@@ -1,123 +1,131 @@
-Received: from mail-ed1-f48.google.com (mail-ed1-f48.google.com [209.85.208.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2626C1F17C
-	for <iommu@lists.linux.dev>; Tue, 25 Jul 2023 15:07:06 +0000 (UTC)
-Received: by mail-ed1-f48.google.com with SMTP id 4fb4d7f45d1cf-51d95aed33aso8051882a12.3
-        for <iommu@lists.linux.dev>; Tue, 25 Jul 2023 08:07:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1690297624; x=1690902424;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=NZUa3uDyejgNax81C3rf+wIL3cUgqBQKB2P7I+aBclw=;
-        b=Uf29Nyg7xnRg63yyxfx80HjEG6Br0n/5nlnoDN7RuMqIxIbyLEElRmiCQpDx8aW12B
-         qJdMhW2tLGVP3WwTW/U02C6SUEc8UzgtauOUwxQp2mAX/a9ZdRUbbmww10esmusvJ1v7
-         KpckzVh9aqCjKaIKdKBsZw2e8hYJ0KtlXg2QY=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1690297624; x=1690902424;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=NZUa3uDyejgNax81C3rf+wIL3cUgqBQKB2P7I+aBclw=;
-        b=j8mpKEIygorMJu8URvuuLrjs/WKPuQPHzxuMUJx51H60B4mpN44ssPuOf/cmWyhp5s
-         g2rQ9/wpnBOyoCNrB9fyKbZiYHP81qs5XlU7gm5QgaTq/TkGdc3IlxOhLYJ7f+7sWbBI
-         cF4rBDKl8TvD1rM20hVcdQUuLutRQ7iutcRyiWJVlcvw2IgkbCouKxZORGf++L5+J3A1
-         UrzVQfRCLUT9yMApqNqBq3R+tbsyBQITvKL99fLK4hxAs+0yZsZCmC2ebogZMljfVy2m
-         IM6c+/S0STrwzE3onPRhmeQJexZ8n0/kW0tZMM4abiaTQTLoSjj5yaZgjRys4iOcrEWR
-         z1jg==
-X-Gm-Message-State: ABy/qLZfh6CO78yn6TjeU7tNHJfvfJeT/KmUOKz2Y5Chtn5sb6EjF8yM
-	ntZtRyYEZwubzPJk7El6h5/DZA6slXOWg1Zm8zVdJJTu
-X-Google-Smtp-Source: APBJJlHx1hIeTGK8MW9czcdjRZsb1FUSQCh67CQ4aeGp9QSDENIqXFmdCX6buZXXgO3KN9X9trJ5Nw==
-X-Received: by 2002:a17:907:77c6:b0:987:498a:87f6 with SMTP id kz6-20020a17090777c600b00987498a87f6mr12270821ejc.34.1690297624446;
-        Tue, 25 Jul 2023 08:07:04 -0700 (PDT)
-Received: from mail-ed1-f52.google.com (mail-ed1-f52.google.com. [209.85.208.52])
-        by smtp.gmail.com with ESMTPSA id z3-20020a170906270300b00993017b64a8sm8291478ejc.224.2023.07.25.08.07.04
-        for <iommu@lists.linux.dev>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 25 Jul 2023 08:07:04 -0700 (PDT)
-Received: by mail-ed1-f52.google.com with SMTP id 4fb4d7f45d1cf-51e24210395so13751a12.0
-        for <iommu@lists.linux.dev>; Tue, 25 Jul 2023 08:07:04 -0700 (PDT)
-X-Received: by 2002:a50:d55c:0:b0:51e:16c5:2004 with SMTP id
- f28-20020a50d55c000000b0051e16c52004mr113153edj.6.1690297603084; Tue, 25 Jul
- 2023 08:06:43 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A317F1F173;
+	Tue, 25 Jul 2023 16:20:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1690302007; x=1721838007;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=xMJQU7WTWSpimqw/VFg1O+U2yOPYq72neWOXdqXZSc8=;
+  b=JgjsEWBMPT7Jvk6lVX5S+Tje71NtLAHXR4l3VdafEmB/w8N9u1WYPetJ
+   A8+WRhoJYO69xIZGtMVLfZvDyMpFRJE/+L6YiEnWWOj2862BLuvVrPtux
+   lt3juE8Jj9zK3n5HZwd+B+FrpFDBUdj6T0CD/3phwdMiQ8YX7/rRM5k+n
+   TaN+Ub8TZNQDVd5dWvdMDnuIB+Tq+QhJRF2du4si0JoVwxaSCiIhgKTnm
+   3R9qzIfoudKe3XpFgpUSddE5VYUMGcEBk3IHq6QYUOjePwmneLvmfnKTs
+   7dGVrUk5NIOcFLPF0qaDHlD71rLwGqgf61cP4+7i0C818813raP+PzSrO
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10782"; a="454157839"
+X-IronPort-AV: E=Sophos;i="6.01,230,1684825200"; 
+   d="scan'208";a="454157839"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jul 2023 09:19:43 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10782"; a="972748557"
+X-IronPort-AV: E=Sophos;i="6.01,230,1684825200"; 
+   d="scan'208";a="972748557"
+Received: from lkp-server02.sh.intel.com (HELO 953e8cd98f7d) ([10.239.97.151])
+  by fmsmga006.fm.intel.com with ESMTP; 25 Jul 2023 09:19:41 -0700
+Received: from kbuild by 953e8cd98f7d with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1qOKlA-00008V-1o;
+	Tue, 25 Jul 2023 16:19:40 +0000
+Date: Wed, 26 Jul 2023 00:19:39 +0800
+From: kernel test robot <lkp@intel.com>
+To: Binglei Wang <l3b2w1@gmail.com>, hch@lst.de
+Cc: oe-kbuild-all@lists.linux.dev, m.szyprowski@samsung.com,
+	robin.murphy@arm.com, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, l3b2w1@gmail.com
+Subject: Re: [PATCH v2] cma: check for memory region overlapping
+Message-ID: <202307260010.zz6hkvQa-lkp@intel.com>
+References: <20230725141602.7759-1-l3b2w1@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20230627-topic-more_bindings-v1-0-6b4b6cd081e5@linaro.org> <20230627-topic-more_bindings-v1-1-6b4b6cd081e5@linaro.org>
-In-Reply-To: <20230627-topic-more_bindings-v1-1-6b4b6cd081e5@linaro.org>
-From: Doug Anderson <dianders@chromium.org>
-Date: Tue, 25 Jul 2023 08:06:25 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=WsWyTWk8W23PEgw7vXWpLDCih1kGZHkqYCNHLFOPrkGw@mail.gmail.com>
-Message-ID: <CAD=FV=WsWyTWk8W23PEgw7vXWpLDCih1kGZHkqYCNHLFOPrkGw@mail.gmail.com>
-Subject: Re: [PATCH 01/11] arm64: dts: qcom: sc7180: Fix DSI0_PHY reg-names
-To: Konrad Dybcio <konrad.dybcio@linaro.org>
-Cc: cros-qcom-dts-watchers@chromium.org, Andy Gross <agross@kernel.org>, 
-	Bjorn Andersson <andersson@kernel.org>, Rob Herring <robh+dt@kernel.org>, 
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, Benjamin Li <benl@squareup.com>, 
-	James Willcox <jwillcox@squareup.com>, Joseph Gates <jgates@squareup.com>, 
-	Stephan Gerhold <stephan@gerhold.net>, Zac Crosby <zac@squareup.com>, 
-	Srinivas Kandagatla <srinivas.kandagatla@linaro.org>, Banajit Goswami <bgoswami@quicinc.com>, 
-	Liam Girdwood <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>, Lee Jones <lee@kernel.org>, 
-	Stephen Boyd <sboyd@kernel.org>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Xu Yang <xu.yang_2@nxp.com>, Peng Fan <peng.fan@nxp.com>, 
-	Christian Marangi <ansuelsmth@gmail.com>, Wesley Cheng <quic_wcheng@quicinc.com>, 
-	Jun Nie <jun.nie@linaro.org>, Max Chen <mchen@squareup.com>, 
-	Shawn Guo <shawn.guo@linaro.org>, Vivek Gautam <vivek.gautam@codeaurora.org>, 
-	Marijn Suijten <marijn.suijten@somainline.org>, linux-arm-msm@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	Vincent Knecht <vincent.knecht@mailoo.org>, "Bryan O'Donoghue" <bryan.odonoghue@linaro.org>, 
-	Konrad Dybcio <konradybcio@kernel.org>, alsa-devel@alsa-project.org, iommu@lists.linux.dev, 
-	linux-usb@vger.kernel.org, 
-	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, Leo Yan <leo.yan@linaro.org>, 
-	Rob Herring <robh@kernel.org>, Andy Gross <andy.gross@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230725141602.7759-1-l3b2w1@gmail.com>
 
-Hi,
+Hi Binglei,
 
-On Tue, Jun 27, 2023 at 9:24=E2=80=AFAM Konrad Dybcio <konrad.dybcio@linaro=
-.org> wrote:
->
-> Commit 2b616f86d51b ("arm64: dts: qcom: sc7180: rename labels for DSI
-> nodes") broke reg-names, possibly with search-and-replace. Fix it.
->
-> Fixes: 2b616f86d51b ("arm64: dts: qcom: sc7180: rename labels for DSI nod=
-es")
-> Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
-> ---
->  arch/arm64/boot/dts/qcom/sc7180.dtsi | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
->
-> diff --git a/arch/arm64/boot/dts/qcom/sc7180.dtsi b/arch/arm64/boot/dts/q=
-com/sc7180.dtsi
-> index 34eff97f8630..b9640574e73b 100644
-> --- a/arch/arm64/boot/dts/qcom/sc7180.dtsi
-> +++ b/arch/arm64/boot/dts/qcom/sc7180.dtsi
-> @@ -3120,8 +3120,8 @@ mdss_dsi0_phy: phy@ae94400 {
->                                 reg =3D <0 0x0ae94400 0 0x200>,
->                                       <0 0x0ae94600 0 0x280>,
->                                       <0 0x0ae94a00 0 0x1e0>;
-> -                               reg-names =3D "dsi0_phy",
-> -                                           "dsi0_phy_lane",
-> +                               reg-names =3D "dsi_phy",
-> +                                           "dsi_phy_lane",
+kernel test robot noticed the following build errors:
 
-I noticed that this patch got applied [1], but I think it got put into
-a branch targeting 6.6 instead of 6.5. Specifically I see it in
-"arm64-for-6.6" but not "arm64-fixes-for-6.5". Any chance it could be
-landed in a "Fixes" tree and get sent out sooner rather than later?
-v6.5 will be pretty broken without it and it would be nice to see it
-in Linus's tree sooner rather than later.
+[auto build test ERROR on linus/master]
+[also build test ERROR on v6.5-rc3 next-20230725]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-[1] https://lore.kernel.org/r/168896565982.1376307.13166434967387866925.b4-=
-ty@kernel.org
+url:    https://github.com/intel-lab-lkp/linux/commits/Binglei-Wang/cma-check-for-memory-region-overlapping/20230725-222426
+base:   linus/master
+patch link:    https://lore.kernel.org/r/20230725141602.7759-1-l3b2w1%40gmail.com
+patch subject: [PATCH v2] cma: check for memory region overlapping
+config: loongarch-allyesconfig (https://download.01.org/0day-ci/archive/20230726/202307260010.zz6hkvQa-lkp@intel.com/config)
+compiler: loongarch64-linux-gcc (GCC) 12.3.0
+reproduce: (https://download.01.org/0day-ci/archive/20230726/202307260010.zz6hkvQa-lkp@intel.com/reproduce)
 
-Thanks!
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202307260010.zz6hkvQa-lkp@intel.com/
 
--Doug
+All errors (new ones prefixed by >>):
+
+   In file included from include/linux/dma-map-ops.h:9,
+                    from kernel/dma/contiguous.c:51:
+   include/linux/dma-mapping.h: In function 'rmem_cma_setup':
+>> include/linux/dma-mapping.h:336:8: error: unterminated argument list invoking macro "pr_info"
+     336 |         return dma_map_page_attrs(dev, virt_to_page(ptr), offset_in_page(ptr),
+         | ^       ~~~~~~~~~~~~~~~~~
+>> kernel/dma/contiguous.c:414:17: error: 'pr_info' undeclared (first use in this function); did you mean 'qc_info'?
+     414 |                 pr_info("Reserved memory: overlap with other memblock reserved region\n",
+         |                 ^~~~~~~
+         |                 qc_info
+   kernel/dma/contiguous.c:414:17: note: each undeclared identifier is reported only once for each function it appears in
+>> kernel/dma/contiguous.c:414:24: error: expected ';' at end of input
+     414 |                 pr_info("Reserved memory: overlap with other memblock reserved region\n",
+         |                        ^
+         |                        ;
+   ......
+>> kernel/dma/contiguous.c:414:17: error: expected declaration or statement at end of input
+     414 |                 pr_info("Reserved memory: overlap with other memblock reserved region\n",
+         |                 ^~~~~~~
+>> kernel/dma/contiguous.c:414:17: error: expected declaration or statement at end of input
+   kernel/dma/contiguous.c:405:13: warning: unused variable 'err' [-Wunused-variable]
+     405 |         int err;
+         |             ^~~
+   kernel/dma/contiguous.c:404:21: warning: unused variable 'cma' [-Wunused-variable]
+     404 |         struct cma *cma;
+         |                     ^~~
+   kernel/dma/contiguous.c: At top level:
+   kernel/dma/contiguous.c:400:19: warning: 'rmem_cma_setup' defined but not used [-Wunused-function]
+     400 | static int __init rmem_cma_setup(struct reserved_mem *rmem)
+         |                   ^~~~~~~~~~~~~~
+   kernel/dma/contiguous.c:395:38: warning: 'rmem_cma_ops' defined but not used [-Wunused-const-variable=]
+     395 | static const struct reserved_mem_ops rmem_cma_ops = {
+         |                                      ^~~~~~~~~~~~
+
+
+vim +/pr_info +336 include/linux/dma-mapping.h
+
+0d71675f87dc40 Christoph Hellwig 2020-09-01  327  
+2e05ea5cdc1ac5 Christoph Hellwig 2018-12-25  328  static inline dma_addr_t dma_map_single_attrs(struct device *dev, void *ptr,
+2e05ea5cdc1ac5 Christoph Hellwig 2018-12-25  329  		size_t size, enum dma_data_direction dir, unsigned long attrs)
+2e05ea5cdc1ac5 Christoph Hellwig 2018-12-25  330  {
+4544b9f25e70ea Kees Cook         2019-10-29  331  	/* DMA must never operate on areas that might be remapped. */
+4544b9f25e70ea Kees Cook         2019-10-29  332  	if (dev_WARN_ONCE(dev, is_vmalloc_addr(ptr),
+4544b9f25e70ea Kees Cook         2019-10-29  333  			  "rejecting DMA map of vmalloc memory\n"))
+4544b9f25e70ea Kees Cook         2019-10-29  334  		return DMA_MAPPING_ERROR;
+2e05ea5cdc1ac5 Christoph Hellwig 2018-12-25  335  	debug_dma_map_single(dev, ptr, size);
+2e05ea5cdc1ac5 Christoph Hellwig 2018-12-25 @336  	return dma_map_page_attrs(dev, virt_to_page(ptr), offset_in_page(ptr),
+2e05ea5cdc1ac5 Christoph Hellwig 2018-12-25  337  			size, dir, attrs);
+2e05ea5cdc1ac5 Christoph Hellwig 2018-12-25  338  }
+2e05ea5cdc1ac5 Christoph Hellwig 2018-12-25  339  
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
