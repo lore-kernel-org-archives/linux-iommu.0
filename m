@@ -1,109 +1,90 @@
-Received: from mail-oo1-f45.google.com (mail-oo1-f45.google.com [209.85.161.45])
+Received: from mail-ed1-f49.google.com (mail-ed1-f49.google.com [209.85.208.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 581B8134CC
-	for <iommu@lists.linux.dev>; Tue, 25 Jul 2023 08:06:58 +0000 (UTC)
-Received: by mail-oo1-f45.google.com with SMTP id 006d021491bc7-55e1a9ff9d4so3783698eaf.1
-        for <iommu@lists.linux.dev>; Tue, 25 Jul 2023 01:06:58 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 55D2C8F4F
+	for <iommu@lists.linux.dev>; Tue, 25 Jul 2023 09:13:51 +0000 (UTC)
+Received: by mail-ed1-f49.google.com with SMTP id 4fb4d7f45d1cf-51cff235226so11140144a12.0
+        for <iommu@lists.linux.dev>; Tue, 25 Jul 2023 02:13:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1690272417; x=1690877217;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=JQlid0H2jkWZz9fgcu7Ae/8sWUNA4lIusDDxBLqkgag=;
-        b=N/RwH41ntlp8cr8ydFYUpFpoqiW4MZC9W726ahHb9rNeZN/BQhgjRUvW43TbQVMkww
-         1hCXeYujuKghA2smFO10Eh5xisYmN+xqOiTFdmPXOlm6hy3SklxNH+j2c1J98sHXJzuZ
-         BNTho6g2LvDsx1alHYU1iVCYl+J2TFEdw9Yjk=
+        d=gmail.com; s=20221208; t=1690276429; x=1690881229;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=uLZB3Vqxh2dmDsMSqV5fzIBLu6enFz7CJhJ0EWNmhTI=;
+        b=m4nK3VDvHyrM4luA4VtYad/5lwzifZ+QvUFq77i1s5ewvnXe1YIW5GCir3DvTYdzoc
+         Fd+Z5Whl3UnEGrmJ48c5AmftBRswUaygjNqQG07vBKgJq5IKHRsbxPGhw8Ga4+KQgqUR
+         QC6bLolsTrDRQlS0Jwljyu9kz3ncjCeZXYGW1k9XVXbDp6SDE1QVJ0cw1RECovxtFC85
+         whwMVEVTfsk5hXWgxElEZCYHaFuNe9gKz6ggtLO1YMRvWdB0YSgaMMlRWj6FblXeE8H0
+         kfAGAtwKkz6rKgjFJGwuII7uRMKA038kVCZstU7hHsaCdltlljZga/8DDl0jRkYPD4Lc
+         JEeA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1690272417; x=1690877217;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=JQlid0H2jkWZz9fgcu7Ae/8sWUNA4lIusDDxBLqkgag=;
-        b=h5w9z0EK98A5wIzD85A+19tF0BpVr37hLD5QbQduvXGwXUKAlot2brVvZkJA6EWwj1
-         WYrCtvn5XhLvjxw2skzO3OJb4BmTKYI5kakc8Q7gtHH+dKi2Qf1Ei8eQCAHb6NCw5gDr
-         ZsWaUuB7bT40JuUX5PDlA4RCZNyf+M6rNViX8ySZsnITnXMw078HMEPiEqdYPW4J00op
-         HNgtu/p7EQ6L0o6yUmXCL3fvGL+H/GKjhad0m6/9Jjv+VeFJIaFYMs6QkyH+LirfMAT2
-         n0yB3Sp2ysOkRe0Jti2Kb+55G8vxmem8r97IKB9b2mqlMB8muIZHGlxoMa3IzVWIxoad
-         3lXw==
-X-Gm-Message-State: ABy/qLZjJiTFbweS0nDhi9XqD8A4Oowcq7qG19X3vV5/KIOZs7gsh47R
-	lTytklGw3x7yneGcbbLIp+vIX4cV5K57TRGhIEw=
-X-Google-Smtp-Source: APBJJlHhpvDnd6aTbUwCR0z+VI+fvqZszoXe3tRaG5l6nV72ftVSjU+aAOcL0T3wdEmI3GAw34WKAA==
-X-Received: by 2002:a4a:344a:0:b0:567:4e58:6aae with SMTP id n10-20020a4a344a000000b005674e586aaemr1493299oof.0.1690272416974;
-        Tue, 25 Jul 2023 01:06:56 -0700 (PDT)
-Received: from mail-ot1-f46.google.com (mail-ot1-f46.google.com. [209.85.210.46])
-        by smtp.gmail.com with ESMTPSA id q130-20020a4a3388000000b00541fbbbcd31sm5252400ooq.5.2023.07.25.01.06.56
-        for <iommu@lists.linux.dev>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 25 Jul 2023 01:06:56 -0700 (PDT)
-Received: by mail-ot1-f46.google.com with SMTP id 46e09a7af769-6b9cf17f69cso3322159a34.0
-        for <iommu@lists.linux.dev>; Tue, 25 Jul 2023 01:06:56 -0700 (PDT)
-X-Received: by 2002:a6b:8d82:0:b0:789:dcd1:8eb9 with SMTP id
- p124-20020a6b8d82000000b00789dcd18eb9mr1029181iod.6.1690272036013; Tue, 25
- Jul 2023 01:00:36 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1690276429; x=1690881229;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=uLZB3Vqxh2dmDsMSqV5fzIBLu6enFz7CJhJ0EWNmhTI=;
+        b=f9nk5mUjXvc+pYKESxZI1npze0Jr/mzu3U8w3GUsF0C1w2wYTCNsFH/2pTl0sgpTL3
+         wtGCIwe5F9EtH7ACx1YZWKrHNnMoKiyohHIV+aJ8bFVqOPHekglhArmFtbrV0o4+nRFk
+         YlmD4N/XJyCBM83ZLwSCUE6cyevzXNR2wmjsEcCFG8hxF3GlfPqdmF/pRB3c/LHzMZ3U
+         bIxnuaZbYIzQMLRcndpcxPQLjHBvnvKy68XjFv02QU9ZInFV+NcAvQhh+kF6i6oPi7dg
+         cglJ6O1642uW9l/+a2tmKm23jxlbVuyO/JTaw5SzE17JT3qoj/m+80/Y99ScM58pSQGF
+         +BOA==
+X-Gm-Message-State: ABy/qLYQ16+ROmStLGeWAP0KHYHgSoE7AGCJ5hucy+yVga/MKSJXgWxP
+	S/2QrW5sDTC/SBUvUyhyIYGEQ9ibILu1cUyjh4g55GZb
+X-Google-Smtp-Source: APBJJlHQePc24l5M94LiwGV6xth3Ox+SSMoRFG/xTywl3wMt+dnuiXmPOuQDIfXcVKkfX644GS70gRb6tsp9G4GKM+I=
+X-Received: by 2002:a05:6402:27c6:b0:522:405f:a7 with SMTP id
+ c6-20020a05640227c600b00522405f00a7mr2014416ede.16.1690276429117; Tue, 25 Jul
+ 2023 02:13:49 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20230602090227.7264-1-yong.wu@mediatek.com>
-In-Reply-To: <20230602090227.7264-1-yong.wu@mediatek.com>
-From: Fei Shao <fshao@chromium.org>
-Date: Tue, 25 Jul 2023 15:59:59 +0800
-X-Gmail-Original-Message-ID: <CAC=S1nhgkj5zh-Oa+OJjZKmkNMfG63+WjSefB2swybm29KxDXA@mail.gmail.com>
-Message-ID: <CAC=S1nhgkj5zh-Oa+OJjZKmkNMfG63+WjSefB2swybm29KxDXA@mail.gmail.com>
-Subject: Re: [PATCH v12 0/7] MT8188 IOMMU SUPPORT
-To: Yong Wu <yong.wu@mediatek.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Rob Herring <robh+dt@kernel.org>, 
-	Matthias Brugger <matthias.bgg@gmail.com>, Robin Murphy <robin.murphy@arm.com>, 
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, 
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, iommu@lists.linux.dev, 
-	linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	mingyuan.ma@mediatek.com, yf.wang@mediatek.com, jianjiao.zeng@mediatek.com, 
-	chengci.xu@mediatek.com
+References: <0-v1-b782fe624c2a+3d511-sprd_force_aperture_jgg@nvidia.com>
+In-Reply-To: <0-v1-b782fe624c2a+3d511-sprd_force_aperture_jgg@nvidia.com>
+From: Chunyan Zhang <zhang.lyra@gmail.com>
+Date: Tue, 25 Jul 2023 17:13:12 +0800
+Message-ID: <CAAfSe-uX=JWSXoBy6egcE1iGaHxQMp7Rf34qC7iseSnO+kXSDA@mail.gmail.com>
+Subject: Re: [PATCH] iommu/sprd: Add missing force_aperture
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Baolin Wang <baolin.wang@linux.alibaba.com>, iommu@lists.linux.dev, 
+	Joerg Roedel <joro@8bytes.org>, Orson Zhai <orsonzhai@gmail.com>, 
+	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>, 
+	Chunyan Zhang <chunyan.zhang@unisoc.com>, Joerg Roedel <jroedel@suse.de>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-On Fri, Jun 2, 2023 at 5:03=E2=80=AFPM Yong Wu <yong.wu@mediatek.com> wrote=
-:
+On Tue, 25 Jul 2023 at 01:36, Jason Gunthorpe <jgg@nvidia.com> wrote:
 >
-> MT8188 have 3 IOMMU HWs. 2 IOMMU HW is for multimedia, and 1 IOMMU HW
-> is for infra-master, like PCIe.
+> force_aperture was intended to false only by GART drivers that have an
+> identity translation outside the aperture. This does not describe sprd, so
+> add the missing 'force_aperture = true'.
 >
-> About the 2 MM IOMMU HW, the connection could be something like this:
->
->         IOMMU(VDO)          IOMMU(VPP)
->            |                   |
->       SMI_COMMON(VDO)      SMI_COMMON(VPP)
->       ---------------     ----------------
->       |      |   ...      |      |     ...
->     larb0 larb2  ...    larb1 larb3    ...
->
-> INFRA IOMMU does not have SMI, the master connects to IOMMU directly.
->
-> Although multiple banks supported in MT8188, we only use one of them,
-> which means PCIe is put in bank0 of INFRA IOMMU.
->
-> So we have two pgtable for MT8188, specifically, these two MM IOMMU HW
-> share a pgtable while INFRA IOMMU HW use a independent pgtable.
->
-> Another change is that we add some SMC command for INFRA master to
-> enable INFRA IOMMU in ATF considering security concerns.
->
-> We also adjust the flow of mtk_iommu_config to reduce indention.
+> Fixes: b23e4fc4e3fa ("iommu: add Unisoc IOMMU basic driver")
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 
-A friendly ping - this series was reviewed, but I'm not sure if it's
-still on the radar today.
-This can be cleanly applied on top of next-20230725.
+Acked-by: Chunyan Zhang <zhang.lyra@gmail.com>
 
-To give more confidence, I also tested the basic multimedia and infra
-functionalities on my MT8188 with this series, so
+Thanks,
+Chunyan
 
-Tested-by: Fei Shao <fshao@chromium.org>
-
-to the entire v12 series.
-
-Regards,
-Fei
+> ---
+>  drivers/iommu/sprd-iommu.c | 1 +
+>  1 file changed, 1 insertion(+)
+>
+> diff --git a/drivers/iommu/sprd-iommu.c b/drivers/iommu/sprd-iommu.c
+> index af68b3a2c123ab..183ca889a6f9c4 100644
+> --- a/drivers/iommu/sprd-iommu.c
+> +++ b/drivers/iommu/sprd-iommu.c
+> @@ -145,6 +145,7 @@ static struct iommu_domain *sprd_iommu_domain_alloc_paging(struct device *dev)
+>
+>         dom->domain.geometry.aperture_start = 0;
+>         dom->domain.geometry.aperture_end = SZ_256M - 1;
+> +       dom->domain.geometry.force_aperture = true;
+>
+>         return &dom->domain;
+>  }
+>
+> base-commit: b9e8d053f9e8b9d3aa1b5113e3fcfb66ef450564
+> --
+> 2.41.0
+>
