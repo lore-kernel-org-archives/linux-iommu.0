@@ -1,186 +1,135 @@
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2050.outbound.protection.outlook.com [40.107.94.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49D1A7C;
-	Tue, 25 Jul 2023 02:12:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1690251176; x=1721787176;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=2ZzA8PQhmyEUD1bS/bpO6I57HTXTNUQZMqegoa6huK4=;
-  b=BUmbskHEhWOzSzWj9xeVT++3uXJW2StzqEMzuaCNKUHsAUgcZzuJ5NCP
-   qf41O+gWiqYC3hkA0DtpgvB6oB8d5edwBD8ourFMTwz/fU4m3eLlyOuiN
-   sjHPSZ00zB8j2ahRaPiIuEKFhH72MdfRrApAuGDXR4SuznWFbTBAPaQnF
-   5Q1C5u7Wu4i7+gT5a/sXv/sVd3SNFBn6tfsu0fJS8D9nwpC/78GLJ5NcM
-   51dLrylGI9CHJKRJ5dJMgkMKu2CukUWY+57aW6ZlpYWE6rLXUvM0Y8T8i
-   vgK53aUnepZLMwX5BAYbm93GNPscoY1NVJHQyKbx43GR1iu6SZQUhNLp7
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10781"; a="431399075"
-X-IronPort-AV: E=Sophos;i="6.01,229,1684825200"; 
-   d="scan'208";a="431399075"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jul 2023 19:12:54 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10781"; a="719888695"
-X-IronPort-AV: E=Sophos;i="6.01,229,1684825200"; 
-   d="scan'208";a="719888695"
-Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
-  by orsmga007.jf.intel.com with ESMTP; 24 Jul 2023 19:12:53 -0700
-Received: from fmsmsx602.amr.corp.intel.com (10.18.126.82) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.27; Mon, 24 Jul 2023 19:12:52 -0700
-Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.27 via Frontend Transport; Mon, 24 Jul 2023 19:12:52 -0700
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.108)
- by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.27; Mon, 24 Jul 2023 19:12:52 -0700
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA9E61FB7
+	for <iommu@lists.linux.dev>; Tue, 25 Jul 2023 03:31:49 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=AWB5hVa7mI9NVM1ZNpOM2FWE7Oxc5KpJZ7LS+/cwnDrOqLVl87Kw4orDwWuI5JTqtrOhIRgrAhuYE6NPKFFJW/N5oOU9wKafpKYx8LCmx2pTpM4JW0yM/eBsZSF3AXRCFKE5zotNeThKLJhCSEOQyc4jEfZBzyT4G5/Eg+MTQDS7ufL48ZgiU9EkiHJ93X6ZqbUVje+koeKVA4cl8BoXj4ah1ETldYpDH492pHPQakPMaBJfDpaQEBe6H0Q4aKguS3fUy/URaUZVlrM5tV5HA8KwNrdOA+Na4y4hKaY4lZZC5UmGirU7jsRcJfCk0kDJsHyuDdKpZ9k5ZKO2MgA/Ww==
+ b=BES157FK0gE0NdbbnyNPDrTUaL3L3o5azhbj9VP9RNPWXxMEI708Aw/U6ZGP55PoJf8o20ONSXZ2x1jrOwMiKJ07y7YJYQ6P757MAfxiVG0jRmME04DvfMGSEl3Dq2dsQiHQLT+YN6eoSCUs5j8/mPmQ8+RTA41Z9hqCxj7g+fRJ+ZARK8sCxBkMRKhBM8VFPWtqw04rdgX1q40K7YmPhz/eE6GL7UYbGb7f0VVoSFtUkilrx6VUwCf8u0+w3xwmRA25VQO23QuNtaqvfcp4rffvBtIMkZlL2+NPMvDhEege3O20SG69b+qip9AqKnH7eJt7N1CeP2ls5LkdmRvnRw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=OTFTCJLcwUc0k392KwO/QAarBr78QRN9xjsWDQ2yTMA=;
- b=S2MUMfhngJQe6HKLOCkIIRt0k0ZmAyKuMbM81UuybMyfRUN0yhWWetNaYW4JLcS5sgK0fkL0ZqmUW7bJ7ok5AkP0U/R9sU7xBXkTpSSEhNTVG+bZX0i2QebLJJP58d0PXFDGAhUMEKeujFJIP2An9SD2Pz0UuH8uZEKJrKi4dZ/qBr+GdpkewZv8QQK9d2RKB1fG/J81xdDLHuw1NrMYEr5n/h8sXPI2Fadx5OsmRuToGN9jEqso5f2RoCfUyX8FeuFLUMBrw0sQAcbiL5tyuz+k86nwUh7TkrHo8pkJbvv9pwAXmxJJq2YGlJtBen7fszzd4+AF4NnfVbN3E3b+Zg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by PH0PR11MB4806.namprd11.prod.outlook.com (2603:10b6:510:31::21) with
+ bh=TQGyBMnBg4yT3jnTVAWLNLwd9fLHT+QAGr1yl0pZhsA=;
+ b=BWfiXgHRBLwh9m3SXuDvT2HqIX+sdu67gPfavdjM16o8ZehyMXv+Kw9T3ihZkaKhy53NGRmcJYkPwMNvq+1urhduR6jqPNFsHgDdycgcRNyol+vlgKcv18RVh9e4tn8lhs8ISMrljCf5GeLjj87OD+CJsaQAMLBWIKMW5SCaAJDD34aR++3AHkOr+GxxzCbgDiuLxA6/yz6pq0SF4n2ulnHzPcPsIgWyKELMt1OTXfoShr7Zs4ROweJEvcSkoqEtOETgzAZbaOl8f2PUK0Eg2nIvJRevDN2tqbAUDLMZgZik+8rHB6Fet0CFevtPPCa/GGSIybi3f6DiaNnQHyMkSA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=TQGyBMnBg4yT3jnTVAWLNLwd9fLHT+QAGr1yl0pZhsA=;
+ b=j1woApV+j+cAf4s3c99EkVmhpUoFvnwODeApKyUmQ1PRCXR3fqkhkyPCMHIen/BixiAKBOq1PSt12EVi0vohNjpcqsx301Brh+5xPSax0W3bdJr6OSBlAewliQajozmMaslqbG7AT5Oblg9fu/8g3LAJUaAtpAfAXvGxPTbAKWs=
+Received: from BN1PR13CA0030.namprd13.prod.outlook.com (2603:10b6:408:e2::35)
+ by IA0PR12MB8840.namprd12.prod.outlook.com (2603:10b6:208:490::13) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6609.32; Tue, 25 Jul
- 2023 02:12:51 +0000
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::137b:ec82:a88c:8159]) by BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::137b:ec82:a88c:8159%4]) with mapi id 15.20.6609.026; Tue, 25 Jul 2023
- 02:12:51 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: Baolin Wang <baolin.wang@linux.alibaba.com>, Lu Baolu
-	<baolu.lu@linux.intel.com>, David Woodhouse <dwmw2@infradead.org>, "Heiko
- Stuebner" <heiko@sntech.de>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	Jernej Skrabec <jernej.skrabec@gmail.com>, Joerg Roedel <joro@8bytes.org>,
-	"linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>, "linux-rockchip@lists.infradead.org"
-	<linux-rockchip@lists.infradead.org>, "linux-sunxi@lists.linux.dev"
-	<linux-sunxi@lists.linux.dev>, Orson Zhai <orsonzhai@gmail.com>, Robin Murphy
-	<robin.murphy@arm.com>, Samuel Holland <samuel@sholland.org>, Chen-Yu Tsai
-	<wens@csie.org>, Will Deacon <will@kernel.org>, Chunyan Zhang
-	<zhang.lyra@gmail.com>, Alex Williamson <alex.williamson@redhat.com>
-Subject: RE: [PATCH 01/10] iommu: Remove useless group refcounting
-Thread-Topic: [PATCH 01/10] iommu: Remove useless group refcounting
-Thread-Index: AQHZuar/8ffxdhgup0+jp6oCKhjoRa/D0M0AgABSGoCABBHlUIABCuuAgACH4MA=
-Date: Tue, 25 Jul 2023 02:12:50 +0000
-Message-ID: <BN9PR11MB52761B55F0534F92614213858C03A@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <0-v1-3c8177327a47+256-iommu_group_locking_jgg@nvidia.com>
- <1-v1-3c8177327a47+256-iommu_group_locking_jgg@nvidia.com>
- <BN9PR11MB5276130E7AE8B0BEA43FCC6C8C3FA@BN9PR11MB5276.namprd11.prod.outlook.com>
- <ZLpzqVAxxLGJp+L4@nvidia.com>
- <BN9PR11MB527621E6E7D464982B8730118C02A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <ZL69k24VQdH0LFHk@nvidia.com>
-In-Reply-To: <ZL69k24VQdH0LFHk@nvidia.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|PH0PR11MB4806:EE_
-x-ms-office365-filtering-correlation-id: 95e030fd-b1b0-4e0f-dac0-08db8cb4a607
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: +JCx4SEB/s1jgOQyoTTxXmvcSFt7RXkWyLtv9qep/VeE9z866JbhZp7hPm+XBZZw38mdlgZhbMKFRLv+UTTu4zZkhG5n8j5kCiN6OW+zrBg6S8V0gBlDiHV6TAWM6ScHuFBzDhyhtcmP4FbV/UvitZxjW3ihN4lIoqoNMzI/O44Ys85ba8f1GcMuz/aLAFNJxNm/35zR+aTWVx8kwX5j1ZYf+FvwRJ+XM9poeyWl6DJD3WSg376kVczgdFOlBSbZErVSuaESXAMCekq0bxNBfMXxJ2W4sRm1dbmoIxVfmuRWz052Gxq/i9WBiogbl3Ug58ANLaDVciKygmMcmndlcpf/UIIuAWysxp28i6Vxza2I2wIxpvlZ7Mu2b5F99rvvjl4drA/2KuzgN3jyDiXblU1nAaAdO2fYbPGmPCsLE0vz+I0KLiC1WjDTkX7tWEOOJ34AByJBYswqpK1sD7MeWI/tv9PI6ZRKvJmaLZ0mQ1EUFDNkn1iaIFmizSNZz2s54QUtReCRIUZkQJirGcV2UmNoUThsLSzUFjtVWQ3XObrO3nFYvFdjwUAwgkJ/a1RXPVSkWR3iP9jSE1M7KBkqtssCAdpVyAF4MOiXRk0/hZFuX1nog8kw1Obyuqcf234+
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(396003)(376002)(346002)(136003)(39860400002)(366004)(451199021)(38100700002)(55016003)(122000001)(83380400001)(7416002)(8936002)(8676002)(52536014)(5660300002)(6916009)(478600001)(54906003)(66556008)(4326008)(66476007)(316002)(66946007)(76116006)(41300700001)(71200400001)(64756008)(186003)(6506007)(26005)(9686003)(66446008)(7696005)(2906002)(33656002)(38070700005)(86362001)(82960400001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?Yw8AMCgk+NRviqWQTt2Su3FSzdUMpAe4zOBy1xPf3H4au/h8J/rdrkS1GYG1?=
- =?us-ascii?Q?ZR/idMzZjqbaSgA85tGJgocQB3Tl/gHMlm25YiDsLwxBU5pdPh7l64ktRVvF?=
- =?us-ascii?Q?aBu0ViOkDT4HPv43QTRIoN0dOHvB62F+T1BpXH708SP4zApKGKOq9ZKOlzbT?=
- =?us-ascii?Q?LwrmCKTUQhMBNNFOY4kE7K1jogYiFiefU3xd1w5EC9qZAN+/QEvXpNSYbnxp?=
- =?us-ascii?Q?4dz+mx+DR3tGq/POozj7i9PLE5g35XMqXFttOYbprxsjEI4JAr14Dx5DcQWL?=
- =?us-ascii?Q?xW/SO4cfqN3p/QcZ1QSCjGrjZkPHcnVGpuMy0JYLA2wvAYiTEaBQSjMem144?=
- =?us-ascii?Q?WwL4liFPZc53Ct3ZkUg3o9T42IMTkH8lBEFwUBG30nAojmz0iHh4gqckDvRF?=
- =?us-ascii?Q?LWe9+U/6c+EdwVSM5RIelcKjX0BUoae9j4Tp7Sji1XYVu4WvcVXACnh72FdJ?=
- =?us-ascii?Q?TF61o2tRUqspbrFDC1Z10EPf0LM5KXJK28KIdByEaM4bG7frJcx34A4Z2Wg5?=
- =?us-ascii?Q?KgKpVB6LS1cnv9FWDBzCpr3mA61C33CYBrQWktoUC1vx9C6M4M/5oIMDREuv?=
- =?us-ascii?Q?unGXNWGi/hbvX8q2bIU+NT0rEaR8In9O5a/cPHLFb6/IP6kipwpRvNdQqyoz?=
- =?us-ascii?Q?hG4ar8uLTfmRzM8lYENlN9e9snJ19cTWXptOZvk2smZ6InTPDxfv/Vfxnqwy?=
- =?us-ascii?Q?LTQE/2F93dLukqz8pNKhjqvgI4rXRjqUPfDCx/CnewVVI1wx9yDChsBTe8IP?=
- =?us-ascii?Q?dNHb/XbjMWWgi3PEb8rzClqVCN+Elm+QZzGPSBc2UhfrgeAPIFaR/It927Ge?=
- =?us-ascii?Q?aPcvJXhllSDGwH0at6vS10To70o1tBeOCSe0olsaerGSAkxoKqxOfIZPek3T?=
- =?us-ascii?Q?l9G0ISnZphRBOp0ryCvatJsC6eu2/tq2HGubE/HGjjpziocrde/UlLVewMuo?=
- =?us-ascii?Q?sh910t9y/83iNrukXoANabrGqKFLM6NoQi5miGH23COUU+JM1N+rIok9vq7n?=
- =?us-ascii?Q?ybMkVXCkEYDM1k75uDTb2EuXnLvSy3+DZj7AfUe5O3mvjaix5vY8USWXW4op?=
- =?us-ascii?Q?jsfm9DP5rGolHvRPFg+YguULcdt/i0UQbgGVnvPw1CuGV8e9ibRw9xU2uS2Y?=
- =?us-ascii?Q?4NUfZ21wMbznneD3V1KeK9hQMtr0z7UHdB5U4a2ff2EQzUpZLnW6U1MLKnHD?=
- =?us-ascii?Q?kLnIezd6uNDuoUdet0FANf4lkL61gwutmCK9AVsETxkVxSChKJvReV/xFjH4?=
- =?us-ascii?Q?lFGbKDAub43KN6Y9wcwUA8U+mhhwudHCTDA2ePISSFEtZNrL3Z4I8ay/8zOk?=
- =?us-ascii?Q?MLzibx6IShuu5CfKUWz/GFoU4xAewJRdHyozrriNibCsYDcRky74IH4JzP5p?=
- =?us-ascii?Q?/QVctZm+3WgO9Hw4Z0WIYCOZavAbJT2FX3gCgKKkLlXiyKhYEPkZ1LqGxs+q?=
- =?us-ascii?Q?v+6eOpAqg0ID4bTN02tzxJqcpwPt2XoihjyeUWojOXCOC4bO+uWbKMvKNnYb?=
- =?us-ascii?Q?wEbLrgKf5vKH5PEy8yHnEa0hmx/jLrXnAid8xdaWh/HW9V31VBaJxwJFB9t8?=
- =?us-ascii?Q?At/TPKqEsbqcznr73qKmVx8rYuVqGkPrZBP5b2RK?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6609.24; Tue, 25 Jul
+ 2023 03:31:47 +0000
+Received: from BN8NAM11FT009.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:e2:cafe::37) by BN1PR13CA0030.outlook.office365.com
+ (2603:10b6:408:e2::35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6631.25 via Frontend
+ Transport; Tue, 25 Jul 2023 03:31:47 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB03.amd.com; pr=C
+Received: from SATLEXMB03.amd.com (165.204.84.17) by
+ BN8NAM11FT009.mail.protection.outlook.com (10.13.176.65) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.6631.25 via Frontend Transport; Tue, 25 Jul 2023 03:31:47 +0000
+Received: from SATLEXMB07.amd.com (10.181.41.45) by SATLEXMB03.amd.com
+ (10.181.40.144) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.27; Mon, 24 Jul
+ 2023 22:31:46 -0500
+Received: from SATLEXMB04.amd.com (10.181.40.145) by SATLEXMB07.amd.com
+ (10.181.41.45) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.27; Mon, 24 Jul
+ 2023 20:31:46 -0700
+Received: from dev-desktop.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server id 15.1.2507.27 via Frontend
+ Transport; Mon, 24 Jul 2023 22:31:39 -0500
+From: Jesse Zhang <Jesse.Zhang@amd.com>
+To: <iommu@lists.linux.dev>
+CC: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, Yifan Zhang
+	<yifan1.zhang@amd.com>, Jesse Zhang <jesse.zhang@amd.com>, Jesse Zhang
+	<Jesse.Zhang@amd.com>
+Subject: [PATCH] [PATCH] iommu/amd: fix the flush IOTLB issue when do detach
+Date: Tue, 25 Jul 2023 11:31:38 +0800
+Message-ID: <20230725033138.821890-1-Jesse.Zhang@amd.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 95e030fd-b1b0-4e0f-dac0-08db8cb4a607
-X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Jul 2023 02:12:51.0050
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BN8NAM11FT009:EE_|IA0PR12MB8840:EE_
+X-MS-Office365-Filtering-Correlation-Id: e51f2e60-3cf5-4c2e-8cc4-08db8cbfad0e
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	Bnr8Z4wk41F3DDVOnPKhgTzv/4zdzgRGDAUq1RFVQakg8R3RITx/RY3SosMwwkdUM4QDs6YZYpg1otwNza41uQUPIj86j7ixCzHn+CmJOgJM6UZrbPCCvME0Sisc7DjsJt7AUcehXsyZc2AuPaHRnuUbejwH3N4bdV6zfgaJOPU4O1fSPptiPyo0Sbq3pvKweOxRYALLGtV+QlgGSTmqG6vCLdXeZAkxANrp/JQOJv7Q31xcklOHbQWJ7RAIdZpC7vBO0XuyDm2JHqk03KB9rdVSkjQ4RKhNJlwcwDmBTLD/IcDhllEYlCEAEjYk49n74F7zkA2Ei1/cYzngMfLP0Aix3d3yGnlK+z+qYJmT6TqZih6YjorsajPe8z1oSPXIEEXF+f6Ouu8QcYFQkhpI519Gp58FFCR4lIhCQgWqEaMiR2s/O3TLts9xwDA1osS+zRyeCRwHUK4TUZMJww83F0xqVxl5icdGWYtpGKF34vMpI+pP3BhMN152g9bfVLnyHaWYEPu77em7gVg81zI8qUODnlpr6fiXcV4tCbL6rjOsB0/rr15SFwy4gVOduDObtk/ex1JrMbgiJkopQ1ci1oL1pPLGCQADY+vRefyNmQPbT5s295eiYFH3NSSxa6uvJxHZX23EjAdSm3XDJZxmd2x0NZrvISeSYqA7s5TYheCgwL9q2y4hLsknpj7CxOOjmOTNIg9VaXdqpjDEPXW91ie4WmuAtcvu/XIFPePMAFxyH+m8/Xn7iLbNCRwAKtFfNapZ8g7RK3NvQhC5Y6HyRw==
+X-Forefront-Antispam-Report:
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB03.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(346002)(396003)(376002)(39860400002)(136003)(82310400008)(451199021)(46966006)(40470700004)(36840700001)(41300700001)(40480700001)(54906003)(8936002)(5660300002)(8676002)(4326008)(6916009)(316002)(7696005)(40460700003)(70586007)(70206006)(86362001)(83380400001)(478600001)(2906002)(36756003)(356005)(47076005)(81166007)(82740400003)(2616005)(36860700001)(426003)(1076003)(186003)(26005)(336012)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jul 2023 03:31:47.2642
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: KITvbMrdKsX4Ma4JKHk51xmg3vbFiyrcZXMpSu2erMR1zj+95vAY2xX8ubWlgb3W9yYbDSn1aU5cdj+AmUgN8Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR11MB4806
-X-OriginatorOrg: intel.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e51f2e60-3cf5-4c2e-8cc4-08db8cbfad0e
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB03.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BN8NAM11FT009.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB8840
 
-> From: Jason Gunthorpe <jgg@nvidia.com>
-> Sent: Tuesday, July 25, 2023 2:06 AM
->=20
-> On Mon, Jul 24, 2023 at 02:11:44AM +0000, Tian, Kevin wrote:
-> > > From: Jason Gunthorpe <jgg@nvidia.com>
-> > > Sent: Friday, July 21, 2023 8:02 PM
-> > >
-> > > On Fri, Jul 21, 2023 at 07:10:57AM +0000, Tian, Kevin wrote:
-> > > > > From: Jason Gunthorpe <jgg@nvidia.com>
-> > > > > Sent: Wednesday, July 19, 2023 3:06 AM
-> > > > >
-> > > > >  int iommu_device_use_default_domain(struct device *dev)
-> > > > >  {
-> > > > > -	struct iommu_group *group =3D iommu_group_get(dev);
-> > > > > +	/* Caller must be a probed driver on dev */
-> > > > > +	struct iommu_group *group =3D dev->iommu_group;
-> > > > >  	int ret =3D 0;
-> > > >
-> > > > this is called in the probing path by .dma_configure().
-> > > >
-> > > > the driver hasn't been probed yet hence the rationale to not
-> > > > refcount is due to device_lock() instead?
-> > >
-> > > At this point the driver core has partially attached/detached a drive=
-r
-> > > so I'm considering it part of the probed driver explanation.
-> > >
-> > > Really during anything protected by the driver core probe path is
-> > > assured that the group cannot change.
-> > >
-> >
-> > Probably this worths a slightly different comment then?
->=20
-> How about
->=20
-> 	/* Caller is the driver core during the post-probe path */
->=20
+From: Jesse Zhang <jesse.zhang@amd.com>
 
-sounds good
+[WHY] After invalidating a domain's page tables, then we need to flush the IOTLB of the device in the domain.
+[HOW] so we need clear the IOTLB first, then delete the device list.
+otherwise, that will not clear the IOTLB by the function of amd_iommu_domain_flush_tlb_pde
+
+Signed-off-by: Jesse Zhang <Jesse.Zhang@amd.com>
+---
+ drivers/iommu/amd/iommu.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+index dc1ec6849775..6e4c43e25c27 100644
+--- a/drivers/iommu/amd/iommu.c
++++ b/drivers/iommu/amd/iommu.c
+@@ -1699,12 +1699,6 @@ static void do_detach(struct iommu_dev_data *dev_data)
+ 	if (!iommu)
+ 		return;
+ 
+-	/* Update data structures */
+-	dev_data->domain = NULL;
+-	list_del(&dev_data->list);
+-	clear_dte_entry(iommu, dev_data->devid);
+-	clone_aliases(iommu, dev_data->dev);
+-
+ 	/* Flush the DTE entry */
+ 	device_flush_dte(dev_data);
+ 
+@@ -1714,6 +1708,12 @@ static void do_detach(struct iommu_dev_data *dev_data)
+ 	/* Wait for the flushes to finish */
+ 	amd_iommu_domain_flush_complete(domain);
+ 
++	/* Update data structures */
++	dev_data->domain = NULL;
++	list_del(&dev_data->list);
++	clear_dte_entry(iommu, dev_data->devid);
++	clone_aliases(iommu, dev_data->dev);
++
+ 	/* decrease reference counters - needs to happen after the flushes */
+ 	domain->dev_iommu[iommu->index] -= 1;
+ 	domain->dev_cnt                 -= 1;
+-- 
+2.25.1
+
