@@ -1,135 +1,120 @@
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2086.outbound.protection.outlook.com [40.107.223.86])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1DB991F188;
-	Tue, 25 Jul 2023 21:30:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1690320621; x=1721856621;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=9PNvZoBQBaeIOj+3AWC2/xbOcyDjpito1JAw2tYH360=;
-  b=j5NidulOTrUzHYPFWYOEoXL9hbEban2y7CHj6rb4rDB4f7c/DLPMBSA6
-   szvYrXOpUsZQ5vLjGcimneqkZFWBSwC/ve+6jvCDzUa9tr77lTAmtNaV/
-   e0jPTeQfzuppvTOmoKVXHIto7/lH+082zL9geLkZCJjBmd0EVHV0Wf++E
-   uTd/+vs7UGY569DctlRZlt+IrtT0gVA1Njl02iUrDw9vhMJULpXprusPo
-   2qM1pegTDfxH/FFVW10xrzUnK4IQyrLGr/GPyXdWcXDRoQ2+B0e5veUbw
-   7040ChshoX2Kj5UA8jT2yyCLAhH/rRwn44+9aohOHCXbXXRG/kif3evcw
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10782"; a="434104813"
-X-IronPort-AV: E=Sophos;i="6.01,231,1684825200"; 
-   d="scan'208";a="434104813"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jul 2023 14:30:20 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10782"; a="900118498"
-X-IronPort-AV: E=Sophos;i="6.01,231,1684825200"; 
-   d="scan'208";a="900118498"
-Received: from lkp-server02.sh.intel.com (HELO 953e8cd98f7d) ([10.239.97.151])
-  by orsmga005.jf.intel.com with ESMTP; 25 Jul 2023 14:30:17 -0700
-Received: from kbuild by 953e8cd98f7d with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1qOPbl-0000MN-0b;
-	Tue, 25 Jul 2023 21:30:17 +0000
-Date: Wed, 26 Jul 2023 05:30:13 +0800
-From: kernel test robot <lkp@intel.com>
-To: Binglei Wang <l3b2w1@gmail.com>, hch@lst.de
-Cc: oe-kbuild-all@lists.linux.dev, m.szyprowski@samsung.com,
-	robin.murphy@arm.com, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, l3b2w1@gmail.com
-Subject: Re: [PATCH v2] cma: check for memory region overlapping
-Message-ID: <202307260509.OMkcRpqC-lkp@intel.com>
-References: <20230725141602.7759-1-l3b2w1@gmail.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5FE8B26B83
+	for <iommu@lists.linux.dev>; Tue, 25 Jul 2023 21:45:37 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=YZEl0RbRXcPIZ13W4ZWb8L/ZBqBdGZIeobjNQJQ1LG9e3X5h7+hvOab0xceJF1XTDmotyxyL24BHwtQ7ifpvuUseoID6vAB0BBuj58sNd/hHHzEsqspqLWPxjkhHNWsTPqjWF5yfHLGW/H88WgLinPj91Nns1MlLZzmcYOCL50Vn9iAba7bTyFPGV30EsNvOtU5lpkfoVLDbM29RJVY8OkrMuO2NRiex/BOjvAdfMVJBs+8oGfAB+l7Bw/d+H0uUZCv42kfH+x3WbXuBeg5pApfhX16VcidBPaotJ3adTIt57srhomCD4PZSLd3tpGo8HOFJQj7ZZ7u7dI0ncaKcNQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=n20mpiGB1blLl+zVq0e5jefHvsU6o19inj9JXSbXp4s=;
+ b=GOlZxwHH4pMdftMcFBXJhpOIMbuutMKJ3Wj0U3NmmqFHXobaf4gg7im4TZ9vUdup1x7GiEds4tR3RSDnCb63OEWbwM/7tyKFqn4VMJqBVXL3XDjeZDXyaT8QCxRrTGXfKr4PmwdILLIDNNjyGikca4dHjiAD7hkKAgg7CGRF6KqCcO1w/Bx7vMWgZKjwP//uIRYFCFQgPDzDeLICvDYYjKQqVUiz8bldUm+3u/B3td6W7YKMl+OXqjzp8q2fql8jDjwkcp5Qg00b58o08859+C/QNGuDu3t5hH3tZNnCF/XLn7D1Vs131SVtXdsGL5YmIjoJM16S80asyFk0BC+fLQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.118.232) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=n20mpiGB1blLl+zVq0e5jefHvsU6o19inj9JXSbXp4s=;
+ b=LIf4fnbxa/gUAOL/6Ppc4QEzIePBjrCZzL+ci7rW0OyiVb7RDEUfjHiMqXseORhouaGWBXRzMSHoSDTlTJ7mhr+NcylTs0e3cE8uoZCEsAL9B54iiCzUesb6fmGa4I/yNQFA8fYL9TpTtwIFtXiFeig/lKr/Uvbz2ODxUznkgLNpK15pFGMx5L62wkOEDEB6EW6z4hebKC4WxxRS/KR0A5XxmWSrheHmKJViEbfKrIWovY5R+4+Kx4vP382LnAtN66NlzwTFLMtjH8Lzs9Kznx+siCl75eKXAOchljQNECh+g9c58JvwjEFpGrvrXdqsjvBKGLQVD2yh//wUZ8yGaQ==
+Received: from DS7PR05CA0045.namprd05.prod.outlook.com (2603:10b6:8:2f::7) by
+ IA1PR12MB8467.namprd12.prod.outlook.com (2603:10b6:208:448::9) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6609.32; Tue, 25 Jul 2023 21:45:35 +0000
+Received: from DM6NAM11FT110.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:8:2f:cafe::9b) by DS7PR05CA0045.outlook.office365.com
+ (2603:10b6:8:2f::7) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6631.25 via Frontend
+ Transport; Tue, 25 Jul 2023 21:45:35 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.232) by
+ DM6NAM11FT110.mail.protection.outlook.com (10.13.173.205) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6631.29 via Frontend Transport; Tue, 25 Jul 2023 21:45:34 +0000
+Received: from drhqmail202.nvidia.com (10.126.190.181) by mail.nvidia.com
+ (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Tue, 25 Jul 2023
+ 14:45:27 -0700
+Received: from drhqmail203.nvidia.com (10.126.190.182) by
+ drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.37; Tue, 25 Jul 2023 14:45:26 -0700
+Received: from Asurada-Nvidia (10.127.8.11) by mail.nvidia.com
+ (10.126.190.182) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37 via Frontend
+ Transport; Tue, 25 Jul 2023 14:45:26 -0700
+Date: Tue, 25 Jul 2023 14:45:24 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: <iommu@lists.linux.dev>, Alex Williamson <alex.williamson@redhat.com>, "Lu
+ Baolu" <baolu.lu@linux.intel.com>, Eric Auger <eric.auger@redhat.com>, "Kevin
+ Tian" <kevin.tian@intel.com>, Lixiao Yang <lixiao.yang@intel.com>, "Matthew
+ Rosato" <mjrosato@linux.ibm.com>, <stable@vger.kernel.org>,
+	<syzbot+7574ebfe589049630608@syzkaller.appspotmail.com>, Terrence Xu
+	<terrence.xu@intel.com>, Yi Liu <yi.l.liu@intel.com>
+Subject: Re: [PATCH rc 1/3] iommufd/selftest: Do not try to destroy an access
+ once it is attached
+Message-ID: <ZMBCdNIneapDbjUS@Asurada-Nvidia>
+References: <0-v1-85aacb2af554+bc-iommufd_syz3_jgg@nvidia.com>
+ <1-v1-85aacb2af554+bc-iommufd_syz3_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <20230725141602.7759-1-l3b2w1@gmail.com>
+In-Reply-To: <1-v1-85aacb2af554+bc-iommufd_syz3_jgg@nvidia.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM6NAM11FT110:EE_|IA1PR12MB8467:EE_
+X-MS-Office365-Filtering-Correlation-Id: a5ad737b-f533-477d-65a3-08db8d587a3e
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	OVCz9SkvU89fc1krFSnUFub+jxSjvZ2sacFnuhKKLhQ2E9pr/WjJ6Tr8swPli5yMtETgKC6orM7uPAFJ2jSrgcGIa5k/fFO1WbPrULKKO+vb571LGI2631Mp3FWeYi+TlYdcIekQCIEIgUF/QvcMjZENEfnzgCvYDWSSfEtXqn0jYLkuKHLLddpFfnZQ72OHeucxkOJVjP3RAIded7qWC867FCovBf1q5V4KLF+7JzbuRGj0w1rJNccayrXYitLxFL0h2rQQamCYgrWIAFPh62Zmzd9cWzmuKBekE63BIWD+cwZsMMwtA05wRLGnTaix+S5DubIhMZp3xc85YdpqPpZJXSV1KP9ss7ejze9W1ybKt1W5EbStoirl3X4yO1oMFplPv7VILSQpRv8isE5vQu4B8z4pjnWAERmDqRICVIlShNGNkCbf+Ft1mbmU3CPJ+y/0VyuZx+VviZaHOK0igYotu0Wgry1Jip2KUTaCyc31eSpG6MM5mJHl87fLHZHBZe300e4SguRrfJRVB+bkvuYisHdfwP4MPgoL6A08iz4K2QrWwySQI5rAsmG4UhhRFhZMHO9Ov9agwp42M+anx2AybQAXx+ckoo6lRonSY7dYnIJ6zY003HmVLHJKczKNfARFGkpc/5W8S0pad7hGK1/53fuV10dfpCmVRJQBWFSq3I5vfWm737dv4R8qANxGKsFiogNoYFucYnA283JlhLYO18gGz6Ho6T2kRzh1xYCH1hHyzYuDz05Vkjcch+JQ
+X-Forefront-Antispam-Report:
+	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(376002)(136003)(39860400002)(346002)(396003)(82310400008)(451199021)(40470700004)(36840700001)(46966006)(36860700001)(83380400001)(33716001)(40480700001)(86362001)(82740400003)(40460700003)(7636003)(55016003)(356005)(2906002)(4744005)(54906003)(336012)(26005)(478600001)(9686003)(186003)(8936002)(5660300002)(8676002)(7416002)(6862004)(316002)(41300700001)(70206006)(4326008)(6636002)(70586007)(426003)(47076005);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jul 2023 21:45:34.9355
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: a5ad737b-f533-477d-65a3-08db8d587a3e
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	DM6NAM11FT110.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB8467
 
-Hi Binglei,
+On Tue, Jul 25, 2023 at 04:05:48PM -0300, Jason Gunthorpe wrote:
+> The access must be detached first.
+>
+> To make the cleanup simpler copy the fdno to userspace before creating the
+> access in the first place. Then there is no need to unwind after
+> iommufd_access_attach.
+>
+> Fixes: 54b47585db66 ("iommufd: Create access in vfio_iommufd_emulated_bind()")
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 
-kernel test robot noticed the following build warnings:
+Hmm, I was expecting that the iopt_remove_access() call in the
+iommufd_access_destroy_object() could "detach" the access. If
+calling iopt_remove_access() isn't enough, it means that we'd
+need the full routine from the iommufd_access_detach() in cdev
+series, i.e. we are missing the unmap part?
 
-[auto build test WARNING on linus/master]
-[also build test WARNING on v6.5-rc3 next-20230725]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+In that case, though this patch can fix the issue in selftest,
+yet does the emulated pathway potentially have the same issue?
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Binglei-Wang/cma-check-for-memory-region-overlapping/20230725-222426
-base:   linus/master
-patch link:    https://lore.kernel.org/r/20230725141602.7759-1-l3b2w1%40gmail.com
-patch subject: [PATCH v2] cma: check for memory region overlapping
-config: i386-allyesconfig (https://download.01.org/0day-ci/archive/20230726/202307260509.OMkcRpqC-lkp@intel.com/config)
-compiler: gcc-12 (Debian 12.2.0-14) 12.2.0
-reproduce: (https://download.01.org/0day-ci/archive/20230726/202307260509.OMkcRpqC-lkp@intel.com/reproduce)
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202307260509.OMkcRpqC-lkp@intel.com/
-
-All warnings (new ones prefixed by >>):
-
-   In file included from include/linux/elf.h:6,
-                    from include/linux/module.h:19,
-                    from include/linux/device/driver.h:21,
-                    from include/linux/device.h:32,
-                    from include/linux/dma-mapping.h:8,
-                    from include/linux/dma-map-ops.h:9,
-                    from kernel/dma/contiguous.c:51:
-   arch/x86/include/asm/elf.h: In function 'rmem_cma_setup':
-   arch/x86/include/asm/elf.h:204:29: error: unterminated argument list invoking macro "pr_info"
-     204 |         (pr_reg)[11] = (regs)->cx;                              \
-         |                             ^
-   kernel/dma/contiguous.c:414:17: error: 'pr_info' undeclared (first use in this function); did you mean 'pv_info'?
-     414 |                 pr_info("Reserved memory: overlap with other memblock reserved region\n",
-         |                 ^~~~~~~
-         |                 pv_info
-   kernel/dma/contiguous.c:414:17: note: each undeclared identifier is reported only once for each function it appears in
-   kernel/dma/contiguous.c:414:24: error: expected ';' at end of input
-     414 |                 pr_info("Reserved memory: overlap with other memblock reserved region\n",
-         |                        ^
-         |                        ;
-   ......
-   kernel/dma/contiguous.c:414:17: error: expected declaration or statement at end of input
-     414 |                 pr_info("Reserved memory: overlap with other memblock reserved region\n",
-         |                 ^~~~~~~
-   kernel/dma/contiguous.c:414:17: error: expected declaration or statement at end of input
->> kernel/dma/contiguous.c:405:13: warning: unused variable 'err' [-Wunused-variable]
-     405 |         int err;
-         |             ^~~
->> kernel/dma/contiguous.c:404:21: warning: unused variable 'cma' [-Wunused-variable]
-     404 |         struct cma *cma;
-         |                     ^~~
-   kernel/dma/contiguous.c: At top level:
->> kernel/dma/contiguous.c:400:19: warning: 'rmem_cma_setup' defined but not used [-Wunused-function]
-     400 | static int __init rmem_cma_setup(struct reserved_mem *rmem)
-         |                   ^~~~~~~~~~~~~~
->> kernel/dma/contiguous.c:395:38: warning: 'rmem_cma_ops' defined but not used [-Wunused-const-variable=]
-     395 | static const struct reserved_mem_ops rmem_cma_ops = {
-         |                                      ^~~~~~~~~~~~
-
-
-vim +/err +405 kernel/dma/contiguous.c
-
-de9e14eebf33a6 drivers/base/dma-contiguous.c Marek Szyprowski       2014-10-13  394  
-de9e14eebf33a6 drivers/base/dma-contiguous.c Marek Szyprowski       2014-10-13 @395  static const struct reserved_mem_ops rmem_cma_ops = {
-de9e14eebf33a6 drivers/base/dma-contiguous.c Marek Szyprowski       2014-10-13  396  	.device_init	= rmem_cma_device_init,
-de9e14eebf33a6 drivers/base/dma-contiguous.c Marek Szyprowski       2014-10-13  397  	.device_release = rmem_cma_device_release,
-de9e14eebf33a6 drivers/base/dma-contiguous.c Marek Szyprowski       2014-10-13  398  };
-de9e14eebf33a6 drivers/base/dma-contiguous.c Marek Szyprowski       2014-10-13  399  
-de9e14eebf33a6 drivers/base/dma-contiguous.c Marek Szyprowski       2014-10-13 @400  static int __init rmem_cma_setup(struct reserved_mem *rmem)
-de9e14eebf33a6 drivers/base/dma-contiguous.c Marek Szyprowski       2014-10-13  401  {
-de9e14eebf33a6 drivers/base/dma-contiguous.c Marek Szyprowski       2014-10-13  402  	unsigned long node = rmem->fdt_node;
-8c8c5a4994a306 kernel/dma/contiguous.c       Nicolas Saenz Julienne 2020-01-10  403  	bool default_cma = of_get_flat_dt_prop(node, "linux,cma-default", NULL);
-de9e14eebf33a6 drivers/base/dma-contiguous.c Marek Szyprowski       2014-10-13 @404  	struct cma *cma;
-de9e14eebf33a6 drivers/base/dma-contiguous.c Marek Szyprowski       2014-10-13 @405  	int err;
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+Thanks
+Nic
