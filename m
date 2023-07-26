@@ -1,33 +1,34 @@
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9004BE47;
-	Wed, 26 Jul 2023 09:50:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B8C1BA3B;
+	Wed, 26 Jul 2023 09:54:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1690365034; x=1721901034;
+  t=1690365270; x=1721901270;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=R4Zidp2fJsuWVie8ZjWjKRcfxPMAX8NCKddofG0H9Oc=;
-  b=Ibbk2RHlgIn9jSy2t72qsSBHLlWoGhcOzQgjJzDecweCGEpX//zkpvRZ
-   NuDX+T2Erch94WcW/lZxiDiybJbsaQc2F2PpcPenZNZ6vw1I1p3wzPiWD
-   xYugDPNHztnQzrIheEB+JcDYDqKl+PqyOH/4lAUUWOeXoeMaXkk3kU1RG
-   xQr1gl9WL+PJhZlLmYJTPDpWb9JIg9+/Xha9IjUU7cV676FiOZ/XgKwSR
-   KZdHYJ54RHahyL9r/6RCHjIWtuYolnVci+NL5NFtNXvBwykLZajn2iti8
-   PhLaw7rfY11hw6oHvmTkk4DW3AVfYov06sAhvkA/Mn7GX1EwRrezL4LLJ
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10782"; a="370645329"
+  bh=KI5Ekd4G7iMCYJ70MjZvH6+mRrT95owuJmYg2GgsOT8=;
+  b=dPcJ7U7yTp17sZyzqoGnJEclPtzlI1r7S8IY/Zof1hNc0FYgKE/MV17B
+   d6dkxyjC39HmmqoKWtqZU9aUXEXKLwXGA9XEak6obUL5cl+jCONak4u8D
+   ++glXIDp1NtfrNmAEoH6ZQpjd+SHLX64hziVh1WLIj9tJDER2sFgmyhNA
+   Q8CbpiOn9KLs5QaACLuouo3WDYq8fTsy1w0LLdudglqFuNI2pwnZAU+6h
+   rGIRjFPoJYfDaY/toQZg1ciOhQI5UhSwmJdaSXGb/B7+AOjSdomFn5TFZ
+   WqEKGLAfVZdwREqwD300j4d4NsOCKh40L/bHZS9YE4mzxFqpqCc5JH8LM
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10782"; a="352869793"
 X-IronPort-AV: E=Sophos;i="6.01,231,1684825200"; 
-   d="scan'208";a="370645329"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jul 2023 02:50:33 -0700
+   d="scan'208";a="352869793"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jul 2023 02:54:29 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.01,202,1684825200"; 
-   d="scan'208";a="869813981"
+X-IronPort-AV: E=McAfee;i="6600,9927,10782"; a="726479902"
+X-IronPort-AV: E=Sophos;i="6.01,231,1684825200"; 
+   d="scan'208";a="726479902"
 Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.254.208.129]) ([10.254.208.129])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jul 2023 02:50:25 -0700
-Message-ID: <219fb054-c5a7-92e5-dfa4-af6a5a404c3e@linux.intel.com>
-Date: Wed, 26 Jul 2023 17:50:21 +0800
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jul 2023 02:54:18 -0700
+Message-ID: <8cb5a8d9-9eff-ff2e-f173-8e72af82bca2@linux.intel.com>
+Date: Wed, 26 Jul 2023 17:54:16 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -41,8 +42,7 @@ Cc: baolu.lu@linux.intel.com, Dmitry Osipenko <digetx@gmail.com>,
  Nicolin Chen <nicolinc@nvidia.com>, Niklas Schnelle
  <schnelle@linux.ibm.com>, Steven Price <steven.price@arm.com>,
  Thierry Reding <treding@nvidia.com>
-Subject: Re: [PATCH v5 21/25] iommu: Require a default_domain for all iommu
- drivers
+Subject: Re: [PATCH v5 22/25] iommu: Add __iommu_group_domain_alloc()
 Content-Language: en-US
 To: Jason Gunthorpe <jgg@nvidia.com>, Andy Gross <agross@kernel.org>,
  Alim Akhtar <alim.akhtar@samsung.com>, Bjorn Andersson
@@ -70,81 +70,22 @@ To: Jason Gunthorpe <jgg@nvidia.com>, Andy Gross <agross@kernel.org>,
  <vdumpa@nvidia.com>, Chen-Yu Tsai <wens@csie.org>,
  Will Deacon <will@kernel.org>, Yong Wu <yong.wu@mediatek.com>,
  Chunyan Zhang <zhang.lyra@gmail.com>
-References: <21-v5-d0a204c678c7+3d16a-iommu_all_defdom_jgg@nvidia.com>
+References: <22-v5-d0a204c678c7+3d16a-iommu_all_defdom_jgg@nvidia.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <21-v5-d0a204c678c7+3d16a-iommu_all_defdom_jgg@nvidia.com>
+In-Reply-To: <22-v5-d0a204c678c7+3d16a-iommu_all_defdom_jgg@nvidia.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 2023/7/25 1:22, Jason Gunthorpe wrote:
-> At this point every iommu driver will cause a default_domain to be
-> selected, so we can finally remove this gap from the core code.
+> Allocate a domain from a group. Automatically obtains the iommu_ops to use
+> from the device list of the group. Convert the internal callers to use it.
 > 
-> The following table explains what each driver supports and what the
-> resulting default_domain will be:
-> 
->                                          ops->defaut_domain
->                      IDENTITY   DMA  PLATFORM    v      ARM32          dma-iommu  ARCH
-> amd/iommu.c             Y       Y                       N/A             either
-> apple-dart.c            Y       Y                       N/A             either
-> arm-smmu.c              Y       Y                       IDENTITY        either
-> qcom_iommu.c            G       Y                       IDENTITY        either
-> arm-smmu-v3.c           Y       Y                       N/A             either
-> exynos-iommu.c          G       Y                       IDENTITY        either
-> fsl_pamu_domain.c       Y                               N/A             N/A     PLATFORM
-> intel/iommu.c           Y       Y                       N/A             either
-> ipmmu-vmsa.c            G       Y                       IDENTITY        either
-> msm_iommu.c             G                               IDENTITY        N/A
-> mtk_iommu.c             G       Y                       IDENTITY        either
-> mtk_iommu_v1.c          G                               IDENTITY        N/A
-> omap-iommu.c            G                               IDENTITY        N/A
-> rockchip-iommu.c        G       Y                       IDENTITY        either
-> s390-iommu.c                            Y       Y       N/A             N/A     PLATFORM
-> sprd-iommu.c                    Y                       N/A             DMA
-> sun50i-iommu.c          G       Y                       IDENTITY        either
-> tegra-smmu.c            G       Y                       IDENTITY        IDENTITY
-> virtio-iommu.c          Y       Y                       N/A             either
-> spapr                                   Y       Y       N/A             N/A     PLATFORM
->   * G means ops->identity_domain is used
->   * N/A means the driver will not compile in this configuration
-> 
-> ARM32 drivers select an IDENTITY default domain through either the
-> ops->identity_domain or directly requesting an IDENTIY domain through
-> alloc_domain().
-> 
-> In ARM64 mode tegra-smmu will still block the use of dma-iommu.c and
-> forces an IDENTITY domain.
-> 
-> S390 uses a PLATFORM domain to represent when the dma_ops are set to the
-> s390 iommu code.
-> 
-> fsl_pamu uses an IDENTITY domain.
-> 
-> POWER SPAPR uses PLATFORM and blocking to enable its weird VFIO mode.
-> 
-> The x86 drivers continue unchanged.
-> 
-> After this patch group->default_domain is only NULL for a short period
-> during bus iommu probing while all the groups are constituted. Otherwise
-> it is always !NULL.
-> 
-> This completes changing the iommu subsystem driver contract to a system
-> where the current iommu_domain always represents some form of translation
-> and the driver is continuously asserting a definable translation mode.
-> 
-> It resolves the confusion that the original ops->detach_dev() caused
-> around what translation, exactly, is the IOMMU performing after
-> detach. There were at least three different answers to that question in
-> the tree, they are all now clearly named with domain types.
-> 
-> Tested-by: Heiko Stuebner<heiko@sntech.de>
-> Tested-by: Niklas Schnelle<schnelle@linux.ibm.com>
 > Tested-by: Steven Price<steven.price@arm.com>
 > Tested-by: Marek Szyprowski<m.szyprowski@samsung.com>
 > Tested-by: Nicolin Chen<nicolinc@nvidia.com>
 > Signed-off-by: Jason Gunthorpe<jgg@nvidia.com>
 > ---
->   drivers/iommu/iommu.c | 21 +++++++--------------
->   1 file changed, 7 insertions(+), 14 deletions(-)
+>   drivers/iommu/iommu.c | 66 ++++++++++++++++++++++++-------------------
+>   1 file changed, 37 insertions(+), 29 deletions(-)
 
 Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
