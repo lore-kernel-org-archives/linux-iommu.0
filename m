@@ -1,52 +1,56 @@
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2070.outbound.protection.outlook.com [40.107.220.70])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BBA7F253B9
-	for <iommu@lists.linux.dev>; Wed, 26 Jul 2023 14:30:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 72439A42
+	for <iommu@lists.linux.dev>; Wed, 26 Jul 2023 16:41:01 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=I8XAnjCmbsbMmStvqN3MzVClCKyYey9yz+Ra9weNCq+FNq7oFRVxfrTbnkuFDoj5sRIXwRpLpyhnFaIDjLpswGslV7O8D/CGb7dPmoH2ErHbc9bnFCe2P37T0Wx4jsOuNiFh199DEBo+XLjPhumh+DX7u/RNkX6bfqUzl+aZf2D/4j9noh5cKTkPY6KckmDHoa9i76QeMJMT3T1UhcRyB0qIc779aOWWt+dglBk5wKAUp8/8Y8PnW/luG8+m4slBUYewmJONflfSUGKatE2gbHkdOAvvPiEGsfDvsb9IWgu6hXuEMD07Wsasfnh1q3G8SU0CGdw4CYz/RRPKTTjjIg==
+ b=j9H5cv7ucjGR+RlrMV7FV814bk0u0scJ6nIpccfUr2FZHQ2VAKqsdosADzTcEv+dzxkmzBuJbWRy2MEeEsfzRnBpGIcsOl5aYwMeoROjM5rh0mcAJksJVas95JV7LLqaJZ+EbXIRth3a9Oe8d2MaAa3S/wFlcfDBV80jXN8YexU/QcUPsiItGSJQHeAUJ1NGrRghAqvLeiNpopNWsT6phePMQYHEZFZUncHFyTZbZNnQ05qWGrDavOqOAi/AOz0mZ1lzlT4ks1ZEEHzhPhv0euCW9lIK3Sd4jJjQWMWFZmc0ipipMXDJvcuyQHpdfjsreA1YOJcqbWyL1zKVlWYNEQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=BUjTTUDISvu+u1W/IE/Ih52BmG5MSSZi78OTqFaaDN0=;
- b=jdOfyOkBwgsDjcev2RCFFiwrVVa4uR9QiJJrryamzWKQ7+yy9WfZ/7IrsuwopQPwJFq3iOHj660hoVtwCUjcX+/6qJXhcCjP0wryzfueoDdsajwShBvuswG+ps6f5oP4Nt88cBxeA86+Djpl7fBrHv/ezlwy6tzZ5pQwhX9g2wJwpu/MCRr56x2IjtKrSlMuUWjAsni4gr7m09UKmPznWHoBPrQtTzMeq/X90Dr0CFeqskuoUzW/jYLlnGXCXnyMzXg/5ebGFAHcNQU+/0AoNR0WAeKAX5sAO8ecoJfawUFZ85UBzgfx/Hh19HRf3P7iGFJsivKVw12Aoabyt6AheA==
+ bh=t3nJN4v7oVCFLcSsnmQ+ws5cEMKn4BOtFMFfx0Xc00U=;
+ b=dVXCMbSeGraotD444aZftJVpMjvJ/pQ/SEiQo4DaSrFTKfi1zBh9gbhdRyl4/daz6cUCNeKIzIgJIzuq4juhjLEXuSCGCPvqdycCWUMKiAnmVgEoRL7zm6Tzx+FRPVqf17rKXkdnly6lMB736eC0JH3VZ91Kv9L29+qVibmdaYS8blosNWCuozVZWJSfz0ZRkYiGfJobZhWrmd4u9fqUKcxJJSG4f4cIfV1WlZn+shGq0Ivf8Sv1alQtpOmkuhoidmr7M8kNoL9BJvHA1sV4pLMHN7KEzoNixBtuLsx/DHtrLQvacthcZ6SVWca8L69fKQoBRcZIsb8W8tMh2SapDg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=BUjTTUDISvu+u1W/IE/Ih52BmG5MSSZi78OTqFaaDN0=;
- b=GMA1aJUkxvq27yySyV7IUZpTxz3UgGVCHdSt/IqqI9qCs3ZKlUuTfclSe+mIW9PD0S3twq87pEZFdPsmUlRJiQORW0t19O2/+IElgdYcHNNO1m58tFIVsxB0uw2SeGmfY8JmjlfQ0BbAv7rzqv6yG7VYx2seSjxqh3St90kOp3jcFMIzM+011w8xEhWjLT8mvyjOn7AIQQZ5LytxlFGUwqDeGIycbNCtFGIfDuThFPBA8qzEcZtJoX81kFi8zx6wRgvRXn0eO5Bw+b/uWYI4brcPk8cdBrCIFgen5OPYJZPbYU+jdrKgBWA5YFb3G5ZEeHAyc8/1IDwsRCHK08DEeQ==
+ bh=t3nJN4v7oVCFLcSsnmQ+ws5cEMKn4BOtFMFfx0Xc00U=;
+ b=i+LfCaBDIiQg2gTQSrluN4TEIB3ge3kl1l530pW++kQ93y0/ep70ZzPlN0LZIITGTMHOvK1VMFAJ+Qngeb/uVi/czSe2+oljAIgzL9c6urNkqOw/lNsPPTpzwzM4C0GAWl1jXWs0Gdtw5kHIEBhhk9PMUFmhwNRXDfi0OrMAodtPfELAyuDo3CU1jFH5aiUCP2PqCXKiYdZD6yRzbSJj6n6MNhM1Nj5Hff5P4lk9HD+uBATrI1tQPb9q38zsWBkb8RTTEkfBm7RNiE4uGn6ZZ5jcX1WpcU4efoRXrvhqRQXObt7UDo5EI+HFMYgCcMVhIIYB18YGl7+rrUoBBDrEoQ==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by DM4PR12MB7696.namprd12.prod.outlook.com (2603:10b6:8:100::10) with
+ by DM6PR12MB4958.namprd12.prod.outlook.com (2603:10b6:5:20a::8) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6609.32; Wed, 26 Jul
- 2023 14:30:18 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6609.33; Wed, 26 Jul
+ 2023 16:40:59 +0000
 Received: from LV2PR12MB5869.namprd12.prod.outlook.com
  ([fe80::5111:16e8:5afe:1da1]) by LV2PR12MB5869.namprd12.prod.outlook.com
  ([fe80::5111:16e8:5afe:1da1%6]) with mapi id 15.20.6631.026; Wed, 26 Jul 2023
- 14:30:18 +0000
-Date: Wed, 26 Jul 2023 11:30:17 -0300
+ 16:40:59 +0000
+Date: Wed, 26 Jul 2023 13:40:58 -0300
 From: Jason Gunthorpe <jgg@nvidia.com>
 To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: kevin.tian@intel.com, alex.williamson@redhat.com, yi.l.liu@intel.com,
-	joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
-	shuah@kernel.org, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev, kvm@vger.kernel.org,
-	linux-kselftest@vger.kernel.org, mjrosato@linux.ibm.com,
-	farman@linux.ibm.com
-Subject: Re: [PATCH v8 2/4] iommufd: Add iommufd_access_replace() API
-Message-ID: <ZMEt+SMFBMKT3AoT@nvidia.com>
-References: <cover.1690226015.git.nicolinc@nvidia.com>
- <5dfe3e9a9d511919cb105459ca9d96f013daadb4.1690226015.git.nicolinc@nvidia.com>
+Cc: iommu@lists.linux.dev, Alex Williamson <alex.williamson@redhat.com>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Eric Auger <eric.auger@redhat.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Lixiao Yang <lixiao.yang@intel.com>,
+	Matthew Rosato <mjrosato@linux.ibm.com>,
+	syzbot+7574ebfe589049630608@syzkaller.appspotmail.com,
+	Terrence Xu <terrence.xu@intel.com>, Yi Liu <yi.l.liu@intel.com>
+Subject: Re: [PATCH rc 1/3] iommufd/selftest: Do not try to destroy an access
+ once it is attached
+Message-ID: <ZMFMmjJQ+yhzxTmj@nvidia.com>
+References: <0-v1-85aacb2af554+bc-iommufd_syz3_jgg@nvidia.com>
+ <1-v1-85aacb2af554+bc-iommufd_syz3_jgg@nvidia.com>
+ <ZMBCdNIneapDbjUS@Asurada-Nvidia>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <5dfe3e9a9d511919cb105459ca9d96f013daadb4.1690226015.git.nicolinc@nvidia.com>
-X-ClientProxiedBy: BLAP220CA0012.NAMP220.PROD.OUTLOOK.COM
- (2603:10b6:208:32c::17) To LV2PR12MB5869.namprd12.prod.outlook.com
+In-Reply-To: <ZMBCdNIneapDbjUS@Asurada-Nvidia>
+X-ClientProxiedBy: BL1PR13CA0265.namprd13.prod.outlook.com
+ (2603:10b6:208:2ba::30) To LV2PR12MB5869.namprd12.prod.outlook.com
  (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -55,245 +59,86 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|DM4PR12MB7696:EE_
-X-MS-Office365-Filtering-Correlation-Id: b27f0b79-8fd3-4318-1601-08db8de4d599
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|DM6PR12MB4958:EE_
+X-MS-Office365-Filtering-Correlation-Id: ec6a4304-fa43-4ca8-e134-08db8df7174d
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	ZIcQYAnNuTjSCu775Tdwdg+hBsSw0Tp0ef/HvQf93NZGNtupxxSZH3JxTLTAqaAYaO4nfVmmsAMIxqFNf7931AgQ5LlzN7cneA936T062qlAZpFsUzLlczDk0lMHKJvqgpzVJ/8GUnH3O5ZoP+RZRxGXYW9ZDKW3RcTRchVl4GiLj5QmGYRI/k+Zc4Ctsu6eH20V8cekKPn3nK/6/vJ0q64iyJ/eq8MUNri21EMPxPaYTtsSRG+tZu8dcDJ8Vw+KbBb43zE4oHuGsH+bLNW/xpTrf8GOZ812y6RAlZXvF47IBIvFEjjOx2AarW0tiXUkzCQxq2B6v4xb97vFMOX0jYjSGWqkyG+jAv0qWnJsIYBFKsiCxUIWnIKRjw7YqtVbrF57M1P0eyHgQd1Yms5BlOwc8KkdTtFSubX50wNX7eEHJQF6KeuHuZA4/QPB3pV0PjjnGFpWtTLsdxRR2enxkQYKMnS01bx5NylUlhLL4KUAbBl+9DCKtUNzm3rBQZzovxlr6BQGGMXPvw3MpNhu9yoTwpmOL5cyL8CjKIDcuftb55j4cj+X+zeId2Lvknh3p2ZO5vxbe2Wd9qe+A7f663OcoYQpcXxCHyrC7ZhLhU8=
+	NgkNZe20xtT2tFO6DcohgIKZt5y4bPtaRn+yGem8vhBjmWaqodpmbc3fsbVIk1JquV6g9hPc84BWROqM5jE7LnJUGnSLkz/sVQdVcLu04B421vXUYjkSoChhBD97ztf3RKNbRlx3svccfDtFKhJIUiTlA0SL+eEp+pDjFEak46fXyOExWs5tBv+GgrFgmUQBm8NV/wdu3fjidgWzLA/j7Y913ALvIHRViaW8/fV2TwLzjEukNCI0vz3tB2BLlatL+KCNL4FjXpvzWuoydoVYFCSqRbOQs8veaLmRcouSBaN8Oc9j9CcwW67UKiMGKRz4r+dibVIJJMvgdDeTiggX9KUm1hU63wloSB1H62PIMDBbvTQO9HHHRunxGDwoYk2lNCTQEYSLcyNMs9wRwB/qTl7E3BwA1ui+penfCw37zxoHTD7OoxamcTW6NJ+WR52fJQ6zjlTkbdYv0b3inY9t6bEfovJrNDmd/LdO37cCCKM0zhZ95FXnFLEmY6IyvZu2MQwKfkMsvuy5tNyvJjr2mPYnIsFTu9zU0iyOZ5IDqJTu8Pmen5rrI1X98iA9u13i94uhUQ+mprDWQeFD6hZIFTsxyhJiG8IKguHJRrZny/s=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(376002)(346002)(39860400002)(366004)(136003)(396003)(451199021)(6512007)(66476007)(83380400001)(38100700002)(2616005)(186003)(26005)(6506007)(41300700001)(5660300002)(6862004)(7416002)(8936002)(8676002)(2906002)(36756003)(6486002)(316002)(6636002)(4326008)(66556008)(86362001)(37006003)(478600001)(66946007)(67856001);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(346002)(136003)(376002)(396003)(366004)(39860400002)(451199021)(54906003)(6486002)(37006003)(66476007)(66556008)(66946007)(2616005)(36756003)(83380400001)(86362001)(38100700002)(478600001)(26005)(6512007)(186003)(6506007)(41300700001)(5660300002)(2906002)(316002)(4326008)(6636002)(6862004)(7416002)(8936002)(8676002)(67856001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?cGszn+P4u1ZfY4RH058CfRoIEmj4t98QJD8Zr0504AEzhefIvNx34bcy/iCe?=
- =?us-ascii?Q?13cDtpbxvhszEupQMFyd16ZmlYW6CL01P7m61M5s+geE7jdXUgONbesvoVb6?=
- =?us-ascii?Q?rpFjlRNVUglBfAJaNt9z0TnJjsWNbJ2m6xY8w29PYj0NoF+EoACcC5Br2+h2?=
- =?us-ascii?Q?/Y/2OHa5CrZyyjUe3I0Eb44IRYC7hytkoxGS8bb2dusK3Xj6mBkR1yTprA+H?=
- =?us-ascii?Q?ro36/vCj7FsWsY3q/gNCxSpVeUNEdYd0BuQJV41x7CpybY/LCZmZXElMG86h?=
- =?us-ascii?Q?zX221zfEYnKygNxYieOl2aRW4deMILmKeWkdW3R+oSgI5XBNWXc/y1L9ksPj?=
- =?us-ascii?Q?D0vrOQwmOAXkXL25dc9sEMYaQ1EHlups6M8eIAoRWHCnYdTCY0iL3zZAAPuc?=
- =?us-ascii?Q?JgsdBXLHLgj88TjvErawmqPMP0Z7yaWZnNyN8U2x5t8NpNf6HCqso8f/3bZw?=
- =?us-ascii?Q?30SKv7kdtmOOIsIPLtb2rFOWHph3f3hCj8VWnVS79bVMIHCon/m2yc5IM/19?=
- =?us-ascii?Q?IEyVyEEcF2bMVECjOetzUfNNnBbsE4SjLcSGNfQ3jU4peupDPG9oIVxJqDQW?=
- =?us-ascii?Q?pD81sapeaFXdToEghp6Nzk3A/qRjD9zvcMwlOhSd5oqrpRpYjtPycTZiOgv4?=
- =?us-ascii?Q?3ozenNbu2Wouu59uWDtPAdmvkAN+O3i0MgzZO6gwppxdfHI79y/lYTTTvALO?=
- =?us-ascii?Q?5JEJah4/HYR/YpjICg4ZZDlY37anh/gAnOc3c+ymS8ZJGlXTKytFIWcaGRDc?=
- =?us-ascii?Q?iGOl7pieIni0tkgRgWzKFSQs7N2WINMojXKlvK5GRq7WyvptC0NFMHBim+jx?=
- =?us-ascii?Q?BszMKvboBGijroq/tK611STDyK4GmVt17Rgd0bNotHNbgvss9Ez+XqAOu80M?=
- =?us-ascii?Q?3bxJglMEejBHpYEq6448nGfKI7TOOf1HFxJLMm6Xji2VrkIgHezek94U+vbd?=
- =?us-ascii?Q?Zn1MJbudR8onIAyzcU3xDQmHHjFSR7PHUgMHXt8AkrpkK/25waXaBojIII8u?=
- =?us-ascii?Q?beiKmztsDi42hvMAxRv16QMLB5QvpcWOAZMpotesal4RBnQ+Mpl5jqiArU4A?=
- =?us-ascii?Q?RHjwUL4JlVu0NIoutgt/uR+uTg/wbY9b6XQMg4O0i+uZGVLYQ1IGTmM8Q2qD?=
- =?us-ascii?Q?YY8Niij+rdlwHgn04kksTDikYYAnpgOL1wOWa9MoMZBWoxNJP+PlvFQyx6Ka?=
- =?us-ascii?Q?rpCZU8SZ2VZ6xa79av3nkR+xXQloQVrnqLi+tTvvDHlg4XIteRYYdKAOeGM6?=
- =?us-ascii?Q?3DseOPW+/Yu/Y3DhGDJHQFjLeaMi8z81dA9C25sHuVTP5+feQFORzWL51lVH?=
- =?us-ascii?Q?xK26A3pUHf0RRKRr/igTBpBHJnzX6EfQipjQ5qPewSFekARZsXcb5xH0P4bl?=
- =?us-ascii?Q?cNeidR7xnN487BHy7yY3HkMqY2PHS0c1SGyO2TErpLsILrnEoC6QQm3dtADX?=
- =?us-ascii?Q?jRCufpmk0IZyUXbQ28HW4StJrTcnQIbb7KmVTngXFoMsLE4/ZdcIsEV1WYMn?=
- =?us-ascii?Q?HHB2fLalvMahetqfO2UnsHmjUZH9ClObE5Ld9jnVXt7nXk03wYXL0IYKZ4+l?=
- =?us-ascii?Q?cu/+WDxCE0vo1Kvxkhn9UjklTh4Rav2fojdop7ZG?=
+	=?us-ascii?Q?0WkTUDQjXVJfkOqIVbclFUgb4yPOa1HfX74fGz6m3+Qv2KyI64zdartv4+1z?=
+ =?us-ascii?Q?ElISoyr4AGfKHRZSfE0LsbIEjwpzHwuWB0Q8meWo09vDYFpy4MA4CrBl8vvk?=
+ =?us-ascii?Q?gwbrvDfkVoxpeQSYQdiju3rYwyd0JI9GfDjxcJHfBTFFK+Puqd6zTzyaGNZR?=
+ =?us-ascii?Q?QymCOUXXEnKjKQdrPiHo9sHD7MVCifrvPnLBxnFDO2YnycgK6KCznPc2xSmA?=
+ =?us-ascii?Q?f+YvyBTOokf+GtN6pk0cznRYIA3NMd3lcdMwoJtxjTd9gS6vtbDKTcI1Gg+T?=
+ =?us-ascii?Q?QG2XEUnHtlNF9FlivkGHImGtsQq7LEHrSeXO3/UCw1weOr8FlBCE2oaBccXv?=
+ =?us-ascii?Q?OiKMyzCb1VAwv0TVLPxRA+rsVqvuwag2U90H4uORKhnrwQtAgk5Wjbv+s3i/?=
+ =?us-ascii?Q?SCJpAsxVvmSztbVyYRh7owDVfGz8qqa17tAyvkN85K9lrJCaX+XcEfkCs3uW?=
+ =?us-ascii?Q?docRLhu67pMY08ssNJei5BBNiXQIsiRHS8VIVl56Q+FxWyRxaMCv9hDPenaq?=
+ =?us-ascii?Q?tPzz2hrKab9wh82/vo4oWea/EJXyxA7GCNN8DMLfblHOiD89HQXh/nQUIlOo?=
+ =?us-ascii?Q?WuEKExispRGrmotVxe6ttDt7rn8En7M8dg3bOrg8nEEhKhtdSpmFZrurkmTN?=
+ =?us-ascii?Q?xkhUXF39D0KB8G8h+/MBrPl1/iRkULraELNtCktV3aBHl5Ba0kvNv0vPot40?=
+ =?us-ascii?Q?nQ4cqBe+oRZucMxGuazaXz98qCBYB2HI/Dwgm/P/ou5CFlbJO8MRR3JPqIDY?=
+ =?us-ascii?Q?/Frg8oZM1JWNB++DAXXli1302ySIsIYYN15aXaXYk1l1e10K9o/wcu6f5LAQ?=
+ =?us-ascii?Q?AgJtPyfl2hiS1ssbfyhBm4hepT9GG3dJCEMyxprAoDEPZjpiXnDtWl/TPzfK?=
+ =?us-ascii?Q?yiawIPTWN5GiweJ/6HVL2NVBWQ/EyOSjPurthqv7SbNXJz/yYs88+6PEIfOu?=
+ =?us-ascii?Q?zzKRT3WTF/TEnbcRti9jcj05thGzTG9o3NgiLF6w7VHxB0hGK5UnBLq4eOTW?=
+ =?us-ascii?Q?y2iUGzUaXNDLIMDb/S3x/0XvUdOz6WmWMTAAEqlzME1McZWaUpxpfS72KoL0?=
+ =?us-ascii?Q?Xf1N2nQsvYESnqfaLp78uWn+3+qOqixp2zKg6phDiQdVMrCDOgWLw5Gtbura?=
+ =?us-ascii?Q?wHqpvYLxqc2+Ay0FnRcNlJsHRJ4fObMzmNNmqrc3iE4aV5KBrmg75XuXz2Oe?=
+ =?us-ascii?Q?TgOOsIjL8p8YgHcGYkERhONYa5zOHKi9elwa94x7RrnTb3RzpT0VlvjEYhEP?=
+ =?us-ascii?Q?+1v8vb58HoMCuZeoRKIZr1lsGCZtSLIliKghWUWMW8m/KiwEd6zfAFJNw08V?=
+ =?us-ascii?Q?+OVbRTwn+ad9lu6r6N8GfU0v0PqxuyLBtsTeX58XKVVVjfummDOz6TpL9Ln0?=
+ =?us-ascii?Q?XjIQdOZdMHKHUm3N8FEbJnUYWqWPeTjZIxmbwRPGIQWzFAGWn97/JzhJC7iz?=
+ =?us-ascii?Q?Vh/ZGYbo6bi2dRtwhySamRjdHhlUAWsp3g1IREUaGNNL1ZgMjyK8+libkqgq?=
+ =?us-ascii?Q?PdMgESTBKtG8dN83t1qIo6CDcOaPqdieV+s6r3YRR8WIjY5NADkDbaWc2UBQ?=
+ =?us-ascii?Q?RkAVlspKhOFw+IB1sX9m8icsDJ9jxBskIYYy5Bn3?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b27f0b79-8fd3-4318-1601-08db8de4d599
+X-MS-Exchange-CrossTenant-Network-Message-Id: ec6a4304-fa43-4ca8-e134-08db8df7174d
 X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Jul 2023 14:30:18.1177
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Jul 2023 16:40:59.2264
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ooxq699v5SdoAYRngnNTGnhv1yiIvTBQfUltBb+p6kgxJPAKWHMKZsmTsz+JpwpV
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB7696
+X-MS-Exchange-CrossTenant-UserPrincipalName: 8EwR8xlVB5noVbRDsHRUYVxRcqCl6bcCl1paE47rR8j7uspDIxxXbxBFaX8suwD6
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4958
 
-On Mon, Jul 24, 2023 at 12:47:05PM -0700, Nicolin Chen wrote:
-> -int iommufd_access_attach(struct iommufd_access *access, u32 ioas_id)
-> +static int iommufd_access_change_pt(struct iommufd_access *access, u32 ioas_id)
->  {
-> +	struct iommufd_ioas *cur_ioas = access->ioas;
->  	struct iommufd_ioas *new_ioas;
-> -	int rc = 0;
-> +	int rc;
->  
-> -	mutex_lock(&access->ioas_lock);
-> -	if (WARN_ON(access->ioas || access->ioas_unpin)) {
-> -		mutex_unlock(&access->ioas_lock);
-> -		return -EINVAL;
-> -	}
-> +	lockdep_assert_held(&access->ioas_lock);
->  
->  	new_ioas = iommufd_get_ioas(access->ictx, ioas_id);
-> -	if (IS_ERR(new_ioas)) {
-> -		mutex_unlock(&access->ioas_lock);
-> +	if (IS_ERR(new_ioas))
->  		return PTR_ERR(new_ioas);
-> -	}
-> +
-> +	if (cur_ioas)
-> +		__iommufd_access_detach(access);
+On Tue, Jul 25, 2023 at 02:45:24PM -0700, Nicolin Chen wrote:
+> On Tue, Jul 25, 2023 at 04:05:48PM -0300, Jason Gunthorpe wrote:
+> > The access must be detached first.
+> >
+> > To make the cleanup simpler copy the fdno to userspace before creating the
+> > access in the first place. Then there is no need to unwind after
+> > iommufd_access_attach.
+> >
+> > Fixes: 54b47585db66 ("iommufd: Create access in vfio_iommufd_emulated_bind()")
+> > Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> 
+> Hmm, I was expecting that the iopt_remove_access() call in the
+> iommufd_access_destroy_object() could "detach" the access.
 
-The drop of the mutex while this function runs is racey with the rest
-of this, we can mitigate it by blocking concurrent change while
-detaching which is if access->ioas_unpin is set
-  
->  	rc = iopt_add_access(&new_ioas->iopt, access);
->  	if (rc) {
-> -		mutex_unlock(&access->ioas_lock);
->  		iommufd_put_object(&new_ioas->obj);
-> +		if (cur_ioas)
-> +			WARN_ON(iommufd_access_change_pt(access,
-> +							 cur_ioas->obj.id));
+Hmm, it does yes
 
-We've already dropped our ref to cur_ioas, so this is also racy with
-destroy.
+> If calling iopt_remove_access() isn't enough, it means that we'd
+> need the full routine from the iommufd_access_detach() in cdev
+> series, i.e. we are missing the unmap part?
 
-This is what I came up with:
+At least that part is not missing the unmap because the close_device()
+immediately before is supposed to be an implicit unmap for the driver.
+ 
+> In that case, though this patch can fix the issue in selftest,
+> yet does the emulated pathway potentially have the same issue?
 
-diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
-index 57c0e81f5073b2..e55d6e902edb98 100644
---- a/drivers/iommu/iommufd/device.c
-+++ b/drivers/iommu/iommufd/device.c
-@@ -758,64 +758,101 @@ void iommufd_access_destroy(struct iommufd_access *access)
- }
- EXPORT_SYMBOL_NS_GPL(iommufd_access_destroy, IOMMUFD);
- 
--void iommufd_access_detach(struct iommufd_access *access)
-+static int iommufd_access_change_ioas(struct iommufd_access *access,
-+				      struct iommufd_ioas *new_ioas)
- {
- 	struct iommufd_ioas *cur_ioas = access->ioas;
-+	int rc;
-+
-+	lockdep_assert_held(&access->ioas_lock);
-+
-+	/* We are racing with a concurrent detach, bail */
-+	if (access->ioas_unpin)
-+		return -EBUSY;
-+
-+	if (IS_ERR(new_ioas))
-+		return PTR_ERR(new_ioas);
-+
-+	if (cur_ioas == new_ioas)
-+		return 0;
- 
--	mutex_lock(&access->ioas_lock);
--	if (WARN_ON(!access->ioas))
--		goto out;
- 	/*
- 	 * Set ioas to NULL to block any further iommufd_access_pin_pages().
- 	 * iommufd_access_unpin_pages() can continue using access->ioas_unpin.
- 	 */
- 	access->ioas = NULL;
--
--	if (access->ops->unmap) {
-+	if (cur_ioas && access->ops->unmap) {
- 		mutex_unlock(&access->ioas_lock);
- 		access->ops->unmap(access->data, 0, ULONG_MAX);
- 		mutex_lock(&access->ioas_lock);
- 	}
-+
-+	if (new_ioas) {
-+		rc = iopt_add_access(&new_ioas->iopt, access);
-+		if (rc) {
-+			iommufd_put_object(&new_ioas->obj);
-+			access->ioas = cur_ioas;
-+			return rc;
-+		}
-+		iommufd_ref_to_users(&new_ioas->obj);
-+	}
-+
-+	access->ioas = new_ioas;
-+	access->ioas_unpin = new_ioas;
- 	iopt_remove_access(&cur_ioas->iopt, access);
- 	refcount_dec(&cur_ioas->obj.users);
--out:
--	access->ioas_unpin = NULL;
-+
-+	return 0;
-+}
-+
-+void iommufd_access_detach(struct iommufd_access *access)
-+{
-+	int rc;
-+
-+	mutex_lock(&access->ioas_lock);
-+	if (WARN_ON(!access->ioas)) {
-+		mutex_unlock(&access->ioas_lock);
-+		return;
-+	}
-+	rc = iommufd_access_change_ioas(access, NULL);
-+	WARN_ON(rc);
- 	mutex_unlock(&access->ioas_lock);
- }
- EXPORT_SYMBOL_NS_GPL(iommufd_access_detach, IOMMUFD);
- 
- int iommufd_access_attach(struct iommufd_access *access, u32 ioas_id)
- {
--	struct iommufd_ioas *new_ioas;
--	int rc = 0;
-+	int rc;
- 
- 	mutex_lock(&access->ioas_lock);
--	if (WARN_ON(access->ioas || access->ioas_unpin)) {
-+	if (WARN_ON(access->ioas)) {
- 		mutex_unlock(&access->ioas_lock);
- 		return -EINVAL;
- 	}
- 
--	new_ioas = iommufd_get_ioas(access->ictx, ioas_id);
--	if (IS_ERR(new_ioas)) {
--		mutex_unlock(&access->ioas_lock);
--		return PTR_ERR(new_ioas);
--	}
--
--	rc = iopt_add_access(&new_ioas->iopt, access);
--	if (rc) {
--		mutex_unlock(&access->ioas_lock);
--		iommufd_put_object(&new_ioas->obj);
--		return rc;
--	}
--	iommufd_ref_to_users(&new_ioas->obj);
--
--	access->ioas = new_ioas;
--	access->ioas_unpin = new_ioas;
-+	rc = iommufd_access_change_ioas(access,
-+				      iommufd_get_ioas(access->ictx, ioas_id));
- 	mutex_unlock(&access->ioas_lock);
--	return 0;
-+	return rc;
- }
- EXPORT_SYMBOL_NS_GPL(iommufd_access_attach, IOMMUFD);
- 
-+int iommufd_access_replace(struct iommufd_access *access, u32 ioas_id)
-+{
-+	int rc;
-+
-+	mutex_lock(&access->ioas_lock);
-+	if (!access->ioas) {
-+		mutex_unlock(&access->ioas_lock);
-+		return -ENOENT;
-+	}
-+	rc = iommufd_access_change_ioas(access,
-+				      iommufd_get_ioas(access->ictx, ioas_id));
-+	mutex_unlock(&access->ioas_lock);
-+	return rc;
-+}
-+EXPORT_SYMBOL_NS_GPL(iommufd_access_replace, IOMMUFD);
-+
- /**
-  * iommufd_access_notify_unmap - Notify users of an iopt to stop using it
-  * @iopt: iopt to work on
-diff --git a/include/linux/iommufd.h b/include/linux/iommufd.h
-index 0ac60256b65929..ffc3a949f8374f 100644
---- a/include/linux/iommufd.h
-+++ b/include/linux/iommufd.h
-@@ -49,6 +49,7 @@ iommufd_access_create(struct iommufd_ctx *ictx,
- 		      const struct iommufd_access_ops *ops, void *data, u32 *id);
- void iommufd_access_destroy(struct iommufd_access *access);
- int iommufd_access_attach(struct iommufd_access *access, u32 ioas_id);
-+int iommufd_access_replace(struct iommufd_access *access, u32 ioas_id);
- void iommufd_access_detach(struct iommufd_access *access);
- 
- void iommufd_ctx_get(struct iommufd_ctx *ictx);
+It seems not, and this patch is more a cosmetic change than any
+functional issue, but given that the vfio flows rely on this working
+we should keep it here to test it.
 
+So, lets drop this patch.
 
 Jason
