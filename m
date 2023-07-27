@@ -1,194 +1,222 @@
-Received: from frasgout12.his.huawei.com (unknown [14.137.139.154])
+Received: from dggsgout11.his.huawei.com (unknown [45.249.212.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E62DEE56E
-	for <iommu@lists.linux.dev>; Thu, 27 Jul 2023 12:09:24 +0000 (UTC)
-Received: from mail02.huawei.com (unknown [172.18.147.229])
-	by frasgout12.his.huawei.com (SkyGuard) with ESMTP id 4RBTkD0wBrz9yDry
-	for <iommu@lists.linux.dev>; Thu, 27 Jul 2023 19:56:04 +0800 (CST)
-Received: from A2101119013HW2.china.huawei.com (unknown [10.81.209.69])
-	by APP2 (Coremail) with SMTP id GxC2BwBnGkGaXcJkfMYUBQ--.33878S11;
-	Thu, 27 Jul 2023 13:08:45 +0100 (CET)
-From: Petr Tesarik <petrtesarik@huaweicloud.com>
-To: Stefano Stabellini <sstabellini@kernel.org>,
-	Russell King <linux@armlinux.org.uk>,
-	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Ingo Molnar <mingo@redhat.com>,
-	Borislav Petkov <bp@alien8.de>,
-	Dave Hansen <dave.hansen@linux.intel.com>,
-	x86@kernel.org (maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)),
-	"H. Peter Anvin" <hpa@zytor.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Juergen Gross <jgross@suse.com>,
-	Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
-	Christoph Hellwig <hch@lst.de>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Christoph Lameter <cl@linux.com>,
-	Pekka Enberg <penberg@kernel.org>,
-	David Rientjes <rientjes@google.com>,
-	Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Vlastimil Babka <vbabka@suse.cz>,
-	Roman Gushchin <roman.gushchin@linux.dev>,
-	Hyeonggon Yoo <42.hyeyoo@gmail.com>,
-	Petr Tesarik <petr.tesarik.ext@huawei.com>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Hans de Goede <hdegoede@redhat.com>,
-	James Seo <james@equiv.tech>,
-	James Clark <james.clark@arm.com>,
-	Kees Cook <keescook@chromium.org>,
-	xen-devel@lists.xenproject.org (moderated list:XEN HYPERVISOR ARM),
-	linux-arm-kernel@lists.infradead.org (moderated list:ARM PORT),
-	linux-kernel@vger.kernel.org (open list),
-	linux-mips@vger.kernel.org (open list:MIPS),
-	iommu@lists.linux.dev (open list:XEN SWIOTLB SUBSYSTEM),
-	linux-mm@kvack.org (open list:SLAB ALLOCATOR)
-Cc: Roberto Sassu <roberto.sassu@huaweicloud.com>,
-	petr@tesarici.cz
-Subject: [PATCH v6 9/9] swiotlb: search the software IO TLB only if the device makes use of it
-Date: Thu, 27 Jul 2023 14:05:37 +0200
-Message-Id: <992c172baff5deac9aa3bbc76d999785d12fe995.1690459412.git.petr.tesarik.ext@huawei.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <cover.1690459412.git.petr.tesarik.ext@huawei.com>
-References: <cover.1690459412.git.petr.tesarik.ext@huawei.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3AE1D1641B;
+	Thu, 27 Jul 2023 12:16:45 +0000 (UTC)
+Received: from mail02.huawei.com (unknown [172.30.67.143])
+	by dggsgout11.his.huawei.com (SkyGuard) with ESMTP id 4RBV9w2lXJz4f3mW6;
+	Thu, 27 Jul 2023 20:16:36 +0800 (CST)
+Received: from [10.174.178.55] (unknown [10.174.178.55])
+	by APP4 (Coremail) with SMTP id gCh0CgD3rLAeYMJkyp24Ow--.57086S3;
+	Thu, 27 Jul 2023 20:16:32 +0800 (CST)
+Subject: Re: [RESEND PATCH 1/4] iommu/arm-smmu-v3: Add support for ECMDQ
+ register mode
+To: kernel test robot <lkp@intel.com>, Tanmay Jagdale <tanmay@marvell.com>,
+ will@kernel.org, robin.murphy@arm.com, joro@8bytes.org,
+ baolu.lu@linux.intel.com, thunder.leizhen@huawei.com
+Cc: oe-kbuild-all@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org, gcherian@marvell.com,
+ sgoutham@marvell.com, lcherian@marvell.com, bbhushan2@marvell.com
+References: <20230721063513.33431-2-tanmay@marvell.com>
+ <202307271849.sqXiM3CK-lkp@intel.com>
+From: "Leizhen (ThunderTown)" <thunder.leizhen@huaweicloud.com>
+Message-ID: <6f2863d3-f0ef-900c-c64a-87f02e726cf8@huaweicloud.com>
+Date: Thu, 27 Jul 2023 20:16:30 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:GxC2BwBnGkGaXcJkfMYUBQ--.33878S11
-X-Coremail-Antispam: 1UD129KBjvJXoWxZF15Ww18ZF1fWr1UtFW7XFb_yoWrXFy3pF
-	98AFZ8KayqqryxGryxCF18uF1agw4vk3yfurWagrnYkr1DJwnaqF1DKrWav3s5Ar47ZF43
-	tryj9wsYkr17Zr7anT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDU0xBIdaVrnRJUUUQl14x267AKxVWrJVCq3wAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-	rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2048vs2IY020E87I2jVAFwI0_JF0E3s1l82xGYI
-	kIc2x26xkF7I0E14v26ryj6s0DM28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8wA2
-	z4x0Y4vE2Ix0cI8IcVAFwI0_Gr0_Xr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr1j6F
-	4UJwA2z4x0Y4vEx4A2jsIE14v26r4j6F4UM28EF7xvwVC2z280aVCY1x0267AKxVWxJr0_
-	GcWle2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E2I
-	x0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJVW8
-	JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lFIxGxcIEc7CjxVA2Y2
-	ka0xkIwI1lc7CjxVAaw2AFwI0_Jw0_GFylc7CjxVAKzI0EY4vE52x082I5MxAIw28IcxkI
-	7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxV
-	Cjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWrXVW8Jr1lIxkGc2Ij64vIr41lIxAI
-	cVC0I7IYx2IY67AKxVWUCVW8JwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Gr1j6F4UJwCI42
-	IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z280aVAFwI0_Gr0_Cr1lIxAIcVC2z280
-	aVCY1x0267AKxVWxJr0_GcJvcSsGvfC2KfnxnUUI43ZEXa7VUUMKZtUUUUU==
-X-CM-SenderInfo: hshw23xhvd2x3n6k3tpzhluzxrxghudrp/
+In-Reply-To: <202307271849.sqXiM3CK-lkp@intel.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-CM-TRANSID:gCh0CgD3rLAeYMJkyp24Ow--.57086S3
+X-Coremail-Antispam: 1UD129KBjvJXoWxtrW3CFyfXrykZr4rKFykKrg_yoWxZw4kpa
+	1DGa9Yyr1kGF4xZa4xXr1Iv3s8tws5ua4ayFWUur90vr1j9rWrWrs7K3WYkrykKFy5Kw17
+	ArnxX3yjkw45ArJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+	9KBjDU0xBIdaVrnRJUUUv2b4IE77IF4wAFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k2
+	6cxKx2IYs7xG6r1S6rWUM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4
+	vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Ar0_tr1l84ACjcxK6xIIjxv20xvEc7Cj
+	xVAFwI0_Cr1j6rxdM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I
+	0E14v26rxl6s0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40E
+	x7xfMcIj6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x
+	0Yz7v_Jr0_Gr1lF7xvr2IY64vIr41lFIxGxcIEc7CjxVA2Y2ka0xkIwI1lc7I2V7IY0VAS
+	07AlzVAYIcxG8wCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c
+	02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_
+	GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7
+	CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6rW3Jr0E3s1lIxAIcVC2z280aVAF
+	wI0_Gr0_Cr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa
+	7IU1zuWJUUUUU==
+X-CM-SenderInfo: hwkx0vthuozvpl2kv046kxt4xhlfz01xgou0bp/
 X-CFilter-Loop: Reflected
 
-From: Petr Tesarik <petr.tesarik.ext@huawei.com>
 
-Skip searching the software IO TLB if a device has never used it, making
-sure these devices are not affected by the introduction of multiple IO TLB
-memory pools.
 
-Additional memory barrier is required to ensure that the new value of the
-flag is visible to other CPUs after mapping a new bounce buffer. For
-efficiency, the flag check should be inlined, and then the memory barrier
-must be moved to is_swiotlb_buffer(). However, it can replace the existing
-barrier in swiotlb_find_pool(), because all callers use is_swiotlb_buffer()
-first to verify that the buffer address belongs to the software IO TLB.
+On 2023/7/27 19:13, kernel test robot wrote:
+> Hi Tanmay,
+> 
+> kernel test robot noticed the following build warnings:
+> 
+> [auto build test WARNING on v6.5-rc2]
+> [also build test WARNING on linus/master next-20230727]
+> [cannot apply to joro-iommu/next]
+> [If your patch is applied to the wrong git tree, kindly drop us a note.
+> And when submitting patch, we suggest to use '--base' as documented in
+> https://git-scm.com/docs/git-format-patch#_base_tree_information]
+> 
+> url:    https://github.com/intel-lab-lkp/linux/commits/Tanmay-Jagdale/iommu-arm-smmu-v3-Add-support-for-ECMDQ-register-mode/20230721-143913
+> base:   v6.5-rc2
+> patch link:    https://lore.kernel.org/r/20230721063513.33431-2-tanmay%40marvell.com
+> patch subject: [RESEND PATCH 1/4] iommu/arm-smmu-v3: Add support for ECMDQ register mode
+> config: arm64-randconfig-r083-20230726 (https://download.01.org/0day-ci/archive/20230727/202307271849.sqXiM3CK-lkp@intel.com/config)
+> compiler: aarch64-linux-gcc (GCC) 12.3.0
+> reproduce: (https://download.01.org/0day-ci/archive/20230727/202307271849.sqXiM3CK-lkp@intel.com/reproduce)
+> 
+> If you fix the issue in a separate patch/commit (i.e. not just a new version of
+> the same patch/commit), kindly add following tags
+> | Reported-by: kernel test robot <lkp@intel.com>
+> | Closes: https://lore.kernel.org/oe-kbuild-all/202307271849.sqXiM3CK-lkp@intel.com/
+> 
+> sparse warnings: (new ones prefixed by >>)
+>>> drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c:3573:23: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected struct arm_smmu_ecmdq *ecmdq @@     got struct arm_smmu_ecmdq [noderef] __percpu * @@
+>    drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c:3573:23: sparse:     expected struct arm_smmu_ecmdq *ecmdq
+>    drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c:3573:23: sparse:     got struct arm_smmu_ecmdq [noderef] __percpu *
 
-Signed-off-by: Petr Tesarik <petr.tesarik.ext@huawei.com>
----
- include/linux/device.h  |  2 ++
- include/linux/swiotlb.h |  7 ++++++-
- kernel/dma/swiotlb.c    | 14 ++++++--------
- 3 files changed, 14 insertions(+), 9 deletions(-)
+OK, thanks, the local variable 'ecmdq' need modifier '__percpu'.
 
-diff --git a/include/linux/device.h b/include/linux/device.h
-index 5fd89c9d005c..6fc808d22bfd 100644
---- a/include/linux/device.h
-+++ b/include/linux/device.h
-@@ -628,6 +628,7 @@ struct device_physical_location {
-  * @dma_io_tlb_mem: Software IO TLB allocator.  Not for driver use.
-  * @dma_io_tlb_pools:	List of transient swiotlb memory pools.
-  * @dma_io_tlb_lock:	Protects changes to the list of active pools.
-+ * @dma_uses_io_tlb: %true if device has used the software IO TLB.
-  * @archdata:	For arch-specific additions.
-  * @of_node:	Associated device tree node.
-  * @fwnode:	Associated device node supplied by platform firmware.
-@@ -737,6 +738,7 @@ struct device {
- #ifdef CONFIG_SWIOTLB_DYNAMIC
- 	struct list_head dma_io_tlb_pools;
- 	spinlock_t dma_io_tlb_lock;
-+	bool dma_uses_io_tlb;
- #endif
- 	/* arch specific additions */
- 	struct dev_archdata	archdata;
-diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
-index 8371c92a0271..b4536626f8ff 100644
---- a/include/linux/swiotlb.h
-+++ b/include/linux/swiotlb.h
-@@ -172,8 +172,13 @@ static inline bool is_swiotlb_buffer(struct device *dev, phys_addr_t paddr)
- 	if (!mem)
- 		return false;
- 
--	if (IS_ENABLED(CONFIG_SWIOTLB_DYNAMIC))
-+	if (IS_ENABLED(CONFIG_SWIOTLB_DYNAMIC)) {
-+		/* Pairs with smp_wmb() in swiotlb_find_slots() and
-+		 * swiotlb_dyn_alloc(), which modify the RCU lists.
-+		 */
-+		smp_rmb();
- 		return swiotlb_find_pool(dev, paddr);
-+	}
- 	return paddr >= mem->defpool.start && paddr < mem->defpool.end;
- }
- 
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index 1560a3e484b9..1fe64573d828 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -730,7 +730,7 @@ static void swiotlb_dyn_alloc(struct work_struct *work)
- 
- 	add_mem_pool(mem, pool);
- 
--	/* Pairs with smp_rmb() in swiotlb_find_pool(). */
-+	/* Pairs with smp_rmb() in is_swiotlb_buffer(). */
- 	smp_wmb();
- }
- 
-@@ -764,11 +764,6 @@ struct io_tlb_pool *swiotlb_find_pool(struct device *dev, phys_addr_t paddr)
- 	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
- 	struct io_tlb_pool *pool;
- 
--	/* Pairs with smp_wmb() in swiotlb_find_slots() and
--	 * swiotlb_dyn_alloc(), which modify the RCU lists.
--	 */
--	smp_rmb();
--
- 	rcu_read_lock();
- 	list_for_each_entry_rcu(pool, &mem->pools, node) {
- 		if (paddr >= pool->start && paddr < pool->end)
-@@ -813,6 +808,7 @@ void swiotlb_dev_init(struct device *dev)
- #ifdef CONFIG_SWIOTLB_DYNAMIC
- 	INIT_LIST_HEAD(&dev->dma_io_tlb_pools);
- 	spin_lock_init(&dev->dma_io_tlb_lock);
-+	dev->dma_uses_io_tlb = false;
- #endif
- }
- 
-@@ -1157,9 +1153,11 @@ static int swiotlb_find_slots(struct device *dev, phys_addr_t orig_addr,
- 	list_add_rcu(&pool->node, &dev->dma_io_tlb_pools);
- 	spin_unlock_irqrestore(&dev->dma_io_tlb_lock, flags);
- 
--	/* Pairs with smp_rmb() in swiotlb_find_pool(). */
--	smp_wmb();
- found:
-+	dev->dma_uses_io_tlb = true;
-+	/* Pairs with smp_rmb() in is_swiotlb_buffer() */
-+	smp_wmb();
-+
- 	*retpool = pool;
- 	return index;
- }
+>>> drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c:3578:58: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected void const [noderef] __percpu *__vpp_verify @@     got struct arm_smmu_ecmdq * @@
+>    drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c:3578:58: sparse:     expected void const [noderef] __percpu *__vpp_verify
+>    drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c:3578:58: sparse:     got struct arm_smmu_ecmdq *
+>>> drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c:3604:45: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const *addr @@     got void [noderef] __iomem *base @@
+>    drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c:3604:45: sparse:     expected void const *addr
+>    drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c:3604:45: sparse:     got void [noderef] __iomem *base
+
+Perhaps it would be better to add a member to the structure arm_smmu_device
+to record the start physical address of the smmu.
+
+>    drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c: note: in included file (through arch/arm64/include/asm/atomic.h, include/linux/atomic.h, include/asm-generic/bitops/atomic.h, ...):
+>    arch/arm64/include/asm/cmpxchg.h:168:1: sparse: sparse: cast truncates bits from constant value (ffffffff80000000 becomes 0)
+>    arch/arm64/include/asm/cmpxchg.h:168:1: sparse: sparse: cast truncates bits from constant value (ffffffff80000000 becomes 0)
+> 
+> vim +3573 drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> 
+>   3566	
+>   3567	static int arm_smmu_ecmdq_layout(struct arm_smmu_device *smmu)
+>   3568	{
+>   3569		int cpu;
+>   3570		struct arm_smmu_ecmdq *ecmdq;
+>   3571	
+>   3572		if (num_possible_cpus() <= smmu->nr_ecmdq) {
+>> 3573			ecmdq = devm_alloc_percpu(smmu->dev, *ecmdq);
+>   3574			if (!ecmdq)
+>   3575				return -ENOMEM;
+>   3576	
+>   3577			for_each_possible_cpu(cpu)
+>> 3578				*per_cpu_ptr(smmu->ecmdq, cpu) = per_cpu_ptr(ecmdq, cpu);
+>   3579	
+>   3580			/* A core requires at most one ECMDQ */
+>   3581			smmu->nr_ecmdq = num_possible_cpus();
+>   3582	
+>   3583			return 0;
+>   3584		}
+>   3585	
+>   3586		return -ENOSPC;
+>   3587	}
+>   3588	
+>   3589	static int arm_smmu_ecmdq_probe(struct arm_smmu_device *smmu)
+>   3590	{
+>   3591		int ret, cpu;
+>   3592		u32 i, nump, numq, gap;
+>   3593		u32 reg, shift_increment;
+>   3594		u64 addr, smmu_dma_base;
+>   3595		void __iomem *cp_regs, *cp_base;
+>   3596	
+>   3597		/* IDR6 */
+>   3598		reg = readl_relaxed(smmu->base + ARM_SMMU_IDR6);
+>   3599		nump = 1 << FIELD_GET(IDR6_LOG2NUMP, reg);
+>   3600		numq = 1 << FIELD_GET(IDR6_LOG2NUMQ, reg);
+>   3601		smmu->nr_ecmdq = nump * numq;
+>   3602		gap = ECMDQ_CP_RRESET_SIZE >> FIELD_GET(IDR6_LOG2NUMQ, reg);
+>   3603	
+>> 3604		smmu_dma_base = (vmalloc_to_pfn(smmu->base) << PAGE_SHIFT);
+>   3605		cp_regs = ioremap(smmu_dma_base + ARM_SMMU_ECMDQ_CP_BASE, PAGE_SIZE);
+>   3606		if (!cp_regs)
+>   3607			return -ENOMEM;
+>   3608	
+>   3609		for (i = 0; i < nump; i++) {
+>   3610			u64 val, pre_addr;
+>   3611	
+>   3612			val = readq_relaxed(cp_regs + 32 * i);
+>   3613			if (!(val & ECMDQ_CP_PRESET)) {
+>   3614				iounmap(cp_regs);
+>   3615				dev_err(smmu->dev, "ecmdq control page %u is memory mode\n", i);
+>   3616				return -EFAULT;
+>   3617			}
+>   3618	
+>   3619			if (i && ((val & ECMDQ_CP_ADDR) != (pre_addr + ECMDQ_CP_RRESET_SIZE))) {
+>   3620				iounmap(cp_regs);
+>   3621				dev_err(smmu->dev, "ecmdq_cp memory region is not contiguous\n");
+>   3622				return -EFAULT;
+>   3623			}
+>   3624	
+>   3625			pre_addr = val & ECMDQ_CP_ADDR;
+>   3626		}
+>   3627	
+>   3628		addr = readl_relaxed(cp_regs) & ECMDQ_CP_ADDR;
+>   3629		iounmap(cp_regs);
+>   3630	
+>   3631		cp_base = devm_ioremap(smmu->dev, smmu_dma_base + addr, ECMDQ_CP_RRESET_SIZE * nump);
+>   3632		if (!cp_base)
+>   3633			return -ENOMEM;
+>   3634	
+>   3635		smmu->ecmdq = devm_alloc_percpu(smmu->dev, struct arm_smmu_ecmdq *);
+>   3636		if (!smmu->ecmdq)
+>   3637			return -ENOMEM;
+>   3638	
+>   3639		ret = arm_smmu_ecmdq_layout(smmu);
+>   3640		if (ret)
+>   3641			return ret;
+>   3642	
+>   3643		shift_increment = order_base_2(num_possible_cpus() / smmu->nr_ecmdq);
+>   3644	
+>   3645		addr = 0;
+>   3646		for_each_possible_cpu(cpu) {
+>   3647			struct arm_smmu_ecmdq *ecmdq;
+>   3648			struct arm_smmu_queue *q;
+>   3649	
+>   3650			ecmdq = *per_cpu_ptr(smmu->ecmdq, cpu);
+>   3651			ecmdq->base = cp_base + addr;
+>   3652	
+>   3653			q = &ecmdq->cmdq.q;
+>   3654	
+>   3655			q->llq.max_n_shift = ECMDQ_MAX_SZ_SHIFT + shift_increment;
+>   3656			ret = arm_smmu_init_one_queue(smmu, q, ecmdq->base, ARM_SMMU_ECMDQ_PROD,
+>   3657					ARM_SMMU_ECMDQ_CONS, CMDQ_ENT_DWORDS, "ecmdq");
+>   3658			if (ret)
+>   3659				return ret;
+>   3660	
+>   3661			q->ecmdq_prod = ECMDQ_PROD_EN;
+>   3662			rwlock_init(&q->ecmdq_lock);
+>   3663	
+>   3664			ret = arm_smmu_ecmdq_init(&ecmdq->cmdq);
+>   3665			if (ret) {
+>   3666				dev_err(smmu->dev, "ecmdq[%d] init failed\n", i);
+>   3667				return ret;
+>   3668			}
+>   3669	
+>   3670			addr += gap;
+>   3671		}
+>   3672	
+>   3673		return 0;
+>   3674	}
+>   3675	
+> 
+
 -- 
-2.25.1
+Regards,
+  Zhen Lei
 
