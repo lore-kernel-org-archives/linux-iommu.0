@@ -1,121 +1,204 @@
-Received: from mail-io1-f49.google.com (mail-io1-f49.google.com [209.85.166.49])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2071.outbound.protection.outlook.com [40.107.92.71])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B7BFE399
-	for <iommu@lists.linux.dev>; Thu, 27 Jul 2023 02:42:59 +0000 (UTC)
-Received: by mail-io1-f49.google.com with SMTP id ca18e2360f4ac-78362f57500so16400739f.3
-        for <iommu@lists.linux.dev>; Wed, 26 Jul 2023 19:42:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sifive.com; s=google; t=1690425778; x=1691030578;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=V8jyIXLWbiaPIfUNQUt/A1abaBSl99TewPn4xIRH3Gk=;
-        b=dbnUFrMfJLqrJt66x+t87Cn30gCM4ssUP+qYJSr9zH+PptsSMCURpkLnIQbFBiFdWF
-         UwmkDC+uzYwwo/JAe24bt9XBAXX5jibXHISDLWDE2RgZOu8QMSfQlEsLF+Xmi7TYK4vd
-         3dm99tWY34wEeITB0N/MMMztVoxiOEyoYkyGXMl1fwYHaEB2EvDw/Tls3xlGbl86xO0o
-         mN4FZMO+uTeKfCQD4mhLMrhm+InZmxPaxOWq7Ur1mTCqxH7JktdjtxDEvTZnlH8c1eDq
-         fPvFX7HmSYvywfjg9RyMITrlL5aTIhpe7L+smnYu0PFl4Ir9Hyz9HlkgQleRn8QkxPrw
-         izJA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1690425778; x=1691030578;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=V8jyIXLWbiaPIfUNQUt/A1abaBSl99TewPn4xIRH3Gk=;
-        b=BzmsxNxUzabPZeSwZSFwecOSgLqazsJFTABODRIU+lCxQRAauD04qgL1O9zhzCAfK8
-         sJn57Y4xfTnu2vwco1ZeaYMmFpeAU3HVKJF8bRhrPhUlPgWllptTnJeewDapKQQn58sP
-         iYqqBuD9oBcHzbC7O1ZQNWwLB6ZwtLMi4Ji+7GdPcjFQDtKMieb+7WHcB2RV8lKZT9lb
-         Jb/Yb/GiZIcSMtk83AOIq1O4BpEQw8a0HQG7pwCEAfco53XIyhc4N6VB27w9cCTySKPo
-         PHzn2+gamW/EtsWnVNKKvrwu+FGZRRL21CGU/rPouBOqMUJap/C5hErzLnqF8YqSN2Hc
-         5shQ==
-X-Gm-Message-State: ABy/qLbBzUEZ04NZbRTWoCi89NiQb3g/6WsFOjzzcGY96UneKzhKnuIB
-	OFdD/HhtAycTjefjR5hWP9EbQG9xFngTHVEEgtOV4g==
-X-Google-Smtp-Source: APBJJlHCjsq9WEkyIPdPbZnYZG7ki1pDsOSIOucj+Kdgdv9AAgadEJaEys0ZQLpivwimHm1HmO/UrXhpnSNMewQmKXo=
-X-Received: by 2002:a6b:6014:0:b0:783:572c:9caa with SMTP id
- r20-20020a6b6014000000b00783572c9caamr3688832iog.0.1690425778618; Wed, 26 Jul
- 2023 19:42:58 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9CF2399
+	for <iommu@lists.linux.dev>; Thu, 27 Jul 2023 02:59:26 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=cGfiOYOqwQ9bs0MpWu/9XvhNxLtbktDauNpef8gfAELFinsqjdeTb9GvoUTjaR4oZ4nTdhoJJBme8/+nc+CH/KXeOsZh6acwrWOMnQ3xFuXrBV/fcY9nJjZQU0SjcVgGyHe2MhtpmhxFI3tiYiftWVfv4+K+0RlCW7J550L2NRXSV4vXQIq/Awwvnx2xAdqffGmtG46lQx6MR7y1/PQ/Q7D2cnpb5jP4P1XKK4jCQwMVb9PKdbQQ6FBsXpjJqP4BMhKxgnPOvtRMCERVituSI7v6p2BmUG1iK9RrxZkHTryU7Q0OmuTHtRvNRYSM13MUjtpyMUeAhLENiVVzYCSyjA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=eoLMyFtkLC5U1zH2nu0OWVSSVAaORxB0z5ulkdYs5pk=;
+ b=SHrYpO3hvsZQwbWyTihmp6lor7qk+j30FfDoRolCa3QB2Xa1DPpc4Eu8m8aVuz83wjjYWQysGFu/3WN/qGJ+FrRbp6iC+N1ye7vXRl3/gb6VnOamdW78Y2U1YC25pBvCO1FAWhwTwJZb2DzeAf9Y64MyXEuLNP1nxi8wqbsaCRQz+nlihhl+xCEpYCTel0QVPlr2IFCAh8QkdM08O8OhNgAXzfKqyBO998O3t7qwXY1peUsusE+r1l4NxLWbf+iRdotH1Z/c6M4fytv1+20QzJr2xtWd4XdD0P/Q6Dp0ICMFOyOGjm3nUeRlZk8hAH2DCboP/c3NzKhk//1SU+ZrBQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.118.233) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=eoLMyFtkLC5U1zH2nu0OWVSSVAaORxB0z5ulkdYs5pk=;
+ b=e7QAGquul29LADdg0NSpafRgsK4MGnVfslYKS4TRqTY51A5qGStVD72ieXVQK9AqT3grEAXJqakrGcgQOqfuobj6I3UO4y1ErUOX5cnXMeymKVWfGRakghKr7GzAIndWf88dW8KOLKQ8yORlLZ+U3f79TnKMgq8+oRUoRctUmD2W0eTjbUM0c7SKVfWcGJFjDnVtcF9JSXE2vfqyG+DuSErjx5KkzXFsUkymaAXzOWxdyIX4zHt+QSdD16aQtcWJ8W4nMFueKuCXRAk6Q76FaFBGYEpMtjkq5cMlG057iL78DBY4cuCSkfNMFNFs07FYRnvnb0oV6CM2RpbDdrPQEw==
+Received: from BN8PR12CA0021.namprd12.prod.outlook.com (2603:10b6:408:60::34)
+ by PH0PR12MB7887.namprd12.prod.outlook.com (2603:10b6:510:26d::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6609.32; Thu, 27 Jul
+ 2023 02:59:23 +0000
+Received: from BN8NAM11FT089.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:60:cafe::e1) by BN8PR12CA0021.outlook.office365.com
+ (2603:10b6:408:60::34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6631.29 via Frontend
+ Transport; Thu, 27 Jul 2023 02:59:23 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.233) by
+ BN8NAM11FT089.mail.protection.outlook.com (10.13.176.105) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6631.29 via Frontend Transport; Thu, 27 Jul 2023 02:59:23 +0000
+Received: from drhqmail202.nvidia.com (10.126.190.181) by mail.nvidia.com
+ (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Wed, 26 Jul 2023
+ 19:59:13 -0700
+Received: from drhqmail203.nvidia.com (10.126.190.182) by
+ drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.37; Wed, 26 Jul 2023 19:59:13 -0700
+Received: from Asurada-Nvidia (10.127.8.10) by mail.nvidia.com
+ (10.126.190.182) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37 via Frontend
+ Transport; Wed, 26 Jul 2023 19:59:12 -0700
+Date: Wed, 26 Jul 2023 19:59:11 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: <kevin.tian@intel.com>, <alex.williamson@redhat.com>,
+	<yi.l.liu@intel.com>, <joro@8bytes.org>, <will@kernel.org>,
+	<robin.murphy@arm.com>, <shuah@kernel.org>, <linux-kernel@vger.kernel.org>,
+	<iommu@lists.linux.dev>, <kvm@vger.kernel.org>,
+	<linux-kselftest@vger.kernel.org>, <mjrosato@linux.ibm.com>,
+	<farman@linux.ibm.com>
+Subject: Re: [PATCH v8 2/4] iommufd: Add iommufd_access_replace() API
+Message-ID: <ZMHdfycdAdmqB2VB@Asurada-Nvidia>
+References: <cover.1690226015.git.nicolinc@nvidia.com>
+ <5dfe3e9a9d511919cb105459ca9d96f013daadb4.1690226015.git.nicolinc@nvidia.com>
+ <ZMEt+SMFBMKT3AoT@nvidia.com>
+ <ZMGHFI4KB4XTG9EH@Asurada-Nvidia>
+ <ZMGt/4CCCmUB85HX@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <cover.1689792825.git.tjeznach@rivosinc.com> <d62ceb33620cab766d809e6bbf30eaf5b46bc955.1689792825.git.tjeznach@rivosinc.com>
- <CANXhq0r=2eqpy9wLjVt1U0J7=LpnJLcKV7N9d90jvCss=7+Fzg@mail.gmail.com>
- <CAK9=C2Vg9eR5LJPeqDDQ0pHZcrT5DOUzA8_wYEVEjfnhb6s8pw@mail.gmail.com>
- <CANXhq0oTrU_-OQroW7H+hvxcU7YROhkgdCF9g_WtPTzVFQL7gA@mail.gmail.com>
- <CAK9=C2XoQjPzZ5yB5jfTbee4-Pb8GgFAZRbfcMwMk9pyo39WxQ@mail.gmail.com>
- <CANXhq0q7R9Srx6U=fReq7LDLFgW6rMmjKH=o6MzDT5AWNRXP6w@mail.gmail.com>
- <592edb17-7fa4-3b5b-2803-e8c50c322eee@linux.intel.com> <CANXhq0pS_=YxgrxSKbdfrFdGcBduzk3LTyC4vp_hqoJTbX3e0g@mail.gmail.com>
- <ZMEO1kNGfGjN6kZM@ziepe.ca>
-In-Reply-To: <ZMEO1kNGfGjN6kZM@ziepe.ca>
-From: Zong Li <zong.li@sifive.com>
-Date: Thu, 27 Jul 2023 10:42:47 +0800
-Message-ID: <CANXhq0qMWS_j0n_aUO8BVFSedYCjuMM=Z_tsnK05ZhG+Ob6pqw@mail.gmail.com>
-Subject: Re: [PATCH 03/11] dt-bindings: Add RISC-V IOMMU bindings
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Baolu Lu <baolu.lu@linux.intel.com>, Anup Patel <apatel@ventanamicro.com>, 
-	Tomasz Jeznach <tjeznach@rivosinc.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Paul Walmsley <paul.walmsley@sifive.com>, 
-	Albert Ou <aou@eecs.berkeley.edu>, linux@rivosinc.com, linux-kernel@vger.kernel.org, 
-	Sebastien Boeuf <seb@rivosinc.com>, iommu@lists.linux.dev, 
-	Palmer Dabbelt <palmer@dabbelt.com>, Nick Kossifidis <mick@ics.forth.gr>, linux-riscv@lists.infradead.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <ZMGt/4CCCmUB85HX@nvidia.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BN8NAM11FT089:EE_|PH0PR12MB7887:EE_
+X-MS-Office365-Filtering-Correlation-Id: 56f8e27a-028c-4455-b551-08db8e4d7b19
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	8m42/hGdMDJeoKJLn0Fq5yKa8bi4C5umK9sKCQq8asRLWY2FAYPDqTj52XSBWziPyAXmOB2ZKdqz12XOKbu3uP9croc4fHxL0eofFAlH69oW77Qesvyx9appQMHBA+UtmWbUtlxeyYuIBPOhic2DMRJ9UA73tnRaxqqeVVoqwxTvluKPSdb3Lut8mE+Ezgxsbak24a48TO3SzzwX2q1fRaKf/04rV+pxoOammpEX3Ujixsn6NoUncMacgYreuZ43zfibraTV1sA3vcThLJJd8dm1sRYhY/FWYdN6SPc50qvOftfVghoCrYk4CiBXOVZNcC5u6wa7Rv/jOwB9Imr22y8KHpQX/iEwlX/XBvbSQE4L4pSTmTIWl0aUgEHKWYpscqZz59v0zfBGZjgLHHBO0OdMqHjbiC0FO9ecvQroj+n9pTeZAuc3cV6AcP23cbWGzPGQ65eKDSJgYMHDSPnj8G5Fd/cXU1ecq8Qh4crIF45jGx92S4dHrIxJzAV45WF/HTSawostuxK3JtbYrZAzw3Rz2OEO6aI8M153DoU8HozTtUvZgTzAQDmv6N5NcrIfDx174ZK2g0gqPgqaUawD660iPzZLFgqPNZrbbViPPe+pGosZR9XPWP2svc2PWizUMtMmPR9UaEnNrPu9DIyOZ7LVdekW7FDM7f6MSfxVCBy4+Anrm/ewvySDlxHIlc98vCJAXhasXM/QVwoIbP9c0WnORcMpocS6yaK08y/klf1uc3QWbsFPKGlt0ZiZw9/o
+X-Forefront-Antispam-Report:
+	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(346002)(136003)(39860400002)(376002)(396003)(451199021)(82310400008)(36840700001)(46966006)(40470700004)(33716001)(82740400003)(7636003)(356005)(86362001)(36860700001)(54906003)(478600001)(2906002)(4326008)(6636002)(426003)(70206006)(83380400001)(70586007)(47076005)(9686003)(316002)(41300700001)(40480700001)(55016003)(8936002)(6862004)(40460700003)(5660300002)(8676002)(336012)(26005)(7416002)(186003);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Jul 2023 02:59:23.0090
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 56f8e27a-028c-4455-b551-08db8e4d7b19
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BN8NAM11FT089.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR12MB7887
 
-On Wed, Jul 26, 2023 at 8:17=E2=80=AFPM Jason Gunthorpe <jgg@ziepe.ca> wrot=
-e:
->
-> On Wed, Jul 26, 2023 at 12:26:14PM +0800, Zong Li wrote:
-> > On Wed, Jul 26, 2023 at 11:21=E2=80=AFAM Baolu Lu <baolu.lu@linux.intel=
-.com> wrote:
-> > >
-> > > On 2023/7/24 21:23, Zong Li wrote:
-> > > >>>>> In RISC-V IOMMU, certain devices can be set to bypass mode when=
- the
-> > > >>>>> IOMMU is in translation mode. To identify the devices that requ=
-ire
-> > > >>>>> bypass mode by default, does it be sensible to add a property t=
-o
-> > > >>>>> indicate this behavior?
-> > > >>>> Bypass mode for a device is a property of that device (similar t=
-o dma-coherent)
-> > > >>>> and not of the IOMMU. Other architectures (ARM and x86) never ad=
-ded such
-> > > >>>> a device property for bypass mode so I guess it is NOT ADVISABLE=
- to do it.
-> > > >>>>
-> > > >>>> If this is REALLY required then we can do something similar to t=
-he QCOM
-> > > >>>> SMMU driver where they have a whitelist of devices which are all=
-owed to
-> > > >>>> be in bypass mode (i.e. IOMMU_DOMAIN_IDENTITY) based their devic=
-e
-> > > >>>> compatible string and any device outside this whitelist is
-> > > >>>> blocked by default.
->
-> I have a draft patch someplace that consolidated all this quirk
-> checking into the core code. Generally the expectation is that any
-> device behind an iommu is fully functional in all modes. The existing
-> quirks are for HW defects that make some devices not work properly. In
-> this case the right outcome seems to be effectively blocking them from
-> using the iommu.
->
-> So, you should explain a lot more what "require bypass mode" means in
-> the RISCV world and why any device would need it.
+On Wed, Jul 26, 2023 at 08:36:31PM -0300, Jason Gunthorpe wrote:
+> On Wed, Jul 26, 2023 at 01:50:28PM -0700, Nicolin Chen wrote:
+> > 
+> > > >  	rc = iopt_add_access(&new_ioas->iopt, access);
+> > > >  	if (rc) {
+> > > > -		mutex_unlock(&access->ioas_lock);
+> > > >  		iommufd_put_object(&new_ioas->obj);
+> > > > +		if (cur_ioas)
+> > > > +			WARN_ON(iommufd_access_change_pt(access,
+> > > > +							 cur_ioas->obj.id));
+> > > 
+> > > We've already dropped our ref to cur_ioas, so this is also racy with
+> > > destroy.
+> > 
+> > Would it be better by calling iommufd_access_detach() that holds
+> > the same mutex in the iommufd_access_destroy_object()? We could
+> > also unwrap the detach and delay the refcount_dec, as you did in
+> > your attaching patch.
+> 
+> It is better just to integrate it with this algorithm so we don't have
+> the refcounting issues, like I did
 
-Perhaps this question could be related to the scenarios in which
-devices wish to be in bypass mode when the IOMMU is in translation
-mode, and why IOMMU defines/supports this case. Currently, I could
-envision a scenario where a device is already connected to the IOMMU
-in hardware, but it is not functioning correctly, or there are
-performance impacts. If modifying the hardware is not feasible, a
-default configuration that allows bypass mode could be provided as a
-solution. There might be other scenarios that I might have overlooked.
-It seems to me since IOMMU supports this configuration, it would be
-advantageous to have an approach to achieve it, and DT might be a
-flexible way.
+OK. I will have a patch adding the iommufd_access_change_ioas
+first, and it can update iommufd_access_destroy_object() too.
 
->
-> Jason
+> > > This is what I came up with:
+> > > 
+> > > diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
+> > > index 57c0e81f5073b2..e55d6e902edb98 100644
+> > > --- a/drivers/iommu/iommufd/device.c
+> > > +++ b/drivers/iommu/iommufd/device.c
+> > > @@ -758,64 +758,101 @@ void iommufd_access_destroy(struct iommufd_access *access)
+> > >  }
+> > >  EXPORT_SYMBOL_NS_GPL(iommufd_access_destroy, IOMMUFD);
+> > >  
+> > > -void iommufd_access_detach(struct iommufd_access *access)
+> > > +static int iommufd_access_change_ioas(struct iommufd_access *access,
+> > > +				      struct iommufd_ioas *new_ioas)
+> > >  {
+> > >  	struct iommufd_ioas *cur_ioas = access->ioas;
+> > > +	int rc;
+> > > +
+> > > +	lockdep_assert_held(&access->ioas_lock);
+> > > +
+> > > +	/* We are racing with a concurrent detach, bail */
+> > > +	if (access->ioas_unpin)
+> > > +		return -EBUSY;
+> > 
+> > I think this should check access->ioas too? I mean:
+> 
+> > 
+> > +	/* We are racing with a concurrent detach, bail */
+> > +	if (!access->ioas && access->ioas_unpin)
+> > +		return -EBUSY;
+> 
+> Oh, yes, that should basically be 'cur_ioas != access->ioas_unpin' -
+> ie any difference means we are racing with the unmap call.
+
+Yea, will update to 'cur_ioas != access->ioas_unpin'.
+
+> > > +	if (new_ioas) {
+> > > +		rc = iopt_add_access(&new_ioas->iopt, access);
+> > > +		if (rc) {
+> > > +			iommufd_put_object(&new_ioas->obj);
+> > > +			access->ioas = cur_ioas;
+> > > +			return rc;
+> > > +		}
+> > > +		iommufd_ref_to_users(&new_ioas->obj);
+> > > +	}
+> > > +
+> > > +	access->ioas = new_ioas;
+> > > +	access->ioas_unpin = new_ioas;
+> > >  	iopt_remove_access(&cur_ioas->iopt, access);
+> > 
+> > There was a bug in my earlier version, having the same flow by
+> > calling iopt_add_access() prior to iopt_remove_access(). But,
+> > doing that would override the access->iopt_access_list_id and
+> > it would then get unset by the following iopt_remove_access().
+> 
+> Ah, I was wondering about that order but didn't check it.
+> 
+> Maybe we just need to pass the ID into iopt_remove_access and keep the
+> right version on the stack.
+> 
+> > So, I came up with this version calling an iopt_remove_access()
+> > prior to iopt_add_access(), which requires an add-back the old
+> > ioas upon an failure at iopt_add_access(new_ioas).
+> 
+> That is also sort of reasonable if the refcounting is organized like
+> this does.
+
+I just realized that either my v8 or your version calls unmap()
+first at the entire cur_ioas. So, there seems to be no point in
+doing that fallback re-add routine since the cur_ioas isn't the
+same, which I don't feel quite right...
+
+Perhaps we should pass the ID into iopt_add/remove_access like
+you said above. And then we attach the new_ioas, piror to the
+detach the cur_ioas?
+
+Thanks
+Nicolin
