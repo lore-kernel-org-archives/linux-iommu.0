@@ -1,15 +1,15 @@
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2069.outbound.protection.outlook.com [40.107.220.69])
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF3ED1C9E4
-	for <iommu@lists.linux.dev>; Thu, 27 Jul 2023 21:10:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 883101C9E4
+	for <iommu@lists.linux.dev>; Thu, 27 Jul 2023 21:10:21 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ntA5uPuwtrQYbVfBHVm+Hhn+2nXugfDZ4ikxu/4Y7yG31Mq+rS5cfYanDxkrnuz1xjBNTnMjGrOGpl8YyG4gVNH/yxN/d60rIi4AgeromLNWLSYbOuTmdzy5fpW/2MtocCfUJJkmQPZ9MrqTxQdRf0nzOi5oJP8zYKy378aS2a6Jw7lxhc1rK/oMPrkjh5OORiOx02n8AAJSLVXfynn6iGcrEKl2onogQgYN30nUBUzuct/3xBu96UWlk7t2qrcWBVKMg4kie8eG5Dk5IK2T7ALBRZb5iwRiwa+hqBPRSpB3JamqUcH1LQq06sZ9dAyFVk2ATtIW9vLMSqjlDWfZtg==
+ b=hju7zAfzntqKqJyObzsJOZahojfNvUh6tK03CugQ/Flvha39RtF1ikXjWBCc4HEiKH9utrk9rEBdy+KvYtFEITMrgqLhx2KJKRbI053Xsk06+IkRbHkM2RYfJmkAHx2WI4lW6QuFGbKGzFIH8w1qN3DnM5763z/29vsJJWs9UvnjIhFvlG/l1sV59OrZ0CLtu6scbcXOJjZPWB36QbOBugThNV+QvEy4eWDT+gOVEerNjMJncObP2M3+dzniJDcARmcsCG8igOwNkoeKfunqLIBVz0+Ofv21L9cs1xu/CD/nNwveJrsEtGG+BqPDMf1ysodzYQZcGEmoqaI3l2pLvQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=TPtzgSNN1DVBfV1HRnOQyh1oJme15U55RGAgDKNIn4I=;
- b=R30j6LMZJlrfdz8UJzWvd+zIpFM1GV7zvVcLT6Dt+P54Zb4RVNoBFVL3KS4WoX1PVNzlT8JnMFCCX0tJeeqPZ2Fg5DufQ9HwYt1m0HXfMyRp2J9LVJzys33AHRrXSUnwuO31FzOvk7e0IAswK/zMjVYW7MnzVGNWHoSNA2Ju5mvWoMGVCNhxR3OQ2h3QK1fbyN1MUc7W4tvYrUIORiwWxGmeGOnJ169C91Qi8wRcMnq8+q3Q/YX4A93SoE4KnHYvilj1sejOnOlSnrHRNL7EbF+Dt8PWfTL7ZFbm099nLdxxphM86CgzsDjG5KqToK1uH9YaFk4EEkCXuWzpZRCZFg==
+ bh=vxHpZOXrXPISX7kfANEyB4/sA9KUi6B6vgPuNZZqFdI=;
+ b=flyu+3xqtJ44xyXFDRTdwmyCyZ4cQa3OWmbzbDNRTeb0+Qj/kOY3q9t0cWqs2djSwdaAId119WIQWApbZh41oBCiC/LA2HlDSbuF2D3UOBQ4tYE3qjNM4duxdiYY4S1kVVj9tzVgjdqWFZY/pqFPZBMpwyOgl49tbHP55oUVDLZTXw/s/AXATs+ZK3IuAa4ziOgMvZTvtTepoS9vgQFkufCvtRsQYo31RUQLtnD7pdpZCr0RlhlVovVtmiwnib9PiE3BcKTjYqNjm5eC3mCz8bHqev5eC6kIfPCXDD3SZJGHxW+dy2Rtv3IKAbz66oHMUJj+pT9Tu8LqR0e4gU2tlg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  216.228.117.160) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
@@ -17,17 +17,18 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=TPtzgSNN1DVBfV1HRnOQyh1oJme15U55RGAgDKNIn4I=;
- b=hJ1SaDlmRZ2tfT6BE70k/GzlRdaGCpR+ITuGXJRSVU15uaecEVxNiRICqLbQk1KMIIxWdIcAxvj9AQV8Ao1shTcsfdYaDD2H8Musg3hVg9iKN6iQnjuHP3rYzUNjAHWkU7iGQM4wBOOhM1emZhzdH7Dmk97fP3x1FdSQjU6/RdkryhE664QdIbr1QXKgXTkOpmmHXeuCCNQhEy8Eq15Ytxf0jUcpYRZEec8trtMG14s2kHqnfuUV7oJgrjsL+LUlEL5yBp/dJmFiOV0+EcbqkdhIKHp1KLwJyC8ztGE9853ZfbNXF6wGmaFoIJ+R+/0p4Ox3Bw8ksBDK5LUP5+FIVg==
-Received: from DM5PR07CA0061.namprd07.prod.outlook.com (2603:10b6:4:ad::26) by
- DM6PR12MB4122.namprd12.prod.outlook.com (2603:10b6:5:214::17) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6631.29; Thu, 27 Jul 2023 21:10:15 +0000
-Received: from DM6NAM11FT115.eop-nam11.prod.protection.outlook.com
- (2603:10b6:4:ad:cafe::3d) by DM5PR07CA0061.outlook.office365.com
- (2603:10b6:4:ad::26) with Microsoft SMTP Server (version=TLS1_2,
+ bh=vxHpZOXrXPISX7kfANEyB4/sA9KUi6B6vgPuNZZqFdI=;
+ b=iU8XLqco5+BjywZe8+9woeUstWpcb1ZHclYzEvdZFCAh2bp86smU1K55p0/6jqrJ3v3hxLwzWNczGf8J6xCctju6QEDzzxEasCo0a2O7XGZZXGufnUcv5zTvG1vsj8ubtnwAp1LCnnzfg3lOaTSXTopB8FOqxOR2NmX1np0WoYBHTrAtkcbc0Rfe7FB+v8UEtMhZyZHuSY5o4++xAB6LUcyDNZZTr1GRo/9MydTVJRgdJo5vQpZzsgPg9onkYJCnJNyj80u/vugIwomSW8tE/fSUP6EDpANg7bKa24o1EWA1EcthyOq8ji4K1jepbQGGsuIWzj04t4npRg2VbUcWjg==
+Received: from DM6PR02CA0086.namprd02.prod.outlook.com (2603:10b6:5:1f4::27)
+ by MN2PR12MB4455.namprd12.prod.outlook.com (2603:10b6:208:265::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6588.31; Thu, 27 Jul
+ 2023 21:10:19 +0000
+Received: from DM6NAM11FT065.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:1f4:cafe::40) by DM6PR02CA0086.outlook.office365.com
+ (2603:10b6:5:1f4::27) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6631.29 via Frontend
- Transport; Thu, 27 Jul 2023 21:10:15 +0000
+ Transport; Thu, 27 Jul 2023 21:10:19 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
@@ -35,20 +36,20 @@ Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
  216.228.117.160 as permitted sender) receiver=protection.outlook.com;
  client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
 Received: from mail.nvidia.com (216.228.117.160) by
- DM6NAM11FT115.mail.protection.outlook.com (10.13.173.33) with Microsoft SMTP
+ DM6NAM11FT065.mail.protection.outlook.com (10.13.172.109) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6631.29 via Frontend Transport; Thu, 27 Jul 2023 21:10:15 +0000
+ 15.20.6631.29 via Frontend Transport; Thu, 27 Jul 2023 21:10:18 +0000
 Received: from rnnvmail203.nvidia.com (10.129.68.9) by mail.nvidia.com
  (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Thu, 27 Jul 2023
- 14:10:02 -0700
+ 14:10:04 -0700
 Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail203.nvidia.com
  (10.129.68.9) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Thu, 27 Jul
- 2023 14:10:02 -0700
+ 2023 14:10:04 -0700
 Received: from Asurada-Nvidia.nvidia.com (10.127.8.13) by mail.nvidia.com
  (10.129.68.6) with Microsoft SMTP Server id 15.2.986.37 via Frontend
- Transport; Thu, 27 Jul 2023 14:10:01 -0700
+ Transport; Thu, 27 Jul 2023 14:10:03 -0700
 From: Nicolin Chen <nicolinc@nvidia.com>
 To: <jgg@nvidia.com>, <kevin.tian@intel.com>
 CC: <robin.murphy@arm.com>, <eric.auger@redhat.com>, <yi.l.liu@intel.com>,
@@ -56,9 +57,9 @@ CC: <robin.murphy@arm.com>, <eric.auger@redhat.com>, <yi.l.liu@intel.com>,
 	<shameerali.kolothum.thodi@huawei.com>, <jean-philippe@linaro.org>,
 	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
 	<linux-kernel@vger.kernel.org>
-Subject: [PATCH v5 2/4] iommufd: Add IOMMUFD_CMD_SET_DEV_DATA and IOMMUFD_CMD_UNSET_DEV_DATA
-Date: Thu, 27 Jul 2023 14:09:41 -0700
-Message-ID: <664cae4552da90eceacf02cf00bd29183cd1960b.1690487690.git.nicolinc@nvidia.com>
+Subject: [PATCH v5 4/4] iommufd/selftest: Add coverage for IOMMU_SET/UNSET_DEV_DATA
+Date: Thu, 27 Jul 2023 14:09:43 -0700
+Message-ID: <5b192832f6a8a02e24ba0712b1f9ab20735fd583.1690487690.git.nicolinc@nvidia.com>
 X-Mailer: git-send-email 2.41.0
 In-Reply-To: <cover.1690487690.git.nicolinc@nvidia.com>
 References: <cover.1690487690.git.nicolinc@nvidia.com>
@@ -73,227 +74,143 @@ Content-Type: text/plain
 X-NV-OnPremToCloud: ExternallySecured
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT115:EE_|DM6PR12MB4122:EE_
-X-MS-Office365-Filtering-Correlation-Id: 09a0c027-147e-4ffa-d1b3-08db8ee5df9c
+X-MS-TrafficTypeDiagnostic: DM6NAM11FT065:EE_|MN2PR12MB4455:EE_
+X-MS-Office365-Filtering-Correlation-Id: 0aa4579a-ec9f-441d-c6e8-08db8ee5e1b6
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	TLEz+9/Vs2xamO8UtBAmS2ORWJaXN3AYH9SwWvACIdY4GOQn5f3Ma1XaGndaCJpo9N5nJpkydKSDKrtSbLJ28fbtkTeF6yFBag5GwlAgG5g7U7GLCwdY8ZoC5EkGRVbUhdg+rAl1OLONUvpzw5nNVpkYM3baTDgNrK4e+7CQNQiLUVi4q3vrlzovvxGuTOr9Kz1uQ8H7C/InTOZgqH9ZRNMndNqf3Ru7iDrGU5RMpXPJ/G96UlC9QHwYn1PsuhUevTtG71mus1g8gRsx1wC27zwdq5deLlmlPODOh1UMQO52yAurZWe9zUSBvBC2TRDU4sN0sy+iQsczKDq9ZB+R2SmPF75ufNZdXRmLQxvo3xnNB0/z8u9t6yETTaBr5WbabVsBcguKo//6jYCAySU2cXuSQRlnTCp2i/NPhHKYAry8tstV9WJRrHV5ZPZWmT1YbXsXmWpCyJXN7aerWEehrD3g//pNV6Rjzr33I3+iIF3TIv8Wq9gETKSuKD0NNc62lYqafNdW5RwnDj+Kok6ExQKwgp0ow4R2z+c37TKnwIN02UVSS19ndFddKGWiHsWYAJ0xL5+rTtRWtg8VIp4B553FNCFzgm3Ea9t26ASfp3Hjbc0har9nn0qeVjuKyZ6FrUhu10CxiRHSWDi/be6VbVuOMo1op1B0Hb4Y0iHv2wYdKgOC+XehSN3Pk+I+T5CcSsk7X7jlv8+LAyqLZXs3GZzILr2GaIg7Gav3zIU8EFwuZCoq7BVQSPwca9iAT49O
+	+fNsa/t6YnpsWPRb3H9BRXbViLqL6NwuF7ZPdE7lXPYnqBNOwbS1OxvGbbh5wAGPanKO62jUJUgqk6TLwOzHS9HNltyFiTtYkHQndg9LDh75x5RzBKuChLGn48D4qoWjewkQm4XwWVftNW2qCEjufETziTWyaTAlo7CUd/eGtR30uuqMeepO9A+qHKliyTKyqp50nMGY1Nn0Z5xtgkLvN/M7rVJSRziCnl77YQ/e51MBDv850pxrwqO4ntQ+WvLgf5QqC9u3EZCPIjTH/7bD0hohlBN+GFa9udeFXoSMF2TRyPx9RiX49LLs/hXO4KL60gNaetEv3zZDVJkVZR6T2Vkz+tifuUZCX9NIkwVipamkfV9EY96ElYLtTIM9ID1kKag1T3utGLWQypf1l++Mo34epiFpeHSHcd+upMH7wTPRB/9sgfEeI501vOfK0B0LgjEOeatFQJfsyeIZb+5bfvJmNALwk4JtNwD6KradSHTWYDRkTXVQvKZn4fUS0VkdKGYf3Ta4OAKx+LcHpkEFlxm1l5fskJFkSmSx6Izo29Tqsq1mDvIbuRu7+BuaK85aUSifXhBj2HdJEiy/73ZA5yplPvtkZAwWwEqFzdOhcGJV3WsmUmvV4b9mSufy8tEVdLxv8ULtiPj3SJfSnSak6Uh6hr0o/gWjb6p4iKuQVW9yBtjZM7r5PpqTFKS13AwxjHXoU8A72cu67DgArlM/I7d2peLG9476Yt5wOVRDTw0yXmyzoVmSV2eNPcclkG/Z
 X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(136003)(396003)(346002)(376002)(39860400002)(451199021)(82310400008)(36840700001)(40470700004)(46966006)(83380400001)(5660300002)(36860700001)(478600001)(54906003)(110136005)(356005)(47076005)(8676002)(8936002)(426003)(36756003)(41300700001)(2616005)(2906002)(40480700001)(7636003)(4326008)(70206006)(86362001)(70586007)(316002)(26005)(40460700003)(7696005)(82740400003)(336012)(186003)(6666004)(7416002);DIR:OUT;SFP:1101;
+	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(376002)(346002)(396003)(136003)(39860400002)(451199021)(82310400008)(40470700004)(46966006)(36840700001)(6666004)(7696005)(356005)(82740400003)(83380400001)(478600001)(47076005)(26005)(70586007)(7636003)(4326008)(54906003)(70206006)(110136005)(336012)(2616005)(186003)(36860700001)(426003)(5660300002)(7416002)(8936002)(8676002)(40460700003)(2906002)(41300700001)(316002)(40480700001)(86362001)(36756003);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Jul 2023 21:10:15.1746
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Jul 2023 21:10:18.7158
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 09a0c027-147e-4ffa-d1b3-08db8ee5df9c
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0aa4579a-ec9f-441d-c6e8-08db8ee5e1b6
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	DM6NAM11FT115.eop-nam11.prod.protection.outlook.com
+	DM6NAM11FT065.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4122
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4455
 
-Add a new pair of ioctls to allow user space to set and unset its iommu-
-specific device data at the iommu that a passthrough device is behind.
-
-On platforms with SMMUv3, this new uAPIs will be used to forward a user
-space virtual Stream ID of a passthrough device to link to its physical
-Stream ID and log into a lookup table, in order for the host kernel to
-later run sanity on ATC invalidation requests from the user space, with
-ATC_INV commands that have SID fields (virtual Stream IDs).
+Add a new IOMMU_TEST_OP_DEV_CHECK_DATA to verify whether the dev_data
+is properly set/unset by the IOMMU_SET/UNSET_DEV_DATA.
 
 Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
 ---
- drivers/iommu/iommufd/device.c          |  2 +
- drivers/iommu/iommufd/iommufd_private.h |  1 +
- drivers/iommu/iommufd/main.c            | 85 +++++++++++++++++++++++++
- include/uapi/linux/iommufd.h            | 32 ++++++++++
- 4 files changed, 120 insertions(+)
+ tools/testing/selftests/iommu/iommufd.c       | 22 +++++++
+ tools/testing/selftests/iommu/iommufd_utils.h | 59 +++++++++++++++++++
+ 2 files changed, 81 insertions(+)
 
-diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
-index 7f238c583b61..37a234371645 100644
---- a/drivers/iommu/iommufd/device.c
-+++ b/drivers/iommu/iommufd/device.c
-@@ -136,6 +136,8 @@ void iommufd_device_destroy(struct iommufd_object *obj)
- 	struct iommufd_device *idev =
- 		container_of(obj, struct iommufd_device, obj);
- 
-+	if (idev->has_user_data)
-+		dev_iommu_ops(idev->dev)->unset_dev_user_data(idev->dev);
- 	iommu_device_release_dma_owner(idev->dev);
- 	iommufd_put_group(idev->igroup);
- 	if (!iommufd_selftest_is_mock_dev(idev->dev))
-diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
-index 9ae6edea697f..b8abf664d3f8 100644
---- a/drivers/iommu/iommufd/iommufd_private.h
-+++ b/drivers/iommu/iommufd/iommufd_private.h
-@@ -313,6 +313,7 @@ struct iommufd_device {
- 	/* always the physical device */
- 	struct device *dev;
- 	bool enforce_cache_coherency;
-+	bool has_user_data;
- };
- 
- static inline struct iommufd_device *
-diff --git a/drivers/iommu/iommufd/main.c b/drivers/iommu/iommufd/main.c
-index 255e8a3c5b0e..d49837397dfa 100644
---- a/drivers/iommu/iommufd/main.c
-+++ b/drivers/iommu/iommufd/main.c
-@@ -387,6 +387,85 @@ static int iommufd_option(struct iommufd_ucmd *ucmd)
- 	return 0;
+diff --git a/tools/testing/selftests/iommu/iommufd.c b/tools/testing/selftests/iommu/iommufd.c
+index bf0082d88a38..b437b890e4f5 100644
+--- a/tools/testing/selftests/iommu/iommufd.c
++++ b/tools/testing/selftests/iommu/iommufd.c
+@@ -123,6 +123,8 @@ TEST_F(iommufd, cmd_length)
+ 	TEST_LENGTH(iommu_ioas_copy, IOMMU_IOAS_COPY);
+ 	TEST_LENGTH(iommu_ioas_unmap, IOMMU_IOAS_UNMAP);
+ 	TEST_LENGTH(iommu_option, IOMMU_OPTION);
++	TEST_LENGTH(iommu_set_dev_data, IOMMU_SET_DEV_DATA);
++	TEST_LENGTH(iommu_unset_dev_data, IOMMU_UNSET_DEV_DATA);
+ 	TEST_LENGTH(iommu_vfio_ioas, IOMMU_VFIO_IOAS);
+ #undef TEST_LENGTH
+ }
+@@ -1517,6 +1519,26 @@ TEST_F(iommufd_mock_domain, alloc_hwpt)
+ 	}
  }
  
-+static int iommufd_set_dev_data(struct iommufd_ucmd *ucmd)
++TEST_F(iommufd_mock_domain, set_dev_data)
 +{
-+	struct iommu_set_dev_data *cmd = ucmd->cmd;
-+	struct iommufd_device *idev;
-+	const struct iommu_ops *ops;
-+	void *data = NULL;
-+	int rc;
++	struct iommu_test_device_data dev_data = {
++		.val = IOMMU_DEVICE_DATA_SELFTEST,
++	};
++	int i;
 +
-+	if (!cmd->data_uptr || !cmd->data_len)
-+		return -EINVAL;
-+
-+	idev = iommufd_get_device(ucmd, cmd->dev_id);
-+	if (IS_ERR(idev))
-+		return PTR_ERR(idev);
-+
-+	mutex_lock(&idev->igroup->lock);
-+	if (idev->has_user_data) {
-+		rc = -EEXIST;
-+		goto out_unlock;
++	for (i = 0; i != variant->mock_domains; i++) {
++		test_err_set_dev_data(ENOENT, 0, &dev_data);
++		test_err_set_dev_data(EINVAL, self->idev_ids[i], NULL);
++		test_cmd_set_dev_data(self->idev_ids[i], &dev_data);
++		test_err_set_dev_data(EEXIST, self->idev_ids[i], &dev_data);
++		test_cmd_dev_check_data(self->idev_ids[i], dev_data.val);
++		test_err_unset_dev_data(ENOENT, 0);
++		test_cmd_unset_dev_data(self->idev_ids[i]);
++		test_err_unset_dev_data(ENOENT, self->idev_ids[i]);
++		test_cmd_dev_check_data(self->idev_ids[i], 0);
 +	}
-+
-+	ops = dev_iommu_ops(idev->dev);
-+	if (!ops->dev_user_data_len ||
-+	    !ops->set_dev_user_data ||
-+	    !ops->unset_dev_user_data) {
-+		rc = -EOPNOTSUPP;
-+		goto out_unlock;
-+	}
-+
-+	data = kzalloc(ops->dev_user_data_len, GFP_KERNEL);
-+	if (!data) {
-+		rc = -ENOMEM;
-+		goto out_unlock;
-+	}
-+
-+	if (copy_struct_from_user(data, ops->dev_user_data_len,
-+				  u64_to_user_ptr(cmd->data_uptr),
-+				  cmd->data_len)) {
-+		rc = -EFAULT;
-+		goto out_free_data;
-+	}
-+
-+	rc = ops->set_dev_user_data(idev->dev, data);
-+	if (rc)
-+		goto out_free_data;
-+
-+	idev->has_user_data = true;
-+out_free_data:
-+	kfree(data);
-+out_unlock:
-+	mutex_unlock(&idev->igroup->lock);
-+	iommufd_put_object(&idev->obj);
-+	return rc;
 +}
 +
-+static int iommufd_unset_dev_data(struct iommufd_ucmd *ucmd)
-+{
-+	struct iommu_unset_dev_data *cmd = ucmd->cmd;
-+	struct iommufd_device *idev;
-+	int rc = 0;
-+
-+	idev = iommufd_get_device(ucmd, cmd->dev_id);
-+	if (IS_ERR(idev))
-+		return PTR_ERR(idev);
-+
-+	mutex_lock(&idev->igroup->lock);
-+	if (!idev->has_user_data) {
-+		rc = -ENOENT;
-+		goto out_unlock;
-+	}
-+
-+	dev_iommu_ops(idev->dev)->unset_dev_user_data(idev->dev);
-+	idev->has_user_data = false;
-+out_unlock:
-+	mutex_unlock(&idev->igroup->lock);
-+	iommufd_put_object(&idev->obj);
-+	return rc;
-+}
-+
- union ucmd_buffer {
- 	struct iommu_destroy destroy;
- 	struct iommu_hw_info info;
-@@ -400,6 +479,8 @@ union ucmd_buffer {
- 	struct iommu_ioas_unmap unmap;
- 	struct iommu_option option;
- 	struct iommu_resv_iova_ranges resv_ranges;
-+	struct iommu_set_dev_data set_dev_data;
-+	struct iommu_unset_dev_data unset_dev_data;
- 	struct iommu_vfio_ioas vfio_ioas;
- #ifdef CONFIG_IOMMUFD_TEST
- 	struct iommu_test_cmd test;
-@@ -446,6 +527,10 @@ static const struct iommufd_ioctl_op iommufd_ioctl_ops[] = {
- 		 val64),
- 	IOCTL_OP(IOMMU_RESV_IOVA_RANGES, iommufd_resv_iova_ranges,
- 		 struct iommu_resv_iova_ranges, resv_iovas),
-+	IOCTL_OP(IOMMU_SET_DEV_DATA, iommufd_set_dev_data,
-+		 struct iommu_set_dev_data, data_len),
-+	IOCTL_OP(IOMMU_UNSET_DEV_DATA, iommufd_unset_dev_data,
-+		 struct iommu_unset_dev_data, dev_id),
- 	IOCTL_OP(IOMMU_VFIO_IOAS, iommufd_vfio_ioas, struct iommu_vfio_ioas,
- 		 __reserved),
- #ifdef CONFIG_IOMMUFD_TEST
-diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
-index 034da283cd3a..ede822e5acbb 100644
---- a/include/uapi/linux/iommufd.h
-+++ b/include/uapi/linux/iommufd.h
-@@ -49,6 +49,8 @@ enum {
- 	IOMMUFD_CMD_GET_HW_INFO,
- 	IOMMUFD_CMD_RESV_IOVA_RANGES,
- 	IOMMUFD_CMD_HWPT_INVALIDATE,
-+	IOMMUFD_CMD_SET_DEV_DATA,
-+	IOMMUFD_CMD_UNSET_DEV_DATA,
- };
+ /* VFIO compatibility IOCTLs */
  
- /**
-@@ -508,4 +510,34 @@ struct iommu_hwpt_invalidate {
- 	__aligned_u64 data_uptr;
- };
- #define IOMMU_HWPT_INVALIDATE _IO(IOMMUFD_TYPE, IOMMUFD_CMD_HWPT_INVALIDATE)
+ TEST_F(iommufd, simple_ioctls)
+diff --git a/tools/testing/selftests/iommu/iommufd_utils.h b/tools/testing/selftests/iommu/iommufd_utils.h
+index 9b3e5f36c4a3..eb756fffbc89 100644
+--- a/tools/testing/selftests/iommu/iommufd_utils.h
++++ b/tools/testing/selftests/iommu/iommufd_utils.h
+@@ -444,3 +444,62 @@ static int _test_cmd_get_hw_info(int fd, __u32 device_id,
+ 	EXPECT_ERRNO(_errno,                                    \
+ 		     _test_cmd_get_hw_info(self->fd, device_id, \
+ 						  data_len, data))
 +
-+/**
-+ * struct iommu_set_dev_data - ioctl(IOMMU_SET_DEV_DATA)
-+ * @size: sizeof(struct iommu_set_dev_data)
-+ * @dev_id: The device to set an iommu specific device data
-+ * @data_uptr: User pointer of the device user data
-+ * @data_len: Length of the device user data
-+ *
-+ * The device data must be unset using ioctl(IOMMU_UNSET_DEV_DATA), before
-+ * another ioctl(IOMMU_SET_DEV_DATA) call or before the device itself gets
-+ * unbind'd from the iommufd context.
-+ */
-+struct iommu_set_dev_data {
-+	__u32 size;
-+	__u32 dev_id;
-+	__aligned_u64 data_uptr;
-+	__u32 data_len;
-+};
-+#define IOMMU_SET_DEV_DATA _IO(IOMMUFD_TYPE, IOMMUFD_CMD_SET_DEV_DATA)
++#define test_cmd_dev_check_data(device_id, expected)                           \
++	({                                                                     \
++		struct iommu_test_cmd test_cmd = {                             \
++			.size = sizeof(test_cmd),                              \
++			.op = IOMMU_TEST_OP_DEV_CHECK_DATA,                    \
++			.id = device_id,                                       \
++			.check_dev_data = { .val = expected },                 \
++		};                                                             \
++		ASSERT_EQ(0,                                                   \
++			  ioctl(self->fd,                                      \
++				_IOMMU_TEST_CMD(IOMMU_TEST_OP_DEV_CHECK_DATA), \
++				&test_cmd));                                   \
++	})
 +
-+/**
-+ * struct iommu_unset_dev_data - ioctl(IOMMU_UNSET_DEV_DATA)
-+ * @size: sizeof(struct iommu_unset_dev_data)
-+ * @dev_id: The device to unset its device user data
-+ */
-+struct iommu_unset_dev_data {
-+	__u32 size;
-+	__u32 dev_id;
-+};
-+#define IOMMU_UNSET_DEV_DATA _IO(IOMMUFD_TYPE, IOMMUFD_CMD_UNSET_DEV_DATA)
- #endif
++static int _test_cmd_set_dev_data(int fd, __u32 device_id,
++				  struct iommu_test_device_data *dev_data)
++{
++	struct iommu_set_dev_data cmd = {
++		.size = sizeof(cmd),
++		.dev_id = device_id,
++		.data_uptr = (uint64_t)dev_data,
++		.data_len = sizeof(*dev_data),
++	};
++	int ret;
++
++	ret = ioctl(fd, IOMMU_SET_DEV_DATA, &cmd);
++	if (ret)
++		return ret;
++	return 0;
++}
++
++#define test_cmd_set_dev_data(device_id, dev_data) \
++	ASSERT_EQ(0, _test_cmd_set_dev_data(self->fd, device_id, dev_data))
++
++#define test_err_set_dev_data(_errno, device_id, dev_data) \
++	EXPECT_ERRNO(_errno,                               \
++		     _test_cmd_set_dev_data(self->fd, device_id, dev_data))
++
++static int _test_cmd_unset_dev_data(int fd, __u32 device_id)
++{
++	struct iommu_unset_dev_data cmd = {
++		.size = sizeof(cmd),
++		.dev_id = device_id,
++	};
++	int ret;
++
++	ret = ioctl(fd, IOMMU_UNSET_DEV_DATA, &cmd);
++	if (ret)
++		return ret;
++	return 0;
++}
++
++#define test_cmd_unset_dev_data(device_id) \
++	ASSERT_EQ(0, _test_cmd_unset_dev_data(self->fd, device_id))
++
++#define test_err_unset_dev_data(_errno, device_id) \
++	EXPECT_ERRNO(_errno,                       \
++		     _test_cmd_unset_dev_data(self->fd, device_id))
 -- 
 2.41.0
 
