@@ -1,216 +1,219 @@
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2076.outbound.protection.outlook.com [40.107.94.76])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 883101C9E4
-	for <iommu@lists.linux.dev>; Thu, 27 Jul 2023 21:10:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0EE5827132
+	for <iommu@lists.linux.dev>; Thu, 27 Jul 2023 21:38:08 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hju7zAfzntqKqJyObzsJOZahojfNvUh6tK03CugQ/Flvha39RtF1ikXjWBCc4HEiKH9utrk9rEBdy+KvYtFEITMrgqLhx2KJKRbI053Xsk06+IkRbHkM2RYfJmkAHx2WI4lW6QuFGbKGzFIH8w1qN3DnM5763z/29vsJJWs9UvnjIhFvlG/l1sV59OrZ0CLtu6scbcXOJjZPWB36QbOBugThNV+QvEy4eWDT+gOVEerNjMJncObP2M3+dzniJDcARmcsCG8igOwNkoeKfunqLIBVz0+Ofv21L9cs1xu/CD/nNwveJrsEtGG+BqPDMf1ysodzYQZcGEmoqaI3l2pLvQ==
+ b=kYNczqEBqy3fqUzczq0h3lDuqKskiizBV1bwQMCZMSUFSjcXfxeclKKFV7HlThCyS7zs+NTk9IXDrxs2+auDTOYh/w9SYHd+fO8vgqp9wbdqDplknuxo9+SoYQTey/n+jx7VHZ+6G7N9f295V3dDFpf3HA1a9tvqBQHwhS30xsYLd7RAhXC90eRXEA3Wj0/a17dEXSP7Ln+/ga+1M+8A4upjfM3xKWg0lZMuPFmLLfb7fTGqdhocFMUdVxNcLEKuYFmm/F8aiNn2EX+qoRf1xvg+q7glLRyS1QlfBUyBnM7pPYy+YDlrEssCvIjOrEmUM9hkl7Gi9N6YDqfY/nLwTA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=vxHpZOXrXPISX7kfANEyB4/sA9KUi6B6vgPuNZZqFdI=;
- b=flyu+3xqtJ44xyXFDRTdwmyCyZ4cQa3OWmbzbDNRTeb0+Qj/kOY3q9t0cWqs2djSwdaAId119WIQWApbZh41oBCiC/LA2HlDSbuF2D3UOBQ4tYE3qjNM4duxdiYY4S1kVVj9tzVgjdqWFZY/pqFPZBMpwyOgl49tbHP55oUVDLZTXw/s/AXATs+ZK3IuAa4ziOgMvZTvtTepoS9vgQFkufCvtRsQYo31RUQLtnD7pdpZCr0RlhlVovVtmiwnib9PiE3BcKTjYqNjm5eC3mCz8bHqev5eC6kIfPCXDD3SZJGHxW+dy2Rtv3IKAbz66oHMUJj+pT9Tu8LqR0e4gU2tlg==
+ bh=yZRJYRfSVCc4YMTDpDe4bt1zlIHu/66UzjINZokc3zU=;
+ b=S24P/XIuKyWZ8XnalxLx4GgPA9RSqZTduQxFaUMEOWK0oFDjBl6WFPxLoM0nqpiAD45q5uPFHc6x/kzMDCQbdvVssGbQTCtEnrlLcXD0j2xJ22V2M/1rrfirpCXLvQJt+sPq59RTq3swHOTqi/YUEAJw6/ouU1hBSjbq7pr9BsaY2CUpEuMRkwo6XP0u8w7Zg/ew+P8daaR5TkVNreqKOmvu7Ldv7yggiis8L7UxLDxzlQWFxUSj0QJed9mMvb1d5njZ+mY2d0a9HrwzTd/7GhUtNsh28Ur3Ypl4zY8zML0Tuslarzx+XxuV6LVpwhw/ipuq4zZRp+xAXbmcxS+1JA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
+ 216.228.117.161) smtp.rcpttodomain=google.com smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
  dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vxHpZOXrXPISX7kfANEyB4/sA9KUi6B6vgPuNZZqFdI=;
- b=iU8XLqco5+BjywZe8+9woeUstWpcb1ZHclYzEvdZFCAh2bp86smU1K55p0/6jqrJ3v3hxLwzWNczGf8J6xCctju6QEDzzxEasCo0a2O7XGZZXGufnUcv5zTvG1vsj8ubtnwAp1LCnnzfg3lOaTSXTopB8FOqxOR2NmX1np0WoYBHTrAtkcbc0Rfe7FB+v8UEtMhZyZHuSY5o4++xAB6LUcyDNZZTr1GRo/9MydTVJRgdJo5vQpZzsgPg9onkYJCnJNyj80u/vugIwomSW8tE/fSUP6EDpANg7bKa24o1EWA1EcthyOq8ji4K1jepbQGGsuIWzj04t4npRg2VbUcWjg==
-Received: from DM6PR02CA0086.namprd02.prod.outlook.com (2603:10b6:5:1f4::27)
- by MN2PR12MB4455.namprd12.prod.outlook.com (2603:10b6:208:265::23) with
+ bh=yZRJYRfSVCc4YMTDpDe4bt1zlIHu/66UzjINZokc3zU=;
+ b=Hxn0N5LCWaZgGdfJRl7Z8hwgt0q2BOrhevS5npE/oAP0uVfJSEvwL3hcBFWhhCQYj09j/RN0qxhZisa4OK4hExxpDJ31rieA9dIUlMd/paNDR+ByxnDlPdZkf8v3TJpGERS4y7uzXY+nWwzlZ9JXpgDK+lIO0gXwBHyZqH4lAb526LtvlTLyei4MmH0fgm1H3QbxJ18FKI88RyG0lXLLvFA8iMy6UgN1/dEr86AGajGZi4Qj+RqnMkFJaceiGCM6jdsZir0A0IgmAh5Ov2baNOqCWxxK6QtPDE3UoZYKiRFr8w3Wl5rNWBt0YfaNdbTl8qU9CtD64P88KPy2EoxGrg==
+Received: from BN0PR04CA0088.namprd04.prod.outlook.com (2603:10b6:408:ea::33)
+ by SJ2PR12MB8719.namprd12.prod.outlook.com (2603:10b6:a03:543::7) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6588.31; Thu, 27 Jul
- 2023 21:10:19 +0000
-Received: from DM6NAM11FT065.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:1f4:cafe::40) by DM6PR02CA0086.outlook.office365.com
- (2603:10b6:5:1f4::27) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6609.29; Thu, 27 Jul
+ 2023 21:38:04 +0000
+Received: from BN8NAM11FT071.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:ea:cafe::7c) by BN0PR04CA0088.outlook.office365.com
+ (2603:10b6:408:ea::33) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6631.29 via Frontend
- Transport; Thu, 27 Jul 2023 21:10:19 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+ Transport; Thu, 27 Jul 2023 21:38:04 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- DM6NAM11FT065.mail.protection.outlook.com (10.13.172.109) with Microsoft SMTP
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ BN8NAM11FT071.mail.protection.outlook.com (10.13.177.92) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6631.29 via Frontend Transport; Thu, 27 Jul 2023 21:10:18 +0000
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ 15.20.6631.29 via Frontend Transport; Thu, 27 Jul 2023 21:38:04 +0000
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Thu, 27 Jul 2023
- 14:10:04 -0700
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail203.nvidia.com
- (10.129.68.9) with Microsoft SMTP Server (version=TLS1_2,
+ 14:37:47 -0700
+Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail202.nvidia.com
+ (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Thu, 27 Jul
- 2023 14:10:04 -0700
-Received: from Asurada-Nvidia.nvidia.com (10.127.8.13) by mail.nvidia.com
- (10.129.68.6) with Microsoft SMTP Server id 15.2.986.37 via Frontend
- Transport; Thu, 27 Jul 2023 14:10:03 -0700
+ 2023 14:37:47 -0700
+Received: from Asurada-Nvidia (10.127.8.13) by mail.nvidia.com (10.129.68.6)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37 via Frontend
+ Transport; Thu, 27 Jul 2023 14:37:46 -0700
+Date: Thu, 27 Jul 2023 14:37:45 -0700
 From: Nicolin Chen <nicolinc@nvidia.com>
-To: <jgg@nvidia.com>, <kevin.tian@intel.com>
-CC: <robin.murphy@arm.com>, <eric.auger@redhat.com>, <yi.l.liu@intel.com>,
-	<baolu.lu@linux.intel.com>, <will@kernel.org>, <joro@8bytes.org>,
-	<shameerali.kolothum.thodi@huawei.com>, <jean-philippe@linaro.org>,
-	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>
-Subject: [PATCH v5 4/4] iommufd/selftest: Add coverage for IOMMU_SET/UNSET_DEV_DATA
-Date: Thu, 27 Jul 2023 14:09:43 -0700
-Message-ID: <5b192832f6a8a02e24ba0712b1f9ab20735fd583.1690487690.git.nicolinc@nvidia.com>
-X-Mailer: git-send-email 2.41.0
-In-Reply-To: <cover.1690487690.git.nicolinc@nvidia.com>
-References: <cover.1690487690.git.nicolinc@nvidia.com>
+To: Michael Shavit <mshavit@google.com>
+CC: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, "Joerg
+ Roedel" <joro@8bytes.org>, <jean-philippe@linaro.org>, <jgg@nvidia.com>,
+	<baolu.lu@linux.intel.com>, <linux-arm-kernel@lists.infradead.org>,
+	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v1 6/7] iommu/arm-smmu-v3: Refactor write_ctx_desc
+Message-ID: <ZMLjqfp6M6n7HAxl@Asurada-Nvidia>
+References: <20230727182647.4106140-1-mshavit@google.com>
+ <20230727182647.4106140-7-mshavit@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20230727182647.4106140-7-mshavit@google.com>
 X-NV-OnPremToCloud: ExternallySecured
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT065:EE_|MN2PR12MB4455:EE_
-X-MS-Office365-Filtering-Correlation-Id: 0aa4579a-ec9f-441d-c6e8-08db8ee5e1b6
+X-MS-TrafficTypeDiagnostic: BN8NAM11FT071:EE_|SJ2PR12MB8719:EE_
+X-MS-Office365-Filtering-Correlation-Id: c0033c83-0030-4e15-a47f-08db8ee9c287
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	+fNsa/t6YnpsWPRb3H9BRXbViLqL6NwuF7ZPdE7lXPYnqBNOwbS1OxvGbbh5wAGPanKO62jUJUgqk6TLwOzHS9HNltyFiTtYkHQndg9LDh75x5RzBKuChLGn48D4qoWjewkQm4XwWVftNW2qCEjufETziTWyaTAlo7CUd/eGtR30uuqMeepO9A+qHKliyTKyqp50nMGY1Nn0Z5xtgkLvN/M7rVJSRziCnl77YQ/e51MBDv850pxrwqO4ntQ+WvLgf5QqC9u3EZCPIjTH/7bD0hohlBN+GFa9udeFXoSMF2TRyPx9RiX49LLs/hXO4KL60gNaetEv3zZDVJkVZR6T2Vkz+tifuUZCX9NIkwVipamkfV9EY96ElYLtTIM9ID1kKag1T3utGLWQypf1l++Mo34epiFpeHSHcd+upMH7wTPRB/9sgfEeI501vOfK0B0LgjEOeatFQJfsyeIZb+5bfvJmNALwk4JtNwD6KradSHTWYDRkTXVQvKZn4fUS0VkdKGYf3Ta4OAKx+LcHpkEFlxm1l5fskJFkSmSx6Izo29Tqsq1mDvIbuRu7+BuaK85aUSifXhBj2HdJEiy/73ZA5yplPvtkZAwWwEqFzdOhcGJV3WsmUmvV4b9mSufy8tEVdLxv8ULtiPj3SJfSnSak6Uh6hr0o/gWjb6p4iKuQVW9yBtjZM7r5PpqTFKS13AwxjHXoU8A72cu67DgArlM/I7d2peLG9476Yt5wOVRDTw0yXmyzoVmSV2eNPcclkG/Z
+	9oXs4AQGqeIg5CbxqaHSbmVZcKt8ugbk/Zeh6gqyT1yGY4oiBdsmLH9G0ce4LxKYT6sKCa4c4mrGbmzbgWiaMUg9Gb4+hC9dwEjnuR4CPwHp+J/wxuI6ID5dewbeZcLocTFuct2xEAOpjsTRG7kBCFoOe0xWEOuoSS6YNq18MCFqw7543f3n81yF9bd9jf3pcMvavZDl6mpgmn+o2BDHVleY6OVibVSlWq5QuO3aR/pa/kzrAHyc1PzAWaC2rPqAwF8NR3kIRMVz7XFiKI3CC021+4zm2M0+C7rgAbtLMDNcKl8C3w3+8vJ1Np3rbm+tNVFkG/xBb9vqDx+RB4cR/hF20Eg6/foZF5MbZ2HKVWC5uklGXHIb8PGY7Wr793zwM73rko9QP6e7+J67E6VE58vQrHB9BlYlsVaSjQYsfXbkcR5O4ZQnKeT2ZIrRkdSDtjFTnjAqCoZ5v1/ucioMOmPqEIESeNqdOexzFkalNHD3SkRS+mcLuxDvGiRTzviYOMqyo7TmuweSazPmw55gO/mWGhRd87+1UPRdThlY2xwaONNhYS57LyFoQhGhbo8JWOxPw4mGETV6XTo8RTEupdC1BaiHIcseipCFWsuZRgf/76QIQBg/cc2uNhEC+xbvxPzreW42p/dxZaD9SuNPqk0Eq5Je5Mh3QcU2arTpW9lgWRCCTjVYPIbg4Xd0U7hSIK8E+2QeTY3Vo2O2EjOhvQ3ZmOQrqmdk/NxJHIx8bBq7g8rKtc4eSKWyPO5ryJl7wphWCt1OR6hnp40/SiGlDg==
 X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(376002)(346002)(396003)(136003)(39860400002)(451199021)(82310400008)(40470700004)(46966006)(36840700001)(6666004)(7696005)(356005)(82740400003)(83380400001)(478600001)(47076005)(26005)(70586007)(7636003)(4326008)(54906003)(70206006)(110136005)(336012)(2616005)(186003)(36860700001)(426003)(5660300002)(7416002)(8936002)(8676002)(40460700003)(2906002)(41300700001)(316002)(40480700001)(86362001)(36756003);DIR:OUT;SFP:1101;
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(136003)(376002)(39860400002)(396003)(346002)(82310400008)(451199021)(46966006)(36840700001)(40470700004)(5660300002)(33716001)(8676002)(316002)(8936002)(41300700001)(47076005)(2906002)(70206006)(70586007)(40460700003)(55016003)(36860700001)(40480700001)(4326008)(426003)(83380400001)(54906003)(9686003)(86362001)(6916009)(26005)(478600001)(356005)(186003)(82740400003)(336012)(7636003)(473944003);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Jul 2023 21:10:18.7158
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Jul 2023 21:38:04.3219
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0aa4579a-ec9f-441d-c6e8-08db8ee5e1b6
+X-MS-Exchange-CrossTenant-Network-Message-Id: c0033c83-0030-4e15-a47f-08db8ee9c287
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	DM6NAM11FT065.eop-nam11.prod.protection.outlook.com
+	BN8NAM11FT071.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4455
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ2PR12MB8719
 
-Add a new IOMMU_TEST_OP_DEV_CHECK_DATA to verify whether the dev_data
-is properly set/unset by the IOMMU_SET/UNSET_DEV_DATA.
+On Fri, Jul 28, 2023 at 02:26:22AM +0800, Michael Shavit wrote:
 
-Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
----
- tools/testing/selftests/iommu/iommufd.c       | 22 +++++++
- tools/testing/selftests/iommu/iommufd_utils.h | 59 +++++++++++++++++++
- 2 files changed, 81 insertions(+)
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+> index 968559d625c40..57073d278cd7e 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+> @@ -45,10 +45,12 @@ static struct arm_smmu_ctx_desc *
+>  arm_smmu_share_asid(struct mm_struct *mm, u16 asid)
+>  {
+>         int ret;
+> +       unsigned long flags;
+>         u32 new_asid;
+>         struct arm_smmu_ctx_desc *cd;
+>         struct arm_smmu_device *smmu;
+>         struct arm_smmu_domain *smmu_domain;
+> +       struct arm_smmu_master *master;
 
-diff --git a/tools/testing/selftests/iommu/iommufd.c b/tools/testing/selftests/iommu/iommufd.c
-index bf0082d88a38..b437b890e4f5 100644
---- a/tools/testing/selftests/iommu/iommufd.c
-+++ b/tools/testing/selftests/iommu/iommufd.c
-@@ -123,6 +123,8 @@ TEST_F(iommufd, cmd_length)
- 	TEST_LENGTH(iommu_ioas_copy, IOMMU_IOAS_COPY);
- 	TEST_LENGTH(iommu_ioas_unmap, IOMMU_IOAS_UNMAP);
- 	TEST_LENGTH(iommu_option, IOMMU_OPTION);
-+	TEST_LENGTH(iommu_set_dev_data, IOMMU_SET_DEV_DATA);
-+	TEST_LENGTH(iommu_unset_dev_data, IOMMU_UNSET_DEV_DATA);
- 	TEST_LENGTH(iommu_vfio_ioas, IOMMU_VFIO_IOAS);
- #undef TEST_LENGTH
- }
-@@ -1517,6 +1519,26 @@ TEST_F(iommufd_mock_domain, alloc_hwpt)
- 	}
- }
- 
-+TEST_F(iommufd_mock_domain, set_dev_data)
-+{
-+	struct iommu_test_device_data dev_data = {
-+		.val = IOMMU_DEVICE_DATA_SELFTEST,
-+	};
-+	int i;
-+
-+	for (i = 0; i != variant->mock_domains; i++) {
-+		test_err_set_dev_data(ENOENT, 0, &dev_data);
-+		test_err_set_dev_data(EINVAL, self->idev_ids[i], NULL);
-+		test_cmd_set_dev_data(self->idev_ids[i], &dev_data);
-+		test_err_set_dev_data(EEXIST, self->idev_ids[i], &dev_data);
-+		test_cmd_dev_check_data(self->idev_ids[i], dev_data.val);
-+		test_err_unset_dev_data(ENOENT, 0);
-+		test_cmd_unset_dev_data(self->idev_ids[i]);
-+		test_err_unset_dev_data(ENOENT, self->idev_ids[i]);
-+		test_cmd_dev_check_data(self->idev_ids[i], 0);
-+	}
-+}
-+
- /* VFIO compatibility IOCTLs */
- 
- TEST_F(iommufd, simple_ioctls)
-diff --git a/tools/testing/selftests/iommu/iommufd_utils.h b/tools/testing/selftests/iommu/iommufd_utils.h
-index 9b3e5f36c4a3..eb756fffbc89 100644
---- a/tools/testing/selftests/iommu/iommufd_utils.h
-+++ b/tools/testing/selftests/iommu/iommufd_utils.h
-@@ -444,3 +444,62 @@ static int _test_cmd_get_hw_info(int fd, __u32 device_id,
- 	EXPECT_ERRNO(_errno,                                    \
- 		     _test_cmd_get_hw_info(self->fd, device_id, \
- 						  data_len, data))
-+
-+#define test_cmd_dev_check_data(device_id, expected)                           \
-+	({                                                                     \
-+		struct iommu_test_cmd test_cmd = {                             \
-+			.size = sizeof(test_cmd),                              \
-+			.op = IOMMU_TEST_OP_DEV_CHECK_DATA,                    \
-+			.id = device_id,                                       \
-+			.check_dev_data = { .val = expected },                 \
-+		};                                                             \
-+		ASSERT_EQ(0,                                                   \
-+			  ioctl(self->fd,                                      \
-+				_IOMMU_TEST_CMD(IOMMU_TEST_OP_DEV_CHECK_DATA), \
-+				&test_cmd));                                   \
-+	})
-+
-+static int _test_cmd_set_dev_data(int fd, __u32 device_id,
-+				  struct iommu_test_device_data *dev_data)
-+{
-+	struct iommu_set_dev_data cmd = {
-+		.size = sizeof(cmd),
-+		.dev_id = device_id,
-+		.data_uptr = (uint64_t)dev_data,
-+		.data_len = sizeof(*dev_data),
-+	};
-+	int ret;
-+
-+	ret = ioctl(fd, IOMMU_SET_DEV_DATA, &cmd);
-+	if (ret)
-+		return ret;
-+	return 0;
-+}
-+
-+#define test_cmd_set_dev_data(device_id, dev_data) \
-+	ASSERT_EQ(0, _test_cmd_set_dev_data(self->fd, device_id, dev_data))
-+
-+#define test_err_set_dev_data(_errno, device_id, dev_data) \
-+	EXPECT_ERRNO(_errno,                               \
-+		     _test_cmd_set_dev_data(self->fd, device_id, dev_data))
-+
-+static int _test_cmd_unset_dev_data(int fd, __u32 device_id)
-+{
-+	struct iommu_unset_dev_data cmd = {
-+		.size = sizeof(cmd),
-+		.dev_id = device_id,
-+	};
-+	int ret;
-+
-+	ret = ioctl(fd, IOMMU_UNSET_DEV_DATA, &cmd);
-+	if (ret)
-+		return ret;
-+	return 0;
-+}
-+
-+#define test_cmd_unset_dev_data(device_id) \
-+	ASSERT_EQ(0, _test_cmd_unset_dev_data(self->fd, device_id))
-+
-+#define test_err_unset_dev_data(_errno, device_id) \
-+	EXPECT_ERRNO(_errno,                       \
-+		     _test_cmd_unset_dev_data(self->fd, device_id))
--- 
-2.41.0
+It seems that the coding style at these struct lines is listing
+from shorter to longer, like a Christmas tree? If so, we should
+place "master" before "smmu_domain".
 
+> @@ -80,7 +82,11 @@ arm_smmu_share_asid(struct mm_struct *mm, u16 asid)
+>          * be some overlap between use of both ASIDs, until we invalidate the
+>          * TLB.
+>          */
+> -       arm_smmu_write_ctx_desc(smmu_domain, 0, cd);
+> +       spin_lock_irqsave(&smmu_domain->devices_lock, flags);
+> +       list_for_each_entry(master, &smmu_domain->devices, domain_head) {
+> +               arm_smmu_write_ctx_desc(master, 0, cd);
+> +       }
+
++	list_for_each_entry(master, &smmu_domain->devices, domain_head)
++		arm_smmu_write_ctx_desc(master, 0, cd);
+
+> @@ -248,8 +260,10 @@ arm_smmu_mmu_notifier_get(struct arm_smmu_domain *smmu_domain,
+>                           struct mm_struct *mm)
+>  {
+>         int ret;
+> +       unsigned long flags;
+>         struct arm_smmu_ctx_desc *cd;
+>         struct arm_smmu_mmu_notifier *smmu_mn;
+> +       struct arm_smmu_master *master;
+
+For the coding style topic, similarly, "master" before "smmu_mn".
+
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index af7949b62327b..b211424a85fb2 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -971,14 +971,12 @@ void arm_smmu_tlb_inv_asid(struct arm_smmu_device *smmu, u16 asid)
+>         arm_smmu_cmdq_issue_cmd_with_sync(smmu, &cmd);
+>  }
+> 
+> -static void arm_smmu_sync_cd(struct arm_smmu_domain *smmu_domain,
+> +static void arm_smmu_sync_cd(struct arm_smmu_master *master,
+>                              int ssid, bool leaf)
+>  {
+>         size_t i;
+> -       unsigned long flags;
+> -       struct arm_smmu_master *master;
+>         struct arm_smmu_cmdq_batch cmds;
+> -       struct arm_smmu_device *smmu = smmu_domain->smmu;
+> +       struct arm_smmu_device *smmu;
+
+	struct arm_smmu_device *smmu = master->smmu;
+
+Then ...
+
+> @@ -987,19 +985,15 @@ static void arm_smmu_sync_cd(struct arm_smmu_domain *smmu_domain,
+>                 },
+>         };
+> 
+> -       if (!smmu_domain->cd_table.installed)
+> +       if (!master->domain->cd_table.installed)
+>                 return;
+> 
+> +       smmu = master->smmu;
+
+... no need of this line.
+
+> @@ -1029,14 +1023,12 @@ static void arm_smmu_write_cd_l1_desc(__le64 *dst,
+>         WRITE_ONCE(*dst, cpu_to_le64(val));
+>  }
+> 
+> -static __le64 *arm_smmu_get_cd_ptr(struct arm_smmu_domain *smmu_domain,
+> -                                  u32 ssid)
+> +static __le64 *arm_smmu_get_cd_ptr(struct arm_smmu_master *master, u32 ssid)
+>  {
+>         __le64 *l1ptr;
+>         unsigned int idx;
+>         struct arm_smmu_l1_ctx_desc *l1_desc;
+> -       struct arm_smmu_device *smmu = smmu_domain->smmu;
+
+	struct arm_smmu_device *smmu = master->smmu;
+
+Then ...
+
+> @@ -1044,19 +1036,19 @@ static __le64 *arm_smmu_get_cd_ptr(struct arm_smmu_domain *smmu_domain,
+>         idx = ssid >> CTXDESC_SPLIT;
+>         l1_desc = &cdcfg->l1_desc[idx];
+>         if (!l1_desc->l2ptr) {
+> -               if (arm_smmu_alloc_cd_leaf_table(smmu, l1_desc))
+> +               if (arm_smmu_alloc_cd_leaf_table(master->smmu, l1_desc))
+
+... no need to change this.
+
+> @@ -1101,11 +1094,11 @@ int arm_smmu_write_ctx_desc(struct arm_smmu_domain *smmu_domain, int ssid,
+>                 cdptr[3] = cpu_to_le64(cd->mair);
+> 
+>                 /*
+> -                * STE is live, and the SMMU might read dwords of this CD in any
+> -                * order. Ensure that it observes valid values before reading
+> -                * V=1.
+> +                * STE may be live, and the SMMU might read dwords of this CD
+> +                * in any order. Ensure that it observes valid values before
+> +                * reading V=1.
+
+This seems to be true only after the following patch? If so, we
+should move this part over there too.
+
+Thanks
+Nicolin
