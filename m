@@ -1,156 +1,146 @@
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1nam02on2067.outbound.protection.outlook.com [40.107.96.67])
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA30DBA40
-	for <iommu@lists.linux.dev>; Thu, 27 Jul 2023 20:57:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45EECEBE
+	for <iommu@lists.linux.dev>; Thu, 27 Jul 2023 21:10:11 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=F1uSGpBsjvLdFN6PKvmOjtqPsJXpXDmqWZTBsdM0Ex3XZqIFIW4MCY3r1gfmLMCy1eVShRAlt4Xpl4DvO0Gg01BH3EQQY4kP8HdSeI7obgoYeUFspvyS3j7IdpfEOM8NhbS16ORqRSI+Q5c1P4Nrih1kdph/NSwzI2UHD4Xb7J/sgeIkMl6DVZt/oI0A6w4S64Si/MNZhC6DJlTAhvXy296W9mltUrtKE2ZWMbbB8kaW1Osbj/T2CLCiALQRBWnNtWe2y/lnrd5LdO2LZqN5Rs++JhmQuBNOwcUrrx4GXtA1w74MjXly1+bbXPUoD6K5/nZ1iCco1K49eyCKeChjgg==
+ b=aPktB2Xbk53KJ/0QScfStOI2DhRVPJWC+DAylmg5uYicofbTBQuLOOthvQR4XtsSJJv2Lflgivr2hA6uuqkZIwKxRA2LVFeSyZDubZTN4NpJZWk6ayv6Q6jFEJj1Eeib4S87Ss2Yf8QhY2pXMNtnqXXZ2Rvi/3AqR0N6eRuZ3SF8M+pzlYFUuDpUDrxu/H7BGHJI85iLhECvnv5caj7ffHcGVY0YAG/Xj6XXRrWbz3JULgH4T+WTwc+kNLE+56VtlKvFwP26oKLJhC8XxE++cs1ypKceAGMJMEBfBj38sDMyXeabApaniMFSxn84xV5i5Mu1/OlcyzGXw+dYbJCcpA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=a5VyKL0m+t2msTl+MBV2YxDcqbGQzDF1w7xDwCU4sUo=;
- b=ROlqMmWHcE8hPi48cKDxYZ7W0lJidPBrxBX/lERrmqp3cTLCSdpzzYS/zuBTSYZeeoEA5siadPyyKAgag70v6e8kPJwcZD+g6wsT9hmuIF72Gc0Ju+k2PnNsXoDazLCcRx+ruZu86Ld3rTxmZ2XPqeNNy2XhPnjXyxjHWuLOLhxlTeW5alJEYivqzL0rF3l5Ctr4wYNPRxXLmoP4TsKOzK1YUKd2igQHddOJ3LFlhq11t2+YSc+Vxqp3vIAO1d5whrLCNNIzAe80MPHNN4PT5CFqPSpSEo6SVJVcd+AJDMzdxqkQIcTMjzV/mBJzpWf8BADIlrAhaelzif5LTER+8Q==
+ bh=Ri7L3Hw/A5KeDrdH3l0dkLhCMQTNk23gWQFUjAXFL1o=;
+ b=mCHNVkPO9OMIDoZ6ZCKEIILknNbL9B8hyZPxupKun194je1tKKiTJhbYyjBM8rISvt12akhaPnfFNGyDQVVh3IDh0MbyFudN1vD7XZnuzngGdPBeaV0QnOn9XOJppHCX7YKCIBe+7lo9aNtNdUI4cEPkk6C/yNJZEYCiSVwcUfKWhikIzecSfTc+gMUhnQ530ZFiAQDgAwmFELXNEd1f8z9DUxgHfnGk0pBc9bZZ6M+nz/IJ8v+Rad6YWuh7AlxfJs5GmDC/f76tQ2J0zHKhO6LuaNIU1MYst+4NFRM94mvE6zeqkuNMEnQq+Ck4bA9M7EC8ig7HBzVzgcxtLb592A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.232) smtp.rcpttodomain=google.com smtp.mailfrom=nvidia.com;
+ 216.228.117.161) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
  dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=a5VyKL0m+t2msTl+MBV2YxDcqbGQzDF1w7xDwCU4sUo=;
- b=JGtqvM1siG4tFUfIDaQXylN5XRpBNTI3j7GZ4dXnir1+Jhe/C6fj8aQfdivVl1AWygc4trRKruGfpGf9OdsJzYfl20D/zc1QoMCEuOcI9wEZJHThWO39bu4BM8YNDtZy5dX4vw7n6LPDPkCPkvMDFShlkE21wiLqxYWpdswsCKuq3uJFh/J82yIKzfuItekfEgTrtByJpcPRcsepp0WX6fX3JwblQPCz7N37uK4g8pjVWbL9GyS64Hs0qotX3w+Di5kjR2sXkC5CNTDVQO0kQd4P8w/JXQgKcsCsq9RqUAWDUE99S04VGAbrYIb3paYmtcY5h1afwHw2hd6d8eTamw==
-Received: from DS7PR05CA0065.namprd05.prod.outlook.com (2603:10b6:8:57::10) by
- MN2PR12MB4469.namprd12.prod.outlook.com (2603:10b6:208:268::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6631.29; Thu, 27 Jul
- 2023 20:57:41 +0000
-Received: from DM6NAM11FT092.eop-nam11.prod.protection.outlook.com
- (2603:10b6:8:57:cafe::c4) by DS7PR05CA0065.outlook.office365.com
- (2603:10b6:8:57::10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6631.25 via Frontend
- Transport; Thu, 27 Jul 2023 20:57:41 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
+ bh=Ri7L3Hw/A5KeDrdH3l0dkLhCMQTNk23gWQFUjAXFL1o=;
+ b=X7gLSfffnCuYovbJNRoEpTIzdA86eJj90RHZH28dotUsHSHCgkS0OxHmaCAjZb3u1UJTPVZy+6n5F3qhuvFhOXJL8w1G9GkTpXxts1WUzWtpVpCXRJsI8XlFHLZqyRCKTsjvFLmqY3r0/4NjIzU0GKwFF5Bv9rDYEoOKzFGsBKyRPk6s2Nwwov0WiEUwLrAbKwQPHxk7lNmq1XTpgrdZjEqGWIStIWS2Qk3FzL12yI4Ad+CvPYBWMwMNtwYlrZfUcdzC690yiUxJ8r9eYoiPNIj290C9YeQNDAzQRnHBSdIrKp2uvijp7o1dcWSCWLuRCx91aqIpvGnl+w3i0ZQ5ag==
+Received: from DM6PR03CA0076.namprd03.prod.outlook.com (2603:10b6:5:333::9) by
+ DM6PR12MB4436.namprd12.prod.outlook.com (2603:10b6:5:2a3::20) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6631.29; Thu, 27 Jul 2023 21:10:09 +0000
+Received: from DM6NAM11FT010.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:333:cafe::c2) by DM6PR03CA0076.outlook.office365.com
+ (2603:10b6:5:333::9) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6631.29 via Frontend
+ Transport; Thu, 27 Jul 2023 21:10:09 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.232) by
- DM6NAM11FT092.mail.protection.outlook.com (10.13.173.44) with Microsoft SMTP
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ DM6NAM11FT010.mail.protection.outlook.com (10.13.172.222) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6631.29 via Frontend Transport; Thu, 27 Jul 2023 20:57:40 +0000
-Received: from drhqmail202.nvidia.com (10.126.190.181) by mail.nvidia.com
- (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
+ 15.20.6631.29 via Frontend Transport; Thu, 27 Jul 2023 21:10:09 +0000
+Received: from rnnvmail203.nvidia.com (10.129.68.9) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Thu, 27 Jul 2023
- 13:57:25 -0700
-Received: from drhqmail202.nvidia.com (10.126.190.181) by
- drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.37; Thu, 27 Jul 2023 13:57:25 -0700
-Received: from Asurada-Nvidia (10.127.8.13) by mail.nvidia.com
- (10.126.190.181) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37 via Frontend
- Transport; Thu, 27 Jul 2023 13:57:24 -0700
-Date: Thu, 27 Jul 2023 13:57:23 -0700
+ 14:10:01 -0700
+Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail203.nvidia.com
+ (10.129.68.9) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Thu, 27 Jul
+ 2023 14:10:00 -0700
+Received: from Asurada-Nvidia.nvidia.com (10.127.8.13) by mail.nvidia.com
+ (10.129.68.6) with Microsoft SMTP Server id 15.2.986.37 via Frontend
+ Transport; Thu, 27 Jul 2023 14:10:00 -0700
 From: Nicolin Chen <nicolinc@nvidia.com>
-To: Michael Shavit <mshavit@google.com>
-CC: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, "Joerg
- Roedel" <joro@8bytes.org>, <jean-philippe@linaro.org>, <jgg@nvidia.com>,
-	<baolu.lu@linux.intel.com>, <linux-arm-kernel@lists.infradead.org>,
-	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v1 2/7] iommu/arm-smmu-v3: Replace s1_cfg with
- ctx_desc_cfg
-Message-ID: <ZMLaM9QjHDu11iKf@Asurada-Nvidia>
-References: <20230727182647.4106140-1-mshavit@google.com>
- <20230727182647.4106140-3-mshavit@google.com>
+To: <jgg@nvidia.com>, <kevin.tian@intel.com>
+CC: <robin.murphy@arm.com>, <eric.auger@redhat.com>, <yi.l.liu@intel.com>,
+	<baolu.lu@linux.intel.com>, <will@kernel.org>, <joro@8bytes.org>,
+	<shameerali.kolothum.thodi@huawei.com>, <jean-philippe@linaro.org>,
+	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>
+Subject: [PATCH v5 1/4] iommu: Add set/unset_dev_user_data ops
+Date: Thu, 27 Jul 2023 14:09:40 -0700
+Message-ID: <6772ccfb71cd1eb3d402d82836ae7e98a853a793.1690487690.git.nicolinc@nvidia.com>
+X-Mailer: git-send-email 2.41.0
+In-Reply-To: <cover.1690487690.git.nicolinc@nvidia.com>
+References: <cover.1690487690.git.nicolinc@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20230727182647.4106140-3-mshavit@google.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 X-NV-OnPremToCloud: ExternallySecured
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT092:EE_|MN2PR12MB4469:EE_
-X-MS-Office365-Filtering-Correlation-Id: e112b377-cd3f-4f7a-cbcc-08db8ee41e10
+X-MS-TrafficTypeDiagnostic: DM6NAM11FT010:EE_|DM6PR12MB4436:EE_
+X-MS-Office365-Filtering-Correlation-Id: 4aa2da08-4126-4f0f-8a98-08db8ee5dc0d
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	FAX+7MYRtWRJp3TkqzPjK+R7yb6SLr270kNO38bP58ut3Rq0uyFdSu+KtDzLfbixzKS0bEKHRa+yfioKEo6Z/0ALqU4jS/tJWSBmsCXPpORhHZlXo2Ep3RUm2+sGu2KxosymXytQe1tw0A5sfUFB98CzPX2mrFicZSxqQ/tFJx+AFZrMEe8N8y1n2L1ZF7wUNoZf6uyVrpqRoh+KyoWhAVDhuAwjFlLYpCDNqlkkITmNfklVoMqm9bMXBnLY9PmqdOU47o9lnvAhtFOoV+hPFYsyOMhpN2bTKJR0k/L2+89QYm9W9V3z+P/pZkQH1W2ECaTYwtR2PwRT+EUcDn48LyuH+H+3QvN0l3jqxKUlCyJfbYAI/f1wldizTTIFn6IhwspGEOrctk4D1EY1usRqF8zDh+AFz8rT5Xq/cTTqh6qouh79InUMDBNwtufphU7ZrMJzEcsfc0t5vFAtQwAsHh9zFJ7Pl5bwQlw9S/zfo4MJ7x6y7zCn6dLfqBIH4Zi+aq3tRM0oKsXVDvwSOwNkjnwgaVvZJ0CRL8CrStDmBaCRCrViGjHAANZ32Ge8ZF+shSjULtkk9j+MfPgJRtI3M8hu4vBnJ1LOFuYLbMm8RV53t17cxsK6inxEqScki0talgkkx/EK/HstKRDFQaG1TKDGSpgLlp/NdyGkUYr6QoKjt0GhUvEm6eC9BjsZddD+9AhmLL8YFGCXaERbV00UsNlJVERdzrqFVbwduq5yhMIDX5tKgbepl7EiYR8SO+GD7spq3cigh0/VXEosrCOD/MuZLAoZJXIrZktu7GlzFa4=
+	7T05ls9kJ24Zsidefw9jYSUw22VJ6gIcXkYLaD5OCKh8MVdhBs7JbP+Xmu9Mm6a1VSj11E09WNhyHKyAP3nckjHQABf0YyXI1FJYev3R3HbHRc3ZhlxXs4pb5CsFL41kkRSr7uJEL2ghjSBttBYoP1QhCs8HgjxNQQyIsvZCMgRUFm+cO39zSHdBXBIbdNn/Ma0jJPopVsDeY28WiAeCb34Dus0BOgPQF7qRag/3kXropz9b5TeYr4/6nlCOoNdzmmb8oM+9eerfS3jHGg3pWeyKZ1iJO/RaDljnta69dBWYSo824itH65zubnGybaiIuAtc4zZe1A6rVwhnFClHdMxdNWuSkvOJ1pz2QtFWP9iXz+vbheyMS1CXuhOtckBFxeNo1QkGOr6cZKvEqGT084aPdCnSwRLlqgsy7yhf+2vZPnOTgXGK4APxz5boFyovyVuMAc7yT1uOkyc/IFmbKeFkxXE6V+GpeC7GJdraKhFPRq5ALXwwnovN5zeCMjj2mgjN9m1B+PGpxk4RKq62CrCg45N8fVSVs3Zrhm+eHMOEz3mfkU4iaW6HjTOMA4q9u5ex7JBFnegLYLB8RfZdZ3CHG48K/8A/g+yyjTh2YqERHueg+/VFM2GLZKX6pHWE5Hqr4Soq/HPtpzU4NL73jpzY/5bV+1UIcBPx4AnTsmoM9yblNFJHbyOt6Dx40GUPSQyWHPL+72rgXcsDwKRTtL02wcBw5pJV+viYLYWZgq8GdhH3cMpeJqnp0LQToC2H
 X-Forefront-Antispam-Report:
-	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(136003)(376002)(346002)(396003)(451199021)(82310400008)(40470700004)(46966006)(36840700001)(47076005)(9686003)(478600001)(54906003)(336012)(26005)(70586007)(426003)(2906002)(33716001)(70206006)(6916009)(316002)(8936002)(7636003)(8676002)(5660300002)(41300700001)(82740400003)(4326008)(86362001)(356005)(55016003)(83380400001)(40480700001)(36860700001)(40460700003)(186003)(414714003)(473944003);DIR:OUT;SFP:1101;
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(396003)(136003)(346002)(39860400002)(376002)(82310400008)(451199021)(36840700001)(40470700004)(46966006)(83380400001)(36860700001)(478600001)(5660300002)(110136005)(54906003)(47076005)(8676002)(7416002)(8936002)(36756003)(86362001)(426003)(2906002)(41300700001)(2616005)(7636003)(70586007)(40480700001)(70206006)(356005)(316002)(4326008)(40460700003)(336012)(7696005)(26005)(6666004)(82740400003)(186003);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Jul 2023 20:57:40.9912
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Jul 2023 21:10:09.2024
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: e112b377-cd3f-4f7a-cbcc-08db8ee41e10
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4aa2da08-4126-4f0f-8a98-08db8ee5dc0d
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	DM6NAM11FT092.eop-nam11.prod.protection.outlook.com
+	DM6NAM11FT010.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4469
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4436
 
-On Fri, Jul 28, 2023 at 02:26:18AM +0800, Michael Shavit wrote:
+The device behind an IOMMU might be used in the user space by a VM. So, it
+might have some user space data. For example, a device behind an SMMU has
+a static stream ID. In a virtualization use case, both a host environment
+and a guest environment have their own Stream IDs. A link (a lookup table)
+between the physical Stream ID and the virtual (user) Stream ID is needed
+when the host handles the user cache invalidation commands.
 
-> Remove or move s1_cfg fields that are redundant with those found in
-> arm_smmu_ctx_desc_cfg. The arm_smmu_ctx_desc_cfg member is named
-> cd_table to make it more obvious that it represents a cd table.
+Add a pair of new ops to allow user space to forward user_data of a device
+via iommufd, and a new dev_user_data_len for data structure sanity done by
+the iommufd core.
 
-Though the "cd_table" is clear, it doesn't feel very obvious to me
-that "struct arm_smmu_ctx_desc_cfg" means CD table, so a mismatch
-with "cd_table". How about renaming to "struct arm_smmu_cdtab_cfg",
-similar to "struct arm_smmu_strtab_cfg"?
+Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+---
+ include/linux/iommu.h | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
-> Signed-off-by: Michael Shavit <mshavit@google.com>
-> ---
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 45 +++++++++++----------
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h | 10 ++---
->  2 files changed, 26 insertions(+), 29 deletions(-)
-> 
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index bb277ff86f65f..8cf4987dd9ec7 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -1033,9 +1033,9 @@ static __le64 *arm_smmu_get_cd_ptr(struct arm_smmu_domain *smmu_domain,
->         unsigned int idx;
->         struct arm_smmu_l1_ctx_desc *l1_desc;
->         struct arm_smmu_device *smmu = smmu_domain->smmu;
-> -       struct arm_smmu_ctx_desc_cfg *cdcfg = &smmu_domain->s1_cfg.cdcfg;
-> +       struct arm_smmu_ctx_desc_cfg *cdcfg = &smmu_domain->cd_table;
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index e4835230d5f0..231920efab84 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -281,6 +281,15 @@ union iommu_domain_user_data {
+  * @remove_dev_pasid: Remove any translation configurations of a specific
+  *                    pasid, so that any DMA transactions with this pasid
+  *                    will be blocked by the hardware.
++ * @set/unset_dev_user_data: set/unset an iommu specific device data from user
++ *                           space. The user device data info will be used by
++ *                           the driver to take care of user space requests.
++ *                           The device data structure must be defined in
++ *                           include/uapi/linux/iommufd.h.
++ * @dev_user_data_len: Length of the device data from user space (in bytes),
++ *                     simply the "sizeof" the data structure defined in the
++ *                     include/uapi/linux/iommufd.h. This is used by iommufd
++ *                     core to run a data length validation.
+  * @hw_info_type: One of enum iommu_hw_info_type defined in
+  *                include/uapi/linux/iommufd.h. It is used to tag the type
+  *                of data returned by .hw_info callback. The drivers that
+@@ -326,6 +335,10 @@ struct iommu_ops {
+ 	int (*def_domain_type)(struct device *dev);
+ 	void (*remove_dev_pasid)(struct device *dev, ioasid_t pasid);
+ 
++	int (*set_dev_user_data)(struct device *dev, const void *user_data);
++	void (*unset_dev_user_data)(struct device *dev);
++	size_t dev_user_data_len;
++
+ 	const struct iommu_domain_ops *default_domain_ops;
+ 	enum iommu_hw_info_type hw_info_type;
+ 	unsigned long pgsize_bitmap;
+-- 
+2.41.0
 
-[<<<]
-
-> @@ -1276,7 +1273,7 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_master *master, u32 sid,
->         u64 val = le64_to_cpu(dst[0]);
->         bool ste_live = false;
->         struct arm_smmu_device *smmu = NULL;
-> -       struct arm_smmu_s1_cfg *s1_cfg = NULL;
-> +       struct arm_smmu_ctx_desc_cfg *cd_table = NULL;
-
-[>>>]
-
-It'd be nicer to align all the variables to "cd_table" like the
-2nd piece here. And if we rename the struct name too:
-
-	struct arm_smmu_cdtab_cfg *cd_table = xxxx;
-
-> -struct arm_smmu_s1_cfg {
-> -       struct arm_smmu_ctx_desc_cfg    cdcfg;
-> -       u8                              s1fmt;
-> -       u8                              s1cdmax;
-> +       /* log2 of the maximum number of CDs supported by this table */
-> +       u8                              max_cds_bits;
-
-Though "s1fmt" is redundant, "max_cds_bits" doesn't seem to be.
-
-It'd be nicer to separate them in the commit message to why we
-remove s1fmt and why we rename s1cdmax.
-
-Thanks
-Nicolin
