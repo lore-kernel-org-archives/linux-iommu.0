@@ -1,33 +1,33 @@
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2069.outbound.protection.outlook.com [40.107.93.69])
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2076.outbound.protection.outlook.com [40.107.94.76])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 35EDF23AE
-	for <iommu@lists.linux.dev>; Fri, 28 Jul 2023 05:37:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 499B423AE
+	for <iommu@lists.linux.dev>; Fri, 28 Jul 2023 05:38:04 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LUF0lGDKDgDUt9vvPF2J8q8RXnoK/rwLo8LITYcbbKo2yV5ijUlf5XiLhUQUaX5YLg+KyZsgz2GRyion3agEehWQFZGtNR/9c6NyuqXj7bHOLd2eQIa/7Khtb7qEvCaOJIglFOzYaB6eWwh/qPRdOv2W3JCBEY2m3K+grdIun9kVduFEH2fQlO/tJCP2OfYwJ9xlq385lnteruurrhLmGXKf8vSbBBdH1D43OtN/430Udlsvn24/3Fru4zpptxSYBEv+G9wpn8bmsTwnq4ZBlbqJ4s8dw464kAg8Ai3JSDZi6DUBTKm4yVgWPrxmyGcVrDR1Stfkzk+F0VPm4u5Xpw==
+ b=LKk6nNfbRFQSoXq5HwRUU41qVoLrpAKL7CkSUOe7V8tChTX/H74/k+RCE0LqKkzo+DzzR5mIfYXOts3qE/sONI649O4tX/MDdBd+8qKtbo8R+eQugn6YxFajJYURpgjKZdAMjgZE6mdcM4dVuy04HQimjpu0Lc1fZfhxmBhIWs+bXZKmC6gatD0K8BRhXCZTKxoKCSV59rSRHv4psuAMKb6eiLwMZnwskqCi8yVoTffhKrZuSA+5ULNDtvBcHVdapPxue02CAyTS6X/mvvoSU0YQSJ7Sj+uR3i3d90DtRoHarR/jU3zrrDGHmdQuLAONCGwZKMtZEZBvcWKe4kG99w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=/OOdI4GHXCL7CFg1KVkO62Bu1L5IVU0WgHLEoNPnInU=;
- b=I1dpKi8KVrR4YK3lwHlhG6Fj90SN2K7CqjytTvZcqQ4ytTsyxJFV03qcXHdVdv7Oxq40h9rqntRw1yS3CA3MKJ/egNGDxdR1yDZEmataZkv8pAXfy847a/scFWoqIzUXo3LYBJhcV0NfqV3YmnyZ9bpkf1PEey/UrtA1Y3Fdzc8GaAe/iOPSSePvI6fH6GAwothmWshE3a3aCs/RGCH+vLJE6OHRPig/k/VqBIXYaIAaFOSFflkz3Sa1oc1+3+uSYiuWEuljdSA0aIIvFMqpEJ7Bp2R58LjfKjT30aO4TVz0sP8UKq+AYJPWxqKSvlui4QQTNOeNkRDfWemTwekBfQ==
+ bh=JGQQrAO7S9b9HMAsSgnDH1V0KZv2NqsTTnCPSw92gds=;
+ b=X6ZRZtXSHZeD+bkh3YP8sKEecpuL+BlOizLqnu290oYU9oYJnvU0n3CYHRpYeQ2c0Fho73XGRrzbV+VmM0bL7U/d77WYbxVLHNbZqNCWm+qjPOHRds6M/qUIX24TfAUHdDO4J6/wcK0TTPb+5yRLuuoT2nx+XYtsPdX+58QLS6A7Z0+aTokVwPSzf7Idsk/My0vEnlk+zMdjPVT4Nnxjseyjxa3LUOCa+vEcxCVSsVhg0tN+Il7YqZrxqPnScWrF+y6SiM05NlKH+2D9BLkKTpAx7IhdnBfT60Bir9qIItFEqwlE5Owx4NhgPUIxtLWfKKwaLV+XY2dlN3KVUJLP3A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=amd.com;
  dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
  header.from=amd.com; dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/OOdI4GHXCL7CFg1KVkO62Bu1L5IVU0WgHLEoNPnInU=;
- b=l2DBttRjI1053m8FX53LzX2/GBaRGxeytu6bIxAuCSLa3uOScKH0nFxPEN6mnN9xHs7PV35uP58ZieQUmfP5f63kjZko4GVRwa+rhX3DI0R7aN7f5GauQLsQ/+ui8Ih3ErnO5Vk6EYfpF7DKS4gbbuQt4NaDrnPSKQXMGpOGtFU=
-Received: from MW4PR04CA0340.namprd04.prod.outlook.com (2603:10b6:303:8a::15)
- by IA1PR12MB8465.namprd12.prod.outlook.com (2603:10b6:208:457::8) with
+ bh=JGQQrAO7S9b9HMAsSgnDH1V0KZv2NqsTTnCPSw92gds=;
+ b=z0Tm31xPQ3EKO5YcTK4jzX2UWl/RBLwJWwj+OUqr7BxEQcWt+TTR1dq6icMJpQ38TBjQeZ3Q5+rym8umNGTmL8QkmJwTYLM5xnee5HQWTBNhK07GwBIFWCD24BHV2mYQiZ0Nimy4qFKYejZUCPgsOnFcO6EfjQp0ln/ISuKJZ2Q=
+Received: from MW4PR04CA0170.namprd04.prod.outlook.com (2603:10b6:303:85::25)
+ by DS7PR12MB5909.namprd12.prod.outlook.com (2603:10b6:8:7a::10) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6631.29; Fri, 28 Jul
- 2023 05:37:38 +0000
-Received: from CO1NAM11FT036.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:8a:cafe::25) by MW4PR04CA0340.outlook.office365.com
- (2603:10b6:303:8a::15) with Microsoft SMTP Server (version=TLS1_2,
+ 2023 05:37:59 +0000
+Received: from CO1NAM11FT098.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:85:cafe::e1) by MW4PR04CA0170.outlook.office365.com
+ (2603:10b6:303:85::25) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6631.29 via Frontend
- Transport; Fri, 28 Jul 2023 05:37:37 +0000
+ Transport; Fri, 28 Jul 2023 05:37:59 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -35,20 +35,20 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
  client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
 Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CO1NAM11FT036.mail.protection.outlook.com (10.13.174.124) with Microsoft SMTP
+ CO1NAM11FT098.mail.protection.outlook.com (10.13.174.207) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.6631.29 via Frontend Transport; Fri, 28 Jul 2023 05:37:37 +0000
+ 15.20.6631.29 via Frontend Transport; Fri, 28 Jul 2023 05:37:58 +0000
 Received: from kali.amd.com (10.180.168.240) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.27; Fri, 28 Jul
- 2023 00:37:34 -0500
+ 2023 00:37:55 -0500
 From: Vasant Hegde <vasant.hegde@amd.com>
 To: <iommu@lists.linux.dev>, <joro@8bytes.org>
 CC: <suravee.suthikulpanit@amd.com>, <wei.huang2@amd.com>,
 	<jsnitsel@redhat.com>, <jgg@ziepe.ca>, Vasant Hegde <vasant.hegde@amd.com>
-Subject: [PATCH v2 04/16] iommu/amd: Refactor protection domain allocation code
-Date: Fri, 28 Jul 2023 05:35:57 +0000
-Message-ID: <20230728053609.165183-5-vasant.hegde@amd.com>
+Subject: [PATCH v2 05/16] iommu/amd/iommu_v2: Use protection_domain in struct device_state
+Date: Fri, 28 Jul 2023 05:35:58 +0000
+Message-ID: <20230728053609.165183-6-vasant.hegde@amd.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230728053609.165183-1-vasant.hegde@amd.com>
 References: <20230728053609.165183-1-vasant.hegde@amd.com>
@@ -65,117 +65,166 @@ X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
  (10.181.40.145)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1NAM11FT036:EE_|IA1PR12MB8465:EE_
-X-MS-Office365-Filtering-Correlation-Id: 91df29fb-5d0a-470c-1908-08db8f2cc08b
+X-MS-TrafficTypeDiagnostic: CO1NAM11FT098:EE_|DS7PR12MB5909:EE_
+X-MS-Office365-Filtering-Correlation-Id: 3c4fbe32-8f99-46f0-d85d-08db8f2ccd57
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	Kq+1egCjyTG9FynWQsEKw+ORc1x6UekuEFtR7k7x4sEODIFpx4xgBK6/Jy+g3D8hP8ca7Xb/fyPTFDINPcmgtSCp/pubqAVa0zihtyKt+n/6PL8Gur8tEP4ZQlL6veD772OhC1+H5+QTOR44OKGcNXnV3Ma29uH6pIv9o8ZESFY2YqSC8xPbcSiViQjCxbXKuQNn3lcC/vtWyQVBgZvi3VU2CdrzXnYTuQsYyWayYaYVdMghPzzEdlKhCNrL1n8//2pDUs2A1QBz2ZmDUReP0Zx6zF5AiqUcb0w9LLJrFs0r2Hx7Fm61NoezFiJOqh78gT8Y3TMNjnSFXORgQ5Z53oawbBanRwBXCmiLwVvZAPfE9AA4G2pSF88wfy0pUja51GQyb0UhejG8RFfQG9CQV3XIkNc5+8IPVDNFvWAKea7RX9TS56pDKnP2TM9yO3Oob9bOZI2ep+UdRi+OlRaoItXZbOZFKlTXxS479qigbVv8TSsnn47zAXFJsZMxN3FK6t2vIvPPmaxDqHP/En3oO3EkW2brbiqSrO1oWxs0uIdMcxwgYEUkxQykFhzt4wQwEyCaOFsUs0O7xAJJuED+ISzIOqrHVfiuK3H+jL5iE1izbSh71PAQWE6lCbaraF/jUqLd/+iYKeHg36rjZZ+lNJ3zMhCn/n1uib6Fs871coSgimujn8rcjJJ1Pq22zozNPlepiZpt0+3BzrZSP6CRCCdxrbhS/WQCF5SUZqFVPrJ9OmJLd7O97sUWdveM5rVya6IFQwLMfUKIfRagdSwIwA==
+	M6j14WPmJvAVDsocuYxtRZ3jCaY7v2wfs7yOe1eSJy6wxT2ubFx6jwP9PA6XTRnGpjfF87CIt+WBU+NO0rAHtCtp5gCQvHQv7obJRNpO0u3kEeRS2sFiu77kguT9IhtA6b+p1vX800QBuw/+eBLVxkxBLHzRB//Krx4vBHo03prgfhf8mAWtB9NZugF0P4CEfhICISEhgGt4LhuXHP1oAEPshBvChfrkts0nPcWbnK9L1PbRY+p7bfkk05uY+YHvZLm+9jDnGrssqIiaWlJbdCgmEoZhg/Zh5oxrtq6lCaW0hhE6uCFOuk+c8W3m31IvsRaLRk0W0k54TwkFqW7J/B5UxMhRNgaedJWggYTxlK3H1H8NIwJ/A1Pg1tO9FgVghDvzcbXxwqsonLDC+BULDzYD3e0PQ0+N1f3SXa4HdS0+UudYGKyWRyE0YYa8GM6R6I2ib858RIyIMJc8PgBiuGfdOSC5+jA/wMLoDOfOgqZAYCvyGpBNzkk2m9cgRrCkQw2Hf9O2fonu9yUX7OOaXTCxtzplJAiLzRUxclulA2Syzrk+qeWMEV0Dq9rOYH+/5Zq0XIKEoeHxpHuIAWasIAZiqOa5LLSB13yb5sTYhwdq7eH4ladkfJadfzth+v2lSLaWZA7mLHk79+cbASp6pP65tNjv2PC66TXyps5HleAJo3hdwTVljqcX+e7nwgE6ZsIfI6uDny8to0VrFUeh4hz2BQhaPwzKaEzYPnzELzkKzuChZ8f6QW5Le6w8nL1sglPulDPtQ/Uqnb09XMXwYA==
 X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(136003)(346002)(39860400002)(396003)(376002)(82310400008)(451199021)(46966006)(36840700001)(40470700004)(2906002)(1076003)(336012)(26005)(186003)(316002)(16526019)(81166007)(426003)(40480700001)(2616005)(83380400001)(47076005)(70206006)(5660300002)(44832011)(40460700003)(356005)(41300700001)(70586007)(36860700001)(8676002)(110136005)(36756003)(8936002)(54906003)(82740400003)(478600001)(6666004)(7696005)(4326008)(86362001)(36900700001);DIR:OUT;SFP:1101;
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(376002)(346002)(39860400002)(136003)(396003)(451199021)(82310400008)(46966006)(36840700001)(40470700004)(83380400001)(47076005)(40460700003)(36756003)(426003)(2906002)(36860700001)(86362001)(2616005)(40480700001)(356005)(81166007)(82740400003)(41300700001)(316002)(4326008)(26005)(1076003)(8676002)(8936002)(54906003)(110136005)(7696005)(478600001)(70206006)(70586007)(44832011)(336012)(186003)(16526019)(5660300002)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jul 2023 05:37:37.3325
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jul 2023 05:37:58.8070
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 91df29fb-5d0a-470c-1908-08db8f2cc08b
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3c4fbe32-8f99-46f0-d85d-08db8f2ccd57
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	CO1NAM11FT036.eop-nam11.prod.protection.outlook.com
+	CO1NAM11FT098.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB8465
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB5909
 
-To replace if-else with switch-case statement due to increasing number of
-domain types.
+Replace struct iommu_domain with struct protection_domain to simplify code
+since the protection_domain contains AMD IOMMU specific information.
 
 No functional changes intended.
 
 Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
 ---
- drivers/iommu/amd/iommu.c | 46 +++++++++++++++++++--------------------
- 1 file changed, 23 insertions(+), 23 deletions(-)
+ drivers/iommu/amd/iommu_v2.c | 38 ++++++++++++++++++++----------------
+ 1 file changed, 21 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index c2cb541b0553..09749ad4445c 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -2078,24 +2078,8 @@ static struct protection_domain *protection_domain_alloc(unsigned int type)
- 	struct io_pgtable_ops *pgtbl_ops;
- 	struct protection_domain *domain;
- 	int pgtable;
--	int mode = DEFAULT_PGTABLE_LEVEL;
- 	int ret;
+diff --git a/drivers/iommu/amd/iommu_v2.c b/drivers/iommu/amd/iommu_v2.c
+index c5825e0a6770..6a423928d5b5 100644
+--- a/drivers/iommu/amd/iommu_v2.c
++++ b/drivers/iommu/amd/iommu_v2.c
+@@ -55,7 +55,7 @@ struct device_state {
+ 	atomic_t count;
+ 	struct pci_dev *pdev;
+ 	struct pasid_state **states;
+-	struct iommu_domain *domain;
++	struct protection_domain *pdom;
+ 	int pasid_levels;
+ 	int max_pasids;
+ 	amd_iommu_invalid_ppr_cb inv_ppr_cb;
+@@ -112,6 +112,7 @@ static struct device_state *get_device_state(u32 sbdf)
+ static void free_device_state(struct device_state *dev_state)
+ {
+ 	struct iommu_group *group;
++	struct iommu_domain *domain = &dev_state->pdom->domain;
  
--	/*
--	 * Force IOMMU v1 page table when iommu=pt and
--	 * when allocating domain for pass-through devices.
--	 */
--	if (type == IOMMU_DOMAIN_IDENTITY) {
--		pgtable = AMD_IOMMU_V1;
--		mode = PAGE_MODE_NONE;
--	} else if (type == IOMMU_DOMAIN_UNMANAGED) {
--		pgtable = AMD_IOMMU_V1;
--	} else if (type == IOMMU_DOMAIN_DMA || type == IOMMU_DOMAIN_DMA_FQ) {
--		pgtable = amd_iommu_pgtable;
--	} else {
--		return NULL;
--	}
+ 	/* Get rid of any remaining pasid states */
+ 	free_pasid_states(dev_state);
+@@ -130,12 +131,12 @@ static void free_device_state(struct device_state *dev_state)
+ 	if (WARN_ON(!group))
+ 		return;
+ 
+-	iommu_detach_group(dev_state->domain, group);
++	iommu_detach_group(domain, group);
+ 
+ 	iommu_group_put(group);
+ 
+ 	/* Everything is down now, free the IOMMUv2 domain */
+-	iommu_domain_free(dev_state->domain);
++	iommu_domain_free(domain);
+ 
+ 	/* Finally get rid of the device-state */
+ 	kfree(dev_state);
+@@ -269,9 +270,7 @@ static void put_pasid_state_wait(struct pasid_state *pasid_state)
+ 
+ static void unbind_pasid(struct pasid_state *pasid_state)
+ {
+-	struct iommu_domain *domain;
 -
- 	domain = kzalloc(sizeof(*domain), GFP_KERNEL);
- 	if (!domain)
- 		return NULL;
-@@ -2106,27 +2090,43 @@ static struct protection_domain *protection_domain_alloc(unsigned int type)
+-	domain = pasid_state->device_state->domain;
++	struct device_state *dev_state = pasid_state->device_state;
  
- 	spin_lock_init(&domain->lock);
- 	INIT_LIST_HEAD(&domain->dev_list);
-+	domain->nid = NUMA_NO_NODE;
+ 	/*
+ 	 * Mark pasid_state as invalid, no more faults will we added to the
+@@ -283,7 +282,7 @@ static void unbind_pasid(struct pasid_state *pasid_state)
+ 	smp_wmb();
+ 
+ 	/* After this the device/pasid can't access the mm anymore */
+-	amd_iommu_domain_clear_gcr3(domain, pasid_state->pasid);
++	amd_iommu_domain_clear_gcr3(&dev_state->pdom->domain, pasid_state->pasid);
+ 
+ 	/* Make sure no more pending faults are in the queue */
+ 	flush_workqueue(iommu_wq);
+@@ -369,10 +368,10 @@ static void mn_invalidate_range(struct mmu_notifier *mn,
+ 	dev_state   = pasid_state->device_state;
+ 
+ 	if ((start ^ (end - 1)) < PAGE_SIZE)
+-		amd_iommu_flush_page(dev_state->domain, pasid_state->pasid,
++		amd_iommu_flush_page(&dev_state->pdom->domain, pasid_state->pasid,
+ 				     start);
+ 	else
+-		amd_iommu_flush_tlb(dev_state->domain, pasid_state->pasid);
++		amd_iommu_flush_tlb(&dev_state->pdom->domain, pasid_state->pasid);
+ }
+ 
+ static void mn_release(struct mmu_notifier *mn, struct mm_struct *mm)
+@@ -651,7 +650,7 @@ int amd_iommu_bind_pasid(struct pci_dev *pdev, u32 pasid,
+ 	if (ret)
+ 		goto out_unregister;
+ 
+-	ret = amd_iommu_domain_set_gcr3(dev_state->domain, pasid,
++	ret = amd_iommu_domain_set_gcr3(&dev_state->pdom->domain, pasid,
+ 					__pa(pasid_state->mm->pgd));
+ 	if (ret)
+ 		goto out_clear_state;
+@@ -735,6 +734,7 @@ EXPORT_SYMBOL(amd_iommu_unbind_pasid);
+ 
+ int amd_iommu_init_device(struct pci_dev *pdev, int pasids)
+ {
++	struct iommu_domain *domain;
+ 	struct device_state *dev_state;
+ 	struct iommu_group *group;
+ 	unsigned long flags;
+@@ -779,15 +779,19 @@ int amd_iommu_init_device(struct pci_dev *pdev, int pasids)
+ 	if (dev_state->states == NULL)
+ 		goto out_free_dev_state;
+ 
+-	dev_state->domain = iommu_domain_alloc(&pci_bus_type);
+-	if (dev_state->domain == NULL)
++	domain = iommu_domain_alloc(&pci_bus_type);
++	if (domain == NULL)
+ 		goto out_free_states;
+ 
++	/* Retrieve new protection_domain that has just been allocated */
++	dev_state->pdom = container_of(domain,
++				       struct protection_domain, domain);
 +
-+	switch (type) {
-+	/* No need to allocate io pgtable ops in passthrough mode */
-+	case IOMMU_DOMAIN_IDENTITY:
-+		return domain;
-+	case IOMMU_DOMAIN_DMA:
-+		fallthrough;
-+	case IOMMU_DOMAIN_DMA_FQ:
-+		pgtable = amd_iommu_pgtable;
-+		break;
-+	/*
-+	 * Force IOMMU v1 page table when allocating
-+	 * domain for pass-through devices.
-+	 */
-+	case IOMMU_DOMAIN_UNMANAGED:
-+		pgtable = AMD_IOMMU_V1;
-+		break;
-+	default:
-+		goto out_err;
-+	}
+ 	/* See iommu_is_default_domain() */
+-	dev_state->domain->type = IOMMU_DOMAIN_IDENTITY;
+-	amd_iommu_domain_direct_map(dev_state->domain);
++	domain->type = IOMMU_DOMAIN_IDENTITY;
++	amd_iommu_domain_direct_map(&dev_state->pdom->domain);
  
- 	switch (pgtable) {
- 	case AMD_IOMMU_V1:
--		ret = protection_domain_init_v1(domain, mode);
-+		ret = protection_domain_init_v1(domain, DEFAULT_PGTABLE_LEVEL);
- 		break;
- 	case AMD_IOMMU_V2:
- 		ret = protection_domain_init_v2(domain);
- 		break;
- 	default:
- 		ret = -EINVAL;
-+		break;
+-	ret = amd_iommu_domain_enable_v2(dev_state->domain, pasids);
++	ret = amd_iommu_domain_enable_v2(domain, pasids);
+ 	if (ret)
+ 		goto out_free_domain;
+ 
+@@ -797,7 +801,7 @@ int amd_iommu_init_device(struct pci_dev *pdev, int pasids)
+ 		goto out_free_domain;
  	}
  
- 	if (ret)
- 		goto out_err;
+-	ret = iommu_attach_group(dev_state->domain, group);
++	ret = iommu_attach_group(domain, group);
+ 	if (ret != 0)
+ 		goto out_drop_group;
  
--	/* No need to allocate io pgtable ops in passthrough mode */
--	if (type == IOMMU_DOMAIN_IDENTITY)
--		return domain;
--
--	domain->nid = NUMA_NO_NODE;
--
- 	pgtbl_ops = alloc_io_pgtable_ops(pgtable, &domain->iop.pgtbl_cfg, domain);
- 	if (!pgtbl_ops) {
- 		domain_id_free(domain->id);
+@@ -821,7 +825,7 @@ int amd_iommu_init_device(struct pci_dev *pdev, int pasids)
+ 	iommu_group_put(group);
+ 
+ out_free_domain:
+-	iommu_domain_free(dev_state->domain);
++	iommu_domain_free(domain);
+ 
+ out_free_states:
+ 	free_page((unsigned long)dev_state->states);
 -- 
 2.31.1
 
