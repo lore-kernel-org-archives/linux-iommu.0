@@ -1,53 +1,126 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2082.outbound.protection.outlook.com [40.107.102.82])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 77A52154BC
-	for <iommu@lists.linux.dev>; Fri, 28 Jul 2023 18:39:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id DE298C433C8;
-	Fri, 28 Jul 2023 18:39:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1690569570;
-	bh=ekJmFxg2g3kH89CuUtzM5Ayd0aUXp/XgOQDgCNBy2h0=;
-	h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-	b=NXS6m11RWNORjqdODWImtvNmtDOg31IkCPkoBnP6RSI0DZ6WzOinUTXRoYuE0LJJk
-	 XQgFTkdLeqddpUjDH3+7g4sqnYdxVpk0Md7ObmPXuCptojNd6OO3qpB7tdiUfUErnH
-	 JELOWY7ahcntFDJC7j8j2PY03BRskhSHhQSW/rwS5uapHM+5Ppb2Vn9XProsKvZL+P
-	 xfmXPRcDg1zb837Ml0rlJEQWzqb1b7NUZc5bWKavbMLu0+jDPoEKqja9A1sHaa5KSO
-	 zBkQXwsWZ94Lz3LQAtk14FVSzDbRpPOENjju+xBIFgyKzPN70mznmTY98ZWIeeUd+d
-	 d32Pls2gHUbzw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C8EA1C4166F;
-	Fri, 28 Jul 2023 18:39:30 +0000 (UTC)
-Subject: Re: [GIT PULL] Please pull IOMMUFD subsystem changes
-From: pr-tracker-bot@kernel.org
-In-Reply-To: <ZMPHGPLDXK46QF+K@nvidia.com>
-References: <ZMPHGPLDXK46QF+K@nvidia.com>
-X-PR-Tracked-List-Id: <kvm.vger.kernel.org>
-X-PR-Tracked-Message-Id: <ZMPHGPLDXK46QF+K@nvidia.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/jgg/iommufd.git tags/for-linus-iommufd
-X-PR-Tracked-Commit-Id: b7c822fa6b7701b17e139f1c562fc24135880ed4
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 0299a13af0be43f2679047c7236e3a58e587f3f8
-Message-Id: <169056957081.21363.12613540591613546001.pr-tracker-bot@kernel.org>
-Date: Fri, 28 Jul 2023 18:39:30 +0000
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6361C1426E
+	for <iommu@lists.linux.dev>; Fri, 28 Jul 2023 18:41:46 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=VUWZRPjRvlcfc5BJ960dHNSNE9ZHd+S9Tscmjw9GoXeydgpspKqUphkpbwe4O4m37AWtAOy+C5K4xM1uTUiYVJY1AagnrZqJHk/C4D6YVfesHy3y2JSHoDJOyozcFvBH/rwLHjf5EqykkURQ5N/U401F7LXXdVEbvK+I2whz8MfNK+2m5dY3FFLYRneC//R78j99umo55jShSIf4P3irE1LVumTiaLtWPZC++8CLL8R6zdavp1gruPjfQiLUhebyjETF8OqnrsaX1D36fb7AOr4jKPhsO89Ad+TrviTUyHhMJoFGeLuJRpGHANqLwrys2w9etXFPAr2D5bXNFvqnaA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=4FLmy2XHuvSFiMWYJfHfWuBDA1n1wWOznY0unL+3Mlg=;
+ b=C2WudQuleChiWgxlj31sZRxwM02XyCFjbQb4TscpY0ya+8hSpy1e7dhsMEaREt9nhcYSJdZOF7IWih1cnAYjBrefPZ2or0X09b/Z6kVCp1i9ghhaopTeAjVoly6+RGhXTcu/p08ZAdX3VN0t/Xho1CcedcqM7mNuvLrgO4mAnnrjukdbNxxSX4gTMb212DCPmbsS9ZfhxHME/bHs1dFTDj7qHhgGqsJSo8GXI+vw1YhqIsqyGuRH5qoAmOyZmYrDYPR3q8abINT/SKF6n17C9Bcry5SRSwr3i1/PyfwmxEIGHcsrFKJGhYSPEpFWh9NPsxaab8RyUHdUhdfNMajYiQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=google.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=4FLmy2XHuvSFiMWYJfHfWuBDA1n1wWOznY0unL+3Mlg=;
+ b=sdbfhLEd3k/toWkZZqihuinWxbnNfR4FzT4EGHYQJKiXfTlCQIO6NnjgTpFFA466m1igrVLusz2QBvUvfkM1G2y542KGj/Eg4AXPbc5xGAf1t13DgG3ccw+YiO26YKff0MeipL+4HxPPjCaEpNqvukB7dAr4rvLd2hBzlksEW+arV/zKG1sOMdnVVylyyYxt5LljyUyMhUphmoKJMmABOZvUBtzq7ub2yTRHcyQCquI/iSFdbnm7txbqdFaW+j2JYAJDmzNl1RToqFfEeFB50WG4o8ZKt24CrnE0d9gqo5bBFO49UNnaVXE9YUXb8OTqNrkcvj29K96mIAtRbOXiHg==
+Received: from BN8PR04CA0013.namprd04.prod.outlook.com (2603:10b6:408:70::26)
+ by DM6PR12MB4170.namprd12.prod.outlook.com (2603:10b6:5:219::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6631.29; Fri, 28 Jul
+ 2023 18:41:43 +0000
+Received: from BN8NAM11FT106.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:70:cafe::87) by BN8PR04CA0013.outlook.office365.com
+ (2603:10b6:408:70::26) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6631.29 via Frontend
+ Transport; Fri, 28 Jul 2023 18:41:43 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ BN8NAM11FT106.mail.protection.outlook.com (10.13.177.7) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6631.29 via Frontend Transport; Fri, 28 Jul 2023 18:41:43 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Fri, 28 Jul 2023
+ 11:41:29 -0700
+Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Fri, 28 Jul
+ 2023 11:41:28 -0700
+Received: from Asurada-Nvidia (10.127.8.13) by mail.nvidia.com (10.129.68.9)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37 via Frontend
+ Transport; Fri, 28 Jul 2023 11:41:28 -0700
+Date: Fri, 28 Jul 2023 11:41:26 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
 To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, iommu@lists.linux.dev, kvm@vger.kernel.org, linux-kernel@vger.kernel.org, Kevin Tian <kevin.tian@intel.com>
+CC: Michael Shavit <mshavit@google.com>, Will Deacon <will@kernel.org>, "Robin
+ Murphy" <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+	<jean-philippe@linaro.org>, <baolu.lu@linux.intel.com>,
+	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v1 2/7] iommu/arm-smmu-v3: Replace s1_cfg with
+ ctx_desc_cfg
+Message-ID: <ZMQL1qjHT3NE9FR2@Asurada-Nvidia>
+References: <20230727182647.4106140-1-mshavit@google.com>
+ <20230727182647.4106140-3-mshavit@google.com>
+ <ZMLaM9QjHDu11iKf@Asurada-Nvidia>
+ <CAKHBV252e5Cx1nssFTPVBmr_iGqLhvp1jjBfR5euRynAzHC12w@mail.gmail.com>
+ <ZMOzHJO23ZakRs8b@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <ZMOzHJO23ZakRs8b@nvidia.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BN8NAM11FT106:EE_|DM6PR12MB4170:EE_
+X-MS-Office365-Filtering-Correlation-Id: 127d83b5-f094-4f62-d9d9-08db8f9a4a23
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	AUlSMMIeRqnC8jVUCDdZkMovp+FvHbzqRXkUj8wYhJf4c5fyw26Ock6i8fRaPoSa5Eiw0YQQULkggQAf54dMTaDrrEudw3P1+nueb4I2/Jkw6PRzXdTpchZW8Fh7s2OB8AsxyKmNZIcegyGhBp2e5hTcTRPCs+PHmpBYOGslh5Z5+PM2Al9gXeoLXdQIOF/7zwj5ycm6u4hFPQh/I3Q5YZzHoUU3JOY/hX74P3WoZds+HWw478CqcMmBPaAhLn3pEjEFEEdnlgWiAR3p/2wr84UQ4KVVnTZj0jGcyZaH07ETWW5QyGuBz5nIE/5bfwH2cM90bwKebhTt3MxtI23Qe2O0z8NccDe4dehPGaP7aNWi1U7xIbkiiSBCCk98Ob5Ye13tNMYCTGo5GJgbvZnEU6ZnhTaZMm09ew6YZBmRo+XkxCsRcMF1HZKYTPIyF46nStZH/1udFaqW5T+at9CZ41866uvQB2UV1uG8wu0Q1UiKQepW8PiwQktkYvltfvP8fSkBR4us6rGUH+3F7nUMZFGP5kmpaStEq3CnjVMa+S9ftVmTJa/pIMPOxXB/R2H2XA0pE7V+lBV9EBFkmWgEmeyFMfdHpdW7G3wyP6JhvBbPtGW1eFvUQtA6bkmf24MQA0OxGlXLKc0ablu0iGsGdWUjZUM1Twe0fD1E/Ax7liTLXm5/ixvyalLKNlHgliQOHKhwPmghvR/JimJZqgimjus8AOSo6HHaTJkWsXQPoqE=
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(136003)(346002)(376002)(396003)(451199021)(82310400008)(46966006)(40470700004)(36840700001)(36860700001)(54906003)(9686003)(478600001)(336012)(47076005)(26005)(186003)(6636002)(53546011)(70586007)(6862004)(2906002)(426003)(316002)(8936002)(5660300002)(4326008)(8676002)(41300700001)(82740400003)(70206006)(7636003)(40460700003)(356005)(86362001)(55016003)(40480700001)(33716001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jul 2023 18:41:43.2781
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 127d83b5-f094-4f62-d9d9-08db8f9a4a23
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BN8NAM11FT106.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4170
 
-The pull request you sent on Fri, 28 Jul 2023 10:48:08 -0300:
+On Fri, Jul 28, 2023 at 09:22:52AM -0300, Jason Gunthorpe wrote:
+> On Fri, Jul 28, 2023 at 03:47:45PM +0800, Michael Shavit wrote:
+> > On Fri, Jul 28, 2023 at 4:57 AM Nicolin Chen <nicolinc@nvidia.com> wrote:
+> > 
+> > > It'd be nicer to align all the variables to "cd_table" like the
+> > > 2nd piece here. And if we rename the struct name too:
+> > >
+> > >         struct arm_smmu_cdtab_cfg *cd_table = xxxx;
+> > 
+> > I agree that renaming these would be nice. There's 36 usages of cdcfg
+> > in arm-smmu-v3.c, and 6 usages of  arm_smmu_ctx_desc_cfg.
+> > I can rename the struct since we'll be touching many of those in this
+> > patch anyways, but I'm a bit concerned of the churn from updating all
+> > the cdcfg usages.
+> 
+> Will was not keen on churn for clarity so it seem better to be
+> thoughtful about what is touched to get this merged.
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/jgg/iommufd.git tags/for-linus-iommufd
+Still, it would be odd to have "cdcfg" and "cd_table" at the same
+time. If we have to be conservative, perhaps we should just align
+with the old naming: "struct arm_smmu_ctx_desc_cfg *cdcfg;"...
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/0299a13af0be43f2679047c7236e3a58e587f3f8
-
-Thank you!
-
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+Nicolin
