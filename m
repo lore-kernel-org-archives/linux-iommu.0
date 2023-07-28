@@ -1,33 +1,33 @@
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2055.outbound.protection.outlook.com [40.107.94.55])
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2060.outbound.protection.outlook.com [40.107.220.60])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7672723AE
-	for <iommu@lists.linux.dev>; Fri, 28 Jul 2023 05:36:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1EF5723AE
+	for <iommu@lists.linux.dev>; Fri, 28 Jul 2023 05:37:20 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=JjeBymJinaWLdFFYUPuU1NfadseocMZi/s12LIqiLuL1scWNeN2YEMS4s2kdXUXfDjHkTeYT3A/7HZgdTuuXnTZ+jUywi5PstE4KeGNFzvtYs/9a2Qv0ZZ5ggQes8XbNLYaTb/cohBBlhZi1wfWuSv+fe6Szk25qoYIBtMznzV8Je/4uClUxRlKMgiHxnjTXcBsIhYEkDZRIaIT1ANNks1uBn7k04U/uesyaKtJjyDWG7QtlL1BE6aE5PJcwd1oJkbYdqR5JF2t6pHhafwE21FzNwKdgUxfN2lRDLikjUvm1Ow3Z2WObvOLqRM3fQXob/UQCSD0lVLcJX/c3h7U5Qg==
+ b=W9FM8YGqwVudxGEatjUE7AYIu2roum4pqd+h3JszA3PQChg5tQi1arfO0iuftuXiD6mTIwUa4INoS0QajS4Wt2bUTEYU0kj33/bC/Rn0hytgtxT6uxNju5/Yq3ETnwIu+9F9vJiajFIjzLaU9mrMcBcsNtaYRcJx13lNm4tIXUYIAdyyn3VRZMjuWHiruoypFHVrRsuMgq5NQQUBtJcih/+z23UWKkwWkePkcKuJcokNo855qikguNt4JXmD2462gsdlUI4TJW4PAZRFxrgqfwmT7K0cimG9h29OazfwtnpSnm1l33Bvf2Jgi/KLDW+bS+ToAba0zhc8/UtXFTzO4w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=hi5WjxCxf/F8XBkzLTJSjPWbJNn2cuuKeB7YoP/qOTI=;
- b=LvssT6SQNgoywvb11ipEFSMhKdHKZYoAkVuzY9vheJ2l5PvuKeVn/h6nQtyQGpwCUyxifDJTjKUQNFrMBWHMEvYcqEuXPWFuW2T6HonmzReqIZJFIuOtUgiHc/Iao7RCLFXQVOR5wF9zZysGo/uboge+do3/+fvFI/JoObGjSob+Ix7qzUty2WaKTQDd/MkpBPEnGfgpxNt1wOM6tMnLlixsD/q0pZC6ZBEmYspNFhfTQqTgeZuAvkvNtqmeRSid1ZO9cpWsC9QThDmj4+no9fpZFJFuepst708079S3Z2q/XeDwTGhaAD5AfXHBnULHRD514JOuagREdQGOo2zDxw==
+ bh=MkkALXGb9nPRYwkNYtpCt+Atuh9Wi8ZARCDN0vK4ucE=;
+ b=hydvJQEpXqFnczPKBVPaCHmos2cpTuiuq4Wi0N+VVhlbDKW+PHcU2jdt7DUuByGhGUyr3zd5subgvV8e8LURxAICKVm6sxHFnOIPTdK0ta7JNiQNQ8itpPKXZzLeJ1q+bPGi4wWo7nm2EbPKy6hvw3qWeHBNH5ua7Ndpwn3HRZn7RACsA+BBzq4O7nOh/fbxy9Z2rtC8aa+bhITCAkXBCaa8dWP9YEeLAWm6ax/dLRhHtTCMvt5mpYfS2Lxiei6k8/MmnuMMg0OUQtFAFcWQMJ156ANORA3moOumnUPnFtTN/mWdc10KJaR+1VGl9A0otQE2vpuDhdLbpUkHX7l4oQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=amd.com;
  dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
  header.from=amd.com; dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=hi5WjxCxf/F8XBkzLTJSjPWbJNn2cuuKeB7YoP/qOTI=;
- b=TPZDqv+DjvsKj8eGqVpbQJFYDA5LGPqlv/5fJyzOyP8qwy8Bkhx8TSIrz2D0r18sGTLf5SAp6G0RbwzVXNbxFpjWKd1Ht05ECHARzlpHWsNXnl+/+h2qVSGXx53xWfI05Sq5iIqAsYjyUQeFjrtFg4Qi0fKgHQAo40fiELr2BQM=
-Received: from MW4PR03CA0283.namprd03.prod.outlook.com (2603:10b6:303:b5::18)
- by MW3PR12MB4538.namprd12.prod.outlook.com (2603:10b6:303:55::15) with
+ bh=MkkALXGb9nPRYwkNYtpCt+Atuh9Wi8ZARCDN0vK4ucE=;
+ b=GPFQnuHYEsvYezRY2q7HMvCP5xkyUW4R6yOJH0rp1Z5hcLA+7HSB0ofKCtsqwYVW/EAEu6yUWiAecgVa5L4JoqC0k2KAGMP9ElmL0NVJNurzGRzPYzafsO7pRRL9damW5zepBXJyNBdeLJjfSNGFSIcPbxMtZwMTrZe51EJiBkg=
+Received: from MW2PR16CA0070.namprd16.prod.outlook.com (2603:10b6:907:1::47)
+ by BN9PR12MB5212.namprd12.prod.outlook.com (2603:10b6:408:11d::14) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6631.29; Fri, 28 Jul
- 2023 05:36:52 +0000
-Received: from CO1NAM11FT053.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:b5:cafe::54) by MW4PR03CA0283.outlook.office365.com
- (2603:10b6:303:b5::18) with Microsoft SMTP Server (version=TLS1_2,
+ 2023 05:37:18 +0000
+Received: from CO1NAM11FT070.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:907:1:cafe::79) by MW2PR16CA0070.outlook.office365.com
+ (2603:10b6:907:1::47) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6631.29 via Frontend
- Transport; Fri, 28 Jul 2023 05:36:52 +0000
+ Transport; Fri, 28 Jul 2023 05:37:18 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -35,20 +35,20 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
  client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
 Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CO1NAM11FT053.mail.protection.outlook.com (10.13.175.63) with Microsoft SMTP
+ CO1NAM11FT070.mail.protection.outlook.com (10.13.175.20) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.6631.29 via Frontend Transport; Fri, 28 Jul 2023 05:36:50 +0000
+ 15.20.6631.29 via Frontend Transport; Fri, 28 Jul 2023 05:37:17 +0000
 Received: from kali.amd.com (10.180.168.240) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.27; Fri, 28 Jul
- 2023 00:36:47 -0500
+ 2023 00:37:03 -0500
 From: Vasant Hegde <vasant.hegde@amd.com>
 To: <iommu@lists.linux.dev>, <joro@8bytes.org>
 CC: <suravee.suthikulpanit@amd.com>, <wei.huang2@amd.com>,
 	<jsnitsel@redhat.com>, <jgg@ziepe.ca>, Vasant Hegde <vasant.hegde@amd.com>
-Subject: [PATCH v2 01/16] iommu/amd: Remove unused amd_io_pgtable.pt_root variable
-Date: Fri, 28 Jul 2023 05:35:54 +0000
-Message-ID: <20230728053609.165183-2-vasant.hegde@amd.com>
+Subject: [PATCH v2 02/16] iommu/amd: Consolidate timeout pre-define to amd_iommu_type.h
+Date: Fri, 28 Jul 2023 05:35:55 +0000
+Message-ID: <20230728053609.165183-3-vasant.hegde@amd.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230728053609.165183-1-vasant.hegde@amd.com>
 References: <20230728053609.165183-1-vasant.hegde@amd.com>
@@ -65,63 +65,114 @@ X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
  (10.181.40.145)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1NAM11FT053:EE_|MW3PR12MB4538:EE_
-X-MS-Office365-Filtering-Correlation-Id: 190b0adf-1a73-4a15-7cc9-08db8f2ca479
+X-MS-TrafficTypeDiagnostic: CO1NAM11FT070:EE_|BN9PR12MB5212:EE_
+X-MS-Office365-Filtering-Correlation-Id: 7b95ce1d-49b1-4d3f-7d27-08db8f2cb4ed
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	tsqXDDUNY3K9Kr8tIAatXJCA4QbH1C8T5Zn0oe8aOl2L1N7eUt6QGTtEt6G+l+0l6Zh1YBtPvwSvwdhrzHkyYEV46/YLvT8EjUCq6k8fxZM6kkR2FF484VmkVxI8+XbRCv1Z/UhDkBDiR2J/hPTindNLQbRkC3bokNVZbvzKRPnB+YFZ2VMR7tk6omlZ9PvcGvOpN+TcBfUppkQw+5qNPQzJ5BCBg7CjFJgV4grqOhk0UP3kyFxLIuk/wD3gBUpMd1d5vkdmb0rKcGrGlJ6w97c1qMN5SXxBZfuE3akiVFUhy5MaUYGiBDgY4hFN+U4EFrYkqcwgYc95AVwtHHcKwOC/XGr4yMBY8VAUxC6GZ2ATQyBcdy9FYJm86y/9AhoniAybsas958w9ffIGyWh2NNkD1nT0obaFlvMFivsQNeEwVsB62sX4h014GXKoy7dufAtoV9CYcMQSAlcfd5L7TZqiv3RfnYbMUX1twZs/AB51vkGSJSkd9Yw1NttqhO17M1LjAR/no5PLqW/GJQNF8/VIhgA0JwIGCyhmAdNzBi6GLeUggiTqaKIyLw0ecxhV0W4fc/39rZFnzi0ktHyGvB0IzF+mrWgCqDNNjJLRA1qc84JtV3Q8xEqCcLZUcb5RCIwwRWY00Vo5epPOA+hQljO0ZrLLBT727cWWIkzXJ0PBCyRNYhIaoINmrnCiY4ykmLDCOMyle85NPpTsOpQr/Ym6lbeGhcdwyXVjBYnZhdrLQXjCa2RMIzK5pBFPrLmWFKu9aFsiSvh07Vipj9FZYw==
+	xT+ffuhISu3Psp2fumjkeplG//826GoMKKzvbinEyKzwxrbIta6VJ/sxFpxr2qEeiRjvLtsen5pQ8M41q4wbQTL00TaPWxsj5od8UkDSp/AsMJ/pJP29htkqImY5npbTKEDYP6LQUCtGTt/OWzVQ99Nhi1tdrZt2VMvVHIYjxpIFV+rWOPOAhpWkO6k7saQRtGEYparXqOIV+DANd+9KiW6+a0CgBt4nmgdthjJ9Gxmc4Y9XuhCOJIHjAjss5VOBmI1TzklgrqZlHpol9dkrZjLvQrFQnnpgD9jBbJ3u8fS0vOhBO/0HD+uWw+wXXkIm0ojMj+x6rp07GRyYzHQcWEXckbbQnK8+qB2/Oavbp9R2bN6TETQfJQmkzWCYmlRUg5/gM5pbGbEZNwxq8FcNHnlxK4mj0Hkjjd0TW3KzD0zQqhnPOGoJUgCDr88wFT1kn0kYE/1hLvvJ2Mw1BtyXCT9QLNloQvhPRRyBHMg4KVEc5uNUOgS/mU3p+ngUl0kwGkjwhMSdKSzO/b7DzZt4ESZvKnAvLddiJjLzFIYedyPZpQPV56YxBitEecCrP1iizwyNlS2/jsZ25A/+fpL0hAbfpXW23Q5WiBrKYNLRyr/HGgegG5U2zTXzmjU2eP+D6Nfik2+uhF0ED7n1LWs1V7Gn8w8z13AHDuWXhDB7r5qTlDpc2FrDCgSxWdxXlsmm2xeohO5LjSX/AvjWWFgTQC1lot2iXJLJ+/HOe05tSVDKo9I6Wy2KFyy3Un8lm2Xc3oeqgMMg4xjLShcBxHnOcw==
 X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:ErrorRetry;CAT:NONE;SFS:(13230028)(4636009)(396003)(346002)(136003)(376002)(39860400002)(82310400008)(451199021)(46966006)(40470700004)(36840700001)(6666004)(82740400003)(478600001)(356005)(7696005)(47076005)(83380400001)(1076003)(26005)(4326008)(54906003)(70206006)(70586007)(81166007)(110136005)(426003)(336012)(2616005)(16526019)(36860700001)(186003)(44832011)(8936002)(8676002)(316002)(40460700003)(5660300002)(2906002)(41300700001)(86362001)(40480700001)(36756003)(36900700001);DIR:OUT;SFP:1101;
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(136003)(376002)(396003)(346002)(39860400002)(82310400008)(451199021)(46966006)(36840700001)(40470700004)(36860700001)(110136005)(6666004)(7696005)(54906003)(26005)(478600001)(83380400001)(40460700003)(36756003)(86362001)(40480700001)(2906002)(356005)(2616005)(426003)(336012)(47076005)(1076003)(186003)(16526019)(8936002)(82740400003)(4326008)(81166007)(44832011)(8676002)(70206006)(70586007)(41300700001)(316002)(5660300002)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jul 2023 05:36:50.2409
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jul 2023 05:37:17.8446
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 190b0adf-1a73-4a15-7cc9-08db8f2ca479
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7b95ce1d-49b1-4d3f-7d27-08db8f2cb4ed
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	CO1NAM11FT053.eop-nam11.prod.protection.outlook.com
+	CO1NAM11FT070.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR12MB4538
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN9PR12MB5212
 
 From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 
-It has been no longer used since the commit 6eedb59c18a3 ("iommu/amd:
-Remove amd_iommu_domain_get_pgtable").
+To allow inclusion in other files in subsequent patches.
 
 Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
 ---
- drivers/iommu/amd/amd_iommu.h       | 1 -
- drivers/iommu/amd/amd_iommu_types.h | 1 -
- 2 files changed, 2 deletions(-)
+ drivers/iommu/amd/amd_iommu_types.h |  4 ++++
+ drivers/iommu/amd/init.c            | 10 ++++------
+ drivers/iommu/amd/iommu.c           |  2 --
+ 3 files changed, 8 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/iommu/amd/amd_iommu.h b/drivers/iommu/amd/amd_iommu.h
-index f23ad6043f04..6bf55de9fbeb 100644
---- a/drivers/iommu/amd/amd_iommu.h
-+++ b/drivers/iommu/amd/amd_iommu.h
-@@ -108,7 +108,6 @@ static inline void *iommu_phys_to_virt(unsigned long paddr)
- static inline
- void amd_iommu_domain_set_pt_root(struct protection_domain *domain, u64 root)
- {
--	atomic64_set(&domain->iop.pt_root, root);
- 	domain->iop.root = (u64 *)(root & PAGE_MASK);
- 	domain->iop.mode = root & 7; /* lowest 3 bits encode pgtable mode */
- }
 diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
-index 781ab9c2ea70..1930e918188f 100644
+index 1930e918188f..13c582a2454a 100644
 --- a/drivers/iommu/amd/amd_iommu_types.h
 +++ b/drivers/iommu/amd/amd_iommu_types.h
-@@ -544,7 +544,6 @@ struct amd_io_pgtable {
- 	struct io_pgtable	iop;
- 	int			mode;
- 	u64			*root;
--	atomic64_t		pt_root;	/* pgtable root and pgtable mode */
- 	u64			*pgd;		/* v2 pgtable pgd pointer */
- };
+@@ -451,6 +451,10 @@
+ #define PD_IOMMUV2_MASK		BIT(3) /* domain has gcr3 table */
+ #define PD_GIOV_MASK		BIT(4) /* domain enable GIOV support */
  
++/* Timeout stuff */
++#define LOOP_TIMEOUT		100000
++#define MMIO_STATUS_TIMEOUT	2000000
++
+ extern bool amd_iommu_dump;
+ #define DUMP_printk(format, arg...)				\
+ 	do {							\
+diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+index 45efb7e5d725..852e40b13d20 100644
+--- a/drivers/iommu/amd/init.c
++++ b/drivers/iommu/amd/init.c
+@@ -83,8 +83,6 @@
+ #define ACPI_DEVFLAG_LINT1              0x80
+ #define ACPI_DEVFLAG_ATSDIS             0x10000000
+ 
+-#define LOOP_TIMEOUT	2000000
+-
+ #define IVRS_GET_SBDF_ID(seg, bus, dev, fn)	(((seg & 0xffff) << 16) | ((bus & 0xff) << 8) \
+ 						 | ((dev & 0x1f) << 3) | (fn & 0x7))
+ 
+@@ -985,14 +983,14 @@ static int iommu_ga_log_enable(struct amd_iommu *iommu)
+ 	iommu_feature_enable(iommu, CONTROL_GAINT_EN);
+ 	iommu_feature_enable(iommu, CONTROL_GALOG_EN);
+ 
+-	for (i = 0; i < LOOP_TIMEOUT; ++i) {
++	for (i = 0; i < MMIO_STATUS_TIMEOUT; ++i) {
+ 		status = readl(iommu->mmio_base + MMIO_STATUS_OFFSET);
+ 		if (status & (MMIO_STATUS_GALOG_RUN_MASK))
+ 			break;
+ 		udelay(10);
+ 	}
+ 
+-	if (WARN_ON(i >= LOOP_TIMEOUT))
++	if (WARN_ON(i >= MMIO_STATUS_TIMEOUT))
+ 		return -EINVAL;
+ 
+ 	return 0;
+@@ -2900,14 +2898,14 @@ static void enable_iommus_vapic(void)
+ 		 * Need to set and poll check the GALOGRun bit to zero before
+ 		 * we can set/ modify GA Log registers safely.
+ 		 */
+-		for (i = 0; i < LOOP_TIMEOUT; ++i) {
++		for (i = 0; i < MMIO_STATUS_TIMEOUT; ++i) {
+ 			status = readl(iommu->mmio_base + MMIO_STATUS_OFFSET);
+ 			if (!(status & MMIO_STATUS_GALOG_RUN_MASK))
+ 				break;
+ 			udelay(10);
+ 		}
+ 
+-		if (WARN_ON(i >= LOOP_TIMEOUT))
++		if (WARN_ON(i >= MMIO_STATUS_TIMEOUT))
+ 			return;
+ 	}
+ 
+diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+index 56b6cf8bf03f..dd586f69a9d8 100644
+--- a/drivers/iommu/amd/iommu.c
++++ b/drivers/iommu/amd/iommu.c
+@@ -44,8 +44,6 @@
+ 
+ #define CMD_SET_TYPE(cmd, t) ((cmd)->data[1] |= ((t) << 28))
+ 
+-#define LOOP_TIMEOUT	100000
+-
+ /* IO virtual address start page frame number */
+ #define IOVA_START_PFN		(1)
+ #define IOVA_PFN(addr)		((addr) >> PAGE_SHIFT)
 -- 
 2.31.1
 
