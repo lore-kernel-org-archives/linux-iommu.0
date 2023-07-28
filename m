@@ -1,80 +1,192 @@
-Received: from mail-qt1-f170.google.com (mail-qt1-f170.google.com [209.85.160.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (unknown [192.55.52.120])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0CF782F35
-	for <iommu@lists.linux.dev>; Fri, 28 Jul 2023 07:53:32 +0000 (UTC)
-Received: by mail-qt1-f170.google.com with SMTP id d75a77b69052e-40550136e54so220951cf.0
-        for <iommu@lists.linux.dev>; Fri, 28 Jul 2023 00:53:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1690530812; x=1691135612;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=FCkZl/qhv7Jne5YDBQ8ejzDwVZoTpLAS727QSMzp5Q0=;
-        b=6fRRzIgSr85C86YxYuL3k72o/nG8Mz4C+lKlI3SrmzNHHvxxXkuNFPFBKeQ7TX6VT9
-         qMWsGVOWBFZVuLPp4/jM6QV7f8kQsZIFy96EvVrmlJaNQOOi1ZHYPWmDicqh56k6QJbh
-         qkxivVEgMFSRvkk4j2T/8djCvq2aX5q/T3qW17eojfahjzOLwUuR3i/2WYu5a/ZTpe5o
-         Puw9HSdiZpO8SMxTZh7Q+Ha+D5d2n65k22wFvXf/3vHDhlUYQxQapBcUUk0J6c9v1EGi
-         Oa9LgN65HyW8juGw72UI70gy6wpeQu5j4alDiL7mRo1OYRevd7VLzs0Xj2Vqi0vFNgVp
-         Ex8A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1690530812; x=1691135612;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=FCkZl/qhv7Jne5YDBQ8ejzDwVZoTpLAS727QSMzp5Q0=;
-        b=IU+tS06Jui/J5gzB4HWFLMgZBAi85VpZ5Dx2fRfkGofSTybBUTuTwfpn6vJqUOp8R5
-         dNpRdmSCCi6cP1Wn4TalkKeAapkVFo4lL/Q4FaeWmtbABCVDmLe3y8owzBmdxlcDd4C7
-         bTfx82g4g4j/jlRZXt6r9qQQZWo4Hp/OHHmkzPnwIOtY64zxvDuNh9Ji9KU5S4DYtqO1
-         rYZV7h1WHa+ZTSxVBde3C0V3IlARsIE6dVxBvjBKz9Bgp6TGrZjFYEi/yRj6GMkhvYfa
-         9MheznY5o1DsKzze0Q4Scs/MZdcYxKL14YtTC/AmTQMdOg2/C1B1UMRrk3Xz+lasTC9Z
-         UrGA==
-X-Gm-Message-State: ABy/qLYbkYidUjRTSOZFW+Bb7+P0HikHYt1Foh/KeW4V/zLK20kIV+co
-	Z3tPcUMn7b32TyDPmel4bVfLGbg6gUSax0LtaL5Qog==
-X-Google-Smtp-Source: APBJJlGD+SwyVD2EOuZnO4UoKoOOcE6/ENbNmOzXdUfuF/X+GQBYzXEFu/reLSXEl57dPRqhCmrPVZzVmXxy62vjJUk=
-X-Received: by 2002:a05:622a:1a18:b0:403:b6ff:c0b with SMTP id
- f24-20020a05622a1a1800b00403b6ff0c0bmr216044qtb.6.1690530811464; Fri, 28 Jul
- 2023 00:53:31 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A2253C8EF;
+	Fri, 28 Jul 2023 08:19:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1690532349; x=1722068349;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=b/epiay7cjfSEFmhvgmiHCozve2Mrb9TOzKISarVum8=;
+  b=bauMP/jeGEiFXbPrr2Y5s9B4hUhIAN7umsuoBCypN6AYyAgVDNQyXoMg
+   rbjU2XCLh+5dMNmpMRWyZE3kiP/JTuxOBy+ddYxVSBSum27zSbJhHQjKd
+   kYz5Ivn9kLHBxVzKB8NLf944CIJGIjaJMR3CXMZIg1YsDeXWslmu2ZBue
+   3mdKKxeXYCmL95iOy9Q4m/611//JmsvKHzyxKIhmslUNpeXvEFj2dI7Lv
+   WnxbV7zdP1mUGMvfwWDZVHglHIWY63bHyQ+ZhXJKahMnNOub9CdLqG0bs
+   xGyjZ+wHZmszcauIy7W1XLNObVntgpuxPtWi2KsOJxq7jhYmVF2e9EPyk
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10784"; a="367415187"
+X-IronPort-AV: E=Sophos;i="6.01,236,1684825200"; 
+   d="scan'208";a="367415187"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jul 2023 01:19:08 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10784"; a="1058040615"
+X-IronPort-AV: E=Sophos;i="6.01,236,1684825200"; 
+   d="scan'208";a="1058040615"
+Received: from lkp-server02.sh.intel.com (HELO 953e8cd98f7d) ([10.239.97.151])
+  by fmsmga005.fm.intel.com with ESMTP; 28 Jul 2023 01:19:04 -0700
+Received: from kbuild by 953e8cd98f7d with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1qPIgi-00031l-0m;
+	Fri, 28 Jul 2023 08:19:04 +0000
+Date: Fri, 28 Jul 2023 16:18:48 +0800
+From: kernel test robot <lkp@intel.com>
+To: Tanmay Jagdale <tanmay@marvell.com>, will@kernel.org,
+	robin.murphy@arm.com, joro@8bytes.org, baolu.lu@linux.intel.com,
+	thunder.leizhen@huawei.com
+Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, gcherian@marvell.com,
+	sgoutham@marvell.com, lcherian@marvell.com, bbhushan2@marvell.com
+Subject: Re: [RESEND PATCH 1/4] iommu/arm-smmu-v3: Add support for ECMDQ
+ register mode
+Message-ID: <202307281657.K3A7kRax-lkp@intel.com>
+References: <20230721063513.33431-2-tanmay@marvell.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20230727182647.4106140-1-mshavit@google.com> <20230727182647.4106140-8-mshavit@google.com>
- <ZMK60wm3BBk038r7@nvidia.com>
-In-Reply-To: <ZMK60wm3BBk038r7@nvidia.com>
-From: Michael Shavit <mshavit@google.com>
-Date: Fri, 28 Jul 2023 15:52:55 +0800
-Message-ID: <CAKHBV24U3ekA9vFbh1_ZzO88qkozxVnwP=AMkNkbDnSTH3o_dw@mail.gmail.com>
-Subject: Re: [PATCH v1 7/7] iommu/arm-smmu-v3: Move CD table to arm_smmu_master
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
-	Joerg Roedel <joro@8bytes.org>, jean-philippe@linaro.org, nicolinc@nvidia.com, 
-	baolu.lu@linux.intel.com, linux-arm-kernel@lists.infradead.org, 
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230721063513.33431-2-tanmay@marvell.com>
 
-On Fri, Jul 28, 2023 at 2:43=E2=80=AFAM Jason Gunthorpe <jgg@nvidia.com> wr=
-ote:
->
-> On Fri, Jul 28, 2023 at 02:26:23AM +0800, Michael Shavit wrote:
-> > Each master is now allocated a CD table at probe time,
->
-> Currently it is allocated during arm_smmu_domain_finalise_s1(), so it
-> isn't allocated at probe time.
+Hi Tanmay,
 
-Urh right, I meant that this patch moves the allocation to the probe,
-but that was misleading wording for sure.
+kernel test robot noticed the following build warnings:
 
-> I think the right place to put the allocation is during the attach op,
-> the first time we need a CD table then go and allocate it. If we can't
-> then domain attach fails with -ENOMEM.
->
-> Then you can put the free in a detach op once the CD table becomes
-> empty and it behaves much like it already does.
+[auto build test WARNING on v6.5-rc2]
+[also build test WARNING on linus/master next-20230728]
+[cannot apply to joro-iommu/next]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-Hmmm fair. I can't think of a reason that the table *must* be
-pre-allocated for the PASID feature, and that could always be a
-different commit if it turns out to be necessary.
+url:    https://github.com/intel-lab-lkp/linux/commits/Tanmay-Jagdale/iommu-arm-smmu-v3-Add-support-for-ECMDQ-register-mode/20230721-143913
+base:   v6.5-rc2
+patch link:    https://lore.kernel.org/r/20230721063513.33431-2-tanmay%40marvell.com
+patch subject: [RESEND PATCH 1/4] iommu/arm-smmu-v3: Add support for ECMDQ register mode
+config: arm64-randconfig-r032-20230727 (https://download.01.org/0day-ci/archive/20230728/202307281657.K3A7kRax-lkp@intel.com/config)
+compiler: clang version 17.0.0 (https://github.com/llvm/llvm-project.git 4a5ac14ee968ff0ad5d2cc1ffa0299048db4c88a)
+reproduce: (https://download.01.org/0day-ci/archive/20230728/202307281657.K3A7kRax-lkp@intel.com/reproduce)
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202307281657.K3A7kRax-lkp@intel.com/
+
+All warnings (new ones prefixed by >>):
+
+>> drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c:3619:39: warning: variable 'pre_addr' is uninitialized when used here [-Wuninitialized]
+    3619 |                 if (i && ((val & ECMDQ_CP_ADDR) != (pre_addr + ECMDQ_CP_RRESET_SIZE))) {
+         |                                                     ^~~~~~~~
+   include/linux/compiler.h:55:47: note: expanded from macro 'if'
+      55 | #define if(cond, ...) if ( __trace_if_var( !!(cond , ## __VA_ARGS__) ) )
+         |                                               ^~~~
+   include/linux/compiler.h:57:52: note: expanded from macro '__trace_if_var'
+      57 | #define __trace_if_var(cond) (__builtin_constant_p(cond) ? (cond) : __trace_if_value(cond))
+         |                                                    ^~~~
+   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c:3610:20: note: initialize the variable 'pre_addr' to silence this warning
+    3610 |                 u64 val, pre_addr;
+         |                                  ^
+         |                                   = 0
+   1 warning generated.
+
+
+vim +/pre_addr +3619 drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+
+  3588	
+  3589	static int arm_smmu_ecmdq_probe(struct arm_smmu_device *smmu)
+  3590	{
+  3591		int ret, cpu;
+  3592		u32 i, nump, numq, gap;
+  3593		u32 reg, shift_increment;
+  3594		u64 addr, smmu_dma_base;
+  3595		void __iomem *cp_regs, *cp_base;
+  3596	
+  3597		/* IDR6 */
+  3598		reg = readl_relaxed(smmu->base + ARM_SMMU_IDR6);
+  3599		nump = 1 << FIELD_GET(IDR6_LOG2NUMP, reg);
+  3600		numq = 1 << FIELD_GET(IDR6_LOG2NUMQ, reg);
+  3601		smmu->nr_ecmdq = nump * numq;
+  3602		gap = ECMDQ_CP_RRESET_SIZE >> FIELD_GET(IDR6_LOG2NUMQ, reg);
+  3603	
+  3604		smmu_dma_base = (vmalloc_to_pfn(smmu->base) << PAGE_SHIFT);
+  3605		cp_regs = ioremap(smmu_dma_base + ARM_SMMU_ECMDQ_CP_BASE, PAGE_SIZE);
+  3606		if (!cp_regs)
+  3607			return -ENOMEM;
+  3608	
+  3609		for (i = 0; i < nump; i++) {
+  3610			u64 val, pre_addr;
+  3611	
+  3612			val = readq_relaxed(cp_regs + 32 * i);
+  3613			if (!(val & ECMDQ_CP_PRESET)) {
+  3614				iounmap(cp_regs);
+  3615				dev_err(smmu->dev, "ecmdq control page %u is memory mode\n", i);
+  3616				return -EFAULT;
+  3617			}
+  3618	
+> 3619			if (i && ((val & ECMDQ_CP_ADDR) != (pre_addr + ECMDQ_CP_RRESET_SIZE))) {
+  3620				iounmap(cp_regs);
+  3621				dev_err(smmu->dev, "ecmdq_cp memory region is not contiguous\n");
+  3622				return -EFAULT;
+  3623			}
+  3624	
+  3625			pre_addr = val & ECMDQ_CP_ADDR;
+  3626		}
+  3627	
+  3628		addr = readl_relaxed(cp_regs) & ECMDQ_CP_ADDR;
+  3629		iounmap(cp_regs);
+  3630	
+  3631		cp_base = devm_ioremap(smmu->dev, smmu_dma_base + addr, ECMDQ_CP_RRESET_SIZE * nump);
+  3632		if (!cp_base)
+  3633			return -ENOMEM;
+  3634	
+  3635		smmu->ecmdq = devm_alloc_percpu(smmu->dev, struct arm_smmu_ecmdq *);
+  3636		if (!smmu->ecmdq)
+  3637			return -ENOMEM;
+  3638	
+  3639		ret = arm_smmu_ecmdq_layout(smmu);
+  3640		if (ret)
+  3641			return ret;
+  3642	
+  3643		shift_increment = order_base_2(num_possible_cpus() / smmu->nr_ecmdq);
+  3644	
+  3645		addr = 0;
+  3646		for_each_possible_cpu(cpu) {
+  3647			struct arm_smmu_ecmdq *ecmdq;
+  3648			struct arm_smmu_queue *q;
+  3649	
+  3650			ecmdq = *per_cpu_ptr(smmu->ecmdq, cpu);
+  3651			ecmdq->base = cp_base + addr;
+  3652	
+  3653			q = &ecmdq->cmdq.q;
+  3654	
+  3655			q->llq.max_n_shift = ECMDQ_MAX_SZ_SHIFT + shift_increment;
+  3656			ret = arm_smmu_init_one_queue(smmu, q, ecmdq->base, ARM_SMMU_ECMDQ_PROD,
+  3657					ARM_SMMU_ECMDQ_CONS, CMDQ_ENT_DWORDS, "ecmdq");
+  3658			if (ret)
+  3659				return ret;
+  3660	
+  3661			q->ecmdq_prod = ECMDQ_PROD_EN;
+  3662			rwlock_init(&q->ecmdq_lock);
+  3663	
+  3664			ret = arm_smmu_ecmdq_init(&ecmdq->cmdq);
+  3665			if (ret) {
+  3666				dev_err(smmu->dev, "ecmdq[%d] init failed\n", i);
+  3667				return ret;
+  3668			}
+  3669	
+  3670			addr += gap;
+  3671		}
+  3672	
+  3673		return 0;
+  3674	}
+  3675	
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
