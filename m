@@ -1,144 +1,182 @@
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2040.outbound.protection.outlook.com [40.107.236.40])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oi1-f173.google.com (mail-oi1-f173.google.com [209.85.167.173])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 61DAB1FC6
-	for <iommu@lists.linux.dev>; Fri, 28 Jul 2023 04:44:27 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=WZV8b+dQK94sf3ur23uyFm3gLwYVKEJeUqaLAscTqGfsHa6GmtasAPu/O25GDnvHMZYE/oHFMsgYp7ZZ0e7zzxr+eeFyirqRwteteSGRrjux+Jwq5VfyIB6GjIpxhNUqylaML2b6jhdn35CQTyIBj5uX65bI5u2VjYNYlYgDBtX9ASj/wqkJ3Qdzl36sYilW0ImveaqCba2JIr5xmdpJPK5SnhHcxhJO1mBmZEsP6dguxAJzpV0ZeAAj0o8683RL9bsVkwltG80eBaeEY31kIICnEZllj1faaGAX0S/1OZSiKkbN8Db8R8sj7A/h0hX+06ZP9RHa2P6J91DtF5tlLw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=cO+HdEFRgc+fGIm0mnRjW78mYR10GWTU281tj5iX7rM=;
- b=ABNtpHGLWUF7v9XXYaP77N2C4b3Qj90MjW0DRb/LoXQLpFGplHnJ4sx9FEwaQvwesHzSIRt1elcHpoz2Luu+dtkSvurF0Vse5iZJfJyDRA7QWGcH1/LP2uJbgWwMd/wQIhRF1GC4gQeYAY386nUlj8rd7o/UeMgc7Z2apgRnifwzNV55pOaX11FOjohOAskrcozwPKvIaLXYf/cHQ8RaEwYlHc5m2hn5qOwaxDU0gRngEgC1ca2yuGOOgyWHj1cfSBqdArusl99rVLM1Bf4YXQhZHcCXyoWR+5v9dgKSw6/CGpX96a5lIuNgoihve1gMKV7iuD9L+Sd6LbAGC2LDzQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.232) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=cO+HdEFRgc+fGIm0mnRjW78mYR10GWTU281tj5iX7rM=;
- b=frWQjZK9ckHV0AouQ4zU/AFzEhL6mLTg3Y9LxAVMgeouhcRqlFAPZrCPLWvg+aFRjfnz/wmLOV3ixuZdkG+r6X/1nJRLjcC6L9hd1nNTOkiveJVGHzCVx18UhImmG3r5MmuyMnZQVdtGuEK1bYu0MVk7r3fo9q0QDVPcT99xI64n51nbSQQ0waQ+QXCV4OatRJAs16SGM0r+d82gDBkNi2lbXBHRiduu6m6v4Zp0AG5I24YLqU+ZkX6gvG9FItc9dJFi3zFH/A8c2ENZ+NU4l0ZrgZ8YPJ3b2xxy+HZvv/lHnOVR6Py52R0oIGNG/cCJhxXcWUXxEy9Wi82lP3/WaQ==
-Received: from CYZPR05CA0038.namprd05.prod.outlook.com (2603:10b6:930:a3::29)
- by DM4PR12MB6280.namprd12.prod.outlook.com (2603:10b6:8:a2::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6631.29; Fri, 28 Jul
- 2023 04:44:24 +0000
-Received: from CY4PEPF0000EDD2.namprd03.prod.outlook.com
- (2603:10b6:930:a3:cafe::6f) by CYZPR05CA0038.outlook.office365.com
- (2603:10b6:930:a3::29) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6652.5 via Frontend
- Transport; Fri, 28 Jul 2023 04:44:24 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.232) by
- CY4PEPF0000EDD2.mail.protection.outlook.com (10.167.241.206) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6631.22 via Frontend Transport; Fri, 28 Jul 2023 04:44:24 +0000
-Received: from drhqmail202.nvidia.com (10.126.190.181) by mail.nvidia.com
- (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Thu, 27 Jul 2023
- 21:44:17 -0700
-Received: from drhqmail201.nvidia.com (10.126.190.180) by
- drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.37; Thu, 27 Jul 2023 21:44:16 -0700
-Received: from Asurada-Nvidia (10.127.8.13) by mail.nvidia.com
- (10.126.190.180) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37 via Frontend
- Transport; Thu, 27 Jul 2023 21:44:16 -0700
-Date: Thu, 27 Jul 2023 21:44:14 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-CC: "jgg@nvidia.com" <jgg@nvidia.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
-	"joro@8bytes.org" <joro@8bytes.org>, "will@kernel.org" <will@kernel.org>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>, "alex.williamson@redhat.com"
-	<alex.williamson@redhat.com>, "shuah@kernel.org" <shuah@kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>, "kvm@vger.kernel.org"
-	<kvm@vger.kernel.org>, "linux-kselftest@vger.kernel.org"
-	<linux-kselftest@vger.kernel.org>, "mjrosato@linux.ibm.com"
-	<mjrosato@linux.ibm.com>, "farman@linux.ibm.com" <farman@linux.ibm.com>
-Subject: Re: [PATCH v10 3/6] iommufd: Add iommufd_access_change_ioas(_id)
- helpers
-Message-ID: <ZMNHnmydMM1zExZW@Asurada-Nvidia>
-References: <cover.1690488745.git.nicolinc@nvidia.com>
- <ad75a1f7f0b4d5b6d35238b4ae7b41db1410110c.1690488745.git.nicolinc@nvidia.com>
- <BN9PR11MB527660F2932964A47396D1E88C06A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <ZMNF5vTTp2IRMsWH@Asurada-Nvidia>
- <BN9PR11MB5276C3F296F27696AFD92D0F8C06A@BN9PR11MB5276.namprd11.prod.outlook.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB1E123AE
+	for <iommu@lists.linux.dev>; Fri, 28 Jul 2023 05:19:03 +0000 (UTC)
+Received: by mail-oi1-f173.google.com with SMTP id 5614622812f47-3a425ef874dso1420335b6e.0
+        for <iommu@lists.linux.dev>; Thu, 27 Jul 2023 22:19:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=rivosinc-com.20221208.gappssmtp.com; s=20221208; t=1690521542; x=1691126342;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=dA4h1wXuO+RqiKn56Fbjhd22WJLs7KDtxnH5lEYDThw=;
+        b=rCCGFQOaheftq0HBV0LLW8L+L/v6ll8/foJApxGYX++40jda1h5c0MWTF5uv35NOCF
+         yaH9NHb3PZpu3nzpkBd3mt1WnPtZ9z3ydmeagEC8cU1Hfk8th+iT9nfxFuTWfKWNMdq8
+         n8wnb1rM3D6J0b3bhLL4G4KA3L8KDqw1kOgvKizfcveQ1uA1cuV2lFWT2zG67WZr6YEU
+         ng2su2EY9hqNPdMBPtdMPPSk0j8ev6ZR+5zcP8/HacSMRejTg4ZwLEfDbEunGix1l0YX
+         DndlAnMka4ykXJbXYC7WjlDVBN+bD7cZ0CXFDvOTrx37mCops+MAyXcQT3agmOs2Veow
+         PzwQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1690521542; x=1691126342;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=dA4h1wXuO+RqiKn56Fbjhd22WJLs7KDtxnH5lEYDThw=;
+        b=jN8hf1bNNTlQCgLPpsr8VjYlxi0u+VOC0uGtX/TCwitDjnv1ClxBBI+3so+0pz4AKr
+         2xz2Z/dKrtAZQG0PcKi0Qqzhf3HlrE/LvIdNVRwGk7sjkvBzr0Y2XSw4eMHX5VXzjp1B
+         XkExjFN9JebqGl6db+OvQsIc2cFPdvuHs7oDfmYbf0DZOpDgkToCS4U0AAH+xAoU6mp7
+         fZhpODRqurtkGv65zrFPcfSHLmSGrtjGkjpD0AM72EkYF0UWLPG8OEPLvXKtdcT1j36i
+         f67Ni2Ohz6+M9oSJVocoxt42WlaJFZ38Mxtz3cv2LCkXMKT8iW4fJZdW8MSam5WppEHO
+         Ruog==
+X-Gm-Message-State: ABy/qLbd6NgHwr0jFNqhT5oenC+rRBLZEH3BNYhn9nWVGhNcvvnKQHu3
+	tV5nLN5IbfESw/YZvpn6SnAMsGT4bMiCw3gpju/ugA==
+X-Google-Smtp-Source: APBJJlHSydpCNCH72+CyJD9Ih+I/nhI+XXfo842aQixN2GlXK2CsCxImcW2/Puw6DSs7Cz69xxqmvHQF4lkXRvRAEfA=
+X-Received: by 2002:a05:6808:f05:b0:3a0:5ee3:ea67 with SMTP id
+ m5-20020a0568080f0500b003a05ee3ea67mr2125638oiw.16.1690521542545; Thu, 27 Jul
+ 2023 22:19:02 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <BN9PR11MB5276C3F296F27696AFD92D0F8C06A@BN9PR11MB5276.namprd11.prod.outlook.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY4PEPF0000EDD2:EE_|DM4PR12MB6280:EE_
-X-MS-Office365-Filtering-Correlation-Id: cd70e105-c776-4a02-9c3b-08db8f255151
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	I1wUtZkaja0CxmVv7lFDspaD0pihNxFGIvNEvfL0zFI05yy4WYAD/VVSrIsQsB9GhUN354rbyyjyON+kIydHQhHe+CBc0TLJRTCShf0fMKjGM5CWTGPc1sh5xca5TizDzpLnnakMggPk9S7frzTw3rpc2MNuf68CRx+w5Uq8UHRA6fc6Xvm8wzm+OVya1Czk5PmTUA2bvJ+CwrHqbceLEfyqD329s+iUSKLS/ysyb+kMnsEutV5h9MvAkgEFLaR1O5vATDPLnQslO3yuVQhDo6MZdV2gRLRPjLzC6ZpMME9ohZSogcgDo9i+FWvUjE+p850BQyDIbPKeCFT3XLGhcvqOwy9Y+zD8U06ubzIvC8oYwSx5rkyQ716w/ezYGMY49uyO2avYerBzyxplHr+nWYgTf62/5SvX9UXYc5Yhlclh1iuNpIFM6mE8w+ClRIFrK2pW9NCkTaiioOsOAPYjVgUi6S60PqefmtpZn4PxnMc2/7xxZK4Lt8ph+O106XgTFfPt+P/3pc1cTbmpT2E38elnJ/gwob9fhyENLFlYSOzg8IotxhesXItUwpdqQ50fJl8sh7MxuYdOmN5lUHsoFpue38voj8ySST0j2hXYi0UL9rvRw+lbew8hvYq1tX6mn5IpIEPbuw2gS6CseksU6PcCMg40chU2CEFwXnAcu19k5PlwHyB8BUJVXgBLDyjJIbDQzzqFrvsdSj62fAlH+e/DBeSLv/nB0urKP1qi47N1o91PoWjZ60cyiuKMf+3b
-X-Forefront-Antispam-Report:
-	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(136003)(376002)(39860400002)(396003)(346002)(451199021)(82310400008)(46966006)(36840700001)(40470700004)(86362001)(7416002)(33716001)(2906002)(40460700003)(40480700001)(55016003)(426003)(47076005)(83380400001)(186003)(36860700001)(336012)(26005)(9686003)(7636003)(478600001)(356005)(54906003)(4326008)(82740400003)(6916009)(8936002)(70586007)(316002)(70206006)(8676002)(41300700001)(5660300002);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jul 2023 04:44:24.2828
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: cd70e105-c776-4a02-9c3b-08db8f255151
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CY4PEPF0000EDD2.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB6280
+References: <cover.1689792825.git.tjeznach@rivosinc.com> <1fd79e5c53d9d6ed2264f60dd4261f293cc00472.1689792825.git.tjeznach@rivosinc.com>
+ <5b8fd18e-8dfa-96bf-cdd4-4498b1d15ab9@ics.forth.gr> <CAH2o1u7uAuXsD6+6Dvam4kzQuUj8s98G0sR26_-q31wvSUYZNA@mail.gmail.com>
+ <CANXhq0rz1J+0t9M-e5NY015HhDT1Yy024_-Uan9CSJ4rMqtyng@mail.gmail.com>
+In-Reply-To: <CANXhq0rz1J+0t9M-e5NY015HhDT1Yy024_-Uan9CSJ4rMqtyng@mail.gmail.com>
+From: Tomasz Jeznach <tjeznach@rivosinc.com>
+Date: Fri, 28 Jul 2023 07:18:51 +0200
+Message-ID: <CAH2o1u6TaQ2PLcKRuSpcqh4Q5qUriimSZ1hmmy=37R2378NCUA@mail.gmail.com>
+Subject: Re: [PATCH 06/11] RISC-V: drivers/iommu/riscv: Add command, fault,
+ page-req queues
+To: Zong Li <zong.li@sifive.com>
+Cc: Nick Kossifidis <mick@ics.forth.gr>, Anup Patel <apatel@ventanamicro.com>, 
+	Albert Ou <aou@eecs.berkeley.edu>, linux@rivosinc.com, Will Deacon <will@kernel.org>, 
+	Joerg Roedel <joro@8bytes.org>, linux-kernel@vger.kernel.org, 
+	Sebastien Boeuf <seb@rivosinc.com>, iommu@lists.linux.dev, 
+	Palmer Dabbelt <palmer@dabbelt.com>, Paul Walmsley <paul.walmsley@sifive.com>, 
+	linux-riscv@lists.infradead.org, Robin Murphy <robin.murphy@arm.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Fri, Jul 28, 2023 at 04:41:18AM +0000, Tian, Kevin wrote:
-> > From: Nicolin Chen <nicolinc@nvidia.com>
-> > Sent: Friday, July 28, 2023 12:37 PM
+On Mon, Jul 24, 2023 at 11:47=E2=80=AFAM Zong Li <zong.li@sifive.com> wrote=
+:
+>
+> On Fri, Jul 21, 2023 at 2:00=E2=80=AFAM Tomasz Jeznach <tjeznach@rivosinc=
+.com> wrote:
 > >
-> > On Fri, Jul 28, 2023 at 04:23:03AM +0000, Tian, Kevin wrote:
-> > > > From: Nicolin Chen <nicolinc@nvidia.com>
-> > > > Sent: Friday, July 28, 2023 4:25 AM
-> > > >
-> > > > +static int iommufd_access_change_ioas(struct iommufd_access *access,
-> > > > +                                   struct iommufd_ioas *new_ioas)
-> > > > +{
-> > > > +     u32 iopt_access_list_id = access->iopt_access_list_id;
-> > > > +     struct iommufd_ioas *cur_ioas = access->ioas;
-> > > > +     int rc;
-> > > > +
-> > > > +     lockdep_assert_held(&access->ioas_lock);
-> > > > +
-> > > > +     /* We are racing with a concurrent detach, bail */
-> > > > +     if (cur_ioas != access->ioas_unpin)
-> > > > +             return -EBUSY;
-> > > > +
-> > > > +     if (IS_ERR(new_ioas))
-> > > > +             return PTR_ERR(new_ioas);
+> > On Wed, Jul 19, 2023 at 8:12=E2=80=AFPM Nick Kossifidis <mick@ics.forth=
+.gr> wrote:
 > > >
-> > > iommufd_access_change_ioas_id() already checks errors.
+> > > Hello Tomasz,
+> > >
+> > > On 7/19/23 22:33, Tomasz Jeznach wrote:
+> > > > Enables message or wire signal interrupts for PCIe and platforms de=
+vices.
+> > > >
+> > >
+> > > The description doesn't match the subject nor the patch content (we
+> > > don't jus enable interrupts, we also init the queues).
+> > >
+> > > > +     /* Parse Queue lengts */
+> > > > +     ret =3D of_property_read_u32(pdev->dev.of_node, "cmdq_len", &=
+iommu->cmdq_len);
+> > > > +     if (!ret)
+> > > > +             dev_info(dev, "command queue length set to %i\n", iom=
+mu->cmdq_len);
+> > > > +
+> > > > +     ret =3D of_property_read_u32(pdev->dev.of_node, "fltq_len", &=
+iommu->fltq_len);
+> > > > +     if (!ret)
+> > > > +             dev_info(dev, "fault/event queue length set to %i\n",=
+ iommu->fltq_len);
+> > > > +
+> > > > +     ret =3D of_property_read_u32(pdev->dev.of_node, "priq_len", &=
+iommu->priq_len);
+> > > > +     if (!ret)
+> > > > +             dev_info(dev, "page request queue length set to %i\n"=
+, iommu->priq_len);
+> > > > +
+> > > >       dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
+> > > >
+> > >
+> > > We need to add those to the device tree binding doc (or throw them aw=
+ay,
+> > > I thought it would be better to have them as part of the device
+> > > desciption than a module parameter).
+> > >
 > >
-> > I've thought about that: given that iommufd_access_change_ioas
-> > is a standalone API, though it's not used anywhere else at the
-> > moment, it might be safer to have this check again. Otherwise,
-> > we would need a line of comments saying that "caller must make
-> > sure that the input new_ioas is not holding an error code" or
-> > so?
+> > We can add them as an optional fields to DT.
+> > Alternatively, I've been looking into an option to auto-scale CQ/PQ
+> > based on number of attached devices, but this gets trickier for
+> > hot-pluggable systems. I've added module parameters as a bare-minimum,
+> > but still looking for better solutions.
 > >
-> 
-> I don't think it's a common practice for the caller to pass in
-> an error pointer when it already knows it's an error...
+> > >
+> > > > +static irqreturn_t riscv_iommu_priq_irq_check(int irq, void *data)=
+;
+> > > > +static irqreturn_t riscv_iommu_priq_process(int irq, void *data);
+> > > > +
+> > >
+> > > > +     case RISCV_IOMMU_PAGE_REQUEST_QUEUE:
+> > > > +             q =3D &iommu->priq;
+> > > > +             q->len =3D sizeof(struct riscv_iommu_pq_record);
+> > > > +             count =3D iommu->priq_len;
+> > > > +             irq =3D iommu->irq_priq;
+> > > > +             irq_check =3D riscv_iommu_priq_irq_check;
+> > > > +             irq_process =3D riscv_iommu_priq_process;
+> > > > +             q->qbr =3D RISCV_IOMMU_REG_PQB;
+> > > > +             q->qcr =3D RISCV_IOMMU_REG_PQCSR;
+> > > > +             name =3D "priq";
+> > > > +             break;
+> > >
+> > >
+> > > It makes more sense to add the code for the page request queue in the
+> > > patch that adds ATS/PRI support IMHO. This comment also applies to it=
+s
+> > > interrupt handlers below.
+> > >
+> >
+> > ack. will do.
+> >
+> > >
+> > > > +static inline void riscv_iommu_cmd_inval_set_addr(struct riscv_iom=
+mu_command *cmd,
+> > > > +                                               u64 addr)
+> > > > +{
+> > > > +     cmd->dword0 |=3D RISCV_IOMMU_CMD_IOTINVAL_AV;
+> > > > +     cmd->dword1 =3D addr;
+> > > > +}
+> > > > +
+> > >
+> > > This needs to be (addr >> 2) to match the spec, same as in the iofenc=
+e
+> > > command.
+> > >
+> >
+> > oops. Thanks!
+> >
+>
+> I think it should be (addr >> 12) according to the spec.
+>
 
-OK. I will just drop it then.
+My reading of the spec '3.1.1. IOMMU Page-Table cache invalidation commands=
+'
+is that it is a 4k page aligned address packed at dword1[61:10], so
+effectively shifted by 2 bits.
+
+regards,
+- Tomasz
+
+> > > Regards,
+> > > Nick
+> > >
+> >
+> > regards,
+> > - Tomasz
+> >
+> > _______________________________________________
+> > linux-riscv mailing list
+> > linux-riscv@lists.infradead.org
+> > http://lists.infradead.org/mailman/listinfo/linux-riscv
