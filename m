@@ -1,147 +1,93 @@
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2079.outbound.protection.outlook.com [40.107.244.79])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 96625EDC
-	for <iommu@lists.linux.dev>; Fri, 28 Jul 2023 19:10:34 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hh+rQumYVsV8bwe7TdJ4CRcrN8U04ES9yG4vhW+D6535TSz4kHEbzpCjZADXRNvxrKmCwjmlh2vaPBsxlQ2ZYlOq0ApQKQl+JH9knzxEuuRTJmfHIfL9oLNzM2Q1mrh/nn2h6VYzVaunNskE4anw2hb5jH0ZTgoTNnZQsavy1oWG70cMlJwrASPGFoXiqeWFNGTnKxrH6IOeO5dI9/C9IFr/rha+1tSsbW4oVvWyV+wi28m86LAFFRf8vqoCBqbUCW76aZyQVpORAjZWit8CkJhdO/o/2JqyDsf4hrSAMmkVd6VoHD9lTFaYkUGPE0xyowhDI/RuOsuKVnkca579Tw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=gsGPwOhADDslDx7yDEitZFaA8RlTWyavgSyfAWY3qMI=;
- b=ByPuqLlJC1wL/WzL5Tj7x+O6oIXQjbJjOJAX+DkNlTEsy9z/mIAJttSrUpLsS1UfiXIKDku0/saaPqScQl3g/XyUM+h5Ppu43kYmT/rlPmVn+jSAtjFpiYJiNMjakF0bPv/jIYpKm7ASD2mpZTpLz4BJPxcM6vbrqTJ0bwS5kuAYvkw1dwu13e4GTB33kr4ZwALGzkoVAx0Y8hWapkV0wvf/j6LH0co+EmJGPtKeCRzAeTCeCiQTWfbWkN/8fa073bavXxfFn/Hfgwut95GYulCQ9MPlnuMMCi5QkbR0PVPkqAXWftYr0WdiSr5C6MAD7xdieM/T0yMemihos5/MkA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=gsGPwOhADDslDx7yDEitZFaA8RlTWyavgSyfAWY3qMI=;
- b=iTkQxyKN8+VDGHmfZEXtsXUdATOcG20AaPsao/OWZBOfCSXzinQDCgPI0nuFQH7DVwE6ZhwMRfTEkYjNOvZ5Ph35QJk2FIube1Sx/5W9n0HhrN0SytqjiaG4vwix7a/C8IHJG4Y0RwssFHbzt3kZW0vpg0W3CEWtN4xeTaXL6ytxFaib3zhR+6wUrezUvUpzh61O37edqrqcjNoXb7aHwh03a4J7dSx62QGJPtdQLjyRg9DLLIhMJumO/GxqaSru9VRlPXL9tUfoABEg6SPDT2F17FBVG5vuveLqRb7mga9fWS95tReJnJfv0TqcRB0UhrG4iDc4DwwV1QMFis0+uw==
-Received: from BN9PR03CA0133.namprd03.prod.outlook.com (2603:10b6:408:fe::18)
- by BL1PR12MB5753.namprd12.prod.outlook.com (2603:10b6:208:390::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6609.33; Fri, 28 Jul
- 2023 19:10:32 +0000
-Received: from BN8NAM11FT055.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:fe:cafe::77) by BN9PR03CA0133.outlook.office365.com
- (2603:10b6:408:fe::18) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6631.34 via Frontend
- Transport; Fri, 28 Jul 2023 19:10:32 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- BN8NAM11FT055.mail.protection.outlook.com (10.13.177.62) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6631.37 via Frontend Transport; Fri, 28 Jul 2023 19:10:32 +0000
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Fri, 28 Jul 2023
- 12:10:17 -0700
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail205.nvidia.com
- (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Fri, 28 Jul
- 2023 12:10:17 -0700
-Received: from Asurada-Nvidia (10.127.8.13) by mail.nvidia.com (10.129.68.9)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37 via Frontend
- Transport; Fri, 28 Jul 2023 12:10:15 -0700
-Date: Fri, 28 Jul 2023 12:10:14 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Yi Liu <yi.l.liu@intel.com>, Jason Gunthorpe <jgg@nvidia.com>
-CC: <joro@8bytes.org>, <alex.williamson@redhat.com>, <kevin.tian@intel.com>,
-	<robin.murphy@arm.com>, <baolu.lu@linux.intel.com>, <cohuck@redhat.com>,
-	<eric.auger@redhat.com>, <kvm@vger.kernel.org>, <mjrosato@linux.ibm.com>,
-	<chao.p.peng@linux.intel.com>, <yi.y.sun@linux.intel.com>,
-	<peterx@redhat.com>, <jasowang@redhat.com>,
-	<shameerali.kolothum.thodi@huawei.com>, <lulu@redhat.com>,
-	<suravee.suthikulpanit@amd.com>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
-	<zhenzhong.duan@intel.com>
-Subject: Re: [PATCH v3 08/17] iommufd: IOMMU_HWPT_ALLOC allocation with user
- data
-Message-ID: <ZMQSlvlVEE3G4R/8@Asurada-Nvidia>
-References: <20230724110406.107212-1-yi.l.liu@intel.com>
- <20230724110406.107212-9-yi.l.liu@intel.com>
- <ZMQBLTm+U+5bgC/Z@nvidia.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DDFA8198
+	for <iommu@lists.linux.dev>; Sat, 29 Jul 2023 02:35:55 +0000 (UTC)
+Received: from pps.filterd (m0279871.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 36T2Sbma019420;
+	Sat, 29 Jul 2023 02:35:48 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-type; s=qcppdkim1;
+ bh=UhCe6In43FCrljOeoCP6IaxqfLrOJVXxJPpLg+djOW4=;
+ b=MJiKUzwXTiUL4cxRftma/uuA5NDsboJHppypat3sDMQiwR4xj2HZh5rTEI5QFlQhF02Q
+ 8Yqax9X9/3GaW8vjgnfZBri64DBPqiHrWq0Udr+ckQ+AYWARpHBrE4mx6A4yvyakGDcP
+ yh078EE442YGgBp0mTw4nKXTIpylnHWGMAeqddRCqKFMTGC4JcnOaWAygZ7iFCaMsF0i
+ rdfVGjLfFDy2VTthXYP44KK5bu8pF9qhulziaMc/9OPNyCZSpG0QYH4eiJhSiAUOgDno
+ uMkWZI24+903Lv4kcDmNwhOioH83Ub0s3YrMcSZmLJkRKv6dtdU2K7yb4Dl/t6r3pYsE MQ== 
+Received: from nasanppmta02.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3s468r2dhm-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Sat, 29 Jul 2023 02:35:48 +0000
+Received: from nasanex01a.na.qualcomm.com (nasanex01a.na.qualcomm.com [10.52.223.231])
+	by NASANPPMTA02.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 36T2Zk9M016800
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Sat, 29 Jul 2023 02:35:46 GMT
+Received: from blr-ubuntu-498.qualcomm.com (10.80.80.8) by
+ nasanex01a.na.qualcomm.com (10.52.223.231) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.30; Fri, 28 Jul 2023 19:35:44 -0700
+From: Pintu Kumar <quic_pintu@quicinc.com>
+To: <linux-kernel@vger.kernel.org>, <akpm@linux-foundation.org>,
+        <linux-mm@kvack.org>, <hch@lst.de>, <m.szyprowski@samsung.com>,
+        <robin.murphy@arm.com>, <iommu@lists.linux.dev>
+CC: <quic_pintu@quicinc.com>, <pintu.ping@gmail.com>
+Subject: [PATCH v2] dma-contiguous: define proper name for global cma region
+Date: Sat, 29 Jul 2023 08:05:15 +0530
+Message-ID: <1690598115-26287-1-git-send-email-quic_pintu@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1690567693-22082-1-git-send-email-quic_pintu@quicinc.com>
+References: <1690567693-22082-1-git-send-email-quic_pintu@quicinc.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <ZMQBLTm+U+5bgC/Z@nvidia.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN8NAM11FT055:EE_|BL1PR12MB5753:EE_
-X-MS-Office365-Filtering-Correlation-Id: d1813934-9e20-4694-6bff-08db8f9e509f
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	ajN4yEF2UjOkhy1apFmbsPWCsJhEi4ksHEwiKa4xihY4BMKt4bDmtpwBlFI9LzQTtEVReVILiXoLHsiAVufl2Qy/rf+ewchg7iHXKXgfDkkPS9U3q2xufCAN9JqGSN7uECvjDApCXDX6bqo/WYEw9zOvN5vsZ51OKCQWomYdrvN0HV6SGAk79LCCMBUQuwFZbWaeh+blhOM1AFpwA6mGWEoyJEob2T6QyoHGOqjC6yG49LDWh0yzEIfRKt9w+7MRKe8vYOOFJVLUug9gx9nCgr7OQkciuT5PbBDwgcART9pn6DrjOTOJy3ww0rImbWbU+vwU573UwZ2M+pNl5pUbNnfYwt7MYY7IS74FOAJkc+6WkanvJ9JWFrxoubCAWzA6dwLIONn+P/nc8pN6SScLxYMvGEVm8STQlgfGz1mb4+HYBLpYxlUw/NdBHtda5wLqKRrxSpL06CnMQpSSEDVvUfUhUn3SZ01fNGJPvX8Z8ii8lqZs3bMTvreitBWYfBFSV6rWP0Y3I7eySIzYGQEvnOueOPdqexUg+SrFWXb2AJvk7RfEHeOblRFBCmsqtoJgT4HaJ542Ky1X+USd6wyh4eoEeKEfWzK9nMuq3F1uawpdieO9lkKjFBjGyFkAg9rjPoVZ7Rpm+JgUbk5AOrJJrsJs0MNDTTOLJohBcmy5jyAmx99qrHOh4C/bIELqennz97mxPCQKbFjvCYORTdp3WnjF3+erpriZyr79hnC1dITcTm88k6pj+RwnMz/o4YBl
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(396003)(346002)(376002)(136003)(39860400002)(82310400008)(451199021)(40470700004)(36840700001)(46966006)(55016003)(40460700003)(26005)(186003)(426003)(336012)(47076005)(36860700001)(4326008)(6636002)(70586007)(8676002)(8936002)(41300700001)(5660300002)(9686003)(7416002)(70206006)(316002)(2906002)(110136005)(54906003)(40480700001)(478600001)(7636003)(33716001)(356005)(86362001)(82740400003);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jul 2023 19:10:32.1255
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: d1813934-9e20-4694-6bff-08db8f9e509f
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BN8NAM11FT055.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5753
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nasanex01a.na.qualcomm.com (10.52.223.231)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: _6iX0h66HcyeLJUcw2MSgekfzWvhWpdJ
+X-Proofpoint-ORIG-GUID: _6iX0h66HcyeLJUcw2MSgekfzWvhWpdJ
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.957,Hydra:6.0.591,FMLib:17.11.176.26
+ definitions=2023-07-27_10,2023-07-26_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 mlxlogscore=850
+ bulkscore=0 adultscore=0 malwarescore=0 spamscore=0 suspectscore=0
+ mlxscore=0 priorityscore=1501 lowpriorityscore=0 impostorscore=0
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2306200000 definitions=main-2307290021
 
-On Fri, Jul 28, 2023 at 02:55:57PM -0300, Jason Gunthorpe wrote:
-> On Mon, Jul 24, 2023 at 04:03:57AM -0700, Yi Liu wrote:
-> 
-> > +	switch (pt_obj->type) {
-> > +	case IOMMUFD_OBJ_IOAS:
-> > +		ioas = container_of(pt_obj, struct iommufd_ioas, obj);
-> > +		break;
-> > +	case IOMMUFD_OBJ_HW_PAGETABLE:
-> > +		/* pt_id points HWPT only when hwpt_type is !IOMMU_HWPT_TYPE_DEFAULT */
-> > +		if (cmd->hwpt_type == IOMMU_HWPT_TYPE_DEFAULT) {
-> > +			rc = -EINVAL;
-> > +			goto out_put_pt;
-> > +		}
-> > +
-> > +		parent = container_of(pt_obj, struct iommufd_hw_pagetable, obj);
-> > +		/*
-> > +		 * Cannot allocate user-managed hwpt linking to auto_created
-> > +		 * hwpt. If the parent hwpt is already a user-managed hwpt,
-> > +		 * don't allocate another user-managed hwpt linking to it.
-> > +		 */
-> > +		if (parent->auto_domain || parent->parent) {
-> > +			rc = -EINVAL;
-> > +			goto out_put_pt;
-> > +		}
-> > +		ioas = parent->ioas;
-> 
-> Why do we set ioas here? I would think it should be NULL.
-> 
-> I think it is looking like a mistake to try and re-use
-> iommufd_hw_pagetable_alloc() directly for the nested case. It should
-> not have a IOAS argument, it should not do enforce_cc, or iopt_*
-> functions
-> 
-> So must of the function is removed. Probably better to make a new
-> ioas-less function for the nesting case.
+The current global cma region name defined as "reserved"
+which is misleading, creates confusion and too generic.
 
-OK.
+Also, the default cma allocation happens from global cma region,
+so, if one has to figure out all allocations happening from
+global cma region, this seems easier.
 
-@Yi, along with the PATCH-6 (IOMMU_RESV_SW_MSI), I will rework
-on this -- mainly breaking up NESTED hwpt with IOAS.
+Thus, change the name from "reserved" to "global-cma-region".
 
-Thanks
-Nic
+Signed-off-by: Pintu Kumar <quic_pintu@quicinc.com>
+---
+ kernel/dma/contiguous.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
+index 26a8e53..4628b62 100644
+--- a/kernel/dma/contiguous.c
++++ b/kernel/dma/contiguous.c
+@@ -237,7 +237,7 @@ int __init dma_contiguous_reserve_area(phys_addr_t size, phys_addr_t base,
+ 	int ret;
+ 
+ 	ret = cma_declare_contiguous(base, size, limit, 0, 0, fixed,
+-					"reserved", res_cma);
++					"global-cma-region", res_cma);
+ 	if (ret)
+ 		return ret;
+ 
+-- 
+2.7.4
+
