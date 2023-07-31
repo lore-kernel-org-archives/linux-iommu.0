@@ -1,41 +1,41 @@
 Received: from mail-yw1-f201.google.com (mail-yw1-f201.google.com [209.85.128.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0201B11CBD
-	for <iommu@lists.linux.dev>; Mon, 31 Jul 2023 10:48:56 +0000 (UTC)
-Received: by mail-yw1-f201.google.com with SMTP id 00721157ae682-58440eb872aso58217027b3.3
-        for <iommu@lists.linux.dev>; Mon, 31 Jul 2023 03:48:56 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 86D1811CBD
+	for <iommu@lists.linux.dev>; Mon, 31 Jul 2023 10:49:01 +0000 (UTC)
+Received: by mail-yw1-f201.google.com with SMTP id 00721157ae682-583c49018c6so51273567b3.0
+        for <iommu@lists.linux.dev>; Mon, 31 Jul 2023 03:49:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1690800536; x=1691405336;
+        d=google.com; s=20221208; t=1690800540; x=1691405340;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=6LEwoPypxNg/0wwK9DSpnnqLrV8S3AoRDp+1fjKUE9c=;
-        b=Zu64jTlkBdRIj9gwBHIkEJVYF6dZ4s91FVFh7yUrGiQNx/2i3SIoPyZB6p02M0O05+
-         JkrVvisudZwOk1RmAK2Tyv4tzukWrLKNCbah+iRW+hxH/ExAyAs8Fp39H0BlmOgYGav7
-         MHhAWUA99pdip43QxxiQbM5L0wEs3+ubr889qb7MgWXz2RyHiNAX+fEpEqDTTzuOoN5r
-         p+HwJchlRe0WbydTE9EvRGjYFrPcvNmK5E3mr3WeLt5rMsKuQJ2XRQK7XFHd129+Z4ZE
-         /a8Hiypp0fsAu5JwS773/ZODdwTlPSNmKLL2DEv65nfvXF4kXyHjcsuvmIaYEDqS6ZXI
-         CC0A==
+        bh=5wCGxdM3vMHiwD5Hqt1d7Th7Pi/IDzxiPCnlsNf6ST4=;
+        b=wvipL4WYLuG06Yh5YopeGwe+XP+zY71R/EbIkI2asNYrYY+npiquOLOKtTV2H4wE2V
+         EaHCyurHW1OnBNBicb3akuqlgF4MJPoQognV8Zlk2nlY3F68isgainEajrK0YmO8BFKX
+         v9uxGx2aUalsMGIWmLEXx77Qt9MTtXIWfIaXsQN9QhUdFKcBkreF2WgktcFBR6IE/uoH
+         55LrshvxNW8mBQlz05AGY0+XgdTfXjNZFqKztaF2CceW22NfA18nxf+yKVrkIKH/GwA+
+         awt3aG+Mo/+5YJJba+ZkC4K6v8Jqe+YiictB/4pRzc9kXU9nN1RKGk/pvbOiCaLhUeE+
+         mn5A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1690800536; x=1691405336;
+        d=1e100.net; s=20221208; t=1690800540; x=1691405340;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=6LEwoPypxNg/0wwK9DSpnnqLrV8S3AoRDp+1fjKUE9c=;
-        b=dCraZ+uwvizGppvuM+A4LHArhUTlzULfOXGi6vDHCzf9PHPay/PxSp5b5hPU8lJjL6
-         KuaHde7CItNq17NJ6c82uedClfMJMZaWtuyRYxLkvsZ2oQ8uK9l29TTvKKgAxgGAufJx
-         hKfiC0nqh/2NASXTqRjGAdwqzqQPefkDhCH5qRvVRPDjLPrrZJlsO+VLMyzWHWLjMcsr
-         Af9YowGmZ51JihGtpvLQdZ90Y9dlAbKsy46RHceKLCThkOoiRau3nJx//SXyYsJTNNzk
-         4ELvuATox/sMIefHm6FP0nziWYq+prZfixyaHoTSxq+0VzqEuBlJMQzU+VUs5dBNQ0ah
-         5sGQ==
-X-Gm-Message-State: ABy/qLbgdrGD22mhxxQORa1VRKzZMocDw8sUwLznXNyhjfiGffsatjg+
-	sRaysEeCPccn1Qf/rdBfwQZe55iee+jajzGOIU3BKkpaP0t05eW6MS01sSLTiQi6jw7sxnm4djI
-	yEvKnnnVt7MASo73Eo/Nd1umAPpgDodZdLGSLqnZo87HpT/5P1xOk9hAfXxbLvWg=
-X-Google-Smtp-Source: APBJJlGFT8JRbNN2pllj+H+26z9eiMA1wqXAGjOqgKNZgKbHNZEnTJSje3k6Z2LOS2azPtan7cioZd2AbX0T
+        bh=5wCGxdM3vMHiwD5Hqt1d7Th7Pi/IDzxiPCnlsNf6ST4=;
+        b=EavlvqevKF348YpN3IAJoYFqGMMVrElRMnikX/wmh1Mbea6RZYD+Vak8B1oAYtqaec
+         PqgX8LsMsvqS0kQwaT7M8XQwzEmJ18Nrbo81o4uy+uQJf+kZb+7MmrFNyYs/HBnoxewG
+         K/lSI/SRc8Ro/qHu0Bx0+KsiUhietz8/Q2FjtBsTM+oXk83V/P8nOednDXsjJKLtoauH
+         Fde1PTGvn0t+VxS1D/S8rRoLyoRhnmj9KCkV9fFNecPKNqylW/Lytx1C99dSiE3pjbMy
+         5Oy7ksFUB1IHQH+jboviFUI76PW4pOTQM1I5tBWwDmVISbuLE8Xtsc7iTTMjTq0GYvRM
+         7ScA==
+X-Gm-Message-State: ABy/qLbj7IihyjSrvYLXokNHWtmhoNa3DNZ8h5JoZ3zHPJkBQOeLVc6a
+	3ADnnGY4YbOBiR8J/AGkZ+OBd5MHST3P41LWTkmid68mwqaSR9YjDmBVgGBcJ9lqqiwfqEn7C3r
+	VSycchCVN00Kv1fNpPFdzwWBiT4Fy8TVxjRMvHhebCzXunddZC8Uds75aVLgq1G4=
+X-Google-Smtp-Source: APBJJlFQ7Qm2AbHHFTv+59ukHyucVUan8ZyEh930iZGIBXi3F+1k6wJAPucN7Z8mtOU9tmxewSWQWBEKDQ12
 X-Received: from mshavit.ntc.corp.google.com ([2401:fa00:95:20c:affc:ad1d:5cbb:3c6a])
- (user=mshavit job=sendgmr) by 2002:a81:b703:0:b0:584:41a6:6cd8 with SMTP id
- v3-20020a81b703000000b0058441a66cd8mr66785ywh.8.1690800535642; Mon, 31 Jul
- 2023 03:48:55 -0700 (PDT)
-Date: Mon, 31 Jul 2023 18:48:13 +0800
+ (user=mshavit job=sendgmr) by 2002:a25:7341:0:b0:d0b:ca14:33fd with SMTP id
+ o62-20020a257341000000b00d0bca1433fdmr49423ybc.8.1690800540379; Mon, 31 Jul
+ 2023 03:49:00 -0700 (PDT)
+Date: Mon, 31 Jul 2023 18:48:14 +0800
 In-Reply-To: <20230731104833.800114-1-mshavit@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -45,8 +45,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20230731104833.800114-1-mshavit@google.com>
 X-Mailer: git-send-email 2.41.0.585.gd2178a4bd4-goog
-Message-ID: <20230731184817.v2.3.I875254464d044a8ce8b3a2ad6beb655a4a006456@changeid>
-Subject: [PATCH v2 3/8] iommu/arm-smmu-v3: Encapsulate ctx_desc_cfg init in alloc_cd_tables
+Message-ID: <20230731184817.v2.4.I5aa89c849228794a64146cfe86df21fb71629384@changeid>
+Subject: [PATCH v2 4/8] iommu/arm-smmu-v3: move stall_enabled to the cd table
 From: Michael Shavit <mshavit@google.com>
 To: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
 	linux-kernel@vger.kernel.org
@@ -54,60 +54,80 @@ Cc: will@kernel.org, robin.murphy@arm.com, nicolinc@nvidia.com, jgg@nvidia.com,
 	jean-philippe@linaro.org, Michael Shavit <mshavit@google.com>
 Content-Type: text/plain; charset="UTF-8"
 
-This is slighlty cleaner: arm_smmu_ctx_desc_cfg is initialized in a
-single function instead of having pieces set ahead-of time by its caller.
+This controls whether CD entries will have the stall bit set when
+writing entries into the table.
 
 Signed-off-by: Michael Shavit <mshavit@google.com>
 ---
 
-(no changes since v1)
+Changes in v2:
+- Use a bitfield instead of a bool for stall_enabled
 
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 8 ++++----
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h | 3 ++-
+ 2 files changed, 6 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 8cf4987dd9ec7..8a286e3838d70 100644
+index 8a286e3838d70..654acf6002bf3 100644
 --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
 +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -1132,7 +1132,8 @@ int arm_smmu_write_ctx_desc(struct arm_smmu_domain *smmu_domain, int ssid,
- 	return 0;
- }
+@@ -1114,7 +1114,7 @@ int arm_smmu_write_ctx_desc(struct arm_smmu_domain *smmu_domain, int ssid,
+ 			FIELD_PREP(CTXDESC_CD_0_ASID, cd->asid) |
+ 			CTXDESC_CD_0_V;
  
--static int arm_smmu_alloc_cd_tables(struct arm_smmu_domain *smmu_domain)
-+static int arm_smmu_alloc_cd_tables(struct arm_smmu_domain *smmu_domain,
-+				    struct arm_smmu_master *master)
- {
- 	int ret;
- 	size_t l1size;
-@@ -1140,6 +1141,7 @@ static int arm_smmu_alloc_cd_tables(struct arm_smmu_domain *smmu_domain)
+-		if (smmu_domain->stall_enabled)
++		if (smmu_domain->cd_table.stall_enabled)
+ 			val |= CTXDESC_CD_0_S;
+ 	}
+ 
+@@ -1141,6 +1141,7 @@ static int arm_smmu_alloc_cd_tables(struct arm_smmu_domain *smmu_domain,
  	struct arm_smmu_device *smmu = smmu_domain->smmu;
  	struct arm_smmu_ctx_desc_cfg *cdcfg = &smmu_domain->cd_table;
  
-+	cdcfg->max_cds_bits = master->ssid_bits;
++	cdcfg->stall_enabled = master->stall_enabled;
+ 	cdcfg->max_cds_bits = master->ssid_bits;
  	max_contexts = 1 << cdcfg->max_cds_bits;
  
- 	if (!(smmu->features & ARM_SMMU_FEAT_2_LVL_CDTAB) ||
-@@ -2107,7 +2109,6 @@ static int arm_smmu_domain_finalise_s1(struct arm_smmu_domain *smmu_domain,
- 	int ret;
- 	u32 asid;
- 	struct arm_smmu_device *smmu = smmu_domain->smmu;
--	struct arm_smmu_ctx_desc_cfg *cdcfg = &smmu_domain->cd_table;
- 	struct arm_smmu_ctx_desc *cd = &smmu_domain->cd;
- 	typeof(&pgtbl_cfg->arm_lpae_s1_cfg.tcr) tcr = &pgtbl_cfg->arm_lpae_s1_cfg.tcr;
- 
-@@ -2120,11 +2121,9 @@ static int arm_smmu_domain_finalise_s1(struct arm_smmu_domain *smmu_domain,
+@@ -2121,8 +2122,6 @@ static int arm_smmu_domain_finalise_s1(struct arm_smmu_domain *smmu_domain,
  	if (ret)
  		goto out_unlock;
  
--	cdcfg->max_cds_bits = master->ssid_bits;
+-	smmu_domain->stall_enabled = master->stall_enabled;
 -
- 	smmu_domain->stall_enabled = master->stall_enabled;
- 
--	ret = arm_smmu_alloc_cd_tables(smmu_domain);
-+	ret = arm_smmu_alloc_cd_tables(smmu_domain, master);
+ 	ret = arm_smmu_alloc_cd_tables(smmu_domain, master);
  	if (ret)
  		goto out_free_asid;
+@@ -2461,7 +2460,8 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+ 		ret = -EINVAL;
+ 		goto out_unlock;
+ 	} else if (smmu_domain->stage == ARM_SMMU_DOMAIN_S1 &&
+-		   smmu_domain->stall_enabled != master->stall_enabled) {
++		   smmu_domain->cd_table.stall_enabled !=
++			   master->stall_enabled) {
+ 		ret = -EINVAL;
+ 		goto out_unlock;
+ 	}
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+index 35a93e8858872..05b1f0ee60808 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+@@ -597,6 +597,8 @@ struct arm_smmu_ctx_desc_cfg {
+ 	unsigned int			num_l1_ents;
+ 	/* log2 of the maximum number of CDs supported by this table */
+ 	u8				max_cds_bits;
++	/* Whether CD entries in this table have the stall bit set. */
++	u8				stall_enabled:1;
+ };
  
+ struct arm_smmu_s2_cfg {
+@@ -714,7 +716,6 @@ struct arm_smmu_domain {
+ 	struct mutex			init_mutex; /* Protects smmu pointer */
+ 
+ 	struct io_pgtable_ops		*pgtbl_ops;
+-	bool				stall_enabled;
+ 	atomic_t			nr_ats_masters;
+ 
+ 	enum arm_smmu_domain_stage	stage;
 -- 
 2.41.0.585.gd2178a4bd4-goog
 
