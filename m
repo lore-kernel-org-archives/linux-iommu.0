@@ -1,51 +1,60 @@
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2063.outbound.protection.outlook.com [40.107.94.63])
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2054.outbound.protection.outlook.com [40.107.237.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2BD4C18B09
-	for <iommu@lists.linux.dev>; Mon, 31 Jul 2023 16:04:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1282918C34;
+	Mon, 31 Jul 2023 17:50:37 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=FWn4eaVdj+P+2JyWhK/vWsH4yQ7FTpKlmJJ8FA5QJGVdIxyEE/scEkkDq/6++XaWcGFGi0tJkRHi99+M5B2RWObo9hsj386mtzV/Ylr0d0Ekbnwyui78nv5F3MlUFgTakx9mhanMxQry04OSwNobJcuzOgFjPkYkJpra6XWAQEP2kzaZEv6BcVmr39V3Kme+4q83iOKLRtSmoeBsrDYnNBr9Lz6lp6qACeWOzlBtLQSOhn1ntVDcIyfLMqV6SeSa0gPqvFE94R9Yxenaf6pZSguu3U91Ztx2w9O2zmGft1Epra03rbK+cTwDQ64Lc1Bz6t37WaoNb2Im87ytGcbVZg==
+ b=P2HMEIPXRWHXnmFG7b+UOOBtu88drkaOAzsoS+gvk/YP5dU1fnREXf48tI78y38nL7PwCP+QXn4SR5q52YGLaTvJ4z9K8r0qusTI2Uei+m3n+1UmhsjuMgl5yLvw7Vf+BgjihLruvth+EdtMyfL/JWXr2DB+RUeQH2+RzbT24lwqKlm71qpMAwEUkW1zkg/LV35RVfCrb9hFw6zdfy1ys42uiBEENxWhwiZ4g4m+8eQ+Z9JdZaNUzf6hQWW8q/mDkdDRo42120NXHle+bbbohc9dZ6xwkx76sTvPVKby3GMymyucH2DJPHybV17Jh2MyhomS9mIMKir9+78UegsuhQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=FQzwIjJiIr7rGJwUm+8TEyjyWwrwdu7xVXhsFRZaE3I=;
- b=E9CT5CUeMclFjg/xpuI3e6nxh8cpfbQrtl4VGTC3wUZKtI0BPuQGiTOiLHnx54uvr/Q0bPH0QKh/TGbUeS5MkZ450bKSFLoXBlCiuXYnn4VPNyb2g7kiyYGA6bK+arMEk/SGtUdIz5Sojg9lAjdz+cD5HKDkoEmAn79VwzgxtikhlzJTm5JG9ib6BJFZq5QDmjWRVfaP0vOsb/tJcKu8fpCXQRp1c2QviDndFKAKcSelRd7zbYtrQ2s5KRKGxOvrNHqUHcjG4Wm3+4WAiEeW9wTJKQT49PG89qSrFwR44o9NAynbKZPNR+J+fs0u4uXDVDGIjddGC1KERyn2wwVhSw==
+ bh=Wyhbk5va218DoPtymtzpXj65Jm8E3ndEQ+y3/M0iGLc=;
+ b=bu2o+S7KHT1LR0yH1e7bnJKY/D6KU0vGLw1kk2elgp3gEekEPhFEIenCersSjQm6PJqcncIMNg/PGdZ6SO1VJHEr3ykxk3On2I9YqBL8YqbOf6zhBRDPn03AImq/oZwIeNNlvHmzqC9qhEeIaMAhEC6PJD7/blQycFiZUDYNmOdfFyyZAWx1r587L+eMEuJy/7mfvYS64h502QO52hGWXitDM8gYnTyYJSi6XAf/st1eoE5PE1yEuQwWEJpGR1OviQ/nbBD1BTAw4VT60pclUoOrLW7GpeJiPG/qigLdFMqhHsy1PHWFHhJ4g9JJSqlb5W+fiFncaNH5O/Oc9ui/JA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=FQzwIjJiIr7rGJwUm+8TEyjyWwrwdu7xVXhsFRZaE3I=;
- b=eRqFk6LMhZfSymL1Oa/puWvSKyGG9Pz4wuRBGJhYZ7D6ha8FfwPtLyE3EQeGP+/VCufB8pg43LUce+2zf5rVAQ0sHzFqupHx+0ry6J4/wZzdtlQqLYLWmD5sClxfwyr/cvV0QN6cDjFzwu8CnDttmqowmUL+JYpeEhqzBVnNK/Q=
+ bh=Wyhbk5va218DoPtymtzpXj65Jm8E3ndEQ+y3/M0iGLc=;
+ b=Bnpl1hqVnYXfZ6yGOBckMo3f6tAN7brJkPt61fIbe2TX8rzAgXkmT+5lRWHprNtt41ZvJ3wRdm8A7RL6U3Iqe6+akIvCRyhHtMgy+FrCZgx4+zYy1PPVAEWA5fRSfQV/JHid7aWGIvOKl6ArDktBSMzKMXqOL1cvQcRWpsH4gHBAsA9t5LczeMzO9knH+Tkqje3K5O383cncONCnovtvxRgW0+RDM2lMKRa/qS0bc4UfRLEDtCseGuyh0LYxcto2MtZBlOCY/3763vFJG6LGZunlPl2Tm2CZpxBEi9japcXA3CDYVJ6oi16gVQCXN8C4W25uMHSGlo2BilvviWEEkw==
 Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DS7PR12MB6048.namprd12.prod.outlook.com (2603:10b6:8:9f::5) by
- CH2PR12MB4120.namprd12.prod.outlook.com (2603:10b6:610:7b::13) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6631.44; Mon, 31 Jul 2023 16:04:43 +0000
-Received: from DS7PR12MB6048.namprd12.prod.outlook.com
- ([fe80::67ec:80e:c478:df8e]) by DS7PR12MB6048.namprd12.prod.outlook.com
- ([fe80::67ec:80e:c478:df8e%7]) with mapi id 15.20.6631.042; Mon, 31 Jul 2023
- 16:04:43 +0000
-Message-ID: <965e5cf2-6a29-0d5b-ad3b-ecabdc3923d4@amd.com>
-Date: Mon, 31 Jul 2023 21:34:31 +0530
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v2 15/16] iommu/amd: Initialize iommu_device->max_pasids
-Content-Language: en-US
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: iommu@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com,
- wei.huang2@amd.com, jsnitsel@redhat.com
-References: <20230728053609.165183-1-vasant.hegde@amd.com>
- <20230728053609.165183-16-vasant.hegde@amd.com> <ZMPUufoPxZgFwx0w@ziepe.ca>
- <b5bb3e1e-a933-a04c-53e5-bb05c3ad38c1@amd.com> <ZMej6GCFu6TJgOY/@ziepe.ca>
-From: Vasant Hegde <vasant.hegde@amd.com>
-In-Reply-To: <ZMej6GCFu6TJgOY/@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: PN2PR01CA0085.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:c01:23::30) To DS7PR12MB6048.namprd12.prod.outlook.com
- (2603:10b6:8:9f::5)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by SJ0PR12MB6992.namprd12.prod.outlook.com (2603:10b6:a03:483::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6631.43; Mon, 31 Jul
+ 2023 17:50:35 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::5111:16e8:5afe:1da1]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::5111:16e8:5afe:1da1%6]) with mapi id 15.20.6631.043; Mon, 31 Jul 2023
+ 17:50:35 +0000
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Baolin Wang <baolin.wang@linux.alibaba.com>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Heiko Stuebner <heiko@sntech.de>,
+	iommu@lists.linux.dev,
+	Jernej Skrabec <jernej.skrabec@gmail.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	linux-arm-kernel@lists.infradead.org,
+	linux-rockchip@lists.infradead.org,
+	linux-sunxi@lists.linux.dev,
+	Orson Zhai <orsonzhai@gmail.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Samuel Holland <samuel@sholland.org>,
+	Chen-Yu Tsai <wens@csie.org>,
+	Will Deacon <will@kernel.org>,
+	Chunyan Zhang <zhang.lyra@gmail.com>
+Cc: Alex Williamson <alex.williamson@redhat.com>,
+	Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH v2 00/10] Refine the locking for dev->iommu_group
+Date: Mon, 31 Jul 2023 14:50:23 -0300
+Message-ID: <0-v2-b0417f84403e+11f-iommu_group_locking_jgg@nvidia.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: YT4P288CA0034.CANP288.PROD.OUTLOOK.COM
+ (2603:10b6:b01:d3::20) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -53,106 +62,124 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS7PR12MB6048:EE_|CH2PR12MB4120:EE_
-X-MS-Office365-Filtering-Correlation-Id: 5b12f4b1-6666-42a1-215c-08db91dfda2a
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|SJ0PR12MB6992:EE_
+X-MS-Office365-Filtering-Correlation-Id: face7454-67e1-48b4-d369-08db91eea44c
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	zobVyXvqpqz/KB78L4qggaoMg1dx5qsYTtLnxeNTiF0NBx23U/QDbFhn4IX5OXyZPn1GpRKItGLZTjJQZJeREb/BHlTLnRnjKqLb5aNIC2vdupu2xNXRqSx7ltRRmtQsLCbDSwOjAPeDV8njzb+zemDBBMYic34idCDMfE1Y35tTg/FbZDegjNr4bMoTcWzKP5hI+0tTfK7yObcSHaZqxP0F7GnsFNbxd7K3otHDaPcCV8nKCNKnVudcmbPjejQb3YjxlYbQkPtH2Af9+AVAiJiaUaaApBEKv6yD6+UMemGOLP0IAFfk0G23n08PqhYqrLSZqU5gwF33PNzt5VyoJQJhUmVUE6x3iwfDfneJxIySLlAvlbNkA6i+jdiSmZQjlW5NgAlHqBHdwtRbgwjg9oeP8CA8g3k+PHAF/4t3tWwAifCpYWcphTE64jdtTLzsN39dRvjl9lTLPaaTb7ui1LA/Ie7lke4kOAFTrntbsYVVXnBKGn1BUpQ5sQbBzNWK+sLLzp+dsokZ/Sf+WURzu3qnYY/w5nqjINb2Jlb5c0Isw0MkoAd1XK2jWX2WcMfBmG/CVpg/M3oQrjVKLer9Q/uMdOwLw5BNUMOhrfUlr/8T2Udxcw8YZWdERn8AQFfI6kKFBz0Y8F8Fp8YOWqAOig==
+	ZN89sLaUSVt1S+vJMg/GBkwB1tLR1DXjKeiZijkxcillopu7G01lc2e22rSS9VB9PM8chHyXmv0FA+3I2zd4bHh0FqYI2TYGv4yrbof60UeJXGzoxXjiaVFrP0xBCeve5rEbCGw5zg2NPfO6QhDOqSfh1VNyE8c/1Eor8dPGaFwiLY84qevS384UKnHe93WHvEBo3cjUqEaJGL5rQYUy2KthWUbt6DCz9D0Thh+JAPbrIIMzcNHghQVRI1bcNs5oCGVD1icMFSi0AhYJQ5vOHgFDhtWHfOUTehPSgxrHuqD5LeSRtQx2b+DjrF8gx7E0m646GgChBliE8IjR0mferEvggHHRsNBJT0rBrp2QbxHAERJ9eT+JRW/6p+qystyv7RO225k4tKCmVWn21n+K3q5PywJ3eZmyKfwRl8W5RQFaQMWB7MRwyGa3OVy7wjZ8on2a23BZDeDQ3j4bhhWHsOvzHR9Jm4/SjNcKW2TuQHVfYMX1MWu5ZblsN8ENxmukduShrhhjyoWIoQJhnRFrVnzn9SoV2tLcA30zGvIMUvSpKRGkz5cn0xKkpdLV6HYJEx7j1mNvG+X7JOmxr1pMrwVXDJCnNvJACxBCYUPxqzAqQUjy4i9D6q8eEejs8hMKMe3WediIB86CayzsOSF3weRtnh2VkOOOLSQh7hETiMSfUloyhzbKe+1oxNWmIRwr1LJQzKcNrhi/K81hpwdm/g==
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6048.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(376002)(39860400002)(396003)(346002)(136003)(366004)(451199021)(31686004)(6506007)(53546011)(186003)(26005)(2906002)(38100700002)(36756003)(44832011)(66556008)(66476007)(66946007)(6916009)(4326008)(316002)(6512007)(2616005)(478600001)(6486002)(86362001)(41300700001)(31696002)(8676002)(5660300002)(6666004)(8936002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(346002)(366004)(376002)(136003)(396003)(451199021)(966005)(6512007)(6486002)(36756003)(2616005)(6506007)(26005)(83380400001)(186003)(66946007)(66556008)(7416002)(54906003)(41300700001)(921005)(110136005)(38100700002)(66476007)(86362001)(316002)(5660300002)(4326008)(8676002)(8936002)(2906002)(6666004)(478600001)(4216001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?WkVYOSt6UXpHSzRtMmtzb0t6NmVDM3dJRWlBUVMvNjV2STREL0gzUzhDdU93?=
- =?utf-8?B?Zzk4bjlKRFc3UGVkeUhXZzl2U1VpMDlITi9ZMmJSaDBLcEpnT1o4RTAyU001?=
- =?utf-8?B?YmNJdWxqU005bjI3aEszYUtNbkVHYXdQblZxOEp3Rk94ZjhLSHVmSm5ERzYz?=
- =?utf-8?B?V21rRWZyeXcxTldYUXRKWko0c2Z4SVQxQnlrbzk1QmtlK0kzTzdrdzVJTVJz?=
- =?utf-8?B?NkV6WWF3aHA4TCtIRTRpQTZ2NHAyakNRTkwvZWQwcExNcTE0eTR4LzN4Z1Ax?=
- =?utf-8?B?Ujk4Z1VBa2hpbkpSbFR6M2FRT01EemJ1VkJZc2FTZDN6emxzQ2xHY0swTmZI?=
- =?utf-8?B?eVd5VVZOenVRcmtmdW5iTzNUb2dDOVpKZHd3bTF4VU5NaGNrN3VtOEtxbWpK?=
- =?utf-8?B?L0c0R2FqNXdaZzZ1Q2hKUEFscWNOMHBqSnJkcjRTb2k3RS9US2pYbExrZE96?=
- =?utf-8?B?U0l5KzVRZHhLdkVkNG51aXdlSTBSd0NZYVdDZEJYYTIwZmc4UGhFdFYvNGIy?=
- =?utf-8?B?cVBNbFQxSGUvbGxDOGRMMURBMDViendkRnJ5MTIzZjBoZWUwaFc2bUthMno4?=
- =?utf-8?B?dlFPbzVhY0JENkpkckZEdEF3cTJXaFo1SGlRT04zYjEvQ2h4TVdLU2c2Yjh6?=
- =?utf-8?B?bnE1RTVtcitaeStSUHl6N0Zib0F6L044eXFTeWF0VEVZa0p2V09iSlhiK2ox?=
- =?utf-8?B?YzBLUFQ1b2hJRTdxYXlkU2dsMGdjTDJUSHZiajNWaE1MU1BBMHlNS24rOWd0?=
- =?utf-8?B?NHUwaWczR1Flc2U5L3k1cmllMTdCaDJNbTRkcjAxc3FNbEJYMDJRQURGUUtq?=
- =?utf-8?B?QmZ2K1M0dFFmT3BHMkwzZUJHaUxySWJtQ25udW9jZDdtQUxVSEdvYWNDNHAz?=
- =?utf-8?B?L0E5MmhBclRLZEJ5bnAwZUEyNEhvWWVQYjJMSEoyZDIvQkdmR1cxV2FTb2tj?=
- =?utf-8?B?KzJjTUpDS2I0alVQbXR2Z2Q3R3ZoOCtNcCtOaWZabEJTRkdRejJkUktpbWpn?=
- =?utf-8?B?TlJTUlZ2akI0dFBGV2NhNzVLVVVNMDdyWVBkQ2RnSFBnRlprbVZ6V0F0YlNB?=
- =?utf-8?B?cm5xdEVyc08rM2pDZ29kRFRSQ0pHZFRlRGxncUdrdk9VbWsyOWpIWm0veHhU?=
- =?utf-8?B?NXN3ZloxSjFaM0o1YmZ0REhCU1hUdFBKYUNLTVkxVy9yYUoxSFNSb1o3OGI3?=
- =?utf-8?B?MjlUMTl3WkoyUktmTkYzeEJ3N05tV3kzUEtiK05VYitLVHFSek42THg3SmNX?=
- =?utf-8?B?SE9Zd1VNK2xGb2JtUWN5bVAwN0M0U2I0QTZtdkF4NVhqMEZTNE5qWE56NC9U?=
- =?utf-8?B?RlBTbXRabmhjelhWcEp4NE00WFUxV3RUd2VOZGthVFptWmZzcWl3OG9zaGVR?=
- =?utf-8?B?VUQyTnYzMnZHbFdJclVCUnE0d3VYdW9YeXRIL3pVeE1xK0wwZTNDMTVMRGYw?=
- =?utf-8?B?YVNBemhzYUcyT25GampzL2twaXV0Z25reUt3Qm9SR3gyWEQxcmNaRzBVRDc2?=
- =?utf-8?B?SFZGckFUdG5hbHN5bkxaSDRybm95blMzZGt3enh1WnozcUVOaWJCM3I0UG02?=
- =?utf-8?B?VzVKZlp1YkVrYVBxUEhmZ2RYbERyTHhhSHlYeHVSTXRXREs4dHhuMjRKaXM1?=
- =?utf-8?B?YzZXWkljY0ZWZVoxUENnMjQzcFBkUElsOHJnSkUxRjdkcG5aSkdDSlBBcFpR?=
- =?utf-8?B?VXYvMVZUQXBMSHloYmgrTWM1TUluT0NhWEYwbXJxc2NxU29SZHNzTllIWE4z?=
- =?utf-8?B?cFFGeXpOL3E2OS9qSXVvZ0QyOTE4M1BNSTRQamFVeVNTaHA4S3FFN1VUQVIz?=
- =?utf-8?B?Z1NVU203eHluT2syVUtPWUp2MHplK3FlYXZSM2thME1YZjdFMzlkUm1JVURi?=
- =?utf-8?B?NWp6VVZOZVlBRWVUcnJOUFdVNnlCUzBtQWdXTE5qNFN1bGRLVjlXdmVRZW8v?=
- =?utf-8?B?aDlrb1ViY0lVTzJ6Ni9LR282Y0N5NjRFVmlMOVplSGtJcmVGazByaG1uVEYz?=
- =?utf-8?B?emhreHI2U21KbktJb0JJWVlDMkUvQUYzVXBGd3Q0M3EzdmxXMHZ1dEk0YU1G?=
- =?utf-8?B?RjRsaTEvUExyYjZieHppV2ZmZXk2c0dXcllZWTkzTjZZOU52cUNFRndOQnZJ?=
- =?utf-8?Q?EEzC2GkXy/AoFVbgDk+8mhNKf?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5b12f4b1-6666-42a1-215c-08db91dfda2a
-X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6048.namprd12.prod.outlook.com
+	=?us-ascii?Q?iPwY/VgkMqsFCbgAUY7VRlddkFNjaZT3PzclgpLJ4BqW5zI3V/IPuaH2zJgA?=
+ =?us-ascii?Q?nHErnKdiPJb+Dw8tU5qfqPrm1DU5vz+43pgzJkhCklk0nlW+2N+6A/aKa/H3?=
+ =?us-ascii?Q?fLS2uAZAkx5HMia2RMBpYmPGSIiGGdoc86B9bvGBq6ou4EP7oswEpcMprhGt?=
+ =?us-ascii?Q?6DWCB2fAnIyOPqbNYh8cacfKk9106k+vPvD9GyCw+OSzCILsgMMRKRjPKLUm?=
+ =?us-ascii?Q?8OeTWkhmBUyyWQJyz20KacsMSJctXpLCUWsngDAuF5cG5Kt1tpSl361UsyKP?=
+ =?us-ascii?Q?Uj6/gbKJhzPAvJouXGZ8uZKZ5SPQwzuel3ip3kRyL6UAuk1MIXbpca2ATSyn?=
+ =?us-ascii?Q?bxRpVZwkpC2W7XXlgFZLt+tQsfZvh/zKcSj4myJJti7QucSWbpPu7sYsZmjY?=
+ =?us-ascii?Q?fBgVPrVMo6gHLeS4vfmSD3NlN+tR2cNBRc/ADq+ekN92HwW7+tPCGZv9Fg7+?=
+ =?us-ascii?Q?nJ4yyGNhYqAugNDwcJZ1QF4soy+X6JrxiehcQK9Di4PgCaUkKvw7bzIvzDmG?=
+ =?us-ascii?Q?MtftVsUDFD/HtVP8g88JwKiS317asRZ1LU+GOZS85gSI6ilAq1r3bIiDL/qd?=
+ =?us-ascii?Q?2J/FGgF6uM4S5cdlx6ikEixHl5nVzph1yOrN1wGTGPTb+LfLUuh47o9Qi4Fv?=
+ =?us-ascii?Q?P4OQhbLSXSbxz5V2AkZRrnLCYpE0tUKcoxJUNMICj8XEGGcSs/irs17+90XU?=
+ =?us-ascii?Q?GYHkttnXbBFwFqUI2chVvqKZcb9JJydHZe0f97F7AcS20t38MKk/QLFrykbB?=
+ =?us-ascii?Q?05y/Z6FVz1o5M0yqChrvhJxRhT9X2Lp4/t1hPVB6bMxT2onkGS7Ck0LT8jXX?=
+ =?us-ascii?Q?ZRUYpl82p/wN/gR8HqEOjweX130I4TLGbVdkX2S2wVv85wvdESfHzWiWD8Sw?=
+ =?us-ascii?Q?zQp8862qTmbfk9EHh5qDwN+FBROfbpfZ7Hh6i79+0YYpPDn6EMSm0zYFUJ4m?=
+ =?us-ascii?Q?36QDR+TPH5bSbRjp5FC/oL34nnqaydAN0jn3DIx0F98AhcZjflqnr4v87fy2?=
+ =?us-ascii?Q?DsDPBd8W126aODbt1cB3KGNJV8AMiO/c/HxGEwx85Jo0ZW5oh+tU04wnHgIv?=
+ =?us-ascii?Q?bMMRLgFWr6sSBp5qqnzBz4T83ydedoQvPvwg5RPZbhxAie0WCal6ulgU1kR4?=
+ =?us-ascii?Q?jidPKfNQMz9KR7lB3KCQ1J9k1b+TeIqUO+nANZgMwDKRzHC+VNsQYWGH1m8Y?=
+ =?us-ascii?Q?Ln8lFTOUDUkLcXlvT9dxtZ9eIGxz+Tmmxh+xXCzBbo7z2QXHfoXOSCxS9OlS?=
+ =?us-ascii?Q?ALfxjZ4eAqNTMjMuavpPbXkgZ44mkMp58b2JqXakK+6d1lYJLcl3sBYKjW9N?=
+ =?us-ascii?Q?k63c3s6IrEM45CSXRq0rZbaVgfw9oBqRPloxzSxZat2Sl67zwA0/OOo27j5+?=
+ =?us-ascii?Q?40ULaEBQv1CmGCR4I4GxgtrWbudAfR91E5WDz9S17rmuvBWbnvmojq129dIo?=
+ =?us-ascii?Q?uBqcv1MvibyQCx/cly2bgo3gnpQ41faYKWKOc67GYNwXcfTw2xS9sVKEzxh2?=
+ =?us-ascii?Q?GGqqua9amIS24zq05dy/I4C0Id3lzRMPazQGU3qvuWQHDZY3XFSygPZQRBGg?=
+ =?us-ascii?Q?dUQEScsVzhIjQYpfPzalmVJx9g9C8bwUBbRqBjmA?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: face7454-67e1-48b4-d369-08db91eea44c
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Jul 2023 16:04:43.1197
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Jul 2023 17:50:34.9127
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: hD4TSnRtyABGlWwZKzGa6jIaem2av4oWhXxtE0GJ9ok56j178ZhbtB9QuImVwc1UQyEbIgXq7ci4s0NLYmJegA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB4120
+X-MS-Exchange-CrossTenant-UserPrincipalName: 8sZMtMjHoKzy38xPg+Moyx14+W1tlezu+216+hi2XIW0gRrRRG4M1Nu7wK1YGz1l
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR12MB6992
 
-Hi Jason,
+This series puts the core code usage of dev->iommu_group under a
+consistent set of locking rules. Currently a lot of places in the code
+access this value without any locking or READ_ONCE/etc techniques and it
+is not clear how or why this is safe.
+
+Make it so the following locking rules are used:
+
+ - It is readable by a probe'd device driver. So long as a device driver
+   is probed the dev->iommu_group will be guaranteed stable without further
+   locking. The reader should provide some kind of locking that ensure's
+   its remove() struct device_driver op cannot progress.
+
+ - Read/Write under the device_lock(), this primarily protects against
+   parallel probe of the same device, and parallel probe/remove. This is
+   useful for places that don't naturally have a device driver probed, and
+   should be rare.
+
+ - Read/Write under the global dev_iommu_group_lock. This is used during
+   probe time discovery of groups. Device drivers will scan unlocked
+   portions of the device tree to locate an already existing group. These
+   scans can access the dev->iommu_group under the global lock to single
+   thread determining and installing the group. This ensures that groups
+   are reliably formed.
+
+Add locking assertions to enforce this.
+
+Along the way remove a bunch of opencoded group touching in drivers trying
+to implement a 'single group per driver' approach by providing a core helper
+that does this common algorithm.
+
+Overall this significantly reduces the number of places within
+drivers/iommu calling iommu_group_get or touching groups at all.
+
+This goes on top of Joerg's next tree, it needs the prior series
+"Consolidate the probe_device path".
+
+This is on github: https://github.com/jgunthorpe/linux/commits/iommu_group_locking
+
+v2:
+ - Revise comments
+ - NULL singleton_group during iommu_device_unregister() for clarity
+v1: https://lore.kernel.org/r/0-v1-3c8177327a47+256-iommu_group_locking_jgg@nvidia.com
+
+Jason Gunthorpe (10):
+  iommu: Remove useless group refcounting
+  iommu: Add a lockdep assertion for remaining dev->iommu_group reads
+  iommu: Add generic_single_device_group()
+  iommu/sun50i: Convert to generic_single_device_group()
+  iommu/sprd: Convert to generic_single_device_group()
+  iommu/rockchip: Convert to generic_single_device_group()
+  iommu/ipmmu-vmsa: Convert to generic_single_device_group()
+  iommu/omap: Convert to generic_single_device_group()
+  iommu: Complete the locking for dev->iommu_group
+  iommu/intel: Fix missing locking for show_device_domain_translation()
+
+ drivers/iommu/intel/debugfs.c  |  34 ++++----
+ drivers/iommu/iommu.c          | 155 +++++++++++++++++++++------------
+ drivers/iommu/ipmmu-vmsa.c     |  22 ++---
+ drivers/iommu/omap-iommu.c     |  30 +------
+ drivers/iommu/omap-iommu.h     |   2 +-
+ drivers/iommu/rockchip-iommu.c |  22 +----
+ drivers/iommu/sprd-iommu.c     |  24 +----
+ drivers/iommu/sun50i-iommu.c   |  29 ++----
+ include/linux/iommu.h          |   3 +
+ 9 files changed, 138 insertions(+), 183 deletions(-)
 
 
-On 7/31/2023 5:37 PM, Jason Gunthorpe wrote:
-> On Mon, Jul 31, 2023 at 12:33:18PM +0530, Vasant Hegde wrote:
->> On 7/28/2023 8:16 PM, Jason Gunthorpe wrote:
->>> On Fri, Jul 28, 2023 at 05:36:08AM +0000, Vasant Hegde wrote:
->>>> Commit 1adf3cc20d69 ("iommu: Add max_pasids field in struct iommu_device")
->>>> introduced a variable struct iommu_device.max_pasids to track max
->>>> PASIDS supported by each IOMMU.
->>>>
->>>> Let us initialize this field for AMD IOMMU. IOMMU core will use this value
->>>> to set max PASIDs per device (see __iommu_probe_device()).
->>>>
->>>> Also remove unused global 'amd_iommu_max_pasid' variable.
->>>>
->>>> Finally current code restricts max PASIDs to 16 bits and calls BUG_ON if
->>>> max PASID is more than 16bit. This patch replaces BUG_ON with WARN_ON
->>>> as system can continue to work with 16-bit PASID.
->>>
->>>>  		pasmax = iommu->features & FEATURE_PASID_MASK;
->>>>  		pasmax >>= FEATURE_PASID_SHIFT;
->>>> -		max_pasid  = (1 << (pasmax + 1)) - 1;
->>>
->>> This can be up to (1<<32)-1
->>>
->>>> -
->>>> -		amd_iommu_max_pasid = min(amd_iommu_max_pasid, max_pasid);
->>>> +		iommu->iommu.max_pasids = (1 << (pasmax + 1)) - 1;
->>>
->>> So why not
->>>
->>>    	iommu->iommu.max_pasids = min((1 << (pasmax + 1)) - 1, PASID_MAX)
->>
->> Because some older chips had support upto 16bit PASID only.
-> 
-> Sure, but I mean why not just directly cap it to PASID_MAX and not
-> bother with the WARN? If you WARN then a new chip reporting > 16 bits
-> of PASID support will cause pointless WARN_ONs at boot time even
-> though the driver will run fine?
+base-commit: a5003e75a1714857c01317d04982eef81331fe2f
+-- 
+2.41.0
 
-Sure. I can get rid of WARN_ON and make it work.
-
--Vasant
