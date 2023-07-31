@@ -1,158 +1,575 @@
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2043.outbound.protection.outlook.com [40.107.223.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-io1-f53.google.com (mail-io1-f53.google.com [209.85.166.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E380B1FDA
-	for <iommu@lists.linux.dev>; Mon, 31 Jul 2023 07:03:33 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=O7UmwxgTZmIKOVAKdH4bbqnx92NfrR6rnHalR9oSophWG5C9MlnHEx/pzge1WR5yHQGHU7LcEDr8m5ZQW7ivAtYUggVbcLicMULtZx5xjCa80sy8IWDyqjaYSlTR4WSSAtfz5qfrsAux+lT2Cq2Z/crxeLfQN7gVfRGT+lsE5r19mN0BMupX2Bt9ZDikCSVxQV1/UiGsC1JIAYNSB423eRE3iBPVgZ/31rhgpwJnRZsGRGjPAdyK+axjTi03O73PUPYpQmU+q2+up75SQQMF9nmUeIC4WdXvm/T2rVbPMNpPK68WsKPmqmNuQuB5xQTBhCJuVtcrnTQbCb0/74m1SQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Q6D4irVWPeYjt9CEBhVqw3SOO/96HqjFF7vcqWhT7pE=;
- b=OEJr35eGVw/T11T9JgNt8BOW+BDz0eOc23B4R2YMUeUKcpSvvpDGzs1KN4J7Ye3wKv+fNxtjsY3W4w+OlrxiZF1aARYeHyiy1i+08Q7yHOSwFyG1jMoOtzz5nKi2vud0jCB7jIxr/SJVGzLfxEooN/ryfFfrP5Qd0mTQVIUxAo7qqKVD201qM6Ul3e2LlGP2fvljgQzJYYsiVQvXsdsDHO3c1X3ym9Vh5qr+Ieox/inJHmlGgFN1ygYHGFPbmL6lk9/H/g2/ZdrS+GRsG2M+k/GhmzPlq1W/vzB+3S8H2ET4C2cvB1AFSJd3crQKOXHh/k+f22d3/khyRYwpWHy+KQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Q6D4irVWPeYjt9CEBhVqw3SOO/96HqjFF7vcqWhT7pE=;
- b=eATjKJTLsFCb2gILPov40a4f/DT0S8APLC4/dmVYcemVPby7ciJlRObBRoW4VCpo6C7E/G/UMgliLIbxom8CrVZAl7fshI/nhYmpiOS58jVYPQQiTTVRJyHRfofOrk2v3XnFHAI7HZwJLvvxyQDLYNQNlRHZXISQAzTwoEtmYoY=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DS7PR12MB6048.namprd12.prod.outlook.com (2603:10b6:8:9f::5) by
- DS7PR12MB8289.namprd12.prod.outlook.com (2603:10b6:8:d8::7) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6631.43; Mon, 31 Jul 2023 07:03:31 +0000
-Received: from DS7PR12MB6048.namprd12.prod.outlook.com
- ([fe80::67ec:80e:c478:df8e]) by DS7PR12MB6048.namprd12.prod.outlook.com
- ([fe80::67ec:80e:c478:df8e%7]) with mapi id 15.20.6631.042; Mon, 31 Jul 2023
- 07:03:31 +0000
-Message-ID: <b5bb3e1e-a933-a04c-53e5-bb05c3ad38c1@amd.com>
-Date: Mon, 31 Jul 2023 12:33:18 +0530
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v2 15/16] iommu/amd: Initialize iommu_device->max_pasids
-Content-Language: en-US
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: iommu@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com,
- wei.huang2@amd.com, jsnitsel@redhat.com
-References: <20230728053609.165183-1-vasant.hegde@amd.com>
- <20230728053609.165183-16-vasant.hegde@amd.com> <ZMPUufoPxZgFwx0w@ziepe.ca>
-From: Vasant Hegde <vasant.hegde@amd.com>
-In-Reply-To: <ZMPUufoPxZgFwx0w@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: PN3PR01CA0143.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:c01:bf::7) To DS7PR12MB6048.namprd12.prod.outlook.com
- (2603:10b6:8:9f::5)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D93C11FDA
+	for <iommu@lists.linux.dev>; Mon, 31 Jul 2023 07:19:30 +0000 (UTC)
+Received: by mail-io1-f53.google.com with SMTP id ca18e2360f4ac-790b080f2a0so3679339f.3
+        for <iommu@lists.linux.dev>; Mon, 31 Jul 2023 00:19:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sifive.com; s=google; t=1690787970; x=1691392770;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=V5HCKgizQghhFT6UNgruN8RzDFlLCCsJgxRTM0kkuHo=;
+        b=N56ECHCkbSfOZhDGlV+T01EqnLZlDfwu15hmGWt50FxcJRdncuzIU6LQMNNj6YhLnH
+         gOHz9uaQA2tVlTnuzp0mkNS9J3kRVHzALxhsOrMCJ2U0qb/sWKq0VT3k167GGNLW9MPL
+         2Ylt52nUWQUsyFUTEA5IQ+UGDPhkJC+/g9we7WFToJJCpi+pv+fpsPDYt7Rk6gsHX1KT
+         DZ9GzX0KG12h3+MN2BG8qlJgcKWjjfcVJShpOcsgbfqwG7Y1L/sBCdOf2zMMLrzryMBc
+         soc0SErpbNwb/xF1RccqN7W+Vc6xpjAtjW2P+saBpod304Qo9V3ImTK4lXNyoM/e4/sT
+         +o2w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1690787970; x=1691392770;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=V5HCKgizQghhFT6UNgruN8RzDFlLCCsJgxRTM0kkuHo=;
+        b=VQ0ssKhYpD8aasY83x2mnu+vBMYNH/XoWJ6po0m+hiRmQ/BdjEwfNbB0qyIRl0rZfJ
+         Hl57Cr+x/OidPfobNpV0BZrCbQD6++n4AszUxYuxfz3B7ufY8+awy/wop3Bh5/CfR314
+         bYYDv8Z0/uUJF32+OdOBbS+qUxgl+A4xXXmaFfE0t+PI9sUOWPPAr7mGQV6OuEcD8B2b
+         cZjtRJYaCfqJIMVJrua7aYHPTu1dw85bNCETz846k8Ok2GOoRWH/d/yZ7b0aYK7QUCqS
+         1tSCJYSZsZUy4tgkz46Y17QlxPnwzCt+HYTVCYsHoqfDm3SeNNtuUD0UVp7mwxSHP/zb
+         SOTA==
+X-Gm-Message-State: ABy/qLaXTtfowRUsKSGzZpZaR9SId6vimvnSaEePtNrx/+zW0PT9Ty9w
+	CT4osNgAYG6+ryn8/K8sJbet6i03dpQcoaf3WIaAYA==
+X-Google-Smtp-Source: APBJJlHz36eN/D+sgs9SSHSNxRkJbB420vSQzDbNnunHJRr/b3BttfpC6gVEsy5DqdcMgqrzYKUJtLjRiNs6YP1loxw=
+X-Received: by 2002:a05:6602:641:b0:787:129a:1e6c with SMTP id
+ d1-20020a056602064100b00787129a1e6cmr5113578iox.4.1690787969731; Mon, 31 Jul
+ 2023 00:19:29 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS7PR12MB6048:EE_|DS7PR12MB8289:EE_
-X-MS-Office365-Filtering-Correlation-Id: dd169328-a7ab-4416-1624-08db91943f4f
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	4ohqqIiaNFBB2r24eDYvK3gxy5bakmtUZt6wBi9b5qf6TNOjXn1VEb+xVitTVt/xNp8F/3CXuVXz7SZ1yAHkmsyOrL9DJFoJ5zwMYO2hBRrn/36L3Mf3XWu/oM/XnMAwOQhjUVTgdmCTjUGlLV7iQvh2gKzknHerr7nOl7lxKfI3BB8vyxLaaIPbtfmIIEyROJTtf0d/mDU0nDcVGBB+NQgjTJjaj2Ovp3ryysNylpaHjM7UDZEwYyRY+GWN/hNBV9XypsQIUnnD05g+13Hjt4SMOGs+JZQ1OlHGJwBo0yStYyFDCx7/AtYUzCZyE9u2rohDKVcTQdeHE66ayAOjgeEBxRozisw/RH5aX8DeSJTy7XFGkcq7TS1jmfMW59j3xcEOC6zq9t0GC+x8cVi2Mv/G5T9UdLQTEuZB8RTvJVu8yCza5u2ZAt+PBkuJEK+i19eJcKc/nMJ0lPvBSKMJKoRs1azJTqfeWSZUdzY4vaeF13U3/8tG4W1r9j8QYaNJt3VpLNZTnp8TCQ3fbGaBya1caBkjni4SJXiBl6HaSEo8V022qTQmXgrB5ksOpAPSp7vPRO2iJXZxGt64UcoGIwrSdMNm3LkQDbuwdCBeoMCfyAn7Y5kIlDVv+jCg6KQGIc5MGe/iviGCoXLnKkVJQA==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6048.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(366004)(346002)(376002)(396003)(136003)(451199021)(6512007)(6486002)(36756003)(53546011)(2616005)(6506007)(26005)(186003)(44832011)(66946007)(66556008)(41300700001)(31696002)(86362001)(66476007)(316002)(4326008)(5660300002)(6916009)(8936002)(8676002)(31686004)(38100700002)(2906002)(6666004)(478600001)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?UU9sRWxQWHFtb2t4cjBuTjIxajhqaGtuNU1xNkFBbW5tTjRFaUJ3V2dCOERh?=
- =?utf-8?B?Q1RWUFYvbFVmTUlIUG1QTkJ5aEorR1VxUUVXOTlHbFB0UkxoWTk3d28zVjhM?=
- =?utf-8?B?bmJNaTZVd1RNRUVTd1l2YXRtbXRNZ0NQUCtxdG5HdVZ4Q2pyVlNIQkRkY3cx?=
- =?utf-8?B?S3ZGOC9VVkIrQ3ZqTTQzdEdZaGZRS1l6TW9LWW9xV1NhenhkOGR1Vnl2ZkJp?=
- =?utf-8?B?NmtMTDVxeU9TdG1lVFlacmpXRnJjaTdhQzIyMUxMQ3dWeWY2eFIxK05NczAx?=
- =?utf-8?B?RmJ0dGNmWDBXc0lxWSs3UE85MXhsUW4zaFpUQzlyR20vUloyWnJYUVJNeHRa?=
- =?utf-8?B?bDhYM0orWnNGcEc0aDBSa0tXY3pNN3NvV0xpRGtvWHdHekhOd3habkw3aW1x?=
- =?utf-8?B?SmtDMDZYTUJndERQVHQ5T2d1OXlIYnIwOVZWTUN1VVIwWm1GRklRVG81WWNG?=
- =?utf-8?B?a3pOM2ZlaTZySlpBejNGM3ByOVR6bUxRZExuaTd2THJxYWR5TXZ6a241OEMr?=
- =?utf-8?B?N0tEU0tJQ0tCTjZmOUJGRi9VREJNR3dWN0NuanBIcGNZNEJzakMvRkRlSUVH?=
- =?utf-8?B?UXVkcjVYWGdvbVBtZ1pCUFlmVXF1K0RlcWJjUjlzblVsZk02YXJwMG5jeitI?=
- =?utf-8?B?bUlOZHBsTEF4aTdMOU1RVjB2dm1kcVZtWTR2YmxucmQ1WnZMdzRQNnFZSVdJ?=
- =?utf-8?B?LzhmU25ZYUJqSTZaQlNXOE1MSmt3VDVnWEcrb1VIVTZqQ3lEU0tuaGhUNFRV?=
- =?utf-8?B?QlVXYzNVb3Boc3hvTC9WSnBIVzE0S2ZoWFNJbFhwWnNLNXkxUmR0RWlqdmFz?=
- =?utf-8?B?SkRidWpZUHRaY0gxaUFUUmpGZHRnaUc5T0VIaXhOZnhrSjR4a01hSmtRRW05?=
- =?utf-8?B?OFhtL2JWVEUrdUdxUlNSbStXQ1hjZmdDdDJQcUlHaTU3NUltTk1sNFRMTGc5?=
- =?utf-8?B?S3pBekEvSjlkTEo4SGJadU1tZndyYnU4L1lYdEtmL1U1MEZndmRSQmp5K1dN?=
- =?utf-8?B?MEdHeW5kV0hiUnFINDdNUFJBOEo2dWo5TFg3dFR1VUtOc1RkTWpkZkF5blN0?=
- =?utf-8?B?bjZCRVVQb3BCMFB5eVQvS2RXWXIyaWVzaVZRTFhCUXY3TGtXMnB3NEZKZzVn?=
- =?utf-8?B?TWRJaGVyWG5xSkpwVlE2Ujcva1haekE0bjNuaG4xamY3NnF1MCszc0hMMHpM?=
- =?utf-8?B?NDBMMHBlTUJlWVdQQStwYUtSUDhqUkRWTzJmbE5yeU5HaGs1NXloRTVVMlBs?=
- =?utf-8?B?SEtUS05pck4zVXZRRFZIYkNnQTJodHJOVVZyS0FRd1h1clUzMHJCK3paWWtS?=
- =?utf-8?B?M3E2ZjFLdmFkQ1dmUEVmcDRtTExEYXhyQVBZOEpaalBBcVVreWlvWFNtMEdl?=
- =?utf-8?B?OUNVNjBFZDY1M2Rra3FqSnErWktsYkdjZC9iZmtuYTZjTUdhT25NNHdLaEZM?=
- =?utf-8?B?MjdVS1ZzNko5VWxNNDB0cURwZ21PVUF0b0kydnl3djVWL1F4Zk1PTzVyTnd4?=
- =?utf-8?B?UjcvZkJrbWxKY044LzhiQStlUkt3RDB1SkpRaDMrUS9Md1FVcjlaZ2Nka0tM?=
- =?utf-8?B?ckZ5Y3g3eGtWOXh3Yno0SXcxYzJKcEZqOVo3eUdMK21pZDBOa3phRi9KeWhJ?=
- =?utf-8?B?Wm80RHV4SDFvRjUxdy9JWjdPcDR5VGdabkdWbnNpb0cyQVNodFJsOVU1L2JR?=
- =?utf-8?B?eXBzaGNXdFJuRjdsSS9ZR3FMby9BNTg1dVJjYlZuQzlhWnlJb2g0OEsxbkgr?=
- =?utf-8?B?aFBYV3hVaDZiUjlxUitvdk9PaW1ETmczRDdYdzhGT01NSXJZVWdmY25oSndx?=
- =?utf-8?B?VUZydllTLytXRis4VDZaTUpTRzJtSDY0MUNaQnlpT0orMWdndnk1eTg5b01k?=
- =?utf-8?B?NDhmMkFKcFVaM3lsZXZFWGd5dHVaMko0WXZmeXhlQXg0QnNyYkI1Nk16d3Rt?=
- =?utf-8?B?cGZhc2xsUkFhcVd4K3JFUEtrNTV5K3QreEhSakJOYXFvR3Q0RFdEZGNSY0x0?=
- =?utf-8?B?cjFvR215TTZNRzhrUDQrMnh0N25lN0ppVXFDRzRaMERwem84UjFiY1NSM0Fz?=
- =?utf-8?B?VE1oYWlXWG1aWkx2dFNPamFlTUQ2YmJETEJpV3dBNzZTWHQvTCtHb0xEa1Qv?=
- =?utf-8?Q?RAYsxeFPrbpcs9fTjk2hYcW8v?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: dd169328-a7ab-4416-1624-08db91943f4f
-X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6048.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Jul 2023 07:03:31.0463
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: NmfgQirw9B+bUMqzwwjD4aghDoXYf3YcyjuGxvpaEYw/dGFjt609qcOFD5TJCHDfWjjgjHViKM4EpYkg/g8OYA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB8289
+References: <cover.1689792825.git.tjeznach@rivosinc.com> <2d5242e79a98dc75cd8fa0fefdb4e3ad37a920ba.1689792825.git.tjeznach@rivosinc.com>
+In-Reply-To: <2d5242e79a98dc75cd8fa0fefdb4e3ad37a920ba.1689792825.git.tjeznach@rivosinc.com>
+From: Zong Li <zong.li@sifive.com>
+Date: Mon, 31 Jul 2023 15:19:19 +0800
+Message-ID: <CANXhq0pb-4y9rOoMwqSgyf-RUQAAp5J8iOheG=Nbo71vCtns7g@mail.gmail.com>
+Subject: Re: [PATCH 08/11] RISC-V: drivers/iommu/riscv: Add page table support
+To: Tomasz Jeznach <tjeznach@rivosinc.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Paul Walmsley <paul.walmsley@sifive.com>, 
+	Anup Patel <apatel@ventanamicro.com>, Albert Ou <aou@eecs.berkeley.edu>, linux@rivosinc.com, 
+	linux-kernel@vger.kernel.org, Sebastien Boeuf <seb@rivosinc.com>, iommu@lists.linux.dev, 
+	Palmer Dabbelt <palmer@dabbelt.com>, Nick Kossifidis <mick@ics.forth.gr>, linux-riscv@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 7/28/2023 8:16 PM, Jason Gunthorpe wrote:
-> On Fri, Jul 28, 2023 at 05:36:08AM +0000, Vasant Hegde wrote:
->> Commit 1adf3cc20d69 ("iommu: Add max_pasids field in struct iommu_device")
->> introduced a variable struct iommu_device.max_pasids to track max
->> PASIDS supported by each IOMMU.
->>
->> Let us initialize this field for AMD IOMMU. IOMMU core will use this value
->> to set max PASIDs per device (see __iommu_probe_device()).
->>
->> Also remove unused global 'amd_iommu_max_pasid' variable.
->>
->> Finally current code restricts max PASIDs to 16 bits and calls BUG_ON if
->> max PASID is more than 16bit. This patch replaces BUG_ON with WARN_ON
->> as system can continue to work with 16-bit PASID.
-> 
->>  		pasmax = iommu->features & FEATURE_PASID_MASK;
->>  		pasmax >>= FEATURE_PASID_SHIFT;
->> -		max_pasid  = (1 << (pasmax + 1)) - 1;
-> 
-> This can be up to (1<<32)-1
-> 
->> -
->> -		amd_iommu_max_pasid = min(amd_iommu_max_pasid, max_pasid);
->> +		iommu->iommu.max_pasids = (1 << (pasmax + 1)) - 1;
-> 
-> So why not
-> 
->    	iommu->iommu.max_pasids = min((1 << (pasmax + 1)) - 1, PASID_MAX)
+On Thu, Jul 20, 2023 at 3:34=E2=80=AFAM Tomasz Jeznach <tjeznach@rivosinc.c=
+om> wrote:
+>
+> Introduces I/O page level translation services, with 4K, 2M, 1G page
+> size support and enables page level iommu_map/unmap domain interfaces.
+>
+> Co-developed-by: Sebastien Boeuf <seb@rivosinc.com>
+> Signed-off-by: Sebastien Boeuf <seb@rivosinc.com>
+> Signed-off-by: Tomasz Jeznach <tjeznach@rivosinc.com>
+> ---
+>  drivers/iommu/io-pgtable.c       |   3 +
+>  drivers/iommu/riscv/Makefile     |   2 +-
+>  drivers/iommu/riscv/io_pgtable.c | 266 +++++++++++++++++++++++++++++++
+>  drivers/iommu/riscv/iommu.c      |  40 +++--
+>  drivers/iommu/riscv/iommu.h      |   1 +
+>  include/linux/io-pgtable.h       |   2 +
+>  6 files changed, 297 insertions(+), 17 deletions(-)
+>  create mode 100644 drivers/iommu/riscv/io_pgtable.c
+>
+> diff --git a/drivers/iommu/io-pgtable.c b/drivers/iommu/io-pgtable.c
+> index b843fcd365d2..c4807175934f 100644
+> --- a/drivers/iommu/io-pgtable.c
+> +++ b/drivers/iommu/io-pgtable.c
+> @@ -32,6 +32,9 @@ io_pgtable_init_table[IO_PGTABLE_NUM_FMTS] =3D {
+>         [AMD_IOMMU_V1] =3D &io_pgtable_amd_iommu_v1_init_fns,
+>         [AMD_IOMMU_V2] =3D &io_pgtable_amd_iommu_v2_init_fns,
+>  #endif
+> +#ifdef CONFIG_RISCV_IOMMU
+> +       [RISCV_IOMMU] =3D &io_pgtable_riscv_init_fns,
+> +#endif
+>  };
+>
+>  struct io_pgtable_ops *alloc_io_pgtable_ops(enum io_pgtable_fmt fmt,
+> diff --git a/drivers/iommu/riscv/Makefile b/drivers/iommu/riscv/Makefile
+> index 9523eb053cfc..13af452c3052 100644
+> --- a/drivers/iommu/riscv/Makefile
+> +++ b/drivers/iommu/riscv/Makefile
+> @@ -1 +1 @@
+> -obj-$(CONFIG_RISCV_IOMMU) +=3D iommu.o iommu-pci.o iommu-platform.o iomm=
+u-sysfs.o
+> \ No newline at end of file
+> +obj-$(CONFIG_RISCV_IOMMU) +=3D iommu.o iommu-pci.o iommu-platform.o iomm=
+u-sysfs.o io_pgtable.o
+> diff --git a/drivers/iommu/riscv/io_pgtable.c b/drivers/iommu/riscv/io_pg=
+table.c
+> new file mode 100644
+> index 000000000000..b6e603e6726e
+> --- /dev/null
+> +++ b/drivers/iommu/riscv/io_pgtable.c
+> @@ -0,0 +1,266 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/*
+> + * Copyright =C2=A9 2022-2023 Rivos Inc.
+> + *
+> + * RISC-V IOMMU page table allocator.
+> + *
+> + * Authors:
+> + *     Tomasz Jeznach <tjeznach@rivosinc.com>
+> + *     Sebastien Boeuf <seb@rivosinc.com>
+> + */
+> +
+> +#include <linux/atomic.h>
+> +#include <linux/bitops.h>
+> +#include <linux/io-pgtable.h>
+> +#include <linux/kernel.h>
+> +#include <linux/sizes.h>
+> +#include <linux/slab.h>
+> +#include <linux/types.h>
+> +#include <linux/dma-mapping.h>
+> +
+> +#include "iommu.h"
+> +
+> +#define io_pgtable_to_domain(x) \
+> +       container_of((x), struct riscv_iommu_domain, pgtbl)
+> +
+> +#define io_pgtable_ops_to_domain(x) \
+> +       io_pgtable_to_domain(container_of((x), struct io_pgtable, ops))
+> +
+> +static inline size_t get_page_size(size_t size)
+> +{
+> +       if (size >=3D IOMMU_PAGE_SIZE_512G)
+> +               return IOMMU_PAGE_SIZE_512G;
+> +
+> +       if (size >=3D IOMMU_PAGE_SIZE_1G)
+> +               return IOMMU_PAGE_SIZE_1G;
+> +
+> +       if (size >=3D IOMMU_PAGE_SIZE_2M)
+> +               return IOMMU_PAGE_SIZE_2M;
+> +
+> +       return IOMMU_PAGE_SIZE_4K;
+> +}
+> +
+> +static void riscv_iommu_pt_walk_free(pmd_t * ptp, unsigned shift, bool r=
+oot)
+> +{
+> +       pmd_t *pte, *pt_base;
+> +       int i;
+> +
+> +       if (shift =3D=3D PAGE_SHIFT)
+> +               return;
+> +
+> +       if (root)
+> +               pt_base =3D ptp;
+> +       else
+> +               pt_base =3D
+> +                   (pmd_t *) pfn_to_virt(__page_val_to_pfn(pmd_val(*ptp)=
+));
+> +
+> +       /* Recursively free all sub page table pages */
+> +       for (i =3D 0; i < PTRS_PER_PMD; i++) {
+> +               pte =3D pt_base + i;
+> +               if (pmd_present(*pte) && !pmd_leaf(*pte))
+> +                       riscv_iommu_pt_walk_free(pte, shift - 9, false);
+> +       }
+> +
+> +       /* Now free the current page table page */
+> +       if (!root && pmd_present(*pt_base))
+> +               free_page((unsigned long)pt_base);
+> +}
+> +
+> +static void riscv_iommu_free_pgtable(struct io_pgtable *iop)
+> +{
+> +       struct riscv_iommu_domain *domain =3D io_pgtable_to_domain(iop);
+> +       riscv_iommu_pt_walk_free((pmd_t *) domain->pgd_root, PGDIR_SHIFT,=
+ true);
+> +}
+> +
+> +static pte_t *riscv_iommu_pt_walk_alloc(pmd_t * ptp, unsigned long iova,
+> +                                       unsigned shift, bool root,
+> +                                       size_t pgsize,
+> +                                       unsigned long (*pd_alloc)(gfp_t),
+> +                                       gfp_t gfp)
+> +{
+> +       pmd_t *pte;
+> +       unsigned long pfn;
+> +
+> +       if (root)
+> +               pte =3D ptp + ((iova >> shift) & (PTRS_PER_PMD - 1));
+> +       else
+> +               pte =3D (pmd_t *) pfn_to_virt(__page_val_to_pfn(pmd_val(*=
+ptp))) +
+> +                   ((iova >> shift) & (PTRS_PER_PMD - 1));
+> +
+> +       if ((1ULL << shift) <=3D pgsize) {
+> +               if (pmd_present(*pte) && !pmd_leaf(*pte))
+> +                       riscv_iommu_pt_walk_free(pte, shift - 9, false);
+> +               return (pte_t *) pte;
+> +       }
+> +
+> +       if (pmd_none(*pte)) {
+> +               pfn =3D pd_alloc ? virt_to_pfn(pd_alloc(gfp)) : 0;
+> +               if (!pfn)
+> +                       return NULL;
+> +               set_pmd(pte, __pmd((pfn << _PAGE_PFN_SHIFT) | _PAGE_TABLE=
+));
+> +       }
+> +
+> +       return riscv_iommu_pt_walk_alloc(pte, iova, shift - 9, false,
+> +                                        pgsize, pd_alloc, gfp);
+> +}
+> +
+> +static pte_t *riscv_iommu_pt_walk_fetch(pmd_t * ptp,
+> +                                       unsigned long iova, unsigned shif=
+t,
+> +                                       bool root)
+> +{
+> +       pmd_t *pte;
+> +
+> +       if (root)
+> +               pte =3D ptp + ((iova >> shift) & (PTRS_PER_PMD - 1));
+> +       else
+> +               pte =3D (pmd_t *) pfn_to_virt(__page_val_to_pfn(pmd_val(*=
+ptp))) +
+> +                   ((iova >> shift) & (PTRS_PER_PMD - 1));
+> +
+> +       if (pmd_leaf(*pte))
+> +               return (pte_t *) pte;
+> +       else if (pmd_none(*pte))
+> +               return NULL;
+> +       else if (shift =3D=3D PAGE_SHIFT)
+> +               return NULL;
+> +
+> +       return riscv_iommu_pt_walk_fetch(pte, iova, shift - 9, false);
+> +}
+> +
+> +static int riscv_iommu_map_pages(struct io_pgtable_ops *ops,
+> +                                unsigned long iova, phys_addr_t phys,
+> +                                size_t pgsize, size_t pgcount, int prot,
+> +                                gfp_t gfp, size_t *mapped)
+> +{
+> +       struct riscv_iommu_domain *domain =3D io_pgtable_ops_to_domain(op=
+s);
+> +       size_t size =3D 0;
+> +       size_t page_size =3D get_page_size(pgsize);
+> +       pte_t *pte;
+> +       pte_t pte_val;
+> +       pgprot_t pte_prot;
+> +
+> +       if (domain->domain.type =3D=3D IOMMU_DOMAIN_BLOCKED)
+> +               return -ENODEV;
+> +
+> +       if (domain->domain.type =3D=3D IOMMU_DOMAIN_IDENTITY) {
+> +               *mapped =3D pgsize * pgcount;
+> +               return 0;
+> +       }
+> +
+> +       pte_prot =3D (prot & IOMMU_WRITE) ?
+> +           __pgprot(_PAGE_BASE | _PAGE_READ | _PAGE_WRITE | _PAGE_DIRTY)=
+ :
+> +           __pgprot(_PAGE_BASE | _PAGE_READ);
+> +
+> +       while (pgcount--) {
+> +               pte =3D
+> +                   riscv_iommu_pt_walk_alloc((pmd_t *) domain->pgd_root,=
+ iova,
+> +                                             PGDIR_SHIFT, true, page_siz=
+e,
+> +                                             get_zeroed_page, gfp);
+> +               if (!pte) {
+> +                       *mapped =3D size;
+> +                       return -ENOMEM;
+> +               }
+> +
+> +               pte_val =3D pfn_pte(phys_to_pfn(phys), pte_prot);
+> +
+> +               set_pte(pte, pte_val);
+> +
+> +               size +=3D page_size;
+> +               iova +=3D page_size;
+> +               phys +=3D page_size;
+> +       }
+> +
+> +       *mapped =3D size;
+> +       return 0;
+> +}
+> +
+> +static size_t riscv_iommu_unmap_pages(struct io_pgtable_ops *ops,
+> +                                     unsigned long iova, size_t pgsize,
+> +                                     size_t pgcount,
+> +                                     struct iommu_iotlb_gather *gather)
+> +{
+> +       struct riscv_iommu_domain *domain =3D io_pgtable_ops_to_domain(op=
+s);
+> +       size_t size =3D 0;
+> +       size_t page_size =3D get_page_size(pgsize);
+> +       pte_t *pte;
+> +
+> +       if (domain->domain.type =3D=3D IOMMU_DOMAIN_IDENTITY)
+> +               return pgsize * pgcount;
+> +
+> +       while (pgcount--) {
+> +               pte =3D riscv_iommu_pt_walk_fetch((pmd_t *) domain->pgd_r=
+oot,
+> +                                               iova, PGDIR_SHIFT, true);
+> +               if (!pte)
+> +                       return size;
+> +
+> +               set_pte(pte, __pte(0));
+> +
+> +               iommu_iotlb_gather_add_page(&domain->domain, gather, iova=
+,
+> +                                           pgsize);
+> +
+> +               size +=3D page_size;
+> +               iova +=3D page_size;
+> +       }
+> +
+> +       return size;
+> +}
+> +
+> +static phys_addr_t riscv_iommu_iova_to_phys(struct io_pgtable_ops *ops,
+> +                                           unsigned long iova)
+> +{
+> +       struct riscv_iommu_domain *domain =3D io_pgtable_ops_to_domain(op=
+s);
+> +       pte_t *pte;
+> +
+> +       if (domain->domain.type =3D=3D IOMMU_DOMAIN_IDENTITY)
+> +               return (phys_addr_t) iova;
+> +
+> +       pte =3D riscv_iommu_pt_walk_fetch((pmd_t *) domain->pgd_root,
+> +                                       iova, PGDIR_SHIFT, true);
+> +       if (!pte || !pte_present(*pte))
+> +               return 0;
+> +
+> +       return (pfn_to_phys(pte_pfn(*pte)) | (iova & PAGE_MASK));
 
-Because some older chips had support upto 16bit PASID only.
+As I mentioned in last mail, it should be (iova & ~PAGE_MASK) for
+getting low 12 bits.
 
-Looks like I missed to cover this details in the description. I will mentioned
-about below commit details in the description.
+> +}
+> +
+> +static void riscv_iommu_tlb_inv_all(void *cookie)
+> +{
+> +}
+> +
+> +static void riscv_iommu_tlb_inv_walk(unsigned long iova, size_t size,
+> +                                    size_t granule, void *cookie)
+> +{
+> +}
+> +
 
-a919a018cccf ("iommu/amd: Fix logic to determine and checking max PASID"
+What could we do in these callbacks? Perhaps send the IOTINVAL command to I=
+OMMU?
 
+> +static void riscv_iommu_tlb_add_page(struct iommu_iotlb_gather *gather,
+> +                                    unsigned long iova, size_t granule,
+> +                                    void *cookie)
+> +{
+> +}
+> +
+> +static const struct iommu_flush_ops riscv_iommu_flush_ops =3D {
+> +       .tlb_flush_all =3D riscv_iommu_tlb_inv_all,
+> +       .tlb_flush_walk =3D riscv_iommu_tlb_inv_walk,
+> +       .tlb_add_page =3D riscv_iommu_tlb_add_page,
+> +};
+> +
+> +/* NOTE: cfg should point to riscv_iommu_domain structure member pgtbl.c=
+fg */
+> +static struct io_pgtable *riscv_iommu_alloc_pgtable(struct io_pgtable_cf=
+g *cfg,
+> +                                                   void *cookie)
+> +{
+> +       struct io_pgtable *iop =3D container_of(cfg, struct io_pgtable, c=
+fg);
+> +
+> +       cfg->pgsize_bitmap =3D SZ_4K | SZ_2M | SZ_1G;
+> +       cfg->ias =3D 57;          // va mode, SvXX -> ias
+> +       cfg->oas =3D 57;          // pa mode, or SvXX+4 -> oas
 
+Is it possible that use VA_BITS instead of this magic number?
 
-> 
-> and forget the WARN_ON?
-
-I do have WARN_ON and then apply PASID_MASK.
-
--Vasant
-
+> +       cfg->tlb =3D &riscv_iommu_flush_ops;
+> +
+> +       iop->ops.map_pages =3D riscv_iommu_map_pages;
+> +       iop->ops.unmap_pages =3D riscv_iommu_unmap_pages;
+> +       iop->ops.iova_to_phys =3D riscv_iommu_iova_to_phys;
+> +
+> +       return iop;
+> +}
+> +
+> +struct io_pgtable_init_fns io_pgtable_riscv_init_fns =3D {
+> +       .alloc =3D riscv_iommu_alloc_pgtable,
+> +       .free =3D riscv_iommu_free_pgtable,
+> +};
+> diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
+> index 9ee7d2b222b5..2ef6952a2109 100644
+> --- a/drivers/iommu/riscv/iommu.c
+> +++ b/drivers/iommu/riscv/iommu.c
+> @@ -807,7 +807,7 @@ static struct iommu_device *riscv_iommu_probe_device(=
+struct device *dev)
+>         /* Initial DC pointer can be NULL if IOMMU is configured in OFF o=
+r BARE mode */
+>         ep->dc =3D riscv_iommu_get_dc(iommu, ep->devid);
+>
+> -       dev_info(iommu->dev, "adding device to iommu with devid %i in dom=
+ain %i\n",
+> +       dev_dbg(iommu->dev, "adding device to iommu with devid %i in doma=
+in %i\n",
+>                 ep->devid, ep->domid);
+>
+>         dev_iommu_priv_set(dev, ep);
+> @@ -874,7 +874,10 @@ static struct iommu_domain *riscv_iommu_domain_alloc=
+(unsigned type)
+>  {
+>         struct riscv_iommu_domain *domain;
+>
+> -       if (type !=3D IOMMU_DOMAIN_IDENTITY &&
+> +       if (type !=3D IOMMU_DOMAIN_DMA &&
+> +           type !=3D IOMMU_DOMAIN_DMA_FQ &&
+> +           type !=3D IOMMU_DOMAIN_UNMANAGED &&
+> +           type !=3D IOMMU_DOMAIN_IDENTITY &&
+>             type !=3D IOMMU_DOMAIN_BLOCKED)
+>                 return NULL;
+>
+> @@ -890,7 +893,7 @@ static struct iommu_domain *riscv_iommu_domain_alloc(=
+unsigned type)
+>         domain->pscid =3D ida_alloc_range(&riscv_iommu_pscids, 1,
+>                                         RISCV_IOMMU_MAX_PSCID, GFP_KERNEL=
+);
+>
+> -       printk("domain type %x alloc %u\n", type, domain->pscid);
+> +       printk("domain alloc %u\n", domain->pscid);
+>
+>         return &domain->domain;
+>  }
+> @@ -903,6 +906,9 @@ static void riscv_iommu_domain_free(struct iommu_doma=
+in *iommu_domain)
+>                 pr_warn("IOMMU domain is not empty!\n");
+>         }
+>
+> +       if (domain->pgtbl.cookie)
+> +               free_io_pgtable_ops(&domain->pgtbl.ops);
+> +
+>         if (domain->pgd_root)
+>                 free_pages((unsigned long)domain->pgd_root, 0);
+>
+> @@ -959,6 +965,9 @@ static int riscv_iommu_domain_finalize(struct riscv_i=
+ommu_domain *domain,
+>         if (!domain->pgd_root)
+>                 return -ENOMEM;
+>
+> +       if (!alloc_io_pgtable_ops(RISCV_IOMMU, &domain->pgtbl.cfg, domain=
+))
+> +               return -ENOMEM;
+> +
+>         return 0;
+>  }
+>
+> @@ -1006,9 +1015,8 @@ static int riscv_iommu_attach_dev(struct iommu_doma=
+in *iommu_domain, struct devi
+>                 return 0;
+>         }
+>
+> -       if (!dc) {
+> +       if (!dc)
+>                 return -ENODEV;
+> -       }
+>
+>         /*
+>          * S-Stage translation table. G-Stage remains unmodified (BARE).
+> @@ -1104,12 +1112,11 @@ static int riscv_iommu_map_pages(struct iommu_dom=
+ain *iommu_domain,
+>  {
+>         struct riscv_iommu_domain *domain =3D iommu_domain_to_riscv(iommu=
+_domain);
+>
+> -       if (domain->domain.type =3D=3D IOMMU_DOMAIN_IDENTITY) {
+> -               *mapped =3D pgsize * pgcount;
+> -               return 0;
+> -       }
+> +       if (!domain->pgtbl.ops.map_pages)
+> +               return -ENODEV;
+>
+> -       return -ENODEV;
+> +       return domain->pgtbl.ops.map_pages(&domain->pgtbl.ops, iova, phys=
+,
+> +                                          pgsize, pgcount, prot, gfp, ma=
+pped);
+>  }
+>
+>  static size_t riscv_iommu_unmap_pages(struct iommu_domain *iommu_domain,
+> @@ -1118,10 +1125,11 @@ static size_t riscv_iommu_unmap_pages(struct iomm=
+u_domain *iommu_domain,
+>  {
+>         struct riscv_iommu_domain *domain =3D iommu_domain_to_riscv(iommu=
+_domain);
+>
+> -       if (domain->domain.type =3D=3D IOMMU_DOMAIN_IDENTITY)
+> -               return pgsize * pgcount;
+> +       if (!domain->pgtbl.ops.unmap_pages)
+> +               return 0;
+>
+> -       return 0;
+> +       return domain->pgtbl.ops.unmap_pages(&domain->pgtbl.ops, iova, pg=
+size,
+> +                                            pgcount, gather);
+>  }
+>
+>  static phys_addr_t riscv_iommu_iova_to_phys(struct iommu_domain *iommu_d=
+omain,
+> @@ -1129,10 +1137,10 @@ static phys_addr_t riscv_iommu_iova_to_phys(struc=
+t iommu_domain *iommu_domain,
+>  {
+>         struct riscv_iommu_domain *domain =3D iommu_domain_to_riscv(iommu=
+_domain);
+>
+> -       if (domain->domain.type =3D=3D IOMMU_DOMAIN_IDENTITY)
+> -               return (phys_addr_t) iova;
+> +       if (!domain->pgtbl.ops.iova_to_phys)
+> +               return 0;
+>
+> -       return 0;
+> +       return domain->pgtbl.ops.iova_to_phys(&domain->pgtbl.ops, iova);
+>  }
+>
+>  /*
+> diff --git a/drivers/iommu/riscv/iommu.h b/drivers/iommu/riscv/iommu.h
+> index 9140df71e17b..fe32a4eff14e 100644
+> --- a/drivers/iommu/riscv/iommu.h
+> +++ b/drivers/iommu/riscv/iommu.h
+> @@ -88,6 +88,7 @@ struct riscv_iommu_device {
+>
+>  struct riscv_iommu_domain {
+>         struct iommu_domain domain;
+> +       struct io_pgtable pgtbl;
+>
+>         struct list_head endpoints;
+>         struct mutex lock;
+> diff --git a/include/linux/io-pgtable.h b/include/linux/io-pgtable.h
+> index 1b7a44b35616..8dd9d3a28e3a 100644
+> --- a/include/linux/io-pgtable.h
+> +++ b/include/linux/io-pgtable.h
+> @@ -19,6 +19,7 @@ enum io_pgtable_fmt {
+>         AMD_IOMMU_V2,
+>         APPLE_DART,
+>         APPLE_DART2,
+> +       RISCV_IOMMU,
+>         IO_PGTABLE_NUM_FMTS,
+>  };
+>
+> @@ -258,5 +259,6 @@ extern struct io_pgtable_init_fns io_pgtable_arm_mali=
+_lpae_init_fns;
+>  extern struct io_pgtable_init_fns io_pgtable_amd_iommu_v1_init_fns;
+>  extern struct io_pgtable_init_fns io_pgtable_amd_iommu_v2_init_fns;
+>  extern struct io_pgtable_init_fns io_pgtable_apple_dart_init_fns;
+> +extern struct io_pgtable_init_fns io_pgtable_riscv_init_fns;
+>
+>  #endif /* __IO_PGTABLE_H */
+> --
+> 2.34.1
+>
+>
+> _______________________________________________
+> linux-riscv mailing list
+> linux-riscv@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-riscv
