@@ -1,52 +1,53 @@
-Received: from mail-io1-f49.google.com (mail-io1-f49.google.com [209.85.166.49])
+Received: from mail-io1-f41.google.com (mail-io1-f41.google.com [209.85.166.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8E01610C
-	for <iommu@lists.linux.dev>; Mon, 31 Jul 2023 08:02:46 +0000 (UTC)
-Received: by mail-io1-f49.google.com with SMTP id ca18e2360f4ac-790a590237aso42178439f.3
-        for <iommu@lists.linux.dev>; Mon, 31 Jul 2023 01:02:46 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B7042117
+	for <iommu@lists.linux.dev>; Mon, 31 Jul 2023 08:12:25 +0000 (UTC)
+Received: by mail-io1-f41.google.com with SMTP id ca18e2360f4ac-7878e573827so161458439f.1
+        for <iommu@lists.linux.dev>; Mon, 31 Jul 2023 01:12:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sifive.com; s=google; t=1690790565; x=1691395365;
+        d=sifive.com; s=google; t=1690791145; x=1691395945;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=QCZirPUdtYbiMuCxmXphGmJX/Sg5hOUUOg1RDGHulbI=;
-        b=SGjh/AtHr94md2aeFSV2NwDOg0oqQn/SnLDDCpkiU+G/+WrXhyeOhsf66FGuUrpqYs
-         7V3JqnTUGI4Us+GaagWCJgh/GCN2kKnZ/dF9GCAGYievYQeiUtSbEGxAE2cIbk7c074o
-         Dd6mH52/RWEtboQi+FZ9Fxp6tT450oKtHzGNomgcoExJYC4BfFneAv3jVkvw6ZNqr/Ty
-         y4Ki3bP0cbG+IljwLYr2ygscyyKgN/DaHBC6dzBbOFd/GkNmdgo1JLS1vZ5z59XUoa9b
-         +TWq7KrAye5BeHAUoEA4ALj1+uInnUN41dRuZCE2h1cd5kZC8FBVwcQ2q0UWMgnliuoZ
-         MuuA==
+        bh=uHauh0efPqBTqf56QAv8YjVP272Ig9QLMnZTsT29Eps=;
+        b=TulGKMcX321aWapxcZccg9DOsP4HNkn2WTblLDm26pSR0fGnsJcdGRD/TzCyDxqhHk
+         mU+S8phtTNqeqm4bZD/j4KV4vQSUH//JL9+fD5b4MphnWCAlkYaR9wD4xTeeBtI3WlXE
+         heYDFjVKSD7pk1bpwKDno2Kcqc6I1ycWAwNIkqP4zXl+ZV583LOlYYbCfHsd6g0T10BY
+         fIfcJLYPvQNBnFWYQ3NoqCsorXChKjAmIBR/M6NDJIp78N3k6H+HJtCawVHNJpZrReEA
+         8czg7aUa2sUuR2yiInxZ0cG1A7XahnbXvkiqGSgY5S342d4vdSy/jzvDHDFodXku/YQx
+         23Hg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1690790565; x=1691395365;
+        d=1e100.net; s=20221208; t=1690791145; x=1691395945;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=QCZirPUdtYbiMuCxmXphGmJX/Sg5hOUUOg1RDGHulbI=;
-        b=LhztPbpRTf9gahM/2TJepXiu1HSDpTa2LdH1FDy3eI3YcIyx3Di5TcMO17TETZIRws
-         XGVOPvzrh0u7Z5elwbmnkcEkrxvT9UbL6+LAmsXPH9iQ+8UO3Q1KicjOeCmM1maizfWl
-         GFE7VJ8W+KL3WdBgIS1ahd2uyooHg8o1/EFtvtYoWjcWs9wmV2PIe16B4hViqfs0mQMM
-         iNCpvYkYFB2ZU6dFpx8L6LJDBnDGDBvpVwOTMYM6xetubVU7brPzhDhgpx+VNoy4gd+c
-         AJPuHNtEyW6bC2hoRsO/QpQT6lYKrF9LhpvgRa5SPCB/0uz/8d7Shvjwfym8i7GGvInq
-         mEtA==
-X-Gm-Message-State: ABy/qLbBw9DRlBeudmb3eKFv3Kt7ghVYLDGLETbEHXLlHNeXGhIaop9R
-	jODwCmVNAhqD9hh+a5EhxoRpLcJ1b4PEoMYbTf1sEg==
-X-Google-Smtp-Source: APBJJlH3GU7IdkMvOpU71QMDvT5/hmd5Yp3CEFjdkjLPmxV1u8VCET+nuHN/SjOnH78U+3zpVmL7y/wwobSRmkMbN3s=
-X-Received: by 2002:a5e:a90f:0:b0:790:a23b:1dfc with SMTP id
- c15-20020a5ea90f000000b00790a23b1dfcmr3153500iod.9.1690790565610; Mon, 31 Jul
- 2023 01:02:45 -0700 (PDT)
+        bh=uHauh0efPqBTqf56QAv8YjVP272Ig9QLMnZTsT29Eps=;
+        b=B4mMvVc0HXfszXzxj5I8v5fvaGLzegcA5K3naaXDu4Wy1V0D0oPxT83lX2lyaoGa4v
+         9WBM6vGoiHv61esg5sptDrHiPMCtCtJkUHWm+KF43x/Hqc+ySwlXRpEog/BFpFgdJppU
+         MXcNQJ34ucC88R6cCfH4O1BugkXky6DkyJRXP88vF+D/kUWzP5CqWz10em+f9cxZH+36
+         YP+Ce3YWteuaWd/semG/68YIU09gbkJypKHewwqtL9QflU+ctNgRM90ahOv+V8GfmAFF
+         pb8WcFieiUu7SJroX2zjaVNa+qhGstz4Ed0kDuKN+NKmHfKMzcMPYwQXRKrTuTcN3uoC
+         sKGQ==
+X-Gm-Message-State: ABy/qLby8AoZUuKd3N3GUQM4RWHNVNXLSlwlZfOyXyVSipuiIqev5BZW
+	FRgWBxkPt8geNQ4tnmBPAik5l+BmdO1HF4+GNZTsUw==
+X-Google-Smtp-Source: APBJJlFd8FXntafRgv49ekXY4iSLX1SKmvW8LypYEXY0DQr5GzWG7o/hXai+HnoNflLPhvQeZLlH51As3NP47P+py2Y=
+X-Received: by 2002:a92:cda5:0:b0:348:cd6b:d593 with SMTP id
+ g5-20020a92cda5000000b00348cd6bd593mr7885407ild.27.1690791144902; Mon, 31 Jul
+ 2023 01:12:24 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <cover.1689792825.git.tjeznach@rivosinc.com> <660b7a8707e494a6bb2706e10569a7414c3640a7.1689792825.git.tjeznach@rivosinc.com>
-In-Reply-To: <660b7a8707e494a6bb2706e10569a7414c3640a7.1689792825.git.tjeznach@rivosinc.com>
+References: <cover.1689792825.git.tjeznach@rivosinc.com> <0c391072fe0be52b3bdf3d826e4313d960aecba0.1689792825.git.tjeznach@rivosinc.com>
+In-Reply-To: <0c391072fe0be52b3bdf3d826e4313d960aecba0.1689792825.git.tjeznach@rivosinc.com>
 From: Zong Li <zong.li@sifive.com>
-Date: Mon, 31 Jul 2023 16:02:35 +0800
-Message-ID: <CANXhq0oSiv7UV+nmZppA0_oZCevEEt2UsNTz6WE3gtcCpExYqw@mail.gmail.com>
-Subject: Re: [PATCH 10/11] RISC-V: drivers/iommu/riscv: Add MSI identity remapping
+Date: Mon, 31 Jul 2023 16:12:14 +0800
+Message-ID: <CANXhq0q9bMm4m6AJ=3uy81+GsQ+bav+TLbdB-oTBu-wu+f5beQ@mail.gmail.com>
+Subject: Re: [PATCH 11/11] RISC-V: drivers/iommu/riscv: Add G-Stage
+ translation support
 To: Tomasz Jeznach <tjeznach@rivosinc.com>
 Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
 	Robin Murphy <robin.murphy@arm.com>, Paul Walmsley <paul.walmsley@sifive.com>, 
@@ -59,184 +60,176 @@ Content-Transfer-Encoding: quoted-printable
 On Thu, Jul 20, 2023 at 3:34=E2=80=AFAM Tomasz Jeznach <tjeznach@rivosinc.c=
 om> wrote:
 >
-> This change provides basic identity mapping support to
-> excercise MSI_FLAT hardware capability.
+> This change introduces 2nd stage translation configuration
+> support, enabling nested translation for IOMMU hardware.
+> Pending integration with VMM IOMMUFD interfaces to manage
+> 1st stage translation and IOMMU virtialization interfaces.
 >
 > Signed-off-by: Tomasz Jeznach <tjeznach@rivosinc.com>
 > ---
->  drivers/iommu/riscv/iommu.c | 81 +++++++++++++++++++++++++++++++++++++
->  drivers/iommu/riscv/iommu.h |  3 ++
->  2 files changed, 84 insertions(+)
+>  drivers/iommu/riscv/iommu.c | 58 ++++++++++++++++++++++++++++---------
+>  drivers/iommu/riscv/iommu.h |  3 +-
+>  2 files changed, 46 insertions(+), 15 deletions(-)
 >
 > diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
-> index 6042c35be3ca..7b3e3e135cf6 100644
+> index 7b3e3e135cf6..3ca2f0194d3c 100644
 > --- a/drivers/iommu/riscv/iommu.c
 > +++ b/drivers/iommu/riscv/iommu.c
-> @@ -61,6 +61,9 @@ MODULE_PARM_DESC(priq_length, "Page request interface q=
-ueue length.");
->  #define RISCV_IOMMU_MAX_PSCID  (1U << 20)
->  static DEFINE_IDA(riscv_iommu_pscids);
->
-> +/* TODO: Enable MSI remapping */
-> +#define RISCV_IMSIC_BASE       0x28000000
-
-I'm not sure if it is appropriate to hard code the base address of
-peripheral in source code, it might be depends on the layout of each
-target.
-
-> +
->  /* 1 second */
->  #define RISCV_IOMMU_TIMEOUT    riscv_timebase
->
-> @@ -932,6 +935,72 @@ static irqreturn_t riscv_iommu_priq_process(int irq,=
- void *data)
->   * Endpoint management
->   */
->
-> +static int riscv_iommu_enable_ir(struct riscv_iommu_endpoint *ep)
-> +{
-> +       struct riscv_iommu_device *iommu =3D ep->iommu;
-> +       struct iommu_resv_region *entry;
-> +       struct irq_domain *msi_domain;
-> +       u64 val;
-> +       int i;
-> +
-> +       /* Initialize MSI remapping */
-> +       if (!ep->dc || !(iommu->cap & RISCV_IOMMU_CAP_MSI_FLAT))
-> +               return 0;
-> +
-> +       ep->msi_root =3D (struct riscv_iommu_msi_pte *)get_zeroed_page(GF=
-P_KERNEL);
-> +       if (!ep->msi_root)
-> +               return -ENOMEM;
-> +
-> +       for (i =3D 0; i < 256; i++) {
-> +               ep->msi_root[i].pte =3D RISCV_IOMMU_MSI_PTE_V |
-> +                   FIELD_PREP(RISCV_IOMMU_MSI_PTE_M, 3) |
-> +                   phys_to_ppn(RISCV_IMSIC_BASE + i * PAGE_SIZE);
-> +       }
-> +
-> +       entry =3D iommu_alloc_resv_region(RISCV_IMSIC_BASE, PAGE_SIZE * 2=
-56, 0,
-> +                                       IOMMU_RESV_SW_MSI, GFP_KERNEL);
-> +       if (entry)
-> +               list_add_tail(&entry->list, &ep->regions);
-> +
-> +       val =3D virt_to_pfn(ep->msi_root) |
-> +           FIELD_PREP(RISCV_IOMMU_DC_MSIPTP_MODE, RISCV_IOMMU_DC_MSIPTP_=
-MODE_FLAT);
-> +       ep->dc->msiptp =3D cpu_to_le64(val);
-> +
-> +       /* Single page of MSIPTP, 256 IMSIC files */
-> +       ep->dc->msi_addr_mask =3D cpu_to_le64(255);
-> +       ep->dc->msi_addr_pattern =3D cpu_to_le64(RISCV_IMSIC_BASE >> 12);
-> +       wmb();
-> +
-> +       /* set msi domain for the device as isolated. hack. */
-> +       msi_domain =3D dev_get_msi_domain(ep->dev);
-> +       if (msi_domain) {
-> +               msi_domain->flags |=3D IRQ_DOMAIN_FLAG_ISOLATED_MSI;
-> +       }
-> +
-> +       dev_dbg(ep->dev, "RV-IR enabled\n");
-> +
-> +       ep->ir_enabled =3D true;
-> +
-> +       return 0;
-> +}
-> +
-> +static void riscv_iommu_disable_ir(struct riscv_iommu_endpoint *ep)
-> +{
-> +       if (!ep->ir_enabled)
-> +               return;
-> +
-> +       ep->dc->msi_addr_pattern =3D 0ULL;
-> +       ep->dc->msi_addr_mask =3D 0ULL;
-> +       ep->dc->msiptp =3D 0ULL;
-> +       wmb();
-> +
-> +       dev_dbg(ep->dev, "RV-IR disabled\n");
-> +
-> +       free_pages((unsigned long)ep->msi_root, 0);
-> +       ep->msi_root =3D NULL;
-> +       ep->ir_enabled =3D false;
-> +}
-> +
->  /* Endpoint features/capabilities */
->  static void riscv_iommu_disable_ep(struct riscv_iommu_endpoint *ep)
->  {
-> @@ -1226,6 +1295,7 @@ static struct iommu_device *riscv_iommu_probe_devic=
-e(struct device *dev)
->
->         mutex_init(&ep->lock);
->         INIT_LIST_HEAD(&ep->domain);
-> +       INIT_LIST_HEAD(&ep->regions);
->
->         if (dev_is_pci(dev)) {
->                 ep->devid =3D pci_dev_id(to_pci_dev(dev));
-> @@ -1248,6 +1318,7 @@ static struct iommu_device *riscv_iommu_probe_devic=
-e(struct device *dev)
->         dev_iommu_priv_set(dev, ep);
->         riscv_iommu_add_device(iommu, dev);
->         riscv_iommu_enable_ep(ep);
-> +       riscv_iommu_enable_ir(ep);
->
->         return &iommu->iommu;
+> @@ -1418,6 +1418,19 @@ static struct iommu_domain *riscv_iommu_domain_all=
+oc(unsigned type)
+>         return &domain->domain;
 >  }
-> @@ -1279,6 +1350,7 @@ static void riscv_iommu_release_device(struct devic=
-e *dev)
->                 riscv_iommu_iodir_inv_devid(iommu, ep->devid);
+>
+> +/* mark domain as second-stage translation */
+> +static int riscv_iommu_enable_nesting(struct iommu_domain *iommu_domain)
+> +{
+> +       struct riscv_iommu_domain *domain =3D iommu_domain_to_riscv(iommu=
+_domain);
+> +
+> +       mutex_lock(&domain->lock);
+> +       if (list_empty(&domain->endpoints))
+> +               domain->g_stage =3D true;
+> +       mutex_unlock(&domain->lock);
+> +
+> +       return domain->g_stage ? 0 : -EBUSY;
+> +}
+> +
+>  static void riscv_iommu_domain_free(struct iommu_domain *iommu_domain)
+>  {
+>         struct riscv_iommu_domain *domain =3D iommu_domain_to_riscv(iommu=
+_domain);
+> @@ -1433,7 +1446,7 @@ static void riscv_iommu_domain_free(struct iommu_do=
+main *iommu_domain)
+>                 free_io_pgtable_ops(&domain->pgtbl.ops);
+>
+>         if (domain->pgd_root)
+> -               free_pages((unsigned long)domain->pgd_root, 0);
+> +               free_pages((unsigned long)domain->pgd_root, domain->g_sta=
+ge ? 2 : 0);
+>
+>         if ((int)domain->pscid > 0)
+>                 ida_free(&riscv_iommu_pscids, domain->pscid);
+> @@ -1483,7 +1496,8 @@ static int riscv_iommu_domain_finalize(struct riscv=
+_iommu_domain *domain,
+>
+>         /* TODO: Fix this for RV32 */
+>         domain->mode =3D satp_mode >> 60;
+> -       domain->pgd_root =3D (pgd_t *) __get_free_pages(GFP_KERNEL | __GF=
+P_ZERO, 0);
+> +       domain->pgd_root =3D (pgd_t *) __get_free_pages(GFP_KERNEL | __GF=
+P_ZERO,
+> +                                                     domain->g_stage ? 2=
+ : 0);
+>
+>         if (!domain->pgd_root)
+>                 return -ENOMEM;
+> @@ -1499,6 +1513,8 @@ static u64 riscv_iommu_domain_atp(struct riscv_iomm=
+u_domain *domain)
+>         u64 atp =3D FIELD_PREP(RISCV_IOMMU_DC_FSC_MODE, domain->mode);
+>         if (domain->mode !=3D RISCV_IOMMU_DC_FSC_MODE_BARE)
+>                 atp |=3D FIELD_PREP(RISCV_IOMMU_DC_FSC_PPN, virt_to_pfn(d=
+omain->pgd_root));
+> +       if (domain->g_stage)
+> +               atp |=3D FIELD_PREP(RISCV_IOMMU_DC_IOHGATP_GSCID, domain-=
+>pscid);
+>         return atp;
+>  }
+>
+> @@ -1541,20 +1557,30 @@ static int riscv_iommu_attach_dev(struct iommu_do=
+main *iommu_domain, struct devi
+>         if (!dc)
+>                 return -ENODEV;
+>
+> -       /*
+> -        * S-Stage translation table. G-Stage remains unmodified (BARE).
+> -        */
+> -       val =3D FIELD_PREP(RISCV_IOMMU_DC_TA_PSCID, domain->pscid);
+> -
+> -       if (ep->pasid_enabled) {
+> -               ep->pc[0].ta =3D cpu_to_le64(val | RISCV_IOMMU_PC_TA_V);
+> -               ep->pc[0].fsc =3D cpu_to_le64(riscv_iommu_domain_atp(doma=
+in));
+> +       if (domain->g_stage) {
+> +               /*
+> +                * Enable G-Stage translation with initial pass-through m=
+ode
+> +                * for S-Stage. VMM is responsible for more restrictive
+> +                * guest VA translation scheme configuration.
+> +                */
+>                 dc->ta =3D 0;
+> -               dc->fsc =3D cpu_to_le64(virt_to_pfn(ep->pc) |
+> -                   FIELD_PREP(RISCV_IOMMU_DC_FSC_MODE, RISCV_IOMMU_DC_FS=
+C_PDTP_MODE_PD8));
+> +               dc->fsc =3D 0ULL; /* RISCV_IOMMU_DC_FSC_MODE_BARE */ ;
+> +               dc->iohgatp =3D cpu_to_le64(riscv_iommu_domain_atp(domain=
+));
+>         } else {
+> -               dc->ta =3D cpu_to_le64(val);
+> -               dc->fsc =3D cpu_to_le64(riscv_iommu_domain_atp(domain));
+> +               /* S-Stage translation table. G-Stage remains unmodified.=
+ */
+> +               if (ep->pasid_enabled) {
+> +                       val =3D FIELD_PREP(RISCV_IOMMU_DC_TA_PSCID, domai=
+n->pscid);
+> +                       ep->pc[0].ta =3D cpu_to_le64(val | RISCV_IOMMU_PC=
+_TA_V);
+> +                       ep->pc[0].fsc =3D cpu_to_le64(riscv_iommu_domain_=
+atp(domain));
+> +                       dc->ta =3D 0;
+> +                       val =3D FIELD_PREP(RISCV_IOMMU_DC_FSC_MODE,
+> +                                         RISCV_IOMMU_DC_FSC_PDTP_MODE_PD=
+8);
+> +                       dc->fsc =3D cpu_to_le64(val | virt_to_pfn(ep->pc)=
+);
+> +               } else {
+> +                       val =3D FIELD_PREP(RISCV_IOMMU_DC_TA_PSCID, domai=
+n->pscid);
+> +                       dc->ta =3D cpu_to_le64(val);
+> +                       dc->fsc =3D cpu_to_le64(riscv_iommu_domain_atp(do=
+main));
+> +               }
 >         }
 >
-> +       riscv_iommu_disable_ir(ep);
->         riscv_iommu_disable_ep(ep);
+>         wmb();
+> @@ -1599,6 +1625,9 @@ static int riscv_iommu_set_dev_pasid(struct iommu_d=
+omain *iommu_domain,
+>         if (!iommu_domain || !iommu_domain->mm)
+>                 return -EINVAL;
 >
->         /* Remove endpoint from IOMMU tracking structures */
-> @@ -1301,6 +1373,15 @@ static struct iommu_group *riscv_iommu_device_grou=
-p(struct device *dev)
->
->  static void riscv_iommu_get_resv_regions(struct device *dev, struct list=
-_head *head)
->  {
-> +       struct iommu_resv_region *entry, *new_entry;
-> +       struct riscv_iommu_endpoint *ep =3D dev_iommu_priv_get(dev);
+> +       if (domain->g_stage)
+> +               return -EINVAL;
 > +
-> +       list_for_each_entry(entry, &ep->regions, list) {
-> +               new_entry =3D kmemdup(entry, sizeof(*entry), GFP_KERNEL);
-> +               if (new_entry)
-> +                       list_add_tail(&new_entry->list, head);
-> +       }
-> +
->         iommu_dma_get_resv_regions(dev, head);
->  }
->
-> diff --git a/drivers/iommu/riscv/iommu.h b/drivers/iommu/riscv/iommu.h
-> index 83e8d00fd0f8..55418a1144fb 100644
-> --- a/drivers/iommu/riscv/iommu.h
-> +++ b/drivers/iommu/riscv/iommu.h
-> @@ -117,14 +117,17 @@ struct riscv_iommu_endpoint {
->         struct riscv_iommu_dc *dc;              /* device context pointer=
- */
->         struct riscv_iommu_pc *pc;              /* process context root, =
-valid if pasid_enabled is true */
->         struct riscv_iommu_device *iommu;       /* parent iommu device */
-> +       struct riscv_iommu_msi_pte *msi_root;   /* interrupt re-mapping *=
-/
->
->         struct mutex lock;
->         struct list_head domain;                /* endpoint attached mana=
-ged domain */
-> +       struct list_head regions;               /* reserved regions, inte=
-rrupt remapping window */
->
->         /* end point info bits */
->         unsigned pasid_bits;
->         unsigned pasid_feat;
->         bool pasid_enabled;
-> +       bool ir_enabled;
+>         /* Driver uses TC.DPE mode, PASID #0 is incorrect. */
+>         if (pasid =3D=3D 0)
+>                 return -EINVAL;
+> @@ -1969,6 +1998,7 @@ static const struct iommu_domain_ops riscv_iommu_do=
+main_ops =3D {
+>         .iotlb_sync =3D riscv_iommu_iotlb_sync,
+>         .iotlb_sync_map =3D riscv_iommu_iotlb_sync_map,
+>         .flush_iotlb_all =3D riscv_iommu_flush_iotlb_all,
+> +       .enable_nesting =3D riscv_iommu_enable_nesting,
 >  };
 >
->  /* Helper functions and macros */
+
+I don't see the GVMA invalidate command, I guess we need do something
+likes that in 'riscv_iommu_mm_invalidate'
+
+>  static const struct iommu_ops riscv_iommu_ops =3D {
+> diff --git a/drivers/iommu/riscv/iommu.h b/drivers/iommu/riscv/iommu.h
+> index 55418a1144fb..55e5aafea5bc 100644
+> --- a/drivers/iommu/riscv/iommu.h
+> +++ b/drivers/iommu/riscv/iommu.h
+> @@ -102,8 +102,9 @@ struct riscv_iommu_domain {
+>         struct riscv_iommu_device *iommu;
+>
+>         unsigned mode;          /* RIO_ATP_MODE_* enum */
+> -       unsigned pscid;         /* RISC-V IOMMU PSCID */
+> +       unsigned pscid;         /* RISC-V IOMMU PSCID / GSCID */
+>         ioasid_t pasid;         /* IOMMU_DOMAIN_SVA: Cached PASID */
+> +       bool g_stage;           /* 2nd stage translation domain */
+>
+>         pgd_t *pgd_root;        /* page table root pointer */
+>  };
 > --
 > 2.34.1
 >
