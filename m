@@ -1,74 +1,96 @@
-Received: from bee.tesarici.cz (bee.tesarici.cz [77.93.223.253])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mailgate.ics.forth.gr (mailgate.ics.forth.gr [139.91.1.2])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 24F2519BD5
-	for <iommu@lists.linux.dev>; Mon, 31 Jul 2023 19:46:28 +0000 (UTC)
-Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-b985-910f-39e1-703f.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:b985:910f:39e1:703f])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by bee.tesarici.cz (Postfix) with ESMTPSA id EAA8B178227;
-	Mon, 31 Jul 2023 21:46:18 +0200 (CEST)
-Authentication-Results: mail.tesarici.cz; dmarc=fail (p=none dis=none) header.from=tesarici.cz
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tesarici.cz; s=mail;
-	t=1690832779; bh=KWGiVMKtI706Wwo+DM5RpfJ8QcAflbLeZoJQleXTj7w=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=DCbut2Q1V/o96bevVJ5VH0tsE8RBOG34SkaIN2hyTrDSOvmqWteKWg9WSSEmkSDR/
-	 7zEcP3LPJCP0C30n9bKPAcmiiYpu7Srh/GV83YQ3KdTEhs0WmTtBNg9apNXr3D4vM9
-	 l+cuuubqpoexTeGXas2IjL8jUpRGjQ4lIgZ7qtkkxPLv/dtnfOM4sW9s/NJ/VXCJbW
-	 bPmzFIP6+7hKJ/ThN/ccfBtqYIIyBpGyv67t5YdZ3SQFvyi67polQGKVblNs06g0Hr
-	 I86Dg302FpL39M5+5q5pMGvrRpcg2f/33XsKuUuAZUtFISY1nQ6bvC7px1r0e4AGzy
-	 6AOiYmUbWlVNw==
-Date: Mon, 31 Jul 2023 21:46:18 +0200
-From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
-To: Christoph Hellwig <hch@lst.de>
-Cc: Petr Tesarik <petrtesarik@huaweicloud.com>, Stefano Stabellini
- <sstabellini@kernel.org>, Russell King <linux@armlinux.org.uk>, Thomas
- Bogendoerfer <tsbogend@alpha.franken.de>, Thomas Gleixner
- <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov
- <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>, "maintainer:X86
- ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>, "H. Peter Anvin"
- <hpa@zytor.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael
- J. Wysocki" <rafael@kernel.org>, Juergen Gross <jgross@suse.com>, Oleksandr
- Tyshchenko <oleksandr_tyshchenko@epam.com>, Marek Szyprowski
- <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Christoph
- Lameter <cl@linux.com>, Pekka Enberg <penberg@kernel.org>, David Rientjes
- <rientjes@google.com>, Joonsoo Kim <iamjoonsoo.kim@lge.com>, Andrew Morton
- <akpm@linux-foundation.org>, Vlastimil Babka <vbabka@suse.cz>, Roman
- Gushchin <roman.gushchin@linux.dev>, Hyeonggon Yoo <42.hyeyoo@gmail.com>,
- Petr Tesarik <petr.tesarik.ext@huawei.com>, Jonathan Corbet
- <corbet@lwn.net>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Hans
- de Goede <hdegoede@redhat.com>, James Seo <james@equiv.tech>, James Clark
- <james.clark@arm.com>, Kees Cook <keescook@chromium.org>, "moderated
- list:XEN HYPERVISOR ARM" <xen-devel@lists.xenproject.org>, "moderated
- list:ARM PORT" <linux-arm-kernel@lists.infradead.org>, open list
- <linux-kernel@vger.kernel.org>, "open list:MIPS"
- <linux-mips@vger.kernel.org>, "open list:XEN SWIOTLB SUBSYSTEM"
- <iommu@lists.linux.dev>, "open list:SLAB ALLOCATOR" <linux-mm@kvack.org>,
- Roberto Sassu <roberto.sassu@huaweicloud.com>
-Subject: Re: [PATCH v6 0/9] Allow dynamic allocation of software IO TLB
- bounce buffers
-Message-ID: <20230731214618.6e7cde05@meshulam.tesarici.cz>
-In-Reply-To: <20230731160409.GA8991@lst.de>
-References: <cover.1690459412.git.petr.tesarik.ext@huawei.com>
-	<20230731160409.GA8991@lst.de>
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; x86_64-suse-linux-gnu)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E1521DDC1
+	for <iommu@lists.linux.dev>; Mon, 31 Jul 2023 23:35:37 +0000 (UTC)
+Received: from av3.ics.forth.gr (av3in.ics.forth.gr [139.91.1.77])
+	by mailgate.ics.forth.gr (8.15.2/ICS-FORTH/V10-1.8-GATE) with ESMTP id 36VNZYxh034597
+	for <iommu@lists.linux.dev>; Tue, 1 Aug 2023 02:35:34 +0300 (EEST)
+DKIM-Signature: v=1; a=rsa-sha256; d=ics.forth.gr; s=av; c=relaxed/simple;
+	q=dns/txt; i=@ics.forth.gr; t=1690846529; x=1693438529;
+	h=From:Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
+	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:Resent-From:
+	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
+	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=LSI+78CfW+QT4JpYLaB75hH9TQH+aW5vj75UYJKOLcQ=;
+	b=kTKV5jqGVcwFgVBaQYJU+AxlBxqtDo+7Eeq8nndszmR0URMZVNHdVyyKaFZVHuT8
+	cfbCzuy/IQvxu8Yx7RYodznI0SVDETLWTb+3dyZ6NOGNsyacWb74Ik60lLqr0Iyg
+	956fID9oI3NzQjjJbmWeufKFmpYMaGrkKXBXP4b9sLo3u7b0E1oY6F2CwkgxugWe
+	9DKYVi66ffit6dW3+owNkh4S/N/eZtG8wdNhWIc/gGnAl/9L6GGEAU/FOYU5b5oK
+	pcCgliA2bG6zgRHqWpmf96Wdhwgv205Op7gR3JK2vXV5KnggQc3v/1GepkgDgrns
+	bEPZ9Ow75g9IGxGKyetq4g==;
+X-AuditID: 8b5b014d-a17eb70000002178-1b-64c845417c82
+Received: from enigma.ics.forth.gr (enigma-2.ics.forth.gr [139.91.151.35])
+	by av3.ics.forth.gr (Symantec Messaging Gateway) with SMTP id 6E.28.08568.14548C46; Tue,  1 Aug 2023 02:35:29 +0300 (EEST)
+X-ICS-AUTH-INFO: Authenticated user: mick at ics.forth.gr
+Message-ID: <dc3974f0-500c-b7d3-c8ca-df069dbd02a8@ics.forth.gr>
+Date: Tue, 1 Aug 2023 02:35:20 +0300
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.13.0
+Subject: Re: [PATCH 06/11] RISC-V: drivers/iommu/riscv: Add command, fault,
+ page-req queues
+To: Zong Li <zong.li@sifive.com>
+Cc: Tomasz Jeznach <tjeznach@rivosinc.com>, Joerg Roedel <joro@8bytes.org>,
+        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Anup Patel <apatel@ventanamicro.com>,
+        Albert Ou <aou@eecs.berkeley.edu>, linux@rivosinc.com,
+        linux-kernel@vger.kernel.org, Sebastien Boeuf <seb@rivosinc.com>,
+        iommu@lists.linux.dev, Palmer Dabbelt <palmer@dabbelt.com>,
+        linux-riscv@lists.infradead.org
+References: <cover.1689792825.git.tjeznach@rivosinc.com>
+ <1fd79e5c53d9d6ed2264f60dd4261f293cc00472.1689792825.git.tjeznach@rivosinc.com>
+ <CANXhq0pm+1yXuvUGudwNtvNHWV3FytH4VfCnq7_Ws=t-MZP_kQ@mail.gmail.com>
+ <3d4d9b22-8451-f4d5-bbd8-117988f3a545@ics.forth.gr>
+ <CANXhq0puxuHA2cEyb2+TobkoFTc=7MQqtv7DYbuZdvf0T8+iUQ@mail.gmail.com>
+Content-Language: el-GR, en-US
+From: Nick Kossifidis <mick@ics.forth.gr>
+In-Reply-To: <CANXhq0puxuHA2cEyb2+TobkoFTc=7MQqtv7DYbuZdvf0T8+iUQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprIIsWRmVeSWpSXmKPExsXSHT1dWdfR9USKQcNpBYutv2exW8y6dJzR
+	4tcXC4vO2RvYLS7vmsNmse1zC5vFhkuzGC1eXu5htmibxW9x8MMTVovP8yssvixrZ7RouWNq
+	8eHubDYHPo8nB+cxeayZt4bR483Llywehzu+sHtsWtXJ5rF5Sb3Hi80zGT1uzIrwuNR8nd3j
+	78+tLB6fN8kFcEdx2aSk5mSWpRbp2yVwZUz40cRccJaj4uzsVtYGxodsXYycHBICJhIz325m
+	7GLk4hASOM4ocf77L6iEpcTmTy9Zuhg5OHgF7CXmbbQHCbMIqEhMm7yLBcTmFRCUODnzCZgt
+	KhAtseHCIzBbWCBW4kPHK7AxIgIKEleWbGQBmc8s8JlZ4sqmL6wQy84xSdzeuBmsillATuL9
+	s+2sIDabgKbE/EsHwSZxCgRKfL67nB2ixkyia2sXI4QtL9G8dTbzBEaBWUgOmYVk1CwkLbOQ
+	tCxgZFnFKJBYZqyXmVysl5ZfVJKhl160iREca4y+Oxhvb36rd4iRiYPxEKMEB7OSCK/07+Mp
+	QrwpiZVVqUX58UWlOanFhxilOViUxHlP2C5IFhJITyxJzU5NLUgtgskycXBKNTCJngib83lr
+	2BsHXqfwF6bKc2bydk6L7PfZYmBXK8USOEP1WuorTvZbV7dFzvPfaMsVliu6LTzoXdbeC2+r
+	fe865fFFWJTNzNy+8LYm69VFG/Lio1o+S990uydYccTr7N4ZuzbWs3xW7E4VmLJowa8VM7eY
+	/m9RYgk8t+mCxOWse8wHVQ8ePCPd9q/+XcufDaZvdeU/K653jJP9G3TzKYdUaegyw7yAoNWX
+	H9nry1Rd/3trw5Vnn8/2OP7eUfNTIGVtywLWWs+e9wxnJc9VPKgQ2994lcOydMkxzQZuyw7L
+	4BmJvY0Ot71lPv9U0VpT+s6XQVKbN/PCz5k3Q57LB3GZvc3MEdqqVfdKqL2npkKJpTgj0VCL
+	uag4EQB9QMtvJAMAAA==
 
-V Mon, 31 Jul 2023 18:04:09 +0200
-Christoph Hellwig <hch@lst.de> naps=C3=A1no:
+On 7/31/23 16:15, Zong Li wrote:
+> On Mon, Jul 31, 2023 at 5:32 PM Nick Kossifidis <mick@ics.forth.gr> wrote:
+>>
+>> On 7/29/23 15:58, Zong Li wrote:
+>>> On Thu, Jul 20, 2023 at 3:34 AM Tomasz Jeznach <tjeznach@rivosinc.com> wrote:
+>>>> +       iommu->cap = riscv_iommu_readq(iommu, RISCV_IOMMU_REG_CAP);
+>>>> +
+>>>> +       /* For now we only support WSIs until we have AIA support */
+>>>
+>>> I'm not completely understand AIA support here, because I saw the pci
+>>> case uses the MSI, and kernel seems to have the AIA implementation.
+>>> Could you please elaborate it?
+>>>
+>>
+>> When I wrote this we didn't have AIA in the kernel, and without IMSIC we
+>> can't have MSIs in the hart (we can still have MSIs in the PCIe controller).
+> 
+> Thanks for your clarification, do we support the MSI in next version?
+> 
 
-> I was just going to apply this, but patch 1 seems to have a non-trivial
-> conflict with the is_swiotlb_active removal in pci-dma.c.  Can you resend
-> against the current dma-mapping for-next tree?
-
-Sure thing, will re-send tomorrow morning.
-
-Petr T
+I don't think there is an IOMMU implementation out there (emulated or in 
+hw) that can do MSIs and is not a pcie device (the QEMU implementation 
+is a pcie device). If we have something to test this against, and we 
+also have an IMSIC etc, we can work on that.
