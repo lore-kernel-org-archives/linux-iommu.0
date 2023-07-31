@@ -1,112 +1,257 @@
-Received: from mailgate.ics.forth.gr (mailgate.ics.forth.gr [139.91.1.2])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (unknown [192.55.52.115])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A9EB41426B
-	for <iommu@lists.linux.dev>; Mon, 31 Jul 2023 10:06:21 +0000 (UTC)
-Received: from av3.ics.forth.gr (av3in.ics.forth.gr [139.91.1.77])
-	by mailgate.ics.forth.gr (8.15.2/ICS-FORTH/V10-1.8-GATE) with ESMTP id 36V9WnBa012594
-	for <iommu@lists.linux.dev>; Mon, 31 Jul 2023 12:32:50 +0300 (EEST)
-DKIM-Signature: v=1; a=rsa-sha256; d=ics.forth.gr; s=av; c=relaxed/simple;
-	q=dns/txt; i=@ics.forth.gr; t=1690795964; x=1693387964;
-	h=From:Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
-	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=hYrmhTrrV00n+yse0bYXu7c0/zKBC0CeIUzRE0uLZlg=;
-	b=YKxeiPnJ67koIgsdTCopqGc/amJ0bseu3UDSU5nSdpRpkcuijU1pq6ZVCDOPlVf6
-	wZueesH/esX70fAKmkgkN2ZCK8LbJyg86Z6eWqiPF+HVNvq+ePyeE9hX75kCyzZv
-	pjdBjLeAw9iiMg6iyHbBCriSLduq5G6nJDE5Qhul7b8B5/nxOkW3YEzM6gYfpqHl
-	t+ebkzx0pEKPDk0z0FSIIgrCbtv58UpHijerTxDkS1BVgh3+YIaLpIxa7lmZ1ZSQ
-	PSb0ABzerHksfIFhxTNld/aXodm/JJ1DrHD3boREa0pAnejNUQeWPIDdf+dnjv+f
-	+D8pYAm4QT0ERZjNq8dX3Q==;
-X-AuditID: 8b5b014d-a23ec70000002178-b5-64c77fbc718e
-Received: from enigma.ics.forth.gr (enigma-2.ics.forth.gr [139.91.151.35])
-	by av3.ics.forth.gr (Symantec Messaging Gateway) with SMTP id 83.D4.08568.CBF77C46; Mon, 31 Jul 2023 12:32:44 +0300 (EEST)
-X-ICS-AUTH-INFO: Authenticated user: mick at ics.forth.gr
-Message-ID: <3d4d9b22-8451-f4d5-bbd8-117988f3a545@ics.forth.gr>
-Date: Mon, 31 Jul 2023 12:32:38 +0300
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DDA001426B
+	for <iommu@lists.linux.dev>; Mon, 31 Jul 2023 10:07:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1690798057; x=1722334057;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=3RX3ySIGqAOuUdUKznWkHaX7NmoO3A/lVEf9S57XpeE=;
+  b=RZm16LOSsTKP9eWg/ly6Atp/+p5CEqEGGiF//OH8NFjnn4HEUDqvwvVS
+   MA5iwr7S3jfEl6Wrk/hOx8NRf4H/RsnMQ16y6HOlqqXLGFGXsCGfMsUvs
+   hn3PXFf1d+aYTnH1BLh//b1beuDcSZ9cbGu0TGjnJW8wvk7Ky9z6W555S
+   GUyBvEKe4f0XeKL3Id7qCev6F1rFAYH+odvMwph1UOKC2O8YkolxkJ8pC
+   hFFeKMSou16D6bZ8ZN5TN4p9si7wwM3zCuri3PNRojy9Bsz6uocCPK2dQ
+   hQT4YVwp5Nt3X5DYomTp9bVq2tDaDODKHGvjNpZevAvw1sg8Q4C2y/EdM
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10787"; a="368988630"
+X-IronPort-AV: E=Sophos;i="6.01,244,1684825200"; 
+   d="scan'208";a="368988630"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jul 2023 03:07:35 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10787"; a="763336902"
+X-IronPort-AV: E=Sophos;i="6.01,244,1684825200"; 
+   d="scan'208";a="763336902"
+Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
+  by orsmga001.jf.intel.com with ESMTP; 31 Jul 2023 03:07:35 -0700
+Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.27; Mon, 31 Jul 2023 03:07:34 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.27; Mon, 31 Jul 2023 03:07:34 -0700
+Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.27 via Frontend Transport; Mon, 31 Jul 2023 03:07:34 -0700
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.170)
+ by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.27; Mon, 31 Jul 2023 03:07:34 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=atLQoghFbtyf72xoBVTij+z0ULizAFd0GOBvAAkTXTyRi/4FaC/9hCJasMsoh32g5xuo5Xn+ZpkzK3DBprbg04DRRJFQWJ32hJisAEtZfNZLTiNwDtIsEytYjEdivkN+TqKWPYI5wetmyqDK9OBs22hexBgAg0rUIDJQaSByfVOE92A+L7r7NR7p1jdFW+WkjbDh+c1Kv/d0Wyuxz+mu7NNpqwGu1VGYBmzPsvAD9r1tDDoJEHGXdmwbhWUCqmW88+FLQQaBx58PRLxseeXxkDsYLD+JADTk1mhctMAxFzuzggWaRM4f6Apx0xLE4UGLNFsBtdxz9C/PqsywLkm+Kg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=d/FQTiq1PY8FI+EpNHIqT0nTSsXKqAh7kcbN2z1gYe4=;
+ b=DA/s0faf40u4ptiwCkuat5c9pbqyjD8a7y/C0nPtDrVxITR5a9Iy3FZeJcZ26mh5AD6QR+zI6Umqz2JcDKWisjrr6DRKG7HAFFSp87KPQQ7lQToXl1jr6+XUjSTlieuBFoGg3nD5w0LwGipKU2oEDaooKJ5UOudwd6Na68of8Y0RxXSdieytz1rrfFsHvZMElW4AVtsbei77VwYxWIHhZtFXUobOTNPG950V9RRPy0lgXS31kJuHaPzmzygVckvs6GkVI4PX7r8O5WVavfxLZzYSZlGj4V27BYp/JUmqZ3GXU3DMiApP9A3nrJolbAuLXfHE256cIJvDLwYKEGUVOA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from DS0PR11MB7529.namprd11.prod.outlook.com (2603:10b6:8:141::20)
+ by DM4PR11MB8160.namprd11.prod.outlook.com (2603:10b6:8:189::5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6631.42; Mon, 31 Jul
+ 2023 10:07:32 +0000
+Received: from DS0PR11MB7529.namprd11.prod.outlook.com
+ ([fe80::b556:42c4:772f:d47e]) by DS0PR11MB7529.namprd11.prod.outlook.com
+ ([fe80::b556:42c4:772f:d47e%7]) with mapi id 15.20.6609.032; Mon, 31 Jul 2023
+ 10:07:32 +0000
+From: "Liu, Yi L" <yi.l.liu@intel.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: "joro@8bytes.org" <joro@8bytes.org>, "alex.williamson@redhat.com"
+	<alex.williamson@redhat.com>, "Tian, Kevin" <kevin.tian@intel.com>,
+	"robin.murphy@arm.com" <robin.murphy@arm.com>, "baolu.lu@linux.intel.com"
+	<baolu.lu@linux.intel.com>, "cohuck@redhat.com" <cohuck@redhat.com>,
+	"eric.auger@redhat.com" <eric.auger@redhat.com>, "nicolinc@nvidia.com"
+	<nicolinc@nvidia.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+	"mjrosato@linux.ibm.com" <mjrosato@linux.ibm.com>,
+	"chao.p.peng@linux.intel.com" <chao.p.peng@linux.intel.com>,
+	"yi.y.sun@linux.intel.com" <yi.y.sun@linux.intel.com>, "peterx@redhat.com"
+	<peterx@redhat.com>, "jasowang@redhat.com" <jasowang@redhat.com>,
+	"shameerali.kolothum.thodi@huawei.com"
+	<shameerali.kolothum.thodi@huawei.com>, "lulu@redhat.com" <lulu@redhat.com>,
+	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>, "Duan,
+ Zhenzhong" <zhenzhong.duan@intel.com>
+Subject: RE: [PATCH v3 09/17] iommufd: Add IOMMU_HWPT_INVALIDATE
+Thread-Topic: [PATCH v3 09/17] iommufd: Add IOMMU_HWPT_INVALIDATE
+Thread-Index: AQHZvh6oi+POLB7tyEyJT6RvyneQWq/PfyuAgAQvXCA=
+Date: Mon, 31 Jul 2023 10:07:32 +0000
+Message-ID: <DS0PR11MB7529696366A4447EF0945E87C305A@DS0PR11MB7529.namprd11.prod.outlook.com>
+References: <20230724110406.107212-1-yi.l.liu@intel.com>
+ <20230724110406.107212-10-yi.l.liu@intel.com> <ZMQCw2iiIqa4CXNG@nvidia.com>
+In-Reply-To: <ZMQCw2iiIqa4CXNG@nvidia.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: DS0PR11MB7529:EE_|DM4PR11MB8160:EE_
+x-ms-office365-filtering-correlation-id: 02f60ff7-6c48-46e7-1c12-08db91adf48c
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: FNkaOLndtLNo6/CF2z88H/sJ+a+II0OnglRa4C6Os+ev0oBa2ne/A+b0c4Y1Aydk9Qx9Cwnn/NEgI+ewMOzv/DdwhiHv5RZb2vqntxQ4gEwxs83grloVdl3RFHaL99oN/oFyi6bMKeIKKsP2rqaHO7/1RsBOVpwnQxs6epZSiU9FVg/sDo8F2Iw7g01Mbc2Hcx4D/4VIJycwWEMCH3TDNAFbpdZz6xx2549EDz3pGkSMhuEQhdEwLAhCull/+EMoEpxtWZMiQU38dciV7uR+x/Kd6iuu6eCwtCMgRZ8vhlrvWOA6x7NUGHyxxXjvkXvuVGrUwhYnZSDW0lGEEWGjxsUpZWMTQtit1VrcKgMC5EmXpMaTSJh0DUDhwMUOlVUqw3EKI5ZyCm14z/JuNKHiTgPprOF9yaGwZ8CsndBhx5WthHsi7VbzuTLddubggKAujEAvLhgc/VIB12I5SYp3Af3k0yCfFwW/0PFft/evGSVfFV51jMjnN+viKq0/yAF4OvkciQBhpprRxL2RVSLS9sQOd9r16oQE92JXlKP4gqyOEWxqX9M68kjWu+Cb77BqdacY80JEMV8Ozrp1PPcMY09caAfrzG2lYzE+hGFTfCq9UZizN4+1SjADfElhSG+JFOyVGyXYfOdJiNaNT2xNyA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS0PR11MB7529.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(376002)(136003)(346002)(366004)(39860400002)(396003)(451199021)(38100700002)(82960400001)(122000001)(55016003)(86362001)(38070700005)(33656002)(9686003)(966005)(478600001)(71200400001)(7696005)(186003)(26005)(8676002)(8936002)(6506007)(7416002)(52536014)(5660300002)(76116006)(4326008)(6916009)(64756008)(66446008)(66476007)(66556008)(66946007)(2906002)(54906003)(41300700001)(316002)(83380400001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?l7VkffsokZNYMWqL1DybgRhMRKAbOeAv4YfT0YOWa32+9vjumcC2wSKEopo2?=
+ =?us-ascii?Q?Qdg5ZNqet0FVS2BD6+Vr35rPpVKcTOmkRxsWNg4W+el57PP4McgeusIFvKvd?=
+ =?us-ascii?Q?YFd94zIPdo0byEmESknOTQxX3p4aiPW4dhAIH1mHzojeAyr7TansL0fv+MA1?=
+ =?us-ascii?Q?JR5DgR2htlv1uD1xNP0Po1VK0/HHhF/blL580ANwX0S1mtgDDTqQIm30pu7/?=
+ =?us-ascii?Q?4kfQiwrQh2gMdCPp7vp+9TlDPMy4cQvuK4cIg1hf0sY4pU2o3rt/qmOuMQqV?=
+ =?us-ascii?Q?ofRuc7GfjPH2AXCeLhZ0/W14F92wK/lK5ZRiPBjUTOh/9j0VRBNZXP7ds9pw?=
+ =?us-ascii?Q?Iy79xVE2cSFQCvV7t9EVJ4y7JgzFoU2UHXeD/6c/gBlvi7kuL9EC2p9uf2T0?=
+ =?us-ascii?Q?+iV4ZVV4lxcdWO44O7OGC4WrqaeeRudywazpufZtP2guqDeawTdmGWqXyTgI?=
+ =?us-ascii?Q?spAua+1/CxXxWHCaGxePthsoN5Grv51ZvOxoMO+us1FKrAPJeg6FNxlfVYLj?=
+ =?us-ascii?Q?603tVZfJQEURu5ez6YaJfgEWwMxWuRO9T2lh9oElHt1BB6NZNaEqiKoPwlls?=
+ =?us-ascii?Q?X8aj2CSXjPXlvXmXuyqfaaEnb7LqxKyqgWZ3Ad18U8YwSSfnFMkcnM+psPWt?=
+ =?us-ascii?Q?vh8puoXGwsp07toBM71FKqeYdAhF6Jnkt+4JIWJgIYs+nomWpdYkzrdgqomR?=
+ =?us-ascii?Q?LSi/AG6yVg5ed7qGkeMK8PAaclEcbvX3ML7jZx0rDLBa4DP7Eq37YUyJ2v4b?=
+ =?us-ascii?Q?Tiej8GkRPKob6UOL+3D1LwrRhiTRM43g4kQovFIfZdKuB43yTSNmgqOOEJmi?=
+ =?us-ascii?Q?SPg+WKffXUPQQCXVFplWeGPMReZnnkECBxE7nh953JqL9H4zSSapkCLK/D5Y?=
+ =?us-ascii?Q?H//4n9teU+dFM38RMujy8X/iPy2tbTeoYMcnkkjxX7mNSvEeE9m0iLRPL/VD?=
+ =?us-ascii?Q?7e89ssegXOVaZH3lkfbgqg32b+Ld4HtUrcdsyOVatIemotD7eAkS5c+vKQe2?=
+ =?us-ascii?Q?LgBTrqynFf/zvWLuBrJH4MsiZw2p5Ztg37iGu6hGM3p5k1orrXSiAhWdgNDD?=
+ =?us-ascii?Q?jRLgTjibIzfQdEsSgyQlORKeVum3iJZ9YD5gFwVEw0w9izyHZNGwU8mYp9in?=
+ =?us-ascii?Q?/7R6RPJyHhlb0JaIzjjGY0rD004k6D+P6XWiQX7uHR5j67J1M/BvyHLti2Ba?=
+ =?us-ascii?Q?Dd9tqKYu6yHZeFS8kN26SBq9FD3ht+eo794QbcZc3rBrw1VOT+5mlMsbUWC5?=
+ =?us-ascii?Q?ecHn3vA17odQahsHzrSEX9bwZhfL0D/wWFcllXHbgw6bghHPkS9vFa8ETv6I?=
+ =?us-ascii?Q?Q3GRBMJOE7+Pcnl0ueR0rLomZwGMDqEOeUNLXhHTs8mc7V0uKO7VHOrgjtUR?=
+ =?us-ascii?Q?AJdJuaQjWq36hUcOIvNhqhVsErBOUfrb368JkJksGd6KQXMTiFkG99RRqww5?=
+ =?us-ascii?Q?qBfYIghwC57/ylzx16A5gdzBNVGdm/BPb6ovcHaMBVmmJfCV+4W/7pg2oU1s?=
+ =?us-ascii?Q?KknvxMQvTeFbVYrMOKNbYpFqVFf9Zsz+hiMZvtKUeq4qYIj1Bf3QOmJ1QXzD?=
+ =?us-ascii?Q?HhzW5pJhCXVpkPkoA6Nd2YUOsCsZ+XFpAP9z5pBM?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.13.0
-Subject: Re: [PATCH 06/11] RISC-V: drivers/iommu/riscv: Add command, fault,
- page-req queues
-To: Zong Li <zong.li@sifive.com>, Tomasz Jeznach <tjeznach@rivosinc.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Paul Walmsley
- <paul.walmsley@sifive.com>,
-        Anup Patel <apatel@ventanamicro.com>,
-        Albert Ou <aou@eecs.berkeley.edu>, linux@rivosinc.com,
-        linux-kernel@vger.kernel.org, Sebastien Boeuf <seb@rivosinc.com>,
-        iommu@lists.linux.dev, Palmer Dabbelt <palmer@dabbelt.com>,
-        linux-riscv@lists.infradead.org
-References: <cover.1689792825.git.tjeznach@rivosinc.com>
- <1fd79e5c53d9d6ed2264f60dd4261f293cc00472.1689792825.git.tjeznach@rivosinc.com>
- <CANXhq0pm+1yXuvUGudwNtvNHWV3FytH4VfCnq7_Ws=t-MZP_kQ@mail.gmail.com>
-Content-Language: el-GR
-From: Nick Kossifidis <mick@ics.forth.gr>
-In-Reply-To: <CANXhq0pm+1yXuvUGudwNtvNHWV3FytH4VfCnq7_Ws=t-MZP_kQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprAIsWRmVeSWpSXmKPExsXSHT1dWXdP/fEUg/lXtSy2/p7FbjHr0nFG
-	i19fLCw6Z29gt7i8aw6bxbbPLWwWGy7NYrR4ebmH2aJtFr/FwQ9PWC0+z6+w+LKsndGi5Y6p
-	xYe7s9kc+DyeHJzH5LFm3hpGjzcvX7J4HO74wu6xaVUnm8fmJfUeLzbPZPS4MSvC41LzdXaP
-	vz+3snh83iQXwB3FZZOSmpNZllqkb5fAlfF2IU/BAt6KvvNXmRsYW7i6GDk5JARMJPreXmTp
-	YuTiEBI4zijx8dZ2ZoiEpcTmTy9ZQGxeAXuJvXtusoHYLAKqEu8WzmaCiAtKnJz5BKxGVCBa
-	YsOFR2C2sECsxIeOV2D1IgIeEjvnfWMCWcAscJZZYumdh2ALhAQuMkpMvQ9WxCwgLnHk/G+w
-	OJuApsT8SwfBBnEKBEq07lnNAlFjJtG1tYsRwpaXaN46m3kCo8AsJHfMQjJqFpKWWUhaFjCy
-	rGIUSCwz1stMLtZLyy8qydBLL9rECI40Rt8djLc3v9U7xMjEwXiIUYKDWUmE91TAoRQh3pTE
-	yqrUovz4otKc1OJDjNIcLErivCdsFyQLCaQnlqRmp6YWpBbBZJk4OKUamLxSTzWYPrmWOF/h
-	lcJ0r9ge0z+9UjNndomGrXotIr9O4Oa8m0Fni27kZtYtNN+osG9RY29H8PPy2wof161+tlEi
-	/VrqowXVeyeX/fpsc/3sqp9f7b49q1/2rSNdK3n1kqszzPXM1syseqIxo3TfOuMH23VFDM7v
-	L3zZ4CET9DEgZpbqo2l+BbwqMapRSSb/HW2SoxZxFTTyeMz3VZos9vXtiTN/l3H8a21ReS3z
-	9ADDi6PnVO42ZoscuDuR6eXNeYu26XV0XeposFvPGmedutK+M6ZNWUZrWmGSZtCa3zYuNav9
-	1L4mKNr52k+yOV4+vbk9nylH/TxX6rMPN0OZ5JS0rR+8bQm3cJkhtmnnTyWW4oxEQy3mouJE
-	AJtm9pUjAwAA
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DS0PR11MB7529.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 02f60ff7-6c48-46e7-1c12-08db91adf48c
+X-MS-Exchange-CrossTenant-originalarrivaltime: 31 Jul 2023 10:07:32.0867
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: aNON4Z5BgKTuHFJfc4q+UlJ1KxYnaGsTIpYmnz9ejT2uSMgbxWFI89jSnH2szuT7ipGR0h3IofUL/eMJN2a5Fw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR11MB8160
+X-OriginatorOrg: intel.com
 
-On 7/29/23 15:58, Zong Li wrote:
-> On Thu, Jul 20, 2023 at 3:34 AM Tomasz Jeznach <tjeznach@rivosinc.com> wrote:
->> +       iommu->cap = riscv_iommu_readq(iommu, RISCV_IOMMU_REG_CAP);
->> +
->> +       /* For now we only support WSIs until we have AIA support */
-> 
-> I'm not completely understand AIA support here, because I saw the pci
-> case uses the MSI, and kernel seems to have the AIA implementation.
-> Could you please elaborate it?
-> 
+> From: Jason Gunthorpe <jgg@nvidia.com>
+> Sent: Saturday, July 29, 2023 2:03 AM
+>=20
+> On Mon, Jul 24, 2023 at 04:03:58AM -0700, Yi Liu wrote:
+> > In nested translation, the stage-1 page table is user-managed and used =
+by
+> > IOMMU hardware, so update of any present page table entry in the stage-=
+1
+> > page table should be followed with an IOTLB invalidation.
+> >
+> > This adds IOMMU_HWPT_INVALIDATE for stage-1 IOTLB invalidation.
+> >
+> > Co-developed-by: Nicolin Chen <nicolinc@nvidia.com>
+> > Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+> > Signed-off-by: Yi Liu <yi.l.liu@intel.com>
+> > ---
+> >  drivers/iommu/iommufd/hw_pagetable.c    | 45 +++++++++++++++++++++++++
+> >  drivers/iommu/iommufd/iommufd_private.h |  9 +++++
+> >  drivers/iommu/iommufd/main.c            |  3 ++
+> >  include/uapi/linux/iommufd.h            | 22 ++++++++++++
+> >  4 files changed, 79 insertions(+)
+> >
+> > diff --git a/drivers/iommu/iommufd/hw_pagetable.c
+> b/drivers/iommu/iommufd/hw_pagetable.c
+> > index 97e4114226de..9064e6d181b4 100644
+> > --- a/drivers/iommu/iommufd/hw_pagetable.c
+> > +++ b/drivers/iommu/iommufd/hw_pagetable.c
+> > @@ -286,3 +286,48 @@ int iommufd_hwpt_alloc(struct iommufd_ucmd *ucmd)
+> >  	iommufd_put_object(&idev->obj);
+> >  	return rc;
+> >  }
+> > +
+> > +int iommufd_hwpt_invalidate(struct iommufd_ucmd *ucmd)
+> > +{
+> > +	struct iommu_hwpt_invalidate *cmd =3D ucmd->cmd;
+> > +	struct iommufd_hw_pagetable *hwpt;
+> > +	u32 user_data_len, klen;
+> > +	u64 user_ptr;
+> > +	int rc =3D 0;
+> > +
+> > +	if (!cmd->data_len || cmd->__reserved)
+> > +		return -EOPNOTSUPP;
+> > +
+> > +	hwpt =3D iommufd_get_hwpt(ucmd, cmd->hwpt_id);
+> > +	if (IS_ERR(hwpt))
+> > +		return PTR_ERR(hwpt);
+> > +
+> > +	/* Do not allow any kernel-managed hw_pagetable */
+> > +	if (!hwpt->parent) {
+>=20
+> I don't think this is needed because:
+>=20
+> > +		rc =3D -EINVAL;
+> > +		goto out_put_hwpt;
+> > +	}
+> > +
+> > +	klen =3D hwpt->domain->ops->cache_invalidate_user_data_len;
+> > +	if (!hwpt->domain->ops->cache_invalidate_user || !klen) {
+> > +		rc =3D -EOPNOTSUPP;
+>=20
+> We need to get to a place where the drivers are providing proper ops
+> for the domains, so this op should never exist for a paging domain.
 
-When I wrote this we didn't have AIA in the kernel, and without IMSIC we 
-can't have MSIs in the hart (we can still have MSIs in the PCIe controller).
+Yes.
 
-> 
-> Should we define the "interrupt-names" in dt-bindings?
-> 
+>=20
+> And return EINVAL here instead.
 
-Yes we should, along with queue lengths below.
+Sure.
 
->> +
->> +       /* Make sure fctl.WSI is set */
->> +       fctl = riscv_iommu_readl(iommu, RISCV_IOMMU_REG_FCTL);
->> +       fctl |= RISCV_IOMMU_FCTL_WSI;
->> +       riscv_iommu_writel(iommu, RISCV_IOMMU_REG_FCTL, fctl);
->> +
->> +       /* Parse Queue lengts */
->> +       ret = of_property_read_u32(pdev->dev.of_node, "cmdq_len", &iommu->cmdq_len);
->> +       if (!ret)
->> +               dev_info(dev, "command queue length set to %i\n", iommu->cmdq_len);
->> +
->> +       ret = of_property_read_u32(pdev->dev.of_node, "fltq_len", &iommu->fltq_len);
->> +       if (!ret)
->> +               dev_info(dev, "fault/event queue length set to %i\n", iommu->fltq_len);
->> +
->> +       ret = of_property_read_u32(pdev->dev.of_node, "priq_len", &iommu->priq_len);
->> +       if (!ret)
->> +               dev_info(dev, "page request queue length set to %i\n", iommu->priq_len);
->> +
->>          dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
->>
+>=20
+> > +		goto out_put_hwpt;
+> > +	}
+> > +
+> > +	/*
+> > +	 * Copy the needed fields before reusing the ucmd buffer, this
+> > +	 * avoids memory allocation in this path.
+> > +	 */
+> > +	user_ptr =3D cmd->data_uptr;
+> > +	user_data_len =3D cmd->data_len;
+>=20
+> Uhh, who checks that klen < the temporary stack struct?
+
+Take vtd as an example. The invalidate structure is struct iommu_hwpt_vtd_s=
+1_invalidate[1].
+The klen is sizeof(struct iommu_hwpt_vtd_s1_invalidate)[2]. iommu_hwpt_vtd_=
+s1_invalidate
+is also placed in the temporary stack struct (actually it is a union)[1]. S=
+o the klen should
+be <=3D temporary stack.
+
+[1] https://lore.kernel.org/linux-iommu/20230724111335.107427-8-yi.l.liu@in=
+tel.com/
+[2] https://lore.kernel.org/linux-iommu/20230724111335.107427-10-yi.l.liu@i=
+ntel.com/
+
+It's not so explicit though. Perhaps worth to have a check like below in th=
+is patch?
+
+if (unlikely(klen > sizeof(union ucmd_buffer)))
+	return -EINVAL;
+
+Regards,
+Yi Liu
