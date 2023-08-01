@@ -1,88 +1,89 @@
-Received: from frasgout13.his.huawei.com (unknown [14.137.139.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-vs1-f53.google.com (mail-vs1-f53.google.com [209.85.217.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 63FA11ADE8
-	for <iommu@lists.linux.dev>; Tue,  1 Aug 2023 17:06:00 +0000 (UTC)
-Received: from mail02.huawei.com (unknown [172.18.147.229])
-	by frasgout13.his.huawei.com (SkyGuard) with ESMTP id 4RFh6C6kwPz9ttCf
-	for <iommu@lists.linux.dev>; Wed,  2 Aug 2023 00:54:27 +0800 (CST)
-Received: from [10.81.206.119] (unknown [10.81.206.119])
-	by APP1 (Coremail) with SMTP id LxC2BwAn2bg5O8lkq2QeAA--.14915S2;
-	Tue, 01 Aug 2023 18:05:17 +0100 (CET)
-Message-ID: <56be3268-60ee-a496-4781-a59ce34bfca8@huaweicloud.com>
-Date: Tue, 1 Aug 2023 19:04:55 +0200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D1EA32CA5
+	for <iommu@lists.linux.dev>; Tue,  1 Aug 2023 17:12:55 +0000 (UTC)
+Received: by mail-vs1-f53.google.com with SMTP id ada2fe7eead31-4476a50c64bso1688171137.3
+        for <iommu@lists.linux.dev>; Tue, 01 Aug 2023 10:12:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1690909974; x=1691514774;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=tjQ83+bP/eZvrnu5mLPteL9v32upNHucn015ldMT4Lg=;
+        b=eqleB+PpZKRzf07CkM3xQAVn2NofBi6SMHQMVVOvtjj1yAdQkkEpzST4P2npF+ejbz
+         6OeHxWZxrhXtqLOSpyOOfUpXFH2lHhWamSLonMZ1o9NLYn5M31P6SwoZhQMpsBD3Rgxi
+         jKQMJxbGcSSl685ayD3GcRoQfH5mg2NTm8mJ0XSQfkMgIrKRafZUto7la0ReRcyYsYF5
+         6g7JxTndHY8g7HTBuN5JR1VCzQCKdRmiz2umjOQr40oPXi6MbozGZp1POTJ+c2RgDyqb
+         MBwz+LZfTd0zNq7XYymhuV448iJei5cgunB3imBi/pb/Bc6n3nGlkvRDpu8PdAC/v1zX
+         /Muw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1690909974; x=1691514774;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=tjQ83+bP/eZvrnu5mLPteL9v32upNHucn015ldMT4Lg=;
+        b=DvsKtEuhrQVjo6KovHpG7Us22b6HvnZ/oY8d3UqXjywMY9/QW13QcOvEZo9BgZPeXP
+         XwRa/29fgZyqXQjjTCyb+1up1gGt1Cf7Q6QNb2xaHJAVkcSouCeiqHC5VUUQmOJlzp05
+         cdEdS9rTWTJJ8R2V6kBQcq6luX+UBxzZsSPN4Rr24X2KXq+TkbfS+gTekEwS2mBHnLoG
+         RywuAB3RM7sczhzRc2h/tmbTz5mjATZdwYQpEaQy83caikDXeKlYtJVjAALrTZ99mPJy
+         rn35wzpHiIFrn+XkcIjYstah91DMVjcx9/OrQJDjQPip8rGYaqbCiGXKMPuZjY7aGL38
+         UIYA==
+X-Gm-Message-State: ABy/qLYMvdnY2KPZBaGAlgTrVi1u3IjZVMVHKsFsv1ml3Gsk3cf+VHVJ
+	uYTjhFxYViLb8MhWjLlg5kqApSrvC8RcLaLjXxE=
+X-Google-Smtp-Source: APBJJlGnBieFRVxRgawFgQeh8nMkgg8VXaX2ymYIkKzgsSDMdNymXxpqVlXrzhUS5zrV6ie9HEECZVtXFldDoVWXz7k=
+X-Received: by 2002:a05:6102:8f:b0:447:48ab:cfe9 with SMTP id
+ t15-20020a056102008f00b0044748abcfe9mr2671039vsp.5.1690909974270; Tue, 01 Aug
+ 2023 10:12:54 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v7 0/9] Allow dynamic allocation of software IO TLB bounce
- buffers
-Content-Language: en-US
+References: <1690598115-26287-1-git-send-email-quic_pintu@quicinc.com> <20230731112155.GA3662@lst.de>
+In-Reply-To: <20230731112155.GA3662@lst.de>
+From: Pintu Agarwal <pintu.ping@gmail.com>
+Date: Tue, 1 Aug 2023 22:42:42 +0530
+Message-ID: <CAOuPNLjnfq1JefngtNrg0Q+JdMTSRz+eEqxGQJFfx9+af+k9WA@mail.gmail.com>
+Subject: Re: [PATCH v2] dma-contiguous: define proper name for global cma region
 To: Christoph Hellwig <hch@lst.de>
-Cc: Stefano Stabellini <sstabellini@kernel.org>,
- Russell King <linux@armlinux.org.uk>,
- Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
- Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>,
- Borislav Petkov <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>,
- "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
- "H. Peter Anvin" <hpa@zytor.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- "Rafael J. Wysocki" <rafael@kernel.org>, Juergen Gross <jgross@suse.com>,
- Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
- Marek Szyprowski <m.szyprowski@samsung.com>,
- Robin Murphy <robin.murphy@arm.com>, Christoph Lameter <cl@linux.com>,
- Pekka Enberg <penberg@kernel.org>, David Rientjes <rientjes@google.com>,
- Joonsoo Kim <iamjoonsoo.kim@lge.com>,
- Andrew Morton <akpm@linux-foundation.org>, Vlastimil Babka <vbabka@suse.cz>,
- Roman Gushchin <roman.gushchin@linux.dev>,
- Hyeonggon Yoo <42.hyeyoo@gmail.com>,
- Petr Tesarik <petr.tesarik.ext@huawei.com>, Jonathan Corbet
- <corbet@lwn.net>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
- Hans de Goede <hdegoede@redhat.com>, James Seo <james@equiv.tech>,
- James Clark <james.clark@arm.com>, Kees Cook <keescook@chromium.org>,
- "moderated list:XEN HYPERVISOR ARM" <xen-devel@lists.xenproject.org>,
- "moderated list:ARM PORT" <linux-arm-kernel@lists.infradead.org>,
- open list <linux-kernel@vger.kernel.org>,
- "open list:MIPS" <linux-mips@vger.kernel.org>,
- "open list:XEN SWIOTLB SUBSYSTEM" <iommu@lists.linux.dev>,
- "open list:SLAB ALLOCATOR" <linux-mm@kvack.org>,
- Roberto Sassu <roberto.sassu@huaweicloud.com>, petr@tesarici.cz
-References: <cover.1690871004.git.petr.tesarik.ext@huawei.com>
- <20230801160339.GB13111@lst.de>
-From: Petr Tesarik <petrtesarik@huaweicloud.com>
-In-Reply-To: <20230801160339.GB13111@lst.de>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-CM-TRANSID:LxC2BwAn2bg5O8lkq2QeAA--.14915S2
-X-Coremail-Antispam: 1UD129KBjDUn29KB7ZKAUJUUUUU529EdanIXcx71UUUUU7v73
-	VFW2AGmfu7bjvjm3AaLaJ3UjIYCTnIWjp_UUUY77AC8VAFwI0_Wr0E3s1l1xkIjI8I6I8E
-	6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28Cjx
-	kF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVWUJVWUCwA2z4x0Y4vE2Ix0cI8I
-	cVCY1x0267AKxVW8JVWxJwA2z4x0Y4vEx4A2jsIE14v26F4j6r4UJwA2z4x0Y4vEx4A2js
-	IEc7CjxVAFwI0_Cr1j6rxdM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE
-	6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72
-	CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IY64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7M4II
-	rI8v6xkF7I0E8cxan2IY04v7MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r
-	4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF
-	67AKxVWrXVW8Jr1lIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6x
-	IIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6rW3Jr0E3s1lIxAI
-	cVC2z280aVAFwI0_Gr0_Cr1lIxAIcVC2z280aVCY1x0267AKxVWxJr0_GcJvcSsGvfC2Kf
-	nxnUUI43ZEXa7VUbJ73DUUUUU==
-X-CM-SenderInfo: hshw23xhvd2x3n6k3tpzhluzxrxghudrp/
-X-CFilter-Loop: Reflected
+Cc: Pintu Kumar <quic_pintu@quicinc.com>, linux-kernel@vger.kernel.org, 
+	akpm@linux-foundation.org, linux-mm@kvack.org, m.szyprowski@samsung.com, 
+	robin.murphy@arm.com, iommu@lists.linux.dev, 
+	Sumit Semwal <sumit.semwal@linaro.org>, 
+	Benjamin Gaignard <benjamin.gaignard@collabora.com>, Liam Mark <lmark@codeaurora.org>, 
+	Laura Abbott <labbott@redhat.com>, Brian Starkey <Brian.Starkey@arm.com>, 
+	John Stultz <jstultz@google.com>, =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>, 
+	linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org, 
+	linaro-mm-sig@lists.linaro.org
+Content-Type: text/plain; charset="UTF-8"
 
-On 8/1/2023 6:03 PM, Christoph Hellwig wrote:
-> Thanks,
-> 
-> I've applied this to a new swiotlb-dynamic branch that I'll pull into
-> the dma-mapping for-next tree.
+Hi Christoph,
+Thank you so much for your review and comments.
 
-Thank you.
+On Mon, 31 Jul 2023 at 16:51, Christoph Hellwig <hch@lst.de> wrote:
+>
+> Hi Pintu,
+>
+> On Sat, Jul 29, 2023 at 08:05:15AM +0530, Pintu Kumar wrote:
+> > The current global cma region name defined as "reserved"
+> > which is misleading, creates confusion and too generic.
+> >
+> > Also, the default cma allocation happens from global cma region,
+> > so, if one has to figure out all allocations happening from
+> > global cma region, this seems easier.
+> >
+> > Thus, change the name from "reserved" to "global-cma-region".
+>
+> I agree that reserved is not a very useful name.  Unfortuately the
+> name of the region leaks to userspace through cma_heap.
+>
+> So I think we need prep patches to hardcode "reserved" in
+> add_default_cma_heap first, and then remove the cma_get_name
+> first.
 
-I guess I can prepare some follow-up series now. ;-)
-
-Petr T
-
+Sorry, but I could not fully understand your comments.
+Can you please elaborate a little more what changes are required in
+cma_heap if we change "reserved" to "global-cma-region" ?
+You mean to say there are userspace tools that rely on this "reserved"
+naming for global cma ?
