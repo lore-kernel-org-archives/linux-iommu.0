@@ -1,32 +1,32 @@
 Received: from mgamail.intel.com (unknown [134.134.136.65])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BBC32111C
-	for <iommu@lists.linux.dev>; Tue,  1 Aug 2023 06:33:40 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2C4C20FA
+	for <iommu@lists.linux.dev>; Tue,  1 Aug 2023 06:33:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1690871620; x=1722407620;
+  t=1690871623; x=1722407623;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=+iHkZBSN+1bzr7JDBFw7QGjlsGH/4tNigpjWZLTIazU=;
-  b=bLidYF3pHk0oXyiCyGGBqg/upJ32eSfxryAS6Dw7l3GMtlkC5kW447Gf
-   ZP+Hq/9gp1nX7GiWzr2YPLWxW3hTiLAKXmOAoCXxLNc0+vluBBKuxxFVo
-   X/zTAFsvmmcZW1UwAZCsn/KYhnofXlAOnhYwqunBE9YOikI4fIJGT9UDT
-   8zMnJ6lXQ9b+TV6+7ulS8SNqrE9beavQTq4G7QqdWw39Abed8Ukn5gcxx
-   8xCvTcTAAMAle0z4vl5nIW3nVvJ0jlFiI4LKD36P9W/nqRhw7KjlrBKgV
-   UM7Kn1sBL+Tb5oLBS3fuGFZINVq9zGZhDrvrcwyEeUuBeQs4PnU58ndj5
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10788"; a="372839973"
+  bh=TmQOj4iLTqJpFp8MSsuwD21k8KlbkD0tFWAuvpU6ezU=;
+  b=Gm7wINTh6/J7zZgUdVyB2J2T9CdisDUUao4qQC67hU6/ftaqgq8MirUq
+   9QaR3COxLTGZl2Deeu9kKC4FKF49L+0T9lU/1dKiUrdGIkM/InyZc4QTo
+   u68qasABJ8JQgyn7IEt/ChPGKz7t3C1Po4zikNXroDfmolDXrQCiC5wcA
+   vHbWsEmbEkOKvNJWUPsfeKGVwZfthKodkh36BKvZfvBxwy0rsS7im7Gcl
+   1l249CJMZH4b3v+OHnoNPTlK/mL89xW4DlfesdPHCWUvXrs/ehhGJW5IO
+   0rYtCZIPx0ZnkRjoWeOMRwA3eez0Pds84uTaYt73pn2DY1AVI2TMGavEW
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10788"; a="372839989"
 X-IronPort-AV: E=Sophos;i="6.01,246,1684825200"; 
-   d="scan'208";a="372839973"
+   d="scan'208";a="372839989"
 Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jul 2023 23:33:40 -0700
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jul 2023 23:33:43 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10788"; a="798537916"
+X-IronPort-AV: E=McAfee;i="6600,9927,10788"; a="798537925"
 X-IronPort-AV: E=Sophos;i="6.01,246,1684825200"; 
-   d="scan'208";a="798537916"
+   d="scan'208";a="798537925"
 Received: from allen-box.sh.intel.com ([10.239.159.127])
-  by fmsmga004.fm.intel.com with ESMTP; 31 Jul 2023 23:33:37 -0700
+  by fmsmga004.fm.intel.com with ESMTP; 31 Jul 2023 23:33:40 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>,
 	Will Deacon <will@kernel.org>,
@@ -41,9 +41,9 @@ Cc: Yi Liu <yi.l.liu@intel.com>,
 	kvm@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH 1/2] iommu: Consolidate pasid dma ownership check
-Date: Tue,  1 Aug 2023 14:31:24 +0800
-Message-Id: <20230801063125.34995-2-baolu.lu@linux.intel.com>
+Subject: [PATCH 2/2] iommu: Move pasid array from group to device
+Date: Tue,  1 Aug 2023 14:31:25 +0800
+Message-Id: <20230801063125.34995-3-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230801063125.34995-1-baolu.lu@linux.intel.com>
 References: <20230801063125.34995-1-baolu.lu@linux.intel.com>
@@ -55,99 +55,198 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-When switching device DMA ownership, it is required that all the device's
-pasid DMA be disabled. This is done by checking if the pasid array of the
-group is empty. Consolidate all the open code into a single helper. No
-intentional functionality change.
+The PASID (Process Address Space ID) feature is a device feature that
+allows a device driver to manage the PASID value and attach or detach
+its domain to the pasid. The pasid array, which is used to store the
+domain of each pasid, is currently stored in iommu group struct, but
+it would be more natural to move it to the device so that the device
+drivers don't need to understand the internal iommu group concept.
 
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- drivers/iommu/iommu.c | 27 ++++++++++++++++++++-------
- 1 file changed, 20 insertions(+), 7 deletions(-)
+ include/linux/iommu.h |  2 ++
+ drivers/iommu/iommu.c | 80 ++++++++++++-------------------------------
+ 2 files changed, 24 insertions(+), 58 deletions(-)
 
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index b1dcb1b9b170..90be3efd0e91 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -406,6 +406,7 @@ struct iommu_fault_param {
+  * @iopf_param:	 I/O Page Fault queue and data
+  * @fwspec:	 IOMMU fwspec data
+  * @iommu_dev:	 IOMMU device this device is linked to
++ * @pasid_array: pasid-indexed array of domains attached to pasid
+  * @priv:	 IOMMU Driver private data
+  * @max_pasids:  number of PASIDs this device can consume
+  * @attach_deferred: the dma domain attachment is deferred
+@@ -420,6 +421,7 @@ struct dev_iommu {
+ 	struct iopf_device_param	*iopf_param;
+ 	struct iommu_fwspec		*fwspec;
+ 	struct iommu_device		*iommu_dev;
++	struct xarray			pasid_array;
+ 	void				*priv;
+ 	u32				max_pasids;
+ 	u32				attach_deferred:1;
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 4352a149a935..1a8fb30341e6 100644
+index 1a8fb30341e6..7fd53b9e9754 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
-@@ -3034,6 +3034,17 @@ static bool iommu_is_default_domain(struct iommu_group *group)
- 	return false;
+@@ -48,7 +48,6 @@ struct iommu_group {
+ 	struct kobject kobj;
+ 	struct kobject *devices_kobj;
+ 	struct list_head devices;
+-	struct xarray pasid_array;
+ 	struct mutex mutex;
+ 	void *iommu_data;
+ 	void (*iommu_data_release)(void *iommu_data);
+@@ -302,6 +301,7 @@ static struct dev_iommu *dev_iommu_get(struct device *dev)
+ 		return NULL;
+ 
+ 	mutex_init(&param->lock);
++	xa_init(&param->pasid_array);
+ 	dev->iommu = param;
+ 	return param;
+ }
+@@ -891,7 +891,6 @@ struct iommu_group *iommu_group_alloc(void)
+ 	mutex_init(&group->mutex);
+ 	INIT_LIST_HEAD(&group->devices);
+ 	INIT_LIST_HEAD(&group->entry);
+-	xa_init(&group->pasid_array);
+ 
+ 	ret = ida_alloc(&iommu_group_ida, GFP_KERNEL);
+ 	if (ret < 0) {
+@@ -3041,8 +3040,11 @@ static bool iommu_is_default_domain(struct iommu_group *group)
+  */
+ static void assert_pasid_dma_ownership(struct iommu_group *group)
+ {
++	struct group_device *device;
++
+ 	lockdep_assert_held(&group->mutex);
+-	WARN_ON(!xa_empty(&group->pasid_array));
++	for_each_group_device(group, device)
++		WARN_ON(!xa_empty(&device->dev->iommu->pasid_array));
  }
  
-+/*
-+ * Assert no PASID DMA when claiming or releasing group's DMA ownership.
-+ * The iommu_xxx_device_pasid() interfaces are only for device drivers
-+ * that have claimed the DMA ownership. Otherwise, it's a driver bug.
-+ */
-+static void assert_pasid_dma_ownership(struct iommu_group *group)
-+{
-+	lockdep_assert_held(&group->mutex);
-+	WARN_ON(!xa_empty(&group->pasid_array));
-+}
-+
  /**
-  * iommu_device_use_default_domain() - Device driver wants to handle device
-  *                                     DMA through the kernel DMA API.
-@@ -3052,14 +3063,14 @@ int iommu_device_use_default_domain(struct device *dev)
+@@ -3281,33 +3283,6 @@ bool iommu_group_dma_owner_claimed(struct iommu_group *group)
+ }
+ EXPORT_SYMBOL_GPL(iommu_group_dma_owner_claimed);
  
- 	mutex_lock(&group->mutex);
- 	if (group->owner_cnt) {
--		if (group->owner || !iommu_is_default_domain(group) ||
--		    !xa_empty(&group->pasid_array)) {
-+		if (group->owner || !iommu_is_default_domain(group)) {
- 			ret = -EBUSY;
- 			goto unlock_out;
- 		}
- 	}
- 
- 	group->owner_cnt++;
-+	assert_pasid_dma_ownership(group);
- 
- unlock_out:
- 	mutex_unlock(&group->mutex);
-@@ -3084,7 +3095,8 @@ void iommu_device_unuse_default_domain(struct device *dev)
- 		return;
- 
- 	mutex_lock(&group->mutex);
--	if (!WARN_ON(!group->owner_cnt || !xa_empty(&group->pasid_array)))
-+	assert_pasid_dma_ownership(group);
-+	if (!WARN_ON(!group->owner_cnt))
- 		group->owner_cnt--;
- 
- 	mutex_unlock(&group->mutex);
-@@ -3118,8 +3130,7 @@ static int __iommu_take_dma_ownership(struct iommu_group *group, void *owner)
+-static int __iommu_set_group_pasid(struct iommu_domain *domain,
+-				   struct iommu_group *group, ioasid_t pasid)
+-{
+-	struct group_device *device;
+-	int ret = 0;
+-
+-	for_each_group_device(group, device) {
+-		ret = domain->ops->set_dev_pasid(domain, device->dev, pasid);
+-		if (ret)
+-			break;
+-	}
+-
+-	return ret;
+-}
+-
+-static void __iommu_remove_group_pasid(struct iommu_group *group,
+-				       ioasid_t pasid)
+-{
+-	struct group_device *device;
+-	const struct iommu_ops *ops;
+-
+-	for_each_group_device(group, device) {
+-		ops = dev_iommu_ops(device->dev);
+-		ops->remove_dev_pasid(device->dev, pasid);
+-	}
+-}
+-
+ /*
+  * iommu_attach_device_pasid() - Attach a domain to pasid of device
+  * @domain: the iommu domain.
+@@ -3319,32 +3294,28 @@ static void __iommu_remove_group_pasid(struct iommu_group *group,
+ int iommu_attach_device_pasid(struct iommu_domain *domain,
+ 			      struct device *dev, ioasid_t pasid)
  {
+-	struct iommu_group *group;
++	struct dev_iommu *param = dev->iommu;
+ 	void *curr;
  	int ret;
  
--	if ((group->domain && group->domain != group->default_domain) ||
--	    !xa_empty(&group->pasid_array))
-+	if (group->domain && group->domain != group->default_domain)
- 		return -EBUSY;
+ 	if (!domain->ops->set_dev_pasid)
+ 		return -EOPNOTSUPP;
  
- 	ret = __iommu_group_alloc_blocking_domain(group);
-@@ -3129,8 +3140,10 @@ static int __iommu_take_dma_ownership(struct iommu_group *group, void *owner)
- 	if (ret)
- 		return ret;
+-	group = iommu_group_get(dev);
+-	if (!group)
++	if (!param)
+ 		return -ENODEV;
  
-+	assert_pasid_dma_ownership(group);
- 	group->owner = owner;
- 	group->owner_cnt++;
-+
- 	return 0;
+-	mutex_lock(&group->mutex);
+-	curr = xa_cmpxchg(&group->pasid_array, pasid, NULL, domain, GFP_KERNEL);
++	mutex_lock(&param->lock);
++	curr = xa_cmpxchg(&param->pasid_array, pasid, NULL, domain, GFP_KERNEL);
+ 	if (curr) {
+ 		ret = xa_err(curr) ? : -EBUSY;
+ 		goto out_unlock;
+ 	}
+ 
+-	ret = __iommu_set_group_pasid(domain, group, pasid);
+-	if (ret) {
+-		__iommu_remove_group_pasid(group, pasid);
+-		xa_erase(&group->pasid_array, pasid);
+-	}
++	ret = domain->ops->set_dev_pasid(domain, dev, pasid);
++	if (ret)
++		xa_erase(&param->pasid_array, pasid);
+ out_unlock:
+-	mutex_unlock(&group->mutex);
+-	iommu_group_put(group);
++	mutex_unlock(&param->lock);
+ 
+ 	return ret;
  }
- 
-@@ -3206,10 +3219,10 @@ EXPORT_SYMBOL_GPL(iommu_device_claim_dma_owner);
- 
- static void __iommu_release_dma_ownership(struct iommu_group *group)
+@@ -3362,14 +3333,13 @@ EXPORT_SYMBOL_GPL(iommu_attach_device_pasid);
+ void iommu_detach_device_pasid(struct iommu_domain *domain, struct device *dev,
+ 			       ioasid_t pasid)
  {
--	if (WARN_ON(!group->owner_cnt || !group->owner ||
--		    !xa_empty(&group->pasid_array)))
-+	if (WARN_ON(!group->owner_cnt || !group->owner))
- 		return;
+-	struct iommu_group *group = iommu_group_get(dev);
++	const struct iommu_ops *ops = dev_iommu_ops(dev);
++	struct dev_iommu *param = dev->iommu;
  
-+	assert_pasid_dma_ownership(group);
- 	group->owner_cnt = 0;
- 	group->owner = NULL;
- 	__iommu_group_set_domain_nofail(group, group->default_domain);
+-	mutex_lock(&group->mutex);
+-	__iommu_remove_group_pasid(group, pasid);
+-	WARN_ON(xa_erase(&group->pasid_array, pasid) != domain);
+-	mutex_unlock(&group->mutex);
+-
+-	iommu_group_put(group);
++	mutex_lock(&param->lock);
++	ops->remove_dev_pasid(dev, pasid);
++	WARN_ON(xa_erase(&param->pasid_array, pasid) != domain);
++	mutex_unlock(&param->lock);
+ }
+ EXPORT_SYMBOL_GPL(iommu_detach_device_pasid);
+ 
+@@ -3392,18 +3362,12 @@ struct iommu_domain *iommu_get_domain_for_dev_pasid(struct device *dev,
+ 						    unsigned int type)
+ {
+ 	struct iommu_domain *domain;
+-	struct iommu_group *group;
+ 
+-	group = iommu_group_get(dev);
+-	if (!group)
+-		return NULL;
+-
+-	xa_lock(&group->pasid_array);
+-	domain = xa_load(&group->pasid_array, pasid);
++	xa_lock(&dev->iommu->pasid_array);
++	domain = xa_load(&dev->iommu->pasid_array, pasid);
+ 	if (type && domain && domain->type != type)
+ 		domain = ERR_PTR(-EBUSY);
+-	xa_unlock(&group->pasid_array);
+-	iommu_group_put(group);
++	xa_unlock(&dev->iommu->pasid_array);
+ 
+ 	return domain;
+ }
 -- 
 2.34.1
 
