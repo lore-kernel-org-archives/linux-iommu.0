@@ -1,246 +1,175 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (unknown [134.134.136.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 380CE1866
-	for <iommu@lists.linux.dev>; Tue,  1 Aug 2023 06:38:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31641C433C8;
-	Tue,  1 Aug 2023 06:38:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1690871887;
-	bh=hDT+iR6AIZkPiUojYsTG3f1l1RIz7J/cYfpHFlOtmcY=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=ihVqg2sCDGTatgUfOTqQau2d5hVIQ7FhkJ4dQpOT6tNN864bCCltGkeZsSp33J3G6
-	 67N3c/0YoQ7uttpJF1XBIQwpsMlhyfqYfn0RI23AQwNs82WxOMomf6WcFs2wg6yuwo
-	 qESSyNtICw/59SiCMx7JA4bv1FkEQ3vhy5wSX/Nc=
-Date: Tue, 1 Aug 2023 08:38:05 +0200
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Petr Tesarik <petrtesarik@huaweicloud.com>
-Cc: Stefano Stabellini <sstabellini@kernel.org>,
-	Russell King <linux@armlinux.org.uk>,
-	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-	Dave Hansen <dave.hansen@linux.intel.com>,
-	"maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
-	"H. Peter Anvin" <hpa@zytor.com>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Juergen Gross <jgross@suse.com>,
-	Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
-	Christoph Hellwig <hch@lst.de>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Christoph Lameter <cl@linux.com>, Pekka Enberg <penberg@kernel.org>,
-	David Rientjes <rientjes@google.com>,
-	Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Vlastimil Babka <vbabka@suse.cz>,
-	Roman Gushchin <roman.gushchin@linux.dev>,
-	Hyeonggon Yoo <42.hyeyoo@gmail.com>,
-	Petr Tesarik <petr.tesarik.ext@huawei.com>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Hans de Goede <hdegoede@redhat.com>, James Seo <james@equiv.tech>,
-	James Clark <james.clark@arm.com>,
-	Kees Cook <keescook@chromium.org>,
-	"moderated list:XEN HYPERVISOR ARM" <xen-devel@lists.xenproject.org>,
-	"moderated list:ARM PORT" <linux-arm-kernel@lists.infradead.org>,
-	open list <linux-kernel@vger.kernel.org>,
-	"open list:MIPS" <linux-mips@vger.kernel.org>,
-	"open list:XEN SWIOTLB SUBSYSTEM" <iommu@lists.linux.dev>,
-	"open list:SLAB ALLOCATOR" <linux-mm@kvack.org>,
-	Roberto Sassu <roberto.sassu@huaweicloud.com>, petr@tesarici.cz
-Subject: Re: [PATCH v7 0/9] Allow dynamic allocation of software IO TLB
- bounce buffers
-Message-ID: <2023080144-cardigan-nerd-2bed@gregkh>
-References: <cover.1690871004.git.petr.tesarik.ext@huawei.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E54B139F
+	for <iommu@lists.linux.dev>; Tue,  1 Aug 2023 07:04:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1690873446; x=1722409446;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=EJaWi0Zy1SYfvDmf3F5pdYNPtuk5jjpYU2XnoY7a0Lo=;
+  b=cOOHkQJUobjc0Wtu4O/M+K8UetclB6AZKqPTrDPAkn9T/MCpLLskrvlu
+   +c5CMCj6RDAO8txejp/44AyODN4bhbx2tJBfndt0XqWy29JKcQWt/4GXb
+   X6kGeAImvuL5mHPvGc5BM+uSlyuf2JeFU1JmikyOQGvpSSNyWgejVju8I
+   9wpndgqydZjnREQZic7vIjkS9kmVooP44QqOIYMxMJEGgP3Gp5cCjUhvx
+   FU2b//tGmM6Qa6sIGSO0DWxOSRFxMKGxfNbzAWZ9yyWo0kMv/qmN+f4gV
+   +0C6eV7mx3SROmlE5gsTv77YgDofgBbj25kuV3yusJdEE+3/YE5L9Ba2y
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10788"; a="359261961"
+X-IronPort-AV: E=Sophos;i="6.01,246,1684825200"; 
+   d="scan'208";a="359261961"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Aug 2023 00:03:34 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10788"; a="975162129"
+X-IronPort-AV: E=Sophos;i="6.01,246,1684825200"; 
+   d="scan'208";a="975162129"
+Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
+  by fmsmga006.fm.intel.com with ESMTP; 01 Aug 2023 00:03:33 -0700
+Received: from orsmsx602.amr.corp.intel.com (10.22.229.15) by
+ ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.27; Tue, 1 Aug 2023 00:03:33 -0700
+Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
+ orsmsx602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.27 via Frontend Transport; Tue, 1 Aug 2023 00:03:33 -0700
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.169)
+ by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.27; Tue, 1 Aug 2023 00:03:33 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=IR7tVO2nLdwygWZLXQQ1FHZjHOOU/ezBj50HRgqilw9uU5ucMEOKQ2yMbuhJJGkoJ4KpnOgRChG+L4wI/hd34iVdwJq5ENWLreOJzsnqUTEpFtyqqlhMrLcOJQ4vtovSfxqM3UdZ/tIKjGHoFCSS5hJSwuy69/1Xb24UnjOssGs2aiSDOmdTwJFqDOCUbv17Juvkv8lQfVrQ6tsDxmDd8qlU9+HFwcHrMYT4g0duRmsQc6FizK9qouHaSnoj9R9U77AJflnxtdhwd8rxe33bRHQc2f9bZkr1/Hfga0XrpD9ok5Eo3dZmmYF0TvASiWwBAeE1+IiQ5Lij2u48OZ/qwg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Pz9wbM6x/hYd1HH08MMfVe76kt4QZjYn5wXFvEKFJ9k=;
+ b=hvcvsoczLy5gj9O7UhFMwwE5pShVpjtCtDfi0equgWRanBLpp4HU4TzCQzBxLjXg1WTlVemZHRhjrkrXNluFl63sPt7JtwID9KYL+lp4fnQFHe1bzV0/RocZosPNALp0SMwrCWQKsMkKt8/kb9ns5ab/hiD6AvJR/bMLxz47eFxOjl8seMSRmKUhSAfqxNoSuJZ3WbQvI6aTAIrtVol+Kxo/SpsbAhOQH2rnbVaWMH7xWVXwizZV481rNlhZbeBHdvHiNfsN76UouDYOtvfN7A4PBchQ9bkC/1EwmvaC/LHKA3R1Dr5vChWhP9oSVc0YcB+L1kwtkgjoqTc7sMmgRw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
+ by IA0PR11MB7863.namprd11.prod.outlook.com (2603:10b6:208:40c::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6631.44; Tue, 1 Aug
+ 2023 07:03:31 +0000
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::dcf3:7bac:d274:7bed]) by BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::dcf3:7bac:d274:7bed%4]) with mapi id 15.20.6631.043; Tue, 1 Aug 2023
+ 07:03:31 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, "Will
+ Deacon" <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, "Jason
+ Gunthorpe" <jgg@ziepe.ca>, Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Nicolin Chen <nicolinc@nvidia.com>
+CC: "Liu, Yi L" <yi.l.liu@intel.com>, Jacob Pan
+	<jacob.jun.pan@linux.intel.com>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH 1/2] iommu: Consolidate pasid dma ownership check
+Thread-Topic: [PATCH 1/2] iommu: Consolidate pasid dma ownership check
+Thread-Index: AQHZxEIhfIdukOyCd0Ww2obftm7IEq/VAaVQ
+Date: Tue, 1 Aug 2023 07:03:31 +0000
+Message-ID: <BN9PR11MB5276D196F9BFB06D0E59AEF28C0AA@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <20230801063125.34995-1-baolu.lu@linux.intel.com>
+ <20230801063125.34995-2-baolu.lu@linux.intel.com>
+In-Reply-To: <20230801063125.34995-2-baolu.lu@linux.intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|IA0PR11MB7863:EE_
+x-ms-office365-filtering-correlation-id: 8777c6cb-71f7-4b0f-ed11-08db925d6a18
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 0Dyd/MTd+KNTo+Q9NSnFKOYBDkEpge4hDFRG1OydeNyFeO261sAzcFLEF5SHi47l1v6hSBXA/LQwUhiAnJURA8TfWQaxDEBXa9GSS0Z84k8qfC7uhN9gKrZpbcyAQuf1kn72cPzil7PrJWaMAOZ9Xm4fdz0hDArRX0s1hcHyeKUXL+2FAerNLGVknp+u03h+4KssH/lm6lA7amPIUkkUF9AzmKWhZmsrhDQEP7OY9Uff5VQtpN5GsS9nQRK/S4Cj9XCxd8t7rkPPIguBUo+SbLCb8dT/i/qv9a4CJoEzg5y6Zmm1gHtFlYqqvb7E0294bwCxK/yEznGf56pAhVluD7ooQATIbRScta/gvh1waaJtgxEkSQsvpylTGP8hCw1Uw9srTEpSxId2nnsc6wgg/Y9GYJuwZ+33+L/He2frpVJObJ9RP90EOhjdKeXaRyj4bWy5NddV4BXQujjC/DExg90LzT7MuVXF39RncoHy8xQ/tmEsoOwOMyvcRKnVwu7VRmZeeAJ+LC3sovbcPRXhBm8m/Opv1c33ljTeLzcez4ByFnXUXp9FcNW+E4QhRg0/qK55BO1xnnyQsgWbmWXD6nOhHkt6MNX+WfUhWx/KIoMQfwAAE1PogrmUBMWtw4LF
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(346002)(39860400002)(136003)(376002)(366004)(396003)(451199021)(52536014)(82960400001)(54906003)(110136005)(122000001)(9686003)(26005)(33656002)(6506007)(7696005)(8936002)(8676002)(5660300002)(55016003)(71200400001)(76116006)(66946007)(64756008)(66556008)(66476007)(66446008)(4326008)(2906002)(83380400001)(38070700005)(478600001)(41300700001)(7416002)(38100700002)(186003)(86362001)(316002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?Ascv70B50ItG0oc8nA48bX+nUVEp+vaoggFyYQ4pqwaX2mpSMxGGTnyosW+2?=
+ =?us-ascii?Q?/jQIoYlLgQ4H70sqQzLrLYjw74QdVRb32PaIA6fwIz18hBU+2avKLAi+qaS3?=
+ =?us-ascii?Q?e1yEUsLwKl1hM2Da4AxH3cTt6plzGvpkuE6ENjFWHSMyHDiQ6ot27p2ipamJ?=
+ =?us-ascii?Q?/KEKAWEiax+Bk/n64wOCY8Tlo3Fj5DnFl8cScDVo5cdAhMtFVcN2MsT3QN/v?=
+ =?us-ascii?Q?nn/ZyI+qK8llPQPMyYfWVEklczVcRWWU2EW6WVubwWuImDUZWSxiZr31Fo+W?=
+ =?us-ascii?Q?NW5TmprornH5k1mXauQaCLV+tQjD/uTkQxX3QJh+ZXaAt2TjHMHg23n7NaBk?=
+ =?us-ascii?Q?8fWMiIyZM5BYndrSLliuWWMyf7vRVZZTKETvVxooSE7a+BPEhpgnKoZF2nag?=
+ =?us-ascii?Q?jd+2TvfztjKpOsKJ5hX96m8xFut7nZEyM3CPZTsJWP5YamKVRsd0LOCOTBxX?=
+ =?us-ascii?Q?PKTeVAGtKjs5aAaa22zHCdlidfpKawq3wJJ2NbxhNA6EmrcUozuJyIQPAtZS?=
+ =?us-ascii?Q?jiTD1SzccPfvyAvp0XVkJ9ISpar2K859fReDWUf+KioaLroUI02H98wgoEpL?=
+ =?us-ascii?Q?jwYe/3VMmFHXXBkYiowpi6dM7oAJljNPSpLcxH4XnjLV9SLH3jR1o14oZfZa?=
+ =?us-ascii?Q?UZ9Gf2dtiICiNXLonb8pqUZ/+twlEXu3379s9cPADbTdhqD/6VUtMM99wrWw?=
+ =?us-ascii?Q?cdyjki5L7J0pHryiAv3E5AT6nqQiYinqyuYJPJCPUnu8Gv5SqWmr3fq5jFjf?=
+ =?us-ascii?Q?0ZqQNCIFBi157LRqUsyreFe4n3yp9oMDfWSFVGteFfZXYWY5I5ghURQLIVGy?=
+ =?us-ascii?Q?HG4L54og3Kd2W1rBFtkXXDvANdqw11Z1tsD6goJPsblpGs1/EOVJFzoX6em6?=
+ =?us-ascii?Q?ih7IGlylNmO9HjwVriRJZx1KIopbyemJAxCH9ZwH5DuUK/dBRlLolbgvDLzS?=
+ =?us-ascii?Q?R//+ycG9zIIr8/4M/flb8LAViSyfq5wwIweUJJMXcyu7MMGyfKw9G5mnS3W4?=
+ =?us-ascii?Q?5iUb8kaJLib5Od9T5AadoErufOvk3KU8kg/iB41++rmNPa0YNcSuEgqCYxYP?=
+ =?us-ascii?Q?U0QLP9pR0T4stm7rzmfT4fdHgjuP1xv5/+0ftd7NuYVjRvMjjSKneQkFd7EP?=
+ =?us-ascii?Q?31SgNlxNBwgA0H6KL6yB8Iy8f+aDuvcx4riDOIQn0UYeBDnwdkSsdfcbDHzq?=
+ =?us-ascii?Q?aAvdURTYpeCzEE5zBiE0TYYU+T8alx5OMX87iEJQ0SW2OKAOIrgQ5G2KvYui?=
+ =?us-ascii?Q?GzoQr0QH90bVBQp2oc4YOGIWQtvJI5QNZ2edZ0GZy3x7KqJTW0ywbf+3v2vx?=
+ =?us-ascii?Q?HgXd1aK3BN5OUe0ywz30lMCgrtp8+KeTnyFrJPXn1ntTxovCzbguGxtJrJ6R?=
+ =?us-ascii?Q?lBdbduc8yevIJzPPFAxWdRCP7RGigBBEwdWVBTxmPXQFj341cKJlQVTFJn2w?=
+ =?us-ascii?Q?4omDQjD3uVG4hr2yp01IVg94xk1JkrkA0ZEqLTYFXtJHi4qnLWN0VSSwpbFM?=
+ =?us-ascii?Q?SJuAlp6gfOWneWz87pwz32PO08QRdCtvExzT7LVgRz6ZcG54rhoFVmrrAJKd?=
+ =?us-ascii?Q?RlqkEm7kfddhiTD7gTHr5nY8pgwFHqPi1MPqSfFX?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cover.1690871004.git.petr.tesarik.ext@huawei.com>
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8777c6cb-71f7-4b0f-ed11-08db925d6a18
+X-MS-Exchange-CrossTenant-originalarrivaltime: 01 Aug 2023 07:03:31.2421
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: XYn7ZHfq9XlNqAFtoY9F6JZcYX70G4WXQFhcw8M1ccNGfZnBvRCGuMJ6apYpHZd/zV3Iy4WoQqAj8d/MjEbrrQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR11MB7863
+X-OriginatorOrg: intel.com
 
-On Tue, Aug 01, 2023 at 08:23:55AM +0200, Petr Tesarik wrote:
-> From: Petr Tesarik <petr.tesarik.ext@huawei.com>
-> 
-> Motivation
-> ==========
-> 
-> The software IO TLB was designed with these assumptions:
-> 
-> 1) It would not be used much. Small systems (little RAM) don't need it, and
->    big systems (lots of RAM) would have modern DMA controllers and an IOMMU
->    chip to handle legacy devices.
-> 2) A small fixed memory area (64 MiB by default) is sufficient to
->    handle the few cases which require a bounce buffer.
-> 3) 64 MiB is little enough that it has no impact on the rest of the
->    system.
-> 4) Bounce buffers require large contiguous chunks of low memory. Such
->    memory is precious and can be allocated only early at boot.
-> 
-> It turns out they are not always true:
-> 
-> 1) Embedded systems may have more than 4GiB RAM but no IOMMU and legacy
->    32-bit peripheral busses and/or DMA controllers.
-> 2) CoCo VMs use bounce buffers for all I/O but may need substantially more
->    than 64 MiB.
-> 3) Embedded developers put as many features as possible into the available
->    memory. A few dozen "missing" megabytes may limit what features can be
->    implemented.
-> 4) If CMA is available, it can allocate large continuous chunks even after
->    the system has run for some time.
-> 
-> Goals
-> =====
-> 
-> The goal of this work is to start with a small software IO TLB at boot and
-> expand it later when/if needed.
-> 
-> Design
-> ======
-> 
-> This version of the patch series retains the current slot allocation
-> algorithm with multiple areas to reduce lock contention, but additional
-> slots can be added when necessary.
-> 
-> These alternatives have been considered:
-> 
-> - Allocate and free buffers as needed using direct DMA API. This works
->   quite well, except in CoCo VMs where each allocation/free requires
->   decrypting/encrypting memory, which is a very expensive operation.
-> 
-> - Allocate a very large software IO TLB at boot, but allow to migrate pages
->   to/from it (like CMA does). For systems with CMA, this would mean two big
->   allocations at boot. Finding the balance between CMA, SWIOTLB and rest of
->   available RAM can be challenging. More importantly, there is no clear
->   benefit compared to allocating SWIOTLB memory pools from the CMA.
-> 
-> Implementation Constraints
-> ==========================
-> 
-> These constraints have been taken into account:
-> 
-> 1) Minimize impact on devices which do not benefit from the change.
-> 2) Minimize the number of memory decryption/encryption operations.
-> 3) Avoid contention on a lock or atomic variable to preserve parallel
->    scalability.
-> 
-> Additionally, the software IO TLB code is also used to implement restricted
-> DMA pools. These pools are restricted to a pre-defined physical memory
-> region and must not use any other memory. In other words, dynamic
-> allocation of memory pools must be disabled for restricted DMA pools.
-> 
-> Data Structures
-> ===============
-> 
-> The existing struct io_tlb_mem is the central type for a SWIOTLB allocator,
-> but it now contains multiple memory pools::
-> 
->   io_tlb_mem
->   +---------+   io_tlb_pool
->   | SWIOTLB | 	+-------+   +-------+   +-------+
->   |allocator|-->|default|-->|dynamic|-->|dynamic|-->...
->   |    	    |  	|memory |   |memory |   |memory |
->   +---------+ 	| pool  |   | pool  |   | pool  |
-> 	      	+-------+   +-------+   +-------+
-> 
-> The allocator structure contains global state (such as flags and counters)
-> and structures needed to schedule new allocations. Each memory pool
-> contains the actual buffer slots and metadata. The first memory pool in the
-> list is the default memory pool allocated statically at early boot.
-> 
-> New memory pools are allocated from a kernel worker thread. That's because
-> bounce buffers are allocated when mapping a DMA buffer, which may happen in
-> interrupt context where large atomic allocations would probably fail.
-> Allocation from process context is much more likely to succeed, especially
-> if it can use CMA.
-> 
-> Nonetheless, the onset of a load spike may fill up the SWIOTLB before the
-> worker has a chance to run. In that case, try to allocate a small transient
-> memory pool to accommodate the request. If memory is encrypted and the
-> device cannot do DMA to encrypted memory, this buffer is allocated from the
-> coherent atomic DMA memory pool. Reducing the size of SWIOTLB may therefore
-> require increasing the size of the coherent pool with the "coherent_pool"
-> command-line parameter.
-> 
-> Performance
-> ===========
-> 
-> All testing compared a vanilla v6.4-rc6 kernel with a fully patched
-> kernel. The kernel was booted with "swiotlb=force" to allow stress-testing
-> the software IO TLB on a high-performance device that would otherwise not
-> need it. CONFIG_DEBUG_FS was set to 'y' to match the configuration of
-> popular distribution kernels; it is understood that parallel workloads
-> suffer from contention on the recently added debugfs atomic counters.
-> 
-> These benchmarks were run:
-> 
-> - small: single-threaded I/O of 4 KiB blocks,
-> - big: single-threaded I/O of 64 KiB blocks,
-> - 4way: 4-way parallel I/O of 4 KiB blocks.
-> 
-> In all tested cases, the default 64 MiB SWIOTLB would be sufficient (but
-> wasteful). The "default" pair of columns shows performance impact when
-> booted with 64 MiB SWIOTLB (i.e. current state). The "growing" pair of
-> columns shows the impact when booted with a 1 MiB initial SWIOTLB, which
-> grew to 5 MiB at run time. The "var" column in the tables below is the
-> coefficient of variance over 5 runs of the test, the "diff" column is the
-> difference in read-write I/O bandwidth (MiB/s). The very first column is
-> the coefficient of variance in the results of the base unpatched kernel.
-> 
-> First, on an x86 VM against a QEMU virtio SATA driver backed by a RAM-based
-> block device on the host:
-> 
-> 	base	   default	   growing
-> 	var	var	diff	var	diff
-> small	1.96%	0.47%	-1.5%	0.52%	-2.2%
-> big	2.03%	1.35%	+0.9%	2.22%	+2.9%
-> 4way	0.80%	0.45%	-0.7%	1.22%	<0.1%
-> 
-> Second, on a Raspberry Pi4 with 8G RAM and a class 10 A1 microSD card:
-> 
-> 	base	   default	   growing
-> 	var	var	diff	var	diff
-> small	1.09%	1.69%	+0.5%	2.14%	-0.2%
-> big	0.03%	0.28%	-0.5%	0.03%	-0.1%
-> 4way	5.15%	2.39%	+0.2%	0.66%	<0.1%
-> 
-> Third, on a CoCo VM. This was a bigger system, so I also added a 24-thread
-> parallel I/O test:
-> 
-> 	base	   default	   growing
-> 	var	var	diff	var	diff
-> small	2.41%	6.02%	+1.1%	10.33%	+6.7%
-> big	9.20%	2.81%	-0.6%	16.84%	-0.2%
-> 4way	0.86%	2.66%	-0.1%	 2.22%	-4.9%
-> 24way	3.19%	6.19%	+4.4%	 4.08%	-5.9%
-> 
-> Note the increased variance of the CoCo VM, although the host was not
-> otherwise loaded. These are caused by the first run, which includes the
-> overhead of allocating additional bounce buffers and sharing them with the
-> hypervisor. The system was not rebooted between successive runs.
-> 
-> Parallel tests suffer from a reduced number of areas in the dynamically
-> allocated memory pools. This can be improved by allocating a larger pool
-> from CMA (not implemented in this series yet).
-> 
-> I have no good explanation for the increase in performance of the
-> 24-thread I/O test with the default (non-growing) memory pool. Although the
-> difference is within variance, it seems to be real. The average bandwidth
-> is consistently above that of the unpatched kernel.
-> 
-> To sum it up:
-> 
-> - All workloads benefit from reduced memory footprint.
-> - No performance regressions have been observed with the default size of
->   the software IO TLB.
-> - Most workloads retain their former performance even if the software IO
->   TLB grows at run time.
-> 
+> From: Lu Baolu <baolu.lu@linux.intel.com>
+> Sent: Tuesday, August 1, 2023 2:31 PM
+>
+> When switching device DMA ownership, it is required that all the device's
+> pasid DMA be disabled. This is done by checking if the pasid array of the
+> group is empty. Consolidate all the open code into a single helper. No
+> intentional functionality change.
 
-For the driver-core touched portions:
+...
 
-Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+>  /**
+>   * iommu_device_use_default_domain() - Device driver wants to handle
+> device
+>   *                                     DMA through the kernel DMA API.
+> @@ -3052,14 +3063,14 @@ int iommu_device_use_default_domain(struct
+> device *dev)
+>=20
+>  	mutex_lock(&group->mutex);
+>  	if (group->owner_cnt) {
+> -		if (group->owner || !iommu_is_default_domain(group) ||
+> -		    !xa_empty(&group->pasid_array)) {
+> +		if (group->owner || !iommu_is_default_domain(group)) {
+>  			ret =3D -EBUSY;
+>  			goto unlock_out;
+>  		}
+>  	}
+>=20
+>  	group->owner_cnt++;
+> +	assert_pasid_dma_ownership(group);
+
+Old code returns error if pasid_xrrary is not empty.
+
+New code continues to take ownership with a warning.
+
+this is a functional change. Is it intended or not?
+
