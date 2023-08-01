@@ -1,38 +1,36 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 466174DC94
-	for <iommu@lists.linux.dev>; Tue,  1 Aug 2023 20:41:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B228CC433C8;
-	Tue,  1 Aug 2023 20:41:50 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 160C64DC94
+	for <iommu@lists.linux.dev>; Tue,  1 Aug 2023 20:41:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34A64C433C9;
+	Tue,  1 Aug 2023 20:41:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1690922512;
-	bh=Ru+b3oEZPQazdmXzDRhzAlXaDh13Ys1hi6gQ2UgJgEw=;
+	s=k20201202; t=1690922514;
+	bh=UmykxjBF+sC4aN4OQ8EfvIYebgfE0K7LxRs85fn43fg=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=KrVAmGhpykx3UOI+aLOwipKXGDy/7xPxNoU0w1zrSKS5oYRg70zlHxY1m+2Pr9vm9
-	 HnlWgITb8lpMSeu4Aye8R+4CznA3cJR9f3DR7p1be9HX5uj6xXTmWxKtD8Km+VzRx5
-	 W3CTDr7IMFTHCSen7s1sdoBSWg5aMS4iz2D4dZFbpVeTJLWdjRaS51EHtunjyVeP/C
-	 Aonb7SmvFBx+V0JL3ySA5ohs4l/1vuNRK/mRSPLy82dY6HAK9i1B/hK9iV6K/T7RHR
-	 4eenXoeJJWDjOrWgK4HxBoca0gDyOWiB3st14eYU74iEfvCU7pCqf/M0le22xCWtbl
-	 ghYa+TlhDiWpA==
+	b=WeH44eSsG9xcFFrj+wih+yefO4Nd1y2oXU/izkvZNGEVLYMWas4UYdN/krVJ8IDvk
+	 2oRZC/YX+ezOMpzKcC5UWEA7B6X5lcsA9lBf8n3NPEfAHNEQo9Ume5RAXLLySBhEGN
+	 avE9yqBmEpeYKzGzoFqIZ3Dco0dtnqVtKk8ud5pxmmyDzHk32Tfyz3hUZ5AwIKovqU
+	 xND8qoW6cRRFcDU2/d4yXsKlcJhtRu+MSHyAFl54PIYfO/pCVpFmb29eEUo8QgwIZS
+	 jR8VkCgdvvCbY2R/xNAJkDUm6+BNfajHsdploQkOYiC8Slm+HffWvtIPRwvbpbXpr/
+	 ALP1Xuhl83fMA==
 From: Will Deacon <will@kernel.org>
-To: Robin Murphy <robin.murphy@arm.com>,
-	Yangtao Li <frank.li@vivo.com>,
-	Rob Clark <robdclark@gmail.com>,
-	Joerg Roedel <joro@8bytes.org>
+To: Dawei Li <set_pte_at@outlook.com>,
+	joro@8bytes.org,
+	robin.murphy@arm.com
 Cc: catalin.marinas@arm.com,
 	kernel-team@android.com,
 	Will Deacon <will@kernel.org>,
-	linux-arm-msm@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
 	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH 1/6] iommu/arm-smmu: do some cleanup
-Date: Tue,  1 Aug 2023 21:41:46 +0100
-Message-Id: <169089727545.1325205.14020331794830361964.b4-ty@kernel.org>
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iommu/arm-smmu-v3: Change vmid alloc strategy from bitmap to ida
+Date: Tue,  1 Aug 2023 21:41:47 +0100
+Message-Id: <169087904450.1290857.11726985177314533259.b4-ty@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20230705130416.46710-1-frank.li@vivo.com>
-References: <20230705130416.46710-1-frank.li@vivo.com>
+In-Reply-To: <TYCP286MB2323E0C525FF9F94E3B07C7ACA35A@TYCP286MB2323.JPNP286.PROD.OUTLOOK.COM>
+References: <TYCP286MB2323E0C525FF9F94E3B07C7ACA35A@TYCP286MB2323.JPNP286.PROD.OUTLOOK.COM>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -42,16 +40,20 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 
-On Wed, 5 Jul 2023 21:04:11 +0800, Yangtao Li wrote:
-> Convert to use devm_platform_ioremap_resource() and fix return value
-> when platform_get_irq fails.
+On Sun, 16 Jul 2023 00:16:21 +0800, Dawei Li wrote:
+> For current implementation of vmid allocation of arm smmu-v3, a per-smmu
+> devide bitmap of 64K bits(8K bytes) is allocated on behalf of possible VMID
+> range, which is two pages for some architectures. Besides that, its memory
+> consumption is 'static', despite of how many VMIDs are allocated actually.
 > 
+> That's memory inefficient and lack of scalability.
 > 
+> [...]
 
-Applied Arm SMMU patch to will (for-joerg/arm-smmu/updates), thanks!
+Applied to will (for-joerg/arm-smmu/updates), thanks!
 
-[1/6] iommu/arm-smmu: Clean up resource handling during Qualcomm context probe 
-      https://git.kernel.org/will/c/0a8c264d51ad
+[1/1] iommu/arm-smmu-v3: Change vmid alloc strategy from bitmap to ida
+      https://git.kernel.org/will/c/1672730cffaf
 
 Cheers,
 -- 
