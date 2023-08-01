@@ -1,140 +1,330 @@
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2071.outbound.protection.outlook.com [40.107.237.71])
+Received: from frasgout11.his.huawei.com (unknown [14.137.139.23])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 37774111A
-	for <iommu@lists.linux.dev>; Tue,  1 Aug 2023 04:52:46 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=YlmVQ2N3YwDlM1IgTQDiTFzP+heR4VJYPvGhjm1R8g/zYN6mlCsN7lDeqvlpBNjuSy11sBK9YrebdJPbyOf92YzOGBnk/B/igbxc3NS3yKRUNrq03e3usIIwgN+nyzm7yd5DwC0Td6FhrweZSW9UV09qFKIPFpAmSQKIrEoaifL5MYSsaYW0NYXX6IZi/r470ZjEY7fr8EHT+0KqopYQc0WqeQsi0qPUryQ4Jso2/N7Uq3q0p4TLNtCWGR4Ff81rllQ3m+B78b4/PrMihM/WrM7wJBSBLfgQcUK8LqQo7ZdrLDelbbrAhfDnhpSzm+nCYOBy148FNEjSxleZDKkNpg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=x7SiEFRWqBfm3TOEO4B66AOEfiknhs7Z2KPFWEAPAeo=;
- b=DPwuhvgzyQAC6GMyoZFXBtlFCDSH++tysOlPg2+7DOzLvHEBmNReS8W+mCNn7bNBk06pUTJUvAb2g0wFbdNYJVgPgd4vvcg1gGsiQceWyo/3k3QUljVVpOrblfz7iUTZMEGeVR8mYOkXe/YgDySWnmwYTy/IopD9U8Ze67iJvPBBTh3Zl/8SWiz4ryyv/5JImWiUJMavUGXuKXGK785vKY7gChrkiMN6iJ8/VcxXv/+NgP1pTTGYSsDaTO0PUGlOQx3HqDPCI3Nwc6sqcm/8ulcnWIgfolsCFDnZtK7cZeSs6AhiMCjhPEUkZm+AKIR2eqIdeqTrPrT12TrGwOAOdw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=google.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=x7SiEFRWqBfm3TOEO4B66AOEfiknhs7Z2KPFWEAPAeo=;
- b=A6TTP7HrS2m9fNMqKuoNChJWKs/wW2iNZsJfk0iXv1U9a/Q/X81oFihk2t3VkXGim0MR++Yam34ozeo1Z7TOOPGqS543ZeYgIEjEAJK4CPLFHQJhANz9EoxF6LNnXV0nPwpclxuparDcY4mZzuas26LpoXG80eoh66jJ0HZb/1U2DNwgs+pjX8cOJrnjIQws9h+0XKZRmD6cYCY0KumA9zXsFzi12t+tMe+P8R6sZx3Cr8kaucZEaoMES4Fzne+yHGeLkPNcbk4D66j0SKiO4Fvlc3BayNw8PSK6XUpCn0jBXQl4MXcYvom3Ut1SIU8iy9BLAxkT1jXHFPdMEKwsTw==
-Received: from MW4PR04CA0381.namprd04.prod.outlook.com (2603:10b6:303:81::26)
- by SN7PR12MB7274.namprd12.prod.outlook.com (2603:10b6:806:2ad::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6631.42; Tue, 1 Aug
- 2023 04:52:44 +0000
-Received: from CO1NAM11FT052.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:81:cafe::ed) by MW4PR04CA0381.outlook.office365.com
- (2603:10b6:303:81::26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6631.44 via Frontend
- Transport; Tue, 1 Aug 2023 04:52:44 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- CO1NAM11FT052.mail.protection.outlook.com (10.13.174.225) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6631.44 via Frontend Transport; Tue, 1 Aug 2023 04:52:43 +0000
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Mon, 31 Jul 2023
- 21:52:31 -0700
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail204.nvidia.com
- (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Mon, 31 Jul
- 2023 21:52:31 -0700
-Received: from Asurada-Nvidia (10.127.8.11) by mail.nvidia.com (10.129.68.8)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37 via Frontend
- Transport; Mon, 31 Jul 2023 21:52:30 -0700
-Date: Mon, 31 Jul 2023 21:52:29 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Michael Shavit <mshavit@google.com>
-CC: <iommu@lists.linux.dev>, <linux-arm-kernel@lists.infradead.org>,
-	<linux-kernel@vger.kernel.org>, <will@kernel.org>, <robin.murphy@arm.com>,
-	<jgg@nvidia.com>, <jean-philippe@linaro.org>
-Subject: Re: [PATCH v2 4/8] iommu/arm-smmu-v3: move stall_enabled to the cd
- table
-Message-ID: <ZMiPjRtch1c06F5Y@Asurada-Nvidia>
-References: <20230731104833.800114-1-mshavit@google.com>
- <20230731184817.v2.4.I5aa89c849228794a64146cfe86df21fb71629384@changeid>
- <ZMiJ9Cg5wfbxMZ+W@Asurada-Nvidia>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CFCD1EA3
+	for <iommu@lists.linux.dev>; Tue,  1 Aug 2023 06:25:33 +0000 (UTC)
+Received: from mail02.huawei.com (unknown [172.18.147.229])
+	by frasgout11.his.huawei.com (SkyGuard) with ESMTP id 4RFPv718gzz9xqcK
+	for <iommu@lists.linux.dev>; Tue,  1 Aug 2023 14:13:55 +0800 (CST)
+Received: from A2101119013HW2.china.huawei.com (unknown [10.81.220.249])
+	by APP1 (Coremail) with SMTP id LxC2BwCHOroapchkgAwYAA--.27948S2;
+	Tue, 01 Aug 2023 07:24:46 +0100 (CET)
+From: Petr Tesarik <petrtesarik@huaweicloud.com>
+To: Stefano Stabellini <sstabellini@kernel.org>,
+	Russell King <linux@armlinux.org.uk>,
+	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Ingo Molnar <mingo@redhat.com>,
+	Borislav Petkov <bp@alien8.de>,
+	Dave Hansen <dave.hansen@linux.intel.com>,
+	x86@kernel.org (maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)),
+	"H. Peter Anvin" <hpa@zytor.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Juergen Gross <jgross@suse.com>,
+	Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
+	Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Christoph Lameter <cl@linux.com>,
+	Pekka Enberg <penberg@kernel.org>,
+	David Rientjes <rientjes@google.com>,
+	Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Vlastimil Babka <vbabka@suse.cz>,
+	Roman Gushchin <roman.gushchin@linux.dev>,
+	Hyeonggon Yoo <42.hyeyoo@gmail.com>,
+	Petr Tesarik <petr.tesarik.ext@huawei.com>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Hans de Goede <hdegoede@redhat.com>,
+	James Seo <james@equiv.tech>,
+	James Clark <james.clark@arm.com>,
+	Kees Cook <keescook@chromium.org>,
+	xen-devel@lists.xenproject.org (moderated list:XEN HYPERVISOR ARM),
+	linux-arm-kernel@lists.infradead.org (moderated list:ARM PORT),
+	linux-kernel@vger.kernel.org (open list),
+	linux-mips@vger.kernel.org (open list:MIPS),
+	iommu@lists.linux.dev (open list:XEN SWIOTLB SUBSYSTEM),
+	linux-mm@kvack.org (open list:SLAB ALLOCATOR)
+Cc: Roberto Sassu <roberto.sassu@huaweicloud.com>,
+	petr@tesarici.cz
+Subject: [PATCH v7 0/9] Allow dynamic allocation of software IO TLB bounce buffers
+Date: Tue,  1 Aug 2023 08:23:55 +0200
+Message-Id: <cover.1690871004.git.petr.tesarik.ext@huawei.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <ZMiJ9Cg5wfbxMZ+W@Asurada-Nvidia>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1NAM11FT052:EE_|SN7PR12MB7274:EE_
-X-MS-Office365-Filtering-Correlation-Id: 6abaa34d-366b-43c6-434b-08db924b24c3
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	hUk/yFnMGKTXUrp9+zJkysq7j98qvEdc6jPagQuZyL9tD/u2MN5r3yp5cg5J9gzuUddNzfP5lS68tSKDJqv9tkCBNxr338AdseiiPVq71xgnaau/U3jTPu5A18MXTFLFLdoRIkA8MaxgQb0xbipi0sBoNyyf1ghd46lg8QtGA9hTIrVXZ2FBSbYRp5UxgqihTova6R8puBWstd873JxFj3bRGa5fyI8adtKgfsK+QzbN+JEnthMf8tV8z2F7f1wKKw+TgQoTvU++7GMlOsKnWyTjB2Rgxl7EutdK4UjJl5dm5J/vG9Sv1GuKtyEzLfiX7i1UzPa9uf48USeGGID/c2eBfFrluMO5wyRZEuXfmpyLHfsZPdNZwdh+ftZeh5WUz/9N5ItMBQgzojyRBe7kOxLOEUgefNQJiVu+rf9qq8siNtl74yLO4A2Oicqrs1ww+3KyBnhsPog0GM9f2+sgySq56QoC0iM9oTraOfybAJ5EjNZuWGltObh7l/pSVIQCVpXitJqdLgsgVywOY2a/zRh0Q9RCLkA7B/z422n4xXqUwQ2C1koy76ZO3pblEkTZy4MbOhIZSgApsVJLgQTPvSvcGExCC3LABPtBXcTVkEmQ1IHHoDlaVxUtT0KZ5XlssALlyDOlWk9NGWYvZKRVvaxqHVP2rp/dor7MsuEnsRAyswk98Hz6MhklUCrE0Qg5/LPGeXo3fXwtLJHL2bq9bdvN55pM8VExmyWJEOF9B8Y6xRVK0YjEQn6h905h4BgO
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(346002)(39860400002)(376002)(136003)(396003)(82310400008)(451199021)(46966006)(40470700004)(36840700001)(9686003)(47076005)(36860700001)(55016003)(40460700003)(40480700001)(26005)(83380400001)(336012)(186003)(426003)(70206006)(7636003)(70586007)(54906003)(356005)(33716001)(82740400003)(41300700001)(86362001)(316002)(5660300002)(6916009)(4326008)(8676002)(8936002)(2906002)(478600001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Aug 2023 04:52:43.8473
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6abaa34d-366b-43c6-434b-08db924b24c3
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CO1NAM11FT052.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB7274
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID:LxC2BwCHOroapchkgAwYAA--.27948S2
+X-Coremail-Antispam: 1UD129KBjvJXoW3Wr1Dtw1rJr47Aw4kKrykZrb_yoWDGrWfpF
+	WrKryftF4qqryxA3s7Ca18GFyrKa1kGrW5GrWFvryrur13Cr1j93WktayrXFW7Gr40vF12
+	qFyYvw13uw1DZ3DanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+	9KBjDU0xBIdaVrnRJUUUBK14x267AKxVWrJVCq3wAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+	rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+	1l84ACjcxK6xIIjxv20xvE14v26r4j6ryUM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4U
+	JVWxJr1l84ACjcxK6I8E87Iv67AKxVW8JVWxJwA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gr
+	1j6F4UJwAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv
+	7VC0I7IYx2IY67AKxVWUXVWUAwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r
+	1j6r4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwACI402YVCY1x02
+	628vn2kIc2xKxwCY1x0262kKe7AKxVWUtVW8ZwCY1x0264kExVAvwVAq07x20xyl42xK82
+	IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC2
+	0s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26rWY6r4UJwCIc40Y0x0EwIxGrw
+	CI42IY6xIIjxv20xvE14v26r4j6ryUMIIF0xvE2Ix0cI8IcVCY1x0267AKxVW8Jr0_Cr1U
+	MIIF0xvE42xK8VAvwI8IcIk0rVWrJr0_WFyUJwCI42IY6I8E87Iv67AKxVW8JVWxJwCI42
+	IY6I8E87Iv6xkF7I0E14v26r4UJVWxJrUvcSsGvfC2KfnxnUUI43ZEXa7VUjFksDUUUUU=
+	=
+X-CM-SenderInfo: hshw23xhvd2x3n6k3tpzhluzxrxghudrp/
+X-CFilter-Loop: Reflected
 
-On Mon, Jul 31, 2023 at 09:28:40PM -0700, Nicolin Chen wrote:
-> On Mon, Jul 31, 2023 at 06:48:14PM +0800, Michael Shavit wrote:
-> > This controls whether CD entries will have the stall bit set when
-> > writing entries into the table.
-> > 
-> > Signed-off-by: Michael Shavit <mshavit@google.com>
-> > ---
-> > 
-> > Changes in v2:
-> > - Use a bitfield instead of a bool for stall_enabled
-> > 
-> >  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 8 ++++----
-> >  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h | 3 ++-
-> >  2 files changed, 6 insertions(+), 5 deletions(-)
-> > 
-> > diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> > index 8a286e3838d70..654acf6002bf3 100644
-> > --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> > +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> > @@ -1114,7 +1114,7 @@ int arm_smmu_write_ctx_desc(struct arm_smmu_domain *smmu_domain, int ssid,
-> >                         FIELD_PREP(CTXDESC_CD_0_ASID, cd->asid) |
-> >                         CTXDESC_CD_0_V;
-> > 
-> > -               if (smmu_domain->stall_enabled)
-> > +               if (smmu_domain->cd_table.stall_enabled)
-> >                         val |= CTXDESC_CD_0_S;
-> 
-> This cd_table->stall_enabled comes from master->stall_enabled, and
-> cd_table will be in master structure. Also, struct arm_smmu_master
-> pointer will be passed in to arm_smmu_write_ctx_desc(). So, there
-> seems to be no need of master->cd_table.stall_enabled in the end;
-> just use master->stall_enabled directly?
+From: Petr Tesarik <petr.tesarik.ext@huawei.com>
 
-Actually the stall_enabled might still need to be per-CD/domain.
-If a domain is attached by two masters. The domain->stall_enabled
-is initialized with the first master->stall_enabled. Then, the
-second master->stall_enabled would be required to match with the
-domain->stall_enabled. arm_smmu_attach_dev() has such a sanity.
+Motivation
+==========
 
-So, I think we might not need this patch.
+The software IO TLB was designed with these assumptions:
 
-Nicolin
+1) It would not be used much. Small systems (little RAM) don't need it, and
+   big systems (lots of RAM) would have modern DMA controllers and an IOMMU
+   chip to handle legacy devices.
+2) A small fixed memory area (64 MiB by default) is sufficient to
+   handle the few cases which require a bounce buffer.
+3) 64 MiB is little enough that it has no impact on the rest of the
+   system.
+4) Bounce buffers require large contiguous chunks of low memory. Such
+   memory is precious and can be allocated only early at boot.
+
+It turns out they are not always true:
+
+1) Embedded systems may have more than 4GiB RAM but no IOMMU and legacy
+   32-bit peripheral busses and/or DMA controllers.
+2) CoCo VMs use bounce buffers for all I/O but may need substantially more
+   than 64 MiB.
+3) Embedded developers put as many features as possible into the available
+   memory. A few dozen "missing" megabytes may limit what features can be
+   implemented.
+4) If CMA is available, it can allocate large continuous chunks even after
+   the system has run for some time.
+
+Goals
+=====
+
+The goal of this work is to start with a small software IO TLB at boot and
+expand it later when/if needed.
+
+Design
+======
+
+This version of the patch series retains the current slot allocation
+algorithm with multiple areas to reduce lock contention, but additional
+slots can be added when necessary.
+
+These alternatives have been considered:
+
+- Allocate and free buffers as needed using direct DMA API. This works
+  quite well, except in CoCo VMs where each allocation/free requires
+  decrypting/encrypting memory, which is a very expensive operation.
+
+- Allocate a very large software IO TLB at boot, but allow to migrate pages
+  to/from it (like CMA does). For systems with CMA, this would mean two big
+  allocations at boot. Finding the balance between CMA, SWIOTLB and rest of
+  available RAM can be challenging. More importantly, there is no clear
+  benefit compared to allocating SWIOTLB memory pools from the CMA.
+
+Implementation Constraints
+==========================
+
+These constraints have been taken into account:
+
+1) Minimize impact on devices which do not benefit from the change.
+2) Minimize the number of memory decryption/encryption operations.
+3) Avoid contention on a lock or atomic variable to preserve parallel
+   scalability.
+
+Additionally, the software IO TLB code is also used to implement restricted
+DMA pools. These pools are restricted to a pre-defined physical memory
+region and must not use any other memory. In other words, dynamic
+allocation of memory pools must be disabled for restricted DMA pools.
+
+Data Structures
+===============
+
+The existing struct io_tlb_mem is the central type for a SWIOTLB allocator,
+but it now contains multiple memory pools::
+
+  io_tlb_mem
+  +---------+   io_tlb_pool
+  | SWIOTLB | 	+-------+   +-------+   +-------+
+  |allocator|-->|default|-->|dynamic|-->|dynamic|-->...
+  |    	    |  	|memory |   |memory |   |memory |
+  +---------+ 	| pool  |   | pool  |   | pool  |
+	      	+-------+   +-------+   +-------+
+
+The allocator structure contains global state (such as flags and counters)
+and structures needed to schedule new allocations. Each memory pool
+contains the actual buffer slots and metadata. The first memory pool in the
+list is the default memory pool allocated statically at early boot.
+
+New memory pools are allocated from a kernel worker thread. That's because
+bounce buffers are allocated when mapping a DMA buffer, which may happen in
+interrupt context where large atomic allocations would probably fail.
+Allocation from process context is much more likely to succeed, especially
+if it can use CMA.
+
+Nonetheless, the onset of a load spike may fill up the SWIOTLB before the
+worker has a chance to run. In that case, try to allocate a small transient
+memory pool to accommodate the request. If memory is encrypted and the
+device cannot do DMA to encrypted memory, this buffer is allocated from the
+coherent atomic DMA memory pool. Reducing the size of SWIOTLB may therefore
+require increasing the size of the coherent pool with the "coherent_pool"
+command-line parameter.
+
+Performance
+===========
+
+All testing compared a vanilla v6.4-rc6 kernel with a fully patched
+kernel. The kernel was booted with "swiotlb=force" to allow stress-testing
+the software IO TLB on a high-performance device that would otherwise not
+need it. CONFIG_DEBUG_FS was set to 'y' to match the configuration of
+popular distribution kernels; it is understood that parallel workloads
+suffer from contention on the recently added debugfs atomic counters.
+
+These benchmarks were run:
+
+- small: single-threaded I/O of 4 KiB blocks,
+- big: single-threaded I/O of 64 KiB blocks,
+- 4way: 4-way parallel I/O of 4 KiB blocks.
+
+In all tested cases, the default 64 MiB SWIOTLB would be sufficient (but
+wasteful). The "default" pair of columns shows performance impact when
+booted with 64 MiB SWIOTLB (i.e. current state). The "growing" pair of
+columns shows the impact when booted with a 1 MiB initial SWIOTLB, which
+grew to 5 MiB at run time. The "var" column in the tables below is the
+coefficient of variance over 5 runs of the test, the "diff" column is the
+difference in read-write I/O bandwidth (MiB/s). The very first column is
+the coefficient of variance in the results of the base unpatched kernel.
+
+First, on an x86 VM against a QEMU virtio SATA driver backed by a RAM-based
+block device on the host:
+
+	base	   default	   growing
+	var	var	diff	var	diff
+small	1.96%	0.47%	-1.5%	0.52%	-2.2%
+big	2.03%	1.35%	+0.9%	2.22%	+2.9%
+4way	0.80%	0.45%	-0.7%	1.22%	<0.1%
+
+Second, on a Raspberry Pi4 with 8G RAM and a class 10 A1 microSD card:
+
+	base	   default	   growing
+	var	var	diff	var	diff
+small	1.09%	1.69%	+0.5%	2.14%	-0.2%
+big	0.03%	0.28%	-0.5%	0.03%	-0.1%
+4way	5.15%	2.39%	+0.2%	0.66%	<0.1%
+
+Third, on a CoCo VM. This was a bigger system, so I also added a 24-thread
+parallel I/O test:
+
+	base	   default	   growing
+	var	var	diff	var	diff
+small	2.41%	6.02%	+1.1%	10.33%	+6.7%
+big	9.20%	2.81%	-0.6%	16.84%	-0.2%
+4way	0.86%	2.66%	-0.1%	 2.22%	-4.9%
+24way	3.19%	6.19%	+4.4%	 4.08%	-5.9%
+
+Note the increased variance of the CoCo VM, although the host was not
+otherwise loaded. These are caused by the first run, which includes the
+overhead of allocating additional bounce buffers and sharing them with the
+hypervisor. The system was not rebooted between successive runs.
+
+Parallel tests suffer from a reduced number of areas in the dynamically
+allocated memory pools. This can be improved by allocating a larger pool
+from CMA (not implemented in this series yet).
+
+I have no good explanation for the increase in performance of the
+24-thread I/O test with the default (non-growing) memory pool. Although the
+difference is within variance, it seems to be real. The average bandwidth
+is consistently above that of the unpatched kernel.
+
+To sum it up:
+
+- All workloads benefit from reduced memory footprint.
+- No performance regressions have been observed with the default size of
+  the software IO TLB.
+- Most workloads retain their former performance even if the software IO
+  TLB grows at run time.
+
+Changelog
+=========
+
+Changes from v6:
+- Rebase on dma-mapping for-next tree. Drop changes to pci-dma.c.
+
+Changes from v5:
+- Re-introduce is_swiotlb_allocated(), now again required because of commit
+  b035f5a6d852 ("mm: slab: reduce the kmalloc() minimum alignment if DMA
+  bouncing possible").
+
+Changes from v4:
+- Guard the code with a CONFIG_SWIOTLB_DYNAMIC option
+- Remove is_swiotlb_allocated(); instead, prevent repeated initialization
+  in swiotlb_init_late()
+- Rename default_swiotlb_start() to default_swiotlb_base()
+- Embed the default struct io_tlb_pool into struct io_tlb_mem
+- Do not re-introduce struct io_tlb_pool.used
+
+Changes from v3:
+- Provide swiotlb_is_allocated() instead of extending swiotlb_is_active().
+- Do not grow SWIOTLB if its address has been queried (affects Octeon).
+- Do not grow SWIOTLB if a remap function is used (affects Xen PV).
+- Use dma_mask instead of coherent_dma_mask.
+- Replace complex ternary operators with if-else blocks.
+
+Changes from v2:
+- Complete rewrite using dynamically allocated memory pools rather
+  than a list of individual buffers
+- Depend on other SWIOTLB fixes (already sent)
+- Fix Xen and MIPS Octeon builds
+
+Changes from RFC:
+- Track dynamic buffers per device instead of per swiotlb
+- Use a linked list instead of a maple tree
+- Move initialization of swiotlb fields of struct device to a
+  helper function
+- Rename __lookup_dyn_slot() to lookup_dyn_slot_locked()
+- Introduce per-device flag if dynamic buffers are in use
+- Add one more user of DMA_ATTR_MAY_SLEEP
+- Add kernel-doc comments for new (and some old) code
+- Properly escape '*' in dma-attributes.rst
+
+Petr Tesarik (9):
+  swiotlb: bail out of swiotlb_init_late() if swiotlb is already
+    allocated
+  swiotlb: make io_tlb_default_mem local to swiotlb.c
+  swiotlb: add documentation and rename swiotlb_do_find_slots()
+  swiotlb: separate memory pool data from other allocator data
+  swiotlb: add a flag whether SWIOTLB is allowed to grow
+  swiotlb: if swiotlb is full, fall back to a transient memory pool
+  swiotlb: determine potential physical address limit
+  swiotlb: allocate a new memory pool when existing pools are full
+  swiotlb: search the software IO TLB only if the device makes use of it
+
+ arch/arm/xen/mm.c           |  10 +-
+ arch/mips/pci/pci-octeon.c  |   2 +-
+ drivers/base/core.c         |   4 +-
+ drivers/xen/swiotlb-xen.c   |   2 +-
+ include/linux/device.h      |  10 +-
+ include/linux/dma-mapping.h |   2 +
+ include/linux/swiotlb.h     | 131 +++++--
+ kernel/dma/Kconfig          |  13 +
+ kernel/dma/direct.c         |   2 +-
+ kernel/dma/swiotlb.c        | 683 ++++++++++++++++++++++++++++++++----
+ mm/slab_common.c            |   5 +-
+ 11 files changed, 764 insertions(+), 100 deletions(-)
+
+-- 
+2.25.1
+
