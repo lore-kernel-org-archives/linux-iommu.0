@@ -1,96 +1,100 @@
-Received: from mailgate.ics.forth.gr (mailgate.ics.forth.gr [139.91.1.2])
+Received: from mail-vk1-f174.google.com (mail-vk1-f174.google.com [209.85.221.174])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E1521DDC1
-	for <iommu@lists.linux.dev>; Mon, 31 Jul 2023 23:35:37 +0000 (UTC)
-Received: from av3.ics.forth.gr (av3in.ics.forth.gr [139.91.1.77])
-	by mailgate.ics.forth.gr (8.15.2/ICS-FORTH/V10-1.8-GATE) with ESMTP id 36VNZYxh034597
-	for <iommu@lists.linux.dev>; Tue, 1 Aug 2023 02:35:34 +0300 (EEST)
-DKIM-Signature: v=1; a=rsa-sha256; d=ics.forth.gr; s=av; c=relaxed/simple;
-	q=dns/txt; i=@ics.forth.gr; t=1690846529; x=1693438529;
-	h=From:Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
-	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=LSI+78CfW+QT4JpYLaB75hH9TQH+aW5vj75UYJKOLcQ=;
-	b=kTKV5jqGVcwFgVBaQYJU+AxlBxqtDo+7Eeq8nndszmR0URMZVNHdVyyKaFZVHuT8
-	cfbCzuy/IQvxu8Yx7RYodznI0SVDETLWTb+3dyZ6NOGNsyacWb74Ik60lLqr0Iyg
-	956fID9oI3NzQjjJbmWeufKFmpYMaGrkKXBXP4b9sLo3u7b0E1oY6F2CwkgxugWe
-	9DKYVi66ffit6dW3+owNkh4S/N/eZtG8wdNhWIc/gGnAl/9L6GGEAU/FOYU5b5oK
-	pcCgliA2bG6zgRHqWpmf96Wdhwgv205Op7gR3JK2vXV5KnggQc3v/1GepkgDgrns
-	bEPZ9Ow75g9IGxGKyetq4g==;
-X-AuditID: 8b5b014d-a17eb70000002178-1b-64c845417c82
-Received: from enigma.ics.forth.gr (enigma-2.ics.forth.gr [139.91.151.35])
-	by av3.ics.forth.gr (Symantec Messaging Gateway) with SMTP id 6E.28.08568.14548C46; Tue,  1 Aug 2023 02:35:29 +0300 (EEST)
-X-ICS-AUTH-INFO: Authenticated user: mick at ics.forth.gr
-Message-ID: <dc3974f0-500c-b7d3-c8ca-df069dbd02a8@ics.forth.gr>
-Date: Tue, 1 Aug 2023 02:35:20 +0300
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9452E7E
+	for <iommu@lists.linux.dev>; Tue,  1 Aug 2023 00:38:07 +0000 (UTC)
+Received: by mail-vk1-f174.google.com with SMTP id 71dfb90a1353d-486c9cd3b6aso498228e0c.1
+        for <iommu@lists.linux.dev>; Mon, 31 Jul 2023 17:38:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sifive.com; s=google; t=1690850286; x=1691455086;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=NdYmmXRXkB8A9hlXpUOeNCxACpncud2UiXIMN7+uwMg=;
+        b=ZsfhB4Qik9M38h7DpsHfzbBtyfKLsOae/fInlFnh4KWn1KPTAqKqfss8bCClXvf2eP
+         LO249W9XeMRCI5ZQDk7iioHmflDkF/8oO1bFlerdykVfrI+fCW0PMPYE/Dq91HeVGH+W
+         SJ8cooavwfQ0d4fvfgIX9urh0Uyj4gBWn20qm9Fx6bOLk2QVrMD/W1Pf62wFCpGEO0Hs
+         LBfuHJZVJm89jiw9SZ51eJWZ89ZUqExRj8UfmSVDM3MRMK/k2GCFJ0YMN/WbG1nfHgZa
+         jXvE5ZphKIIOEXRtUmuopZZ5dxlVSaZ9xZiDu8VqGPvPXdKq3mzGVEhzvbGOE/ppCGvY
+         P+9g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1690850286; x=1691455086;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=NdYmmXRXkB8A9hlXpUOeNCxACpncud2UiXIMN7+uwMg=;
+        b=d2sPXQfU/GyAN0ehJg2+qconKJNt2v00jiAPc5UqxJx4WZdVS7+wgxizapq8TWhTVl
+         PqkDqN1nM/iW7moO8VT9KXMH/mJ8ptmUBDutzKxdoL0tdobW/6DYLJj/vZ/hvWck/FLY
+         cG6RrbHcf1Rs3zdAdFHZcyBHIQ+JunXnrVAC9mAONfbzn1oCvvbPSMg3nfH87ytF2S4H
+         +AnfI59wHKTjIZcaxIZAmjiGcUh4tK5T4/7OO+mN2tVxhdgFHGklNr24YiikbmQR4Qx8
+         SZ2kf6PD9DOoqRxG3LTlLe4X2hqwFcFtCsp86K41KopXdaKhBb9V09wrWfFem7w2XtYd
+         UQFw==
+X-Gm-Message-State: ABy/qLbbeQj0V5JoZqBGyJI4tdge2O06fId81N8grAUgVMpH/zaL4WUj
+	8i+/8qwQHB6qAztycGFUQ9RF7/qTVcBZskCjAQvhcA==
+X-Google-Smtp-Source: APBJJlFnersDKJEeFzHE4uX3AEe6xNSZtfoqDenYiRn7lbZF/LiOg7O0b5UFQR20Vrygel0Z6Cgmh72uBhl3+ZselsI=
+X-Received: by 2002:a1f:5ec6:0:b0:486:42ab:6a46 with SMTP id
+ s189-20020a1f5ec6000000b0048642ab6a46mr1469358vkb.13.1690850286296; Mon, 31
+ Jul 2023 17:38:06 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.13.0
+References: <cover.1689792825.git.tjeznach@rivosinc.com> <1fd79e5c53d9d6ed2264f60dd4261f293cc00472.1689792825.git.tjeznach@rivosinc.com>
+ <CANXhq0pm+1yXuvUGudwNtvNHWV3FytH4VfCnq7_Ws=t-MZP_kQ@mail.gmail.com>
+ <3d4d9b22-8451-f4d5-bbd8-117988f3a545@ics.forth.gr> <CANXhq0puxuHA2cEyb2+TobkoFTc=7MQqtv7DYbuZdvf0T8+iUQ@mail.gmail.com>
+ <dc3974f0-500c-b7d3-c8ca-df069dbd02a8@ics.forth.gr>
+In-Reply-To: <dc3974f0-500c-b7d3-c8ca-df069dbd02a8@ics.forth.gr>
+From: Zong Li <zong.li@sifive.com>
+Date: Tue, 1 Aug 2023 08:37:56 +0800
+Message-ID: <CANXhq0pz5U2i3V7P2qYnhZf5fpcNUrs4J24in2ffMncK7yx6pw@mail.gmail.com>
 Subject: Re: [PATCH 06/11] RISC-V: drivers/iommu/riscv: Add command, fault,
  page-req queues
-To: Zong Li <zong.li@sifive.com>
-Cc: Tomasz Jeznach <tjeznach@rivosinc.com>, Joerg Roedel <joro@8bytes.org>,
-        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Anup Patel <apatel@ventanamicro.com>,
-        Albert Ou <aou@eecs.berkeley.edu>, linux@rivosinc.com,
-        linux-kernel@vger.kernel.org, Sebastien Boeuf <seb@rivosinc.com>,
-        iommu@lists.linux.dev, Palmer Dabbelt <palmer@dabbelt.com>,
-        linux-riscv@lists.infradead.org
-References: <cover.1689792825.git.tjeznach@rivosinc.com>
- <1fd79e5c53d9d6ed2264f60dd4261f293cc00472.1689792825.git.tjeznach@rivosinc.com>
- <CANXhq0pm+1yXuvUGudwNtvNHWV3FytH4VfCnq7_Ws=t-MZP_kQ@mail.gmail.com>
- <3d4d9b22-8451-f4d5-bbd8-117988f3a545@ics.forth.gr>
- <CANXhq0puxuHA2cEyb2+TobkoFTc=7MQqtv7DYbuZdvf0T8+iUQ@mail.gmail.com>
-Content-Language: el-GR, en-US
-From: Nick Kossifidis <mick@ics.forth.gr>
-In-Reply-To: <CANXhq0puxuHA2cEyb2+TobkoFTc=7MQqtv7DYbuZdvf0T8+iUQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprIIsWRmVeSWpSXmKPExsXSHT1dWdfR9USKQcNpBYutv2exW8y6dJzR
-	4tcXC4vO2RvYLS7vmsNmse1zC5vFhkuzGC1eXu5htmibxW9x8MMTVovP8yssvixrZ7RouWNq
-	8eHubDYHPo8nB+cxeayZt4bR483Llywehzu+sHtsWtXJ5rF5Sb3Hi80zGT1uzIrwuNR8nd3j
-	78+tLB6fN8kFcEdx2aSk5mSWpRbp2yVwZUz40cRccJaj4uzsVtYGxodsXYycHBICJhIz325m
-	7GLk4hASOM4ocf77L6iEpcTmTy9Zuhg5OHgF7CXmbbQHCbMIqEhMm7yLBcTmFRCUODnzCZgt
-	KhAtseHCIzBbWCBW4kPHK7AxIgIKEleWbGQBmc8s8JlZ4sqmL6wQy84xSdzeuBmsillATuL9
-	s+2sIDabgKbE/EsHwSZxCgRKfL67nB2ixkyia2sXI4QtL9G8dTbzBEaBWUgOmYVk1CwkLbOQ
-	tCxgZFnFKJBYZqyXmVysl5ZfVJKhl160iREca4y+Oxhvb36rd4iRiYPxEKMEB7OSCK/07+Mp
-	QrwpiZVVqUX58UWlOanFhxilOViUxHlP2C5IFhJITyxJzU5NLUgtgskycXBKNTCJngib83lr
-	2BsHXqfwF6bKc2bydk6L7PfZYmBXK8USOEP1WuorTvZbV7dFzvPfaMsVliu6LTzoXdbeC2+r
-	fe865fFFWJTNzNy+8LYm69VFG/Lio1o+S990uydYccTr7N4ZuzbWs3xW7E4VmLJowa8VM7eY
-	/m9RYgk8t+mCxOWse8wHVQ8ePCPd9q/+XcufDaZvdeU/K653jJP9G3TzKYdUaegyw7yAoNWX
-	H9nry1Rd/3trw5Vnn8/2OP7eUfNTIGVtywLWWs+e9wxnJc9VPKgQ2994lcOydMkxzQZuyw7L
-	4BmJvY0Ot71lPv9U0VpT+s6XQVKbN/PCz5k3Q57LB3GZvc3MEdqqVfdKqL2npkKJpTgj0VCL
-	uag4EQB9QMtvJAMAAA==
+To: Nick Kossifidis <mick@ics.forth.gr>
+Cc: Tomasz Jeznach <tjeznach@rivosinc.com>, Joerg Roedel <joro@8bytes.org>, 
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+	Paul Walmsley <paul.walmsley@sifive.com>, Anup Patel <apatel@ventanamicro.com>, 
+	Albert Ou <aou@eecs.berkeley.edu>, linux@rivosinc.com, linux-kernel@vger.kernel.org, 
+	Sebastien Boeuf <seb@rivosinc.com>, iommu@lists.linux.dev, 
+	Palmer Dabbelt <palmer@dabbelt.com>, linux-riscv@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 7/31/23 16:15, Zong Li wrote:
-> On Mon, Jul 31, 2023 at 5:32 PM Nick Kossifidis <mick@ics.forth.gr> wrote:
->>
->> On 7/29/23 15:58, Zong Li wrote:
->>> On Thu, Jul 20, 2023 at 3:34 AM Tomasz Jeznach <tjeznach@rivosinc.com> wrote:
->>>> +       iommu->cap = riscv_iommu_readq(iommu, RISCV_IOMMU_REG_CAP);
->>>> +
->>>> +       /* For now we only support WSIs until we have AIA support */
->>>
->>> I'm not completely understand AIA support here, because I saw the pci
->>> case uses the MSI, and kernel seems to have the AIA implementation.
->>> Could you please elaborate it?
->>>
->>
->> When I wrote this we didn't have AIA in the kernel, and without IMSIC we
->> can't have MSIs in the hart (we can still have MSIs in the PCIe controller).
-> 
-> Thanks for your clarification, do we support the MSI in next version?
-> 
+On Tue, Aug 1, 2023 at 7:35=E2=80=AFAM Nick Kossifidis <mick@ics.forth.gr> =
+wrote:
+>
+> On 7/31/23 16:15, Zong Li wrote:
+> > On Mon, Jul 31, 2023 at 5:32=E2=80=AFPM Nick Kossifidis <mick@ics.forth=
+.gr> wrote:
+> >>
+> >> On 7/29/23 15:58, Zong Li wrote:
+> >>> On Thu, Jul 20, 2023 at 3:34=E2=80=AFAM Tomasz Jeznach <tjeznach@rivo=
+sinc.com> wrote:
+> >>>> +       iommu->cap =3D riscv_iommu_readq(iommu, RISCV_IOMMU_REG_CAP)=
+;
+> >>>> +
+> >>>> +       /* For now we only support WSIs until we have AIA support */
+> >>>
+> >>> I'm not completely understand AIA support here, because I saw the pci
+> >>> case uses the MSI, and kernel seems to have the AIA implementation.
+> >>> Could you please elaborate it?
+> >>>
+> >>
+> >> When I wrote this we didn't have AIA in the kernel, and without IMSIC =
+we
+> >> can't have MSIs in the hart (we can still have MSIs in the PCIe contro=
+ller).
+> >
+> > Thanks for your clarification, do we support the MSI in next version?
+> >
+>
+> I don't think there is an IOMMU implementation out there (emulated or in
+> hw) that can do MSIs and is not a pcie device (the QEMU implementation
+> is a pcie device). If we have something to test this against, and we
+> also have an IMSIC etc, we can work on that.
 
-I don't think there is an IOMMU implementation out there (emulated or in 
-hw) that can do MSIs and is not a pcie device (the QEMU implementation 
-is a pcie device). If we have something to test this against, and we 
-also have an IMSIC etc, we can work on that.
+I guess I can assist with that. We have an IOMMU hardware (non-pcie
+device) that has already implemented the MSI functionality, and I have
+conducted testing on it. Perhaps let me add the related implementation
+here after this series is merged.
