@@ -1,130 +1,146 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3DC5111E
-	for <iommu@lists.linux.dev>; Tue,  1 Aug 2023 13:55:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1ADE6C433C7;
-	Tue,  1 Aug 2023 13:55:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1690898115;
-	bh=b1Ru6HQQj7OPPfkrcTILfSpriwVsHE8DXB9CcteRH7o=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=sTftyfWhUXdsiUvIXoMfKSa+/Du3FjvtgH+PAuawF7RHao97/0VmcPoDslQutHia9
-	 lUcythuVIfRDv53GkwNM1bDcfWOAm6V6ykX/x76OAtoo3ZyMlP4sPxNdxFUgTb5CDM
-	 +4S75u8Tp4pA+QKP/HpDUZYy9aZD4Q0OXRH/PcDvvuvWtm6TbUa4zJOc5Kzi+J+FUc
-	 cl5E8QlmKDceNm1ZtaAU14QFm5yJbC4Y9jg5Ofzx5fj/n/NjrZy3cdLZvq6cnFIgd7
-	 qMMEiuZ53Ek4OX2z5SllDlLh58rxuoS7Ws5y6rfQdrL7DHZyK8qGV++DUsJHndTsI/
-	 bWYLLSe/C8zfw==
-Date: Tue, 1 Aug 2023 14:55:08 +0100
-From: Will Deacon <will@kernel.org>
-To: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Cc: agross@kernel.org, andersson@kernel.org, luca@z3ntu.xyz,
-	konrad.dybcio@linaro.org, dmitry.baryshkov@linaro.org,
-	joro@8bytes.org, robin.murphy@arm.com, robh+dt@kernel.org,
-	krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
-	robdclark@gmail.com, linux-arm-msm@vger.kernel.org,
-	iommu@lists.linux.dev, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	kernel@collabora.com
-Subject: Re: [PATCH v5 4/6] iommu/qcom: Index contexts by asid number to
- allow asid 0
-Message-ID: <20230801135507.GB26253@willie-the-truck>
-References: <20230622092742.74819-1-angelogioacchino.delregno@collabora.com>
- <20230622092742.74819-5-angelogioacchino.delregno@collabora.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4F9A922EE6
+	for <iommu@lists.linux.dev>; Tue,  1 Aug 2023 14:02:29 +0000 (UTC)
+Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	(Authenticated sender: kholk11)
+	by madras.collabora.co.uk (Postfix) with ESMTPSA id 8D28F6607187;
+	Tue,  1 Aug 2023 15:02:24 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+	s=mail; t=1690898545;
+	bh=O+sOqle7nRll28/FmxMTrTj8mlyOiIx2mIEKBCwzSGA=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=eoHmMrCkU2nYDXoxwl6GPyQUilti2nJ82i/ts2XxDBgQyKb4hPNwDuIUyLUSiSc8z
+	 R0A5XpQtIjU1Qxnm7npVqJ0L60HTMNovgl/DNSe7hLGBeKMbt4gi1Wn78S2rTaMFk2
+	 /IycX6R5OfRR2F3ujH3Oi8fKrwtmvWTwbRD9P9BpbauTpIooMAXxcAlSujIK86w57X
+	 Ev/wQhrEPZYpwj1ohQlPVqzYHuQzmdef1CXDJGBnI4Q7U2OQA8eR53u3v5eHV7jR+P
+	 /fGTEAhrG1+RgBECZ+Zd7hAloPlBzsoPuxwRXoE8ouT1h7DXIAmVjW0ox3q3Yuvi4j
+	 oVssdzhph1nKQ==
+Message-ID: <9ae6616c-7799-8b0c-eff5-1a30d467fbda@collabora.com>
+Date: Tue, 1 Aug 2023 16:02:21 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230622092742.74819-5-angelogioacchino.delregno@collabora.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.13.0
+Subject: Re: [PATCH v5 2/6] iommu/qcom: Use the asid read from device-tree if
+ specified
+Content-Language: en-US
+To: Will Deacon <will@kernel.org>
+Cc: agross@kernel.org, andersson@kernel.org, luca@z3ntu.xyz,
+ konrad.dybcio@linaro.org, dmitry.baryshkov@linaro.org, joro@8bytes.org,
+ robin.murphy@arm.com, robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+ conor+dt@kernel.org, robdclark@gmail.com, linux-arm-msm@vger.kernel.org,
+ iommu@lists.linux.dev, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ kernel@collabora.com, Marijn Suijten <marijn.suijten@somainline.org>
+References: <20230622092742.74819-1-angelogioacchino.delregno@collabora.com>
+ <20230622092742.74819-3-angelogioacchino.delregno@collabora.com>
+ <20230801134953.GA26253@willie-the-truck>
+From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20230801134953.GA26253@willie-the-truck>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Thu, Jun 22, 2023 at 11:27:40AM +0200, AngeloGioacchino Del Regno wrote:
-> This driver was indexing the contexts by asid-1, which is probably
-> done under the assumption that the first ASID is always 1.
-> Unfortunately this is not always true: at least for MSM8956 and
-> MSM8976's GPU IOMMU, the gpu_user context's ASID number is zero.
-> To allow using a zero asid number, index the contexts by `asid`
-> instead of by `asid - 1`.
+Il 01/08/23 15:49, Will Deacon ha scritto:
+> On Thu, Jun 22, 2023 at 11:27:38AM +0200, AngeloGioacchino Del Regno wrote:
+>> As specified in this driver, the context banks are 0x1000 apart but
+>> on some SoCs the context number does not necessarily match this
+>> logic, hence we end up using the wrong ASID: keeping in mind that
+>> this IOMMU implementation relies heavily on SCM (TZ) calls, it is
+>> mandatory that we communicate the right context number.
+>>
+>> Since this is all about how context banks are mapped in firmware,
+>> which may be board dependent (as a different firmware version may
+>> eventually change the expected context bank numbers), introduce a
+>> new property "qcom,ctx-asid": when found, the ASID will be forced
+>> as read from the devicetree.
+>>
+>> When "qcom,ctx-asid" is not found, this driver retains the previous
+>> behavior as to avoid breaking older devicetrees or systems that do
+>> not require forcing ASID numbers.
+>>
+>> Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
+>> [Marijn: Rebased over next-20221111]
+>> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+>> ---
+>>   drivers/iommu/arm/arm-smmu/qcom_iommu.c | 18 +++++++++++++++---
+>>   1 file changed, 15 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/drivers/iommu/arm/arm-smmu/qcom_iommu.c b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
+>> index a503ed758ec3..8face57c4180 100644
+>> --- a/drivers/iommu/arm/arm-smmu/qcom_iommu.c
+>> +++ b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
+>> @@ -531,7 +531,8 @@ static int qcom_iommu_of_xlate(struct device *dev, struct of_phandle_args *args)
+>>   	 * index into qcom_iommu->ctxs:
+>>   	 */
+>>   	if (WARN_ON(asid < 1) ||
+>> -	    WARN_ON(asid > qcom_iommu->num_ctxs)) {
+>> +	    WARN_ON(asid > qcom_iommu->num_ctxs) ||
+>> +	    WARN_ON(qcom_iommu->ctxs[asid - 1] == NULL)) {
+>>   		put_device(&iommu_pdev->dev);
+>>   		return -EINVAL;
+>>   	}
+>> @@ -617,7 +618,8 @@ static int qcom_iommu_sec_ptbl_init(struct device *dev)
+>>   
+>>   static int get_asid(const struct device_node *np)
+>>   {
+>> -	u32 reg;
+>> +	u32 reg, val;
+>> +	int asid;
+>>   
+>>   	/* read the "reg" property directly to get the relative address
+>>   	 * of the context bank, and calculate the asid from that:
+>> @@ -625,7 +627,17 @@ static int get_asid(const struct device_node *np)
+>>   	if (of_property_read_u32_index(np, "reg", 0, &reg))
+>>   		return -ENODEV;
+>>   
+>> -	return reg / 0x1000;      /* context banks are 0x1000 apart */
+>> +	/*
+>> +	 * Context banks are 0x1000 apart but, in some cases, the ASID
+>> +	 * number doesn't match to this logic and needs to be passed
+>> +	 * from the DT configuration explicitly.
+>> +	 */
+>> +	if (!of_property_read_u32(np, "qcom,ctx-asid", &val))
+>> +		asid = val;
+>> +	else
+>> +		asid = reg / 0x1000;
+>> +
+>> +	return asid;
 > 
-> While at it, also enhance human readability by renaming the
-> `num_ctxs` member of struct qcom_iommu_dev to `max_asid`.
+> Shouldn't we at least have some error checking here? For example, ensuring
+> that the ASIDs are within range, aren't duplicates etc?
 > 
-> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-> ---
->  drivers/iommu/arm/arm-smmu/qcom_iommu.c | 22 ++++++++++------------
->  1 file changed, 10 insertions(+), 12 deletions(-)
-> 
-> diff --git a/drivers/iommu/arm/arm-smmu/qcom_iommu.c b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-> index f1bd7c035db8..9786fd094e7d 100644
-> --- a/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-> +++ b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-> @@ -51,8 +51,8 @@ struct qcom_iommu_dev {
->  	struct clk_bulk_data clks[CLK_NUM];
->  	void __iomem		*local_base;
->  	u32			 sec_id;
-> -	u8			 num_ctxs;
-> -	struct qcom_iommu_ctx	*ctxs[];   /* indexed by asid-1 */
-> +	u8			 max_asid;
-> +	struct qcom_iommu_ctx	*ctxs[];   /* indexed by asid */
->  };
->  
->  struct qcom_iommu_ctx {
-> @@ -94,7 +94,7 @@ static struct qcom_iommu_ctx * to_ctx(struct qcom_iommu_domain *d, unsigned asid
->  	struct qcom_iommu_dev *qcom_iommu = d->iommu;
->  	if (!qcom_iommu)
->  		return NULL;
-> -	return qcom_iommu->ctxs[asid - 1];
-> +	return qcom_iommu->ctxs[asid];
->  }
->  
->  static inline void
-> @@ -534,12 +534,10 @@ static int qcom_iommu_of_xlate(struct device *dev, struct of_phandle_args *args)
->  	qcom_iommu = platform_get_drvdata(iommu_pdev);
->  
->  	/* make sure the asid specified in dt is valid, so we don't have
-> -	 * to sanity check this elsewhere, since 'asid - 1' is used to
-> -	 * index into qcom_iommu->ctxs:
-> +	 * to sanity check this elsewhere:
->  	 */
-> -	if (WARN_ON(asid < 1) ||
-> -	    WARN_ON(asid > qcom_iommu->num_ctxs) ||
-> -	    WARN_ON(qcom_iommu->ctxs[asid - 1] == NULL)) {
-> +	if (WARN_ON(asid > qcom_iommu->max_asid) ||
-> +	    WARN_ON(qcom_iommu->ctxs[asid] == NULL)) {
->  		put_device(&iommu_pdev->dev);
->  		return -EINVAL;
->  	}
-> @@ -696,7 +694,7 @@ static int qcom_iommu_ctx_probe(struct platform_device *pdev)
->  
->  	dev_dbg(dev, "found asid %u\n", ctx->asid);
->  
-> -	qcom_iommu->ctxs[ctx->asid - 1] = ctx;
-> +	qcom_iommu->ctxs[ctx->asid] = ctx;
->  
->  	return 0;
->  }
-> @@ -708,7 +706,7 @@ static void qcom_iommu_ctx_remove(struct platform_device *pdev)
->  
->  	platform_set_drvdata(pdev, NULL);
->  
-> -	qcom_iommu->ctxs[ctx->asid - 1] = NULL;
-> +	qcom_iommu->ctxs[ctx->asid] = NULL;
->  }
->  
->  static const struct of_device_id ctx_of_match[] = {
-> @@ -755,11 +753,11 @@ static int qcom_iommu_device_probe(struct platform_device *pdev)
->  	for_each_child_of_node(dev->of_node, child)
->  		max_asid = max(max_asid, get_asid(child));
->  
-> -	qcom_iommu = devm_kzalloc(dev, struct_size(qcom_iommu, ctxs, max_asid),
-> +	qcom_iommu = devm_kzalloc(dev, struct_size(qcom_iommu, ctxs, max_asid + 1),
->  				  GFP_KERNEL);
 
-So is this '+ 1' there to handle the case where ASIDs are indexed from 1? If
-so, please add a comment because this isn't obvious at all.
+The only check that we can perform here for ASID-in-range is
 
-Will
+if ((asid * 0x1000 > (mmio_start + mmio_size - 0x1000))
+	return -EINVAL;
+
+...as for duplicates, a check can *probably* (surely) be done... but I'm not
+sure I have any more time to feed more code to this series from years ago...
+
+> Also, can you elaborate a little more on what sort of ASID-to-Context
+> mappings you actually see in practice?
+> 
+
+I'm sorry, but not really. The first version of this (including the whole research
+that I had to perform to write those patches) is from year 2019, so 4 years ago...
+
+...I don't really remember the full details anymore - if not that all of this was
+done because context banks are fixed (and setup by TZ), tz takes an asid number
+when trying to perform any operation on the context bank, and there's no way to
+reset mappings because everything is protected by the hypervisor (which will fault
+and reboot the AP instantly if you try).
+
+Cheers,
+Angelo
+
+
