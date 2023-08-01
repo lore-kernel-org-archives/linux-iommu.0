@@ -1,50 +1,50 @@
-Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2057.outbound.protection.outlook.com [40.107.95.57])
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam04on2063.outbound.protection.outlook.com [40.107.101.63])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E679E22F13
-	for <iommu@lists.linux.dev>; Tue,  1 Aug 2023 14:12:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6988B23BC4
+	for <iommu@lists.linux.dev>; Tue,  1 Aug 2023 14:13:48 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZqN6e3UNHra7T3gGIweUjRrmNY5UR0nMwP66cU6dTV+n0PqJzB4A6vOqZy5q+umCAgLcQLAbRgKm8VjDs/fBge+PMZ1kacyskKg26V/uT+c1NKpEFuyXH1aFTsVJz+U7s5gHgqvYI6uWicj86Cv0Kd+mNuBeQsUXCHQIagHP+w6zZox5Q5lNwrti9Y8GQaeYGzWMBStLti8YAK414tO703aQ//QJeEwa/k+KlPNAZELeCXEZx22AtR3qwPsKkPxs7zeEaRLV5jMdw8n5iINf+qG/A7VSARu0MiCFCYAwxPEd9mrPFgQzpYF3ivcewg/qGRpZvn39zQZm19v2comgow==
+ b=HEF+YVtAhzLa/HNEQsfK0ELlxQle5cWmvEv0F4v7c1wagqnU/1lledIh/cErudtSxpdxfkNzuEgnWl2QC2Y7bFykzRcvv0eSLivKNz2ou8LX+gmLOgzykJf2JOAyMdBhto51A1/06wgWFmEBk3gMscWB0EfY9N3YsbKsPStdv94yQxirok9BQ/ox4XI98EuQDrfL7PyemR9+7OK0JrPgI0vJCmk+zTygJB3O/GEWIV/nXN/QjDbRZiplmkYU4u2fuL2h07REsSe2xTIpXvfgObIvXODzC8yXU6bSNvHbEec+p/h94UTwTH60qmwC3/anZeZlhCF6VNRPaHa16AVgBg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=vItXsRNIIURttymHEVb+hV4aj9Sq4CmajMnxEaSjspI=;
- b=avtFCEIJyEaOLzOpuwmYltbRKhPXZTmCl8sKHXDju/5VMhGfR2KcKpKKCnxtVPzfiBvVwxB/AAcCTTv/qVaQe9zlqhK9vVOHhcYh00DzyZkdSCSTMaHLN6dNeQmvAorRqYPolKu3ZJ+6V3tMFvhGYBHoAI0rxUMux/AbphgF28b7nB5WgRRbbt4Ts7hCCyL04JS24v8BNAsHTNnhNB8jm8YVZGT9LhLgilnyYCcycBDT0Wcozid6HZuEbM1B1vTB7tdgSd5UkPo91Im75djNnXCIIVNDFJq3YMhsPfbB+VPcRo2j9ZkCLYMfngdJSMxWnUEm3vaBDbChqEHMji+MKw==
+ bh=2WTmZPImN1HO0inF8rerYKyJiIYOninbUT2b2107yp0=;
+ b=oeZnzlFkEXCt4BtKnpAnt05gGUVxuEGy/kJ4p5/lFMZr86v7wgL+t8AuIL41gWnqlQkRR5IDHcDsDKUxtwFDrh4dODv8y49vFOTobm8wo8N3/4Op2sO/eIozzKsrwSUOcoWLpPCFLrjAv60Hj/G8XMKk/1yvmG6bz2G3XQI06KCaoU3f5oLQNl9GXA8JTEI4CgGIvAxGuKOHrV09KxA63x3uoEB3FF9Fr6mp6p843dmI4/w9ztbtXETfXA3MYTLStNsa1cnITP/N0skfh9vDkZu0XUwZi4Idq8pOZdu0X4oN4ZDTStsHnFqqWDLEi0d1TDWRxDVhmzqQZGO6cTjBkg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vItXsRNIIURttymHEVb+hV4aj9Sq4CmajMnxEaSjspI=;
- b=iLEVUaxgdcLxzlPBwkvlwOM7aamqFaHxY7IJFPc7uraKSAMoDbUd0g5y+OApRBY7wQu22SVDE9bVGopF44nx0Szv5i0+I1Cw80eNQktS+hX5un67PMxbmTItJ+8qktQgDB3o2FyDPj+AYUb6kv2ZQ2syxVRVLL6grkZLQEkVsHnS8shpWP09emVtAl4YGbxVIoWq3alB6+jB1KZmyqbcr0HeQFAz2mvOeAZaSUMfGvsypjPE9xjqGI5LqFuCuVtiRfecf8MWu5RJ9UPTyZOnXUILakk2t9AfAh41rFtNHYF1ODmUD0MCq9PfykU/NSBqImEqb+wkm8thVr02dQq/mQ==
+ bh=2WTmZPImN1HO0inF8rerYKyJiIYOninbUT2b2107yp0=;
+ b=LPM7kmSLHqReMIRfRaUzcvo2AIDjsqkag+lX64W71ppVwnzqFS6DLU7wDjkP4IMWf9D4VyAnpvClUr6Kbi+X2OuwgxgiCHLssyS9P6Ga/BAdEQBXHJJ79gQhVGCJ+36n0GhZExrSCmhRZg+DpSgqOlsSvqOPvpZhqEm2Tp7yBxnqKCSrOikmybLW07fCZDvyvPaKPAxQD03FYD4xd8K4blvkLttODldTmbj6zhycDkMSrTknkkXiOiaP3VYZQGnwC0/RuLwH8eVpWdvA+yID1pqoHCBYUXq7bIS2jRij1Fv7B0u57/fgkGXg8jft2nWyPzw31f8c6EpkoFuI1JN8xQ==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by SA1PR12MB8093.namprd12.prod.outlook.com (2603:10b6:806:335::15) with
+ by BY5PR12MB4052.namprd12.prod.outlook.com (2603:10b6:a03:209::9) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6631.44; Tue, 1 Aug
- 2023 14:12:46 +0000
+ 2023 14:13:46 +0000
 Received: from LV2PR12MB5869.namprd12.prod.outlook.com
  ([fe80::5111:16e8:5afe:1da1]) by LV2PR12MB5869.namprd12.prod.outlook.com
  ([fe80::5111:16e8:5afe:1da1%6]) with mapi id 15.20.6631.043; Tue, 1 Aug 2023
- 14:12:46 +0000
-Date: Tue, 1 Aug 2023 11:12:44 -0300
+ 14:13:46 +0000
+Date: Tue, 1 Aug 2023 11:13:44 -0300
 From: Jason Gunthorpe <jgg@nvidia.com>
 To: Michael Shavit <mshavit@google.com>
 Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
 	linux-kernel@vger.kernel.org, will@kernel.org, robin.murphy@arm.com,
 	nicolinc@nvidia.com, jean-philippe@linaro.org
-Subject: Re: [PATCH v2 4/8] iommu/arm-smmu-v3: move stall_enabled to the cd
- table
-Message-ID: <ZMkS3C01IuvrI1fc@nvidia.com>
+Subject: Re: [PATCH v2 5/8] iommu/arm-smmu-v3: Skip cd sync if CD table isn't
+ active
+Message-ID: <ZMkTGJFWrIO4q4Ej@nvidia.com>
 References: <20230731104833.800114-1-mshavit@google.com>
- <20230731184817.v2.4.I5aa89c849228794a64146cfe86df21fb71629384@changeid>
+ <20230731184817.v2.5.Idedc0f496231e2faab3df057219c5e2d937bbfe4@changeid>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230731184817.v2.4.I5aa89c849228794a64146cfe86df21fb71629384@changeid>
-X-ClientProxiedBy: YT3PR01CA0049.CANPRD01.PROD.OUTLOOK.COM
- (2603:10b6:b01:82::30) To LV2PR12MB5869.namprd12.prod.outlook.com
+In-Reply-To: <20230731184817.v2.5.Idedc0f496231e2faab3df057219c5e2d937bbfe4@changeid>
+X-ClientProxiedBy: CH2PR03CA0010.namprd03.prod.outlook.com
+ (2603:10b6:610:59::20) To LV2PR12MB5869.namprd12.prod.outlook.com
  (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -53,114 +53,70 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|SA1PR12MB8093:EE_
-X-MS-Office365-Filtering-Correlation-Id: 762f1fde-2450-4b69-5ffb-08db92996153
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|BY5PR12MB4052:EE_
+X-MS-Office365-Filtering-Correlation-Id: b440cf8a-6202-4a7b-e5d9-08db929984d6
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	UaVjzB0xfwiXicKAFR0czxSn3rajKV1E3+yQGS2SZCkLSC01FxK4OIgXmBBE0eXCnVOKygYMhZiGhquWgLLbOux3CFB7TMXUJDvho67CQbQFih9iI5IVvHaTuUbKfrfYal0mSnNN7tcxwpJNojH1683IPonhFHU5cMhUHdeCQmhSNmQuDHQVToJvfWWycf4YYA5crmVJS/FZLD0iacb5S3d7Gti4Fsv278ZcinFhFlTtYRIx2tV72PfvfN3WENQYVXojsuCJYiMi9BUOBUBmrSPXlSZmGQI8b5DWvdfoAg4V7ogqslxkVTALWdOvtlpdCIWgNULwaZJolgXtMSz26DmzO46Se4fTA7H90cZIlRuyNYbYRByKw2k9wT0kQKn5Fmoc2jwP5U04hPgf8MzlU6L5UH/gRi+p4TCWQO8+ZEVJtLmE64vT50mgvRkyA5T2lqc1CupOoF8MGLK48YxFnReiXWpxT61yndO+GWrTH6cB8tgNEVfTMvKbF7yHQPpTIOcuhn7RLyuZoNAKySHwKIssPsRszAdhuf1xzjmcXMzvCvfPMTw7hJYP+HyByAoc
+	VmG5u7NGaRVfMR8wDqManfd/3WGSrHvqrtRg9Ib9TtdHld8+oiB8xMDG5WNWko+ZUJM2a5b34+O9u+SKtAT6ECFYJdx3pZaPBPymDzZ6vH24QPFDmVfOqD9tk0ygeb1LyBDdfcIvUA/0pnwvdr6CQmH+5tOASrawvtomEIOCZSwNuaJ51GydtwhkntbGV4wjHq0F/lOffss+qs0k2fClsa1PZSRJlclUMGv1w/ccf7fdTDEaggZEQ0vQv30Ue6P6lHqMcsoQCQKBYaEJqYtMvznzrOmj5Shq7tY+0oP+W/F8xUB/eOSu2CsV/DSGMhtx5QsClioijoF6JjlT8b/wqfG6PWZhBCKPagUCZZ6W2BWd395xcnnw138uhhZidziG6sfQJY5DhIPvXJFCi5ZMY5/okVdZ/tQb5N1YUt1673UpWdmdMK+YaaPX5RyPTFUI8EEf1GYG7x+1vqQUSrBDB8LemGxbPFA6YEERB2F1tj6tAHbE/JcBf4sAUwIivM7vqumMNklmHDdrlp+7KyWG0CCkyeehIwMnz5SFsAAoEZ94UzYIBaQPhgsrOmWdvMdv
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(366004)(376002)(39860400002)(346002)(136003)(451199021)(6512007)(5660300002)(186003)(66946007)(66556008)(66476007)(4326008)(6916009)(478600001)(6486002)(316002)(41300700001)(8936002)(8676002)(26005)(38100700002)(86362001)(6506007)(36756003)(2906002)(83380400001)(2616005);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(136003)(396003)(39860400002)(376002)(366004)(346002)(451199021)(8936002)(8676002)(36756003)(6486002)(41300700001)(478600001)(2616005)(2906002)(4744005)(26005)(316002)(186003)(86362001)(6506007)(5660300002)(38100700002)(6512007)(4326008)(6916009)(66556008)(66476007)(66946007);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?gFwOs9iOoAxpqFiorU68zCWz16M9e4QP780vjIca0srxzEu/rl5yYDtxC0bk?=
- =?us-ascii?Q?IXrXGC+tz1PfgwtvA7tLNPcDLk8WAFsg39FiKxLHcq4xFjuiXEUERWCcVxA7?=
- =?us-ascii?Q?4/pFm02GK66NH/4CZMshDySwMmi38gDStwLifOn35feMUVWCmpo23GAE0zbW?=
- =?us-ascii?Q?jBfeLmKJwiG5MdUltbxppzkvuZjhEc7KQH2hV99/Vhxd85CvpRv4+MKXjOur?=
- =?us-ascii?Q?oa0VUcb9+RJ7v5kvXV1FSJCFOJWIBi2Hv+u61KsoeyEIU7ZJkn7ns9nPDAHK?=
- =?us-ascii?Q?2La8vs3OaSBfig/3XySWCiHR+iswnySTWdf0/LsT99LsSqUO0OgTGy5wKXHr?=
- =?us-ascii?Q?9qQku5EPjqSmhtO5ydI8Kq9W1EjbxRQTHwO4UuEAqepeZnWBxc6ohSlyFb1X?=
- =?us-ascii?Q?Xy+02Lrp0WWbWO55m/zFNhZTguGhpCXgFoyLWCpAiEr9xE+4KVIzU4bTYFny?=
- =?us-ascii?Q?lQgFrO03d+gXUn0KjAb+/YwBh4dZe3c7f7XbA2cAZTjP8sAuGG/5u8TDaWKT?=
- =?us-ascii?Q?n+/06GMPnd4JirRekJjo538Ns5oX7Djoa8m4TW7/ef030LjnAY3PvHPRzb+0?=
- =?us-ascii?Q?/gb+z3jsJYR0I8q0NT2Ov/ybi9TffiJAMqTWUfg08dWvFcQTdBf42j60OKrP?=
- =?us-ascii?Q?URaPA/IKYJU5Sa75EDW5r5VZo4jxc+wnpQKulINs2l9329i5SIdtr5QRE2wI?=
- =?us-ascii?Q?df3E7VZqhlB+AgCuO9xcoFoN/sJBElXi9w7RPsQSivcjQMiFJwrzv1NkZWKb?=
- =?us-ascii?Q?bK+6HVooGHbotL1P9YafZkJpMYhEyLHxQ3GNCKAH9qBnR4eV0v0xPTrJ7TN9?=
- =?us-ascii?Q?NAK0EbWdGgEGPRmZJUPMWG8MJwBONX5RGFLylOrnX6gEb3RxqupQ04Lm/8Jx?=
- =?us-ascii?Q?e35tXre3fyBln6V5wEF0eJpgLnfUoyCxHzt2BzaTMuyqxjciPOf2bGOjjytI?=
- =?us-ascii?Q?j3sh9lid4YZJJ529JWyDwTapOJZ6BkJYusVM0TAuv553hnXMWsfW7Br5YS/d?=
- =?us-ascii?Q?1JPXQzKb1E3HvCwVootvsbpnIidRetDEWcMJievMuXoegWZYERbqrvth0AAK?=
- =?us-ascii?Q?CPxO8ORLEJGVrpU8dh4U4QupWoIn2p5pTDaZJCjzrDhbK0xco666SL3oqV7I?=
- =?us-ascii?Q?VoZjeSBDDWlk9J6XF7vQl6jA/UiacdMH8JDUZZPJLlDzhTlUP/Rx8IMrQqGC?=
- =?us-ascii?Q?MzkOOhDaIPU7xO7hLVZ5rDjTo2wY7JV3SMDXc/jRekrDQRKT7ouygFF2mzEj?=
- =?us-ascii?Q?fPyk2h5833I5NdOZbi8n4mm4VB4gRQ/6j/gMlFKOZbkex2VXgTg4ZomySW1D?=
- =?us-ascii?Q?ITZ12lLaBMTqugvCw46IlW02amTmR8IbNNxfBPTmRDoKLtkIMKFnUZCk8RxX?=
- =?us-ascii?Q?zDUS70Fv2dklsrEQ+Lfh/zin1fh/grvAvmjDdnTCjzri1mJv0TGS25B2VAHB?=
- =?us-ascii?Q?dm/apCO819WBz+VjikQepBGCO7JCI0mRN8TC7VIX0GwYLuZdYZSBIFXZh/fG?=
- =?us-ascii?Q?akbe4gQZL++JSbbH83d8A3w8Sqk/USHbbr/61bQCxQudUqTR898VaCihSmip?=
- =?us-ascii?Q?Vh+nbLgb/nCKW1v3QgkI/IW6ckt/fFzGlK4r/NAG?=
+	=?us-ascii?Q?J3E65JSJiK1dUmBeOr9uXHLcfDLzp+MzqrMT2wzskJQZhiRf1a2ikGkJKhyg?=
+ =?us-ascii?Q?xo1NiWywWVTy4xIVAHM11TbIfRia0j/SEZ+K2TGZAIxAF6BtPLqjCNo0D7rp?=
+ =?us-ascii?Q?xCyebEKx3Hrbr1nl1ma08HSAFudjq1R9R43FYWVK0wAzY+L3ZAinxn5Nsd0L?=
+ =?us-ascii?Q?P1tSqlZjHN/aYOofOSF2qdbqqvEupgFDtj+fUyiHn53A3XSA26laFd+Q5jlV?=
+ =?us-ascii?Q?DgPLhi6fqmuwjTRtHMYXzJ/vGZ9GIDVmUoYYLdbXPKyizQ0EnDRQV6rKIOiw?=
+ =?us-ascii?Q?8O7GfV/CoNwiKvh5eODMj4Tjp0zQ2aqjeSEvN2eKfl3Oh54PYnBZ20L+UJzW?=
+ =?us-ascii?Q?WAyRh1G4mvBJ28PfPc6EEQU0pX3RNj+wY0GXN+EZRPa8NJdcRm0hZpliciX9?=
+ =?us-ascii?Q?CCHWXJsHCBaryPkia7zwWYt19yfD7e9i9Yi4BJobCkeWFBatGOQyA+U60YuF?=
+ =?us-ascii?Q?MyglQX94ELJX/UkwwicHE0wYhayxq6d5tmWRsfex0YuaNKYLcUBNqD+i0+Ho?=
+ =?us-ascii?Q?gsIPcXb12A/4mE5myaWj4mqVaNi6GlwbPsTxfo0aECeUd9XhS5c677zNxKKO?=
+ =?us-ascii?Q?WROvYJ0bpPGSv3o3dSi0T3gDjAXZ/t1/hkRAFnaZaq3H6yBU2+LibGV9/GyC?=
+ =?us-ascii?Q?Nd5S4HWk0WKatiKE471inemKGSEyhZKyzkdeNkNeo5O0s8z4+dTtYwyi/u9c?=
+ =?us-ascii?Q?usH0UJNbsAi4fw+ScMIa8hfI4YgEYhhgv1Sm9yhQGGTFfRRSzNSl93lEJkWQ?=
+ =?us-ascii?Q?cT40z7UPqk93dxwjgaqx27keoLgbKwVTgiiSb4dHhyXRC2UCHyo7cwy5iZbh?=
+ =?us-ascii?Q?PF4db55TVtIWVir32AWfaYaFekNLgg3k8di7SGsx7TCGAZv71xnJdmeyfwCh?=
+ =?us-ascii?Q?S83A8rGlEQ9Lk4Tu0H3X2+TBs1lWh+YGrrTxJVqutr/PFqVbfFtoF8SD/M8n?=
+ =?us-ascii?Q?wG5Zis33k4Ao5/WtYTA+uIVmEzACWmAnw2s9aU9l0VEW0uyUfiVHig7WkAns?=
+ =?us-ascii?Q?yzq+dkIPNUSjJuDfELwqe71V0v7TQdUGuzq5WJnQ9eaIL8P5WtMwVX30H8R6?=
+ =?us-ascii?Q?a4nNEofr77gYqHs2BgL1tf9dujRIzVIxsnMyQdn4lrFHQQAfEuOmko2v7rzT?=
+ =?us-ascii?Q?fnl8BQOR+v+QRrq4vjjerVAI4NiRYqvpMkZcrtQK9cXbMQ/iTiT3nKo0NyO3?=
+ =?us-ascii?Q?bgDjjhaUoXRwZUN7Kwn91FbkcBVPelxeN6ax3HQqVPb4IkjAhVCgt+O5P1SZ?=
+ =?us-ascii?Q?tm1/TcmSgVOWJlWpFSReCQ6Hdxr7s09MzculTIT/t1tEYGj7eKvpubSCoF8J?=
+ =?us-ascii?Q?sSG7Wz2UIO/GocyR6Se5f4TU226g3YtfXVo/Zhq2BAA7bI1JzksLdTYXLTrK?=
+ =?us-ascii?Q?ID9xjnctmt1PgmvV+7/RiIpb8Qgv0J3acbY9lxYgUiZPiT8fFuUaDBOp4Ey8?=
+ =?us-ascii?Q?3GYqYECXmK1CSsu/4cdxD19BeIQHnZZhFweArx6U227k7Z7VSj00tsxw4zNw?=
+ =?us-ascii?Q?Yfg7BxZChbKm3HLQFu6whnlHJhA3uEkcJuKyoKiIk4Znz90uiULd5UboRzaC?=
+ =?us-ascii?Q?CR4hkV6f6szOxnWEXBooaMM/I5BEypf1MbYXHXrF?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 762f1fde-2450-4b69-5ffb-08db92996153
+X-MS-Exchange-CrossTenant-Network-Message-Id: b440cf8a-6202-4a7b-e5d9-08db929984d6
 X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Aug 2023 14:12:46.5313
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Aug 2023 14:13:46.0775
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 9zOUm1Aji6u59znIa6ZbS2pQjFHWm7O8kvXSbDE17zsFyy4O4mjQ2MInS5tkjFZE
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB8093
+X-MS-Exchange-CrossTenant-UserPrincipalName: Sag4UWPvB0c2kT+1ia98+g26O5HMYqiil0dBHf4uFSlCT3wdOLhtXVC313j2+AH0
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4052
 
-On Mon, Jul 31, 2023 at 06:48:14PM +0800, Michael Shavit wrote:
-> This controls whether CD entries will have the stall bit set when
-> writing entries into the table.
+On Mon, Jul 31, 2023 at 06:48:15PM +0800, Michael Shavit wrote:
+> This commit explicitly keeps track of whether a CD table is installed in
+> an STE so that arm_smmu_sync_cd can skip the sync when unnecessary. This
+> was previously achieved through the domain->devices list, but we are
+> moving to a model where arm_smmu_sync_cd directly operates on a master
+> and the master's CD table instead of a domain.
 > 
 > Signed-off-by: Michael Shavit <mshavit@google.com>
 > ---
 > 
 > Changes in v2:
-> - Use a bitfield instead of a bool for stall_enabled
-> 
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 8 ++++----
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h | 3 ++-
->  2 files changed, 6 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index 8a286e3838d70..654acf6002bf3 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -1114,7 +1114,7 @@ int arm_smmu_write_ctx_desc(struct arm_smmu_domain *smmu_domain, int ssid,
->  			FIELD_PREP(CTXDESC_CD_0_ASID, cd->asid) |
->  			CTXDESC_CD_0_V;
->  
-> -		if (smmu_domain->stall_enabled)
-> +		if (smmu_domain->cd_table.stall_enabled)
->  			val |= CTXDESC_CD_0_S;
->  	}
-
-Since patch 6 makes arm_smmu_write_ctx_desc() take in the master
-parameter, it does make sense to just refer to the stall in the master
-at this point. Can you defer this until after patch 6?
-
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> index 35a93e8858872..05b1f0ee60808 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> @@ -597,6 +597,8 @@ struct arm_smmu_ctx_desc_cfg {
->  	unsigned int			num_l1_ents;
->  	/* log2 of the maximum number of CDs supported by this table */
->  	u8				max_cds_bits;
-> +	/* Whether CD entries in this table have the stall bit set. */
-> +	u8				stall_enabled:1;
->  };
->  
->  struct arm_smmu_s2_cfg {
-> @@ -714,7 +716,6 @@ struct arm_smmu_domain {
->  	struct mutex			init_mutex; /* Protects smmu pointer */
->  
->  	struct io_pgtable_ops		*pgtbl_ops;
-> -	bool				stall_enabled;
->  	atomic_t			nr_ats_masters;
->  
->  	enum arm_smmu_domain_stage	stage;
-
-But this also makes sense, and removing stall_enabled from the domain
-is important, so
+> - Store field as a bit instead of a bool. Fix comment about STE being
+>   live before the sync in write_ctx_desc().
 
 Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-
-If you keep it this way
 
 Jason
