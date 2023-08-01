@@ -1,78 +1,97 @@
-Received: from mgamail.intel.com (unknown [192.55.52.93])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 184BB1C33
-	for <iommu@lists.linux.dev>; Tue,  1 Aug 2023 08:40:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1690879223; x=1722415223;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=REn/Is4TBVpWaD5oECbSAASATiSAsFC/V8UYQ7o8W6k=;
-  b=SSqWqan3Uty325x/MiCdWdEO6xsqjBLfOGu3ZYB+3qUBgz/BI4n44laI
-   A/dEtj/9z35tr6Js4nykE3425o8vbJ24GaNXk3bPn8/Q6pFuTgktrqrVc
-   TlTTH1auVOpqZ5ANWiOjRU+bfqK7h0ZrOlk0/0OkFmumtp415Wojruniu
-   9A+q6USFZ0+RLq0o93iOkgDTeewDvg255wygG9Z3IRnjj0CDZMTVYTuKH
-   vmkDebkveIX2lvIr6yuS1qpVAkXpbL77XpAY7OpieLX0s/w2kwJ8BRQ/1
-   9lSNkDSjRQYdLqVTp6tTLsULqMjANNsPNHDMpQpqQiy7pG92yU2Zi2g8n
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10788"; a="366708775"
-X-IronPort-AV: E=Sophos;i="6.01,246,1684825200"; 
-   d="scan'208";a="366708775"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Aug 2023 01:40:21 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10788"; a="842637504"
-X-IronPort-AV: E=Sophos;i="6.01,246,1684825200"; 
-   d="scan'208";a="842637504"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.254.213.15]) ([10.254.213.15])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Aug 2023 01:40:18 -0700
-Message-ID: <b67d6f3f-95f0-0421-49ff-471032de0963@linux.intel.com>
-Date: Tue, 1 Aug 2023 16:40:16 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6EA63611B
+	for <iommu@lists.linux.dev>; Tue,  1 Aug 2023 08:55:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E69C3C433C9;
+	Tue,  1 Aug 2023 08:55:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1690880111;
+	bh=9eJCKTqNMuD9Qzd4V6zbjbKNH9Wn22vwxY5UdngJOsA=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=G2RNsx5poE4gfIohzHxNzgBThoQMTuMRj8TR1ONzG43Qx4zubbobawBjUKKwieY63
+	 PYMuSGRF3htn76wjGsBiv+uirXuvL2iF5o1nlsyFnLTu8PLEVU6WgtomvfmyxI2jhg
+	 yMUOk4ovrZSItmxBkaWnPPqqcWFaAh0qxIbPlhrAxwfGAJeQ0KByKAJT4+HIr6Rzw7
+	 tPlvYvD7be3Yk/+tJNuj64IFAFu5NVCjPvDVv6W/VQCwKFh8Z1MPIbi72FjuD3iaBE
+	 6AWIG1ArxsPGsJb7nvUNPsRvKnA5Y7qf7zQiXKUPNE8WKmxbKiN8L9DNF/5G18uBd2
+	 t7Nf7WXHCFwoQ==
+Date: Tue, 1 Aug 2023 09:55:05 +0100
+From: Will Deacon <will@kernel.org>
+To: wangwudi <wangwudi@hisilicon.com>
+Cc: linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, Rui Zhu <zhurui3@huawei.com>,
+	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+	Lu Baolu <baolu.lu@linux.intel.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+	Yicong Yang <yangyicong@hisilicon.com>,
+	Tomas Krcka <krckatom@amazon.de>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Nicolin Chen <nicolinc@nvidia.com>
+Subject: Re: [PATCH 1/1] Revert "iommu/arm-smmu-v3: Set TTL invalidation hint
+ better"
+Message-ID: <20230801085504.GA26130@willie-the-truck>
+References: <1690784482-30028-1-git-send-email-wangwudi@hisilicon.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.13.0
-Cc: baolu.lu@linux.intel.com, Yi Liu <yi.l.liu@intel.com>,
- Jacob Pan <jacob.jun.pan@linux.intel.com>, iommu@lists.linux.dev,
- kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] iommu: Move pasid array from group to device
-Content-Language: en-US
-To: "tina.zhang" <tina.zhang@intel.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Nicolin Chen <nicolinc@nvidia.com>
-References: <20230801063125.34995-1-baolu.lu@linux.intel.com>
- <20230801063125.34995-3-baolu.lu@linux.intel.com>
- <1254d61b-1f4e-2ef3-c3dc-95180f26f08c@intel.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <1254d61b-1f4e-2ef3-c3dc-95180f26f08c@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1690784482-30028-1-git-send-email-wangwudi@hisilicon.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 
-On 2023/8/1 16:07, tina.zhang wrote:
-> Hi Baolu,
+On Mon, Jul 31, 2023 at 02:21:22PM +0800, wangwudi wrote:
+> From: Rui Zhu <zhurui3@huawei.com>
+> 
+> This reverts commit 6833b8f2e19945a41e4d5efd8c6d9f4cae9a5b7d.
+> 
+> This constraint violates the protocol. When tg is not 0 but ttl, scale,
+> and num are 0, the hardware reports the CERROR_IL gerror. In the
+> protocol, leaf is not a prerequisite for TTL.
+> 
+> Cc: Will Deacon <will@kernel.org>
+> Cc: Robin Murphy <robin.murphy@arm.com>
+> Cc: Joerg Roedel <joro@8bytes.org>
+> Cc: Lu Baolu <baolu.lu@linux.intel.com>
+> Cc: Jason Gunthorpe <jgg@ziepe.ca>
+> Cc: Yicong Yang <yangyicong@hisilicon.com>
+> Cc: Tomas Krcka <krckatom@amazon.de>
+> Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> Cc: Nicolin Chen <nicolinc@nvidia.com>
+> Cc: Rui Zhu <zhurui3@huawei.com>
+> 
+> Signed-off-by: Rui Zhu <zhurui3@huawei.com>
+> ---
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 9 ++-------
+>  1 file changed, 2 insertions(+), 7 deletions(-)
+> 
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index 9b0dc3505601..098e84cfa82f 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -1898,13 +1898,8 @@ static void __arm_smmu_tlb_inv_range(struct arm_smmu_cmdq_ent *cmd,
+>  		/* Convert page size of 12,14,16 (log2) to 1,2,3 */
+>  		cmd->tlbi.tg = (tg - 10) / 2;
+>  
+> -		/*
+> -		 * Determine what level the granule is at. For non-leaf, io-pgtable
+> -		 * assumes .tlb_flush_walk can invalidate multiple levels at once,
+> -		 * so ignore the nominal last-level granule and leave TTL=0.
+> -		 */
+> -		if (cmd->tlbi.leaf)
+> -			cmd->tlbi.ttl = 4 - ((ilog2(granule) - 3) / (tg - 3));
+> +		/* Determine what level the granule is at */
+> +		cmd->tlbi.ttl = 4 - ((ilog2(granule) - 3) / (tg - 3));
 
-Hi Tina,
+Doesn't this reintroduce the bug that 6833b8f2e199 tried to fix?
 
-> Although this patch moves the domain reference pointer from a per-group
-> structure to a per-device structure, the domain life-cycle is still
-> expected to be managed per-group (i.e., iommu_domain_free() is called in
-> iommu_group_release()). Is this what we expect?
+afaict, we should only hit the problematic case of tg != 0 but ttl, scale
+and num all 0 if we're invalidating a single page, so shouldn't we just
+zap tg in that case, since it's not doing anything useful?
 
-The lifecycle of an iommu domain is independent of the lifecycle of the
-iommu group that it is attached to. The system domains, such as the
-default domain and the blocking domain, are allocated and managed by the
-iommu core. These domains are freed when the group is freed.
+I hesitate to say we should avoid range invalidation altogether for
+single-page invalidations because I think some errata workarounds might
+need that to work.
 
-However, any device driver can allocate its own iommu domains. The
-device driver can set/remove the domain to/from the RID or PASID of the
-device.
-
-Best regards,
-baolu
+Will
