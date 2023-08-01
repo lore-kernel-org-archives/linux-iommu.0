@@ -1,95 +1,81 @@
-Received: from frasgout12.his.huawei.com (unknown [14.137.139.154])
+Received: from mgamail.intel.com (unknown [134.134.136.65])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7E184A0E
-	for <iommu@lists.linux.dev>; Tue,  1 Aug 2023 06:29:42 +0000 (UTC)
-Received: from mail02.huawei.com (unknown [172.18.147.229])
-	by frasgout12.his.huawei.com (SkyGuard) with ESMTP id 4RFPxp0MXYz9v7Hf
-	for <iommu@lists.linux.dev>; Tue,  1 Aug 2023 14:16:14 +0800 (CST)
-Received: from [10.81.220.249] (unknown [10.81.220.249])
-	by APP1 (Coremail) with SMTP id LxC2BwC3abkdpshkKRcYAA--.13561S2;
-	Tue, 01 Aug 2023 07:29:03 +0100 (CET)
-Message-ID: <4c2f96bc-f6c0-4a04-e4fa-6ab1b5e56bd6@huaweicloud.com>
-Date: Tue, 1 Aug 2023 08:28:42 +0200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 56182111C
+	for <iommu@lists.linux.dev>; Tue,  1 Aug 2023 06:33:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1690871618; x=1722407618;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=38X/UQN2S8KMhUmc07Z43oFl0p6G/FE1mEl9dZQsBt4=;
+  b=aUnMTBqN1VR+Wj3VC6kjkd6ubZpJbnXdP3ZyXywOuJLwzUC8qZ8WhbVt
+   7OZ3z24qqN3oluL6z4aAZl1USXt09RhuisSzy4uuuC80ccOB+ME+p2xl5
+   sXwB+dOPFjhb62VlQgeSD54dvOWs2XK06cQmQQYVjhbohPQ5kldfmKLY+
+   4iVYb8g4er4xIUKTMIYdBtOYzg0Miu8qkmT6UYBe1jUM2DPgaTxwr22h8
+   4Zck8Q1Z7K1Yc61C/IGWdQAFbCs3P8TZEoIrVCig5qM5bZqHIJ6vJGmED
+   4wTC8Jpt6ig/8aDxqpXkCjyy46C66Us561mTegyOgTS8VGEQsCQcbbkHx
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10788"; a="372839954"
+X-IronPort-AV: E=Sophos;i="6.01,246,1684825200"; 
+   d="scan'208";a="372839954"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jul 2023 23:33:37 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10788"; a="798537908"
+X-IronPort-AV: E=Sophos;i="6.01,246,1684825200"; 
+   d="scan'208";a="798537908"
+Received: from allen-box.sh.intel.com ([10.239.159.127])
+  by fmsmga004.fm.intel.com with ESMTP; 31 Jul 2023 23:33:34 -0700
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Nicolin Chen <nicolinc@nvidia.com>
+Cc: Yi Liu <yi.l.liu@intel.com>,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>,
+	iommu@lists.linux.dev,
+	kvm@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH 0/2] iommu: Make pasid array per device
+Date: Tue,  1 Aug 2023 14:31:23 +0800
+Message-Id: <20230801063125.34995-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v6 0/9] Allow dynamic allocation of software IO TLB bounce
- buffers
-Content-Language: en-US
-To: =?UTF-8?B?UGV0ciBUZXNhxZnDrWs=?= <petr@tesarici.cz>,
- Christoph Hellwig <hch@lst.de>
-Cc: Stefano Stabellini <sstabellini@kernel.org>,
- Russell King <linux@armlinux.org.uk>,
- Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
- Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>,
- Borislav Petkov <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>,
- "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
- "H. Peter Anvin" <hpa@zytor.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- "Rafael J. Wysocki" <rafael@kernel.org>, Juergen Gross <jgross@suse.com>,
- Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
- Marek Szyprowski <m.szyprowski@samsung.com>,
- Robin Murphy <robin.murphy@arm.com>, Christoph Lameter <cl@linux.com>,
- Pekka Enberg <penberg@kernel.org>, David Rientjes <rientjes@google.com>,
- Joonsoo Kim <iamjoonsoo.kim@lge.com>,
- Andrew Morton <akpm@linux-foundation.org>, Vlastimil Babka <vbabka@suse.cz>,
- Roman Gushchin <roman.gushchin@linux.dev>,
- Hyeonggon Yoo <42.hyeyoo@gmail.com>,
- Petr Tesarik <petr.tesarik.ext@huawei.com>, Jonathan Corbet
- <corbet@lwn.net>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
- Hans de Goede <hdegoede@redhat.com>, James Seo <james@equiv.tech>,
- James Clark <james.clark@arm.com>, Kees Cook <keescook@chromium.org>,
- "moderated list:XEN HYPERVISOR ARM" <xen-devel@lists.xenproject.org>,
- "moderated list:ARM PORT" <linux-arm-kernel@lists.infradead.org>,
- open list <linux-kernel@vger.kernel.org>,
- "open list:MIPS" <linux-mips@vger.kernel.org>,
- "open list:XEN SWIOTLB SUBSYSTEM" <iommu@lists.linux.dev>,
- "open list:SLAB ALLOCATOR" <linux-mm@kvack.org>,
- Roberto Sassu <roberto.sassu@huaweicloud.com>
-References: <cover.1690459412.git.petr.tesarik.ext@huawei.com>
- <20230731160409.GA8991@lst.de> <20230731214618.6e7cde05@meshulam.tesarici.cz>
-From: Petr Tesarik <petrtesarik@huaweicloud.com>
-In-Reply-To: <20230731214618.6e7cde05@meshulam.tesarici.cz>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:LxC2BwC3abkdpshkKRcYAA--.13561S2
-X-Coremail-Antispam: 1UD129KBjDUn29KB7ZKAUJUUUUU529EdanIXcx71UUUUU7v73
-	VFW2AGmfu7bjvjm3AaLaJ3UjIYCTnIWjp_UUUYc7AC8VAFwI0_Wr0E3s1l1xkIjI8I6I8E
-	6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28Cjx
-	kF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVW8JVW5JwA2z4x0Y4vE2Ix0cI8I
-	cVCY1x0267AKxVW8Jr0_Cr1UM28EF7xvwVC2z280aVAFwI0_Gr0_Cr1l84ACjcxK6I8E87
-	Iv6xkF7I0E14v26F4UJVW0owAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAK
-	zVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWUXVWUAwAv7VC2z280aVAFwI0_Jr0_Gr1lOx
-	8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcVAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwAC
-	I402YVCY1x02628vn2kIc2xKxwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJV
-	W8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF
-	1VAFwI0_Wrv_Gr1UMIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Gr0_Xr1lIxAIcV
-	C0I7IYx2IY6xkF7I0E14v26r4UJVWxJr1lIxAIcVCF04k26cxKx2IYs7xG6Fyj6rWUJwCI
-	42IY6I8E87Iv67AKxVW8JVWxJwCI42IY6I8E87Iv6xkF7I0E14v26F4UJVW0obIYCTnIWI
-	evJa73UjIFyTuYvjfUoL0eDUUUU
-X-CM-SenderInfo: hshw23xhvd2x3n6k3tpzhluzxrxghudrp/
-X-CFilter-Loop: Reflected
 
-On 7/31/2023 9:46 PM, Petr Tesařík wrote:
-> V Mon, 31 Jul 2023 18:04:09 +0200
-> Christoph Hellwig <hch@lst.de> napsáno:
-> 
->> I was just going to apply this, but patch 1 seems to have a non-trivial
->> conflict with the is_swiotlb_active removal in pci-dma.c.  Can you resend
->> against the current dma-mapping for-next tree?
-> 
-> Sure thing, will re-send tomorrow morning.
+The PCI PASID enabling interface guarantees that the address space used
+by each PASID is unique. This is achieved by checking that the PCI ACS
+path is enabled for the device. If the path is not enabled, then the
+PASID feature cannot be used.
 
-After commit f9a38ea5172a ("x86: always initialize xen-swiotlb when
-xen-pcifront is enabling") removed that call to swiotlb_init_late(),
-there is nothing to patch, and the hunk can be dropped.
+    if (!pci_acs_path_enabled(pdev, NULL, PCI_ACS_RR | PCI_ACS_UF))
+            return -EINVAL;
 
-I have just sent v7.
+The PASID array is not an attribute of the IOMMU group. It is more
+natural to store the PASID array in the per-device IOMMU data. This
+makes the code clearer and easier to understand. No functional changes
+are intended.
 
-Petr T
+Please help review and suggest.
+
+Lu Baolu (2):
+  iommu: Consolidate pasid dma ownership check
+  iommu: Move pasid array from group to device
+
+ include/linux/iommu.h |   2 +
+ drivers/iommu/iommu.c | 105 +++++++++++++++++-------------------------
+ 2 files changed, 43 insertions(+), 64 deletions(-)
+
+-- 
+2.34.1
 
