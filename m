@@ -1,92 +1,95 @@
-Received: from mgamail.intel.com (unknown [192.55.52.136])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f169.google.com (mail-qt1-f169.google.com [209.85.160.169])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4488920FA
-	for <iommu@lists.linux.dev>; Tue,  1 Aug 2023 07:44:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1690875843; x=1722411843;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=y5XYC4EjZVOrvBIGvFvcrLXcPNOOeXir4L5TiCpAw9Y=;
-  b=J4vDUIVVrZCZQAYTqvm28nXIbmKRZiEN7GEvsV7ayOKHqTsVIGzddTKq
-   nauY5olWR76nhcK0j9NJmEWdLMC0iIb+jRVEffRAWnB3zobOWV5NT0CIJ
-   bn9reXNnDXEznWqLurpryqajf6zlWRCmrXbMpBlPc+GetjmM+REP7jRrq
-   xaXSsmRS6clnWErcenzNt/vyomxEEIcpwU0732fll0nO0NCwhwnzwZqJO
-   17kAuyokhdBFbFCyG8Le4mCRJGbUlmPJnV3Z7rbkpQEbB+RVbKxKmMeSN
-   TDrRJyiLyS355Lm8d7w2fGvimocoGkiGbsykaIdrDOIYM6Syudrc6NFoH
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10788"; a="348822493"
-X-IronPort-AV: E=Sophos;i="6.01,246,1684825200"; 
-   d="scan'208";a="348822493"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Aug 2023 00:44:02 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10788"; a="705743921"
-X-IronPort-AV: E=Sophos;i="6.01,246,1684825200"; 
-   d="scan'208";a="705743921"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.254.213.15]) ([10.254.213.15])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Aug 2023 00:43:58 -0700
-Message-ID: <36fb3548-7206-878e-d095-195c2feb24f1@linux.intel.com>
-Date: Tue, 1 Aug 2023 15:43:56 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB5771EA9A
+	for <iommu@lists.linux.dev>; Tue,  1 Aug 2023 08:01:20 +0000 (UTC)
+Received: by mail-qt1-f169.google.com with SMTP id d75a77b69052e-40c72caec5cso223641cf.0
+        for <iommu@lists.linux.dev>; Tue, 01 Aug 2023 01:01:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20221208; t=1690876879; x=1691481679;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Xwyr19S0TCJZ5VuRNPaLImVIGikcLg8N0JXke6/SZ1Q=;
+        b=TpIV2fBhjggI66wGECsWZWeQ/ITLWwvObDTn0TOXgtXaOwsaIwcvUx3CRPZBz9C4XI
+         mEAVcn632crZhGSjgl4yAV8HGSEJn3M4V4A5bUqJDmVCdWZDE0nBxjlqqKYgb6c8QnGQ
+         qsmlTaxME7oKUowgbnEX9VF/cP797ZrXOyeExljKsJ9yI9SZho7Za4BR+l0dFrdRuUXf
+         bFj/Vy4i3AQn8+P7IzImbZ7Z9oPUgD5BHIpgJxlJs12bI28IyrgJAUSbu3OQ08ebHpXp
+         94O/+zQxuo47SkaZtti722A3uDu40DdkETYphXqrfUhL4cNit8o6N84aiS0dNYi6lCgO
+         thvw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1690876879; x=1691481679;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Xwyr19S0TCJZ5VuRNPaLImVIGikcLg8N0JXke6/SZ1Q=;
+        b=MCqJuuDn73kiEev9cRfdGlmcrQ5cjT2r5GTsryWXTDhdy3rqQD4oZi1hNYJIPnmDD8
+         oTckAjo7yaMnjh8Vr4cULwckZJjlT1b39VrpnOa2P8jFCvap9orJ7eWlmIB0MM2FdyW3
+         LvXNVI7ZHRWyAS2xo17rjDwi0titJg4rEpQXzsKvPByisO6eI8Mi1Fc43GHxTr7uXnN5
+         bSeW05zgNiCuk5EbqtYh9KRyVp8EK9g0dJuZVH2ps/VgzBRJILqyLI9ydS4Go7yGRwY7
+         ja9sQTKpNAj3iaZsYrOdTm/rqUmvwX/2LvU4rmuL2IbGUc4YNYE0Ye7YSDoiqW1agF5S
+         IiaQ==
+X-Gm-Message-State: ABy/qLbSpnmSgUGphsJRNpO4M2+iJKHdPXc7zjz95ufyRZZTYBAn8Y+8
+	k7PIUx1UQqdQFRiOnUZgnxkn9K9TUgJeAAaNjHEtsA==
+X-Google-Smtp-Source: APBJJlGbJiCGi2WbzNRkqn+UGG9iYkhXZLgCWzz0KD+IVaAUeE8KywhNcy+qIOAh1L8FgvI0JPmRabMsYQzNkljIiYY=
+X-Received: by 2002:a05:622a:1447:b0:3f4:f0fd:fe7e with SMTP id
+ v7-20020a05622a144700b003f4f0fdfe7emr597315qtx.3.1690876879525; Tue, 01 Aug
+ 2023 01:01:19 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.13.0
-Cc: baolu.lu@linux.intel.com, "Liu, Yi L" <yi.l.liu@intel.com>,
- Jacob Pan <jacob.jun.pan@linux.intel.com>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 1/2] iommu: Consolidate pasid dma ownership check
-To: "Tian, Kevin" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Jason Gunthorpe <jgg@ziepe.ca>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Nicolin Chen <nicolinc@nvidia.com>
-References: <20230801063125.34995-1-baolu.lu@linux.intel.com>
- <20230801063125.34995-2-baolu.lu@linux.intel.com>
- <BN9PR11MB5276D196F9BFB06D0E59AEF28C0AA@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <BN9PR11MB5276D196F9BFB06D0E59AEF28C0AA@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20230731104833.800114-1-mshavit@google.com> <20230731184817.v2.2.I1ef1ed19d7786c8176a0d05820c869e650c8d68f@changeid>
+ <ZMiGs5dR6IKF855y@Asurada-Nvidia>
+In-Reply-To: <ZMiGs5dR6IKF855y@Asurada-Nvidia>
+From: Michael Shavit <mshavit@google.com>
+Date: Tue, 1 Aug 2023 16:00:43 +0800
+Message-ID: <CAKHBV27cemBkU9e-=UMNizwnEjWScEK1bNzy8O_X7K55Da0aCA@mail.gmail.com>
+Subject: Re: [PATCH v2 2/8] iommu/arm-smmu-v3: Replace s1_cfg with cdtab_cfg
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
+	linux-kernel@vger.kernel.org, will@kernel.org, robin.murphy@arm.com, 
+	jgg@nvidia.com, jean-philippe@linaro.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 2023/8/1 15:03, Tian, Kevin wrote:
->>   /**
->>    * iommu_device_use_default_domain() - Device driver wants to handle
->> device
->>    *                                     DMA through the kernel DMA API.
->> @@ -3052,14 +3063,14 @@ int iommu_device_use_default_domain(struct
->> device *dev)
->>
->>   	mutex_lock(&group->mutex);
->>   	if (group->owner_cnt) {
->> -		if (group->owner || !iommu_is_default_domain(group) ||
->> -		    !xa_empty(&group->pasid_array)) {
->> +		if (group->owner || !iommu_is_default_domain(group)) {
->>   			ret = -EBUSY;
->>   			goto unlock_out;
->>   		}
->>   	}
->>
->>   	group->owner_cnt++;
->> +	assert_pasid_dma_ownership(group);
-> Old code returns error if pasid_xrrary is not empty.
-> 
-> New code continues to take ownership with a warning.
-> 
-> this is a functional change. Is it intended or not?
+On Tue, Aug 1, 2023 at 12:15=E2=80=AFPM Nicolin Chen <nicolinc@nvidia.com> =
+wrote:
+>
+> On Mon, Jul 31, 2023 at 06:48:12PM +0800, Michael Shavit wrote:
+>
+> > arm_smmu_ctx_desc_cfg is renamed to arm_smmu_cdtab_cfg to make it more
+>
+> There seems to be no change of renaming "arm_smmu_ctx_desc_cfg" to
+> "arm_smmu_cdtab_cfg". Even PATCH-8 only renames the local variable
+> "cdcfg" to "cd_table". Also, we should not use PATCH-8 to justify
+> this change, because it makes this patch less convincing since the
+> PATCH-8 might not get applied at all.
 
-If iommu_device_use_default_domain() is called with pasid_array not
-empty, there must be a bug somewhere in the device driver. We should
-WARN it instead of returning an error. Probably this is a functional
-change? If so, I can add this in the commit message.
+Oof sorry for the mixup. I made the change described in the changelog
+but then undid it based on the last few messages of the last thread.
+This commit is identical to the v1 change where cdcfg is only renamed
+to cd_table in places that we touch.
+Will fix the message.
 
-Best regards,
-baolu
+
+
+>
+> > obvious that it represents a cd table. The max number of CDs that can b=
+e
+> > represented by the CD table is stored in this truct in its log2 form
+> > since it is more useful for users of the CD table, and replaces the
+> > s1cdmax field in s1_cfg. Instead of storing s1_cfg.s1fmt, it can also b=
+e
+> > trivially computed from the cdtab_cfg, and is therefore removed from
+> > s1_cfg.
+>
+> The commit message does not quite well describe why "replace s1_cfg
+> with cd_table" in the subject. It could mention that the goal here
+> is to move cdtab to the master structure. And "unwrap s1_cfg" might
+> be more fitting in the subject, IMHO.
+>
+> Thanks
+> Nicolin
