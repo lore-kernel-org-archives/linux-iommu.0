@@ -1,106 +1,88 @@
-Received: from mail-qt1-f171.google.com (mail-qt1-f171.google.com [209.85.160.171])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from frasgout13.his.huawei.com (unknown [14.137.139.46])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B5E91ADE8
-	for <iommu@lists.linux.dev>; Tue,  1 Aug 2023 17:04:20 +0000 (UTC)
-Received: by mail-qt1-f171.google.com with SMTP id d75a77b69052e-40c72caec5cso10691cf.0
-        for <iommu@lists.linux.dev>; Tue, 01 Aug 2023 10:04:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1690909459; x=1691514259;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=TtiZ/2g+uRWOlvdf02o01d3yF2A6nxZGDaY/kcHLaKU=;
-        b=DBSMzQ6mgKsgt1hDGi5ZVgF0h9BEm3p0wT9fus6WIGe4OHTavNXlngjdTRVLBTlswk
-         8lNX8Bm5BQJtReLn1ylzH/1DHl5n7KsFnv2KPv7oGw38xOff4QHynk1DJfBKOKJW5h0O
-         0qUaLecNno+Fg7EJ1wX0DRCHNlE2DGOVRDqCsI/CIBOCURh+g6/DWLprnsuobBhnuaEz
-         PfTol6v95rg03T0UAsyJopKOaNmzNXA3rPlnzSAU3Ii6+QasrWUw/+soO7bnx6JBxN6x
-         Hh25Rz1pQ486Be2zEVjQvNIKc0MVVtXWxfEuMbiycY65XBDlURXrYoV7jtH3sTONXVid
-         RA3g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1690909459; x=1691514259;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=TtiZ/2g+uRWOlvdf02o01d3yF2A6nxZGDaY/kcHLaKU=;
-        b=C5jjkM8gwslUNsGKtlrCh29wgJwbMN0hp6rNcSonTA3+MRystjdS3YXzNaGI7X7hzz
-         trX8HDc6i+imM2u1EysPqE/ALS6gyFVxdA802fPAvDjvXEepTiFNHidb98rLAR5RP+sb
-         icEpCS9ioBanGkxwlChYJ8zxHLWrfL7fHDlPw6nCCA8dhPC1PCQWGol91yvFaBmDJzTc
-         YowtMVOKC0V6HMaw8tnabISLoKjbfd2qCYTwGvWeWJyden7qtMRmEuIfpPp1cc6jU2cV
-         kioOtr6raVTPW2REpvm4tz9qavAuFcuTgn1bXfx+WvJSoidCIfQpkqSrr3jSBHQCixkq
-         hD+g==
-X-Gm-Message-State: ABy/qLYzC2yzu9wM6kX6EbONpRso6j5WZ2zlMbZmBYpsTD+a0L4atxqi
-	bQp5OsAiHlWR6jzdMIA2VBK3cMy7asw5ELySOemqQw==
-X-Google-Smtp-Source: APBJJlHpos92MVcMyqsUnxl06UQwzPlCnyYB0wP5AYGPjD0cWyAYOalszh5XhLejGTaOSoVqUGELBqR5Gp8/iCbcYNc=
-X-Received: by 2002:ac8:7e87:0:b0:40e:332b:ba30 with SMTP id
- w7-20020ac87e87000000b0040e332bba30mr552428qtj.23.1690909458906; Tue, 01 Aug
- 2023 10:04:18 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 63FA11ADE8
+	for <iommu@lists.linux.dev>; Tue,  1 Aug 2023 17:06:00 +0000 (UTC)
+Received: from mail02.huawei.com (unknown [172.18.147.229])
+	by frasgout13.his.huawei.com (SkyGuard) with ESMTP id 4RFh6C6kwPz9ttCf
+	for <iommu@lists.linux.dev>; Wed,  2 Aug 2023 00:54:27 +0800 (CST)
+Received: from [10.81.206.119] (unknown [10.81.206.119])
+	by APP1 (Coremail) with SMTP id LxC2BwAn2bg5O8lkq2QeAA--.14915S2;
+	Tue, 01 Aug 2023 18:05:17 +0100 (CET)
+Message-ID: <56be3268-60ee-a496-4781-a59ce34bfca8@huaweicloud.com>
+Date: Tue, 1 Aug 2023 19:04:55 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20230731104833.800114-1-mshavit@google.com> <20230731184817.v2.6.I219054a6cf538df5bb22f4ada2d9933155d6058c@changeid>
- <ZMkULTvwIIE3zo5+@nvidia.com>
-In-Reply-To: <ZMkULTvwIIE3zo5+@nvidia.com>
-From: Michael Shavit <mshavit@google.com>
-Date: Wed, 2 Aug 2023 01:03:42 +0800
-Message-ID: <CAKHBV25W_UTdhaL2L4ezP60TxgvP86sa_1-8L-aOiyjz64Fkug@mail.gmail.com>
-Subject: Re: [PATCH v2 6/8] iommu/arm-smmu-v3: Refactor write_ctx_desc
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
-	linux-kernel@vger.kernel.org, will@kernel.org, robin.murphy@arm.com, 
-	nicolinc@nvidia.com, jean-philippe@linaro.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v7 0/9] Allow dynamic allocation of software IO TLB bounce
+ buffers
+Content-Language: en-US
+To: Christoph Hellwig <hch@lst.de>
+Cc: Stefano Stabellini <sstabellini@kernel.org>,
+ Russell King <linux@armlinux.org.uk>,
+ Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+ Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>,
+ Borislav Petkov <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>,
+ "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
+ "H. Peter Anvin" <hpa@zytor.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ "Rafael J. Wysocki" <rafael@kernel.org>, Juergen Gross <jgross@suse.com>,
+ Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
+ Marek Szyprowski <m.szyprowski@samsung.com>,
+ Robin Murphy <robin.murphy@arm.com>, Christoph Lameter <cl@linux.com>,
+ Pekka Enberg <penberg@kernel.org>, David Rientjes <rientjes@google.com>,
+ Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+ Andrew Morton <akpm@linux-foundation.org>, Vlastimil Babka <vbabka@suse.cz>,
+ Roman Gushchin <roman.gushchin@linux.dev>,
+ Hyeonggon Yoo <42.hyeyoo@gmail.com>,
+ Petr Tesarik <petr.tesarik.ext@huawei.com>, Jonathan Corbet
+ <corbet@lwn.net>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ Hans de Goede <hdegoede@redhat.com>, James Seo <james@equiv.tech>,
+ James Clark <james.clark@arm.com>, Kees Cook <keescook@chromium.org>,
+ "moderated list:XEN HYPERVISOR ARM" <xen-devel@lists.xenproject.org>,
+ "moderated list:ARM PORT" <linux-arm-kernel@lists.infradead.org>,
+ open list <linux-kernel@vger.kernel.org>,
+ "open list:MIPS" <linux-mips@vger.kernel.org>,
+ "open list:XEN SWIOTLB SUBSYSTEM" <iommu@lists.linux.dev>,
+ "open list:SLAB ALLOCATOR" <linux-mm@kvack.org>,
+ Roberto Sassu <roberto.sassu@huaweicloud.com>, petr@tesarici.cz
+References: <cover.1690871004.git.petr.tesarik.ext@huawei.com>
+ <20230801160339.GB13111@lst.de>
+From: Petr Tesarik <petrtesarik@huaweicloud.com>
+In-Reply-To: <20230801160339.GB13111@lst.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-CM-TRANSID:LxC2BwAn2bg5O8lkq2QeAA--.14915S2
+X-Coremail-Antispam: 1UD129KBjDUn29KB7ZKAUJUUUUU529EdanIXcx71UUUUU7v73
+	VFW2AGmfu7bjvjm3AaLaJ3UjIYCTnIWjp_UUUY77AC8VAFwI0_Wr0E3s1l1xkIjI8I6I8E
+	6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28Cjx
+	kF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVWUJVWUCwA2z4x0Y4vE2Ix0cI8I
+	cVCY1x0267AKxVW8JVWxJwA2z4x0Y4vEx4A2jsIE14v26F4j6r4UJwA2z4x0Y4vEx4A2js
+	IEc7CjxVAFwI0_Cr1j6rxdM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE
+	6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72
+	CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IY64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7M4II
+	rI8v6xkF7I0E8cxan2IY04v7MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r
+	4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF
+	67AKxVWrXVW8Jr1lIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6x
+	IIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6rW3Jr0E3s1lIxAI
+	cVC2z280aVAFwI0_Gr0_Cr1lIxAIcVC2z280aVCY1x0267AKxVWxJr0_GcJvcSsGvfC2Kf
+	nxnUUI43ZEXa7VUbJ73DUUUUU==
+X-CM-SenderInfo: hshw23xhvd2x3n6k3tpzhluzxrxghudrp/
+X-CFilter-Loop: Reflected
 
-On Tue, Aug 1, 2023 at 10:18=E2=80=AFPM Jason Gunthorpe <jgg@nvidia.com> wr=
-ote:
-> You know, you should try to keep the function instead of duplicating
-> these
->
-> arm_smmu_write_ctx_desc_devices()
->
-> And put the four lines in there?
+On 8/1/2023 6:03 PM, Christoph Hellwig wrote:
+> Thanks,
+> 
+> I've applied this to a new swiotlb-dynamic branch that I'll pull into
+> the dma-mapping for-next tree.
 
-Urhhh yes, I thought I had a reason for this but probably just a lapse
-of judgement. Done.
+Thank you.
 
-> -     ret =3D arm_smmu_write_ctx_desc(smmu_domain, mm->pasid, cd);
-> +     spin_lock_irqsave(&smmu_domain->devices_lock, flags);
-> +     list_for_each_entry(master, &smmu_domain->devices, domain_head) {
-> +             ret =3D arm_smmu_write_ctx_desc(master, mm->pasid, cd);
-> +     }
-> +     spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
+I guess I can prepare some follow-up series now. ;-)
 
-Just noticed that this is problematic; we may not notice a failure if
-it occurs on an earlier iteration of the loop. Will fix.
+Petr T
 
->
-> > @@ -987,19 +985,14 @@ static void arm_smmu_sync_cd(struct arm_smmu_doma=
-in *smmu_domain,
-> >               },
-> >       };
-> >
-> > -     if (!smmu_domain->cd_table.installed)
-> > +     if (!master->domain->cd_table.installed)
-> >               return;
->
-> BTW, do you have locking for this? I didn't check carefully
-
-This is one of the reasons I wanted to take this as a parameter to the
-function. This relies on callers guaranteeing that the cd table not be
-attached/detached while this call is in progress. This works now
-because:
-1. No domain may be attached/detached while SVA is enabled, which is
-most of the calls that lead to arm_smmu_sync_cd
-2. The other call to arm_smmu_write_ctx_desc in arm-smmu-v3.c is more
-obviously serialized with operations that detach/attach the cd table.
-
-Maybe this should at least be a comment on arm_smmu_write_ctx_desc, if
-not a lock?
-
-
-Speaking of.... I should probably flip this bit to false in patch 5
-when the cd table is detached.
