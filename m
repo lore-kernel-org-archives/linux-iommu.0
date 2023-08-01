@@ -1,252 +1,246 @@
-Received: from mgamail.intel.com (unknown [134.134.136.65])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2C4C20FA
-	for <iommu@lists.linux.dev>; Tue,  1 Aug 2023 06:33:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1690871623; x=1722407623;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=TmQOj4iLTqJpFp8MSsuwD21k8KlbkD0tFWAuvpU6ezU=;
-  b=Gm7wINTh6/J7zZgUdVyB2J2T9CdisDUUao4qQC67hU6/ftaqgq8MirUq
-   9QaR3COxLTGZl2Deeu9kKC4FKF49L+0T9lU/1dKiUrdGIkM/InyZc4QTo
-   u68qasABJ8JQgyn7IEt/ChPGKz7t3C1Po4zikNXroDfmolDXrQCiC5wcA
-   vHbWsEmbEkOKvNJWUPsfeKGVwZfthKodkh36BKvZfvBxwy0rsS7im7Gcl
-   1l249CJMZH4b3v+OHnoNPTlK/mL89xW4DlfesdPHCWUvXrs/ehhGJW5IO
-   0rYtCZIPx0ZnkRjoWeOMRwA3eez0Pds84uTaYt73pn2DY1AVI2TMGavEW
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10788"; a="372839989"
-X-IronPort-AV: E=Sophos;i="6.01,246,1684825200"; 
-   d="scan'208";a="372839989"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jul 2023 23:33:43 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10788"; a="798537925"
-X-IronPort-AV: E=Sophos;i="6.01,246,1684825200"; 
-   d="scan'208";a="798537925"
-Received: from allen-box.sh.intel.com ([10.239.159.127])
-  by fmsmga004.fm.intel.com with ESMTP; 31 Jul 2023 23:33:40 -0700
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 380CE1866
+	for <iommu@lists.linux.dev>; Tue,  1 Aug 2023 06:38:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31641C433C8;
+	Tue,  1 Aug 2023 06:38:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1690871887;
+	bh=hDT+iR6AIZkPiUojYsTG3f1l1RIz7J/cYfpHFlOtmcY=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=ihVqg2sCDGTatgUfOTqQau2d5hVIQ7FhkJ4dQpOT6tNN864bCCltGkeZsSp33J3G6
+	 67N3c/0YoQ7uttpJF1XBIQwpsMlhyfqYfn0RI23AQwNs82WxOMomf6WcFs2wg6yuwo
+	 qESSyNtICw/59SiCMx7JA4bv1FkEQ3vhy5wSX/Nc=
+Date: Tue, 1 Aug 2023 08:38:05 +0200
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Petr Tesarik <petrtesarik@huaweicloud.com>
+Cc: Stefano Stabellini <sstabellini@kernel.org>,
+	Russell King <linux@armlinux.org.uk>,
+	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+	Dave Hansen <dave.hansen@linux.intel.com>,
+	"maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
+	"H. Peter Anvin" <hpa@zytor.com>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Juergen Gross <jgross@suse.com>,
+	Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
+	Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
 	Robin Murphy <robin.murphy@arm.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Nicolin Chen <nicolinc@nvidia.com>
-Cc: Yi Liu <yi.l.liu@intel.com>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>,
-	iommu@lists.linux.dev,
-	kvm@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH 2/2] iommu: Move pasid array from group to device
-Date: Tue,  1 Aug 2023 14:31:25 +0800
-Message-Id: <20230801063125.34995-3-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230801063125.34995-1-baolu.lu@linux.intel.com>
-References: <20230801063125.34995-1-baolu.lu@linux.intel.com>
+	Christoph Lameter <cl@linux.com>, Pekka Enberg <penberg@kernel.org>,
+	David Rientjes <rientjes@google.com>,
+	Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Vlastimil Babka <vbabka@suse.cz>,
+	Roman Gushchin <roman.gushchin@linux.dev>,
+	Hyeonggon Yoo <42.hyeyoo@gmail.com>,
+	Petr Tesarik <petr.tesarik.ext@huawei.com>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Hans de Goede <hdegoede@redhat.com>, James Seo <james@equiv.tech>,
+	James Clark <james.clark@arm.com>,
+	Kees Cook <keescook@chromium.org>,
+	"moderated list:XEN HYPERVISOR ARM" <xen-devel@lists.xenproject.org>,
+	"moderated list:ARM PORT" <linux-arm-kernel@lists.infradead.org>,
+	open list <linux-kernel@vger.kernel.org>,
+	"open list:MIPS" <linux-mips@vger.kernel.org>,
+	"open list:XEN SWIOTLB SUBSYSTEM" <iommu@lists.linux.dev>,
+	"open list:SLAB ALLOCATOR" <linux-mm@kvack.org>,
+	Roberto Sassu <roberto.sassu@huaweicloud.com>, petr@tesarici.cz
+Subject: Re: [PATCH v7 0/9] Allow dynamic allocation of software IO TLB
+ bounce buffers
+Message-ID: <2023080144-cardigan-nerd-2bed@gregkh>
+References: <cover.1690871004.git.petr.tesarik.ext@huawei.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cover.1690871004.git.petr.tesarik.ext@huawei.com>
 
-The PASID (Process Address Space ID) feature is a device feature that
-allows a device driver to manage the PASID value and attach or detach
-its domain to the pasid. The pasid array, which is used to store the
-domain of each pasid, is currently stored in iommu group struct, but
-it would be more natural to move it to the device so that the device
-drivers don't need to understand the internal iommu group concept.
+On Tue, Aug 01, 2023 at 08:23:55AM +0200, Petr Tesarik wrote:
+> From: Petr Tesarik <petr.tesarik.ext@huawei.com>
+> 
+> Motivation
+> ==========
+> 
+> The software IO TLB was designed with these assumptions:
+> 
+> 1) It would not be used much. Small systems (little RAM) don't need it, and
+>    big systems (lots of RAM) would have modern DMA controllers and an IOMMU
+>    chip to handle legacy devices.
+> 2) A small fixed memory area (64 MiB by default) is sufficient to
+>    handle the few cases which require a bounce buffer.
+> 3) 64 MiB is little enough that it has no impact on the rest of the
+>    system.
+> 4) Bounce buffers require large contiguous chunks of low memory. Such
+>    memory is precious and can be allocated only early at boot.
+> 
+> It turns out they are not always true:
+> 
+> 1) Embedded systems may have more than 4GiB RAM but no IOMMU and legacy
+>    32-bit peripheral busses and/or DMA controllers.
+> 2) CoCo VMs use bounce buffers for all I/O but may need substantially more
+>    than 64 MiB.
+> 3) Embedded developers put as many features as possible into the available
+>    memory. A few dozen "missing" megabytes may limit what features can be
+>    implemented.
+> 4) If CMA is available, it can allocate large continuous chunks even after
+>    the system has run for some time.
+> 
+> Goals
+> =====
+> 
+> The goal of this work is to start with a small software IO TLB at boot and
+> expand it later when/if needed.
+> 
+> Design
+> ======
+> 
+> This version of the patch series retains the current slot allocation
+> algorithm with multiple areas to reduce lock contention, but additional
+> slots can be added when necessary.
+> 
+> These alternatives have been considered:
+> 
+> - Allocate and free buffers as needed using direct DMA API. This works
+>   quite well, except in CoCo VMs where each allocation/free requires
+>   decrypting/encrypting memory, which is a very expensive operation.
+> 
+> - Allocate a very large software IO TLB at boot, but allow to migrate pages
+>   to/from it (like CMA does). For systems with CMA, this would mean two big
+>   allocations at boot. Finding the balance between CMA, SWIOTLB and rest of
+>   available RAM can be challenging. More importantly, there is no clear
+>   benefit compared to allocating SWIOTLB memory pools from the CMA.
+> 
+> Implementation Constraints
+> ==========================
+> 
+> These constraints have been taken into account:
+> 
+> 1) Minimize impact on devices which do not benefit from the change.
+> 2) Minimize the number of memory decryption/encryption operations.
+> 3) Avoid contention on a lock or atomic variable to preserve parallel
+>    scalability.
+> 
+> Additionally, the software IO TLB code is also used to implement restricted
+> DMA pools. These pools are restricted to a pre-defined physical memory
+> region and must not use any other memory. In other words, dynamic
+> allocation of memory pools must be disabled for restricted DMA pools.
+> 
+> Data Structures
+> ===============
+> 
+> The existing struct io_tlb_mem is the central type for a SWIOTLB allocator,
+> but it now contains multiple memory pools::
+> 
+>   io_tlb_mem
+>   +---------+   io_tlb_pool
+>   | SWIOTLB | 	+-------+   +-------+   +-------+
+>   |allocator|-->|default|-->|dynamic|-->|dynamic|-->...
+>   |    	    |  	|memory |   |memory |   |memory |
+>   +---------+ 	| pool  |   | pool  |   | pool  |
+> 	      	+-------+   +-------+   +-------+
+> 
+> The allocator structure contains global state (such as flags and counters)
+> and structures needed to schedule new allocations. Each memory pool
+> contains the actual buffer slots and metadata. The first memory pool in the
+> list is the default memory pool allocated statically at early boot.
+> 
+> New memory pools are allocated from a kernel worker thread. That's because
+> bounce buffers are allocated when mapping a DMA buffer, which may happen in
+> interrupt context where large atomic allocations would probably fail.
+> Allocation from process context is much more likely to succeed, especially
+> if it can use CMA.
+> 
+> Nonetheless, the onset of a load spike may fill up the SWIOTLB before the
+> worker has a chance to run. In that case, try to allocate a small transient
+> memory pool to accommodate the request. If memory is encrypted and the
+> device cannot do DMA to encrypted memory, this buffer is allocated from the
+> coherent atomic DMA memory pool. Reducing the size of SWIOTLB may therefore
+> require increasing the size of the coherent pool with the "coherent_pool"
+> command-line parameter.
+> 
+> Performance
+> ===========
+> 
+> All testing compared a vanilla v6.4-rc6 kernel with a fully patched
+> kernel. The kernel was booted with "swiotlb=force" to allow stress-testing
+> the software IO TLB on a high-performance device that would otherwise not
+> need it. CONFIG_DEBUG_FS was set to 'y' to match the configuration of
+> popular distribution kernels; it is understood that parallel workloads
+> suffer from contention on the recently added debugfs atomic counters.
+> 
+> These benchmarks were run:
+> 
+> - small: single-threaded I/O of 4 KiB blocks,
+> - big: single-threaded I/O of 64 KiB blocks,
+> - 4way: 4-way parallel I/O of 4 KiB blocks.
+> 
+> In all tested cases, the default 64 MiB SWIOTLB would be sufficient (but
+> wasteful). The "default" pair of columns shows performance impact when
+> booted with 64 MiB SWIOTLB (i.e. current state). The "growing" pair of
+> columns shows the impact when booted with a 1 MiB initial SWIOTLB, which
+> grew to 5 MiB at run time. The "var" column in the tables below is the
+> coefficient of variance over 5 runs of the test, the "diff" column is the
+> difference in read-write I/O bandwidth (MiB/s). The very first column is
+> the coefficient of variance in the results of the base unpatched kernel.
+> 
+> First, on an x86 VM against a QEMU virtio SATA driver backed by a RAM-based
+> block device on the host:
+> 
+> 	base	   default	   growing
+> 	var	var	diff	var	diff
+> small	1.96%	0.47%	-1.5%	0.52%	-2.2%
+> big	2.03%	1.35%	+0.9%	2.22%	+2.9%
+> 4way	0.80%	0.45%	-0.7%	1.22%	<0.1%
+> 
+> Second, on a Raspberry Pi4 with 8G RAM and a class 10 A1 microSD card:
+> 
+> 	base	   default	   growing
+> 	var	var	diff	var	diff
+> small	1.09%	1.69%	+0.5%	2.14%	-0.2%
+> big	0.03%	0.28%	-0.5%	0.03%	-0.1%
+> 4way	5.15%	2.39%	+0.2%	0.66%	<0.1%
+> 
+> Third, on a CoCo VM. This was a bigger system, so I also added a 24-thread
+> parallel I/O test:
+> 
+> 	base	   default	   growing
+> 	var	var	diff	var	diff
+> small	2.41%	6.02%	+1.1%	10.33%	+6.7%
+> big	9.20%	2.81%	-0.6%	16.84%	-0.2%
+> 4way	0.86%	2.66%	-0.1%	 2.22%	-4.9%
+> 24way	3.19%	6.19%	+4.4%	 4.08%	-5.9%
+> 
+> Note the increased variance of the CoCo VM, although the host was not
+> otherwise loaded. These are caused by the first run, which includes the
+> overhead of allocating additional bounce buffers and sharing them with the
+> hypervisor. The system was not rebooted between successive runs.
+> 
+> Parallel tests suffer from a reduced number of areas in the dynamically
+> allocated memory pools. This can be improved by allocating a larger pool
+> from CMA (not implemented in this series yet).
+> 
+> I have no good explanation for the increase in performance of the
+> 24-thread I/O test with the default (non-growing) memory pool. Although the
+> difference is within variance, it seems to be real. The average bandwidth
+> is consistently above that of the unpatched kernel.
+> 
+> To sum it up:
+> 
+> - All workloads benefit from reduced memory footprint.
+> - No performance regressions have been observed with the default size of
+>   the software IO TLB.
+> - Most workloads retain their former performance even if the software IO
+>   TLB grows at run time.
+> 
 
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- include/linux/iommu.h |  2 ++
- drivers/iommu/iommu.c | 80 ++++++++++++-------------------------------
- 2 files changed, 24 insertions(+), 58 deletions(-)
+For the driver-core touched portions:
 
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index b1dcb1b9b170..90be3efd0e91 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -406,6 +406,7 @@ struct iommu_fault_param {
-  * @iopf_param:	 I/O Page Fault queue and data
-  * @fwspec:	 IOMMU fwspec data
-  * @iommu_dev:	 IOMMU device this device is linked to
-+ * @pasid_array: pasid-indexed array of domains attached to pasid
-  * @priv:	 IOMMU Driver private data
-  * @max_pasids:  number of PASIDs this device can consume
-  * @attach_deferred: the dma domain attachment is deferred
-@@ -420,6 +421,7 @@ struct dev_iommu {
- 	struct iopf_device_param	*iopf_param;
- 	struct iommu_fwspec		*fwspec;
- 	struct iommu_device		*iommu_dev;
-+	struct xarray			pasid_array;
- 	void				*priv;
- 	u32				max_pasids;
- 	u32				attach_deferred:1;
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 1a8fb30341e6..7fd53b9e9754 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -48,7 +48,6 @@ struct iommu_group {
- 	struct kobject kobj;
- 	struct kobject *devices_kobj;
- 	struct list_head devices;
--	struct xarray pasid_array;
- 	struct mutex mutex;
- 	void *iommu_data;
- 	void (*iommu_data_release)(void *iommu_data);
-@@ -302,6 +301,7 @@ static struct dev_iommu *dev_iommu_get(struct device *dev)
- 		return NULL;
- 
- 	mutex_init(&param->lock);
-+	xa_init(&param->pasid_array);
- 	dev->iommu = param;
- 	return param;
- }
-@@ -891,7 +891,6 @@ struct iommu_group *iommu_group_alloc(void)
- 	mutex_init(&group->mutex);
- 	INIT_LIST_HEAD(&group->devices);
- 	INIT_LIST_HEAD(&group->entry);
--	xa_init(&group->pasid_array);
- 
- 	ret = ida_alloc(&iommu_group_ida, GFP_KERNEL);
- 	if (ret < 0) {
-@@ -3041,8 +3040,11 @@ static bool iommu_is_default_domain(struct iommu_group *group)
-  */
- static void assert_pasid_dma_ownership(struct iommu_group *group)
- {
-+	struct group_device *device;
-+
- 	lockdep_assert_held(&group->mutex);
--	WARN_ON(!xa_empty(&group->pasid_array));
-+	for_each_group_device(group, device)
-+		WARN_ON(!xa_empty(&device->dev->iommu->pasid_array));
- }
- 
- /**
-@@ -3281,33 +3283,6 @@ bool iommu_group_dma_owner_claimed(struct iommu_group *group)
- }
- EXPORT_SYMBOL_GPL(iommu_group_dma_owner_claimed);
- 
--static int __iommu_set_group_pasid(struct iommu_domain *domain,
--				   struct iommu_group *group, ioasid_t pasid)
--{
--	struct group_device *device;
--	int ret = 0;
--
--	for_each_group_device(group, device) {
--		ret = domain->ops->set_dev_pasid(domain, device->dev, pasid);
--		if (ret)
--			break;
--	}
--
--	return ret;
--}
--
--static void __iommu_remove_group_pasid(struct iommu_group *group,
--				       ioasid_t pasid)
--{
--	struct group_device *device;
--	const struct iommu_ops *ops;
--
--	for_each_group_device(group, device) {
--		ops = dev_iommu_ops(device->dev);
--		ops->remove_dev_pasid(device->dev, pasid);
--	}
--}
--
- /*
-  * iommu_attach_device_pasid() - Attach a domain to pasid of device
-  * @domain: the iommu domain.
-@@ -3319,32 +3294,28 @@ static void __iommu_remove_group_pasid(struct iommu_group *group,
- int iommu_attach_device_pasid(struct iommu_domain *domain,
- 			      struct device *dev, ioasid_t pasid)
- {
--	struct iommu_group *group;
-+	struct dev_iommu *param = dev->iommu;
- 	void *curr;
- 	int ret;
- 
- 	if (!domain->ops->set_dev_pasid)
- 		return -EOPNOTSUPP;
- 
--	group = iommu_group_get(dev);
--	if (!group)
-+	if (!param)
- 		return -ENODEV;
- 
--	mutex_lock(&group->mutex);
--	curr = xa_cmpxchg(&group->pasid_array, pasid, NULL, domain, GFP_KERNEL);
-+	mutex_lock(&param->lock);
-+	curr = xa_cmpxchg(&param->pasid_array, pasid, NULL, domain, GFP_KERNEL);
- 	if (curr) {
- 		ret = xa_err(curr) ? : -EBUSY;
- 		goto out_unlock;
- 	}
- 
--	ret = __iommu_set_group_pasid(domain, group, pasid);
--	if (ret) {
--		__iommu_remove_group_pasid(group, pasid);
--		xa_erase(&group->pasid_array, pasid);
--	}
-+	ret = domain->ops->set_dev_pasid(domain, dev, pasid);
-+	if (ret)
-+		xa_erase(&param->pasid_array, pasid);
- out_unlock:
--	mutex_unlock(&group->mutex);
--	iommu_group_put(group);
-+	mutex_unlock(&param->lock);
- 
- 	return ret;
- }
-@@ -3362,14 +3333,13 @@ EXPORT_SYMBOL_GPL(iommu_attach_device_pasid);
- void iommu_detach_device_pasid(struct iommu_domain *domain, struct device *dev,
- 			       ioasid_t pasid)
- {
--	struct iommu_group *group = iommu_group_get(dev);
-+	const struct iommu_ops *ops = dev_iommu_ops(dev);
-+	struct dev_iommu *param = dev->iommu;
- 
--	mutex_lock(&group->mutex);
--	__iommu_remove_group_pasid(group, pasid);
--	WARN_ON(xa_erase(&group->pasid_array, pasid) != domain);
--	mutex_unlock(&group->mutex);
--
--	iommu_group_put(group);
-+	mutex_lock(&param->lock);
-+	ops->remove_dev_pasid(dev, pasid);
-+	WARN_ON(xa_erase(&param->pasid_array, pasid) != domain);
-+	mutex_unlock(&param->lock);
- }
- EXPORT_SYMBOL_GPL(iommu_detach_device_pasid);
- 
-@@ -3392,18 +3362,12 @@ struct iommu_domain *iommu_get_domain_for_dev_pasid(struct device *dev,
- 						    unsigned int type)
- {
- 	struct iommu_domain *domain;
--	struct iommu_group *group;
- 
--	group = iommu_group_get(dev);
--	if (!group)
--		return NULL;
--
--	xa_lock(&group->pasid_array);
--	domain = xa_load(&group->pasid_array, pasid);
-+	xa_lock(&dev->iommu->pasid_array);
-+	domain = xa_load(&dev->iommu->pasid_array, pasid);
- 	if (type && domain && domain->type != type)
- 		domain = ERR_PTR(-EBUSY);
--	xa_unlock(&group->pasid_array);
--	iommu_group_put(group);
-+	xa_unlock(&dev->iommu->pasid_array);
- 
- 	return domain;
- }
--- 
-2.34.1
-
+Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
