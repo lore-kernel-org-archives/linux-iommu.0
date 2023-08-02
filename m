@@ -1,189 +1,108 @@
-Received: from mgamail.intel.com (unknown [192.55.52.88])
+Received: from mgamail.intel.com (unknown [134.134.136.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A6321FB3
-	for <iommu@lists.linux.dev>; Wed,  2 Aug 2023 07:59:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0CF9853A6
+	for <iommu@lists.linux.dev>; Wed,  2 Aug 2023 08:09:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1690963197; x=1722499197;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=giGuHtZJAm5TX32Em94MFKJ/A3VAUq85/qhV90+B+BE=;
-  b=dKLE9DhvHCVSKw88+aWMoranleBJ1ZxWCFhvDCxir/0ZRk+i29dYheLK
-   LnHiLioekd+cSZ6qKAL60B2aibkgeYeVFakR3G4tFH2TtyuKSuPL80Vx+
-   I8dqHRlEZy94acM7D+cnA6Ft65jyallPZ6UULp9+OSijQH1wpATfQyU6b
-   tMe73eHGHR170dE3nArBEsARnE1uX82pwiIKEbkeLQNU7BoqfYJJLe3/p
-   2yPYYZ5IwQFfoaevG1DTOx+3h7lkxBVZsnH62miGZ4/J2ScgewmBeJoP+
-   q56448LjxmkZ3zUWUoLMkG8LKi4tPaPNkaYVZKtK0nuW6al6e93bbbfkg
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10789"; a="400457022"
+  t=1690963781; x=1722499781;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=ki0hcyOchnwZdsu/iCxnKTRMwPrBS92kVd7zfRstuOg=;
+  b=KxlruH/ojtufURV402oZc6w9HUVoVhGSdRrEILVl5yn0thpakDv5Fz4r
+   HJZZ9v8sQvOsXPGojCB4HgCOOBYmRPiMLSCNVCzn/gUylY+hyVAh+0hOE
+   FReD38LC3xLHqXgQ+eIrw6xZeRoK5xQS/wWrumbaWBZRucs0rczucmWdn
+   rSnkrlXvOz6xPPRBHNDM7l8MZkyDDPdM9TTGzsjSMlB9ZKihwcF4eH/QW
+   O21F+gl2WT203Rji1v0c26V28Q5S8DX5ZPtSo9Jo0VI5Qu4xzAQiF5n9T
+   zQH4hM3v0TTtnqT+oWVNjCekIXIojfprRZlVduaEYJ95qScqDLw1L7ukB
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10789"; a="359557966"
 X-IronPort-AV: E=Sophos;i="6.01,248,1684825200"; 
-   d="scan'208";a="400457022"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Aug 2023 00:59:55 -0700
+   d="scan'208";a="359557966"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Aug 2023 01:09:40 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10789"; a="852791189"
+X-IronPort-AV: E=McAfee;i="6600,9927,10789"; a="678978681"
 X-IronPort-AV: E=Sophos;i="6.01,248,1684825200"; 
-   d="scan'208";a="852791189"
-Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
-  by orsmga004.jf.intel.com with ESMTP; 02 Aug 2023 00:59:55 -0700
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.27; Wed, 2 Aug 2023 00:59:55 -0700
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.27; Wed, 2 Aug 2023 00:59:54 -0700
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.27 via Frontend Transport; Wed, 2 Aug 2023 00:59:54 -0700
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.176)
- by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.27; Wed, 2 Aug 2023 00:59:54 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ULCoVK5a5F4LxIMEsp72e9XMo2S5Lk4aAffvzpQ8Jv5KL1PKXfMUdcxhbxDy504kG7QQlKq4RoXsuzIcD3cl8vaVqitywMcyYKs3qOVME1gaQSz3UzaU7k4F9avvKlsvc/CmvrzSCDoPd85bSp7HBBZdVp4KcC8EEWA8p5JYDoqpIPmRzSTYLr6/A8phidCbMlAv4iixYk7KtCSD/sJ36XqPhqH1OgsXycBHYgaRg2NkWV144tWWcds6UkrK0AZ35AdovBLkvryHg4xA0eqiu/O7HcJ5FB8vFwC1AQhSKznM1//xfEjV0PxYpehrhiqo34cCTi4h803By0JQS5u+FA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=xqTPJQqQk/lofFiJ6bQUKxnEE4OXYthBy6fVbjR0dSw=;
- b=bkejjt84ahWsTcaz9rr8qQ6ECrkY48B3n93V499B/muTzLOhZ3sSF+UXyDpdoXQtpyDsYKRLfrEXEUX03FGhsxosO5O5074bwIcxPCI/BDpQYGrA0kEfzQxCQGbVN7WyA+2nHvQEfT/fED1gFSugEWsmQPsORnRSvzFka3y2VcRbaRLOv0/L0cukh7Kv3fvHwJmNehJTpw+le597ztmIdnPvFRbqyZORYcjJKrzh4Y4gBTnOPwMh052mr4I0NcLRsAUJKDZcVwqPbOcv/SOYQONltqL/UIpvqZ/RV4nJ7BdNqpVcENmAX9wW81bVODjzfzPa8Wz5ZoUXURe45ABZGQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by MW4PR11MB5774.namprd11.prod.outlook.com (2603:10b6:303:182::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6631.45; Wed, 2 Aug
- 2023 07:59:52 +0000
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::dcf3:7bac:d274:7bed]) by BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::dcf3:7bac:d274:7bed%4]) with mapi id 15.20.6631.045; Wed, 2 Aug 2023
- 07:59:52 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: "Liu, Yi L" <yi.l.liu@intel.com>, "joro@8bytes.org" <joro@8bytes.org>,
-	"alex.williamson@redhat.com" <alex.williamson@redhat.com>, "jgg@nvidia.com"
-	<jgg@nvidia.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>
-CC: "cohuck@redhat.com" <cohuck@redhat.com>, "eric.auger@redhat.com"
-	<eric.auger@redhat.com>, "nicolinc@nvidia.com" <nicolinc@nvidia.com>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>, "mjrosato@linux.ibm.com"
-	<mjrosato@linux.ibm.com>, "chao.p.peng@linux.intel.com"
-	<chao.p.peng@linux.intel.com>, "yi.y.sun@linux.intel.com"
-	<yi.y.sun@linux.intel.com>, "peterx@redhat.com" <peterx@redhat.com>,
-	"jasowang@redhat.com" <jasowang@redhat.com>,
-	"shameerali.kolothum.thodi@huawei.com"
-	<shameerali.kolothum.thodi@huawei.com>, "lulu@redhat.com" <lulu@redhat.com>,
-	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>, "Duan,
- Zhenzhong" <zhenzhong.duan@intel.com>
-Subject: RE: [PATCH v4 12/12] iommu/vt-d: Disallow nesting on domains with
- read-only mappings
-Thread-Topic: [PATCH v4 12/12] iommu/vt-d: Disallow nesting on domains with
- read-only mappings
-Thread-Index: AQHZvh/xpJ4WurReCk6xBF9LLfi+N6/Wr/7A
-Date: Wed, 2 Aug 2023 07:59:52 +0000
-Message-ID: <BN9PR11MB52767DF0C8F25AB893B38B678C0BA@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <20230724111335.107427-1-yi.l.liu@intel.com>
- <20230724111335.107427-13-yi.l.liu@intel.com>
-In-Reply-To: <20230724111335.107427-13-yi.l.liu@intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|MW4PR11MB5774:EE_
-x-ms-office365-filtering-correlation-id: 0945a300-09ab-4d51-e351-08db932e73a2
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: g848N5KJzwzj3oe3ZSiJ4VLGuLqaSEm5eKowXZhJGfpE9gHFwvCwwjOldR8t38I0+4OH1pcxRPR8ReO4pRKra39Kc/FPOg8P/7sd4+o2TKnWtLRsGTut4fzbY7R2u62ZY3y/+JsdH3M30uzwweDQl3SSNH86XpE+MfjEMaUO5viNult/8NeBNyNNRNocpRBvZnCUOmuOR8C2O/kY9uJwWYY97vgbZDjJdr6uxLd//FQvG0FxCk1A6jh0ertWG9zxpZCjyNC6vDrX1bP4N4D1e014OF/AEa6X6UFPdFML56ipOGMIgKqgCPfbZjJ87vzAtO7blZGev78X8wENqoXLnTnYyN0bSbmKo2cxJewVQpL7PyYca13RRV8PJ+w64jNnZ5qXUmD8BVIHRrEFmhpZaZg0JirM6YCkpn1Zg14U8Tui0Tsqhpg1J5OhMTePXXXBHcIChGyFbtjGVMW6xbt+PvLYPBnWgHRGluUZ/QAWAcyDKbRhD6jnWdZANofG6hoKeCidvFqeq87+TLIHewx7PBZygkQHTL6RdmPMHqH2pV3WstYNcAQcNEf4tO/0bRPQTx7dfcX3h4GralpWZN8dfXkvC6mi5J4AmX6U+vgro5HyhORmgZaMXQsJqXHNqGAi
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(39860400002)(376002)(366004)(136003)(396003)(346002)(451199021)(55016003)(186003)(9686003)(316002)(86362001)(478600001)(122000001)(54906003)(110136005)(38100700002)(76116006)(71200400001)(66946007)(66556008)(66476007)(66446008)(33656002)(64756008)(7696005)(4326008)(82960400001)(6506007)(41300700001)(26005)(52536014)(8676002)(5660300002)(8936002)(2906002)(38070700005)(7416002)(83380400001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?3g5ZDavB7Mv2obZYQVC+lkTy3xJqW8UvWZyBQm7FUfwZiTKt8mM0UuewmeNN?=
- =?us-ascii?Q?VFluyW+xVEZClA1YXitTQ8OBRxTZ+IAfav2j/p6kjDXO8TiX4PxyWz15tHFa?=
- =?us-ascii?Q?gGWbPcz2yOwW5SVRrKJJ3U18ClVFNvJ5nnOnpMzTBXY/mMMq2XRSJUouATpB?=
- =?us-ascii?Q?ZE0ZnidPXIrijysvvrDn/LMcn+gZx+oF66oNhMgKFmh4FKpqOHMf83BCaY//?=
- =?us-ascii?Q?IhdzZQ1xjfULc/1P29KM2SwbaPEqUjdWYzUBc+rIa8XGC/rKa2gnc/ouXZVP?=
- =?us-ascii?Q?HyzNuR1pcxJRB2BgzXNhrazHsG1gQQtNbVyGFucTmR+Cr8LSSfgbnRiUVD0p?=
- =?us-ascii?Q?dKJ+jqYPpv+kjQIM8+Rn9DT40F4/COQeyTnd9ARZ4b4jpEMgn2e74Phjnmr9?=
- =?us-ascii?Q?LuffQjVzNFHt+A3XEhcxRLzxMeDQ5rnX8R66NS4VGrVHuo4FUeMg2VTumBXE?=
- =?us-ascii?Q?X6KYjq/dzEk5YRo4Cg4uPiuEik08M+IFOFSyuIoRByCcvOlyF5BHiv93R1C7?=
- =?us-ascii?Q?o0VPWYVU+fxxmKgUZiyzJxtthhfT/DryHNwZTUVOu8jwcW5fI05WGU6hkCKd?=
- =?us-ascii?Q?i9oGt29pxYSR58zYrVPEkA0AenRk4sJUxSfsVAtJjBM+DrLJ/MUejna/Y2j0?=
- =?us-ascii?Q?NjE0QaAMihcC3qDwJQFPzR5FbXus1+Xl/WK9Byg2+sQ3S8/P5VavIq/Eo/rv?=
- =?us-ascii?Q?evzi4Pg68DjH92V8sDJt/xcxC5O5z91du8P1ZJBhE/nSVXMjLR7Ag1D+hSZ3?=
- =?us-ascii?Q?sXWa0e5FpXgIxmIT1DMW70Q3uk1nLhjWTF5+laPOW3xgqH8d6/g7yXgwcmj2?=
- =?us-ascii?Q?LGXjD7wctscRgCWzyJBZo587xNMLwhbOvX76TJgXi4mKs0jBSH1oHLigyP0j?=
- =?us-ascii?Q?QgfNT+Nmw9V9c/2wTHvRekesKW/N3d9mi/BkwdK3Vh1zPO6tf2mUbd6zwjXs?=
- =?us-ascii?Q?gOya8qUi5zruGspXWJ03hisi5cdOR8455rC98AE4m8JEhC9T1jWlZxCN8750?=
- =?us-ascii?Q?776nG405lNrnrvbJyO4wbgPK5nIV57pmTP+KG1HZ6mGDcKOW/xXDIHKZy/kt?=
- =?us-ascii?Q?ozERyKiA9p1FSGMqC6eWX82EQlVVOG3abUyflE39umDbnU+rOT0U9BvM1uGI?=
- =?us-ascii?Q?yrh7dUoD7xcdDu2vtQ6UOwq5rQf0Yg+Td7SYr09B0PzH0isVMKsJV4G2fjy2?=
- =?us-ascii?Q?42Ww/UdTbkxqxn854GPricVFpbDyAOKToVdogJlnC7uzlBu/tWPMzyeZtOiL?=
- =?us-ascii?Q?a/B64D3fYrUe1n1hDnUHYOuHUUHFvNbKyM/oiPznTzM96SDl/JdMnaRL8UkN?=
- =?us-ascii?Q?xqzeEcgKV0xgCbz4eRPIoU/gEauXs7l/q9t0yeymm4oNg35M6igINvDOUQ3N?=
- =?us-ascii?Q?yRN84Jq9rtq38anfyLnI/i4f2oZry/FNItjmROLoefpv/GBB9lI6suLDyXig?=
- =?us-ascii?Q?Tjg2q9BBy+mbSl60jjo3/mo1L9zL5hSHzP62DV21FymvEcXumxPdINg7gyJe?=
- =?us-ascii?Q?HgupELX9dE5ggFGVRB2W0s2WhYgBQz+8odIY1VeIaMu52liNpZqOBBUHEQBk?=
- =?us-ascii?Q?C4CqlIaf8xvvZQV/rl2hH44ey/Wpw/YN7ETAxZ6N?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+   d="scan'208";a="678978681"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.254.213.137]) ([10.254.213.137])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Aug 2023 01:09:34 -0700
+Message-ID: <17e403c0-f2f8-c3d4-9dd0-3a812be79b4a@linux.intel.com>
+Date: Wed, 2 Aug 2023 16:09:32 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0945a300-09ab-4d51-e351-08db932e73a2
-X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Aug 2023 07:59:52.0542
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Y0VUUDkwwEf55Povpx07EUJkjLDf3AmIB1fH/Ry9dOPn/bFlU8kE9mG5pfx7w1mYIYWtq9hc8zOwoc/NR7qLeg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR11MB5774
-X-OriginatorOrg: intel.com
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.13.0
+Cc: baolu.lu@linux.intel.com, "cohuck@redhat.com" <cohuck@redhat.com>,
+ "eric.auger@redhat.com" <eric.auger@redhat.com>,
+ "nicolinc@nvidia.com" <nicolinc@nvidia.com>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "mjrosato@linux.ibm.com" <mjrosato@linux.ibm.com>,
+ "chao.p.peng@linux.intel.com" <chao.p.peng@linux.intel.com>,
+ "yi.y.sun@linux.intel.com" <yi.y.sun@linux.intel.com>,
+ "peterx@redhat.com" <peterx@redhat.com>,
+ "jasowang@redhat.com" <jasowang@redhat.com>,
+ "shameerali.kolothum.thodi@huawei.com"
+ <shameerali.kolothum.thodi@huawei.com>, "lulu@redhat.com" <lulu@redhat.com>,
+ "suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+ "Duan, Zhenzhong" <zhenzhong.duan@intel.com>,
+ Jacob Pan <jacob.jun.pan@linux.intel.com>
+Subject: Re: [PATCH v4 04/12] iommu/vt-d: Add helper to setup pasid nested
+ translation
+Content-Language: en-US
+To: "Tian, Kevin" <kevin.tian@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
+ "joro@8bytes.org" <joro@8bytes.org>,
+ "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
+ "jgg@nvidia.com" <jgg@nvidia.com>,
+ "robin.murphy@arm.com" <robin.murphy@arm.com>
+References: <20230724111335.107427-1-yi.l.liu@intel.com>
+ <20230724111335.107427-5-yi.l.liu@intel.com>
+ <BN9PR11MB5276C84A20C48B4041BE07B78C0BA@BN9PR11MB5276.namprd11.prod.outlook.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <BN9PR11MB5276C84A20C48B4041BE07B78C0BA@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-> From: Liu, Yi L <yi.l.liu@intel.com>
-> Sent: Monday, July 24, 2023 7:14 PM
->
-> @@ -2147,6 +2148,18 @@ __domain_mapping(struct dmar_domain
-> *domain, unsigned long iov_pfn,
->  	if ((prot & (DMA_PTE_READ|DMA_PTE_WRITE)) =3D=3D 0)
->  		return -EINVAL;
->=20
-> +	if (!(prot & DMA_PTE_WRITE) && !domain->read_only_mapped) {
-> +		spin_lock_irqsave(&domain->lock, flags);
-> +		if (domain->set_nested) {
-> +			pr_err_ratelimited("No read-only mapping
-> permitted\n");
+On 2023/8/2 15:10, Tian, Kevin wrote:
+>> +
+>> +	pasid_set_slptr(pte, virt_to_phys(pgd));
+>> +	pasid_set_fault_enable(pte);
+>> +	pasid_set_domain_id(pte, did);
+>> +	pasid_set_address_width(pte, s2_domain->agaw);
+>> +	pasid_set_page_snoop(pte, !!ecap_smpwc(iommu->ecap));
+>> +	pasid_set_translation_type(pte, PASID_ENTRY_PGTT_NESTED);
+>> +	pasid_set_present(pte);
+>> +	spin_unlock(&iommu->lock);
+>> +
+> this lacks of handling of force_snooping
 
-"Read-only mapping is disallowed on the domain which serves as the
-parent in a nested configuration, due to HW errata (ERRATA_772415_SPR17)"
+If stage-2 domain has force_snooping attribute set, then we should set
+the bit field in the pasid entry, right?
 
-> +	u8 read_only_mapped:1;		/* domain has mappings with
-> read-only
-> +					 * permission.
-> +					 */
-> +	u8 set_nested:1;		/* has other domains nested on it */
+How about below additional change?
 
-what about "is_parent"?
+diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
+index 19ac4084913b..86db81ec91f1 100644
+--- a/drivers/iommu/intel/pasid.c
++++ b/drivers/iommu/intel/pasid.c
+@@ -827,6 +827,9 @@ int intel_pasid_setup_nested(struct intel_iommu 
+*iommu, struct device *dev,
+         if (s1_cfg->flags & IOMMU_VTD_S1_EAFE)
+                 pasid_set_eafe(pte);
 
->=20
-> +	spin_lock_irqsave(&s2_dmar_domain->lock, flags);
-> +	if (s2_dmar_domain->read_only_mapped) {
-> +		spin_unlock_irqrestore(&s2_dmar_domain->lock, flags);
-> +		pr_err_ratelimited("S2 domain has read-only mappings\n");
++       if (s2_domain>force_snooping)
++               pasid_set_pgsnp(pte);
++
+         pasid_set_slptr(pte, virt_to_phys(pgd));
+         pasid_set_fault_enable(pte);
+         pasid_set_domain_id(pte, did);
 
-"Nested configuration is disallowed when the stage-2 domain already
-has read-only mappings, due to HW errata (ERRATA_772415_SPR17)"
-
+Best regards,
+baolu
