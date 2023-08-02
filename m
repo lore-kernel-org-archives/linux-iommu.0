@@ -1,35 +1,35 @@
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2041.outbound.protection.outlook.com [40.107.220.41])
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2055.outbound.protection.outlook.com [40.107.237.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 685725230
-	for <iommu@lists.linux.dev>; Wed,  2 Aug 2023 14:48:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 71C6833E5
+	for <iommu@lists.linux.dev>; Wed,  2 Aug 2023 14:51:31 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=k7/ldryD55fHPSNXJW1vDYmjWnH9f97PjMXH7YR/LUsJ7UO8AfAviXn5qRgq7cWE4HiObtujIquzAXWvb0M9qi7rz0Cay5uf0U9ENgpj0FaP6W9s3IXAmfW4XvW9wxxNvvbZlWQYoU7KPtf75A3bsACRdNDZ9lygi7NeUNh3cDFYygcFxTYrJAtrXZPeEZZFMN8ESPeqsOdxEqsaJWoa3oJ9GdXc5bpXmyGvc3dXoyOKbHo/6W5ExSZp4JWxNc1Q0ncACK9X+rZFfaUBF9YWAtvXQGMrN5i+T2qF+IICqeo0oYEKikNWA1pBOs2f29DIG+6DTEm4KWKcrf1zZknQJg==
+ b=nlf+tuUxbcyZLlTNEntGF9F+hgdad/6IeD71zorowL0ls5Ixqrk3H/vVTdiJqjGDGM9d0osDKpYRcUdwj+l5/H5xKMdVKN//7MkB/aTxTldzt4IU0j1LOT9GWsdCiaS00GAqMMZ/AVhcp0pqSTm3Xp22cu7B1kzTimPhishZ970cBj5Rd2SgPm7hHQ+pIdyaH4Y1qzlgN5k9/hls+EIDdft6SEzn6Cr1n3qW8FTuvdNNBV0vBsVJZTTQ9DyHRTAcwTKZEBj3Ar7auSiZiDOGjQ+8oDpNbVZcBrSYqjKckD4KxqX8fwGVdoXa6Strhma0G6M7W7r1SWSQIndj+5M7pA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ggPtWTXEXy4DGH9vLVn5ANUrPjZjqDCp18f2/K8SQD4=;
- b=ig5cU5z4L/ZBuXmNW9dJbzArxtici/+XhAtBrYhtmm9rnFEEUlaHt92mX6LqgCkrBqei3niHV7ijKiUDTFQmT0N+K74E7I3dvb3XZ72F8SfzoMSZoqJdQPsXZRH+2kjO7bVsPhJVjImRqp1+L59kRt2xVGdqyYnil9zuyQQiEM1TMl9fuDkdqUDaCR+6IQXX3IrGNpXZzvPUG59YXFd5Qd3m67uKSr6AGBNIDiwXiB1KigdWgBU+gXYgZEG/nWwFlxaJh8UNLJ68JwBc4oWlVdk9nu1BBfEcUB1rhppHH/fhXgYibOz2HEvUH4pvfXuODOu0Ub8my7iFRIw7ml05Uw==
+ bh=VVrQ0UQSo7o3INkIluyoozRerAuBHcpFftZbqjkfwdU=;
+ b=kme5Qpw8PjT9woG2VAx5csFxcGrUzmsr+cWp1PUnZK9743OR7VmsgGmmD7RW28LLEYOGQji7AI5W8YTlxzMPi3imqpUKr0DEbsY6Bvw1J6v1tjG454zzGNwg3JEG0m/TkdfwJlD5eoMxWofeIhwdfrYacKosgf0ZPYlIoNRPplztn/m95l9jWLHDU7gg/hl9rE30jLii+H1py8EjF3YkwAVzLfRvxul6hw1uhDyDvne/C8QsUWE1tEjSBDlgwzTMVBYyXWlYO0sKWj4Ovtb+PK71pE1Mnq8MAUQh3Hr6wVXk4OeYsiN7iKAYGlrTekcjlDoS83V2tlU/WvqXpXD/Eg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ggPtWTXEXy4DGH9vLVn5ANUrPjZjqDCp18f2/K8SQD4=;
- b=OTGwlAmVwt+pIaEwYphwtApxNVsW5chEG4f4MaSGpSbkCc445cnjieoaAK3PqQbf+kvMjw7GIQ8Frp8iqGhQ0zboK4R2SRDDIALeU7MKVHgjvXN7oSdAKJQKSM9eli/DsoagVEYjHfThRk2zlW3iCxJX8O7PG1/Xy2uG80mHuVzvNHVnWOxvhUVpwcnJOySvskkrf8SzXScdbxvFqIP2Gkk1EW/ytXZoTCdNNJMt25xXr2y0wz3vHn9lJ58AcQurIpqip/DogWg/LfGXXV7FwTtdZAmQEI9QfavPPGjoW5Vmx9GNUmS+JO6mCLraYLuJSkcMTDa8shTVXVM8HHKpRg==
+ bh=VVrQ0UQSo7o3INkIluyoozRerAuBHcpFftZbqjkfwdU=;
+ b=iBU7Lhl83xDnFRnjn1RpVeZXl6YIt/Ig8/+fUKw3lb8oOwyrnJi91Gg/6aSozINW/Rzr+BiGfkxRaaDwGlrpT/ITUGBdveqYxN2uPU56Cu18ubNADI53FnLlugwaymMDp8TkTjvcJtzmtG6s//zMKon917IFuZxQYMxJnAt+0prR2+lXtoCAi86WPxPHmrMyv5Mi4+N3vDMjKY5JhSLcGw1xHT8LOiQr/E8+CP5BhSdTqEtdduOl1nzDJyHXyDY8gF+ryMyauSpLX2JDdvuHTruyCqpxHi7JLFzHsQDC67aOQ2hi6WzOBkLSyGnFBu7q5GtNpXMLXLfOwTLod9LJPw==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by PH7PR12MB9223.namprd12.prod.outlook.com (2603:10b6:510:2f2::18) with
+ by DM4PR12MB5215.namprd12.prod.outlook.com (2603:10b6:5:397::21) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6631.45; Wed, 2 Aug
- 2023 14:48:18 +0000
+ 2023 14:51:29 +0000
 Received: from LV2PR12MB5869.namprd12.prod.outlook.com
  ([fe80::5111:16e8:5afe:1da1]) by LV2PR12MB5869.namprd12.prod.outlook.com
  ([fe80::5111:16e8:5afe:1da1%6]) with mapi id 15.20.6631.045; Wed, 2 Aug 2023
- 14:48:18 +0000
-Date: Wed, 2 Aug 2023 11:48:15 -0300
+ 14:51:29 +0000
+Date: Wed, 2 Aug 2023 11:51:26 -0300
 From: Jason Gunthorpe <jgg@nvidia.com>
 To: Jacob Pan <jacob.jun.pan@linux.intel.com>
 Cc: LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev,
@@ -38,17 +38,18 @@ Cc: LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev,
 	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
 	"Tian, Kevin" <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>,
 	"Yu, Fenghua" <fenghua.yu@intel.com>,
-	Tony Luck <tony.luck@intel.com>
-Subject: Re: [PATCH v11 2/8] iommu: Move global PASID allocation from SVA to
- core
-Message-ID: <ZMpsr3FbcEYRs/G8@nvidia.com>
+	Tony Luck <tony.luck@intel.com>, Tony Zhu <tony.zhu@intel.com>,
+	Dave Jiang <dave.jiang@intel.com>, Vinod Koul <vkoul@kernel.org>
+Subject: Re: [PATCH v11 8/8] dmaengine/idxd: Re-enable kernel workqueue under
+ DMA API
+Message-ID: <ZMptbm4BEmEP4Z1J@nvidia.com>
 References: <20230724222538.3902553-1-jacob.jun.pan@linux.intel.com>
- <20230724222538.3902553-3-jacob.jun.pan@linux.intel.com>
+ <20230724222538.3902553-9-jacob.jun.pan@linux.intel.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230724222538.3902553-3-jacob.jun.pan@linux.intel.com>
-X-ClientProxiedBy: BY5PR20CA0029.namprd20.prod.outlook.com
- (2603:10b6:a03:1f4::42) To LV2PR12MB5869.namprd12.prod.outlook.com
+In-Reply-To: <20230724222538.3902553-9-jacob.jun.pan@linux.intel.com>
+X-ClientProxiedBy: BYAPR08CA0009.namprd08.prod.outlook.com
+ (2603:10b6:a03:100::22) To LV2PR12MB5869.namprd12.prod.outlook.com
  (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -57,80 +58,83 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|PH7PR12MB9223:EE_
-X-MS-Office365-Filtering-Correlation-Id: 48ee60d1-f036-4f3b-9f5b-08db9367829f
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|DM4PR12MB5215:EE_
+X-MS-Office365-Filtering-Correlation-Id: 570bedb8-4878-4c99-8d92-08db9367f41c
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	KQjcjeVAV9CqVQuL6jZCKKgfteoHsCDrAq5qIpru2dmcB3ZaLglja3Un8ZU4B4xdcHedUBShTcEsE5UHulgEbUy+RSLzlZfjMkqLlt0P26ow1bw65YX4rmDX8X9Rm6Fu5S3Ccpde6Fh6SPcZmSp6Le3CwzNsgICPu0JlQtMUh9LCKCU+3xyIhURzW4WGcLF/+XMP5DhjeFvb7VZuSiQRE3T4Y5gnEPsg4UeFBoroIhAUhdxjqv+aGGUgpwRFwf+A9BndM4Bl+59XeWqk6P/PD71MfLH2Ngd90nCSOC7g899mvaGSHi5kIdlXw4oCoiKagYghaVMgc1RGfvFGtVVbQEOqWoUpnENxqIPC8JXyplychAqZjEMxMGeTfgqUVnrYYxugPeioBf90iSzjzYPDkhqjVZSzRDFRqMHgcB++6O7qBV9x9COhOqewJeK+Qi+ZPgRBfPqKpnVMLvfS+4ywaY9FpKhlcasDazMXQbr98m89GiLJtmHdM+hMkupxM/ThvO8Jm2P5FHfFgQqeOSDO0pxhncQM/P9qYaE9kcoUFhTFpnQwZDB5SvDTsf1KVVJX
+	WXRFaA3kvaQuNUMn+lpCtIskfZ0V/JDyDjs/8ExJz11p6OZFr3g09CPD7LMm3J2+FAmWQx7iw4vhIf5J48n7l00akm0n0+r/Ffsr4zjwFRqHpnLaaEnIQF+V3/c9KbAmK3NVre19O/vN/HNa2WTOfoILtZQecANGtaZ5bzv8fHa35WhfNPj7TCGUXkYLDYZs/Flw1MOzNWFTMf8H0mQxAUB8bJOojKLJoOvnjwv+1bYcVPDCsH/T60f7IAPddQAoePD4P2lFmtTZJv3sir9MtxXieF+bsKTZePxCn9EVbcl6EBPyguK8SZaViWYSDMSDvGovw/FG4bmYg96rBL9gd0jHDiAPEOQJstulciLO7RbcnAWwElvdl6RFhmOVZ6GMyRZ/3Aog9cBlfQ6S+g1HtPV7B6ByacmG72QmHjeWtgo+Bh46laqpveYkmnzzoJHDduLowrga/vFFpQjkpPKRN7Yj1LVv3SAzG6q9Xv08Um+WD/iiKp6hyyzlJRX1CLca5QNtgpMvAjEEU7hx8Atl6j7SQEZzucF3cltbgevbFJNY8rj2P4kOum0dUw83d/qMgohcSzJocAXtSa7twQoYnS/pW2E+EVpvqQa7Cn5RcQk=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(346002)(396003)(136003)(366004)(376002)(39860400002)(451199021)(8936002)(8676002)(5660300002)(26005)(41300700001)(2906002)(7416002)(36756003)(2616005)(478600001)(54906003)(38100700002)(316002)(86362001)(6506007)(6486002)(66946007)(66556008)(66476007)(6666004)(4326008)(6916009)(186003)(6512007);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(346002)(396003)(136003)(366004)(376002)(39860400002)(451199021)(8936002)(8676002)(7416002)(41300700001)(5660300002)(2906002)(83380400001)(2616005)(186003)(86362001)(478600001)(54906003)(316002)(26005)(6506007)(38100700002)(66946007)(6666004)(66476007)(66556008)(6486002)(6916009)(4326008)(6512007)(36756003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?DPE5H/xZiwMALJmUtE74mlZdjAA2WZ1ffs9CWDgTQuNkUeYEsA8E6EyubkAb?=
- =?us-ascii?Q?39rvacl0zCCyiRkiBO/WFgC6DfNHIJ28jHlIsVWRZvcGm9ebQB7n8DfP84hS?=
- =?us-ascii?Q?Lh3HKgTwZmKd/KhkpfVE/QnKPya3qM54PU7hjQzL95Sv23ZJm+scLPe893Tp?=
- =?us-ascii?Q?PV4pUnQZwtd++ShSrThx32lMB2bxcaUsUMMvFtzcH/4Avvwymryss0dK8Cdm?=
- =?us-ascii?Q?TIcPcRrkAhhpB1mcH1qwSY1nXYO7LjS8hHva9fqT8tb0jfHX8qswmbwGtCCy?=
- =?us-ascii?Q?L58zq1CUxWBxbK7QsZSP428DJ5/khIFICJuqkCVmDefUlMLknDqcJzrn1ZTv?=
- =?us-ascii?Q?HLV8Qv3dxqu/yaMb4ZluFduAzXzOsG+TAuNQXM9RHc9iEQC1VOE+BfK08uVx?=
- =?us-ascii?Q?IendOwoRVRwOmtd9fWfQTtPW6CLZXHwBSCLVIFtUncTfV5V3vr9LCTyxyAk6?=
- =?us-ascii?Q?Cw2UXkP9dBbH2rLQqY1/peBs2CanPqauMzyyDHqcdcbaT+C/vY1yut0ILQep?=
- =?us-ascii?Q?Zx+t7zZnzm/vKEgB53nMlopbi7fB7X1H/BYjck2HAhCHXGNSm0sbfF9x7x+2?=
- =?us-ascii?Q?H5aP4satJffuQraoc8bnV346t+IW1fhtgqX3VfEe3eEGwz1qtv0oLeQ1jTvc?=
- =?us-ascii?Q?uudze6ZKErIpk8jJGfOjp5DYnb2GbDrpMn0f9oGfU3F7R0mWbOUIFzwzyNOy?=
- =?us-ascii?Q?tAVCNiOS9xII4dw9UwwlydChsVEn+v7uB/XMAqAyKoBZszFQOi8AoZbmd0Qq?=
- =?us-ascii?Q?hVO6pE9f7hE38vSA6mfTlUwZKcNkFSVfer0YO4Mij9k8GaUYjNxeI384dQQt?=
- =?us-ascii?Q?vsasa9NgSQ1CZWdwZW7i52oePSWnaOH9RDTvJZ9b+aAN32dDAZnP79AlaSni?=
- =?us-ascii?Q?GJkAQBW6IkUKsaYyyEqn572G21dayTRf8Z5ElSiAMYw09fNm5ZCuq+NpE+jj?=
- =?us-ascii?Q?Zj/kLPScFFp9gBgioUun+rbFyu44zcsJD3tAb+STC1Uzg7FytrWuHJfdqZ4l?=
- =?us-ascii?Q?TFEkc4zTxNn4C8dUFIPquZnJXcLNLC74yj6MOuF8yg2w3AFIqjrAFolh2lxI?=
- =?us-ascii?Q?kHh4TnRd5RwlMKh5v5q+stHx9tL2nOcowLO+Jn9JtlsZQUY56A9PflPEGlZ2?=
- =?us-ascii?Q?wVAAisBPVk/dc9uCqndADBsbdpbXR7KQwlbsxJJcStEu2GACM5b6oKZT/a2C?=
- =?us-ascii?Q?t25KXU7INGUAHqcGtupSvpqzmcGO6ycXe54ENZ3qhSZFRsqpGNX2VMo+Cx/P?=
- =?us-ascii?Q?tnErNDAgLOcptYHpyad1IosCwc6E1f0TwfP+kCTq3kH14RS8S56SN43DPtVO?=
- =?us-ascii?Q?Pm9/dcMueY6+4AyopCH9jMYMgkIdJfTeDTxKHuYXTMrnMeljCVrZuPKU2Cw7?=
- =?us-ascii?Q?w9603qolUAflyKtBedzQO+jWgYT4OTj9Q+Rfdm1KSvsNLp4/7qahEPv0BXRa?=
- =?us-ascii?Q?hjFznaeDFEYNuaOiubw/kKbzMzjgwtvAg7hP9oFbb9hfIzAEXY0R2FPQTQaq?=
- =?us-ascii?Q?KKHMQ/CNJvWDzNHwy+osLhF/llW+y7kcEkGI2eNS1QrCDkfFlRBBEGTdTrKy?=
- =?us-ascii?Q?rVsG5rmhQORjAAzLgrNeLEVNYQNeh0RGOltLjUxd?=
+	=?us-ascii?Q?W65IWVW1oWVxGcGLRwOwYyJoRDvulq26Y7aLMdIdAOQmn1AP3aAyWFnughM2?=
+ =?us-ascii?Q?m9/qZ/foswv01VVAWYTqnoOgNUQdiEvF3RukyMAufm17Ps8fkjho0rXonBex?=
+ =?us-ascii?Q?063BYgOaW4odvJBJW1OHbXb2lOn7qe59sAXqfr4l9qniZ+QfCkmd0Edi/TUR?=
+ =?us-ascii?Q?RMFJMrhtO3dSkWOK2bEoNzTp9QHqXIE4MO3zvmm1nZhMQ0FDSn7i57WAefU2?=
+ =?us-ascii?Q?W7DBj2LnAe1YB31xf9tHTbz8+wme4TT5q2HzUDgLSIOf6y4g8S6ZPdSuMS3P?=
+ =?us-ascii?Q?38meE1UsLr7MGnrycBi7tM9+FA+bNi/wJWgerb7WMSTWEUkRW6BJy6KxZmgq?=
+ =?us-ascii?Q?B7Ya3wIvYDeSual/x9trZlEXMq9CKjzPGL3CGg9xR+dsW9UbJpVefRNeUO4L?=
+ =?us-ascii?Q?HP0S42VGAwHWCJslK1CxIVuwjuOHJZzPs3tSZMR0nJ0yI5ycQazXIFL06xhh?=
+ =?us-ascii?Q?G810cJeU+s+Y/J/5uARDtOp444az11ka+gssaYVTYPquNNaw9RyXBdodTW6o?=
+ =?us-ascii?Q?6si28vPo+/Iaucw8lw83uHdctANynQr1QxoNOHQ04spYcveM6wzSzQSDAgJ2?=
+ =?us-ascii?Q?Rd+CW4A3h8OQcfYR7LBrP+e3eeQGDFEXp5i/xamno6CkDvxfS/XceZvSRjYE?=
+ =?us-ascii?Q?PDVuH4p1jjG/ngl6dM1SHa0LnIkw5xiW0Pz0jOGJNDyMPoDXyyNwXzB1S2IW?=
+ =?us-ascii?Q?1MMFrpKe+gFTsk6ATy/eIRqBbrEf+oSGudKZBd5S+QwTsxJx9sQqnv8l4/KO?=
+ =?us-ascii?Q?JvEhasWxVgb8AmXuAE2S+22vim8+QxBE4m9lb+vRFxmi4OUXn+QhUjvvphHA?=
+ =?us-ascii?Q?YsR+PKtfUopYVRIwkbImpeqRqEKnm7PmqNYf8xgtgfBAJJUhX8VtV+nPNj72?=
+ =?us-ascii?Q?U9EjJEcqxyjxKBsvSyr4H3POiTm/NwD46pU5LbpDAqP5Gb5qiaQoOTYAZBvU?=
+ =?us-ascii?Q?mz4vFAisfD51S6derGzuArGgVoBwtBBuDEmkYcqAr5HwKdyVqyGdaBeU33Q9?=
+ =?us-ascii?Q?9VtuA2S37mN35d7fxbNMmdbL9kZH1pmN9GhW+Zj3WdEKzP+F/3M0hgyNCPUN?=
+ =?us-ascii?Q?z/HE6azjJYBqWlLORMlfZhIS5+laqEjtdEycL+RhR3n/Xam3XlOIiDv/z6Br?=
+ =?us-ascii?Q?ly0sOOq2uuJsG4GjsV+vruc7lzxciNPtImRpaBa3RwldHDqdcI5P0blkxF2h?=
+ =?us-ascii?Q?9FZSnUAxFWApI9zvZjfXR3+/dmr2aaK9/46XikKE/AXlJ2S3Io4D+mEkPncp?=
+ =?us-ascii?Q?00BfXLXJNvgjLW7jqH7cOJN6aOOZBWP6o2onHxHuaNt9dWLZhCQgvNUKb9jY?=
+ =?us-ascii?Q?qchrOFeO4HqYraLpjpZ6v18ZS+HxP3cP7YmH15Wc3tPTTMyhTBxD6GGM5wKH?=
+ =?us-ascii?Q?6/IsCKRXZbQOoaGJ6UPhHIu7DM8VqbZeKKGk+3XPQUOYAiMVlxpNAxOwD3e6?=
+ =?us-ascii?Q?2z0iXk45m8059LQ8y61PF0+DOXfFY/CzKNHyPGqzvICtwy1v01NuimJ2NtCn?=
+ =?us-ascii?Q?ui/biq0AnPin4j4m6Tx/wlWsJXtGQAv9YSBE4usXvLibWr30xaPl4iCkAFtl?=
+ =?us-ascii?Q?TuM/hHKFHQCsi2yIvqMNo0P0Czt3wt6J0oe7uxNr?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 48ee60d1-f036-4f3b-9f5b-08db9367829f
+X-MS-Exchange-CrossTenant-Network-Message-Id: 570bedb8-4878-4c99-8d92-08db9367f41c
 X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Aug 2023 14:48:18.7404
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Aug 2023 14:51:29.1092
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: kjoFX4brOY8ez1I2a7rTqKiT5S7/A+ld6h5A4LYCI28NOWkLtDSOq03dLVBnDPcI
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB9223
+X-MS-Exchange-CrossTenant-UserPrincipalName: 52fgqz3wJCvCJKfOt8BiFTa8eEMmvZhwtLDpe2xe4geZlj9FLA0DeAIn2clVvKqX
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5215
 
-On Mon, Jul 24, 2023 at 03:25:32PM -0700, Jacob Pan wrote:
-> Global PASID can be used beyond SVA. For example, drivers that use
-> Intel ENQCMD to submit work must use global PASIDs in that PASID
-> is stored in a per CPU MSR. When such device need to submit work
-> for in-kernel DMA with PASID, it must allocate PASIDs from the same
-> global number space to avoid conflict.
+On Mon, Jul 24, 2023 at 03:25:38PM -0700, Jacob Pan wrote:
+> Kernel workqueues were disabled due to flawed use of kernel VA and SVA
+> API. Now that we have the support for attaching PASID to the device's
+> default domain and the ability to reserve global PASIDs from SVA APIs,
+> we can re-enable the kernel work queues and use them under DMA API.
+> 
+> We also use non-privileged access for in-kernel DMA to be consistent
+> with the IOMMU settings. Consequently, interrupt for user privilege is
+> enabled for work completion IRQs.
+> 
+> Link:https://lore.kernel.org/linux-iommu/20210511194726.GP1002214@nvidia.com/
+> Tested-by: Tony Zhu <tony.zhu@intel.com>
+> Reviewed-by: Dave Jiang <dave.jiang@intel.com>
+> Reviewed-by: Fenghua Yu <fenghua.yu@intel.com>
+> Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+> Acked-by: Vinod Koul <vkoul@kernel.org>
+> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> ---
+> v9: Set user IRQ enable when device is enabled for system PASID
+> ---
+>  drivers/dma/idxd/device.c | 39 ++++++++++------------------
+>  drivers/dma/idxd/dma.c    |  5 ++--
+>  drivers/dma/idxd/idxd.h   |  9 +++++++
+>  drivers/dma/idxd/init.c   | 54 ++++++++++++++++++++++++++++++++++++---
+>  drivers/dma/idxd/sysfs.c  |  7 -----
+>  5 files changed, 76 insertions(+), 38 deletions(-)
 
-This is a bit misleading, maybe:
-
-==
-Intel ENQCMD requires a single PASID to be shared between multiple
-devices, as the PASID is stored in a single MSR register per-process
-and userspace can use only that one PASID.
-
-This means that the PASID allocation for any ENQCMD using device driver
-must always come from a shared global pool, regardless of what kind of
-domain the PASID will be used with.
-
-Split the code for the global PASID allocator into
-iommu_alloc/free_global_pasid() so that drivers can attach non-SVA
-domains to PASIDs as well.
-==
-
-The code looks fine, though I would eventually like to see the SVA
-code not hardwired to the global allocator too :\
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
 Jason
