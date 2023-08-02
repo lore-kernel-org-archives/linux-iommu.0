@@ -1,54 +1,112 @@
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D33A65672
-	for <iommu@lists.linux.dev>; Wed,  2 Aug 2023 09:47:31 +0000 (UTC)
-Received: by verein.lst.de (Postfix, from userid 2407)
-	id 2B29368AFE; Wed,  2 Aug 2023 11:47:26 +0200 (CEST)
-Date: Wed, 2 Aug 2023 11:47:25 +0200
-From: Christoph Hellwig <hch@lst.de>
-To: John Stultz <jstultz@google.com>
-Cc: Christoph Hellwig <hch@lst.de>, Pintu Agarwal <pintu.ping@gmail.com>,
-	Pintu Kumar <quic_pintu@quicinc.com>, linux-kernel@vger.kernel.org,
-	akpm@linux-foundation.org, linux-mm@kvack.org,
-	m.szyprowski@samsung.com, robin.murphy@arm.com,
-	iommu@lists.linux.dev, Sumit Semwal <sumit.semwal@linaro.org>,
-	Benjamin Gaignard <benjamin.gaignard@collabora.com>,
-	Liam Mark <lmark@codeaurora.org>, Laura Abbott <labbott@redhat.com>,
-	Brian Starkey <Brian.Starkey@arm.com>,
-	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-	linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
-	linaro-mm-sig@lists.linaro.org
-Subject: Re: [PATCH v2] dma-contiguous: define proper name for global cma
- region
-Message-ID: <20230802094725.GA28241@lst.de>
-References: <1690598115-26287-1-git-send-email-quic_pintu@quicinc.com> <20230731112155.GA3662@lst.de> <CAOuPNLjnfq1JefngtNrg0Q+JdMTSRz+eEqxGQJFfx9+af+k9WA@mail.gmail.com> <20230801171838.GA14599@lst.de> <CANDhNCq+3OEosUcQJ5GFgk+5OyG+JqXKM43UAo0aPz-V27OgAA@mail.gmail.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9824A6FA4
+	for <iommu@lists.linux.dev>; Wed,  2 Aug 2023 10:52:09 +0000 (UTC)
+Received: from canpemm500006.china.huawei.com (unknown [172.30.72.54])
+	by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4RG7xh4fjKzNmZ3;
+	Wed,  2 Aug 2023 18:48:40 +0800 (CST)
+Received: from [10.67.145.224] (10.67.145.224) by
+ canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.27; Wed, 2 Aug 2023 18:52:06 +0800
+Subject: Re: [PATCH 1/1] Revert "iommu/arm-smmu-v3: Set TTL invalidation hint
+ better"
+To: Will Deacon <will@kernel.org>
+CC: <linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>, Robin Murphy <robin.murphy@arm.com>, Joerg
+ Roedel <joro@8bytes.org>, Lu Baolu <baolu.lu@linux.intel.com>, Jason
+ Gunthorpe <jgg@ziepe.ca>, Yicong Yang <yangyicong@hisilicon.com>, Tomas Krcka
+	<krckatom@amazon.de>, Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Nicolin Chen <nicolinc@nvidia.com>
+References: <1690784482-30028-1-git-send-email-wangwudi@hisilicon.com>
+ <20230801085504.GA26130@willie-the-truck>
+From: zhurui <zhurui3@huawei.com>
+Message-ID: <27c895b8-1fb0-be88-8bc3-878d754684c8@huawei.com>
+Date: Wed, 2 Aug 2023 18:52:05 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CANDhNCq+3OEosUcQJ5GFgk+5OyG+JqXKM43UAo0aPz-V27OgAA@mail.gmail.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+In-Reply-To: <20230801085504.GA26130@willie-the-truck>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.67.145.224]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ canpemm500006.china.huawei.com (7.192.105.130)
+X-CFilter-Loop: Reflected
 
-On Tue, Aug 01, 2023 at 10:39:04PM -0700, John Stultz wrote:
-> So, forgive me, I've not had a chance to look into this, but my
-> recollection was "reserved" is the name we see on x86, but other names
-> are possibly provided via the dts node?
 
-Indeed, dma_contiguous_default_area can also be set through
-rmem_cma_setup, which then takes the name from DT.
 
-> I believe on the hikey board its "linux,cma" is the name, so forcing
-> it to reserved would break that.
+On 2023/8/1 16:55, Will Deacon wrote:
+> On Mon, Jul 31, 2023 at 02:21:22PM +0800, wangwudi wrote:
+>> From: Rui Zhu <zhurui3@huawei.com>
+>>
+>> This reverts commit 6833b8f2e19945a41e4d5efd8c6d9f4cae9a5b7d.
+>>
+>> This constraint violates the protocol. When tg is not 0 but ttl, scale,
+>> and num are 0, the hardware reports the CERROR_IL gerror. In the
+>> protocol, leaf is not a prerequisite for TTL.
+>>
+>> Cc: Will Deacon <will@kernel.org>
+>> Cc: Robin Murphy <robin.murphy@arm.com>
+>> Cc: Joerg Roedel <joro@8bytes.org>
+>> Cc: Lu Baolu <baolu.lu@linux.intel.com>
+>> Cc: Jason Gunthorpe <jgg@ziepe.ca>
+>> Cc: Yicong Yang <yangyicong@hisilicon.com>
+>> Cc: Tomas Krcka <krckatom@amazon.de>
+>> Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
+>> Cc: Nicolin Chen <nicolinc@nvidia.com>
+>> Cc: Rui Zhu <zhurui3@huawei.com>
+>>
+>> Signed-off-by: Rui Zhu <zhurui3@huawei.com>
+>> ---
+>>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 9 ++-------
+>>  1 file changed, 2 insertions(+), 7 deletions(-)
+>>
+>> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>> index 9b0dc3505601..098e84cfa82f 100644
+>> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>> @@ -1898,13 +1898,8 @@ static void __arm_smmu_tlb_inv_range(struct arm_smmu_cmdq_ent *cmd,
+>>  		/* Convert page size of 12,14,16 (log2) to 1,2,3 */
+>>  		cmd->tlbi.tg = (tg - 10) / 2;
+>>  
+>> -		/*
+>> -		 * Determine what level the granule is at. For non-leaf, io-pgtable
+>> -		 * assumes .tlb_flush_walk can invalidate multiple levels at once,
+>> -		 * so ignore the nominal last-level granule and leave TTL=0.
+>> -		 */
+>> -		if (cmd->tlbi.leaf)
+>> -			cmd->tlbi.ttl = 4 - ((ilog2(granule) - 3) / (tg - 3));
+>> +		/* Determine what level the granule is at */
+>> +		cmd->tlbi.ttl = 4 - ((ilog2(granule) - 3) / (tg - 3));
 > 
-> Maybe instead add a compat config option to force the cma name (so x86
-> can set it to "default" if needed)?
+> Doesn't this reintroduce the bug that 6833b8f2e199 tried to fix?
+> 
+> afaict, we should only hit the problematic case of tg != 0 but ttl, scale
+> and num all 0 if we're invalidating a single page, so shouldn't we just
+> zap tg in that case, since it's not doing anything useful?
 
+You're right. I'm sorry I missed. I just need to handle the problematic
+case by assigning 0 to tg. It's better to add this following code before
+each tlbi cmd batch add.
 
-I think we'll just need to leave it as-is.  I with dma-heaps had never
-exposed the name to userspace, but we'll have to lіve with it now.
+if (num_pages == 1) {
+	cmd->tlbi.tg = 0;
+}
+
+I'll resubmit a new patch. Thanks for your correction.
+
+> 
+> I hesitate to say we should avoid range invalidation altogether for
+> single-page invalidations because I think some errata workarounds might
+> need that to work.
+> 
+> Will
+> .
+> 
