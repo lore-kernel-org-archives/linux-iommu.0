@@ -1,112 +1,94 @@
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f181.google.com (mail-qt1-f181.google.com [209.85.160.181])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9824A6FA4
-	for <iommu@lists.linux.dev>; Wed,  2 Aug 2023 10:52:09 +0000 (UTC)
-Received: from canpemm500006.china.huawei.com (unknown [172.30.72.54])
-	by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4RG7xh4fjKzNmZ3;
-	Wed,  2 Aug 2023 18:48:40 +0800 (CST)
-Received: from [10.67.145.224] (10.67.145.224) by
- canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.27; Wed, 2 Aug 2023 18:52:06 +0800
-Subject: Re: [PATCH 1/1] Revert "iommu/arm-smmu-v3: Set TTL invalidation hint
- better"
-To: Will Deacon <will@kernel.org>
-CC: <linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>, Robin Murphy <robin.murphy@arm.com>, Joerg
- Roedel <joro@8bytes.org>, Lu Baolu <baolu.lu@linux.intel.com>, Jason
- Gunthorpe <jgg@ziepe.ca>, Yicong Yang <yangyicong@hisilicon.com>, Tomas Krcka
-	<krckatom@amazon.de>, Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Nicolin Chen <nicolinc@nvidia.com>
-References: <1690784482-30028-1-git-send-email-wangwudi@hisilicon.com>
- <20230801085504.GA26130@willie-the-truck>
-From: zhurui <zhurui3@huawei.com>
-Message-ID: <27c895b8-1fb0-be88-8bc3-878d754684c8@huawei.com>
-Date: Wed, 2 Aug 2023 18:52:05 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B144D63AA
+	for <iommu@lists.linux.dev>; Wed,  2 Aug 2023 11:19:49 +0000 (UTC)
+Received: by mail-qt1-f181.google.com with SMTP id d75a77b69052e-40c72caec5cso196591cf.0
+        for <iommu@lists.linux.dev>; Wed, 02 Aug 2023 04:19:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20221208; t=1690975188; x=1691579988;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=1Wq8cn2J6sVYRERovJLmedigLkU1hrLj8goBJfFuNds=;
+        b=kOrKMge0UoNaRBw0wrdtyfN0q3TJ7HPqJutvDcwc46Gv+XF5TpZpoXcnvFCjJxfscJ
+         VOsC3FlmCH9tyKdBBq3osNmeW4/3B2zoAhzNtN3BEL64qq4/6jtMS9Be1jGywd8w5NoY
+         +/B6EaWWy5/yo6losZFJsX4goGF41WslK1jcQeFKTrsE8ACj0I28azDJqdMnq2hbj4Hs
+         uoD9PFrFYaweFOjuhh4z32GOzFYo6SmU4oWyAH1SjVoSNG4QwzdYgL9L4yhCpno6MYv0
+         LyYmS9+Kq+fnYglWOTSIXVoeqPAXDVCae+FRprPd94iMec/HvQtJ/EGd4Pv/4Yc2ddLj
+         EYCA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1690975188; x=1691579988;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=1Wq8cn2J6sVYRERovJLmedigLkU1hrLj8goBJfFuNds=;
+        b=iD8F7S+OwIYks61IJ/2W+Jb6pwjrukk+DH6N7/TDzwoZN6pl8OCyK7MBFNMRozuMbI
+         F2I3LNVbL90MO5ByVdvQAcIxH8ZyMO/URnSkbyg7qxhIiXhXxbeON40yQLpyE679IBUV
+         dkTpj7xNA6bkfwCLn2aMKenm3KoaQbmvgwjhIGBRNFyMfnIy08VCr9nR8iR5cPvJVV1f
+         2UY17cxODn+NYrCUBQMeU11lYFscKE9Q1jc7qW660liH4ch1Txgfm2OpPbIhaMk5/8K0
+         ZQCSFZN2kUcqruTYMzXeqrtgR1m6lw6g5Rjvt+UK8w9KDVuvkXo5fZjRw0ztM2HqjXO1
+         BU3Q==
+X-Gm-Message-State: ABy/qLbX4OJbpI4Vas4SNH7nwWn18zeY8U0aLta1e1ZYPiauVe9aGX7l
+	NcZvRmj77tP6JslA9VLqbChFGSObsoH0qt3VI/E95w==
+X-Google-Smtp-Source: APBJJlG0I3Dhg+TBORKYrBn9z8NMpsRfeSBGXC1mEccDfQVVS1/uUKsIB++bl54caZq72N8AvPt4aT2zHVUtP/TVO4I=
+X-Received: by 2002:a05:622a:130e:b0:3fa:3c8f:3435 with SMTP id
+ v14-20020a05622a130e00b003fa3c8f3435mr999983qtk.27.1690975188231; Wed, 02 Aug
+ 2023 04:19:48 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <20230801085504.GA26130@willie-the-truck>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.145.224]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- canpemm500006.china.huawei.com (7.192.105.130)
-X-CFilter-Loop: Reflected
+References: <20230801183845.4026101-1-mshavit@google.com> <20230802023524.v3.6.Ice063dcf87d1b777a72e008d9e3406d2bcf6d876@changeid>
+ <ZMma/qk0otN9eyW3@nvidia.com>
+In-Reply-To: <ZMma/qk0otN9eyW3@nvidia.com>
+From: Michael Shavit <mshavit@google.com>
+Date: Wed, 2 Aug 2023 19:19:12 +0800
+Message-ID: <CAKHBV24e4YAB8J7MP=vuVarn5cVSWrB-NsjO-obH5CZECk0xNg@mail.gmail.com>
+Subject: Re: [PATCH v3 6/8] iommu/arm-smmu-v3: Move CD table to arm_smmu_master
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
+	linux-kernel@vger.kernel.org, robin.murphy@arm.com, will@kernel.org, 
+	jean-philippe@linaro.org, nicolinc@nvidia.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
+On Wed, Aug 2, 2023 at 7:53=E2=80=AFAM Jason Gunthorpe <jgg@nvidia.com> wro=
+te:
+>
+> On Wed, Aug 02, 2023 at 02:35:23AM +0800, Michael Shavit wrote:
+> > @@ -2465,6 +2440,22 @@ static int arm_smmu_attach_dev(struct iommu_doma=
+in *domain, struct device *dev)
+> >       if (smmu_domain->stage !=3D ARM_SMMU_DOMAIN_BYPASS)
+> >               master->ats_enabled =3D arm_smmu_ats_supported(master);
+> >
+> > +     if (smmu_domain->stage =3D=3D ARM_SMMU_DOMAIN_S1) {
+> > +             if (!master->cd_table.cdtab) {
+> > +                     ret =3D arm_smmu_alloc_cd_tables(master);
+> > +                     if (ret) {
+>
+> Again, I didn't look very closely at your locking, but what lock is
+> being held to protect the read of master->cd_table.cdtab ?
 
+The cd_table is only written into (with write_ctx_desc) when something
+attaches or detaches (SVA is a little weird, but it handles locking
+internally, and blocks all non-sva attach/detach calls while enabled).
+The cd_table itself is allocated on first attach, and freed on release.
 
-On 2023/8/1 16:55, Will Deacon wrote:
-> On Mon, Jul 31, 2023 at 02:21:22PM +0800, wangwudi wrote:
->> From: Rui Zhu <zhurui3@huawei.com>
->>
->> This reverts commit 6833b8f2e19945a41e4d5efd8c6d9f4cae9a5b7d.
->>
->> This constraint violates the protocol. When tg is not 0 but ttl, scale,
->> and num are 0, the hardware reports the CERROR_IL gerror. In the
->> protocol, leaf is not a prerequisite for TTL.
->>
->> Cc: Will Deacon <will@kernel.org>
->> Cc: Robin Murphy <robin.murphy@arm.com>
->> Cc: Joerg Roedel <joro@8bytes.org>
->> Cc: Lu Baolu <baolu.lu@linux.intel.com>
->> Cc: Jason Gunthorpe <jgg@ziepe.ca>
->> Cc: Yicong Yang <yangyicong@hisilicon.com>
->> Cc: Tomas Krcka <krckatom@amazon.de>
->> Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
->> Cc: Nicolin Chen <nicolinc@nvidia.com>
->> Cc: Rui Zhu <zhurui3@huawei.com>
->>
->> Signed-off-by: Rui Zhu <zhurui3@huawei.com>
->> ---
->>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 9 ++-------
->>  1 file changed, 2 insertions(+), 7 deletions(-)
->>
->> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
->> index 9b0dc3505601..098e84cfa82f 100644
->> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
->> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
->> @@ -1898,13 +1898,8 @@ static void __arm_smmu_tlb_inv_range(struct arm_smmu_cmdq_ent *cmd,
->>  		/* Convert page size of 12,14,16 (log2) to 1,2,3 */
->>  		cmd->tlbi.tg = (tg - 10) / 2;
->>  
->> -		/*
->> -		 * Determine what level the granule is at. For non-leaf, io-pgtable
->> -		 * assumes .tlb_flush_walk can invalidate multiple levels at once,
->> -		 * so ignore the nominal last-level granule and leave TTL=0.
->> -		 */
->> -		if (cmd->tlbi.leaf)
->> -			cmd->tlbi.ttl = 4 - ((ilog2(granule) - 3) / (tg - 3));
->> +		/* Determine what level the granule is at */
->> +		cmd->tlbi.ttl = 4 - ((ilog2(granule) - 3) / (tg - 3));
-> 
-> Doesn't this reintroduce the bug that 6833b8f2e199 tried to fix?
-> 
-> afaict, we should only hit the problematic case of tg != 0 but ttl, scale
-> and num all 0 if we're invalidating a single page, so shouldn't we just
-> zap tg in that case, since it's not doing anything useful?
+Doesn't the iommu framework guarantee that attach_dev (and
+release_device) won't have concurrent calls for a given master through
+the group lock? I can add an internal lock if relying on the iommu
+lock is not OK.
 
-You're right. I'm sorry I missed. I just need to handle the problematic
-case by assigning 0 to tg. It's better to add this following code before
-each tlbi cmd batch add.
+> > +                             master->domain =3D NULL;
+> > +                             goto out_unlock;
+>
+> This is only the domain lock:
+>         mutex_unlock(&smmu_domain->init_mutex);
+>
+> Which is no longer sufficient.
 
-if (num_pages == 1) {
-	cmd->tlbi.tg = 0;
-}
-
-I'll resubmit a new patch. Thanks for your correction.
-
-> 
-> I hesitate to say we should avoid range invalidation altogether for
-> single-page invalidations because I think some errata workarounds might
-> need that to work.
-> 
-> Will
-> .
-> 
+Hmmm yeah that lock looks misleading here. Let me move the unlock
+further up so that it more clearly surrounds the section it protects.
