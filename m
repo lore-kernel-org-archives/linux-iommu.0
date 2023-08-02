@@ -1,173 +1,127 @@
-Received: from mgamail.intel.com (unknown [192.55.52.88])
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2081.outbound.protection.outlook.com [40.107.93.81])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0393733E5
-	for <iommu@lists.linux.dev>; Wed,  2 Aug 2023 14:52:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1690987933; x=1722523933;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=7O8wsYLgsT8lGZDwBvYyoxU7lwdC5FqCYczmgEG4628=;
-  b=KeqbbnmWv2xtHMbhllq3x5i/CL1687T37AHLxMjRTo/dpH1Qgdx4kEGj
-   Ylw7nzsYm8BzSfG9R2DqJ4IbQ6+HogbmaAzLwKnVjsN28BRcleDKDTN/a
-   2rugYPSEP6J8uG4vHNFVj4TvP9/d5is9vK7i8iDSf7Hh2sEaV93IEdAnZ
-   GTEyGnNQ4TJdWSbA+HNynUhuJ4sINMatiAoRnyco8IGYqhRcyRQWApE6x
-   drof4civkj9NPpuTbeHaTJZCMkyR3qVwHfj+Tk+wVvWSAUl3pcFxTFQ/e
-   gFma8x/T8lPRCAHJsuGTTUpZyadbvM8dq1w5Xnk+lmQZuF7EvHEHWVmbr
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10790"; a="400552405"
-X-IronPort-AV: E=Sophos;i="6.01,249,1684825200"; 
-   d="scan'208";a="400552405"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Aug 2023 07:49:02 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10790"; a="722869945"
-X-IronPort-AV: E=Sophos;i="6.01,249,1684825200"; 
-   d="scan'208";a="722869945"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.24.100.114])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Aug 2023 07:48:49 -0700
-Date: Wed, 2 Aug 2023 07:53:57 -0700
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev, "Lu Baolu"
- <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, Jean-Philippe
- Brucker <jean-philippe@linaro.com>, "Robin Murphy" <robin.murphy@arm.com>
-Cc: Jason Gunthorpe <jgg@nvidia.com>, "Will Deacon" <will@kernel.org>,
- "Tian, Kevin" <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>, "Yu,
- Fenghua" <fenghua.yu@intel.com>, Tony Luck <tony.luck@intel.com>,
- jacob.jun.pan@linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 98ECE33E5
+	for <iommu@lists.linux.dev>; Wed,  2 Aug 2023 14:52:18 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Ml4ic6jKTA/DlVl/150XU980ABMZSgurQczVOhv9E0X9022A/mCAxkv/nodaU4q85cYzOd+cZZWsQUIpZ0N80OFV0XU1XSy+db4JqbD5N8Bh4nDFfJh3hAxG3BT2NzholwJh+EXD0mmtYZ2i7Ktfwd5gG0CX9YFnsNwvrZWG+tz8VT7XiPVaU1ksXyfIoyNjDYEpT/gBGc35ChRMoTYinXHUyZJBPsm1eajksBmjZpkIyDUDaGqeqE6AafnUy6rPBlM4nqRuTAKGHtga5Wa1ittnHzwlyVsnWrsE8eDPSX5hVr807iFVG4wNwETJKyJoWrY1lx7b9NMLkUds8a1OTg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=C43Q6LwHoP8qd47g2u1mY48J+7Vt0aXRt186oem9ixM=;
+ b=E0aQCaVP1HpUP8AjRdjs4h2qjqfFuXdhQM6/T45YgoINlijjXpftgI28s7bpbGcgdK9wOuuEEP9gkIWj9wD/qzufg2bsdCS28qNUwAnI73/nm/Gp8WpRmD7gI2G/hKqWpq8hxAtvQlAsAlo8+qNOfwZ8b7ec9e2Flq/fjcyMcvb7MWKXBkRJfLq3L5gQit38GGiydOAPa2qxryIo9stcO1nG8v9UJl/MsP2+yWOflJFrPQOi6Ggf90dl6B+Q3jSreQ8HNATKBFXzZZJWvMl15BhAZx5UEjd2jwmtj91sREBVyDglhT68YfnO9JnztM+qeaNZQp3tKTE5Ys/Ab6UTtA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=C43Q6LwHoP8qd47g2u1mY48J+7Vt0aXRt186oem9ixM=;
+ b=esCbSthRlFUuTE3PFuxiiMZN/9zSqXRzpMe3eTdKJvVwjDWpjX2qIjm5QXfDyovu0JtpOfDD9dPpSgOFYz2e/XWtSVmz4fsL+J9oA3ul7f7nnxkj5pFfFTEMBx04Ed8lwxgnbNRV70vXQo8uVJKz4pVlaPJ81an/jTDfzSrTHOREvqHFC9VY28rGqkiREjIa96mTDhf9GsrSYHHndRlR7XeqXl+igKN8G3qyDsY59a3wBLtGp2TQrCsLBWzEICGkKaLQOiay1Jzvim3HoEBkf7aICatGNEV19JY6kwg8dGRV642RkRb95uZEPk67KhMf4S2KZGMeZ/X/sZD3nMencA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by DM4PR12MB5938.namprd12.prod.outlook.com (2603:10b6:8:69::9) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6631.45; Wed, 2 Aug 2023 14:52:16 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::5111:16e8:5afe:1da1]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::5111:16e8:5afe:1da1%6]) with mapi id 15.20.6631.045; Wed, 2 Aug 2023
+ 14:52:16 +0000
+Date: Wed, 2 Aug 2023 11:52:14 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Cc: LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev,
+	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+	Jean-Philippe Brucker <jean-philippe@linaro.com>,
+	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
+	"Tian, Kevin" <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>,
+	"Yu, Fenghua" <fenghua.yu@intel.com>,
+	Tony Luck <tony.luck@intel.com>
 Subject: Re: [PATCH v11 0/8] Re-enable IDXD kernel workqueue under DMA API
-Message-ID: <20230802075357.536a8508@jacob-builder>
-In-Reply-To: <20230724222538.3902553-1-jacob.jun.pan@linux.intel.com>
+Message-ID: <ZMptngQ3vzpJLRTG@nvidia.com>
 References: <20230724222538.3902553-1-jacob.jun.pan@linux.intel.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230724222538.3902553-1-jacob.jun.pan@linux.intel.com>
+X-ClientProxiedBy: SJ0PR05CA0027.namprd05.prod.outlook.com
+ (2603:10b6:a03:33b::32) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|DM4PR12MB5938:EE_
+X-MS-Office365-Filtering-Correlation-Id: 65458f4c-92dd-4ad6-3104-08db93681040
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	QXuigfnFCgq6RwK3hWrZpquoGhNUmOYv7Rh6V8G4XAo3yJ0juvnr3B1XetF32lGOAsHeRv33nOgGZppQkn+U151+RHlSmmGZlzAffZFaaWF5T7D5T9EpfM00QjorM+kUdSBwb5KBBBXdkBYHwD3jlcy499M3AgWnp3oGy6TrNllNHZVzxkJeUljWaggWxX8TuXKpaPd7ui2co+zVkE4gjcxiGrP9hqLIuS35iMoh325dcS3X9FvbqyEHJH2XICsDfkBYuUrgo4c515JgaCgk/yj+fLf+kPbFzWE5LIwzBckvVVBNvDx5Lw7y4GvU/AlFtkFX9l8bIzDaqO+vjOh55j/iN85x6Pm8DnqJFYjsNOGVfzcdi/csgvvOCr2CFu66P1PT+2TXwGqaRDBfpTo853wjSB0E4GYWxEos5Bs7Ia8lQReHNBWaCfxvKXhhB2enx5Tr6qya9LgK7DmSne4Df3gyIvgge7DHFrGoUcqtJ0sbKMJAvGcgOQfj3XQsKQLDQC9UtQIUlUv47CjuqGBd+C8+WYnCRncqF2zgH8AV4raNwQILQl4y0PnCltBPnxNjw4yOJK2vwYGlsQVrISrJZmFnjcC8bD0JGeaofOiH6oUPfK0RwsY28HrbHVPGCcbYDNvAOZnPVdX2/Hi80Y6Icg==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(346002)(376002)(366004)(136003)(396003)(39860400002)(451199021)(4744005)(478600001)(86362001)(6512007)(966005)(36756003)(6486002)(316002)(8676002)(8936002)(41300700001)(5660300002)(6916009)(4326008)(66556008)(66476007)(83380400001)(7416002)(54906003)(2906002)(38100700002)(66946007)(26005)(2616005)(186003)(6506007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?p9+CPYrqyFn2lnUd47/L2j2BDwZAxe3vRhdwIN+GTyG2bxq7BfBCRWibdxgP?=
+ =?us-ascii?Q?OuWeqJ2+iwxH61Bz4Mxai+k1vbEfmTfgxhagJ3rM0BP+XZaN9KFcY/41MhSn?=
+ =?us-ascii?Q?XxHvu0iR6rYhdvYV6yuHdq5AcsF+tugDNJblYSmo9pcip0lfuqQQGiDitRBc?=
+ =?us-ascii?Q?7aOUnyTYA/iRtX89p924Hzqxhfyqq3trlK5jM4gPNir7+MvYmsm/a7n0dagB?=
+ =?us-ascii?Q?Xab6YMSOhDjGrXD72wdLKuts0bEpuO5+rVWbxOWnaLga6JlcL8JhaWwoVmnF?=
+ =?us-ascii?Q?nYVRHH9lVGFaopEjcYCkgIc7skL46Dq7bTY61rEsQ5dbd8QWi8CaAzEq7M1k?=
+ =?us-ascii?Q?2qNuTEHP+z3Ubz1Si4g6pC/ej9uKICzieOtc/0Pm874qpBjgfkwcvsapf/xG?=
+ =?us-ascii?Q?0py7kHPEMXNbDbWi9929P+cr25tW4DTSsCSEH2XXDNs/W/LvwmoZ44DXkv9a?=
+ =?us-ascii?Q?YMxBePSKJgeOL1sIiMfSyr6a/woVlHiYEfnafmzFATgG/WXZyKwppMJqUe/y?=
+ =?us-ascii?Q?vnoYK92IxJWKzH0aMcwIr+HnCGSvoMXtKkhKnNKKMciiqyXH5wJAOponTDrM?=
+ =?us-ascii?Q?9JDU50nv/1qoSA3E0foPvdMJ58kuN0dtyMgJDTDbU6ZI3Vx6JmswmLn9ZWpx?=
+ =?us-ascii?Q?4ZJnnJN4heHBSK7lAslx0pa5wLUoCKWzbZyPSi5pICXOoJ/eWQF5tsk2C9if?=
+ =?us-ascii?Q?80MbPVsCD2rv7qk6uVvEMFOwaFg2bZAd1aQ3YsR2JIx073oyXDX+zJrP0Kzl?=
+ =?us-ascii?Q?lItT6VUXYjZ1CaLl99yixsRxl8P/Ul14fgk0ZrPotlb/jxhjo6D43ReU0rnd?=
+ =?us-ascii?Q?PSUaZNFhFU/VsyedX8iUzZC6+oTszZlQozm1kYbkLcAc8s10Rw6wn8tUQsJW?=
+ =?us-ascii?Q?iq9VyJURoFdUkJBS9ivRFIjriuFmO66Lb+DC1kxnTQ5fJLWZZupXfrQiKCL8?=
+ =?us-ascii?Q?6Sx+tIppACjjBcYh6jOFFmpqJqQdrq/fEiRMQvmOfAkPQiPulRTWu5k9Ya4U?=
+ =?us-ascii?Q?/A/XbU18s8BVH1FR70/0/j0ojihwTlndtM23wzOrUKurfzXTo7xlbrrE05uA?=
+ =?us-ascii?Q?q4yCa0ZMVBVSjor4ihnko7Mo5f/skzSMc6FUtLJT1ALYiEUd4dRSwIWHI20a?=
+ =?us-ascii?Q?z+h7PBKeVgCkWyuwy+Ciimr7juPq74d/FpPmtcX5s9P+le8RFuQ5yVA0/lse?=
+ =?us-ascii?Q?LWRzT9Yn/bUV+7zZlM4F3L6xKI1z+PalrIC0Q1nIqAYjvpH8ocFUqAHYrQBP?=
+ =?us-ascii?Q?rA0kRnf0Fk7iPEB+8AZVAXDGnwW+k97Ea1rrCXF5sgCn3nAv88AT/FeaAQ/t?=
+ =?us-ascii?Q?Y8BxIBgckqjdXyub5aoCnyI+r19oG/UIIkdpwzLMuDZwaWRFrN+In2tOQZG/?=
+ =?us-ascii?Q?b+Cf269niESdV1jwymNML5D/gK3lH0Am32V5a+0qibRcMwq5t7i3BP+cY23N?=
+ =?us-ascii?Q?Pf54q4x22boIVoDg1za+0hlJ2RrN52UReKBG5lq4eCK7VRj+meCDldx2eQmq?=
+ =?us-ascii?Q?5YNoB0g1ulZjfPevkYuxcANM03CfQG0Tl8tsWsNyIf0/opN9wyLm141C3AFj?=
+ =?us-ascii?Q?VGEvRsskFC2wAC6jD7EXMnWZQPGt3Bk1oC9dqjJZ?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 65458f4c-92dd-4ad6-3104-08db93681040
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Aug 2023 14:52:16.3091
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: kAR/PKSfv4KUircv77GrdDELsvH+eUWzCe39MBcopQLTKJL/IEfmeJXr5cB+gaOy
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5938
 
-Hi Joerg/Baolu,
-
-Any more comments on this series? Thanks
-
-On Mon, 24 Jul 2023 15:25:30 -0700, Jacob Pan
-<jacob.jun.pan@linux.intel.com> wrote:
-
+On Mon, Jul 24, 2023 at 03:25:30PM -0700, Jacob Pan wrote:
 > Hi Joerg and all,
 > 
 > IDXD kernel work queues were disabled due to the flawed use of kernel VA
 > and SVA API.
-> Link:
-> https://lore.kernel.org/linux-iommu/20210511194726.GP1002214@nvidia.com/
+> Link: https://lore.kernel.org/linux-iommu/20210511194726.GP1002214@nvidia.com/
 > 
-> The solution is to enable it under DMA API where IDXD shared workqueue
-> users can use ENQCMDS to submit work on buffers mapped by DMA API.
+> The solution is to enable it under DMA API where IDXD shared workqueue users
+> can use ENQCMDS to submit work on buffers mapped by DMA API.
 > 
 > This patchset adds support for attaching PASID to the device's default
-> domain and the ability to allocate global PASIDs from IOMMU APIs. IDXD
-> driver can then re-enable the kernel work queues and use them under DMA
-> API.
+> domain and the ability to allocate global PASIDs from IOMMU APIs. IDXD driver
+> can then re-enable the kernel work queues and use them under DMA API.
 > 
 > This depends on the IOASID removal series. (merged)
 > https://lore.kernel.org/all/ZCaUBJvUMsJyD7EW@8bytes.org/
-> 
-> 
-> Thanks,
-> 
-> Jacob
-> 
-> ---
-> Changelog:
-> v11:
-> 	- Rebased onto Joerg's next tree (v6.5-rc1)
-> 	- Split RIDPASID check in invalidation code into patch (6/8)
-> 	- Renamed iommu_alloc_global_pasid_dev to
-> iommu_alloc_global_pasid (2/8)
-> 	- Added WARN_ON if no dev_pasid is found during remove (7/8)
-> v10:
-> 	- Fix global PASID alloc function with device's max_pasid=0
-> v9:
-> 	- Fix an IDXD driver issue where user interrupt enable bit got
-> cleared during device enable/disable cycle. Reported and tested by
-> 	  Tony Zhu <tony.zhu@intel.com>
-> 	- Rebased to v6.4-rc7
-> v8:
-> 	- further vt-d driver refactoring (3-6) around set/remove device
-> PASID (Baolu)
-> 	- make consistent use of NO_PASID in SMMU code (Jean)
-> 	- fix off-by-one error in max PASID check (Kevin)
-> v7:
-> 	- renamed IOMMU_DEF_RID_PASID to be IOMMU_NO_PASID to be more
-> generic (Jean)
-> 	- simplify range checking for sva PASID (Baolu) 
-> v6:
-> 	- use a simplified version of vt-d driver change for
-> set_device_pasid from Baolu.
-> 	- check and rename global PASID allocation base
-> v5:
-> 	- exclude two patches related to supervisor mode, taken by VT-d
-> 	maintainer Baolu.
-> 	- move PASID range check into allocation API so that device
-> drivers only need to pass in struct device*. (Kevin)
-> 	- factor out helper functions in device-domain attach (Baolu)
-> 	- make explicit use of RID_PASID across architectures
-> v4:
-> 	- move dummy functions outside ifdef CONFIG_IOMMU_SVA (Baolu)
-> 	- dropped domain type check while disabling idxd system PASID
-> (Baolu)
-> 
-> v3:
-> 	- moved global PASID allocation API from SVA to IOMMU (Kevin)
-> 	- remove #ifdef around global PASID reservation during boot
-> (Baolu)
-> 	- remove restriction on PASID 0 allocation (Baolu)
-> 	- fix a bug in sysfs domain change when attaching devices
-> 	- clear idxd user interrupt enable bit after disabling device(
-> Fenghua) v2:
-> 	- refactored device PASID attach domain ops based on Baolu's
-> early patch
-> 	- addressed TLB flush gap
-> 	- explicitly reserve RID_PASID from SVA PASID number space
-> 	- get dma domain directly, avoid checking domain types
-> 
-> 
-> 
-> Jacob Pan (3):
->   iommu: Generalize PASID 0 for normal DMA w/o PASID
->   iommu: Move global PASID allocation from SVA to core
->   dmaengine/idxd: Re-enable kernel workqueue under DMA API
-> 
-> Lu Baolu (5):
->   iommu/vt-d: Add domain_flush_pasid_iotlb()
->   iommu/vt-d: Remove pasid_mutex
->   iommu/vt-d: Make prq draining code generic
->   iommu/vt-d: Prepare for set_dev_pasid callback
->   iommu/vt-d: Add set_dev_pasid callback for dma domain
-> 
->  drivers/dma/idxd/device.c                     |  39 ++---
->  drivers/dma/idxd/dma.c                        |   5 +-
->  drivers/dma/idxd/idxd.h                       |   9 +
->  drivers/dma/idxd/init.c                       |  54 +++++-
->  drivers/dma/idxd/sysfs.c                      |   7 -
->  .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   |   2 +-
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |  16 +-
->  drivers/iommu/intel/iommu.c                   | 157 +++++++++++++++---
->  drivers/iommu/intel/iommu.h                   |   9 +
->  drivers/iommu/intel/pasid.c                   |   2 +-
->  drivers/iommu/intel/pasid.h                   |   2 -
->  drivers/iommu/intel/svm.c                     |  62 +------
->  drivers/iommu/iommu-sva.c                     |  29 ++--
->  drivers/iommu/iommu.c                         |  28 ++++
->  include/linux/iommu.h                         |  11 ++
->  15 files changed, 287 insertions(+), 145 deletions(-)
-> 
 
+If the vt-d driver bits are fine I think this series is OK
 
 Thanks,
-
-Jacob
+Jason
