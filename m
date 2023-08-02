@@ -1,107 +1,143 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C6ECCDF66
-	for <iommu@lists.linux.dev>; Wed,  2 Aug 2023 17:26:43 +0000 (UTC)
-Received: from rrs24-12-35.corp.microsoft.com (unknown [131.107.147.181])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 5E652238C435;
-	Wed,  2 Aug 2023 10:26:43 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 5E652238C435
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1690997203;
-	bh=JxNu19adZsu3M0z/z3GFu4USKc1JYfzjTR+eXKUvlDs=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=WP2U/xqOlg9dXus047uOQXiWeS1uOyD1f5yFXMPeDHHAErxOn36jTxi8wnAmpH02A
-	 JU2Ni3Wy3G6AnIKF0bfXMiALAu7srGzIz9tPLmDvmiCjRyzShf36ejAObu/IEqszGv
-	 /hdJjYPo0dyRR6HJSdMKGo8WpMTyuOmiLuPaqFKw=
-From: Easwar Hariharan <eahariha@linux.microsoft.com>
-To: stable@vger.kernel.org
-Cc: easwar.hariharan@microsoft.com,
-	Robin Murphy <robin.murphy@arm.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Will Deacon <will@kernel.org>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Joerg Roedel <joro@8bytes.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Vladimir Oltean <vladimir.oltean@nxp.com>,
-	Yicong Yang <yangyicong@hisilicon.com>,
-	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
-	Tomas Krcka <krckatom@amazon.de>,
-	linux-arm-kernel@lists.infradead.org (moderated list:ARM64 PORT (AARCH64 ARCHITECTURE)),
-	linux-doc@vger.kernel.org (open list:DOCUMENTATION),
-	linux-kernel@vger.kernel.org (open list),
-	iommu@lists.linux.dev (open list:IOMMU SUBSYSTEM)
-Subject: [PATCH v2 6.4 4/4] iommu/arm-smmu-v3: Document nesting-related errata
-Date: Wed,  2 Aug 2023 17:26:20 +0000
-Message-Id: <20230802172620.1628017-5-eahariha@linux.microsoft.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20230802172620.1628017-1-eahariha@linux.microsoft.com>
-References: <20230802172620.1628017-1-eahariha@linux.microsoft.com>
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2079.outbound.protection.outlook.com [40.107.92.79])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A35E717FED
+	for <iommu@lists.linux.dev>; Wed,  2 Aug 2023 17:28:07 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Kq50duIz+YBpg8garxRU5FRyDqSYOwxZe7NGLTC77dE1j1cY00hXq4TAdR0nHGzVE1D74TZsIkBgRza6hdVYnvwPa5yVGEPEbr8jynICVr4g6Igs6jI4gwMIibZuPmvxB1TD+rbgK9S+giGtnNdpwRlZM3yLnNyKPF12YmiVAjQS/7R9f0rqEaQCxQpX2yXK2Slo67BCuhe8xio/GBFWU6HzpXs2B0505vUBAkZSgEZ4yuvZXP9kVwQWdJQ6ZChLLbCAFCvOx6eAVTJ0wnxLnMMx7G5sBx88tc4RLfDokFcV8f6s6oSTNKeWTLuDDr3julEWz8/F9MtKcQissc2U5g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=b0Zu0LV9Kf+x40iaTfu4K8ne0qBJw0PIq2DUXOSQ6EQ=;
+ b=cTPq/UHHvaRMQa5YoT0V6HQZ+ZnhuSaS93vVO7fF5mAhAfRumUMFUQOckBMYkqdrLTBrTW1hK3iviv+6GU+8o+ZDRm+CXCEntXPGkA2d4qe7rFfFubAxNRBfKoXAI0wpC84a6AGZGIAnjGfyvvcrWAw6qlij4U2mypEtQvVvxALrfrnTIltf4nfl6tV9tFXLMOA6z+RiAhBnIUBwxXsRzmCvTptdvzQcH7u71Qq17QTJUnCwpHi+4yR8cMkWndADJ9ufz7yylEeoAuj7V5wWBg020SAtaSBn/oOakRq6A/wyoToocx8H6e5/6vmDvDOO++NhpOx4nrBw0CvUOPzeYA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=b0Zu0LV9Kf+x40iaTfu4K8ne0qBJw0PIq2DUXOSQ6EQ=;
+ b=0VjFZYbk0p245K2N8guMIBYKriVU17Eut5bqYRLaWXs42BmbnKRIkpzMdeCOrJjTvAl7G4+HTJVL/+XYStL5ifr/Mob1OztN5lrtOm8bI2GlpkagvoJ3AOcs7d0TVUMU8nsJXXFTUIWSt3slz1B6moPeKxd6DsTycvhKEsjwPLg=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DM8PR12MB5445.namprd12.prod.outlook.com (2603:10b6:8:24::7) by
+ SJ1PR12MB6292.namprd12.prod.outlook.com (2603:10b6:a03:455::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6631.45; Wed, 2 Aug
+ 2023 17:28:04 +0000
+Received: from DM8PR12MB5445.namprd12.prod.outlook.com
+ ([fe80::12ec:a62b:b286:d309]) by DM8PR12MB5445.namprd12.prod.outlook.com
+ ([fe80::12ec:a62b:b286:d309%7]) with mapi id 15.20.6631.045; Wed, 2 Aug 2023
+ 17:28:04 +0000
+Message-ID: <ca7bc694-b7dd-6699-2fc4-aca046377194@amd.com>
+Date: Wed, 2 Aug 2023 10:28:01 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.1
+Subject: Re: [PATCH -next] iommu/amd: Remove unsued extern declaration
+ amd_iommu_init_hardware()
+Content-Language: en-US
+To: Yue Haibing <yuehaibing@huawei.com>, joro@8bytes.org
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <20230802133201.17512-1-yuehaibing@huawei.com>
+From: "Suthikulpanit, Suravee" <suravee.suthikulpanit@amd.com>
+In-Reply-To: <20230802133201.17512-1-yuehaibing@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: PH0P220CA0012.NAMP220.PROD.OUTLOOK.COM
+ (2603:10b6:510:d3::35) To DM8PR12MB5445.namprd12.prod.outlook.com
+ (2603:10b6:8:24::7)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM8PR12MB5445:EE_|SJ1PR12MB6292:EE_
+X-MS-Office365-Filtering-Correlation-Id: d262f06e-642a-47f6-aa4d-08db937dd43e
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	jcKayLVcHEqm+laCZYOacD1urs6bSwwU3/yupfgGwAuZNJnPhhzHCJHMOQA5nU6OK/izZl8QTKPsdY9oeNmLnTcsbxGQ9RRvbtSa/UhB4Xg2FrBFXWvKEOCtoe0rjnJZPrfOgJrH9j3/NL8HecxOxg2dPVkSUN+imEWJikXGRzROPm4aJ0FG8vlT0ASCxeC7I0CBjD2Q45osffeGEmNflxNR2PFgbAwCkBXeMf9tYCO7OPGHRpUkpBcw5Z8AZfqcf3ILoDlnzSKZFl5lKfz95l2393Gc73kLsdT7eOtZigU1JxJBRM8G8QBX7aMaHplHmckimGuQqddm6qLsE6zHUcM/VCFxQ9imrQMbIGXvQpkBlFq8NMfiOfN6gAPbEJXReO4aKiMDO4B5GEoBWsZgmKCvU9b+K1vGdUChVoniQTSeLNP+UeysjGHVqjGWdcNZWi+HEbTGCBHub31J1qZGB+S3ziKDvtUouaRiIR3U5bOlQ07zcvRn5CrE6ukM/CPNOKh734vr2Z1yM9cgEzDIpp7O5j55/f3C9EyVbyP2ssdUj1rP3WsASp+YMtECIL0xHIzuQeeZHHTlvKxwI7+V2B06Aju8nXfYIEgQbuYOhv022yhFgxvuQ83OOzSuhwqONXO01sV0C5UtqU6RfATTvg==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM8PR12MB5445.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(136003)(376002)(346002)(39860400002)(396003)(451199021)(86362001)(66946007)(31696002)(66476007)(66556008)(6486002)(6666004)(6512007)(2906002)(31686004)(4326008)(36756003)(478600001)(83380400001)(38100700002)(41300700001)(2616005)(5660300002)(8676002)(8936002)(26005)(53546011)(6506007)(186003)(316002)(4744005)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?Q09USDRhQ2hoR3dVc09MN01haFBmZXlIcUFQVmEwY0JNbjd4V1lNRy84N1Rl?=
+ =?utf-8?B?eXkwbEV1NEVycVcxTnRsNGVuSm9Sa1dvVmdOa0FwZmRNYVpIZFJGUUJlQjJR?=
+ =?utf-8?B?emRpOWQ3MkFNWnJ0VytrUjU3blRiRnRiY2c2U2ZsVzRoMklCZS9JTWdLdmRW?=
+ =?utf-8?B?Q0NzSXpxRjNvczRUam5KUW12RjQ0eWs2WTBMcTJTd1JCeXg1Q0ZWOCsrUkpN?=
+ =?utf-8?B?L1pjbTVTUjdtbUIxanpNcjdIak5vbVlxcFRwT3hzenNtaGxjMHRKZWduYWg4?=
+ =?utf-8?B?RXI3blNONnh0WC9TcEUrZnZLY1k0SUsrWnZRY1BaREk0UkltdVFKQzR1d0hD?=
+ =?utf-8?B?M1RCWVhVbEtUaXh5amp5M2I1RExDWGZ3OFp4dzBFMUN0TmJQNmw4dGF3VUpv?=
+ =?utf-8?B?Rm5nTjhQM1dvRm5wb1B6cjZNQ0VhSGdabjROektYaVE5NTUwQnNiZHRxaFNm?=
+ =?utf-8?B?dUFGWDBkWC9kcFZZVUsrL2J1dzg1RVQ3Q2tkSUJWSWx1Um5ReGFtSUx5V3BC?=
+ =?utf-8?B?eDlwQTFaSEc3UHJGTFZGOGhFdHlNWTcvZWx0eDRwdkF1SGw3T2Q2SXpEbmpp?=
+ =?utf-8?B?ZE8xSWJTMmlyTmZXV3dDeTNwcGZnSnhxTHAvUlg0d1VRRkR0YkF5NzBvdW9C?=
+ =?utf-8?B?aTRKdVpyakEwK1RWTUNzQlV0d3VLZDdUb01jbmlzMXh6SG9uT1BUcnpQdkxz?=
+ =?utf-8?B?elRNeWlpaWNXUGlXRWdkU2ZCRndvNXpvMHNjc0ZCa09OZjNBN1ZCS0lrdUVU?=
+ =?utf-8?B?VXRsM0Y2OVVWaFp1b1Ixc2FpeDhLY1k2aHIrVGNIYWpmNUhsVnh2VU9oLy9B?=
+ =?utf-8?B?SThrSDA3REZRa1dVQU9RNWNvOExOKzFGNGdKZlFka0tSbml0M1FxQjFrVHJn?=
+ =?utf-8?B?cDlQaWl0YmREOFhqL2xxWmhDVWw3ak1HUWdoSG8weUlxTDViSnQ1cFN2aFBw?=
+ =?utf-8?B?Sm9sRGtEekUxWFFMRzNINlIvbk5LcmtST1A0dGY4UTY3SVhxcUY5MXBKdnVi?=
+ =?utf-8?B?ZWtHeDA2aHhOQzVkaXBXTFErSjJSQW1qWVRpSDFKMmpyYkRJaFYySkNzaUph?=
+ =?utf-8?B?Z1FlSHBzQVlzSFRvd0k1THlnU0NLQ0dTNUtFaXd5dk1Sak1wc2EzMUVKTnlr?=
+ =?utf-8?B?Mm1qMTJTNFBSZFhPb09VaWxxWDZFR2d3bjYyOC8vQ2FwZjkxZ3ZyWEF2a3Zl?=
+ =?utf-8?B?c2ZRRk9OT1N5ZS94VmZJS2JxbG9oNzlpeEp4bmVQRzdtdkQvKzRSTHJJUjk0?=
+ =?utf-8?B?UUtRdDhmOElGdStNWUNkNjV0TXJFYzRMWXBOOEppN3RrakJpNkRnRjQvMjFr?=
+ =?utf-8?B?cHdROVR5dGtUb0lFZWZwRnFMMkdPUEgzR1B0bDBhckNLdTdFcnRvVWtwclNi?=
+ =?utf-8?B?aHRTa2l5V1M4Y3ZRazNGSE9yZ0N6clQxcko1b0ZMWG1oUytYc0J1OVR3QXlt?=
+ =?utf-8?B?RCtaUk02cE5rNDZhUGh2TVRORXdmTjNpbDROenFDQzNYbTZxblRFWmo2MHVC?=
+ =?utf-8?B?bW1Gbkc2Uk5xQjMyUElya3FHMHJ0M3NiNHcxaG90MXRHVDJSSEQ5RGFkL1c5?=
+ =?utf-8?B?cTB4djA2aEJTc2VTK3R4di8vZkNrTnhWOGFzbE5zSldFcTV3all4c3dVSk1y?=
+ =?utf-8?B?R3o0WEFDYUh0eVZCVjQvR3FuU3ovUVd2Q3ZKcDh6UEZ2ZjY5RXRpOWVQSlJX?=
+ =?utf-8?B?M2Q0dkx1MGl5MmZXV1g5Zm5xeXBKZDh3dTVSQ2NVOEY2L1VNc0xsd1daSTBE?=
+ =?utf-8?B?R1k0RWd1OTh4VCsvakh4NGRQSkdiaEFvM2lRQUl1SEVabUExQlM1NkU4UHJx?=
+ =?utf-8?B?N2hZNjJPcFFmd3E1QjU3NUVJdVg5dzlLNFpzeWlvWStvMGxNUGViQlp1amxO?=
+ =?utf-8?B?WmUyY1cxRlQrNFB2MXJnWGpvcU54UlVOTlAxYjBJS0xRUHl3Z3h2ang0VTht?=
+ =?utf-8?B?TWU3NGJOcGZLRlkrTDNHRURiYSsvRmg1c254c2FNR3I0TjlBK3BmUnFnRUQ0?=
+ =?utf-8?B?RGFJQStFS3NFdDhCVlVDVDVVSGo4bWxNbFg3L3QzZTVac3FmZHRQWG1oekl1?=
+ =?utf-8?B?aVVmRGl0UUtVUmFOcHpiZzZQNnVEMmFGK0JMTC9oaThiWFJ3eXFYMnkzbkJt?=
+ =?utf-8?Q?dr2QQCIeDga+aPX/IKSjFcaOY?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d262f06e-642a-47f6-aa4d-08db937dd43e
+X-MS-Exchange-CrossTenant-AuthSource: DM8PR12MB5445.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Aug 2023 17:28:04.6638
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: y0CNkL08W/bdo2Ne6auA5E3/Qno7De9q9QUnuEtlPAdwA5J2GfSTW+5X1FEosx5G2tb9txXWOQUae8Zbket5Lg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ1PR12MB6292
 
-From: Robin Murphy <robin.murphy@arm.com>
 
-commit 0bfbfc526c70606bf0fad302e4821087cbecfaf4 upstream
 
-Both MMU-600 and MMU-700 have similar errata around TLB invalidation
-while both stages of translation are active, which will need some
-consideration once nesting support is implemented. For now, though,
-it's very easy to make our implicit lack of nesting support explicit
-for those cases, so they're less likely to be missed in future.
+On 8/2/2023 6:32 AM, Yue Haibing wrote:
+> From: YueHaibing <yuehaibing@huawei.com>
+> 
+> Commit 2c0ae1720c09 ("iommu/amd: Convert iommu initialization to state machine")
+> left behind this.
+> 
+> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+> ---
+>   include/linux/amd-iommu.h | 1 -
+>   1 file changed, 1 deletion(-)
+> 
+> diff --git a/include/linux/amd-iommu.h b/include/linux/amd-iommu.h
+> index 953e6f12fa1c..99a5201d9e62 100644
+> --- a/include/linux/amd-iommu.h
+> +++ b/include/linux/amd-iommu.h
+> @@ -32,7 +32,6 @@ struct task_struct;
+>   struct pci_dev;
+>   
+>   extern int amd_iommu_detect(void);
+> -extern int amd_iommu_init_hardware(void);
+>   
+>   /**
+>    * amd_iommu_init_device() - Init device for use with IOMMUv2 driver
 
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
-Link: https://lore.kernel.org/r/696da78d32bb4491f898f11b0bb4d850a8aa7c6a.1683731256.git.robin.murphy@arm.com
-Signed-off-by: Will Deacon <will@kernel.org>
-Signed-off-by: Easwar Hariharan <eahariha@linux.microsoft.com>
----
- Documentation/arm64/silicon-errata.rst      | 4 ++--
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 5 +++++
- 2 files changed, 7 insertions(+), 2 deletions(-)
+Reviewed-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 
-diff --git a/Documentation/arm64/silicon-errata.rst b/Documentation/arm64/silicon-errata.rst
-index b0346968765d..3ce6e4aebdef 100644
---- a/Documentation/arm64/silicon-errata.rst
-+++ b/Documentation/arm64/silicon-errata.rst
-@@ -143,9 +143,9 @@ stable kernels.
- +----------------+-----------------+-----------------+-----------------------------+
- | ARM            | MMU-500         | #841119,826419  | N/A                         |
- +----------------+-----------------+-----------------+-----------------------------+
--| ARM            | MMU-600         | #1076982        | N/A                         |
-+| ARM            | MMU-600         | #1076982,1209401| N/A                         |
- +----------------+-----------------+-----------------+-----------------------------+
--| ARM            | MMU-700         | #2812531        | N/A                         |
-+| ARM            | MMU-700         | #2268618,2812531| N/A                         |
- +----------------+-----------------+-----------------+-----------------------------+
- +----------------+-----------------+-----------------+-----------------------------+
- | Broadcom       | Brahma-B53      | N/A             | ARM64_ERRATUM_845719        |
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 7e08ec55df2a..bbad54aa6c8c 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -3457,11 +3457,16 @@ static void arm_smmu_device_iidr_probe(struct arm_smmu_device *smmu)
- 			/* Arm erratum 1076982 */
- 			if (variant == 0 && revision <= 2)
- 				smmu->features &= ~ARM_SMMU_FEAT_SEV;
-+			/* Arm erratum 1209401 */
-+			if (variant < 2)
-+				smmu->features &= ~ARM_SMMU_FEAT_NESTING;
- 			break;
- 		case IIDR_PRODUCTID_ARM_MMU_700:
- 			/* Arm erratum 2812531 */
- 			smmu->features &= ~ARM_SMMU_FEAT_BTM;
- 			smmu->options |= ARM_SMMU_OPT_CMDQ_FORCE_SYNC;
-+			/* Arm errata 2268618, 2812531 */
-+			smmu->features &= ~ARM_SMMU_FEAT_NESTING;
- 			break;
- 		}
- 		break;
--- 
-2.25.1
-
+Thanks,
+Suravee
