@@ -1,92 +1,136 @@
-Received: from mail-qk1-f180.google.com (mail-qk1-f180.google.com [209.85.222.180])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2041.outbound.protection.outlook.com [40.107.220.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4A83C79CF
-	for <iommu@lists.linux.dev>; Wed,  2 Aug 2023 14:15:35 +0000 (UTC)
-Received: by mail-qk1-f180.google.com with SMTP id af79cd13be357-768054797f7so596241985a.2
-        for <iommu@lists.linux.dev>; Wed, 02 Aug 2023 07:15:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1690985735; x=1691590535;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=v/v2fhzkoLc0XBqBu1jWFj/Nwn47lwdRkCiLxyO8V30=;
-        b=Sxdue3MHFYBbmk6FfucrMbAKCC/vqFsDJvMkC6HXzY02Qba2GTHr0SHy1DwQO07w8A
-         Gxi3Fk//XxlHJFW+0AaTYct04Om8rU5nIrErYS8hm82LO9r8W+nPak0n5OWrQEPjNRl1
-         8+zxXUx5T3IWrVj9iFJPYAmUwOaFILiqk9eFcGuJzgk6IICab1ppy0/AY1k+AegChCKz
-         lpNVHQLxYegoj1+mltezt+ZRXkrP9NhThJ4fnXfbGVot3WaEc8H5FrMRVt9Dn4CbdiZm
-         Rozx7DgQC0/x1PP/RXh0wc19ORG6eXFtFDQUtFUP8KqnHGFR4oQLjDUvyDBysjFguDb+
-         kDOQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1690985735; x=1691590535;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=v/v2fhzkoLc0XBqBu1jWFj/Nwn47lwdRkCiLxyO8V30=;
-        b=MOm7Kfgg5Bo5E8GhahnwCuBfRhrprEIz3c9jbQUhm4IbSE85e9HHLwsGrCN+r3cBk3
-         px46ebpGGuQw+rOhKwCJIjFH45ErrlyMe5y7/F8z30J4zLZJp4ZCMFJ2v4y6wEoJiBpH
-         WnI8Pty7/qeycv//hvXcrmbAwIRMru1pkxdshbcGFWOHQgWdmAHhKR+xPNZBF3t/yJ4D
-         9GZ+r7uwndsqV0MPYo3WyDD2hGgAFmj+7yWUUZk8adG0xMAfQ6O+SV3XIg+/UDcnL4fP
-         boagYiUhCHhLH7ACSZcy4FVpV7qV5LgAHKgr6k3fa828/Dethz1SMT0UF7Rb5XFotteM
-         /wnw==
-X-Gm-Message-State: ABy/qLbttszb4j0C1Yl4O6B802ROwQTrkpxjeh9B5m75+TjMC067E3ih
-	6bmbzRcsJqGWoHxxM8UoZIKz8g==
-X-Google-Smtp-Source: APBJJlGInqqbbLPaE80P2pKXirrUYAT7zZzyHhPtLanpiPQ2UB6qB27NxHN+Y/2YgtYZ3tPQ3pH3nQ==
-X-Received: by 2002:a05:620a:205d:b0:76c:be58:d770 with SMTP id d29-20020a05620a205d00b0076cbe58d770mr5994984qka.78.1690985734872;
-        Wed, 02 Aug 2023 07:15:34 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-25-194.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.25.194])
-        by smtp.gmail.com with ESMTPSA id a11-20020a05620a124b00b00767cd2dbd82sm2507399qkl.15.2023.08.02.07.15.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Aug 2023 07:15:34 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1qRCdR-0033D9-O2;
-	Wed, 02 Aug 2023 11:15:33 -0300
-Date: Wed, 2 Aug 2023 11:15:33 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>, iommu@lists.linux.dev,
-	kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 0/2] iommu: Make pasid array per device
-Message-ID: <ZMplBfgSb8Hh9jLt@ziepe.ca>
-References: <20230801063125.34995-1-baolu.lu@linux.intel.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 685725230
+	for <iommu@lists.linux.dev>; Wed,  2 Aug 2023 14:48:21 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=k7/ldryD55fHPSNXJW1vDYmjWnH9f97PjMXH7YR/LUsJ7UO8AfAviXn5qRgq7cWE4HiObtujIquzAXWvb0M9qi7rz0Cay5uf0U9ENgpj0FaP6W9s3IXAmfW4XvW9wxxNvvbZlWQYoU7KPtf75A3bsACRdNDZ9lygi7NeUNh3cDFYygcFxTYrJAtrXZPeEZZFMN8ESPeqsOdxEqsaJWoa3oJ9GdXc5bpXmyGvc3dXoyOKbHo/6W5ExSZp4JWxNc1Q0ncACK9X+rZFfaUBF9YWAtvXQGMrN5i+T2qF+IICqeo0oYEKikNWA1pBOs2f29DIG+6DTEm4KWKcrf1zZknQJg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ggPtWTXEXy4DGH9vLVn5ANUrPjZjqDCp18f2/K8SQD4=;
+ b=ig5cU5z4L/ZBuXmNW9dJbzArxtici/+XhAtBrYhtmm9rnFEEUlaHt92mX6LqgCkrBqei3niHV7ijKiUDTFQmT0N+K74E7I3dvb3XZ72F8SfzoMSZoqJdQPsXZRH+2kjO7bVsPhJVjImRqp1+L59kRt2xVGdqyYnil9zuyQQiEM1TMl9fuDkdqUDaCR+6IQXX3IrGNpXZzvPUG59YXFd5Qd3m67uKSr6AGBNIDiwXiB1KigdWgBU+gXYgZEG/nWwFlxaJh8UNLJ68JwBc4oWlVdk9nu1BBfEcUB1rhppHH/fhXgYibOz2HEvUH4pvfXuODOu0Ub8my7iFRIw7ml05Uw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ggPtWTXEXy4DGH9vLVn5ANUrPjZjqDCp18f2/K8SQD4=;
+ b=OTGwlAmVwt+pIaEwYphwtApxNVsW5chEG4f4MaSGpSbkCc445cnjieoaAK3PqQbf+kvMjw7GIQ8Frp8iqGhQ0zboK4R2SRDDIALeU7MKVHgjvXN7oSdAKJQKSM9eli/DsoagVEYjHfThRk2zlW3iCxJX8O7PG1/Xy2uG80mHuVzvNHVnWOxvhUVpwcnJOySvskkrf8SzXScdbxvFqIP2Gkk1EW/ytXZoTCdNNJMt25xXr2y0wz3vHn9lJ58AcQurIpqip/DogWg/LfGXXV7FwTtdZAmQEI9QfavPPGjoW5Vmx9GNUmS+JO6mCLraYLuJSkcMTDa8shTVXVM8HHKpRg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by PH7PR12MB9223.namprd12.prod.outlook.com (2603:10b6:510:2f2::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6631.45; Wed, 2 Aug
+ 2023 14:48:18 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::5111:16e8:5afe:1da1]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::5111:16e8:5afe:1da1%6]) with mapi id 15.20.6631.045; Wed, 2 Aug 2023
+ 14:48:18 +0000
+Date: Wed, 2 Aug 2023 11:48:15 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Cc: LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev,
+	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+	Jean-Philippe Brucker <jean-philippe@linaro.com>,
+	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
+	"Tian, Kevin" <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>,
+	"Yu, Fenghua" <fenghua.yu@intel.com>,
+	Tony Luck <tony.luck@intel.com>
+Subject: Re: [PATCH v11 2/8] iommu: Move global PASID allocation from SVA to
+ core
+Message-ID: <ZMpsr3FbcEYRs/G8@nvidia.com>
+References: <20230724222538.3902553-1-jacob.jun.pan@linux.intel.com>
+ <20230724222538.3902553-3-jacob.jun.pan@linux.intel.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230724222538.3902553-3-jacob.jun.pan@linux.intel.com>
+X-ClientProxiedBy: BY5PR20CA0029.namprd20.prod.outlook.com
+ (2603:10b6:a03:1f4::42) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230801063125.34995-1-baolu.lu@linux.intel.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|PH7PR12MB9223:EE_
+X-MS-Office365-Filtering-Correlation-Id: 48ee60d1-f036-4f3b-9f5b-08db9367829f
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	KQjcjeVAV9CqVQuL6jZCKKgfteoHsCDrAq5qIpru2dmcB3ZaLglja3Un8ZU4B4xdcHedUBShTcEsE5UHulgEbUy+RSLzlZfjMkqLlt0P26ow1bw65YX4rmDX8X9Rm6Fu5S3Ccpde6Fh6SPcZmSp6Le3CwzNsgICPu0JlQtMUh9LCKCU+3xyIhURzW4WGcLF/+XMP5DhjeFvb7VZuSiQRE3T4Y5gnEPsg4UeFBoroIhAUhdxjqv+aGGUgpwRFwf+A9BndM4Bl+59XeWqk6P/PD71MfLH2Ngd90nCSOC7g899mvaGSHi5kIdlXw4oCoiKagYghaVMgc1RGfvFGtVVbQEOqWoUpnENxqIPC8JXyplychAqZjEMxMGeTfgqUVnrYYxugPeioBf90iSzjzYPDkhqjVZSzRDFRqMHgcB++6O7qBV9x9COhOqewJeK+Qi+ZPgRBfPqKpnVMLvfS+4ywaY9FpKhlcasDazMXQbr98m89GiLJtmHdM+hMkupxM/ThvO8Jm2P5FHfFgQqeOSDO0pxhncQM/P9qYaE9kcoUFhTFpnQwZDB5SvDTsf1KVVJX
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(346002)(396003)(136003)(366004)(376002)(39860400002)(451199021)(8936002)(8676002)(5660300002)(26005)(41300700001)(2906002)(7416002)(36756003)(2616005)(478600001)(54906003)(38100700002)(316002)(86362001)(6506007)(6486002)(66946007)(66556008)(66476007)(6666004)(4326008)(6916009)(186003)(6512007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?DPE5H/xZiwMALJmUtE74mlZdjAA2WZ1ffs9CWDgTQuNkUeYEsA8E6EyubkAb?=
+ =?us-ascii?Q?39rvacl0zCCyiRkiBO/WFgC6DfNHIJ28jHlIsVWRZvcGm9ebQB7n8DfP84hS?=
+ =?us-ascii?Q?Lh3HKgTwZmKd/KhkpfVE/QnKPya3qM54PU7hjQzL95Sv23ZJm+scLPe893Tp?=
+ =?us-ascii?Q?PV4pUnQZwtd++ShSrThx32lMB2bxcaUsUMMvFtzcH/4Avvwymryss0dK8Cdm?=
+ =?us-ascii?Q?TIcPcRrkAhhpB1mcH1qwSY1nXYO7LjS8hHva9fqT8tb0jfHX8qswmbwGtCCy?=
+ =?us-ascii?Q?L58zq1CUxWBxbK7QsZSP428DJ5/khIFICJuqkCVmDefUlMLknDqcJzrn1ZTv?=
+ =?us-ascii?Q?HLV8Qv3dxqu/yaMb4ZluFduAzXzOsG+TAuNQXM9RHc9iEQC1VOE+BfK08uVx?=
+ =?us-ascii?Q?IendOwoRVRwOmtd9fWfQTtPW6CLZXHwBSCLVIFtUncTfV5V3vr9LCTyxyAk6?=
+ =?us-ascii?Q?Cw2UXkP9dBbH2rLQqY1/peBs2CanPqauMzyyDHqcdcbaT+C/vY1yut0ILQep?=
+ =?us-ascii?Q?Zx+t7zZnzm/vKEgB53nMlopbi7fB7X1H/BYjck2HAhCHXGNSm0sbfF9x7x+2?=
+ =?us-ascii?Q?H5aP4satJffuQraoc8bnV346t+IW1fhtgqX3VfEe3eEGwz1qtv0oLeQ1jTvc?=
+ =?us-ascii?Q?uudze6ZKErIpk8jJGfOjp5DYnb2GbDrpMn0f9oGfU3F7R0mWbOUIFzwzyNOy?=
+ =?us-ascii?Q?tAVCNiOS9xII4dw9UwwlydChsVEn+v7uB/XMAqAyKoBZszFQOi8AoZbmd0Qq?=
+ =?us-ascii?Q?hVO6pE9f7hE38vSA6mfTlUwZKcNkFSVfer0YO4Mij9k8GaUYjNxeI384dQQt?=
+ =?us-ascii?Q?vsasa9NgSQ1CZWdwZW7i52oePSWnaOH9RDTvJZ9b+aAN32dDAZnP79AlaSni?=
+ =?us-ascii?Q?GJkAQBW6IkUKsaYyyEqn572G21dayTRf8Z5ElSiAMYw09fNm5ZCuq+NpE+jj?=
+ =?us-ascii?Q?Zj/kLPScFFp9gBgioUun+rbFyu44zcsJD3tAb+STC1Uzg7FytrWuHJfdqZ4l?=
+ =?us-ascii?Q?TFEkc4zTxNn4C8dUFIPquZnJXcLNLC74yj6MOuF8yg2w3AFIqjrAFolh2lxI?=
+ =?us-ascii?Q?kHh4TnRd5RwlMKh5v5q+stHx9tL2nOcowLO+Jn9JtlsZQUY56A9PflPEGlZ2?=
+ =?us-ascii?Q?wVAAisBPVk/dc9uCqndADBsbdpbXR7KQwlbsxJJcStEu2GACM5b6oKZT/a2C?=
+ =?us-ascii?Q?t25KXU7INGUAHqcGtupSvpqzmcGO6ycXe54ENZ3qhSZFRsqpGNX2VMo+Cx/P?=
+ =?us-ascii?Q?tnErNDAgLOcptYHpyad1IosCwc6E1f0TwfP+kCTq3kH14RS8S56SN43DPtVO?=
+ =?us-ascii?Q?Pm9/dcMueY6+4AyopCH9jMYMgkIdJfTeDTxKHuYXTMrnMeljCVrZuPKU2Cw7?=
+ =?us-ascii?Q?w9603qolUAflyKtBedzQO+jWgYT4OTj9Q+Rfdm1KSvsNLp4/7qahEPv0BXRa?=
+ =?us-ascii?Q?hjFznaeDFEYNuaOiubw/kKbzMzjgwtvAg7hP9oFbb9hfIzAEXY0R2FPQTQaq?=
+ =?us-ascii?Q?KKHMQ/CNJvWDzNHwy+osLhF/llW+y7kcEkGI2eNS1QrCDkfFlRBBEGTdTrKy?=
+ =?us-ascii?Q?rVsG5rmhQORjAAzLgrNeLEVNYQNeh0RGOltLjUxd?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 48ee60d1-f036-4f3b-9f5b-08db9367829f
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Aug 2023 14:48:18.7404
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: kjoFX4brOY8ez1I2a7rTqKiT5S7/A+ld6h5A4LYCI28NOWkLtDSOq03dLVBnDPcI
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB9223
 
-On Tue, Aug 01, 2023 at 02:31:23PM +0800, Lu Baolu wrote:
-> The PCI PASID enabling interface guarantees that the address space used
-> by each PASID is unique. This is achieved by checking that the PCI ACS
-> path is enabled for the device. If the path is not enabled, then the
-> PASID feature cannot be used.
-> 
->     if (!pci_acs_path_enabled(pdev, NULL, PCI_ACS_RR | PCI_ACS_UF))
->             return -EINVAL;
-> 
-> The PASID array is not an attribute of the IOMMU group. It is more
-> natural to store the PASID array in the per-device IOMMU data. This
-> makes the code clearer and easier to understand. No functional changes
-> are intended.
+On Mon, Jul 24, 2023 at 03:25:32PM -0700, Jacob Pan wrote:
+> Global PASID can be used beyond SVA. For example, drivers that use
+> Intel ENQCMD to submit work must use global PASIDs in that PASID
+> is stored in a per CPU MSR. When such device need to submit work
+> for in-kernel DMA with PASID, it must allocate PASIDs from the same
+> global number space to avoid conflict.
 
-Is there a reason to do this?
+This is a bit misleading, maybe:
 
-*PCI* requires the ACS/etc because PCI kind of messed up how switches
-handled PASID so PASID doesn't work otherwise.
+==
+Intel ENQCMD requires a single PASID to be shared between multiple
+devices, as the PASID is stored in a single MSR register per-process
+and userspace can use only that one PASID.
 
-But there is nothing that says other bus type can't have working
-(non-PCI) PASID and still have device isolation issues.
+This means that the PASID allocation for any ENQCMD using device driver
+must always come from a shared global pool, regardless of what kind of
+domain the PASID will be used with.
 
-So unless there is a really strong reason to do this we should keep
-the PASID list in the group just like the domain.
+Split the code for the global PASID allocator into
+iommu_alloc/free_global_pasid() so that drivers can attach non-SVA
+domains to PASIDs as well.
+==
+
+The code looks fine, though I would eventually like to see the SVA
+code not hardwired to the global allocator too :\
 
 Jason
