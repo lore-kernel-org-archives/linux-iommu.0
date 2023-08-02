@@ -1,143 +1,182 @@
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2079.outbound.protection.outlook.com [40.107.92.79])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f170.google.com (mail-pl1-f170.google.com [209.85.214.170])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A35E717FED
-	for <iommu@lists.linux.dev>; Wed,  2 Aug 2023 17:28:07 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Kq50duIz+YBpg8garxRU5FRyDqSYOwxZe7NGLTC77dE1j1cY00hXq4TAdR0nHGzVE1D74TZsIkBgRza6hdVYnvwPa5yVGEPEbr8jynICVr4g6Igs6jI4gwMIibZuPmvxB1TD+rbgK9S+giGtnNdpwRlZM3yLnNyKPF12YmiVAjQS/7R9f0rqEaQCxQpX2yXK2Slo67BCuhe8xio/GBFWU6HzpXs2B0505vUBAkZSgEZ4yuvZXP9kVwQWdJQ6ZChLLbCAFCvOx6eAVTJ0wnxLnMMx7G5sBx88tc4RLfDokFcV8f6s6oSTNKeWTLuDDr3julEWz8/F9MtKcQissc2U5g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=b0Zu0LV9Kf+x40iaTfu4K8ne0qBJw0PIq2DUXOSQ6EQ=;
- b=cTPq/UHHvaRMQa5YoT0V6HQZ+ZnhuSaS93vVO7fF5mAhAfRumUMFUQOckBMYkqdrLTBrTW1hK3iviv+6GU+8o+ZDRm+CXCEntXPGkA2d4qe7rFfFubAxNRBfKoXAI0wpC84a6AGZGIAnjGfyvvcrWAw6qlij4U2mypEtQvVvxALrfrnTIltf4nfl6tV9tFXLMOA6z+RiAhBnIUBwxXsRzmCvTptdvzQcH7u71Qq17QTJUnCwpHi+4yR8cMkWndADJ9ufz7yylEeoAuj7V5wWBg020SAtaSBn/oOakRq6A/wyoToocx8H6e5/6vmDvDOO++NhpOx4nrBw0CvUOPzeYA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=b0Zu0LV9Kf+x40iaTfu4K8ne0qBJw0PIq2DUXOSQ6EQ=;
- b=0VjFZYbk0p245K2N8guMIBYKriVU17Eut5bqYRLaWXs42BmbnKRIkpzMdeCOrJjTvAl7G4+HTJVL/+XYStL5ifr/Mob1OztN5lrtOm8bI2GlpkagvoJ3AOcs7d0TVUMU8nsJXXFTUIWSt3slz1B6moPeKxd6DsTycvhKEsjwPLg=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DM8PR12MB5445.namprd12.prod.outlook.com (2603:10b6:8:24::7) by
- SJ1PR12MB6292.namprd12.prod.outlook.com (2603:10b6:a03:455::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6631.45; Wed, 2 Aug
- 2023 17:28:04 +0000
-Received: from DM8PR12MB5445.namprd12.prod.outlook.com
- ([fe80::12ec:a62b:b286:d309]) by DM8PR12MB5445.namprd12.prod.outlook.com
- ([fe80::12ec:a62b:b286:d309%7]) with mapi id 15.20.6631.045; Wed, 2 Aug 2023
- 17:28:04 +0000
-Message-ID: <ca7bc694-b7dd-6699-2fc4-aca046377194@amd.com>
-Date: Wed, 2 Aug 2023 10:28:01 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.1
-Subject: Re: [PATCH -next] iommu/amd: Remove unsued extern declaration
- amd_iommu_init_hardware()
-Content-Language: en-US
-To: Yue Haibing <yuehaibing@huawei.com>, joro@8bytes.org
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <20230802133201.17512-1-yuehaibing@huawei.com>
-From: "Suthikulpanit, Suravee" <suravee.suthikulpanit@amd.com>
-In-Reply-To: <20230802133201.17512-1-yuehaibing@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: PH0P220CA0012.NAMP220.PROD.OUTLOOK.COM
- (2603:10b6:510:d3::35) To DM8PR12MB5445.namprd12.prod.outlook.com
- (2603:10b6:8:24::7)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8460111188
+	for <iommu@lists.linux.dev>; Wed,  2 Aug 2023 20:15:34 +0000 (UTC)
+Received: by mail-pl1-f170.google.com with SMTP id d9443c01a7336-1bbf3da0ea9so2011655ad.2
+        for <iommu@lists.linux.dev>; Wed, 02 Aug 2023 13:15:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=rivosinc-com.20221208.gappssmtp.com; s=20221208; t=1691007334; x=1691612134;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=bqaiD0oWwblWodb1STkSm+MDiqVpucLuhqfe3hzQhdE=;
+        b=yAiX8FxYkc605M0cG+7yI0Nl+xuCcB1+e2VLfkaxupBO4Hj4NNiGpqu1274aRHw/KB
+         QFTNVLNa2vGOhhLnixSOScJrplMeRvS6oweKOEiuYnxobjOL980rDlte4j8dvjXY82dL
+         JLVEYMK1nPzTZMK1x5bzfn0tY3JhzreMu/znJxGySZrF8hq4I7VWEfjgXn3zWMR3+57H
+         IRf+OcXBUUPMf+yycDv7kFDnp4dGE8uJACu/C93f0R/plZXHkX7E/p9Xbcd34jFW3CdN
+         pomzxFkfzRUvhRLvj6raPg5WHZI9z56OG97ChW6kAjslaZA72E9OyTlUnZwXw0MB4f9Y
+         vZEA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1691007334; x=1691612134;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=bqaiD0oWwblWodb1STkSm+MDiqVpucLuhqfe3hzQhdE=;
+        b=gFyHakIoEpboq8FFtYO/wYTEc9Sd2v2qb5Z/IMVy15LtkzfunDbJE8Ek9Xpo6FFAu+
+         4HY1of+wiDgIzdoEOmHtNBqTofQ/O37LcFwEeRUbjCk/FDYgnfE+cRFPaTUA+Vb3GPoZ
+         kkSrnU0nPIek8YPMmTO5UvRpSHM9nE8Tu0kkO8C6ThdHTYrzPyOBCME/kURYP//Nnwew
+         oqBBM8KbRPkd+uwqeGtm++dTSS3urEkH7QP/TR9A0mkFBJfWQOkntHia8v5m2pFchdT8
+         +RAEQTMVob/INBQrOWJi78cHgZdOXQ190Y64dJTf9euu+jtT66Po8HPibUUgIYbSSBL/
+         n9ig==
+X-Gm-Message-State: AOJu0Yyf2s4xF3W9mDAjX0yjUH7XCp3KdaZPakLdJXp6+VMvNvjiLgtL
+	Wv/ho97ME7odIG/oIaQfIsSg0Ubuq5vYkSpRmJMwHQ==
+X-Google-Smtp-Source: AGHT+IEldlUzLdMbLeNZ5QAQ0zR94lcB3YjBYjuINZSrYFnfre7W0+RGSobst9wqQSqSuGXumKZlxDhigTUDgnGM86U=
+X-Received: by 2002:a17:90b:110f:b0:268:fb85:3b2 with SMTP id
+ gi15-20020a17090b110f00b00268fb8503b2mr3104373pjb.7.1691007333727; Wed, 02
+ Aug 2023 13:15:33 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM8PR12MB5445:EE_|SJ1PR12MB6292:EE_
-X-MS-Office365-Filtering-Correlation-Id: d262f06e-642a-47f6-aa4d-08db937dd43e
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	jcKayLVcHEqm+laCZYOacD1urs6bSwwU3/yupfgGwAuZNJnPhhzHCJHMOQA5nU6OK/izZl8QTKPsdY9oeNmLnTcsbxGQ9RRvbtSa/UhB4Xg2FrBFXWvKEOCtoe0rjnJZPrfOgJrH9j3/NL8HecxOxg2dPVkSUN+imEWJikXGRzROPm4aJ0FG8vlT0ASCxeC7I0CBjD2Q45osffeGEmNflxNR2PFgbAwCkBXeMf9tYCO7OPGHRpUkpBcw5Z8AZfqcf3ILoDlnzSKZFl5lKfz95l2393Gc73kLsdT7eOtZigU1JxJBRM8G8QBX7aMaHplHmckimGuQqddm6qLsE6zHUcM/VCFxQ9imrQMbIGXvQpkBlFq8NMfiOfN6gAPbEJXReO4aKiMDO4B5GEoBWsZgmKCvU9b+K1vGdUChVoniQTSeLNP+UeysjGHVqjGWdcNZWi+HEbTGCBHub31J1qZGB+S3ziKDvtUouaRiIR3U5bOlQ07zcvRn5CrE6ukM/CPNOKh734vr2Z1yM9cgEzDIpp7O5j55/f3C9EyVbyP2ssdUj1rP3WsASp+YMtECIL0xHIzuQeeZHHTlvKxwI7+V2B06Aju8nXfYIEgQbuYOhv022yhFgxvuQ83OOzSuhwqONXO01sV0C5UtqU6RfATTvg==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM8PR12MB5445.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(136003)(376002)(346002)(39860400002)(396003)(451199021)(86362001)(66946007)(31696002)(66476007)(66556008)(6486002)(6666004)(6512007)(2906002)(31686004)(4326008)(36756003)(478600001)(83380400001)(38100700002)(41300700001)(2616005)(5660300002)(8676002)(8936002)(26005)(53546011)(6506007)(186003)(316002)(4744005)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?Q09USDRhQ2hoR3dVc09MN01haFBmZXlIcUFQVmEwY0JNbjd4V1lNRy84N1Rl?=
- =?utf-8?B?eXkwbEV1NEVycVcxTnRsNGVuSm9Sa1dvVmdOa0FwZmRNYVpIZFJGUUJlQjJR?=
- =?utf-8?B?emRpOWQ3MkFNWnJ0VytrUjU3blRiRnRiY2c2U2ZsVzRoMklCZS9JTWdLdmRW?=
- =?utf-8?B?Q0NzSXpxRjNvczRUam5KUW12RjQ0eWs2WTBMcTJTd1JCeXg1Q0ZWOCsrUkpN?=
- =?utf-8?B?L1pjbTVTUjdtbUIxanpNcjdIak5vbVlxcFRwT3hzenNtaGxjMHRKZWduYWg4?=
- =?utf-8?B?RXI3blNONnh0WC9TcEUrZnZLY1k0SUsrWnZRY1BaREk0UkltdVFKQzR1d0hD?=
- =?utf-8?B?M1RCWVhVbEtUaXh5amp5M2I1RExDWGZ3OFp4dzBFMUN0TmJQNmw4dGF3VUpv?=
- =?utf-8?B?Rm5nTjhQM1dvRm5wb1B6cjZNQ0VhSGdabjROektYaVE5NTUwQnNiZHRxaFNm?=
- =?utf-8?B?dUFGWDBkWC9kcFZZVUsrL2J1dzg1RVQ3Q2tkSUJWSWx1Um5ReGFtSUx5V3BC?=
- =?utf-8?B?eDlwQTFaSEc3UHJGTFZGOGhFdHlNWTcvZWx0eDRwdkF1SGw3T2Q2SXpEbmpp?=
- =?utf-8?B?ZE8xSWJTMmlyTmZXV3dDeTNwcGZnSnhxTHAvUlg0d1VRRkR0YkF5NzBvdW9C?=
- =?utf-8?B?aTRKdVpyakEwK1RWTUNzQlV0d3VLZDdUb01jbmlzMXh6SG9uT1BUcnpQdkxz?=
- =?utf-8?B?elRNeWlpaWNXUGlXRWdkU2ZCRndvNXpvMHNjc0ZCa09OZjNBN1ZCS0lrdUVU?=
- =?utf-8?B?VXRsM0Y2OVVWaFp1b1Ixc2FpeDhLY1k2aHIrVGNIYWpmNUhsVnh2VU9oLy9B?=
- =?utf-8?B?SThrSDA3REZRa1dVQU9RNWNvOExOKzFGNGdKZlFka0tSbml0M1FxQjFrVHJn?=
- =?utf-8?B?cDlQaWl0YmREOFhqL2xxWmhDVWw3ak1HUWdoSG8weUlxTDViSnQ1cFN2aFBw?=
- =?utf-8?B?Sm9sRGtEekUxWFFMRzNINlIvbk5LcmtST1A0dGY4UTY3SVhxcUY5MXBKdnVi?=
- =?utf-8?B?ZWtHeDA2aHhOQzVkaXBXTFErSjJSQW1qWVRpSDFKMmpyYkRJaFYySkNzaUph?=
- =?utf-8?B?Z1FlSHBzQVlzSFRvd0k1THlnU0NLQ0dTNUtFaXd5dk1Sak1wc2EzMUVKTnlr?=
- =?utf-8?B?Mm1qMTJTNFBSZFhPb09VaWxxWDZFR2d3bjYyOC8vQ2FwZjkxZ3ZyWEF2a3Zl?=
- =?utf-8?B?c2ZRRk9OT1N5ZS94VmZJS2JxbG9oNzlpeEp4bmVQRzdtdkQvKzRSTHJJUjk0?=
- =?utf-8?B?UUtRdDhmOElGdStNWUNkNjV0TXJFYzRMWXBOOEppN3RrakJpNkRnRjQvMjFr?=
- =?utf-8?B?cHdROVR5dGtUb0lFZWZwRnFMMkdPUEgzR1B0bDBhckNLdTdFcnRvVWtwclNi?=
- =?utf-8?B?aHRTa2l5V1M4Y3ZRazNGSE9yZ0N6clQxcko1b0ZMWG1oUytYc0J1OVR3QXlt?=
- =?utf-8?B?RCtaUk02cE5rNDZhUGh2TVRORXdmTjNpbDROenFDQzNYbTZxblRFWmo2MHVC?=
- =?utf-8?B?bW1Gbkc2Uk5xQjMyUElya3FHMHJ0M3NiNHcxaG90MXRHVDJSSEQ5RGFkL1c5?=
- =?utf-8?B?cTB4djA2aEJTc2VTK3R4di8vZkNrTnhWOGFzbE5zSldFcTV3all4c3dVSk1y?=
- =?utf-8?B?R3o0WEFDYUh0eVZCVjQvR3FuU3ovUVd2Q3ZKcDh6UEZ2ZjY5RXRpOWVQSlJX?=
- =?utf-8?B?M2Q0dkx1MGl5MmZXV1g5Zm5xeXBKZDh3dTVSQ2NVOEY2L1VNc0xsd1daSTBE?=
- =?utf-8?B?R1k0RWd1OTh4VCsvakh4NGRQSkdiaEFvM2lRQUl1SEVabUExQlM1NkU4UHJx?=
- =?utf-8?B?N2hZNjJPcFFmd3E1QjU3NUVJdVg5dzlLNFpzeWlvWStvMGxNUGViQlp1amxO?=
- =?utf-8?B?WmUyY1cxRlQrNFB2MXJnWGpvcU54UlVOTlAxYjBJS0xRUHl3Z3h2ang0VTht?=
- =?utf-8?B?TWU3NGJOcGZLRlkrTDNHRURiYSsvRmg1c254c2FNR3I0TjlBK3BmUnFnRUQ0?=
- =?utf-8?B?RGFJQStFS3NFdDhCVlVDVDVVSGo4bWxNbFg3L3QzZTVac3FmZHRQWG1oekl1?=
- =?utf-8?B?aVVmRGl0UUtVUmFOcHpiZzZQNnVEMmFGK0JMTC9oaThiWFJ3eXFYMnkzbkJt?=
- =?utf-8?Q?dr2QQCIeDga+aPX/IKSjFcaOY?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d262f06e-642a-47f6-aa4d-08db937dd43e
-X-MS-Exchange-CrossTenant-AuthSource: DM8PR12MB5445.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Aug 2023 17:28:04.6638
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: y0CNkL08W/bdo2Ne6auA5E3/Qno7De9q9QUnuEtlPAdwA5J2GfSTW+5X1FEosx5G2tb9txXWOQUae8Zbket5Lg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ1PR12MB6292
+References: <cover.1689792825.git.tjeznach@rivosinc.com> <c33c24036c06c023947ecb47177da273569b3ac7.1689792825.git.tjeznach@rivosinc.com>
+ <CANXhq0qRYvTffMnep-aQyTq2tMxbP-s_Lunc+cZ2Rio+BvAE=g@mail.gmail.com>
+In-Reply-To: <CANXhq0qRYvTffMnep-aQyTq2tMxbP-s_Lunc+cZ2Rio+BvAE=g@mail.gmail.com>
+From: Tomasz Jeznach <tjeznach@rivosinc.com>
+Date: Wed, 2 Aug 2023 13:15:22 -0700
+Message-ID: <CAH2o1u5Sr0XigUbhna0E-Zk=U76CLZZ4LbM0u4ahPaN5+nOK6A@mail.gmail.com>
+Subject: Re: [PATCH 01/11] RISC-V: drivers/iommu: Add RISC-V IOMMU - Ziommu support.
+To: Zong Li <zong.li@sifive.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Paul Walmsley <paul.walmsley@sifive.com>, 
+	Anup Patel <apatel@ventanamicro.com>, Albert Ou <aou@eecs.berkeley.edu>, linux@rivosinc.com, 
+	linux-kernel@vger.kernel.org, Sebastien Boeuf <seb@rivosinc.com>, iommu@lists.linux.dev, 
+	Palmer Dabbelt <palmer@dabbelt.com>, Nick Kossifidis <mick@ics.forth.gr>, linux-riscv@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+On Thu, Jul 27, 2023 at 7:42=E2=80=AFPM Zong Li <zong.li@sifive.com> wrote:
+>
+> On Thu, Jul 20, 2023 at 3:34=E2=80=AFAM Tomasz Jeznach <tjeznach@rivosinc=
+.com> wrote:
+> >
+> > +static int riscv_iommu_platform_probe(struct platform_device *pdev)
+> > +{
+> > +       struct device *dev =3D &pdev->dev;
+> > +       struct riscv_iommu_device *iommu =3D NULL;
+> > +       struct resource *res =3D NULL;
+> > +       int ret =3D 0;
+> > +
+> > +       iommu =3D devm_kzalloc(dev, sizeof(*iommu), GFP_KERNEL);
+> > +       if (!iommu)
+> > +               return -ENOMEM;
+> > +
+> > +       iommu->dev =3D dev;
+> > +       dev_set_drvdata(dev, iommu);
+> > +
+> > +       res =3D platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> > +       if (!res) {
+> > +               dev_err(dev, "could not find resource for register regi=
+on\n");
+> > +               return -EINVAL;
+> > +       }
+> > +
+> > +       iommu->reg =3D devm_platform_get_and_ioremap_resource(pdev, 0, =
+&res);
+> > +       if (IS_ERR(iommu->reg)) {
+> > +               ret =3D dev_err_probe(dev, PTR_ERR(iommu->reg),
+> > +                                   "could not map register region\n");
+> > +               goto fail;
+> > +       };
+> > +
+> > +       iommu->reg_phys =3D res->start;
+> > +
+> > +       ret =3D -ENODEV;
+> > +
+> > +       /* Sanity check: Did we get the whole register space ? */
+> > +       if ((res->end - res->start + 1) < RISCV_IOMMU_REG_SIZE) {
+> > +               dev_err(dev, "device region smaller than register file =
+(0x%llx)\n",
+> > +                       res->end - res->start);
+> > +               goto fail;
+> > +       }
+>
+> Could we assume that DT should be responsible for specifying the right si=
+ze?
+>
+
+This only to validate DT provided info and driver expected register
+file size. Expectation is that DT will provide right size.
 
 
+> > +static struct iommu_domain *riscv_iommu_domain_alloc(unsigned type)
+> > +{
+> > +       struct riscv_iommu_domain *domain;
+> > +
+> > +       if (type !=3D IOMMU_DOMAIN_IDENTITY &&
+> > +           type !=3D IOMMU_DOMAIN_BLOCKED)
+> > +               return NULL;
+> > +
+> > +       domain =3D kzalloc(sizeof(*domain), GFP_KERNEL);
+> > +       if (!domain)
+> > +               return NULL;
+> > +
+> > +       mutex_init(&domain->lock);
+> > +       INIT_LIST_HEAD(&domain->endpoints);
+> > +
+> > +       domain->domain.ops =3D &riscv_iommu_domain_ops;
+> > +       domain->mode =3D RISCV_IOMMU_DC_FSC_MODE_BARE;
+> > +       domain->pscid =3D ida_alloc_range(&riscv_iommu_pscids, 1,
+> > +                                       RISCV_IOMMU_MAX_PSCID, GFP_KERN=
+EL);
+> > +
+> > +       printk("domain type %x alloc %u\n", type, domain->pscid);
+> > +
+>
+> Could it uses pr_xxx instead of printk?
+>
 
-On 8/2/2023 6:32 AM, Yue Haibing wrote:
-> From: YueHaibing <yuehaibing@huawei.com>
-> 
-> Commit 2c0ae1720c09 ("iommu/amd: Convert iommu initialization to state machine")
-> left behind this.
-> 
-> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
-> ---
->   include/linux/amd-iommu.h | 1 -
->   1 file changed, 1 deletion(-)
-> 
-> diff --git a/include/linux/amd-iommu.h b/include/linux/amd-iommu.h
-> index 953e6f12fa1c..99a5201d9e62 100644
-> --- a/include/linux/amd-iommu.h
-> +++ b/include/linux/amd-iommu.h
-> @@ -32,7 +32,6 @@ struct task_struct;
->   struct pci_dev;
->   
->   extern int amd_iommu_detect(void);
-> -extern int amd_iommu_init_hardware(void);
->   
->   /**
->    * amd_iommu_init_device() - Init device for use with IOMMUv2 driver
+Absolutely, fixed here and elsewhere. Also, used dev_dbg wherever applicabl=
+e.
 
-Reviewed-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+> > +
+> > +static int riscv_iommu_enable(struct riscv_iommu_device *iommu, unsign=
+ed requested_mode)
+> > +{
+> > +       struct device *dev =3D iommu->dev;
+> > +       u64 ddtp =3D 0;
+> > +       u64 ddtp_paddr =3D 0;
+> > +       unsigned mode =3D requested_mode;
+> > +       unsigned mode_readback =3D 0;
+> > +
+> > +       ddtp =3D riscv_iommu_get_ddtp(iommu);
+> > +       if (ddtp & RISCV_IOMMU_DDTP_BUSY)
+> > +               return -EBUSY;
+> > +
+> > +       /* Disallow state transtion from xLVL to xLVL. */
+> > +       switch (FIELD_GET(RISCV_IOMMU_DDTP_MODE, ddtp)) {
+> > +       case RISCV_IOMMU_DDTP_MODE_BARE:
+> > +       case RISCV_IOMMU_DDTP_MODE_OFF:
+> > +               break;
+> > +       default:
+> > +               if ((mode !=3D RISCV_IOMMU_DDTP_MODE_BARE)
+> > +                   && (mode !=3D RISCV_IOMMU_DDTP_MODE_OFF))
+> > +                       return -EINVAL;
+> > +               break;
+> > +       }
+> > +
+> > + retry:
+>
+> We need to consider the `iommu.passthrough` before we set up the mode
+> in switch case, something like
+>
 
-Thanks,
-Suravee
+This function is only to execute configuration and set device directory mod=
+e.
+Handling global iommu.passthrough policy is implemented in
+riscv_iommu_init() call (patch #7).
+
+Best,
+- Tomasz
