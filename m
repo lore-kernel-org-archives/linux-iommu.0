@@ -1,164 +1,92 @@
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2045.outbound.protection.outlook.com [40.107.237.45])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qk1-f180.google.com (mail-qk1-f180.google.com [209.85.222.180])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C047B79CF
-	for <iommu@lists.linux.dev>; Wed,  2 Aug 2023 13:48:00 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=N2cMegOUy94Ac1fF6bG+EiQGQnA5/XL91VlbKd/LLsByoFRWGulfyCVEDzuhmTNuZ/lC4sJwC38/7XR+QaxUrQq0D8eztGEP8EfQUZ+o9RZo3yoTuHRlMCUOfN4X4GE41ZWEb0MmkwKHldaWNpvEkOonUL8vyoVMxwwsgrqjp5tKBPKbVZhYnV02RVE1w97VSEa46xazOKDeSk9gOOgzSWWfLN+f/llV+3XesLLpvYxdK0ovYyoeW0IK7rfZ4anqttY0vWwVFOs7xYavnxpqDWtyOghN2YJ0Mf2B2LYjVYxjJiPpvjo2p0O4WfMeBrN+4SaGlb+4teSB5YPsHQzkpA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=1ciXvUz1N3/DaB5j8fIipqGuDjxCXUzpaOxuf4pGbb8=;
- b=ZW9Q7nEc4jxvpKrB/QB1Tieyqgpp0RaYOWfBsdThuy+BHxwkv1vunnV0A5G3ZEs2zuoM5366JrVid/RbEUuoacBxHpBmYblzEVLJmU7AClAXcEDPJp7ssa8HtZOAGhKVNIkmN3c/jIjf9ZdCgcWQbCsg6kEzt6lHhK84pt5ZcrswT88z6EyRDqR58AXrYMpGstObN1uvSUmqcOQgoClLl9ytalkA619rpnWty+UYijTNxZB8w7kLj+XQQfx3h6w32C+NWou3yboYhKEgFgSqZiabMDwwL/NuwmzBKvG73qcUKgoVKfF6aCQ4lxIBjLvh0uGwqfBBYo+1Mc8f001p4Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1ciXvUz1N3/DaB5j8fIipqGuDjxCXUzpaOxuf4pGbb8=;
- b=pOljG0+ZA3LR3yHp0ZBUN9ilqfJfiVpdq0c4L/WjFJCikYIZlKszOMzt7cev/V/h7MbRGDu5gzmfvq7JR5ZT/U9Wd0Fn7xHIF1hO2pDsWOWVK9R5e3JbwMgDSGJMrRd1I/KRgT+r47lpyhJiv/jg3+zPtG7Mqv+edHpnzn5/a9MhRLAn8b2mTHJsToeomidy6JBhywzil4hTCc6azn6FPPbw4o3QkGTA17sN0IRgAZm8whkMz7jyoK9sHhWhpP68OS/XpkHWixn1mU4ZnnD43ziUyt8XfM13cl7Z7mqY+kE2QnMRvC2w0sKePQDKhvLNOD+FGiTGU2Z19epxSjLwUw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by CYYPR12MB8870.namprd12.prod.outlook.com (2603:10b6:930:bb::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6631.45; Wed, 2 Aug
- 2023 13:47:58 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::5111:16e8:5afe:1da1]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::5111:16e8:5afe:1da1%6]) with mapi id 15.20.6631.045; Wed, 2 Aug 2023
- 13:47:57 +0000
-Date: Wed, 2 Aug 2023 10:47:55 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Cc: "Liu, Yi L" <yi.l.liu@intel.com>, "joro@8bytes.org" <joro@8bytes.org>,
-	"alex.williamson@redhat.com" <alex.williamson@redhat.com>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
-	"cohuck@redhat.com" <cohuck@redhat.com>,
-	"eric.auger@redhat.com" <eric.auger@redhat.com>,
-	"nicolinc@nvidia.com" <nicolinc@nvidia.com>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-	"mjrosato@linux.ibm.com" <mjrosato@linux.ibm.com>,
-	"chao.p.peng@linux.intel.com" <chao.p.peng@linux.intel.com>,
-	"yi.y.sun@linux.intel.com" <yi.y.sun@linux.intel.com>,
-	"peterx@redhat.com" <peterx@redhat.com>,
-	"jasowang@redhat.com" <jasowang@redhat.com>,
-	"shameerali.kolothum.thodi@huawei.com" <shameerali.kolothum.thodi@huawei.com>,
-	"lulu@redhat.com" <lulu@redhat.com>,
-	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-	"Duan, Zhenzhong" <zhenzhong.duan@intel.com>
-Subject: Re: [PATCH v4 07/12] iommufd: Add data structure for Intel VT-d
- stage-1 cache invalidation
-Message-ID: <ZMpei2/CffaW97iU@nvidia.com>
-References: <20230724111335.107427-1-yi.l.liu@intel.com>
- <20230724111335.107427-8-yi.l.liu@intel.com>
- <BN9PR11MB52763681308D7950A51E18438C0BA@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <BN9PR11MB52763681308D7950A51E18438C0BA@BN9PR11MB5276.namprd11.prod.outlook.com>
-X-ClientProxiedBy: YT4PR01CA0380.CANPRD01.PROD.OUTLOOK.COM
- (2603:10b6:b01:fd::18) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4A83C79CF
+	for <iommu@lists.linux.dev>; Wed,  2 Aug 2023 14:15:35 +0000 (UTC)
+Received: by mail-qk1-f180.google.com with SMTP id af79cd13be357-768054797f7so596241985a.2
+        for <iommu@lists.linux.dev>; Wed, 02 Aug 2023 07:15:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1690985735; x=1691590535;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=v/v2fhzkoLc0XBqBu1jWFj/Nwn47lwdRkCiLxyO8V30=;
+        b=Sxdue3MHFYBbmk6FfucrMbAKCC/vqFsDJvMkC6HXzY02Qba2GTHr0SHy1DwQO07w8A
+         Gxi3Fk//XxlHJFW+0AaTYct04Om8rU5nIrErYS8hm82LO9r8W+nPak0n5OWrQEPjNRl1
+         8+zxXUx5T3IWrVj9iFJPYAmUwOaFILiqk9eFcGuJzgk6IICab1ppy0/AY1k+AegChCKz
+         lpNVHQLxYegoj1+mltezt+ZRXkrP9NhThJ4fnXfbGVot3WaEc8H5FrMRVt9Dn4CbdiZm
+         Rozx7DgQC0/x1PP/RXh0wc19ORG6eXFtFDQUtFUP8KqnHGFR4oQLjDUvyDBysjFguDb+
+         kDOQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1690985735; x=1691590535;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=v/v2fhzkoLc0XBqBu1jWFj/Nwn47lwdRkCiLxyO8V30=;
+        b=MOm7Kfgg5Bo5E8GhahnwCuBfRhrprEIz3c9jbQUhm4IbSE85e9HHLwsGrCN+r3cBk3
+         px46ebpGGuQw+rOhKwCJIjFH45ErrlyMe5y7/F8z30J4zLZJp4ZCMFJ2v4y6wEoJiBpH
+         WnI8Pty7/qeycv//hvXcrmbAwIRMru1pkxdshbcGFWOHQgWdmAHhKR+xPNZBF3t/yJ4D
+         9GZ+r7uwndsqV0MPYo3WyDD2hGgAFmj+7yWUUZk8adG0xMAfQ6O+SV3XIg+/UDcnL4fP
+         boagYiUhCHhLH7ACSZcy4FVpV7qV5LgAHKgr6k3fa828/Dethz1SMT0UF7Rb5XFotteM
+         /wnw==
+X-Gm-Message-State: ABy/qLbttszb4j0C1Yl4O6B802ROwQTrkpxjeh9B5m75+TjMC067E3ih
+	6bmbzRcsJqGWoHxxM8UoZIKz8g==
+X-Google-Smtp-Source: APBJJlGInqqbbLPaE80P2pKXirrUYAT7zZzyHhPtLanpiPQ2UB6qB27NxHN+Y/2YgtYZ3tPQ3pH3nQ==
+X-Received: by 2002:a05:620a:205d:b0:76c:be58:d770 with SMTP id d29-20020a05620a205d00b0076cbe58d770mr5994984qka.78.1690985734872;
+        Wed, 02 Aug 2023 07:15:34 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-68-25-194.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.25.194])
+        by smtp.gmail.com with ESMTPSA id a11-20020a05620a124b00b00767cd2dbd82sm2507399qkl.15.2023.08.02.07.15.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Aug 2023 07:15:34 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1qRCdR-0033D9-O2;
+	Wed, 02 Aug 2023 11:15:33 -0300
+Date: Wed, 2 Aug 2023 11:15:33 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>, iommu@lists.linux.dev,
+	kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/2] iommu: Make pasid array per device
+Message-ID: <ZMplBfgSb8Hh9jLt@ziepe.ca>
+References: <20230801063125.34995-1-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|CYYPR12MB8870:EE_
-X-MS-Office365-Filtering-Correlation-Id: 77dbc00a-6056-432e-0959-08db935f1468
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	TJhqeixGr8mqot8nBc/Jn5Juy7cajg7pcKhSYX8/oY1DlitkbwqJ7CxRqXy6U/zCtpp+oiihf+fpSeoNM9Gx8va8ARY4/iJDtWQSzIn+dGCkstb5jrrncyUHG/jDwrV4TQbcXhHhAWydhcCW2dM+v4ucsdqwlwBCRtmde0yuy3tU11iMDOkmReM0mrKpJnOkTOomNAx5jJccMQLqN3DImvxERvT4obOAP4l85U+TYsUBrXKHNmh2i3V0t4Sqq7Pnj0PfLEjxfMqc4ZUnjk1OlqB39H1jQCB4eP6Wl3r6ebP5fkzSUyPdMsT6jlYY9xg0eVGtPrYWjyBZqiKEnswv0fAtBULFabmKQP6pOoppR7sjVYdzQqIQho1544d4FQr+5VRnMVntOz9PRQ4iA0g69xly0CBovD3ksUt5498IPlHQXe4D5t0fAzyumqOrfCy/0556BY5Nb/Em6S2OLfzl58Sx4/WcnP6xk1YvO+Kb8X2eHFrDxQUdYM//SRw09YgkvPDzMs35EIX9PliG2XancYOUejgBwLHFc5NQCpsfKYGF0TNexwgkf/zJELkQd82S
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(39860400002)(366004)(346002)(376002)(136003)(451199021)(5660300002)(8936002)(8676002)(41300700001)(7416002)(66899021)(316002)(6916009)(66556008)(4326008)(66476007)(66946007)(2906002)(26005)(6506007)(38100700002)(2616005)(54906003)(83380400001)(6512007)(6486002)(86362001)(36756003)(186003)(478600001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?nVgYw+1CyJa/6HXRt4Tt5buoMWs/5UKH6dnJ65mGE7DMjEVR45GsFvIEbjtj?=
- =?us-ascii?Q?1GotXp8k5OmK4egWccFbb4cw0j1xPJqBIQI0WETc+NcJYHipHYkbyzoA9Wn9?=
- =?us-ascii?Q?vJWn1KHAa1Xo8lyyBOvb71Eo7QS2rhALdymrWiWCFyffcOJ3GdMiJQvSKKKq?=
- =?us-ascii?Q?0mR6gqQdO/LJG7YoYfU6U5NU7JtIqpkLV+6KO3AAavju1LAkGTzHhGEyCVMh?=
- =?us-ascii?Q?v8PjPEtekSbxFgR2SOTA+HlmR4rE2Z4COvCrp1PsHUTLeTO0heDHLeiYIYup?=
- =?us-ascii?Q?1ohikBzRpw4McTqm8nIxpzIuy1Zbss/6/P8Ds6Mx61qx6pIK1KB/l30aE6Q1?=
- =?us-ascii?Q?j2tSuNgRTEKA/5ywSMqGcxCBVwwm3R9vL3AA+UZBuaP08qK1RiL+KhkJ1MpB?=
- =?us-ascii?Q?JcdIrXfv/V+KBWXc0EQ8XM5zKymiHALnEsl+5pXQHHNYnXeEdTorvzF3FLUo?=
- =?us-ascii?Q?g3DAy3Y2cW1V2Z5YmTFvCJFUPfJDCtoUSC6OE9mMsZQvYp7OJJ66cBnpqkGS?=
- =?us-ascii?Q?ROwTMEYFbPvFwKAG3FOYCBJ5rRJ5PEAVxru9RJkJQBRZbJ7sUdeQn+Bhv2Op?=
- =?us-ascii?Q?TvyQ4uPEjv+a+1d5Gm2KBn2pVLwxSnxxOqMzny1+yZOtBPhwSCIt0CQg2E5+?=
- =?us-ascii?Q?Qx5myTZbogObBuqEiZTfab1kwQJCUT0//Mu+12OB0w8+QNoyjj3B3HdxvQP1?=
- =?us-ascii?Q?6MkS8NcnfX514WspJwMtMNfbKSXnpmQ4q/9sHxQQgvoX+WvQ3Lqm1hxhkG1A?=
- =?us-ascii?Q?KPwPWYkRrAQhYasZTbdtAfjxrnnNBMYLr5iFZS9OQRcm0ERphsMAwwcTHdUv?=
- =?us-ascii?Q?AwF8/+OrEWeti85adzhQ2NzOOFmuKEU2FrAawHKt2q7njJjrNuQ+AVQP78Ph?=
- =?us-ascii?Q?WHeoIGB/JWm2z+U2eGjq5zVufeVKXunSu2U7hK6ye7Xwp7cEH5l3UeSULNef?=
- =?us-ascii?Q?Lasie3jhLad/kN6gjBeqSpODb700XJRZFXl/OA6zPzwJPTcBNU0wEeMuQ1BH?=
- =?us-ascii?Q?AKtKJbky3jXTpYIj85zCDvpewDPiXHkLvGqJQkCfpFUOrRYOs2zqR4tYr6lB?=
- =?us-ascii?Q?rAxtjbr88mRBictLkvLD2bTBesMNxfteq+y9+SCZA4Pr7a/5CZBzhARdSAOX?=
- =?us-ascii?Q?qjWLjNi1dyE8WJZf7/L2pPtk5w9a9uofkrjKHI1cc78d/nXtYjGGXPutsfGY?=
- =?us-ascii?Q?N8OUv4hgYH7pqu7YeOFgiw771RTYBY2ThUodkkwGnGInibwQB2trN4wgtBMR?=
- =?us-ascii?Q?/zrDslNSHMhcn7oYS5kqRNqqPP/rSaNRDs6vbnKJBkhmO5MfVjv0yxBO36/T?=
- =?us-ascii?Q?bzqWicfSTgN9628jXV0YRLVzfudQ+rMS5N/imkcRfsbd6ssn8pL8Ca3oWlHA?=
- =?us-ascii?Q?lhFpey8Rnb7MRGbbvY2XeHMngtVOqzz5kD4wz6wOJVP19uM6UJDZGdsQpcsj?=
- =?us-ascii?Q?jHjjdOzuuaFT1pgfb7QVxC9xsr+N5ViVGHnfJtRG36uZvfuWZBpdb4ywtZ5R?=
- =?us-ascii?Q?Mkl7/v+shAXTq4e1ly+DcqWK2/LVwjHHQog8T2tBvDRXhPk+gsQL99IP7FAq?=
- =?us-ascii?Q?2PuwGMG7ecYn5fj1lRUA+F5g1vRDO2sa+wgtYxJs?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 77dbc00a-6056-432e-0959-08db935f1468
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Aug 2023 13:47:57.8394
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: GZo7w2o+j+87oOa9y1Yf/ajHdfmQT4B7AR0y6eamKfeQ7h6MBZXGMf1G+O5EDuBM
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CYYPR12MB8870
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230801063125.34995-1-baolu.lu@linux.intel.com>
 
-On Wed, Aug 02, 2023 at 07:41:05AM +0000, Tian, Kevin wrote:
-> > +/**
-> > + * struct iommu_hwpt_vtd_s1_invalidate - Intel VT-d cache invalidation
-> > + *                                       (IOMMU_HWPT_TYPE_VTD_S1)
-> > + * @flags: Must be 0
-> > + * @entry_size: Size in bytes of each cache invalidation request
-> > + * @entry_nr_uptr: User pointer to the number of invalidation requests.
-> > + *                 Kernel reads it to get the number of requests and
-> > + *                 updates the buffer with the number of requests that
-> > + *                 have been processed successfully. This pointer must
-> > + *                 point to a __u32 type of memory location.
-> > + * @inv_data_uptr: Pointer to the cache invalidation requests
-> > + *
-> > + * The Intel VT-d specific invalidation data for a set of cache invalidation
-> > + * requests. Kernel loops the requests one-by-one and stops when failure
-> > + * is encountered. The number of handled requests is reported to user by
-> > + * writing the buffer pointed by @entry_nr_uptr.
-> > + */
-> > +struct iommu_hwpt_vtd_s1_invalidate {
-> > +	__u32 flags;
-> > +	__u32 entry_size;
-> > +	__aligned_u64 entry_nr_uptr;
-> > +	__aligned_u64 inv_data_uptr;
-> > +};
-> > +
+On Tue, Aug 01, 2023 at 02:31:23PM +0800, Lu Baolu wrote:
+> The PCI PASID enabling interface guarantees that the address space used
+> by each PASID is unique. This is achieved by checking that the PCI ACS
+> path is enabled for the device. If the path is not enabled, then the
+> PASID feature cannot be used.
 > 
-> I wonder whether this array can be defined directly in the common
-> struct iommu_hwpt_invalidate so there is no need for underlying
-> iommu driver to further deal with user buffers, including various
-> minsz/backward compat. check. 
+>     if (!pci_acs_path_enabled(pdev, NULL, PCI_ACS_RR | PCI_ACS_UF))
+>             return -EINVAL;
+> 
+> The PASID array is not an attribute of the IOMMU group. It is more
+> natural to store the PASID array in the per-device IOMMU data. This
+> makes the code clearer and easier to understand. No functional changes
+> are intended.
 
-You want to have an array and another chunk of data?
+Is there a reason to do this?
 
-What is the array for? To do batching?
+*PCI* requires the ACS/etc because PCI kind of messed up how switches
+handled PASID so PASID doesn't work otherwise.
 
-It means we have to allocate memory on this path, that doesn't seem
-like the right direction for a performance improvement..
+But there is nothing that says other bus type can't have working
+(non-PCI) PASID and still have device isolation issues.
 
-Having the driver copy in a loop might be better
+So unless there is a really strong reason to do this we should keep
+the PASID list in the group just like the domain.
 
 Jason
