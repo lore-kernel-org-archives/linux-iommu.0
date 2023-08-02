@@ -1,17 +1,17 @@
 Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4A783DDD1
-	for <iommu@lists.linux.dev>; Wed,  2 Aug 2023 17:09:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 357FDDDC4
+	for <iommu@lists.linux.dev>; Wed,  2 Aug 2023 17:10:49 +0000 (UTC)
 Received: from rrs24-12-35.corp.microsoft.com (unknown [131.107.147.181])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 12B5B238C432;
-	Wed,  2 Aug 2023 10:09:24 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 12B5B238C432
+	by linux.microsoft.com (Postfix) with ESMTPSA id 67061238C435;
+	Wed,  2 Aug 2023 10:02:39 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 67061238C435
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1690996164;
-	bh=NIfkdItr0RVlDTO9mqpTIL61A+YsZheMdyarxG4O/nU=;
+	s=default; t=1690995759;
+	bh=fDMlaBv0OrmjGT2rCt6r3VpG49OJGOp86FWwQR6AG8I=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=hTfikkjz0rWW0uTEPWjqVN7uSYV1OhIu6RsZBw0x6DsxoY6G2KpiKbunqftmUXgqK
-	 gND87iC+O5opWuZ7k1LWJlETVl6S8AT7ANnAlNsR7gl9lky91Lv5/sSMK5S6XoWf1Q
-	 leHJW6fKfEU0k2gl4m1aHFsIpyBPDIPG2GtKFHXk=
+	b=L1ieVBZWubgn3K8CtQJ2GToFuRe/5t4o2TI7D68NzJCJa6xo4uOEIsw8WIufxiolD
+	 mIRowRETYATxzn99dmI5lxZA7QlvOXkvYvc07MOrIqwV0gM4Ii2+ZyrOmlcLX8N2iL
+	 B/RDyfWFHifnKM0VSUXQRhBLrqVRCzsuBz/mehk8=
 From: Easwar Hariharan <eahariha@linux.microsoft.com>
 To: stable@vger.kernel.org
 Cc: easwar.hariharan@microsoft.com,
@@ -29,12 +29,12 @@ Cc: easwar.hariharan@microsoft.com,
 	linux-kernel@vger.kernel.org (open list),
 	iommu@lists.linux-foundation.org (open list:IOMMU DRIVERS),
 	iommu@lists.linux.dev (open list:IOMMU DRIVERS)
-Subject: [PATCH v2 6.1 4/4] iommu/arm-smmu-v3: Document nesting-related errata
-Date: Wed,  2 Aug 2023 17:09:11 +0000
-Message-Id: <20230802170911.1593275-5-eahariha@linux.microsoft.com>
+Subject: [PATCH v3 5.15 3/6] iommu/arm-smmu-v3: Work around MMU-600 erratum 1076982
+Date: Wed,  2 Aug 2023 17:02:24 +0000
+Message-Id: <20230802170227.1590187-4-eahariha@linux.microsoft.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20230802170911.1593275-1-eahariha@linux.microsoft.com>
-References: <20230802170911.1593275-1-eahariha@linux.microsoft.com>
+In-Reply-To: <20230802170227.1590187-1-eahariha@linux.microsoft.com>
+References: <20230802170227.1590187-1-eahariha@linux.microsoft.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -45,61 +45,104 @@ Content-Transfer-Encoding: 8bit
 
 From: Robin Murphy <robin.murphy@arm.com>
 
-commit 0bfbfc526c70606bf0fad302e4821087cbecfaf4 upstream
+commit f322e8af35c7f23a8c08b595c38d6c855b2d836f upstream
 
-Both MMU-600 and MMU-700 have similar errata around TLB invalidation
-while both stages of translation are active, which will need some
-consideration once nesting support is implemented. For now, though,
-it's very easy to make our implicit lack of nesting support explicit
-for those cases, so they're less likely to be missed in future.
+MMU-600 versions prior to r1p0 fail to correctly generate a WFE wakeup
+event when the command queue transitions fom full to non-full. We can
+easily work around this by simply hiding the SEV capability such that we
+fall back to polling for space in the queue - since MMU-600 implements
+MSIs we wouldn't expect to need SEV for sync completion either, so this
+should have little to no impact.
 
 Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
-Link: https://lore.kernel.org/r/696da78d32bb4491f898f11b0bb4d850a8aa7c6a.1683731256.git.robin.murphy@arm.com
+Tested-by: Nicolin Chen <nicolinc@nvidia.com>
+Link: https://lore.kernel.org/r/08adbe3d01024d8382a478325f73b56851f76e49.1683731256.git.robin.murphy@arm.com
 Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Easwar Hariharan <eahariha@linux.microsoft.com>
 ---
- Documentation/arm64/silicon-errata.rst      | 4 ++--
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 5 +++++
- 2 files changed, 7 insertions(+), 2 deletions(-)
+ Documentation/arm64/silicon-errata.rst      |  2 ++
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 29 +++++++++++++++++++++
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  6 +++++
+ 3 files changed, 37 insertions(+)
 
 diff --git a/Documentation/arm64/silicon-errata.rst b/Documentation/arm64/silicon-errata.rst
-index 322df8abbc0e..83a75e16e54d 100644
+index f64354f8a79f..55e1e074dec1 100644
 --- a/Documentation/arm64/silicon-errata.rst
 +++ b/Documentation/arm64/silicon-errata.rst
-@@ -122,9 +122,9 @@ stable kernels.
+@@ -122,6 +122,8 @@ stable kernels.
  +----------------+-----------------+-----------------+-----------------------------+
  | ARM            | MMU-500         | #841119,826419  | N/A                         |
  +----------------+-----------------+-----------------+-----------------------------+
--| ARM            | MMU-600         | #1076982        | N/A                         |
-+| ARM            | MMU-600         | #1076982,1209401| N/A                         |
- +----------------+-----------------+-----------------+-----------------------------+
--| ARM            | MMU-700         | #2812531        | N/A                         |
-+| ARM            | MMU-700         | #2268618,2812531| N/A                         |
- +----------------+-----------------+-----------------+-----------------------------+
++| ARM            | MMU-600         | #1076982        | N/A                         |
+++----------------+-----------------+-----------------+-----------------------------+
  +----------------+-----------------+-----------------+-----------------------------+
  | Broadcom       | Brahma-B53      | N/A             | ARM64_ERRATUM_845719        |
+ +----------------+-----------------+-----------------+-----------------------------+
 diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 7cec4a457d91..340ef116d574 100644
+index bcdb2cbdda97..782d040a829c 100644
 --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
 +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -3487,11 +3487,16 @@ static void arm_smmu_device_iidr_probe(struct arm_smmu_device *smmu)
- 			/* Arm erratum 1076982 */
- 			if (variant == 0 && revision <= 2)
- 				smmu->features &= ~ARM_SMMU_FEAT_SEV;
-+			/* Arm erratum 1209401 */
-+			if (variant < 2)
-+				smmu->features &= ~ARM_SMMU_FEAT_NESTING;
- 			break;
- 		case IIDR_PRODUCTID_ARM_MMU_700:
- 			/* Arm erratum 2812531 */
- 			smmu->features &= ~ARM_SMMU_FEAT_BTM;
- 			smmu->options |= ARM_SMMU_OPT_CMDQ_FORCE_SYNC;
-+			/* Arm errata 2268618, 2812531 */
-+			smmu->features &= ~ARM_SMMU_FEAT_NESTING;
- 			break;
- 		}
- 		break;
+@@ -3459,6 +3459,33 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu, bool bypass)
+ 	return 0;
+ }
+ 
++#define IIDR_IMPLEMENTER_ARM		0x43b
++#define IIDR_PRODUCTID_ARM_MMU_600	0x483
++
++static void arm_smmu_device_iidr_probe(struct arm_smmu_device *smmu)
++{
++	u32 reg;
++	unsigned int implementer, productid, variant, revision;
++
++	reg = readl_relaxed(smmu->base + ARM_SMMU_IIDR);
++	implementer = FIELD_GET(IIDR_IMPLEMENTER, reg);
++	productid = FIELD_GET(IIDR_PRODUCTID, reg);
++	variant = FIELD_GET(IIDR_VARIANT, reg);
++	revision = FIELD_GET(IIDR_REVISION, reg);
++
++	switch (implementer) {
++	case IIDR_IMPLEMENTER_ARM:
++		switch (productid) {
++		case IIDR_PRODUCTID_ARM_MMU_600:
++			/* Arm erratum 1076982 */
++			if (variant == 0 && revision <= 2)
++				smmu->features &= ~ARM_SMMU_FEAT_SEV;
++			break;
++		}
++		break;
++	}
++}
++
+ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
+ {
+ 	u32 reg;
+@@ -3664,6 +3691,8 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
+ 
+ 	smmu->ias = max(smmu->ias, smmu->oas);
+ 
++	arm_smmu_device_iidr_probe(smmu);
++
+ 	if (arm_smmu_sva_supported(smmu))
+ 		smmu->features |= ARM_SMMU_FEAT_SVA;
+ 
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+index 4cb136f07914..5964e02c4e57 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+@@ -69,6 +69,12 @@
+ #define IDR5_VAX			GENMASK(11, 10)
+ #define IDR5_VAX_52_BIT			1
+ 
++#define ARM_SMMU_IIDR			0x18
++#define IIDR_PRODUCTID			GENMASK(31, 20)
++#define IIDR_VARIANT			GENMASK(19, 16)
++#define IIDR_REVISION			GENMASK(15, 12)
++#define IIDR_IMPLEMENTER		GENMASK(11, 0)
++
+ #define ARM_SMMU_CR0			0x20
+ #define CR0_ATSCHK			(1 << 4)
+ #define CR0_CMDQEN			(1 << 3)
 -- 
 2.25.1
 
