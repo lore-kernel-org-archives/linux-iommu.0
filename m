@@ -1,52 +1,52 @@
-Received: from mail-qt1-f178.google.com (mail-qt1-f178.google.com [209.85.160.178])
+Received: from mail-qt1-f177.google.com (mail-qt1-f177.google.com [209.85.160.177])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 37B54156DE
-	for <iommu@lists.linux.dev>; Thu,  3 Aug 2023 10:16:02 +0000 (UTC)
-Received: by mail-qt1-f178.google.com with SMTP id d75a77b69052e-40c72caec5cso260381cf.0
-        for <iommu@lists.linux.dev>; Thu, 03 Aug 2023 03:16:02 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A841D156DE
+	for <iommu@lists.linux.dev>; Thu,  3 Aug 2023 10:17:52 +0000 (UTC)
+Received: by mail-qt1-f177.google.com with SMTP id d75a77b69052e-407db3e9669so197091cf.1
+        for <iommu@lists.linux.dev>; Thu, 03 Aug 2023 03:17:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1691057762; x=1691662562;
+        d=google.com; s=20221208; t=1691057871; x=1691662671;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=QOr42OTiqwuGgbJm6LEEziFOJyncUa+T/gr4vCNaqGY=;
-        b=ceF0aZ1kYRIaCjRP0tTmmcv9Jhn3nKp2gYfVyWfgiTdf1RNanXYgBWp8FEiGOjhcm1
-         LfwFPktlPXciFzr01X1Q5xcbAlWhYLsI6rMJCvi9ccMJVdLSoXgGdFAL/LPEN++JCD7X
-         Uek/nqFOe+Bl+dSQ54ncOhCUo4B9r/KH3Gx58AGZHZ7lr+150oqpMgSJ+YpCopoYcb4j
-         C9IfDSzrJ+rQqSrz7tCS3bIS7IWW+ZRmIH5tP17FhkVOYIrU8H2FzBaYD4UtGPB8pYzZ
-         OSVX6FP/C9CYaCeEzj+CVy6hPOOc1AyaAAO9wM9Hhpd2Ju2tW/QCE7hFFK5qc8YbLvYX
-         u/+A==
+        bh=29AWipdQo31kN/LF6uL0S9fTmmZ+Vp1T6y0yHo8ss3s=;
+        b=qENaUuvDShKvl0GSjEp+Xq57/W9/7QiDDOXIMSbRNu6tVCfSamwUwv8lfKvruI4Mdj
+         WXoWUQ5ab5hK+HZvmYmpJGuyt2cLf3eOzlAhuhhbohP1AqVP7C0yZRqRkSPtE5QKZcsp
+         hqJb5yZUn3jF1MXwk90sadZggDmo0BJ4SwbX0tjePaim19TxYz+kdqEWf5hF5p4xEejJ
+         Qs/O4aOK10ofyiAI35verfeR4X6f+bTQn/DymVewBIUkWQhNGlTvZFIglFsUKSZO6Y18
+         aXeathHxRUad/alfxViGElYYVHuJCtplXmJf8YcSEMdZUmd9hLbMORd1IkjXUQ17oDO7
+         2FKg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1691057762; x=1691662562;
+        d=1e100.net; s=20221208; t=1691057871; x=1691662671;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=QOr42OTiqwuGgbJm6LEEziFOJyncUa+T/gr4vCNaqGY=;
-        b=GhjAHu9cqHd+c6NieQYf9Dn87oqKj8PbqaG8a0pEMae19z2GrxYviqN58VNUKn//FC
-         RXK7AwpUQkmCw4YekOexBzzTAKiUUoay13fNgfX8zWYzTF7XJM5+MGnaDCLflzfcBMQ1
-         kVLpj+0O3RcgUKtuduNB4gKRu3trBaGZlqpovu01oGCmLR/Nxjl+mnaHQ0N9fwA34UP5
-         eENTwqhwoBavjHGUkLtaB10auVjppqwCNK/f5/k8ShyHE2q/onWVD/oWUFuq7WbGfHtA
-         gWTNT2ymK3ATCax83gS7/w+sEoCMd9AecOFJ75hS6T0PuxKH2b16UqS5Y1O6NG058V4K
-         pNVw==
-X-Gm-Message-State: ABy/qLas4qj9lXVf6sF0kZtxIcsus7OcUjUj+N2XvbTsh67oG3UalRXD
-	z8rJCRkeKO531+J+zTb1VUq557no8HhaBg4thWmpvl0eVVhUatQB30kCUDo2
-X-Google-Smtp-Source: APBJJlGwUqTyg1oUt5euBh0ut1AeSopxrW/THLJ12+7fGBSLProZNbKZm/LOkBs7PJ1rjxVr7w2pnIqRnnJfjYccDuI=
-X-Received: by 2002:a05:622a:1aa2:b0:405:3a65:b3d6 with SMTP id
- s34-20020a05622a1aa200b004053a65b3d6mr1207827qtc.13.1691057761676; Thu, 03
- Aug 2023 03:16:01 -0700 (PDT)
+        bh=29AWipdQo31kN/LF6uL0S9fTmmZ+Vp1T6y0yHo8ss3s=;
+        b=MEAN9YFDzWQ/PsRwsv4zxC/Fjk37dVRSSKqAZtV3n+YPl0y3rlT47nPr5RHpHr+WBu
+         aDbUw/W7xBq1VcBFKYPrFKBRE3L0hoRNviSlEfa+Tr+zWFrD8Y2FBeMWE5E8e0HS+FWB
+         zG/uaqBGeVuh0k1XpnVqXNx8JnN4ljvwejr6FHO+9yByCWNcxz7fyqzKwknRyCmsv+E6
+         sa/megkqBArFuf2HM5VQllJjeAuPnXhVirGCWiuTSY/alx/spOvOROTZLWtvl1H2CMRt
+         uiIPdobPB9AnW3kLE3bbw7LCZ+Wx6OdAXcPk94wgGxw9TC0GPMVWS6ND2/gjA94PVTZX
+         QubA==
+X-Gm-Message-State: ABy/qLZqsnrwYgXHGSD4fvPemOphP1lUhd8MH6ROjeXfIcP+NGANfZR7
+	1Tcy86HNcc5flEkhAU4ql0Jr0tC1YvCUFc/e42RMiw/K1t6aTba0E6tLhxK/
+X-Google-Smtp-Source: APBJJlHH21AxchBfMPJlwaX6hi1FkZvHXSAuBRU5Jw5qd1WmFBl7oznkQ9KCKkmxkFo5LYGeNlbmoe3bfCOouswmTFQ=
+X-Received: by 2002:ac8:5913:0:b0:3ef:5f97:258f with SMTP id
+ 19-20020ac85913000000b003ef5f97258fmr1582616qty.16.1691057871221; Thu, 03 Aug
+ 2023 03:17:51 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20230803101351.1561031-1-mshavit@google.com> <20230803181225.v5.6.Iff18df41564b9df82bf40b3ec7af26b87f08ef6e@changeid>
-In-Reply-To: <20230803181225.v5.6.Iff18df41564b9df82bf40b3ec7af26b87f08ef6e@changeid>
+References: <20230803101351.1561031-1-mshavit@google.com> <20230803181225.v5.5.I6f3fb0734ef5ef746ae7c9b27f632f506197eb30@changeid>
+In-Reply-To: <20230803181225.v5.5.I6f3fb0734ef5ef746ae7c9b27f632f506197eb30@changeid>
 From: Michael Shavit <mshavit@google.com>
-Date: Thu, 3 Aug 2023 18:15:25 +0800
-Message-ID: <CAKHBV27-fkATKL9OyVgSG4M2vxvT0AyUVFqiwqpV2RUu1OArxA@mail.gmail.com>
-Subject: Re: [PATCH v5 6/6] iommu/arm-smmu-v3: Cleanup arm_smmu_domain_finalise
+Date: Thu, 3 Aug 2023 18:17:15 +0800
+Message-ID: <CAKHBV27=9PJkWi8oJbhBbHYw1BLkdBKXEUyGSMcNmL9yN1-HPg@mail.gmail.com>
+Subject: Re: [PATCH v5 5/6] iommu/arm-smmu-v3: Free pasid domains on iommu release
 To: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
 	linux-kernel@vger.kernel.org
 Cc: baolu.lu@linux.intel.com, will@kernel.org, jgg@nvidia.com, 
@@ -57,8 +57,8 @@ Content-Transfer-Encoding: quoted-printable
 On Thu, Aug 3, 2023 at 6:14=E2=80=AFPM Michael Shavit <mshavit@google.com> =
 wrote:
 >
-> Remove unused master parameter now that the CD table is allocated
-> elsewhere.
+> The iommu core doesn't guarantee that pasid domains will be detached
+> before the device is released.
 
-This almost certainly belongs in the CD table patch series. I'd like
-to move it there if this commit looks OK.
+I'm not certain whether this is possible or not. Is this change really
+necessary?
