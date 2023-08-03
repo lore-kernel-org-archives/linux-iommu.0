@@ -1,90 +1,58 @@
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2040.outbound.protection.outlook.com [40.107.236.40])
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2076.outbound.protection.outlook.com [40.107.93.76])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 378B91FAB;
-	Thu,  3 Aug 2023 00:08:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 709A3EA0
+	for <iommu@lists.linux.dev>; Thu,  3 Aug 2023 00:18:39 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Hcze1gxanMQs5Uwd184PSqzdplKJR4acQQa7rzBPkG+rZADj6/OTXzcf/5zyvnSwd5lAKtnkCzuVf2nd1OmtgURGujmmvZQTzsGNC1Gex4wlWP8InucPMHV7Xc92adLM4ETSHhtUnYRsfzdmFjujE2nHPHLRptrXyIgNQStJ5OwEhB6ASaKCwkj9VOnK/0bfui9NgSJ3nE7juvA77vl3fmk+YF8OvSPiavvDUn+x63cJhy8UVCxwbftB8wyLXyJu01i0KZ5q5pOqD/gIRbZFqsAU1l8tXdQprDGeEyKRRnLmnqGA3Sm3Epgho2Li+QDUjaSTgJaZAhsBiwgJgg/SRw==
+ b=mz8aj4XAbkghCnicfMjnLV5f4CJAC4kiVakj61d0cKyASItaT+eGBMJBGwZ2im4bG26sV8RrlaoBpV//eXCDyqZ1cb3qloOCzmdQB+8Bv1SPdbdDaeswhAc1QWTka65TPj9ZtALaxYtAzhRwoWtN+xNQZXiqDNCaN7x5aC9UNeFEknbYJ+MiEg0VrpsNqtODpQxxs8RYCW/pXttKnHQZa1aA7e9ujlDO7axkLUv7//FHPonN89EGnSptSZu5da38O/PEOWDfiWtIxnwHPVKhuky5LUZzBBcxUIWMp/nYNq+xLmmDHDSNWeD0NRHLxeuZEAj1Iag/7ZoLECj2+d+jPg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=YtZrvcRXMzDa0mN6qyI067L4cF0+kUMjpkfJj4hHp7U=;
- b=ae992h8AErQwTBhfv+rKOoEoPO+w/ui+2UnVIM6P+YNfm/Opvh37JP2bdarkAYPvKQd38AGO9LIkKK038it41wNLSksa0T07Svdc0bXhY7LT0Xm1+NgTuJjwNB/9unygKij9ZQb9G9drzdmNjg3H142C5P3XCjq3KTWfkIpi10h4nkLQgDONxARfr19jiYNzSJmec5btduPK26wXu48JzXYO4ZXs2IhL1udFLuFEWQWPcQHBFUJ4aiKDk+L/wZX58mJKH0Y1IzFIYu0qJkpV2klot37QN6QIehq5t1LuPgltanfNFkfxZuzCBd6W7F61bXY5WEzdQrVexY7Q8apd0w==
+ bh=LBDw9w/qf2P3eJ3SdwSaHSXS/Zb6kpRN3nbyXAapX90=;
+ b=dYsDu+obfM+nqfYRMPxSrNkoXQPnIP8vcWSv0HySYGNrzLi+vKZn/EqV+xCjWu9GWNgrzD6s0LiP7zDZD0dKhXLP5OtqVDfBjWmTKgIQaXDF/iIshVumk6ywKCmvgRYUVVLV6UbP1z5RhdxcM4kpsz+4guL5SgI9dD0ZlfDnxqC4dhDuTKM10EFf/Ck+f+AgpiuyVIQz3Q8Od35rLpj9sXEjqzKVHSpzjW5+FMCwL8a9nVqWo53AJVpgB8KfM4bHim0+giIGqge27y/h8h9y3Bw07W2c8MeNN/jvvXaq8kodfMxOkCmCavfwO4y1XzoFAzDYGnqfps3Q/va1LUpIvA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=YtZrvcRXMzDa0mN6qyI067L4cF0+kUMjpkfJj4hHp7U=;
- b=td1q8/q6sg11kff45B/V4AmhzsBVQET67J+eY0lPWVN69jJZNPg/tMpou6m7ZNwFcF+mfUyEGk3w6xOUftDRDg5SPpwjvVWuNKtt0BNDzGrQYsofRl6y8dHuYHNDGPbJEIZel8jsu6i0uCG12PYxfpMz/1MFVQD/Gz8dX760s0iCstAvO5GJ2njY+sG8SbGOD0/w6pbpTWaDsDCJwGQ6PGK8n+qENGmiO3LA+wnIG+snldEupqmZHlDjFVLL428Q2pF/Sbg4iA6m88r6zWfys+OCGfnI3F6WqkwPb8Y6igZlPwAhqXEXPH7MKntL4cR+Hy8MRoq9GZn2ctmBR8HuKQ==
+ bh=LBDw9w/qf2P3eJ3SdwSaHSXS/Zb6kpRN3nbyXAapX90=;
+ b=sHZZa6TQ12B76oRX5AQuhGma/6oP79tDiKvnwTYeW0oxFRa+5rYnKWlxb5sRyAnOsXv3xZAKgrAKBO4qtJF7Nke+KP6Pgvp/rSwg9i8u5+/L3wDGfugoNVVOoEs9d0YB3cOQiPrQnkXnTQelMNrOrh3OWybrA7PlcN9+LdZ+KpX/emkWIP31CgBSzhAXAxkRtq5V3rr4dFwk3K3WzQvYcLRILGp5PPLaT+iMYuU+I98SkV6UwpqVLMT7hddxWdNFfKvnz655yJzGVXi9eVyHR4DFJ8AkyPFIhqEhw+2bPdCjlaOqg6DTDuJYfhdzxc4FkV3+OuJFCuOS2g6/DvKb2g==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by DM4PR12MB6085.namprd12.prod.outlook.com (2603:10b6:8:b3::16) with
+ by SJ2PR12MB7961.namprd12.prod.outlook.com (2603:10b6:a03:4c0::20) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6631.47; Thu, 3 Aug
- 2023 00:08:26 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6631.45; Thu, 3 Aug
+ 2023 00:18:36 +0000
 Received: from LV2PR12MB5869.namprd12.prod.outlook.com
  ([fe80::5111:16e8:5afe:1da1]) by LV2PR12MB5869.namprd12.prod.outlook.com
  ([fe80::5111:16e8:5afe:1da1%6]) with mapi id 15.20.6631.045; Thu, 3 Aug 2023
- 00:08:26 +0000
+ 00:18:36 +0000
+Date: Wed, 2 Aug 2023 21:18:35 -0300
 From: Jason Gunthorpe <jgg@nvidia.com>
-To: Andy Gross <agross@kernel.org>,
-	Alim Akhtar <alim.akhtar@samsung.com>,
-	Bjorn Andersson <andersson@kernel.org>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-	Baolin Wang <baolin.wang@linux.alibaba.com>,
-	Christophe Leroy <christophe.leroy@csgroup.eu>,
-	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-	Heiko Stuebner <heiko@sntech.de>,
-	iommu@lists.linux.dev,
-	Jernej Skrabec <jernej.skrabec@gmail.com>,
-	Jonathan Hunter <jonathanh@nvidia.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Konrad Dybcio <konrad.dybcio@linaro.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-	linux-arm-kernel@lists.infradead.org,
-	linux-arm-msm@vger.kernel.org,
-	linux-mediatek@lists.infradead.org,
-	linux-rockchip@lists.infradead.org,
-	linux-s390@vger.kernel.org,
-	linux-samsung-soc@vger.kernel.org,
-	linux-sunxi@lists.linux.dev,
-	linux-tegra@vger.kernel.org,
-	Russell King <linux@armlinux.org.uk>,
-	linuxppc-dev@lists.ozlabs.org,
-	Matthias Brugger <matthias.bgg@gmail.com>,
-	Matthew Rosato <mjrosato@linux.ibm.com>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	Orson Zhai <orsonzhai@gmail.com>,
-	Rob Clark <robdclark@gmail.com>,
+To: Tomasz Jeznach <tjeznach@rivosinc.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
 	Robin Murphy <robin.murphy@arm.com>,
-	Samuel Holland <samuel@sholland.org>,
-	Thierry Reding <thierry.reding@gmail.com>,
-	Krishna Reddy <vdumpa@nvidia.com>,
-	Chen-Yu Tsai <wens@csie.org>,
-	Will Deacon <will@kernel.org>,
-	Yong Wu <yong.wu@mediatek.com>,
-	Chunyan Zhang <zhang.lyra@gmail.com>
-Cc: Lu Baolu <baolu.lu@linux.intel.com>,
-	Dmitry Osipenko <digetx@gmail.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Niklas Schnelle <schnelle@linux.ibm.com>,
-	Steven Price <steven.price@arm.com>,
-	Thierry Reding <treding@nvidia.com>
-Subject: [PATCH v6 22/25] iommu: Add __iommu_group_domain_alloc()
-Date: Wed,  2 Aug 2023 21:08:09 -0300
-Message-ID: <22-v6-e8114faedade+425-iommu_all_defdom_jgg@nvidia.com>
-In-Reply-To: <0-v6-e8114faedade+425-iommu_all_defdom_jgg@nvidia.com>
-References:
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: MN2PR15CA0066.namprd15.prod.outlook.com
- (2603:10b6:208:237::35) To LV2PR12MB5869.namprd12.prod.outlook.com
+	Paul Walmsley <paul.walmsley@sifive.com>,
+	Palmer Dabbelt <palmer@dabbelt.com>,
+	Albert Ou <aou@eecs.berkeley.edu>,
+	Anup Patel <apatel@ventanamicro.com>,
+	Sunil V L <sunilvl@ventanamicro.com>,
+	Nick Kossifidis <mick@ics.forth.gr>,
+	Sebastien Boeuf <seb@rivosinc.com>, iommu@lists.linux.dev,
+	linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+	linux@rivosinc.com
+Subject: Re: [PATCH 01/11] RISC-V: drivers/iommu: Add RISC-V IOMMU - Ziommu
+ support.
+Message-ID: <ZMryW/krEWLEyaq+@nvidia.com>
+References: <cover.1689792825.git.tjeznach@rivosinc.com>
+ <c33c24036c06c023947ecb47177da273569b3ac7.1689792825.git.tjeznach@rivosinc.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <c33c24036c06c023947ecb47177da273569b3ac7.1689792825.git.tjeznach@rivosinc.com>
+X-ClientProxiedBy: BL1PR13CA0285.namprd13.prod.outlook.com
+ (2603:10b6:208:2bc::20) To LV2PR12MB5869.namprd12.prod.outlook.com
  (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -93,229 +61,160 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|DM4PR12MB6085:EE_
-X-MS-Office365-Filtering-Correlation-Id: 35561d0e-123b-4fb1-c38f-08db93b5bcd9
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|SJ2PR12MB7961:EE_
+X-MS-Office365-Filtering-Correlation-Id: 645765bf-7015-4787-b3ef-08db93b72e05
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	HHc5XGbLCJvnETbHGHcWZHUcUJuoQgEdRrQQk+gYz9xteiBx75OHxyo5U9jHsgQb6v0QV2ruhwfcjFx0+GHwEXX0X4ZU7eUciHmfcLpv3zJ983yNTLi+KAZhOgz2o5vVmSuGxyWd9Lz8BsyJsEFl3KvaMY1XaGb1Tj4Z0vgUYRM0Jaso7+EbTC+tf2QVQS308M0s0HfPKhzyLf/WwSyRaw6gqyetwOU96qrAh9/8RS8nxpPo+L/z9P/q65JuHr74LNVR543RbN9XrPf/MEZBiuASU8QeBf7Ffsz1TiVEVbIM6zj3CKrQE8tMY80Q+KoYZ8GkDmGTEDfFbAUKLBoMty+FPKCXoygBjeMvXtYrG3G1+PlJSZg81gNxbffO+JWi7gBuNsuZenqovB9eU8b1P3J6O27h6cxD+S3fTOqaqo5kLT46+W2BJzBD8IuqZSpjmb2J8Ryi105/Sx4sXcNL+oZmgU0mKTuP7QGzgcZjIWh0VUJYLEYTxf7/uwlr+SD2zVz8iRwwd/rdus+4+eS/e8sgCAoIdP6QsI1GqnEHQHx5D9mu44ubxkOHP3rTtdtTbvIN1nhUBJi9lXWm+7UOr5t+5ENLoIUDFMlpfNknSCSnExcyUFjXNS7eaXQpM34VRio+rsbnkC3uVLiDHL2SBg==
+	qs+uNN0hTMZ74Mhq8KULFmSaIBDpmEVNtGiZdvSLesrHbc4RP5MG6+IIV1VUl+4Ydiz/doPoYmKwDHUm5uAIpztdYrSLKU1YMztJHIUinB4wTizLdTYEkN4IaCoalrlzhzjxN5Mjiq6kdMPxYYycyem3DzpuXDxdcNS9+K5l9AP1HcUEvwbxUnlf+z1ZWOBNGCMfDERZWGa6nKWUqDPlyy9aqKL33QLnVYVsuOgXDlyaKML5O7ytzFZHFEIwvkhmctUJNEf7xwAdS4kv4mLKkdd/MfabVUzdp1NMLkd+PvDm3eGVGA0fJnkEpiShgozbpYWhf9R9OeXtTLQKRyPaM+P2/ktGYnIQa51/qq5k1V8cOxzolMNxVioTzJKdiQtDKvjl5lhqKnDEAYFJrnnFiRbY8AplMNJBLVxX0ijoLdm1gs+9WudfKzeNXjcJ2GndBjRGjD3FqkEC/kIAdx8EuYJ8j4Kz91BPwxqERR8ijHU+AQ2xhmlUe2tkU1ZqSWpHwh0ojZY6OyQnrorSOVKHf7gtTH49FIRhnDU5BQAGy8GMLH2SgnvxE4x6cq6guo9C
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(346002)(366004)(39860400002)(376002)(136003)(451199021)(7416002)(36756003)(86362001)(7406005)(54906003)(478600001)(110136005)(38100700002)(921005)(83380400001)(186003)(2616005)(6506007)(107886003)(26005)(41300700001)(8676002)(8936002)(6512007)(6666004)(6486002)(316002)(66476007)(66556008)(5660300002)(4326008)(2906002)(66946007);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(136003)(376002)(346002)(396003)(366004)(39860400002)(451199021)(66946007)(2906002)(4326008)(6916009)(66556008)(66476007)(478600001)(6512007)(86362001)(83380400001)(6486002)(186003)(36756003)(6506007)(38100700002)(2616005)(26005)(54906003)(41300700001)(8936002)(8676002)(5660300002)(7416002)(316002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?HVwS/4kZq3GtjnpYSaJdhIi856p9gZuXK76F9Ge35ww7GRSzdj0iYoSxhph4?=
- =?us-ascii?Q?R+MhPbg/GL2xKI0jb6PBHr4iOUxzYm0e3RnykRoC8o0xQP2a+ZruRFqSp3BP?=
- =?us-ascii?Q?Ikw/JKmUxFebaUVnlB641NgyWjNLHW0Hhx+L8EqXPtuJUCH00fJX0Ec9zeqO?=
- =?us-ascii?Q?U7cmW7lkYh9FlH+SgH9g6Ja+Z6B3lrslhpNxaKYx74HMGJM5Pe2d2S6msrjK?=
- =?us-ascii?Q?oei6hDs5njVFZjscSH3VV1xyRHYzqucfvGJit48CGJmAlySBviw/Fxrh+brE?=
- =?us-ascii?Q?9/cHaO9Fs6eL8pDE3mmo2FYIEQ818hmByGdKDpuIBOcWUPg4VAnZgPGJMYN+?=
- =?us-ascii?Q?zuyqC5eXxJo4MyJXDA5YMbl6PC8Gp9lWNvFIwNcgNc5wVknUqRu+QxU8ZCOM?=
- =?us-ascii?Q?JQoK+0SFmRTBHUYWK5BeNnkr7ugas03piQrR7kOAaqF9hDkWimPm9dzmS8EE?=
- =?us-ascii?Q?lTvMh9bZMuQH85Ln4bs/u/jAtrULLSSWtOQt7Wv5Fb2NZ9dX4LWqvrX8zFGM?=
- =?us-ascii?Q?m/ykW1t+lGqOwSRh/z7g9wEzfOYh6laBVOSqg9T+ZAOJ3Hg2fpI120zmPJJS?=
- =?us-ascii?Q?sgYq8+tuUw1f7zvhpFEuoW6LgMItzoGGr2mmvo1pcrohiTgdBHyya52tvKr3?=
- =?us-ascii?Q?eko1mzGmvY7AGTLG8d9Q6SUnKeeSG96IjPzy1qjly1cWJHsV+LFgQzLDBMyv?=
- =?us-ascii?Q?y28RRLIKU/66ZSDh2SWroo47sp826c4EYv6rAuMTsHI8EN/f1TpLHkJ+5sAW?=
- =?us-ascii?Q?ZAEyXRzEhn/sq59Jt7ivi8/icQc6UYuE90jNeEKNOHiIgVdIaOLpJyWeiQ2q?=
- =?us-ascii?Q?o7QoJDNQ9rAQ6e8oVw99yg5HyJDM+YLLUwf38Jowm/kg8xh5ZR9doR36aKro?=
- =?us-ascii?Q?T/LvDMEHSHJsg1XMXwMVC0PmaIvs5WwKMkaNzMxyLMWAzVAFHRZlB3NxY4gU?=
- =?us-ascii?Q?Mn6yicyFzkryOoPTZztM6JADXO3IRZpqsH8j5OIW8uRC/1ldRX3TsmJUV8aR?=
- =?us-ascii?Q?widEkIoTP7nO2hQ5XBo9f/tKCIplTtSDJ1+WgOmFnr6EXRv1OndJzUaozrOD?=
- =?us-ascii?Q?g4RFIkSnvdj7UKWYyw8zmDuJou+AMwwc8OXocAhYDcZ+luhP6QMqFdP7gDvD?=
- =?us-ascii?Q?guza8uWv1szkFBlf5o49KF4nXno3+CFqfZ5SwvZ/Bq8VB2+67AWu8iakkmtl?=
- =?us-ascii?Q?RhZ0ueXIho603A1YZlqXlEsaX334zL9FZn3aJW1UotR7fgLipAYTIcVLhKmX?=
- =?us-ascii?Q?MozMG2bNmImuS5N+H2zL14YOUxj0B1HZjBSH83NgjxhFyK7IorsYwThTVFpw?=
- =?us-ascii?Q?6zo6jKIeJsMVTr31LEcTBWpnteNUXKCJm9C12pg4eIB5BPh8zPDuC01urU8i?=
- =?us-ascii?Q?rzQ37vMYkrcU0PKSle4ZPtcPsvRXOnRKBEbDnziDuDIc/BEQ7njbcnAWGk3w?=
- =?us-ascii?Q?fVKOk1+WZT9FF9DbrjhCxV8o/N/pcv4swdWmDIe9j9VRPwIJ7yXaHNwg7c7f?=
- =?us-ascii?Q?wIX/IafvBY99iaA0p5KJc57lJLj0WrRzhdr2mhSV3A2uur+4y8f4hg181hk0?=
- =?us-ascii?Q?NiNVmys2UyC4uQGDGA4KVb7irP6ChQjkSqI1nECH?=
+	=?us-ascii?Q?O3pPsSpZ0kMEBeMGsIqHGeHBx9KFvZTMwkFMRSXjNwGlBtn/sMFm6NegzUcb?=
+ =?us-ascii?Q?Tn1IQp+myfXXLHBmWa+k87QP28H70kwohiI1vrD7/Mh6Y7z4iU0YnT42cVsg?=
+ =?us-ascii?Q?a+ZaQq9JqwaNxN/+wcIBEZTwp6AQ2nAZUB6ksQrsW02lADaSzD1VWVIdQE4k?=
+ =?us-ascii?Q?h0F6lKeIuSDxppuQ1Au71jqAALc2/7abWs0CNVEWTRKBBZ/ZezGkFdkRtmbv?=
+ =?us-ascii?Q?77DGobBFlXyn9m772Qkp79fbIa5k4CW2eq/M/XU9kaQiyxXPGd1sheF2lkol?=
+ =?us-ascii?Q?MnvOAtmbF29TdqWlZmsU1H7OAmdN/j6REBsP4sYwpHhqJLIHULQtqug/PDbn?=
+ =?us-ascii?Q?EqpTn8/OaNKMGwXjujjhGOQB1VbnnkPkCSND3dj3TZKKM56GCP9c5HGTHRY6?=
+ =?us-ascii?Q?NsZ6G6nDYd4aco5cx5K7+gvG4FKs6yLQYC4H2vr0ZZ5/CBAn1jbFcyis1WzF?=
+ =?us-ascii?Q?ar7swFl0EoXgDD9RwqnH0HiIcS5zcQJt9beUWxaxePdO+/XlTstBHfDX9Rcs?=
+ =?us-ascii?Q?Oxd2uijz8xamhqb59liPRbVcSoPz78Z3w0LQ8bLVPIGwQBXFfUWbF2d1g9pI?=
+ =?us-ascii?Q?B5zld0pE6DVTWWcw2/9lHOCdEwshyqW3/zwgZIRM0aVBVIpXrIC+jQcmFcSg?=
+ =?us-ascii?Q?p/dfxTKbeHiDltmZ5Hl1jSaUc3TpRYsFfuippFxc5qv9Zr8WUz6zIiYHceVv?=
+ =?us-ascii?Q?eHJoHLroXs3YUag0p3mNrBRDvH7LHH/hMe2L0Ptmn9MCNkjIbT0f9F+9J2JW?=
+ =?us-ascii?Q?s5Ivtl7MbpOG2ivW8ZziD/BK1/RARC4zvLzx45YhLo44DkCvEfgxyy1+VsBT?=
+ =?us-ascii?Q?5JQyb4vzdivTKurcbZNPXj8nu2bAEA3PlPN6PoyoDo07fZRm69oPHonpd3SQ?=
+ =?us-ascii?Q?FPmvPiAWDi174JbKH8ULl7RX5oIgthI9044rRTx0h24nzjW9ixY7tRt8gyGL?=
+ =?us-ascii?Q?fh4z79Tl3A4zClNf6hPuIwkCSgk4J/t8agwqdWgxukDcUEEI0jTZuobwt+B6?=
+ =?us-ascii?Q?LTQSOoc8IvUT99hlX2wykqNzRFulK3Jl41bux1wEDZ/rx2YaKE5jLMBbQntk?=
+ =?us-ascii?Q?bwhYzsK8ijFwHHqZ4k390SuMoCdDk/2DqUpdJjv67JWlxlG1KMBvXl+uItSF?=
+ =?us-ascii?Q?F6r3ru/abFL4evl6IaSwYiccUw/K1oJV4MIv20BMgk6o9qFGDjxDEWvxsoZw?=
+ =?us-ascii?Q?b8KxNfgk1aiH5W7srDZ5/36ac2YcG2jlf0eGYiT8OX358Zj0IlKNQ4/iAj+Y?=
+ =?us-ascii?Q?XZx1JM0GH91D54qKkkwDBEOYBG+GSG5tIb4ldsxGNssqLmomxy74JOCa0h6p?=
+ =?us-ascii?Q?9aHPbkiCipRmktgNYVTuxHzCD3LUiJSWJiNPza226cpygQsgZjKooNb+znyg?=
+ =?us-ascii?Q?9W/qBwDM56u2Sbr1YqIIZngQejJ94G5zGqm9oht2bgfEB4kFST2V+loQYZMA?=
+ =?us-ascii?Q?/PTkulG1nDLDdbX3w0CtNwapPBDfwIdPIhNMMx8wLKzkFNGyowFf0uT9YxjU?=
+ =?us-ascii?Q?vuJtr9wSax/avZDr5Qlt1GKQKx4wFm1MN7eeF64mvvAx+v3eRnSomtn4tAbI?=
+ =?us-ascii?Q?bIE7N8pZlofw2bZ07Ds6ZWFmlwfwjW9iEbzt/kME?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 35561d0e-123b-4fb1-c38f-08db93b5bcd9
+X-MS-Exchange-CrossTenant-Network-Message-Id: 645765bf-7015-4787-b3ef-08db93b72e05
 X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Aug 2023 00:08:17.7290
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Aug 2023 00:18:36.7477
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: vI9XomDANfi0p3G9/tfrDcvg/73I6Od6Yo5btFw+zkleGhQS+e0zSINfkW4lpafk
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB6085
+X-MS-Exchange-CrossTenant-UserPrincipalName: 8UGQNosFV/8RjXD0WflvxX8/AMAP7wAj2ALJtNCJwoaycaIoNfZKmHSMMy3B97G7
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ2PR12MB7961
 
-Allocate a domain from a group. Automatically obtains the iommu_ops to use
-from the device list of the group. Convert the internal callers to use it.
+On Wed, Jul 19, 2023 at 12:33:45PM -0700, Tomasz Jeznach wrote:
 
-Tested-by: Steven Price <steven.price@arm.com>
-Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
-Tested-by: Nicolin Chen <nicolinc@nvidia.com>
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
----
- drivers/iommu/iommu.c | 66 ++++++++++++++++++++++++-------------------
- 1 file changed, 37 insertions(+), 29 deletions(-)
+> +static int riscv_iommu_domain_finalize(struct riscv_iommu_domain *domain,
+> +				       struct riscv_iommu_device *iommu)
+> +{
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 1533e65d075bce..bc8b35e31b5343 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -94,8 +94,8 @@ static const char * const iommu_group_resv_type_string[] = {
- static int iommu_bus_notifier(struct notifier_block *nb,
- 			      unsigned long action, void *data);
- static void iommu_release_device(struct device *dev);
--static struct iommu_domain *__iommu_domain_alloc(const struct bus_type *bus,
--						 unsigned type);
-+static struct iommu_domain *
-+__iommu_group_domain_alloc(struct iommu_group *group, unsigned int type);
- static int __iommu_attach_device(struct iommu_domain *domain,
- 				 struct device *dev);
- static int __iommu_attach_group(struct iommu_domain *domain,
-@@ -1713,12 +1713,11 @@ struct iommu_group *fsl_mc_device_group(struct device *dev)
- EXPORT_SYMBOL_GPL(fsl_mc_device_group);
- 
- static struct iommu_domain *
--__iommu_group_alloc_default_domain(const struct bus_type *bus,
--				   struct iommu_group *group, int req_type)
-+__iommu_group_alloc_default_domain(struct iommu_group *group, int req_type)
- {
- 	if (group->default_domain && group->default_domain->type == req_type)
- 		return group->default_domain;
--	return __iommu_domain_alloc(bus, req_type);
-+	return __iommu_group_domain_alloc(group, req_type);
- }
- 
- /*
-@@ -1728,9 +1727,10 @@ __iommu_group_alloc_default_domain(const struct bus_type *bus,
- static struct iommu_domain *
- iommu_group_alloc_default_domain(struct iommu_group *group, int req_type)
- {
--	const struct bus_type *bus =
-+	struct device *dev =
- 		list_first_entry(&group->devices, struct group_device, list)
--			->dev->bus;
-+			->dev;
-+	const struct iommu_ops *ops = dev_iommu_ops(dev);
- 	struct iommu_domain *dom;
- 
- 	lockdep_assert_held(&group->mutex);
-@@ -1740,24 +1740,24 @@ iommu_group_alloc_default_domain(struct iommu_group *group, int req_type)
- 	 * domain. This should always be either an IDENTITY or PLATFORM domain.
- 	 * Do not use in new drivers.
- 	 */
--	if (bus->iommu_ops->default_domain) {
-+	if (ops->default_domain) {
- 		if (req_type)
- 			return ERR_PTR(-EINVAL);
--		return bus->iommu_ops->default_domain;
-+		return ops->default_domain;
- 	}
- 
- 	if (req_type)
--		return __iommu_group_alloc_default_domain(bus, group, req_type);
-+		return __iommu_group_alloc_default_domain(group, req_type);
- 
- 	/* The driver gave no guidance on what type to use, try the default */
--	dom = __iommu_group_alloc_default_domain(bus, group, iommu_def_domain_type);
-+	dom = __iommu_group_alloc_default_domain(group, iommu_def_domain_type);
- 	if (dom)
- 		return dom;
- 
- 	/* Otherwise IDENTITY and DMA_FQ defaults will try DMA */
- 	if (iommu_def_domain_type == IOMMU_DOMAIN_DMA)
- 		return NULL;
--	dom = __iommu_group_alloc_default_domain(bus, group, IOMMU_DOMAIN_DMA);
-+	dom = __iommu_group_alloc_default_domain(group, IOMMU_DOMAIN_DMA);
- 	if (!dom)
- 		return NULL;
- 
-@@ -1998,19 +1998,16 @@ void iommu_set_fault_handler(struct iommu_domain *domain,
- }
- EXPORT_SYMBOL_GPL(iommu_set_fault_handler);
- 
--static struct iommu_domain *__iommu_domain_alloc(const struct bus_type *bus,
--						 unsigned type)
-+static struct iommu_domain *__iommu_domain_alloc(const struct iommu_ops *ops,
-+						 unsigned int type)
- {
- 	struct iommu_domain *domain;
- 	unsigned int alloc_type = type & IOMMU_DOMAIN_ALLOC_FLAGS;
- 
--	if (bus == NULL || bus->iommu_ops == NULL)
--		return NULL;
-+	if (alloc_type == IOMMU_DOMAIN_IDENTITY && ops->identity_domain)
-+		return ops->identity_domain;
- 
--	if (alloc_type == IOMMU_DOMAIN_IDENTITY && bus->iommu_ops->identity_domain)
--		return bus->iommu_ops->identity_domain;
--
--	domain = bus->iommu_ops->domain_alloc(alloc_type);
-+	domain = ops->domain_alloc(alloc_type);
- 	if (!domain)
- 		return NULL;
- 
-@@ -2020,10 +2017,10 @@ static struct iommu_domain *__iommu_domain_alloc(const struct bus_type *bus,
- 	 * may override this later
- 	 */
- 	if (!domain->pgsize_bitmap)
--		domain->pgsize_bitmap = bus->iommu_ops->pgsize_bitmap;
-+		domain->pgsize_bitmap = ops->pgsize_bitmap;
- 
- 	if (!domain->ops)
--		domain->ops = bus->iommu_ops->default_domain_ops;
-+		domain->ops = ops->default_domain_ops;
- 
- 	if (iommu_is_dma_domain(domain) && iommu_get_dma_cookie(domain)) {
- 		iommu_domain_free(domain);
-@@ -2032,9 +2029,23 @@ static struct iommu_domain *__iommu_domain_alloc(const struct bus_type *bus,
- 	return domain;
- }
- 
-+static struct iommu_domain *
-+__iommu_group_domain_alloc(struct iommu_group *group, unsigned int type)
-+{
-+	struct device *dev =
-+		list_first_entry(&group->devices, struct group_device, list)
-+			->dev;
-+
-+	lockdep_assert_held(&group->mutex);
-+
-+	return __iommu_domain_alloc(dev_iommu_ops(dev), type);
-+}
-+
- struct iommu_domain *iommu_domain_alloc(const struct bus_type *bus)
- {
--	return __iommu_domain_alloc(bus, IOMMU_DOMAIN_UNMANAGED);
-+	if (bus == NULL || bus->iommu_ops == NULL)
-+		return NULL;
-+	return __iommu_domain_alloc(bus->iommu_ops, IOMMU_DOMAIN_UNMANAGED);
- }
- EXPORT_SYMBOL_GPL(iommu_domain_alloc);
- 
-@@ -3144,21 +3155,18 @@ void iommu_device_unuse_default_domain(struct device *dev)
- 
- static int __iommu_group_alloc_blocking_domain(struct iommu_group *group)
- {
--	struct group_device *dev =
--		list_first_entry(&group->devices, struct group_device, list);
--
- 	if (group->blocking_domain)
- 		return 0;
- 
- 	group->blocking_domain =
--		__iommu_domain_alloc(dev->dev->bus, IOMMU_DOMAIN_BLOCKED);
-+		__iommu_group_domain_alloc(group, IOMMU_DOMAIN_BLOCKED);
- 	if (!group->blocking_domain) {
- 		/*
- 		 * For drivers that do not yet understand IOMMU_DOMAIN_BLOCKED
- 		 * create an empty domain instead.
- 		 */
--		group->blocking_domain = __iommu_domain_alloc(
--			dev->dev->bus, IOMMU_DOMAIN_UNMANAGED);
-+		group->blocking_domain = __iommu_group_domain_alloc(
-+			group, IOMMU_DOMAIN_UNMANAGED);
- 		if (!group->blocking_domain)
- 			return -EINVAL;
- 	}
--- 
-2.41.0
+Do not introduce this finalize pattern into new drivers. We are trying
+to get rid of it. I don't see anything here that suggest you need it.
 
+Do all of this when you allocate the domain.
+
+> +	struct iommu_domain_geometry *geometry;
+> +
+> +	/* Domain assigned to another iommu */
+> +	if (domain->iommu && domain->iommu != iommu)
+> +		return -EINVAL;
+> +	/* Domain already initialized */
+> +	else if (domain->iommu)
+> +		return 0;
+
+These tests are not good, the domain should be able to be associated
+with as many iommu instances as it likes.
+
+> +static int riscv_iommu_attach_dev(struct iommu_domain *iommu_domain, struct device *dev)
+> +{
+> +	struct riscv_iommu_domain *domain = iommu_domain_to_riscv(iommu_domain);
+> +	struct riscv_iommu_endpoint *ep = dev_iommu_priv_get(dev);
+> +	int ret;
+> +
+> +	/* PSCID not valid */
+> +	if ((int)domain->pscid < 0)
+> +		return -ENOMEM;
+> +
+> +	mutex_lock(&domain->lock);
+> +	mutex_lock(&ep->lock);
+> +
+> +	if (!list_empty(&ep->domain)) {
+> +		dev_warn(dev, "endpoint already attached to a domain. dropping\n");
+
+This is legitimate, it means the driver has to replace the domain, and
+drivers have to implement this.
+
+> +/*
+> + * Common I/O MMU driver probe/teardown
+> + */
+> +
+> +static const struct iommu_domain_ops riscv_iommu_domain_ops = {
+> +	.free = riscv_iommu_domain_free,
+> +	.attach_dev = riscv_iommu_attach_dev,
+> +	.map_pages = riscv_iommu_map_pages,
+> +	.unmap_pages = riscv_iommu_unmap_pages,
+> +	.iova_to_phys = riscv_iommu_iova_to_phys,
+> +	.iotlb_sync = riscv_iommu_iotlb_sync,
+> +	.iotlb_sync_map = riscv_iommu_iotlb_sync_map,
+> +	.flush_iotlb_all = riscv_iommu_flush_iotlb_all,
+> +};
+
+Please split the ops by domain type, eg identity, paging, sva, etc.
+
+> +int riscv_iommu_init(struct riscv_iommu_device *iommu)
+> +{
+> +	struct device *dev = iommu->dev;
+> +	u32 fctl = 0;
+> +	int ret;
+> +
+> +	iommu->eps = RB_ROOT;
+> +
+> +	fctl = riscv_iommu_readl(iommu, RISCV_IOMMU_REG_FCTL);
+> +
+> +#ifdef CONFIG_CPU_BIG_ENDIAN
+> +	if (!(cap & RISCV_IOMMU_CAP_END)) {
+> +		dev_err(dev, "IOMMU doesn't support Big Endian\n");
+
+Why not?
+
+> +		return -EIO;
+> +	} else if (!(fctl & RISCV_IOMMU_FCTL_BE)) {
+> +		fctl |= FIELD_PREP(RISCV_IOMMU_FCTL_BE, 1);
+> +		riscv_iommu_writel(iommu, RISCV_IOMMU_REG_FCTL, fctl);
+> +	}
+> +#endif
+> +
+> +	/* Clear any pending interrupt flag. */
+> +	riscv_iommu_writel(iommu, RISCV_IOMMU_REG_IPSR,
+> +			   RISCV_IOMMU_IPSR_CIP |
+> +			   RISCV_IOMMU_IPSR_FIP |
+> +			   RISCV_IOMMU_IPSR_PMIP | RISCV_IOMMU_IPSR_PIP);
+> +	spin_lock_init(&iommu->cq_lock);
+> +	mutex_init(&iommu->eps_mutex);
+> +
+> +	ret = riscv_iommu_enable(iommu, RISCV_IOMMU_DDTP_MODE_BARE);
+> +
+> +	if (ret) {
+> +		dev_err(dev, "cannot enable iommu device (%d)\n", ret);
+> +		goto fail;
+> +	}
+> +
+> +	ret = iommu_device_register(&iommu->iommu, &riscv_iommu_ops, dev);
+> +	if (ret) {
+> +		dev_err(dev, "cannot register iommu interface (%d)\n", ret);
+> +		iommu_device_sysfs_remove(&iommu->iommu);
+> +		goto fail;
+> +	}
+
+The calls to iommu_device_sysfs_add() are missing, this is mandatory..
+
+Jason
