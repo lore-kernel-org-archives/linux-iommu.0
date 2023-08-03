@@ -1,117 +1,190 @@
-Received: from mgamail.intel.com (unknown [134.134.136.20])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-il1-f175.google.com (mail-il1-f175.google.com [209.85.166.175])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 56819846A
-	for <iommu@lists.linux.dev>; Thu,  3 Aug 2023 03:27:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1691033229; x=1722569229;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=QmXtopTlfod2q44aI/cG9ypI7xSvby98JB+fVs0/xVI=;
-  b=Zr5RIuF2Lttij8uJuqzS7RXTD7knk/Dxsi4ugp1pdfVjoMlTuemO3jzh
-   Y/IpvhrMrkhT+tWNI8SaK8ib0d2yDgVaIvuBSUmWyC55VtYOP+ZSv9gJr
-   PfHhgK9D0Gbo2LUDmInFAnFupjudRoG2+wufxpQf9by/5KxtomoSxICXv
-   AMxrYwTL+4QdqUETcvZ9dkGcQxWwAEO5UUN0P6GtZj/QDb7UXzwN/Tlzw
-   87pFdX53ODPwhtl3KVpg62Z4MQGCWsYI8mHZGk9S3WJWE5mcFE8PsOc8K
-   IwYbJhLsKLCztA0Fs0V1ow47HxfDV6IHXx8JyqNxp+muma6w6QjWIGZrn
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10790"; a="359797826"
-X-IronPort-AV: E=Sophos;i="6.01,251,1684825200"; 
-   d="scan'208";a="359797826"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Aug 2023 20:27:08 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10790"; a="819464846"
-X-IronPort-AV: E=Sophos;i="6.01,251,1684825200"; 
-   d="scan'208";a="819464846"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.255.31.34]) ([10.255.31.34])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Aug 2023 20:27:03 -0700
-Message-ID: <b099a333-65b1-de9e-742d-d12f4fb58f67@linux.intel.com>
-Date: Thu, 3 Aug 2023 11:27:01 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C883B1847
+	for <iommu@lists.linux.dev>; Thu,  3 Aug 2023 03:37:28 +0000 (UTC)
+Received: by mail-il1-f175.google.com with SMTP id e9e14a558f8ab-3490eacf4d5so1925625ab.0
+        for <iommu@lists.linux.dev>; Wed, 02 Aug 2023 20:37:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sifive.com; s=google; t=1691033847; x=1691638647;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=5XezimV1as/cKuTMyLJfYIpzABwFXYSrbRVNfnuICdU=;
+        b=giOWK51Dhn9vReA6OJfd8zvKnuve/uokt8ax23zbCVAwmmR36s9yVrixUyaVE4JA7D
+         oWS+jn9gNn+g8OAAVMQNVW+gzShA5OHjUhoJhM7ZkkoKfPI8kT643pso7Dn7dXLQ0fD8
+         MtD+unY09yWthQYKv4JKiELGU9AbHbs7CIQJUeYXurtQyg3KeSegehAPAiIjicbya9Wu
+         btmRsfa0OtDeg99VO+jVo3Cp2FbYCph1ACEm7RB+66jKoVJzhqe0itR5GEp/LrE9Vqzy
+         ccuMlaOKScPTnpuspxvUA/6DSzjmypFuCndoiTNyhItlnwGtVoz7lisoyGaokTQLk79b
+         PaqQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1691033847; x=1691638647;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=5XezimV1as/cKuTMyLJfYIpzABwFXYSrbRVNfnuICdU=;
+        b=DQp2NHZCJ6L5vBbCx8yGOFHQhlR4Tcj/A9CkwheiJ2E442eaCV4HY/XrCDhns5TwVv
+         1jIdPEdGNyfR3B52i0SOBGooSew4fFKeLj5joK0XU7O5jqw5GdLemcxNx06Hxj7ae420
+         PZ4uhA8hFMP08a4zcQn/DhyHiJVOmmMmxsFItXMpwqmtgwriLVVjHtTF/6I3e26/4kzk
+         K7xtJ6kVNNjogts+1gbkwa+49sWFCk30a0xluU19xb9LnRgHLSSNyTkUkJ66mwUQ7cYr
+         /La+8cn6kfu1LLjku+cIZAOoHFdu70Lj7/qMlF++2bBMYRUzJkp6MfcBQmTYtNA6LbaM
+         soNg==
+X-Gm-Message-State: ABy/qLZSPFWR3veRND5k1jMr0fNcVxENnAYXdX+iHA1BCNeUwJOoR7ru
+	9i2d0ET/OWj5p+NiaDpOLOgEYgAqbmiTsv3IyRJ32Q==
+X-Google-Smtp-Source: APBJJlE6OdMliq0SpqBmWgqkyB7p9epCcw1sbOElJJhGiT0YKv5ld0XCAhfkil/SqKM9pPRldnE9PG5yRhHEvF45DOI=
+X-Received: by 2002:a05:6e02:2163:b0:345:dcc1:a1c4 with SMTP id
+ s3-20020a056e02216300b00345dcc1a1c4mr18872255ilv.4.1691033847682; Wed, 02 Aug
+ 2023 20:37:27 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.13.0
-Cc: baolu.lu@linux.intel.com, "cohuck@redhat.com" <cohuck@redhat.com>,
- "eric.auger@redhat.com" <eric.auger@redhat.com>,
- "nicolinc@nvidia.com" <nicolinc@nvidia.com>,
- "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "mjrosato@linux.ibm.com" <mjrosato@linux.ibm.com>,
- "chao.p.peng@linux.intel.com" <chao.p.peng@linux.intel.com>,
- "yi.y.sun@linux.intel.com" <yi.y.sun@linux.intel.com>,
- "peterx@redhat.com" <peterx@redhat.com>,
- "jasowang@redhat.com" <jasowang@redhat.com>,
- "shameerali.kolothum.thodi@huawei.com"
- <shameerali.kolothum.thodi@huawei.com>, "lulu@redhat.com" <lulu@redhat.com>,
- "suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
- "Duan, Zhenzhong" <zhenzhong.duan@intel.com>
-Subject: Re: [PATCH v4 12/12] iommu/vt-d: Disallow nesting on domains with
- read-only mappings
-Content-Language: en-US
-To: "Tian, Kevin" <kevin.tian@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
- "joro@8bytes.org" <joro@8bytes.org>,
- "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
- "jgg@nvidia.com" <jgg@nvidia.com>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>
-References: <20230724111335.107427-1-yi.l.liu@intel.com>
- <20230724111335.107427-13-yi.l.liu@intel.com>
- <BN9PR11MB52767DF0C8F25AB893B38B678C0BA@BN9PR11MB5276.namprd11.prod.outlook.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <BN9PR11MB52767DF0C8F25AB893B38B678C0BA@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <cover.1689792825.git.tjeznach@rivosinc.com> <c33c24036c06c023947ecb47177da273569b3ac7.1689792825.git.tjeznach@rivosinc.com>
+ <CANXhq0qRYvTffMnep-aQyTq2tMxbP-s_Lunc+cZ2Rio+BvAE=g@mail.gmail.com> <CAH2o1u5Sr0XigUbhna0E-Zk=U76CLZZ4LbM0u4ahPaN5+nOK6A@mail.gmail.com>
+In-Reply-To: <CAH2o1u5Sr0XigUbhna0E-Zk=U76CLZZ4LbM0u4ahPaN5+nOK6A@mail.gmail.com>
+From: Zong Li <zong.li@sifive.com>
+Date: Thu, 3 Aug 2023 11:37:16 +0800
+Message-ID: <CANXhq0o5898J=U5XmKbmO4wLq5VkKHVaSwzzcixUqGkkFddhWw@mail.gmail.com>
+Subject: Re: [PATCH 01/11] RISC-V: drivers/iommu: Add RISC-V IOMMU - Ziommu support.
+To: Tomasz Jeznach <tjeznach@rivosinc.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Paul Walmsley <paul.walmsley@sifive.com>, 
+	Anup Patel <apatel@ventanamicro.com>, Albert Ou <aou@eecs.berkeley.edu>, linux@rivosinc.com, 
+	linux-kernel@vger.kernel.org, Sebastien Boeuf <seb@rivosinc.com>, iommu@lists.linux.dev, 
+	Palmer Dabbelt <palmer@dabbelt.com>, Nick Kossifidis <mick@ics.forth.gr>, linux-riscv@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 2023/8/2 15:59, Tian, Kevin wrote:
->> From: Liu, Yi L <yi.l.liu@intel.com>
->> Sent: Monday, July 24, 2023 7:14 PM
->>
->> @@ -2147,6 +2148,18 @@ __domain_mapping(struct dmar_domain
->> *domain, unsigned long iov_pfn,
->>   	if ((prot & (DMA_PTE_READ|DMA_PTE_WRITE)) == 0)
->>   		return -EINVAL;
->>
->> +	if (!(prot & DMA_PTE_WRITE) && !domain->read_only_mapped) {
->> +		spin_lock_irqsave(&domain->lock, flags);
->> +		if (domain->set_nested) {
->> +			pr_err_ratelimited("No read-only mapping
->> permitted\n");
-> 
-> "Read-only mapping is disallowed on the domain which serves as the
-> parent in a nested configuration, due to HW errata (ERRATA_772415_SPR17)"
+On Thu, Aug 3, 2023 at 4:15=E2=80=AFAM Tomasz Jeznach <tjeznach@rivosinc.co=
+m> wrote:
+>
+> On Thu, Jul 27, 2023 at 7:42=E2=80=AFPM Zong Li <zong.li@sifive.com> wrot=
+e:
+> >
+> > On Thu, Jul 20, 2023 at 3:34=E2=80=AFAM Tomasz Jeznach <tjeznach@rivosi=
+nc.com> wrote:
+> > >
+> > > +static int riscv_iommu_platform_probe(struct platform_device *pdev)
+> > > +{
+> > > +       struct device *dev =3D &pdev->dev;
+> > > +       struct riscv_iommu_device *iommu =3D NULL;
+> > > +       struct resource *res =3D NULL;
+> > > +       int ret =3D 0;
+> > > +
+> > > +       iommu =3D devm_kzalloc(dev, sizeof(*iommu), GFP_KERNEL);
+> > > +       if (!iommu)
+> > > +               return -ENOMEM;
+> > > +
+> > > +       iommu->dev =3D dev;
+> > > +       dev_set_drvdata(dev, iommu);
+> > > +
+> > > +       res =3D platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> > > +       if (!res) {
+> > > +               dev_err(dev, "could not find resource for register re=
+gion\n");
+> > > +               return -EINVAL;
+> > > +       }
+> > > +
+> > > +       iommu->reg =3D devm_platform_get_and_ioremap_resource(pdev, 0=
+, &res);
+> > > +       if (IS_ERR(iommu->reg)) {
+> > > +               ret =3D dev_err_probe(dev, PTR_ERR(iommu->reg),
+> > > +                                   "could not map register region\n"=
+);
+> > > +               goto fail;
+> > > +       };
+> > > +
+> > > +       iommu->reg_phys =3D res->start;
+> > > +
+> > > +       ret =3D -ENODEV;
+> > > +
+> > > +       /* Sanity check: Did we get the whole register space ? */
+> > > +       if ((res->end - res->start + 1) < RISCV_IOMMU_REG_SIZE) {
+> > > +               dev_err(dev, "device region smaller than register fil=
+e (0x%llx)\n",
+> > > +                       res->end - res->start);
+> > > +               goto fail;
+> > > +       }
+> >
+> > Could we assume that DT should be responsible for specifying the right =
+size?
+> >
+>
+> This only to validate DT provided info and driver expected register
+> file size. Expectation is that DT will provide right size.
+>
+>
+> > > +static struct iommu_domain *riscv_iommu_domain_alloc(unsigned type)
+> > > +{
+> > > +       struct riscv_iommu_domain *domain;
+> > > +
+> > > +       if (type !=3D IOMMU_DOMAIN_IDENTITY &&
+> > > +           type !=3D IOMMU_DOMAIN_BLOCKED)
+> > > +               return NULL;
+> > > +
+> > > +       domain =3D kzalloc(sizeof(*domain), GFP_KERNEL);
+> > > +       if (!domain)
+> > > +               return NULL;
+> > > +
+> > > +       mutex_init(&domain->lock);
+> > > +       INIT_LIST_HEAD(&domain->endpoints);
+> > > +
+> > > +       domain->domain.ops =3D &riscv_iommu_domain_ops;
+> > > +       domain->mode =3D RISCV_IOMMU_DC_FSC_MODE_BARE;
+> > > +       domain->pscid =3D ida_alloc_range(&riscv_iommu_pscids, 1,
+> > > +                                       RISCV_IOMMU_MAX_PSCID, GFP_KE=
+RNEL);
+> > > +
+> > > +       printk("domain type %x alloc %u\n", type, domain->pscid);
+> > > +
+> >
+> > Could it uses pr_xxx instead of printk?
+> >
+>
+> Absolutely, fixed here and elsewhere. Also, used dev_dbg wherever applica=
+ble.
+>
+> > > +
+> > > +static int riscv_iommu_enable(struct riscv_iommu_device *iommu, unsi=
+gned requested_mode)
+> > > +{
+> > > +       struct device *dev =3D iommu->dev;
+> > > +       u64 ddtp =3D 0;
+> > > +       u64 ddtp_paddr =3D 0;
+> > > +       unsigned mode =3D requested_mode;
+> > > +       unsigned mode_readback =3D 0;
+> > > +
+> > > +       ddtp =3D riscv_iommu_get_ddtp(iommu);
+> > > +       if (ddtp & RISCV_IOMMU_DDTP_BUSY)
+> > > +               return -EBUSY;
+> > > +
+> > > +       /* Disallow state transtion from xLVL to xLVL. */
+> > > +       switch (FIELD_GET(RISCV_IOMMU_DDTP_MODE, ddtp)) {
+> > > +       case RISCV_IOMMU_DDTP_MODE_BARE:
+> > > +       case RISCV_IOMMU_DDTP_MODE_OFF:
+> > > +               break;
+> > > +       default:
+> > > +               if ((mode !=3D RISCV_IOMMU_DDTP_MODE_BARE)
+> > > +                   && (mode !=3D RISCV_IOMMU_DDTP_MODE_OFF))
+> > > +                       return -EINVAL;
+> > > +               break;
+> > > +       }
+> > > +
+> > > + retry:
+> >
+> > We need to consider the `iommu.passthrough` before we set up the mode
+> > in switch case, something like
+> >
+>
+> This function is only to execute configuration and set device directory m=
+ode.
+> Handling global iommu.passthrough policy is implemented in
+> riscv_iommu_init() call (patch #7).
 
-Ack.
+Thanks. I saw that in patch #7.
 
-> 
->> +	u8 read_only_mapped:1;		/* domain has mappings with
->> read-only
->> +					 * permission.
->> +					 */
->> +	u8 set_nested:1;		/* has other domains nested on it */
-> 
-> what about "is_parent"?
-
-"is_parent" is still a bit generic. How about "is_nested_parent"?
-
-> 
->>
->> +	spin_lock_irqsave(&s2_dmar_domain->lock, flags);
->> +	if (s2_dmar_domain->read_only_mapped) {
->> +		spin_unlock_irqrestore(&s2_dmar_domain->lock, flags);
->> +		pr_err_ratelimited("S2 domain has read-only mappings\n");
-> 
-> "Nested configuration is disallowed when the stage-2 domain already
-> has read-only mappings, due to HW errata (ERRATA_772415_SPR17)"
-
-Ack.
-
-Best regards,
-baolu
-
+>
+> Best,
+> - Tomasz
