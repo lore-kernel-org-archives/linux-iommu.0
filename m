@@ -1,313 +1,226 @@
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1nam02on2041.outbound.protection.outlook.com [40.107.96.41])
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF85CEDD;
-	Thu,  3 Aug 2023 00:30:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 77DE17F
+	for <iommu@lists.linux.dev>; Thu,  3 Aug 2023 00:38:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1691023138; x=1722559138;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=x9Ji+dCSv97hVWyMFbRibi0i/HZ8IXYSTgCjG/JZCa0=;
+  b=kKcA6stV2Bj06CDihttsJQj/6/3IfiQvxblMxYRgdyVGgR2x01clttNR
+   C6oLFyovDYEcA+0BBf/kedw1GVpR+h+L8TF51zOrBiOBsyf4e3SeDhIkR
+   kqH6aK99W4YYOg6WAL+p8arSoP2FKyZSsDjr+6Jlpz8yLlWpWzIDtZJK9
+   7+UyeADW3YrAhUOVrOXdH4Qqj2EHhak5LzHgh+I3qjlJB/1YhJxMeI7QO
+   YXzy5iSGcZo/C2uE9hlmlfb5wXNNpV1oEJiTkgls/ykLHT8dWZo1A6Plr
+   XCPt1JZIYrVzojtTc6H/umXjeQa03Rc8L1amqYOA8yRXJ6UfnPzvait00
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10790"; a="359776706"
+X-IronPort-AV: E=Sophos;i="6.01,250,1684825200"; 
+   d="scan'208";a="359776706"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Aug 2023 17:38:57 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10790"; a="799323200"
+X-IronPort-AV: E=Sophos;i="6.01,250,1684825200"; 
+   d="scan'208";a="799323200"
+Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
+  by fmsmga004.fm.intel.com with ESMTP; 02 Aug 2023 17:38:56 -0700
+Received: from orsmsx602.amr.corp.intel.com (10.22.229.15) by
+ ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.27; Wed, 2 Aug 2023 17:38:55 -0700
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.27 via Frontend Transport; Wed, 2 Aug 2023 17:38:55 -0700
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com (104.47.73.170)
+ by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.27; Wed, 2 Aug 2023 17:38:55 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=iXS1EGv5y8t6SYjHNxUs/8B6U3N172RH0FDqffgXQreP7nzbNwK7A/SI9HKeDzpCfP7D7xgsvak4cYsTI15sGSP8h6sxBXNtK2LIHz/QKcfjAFUgLP2p8aIV/XwnELd9fSYhMpAvfvSoYBfSyecKzakeYxSizR41r/TUXvjOqS2seIdNCy8RjMI1GcV6i9eH1t8sfZA80DayW9HfKlbCf//RM5x5YPaxLWSPx2r8XHtSXQAVfuUlUiUlqhH1pULkGynG1gan2n2vfPJsks3xdxmS8FZcwdpc2S9fgDIv6DvGWr61b1YgOtlZDheymOC+Zai29b013UNogqzBVCS2TA==
+ b=ily8bq/cXD/BRw64LtPepsWQaMRHKC1BGfF43ghGViHzAyAjbG/KgD6gyiN1BWI43NdlZ6NOB0ckK+UcJocij7/BnxHGaZRARuVH+w5KPBMxZg3ZLRs0wJojoAjZNG+gSI3ChHwZnNYw1wVpKe7uRA51rUNDigeQjs7xFlAurItvz97c1bh8mWowjHllSKFyR1iFBQL4peVm6yq0UfuZqV4fpsnlvPZ1+51IxwrWp3q4YUB/VPsi124rJNXnc9pCA7DJrG48lbIgT2KfZfCcjSNMRom7UA4Jeliu13oHHmIPfgOGPpCoepRdrbyinLiRtV/aTbXyWy4SjALhfEVLRA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=tuioqqLJ9nwTxiQOZ8nAoXdBA08XbZNNbPO6KQsUrqM=;
- b=QWlAVH940jarLjjhXOd3ThQAYZcJsaVIx+2S0Gsf8VQCwHPGOwl3l/6LeR16NY1zq3Gr56uhfFDbMu7BsneZF6llZPndcJTEr1603XkrFRSD78MDYQhA5nyXSRWXI58PX0wxSECelmXskE0MLpVq8uyPWfFye0ZCfStLoAzbPLi3qFt/97saEuq+V0DEKfgixfHypofri7D9NSpY57VLaERok4o7k7dUDx8phCmKpWZRr0ftKDVD/XyTthNCc78Skm2A9GM5WwGNqVbuUuj8NloYHKRfjSQqenLY7R7o5fmNCZxKT4QyudMRv3w2J8JbNWv6HwODwqsPr7kvMrtEbA==
+ bh=SYypAQ3lfcV+OKrZMH8Ufl+7sAlCk7JBJZTIBiqzn2E=;
+ b=hGKXO6FD9MdOrDe3/4LT7zJWS4m4f5AhneYXTZfgXqpXKefsFRpt1GGDWQ7l6/hLXjWzTb0IoZ3dtqTer+mrwD9eaGF0v20QKY/CF0ZhXGIK+mYCK359Ytube8BpoCLqVlLoL6uMPQ/DjjwjaqoW4fGIF2wFILEZPjxbmHwIM6spojSFF+CFIgQVUgOBtY1VLR6TJFFGTHz2NPnnsm8j17BqCXBMgLFcwzxfb1cgcndQTA4wHR6zgZVJIb7qNyH0hwjp2QXv32COmgm+MGw0eRZTOFNN7al4hAcTMBQSxFaUacm7QBA1g7FuC8ZDUL/6yC6cKqHdIqJmSCRxsUFCGQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=tuioqqLJ9nwTxiQOZ8nAoXdBA08XbZNNbPO6KQsUrqM=;
- b=g0+/CMjkbB0WkpBc1Jb8tLQu/bgnMaYBQtdGVjcXhfkWOJk1Iu22MKLFTxwHfp4Lt7nFbn9K7I+t6m2bK2qXoK1rqhglELdkEbsr91aMrp1HteRem8AF5OQ8QFCtKcx8MLOVA+zsdJMNOQB1tFSfgJwWyMPMrhRgX2mPKiPKyuhv3tNUDvysH38vo70tq9uW/x/CnjY8u9t7UZM5+blGiZpbyCfF8fIBMse1gC+0j/N5ZCW4hANRJ0drWsDavAYmBLFg7ULVnNGSdWL71FtEqoymoJeR8Tq4Vs9sH33KvA8h37k2e8ZiTscVnqp8MSbQMY2DbaI7bjx5YOlnopV9sw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by MW4PR12MB7261.namprd12.prod.outlook.com (2603:10b6:303:229::22) with
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
+ by CY8PR11MB6819.namprd11.prod.outlook.com (2603:10b6:930:61::16) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6631.44; Thu, 3 Aug
- 2023 00:30:38 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::5111:16e8:5afe:1da1]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::5111:16e8:5afe:1da1%6]) with mapi id 15.20.6631.045; Thu, 3 Aug 2023
- 00:30:37 +0000
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Andy Gross <agross@kernel.org>,
-	Alim Akhtar <alim.akhtar@samsung.com>,
-	Bjorn Andersson <andersson@kernel.org>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-	Baolin Wang <baolin.wang@linux.alibaba.com>,
-	Christophe Leroy <christophe.leroy@csgroup.eu>,
-	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-	Heiko Stuebner <heiko@sntech.de>,
-	iommu@lists.linux.dev,
-	Jernej Skrabec <jernej.skrabec@gmail.com>,
-	Jonathan Hunter <jonathanh@nvidia.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Konrad Dybcio <konrad.dybcio@linaro.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-	linux-arm-kernel@lists.infradead.org,
-	linux-arm-msm@vger.kernel.org,
-	linux-mediatek@lists.infradead.org,
-	linux-rockchip@lists.infradead.org,
-	linux-s390@vger.kernel.org,
-	linux-samsung-soc@vger.kernel.org,
-	linux-sunxi@lists.linux.dev,
-	linux-tegra@vger.kernel.org,
-	Russell King <linux@armlinux.org.uk>,
-	linuxppc-dev@lists.ozlabs.org,
-	Matthias Brugger <matthias.bgg@gmail.com>,
-	Matthew Rosato <mjrosato@linux.ibm.com>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	Orson Zhai <orsonzhai@gmail.com>,
-	Rob Clark <robdclark@gmail.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Samuel Holland <samuel@sholland.org>,
-	Thierry Reding <thierry.reding@gmail.com>,
-	Krishna Reddy <vdumpa@nvidia.com>,
-	Chen-Yu Tsai <wens@csie.org>,
-	Will Deacon <will@kernel.org>,
-	Yong Wu <yong.wu@mediatek.com>,
-	Chunyan Zhang <zhang.lyra@gmail.com>
-Cc: Lu Baolu <baolu.lu@linux.intel.com>,
-	Dmitry Osipenko <digetx@gmail.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Niklas Schnelle <schnelle@linux.ibm.com>,
-	Steven Price <steven.price@arm.com>,
-	Thierry Reding <treding@nvidia.com>
-Subject: [PATCH v6 10/25] iommu/exynos: Implement an IDENTITY domain
-Date: Wed,  2 Aug 2023 21:07:57 -0300
-Message-ID: <10-v6-e8114faedade+425-iommu_all_defdom_jgg@nvidia.com>
-In-Reply-To: <0-v6-e8114faedade+425-iommu_all_defdom_jgg@nvidia.com>
-References:
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: BL1PR13CA0105.namprd13.prod.outlook.com
- (2603:10b6:208:2b9::20) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6652.20; Thu, 3 Aug
+ 2023 00:38:54 +0000
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::dcf3:7bac:d274:7bed]) by BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::dcf3:7bac:d274:7bed%4]) with mapi id 15.20.6652.020; Thu, 3 Aug 2023
+ 00:38:53 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: "Liu, Yi L" <yi.l.liu@intel.com>, "joro@8bytes.org" <joro@8bytes.org>,
+	"alex.williamson@redhat.com" <alex.williamson@redhat.com>,
+	"robin.murphy@arm.com" <robin.murphy@arm.com>, "baolu.lu@linux.intel.com"
+	<baolu.lu@linux.intel.com>, "cohuck@redhat.com" <cohuck@redhat.com>,
+	"eric.auger@redhat.com" <eric.auger@redhat.com>, "nicolinc@nvidia.com"
+	<nicolinc@nvidia.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+	"mjrosato@linux.ibm.com" <mjrosato@linux.ibm.com>,
+	"chao.p.peng@linux.intel.com" <chao.p.peng@linux.intel.com>,
+	"yi.y.sun@linux.intel.com" <yi.y.sun@linux.intel.com>, "peterx@redhat.com"
+	<peterx@redhat.com>, "jasowang@redhat.com" <jasowang@redhat.com>,
+	"shameerali.kolothum.thodi@huawei.com"
+	<shameerali.kolothum.thodi@huawei.com>, "lulu@redhat.com" <lulu@redhat.com>,
+	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>, "Duan,
+ Zhenzhong" <zhenzhong.duan@intel.com>
+Subject: RE: [PATCH v4 07/12] iommufd: Add data structure for Intel VT-d
+ stage-1 cache invalidation
+Thread-Topic: [PATCH v4 07/12] iommufd: Add data structure for Intel VT-d
+ stage-1 cache invalidation
+Thread-Index: AQHZvh/vvq7opaI5PkGCKntULu5FEK/WqARwgABrnICAALSPMA==
+Date: Thu, 3 Aug 2023 00:38:53 +0000
+Message-ID: <BN9PR11MB5276035683CE2AFB7B0F36D28C08A@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <20230724111335.107427-1-yi.l.liu@intel.com>
+ <20230724111335.107427-8-yi.l.liu@intel.com>
+ <BN9PR11MB52763681308D7950A51E18438C0BA@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <ZMpei2/CffaW97iU@nvidia.com>
+In-Reply-To: <ZMpei2/CffaW97iU@nvidia.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|CY8PR11MB6819:EE_
+x-ms-office365-filtering-correlation-id: a9ade4b9-4b10-465c-41ee-08db93ba03bc
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: cK7JF1QkD75i89XfObkkrvLM57GGANmNxKVTBJu9pHY0SmWX5I2YTEURmD/bEdbvhyuD+swq/qm9uO/LHJVnb7CpLnujXvKg7pYV72Dl+KO0IhhxlZ0ltoqFYwcEQEQen9yZiqNGKdVi8KpZwKIDrCyUzwdwQZGN6+XiTDDUm9lfgIDArzsXUskyVD+yHzwLvtOboIP44USS2t+wUg9Ls3yyoyt/UZsteC1coPbNOFGoWoseiHIMmSIrRwEAp4ti2S4lB8OHBtrNcBpI9zNzhjhKMBJH+LWAC1YHmNms1rHZs+Q+5eQfSyWmrNqYc53C7tNqfA+pdDDGEohzl+qx2dWZ3bhhjqAtLkiu8ilciQ15uDL7moB+npcuv6hhXmgo6wFW7T0+2Ezvne4dvABNm/V6kpIdYhtgkkv4lnilp9wmVJnGEcQScL766+eyykg6qNwndn0Osb4MmNp8wuu/8bOl/oCHfECVeNXdckHcXjQv1Ufec1x1LodQZxCgXDiN3OuT3sEwwR5kAO8APfKdQeVmLdbHVjqSOiSM+wmBXRTmR0DtPHE+6ANj2/xzhsaQKnOAFvdqHs8pKNkpSuCDAxy0EflK0coqa6y90GXo/3r1zXj54pV5DmkUJOsXLQjt
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(376002)(366004)(136003)(39860400002)(346002)(396003)(451199021)(38070700005)(33656002)(86362001)(66899021)(54906003)(478600001)(38100700002)(82960400001)(122000001)(55016003)(186003)(26005)(83380400001)(6506007)(41300700001)(8676002)(8936002)(52536014)(7416002)(9686003)(71200400001)(7696005)(316002)(6916009)(64756008)(66446008)(66476007)(66556008)(5660300002)(4326008)(76116006)(66946007)(2906002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?MM7CdgXEzX/yWJ+xBDGmjQpa7d3jRJlJ10DzCsUpdEtwcv9hq2TV7O6yBwtT?=
+ =?us-ascii?Q?LWz1GLL0HbGmp/9M2BayhNYWih2phxQHQ5JJ19kPVlyMI8KVD0Kbz1hgyHTo?=
+ =?us-ascii?Q?r6q5M/t6Cmosgw+J/L/kgYQK678uo9fUdUju26pqeZfQL9EfM0EW9AnsYEUx?=
+ =?us-ascii?Q?L85159jvy9EoiGnXt6KPZGAeSyss1RQjj0oy/bGmNMJPxMXydUWQFZjGgYWX?=
+ =?us-ascii?Q?4CjGqIYd9NfHIZMhigUpb+GgbVxaXg10YtqST2zoMsUIxH9OzkYKHvxXSj0d?=
+ =?us-ascii?Q?9zzfL7QlKukmLf97Z7xupl8cR/cM4ndflxey36ubn9dTafTOKCETJbDRjT6O?=
+ =?us-ascii?Q?3Th0vo6IxguqLp198uAOP+NC7+q2BjzpgGHy074fpi5s9FD/9x5k7cw31bG/?=
+ =?us-ascii?Q?F6M9BuhIqynUtgTwSNcP8Doznk8EwGGLOXj4ytGkDlHg1DJVwtm3RjBjCsnw?=
+ =?us-ascii?Q?9zWNc3ipuI37JiptAv3x/w5k/swRTEvBPeaDYRzLmhQh+vERIHL08wr+D4Gv?=
+ =?us-ascii?Q?U6P8s1gnZ6zi5TyL1y4uc9W0o7R/LtWL/JUeOuTUcB73U3RdoK2Xl094RBKK?=
+ =?us-ascii?Q?k4DZJnbJNBGECHXCo1rzDnIxZFqv98nemr8TWZ8sPA6/bQ6sIQaYuwt1Cufj?=
+ =?us-ascii?Q?sAkH2Q+SnNDO480V49pwn1OY2CdGnPU6Qj/Q+b6zxR8paquQL3tWzYtxk6q+?=
+ =?us-ascii?Q?onl5Uvdxbm32/kBEQqcRkDeEGd/RfDy8r/b1VIjx3E5zXo1imXp4Qdn1aKfS?=
+ =?us-ascii?Q?KiSL9gCajV5EfprS0RqWn1NRJrK0tocsY7MpRSjeMJMKOyNn8Uv/B4ZlPQei?=
+ =?us-ascii?Q?hYSfTXBzl/RA7MA1Mj2xN5jbGgIRG9H2jUj5twZsoEsOAtug1QyedWAKNPoE?=
+ =?us-ascii?Q?14lWBsGX7THrGiVwPc9NSRFAHoVxL2xSkKPKDCX3Un/gBKpEZVVXIHK89lU5?=
+ =?us-ascii?Q?FQSng5t3bXvmBNgd1VshKyLyb/PoKByXxl7Gd8sxNWqndEk02jsLTYCa7l+7?=
+ =?us-ascii?Q?ZFyYlX6oc82kt6sbn6M0M3NaCPwsmNKtAWNYjlqQmwRz5uTXKtIAk5Yx3clW?=
+ =?us-ascii?Q?35jLGVLnPgY9c9CcCFMyse96JzjowO4UqI5k+6FtpLFXL3d1aURIbye5fV4x?=
+ =?us-ascii?Q?L6aRF7zj4LwR0fcH5tCda28fESZYH+ZLuUIaJMgdvWm+HXK9TqotRMy9o7vO?=
+ =?us-ascii?Q?YQBbIHfkooBfGrvGPO2T/L8g+Jog7EpJxyMfrOAfIE6mMPboNQWgnj8sEC/9?=
+ =?us-ascii?Q?oubQ6qThPPIvBBoKskl/bKsq90wuPyKR6TNPkT7JD0ZxQTyGLrTMdj0F9hW4?=
+ =?us-ascii?Q?phWh6jzop2b0M7QCiuLfh0RSaKFFEt/QuRyE4SDdg/PBIw53CdSzy6l9MtB6?=
+ =?us-ascii?Q?iWHsbCDvBHs5b1oHjhllI8Bbm4fky4iXBtUMkQoPDJ7RKbdah4dlGp6cYhO2?=
+ =?us-ascii?Q?matS1q+aXiiNL0/OIYsVtcOocmK6J0MyAK2Om0OkGa9NGwRLK54ILw4sHUCx?=
+ =?us-ascii?Q?GYztJ4OBeHy3gK9nwbFHSt1vRgtwNso/2tmpWY12sZKkVplZ363mhF6Ags1o?=
+ =?us-ascii?Q?uwXz67DyUDu8WtYHsph07jORQXp7SyqKNOHSuKiy?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|MW4PR12MB7261:EE_
-X-MS-Office365-Filtering-Correlation-Id: fe4e2eac-ba95-477e-3675-08db93b8d829
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	MUqS/SigT+Lw+qA+VxMrInqdOfhZ0+DU3x9N3jt73QgswMJrEUCNTVNtB3p/ot8+dPoggF/qG3+h2k7cUXfwkUEHK9Gfwg7B2hEkRvc+g2KjLrQm1H3UU8Xx6TPXT3M83KCN3uMlUpkRFf6i4EovXdtjEsWOq3G3MLUgMgtrgTRtaAgWZ6Z6TZYiFa/DLH3Y+xMcd/Cxy5tJp6EpysQ8hoC/jc3SdQCbn0bUWOadU27oS+JtzUdDJxH5EzJA3DtmpQBabC2ns4MC8E1tG5/7QqpHL+la8b0sy2ePkWIkww4z6Hoq1CYMA8D7ZAyoTYKV7qJFgNPwy/lTJhqc/xafBKmWukJtf0aL3FRK9n1HUiRHupyIh0sJXDssHSH385yqhHirX45CXeWYSaxBDqGzd67ckQ9WIHB7qxPoHepwB09ns6zFsw+gCI2yqIemnWUcH2Gqc+YmW1DoL/XRu8I4jhZBiHocQse9tzlZdjtdsw7LuEncR0PeiIl1nb1i3/+6lI7DuFf/htC2R0i+C4UVZFnPnwxFH9UgPFjIoe1fhoLVSMpHLEBaqvaSyhzd0VdOsadSQWXe8ixIznUJeTZSz6QzLpMvnL1AEV+wpQufVF8=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(346002)(39860400002)(396003)(376002)(366004)(136003)(451199021)(5660300002)(2616005)(36756003)(38100700002)(921005)(2906002)(316002)(26005)(83380400001)(186003)(7406005)(6506007)(8676002)(8936002)(6666004)(7416002)(54906003)(6512007)(66476007)(6486002)(478600001)(41300700001)(86362001)(66556008)(110136005)(4326008)(66946007)(107886003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?3SU21KRJgYLd5Qz2aSpGPO0VMxmPq19wvehnmoOQLZsWgdqalNgsj5PMLexS?=
- =?us-ascii?Q?yxBn9nCHygqNXivnp2/xMMkyktEeqVcGJZApcA7YjE0r0y7ikANVRFs7h8pN?=
- =?us-ascii?Q?nXByQbIIdSMoJ8kjHmh10Geoc7KesPrYGoOhafeW76r+x72P9PY/+cWhnTQ7?=
- =?us-ascii?Q?kU4lnFofMgYoUc2+Pva0Y12jUYpEPLWDl3JAwK4vtHnKXoi8gfAu4Cf4yVo9?=
- =?us-ascii?Q?ar3vsftpS0UQHEnLpciLo6I4mmNmniWJePhk5oBay3+ixK8YTV5DOg09FXpr?=
- =?us-ascii?Q?KqQMjWqBAzw1TZjqI4iBnSp4yqJgcegiG0XCPrYbFVgRmMg2sf5QkOSCOeJ5?=
- =?us-ascii?Q?OmANZ15YpsSIjNiAtRa4EGC0u2Hd//gQrvRLgRRhvsvHu4BDNlFDgY07oP0C?=
- =?us-ascii?Q?xD+OcsnIXdH4vHqR+HSaWLN5zvAgTIH8wTCuGul4Dp/2AdmPHlCQFa58yeQy?=
- =?us-ascii?Q?ZWW7OwAS0Kx9R1VfbCSXIeF1T5PDvn4cyF9DvbQAXH2xTKh/s0Malw08ku+2?=
- =?us-ascii?Q?kmnFmkIqS8nUkZnvQZT3bxJrvaxHZm7gT2HdTOfnBxo/9tdwH4/+ODGNTft/?=
- =?us-ascii?Q?1mgh6FpwL7+q07gmkMMn16LfVGM73tX2wGH+482jVi8esw8kz8xunLbeNQgM?=
- =?us-ascii?Q?WU9ebov87e4p1OWMvXyYxsVVxqK6AWbDjxh7ZLszX+Cv85mqutGcrsV91kV9?=
- =?us-ascii?Q?X2JRbm4A5R0k7igbVdUe6QGuKWPmusih11w7J/PHtfDbJvL2uXgmd9nGHlE9?=
- =?us-ascii?Q?SwLnP6A8Z3Sjk6XqdiuErmCYieQ50itxap3kwtwlyrF6+LNbNsVbSqRcaKZ9?=
- =?us-ascii?Q?TNjZZNTIK+8akjmbhMSIIKIBJBWXDQhgb32d0eOK1O+ayw1F6tDEsGv3vacH?=
- =?us-ascii?Q?7A0MBd9nJDwefRemXbzh8HuLVnRJHnkzsageLt2j8UxSnagcapfs4qguOP07?=
- =?us-ascii?Q?o9LVoVeuhdHoD6VxiJr4L/VL+aMx/N8RLPVL69d2tFvRll/gN7skDdKi7Ysx?=
- =?us-ascii?Q?V8gHoERqnJaquUaQTLBHK8CFxboc/6cooh6Bj1S7UC+jp0A8XkNCrXmto09Y?=
- =?us-ascii?Q?PFELh3sJJJLyikISG5ssvRV10B2CnV9UsBdaaFGakd0+q68WiazWGhysG1m8?=
- =?us-ascii?Q?KEBkdvB0Y9m/adFlf7jTryFmTdG9r4bl9IGF7dgMAOGcb/ui1fBwOxVRc4hX?=
- =?us-ascii?Q?wD9GyfQDbmbM6Ff5YE4I/v48s3LIc1CLbF3hBw3Iez9k646ULPqUkAZkoAST?=
- =?us-ascii?Q?SUeNIpmpIuOceWeCFQCVVgUAeh3ij9U66eTTVOH7tl7GMYjUHkz00cpCrIoL?=
- =?us-ascii?Q?ht2CE/kbLyO16UDlcCrtL6/HQH2bQZAqx3GlyOXcJhLzun6Mzh6HWeuFOk6d?=
- =?us-ascii?Q?RoZQ8IJ5I7v2h0LWQc1tuUM41OVzxOot4AVsEdazjNRxZ+LeCubj8+J1CnPe?=
- =?us-ascii?Q?hsXL/KBgFZV05v4wInxupfJLGZaLnTXAzmOlCyo2vV4E++F3HMBjh11DkNGt?=
- =?us-ascii?Q?JppK86eNMoEiWtPbQ9cF9VtY/zOCXa+6s9nzqHfaBcx8nI41jMd18I9R/Pj6?=
- =?us-ascii?Q?r1xFGSAxGm/4VvBYt79943ElYsBTQA7be5oQSNbe?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: fe4e2eac-ba95-477e-3675-08db93b8d829
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Aug 2023 00:30:31.4370
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a9ade4b9-4b10-465c-41ee-08db93ba03bc
+X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Aug 2023 00:38:53.8437
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: QaeELlwN5/gdlODTRf6qSAv4wC5aJkyKljfzTVP1NSPLkHrWU4tbh8waSM/ogcMd
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR12MB7261
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: wfH5YkoKc9yo8oAMiWM30Q2abKHBAirMBgcm9reqJNU6Aa+9Q2Bm15IrvI0H6qq0sDJplGByIve/I7q7MkpoPw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR11MB6819
+X-OriginatorOrg: intel.com
 
-What exynos calls exynos_iommu_detach_device is actually putting the iommu
-into identity mode.
+> From: Jason Gunthorpe <jgg@nvidia.com>
+> Sent: Wednesday, August 2, 2023 9:48 PM
+>=20
+> On Wed, Aug 02, 2023 at 07:41:05AM +0000, Tian, Kevin wrote:
+> > > +/**
+> > > + * struct iommu_hwpt_vtd_s1_invalidate - Intel VT-d cache invalidati=
+on
+> > > + *                                       (IOMMU_HWPT_TYPE_VTD_S1)
+> > > + * @flags: Must be 0
+> > > + * @entry_size: Size in bytes of each cache invalidation request
+> > > + * @entry_nr_uptr: User pointer to the number of invalidation reques=
+ts.
+> > > + *                 Kernel reads it to get the number of requests and
+> > > + *                 updates the buffer with the number of requests th=
+at
+> > > + *                 have been processed successfully. This pointer mu=
+st
+> > > + *                 point to a __u32 type of memory location.
+> > > + * @inv_data_uptr: Pointer to the cache invalidation requests
+> > > + *
+> > > + * The Intel VT-d specific invalidation data for a set of cache inva=
+lidation
+> > > + * requests. Kernel loops the requests one-by-one and stops when
+> failure
+> > > + * is encountered. The number of handled requests is reported to use=
+r
+> by
+> > > + * writing the buffer pointed by @entry_nr_uptr.
+> > > + */
+> > > +struct iommu_hwpt_vtd_s1_invalidate {
+> > > +	__u32 flags;
+> > > +	__u32 entry_size;
+> > > +	__aligned_u64 entry_nr_uptr;
+> > > +	__aligned_u64 inv_data_uptr;
+> > > +};
+> > > +
+> >
+> > I wonder whether this array can be defined directly in the common
+> > struct iommu_hwpt_invalidate so there is no need for underlying
+> > iommu driver to further deal with user buffers, including various
+> > minsz/backward compat. check.
+>=20
+> You want to have an array and another chunk of data?
+>=20
+> What is the array for? To do batching?
 
-Move to the new core support for ARM_DMA_USE_IOMMU by defining
-ops->identity_domain.
+yes, it's for batching
 
-Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
-Acked-by: Marek Szyprowski <m.szyprowski@samsung.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
----
- drivers/iommu/exynos-iommu.c | 66 +++++++++++++++++-------------------
- 1 file changed, 32 insertions(+), 34 deletions(-)
+>=20
+> It means we have to allocate memory on this path, that doesn't seem
+> like the right direction for a performance improvement..
 
-diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index c275fe71c4db32..5e12b85dfe8705 100644
---- a/drivers/iommu/exynos-iommu.c
-+++ b/drivers/iommu/exynos-iommu.c
-@@ -24,6 +24,7 @@
- 
- typedef u32 sysmmu_iova_t;
- typedef u32 sysmmu_pte_t;
-+static struct iommu_domain exynos_identity_domain;
- 
- /* We do not consider super section mapping (16MB) */
- #define SECT_ORDER 20
-@@ -829,7 +830,7 @@ static int __maybe_unused exynos_sysmmu_suspend(struct device *dev)
- 		struct exynos_iommu_owner *owner = dev_iommu_priv_get(master);
- 
- 		mutex_lock(&owner->rpm_lock);
--		if (data->domain) {
-+		if (&data->domain->domain != &exynos_identity_domain) {
- 			dev_dbg(data->sysmmu, "saving state\n");
- 			__sysmmu_disable(data);
- 		}
-@@ -847,7 +848,7 @@ static int __maybe_unused exynos_sysmmu_resume(struct device *dev)
- 		struct exynos_iommu_owner *owner = dev_iommu_priv_get(master);
- 
- 		mutex_lock(&owner->rpm_lock);
--		if (data->domain) {
-+		if (&data->domain->domain != &exynos_identity_domain) {
- 			dev_dbg(data->sysmmu, "restoring state\n");
- 			__sysmmu_enable(data);
- 		}
-@@ -980,17 +981,20 @@ static void exynos_iommu_domain_free(struct iommu_domain *iommu_domain)
- 	kfree(domain);
- }
- 
--static void exynos_iommu_detach_device(struct iommu_domain *iommu_domain,
--				    struct device *dev)
-+static int exynos_iommu_identity_attach(struct iommu_domain *identity_domain,
-+					struct device *dev)
- {
--	struct exynos_iommu_domain *domain = to_exynos_domain(iommu_domain);
- 	struct exynos_iommu_owner *owner = dev_iommu_priv_get(dev);
--	phys_addr_t pagetable = virt_to_phys(domain->pgtable);
-+	struct exynos_iommu_domain *domain;
-+	phys_addr_t pagetable;
- 	struct sysmmu_drvdata *data, *next;
- 	unsigned long flags;
- 
--	if (!has_sysmmu(dev) || owner->domain != iommu_domain)
--		return;
-+	if (owner->domain == identity_domain)
-+		return 0;
-+
-+	domain = to_exynos_domain(owner->domain);
-+	pagetable = virt_to_phys(domain->pgtable);
- 
- 	mutex_lock(&owner->rpm_lock);
- 
-@@ -1009,15 +1013,25 @@ static void exynos_iommu_detach_device(struct iommu_domain *iommu_domain,
- 		list_del_init(&data->domain_node);
- 		spin_unlock(&data->lock);
- 	}
--	owner->domain = NULL;
-+	owner->domain = identity_domain;
- 	spin_unlock_irqrestore(&domain->lock, flags);
- 
- 	mutex_unlock(&owner->rpm_lock);
- 
--	dev_dbg(dev, "%s: Detached IOMMU with pgtable %pa\n", __func__,
--		&pagetable);
-+	dev_dbg(dev, "%s: Restored IOMMU to IDENTITY from pgtable %pa\n",
-+		__func__, &pagetable);
-+	return 0;
- }
- 
-+static struct iommu_domain_ops exynos_identity_ops = {
-+	.attach_dev = exynos_iommu_identity_attach,
-+};
-+
-+static struct iommu_domain exynos_identity_domain = {
-+	.type = IOMMU_DOMAIN_IDENTITY,
-+	.ops = &exynos_identity_ops,
-+};
-+
- static int exynos_iommu_attach_device(struct iommu_domain *iommu_domain,
- 				   struct device *dev)
- {
-@@ -1026,12 +1040,11 @@ static int exynos_iommu_attach_device(struct iommu_domain *iommu_domain,
- 	struct sysmmu_drvdata *data;
- 	phys_addr_t pagetable = virt_to_phys(domain->pgtable);
- 	unsigned long flags;
-+	int err;
- 
--	if (!has_sysmmu(dev))
--		return -ENODEV;
--
--	if (owner->domain)
--		exynos_iommu_detach_device(owner->domain, dev);
-+	err = exynos_iommu_identity_attach(&exynos_identity_domain, dev);
-+	if (err)
-+		return err;
- 
- 	mutex_lock(&owner->rpm_lock);
- 
-@@ -1407,26 +1420,12 @@ static struct iommu_device *exynos_iommu_probe_device(struct device *dev)
- 	return &data->iommu;
- }
- 
--static void exynos_iommu_set_platform_dma(struct device *dev)
--{
--	struct exynos_iommu_owner *owner = dev_iommu_priv_get(dev);
--
--	if (owner->domain) {
--		struct iommu_group *group = iommu_group_get(dev);
--
--		if (group) {
--			exynos_iommu_detach_device(owner->domain, dev);
--			iommu_group_put(group);
--		}
--	}
--}
--
- static void exynos_iommu_release_device(struct device *dev)
- {
- 	struct exynos_iommu_owner *owner = dev_iommu_priv_get(dev);
- 	struct sysmmu_drvdata *data;
- 
--	exynos_iommu_set_platform_dma(dev);
-+	WARN_ON(exynos_iommu_identity_attach(&exynos_identity_domain, dev));
- 
- 	list_for_each_entry(data, &owner->controllers, owner_node)
- 		device_link_del(data->link);
-@@ -1457,6 +1456,7 @@ static int exynos_iommu_of_xlate(struct device *dev,
- 
- 		INIT_LIST_HEAD(&owner->controllers);
- 		mutex_init(&owner->rpm_lock);
-+		owner->domain = &exynos_identity_domain;
- 		dev_iommu_priv_set(dev, owner);
- 	}
- 
-@@ -1471,11 +1471,9 @@ static int exynos_iommu_of_xlate(struct device *dev,
- }
- 
- static const struct iommu_ops exynos_iommu_ops = {
-+	.identity_domain = &exynos_identity_domain,
- 	.domain_alloc = exynos_iommu_domain_alloc,
- 	.device_group = generic_device_group,
--#ifdef CONFIG_ARM
--	.set_platform_dma_ops = exynos_iommu_set_platform_dma,
--#endif
- 	.probe_device = exynos_iommu_probe_device,
- 	.release_device = exynos_iommu_release_device,
- 	.pgsize_bitmap = SECT_SIZE | LPAGE_SIZE | SPAGE_SIZE,
--- 
-2.41.0
+It reuses the ucmd_buffer to avoid memory allocation:
 
+@@ -485,6 +485,12 @@ union ucmd_buffer {
+ #ifdef CONFIG_IOMMUFD_TEST
+ 	struct iommu_test_cmd test;
+ #endif
++	/*
++	 * hwpt_type specific structure used in the cache invalidation
++	 * path.
++	 */
++	struct iommu_hwpt_vtd_s1_invalidate vtd;
++	struct iommu_hwpt_vtd_s1_invalidate_desc req_vtd;
+ };
+
+I don't quite like this way.
+
+>=20
+> Having the driver copy in a loop might be better
+>=20
+
+Can you elaborate?
