@@ -1,186 +1,180 @@
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2081.outbound.protection.outlook.com [40.107.220.81])
+Received: from mgamail.intel.com (unknown [134.134.136.31])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 644277F
-	for <iommu@lists.linux.dev>; Thu,  3 Aug 2023 00:53:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E44F7F
+	for <iommu@lists.linux.dev>; Thu,  3 Aug 2023 01:01:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1691024514; x=1722560514;
+  h=date:from:to:cc:subject:message-id:references:
+   in-reply-to:mime-version;
+  bh=gO48LugQx1pEOPw1AuMBk11tqwawJCSLUYKyC7y3SOE=;
+  b=P6Tlc9Qf6f2WetHknd63YKNYoopD85uOwfBKpM8JtrPlhOk7JgbUIA1m
+   Fw9J8cMsr3nYLiPI43Z5um0MOePWb/kw0mHqVL/S0XlksUirRdVu4K3zr
+   dhXIaPuklKrEEBZCAq+4K4NQGsOOmKVlmPmKo10NVeAywroV+/zkJXL9E
+   VCkNSR1JtmGJTwBBTOH9YX54im41qGwwSjUhaZBADNjB+byDyiUJ4n4XL
+   csS6xN5KNKxKj8WjjbKd4yQ87jBRgFhh4jvpK/zp20dJu5g7w2vm4rOes
+   YLRYZJW+AItmNzcFlMMCYgG5Wkwh5vXr3Jk7cS2EI6hINKqyHz4zCHWit
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10790"; a="433578847"
+X-IronPort-AV: E=Sophos;i="6.01,250,1684825200"; 
+   d="scan'208";a="433578847"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Aug 2023 18:01:53 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10790"; a="975880573"
+X-IronPort-AV: E=Sophos;i="6.01,250,1684825200"; 
+   d="scan'208";a="975880573"
+Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
+  by fmsmga006.fm.intel.com with ESMTP; 02 Aug 2023 18:01:53 -0700
+Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.27; Wed, 2 Aug 2023 18:01:52 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.27; Wed, 2 Aug 2023 18:01:52 -0700
+Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.27 via Frontend Transport; Wed, 2 Aug 2023 18:01:52 -0700
+Received: from NAM04-BN8-obe.outbound.protection.outlook.com (104.47.74.47) by
+ edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.27; Wed, 2 Aug 2023 18:01:52 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ATGjOkVqm3rQTLCinS2t6QmyRhBwnzPmzqiwdU/QpsA5LYkIjGEWm2cpUEZKL7pYytaSfJXWMVO3epFboQKelsYz9vwEyK7NQ24saI20SpjhIWK/OJHE/yAYANeH/yfejcDRr081pl6I/gBsFlQ69w5p7oMrOMDeW/hwZe352hvoUTCYXXZTrgchvcQBBxO6T93hAot+RqRGFfHPyyf4SAjR600VldbfLGthG+sorbFmTkP9ZintGhAzsJx1XUuG7bQA/0LMQDAH4T2OVQ0inISm0s1DchrgLXTy2jVv7HVIvFu8hZYtObozpop7nWLhFzxaaQ7iLlw+fG0kp0H89Q==
+ b=PnzoOLZCW74uC3eiFiKaXO8aPNrJFlzD51KCbte4WLiLiMge8dZv04bOgpogaV1ovd5NHs8UTt40M1S3iTieqjkWDlZe3PZkG1hpBILBJfcn8AHKtfo9Ck4fRnKnnEgDHuCVI3ex3XPsMae8rLQpJlh+CCNANN9/4KBMP4e0ySnYbwx01vcRrBignZxBrkW0Af/8WURc/uGTLLyEuOdlUfSUuMTQ3Fct5FeswzyBhLeHKAPKqSqwhi4n03ULZQ6JLqZNC/5XpxltKJ6AaJG4kYDrzV9OXhndfVSKPUBSxJbF1qmIPnGU79tbxrQUuuaODoqkhJegQn8X2C/AEsHjTQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=P9P3W9cEqFBnuh7ZdWHim6sI1BI16haLklkmsLBX9z0=;
- b=ipRUZSVy/LZxV7Ub/RslfDONHhbYi1bDizRr6Kg023d6VrCWAyngzwdwc0Xna1PLL70DJk+b1ZAqqaGE5msgkVJ1lmRzQE7eqvIbtROGfMrf2m03KmxAbWod+sRT1sm9Lwp1ZbSUbjPV4UZbwnlZ5Qu64JtBiAdI0ZqZcX0+vmqK1F9KyTq5xVdC/hIZjTamCEbjQ2zWkt6AlwfQjmiMKEvM07m16OmK2F7itLjPAAtW/lDQ2gqiVVzpooOEZnEf6HGnIHStPsORlVwh7mqOOk7arFPnqqOWoV8T5unteAYOx3SMhH16IHhqZMx7BVzP6NZj3fi534S+CsvA++fppA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.232) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=P9P3W9cEqFBnuh7ZdWHim6sI1BI16haLklkmsLBX9z0=;
- b=gU++xw5rm8WO2gAa6xyS8Ye/Qo+dWbmqKKqlEWNqs/DRe5NHuPP8669zFU9h0arOXcVBrKlmT7j8QOzGbhIemds1KamiHZBLybJKOl3tSRX9BOmsbNukv6GDZJggRt73e5zb+sZ1WcDhkN7CkdH3gZHhJVME3mqgYDi1HabHKMjrPyyJIO3WEZXK7w2hCCh6mL42e5GJELp+el0uaXV04oHihzKL8YMiDGj5Kr2PtPkbhLJKXxfoiQyVnZMIq1jxMyLtzo6gGRqwYHp24X/MdpY/Yl4zxk51XEkO1KnsEHofbiahNqEg67uOZ6fRvIcDZ57zfGZMozpI7AZ8Ri+uqw==
-Received: from SJ0PR05CA0178.namprd05.prod.outlook.com (2603:10b6:a03:339::33)
- by DS0PR12MB7726.namprd12.prod.outlook.com (2603:10b6:8:130::6) with
+ bh=V6TX5Tq3hOoOp/Ra+FbGUnBhu85l7rj6TC3X2k4LqyY=;
+ b=ntqZAabAALqw+NO0jzbAF//B8T8s0o+iPaWBl22JkKTiDr6yVOUfG0kPMJ21Q2pkmtaYAPS/xzBGWsjHUjSQqGy9jeBA6VupsT8nPMFSfStFfDH2ea9cDPjAccIRHmFcMkr1ewb2ZSdkLyQSkF5EGJmeHQWXnz/KlrzsJDgP9lOI1Nnwnd8EkYEH/hYD2TOEO9Yzbs4ikrlfBYAOMX5+zYlBXYrH6ZlRiV32IUubvyo+uoWZZz+A7W5lOPUEP5r2XeL2+k3n3IE0x2tYQTVBuczkSk/cSG9W54awy9Y+94aWGTy88N9xW7Rxcr8cHYUQrlgDk9g0y5EBO8Oc3pVoQw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from PH0PR11MB4839.namprd11.prod.outlook.com (2603:10b6:510:42::18)
+ by IA1PR11MB8152.namprd11.prod.outlook.com (2603:10b6:208:446::8) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6631.47; Thu, 3 Aug
- 2023 00:53:49 +0000
-Received: from MWH0EPF000971E2.namprd02.prod.outlook.com
- (2603:10b6:a03:339:cafe::b1) by SJ0PR05CA0178.outlook.office365.com
- (2603:10b6:a03:339::33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6652.14 via Frontend
- Transport; Thu, 3 Aug 2023 00:53:48 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.232) by
- MWH0EPF000971E2.mail.protection.outlook.com (10.167.243.69) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6652.20 via Frontend Transport; Thu, 3 Aug 2023 00:53:48 +0000
-Received: from drhqmail201.nvidia.com (10.126.190.180) by mail.nvidia.com
- (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Wed, 2 Aug 2023
- 17:53:43 -0700
-Received: from drhqmail201.nvidia.com (10.126.190.180) by
- drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.37; Wed, 2 Aug 2023 17:53:42 -0700
-Received: from Asurada-Nvidia (10.127.8.14) by mail.nvidia.com
- (10.126.190.180) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37 via Frontend
- Transport; Wed, 2 Aug 2023 17:53:41 -0700
-Date: Wed, 2 Aug 2023 17:53:40 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
+ 2023 01:01:50 +0000
+Received: from PH0PR11MB4839.namprd11.prod.outlook.com
+ ([fe80::34c:f9c:28bd:e642]) by PH0PR11MB4839.namprd11.prod.outlook.com
+ ([fe80::34c:f9c:28bd:e642%4]) with mapi id 15.20.6631.045; Thu, 3 Aug 2023
+ 01:01:50 +0000
+Date: Thu, 3 Aug 2023 09:04:20 +0800
+From: Pengfei Xu <pengfei.xu@intel.com>
 To: Jason Gunthorpe <jgg@nvidia.com>
-CC: "Tian, Kevin" <kevin.tian@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
-	"joro@8bytes.org" <joro@8bytes.org>, "alex.williamson@redhat.com"
-	<alex.williamson@redhat.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>, "cohuck@redhat.com"
-	<cohuck@redhat.com>, "eric.auger@redhat.com" <eric.auger@redhat.com>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>, "mjrosato@linux.ibm.com"
-	<mjrosato@linux.ibm.com>, "chao.p.peng@linux.intel.com"
-	<chao.p.peng@linux.intel.com>, "yi.y.sun@linux.intel.com"
-	<yi.y.sun@linux.intel.com>, "peterx@redhat.com" <peterx@redhat.com>,
-	"jasowang@redhat.com" <jasowang@redhat.com>,
-	"shameerali.kolothum.thodi@huawei.com"
-	<shameerali.kolothum.thodi@huawei.com>, "lulu@redhat.com" <lulu@redhat.com>,
-	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>, "Duan,
- Zhenzhong" <zhenzhong.duan@intel.com>
-Subject: Re: [PATCH v3 08/17] iommufd: IOMMU_HWPT_ALLOC allocation with user
- data
-Message-ID: <ZMr6lJpRDNZsvSm/@Asurada-Nvidia>
-References: <20230724110406.107212-1-yi.l.liu@intel.com>
- <20230724110406.107212-9-yi.l.liu@intel.com>
- <ZMQBLTm+U+5bgC/Z@nvidia.com>
- <BN9PR11MB5276C84452E56AB03B819D208C05A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <ZMe0IQksFgV6yKTB@nvidia.com>
- <ZMrp0ofsx8M6fT/S@Asurada-Nvidia>
- <ZMrqEAOh82SBvyaq@nvidia.com>
+CC: <iommu@lists.linux.dev>, <baolu.lu@linux.intel.com>,
+	<kevin.tian@intel.com>, <nicolinc@nvidia.com>, <heng.su@intel.com>,
+	<rafael.j.wysocki@intel.com>, <lenb@kernel.org>, <lkp@intel.com>
+Subject: Re: [Syzkaller & bisect] There is general protection fault in
+ iommu_device_unlink in upstream patch
+Message-ID: <ZMr9FB7HfHsM3ebQ@xpf.sh.intel.com>
+References: <ZMkMt1cTeXhg8yBM@xpf.sh.intel.com>
+ <ZMrzJgoQfQFUT7AX@nvidia.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <ZMrzJgoQfQFUT7AX@nvidia.com>
+X-ClientProxiedBy: SI2PR01CA0018.apcprd01.prod.exchangelabs.com
+ (2603:1096:4:191::7) To PH0PR11MB4839.namprd11.prod.outlook.com
+ (2603:10b6:510:42::18)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <ZMrqEAOh82SBvyaq@nvidia.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: MWH0EPF000971E2:EE_|DS0PR12MB7726:EE_
-X-MS-Office365-Filtering-Correlation-Id: aed14420-8684-4708-109d-08db93bc18fe
+X-MS-TrafficTypeDiagnostic: PH0PR11MB4839:EE_|IA1PR11MB8152:EE_
+X-MS-Office365-Filtering-Correlation-Id: 1a89daa9-6d29-416e-ccd7-08db93bd37f0
+X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	+j6W/Ydz8H/IPes4dLa/SEdf1Xxd6hZM7Az88huw35iYbgMonoSEwg0BeBK0VMQmOn3nM/NMOLQLtG10CO+m/tRWWmczCvv1zbMCEbyCrZhLsXMhZkxuIrW8bb6AcWRJhZgH95EQvfLAZliLw91KA8b2Y1HSdRzMfTEq4DurI2263bqmG+kBCKHIKoE+BU1CfO99qn61MwvGADWHGXMl3Me1ayBflf55bfS9RwUFYT9Zxkd+qv/Fo/jtmOZo/bs2tWWioGc4HuU115POr/V79vZmQwRFnRAZQrj+7BrbcN//vWLdrctGZJ/CRSscUWVT7/jScrn1Ig9laHg3NaYvN/x5Dv6MMmrxXUqcKAVKPPA8SjPxamrpOjWAuFfPHcSJgdrELrqA/+RPT5qGL6XrBtbVd4+h5XMlk1HS0GWtiHfbvm2GyDKxh+EGywG9i0SPYz55G96Aav2vw8Xt5ANiNm7AxRKlDzmQQd3eVYL5m1RE8sNd7z2TjABgbuBfJpw5YjRZhucH50KzIBrJ9U4B/G+w2r1OSyII2kDqFsMziuuL+Wu9CSoQk8jsL0uN+CV/48lspCgeh6taayec+LualkVecAdM/Rf5+QrCeROf8UNsovZngMiIoM4T0KY3lJAgN14d5EZmwe8dFpVffSy94QSQCZlvR0iOt8ivz7EqI4Y8uS2w5wvmfvFWXuiWu0SK2Y4YwYLHe/M3kfdWEEcl/y+2xBxgSbZa33Skv5qcZOs=
-X-Forefront-Antispam-Report:
-	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(396003)(346002)(39860400002)(136003)(376002)(82310400008)(451199021)(40470700004)(46966006)(36840700001)(40460700003)(426003)(336012)(26005)(186003)(83380400001)(47076005)(36860700001)(316002)(70206006)(70586007)(2906002)(4326008)(6636002)(5660300002)(7416002)(6862004)(41300700001)(8676002)(8936002)(9686003)(478600001)(54906003)(40480700001)(55016003)(356005)(7636003)(82740400003)(33716001)(86362001)(66899021);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Aug 2023 00:53:48.4401
+X-Microsoft-Antispam-Message-Info: qtrU+WC2wvoBvWTZnsErwAn8c1XU1G2kZh20fGRX9z07zOQldBIFB+bqFOAhSSV//9hfIo0Rjo8ErLLWEmYZBeP8ZVP95R9XYs3Dh1nbETkzYNU2SKrv+GCoDnG/WOQNXxJUwkflfTuTnfN5LMCIqwZLqvFcXuAT6KM2Q4Kv/5SxL1+QVr5wgSd/glhaAnj/PvGf9aQnJviDV3KBbEeLswZjSWc5LI79aa4HcoeEdQaUxHmUgr1EOq+tiZFeLC6N+hTaw4lwuaOQGYqebviLfWM+wUDWClspst19ZwFtC30Pzv6Y3Cr88/fZa7uje9yKnakZR49ltMn2zz5hZM3UqrUg7OuUV9BanLYYVRg4oIlo9vCoH2dL2J2gtiyxTY5JhjIYag8ExvRKpv7kpeR9LBOFIknJ9bfkC2RLWckcnwsHIHJxjPnFJBC8Gb2shM3usKxEIjDT4Lhs25YMGJFlK0oyTt0ghgPMDbJmtsjQc8gKcdDN5LzNejlXbVPqjL00co6aRo/rcG3BIZ0wwPxZCbEmN7wm094jQAGfW5aZHQ4eEJPc52wgON0jSeYXTyc/7wcI/y4h7YUvtcrEUGwScQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB4839.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(136003)(366004)(396003)(39860400002)(346002)(376002)(451199021)(53546011)(6506007)(26005)(186003)(316002)(2906002)(66946007)(4326008)(6916009)(66476007)(66556008)(5660300002)(44832011)(41300700001)(8676002)(8936002)(6666004)(6486002)(966005)(6512007)(478600001)(38100700002)(82960400001)(86362001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?BwFuiPZScFZjN69zNK2xmskGUxlIP5K9XMtQ139enOK/hGXwCNpxpGh0ZkNC?=
+ =?us-ascii?Q?zUpd36s/P+ONn6gXZcAySUlHINjhoOSyRrrOoBe8Txc7XE0WNHJnR6xnqnIZ?=
+ =?us-ascii?Q?q6QMqQm8O49Y0Ik9VCD+j5OexEYNGLNmLcxXPK29CSGTHR2GT+A7Zqilu0Nc?=
+ =?us-ascii?Q?wwnSi8kdNK2GIQuFDd1ajQCD3Dm4Yy4mrWtAae09NPCCPLTxtD8ITifAVh6E?=
+ =?us-ascii?Q?RM36dfOSCY3ALtmsJZcgwcHzBmiJdreKKo8gZFPnm4g9zzsHdlShf/dPXBCj?=
+ =?us-ascii?Q?sGKNcZE/ANFxreivk5Sr8GIu8kixuBywFcx1wBcOyUl392Jl0iU2+vS51xgd?=
+ =?us-ascii?Q?HQi16dTl2Ebw82GqvQB71Z0BPgjpLz679/Sct5hzqqlxrygtLQh5VFlWGjYY?=
+ =?us-ascii?Q?i/KemKx9HHQ9FlmMpd66rw8pbNc7G7aJr/iIbEAazRF+6/tZ+XAB2/O8rx+j?=
+ =?us-ascii?Q?zQhVXqqZmRBd7+ZrwsCyf05PjSS8kC78o2LIKQfM4zFTW5Gda3WJpmO5e6dj?=
+ =?us-ascii?Q?UGPSl2SLuPSuvlr6tiy6bsVwn3bRSdxF8hvm4xeMGbI8JtEOxs2nQ/gICS2H?=
+ =?us-ascii?Q?Bx62BhEFGf83ihkpBsvsMgA7Mpm7/lV8KDZLJ02KV7ZMHBUp8aLxun5Dpv4F?=
+ =?us-ascii?Q?pAAHXIPe/7lYEjtUiw5DaKfGAzo7oRDRcRP/Ayel0OW7Zm8ibMukNWhOFm2M?=
+ =?us-ascii?Q?o1Xvn/n+5dlphwUvTwcsy4EXl3ZJF5FxJemTn3LUvFE8Z5qPhfWDTxw9pcbB?=
+ =?us-ascii?Q?1Jj1oQQAcfLWhV6bR/GLjjnm7umWDGL3DJx8d31MfnJ4L2yJSH8KEjOM0aXA?=
+ =?us-ascii?Q?lQ9k3IdUiCOpycLmOY2Fh8kOUuR1sg6v6KDLgGoS1R9gKLOx5/M4wvrX4dqA?=
+ =?us-ascii?Q?v8mEtBajouOwnyuLQ7mKb+vd99c0rRV6obR/enJRKNpIxHgiTBIOn4qc5lkv?=
+ =?us-ascii?Q?olHFoIUJ4rFtrlxqUpC4slE7NjkmWbAjt29DKyTorYee83F9W/iUUb5tsncx?=
+ =?us-ascii?Q?1DJQoUqPkCXkjpIGew/5uOwWgPsA2QlGIi6gIee69Pk1Tzd9dOo8XzW7bjin?=
+ =?us-ascii?Q?Ubr0QQvT8dBX/eC7rGbdmbJId6p8wYFp+GxTotFpPUm345Ydukj5JLkqVQGh?=
+ =?us-ascii?Q?k6wWh1pI2v4bb1fwjpsnyM8nLsYRszZuT7t8zeJlF/lRjqOqBTdJ+lNljzvs?=
+ =?us-ascii?Q?0D8G4VK6IPtbsUnT4lyinCxkHyYxlObiq+lciGjE0szJPmFytRc3+qIEzc9I?=
+ =?us-ascii?Q?plfykW2eVa4sTlvzoI9PiDrp+xzS/RNWiRYyahk6zAj3ABHgzwioQLtzS0Ke?=
+ =?us-ascii?Q?j09CwdpEvRKH/XDlQhsrILsJrMwaHyQNU6wUbULz4oj9KfEYzSdweEbXOzbT?=
+ =?us-ascii?Q?8jLgBuIi9nO0huncKl3laTEsaAqjLZhZH/3TW3OXdSYly48gmfwr9pJ7rakT?=
+ =?us-ascii?Q?/ChSaOT4mM9x4nLs1mlCbLfIIHZ+PI9yBbalq0sjZLTdgndsJyhmK+deLPAQ?=
+ =?us-ascii?Q?dcMRPph5bm+PIICNZIlzhckbMGlfrOj60rRnqQNg7URWJrAj+XGzNefDnViV?=
+ =?us-ascii?Q?+cvcSCTxcKDPSwZm4IKWjzBWamff49fOP6FqglF5?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1a89daa9-6d29-416e-ccd7-08db93bd37f0
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB4839.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Aug 2023 01:01:50.1223
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: aed14420-8684-4708-109d-08db93bc18fe
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	MWH0EPF000971E2.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB7726
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 8BhrQcEWCxaaJX5rm7JxJwThm1W0Z7wRh108FWKhB5909lCMDb6uOVYxJ/ivFxAZzFuxpqG9EPnwwnctuvRP9g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR11MB8152
+X-OriginatorOrg: intel.com
 
-On Wed, Aug 02, 2023 at 08:43:12PM -0300, Jason Gunthorpe wrote:
-> On Wed, Aug 02, 2023 at 04:42:10PM -0700, Nicolin Chen wrote:
-> > On Mon, Jul 31, 2023 at 10:16:17AM -0300, Jason Gunthorpe wrote:
-> >  
-> > > > Ideally expanding uAPI structure size should come with new flag bits.
-> > > 
-> > > Flags or some kind of 'zero is the same behavior as a smaller struct'
-> > > scheme.
-> > > 
-> > > This patch is doing the zero option:
-> > > 
-> > >  	__u32 __reserved;
-> > > +	__u32 hwpt_type;
-> > > +	__u32 data_len;
-> > > +	__aligned_u64 data_uptr;
-> > >  };
-> > > 
-> > > hwpt_type == 0 means default type
-> > > data_len == 0 means no data
-> > > data_uptr is ignored (zero is safe)
-> > > 
-> > > So there is no need to change it
+Hi Jason,
+
+On 2023-08-02 at 21:21:58 -0300, Jason Gunthorpe wrote:
+> On Tue, Aug 01, 2023 at 09:46:31PM +0800, Pengfei Xu wrote:
+> > Hi Jason,
 > > 
-> > TEST_LENGTH passing ".size = sizeof(struct _struct) - 1" expects a
-> > -EINVAL error code from "if (ucmd.user_size < op->min_size)" check
-> > in the iommufd_fops_ioctl(). This has been working when min_size is
-> > exactly the size of the structure.
+> > Greeting!
 > > 
-> > When the size of the structure becomes larger than min_size, i.e.
-> > the passing size above is larger than min_size, it bypasses that
-> > min_size sanity and goes down to an ioctl handler with a potential
-> > risk. And actually, the size range can be [min_size, struct_size),
-> > making it harder for us to sanitize with the existing code.
+> > We tested the intel internal kernel and found that:
+> > There was general protection fault in iommu_device_unlink issue in kernel
+> > and found the problem commit:
+> > 14891af3799e iommu: Move the iommu driver sysfs setup into iommu_init/deinit_device()
 > > 
-> > I wonder what's the generic way of sanitizing this case? And, it
-> > seems that TEST_LENGTH needs some rework to test min_size only?
+> > Above commit is same as following patch:
+> > https://lore.kernel.org/linux-iommu/6-v3-328044aa278c+45e49-iommu_probe_jgg@nvidia.com/
+> > 
+> > All detailed info: https://github.com/xupengfe/syzkaller_logs/tree/main/230801_150257_iommu_device_unlink
+> > Reproduced code: https://github.com/xupengfe/syzkaller_logs/blob/main/230801_150257_iommu_device_unlink/repro.c
+> > Kconfig: https://github.com/xupengfe/syzkaller_logs/blob/main/230801_150257_iommu_device_unlink/kconfig_origin
+> > repro.prog: https://github.com/xupengfe/syzkaller_logs/blob/main/230801_150257_iommu_device_unlink/repro.prog
+> > repro.report: https://github.com/xupengfe/syzkaller_logs/blob/main/230801_150257_iommu_device_unlink/repro.report
+> > Bisect info: https://github.com/xupengfe/syzkaller_logs/blob/main/230801_150257_iommu_device_unlink/bisect_info.log
+> > Issue dmesg: https://github.com/xupengfe/syzkaller_logs/blob/main/230801_150257_iommu_device_unlink/a3fe9a2e1692a413d887a6a0f1184c26481d6a2b_dmesg.log
 > 
-> Yes, it should technically test using offsetof and a matching set of
-> struct members.
+> This is only an issue for the iommufd selftest and it looks very hard
+> to fix in a micro way.
+> 
+> Fortunately I already fixed it here:
+> 
+> https://lore.kernel.org/linux-iommu/15-v6-e8114faedade+425-iommu_all_defdom_jgg@nvidia.com
+> 
+> If Joerg doesn't take that series for this cycle I'll feed the above
+> patch through the iommufd tree to fix this.
 
-OK. I copied 3 lines for offsetofend from the kernel and did this:
---------------------------------------------------------------------------
-diff --git a/tools/testing/selftests/iommu/iommufd.c b/tools/testing/selftests/iommu/iommufd.c
-index 6b075a68b928..a15a475c1243 100644
---- a/tools/testing/selftests/iommu/iommufd.c
-+++ b/tools/testing/selftests/iommu/iommufd.c
-@@ -86,12 +86,13 @@ TEST_F(iommufd, cmd_fail)
+Great! Thanks for your information.
 
- TEST_F(iommufd, cmd_length)
- {
--#define TEST_LENGTH(_struct, _ioctl)                                     \
-+#define TEST_LENGTH(_struct, _ioctl, _last)                              \
-        {                                                                \
-+               size_t min_size = offsetofend(struct _struct, _last);    \
-                struct {                                                 \
-                        struct _struct cmd;                              \
-                        uint8_t extra;                                   \
--               } cmd = { .cmd = { .size = sizeof(struct _struct) - 1 }, \
-+               } cmd = { .cmd = { .size = min_size - 1 },               \
-                          .extra = UINT8_MAX };                          \
-                int old_errno;                                           \
-                int rc;                                                  \
---------------------------------------------------------------------------
+Best Regards,
+Thanks!
 
-Any misaligned size within the range of [min_size, struct_size) still
-doesn't have a coverage though. Is this something that we have to let
-it fail with a potential risk?
-
-Thanks
-Nic
+> 
+> Thanks,
+> Jason
