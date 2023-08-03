@@ -1,115 +1,223 @@
-Received: from mail-vs1-f47.google.com (mail-vs1-f47.google.com [209.85.217.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2069.outbound.protection.outlook.com [40.107.244.69])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 644CB1F937
-	for <iommu@lists.linux.dev>; Thu,  3 Aug 2023 17:34:15 +0000 (UTC)
-Received: by mail-vs1-f47.google.com with SMTP id ada2fe7eead31-44756c21105so826467137.1
-        for <iommu@lists.linux.dev>; Thu, 03 Aug 2023 10:34:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1691084054; x=1691688854;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=s8Xa9pYsN9q26Cy2OfWksmVuBviyVuvzRMdasYi4RPE=;
-        b=ieYA6bVxf1lbXkgHAn+hXhVfxzKe711nmI2r+8a2Pkje45GQmKLftZmaLt0qar82gg
-         SFBl/K1845mX6+FAqPkGcjyrpBXYikncS74nQOppvoyKSHXe0rCclfsEAXrPauDBdjLV
-         e25KI/Uu6/whFSVJCUzOwGJkV3uYaP9OmOzDMNjjkk1ts8gnSQW1ex6gNo+0kzwO65XL
-         HyypX83EJT7/21befwOJ9uRlgd3lhXqtj1LN6iNBdvKWKSCrS9QQZFXiZGxHkCMMLy82
-         +seRRUC93Y1mRKPJn8r746QD8Gi1bfCC2+B+iopA0nXA09o5X8xylmqFAP/A/rLnnA0P
-         /oIA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1691084054; x=1691688854;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=s8Xa9pYsN9q26Cy2OfWksmVuBviyVuvzRMdasYi4RPE=;
-        b=bqf2qF1iOoVECxHrM8lG4BJ+z3/w/rNvypINTtWoEHCqNjRaPER3U27wR4u+VWwyme
-         MfcTgJ/YW2nj+C99O9jbEXg12v7nPiwOvJGZdnZ//8X5jU3RyfdfLSceaRTG50B05Tk5
-         p7EjrXPD2GvCQqOtIVdEQi3LsyDBT+2QrkhQlTdPpYStvmo9lxIsHsJh0NwXK7LQovsY
-         +UHRAuq0wuXnI+Cap+qlYONmJEIrHpoIcsKOLgFCXFoN6k9izeVE3O1iynONY0i6empl
-         rMB8KG2OQVwzF1Fuax6hISDHiwhXqRQg3PBmUgfwCYR5S8pCOmEmy+wIXahwHNhZ/5Pw
-         VOJw==
-X-Gm-Message-State: ABy/qLYTp7WnEFQUYCeSCH235lcgwua7UT5WnjiPtlQHtBR5m1eLo3SY
-	y5pGkXpmCn9DnV7rjlKLUMOCyS7QKhgweAUuaNk=
-X-Google-Smtp-Source: APBJJlG6pjOoG0q6RAsawh+9qeUBUHt8XE1GKbQlIBPYmQFLRffHoU6WGPDLy5lU6fh2CQ1SS4cFWeU/BvylteONzOI=
-X-Received: by 2002:a05:6102:d8a:b0:443:5524:8f8b with SMTP id
- d10-20020a0561020d8a00b0044355248f8bmr4828038vst.4.1691084054017; Thu, 03 Aug
- 2023 10:34:14 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E457E1F937
+	for <iommu@lists.linux.dev>; Thu,  3 Aug 2023 17:44:03 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=c2iqujxSTyU1JJRe2ha7dCChoId5FocBfvUNfM4uVOylBZOC2bm2j+FSOQDwVmhoIU47wkBzk7UD6Ea09LX4gjL5AWxnSTNjM51zuR/fhGmn0U0d1Jy8CUPJEcfdigkKug3cdo7CDWsX3TnZKuVQFdVAx/QQqIjPK6FVyHgsb/ylXXsg+7kyrUONYKK+oAnJmxam3jMSz+WXulopxCkCyp2X2AvfmDT86ZfqF9mPnyQ+O417iVprRyjs/UHIhshFOhWIK0r0zvGiPktAA2SjfFzREYNUxQSNEqR+BzVt+hbOmRGevUXncBiftMKJbGF376UGpfE8RkNOMBMrUK4J+A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=PsvTkuAMJAwwCT/cxSbcM1S1gxh+7hn4AfpxRU6wSZA=;
+ b=RMQRzDeLpRHw1SAWA6RVVo79KN0uDoLaL/Koeezc6nFEiu2oByRL12SpawveWeNSM8MgtTUU70knf+/zwVcYHp9zYZ5OxlfGmlXSqaJi4u/4TXJRXfNKGhcvR8+2nqD/+raQmcqLcCTEhG44lyghO2zBowBiJsCsfJMLvdT04/uDmRKnM/NpntT2r6QknWkXSd4b2mnHJ43LtOU6rx6NSpA/+cZa7Ja+dsR68N8rig3/QLx30iDQbF2+8UOuT7JbXIJeYxDoZf6v/AadW+SDK7nGM4YSHN3HG/Rx//5ZfBGY5Zrb73zZF8vFXMCw9cy8Rvtdk8fnJ+IDxomM/bLDIw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=PsvTkuAMJAwwCT/cxSbcM1S1gxh+7hn4AfpxRU6wSZA=;
+ b=A5VcYWfYCP/iLvcz3AyLkBT5TLOTGiARE1A4QSzWNxZ7G3Kt5auxLg0Aiuumj/FcRN9rUZkOpczG+LIEgEWPgpBWjCHMErPHVAcukfQHC8pBcrLZ9wfxuhCF1AG4wfpghXhJbdFlc084gv6p3mT/ylfGdImbNi2l+JarxgDB/8nSN2UVZNyh4ABrcCtEZ2P5kYLxhVRdU14ONgNv5OzznI5j9xVnDsm5DHPUgm9niKn73sjq2+rSFNiY7cxnj4sfYGktnlPJhLtI0gFgOqe5DPG/XHWFgAeF2nOplZa8RoopiF5NwE8YiVKz9sBDo3c3Ly6L3R/FtL9VR6Ylnicbyg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by SJ2PR12MB9088.namprd12.prod.outlook.com (2603:10b6:a03:565::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6631.47; Thu, 3 Aug
+ 2023 17:44:01 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::5111:16e8:5afe:1da1]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::5111:16e8:5afe:1da1%6]) with mapi id 15.20.6631.046; Thu, 3 Aug 2023
+ 17:44:01 +0000
+Date: Thu, 3 Aug 2023 14:44:00 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Michael Shavit <mshavit@google.com>
+Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org, baolu.lu@linux.intel.com,
+	will@kernel.org, jean-philippe@linaro.org, robin.murphy@arm.com,
+	nicolinc@nvidia.com
+Subject: Re: [PATCH v5 2/6] iommu/arm-smmu-v3: Keep track of attached ssids
+Message-ID: <ZMvnYAYXvDYbYgvV@nvidia.com>
+References: <20230803101351.1561031-1-mshavit@google.com>
+ <20230803181225.v5.2.I8db07b9eaef3bd5ef9bfc5c8c6d44768a4d95293@changeid>
+ <ZMvKzwx2IhgXO+F8@nvidia.com>
+ <CAKHBV27q-KdcoKZu7TeFdRWGvKkU7C13yOdxRNZ5cGEEbPumCw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAKHBV27q-KdcoKZu7TeFdRWGvKkU7C13yOdxRNZ5cGEEbPumCw@mail.gmail.com>
+X-ClientProxiedBy: BL0PR0102CA0015.prod.exchangelabs.com
+ (2603:10b6:207:18::28) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <1690598115-26287-1-git-send-email-quic_pintu@quicinc.com>
- <20230731112155.GA3662@lst.de> <CAOuPNLjnfq1JefngtNrg0Q+JdMTSRz+eEqxGQJFfx9+af+k9WA@mail.gmail.com>
- <20230801171838.GA14599@lst.de> <CANDhNCq+3OEosUcQJ5GFgk+5OyG+JqXKM43UAo0aPz-V27OgAA@mail.gmail.com>
- <20230802094725.GA28241@lst.de>
-In-Reply-To: <20230802094725.GA28241@lst.de>
-From: Pintu Agarwal <pintu.ping@gmail.com>
-Date: Thu, 3 Aug 2023 23:04:02 +0530
-Message-ID: <CAOuPNLjAOk0BOXDcjbY+evX_uxbZyptrJXMf0ULhReECzEX0CQ@mail.gmail.com>
-Subject: Re: [PATCH v2] dma-contiguous: define proper name for global cma region
-To: Christoph Hellwig <hch@lst.de>
-Cc: John Stultz <jstultz@google.com>, Pintu Kumar <quic_pintu@quicinc.com>, 
-	linux-kernel@vger.kernel.org, akpm@linux-foundation.org, linux-mm@kvack.org, 
-	m.szyprowski@samsung.com, robin.murphy@arm.com, iommu@lists.linux.dev, 
-	Sumit Semwal <sumit.semwal@linaro.org>, 
-	Benjamin Gaignard <benjamin.gaignard@collabora.com>, Liam Mark <lmark@codeaurora.org>, 
-	Laura Abbott <labbott@redhat.com>, Brian Starkey <Brian.Starkey@arm.com>, 
-	=?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>, 
-	linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org, 
-	linaro-mm-sig@lists.linaro.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|SJ2PR12MB9088:EE_
+X-MS-Office365-Filtering-Correlation-Id: 4f5d5c22-5d68-4e65-aa35-08db944938c4
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	LNUo1FXqoVlgEqtSw+PMdyRtMNh+AziVpW+qP7SACoHT4fSvr6KcyOilnX2b67ecp7CguUmN3pMZlm1hTK+950j/c5X2NNMZuYmHHD5ymqz//PJBrC/6EJZntYBTOnufa6IIL/5Qk/gSt+quBcH7orI6nfBRe6Fr+D7Kh4qdUjquORKFPhiJvDA6+TEm7vQyNBMkMuDAcvpBRqrSvLvPVF2LI8ExK8rpHWAoGoB9HMQCRXgxAIILG4UvKOwVTLrfmsE4gDccmUU3xatIMSTVynTjSEtSbreg91zU47rUIDdc5G576ZzzIN+4uuI5TKSrzp3HSAPCK1Ck3H7OHHnCM+Uk79BQ6tCfKwEchxqsZFO3CdXDcr/1x1EoavbmCgPn2xBoreMa9tGSppwglvDA3dJG2oJhW7zIdy4ZnzgMhnLl/s9q1KiPG2Bsfg/YXsM32LlkoM0cv97bDM93gCB2rBwtaKPDlAC/lBCffxGVEGcKNumMO3ZIOyLuEgGCGEG4De6qOat41av3eS9SSNaldftsPMud0R8srHfmF5Ll9ccQpBnZ2EbEBsmZi1FMXWTh
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(376002)(396003)(366004)(136003)(39860400002)(346002)(451199021)(2616005)(107886003)(53546011)(6506007)(186003)(83380400001)(26005)(8676002)(66476007)(316002)(66556008)(2906002)(4326008)(66946007)(5660300002)(6916009)(8936002)(41300700001)(6486002)(6512007)(478600001)(38100700002)(36756003)(86362001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?WlJ3MHN6OUZOdUNOVWx1UmRxd05sTjkvUDRSeCtHdVlnWFUrdmRzM3VZNzBz?=
+ =?utf-8?B?Vk5WWVdETWwvc05LUE1vam01RUhzdGJ2d0FVRlQrVE5YMWdsS2tteDBRZG9V?=
+ =?utf-8?B?SEp1b3cxelIvRnV0YnFDUUlPT1A5aEd4NmJNTWhCRlMvV3E3dXNrWE9kbXhY?=
+ =?utf-8?B?azdGNkpGUk00bW90MjFxcUNGSnh6V2VXRk15UFFSNGREeFdvWUtpOWNSK1Jx?=
+ =?utf-8?B?UnRzS2d0VE9qaXNDNGovdmNvK3l6NmtKNys1aGx6UWx5UTcxRUx5Y1EzRzdn?=
+ =?utf-8?B?NHZYV2toQnMyNGswUG5uODFXTjVyM1g0Szg1SWxVZ01kNEdpL2ZhS2l3Tmh2?=
+ =?utf-8?B?ZmNwc3pVcDdlU2QyVjdoMFhsYkI3ZS92ZVgyM1BjKzF4R29vZEI2ZVV6cGVW?=
+ =?utf-8?B?WEpMeUR1Z1puRmIxZnFvWkhPbk1kSmZjYWFwZ2xQWGduaU5uNnRTS1M1VCtU?=
+ =?utf-8?B?RjdoMEFBdEVmak5pUGtFdkY4UndYL2ljc2twU29qUWtmK05sNzBRWm5EYjUy?=
+ =?utf-8?B?WmI4emlUcTF5dUJrVlhaSGZxL2ZudE0vUlpRNDZ6WFozMS9lVVdCMUNlb1l2?=
+ =?utf-8?B?MUEyenhWblVIcGo3cHMxc2lBVjNuRFRpekxFSktNRngwUDhnS2MwSzJ2RFVj?=
+ =?utf-8?B?aDZSOUd5elRwNFlzVVc2MHVZd3NmQzlQdzQwc1d0TFcwSHBEQjN6WHhRd0Z2?=
+ =?utf-8?B?eUV2RE9xSnZmRGhhRW43MGU0di9wOUliQm9HMURrR3RXNXFVM1lBREx4WFIy?=
+ =?utf-8?B?djcyOXNSYzNRRUZZQ1RrejkrSGhoUFp6dDlabU9Kc3NGajh3L3JsMXg5U1N4?=
+ =?utf-8?B?di9PQXVOM1dJWW9Nd2NnNkZGajdFY3R2Rkc3QkxVaTljYyttUnlDNlZKVnNu?=
+ =?utf-8?B?WkdiM01ENERlMFlORXgwaG9jZzUzWXhzZEx4ejFPMXZBYk5pOTJGNHpwUVdx?=
+ =?utf-8?B?Y1BudHBwMHRGZy90cytGTGY1amJ3c3ozRU1ZS1JhWEU1RlZlb2EvUlRqQmF2?=
+ =?utf-8?B?ZEVld0pVSEo5WWhDZ0VpYjIxMFpmSmVxUlhkMEtVajlaRVNxbHowK0Vzd1JP?=
+ =?utf-8?B?endWODJ1dWtGMFpOWFdBYWVIbTg5dFpyM003QW1IU1ZRQUlCSERKd3paZmhQ?=
+ =?utf-8?B?STRvek8zZjVWTTI4cUZGQVNlZWg5RlNjdkltaEV0Q1dld2dIUEpaYkZFVEN3?=
+ =?utf-8?B?WXlIRE1FR1RSdjA5Qk5qSmFTaloyRDhET3A5UmNQMVJ5ZGJFSGpoTitabDlE?=
+ =?utf-8?B?SWJoMTl2RXBSNDNOdDVkOTUvaVVFRWxqbWFmZ09oSHVIRUFENU1ab25BU0RS?=
+ =?utf-8?B?TG9EWWRQL2h1NmhzKzdFaDFvSHdIYlhCbkxQc1JGQ1cvN2NoNGg3bi95cFk4?=
+ =?utf-8?B?M05lZTlEamd2L0VHb2ZIcVpubkVGT3Z6SzJmUzFrbW1EaHBPeWJrZ1VGMVFk?=
+ =?utf-8?B?RlJLeDBJaktkM1pEMUNEbWhYc1RtdFFqU3BORWY1L1Z5V0tuN2I3bGIyMXV2?=
+ =?utf-8?B?UlJTdEFJditxekJWQkNQK21kSjBkZW9EQStKUUdpRVRCdzd0dE0xT2hDOHVB?=
+ =?utf-8?B?Z0xDWGFtL2g2M25YSjk2RTRuaFJjMHQwS2tDSkpaK01ybiswcnlvY2dQMGNF?=
+ =?utf-8?B?UkM2MHVZQ1Y5Mmk0c0UyTlU2bVBPeVpQUnFHNlNIZENBSGkwRU1YN2xTeFJJ?=
+ =?utf-8?B?aUwyUCtvczV1cm1TR0d6KzVITFlnNXhWVTlqNUFiNSt0bzRLK040cmhhV3Q1?=
+ =?utf-8?B?WjZtdFRtaEJyd3NiZlVVaTZ4MDFnSzByT3JFS3JIV2pMdW9sUnQrcWtQV0pO?=
+ =?utf-8?B?R2Z1VEpKd2QrQUtHNGg2bnRwL014ZjV6UFpOMWYwQ3pNaW5IaERKaEx3WENk?=
+ =?utf-8?B?VWlFZFRNdk5jUFQ0eWFtYVRPNXIvNU9LakUvM0M1WnY4eVZwWmNscHQ1VUVM?=
+ =?utf-8?B?YXdPSjU0ZEtUdjFNRGc4SThjdWJuU0YzZHRHVkNzSUlWRllTU25wUmZHc0lN?=
+ =?utf-8?B?R3h3YmpVaUdNMVI1L2cyZG9kanFOd0Nub0FEc3dqeWdUcVpDVThTOEt4L2FQ?=
+ =?utf-8?B?cENIWVdEdUM2WkRVUWQ0QUlwUGJ2cUtzNWJMNUMreXdWYXZZZm9xN2daMHdj?=
+ =?utf-8?Q?10rY8EupDJV4EmOo2ImU7DrYF?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4f5d5c22-5d68-4e65-aa35-08db944938c4
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Aug 2023 17:44:01.1285
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: txArfI1C3Zi1dQGsPmRdH7aRpFCsGxYxL3KpgDyyyGVXwinvKw7WZCZffeqb1+b6
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ2PR12MB9088
 
-Hi,
-
-On Wed, 2 Aug 2023 at 15:17, Christoph Hellwig <hch@lst.de> wrote:
->
-> On Tue, Aug 01, 2023 at 10:39:04PM -0700, John Stultz wrote:
-> > So, forgive me, I've not had a chance to look into this, but my
-> > recollection was "reserved" is the name we see on x86, but other names
-> > are possibly provided via the dts node?
->
-No, I think "reserved" is the name hard-coded (for all arch) in Kernel
-for global-cma.
-So, I don't think this is x86 specific. I am checking on arm32 itself.
-When we can dma_alloc_coherent we see these in the logs (if dts region
-is not present).
-cma: cma_alloc(cma (ptrval), name: reserved, count 64, align 6)
-Now, with this change we will see this:
-cma: cma_alloc(cma (ptrval), name: global-cma-region, count 64, align 6)
-
-> Indeed, dma_contiguous_default_area can also be set through
-> rmem_cma_setup, which then takes the name from DT.
->
-I think this is a different case. If DT entry is present we get this:
-Reserved memory: created CMA memory pool at 0x98000000, name: name:
-linux,cma, size 128 MiB
-cma: cma_alloc(cma (ptrval), name: linux,cma, count 64, align 6)
-
-Here we are talking about the default hard-coded name in Kernel code
-if DT is not defined.
-So, in one of the boards, this DT entry was not present and it shows
-as "reserved".
-
-> > I believe on the hikey board its "linux,cma" is the name, so forcing
-> > it to reserved would break that.
+On Fri, Aug 04, 2023 at 12:32:08AM +0800, Michael Shavit wrote:
+> On Thu, Aug 3, 2023 at 11:42 PM Jason Gunthorpe <jgg@nvidia.com> wrote:
 > >
-Yes, everywhere in the DT it's defined as "linux,cma".
-You mean this also should be changed to "linux,cma-global-region"
-everywhere with this change ?
+> > On Thu, Aug 03, 2023 at 06:12:22PM +0800, Michael Shavit wrote:
+> > > The arm-smmu-v3 driver keeps track of all masters that a domain is
+> > > attached to so that it can re-write their STEs when the domain's ASID is
+> > > upated by SVA.
+> >
+> > Wah?
+> >
+> > A domain's ASID shouldn't change, why does it change for SVA? Doesn't
+> > SVA use CDTE's only? Why would it ever change a STE? I'm confused what
+> > you are trying to explain here.
+> 
+> Urh right, I mixed up CD entry and STE here. Before this patch, SVA
+> keeps tracks of all the masters attached to a CD domain, and updates
+> the CD entry 0 in their CD table. 
 
-> > Maybe instead add a compat config option to force the cma name (so x86
-> > can set it to "default" if needed)?
->
-Yes, having it in config is also a good option instead of hard-coding in Ke=
-rnel.
->
-> I think we'll just need to leave it as-is.  I with dma-heaps had never
-> exposed the name to userspace, but we'll have to l=D1=96ve with it now.
+Because it assumes that if a domain is returned from the ASID lookup
+it is a RID domain.
 
-Can you point me to the userspace utility we are talking about here ?
-I think we should not worry much about userspace name exposure.
-I guess it should fetch whatever is declared in Kernel or DTS, right ?
+> Now that a CD domain can be attached on non-zero SSIDs, SVA can't
+> simply update slot 0 in the table; it must know which slot(s) this
+> domain is attached to.
+
+Yes, so why are you passing in 0 as the ssid argument to
+arm_smmu_write_ctx_desc_devices() for the ASID change?
+
+I think your commit message is trying to say:
+
+The SMMUv3 driver keeps track of all the iommu_domains that are
+assigned to an ASID in an xarray. The SVA code needs to re-use the
+same ASID as the CPU's ASID (presumably only for BTM mode?) so it has
+a mechanism to reclaim an already used ASID from an existing domain.
+
+This is currently hardwired with the assumption that a domain using an
+ASID is only on SSID 0.
+
+Add a list to the struct arm_smmu_domain recording each master and
+SSID that the domain is attached to and update it when any domain is
+attached/detached.
+
+Make arm_smmu_write_ctx_desc_devices() follow this list when storing
+the CD table entries for the domain.
+
+Remove 'ssid' as an argument to arm_smmu_write_ctx_desc_devices()
+since it is always found in the attached_ssids.
+
+> > What is a "primary domain"? Why can't we fix SVA first so it doesn't
+> > have this weird "piggybacks" or:
+> >
+> ...
+> >
+> > This patch is not making sense to me, the goal in the commit message
+> > seems logical, but why is tracking CD entries introducing this concept
+> > of a primary domain and doing special stuff for SSID=0?
+> 
+> I'd argue this patch isn't introducing anything the driver isn't
+> already doing.
+
+So this I don't understand:
+
++               if (ssid && attached_domain->ssid == 0) {
++                       ret = arm_smmu_write_ctx_desc(master, ssid, cd);
++               } else {
++                       ret = arm_smmu_write_ctx_desc(
++                               master, attached_domain->ssid, cd);
++               }
+
+Fix this patch so attached_domain->ssid is never wrong?
+
+Remove ssid as an input to the function.
+
+(I'd ultimately expect to remove CD too)
+
+> it. I do have a patch series in the works to properly fix SVA, but
+> it's growing quite large and I was trying to get this feature
+> out first. At a high level, the subsequent series:
+> 1. Nests the list of attached masters in a list of SMMUs the domain is
+> installed in. Updates SMMU-level operations (such as invalidations) to
+> iterate over said list.
+> 2. Checks the compatibility of a domain when attaching to a new SMMU
+> instead of outright rejecting, to allow attaching a domain to multiple
+> SMMUs.
+> 3. Thus allowing SVA to alloc a single domain for the MM struct (which
+> the series maps from multiple SVA domains internally, pending support
+> at the iommu core layer)
+
+This should not be hard for the core code
+
+> 4. And allowing SVA to use the same set_dev_pasid implementation used
+> here on that domain.
+
+This list all makes alot of sense to me
+
+> Now having said that, it might be possible to get rid of piggybacking
+> sooner if we create an MM per master instead of per "primary-domain",
+> but I'm not too sure about performance implications. AFAICT, the only
+> downside might be for invalidate_range commands that could no longer
+> be sent as a batched command to the SMMU (since each mmu notifier
+> would be called independently).
+
+I'm not sure this series leaves things in a better state than before,
+now we have two parallel domain attachment paths for PASID :(
+
+Jason
