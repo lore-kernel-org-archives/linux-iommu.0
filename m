@@ -1,34 +1,34 @@
-Received: from mgamail.intel.com (unknown [192.55.52.151])
+Received: from mgamail.intel.com (unknown [134.134.136.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A2304846A
-	for <iommu@lists.linux.dev>; Thu,  3 Aug 2023 03:24:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 56819846A
+	for <iommu@lists.linux.dev>; Thu,  3 Aug 2023 03:27:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1691033088; x=1722569088;
+  t=1691033229; x=1722569229;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=ICQshYmMfbXZrwMngTGz4HUFiYda9PJa/FB3HICeWPs=;
-  b=H/mgz5ldWeM56GcB0a7HhGSHj1imk/vE2u/FSdULKhWYhGX7k+nYxc6x
-   caA761u0lw9iOO5fVotwNNVIlKQ93D1HSwt8ihwJaeagGjJhikWLk6IiF
-   8y6afutuKsOiMhTv5swBNQdC5FY0zDdH9KDtD7vSFys+Isz5Ip1iGvK86
-   Trr9sqwTBRU7iieuHZFtapx+a/gq8CjehmLBfu4yPw7M3iOEryvZoIrYF
-   5ztAa5w8dU+/YiqV+lcT/GCXzkOgMON/7txzh1bjN9CLGFEVCNq6yCWDX
-   J4WzAE4jHeFeYbJ+C0h1LIla/v4Z2YPuKATDtQQ6XzNnYE3I4/1yDAQh8
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10790"; a="350050675"
+  bh=QmXtopTlfod2q44aI/cG9ypI7xSvby98JB+fVs0/xVI=;
+  b=Zr5RIuF2Lttij8uJuqzS7RXTD7knk/Dxsi4ugp1pdfVjoMlTuemO3jzh
+   Y/IpvhrMrkhT+tWNI8SaK8ib0d2yDgVaIvuBSUmWyC55VtYOP+ZSv9gJr
+   PfHhgK9D0Gbo2LUDmInFAnFupjudRoG2+wufxpQf9by/5KxtomoSxICXv
+   AMxrYwTL+4QdqUETcvZ9dkGcQxWwAEO5UUN0P6GtZj/QDb7UXzwN/Tlzw
+   87pFdX53ODPwhtl3KVpg62Z4MQGCWsYI8mHZGk9S3WJWE5mcFE8PsOc8K
+   IwYbJhLsKLCztA0Fs0V1ow47HxfDV6IHXx8JyqNxp+muma6w6QjWIGZrn
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10790"; a="359797826"
 X-IronPort-AV: E=Sophos;i="6.01,251,1684825200"; 
-   d="scan'208";a="350050675"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Aug 2023 20:24:47 -0700
+   d="scan'208";a="359797826"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Aug 2023 20:27:08 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10790"; a="1060074437"
+X-IronPort-AV: E=McAfee;i="6600,9927,10790"; a="819464846"
 X-IronPort-AV: E=Sophos;i="6.01,251,1684825200"; 
-   d="scan'208";a="1060074437"
+   d="scan'208";a="819464846"
 Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.255.31.34]) ([10.255.31.34])
-  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Aug 2023 20:24:42 -0700
-Message-ID: <58ae9095-28f2-a44a-b0e5-be82e1eae9d9@linux.intel.com>
-Date: Thu, 3 Aug 2023 11:24:40 +0800
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Aug 2023 20:27:03 -0700
+Message-ID: <b099a333-65b1-de9e-742d-d12f4fb58f67@linux.intel.com>
+Date: Thu, 3 Aug 2023 11:27:01 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -53,7 +53,8 @@ Cc: baolu.lu@linux.intel.com, "cohuck@redhat.com" <cohuck@redhat.com>,
  "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
  "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
  "Duan, Zhenzhong" <zhenzhong.duan@intel.com>
-Subject: Re: [PATCH v4 09/12] iommu/vt-d: Add iotlb flush for nested domain
+Subject: Re: [PATCH v4 12/12] iommu/vt-d: Disallow nesting on domains with
+ read-only mappings
 Content-Language: en-US
 To: "Tian, Kevin" <kevin.tian@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
  "joro@8bytes.org" <joro@8bytes.org>,
@@ -61,74 +62,56 @@ To: "Tian, Kevin" <kevin.tian@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
  "jgg@nvidia.com" <jgg@nvidia.com>,
  "robin.murphy@arm.com" <robin.murphy@arm.com>
 References: <20230724111335.107427-1-yi.l.liu@intel.com>
- <20230724111335.107427-10-yi.l.liu@intel.com>
- <BN9PR11MB527690EBAA872A16AE8926F88C0BA@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20230724111335.107427-13-yi.l.liu@intel.com>
+ <BN9PR11MB52767DF0C8F25AB893B38B678C0BA@BN9PR11MB5276.namprd11.prod.outlook.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <BN9PR11MB527690EBAA872A16AE8926F88C0BA@BN9PR11MB5276.namprd11.prod.outlook.com>
+In-Reply-To: <BN9PR11MB52767DF0C8F25AB893B38B678C0BA@BN9PR11MB5276.namprd11.prod.outlook.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2023/8/2 15:46, Tian, Kevin wrote:
+On 2023/8/2 15:59, Tian, Kevin wrote:
 >> From: Liu, Yi L <yi.l.liu@intel.com>
 >> Sent: Monday, July 24, 2023 7:14 PM
 >>
->> +static int intel_nested_cache_invalidate_user(struct iommu_domain
->> *domain,
->> +					      void *user_data)
->> +{
->> +	struct iommu_hwpt_vtd_s1_invalidate_desc *req = user_data;
->> +	struct iommu_hwpt_vtd_s1_invalidate *inv_info = user_data;
->> +	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
->> +	unsigned int entry_size = inv_info->entry_size;
->> +	u64 uptr = inv_info->inv_data_uptr;
->> +	u64 nr_uptr = inv_info->entry_nr_uptr;
->> +	struct device_domain_info *info;
->> +	u32 entry_nr, index;
->> +	unsigned long flags;
->> +	int ret = 0;
->> +
->> +	if (get_user(entry_nr, (uint32_t __user *)u64_to_user_ptr(nr_uptr)))
->> +		return -EFAULT;
->> +
->> +	for (index = 0; index < entry_nr; index++) {
->> +		ret = copy_struct_from_user(req, sizeof(*req),
->> +					    u64_to_user_ptr(uptr + index *
->> entry_size),
->> +					    entry_size);
+>> @@ -2147,6 +2148,18 @@ __domain_mapping(struct dmar_domain
+>> *domain, unsigned long iov_pfn,
+>>   	if ((prot & (DMA_PTE_READ|DMA_PTE_WRITE)) == 0)
+>>   		return -EINVAL;
+>>
+>> +	if (!(prot & DMA_PTE_WRITE) && !domain->read_only_mapped) {
+>> +		spin_lock_irqsave(&domain->lock, flags);
+>> +		if (domain->set_nested) {
+>> +			pr_err_ratelimited("No read-only mapping
+>> permitted\n");
 > 
-> If continuing this direction then the driver should also check minsz etc.
-> for struct iommu_hwpt_vtd_s1_invalidate and iommu_hwpt_vtd_s1_invalidate_desc
-> since they are uAPI and subject to change.
+> "Read-only mapping is disallowed on the domain which serves as the
+> parent in a nested configuration, due to HW errata (ERRATA_772415_SPR17)"
 
-Agreed.
+Ack.
 
 > 
->> +		if (ret) {
->> +			pr_err_ratelimited("Failed to fetch invalidation
->> request\n");
->> +			break;
->> +		}
->> +
->> +		if (req->__reserved || (req->flags &
->> ~IOMMU_VTD_QI_FLAGS_LEAF) ||
->> +		    !IS_ALIGNED(req->addr, VTD_PAGE_SIZE)) {
->> +			ret = -EINVAL;
->> +			break;
->> +		}
->> +
->> +		spin_lock_irqsave(&dmar_domain->lock, flags);
->> +		list_for_each_entry(info, &dmar_domain->devices, link)
->> +			intel_nested_invalidate(info->dev, dmar_domain,
->> +						req->addr, req->npages);
->> +		spin_unlock_irqrestore(&dmar_domain->lock, flags);
+>> +	u8 read_only_mapped:1;		/* domain has mappings with
+>> read-only
+>> +					 * permission.
+>> +					 */
+>> +	u8 set_nested:1;		/* has other domains nested on it */
 > 
-> Disabling interrupt while invalidating iotlb is certainly unacceptable.
-> 
-> Actually there is no need to walk devices. Under dmar_domain there
-> is already a list of attached iommu's.
+> what about "is_parent"?
 
-Walking device is only necessary when invalidating device TLB. For iotlb
-invalidation, it only needs to know the iommu's.
+"is_parent" is still a bit generic. How about "is_nested_parent"?
+
+> 
+>>
+>> +	spin_lock_irqsave(&s2_dmar_domain->lock, flags);
+>> +	if (s2_dmar_domain->read_only_mapped) {
+>> +		spin_unlock_irqrestore(&s2_dmar_domain->lock, flags);
+>> +		pr_err_ratelimited("S2 domain has read-only mappings\n");
+> 
+> "Nested configuration is disallowed when the stage-2 domain already
+> has read-only mappings, due to HW errata (ERRATA_772415_SPR17)"
+
+Ack.
 
 Best regards,
 baolu
+
