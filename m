@@ -1,142 +1,160 @@
-Received: from mgamail.intel.com (unknown [134.134.136.31])
+Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2058.outbound.protection.outlook.com [40.107.102.58])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4535E7483
-	for <iommu@lists.linux.dev>; Thu,  3 Aug 2023 03:13:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1691032403; x=1722568403;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=yPbevtCcZpOeTAiAA2lNuyEOiqfa6vas4KxoyVt3mTA=;
-  b=l5RMvK6L4EaKVttyVzlCDzc6hv+TSMEJ4huwnIYIjuIWpR+PxYx7iMHm
-   zxyQnOR3TzmJ1SffRFpfdrnzQVbcGWtPTtEE+wCZ5iCO+5YYl8ZlrL0C5
-   Ufj8jgKDLD9+2O/kNEkyZsl+3WIEn3QhhmfWDZSh7Ui3zH65iqH6zzp8O
-   tSMytMw0IEn85BsDz18oDI8AKcKGaisKjX2/hBsPuCkNe+7OeDw2y3AUt
-   btQk/I8cMr6fFJ7EpnUiVPh1BHgTux/dR4LB/0bGD1Xgu8Xh9gG8wsvLL
-   9v0GawJqnJxPapFuAqrajLAcyswn5ht4eM7QS9wPx2j/l9MoEIk06ptWB
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10790"; a="433597066"
-X-IronPort-AV: E=Sophos;i="6.01,251,1684825200"; 
-   d="scan'208";a="433597066"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Aug 2023 20:13:22 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10790"; a="843385818"
-X-IronPort-AV: E=Sophos;i="6.01,251,1684825200"; 
-   d="scan'208";a="843385818"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.255.31.34]) ([10.255.31.34])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Aug 2023 20:13:16 -0700
-Message-ID: <d57dc99c-4970-fe0f-53f9-ea6f926910ca@linux.intel.com>
-Date: Thu, 3 Aug 2023 11:13:14 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D0297483
+	for <iommu@lists.linux.dev>; Thu,  3 Aug 2023 03:14:01 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=NedWsM8CAcDh+d5o76FODq9s5+lA+qLt/tqQ3psLC3BnTfnNR5k9ltPxcqqGfpIfZ8FGtpNF7i7etrSaHw+JqJs786glwkQ2TEFdumyj57zvC3f1lzrjGkjo2n+4wjHi5ej/HlU+WD9e98hADJj0KS7u4h4zQzPAnxWHxmBfDQcpbgRj/wh2FQTJn+Si78aQk9i1ksGyftNImC4KEJYXwjnH3uLeu7G09Xea4fEFO2ONgTM/MvijZvOlsu2EnjhF4xKOrAyZ45N1molSv7LO/KrkR6w6cWzXUCuTWxrgpFdWFJBwsmIBUHlC3ZOoDVu3krz6ldllT9wD+fA/T4VNZQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=iwzvP1VC+KIPDMiV1S/bB6ZBm+SzFk0DIjBRkXnpBbs=;
+ b=f/OHnrnpsii+VaeaPV0nbHY2YODzpba+Zk3rjCa51D+F2o6ep2xWoIy9CYK+1q711M60UQAInVDGaWVsmSb0Tq4EMV6OSFeVzgr5vRU3tq2ui+kGM7WwMC1KzA9KKx973n70JBiPs2MjQBzMShfkZAMy8gDtVgr8YA+YC4UxwGabGZUp+Aucui21zkAxn61bALVD0TA7q7a+y3LpYVc0ae1dfVDNi/pXzFRVT/nlZMKo6ORk/Ho4i8HQsTSWcU1UuPepZg465CcdpeVAhT8Aqou0kdqACUi9aRKv7GnJKMvgoXUMo55+/81o8+S3OfVE9jwDpyih0Uthx1Ydtyfjdw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.160) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=iwzvP1VC+KIPDMiV1S/bB6ZBm+SzFk0DIjBRkXnpBbs=;
+ b=S3KCs09g4NMpYYhBke0MptTEwma61W3VVc4sxcv/vWBmC0RAtwlB6gCTUhni86hLO+9ate2EYi+tJa2CtCClaBrRLQmZK4KvZN9xNmOImxg1T1oDaFj/HYtJdhmhC2iQVoYH7dYX9GhqVcwUk3lJMZR/XC4jIZNO0Uv5LB75PSMEhTqskWgHIEzMwM7QJiCYIaYvsMPDA4Kqs/bqm0DwHt6Bk3sR6mlIFI6FIdbe7yX29vsZg0osccpEn1OMEwrgCBtc3hq8z0IZ/z73Q1Hz5hXUq89FRW/bL1eDBx36aBQghlvtqogNvAEMg33V7sLuwFNLiZFrtCCcbkS8P0u6KQ==
+Received: from MW4P222CA0013.NAMP222.PROD.OUTLOOK.COM (2603:10b6:303:114::18)
+ by IA1PR12MB7759.namprd12.prod.outlook.com (2603:10b6:208:420::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6631.47; Thu, 3 Aug
+ 2023 03:13:59 +0000
+Received: from MWH0EPF000989E5.namprd02.prod.outlook.com
+ (2603:10b6:303:114:cafe::3) by MW4P222CA0013.outlook.office365.com
+ (2603:10b6:303:114::18) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6631.45 via Frontend
+ Transport; Thu, 3 Aug 2023 03:13:59 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ MWH0EPF000989E5.mail.protection.outlook.com (10.167.241.132) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6652.19 via Frontend Transport; Thu, 3 Aug 2023 03:13:59 +0000
+Received: from rnnvmail203.nvidia.com (10.129.68.9) by mail.nvidia.com
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Wed, 2 Aug 2023
+ 20:13:38 -0700
+Received: from rnnvmail205.nvidia.com (10.129.68.10) by rnnvmail203.nvidia.com
+ (10.129.68.9) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Wed, 2 Aug 2023
+ 20:13:38 -0700
+Received: from Asurada-Nvidia (10.127.8.14) by mail.nvidia.com (10.129.68.10)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37 via Frontend
+ Transport; Wed, 2 Aug 2023 20:13:37 -0700
+Date: Wed, 2 Aug 2023 20:13:35 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: "Liu, Yi L" <yi.l.liu@intel.com>
+CC: Jason Gunthorpe <jgg@nvidia.com>, "joro@8bytes.org" <joro@8bytes.org>,
+	"alex.williamson@redhat.com" <alex.williamson@redhat.com>, "Tian, Kevin"
+	<kevin.tian@intel.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>, "cohuck@redhat.com"
+	<cohuck@redhat.com>, "eric.auger@redhat.com" <eric.auger@redhat.com>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>, "mjrosato@linux.ibm.com"
+	<mjrosato@linux.ibm.com>, "chao.p.peng@linux.intel.com"
+	<chao.p.peng@linux.intel.com>, "yi.y.sun@linux.intel.com"
+	<yi.y.sun@linux.intel.com>, "peterx@redhat.com" <peterx@redhat.com>,
+	"jasowang@redhat.com" <jasowang@redhat.com>,
+	"shameerali.kolothum.thodi@huawei.com"
+	<shameerali.kolothum.thodi@huawei.com>, "lulu@redhat.com" <lulu@redhat.com>,
+	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>, "Duan,
+ Zhenzhong" <zhenzhong.duan@intel.com>
+Subject: Re: [PATCH v3 09/17] iommufd: Add IOMMU_HWPT_INVALIDATE
+Message-ID: <ZMsbX4U/wGvE02eI@Asurada-Nvidia>
+References: <20230724110406.107212-1-yi.l.liu@intel.com>
+ <20230724110406.107212-10-yi.l.liu@intel.com>
+ <ZMQCw2iiIqa4CXNG@nvidia.com>
+ <DS0PR11MB7529696366A4447EF0945E87C305A@DS0PR11MB7529.namprd11.prod.outlook.com>
+ <ZMe0zQ/29/gLGBwZ@nvidia.com>
+ <ZMsOAv9PjZpLaf4z@Asurada-Nvidia>
+ <DS0PR11MB7529EA8256BD06A96C8D1A85C308A@DS0PR11MB7529.namprd11.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.13.0
-Cc: baolu.lu@linux.intel.com, "cohuck@redhat.com" <cohuck@redhat.com>,
- "eric.auger@redhat.com" <eric.auger@redhat.com>,
- "nicolinc@nvidia.com" <nicolinc@nvidia.com>,
- "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "mjrosato@linux.ibm.com" <mjrosato@linux.ibm.com>,
- "chao.p.peng@linux.intel.com" <chao.p.peng@linux.intel.com>,
- "yi.y.sun@linux.intel.com" <yi.y.sun@linux.intel.com>,
- "peterx@redhat.com" <peterx@redhat.com>,
- "jasowang@redhat.com" <jasowang@redhat.com>,
- "shameerali.kolothum.thodi@huawei.com"
- <shameerali.kolothum.thodi@huawei.com>, "lulu@redhat.com" <lulu@redhat.com>,
- "suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
- "Duan, Zhenzhong" <zhenzhong.duan@intel.com>,
- Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: Re: [PATCH v4 04/12] iommu/vt-d: Add helper to setup pasid nested
- translation
-To: "Tian, Kevin" <kevin.tian@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
- "joro@8bytes.org" <joro@8bytes.org>,
- "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
- "jgg@nvidia.com" <jgg@nvidia.com>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>
-References: <20230724111335.107427-1-yi.l.liu@intel.com>
- <20230724111335.107427-5-yi.l.liu@intel.com>
- <BN9PR11MB5276C84A20C48B4041BE07B78C0BA@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <BN9PR11MB5276C84A20C48B4041BE07B78C0BA@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <DS0PR11MB7529EA8256BD06A96C8D1A85C308A@DS0PR11MB7529.namprd11.prod.outlook.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: MWH0EPF000989E5:EE_|IA1PR12MB7759:EE_
+X-MS-Office365-Filtering-Correlation-Id: 6abbb023-c940-40f6-01fb-08db93cfae54
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	DWl2AN9LuxgqSMsd3K45ZE+aB9xzZDDOCpMNwZz6mmx4JPQVVeJolRLjemJmbnJLsUTfYWTJns/1+1k3wT082T9EQxGWg0eLZRmsvLaAyL/KLmoXgdkKkR4NGl7pu0A9XmBCAOlnHfG4ksvFShm3iUcEYQbqtZVYeIQt94KjvafV/K7FOJ80oyEzgd9vQSP63V9y5liQAaGWHKu5oWZG617J3b6TIalA7D70PhnFL2f1flcXqasU6BE12dPLkJa+E2IFtv0NRqDMjdg38tchCnjlHbQTnMZJqoVO1ZBRXK3qJCvgz1IIFcG66uiE/QJpJ3FrYGnqCvMUKala+ffkh7+0axsQdKftermN5yO8X5Y4LvpcHg+SwMVKUg7++MdRMLnGptUuPl2ttmlXwXE0PkGWFRrznS3VZoQj7xpz4pm5cbyQV3njL6Un1gdgYfzl3FaKA6umyUQ8d6fkb9nR+b41MOaf004teGSfwVOUtrgbozLAXlgwOWMsI5XHIlT0vGBL/LI7ctxuLZ8vpdjr5QBmYxI16M+2oyKLeSWnootx2FNAe81HERzDWaqWxXS0YBXS6N2znJLp1tB5A/tKQtU8pzON0AxUdrpmPYAgyZS1w4legIjEa1fDilOI9z1yaFNoNhklfmM+SQN6oyQ5kB6ZYBS2T9ypNWPECsUdnu1ukD5ZFYYsg+VHFmOAdm8kVJPcb0Y6S/i51kjjozNmQ1I+uS+hoPWUsV5H11NAEIpDWDPb9ZuheN6/1WHYyWPo
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(396003)(346002)(39860400002)(136003)(376002)(82310400008)(451199021)(40470700004)(46966006)(36840700001)(40460700003)(426003)(336012)(26005)(186003)(83380400001)(47076005)(36860700001)(316002)(70206006)(70586007)(2906002)(4326008)(6916009)(5660300002)(7416002)(41300700001)(8676002)(8936002)(9686003)(478600001)(54906003)(40480700001)(55016003)(356005)(7636003)(82740400003)(33716001)(86362001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Aug 2023 03:13:59.3749
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6abbb023-c940-40f6-01fb-08db93cfae54
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	MWH0EPF000989E5.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB7759
 
-On 2023/8/2 15:10, Tian, Kevin wrote:
->> From: Liu, Yi L<yi.l.liu@intel.com>
->> Sent: Monday, July 24, 2023 7:13 PM
->>   }
->> +
->> +/**
->> + * intel_pasid_setup_nested() - Set up PASID entry for nested translation.
->> + * This could be used for nested translation based vIOMMU. e.g. guest IOVA
-> s/could be/is/
-
-Ack.
-
+On Thu, Aug 03, 2023 at 03:07:23AM +0000, Liu, Yi L wrote:
+> > > > It's not so explicit though. Perhaps worth to have a check like below in this patch?
+> > > >
+> > > > if (unlikely(klen > sizeof(union ucmd_buffer)))
+> > > >   return -EINVAL;
+> > >
+> > > Yes, stick this in the domain allocate path with a WARN_ON. The driver
+> > > is broken to allocate a domain with an invalid size.
+> >
+> > And here too with a WARN_ON_ONCE.
+> >
+> > +       /*
+> > +        * Either the driver is broken by having an invalid size, or the user
+> > +        * invalidate data struct used by the driver is missing in the union.
+> > +        */
+> > +       if (WARN_ON_ONCE(hwpt->domain->ops->cache_invalidate_user &&
+> > +                        (!hwpt->domain->ops->cache_invalidate_user_data_len ||
+> > +                         hwpt->domain->ops->cache_invalidate_user_data_len >
+> > +                         sizeof(union ucmd_buffer)))) {
+> > +               rc = -EINVAL;
+> > +               goto out_abort;
+> > +
+> > +       }
+> >
+> > Though I am making this cache_invalidate_user optional here, I
+> > wonder if there actually could be a case that a user-managed
+> > domain doesn't need a cache_invalidate_user op...
 > 
->> + * and guest shared virtual address. In this case, the first level page
->> + * tables are used for GVA/GIOVA-GPA translation in the guest, second level
->> + * page tables are used for GPA-HPA translation.
-> let's be consistent on using stage-1/stage-2
-> 
-> btw the convention is to have 1-line summary, then the list of
-> parameters followed by detail explanation of the function.
-> 
+> If user-managed domain is the stage-1 domain in nested, then seems not
+> possible as cache invalidate is a must. But I think this logic is fine as not
+> all the domains allocated by the user is user-managed. It may be kernel
+> managed like the s2 domains.
 
-This patch just follows the existing code style in this file. Need a
-separated patch to cleanup this.
+Oh, I forgot to mention that this piece is in the user-managed
+HWPT allocator, following Jason's suggestion to separate them.
 
->> + *
->> + * @iommu:      IOMMU which the device belong to
->> + * @dev:        Device to be set up for translation
->> + * @pasid:      PASID to be programmed in the device PASID table
->> + * @domain:     User stage-1 domain nested on a s2 domain
->> + */
->> +int intel_pasid_setup_nested(struct intel_iommu *iommu, struct device
->> *dev,
->> +			     u32 pasid, struct dmar_domain *domain)
->> +{
->> +	struct iommu_hwpt_vtd_s1 *s1_cfg = &domain->s1_cfg;
->> +	pgd_t *s1_gpgd = (pgd_t *)(uintptr_t)domain->s1_pgtbl;
->> +	struct dmar_domain *s2_domain = domain->s2_domain;
->> +	u16 did = domain_id_iommu(domain, iommu);
->> +	struct dma_pte *pgd = s2_domain->pgd;
->> +	struct pasid_entry *pte;
->> +
->> +	if (!ecap_nest(iommu->ecap)) {
->> +		pr_err_ratelimited("%s: No nested translation support\n",
->> +				   iommu->name);
->> +		return -ENODEV;
->> +	}
-> -EINVAL
+So, perhaps should just mark it mandatory:
 
-This is in the attach domain path. -EINVAL has the special meaning of
-"this domain is not compatible with iommu for the device".
-
-So here, I still think we should return -ENODEV and the caller doesn't
-need to retry anymore.
-
-> 
->> +
->> +	if (s2_domain->agaw > iommu->agaw) {
->> +		pr_err_ratelimited("Incompatible agaw %s\n", iommu-
->>> name);
->> +		return -EINVAL;
->> +	}
-> there is a duplicated check in intel_nested_attach_dev().
-> 
-
-Yeah, should be removed.
-
-Best regards,
-baolu
-
++	if (WARN_ON_ONCE(!hwpt->domain->ops->cache_invalidate_user ||
++			 !hwpt->domain->ops->cache_invalidate_user_data_len ||
++			 hwpt->domain->ops->cache_invalidate_user_data_len >
++			 sizeof(union iommu_user_cache_invalidate))) {
++		rc = -EINVAL;
++		goto out_abort;
++	}
