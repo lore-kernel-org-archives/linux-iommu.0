@@ -1,54 +1,52 @@
-Received: from mail-il1-f178.google.com (mail-il1-f178.google.com [209.85.166.178])
+Received: from mail-il1-f180.google.com (mail-il1-f180.google.com [209.85.166.180])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C4DFF13AD0
-	for <iommu@lists.linux.dev>; Thu,  3 Aug 2023 08:24:27 +0000 (UTC)
-Received: by mail-il1-f178.google.com with SMTP id e9e14a558f8ab-348d6bc349eso2525655ab.0
-        for <iommu@lists.linux.dev>; Thu, 03 Aug 2023 01:24:27 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 90B888F4F
+	for <iommu@lists.linux.dev>; Thu,  3 Aug 2023 08:27:37 +0000 (UTC)
+Received: by mail-il1-f180.google.com with SMTP id e9e14a558f8ab-3490eacf4d5so2484135ab.0
+        for <iommu@lists.linux.dev>; Thu, 03 Aug 2023 01:27:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sifive.com; s=google; t=1691051066; x=1691655866;
+        d=sifive.com; s=google; t=1691051256; x=1691656056;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=0KKdRcJOjqGYVQFBtwJataDL3DF+1QRdAZBzDNKjk8k=;
-        b=IuVFtbQZGUb07W1VRvPKAFQSqhXxCvGq33JgoSaegCmf6vRis3S34SBZWXhQwxSjv2
-         JIu/+KBCghCZx+mVqwW2EeAqPdhYDZ20hG1Pis1OYy5lOG/J6iMmg3vURaErbhO5GVEf
-         HecA599vvFOI45i8etuInAaTmoo5X/iaWgHhdWYMePEOo11nlXLmtWEFAvwzbPfeXjxh
-         2WZDdeMtKLiyWIa0raSt/dAm64rI2YrGnwaKPfJ5zhXThcc3ZQrp8H+mp+xq2+TYm94n
-         TO7cAKm6ZGFZRHuBA5ELmzUTvDs50WPdBd0SmPpepEyt8MDtDoy4ygWY51xm91d/yAzc
-         jvVg==
+        bh=6JyTst/OIYLE7+cxCRCyWChlXe/d7VyKezD6xl2bdWo=;
+        b=J8gLdsXQIk0qD5U5I8D0IEtDGjH+YSnfUIEbFJ9CsSwvkNeNBRDBNx0GHXJSMZjNkI
+         lvASGPUvV8ldnI1Mdpp3STqNYItHrYr35wAKv/rX/DXHkncHS7VP5yBA/bLH8QON9zLL
+         6jJiQm7qCvBYZz09I8bEG/eQj2AakD4tq5NT6UGIqlCoFY2Ome0bn0W1n+TJd5IxMmTy
+         tcrimKRAlgxQP8tjrwjAwXyP41Uyt/zntwS3jC2Ck6ofiUXu3Tf8ejl+zk08aSebnmBH
+         f2FJeyVPBSmhA0ADPC7ErWzkINDQ9Oz79ch8CTN3smBLAuyGJqQTKYkvCw9IfihbATTR
+         CcZg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1691051066; x=1691655866;
+        d=1e100.net; s=20221208; t=1691051256; x=1691656056;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=0KKdRcJOjqGYVQFBtwJataDL3DF+1QRdAZBzDNKjk8k=;
-        b=PX40UOY5GkDFFsxpdlq6x5O7efERaVeSMRdyqbxOIRLcdn4xNab7bZKSEC7mODZEQx
-         VrkgKZ0RL5m7uxPl8D95ccYzDWOt5UCiCj4e/GkoNPjOwqME50fabtfEJfx1wy+gNJED
-         C8Y1I9STsaynB9Bc1G8seTUDvCGuykO56Q4bqcv4lgmjmDX6UaFS2qdk7frt2EJfZbFP
-         GtMm+xgLJUs/tiXsSjn8hHlosY/ZJBc8tKLbCpEUHk1hxYeQWE4DQXxxCEq/hmJ1tUXd
-         eRrnmecHW1gytfmMjG68LWsZkWRQ9mweNi3pLkGhorg+Ry9tOT9rWuulLIhr3fbG8akn
-         QHvA==
-X-Gm-Message-State: ABy/qLYlV0NqNjxu32oWRKBE9l0qKynBRqTaQbMSk87F4uYYMyvG2GLf
-	2NY4e5+dcC+j6X+jnzI0NYpJSXaLTqSQqSUSRmM3Aw==
-X-Google-Smtp-Source: APBJJlGUNhicKLIPFcJekfczzRsGfW11G28V6kxfO+WhaiRdRRAveuoccKWRDdO+AaQN0+ivhF+QOfRFCUMAW3qoiFI=
-X-Received: by 2002:a05:6e02:1288:b0:348:dd48:e9d4 with SMTP id
- y8-20020a056e02128800b00348dd48e9d4mr16055206ilq.1.1691051066488; Thu, 03 Aug
- 2023 01:24:26 -0700 (PDT)
+        bh=6JyTst/OIYLE7+cxCRCyWChlXe/d7VyKezD6xl2bdWo=;
+        b=kvUHmjY3jwoChX+nyr2kC1muOfDNzBj/jiTrG6thOAbpUph1lmxpYcJ+H5+NKdBrUP
+         pwaopYbw0qa3ZlurLmEkDIWjNRy2q5HfJ8mvZMMvjYOYrI2QvonaqHGF5YgDBU42b8+h
+         cyDT49KENFmP+vGLmduwUOiQM1n/vzSJ9dklnIvXyK424elZnwztGshnJkjPl6pPT0ZU
+         AC++zZxWccmMjF6RIKAGNLWDw7bTKA/9umgVaUbxIN059HBWmhFOMzNuCF7fAobwiyOl
+         Vf6p+zzCD+A3EEhALSzD4dixp6Q6I12vAk3cQZgiGNffQxJxYBFvbC7xKP38acRY8Y11
+         s3vA==
+X-Gm-Message-State: ABy/qLai0iQKrx4l0ZfkFYHrsYBDDVYDFZSlVBIm1XvICN4I1N1glUoB
+	OjvlQiypr21nBZzbE+QvTihTUxs2FE1FXKwTBMS0qw==
+X-Google-Smtp-Source: APBJJlFxk14kitNI0ulsU+CZD/eE15x0z0egyA+MJKvr5MriK14ERn2Lof+IoDWq3nrGgndamMicTyERn8EA03uEHyo=
+X-Received: by 2002:a05:6e02:d4b:b0:348:7c4e:2959 with SMTP id
+ h11-20020a056e020d4b00b003487c4e2959mr15796444ilj.23.1691051256292; Thu, 03
+ Aug 2023 01:27:36 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <cover.1689792825.git.tjeznach@rivosinc.com> <1fd79e5c53d9d6ed2264f60dd4261f293cc00472.1689792825.git.tjeznach@rivosinc.com>
- <CANXhq0pm+1yXuvUGudwNtvNHWV3FytH4VfCnq7_Ws=t-MZP_kQ@mail.gmail.com> <CAH2o1u5P-y8UF-nCXGPs8kiKk3Y1MY8XVdDCcjp+5+zdDqxZXQ@mail.gmail.com>
-In-Reply-To: <CAH2o1u5P-y8UF-nCXGPs8kiKk3Y1MY8XVdDCcjp+5+zdDqxZXQ@mail.gmail.com>
+References: <cover.1689792825.git.tjeznach@rivosinc.com> <c33c24036c06c023947ecb47177da273569b3ac7.1689792825.git.tjeznach@rivosinc.com>
+In-Reply-To: <c33c24036c06c023947ecb47177da273569b3ac7.1689792825.git.tjeznach@rivosinc.com>
 From: Zong Li <zong.li@sifive.com>
-Date: Thu, 3 Aug 2023 16:24:14 +0800
-Message-ID: <CANXhq0qWQpnSmYp2rPYVYFCmFzdfxi7Lyo3nvVche6X9dCz89A@mail.gmail.com>
-Subject: Re: [PATCH 06/11] RISC-V: drivers/iommu/riscv: Add command, fault,
- page-req queues
+Date: Thu, 3 Aug 2023 16:27:24 +0800
+Message-ID: <CANXhq0qhtPzm69TqfO6ELtGR=mbeP99JnmcUNaTA6m5xzRYP+A@mail.gmail.com>
+Subject: Re: [PATCH 01/11] RISC-V: drivers/iommu: Add RISC-V IOMMU - Ziommu support.
 To: Tomasz Jeznach <tjeznach@rivosinc.com>
 Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
 	Robin Murphy <robin.murphy@arm.com>, Paul Walmsley <paul.walmsley@sifive.com>, 
@@ -58,1148 +56,1987 @@ Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Aug 3, 2023 at 4:50=E2=80=AFAM Tomasz Jeznach <tjeznach@rivosinc.co=
-m> wrote:
+On Thu, Jul 20, 2023 at 3:34=E2=80=AFAM Tomasz Jeznach <tjeznach@rivosinc.c=
+om> wrote:
 >
-> On Sat, Jul 29, 2023 at 5:58=E2=80=AFAM Zong Li <zong.li@sifive.com> wrot=
-e:
-> >
-> > On Thu, Jul 20, 2023 at 3:34=E2=80=AFAM Tomasz Jeznach <tjeznach@rivosi=
-nc.com> wrote:
-> > >
-> > > Enables message or wire signal interrupts for PCIe and platforms devi=
-ces.
-> > >
-> > > Co-developed-by: Nick Kossifidis <mick@ics.forth.gr>
-> > > Signed-off-by: Nick Kossifidis <mick@ics.forth.gr>
-> > > Signed-off-by: Tomasz Jeznach <tjeznach@rivosinc.com>
-> > > ---
-> > >  drivers/iommu/riscv/iommu-pci.c      |  72 ++++
-> > >  drivers/iommu/riscv/iommu-platform.c |  66 +++
-> > >  drivers/iommu/riscv/iommu.c          | 604 +++++++++++++++++++++++++=
-+-
-> > >  drivers/iommu/riscv/iommu.h          |  28 ++
-> > >  4 files changed, 769 insertions(+), 1 deletion(-)
-> > >
-> > > diff --git a/drivers/iommu/riscv/iommu-pci.c b/drivers/iommu/riscv/io=
-mmu-pci.c
-> > > index c91f963d7a29..9ea0647f7b92 100644
-> > > --- a/drivers/iommu/riscv/iommu-pci.c
-> > > +++ b/drivers/iommu/riscv/iommu-pci.c
-> > > @@ -34,6 +34,7 @@ static int riscv_iommu_pci_probe(struct pci_dev *pd=
-ev, const struct pci_device_i
-> > >  {
-> > >         struct device *dev =3D &pdev->dev;
-> > >         struct riscv_iommu_device *iommu;
-> > > +       u64 icvec;
-> > >         int ret;
-> > >
-> > >         ret =3D pci_enable_device_mem(pdev);
-> > > @@ -67,14 +68,84 @@ static int riscv_iommu_pci_probe(struct pci_dev *=
-pdev, const struct pci_device_i
-> > >         iommu->dev =3D dev;
-> > >         dev_set_drvdata(dev, iommu);
-> > >
-> > > +       /* Check device reported capabilities. */
-> > > +       iommu->cap =3D riscv_iommu_readq(iommu, RISCV_IOMMU_REG_CAP);
-> > > +
-> > > +       /* The PCI driver only uses MSIs, make sure the IOMMU support=
-s this */
-> > > +       switch (FIELD_GET(RISCV_IOMMU_CAP_IGS, iommu->cap)) {
-> > > +       case RISCV_IOMMU_CAP_IGS_MSI:
-> > > +       case RISCV_IOMMU_CAP_IGS_BOTH:
-> > > +               break;
-> > > +       default:
-> > > +               dev_err(dev, "unable to use message-signaled interrup=
-ts\n");
-> > > +               ret =3D -ENODEV;
-> > > +               goto fail;
-> > > +       }
-> > > +
-> > >         dma_set_mask_and_coherent(dev, DMA_BIT_MASK(64));
-> > >         pci_set_master(pdev);
-> > >
-> > > +       /* Allocate and assign IRQ vectors for the various events */
-> > > +       ret =3D pci_alloc_irq_vectors(pdev, 1, RISCV_IOMMU_INTR_COUNT=
-, PCI_IRQ_MSIX);
-> > > +       if (ret < 0) {
-> > > +               dev_err(dev, "unable to allocate irq vectors\n");
-> > > +               goto fail;
-> > > +       }
-> > > +
-> > > +       ret =3D -ENODEV;
-> > > +
-> > > +       iommu->irq_cmdq =3D msi_get_virq(dev, RISCV_IOMMU_INTR_CQ);
-> > > +       if (!iommu->irq_cmdq) {
-> > > +               dev_warn(dev, "no MSI vector %d for the command queue=
-\n",
-> > > +                        RISCV_IOMMU_INTR_CQ);
-> > > +               goto fail;
-> > > +       }
-> > > +
-> > > +       iommu->irq_fltq =3D msi_get_virq(dev, RISCV_IOMMU_INTR_FQ);
-> > > +       if (!iommu->irq_fltq) {
-> > > +               dev_warn(dev, "no MSI vector %d for the fault/event q=
-ueue\n",
-> > > +                        RISCV_IOMMU_INTR_FQ);
-> > > +               goto fail;
-> > > +       }
-> > > +
-> > > +       if (iommu->cap & RISCV_IOMMU_CAP_HPM) {
-> > > +               iommu->irq_pm =3D msi_get_virq(dev, RISCV_IOMMU_INTR_=
-PM);
-> > > +               if (!iommu->irq_pm) {
-> > > +                       dev_warn(dev,
-> > > +                                "no MSI vector %d for performance mo=
-nitoring\n",
-> > > +                                RISCV_IOMMU_INTR_PM);
-> > > +                       goto fail;
-> > > +               }
-> > > +       }
-> > > +
-> > > +       if (iommu->cap & RISCV_IOMMU_CAP_ATS) {
-> > > +               iommu->irq_priq =3D msi_get_virq(dev, RISCV_IOMMU_INT=
-R_PQ);
-> > > +               if (!iommu->irq_priq) {
-> > > +                       dev_warn(dev,
-> > > +                                "no MSI vector %d for page-request q=
-ueue\n",
-> > > +                                RISCV_IOMMU_INTR_PQ);
-> > > +                       goto fail;
-> > > +               }
-> > > +       }
-> > > +
-> > > +       /* Set simple 1:1 mapping for MSI vectors */
-> > > +       icvec =3D FIELD_PREP(RISCV_IOMMU_IVEC_CIV, RISCV_IOMMU_INTR_C=
-Q) |
-> > > +           FIELD_PREP(RISCV_IOMMU_IVEC_FIV, RISCV_IOMMU_INTR_FQ);
-> > > +
-> > > +       if (iommu->cap & RISCV_IOMMU_CAP_HPM)
-> > > +               icvec |=3D FIELD_PREP(RISCV_IOMMU_IVEC_PMIV, RISCV_IO=
-MMU_INTR_PM);
-> > > +
-> > > +       if (iommu->cap & RISCV_IOMMU_CAP_ATS)
-> > > +               icvec |=3D FIELD_PREP(RISCV_IOMMU_IVEC_PIV, RISCV_IOM=
-MU_INTR_PQ);
-> > > +
-> > > +       riscv_iommu_writel(iommu, RISCV_IOMMU_REG_IVEC, icvec);
-> > > +
-> > >         ret =3D riscv_iommu_init(iommu);
-> > >         if (!ret)
-> > >                 return ret;
-> > >
-> > >   fail:
-> > > +       pci_free_irq_vectors(pdev);
-> > >         pci_clear_master(pdev);
-> > >         pci_release_regions(pdev);
-> > >         pci_disable_device(pdev);
-> > > @@ -85,6 +156,7 @@ static int riscv_iommu_pci_probe(struct pci_dev *p=
-dev, const struct pci_device_i
-> > >  static void riscv_iommu_pci_remove(struct pci_dev *pdev)
-> > >  {
-> > >         riscv_iommu_remove(dev_get_drvdata(&pdev->dev));
-> > > +       pci_free_irq_vectors(pdev);
-> > >         pci_clear_master(pdev);
-> > >         pci_release_regions(pdev);
-> > >         pci_disable_device(pdev);
-> > > diff --git a/drivers/iommu/riscv/iommu-platform.c b/drivers/iommu/ris=
-cv/iommu-platform.c
-> > > index e4e8ca6711e7..35935d3c7ef4 100644
-> > > --- a/drivers/iommu/riscv/iommu-platform.c
-> > > +++ b/drivers/iommu/riscv/iommu-platform.c
-> > > @@ -20,6 +20,8 @@ static int riscv_iommu_platform_probe(struct platfo=
-rm_device *pdev)
-> > >         struct device *dev =3D &pdev->dev;
-> > >         struct riscv_iommu_device *iommu =3D NULL;
-> > >         struct resource *res =3D NULL;
-> > > +       u32 fctl =3D 0;
-> > > +       int irq =3D 0;
-> > >         int ret =3D 0;
-> > >
-> > >         iommu =3D devm_kzalloc(dev, sizeof(*iommu), GFP_KERNEL);
-> > > @@ -53,6 +55,70 @@ static int riscv_iommu_platform_probe(struct platf=
-orm_device *pdev)
-> > >                 goto fail;
-> > >         }
-> > >
-> > > +       iommu->cap =3D riscv_iommu_readq(iommu, RISCV_IOMMU_REG_CAP);
-> > > +
-> > > +       /* For now we only support WSIs until we have AIA support */
-> >
-> > I'm not completely understand AIA support here, because I saw the pci
-> > case uses the MSI, and kernel seems to have the AIA implementation.
-> > Could you please elaborate it?
-> >
-> > > +       ret =3D FIELD_GET(RISCV_IOMMU_CAP_IGS, iommu->cap);
-> > > +       if (ret =3D=3D RISCV_IOMMU_CAP_IGS_MSI) {
-> > > +               dev_err(dev, "IOMMU only supports MSIs\n");
-> > > +               goto fail;
-> > > +       }
-> > > +
-> > > +       /* Parse IRQ assignment */
-> > > +       irq =3D platform_get_irq_byname_optional(pdev, "cmdq");
-> > > +       if (irq > 0)
-> > > +               iommu->irq_cmdq =3D irq;
-> > > +       else {
-> > > +               dev_err(dev, "no IRQ provided for the command queue\n=
-");
-> > > +               goto fail;
-> > > +       }
-> > > +
-> > > +       irq =3D platform_get_irq_byname_optional(pdev, "fltq");
-> > > +       if (irq > 0)
-> > > +               iommu->irq_fltq =3D irq;
-> > > +       else {
-> > > +               dev_err(dev, "no IRQ provided for the fault/event que=
-ue\n");
-> > > +               goto fail;
-> > > +       }
-> > > +
-> > > +       if (iommu->cap & RISCV_IOMMU_CAP_HPM) {
-> > > +               irq =3D platform_get_irq_byname_optional(pdev, "pm");
-> > > +               if (irq > 0)
-> > > +                       iommu->irq_pm =3D irq;
-> > > +               else {
-> > > +                       dev_err(dev, "no IRQ provided for performance=
- monitoring\n");
-> > > +                       goto fail;
-> > > +               }
-> > > +       }
-> > > +
-> > > +       if (iommu->cap & RISCV_IOMMU_CAP_ATS) {
-> > > +               irq =3D platform_get_irq_byname_optional(pdev, "priq"=
+> The patch introduces skeleton IOMMU device driver implementation as defin=
+ed
+> by RISC-V IOMMU Architecture Specification, Version 1.0 [1], with minimal=
+ support
+> for pass-through mapping, basic initialization and bindings for platform =
+and PCIe
+> hardware implementations.
+>
+> Series of patches following specification evolution has been reorganized =
+to provide
+> functional separation of implemented blocks, compliant with ratified spec=
+ification.
+>
+> This and following patch series includes code contributed by: Nick Kossif=
+idis
+> <mick@ics.forth.gr> (iommu-platform device, number of specification clari=
+fication
+> and bugfixes and readability improvements), Sebastien Boeuf <seb@rivosinc=
+.com> (page
+> table creation, ATS/PGR flow).
+>
+> Complete history can be found at the maintainer's repository branch [2].
+>
+> Device driver enables RISC-V 32/64 support for memory translation for DMA=
+ capable
+> PCI and platform devices, multilevel device directory table, process dire=
+ctory,
+> shared virtual address support, wired and message signaled interrupt for =
+translation
+> I/O fault, page request interface and command processing.
+>
+> Matching RISCV-V IOMMU device emulation implementation is available for Q=
+EMU project,
+> along with educational device extensions for PASID ATS/PRI support [3].
+>
+> References:
+>  - [1] https://github.com/riscv-non-isa/riscv-iommu
+>  - [2] https://github.com/tjeznach/linux/tree/tjeznach/riscv-iommu
+>  - [3] https://github.com/tjeznach/qemu/tree/tjeznach/riscv-iommu
+>
+> Co-developed-by: Nick Kossifidis <mick@ics.forth.gr>
+> Signed-off-by: Nick Kossifidis <mick@ics.forth.gr>
+> Co-developed-by: Sebastien Boeuf <seb@rivosinc.com>
+> Signed-off-by: Sebastien Boeuf <seb@rivosinc.com>
+> Signed-off-by: Tomasz Jeznach <tjeznach@rivosinc.com>
+> ---
+>  drivers/iommu/Kconfig                |   1 +
+>  drivers/iommu/Makefile               |   2 +-
+>  drivers/iommu/riscv/Kconfig          |  22 +
+>  drivers/iommu/riscv/Makefile         |   1 +
+>  drivers/iommu/riscv/iommu-bits.h     | 704 +++++++++++++++++++++++++++
+>  drivers/iommu/riscv/iommu-pci.c      | 134 +++++
+>  drivers/iommu/riscv/iommu-platform.c |  94 ++++
+>  drivers/iommu/riscv/iommu.c          | 660 +++++++++++++++++++++++++
+>  drivers/iommu/riscv/iommu.h          | 115 +++++
+>  9 files changed, 1732 insertions(+), 1 deletion(-)
+>  create mode 100644 drivers/iommu/riscv/Kconfig
+>  create mode 100644 drivers/iommu/riscv/Makefile
+>  create mode 100644 drivers/iommu/riscv/iommu-bits.h
+>  create mode 100644 drivers/iommu/riscv/iommu-pci.c
+>  create mode 100644 drivers/iommu/riscv/iommu-platform.c
+>  create mode 100644 drivers/iommu/riscv/iommu.c
+>  create mode 100644 drivers/iommu/riscv/iommu.h
+>
+> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+> index 2b12b583ef4b..36fcc6fd5b4e 100644
+> --- a/drivers/iommu/Kconfig
+> +++ b/drivers/iommu/Kconfig
+> @@ -187,6 +187,7 @@ config MSM_IOMMU
+>  source "drivers/iommu/amd/Kconfig"
+>  source "drivers/iommu/intel/Kconfig"
+>  source "drivers/iommu/iommufd/Kconfig"
+> +source "drivers/iommu/riscv/Kconfig"
+>
+>  config IRQ_REMAP
+>         bool "Support for Interrupt Remapping"
+> diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
+> index 769e43d780ce..8f57110a9fb1 100644
+> --- a/drivers/iommu/Makefile
+> +++ b/drivers/iommu/Makefile
+> @@ -1,5 +1,5 @@
+>  # SPDX-License-Identifier: GPL-2.0
+> -obj-y +=3D amd/ intel/ arm/ iommufd/
+> +obj-y +=3D amd/ intel/ arm/ iommufd/ riscv/
+>  obj-$(CONFIG_IOMMU_API) +=3D iommu.o
+>  obj-$(CONFIG_IOMMU_API) +=3D iommu-traces.o
+>  obj-$(CONFIG_IOMMU_API) +=3D iommu-sysfs.o
+> diff --git a/drivers/iommu/riscv/Kconfig b/drivers/iommu/riscv/Kconfig
+> new file mode 100644
+> index 000000000000..01d4043849d4
+> --- /dev/null
+> +++ b/drivers/iommu/riscv/Kconfig
+> @@ -0,0 +1,22 @@
+> +# SPDX-License-Identifier: GPL-2.0-only
+> +# RISC-V IOMMU support
+> +
+> +config RISCV_IOMMU
+> +       bool "RISC-V IOMMU driver"
+> +       depends on RISCV
+> +       select IOMMU_API
+> +       select IOMMU_DMA
+> +       select IOMMU_SVA
+> +       select IOMMU_IOVA
+> +       select IOMMU_IO_PGTABLE
+> +       select IOASID
+> +       select PCI_MSI
+> +       select PCI_ATS
+> +       select PCI_PRI
+> +       select PCI_PASID
+> +       select MMU_NOTIFIER
+> +       help
+> +         Support for devices following RISC-V IOMMU specification.
+> +
+> +         If unsure, say N here.
+> +
+> diff --git a/drivers/iommu/riscv/Makefile b/drivers/iommu/riscv/Makefile
+> new file mode 100644
+> index 000000000000..38730c11e4a8
+> --- /dev/null
+> +++ b/drivers/iommu/riscv/Makefile
+> @@ -0,0 +1 @@
+> +obj-$(CONFIG_RISCV_IOMMU) +=3D iommu.o iommu-pci.o iommu-platform.o
+> \ No newline at end of file
+> diff --git a/drivers/iommu/riscv/iommu-bits.h b/drivers/iommu/riscv/iommu=
+-bits.h
+> new file mode 100644
+> index 000000000000..b2946793a73d
+> --- /dev/null
+> +++ b/drivers/iommu/riscv/iommu-bits.h
+> @@ -0,0 +1,704 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/*
+> + * Copyright =C2=A9 2022-2023 Rivos Inc.
+> + * Copyright =C2=A9 2023 FORTH-ICS/CARV
+> + * Copyright =C2=A9 2023 RISC-V IOMMU Task Group
+> + *
+> + * RISC-V Ziommu - Register Layout and Data Structures.
+> + *
+> + * Based on the 'RISC-V IOMMU Architecture Specification', Version 1.0
+> + * Published at  https://github.com/riscv-non-isa/riscv-iommu
+> + *
+> + */
+> +
+> +#ifndef _RISCV_IOMMU_BITS_H_
+> +#define _RISCV_IOMMU_BITS_H_
+> +
+> +#include <linux/types.h>
+> +#include <linux/bitfield.h>
+> +#include <linux/bits.h>
+> +
+> +/*
+> + * Chapter 5: Memory Mapped register interface
+> + */
+> +
+> +/* Common field positions */
+> +#define RISCV_IOMMU_PPN_FIELD          GENMASK_ULL(53, 10)
+> +#define RISCV_IOMMU_QUEUE_LOGSZ_FIELD  GENMASK_ULL(4, 0)
+> +#define RISCV_IOMMU_QUEUE_INDEX_FIELD  GENMASK_ULL(31, 0)
+> +#define RISCV_IOMMU_QUEUE_ENABLE       BIT(0)
+> +#define RISCV_IOMMU_QUEUE_INTR_ENABLE  BIT(1)
+> +#define RISCV_IOMMU_QUEUE_MEM_FAULT    BIT(8)
+> +#define RISCV_IOMMU_QUEUE_OVERFLOW     BIT(9)
+> +#define RISCV_IOMMU_QUEUE_ACTIVE       BIT(16)
+> +#define RISCV_IOMMU_QUEUE_BUSY         BIT(17)
+> +
+> +#define RISCV_IOMMU_ATP_PPN_FIELD      GENMASK_ULL(43, 0)
+> +#define RISCV_IOMMU_ATP_MODE_FIELD     GENMASK_ULL(63, 60)
+> +
+> +/* 5.3 IOMMU Capabilities (64bits) */
+> +#define RISCV_IOMMU_REG_CAP            0x0000
+> +#define RISCV_IOMMU_CAP_VERSION                GENMASK_ULL(7, 0)
+> +#define RISCV_IOMMU_CAP_S_SV32         BIT_ULL(8)
+> +#define RISCV_IOMMU_CAP_S_SV39         BIT_ULL(9)
+> +#define RISCV_IOMMU_CAP_S_SV48         BIT_ULL(10)
+> +#define RISCV_IOMMU_CAP_S_SV57         BIT_ULL(11)
+> +#define RISCV_IOMMU_CAP_SVPBMT         BIT_ULL(15)
+> +#define RISCV_IOMMU_CAP_G_SV32         BIT_ULL(16)
+> +#define RISCV_IOMMU_CAP_G_SV39         BIT_ULL(17)
+> +#define RISCV_IOMMU_CAP_G_SV48         BIT_ULL(18)
+> +#define RISCV_IOMMU_CAP_G_SV57         BIT_ULL(19)
+> +#define RISCV_IOMMU_CAP_MSI_FLAT       BIT_ULL(22)
+> +#define RISCV_IOMMU_CAP_MSI_MRIF       BIT_ULL(23)
+> +#define RISCV_IOMMU_CAP_AMO            BIT_ULL(24)
+> +#define RISCV_IOMMU_CAP_ATS            BIT_ULL(25)
+> +#define RISCV_IOMMU_CAP_T2GPA          BIT_ULL(26)
+> +#define RISCV_IOMMU_CAP_END            BIT_ULL(27)
+> +#define RISCV_IOMMU_CAP_IGS            GENMASK_ULL(29, 28)
+> +#define RISCV_IOMMU_CAP_HPM            BIT_ULL(30)
+> +#define RISCV_IOMMU_CAP_DBG            BIT_ULL(31)
+> +#define RISCV_IOMMU_CAP_PAS            GENMASK_ULL(37, 32)
+> +#define RISCV_IOMMU_CAP_PD8            BIT_ULL(38)
+> +#define RISCV_IOMMU_CAP_PD17           BIT_ULL(39)
+> +#define RISCV_IOMMU_CAP_PD20           BIT_ULL(40)
+> +
+> +#define RISCV_IOMMU_CAP_VERSION_VER_MASK       0xF0
+> +#define RISCV_IOMMU_CAP_VERSION_REV_MASK       0x0F
+> +
+> +/**
+> + * enum riscv_iommu_igs_settings - Interrupt Generation Support Settings
+> + * @RISCV_IOMMU_CAP_IGS_MSI: I/O MMU supports only MSI generation
+> + * @RISCV_IOMMU_CAP_IGS_WSI: I/O MMU supports only Wired-Signaled interr=
+upt
+> + * @RISCV_IOMMU_CAP_IGS_BOTH: I/O MMU supports both MSI and WSI generati=
+on
+> + * @RISCV_IOMMU_CAP_IGS_RSRV: Reserved for standard use
+> + */
+> +enum riscv_iommu_igs_settings {
+> +       RISCV_IOMMU_CAP_IGS_MSI =3D 0,
+> +       RISCV_IOMMU_CAP_IGS_WSI =3D 1,
+> +       RISCV_IOMMU_CAP_IGS_BOTH =3D 2,
+> +       RISCV_IOMMU_CAP_IGS_RSRV =3D 3
+> +};
+> +
+> +/* 5.4 Features control register (32bits) */
+> +#define RISCV_IOMMU_REG_FCTL           0x0008
+> +#define RISCV_IOMMU_FCTL_BE            BIT(0)
+> +#define RISCV_IOMMU_FCTL_WSI           BIT(1)
+> +#define RISCV_IOMMU_FCTL_GXL           BIT(2)
+> +
+> +/* 5.5 Device-directory-table pointer (64bits) */
+> +#define RISCV_IOMMU_REG_DDTP           0x0010
+> +#define RISCV_IOMMU_DDTP_MODE          GENMASK_ULL(3, 0)
+> +#define RISCV_IOMMU_DDTP_BUSY          BIT_ULL(4)
+> +#define RISCV_IOMMU_DDTP_PPN           RISCV_IOMMU_PPN_FIELD
+> +
+> +/**
+> + * enum riscv_iommu_ddtp_modes - I/O MMU translation modes
+> + * @RISCV_IOMMU_DDTP_MODE_OFF: No inbound transactions allowed
+> + * @RISCV_IOMMU_DDTP_MODE_BARE: Pass-through mode
+> + * @RISCV_IOMMU_DDTP_MODE_1LVL: One-level DDT
+> + * @RISCV_IOMMU_DDTP_MODE_2LVL: Two-level DDT
+> + * @RISCV_IOMMU_DDTP_MODE_3LVL: Three-level DDT
+> + */
+> +enum riscv_iommu_ddtp_modes {
+> +       RISCV_IOMMU_DDTP_MODE_OFF =3D 0,
+> +       RISCV_IOMMU_DDTP_MODE_BARE =3D 1,
+> +       RISCV_IOMMU_DDTP_MODE_1LVL =3D 2,
+> +       RISCV_IOMMU_DDTP_MODE_2LVL =3D 3,
+> +       RISCV_IOMMU_DDTP_MODE_3LVL =3D 4,
+> +       RISCV_IOMMU_DDTP_MODE_MAX =3D 4
+> +};
+> +
+> +/* 5.6 Command Queue Base (64bits) */
+> +#define RISCV_IOMMU_REG_CQB            0x0018
+> +#define RISCV_IOMMU_CQB_ENTRIES                RISCV_IOMMU_QUEUE_LOGSZ_F=
+IELD
+> +#define RISCV_IOMMU_CQB_PPN            RISCV_IOMMU_PPN_FIELD
+> +
+> +/* 5.7 Command Queue head (32bits) */
+> +#define RISCV_IOMMU_REG_CQH            0x0020
+> +#define RISCV_IOMMU_CQH_INDEX          RISCV_IOMMU_QUEUE_INDEX_FIELD
+> +
+> +/* 5.8 Command Queue tail (32bits) */
+> +#define RISCV_IOMMU_REG_CQT            0x0024
+> +#define RISCV_IOMMU_CQT_INDEX          RISCV_IOMMU_QUEUE_INDEX_FIELD
+> +
+> +/* 5.9 Fault Queue Base (64bits) */
+> +#define RISCV_IOMMU_REG_FQB            0x0028
+> +#define RISCV_IOMMU_FQB_ENTRIES                RISCV_IOMMU_QUEUE_LOGSZ_F=
+IELD
+> +#define RISCV_IOMMU_FQB_PPN            RISCV_IOMMU_PPN_FIELD
+> +
+> +/* 5.10 Fault Queue Head (32bits) */
+> +#define RISCV_IOMMU_REG_FQH            0x0030
+> +#define RISCV_IOMMU_FQH_INDEX          RISCV_IOMMU_QUEUE_INDEX_FIELD
+> +
+> +/* 5.11 Fault Queue tail (32bits) */
+> +#define RISCV_IOMMU_REG_FQT            0x0034
+> +#define RISCV_IOMMU_FQT_INDEX          RISCV_IOMMU_QUEUE_INDEX_FIELD
+> +
+> +/* 5.12 Page Request Queue base (64bits) */
+> +#define RISCV_IOMMU_REG_PQB            0x0038
+> +#define RISCV_IOMMU_PQB_ENTRIES                RISCV_IOMMU_QUEUE_LOGSZ_F=
+IELD
+> +#define RISCV_IOMMU_PQB_PPN            RISCV_IOMMU_PPN_FIELD
+> +
+> +/* 5.13 Page Request Queue head (32bits) */
+> +#define RISCV_IOMMU_REG_PQH            0x0040
+> +#define RISCV_IOMMU_PQH_INDEX          RISCV_IOMMU_QUEUE_INDEX_FIELD
+> +
+> +/* 5.14 Page Request Queue tail (32bits) */
+> +#define RISCV_IOMMU_REG_PQT            0x0044
+> +#define RISCV_IOMMU_PQT_INDEX_MASK     RISCV_IOMMU_QUEUE_INDEX_FIELD
+> +
+> +/* 5.15 Command Queue CSR (32bits) */
+> +#define RISCV_IOMMU_REG_CQCSR          0x0048
+> +#define RISCV_IOMMU_CQCSR_CQEN         RISCV_IOMMU_QUEUE_ENABLE
+> +#define RISCV_IOMMU_CQCSR_CIE          RISCV_IOMMU_QUEUE_INTR_ENABLE
+> +#define RISCV_IOMMU_CQCSR_CQMF         RISCV_IOMMU_QUEUE_MEM_FAULT
+> +#define RISCV_IOMMU_CQCSR_CMD_TO       BIT(9)
+> +#define RISCV_IOMMU_CQCSR_CMD_ILL      BIT(10)
+> +#define RISCV_IOMMU_CQCSR_FENCE_W_IP   BIT(11)
+> +#define RISCV_IOMMU_CQCSR_CQON         RISCV_IOMMU_QUEUE_ACTIVE
+> +#define RISCV_IOMMU_CQCSR_BUSY         RISCV_IOMMU_QUEUE_BUSY
+> +
+> +/* 5.16 Fault Queue CSR (32bits) */
+> +#define RISCV_IOMMU_REG_FQCSR          0x004C
+> +#define RISCV_IOMMU_FQCSR_FQEN         RISCV_IOMMU_QUEUE_ENABLE
+> +#define RISCV_IOMMU_FQCSR_FIE          RISCV_IOMMU_QUEUE_INTR_ENABLE
+> +#define RISCV_IOMMU_FQCSR_FQMF         RISCV_IOMMU_QUEUE_MEM_FAULT
+> +#define RISCV_IOMMU_FQCSR_FQOF         RISCV_IOMMU_QUEUE_OVERFLOW
+> +#define RISCV_IOMMU_FQCSR_FQON         RISCV_IOMMU_QUEUE_ACTIVE
+> +#define RISCV_IOMMU_FQCSR_BUSY         RISCV_IOMMU_QUEUE_BUSY
+> +
+> +/* 5.17 Page Request Queue CSR (32bits) */
+> +#define RISCV_IOMMU_REG_PQCSR          0x0050
+> +#define RISCV_IOMMU_PQCSR_PQEN         RISCV_IOMMU_QUEUE_ENABLE
+> +#define RISCV_IOMMU_PQCSR_PIE          RISCV_IOMMU_QUEUE_INTR_ENABLE
+> +#define RISCV_IOMMU_PQCSR_PQMF         RISCV_IOMMU_QUEUE_MEM_FAULT
+> +#define RISCV_IOMMU_PQCSR_PQOF         RISCV_IOMMU_QUEUE_OVERFLOW
+> +#define RISCV_IOMMU_PQCSR_PQON         RISCV_IOMMU_QUEUE_ACTIVE
+> +#define RISCV_IOMMU_PQCSR_BUSY         RISCV_IOMMU_QUEUE_BUSY
+> +
+> +/* 5.18 Interrupt Pending Status (32bits) */
+> +#define RISCV_IOMMU_REG_IPSR           0x0054
+> +
+> +#define RISCV_IOMMU_INTR_CQ            0
+> +#define RISCV_IOMMU_INTR_FQ            1
+> +#define RISCV_IOMMU_INTR_PM            2
+> +#define RISCV_IOMMU_INTR_PQ            3
+> +#define RISCV_IOMMU_INTR_COUNT         4
+> +
+> +#define RISCV_IOMMU_IPSR_CIP           BIT(RISCV_IOMMU_INTR_CQ)
+> +#define RISCV_IOMMU_IPSR_FIP           BIT(RISCV_IOMMU_INTR_FQ)
+> +#define RISCV_IOMMU_IPSR_PMIP          BIT(RISCV_IOMMU_INTR_PM)
+> +#define RISCV_IOMMU_IPSR_PIP           BIT(RISCV_IOMMU_INTR_PQ)
+> +
+> +/* 5.19 Performance monitoring counter overflow status (32bits) */
+> +#define RISCV_IOMMU_REG_IOCOUNTOVF     0x0058
+> +#define RISCV_IOMMU_IOCOUNTOVF_CY      BIT(0)
+> +#define RISCV_IOMMU_IOCOUNTOVF_HPM     GENMASK_ULL(31, 1)
+> +
+> +/* 5.20 Performance monitoring counter inhibits (32bits) */
+> +#define RISCV_IOMMU_REG_IOCOUNTINH     0x005C
+> +#define RISCV_IOMMU_IOCOUNTINH_CY      BIT(0)
+> +#define RISCV_IOMMU_IOCOUNTINH_HPM     GENMASK(31, 1)
+> +
+> +/* 5.21 Performance monitoring cycles counter (64bits) */
+> +#define RISCV_IOMMU_REG_IOHPMCYCLES     0x0060
+> +#define RISCV_IOMMU_IOHPMCYCLES_COUNTER        GENMASK_ULL(62, 0)
+> +#define RISCV_IOMMU_IOHPMCYCLES_OVF    BIT_ULL(63)
+> +
+> +/* 5.22 Performance monitoring event counters (31 * 64bits) */
+> +#define RISCV_IOMMU_REG_IOHPMCTR_BASE  0x0068
+> +#define RISCV_IOMMU_REG_IOHPMCTR(_n)   (RISCV_IOMMU_REG_IOHPMCTR_BASE + =
+(_n * 0x8))
+> +
+> +/* 5.23 Performance monitoring event selectors (31 * 64bits) */
+> +#define RISCV_IOMMU_REG_IOHPMEVT_BASE  0x0160
+> +#define RISCV_IOMMU_REG_IOHPMEVT(_n)   (RISCV_IOMMU_REG_IOHPMEVT_BASE + =
+(_n * 0x8))
+> +#define RISCV_IOMMU_IOHPMEVT_EVENT_ID  GENMASK_ULL(14, 0)
+> +#define RISCV_IOMMU_IOHPMEVT_DMASK     BIT_ULL(15)
+> +#define RISCV_IOMMU_IOHPMEVT_PID_PSCID GENMASK_ULL(35, 16)
+> +#define RISCV_IOMMU_IOHPMEVT_DID_GSCID GENMASK_ULL(59, 36)
+> +#define RISCV_IOMMU_IOHPMEVT_PV_PSCV   BIT_ULL(60)
+> +#define RISCV_IOMMU_IOHPMEVT_DV_GSCV   BIT_ULL(61)
+> +#define RISCV_IOMMU_IOHPMEVT_IDT       BIT_ULL(62)
+> +#define RISCV_IOMMU_IOHPMEVT_OF                BIT_ULL(63)
+> +
+> +/**
+> + * enum riscv_iommu_hpmevent_id - Performance-monitoring event identifie=
+r
+> + *
+> + * @RISCV_IOMMU_HPMEVENT_INVALID: Invalid event, do not count
+> + * @RISCV_IOMMU_HPMEVENT_URQ: Untranslated requests
+> + * @RISCV_IOMMU_HPMEVENT_TRQ: Translated requests
+> + * @RISCV_IOMMU_HPMEVENT_ATS_RQ: ATS translation requests
+> + * @RISCV_IOMMU_HPMEVENT_TLB_MISS: TLB misses
+> + * @RISCV_IOMMU_HPMEVENT_DD_WALK: Device directory walks
+> + * @RISCV_IOMMU_HPMEVENT_PD_WALK: Process directory walks
+> + * @RISCV_IOMMU_HPMEVENT_S_VS_WALKS: S/VS-Stage page table walks
+> + * @RISCV_IOMMU_HPMEVENT_G_WALKS: G-Stage page table walks
+> + * @RISCV_IOMMU_HPMEVENT_MAX: Value to denote maximum Event IDs
+> + */
+> +enum riscv_iommu_hpmevent_id {
+> +       RISCV_IOMMU_HPMEVENT_INVALID    =3D 0,
+> +       RISCV_IOMMU_HPMEVENT_URQ        =3D 1,
+> +       RISCV_IOMMU_HPMEVENT_TRQ        =3D 2,
+> +       RISCV_IOMMU_HPMEVENT_ATS_RQ     =3D 3,
+> +       RISCV_IOMMU_HPMEVENT_TLB_MISS   =3D 4,
+> +       RISCV_IOMMU_HPMEVENT_DD_WALK    =3D 5,
+> +       RISCV_IOMMU_HPMEVENT_PD_WALK    =3D 6,
+> +       RISCV_IOMMU_HPMEVENT_S_VS_WALKS =3D 7,
+> +       RISCV_IOMMU_HPMEVENT_G_WALKS    =3D 8,
+> +       RISCV_IOMMU_HPMEVENT_MAX        =3D 9
+> +};
+> +
+> +/* 5.24 Translation request IOVA (64bits) */
+> +#define RISCV_IOMMU_REG_TR_REQ_IOVA     0x0258
+> +#define RISCV_IOMMU_TR_REQ_IOVA_VPN    GENMASK_ULL(63, 12)
+> +
+> +/* 5.25 Translation request control (64bits) */
+> +#define RISCV_IOMMU_REG_TR_REQ_CTL     0x0260
+> +#define RISCV_IOMMU_TR_REQ_CTL_GO_BUSY BIT_ULL(0)
+> +#define RISCV_IOMMU_TR_REQ_CTL_PRIV    BIT_ULL(1)
+> +#define RISCV_IOMMU_TR_REQ_CTL_EXE     BIT_ULL(2)
+> +#define RISCV_IOMMU_TR_REQ_CTL_NW      BIT_ULL(3)
+> +#define RISCV_IOMMU_TR_REQ_CTL_PID     GENMASK_ULL(31, 12)
+> +#define RISCV_IOMMU_TR_REQ_CTL_PV      BIT_ULL(32)
+> +#define RISCV_IOMMU_TR_REQ_CTL_DID     GENMASK_ULL(63, 40)
+> +
+> +/* 5.26 Translation request response (64bits) */
+> +#define RISCV_IOMMU_REG_TR_RESPONSE    0x0268
+> +#define RISCV_IOMMU_TR_RESPONSE_FAULT  BIT_ULL(0)
+> +#define RISCV_IOMMU_TR_RESPONSE_PBMT   GENMASK_ULL(8, 7)
+> +#define RISCV_IOMMU_TR_RESPONSE_SZ     BIT_ULL(9)
+> +#define RISCV_IOMMU_TR_RESPONSE_PPN    RISCV_IOMMU_PPN_FIELD
+> +
+> +/* 5.27 Interrupt cause to vector (64bits) */
+> +#define RISCV_IOMMU_REG_IVEC           0x02F8
+> +#define RISCV_IOMMU_IVEC_CIV           GENMASK_ULL(3, 0)
+> +#define RISCV_IOMMU_IVEC_FIV           GENMASK_ULL(7, 4)
+> +#define RISCV_IOMMU_IVEC_PMIV          GENMASK_ULL(11, 8)
+> +#define RISCV_IOMMU_IVEC_PIV           GENMASK_ULL(15,12)
+> +
+> +/* 5.28 MSI Configuration table (32 * 64bits) */
+> +#define RISCV_IOMMU_REG_MSI_CONFIG     0x0300
+> +#define RISCV_IOMMU_REG_MSI_ADDR(_n)   (RISCV_IOMMU_REG_MSI_CONFIG + (_n=
+ * 0x10))
+> +#define RISCV_IOMMU_MSI_ADDR           GENMASK_ULL(55, 2)
+> +#define RISCV_IOMMU_REG_MSI_DATA(_n)   (RISCV_IOMMU_REG_MSI_CONFIG + (_n=
+ * 0x10) + 0x08)
+> +#define RISCV_IOMMU_MSI_DATA           GENMASK_ULL(31, 0)
+> +#define RISCV_IOMMU_REG_MSI_VEC_CTL(_n)        (RISCV_IOMMU_REG_MSI_CONF=
+IG + (_n * 0x10) + 0x0C)
+> +#define RISCV_IOMMU_MSI_VEC_CTL_M      BIT_ULL(0)
+> +
+> +#define RISCV_IOMMU_REG_SIZE   0x1000
+> +
+> +/*
+> + * Chapter 2: Data structures
+> + */
+> +
+> +/*
+> + * Device Directory Table macros for non-leaf nodes
+> + */
+> +#define RISCV_IOMMU_DDTE_VALID BIT_ULL(0)
+> +#define RISCV_IOMMU_DDTE_PPN   RISCV_IOMMU_PPN_FIELD
+> +
+> +/**
+> + * struct riscv_iommu_dc - Device Context
+> + * @tc: Translation Control
+> + * @iohgatp: I/O Hypervisor guest address translation and protection
+> + *          (Second stage context)
+> + * @ta: Translation Attributes
+> + * @fsc: First stage context
+> + * @msiptpt: MSI page table pointer
+> + * @msi_addr_mask: MSI address mask
+> + * @msi_addr_pattern: MSI address pattern
+> + *
+> + * This structure is used for leaf nodes on the Device Directory Table,
+> + * in case RISCV_IOMMU_CAP_MSI_FLAT is not set, the bottom 4 fields are
+> + * not present and are skipped with pointer arithmetic to avoid
+> + * casting, check out riscv_iommu_get_dc().
+> + * See section 2.1 for more details
+> + */
+> +struct riscv_iommu_dc {
+> +       u64 tc;
+> +       u64 iohgatp;
+> +       u64 ta;
+> +       u64 fsc;
+> +       u64 msiptp;
+> +       u64 msi_addr_mask;
+> +       u64 msi_addr_pattern;
+> +       u64 _reserved;
+> +};
+> +
+> +/* Translation control fields */
+> +#define RISCV_IOMMU_DC_TC_V            BIT_ULL(0)
+> +#define RISCV_IOMMU_DC_TC_EN_ATS       BIT_ULL(1)
+> +#define RISCV_IOMMU_DC_TC_EN_PRI       BIT_ULL(2)
+> +#define RISCV_IOMMU_DC_TC_T2GPA                BIT_ULL(3)
+> +#define RISCV_IOMMU_DC_TC_DTF          BIT_ULL(4)
+> +#define RISCV_IOMMU_DC_TC_PDTV         BIT_ULL(5)
+> +#define RISCV_IOMMU_DC_TC_PRPR         BIT_ULL(6)
+> +#define RISCV_IOMMU_DC_TC_GADE         BIT_ULL(7)
+> +#define RISCV_IOMMU_DC_TC_SADE         BIT_ULL(8)
+> +#define RISCV_IOMMU_DC_TC_DPE          BIT_ULL(9)
+> +#define RISCV_IOMMU_DC_TC_SBE          BIT_ULL(10)
+> +#define RISCV_IOMMU_DC_TC_SXL          BIT_ULL(11)
+> +
+> +/* Second-stage (aka G-stage) context fields */
+> +#define RISCV_IOMMU_DC_IOHGATP_PPN     RISCV_IOMMU_ATP_PPN_FIELD
+> +#define RISCV_IOMMU_DC_IOHGATP_GSCID   GENMASK_ULL(59, 44)
+> +#define RISCV_IOMMU_DC_IOHGATP_MODE    RISCV_IOMMU_ATP_MODE_FIELD
+> +
+> +/**
+> + * enum riscv_iommu_dc_iohgatp_modes - Guest address translation/protect=
+ion modes
+> + * @RISCV_IOMMU_DC_IOHGATP_MODE_BARE: No translation/protection
+> + * @RISCV_IOMMU_DC_IOHGATP_MODE_SV32X4: Sv32x4 (2-bit extension of Sv32)=
+, when fctl.GXL =3D=3D 1
+> + * @RISCV_IOMMU_DC_IOHGATP_MODE_SV39X4: Sv39x4 (2-bit extension of Sv39)=
+, when fctl.GXL =3D=3D 0
+> + * @RISCV_IOMMU_DC_IOHGATP_MODE_SV48X4: Sv48x4 (2-bit extension of Sv48)=
+, when fctl.GXL =3D=3D 0
+> + * @RISCV_IOMMU_DC_IOHGATP_MODE_SV57X4: Sv57x4 (2-bit extension of Sv57)=
+, when fctl.GXL =3D=3D 0
+> + */
+> +enum riscv_iommu_dc_iohgatp_modes {
+> +       RISCV_IOMMU_DC_IOHGATP_MODE_BARE =3D 0,
+> +       RISCV_IOMMU_DC_IOHGATP_MODE_SV32X4 =3D 8,
+> +       RISCV_IOMMU_DC_IOHGATP_MODE_SV39X4 =3D 8,
+> +       RISCV_IOMMU_DC_IOHGATP_MODE_SV48X4 =3D 9,
+> +       RISCV_IOMMU_DC_IOHGATP_MODE_SV57X4 =3D 10
+> +};
+> +
+> +/* Translation attributes fields */
+> +#define RISCV_IOMMU_DC_TA_PSCID                GENMASK_ULL(31,12)
+> +
+> +/* First-stage context fields */
+> +#define RISCV_IOMMU_DC_FSC_PPN         RISCV_IOMMU_ATP_PPN_FIELD
+> +#define RISCV_IOMMU_DC_FSC_MODE                RISCV_IOMMU_ATP_MODE_FIEL=
+D
+> +
+> +/**
+> + * enum riscv_iommu_dc_fsc_atp_modes - First stage address translation/p=
+rotection modes
+> + * @RISCV_IOMMU_DC_FSC_MODE_BARE: No translation/protection
+> + * @RISCV_IOMMU_DC_FSC_IOSATP_MODE_SV32: Sv32, when dc.tc.SXL =3D=3D 1
+> + * @RISCV_IOMMU_DC_FSC_IOSATP_MODE_SV39: Sv39, when dc.tc.SXL =3D=3D 0
+> + * @RISCV_IOMMU_DC_FSC_IOSATP_MODE_SV48: Sv48, when dc.tc.SXL =3D=3D 0
+> + * @RISCV_IOMMU_DC_FSC_IOSATP_MODE_SV57: Sv57, when dc.tc.SXL =3D=3D 0
+> + * @RISCV_IOMMU_DC_FSC_PDTP_MODE_PD8: 1lvl PDT, 8bit process ids
+> + * @RISCV_IOMMU_DC_FSC_PDTP_MODE_PD17: 2lvl PDT, 17bit process ids
+> + * @RISCV_IOMMU_DC_FSC_PDTP_MODE_PD20: 3lvl PDT, 20bit process ids
+> + *
+> + * FSC holds IOSATP when RISCV_IOMMU_DC_TC_PDTV is 0 and PDTP otherwise.
+> + * IOSATP controls the first stage address translation (same as the satp=
+ register on
+> + * the RISC-V MMU), and PDTP holds the process directory table, used to =
+select a
+> + * first stage page table based on a process id (for devices that suppor=
+t multiple
+> + * process ids).
+> + */
+> +enum riscv_iommu_dc_fsc_atp_modes {
+> +       RISCV_IOMMU_DC_FSC_MODE_BARE =3D 0,
+> +       RISCV_IOMMU_DC_FSC_IOSATP_MODE_SV32 =3D 8,
+> +       RISCV_IOMMU_DC_FSC_IOSATP_MODE_SV39 =3D 8,
+> +       RISCV_IOMMU_DC_FSC_IOSATP_MODE_SV48 =3D 9,
+> +       RISCV_IOMMU_DC_FSC_IOSATP_MODE_SV57 =3D 10,
+> +       RISCV_IOMMU_DC_FSC_PDTP_MODE_PD8 =3D 1,
+> +       RISCV_IOMMU_DC_FSC_PDTP_MODE_PD17 =3D 2,
+> +       RISCV_IOMMU_DC_FSC_PDTP_MODE_PD20 =3D 3
+> +};
+> +
+> +/* MSI page table pointer */
+> +#define RISCV_IOMMU_DC_MSIPTP_PPN      RISCV_IOMMU_ATP_PPN_FIELD
+> +#define RISCV_IOMMU_DC_MSIPTP_MODE     RISCV_IOMMU_ATP_MODE_FIELD
+> +#define RISCV_IOMMU_DC_MSIPTP_MODE_OFF 0
+> +#define RISCV_IOMMU_DC_MSIPTP_MODE_FLAT        1
+> +
+> +/* MSI address mask */
+> +#define RISCV_IOMMU_DC_MSI_ADDR_MASK   GENMASK_ULL(51, 0)
+> +
+> +/* MSI address pattern */
+> +#define RISCV_IOMMU_DC_MSI_PATTERN     GENMASK_ULL(51, 0)
+> +
+> +/**
+> + * struct riscv_iommu_pc - Process Context
+> + * @ta: Translation Attributes
+> + * @fsc: First stage context
+> + *
+> + * This structure is used for leaf nodes on the Process Directory Table
+> + * See section 2.3 for more details
+> + */
+> +struct riscv_iommu_pc {
+> +       u64 ta;
+> +       u64 fsc;
+> +};
+> +
+> +/* Translation attributes fields */
+> +#define RISCV_IOMMU_PC_TA_V    BIT_ULL(0)
+> +#define RISCV_IOMMU_PC_TA_ENS  BIT_ULL(1)
+> +#define RISCV_IOMMU_PC_TA_SUM  BIT_ULL(2)
+> +#define RISCV_IOMMU_PC_TA_PSCID        GENMASK_ULL(31, 12)
+> +
+> +/* First stage context fields */
+> +#define RISCV_IOMMU_PC_FSC_PPN RISCV_IOMMU_ATP_PPN_FIELD
+> +#define RISCV_IOMMU_PC_FSC_MODE        RISCV_IOMMU_ATP_MODE_FIELD
+> +
+> +/*
+> + * Chapter 3: In-memory queue interface
+> + */
+> +
+> +/**
+> + * struct riscv_iommu_cmd - Generic I/O MMU command structure
+> + * @dword0: Includes the opcode and the function identifier
+> + * @dword1: Opcode specific data
+> + *
+> + * The commands are interpreted as two 64bit fields, where the first
+> + * 7bits of the first field are the opcode which also defines the
+> + * command's format, followed by a 3bit field that specifies the
+> + * function invoked by that command, and the rest is opcode-specific.
+> + * This is a generic struct which will be populated differently
+> + * according to each command. For more infos on the commands and
+> + * the command queue check section 3.1.
+> + */
+> +struct riscv_iommu_command {
+> +       u64 dword0;
+> +       u64 dword1;
+> +};
+> +
+> +/* Fields on dword0, common for all commands */
+> +#define RISCV_IOMMU_CMD_OPCODE GENMASK_ULL(6, 0)
+> +#define        RISCV_IOMMU_CMD_FUNC    GENMASK_ULL(9, 7)
+> +
+> +/* 3.1.1 I/O MMU Page-table cache invalidation */
+> +/* Fields on dword0 */
+> +#define RISCV_IOMMU_CMD_IOTINVAL_OPCODE                1
+> +#define RISCV_IOMMU_CMD_IOTINVAL_FUNC_VMA      0
+> +#define RISCV_IOMMU_CMD_IOTINVAL_FUNC_GVMA     1
+> +#define RISCV_IOMMU_CMD_IOTINVAL_AV            BIT_ULL(10)
+> +#define RISCV_IOMMU_CMD_IOTINVAL_PSCID         GENMASK_ULL(31, 12)
+> +#define RISCV_IOMMU_CMD_IOTINVAL_PSCV          BIT_ULL(32)
+> +#define RISCV_IOMMU_CMD_IOTINVAL_GV            BIT_ULL(33)
+> +#define RISCV_IOMMU_CMD_IOTINVAL_GSCID         GENMASK_ULL(59, 44)
+> +/* dword1 is the address, 4K-alligned and shifted to the right by
+> + * two bits. */
+> +
+> +/* 3.1.2 I/O MMU Command Queue Fences */
+> +/* Fields on dword0 */
+> +#define RISCV_IOMMU_CMD_IOFENCE_OPCODE         2
+> +#define RISCV_IOMMU_CMD_IOFENCE_FUNC_C         0
+> +#define RISCV_IOMMU_CMD_IOFENCE_AV             BIT_ULL(10)
+> +#define RISCV_IOMMU_CMD_IOFENCE_WSI            BIT_ULL(11)
+> +#define RISCV_IOMMU_CMD_IOFENCE_PR             BIT_ULL(12)
+> +#define RISCV_IOMMU_CMD_IOFENCE_PW             BIT_ULL(13)
+> +#define RISCV_IOMMU_CMD_IOFENCE_DATA           GENMASK_ULL(63, 32)
+> +/* dword1 is the address, word-size alligned and shifted to the
+> + * right by two bits. */
+> +
+> +/* 3.1.3 I/O MMU Directory cache invalidation */
+> +/* Fields on dword0 */
+> +#define RISCV_IOMMU_CMD_IODIR_OPCODE           3
+> +#define RISCV_IOMMU_CMD_IODIR_FUNC_INVAL_DDT   0
+> +#define RISCV_IOMMU_CMD_IODIR_FUNC_INVAL_PDT   1
+> +#define RISCV_IOMMU_CMD_IODIR_PID              GENMASK_ULL(31, 12)
+> +#define RISCV_IOMMU_CMD_IODIR_DV               BIT_ULL(33)
+> +#define RISCV_IOMMU_CMD_IODIR_DID              GENMASK_ULL(63, 40)
+> +/* dword1 is reserved for standard use */
+> +
+> +/* 3.1.4 I/O MMU PCIe ATS */
+> +/* Fields on dword0 */
+> +#define RISCV_IOMMU_CMD_ATS_OPCODE             4
+> +#define RISCV_IOMMU_CMD_ATS_FUNC_INVAL         0
+> +#define RISCV_IOMMU_CMD_ATS_FUNC_PRGR          1
+> +#define RISCV_IOMMU_CMD_ATS_PID                        GENMASK_ULL(31, 1=
+2)
+> +#define RISCV_IOMMU_CMD_ATS_PV                 BIT_ULL(32)
+> +#define RISCV_IOMMU_CMD_ATS_DSV                        BIT_ULL(33)
+> +#define RISCV_IOMMU_CMD_ATS_RID                        GENMASK_ULL(55, 4=
+0)
+> +#define RISCV_IOMMU_CMD_ATS_DSEG               GENMASK_ULL(63, 56)
+> +/* dword1 is the ATS payload, two different payload types for INVAL and =
+PRGR */
+> +
+> +/* ATS.INVAL payload*/
+> +#define RISCV_IOMMU_CMD_ATS_INVAL_G            BIT_ULL(0)
+> +/* Bits 1 - 10 are zeroed */
+> +#define RISCV_IOMMU_CMD_ATS_INVAL_S            BIT_ULL(11)
+> +#define RISCV_IOMMU_CMD_ATS_INVAL_UADDR                GENMASK_ULL(63, 1=
+2)
+> +
+> +/* ATS.PRGR payload */
+> +/* Bits 0 - 31 are zeroed */
+> +#define RISCV_IOMMU_CMD_ATS_PRGR_PRG_INDEX     GENMASK_ULL(40, 32)
+> +/* Bits 41 - 43 are zeroed */
+> +#define RISCV_IOMMU_CMD_ATS_PRGR_RESP_CODE     GENMASK_ULL(47, 44)
+> +#define RISCV_IOMMU_CMD_ATS_PRGR_DST_ID                GENMASK_ULL(63, 4=
+8)
+> +
+> +/**
+> + * struct riscv_iommu_fq_record - Fault/Event Queue Record
+> + * @hdr: Header, includes fault/event cause, PID/DID, transaction type e=
+tc
+> + * @_reserved: Low 32bits for custom use, high 32bits for standard use
+> + * @iotval: Transaction-type/cause specific format
+> + * @iotval2: Cause specific format
+> + *
+> + * The fault/event queue reports events and failures raised when
+> + * processing transactions. Each record is a 32byte structure where
+> + * the first dword has a fixed format for providing generic infos
+> + * regarding the fault/event, and two more dwords are there for
+> + * fault/event-specific information. For more details see section
+> + * 3.2.
+> + */
+> +struct riscv_iommu_fq_record {
+> +       u64 hdr;
+> +       u64 _reserved;
+> +       u64 iotval;
+> +       u64 iotval2;
+> +};
+> +
+> +/* Fields on header */
+> +#define RISCV_IOMMU_FQ_HDR_CAUSE       GENMASK_ULL(11, 0)
+> +#define RISCV_IOMMU_FQ_HDR_PID         GENMASK_ULL(31, 12)
+> +#define RISCV_IOMMU_FQ_HDR_PV          BIT_ULL(32)
+> +#define RISCV_IOMMU_FQ_HDR_PRIV                BIT_ULL(33)
+> +#define RISCV_IOMMU_FQ_HDR_TTYPE       GENMASK_ULL(39, 34)
+> +#define RISCV_IOMMU_FQ_HDR_DID         GENMASK_ULL(63, 40)
+> +
+> +/**
+> + * enum riscv_iommu_fq_causes - Fault/event cause values
+> + * @RISCV_IOMMU_FQ_CAUSE_INST_FAULT: Instruction access fault
+> + * @RISCV_IOMMU_FQ_CAUSE_RD_ADDR_MISALIGNED: Read address misaligned
+> + * @RISCV_IOMMU_FQ_CAUSE_RD_FAULT: Read load fault
+> + * @RISCV_IOMMU_FQ_CAUSE_WR_ADDR_MISALIGNED: Write/AMO address misaligne=
+d
+> + * @RISCV_IOMMU_FQ_CAUSE_WR_FAULT: Write/AMO access fault
+> + * @RISCV_IOMMU_FQ_CAUSE_INST_FAULT_S: Instruction page fault
+> + * @RISCV_IOMMU_FQ_CAUSE_RD_FAULT_S: Read page fault
+> + * @RISCV_IOMMU_FQ_CAUSE_WR_FAULT_S: Write/AMO page fault
+> + * @RISCV_IOMMU_FQ_CAUSE_INST_FAULT_VS: Instruction guest page fault
+> + * @RISCV_IOMMU_FQ_CAUSE_RD_FAULT_VS: Read guest page fault
+> + * @RISCV_IOMMU_FQ_CAUSE_WR_FAULT_VS: Write/AMO guest page fault
+> + * @RISCV_IOMMU_FQ_CAUSE_DMA_DISABLED: All inbound transactions disallow=
+ed
+> + * @RISCV_IOMMU_FQ_CAUSE_DDT_LOAD_FAULT: DDT entry load access fault
+> + * @RISCV_IOMMU_FQ_CAUSE_DDT_INVALID: DDT entry invalid
+> + * @RISCV_IOMMU_FQ_CAUSE_DDT_MISCONFIGURED: DDT entry misconfigured
+> + * @RISCV_IOMMU_FQ_CAUSE_TTYPE_BLOCKED: Transaction type disallowed
+> + * @RISCV_IOMMU_FQ_CAUSE_MSI_LOAD_FAULT: MSI PTE load access fault
+> + * @RISCV_IOMMU_FQ_CAUSE_MSI_INVALID: MSI PTE invalid
+> + * @RISCV_IOMMU_FQ_CAUSE_MSI_MISCONFIGURED: MSI PTE misconfigured
+> + * @RISCV_IOMMU_FQ_CAUSE_MRIF_FAULT: MRIF access fault
+> + * @RISCV_IOMMU_FQ_CAUSE_PDT_LOAD_FAULT: PDT entry load access fault
+> + * @RISCV_IOMMU_FQ_CAUSE_PDT_INVALID: PDT entry invalid
+> + * @RISCV_IOMMU_FQ_CAUSE_PDT_MISCONFIGURED: PDT entry misconfigured
+> + * @RISCV_IOMMU_FQ_CAUSE_DDT_CORRUPTED: DDT data corruption
+> + * @RISCV_IOMMU_FQ_CAUSE_PDT_CORRUPTED: PDT data corruption
+> + * @RISCV_IOMMU_FQ_CAUSE_MSI_PT_CORRUPTED: MSI page table data corruptio=
+n
+> + * @RISCV_IOMMU_FQ_CAUSE_MRIF_CORRUIPTED: MRIF data corruption
+> + * @RISCV_IOMMU_FQ_CAUSE_INTERNAL_DP_ERROR: Internal data path error
+> + * @RISCV_IOMMU_FQ_CAUSE_MSI_WR_FAULT: IOMMU MSI write access fault
+> + * @RISCV_IOMMU_FQ_CAUSE_PT_CORRUPTED: First/second stage page table dat=
+a corruption
+> + *
+> + * Values are on table 11 of the spec, encodings 275 - 2047 are reserved=
+ for standard
+> + * use, and 2048 - 4095 for custom use.
+> + */
+> +enum riscv_iommu_fq_causes {
+> +       RISCV_IOMMU_FQ_CAUSE_INST_FAULT =3D 1,
+> +       RISCV_IOMMU_FQ_CAUSE_RD_ADDR_MISALIGNED =3D 4,
+> +       RISCV_IOMMU_FQ_CAUSE_RD_FAULT =3D 5,
+> +       RISCV_IOMMU_FQ_CAUSE_WR_ADDR_MISALIGNED =3D 6,
+> +       RISCV_IOMMU_FQ_CAUSE_WR_FAULT =3D 7,
+> +       RISCV_IOMMU_FQ_CAUSE_INST_FAULT_S =3D 12,
+> +       RISCV_IOMMU_FQ_CAUSE_RD_FAULT_S =3D 13,
+> +       RISCV_IOMMU_FQ_CAUSE_WR_FAULT_S =3D 15,
+> +       RISCV_IOMMU_FQ_CAUSE_INST_FAULT_VS =3D 20,
+> +       RISCV_IOMMU_FQ_CAUSE_RD_FAULT_VS =3D 21,
+> +       RISCV_IOMMU_FQ_CAUSE_WR_FAULT_VS =3D 23,
+> +       RISCV_IOMMU_FQ_CAUSE_DMA_DISABLED =3D 256,
+> +       RISCV_IOMMU_FQ_CAUSE_DDT_LOAD_FAULT =3D 257,
+> +       RISCV_IOMMU_FQ_CAUSE_DDT_INVALID =3D 258,
+> +       RISCV_IOMMU_FQ_CAUSE_DDT_MISCONFIGURED =3D 259,
+> +       RISCV_IOMMU_FQ_CAUSE_TTYPE_BLOCKED =3D 260,
+> +       RISCV_IOMMU_FQ_CAUSE_MSI_LOAD_FAULT =3D 261,
+> +       RISCV_IOMMU_FQ_CAUSE_MSI_INVALID =3D 262,
+> +       RISCV_IOMMU_FQ_CAUSE_MSI_MISCONFIGURED =3D 263,
+> +       RISCV_IOMMU_FQ_CAUSE_MRIF_FAULT =3D 264,
+> +       RISCV_IOMMU_FQ_CAUSE_PDT_LOAD_FAULT =3D 265,
+> +       RISCV_IOMMU_FQ_CAUSE_PDT_INVALID =3D 266,
+> +       RISCV_IOMMU_FQ_CAUSE_PDT_MISCONFIGURED =3D 267,
+> +       RISCV_IOMMU_FQ_CAUSE_DDT_CORRUPTED =3D 268,
+> +       RISCV_IOMMU_FQ_CAUSE_PDT_CORRUPTED =3D 269,
+> +       RISCV_IOMMU_FQ_CAUSE_MSI_PT_CORRUPTED =3D 270,
+> +       RISCV_IOMMU_FQ_CAUSE_MRIF_CORRUIPTED =3D 271,
+> +       RISCV_IOMMU_FQ_CAUSE_INTERNAL_DP_ERROR =3D 272,
+> +       RISCV_IOMMU_FQ_CAUSE_MSI_WR_FAULT =3D 273,
+> +       RISCV_IOMMU_FQ_CAUSE_PT_CORRUPTED =3D 274
+> +};
+> +
+> +/**
+> + * enum riscv_iommu_fq_ttypes: Fault/event transaction types
+> + * @RISCV_IOMMU_FQ_TTYPE_NONE: None. Fault not caused by an inbound tran=
+saction.
+> + * @RISCV_IOMMU_FQ_TTYPE_UADDR_INST_FETCH: Instruction fetch from untran=
+slated address
+> + * @RISCV_IOMMU_FQ_TTYPE_UADDR_RD: Read from untranslated address
+> + * @RISCV_IOMMU_FQ_TTYPE_UADDR_WR: Write/AMO to untranslated address
+> + * @RISCV_IOMMU_FQ_TTYPE_TADDR_INST_FETCH: Instruction fetch from transl=
+ated address
+> + * @RISCV_IOMMU_FQ_TTYPE_TADDR_RD: Read from translated address
+> + * @RISCV_IOMMU_FQ_TTYPE_TADDR_WR: Write/AMO to translated address
+> + * @RISCV_IOMMU_FQ_TTYPE_PCIE_ATS_REQ: PCIe ATS translation request
+> + * @RISCV_IOMMU_FW_TTYPE_PCIE_MSG_REQ: PCIe message request
+> + *
+> + * Values are on table 12 of the spec, type 4 and 10 - 31 are reserved f=
+or standard use
+> + * and 31 - 63 for custom use.
+> + */
+> +enum riscv_iommu_fq_ttypes {
+> +       RISCV_IOMMU_FQ_TTYPE_NONE =3D 0,
+> +       RISCV_IOMMU_FQ_TTYPE_UADDR_INST_FETCH =3D 1,
+> +       RISCV_IOMMU_FQ_TTYPE_UADDR_RD =3D 2,
+> +       RISCV_IOMMU_FQ_TTYPE_UADDR_WR =3D 3,
+> +       RISCV_IOMMU_FQ_TTYPE_TADDR_INST_FETCH =3D 5,
+> +       RISCV_IOMMU_FQ_TTYPE_TADDR_RD =3D 6,
+> +       RISCV_IOMMU_FQ_TTYPE_TADDR_WR =3D 7,
+> +       RISCV_IOMMU_FQ_TTYPE_PCIE_ATS_REQ =3D 8,
+> +       RISCV_IOMMU_FW_TTYPE_PCIE_MSG_REQ =3D 9,
+> +};
+> +
+> +/**
+> + * struct riscv_iommu_pq_record - PCIe Page Request record
+> + * @hdr: Header, includes PID, DID etc
+> + * @payload: Holds the page address, request group and permission bits
+> + *
+> + * For more infos on the PCIe Page Request queue see chapter 3.3.
+> + */
+> +struct riscv_iommu_pq_record {
+> +       u64 hdr;
+> +       u64 payload;
+> +};
+> +
+> +/* Header fields */
+> +#define RISCV_IOMMU_PREQ_HDR_PID       GENMASK_ULL(31, 12)
+> +#define RISCV_IOMMU_PREQ_HDR_PV                BIT_ULL(32)
+> +#define RISCV_IOMMU_PREQ_HDR_PRIV      BIT_ULL(33)
+> +#define RISCV_IOMMU_PREQ_HDR_EXEC      BIT_ULL(34)
+> +#define RISCV_IOMMU_PREQ_HDR_DID       GENMASK_ULL(63, 40)
+> +
+> +/* Payload fields */
+> +#define RISCV_IOMMU_PREQ_PAYLOAD_R     BIT_ULL(0)
+> +#define RISCV_IOMMU_PREQ_PAYLOAD_W     BIT_ULL(1)
+> +#define RISCV_IOMMU_PREQ_PAYLOAD_L     BIT_ULL(2)
+> +#define RISCV_IOMMU_PREQ_PAYLOAD_M     GENMASK_ULL(2, 0)       /* Mask o=
+f RWL for convenience */
+> +#define RISCV_IOMMU_PREQ_PRG_INDEX     GENMASK_ULL(11, 3)
+> +#define RISCV_IOMMU_PREQ_UADDR         GENMASK_ULL(63, 12)
+> +
+> +/**
+> + * struct riscv_iommu_msi_pte - MSI Page Table Entry
+> + * @pte: MSI PTE
+> + * @mrif_info: Memory-resident interrupt file info
+> + *
+> + * The MSI Page Table is used for virtualizing MSIs, so that when
+> + * a device sends an MSI to a guest, the IOMMU can reroute it
+> + * by translating the MSI address, either to a guest interrupt file
+> + * or a memory resident interrupt file (MRIF). Note that this page table
+> + * is an array of MSI PTEs, not a multi-level pt, each entry
+> + * is a leaf entry. For more infos check out the the AIA spec, chapter 9=
+.5.
+> + *
+> + * Also in basic mode the mrif_info field is ignored by the IOMMU and ca=
+n
+> + * be used by software, any other reserved fields on pte must be zeroed-=
+out
+> + * by software.
+> + */
+> +struct riscv_iommu_msi_pte {
+> +       u64 pte;
+> +       u64 mrif_info;
+> +};
+> +
+> +/* Fields on pte */
+> +#define RISCV_IOMMU_MSI_PTE_V          BIT_ULL(0)
+> +#define RISCV_IOMMU_MSI_PTE_M          GENMASK_ULL(2, 1)
+> +#define RISCV_IOMMU_MSI_PTE_MRIF_ADDR  GENMASK_ULL(53, 7)      /* When M=
+ =3D=3D 1 (MRIF mode) */
+> +#define RISCV_IOMMU_MSI_PTE_PPN                RISCV_IOMMU_PPN_FIELD   /=
+* When M =3D=3D 3 (basic mode) */
+> +#define RISCV_IOMMU_MSI_PTE_C          BIT_ULL(63)
+> +
+> +/* Fields on mrif_info */
+> +#define RISCV_IOMMU_MSI_MRIF_NID       GENMASK_ULL(9, 0)
+> +#define RISCV_IOMMU_MSI_MRIF_NPPN      RISCV_IOMMU_PPN_FIELD
+> +#define RISCV_IOMMU_MSI_MRIF_NID_MSB   BIT_ULL(60)
+> +
+> +#endif /* _RISCV_IOMMU_BITS_H_ */
+> diff --git a/drivers/iommu/riscv/iommu-pci.c b/drivers/iommu/riscv/iommu-=
+pci.c
+> new file mode 100644
+> index 000000000000..c91f963d7a29
+> --- /dev/null
+> +++ b/drivers/iommu/riscv/iommu-pci.c
+> @@ -0,0 +1,134 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +
+> +/*
+> + * Copyright =C2=A9 2022-2023 Rivos Inc.
+> + * Copyright =C2=A9 2023 FORTH-ICS/CARV
+> + *
+> + * RISCV IOMMU as a PCIe device
+> + *
+> + * Authors
+> + *     Tomasz Jeznach <tjeznach@rivosinc.com>
+> + *     Nick Kossifidis <mick@ics.forth.gr>
+> + */
+> +
+> +#include <linux/module.h>
+> +#include <linux/kernel.h>
+> +#include <linux/compiler.h>
+> +#include <linux/pci.h>
+> +#include <linux/init.h>
+> +#include <linux/iommu.h>
+> +#include <linux/bitfield.h>
+> +
+> +#include "iommu.h"
+> +
+> +/* Rivos Inc. assigned PCI Vendor and Device IDs */
+> +#ifndef PCI_VENDOR_ID_RIVOS
+> +#define PCI_VENDOR_ID_RIVOS             0x1efd
+> +#endif
+> +
+> +#ifndef PCI_DEVICE_ID_RIVOS_IOMMU
+> +#define PCI_DEVICE_ID_RIVOS_IOMMU       0xedf1
+> +#endif
+> +
+> +static int riscv_iommu_pci_probe(struct pci_dev *pdev, const struct pci_=
+device_id *ent)
+> +{
+> +       struct device *dev =3D &pdev->dev;
+> +       struct riscv_iommu_device *iommu;
+> +       int ret;
+> +
+> +       ret =3D pci_enable_device_mem(pdev);
+> +       if (ret < 0)
+> +               return ret;
+> +
+> +       ret =3D pci_request_mem_regions(pdev, KBUILD_MODNAME);
+> +       if (ret < 0)
+> +               goto fail;
+> +
+> +       ret =3D -ENOMEM;
+> +
+> +       iommu =3D devm_kzalloc(dev, sizeof(*iommu), GFP_KERNEL);
+> +       if (!iommu)
+> +               goto fail;
+> +
+> +       if (!(pci_resource_flags(pdev, 0) & IORESOURCE_MEM))
+> +               goto fail;
+> +
+> +       if (pci_resource_len(pdev, 0) < RISCV_IOMMU_REG_SIZE)
+> +               goto fail;
+> +
+> +       iommu->reg_phys =3D pci_resource_start(pdev, 0);
+> +       if (!iommu->reg_phys)
+> +               goto fail;
+> +
+> +       iommu->reg =3D devm_ioremap(dev, iommu->reg_phys, RISCV_IOMMU_REG=
+_SIZE);
+> +       if (!iommu->reg)
+> +               goto fail;
+> +
+> +       iommu->dev =3D dev;
+> +       dev_set_drvdata(dev, iommu);
+> +
+> +       dma_set_mask_and_coherent(dev, DMA_BIT_MASK(64));
+> +       pci_set_master(pdev);
+> +
+> +       ret =3D riscv_iommu_init(iommu);
+> +       if (!ret)
+> +               return ret;
+> +
+> + fail:
+> +       pci_clear_master(pdev);
+> +       pci_release_regions(pdev);
+> +       pci_disable_device(pdev);
+> +       /* Note: devres_release_all() will release iommu and iommu->reg *=
+/
+> +       return ret;
+> +}
+> +
+> +static void riscv_iommu_pci_remove(struct pci_dev *pdev)
+> +{
+> +       riscv_iommu_remove(dev_get_drvdata(&pdev->dev));
+> +       pci_clear_master(pdev);
+> +       pci_release_regions(pdev);
+> +       pci_disable_device(pdev);
+> +}
+> +
+> +static int riscv_iommu_suspend(struct device *dev)
+> +{
+> +       dev_warn(dev, "RISC-V IOMMU PM not implemented");
+> +       return -ENODEV;
+> +}
+> +
+> +static int riscv_iommu_resume(struct device *dev)
+> +{
+> +       dev_warn(dev, "RISC-V IOMMU PM not implemented");
+> +       return -ENODEV;
+> +}
+> +
+> +static DEFINE_SIMPLE_DEV_PM_OPS(riscv_iommu_pm_ops, riscv_iommu_suspend,
+> +                               riscv_iommu_resume);
+> +
+> +static const struct pci_device_id riscv_iommu_pci_tbl[] =3D {
+> +       {PCI_VENDOR_ID_RIVOS, PCI_DEVICE_ID_RIVOS_IOMMU,
+> +        PCI_ANY_ID, PCI_ANY_ID, 0, 0, 0},
+> +       {0,}
+> +};
+> +
+> +MODULE_DEVICE_TABLE(pci, riscv_iommu_pci_tbl);
+> +
+> +static const struct of_device_id riscv_iommu_of_match[] =3D {
+> +       {.compatible =3D "riscv,pci-iommu",},
+> +       {},
+> +};
+> +
+> +MODULE_DEVICE_TABLE(of, riscv_iommu_of_match);
+> +
+> +static struct pci_driver riscv_iommu_pci_driver =3D {
+> +       .name =3D KBUILD_MODNAME,
+> +       .id_table =3D riscv_iommu_pci_tbl,
+> +       .probe =3D riscv_iommu_pci_probe,
+> +       .remove =3D riscv_iommu_pci_remove,
+> +       .driver =3D {
+> +                  .pm =3D pm_sleep_ptr(&riscv_iommu_pm_ops),
+> +                  .of_match_table =3D riscv_iommu_of_match,
+> +                  },
+> +};
+> +
+> +module_driver(riscv_iommu_pci_driver, pci_register_driver, pci_unregiste=
+r_driver);
+> diff --git a/drivers/iommu/riscv/iommu-platform.c b/drivers/iommu/riscv/i=
+ommu-platform.c
+> new file mode 100644
+> index 000000000000..e4e8ca6711e7
+> --- /dev/null
+> +++ b/drivers/iommu/riscv/iommu-platform.c
+> @@ -0,0 +1,94 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/*
+> + * RISC-V IOMMU as a platform device
+> + *
+> + * Copyright =C2=A9 2023 FORTH-ICS/CARV
+> + *
+> + * Author: Nick Kossifidis <mick@ics.forth.gr>
+> + */
+> +
+> +#include <linux/module.h>
+> +#include <linux/kernel.h>
+> +#include <linux/of_platform.h>
+> +#include <linux/bitfield.h>
+> +
+> +#include "iommu-bits.h"
+> +#include "iommu.h"
+> +
+> +static int riscv_iommu_platform_probe(struct platform_device *pdev)
+> +{
+> +       struct device *dev =3D &pdev->dev;
+> +       struct riscv_iommu_device *iommu =3D NULL;
+> +       struct resource *res =3D NULL;
+> +       int ret =3D 0;
+> +
+> +       iommu =3D devm_kzalloc(dev, sizeof(*iommu), GFP_KERNEL);
+> +       if (!iommu)
+> +               return -ENOMEM;
+> +
+> +       iommu->dev =3D dev;
+> +       dev_set_drvdata(dev, iommu);
+> +
+> +       res =3D platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> +       if (!res) {
+> +               dev_err(dev, "could not find resource for register region=
+\n");
+> +               return -EINVAL;
+> +       }
+> +
+> +       iommu->reg =3D devm_platform_get_and_ioremap_resource(pdev, 0, &r=
+es);
+> +       if (IS_ERR(iommu->reg)) {
+> +               ret =3D dev_err_probe(dev, PTR_ERR(iommu->reg),
+> +                                   "could not map register region\n");
+> +               goto fail;
+> +       };
+> +
+> +       iommu->reg_phys =3D res->start;
+> +
+> +       ret =3D -ENODEV;
+> +
+> +       /* Sanity check: Did we get the whole register space ? */
+> +       if ((res->end - res->start + 1) < RISCV_IOMMU_REG_SIZE) {
+> +               dev_err(dev, "device region smaller than register file (0=
+x%llx)\n",
+> +                       res->end - res->start);
+> +               goto fail;
+> +       }
+> +
+> +       dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
+> +
+> +       return riscv_iommu_init(iommu);
+> +
+> + fail:
+> +       /* Note: devres_release_all() will release iommu and iommu->reg *=
+/
+> +       return ret;
+> +};
+> +
+> +static void riscv_iommu_platform_remove(struct platform_device *pdev)
+> +{
+> +       riscv_iommu_remove(dev_get_drvdata(&pdev->dev));
+> +};
+> +
+> +static void riscv_iommu_platform_shutdown(struct platform_device *pdev)
+> +{
+> +       return;
+> +};
+> +
+> +static const struct of_device_id riscv_iommu_of_match[] =3D {
+> +       {.compatible =3D "riscv,iommu",},
+> +       {},
+> +};
+> +
+> +MODULE_DEVICE_TABLE(of, riscv_iommu_of_match);
+> +
+> +static struct platform_driver riscv_iommu_platform_driver =3D {
+> +       .driver =3D {
+> +                  .name =3D "riscv,iommu",
+> +                  .of_match_table =3D riscv_iommu_of_match,
+> +                  .suppress_bind_attrs =3D true,
+> +                  },
+> +       .probe =3D riscv_iommu_platform_probe,
+> +       .remove_new =3D riscv_iommu_platform_remove,
+> +       .shutdown =3D riscv_iommu_platform_shutdown,
+> +};
+> +
+> +module_driver(riscv_iommu_platform_driver, platform_driver_register,
+> +             platform_driver_unregister);
+> diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
+> new file mode 100644
+> index 000000000000..8c236242e2cc
+> --- /dev/null
+> +++ b/drivers/iommu/riscv/iommu.c
+> @@ -0,0 +1,660 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/*
+> + * IOMMU API for RISC-V architected Ziommu implementations.
+> + *
+> + * Copyright =C2=A9 2022-2023 Rivos Inc.
+> + * Copyright =C2=A9 2023 FORTH-ICS/CARV
+> + *
+> + * Authors
+> + *     Tomasz Jeznach <tjeznach@rivosinc.com>
+> + *     Nick Kossifidis <mick@ics.forth.gr>
+> + */
+> +
+> +#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+> +
+> +#include <linux/bitfield.h>
+> +#include <linux/module.h>
+> +#include <linux/kernel.h>
+> +#include <linux/compiler.h>
+> +#include <linux/pci.h>
+> +#include <linux/pci-ats.h>
+> +#include <linux/init.h>
+> +#include <linux/completion.h>
+> +#include <linux/uaccess.h>
+> +#include <linux/iommu.h>
+> +#include <linux/irqdomain.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/dma-map-ops.h>
+> +#include <asm/page.h>
+> +
+> +#include "../dma-iommu.h"
+> +#include "../iommu-sva.h"
+> +#include "iommu.h"
+> +
+> +#include <asm/csr.h>
+> +#include <asm/delay.h>
+> +
+> +MODULE_DESCRIPTION("IOMMU driver for RISC-V architected Ziommu implement=
+ations");
+> +MODULE_AUTHOR("Tomasz Jeznach <tjeznach@rivosinc.com>");
+> +MODULE_AUTHOR("Nick Kossifidis <mick@ics.forth.gr>");
+> +MODULE_ALIAS("riscv-iommu");
+> +MODULE_LICENSE("GPL v2");
+> +
+> +/* Global IOMMU params. */
+> +static int ddt_mode =3D RISCV_IOMMU_DDTP_MODE_BARE;
+> +module_param(ddt_mode, int, 0644);
+> +MODULE_PARM_DESC(ddt_mode, "Device Directory Table mode.");
+> +
+> +/* IOMMU PSCID allocation namespace. */
+> +#define RISCV_IOMMU_MAX_PSCID  (1U << 20)
+> +static DEFINE_IDA(riscv_iommu_pscids);
+> +
+> +/* 1 second */
+> +#define RISCV_IOMMU_TIMEOUT    riscv_timebase
+> +
+> +/* RISC-V IOMMU PPN <> PHYS address conversions, PHYS <=3D> PPN[53:10] *=
+/
+> +#define phys_to_ppn(va)  (((va) >> 2) & (((1ULL << 44) - 1) << 10))
+> +#define ppn_to_phys(pn)         (((pn) << 2) & (((1ULL << 44) - 1) << 12=
+))
+> +
+> +#define iommu_domain_to_riscv(iommu_domain) \
+> +    container_of(iommu_domain, struct riscv_iommu_domain, domain)
+> +
+> +#define iommu_device_to_riscv(iommu_device) \
+> +    container_of(iommu_device, struct riscv_iommu, iommu)
+> +
+> +static const struct iommu_domain_ops riscv_iommu_domain_ops;
+> +static const struct iommu_ops riscv_iommu_ops;
+> +
+> +/*
+> + * Register device for IOMMU tracking.
+> + */
+> +static void riscv_iommu_add_device(struct riscv_iommu_device *iommu, str=
+uct device *dev)
+> +{
+> +       struct riscv_iommu_endpoint *ep, *rb_ep;
+> +       struct rb_node **new_node, *parent_node =3D NULL;
+> +
+> +       mutex_lock(&iommu->eps_mutex);
+> +
+> +       ep =3D dev_iommu_priv_get(dev);
+> +
+> +       new_node =3D &(iommu->eps.rb_node);
+> +       while (*new_node) {
+> +               rb_ep =3D rb_entry(*new_node, struct riscv_iommu_endpoint=
+, node);
+> +               parent_node =3D *new_node;
+> +               if (rb_ep->devid > ep->devid) {
+> +                       new_node =3D &((*new_node)->rb_left);
+> +               } else if (rb_ep->devid < ep->devid) {
+> +                       new_node =3D &((*new_node)->rb_right);
+> +               } else {
+> +                       dev_warn(dev, "device %u already in the tree\n", =
+ep->devid);
+> +                       break;
+> +               }
+> +       }
+> +
+> +       rb_link_node(&ep->node, parent_node, new_node);
+> +       rb_insert_color(&ep->node, &iommu->eps);
+> +
+> +       mutex_unlock(&iommu->eps_mutex);
+> +}
+> +
+> +/*
+> + * Endpoint management
+> + */
+> +
+> +static int riscv_iommu_of_xlate(struct device *dev, struct of_phandle_ar=
+gs *args)
+> +{
+> +       return iommu_fwspec_add_ids(dev, args->args, 1);
+> +}
+> +
+> +static bool riscv_iommu_capable(struct device *dev, enum iommu_cap cap)
+> +{
+> +       switch (cap) {
+> +       case IOMMU_CAP_CACHE_COHERENCY:
+> +       case IOMMU_CAP_PRE_BOOT_PROTECTION:
+> +               return true;
+> +
+> +       default:
+> +               break;
+> +       }
+> +
+> +       return false;
+> +}
+> +
+> +static struct iommu_device *riscv_iommu_probe_device(struct device *dev)
+> +{
+> +       struct riscv_iommu_device *iommu;
+> +       struct riscv_iommu_endpoint *ep;
+> +       struct iommu_fwspec *fwspec;
+> +
+> +       fwspec =3D dev_iommu_fwspec_get(dev);
+> +       if (!fwspec || fwspec->ops !=3D &riscv_iommu_ops ||
+> +           !fwspec->iommu_fwnode || !fwspec->iommu_fwnode->dev)
+> +               return ERR_PTR(-ENODEV);
+> +
+> +       iommu =3D dev_get_drvdata(fwspec->iommu_fwnode->dev);
+> +       if (!iommu)
+> +               return ERR_PTR(-ENODEV);
+> +
+> +       if (dev_iommu_priv_get(dev))
+> +               return &iommu->iommu;
+> +
+> +       ep =3D kzalloc(sizeof(*ep), GFP_KERNEL);
+> +       if (!ep)
+> +               return ERR_PTR(-ENOMEM);
+> +
+> +       mutex_init(&ep->lock);
+> +       INIT_LIST_HEAD(&ep->domain);
+> +
+> +       if (dev_is_pci(dev)) {
+> +               ep->devid =3D pci_dev_id(to_pci_dev(dev));
+> +               ep->domid =3D pci_domain_nr(to_pci_dev(dev)->bus);
+> +       } else {
+> +               /* TODO: Make this generic, for now hardcode domain id to=
+ 0 */
+> +               ep->devid =3D fwspec->ids[0];
+> +               ep->domid =3D 0;
+> +       }
+> +
+> +       ep->iommu =3D iommu;
+> +       ep->dev =3D dev;
+> +
+> +       dev_info(iommu->dev, "adding device to iommu with devid %i in dom=
+ain %i\n",
+> +               ep->devid, ep->domid);
+> +
+> +       dev_iommu_priv_set(dev, ep);
+> +       riscv_iommu_add_device(iommu, dev);
+> +
+> +       return &iommu->iommu;
+> +}
+> +
+> +static void riscv_iommu_probe_finalize(struct device *dev)
+> +{
+> +       set_dma_ops(dev, NULL);
+> +       iommu_setup_dma_ops(dev, 0, U64_MAX);
+> +}
+> +
+> +static void riscv_iommu_release_device(struct device *dev)
+> +{
+> +       struct riscv_iommu_endpoint *ep =3D dev_iommu_priv_get(dev);
+> +       struct riscv_iommu_device *iommu =3D ep->iommu;
+> +
+> +       dev_info(dev, "device with devid %i released\n", ep->devid);
+> +
+> +       mutex_lock(&ep->lock);
+> +       list_del(&ep->domain);
+> +       mutex_unlock(&ep->lock);
+> +
+> +       /* Remove endpoint from IOMMU tracking structures */
+> +       mutex_lock(&iommu->eps_mutex);
+> +       rb_erase(&ep->node, &iommu->eps);
+> +       mutex_unlock(&iommu->eps_mutex);
+> +
+> +       set_dma_ops(dev, NULL);
+> +       dev_iommu_priv_set(dev, NULL);
+> +
+> +       kfree(ep);
+> +}
+> +
+> +static struct iommu_group *riscv_iommu_device_group(struct device *dev)
+> +{
+> +       if (dev_is_pci(dev))
+> +               return pci_device_group(dev);
+> +       return generic_device_group(dev);
+> +}
+> +
+> +static void riscv_iommu_get_resv_regions(struct device *dev, struct list=
+_head *head)
+> +{
+> +       iommu_dma_get_resv_regions(dev, head);
+> +}
+> +
+> +/*
+> + * Domain management
+> + */
+> +
+> +static struct iommu_domain *riscv_iommu_domain_alloc(unsigned type)
+> +{
+> +       struct riscv_iommu_domain *domain;
+> +
+> +       if (type !=3D IOMMU_DOMAIN_IDENTITY &&
+> +           type !=3D IOMMU_DOMAIN_BLOCKED)
+> +               return NULL;
+> +
+> +       domain =3D kzalloc(sizeof(*domain), GFP_KERNEL);
+> +       if (!domain)
+> +               return NULL;
+> +
+> +       mutex_init(&domain->lock);
+> +       INIT_LIST_HEAD(&domain->endpoints);
+> +
+> +       domain->domain.ops =3D &riscv_iommu_domain_ops;
+> +       domain->mode =3D RISCV_IOMMU_DC_FSC_MODE_BARE;
+> +       domain->pscid =3D ida_alloc_range(&riscv_iommu_pscids, 1,
+> +                                       RISCV_IOMMU_MAX_PSCID, GFP_KERNEL=
 );
-> > > +               if (irq > 0)
-> > > +                       iommu->irq_priq =3D irq;
-> > > +               else {
-> > > +                       dev_err(dev, "no IRQ provided for the page-re=
-quest queue\n");
-> > > +                       goto fail;
-> > > +               }
-> > > +       }
-> >
-> > Should we define the "interrupt-names" in dt-bindings?
-> >
->
-> Yes, this was brought up earlier wrt dt-bindings.
->
-> I'm considering removal of interrupt names from DT (and get-byname
-> option), as IOMMU hardware cause-to-vector remapping `icvec` should be
-> used to map interrupt source to actual interrupt vector. If possible
-> device driver should map cause to interrupt (based on number of
-> vectors available) or rely on ICVEC WARL properties to discover fixed
-> cause-to-vector mapping in the hardware.
->
-
-I'm not sure if I understand correctly, but one thing we might need to
-consider is when the vector numbers are less than interrupt sources,
-for example, if IOMMU only supports single vector (i.e. supports a
-single interrupt wire), the `request_threaded_irq` will request the
-irq three times by using same irq number for command, fault and
-page-request queues. It would cause a problem and fail to request an
-IRQ for the other two queues. It seems that we still need to consider
-this situation regardless of how we determine the IRQs for each
-interrupt source.
-
-> Please let me know if this is reasonable change.
->
-> > > +
-> > > +       /* Make sure fctl.WSI is set */
-> > > +       fctl =3D riscv_iommu_readl(iommu, RISCV_IOMMU_REG_FCTL);
-> > > +       fctl |=3D RISCV_IOMMU_FCTL_WSI;
-> > > +       riscv_iommu_writel(iommu, RISCV_IOMMU_REG_FCTL, fctl);
-> > > +
-> > > +       /* Parse Queue lengts */
-> > > +       ret =3D of_property_read_u32(pdev->dev.of_node, "cmdq_len", &=
-iommu->cmdq_len);
-> > > +       if (!ret)
-> > > +               dev_info(dev, "command queue length set to %i\n", iom=
-mu->cmdq_len);
-> > > +
-> > > +       ret =3D of_property_read_u32(pdev->dev.of_node, "fltq_len", &=
-iommu->fltq_len);
-> > > +       if (!ret)
-> > > +               dev_info(dev, "fault/event queue length set to %i\n",=
- iommu->fltq_len);
-> > > +
-> > > +       ret =3D of_property_read_u32(pdev->dev.of_node, "priq_len", &=
-iommu->priq_len);
-> > > +       if (!ret)
-> > > +               dev_info(dev, "page request queue length set to %i\n"=
-, iommu->priq_len);
-> > > +
-> > >         dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
-> > >
-> > >         return riscv_iommu_init(iommu);
-> > > diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.=
-c
-> > > index 31dc3c458e13..5c4cf9875302 100644
-> > > --- a/drivers/iommu/riscv/iommu.c
-> > > +++ b/drivers/iommu/riscv/iommu.c
-> > > @@ -45,6 +45,18 @@ static int ddt_mode =3D RISCV_IOMMU_DDTP_MODE_BARE=
+> +
+> +       printk("domain type %x alloc %u\n", type, domain->pscid);
+> +
+> +       return &domain->domain;
+> +}
+> +
+> +static void riscv_iommu_domain_free(struct iommu_domain *iommu_domain)
+> +{
+> +       struct riscv_iommu_domain *domain =3D iommu_domain_to_riscv(iommu=
+_domain);
+> +
+> +       if (!list_empty(&domain->endpoints)) {
+> +               pr_warn("IOMMU domain is not empty!\n");
+> +       }
+> +
+> +       if (domain->pgd_root)
+> +               free_pages((unsigned long)domain->pgd_root, 0);
+> +
+> +       if ((int)domain->pscid > 0)
+> +               ida_free(&riscv_iommu_pscids, domain->pscid);
+> +
+> +       printk("domain free %u\n", domain->pscid);
+> +
+> +       kfree(domain);
+> +}
+> +
+> +static int riscv_iommu_domain_finalize(struct riscv_iommu_domain *domain=
+,
+> +                                      struct riscv_iommu_device *iommu)
+> +{
+> +       struct iommu_domain_geometry *geometry;
+> +
+> +       /* Domain assigned to another iommu */
+> +       if (domain->iommu && domain->iommu !=3D iommu)
+> +               return -EINVAL;
+> +       /* Domain already initialized */
+> +       else if (domain->iommu)
+> +               return 0;
+> +
+> +       /*
+> +        * TODO: Before using VA_BITS and satp_mode here, verify they
+> +        * are supported by the iommu, through the capabilities register.
+> +        */
+> +
+> +       geometry =3D &domain->domain.geometry;
+> +
+> +       /*
+> +        * Note: RISC-V Privilege spec mandates that virtual addresses
+> +        * need to be sign-extended, so if (VA_BITS - 1) is set, all
+> +        * bits >=3D VA_BITS need to also be set or else we'll get a
+> +        * page fault. However the code that creates the mappings
+> +        * above us (e.g. iommu_dma_alloc_iova()) won't do that for us
+> +        * for now, so we'll end up with invalid virtual addresses
+> +        * to map. As a workaround until we get this sorted out
+> +        * limit the available virtual addresses to VA_BITS - 1.
+> +        */
+> +       geometry->aperture_start =3D 0;
+> +       geometry->aperture_end =3D DMA_BIT_MASK(VA_BITS - 1);
+> +       geometry->force_aperture =3D true;
+> +
+> +       domain->iommu =3D iommu;
+> +
+> +       if (domain->domain.type =3D=3D IOMMU_DOMAIN_IDENTITY)
+> +               return 0;
+> +
+> +       /* TODO: Fix this for RV32 */
+> +       domain->mode =3D satp_mode >> 60;
+> +       domain->pgd_root =3D (pgd_t *) __get_free_pages(GFP_KERNEL | __GF=
+P_ZERO, 0);
+> +
+> +       if (!domain->pgd_root)
+> +               return -ENOMEM;
+> +
+> +       return 0;
+> +}
+> +
+> +static int riscv_iommu_attach_dev(struct iommu_domain *iommu_domain, str=
+uct device *dev)
+> +{
+> +       struct riscv_iommu_domain *domain =3D iommu_domain_to_riscv(iommu=
+_domain);
+> +       struct riscv_iommu_endpoint *ep =3D dev_iommu_priv_get(dev);
+> +       int ret;
+> +
+> +       /* PSCID not valid */
+> +       if ((int)domain->pscid < 0)
+> +               return -ENOMEM;
+> +
+> +       mutex_lock(&domain->lock);
+> +       mutex_lock(&ep->lock);
+> +
+> +       if (!list_empty(&ep->domain)) {
+> +               dev_warn(dev, "endpoint already attached to a domain. dro=
+pping\n");
+> +               list_del_init(&ep->domain);
+> +       }
+> +
+> +       /* allocate root pages, initialize io-pgtable ops, etc. */
+> +       ret =3D riscv_iommu_domain_finalize(domain, ep->iommu);
+> +       if (ret < 0) {
+> +               dev_err(dev, "can not finalize domain: %d\n", ret);
+> +               mutex_unlock(&ep->lock);
+> +               mutex_unlock(&domain->lock);
+> +               return ret;
+> +       }
+> +
+> +       if (ep->iommu->ddt_mode !=3D RISCV_IOMMU_DDTP_MODE_BARE ||
+> +           domain->domain.type !=3D IOMMU_DOMAIN_IDENTITY) {
+> +               dev_warn(dev, "domain type %d not supported\n",
+> +                   domain->domain.type);
+> +               return -ENODEV;
+> +       }
+> +
+> +       list_add_tail(&ep->domain, &domain->endpoints);
+> +       mutex_unlock(&ep->lock);
+> +       mutex_unlock(&domain->lock);
+> +
+> +       dev_info(dev, "domain type %d attached w/ PSCID %u\n",
+> +           domain->domain.type, domain->pscid);
+> +
+> +       return 0;
+> +}
+> +
+> +static void riscv_iommu_flush_iotlb_range(struct iommu_domain *iommu_dom=
+ain,
+> +                                         unsigned long *start, unsigned =
+long *end,
+> +                                         size_t *pgsize)
+> +{
+> +       /* Command interface not implemented */
+> +}
+> +
+> +static void riscv_iommu_flush_iotlb_all(struct iommu_domain *iommu_domai=
+n)
+> +{
+> +       riscv_iommu_flush_iotlb_range(iommu_domain, NULL, NULL, NULL);
+> +}
+> +
+> +static void riscv_iommu_iotlb_sync(struct iommu_domain *iommu_domain,
+> +                                  struct iommu_iotlb_gather *gather)
+> +{
+> +       riscv_iommu_flush_iotlb_range(iommu_domain, &gather->start, &gath=
+er->end,
+> +                                     &gather->pgsize);
+> +}
+> +
+> +static void riscv_iommu_iotlb_sync_map(struct iommu_domain *iommu_domain=
+,
+> +                                      unsigned long iova, size_t size)
+> +{
+> +       unsigned long end =3D iova + size - 1;
+> +       /*
+> +        * Given we don't know the page size used by this range, we assum=
+e the
+> +        * smallest page size to ensure all possible entries are flushed =
+from
+> +        * the IOATC.
+> +        */
+> +       size_t pgsize =3D PAGE_SIZE;
+> +       riscv_iommu_flush_iotlb_range(iommu_domain, &iova, &end, &pgsize)=
 ;
-> > >  module_param(ddt_mode, int, 0644);
-> > >  MODULE_PARM_DESC(ddt_mode, "Device Directory Table mode.");
-> > >
-> > > +static int cmdq_length =3D 1024;
-> > > +module_param(cmdq_length, int, 0644);
-> > > +MODULE_PARM_DESC(cmdq_length, "Command queue length.");
-> > > +
-> > > +static int fltq_length =3D 1024;
-> > > +module_param(fltq_length, int, 0644);
-> > > +MODULE_PARM_DESC(fltq_length, "Fault queue length.");
-> > > +
-> > > +static int priq_length =3D 1024;
-> > > +module_param(priq_length, int, 0644);
-> > > +MODULE_PARM_DESC(priq_length, "Page request interface queue length."=
+> +}
+> +
+> +static int riscv_iommu_map_pages(struct iommu_domain *iommu_domain,
+> +                                unsigned long iova, phys_addr_t phys,
+> +                                size_t pgsize, size_t pgcount, int prot,
+> +                                gfp_t gfp, size_t *mapped)
+> +{
+> +       struct riscv_iommu_domain *domain =3D iommu_domain_to_riscv(iommu=
+_domain);
+> +
+> +       if (domain->domain.type =3D=3D IOMMU_DOMAIN_IDENTITY) {
+> +               *mapped =3D pgsize * pgcount;
+> +               return 0;
+> +       }
+> +
+> +       return -ENODEV;
+> +}
+> +
+> +static size_t riscv_iommu_unmap_pages(struct iommu_domain *iommu_domain,
+> +                                     unsigned long iova, size_t pgsize,
+> +                                     size_t pgcount, struct iommu_iotlb_=
+gather *gather)
+> +{
+> +       struct riscv_iommu_domain *domain =3D iommu_domain_to_riscv(iommu=
+_domain);
+> +
+> +       if (domain->domain.type =3D=3D IOMMU_DOMAIN_IDENTITY)
+> +               return pgsize * pgcount;
+> +
+> +       return 0;
+> +}
+> +
+> +static phys_addr_t riscv_iommu_iova_to_phys(struct iommu_domain *iommu_d=
+omain,
+> +                                           dma_addr_t iova)
+> +{
+> +       struct riscv_iommu_domain *domain =3D iommu_domain_to_riscv(iommu=
+_domain);
+> +
+> +       if (domain->domain.type =3D=3D IOMMU_DOMAIN_IDENTITY)
+> +               return (phys_addr_t) iova;
+> +
+> +       return 0;
+> +}
+> +
+> +/*
+> + * Translation mode setup
+> + */
+> +
+> +static u64 riscv_iommu_get_ddtp(struct riscv_iommu_device *iommu)
+> +{
+> +       u64 ddtp;
+> +       cycles_t end_cycles =3D RISCV_IOMMU_TIMEOUT + get_cycles();
+> +
+> +       /* Wait for DDTP.BUSY to be cleared and return latest value */
+> +       do {
+> +               ddtp =3D riscv_iommu_readq(iommu, RISCV_IOMMU_REG_DDTP);
+> +               if (!(ddtp & RISCV_IOMMU_DDTP_BUSY))
+> +                       break;
+> +               cpu_relax();
+> +       } while (get_cycles() < end_cycles);
+> +
+> +       return ddtp;
+> +}
+> +
+> +static void riscv_iommu_ddt_cleanup(struct riscv_iommu_device *iommu)
+> +{
+> +       /* TODO: teardown whole device directory tree. */
+> +       if (iommu->ddtp) {
+> +               if (iommu->ddtp_in_iomem) {
+> +                       iounmap((void *)iommu->ddtp);
+> +               } else
+> +                       free_page(iommu->ddtp);
+> +               iommu->ddtp =3D 0;
+> +       }
+> +}
+> +
+> +static int riscv_iommu_enable(struct riscv_iommu_device *iommu, unsigned=
+ requested_mode)
+> +{
+> +       struct device *dev =3D iommu->dev;
+> +       u64 ddtp =3D 0;
+> +       u64 ddtp_paddr =3D 0;
+> +       unsigned mode =3D requested_mode;
+> +       unsigned mode_readback =3D 0;
+> +
+> +       ddtp =3D riscv_iommu_get_ddtp(iommu);
+> +       if (ddtp & RISCV_IOMMU_DDTP_BUSY)
+> +               return -EBUSY;
+> +
+> +       /* Disallow state transtion from xLVL to xLVL. */
+> +       switch (FIELD_GET(RISCV_IOMMU_DDTP_MODE, ddtp)) {
+> +       case RISCV_IOMMU_DDTP_MODE_BARE:
+> +       case RISCV_IOMMU_DDTP_MODE_OFF:
+> +               break;
+> +       default:
+> +               if ((mode !=3D RISCV_IOMMU_DDTP_MODE_BARE)
+> +                   && (mode !=3D RISCV_IOMMU_DDTP_MODE_OFF))
+> +                       return -EINVAL;
+> +               break;
+> +       }
+> +
+> + retry:
+> +       switch (mode) {
+> +       case RISCV_IOMMU_DDTP_MODE_BARE:
+> +       case RISCV_IOMMU_DDTP_MODE_OFF:
+> +               riscv_iommu_ddt_cleanup(iommu);
+> +               ddtp =3D FIELD_PREP(RISCV_IOMMU_DDTP_MODE, mode);
+> +               break;
+> +       case RISCV_IOMMU_DDTP_MODE_1LVL:
+> +       case RISCV_IOMMU_DDTP_MODE_2LVL:
+> +       case RISCV_IOMMU_DDTP_MODE_3LVL:
+> +               if (!iommu->ddtp) {
+> +                       /*
+> +                        * We haven't initialized ddtp yet, since it's WA=
+RL make
+> +                        * sure that we don't have a hardwired PPN field =
+there
+> +                        * that points to i/o memory instead.
+> +                        */
+> +                       riscv_iommu_writeq(iommu, RISCV_IOMMU_REG_DDTP, 0=
 );
-> > > +
-> > >  /* IOMMU PSCID allocation namespace. */
-> > >  #define RISCV_IOMMU_MAX_PSCID  (1U << 20)
-> > >  static DEFINE_IDA(riscv_iommu_pscids);
-> > > @@ -65,6 +77,497 @@ static DEFINE_IDA(riscv_iommu_pscids);
-> > >  static const struct iommu_domain_ops riscv_iommu_domain_ops;
-> > >  static const struct iommu_ops riscv_iommu_ops;
-> > >
-> > > +/*
-> > > + * Common queue management routines
-> > > + */
-> > > +
-> > > +/* Note: offsets are the same for all queues */
-> > > +#define Q_HEAD(q) ((q)->qbr + (RISCV_IOMMU_REG_CQH - RISCV_IOMMU_REG=
-_CQB))
-> > > +#define Q_TAIL(q) ((q)->qbr + (RISCV_IOMMU_REG_CQT - RISCV_IOMMU_REG=
-_CQB))
-> > > +
-> > > +static unsigned riscv_iommu_queue_consume(struct riscv_iommu_device =
-*iommu,
-> > > +                                         struct riscv_iommu_queue *q=
-, unsigned *ready)
-> > > +{
-> > > +       u32 tail =3D riscv_iommu_readl(iommu, Q_TAIL(q));
-> > > +       *ready =3D q->lui;
-> > > +
-> > > +       BUG_ON(q->cnt <=3D tail);
-> > > +       if (q->lui <=3D tail)
-> > > +               return tail - q->lui;
-> > > +       return q->cnt - q->lui;
-> > > +}
-> > > +
-> > > +static void riscv_iommu_queue_release(struct riscv_iommu_device *iom=
-mu,
-> > > +                                     struct riscv_iommu_queue *q, un=
-signed count)
-> > > +{
-> > > +       q->lui =3D (q->lui + count) & (q->cnt - 1);
-> > > +       riscv_iommu_writel(iommu, Q_HEAD(q), q->lui);
-> > > +}
-> > > +
-> > > +static u32 riscv_iommu_queue_ctrl(struct riscv_iommu_device *iommu,
-> > > +                                 struct riscv_iommu_queue *q, u32 va=
-l)
-> > > +{
-> > > +       cycles_t end_cycles =3D RISCV_IOMMU_TIMEOUT + get_cycles();
-> > > +
-> > > +       riscv_iommu_writel(iommu, q->qcr, val);
-> > > +       do {
-> > > +               val =3D riscv_iommu_readl(iommu, q->qcr);
-> > > +               if (!(val & RISCV_IOMMU_QUEUE_BUSY))
-> > > +                       break;
-> > > +               cpu_relax();
-> > > +       } while (get_cycles() < end_cycles);
-> > > +
-> > > +       return val;
-> > > +}
-> > > +
-> > > +static void riscv_iommu_queue_free(struct riscv_iommu_device *iommu,
-> > > +                                  struct riscv_iommu_queue *q)
-> > > +{
-> > > +       size_t size =3D q->len * q->cnt;
-> > > +
-> > > +       riscv_iommu_queue_ctrl(iommu, q, 0);
-> > > +
-> > > +       if (q->base) {
-> > > +               if (q->in_iomem)
-> > > +                       iounmap(q->base);
-> > > +               else
-> > > +                       dmam_free_coherent(iommu->dev, size, q->base,=
- q->base_dma);
-> > > +       }
-> > > +       if (q->irq)
-> > > +               free_irq(q->irq, q);
-> > > +}
-> > > +
-> > > +static irqreturn_t riscv_iommu_cmdq_irq_check(int irq, void *data);
-> > > +static irqreturn_t riscv_iommu_cmdq_process(int irq, void *data);
-> > > +static irqreturn_t riscv_iommu_fltq_irq_check(int irq, void *data);
-> > > +static irqreturn_t riscv_iommu_fltq_process(int irq, void *data);
-> > > +static irqreturn_t riscv_iommu_priq_irq_check(int irq, void *data);
-> > > +static irqreturn_t riscv_iommu_priq_process(int irq, void *data);
-> > > +
-> > > +static int riscv_iommu_queue_init(struct riscv_iommu_device *iommu, =
-int queue_id)
-> > > +{
-> > > +       struct device *dev =3D iommu->dev;
-> > > +       struct riscv_iommu_queue *q =3D NULL;
-> > > +       size_t queue_size =3D 0;
-> > > +       irq_handler_t irq_check;
-> > > +       irq_handler_t irq_process;
-> > > +       const char *name;
-> > > +       int count =3D 0;
-> > > +       int irq =3D 0;
-> > > +       unsigned order =3D 0;
-> > > +       u64 qbr_val =3D 0;
-> > > +       u64 qbr_readback =3D 0;
-> > > +       u64 qbr_paddr =3D 0;
-> > > +       int ret =3D 0;
-> > > +
-> > > +       switch (queue_id) {
-> > > +       case RISCV_IOMMU_COMMAND_QUEUE:
-> > > +               q =3D &iommu->cmdq;
-> > > +               q->len =3D sizeof(struct riscv_iommu_command);
-> > > +               count =3D iommu->cmdq_len;
-> > > +               irq =3D iommu->irq_cmdq;
-> > > +               irq_check =3D riscv_iommu_cmdq_irq_check;
-> > > +               irq_process =3D riscv_iommu_cmdq_process;
-> > > +               q->qbr =3D RISCV_IOMMU_REG_CQB;
-> > > +               q->qcr =3D RISCV_IOMMU_REG_CQCSR;
-> > > +               name =3D "cmdq";
-> > > +               break;
-> > > +       case RISCV_IOMMU_FAULT_QUEUE:
-> > > +               q =3D &iommu->fltq;
-> > > +               q->len =3D sizeof(struct riscv_iommu_fq_record);
-> > > +               count =3D iommu->fltq_len;
-> > > +               irq =3D iommu->irq_fltq;
-> > > +               irq_check =3D riscv_iommu_fltq_irq_check;
-> > > +               irq_process =3D riscv_iommu_fltq_process;
-> > > +               q->qbr =3D RISCV_IOMMU_REG_FQB;
-> > > +               q->qcr =3D RISCV_IOMMU_REG_FQCSR;
-> > > +               name =3D "fltq";
-> > > +               break;
-> > > +       case RISCV_IOMMU_PAGE_REQUEST_QUEUE:
-> > > +               q =3D &iommu->priq;
-> > > +               q->len =3D sizeof(struct riscv_iommu_pq_record);
-> > > +               count =3D iommu->priq_len;
-> > > +               irq =3D iommu->irq_priq;
-> > > +               irq_check =3D riscv_iommu_priq_irq_check;
-> > > +               irq_process =3D riscv_iommu_priq_process;
-> > > +               q->qbr =3D RISCV_IOMMU_REG_PQB;
-> > > +               q->qcr =3D RISCV_IOMMU_REG_PQCSR;
-> > > +               name =3D "priq";
-> > > +               break;
-> > > +       default:
-> > > +               dev_err(dev, "invalid queue interrupt index in queue_=
-init!\n");
-> > > +               return -EINVAL;
-> > > +       }
-> > > +
-> > > +       /* Polling not implemented */
-> > > +       if (!irq)
-> > > +               return -ENODEV;
-> > > +
-> > > +       /* Allocate queue in memory and set the base register */
-> > > +       order =3D ilog2(count);
-> > > +       do {
-> > > +               queue_size =3D q->len * (1ULL << order);
-> > > +               q->base =3D dmam_alloc_coherent(dev, queue_size, &q->=
-base_dma, GFP_KERNEL);
-> > > +               if (q->base || queue_size < PAGE_SIZE)
-> > > +                       break;
-> > > +
-> > > +               order--;
-> > > +       } while (1);
-> > > +
-> > > +       if (!q->base) {
-> > > +               dev_err(dev, "failed to allocate %s queue (cnt: %u)\n=
-", name, count);
-> > > +               return -ENOMEM;
-> > > +       }
-> > > +
-> > > +       q->cnt =3D 1ULL << order;
-> > > +
-> > > +       qbr_val =3D phys_to_ppn(q->base_dma) |
-> > > +           FIELD_PREP(RISCV_IOMMU_QUEUE_LOGSZ_FIELD, order - 1);
-> > > +
-> > > +       riscv_iommu_writeq(iommu, q->qbr, qbr_val);
-> > > +
-> > > +       /*
-> > > +        * Queue base registers are WARL, so it's possible that whate=
-ver we wrote
-> > > +        * there was illegal/not supported by the hw in which case we=
- need to make
-> > > +        * sure we set a supported PPN and/or queue size.
-> > > +        */
-> > > +       qbr_readback =3D riscv_iommu_readq(iommu, q->qbr);
-> > > +       if (qbr_readback =3D=3D qbr_val)
-> > > +               goto irq;
-> > > +
-> > > +       dmam_free_coherent(dev, queue_size, q->base, q->base_dma);
-> > > +
-> > > +       /* Get supported queue size */
-> > > +       order =3D FIELD_GET(RISCV_IOMMU_QUEUE_LOGSZ_FIELD, qbr_readba=
-ck) + 1;
-> > > +       q->cnt =3D 1ULL << order;
-> > > +       queue_size =3D q->len * q->cnt;
-> > > +
-> > > +       /*
-> > > +        * In case we also failed to set PPN, it means the field is h=
-ardcoded and the
-> > > +        * queue resides in I/O memory instead, so get its physical a=
-ddress and
-> > > +        * ioremap it.
-> > > +        */
-> > > +       qbr_paddr =3D ppn_to_phys(qbr_readback);
-> > > +       if (qbr_paddr !=3D q->base_dma) {
-> > > +               dev_info(dev,
-> > > +                        "hardcoded ppn in %s base register, using io=
- memory for the queue\n",
-> > > +                        name);
-> > > +               dev_info(dev, "queue length for %s set to %i\n", name=
-, q->cnt);
-> > > +               q->in_iomem =3D true;
-> > > +               q->base =3D ioremap(qbr_paddr, queue_size);
-> > > +               if (!q->base) {
-> > > +                       dev_err(dev, "failed to map %s queue (cnt: %u=
-)\n", name, q->cnt);
-> > > +                       return -ENOMEM;
-> > > +               }
-> > > +               q->base_dma =3D qbr_paddr;
-> > > +       } else {
-> > > +               /*
-> > > +                * We only failed to set the queue size, re-try to al=
-locate memory with
-> > > +                * the queue size supported by the hw.
-> > > +                */
-> > > +               dev_info(dev, "hardcoded queue size in %s base regist=
-er\n", name);
-> > > +               dev_info(dev, "retrying with queue length: %i\n", q->=
-cnt);
-> > > +               q->base =3D dmam_alloc_coherent(dev, queue_size, &q->=
-base_dma, GFP_KERNEL);
-> > > +               if (!q->base) {
-> > > +                       dev_err(dev, "failed to allocate %s queue (cn=
-t: %u)\n",
-> > > +                               name, q->cnt);
-> > > +                       return -ENOMEM;
-> > > +               }
-> > > +       }
-> > > +
-> > > +       qbr_val =3D phys_to_ppn(q->base_dma) |
-> > > +           FIELD_PREP(RISCV_IOMMU_QUEUE_LOGSZ_FIELD, order - 1);
-> > > +       riscv_iommu_writeq(iommu, q->qbr, qbr_val);
-> > > +
-> > > +       /* Final check to make sure hw accepted our write */
-> > > +       qbr_readback =3D riscv_iommu_readq(iommu, q->qbr);
-> > > +       if (qbr_readback !=3D qbr_val) {
-> > > +               dev_err(dev, "failed to set base register for %s\n", =
-name);
-> > > +               goto fail;
-> > > +       }
-> > > +
-> > > + irq:
-> > > +       if (request_threaded_irq(irq, irq_check, irq_process, IRQF_ON=
-ESHOT | IRQF_SHARED,
-> > > +                                dev_name(dev), q)) {
-> > > +               dev_err(dev, "fail to request irq %d for %s\n", irq, =
-name);
-> > > +               goto fail;
-> > > +       }
-> > > +
-> > > +       q->irq =3D irq;
-> > > +
-> > > +       /* Note: All RIO_xQ_EN/IE fields are in the same offsets */
-> > > +       ret =3D
-> > > +           riscv_iommu_queue_ctrl(iommu, q,
-> > > +                                  RISCV_IOMMU_QUEUE_ENABLE |
-> > > +                                  RISCV_IOMMU_QUEUE_INTR_ENABLE);
-> > > +       if (ret & RISCV_IOMMU_QUEUE_BUSY) {
-> > > +               dev_err(dev, "%s init timeout\n", name);
-> > > +               ret =3D -EBUSY;
-> > > +               goto fail;
-> > > +       }
-> > > +
-> > > +       return 0;
-> > > +
-> > > + fail:
-> > > +       riscv_iommu_queue_free(iommu, q);
-> > > +       return 0;
-> > > +}
-> > > +
-> > > +/*
-> > > + * I/O MMU Command queue chapter 3.1
-> > > + */
-> > > +
-> > > +static inline void riscv_iommu_cmd_inval_vma(struct riscv_iommu_comm=
-and *cmd)
-> > > +{
-> > > +       cmd->dword0 =3D
-> > > +           FIELD_PREP(RISCV_IOMMU_CMD_OPCODE,
-> > > +                      RISCV_IOMMU_CMD_IOTINVAL_OPCODE) | FIELD_PREP(=
-RISCV_IOMMU_CMD_FUNC,
-> > > +                                                                    =
-RISCV_IOMMU_CMD_IOTINVAL_FUNC_VMA);
-> > > +       cmd->dword1 =3D 0;
-> > > +}
-> > > +
-> > > +static inline void riscv_iommu_cmd_inval_set_addr(struct riscv_iommu=
-_command *cmd,
-> > > +                                                 u64 addr)
-> > > +{
-> > > +       cmd->dword0 |=3D RISCV_IOMMU_CMD_IOTINVAL_AV;
-> > > +       cmd->dword1 =3D addr;
-> > > +}
-> > > +
-> > > +static inline void riscv_iommu_cmd_inval_set_pscid(struct riscv_iomm=
-u_command *cmd,
-> > > +                                                  unsigned pscid)
-> > > +{
-> > > +       cmd->dword0 |=3D FIELD_PREP(RISCV_IOMMU_CMD_IOTINVAL_PSCID, p=
-scid) |
-> > > +           RISCV_IOMMU_CMD_IOTINVAL_PSCV;
-> > > +}
-> > > +
-> > > +static inline void riscv_iommu_cmd_inval_set_gscid(struct riscv_iomm=
-u_command *cmd,
-> > > +                                                  unsigned gscid)
-> > > +{
-> > > +       cmd->dword0 |=3D FIELD_PREP(RISCV_IOMMU_CMD_IOTINVAL_GSCID, g=
-scid) |
-> > > +           RISCV_IOMMU_CMD_IOTINVAL_GV;
-> > > +}
-> > > +
-> > > +static inline void riscv_iommu_cmd_iofence(struct riscv_iommu_comman=
-d *cmd)
-> > > +{
-> > > +       cmd->dword0 =3D FIELD_PREP(RISCV_IOMMU_CMD_OPCODE, RISCV_IOMM=
-U_CMD_IOFENCE_OPCODE) |
-> > > +           FIELD_PREP(RISCV_IOMMU_CMD_FUNC, RISCV_IOMMU_CMD_IOFENCE_=
-FUNC_C);
-> > > +       cmd->dword1 =3D 0;
-> > > +}
-> > > +
-> > > +static inline void riscv_iommu_cmd_iofence_set_av(struct riscv_iommu=
-_command *cmd,
-> > > +                                                 u64 addr, u32 data)
-> > > +{
-> > > +       cmd->dword0 =3D FIELD_PREP(RISCV_IOMMU_CMD_OPCODE, RISCV_IOMM=
-U_CMD_IOFENCE_OPCODE) |
-> > > +           FIELD_PREP(RISCV_IOMMU_CMD_FUNC, RISCV_IOMMU_CMD_IOFENCE_=
-FUNC_C) |
-> > > +           FIELD_PREP(RISCV_IOMMU_CMD_IOFENCE_DATA, data) | RISCV_IO=
-MMU_CMD_IOFENCE_AV;
-> > > +       cmd->dword1 =3D (addr >> 2);
-> > > +}
-> > > +
-> > > +static inline void riscv_iommu_cmd_iodir_inval_ddt(struct riscv_iomm=
-u_command *cmd)
-> > > +{
-> > > +       cmd->dword0 =3D FIELD_PREP(RISCV_IOMMU_CMD_OPCODE, RISCV_IOMM=
-U_CMD_IODIR_OPCODE) |
-> > > +           FIELD_PREP(RISCV_IOMMU_CMD_FUNC, RISCV_IOMMU_CMD_IODIR_FU=
-NC_INVAL_DDT);
-> > > +       cmd->dword1 =3D 0;
-> > > +}
-> > > +
-> > > +static inline void riscv_iommu_cmd_iodir_inval_pdt(struct riscv_iomm=
-u_command *cmd)
-> > > +{
-> > > +       cmd->dword0 =3D FIELD_PREP(RISCV_IOMMU_CMD_OPCODE, RISCV_IOMM=
-U_CMD_IODIR_OPCODE) |
-> > > +           FIELD_PREP(RISCV_IOMMU_CMD_FUNC, RISCV_IOMMU_CMD_IODIR_FU=
-NC_INVAL_PDT);
-> > > +       cmd->dword1 =3D 0;
-> > > +}
-> > > +
-> > > +static inline void riscv_iommu_cmd_iodir_set_did(struct riscv_iommu_=
-command *cmd,
-> > > +                                                unsigned devid)
-> > > +{
-> > > +       cmd->dword0 |=3D
-> > > +           FIELD_PREP(RISCV_IOMMU_CMD_IODIR_DID, devid) | RISCV_IOMM=
-U_CMD_IODIR_DV;
-> > > +}
-> > > +
-> > > +/* TODO: Convert into lock-less MPSC implementation. */
-> > > +static bool riscv_iommu_post_sync(struct riscv_iommu_device *iommu,
-> > > +                                 struct riscv_iommu_command *cmd, bo=
-ol sync)
-> > > +{
-> > > +       u32 head, tail, next, last;
-> > > +       unsigned long flags;
-> > > +
-> > > +       spin_lock_irqsave(&iommu->cq_lock, flags);
-> > > +       head =3D riscv_iommu_readl(iommu, RISCV_IOMMU_REG_CQH) & (iom=
-mu->cmdq.cnt - 1);
-> > > +       tail =3D riscv_iommu_readl(iommu, RISCV_IOMMU_REG_CQT) & (iom=
-mu->cmdq.cnt - 1);
-> > > +       last =3D iommu->cmdq.lui;
-> > > +       if (tail !=3D last) {
-> > > +               spin_unlock_irqrestore(&iommu->cq_lock, flags);
-> > > +               /*
-> > > +                * FIXME: This is a workaround for dropped MMIO write=
-s/reads on QEMU platform.
-> > > +                *        While debugging of the problem is still ong=
-oing, this provides
-> > > +                *        a simple impolementation of try-again polic=
-y.
-> > > +                *        Will be changed to lock-less algorithm in t=
-he feature.
-> > > +                */
-> > > +               dev_dbg(iommu->dev, "IOMMU CQT: %x !=3D %x (1st)\n", =
-last, tail);
-> > > +               spin_lock_irqsave(&iommu->cq_lock, flags);
-> > > +               tail =3D
-> > > +                   riscv_iommu_readl(iommu, RISCV_IOMMU_REG_CQT) & (=
-iommu->cmdq.cnt - 1);
-> > > +               last =3D iommu->cmdq.lui;
-> > > +               if (tail !=3D last) {
-> > > +                       spin_unlock_irqrestore(&iommu->cq_lock, flags=
-);
-> > > +                       dev_dbg(iommu->dev, "IOMMU CQT: %x !=3D %x (2=
-nd)\n", last, tail);
-> > > +                       spin_lock_irqsave(&iommu->cq_lock, flags);
-> > > +               }
-> > > +       }
-> > > +
-> > > +       next =3D (last + 1) & (iommu->cmdq.cnt - 1);
-> > > +       if (next !=3D head) {
-> > > +               struct riscv_iommu_command *ptr =3D iommu->cmdq.base;
-> > > +               ptr[last] =3D *cmd;
-> > > +               wmb();
-> > > +               riscv_iommu_writel(iommu, RISCV_IOMMU_REG_CQT, next);
-> > > +               iommu->cmdq.lui =3D next;
-> > > +       }
-> > > +
-> > > +       spin_unlock_irqrestore(&iommu->cq_lock, flags);
-> > > +
-> > > +       if (sync && head !=3D next) {
-> > > +               cycles_t start_time =3D get_cycles();
-> > > +               while (1) {
-> > > +                       last =3D riscv_iommu_readl(iommu, RISCV_IOMMU=
-_REG_CQH) &
-> > > +                           (iommu->cmdq.cnt - 1);
-> > > +                       if (head < next && last >=3D next)
-> > > +                               break;
-> > > +                       if (head > next && last < head && last >=3D n=
-ext)
-> > > +                               break;
-> > > +                       if (RISCV_IOMMU_TIMEOUT < (get_cycles() - sta=
-rt_time)) {
-> >
-> > This condition will be imprecise, because here is not in irq disabled
-> > context, it will be scheduled out or preempted. When we come back
-> > here, it might be over 1 second, but the IOFENCE is actually
-> > completed.
-> >
->
-> Good point. Thank.
->
->
-> > > +                               dev_err(iommu->dev, "IOFENCE TIMEOUT\=
-n");
-> > > +                               return false;
-> > > +                       }
-> > > +                       cpu_relax();
-> > > +               }
-> > > +       }
-> > > +
-> > > +       return next !=3D head;
-> > > +}
-> > > +
-> > > +static bool riscv_iommu_post(struct riscv_iommu_device *iommu,
-> > > +                            struct riscv_iommu_command *cmd)
-> > > +{
-> > > +       return riscv_iommu_post_sync(iommu, cmd, false);
-> > > +}
-> > > +
-> > > +static bool riscv_iommu_iofence_sync(struct riscv_iommu_device *iomm=
-u)
-> > > +{
-> > > +       struct riscv_iommu_command cmd;
-> > > +       riscv_iommu_cmd_iofence(&cmd);
-> > > +       return riscv_iommu_post_sync(iommu, &cmd, true);
-> > > +}
-> > > +
-> > > +/* Command queue primary interrupt handler */
-> > > +static irqreturn_t riscv_iommu_cmdq_irq_check(int irq, void *data)
-> > > +{
-> > > +       struct riscv_iommu_queue *q =3D (struct riscv_iommu_queue *)d=
-ata;
-> > > +       struct riscv_iommu_device *iommu =3D
-> > > +           container_of(q, struct riscv_iommu_device, cmdq);
-> > > +       u32 ipsr =3D riscv_iommu_readl(iommu, RISCV_IOMMU_REG_IPSR);
-> > > +       if (ipsr & RISCV_IOMMU_IPSR_CIP)
-> > > +               return IRQ_WAKE_THREAD;
-> > > +       return IRQ_NONE;
-> > > +}
-> > > +
-> > > +/* Command queue interrupt hanlder thread function */
-> > > +static irqreturn_t riscv_iommu_cmdq_process(int irq, void *data)
-> > > +{
-> > > +       struct riscv_iommu_queue *q =3D (struct riscv_iommu_queue *)d=
-ata;
-> > > +       struct riscv_iommu_device *iommu;
-> > > +       unsigned ctrl;
-> > > +
-> > > +       iommu =3D container_of(q, struct riscv_iommu_device, cmdq);
-> > > +
-> > > +       /* Error reporting, clear error reports if any. */
-> > > +       ctrl =3D riscv_iommu_readl(iommu, RISCV_IOMMU_REG_CQCSR);
-> > > +       if (ctrl & (RISCV_IOMMU_CQCSR_CQMF |
-> > > +                   RISCV_IOMMU_CQCSR_CMD_TO | RISCV_IOMMU_CQCSR_CMD_=
-ILL)) {
-> > > +               riscv_iommu_queue_ctrl(iommu, &iommu->cmdq, ctrl);
-> > > +               dev_warn_ratelimited(iommu->dev,
-> > > +                                    "Command queue error: fault: %d =
-tout: %d err: %d\n",
-> > > +                                    !!(ctrl & RISCV_IOMMU_CQCSR_CQMF=
-),
-> > > +                                    !!(ctrl & RISCV_IOMMU_CQCSR_CMD_=
-TO),
-> > > +                                    !!(ctrl & RISCV_IOMMU_CQCSR_CMD_=
-ILL));
-> >
-> > We need to handle the error by either adjusting the tail to remove the
-> > failed command or fixing the failed command itself. Otherwise, the
-> > failed command will keep in the queue and IOMMU will try to execute
-> > it. I guess the first option might be easier to implement.
-> >
->
-> Correct. Thanks for pointing this out.
-> Error handling / recovery was not pushed in this series. There is
-> work-in-progress series to handle various types of failures, including
-> command processing errors, DDT misconfiguration, queue overflows,
-> device reported faults handling, etc.  I can bring some of the error
-> handling here, if needed. Otherwise I'd prefer to keep it as separate
-> series, sent out once this one is merged.
+> +                       ddtp =3D riscv_iommu_get_ddtp(iommu);
+> +                       ddtp_paddr =3D ppn_to_phys(ddtp);
+> +                       if (ddtp_paddr) {
+> +                               dev_warn(dev, "ddtp at 0x%llx\n", ddtp_pa=
+ddr);
+> +                               iommu->ddtp =3D
+> +                                   (unsigned long)ioremap(ddtp_paddr, PA=
+GE_SIZE);
+> +                               iommu->ddtp_in_iomem =3D true;
+> +                       } else {
+> +                               iommu->ddtp =3D get_zeroed_page(GFP_KERNE=
+L);
+> +                       }
+> +               }
+> +               if (!iommu->ddtp)
+> +                       return -ENOMEM;
+> +
+> +               ddtp =3D FIELD_PREP(RISCV_IOMMU_DDTP_MODE, mode) |
+> +                   phys_to_ppn(__pa(iommu->ddtp));
+> +
+> +               break;
+> +       default:
+> +               return -EINVAL;
+> +       }
+> +
+> +       riscv_iommu_writeq(iommu, RISCV_IOMMU_REG_DDTP, ddtp);
+> +       ddtp =3D riscv_iommu_get_ddtp(iommu);
+> +       if (ddtp & RISCV_IOMMU_DDTP_BUSY) {
+> +               dev_warn(dev, "timeout when setting ddtp (ddt mode: %i)\n=
+", mode);
+> +               return -EBUSY;
+> +       }
+> +
+> +       mode_readback =3D FIELD_GET(RISCV_IOMMU_DDTP_MODE, ddtp);
+> +       dev_info(dev, "mode_readback: %i, mode: %i\n", mode_readback, mod=
+e);
+> +       if (mode_readback !=3D mode) {
+> +               /*
+> +                * Mode field is WARL, an I/O MMU may support a subset of
+> +                * directory table levels in which case if we tried to se=
+t
+> +                * an unsupported number of levels we'll readback either
+> +                * a valid xLVL or off/bare. If we got off/bare, try agai=
+n
+> +                * with a smaller xLVL.
+> +                */
+> +               if (mode_readback < RISCV_IOMMU_DDTP_MODE_1LVL &&
+> +                   mode > RISCV_IOMMU_DDTP_MODE_1LVL) {
+> +                       mode--;
+> +                       goto retry;
+> +               }
+> +
+> +               /*
+> +                * We tried all supported xLVL modes and still got off/ba=
+re instead,
+> +                * an I/O MMU must support at least one supported xLVL mo=
+de so something
+> +                * went very wrong.
+> +                */
+> +               if (mode_readback < RISCV_IOMMU_DDTP_MODE_1LVL &&
+> +                   mode =3D=3D RISCV_IOMMU_DDTP_MODE_1LVL)
+> +                       goto fail;
+> +
+> +               /*
+> +                * We tried setting off or bare and got something else ba=
+ck, something
+> +                * went very wrong since off/bare is always legal.
+> +                */
+> +               if (mode < RISCV_IOMMU_DDTP_MODE_1LVL)
+> +                       goto fail;
+> +
+> +               /*
+> +                * We tried setting an xLVL mode but got another xLVL mod=
+e that
+> +                * we don't support (e.g. a custom one).
+> +                */
+> +               if (mode_readback > RISCV_IOMMU_DDTP_MODE_MAX)
+> +                       goto fail;
+> +
+> +               /* We tried setting an xLVL mode but got another supporte=
+d xLVL mode */
+> +               mode =3D mode_readback;
+> +       }
+> +
+> +       if (mode !=3D requested_mode)
+> +               dev_warn(dev, "unsupported DDT mode requested (%i), using=
+ %i instead\n",
+> +                        requested_mode, mode);
+> +
+> +       iommu->ddt_mode =3D mode;
+> +       dev_info(dev, "ddt_mode: %i\n", iommu->ddt_mode);
+> +       return 0;
+> +
+> + fail:
+> +       dev_err(dev, "failed to set DDT mode, tried: %i and got %i\n", mo=
+de,
+> +               mode_readback);
+> +       riscv_iommu_ddt_cleanup(iommu);
+> +       return -EINVAL;
+> +}
+> +
+> +/*
+> + * Common I/O MMU driver probe/teardown
+> + */
+> +
+> +static const struct iommu_domain_ops riscv_iommu_domain_ops =3D {
+> +       .free =3D riscv_iommu_domain_free,
+> +       .attach_dev =3D riscv_iommu_attach_dev,
 
-It sounds good to me, thanks.
+Could I know why there is no implementation of '.detach_dev' ? It
+seems that we need to clear something when device is detached, such as
+device context.
 
+> +       .map_pages =3D riscv_iommu_map_pages,
+> +       .unmap_pages =3D riscv_iommu_unmap_pages,
+> +       .iova_to_phys =3D riscv_iommu_iova_to_phys,
+> +       .iotlb_sync =3D riscv_iommu_iotlb_sync,
+> +       .iotlb_sync_map =3D riscv_iommu_iotlb_sync_map,
+> +       .flush_iotlb_all =3D riscv_iommu_flush_iotlb_all,
+> +};
+> +
+> +static const struct iommu_ops riscv_iommu_ops =3D {
+> +       .owner =3D THIS_MODULE,
+> +       .pgsize_bitmap =3D SZ_4K | SZ_2M | SZ_512M,
+> +       .capable =3D riscv_iommu_capable,
+> +       .domain_alloc =3D riscv_iommu_domain_alloc,
+> +       .probe_device =3D riscv_iommu_probe_device,
+> +       .probe_finalize =3D riscv_iommu_probe_finalize,
+> +       .release_device =3D riscv_iommu_release_device,
+> +       .device_group =3D riscv_iommu_device_group,
+> +       .get_resv_regions =3D riscv_iommu_get_resv_regions,
+> +       .of_xlate =3D riscv_iommu_of_xlate,
+> +       .default_domain_ops =3D &riscv_iommu_domain_ops,
+> +};
+> +
+> +void riscv_iommu_remove(struct riscv_iommu_device *iommu)
+> +{
+> +       iommu_device_unregister(&iommu->iommu);
+> +       riscv_iommu_enable(iommu, RISCV_IOMMU_DDTP_MODE_OFF);
+> +}
+> +
+> +int riscv_iommu_init(struct riscv_iommu_device *iommu)
+> +{
+> +       struct device *dev =3D iommu->dev;
+> +       u32 fctl =3D 0;
+> +       int ret;
+> +
+> +       iommu->eps =3D RB_ROOT;
+> +
+> +       fctl =3D riscv_iommu_readl(iommu, RISCV_IOMMU_REG_FCTL);
+> +
+> +#ifdef CONFIG_CPU_BIG_ENDIAN
+> +       if (!(cap & RISCV_IOMMU_CAP_END)) {
+> +               dev_err(dev, "IOMMU doesn't support Big Endian\n");
+> +               return -EIO;
+> +       } else if (!(fctl & RISCV_IOMMU_FCTL_BE)) {
+> +               fctl |=3D FIELD_PREP(RISCV_IOMMU_FCTL_BE, 1);
+> +               riscv_iommu_writel(iommu, RISCV_IOMMU_REG_FCTL, fctl);
+> +       }
+> +#endif
+> +
+> +       /* Clear any pending interrupt flag. */
+> +       riscv_iommu_writel(iommu, RISCV_IOMMU_REG_IPSR,
+> +                          RISCV_IOMMU_IPSR_CIP |
+> +                          RISCV_IOMMU_IPSR_FIP |
+> +                          RISCV_IOMMU_IPSR_PMIP | RISCV_IOMMU_IPSR_PIP);
+> +       spin_lock_init(&iommu->cq_lock);
+> +       mutex_init(&iommu->eps_mutex);
+> +
+> +       ret =3D riscv_iommu_enable(iommu, RISCV_IOMMU_DDTP_MODE_BARE);
+> +
+> +       if (ret) {
+> +               dev_err(dev, "cannot enable iommu device (%d)\n", ret);
+> +               goto fail;
+> +       }
+> +
+> +       ret =3D iommu_device_register(&iommu->iommu, &riscv_iommu_ops, de=
+v);
+> +       if (ret) {
+> +               dev_err(dev, "cannot register iommu interface (%d)\n", re=
+t);
+> +               iommu_device_sysfs_remove(&iommu->iommu);
+> +               goto fail;
+> +       }
+> +
+> +       return 0;
+> + fail:
+> +       riscv_iommu_enable(iommu, RISCV_IOMMU_DDTP_MODE_OFF);
+> +       return ret;
+> +}
+> diff --git a/drivers/iommu/riscv/iommu.h b/drivers/iommu/riscv/iommu.h
+> new file mode 100644
+> index 000000000000..7baefd3630b3
+> --- /dev/null
+> +++ b/drivers/iommu/riscv/iommu.h
+> @@ -0,0 +1,115 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/*
+> + * Copyright =C2=A9 2022-2023 Rivos Inc.
+> + * Copyright =C2=A9 2023 FORTH-ICS/CARV
+> + *
+> + * RISC-V Ziommu - IOMMU Interface Specification.
+> + *
+> + * Authors
+> + *     Tomasz Jeznach <tjeznach@rivosinc.com>
+> + *     Nick Kossifidis <mick@ics.forth.gr>
+> + */
+> +
+> +#ifndef _RISCV_IOMMU_H_
+> +#define _RISCV_IOMMU_H_
+> +
+> +#include <linux/types.h>
+> +#include <linux/iova.h>
+> +#include <linux/io.h>
+> +#include <linux/idr.h>
+> +#include <linux/list.h>
+> +#include <linux/iommu.h>
+> +#include <linux/io-pgtable.h>
+> +
+> +#include "iommu-bits.h"
+> +
+> +#define IOMMU_PAGE_SIZE_4K     BIT_ULL(12)
+> +#define IOMMU_PAGE_SIZE_2M     BIT_ULL(21)
+> +#define IOMMU_PAGE_SIZE_1G     BIT_ULL(30)
+> +#define IOMMU_PAGE_SIZE_512G   BIT_ULL(39)
+> +
+> +struct riscv_iommu_device {
+> +       struct iommu_device iommu;      /* iommu core interface */
+> +       struct device *dev;             /* iommu hardware */
+> +
+> +       /* hardware control register space */
+> +       void __iomem *reg;
+> +       resource_size_t reg_phys;
+> +
+> +       /* IRQs for the various queues */
+> +       int irq_cmdq;
+> +       int irq_fltq;
+> +       int irq_pm;
+> +       int irq_priq;
+> +
+> +       /* supported and enabled hardware capabilities */
+> +       u64 cap;
+> +
+> +       /* global lock, to be removed */
+> +       spinlock_t cq_lock;
+> +
+> +       /* device directory table root pointer and mode */
+> +       unsigned long ddtp;
+> +       unsigned ddt_mode;
+> +       bool ddtp_in_iomem;
+> +
+> +       /* Connected end-points */
+> +       struct rb_root eps;
+> +       struct mutex eps_mutex;
+> +};
+> +
+> +struct riscv_iommu_domain {
+> +       struct iommu_domain domain;
+> +
+> +       struct list_head endpoints;
+> +       struct mutex lock;
+> +       struct riscv_iommu_device *iommu;
+> +
+> +       unsigned mode;          /* RIO_ATP_MODE_* enum */
+> +       unsigned pscid;         /* RISC-V IOMMU PSCID */
+> +
+> +       pgd_t *pgd_root;        /* page table root pointer */
+> +};
+> +
+> +/* Private dev_iommu_priv object, device-domain relationship. */
+> +struct riscv_iommu_endpoint {
+> +       struct device *dev;                     /* platform or PCI endpoi=
+nt device */
+> +       unsigned devid;                         /* PCI bus:device:functio=
+n number */
+> +       unsigned domid;                         /* PCI domain number, seg=
+ment */
+> +       struct rb_node node;                    /* device tracking node (=
+lookup by devid) */
+> +       struct riscv_iommu_device *iommu;       /* parent iommu device */
+> +
+> +       struct mutex lock;
+> +       struct list_head domain;                /* endpoint attached mana=
+ged domain */
+> +};
+> +
+> +/* Helper functions and macros */
+> +
+> +static inline u32 riscv_iommu_readl(struct riscv_iommu_device *iommu,
+> +                                   unsigned offset)
+> +{
+> +       return readl_relaxed(iommu->reg + offset);
+> +}
+> +
+> +static inline void riscv_iommu_writel(struct riscv_iommu_device *iommu,
+> +                                     unsigned offset, u32 val)
+> +{
+> +       writel_relaxed(val, iommu->reg + offset);
+> +}
+> +
+> +static inline u64 riscv_iommu_readq(struct riscv_iommu_device *iommu,
+> +                                   unsigned offset)
+> +{
+> +       return readq_relaxed(iommu->reg + offset);
+> +}
+> +
+> +static inline void riscv_iommu_writeq(struct riscv_iommu_device *iommu,
+> +                                     unsigned offset, u64 val)
+> +{
+> +       writeq_relaxed(val, iommu->reg + offset);
+> +}
+> +
+> +int riscv_iommu_init(struct riscv_iommu_device *iommu);
+> +void riscv_iommu_remove(struct riscv_iommu_device *iommu);
+> +
+> +#endif
+> --
+> 2.34.1
 >
-> > > +       }
-> > > +
-> > > +       /* Clear fault interrupt pending. */
-> > > +       riscv_iommu_writel(iommu, RISCV_IOMMU_REG_IPSR, RISCV_IOMMU_I=
-PSR_CIP);
-> > > +
-> > > +       return IRQ_HANDLED;
-> > > +}
-> > > +
-> > > +/*
-> > > + * Fault/event queue, chapter 3.2
-> > > + */
-> > > +
-> > > +static void riscv_iommu_fault_report(struct riscv_iommu_device *iomm=
-u,
-> > > +                                    struct riscv_iommu_fq_record *ev=
-ent)
-> > > +{
-> > > +       unsigned err, devid;
-> > > +
-> > > +       err =3D FIELD_GET(RISCV_IOMMU_FQ_HDR_CAUSE, event->hdr);
-> > > +       devid =3D FIELD_GET(RISCV_IOMMU_FQ_HDR_DID, event->hdr);
-> > > +
-> > > +       dev_warn_ratelimited(iommu->dev,
-> > > +                            "Fault %d devid: %d" " iotval: %llx iotv=
-al2: %llx\n", err,
-> > > +                            devid, event->iotval, event->iotval2);
-> > > +}
-> > > +
-> > > +/* Fault/event queue primary interrupt handler */
-> > > +static irqreturn_t riscv_iommu_fltq_irq_check(int irq, void *data)
-> > > +{
-> > > +       struct riscv_iommu_queue *q =3D (struct riscv_iommu_queue *)d=
-ata;
-> > > +       struct riscv_iommu_device *iommu =3D
-> > > +           container_of(q, struct riscv_iommu_device, fltq);
-> > > +       u32 ipsr =3D riscv_iommu_readl(iommu, RISCV_IOMMU_REG_IPSR);
-> > > +       if (ipsr & RISCV_IOMMU_IPSR_FIP)
-> > > +               return IRQ_WAKE_THREAD;
-> > > +       return IRQ_NONE;
-> > > +}
-> > > +
-> > > +/* Fault queue interrupt hanlder thread function */
-> > > +static irqreturn_t riscv_iommu_fltq_process(int irq, void *data)
-> > > +{
-> > > +       struct riscv_iommu_queue *q =3D (struct riscv_iommu_queue *)d=
-ata;
-> > > +       struct riscv_iommu_device *iommu;
-> > > +       struct riscv_iommu_fq_record *events;
-> > > +       unsigned cnt, len, idx, ctrl;
-> > > +
-> > > +       iommu =3D container_of(q, struct riscv_iommu_device, fltq);
-> > > +       events =3D (struct riscv_iommu_fq_record *)q->base;
-> > > +
-> > > +       /* Error reporting, clear error reports if any. */
-> > > +       ctrl =3D riscv_iommu_readl(iommu, RISCV_IOMMU_REG_FQCSR);
-> > > +       if (ctrl & (RISCV_IOMMU_FQCSR_FQMF | RISCV_IOMMU_FQCSR_FQOF))=
- {
-> > > +               riscv_iommu_queue_ctrl(iommu, &iommu->fltq, ctrl);
-> > > +               dev_warn_ratelimited(iommu->dev,
-> > > +                                    "Fault queue error: fault: %d fu=
-ll: %d\n",
-> > > +                                    !!(ctrl & RISCV_IOMMU_FQCSR_FQMF=
-),
-> > > +                                    !!(ctrl & RISCV_IOMMU_FQCSR_FQOF=
-));
-> > > +       }
-> > > +
-> > > +       /* Clear fault interrupt pending. */
-> > > +       riscv_iommu_writel(iommu, RISCV_IOMMU_REG_IPSR, RISCV_IOMMU_I=
-PSR_FIP);
-> > > +
-> > > +       /* Report fault events. */
-> > > +       do {
-> > > +               cnt =3D riscv_iommu_queue_consume(iommu, q, &idx);
-> > > +               if (!cnt)
-> > > +                       break;
-> > > +               for (len =3D 0; len < cnt; idx++, len++)
-> > > +                       riscv_iommu_fault_report(iommu, &events[idx])=
-;
-> > > +               riscv_iommu_queue_release(iommu, q, cnt);
-> > > +       } while (1);
-> > > +
-> > > +       return IRQ_HANDLED;
-> > > +}
-> > > +
-> > > +/*
-> > > + * Page request queue, chapter 3.3
-> > > + */
-> > > +
-> > >  /*
-> > >   * Register device for IOMMU tracking.
-> > >   */
-> > > @@ -97,6 +600,54 @@ static void riscv_iommu_add_device(struct riscv_i=
-ommu_device *iommu, struct devi
-> > >         mutex_unlock(&iommu->eps_mutex);
-> > >  }
-> > >
-> > > +/* Page request interface queue primary interrupt handler */
-> > > +static irqreturn_t riscv_iommu_priq_irq_check(int irq, void *data)
-> > > +{
-> > > +       struct riscv_iommu_queue *q =3D (struct riscv_iommu_queue *)d=
-ata;
-> > > +       struct riscv_iommu_device *iommu =3D
-> > > +           container_of(q, struct riscv_iommu_device, priq);
-> > > +       u32 ipsr =3D riscv_iommu_readl(iommu, RISCV_IOMMU_REG_IPSR);
-> > > +       if (ipsr & RISCV_IOMMU_IPSR_PIP)
-> > > +               return IRQ_WAKE_THREAD;
-> > > +       return IRQ_NONE;
-> > > +}
-> > > +
-> > > +/* Page request interface queue interrupt hanlder thread function */
-> > > +static irqreturn_t riscv_iommu_priq_process(int irq, void *data)
-> > > +{
-> > > +       struct riscv_iommu_queue *q =3D (struct riscv_iommu_queue *)d=
-ata;
-> > > +       struct riscv_iommu_device *iommu;
-> > > +       struct riscv_iommu_pq_record *requests;
-> > > +       unsigned cnt, idx, ctrl;
-> > > +
-> > > +       iommu =3D container_of(q, struct riscv_iommu_device, priq);
-> > > +       requests =3D (struct riscv_iommu_pq_record *)q->base;
-> > > +
-> > > +       /* Error reporting, clear error reports if any. */
-> > > +       ctrl =3D riscv_iommu_readl(iommu, RISCV_IOMMU_REG_PQCSR);
-> > > +       if (ctrl & (RISCV_IOMMU_PQCSR_PQMF | RISCV_IOMMU_PQCSR_PQOF))=
- {
-> > > +               riscv_iommu_queue_ctrl(iommu, &iommu->priq, ctrl);
-> > > +               dev_warn_ratelimited(iommu->dev,
-> > > +                                    "Page request queue error: fault=
-: %d full: %d\n",
-> > > +                                    !!(ctrl & RISCV_IOMMU_PQCSR_PQMF=
-),
-> > > +                                    !!(ctrl & RISCV_IOMMU_PQCSR_PQOF=
-));
-> > > +       }
-> > > +
-> > > +       /* Clear page request interrupt pending. */
-> > > +       riscv_iommu_writel(iommu, RISCV_IOMMU_REG_IPSR, RISCV_IOMMU_I=
-PSR_PIP);
-> > > +
-> > > +       /* Process page requests. */
-> > > +       do {
-> > > +               cnt =3D riscv_iommu_queue_consume(iommu, q, &idx);
-> > > +               if (!cnt)
-> > > +                       break;
-> > > +               dev_warn(iommu->dev, "unexpected %u page requests\n",=
- cnt);
-> > > +               riscv_iommu_queue_release(iommu, q, cnt);
-> > > +       } while (1);
-> > > +
-> > > +       return IRQ_HANDLED;
-> > > +}
-> > > +
-> > >  /*
-> > >   * Endpoint management
-> > >   */
-> > > @@ -350,7 +901,29 @@ static void riscv_iommu_flush_iotlb_range(struct=
- iommu_domain *iommu_domain,
-> > >                                           unsigned long *start, unsig=
-ned long *end,
-> > >                                           size_t *pgsize)
-> > >  {
-> > > -       /* Command interface not implemented */
-> > > +       struct riscv_iommu_domain *domain =3D iommu_domain_to_riscv(i=
-ommu_domain);
-> > > +       struct riscv_iommu_command cmd;
-> > > +       unsigned long iova;
-> > > +
-> > > +       if (domain->mode =3D=3D RISCV_IOMMU_DC_FSC_MODE_BARE)
-> > > +               return;
-> > > +
-> > > +       /* Domain not attached to an IOMMU! */
-> > > +       BUG_ON(!domain->iommu);
-> > > +
-> > > +       riscv_iommu_cmd_inval_vma(&cmd);
-> > > +       riscv_iommu_cmd_inval_set_pscid(&cmd, domain->pscid);
-> > > +
-> > > +       if (start && end && pgsize) {
-> > > +               /* Cover only the range that is needed */
-> > > +               for (iova =3D *start; iova <=3D *end; iova +=3D *pgsi=
-ze) {
-> > > +                       riscv_iommu_cmd_inval_set_addr(&cmd, iova);
-> > > +                       riscv_iommu_post(domain->iommu, &cmd);
-> > > +               }
-> > > +       } else {
-> > > +               riscv_iommu_post(domain->iommu, &cmd);
-> > > +       }
-> > > +       riscv_iommu_iofence_sync(domain->iommu);
-> > >  }
-> > >
-> > >  static void riscv_iommu_flush_iotlb_all(struct iommu_domain *iommu_d=
-omain)
-> > > @@ -610,6 +1183,9 @@ void riscv_iommu_remove(struct riscv_iommu_devic=
-e *iommu)
-> > >         iommu_device_unregister(&iommu->iommu);
-> > >         iommu_device_sysfs_remove(&iommu->iommu);
-> > >         riscv_iommu_enable(iommu, RISCV_IOMMU_DDTP_MODE_OFF);
-> > > +       riscv_iommu_queue_free(iommu, &iommu->cmdq);
-> > > +       riscv_iommu_queue_free(iommu, &iommu->fltq);
-> > > +       riscv_iommu_queue_free(iommu, &iommu->priq);
-> > >  }
-> > >
-> > >  int riscv_iommu_init(struct riscv_iommu_device *iommu)
-> > > @@ -632,6 +1208,16 @@ int riscv_iommu_init(struct riscv_iommu_device =
-*iommu)
-> > >         }
-> > >  #endif
-> > >
-> > > +       /*
-> > > +        * Assign queue lengths from module parameters if not already
-> > > +        * set on the device tree.
-> > > +        */
-> > > +       if (!iommu->cmdq_len)
-> > > +               iommu->cmdq_len =3D cmdq_length;
-> > > +       if (!iommu->fltq_len)
-> > > +               iommu->fltq_len =3D fltq_length;
-> > > +       if (!iommu->priq_len)
-> > > +               iommu->priq_len =3D priq_length;
-> > >         /* Clear any pending interrupt flag. */
-> > >         riscv_iommu_writel(iommu, RISCV_IOMMU_REG_IPSR,
-> > >                            RISCV_IOMMU_IPSR_CIP |
-> > > @@ -639,7 +1225,20 @@ int riscv_iommu_init(struct riscv_iommu_device =
-*iommu)
-> > >                            RISCV_IOMMU_IPSR_PMIP | RISCV_IOMMU_IPSR_P=
-IP);
-> > >         spin_lock_init(&iommu->cq_lock);
-> > >         mutex_init(&iommu->eps_mutex);
-> > > +       ret =3D riscv_iommu_queue_init(iommu, RISCV_IOMMU_COMMAND_QUE=
-UE);
-> > > +       if (ret)
-> > > +               goto fail;
-> > > +       ret =3D riscv_iommu_queue_init(iommu, RISCV_IOMMU_FAULT_QUEUE=
-);
-> > > +       if (ret)
-> > > +               goto fail;
-> > > +       if (!(iommu->cap & RISCV_IOMMU_CAP_ATS))
-> > > +               goto no_ats;
-> > > +
-> > > +       ret =3D riscv_iommu_queue_init(iommu, RISCV_IOMMU_PAGE_REQUES=
-T_QUEUE);
-> > > +       if (ret)
-> > > +               goto fail;
-> > >
-> > > + no_ats:
-> > >         ret =3D riscv_iommu_enable(iommu, RISCV_IOMMU_DDTP_MODE_BARE)=
-;
-> > >
-> > >         if (ret) {
-> > > @@ -663,5 +1262,8 @@ int riscv_iommu_init(struct riscv_iommu_device *=
-iommu)
-> > >         return 0;
-> > >   fail:
-> > >         riscv_iommu_enable(iommu, RISCV_IOMMU_DDTP_MODE_OFF);
-> > > +       riscv_iommu_queue_free(iommu, &iommu->priq);
-> > > +       riscv_iommu_queue_free(iommu, &iommu->fltq);
-> > > +       riscv_iommu_queue_free(iommu, &iommu->cmdq);
-> > >         return ret;
-> > >  }
-> > > diff --git a/drivers/iommu/riscv/iommu.h b/drivers/iommu/riscv/iommu.=
-h
-> > > index 7dc9baa59a50..04148a2a8ffd 100644
-> > > --- a/drivers/iommu/riscv/iommu.h
-> > > +++ b/drivers/iommu/riscv/iommu.h
-> > > @@ -28,6 +28,24 @@
-> > >  #define IOMMU_PAGE_SIZE_1G     BIT_ULL(30)
-> > >  #define IOMMU_PAGE_SIZE_512G   BIT_ULL(39)
-> > >
-> > > +struct riscv_iommu_queue {
-> > > +       dma_addr_t base_dma;    /* ring buffer bus address */
-> > > +       void *base;             /* ring buffer pointer */
-> > > +       size_t len;             /* single item length */
-> > > +       u32 cnt;                /* items count */
-> > > +       u32 lui;                /* last used index, consumer/producer=
- share */
-> > > +       unsigned qbr;           /* queue base register offset */
-> > > +       unsigned qcr;           /* queue control and status register =
-offset */
-> > > +       int irq;                /* registered interrupt number */
-> > > +       bool in_iomem;          /* indicates queue data are in I/O me=
-mory  */
-> > > +};
-> > > +
-> > > +enum riscv_queue_ids {
-> > > +       RISCV_IOMMU_COMMAND_QUEUE       =3D 0,
-> > > +       RISCV_IOMMU_FAULT_QUEUE         =3D 1,
-> > > +       RISCV_IOMMU_PAGE_REQUEST_QUEUE  =3D 2
-> > > +};
-> > > +
-> > >  struct riscv_iommu_device {
-> > >         struct iommu_device iommu;      /* iommu core interface */
-> > >         struct device *dev;             /* iommu hardware */
-> > > @@ -42,6 +60,11 @@ struct riscv_iommu_device {
-> > >         int irq_pm;
-> > >         int irq_priq;
-> > >
-> > > +       /* Queue lengths */
-> > > +       int cmdq_len;
-> > > +       int fltq_len;
-> > > +       int priq_len;
-> > > +
-> > >         /* supported and enabled hardware capabilities */
-> > >         u64 cap;
-> > >
-> > > @@ -53,6 +76,11 @@ struct riscv_iommu_device {
-> > >         unsigned ddt_mode;
-> > >         bool ddtp_in_iomem;
-> > >
-> > > +       /* hardware queues */
-> > > +       struct riscv_iommu_queue cmdq;
-> > > +       struct riscv_iommu_queue fltq;
-> > > +       struct riscv_iommu_queue priq;
-> > > +
-> > >         /* Connected end-points */
-> > >         struct rb_root eps;
-> > >         struct mutex eps_mutex;
-> > > --
-> > > 2.34.1
-> > >
-> > >
-> > > _______________________________________________
-> > > linux-riscv mailing list
-> > > linux-riscv@lists.infradead.org
-> > > http://lists.infradead.org/mailman/listinfo/linux-riscv
 >
-> best,
-> - Tomasz
+> _______________________________________________
+> linux-riscv mailing list
+> linux-riscv@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-riscv
