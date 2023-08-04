@@ -1,135 +1,125 @@
-Received: from mail-qv1-f45.google.com (mail-qv1-f45.google.com [209.85.219.45])
+Received: from mail-qk1-f172.google.com (mail-qk1-f172.google.com [209.85.222.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9DACDA940
-	for <iommu@lists.linux.dev>; Fri,  4 Aug 2023 13:12:47 +0000 (UTC)
-Received: by mail-qv1-f45.google.com with SMTP id 6a1803df08f44-63c70dc7ed2so12973856d6.0
-        for <iommu@lists.linux.dev>; Fri, 04 Aug 2023 06:12:47 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F0EA2A940
+	for <iommu@lists.linux.dev>; Fri,  4 Aug 2023 13:14:55 +0000 (UTC)
+Received: by mail-qk1-f172.google.com with SMTP id af79cd13be357-7659cb9c42aso162456485a.3
+        for <iommu@lists.linux.dev>; Fri, 04 Aug 2023 06:14:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1691154766; x=1691759566;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=K5KeRI+SV1FCdpo3Xm/MnSKW39DtNUa4J2xurlzsahs=;
-        b=IV7GHcIKmZuxG3dyOGK5NSIu9+sKjxUkR65EvD7EZVUlCnDTUb4zpV0EyPOxAPz4rr
-         ZiiX6SmaxndN66cnOxfAgguAT8sXtMb1vIjyN6+sA3+ujAI/i5B9NZHZ21cQK0nTRfby
-         JLFJi/j0nePnANK5s73Cp8Sqa6HwTgakv+G5n5K6KxL2pfnrURAhLGBhki6HhKSDPm/1
-         bhR5qb9ayVrxTMweB+O7LY/MJ4taGgPFsXA5RLI1a3YmegkVF9/j4R0MG2b5opW4VAAG
-         y79Io8bJkai1bWFpk43xD1qdnJfihqFaAekNEfL2CD1y2wktCHlIPFk3GimDB2C+VWaV
-         8k5Q==
+        d=ziepe.ca; s=google; t=1691154894; x=1691759694;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=RT+Sr6a/1l5Euyg5CbRauXZRb2HkKTFXhVii/k294wU=;
+        b=XvpFuuN7iWuwbhgGfa8ZonGOLfjkLaZQaaHtix7rdcG0zMDKfahK4ZiuAn03JQuUJ6
+         KysfwYa42AZsat0Tb0wQsTYf27p/Q2Lgf89LX7lgbhhnKBWiL8O0IYAeSH6B3qHI8/tZ
+         pXQtyoqqsvVDlxYL4sPRI8qNoBYg+nJtzM7mzs2PeLsEsunvoK/pbIG3Tp+pdLMnxbca
+         ptASkE91OGxSrtkvN+eJG3ePcZYGizQWLyjbnuskayV7Ds52bQftOvxNBjhkKbxmEoxh
+         jmqa4YjmiMROjpwiisHiwUiVFRiViFyvHDaUO0YsvByLdoHmzL1wfl1p0ttJbXe72VHe
+         FT0g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1691154766; x=1691759566;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=K5KeRI+SV1FCdpo3Xm/MnSKW39DtNUa4J2xurlzsahs=;
-        b=bLVTovBFcSUhi3WrLm/m9Rj4DRFWIlN3b+oGq/Z0AtKCrgu4O3NYxXoKiBb/hCtLxF
-         3S1x+w2wliQiXQy+IQ6SbOwCZbuzSJHisk+aRcbRQkTy6GB4d8OcjSMvmRXdmN/nDQmL
-         gou13FS8C0IyvofG84zhjGwZUMwgDe1fylWg5dnNHpZJfIznh/bKl84OZEKDBRAiFVSD
-         v4s89Nl4CiMM7vOg9oJBUTZcv+whQuG6tIa20wZeBMPsaRRUVk3G7G5FP2LJeqTAqCxs
-         IUvQqO5mYBGrvxxkRzBRhPPNXBVZ0lka+UCOvdIIq78sDYbVcRTwRObo0hKB2hrxbFl6
-         tluQ==
-X-Gm-Message-State: AOJu0Yz86AkQmSwBMRxJm2Mxec+3W5L1omLXzJciGdiMq0ux1uwV6qgX
-	PfaPDo7mkWDoVVVNkeiaU10SZw==
-X-Google-Smtp-Source: AGHT+IGI3w7HNaf+cHB70oPi/jS31g9ivt3CUdAgCt2wy35N+pxVe6WQ2Vi5iLY+Mv94CNY4L4Uelg==
-X-Received: by 2002:ad4:5945:0:b0:635:e368:1c70 with SMTP id eo5-20020ad45945000000b00635e3681c70mr1975728qvb.43.1691154766271;
-        Fri, 04 Aug 2023 06:12:46 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1691154894; x=1691759694;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=RT+Sr6a/1l5Euyg5CbRauXZRb2HkKTFXhVii/k294wU=;
+        b=LXhSpmmuc+b5xyAQnLouv8ioQ2cTF9tyxUCJt1KurAEclnZ6SdgsLHxhRmetpp2J1a
+         vHEHgs+W1x9G1USJy/TizWvbjIPdPhYaTOEITHEoHJeifiVVh43DhWzAWl39tPUH/qYY
+         pjR08lVNF+ZTokun3iyssv02AryP555OzIttnSclbvhbYsl0gHiLNCZFRqBaA8TF1SwA
+         bSfaQjPNFwphZJVjR+3esEpOmbctF7ZsVTHGVpgtLBzXB16aKsYdl/4HbZLu6rnJ/wTc
+         T0NR5Gi91ti0W6KLmoYTxCDZnwYH/FPlVyvlLP4Y65yL0H0JFwCEAQZStRnWuybPVOr+
+         PTzA==
+X-Gm-Message-State: AOJu0Yzqu3hKm+Slwdx+2cGlFW+3H8rr8Jo5Ti5FbtAQ7F/IayPytgG8
+	UM6ALieqTGx2+HaYUnvk1jY5Ag==
+X-Google-Smtp-Source: AGHT+IFE+snyU9foeOBpTxVd8H9BoT+CP9LyhiS+p4yq1iL0Z2vu6vAQ1MgUK2uHvhn0adCDVn0Ung==
+X-Received: by 2002:a0c:fe07:0:b0:635:f4e3:8842 with SMTP id x7-20020a0cfe07000000b00635f4e38842mr1334803qvr.48.1691154894581;
+        Fri, 04 Aug 2023 06:14:54 -0700 (PDT)
 Received: from ziepe.ca (hlfxns017vw-142-68-25-194.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.25.194])
-        by smtp.gmail.com with ESMTPSA id w19-20020a0cdf93000000b0062de6537febsm656462qvl.58.2023.08.04.06.12.45
+        by smtp.gmail.com with ESMTPSA id x13-20020a0ce24d000000b0063d31b493e1sm647972qvl.99.2023.08.04.06.14.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Aug 2023 06:12:45 -0700 (PDT)
+        Fri, 04 Aug 2023 06:14:54 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.95)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1qRubl-003ial-5v;
-	Fri, 04 Aug 2023 10:12:45 -0300
-Date: Fri, 4 Aug 2023 10:12:45 -0300
+	id 1qRudp-003icY-IQ;
+	Fri, 04 Aug 2023 10:14:53 -0300
+Date: Fri, 4 Aug 2023 10:14:53 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	"Liu, Yi L" <yi.l.liu@intel.com>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 0/2] iommu: Make pasid array per device
-Message-ID: <ZMz5TVrFvGf4jPCa@ziepe.ca>
-References: <20230801063125.34995-1-baolu.lu@linux.intel.com>
- <ZMplBfgSb8Hh9jLt@ziepe.ca>
- <BN9PR11MB527649D7E79E29291DA1A5538C08A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <ZMvFR52o86upAVrp@ziepe.ca>
- <15c6f634-f00a-dfa7-9759-161ec201460a@linux.intel.com>
- <ff357c87-f554-d89c-ce0e-e38886374da5@linux.intel.com>
+To: Vasant Hegde <vasant.hegde@amd.com>
+Cc: iommu@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com,
+	wei.huang2@amd.com, jsnitsel@redhat.com
+Subject: Re: [PATCH v3 15/16] iommu/amd: Initialize iommu_device->max_pasids
+Message-ID: <ZMz5zVbcEVX6Rrj2@ziepe.ca>
+References: <20230804064216.835544-1-vasant.hegde@amd.com>
+ <20230804064216.835544-16-vasant.hegde@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <ff357c87-f554-d89c-ce0e-e38886374da5@linux.intel.com>
+In-Reply-To: <20230804064216.835544-16-vasant.hegde@amd.com>
 
-On Fri, Aug 04, 2023 at 10:30:12AM +0800, Baolu Lu wrote:
-> On 2023/8/4 10:20, Baolu Lu wrote:
-> > On 2023/8/3 23:18, Jason Gunthorpe wrote:
-> > > On Thu, Aug 03, 2023 at 12:44:03AM +0000, Tian, Kevin wrote:
-> > > > > From: Jason Gunthorpe<jgg@ziepe.ca>
-> > > > > Sent: Wednesday, August 2, 2023 10:16 PM
-> > > > > 
-> > > > > On Tue, Aug 01, 2023 at 02:31:23PM +0800, Lu Baolu wrote:
-> > > > > > The PCI PASID enabling interface guarantees that the
-> > > > > > address space used
-> > > > > > by each PASID is unique. This is achieved by checking that the PCI ACS
-> > > > > > path is enabled for the device. If the path is not enabled, then the
-> > > > > > PASID feature cannot be used.
-> > > > > > 
-> > > > > >      if (!pci_acs_path_enabled(pdev, NULL, PCI_ACS_RR | PCI_ACS_UF))
-> > > > > >              return -EINVAL;
-> > > > > > 
-> > > > > > The PASID array is not an attribute of the IOMMU group. It is more
-> > > > > > natural to store the PASID array in the per-device IOMMU data. This
-> > > > > > makes the code clearer and easier to understand. No functional changes
-> > > > > > are intended.
-> > > > > Is there a reason to do this?
-> > > > > 
-> > > > > *PCI*  requires the ACS/etc because PCI kind of messed up how switches
-> > > > > handled PASID so PASID doesn't work otherwise.
-> > > > > 
-> > > > > But there is nothing that says other bus type can't have working
-> > > > > (non-PCI) PASID and still have device isolation issues.
-> > > > > 
-> > > > > So unless there is a really strong reason to do this we should keep
-> > > > > the PASID list in the group just like the domain.
-> > > > > 
-> > > > this comes from the consensus in [1].
-> > > > 
-> > > > [1]https://lore.kernel.org/linux-iommu/ZAcyEzN4102gPsWC@nvidia.com/
-> > > That consensus was that we don't have PASID support if there is
-> > > multi-device groups, at least in iommufd.. That makes sense. If we
-> > > want to change the core code to enforce this that also makes sense
-> > 
-> > In my initial plan, I had a third patch that would have enforced single-
-> > device groups for PASID interfaces in the core. But I ultimately dropped
-> > it because it is the fact for PCI devices, but I am not sure about other
-> > buses although perhaps there is none.
-> > 
-> > > But this series is just moving the array?
-> > 
-> > So I took the first step by moving the pasid_array from iommu group to
-> > the device. 😄
+On Fri, Aug 04, 2023 at 06:42:15AM +0000, Vasant Hegde wrote:
+> Commit 1adf3cc20d69 ("iommu: Add max_pasids field in struct iommu_device")
+> introduced a variable struct iommu_device.max_pasids to track max
+> PASIDS supported by each IOMMU.
 > 
-> In my mind, iommu_group was introduced to solve the PCI alias and P2P
-> transactions which bypass IOMMU translation. When we enter the PASID
-> world, the architecture should disallow these anymore. Hence, it's safe
-> to move pasid_array to device.
+> Let us initialize this field for AMD IOMMU. IOMMU core will use this value
+> to set max PASIDs per device (see __iommu_probe_device()).
 > 
-> This was the motivation of this series.
+> Also remove unused global 'amd_iommu_max_pasid' variable.
+> 
+> Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
+> ---
+>  drivers/iommu/amd/amd_iommu_types.h | 3 ---
+>  drivers/iommu/amd/init.c            | 9 ++-------
+>  2 files changed, 2 insertions(+), 10 deletions(-)
+> 
+> diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
+> index e114e4af0f05..0d339e022572 100644
+> --- a/drivers/iommu/amd/amd_iommu_types.h
+> +++ b/drivers/iommu/amd/amd_iommu_types.h
+> @@ -895,9 +895,6 @@ extern unsigned amd_iommu_aperture_order;
+>  /* allocation bitmap for domain ids */
+>  extern unsigned long *amd_iommu_pd_alloc_bitmap;
+>  
+> -/* Smallest max PASID supported by any IOMMU in the system */
+> -extern u32 amd_iommu_max_pasid;
+> -
+>  extern bool amd_iommu_force_isolation;
+>  
+>  /* Max levels of glxval supported */
+> diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+> index 1f56478ae74e..e0b0e48d3d38 100644
+> --- a/drivers/iommu/amd/init.c
+> +++ b/drivers/iommu/amd/init.c
+> @@ -185,8 +185,6 @@ static int amd_iommus_present;
+>  bool amd_iommu_np_cache __read_mostly;
+>  bool amd_iommu_iotlb_sup __read_mostly = true;
+>  
+> -u32 amd_iommu_max_pasid __read_mostly = ~0;
+> -
+>  static bool amd_iommu_pc_present __read_mostly;
+>  bool amdr_ivrs_remap_support __read_mostly;
+>  
+> @@ -2086,16 +2084,13 @@ static int __init iommu_init_pci(struct amd_iommu *iommu)
+>  
+>  	if (iommu_feature(iommu, FEATURE_GT)) {
+>  		int glxval;
+> -		u32 max_pasid;
+>  		u64 pasmax;
+>  
+>  		pasmax = iommu->features & FEATURE_PASID_MASK;
+>  		pasmax >>= FEATURE_PASID_SHIFT;
+> -		max_pasid  = (1 << (pasmax + 1)) - 1;
+> -
+> -		amd_iommu_max_pasid = min(amd_iommu_max_pasid, max_pasid);
+> +		iommu->iommu.max_pasids = (1 << (pasmax + 1)) - 1;
+>  
+> -		BUG_ON(amd_iommu_max_pasid & ~PASID_MASK);
+> +		BUG_ON(iommu->iommu.max_pasids & ~PASID_MASK);
 
-I think you should add a protection as well, directly prevent
-multi-device groups being used with pasid.
+You said you'd fix this to remove the BUG_ON.
 
 Jason
