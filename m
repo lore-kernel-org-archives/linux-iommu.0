@@ -1,159 +1,241 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.24])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CCEE35250
-	for <iommu@lists.linux.dev>; Fri,  4 Aug 2023 11:20:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D79DC433C9;
-	Fri,  4 Aug 2023 11:20:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1691148024;
-	bh=OH9tNAawAIMP1A/xA0K4f5BVgYSF09wC0Gk8UgehCOE=;
-	h=Subject:To:Cc:From:Date:In-Reply-To:From;
-	b=o1IOTkCdpfc1a6SG5MENapSZA0PsOhP0d4p0UksS4iWESDKx/bWlSGquDJkzvh7Jz
-	 29Eav1j4MshvXTMERhtVTIAeAKKZyHRYQ168xoVQz9WK1uNu5EZsgB1NW8KojBiihy
-	 vz8BhiudpzjHfdJdSPtennh2fofmHOxfXCjqI39Q=
-Subject: Patch "iommu/arm-smmu-v3: Work around MMU-600 erratum 1076982" has been added to the 6.1-stable tree
-To: baolu.lu@linux.intel.com,catalin.marinas@arm.com,corbet@lwn.net,eahariha@linux.microsoft.com,easwar.hariharan@microsoft.com,gregkh@linuxfoundation.org,iommu@lists.linux.dev,joro@8bytes.org,linux-arm-kernel@lists.infradead.org,nicolinc@nvidia.com,robin.murphy@arm.com,vladimir.oltean@nxp.com,will@kernel.org,yangyicong@hisilicon.com
-Cc: <stable-commits@vger.kernel.org>
-From: <gregkh@linuxfoundation.org>
-Date: Fri, 04 Aug 2023 13:20:00 +0200
-In-Reply-To: <20230802172100.1599164-2-eahariha@linux.microsoft.com>
-Message-ID: <2023080400-renter-unhitched-eb78@gregkh>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C258A940
+	for <iommu@lists.linux.dev>; Fri,  4 Aug 2023 13:05:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1691154303; x=1722690303;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=15PMzUNfl5GdLs22+epkf/Y31boWGTWsVemCl2EpGDQ=;
+  b=Zsm36vSz9IpiJq7xgzZn7SkHPjCqgVkvQ5JrVMnxrmU2VS7WtmDdG1G1
+   gFyOMffL9/lc/ZP0W5gC66ucmAkDsbI35UOsfD4uKnCdPqCjVbfeKTSo8
+   k3SvYr3zGooo8h9zCHoOVf2+Z1D+z1c9S7xADYUpzGExnsV4mlkytZM6i
+   2WvU3g/xspHAhabXJW1INzRKfHN+OVhspHgdTbQmp4uxdcpyeDpk/plqR
+   TC3M7nmkIUNz8eAWvkD8jF4wDYih5V0Pywjs+x3ukfbMlT3eVk5GoiXJ6
+   WkCVJgHF/qvvnPL4/YgpuiERF7SK/KRj4WZapLLvbkTPKOYv47ur1NS/7
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10792"; a="372894788"
+X-IronPort-AV: E=Sophos;i="6.01,255,1684825200"; 
+   d="scan'208";a="372894788"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Aug 2023 06:05:02 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10792"; a="844081715"
+X-IronPort-AV: E=Sophos;i="6.01,255,1684825200"; 
+   d="scan'208";a="844081715"
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
+  by fmsmga002.fm.intel.com with ESMTP; 04 Aug 2023 06:05:02 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.27; Fri, 4 Aug 2023 06:05:01 -0700
+Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.27 via Frontend Transport; Fri, 4 Aug 2023 06:05:01 -0700
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.174)
+ by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.27; Fri, 4 Aug 2023 06:05:01 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=UTYTrxDf7OyaiNnYaFQ7eGc5p2FA60mPeMRAgkUa6U30qC7Lm8ghCnBsnnLeJQwAaqhG1sDfDptsUYdoDy/Bqcji94BB0us8ujnIUbhF2+SP4LuZXCNWF7Ih1Ej0ZFDKX75rgLhPg8Lc3ao/4v/pBwcihbUHo8e/xMRkXslGMb+ss4SezXvH9RJJh7Ger71eprObFtIZ1BL7XefO/hbJ2AqEFYFz9FvJeG7bzS5yGcKzke3VkQ3OqI70AOM1uB3lsV0KX6+NGzEva7LBsWKmI0I/7BCmqHLAnP5Q31L4HEDuvQnc6xnHD9mMLiF1HhR1V1HDYcaSTp/HlHO1tTBp5Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=KctEiXP6AVBTiTIpWm4e7NHlZOpuiFZ/HYl59XshlR8=;
+ b=AYrts+H0PGOi1beWmwp0wttLdq75KU0BJWMfG7tb99iDGQdcjqD+LCBE6OQBRWeJU3598HjhO5DlDzlgc7KfMob1iT/+aR0ekAf2wRSqmD50MguONGnjzkNonGKANGDRcp+/8fLKSTU60J5Y8LFgBV8MPWqMeySR37evtPTsw2dH7g2dxS8GynXvJlkk9Ad+sky+abu5xky10VJgir+UANZIu+KqFPExnOFQ678pNzn5V9VEK9eBuMPIemrh7VoxRHdPD4VYxwPCSQIAGQyG4zvVdjwv1AdNcyebH8wA/S8hhRo7D6Vb7/8axKdTZNdreFxn8uJKzJ1D5ZkTn4F5jg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from DS0PR11MB7529.namprd11.prod.outlook.com (2603:10b6:8:141::20)
+ by BL1PR11MB5510.namprd11.prod.outlook.com (2603:10b6:208:31d::5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6652.21; Fri, 4 Aug
+ 2023 13:04:58 +0000
+Received: from DS0PR11MB7529.namprd11.prod.outlook.com
+ ([fe80::b556:42c4:772f:d47e]) by DS0PR11MB7529.namprd11.prod.outlook.com
+ ([fe80::b556:42c4:772f:d47e%7]) with mapi id 15.20.6652.021; Fri, 4 Aug 2023
+ 13:04:57 +0000
+From: "Liu, Yi L" <yi.l.liu@intel.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>, Jason Gunthorpe <jgg@nvidia.com>
+CC: "joro@8bytes.org" <joro@8bytes.org>, "alex.williamson@redhat.com"
+	<alex.williamson@redhat.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>, "cohuck@redhat.com"
+	<cohuck@redhat.com>, "eric.auger@redhat.com" <eric.auger@redhat.com>,
+	"nicolinc@nvidia.com" <nicolinc@nvidia.com>, "kvm@vger.kernel.org"
+	<kvm@vger.kernel.org>, "mjrosato@linux.ibm.com" <mjrosato@linux.ibm.com>,
+	"chao.p.peng@linux.intel.com" <chao.p.peng@linux.intel.com>,
+	"yi.y.sun@linux.intel.com" <yi.y.sun@linux.intel.com>, "peterx@redhat.com"
+	<peterx@redhat.com>, "jasowang@redhat.com" <jasowang@redhat.com>,
+	"shameerali.kolothum.thodi@huawei.com"
+	<shameerali.kolothum.thodi@huawei.com>, "lulu@redhat.com" <lulu@redhat.com>,
+	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>, "Duan,
+ Zhenzhong" <zhenzhong.duan@intel.com>
+Subject: RE: [PATCH v4 07/12] iommufd: Add data structure for Intel VT-d
+ stage-1 cache invalidation
+Thread-Topic: [PATCH v4 07/12] iommufd: Add data structure for Intel VT-d
+ stage-1 cache invalidation
+Thread-Index: AQHZvh/vmslv1BsHJ0KI1gktitpb2K/WrSKAgABmfoCAALXhgIACYSNw
+Date: Fri, 4 Aug 2023 13:04:57 +0000
+Message-ID: <DS0PR11MB75295187EE9B4EB64D8797CFC309A@DS0PR11MB7529.namprd11.prod.outlook.com>
+References: <20230724111335.107427-1-yi.l.liu@intel.com>
+ <20230724111335.107427-8-yi.l.liu@intel.com>
+ <BN9PR11MB52763681308D7950A51E18438C0BA@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <ZMpei2/CffaW97iU@nvidia.com>
+ <BN9PR11MB5276035683CE2AFB7B0F36D28C08A@BN9PR11MB5276.namprd11.prod.outlook.com>
+In-Reply-To: <BN9PR11MB5276035683CE2AFB7B0F36D28C08A@BN9PR11MB5276.namprd11.prod.outlook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: DS0PR11MB7529:EE_|BL1PR11MB5510:EE_
+x-ms-office365-filtering-correlation-id: a88991b0-f818-45ae-5aa7-08db94eb6773
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 5m9CiqpPEBt/gACMns3UbeDb7bW8GkW0fgY0fEuizS60MOF5X4Vk5ctCFXFvHF1p6fYZ9qLlTmuaMV3qg55X5ueDcLtNTgIMTUD1dlJLRLoI3C1BbacDs3UJBKmJ0MhxKnK5tvRcQg9T4+7eS3KxgxyC5LbO+ctRQgyITz5jTzN2lqyhQl/rtZCXlUaT8ti8myEQOa4vapWKFYjZx6lrtMTD3rjARKub9GHe3gVEBNPKdL16ZIjV44kPTZETo5Py0LpkL6x5SgYvrL92dkTSVu0yj4DljB9UbbUjS7n4F5XZer6YHmasqXYpq0RJB+gHrklyAKGdbLxU8qwi9eT7rqXk5w9HczNfOb7znFBGxZF+tFunQkoG8L50XPbr/ZcxtOGnNafgW9mvAaMc/r+hg/WD5NDFY8x0kQJ5vOxjx84nFBT3fYWFPc+E89t0lVwBo02tCpcNP2mpZcj3qqdmPlr8tcoxVNP3BkJYOcOLX03B/9/IHQ5kcEfl/xpNDfN8LVTXONZ9yOg8QTVCTH/wCEGGWZhM1emirCsPitlr86LQH2pakQ7wU+msjME/SsDe5csqM7Dah2zg3v9cbKpD4uni/1kXmMkdLvrYJzRAE4magkOW+z+Byw1SJAdKqxl8
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS0PR11MB7529.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(376002)(39860400002)(396003)(366004)(346002)(136003)(186006)(451199021)(1800799003)(66899021)(6506007)(38100700002)(122000001)(478600001)(54906003)(7416002)(33656002)(5660300002)(52536014)(8676002)(110136005)(64756008)(4326008)(66446008)(66476007)(66556008)(66946007)(76116006)(9686003)(71200400001)(86362001)(41300700001)(55016003)(316002)(8936002)(7696005)(82960400001)(38070700005)(2906002)(83380400001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?AIRbiFu/cI43GD0pUbrGMy+JZ5rTb19IandyFNwKvq9VL3Ub8X1N8k4Nby+D?=
+ =?us-ascii?Q?7Vw79pkMK9LZDXo8UyO4YbW2GuPL9FxErpv7RI/hIA/QGw6GO6zg/WOE4bNM?=
+ =?us-ascii?Q?G1F/Ugx9t0oWhnQw32fmaZQjnb18s9azAFBFpy8wGwjxPxoK+sSjjg5i6WAw?=
+ =?us-ascii?Q?n1D60Utm18ZH3wPDhNf7CWj4arlbzSKPUUwxIaUlEXsmZ5HcNU2U13IyRROm?=
+ =?us-ascii?Q?xtqGS/9QJqPzN2gqbNNUfi2ygPhCtWXg0BIWbG3JQuYrJbc3YQgp5Bc/9KKR?=
+ =?us-ascii?Q?HBY8TA/uSbxrAUUr2dy/LFeDUJlnqUgej93VPHB4kN4+FWbkOtlOVSB0Y4MJ?=
+ =?us-ascii?Q?NE2DRkUZyIaqJlOojfsgXDeB3sLm61F2vb/LT+DQAaU2whgrHD5yacgma/AK?=
+ =?us-ascii?Q?XSUvfb6WrINWd4DMHlLx8W/yEQtrdl9Rv48KNqfbkMn/fI/GdPVIxGpebauf?=
+ =?us-ascii?Q?1cYs6TFZiOkIsnXBFJ93FzyU2m2DEZPeTJUkJjhlOyqbvWJ91jlLkFAnSQoO?=
+ =?us-ascii?Q?30a//NVGZwGMTApIkX3eeZ+2kiR2N7ef6r1SmwwcSNM8jWbUSOgCMP+itkRX?=
+ =?us-ascii?Q?8PjE/eqoLXQh7/WewxHLZDXe2LejdSe+qnNakTcsXdz6taSxNzj/pCvDU8wJ?=
+ =?us-ascii?Q?qi9I4Re103zGjBfo6/BUZHK4rLImfn3zGxxkZYDPg00Xhn6oxyECOdKNRc07?=
+ =?us-ascii?Q?3pOy+2eQmhZFWCM7adq3vs+KmNA66nyZV30SYkXNO5uqCEn+WQEca/AGey64?=
+ =?us-ascii?Q?QzB1JrN46J9Nl0m/ureDumJ6Dn5X4u80A9mQLF3n+dwRt0nLYX1iWSq7ust0?=
+ =?us-ascii?Q?6n1+PC8j2sGzrTNWhO8lKcWwVZL8efGoasa39bKjLa3dgDYCXIrAPz+/uruF?=
+ =?us-ascii?Q?Qfr7hX5Ws9WoDcCu5IAU2/ZHckaQwTLJ8oNdFyvEtNUDB1sY2iDyENQi0OWU?=
+ =?us-ascii?Q?w7wYPVQbN88xgFuJKbcXbjoPxKBDWtX+9xMYHATYQnvpafvmOLubpnjMXajQ?=
+ =?us-ascii?Q?Xo8Kb1FtkZiCZvA1GUY/s+SD1dkSTMWOnnMLCa0y5KNAeUeJQYtNDf+88IRV?=
+ =?us-ascii?Q?et0qdfIE0xU1t7C+HI/p0nDXm8NHvrslz6+9BUwENSEx2D+NrIq9wZIMOYu1?=
+ =?us-ascii?Q?hnooBaHjwrLiPwlxxbaVqGk4i3d9NC1d/ULGaI5oWWmmU2c2FPmFFMxAzldZ?=
+ =?us-ascii?Q?LLxnq9dzlRzPWLN0OS2JWxYBZfZaNIrvpqkeqV77tQ9y9IfmKecDwJIXtcvD?=
+ =?us-ascii?Q?UoE23BkG3+ebh3Tte5DJ8MdwSp7IRBkWreS/ADYYBnHTJ5I8eW5eW89c3Jfz?=
+ =?us-ascii?Q?Q41OO9HAQku4fZAOkEY97Tl6F1/VufefzfwEjuvQaGkjBsbOhCzAnHYSNmHF?=
+ =?us-ascii?Q?snjStKZYeWxopUkmN5FpynFVqCxgbznMXFOL6Rab5/KAiXeKL7h2R6z9ISqv?=
+ =?us-ascii?Q?H2fAxCvDPwmSdr3FmR/sJWgX1ZtupPqe8g0jUmTdIYm4KArfqXcHnLEg1zv5?=
+ =?us-ascii?Q?2GZaBXZSefNHGWnMrIbId8kj7ELmCneSVKpB0o6aH3YGBGlk09tOAJn6cw?=
+ =?us-ascii?Q?=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ANSI_X3.4-1968
-Content-Transfer-Encoding: 8bit
-X-stable: commit
-X-Patchwork-Hint: ignore 
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DS0PR11MB7529.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a88991b0-f818-45ae-5aa7-08db94eb6773
+X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Aug 2023 13:04:57.6895
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 4dTc6IQlXDNZFAZFgxmMWK0tjZdD4Xxw3I54yg8qU+c7+X1ogtx8lGkvJo4cGW54ryIEFaH461zpKWVVMykxdw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR11MB5510
+X-OriginatorOrg: intel.com
 
+> From: Tian, Kevin <kevin.tian@intel.com>
+> Sent: Thursday, August 3, 2023 8:39 AM
+>=20
+> > From: Jason Gunthorpe <jgg@nvidia.com>
+> > Sent: Wednesday, August 2, 2023 9:48 PM
+> >
+> > On Wed, Aug 02, 2023 at 07:41:05AM +0000, Tian, Kevin wrote:
+> > > > +/**
+> > > > + * struct iommu_hwpt_vtd_s1_invalidate - Intel VT-d cache invalida=
+tion
+> > > > + *                                       (IOMMU_HWPT_TYPE_VTD_S1)
+> > > > + * @flags: Must be 0
+> > > > + * @entry_size: Size in bytes of each cache invalidation request
+> > > > + * @entry_nr_uptr: User pointer to the number of invalidation requ=
+ests.
+> > > > + *                 Kernel reads it to get the number of requests a=
+nd
+> > > > + *                 updates the buffer with the number of requests =
+that
+> > > > + *                 have been processed successfully. This pointer =
+must
+> > > > + *                 point to a __u32 type of memory location.
+> > > > + * @inv_data_uptr: Pointer to the cache invalidation requests
+> > > > + *
+> > > > + * The Intel VT-d specific invalidation data for a set of cache in=
+validation
+> > > > + * requests. Kernel loops the requests one-by-one and stops when
+> > failure
+> > > > + * is encountered. The number of handled requests is reported to u=
+ser
+> > by
+> > > > + * writing the buffer pointed by @entry_nr_uptr.
+> > > > + */
+> > > > +struct iommu_hwpt_vtd_s1_invalidate {
+> > > > +	__u32 flags;
+> > > > +	__u32 entry_size;
+> > > > +	__aligned_u64 entry_nr_uptr;
+> > > > +	__aligned_u64 inv_data_uptr;
+> > > > +};
+> > > > +
+> > >
+> > > I wonder whether this array can be defined directly in the common
+> > > struct iommu_hwpt_invalidate so there is no need for underlying
+> > > iommu driver to further deal with user buffers, including various
+> > > minsz/backward compat. check.
+> >
+> > You want to have an array and another chunk of data?
+> >
+> > What is the array for? To do batching?
+>=20
+> yes, it's for batching
+>=20
+> >
+> > It means we have to allocate memory on this path, that doesn't seem
+> > like the right direction for a performance improvement..
+>=20
+> It reuses the ucmd_buffer to avoid memory allocation:
 
-This is a note to let you know that I've just added the patch titled
+I guess your point is to copy each invalidation descriptor in the common
+layer and pass the descriptor to iommu driver. right?
 
-    iommu/arm-smmu-v3: Work around MMU-600 erratum 1076982
+> @@ -485,6 +485,12 @@ union ucmd_buffer {
+>  #ifdef CONFIG_IOMMUFD_TEST
+>  	struct iommu_test_cmd test;
+>  #endif
+> +	/*
+> +	 * hwpt_type specific structure used in the cache invalidation
+> +	 * path.
+> +	 */
+> +	struct iommu_hwpt_vtd_s1_invalidate vtd;
+> +	struct iommu_hwpt_vtd_s1_invalidate_desc req_vtd;
+>  };
+>=20
+> I don't quite like this way.
 
-to the 6.1-stable tree which can be found at:
-    http://www.kernel.org/git/?p=linux/kernel/git/stable/stable-queue.git;a=summary
+This is because each descriptor is stored in the uncmd_buffer. So
+Need to put the struct iommu_hwpt_vtd_s1_invalidate_desc here.
 
-The filename of the patch is:
-     iommu-arm-smmu-v3-work-around-mmu-600-erratum-1076982.patch
-and it can be found in the queue-6.1 subdirectory.
+> >
+> > Having the driver copy in a loop might be better
+> >
+>=20
+> Can you elaborate?
 
-If you, or anyone else, feels it should not be added to the stable tree,
-please let <stable@vger.kernel.org> know about it.
+I think Jason means the way in patch 09.
 
-
-From stable-owner@vger.kernel.org Wed Aug  2 19:21:17 2023
-From: Easwar Hariharan <eahariha@linux.microsoft.com>
-Date: Wed,  2 Aug 2023 17:20:57 +0000
-Subject: iommu/arm-smmu-v3: Work around MMU-600 erratum 1076982
-To: stable@vger.kernel.org
-Cc: easwar.hariharan@microsoft.com, Robin Murphy <robin.murphy@arm.com>, Nicolin Chen <nicolinc@nvidia.com>, Will Deacon <will@kernel.org>, Catalin Marinas <catalin.marinas@arm.com>, Jonathan Corbet <corbet@lwn.net>, Joerg Roedel <joro@8bytes.org>, Yicong Yang <yangyicong@hisilicon.com>, Vladimir Oltean <vladimir.oltean@nxp.com>, Lu Baolu <baolu.lu@linux.intel.com>, linux-arm-kernel@lists.infradead.org (moderated list:ARM64 PORT (AARCH64 ARCHITECTURE)), linux-doc@vger.kernel.org (open list:DOCUMENTATION), linux-kernel@vger.kernel.org (open list), iommu@lists.linux.dev (open list:IOMMU SUBSYSTEM)
-Message-ID: <20230802172100.1599164-2-eahariha@linux.microsoft.com>
-
-From: Robin Murphy <robin.murphy@arm.com>
-
-commit f322e8af35c7f23a8c08b595c38d6c855b2d836f upstream
-
-MMU-600 versions prior to r1p0 fail to correctly generate a WFE wakeup
-event when the command queue transitions fom full to non-full. We can
-easily work around this by simply hiding the SEV capability such that we
-fall back to polling for space in the queue - since MMU-600 implements
-MSIs we wouldn't expect to need SEV for sync completion either, so this
-should have little to no impact.
-
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
-Tested-by: Nicolin Chen <nicolinc@nvidia.com>
-Link: https://lore.kernel.org/r/08adbe3d01024d8382a478325f73b56851f76e49.1683731256.git.robin.murphy@arm.com
-Signed-off-by: Will Deacon <will@kernel.org>
-Signed-off-by: Easwar Hariharan <eahariha@linux.microsoft.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- Documentation/arm64/silicon-errata.rst      |    2 +
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c |   29 ++++++++++++++++++++++++++++
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |    6 +++++
- 3 files changed, 37 insertions(+)
-
---- a/Documentation/arm64/silicon-errata.rst
-+++ b/Documentation/arm64/silicon-errata.rst
-@@ -141,6 +141,8 @@ stable kernels.
- +----------------+-----------------+-----------------+-----------------------------+
- | ARM            | MMU-500         | #841119,826419  | N/A                         |
- +----------------+-----------------+-----------------+-----------------------------+
-+| ARM            | MMU-600         | #1076982        | N/A                         |
-++----------------+-----------------+-----------------+-----------------------------+
- +----------------+-----------------+-----------------+-----------------------------+
- | Broadcom       | Brahma-B53      | N/A             | ARM64_ERRATUM_845719        |
- +----------------+-----------------+-----------------+-----------------------------+
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -3410,6 +3410,33 @@ static int arm_smmu_device_reset(struct
- 	return 0;
- }
- 
-+#define IIDR_IMPLEMENTER_ARM		0x43b
-+#define IIDR_PRODUCTID_ARM_MMU_600	0x483
-+
-+static void arm_smmu_device_iidr_probe(struct arm_smmu_device *smmu)
-+{
-+	u32 reg;
-+	unsigned int implementer, productid, variant, revision;
-+
-+	reg = readl_relaxed(smmu->base + ARM_SMMU_IIDR);
-+	implementer = FIELD_GET(IIDR_IMPLEMENTER, reg);
-+	productid = FIELD_GET(IIDR_PRODUCTID, reg);
-+	variant = FIELD_GET(IIDR_VARIANT, reg);
-+	revision = FIELD_GET(IIDR_REVISION, reg);
-+
-+	switch (implementer) {
-+	case IIDR_IMPLEMENTER_ARM:
-+		switch (productid) {
-+		case IIDR_PRODUCTID_ARM_MMU_600:
-+			/* Arm erratum 1076982 */
-+			if (variant == 0 && revision <= 2)
-+				smmu->features &= ~ARM_SMMU_FEAT_SEV;
-+			break;
-+		}
-+		break;
-+	}
-+}
-+
- static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
- {
- 	u32 reg;
-@@ -3615,6 +3642,8 @@ static int arm_smmu_device_hw_probe(stru
- 
- 	smmu->ias = max(smmu->ias, smmu->oas);
- 
-+	arm_smmu_device_iidr_probe(smmu);
-+
- 	if (arm_smmu_sva_supported(smmu))
- 		smmu->features |= ARM_SMMU_FEAT_SVA;
- 
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-@@ -69,6 +69,12 @@
- #define IDR5_VAX			GENMASK(11, 10)
- #define IDR5_VAX_52_BIT			1
- 
-+#define ARM_SMMU_IIDR			0x18
-+#define IIDR_PRODUCTID			GENMASK(31, 20)
-+#define IIDR_VARIANT			GENMASK(19, 16)
-+#define IIDR_REVISION			GENMASK(15, 12)
-+#define IIDR_IMPLEMENTER		GENMASK(11, 0)
-+
- #define ARM_SMMU_CR0			0x20
- #define CR0_ATSCHK			(1 << 4)
- #define CR0_CMDQEN			(1 << 3)
-
-
-Patches currently in stable-queue which might be from stable-owner@vger.kernel.org are
-
-queue-6.1/iommu-arm-smmu-v3-document-nesting-related-errata.patch
-queue-6.1/iommu-arm-smmu-v3-add-explicit-feature-for-nesting.patch
-queue-6.1/iommu-arm-smmu-v3-document-mmu-700-erratum-2812531.patch
-queue-6.1/iommu-arm-smmu-v3-work-around-mmu-600-erratum-1076982.patch
+Regards,
+Yi Liu
