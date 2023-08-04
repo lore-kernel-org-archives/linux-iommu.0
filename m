@@ -1,34 +1,33 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.136])
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 23028A4E
-	for <iommu@lists.linux.dev>; Fri,  4 Aug 2023 01:59:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A86D1105
+	for <iommu@lists.linux.dev>; Fri,  4 Aug 2023 02:20:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1691114363; x=1722650363;
+  t=1691115634; x=1722651634;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=qPJ6wVTEhN0Xm5LsPItjDidUz03aXajdt1tgXSztyNE=;
-  b=fR6uHPUlZmKnqqYUf9xcS2DL1eQAogx7Y1AezO/W4I0eC6JWbQhScekc
-   cS5uXRVC3AAayqkeKd4S6ENqKtRtmlTZ0Hv8/tjjxzdzkZqFfmFWH7tLn
-   RwFxonA6BDJUJLQDgnVOzZxNm9aJrMibUNJbi9dXRoJAHFzBrJcMnSzph
-   /TR9c24bZR/T+QAPCdFIJluPFDrPUBwZr41ncJFBUgfdCFRFxI+ypfqKq
-   EDIfSjHcRDc+nBXhkl8/O0DZhjGW9VnRCzaYQYRy2Stndz8cF5ZtD0z5n
-   UCLH/4fiAcUNrLwtDIloTcECUfjxHaCxzqvn+GRQEZO1fwyGIgExf5yHq
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10791"; a="349633843"
+  bh=8RVBndkshGnvHV5Z1uI2lfdqXRdUsjPzvSMKu45GOx8=;
+  b=BE58ooKKb3UA43QiNRrMs/0ypd7WyDmrm6i8Uo1tDk1K1WFxAlYNiQFK
+   We3ErcdBcTTgR19hPULAxHwXTtx9wbDQ83h8gWAgweE5ozKZttdHGuFBY
+   Ewt8ZAbb6udOVvDQU5IclRmv+QvHjy2lxKUB3DCv+agdMpWWvm3SdBUnh
+   kRhcqB/OpEdwoPdLMe/vKxTAkl9yxQd2SWqsOq484b1eP5Nwgb9hOagdT
+   2JHYFDB3e2efPHl+yyAS0gGx3Ai0awOpjrdUQIsjPz9Loi4C6bbFp8HwO
+   M9kHAuwgU1rUFoiWw/KFB7y5etMCuDrOyCYJIuUGH2uqAZa/kms6buPtS
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10791"; a="456416917"
 X-IronPort-AV: E=Sophos;i="6.01,253,1684825200"; 
-   d="scan'208";a="349633843"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2023 18:59:21 -0700
+   d="scan'208";a="456416917"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2023 19:20:33 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10791"; a="723455022"
-X-IronPort-AV: E=Sophos;i="6.01,253,1684825200"; 
-   d="scan'208";a="723455022"
+X-IronPort-AV: E=Sophos;i="6.01,202,1684825200"; 
+   d="scan'208";a="873178606"
 Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.254.210.88]) ([10.254.210.88])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2023 18:59:14 -0700
-Message-ID: <51418f60-db2f-8ee3-ed9c-1a97d89774cf@linux.intel.com>
-Date: Fri, 4 Aug 2023 09:59:11 +0800
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2023 19:20:32 -0700
+Message-ID: <15c6f634-f00a-dfa7-9759-161ec201460a@linux.intel.com>
+Date: Fri, 4 Aug 2023 10:20:28 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -37,177 +36,71 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.13.0
-Cc: baolu.lu@linux.intel.com, cohuck@redhat.com, eric.auger@redhat.com,
- nicolinc@nvidia.com, kvm@vger.kernel.org, mjrosato@linux.ibm.com,
- chao.p.peng@linux.intel.com, yi.y.sun@linux.intel.com, peterx@redhat.com,
- jasowang@redhat.com, shameerali.kolothum.thodi@huawei.com, lulu@redhat.com,
- suravee.suthikulpanit@amd.com, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
- zhenzhong.duan@intel.com
-Subject: Re: [PATCH v5 3/4] iommufd: Add IOMMU_GET_HW_INFO
-To: Yi Liu <yi.l.liu@intel.com>, joro@8bytes.org, alex.williamson@redhat.com,
- jgg@nvidia.com, kevin.tian@intel.com, robin.murphy@arm.com
-References: <20230803143144.200945-1-yi.l.liu@intel.com>
- <20230803143144.200945-4-yi.l.liu@intel.com>
+Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Nicolin Chen <nicolinc@nvidia.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
+ Jacob Pan <jacob.jun.pan@linux.intel.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 0/2] iommu: Make pasid array per device
 Content-Language: en-US
+To: Jason Gunthorpe <jgg@ziepe.ca>, "Tian, Kevin" <kevin.tian@intel.com>
+References: <20230801063125.34995-1-baolu.lu@linux.intel.com>
+ <ZMplBfgSb8Hh9jLt@ziepe.ca>
+ <BN9PR11MB527649D7E79E29291DA1A5538C08A@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <ZMvFR52o86upAVrp@ziepe.ca>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20230803143144.200945-4-yi.l.liu@intel.com>
+In-Reply-To: <ZMvFR52o86upAVrp@ziepe.ca>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2023/8/3 22:31, Yi Liu wrote:
-> Under nested IOMMU translation, userspace owns the stage-1 translation
-> table (e.g. the stage-1 page table of Intel VT-d or the context table
-> of ARM SMMUv3, and etc.). Stage-1 translation tables are vendor specific,
-> and need to be compatiable with the underlying IOMMU hardware. Hence,
+On 2023/8/3 23:18, Jason Gunthorpe wrote:
+> On Thu, Aug 03, 2023 at 12:44:03AM +0000, Tian, Kevin wrote:
+>>> From: Jason Gunthorpe<jgg@ziepe.ca>
+>>> Sent: Wednesday, August 2, 2023 10:16 PM
+>>>
+>>> On Tue, Aug 01, 2023 at 02:31:23PM +0800, Lu Baolu wrote:
+>>>> The PCI PASID enabling interface guarantees that the address space used
+>>>> by each PASID is unique. This is achieved by checking that the PCI ACS
+>>>> path is enabled for the device. If the path is not enabled, then the
+>>>> PASID feature cannot be used.
+>>>>
+>>>>      if (!pci_acs_path_enabled(pdev, NULL, PCI_ACS_RR | PCI_ACS_UF))
+>>>>              return -EINVAL;
+>>>>
+>>>> The PASID array is not an attribute of the IOMMU group. It is more
+>>>> natural to store the PASID array in the per-device IOMMU data. This
+>>>> makes the code clearer and easier to understand. No functional changes
+>>>> are intended.
+>>> Is there a reason to do this?
+>>>
+>>> *PCI*  requires the ACS/etc because PCI kind of messed up how switches
+>>> handled PASID so PASID doesn't work otherwise.
+>>>
+>>> But there is nothing that says other bus type can't have working
+>>> (non-PCI) PASID and still have device isolation issues.
+>>>
+>>> So unless there is a really strong reason to do this we should keep
+>>> the PASID list in the group just like the domain.
+>>>
+>> this comes from the consensus in [1].
+>>
+>> [1]https://lore.kernel.org/linux-iommu/ZAcyEzN4102gPsWC@nvidia.com/
+> That consensus was that we don't have PASID support if there is
+> multi-device groups, at least in iommufd.. That makes sense. If we
+> want to change the core code to enforce this that also makes sense
 
-                  compatible
+In my initial plan, I had a third patch that would have enforced single-
+device groups for PASID interfaces in the core. But I ultimately dropped
+it because it is the fact for PCI devices, but I am not sure about other
+buses although perhaps there is none.
 
-> userspace should know the IOMMU hardware capability before creating and
-> configuring the stage-1 translation table to kernel.
-> 
-> This adds IOMMU_GET_HW_INFO ioctl to query the IOMMU hardware information
-> (a.k.a capability) for a given device. The returned data is vendor specific,
-> userspace needs to decode it with the structure mapped by the @out_data_type
-> field.
-> 
-> As only physical devices have IOMMU hardware, so this will return error
-> if the given device is not a physical device.
-> 
-> Co-developed-by: Nicolin Chen <nicolinc@nvidia.com>
-> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-> Signed-off-by: Yi Liu <yi.l.liu@intel.com>
-> ---
->   drivers/iommu/iommufd/main.c | 79 ++++++++++++++++++++++++++++++++++++
->   include/uapi/linux/iommufd.h | 36 ++++++++++++++++
->   2 files changed, 115 insertions(+)
-> 
-> diff --git a/drivers/iommu/iommufd/main.c b/drivers/iommu/iommufd/main.c
-> index 94c498b8fdf6..a0302bcaa97c 100644
-> --- a/drivers/iommu/iommufd/main.c
-> +++ b/drivers/iommu/iommufd/main.c
-> @@ -17,6 +17,7 @@
->   #include <linux/bug.h>
->   #include <uapi/linux/iommufd.h>
->   #include <linux/iommufd.h>
-> +#include "../iommu-priv.h"
->   
->   #include "io_pagetable.h"
->   #include "iommufd_private.h"
-> @@ -177,6 +178,81 @@ static int iommufd_destroy(struct iommufd_ucmd *ucmd)
->   	return 0;
->   }
->   
-> +static int iommufd_zero_fill_user(void __user *ptr, size_t bytes)
-> +{
-> +	int index = 0;
-> +
-> +	for (; index < bytes; index++) {
-> +		if (put_user(0, (uint8_t __user *)(ptr + index)))
-> +			return -EFAULT;
-> +	}
-> +	return 0;
-> +}
-> +
-> +static int iommufd_get_hw_info(struct iommufd_ucmd *ucmd)
-> +{
-> +	u32 hw_info_type = IOMMU_HW_INFO_TYPE_NONE;
-> +	struct iommu_hw_info *cmd = ucmd->cmd;
-> +	unsigned int length = 0, data_len;
-> +	struct iommufd_device *idev;
-> +	const struct iommu_ops *ops;
-> +	void __user *user_ptr;
-> +	void *data = NULL;
-> +	int rc = 0;
-> +
-> +	if (cmd->flags || cmd->__reserved || !cmd->data_len)
-> +		return -EOPNOTSUPP;
-> +
-> +	idev = iommufd_get_device(ucmd, cmd->dev_id);
-> +	if (IS_ERR(idev))
-> +		return PTR_ERR(idev);
-> +
-> +	user_ptr = u64_to_user_ptr(cmd->data_ptr);
-> +
-> +	ops = dev_iommu_ops(idev->dev);
-> +	if (!ops->hw_info)
-> +		goto done;
-> +
-> +	data = ops->hw_info(idev->dev, &data_len, &hw_info_type);
-> +	if (IS_ERR(data)) {
-> +		rc = PTR_ERR(data);
-> +		goto out_err;
+> But this series is just moving the array?
 
-Can kfree() handle a ERR_PTR input? I am afraid not,
-
-/**
-  * kfree - free previously allocated memory
-  * @object: pointer returned by kmalloc() or kmem_cache_alloc()
-  *
-  * If @object is NULL, no operation is performed.
-  */
-void kfree(const void *object)
-{
-         struct folio *folio;
-         struct slab *slab;
-         struct kmem_cache *s;
-
-         trace_kfree(_RET_IP_, object);
-
-         if (unlikely(ZERO_OR_NULL_PTR(object)))
-                 return;
-
-So, perhaps we should add
-
-	data = NULL;
-
-before
-	goto out_err;
-
-?
-
-> +	}
-> +
-> +	/* driver has hw_info callback should have a unique hw_info_type */
-> +	if (WARN_ON_ONCE(hw_info_type == IOMMU_HW_INFO_TYPE_NONE)) {
-> +		rc = -ENODEV;
-> +		goto out_err;
-> +	}
-> +
-> +	length = min(cmd->data_len, data_len);
-> +	if (copy_to_user(user_ptr, data, length)) {
-> +		rc = -EFAULT;
-> +		goto out_err;
-> +	}
-> +
-> +done:
-> +	/*
-> +	 * Zero the trailing bytes if the user buffer is bigger than the
-> +	 * data size kernel actually has.
-> +	 */
-> +	if (length < cmd->data_len) {
-> +		rc = iommufd_zero_fill_user(user_ptr + length,
-> +					    cmd->data_len - length);
-> +		if (rc)
-> +			goto out_err;
-> +	}
-> +
-> +	cmd->data_len = length;
-> +	cmd->out_data_type = hw_info_type;
-> +	rc = iommufd_ucmd_respond(ucmd, sizeof(*cmd));
-> +
-> +out_err:
-> +	kfree(data);
-> +	iommufd_put_object(&idev->obj);
-> +	return rc;
-> +}
-> +
-
-Others look good to me, feel free to add:
-
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
-
-after above are addressed.
+So I took the first step by moving the pasid_array from iommu group to
+the device. :-)
 
 Best regards,
 baolu
