@@ -1,56 +1,56 @@
-Received: from mail-oi1-f172.google.com (mail-oi1-f172.google.com [209.85.167.172])
+Received: from mail-qt1-f171.google.com (mail-qt1-f171.google.com [209.85.160.171])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C884BE6C
-	for <iommu@lists.linux.dev>; Fri,  4 Aug 2023 13:28:53 +0000 (UTC)
-Received: by mail-oi1-f172.google.com with SMTP id 5614622812f47-3a751d2e6ecso1635498b6e.0
-        for <iommu@lists.linux.dev>; Fri, 04 Aug 2023 06:28:53 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95030AD37
+	for <iommu@lists.linux.dev>; Fri,  4 Aug 2023 13:36:28 +0000 (UTC)
+Received: by mail-qt1-f171.google.com with SMTP id d75a77b69052e-40648d758f1so14676211cf.0
+        for <iommu@lists.linux.dev>; Fri, 04 Aug 2023 06:36:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1691155732; x=1691760532;
+        d=ziepe.ca; s=google; t=1691156187; x=1691760987;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=OWxQHRWTyWs/VUTiNUl3bSKSezxZnAwXbfHnbXUxK8I=;
-        b=LchXcDmb1p4mkNWSF2u7PTzC9Wcx5vck9ifNPdrLoTl0UVUVYgYLob9w3Y17nMlMlQ
-         kkBqzxbytSafOEXafIbmCUlK+V43Lv4uE6bfHvRQQOCujuBsUlL9MQlIGkTZWi1NgREQ
-         RrVanwHYrfVhkAevlYDJfTjIToa6fhcFPzDgOmlg+wAJgV321b2IxCJruLGzpRfjOzx6
-         KMkHCIYUKPYVe8KkKzCAPtVQZ+U6pPtogUqwQdGwl+5rDHhp2XisJw0IBdDmsbKS0xzk
-         L9XOBib9ttVV4Gqf95eo3tg/fkbfYNl4ZJ7ahG8X/ZCj0uVA70GGsguMAppQq5+ghsXD
-         +nYw==
+        bh=rFnF6bZuWMDLIU8svoV99BkmwMs8ORoSmrTuPpBjZW4=;
+        b=Se7KxM16Ya9MCGJ0xgrHvi7Fx9+2HaUN9I9htFCAJoDgBV0PoJlDU0wI4y4I8kri+X
+         bKIQG4HddIF/ekkeG+Rylw2SgigYJeHC03xHw7LNcg6r7CZTyozzNLVz0qq10sDippnx
+         xT8Syr5l/4RXftJAP9A7ik0EYJvKWFEvYMRZ1Y57H/QCoILNzqjd26ftvFboxg6Uxwhr
+         qAzAF8ckL/nWH6xklSDeo3ttcfOaJTslBLKWBM2zC77Ehli0A11ZYlF3jV7OH8YjuBK/
+         BtOKrLsDq8cHfLR6cmcbqHYzCvuJiD3DuZMMGM2lKT+P1fqk4yOjbMksFZXv2rB42clK
+         7c0Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1691155732; x=1691760532;
+        d=1e100.net; s=20221208; t=1691156187; x=1691760987;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=OWxQHRWTyWs/VUTiNUl3bSKSezxZnAwXbfHnbXUxK8I=;
-        b=gADD227AjPbIAkgzpMnXNDI/PsPkbv6pvtNcgFzHVfu4LuWKhHamNhLVWcx5GjCdEV
-         tkrLTSeafQNM4D0CDtdTMrTf/pOXnVi4w6B+yj7Y6ZKgGXQThlakQfIqWUHHwPtfnq3U
-         +viGQlbZdkPoGW2XN7gkdIgc6TvGkcZTAnKEV+kNVwhUc/mU9Mf5Arv97k8lfO4HF8LQ
-         Q7gKr8E/dBDiAE7Xh7HYl/PTeper/An9akzA0CrZIy2LU6NV516VdwroypH2XTGqAeWP
-         kM1lBGPvrJkjaX59mp0oF2SKroL7C85FeSWxSEfZAkgWZtYYnK3gHt03aYuMw+/kysGz
-         NIMg==
-X-Gm-Message-State: AOJu0Yx2lt2g3Zen7ZtVbzIX/9vRciIrpvhF/p87hnmALUDqu/3uPsQy
-	9O9MZnq8QI8bWRZa4H7N9mSzIg==
-X-Google-Smtp-Source: AGHT+IFqaIVKt4DXOHqIBnzuytdCAeu7/OHKMYVqkCQw9CKLV9C2CM999vO9OLljQ++b6IzAjo9aSw==
-X-Received: by 2002:a05:6358:280d:b0:130:afe8:43de with SMTP id k13-20020a056358280d00b00130afe843demr2097824rwb.30.1691155732354;
-        Fri, 04 Aug 2023 06:28:52 -0700 (PDT)
+        bh=rFnF6bZuWMDLIU8svoV99BkmwMs8ORoSmrTuPpBjZW4=;
+        b=TFPFaHuhezgOqk937uiT7jnhzvdOzsUup4H8pkdSsVKfT/A2pq/y6FCqfcTm4Y9D63
+         uJKsh+foAX7qYdm/+S4KIkKTXR2ygzkweK6z4lYrfZO3IgH+beEojIWTJY37t7xmEuf/
+         g5lvQqYhXL8+vTcXwCVX6wDQd4a4kB+YyC/AnnTcID5WFCk3rbxInH1Qo7v4CDgZ/VW9
+         NSviNiwWsfERr1DRQfhlMZP1KsSHXXeN4anO3puUFkMs2j/+BmZbxABsLYQv0aZbtbKD
+         3g5CEs+uO0iphN3loLFgokjPo1cnirLiUWnfcOLeQSL6RqJXU57Ko0IGIiTSiFUBL7h7
+         L06Q==
+X-Gm-Message-State: AOJu0Yx3b2Xf6Falm2uWyKLMTdLCIJoiau+NVQ4F8k5wdKfRYUYWlcnz
+	f2h+mBW9MnNebbE7qhL/kk0khw==
+X-Google-Smtp-Source: AGHT+IFgvMEj7g/0Qc2hcr8firbViKqtTX2C2Dk6ydVSqr/vvmMoSoAspJ0e4kxTXI7UrNZOP251pQ==
+X-Received: by 2002:ac8:5f08:0:b0:405:50b8:dc1d with SMTP id x8-20020ac85f08000000b0040550b8dc1dmr2134691qta.48.1691156187266;
+        Fri, 04 Aug 2023 06:36:27 -0700 (PDT)
 Received: from ziepe.ca (hlfxns017vw-142-68-25-194.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.25.194])
-        by smtp.gmail.com with ESMTPSA id n17-20020a0cdc91000000b006238b37fb05sm660907qvk.119.2023.08.04.06.28.51
+        by smtp.gmail.com with ESMTPSA id kc12-20020a05622a44cc00b0040ff1fabc7bsm657886qtb.36.2023.08.04.06.36.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Aug 2023 06:28:51 -0700 (PDT)
+        Fri, 04 Aug 2023 06:36:26 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.95)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1qRurL-003ivN-5Y;
-	Fri, 04 Aug 2023 10:28:51 -0300
-Date: Fri, 4 Aug 2023 10:28:51 -0300
+	id 1qRuyg-003j0a-6o;
+	Fri, 04 Aug 2023 10:36:26 -0300
+Date: Fri, 4 Aug 2023 10:36:26 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
 To: Vasant Hegde <vasant.hegde@amd.com>
 Cc: iommu@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com,
 	wei.huang2@amd.com, jsnitsel@redhat.com
-Subject: Re: [PATCH v3 12/16] iommu/amd: Add support for different types of
- PPR handler
-Message-ID: <ZMz9E41XgqzFub2g@ziepe.ca>
+Subject: Re: [PATCH v3 13/16] iommu/amd: Introduce iommu_dev_data.flags to
+ track device capabilities
+Message-ID: <ZMz+2kantGhQl47M@ziepe.ca>
 References: <20230804064216.835544-1-vasant.hegde@amd.com>
- <20230804064216.835544-13-vasant.hegde@amd.com>
+ <20230804064216.835544-14-vasant.hegde@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -59,90 +59,26 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230804064216.835544-13-vasant.hegde@amd.com>
+In-Reply-To: <20230804064216.835544-14-vasant.hegde@amd.com>
 
-On Fri, Aug 04, 2023 at 06:42:12AM +0000, Vasant Hegde wrote:
-> From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+On Fri, Aug 04, 2023 at 06:42:13AM +0000, Vasant Hegde wrote:
+> Currently we use struct iommu_dev_data.iommu_v2 to keep track of the device
+> ATS, PRI, and PASID capabilities. But these capabilities can be enabled
+> independently (except PRI requires ATS support). Hence, replace
+> the iommu_v2 variable with a flags variable, which keep track of the device
+> capabilities.
 > 
-> For AMD IOMMU, the PPR feature is needed to support IO page fault (IOPF).
-> PPR is enabled per PCI end-point device, and is configured by the PPR bit
-> in the IOMMU device table entry (i.e DTE[PPR]).
+> Device PRI/PASID is shared between PF and any associated VFs (See commit
+> 9bf49e36d718 ("PCI/ATS: Handle sharing of PF PRI Capability with
+> all VFs")). Hence use pci_pri_supported() and pci_pasid_features()
+> instead of pci_find_ext_capability() to check device PRI/PASID support.
 > 
-> Currently, PPR is enabled for a device when it is initialized for AMD
-> IOMMU v2API. To support paging for IOPF, the DTE[PPR] bit needs to be
-> updated when enable/disable IOPF feature.
-> 
-> Introducing struct iommu_dev_data.ppr and enum ppr_handlers to track PPR
-> setting for each device.
-> 
-> Finally iommu_dev_data.ppr is set only when IOMMU supports PPR. Hence
-> remove redundant feature support check in set_dte_entry().
-> 
-> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-> Co-developed-by: Vasant Hegde <vasant.hegde@amd.com>
 > Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
 > ---
->  drivers/iommu/amd/amd_iommu_types.h |  6 ++++++
->  drivers/iommu/amd/iommu.c           | 10 ++++------
->  drivers/iommu/amd/iommu_v2.c        | 14 +++++++++++++-
->  3 files changed, 23 insertions(+), 7 deletions(-)
-> 
-> diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
-> index b79c6e10684d..443b13b56235 100644
-> --- a/drivers/iommu/amd/amd_iommu_types.h
-> +++ b/drivers/iommu/amd/amd_iommu_types.h
-> @@ -803,6 +803,11 @@ struct devid_map {
->  	bool cmd_line;
->  };
->  
-> +enum ppr_handlers {
-> +	PPR_HANDLER_NONE,	/* No handler specified */
-> +	PPR_HANDLER_V2API,	/* IOMMU v2 API ppr handler */
-> +};
-> +
->  /*
->   * This struct contains device specific data for the IOMMU
->   */
-> @@ -820,6 +825,7 @@ struct iommu_dev_data {
->  	u8 ats_enabled  :1;		  /* ATS state */
->  	u8 pri_tlp      :1;		  /* PASID TLB required for
->  					     PPR completions */
-> +	enum ppr_handlers ppr;
->  	bool use_vapic;			  /* Enable device to use vapic mode */
->  	bool defer_attach;
->  
-> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-> index 5968eb8d265c..888bce5abe56 100644
-> --- a/drivers/iommu/amd/iommu.c
-> +++ b/drivers/iommu/amd/iommu.c
-> @@ -1634,10 +1634,8 @@ static void set_dte_entry(struct amd_iommu *iommu, u16 devid,
->  	if (ats)
->  		flags |= DTE_FLAG_IOTLB;
->  
-> -	if (ppr) {
-> -		if (iommu_feature(iommu, FEATURE_EPHSUP))
-> -			pte_root |= 1ULL << DEV_ENTRY_PPR;
-> -	}
-> +	if (ppr)
-> +		pte_root |= 1ULL << DEV_ENTRY_PPR;
->  
->  	if (domain->flags & PD_IOMMUV2_MASK) {
->  		u64 gcr3 = iommu_virt_to_phys(domain->gcr3_tbl);
-> @@ -1730,7 +1728,7 @@ static void do_attach(struct iommu_dev_data *dev_data,
->  
->  	/* Update device table */
->  	set_dte_entry(iommu, dev_data->devid, domain,
-> -		      ats, dev_data->iommu_v2);
-> +		      ats, dev_data->ppr);
+>  drivers/iommu/amd/amd_iommu_types.h |  3 ++-
+>  drivers/iommu/amd/iommu.c           | 39 +++++++++++++++--------------
+>  2 files changed, 22 insertions(+), 20 deletions(-)
 
-This is casting an enum to a bool, 
-
-dev_data->ppr != PPR_HANDLER_NONE
-
-?
-
-And in other places
-
-Or maybe just pass in the enum.
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
 Jason
