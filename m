@@ -1,56 +1,56 @@
-Received: from mail-qt1-f182.google.com (mail-qt1-f182.google.com [209.85.160.182])
+Received: from mail-qv1-f42.google.com (mail-qv1-f42.google.com [209.85.219.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D065FC124
-	for <iommu@lists.linux.dev>; Fri,  4 Aug 2023 13:17:53 +0000 (UTC)
-Received: by mail-qt1-f182.google.com with SMTP id d75a77b69052e-40398ccdaeeso13288051cf.3
-        for <iommu@lists.linux.dev>; Fri, 04 Aug 2023 06:17:53 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 76C71BE64
+	for <iommu@lists.linux.dev>; Fri,  4 Aug 2023 13:19:03 +0000 (UTC)
+Received: by mail-qv1-f42.google.com with SMTP id 6a1803df08f44-63cff46ddb8so15129016d6.1
+        for <iommu@lists.linux.dev>; Fri, 04 Aug 2023 06:19:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1691155072; x=1691759872;
+        d=ziepe.ca; s=google; t=1691155142; x=1691759942;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=UvI+z6a+Du3NSuq7i68YY7hMILr0K31TIp3D8EqBCfo=;
-        b=JvWtOXGJr9j1teBB2MflpfJCi6ONKYcQQnql4RNvl2zcViH46bNOfk42H/jGVAMtl5
-         DLypFlmaHcMFoL4+BE9ZYM2ZB8Uopxgx/9m+n3op9ZNd8zg+SCizlq2DSEKwJNlkNJQs
-         a7K2MzG7tZA8Sz+48sGO+7DMAPsp4IV22NkXQ2AbxUZ8D076WHa9UvtCKm4ZiBP1UfB+
-         IgPrjr/Z5ePbr1jOQdJ/mTuPtNie51joUq7nHBUJMdw3Uv+g2HYgctCRV4wex8hgYuYP
-         GW2D5vDGQtfpPcFfbTCfJRR777CSyx1o08g58gGwdFeYRwlpjsNrVFKtSSlfHq6PQcMr
-         hoWA==
+        bh=NQnhrEopY4ZfqnnrX2qCYm1RFQ0GzpHAI03zdoZIqTs=;
+        b=pHwqUN7qXysSPyLbRad1ZEZO1VyDssHwbIIp3TUX2DsjoT9MVxG33BHh6rCvpLmj2O
+         Og4Gsz4Nt71DNvUQPvrmy0sRQZBLG7bu09ML+qIttz3lvjkPPGONOgTQbVRtOM13+cvF
+         5QQ03GjE6vgRXxoCXa8Yrwy54hH+J7okHm4huzMh//x4JUcp47b3oq5ux/IJiCEa2ARf
+         ayMGp+21tYIZ25C8tblzVzOoyHoNL/MxeK0wwKiQryI6HDvPt25Sn5k9Z8NezGw/dzPW
+         GKcLqjkEguRq+RKvFRCGGlRjyr0fAwfex+Wq0q66uouLkLuHl3uiNQAenoH7/Nm4yjCv
+         VHTw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1691155072; x=1691759872;
+        d=1e100.net; s=20221208; t=1691155142; x=1691759942;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=UvI+z6a+Du3NSuq7i68YY7hMILr0K31TIp3D8EqBCfo=;
-        b=MPrFCjG7upDLCEsreadbLyF8uCVHfPxI20FmsJuoHs1Zk02q00NsEsO++QhvxuDIt9
-         yflqg9j//MJKLgygEkUX+q06aplclyX/iNebuhn23kSJC3EWucMM0VwUPbxR0GZ416ss
-         FuvJeiL33PFoOKhamfUSSAd8AkJHBKFi1gYiUPRo7NbnKNNBUfBRaNe0E+cyeaLTBbLe
-         eE5X6fcvquaK0MBjW00CgXQbkCIzXErOzAlt9nYxVJ41VdDxPDfWFiZap9S74enhAQqc
-         qSdd8tTv9i1ztpJiEkBhhQxU8xFEjclFoKmK0TTefttaxldGOpikvcYLnqYSlnwEXUl+
-         9C1Q==
-X-Gm-Message-State: AOJu0YzAt7H4IImAedlpOfg28QuujI2kb3IJkNuyTRcQoq1MJhsi4/zB
-	S7XuN14D77pYJQT0oX106n62AA==
-X-Google-Smtp-Source: AGHT+IGf2N51iZNpyOo8eHFXOleFvsNaxjZ6S6DGysgzyIZiI8RNNXhxLVe7pn+V17DvpP+tqUaDtA==
-X-Received: by 2002:ac8:5804:0:b0:3ff:3110:bb5e with SMTP id g4-20020ac85804000000b003ff3110bb5emr1730898qtg.30.1691155072476;
-        Fri, 04 Aug 2023 06:17:52 -0700 (PDT)
+        bh=NQnhrEopY4ZfqnnrX2qCYm1RFQ0GzpHAI03zdoZIqTs=;
+        b=N0pHKciArKgnmyyuHQ3cDi6QI7CgZ1cGY44+3bQdUTrehi6kR/SNuK5tYazNkIcOJF
+         9Qw5FFVb3XOSlFAgSw988lVN6gfnOcnf+3Rxt6VIqmdoO3NrWE9zZagWnr1MBOUTwMq/
+         AYjCeTFjgHviINsKTkb3MYV9/YQGx5kQ8314TX29QUvQwx8vKhP7GXTOi71x5hgluJns
+         yNUO/ZKUYqJQE10hqrAjEdlMjiAwS1h3p+tS3o/w0Sw1y3S9MeE5GAAqRtAerGXdZ+GK
+         iG5ZZiIIxtTxfUEbYuOmW4yy2Akzd4FAeNskQmLeYRmkiQRzo/oAZZgOt4nGH+73hK9Q
+         wJ5Q==
+X-Gm-Message-State: AOJu0YxU1LdtHzWEYETFMO4fFfJONmz1qx/E7fzd5aFJEZAtPoF0UPZe
+	wM1zr+BFPSHdY/FgmWypkX157A==
+X-Google-Smtp-Source: AGHT+IE64FK4n2wJ1KyODg3m3LHhsWCcy674I2/x5XPwqgSg4sft4fxDPKC8kWvFrCaOZBlj3ocP2Q==
+X-Received: by 2002:a0c:f248:0:b0:63f:50c8:3fa5 with SMTP id z8-20020a0cf248000000b0063f50c83fa5mr1963509qvl.23.1691155142294;
+        Fri, 04 Aug 2023 06:19:02 -0700 (PDT)
 Received: from ziepe.ca (hlfxns017vw-142-68-25-194.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.25.194])
-        by smtp.gmail.com with ESMTPSA id b8-20020a05620a126800b0076c84240467sm626021qkl.52.2023.08.04.06.17.51
+        by smtp.gmail.com with ESMTPSA id a2-20020a0c8bc2000000b0063d06946b2bsm650689qvc.100.2023.08.04.06.19.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Aug 2023 06:17:51 -0700 (PDT)
+        Fri, 04 Aug 2023 06:19:01 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.95)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1qRugh-003ifi-8d;
-	Fri, 04 Aug 2023 10:17:51 -0300
-Date: Fri, 4 Aug 2023 10:17:51 -0300
+	id 1qRuhp-003igJ-7c;
+	Fri, 04 Aug 2023 10:19:01 -0300
+Date: Fri, 4 Aug 2023 10:19:01 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
 To: Vasant Hegde <vasant.hegde@amd.com>
 Cc: iommu@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com,
 	wei.huang2@amd.com, jsnitsel@redhat.com
-Subject: Re: [PATCH v3 06/16] iommu/amd: Introduce helper functions for
- managing GCR3 table
-Message-ID: <ZMz6fyAtKhuTk7HZ@ziepe.ca>
+Subject: Re: [PATCH v3 09/16] iommu/amd: Miscellaneous clean up when free
+ domain
+Message-ID: <ZMz6xahZgKILqlfK@ziepe.ca>
 References: <20230804064216.835544-1-vasant.hegde@amd.com>
- <20230804064216.835544-7-vasant.hegde@amd.com>
+ <20230804064216.835544-10-vasant.hegde@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -59,54 +59,28 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230804064216.835544-7-vasant.hegde@amd.com>
+In-Reply-To: <20230804064216.835544-10-vasant.hegde@amd.com>
 
-On Fri, Aug 04, 2023 at 06:42:06AM +0000, Vasant Hegde wrote:
+On Fri, Aug 04, 2023 at 06:42:09AM +0000, Vasant Hegde wrote:
 > From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 > 
-> Refactor domain_enable_v2() into helper functions for managing GCR3 table
-> (i.e. setup_gcr3_table() and get_gcr3_levels()), which will be used in
-> subsequent patches. Also re-arrange code and remove forward declaration.
+> * Use the protection_domain_free() helper function to free domain.
+>   The function has been modified to also free memory used for the v1 and v2
+>   page tables. Also clear gcr3 table in v2 page table free path.
+> 
+> * Refactor code into cleanup_domain() for reusability. Change BUG_ON to
+>   WARN_ON in cleanup path.
+> 
+> * Protection domain dev_cnt should be read when the domain is locked.
 > 
 > Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 > Co-developed-by: Vasant Hegde <vasant.hegde@amd.com>
 > Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
 > ---
->  drivers/iommu/amd/iommu.c | 66 +++++++++++++++++++++++----------------
->  1 file changed, 39 insertions(+), 27 deletions(-)
-> 
-> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-> index d5569eec0fe9..135fa087ce47 100644
-> --- a/drivers/iommu/amd/iommu.c
-> +++ b/drivers/iommu/amd/iommu.c
-> @@ -77,7 +77,6 @@ struct iommu_cmd {
->  struct kmem_cache *amd_iommu_irq_cache;
->  
->  static void detach_device(struct device *dev);
-> -static int domain_enable_v2(struct protection_domain *domain, int pasids);
->  
->  /****************************************************************************
->   *
-> @@ -1575,6 +1574,43 @@ static void free_gcr3_table(struct protection_domain *domain)
->  	free_page((unsigned long)domain->gcr3_tbl);
->  }
->  
-> +static int get_gcr3_levels(int pasids)
-> +{
-> +	int levels = 0;
-> +
-> +	if (pasids == -1)
-> +		return amd_iommu_max_glx_val;
-> +
-> +	/*
-> +	 * Number of GCR3 table levels required. Level must be 4-Kbyte
-> +	 * page and can contain upto 512 entries.
-> +	 */
-> +	for ( ; get_count_order(pasids) >= 9; pasids >>= 9)
-> +		levels += 1;
-> +
-> +	return levels;
+>  drivers/iommu/amd/io_pgtable_v2.c |  8 +++---
+>  drivers/iommu/amd/iommu.c         | 44 +++++++++++++++----------------
+>  2 files changed, 26 insertions(+), 26 deletions(-)
 
-You missed to use the DIV_ROUND_UP
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
 Jason
