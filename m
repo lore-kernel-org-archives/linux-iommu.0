@@ -1,148 +1,148 @@
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2063.outbound.protection.outlook.com [40.107.223.63])
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2064.outbound.protection.outlook.com [40.107.94.64])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 65A701AA8B
-	for <iommu@lists.linux.dev>; Fri,  4 Aug 2023 22:25:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 91350BA2C
+	for <iommu@lists.linux.dev>; Fri,  4 Aug 2023 22:46:27 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=H/0EF6ILZzv/ECeUUIIiIdGXraZ/bKDuIqbZx7sHIyw6YDnjpya3J7EwKV/z7METTqk+Jnqwc0Hf5kFi+DekSlz8bxWjJQLQdutyy9MC13KDLJJYqg9dUcruXMdjRJDWbmW9nHkn87nAYTPEhrJpLuqIOjLhOw39IxrUYiUmMOuH+nJIrGDCnn8vkbb/F9z8QU0wUjoWDGNlQjgq1IeTm8eki2dNl7fE8HT3HuEFmPId6rgfAIR349M/F494Belijayjo9KH6uABBjRvAhUGvUI97V0AL6O3v50Xv/yHL+Iqyl1sDTIwDq2FVajw92I+HZEDcJMqpjNh49TEpCL81Q==
+ b=NseBxk+fIitAZjfzzoMqC1vsoCPH+mhTbuTqmjmJqZbzKBsIJh08KHuFlkbQIrO0nhIpRjdCEV0s77H2Ofu0ugzzAQkmYtIeyaSPoeaeavp+wZjJUkRuJJ+sebj++Uv3gvgGJz1FAxVU3anZAwRbJ5RCb+B4auoxE0NnsNRAmtHKcT+z4YN4krnco6LAHemsSvWpW4MAYrzLDYis3ohKrcImAVOUPWqV5viX7A2x5zRlwkuzI7XU0SGZCzWVNiQfH12uvcBppUrBhcQbGNasyMeOo/+xj1bHiA/aH69WzcsjxjmWJecdDDwoAaa6DtiZN50bp4GH0qpjOfp9egVjpw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=aZ6K9MdcMIBpulwiaMpvW4l/DU2e0+wmvhisO/GpWOE=;
- b=WhyJiIAN1NaRSndWi6yO25Ln0TT5kpCAJwI9Gh25oS0GApO+2Z5uK1bIagotVtOmqcZsub6lT2eclskKE17GB60/hHUWViHfe4+E72toqnM2EEjGXGRby6bYi/CTjD4NH0UP1eYVoX09eRZ3MtLJFzXWxFCiu1Mmh4mLHpbtu5b7wkBfz51R9EGiDJb+Oo4OohTHnNNvrA3XNNsSvnA1xaNsMRT+iNd0JTVTYE563ZTJhAlryMQPHbs6Wq0Ak862AA4wupmKNEE8eLrHSSiJQAP3yR3YffbBb6zN146BVoDfrFvMgWAUHf4QvrYdIxSrA3GkgRQ190DtIYK0MUgcDw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=google.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
+ bh=3SfBiyIdz0NGJevWBG7OnpdgnCir55sPR1Dm3i6rH2o=;
+ b=glTQkCOixKNbmNuZqmHpT/ogCeTCruJW92eQqAC//5nj/+JRuIwBE1V5qOTih5CLb2AbMdJa7YA5H0tafP0BympW9gWH6Hn6wuBUOSd171Ag/byrK9LBQ2Sz8C6UM99IbbPzcRSzQubekGXJF82Kess+OERn9iKEtRC+ehrySzIrCMjrxo9ady7w6Nck0dlvRRoR9IvEmuAjrOjYUPrBY2ska8GxD+Ov8PMp4z2hiNQvjr4w4DoTx0EUbjKeMHZei8CIFVjyF17VVY9Hg4dIlNZwmCjrE3biVp06nL6vbjO86fjfcsp3KTYBH251zsnwxHo+PGDASuMH4fJDrLc3xA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=aZ6K9MdcMIBpulwiaMpvW4l/DU2e0+wmvhisO/GpWOE=;
- b=VwZLd8UI6Ydk/ZRdPwfPeeX43GchjMCrrYG7v1uoDA5an8dw7pLM1ABFTJJkIoBNWAdolD+bc/4qUHp71FzOpRfr9KjMK5Y9COMpM+1Vuhh25pkupuysUPeRFJmYXjHNM98kM03W0BAm5598OVVKPenPuUdGIUZ5y5VNeVkI+Rw/dYPITxYBPhFeJTbvqxl3WCKy1Ez3k+TQdbABYSUvKSwy67d+2rQumvb79rhoS8byVYCXRr6zKgUj4QaZ02cKl3tdbDNYQRDDhg2A04w6gOnYweGkGMuzfdv0I9WNIx5j9a2Uv1Y9epdDq079Nj7lhnR02FnrNZerlolvc1WNtw==
-Received: from SJ0PR05CA0002.namprd05.prod.outlook.com (2603:10b6:a03:33b::7)
- by MN2PR12MB4567.namprd12.prod.outlook.com (2603:10b6:208:263::12) with
+ bh=3SfBiyIdz0NGJevWBG7OnpdgnCir55sPR1Dm3i6rH2o=;
+ b=JgtowYxTNRDE+aFFK38mpYEhIS4AC1bBORYSV9mAx5Mudrb1Cz/1vNCxi+2XfVwnfwrDb/Q2VBDIuGHGPBFoakF/9mC9a6cyRlionHYEJEGfTNj3XwqIGzv5mcSKCBgDZp7L8XBzQ7uyItP1DH5+Kpt+YVR6mTcE16MEr9cJS/fcp0HLB3XVoq+ChDMmSzJlGgte4uI/XQMjtwCVd/c0FXK4NErZ3o3nIkrsFJif1eFfhwYffdNiYlJIXLHKpbuahOb7160BVgg5JMnRn6WqJCjx4pki9D+hig3GOm8CY+WkCuPcnSzinoHvky3eFt6U6zH82h8y0yEPJmB60dHqCw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by CH3PR12MB8852.namprd12.prod.outlook.com (2603:10b6:610:17d::14) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6631.47; Fri, 4 Aug
- 2023 22:25:56 +0000
-Received: from MWH0EPF000971E2.namprd02.prod.outlook.com
- (2603:10b6:a03:33b:cafe::84) by SJ0PR05CA0002.outlook.office365.com
- (2603:10b6:a03:33b::7) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6678.10 via Frontend
- Transport; Fri, 4 Aug 2023 22:25:55 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- MWH0EPF000971E2.mail.protection.outlook.com (10.167.243.69) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6652.20 via Frontend Transport; Fri, 4 Aug 2023 22:25:55 +0000
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Fri, 4 Aug 2023
- 15:25:45 -0700
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail204.nvidia.com
- (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Fri, 4 Aug 2023
- 15:25:45 -0700
-Received: from Asurada-Nvidia (10.127.8.12) by mail.nvidia.com (10.129.68.6)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37 via Frontend
- Transport; Fri, 4 Aug 2023 15:25:44 -0700
-Date: Fri, 4 Aug 2023 15:25:43 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Michael Shavit <mshavit@google.com>
-CC: <iommu@lists.linux.dev>, <linux-arm-kernel@lists.infradead.org>,
-	<linux-kernel@vger.kernel.org>, <will@kernel.org>, <robin.murphy@arm.com>,
-	<jgg@nvidia.com>, <jean-philippe@linaro.org>
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6652.20; Fri, 4 Aug
+ 2023 22:46:23 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::5111:16e8:5afe:1da1]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::5111:16e8:5afe:1da1%6]) with mapi id 15.20.6631.046; Fri, 4 Aug 2023
+ 22:46:23 +0000
+Date: Fri, 4 Aug 2023 19:46:23 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: Michael Shavit <mshavit@google.com>, iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	will@kernel.org, robin.murphy@arm.com, jean-philippe@linaro.org
 Subject: Re: [PATCH v4 6/8] iommu/arm-smmu-v3: Move CD table to
  arm_smmu_master
-Message-ID: <ZM165+0WUNsIZ3Sn@Asurada-Nvidia>
+Message-ID: <ZM1/vx0bgNZXYcY6@nvidia.com>
 References: <20230802163328.2623773-1-mshavit@google.com>
  <20230803003234.v4.6.Ice063dcf87d1b777a72e008d9e3406d2bcf6d876@changeid>
+ <ZM165+0WUNsIZ3Sn@Asurada-Nvidia>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZM165+0WUNsIZ3Sn@Asurada-Nvidia>
+X-ClientProxiedBy: BL1PR13CA0112.namprd13.prod.outlook.com
+ (2603:10b6:208:2b9::27) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20230803003234.v4.6.Ice063dcf87d1b777a72e008d9e3406d2bcf6d876@changeid>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: MWH0EPF000971E2:EE_|MN2PR12MB4567:EE_
-X-MS-Office365-Filtering-Correlation-Id: 932f9b72-f6bc-41da-dd1f-08db9539c529
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|CH3PR12MB8852:EE_
+X-MS-Office365-Filtering-Correlation-Id: 3c3b2e22-730d-41be-d946-08db953ca114
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	UTQYSkw+6Ap2ArB9lncEQTLpqrw3qNMh6C/Zut5rTCMZo5bn/DGQHBpgHhucDVygWAv57UxrPRJAfAglb43NGEe2MTjOw+OBuc57F2RrW42ckyVHUKa6h/xKRiQd7ZUJAbF0+AmdwoDy43bztT3RsZzlCrq7uLGLPDAm3/WgiNhjwsY3XByRxY/0xKmoxvOeSJzdi7zlAXoCMrOwm472LxUbSDk9VWuWVYiTUXn5Zr8nZGGROtIIdy1CG1RTPgpqnnYFxQbmehMB5fMaXl3OXC52tFaYqDWcLEyZZt54S3Rlyn7NK6Jb3m3wD34iB1pVMTlJqMUzjzsdGjlsRqDKa+FPKz5+uedHmTydrrtNecyVcpDY6rXlg1TGDOGzTa0S6yGpeczNKl0CYIIQEi1bC2odEPxhZ1LgU7GRoOtHPHrqyh6U06AS98Tc5/1Ii9DyukpvepPBIQRbZMZinAFtVIqO5V7zHmSIiaTdQf/jqx0tqQ+lkYJcKhPQwVI4BJ9i2NzPzNfZQsMltvUAYfxGsL21yVrtVSNlce/VOlRE5bsnd/4dmGZ5jCkySegAohJWLIaFFD4dzZu5qhQ4KwxfGbKmIkmG5u8nDKMYGKj/6jfLohcaT/5RKPhW/hPdFWlAvNJzVn2f9qG89ucwOjCANrzQQdijNU9QiUIbm2H1OhnpmLcRh0XeKXm6L1TdON9WqBxeGUzXyDoxZXv572x+sPNuiZqgZH5UbukxzbEN9hOBs7GUP59MxGtCdPbjE3hU5g3RlC7Ja1hrDMXFN0Rg4ofM/q2YVsOHvgxg2/vJQjT8v9+oBC+Pl5R7WX9XqXc5
+	1f6LkOHDoPoWQv2/bUYzIseNd1IpT04FwSouo0J9SVSLYHDQkFY6CgFsqfChfdsKkCJPnGkUDZbR2UFeT3hxaFsAC5Z3X0UnKhGOAJkw+WQE+88RQ0pFkv5K1MbXJHcevJt8Hy9FA5BRPyvIGyNTPWJm0GGe7OFZMfgSdLQdgZWby5bEloDNee3ZsImItcKVXSAhEvda+5aPfHHx7pkLpRMQUedf6TaqaM+7i4K29FNfoBfqyPJ53UmhIKwXtTVy8ONJZRt9CY8DYWBXXdzOTe35Cx625XPhdTzImnnaiZYdb3FICIoJkySbC+n6mw51vEBAgZF4zFHkdmP/LmWuPHsPoAsm0cA2q/ft7rGCPgAWV6+K+mM9omw1rGP6Je6dfnHFAbR0iBEUz6JNouEUYwoGo4CkoFnfumcK8Ftj2TnvQrYS/UX5xtGMYI8526Xa8HmzUiTR6j2ajQqlflkBkWk1jqWoRuLsgoXJ3/IrACcL9XGV8RVGoYvmznwJ6lV+IUVPCAAb6qa+Pf81+dk6/PSiU3fCKZDtSEGCmh9sFJG+0Cl2dDo0/MTHZgLld7b0
 X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(346002)(39860400002)(376002)(396003)(136003)(451199021)(82310400008)(1800799003)(186006)(36840700001)(46966006)(40470700004)(82740400003)(33716001)(86362001)(40460700003)(40480700001)(55016003)(54906003)(478600001)(7636003)(356005)(47076005)(83380400001)(426003)(336012)(26005)(9686003)(41300700001)(8936002)(6916009)(4326008)(5660300002)(36860700001)(70586007)(2906002)(316002)(8676002)(70206006)(67856001)(473944003)(414714003);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(136003)(39860400002)(366004)(376002)(396003)(346002)(186006)(451199021)(1800799003)(26005)(37006003)(6506007)(478600001)(6512007)(6486002)(36756003)(2616005)(66476007)(6636002)(8936002)(8676002)(316002)(66946007)(6862004)(41300700001)(4326008)(66556008)(83380400001)(5660300002)(2906002)(86362001)(38100700002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?RKaYS4eCTJYfe9QYg9uLRCgJCeH8Xf+Y+GSLbinQ4i1ZGcDf2jKAmZnHhTFq?=
+ =?us-ascii?Q?g8jhq7XaTNf1P2RKLOmz5eIpm/hE7hoUp11RG/yq1cxUIhhm/h/27Cc6jza2?=
+ =?us-ascii?Q?yhWXmlNlVU7Go8RZnAeo4X9g8v62yqm3p4r/0ZdNIzlI0+ZL5vGtUccLfCQG?=
+ =?us-ascii?Q?uIsqkYHfTYmFydLnXwhSj2orAngR/3zB8BvXKHe0nfZnn5iUgfCCZMSMXYJR?=
+ =?us-ascii?Q?LRpzDsReAAS3bTvCfvt9f6GBsM/NMLdejcheVIGzaFcOTJBv4Tt42Scseze3?=
+ =?us-ascii?Q?JB2n7hlMF+HqH5R5F3T3+6n7ZlVYaPu+SSEZ6+RW8B9V1dmkLPFSjYPEsogl?=
+ =?us-ascii?Q?K9D2bacSFv9IClRBAK2cagpy6D098rCwx906fgoHdqhqUYCLpv2nySBo9vRV?=
+ =?us-ascii?Q?u37Eoq4B48ptZZpbumE3uuDD5vlYmyRcvpJsRiMTuDSinZCiz/Ll5tSFeQPl?=
+ =?us-ascii?Q?flUP+8dAmFsSgeHupomo/RPsMRkIhYomVFO1GHjpZscjVP3Cu/0z7sHswn1R?=
+ =?us-ascii?Q?OUkQa80bYLrJjK2ojnVGgcHgmio999iy8TwT+s4HHDr40eGJ81F7Nue6aQzS?=
+ =?us-ascii?Q?2Eo+ZcSvm5sOm0hPsxoA8GsI3OJ8GIX2eG8PnCv/7Vl/NJzaeiV7CREDwXz/?=
+ =?us-ascii?Q?3qV69q3XPjjW1zSnnSViqTc+A9BqZqI63V2hR79XFz02Q6KrgX3Pt0X9smpx?=
+ =?us-ascii?Q?3A97xQS+rvpY5TfLRs3ogeDf2ASEctOoAIqfLYxjLX8Z6kXb8sNs2rl+kMz8?=
+ =?us-ascii?Q?L8C5GLcx52MQ7YAwnwzLB3IximheprItCFcyOBanmsQYCbzqd5u1AFX+2Uag?=
+ =?us-ascii?Q?RZc5ViGxujWcRmGNFQohW01OdZsKMiGmXvVCOSny5KHwJhCU8PeQuBDPoUFK?=
+ =?us-ascii?Q?Sg5cH0ET4wgKUt28PbDcd2abEhufg8Wz/9MspuuZujQm3c+UXy5R/J9sw9nm?=
+ =?us-ascii?Q?QlY0KdpuLrH1eaE4JaqCcVSrWfy/q06PmzS/wz4c0rN8s7HTwIVeeXQYbcQ0?=
+ =?us-ascii?Q?QPB4Ee0z7z1ovH/Zf526isiB3mk0XH0SpjS7+SbzNG6r3ZhZ98rQadP65RhE?=
+ =?us-ascii?Q?Mtt1I+q638s9F9ExDj+lMTlBkl/8V1KLv9My9h+vK34CrFp8bngdVyjX36SF?=
+ =?us-ascii?Q?9i5QQqGkzudllTrG75vu3AD5izHhD7nL4KUSz3f10alnAt2UNPKf1xBSRM3J?=
+ =?us-ascii?Q?UmwgdficC9H8YWDSBho1dW3aanejQZL+AnPp9ko/EdBsgmdsnl0zMf8u9HoE?=
+ =?us-ascii?Q?b913WpV8NoF+4tV4NZ4SkDhCOM4JN08Lajje88lshE+U/Es9WUrNVkhRhVdF?=
+ =?us-ascii?Q?LPRTa0kgptA6lfkjekRgst+HrQAmMzTIEEjkBNgFFzc8gFI8r4V1HvayxYdm?=
+ =?us-ascii?Q?FCiCekhEN4xDWGzE+UQ5GOiXwIR0bIJfBuM+GpWUf1Fs1HNI4bjP31FjsZPJ?=
+ =?us-ascii?Q?i1o61nOaZXd6tNS7RdorlMteXGXi2wy5VrOwK5nQ7tVaeo/m0Lw/UfiWoe7B?=
+ =?us-ascii?Q?iC4DLttvvrMXHV/NDYaKPRSRhlME+hPok0ipP1WONI27T1DaMy61CYJLRO+a?=
+ =?us-ascii?Q?IqOg9elG2hs8vz2dV0nn1q36VR3f2eCNRwDMwlZX?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Aug 2023 22:25:55.5649
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3c3b2e22-730d-41be-d946-08db953ca114
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Aug 2023 22:46:23.7471
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 932f9b72-f6bc-41da-dd1f-08db9539c529
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	MWH0EPF000971E2.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4567
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: NbrouPnJjDaxYwXTveWWTiWOA9dtULxb9hl2ZCVs2sOkL2/vcQ3hUlgJEk1HzwJD
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR12MB8852
 
-On Thu, Aug 03, 2023 at 12:32:34AM +0800, Michael Shavit wrote:
-> +static int arm_smmu_alloc_cd_tables(struct arm_smmu_master *master)
->  {
->         int ret;
->         size_t l1size;
->         size_t max_contexts;
->         struct arm_smmu_device *smmu = master->smmu;
-> -       struct arm_smmu_ctx_desc_cfg *cdcfg = &smmu_domain->cd_table;
-> +       struct arm_smmu_ctx_desc_cfg *cdcfg = &master->cd_table;
+On Fri, Aug 04, 2023 at 03:25:43PM -0700, Nicolin Chen wrote:
+> > @@ -2436,22 +2419,14 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+> >         if (!smmu_domain->smmu) {
+> >                 smmu_domain->smmu = smmu;
+> >                 ret = arm_smmu_domain_finalise(domain, master);
+> > -               if (ret) {
+> > +               if (ret)
+> >                         smmu_domain->smmu = NULL;
+> > -                       goto out_unlock;
+> > -               }
+> > -       } else if (smmu_domain->smmu != smmu) {
+> > +       } else if (smmu_domain->smmu != smmu)
+> >                 ret = -EINVAL;
+> > -               goto out_unlock;
+> > -       } else if (smmu_domain->stage == ARM_SMMU_DOMAIN_S1 &&
+> > -                  master->ssid_bits != smmu_domain->cd_table.max_cds_bits) {
+> > -               ret = -EINVAL;
+> > -               goto out_unlock;
+> > -       } else if (smmu_domain->stage == ARM_SMMU_DOMAIN_S1 &&
+> > -                  smmu_domain->cd_table.stall_enabled != master->stall_enabled) {
+> > -               ret = -EINVAL;
+> > -               goto out_unlock;
+> > -       }
 > 
->         cdcfg->stall_enabled = master->stall_enabled;
+> ... then we remove this stall_enabled sanity also.
+> 
+> This means a shared domain (holding a shared CD) being inserted
+> to two CD tables from two masters would have two different CDTE
+> configurations at the stall bit.
 
-We have stall_enabled at both master->cd_table->stall_enabled
-and master->stall_enabled, and we removed stall_enabled from
-the CD structure...
+I looked through the spec for a while and I thought this was fine..
 
-> @@ -2436,22 +2419,14 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
->         if (!smmu_domain->smmu) {
->                 smmu_domain->smmu = smmu;
->                 ret = arm_smmu_domain_finalise(domain, master);
-> -               if (ret) {
-> +               if (ret)
->                         smmu_domain->smmu = NULL;
-> -                       goto out_unlock;
-> -               }
-> -       } else if (smmu_domain->smmu != smmu) {
-> +       } else if (smmu_domain->smmu != smmu)
->                 ret = -EINVAL;
-> -               goto out_unlock;
-> -       } else if (smmu_domain->stage == ARM_SMMU_DOMAIN_S1 &&
-> -                  master->ssid_bits != smmu_domain->cd_table.max_cds_bits) {
-> -               ret = -EINVAL;
-> -               goto out_unlock;
-> -       } else if (smmu_domain->stage == ARM_SMMU_DOMAIN_S1 &&
-> -                  smmu_domain->cd_table.stall_enabled != master->stall_enabled) {
-> -               ret = -EINVAL;
-> -               goto out_unlock;
-> -       }
+Stall is basically a master specific behavior on how to operate page
+faulting. It makes sense that it follows the master and the IOPTEs in
+the domain can be used with both the faulting and non-faulting page
+faulting path.
 
-... then we remove this stall_enabled sanity also.
+I would expect the page faulting path to figure out what to (if there
+is anything special to do) do based on the master that triggered the
+fault, not based on the domain that received it.
 
-This means a shared domain (holding a shared CD) being inserted
-to two CD tables from two masters would have two different CDTE
-configurations at the stall bit.
-
-If this is fine (I can't think of something wrong but not sure),
-it would be okay here, though I feel we could mention this some-
-where (maybe commit logs) since it changes the attach behavior?
-
-Thanks
-Nicolin
+Jason
