@@ -1,128 +1,94 @@
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2064.outbound.protection.outlook.com [40.107.220.64])
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 57D551BEE3
-	for <iommu@lists.linux.dev>; Fri,  4 Aug 2023 23:32:40 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=RgcszRTpaF3vk9JCBYmrbidhoSTYmd073Z6S558abgGF9m/oGthJf8MJUjm0KNm2OxOQVgpdRgnXlPcJLZ07+OOH5H5Gcr9hO6oIKL/9Dq2mai6TWuO8Urp1XV/zB2f7pj5iWh1qNodDfqp5CjdCDYRY3U5cT9qzPPMpKzXiOpfiCPUzAL4HKy+OF+AAc99eN21YKGT92PPFFPPC/bgmJeNAIIRu4u87FlEQdhDW72Qv+jRLxClX7mQz8C3NOtrQWz5p9e9+OjD5eJ6OAnZ8PCEH563rmV4E5+mOy9eT1jCVMhhoXYH6PbLY2qUU6taRPifpMTogezTm3gjH0ZV/JQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=b9X0IzKS8wcJjc2Nckme22jvRab6J6z8HBS5tvrJxr0=;
- b=PYZAU2ltmX/LKx9udhmkSdUqRVZy86mieEYATPt+06lsadEyoEelQmjmYsHLuGh8a/dkgIZasfCnGWtN4WUGztsd6ldYkIOAmhU5j4+CbauNNfYOWfFGSPd+W0B7RFXJfD6ZV5n8u/XCUhEPZdz+rLwyKQAiQrnrcPrqmu/TPRBUjfWNfFntOy90W4kHpQLmBfDMOwoD7lwrO1XxGAskD3Q4uMhGpsIzAgfHrE0zHmDSsbl4jsO3PSSEzTHPVM8SpVsFAFC8yrybFlxdbvExFOQbnWyY7prLqr+mP4CvYRAJwtNsB/TMN4IceSllIOLzYShdCnyRgBAndhEvn2PWNg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=google.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=b9X0IzKS8wcJjc2Nckme22jvRab6J6z8HBS5tvrJxr0=;
- b=HD7qcZmOC5/osW8GEo9uNcCAFbacWq8UyEHhHi7gWTRSoc6rvc+Rim12TECB0TOKaO2oZ9+ONA+EuOdokrZ8JPRU6ZIBLvY9CUhfWZKLGTli3s5OaqgCtD6R72OdndyVcry1yc3XPw/DWfxikvw400pe9dpq7t/hO/d++a9KGDtGe0EYKlhtd+OWg61tA71nDGwNiT+8F3K6hPVmWmA9ihC0fy6qGzot/fZe/Xij/n8+FDbyKyW85vJL6EpdQzqLUpVmoEOtSuUpIfjZLZ1IH4BS2l9z24SU78mK08wQGL2lr3OCARhO32JcJ8ftCS08AbfSfXcZwakJFw4q35+0qA==
-Received: from SA9PR03CA0016.namprd03.prod.outlook.com (2603:10b6:806:20::21)
- by IA1PR12MB6066.namprd12.prod.outlook.com (2603:10b6:208:3ee::5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6652.21; Fri, 4 Aug
- 2023 23:32:38 +0000
-Received: from SA2PEPF00001506.namprd04.prod.outlook.com
- (2603:10b6:806:20:cafe::ac) by SA9PR03CA0016.outlook.office365.com
- (2603:10b6:806:20::21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6652.21 via Frontend
- Transport; Fri, 4 Aug 2023 23:32:37 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- SA2PEPF00001506.mail.protection.outlook.com (10.167.242.38) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6652.19 via Frontend Transport; Fri, 4 Aug 2023 23:32:37 +0000
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Fri, 4 Aug 2023
- 16:32:29 -0700
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail202.nvidia.com
- (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Fri, 4 Aug 2023
- 16:32:29 -0700
-Received: from Asurada-Nvidia (10.127.8.12) by mail.nvidia.com (10.129.68.9)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37 via Frontend
- Transport; Fri, 4 Aug 2023 16:32:28 -0700
-Date: Fri, 4 Aug 2023 16:32:27 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Michael Shavit <mshavit@google.com>
-CC: <iommu@lists.linux.dev>, <linux-arm-kernel@lists.infradead.org>,
-	<linux-kernel@vger.kernel.org>, <will@kernel.org>, <robin.murphy@arm.com>,
-	<jgg@nvidia.com>, <jean-philippe@linaro.org>
-Subject: Re: [PATCH v4 4/8] iommu/arm-smmu-v3: move stall_enabled to the cd
- table
-Message-ID: <ZM2Ki7MDsNLkBEQ9@Asurada-Nvidia>
-References: <20230802163328.2623773-1-mshavit@google.com>
- <20230803003234.v4.4.I5aa89c849228794a64146cfe86df21fb71629384@changeid>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5407310EA
+	for <iommu@lists.linux.dev>; Sun,  6 Aug 2023 05:28:15 +0000 (UTC)
+Received: from canpemm500006.china.huawei.com (unknown [172.30.72.56])
+	by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4RJScd716vz1K97H;
+	Sun,  6 Aug 2023 13:26:57 +0800 (CST)
+Received: from [10.67.145.224] (10.67.145.224) by
+ canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.27; Sun, 6 Aug 2023 13:28:04 +0800
+Subject: Re: [PATCH v2 1/1] iommu/arm-smmu-v3: Fix error case of range command
+To: Nicolin Chen <nicolinc@nvidia.com>, Will Deacon <will@kernel.org>
+CC: <linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>, Robin Murphy <robin.murphy@arm.com>, Joerg
+ Roedel <joro@8bytes.org>, Lu Baolu <baolu.lu@linux.intel.com>, Jason
+ Gunthorpe <jgg@ziepe.ca>, Yicong Yang <yangyicong@hisilicon.com>, Tomas Krcka
+	<krckatom@amazon.de>, Jean-Philippe Brucker <jean-philippe@linaro.org>
+References: <1690784482-30028-1-git-send-email-wangwudi@hisilicon.com>
+ <20230801085504.GA26130@willie-the-truck>
+ <27c895b8-1fb0-be88-8bc3-878d754684c8@huawei.com>
+ <d5fc1f72-7428-4fef-d868-d06b85add635@huawei.com>
+ <20230804165225.GF30679@willie-the-truck> <ZM1DqxXcBT2SOs8/@Asurada-Nvidia>
+From: zhurui <zhurui3@huawei.com>
+Message-ID: <015b4573-9d74-451b-8028-a1050ade7019@huawei.com>
+Date: Sun, 6 Aug 2023 13:28:04 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20230803003234.v4.4.I5aa89c849228794a64146cfe86df21fb71629384@changeid>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SA2PEPF00001506:EE_|IA1PR12MB6066:EE_
-X-MS-Office365-Filtering-Correlation-Id: 05e059c2-4bcf-4b99-2e22-08db95431693
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	VB0AzTjxnqJ1CYSax4jyC01O06KfC4Grzbpl3ese+sOAj8A+OisUwMri68OGrzNMRsOc1xk5rq8LrozTs3HJm63+uZvGcaIZhNp7hVFnu3AXxdYfcDC9V7p8WcrsPGVWzUQxXUCknOXeMFNy8GCDFaPENZ136+qrPVMY81naaRucMnFYhToVj5TaTDv4RtUFsdOA6V/YAZxh2ekXSjzTbQgMylwEtbNNKldtfcIzZ6h9QBgIKpCiqhjY6Q1pqIcOYoWEz8umcJBvZ+dUEfuyoL0Mu0Cw/JHSjx4AIso2KQzSN86/ZqfgWJJVufH9PQLh/s/pCGwTCMqd2iHMzBn5nB7vVO5/MSwfyrLs+kpVp7t8ORQzBhhAELRPjpHlKuRuzpa1kPC8pnSGC8BY1ODRbcRqAmBH1nzI+ZbPRSsAXCEcnEDX6YT7jj0d2DkBgbK4vYhmny2HfMFmF3EJ4SxRw+Jb/0BOVXQgh2tleCY8zAaXyF55kIj5zVdj4fHSPC14zTTBk0mkmrjBQKDDurImMbsyGkteJeCBHoaVwi+UTKvOdSiuUX38Jkt8z4Z4+02REv9t+f5Z+uRD3u/4QJ279tNL8AB5e5YlmfOilyzJK8r78DwMp6M41zC28zWzbsAcdh+iJT+VCy9C8c/HeTfmqoNpuYVEmiumaQyjbnajCso4JFMURS0AQcGNk45ovIdIZVHGGi21tQtLRJeLySbXiUe6Y9rE0I6awVRgx/aLjOQW8l+hxvqlK/knWbykYRgi
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(346002)(396003)(376002)(39860400002)(136003)(451199021)(1800799003)(82310400008)(186006)(36840700001)(46966006)(40470700004)(41300700001)(6916009)(4326008)(70586007)(2906002)(8936002)(8676002)(356005)(33716001)(5660300002)(478600001)(54906003)(316002)(70206006)(82740400003)(86362001)(40460700003)(9686003)(7636003)(26005)(36860700001)(40480700001)(55016003)(47076005)(83380400001)(426003)(336012);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Aug 2023 23:32:37.5742
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 05e059c2-4bcf-4b99-2e22-08db95431693
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	SA2PEPF00001506.namprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB6066
+In-Reply-To: <ZM1DqxXcBT2SOs8/@Asurada-Nvidia>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.67.145.224]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ canpemm500006.china.huawei.com (7.192.105.130)
+X-CFilter-Loop: Reflected
 
-On Thu, Aug 03, 2023 at 12:32:32AM +0800, Michael Shavit wrote:
- 
-> This controls whether CD entries will have the stall bit set when
-> writing entries into the table.
+On 2023/8/5 2:30, Nicolin Chen wrote:
+> On Fri, Aug 04, 2023 at 05:52:25PM +0100, Will Deacon wrote:
+>> On Fri, Aug 04, 2023 at 05:31:20PM +0800, zhurui wrote:
+>>> When tg != 0 but ttl, scale, num all 0 in a range tlbi command, it
+>>> is reserved and will cause the CERROR_ILL error. This case means
+>>> that the size to be invalidated is only one page size, and the
+>>> range invalidation is meaningless here. So we set tg to 0 in this
+>>> case to do an non-range invalidation instead.
+> 
+>>> @@ -1930,6 +1927,12 @@ static void __arm_smmu_tlb_inv_range(struct arm_smmu_cmdq_ent *cmd,
+>>>                         num = (num_pages >> scale) & CMDQ_TLBI_RANGE_NUM_MAX;
+>>>                         cmd->tlbi.num = num - 1;
+>>>
+>>> +                       /* Prevent error caused by one page tlbi with leaf 0 */
+>>> +                       if (scale == 0 && num == 1 && cmd->tlbi.leaf == 0)
+>>> +                               cmd->tlbi.tg = 0;
+>>
+>> This should only be true for the last iteration, right (i.e. when num_pages
+>> == 1)? In which case, I'd prefer to leave the old code as-is and just add:
+>>
+>>         /* Single-page leaf invalidation requires a TG field of 0 */
+>>         if (num_pages == 1 && !cmd->tlbi.leaf)
+>>                 cmd->tlbi.tg = 0;To Will and Nicolin,
 
-It'd be nicer to spare a few more lines here -- something like
-this yet feel free to rephrase:
+Not only the last iteration, it's the result of __ffs function. For example, if
+numpages is 33, then the value of __ffs(num_pages) is 0, so the value of scale
+is also 0. The value of num depends on CMDQ_TLBI_RANGE_NUM_MAX. That is, the
+maximum value of num is 31. Therefore, the final value of num is 1.
+So, if consider CMDQ_TLBI_RANGE_NUM_MAX, there will be some case not the last
+one page but the beginning pages. That's why I use scale and num as conditions,
+not num_pages. Then I should reassign tg based on the result.
 
-The stall bit of a CD entry should follow the master->stall_enabled and
-has an inverse relationship with the STE.S1STALLD bit.
+> 
+> Is "!cmd->tlbi.leaf" to be "leaf" or "non-leaf"?
+> 
+> IIUIC, this "num_pages == 1" implies "NUM == 0, SCALE == 0" while
+> the "!cmd->tlbi.leaf" implies "TTL = 0b00", which in combination
+> would result in a CERROR_ILL mentioned by the spec?
+> 
+> I feel this could be more clear by just checking the three fields
+> following the spec...>
+> Thanks
+> Nicolin
+> .
+> 
+Yes, based on spec 4.4.1.1 for ARM IHI 0070, after the TLL and TG table, there is a
+description for TG != 0b00, and you can check it in the last point.
 
-Also, a domain should be able to share between two masters, even if they
-have different stall_enabled configurations, in which case, two masters
-should have two sets of CD tables, i.e. having two different CD entries
-for the same domain holding a CD.
-
-So, move the "stall_enabled" out of domain to cd_table. It then controls
-whether CD entries will have the stall bit set when writing entries into
-the table.
-
-> Signed-off-by: Michael Shavit <mshavit@google.com>
-> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-
-With that,
-Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
-
-And btw, you should probably put your Signed-off-by at the end
-the commit log, i.e. behind "Reviewed-by", meaning you created/
-updated the commit, and then signed it off.
-
-Nicolin
+Thanks.
+ZhuRui
+.
