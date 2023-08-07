@@ -1,59 +1,45 @@
 Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D0E9C4436
-	for <iommu@lists.linux.dev>; Mon,  7 Aug 2023 12:24:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id ACA954436
+	for <iommu@lists.linux.dev>; Mon,  7 Aug 2023 12:26:11 +0000 (UTC)
 Received: from 8bytes.org (pd9fe94eb.dip0.t-ipconnect.de [217.254.148.235])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id B3EA92802BA;
-	Mon,  7 Aug 2023 14:17:08 +0200 (CEST)
+	by mail.8bytes.org (Postfix) with ESMTPSA id 2F1302802BA;
+	Mon,  7 Aug 2023 14:26:10 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1691410629;
-	bh=MoMY1SFtkbtEUBwIL7en7e2435l5MQq5o7TXLrJFqPY=;
+	s=default; t=1691411170;
+	bh=wmPL7XejhagU6uyZud+Zdk9aWQ7ayvhKT8YunsXvlpA=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=OtkTggzs+tvxWYj2I7pXxg2LkseYu2TNyjMFfy6jbmuoFD/4TxvnrV1Kt4aVTxL32
-	 cC/4eKMOWdCCo2Iw7i3FzN+S3jxQWacSeYK4c6mVsQd9Y4/q6crstdMUrN6Yg6OZ+9
-	 JXDt/2cUJ4CKcgeTBYU3YsWzevTJiT2GyXJDWaN8neg3f5KEMOSoIVqM/zX7V24Jc+
-	 Qj8EeW3tgNzumUI8T1C8nZZdR+L3YZ22hxGfOtKNF2cE0+GWJbR6N+v4RyKspefl39
-	 xjo77kXV5IOfkRuvPCfOM6wDCMa+BpwJB1mWLzVq9Vy4St7xyNT38PyWsG3ZrYYpNo
-	 eUjK2JRU/qPHA==
-Date: Mon, 7 Aug 2023 14:17:06 +0200
-From: "joro@8bytes.org" <joro@8bytes.org>
-To: Yong Wu =?utf-8?B?KOWQtOWLhyk=?= <Yong.Wu@mediatek.com>
-Cc: "fshao@chromium.org" <fshao@chromium.org>,
-	"linux-mediatek@lists.infradead.org" <linux-mediatek@lists.infradead.org>,
-	"robh+dt@kernel.org" <robh+dt@kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	Jianjiao Zeng =?utf-8?B?KOabvuWBpeWnoyk=?= <Jianjiao.Zeng@mediatek.com>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>,
-	Chengci Xu =?utf-8?B?KOiuuOaJv+i1kCk=?= <Chengci.Xu@mediatek.com>,
-	YF Wang =?utf-8?B?KOeOi+S6kemjnik=?= <YF.Wang@mediatek.com>,
-	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"krzysztof.kozlowski+dt@linaro.org" <krzysztof.kozlowski+dt@linaro.org>,
-	"matthias.bgg@gmail.com" <matthias.bgg@gmail.com>,
-	Mingyuan Ma =?utf-8?B?KOmprOm4o+i/nCk=?= <Mingyuan.Ma@mediatek.com>,
-	"angelogioacchino.delregno@collabora.com" <angelogioacchino.delregno@collabora.com>,
-	"will@kernel.org" <will@kernel.org>
-Subject: Re: [PATCH v12 0/7] MT8188 IOMMU SUPPORT
-Message-ID: <ZNDgwh2r02SXZEG4@8bytes.org>
-References: <20230602090227.7264-1-yong.wu@mediatek.com>
- <CAC=S1nhgkj5zh-Oa+OJjZKmkNMfG63+WjSefB2swybm29KxDXA@mail.gmail.com>
- <cc910b5c3ec130f092a37049d71bb35c20b278a6.camel@mediatek.com>
+	b=VB8+b01PeLz6+nkT8eci4WM95w3mmZP/8DM91limSRuWo91mbgwwMc7ZCyrN/GTyA
+	 PHaAR3o4a0xaAMhbxlM+SQKeHSlwJa/fzYp9I8BriaiAXBzSXy6xiXfGh8bVp/3QtM
+	 wx2DWHUOsKCPzTCuFSzw0MUTnBYcY6d3Tlj95s2UnM17l4lV4CQ/yOL5UZyFT82shI
+	 IfK/2xCvfjaZz3jmybRP58UrpDSMsx1PD//nROxPYzk1a/IOsaFKVdF6LP927jfM9r
+	 X1e6mjWyx0gU9wwEwW71gTK38P0VObFA3Gp9wRMoaYI5HZud5NNH/iXi4XJxmEgagt
+	 wW7Y/mxfaBGnw==
+Date: Mon, 7 Aug 2023 14:26:09 +0200
+From: Joerg Roedel <joro@8bytes.org>
+To: Geert Uytterhoeven <geert+renesas@glider.be>
+Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+	iommu@lists.linux.dev, linux-renesas-soc@vger.kernel.org
+Subject: Re: [PATCH v4] iommu/ipmmu-vmsa: Convert to
+ read_poll_timeout_atomic()
+Message-ID: <ZNDi4dOwKdD6lwie@8bytes.org>
+References: <649c7e09841b998c5c8d7fc274884a85e4b5bfe9.1689599528.git.geert+renesas@glider.be>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <cc910b5c3ec130f092a37049d71bb35c20b278a6.camel@mediatek.com>
+In-Reply-To: <649c7e09841b998c5c8d7fc274884a85e4b5bfe9.1689599528.git.geert+renesas@glider.be>
 
-On Tue, Aug 01, 2023 at 12:53:29PM +0000, Yong Wu (吴勇) wrote:
-> Your A-b always is expected before Joerg applies.
+On Mon, Jul 17, 2023 at 03:14:40PM +0200, Geert Uytterhoeven wrote:
+>  drivers/iommu/ipmmu-vmsa.c | 15 ++++++---------
+>  1 file changed, 6 insertions(+), 9 deletions(-)
 
-It is time to make some progress on the MTK driver patch flow. I just
-applied this series, thanks.
+Applied, thanks.
+
