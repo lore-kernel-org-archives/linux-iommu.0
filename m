@@ -1,14 +1,14 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3B88B107B6
-	for <iommu@lists.linux.dev>; Mon,  7 Aug 2023 19:21:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id EABE516408
+	for <iommu@lists.linux.dev>; Mon,  7 Aug 2023 20:14:35 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 49DAE1FB;
-	Mon,  7 Aug 2023 12:21:47 -0700 (PDT)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DE9021FB;
+	Mon,  7 Aug 2023 13:15:17 -0700 (PDT)
 Received: from [192.168.1.102] (unknown [172.31.20.19])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 50E903F64C;
-	Mon,  7 Aug 2023 12:21:02 -0700 (PDT)
-Message-ID: <661a7bb5-99e1-de16-d860-0cd17f7a0470@arm.com>
-Date: Mon, 7 Aug 2023 20:20:45 +0100
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 702233F6C4;
+	Mon,  7 Aug 2023 13:14:32 -0700 (PDT)
+Message-ID: <919ab857-30cf-00a5-1a40-fb180678792e@arm.com>
+Date: Mon, 7 Aug 2023 21:14:24 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -17,90 +17,138 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
  Thunderbird/102.13.0
-Subject: Re: [PATCH v2 1/1] iommu/arm-smmu-v3: Fix error case of range command
+Subject: Re: [PATCH v3 5.15 4/6] iommu/arm-smmu-v3: Document MMU-700 erratum
+ 2812531
 Content-Language: en-GB
-To: zhurui <zhurui3@huawei.com>, Nicolin Chen <nicolinc@nvidia.com>,
- Will Deacon <will@kernel.org>
-Cc: linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, Joerg Roedel <joro@8bytes.org>,
- Lu Baolu <baolu.lu@linux.intel.com>, Jason Gunthorpe <jgg@ziepe.ca>,
- Yicong Yang <yangyicong@hisilicon.com>, Tomas Krcka <krckatom@amazon.de>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>
-References: <1690784482-30028-1-git-send-email-wangwudi@hisilicon.com>
- <20230801085504.GA26130@willie-the-truck>
- <27c895b8-1fb0-be88-8bc3-878d754684c8@huawei.com>
- <d5fc1f72-7428-4fef-d868-d06b85add635@huawei.com>
- <20230804165225.GF30679@willie-the-truck> <ZM1DqxXcBT2SOs8/@Asurada-Nvidia>
- <015b4573-9d74-451b-8028-a1050ade7019@huawei.com>
+To: Easwar Hariharan <eahariha@linux.microsoft.com>, stable@vger.kernel.org
+Cc: easwar.hariharan@microsoft.com, Nicolin Chen <nicolinc@nvidia.com>,
+ Will Deacon <will@kernel.org>, Catalin Marinas <catalin.marinas@arm.com>,
+ Jonathan Corbet <corbet@lwn.net>, Joerg Roedel <joro@8bytes.org>,
+ Sasha Levin <sashal@kernel.org>, Yicong Yang <yangyicong@hisilicon.com>,
+ Tomas Krcka <krckatom@amazon.de>,
+ "moderated list:ARM64 PORT (AARCH64 ARCHITECTURE)"
+ <linux-arm-kernel@lists.infradead.org>,
+ "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+ open list <linux-kernel@vger.kernel.org>,
+ "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
+ "open list:IOMMU DRIVERS" <iommu@lists.linux.dev>
+References: <20230802170227.1590187-1-eahariha@linux.microsoft.com>
+ <20230802170227.1590187-5-eahariha@linux.microsoft.com>
 From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <015b4573-9d74-451b-8028-a1050ade7019@huawei.com>
+In-Reply-To: <20230802170227.1590187-5-eahariha@linux.microsoft.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2023-08-06 06:28, zhurui wrote:
-> On 2023/8/5 2:30, Nicolin Chen wrote:
->> On Fri, Aug 04, 2023 at 05:52:25PM +0100, Will Deacon wrote:
->>> On Fri, Aug 04, 2023 at 05:31:20PM +0800, zhurui wrote:
->>>> When tg != 0 but ttl, scale, num all 0 in a range tlbi command, it
->>>> is reserved and will cause the CERROR_ILL error. This case means
->>>> that the size to be invalidated is only one page size, and the
->>>> range invalidation is meaningless here. So we set tg to 0 in this
->>>> case to do an non-range invalidation instead.
->>
->>>> @@ -1930,6 +1927,12 @@ static void __arm_smmu_tlb_inv_range(struct arm_smmu_cmdq_ent *cmd,
->>>>                          num = (num_pages >> scale) & CMDQ_TLBI_RANGE_NUM_MAX;
->>>>                          cmd->tlbi.num = num - 1;
->>>>
->>>> +                       /* Prevent error caused by one page tlbi with leaf 0 */
->>>> +                       if (scale == 0 && num == 1 && cmd->tlbi.leaf == 0)
->>>> +                               cmd->tlbi.tg = 0;
->>>
->>> This should only be true for the last iteration, right (i.e. when num_pages
->>> == 1)? In which case, I'd prefer to leave the old code as-is and just add:
->>>
->>>          /* Single-page leaf invalidation requires a TG field of 0 */
->>>          if (num_pages == 1 && !cmd->tlbi.leaf)
->>>                  cmd->tlbi.tg = 0;To Will and Nicolin,
+On 2023-08-02 18:02, Easwar Hariharan wrote:
+> From: Robin Murphy <robin.murphy@arm.com>
 > 
-> Not only the last iteration, it's the result of __ffs function. For example, if
-> numpages is 33, then the value of __ffs(num_pages) is 0, so the value of scale
-> is also 0. The value of num depends on CMDQ_TLBI_RANGE_NUM_MAX. That is, the
-> maximum value of num is 31. Therefore, the final value of num is 1.
-> So, if consider CMDQ_TLBI_RANGE_NUM_MAX, there will be some case not the last
-> one page but the beginning pages. That's why I use scale and num as conditions,
-> not num_pages. Then I should reassign tg based on the result.
+> commit 309a15cb16bb075da1c99d46fb457db6a1a2669e upstream
+> 
+> To work around MMU-700 erratum 2812531 we need to ensure that certain
+> sequences of commands cannot be issued without an intervening sync. In
+> practice this falls out of our current command-batching machinery
+> anyway - each batch only contains a single type of invalidation command,
+> and ends with a sync. The only exception is when a batch is sufficiently
+> large to need issuing across multiple command queue slots, wherein the
+> earlier slots will not contain a sync and thus may in theory interleave
+> with another batch being issued in parallel to create an affected
+> sequence across the slot boundary.
+> 
+> Since MMU-700 supports range invalidate commands and thus we will prefer
+> to use them (which also happens to avoid conditions for other errata),
+> I'm not entirely sure it's even possible for a single high-level
+> invalidate call to generate a batch of more than 63 commands,
 
-Yeah, I'd rather not downgrade to a non-range invalidate since that 
-complicates the reasoning for the errata affecting those. If the size of 
-the invalidation is equal to TG then it can only represent a single 
-last-level page, i.e. TTL=3, thus if it does warrant handling here then 
-indeed rearranging to base the condition on num_pages as well ought to 
-suffice. However, this is all still begging the question of where and 
-why we're doing a *non-leaf* invalidation that isn't aligned to the size 
-of a table, because that in itself doesn't make a whole heap of sense - 
-my hunch is that that wants figuring out and could probably be fixed at 
-the source.
+Out of interest, have you observed a case where this actually happens?
+
+> but for
+> the sake of robustness and documentation, wire up an option to enforce
+> that a sync is always inserted for every slot issued.
+> 
+> The other aspect is that the relative order of DVM commands cannot be
+> controlled, so DVM cannot be used. Again that is already the status quo,
+> but since we have at least defined ARM_SMMU_FEAT_BTM, we can explicitly
+> disable it for documentation purposes even if it's not wired up anywhere
+> yet.
+
+Note that there seems to be a slight issue with this patch that I 
+missed, under discussion here:
+
+https://lore.kernel.org/linux-iommu/27c895b8-1fb0-be88-8bc3-878d754684c8@huawei.com/T/#t
 
 Thanks,
 Robin.
 
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+> Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
+> Link: https://lore.kernel.org/r/330221cdfd0003cd51b6c04e7ff3566741ad8374.1683731256.git.robin.murphy@arm.com
+> Signed-off-by: Will Deacon <will@kernel.org>
+> Signed-off-by: Easwar Hariharan <eahariha@linux.microsoft.com>
+> ---
+>   Documentation/arm64/silicon-errata.rst      |  2 ++
+>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 12 ++++++++++++
+>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  1 +
+>   3 files changed, 15 insertions(+)
 > 
->>
->> Is "!cmd->tlbi.leaf" to be "leaf" or "non-leaf"?
->>
->> IIUIC, this "num_pages == 1" implies "NUM == 0, SCALE == 0" while
->> the "!cmd->tlbi.leaf" implies "TTL = 0b00", which in combination
->> would result in a CERROR_ILL mentioned by the spec?
->>
->> I feel this could be more clear by just checking the three fields
->> following the spec...>
->> Thanks
->> Nicolin
->> .
->>
-> Yes, based on spec 4.4.1.1 for ARM IHI 0070, after the TLL and TG table, there is a
-> description for TG != 0b00, and you can check it in the last point.
-> 
-> Thanks.
-> ZhuRui
-> .
+> diff --git a/Documentation/arm64/silicon-errata.rst b/Documentation/arm64/silicon-errata.rst
+> index 55e1e074dec1..322df8abbc0e 100644
+> --- a/Documentation/arm64/silicon-errata.rst
+> +++ b/Documentation/arm64/silicon-errata.rst
+> @@ -124,6 +124,8 @@ stable kernels.
+>   +----------------+-----------------+-----------------+-----------------------------+
+>   | ARM            | MMU-600         | #1076982        | N/A                         |
+>   +----------------+-----------------+-----------------+-----------------------------+
+> +| ARM            | MMU-700         | #2812531        | N/A                         |
+> ++----------------+-----------------+-----------------+-----------------------------+
+>   +----------------+-----------------+-----------------+-----------------------------+
+>   | Broadcom       | Brahma-B53      | N/A             | ARM64_ERRATUM_845719        |
+>   +----------------+-----------------+-----------------+-----------------------------+
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index 782d040a829c..6a551a48d271 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -897,6 +897,12 @@ static void arm_smmu_cmdq_batch_add(struct arm_smmu_device *smmu,
+>   				    struct arm_smmu_cmdq_batch *cmds,
+>   				    struct arm_smmu_cmdq_ent *cmd)
+>   {
+> +	if (cmds->num == CMDQ_BATCH_ENTRIES - 1 &&
+> +	    (smmu->options & ARM_SMMU_OPT_CMDQ_FORCE_SYNC)) {
+> +		arm_smmu_cmdq_issue_cmdlist(smmu, cmds->cmds, cmds->num, true);
+> +		cmds->num = 0;
+> +	}
+> +
+>   	if (cmds->num == CMDQ_BATCH_ENTRIES) {
+>   		arm_smmu_cmdq_issue_cmdlist(smmu, cmds->cmds, cmds->num, false);
+>   		cmds->num = 0;
+> @@ -3461,6 +3467,7 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu, bool bypass)
+>   
+>   #define IIDR_IMPLEMENTER_ARM		0x43b
+>   #define IIDR_PRODUCTID_ARM_MMU_600	0x483
+> +#define IIDR_PRODUCTID_ARM_MMU_700	0x487
+>   
+>   static void arm_smmu_device_iidr_probe(struct arm_smmu_device *smmu)
+>   {
+> @@ -3481,6 +3488,11 @@ static void arm_smmu_device_iidr_probe(struct arm_smmu_device *smmu)
+>   			if (variant == 0 && revision <= 2)
+>   				smmu->features &= ~ARM_SMMU_FEAT_SEV;
+>   			break;
+> +		case IIDR_PRODUCTID_ARM_MMU_700:
+> +			/* Arm erratum 2812531 */
+> +			smmu->features &= ~ARM_SMMU_FEAT_BTM;
+> +			smmu->options |= ARM_SMMU_OPT_CMDQ_FORCE_SYNC;
+> +			break;
+>   		}
+>   		break;
+>   	}
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> index 5964e02c4e57..abaecdf8d5d2 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> @@ -651,6 +651,7 @@ struct arm_smmu_device {
+>   #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
+>   #define ARM_SMMU_OPT_PAGE0_REGS_ONLY	(1 << 1)
+>   #define ARM_SMMU_OPT_MSIPOLL		(1 << 2)
+> +#define ARM_SMMU_OPT_CMDQ_FORCE_SYNC	(1 << 3)
+>   	u32				options;
+>   
+>   	struct arm_smmu_cmdq		cmdq;
