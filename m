@@ -1,75 +1,71 @@
-Received: from mail-qt1-f171.google.com (mail-qt1-f171.google.com [209.85.160.171])
+Received: from mail-qt1-f176.google.com (mail-qt1-f176.google.com [209.85.160.176])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AAC0B101C4
-	for <iommu@lists.linux.dev>; Mon,  7 Aug 2023 12:20:21 +0000 (UTC)
-Received: by mail-qt1-f171.google.com with SMTP id d75a77b69052e-40a47e8e38dso421851cf.1
-        for <iommu@lists.linux.dev>; Mon, 07 Aug 2023 05:20:21 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 68399DF71
+	for <iommu@lists.linux.dev>; Mon,  7 Aug 2023 12:21:49 +0000 (UTC)
+Received: by mail-qt1-f176.google.com with SMTP id d75a77b69052e-40c72caec5cso427971cf.0
+        for <iommu@lists.linux.dev>; Mon, 07 Aug 2023 05:21:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1691410820; x=1692015620;
+        d=google.com; s=20221208; t=1691410908; x=1692015708;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=EKndJRH8+fA20vciO2QWMbTLEeBf2QvwlRovy10Zq5s=;
-        b=goQJDvsQtRExrxHcS+ViWDBPY8yY1vbu/PiFqwPcHswJuKsGNLmJFm+sjmFUgfBjAv
-         lPQTr5QQZWMgsYAYvLmPEfyVYuxaHuHJQAETCqMYgs6AOPSrAOES13LUMemC5Jg7TEzn
-         WYZ653imtkIk1DppFnE+DPVhQHYg2tTyY/5Bcb6PSi9MrmmRaTEcCWMBh0yzXhvqc/Sh
-         pa89CLgW1DtaO1cWMkAAGhQItaJtMS+nLWoXY9LPRVLvzXFtzmBbW2nXVsldWB6tVe1C
-         2In9tNIkaNkVMeVz7PYhveuzZsSXHOp//xmdWYNSzD5OXDwpAGXpIrvQG+aZofQOB61J
-         lHJg==
+        bh=lnwColYSZ3XmSl1bpZo/azPZh2FDVfUZk9ZS2ZdZQHY=;
+        b=TrBQ8VPQMcf/qpu2cHmg21VlDcAedV3vTdiRn3i0+Z++5MnVbbmZt2LwsiaF8hPGeH
+         S8aXQS1y6/nOEpe9yDnv3Jw4ELm+BRTP0vl+/21Sdys1mEuq3TEjkaSulf04pqlGiDbI
+         QmtJ495Kx3G4Sb4NbEymFF5Ny0MX98J63MfNBAWb30Ya0/3o1i92Aq5MdRd+sNBFK4YA
+         iduJ2jcZblqno1jApMd9ilSc8wACQPn8UQ3CYPgS79qVgnF0E0muO8KJ+UmOSkH36ysT
+         2yd9A11hfvrWcHtcl42lHUc6ya7iFw2mn8JxqCu6mbG0p8ptJaetacngcT32umAi7zT+
+         8EKw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1691410820; x=1692015620;
+        d=1e100.net; s=20221208; t=1691410908; x=1692015708;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=EKndJRH8+fA20vciO2QWMbTLEeBf2QvwlRovy10Zq5s=;
-        b=ShxnoX/OHwy8JhiEz5291LN0Z92WQAs69odclKvTk1beNAQww42bJqzjzKS4Q8Cwtk
-         9vHijvT6X6hpLC5qMg5ZLvZHt6EQfAgQpJNQXjPLNnnrEe+5lLuffXAFLi8a4Vb4xSpM
-         MR0jkmpRwaNMWQmZc86oiC1+EJL90ftaT5/ZbugVycKe8D/856tD6wiwgyvxQB8Ym51u
-         Rt5P/EyqY9cH7gwqy9fdBLFpy8tvFjhkKpg8Fra5aoGkxtluaZGqWchC474Es6asAbg9
-         NfuA0WoaIfK1CK9S92ZpKX0ZrCW0mhEYlJ8A4s0O6ScyY5GLwU80VEVQ/6Qz4LCoc3rw
-         hxOQ==
-X-Gm-Message-State: AOJu0YxZzblFnMqyeQPk6nqn8Icrp7g9W6569HgZTu8nQRV45ddab//L
-	qSskLh/x9gxMqdm+HbditYkbfSARRGr6CKerDeGbOA==
-X-Google-Smtp-Source: AGHT+IHLXvW9OoK5Akyt4yjw8GIDQ9eEk6i0Zq0Abc3A0zfrE7HvA40+g9GjhZY3GoldgZDmVpVHILmBuMpzLsKlJkI=
-X-Received: by 2002:a05:622a:589:b0:403:fdf1:e05e with SMTP id
- c9-20020a05622a058900b00403fdf1e05emr338193qtb.19.1691410820262; Mon, 07 Aug
- 2023 05:20:20 -0700 (PDT)
+        bh=lnwColYSZ3XmSl1bpZo/azPZh2FDVfUZk9ZS2ZdZQHY=;
+        b=UfkM1FWFkQRUR2sjUhll2XJPmXu/sOl129lg0KkE4gvwL67YLJaHdg7J3wzSdtIfFP
+         n1yDerKFxOef4yeOxWyIVuNAl2oXaSS7VbxmGH2tZrmcoUbl7Y40rn94Q+DrbY44GMuO
+         M3VvGj/1v0ajJ7LZJ62GFmaf4U3Ok+TcVJQuhP5hHLVw4PVfJ5t1OViKnAWg8NAYS9BF
+         W9jRGMZAthk2k7MokgEUexhAi5yGgnlMvLGAeE2AMeHhql6kfJ3yNOL4gr20ZUM0rJoH
+         dpRNuKQAgCKFuMJiZgwbNGCAbkg9r7+DWh31edqGhgWoJhk6I+rXvF9F4SIGOL+KT5s5
+         c4dQ==
+X-Gm-Message-State: AOJu0Yx0FRwO/Y2HI88SxcM5vmz38ciWaoAcNAd7TePxO0GXr8T7hkJH
+	4IZ8XRVRMXkCeCLvji4aMkTR1aDIXL5O3EXQYVlLlA==
+X-Google-Smtp-Source: AGHT+IEMLGULSlVZult/2Q3+afbrOjHWrJzvVVPqLYP1dw+AFfKzXE4tHKlAfTJFU/sZEnAsMyMyNJU3jhfdP2K/sgI=
+X-Received: by 2002:a05:622a:1891:b0:403:b6ff:c0b with SMTP id
+ v17-20020a05622a189100b00403b6ff0c0bmr395515qtc.6.1691410908040; Mon, 07 Aug
+ 2023 05:21:48 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20230802163328.2623773-1-mshavit@google.com> <20230803003234.v4.6.Ice063dcf87d1b777a72e008d9e3406d2bcf6d876@changeid>
- <CAKHBV26OsQYRCifuD0UjSf5uqcvMSK2tizjFULLv8DTdz0zD2g@mail.gmail.com> <ZMv2WJX6b2UBBelt@nvidia.com>
-In-Reply-To: <ZMv2WJX6b2UBBelt@nvidia.com>
+References: <20230802163328.2623773-1-mshavit@google.com> <20230803003234.v4.4.I5aa89c849228794a64146cfe86df21fb71629384@changeid>
+ <ZM2Ki7MDsNLkBEQ9@Asurada-Nvidia>
+In-Reply-To: <ZM2Ki7MDsNLkBEQ9@Asurada-Nvidia>
 From: Michael Shavit <mshavit@google.com>
-Date: Mon, 7 Aug 2023 20:19:44 +0800
-Message-ID: <CAKHBV25fCOE3pVysLaB2e67G0Be3FdWLKb+ZsmbHg8CyPpwo5A@mail.gmail.com>
-Subject: Re: [PATCH v4 6/8] iommu/arm-smmu-v3: Move CD table to arm_smmu_master
-To: Jason Gunthorpe <jgg@nvidia.com>
+Date: Mon, 7 Aug 2023 20:21:12 +0800
+Message-ID: <CAKHBV27vPc0mS14oz8nAbrm+bVKeMmtYt5YVU_abkFZEuqmN=A@mail.gmail.com>
+Subject: Re: [PATCH v4 4/8] iommu/arm-smmu-v3: move stall_enabled to the cd table
+To: Nicolin Chen <nicolinc@nvidia.com>
 Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
 	linux-kernel@vger.kernel.org, will@kernel.org, robin.murphy@arm.com, 
-	nicolinc@nvidia.com, jean-philippe@linaro.org
+	jgg@nvidia.com, jean-philippe@linaro.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Aug 4, 2023 at 2:47=E2=80=AFAM Jason Gunthorpe <jgg@nvidia.com> wro=
-te:
->
->
-> I'm not surprised, I think arm_smmu_write_ctx is a little too clever
-> for its own good..
->
-> I would have written it by computing the full target CD entry,
-> extracted directly from the domain.
->
+On Sat, Aug 5, 2023 at 7:32=E2=80=AFAM Nicolin Chen <nicolinc@nvidia.com> w=
+rote:
+> It'd be nicer to spare a few more lines here -- something like
+> this yet feel free to rephrase:
 
-Yeah I was considering making a fix to arm_smmu_write_ctx instead; but
-clearing the CD entry on detach feels like the right thing to do.
-Relying on the 0th CD entry being re-written when the CD table is
-re-inserted feels fragile.
+Yeah you're right, this commit message was pretty sparse. Will update.
 
-Perhaps re-writing arm_smmu_write_ctx could be considered as a
-separate singleton patch?
+> And btw, you should probably put your Signed-off-by at the end
+> the commit log, i.e. behind "Reviewed-by", meaning you created/
+> updated the commit, and then signed it off.
+>
+> Nicolin
+
+Ah, thanks for the tip, will do as well :) .
