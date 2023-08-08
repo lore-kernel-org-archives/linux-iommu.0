@@ -1,56 +1,56 @@
-Received: from mail-ot1-f47.google.com (mail-ot1-f47.google.com [209.85.210.47])
+Received: from mail-qt1-f180.google.com (mail-qt1-f180.google.com [209.85.160.180])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C39C0100B9
-	for <iommu@lists.linux.dev>; Tue,  8 Aug 2023 15:28:47 +0000 (UTC)
-Received: by mail-ot1-f47.google.com with SMTP id 46e09a7af769-6bd0425ad4fso760382a34.2
-        for <iommu@lists.linux.dev>; Tue, 08 Aug 2023 08:28:47 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17BA4100B9
+	for <iommu@lists.linux.dev>; Tue,  8 Aug 2023 15:30:33 +0000 (UTC)
+Received: by mail-qt1-f180.google.com with SMTP id d75a77b69052e-4055bc3cdd8so44126981cf.1
+        for <iommu@lists.linux.dev>; Tue, 08 Aug 2023 08:30:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1691508526; x=1692113326;
+        d=ziepe.ca; s=google; t=1691508633; x=1692113433;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=L2o+PM/HHKCRmWj11mqOHqyguktcNxiaGLUTwfaC4eI=;
-        b=jU1YpQhx4y6rryTVLVlPuViIUpRHDsbDv1vSnrgZveeVblXqMq4QSPXVT8P6rqcDyj
-         4RX9d1mmVauWspfg2xFAsHcAV8o9ZDQOpDTvWxSFDeKo/L455rmzMeLJxG9gHN+UIHdl
-         fHVyt+HqlAfW34b1ftRh4gLISkZsllx9Xr8GB9B3EOYduInunILS1mQG2HHMF7ZTl2qH
-         wDHfyygskmc6vkB/tE3Cwgm1+KwBIAa56m26pEhBQkQ/xDEGa2e85sDxLl23Q//Gv+uO
-         /+EXt7dqGZ81LNbgryTnrvjcb3IKyyiR5ZocMAP+eWV6VzY7qQZ2Idivnyw+uLedWuCy
-         Sbrw==
+        bh=MeBO0TU+wywolPJy9LO8EvpcVAk7REABcY2ZWJ0oR2k=;
+        b=ji2WA3V2wTjeZ6LDa1HNBYPVfvcUNu1EUqLOwfSu229e9GMSMifrbcGkoauKF9Hutp
+         6gK02ZJKZDCrlXlGu+6guMeiLJQYXQ1jCmBc0rPZKMZLX8qWMKU31J7F3KI5cQ/ez1gM
+         Mw75z8TLxFZxr91eZVM4mPvqcMZgrjmTUmQ7tMsFT73gYIl4yfHtbKGGQOJLFucfJ1r1
+         6qLksf8Yb5CfyIXs6OIde7qCOw/h9B6REnlNEhqj6GgTR93bloGEJTZJVdO15Al69gK0
+         OLmL9PiKGqo3x3C2xgPepLE9OUwilDCY0fUWSsqFvnDEsZTgp8q2IiQbY5rbb6uc019M
+         EAdA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1691508526; x=1692113326;
+        d=1e100.net; s=20221208; t=1691508633; x=1692113433;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=L2o+PM/HHKCRmWj11mqOHqyguktcNxiaGLUTwfaC4eI=;
-        b=kfGq/1bdM7mmctfVjvwygSdICg7sFOEztVviqEwrEzJ0Qu4J+89PozGj2oTeg/+42d
-         +dWxSb2uadlZiqh/UfPxDpFAT0NLN0CwjTBrAO7zCAKzooepJesaxQmpw7/yT6qX6d58
-         y4X+jjpVM0RXe+I2E1xcFXxXq7VqTTFSXKL+uvugsqN+G84IePr4rJ2czNx+eF7wq4vY
-         Xt8btFeVsF7tpHN3iWvJ2iNZlYCkQPXdAN4d/v8lRoh+rid95L4+97boVlGt10Lt2J6Z
-         6ut73mfF+mYfKIJgR51M1LmGg+a95NGik4A0dggEtDw5+GfobGlP04mObe5GZfUiNwGt
-         GOnw==
-X-Gm-Message-State: AOJu0Ywd2X9aR3HnaPZEm8SEJ9tDtzhS9kIC4Q52gswbmqHiZCJIA9GA
-	tsZeh3NY0+q6HN70ikAsMTQw7w==
-X-Google-Smtp-Source: AGHT+IHIW80ocn2px4/mSvPMYZaDrwux8LTqqIWK/akYjlkt3tSL/bNkLftU0uqqE52Ci+rLW4ntcg==
-X-Received: by 2002:a05:6358:3183:b0:135:499a:382b with SMTP id q3-20020a056358318300b00135499a382bmr10239406rwd.7.1691508526002;
-        Tue, 08 Aug 2023 08:28:46 -0700 (PDT)
+        bh=MeBO0TU+wywolPJy9LO8EvpcVAk7REABcY2ZWJ0oR2k=;
+        b=Ssyu16R4GleTI8F159rQ6FlRO96Qkxm8Va3I3xZZqNRoPSWqX9CEuZnyli1TWQjNMT
+         lozg+qBjH16XUXipbXeQuOOA5w5Mc1l7DiiFYGSHzgBvCcM1R0SCChFE8doZI7sqt1Nc
+         GQCuBV+61sKruTSDlanOt4DQ7oNur2J6uVUACZIu0KjyGq2h1DvjtwU9SWMu40qTfQrH
+         PoV1oVxa9coBdA6CXkcKkUnSbmlXT/RqdKJqItDIeNUYF89+kQO5waE0ixRCx+qp4Y32
+         5NxKTa+3BFLL8GmXzzqylT4/Z6i5Kve5LMz5Wcs83oD276tkq/d/4xvmJHdjDwROfpje
+         f8tw==
+X-Gm-Message-State: AOJu0YzFknOJBsu0y/zGTic6tdLBVhD1RXh4Uwv68shjY+DfTD8thzQ0
+	67QCz+hN/9zCkqZcJCMFH3EQKQ==
+X-Google-Smtp-Source: AGHT+IGJBCVvvsgYR+q7X0Sk7dXs03IUGDHaNzhG5YQ4qxrxUUqBv75jqofq5CvooNJVQKzWLIXDBg==
+X-Received: by 2002:a05:622a:1cb:b0:405:4734:6913 with SMTP id t11-20020a05622a01cb00b0040547346913mr138020qtw.0.1691508632825;
+        Tue, 08 Aug 2023 08:30:32 -0700 (PDT)
 Received: from ziepe.ca (hlfxns017vw-142-68-25-194.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.25.194])
-        by smtp.gmail.com with ESMTPSA id f6-20020ac81346000000b0040f200feb4fsm3395594qtj.80.2023.08.08.08.28.45
+        by smtp.gmail.com with ESMTPSA id i24-20020ac871d8000000b0040324785e4csm3398941qtp.13.2023.08.08.08.30.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Aug 2023 08:28:45 -0700 (PDT)
+        Tue, 08 Aug 2023 08:30:32 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.95)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1qTOdZ-004dJf-1c;
-	Tue, 08 Aug 2023 12:28:45 -0300
-Date: Tue, 8 Aug 2023 12:28:45 -0300
+	id 1qTOfH-004dKy-Pw;
+	Tue, 08 Aug 2023 12:30:31 -0300
+Date: Tue, 8 Aug 2023 12:30:31 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
 To: Vasant Hegde <vasant.hegde@amd.com>
 Cc: iommu@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com,
 	wei.huang2@amd.com, jsnitsel@redhat.com
-Subject: Re: [PATCH 01/11] iommu/amd: Rename helper function
- rlookup_amd_iommu()
-Message-ID: <ZNJfLQTJhOgorIHB@ziepe.ca>
+Subject: Re: [PATCH 02/11] iommu/amd: Introduce struct
+ protection_domain.pd_mode
+Message-ID: <ZNJflxeIWtJLC896@ziepe.ca>
 References: <20230808100232.5977-1-vasant.hegde@amd.com>
- <20230808100232.5977-2-vasant.hegde@amd.com>
+ <20230808100232.5977-3-vasant.hegde@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -59,56 +59,41 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230808100232.5977-2-vasant.hegde@amd.com>
+In-Reply-To: <20230808100232.5977-3-vasant.hegde@amd.com>
 
-On Tue, Aug 08, 2023 at 10:02:22AM +0000, Vasant Hegde wrote:
+On Tue, Aug 08, 2023 at 10:02:23AM +0000, Vasant Hegde wrote:
 > From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 > 
-> Rename and make it available to other code.
+> This enum variable is used to track the type of page table used by the
+> protection domain. It will replace the protection_domain.flags in
+> subsequent series.
 > 
+> Suggested-by: Jason Gunthorpe <jgg@ziepe.ca>
 > Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 > Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
 > ---
->  drivers/iommu/amd/amd_iommu.h |  1 +
->  drivers/iommu/amd/iommu.c     | 30 +++++++++++++++---------------
->  2 files changed, 16 insertions(+), 15 deletions(-)
+>  drivers/iommu/amd/amd_iommu_types.h | 7 +++++++
+>  drivers/iommu/amd/iommu.c           | 3 +++
+>  2 files changed, 10 insertions(+)
 > 
-> diff --git a/drivers/iommu/amd/amd_iommu.h b/drivers/iommu/amd/amd_iommu.h
-> index 56996dc2868d..1471ab2dddd1 100644
-> --- a/drivers/iommu/amd/amd_iommu.h
-> +++ b/drivers/iommu/amd/amd_iommu.h
-> @@ -24,6 +24,7 @@ int amd_iommu_init_devices(void);
->  void amd_iommu_uninit_devices(void);
->  void amd_iommu_init_notifier(void);
->  void amd_iommu_set_rlookup_table(struct amd_iommu *iommu, u16 devid);
-> +struct amd_iommu *amd_iommu_rlookup_iommu(struct device *dev);
+> diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
+> index 0d339e022572..5e89032b3dee 100644
+> --- a/drivers/iommu/amd/amd_iommu_types.h
+> +++ b/drivers/iommu/amd/amd_iommu_types.h
+> @@ -555,6 +555,12 @@ struct amd_io_pgtable {
+>  	u64			*pgd;		/* v2 pgtable pgd pointer */
+>  };
 >  
->  #ifdef CONFIG_AMD_IOMMU_DEBUGFS
->  void amd_iommu_debugfs_setup(struct amd_iommu *iommu);
-> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-> index 26e509ffe77a..77b913211c35 100644
-> --- a/drivers/iommu/amd/iommu.c
-> +++ b/drivers/iommu/amd/iommu.c
-> @@ -164,7 +164,7 @@ static struct amd_iommu *__rlookup_amd_iommu(u16 seg, u16 devid)
->  	return NULL;
->  }
->  
-> -static struct amd_iommu *rlookup_amd_iommu(struct device *dev)
-> +struct amd_iommu *amd_iommu_rlookup_iommu(struct device *dev)
->  {
+> +enum protection_domain_mode {
+> +	PD_MODE_PT = 0,
+> +	PD_MODE_V1,
+> +	PD_MODE_V2,
+> +};
 
-Er, wah? This is a really confused function. It should just be:
+PD_MODE_PT is redundant because the domain->type ==
+IOMMU_DOMAIN_IDENTITY already indicates identity. It is better not to
+denormalize the data structures.
 
-static inline struct amd_iommu *amd_device_to_iommu(struct device *dev)
-{
-	return container_of(dev->iommu->iommu_dev, struct amd_iommu, iommu);
-}
+But right idea
 
-Right? At least for many of the call sites.
-
-The core code maintains the association of the iommu_device with each
-probe'd device automatically. The drivers don't need tables and
-searching.
-
-Jason 
-
+Jason
