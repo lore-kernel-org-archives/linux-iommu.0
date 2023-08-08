@@ -1,220 +1,93 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.136])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f172.google.com (mail-qt1-f172.google.com [209.85.160.172])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B39D12B83
-	for <iommu@lists.linux.dev>; Tue,  8 Aug 2023 15:35:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1691508930; x=1723044930;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=FrwNPceh10Tu5Pr0DfPIpYCG71l2vETJOJy+lU/84gg=;
-  b=BnUzwljmGjlPu85WDIj6LHeAH9gM1Cn23T322o8ev5l/RxwT2MKAsKL2
-   ycFfb1by3NVJxnJuvZJoKj3NJMqoC5tPU4JtEXw1a5YMWT9ZnAVIF9s6c
-   cDFrX1Eu3p4xn5WOEouN0E82QGjg2tYdUjfNPa17LlzU+pbqUwkdHcDCv
-   lS8DrTjKpZfvVgeB1rHEPLxJWdULFBDsBdz+CCFRXAvzrkZJJpCQBq3H3
-   W+81+i6xKkfv0XRYk6eVwl1aglEEEcSB4PiIzicgxT6gjIbAChL/n6SuF
-   T04qgWBsFf0Uyyr875dx1T+aw62eOEWJj4E8mJCqeCFV1WnjgQ3fpAE3d
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10795"; a="350449324"
-X-IronPort-AV: E=Sophos;i="6.01,156,1684825200"; 
-   d="scan'208";a="350449324"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Aug 2023 08:35:14 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10795"; a="855126982"
-X-IronPort-AV: E=Sophos;i="6.01,156,1684825200"; 
-   d="scan'208";a="855126982"
-Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
-  by orsmga004.jf.intel.com with ESMTP; 08 Aug 2023 08:35:14 -0700
-From: Yi Liu <yi.l.liu@intel.com>
-To: joro@8bytes.org,
-	alex.williamson@redhat.com,
-	jgg@nvidia.com,
-	kevin.tian@intel.com,
-	robin.murphy@arm.com,
-	baolu.lu@linux.intel.com
-Cc: cohuck@redhat.com,
-	eric.auger@redhat.com,
-	nicolinc@nvidia.com,
-	kvm@vger.kernel.org,
-	mjrosato@linux.ibm.com,
-	chao.p.peng@linux.intel.com,
-	yi.l.liu@intel.com,
-	yi.y.sun@linux.intel.com,
-	peterx@redhat.com,
-	jasowang@redhat.com,
-	shameerali.kolothum.thodi@huawei.com,
-	lulu@redhat.com,
-	suravee.suthikulpanit@amd.com,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	linux-kselftest@vger.kernel.org,
-	zhenzhong.duan@intel.com
-Subject: [PATCH v6 4/4] iommufd/selftest: Add coverage for IOMMU_GET_HW_INFO ioctl
-Date: Tue,  8 Aug 2023 08:35:10 -0700
-Message-Id: <20230808153510.4170-5-yi.l.liu@intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230808153510.4170-1-yi.l.liu@intel.com>
-References: <20230808153510.4170-1-yi.l.liu@intel.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A4CF12B83
+	for <iommu@lists.linux.dev>; Tue,  8 Aug 2023 15:35:52 +0000 (UTC)
+Received: by mail-qt1-f172.google.com with SMTP id d75a77b69052e-40e268fe7ddso33753981cf.3
+        for <iommu@lists.linux.dev>; Tue, 08 Aug 2023 08:35:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1691508952; x=1692113752;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=473CqHc/PxOWz4U7yZYFf0ch/8FPP3OC9NEc7IoxEfE=;
+        b=V56Y2GI2M40uUWYPpJic7pxygW9MAe7KCmaaIkT9dx417oeibQTSIE3xmcp/TIfE/4
+         NI1Lfic9jwKfsO491jwXn9iSeyNLnND2rHJ5vKLfzGBL/d1PEJQIBqeqoTErymTj2zNS
+         2cErKjdsa7ptIBW4MX7gQz8a2vUH//XEoerjqt0iFtNJ2YhscSQr5dUuk/Nruh36Ae/m
+         yN8Ea5jYqRfvGtwH7ahB039OYlgJMsOH1yrbPhYRyw+aKMeVvKS+THboE1RT+eRBiun3
+         HUkoCIt4KAZbwhUXeXiO0dphzUkij9oj0GOYRauQCVSd0tnXHUPdDE7utdlfP9YTYA/R
+         24WQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1691508952; x=1692113752;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=473CqHc/PxOWz4U7yZYFf0ch/8FPP3OC9NEc7IoxEfE=;
+        b=lBwNDQK8r7uwQA0II5s5jyQBUsyTD13ZcHoBowC8YqAC1xvg+AjWpit2VMyRwoktHx
+         vlsR1tl/NAs/WGWIsBNzsQJA9+a23NjU07KMgUQ42HXohyyc91ClnAVZ4WpJ0n5PdSEJ
+         ZXPto5XxVDXaS0+XuRX4tAonqOKhiGW7FPWZZVIQ30FwuSARDaMCs9g9Ea3vit+1RI7P
+         xt93y6sqx2QurFB1HouqCqWUJXrcrEotsSBRJD2IcCFUvJ6u5Cd4Es/oic58J/Re4dH3
+         Bpwf0/ejDbGZyRPYdwR0a3xQaX8KXo8CoMJAlRET+pOdY3k96OZbJKBgqiHssltRXap/
+         uuuA==
+X-Gm-Message-State: AOJu0YxON0ISTMj0EviMbqSC2ewxDJ2L5nYPCPxaTXKc94MyR9toNLgA
+	37KifguUSFKNixNYwbl0RnHRAg==
+X-Google-Smtp-Source: AGHT+IFTdf0xPfmFF8WhUj+1oRoLwgGIaWVWNoa78EdhdQ2N4Z1pb7Zl7RSIsMBqi+QvVpPG/EaXWQ==
+X-Received: by 2002:ac8:7d03:0:b0:40c:63d1:7bd6 with SMTP id g3-20020ac87d03000000b0040c63d17bd6mr118450qtb.34.1691508951881;
+        Tue, 08 Aug 2023 08:35:51 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-68-25-194.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.25.194])
+        by smtp.gmail.com with ESMTPSA id iv8-20020a05622a6f0800b004055c555d2dsm3381589qtb.21.2023.08.08.08.35.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Aug 2023 08:35:51 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1qTOkQ-004dOo-W9;
+	Tue, 08 Aug 2023 12:35:51 -0300
+Date: Tue, 8 Aug 2023 12:35:50 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Vasant Hegde <vasant.hegde@amd.com>
+Cc: iommu@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com,
+	wei.huang2@amd.com, jsnitsel@redhat.com
+Subject: Re: [PATCH 04/11] iommu/amd: Use protection_domain.flags to check
+ page table mode
+Message-ID: <ZNJg1mUd+WXBDVaD@ziepe.ca>
+References: <20230808100232.5977-1-vasant.hegde@amd.com>
+ <20230808100232.5977-5-vasant.hegde@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230808100232.5977-5-vasant.hegde@amd.com>
 
-From: Nicolin Chen <nicolinc@nvidia.com>
+On Tue, Aug 08, 2023 at 10:02:25AM +0000, Vasant Hegde wrote:
+> Page table mode (v1, v2 or pt) is per domain property. Recently we have
+> enhanced protection_domain.pd_mode to track per domain page table mode.
+> Use that variable to check the page table mode instead of global
+> 'amd_iommu_pgtable' in {map/unmap}_pages path.
+> 
+> Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
+> ---
+>  drivers/iommu/amd/iommu.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 
-Add a mock_domain_hw_info function and an iommu_test_hw_info data
-structure. This allows to test the IOMMU_GET_HW_INFO ioctl passing
-the test_reg value for the mock_dev.
+This is OK, but IMHO, it is much better to provide different ops for
+the v1/v2 page table map/unmap functions since they don't really share
+any code.
 
-Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-Signed-off-by: Yi Liu <yi.l.liu@intel.com>
----
- drivers/iommu/iommufd/iommufd_test.h          |  9 +++++++
- drivers/iommu/iommufd/selftest.c              | 16 ++++++++++++
- tools/testing/selftests/iommu/iommufd.c       | 17 +++++++++++-
- tools/testing/selftests/iommu/iommufd_utils.h | 26 +++++++++++++++++++
- 4 files changed, 67 insertions(+), 1 deletion(-)
+eg having a function pointer that does nothing other than call another
+function pointer:
 
-diff --git a/drivers/iommu/iommufd/iommufd_test.h b/drivers/iommu/iommufd/iommufd_test.h
-index 258de2253b61..3f3644375bf1 100644
---- a/drivers/iommu/iommufd/iommufd_test.h
-+++ b/drivers/iommu/iommufd/iommufd_test.h
-@@ -100,4 +100,13 @@ struct iommu_test_cmd {
- };
- #define IOMMU_TEST_CMD _IO(IOMMUFD_TYPE, IOMMUFD_CMD_BASE + 32)
- 
-+/* Mock structs for IOMMU_DEVICE_GET_HW_INFO ioctl */
-+#define IOMMU_HW_INFO_TYPE_SELFTEST	0xfeedbeef
-+#define IOMMU_HW_INFO_SELFTEST_REGVAL	0xdeadbeef
-+
-+struct iommu_test_hw_info {
-+	__u32 flags;
-+	__u32 test_reg;
-+};
-+
- #endif
-diff --git a/drivers/iommu/iommufd/selftest.c b/drivers/iommu/iommufd/selftest.c
-index bb2cd54ca7b6..ab4011e3a7c6 100644
---- a/drivers/iommu/iommufd/selftest.c
-+++ b/drivers/iommu/iommufd/selftest.c
-@@ -128,6 +128,21 @@ static struct iommu_domain mock_blocking_domain = {
- 	.ops = &mock_blocking_ops,
- };
- 
-+static void *mock_domain_hw_info(struct device *dev, u32 *length, u32 *type)
-+{
-+	struct iommu_test_hw_info *info;
-+
-+	info = kzalloc(sizeof(*info), GFP_KERNEL);
-+	if (!info)
-+		return ERR_PTR(-ENOMEM);
-+
-+	info->test_reg = IOMMU_HW_INFO_SELFTEST_REGVAL;
-+	*length = sizeof(*info);
-+	*type = IOMMU_HW_INFO_TYPE_SELFTEST;
-+
-+	return info;
-+}
-+
- static struct iommu_domain *mock_domain_alloc(unsigned int iommu_domain_type)
- {
- 	struct mock_iommu_domain *mock;
-@@ -279,6 +294,7 @@ static void mock_domain_set_plaform_dma_ops(struct device *dev)
- static const struct iommu_ops mock_ops = {
- 	.owner = THIS_MODULE,
- 	.pgsize_bitmap = MOCK_IO_PAGE_SIZE,
-+	.hw_info = mock_domain_hw_info,
- 	.domain_alloc = mock_domain_alloc,
- 	.capable = mock_domain_capable,
- 	.set_platform_dma_ops = mock_domain_set_plaform_dma_ops,
-diff --git a/tools/testing/selftests/iommu/iommufd.c b/tools/testing/selftests/iommu/iommufd.c
-index 8acd0af37aa5..6b075a68b928 100644
---- a/tools/testing/selftests/iommu/iommufd.c
-+++ b/tools/testing/selftests/iommu/iommufd.c
-@@ -113,6 +113,7 @@ TEST_F(iommufd, cmd_length)
- 	}
- 
- 	TEST_LENGTH(iommu_destroy, IOMMU_DESTROY);
-+	TEST_LENGTH(iommu_hw_info, IOMMU_GET_HW_INFO);
- 	TEST_LENGTH(iommu_ioas_alloc, IOMMU_IOAS_ALLOC);
- 	TEST_LENGTH(iommu_ioas_iova_ranges, IOMMU_IOAS_IOVA_RANGES);
- 	TEST_LENGTH(iommu_ioas_allow_iovas, IOMMU_IOAS_ALLOW_IOVAS);
-@@ -185,6 +186,7 @@ FIXTURE(iommufd_ioas)
- 	uint32_t ioas_id;
- 	uint32_t stdev_id;
- 	uint32_t hwpt_id;
-+	uint32_t device_id;
- 	uint64_t base_iova;
- };
- 
-@@ -211,7 +213,7 @@ FIXTURE_SETUP(iommufd_ioas)
- 
- 	for (i = 0; i != variant->mock_domains; i++) {
- 		test_cmd_mock_domain(self->ioas_id, &self->stdev_id,
--				     &self->hwpt_id, NULL);
-+				     &self->hwpt_id, &self->device_id);
- 		self->base_iova = MOCK_APERTURE_START;
- 	}
- }
-@@ -290,6 +292,19 @@ TEST_F(iommufd_ioas, ioas_area_auto_destroy)
- 	}
- }
- 
-+TEST_F(iommufd_ioas, get_hw_info)
-+{
-+	struct iommu_test_hw_info info;
-+
-+	if (self->device_id) {
-+		test_cmd_get_hw_info(self->device_id, sizeof(info), &info);
-+		assert(info.test_reg == IOMMU_HW_INFO_SELFTEST_REGVAL);
-+	} else {
-+		test_err_get_hw_info(ENOENT, self->device_id,
-+				     sizeof(info), &info);
-+	}
-+}
-+
- TEST_F(iommufd_ioas, area)
- {
- 	int i;
-diff --git a/tools/testing/selftests/iommu/iommufd_utils.h b/tools/testing/selftests/iommu/iommufd_utils.h
-index 70353e68e599..d6d223435881 100644
---- a/tools/testing/selftests/iommu/iommufd_utils.h
-+++ b/tools/testing/selftests/iommu/iommufd_utils.h
-@@ -348,3 +348,29 @@ static void teardown_iommufd(int fd, struct __test_metadata *_metadata)
- 	})
- 
- #endif
-+
-+static int _test_cmd_get_hw_info(int fd, __u32 device_id,
-+				 void *data, size_t data_len)
-+{
-+	struct iommu_hw_info cmd = {
-+		.size = sizeof(cmd),
-+		.dev_id = device_id,
-+		.data_len = data_len,
-+		.data_ptr = (uint64_t)data,
-+	};
-+	int ret;
-+
-+	ret = ioctl(fd, IOMMU_GET_HW_INFO, &cmd);
-+	if (ret)
-+		return ret;
-+	return 0;
-+}
-+
-+#define test_cmd_get_hw_info(device_id, data_len, data)         \
-+	ASSERT_EQ(0, _test_cmd_get_hw_info(self->fd, device_id, \
-+					   data, data_len))
-+
-+#define test_err_get_hw_info(_errno, device_id, data_len, data) \
-+	EXPECT_ERRNO(_errno,                                    \
-+		     _test_cmd_get_hw_info(self->fd, device_id, \
-+					   data, data_len))
--- 
-2.34.1
+	struct io_pgtable_ops *ops = &domain->iop.iop.ops;
+	if (ops->map_pages) {
+		ret = ops->map_pages(ops, iova, paddr, pgsize,
+				     pgcount, prot, gfp, mapped);
+	}
 
+Is quite inefficient these days. If you start with a map_pages_v2
+domain op then you can just directly call iommu_v2_map_pages().
+
+We did alot of work on the core side to enable this.
+
+Jason
