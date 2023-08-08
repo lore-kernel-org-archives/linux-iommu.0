@@ -1,110 +1,161 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 582EB17FF1
-	for <iommu@lists.linux.dev>; Mon,  7 Aug 2023 23:39:25 +0000 (UTC)
-Received: from linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net (linux.microsoft.com [13.77.154.182])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 08FFA20CD151;
-	Mon,  7 Aug 2023 16:39:19 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 08FFA20CD151
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1691451559;
-	bh=EQXcYPykQB/jwitR5EDr0ODUk0xBPqd7pP3EgOvFa54=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:In-Reply-To:
-	 References:In-Reply-To:References:From;
-	b=LSvV2hMcg+xTJVokTQNM3JqeRryUGVgZLYEqvfX5LyrXpPKkZ1feqwv9GTcIpydra
-	 g9kaQRL/PJvypv9WLcTvbO+Nrmo/wAt+91/krWudvRzKbM3DJx2EmIF4C8Ovxz/GI9
-	 ZHTheXWqwAuc+muC7W2AXcGQq5+gAsHYHZV22ls8=
-From: Easwar Hariharan <eahariha@linux.microsoft.com>
-To: robin.murphy@arm.com
-Cc: catalin.marinas@arm.com,
-	corbet@lwn.net,
-	eahariha@linux.microsoft.com,
-	easwar.hariharan@microsoft.com,
-	iommu@lists.linux-foundation.org,
-	iommu@lists.linux.dev,
-	joro@8bytes.org,
-	krckatom@amazon.de,
-	linux-arm-kernel@lists.infradead.org,
-	linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	nicolinc@nvidia.com,
-	sashal@kernel.org,
-	stable@vger.kernel.org,
-	will@kernel.org,
-	yangyicong@hisilicon.com
-Subject: Re: [PATCH v3 5.15 4/6] iommu/arm-smmu-v3: Document MMU-700 erratum 2812531
-Date: Mon,  7 Aug 2023 16:37:45 -0700
-Message-Id: <e5b7d4fe-c99d-e545-875-33ad683c62e@linux.microsoft.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <919ab857-30cf-00a5-1a40-fb180678792e@arm.com>
-References: <919ab857-30cf-00a5-1a40-fb180678792e@arm.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <919ab857-30cf-00a5-1a40-fb180678792e@arm.com>
-References: <919ab857-30cf-00a5-1a40-fb180678792e@arm.com>
-Fcc: sent-mail
-In-Reply-To: <919ab857-30cf-00a5-1a40-fb180678792e@arm.com>
-References: <20230802170227.1590187-1-eahariha@linux.microsoft.com> <20230802170227.1590187-5-eahariha@linux.microsoft.com> <919ab857-30cf-00a5-1a40-fb180678792e@arm.com>
-X-Reply-UID: (2 > )(1 1589327539 7556)/var/spool/mail/eahariha
-X-Reply-Mbox: inbox
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2056.outbound.protection.outlook.com [40.107.94.56])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 41BDF1C38
+	for <iommu@lists.linux.dev>; Tue,  8 Aug 2023 03:12:56 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Z82k2cXZuEdxRZDNC7SY+5pHFh6EfvrGZO7XDv48W+RAyvfcne3ZLlxk7mhlZWBtxmbDJZybaB3X+ZbexK2Iup+muIKLqgvmifxPAeAIMW31U/If/t4w6dFS2E0Tqs4drk/yRQEn9xgg3mmI8xtv2N2e+DPafwovsaQrPw3JVDHKQLOSDLSSRjAP2dz350OvCSgATQdcF2FY/7iziph/UgSwlDXvuRN4BdwGLOITUNV2i5bgJ1/22kQ8BCXzjzSGAP4+HoivUAweRkZVoPKOV8PkqKzAM7hbW3S4CxvqzDi8eTNR6vpXHUmHBcsrhZdCj4hkqjRQ6BEt91FH/QfSjQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=eALnJYcGKflQ/kh5eX2J9rbfxsXpouoABpu2G9OAQlQ=;
+ b=nUsb4uVSpLuS1KNCQDLHX516pu1y/ClrnX+08wV5MlJJdAhjslw10RvPjV66WR0mcjc8VrbNk2kGRcd8Yqyzm2klY2g7YA2r3lEyznJnncH2yGdkHWUGy1s1lR4vZBxx02qeCnUUSy10B8b4F4QzzwHxhn8FMERGenIpf+C5OuR48YMicEJ3rNRE8Azk+h8eySohU2XPi/jiDklt0nUn4HklW+JwNIDArNy5W9dSAhqygotoxuuezxPbXkzh6v6z6Q0hIDkxPcLK/Q4ZyFV9H3Vv2C28A0UhhsIKLxJzhF4Sh0ZB+nLj79o3TAAEN6nqfRhXClJN5wtbfiIYEooCuw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.160) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=eALnJYcGKflQ/kh5eX2J9rbfxsXpouoABpu2G9OAQlQ=;
+ b=eHTzMFFp63WQpdluivgRIWmX6XwuEzvPeBq+vOP6ciM7aaKNVmX6/W+juPHrOwgZHLdbP/wToUbeitOiKc/yH/vejXFtxyE0gvU8rftheC6EZpCE/LH4jiFJlm2w/UGw8kQxYLTIygcb4wjJG/MphQ9HLoJ8IHKA2mEjeBWP1k9o+geIaqN7Fi8POD2kANRxZ0q/tfMiFIVA1lpfc7ymemf86EqLrqVxX+c1tIoOX86xmrPVvgXRGfsuClbrzww8YqsmiccLItxEtQq+Y9fsw1WMsjZWx09KaBhN0q1P5BxUWmBmcZ6t3W3xlUQSdjUvnMfu2i1St3IeOPZ5eOjIlA==
+Received: from PH0PR07CA0060.namprd07.prod.outlook.com (2603:10b6:510:e::35)
+ by SN7PR12MB6689.namprd12.prod.outlook.com (2603:10b6:806:273::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6652.27; Tue, 8 Aug
+ 2023 03:12:51 +0000
+Received: from SN1PEPF000252A0.namprd05.prod.outlook.com
+ (2603:10b6:510:e:cafe::e1) by PH0PR07CA0060.outlook.office365.com
+ (2603:10b6:510:e::35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6652.27 via Frontend
+ Transport; Tue, 8 Aug 2023 03:12:54 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ SN1PEPF000252A0.mail.protection.outlook.com (10.167.242.7) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6652.19 via Frontend Transport; Tue, 8 Aug 2023 03:12:54 +0000
+Received: from rnnvmail205.nvidia.com (10.129.68.10) by mail.nvidia.com
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Mon, 7 Aug 2023
+ 20:12:41 -0700
+Received: from rnnvmail205.nvidia.com (10.129.68.10) by rnnvmail205.nvidia.com
+ (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Mon, 7 Aug 2023
+ 20:12:40 -0700
+Received: from Asurada-Nvidia (10.127.8.11) by mail.nvidia.com (10.129.68.10)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37 via Frontend
+ Transport; Mon, 7 Aug 2023 20:12:39 -0700
+Date: Mon, 7 Aug 2023 20:12:37 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: "Liu, Yi L" <yi.l.liu@intel.com>
+CC: "Tian, Kevin" <kevin.tian@intel.com>, "joro@8bytes.org" <joro@8bytes.org>,
+	"alex.williamson@redhat.com" <alex.williamson@redhat.com>, "jgg@nvidia.com"
+	<jgg@nvidia.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>, "cohuck@redhat.com"
+	<cohuck@redhat.com>, "eric.auger@redhat.com" <eric.auger@redhat.com>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>, "mjrosato@linux.ibm.com"
+	<mjrosato@linux.ibm.com>, "chao.p.peng@linux.intel.com"
+	<chao.p.peng@linux.intel.com>, "yi.y.sun@linux.intel.com"
+	<yi.y.sun@linux.intel.com>, "peterx@redhat.com" <peterx@redhat.com>,
+	"jasowang@redhat.com" <jasowang@redhat.com>,
+	"shameerali.kolothum.thodi@huawei.com"
+	<shameerali.kolothum.thodi@huawei.com>, "lulu@redhat.com" <lulu@redhat.com>,
+	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>, "Duan,
+ Zhenzhong" <zhenzhong.duan@intel.com>
+Subject: Re: [PATCH v4 09/12] iommu/vt-d: Add iotlb flush for nested domain
+Message-ID: <ZNGypUee/U9d68TZ@Asurada-Nvidia>
+References: <20230724111335.107427-1-yi.l.liu@intel.com>
+ <20230724111335.107427-10-yi.l.liu@intel.com>
+ <BN9PR11MB527690EBAA872A16AE8926F88C0BA@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <DS0PR11MB7529F4D4DABBE29E9B7BF5C9C30CA@DS0PR11MB7529.namprd11.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <DS0PR11MB7529F4D4DABBE29E9B7BF5C9C30CA@DS0PR11MB7529.namprd11.prod.outlook.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SN1PEPF000252A0:EE_|SN7PR12MB6689:EE_
+X-MS-Office365-Filtering-Correlation-Id: 2cda00ae-25f4-468f-55de-08db97bd5b9c
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	n0WLcyo5yUAUJhOWtpYtkCmk/TN7egcaFnOw0k/NZsHIkIYqnHYPBUpbgXbAJjQ0a5qpR8apH7LJe2ZLKZZhSWhQ1J2P1Z99WyX9FAU+RmWDs58t60Fekfkeb+iMfCaAdehzRsyZNoBTREmxD+70E8LkkyiVD7Cm0zkiEQVi8uJCx7KaKNaF74nvL5YAT90s5az7JL5B68VEGVMI5kZS4uiqMdkxSDx5Rr3vLIYuqEENs/iL9EFv578TDSCaJ+eW1sFyY3xwGZbs9/H9NqR1qnrl/tFWKw+0msPvsSMRZvzD+ZP+mtoPbXXdV3fdu5DpPppfKQhtK6MuhWDPExSLm9sZiSrSQqMLt5NLwqCzIJK5DyvKwf4vapfAyrlBbO3F0atTMDulSQqtPNpkv+7AKWmtInHXPZYqrzdXssqIft6p6Y7P0GSansUPej5ZvvSk1su9FiK+IzLF6sE5cyD0is1Qh+CnEEJXCcBECacB5AWm1z2J7WAI2RPfWWJAehxhvPoefk96n2U0uhLFMFgL9h9OeWuirUlkKdyG+qg0IqPx9Y/3ro/azBZ/bKFU0aijaieNCo1/hl7ZCJ2nG2v5Km6ce/av1Ci89LGgWuHac91pOrLr0DpQslu3uVS6+qtjE0/0Dm6IhOGD54PqtLbUdbn0ZQpa/h4WoIX/w1cBWZ3N8hvyE686Vx9GEUr4ZGDjspoUjEfFY+Ys6rjc2WAyng1xLEKN6mRnomAnkrKpUehsDMqM8VyB78vVF4terAt17E6CNmUAKz+SZJVTgim0Mauw/GAAYjigBHgimI9RGkspGuPNRNIpjwNFMd1ZOs2N
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(376002)(346002)(396003)(136003)(39860400002)(451199021)(82310400008)(186006)(1800799003)(90011799007)(90021799007)(40470700004)(46966006)(36840700001)(70206006)(4326008)(6916009)(41300700001)(316002)(2906002)(54906003)(478600001)(9686003)(26005)(336012)(7416002)(8676002)(8936002)(70586007)(5660300002)(426003)(47076005)(83380400001)(86362001)(36860700001)(40460700003)(40480700001)(356005)(7636003)(55016003)(82740400003)(33716001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Aug 2023 03:12:54.3236
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2cda00ae-25f4-468f-55de-08db97bd5b9c
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	SN1PEPF000252A0.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB6689
 
-On Mon, 7 Aug 2023, Robin Murphy wrote:
+On Mon, Aug 07, 2023 at 03:08:29PM +0000, Liu, Yi L wrote:
+> > > From: Liu, Yi L <yi.l.liu@intel.com>
+> > > Sent: Monday, July 24, 2023 7:14 PM
+> > >
+> > > +static int intel_nested_cache_invalidate_user(struct iommu_domain
+> > > *domain,
+> > > +                                         void *user_data)
+> > > +{
+> > > +   struct iommu_hwpt_vtd_s1_invalidate_desc *req = user_data;
+> > > +   struct iommu_hwpt_vtd_s1_invalidate *inv_info = user_data;
+> > > +   struct dmar_domain *dmar_domain = to_dmar_domain(domain);
+> > > +   unsigned int entry_size = inv_info->entry_size;
+> > > +   u64 uptr = inv_info->inv_data_uptr;
+> > > +   u64 nr_uptr = inv_info->entry_nr_uptr;
+> > > +   struct device_domain_info *info;
+> > > +   u32 entry_nr, index;
+> > > +   unsigned long flags;
+> > > +   int ret = 0;
+> > > +
+> > > +   if (get_user(entry_nr, (uint32_t __user *)u64_to_user_ptr(nr_uptr)))
+> > > +           return -EFAULT;
+> > > +
+> > > +   for (index = 0; index < entry_nr; index++) {
+> > > +           ret = copy_struct_from_user(req, sizeof(*req),
+> > > +                                       u64_to_user_ptr(uptr + index *
+> > > entry_size),
+> > > +                                       entry_size);
+> >
+> > If continuing this direction then the driver should also check minsz etc.
+> > for struct iommu_hwpt_vtd_s1_invalidate and iommu_hwpt_vtd_s1_invalidate_desc
+> > since they are uAPI and subject to change.
+> 
+> Then needs to define size in the uapi data structure, and copy size first and
+> check minsz before going forward. How about the structures for hwpt alloc
+> like struct iommu_hwpt_vtd_s1? Should check minsz for them as well?
 
-> On 2023-08-02 18:02, Easwar Hariharan wrote:
->>  From: Robin Murphy <robin.murphy@arm.com>
->>
->>  commit 309a15cb16bb075da1c99d46fb457db6a1a2669e upstream
->>
->>  To work around MMU-700 erratum 2812531 we need to ensure that certain
->>  sequences of commands cannot be issued without an intervening sync. In
->>  practice this falls out of our current command-batching machinery
->>  anyway - each batch only contains a single type of invalidation command,
->>  and ends with a sync. The only exception is when a batch is sufficiently
->>  large to need issuing across multiple command queue slots, wherein the
->>  earlier slots will not contain a sync and thus may in theory interleave
->>  with another batch being issued in parallel to create an affected
->>  sequence across the slot boundary.
->>
->>  Since MMU-700 supports range invalidate commands and thus we will prefer
->>  to use them (which also happens to avoid conditions for other errata),
->>  I'm not entirely sure it's even possible for a single high-level
->>  invalidate call to generate a batch of more than 63 commands,
->
-> Out of interest, have you observed a case where this actually happens?
+Assuming that every uAPI data structure needs a min_size, we can
+either add a structure holding all min_sizes like iommufd main.c
+or have another xx_min_len in iommu_/domain_ops.
 
-Not so far, but this was more of a proactive pickup since the erratum was
-published and we have some hardware being tested.
+Currently, we have the union of structures in iommu.h and also a
+xx_data_len in iommu_ops. So, neither of the two places seem to
+be optimal from my p.o.v... any suggestion?
 
->>  but for
->>  the sake of robustness and documentation, wire up an option to enforce
->>  that a sync is always inserted for every slot issued.
->>
->>  The other aspect is that the relative order of DVM commands cannot be
->>  controlled, so DVM cannot be used. Again that is already the status quo,
->>  but since we have at least defined ARM_SMMU_FEAT_BTM, we can explicitly
->>  disable it for documentation purposes even if it's not wired up anywhere
->>  yet.
->
-> Note that there seems to be a slight issue with this patch that I missed, 
-> under discussion here:
->
-> https://lore.kernel.org/linux-iommu/27c895b8-1fb0-be88-8bc3-878d754684c8@huawei.com/T/#t
->
+Also, alloc allows data_len=0, so a min_size check will be only
+applied to data_len > 0 case.
 
-Thanks for the heads up. I did not backport the TTL patch for this series,
-or the ones for 6.1 or 6.4, but I'll track the discussion.
-Could you CC any fixup patch you may create for this to stable for 5.15+
-as well?
-
-Thanks,
-Easwar
-
-> Thanks,
-> Robin.
->
-<snip>
+Thanks
+Nic
