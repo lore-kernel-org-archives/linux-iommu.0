@@ -1,33 +1,33 @@
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2075.outbound.protection.outlook.com [40.107.102.75])
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2066.outbound.protection.outlook.com [40.107.94.66])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B5E00DDBF
-	for <iommu@lists.linux.dev>; Tue,  8 Aug 2023 10:07:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B45A6DDBF
+	for <iommu@lists.linux.dev>; Tue,  8 Aug 2023 10:08:28 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lykT1tw2c9ZxgKcQPGL+WWFuKalA6JJAMA/xVSL72na4QoT9LPk7A5L8oDnVokWS8NN45UJ1VC1ps+QLpanZgWbqPgECwpbq0N+H1v6yUtvu/jtW7vkMI9p7xbbIGHL8/bMKsoeuahkvnM7LSibUItGeYlqHWowIz4SYF/yzOCnxZIFE+PrLXYBSvHIB+2yFdewihqVJAAl13p9RZqk5l1RR687L+ZzPM/vIprnZxxFTATCpJxRhMYeJ1mUopy/JHnT7i6JjJMQHZnqfs+bRlyPR8uXjFOY0mVIbYRQrciBLMb9AZ7AYeAevnP+bBHpTPPHt9oVKMB6/S3qbdyT70w==
+ b=QH/9sXLaPf7/1wH3sJXlda1t9/aExqo6OqOTePVElJtMwcGFr/p00Htc58VZTNzPkmnyp7uUlV+JNRAVsnVDjbqT7CsbAGzbd2ey8Hu3s3vDNv6ES+JF7L9yukbPMSE8d9D/NmBtpOWum2JmStjgbJL/n966Iph3z9wtRMmOCzs7deB2wx6eXxsUhHP/oHXndTcgMIBgLI7ih5qi20D/FSAu9YhIuQZtXFXqe2nKeI7aXA6HfjVutEy3aHEP8N5gKGeq4WINrWf7fzGOI3xpBwhcXAWcIr0j/XlN3asebzd2JQFd6HJ9yT7wSC1eRP8oX4zEWz22/SK8VMHJChUT/Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Sj9m1XiHkzYVOnzNy2t8lvT7IzAh8J4O2BV3QMxSNzQ=;
- b=bytMcABlz4qDwNV24Q6s2HYGaAFu4xr5OLEOlmU/ypQkSJVLL3l5gcwvq9FfJZoPFoF7nygj4YUxnIZdwX0kzeZarVBOtac3IWtTsVr/yApLgBtCItW4uCDOAFq2SvmCq1RJMHIgmR9s3gY+h7bjnp6o/X3dsuDo1q1eFXwoMoud7Ho7k0Wl4uxlhwnl5vSSZW8vliOpC9R/KuYd6EfRTLPq7zFQMGVyN8r9f+fMM76g4zTOVnPwxX1+N573u5zfFNP2ekcsF906SxZzG0Y44F0ZGq6/GSVpdApmadYzs+6bbAi0HEV+aV4NbMOn0HzUJmGyiORoZn9HYko4NPDn5A==
+ bh=i5HDGB2NeL8IoAYlc64/5aFDEl6M5CgkTRcn1ZJJVQI=;
+ b=Y7A5ScCBKdudzi1EqQstS/2jMUyrsvL8GcqH27haWSL/Z8pHop0+b33KC5+odmIqQ4em1RYohJtqwEXDrV6k9IKIVBr3AZs7Yw4dvoueSrTSnLCs4SEmZjprw4uYJ0M3IezqfJrVSnpK0NGzWK82YGMlZZDWXSwolXiuN4A8ckuLLARTAYh78w0dTK+yQ5AwAWVZct1m5Trufxkipg0jkpo2Um4nw5LbmsBzL1ClbkslawNZkVYF6F1+62kLqHKuTo+SHfCQoAgaHb1yDiQ8PDiEow+QE/ABRfrIm3q0veyNyN99fMBGEDwTlNAjyCYbCHFqLJrwHquPbjuFKXCeZw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=amd.com;
  dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
  header.from=amd.com; dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Sj9m1XiHkzYVOnzNy2t8lvT7IzAh8J4O2BV3QMxSNzQ=;
- b=AtEDRYWRHNFAllMNvYN67HNYJ9SUHCoGMeC/Wj1jXHvvQe1CNebu+ppzJh7kOing7rSRWumPjqQwLAjWkPz2QzOqz8/xKXIcwemSjg5qEzE8cHNJ2lWTi7JwQ3meRwEzra/g8DPkEG6D34ZFpnLIDRNwLeCveCDTbaWg4QlriU4=
-Received: from SN6PR2101CA0012.namprd21.prod.outlook.com
- (2603:10b6:805:106::22) by CYYPR12MB8854.namprd12.prod.outlook.com
- (2603:10b6:930:b8::6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6652.26; Tue, 8 Aug
- 2023 10:07:54 +0000
-Received: from SN1PEPF0002636C.namprd02.prod.outlook.com
- (2603:10b6:805:106:cafe::68) by SN6PR2101CA0012.outlook.office365.com
- (2603:10b6:805:106::22) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6652.18 via Frontend
- Transport; Tue, 8 Aug 2023 10:07:54 +0000
+ bh=i5HDGB2NeL8IoAYlc64/5aFDEl6M5CgkTRcn1ZJJVQI=;
+ b=Tv3aFBBBWNTUF+jVc7tBiSL1s+DZRig85SwOMTizWZPkwZkHu92AmEb4cDV/CEDvdMfMI7RsdOwJ28Ti3IW8gfrbywipaeTOB2E8g0dDRsd7jHI4X9vGl4+mTU6UxETBRJeh0d5ljGrvJdPLO1grgZkyeF60C68aJCiKxa2qqVI=
+Received: from SA1P222CA0036.NAMP222.PROD.OUTLOOK.COM (2603:10b6:806:2d0::21)
+ by IA1PR12MB6089.namprd12.prod.outlook.com (2603:10b6:208:3ef::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6652.27; Tue, 8 Aug
+ 2023 10:08:26 +0000
+Received: from SN1PEPF00026369.namprd02.prod.outlook.com
+ (2603:10b6:806:2d0:cafe::49) by SA1P222CA0036.outlook.office365.com
+ (2603:10b6:806:2d0::21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6652.27 via Frontend
+ Transport; Tue, 8 Aug 2023 10:08:26 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -35,20 +35,20 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
  client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
 Received: from SATLEXMB04.amd.com (165.204.84.17) by
- SN1PEPF0002636C.mail.protection.outlook.com (10.167.241.137) with Microsoft
+ SN1PEPF00026369.mail.protection.outlook.com (10.167.241.134) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.6652.19 via Frontend Transport; Tue, 8 Aug 2023 10:07:54 +0000
+ 15.20.6652.19 via Frontend Transport; Tue, 8 Aug 2023 10:08:25 +0000
 Received: from kali.amd.com (10.180.168.240) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.27; Tue, 8 Aug
- 2023 05:07:51 -0500
+ 2023 05:08:23 -0500
 From: Vasant Hegde <vasant.hegde@amd.com>
 To: <iommu@lists.linux.dev>, <joro@8bytes.org>
 CC: <suravee.suthikulpanit@amd.com>, <wei.huang2@amd.com>,
 	<jsnitsel@redhat.com>, <jgg@ziepe.ca>, Vasant Hegde <vasant.hegde@amd.com>
-Subject: [PATCH 08/11] iommu/amd: Refactor GCR3 table helper functions
-Date: Tue, 8 Aug 2023 10:02:29 +0000
-Message-ID: <20230808100232.5977-9-vasant.hegde@amd.com>
+Subject: [PATCH 09/11] iommu/amd: Introduce helper functions for AMD IOMMU v2 driver
+Date: Tue, 8 Aug 2023 10:02:30 +0000
+Message-ID: <20230808100232.5977-10-vasant.hegde@amd.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230808100232.5977-1-vasant.hegde@amd.com>
 References: <20230808100232.5977-1-vasant.hegde@amd.com>
@@ -65,205 +65,165 @@ X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
  (10.181.40.145)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SN1PEPF0002636C:EE_|CYYPR12MB8854:EE_
-X-MS-Office365-Filtering-Correlation-Id: e8800049-a8d7-47e3-d280-08db97f75504
+X-MS-TrafficTypeDiagnostic: SN1PEPF00026369:EE_|IA1PR12MB6089:EE_
+X-MS-Office365-Filtering-Correlation-Id: 6e9eb0de-db89-4d3c-bdf9-08db97f767f7
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	ZAQAiQOJLwDoE4L3oeoQNJfeNKGsxGn6MkUrb993uI233OpiXOKo2ChENS8kXzLZMtZj/yiKcMPGeZQR3HDDULuKyk7RHe4r44UEbqiIYT63rAv+m2gkKpZ4EVLCvYCdIpu/L9FzOuBotVe1wiEkUA5B7VCyPdRMXFauJ/mtUa4tUdJBm9JJerMqlcHQ00ftSH8gBkSyjoml333objYMfEmD7G96ixYxR9dNxiXrholu06k0W6g96Pma41hjnbwSNIGJy4lXKA+P7Hi1KvwGYrtiGdMGTg1UnXhXpfFFLL3K88oJZmufX4Ndy1XgkDN2ZGIrJ7Ug03bfETzoV0YRr7EqLyxeHzenfTTf0dUIDhcFvY3hfED+zAbnTIBJbW7o1KujTB/h/sYXOT0o4T1J9BJGirZEsUP87YhsgVH+wjQkbbe7pDE8FGzGHMc2zc+m0spvrC0/dOcWtD25OoimZv3W//eoyx+XD/N85cIJROCdghxZhvWduArmkZJIq8t5iCxZz0nEDjfYSLjP+0Vjj5PyxYTV8TI1QVh8juMjxz/yDQpMrmTjXj9hO2fJ26tCdBnVworaWf0Wq6g5UOljQyUqkoNG08Oun3VIUN4dKPC4zG0ejR3k5Pr2cTtvaKBYpbyBAlXxMk7Eb6Nyq2DSQiKz0XT2va2toygcEQuaIyevhD8OuZAo/CKSJ58JXf5PD4YUdfxVfluiIQ060SRC/AIexlmfO26UpqzA9Y5SzejkGc8IGwUaczMu/FTGp2N26jmfLIjwumpL75egh7ChTQ==
+	xDljlsMlly+LvYyljX0lERcgf3LrtgYyWLGcJzCiEMrSOl2XsCiaYQ0lL7o9yfQMzIuJvuM/5Lb3OZlzDWocbZrQrP3lXG6PFWfhyUE/kAgmKhf0g7EADl7O131p7IpQw5WF/Xo/Wok/I4qrhyqij+3uZFQLX0hTRELFyx7RhSFsJiLSudRWlfB4i5ESuY/tWFqMScIiYF7lvPO3Uxh0B2yZusTWNfNY3hrwM7xhd4E633IruCY4Rf/pD9fijW9nvEUswDtjF/oHTKOaqPrdqiBFlJMTXbRbjpOQHjHn/iqPLhL4wxON70yEXHRvBEIG2DAW7JbQB3HBeHe72Y8EzuhZFlHLcro0JxwiX5pLNALDAh+GFRRLJv2OVHT/4xM6THfQN7NXYu63p1H0S3+8um0SN+sVRG5s51J8+ozrWpQo90/v1EywRQOYIKZ5nVSD9/+SKdWO3SpmNbyeS2WXdyRBH/GnfbbzELzc/NHxTgfGyxl9+8l6SVIQTcaNwlrba8wgsC88RbpNZXnGgCqrKgO2yTON1rEXImQaNhz7RlMomnqjng0WZrkMLfxNHwGwU7hnT0fgr94lYa8C00TV6aw7ntnnag1XUbuY1H7DfoolVr7dMeBLHLp1gzVAtAUf5JWoGYvII6mZlE2VfjgMSYKUN6j30jpKqOdai1noSpa+ovGKLX/2CmtOwRBVso7HVrDb0vGiX3+9j5rAlad9g1A8BvIUHDvLbQ6e+Fmu4i9gny2GmICgCIpKCmuIinjggw4b2bn5SZl6gvuxfp2vtg==
 X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(396003)(346002)(136003)(376002)(451199021)(186006)(1800799003)(82310400008)(40470700004)(46966006)(36840700001)(478600001)(7696005)(6666004)(26005)(70206006)(336012)(70586007)(40460700003)(36860700001)(316002)(4326008)(47076005)(110136005)(54906003)(83380400001)(36756003)(5660300002)(2906002)(86362001)(40480700001)(2616005)(16526019)(81166007)(356005)(1076003)(41300700001)(426003)(82740400003)(44832011)(8936002)(8676002)(36900700001);DIR:OUT;SFP:1101;
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(136003)(346002)(396003)(376002)(82310400008)(186006)(1800799003)(451199021)(36840700001)(40470700004)(46966006)(7696005)(2616005)(26005)(1076003)(36756003)(16526019)(336012)(6666004)(82740400003)(478600001)(81166007)(356005)(110136005)(54906003)(70206006)(70586007)(4326008)(426003)(316002)(41300700001)(8936002)(8676002)(5660300002)(44832011)(40460700003)(2906002)(36860700001)(83380400001)(47076005)(86362001)(40480700001)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Aug 2023 10:07:54.1526
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Aug 2023 10:08:25.9593
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: e8800049-a8d7-47e3-d280-08db97f75504
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6e9eb0de-db89-4d3c-bdf9-08db97f767f7
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	SN1PEPF0002636C.namprd02.prod.outlook.com
+	SN1PEPF00026369.namprd02.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CYYPR12MB8854
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB6089
 
 From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 
-To use the new per-device struct gcr3_tbl_info. Also modify
-set_dte_entry() to use new per device GCR3 table.
+Introducing new functions to init and uninit v2 domain. Also setup /
+clear GCR3 table. These functions will make necessary changes to
+existing domain to switch to SVA mode. iommu_v2 module will call these
+new functions instead of setting up new domain to enable SVA mode.
 
 Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 Co-developed-by: Vasant Hegde <vasant.hegde@amd.com>
 Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
 ---
- drivers/iommu/amd/iommu.c | 75 +++++++++++++++++++++++++--------------
- 1 file changed, 48 insertions(+), 27 deletions(-)
+ drivers/iommu/amd/amd_iommu.h |  6 +++
+ drivers/iommu/amd/iommu.c     | 95 +++++++++++++++++++++++++++++++++++
+ 2 files changed, 101 insertions(+)
 
+diff --git a/drivers/iommu/amd/amd_iommu.h b/drivers/iommu/amd/amd_iommu.h
+index c9a35b6e2a87..f5a9697488f8 100644
+--- a/drivers/iommu/amd/amd_iommu.h
++++ b/drivers/iommu/amd/amd_iommu.h
+@@ -64,6 +64,12 @@ int amd_iommu_set_gcr3(struct iommu_dev_data *dev_data,
+ 		       u32 pasid, unsigned long gcr3);
+ int amd_iommu_clear_gcr3(struct iommu_dev_data *dev_data, u32 pasid);
+ 
++/* v2 API init */
++int amd_iommu_v2api_domain_init(struct protection_domain *pdom);
++void amd_iommu_v2api_domain_uninit(struct protection_domain *pdom);
++int amd_iommu_v2api_gcr3_init(struct pci_dev *pdev, int pasids);
++int amd_iommu_v2api_gcr3_uninit(struct pci_dev *pdev);
++
+ int amd_iommu_register_ppr_notifier(struct notifier_block *nb);
+ int amd_iommu_unregister_ppr_notifier(struct notifier_block *nb);
+ void amd_iommu_domain_direct_map(struct iommu_domain *dom);
 diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index c9318be9fe4e..bba2034a28f6 100644
+index bba2034a28f6..b56d1e624cf6 100644
 --- a/drivers/iommu/amd/iommu.c
 +++ b/drivers/iommu/amd/iommu.c
-@@ -78,6 +78,11 @@ struct kmem_cache *amd_iommu_irq_cache;
- 
- static void detach_device(struct device *dev);
- 
-+static void set_dte_entry(struct amd_iommu *iommu, u16 devid,
-+			  struct gcr3_tbl_info *gcr3_info,
-+			  struct protection_domain *domain, bool ats,
-+			  enum ppr_handlers ppr);
-+
- static int __set_gcr3(struct iommu_dev_data *dev_data,
- 		       u32 pasid, unsigned long gcr3);
- 
-@@ -1679,16 +1684,27 @@ static void free_gcr3_tbl_level2(u64 *tbl)
- 	}
+@@ -2179,6 +2179,101 @@ static void protection_domain_free(struct protection_domain *domain)
+ 	kfree(domain);
  }
  
--static void free_gcr3_table(struct protection_domain *domain)
-+static void free_gcr3_table(struct iommu_dev_data *dev_data)
- {
--	if (domain->glx == 2)
--		free_gcr3_tbl_level2(domain->gcr3_tbl);
--	else if (domain->glx == 1)
--		free_gcr3_tbl_level1(domain->gcr3_tbl);
++/*******************************
++ * V2API-related helper functions
++ * Note: Separate these out for now. It will be removed when
++ *       deprecate the AMD IOMMU v2 API support.
++ */
++int amd_iommu_v2api_domain_init(struct protection_domain *pdom)
++{
++	unsigned long flags;
++	int ret = 0;
++
++	spin_lock_irqsave(&pdom->lock, flags);
++
++	/* Only allow v2API support on pass-through domain. */
++	if (pdom->pd_mode != PD_MODE_PT) {
++		ret = -EINVAL;
++		goto out;
++	}
++
++	pdom->pd_mode = PD_MODE_V2;
++
++out:
++	spin_unlock_irqrestore(&pdom->lock, flags);
++	return ret;
++}
++EXPORT_SYMBOL(amd_iommu_v2api_domain_init);
++
++void amd_iommu_v2api_domain_uninit(struct protection_domain *pdom)
++{
++	unsigned long flags;
++
++	if (!pdom)
++		return;
++
++	spin_lock_irqsave(&pdom->lock, flags);
++	/* Switch back to pass-through mode */
++	pdom->pd_mode = PD_MODE_PT;
++	spin_unlock_irqrestore(&pdom->lock, flags);
++}
++EXPORT_SYMBOL(amd_iommu_v2api_domain_uninit);
++
++int amd_iommu_v2api_gcr3_init(struct pci_dev *pdev, int pasids)
++{
++	struct iommu_dev_data *dev_data = dev_iommu_priv_get(&pdev->dev);
 +	struct gcr3_tbl_info *gcr3_info = &dev_data->gcr3_info;
-+	struct amd_iommu *iommu = amd_iommu_rlookup_iommu(dev_data->dev);
++	unsigned long flags;
++	int ret;
 +
-+	if (gcr3_info->glx == 2)
-+		free_gcr3_tbl_level2(gcr3_info->gcr3_tbl);
-+	else if (gcr3_info->glx == 1)
-+		free_gcr3_tbl_level1(gcr3_info->gcr3_tbl);
- 	else
--		BUG_ON(domain->glx != 0);
-+		WARN_ON_ONCE(gcr3_info->glx != 0);
++	spin_lock_irqsave(&dev_data->lock, flags);
 +
-+	gcr3_info->glx = 0;
++	/* V2API mode needs ATS, PASID and PRI support */
++	if (!dev_data->ats_enabled || !dev_data->pri_enabled ||
++	    !dev_data->pasid_enabled) {
++		ret = -EINVAL;
++		goto out;
++	}
 +
-+	set_dte_entry(iommu, dev_data->devid, NULL, dev_data->domain,
-+		      dev_data->ats_enabled, dev_data->ppr);
-+	clone_aliases(iommu, dev_data->dev);
-+	device_flush_dte(dev_data);
- 
--	free_page((unsigned long)domain->gcr3_tbl);
-+	free_page((unsigned long)gcr3_info->gcr3_tbl);
-+	gcr3_info->gcr3_tbl = NULL;
- }
- 
- /*
-@@ -1703,27 +1719,35 @@ static int get_gcr3_levels(int pasids)
- 	return (DIV_ROUND_UP(get_count_order(pasids), 9) - 1);
- }
- 
--/* Note: This function expects iommu_domain->lock to be held prior calling the function. */
--static int setup_gcr3_table(struct protection_domain *domain, int pasids)
-+static int setup_gcr3_table(struct iommu_dev_data *dev_data, int pasids)
- {
++	/*
++	 * V2API is supported on passthrough domain only.
++	 * Hence we cannot support GIOV for V2API.
++	 */
++	gcr3_info->giov = false;
++	gcr3_info->pasid_cnt = 0;
++
++	/* Allocate GCR3 table */
++	ret = setup_gcr3_table(dev_data, pasids);
++
++out:
++	spin_unlock_irqrestore(&dev_data->lock, flags);
++	return ret;
++}
++EXPORT_SYMBOL(amd_iommu_v2api_gcr3_init);
++
++int amd_iommu_v2api_gcr3_uninit(struct pci_dev *pdev)
++{
++	struct iommu_dev_data *dev_data = dev_iommu_priv_get(&pdev->dev);
 +	struct gcr3_tbl_info *gcr3_info = &dev_data->gcr3_info;
-+	struct amd_iommu *iommu = amd_iommu_rlookup_iommu(dev_data->dev);
- 	int levels = get_gcr3_levels(pasids);
- 
- 	if (levels > amd_iommu_max_glx_val)
- 		return -EINVAL;
- 
--	domain->gcr3_tbl = alloc_pgtable_page(domain->nid, GFP_ATOMIC);
--	if (domain->gcr3_tbl == NULL)
-+	if (gcr3_info->gcr3_tbl)
-+		return -EBUSY;
++	unsigned long flags;
++	int ret = 0;
 +
-+	gcr3_info->gcr3_tbl = alloc_pgtable_page(dev_to_node(dev_data->dev),
-+						 GFP_ATOMIC);
-+	if (gcr3_info->gcr3_tbl == NULL)
- 		return -ENOMEM;
- 
--	domain->glx      = levels;
--	domain->flags   |= PD_IOMMUV2_MASK;
-+	gcr3_info->glx = levels;
- 
--	amd_iommu_domain_update(domain);
-+	set_dte_entry(iommu, dev_data->devid, &dev_data->gcr3_info,
-+		      dev_data->domain, dev_data->ats_enabled, dev_data->ppr);
-+	clone_aliases(iommu, dev_data->dev);
-+	device_flush_dte(dev_data);
- 
- 	return 0;
- }
- 
- static void set_dte_entry(struct amd_iommu *iommu, u16 devid,
-+			  struct gcr3_tbl_info *gcr3_info,
- 			  struct protection_domain *domain, bool ats,
- 			  enum ppr_handlers ppr)
- {
-@@ -1755,9 +1779,9 @@ static void set_dte_entry(struct amd_iommu *iommu, u16 devid,
- 	if (ppr != PPR_HANDLER_NONE)
- 		pte_root |= 1ULL << DEV_ENTRY_PPR;
- 
--	if (domain->flags & PD_IOMMUV2_MASK) {
--		u64 gcr3 = iommu_virt_to_phys(domain->gcr3_tbl);
--		u64 glx  = domain->glx;
-+	if (gcr3_info && gcr3_info->gcr3_tbl) {
-+		u64 gcr3 = iommu_virt_to_phys(gcr3_info->gcr3_tbl);
-+		u64 glx  = gcr3_info->glx;
- 		u64 tmp;
- 
- 		pte_root |= DTE_FLAG_GV;
-@@ -1785,7 +1809,7 @@ static void set_dte_entry(struct amd_iommu *iommu, u16 devid,
- 				((u64)GUEST_PGTABLE_5_LEVEL << DTE_GPT_LEVEL_SHIFT);
- 		}
- 
--		if (domain->flags & PD_GIOV_MASK)
-+		if (gcr3_info->giov)
- 			pte_root |= DTE_FLAG_GIOV;
- 	}
- 
-@@ -1835,7 +1859,7 @@ static int default_gcr3_init(struct iommu_dev_data *dev_data)
- 	 * By default, setup GCR3 table to support MAX PASIDs
- 	 * support by the IOMMU HW.
- 	 */
--	return setup_gcr3_table(dev_data->domain, -1);
-+	return setup_gcr3_table(dev_data, -1);
- }
- 
- static inline void default_gcr3_destroy(struct iommu_dev_data *dev_data)
-@@ -1843,7 +1867,7 @@ static inline void default_gcr3_destroy(struct iommu_dev_data *dev_data)
- 	struct gcr3_tbl_info *gcr3_info = &dev_data->gcr3_info;
- 
- 	gcr3_info->giov = false;
--	free_gcr3_table(dev_data->domain);
++	spin_lock_irqsave(&dev_data->lock, flags);
++
++	if (gcr3_info->pasid_cnt) {
++		ret = -EBUSY;
++		goto out;
++	}
++
 +	free_gcr3_table(dev_data);
- }
- 
- static int do_attach(struct iommu_dev_data *dev_data,
-@@ -1884,8 +1908,8 @@ static int do_attach(struct iommu_dev_data *dev_data,
- 	}
- 
- 	/* Update device table */
--	set_dte_entry(iommu, dev_data->devid, domain,
--		      ats, dev_data->ppr);
-+	set_dte_entry(iommu, dev_data->devid, &dev_data->gcr3_info,
-+		      domain, ats, dev_data->ppr);
- 	clone_aliases(iommu, dev_data->dev);
- 
- 	device_flush_dte(dev_data);
-@@ -2088,8 +2112,8 @@ static void update_device_table(struct protection_domain *domain)
- 
- 		if (!iommu)
- 			continue;
--		set_dte_entry(iommu, dev_data->devid, domain,
--			      dev_data->ats_enabled, dev_data->ppr);
-+		set_dte_entry(iommu, dev_data->devid, &dev_data->gcr3_info,
-+			      domain, dev_data->ats_enabled, dev_data->ppr);
- 		clone_aliases(iommu, dev_data->dev);
- 	}
- }
-@@ -2637,9 +2661,6 @@ int amd_iommu_domain_enable_v2(struct iommu_domain *dom, int pasids)
- 	if (pdom->dev_cnt > 0 || pdom->flags & PD_IOMMUV2_MASK)
- 		goto out;
- 
--	if (!pdom->gcr3_tbl)
--		ret = setup_gcr3_table(pdom, pasids);
--
- out:
- 	spin_unlock_irqrestore(&pdom->lock, flags);
- 	return ret;
++
++out:
++	spin_unlock_irqrestore(&dev_data->lock, flags);
++	return ret;
++}
++EXPORT_SYMBOL(amd_iommu_v2api_gcr3_uninit);
++
++
+ static int protection_domain_init_v1(struct protection_domain *domain, int mode)
+ {
+ 	u64 *pt_root = NULL;
 -- 
 2.31.1
 
