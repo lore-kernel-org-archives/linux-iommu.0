@@ -1,56 +1,56 @@
-Received: from mail-qt1-f179.google.com (mail-qt1-f179.google.com [209.85.160.179])
+Received: from mail-oo1-f45.google.com (mail-oo1-f45.google.com [209.85.161.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6597613AC7
-	for <iommu@lists.linux.dev>; Tue,  8 Aug 2023 15:49:12 +0000 (UTC)
-Received: by mail-qt1-f179.google.com with SMTP id d75a77b69052e-409ae93bbd0so45218341cf.0
-        for <iommu@lists.linux.dev>; Tue, 08 Aug 2023 08:49:12 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D02D51F178
+	for <iommu@lists.linux.dev>; Tue,  8 Aug 2023 15:51:58 +0000 (UTC)
+Received: by mail-oo1-f45.google.com with SMTP id 006d021491bc7-56c4c4e822eso3919776eaf.3
+        for <iommu@lists.linux.dev>; Tue, 08 Aug 2023 08:51:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1691509752; x=1692114552;
+        d=ziepe.ca; s=google; t=1691509917; x=1692114717;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=1zmJhODYM55C1GF8fxBi666CIjzAmp+0CfxlCkcGvB8=;
-        b=HHQGldvJPPWlfnSlicrGNpJICwepnH7KAN7k4+/yKmfquRdvRysTR9KjqVzArNxX6y
-         KChRvlOkDII2txW9gEh5QJngp1rQTbhNcB8ng/v5a+QtGUQvi/bX2QLRYShmhca87QBH
-         +eIfRSDquYlbLut7IFMjWoI1atvCOuVzZtONhvjREuNKeFt54/vquQCPpWP+bCksJfXa
-         FwofqJlisLcBsynZecz9ACJ3blEOgxnNhbYOoKK+FaeD88TuECKOpuZyc+bduf0z4BA5
-         MM/3XGbqST8fQ9jFdv3/2d23F+FYGHqOO4KftFxzW33Wrb+viRcQIX6VoMsBfnC9eK2I
-         pPBg==
+        bh=dieaelpb8cf/6AdAr55brJLG0Fs7WA3oHuASbb8g8uo=;
+        b=BCKw7ZrJMJ5MHsmDYog5mQgyCUwaSji5cJHw2USlykKfA4X2T3W3pMH4AwEF43KJUi
+         W7n8991MYx5wvMjeSIzjT76IyRabzAj5hLXCYWK+hVMFhZGX2KH1O1ruSuRoGjv/LT4D
+         PFE5QMvf597ZJHS26OPUZEpK4WsE1OG5onLkKP0RYxlKoKXBc/OG7YgsqHjtDpzWgyE4
+         c1sYrelS8xJQcsSSeFucvr43wnlmLNuWD7qgm9P/OKc4lbBzk4isQmA88WnPxmsCzV6P
+         S+GJn+hVbbG6qi2rci7aG/nHoYL8gfhdBnqmKU+ttUmHuqUeXwLWBRMKgEauVo0OONIY
+         PuRg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1691509752; x=1692114552;
+        d=1e100.net; s=20221208; t=1691509917; x=1692114717;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=1zmJhODYM55C1GF8fxBi666CIjzAmp+0CfxlCkcGvB8=;
-        b=S805shqF+DT7N6UBEQuyUeePXAjFNz1bvZDbbSOErGgj2nvE3MEdw0faTaCpToMPkY
-         bDjOg1pBOGjODPX8iO6x5M2me2zm/Y5tls0wUoiCt30QN/wtnqLKmaPpw9YQU3YRx8nr
-         6/scS2ipOMIMV8aeydk5fcYu8TIzbWkNRau3mBzOwtP0U8vG03omgJ8TWSk+Y3HIKB1v
-         o36kKWsFY+13AmYQd3gyaRg23FZAgDXoNPcIhghbSuZd9mR5wl1Ej40BjVMh8s1cMVTb
-         7WoEw4/ArcE3JH7x+ifXr6C4Hg1Aca1oOpo5gE7twaZtEoUCX1ScMSbJ51FoH6v9eDqC
-         87jQ==
-X-Gm-Message-State: AOJu0YxMjCQH0Cpwe3MqilDXvtFzC1vMwoUYRb+eiQqBQi9yb2jfMGKn
-	Czy+Y7i6YvFblUXu3u/ey9D9gQ==
-X-Google-Smtp-Source: AGHT+IG2I4h+3WawfhL7YWjZ2IOykzDAUQEGG+JRa/6Hf3pEDP2cXCYhjw3an8vokq0jbpRXpKcZOA==
-X-Received: by 2002:ac8:5c89:0:b0:40f:c669:a130 with SMTP id r9-20020ac85c89000000b0040fc669a130mr122466qta.36.1691509751969;
-        Tue, 08 Aug 2023 08:49:11 -0700 (PDT)
+        bh=dieaelpb8cf/6AdAr55brJLG0Fs7WA3oHuASbb8g8uo=;
+        b=H72cpE/+tZQSSisFtQBiErv0Y4aYhtdj1f2uMWA0ntS4XiuNUG5EtZRBq9fO+Wqz+i
+         YI9Tu+NybVerIwQMQGQYCXvlNi/7oL9ksyo5BbFvlz23UaEDO7mlKoaUodXOU0oArct0
+         Otr0mGic5mGYEHTEnVpQu6qSMFhvonKeYH9lq1uoQjnrXSwu8TbVPnZSj+Bhk2h6v3ch
+         SDuazGlvrDiBHvU4vGhiH+WhvK5CmaH0sntra8PuNhIOgebPgWWRNutJMYwzSJ4C7Cbg
+         +6NKruTWsI/LSGpGRKtuqDt1iuxfLYGn02Hcva9S5UbBIDDIRwL7LqlA+9W/cJ0Z3fH8
+         Kjjg==
+X-Gm-Message-State: AOJu0YzgcsrP/5DUmnAKOcdsgI3EBpJ8rzsjJl7Bb0cn2CAakyoIioRP
+	gwYaDlVLsxED/Mu/Gn7e91W3qg==
+X-Google-Smtp-Source: AGHT+IHOLR/6AJ/L+tYp5qv/PCcELgHRoF+5lD1CE7PN/rkM+c7EIiGOaUmFZyIwhRd6mKbtzmGoBg==
+X-Received: by 2002:a05:6358:7e46:b0:139:5a46:ea7e with SMTP id p6-20020a0563587e4600b001395a46ea7emr7567393rwm.28.1691509917687;
+        Tue, 08 Aug 2023 08:51:57 -0700 (PDT)
 Received: from ziepe.ca (hlfxns017vw-142-68-25-194.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.25.194])
-        by smtp.gmail.com with ESMTPSA id a5-20020aed2785000000b00407ffb2c24dsm3457883qtd.63.2023.08.08.08.49.11
+        by smtp.gmail.com with ESMTPSA id x25-20020ac84a19000000b0040ff234b9c4sm3418384qtq.25.2023.08.08.08.51.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Aug 2023 08:49:11 -0700 (PDT)
+        Tue, 08 Aug 2023 08:51:57 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.95)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1qTOxK-004dTJ-Uj;
-	Tue, 08 Aug 2023 12:49:10 -0300
-Date: Tue, 8 Aug 2023 12:49:10 -0300
+	id 1qTP00-004dUE-O2;
+	Tue, 08 Aug 2023 12:51:56 -0300
+Date: Tue, 8 Aug 2023 12:51:56 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
 To: Vasant Hegde <vasant.hegde@amd.com>
 Cc: iommu@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com,
 	wei.huang2@amd.com, jsnitsel@redhat.com
-Subject: Re: [PATCH 09/11] iommu/amd: Introduce helper functions for AMD
- IOMMU v2 driver
-Message-ID: <ZNJj9ljbIM842lEh@ziepe.ca>
+Subject: Re: [PATCH 10/11] iommu/amd/iommu_v2: Add support to switch default
+ domain to SVA mode
+Message-ID: <ZNJknPzjAssHAnKq@ziepe.ca>
 References: <20230808100232.5977-1-vasant.hegde@amd.com>
- <20230808100232.5977-10-vasant.hegde@amd.com>
+ <20230808100232.5977-11-vasant.hegde@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -59,64 +59,39 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230808100232.5977-10-vasant.hegde@amd.com>
+In-Reply-To: <20230808100232.5977-11-vasant.hegde@amd.com>
 
-On Tue, Aug 08, 2023 at 10:02:30AM +0000, Vasant Hegde wrote:
-> From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+On Tue, Aug 08, 2023 at 10:02:31AM +0000, Vasant Hegde wrote:
+> Current iommu_v2 module allocates a secondary domain every time a
+> device driver calls amd_iommu_init_device(). Then it detaches all
+> devices in the group from the default domain, and reattaches to the
+> new domain. Finally it configures V2API mode.
 > 
-> Introducing new functions to init and uninit v2 domain. Also setup /
-> clear GCR3 table. These functions will make necessary changes to
-> existing domain to switch to SVA mode. 
+> Previous patch added support to switch same domain to SVA mode. Use
+> these new interfaces to enable SVA mode.
+> 
+> Note that even with this change, PASID is managed by device driver. This
+> imposes restriction where there can be only one SVA enabled device per
+> IOMMU group (same as current behaviour).
+> 
+> Finally remove unused functions.
+> 
+> Co-developed-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+> Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
+> ---
+>  drivers/iommu/amd/amd_iommu.h |  2 --
+>  drivers/iommu/amd/iommu.c     | 37 ----------------------
+>  drivers/iommu/amd/iommu_v2.c  | 59 +++++++----------------------------
+>  3 files changed, 12 insertions(+), 86 deletions(-)
 
-Huh? "necessary changes to existing domains" ? That shouldn't be
-something a driver ever does.
+I'm glad to see this code go, but my remarks are basically the same as
+the last patch
 
-> +/*******************************
-> + * V2API-related helper functions
-> + * Note: Separate these out for now. It will be removed when
-> + *       deprecate the AMD IOMMU v2 API support.
-> + */
-> +int amd_iommu_v2api_domain_init(struct protection_domain *pdom)
-> +{
-> +	unsigned long flags;
-> +	int ret = 0;
-> +
-> +	spin_lock_irqsave(&pdom->lock, flags);
-> +
-> +	/* Only allow v2API support on pass-through domain. */
-> +	if (pdom->pd_mode != PD_MODE_PT) {
-> +		ret = -EINVAL;
-> +		goto out;
-> +	}
-> +
-> +	pdom->pd_mode = PD_MODE_V2;
+amd_iommu_init_device() should force the kernel owned GCR3 table, not
+mess with domains.
 
-Wah?? You change a PT domain to a V2 domain? That seems totally
-nonsensical.
-
-This is continuing the wrong direction of the old code.
-
-When you first create the GCR3 table you have to inspect which domain
-is attached to the RID and setup the DTE/GCR3 accordingly.
-
-You don't *change* the domain that is attached to the RID (other
-things might be using it!) You just note that it is IDENTITY and do
-the right things.
-
-This should all be part of generic code that is working with the GCR3
-object, not here in the v2api section.
-
-Keep in mind that the API flow is to get a 'ref' on the GCR3 (eg
-because the caller wants to put a domain in it) and a pairing 'unref'.
-
-eg if it was already a v2 PT when you want to attach a PASID then
-great, the device already has a gcr3 and so it just keeps
-going. Having a PASID will block the GCR3 from being freed and it will
-block V1 domains from being attached to the RID.
-
-When the GCR3 becomes fully unrefed then all the PASIDs must be
-removed, the RID must be an IDENTIY and then the driver can free the
-GCR3 and reconfigure the DTE back to IDENTITY. Otherwise the DTE
-points to the kernel owned GCR3.
+Basically all it should do is get a ref on the GCR3 table. A ref may
+already exist if the GCR3 is already being used by a v2 RID domain.
 
 Jason
