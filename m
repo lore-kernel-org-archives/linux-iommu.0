@@ -1,255 +1,155 @@
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2077.outbound.protection.outlook.com [40.107.223.77])
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4DB37100AC;
-	Tue,  8 Aug 2023 12:24:31 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZjWzfn9JUc6G7pfis7nNoBAe08SynhvbUKrg+pGHQ8PsRAbdtt08yM3yD2SZ/WE2Z9FzgfZLoPT6dgUhVrB1qZxO6+r7JDQYDMVFTtkc0+S8metBcZSQbDt1OjHTPIfQcG5sTNggWJrX7yoqNjqsmiqWDOLxh59VwGp5HwByNxVeV+JPq90/WVWpwNgK60ex7ZlutT8AdNzt+ytgYUDEHjcLfSClWL/S9aYkcI60Gik0e8/Cb2yYS/QcXR8MMP8pHTFjsgIi+OE7IAqL+aF4dltugICg3xiWqmeEFgCf6zQtZlr3HnhmTVWjbQjUF8Wk2gN9Y4pKrMEpmvsOFh4h/Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=uLH9DtIrPDBjbLLByOYOlQTBw13QxHYGRrSMKu+0Muw=;
- b=ADr21Q4EmxnsUtI3EN0wHrqEyY8O7hyc6WbE98GMeQgRxa8Dqakf/oqjlJq+zoHf0wFqjXhdLvj+37C7WlVEPWisYZR75wIcoF02d7eHGCXwK04yAIKNb6BaMxOkG/QYMvNvR4E8WDhVFXFdkZZOjhsi/8eEbXBOsK/rCquzGBr620qB+Kujenl5YM2L1lNfOvb4lEewDLv4EWiNbSl49wmdTlaZh4oQmgtPzjm2CGxAHWDVWyDaQYkkl6geHk8xIjjb2H3wzGTKnF/7KmZnqKhnas8wIi54Ad99ZJgz6xDp1k8l606AmQssjdUZWoBBeoNbXlnpHX8E8G/t4zVlDg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=uLH9DtIrPDBjbLLByOYOlQTBw13QxHYGRrSMKu+0Muw=;
- b=alpKncMLissCKJz3L8nuZ6aeYZQM5dAr5XaGyrDok276vF+nN5t17Pa/OG9aRf1FwfnHY/GH6Op9FjMjY44POLIAy7kBRj72oP+WfLgETU/fcc9cnoueE1U1Qq2svoc4f/BLt6HAIHuYAsEAuyctKWQHcx/ecM6fMDbashCcHW2wM0NnGs50W3QBQEYf+uMVQanAnuwXfI56DvfAXDlIea9AA59rpLetE+PWTxScaVFKsrKWH+AYaA+IIyJ69dA8al6gj2iy0syl62MmApc8tXsAvVN27zKhx812IA+LzI6PRMHZnIT6hQ9qQaSzpVCoaCjWM6IZ5D7zuBdg+Mb6Eg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by CY8PR12MB8214.namprd12.prod.outlook.com (2603:10b6:930:76::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6652.26; Tue, 8 Aug
- 2023 12:24:30 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::5111:16e8:5afe:1da1]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::5111:16e8:5afe:1da1%6]) with mapi id 15.20.6652.026; Tue, 8 Aug 2023
- 12:24:29 +0000
-Date: Tue, 8 Aug 2023 09:24:28 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Chen-Yu Tsai <wenst@chromium.org>
-Cc: Joerg Roedel <joro@8bytes.org>,
-	Baolin Wang <baolin.wang@linux.alibaba.com>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Heiko Stuebner <heiko@sntech.de>, iommu@lists.linux.dev,
-	Jernej Skrabec <jernej.skrabec@gmail.com>,
-	linux-arm-kernel@lists.infradead.org,
-	linux-rockchip@lists.infradead.org, linux-sunxi@lists.linux.dev,
-	Orson Zhai <orsonzhai@gmail.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Samuel Holland <samuel@sholland.org>, Chen-Yu Tsai <wens@csie.org>,
-	Will Deacon <will@kernel.org>, Chunyan Zhang <zhang.lyra@gmail.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH v2 00/10] Refine the locking for dev->iommu_group
-Message-ID: <ZNIz/NVLb6WqqvQx@nvidia.com>
-References: <0-v2-b0417f84403e+11f-iommu_group_locking_jgg@nvidia.com>
- <ZNDpfCoeFxA56ZlU@8bytes.org>
- <CAGXv+5E-f9AteAYkmXYzVDZFSA_royc7-bS5LcrzzuHDnXccwA@mail.gmail.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAGXv+5E-f9AteAYkmXYzVDZFSA_royc7-bS5LcrzzuHDnXccwA@mail.gmail.com>
-X-ClientProxiedBy: BL0PR01CA0020.prod.exchangelabs.com (2603:10b6:208:71::33)
- To LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E450DEED1
+	for <iommu@lists.linux.dev>; Tue,  8 Aug 2023 12:32:58 +0000 (UTC)
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20230808123251euoutp0197aff98d9b11f66166973e362e021a96~5aHFp3gC40917709177euoutp01b
+	for <iommu@lists.linux.dev>; Tue,  8 Aug 2023 12:32:51 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20230808123251euoutp0197aff98d9b11f66166973e362e021a96~5aHFp3gC40917709177euoutp01b
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1691497971;
+	bh=G2T2PxEZVtl0HYU0BLOU47EoirmQYkZe7nqmhzQk30o=;
+	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
+	b=fYZpxOfU3tAqcmN8GJoGVop5zhiowy8B/dZy5oiQYQFJ/BuDUSGCytTrtGjPWiyJh
+	 Hi0oGcQmAYAMvrriQx+HkvQ75OA6N+kMFWACkhwq57cb5oH4EId24K/6rwSUGn4Hnk
+	 ueFph9ynf0BZmh7T6ho6GG4d9jcxN54ywN07vPYo=
+Received: from eusmges1new.samsung.com (unknown [203.254.199.242]) by
+	eucas1p1.samsung.com (KnoxPortal) with ESMTP id
+	20230808123251eucas1p1cce861653703172c7ff65fc948cfdaf8~5aHFWeISC0841408414eucas1p1J;
+	Tue,  8 Aug 2023 12:32:51 +0000 (GMT)
+Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
+	eusmges1new.samsung.com (EUCPMTA) with SMTP id 9C.0D.42423.2F532D46; Tue,  8
+	Aug 2023 13:32:50 +0100 (BST)
+Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
+	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
+	20230808123250eucas1p19d12a9ae0e530c123ba625189f593b36~5aHE8Svhx0841408414eucas1p1G;
+	Tue,  8 Aug 2023 12:32:50 +0000 (GMT)
+Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
+	eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
+	20230808123250eusmtrp138b7952bca70dd8efc4569e6fe2f7200~5aHE7iOw11004010040eusmtrp1d;
+	Tue,  8 Aug 2023 12:32:50 +0000 (GMT)
+X-AuditID: cbfec7f2-a3bff7000002a5b7-8f-64d235f216ec
+Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
+	eusmgms1.samsung.com (EUCPMTA) with SMTP id 38.9B.10549.2F532D46; Tue,  8
+	Aug 2023 13:32:50 +0100 (BST)
+Received: from [106.210.134.192] (unknown [106.210.134.192]) by
+	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
+	20230808123249eusmtip2d92c0df6cf46696ef25aba4b0275b42b~5aHDzSmAy2806028060eusmtip2t;
+	Tue,  8 Aug 2023 12:32:49 +0000 (GMT)
+Message-ID: <7483d18e-d06f-53eb-92af-beed50674ab0@samsung.com>
+Date: Tue, 8 Aug 2023 14:32:48 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|CY8PR12MB8214:EE_
-X-MS-Office365-Filtering-Correlation-Id: 8ea9326d-2641-449f-3868-08db980a69df
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	PeA30jiBKejRb4GZvZVqTQGv/agZH9f2laqaxYb4yPCTqd1OSgklBRkxEW1eRxxRTtjmJGfbK/HFDHxB1ZE7kFjZIRTyE31hKuMMOpfsZtWOy+ung1IOdsh+4T4IJX3J6ytrHw/nV4Pqeepm6xSKJ21DoyeK4w+0ExsHbjmYJHYICnzGbLHfVrL6afwbqFyGQRXw/jKAL0CmbtCej6AAeP/tspaiWYTcrP14nGrc8ujFpoklAPDI47zNmjLmsTtUTlIKL4psb5U7cwNi/0BHNTOe7Ph1cCHNY4rx4AuPwHK7Ch2YG63RukHCHGzB8JNeHvyK/m1TqFhXMHkRw1dUMwDruH6iziOSqOJifbZ4XBOPb3vBKKJofcwt0YBtBkJaBXIvr/L53ioWB2dFuD6gIQdtzPXC9HARHwvSmjlJOviNiy51mUkmaIte5wrVeU1nwnANcOHy6ni8Wbpt8ZnE4kjZgPU97zwXKMaBmi/TjCQ3wPgSTUFDGTACro13vwNB3UQyFhY2UvXZNrK9t4eRCVn8aWnaWtW1CQqF7VJMRqAZBiOqlwByxVi+7M0H9zbj
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(136003)(396003)(39860400002)(366004)(346002)(376002)(451199021)(1800799003)(186006)(2616005)(36756003)(6512007)(4326008)(316002)(6916009)(38100700002)(54906003)(6486002)(6506007)(86362001)(66946007)(66476007)(66556008)(478600001)(41300700001)(26005)(8676002)(8936002)(2906002)(83380400001)(7416002)(5660300002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?iju2S4LQik66rAstyoRkap9rULQ/we345GynG+GbdtCuDyZyf5Tx4OSjDRoX?=
- =?us-ascii?Q?SinPu13wOOsqTJ66p7sd7FEstKmRVdS7okYuV1vc+Y5YgLFOlVTtBwkZ3M+O?=
- =?us-ascii?Q?VaY/EOSY47tHHxs1SjDr0PTKJJhfZ5Ai72rfuKVyzpFjtChT7XLGHrIV+q/L?=
- =?us-ascii?Q?G2KN7Skq2EDLjafV60316t2YPPrb7hghPPs/Pr2YwZlPMZwVKPAtnb74GWNL?=
- =?us-ascii?Q?8UTLsivLfncao9cVdP1Bxj+kLT9J1JXDpFgIjNyHaBFesdBw5wPzEYiH6lpw?=
- =?us-ascii?Q?QwSYQbWHIroTfD4ahkOR+C11O60+NOseghyia2rKm6idCLkDhf99yP2+Nt+s?=
- =?us-ascii?Q?hdPUa2fNb2JCeZNaIqas9a4jKJtAFwhqZoMgDP8kkbKlDWUtBEgfWHtqslz5?=
- =?us-ascii?Q?NijrdRJuRKA8pLm9C7MdvOY06QvGFHExpiqf4TE31ixOfou1lf5lI5NrW39z?=
- =?us-ascii?Q?jnVh50B2ifWhGv5eJeNJ7roeXibic3IhvSvDGBgWtRO3mP7Rgomljdb7286q?=
- =?us-ascii?Q?6dNjnHadoMTpOW7qmXtuWYTqjsH/sA+wOrFDbmw5TD42JqSuZxrQnGRWyBjz?=
- =?us-ascii?Q?2fEIXcp3F1CkXupcP5Ntg59ImpcuaNWjl6UZd96Afn5yH1sM6N6EpbBxkiKd?=
- =?us-ascii?Q?TrsFgKsI02rqbxdatKJW0og8J2PBXD4+Tq79zv1rn19E6lG6WubjY0+J+cj7?=
- =?us-ascii?Q?JRoPWX3BObcSm3+MXMCfvpLPbQDydkFqQDl5VhHG+bR4vI50ykdReBFIaPfc?=
- =?us-ascii?Q?2/G3FcAA0wuHvgcTxlNFJyphfbCc7v/k4xytpdNzgD86ygfA0eUk66XZDP+P?=
- =?us-ascii?Q?nLm5C1Yt2YCcwwz0kxEDaR03ugE3stsdPNkDnHASXhKsH128qQp+FSVNmX8P?=
- =?us-ascii?Q?ZKC3tke63/Eout4SYab0jfv8ved48DJfmQ+xKYEnN37BosuA8T2SV4e0fVuC?=
- =?us-ascii?Q?UBShZ7Gom4qvikQQoNKdQrgIZmdD1Vof3Z+1L2CSehL1rr5aSAjYJmF2cLPk?=
- =?us-ascii?Q?bbDr+nEj6MNR/7QFnEt1knlCk7jdIfcZrESvsAW3i9HZnBTM7E0W4hK0p221?=
- =?us-ascii?Q?XTb+Xb47XyCQcIRszsiVBFKJ6kG0chirIKhOkiE+2NktHHk1ll5iNKNoKdPh?=
- =?us-ascii?Q?BiUgp7yFKzj1wjwLi6kZAhJo+6fR5oOB96ttunu3QZtG2SYNMCoJdPU1ZPg9?=
- =?us-ascii?Q?zJ07Nb4XflDe1iKctfryKR27mG/l2o2POk3XEeQ6RAdV6usMgxpOWR8Gzah9?=
- =?us-ascii?Q?Fim89UY/8N5nGxBaAYuJUr6NbA8cINCVQGWxr4TGQDrODb03RKTo8Ddh96DI?=
- =?us-ascii?Q?4vYSkl6egfFLrfHL4iUdDTpRmp1X4Gb0HCB/jL5nxsJfxlY9VrO6VCQC9fnx?=
- =?us-ascii?Q?LB4wTuaQuWBwkV6MElkk1VlJdnkF9JiOx1yoEabLZpuiNyoBcNUlh4r6mUZO?=
- =?us-ascii?Q?+5ZkIBtuiO+F/I68ihGWDk7tFryrMKmpWrqcYV0VoZKQOq+a21LkdKXbNfYK?=
- =?us-ascii?Q?ucX6xSStOkclaFvrT3MA1wMywtQzITNQP8Jb0Ea/cWMVcGTtoURcspaJ4+rV?=
- =?us-ascii?Q?S1lsFPYR2yS90wt7r/mitMCTk/RceAX6xTY8X20L?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8ea9326d-2641-449f-3868-08db980a69df
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Aug 2023 12:24:29.8719
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: dUL7FixR4q9oOP62KXKEjGAU1mpvBis6fc7/JjXCvJ6AlTmhpeu0JxA1F3v4Lk+p
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR12MB8214
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0)
+	Gecko/20100101 Thunderbird/102.13.0
+Subject: Re: [PATCH v2 00/10] Refine the locking for dev->iommu_group
+Content-Language: en-US
+To: Chen-Yu Tsai <wenst@chromium.org>, Joerg Roedel <joro@8bytes.org>
+Cc: Jason Gunthorpe <jgg@nvidia.com>, Baolin Wang
+	<baolin.wang@linux.alibaba.com>, David Woodhouse <dwmw2@infradead.org>,
+	Heiko Stuebner <heiko@sntech.de>, iommu@lists.linux.dev, Jernej Skrabec
+	<jernej.skrabec@gmail.com>, linux-arm-kernel@lists.infradead.org,
+	linux-rockchip@lists.infradead.org, linux-sunxi@lists.linux.dev, Orson Zhai
+	<orsonzhai@gmail.com>, Robin Murphy <robin.murphy@arm.com>, Samuel Holland
+	<samuel@sholland.org>, Chen-Yu Tsai <wens@csie.org>, Will Deacon
+	<will@kernel.org>, Chunyan Zhang <zhang.lyra@gmail.com>, Alex Williamson
+	<alex.williamson@redhat.com>, Lu Baolu <baolu.lu@linux.intel.com>
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+In-Reply-To: <CAGXv+5E-f9AteAYkmXYzVDZFSA_royc7-bS5LcrzzuHDnXccwA@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
+X-Brightmail-Tracker: H4sIAAAAAAAAA02Se0zTVxTHd/t79MGKPwukN8WE2RinGHmoxLvoyAQkP51GSIyaOcc6+xOJ
+	pbqWdrqZrZEFBkKCAmG0Ukim4SFipYK8ZBS31oYgKtQM6TbXFSFdAHlqa7Br+eHGf5/zPefc
+	7zknl4eJ8kgJL0uZw6iUMoWUFOCtVu/A5pmEx/K47trtaMFfRCL/XStA5kstJLpUX4ohv+sf
+	AvnmEBqrbgJo6E0XQAUGExc1//2EQDPP/Bgq6+4gUcULA0CWF24CjbkKSOTtHeCgH/MGCfS9
+	MwHVPuvgfhRGuy1GDt1obAS0QfcIp02u6wTdrv+dS5vrounmhgKSbv/rA9poT6fNV7+jx82V
+	gC7OnSTpqW4HSXvmqwB954kRS1v1iWCnnFFkaRlVbOLngpMXHpg5Z6yhZxdGTLgO9IcUAj4P
+	UtvgfcMtIsgiqg7A+31xhUAQ4DkAF7scOBvMAjhtqQZvO3KtHsAmagG8Yr+6HEwDODmeTwar
+	hFQiHPDOcYOMU+vgz7aflvXV0F7pxoMcQTGwbaRkyTuM2g3/qOxcqsEoMXzqruYEOTygv7x4
+	ZVlfwGFn0Y4gk1Q8LJwoXNL5VDqsd3twtiYK5rYYsOBAkPLxYY+vG2fHToFlxlGC5TDosd3m
+	srwG9pUW4WxDPoA1r//ksEEJgLqxp8tL74DOB76AHS9gsRHe7IgNIqR2Qds1LYuh8LeJ1ewM
+	ofByawXGykL4Q56IfWM91Nua/nO1PHyMlQCpfsVV9Cu216/YRv+/bQ3AG4CY0aizMxl1vJL5
+	KkYty1ZrlJkxx09nN4PAV+17Y5tpA1We6ZhewOGBXgB5mDRcaHQPyEVCuezc14zqdIZKo2DU
+	vSCSh0vFwk0f2o+LqExZDnOKYc4wqrdZDo8v0XEO94+/PJHnWXXwfdOx17N34IV9yYp7ibo4
+	7XppUueXEzVtw3Xx7Z3EoqAxnKha2+r4diHVm7xx5JB+/znlx/7PLDuH0kFB227CdUisPeD4
+	ImTYOqn4dYMW9iQcfCejzD06K/rlPb7EKVEeUbdcqy72R24YvhkZK9fsPbWnWJB/d3Cvc6sh
+	lc4hFrdW+ZJezUdt27V9Zr7YSGSkhvVHlm9y7St9NbY5QmVKkfWQ0a3zEd8cPVZ5z2lXH3E8
+	b3i+h7emvqVWJUnWNI1OSUqnoh4WXRafMODnz5KfxtzaMjR9+0b5+YuqkP0N3rqjwvK114fT
+	sioGKbqfTno3q6ssLaUpQ4qrT8riozGVWvYvQcRy9RkEAAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprNKsWRmVeSWpSXmKPExsVy+t/xe7qfTC+lGJzcLW/x7X8Pm8X/vccY
+	LTZP3MpmMXHlZGaL/49es1r8+mJh8Xz+OkaLK//2MFp0zt7AbrHp8TVWi08P/jNbTNm3i81i
+	+ofZjBYHPzxhtXj+qJPN4ueh80wWM9ous1q03DG1WP5gF7uDsMeTg/OYPNbMW8PoMbvhIovH
+	hkerWT12zrrL7rF5hZbHplWdbB47H1p6zDsZ6LF5Sb3Hi80zGT16m9+xebzfd5XN49XXuYwe
+	26/NYw7gj9KzKcovLUlVyMgvLrFVija0MNIztLTQMzKx1DM0No+1MjJV0rezSUnNySxLLdK3
+	S9DLaDq3mangGF/Ft9sbWBoYz3J3MXJySAiYSDQfe8XYxcjFISSwlFFidvcOFoiEjMTJaQ2s
+	ELawxJ9rXWwQRe8ZJX4uaGYGSfAK2Emc//mFHcRmEVCR2H98MRtEXFDi5MwnYINEBVIlfjXs
+	AhskLOAqcW/mbrAaZgFxiVtP5jOB2CJA8e/dc8AWMAv8YpE4s/QXM8S2tYwSE29eBetmEzCU
+	6HrbBdbNKRAosfLJKxaISWYSXVu7GCFseYnmrbOZJzAKzUJyyCwkC2chaZmFpGUBI8sqRpHU
+	0uLc9NxiQ73ixNzi0rx0veT83E2MwFSy7djPzTsY5736qHeIkYmD8RCjBAezkgjvvCfnU4R4
+	UxIrq1KL8uOLSnNSiw8xmgJDYyKzlGhyPjCZ5ZXEG5oZmBqamFkamFqaGSuJ83oWdCQKCaQn
+	lqRmp6YWpBbB9DFxcEo1MK2t29x7MJj1VnDAZLMLS9P9Nv92/JuqrHH5zw/+lVePb/oXbvuZ
+	J09Z8bqhp01m8a0fWzibT23/eCggKmbZ3HOK0ce3T2p/sj7rkucRpk3v8kvbFB5p6gcW9No2
+	O7JuLpfat97o4ZE/rX/7X5zqPyullz5px4+7LEsWp+tPvWnu6v2tdlPstdN/hPxr9Brk54TX
+	6vgXHbv47oPhtidGUrv+rH1qP0lt5c1fsz0KuW7NPb6hPTFo+rIfx74vklH8tMNV7zLjtyqB
+	vNI6lc2rz8+ZUWuuZbX1v8GWV0pnw3L8bgS+b3pfZVvC8LCKr6mg933frpvmV3/w7/Eqv/D7
+	ZvRc+3+B3cdPRlqw/wwVXJyjxFKckWioxVxUnAgAXSaLNa4DAAA=
+X-CMS-MailID: 20230808123250eucas1p19d12a9ae0e530c123ba625189f593b36
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20230808123250eucas1p19d12a9ae0e530c123ba625189f593b36
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20230808123250eucas1p19d12a9ae0e530c123ba625189f593b36
+References: <0-v2-b0417f84403e+11f-iommu_group_locking_jgg@nvidia.com>
+	<ZNDpfCoeFxA56ZlU@8bytes.org>
+	<CAGXv+5E-f9AteAYkmXYzVDZFSA_royc7-bS5LcrzzuHDnXccwA@mail.gmail.com>
+	<CGME20230808123250eucas1p19d12a9ae0e530c123ba625189f593b36@eucas1p1.samsung.com>
 
-On Tue, Aug 08, 2023 at 06:31:47PM +0800, Chen-Yu Tsai wrote:
-> INFO: task kworker/u18:1:67 blocked for more than 122 seconds.
->       Not tainted 6.5.0-rc5-next-20230808-08004-g396bbe23dbf4 #859
-> "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-> task:kworker/u18:1   state:D stack:0     pid:67    ppid:2      flags:0x00000008
-> Workqueue: events_unbound deferred_probe_work_func
-> Call trace:
->  __switch_to+0x138/0x1e8
->  __schedule+0x728/0x1388
->  schedule+0xa8/0x170
->  schedule_preempt_disabled+0x44/0x80
->  __mutex_lock+0x3fc/0x598
->  mutex_lock_nested+0x2c/0x40
->  __iommu_probe_device+0xb8/0x6e0
->  probe_iommu_group+0x18/0x38
->  bus_for_each_dev+0xe4/0x168
->  bus_iommu_probe+0x8c/0x240
->  iommu_device_register+0x120/0x1b0
->  mtk_iommu_probe+0x494/0x7a0
->  platform_probe+0x94/0x100
->  really_probe+0x1e4/0x3e8
->  __driver_probe_device+0xc0/0x1a0
->  driver_probe_device+0x110/0x1f0
->  __device_attach_driver+0xf0/0x1b0
->  bus_for_each_drv+0xf0/0x170
->  __device_attach+0x120/0x240
->  device_initial_probe+0x1c/0x30
->  bus_probe_device+0xdc/0xe8
->  deferred_probe_work_func+0xf0/0x140
->  process_one_work+0x3b0/0x910
->  worker_thread+0x33c/0x610
->  kthread+0x1dc/0x1f0
->  ret_from_fork+0x10/0x20
+Hi,
 
-Oh weird, I wonder why this didn't show up on my testing? It is trying
-to probe the iommu device itself against the iommu and deadlocks on
-the device_lock (which is held during probe):
+On 08.08.2023 12:31, Chen-Yu Tsai wrote:
+> Hi,
+>
+> On Mon, Aug 7, 2023 at 8:54 PM Joerg Roedel <joro@8bytes.org> wrote:
+>> On Mon, Jul 31, 2023 at 02:50:23PM -0300, Jason Gunthorpe wrote:
+>>> Jason Gunthorpe (10):
+>>>    iommu: Remove useless group refcounting
+>>>    iommu: Add a lockdep assertion for remaining dev->iommu_group reads
+>>>    iommu: Add generic_single_device_group()
+>>>    iommu/sun50i: Convert to generic_single_device_group()
+>>>    iommu/sprd: Convert to generic_single_device_group()
+>>>    iommu/rockchip: Convert to generic_single_device_group()
+>>>    iommu/ipmmu-vmsa: Convert to generic_single_device_group()
+>>>    iommu/omap: Convert to generic_single_device_group()
+>>>    iommu: Complete the locking for dev->iommu_group
+>>>    iommu/intel: Fix missing locking for show_device_domain_translation()
+>>>
+>>>   drivers/iommu/intel/debugfs.c  |  34 ++++----
+>>>   drivers/iommu/iommu.c          | 155 +++++++++++++++++++++------------
+>>>   drivers/iommu/ipmmu-vmsa.c     |  22 ++---
+>>>   drivers/iommu/omap-iommu.c     |  30 +------
+>>>   drivers/iommu/omap-iommu.h     |   2 +-
+>>>   drivers/iommu/rockchip-iommu.c |  22 +----
+>>>   drivers/iommu/sprd-iommu.c     |  24 +----
+>>>   drivers/iommu/sun50i-iommu.c   |  29 ++----
+>>>   include/linux/iommu.h          |   3 +
+>>>   9 files changed, 138 insertions(+), 183 deletions(-)
+>> Applied, thanks for the nice cleanup!
+> This series seems to cause a hung task during boot on MediaTek platforms.
+> It hangs with next-20230808. Reverting the 10 commits from this series
+> makes the system boot up again.
 
-> process_one_work+0x2c4/0x910
->  #2: ffffff80c14090f8 (&dev->mutex){....}-{3:3}, at: __device_attach+0x8c/0x240
->  #3: ffffff80c14090f8 (&dev->mutex){....}-{3:3}, at:
+I confirm that next-20230808 is broken on ARM 32bit based Exynos boards 
+too. Boards lock up very early during boot. I will try to investigate 
+this soon.
 
-I suppose the easy fix is to just exclude the iommu driver from
-probing, it doesn't have an iommu usually anyhow.
 
-Does this work for you?
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 7dbbcffac21930..faa0e3520f66b0 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -273,7 +273,7 @@ int iommu_device_register(struct iommu_device *iommu,
- 
- 	for (int i = 0; i < ARRAY_SIZE(iommu_buses) && !err; i++) {
- 		iommu_buses[i]->iommu_ops = ops;
--		err = bus_iommu_probe(iommu_buses[i]);
-+		err = bus_iommu_probe(iommu_buses[i], iommu);
- 	}
- 	if (err)
- 		iommu_device_unregister(iommu);
-@@ -1784,12 +1784,21 @@ struct iommu_domain *iommu_group_default_domain(struct iommu_group *group)
- 	return group->default_domain;
- }
- 
-+struct probe_iommu_args {
-+	struct list_head *group_list;
-+	struct iommu_device *iommu;
-+};
-+
- static int probe_iommu_group(struct device *dev, void *data)
- {
--	struct list_head *group_list = data;
-+	struct probe_iommu_args *args = data;
- 	int ret;
- 
--	ret = __iommu_probe_device(dev, group_list);
-+	/* We never probe the iommu device itself */
-+	if (args->iommu && args->iommu->dev == dev)
-+		return 0;
-+
-+	ret = __iommu_probe_device(dev, args->group_list);
- 	if (ret == -ENODEV)
- 		ret = 0;
- 
-@@ -1858,13 +1867,16 @@ static void iommu_group_do_probe_finalize(struct device *dev)
- 		ops->probe_finalize(dev);
- }
- 
--int bus_iommu_probe(const struct bus_type *bus)
-+int bus_iommu_probe(const struct bus_type *bus, struct iommu_device *iommu)
- {
- 	struct iommu_group *group, *next;
-+	struct probe_iommu_args args = {};
- 	LIST_HEAD(group_list);
- 	int ret;
- 
--	ret = bus_for_each_dev(bus, NULL, &group_list, probe_iommu_group);
-+	args.group_list = &group_list;
-+	args.iommu = iommu;
-+	ret = bus_for_each_dev(bus, NULL, &args, probe_iommu_group);
- 	if (ret)
- 		return ret;
- 
-diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
-index 97c45f50bf4332..e8ab7cb832ba37 100644
---- a/drivers/iommu/omap-iommu.c
-+++ b/drivers/iommu/omap-iommu.c
-@@ -1234,6 +1234,9 @@ static int omap_iommu_probe(struct platform_device *pdev)
- 		if (err)
- 			goto out_sysfs;
- 		obj->has_iommu_driver = true;
-+	} else {
-+		/* Re-probe bus to probe device attached to this IOMMU */
-+		bus_iommu_probe(&platform_bus_type, NULL);
- 	}
- 
- 	pm_runtime_enable(obj->dev);
-@@ -1242,9 +1245,6 @@ static int omap_iommu_probe(struct platform_device *pdev)
- 
- 	dev_info(&pdev->dev, "%s registered\n", obj->name);
- 
--	/* Re-probe bus to probe device attached to this IOMMU */
--	bus_iommu_probe(&platform_bus_type);
--
- 	return 0;
- 
- out_sysfs:
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index f1e18e81fca78b..8e10225e0d611a 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -465,7 +465,8 @@ static inline const struct iommu_ops *dev_iommu_ops(struct device *dev)
- 	return dev->iommu->iommu_dev->ops;
- }
- 
--extern int bus_iommu_probe(const struct bus_type *bus);
-+extern int bus_iommu_probe(const struct bus_type *bus,
-+			   struct iommu_device *iommu);
- extern bool iommu_present(const struct bus_type *bus);
- extern bool device_iommu_capable(struct device *dev, enum iommu_cap cap);
- extern bool iommu_group_has_isolated_msi(struct iommu_group *group);
