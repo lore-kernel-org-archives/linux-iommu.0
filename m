@@ -1,109 +1,163 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 837291B7CD
-	for <iommu@lists.linux.dev>; Tue,  8 Aug 2023 16:43:37 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2E351D75;
-	Tue,  8 Aug 2023 09:44:19 -0700 (PDT)
-Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 219BD3F64C;
-	Tue,  8 Aug 2023 09:43:30 -0700 (PDT)
-Message-ID: <80ead8ee-4dbe-7b3c-44f5-944073a2a39d@arm.com>
-Date: Tue, 8 Aug 2023 17:43:28 +0100
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2067.outbound.protection.outlook.com [40.107.244.67])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8D5B1B7D1;
+	Tue,  8 Aug 2023 16:54:40 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=cgzSQE080Oib5LXUdc2qCLUDcj8Ci4MuucSOcP5T1VkW/fD9jSdKfeqmVR0b1N0XwWpxzLGtWhw0KakA0WqFw3aDrIrrDe0pMDRCZuqkoFOTD2PmmqNmXeVNI8+M7qX+QUv5Zibucrbkg09lVDPaU0ywWz1GL5NSL3ZVO84xz/uXw+Sc/jkpVyRqAcvuluyID862/4axqInL0O2t1Cv+uE6eQ2FXfMUgUGY3OvVqF/vMKwG5xRa9Ot1f2RE+VyTgKjy9jSYcvH5Zju1qHVaXwGL+FUr9lIH0BFocrevLstDQ5eg72Qjez5ISdYNuXlpZxiiEmkKghlW7oKHO9lbtxQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=++zvF+/Y4HE6PdmyxJWjgtz7gY7tcIfhAXcwcP7l9iE=;
+ b=IILIqGvTpXiCjZvw/O55qb1tMMk3yj/pQ3GJ0vLQSBn760fGR+PA6nP6cwTBOrTDgGB3yShZr1+ZUGN0K8KobVQdEdRWA9FbLwHBWm4h+c028aVQUSnWHx5QKhLc/tAzSuxTYzVejU46O5zOKUq+yBMUmjtY1aXz0VwDnVe1YRkwZLfsZ2+CAiuGbJKZihC2rkL8ivWXTnDs1JIIhvfrQGx25fH8Ojjj+mHuL8idtr19zhKROO59k7XEqFk6FkVXtPxTE41QqYiomANIAF252A1pAiPlGAf4EZyapzR/aij1/PrIibIlOv24a1PheJDR01HcdAj1RrAt5Uw4G5eMyg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=++zvF+/Y4HE6PdmyxJWjgtz7gY7tcIfhAXcwcP7l9iE=;
+ b=bC3+HJW/KdSoUAF/oOBGVPNza7ike9vfGB7gaFQg5wN9iD2ebqnnhe9u7zVpki5U0W6Shja7MJTt8RyRvpbm1lGkHqrt8cmZBSlD1ouh2mYsMJxbdpg8qy+zTzACB+j/d/iJuPmN8kElq90vY2mXnoUw8fSGqW4SzFpCqRZI4dHEzeFdmbOTo5QSh7eBAoyr1NxxXgWkwAI5xNN6IKHW4o0pHf/cvQp28a7Lum9wUevW4QH4UWoQf5B/ZNdThEwFHebN3X+fguWoEp/xR7kSuJHktj97VQ4TA0AeoCW2c4H+mssqKwa4ZsyG5CWIl+yjDsjnzaUNNSra9+zZxOItdw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by PH7PR12MB8596.namprd12.prod.outlook.com (2603:10b6:510:1b7::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6652.27; Tue, 8 Aug
+ 2023 16:54:37 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::5111:16e8:5afe:1da1]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::5111:16e8:5afe:1da1%6]) with mapi id 15.20.6652.026; Tue, 8 Aug 2023
+ 16:54:37 +0000
+Date: Tue, 8 Aug 2023 13:54:36 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Baolin Wang <baolin.wang@linux.alibaba.com>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Heiko Stuebner <heiko@sntech.de>, iommu@lists.linux.dev,
+	Jernej Skrabec <jernej.skrabec@gmail.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	linux-arm-kernel@lists.infradead.org,
+	linux-rockchip@lists.infradead.org, linux-sunxi@lists.linux.dev,
+	Orson Zhai <orsonzhai@gmail.com>,
+	Samuel Holland <samuel@sholland.org>, Chen-Yu Tsai <wens@csie.org>,
+	Will Deacon <will@kernel.org>, Chunyan Zhang <zhang.lyra@gmail.com>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH v2 02/10] iommu: Add a lockdep assertion for remaining
+ dev->iommu_group reads
+Message-ID: <ZNJzTIgaqimQ08tA@nvidia.com>
+References: <2-v2-b0417f84403e+11f-iommu_group_locking_jgg@nvidia.com>
+ <a94abd4d-fb0a-8f72-7dee-82144c90187b@arm.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a94abd4d-fb0a-8f72-7dee-82144c90187b@arm.com>
+X-ClientProxiedBy: BL1PR13CA0064.namprd13.prod.outlook.com
+ (2603:10b6:208:2b8::9) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:102.0) Gecko/20100101
- Thunderbird/102.13.0
-Subject: Re: [PATCH v2 1/1] iommu/arm-smmu-v3: Fix error case of range command
-Content-Language: en-GB
-To: Will Deacon <will@kernel.org>
-Cc: zhurui <zhurui3@huawei.com>, Nicolin Chen <nicolinc@nvidia.com>,
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, Joerg Roedel <joro@8bytes.org>,
- Lu Baolu <baolu.lu@linux.intel.com>, Jason Gunthorpe <jgg@ziepe.ca>,
- Yicong Yang <yangyicong@hisilicon.com>, Tomas Krcka <krckatom@amazon.de>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>
-References: <1690784482-30028-1-git-send-email-wangwudi@hisilicon.com>
- <20230801085504.GA26130@willie-the-truck>
- <27c895b8-1fb0-be88-8bc3-878d754684c8@huawei.com>
- <d5fc1f72-7428-4fef-d868-d06b85add635@huawei.com>
- <20230804165225.GF30679@willie-the-truck> <ZM1DqxXcBT2SOs8/@Asurada-Nvidia>
- <015b4573-9d74-451b-8028-a1050ade7019@huawei.com>
- <661a7bb5-99e1-de16-d860-0cd17f7a0470@arm.com>
- <20230808162409.GB2890@willie-the-truck>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20230808162409.GB2890@willie-the-truck>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|PH7PR12MB8596:EE_
+X-MS-Office365-Filtering-Correlation-Id: c113614b-1760-4cd3-87df-08db98302634
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	EWZu7RQOzmcD9GV+f1Xj9ehKTPPBFacpyWOG1yWjOJeHb9CbvKDjyeTpdyqhSL6pGKSZxro8XkuopIqkImmzCIkmcKmxPrycfirNCXBAvYvg6fqD8Vzc+R6L7w6/DRNxYJPojJXhVwcmmcdaUb6lOc+EK8nLkeKmHnqGV2rYvXNu+0yuioRfDi9Z4BKRhNxrklU932RG8HAnV7QgR95FGDCipXoIaBWXpTvnNqC5ABzxhYazwtj0wuJr17abgWaX8uvDwfdHPbGiX7a07ABn1gf6nrcl95VYN0Fgm8tyrAY4lQO25m/ZP7f+lA5JcxN5M4R4hg95vi8xz4z+fXEJ8kEwao71KhycLoYt7G73n8bzuHMC2nVrojYERrtUDLbmmg5bDg1AJATuq3CxQFK0Ka5yFk++g8G/xcFP+tW1NBHs7TCHeFN/5DPiZULTENrG3YeEBYHbbjk+NNgwUrwGLcB6Lke+Z23LX2vticIQ9HSBHKdAvwlnc7qWqxechgkBkheO7poZ+NbyJ15C7RtfgxH30wvTAwXaWDw8kPPbX+HWq+29mbfGBPWHsz9GTIna
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(39860400002)(376002)(346002)(396003)(136003)(1800799003)(186006)(451199021)(8936002)(7416002)(53546011)(6506007)(26005)(8676002)(5660300002)(66476007)(66556008)(66946007)(6916009)(4326008)(478600001)(38100700002)(36756003)(54906003)(6486002)(6512007)(316002)(41300700001)(2616005)(83380400001)(86362001)(2906002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?LURfX0YRlmAkf0JmT4zWAb9wzVFWu8+7jzS5KfugSx4L60/wse0G4tHSVjSZ?=
+ =?us-ascii?Q?5erCS+FOUGJvY6IKrHtFPIoZ27TsUL6M1O4X8QyhbZ2kHZLZ79IJbVtMi/OH?=
+ =?us-ascii?Q?p+X/QkSBBGUk1otHm0vynP0YODSZfQXisiukAfxrpwrACvgV3EsZaEhkf4Nq?=
+ =?us-ascii?Q?TxYebWHxB8y3juizJKcWb0MfPywpAfB9K9QZcxQ6C8rWe9iZAexkIx/KLom0?=
+ =?us-ascii?Q?WO+KJ3LBSRMAK5p90OWUSm51+3QBRZmvW+87BBBCzWUNxeMyDJ6kXnwlCYWu?=
+ =?us-ascii?Q?ahpjyADrGcjpfYbODi9UkhZLGrsyBPW3OqJfTyxU+njgCWuBLhEh1hZZj340?=
+ =?us-ascii?Q?IdUC4FJQ5/za0kH1ruGkj3+rkk7cKIVfrKnPiBpJANANw+6sPl3Ym9jeGuUl?=
+ =?us-ascii?Q?hj3ne/3Y13EWht/hAzgUJFzf3f2JfA0YgS7HdHhvWkJenquYpnL21Q1BKX1U?=
+ =?us-ascii?Q?6FnjRlzWRr7P6ClwX0hgUbIF1ACCO8Gmjnn5Q9tbQ2lR+FbqOhMBfaUq1ZgJ?=
+ =?us-ascii?Q?66baFhnAQgtMxt94THVmd5tQuky5ckcZGKG9it+fpsnLFTJQVsdwHWLlPwyk?=
+ =?us-ascii?Q?ADQbfwo/2AEChjp5yuW3PubP7FaeZj83TCYwcjLsgIjUri6Xq1fmRmJad/Fd?=
+ =?us-ascii?Q?b221PhW0yY6j6mWfmybFGqnpcmjn0G14QN7GmeHxg9LW0nxp7I7jR0OXRdOG?=
+ =?us-ascii?Q?qJwBdeqQmAEB2KTAJ5nd1GatATbWNECDbMhQmSL0lovP3rISBhHvnWKFAY7s?=
+ =?us-ascii?Q?YzGxXZniwzNs+63Y9XEenlDbBXbbOS4NWszXnwueGUafkeQ3cvUq7ziU+j0S?=
+ =?us-ascii?Q?iz5xdrE63p0roYpZerceAjQ56podYMT1jLXF7XPgDptXd9FoisleprQthV+8?=
+ =?us-ascii?Q?22K1g3mNjOEMrHZq9FkZw5gnpyvU7fFl7ku3+KRpeIgqGTRRo3ZICiNWOIWz?=
+ =?us-ascii?Q?fpmv2DevCbuyDwZ/M0c9Rh+1YyxbzZEBrkVxqgvSxZcpqbpdl6oHalAqK5Oo?=
+ =?us-ascii?Q?86rJj5KP1LqgRur6G6iaDtqtS5TwsoMGuEy8RpuVnX4iCWVsCdOFKeoCPAkf?=
+ =?us-ascii?Q?LWWOm0bLMyOxGga91scfQdViQetGjhJoF4lH5TNQ4eW36yjLHBqQEM+nI4sI?=
+ =?us-ascii?Q?3tyf6ndKuVa+eglCl2pkISXa/D5zieJy8XBxKAOTmHUADOs1FFeB67zurkD6?=
+ =?us-ascii?Q?8r7OxEuKinCoyXFBfM/6/f+XrJI2pNKptcqmIqgI/8jo526tVSy5G4H1yX5z?=
+ =?us-ascii?Q?mdU5vqXKzS13+XxzaHc9X5LPG89wLfLAWdOVGOxMhfTaOqyFCHEf6YDjppsw?=
+ =?us-ascii?Q?AgqCsb6SDRROgOa2acnYRcFzbwKt+10mpSPqGcrZusAOHuzg03Q5HBkcYNmr?=
+ =?us-ascii?Q?9Yy1IVbNRPWhvfIRwizQU6jmAUjBP8+5Sa+Jm4hSVUN56phNMwpMUJHcL+Cz?=
+ =?us-ascii?Q?iq56ZU7HDPCd4eJYTP6wyAvsuXAXFKCbta2ve7OLXrUpvc6D1IqXErJ/yp6W?=
+ =?us-ascii?Q?VAHeLZIa3ZS1FgGCmUBBlHOKlv6fIcMg3B9PWzge50halRjmr3w5i+Sm4xCG?=
+ =?us-ascii?Q?Y2go+m7vJEyIgGWiR7G0osVRn+R6h4ZlWa9eFDAv?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c113614b-1760-4cd3-87df-08db98302634
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Aug 2023 16:54:37.3729
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: t5UQB/b96sW28xO27OfVVuzV78PdFYdiXiB/yTAPlPXbAAHeTLQyFs/x1lSAIElC
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB8596
 
-On 08/08/2023 5:24 pm, Will Deacon wrote:
-> Hi Robin,
+On Tue, Aug 08, 2023 at 05:22:55PM +0100, Robin Murphy wrote:
+> Oh, the things that happen if I take holiday... :)
 > 
-> On Mon, Aug 07, 2023 at 08:20:45PM +0100, Robin Murphy wrote:
->> On 2023-08-06 06:28, zhurui wrote:
->>> On 2023/8/5 2:30, Nicolin Chen wrote:
->>>> On Fri, Aug 04, 2023 at 05:52:25PM +0100, Will Deacon wrote:
->>>>> On Fri, Aug 04, 2023 at 05:31:20PM +0800, zhurui wrote:
->>>>>> When tg != 0 but ttl, scale, num all 0 in a range tlbi command, it
->>>>>> is reserved and will cause the CERROR_ILL error. This case means
->>>>>> that the size to be invalidated is only one page size, and the
->>>>>> range invalidation is meaningless here. So we set tg to 0 in this
->>>>>> case to do an non-range invalidation instead.
->>>>
->>>>>> @@ -1930,6 +1927,12 @@ static void __arm_smmu_tlb_inv_range(struct arm_smmu_cmdq_ent *cmd,
->>>>>>                           num = (num_pages >> scale) & CMDQ_TLBI_RANGE_NUM_MAX;
->>>>>>                           cmd->tlbi.num = num - 1;
->>>>>>
->>>>>> +                       /* Prevent error caused by one page tlbi with leaf 0 */
->>>>>> +                       if (scale == 0 && num == 1 && cmd->tlbi.leaf == 0)
->>>>>> +                               cmd->tlbi.tg = 0;
->>>>>
->>>>> This should only be true for the last iteration, right (i.e. when num_pages
->>>>> == 1)? In which case, I'd prefer to leave the old code as-is and just add:
->>>>>
->>>>>           /* Single-page leaf invalidation requires a TG field of 0 */
->>>>>           if (num_pages == 1 && !cmd->tlbi.leaf)
->>>>>                   cmd->tlbi.tg = 0;To Will and Nicolin,
->>>
->>> Not only the last iteration, it's the result of __ffs function. For example, if
->>> numpages is 33, then the value of __ffs(num_pages) is 0, so the value of scale
->>> is also 0. The value of num depends on CMDQ_TLBI_RANGE_NUM_MAX. That is, the
->>> maximum value of num is 31. Therefore, the final value of num is 1.
->>> So, if consider CMDQ_TLBI_RANGE_NUM_MAX, there will be some case not the last
->>> one page but the beginning pages. That's why I use scale and num as conditions,
->>> not num_pages. Then I should reassign tg based on the result.
->>
->> Yeah, I'd rather not downgrade to a non-range invalidate since that
->> complicates the reasoning for the errata affecting those. If the size of the
->> invalidation is equal to TG then it can only represent a single last-level
->> page, i.e. TTL=3, thus if it does warrant handling here then indeed
->> rearranging to base the condition on num_pages as well ought to suffice.
->> However, this is all still begging the question of where and why we're doing
->> a *non-leaf* invalidation that isn't aligned to the size of a table, because
->> that in itself doesn't make a whole heap of sense - my hunch is that that
->> wants figuring out and could probably be fixed at the source.
+> On 31/07/2023 6:50 pm, Jason Gunthorpe wrote:
+> > The remaining reads are all in functions called under ops->device_group.
+> > 
+> > Broadly these functions are walking around the device tree (eg going up
+> > the PCI bus tree) and are trying to de-duplicate group allocations
+> > according to their logic.
+> > 
+> > Since these functions don't hold any particular per-device locks their
+> > reads to dev->iommu_group are being locked by the caller's
+> > iommu_probe_device_lock, and this explains why iommu_probe_device_lock
+> > needs to be a global lock.
 > 
-> Isn't that described above because we're using CMDQ_TLBI_RANGE_NUM_MAX
-> to break up the range into separate commands?
+> This confuzzles me. iommu_probe_device_lock is a global (but tightly-scoped)
+> lock because its sole purpose is as a point hack to serialise calls to
+> iommu_probe_device(), 
 
-Not really, because if we're doing a genuine non-leaf invalidation of a 
-table then it should be a block-aligned range that ought to fit in a 
-single command and should certainly never involve a single-granule 
-remainder. If we're doing non-leaf invalidations of things that 
-logically don't need to be non-leaf, making them leaf would be the even 
-better option.
+Well, that may have been the intention, but as a side effect it turns
+out that it is the only thing that locks the access to the
+dev->iommu_group as well. This is some other bug that I suppose nobody
+noticed.
 
-> Do you mind if I queue the patch as-is for now? I don't think the driver
-> should be emitting illegal commands, and v2 of the patch does seem like
-> the obvious thing to do.
+> concurrently for the same device, but due to the long-standing "replay"
+> hacks, currently can. It is not meant to have anything to do with groups,
+> and expanding its scope is a really really terrible idea.
 
-TBH I'd rather you just drop my patch if it's proven problematic, and 
-I'll take another crack at it soon. The potential problems we introduce 
-by using non-range invalidates on errata-affected MMU-700 revisions are 
-worse than the almost-entirely-theoretical one I was trying to address.
+Regardless, it does serialize the group stuff so what I did here is
+recognize that as its main purpose and made the probe serialization a
+secondary thing, which is eventually entirely removed.
 
-Cheers,
-Robin.
+I could have constructed this the other way and said that the group
+locking is missing and added another global lock, but that seems
+equally confusing since it isn't missing, it is just mis-named :)
+
+> I finally now have some time to work on IOMMU gubbins again, so I'll be
+> updating the bus ops removal series ASAP, then the next step after that is
+> some bus_type callback surgery to pull the {of,acpi}_iommu_configure()
+> parsing and ops->of_xlate calls to the proper point in the core
+> iommu_probe_device() path, and all this mess finally goes away for good.
+
+That is great, but it won't address the dev->group locking.
+
+I'm not sure there is further value in trying to remove the
+device_lock() around probe, but cleaning up the iommu_configure stuff
+would be nice.
+
+Jason
