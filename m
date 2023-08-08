@@ -1,84 +1,179 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3E0F63C37
-	for <iommu@lists.linux.dev>; Tue,  8 Aug 2023 16:12:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9789FC433C8;
-	Tue,  8 Aug 2023 16:12:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1691511134;
-	bh=3dtzfUCD+LNNd3R69riKgojTMmB3iwvo7xJjgLrGkV8=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=q34GiRU8y8r2pRb0qHmcFZnOhscY+xDmlIhH4L0ZUdaIi96k4MWtFeaF6KVLQsIf5
-	 m0QmQWwAZrGpPjOcunyJx/WxYukvd54B282f21cpE2jLkclk0ekzlUvBUBcJZmsLvq
-	 qdQO9uVszwltdLW8tltgXFkKVPceYj1CZze8+KlaywbUxg9fYeEbEXuAP+p0swyE8+
-	 1ejWJW9Y2WKOG8euvAgq4ji6Vu4W6ylOYb694tlUBBBD1240Wtqgmuvjy7Bb7fgaGc
-	 lKRcSMIF+6pIZ+GuYZ6P4rKeBks4z/XTR0AsBK/2Qo13ldQcq3kDbvV8EmbG9VGrSj
-	 RbTA3xdakPSaQ==
-Date: Tue, 8 Aug 2023 17:12:09 +0100
-From: Will Deacon <will@kernel.org>
-To: zhurui <zhurui3@huawei.com>
-Cc: Nicolin Chen <nicolinc@nvidia.com>,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>, Lu Baolu <baolu.lu@linux.intel.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Yicong Yang <yangyicong@hisilicon.com>,
-	Tomas Krcka <krckatom@amazon.de>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: Re: [PATCH v2 1/1] iommu/arm-smmu-v3: Fix error case of range command
-Message-ID: <20230808161208.GA2890@willie-the-truck>
-References: <1690784482-30028-1-git-send-email-wangwudi@hisilicon.com>
- <20230801085504.GA26130@willie-the-truck>
- <27c895b8-1fb0-be88-8bc3-878d754684c8@huawei.com>
- <d5fc1f72-7428-4fef-d868-d06b85add635@huawei.com>
- <20230804165225.GF30679@willie-the-truck>
- <ZM1DqxXcBT2SOs8/@Asurada-Nvidia>
- <015b4573-9d74-451b-8028-a1050ade7019@huawei.com>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C4BEA13FF3;
+	Tue,  8 Aug 2023 16:23:03 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9F0691515;
+	Tue,  8 Aug 2023 09:23:45 -0700 (PDT)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D394F3F64C;
+	Tue,  8 Aug 2023 09:23:00 -0700 (PDT)
+Message-ID: <a94abd4d-fb0a-8f72-7dee-82144c90187b@arm.com>
+Date: Tue, 8 Aug 2023 17:22:55 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <015b4573-9d74-451b-8028-a1050ade7019@huawei.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:102.0) Gecko/20100101
+ Thunderbird/102.13.0
+Subject: Re: [PATCH v2 02/10] iommu: Add a lockdep assertion for remaining
+ dev->iommu_group reads
+Content-Language: en-GB
+To: Jason Gunthorpe <jgg@nvidia.com>,
+ Baolin Wang <baolin.wang@linux.alibaba.com>,
+ David Woodhouse <dwmw2@infradead.org>, Heiko Stuebner <heiko@sntech.de>,
+ iommu@lists.linux.dev, Jernej Skrabec <jernej.skrabec@gmail.com>,
+ Joerg Roedel <joro@8bytes.org>, linux-arm-kernel@lists.infradead.org,
+ linux-rockchip@lists.infradead.org, linux-sunxi@lists.linux.dev,
+ Orson Zhai <orsonzhai@gmail.com>, Samuel Holland <samuel@sholland.org>,
+ Chen-Yu Tsai <wens@csie.org>, Will Deacon <will@kernel.org>,
+ Chunyan Zhang <zhang.lyra@gmail.com>
+Cc: Alex Williamson <alex.williamson@redhat.com>,
+ Lu Baolu <baolu.lu@linux.intel.com>
+References: <2-v2-b0417f84403e+11f-iommu_group_locking_jgg@nvidia.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <2-v2-b0417f84403e+11f-iommu_group_locking_jgg@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Sun, Aug 06, 2023 at 01:28:04PM +0800, zhurui wrote:
-> On 2023/8/5 2:30, Nicolin Chen wrote:
-> > On Fri, Aug 04, 2023 at 05:52:25PM +0100, Will Deacon wrote:
-> >> On Fri, Aug 04, 2023 at 05:31:20PM +0800, zhurui wrote:
-> >>> When tg != 0 but ttl, scale, num all 0 in a range tlbi command, it
-> >>> is reserved and will cause the CERROR_ILL error. This case means
-> >>> that the size to be invalidated is only one page size, and the
-> >>> range invalidation is meaningless here. So we set tg to 0 in this
-> >>> case to do an non-range invalidation instead.
-> > 
-> >>> @@ -1930,6 +1927,12 @@ static void __arm_smmu_tlb_inv_range(struct arm_smmu_cmdq_ent *cmd,
-> >>>                         num = (num_pages >> scale) & CMDQ_TLBI_RANGE_NUM_MAX;
-> >>>                         cmd->tlbi.num = num - 1;
-> >>>
-> >>> +                       /* Prevent error caused by one page tlbi with leaf 0 */
-> >>> +                       if (scale == 0 && num == 1 && cmd->tlbi.leaf == 0)
-> >>> +                               cmd->tlbi.tg = 0;
-> >>
-> >> This should only be true for the last iteration, right (i.e. when num_pages
-> >> == 1)? In which case, I'd prefer to leave the old code as-is and just add:
-> >>
-> >>         /* Single-page leaf invalidation requires a TG field of 0 */
-> >>         if (num_pages == 1 && !cmd->tlbi.leaf)
-> >>                 cmd->tlbi.tg = 0;To Will and Nicolin,
+Oh, the things that happen if I take holiday... :)
+
+On 31/07/2023 6:50 pm, Jason Gunthorpe wrote:
+> The remaining reads are all in functions called under ops->device_group.
 > 
-> Not only the last iteration, it's the result of __ffs function. For example, if
-> numpages is 33, then the value of __ffs(num_pages) is 0, so the value of scale
-> is also 0. The value of num depends on CMDQ_TLBI_RANGE_NUM_MAX. That is, the
-> maximum value of num is 31. Therefore, the final value of num is 1.
-> So, if consider CMDQ_TLBI_RANGE_NUM_MAX, there will be some case not the last
-> one page but the beginning pages. That's why I use scale and num as conditions,
-> not num_pages. Then I should reassign tg based on the result.
+> Broadly these functions are walking around the device tree (eg going up
+> the PCI bus tree) and are trying to de-duplicate group allocations
+> according to their logic.
+> 
+> Since these functions don't hold any particular per-device locks their
+> reads to dev->iommu_group are being locked by the caller's
+> iommu_probe_device_lock, and this explains why iommu_probe_device_lock
+> needs to be a global lock.
 
-Yes, thanks, you're quite right. I'm not sure what I was thinking!
+This confuzzles me. iommu_probe_device_lock is a global (but 
+tightly-scoped) lock because its sole purpose is as a point hack to 
+serialise calls to iommu_probe_device(), which were never expected to be 
+able to happen concurrently for the same device, but due to the 
+long-standing "replay" hacks, currently can. It is not meant to have 
+anything to do with groups, and expanding its scope is a really really 
+terrible idea.
 
-Will
+I finally now have some time to work on IOMMU gubbins again, so I'll be 
+updating the bus ops removal series ASAP, then the next step after that 
+is some bus_type callback surgery to pull the 
+{of,acpi}_iommu_configure() parsing and ops->of_xlate calls to the 
+proper point in the core iommu_probe_device() path, and all this mess 
+finally goes away for good.
+
+Thanks,
+Robin.
+
+> Rename iommu_probe_device_lock to dev_iommu_group_lock, make it local to
+> the module and annotate all the device_group helpers with
+> iommu_group_get_locked() that includes a lockdep to indicate that they are
+> special.
+> 
+> Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> ---
+>   drivers/iommu/iommu.c | 23 +++++++++++++++--------
+>   1 file changed, 15 insertions(+), 8 deletions(-)
+> 
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 409090eaac543a..f1c8a333553e3b 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -44,6 +44,8 @@ static unsigned int iommu_def_domain_type __read_mostly;
+>   static bool iommu_dma_strict __read_mostly = IS_ENABLED(CONFIG_IOMMU_DEFAULT_DMA_STRICT);
+>   static u32 iommu_cmd_line __read_mostly;
+>   
+> +static DEFINE_MUTEX(dev_iommu_group_lock);
+> +
+>   struct iommu_group {
+>   	struct kobject kobj;
+>   	struct kobject *devices_kobj;
+> @@ -438,7 +440,6 @@ static int __iommu_probe_device(struct device *dev, struct list_head *group_list
+>   {
+>   	const struct iommu_ops *ops = dev->bus->iommu_ops;
+>   	struct iommu_group *group;
+> -	static DEFINE_MUTEX(iommu_probe_device_lock);
+>   	struct group_device *gdev;
+>   	int ret;
+>   
+> @@ -451,7 +452,7 @@ static int __iommu_probe_device(struct device *dev, struct list_head *group_list
+>   	 * probably be able to use device_lock() here to minimise the scope,
+>   	 * but for now enforcing a simple global ordering is fine.
+>   	 */
+> -	mutex_lock(&iommu_probe_device_lock);
+> +	mutex_lock(&dev_iommu_group_lock);
+>   
+>   	/* Device is probed already if in a group */
+>   	if (dev->iommu_group) {
+> @@ -497,7 +498,7 @@ static int __iommu_probe_device(struct device *dev, struct list_head *group_list
+>   			list_add_tail(&group->entry, group_list);
+>   	}
+>   	mutex_unlock(&group->mutex);
+> -	mutex_unlock(&iommu_probe_device_lock);
+> +	mutex_unlock(&dev_iommu_group_lock);
+>   
+>   	if (dev_is_pci(dev))
+>   		iommu_dma_set_pci_32bit_workaround(dev);
+> @@ -512,7 +513,7 @@ static int __iommu_probe_device(struct device *dev, struct list_head *group_list
+>   	mutex_unlock(&group->mutex);
+>   	iommu_group_put(group);
+>   out_unlock:
+> -	mutex_unlock(&iommu_probe_device_lock);
+> +	mutex_unlock(&dev_iommu_group_lock);
+>   
+>   	return ret;
+>   }
+> @@ -1219,6 +1220,12 @@ struct iommu_group *iommu_group_get(struct device *dev)
+>   }
+>   EXPORT_SYMBOL_GPL(iommu_group_get);
+>   
+> +static struct iommu_group *iommu_group_get_locked(struct device *dev)
+> +{
+> +	lockdep_assert_held(&dev_iommu_group_lock);
+> +	return iommu_group_get(dev);
+> +}
+> +
+>   /**
+>    * iommu_group_ref_get - Increment reference on a group
+>    * @group: the group to use, must not be NULL
+> @@ -1532,7 +1539,7 @@ static struct iommu_group *get_pci_alias_group(struct pci_dev *pdev,
+>   	if (test_and_set_bit(pdev->devfn & 0xff, devfns))
+>   		return NULL;
+>   
+> -	group = iommu_group_get(&pdev->dev);
+> +	group = iommu_group_get_locked(&pdev->dev);
+>   	if (group)
+>   		return group;
+>   
+> @@ -1573,7 +1580,7 @@ static int get_pci_alias_or_group(struct pci_dev *pdev, u16 alias, void *opaque)
+>   	struct group_for_pci_data *data = opaque;
+>   
+>   	data->pdev = pdev;
+> -	data->group = iommu_group_get(&pdev->dev);
+> +	data->group = iommu_group_get_locked(&pdev->dev);
+>   
+>   	return data->group != NULL;
+>   }
+> @@ -1629,7 +1636,7 @@ struct iommu_group *pci_device_group(struct device *dev)
+>   
+>   		pdev = bus->self;
+>   
+> -		group = iommu_group_get(&pdev->dev);
+> +		group = iommu_group_get_locked(&pdev->dev);
+>   		if (group)
+>   			return group;
+>   	}
+> @@ -1662,7 +1669,7 @@ struct iommu_group *fsl_mc_device_group(struct device *dev)
+>   	struct device *cont_dev = fsl_mc_cont_dev(dev);
+>   	struct iommu_group *group;
+>   
+> -	group = iommu_group_get(cont_dev);
+> +	group = iommu_group_get_locked(cont_dev);
+>   	if (!group)
+>   		group = iommu_group_alloc();
+>   	return group;
