@@ -1,146 +1,183 @@
-Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 63159612D
-	for <iommu@lists.linux.dev>; Wed,  9 Aug 2023 13:38:33 +0000 (UTC)
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20230809133831euoutp02a55c957c64ed8a018047a44e74187357~5uptcDTgp2215522155euoutp02I
-	for <iommu@lists.linux.dev>; Wed,  9 Aug 2023 13:38:31 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20230809133831euoutp02a55c957c64ed8a018047a44e74187357~5uptcDTgp2215522155euoutp02I
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1691588311;
-	bh=SKqPzDFlrkcCcHmSuqmh4kcm811YUbeL2qHu7n5US7s=;
-	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-	b=craY2OV6na1qz6M8TKOSEWbIrFM6PrT80vKkh7Utc3rSi5a3hBPS7t22ClnqLN4Lb
-	 7flARHhk2FYwULGo3x1scVGh3cK9zOhRMVwMI/aWgRoHNU+JbNf8vNzS3xf+BHHChf
-	 /5Udo4lYI2otABN3WmJx5oQxyZpZ8z3K2NYZ0YQk=
-Received: from eusmges2new.samsung.com (unknown [203.254.199.244]) by
-	eucas1p2.samsung.com (KnoxPortal) with ESMTP id
-	20230809133831eucas1p21e51d486ac97f504bff8f142dbb32c96~5uptJ1Qcs0148701487eucas1p2O;
-	Wed,  9 Aug 2023 13:38:31 +0000 (GMT)
-Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
-	eusmges2new.samsung.com (EUCPMTA) with SMTP id 04.72.11320.7D693D46; Wed,  9
-	Aug 2023 14:38:31 +0100 (BST)
-Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
-	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
-	20230809133830eucas1p287639c948bc3fde51b529e2d562ab010~5ups1uaAd0149901499eucas1p2x;
-	Wed,  9 Aug 2023 13:38:30 +0000 (GMT)
-Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
-	eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
-	20230809133830eusmtrp25cfecda9d6ef6858d9a74af399a96146~5upszl5WK1005010050eusmtrp2I;
-	Wed,  9 Aug 2023 13:38:30 +0000 (GMT)
-X-AuditID: cbfec7f4-97dff70000022c38-b1-64d396d7f811
-Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
-	eusmgms2.samsung.com (EUCPMTA) with SMTP id F5.47.14344.6D693D46; Wed,  9
-	Aug 2023 14:38:30 +0100 (BST)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
-	20230809133830eusmtip1103926a77f235a47fceb7cd7d51271f8~5upsG_1fr3234332343eusmtip1b;
-	Wed,  9 Aug 2023 13:38:29 +0000 (GMT)
-Message-ID: <4208251b-8822-9376-cbe3-572f362720c5@samsung.com>
-Date: Wed, 9 Aug 2023 15:38:30 +0200
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B0A3B182BE
+	for <iommu@lists.linux.dev>; Wed,  9 Aug 2023 13:48:39 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0F38DD75;
+	Wed,  9 Aug 2023 06:49:21 -0700 (PDT)
+Received: from [10.57.4.174] (unknown [10.57.4.174])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B33813F59C;
+	Wed,  9 Aug 2023 06:48:36 -0700 (PDT)
+Message-ID: <280d0be7-7d41-ed78-bf4b-3db6c0076e22@arm.com>
+Date: Wed, 9 Aug 2023 14:48:23 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0)
-	Gecko/20100101 Thunderbird/102.13.0
-Subject: Re: [PATCH 3/3] iommu: Do not attempt to re-lock the iommu device
- when probing
-Content-Language: en-US
-To: Jason Gunthorpe <jgg@nvidia.com>, "Tian, Kevin" <kevin.tian@intel.com>
-Cc: "iommu@lists.linux.dev" <iommu@lists.linux.dev>, Joerg Roedel
-	<joro@8bytes.org>, Len Brown <lenb@kernel.org>, "linux-acpi@vger.kernel.org"
-	<linux-acpi@vger.kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>, Robin
-	Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>, Lu Baolu
-	<baolu.lu@linux.intel.com>, Chen-Yu Tsai <wenst@chromium.org>
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <ZNODeRzC+Rtkta1U@nvidia.com>
-Content-Transfer-Encoding: 7bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrKKsWRmVeSWpSXmKPExsWy7djP87rXp11OMTh4lM1i88StbBa/vlhY
-	XPm3h9Gic/YGdoulb7eyW+x8+JbNYvm+fkaLuV+mMlsc/PCE1WJG22VWi5Y7pg7cHk8OzmPy
-	WDNvDaPH7IaLLB6L97xk8ti0qpPNY97JQI8Xm2cyevQ2v2Pz+LxJLoAzissmJTUnsyy1SN8u
-	gSvjbU8jS8EJ7orPy3exNjD2c3YxcnJICJhIXLzVxtLFyMUhJLCCUeL0i/VQzhdGia5Z75gh
-	nM+MEs+7nrPAtNw8tI0JIrEcqOXWClYI5yOjxKEZi1lBqngF7CSu9fUwgdgsAioSva132CHi
-	ghInZz4BmyQqkCqx4/YEsHphgUiJoye6GEFsZgFxiVtP5oP1igh4Sax/+APsJmaBF0wSz7bP
-	BmtmEzCU6HrbxQZicwpoSRzcv50NolleYvvbOWB3SwhM55Q4MXEr1N0uEi3d/5ghbGGJV8e3
-	sEPYMhL/d85ngmhoZ5RY8Ps+lDOBUaLh+S1GiCpriTvnfgGt4ABaoSmxfpc+RNhR4lZvK1hY
-	QoBP4sZbQYgj+CQmbZvODBHmlehoE4KoVpOYdXwd3NqDFy4xT2BUmoUULrOQ/D8LyTuzEPYu
-	YGRZxSieWlqcm55abJSXWq5XnJhbXJqXrpecn7uJEZjSTv87/mUH4/JXH/UOMTJxMB5ilOBg
-	VhLhtQ2+lCLEm5JYWZValB9fVJqTWnyIUZqDRUmcV9v2ZLKQQHpiSWp2ampBahFMlomDU6qB
-	aaPXz+mn7TY8X/9E8p1e3Dd3V85rf902GhTvk1eZ9H93XfH+dx8yRd/b7POQsFo3Q7+l51/0
-	UsdLIScZ820OnFm8Rrp+sRVP9s+5xj73jPxPyKg8CE3XbVvzMH7fg9P7dxtx6lcVn5jyb/2c
-	//2VjXJvRdZ8lz/RwsSX/rZ2+cod03Mfb0oRtYgwYXc8tPJPfZ17cYLz55eS66JdtmT/2v5q
-	17arnltet5UYcvvsaOgy9fh29pBGe/n/L8t1OdpsE5KMaj8JvVeu5zs/2efiDkOjk/t0c+YL
-	Frnd/Le8KT98SY/sYg/7o7bifs1TtXh/au3O4nWpe/H16OT5p1PrKt1FePLmLudccXn/9/qo
-	DiWW4oxEQy3mouJEABQTNrzYAwAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrOIsWRmVeSWpSXmKPExsVy+t/xu7rXpl1OMXj/SNdi88StbBa/vlhY
-	XPm3h9Gic/YGdoulb7eyW+x8+JbNYvm+fkaLuV+mMlsc/PCE1WJG22VWi5Y7pg7cHk8OzmPy
-	WDNvDaPH7IaLLB6L97xk8ti0qpPNY97JQI8Xm2cyevQ2v2Pz+LxJLoAzSs+mKL+0JFUhI7+4
-	xFYp2tDCSM/Q0kLPyMRSz9DYPNbKyFRJ384mJTUnsyy1SN8uQS/jbU8jS8EJ7orPy3exNjD2
-	c3YxcnJICJhI3Dy0jamLkYtDSGApo8S3ydPYIRIyEienNbBC2MISf651sUEUvWeUuPuxAayI
-	V8BO4lpfDxOIzSKgItHbegcqLihxcuYTFhBbVCBV4lfDLrBBwgKREkdPdDGC2MwC4hK3nswH
-	6xUR8JJY//AHC8gCZoFXTBKnNt9ghNh2hkmicU832CQ2AUOJrrcgZ3BycApoSRzcv50NYpKZ
-	RNdWmKnyEtvfzmGewCg0C8khs5AsnIWkZRaSlgWMLKsYRVJLi3PTc4uN9IoTc4tL89L1kvNz
-	NzECY3jbsZ9bdjCufPVR7xAjEwfjIUYJDmYlEV7b4EspQrwpiZVVqUX58UWlOanFhxhNgaEx
-	kVlKNDkfmETySuINzQxMDU3MLA1MLc2MlcR5PQs6EoUE0hNLUrNTUwtSi2D6mDg4pRqYFmo9
-	mPP53Q+ehHK/9wfeO/x0FuZZdN5Hdub7hiWWmxyaJMRU4x/HRa64JaJ/YMmplxqsamZSDeZC
-	lnpuMj8ioif6CnLOMA9PfHfztVbANvMV3LfMzqcV+SZeTSwJXudaL+YwaeazdTZRLuvzXl6J
-	nrxu3XQvjc/3XV7tEj91OnJJiOJc10mr1y665SOgdTlu+bk9L0K5Tu5eITr90v6eT3kNN1e+
-	uV3Umv63V+278oVOVfPZTu39K+0kv84Qnq6brnSxbM4blpPhL4z/XMn7LZ54dV5n4urtn4P3
-	m++7e4X70JGXtjH/p/O4+5oxLrzx4yrnV/XJx22vpLkvO5IoOWfTwp0CU5hPSW/j6WCbekOJ
-	pTgj0VCLuag4EQCwuXxNagMAAA==
-X-CMS-MailID: 20230809133830eucas1p287639c948bc3fde51b529e2d562ab010
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20230809121601eucas1p150499eaa6e5fa6aa998385b3fba70a5a
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20230809121601eucas1p150499eaa6e5fa6aa998385b3fba70a5a
-References: <0-v1-8612b9ef48da+333-iommu_group_locking2_jgg@nvidia.com>
-	<3-v1-8612b9ef48da+333-iommu_group_locking2_jgg@nvidia.com>
-	<BN9PR11MB5276EA0632C6E65C83397B1A8C12A@BN9PR11MB5276.namprd11.prod.outlook.com>
-	<CGME20230809121601eucas1p150499eaa6e5fa6aa998385b3fba70a5a@eucas1p1.samsung.com>
-	<ZNODeRzC+Rtkta1U@nvidia.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.13.0
+Subject: Re: [PATCH v2 1/1] iommu/arm-smmu-v3: Fix error case of range command
+To: zhurui <zhurui3@huawei.com>, Will Deacon <will@kernel.org>
+Cc: Nicolin Chen <nicolinc@nvidia.com>, linux-arm-kernel@lists.infradead.org,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ Joerg Roedel <joro@8bytes.org>, Lu Baolu <baolu.lu@linux.intel.com>,
+ Jason Gunthorpe <jgg@ziepe.ca>, Yicong Yang <yangyicong@hisilicon.com>,
+ Tomas Krcka <krckatom@amazon.de>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>
+References: <1690784482-30028-1-git-send-email-wangwudi@hisilicon.com>
+ <20230801085504.GA26130@willie-the-truck>
+ <27c895b8-1fb0-be88-8bc3-878d754684c8@huawei.com>
+ <d5fc1f72-7428-4fef-d868-d06b85add635@huawei.com>
+ <20230804165225.GF30679@willie-the-truck> <ZM1DqxXcBT2SOs8/@Asurada-Nvidia>
+ <015b4573-9d74-451b-8028-a1050ade7019@huawei.com>
+ <661a7bb5-99e1-de16-d860-0cd17f7a0470@arm.com>
+ <20230808162409.GB2890@willie-the-truck>
+ <80ead8ee-4dbe-7b3c-44f5-944073a2a39d@arm.com>
+ <412886be-644a-5b46-9bfa-1c9a358f9a5d@huawei.com>
+Content-Language: en-GB
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <412886be-644a-5b46-9bfa-1c9a358f9a5d@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On 09.08.2023 14:15, Jason Gunthorpe wrote:
-> On Wed, Aug 09, 2023 at 04:01:42AM +0000, Tian, Kevin wrote:
->>> From: Jason Gunthorpe <jgg@nvidia.com>
->>> Sent: Wednesday, August 9, 2023 1:27 AM
+On 2023-08-09 10:22, zhurui wrote:
+> On 2023/8/9 0:43, Robin Murphy wrote:
+>> On 08/08/2023 5:24 pm, Will Deacon wrote:
+>>> Hi Robin,
 >>>
->>> @@ -1800,11 +1801,18 @@ struct probe_iommu_args {
->>>   static int probe_iommu_group(struct device *dev, void *data)
->>>   {
->>>   	struct probe_iommu_args *args = data;
->>> +	bool need_lock;
->>>   	int ret;
+>>> On Mon, Aug 07, 2023 at 08:20:45PM +0100, Robin Murphy wrote:
+>>>> On 2023-08-06 06:28, zhurui wrote:
+>>>>> On 2023/8/5 2:30, Nicolin Chen wrote:
+>>>>>> On Fri, Aug 04, 2023 at 05:52:25PM +0100, Will Deacon wrote:
+>>>>>>> On Fri, Aug 04, 2023 at 05:31:20PM +0800, zhurui wrote:
+>>>>>>>> When tg != 0 but ttl, scale, num all 0 in a range tlbi command, it
+>>>>>>>> is reserved and will cause the CERROR_ILL error. This case means
+>>>>>>>> that the size to be invalidated is only one page size, and the
+>>>>>>>> range invalidation is meaningless here. So we set tg to 0 in this
+>>>>>>>> case to do an non-range invalidation instead.
+>>>>>>
+>>>>>>>> @@ -1930,6 +1927,12 @@ static void __arm_smmu_tlb_inv_range(struct arm_smmu_cmdq_ent *cmd,
+>>>>>>>>                            num = (num_pages >> scale) & CMDQ_TLBI_RANGE_NUM_MAX;
+>>>>>>>>                            cmd->tlbi.num = num - 1;
+>>>>>>>>
+>>>>>>>> +                       /* Prevent error caused by one page tlbi with leaf 0 */
+>>>>>>>> +                       if (scale == 0 && num == 1 && cmd->tlbi.leaf == 0)
+>>>>>>>> +                               cmd->tlbi.tg = 0;
+>>>>>>>
+>>>>>>> This should only be true for the last iteration, right (i.e. when num_pages
+>>>>>>> == 1)? In which case, I'd prefer to leave the old code as-is and just add:
+>>>>>>>
+>>>>>>>            /* Single-page leaf invalidation requires a TG field of 0 */
+>>>>>>>            if (num_pages == 1 && !cmd->tlbi.leaf)
+>>>>>>>                    cmd->tlbi.tg = 0;To Will and Nicolin,
+>>>>>
+>>>>> Not only the last iteration, it's the result of __ffs function. For example, if
+>>>>> numpages is 33, then the value of __ffs(num_pages) is 0, so the value of scale
+>>>>> is also 0. The value of num depends on CMDQ_TLBI_RANGE_NUM_MAX. That is, the
+>>>>> maximum value of num is 31. Therefore, the final value of num is 1.
+>>>>> So, if consider CMDQ_TLBI_RANGE_NUM_MAX, there will be some case not the last
+>>>>> one page but the beginning pages. That's why I use scale and num as conditions,
+>>>>> not num_pages. Then I should reassign tg based on the result.
+>>>>
+>>>> Yeah, I'd rather not downgrade to a non-range invalidate since that
+>>>> complicates the reasoning for the errata affecting those. If the size of the
+>>>> invalidation is equal to TG then it can only represent a single last-level
+>>>> page, i.e. TTL=3, thus if it does warrant handling here then indeed
+>>>> rearranging to base the condition on num_pages as well ought to suffice.
+>>>> However, this is all still begging the question of where and why we're doing
+>>>> a *non-leaf* invalidation that isn't aligned to the size of a table, because
+>>>> that in itself doesn't make a whole heap of sense - my hunch is that that
+>>>> wants figuring out and could probably be fixed at the source.
 >>>
->>> -	device_lock(dev);
->>> +	/* Probing the iommu itself is always done under the device_lock */
->>> +	need_lock = !args->iommu || args->iommu->hwdev != dev;
->>> +
->> is !args->iommu a valid case?
-> Hmm, not any more, it used to happen in an earlier version
->   
->> btw probably a dumb question. Why do we continue to probe the
->> iommu device itself instead of skipping it? The group is a concept
->> for devices which require DMA protection from iommu instead of
->> for the iommu device itself...
-> Yeah, that is how I originally did it, but since the locking appeared
-> here I thought it would be safer to just continue to invoke probe as
-> we have always done. I don't know for sure that there isn't some
-> driver that relies on this for some reason.
->
-> eg it might change the group layouts or something.
+>>> Isn't that described above because we're using CMDQ_TLBI_RANGE_NUM_MAX
+>>> to break up the range into separate commands?
+>>
+>> Not really, because if we're doing a genuine non-leaf invalidation of a table then it should be a block-aligned range that ought to fit in a single command and should certainly never involve a single-granule remainder. If we're doing non-leaf invalidations of things that logically don't need to be non-leaf, making them leaf would be the even better option.
+>>
+> 
+> I agree with Robin that if the caller is doing a genuine non-leaf invalidation
+> of a table, it should not involve a single-granule tlbi. It seems that the
+> caller only filter the block size, but not the address aligned or not maybe.
 
-Well, I don't think that there is any driver doing such things, but the 
-only way to check is simply change the behavior an wait for complaints.
+Oh, did you hit this with SVA by any chance? AFAICS the only place
+io-pgtable can cause a non-leaf invalidation is from tlb_flush_walk,
+which absolutely should be table-aligned, but then there is another path
+from arm_smmu_mm_invalidate_range(), where I guess we use non-leaf
+unconditionally because the MMU notifier doesn't have visibility of
+exactly how the pagetable structure may have changed. However, by the
+same token that path really does actually need my fix, since it's also
+hard-coding PAGE_SIZE as the invalidation granule. I was saying it's a
+largely theoretical issue from the io-pgtable point of view, since the
+chance of unmapping a level 1 table full of level 2 block entries via
+the IOMMU API is minimal (other than cases like VFIO teardown where
+precise invalidation doesn't matter since the whole domain is about to
+be destroyed anyway), but in this SVA path which I hadn't considered
+before, I think it means that unmapping *any* block entry may not be
+invalidated correctly, and unmapping blocks in general is definitely
+something that processes can and will do :(
 
+>>> Do you mind if I queue the patch as-is for now? I don't think the driver
+>>> should be emitting illegal commands, and v2 of the patch does seem like
+>>> the obvious thing to do.
+>>
+>> TBH I'd rather you just drop my patch if it's proven problematic, and I'll take another crack at it soon. The potential problems we introduce by using non-range invalidates on errata-affected MMU-700 revisions are worse than the almost-entirely-theoretical one I was trying to address.
 
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+Does the patch below work for you?
 
+Thanks,
+Robin.
+
+----->8-----
+Subject: [PATCH] iommu/arm-smmu-v3: Avoid constructing invalid range commands
+
+Although io-pgtable's non-leaf invalidations are always for full tables,
+I missed that SVA also uses non-leaf invalidations, while being at the
+mercy of whatever range the MMU notifier throws at it. This means it
+definitely wants the previous TTL fix as well, since it also doesn't
+know exactly which leaf level(s) may need invalidating, but it can also
+give us less-aligned ranges wherein certain corners may lead to building
+an invalid command where TTL, Num and Scale are all 0. It should be fine
+to handle this by over-invalidating an extra page, since falling back to
+a non-range command opens up a whole can of errata-flavoured worms.
+
+Fixes: 6833b8f2e199 ("iommu/arm-smmu-v3: Set TTL invalidation hint better")
+Reported-by: Rui Zhu <zhurui3@huawei.com>
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+---
+  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 15 ++++++++++-----
+  1 file changed, 10 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index 9b0dc3505601..6ccbae9b93a1 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -1895,18 +1895,23 @@ static void __arm_smmu_tlb_inv_range(struct arm_smmu_cmdq_ent *cmd,
+  		/* Get the leaf page size */
+  		tg = __ffs(smmu_domain->domain.pgsize_bitmap);
+  
++		num_pages = size >> tg;
++
+  		/* Convert page size of 12,14,16 (log2) to 1,2,3 */
+  		cmd->tlbi.tg = (tg - 10) / 2;
+  
+  		/*
+-		 * Determine what level the granule is at. For non-leaf, io-pgtable
+-		 * assumes .tlb_flush_walk can invalidate multiple levels at once,
+-		 * so ignore the nominal last-level granule and leave TTL=0.
++		 * Determine what level the granule is at. For non-leaf, both
++		 * io-pgtable and SVA pass a nominal last-level granule because
++		 * they don't know what level(s) actually apply, so ignore that
++		 * and leave TTL=0. However for various errata reasons we still
++		 * want to use a range command, so avoid the SVA corner case
++		 * where both scale and num could be 0 as well.
+  		 */
+  		if (cmd->tlbi.leaf)
+  			cmd->tlbi.ttl = 4 - ((ilog2(granule) - 3) / (tg - 3));
+-
+-		num_pages = size >> tg;
++		else if ((num_pages & CMDQ_TLBI_RANGE_NUM_MAX) == 1)
++			num_pages++;
+  	}
+  
+  	cmds.num = 0;
