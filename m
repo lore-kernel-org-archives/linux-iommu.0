@@ -1,34 +1,34 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A55CE1AA83
-	for <iommu@lists.linux.dev>; Wed,  9 Aug 2023 18:26:48 +0000 (UTC)
-Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 379Gcupr026067;
-	Wed, 9 Aug 2023 18:25:52 GMT
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 92FC81AA83
+	for <iommu@lists.linux.dev>; Wed,  9 Aug 2023 18:26:51 +0000 (UTC)
+Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 379F7YRP005283;
+	Wed, 9 Aug 2023 18:26:12 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
  mime-version : subject : to : cc : references : from : in-reply-to :
  content-type : content-transfer-encoding; s=qcppdkim1;
- bh=YCgiBM4BbljO43y/sO1vpGYc+7zxImzLm/TIWJmBVVk=;
- b=b+nuwSy5/Ek76gI8mD3B51q5kPqX+r0T+TPnM6dALzZ76O+vFtNzmAdVbSNR+B9CdJsW
- N+ucxzyf9IOqoeyZTi/aOBFs/wQHwz447mI3a6CbF5bSvl8xZqenP2Bw2u0nMpAReajT
- X2p4ZfvOszsr/xCm2GYqMdAK4qiBGGqfUtG7d93RszOrzw9fZfeaRlOMlhqziZ4+7rAO
- FWBXx7JntOSm3uxUHjwgzKjZgUOUE7JCFwNVcNUbjwsKdkgkClaG6ywZP9+VT6G4NjKC
- rOzSx/D85ayP7k+aP/LeS/olxJb+aFyr3VrSs8bV8R0IF443Tzn098/T2uKi92BTy0KP kQ== 
-Received: from nalasppmta02.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3sc5es1juc-1
+ bh=cmp88N1mDDepRm2TgUiw9EjZQIOk/+rO0WA2DXHxrVw=;
+ b=MZWB8SvEDrf5BDFLAznoWYaKXI1cvrpKZcLbDGusKTUN147HLW7/pTsaO/lukDHGHps+
+ 7UmvqQM9mrDScAf7labWHEGcSyM+SlWz9u3ntXC0xHrLZgaVY2y6yvUusA4SK24eDhOz
+ oh/Vd/UtbZY/kw3bQdULL3Htu+eky3hDSGAqICIyLvYzt4p6v3lfzY4vkMiyrOYH+tBR
+ OxEIuHhkxJzYvTRX55qoeCg5Sz1JE3g1yccEp0fYxJTZd/4+DksWXz0e9UOzFPAf+i/j
+ 1crnEy/Jyjf3RAWJ4wblsvyUwx5wlnwYNRXvStxij6lIe+wJ0VOMkd5hGIPafxXqtc1h UQ== 
+Received: from nalasppmta04.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3sbp17kfv6-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 09 Aug 2023 18:25:52 +0000
+	Wed, 09 Aug 2023 18:26:12 +0000
 Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-	by NALASPPMTA02.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 379IPpbm021701
+	by NALASPPMTA04.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 379IQ1YY000600
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 9 Aug 2023 18:25:51 GMT
+	Wed, 9 Aug 2023 18:26:01 GMT
 Received: from [10.226.59.182] (10.80.80.8) by nalasex01a.na.qualcomm.com
  (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.30; Wed, 9 Aug
- 2023 11:25:49 -0700
-Message-ID: <6615b537-c98d-3df2-df30-dd6873fda685@quicinc.com>
-Date: Wed, 9 Aug 2023 12:25:48 -0600
+ 2023 11:25:59 -0700
+Message-ID: <6f3a6d37-aa92-6e86-bf26-350fdb482c6f@quicinc.com>
+Date: Wed, 9 Aug 2023 12:25:58 -0600
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -37,8 +37,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
  Thunderbird/91.6.0
-Subject: Re: [PATCH v2 1/6] arm64: dts: qcom: msm8998: Drop bus clock
- reference from MMSS SMMU
+Subject: Re: [PATCH v2 2/6] arm64: dts: qcom: msm8998: Add missing power
+ domain to MMSS SMMU
 Content-Language: en-US
 To: Konrad Dybcio <konrad.dybcio@linaro.org>, Andy Gross <agross@kernel.org>,
         Bjorn Andersson <andersson@kernel.org>,
@@ -67,35 +67,32 @@ CC: Marijn Suijten <marijn.suijten@somainline.org>,
         <linux-kernel@vger.kernel.org>, <linux-clk@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>
 References: <20230531-topic-8998_mmssclk-v2-0-34273e275c51@linaro.org>
- <20230531-topic-8998_mmssclk-v2-1-34273e275c51@linaro.org>
+ <20230531-topic-8998_mmssclk-v2-2-34273e275c51@linaro.org>
 From: Jeffrey Hugo <quic_jhugo@quicinc.com>
-In-Reply-To: <20230531-topic-8998_mmssclk-v2-1-34273e275c51@linaro.org>
+In-Reply-To: <20230531-topic-8998_mmssclk-v2-2-34273e275c51@linaro.org>
 Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
 X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
  nalasex01a.na.qualcomm.com (10.47.209.196)
 X-QCInternal: smtphost
 X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: qTPUuL47BmDAjV_eUU6eIGiDySv95qaf
-X-Proofpoint-GUID: qTPUuL47BmDAjV_eUU6eIGiDySv95qaf
+X-Proofpoint-ORIG-GUID: tv0SCWlaH0PmZAYA5kUErT7eZINZLfG6
+X-Proofpoint-GUID: tv0SCWlaH0PmZAYA5kUErT7eZINZLfG6
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.267,Aquarius:18.0.957,Hydra:6.0.591,FMLib:17.11.176.26
  definitions=2023-08-09_16,2023-08-09_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 mlxlogscore=932
- spamscore=0 mlxscore=0 malwarescore=0 suspectscore=0 priorityscore=1501
- lowpriorityscore=0 phishscore=0 bulkscore=0 impostorscore=0 clxscore=1011
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2306200000
- definitions=main-2308090161
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 phishscore=0
+ malwarescore=0 mlxlogscore=884 priorityscore=1501 lowpriorityscore=0
+ bulkscore=0 spamscore=0 mlxscore=0 adultscore=0 suspectscore=0
+ clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2306200000 definitions=main-2308090161
 
 On 8/8/2023 3:44 AM, Konrad Dybcio wrote:
-> The MMSS SMMU has been abusingly consuming the exposed RPM interconnect
-> clock. Drop it.
+> The MMSS SMMU has its own power domain. Attach it so that we can drop
+> the "keep it always-on" hack.
 > 
 > Fixes: 05ce21b54423 ("arm64: dts: qcom: msm8998: Configure the multimedia subsystem iommu")
 > Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
-> ---
->   arch/arm64/boot/dts/qcom/msm8998.dtsi | 6 +++---
->   1 file changed, 3 insertions(+), 3 deletions(-)
 
 Reviewed-by: Jeffrey Hugo <quic_jhugo@quicinc.com>
