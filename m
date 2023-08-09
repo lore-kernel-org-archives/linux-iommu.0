@@ -1,83 +1,101 @@
-Received: from mail-ot1-f53.google.com (mail-ot1-f53.google.com [209.85.210.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A89218AE4
-	for <iommu@lists.linux.dev>; Wed,  9 Aug 2023 16:59:45 +0000 (UTC)
-Received: by mail-ot1-f53.google.com with SMTP id 46e09a7af769-6bca3588edbso23438a34.0
-        for <iommu@lists.linux.dev>; Wed, 09 Aug 2023 09:59:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1691600384; x=1692205184;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=XTEsQP1+0iumF877RP4qQLHej8hsu/9BpYuUN5Y2adY=;
-        b=JzlC8Zw9WKivJVxz26FYwqB80WVfFZ6RDiS980y67gmTTNuF7ER+yz08CPVwASwoZM
-         gKYV7BCMOa6zNvbbVCtWaxGDgfUkQ9qJmez94gYiktjPGpOmDjgkfsHiHTTFp/8xFTtf
-         DlOmv8AX5zaHS9ih6o9Q7j0FIxPpPFcT2fnBsU92+V4kJRCVEuLVp/fzvl2N0bIbpxi6
-         SuCTNor5R/pwn+u0oZ2YrCPUsrqYNzRV60a1T/LCyNBE3osy8HyYLEJM9ZV1+buUemOe
-         avfBcqa5N4koDm2vxcyUqsSN8QgDCc9kjJFkgFvPN3JjT8qwQuRMo89sT9Pij82iX2I+
-         3NtA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1691600384; x=1692205184;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=XTEsQP1+0iumF877RP4qQLHej8hsu/9BpYuUN5Y2adY=;
-        b=a5wAvZHrXnaLDD+/PJ2dSgMS/KrLJRepAhuHXIOucAGbLy0kX+m7UmDamT+qkf3nS4
-         z9NDN/IBKCYj3zJiik4eP9pSMegTckN2EqhCQXSMeC1E0o236DNPIcD9ZDqD9JvhFTMm
-         UO/Cg1imzQrvPGpQWq19za9RcqkM5JpgAAzdHo/JyhUGDTe2GdjBHTsoxOS/sBCj5J1F
-         J9XuAswG+SFq1VTOpJuGoe/q+6/WWS6P3Wg5xi3rBP3FVjR7xvkVh/D1ZwEjWdyWB9pM
-         KeXpo+lWLuMLdMpyAKndtS6IKhK0Hg2zR2lW1ntheTbUda+Qx05Hj0i1mA9rbNYCn9gz
-         NG5g==
-X-Gm-Message-State: AOJu0YzF3up+s4SM1+IWk8LD6Sauy+X//0y6+VTUSprjaUgF0EfArjtE
-	LbHjiECCcroAvRvBi+Km/bJ98Q==
-X-Google-Smtp-Source: AGHT+IEmzHenOJPDunw1cOZQzJjOj5rapAsmFJV0dYT4pA3Ve+ScUpS7lPR4AvRR0PMTnE+Xw/oiqw==
-X-Received: by 2002:a05:6358:c18:b0:139:71af:ed0f with SMTP id f24-20020a0563580c1800b0013971afed0fmr2197432rwj.1.1691600384122;
-        Wed, 09 Aug 2023 09:59:44 -0700 (PDT)
-Received: from ziepe.ca ([206.223.160.26])
-        by smtp.gmail.com with ESMTPSA id f6-20020ac81346000000b0040f200feb4fsm4152679qtj.80.2023.08.09.09.59.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Aug 2023 09:59:43 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1qTmX8-00551w-Uh;
-	Wed, 09 Aug 2023 13:59:42 -0300
-Date: Wed, 9 Aug 2023 13:59:42 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>, iommu@lists.linux.dev,
-	kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 03/12] iommu: Remove unrecoverable fault data
-Message-ID: <ZNPF/nA2JdqHMM10@ziepe.ca>
-References: <20230727054837.147050-1-baolu.lu@linux.intel.com>
- <20230727054837.147050-4-baolu.lu@linux.intel.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A55CE1AA83
+	for <iommu@lists.linux.dev>; Wed,  9 Aug 2023 18:26:48 +0000 (UTC)
+Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 379Gcupr026067;
+	Wed, 9 Aug 2023 18:25:52 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=qcppdkim1;
+ bh=YCgiBM4BbljO43y/sO1vpGYc+7zxImzLm/TIWJmBVVk=;
+ b=b+nuwSy5/Ek76gI8mD3B51q5kPqX+r0T+TPnM6dALzZ76O+vFtNzmAdVbSNR+B9CdJsW
+ N+ucxzyf9IOqoeyZTi/aOBFs/wQHwz447mI3a6CbF5bSvl8xZqenP2Bw2u0nMpAReajT
+ X2p4ZfvOszsr/xCm2GYqMdAK4qiBGGqfUtG7d93RszOrzw9fZfeaRlOMlhqziZ4+7rAO
+ FWBXx7JntOSm3uxUHjwgzKjZgUOUE7JCFwNVcNUbjwsKdkgkClaG6ywZP9+VT6G4NjKC
+ rOzSx/D85ayP7k+aP/LeS/olxJb+aFyr3VrSs8bV8R0IF443Tzn098/T2uKi92BTy0KP kQ== 
+Received: from nalasppmta02.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3sc5es1juc-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 09 Aug 2023 18:25:52 +0000
+Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
+	by NALASPPMTA02.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 379IPpbm021701
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 9 Aug 2023 18:25:51 GMT
+Received: from [10.226.59.182] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.30; Wed, 9 Aug
+ 2023 11:25:49 -0700
+Message-ID: <6615b537-c98d-3df2-df30-dd6873fda685@quicinc.com>
+Date: Wed, 9 Aug 2023 12:25:48 -0600
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230727054837.147050-4-baolu.lu@linux.intel.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Subject: Re: [PATCH v2 1/6] arm64: dts: qcom: msm8998: Drop bus clock
+ reference from MMSS SMMU
+Content-Language: en-US
+To: Konrad Dybcio <konrad.dybcio@linaro.org>, Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley
+	<conor+dt@kernel.org>,
+        AngeloGioacchino Del Regno
+	<angelogioacchino.delregno@somainline.org>,
+        Michael Turquette
+	<mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Jeffrey Hugo
+	<jeffrey.l.hugo@gmail.com>,
+        Imran Khan <kimran@codeaurora.org>,
+        "Rajendra
+ Nayak" <quic_rjendra@quicinc.com>,
+        Joonwoo Park <joonwoop@codeaurora.org>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>, "Joerg
+ Roedel" <joro@8bytes.org>
+CC: Marijn Suijten <marijn.suijten@somainline.org>,
+        Dmitry Baryshkov
+	<dmitry.baryshkov@linaro.org>,
+        Jami Kettunen <jami.kettunen@somainline.org>,
+        <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-clk@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>
+References: <20230531-topic-8998_mmssclk-v2-0-34273e275c51@linaro.org>
+ <20230531-topic-8998_mmssclk-v2-1-34273e275c51@linaro.org>
+From: Jeffrey Hugo <quic_jhugo@quicinc.com>
+In-Reply-To: <20230531-topic-8998_mmssclk-v2-1-34273e275c51@linaro.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: qTPUuL47BmDAjV_eUU6eIGiDySv95qaf
+X-Proofpoint-GUID: qTPUuL47BmDAjV_eUU6eIGiDySv95qaf
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.267,Aquarius:18.0.957,Hydra:6.0.591,FMLib:17.11.176.26
+ definitions=2023-08-09_16,2023-08-09_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 mlxlogscore=932
+ spamscore=0 mlxscore=0 malwarescore=0 suspectscore=0 priorityscore=1501
+ lowpriorityscore=0 phishscore=0 bulkscore=0 impostorscore=0 clxscore=1011
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2306200000
+ definitions=main-2308090161
 
-On Thu, Jul 27, 2023 at 01:48:28PM +0800, Lu Baolu wrote:
-> The unrecoverable fault data is not used anywhere. Remove it to avoid
-> dead code.
+On 8/8/2023 3:44 AM, Konrad Dybcio wrote:
+> The MMSS SMMU has been abusingly consuming the exposed RPM interconnect
+> clock. Drop it.
 > 
-> Suggested-by: Kevin Tian <kevin.tian@intel.com>
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> Fixes: 05ce21b54423 ("arm64: dts: qcom: msm8998: Configure the multimedia subsystem iommu")
+> Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
 > ---
->  include/linux/iommu.h | 70 +------------------------------------------
->  1 file changed, 1 insertion(+), 69 deletions(-)
+>   arch/arm64/boot/dts/qcom/msm8998.dtsi | 6 +++---
+>   1 file changed, 3 insertions(+), 3 deletions(-)
 
-Do we plan to bring this back in some form? A driver specific fault
-report via iommufd?
-
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-
-Jason
+Reviewed-by: Jeffrey Hugo <quic_jhugo@quicinc.com>
