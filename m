@@ -1,34 +1,34 @@
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.24])
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45B51362
-	for <iommu@lists.linux.dev>; Wed,  9 Aug 2023 00:18:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 542E8362
+	for <iommu@lists.linux.dev>; Wed,  9 Aug 2023 00:21:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1691540304; x=1723076304;
+  t=1691540503; x=1723076503;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=HJlcHiHuNgv/7TraiPpo1NPMzUrumGGz0oolwOb/Hvs=;
-  b=GnbAb4/1jbgcwMBnL6Cw7CCnt6YhGsiK9zfWQ9q5xuOs2vs1QeTfvjki
-   CSUsC8KoFzVTFyqkTQNJmsdHzi+Rzeq8xdAa+Vk8FrKeEob6fBSKL4JHF
-   AHsNwH0pSx1QM0yJQVfgtonJYFxge8dEwAPxJv2IrFSCJBmM0Mx23pMWN
-   IlrccYTv7Cu2eZc2pmC//KLclyZJr8Rmo7zQmWRrFiXU+GLWPjUHmMsyT
-   vmq31sC2n/up13/gmEoHmJs+XHgVA/A+jmzege6Ep21sQampnScWhMFtV
-   est58TgJ657IFp04FUd0p5RIayg1qL4Ts2MlvkUiCofhX+Xwp+DiB7Z4g
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10795"; a="373766059"
+  bh=pSnxsYD5ez1ZILtbpLadGfYWDNm7OAnwV//2jsi3Zmw=;
+  b=HFViaRhIhkNAJFgLAxZL5nP++2UR8Osm2z1P/zzWWnt4eoeQb+AgcCJ8
+   79+VN4anUIfDbA2mptpaXcrE9ablI6YAOPgviEvFCuFZ19UAbjtRlBD5q
+   EEil1/ekLDUoVGRz+b8bnUL91RCdcf6u9w88yp4wEepzL4kupMLbC9EX1
+   BVNxRrrPN1+IZToiOYKPHe7qhUtwStwqZTxOEtKTB6DSUaAzTBUpB3/i/
+   9VFRd1QbecAS+8Qt3hJQbCxoUhRxV7z6pmVnren9N0w/FQeS1MR76a9sZ
+   fECPUb1VYTRpq1DLhttSgFveImByb+O880GgIDyMMquWTF345NUz/LMBw
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10795"; a="457366965"
 X-IronPort-AV: E=Sophos;i="6.01,157,1684825200"; 
-   d="scan'208";a="373766059"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Aug 2023 17:18:23 -0700
+   d="scan'208";a="457366965"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Aug 2023 17:21:42 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10795"; a="978163637"
+X-IronPort-AV: E=McAfee;i="6600,9927,10795"; a="708496406"
 X-IronPort-AV: E=Sophos;i="6.01,157,1684825200"; 
-   d="scan'208";a="978163637"
+   d="scan'208";a="708496406"
 Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.249.169.46]) ([10.249.169.46])
-  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Aug 2023 17:18:21 -0700
-Message-ID: <184044ad-880f-5452-727b-f7fd18330c22@linux.intel.com>
-Date: Wed, 9 Aug 2023 08:18:18 +0800
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Aug 2023 17:21:40 -0700
+Message-ID: <f3d8692e-b13d-97ee-2288-c2be1858dcfa@linux.intel.com>
+Date: Wed, 9 Aug 2023 08:21:37 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -39,64 +39,192 @@ User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.14.0
 Cc: baolu.lu@linux.intel.com, iommu@lists.linux.dev,
  linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 0/5] Share sva domains with all devices bound to a mm
+Subject: Re: [PATCH 2/5] iommu: Call helper function to get assigned pasid
+ value
 Content-Language: en-US
 To: Tina Zhang <tina.zhang@intel.com>, Jason Gunthorpe <jgg@ziepe.ca>,
  Kevin Tian <kevin.tian@intel.com>, Michael Shavit <mshavit@google.com>
 References: <20230808074944.7825-1-tina.zhang@intel.com>
+ <20230808074944.7825-3-tina.zhang@intel.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20230808074944.7825-1-tina.zhang@intel.com>
+In-Reply-To: <20230808074944.7825-3-tina.zhang@intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 2023/8/8 15:49, Tina Zhang wrote:
-> A sva domain's lifetime begins with binding a device to a mm and ends
-> by releasing all the bound devices from that sva domain. Technically,
-> there could be more than one sva domain identified by the mm PASID for
-> the use of bound devices issuing DMA transactions.
-> 
-> To support mm PASID 1:n with sva domains, each mm needs to keep both a
-> reference list of allocated sva domains and the corresponding PASID.
-> However, currently, mm struct only has one pasid field for sva usage,
-> which is used to keep the info of an assigned PASID. That pasid field
-> cannot provide sufficient info to build up the 1:n mapping between PASID
-> and sva domains.
+> Use the helper function mm_get_pasid() to get the mm assigned pasid
+> value.
 
-Is it more appropriate to have the same life cycle for sva domain and mm
-pasid? I feel that they represent the same thing, that is, the address
-space shared by mm to a device.
+For internal iommu drivers, perhaps we should use another helper.
+Something like sva_domain_get_pasid()?
+
+Suppose that the iommu drivers should have no idea about the "mm".
 
 Best regards,
 baolu
 
 > 
-> This patch-set fills the gap by adding an mm_iommu field[1], whose type is
-> mm_iommu_data struct, to replace the old pasid field. The introduced
-> mm_iommu_data struct keeps info of both a reference list of sva domains
-> and an assigned PASID.
+> Signed-off-by: Tina Zhang <tina.zhang@intel.com>
+> ---
+>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c | 12 ++++++------
+>   drivers/iommu/intel/svm.c                       |  8 ++++----
+>   drivers/iommu/iommu-sva.c                       | 14 +++++++-------
+>   3 files changed, 17 insertions(+), 17 deletions(-)
 > 
-> 
-> [1]: https://lore.kernel.org/linux-iommu/ZIBxPd1%2FJCAle6yP@nvidia.com/
-> 
-> 
-> The RFC version of this patch-set is here:
-> https://lore.kernel.org/linux-iommu/20230707013441.365583-1-tina.zhang@intel.com/
-> 
-> Tina Zhang (5):
->    iommu: Add mm_get_pasid() helper function
->    iommu: Call helper function to get assigned pasid value
->    mm: Add structure to keep sva information
->    iommu: Support mm PASID 1:n with sva domains
->    mm: Deprecate pasid field
-> 
->   arch/x86/kernel/traps.c                       |  2 +-
->   .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   | 12 ++---
->   drivers/iommu/intel/svm.c                     |  8 +--
->   drivers/iommu/iommu-sva.c                     | 50 ++++++++++++-------
->   include/linux/iommu.h                         | 19 +++++--
->   include/linux/mm_types.h                      |  3 +-
->   kernel/fork.c                                 |  1 -
->   mm/init-mm.c                                  |  3 --
->   8 files changed, 58 insertions(+), 40 deletions(-)
-> 
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+> index a5a63b1c947e..0b455654d365 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+> @@ -204,7 +204,7 @@ static void arm_smmu_mm_invalidate_range(struct mmu_notifier *mn,
+>   	if (!(smmu_domain->smmu->features & ARM_SMMU_FEAT_BTM))
+>   		arm_smmu_tlb_inv_range_asid(start, size, smmu_mn->cd->asid,
+>   					    PAGE_SIZE, false, smmu_domain);
+> -	arm_smmu_atc_inv_domain(smmu_domain, mm->pasid, start, size);
+> +	arm_smmu_atc_inv_domain(smmu_domain, mm_get_pasid(mm), start, size);
+>   }
+>   
+>   static void arm_smmu_mm_release(struct mmu_notifier *mn, struct mm_struct *mm)
+> @@ -222,10 +222,10 @@ static void arm_smmu_mm_release(struct mmu_notifier *mn, struct mm_struct *mm)
+>   	 * DMA may still be running. Keep the cd valid to avoid C_BAD_CD events,
+>   	 * but disable translation.
+>   	 */
+> -	arm_smmu_write_ctx_desc(smmu_domain, mm->pasid, &quiet_cd);
+> +	arm_smmu_write_ctx_desc(smmu_domain, mm_get_pasid(mm), &quiet_cd);
+>   
+>   	arm_smmu_tlb_inv_asid(smmu_domain->smmu, smmu_mn->cd->asid);
+> -	arm_smmu_atc_inv_domain(smmu_domain, mm->pasid, 0, 0);
+> +	arm_smmu_atc_inv_domain(smmu_domain, mm_get_pasid(mm), 0, 0);
+>   
+>   	smmu_mn->cleared = true;
+>   	mutex_unlock(&sva_lock);
+> @@ -279,7 +279,7 @@ arm_smmu_mmu_notifier_get(struct arm_smmu_domain *smmu_domain,
+>   		goto err_free_cd;
+>   	}
+>   
+> -	ret = arm_smmu_write_ctx_desc(smmu_domain, mm->pasid, cd);
+> +	ret = arm_smmu_write_ctx_desc(smmu_domain, mm_get_pasid(mm), cd);
+>   	if (ret)
+>   		goto err_put_notifier;
+>   
+> @@ -304,7 +304,7 @@ static void arm_smmu_mmu_notifier_put(struct arm_smmu_mmu_notifier *smmu_mn)
+>   		return;
+>   
+>   	list_del(&smmu_mn->list);
+> -	arm_smmu_write_ctx_desc(smmu_domain, mm->pasid, NULL);
+> +	arm_smmu_write_ctx_desc(smmu_domain, mm_get_pasid(mm), NULL);
+>   
+>   	/*
+>   	 * If we went through clear(), we've already invalidated, and no
+> @@ -312,7 +312,7 @@ static void arm_smmu_mmu_notifier_put(struct arm_smmu_mmu_notifier *smmu_mn)
+>   	 */
+>   	if (!smmu_mn->cleared) {
+>   		arm_smmu_tlb_inv_asid(smmu_domain->smmu, cd->asid);
+> -		arm_smmu_atc_inv_domain(smmu_domain, mm->pasid, 0, 0);
+> +		arm_smmu_atc_inv_domain(smmu_domain, mm_get_pasid(mm), 0, 0);
+>   	}
+>   
+>   	/* Frees smmu_mn */
+> diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
+> index e95b339e9cdc..e6377cff6a93 100644
+> --- a/drivers/iommu/intel/svm.c
+> +++ b/drivers/iommu/intel/svm.c
+> @@ -306,13 +306,13 @@ static int intel_svm_bind_mm(struct intel_iommu *iommu, struct device *dev,
+>   	unsigned long sflags;
+>   	int ret = 0;
+>   
+> -	svm = pasid_private_find(mm->pasid);
+> +	svm = pasid_private_find(mm_get_pasid(mm));
+>   	if (!svm) {
+>   		svm = kzalloc(sizeof(*svm), GFP_KERNEL);
+>   		if (!svm)
+>   			return -ENOMEM;
+>   
+> -		svm->pasid = mm->pasid;
+> +		svm->pasid = mm_get_pasid(mm);
+>   		svm->mm = mm;
+>   		INIT_LIST_HEAD_RCU(&svm->devs);
+>   
+> @@ -350,7 +350,7 @@ static int intel_svm_bind_mm(struct intel_iommu *iommu, struct device *dev,
+>   
+>   	/* Setup the pasid table: */
+>   	sflags = cpu_feature_enabled(X86_FEATURE_LA57) ? PASID_FLAG_FL5LP : 0;
+> -	ret = intel_pasid_setup_first_level(iommu, dev, mm->pgd, mm->pasid,
+> +	ret = intel_pasid_setup_first_level(iommu, dev, mm->pgd, mm_get_pasid(mm),
+>   					    FLPT_DEFAULT_DID, sflags);
+>   	if (ret)
+>   		goto free_sdev;
+> @@ -364,7 +364,7 @@ static int intel_svm_bind_mm(struct intel_iommu *iommu, struct device *dev,
+>   free_svm:
+>   	if (list_empty(&svm->devs)) {
+>   		mmu_notifier_unregister(&svm->notifier, mm);
+> -		pasid_private_remove(mm->pasid);
+> +		pasid_private_remove(mm_get_pasid(mm));
+>   		kfree(svm);
+>   	}
+>   
+> diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
+> index 05c0fb2acbc4..0a4a1ed40814 100644
+> --- a/drivers/iommu/iommu-sva.c
+> +++ b/drivers/iommu/iommu-sva.c
+> @@ -28,7 +28,7 @@ static int iommu_sva_alloc_pasid(struct mm_struct *mm, ioasid_t min, ioasid_t ma
+>   	mutex_lock(&iommu_sva_lock);
+>   	/* Is a PASID already associated with this mm? */
+>   	if (mm_valid_pasid(mm)) {
+> -		if (mm->pasid < min || mm->pasid > max)
+> +		if (mm_get_pasid(mm) < min || mm_get_pasid(mm) > max)
+>   			ret = -EOVERFLOW;
+>   		goto out;
+>   	}
+> @@ -71,7 +71,7 @@ struct iommu_sva *iommu_sva_bind_device(struct device *dev, struct mm_struct *mm
+>   	if (!max_pasids)
+>   		return ERR_PTR(-EOPNOTSUPP);
+>   
+> -	/* Allocate mm->pasid if necessary. */
+> +	/* Allocate pasid if necessary. */
+>   	ret = iommu_sva_alloc_pasid(mm, 1, max_pasids - 1);
+>   	if (ret)
+>   		return ERR_PTR(ret);
+> @@ -82,7 +82,7 @@ struct iommu_sva *iommu_sva_bind_device(struct device *dev, struct mm_struct *mm
+>   
+>   	mutex_lock(&iommu_sva_lock);
+>   	/* Search for an existing domain. */
+> -	domain = iommu_get_domain_for_dev_pasid(dev, mm->pasid,
+> +	domain = iommu_get_domain_for_dev_pasid(dev, mm_get_pasid(mm),
+>   						IOMMU_DOMAIN_SVA);
+>   	if (IS_ERR(domain)) {
+>   		ret = PTR_ERR(domain);
+> @@ -101,7 +101,7 @@ struct iommu_sva *iommu_sva_bind_device(struct device *dev, struct mm_struct *mm
+>   		goto out_unlock;
+>   	}
+>   
+> -	ret = iommu_attach_device_pasid(domain, dev, mm->pasid);
+> +	ret = iommu_attach_device_pasid(domain, dev, mm_get_pasid(mm));
+>   	if (ret)
+>   		goto out_free_domain;
+>   	domain->users = 1;
+> @@ -133,7 +133,7 @@ EXPORT_SYMBOL_GPL(iommu_sva_bind_device);
+>   void iommu_sva_unbind_device(struct iommu_sva *handle)
+>   {
+>   	struct iommu_domain *domain = handle->domain;
+> -	ioasid_t pasid = domain->mm->pasid;
+> +	ioasid_t pasid = mm_get_pasid(domain->mm);
+>   	struct device *dev = handle->dev;
+>   
+>   	mutex_lock(&iommu_sva_lock);
+> @@ -150,7 +150,7 @@ u32 iommu_sva_get_pasid(struct iommu_sva *handle)
+>   {
+>   	struct iommu_domain *domain = handle->domain;
+>   
+> -	return domain->mm->pasid;
+> +	return mm_get_pasid(domain->mm);
+>   }
+>   EXPORT_SYMBOL_GPL(iommu_sva_get_pasid);
+>   
+> @@ -217,5 +217,5 @@ void mm_pasid_drop(struct mm_struct *mm)
+>   	if (likely(!mm_valid_pasid(mm)))
+>   		return;
+>   
+> -	ida_free(&iommu_global_pasid_ida, mm->pasid);
+> +	ida_free(&iommu_global_pasid_ida, mm_get_pasid(mm));
+>   }
 
