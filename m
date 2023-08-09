@@ -1,46 +1,47 @@
-Received: from mail-lj1-f175.google.com (mail-lj1-f175.google.com [209.85.208.175])
+Received: from mail-lj1-f179.google.com (mail-lj1-f179.google.com [209.85.208.179])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A76A324503
-	for <iommu@lists.linux.dev>; Wed,  9 Aug 2023 19:20:29 +0000 (UTC)
-Received: by mail-lj1-f175.google.com with SMTP id 38308e7fff4ca-2b9b6e943ebso15016691fa.1
-        for <iommu@lists.linux.dev>; Wed, 09 Aug 2023 12:20:29 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3464F24503
+	for <iommu@lists.linux.dev>; Wed,  9 Aug 2023 19:20:31 +0000 (UTC)
+Received: by mail-lj1-f179.google.com with SMTP id 38308e7fff4ca-2b9aa1d3029so2692251fa.2
+        for <iommu@lists.linux.dev>; Wed, 09 Aug 2023 12:20:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1691608827; x=1692213627;
-        h=cc:to:content-transfer-encoding:mime-version:message-id:date
-         :subject:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=sVxJJpzcYYfK3TLE6tHWcTq1QcT1ENtNn8bY1sBquA0=;
-        b=MiLKH6m5rUcLO0KU+eQGJ8iVBj+ZdABFkFF9JN0DDrPyRkchV6dUcT0Re4p8bZVcBR
-         H3UqZpJlEmyNRf8LQDATEmFttzf3uvaQFyrrswvMv57pec88Rm1I0TzBUZ6GlX7DqRl0
-         BiCEJ3tzJIcr7JMpp7g24c8jdIJFom6e1vE+hGzwq145Ao8ccJPwutTqDv42dNElKfxe
-         zScewUD1VLn98GboSmRdX6PO6SsiiFiQ4q74GaejrWGVaScrtL2kMqPEtJ+YpgH9pEHs
-         N2IRLthpwH3gmFvmUkQpcMHT7bVbIvwfUUpJm+Va78XDnGR70x4h4Xxr300qlnND6OoI
-         NM0A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1691608827; x=1692213627;
-        h=cc:to:content-transfer-encoding:mime-version:message-id:date
-         :subject:from:x-gm-message-state:from:to:cc:subject:date:message-id
+        d=linaro.org; s=google; t=1691608830; x=1692213630;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=sVxJJpzcYYfK3TLE6tHWcTq1QcT1ENtNn8bY1sBquA0=;
-        b=d7gPvYqd0bgg7qsenO8/tBDmXe3mvM1UWggtIIu34OhQ0djp9kBIQaQvt2c8O9kAnB
-         IckMrpgOSK6Eequdry1RUplyv/cczRtV8DKvbnw3sTBUclgE3kDlk+OEuj36nAkCJPLw
-         TpxeIclSQ5EtR9lQZuLb3dglY5a1jqX1tl4lO6jc88KLJBN1IZv4oN/3m/Dat8cJKsOE
-         7MJXNCelEkuYRNKAYbBh9qcpIWUjo/gQvsFNtW7lvSVrj5nNeOcs/GlR5tfJ68CbvbQr
-         zznfCSU2x45PnmWpjV8dLdQxepbyjqGK9eqm2rinKks/PSChrt6pDK1Ai6N0D+Z6Fv6e
-         wrSg==
-X-Gm-Message-State: AOJu0Yy8yg8CyNPXfqKqyP399lGFsxaZRw9PABvuR3PM6zTcxvXUumgl
-	hpXcSAKXAY90WAbyIy6Y9jZKTQ==
-X-Google-Smtp-Source: AGHT+IE43WLrxARXDliqvvtib67PqUUwSMJq1m3RW4BtVCVyaQuyxqqa8JROBmHmorHk9IfL9klW+A==
-X-Received: by 2002:a2e:8841:0:b0:2b9:344c:181e with SMTP id z1-20020a2e8841000000b002b9344c181emr101477ljj.19.1691608826816;
-        Wed, 09 Aug 2023 12:20:26 -0700 (PDT)
+        bh=mFQ707YTlR2asiZeDkwXq23zTGpUUmFrLAoTxhmG6mY=;
+        b=OPxuvbEuXJUXjzQ89YLv2sBdDf2wZx0cITcGYsNii8MZxxcnyBJ5c8rcGtK4hVNqNi
+         bvgzBFviOD+kPmESZ/f8KkYo1Tv4TXZ49/bRINZspYc17BdlSD05VYIkNxNSlmSS371+
+         jwLhwnJvThpOeD4qf8YunREVa8PM03sXZsgIrD8mGorZpFd6UIYeMzkb5q05orFGHF5r
+         BovPTMhwNsuDP3MLkpcd8kIa1I80udRfhv2g01ZSk0MrTImMoFeaWGt+GN7BmDdbyQTl
+         NsqVezWpl0l/iFlkMcS9J26abIdSn7zpTVTagZSULfvqCxhQkoj5QIzkr/Qur0IJFYVf
+         Pmaw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1691608830; x=1692213630;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=mFQ707YTlR2asiZeDkwXq23zTGpUUmFrLAoTxhmG6mY=;
+        b=WsAkutThZo8QYXTZggAaC+8Ashpbn3DZEH4V29akMZALNVfx7/amgoptwHhhg0wgN1
+         tQwglVl9lHyM7jse1D2Ban/KO0lxfkMLnBpik/LW/xz3KVc/6lG7Y+IdBXtbwUqlHK4g
+         OpeIe9IaNZ8Ye5uTBc1cOXH/40r3oPqvPksDX5+8OnIpA7vOzJQedpAkylj0QwNZfAsk
+         OiJTqebEhWr+fqmxhjYUiuIr8xC+zx/doVfoOFiTaKpNnkppczi1b4WqRS//jtRv6dfl
+         /TOxEOuPBi4f4kiBr3dfhVXlOk8gnKcegds0mTmUUqTNi80a53MbsZqeU3H550o5mmYo
+         L02Q==
+X-Gm-Message-State: AOJu0Ywg5SiSOiVqcdpe6LNkJWsioalS2+WW3n77MDIojYG5G7oZLJxp
+	ozbsF25Oz0v/2reyLRz0ncrJOQ==
+X-Google-Smtp-Source: AGHT+IGx1WiOqj0jubUGfA3Ryt+VCR2f1eEL3qHMRLstCIQlqiZlZyf0bk+Shq+qIJ3+Bwaqub5OnA==
+X-Received: by 2002:a2e:91c8:0:b0:2b9:514d:64c1 with SMTP id u8-20020a2e91c8000000b002b9514d64c1mr112691ljg.8.1691608829483;
+        Wed, 09 Aug 2023 12:20:29 -0700 (PDT)
 Received: from [192.168.1.101] (abxi185.neoplus.adsl.tpnet.pl. [83.9.2.185])
-        by smtp.gmail.com with ESMTPSA id o3-20020a2e9b43000000b002b9ed203af1sm2863218ljj.132.2023.08.09.12.20.24
+        by smtp.gmail.com with ESMTPSA id o3-20020a2e9b43000000b002b9ed203af1sm2863218ljj.132.2023.08.09.12.20.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Aug 2023 12:20:26 -0700 (PDT)
+        Wed, 09 Aug 2023 12:20:29 -0700 (PDT)
 From: Konrad Dybcio <konrad.dybcio@linaro.org>
-Subject: [PATCH v3 0/6] MMCC MSM8998 fixes
-Date: Wed, 09 Aug 2023 21:20:23 +0200
-Message-Id: <20230531-topic-8998_mmssclk-v3-0-ba1b1fd9ee75@linaro.org>
+Date: Wed, 09 Aug 2023 21:20:24 +0200
+Subject: [PATCH v3 1/6] arm64: dts: qcom: msm8998: Drop bus clock reference
+ from MMSS SMMU
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -49,10 +50,9 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAPfm02QC/4WNSw7CIAAFr9KwFsOnpODKexhjgEJLRGigEk3Tu
- 0u7c6PLecmbWUA2yZkMTs0Ckikuuxgq0EMD9CjDYKDrKwOCCEWMYjjHyWnIheC3xyNn7e/Q9q0
- iVnWWawzqUclsoEoy6LFew9P7Ok7JWPfaS5dr5dHlOab3Hi54W382CoYIEsUkt1ogIfDZuyBTP
- MY0gM1XyH8HqQ7ako4a0jHNvh3run4AO4d7nQ4BAAA=
+Message-Id: <20230531-topic-8998_mmssclk-v3-1-ba1b1fd9ee75@linaro.org>
+References: <20230531-topic-8998_mmssclk-v3-0-ba1b1fd9ee75@linaro.org>
+In-Reply-To: <20230531-topic-8998_mmssclk-v3-0-ba1b1fd9ee75@linaro.org>
 To: Andy Gross <agross@kernel.org>, Bjorn Andersson <andersson@kernel.org>, 
  Rob Herring <robh+dt@kernel.org>, 
  Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, 
@@ -71,59 +71,45 @@ Cc: Marijn Suijten <marijn.suijten@somainline.org>,
  Jami Kettunen <jami.kettunen@somainline.org>, linux-arm-msm@vger.kernel.org, 
  devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
  linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
- iommu@lists.linux.dev, Konrad Dybcio <konrad.dybcio@linaro.org>, 
- Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+ iommu@lists.linux.dev, Konrad Dybcio <konrad.dybcio@linaro.org>
 X-Mailer: b4 0.12.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1691608824; l=1754;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1691608824; l=1046;
  i=konrad.dybcio@linaro.org; s=20230215; h=from:subject:message-id;
- bh=egThBZwSTxM3F3X+KJcsxzhYTfwA9D4NBQYRWl4CZm0=;
- b=29IaLLRfDw8KxdgD/8yLej6UnjeOxoOFQg2Fy0arvCcHBorncfoDdlbi9vHct9vX5d3QDFxeC
- STYvzYHj0b6C/3d2cqJyf1ulMPfLt4fUF2gyKMF3n9jLHzsV583BMGp
+ bh=dMjovGWIjyf4UWgt36DKFCmom9ibnuPYDRAv7j4Cf+8=;
+ b=0aJhMLANoopT9Wyll4mX1KVx6JDNVknG/kysgc0OBuv4vVfhC4gUTx23xhiPcZ61jRec2O2fQ
+ 9NkAHlkn2sqD1DWLMOhTzsIB89GXL0lNqi5IveyKMkOX4DQlv8M6WaN
 X-Developer-Key: i=konrad.dybcio@linaro.org; a=ed25519;
  pk=iclgkYvtl2w05SSXO5EjjSYlhFKsJ+5OSZBjOkQuEms=
 
-8998 has a couple of issues related to its clock controllers. This series
-attemps to fix some of them.
+The MMSS SMMU has been abusingly consuming the exposed RPM interconnect
+clock. Drop it.
 
-The DT patch should go in first for bisectability, otherwise
-clk/pd_ignore_unused will need to be used, as the SMMU GDSC is no longer
-considered always-on.
-
-This series results in less "clk stuck at 'on/off'" messages and should
-marginally reduce power consumption.
-
+Fixes: 05ce21b54423 ("arm64: dts: qcom: msm8998: Configure the multimedia subsystem iommu")
+Reviewed-by: Jeffrey Hugo <quic_jhugo@quicinc.com>
 Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
 ---
-Changes in v3:
-- Make the commit message more meaningful in patch 6 (krzk)
-- Pick up tags
-- Link to v2: https://lore.kernel.org/r/20230531-topic-8998_mmssclk-v2-0-34273e275c51@linaro.org
+ arch/arm64/boot/dts/qcom/msm8998.dtsi | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-Changes in v2:
-- Update bindings
-- Separate out the dt patch into two
-- Pick up tags
-- Link to v1: https://lore.kernel.org/r/20230531-topic-8998_mmssclk-v1-0-2b5a8fc90991@linaro.org
+diff --git a/arch/arm64/boot/dts/qcom/msm8998.dtsi b/arch/arm64/boot/dts/qcom/msm8998.dtsi
+index a41a34dbcc3c..e40f6461f4fd 100644
+--- a/arch/arm64/boot/dts/qcom/msm8998.dtsi
++++ b/arch/arm64/boot/dts/qcom/msm8998.dtsi
+@@ -2743,10 +2743,10 @@ mmss_smmu: iommu@cd00000 {
+ 
+ 			clocks = <&mmcc MNOC_AHB_CLK>,
+ 				 <&mmcc BIMC_SMMU_AHB_CLK>,
+-				 <&rpmcc RPM_SMD_MMAXI_CLK>,
+ 				 <&mmcc BIMC_SMMU_AXI_CLK>;
+-			clock-names = "iface-mm", "iface-smmu",
+-				      "bus-mm", "bus-smmu";
++			clock-names = "iface-mm",
++				      "iface-smmu",
++				      "bus-smmu";
+ 
+ 			#global-interrupts = <0>;
+ 			interrupts =
 
----
-Konrad Dybcio (6):
-      arm64: dts: qcom: msm8998: Drop bus clock reference from MMSS SMMU
-      arm64: dts: qcom: msm8998: Add missing power domain to MMSS SMMU
-      clk: qcom: gcc-msm8998: Don't check halt bit on some branch clks
-      clk: qcom: mmcc-msm8998: Don't check halt bit on some branch clks
-      clk: qcom: mmcc-msm8998: Fix the SMMU GDSC
-      dt-bindings: arm-smmu: Fix MSM8998 clocks description
-
- .../devicetree/bindings/iommu/arm,smmu.yaml        | 41 ++++++++++++++++++++++
- arch/arm64/boot/dts/qcom/msm8998.dtsi              |  8 +++--
- drivers/clk/qcom/gcc-msm8998.c                     |  6 ++--
- drivers/clk/qcom/mmcc-msm8998.c                    |  7 +++-
- 4 files changed, 55 insertions(+), 7 deletions(-)
----
-base-commit: 21ef7b1e17d039053edaeaf41142423810572741
-change-id: 20230531-topic-8998_mmssclk-fd4b2fb7f8c1
-
-Best regards,
 -- 
-Konrad Dybcio <konrad.dybcio@linaro.org>
+2.41.0
 
