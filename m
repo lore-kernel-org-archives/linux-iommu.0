@@ -1,32 +1,62 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qv1-f42.google.com (mail-qv1-f42.google.com [209.85.219.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7AB84372
-	for <iommu@lists.linux.dev>; Wed,  9 Aug 2023 14:47:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4C9DC433C7;
-	Wed,  9 Aug 2023 14:47:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1691592445;
-	bh=VomkytXI8p5ZDy7aIFBaDoQO5+JY1tLyWAMjMMQ5sF4=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=ueBgAbLUO176EmG8tDm6wy4qk/E4G0PmoQbNWC8N4lyG8nusAIel3SPmKd4+SmixL
-	 orWyCDqwxYIMiRglqjM41stfde4kBQ589JNd65v6SidUYXT7JoJwaaaeVWHSVj7vuD
-	 lIqS+o5LxNtaH8DkCvQJnIsksPMUIlAn67ZOptuAzP0EfMAdq1OPFJyST/GMIhX+8+
-	 bXkOWGuzQAIl+Xq4eKoaFaJsSX+ozVAPm3yBzHhHX/KlTtyqP0g30IM34fKdQr2Ct7
-	 OxrDTVRdgIwrRXSxbaFASfec6E1y7gXLIqf6ZPQk4RVlfb7wWVk8QM6SI9tPizIm8B
-	 UIkqmp0n4FAHQ==
-Date: Wed, 9 Aug 2023 15:47:21 +0100
-From: Will Deacon <will@kernel.org>
-To: Boris Brezillon <boris.brezillon@collabora.com>
-Cc: Joerg Roedel <joro@8bytes.org>, iommu@lists.linux.dev,
-	Robin Murphy <robin.murphy@arm.com>,
-	linux-arm-kernel@lists.infradead.org,
-	Rob Clark <robdclark@gmail.com>
-Subject: Re: [PATCH 2/2] iommu: Extend LPAE page table format to support
- custom allocators
-Message-ID: <20230809144720.GA4472@willie-the-truck>
-References: <20230809121744.2341454-1-boris.brezillon@collabora.com>
- <20230809121744.2341454-3-boris.brezillon@collabora.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0349317755
+	for <iommu@lists.linux.dev>; Wed,  9 Aug 2023 14:48:26 +0000 (UTC)
+Received: by mail-qv1-f42.google.com with SMTP id 6a1803df08f44-63cffc0f95eso34946026d6.3
+        for <iommu@lists.linux.dev>; Wed, 09 Aug 2023 07:48:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1691592505; x=1692197305;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=m4bISbA3t+yh3hAsX3GX16FfloCmjYYwoOgy/YO987g=;
+        b=hQyQFawRvch/vrwsE1c4VcH8/I/37cjfRv53xh3z+C3J10ieZX2v/VwO3tZpFABOaM
+         v5TOpGidPc7LPAr+vIBVlHx3ii9jMKu97ZCWLbrc4khP5xymRspT9XsE2mP2YndlQnbv
+         QGyEAVLApPpT3nFaHk178DUyBaZOudxpbciJOH4XvfE7IwBBp6QCRDzweEX1Ttc1/rus
+         Dd9oVW25SC9k5IWoRxW5mQ86wpxFV2ik0O7LwEf3ZhuQL5EIDRZ6HRvE/22u0CHwFf4y
+         KB7MRNS7+IOayj1ck8GYw4o6sFaQS+W2oRAAcbzDTU2bbLxP8f7xBSpwnHagMv9hj2al
+         UIaA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1691592505; x=1692197305;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=m4bISbA3t+yh3hAsX3GX16FfloCmjYYwoOgy/YO987g=;
+        b=Gjqa4zYsg+d+lXW/qHDUTkOhm70JIIVQasEaWKkmGPGAJQ+QyA6lU4n+o5WAFm0hEW
+         AYBj4VByY39/OB/ey83ku/rjMClbMoelizwCXhuI2XHldGGl0qZp2wvnbujO3CYJOtd6
+         sI5vA5Bbpy//KKYORFwv07/z6yas5hppuvcxaNphxySgWRaroyp52/Si2yJYyjIHo1Km
+         JsoLueCQIpSaKs6FGDC23t6RF8f5AKJuAH0VX8hppSxgJ3e3H2mao0Ln7FkJ5D+hcb1k
+         1cMlgPV3B0p9NtD9ExcBfLlkXHKeCTrkckZdgFZfaDfnW3yHh0lBc+RgUjWUAa3U+b4r
+         cILA==
+X-Gm-Message-State: AOJu0YxX2s48/3ujTsYy3dvgAiD8f1OGOz9AJHdngEHCff969K0vuPYr
+	8LDwXt+e62Fl3xWewdR/rrL5303K1NG/D5/SFzg=
+X-Google-Smtp-Source: AGHT+IFgpbmLdpjQ1gAKEz+zkG6hBf1mGwlCmh/weIzumrbnKNHa8HANKleEhFnF76ZwV/rj6sLhbQ==
+X-Received: by 2002:ad4:4047:0:b0:63f:78bc:85de with SMTP id r7-20020ad44047000000b0063f78bc85demr2462304qvp.56.1691592505716;
+        Wed, 09 Aug 2023 07:48:25 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-68-25-194.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.25.194])
+        by smtp.gmail.com with ESMTPSA id pc41-20020a05620a842900b0076cc0a6e127sm4019495qkn.116.2023.08.09.07.48.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Aug 2023 07:48:25 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1qTkU4-0053aa-MQ;
+	Wed, 09 Aug 2023 11:48:24 -0300
+Date: Wed, 9 Aug 2023 11:48:24 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Baolu Lu <baolu.lu@linux.intel.com>
+Cc: "Tian, Kevin" <kevin.tian@intel.com>,
+	"Zhang, Tina" <tina.zhang@intel.com>,
+	Michael Shavit <mshavit@google.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 2/5] iommu: Call helper function to get assigned pasid
+ value
+Message-ID: <ZNOnOGTfpXzrrRTz@ziepe.ca>
+References: <20230808074944.7825-1-tina.zhang@intel.com>
+ <20230808074944.7825-3-tina.zhang@intel.com>
+ <f3d8692e-b13d-97ee-2288-c2be1858dcfa@linux.intel.com>
+ <BN9PR11MB52767F29A6C11157659D375B8C12A@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <c0e94e88-94b8-69de-69c8-ed132ae28951@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -35,79 +65,42 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230809121744.2341454-3-boris.brezillon@collabora.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <c0e94e88-94b8-69de-69c8-ed132ae28951@linux.intel.com>
 
-On Wed, Aug 09, 2023 at 02:17:44PM +0200, Boris Brezillon wrote:
-> We need that in order to implement the VM_BIND ioctl in the GPU driver
-> targeting new Mali GPUs.
+On Wed, Aug 09, 2023 at 06:58:15PM +0800, Baolu Lu wrote:
+> On 2023/8/9 17:49, Tian, Kevin wrote:
+> > > From: Baolu Lu <baolu.lu@linux.intel.com>
+> > > Sent: Wednesday, August 9, 2023 8:22 AM
+> > > 
+> > > On 2023/8/8 15:49, Tina Zhang wrote:
+> > > > Use the helper function mm_get_pasid() to get the mm assigned pasid
+> > > > value.
+> > > 
+> > > For internal iommu drivers, perhaps we should use another helper.
+> > > Something like sva_domain_get_pasid()?
+> > > 
+> > > Suppose that the iommu drivers should have no idea about the "mm".
+> > > 
+> > 
+> > Aren't all touched functions accept a struct mm_struct pointer?
 > 
-> VM_BIND is about executing MMU map/unmap requests asynchronously,
-> possibly after waiting for external dependencies encoded as dma_fences.
-> We intend to use the drm_sched framework to automate the dependency
-> tracking and VM job dequeuing logic, but this comes with its own set
-> of constraints, one of them being the fact we are not allowed to
-> allocate memory in the drm_gpu_scheduler_ops::run_job() to avoid this
-> sort of deadlocks:
+> In the end we should remove all mm reference in the individual drivers.
+> The drivers only need to know what they need to know. All mm-aware code
+> should eventually be moved to the core.
 > 
-> - VM_BIND map job needs to allocate a page table to map some memory
->   to the VM. No memory available, so kswapd is kicked
-> - GPU driver shrinker backend ends up waiting on the fence attached to
->   the VM map job or any other job fence depending on this VM operation.
-> 
-> With custom allocators, we will be able to pre-reserve enough pages to
-> guarantee the map/unmap operations we queued will take place without
-> going through the system allocator. But we can also optimize
-> allocation/reservation by not free-ing pages immediately, so any
-> upcoming page table allocation requests can be serviced by some free
-> page table pool kept at the driver level.
-> 
-> Signed-off-by: Boris Brezillon <boris.brezillon@collabora.com>
-> ---
->  drivers/iommu/io-pgtable-arm.c | 50 +++++++++++++++++++++++-----------
->  drivers/iommu/io-pgtable.c     | 12 ++++++++
->  2 files changed, 46 insertions(+), 16 deletions(-)
-> 
-> diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-> index 72dcdd468cf3..c5c04f0106f3 100644
-> --- a/drivers/iommu/io-pgtable-arm.c
-> +++ b/drivers/iommu/io-pgtable-arm.c
-> @@ -188,20 +188,28 @@ static dma_addr_t __arm_lpae_dma_addr(void *pages)
->  }
->  
->  static void *__arm_lpae_alloc_pages(size_t size, gfp_t gfp,
-> -				    struct io_pgtable_cfg *cfg)
-> +				    struct io_pgtable_cfg *cfg,
-> +				    void *cookie)
->  {
->  	struct device *dev = cfg->iommu_dev;
->  	int order = get_order(size);
-> -	struct page *p;
->  	dma_addr_t dma;
->  	void *pages;
->  
->  	VM_BUG_ON((gfp & __GFP_HIGHMEM));
-> -	p = alloc_pages_node(dev_to_node(dev), gfp | __GFP_ZERO, order);
-> -	if (!p)
-> +
-> +	if (cfg->alloc) {
-> +		pages = cfg->alloc(cookie, size, gfp | __GFP_ZERO);
-> +	} else {
-> +		struct page *p;
-> +
-> +		p = alloc_pages_node(dev_to_node(dev), gfp | __GFP_ZERO, order);
-> +		pages = p ? page_address(p) : NULL;
+> For now, at least we should avoid using mm in the set/remove_dev_pasid
+> code path. Later, once we complete consolidating mm notification in the
+> core, drivers will have no need to use "mm" anymore.
 
-Hmm, so the reason we pass the order is because the pgd may have
-additional alignment requirements but that's not passed back to your new
-allocation hook. Does it just return naturally aligned allocations?
+I'm not sure how this will play out...
 
-If you don't care about the pgd (since it's not something that's going
-to be freed and reallocated during the lifetime of the page-table), then
-perhaps it would be cleaner to pass in a 'struct kmem_cache' for the
-non-pgd pages when configuring the page-table, rather than override the
-allocation function wholesale? I think that would also mean that all the
-lowmem assumptions in the code (e.g. use of virt_to_phys()) would be a
-little less fragile.
+We don't want extra function indirections here so ultimately the
+driver needs to hook the arch_invalidate_range() in the mm_notifier
+with its own function.
 
-Will
+The core could put the mm_notifier in a common iommu_domain_sva struct
+and it could stick in the driver's invalidate ops, that would be a
+nice simplification (and discourage drivers from doing the crazy
+things they are currently doing)
+
+Jason
