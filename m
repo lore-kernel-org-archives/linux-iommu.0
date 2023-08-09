@@ -1,83 +1,104 @@
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.100])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B818616428
-	for <iommu@lists.linux.dev>; Wed,  9 Aug 2023 10:58:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1691578700; x=1723114700;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=VfEV/g4BYLMFSmQMtdobIwp2qdeqXTAh5Riv2DiGEVU=;
-  b=b3gckT2127HmK21zGAHjNh6KS1ojU+YLmDRT17ZhWKQcR7fgsdcSVvTZ
-   +aiDQl2tMlLxdRiMakwiZ7JJqGh1zRaBPYjicXG7Z6bxSUeegCu1JK6h+
-   qS6aM010BqPnqhX0hXO29Xgw387i5pbwkTwSXwYUUZ6Aj771n3FGXQveo
-   4E2KGchCm9p7GzQo6drtouK90lVtaauJEogcVwf/ncC/6m8vnGle5faGQ
-   lKeYxTqG20hfGvDpoFUSqAG2H4iWbcx3qBr152sLku/a8SG3dO9en8mw8
-   E2QtOJvkyT/4iNde2nV1k4/gm/tv+pUgG8nogNvGiTIWkmdUcWJ24ISra
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10795"; a="437457748"
-X-IronPort-AV: E=Sophos;i="6.01,159,1684825200"; 
-   d="scan'208";a="437457748"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Aug 2023 03:58:20 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10795"; a="801706808"
-X-IronPort-AV: E=Sophos;i="6.01,159,1684825200"; 
-   d="scan'208";a="801706808"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.254.210.171]) ([10.254.210.171])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Aug 2023 03:58:18 -0700
-Message-ID: <c0e94e88-94b8-69de-69c8-ed132ae28951@linux.intel.com>
-Date: Wed, 9 Aug 2023 18:58:15 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E2681775C
+	for <iommu@lists.linux.dev>; Wed,  9 Aug 2023 11:23:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB94EC433C9;
+	Wed,  9 Aug 2023 11:23:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1691580203;
+	bh=/Jo698VUwWViOfRpDRaOF+geLJTlE2ZHuvKqfJHymbg=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=cBVsEVdhjXnSoLGT3ZxfxQMdwIpTlHwYq31bkpyXuEt3FKgzMn8pbVUhgqStXya3/
+	 lcw+9dGGF+1Q2BZm2cJN1Bdpt/evjLRT4YVvAK3z0rqt5GvfgApsICmtIccmpgYJ3j
+	 YqiB4ahG1XIRUzI46dqIU1Ak6syGoPR0U9TFSJI8QUej/PICfsZ+svckYc07Q5qvJB
+	 a2g6nLd6G6ySr9vZQwcBIWNY54wilqzqqTl7QJVOXMAHcjGDfZSH6Oq95MsYvjZe/K
+	 YVFsSCCj4vJVlaU8xQoWXU+92Gt7AaZzj61uWagT0lOfsBREbBYGUSD1iX1/Rumki7
+	 MjGIxfMUma2yw==
+Date: Wed, 9 Aug 2023 12:23:18 +0100
+From: Will Deacon <will@kernel.org>
+To: zhurui <zhurui3@huawei.com>
+Cc: Robin Murphy <robin.murphy@arm.com>, Nicolin Chen <nicolinc@nvidia.com>,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, Joerg Roedel <joro@8bytes.org>,
+	Lu Baolu <baolu.lu@linux.intel.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+	Yicong Yang <yangyicong@hisilicon.com>,
+	Tomas Krcka <krckatom@amazon.de>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>
+Subject: Re: [PATCH v2 1/1] iommu/arm-smmu-v3: Fix error case of range command
+Message-ID: <20230809112317.GA3830@willie-the-truck>
+References: <20230801085504.GA26130@willie-the-truck>
+ <27c895b8-1fb0-be88-8bc3-878d754684c8@huawei.com>
+ <d5fc1f72-7428-4fef-d868-d06b85add635@huawei.com>
+ <20230804165225.GF30679@willie-the-truck>
+ <ZM1DqxXcBT2SOs8/@Asurada-Nvidia>
+ <015b4573-9d74-451b-8028-a1050ade7019@huawei.com>
+ <661a7bb5-99e1-de16-d860-0cd17f7a0470@arm.com>
+ <20230808162409.GB2890@willie-the-truck>
+ <80ead8ee-4dbe-7b3c-44f5-944073a2a39d@arm.com>
+ <412886be-644a-5b46-9bfa-1c9a358f9a5d@huawei.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.14.0
-Cc: baolu.lu@linux.intel.com, "iommu@lists.linux.dev"
- <iommu@lists.linux.dev>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 2/5] iommu: Call helper function to get assigned pasid
- value
-Content-Language: en-US
-To: "Tian, Kevin" <kevin.tian@intel.com>, "Zhang, Tina"
- <tina.zhang@intel.com>, Jason Gunthorpe <jgg@ziepe.ca>,
- Michael Shavit <mshavit@google.com>
-References: <20230808074944.7825-1-tina.zhang@intel.com>
- <20230808074944.7825-3-tina.zhang@intel.com>
- <f3d8692e-b13d-97ee-2288-c2be1858dcfa@linux.intel.com>
- <BN9PR11MB52767F29A6C11157659D375B8C12A@BN9PR11MB5276.namprd11.prod.outlook.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <BN9PR11MB52767F29A6C11157659D375B8C12A@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <412886be-644a-5b46-9bfa-1c9a358f9a5d@huawei.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 
-On 2023/8/9 17:49, Tian, Kevin wrote:
->> From: Baolu Lu <baolu.lu@linux.intel.com>
->> Sent: Wednesday, August 9, 2023 8:22 AM
->>
->> On 2023/8/8 15:49, Tina Zhang wrote:
->>> Use the helper function mm_get_pasid() to get the mm assigned pasid
->>> value.
->>
->> For internal iommu drivers, perhaps we should use another helper.
->> Something like sva_domain_get_pasid()?
->>
->> Suppose that the iommu drivers should have no idea about the "mm".
->>
+On Wed, Aug 09, 2023 at 05:22:06PM +0800, zhurui wrote:
+> On 2023/8/9 0:43, Robin Murphy wrote:
+> > On 08/08/2023 5:24 pm, Will Deacon wrote:
+> >> On Mon, Aug 07, 2023 at 08:20:45PM +0100, Robin Murphy wrote:
+> >>> Yeah, I'd rather not downgrade to a non-range invalidate since that
+> >>> complicates the reasoning for the errata affecting those. If the size of the
+> >>> invalidation is equal to TG then it can only represent a single last-level
+> >>> page, i.e. TTL=3, thus if it does warrant handling here then indeed
+> >>> rearranging to base the condition on num_pages as well ought to suffice.
+> >>> However, this is all still begging the question of where and why we're doing
+> >>> a *non-leaf* invalidation that isn't aligned to the size of a table, because
+> >>> that in itself doesn't make a whole heap of sense - my hunch is that that
+> >>> wants figuring out and could probably be fixed at the source.
+> >>
+> >> Isn't that described above because we're using CMDQ_TLBI_RANGE_NUM_MAX
+> >> to break up the range into separate commands?
+> > 
+> > Not really, because if we're doing a genuine non-leaf invalidation of a
+> > table then it should be a block-aligned range that ought to fit in a
+> > single command and should certainly never involve a single-granule
+> > remainder. If we're doing non-leaf invalidations of things that
+> > logically don't need to be non-leaf, making them leaf would be the even
+> > better option.
+> > 
 > 
-> Aren't all touched functions accept a struct mm_struct pointer?
+> I agree with Robin that if the caller is doing a genuine non-leaf invalidation
+> of a table, it should not involve a single-granule tlbi. It seems that the
+> caller only filter the block size, but not the address aligned or not maybe.
 
-In the end we should remove all mm reference in the individual drivers.
-The drivers only need to know what they need to know. All mm-aware code
-should eventually be moved to the core.
+There's only one caller though, right? That's the
+io_pgtable_tlb_flush_walk() call in io-pgtable-arm.c which shouldn't trigger
+this problem.
 
-For now, at least we should avoid using mm in the set/remove_dev_pasid
-code path. Later, once we complete consolidating mm notification in the
-core, drivers will have no need to use "mm" anymore.
+Do you have a backtrace for the case when we generate the illegal command?
 
-Best regards,
-baolu
+> >> Do you mind if I queue the patch as-is for now? I don't think the driver
+> >> should be emitting illegal commands, and v2 of the patch does seem like
+> >> the obvious thing to do.
+> > 
+> > TBH I'd rather you just drop my patch if it's proven problematic, and
+> > I'll take another crack at it soon. The potential problems we introduce
+> > by using non-range invalidates on errata-affected MMU-700 revisions are
+> > worse than the almost-entirely-theoretical one I was trying to address.
+> > 
+> 
+> If you all agree to roll back the problematic code, is the first patch be OK?
+> Should I need to add some more descriptions to clarify this?
+
+I can just go and revert Robin's original patch, but I'd like to see your
+backtrace first so that we understand how this is occurring.
+
+Thanks,
+
+Will
