@@ -1,149 +1,54 @@
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C0E44612D
-	for <iommu@lists.linux.dev>; Wed,  9 Aug 2023 15:10:22 +0000 (UTC)
-Received: from localhost (unknown [IPv6:2a01:e0a:2c:6930:5cf4:84a1:2763:fe0d])
+Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id DB09C18AE1
+	for <iommu@lists.linux.dev>; Wed,  9 Aug 2023 15:47:25 +0000 (UTC)
+Received: from 8bytes.org (pd9fe94eb.dip0.t-ipconnect.de [217.254.148.235])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	(Authenticated sender: bbrezillon)
-	by madras.collabora.co.uk (Postfix) with ESMTPSA id A487B660036E;
-	Wed,  9 Aug 2023 16:10:20 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-	s=mail; t=1691593820;
-	bh=F93LILt5/wk4GNejOZlLmJLKm+lKa8Q9jPLRg5BZS78=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=QqH20VfGhofbz13z2P53IxXx21NqA9i8s7sji6qn5Fr0p25AzBltDY85jHwBOy/92
-	 dGl4VcRC1nTdlyPuYd2I4Ym57GmkQY9JSaD47YZ/dSovrv3c650uI74vC0IJGXq50f
-	 6qzdkX0YKjJBoJQBrsrr5v0gaKJa0XvmIswpxnS8lyQC5IYQ21PKaGt75IC4DbBy3J
-	 eq+lRgJrYU8oCSJK1b2SVXLksZC4qvNvRexEpVr4EAxRK4wM17jFbY31YVMaKY+t2x
-	 hrwRVFJtDQyrXfFszA7HJRR4VrMHO1FuyR3mGLIrBkVi1gp/xAYjp4jqIiFvoaK2id
-	 Uc/n4cSgVR7lw==
-Date: Wed, 9 Aug 2023 17:10:17 +0200
-From: Boris Brezillon <boris.brezillon@collabora.com>
-To: Will Deacon <will@kernel.org>
-Cc: Joerg Roedel <joro@8bytes.org>, iommu@lists.linux.dev, Robin Murphy
- <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org, Rob Clark
- <robdclark@gmail.com>
-Subject: Re: [PATCH 2/2] iommu: Extend LPAE page table format to support
- custom allocators
-Message-ID: <20230809171017.64409d60@collabora.com>
-In-Reply-To: <20230809144720.GA4472@willie-the-truck>
-References: <20230809121744.2341454-1-boris.brezillon@collabora.com>
-	<20230809121744.2341454-3-boris.brezillon@collabora.com>
-	<20230809144720.GA4472@willie-the-truck>
-Organization: Collabora
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; x86_64-redhat-linux-gnu)
+	by mail.8bytes.org (Postfix) with ESMTPSA id 49BEF280529;
+	Wed,  9 Aug 2023 17:47:24 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
+	s=default; t=1691596044;
+	bh=c9q4+LkZCmEYpPrz6nZsIMTUQoOd94ugzaMoSeUMz0s=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=KdwpCAptFG7WCj5g6w/Aze4sgRW/QgYuuOgC5A9jOijeWFmRTeXeaGH8aYy6Tmhos
+	 hYzYMuaAyseXYSZEGnBWm5iSHJwzSU6Cd5RHdRr+xIh0ZhgMWHckoGjhPx9pnp3iwR
+	 KYGc4QrOmGoBM1WJNDHmH7lUslVuLVK0HzOIkAWbIOHaFJJhPXGQm2QKOEfSdm9/h8
+	 1Jw8Gm6S/Gd1wkySXLNi8TYWWWrvh40G2Ge+GQcCFLERXFGD5FvgPoVhC+pGMBK6l/
+	 mYp/ldrmnKIhQOfijSMKBb/hPSHEAVKWIH/OJMtlfe+LqKW3U85/sYsAJhwOJS5YPf
+	 VWa6fogpE3kLQ==
+Date: Wed, 9 Aug 2023 17:47:22 +0200
+From: Joerg Roedel <joro@8bytes.org>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: YueHaibing <yuehaibing@huawei.com>, Yanfei Xu <yanfei.xu@intel.com>,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 00/13] [PULL REQUEST] Intel IOMMU updates for Linux v6.6
+Message-ID: <ZNO1Cp2rmsxYhsPG@8bytes.org>
+References: <20230809124806.45516-1-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230809124806.45516-1-baolu.lu@linux.intel.com>
 
-On Wed, 9 Aug 2023 15:47:21 +0100
-Will Deacon <will@kernel.org> wrote:
-
-> On Wed, Aug 09, 2023 at 02:17:44PM +0200, Boris Brezillon wrote:
-> > We need that in order to implement the VM_BIND ioctl in the GPU driver
-> > targeting new Mali GPUs.
-> > 
-> > VM_BIND is about executing MMU map/unmap requests asynchronously,
-> > possibly after waiting for external dependencies encoded as dma_fences.
-> > We intend to use the drm_sched framework to automate the dependency
-> > tracking and VM job dequeuing logic, but this comes with its own set
-> > of constraints, one of them being the fact we are not allowed to
-> > allocate memory in the drm_gpu_scheduler_ops::run_job() to avoid this
-> > sort of deadlocks:
-> > 
-> > - VM_BIND map job needs to allocate a page table to map some memory
-> >   to the VM. No memory available, so kswapd is kicked
-> > - GPU driver shrinker backend ends up waiting on the fence attached to
-> >   the VM map job or any other job fence depending on this VM operation.
-> > 
-> > With custom allocators, we will be able to pre-reserve enough pages to
-> > guarantee the map/unmap operations we queued will take place without
-> > going through the system allocator. But we can also optimize
-> > allocation/reservation by not free-ing pages immediately, so any
-> > upcoming page table allocation requests can be serviced by some free
-> > page table pool kept at the driver level.
-> > 
-> > Signed-off-by: Boris Brezillon <boris.brezillon@collabora.com>
-> > ---
-> >  drivers/iommu/io-pgtable-arm.c | 50 +++++++++++++++++++++++-----------
-> >  drivers/iommu/io-pgtable.c     | 12 ++++++++
-> >  2 files changed, 46 insertions(+), 16 deletions(-)
-> > 
-> > diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-> > index 72dcdd468cf3..c5c04f0106f3 100644
-> > --- a/drivers/iommu/io-pgtable-arm.c
-> > +++ b/drivers/iommu/io-pgtable-arm.c
-> > @@ -188,20 +188,28 @@ static dma_addr_t __arm_lpae_dma_addr(void *pages)
-> >  }
-> >  
-> >  static void *__arm_lpae_alloc_pages(size_t size, gfp_t gfp,
-> > -				    struct io_pgtable_cfg *cfg)
-> > +				    struct io_pgtable_cfg *cfg,
-> > +				    void *cookie)
-> >  {
-> >  	struct device *dev = cfg->iommu_dev;
-> >  	int order = get_order(size);
-> > -	struct page *p;
-> >  	dma_addr_t dma;
-> >  	void *pages;
-> >  
-> >  	VM_BUG_ON((gfp & __GFP_HIGHMEM));
-> > -	p = alloc_pages_node(dev_to_node(dev), gfp | __GFP_ZERO, order);
-> > -	if (!p)
-> > +
-> > +	if (cfg->alloc) {
-> > +		pages = cfg->alloc(cookie, size, gfp | __GFP_ZERO);
-> > +	} else {
-> > +		struct page *p;
-> > +
-> > +		p = alloc_pages_node(dev_to_node(dev), gfp | __GFP_ZERO, order);
-> > +		pages = p ? page_address(p) : NULL;  
+On Wed, Aug 09, 2023 at 08:47:53PM +0800, Lu Baolu wrote:
+> This includes patches queued for v6.6. They aim to:
 > 
-> Hmm, so the reason we pass the order is because the pgd may have
-> additional alignment requirements but that's not passed back to your new
-> allocation hook. Does it just return naturally aligned allocations?
-
-So, the assumption was that the custom allocator should be aware of
-these alignment constraints. Like, if size > min_granule_sz, then order
-equal get_order(size).
-
-Right now, I reject any size that's not SZ_4K, because, given the
-VA-space and the pgtable config, I know I'll always end up with 4
-levels and the pgd will fit in a 4k page. But if we ever decide we want
-to support 64k granule or a VA space that's smaller, we'll adjust the
-custom allocator accordingly.
-
-I'm not sure we discussed this specific aspect with Robin, but his
-point was that the user passing a custom allocator should be aware of
-the page table format and all the allocation constraints that come with
-it.
-
+>  - Enable idxd device DMA with pasid through iommu dma ops.
+>  - Lift RESV_DIRECT check from VT-d driver to core.
+>  - Miscellaneous cleanups and fixes.
 > 
-> If you don't care about the pgd (since it's not something that's going
-> to be freed and reallocated during the lifetime of the page-table), then
-> perhaps it would be cleaner to pass in a 'struct kmem_cache' for the
-> non-pgd pages when configuring the page-table, rather than override the
-> allocation function wholesale?
+> All patches are based on top of the next branch and vt-d patches can
+> apply to v6.5-rc5 as well.
 
-I'd be fine with that, but I wasn't sure every one would be okay to use
-a kmem_cache as the page caching mechanism. I know Rob was intending to
-use a custom allocator with the MSM MMU to provide the same sort of
-caching for the Adreno GPU driver, so it might be good to have his
-opinion on that.
+Pulled, thanks Baolu. There was a minor conflict with the differences
+between next and v6.5-rc5, but I resolved that.
 
-> I think that would also mean that all the
-> lowmem assumptions in the code (e.g. use of virt_to_phys()) would be a
-> little less fragile.
 
-Well, that would only help if a custom kmem_cache is used, unless you
-want to generalize the kmem_cache approach and force it to all
-io-pgtable-arm users, in which case I probably don't need to pass a
-custom kmem_cache in the first place (mine has nothing special).
+Joerg
+
