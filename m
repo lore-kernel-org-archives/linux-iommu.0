@@ -1,78 +1,97 @@
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.65])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D6281182D4
-	for <iommu@lists.linux.dev>; Wed,  9 Aug 2023 12:50:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1691585449; x=1723121449;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=3Ql8GvqSQc3MnpAxdXzxymy2oKa6nPM5ZIi5KTo5aEM=;
-  b=gXdeyJ6NSkL3XCyFAI3G12PV84kK3Lvmh+ZT6XiPdOxSJ6IU9By83QaK
-   Fn2mjqpg8wndFr1FKtgLSAp76gZeeKpFy2sf0uCrG3l7CfJD7OO3L3cvT
-   YMLvqMFwl3Y4GAifdgnVl08SXzELdkkc77sK04SRdO7NAGEiSdicwv1Ij
-   cdVh4UNkaGmfzO+IOmB8Y31TkiZ+3JOupAoxg3WLR+hbMq1NWzqfjtf4P
-   PtVBcjom9GFmpS9nfuRrcI+RRjJVuXGh/pokaX599hNq8MDeE6dzn7j7/
-   9WSucIGj08NRNiYa6Dtvi5heBnVguRuKAq4qhDPDvf3VobDls6KbI1NMr
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10795"; a="374821780"
-X-IronPort-AV: E=Sophos;i="6.01,159,1684825200"; 
-   d="scan'208";a="374821780"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Aug 2023 05:50:49 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10795"; a="855521902"
-X-IronPort-AV: E=Sophos;i="6.01,159,1684825200"; 
-   d="scan'208";a="855521902"
-Received: from allen-box.sh.intel.com ([10.239.159.127])
-  by orsmga004.jf.intel.com with ESMTP; 09 Aug 2023 05:50:47 -0700
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>
-Cc: YueHaibing <yuehaibing@huawei.com>,
-	Yanfei Xu <yanfei.xu@intel.com>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH 13/13] iommu/vt-d: Remove unused extern declaration dmar_parse_dev_scope()
-Date: Wed,  9 Aug 2023 20:48:06 +0800
-Message-Id: <20230809124806.45516-14-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230809124806.45516-1-baolu.lu@linux.intel.com>
-References: <20230809124806.45516-1-baolu.lu@linux.intel.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F2C281800B;
+	Wed,  9 Aug 2023 12:55:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87560C433C8;
+	Wed,  9 Aug 2023 12:55:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1691585754;
+	bh=0TGWljw2l6/eB/viyhym3AwywMruS5XC4iJu1jmzqZc=;
+	h=Date:Subject:To:References:Cc:From:In-Reply-To:From;
+	b=AAqI6mguPx7dJ3F2ck7FwGBHB01OfbEsMcEX2pL/sw95I28WavHzg/p6SBg+mjQGK
+	 l8MBfS+j9EVkG7PmYN2aIwl59leDKKEHY3t9HOB87OuXdOVIxSwTHY2sUv1Y3MzCwA
+	 DTBJAXrt4mdwcfmxh05LmbGyWamD9p8tFW/t5pNOqsmVc4QOWou3GH3opqX+IvGB+O
+	 XqTW8fK0Mq4jn3n7LWnEI15p7NKh/e8317BEK1//RMuUDH001nyllPoJk9YylLjTjH
+	 UrLdWL5M3ZPbTQoTIT5/7wJLPDYT/xrv61GdVHiY9208nMSRbYeziH6shPSegaoAVg
+	 QynX9dlWA2t/A==
+Message-ID: <47692e15-3b3d-4d42-91dc-a1bd0f436039@kernel.org>
+Date: Wed, 9 Aug 2023 14:55:48 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 9/10] iommu: Complete the locking for dev->iommu_group
+Content-Language: en-US
+To: Jason Gunthorpe <jgg@nvidia.com>
+References: <9-v2-b0417f84403e+11f-iommu_group_locking_jgg@nvidia.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>,
+ Chen-Yu Tsai <wens@csie.org>, Jernej Skrabec <jernej.skrabec@gmail.com>,
+ Orson Zhai <orsonzhai@gmail.com>, Chunyan Zhang <zhang.lyra@gmail.com>,
+ David Woodhouse <dwmw2@infradead.org>, Will Deacon <will@kernel.org>,
+ Baolin Wang <baolin.wang@linux.alibaba.com>,
+ linux-arm-kernel@lists.infradead.org, linux-rockchip@lists.infradead.org,
+ iommu@lists.linux.dev, linux-sunxi@lists.linux.dev,
+ Alex Williamson <alex.williamson@redhat.com>,
+ Samuel Holland <samuel@sholland.org>, Heiko Stuebner <heiko@sntech.de>
+From: Konrad Dybcio <konradybcio@kernel.org>
+In-Reply-To: <9-v2-b0417f84403e+11f-iommu_group_locking_jgg@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-From: YueHaibing <yuehaibing@huawei.com>
 
-Since commit 2e4552893038 ("iommu/vt-d: Unify the way to process DMAR
-device scope array") this is not used anymore, so can remove it.
 
-Signed-off-by: YueHaibing <yuehaibing@huawei.com>
-Link: https://lore.kernel.org/r/20230802133934.19712-1-yuehaibing@huawei.com
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- include/linux/dmar.h | 2 --
- 1 file changed, 2 deletions(-)
+On 31.07.2023 19:50, Jason Gunthorpe wrote:
+> Revise the locking for dev->iommu_group so that it has three safe ways to
+> access it:
+> 
+>  - It is read by a probe'd device driver. So long as a device driver is
+>    probed the dev->iommu_group will be guaranteed stable without further
+>    locking.
+> 
+>  - Read under the device_lock(), this primarily protects against
+>    parallel probe of the same device, and parallel probe/remove
+> 
+>  - Read/Write under the global dev_iommu_group_lock. This is used during
+>    probe time discovery of groups. Device drivers will scan unlocked
+>    portions of the device tree to locate an already existing group. These
+>    scans can access the dev->iommu_group under the global lock to single
+>    thread determining and installing the group. This ensures that groups
+>    are reliably formed.
+> 
+> Narrow the scope of the global dev_iommu_group_lock to be only during the
+> dev->iommu_group setup, and not for the entire probing.
+> 
+> Prior patches removed the various races inherent to the probe process by
+> consolidating all the work under the group->mutex. In this configuration
+> it is fine if two devices race to the group_device step of a new
+> iommu_group, the group->mutex locking will ensure the group_device and
+> domain setup part remains properly ordered.
+> 
+> Add the missing locking on the remove paths. For iommu_deinit_device() it
+> is necessary to hold the dev_iommu_group_lock due to possible races during
+> probe error unwind.
+> 
+> Fully lock the iommu_group_add/remove_device() path so we can use lockdep
+> assertions. Other than lockdep this is redundant, VFIO no-iommu doesn't
+> use group clustering.
+> 
+> For iommu_release_device() it is redundant, as we expect no external
+> references to the struct device by this point, but it is harmless so
+> add the missing lock to allow lockdep assertions to work.
+> 
+> This resolves the remarks of the comment in __iommu_probe_device().
+> 
+> Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+> ---
+Hello, this patch breaks booting on at least one Qualcomm platform using
+the SMMUv2 driver w/ qcom impl. The board hangs right after SMMU probe.
 
-diff --git a/include/linux/dmar.h b/include/linux/dmar.h
-index 27dbd4c64860..e34b601b71fd 100644
---- a/include/linux/dmar.h
-+++ b/include/linux/dmar.h
-@@ -106,8 +106,6 @@ static inline bool dmar_rcu_check(void)
- extern int dmar_table_init(void);
- extern int dmar_dev_scope_init(void);
- extern void dmar_register_bus_notifier(void);
--extern int dmar_parse_dev_scope(void *start, void *end, int *cnt,
--				struct dmar_dev_scope **devices, u16 segment);
- extern void *dmar_alloc_dev_scope(void *start, void *end, int *cnt);
- extern void dmar_free_dev_scope(struct dmar_dev_scope **devices, int *cnt);
- extern int dmar_insert_dev_scope(struct dmar_pci_notify_info *info,
--- 
-2.34.1
+Reverting it makes the platform boot again.
 
+Konrad
