@@ -1,139 +1,171 @@
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2071.outbound.protection.outlook.com [40.107.102.71])
+Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DADAF17754
-	for <iommu@lists.linux.dev>; Wed,  9 Aug 2023 13:59:38 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Z0Ouo0x0cxEhsBVdbf/ilYFhZEU1CYzsoh5gDtLDrZysrr/BUdturWaF9ksU3sJdfxqPTtGZuaEVyvW9WKa8Jf3qAZ8aMK/dd+ZhCHy3lgIORBznUqAasbKf081w+1mlD40py5NrW8ZnYzbqkK6HL2uDRzadijPNKBrG2bjeeg/s5r0TbDKpC+TwntZCmChkiR0N5rqJ9Yau7DcmO91iQf+y2HfjQ39dr+ZD9DwnktThSOuGDazhn+17W+mxVlVy8uHkUpxcQ6247HeMUk9eCMP9xzjYjfaXJlPoKe++ZQDTvYQyp75jvZYOzNRUbHSit+6lZY1u9/XKizNQaoHMhA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=hnStTIPo+t/sYmhr8dTiDmSQ1WJVB3cm1/G1sVEG0x0=;
- b=C3yc/1lYdvIkdvPCbYFckxJ6XMIVabD6fufIJMwDt591Ru3HDuQjg+oBO1ZziRxZta+BkWmO4WRZAotYFXhIeHe5uQoHs1w8H7yzHPI50LlOfCjrp4EN1BUgkQ435hZ7+yS16oYur2K/vpGy7tPnCfqyDEt4u5pMj+/j7Yfj1LH+oU0Tfeehis9WP+BgzEQhn10wpQv/k11fMYohbdwDvxijVDSDuikbBoGNfUknZIfpSpHF2RpkMsWv7UxKcI3RQJFCC7/6clkwvLTb8Vb3h6ucv4yyyQk0d5/8c9TEpQXZaM65r6aPfY/YErrMiDn5jJLMDFcX1DXXiGjBbjDWQA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=hnStTIPo+t/sYmhr8dTiDmSQ1WJVB3cm1/G1sVEG0x0=;
- b=lWNe8cmd86sGAjHDe5NXbKoxRriJ3ifJ0bppb082KCSdjm2Sk/m7XPE1tqkIyP8jsFjLL7fe3FsvrQFrsIQxykwUjFULMCqWoNJFkOuCznzwSw7/6pOTAFB2hCbyZQ7XY1/xT4pXVm3QKyY2SiNVfPnR/4Y+cz/WSrKzH2eeqsj15RlBVk7T3oJBo37nuqiXdxb7zw2UERU22GOSZ061uvIDLzyYIZbX3JKMmkSIm9YE7sSauBXUpnxO//h8hyRSeIGKH++UfxLF4Mt+2vC6yLowPJNad4onllgbgYQyuze5Oxy5jkH8P6oV29sse/LnFgQlslViaW56JGDNxv5MSw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by MW4PR12MB6778.namprd12.prod.outlook.com (2603:10b6:303:1e8::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6652.27; Wed, 9 Aug
- 2023 13:59:36 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::5111:16e8:5afe:1da1]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::5111:16e8:5afe:1da1%6]) with mapi id 15.20.6652.028; Wed, 9 Aug 2023
- 13:59:35 +0000
-Date: Wed, 9 Aug 2023 10:59:33 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Will Deacon <will@kernel.org>
-Cc: Michael Shavit <mshavit@google.com>, iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	robin.murphy@arm.com, nicolinc@nvidia.com, jean-philippe@linaro.org
-Subject: Re: [PATCH v5 2/9] iommu/arm-smmu-v3: Replace s1_cfg with cdtab_cfg
-Message-ID: <ZNObxeogswAYyDQ5@nvidia.com>
-References: <20230808171446.2187795-1-mshavit@google.com>
- <20230809011204.v5.2.I1ef1ed19d7786c8176a0d05820c869e650c8d68f@changeid>
- <20230809134941.GA4226@willie-the-truck>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230809134941.GA4226@willie-the-truck>
-X-ClientProxiedBy: BL1PR13CA0301.namprd13.prod.outlook.com
- (2603:10b6:208:2c1::6) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A65D418C3E
+	for <iommu@lists.linux.dev>; Wed,  9 Aug 2023 14:02:22 +0000 (UTC)
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20230809140221euoutp026a0e7ba3d28f2fdd8e326c030fc95e89~5u_gyRfip1689316893euoutp02_
+	for <iommu@lists.linux.dev>; Wed,  9 Aug 2023 14:02:21 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20230809140221euoutp026a0e7ba3d28f2fdd8e326c030fc95e89~5u_gyRfip1689316893euoutp02_
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1691589741;
+	bh=7VzQjeJmxVY/tawsT4b6u0ffcI5diIMKa5AEs4Q3RMA=;
+	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
+	b=B8xdH9btAqoQ8qfSjR5sDbnDomtdnfBOee8Rhhjh4OlJOKab+XfEgDlktbhrYXD88
+	 jtCS5TOut6c8k3wZl/7Uva+ZcN6sxe0Jmpzl3SujyBlHw7fIK9lX0bwss5DI9aFX6b
+	 9e+Sl1mztt7tEamg+QTi9VtEi04Vm81cZGdnC4nY=
+Received: from eusmges1new.samsung.com (unknown [203.254.199.242]) by
+	eucas1p2.samsung.com (KnoxPortal) with ESMTP id
+	20230809140220eucas1p21f53bffcac3e42c97def213f3107bad2~5u_gaNAOJ0280502805eucas1p2c;
+	Wed,  9 Aug 2023 14:02:20 +0000 (GMT)
+Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
+	eusmges1new.samsung.com (EUCPMTA) with SMTP id E5.EE.42423.C6C93D46; Wed,  9
+	Aug 2023 15:02:20 +0100 (BST)
+Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
+	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
+	20230809140220eucas1p1ea4b9a4bb1e64c658abef2ab4bc16733~5u_f_jIfD1190611906eucas1p1x;
+	Wed,  9 Aug 2023 14:02:20 +0000 (GMT)
+Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
+	eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
+	20230809140220eusmtrp21791c5b26e7ec9c225d4bff032f6cf9c~5u_f9mlBb2327523275eusmtrp2a;
+	Wed,  9 Aug 2023 14:02:20 +0000 (GMT)
+X-AuditID: cbfec7f2-a3bff7000002a5b7-d2-64d39c6c3bd6
+Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
+	eusmgms1.samsung.com (EUCPMTA) with SMTP id 18.5B.10549.B6C93D46; Wed,  9
+	Aug 2023 15:02:19 +0100 (BST)
+Received: from [106.210.134.192] (unknown [106.210.134.192]) by
+	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
+	20230809140218eusmtip2c1225bf916a90754f846c11c79fd9ff6~5u_e2C7MC1204112041eusmtip2S;
+	Wed,  9 Aug 2023 14:02:18 +0000 (GMT)
+Message-ID: <af2ff489-1848-ae4a-1146-3725c10678af@samsung.com>
+Date: Wed, 9 Aug 2023 16:02:18 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|MW4PR12MB6778:EE_
-X-MS-Office365-Filtering-Correlation-Id: 57b360ed-7ba5-4326-1541-08db98e0dce2
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	lYZDrzZi/xkzERVrF5ifyZFWODpZpvYLABX2MWi+svnsWs2mnd42mjeTjHNYs55U4w7dGXUpDvuP9SDK04awvMlsWHNCJSaJm3U6FsZmNic1ntdeZyaQGY97H1CKU6oiLmNSzROVqMiBLgqJyIT3HtL2EfoUccIz1hVsIarerf4EQOte/9WgEYIdpOp/i720hQPQe/oIHOSyy4i0aoQr0WnChPJD/HTI4Da6gGYo5/Qfqf+qfpqTfNh8k9QecZFdE9LFonP4WGCCeM4YDqzFhch82D+nFdWnvcFiNf6s6XX/i9vb60J4I4cDqGcQx86AJ/o/uyaMtcB2GHXY87PACC5vl/Y8FBIIXs7YKQzSo2hmK5zpvv85fS0U/Bef2GrAobqhBNFeUgiSAowcHMTIPG2ThU/WhiqFjYB46HbNiETS4FOphWsA0r7OkEBN5kmUrXoniOlsRQHYzoIawxnwWFtkF9mjR9ExlFNSY/7+6URYwkTaWzA+DPx6iRmJ2VDD0l/LSSDlLgb6wWmDsJvpd04eTkwDtR6DKuFT/HK3iCi727bRzal9VZroT2INwYVGHzDGyny8KivUDAOIKrZDtckWq6D5QrSxx1+G1nZfz24=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(346002)(136003)(366004)(39860400002)(396003)(376002)(1800799006)(186006)(451199021)(2906002)(6512007)(36756003)(6916009)(4326008)(478600001)(26005)(6486002)(2616005)(38100700002)(316002)(86362001)(8676002)(8936002)(6506007)(66556008)(5660300002)(66946007)(41300700001)(66476007)(473944003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?iA0zVHJRCljOWnIv0rJ2+693bK+M4YyLBh2L1fTc4FA1E8sluOA9o5nP5Mxc?=
- =?us-ascii?Q?r0ft5E3IKRekYdfSAj9max4A+fwam9U9/3/bok9I6dm3VD4yY6YX4DTlUfh+?=
- =?us-ascii?Q?XvkGRtTEXh6JrPYx0P/Y5+j2X/u+60RBGZOjP/vWGP+Yt2pxc+QRMiQTvnpY?=
- =?us-ascii?Q?F5LXLiwvDUdwhLh6DL0+9bnmXK33n17L1JtBjir+Yyc0UUDDawul+qFnDfBl?=
- =?us-ascii?Q?g15365O+d0hMwcvvXzdOwVkk7ARdmt1yNloG/LX6xXcz0DZERHZS1WOrMG17?=
- =?us-ascii?Q?Xx30CYZMJS1oMQgcKDTkkeVfF+kM8EOVnSWNcVztt6JgO1ohycIHW0HMsp9W?=
- =?us-ascii?Q?/3Aa3jQPmRTXQG/gTAYLyh+M/wJe5tqiyc3yjUqfRokiCiUr01bUFLhXl/1J?=
- =?us-ascii?Q?uDN13srhm0Y4MkjPOFmLh6tNdlv7c2j6EgZpl3rHbMaY97Owpz5N718OwusX?=
- =?us-ascii?Q?HpwGdA2MdX/zVfKxELKGjBVZasPvGzKS7bDdi1dXM+RT9qh851eBaqp2wj2O?=
- =?us-ascii?Q?JSEVm+C0UjeRRyb/LY69cHFhumxqEPW5xQ06YgCBcnNY8UdujABt6qqHCpjK?=
- =?us-ascii?Q?szXrGd/J1MGHQa84qhNJZqE4tagnreS1uCkL0hivKxllG3lxBTam7tZQpISs?=
- =?us-ascii?Q?4nN9Ny7aimLlcCRtaMGn4uHDQS8Th5NsEIwYX3LJyHjRoDacwHabc0wMHQ1J?=
- =?us-ascii?Q?rDxMWq60SDBkUeYtcDvN1Xf51C4KGNDdcYbmgpYvoubu7pBc1tNsrtFr2iIs?=
- =?us-ascii?Q?ZEsBrsvsljBLFnTX6339tB6b+XTFBusVP9UemYFk43zdWFzFYwL7bkQmQz3C?=
- =?us-ascii?Q?ja7SJOtiPk+hg1HcboSugH6sPoYFTAXaq4QgtL8z5cMMcjri6nY0/6uQq6bP?=
- =?us-ascii?Q?GwTus7Nk3TO27USg0RXM4LGgC31KNDiy0Ry2ElEpNAnhMtQJatBcvBZEPRZI?=
- =?us-ascii?Q?VBId/CTHySDxgxtf9FAkRwy1lWfOmvWWWdHMjeaQOc1AU/KR1zs/44TwWw3d?=
- =?us-ascii?Q?NGgNYjBbBBwaxPrC4TGa4Q4cKU5COBTEipn8UaAa/u1SUkp4/BBC71ku5s0B?=
- =?us-ascii?Q?Th+3YN5foLcfmyuCJngeaLaIYJC9FTSVOCmBpI/ZbjuFUOiPxpNSTEPOpWUM?=
- =?us-ascii?Q?osrJlaKzQ1eALrLUWS2P4oJPzu/bWZjBIJzlJW5pQduURdMbknzm7/piWJ2+?=
- =?us-ascii?Q?DTqf8o7x/n9trc4fRxiDcZ761aS2SvuyxdhfblLMlU6Em+j9qs6COQTHhiPN?=
- =?us-ascii?Q?1FfRd4yH9+fy6QdZkURxx0xT+FA5J27ha5KyKTajN3K8ViLetszBlDKfQN/l?=
- =?us-ascii?Q?9TOT2pX7/38cak/Xft49SY9V3X5QIxFjwqq0eMZ16nsw+qV8kR1OfY8fMrSy?=
- =?us-ascii?Q?k5451v3N/Bxxb2IzAAh9tHjFB87Ioy4r21p4/7jAoxjkHHLxRde5puN+fq7k?=
- =?us-ascii?Q?yB8LMj7bMiU7DX3qOqJblHto/tisgy68+KeKw4LxxZvd6hLectjX96o8yTaD?=
- =?us-ascii?Q?jOkTMJZkwAjJo4RiRLl2LQd7T4kewRzGCfMrleCVLS74DZdZC4EodR0xdDEk?=
- =?us-ascii?Q?eO2HmMVMt/lo6I2v78tPFQqtcpmTkYnpARdkvNoo?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 57b360ed-7ba5-4326-1541-08db98e0dce2
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Aug 2023 13:59:35.0111
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 0Ygy1OWeTpmP/Hgh6IWM2visz4ZgXPcoxPTaAUScdsf3quNRpTnr+uLbeYvHgxng
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR12MB6778
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0)
+	Gecko/20100101 Thunderbird/102.13.0
+Subject: Re: [PATCH v2 06/10] iommu/rockchip: Convert to
+ generic_single_device_group()
+Content-Language: en-US
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Baolin Wang <baolin.wang@linux.alibaba.com>, David Woodhouse
+	<dwmw2@infradead.org>, Heiko Stuebner <heiko@sntech.de>,
+	iommu@lists.linux.dev, Jernej Skrabec <jernej.skrabec@gmail.com>, Joerg
+	Roedel <joro@8bytes.org>, linux-arm-kernel@lists.infradead.org,
+	linux-rockchip@lists.infradead.org, linux-sunxi@lists.linux.dev, Orson Zhai
+	<orsonzhai@gmail.com>, Robin Murphy <robin.murphy@arm.com>, Samuel Holland
+	<samuel@sholland.org>, Chen-Yu Tsai <wens@csie.org>, Will Deacon
+	<will@kernel.org>, Chunyan Zhang <zhang.lyra@gmail.com>, Alex Williamson
+	<alex.williamson@redhat.com>, Lu Baolu <baolu.lu@linux.intel.com>
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+In-Reply-To: <ZNOZ0M48+DAhDBWZ@nvidia.com>
+Content-Transfer-Encoding: 7bit
+X-Brightmail-Tracker: H4sIAAAAAAAAA01Sf0xbVRj1vvf6+spS8lbGesOMjd2io9NuLHW5TJkz+sfbHAGDRjOzSQMv
+	3ZSyrQUUoxPFbbaKFnD8KL8as1nGFoaFMSAO15KNNhqQDWuhq7TYrFiEMuhENkfltZ3y3/nO
+	+U7O+W4uhYuWeSnU4cIiVlOoLJCSCUT39aXhpwsab+Zvq7kvQX9FviBR5Mp1gDorL5Go8lw1
+	jiKT0zx0L4xQoKUdoNHl7wHSNXTwkeV3Jw/NeyM4+rq/j0S1cw0AWef8PBSY1JFoyTaMoU9v
+	PYPM3j7+bhHjtzZjzIXmC4DpmDzPY3qNHj7T2SpjLG06kun1pTPNjleYzjMfMVOd9YCpKJ8l
+	mVD/LyQTvNsEmMvOZjw7cX/Cc/lsweESVrN1V27CodGgmzhaTr9nrpgly8AnQj0QUJBWwAbj
+	OF8PEigR3QpgyBLgcYKIDgM4EdodExYAdBkM4KHjD4eJjAlmAN2h0fhwB8CzY3V8bktI74Lt
+	31TjHCboTdB85TYR49dCR70/ipNpFva4DdG4JPoN+OfF2eg+TovhuL8F4/C6Fa/d/lO0H06H
+	Cfhtv53kBJJOg/oZfRQLaBm0euxxswRenmnEOQOkJwVwaehzPNb7JVh+4nwcJ8HgYBc/hh+F
+	kV4ujTOcAtB0fyI+GAAsC4zHr34W3hq6txJHrUSkwot9W2P0C9BV68Y5GtKJ0DWzNlYiEVZ1
+	18ZpIfzspCi2/QQ0Drb/F2v9+QZuAFLjqncxrrrfuOoc4/+5JkC0ATFbrFWrWG1aIfuuXKtU
+	a4sLVfK8I2oLWPmiPy4PzveApuAduQ1gFLABSOHSdcKMnBv5ImG+svR9VnPkLU1xAau1gQ0U
+	IRULt2Q48kS0SlnEvsOyR1nNQxWjBCll2KlXHYHtIMu+OKfoYr6sqcad3j3J/3y3vlp9QJI6
+	26WunK5KMezNPjO06A2WOEstA1j689LjSesX8lQSv+wBfnP0WObGkSTpGt+epeRrHurkJjZz
+	Y4ncete3YXP3V3XpV0/vbRNPGLz7Wh1bMOWcYrtbJqkP/63DeTt7Pj4xVnNwoP5A7hhmyqka
+	kL792qJRl7F/4exOp2Kk0XPuWq4+tUF5cIdkOhuCUhXCBD98MPS6hyrZN79Y1/jg+FNv8n0V
+	XY+NG12/jkiaXOagXrUjjHyZbaZLWVlFV5nNp4fX2KbIUA79Yea0PuXY44oXn+zwtdz2b5NP
+	ebGXaeIR8W9SQntImSbDNVrlvwMqZewRBAAA
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprIKsWRmVeSWpSXmKPExsVy+t/xe7rZcy6nGOx7ZWPx7X8Pm8X/vccY
+	LTZP3MpmMXHlZGaL/49es1r8+mJh8Xz+OkaLK//2MFp0zt7AbrHp8TVWi08P/jNbTNm3i81i
+	+ofZjBYHPzxhtXj+qJPN4ueh80wWLXdMLZY/2MXuIOTx5OA8Jo8189Ywemx4tJrVY+esu+we
+	m1doeWxa1cnmsfOhpce8k4Eem5fUe7zYPJPRo7f5HZvH+31X2TxefZ3L6LH92jzmAL4oPZui
+	/NKSVIWM/OISW6VoQwsjPUNLCz0jE0s9Q2PzWCsjUyV9O5uU1JzMstQifbsEvYwrr26zFDQL
+	VCzvfcfWwNjE28XIySEhYCLx8uQCti5GLg4hgaWMEj9fTmCDSMhInJzWwAphC0v8udYFVfSe
+	UWLht/tgRbwCdhLrFk1mBrFZBFQklu99xgIRF5Q4OfMJmC0qkCrxq2EX2CBhgQiJN+vfgdUz
+	C4hL3HoynwnEFgHqPXHiDDvIAmaBbywSF7dPYoLb1j1/GVg3m4ChRNfbLrDNnAJaEgfvnoCa
+	ZCbRtbWLEcKWl9j+dg7zBEahWUgOmYVk4SwkLbOQtCxgZFnFKJJaWpybnltsqFecmFtcmpeu
+	l5yfu4kRmDa2Hfu5eQfjvFcf9Q4xMnEwHmKU4GBWEuG1Db6UIsSbklhZlVqUH19UmpNafIjR
+	FBgaE5mlRJPzgYkrryTe0MzA1NDEzNLA1NLMWEmc17OgI1FIID2xJDU7NbUgtQimj4mDU6qB
+	KSv3gdmeq8dapz+Irm0IPZ1feSXPbKvFxgKdkFVplgd0z22XUPy/e83M6RHzS2QXS+4XlJu7
+	NSW0jcVq7d3g7IVPX8yZJF0xvcLj1y5pdr/Focd7Xj0WDm3J0Z++wJhB0PCG1kvtV4FsWT8O
+	VPBelfbfPo1Jzmfp6lXTdNbNcnG+uPWqTLbi4rWfV/+6Yzn/Cl/adWWms9XbdB6oLPrZLdmR
+	zcNweBePmmSKv5TLjmB9N9VpFeIqN/95SZzvUE62OJxnzZU84TfLikUvSjgz+jUnrdh18Kl1
+	kuBvVl/RTtnqusySn3xel7Pdd11sEVpZ+njxS3+e73N37P1Yeeao8YGsoNNyEZcDYv0N9H8x
+	K7EUZyQaajEXFScCAMf6W0mkAwAA
+X-CMS-MailID: 20230809140220eucas1p1ea4b9a4bb1e64c658abef2ab4bc16733
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20230809131935eucas1p247866f51cde0952d764c92f10a41c90c
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20230809131935eucas1p247866f51cde0952d764c92f10a41c90c
+References: <6-v2-b0417f84403e+11f-iommu_group_locking_jgg@nvidia.com>
+	<CGME20230809131935eucas1p247866f51cde0952d764c92f10a41c90c@eucas1p2.samsung.com>
+	<e5e75222-13a9-ee01-0c25-8311b622fe0d@samsung.com>
+	<ZNOZ0M48+DAhDBWZ@nvidia.com>
 
-On Wed, Aug 09, 2023 at 02:49:41PM +0100, Will Deacon wrote:
+Hi Jason,
 
-> > @@ -1360,10 +1357,14 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_master *master, u32 sid,
-> >  		    !master->stall_enabled)
-> >  			dst[1] |= cpu_to_le64(STRTAB_STE_1_S1STALLD);
-> >  
-> > -		val |= (s1_cfg->cdcfg.cdtab_dma & STRTAB_STE_0_S1CTXPTR_MASK) |
-> > -			FIELD_PREP(STRTAB_STE_0_CFG, STRTAB_STE_0_CFG_S1_TRANS) |
-> > -			FIELD_PREP(STRTAB_STE_0_S1CDMAX, s1_cfg->s1cdmax) |
-> > -			FIELD_PREP(STRTAB_STE_0_S1FMT, s1_cfg->s1fmt);
-> > +		val |= (cd_table->cdtab_dma & STRTAB_STE_0_S1CTXPTR_MASK) |
-> > +		       FIELD_PREP(STRTAB_STE_0_CFG, STRTAB_STE_0_CFG_S1_TRANS) |
-> > +		       FIELD_PREP(STRTAB_STE_0_S1CDMAX,
-> > +				  cd_table->max_cds_bits) |
-> > +		       FIELD_PREP(STRTAB_STE_0_S1FMT,
-> > +				  cd_table->l1_desc ?
-> > +					  STRTAB_STE_0_S1FMT_64K_L2 :
-> > +					  STRTAB_STE_0_S1FMT_LINEAR);
-> 
-> magically know that we're using 64k tables.
-> 
-> Why is this an improvement to the driver?
+On 09.08.2023 15:51, Jason Gunthorpe wrote:
+> On Wed, Aug 09, 2023 at 03:19:34PM +0200, Marek Szyprowski wrote:
+>> On 31.07.2023 19:50, Jason Gunthorpe wrote:
+>>> Use the new helper.
+>>>
+>>> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+>>> ---
+>>>    drivers/iommu/rockchip-iommu.c | 22 ++--------------------
+>>>    1 file changed, 2 insertions(+), 20 deletions(-)
+>> After applying your recent fixes from "[PATCH 0/3] Fix device_lock
+>> deadlock on two probe() paths" thread I've decided to run more tests on
+>> all boards I have. This way I found that this patch breaks booting of
+>> Odroid-M1 board, which is ARM64 system based on Rockchip RK3568
+>> (arch/arm64/boot/dts/rockchip/rk3568-odroid-m1.dts). Here is the log:
+> Is this why?
 
-Put the above in a function 
+Right, this fixed the issue.
 
-arm_smmu_get_cd_ste(struct arm_smmu_ctx_desc_cfg *cdtab, void *ste)
+Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
 
-And it makes more sense.
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 8842f4975ec4a8..8677d3ace47bbe 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -366,6 +366,7 @@ static int iommu_init_device(struct device *dev, const struct iommu_ops *ops)
+>   		ret = PTR_ERR(iommu_dev);
+>   		goto err_module_put;
+>   	}
+> +	dev->iommu->iommu_dev = iommu_dev;
+>   
+>   	ret = iommu_device_link(iommu_dev, dev);
+>   	if (ret)
+> @@ -383,7 +384,6 @@ static int iommu_init_device(struct device *dev, const struct iommu_ops *ops)
+>   	dev->iommu_group = group;
+>   	mutex_unlock(&dev_iommu_group_lock);
+>   
+> -	dev->iommu->iommu_dev = iommu_dev;
+>   	dev->iommu->max_pasids = dev_iommu_get_max_pasids(dev);
+>   	if (ops->is_attach_deferred)
+>   		dev->iommu->attach_deferred = ops->is_attach_deferred(dev);
+> @@ -397,6 +397,7 @@ static int iommu_init_device(struct device *dev, const struct iommu_ops *ops)
+>   err_module_put:
+>   	module_put(ops->owner);
+>   err_free:
+> +	dev->iommu->iommu_dev = NULL;
+>   	dev_iommu_free(dev);
+>   	return ret;
+>   }
+>
+> Thanks,
+> Jason
+>
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
 
-We don't need the driver to precompute the "s1_cfg" parameters and
-store them in a redundant struct along side the ctx_desc_cfg when we
-can compute those same values on the fly with no cost.
-
-Jason
