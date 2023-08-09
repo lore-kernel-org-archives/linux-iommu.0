@@ -1,192 +1,185 @@
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2052.outbound.protection.outlook.com [40.107.244.52])
+Received: from ms.lwn.net (ms.lwn.net [45.79.88.28])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6198424528
-	for <iommu@lists.linux.dev>; Wed,  9 Aug 2023 20:17:39 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=O1oTADConSP7u0VophglkS5vI9ZIoahoKhPVgFCdJjSfl1TDOqjLecCkVOUH3s2hudku5HMjhUPAv+qCwvllCK/tLYreSRBN2M55JRmmycMxQk+A3TmXEAa6JZdbOzbd6iyAOpsoQmBna1RPeGrxVsyKXP06OwfwVOhJHsd+Y2qTDiKSg+v/uMOhbX/zGOSzhrnlJMj5Dlh5PwugGyylZ9dNqS3VmpH0T+kMYPwREZS3MwVNUHFXrMDGh1B/HfFPCfPz7+1jvQ5ojLQodMF0L0D/LTOMI3TT5J5xLa3PNs7mHU/UDFaDsqTB4jDe1z3yEbY87LWNwUZUhaksWuePFA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=GlCYQChAvXf7fx9Nm+whY758+Mq3ScDSCudxnXKTic8=;
- b=e39tSW3zF/riJdDiAe3VL80PANpAnUzdGJ/YXlhbRALznk756DNz4APf1/G/2uDOceUz/j1w4g8vnFGkFeA0hmVkkvxK9mdhEjxzp6fAzir6YfQ43JOY8m1J4PsmpK4FjO/VZXGBIIi6Lg+ddNLWoQiIotUtAnuS8kYjdQbJ1VSCpGXFU2eUS7Cc8J0FTth4nK4fPwSkh981qvUbwzrjMqPCY2iW3uyYN3UgBdzGG9nLEuxLRPrlmPPZvh/ciwZmfi3+AuenD4kT/QDn8myPC5eq584V/+SOC5zsGQy6K4riRXaBcykqFzIJIWVBNvWqTFA22w31UeRHW7tDQq7RFg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.233) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=GlCYQChAvXf7fx9Nm+whY758+Mq3ScDSCudxnXKTic8=;
- b=MGUdcQhU+uIX0RSqeKn+lED3BZ8RzJIrSDK/HIBVS24J9z3DXeeycsF4hLwlLC0IgOJMSojlvQNqjjuBTxS3WnlpodONRxJtQYNrdoV3TQjN7lVw0jLiuKsi95aN/IrgBN+iukpaxOZoJnEywuRZW3OAfGeqFzNe3d4w3MrcSG1iHwlb60VXT3kwhj7+u/uM5RLO7vW21fpezUKp6YOJflXv14CjybawwcXkBpDr8cIDnHkDUVVaibnXJPoobSskkjq1Q/OvAwOlsXIuHLIXU0191L+MjAgn5FyTVIwPcYgY/e7fci+ejGAu366KaalxkBk7uCzC7wTkrmrOvf6vMQ==
-Received: from CH2PR19CA0016.namprd19.prod.outlook.com (2603:10b6:610:4d::26)
- by SJ0PR12MB6989.namprd12.prod.outlook.com (2603:10b6:a03:448::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6652.28; Wed, 9 Aug
- 2023 20:17:35 +0000
-Received: from CO1PEPF000042AE.namprd03.prod.outlook.com
- (2603:10b6:610:4d:cafe::1d) by CH2PR19CA0016.outlook.office365.com
- (2603:10b6:610:4d::26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6652.28 via Frontend
- Transport; Wed, 9 Aug 2023 20:17:34 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.233) by
- CO1PEPF000042AE.mail.protection.outlook.com (10.167.243.43) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6652.20 via Frontend Transport; Wed, 9 Aug 2023 20:17:34 +0000
-Received: from drhqmail202.nvidia.com (10.126.190.181) by mail.nvidia.com
- (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Wed, 9 Aug 2023
- 13:17:23 -0700
-Received: from drhqmail201.nvidia.com (10.126.190.180) by
- drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.37; Wed, 9 Aug 2023 13:17:23 -0700
-Received: from Asurada-Nvidia (10.127.8.10) by mail.nvidia.com
- (10.126.190.180) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37 via Frontend
- Transport; Wed, 9 Aug 2023 13:17:21 -0700
-Date: Wed, 9 Aug 2023 13:17:20 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: "Liu, Yi L" <yi.l.liu@intel.com>, Jason Gunthorpe <jgg@nvidia.com>
-CC: "Tian, Kevin" <kevin.tian@intel.com>, "joro@8bytes.org" <joro@8bytes.org>,
-	"alex.williamson@redhat.com" <alex.williamson@redhat.com>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>, "baolu.lu@linux.intel.com"
-	<baolu.lu@linux.intel.com>, "cohuck@redhat.com" <cohuck@redhat.com>,
-	"eric.auger@redhat.com" <eric.auger@redhat.com>, "kvm@vger.kernel.org"
-	<kvm@vger.kernel.org>, "mjrosato@linux.ibm.com" <mjrosato@linux.ibm.com>,
-	"chao.p.peng@linux.intel.com" <chao.p.peng@linux.intel.com>,
-	"yi.y.sun@linux.intel.com" <yi.y.sun@linux.intel.com>, "peterx@redhat.com"
-	<peterx@redhat.com>, "jasowang@redhat.com" <jasowang@redhat.com>,
-	"shameerali.kolothum.thodi@huawei.com"
-	<shameerali.kolothum.thodi@huawei.com>, "lulu@redhat.com" <lulu@redhat.com>,
-	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>, "Duan,
- Zhenzhong" <zhenzhong.duan@intel.com>
-Subject: Re: [PATCH v4 09/12] iommu/vt-d: Add iotlb flush for nested domain
-Message-ID: <ZNP0UKGU6id5wfc6@Asurada-Nvidia>
-References: <ZNGypUee/U9d68TZ@Asurada-Nvidia>
- <ZNI2O4Upyna5AWDA@nvidia.com>
- <ZNJ+Uv/WJwngosjJ@Asurada-Nvidia>
- <BN9PR11MB5276BFFEC7E12EEBD4503BF08C12A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <DS0PR11MB7529C3646E38542457D7B75DC312A@DS0PR11MB7529.namprd11.prod.outlook.com>
- <BN9PR11MB5276912120F662498910A1D48C12A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <DS0PR11MB7529C310FAEA61B6E7988629C312A@DS0PR11MB7529.namprd11.prod.outlook.com>
- <ZNO92PIx2IQ70+DY@nvidia.com>
- <ZNPlGd4/72dahSs4@Asurada-Nvidia>
- <ZNPmpW3/zDnjqxyU@nvidia.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3DB01D2F1
+	for <iommu@lists.linux.dev>; Wed,  9 Aug 2023 21:28:15 +0000 (UTC)
+Received: from localhost (unknown [IPv6:2601:281:8300:73::5f6])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by ms.lwn.net (Postfix) with ESMTPSA id 5DF4E218;
+	Wed,  9 Aug 2023 21:20:44 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net 5DF4E218
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
+	t=1691616044; bh=D3OCzS/TjQzlx859sDe4uhCo8ItizHSPamS05kU7M/E=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+	b=NXwT7fNZt30FAE6/rsWNAIxKfZAnHdE0QNzpPAfTcuuLXJv/8sSeNpRi/YYa5NjJC
+	 JPc/pZIj2m1/iKfmCA6z6g2y88sFf4ZH/bH/4XDB2qcRK5jWAwzLmabxM5iXzuAYwc
+	 gdH4oIFqQIHil75Is17wCUwIlXkrwODoldc2N5n5BFNAkaN5JRNZKvsISIklyJvP2F
+	 4+b3s2bgvKX3Qdk1NsvqoUWqBFM5kFpduA+bStZQdIeCWxvmzzb6PeCz24WoTHyNsu
+	 hckvkWe4mo+JyUGpbBEyCK3lFgQYmdeewhQkWR1ZSjYdvGexm2T+wCrOys5KDkkoTp
+	 DAFJ4ZWqDCc4Q==
+From: Jonathan Corbet <corbet@lwn.net>
+To: Petr Tesarik <petrtesarik@huaweicloud.com>, Stefano Stabellini
+ <sstabellini@kernel.org>, Russell King <linux@armlinux.org.uk>, Thomas
+ Bogendoerfer <tsbogend@alpha.franken.de>, Thomas Gleixner
+ <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov
+ <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>, "maintainer:X86
+ ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>, "H. Peter Anvin"
+ <hpa@zytor.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael
+ J. Wysocki" <rafael@kernel.org>, Juergen Gross <jgross@suse.com>,
+ Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>, Christoph Hellwig
+ <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy
+ <robin.murphy@arm.com>, Christoph Lameter <cl@linux.com>, Pekka Enberg
+ <penberg@kernel.org>, David Rientjes <rientjes@google.com>, Joonsoo Kim
+ <iamjoonsoo.kim@lge.com>, Andrew Morton <akpm@linux-foundation.org>,
+ Vlastimil Babka <vbabka@suse.cz>, Roman Gushchin
+ <roman.gushchin@linux.dev>, Hyeonggon Yoo <42.hyeyoo@gmail.com>, Petr
+ Tesarik <petr.tesarik.ext@huawei.com>, Andy Shevchenko
+ <andriy.shevchenko@linux.intel.com>, Hans de Goede <hdegoede@redhat.com>,
+ James Seo <james@equiv.tech>, James Clark <james.clark@arm.com>, Kees Cook
+ <keescook@chromium.org>, "moderated list:XEN HYPERVISOR ARM"
+ <xen-devel@lists.xenproject.org>, "moderated list:ARM PORT"
+ <linux-arm-kernel@lists.infradead.org>, open list
+ <linux-kernel@vger.kernel.org>, "open list:MIPS"
+ <linux-mips@vger.kernel.org>, "open list:XEN SWIOTLB SUBSYSTEM"
+ <iommu@lists.linux.dev>, "open list:SLAB ALLOCATOR" <linux-mm@kvack.org>
+Cc: Roberto Sassu <roberto.sassu@huaweicloud.com>, petr@tesarici.cz
+Subject: Re: [PATCH v7 9/9] swiotlb: search the software IO TLB only if the
+ device makes use of it
+In-Reply-To: <adea71bd1fa8660d4c3157a562431ad8127016d4.1690871004.git.petr.tesarik.ext@huawei.com>
+References: <cover.1690871004.git.petr.tesarik.ext@huawei.com>
+ <adea71bd1fa8660d4c3157a562431ad8127016d4.1690871004.git.petr.tesarik.ext@huawei.com>
+Date: Wed, 09 Aug 2023 15:20:43 -0600
+Message-ID: <87a5uz3ob8.fsf@meer.lwn.net>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <ZNPmpW3/zDnjqxyU@nvidia.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1PEPF000042AE:EE_|SJ0PR12MB6989:EE_
-X-MS-Office365-Filtering-Correlation-Id: b28071c9-2080-4cda-fa13-08db9915aaf9
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	6IH/RbC8a6KnsNsdCQ0JzwcNXte7QKfiv23Zb761TJtsMefYpmdn2pIP94btSv/7JEr2WKMXbirhDpqHe+O51u8ZMIc7n1gcBUWpvkwxpINbhv55TzZ6fcHWfr4X7nNet8hAdKLgKKpmneMjAzQ4tqiRoyI+wlQKB0tBCueBEfocQBBWuarR5rBHXB1+Rr4qTe0hFJDw7FFqLsimfwPo5YTdRHxFp7QvelNayJ8DuZphiyL7kekIRsnxfuFhN0ljx5yIOAmA0I+ybw3LH5ajBGMkbFNjVGxrhXem3f+gsF1YsFCH6Ccwqxs/e0+3uLqfnqr1nEKeTkQ3b4fAN5rtgNTx/u6u8Iq15rcL8ZzHtPMZQCKvBIkU+T1rXMe7tqJITIq9E9WWrW8n5QHH8TTx0jAC2mLO9S5dvQo7doykorSC4+Izro1h1iS4kvw5CRKEKHT336ms4LBNAvu2jrNOqmMlA+AqKbCKqUTAf6ZKdjnnRUT8kzyJjNxQLxpT+EyBCzG0kWa5ruJiLVXSriS7Wk7dErgjkq3k3uRqXugun3JXsTf//q5k2Qs3yjc4nMDbatZCmqzI9wai9XOzy2DDazVUd9WnY4irEV+TVUpTBhWKdC4QLXlUqF2FaGuEikMo0383ZXj6TzMNogqtT8jLKn+LjmjqkQex8oTn+HYYYtnlw0ZXnmEukQEvMxGWrsJ9K/wGsnouvAUfWeymiZk3Qe4444ZibSU1PTpMVnT8BAL0aF1cs9S6CZ0oL0eIUMONOT612iWli8zXxKEYsa3E97s+VhDbBtbxX1EHmg2kpTk=
-X-Forefront-Antispam-Report:
-	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(376002)(136003)(396003)(346002)(186006)(451199021)(82310400008)(1800799006)(36840700001)(46966006)(40470700004)(9686003)(36860700001)(966005)(40480700001)(40460700003)(83380400001)(55016003)(54906003)(7636003)(82740400003)(478600001)(110136005)(86362001)(33716001)(426003)(47076005)(7416002)(316002)(4326008)(6636002)(8676002)(26005)(336012)(5660300002)(2906002)(356005)(41300700001)(70586007)(70206006)(8936002);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Aug 2023 20:17:34.4148
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: b28071c9-2080-4cda-fa13-08db9915aaf9
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CO1PEPF000042AE.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR12MB6989
+Content-Type: text/plain
 
-On Wed, Aug 09, 2023 at 04:19:01PM -0300, Jason Gunthorpe wrote:
-> On Wed, Aug 09, 2023 at 12:12:25PM -0700, Nicolin Chen wrote:
-> > On Wed, Aug 09, 2023 at 01:24:56PM -0300, Jason Gunthorpe wrote:
-> > > On Wed, Aug 09, 2023 at 09:30:12AM +0000, Liu, Yi L wrote:
-> > > 
-> > > > Yeah, adding new structures to ucmd_buffer may increase the size as
-> > > > well if the new one is larger. While for an array, if there is new entry,
-> > > > it is for sure to increase the size. I remember there is one tricky thing
-> > > > when handling the selftest type. E.g. it is defined as 0xbadbeef, if using
-> > > > it to index array, it would expire. So we have some special handling on
-> > > > it. If defining the things in iommu_ops, it is simpler. Selftest may be
-> > > > not so critical to determining the direction though.
-> > > 
-> > > Maybe we are trying too hard to make it "easy" on the driver.
-> > > 
-> > > Can't we just have the driver invoke some:
-> > > 
-> > > driver_iommufd_invalidate_op(??? *opaque)
-> > > {
-> > > 	struct driver_base_struct args;
-> > > 
-> > >         rc = iommufd_get_args(opaque, &args, sizeof(args),
-> > > 	     offsetof(args, last));
-> > 
-> > OK. So, IIUIC, the opaque should be:
-> > 
-> > struct iommu_user_data {
-> > 	void __user *data_uptr;
-> > 	size_t data_len;
-> > }user_data;
-> > 
-> > And core does basic sanity of data_uptr != NULL and data_len !=0
-> > before passing this to driver, and then do a full sanity during
-> > the iommufd_get_args (or iommufd_get_user_data?) call.
-> 
-> Don't even need to check datA_uptr and data_len, the helper should
-> check the size and null is caught by copy from user
+Petr Tesarik <petrtesarik@huaweicloud.com> writes:
 
-I see. I was worried about the alloc path since its data input is
-optional upon IOMMU_DOMAIN_UNMANAGED. But this helper should work
-for that also.
+> From: Petr Tesarik <petr.tesarik.ext@huawei.com>
+>
+> Skip searching the software IO TLB if a device has never used it, making
+> sure these devices are not affected by the introduction of multiple IO TLB
+> memory pools.
+>
+> Additional memory barrier is required to ensure that the new value of the
+> flag is visible to other CPUs after mapping a new bounce buffer. For
+> efficiency, the flag check should be inlined, and then the memory barrier
+> must be moved to is_swiotlb_buffer(). However, it can replace the existing
+> barrier in swiotlb_find_pool(), because all callers use is_swiotlb_buffer()
+> first to verify that the buffer address belongs to the software IO TLB.
+>
+> Signed-off-by: Petr Tesarik <petr.tesarik.ext@huawei.com>
+> ---
 
-In that case, we might not even need to define the union with all
-structures, in iommu.h.
+Excuse me if this is a silly question, but I'm not able to figure it out
+on my own...
 
-> > > Similarly for managing the array of invalidation commands.
-> > 
-> > You mean an embedded uptr inside a driver user data struct right?
-> > Sure, that should go through the new helper too.
-> 
-> If we are committed that all drivers have to process an array then put
-> the array in the top level struct and pass it in the same user_data
-> struct and use another helper to allow the driver to iterate through
-> it.
+>  include/linux/device.h  |  2 ++
+>  include/linux/swiotlb.h |  7 ++++++-
+>  kernel/dma/swiotlb.c    | 14 ++++++--------
+>  3 files changed, 14 insertions(+), 9 deletions(-)
+>
+> diff --git a/include/linux/device.h b/include/linux/device.h
+> index 5fd89c9d005c..6fc808d22bfd 100644
+> --- a/include/linux/device.h
+> +++ b/include/linux/device.h
+> @@ -628,6 +628,7 @@ struct device_physical_location {
+>   * @dma_io_tlb_mem: Software IO TLB allocator.  Not for driver use.
+>   * @dma_io_tlb_pools:	List of transient swiotlb memory pools.
+>   * @dma_io_tlb_lock:	Protects changes to the list of active pools.
+> + * @dma_uses_io_tlb: %true if device has used the software IO TLB.
+>   * @archdata:	For arch-specific additions.
+>   * @of_node:	Associated device tree node.
+>   * @fwnode:	Associated device node supplied by platform firmware.
+> @@ -737,6 +738,7 @@ struct device {
+>  #ifdef CONFIG_SWIOTLB_DYNAMIC
+>  	struct list_head dma_io_tlb_pools;
+>  	spinlock_t dma_io_tlb_lock;
+> +	bool dma_uses_io_tlb;
 
-I see. Both VTD and SMMU pass uptr to the arrays of invalidation
-commands/requests. The only difference is that SMMU's array is a
-ring buffer other than a plain one indexing from the beginning.
-But the helper could take two index inputs, which should work for
-VTD case too. If another IOMMU driver only supports one request,
-rather than a array of requests, we can treat that as a single-
-entry array.
+You add this new member here, fine...
 
-Then, the driver-specific data structure will be the array entry
-level only.
+>  #endif
+>  	/* arch specific additions */
+>  	struct dev_archdata	archdata;
+> diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
+> index 8371c92a0271..b4536626f8ff 100644
+> --- a/include/linux/swiotlb.h
+> +++ b/include/linux/swiotlb.h
+> @@ -172,8 +172,13 @@ static inline bool is_swiotlb_buffer(struct device *dev, phys_addr_t paddr)
+>  	if (!mem)
+>  		return false;
+>  
+> -	if (IS_ENABLED(CONFIG_SWIOTLB_DYNAMIC))
+> +	if (IS_ENABLED(CONFIG_SWIOTLB_DYNAMIC)) {
+> +		/* Pairs with smp_wmb() in swiotlb_find_slots() and
+> +		 * swiotlb_dyn_alloc(), which modify the RCU lists.
+> +		 */
+> +		smp_rmb();
+>  		return swiotlb_find_pool(dev, paddr);
+> +	}
+>  	return paddr >= mem->defpool.start && paddr < mem->defpool.end;
+>  }
+>  
+> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+> index adf80dec42d7..d7eac84f975b 100644
+> --- a/kernel/dma/swiotlb.c
+> +++ b/kernel/dma/swiotlb.c
+> @@ -730,7 +730,7 @@ static void swiotlb_dyn_alloc(struct work_struct *work)
+>  
+>  	add_mem_pool(mem, pool);
+>  
+> -	/* Pairs with smp_rmb() in swiotlb_find_pool(). */
+> +	/* Pairs with smp_rmb() in is_swiotlb_buffer(). */
+>  	smp_wmb();
+>  }
+>  
+> @@ -764,11 +764,6 @@ struct io_tlb_pool *swiotlb_find_pool(struct device *dev, phys_addr_t paddr)
+>  	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
+>  	struct io_tlb_pool *pool;
+>  
+> -	/* Pairs with smp_wmb() in swiotlb_find_slots() and
+> -	 * swiotlb_dyn_alloc(), which modify the RCU lists.
+> -	 */
+> -	smp_rmb();
+> -
+>  	rcu_read_lock();
+>  	list_for_each_entry_rcu(pool, &mem->pools, node) {
+>  		if (paddr >= pool->start && paddr < pool->end)
+> @@ -813,6 +808,7 @@ void swiotlb_dev_init(struct device *dev)
+>  #ifdef CONFIG_SWIOTLB_DYNAMIC
+>  	INIT_LIST_HEAD(&dev->dma_io_tlb_pools);
+>  	spin_lock_init(&dev->dma_io_tlb_lock);
+> +	dev->dma_uses_io_tlb = false;
 
-@Yi,
-This seems to be a bigger rework than the top level struct. Along
-with Jason's request for fail_nth below, we'd need to bisect the
-workload between us, or can just continue each other's daily work.
-Let me know which one you prefer.
-https://lore.kernel.org/linux-iommu/ZNPCtPTcHvITt6fk@nvidia.com/
+...here you initialize it, fine...
 
-Thanks!
-Nic
+>  #endif
+>  }
+>  
+> @@ -1157,9 +1153,11 @@ static int swiotlb_find_slots(struct device *dev, phys_addr_t orig_addr,
+>  	list_add_rcu(&pool->node, &dev->dma_io_tlb_pools);
+>  	spin_unlock_irqrestore(&dev->dma_io_tlb_lock, flags);
+>  
+> -	/* Pairs with smp_rmb() in swiotlb_find_pool(). */
+> -	smp_wmb();
+>  found:
+> +	dev->dma_uses_io_tlb = true;
+> +	/* Pairs with smp_rmb() in is_swiotlb_buffer() */
+> +	smp_wmb();
+> +
+
+...and here you set it if swiotlb is used.
+
+But, as far as I can tell, you don't actually *use* this field anywhere.
+What am I missing?
+
+Thanks,
+
+jon
