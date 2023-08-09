@@ -1,60 +1,61 @@
-Received: from mail-qt1-f180.google.com (mail-qt1-f180.google.com [209.85.160.180])
+Received: from mail-ot1-f42.google.com (mail-ot1-f42.google.com [209.85.210.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D865F182AD
-	for <iommu@lists.linux.dev>; Wed,  9 Aug 2023 12:31:18 +0000 (UTC)
-Received: by mail-qt1-f180.google.com with SMTP id d75a77b69052e-40fd2de0ddcso51149651cf.2
-        for <iommu@lists.linux.dev>; Wed, 09 Aug 2023 05:31:18 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 23AB316426
+	for <iommu@lists.linux.dev>; Wed,  9 Aug 2023 12:35:05 +0000 (UTC)
+Received: by mail-ot1-f42.google.com with SMTP id 46e09a7af769-6bd0a0a675dso1282944a34.2
+        for <iommu@lists.linux.dev>; Wed, 09 Aug 2023 05:35:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1691584277; x=1692189077;
+        d=ziepe.ca; s=google; t=1691584505; x=1692189305;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=zwxMc/Jnf4KYiaUH2KdLbTiq/tI1vp0nwZHG7xf4bjQ=;
-        b=JGgHp8s1/q17mE16KjiuAbrpI+wZnxS9jiieUXX6BnO3L5pZOuM+jYpbmKm+ouHJlR
-         7WEC2Qb6WMFXDl436d9Q58D2e9JubHm8efuk/mVFKuTFjMIEx0oSiMtnEw4YjyMCyhBj
-         mBdPARJI9Y3w/N9xVq/0QF9mWnFLBGa9YALweT5v58LILwqqj8KmJwEnQQZlZ3GEkhe2
-         5susF1zxhAh0BbxG9LLWGjMrXnBX1CvlxqwkqSUUHk6eLhHCL1hmSckD1zgeXja36aeh
-         mqjmx1656ysy1g1Gfa5RflRrmlXBBXMusGLtNkXO0RgEMslQ45NWKkalm+AFfCNEZywR
-         hdUQ==
+        bh=D1vlk426yx9I7RvL78AONvP5VHRKVeaBopr8pvsM2ew=;
+        b=kZqvQo7QPz15n/1fXXXDdFKSI0e4A/DXzZVaQfaTr7UjANpLuMN3SzY5NxH7MwzQou
+         FsNvDyhGFtnBkr34Jr3/ehvKXZ7FKv+3efLEWkVBKZqVsxsZwHLk9+NuV9pYNSDQAttt
+         FVreMUaoInrkupaNoigWXu7tLt8LU4K8IL8ZsX9HSuR2iM7+Wwmu1hfOsdVBFPpNh4m0
+         asP6tXW7QTlzIOErn16fFZ8FrcUBTYRzMThlg9BT3rb4h51TIXX98ai9eaS7lKWzJkKj
+         eEZ7S8/BOrUG55+UoAVm1UcV993ktA0o6xFys38oDvqmcNiRisb4+X9vvSlkuobUELjn
+         Um1A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1691584277; x=1692189077;
+        d=1e100.net; s=20221208; t=1691584505; x=1692189305;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=zwxMc/Jnf4KYiaUH2KdLbTiq/tI1vp0nwZHG7xf4bjQ=;
-        b=Cprx4zozds8HsdG5KusscOE4KGFdPwgzy6z3gDjF1RfB3waNqyZ4kLmxGmnSegrUIe
-         uTUjPu4psWxjNOgSFR1h1KaZ1HBT4wi4GM3QmGIki9UJsSfRGHJS33LOQtnwcHOgcjid
-         7VP/YI+AkGRFfcSKRP3AFdifFBpGZ0j3mKkR/N0+dWASgVMzGvd3AzoYHL0eNVydsSUa
-         1iKqX100KA6yD2+EBEECc8EQdcMRlpDz28mIh/IgZrVHvyNOjhS9bCGdpwZ8B72e27g1
-         vEKYwuQrYB2SMDepfHbrvBpBf9j+6Mjgud11qyEHFPIIU5aHGqJeR0yNFkJCMsPsZYuK
-         tcLg==
-X-Gm-Message-State: AOJu0YxfoPUZ0Mgkx9lCMjWxXcbxzWT6q1tvpbemYMsIHfQ8CTFL9+b3
-	DlltH+YgyssL1GGBaW39VjqP5g==
-X-Google-Smtp-Source: AGHT+IE/9nPEzWHTfAO4Unck7OivGgxHUDY+IIy8TYtQWjM35uS0OME7kSgnmqRHBiRv00LegSDHZw==
-X-Received: by 2002:a05:622a:101:b0:40f:d66e:8134 with SMTP id u1-20020a05622a010100b0040fd66e8134mr2652250qtw.59.1691584277408;
-        Wed, 09 Aug 2023 05:31:17 -0700 (PDT)
+        bh=D1vlk426yx9I7RvL78AONvP5VHRKVeaBopr8pvsM2ew=;
+        b=j0LIB48ZEvDJsa48f2/tm8kt1voCF7scoEpiKMd4m4rtSjl0Mx+44/avrTsRnkAKCX
+         MD/IJYhtjfZIhIQbwlplwkiv3Pv3KzVlkpBJdFu8hVoowxmwOnzj+ILuPjONoeQlv6vd
+         WxK/0O6ftp+fo6v1AKfZdShVa/n4hB+RyP9VRgQ2hn0TTVeK3n7jKsihQU5hQOkZv2p2
+         PuemzXKuT6IIvveyKUAXmkdssPmLGfeIE6pyz0LXvgMPFN11D+NPFlkGRMtf1FfCoWXf
+         Hu0p4xsREg4cNz8Lu62hF7tpYijemYoHs2FA4tQcv5xdSAoODVHwTxnjsSVO8/iRYYec
+         KpGQ==
+X-Gm-Message-State: AOJu0YwewqxL6Z1C116pJJaM3kS4Tnw4WSfwE6qGXtVo+CYv5lu71wZr
+	UXkaCBpGRg8wMiR/ZhLKsaiGRA==
+X-Google-Smtp-Source: AGHT+IFXJv4SSKywPDvp9X/J5cU2mrSKT+Vbk1TAqRv+ipibzkD6pTEls1NDEePZUTv1nQ0uFw/t3g==
+X-Received: by 2002:a05:6358:428c:b0:135:b4c:a490 with SMTP id s12-20020a056358428c00b001350b4ca490mr2799558rwc.10.1691584503427;
+        Wed, 09 Aug 2023 05:35:03 -0700 (PDT)
 Received: from ziepe.ca (hlfxns017vw-142-68-25-194.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.25.194])
-        by smtp.gmail.com with ESMTPSA id fu25-20020a05622a5d9900b0040fdcd391d8sm4039493qtb.72.2023.08.09.05.31.16
+        by smtp.gmail.com with ESMTPSA id b17-20020ac86bd1000000b0040ff25d8712sm4030373qtt.18.2023.08.09.05.35.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Aug 2023 05:31:16 -0700 (PDT)
+        Wed, 09 Aug 2023 05:35:02 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.95)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1qTiLM-0051Mb-4k;
-	Wed, 09 Aug 2023 09:31:16 -0300
-Date: Wed, 9 Aug 2023 09:31:16 -0300
+	id 1qTiP0-0051O0-Ef;
+	Wed, 09 Aug 2023 09:35:02 -0300
+Date: Wed, 9 Aug 2023 09:35:02 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
 To: "Tian, Kevin" <kevin.tian@intel.com>
-Cc: "Zhang, Tina" <tina.zhang@intel.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
+Cc: Baolu Lu <baolu.lu@linux.intel.com>,
+	"Zhang, Tina" <tina.zhang@intel.com>,
 	Michael Shavit <mshavit@google.com>,
 	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
 	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 1/5] iommu: Add mm_get_pasid() helper function
-Message-ID: <ZNOHFKbkQ75owuwC@ziepe.ca>
+Subject: Re: [PATCH 2/5] iommu: Call helper function to get assigned pasid
+ value
+Message-ID: <ZNOH9lPdTnltb9JZ@ziepe.ca>
 References: <20230808074944.7825-1-tina.zhang@intel.com>
- <20230808074944.7825-2-tina.zhang@intel.com>
- <ZNJY/9pwRxIkFEjD@ziepe.ca>
- <BN9PR11MB527654AF38084B07EC7734468C12A@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20230808074944.7825-3-tina.zhang@intel.com>
+ <f3d8692e-b13d-97ee-2288-c2be1858dcfa@linux.intel.com>
+ <BN9PR11MB52767F29A6C11157659D375B8C12A@BN9PR11MB5276.namprd11.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -63,34 +64,35 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <BN9PR11MB527654AF38084B07EC7734468C12A@BN9PR11MB5276.namprd11.prod.outlook.com>
+In-Reply-To: <BN9PR11MB52767F29A6C11157659D375B8C12A@BN9PR11MB5276.namprd11.prod.outlook.com>
 
-On Wed, Aug 09, 2023 at 09:47:15AM +0000, Tian, Kevin wrote:
-> > From: Jason Gunthorpe <jgg@ziepe.ca>
-> > Sent: Tuesday, August 8, 2023 11:02 PM
+On Wed, Aug 09, 2023 at 09:49:16AM +0000, Tian, Kevin wrote:
+> > From: Baolu Lu <baolu.lu@linux.intel.com>
+> > Sent: Wednesday, August 9, 2023 8:22 AM
 > > 
-> > On Tue, Aug 08, 2023 at 03:49:40PM +0800, Tina Zhang wrote:
-> > > mm_get_pasid() is for getting mm pasid value.
-> > >
-> > > The motivation is to replace mm->pasid with an iommu private data
-> > > structure that is introduced in a later patch.
+> > On 2023/8/8 15:49, Tina Zhang wrote:
+> > > Use the helper function mm_get_pasid() to get the mm assigned pasid
+> > > value.
 > > 
-> > Maybe we should start out by calling it what it actually is:
+> > For internal iommu drivers, perhaps we should use another helper.
+> > Something like sva_domain_get_pasid()?
 > > 
-> > 'mm_get_enqcmd_pasid()'
-> > 
-> > We can't actually have multiple SVA domains with different PASIDs
-> > until the places wrongly calling this are removed :\
+> > Suppose that the iommu drivers should have no idea about the "mm".
 > > 
 > 
-> it's kind of egg-chicken problem. mm_get_pasid() is used by all SVA
-> scenarios beyond enqcmd then calling it mm_get_enqcmd_pasid()
-> also sounds weird for non-enqcmd case.
+> Aren't all touched functions accept a struct mm_struct pointer?
 
-Well, those are wrong. We need to be fixing them not hide our eyes to
-the wrongness.
+It is wrong for the driver to even ask this question.
 
-Michael is cooking a fix for ARM, Tina should come with a fix for
-Intel in this series.
+Domains, regardless of what they are, get attached to PASIDs. Maybe
+many PASIDs, driver doesn't get to care. SVA isn't special. Stop
+making it special.
+
+The driver should rely on there being exactly one iommu_domain for SVA
+per mm so it can hang the mm_notifier off the iommu_domain
+
+But otherwise invalidation for a SVA domain should be *exactly the
+same flow* as invalidation for a paging domain. It iterates over the
+attachments and generates the correct list of PASIDs and ATCs.
 
 Jason
