@@ -1,165 +1,348 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.115])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-vs1-f47.google.com (mail-vs1-f47.google.com [209.85.217.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 23F9AA52
-	for <iommu@lists.linux.dev>; Wed,  9 Aug 2023 04:01:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1691553719; x=1723089719;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=mlEtarUxQ7iIcbKjY+DO+zWj5PjLER2aIawvfQGmsUQ=;
-  b=KRJeowWCq6entICw+WJvBO66O+wrFsY/k12uvvIvpbcZqdRDN1p0qWYL
-   0wYZcu/NNpdjwZWsDVOx1vZLZjKJ+hSOOheQ5drMcOj0oDrPTB2Qm8f71
-   HLiphFnegYZHE7wrOgQ0d66ItGAZ1usrOxpKiL2f5OTopX4R9OBJsumNh
-   2SDyzLcrqQb8rT5gjzazcHenGCc/L97TNpICfAaUvgyYIQZL8iDxlfUR/
-   Lb4aMSIb+3UcojnNdRujNCyypeOanBDWpDGlqkWLM+cDr2MtCveIEqzD+
-   FT8yQ3nWOL/L6rQ9HL2+iK/z4QfPontP6qFToRFZAe8JSVA0+bSWH/ZBe
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10795"; a="371008380"
-X-IronPort-AV: E=Sophos;i="6.01,158,1684825200"; 
-   d="scan'208";a="371008380"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Aug 2023 21:01:45 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10795"; a="681517690"
-X-IronPort-AV: E=Sophos;i="6.01,158,1684825200"; 
-   d="scan'208";a="681517690"
-Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
-  by orsmga003.jf.intel.com with ESMTP; 08 Aug 2023 21:01:44 -0700
-Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.27; Tue, 8 Aug 2023 21:01:44 -0700
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.27; Tue, 8 Aug 2023 21:01:44 -0700
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.27 via Frontend Transport; Tue, 8 Aug 2023 21:01:44 -0700
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.168)
- by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.27; Tue, 8 Aug 2023 21:01:44 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jyjxZuxRgCqk07UGJ6yBDT20cNMkADYDjF26kdLCJxGXedQCJg0Katu6ppeq9WoFUtm+ugyeBgVrVd7WRXp1cqSag4YiBD8v2hdzSUkLdLENwsQR8ypF0mBokSHGdRoT5vHaZ8eWPxbEnQF60PjM37fTLJKdYk+ihJ1oRwNuFZkm2FCFswESGq1otSGM34IwOtypi9pQeFPsrb7Ak1wisXQo1l2WeLdHdq0rrf8FIGGIzn6Xbdr06iD0ZHHxey583cq62h5DxkqW+rS0w1gisaguOQxOlMeC+lE37TUykR8FwNLt8OhYU1DvlG0Voscu5pIqcSKRxZH5HTpgGM7zOw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=zklLz7vuCtVLx4x9Ne4YIw6rYDvneZKkVqbQoRi50b0=;
- b=NQteSiUGnsGfMPsb81LjxDmwJKCs6QYr05mlpgq0NPlAdS3vMiiA3Gn0UrCq+RFqHhfse+aBwS3Ja1cor+Dy83Q3uTsqpBta0xim7RDi8/UiNXL1P9IsDsqEawVjyxE5u/y3/J801z9tvZw8nioKv/UYwTZqdf7s6RAj+6dj+W3R6/o4jJf6tvM1fKvwrbuV0PKCuilVLKk2lk2jfccY8MpuwxvahqdVoRaaLJV/DPp3NDzQf39p2vLYNRSmfYgO/CMOnDFqtYicOkJl0WsnA2lV3jb1DXKLCyIl8bV64HXMVFnAdXW9DWoXs1QlPBs35J3f4w73tPBu1848JicqDg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by DS0PR11MB7412.namprd11.prod.outlook.com (2603:10b6:8:152::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6652.27; Wed, 9 Aug
- 2023 04:01:42 +0000
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::dcf3:7bac:d274:7bed]) by BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::dcf3:7bac:d274:7bed%4]) with mapi id 15.20.6652.026; Wed, 9 Aug 2023
- 04:01:42 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Jason Gunthorpe <jgg@nvidia.com>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>, Joerg Roedel <joro@8bytes.org>, Len Brown
-	<lenb@kernel.org>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>,
-	"Rafael J. Wysocki" <rafael@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Will Deacon <will@kernel.org>
-CC: Lu Baolu <baolu.lu@linux.intel.com>, Marek Szyprowski
-	<m.szyprowski@samsung.com>, Chen-Yu Tsai <wenst@chromium.org>
-Subject: RE: [PATCH 3/3] iommu: Do not attempt to re-lock the iommu device
- when probing
-Thread-Topic: [PATCH 3/3] iommu: Do not attempt to re-lock the iommu device
- when probing
-Thread-Index: AQHZyh2akg5YH0F9h0yZdFfxvjRvRa/hVv5g
-Date: Wed, 9 Aug 2023 04:01:42 +0000
-Message-ID: <BN9PR11MB5276EA0632C6E65C83397B1A8C12A@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <0-v1-8612b9ef48da+333-iommu_group_locking2_jgg@nvidia.com>
- <3-v1-8612b9ef48da+333-iommu_group_locking2_jgg@nvidia.com>
-In-Reply-To: <3-v1-8612b9ef48da+333-iommu_group_locking2_jgg@nvidia.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|DS0PR11MB7412:EE_
-x-ms-office365-filtering-correlation-id: 8d50e275-1135-4f39-9964-08db988d570b
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: yzR0uqXVlgG+IIaQZZzIz2bgpGmK8GijQJGB6zW/+Dj1snjlI03H3BwMOzzyO2lVcJsVLuEVP4XinTyZ6pfqPs7VeIX8iACK3IWpg0pyvctbdeV4Yg9u5ZsKf8FqYRTwDNMkkv+QaXLVgyXW/JFTnJJ/kP56ewzDyaeWhfPwbvTJR9gzh9dTVdjZK7TDWnFxrb0c2t7eq/fqldYxaYF/WO49e1BXZaqglWeSYrnN/Vf5Lo7t/uDaGWAXTgKjYbfMCbB9cIv09AZFGx72MzaFnlF14qJirKMmmYP2GpIqlsiV/BtBhkNn2yxZizVec+MwyEyLwo3RaLvla+Zk5m8uMCf1yB6pW4bYNJOzQW0B0l11TvUNymMR4mt+BatAvHUyMb6gNvpS3XSfI0RfGRATvFs9Ww7jfxgDXyjNiawjqAap3Og59p56KaIPDtL0k6CXlFmjI14/yuQVvQ3o9FDeaUxOjCXuUNhHduF4yI52zs6OesLlZf4rvBmIWX1n2gpeumaacuxyWGuK2pVJyJV/X+cHUP65s8/4KfZ0RDvwqM+ZujMMpz9HIb4p16FFPBk6UYrz6q8IkJx00Hu8IpmBSKsIkIZBahFm2TRB9m0YA+xNKvo9XbLdFzzK758FjAJE
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(346002)(366004)(376002)(396003)(39860400002)(136003)(186006)(1800799006)(451199021)(6506007)(26005)(9686003)(71200400001)(7696005)(122000001)(478600001)(82960400001)(33656002)(38100700002)(110136005)(54906003)(66556008)(66946007)(66476007)(76116006)(66446008)(4326008)(316002)(41300700001)(8676002)(52536014)(5660300002)(38070700005)(7416002)(8936002)(64756008)(4744005)(2906002)(83380400001)(86362001)(55016003);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?2LYuZIhxyGiYImRklvjiQc7OX/UA6AsPLAoC2AheH4Lum2DCicU0hBENdW7D?=
- =?us-ascii?Q?DpxjU+8WVd9d+BdYCUo68FobUItnBP0xGAu6RPlDmdA53mRGPi1E/ODOeP6J?=
- =?us-ascii?Q?5WHuWHfRJS+cF6C7WVggmUYlE6FBjccGezjbsUMO6b/fRdmhTpeJRkAi0M1i?=
- =?us-ascii?Q?vmjRr8SlWaBtEstSj6RcEnsbEDykA9Zs15SCQLZsorjRe1zwoFu7rY3SWCsX?=
- =?us-ascii?Q?7SofYQmNT9HwP0k6cA69VHOIqzNu+mfHHK8Bi2ijTLhVr0ncG/9pPdauykho?=
- =?us-ascii?Q?J26AC1Vub5piF2iNljaQRZ6O6cn+8CqH99ike3foAmmIPxWSU1I7F8C3BUck?=
- =?us-ascii?Q?7PmmSevJl69+FUPGaRZtjYKP1UV8fs4LoOULzxYKPLaHkZK+REEUPKY+CzIK?=
- =?us-ascii?Q?XoHZH8kY28y7svMm7DI7CduP5fo8MiQs1ZTPqoLw/3Md4uwPWR0H0ohpUz8K?=
- =?us-ascii?Q?vxBXkGcw9Y3uSlYScGlHwOglHq5rM1HEy7r6Kp55tYZNIOtxVOZh2pctm134?=
- =?us-ascii?Q?v9FWIMKdgQjnKaAue+rfwKnSeLXTgy3AdYtL+DSQYjduY1qZapGwrzrnBzGk?=
- =?us-ascii?Q?gU0cyqdTPVBzgS+ghCbtPRqwhq2AtP0jkXhv/ykm6an1YDZm9ezNODjHS2Dw?=
- =?us-ascii?Q?Xo5x/UE2bUJtBU/UaAlTLU+xgnUMC/Uuu315RIILorNGgj7oB+2z9xIPO/Ua?=
- =?us-ascii?Q?M1cC7dt5fvGABhPie2PTRHDC38InopfX6GLWTzY5jfub9c/EtoKYpHZWuPZQ?=
- =?us-ascii?Q?ODKyahReHE+sT3+KUlq2QGOCPZFxRgLLpvkRNYOVJriAiALfh2X340T7txW5?=
- =?us-ascii?Q?ivXMXr+sOjvagnCCIFs2cqJAT4Kx4yvXAcTpl1B2bo1xcvyYgnA1bJp3yNOi?=
- =?us-ascii?Q?0bqGThu3P1Hcez4NSCSdjv//qmjraNhcZKUsinkUY1BC39c/PGyCnTnJMLKk?=
- =?us-ascii?Q?uOwg3MqGw+bV0CRG+yE4iU3jhix0NOAutCY5+wdOaojabnVf4f/+hxE3rI3l?=
- =?us-ascii?Q?HIwgPbMcegnBJKqFk5Ui12TGqKKsgvnBUTcjim3meO2UxIMhnpEL5nUXVZg6?=
- =?us-ascii?Q?Dl7r9Xw+YPsz+nP1J/lggAzWu/RyUyxOlXdU+hps8qQZdys2HoUui9GHU88Q?=
- =?us-ascii?Q?8gYXWfwNi3XRGzlm9aMFRSfimNqTG7t9cnsdyskeBC/2dmgODODFLWwox+QK?=
- =?us-ascii?Q?MZrJWa8l4ZJ/A9IgnBJEiyu7dWUvPqksKOMejBM45mVPbcwQL/pH+93CEUrP?=
- =?us-ascii?Q?PZz0v7HwkXxamzzC/1vuNnd8YzZlDHS1qoUj/jMUU1OzB2rFreNttqIjI7DJ?=
- =?us-ascii?Q?Ukel0Efzn9TkHt5QsQBRXCDOtzFEFJBty9UrP066c+dowsNQuYYw7kBC7P7/?=
- =?us-ascii?Q?TztMDZ2UG0kAu1WNZrqI6ez1RLoU4BkSmt3dKlbm7iuFAl4E+OU6PClsqtxs?=
- =?us-ascii?Q?Oxq/K77nBlVg3uN2lterV8ZWMzLqNMxIhBz8+On+t4SJlIggpuFIXUolajsK?=
- =?us-ascii?Q?aj+KHy9z7F0cA4Rx2XrTG1MofOJ4WSj7Zp/TV64/Cop1OOD/ivt0Rn7/ERd1?=
- =?us-ascii?Q?ivSqzJDfSxO8iXOF1BPDt6XSjH08+/wGot4jq6IA?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0DD034693
+	for <iommu@lists.linux.dev>; Wed,  9 Aug 2023 06:23:49 +0000 (UTC)
+Received: by mail-vs1-f47.google.com with SMTP id ada2fe7eead31-44756c21105so384099137.1
+        for <iommu@lists.linux.dev>; Tue, 08 Aug 2023 23:23:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google; t=1691562229; x=1692167029;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=x205JUcJrdy6m56y4SI/bATaq/jXQ34fSODElN8AHdQ=;
+        b=e19zKhoYV55naGiVnudOxqRuT0re9tn8S5WtJPpQ7tFI5AygaaQAjILiNVsy225faM
+         eUxnUdVr8WbE4DlezutIV8haej6wF5Fq9/rYKFzBciN0Z3RJSVPzCEoE/yhiRYSmx6JC
+         0NJjF8lXwkxXxYmcSUqf9AfX3RMcV9Nkx3ycs=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1691562229; x=1692167029;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=x205JUcJrdy6m56y4SI/bATaq/jXQ34fSODElN8AHdQ=;
+        b=SqU7+EA3Lrp4esS6qVi458RDOghfa8OnPgkJ10YGx2lk0TCNcY+UVsNjIY29jrN0M3
+         6JdvOV5v5OP7ESwX31Ij2DZOvN57KW/G/ONASHDDzWkf2FruYlHOqjUIMwXhRT3JWfL/
+         foc5wyQi8a1KrRNyjjE4ge8EeRUaxUSL17Xs2V0P2PYgjhpkJvo2mEzmS8QkfMQvpoEx
+         PAWzgLujGLhxMHYGe6dUpH3VXvj7yV94Yr1ed8LZ0gh2M+RVlD83o9cfqNWOgDo49wlK
+         xr3mJJBp7mROACDH4+DKHq0hhAxK9lO5LnMQ/S+4quM+j35ucdUpUUnaknkpmdL76qbC
+         c4Pg==
+X-Gm-Message-State: AOJu0Yzb2ivkwAasgEfiNo3qAcZFtsQl/v59F1MYJgGU8bCW9GiiLc9m
+	lNNI/AhnrWWe3QSn1KihWNz6FYRXJLkXk/B2EYeqUA==
+X-Google-Smtp-Source: AGHT+IEc5P222J1KE8zztcdL/OSdAcdJI1HUp7Z4XJj8Xf1Y7WGImgrKazxHV7M733PBjz+ApvUwUa0wGHUCjzyzRXA=
+X-Received: by 2002:a67:f4c8:0:b0:43f:3426:9e35 with SMTP id
+ s8-20020a67f4c8000000b0043f34269e35mr2048632vsn.12.1691562228737; Tue, 08 Aug
+ 2023 23:23:48 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8d50e275-1135-4f39-9964-08db988d570b
-X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Aug 2023 04:01:42.1184
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: fuaNW/JRnwDG1jE3X95neOf5qEH1I9mUVFNjL5KEOfHAhL/TO3eYunwHcxpNzu5xFeqFbaC/eir5+rNs7siQsg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR11MB7412
-X-OriginatorOrg: intel.com
+References: <0-v2-b0417f84403e+11f-iommu_group_locking_jgg@nvidia.com>
+ <ZNDpfCoeFxA56ZlU@8bytes.org> <CAGXv+5E-f9AteAYkmXYzVDZFSA_royc7-bS5LcrzzuHDnXccwA@mail.gmail.com>
+ <CGME20230808123250eucas1p19d12a9ae0e530c123ba625189f593b36@eucas1p1.samsung.com>
+ <7483d18e-d06f-53eb-92af-beed50674ab0@samsung.com> <ZNI8W0hTXraSi/Ne@nvidia.com>
+ <4d56203e-b602-07ee-ab74-2825c110c36d@samsung.com> <ZNJCRhGGxS+63Dnr@nvidia.com>
+ <bc5d6aa8-e8ca-c896-2f39-af074d55e436@samsung.com> <ZNJRf4Xp8rY1+iT4@nvidia.com>
+In-Reply-To: <ZNJRf4Xp8rY1+iT4@nvidia.com>
+From: Chen-Yu Tsai <wenst@chromium.org>
+Date: Wed, 9 Aug 2023 14:23:37 +0800
+Message-ID: <CAGXv+5GKKskhnwboGUFi0tq=iES9L+wCawTDEh_9mkDmt=qKBQ@mail.gmail.com>
+Subject: Re: [PATCH v2 00/10] Refine the locking for dev->iommu_group
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Joerg Roedel <joro@8bytes.org>, 
+	Baolin Wang <baolin.wang@linux.alibaba.com>, David Woodhouse <dwmw2@infradead.org>, 
+	Heiko Stuebner <heiko@sntech.de>, iommu@lists.linux.dev, 
+	Jernej Skrabec <jernej.skrabec@gmail.com>, linux-arm-kernel@lists.infradead.org, 
+	linux-rockchip@lists.infradead.org, linux-sunxi@lists.linux.dev, 
+	Orson Zhai <orsonzhai@gmail.com>, Robin Murphy <robin.murphy@arm.com>, 
+	Samuel Holland <samuel@sholland.org>, Chen-Yu Tsai <wens@csie.org>, Will Deacon <will@kernel.org>, 
+	Chunyan Zhang <zhang.lyra@gmail.com>, Alex Williamson <alex.williamson@redhat.com>, 
+	Lu Baolu <baolu.lu@linux.intel.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-> From: Jason Gunthorpe <jgg@nvidia.com>
-> Sent: Wednesday, August 9, 2023 1:27 AM
->=20
-> @@ -1800,11 +1801,18 @@ struct probe_iommu_args {
+On Tue, Aug 8, 2023 at 10:30=E2=80=AFPM Jason Gunthorpe <jgg@nvidia.com> wr=
+ote:
+>
+> On Tue, Aug 08, 2023 at 04:02:40PM +0200, Marek Szyprowski wrote:
+> > Hi Jason,
+> >
+> > On 08.08.2023 15:25, Jason Gunthorpe wrote:
+> > > On Tue, Aug 08, 2023 at 03:08:30PM +0200, Marek Szyprowski wrote:
+> > >>> Any of the drivers that use platform device as the iommu_device wil=
+l
+> > >>> have a problem, please try:
+> > >>>
+> > >>> https://lore.kernel.org/linux-iommu/ZNIz%2FNVLb6WqqvQx@nvidia.com/
+> > >> I've checked and it doesn't help in my case. I will soon check why.
+> > > Oh, I botched it. Forgot that the iommu_device->dev is the sysfs
+> > > handle not the HW device. Maybe this:
+> >
+> > This fixed the early lockup, but then system hangs again a bit later. I=
+t
+> > looks that this device lock in __iommu_probe_device() is really
+> > problematic,
+>
+> Yes, I expected we'd hit something like this - I checked alot of call
+> paths but missed these two. The self-probe is sneaky, but here the
+> device_lock is held way up the call chain, I just missed it.
+>
+> The fix is to just annotate that we already hold the lock when calling
+> iommu_probe_device(), since we know in those cases that we must be
+> holding it:
+
+This fixed things for me, so
+
+Tested-by: Chen-Yu Tsai <wenst@chromium.org>
+
+> diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
+> index daa64dd687524b..3fc5e12f2f1c09 100644
+> --- a/drivers/acpi/scan.c
+> +++ b/drivers/acpi/scan.c
+> @@ -1582,7 +1582,7 @@ static const struct iommu_ops *acpi_iommu_configure=
+_id(struct device *dev,
+>          * iommu_probe_device() call for dev, replay it to get things in =
+order.
+>          */
+>         if (!err && dev->bus)
+> -               err =3D iommu_probe_device(dev);
+> +               err =3D iommu_probe_device_locked(dev);
+>
+>         /* Ignore all other errors apart from EPROBE_DEFER */
+>         if (err =3D=3D -EPROBE_DEFER) {
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 7dbbcffac21930..b867d7f22954e9 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -264,6 +264,7 @@ int iommu_device_register(struct iommu_device *iommu,
+>                 return -EBUSY;
+>
+>         iommu->ops =3D ops;
+> +       iommu->hwdev =3D hwdev;
+>         if (hwdev)
+>                 iommu->fwnode =3D dev_fwnode(hwdev);
+>
+> @@ -273,7 +274,7 @@ int iommu_device_register(struct iommu_device *iommu,
+>
+>         for (int i =3D 0; i < ARRAY_SIZE(iommu_buses) && !err; i++) {
+>                 iommu_buses[i]->iommu_ops =3D ops;
+> -               err =3D bus_iommu_probe(iommu_buses[i]);
+> +               err =3D bus_iommu_probe(iommu_buses[i], iommu);
+>         }
+>         if (err)
+>                 iommu_device_unregister(iommu);
+> @@ -452,24 +453,23 @@ static int __iommu_probe_device(struct device *dev,=
+ struct list_head *group_list
+>         struct group_device *gdev;
+>         int ret;
+>
+> -       if (!ops)
+> -               return -ENODEV;
+>         /*
+>          * Allow __iommu_probe_device() to be safely called in parallel,
+>          * both dev->iommu_group and the initial setup of dev->iommu are
+>          * protected this way.
+>          */
+> -       device_lock(dev);
+> +       device_lock_assert(dev);
+> +
+> +       if (!ops)
+> +               return -ENODEV;
+>
+>         /* Device is probed already if in a group */
+> -       if (dev->iommu_group) {
+> -               ret =3D 0;
+> -               goto out_unlock;
+> -       }
+> +       if (dev->iommu_group)
+> +               return 0;
+>
+>         ret =3D iommu_init_device(dev, ops);
+>         if (ret)
+> -               goto out_unlock;
+> +               return ret;
+>
+>         group =3D dev->iommu_group;
+>         gdev =3D iommu_group_alloc_device(group, dev);
+> @@ -505,7 +505,6 @@ static int __iommu_probe_device(struct device *dev, s=
+truct list_head *group_list
+>                         list_add_tail(&group->entry, group_list);
+>         }
+>         mutex_unlock(&group->mutex);
+> -       device_unlock(dev);
+>
+>         if (dev_is_pci(dev))
+>                 iommu_dma_set_pci_32bit_workaround(dev);
+> @@ -519,12 +518,10 @@ static int __iommu_probe_device(struct device *dev,=
+ struct list_head *group_list
+>         iommu_deinit_device(dev);
+>         mutex_unlock(&group->mutex);
+>         iommu_group_put(group);
+> -out_unlock:
+> -       device_unlock(dev);
+>         return ret;
+>  }
+>
+> -int iommu_probe_device(struct device *dev)
+> +int iommu_probe_device_locked(struct device *dev)
+>  {
+>         const struct iommu_ops *ops;
+>         int ret;
+> @@ -540,6 +537,16 @@ int iommu_probe_device(struct device *dev)
+>         return 0;
+>  }
+>
+> +int iommu_probe_device(struct device *dev)
+> +{
+> +       int ret;
+> +
+> +       device_lock(dev);
+> +       ret =3D iommu_probe_device_locked(dev);
+> +       device_unlock(dev);
+> +       return ret;
+> +}
+> +
+>  static void __iommu_group_free_device(struct iommu_group *group,
+>                                       struct group_device *grp_dev)
+>  {
+> @@ -1784,12 +1791,26 @@ struct iommu_domain *iommu_group_default_domain(s=
+truct iommu_group *group)
+>         return group->default_domain;
+>  }
+>
+> +struct probe_iommu_args {
+> +       struct list_head *group_list;
+> +       struct iommu_device *iommu;
+> +};
+> +
 >  static int probe_iommu_group(struct device *dev, void *data)
 >  {
->  	struct probe_iommu_args *args =3D data;
-> +	bool need_lock;
->  	int ret;
->=20
-> -	device_lock(dev);
-> +	/* Probing the iommu itself is always done under the device_lock */
-> +	need_lock =3D !args->iommu || args->iommu->hwdev !=3D dev;
+> -       struct list_head *group_list =3D data;
+> +       struct probe_iommu_args *args =3D data;
+> +       bool need_lock;
+>         int ret;
+>
+> -       ret =3D __iommu_probe_device(dev, group_list);
+> +       /* Probing the iommu itself is always done under the device_lock =
+*/
+> +       need_lock =3D !args->iommu || args->iommu->hwdev !=3D dev;
 > +
-
-is !args->iommu a valid case?
-
-btw probably a dumb question. Why do we continue to probe the
-iommu device itself instead of skipping it? The group is a concept
-for devices which require DMA protection from iommu instead of
-for the iommu device itself...
+> +       if (need_lock)
+> +               device_lock(dev);
+> +       ret =3D __iommu_probe_device(dev, args->group_list);
+> +       if (need_lock)
+> +               device_unlock(dev);
+> +
+>         if (ret =3D=3D -ENODEV)
+>                 ret =3D 0;
+>
+> @@ -1858,13 +1879,16 @@ static void iommu_group_do_probe_finalize(struct =
+device *dev)
+>                 ops->probe_finalize(dev);
+>  }
+>
+> -int bus_iommu_probe(const struct bus_type *bus)
+> +int bus_iommu_probe(const struct bus_type *bus, struct iommu_device *iom=
+mu)
+>  {
+>         struct iommu_group *group, *next;
+> +       struct probe_iommu_args args =3D {};
+>         LIST_HEAD(group_list);
+>         int ret;
+>
+> -       ret =3D bus_for_each_dev(bus, NULL, &group_list, probe_iommu_grou=
+p);
+> +       args.group_list =3D &group_list;
+> +       args.iommu =3D iommu;
+> +       ret =3D bus_for_each_dev(bus, NULL, &args, probe_iommu_group);
+>         if (ret)
+>                 return ret;
+>
+> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+> index 157b286e36bf3a..b5b7d4bd2cefb9 100644
+> --- a/drivers/iommu/of_iommu.c
+> +++ b/drivers/iommu/of_iommu.c
+> @@ -160,7 +160,7 @@ const struct iommu_ops *of_iommu_configure(struct dev=
+ice *dev,
+>          * probe for dev, replay it to get things in order.
+>          */
+>         if (!err && dev->bus)
+> -               err =3D iommu_probe_device(dev);
+> +               err =3D iommu_probe_device_locked(dev);
+>
+>         /* Ignore all other errors apart from EPROBE_DEFER */
+>         if (err =3D=3D -EPROBE_DEFER) {
+> diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
+> index 97c45f50bf4332..828679abef7503 100644
+> --- a/drivers/iommu/omap-iommu.c
+> +++ b/drivers/iommu/omap-iommu.c
+> @@ -1234,6 +1234,10 @@ static int omap_iommu_probe(struct platform_device=
+ *pdev)
+>                 if (err)
+>                         goto out_sysfs;
+>                 obj->has_iommu_driver =3D true;
+> +       } else {
+> +               /* Re-probe bus to probe device attached to this IOMMU */
+> +               obj->iommu.hwdev =3D &pdev->dev;
+> +               bus_iommu_probe(&platform_bus_type, &obj->iommu);
+>         }
+>
+>         pm_runtime_enable(obj->dev);
+> @@ -1242,9 +1246,6 @@ static int omap_iommu_probe(struct platform_device =
+*pdev)
+>
+>         dev_info(&pdev->dev, "%s registered\n", obj->name);
+>
+> -       /* Re-probe bus to probe device attached to this IOMMU */
+> -       bus_iommu_probe(&platform_bus_type);
+> -
+>         return 0;
+>
+>  out_sysfs:
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index f1e18e81fca78b..96782bfb384462 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -361,6 +361,7 @@ struct iommu_domain_ops {
+>   * @list: Used by the iommu-core to keep a list of registered iommus
+>   * @ops: iommu-ops for talking to this iommu
+>   * @dev: struct device for sysfs handling
+> + * @hwdev: The device HW that controls the iommu
+>   * @singleton_group: Used internally for drivers that have only one grou=
+p
+>   * @max_pasids: number of supported PASIDs
+>   */
+> @@ -369,6 +370,7 @@ struct iommu_device {
+>         const struct iommu_ops *ops;
+>         struct fwnode_handle *fwnode;
+>         struct device *dev;
+> +       struct device *hwdev;
+>         struct iommu_group *singleton_group;
+>         u32 max_pasids;
+>  };
+> @@ -465,7 +467,8 @@ static inline const struct iommu_ops *dev_iommu_ops(s=
+truct device *dev)
+>         return dev->iommu->iommu_dev->ops;
+>  }
+>
+> -extern int bus_iommu_probe(const struct bus_type *bus);
+> +extern int bus_iommu_probe(const struct bus_type *bus,
+> +                          struct iommu_device *iommu);
+>  extern bool iommu_present(const struct bus_type *bus);
+>  extern bool device_iommu_capable(struct device *dev, enum iommu_cap cap)=
+;
+>  extern bool iommu_group_has_isolated_msi(struct iommu_group *group);
+> @@ -709,6 +712,7 @@ static inline void dev_iommu_priv_set(struct device *=
+dev, void *priv)
+>  }
+>
+>  int iommu_probe_device(struct device *dev);
+> +int iommu_probe_device_locked(struct device *dev);
+>
+>  int iommu_dev_enable_feature(struct device *dev, enum iommu_dev_features=
+ f);
+>  int iommu_dev_disable_feature(struct device *dev, enum iommu_dev_feature=
+s f);
+>
+>
