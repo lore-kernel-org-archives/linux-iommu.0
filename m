@@ -1,199 +1,146 @@
-Received: from dggsgout11.his.huawei.com (unknown [45.249.212.51])
+Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2995918C2B
-	for <iommu@lists.linux.dev>; Wed,  9 Aug 2023 13:29:24 +0000 (UTC)
-Received: from mail02.huawei.com (unknown [172.30.67.143])
-	by dggsgout11.his.huawei.com (SkyGuard) with ESMTP id 4RLVqY3V8rz4f3prJ
-	for <iommu@lists.linux.dev>; Wed,  9 Aug 2023 21:13:29 +0800 (CST)
-Received: from huaweicloud.com (unknown [10.174.178.55])
-	by APP4 (Coremail) with SMTP id gCh0CgAXp6n1kNNkTII5AQ--.15907S6;
-	Wed, 09 Aug 2023 21:13:29 +0800 (CST)
-From: thunder.leizhen@huaweicloud.com
-To: Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Cc: Zhen Lei <thunder.leizhen@huawei.com>,
-	Tanmay Jagdale <tanmay@marvell.com>,
-	Jonathan Cameron <Jonathan.Cameron@Huawei.com>
-Subject: [PATCH v2 2/2] iommu/arm-smmu-v3: Ensure that a set of associated commands are inserted in the same ECMDQ
-Date: Wed,  9 Aug 2023 21:13:03 +0800
-Message-Id: <20230809131303.1355-3-thunder.leizhen@huaweicloud.com>
-X-Mailer: git-send-email 2.37.3.windows.1
-In-Reply-To: <20230809131303.1355-1-thunder.leizhen@huaweicloud.com>
-References: <20230809131303.1355-1-thunder.leizhen@huaweicloud.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 63159612D
+	for <iommu@lists.linux.dev>; Wed,  9 Aug 2023 13:38:33 +0000 (UTC)
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20230809133831euoutp02a55c957c64ed8a018047a44e74187357~5uptcDTgp2215522155euoutp02I
+	for <iommu@lists.linux.dev>; Wed,  9 Aug 2023 13:38:31 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20230809133831euoutp02a55c957c64ed8a018047a44e74187357~5uptcDTgp2215522155euoutp02I
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1691588311;
+	bh=SKqPzDFlrkcCcHmSuqmh4kcm811YUbeL2qHu7n5US7s=;
+	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
+	b=craY2OV6na1qz6M8TKOSEWbIrFM6PrT80vKkh7Utc3rSi5a3hBPS7t22ClnqLN4Lb
+	 7flARHhk2FYwULGo3x1scVGh3cK9zOhRMVwMI/aWgRoHNU+JbNf8vNzS3xf+BHHChf
+	 /5Udo4lYI2otABN3WmJx5oQxyZpZ8z3K2NYZ0YQk=
+Received: from eusmges2new.samsung.com (unknown [203.254.199.244]) by
+	eucas1p2.samsung.com (KnoxPortal) with ESMTP id
+	20230809133831eucas1p21e51d486ac97f504bff8f142dbb32c96~5uptJ1Qcs0148701487eucas1p2O;
+	Wed,  9 Aug 2023 13:38:31 +0000 (GMT)
+Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
+	eusmges2new.samsung.com (EUCPMTA) with SMTP id 04.72.11320.7D693D46; Wed,  9
+	Aug 2023 14:38:31 +0100 (BST)
+Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
+	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+	20230809133830eucas1p287639c948bc3fde51b529e2d562ab010~5ups1uaAd0149901499eucas1p2x;
+	Wed,  9 Aug 2023 13:38:30 +0000 (GMT)
+Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
+	eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
+	20230809133830eusmtrp25cfecda9d6ef6858d9a74af399a96146~5upszl5WK1005010050eusmtrp2I;
+	Wed,  9 Aug 2023 13:38:30 +0000 (GMT)
+X-AuditID: cbfec7f4-97dff70000022c38-b1-64d396d7f811
+Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
+	eusmgms2.samsung.com (EUCPMTA) with SMTP id F5.47.14344.6D693D46; Wed,  9
+	Aug 2023 14:38:30 +0100 (BST)
+Received: from [106.210.134.192] (unknown [106.210.134.192]) by
+	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
+	20230809133830eusmtip1103926a77f235a47fceb7cd7d51271f8~5upsG_1fr3234332343eusmtip1b;
+	Wed,  9 Aug 2023 13:38:29 +0000 (GMT)
+Message-ID: <4208251b-8822-9376-cbe3-572f362720c5@samsung.com>
+Date: Wed, 9 Aug 2023 15:38:30 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:gCh0CgAXp6n1kNNkTII5AQ--.15907S6
-X-Coremail-Antispam: 1UD129KBjvJXoWxCFyUKw1kur47uw4fWr4kZwb_yoW7JrWDpa
-	17u39YyF45XF1IkrW3Zr4Yqr9rXFyY9a4DtrWUWa4Dtr1UtryrWr1Fk3WFkrykurykZr4f
-	Cr9Fqr4Uur1UtFJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDU0xBIdaVrnRJUUU9vb4IE77IF4wAFF20E14v26rWj6s0DM7CY07I20VC2zVCF04k2
-	6cxKx2IYs7xG6r1S6rWUM7CIcVAFz4kK6r1j6r18M28IrcIa0xkI8VA2jI8067AKxVWUXw
-	A2048vs2IY020Ec7CjxVAFwI0_Gr0_Xr1l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxS
-	w2x7M28EF7xvwVC0I7IYx2IY67AKxVW7JVWDJwA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxV
-	W8Jr0_Cr1UM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v2
-	6rxl6s0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMc
-	Ij6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_
-	Jr0_Gr1lF7xvr2IYc2Ij64vIr41lw4CEc2x0rVAKj4xxMxAIw28IcxkI7VAKI48JMxC20s
-	026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_
-	JrI_JrWlx4CE17CEb7AF67AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14
-	v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVW8JVWxJwCI42IY6xAIw20EY4v20xva
-	j40_Jr0_JF4lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JV
-	W8JrUvcSsGvfC2KfnxnUUI43ZEXa7IU8y89tUUUUU==
-X-CM-SenderInfo: hwkx0vthuozvpl2kv046kxt4xhlfz01xgou0bp/
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0)
+	Gecko/20100101 Thunderbird/102.13.0
+Subject: Re: [PATCH 3/3] iommu: Do not attempt to re-lock the iommu device
+ when probing
+Content-Language: en-US
+To: Jason Gunthorpe <jgg@nvidia.com>, "Tian, Kevin" <kevin.tian@intel.com>
+Cc: "iommu@lists.linux.dev" <iommu@lists.linux.dev>, Joerg Roedel
+	<joro@8bytes.org>, Len Brown <lenb@kernel.org>, "linux-acpi@vger.kernel.org"
+	<linux-acpi@vger.kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>, Robin
+	Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>, Lu Baolu
+	<baolu.lu@linux.intel.com>, Chen-Yu Tsai <wenst@chromium.org>
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+In-Reply-To: <ZNODeRzC+Rtkta1U@nvidia.com>
+Content-Transfer-Encoding: 7bit
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrKKsWRmVeSWpSXmKPExsWy7djP87rXp11OMTh4lM1i88StbBa/vlhY
+	XPm3h9Gic/YGdoulb7eyW+x8+JbNYvm+fkaLuV+mMlsc/PCE1WJG22VWi5Y7pg7cHk8OzmPy
+	WDNvDaPH7IaLLB6L97xk8ti0qpPNY97JQI8Xm2cyevQ2v2Pz+LxJLoAzissmJTUnsyy1SN8u
+	gSvjbU8jS8EJ7orPy3exNjD2c3YxcnJICJhIXLzVxtLFyMUhJLCCUeL0i/VQzhdGia5Z75gh
+	nM+MEs+7nrPAtNw8tI0JIrEcqOXWClYI5yOjxKEZi1lBqngF7CSu9fUwgdgsAioSva132CHi
+	ghInZz4BmyQqkCqx4/YEsHphgUiJoye6GEFsZgFxiVtP5oP1igh4Sax/+APsJmaBF0wSz7bP
+	BmtmEzCU6HrbxQZicwpoSRzcv50NolleYvvbOWB3SwhM55Q4MXEr1N0uEi3d/5ghbGGJV8e3
+	sEPYMhL/d85ngmhoZ5RY8Ps+lDOBUaLh+S1GiCpriTvnfgGt4ABaoSmxfpc+RNhR4lZvK1hY
+	QoBP4sZbQYgj+CQmbZvODBHmlehoE4KoVpOYdXwd3NqDFy4xT2BUmoUULrOQ/D8LyTuzEPYu
+	YGRZxSieWlqcm55abJSXWq5XnJhbXJqXrpecn7uJEZjSTv87/mUH4/JXH/UOMTJxMB5ilOBg
+	VhLhtQ2+lCLEm5JYWZValB9fVJqTWnyIUZqDRUmcV9v2ZLKQQHpiSWp2ampBahFMlomDU6qB
+	aaPXz+mn7TY8X/9E8p1e3Dd3V85rf902GhTvk1eZ9H93XfH+dx8yRd/b7POQsFo3Q7+l51/0
+	UsdLIScZ820OnFm8Rrp+sRVP9s+5xj73jPxPyKg8CE3XbVvzMH7fg9P7dxtx6lcVn5jyb/2c
+	//2VjXJvRdZ8lz/RwsSX/rZ2+cod03Mfb0oRtYgwYXc8tPJPfZ17cYLz55eS66JdtmT/2v5q
+	17arnltet5UYcvvsaOgy9fh29pBGe/n/L8t1OdpsE5KMaj8JvVeu5zs/2efiDkOjk/t0c+YL
+	Frnd/Le8KT98SY/sYg/7o7bifs1TtXh/au3O4nWpe/H16OT5p1PrKt1FePLmLudccXn/9/qo
+	DiWW4oxEQy3mouJEABQTNrzYAwAA
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrOIsWRmVeSWpSXmKPExsVy+t/xu7rXpl1OMXj/SNdi88StbBa/vlhY
+	XPm3h9Gic/YGdoulb7eyW+x8+JbNYvm+fkaLuV+mMlsc/PCE1WJG22VWi5Y7pg7cHk8OzmPy
+	WDNvDaPH7IaLLB6L97xk8ti0qpPNY97JQI8Xm2cyevQ2v2Pz+LxJLoAzSs+mKL+0JFUhI7+4
+	xFYp2tDCSM/Q0kLPyMRSz9DYPNbKyFRJ384mJTUnsyy1SN8uQS/jbU8jS8EJ7orPy3exNjD2
+	c3YxcnJICJhI3Dy0jamLkYtDSGApo8S3ydPYIRIyEienNbBC2MISf651sUEUvWeUuPuxAayI
+	V8BO4lpfDxOIzSKgItHbegcqLihxcuYTFhBbVCBV4lfDLrBBwgKREkdPdDGC2MwC4hK3nswH
+	6xUR8JJY//AHC8gCZoFXTBKnNt9ghNh2hkmicU832CQ2AUOJrrcgZ3BycApoSRzcv50NYpKZ
+	RNdWmKnyEtvfzmGewCg0C8khs5AsnIWkZRaSlgWMLKsYRVJLi3PTc4uN9IoTc4tL89L1kvNz
+	NzECY3jbsZ9bdjCufPVR7xAjEwfjIUYJDmYlEV7b4EspQrwpiZVVqUX58UWlOanFhxhNgaEx
+	kVlKNDkfmETySuINzQxMDU3MLA1MLc2MlcR5PQs6EoUE0hNLUrNTUwtSi2D6mDg4pRqYFmo9
+	mPP53Q+ehHK/9wfeO/x0FuZZdN5Hdub7hiWWmxyaJMRU4x/HRa64JaJ/YMmplxqsamZSDeZC
+	lnpuMj8ioif6CnLOMA9PfHfztVbANvMV3LfMzqcV+SZeTSwJXudaL+YwaeazdTZRLuvzXl6J
+	nrxu3XQvjc/3XV7tEj91OnJJiOJc10mr1y665SOgdTlu+bk9L0K5Tu5eITr90v6eT3kNN1e+
+	uV3Umv63V+278oVOVfPZTu39K+0kv84Qnq6brnSxbM4blpPhL4z/XMn7LZ54dV5n4urtn4P3
+	m++7e4X70JGXtjH/p/O4+5oxLrzx4yrnV/XJx22vpLkvO5IoOWfTwp0CU5hPSW/j6WCbekOJ
+	pTgj0VCLuag4EQCwuXxNagMAAA==
+X-CMS-MailID: 20230809133830eucas1p287639c948bc3fde51b529e2d562ab010
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20230809121601eucas1p150499eaa6e5fa6aa998385b3fba70a5a
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20230809121601eucas1p150499eaa6e5fa6aa998385b3fba70a5a
+References: <0-v1-8612b9ef48da+333-iommu_group_locking2_jgg@nvidia.com>
+	<3-v1-8612b9ef48da+333-iommu_group_locking2_jgg@nvidia.com>
+	<BN9PR11MB5276EA0632C6E65C83397B1A8C12A@BN9PR11MB5276.namprd11.prod.outlook.com>
+	<CGME20230809121601eucas1p150499eaa6e5fa6aa998385b3fba70a5a@eucas1p1.samsung.com>
+	<ZNODeRzC+Rtkta1U@nvidia.com>
 
-From: Zhen Lei <thunder.leizhen@huawei.com>
+On 09.08.2023 14:15, Jason Gunthorpe wrote:
+> On Wed, Aug 09, 2023 at 04:01:42AM +0000, Tian, Kevin wrote:
+>>> From: Jason Gunthorpe <jgg@nvidia.com>
+>>> Sent: Wednesday, August 9, 2023 1:27 AM
+>>>
+>>> @@ -1800,11 +1801,18 @@ struct probe_iommu_args {
+>>>   static int probe_iommu_group(struct device *dev, void *data)
+>>>   {
+>>>   	struct probe_iommu_args *args = data;
+>>> +	bool need_lock;
+>>>   	int ret;
+>>>
+>>> -	device_lock(dev);
+>>> +	/* Probing the iommu itself is always done under the device_lock */
+>>> +	need_lock = !args->iommu || args->iommu->hwdev != dev;
+>>> +
+>> is !args->iommu a valid case?
+> Hmm, not any more, it used to happen in an earlier version
+>   
+>> btw probably a dumb question. Why do we continue to probe the
+>> iommu device itself instead of skipping it? The group is a concept
+>> for devices which require DMA protection from iommu instead of
+>> for the iommu device itself...
+> Yeah, that is how I originally did it, but since the locking appeared
+> here I thought it would be safer to just continue to invoke probe as
+> we have always done. I don't know for sure that there isn't some
+> driver that relies on this for some reason.
+>
+> eg it might change the group layouts or something.
 
-The SYNC command only ensures that the command that precedes it in the
-same ECMDQ must be executed, but cannot synchronize the commands in other
-ECMDQs. If an unmap involves multiple commands, some commands are executed
-on one core, and the other commands are executed on another core. In this
-case, after the SYNC execution is complete, the execution of all preceded
-commands can not be ensured.
+Well, I don't think that there is any driver doing such things, but the 
+only way to check is simply change the behavior an wait for complaints.
 
-Prevent the process that performs a set of associated commands insertion
-from being migrated to other cores ensures that all commands are inserted
-into the same ECMDQ.
 
-Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
----
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 41 +++++++++++++++++----
- 1 file changed, 34 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index c64b34be8eb9181..0244f0647745a72 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -243,6 +243,18 @@ static int queue_remove_raw(struct arm_smmu_queue *q, u64 *ent)
- 	return 0;
- }
- 
-+static void arm_smmu_preempt_disable(struct arm_smmu_device *smmu)
-+{
-+	if (smmu->ecmdq_enabled)
-+		preempt_disable();
-+}
-+
-+static void arm_smmu_preempt_enable(struct arm_smmu_device *smmu)
-+{
-+	if (smmu->ecmdq_enabled)
-+		preempt_enable();
-+}
-+
- /* High-level queue accessors */
- static int arm_smmu_cmdq_build_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
- {
-@@ -1037,6 +1049,7 @@ static void arm_smmu_sync_cd(struct arm_smmu_domain *smmu_domain,
- 
- 	cmds.num = 0;
- 
-+	arm_smmu_preempt_disable(smmu);
- 	spin_lock_irqsave(&smmu_domain->devices_lock, flags);
- 	list_for_each_entry(master, &smmu_domain->devices, domain_head) {
- 		for (i = 0; i < master->num_streams; i++) {
-@@ -1047,6 +1060,7 @@ static void arm_smmu_sync_cd(struct arm_smmu_domain *smmu_domain,
- 	spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
- 
- 	arm_smmu_cmdq_batch_submit(smmu, &cmds);
-+	arm_smmu_preempt_enable(smmu);
- }
- 
- static int arm_smmu_alloc_cd_leaf_table(struct arm_smmu_device *smmu,
-@@ -1842,31 +1856,38 @@ arm_smmu_atc_inv_to_cmd(int ssid, unsigned long iova, size_t size,
- 
- static int arm_smmu_atc_inv_master(struct arm_smmu_master *master)
- {
--	int i;
-+	int i, ret;
- 	struct arm_smmu_cmdq_ent cmd;
- 	struct arm_smmu_cmdq_batch cmds;
-+	struct arm_smmu_device *smmu = master->smmu;
- 
- 	arm_smmu_atc_inv_to_cmd(0, 0, 0, &cmd);
- 
- 	cmds.num = 0;
-+
-+	arm_smmu_preempt_disable(smmu);
- 	for (i = 0; i < master->num_streams; i++) {
- 		cmd.atc.sid = master->streams[i].id;
--		arm_smmu_cmdq_batch_add(master->smmu, &cmds, &cmd);
-+		arm_smmu_cmdq_batch_add(smmu, &cmds, &cmd);
- 	}
- 
--	return arm_smmu_cmdq_batch_submit(master->smmu, &cmds);
-+	ret = arm_smmu_cmdq_batch_submit(smmu, &cmds);
-+	arm_smmu_preempt_enable(smmu);
-+
-+	return ret;
- }
- 
- int arm_smmu_atc_inv_domain(struct arm_smmu_domain *smmu_domain, int ssid,
- 			    unsigned long iova, size_t size)
- {
--	int i;
-+	int i, ret;
- 	unsigned long flags;
- 	struct arm_smmu_cmdq_ent cmd;
- 	struct arm_smmu_master *master;
- 	struct arm_smmu_cmdq_batch cmds;
-+	struct arm_smmu_device *smmu = smmu_domain->smmu;
- 
--	if (!(smmu_domain->smmu->features & ARM_SMMU_FEAT_ATS))
-+	if (!(smmu->features & ARM_SMMU_FEAT_ATS))
- 		return 0;
- 
- 	/*
-@@ -1890,6 +1911,7 @@ int arm_smmu_atc_inv_domain(struct arm_smmu_domain *smmu_domain, int ssid,
- 
- 	cmds.num = 0;
- 
-+	arm_smmu_preempt_disable(smmu);
- 	spin_lock_irqsave(&smmu_domain->devices_lock, flags);
- 	list_for_each_entry(master, &smmu_domain->devices, domain_head) {
- 		if (!master->ats_enabled)
-@@ -1897,12 +1919,15 @@ int arm_smmu_atc_inv_domain(struct arm_smmu_domain *smmu_domain, int ssid,
- 
- 		for (i = 0; i < master->num_streams; i++) {
- 			cmd.atc.sid = master->streams[i].id;
--			arm_smmu_cmdq_batch_add(smmu_domain->smmu, &cmds, &cmd);
-+			arm_smmu_cmdq_batch_add(smmu, &cmds, &cmd);
- 		}
- 	}
- 	spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
- 
--	return arm_smmu_cmdq_batch_submit(smmu_domain->smmu, &cmds);
-+	ret = arm_smmu_cmdq_batch_submit(smmu, &cmds);
-+	arm_smmu_preempt_enable(smmu);
-+
-+	return ret;
- }
- 
- /* IO_PGTABLE API */
-@@ -1962,6 +1987,7 @@ static void __arm_smmu_tlb_inv_range(struct arm_smmu_cmdq_ent *cmd,
- 
- 	cmds.num = 0;
- 
-+	arm_smmu_preempt_disable(smmu);
- 	while (iova < end) {
- 		if (smmu->features & ARM_SMMU_FEAT_RANGE_INV) {
- 			/*
-@@ -1993,6 +2019,7 @@ static void __arm_smmu_tlb_inv_range(struct arm_smmu_cmdq_ent *cmd,
- 		iova += inv_range;
- 	}
- 	arm_smmu_cmdq_batch_submit(smmu, &cmds);
-+	arm_smmu_preempt_enable(smmu);
- }
- 
- static void arm_smmu_tlb_inv_range_domain(unsigned long iova, size_t size,
+Best regards
 -- 
-2.34.1
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
 
