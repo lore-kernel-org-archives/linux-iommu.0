@@ -1,129 +1,165 @@
-Received: from mail-yw1-f172.google.com (mail-yw1-f172.google.com [209.85.128.172])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2064.outbound.protection.outlook.com [40.107.92.64])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 431FB372
-	for <iommu@lists.linux.dev>; Wed,  9 Aug 2023 15:05:00 +0000 (UTC)
-Received: by mail-yw1-f172.google.com with SMTP id 00721157ae682-583e91891aeso79140277b3.1
-        for <iommu@lists.linux.dev>; Wed, 09 Aug 2023 08:05:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1691593499; x=1692198299;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=TUNHA5k0oc4UJ3HPv3ruu/iAAkeeULdAZcTUmh4s50w=;
-        b=cmUWaPIpgABWq6VhUwPcsQcIqckeGYwWCLHIzh5SmxxbhhwMNyabD5AclGPeSIGVeo
-         VCv9i7pvL24DbcuKO4E0QcbZUCbZeKKoclw3CTwYtNZiHPTrLahEgvYyOPF71bWryO+X
-         6d3G2ZHh11Eqn7D9jOKgyfpS/vqgITvWge1EKdRUvmWOxHD9Uz+J4AZu1Z7JzoTrDAxx
-         WcTfzxLA3xKZJo6/uqFlRbNg3cjcKoLA8ewR92yRqvZ4P0scq0vdk8hsrYC7QXiTy6t9
-         o4H30LSpSif7NeTq/cvVU5YDRHtLc4BGw9iF3+iCFAbfvR33CqyyahnTZ8qTAOIcy6vZ
-         ieng==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1691593499; x=1692198299;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=TUNHA5k0oc4UJ3HPv3ruu/iAAkeeULdAZcTUmh4s50w=;
-        b=bmr7CHuZbjhnzNMyLW35+tf1rUVmuhrIgTSnwCjMH2QE6RdmmgEQRu9ldmHD7itxoo
-         3w4W8GTMs7Ry4PBVrc1qKoJxJFkRuxJK0fsHPQSVwHdjxAs+pxBYrMO0avgC2B2IK7tG
-         SJ218BnxoihfsblpeZfIvXzASG2/CCWwcBAqIUdLYKf4Zmles+R/kIM1WsINjPtsVsp9
-         5U+h53tT3AIJE/8nPfoAu0lBq3ubSqH7GZ3rVKnZ2XcTeBmlt+aUj1J7YYppHc4wlZKs
-         QN9326MKoRlWqPZ8UoMJOQQhaZ39RUci4D9nJMFiJsbwYkGx5jjr1yHkQMYHXvwfzPRJ
-         nmNQ==
-X-Gm-Message-State: AOJu0Yx7/2MaB30whFMai4DZJqvFCHSea/xHJfBm55ZMtRh4nChacCEq
-	LRQ69M6HkmIA7B7rp6Pcvt1TDc3VQQamRX4v3w0=
-X-Google-Smtp-Source: AGHT+IGth0evnpBrLoCbQ/NjZeXG4/FKNjvMlrH8Pg4TU4y/1LSVl+3ahRRiojLkI+Z8Rb+JOAS+jkie9I21KObZ3x8=
-X-Received: by 2002:a81:a107:0:b0:583:9018:29ec with SMTP id
- y7-20020a81a107000000b00583901829ecmr2934644ywg.32.1691593498807; Wed, 09 Aug
- 2023 08:04:58 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D5A41372
+	for <iommu@lists.linux.dev>; Wed,  9 Aug 2023 15:08:05 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=iNT18w15ekLARZmQ+D/OcxN7VQJKMtY8JPXSbIgdT7xaP9S3q9x/h4UkgSVkDqSiK2o7A2R3KGEqD5ZCgi05Br0h/muczMoCuxdG/2iJbXc83jHH3Yzpphti42GRJGIBJNyB4guQmo6Ze6CEAem7wD7SfoAiBlWzd+UxFqA8Apr49/RqtQEl1eqZAS+QLYdvisaqRt1KFIvyOi0k5OrKGNs6n4jlhNKM0wp8IpW2qHu0rIUZygsR4k+ptuEusRoQ7E/Q11+yz9kdZbeLgvI209T+TfJAgKE1etEKecMVmjnuVZx8qzG2jh4983Z+lPDmGF97muXKeOlnSG6aLJd15g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=WqDoyj2TIORHLt7iqRS/7RkcUqM1gEyWob2hVE1vaps=;
+ b=BMcMVdtg5fMBuzUxVL185wtThr7waGC3QtVLUBzuSxMbkO7D36voKjPZHSsmMym3R4OZPWHM16Ry5mbzD4PE0td0Pl7dqQCj8SFxE01pln5+lDHVlTNluxiNgn5aPP6YZJXYNM/keWKez3Y5UvPY4FjK+3Yge74mjQnJdcyNhZSVj/qmzdqwOkUS/6FlJvs8U/U1oD6uSh4245i9DqdD0jookVEdqXmDjwgqr80HzfkuhSjHiOeSJ/HHzyQYEo5SoFw5FonQcjVu+5IjDaM7vVA2iOKJYLJ29FVdp/XZUN5n9twrn31IrSg2wTg90e2KX5NZ24D5oSUZz+o6fAz9/Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=WqDoyj2TIORHLt7iqRS/7RkcUqM1gEyWob2hVE1vaps=;
+ b=myOsJSq+TDtWIuYtaWjpfSFZd3k7tKVRIUINX5uFH7KYCQGqhbGY326cFVvNZOe9FtjVsonvutEeeRrh+PC4kvHeq8RrKPF9Znv1neSZyGbT0OL28LLkLN9OfIc2LHXdqQMpJY8yYfbdsMonI+Mg/EZGhO8rLc75PHbZJ5zMewPj9IrjQcGQyfaHN9whGtPpkRx8+vCMRHD/yDqQJsYMh0NqrKONr85EC3QnPwcKd7lxaIM03bXNJV39giftUnLzXzAqQC9UxqqCYYND9U3phcy8gPrHgtmdQ7KPdzNte8Ho4GK2g+Esr2dKvo+JD16QWxdVGBJhu9B0nn2hDsl3vg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by DM4PR12MB5120.namprd12.prod.outlook.com (2603:10b6:5:393::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6652.28; Wed, 9 Aug
+ 2023 15:08:03 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::5111:16e8:5afe:1da1]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::5111:16e8:5afe:1da1%6]) with mapi id 15.20.6652.028; Wed, 9 Aug 2023
+ 15:08:03 +0000
+Date: Wed, 9 Aug 2023 12:08:02 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Will Deacon <will@kernel.org>
+Cc: Michael Shavit <mshavit@google.com>, iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	robin.murphy@arm.com, nicolinc@nvidia.com, jean-philippe@linaro.org
+Subject: Re: [PATCH v5 2/9] iommu/arm-smmu-v3: Replace s1_cfg with cdtab_cfg
+Message-ID: <ZNOr0ggoO9kXHJWl@nvidia.com>
+References: <20230808171446.2187795-1-mshavit@google.com>
+ <20230809011204.v5.2.I1ef1ed19d7786c8176a0d05820c869e650c8d68f@changeid>
+ <20230809134941.GA4226@willie-the-truck>
+ <ZNObxeogswAYyDQ5@nvidia.com>
+ <20230809145542.GB4472@willie-the-truck>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230809145542.GB4472@willie-the-truck>
+X-ClientProxiedBy: BLAPR03CA0094.namprd03.prod.outlook.com
+ (2603:10b6:208:32a::9) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <1690598115-26287-1-git-send-email-quic_pintu@quicinc.com>
- <20230731112155.GA3662@lst.de> <CAOuPNLjnfq1JefngtNrg0Q+JdMTSRz+eEqxGQJFfx9+af+k9WA@mail.gmail.com>
- <20230801171838.GA14599@lst.de> <CANDhNCq+3OEosUcQJ5GFgk+5OyG+JqXKM43UAo0aPz-V27OgAA@mail.gmail.com>
- <20230802094725.GA28241@lst.de> <CAOuPNLjAOk0BOXDcjbY+evX_uxbZyptrJXMf0ULhReECzEX0CQ@mail.gmail.com>
-In-Reply-To: <CAOuPNLjAOk0BOXDcjbY+evX_uxbZyptrJXMf0ULhReECzEX0CQ@mail.gmail.com>
-From: Pintu Agarwal <pintu.ping@gmail.com>
-Date: Wed, 9 Aug 2023 20:34:47 +0530
-Message-ID: <CAOuPNLjn3b3YSgy=ObnF+cE7kj-9vdZ+6fFzMp-bJYLFq3MgWw@mail.gmail.com>
-Subject: Re: [PATCH v2] dma-contiguous: define proper name for global cma region
-To: Christoph Hellwig <hch@lst.de>
-Cc: John Stultz <jstultz@google.com>, Pintu Kumar <quic_pintu@quicinc.com>, 
-	linux-kernel@vger.kernel.org, akpm@linux-foundation.org, linux-mm@kvack.org, 
-	m.szyprowski@samsung.com, robin.murphy@arm.com, iommu@lists.linux.dev, 
-	Sumit Semwal <sumit.semwal@linaro.org>, 
-	Benjamin Gaignard <benjamin.gaignard@collabora.com>, Liam Mark <lmark@codeaurora.org>, 
-	Laura Abbott <labbott@redhat.com>, Brian Starkey <Brian.Starkey@arm.com>, 
-	=?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>, 
-	linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org, 
-	linaro-mm-sig@lists.linaro.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|DM4PR12MB5120:EE_
+X-MS-Office365-Filtering-Correlation-Id: b08b491c-545b-415e-8db9-08db98ea6db6
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	NyVuxgtcCWsYVxIf2J0wKptNFj5zwXumz+Rg4Dh81ud70lHE/CDLway9XMOLgJRYih6UuUb+mPUY/25Z+2QLa8DoYFEJWA3gHb7DMSoZ84XZJvgAczzn9BPUP+5YzlN0hMJQdfDeiYHWbLoeRZKU03PyBm9KqtQtO3o741Mo9pLrm4AgYnJb/IqbYEvIanH4fvI0TqfER0U0DE4z9PRyVARAyUDYS/gJJriX+5ygqYPumQdskkbDW6ewdekPRqtWntiAzls1AnEbq54UhtvmEdVTLdIQxu+gdkDDF9JzTKFfgOoX17LlrmZ5ZxL2LbhZeyR0+os3Ozfn9/F4ErbSdZXZNS5cCLoPWfvhYhVuhb9G1L9c9l4JMcFkeQWt8PWPTl49UimhQ2SEgJzinkP+3+YJvsGF2t6o/Zv/kvjsbo28IT/6mOrQwBkokNKQ/8BMsEHWC1HACC/eHM5LCUloJ/5GWaabHWZ69sumFFpD/sN7pDumcdhF3kOFiLeG+SpgwvTvswpRT9ewa5ZG4ta2TOKSKu1h4RXOV0OrZU9VsvxYcSpTIyz0nMhhgQxvEiOoKrY8fkpobwyC+C35eecgAtb58zZrsGEuMHs7JCTNXew=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(136003)(366004)(346002)(376002)(39860400002)(451199021)(1800799006)(186006)(26005)(6506007)(6486002)(6512007)(478600001)(83380400001)(2616005)(316002)(6916009)(41300700001)(4326008)(8936002)(5660300002)(66946007)(66556008)(66476007)(8676002)(2906002)(36756003)(86362001)(38100700002)(473944003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?Pe15e7YEJ/c7dAMbZpT/sQxsGMzlCqvDZUHjvz6d66EXTY9jT+p5EcVf3JEi?=
+ =?us-ascii?Q?1+IewHXH4ozqQcOJXLTSqgPPAxySzTbLje6suB8ihePE30JUOcpdM1Uu0qDQ?=
+ =?us-ascii?Q?zTZv/MJ9LZwqxRQvBP1orBTow5ZfJ5NEXSe2dak7Huo2gjRT1Jg2YYMMwkZ2?=
+ =?us-ascii?Q?TOdbkPiaNZMUne+v0ti5cnbKwy+SB9psxc/7kdwdNi6Oenrio0OpOkCb/PQJ?=
+ =?us-ascii?Q?P5zz8vRKLP5QzgHYsRdmN+gEs/jEwknHwz4kUZ3yrksl3P0f4G95uPyfkUF0?=
+ =?us-ascii?Q?Ne5M1LzgQta3o5etojnKqaypgG7AqGTOhFYC2r509UQ7GNE7MLZ3oWtsYQGb?=
+ =?us-ascii?Q?BnA0hb0oXIuST8zLt01CDfmnkKVUSzjID21cwcMkOpLdSpbpFRAqYYbl3Nfp?=
+ =?us-ascii?Q?kgdMroqtdr90mct7xDoR8Y2uE7VyytJwCRKEzLBIDIXqVwuPPq6ClTP+mdOP?=
+ =?us-ascii?Q?nwtGJeAeebBNBtVFG+NDCSY5rD3Fd3Oyqm68tM7Zl2A5CcJ3Z3RDv8jLHvi8?=
+ =?us-ascii?Q?ak0jipUaOA0ToMQRqRE7BsuLdRwRCyQpQTMOEnMs6oQLPzsvJv2VUkyHxfPM?=
+ =?us-ascii?Q?ED+sl0tn76WQJ13wK8a8veZstmK3QF9rUHaFfIxY0GAPnkHyHogdFTk82cPR?=
+ =?us-ascii?Q?wNL6WMcV0L3XuwjQNqnaBFRnRD69mKp0AH4T9iJWt2RzG9VXZdHUQTLdjfIp?=
+ =?us-ascii?Q?kDZKmYrpVd/oYEB+xlzf94K3XaezIVS//4uehiETokZ+v8kimmwB5UD59n5Y?=
+ =?us-ascii?Q?m+ClE+RYxs29bZUmdv1+QfMjMHrb9p4OVntRx39ckPbb4qc8BUU5g6MRRjkD?=
+ =?us-ascii?Q?Ay1S4EmfQNOl2CLt3otA9clbNm7lGcB1DJEhm2CMHZj7UW2JRZQF5Q0/fGcM?=
+ =?us-ascii?Q?4VU8EQrt8txdTVcVVtnrnaOENWMnN+Rw8doWjlCXz6jB0FK4iUzsL5B0E9C1?=
+ =?us-ascii?Q?TCgLFkQdLrfzfWDlxLm+EDFiWojtryNB5dDzJAMFgxenER1o797dAXZ6083F?=
+ =?us-ascii?Q?77XqRPY5Qq5hzeRQwjYwsDJf9FON6mI/rnJ0Dz2roLvKl5playfO3DzTyflX?=
+ =?us-ascii?Q?RtmvHWWfd8TwHOu5ODLqD5Hrp8lce4/Jyr74RvA7V0wRTkz/WdURTQQ4vBFj?=
+ =?us-ascii?Q?K70HMHC+YfFJIddRtUWioboxZm/VWwKXOyOX1j762jZ0PzcTcqIpdzWsdqYO?=
+ =?us-ascii?Q?VRUr7GqwuQeowP4tMkJ6+KsPwZb98tPGSBq9T7k08KmxswEb/ICCy6j0m86k?=
+ =?us-ascii?Q?3uZNtbE+mEvsIb4jTS0PzjNCklMzSp3H/U2pt3muYEP4j/Yj2e0J85h4wVu0?=
+ =?us-ascii?Q?vn7/HvuvDDEBRiT/zp/lPyMjFmB6QgMQGgdN/RoRernE6rLlJs/E5aoju+UT?=
+ =?us-ascii?Q?3Peu8PgCfxslQ52blzJxUSm6KiYoGBZEPK65QPAgJJmw8ROYAD7wZgojcOd3?=
+ =?us-ascii?Q?bvl5XzFTxe35l8ZMj5+PkSxXuTU3n1OMOvTpgrwMZHIsS/F9Co402lxe+tGo?=
+ =?us-ascii?Q?0x13KGGQiJV+r4eWE6LJtmkLT6ngl1vz2JoUrV6leXkdEu37/LZ2K+Jk9d0y?=
+ =?us-ascii?Q?/lPNUlM6uyOHCnnNmirKiiEMULaaLh/qP/B2fuzS?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b08b491c-545b-415e-8db9-08db98ea6db6
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Aug 2023 15:08:03.5030
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Tnj3IXQbT4TytpNPCgaH21QpNWhwTlgrKjCd0OtvRg9UbwP0kUDNvFcKgu9BdHAT
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5120
 
-Hi,
+On Wed, Aug 09, 2023 at 03:55:43PM +0100, Will Deacon wrote:
+> On Wed, Aug 09, 2023 at 10:59:33AM -0300, Jason Gunthorpe wrote:
+> > On Wed, Aug 09, 2023 at 02:49:41PM +0100, Will Deacon wrote:
+> > 
+> > > > @@ -1360,10 +1357,14 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_master *master, u32 sid,
+> > > >  		    !master->stall_enabled)
+> > > >  			dst[1] |= cpu_to_le64(STRTAB_STE_1_S1STALLD);
+> > > >  
+> > > > -		val |= (s1_cfg->cdcfg.cdtab_dma & STRTAB_STE_0_S1CTXPTR_MASK) |
+> > > > -			FIELD_PREP(STRTAB_STE_0_CFG, STRTAB_STE_0_CFG_S1_TRANS) |
+> > > > -			FIELD_PREP(STRTAB_STE_0_S1CDMAX, s1_cfg->s1cdmax) |
+> > > > -			FIELD_PREP(STRTAB_STE_0_S1FMT, s1_cfg->s1fmt);
+> > > > +		val |= (cd_table->cdtab_dma & STRTAB_STE_0_S1CTXPTR_MASK) |
+> > > > +		       FIELD_PREP(STRTAB_STE_0_CFG, STRTAB_STE_0_CFG_S1_TRANS) |
+> > > > +		       FIELD_PREP(STRTAB_STE_0_S1CDMAX,
+> > > > +				  cd_table->max_cds_bits) |
+> > > > +		       FIELD_PREP(STRTAB_STE_0_S1FMT,
+> > > > +				  cd_table->l1_desc ?
+> > > > +					  STRTAB_STE_0_S1FMT_64K_L2 :
+> > > > +					  STRTAB_STE_0_S1FMT_LINEAR);
+> > > 
+> > > magically know that we're using 64k tables.
+> > > 
+> > > Why is this an improvement to the driver?
+> > 
+> > Put the above in a function 
+> > 
+> > arm_smmu_get_cd_ste(struct arm_smmu_ctx_desc_cfg *cdtab, void *ste)
+> > 
+> > And it makes more sense.
+> 
+> Sorry, but I'm not seeing it :/
+> 
+> > We don't need the driver to precompute the "s1_cfg" parameters and
+> > store them in a redundant struct along side the ctx_desc_cfg when we
+> > can compute those same values on the fly with no cost.
+> 
+> But the computation isn't happening -- the STRTAB_STE_0_S1FMT_64K_L2
+> constant is hardcoded here. 
 
-On Thu, 3 Aug 2023 at 23:04, Pintu Agarwal <pintu.ping@gmail.com> wrote:
->
-> Hi,
->
-> On Wed, 2 Aug 2023 at 15:17, Christoph Hellwig <hch@lst.de> wrote:
-> >
-> > On Tue, Aug 01, 2023 at 10:39:04PM -0700, John Stultz wrote:
-> > > So, forgive me, I've not had a chance to look into this, but my
-> > > recollection was "reserved" is the name we see on x86, but other name=
-s
-> > > are possibly provided via the dts node?
-> >
-> No, I think "reserved" is the name hard-coded (for all arch) in Kernel
-> for global-cma.
-> So, I don't think this is x86 specific. I am checking on arm32 itself.
-> When we can dma_alloc_coherent we see these in the logs (if dts region
-> is not present).
-> cma: cma_alloc(cma (ptrval), name: reserved, count 64, align 6)
-> Now, with this change we will see this:
-> cma: cma_alloc(cma (ptrval), name: global-cma-region, count 64, align 6)
->
-> > Indeed, dma_contiguous_default_area can also be set through
-> > rmem_cma_setup, which then takes the name from DT.
-> >
-> I think this is a different case. If DT entry is present we get this:
-> Reserved memory: created CMA memory pool at 0x98000000, name: name:
-> linux,cma, size 128 MiB
-> cma: cma_alloc(cma (ptrval), name: linux,cma, count 64, align 6)
->
-> Here we are talking about the default hard-coded name in Kernel code
-> if DT is not defined.
-> So, in one of the boards, this DT entry was not present and it shows
-> as "reserved".
->
-> > > I believe on the hikey board its "linux,cma" is the name, so forcing
-> > > it to reserved would break that.
-> > >
-> Yes, everywhere in the DT it's defined as "linux,cma".
-> You mean this also should be changed to "linux,cma-global-region"
-> everywhere with this change ?
->
-> > > Maybe instead add a compat config option to force the cma name (so x8=
-6
-> > > can set it to "default" if needed)?
-> >
-> Yes, having it in config is also a good option instead of hard-coding in =
-Kernel.
-> >
-> > I think we'll just need to leave it as-is.  I with dma-heaps had never
-> > exposed the name to userspace, but we'll have to l=D1=96ve with it now.
->
-> Can you point me to the userspace utility we are talking about here ?
-> I think we should not worry much about userspace name exposure.
-> I guess it should fetch whatever is declared in Kernel or DTS, right ?
+So it would be hard coded in arm_smmu_get_cd_ste() because that
+reflects the current state of CD table code.
 
-Just to follow-up on this.
-For now, can we change the Kernel hard-coded value from "reserved" to
-"global-cma-region" ?
-Later, for the DTS defined name let it be "linux,cma" or change that
-also to "linux,global-cma-region" ?
+> If we want to use 4k leaf tables in some cases, how would you add
+> that? Such a change shouldn't need the low-level strtab creation
+> code to change.
 
-Will this make sense ?
+You would modify arm_smmu_ctx_desc_cfg to teach it about the different
+format. It would gain some (enum?) member that specifies the CD table
+layout and geometry. arm_smmu_get_cd_ste() will interpret that member
+and generate the correct STE for the specifc cd table.
+
+It is a standard OOP sort of practice that the object self-describes
+and has accessors to export its internal definition. In this case the
+STE bits are part of/derived from the internal definition of the CD
+table.
+
+Jason
