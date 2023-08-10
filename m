@@ -1,62 +1,67 @@
-Received: from mail-pf1-f169.google.com (mail-pf1-f169.google.com [209.85.210.169])
+Received: from mail-pj1-f49.google.com (mail-pj1-f49.google.com [209.85.216.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0C4671E1C0
-	for <iommu@lists.linux.dev>; Thu, 10 Aug 2023 16:46:27 +0000 (UTC)
-Received: by mail-pf1-f169.google.com with SMTP id d2e1a72fcca58-6877eb31261so843682b3a.1
-        for <iommu@lists.linux.dev>; Thu, 10 Aug 2023 09:46:27 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA0591E1C0
+	for <iommu@lists.linux.dev>; Thu, 10 Aug 2023 16:47:11 +0000 (UTC)
+Received: by mail-pj1-f49.google.com with SMTP id 98e67ed59e1d1-2682e33509bso767247a91.1
+        for <iommu@lists.linux.dev>; Thu, 10 Aug 2023 09:47:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1691685987; x=1692290787;
+        d=ziepe.ca; s=google; t=1691686031; x=1692290831;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=JMdp77jhwQvRcl315BSI++IxT1Tx9GaLgh40mJ/tAaA=;
-        b=XgY1GFMxDZl3teOz42X6UjqkluiZg/uKErMnjqTIM5rvepjjsiaFeJai7WPmjDbm23
-         90hN2MYy9mOlOX7CRvcheExTVUo+FDhygE76i/MCEjL0KeQIeEiSgOC92wAkDZ+6oUTj
-         kfQj/fws8sgY3uZJbz/rFhRrGAOcg2nCYgH7zRMp6cxhVqtJttBtHiy6/MVpNojdoDJQ
-         zy5H6tPr2h9qXphV1DICqMWO3H0RL6zfUsD1ZIM2X18or2uuUykq50tDIUNude51aQV3
-         Cwi09gaWtU3Q+0iNV0KOFxyBEhDK3AXf06PV/DKqwJgUebLzFflPgu0UuAVf6DJ42X87
-         04cA==
+        bh=Z1YxxQSx9jryP/gaiSlpxrcgwKgQeQJEh/0X+pazM0o=;
+        b=ce/9DcrCCwo6KPfVtyNMNZolyHGIshD4DR/Wwxcjvjqlu2XZC2ifdrhTlTMfIbIpeQ
+         9b90fyURIEL5MZ9OfK9porDeciE520+G8QtnkKssJ+XxcxmmKkEaLPYgHq4/SWdDOjy8
+         LlUjLXgVmYkOjGqOVyfTuMXSsLpV2rW7vChHQJrQWZmlTTBgJZJmxuZGZCMimvei99rP
+         ghT4UMiwO3FVTv8qcE912BIbrT9fazw4xMd4nFj5YEFvMO+dnOCEyHVFG65Bia2hYzwq
+         FxjZlGsyOIbe7GeyLd73rYRo4u1SYKYuPYchLPh0qDZ11YpBFSFTWWKehNUhm+P8FcbT
+         uitw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1691685987; x=1692290787;
+        d=1e100.net; s=20221208; t=1691686031; x=1692290831;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=JMdp77jhwQvRcl315BSI++IxT1Tx9GaLgh40mJ/tAaA=;
-        b=DpCGnq4U24jvBdYSCUGw3viX/f8J+fD4nyquw1ksoa7syoYcYrdSTFxWr8um18/ITI
-         K0orMcYRRq9MdGQHAn2i/0LOpvWvBXpccWGa4LhwWIKTV+Wc6/SLOKZzxmFsb0cb00JQ
-         jUzPYiX/7udjfVwpuwISvfgOWs4hjrXwZaYafV8A0YVIk0bQk+xL56Gb4gERz7qW9m6w
-         ziO3lDyhz6Rt8gMtx6F7bgaM1toNZ+ZsSoCC5Aw5OxaOWfqIgp8vXC7WQYe3gc3LJRpk
-         7bSwYNR0Ru7Wfenb+xqHkVJPPicdVHMisIDppfegU9XGBab3mM8PUWwfkmPj+ElNLDgZ
-         9ynA==
-X-Gm-Message-State: AOJu0YwKrM/+IdIGy8xmswHfKQmRDRkO0+sF8wfzNvmzmlDcD99qGVoO
-	Zy7DptRd116OZ8qJTxP2oWRyOzSPyGSG4C0z3G4=
-X-Google-Smtp-Source: AGHT+IFF/d8fCJaxRw5PJDuRon+tGXvjwpsZXLOglZ8RskEhE9kyxcV6qwckv9qPdLj+bfxpXnUDgg==
-X-Received: by 2002:a05:6a00:2305:b0:668:99aa:3f17 with SMTP id h5-20020a056a00230500b0066899aa3f17mr3362615pfh.16.1691685987356;
-        Thu, 10 Aug 2023 09:46:27 -0700 (PDT)
+        bh=Z1YxxQSx9jryP/gaiSlpxrcgwKgQeQJEh/0X+pazM0o=;
+        b=jm7ngKAj68Guv1yCyqr1P7tVaQL6r5mTVrw4t77jbeN8ZeExShOxcs2U2sjBtc10hr
+         +mc4VPR6UUN86uR0S3Ir/GDT/KFZhiIXOiOcinMLo/hPvaN6z9GmWlUcmqzpKpegSLzv
+         OXuXgl3UaFX5+fiNMYcPUuXiPFqJ4YAam9Iya7uvoZpswiKF5gUjc5Z4qzQak1LmQoul
+         oNe5facbjLY4LPG+ACyy00mXNa1YYaoaK+2SOyWH4H/KfD5JVpgAz7QcBoOEJXX2ruZX
+         CnGO8ZvV0wS+zPH8X0e28Vq99MfiIzbF9sGyez0Da9c6959Fe1/DeaEKqrF6BfE/juEd
+         ABuQ==
+X-Gm-Message-State: AOJu0YxXv39iSLbfVn9qIKdAodWVdOKNUcNMt1N3d8M4ema/1qz+7JFY
+	D4v5vn27o7k83hlVO88h4QOcdg==
+X-Google-Smtp-Source: AGHT+IEW7khYL0o4UiJXTotcmkvmJTY67L4z884ZB/Rx1B6m1oAZwsmTvmxd1WH9hKUE9QQ1nrFRXQ==
+X-Received: by 2002:a17:90a:ba92:b0:268:300b:ee82 with SMTP id t18-20020a17090aba9200b00268300bee82mr2781613pjr.19.1691686031121;
+        Thu, 10 Aug 2023 09:47:11 -0700 (PDT)
 Received: from ziepe.ca ([206.223.160.26])
-        by smtp.gmail.com with ESMTPSA id b15-20020aa7870f000000b006871bea2eeesm1753718pfo.34.2023.08.10.09.46.26
+        by smtp.gmail.com with ESMTPSA id 19-20020a17090a1a5300b0026851759e9csm1842689pjl.29.2023.08.10.09.47.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Aug 2023 09:46:26 -0700 (PDT)
+        Thu, 10 Aug 2023 09:47:10 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.95)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1qU8np-005H6d-0d;
-	Thu, 10 Aug 2023 13:46:25 -0300
-Date: Thu, 10 Aug 2023 13:46:25 -0300
+	id 1qU8oX-005H7B-4H;
+	Thu, 10 Aug 2023 13:47:09 -0300
+Date: Thu, 10 Aug 2023 13:47:09 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>,
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Cc: Baolu Lu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
 	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>, iommu@lists.linux.dev,
-	kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 03/12] iommu: Remove unrecoverable fault data
-Message-ID: <ZNUUYR9WGf475Q4L@ziepe.ca>
+	Nicolin Chen <nicolinc@nvidia.com>,
+	"Liu, Yi L" <yi.l.liu@intel.com>,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 08/12] iommu: Prepare for separating SVA and IOPF
+Message-ID: <ZNUUjXMrLyU3g5KM@ziepe.ca>
 References: <20230727054837.147050-1-baolu.lu@linux.intel.com>
- <20230727054837.147050-4-baolu.lu@linux.intel.com>
- <ZNPF/nA2JdqHMM10@ziepe.ca>
- <28d86414-d684-b468-d0a9-5c429260e081@linux.intel.com>
+ <20230727054837.147050-9-baolu.lu@linux.intel.com>
+ <BN9PR11MB52769D22490BB09BB25E0C2E8C08A@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <ZNKMz04uhzL9T7ya@ziepe.ca>
+ <BN9PR11MB527629949E7D44BED080400C8C12A@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <0771c28d-1b31-003e-7659-4f3f3cbf5546@linux.intel.com>
+ <BN9PR11MB527686C925E33E0DCDF261CB8C13A@BN9PR11MB5276.namprd11.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -65,34 +70,42 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <28d86414-d684-b468-d0a9-5c429260e081@linux.intel.com>
+In-Reply-To: <BN9PR11MB527686C925E33E0DCDF261CB8C13A@BN9PR11MB5276.namprd11.prod.outlook.com>
 
-On Thu, Aug 10, 2023 at 10:27:21AM +0800, Baolu Lu wrote:
-> On 2023/8/10 0:59, Jason Gunthorpe wrote:
-> > On Thu, Jul 27, 2023 at 01:48:28PM +0800, Lu Baolu wrote:
-> > > The unrecoverable fault data is not used anywhere. Remove it to avoid
-> > > dead code.
-> > > 
-> > > Suggested-by: Kevin Tian<kevin.tian@intel.com>
-> > > Signed-off-by: Lu Baolu<baolu.lu@linux.intel.com>
-> > > ---
-> > >   include/linux/iommu.h | 70 +------------------------------------------
-> > >   1 file changed, 1 insertion(+), 69 deletions(-)
-> > Do we plan to bring this back in some form? A driver specific fault
-> > report via iommufd?
+On Thu, Aug 10, 2023 at 02:35:40AM +0000, Tian, Kevin wrote:
+> > From: Baolu Lu <baolu.lu@linux.intel.com>
+> > Sent: Wednesday, August 9, 2023 6:41 PM
+> > 
+> > On 2023/8/9 8:02, Tian, Kevin wrote:
+> > >> From: Jason Gunthorpe <jgg@ziepe.ca>
+> > >> Sent: Wednesday, August 9, 2023 2:43 AM
+> > >>
+> > >> On Thu, Aug 03, 2023 at 08:16:47AM +0000, Tian, Kevin wrote:
+> > >>
+> > >>> Is there plan to introduce further error in the future? otherwise this
+> > should
+> > >>> be void.
+> > >>>
+> > >>> btw the work queue is only for sva. If there is no other caller this can be
+> > >>> just kept in iommu-sva.c. No need to create a helper.
+> > >>
+> > >> I think more than just SVA will need a work queue context to process
+> > >> their faults.
+> > >>
+> > >
+> > > then this series needs more work. Currently the abstraction doesn't
+> > > include workqueue in the common fault reporting layer.
+> > 
+> > Do you mind elaborate a bit here? workqueue is a basic infrastructure in
+> > the fault handling framework, but it lets the consumers choose to use
+> > it, or not to.
+> > 
 > 
-> I can hardly see the possibility.
-> 
-> The only necessary dma fault messages are the offending address and the
-> permissions. With these, the user space device model software knows that
-> "a DMA fault was generated when the IOMMU hardware tried to translate
-> the offending address with the given permissions".
-> 
-> And then, the device model software will walk the page table and figure
-> out what is missed before injecting the vendor-specific fault messages
-> to the VM guest.
+> My understanding of Jason's comment was to make the workqueue the
+> default path instead of being opted by the consumer.. that is my 1st
+> impression but might be wrong...
 
-Avoiding walking the page table sounds like a pretty big win if we
-could manage it by forwarding more event data..
+Yeah, that is one path. Do we have anyone that uses this that doesn't
+want the WQ? (actually who even uses this besides SVA?)
 
 Jason
