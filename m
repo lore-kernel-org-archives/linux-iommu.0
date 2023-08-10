@@ -1,153 +1,219 @@
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2046.outbound.protection.outlook.com [40.107.92.46])
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2044.outbound.protection.outlook.com [40.107.93.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 41CAC20CA8
-	for <iommu@lists.linux.dev>; Thu, 10 Aug 2023 19:59:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A49323BCE
+	for <iommu@lists.linux.dev>; Thu, 10 Aug 2023 20:31:48 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QFkUGCAb/sK5TNcQgKUVXmOk0NMBbUlhsYIRsi8ja6aQ1oVvRmrFTvgKKkx7JgNv9VgaURWOjDZ3VdKTTv6oOLIk3cwNDljg1t+50fvQMNtIbXyoEtacdf3LOWUTkd+rtYHGrFv7jO7fFw5Bz0+UPvJWEgpP284pGJnUF3OHHz2hqLgBRMP+oTvXpJtb2gedWRd8tqhRF3Z49EjPoxU33qC8hw8Lt+kAVWvzzLv6hpkTtn+2uyl/djFDiH3ZS/D7Sef8+eyj/HtiFsMCSn4PW3cU8/wDLJyG1xZkWjrzVCcmS9MD6/gKcB20kgKRH2eM6E8ruX9PqgMiD9lfkYBZzw==
+ b=SzwI5n5RJHo5MgpP7V5WXRMJDSHbPpKdaLuYSR/4OjkszmScp1DG4U4BXuk0VutpxdPWGyeDj9s9WQHkYmOqdt1b5huzsyOn/Z4mQ55FNtzDwmQzMSElx4yaTIPAF9PPeDz0arLGwY3WPH+MujXj2HLylhTlyH9XonDrX5CTFFWHxACXrVBw2b9SFsYe8UjThICywxP784bsu/jAPki4DJucreFCQIpkYSz5YwdiLLLMa6z8WvGjzb4yDqFh0frmc519d28wqkU6E8WXya9JUzRXi60E1Tev6doDrkxrArhjg4LWjPqWpdY0FeVFlrv7KFt3xOxePcrpDRvTBo69jA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=wqbD74dDFFuEZ70Ohle1rseR7zAyo+q7HCZQRcDQnKc=;
- b=ScZbzM1UrnxHxvvzD3KiX/KOeDNPH5h/RWpquYgPoKimpFH3qNmuM3mZ/571aqXoUT0Jda8thIMVQL16KmYW9tIFIuG5CgDButtF2tTwy6pJaNkuXtHF6RZeOJ+aC1SCz0/4E1rvy7IWc4txpojbPLrYaPmhJncec5BZM+NaOrMuei0vg0x4OMo0kdFvwTy8HdohN3JDfhLVyrs796tLeMINWN8l/FGO89OjZaPXPvoI2JSg0dqCmRATy+xfIcZJuGyi9lNVTAEeO+P1jfGli6xEpXlIOUa6L+50jk14fN/cw9YAkLWBfVX735MiOwfdbYNt3euXtTgDbzzBwfmotg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=huaweicloud.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
+ bh=OhUSHYs7M4qpwxqCakCaKKjxSxcrEYrMJs7QFL1S/zg=;
+ b=N5gciL8HYDhjQSalXv2QbyfsZ0QuAKMl6AyBcFSJuV5PzcNH7fwF0HwwkH9ZBiJcGLsSJK07d0jRpWgwaL3mD4efXoZ6D+DtTGTc5ljpNqWPkNfRSqvkXPjREvxLMw28oGnYwqfeP9x3z2KlxnM2hinBSFLls4Wx4OxIUvuzzD4qzCmsrtliodsJWJg0+/MAS9JGfVt5Jic+DVhThMXGvtT6md5vqR4B5o4iF+bxwlcNCA3l289FcvPFuXY5jvXWVSSt+R657BZ2E6l8p2sJoOcLVtUeuQ6NCy4l588BkIz/C93NA+wdw2xpveFaDF2jq+TlUePHfMhzlVaVz17udQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=wqbD74dDFFuEZ70Ohle1rseR7zAyo+q7HCZQRcDQnKc=;
- b=ez0umGkkkLf9ZtasjioxyP9zAAW/Dgo38nJ/xwVc6PNCkm5KfHIjjJLfzCCC1YJrOWu8qa/cHDRQVp7vCELMLbinH66JC6Qx9SK5SYL7jxhS2zfJJpfb2v6VvBuECr2HUnmYUzTii61oveQ7dP1LoDSp62T/JvRpqgaRGSZtJ6029MI6aIAJToJDfpw7cO6IyUr/KaiuIa2taAWLGYsIMjeWGrWKtIrVPDg0Fd86mJIfA07ERssuI1A9lLVVxxzEtY8yUQHlLGMfFTmAKFvkXbobRugxPDtPkxbqwCTXcZyW9oV7dfJ45V575bllwmIf71khDG0KiUIPbQpE5y9vXQ==
-Received: from DM6PR12CA0012.namprd12.prod.outlook.com (2603:10b6:5:1c0::25)
- by DM4PR12MB9070.namprd12.prod.outlook.com (2603:10b6:8:bc::12) with
+ bh=OhUSHYs7M4qpwxqCakCaKKjxSxcrEYrMJs7QFL1S/zg=;
+ b=qCL9wTwB4v/uxIj1djM7q2CIyPsiCyqxQUuhkx9ku1isRWFPyQS8Qi/MFMhHWjvg8qajkCyEAgM3tyNjY6hJiHYwznHAN3yTLpLzGYBTTVUC5SZNHJPIkEjobw65UyqtNjtWqWh1qzRDS4b8G1Z4ASQwCTOJL9OG7hAgbI1i2qo=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DM8PR12MB5445.namprd12.prod.outlook.com (2603:10b6:8:24::7) by
+ IA0PR12MB7505.namprd12.prod.outlook.com (2603:10b6:208:443::15) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6652.30; Thu, 10 Aug
- 2023 19:59:09 +0000
-Received: from CY4PEPF0000EE33.namprd05.prod.outlook.com
- (2603:10b6:5:1c0:cafe::97) by DM6PR12CA0012.outlook.office365.com
- (2603:10b6:5:1c0::25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6652.30 via Frontend
- Transport; Thu, 10 Aug 2023 19:59:09 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- CY4PEPF0000EE33.mail.protection.outlook.com (10.167.242.39) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6652.19 via Frontend Transport; Thu, 10 Aug 2023 19:59:08 +0000
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Thu, 10 Aug 2023
- 12:58:59 -0700
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail202.nvidia.com
- (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Thu, 10 Aug
- 2023 12:58:59 -0700
-Received: from Asurada-Nvidia (10.127.8.13) by mail.nvidia.com (10.129.68.7)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37 via Frontend
- Transport; Thu, 10 Aug 2023 12:58:58 -0700
-Date: Thu, 10 Aug 2023 12:58:56 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: "thunder.leizhen@huaweicloud.com" <thunder.leizhen@huaweicloud.com>
-CC: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, "Joerg
- Roedel" <joro@8bytes.org>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Zhen Lei
-	<thunder.leizhen@huawei.com>, Tanmay Jagdale <tanmay@marvell.com>, "Jonathan
- Cameron" <Jonathan.Cameron@Huawei.com>
-Subject: Re: [PATCH v2 1/2] iommu/arm-smmu-v3: Add support for ECMDQ register
- mode
-Message-ID: <ZNVBgCb5w0daExIL@Asurada-Nvidia>
-References: <20230809131303.1355-1-thunder.leizhen@huaweicloud.com>
- <20230809131303.1355-2-thunder.leizhen@huaweicloud.com>
+ 2023 20:31:44 +0000
+Received: from DM8PR12MB5445.namprd12.prod.outlook.com
+ ([fe80::12ec:a62b:b286:d309]) by DM8PR12MB5445.namprd12.prod.outlook.com
+ ([fe80::12ec:a62b:b286:d309%7]) with mapi id 15.20.6652.029; Thu, 10 Aug 2023
+ 20:31:44 +0000
+Message-ID: <b11dcd0d-f24c-c940-ce10-a5eba650b27c@amd.com>
+Date: Thu, 10 Aug 2023 13:31:41 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.1
+Subject: Re: [PATCH v3 10/16] iommu/amd: Modify logic for checking GT and PPR
+ features
+Content-Language: en-US
+To: Jason Gunthorpe <jgg@ziepe.ca>, Vasant Hegde <vasant.hegde@amd.com>
+Cc: iommu@lists.linux.dev, joro@8bytes.org, wei.huang2@amd.com,
+ jsnitsel@redhat.com
+References: <20230804064216.835544-1-vasant.hegde@amd.com>
+ <20230804064216.835544-11-vasant.hegde@amd.com> <ZMz66cV24yQV9Byn@ziepe.ca>
+ <14ad5515-e320-198f-8e94-1a83678a51b1@amd.com> <ZNJJTzuCyKXQojfe@ziepe.ca>
+From: "Suthikulpanit, Suravee" <suravee.suthikulpanit@amd.com>
+In-Reply-To: <ZNJJTzuCyKXQojfe@ziepe.ca>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SJ0PR13CA0040.namprd13.prod.outlook.com
+ (2603:10b6:a03:2c2::15) To DM8PR12MB5445.namprd12.prod.outlook.com
+ (2603:10b6:8:24::7)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20230809131303.1355-2-thunder.leizhen@huaweicloud.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY4PEPF0000EE33:EE_|DM4PR12MB9070:EE_
-X-MS-Office365-Filtering-Correlation-Id: 0aa97e5a-3d5c-4214-8127-08db99dc4276
+X-MS-TrafficTypeDiagnostic: DM8PR12MB5445:EE_|IA0PR12MB7505:EE_
+X-MS-Office365-Filtering-Correlation-Id: 7e90f8c5-a64c-4515-1594-08db99e0cfc5
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	AVovRlDF1rqc5svDevpb6YwcNWzrCHuCucHU0pQcDJZ5CwzcGFWJ44R2ZjSWuHaLczAVab8AYn57YyiqtRokjEMLM79ZUJlnJYqvHHqIJAua07rwYmKzG5FDUq3r73MEsiqhURWiWZpgpj0iZPmOGirql9NGEjHWF8aJM8MyyOv2kzV8ezTCmNmZZRibcNMCsRA3ois+UV3kg5dIaWQEkzRKIBsflWeOWsv3jMYAGA+EYUN0aW8ngCORtsjRnSUoGRwJv84LCBwNXxN6mgxPtIKrg7dlh4GwwZZt5KdDqs9YYWin48/f32FHWCfDLPKOlggQKERLc+tVTHTTfZRqV3j6a2HHep3uQQ9O7jed4s2vd8jVjmmjIL8w6ydVDV9tZea0MQJikUcKZbB/iAR8tVzp8SBMtkHsDZO+v1CJYM9D3GMnTTeJkh4m2aWUaZcVyU8g79NKafdrtNzyI1ZZjetneFTtxKLmsdPb6vk6vsu/zf1wjIYsPM0dtUAcymMV7UZS8SMcmyRDe9j1hHwrk9gjsGsWHnW7LMJuhws5cql1FL2QuTCULwGvsgr6dpioqlubRma4MO5/TAEAIeEUFfyzAhXOs9ZqZZCXAy1qLIbUDODjgtBDrsKdGpR7AY6Bt4clDI3XKzpaDy5MwccVHq6PwOsx7bt93R4z/WQCRXcPlnpLFfoEyeHE8b2ulGr5mA/4Xx+Y5GUj8MDvefoJKL3T3c3hLc3Q8miPMPeXAlTIDImhuYHi7kiZxdK8okxw
+	ChAzQxYwFXLrHES0nC+96LCOz4DMLEITZ8N24fX18lgmz+jj7j5Lg5z8aTvQziUCe/mXpPZwugjUCExaDUGPyQywwskVojxYrfWeuuzpslLGXu9SdK6u5lRVBSKQvkrd1OA2mBtB/eVJXMHCR1zfxOICdr+pAHZnfM5+CvD3s6Vleg0C0kc4NXSkvCHrR7bjTV26zQqLv9jrV257avjHtfhQEz3Y5KLlsDnoy1Q5M/WQXnQNn34534SdqkHDfAnezCmlKOY9d9RmSnyrqxQwLlX6+OiO/1Cr/ppaNUEZIStBF4BiLf1O20AvCOyKTOxwtFWJXznBpPjxtTCvlkr3yR33vsYtPkgT+G6Ij9nD8fBKzoeMERngH9wxQQXWdqNwWgGCvDtK8LzKK9Dt2rEDojHn84z3SynPJQXk57HtoGnA6/WQjdGTxiWs6ATmINjNj8/LJD05u2VOmiprvz5SStd2kq0jznKQkYdzmdeduHzlWMGPfMgMn8RYmMRIfwlk7rwaT/+AKUsvMsGgtRRru5fTOYAP93cOde+NJycwrUdzLYaq4nZmZBU/ALyax7t2pnmtTZDvzfGT3hPYZ22oGkENdL+0Owwg8ntpcJm4GyMD1VOVAkoPWdwlNAzgLyuZ75V3XfehTQ/8O+xViXW6LA==
 X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(396003)(346002)(39860400002)(376002)(136003)(451199021)(186006)(1800799006)(82310400008)(40470700004)(46966006)(36840700001)(7636003)(356005)(82740400003)(86362001)(33716001)(40460700003)(55016003)(40480700001)(26005)(8676002)(8936002)(336012)(5660300002)(41300700001)(316002)(70586007)(2906002)(83380400001)(426003)(47076005)(54906003)(478600001)(70206006)(9686003)(6916009)(4326008)(36860700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Aug 2023 19:59:08.8567
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM8PR12MB5445.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(39860400002)(346002)(376002)(366004)(136003)(451199021)(186006)(1800799006)(26005)(6506007)(8676002)(8936002)(53546011)(41300700001)(36756003)(83380400001)(2906002)(2616005)(38100700002)(86362001)(31696002)(6636002)(66476007)(66946007)(66556008)(478600001)(6512007)(4326008)(110136005)(31686004)(6486002)(5660300002)(6666004)(316002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?anRFK0c5NGcwRGx6ZVdJcTZvSCtEcnJFemNRaWFRREszejV1NUcrbFBhR0Jy?=
+ =?utf-8?B?MmNSMVhmL2t5Q0xRbm1ZcUpibkRncVhFN0Q3NGJVV3hrODB5TU1vUXJSMDNy?=
+ =?utf-8?B?YW5pT20zQmQ4Y01WTStLdTE4MCt6WlNWSjhvU1Y5ZVlRbUhLL1pURVJhMUdr?=
+ =?utf-8?B?L21rQlNwT1lZc0FQL29UckFwZXJCc1pTQ0lJLy9KL1ZDcEZiSkMxNWo1RHBX?=
+ =?utf-8?B?MWQ4RHQ2WW91REk3SVdvUGtaOU1qYnl0WWhvRlNyZTJoYjRXbGVPVytmaEVT?=
+ =?utf-8?B?bU5yZmo3bXJGZ1ZPT292eGlUdFVNTUp1SXUwK3E4RlBPNWtRMzNpcjVsOEhq?=
+ =?utf-8?B?aFdySmVTd0xTU0lKWWxhbE9PVEZpOFFwWWMySVFUVXpoMjh2L2JFYkpsenZL?=
+ =?utf-8?B?cmg1S1VFemdaNWpWVEx5bldUNlJUZHhxUkQxTWNFTTd3SERFK3JXc25icG5w?=
+ =?utf-8?B?QXg4M3JUR2xZU3dmNWM4Uk81YnZqS3EycFoxTkhDN01CcUw3eW1HeEJhOTNu?=
+ =?utf-8?B?R21SdWZML2ZRdWhxRXZVTGJ1R3NGZmJ2OVpEa1VZakhHVS9OdjRIK20rdGdj?=
+ =?utf-8?B?aEJHVGowNXE1SXJYTzZBczVjRXJYelJSend2SXdqclNvYTg0elZiQlpJSi9j?=
+ =?utf-8?B?eDNTOUNRMllHZHI2M0pqOHEyQjl0Qk9Qbk8zZllwMlpDYW1tMW5WNEcrMERY?=
+ =?utf-8?B?eW12cVpTc3cxNEhQYURGQ3BhbzIrMUhocVVPWUw3ZzlrTzJWc2FaZ2JTWGRs?=
+ =?utf-8?B?N2hPdDV5alM5bVJKS3JlY1owQ0k3eGN0aDlWN0U5OGd4TzZ1OUtXRkhGRHh6?=
+ =?utf-8?B?TE9EcnBoNVZlay9ZTkRLVDVpK1NCbGNvMjhWd1B1SmYzQ3hueVZIT0tBMS9F?=
+ =?utf-8?B?aWppeFF5bGJkL1Z1TDB3OE5saFFNdVJzWWZDVzliNm9FcGNXZytpSEthUEpG?=
+ =?utf-8?B?ZmZFVG9NSVVVcHpQbTVocS83YzdCSU4reXgxQ1huVHBRSWVnZGZnMXFtVlFC?=
+ =?utf-8?B?UmZWWEw2WjExWHBFdzZabitzbERKT1JUM1lZQ1RwT0lta253TWwreW51enBR?=
+ =?utf-8?B?bEdtZEdQWkNQdnlyUFQzeFpiUGpTckRUN05ZZyt5MVh0RS9DNy9WazUxVUQ4?=
+ =?utf-8?B?NFRyczhHQmFnaURzOTh0ZUNRbGlQbzFqUm15b29YZ21pa29yZXpBNm52T3JB?=
+ =?utf-8?B?ZWJHN2xVOGptaFYweHBoOGhjdXYvQ01qOHZuem1MZmhnYlZkbkxUc1lobTVR?=
+ =?utf-8?B?NXp2U2pSMGR6TlBWY2UxdTNYdDFxMU56Sng4SDEyaFFmc2ZRangxSG9FRTF2?=
+ =?utf-8?B?aVZYNmsrcTRRNnQ2MGdkVkJrQmp5MVZnNEtFSy9PUW5tT0FFUTJmZEpOaWRX?=
+ =?utf-8?B?bDVtaEh3T1dFWStnSnYySTJoSlYzL0FwMXV0U0F2cmo5cTZSOWpnYi9ORnBR?=
+ =?utf-8?B?NWRHNStabCtEQld6aTZualVtbE4vUUYrQnhLdU11UEh1M1RKOHRsTUNhdkFp?=
+ =?utf-8?B?enppem5YbmV5Y3pZaHRIdDBEdUN6MDNJWVpuWGEzRXZDcjJKV1Y1aUVERVp4?=
+ =?utf-8?B?TzRUMThoNzgzSU55b0ZSamc2VW1JQ3IzYXdBdEcveWdlaUJvOEhUOGYycCt0?=
+ =?utf-8?B?cytyUEdzRG1iazE3aFhzODNpOWJad0UyUnB5UjR0SnltdXRSMzQ1MzR0Zzcz?=
+ =?utf-8?B?NmtUYmF5VU11emx5Zk5vNks5aU5uNmVLNkZETG9WUGpiTmRKc24xK3ozMUpB?=
+ =?utf-8?B?Wnd4djk1bmdCcFpxKzJVZXB5VTV6dnRGZUZIRUZpbXNDWExSdkVJWWZBOFZD?=
+ =?utf-8?B?cVFVRTcycmlxYk5QaUhVOTFuR1hzYUxkL21QWDh0YjRGNis4ZWJUMDVFc2xQ?=
+ =?utf-8?B?WnN5Mm1Ha3hnbm1lQ2UvK2FaV3grMXRYS0pwalhJd1NEcTF2NkhQcm9vWHlZ?=
+ =?utf-8?B?UXF4SHcvWmI3eXpBZ2NIYkxJOXRHT0NXM2hHR2k5N2NVV1dCYUN4TkZ3OHpI?=
+ =?utf-8?B?Sktzelo3NFV1d3psbFNjUGN1WXhUSitzdGthVUU0SkhONk1yeWt6Z0hXY0NT?=
+ =?utf-8?B?amZKQ1FoNVZtWXU5QkZMa0tEbk9menN6MVQ3RkJ4UXhNNnRPRWxKYVgxRGRK?=
+ =?utf-8?Q?7y9lGwngh2GF5N8RiHcHcWj1K?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7e90f8c5-a64c-4515-1594-08db99e0cfc5
+X-MS-Exchange-CrossTenant-AuthSource: DM8PR12MB5445.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Aug 2023 20:31:44.3321
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0aa97e5a-3d5c-4214-8127-08db99dc4276
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CY4PEPF0000EE33.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB9070
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 6TOWYnG/J0lwPpAqwzMVKSm/WRi+Dgw0Fxdul3vki+rmBuFOiY8Wd/foOZ8aEfcHShYHg2VoYhKWvFB5Lq1+Ow==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB7505
 
-Hi Zhen,
+Jason,
 
-On Wed, Aug 09, 2023 at 06:13:02AM -0700, thunder.leizhen@huaweicloud.com wrote:
-> +static int arm_smmu_ecmdq_layout(struct arm_smmu_device *smmu)
-> +{
-> +       int cpu;
-> +       struct arm_smmu_ecmdq __percpu *ecmdq;
-> +
-> +       if (num_possible_cpus() <= smmu->nr_ecmdq) {
+On 8/8/2023 6:55 AM, Jason Gunthorpe wrote:
+> On Mon, Aug 07, 2023 at 10:14:23PM +0530, Vasant Hegde wrote:
+>> Hi Jason,
+>>
+>>
+>> On 8/4/2023 6:49 PM, Jason Gunthorpe wrote:
+>>> On Fri, Aug 04, 2023 at 06:42:10AM +0000, Vasant Hegde wrote:
+>>>> From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+>>>>
+>>>> In order to support v2 page table, IOMMU driver need to check if the
+>>>> hardware can support Guest Translation (GT) and Peripheral Page Requet
+>>>> (PPR) features. Currently, IOMMU driver uses global (amd_iommu_v2_present)
+>>>> and per-iommu (struct amd_iommu.is_iommu_v2) variables to track the
+>>>> features. There variables area redundant since we could simply just check
+>>>> the global EFR mask.
+>>>>
+>>>> Therefore, replace it with a helper function with appropriate name.
+>>>>
+>>>> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+>>>> Co-developed-by: Vasant Hegde <vasant.hegde@amd.com>
+>>>> Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
+>>>> ---
+>>>>   drivers/iommu/amd/amd_iommu.h       | 11 +++++++++++
+>>>>   drivers/iommu/amd/amd_iommu_types.h |  9 ++++-----
+>>>>   drivers/iommu/amd/init.c            | 14 +-------------
+>>>>   drivers/iommu/amd/iommu.c           |  2 +-
+>>>>   4 files changed, 17 insertions(+), 19 deletions(-)
+>>>>
+>>>> diff --git a/drivers/iommu/amd/amd_iommu.h b/drivers/iommu/amd/amd_iommu.h
+>>>> index a5a350ee36fe..0605f02fa711 100644
+>>>> --- a/drivers/iommu/amd/amd_iommu.h
+>>>> +++ b/drivers/iommu/amd/amd_iommu.h
+>>>> @@ -95,6 +95,17 @@ static inline bool iommu_feature(struct amd_iommu *iommu, u64 mask)
+>>>>   	return !!(iommu->features & mask);
+>>>>   }
+>>>>   
+>>>> +static inline bool check_feature_on_all_iommus(u64 mask)
+>>>> +{
+>>>> +	return !!(amd_iommu_efr & mask);
+>>>> +}
+>>>> +
+>>>> +static inline bool amd_iommu_gt_ppr_supported(void)
+>>>> +{
+>>>> +	return (check_feature_on_all_iommus(FEATURE_GT) &&
+>>>> +		check_feature_on_all_iommus(FEATURE_PPR));
+>>>> +}
+>>>> +
+>>>
+>>> I'm still against adding more globals, the iommu struct was available,
+>>> just use it directly in this patch.
+>>
+>> Sorry. I missed to append the reason after re-generating patch series.
+>>
+>> We want to make sure features supported by all IOMMUs are consistent.
+>> Hence we introduced this function. This function will be used in
+>> subsequent series (ex:  before enabling IOMMU PPR feature, etc).
+> 
+> That isn't really the right direction. iommus are per-instance things,
+> each instance should attend to its own stuff. Globals should be avoided.
+> 
+>> Also there are features like SNP which has requirement that all
+>> IOMMUs supports features before enabling it. So moving all checks to
+>> check_feature_on_all_iommu() makes it easy.
+> 
+> It is confusing why this would be necessary, but even if it is, it
+> should be limitd to SNP with a big comment explaining why SNP is
+> broken.
+> 
+> Jason
 
-Does the nr_ecmdq always physically match with the number of CPUs?
-I saw the spec saying "up to 256 pages", but not sure if they are
-always physically present, even if CPU number is smaller i.e. some
-of them would be unassigned/wasted.
+Actually, it is not just for the SNP.
 
-> +               ecmdq = devm_alloc_percpu(smmu->dev, *ecmdq);
-> +               if (!ecmdq)
-> +                       return -ENOMEM;
-> +
-> +               for_each_possible_cpu(cpu)
-> +                       *per_cpu_ptr(smmu->ecmdqs, cpu) = per_cpu_ptr(ecmdq, cpu);
-> +
-> +               /* A core requires at most one ECMDQ */
-> +               smmu->nr_ecmdq = num_possible_cpus();
-> +
-> +               return 0;
-> +       }
-> +
-> +       return -ENOSPC;
+Please let me further clarify the existence of the global amd_iommu_efr 
+and amd_iommu_efr2 variables.
 
-This ENOSPC is a software limitation, isn't it? How about using
-"smp_processor_id() % smmu->nr_ecmdq" to select a queue?
+EFR and EFR2 are provided in two places:
+  1. The IVHD block in the ACPI IVRS table.
+  2. The register offset 0030h (EFR) and 01A0h (EFR2).
+where information in the IVHD block supersedes the MMIO registers.
 
-> +       shift_increment = order_base_2(num_possible_cpus() / smmu->nr_ecmdq);
-> +
-> +       offset = 0;
-> +       for_each_possible_cpu(cpu) {
-> +               struct arm_smmu_ecmdq *ecmdq;
-> +               struct arm_smmu_queue *q;
-> +
-> +               ecmdq = *per_cpu_ptr(smmu->ecmdqs, cpu);
-> +               ecmdq->base = cp_base + offset;
-> +
-> +               q = &ecmdq->cmdq.q;
-> +
-> +               q->llq.max_n_shift = ECMDQ_MAX_SZ_SHIFT + shift_increment;
-> +               ret = arm_smmu_init_one_queue(smmu, q, ecmdq->base, ARM_SMMU_ECMDQ_PROD,
-> +                               ARM_SMMU_ECMDQ_CONS, CMDQ_ENT_DWORDS, "ecmdq");
+The EFR/EFR2 information is needed early in the initialization process 
+prior to amd_iomu_init_pci() (where we can start accessing the MMIO 
+registers). So, current code ignore information in the MMIO registers 
+(only check and warn in case of the IVHD and MMIO are mismatch).
 
-Not getting why max_n_shift increases by shift_increment. Mind
-elaborating?
+Currently, IOMMU driver assumes capabilities on all IOMMU instances to 
+be homogeneous. Therefore, during early_amd_iommu_init(), the driver 
+probes all IVHD blocks and do sanity check to make sure that only 
+features common among all IOMMU instances are supported. This is tracked 
+in the global amd_iommu_efr / amd_iommu_efr2.
 
-Thanks
-Nicolin
+Therefore, the helper function check_feature_on_all_iommus() uses the 
+effective amd_iommu_efr/amd_iommu_efr2 instead of iommu->features. In 
+facts, we should remove the code which directly uses the 
+iommu->features, iommu->features2, and the iommu_feature() helper 
+function to simply and make the code less confusing.
+
+We can do this in subsequent patch separately.
+
+Thanks,
+Suravee
