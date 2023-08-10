@@ -1,167 +1,117 @@
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C213200BC
-	for <iommu@lists.linux.dev>; Thu, 10 Aug 2023 15:57:10 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=JX3Ps9baebypnVI+ev2DPdzcwsw9qJpEWX0xBS+QOUZhVS5TxUm23AJA3v7PiHVq4zTGBauakiH+U0+151ntWl3S1hQ7nO0mZcG82+4UVZBk/cPm4TIWx30BvqU3+usMbkmK8p/4hClBIeoveRLbqJvHz84GPb/Q7eiYdO0/Bq/A8kfwTM5czSfwT2b/a0kGsDsXjFWA3vDrsn39tnl3RG+u2yFcEeOMTK9aIHRCW6xL+pKloo6hDgPpzTHf3347PBx5ogdJiDW0miuLCuTwvdADrCFsN8HBfNlDeM6HT6InujLBs2TFvmSBSm4sWspVfMESaI4YW+frNnEV3fAmGQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=J4WadUE/0c677yqnwhT2LBHCKMtHyc5okxShkY3Uj3o=;
- b=V0RfB4nqiJulJzjlX9axe/ac3MH1kpXjq2xsUElhh0mthApWhD6TAiW3q6l52JTB8eM5+E1XMJhZQF+xyAIqoZqjRi/xeVR2BGxlOp1zOJFrHw0wmPvuog1v6UCHk3MfK130jPMBPQo1dtuhDR56CoY5RnY6SFBlfKS86gEo2nBogev2gXpNPJrl3t317dj/JdcQe8umDYTEOURRhwRf0XGwrCGAVdkWaHjULVP5Pl1ZyeQEg400v2t28hem2CZPmrhSv6PMozQO06pZb3zcejY+ziLaRzhE/26BbViKtinuS3285mujZ8U0tg7eaA5liXToZ+JEjv7x+G8GcyX3iw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=J4WadUE/0c677yqnwhT2LBHCKMtHyc5okxShkY3Uj3o=;
- b=VYL2JJRueVUAJkiGXErDYl4eDVWFXxsjpAF3C2PN6gIwL/XsdfY1C+48UuJSB1L2k5P7KH2ZUeG4xuoMmoBIJJQucGvHE2o/1bfxgHnyfIlPJladuI3gLXqxS488UL0W91E3Ev0Y5jGKoSyjFiyRtEDVR/Xwt1ngGB/uVDtCiGKIaI7OCqov15HK2tMEP4XYmDyrZClQxu2cqT6wnK/evOC+V8ZF46RIfYIKiPknqMvuOBqKCPx5+nJIhtwWBbp+0wSy96udtOV3/IZKOe8T3TVNbjmIGq+iGdedvkJuIvCqGYbZhn0z7PQa0Mqm+migTtav/zG8TnuCPbMhvf9Kjw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by SA1PR12MB8118.namprd12.prod.outlook.com (2603:10b6:806:333::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6652.30; Thu, 10 Aug
- 2023 15:57:08 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::5111:16e8:5afe:1da1]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::5111:16e8:5afe:1da1%6]) with mapi id 15.20.6652.029; Thu, 10 Aug 2023
- 15:57:08 +0000
-Date: Thu, 10 Aug 2023 12:57:04 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Cc: Nicolin Chen <nicolinc@nvidia.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
-	"joro@8bytes.org" <joro@8bytes.org>,
-	"alex.williamson@redhat.com" <alex.williamson@redhat.com>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
-	"cohuck@redhat.com" <cohuck@redhat.com>,
-	"eric.auger@redhat.com" <eric.auger@redhat.com>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-	"mjrosato@linux.ibm.com" <mjrosato@linux.ibm.com>,
-	"chao.p.peng@linux.intel.com" <chao.p.peng@linux.intel.com>,
-	"yi.y.sun@linux.intel.com" <yi.y.sun@linux.intel.com>,
-	"peterx@redhat.com" <peterx@redhat.com>,
-	"jasowang@redhat.com" <jasowang@redhat.com>,
-	"shameerali.kolothum.thodi@huawei.com" <shameerali.kolothum.thodi@huawei.com>,
-	"lulu@redhat.com" <lulu@redhat.com>,
-	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-	"Duan, Zhenzhong" <zhenzhong.duan@intel.com>
-Subject: Re: [PATCH v4 09/12] iommu/vt-d: Add iotlb flush for nested domain
-Message-ID: <ZNUI0D7ZMvLWlBNx@nvidia.com>
-References: <ZNJ+Uv/WJwngosjJ@Asurada-Nvidia>
- <BN9PR11MB5276BFFEC7E12EEBD4503BF08C12A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <DS0PR11MB7529C3646E38542457D7B75DC312A@DS0PR11MB7529.namprd11.prod.outlook.com>
- <BN9PR11MB5276912120F662498910A1D48C12A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <DS0PR11MB7529C310FAEA61B6E7988629C312A@DS0PR11MB7529.namprd11.prod.outlook.com>
- <ZNO92PIx2IQ70+DY@nvidia.com>
- <ZNPlGd4/72dahSs4@Asurada-Nvidia>
- <ZNPmpW3/zDnjqxyU@nvidia.com>
- <ZNP0UKGU6id5wfc6@Asurada-Nvidia>
- <BN9PR11MB527683351B687B97AB84B51B8C13A@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <BN9PR11MB527683351B687B97AB84B51B8C13A@BN9PR11MB5276.namprd11.prod.outlook.com>
-X-ClientProxiedBy: SJ0PR13CA0189.namprd13.prod.outlook.com
- (2603:10b6:a03:2c3::14) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A356C1E1D2
+	for <iommu@lists.linux.dev>; Thu, 10 Aug 2023 16:16:00 +0000 (UTC)
+Received: from pps.filterd (m0279867.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 37AEVlbK032168;
+	Thu, 10 Aug 2023 16:15:23 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=qcppdkim1;
+ bh=dsMpN15XnIE21muLE7ooraQPgiRpC1Gn/z0EoywcnfI=;
+ b=CahBecJ6cUa1xX3zcF0auddztn2Sn0KCdIotPsU7Qu9vqq3QRwaMsu669mNjeuxBOi3V
+ e64MzNS8ql3vHO4AxkW3KD+mZKYBixpHFQCZ+jGzKHzdck9LDVmmijMIzVPKI8ncF7Y2
+ lsJmiHNmdpTuSgLrBxEYpNvnjv/1+sviMq0lJNzUiivcpkxPM2zJh0B6FtTq79Pydh0x
+ 9tyzpMWZ4606+SAiWhB7S3Ci8loUPBn3EmjR/LhbT4kyEMpLGqBo3v/LaHjrqfiS7hJm
+ WhfIsYiJ8o39F11VuZ6EFbvZdWmfGeG9JWv1CDmhEBMpB3tkv+WjTjdpUQFbu0fpadRM kA== 
+Received: from nalasppmta02.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3scqsj1nf2-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 10 Aug 2023 16:15:23 +0000
+Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
+	by NALASPPMTA02.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 37AGFMlh005855
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 10 Aug 2023 16:15:22 GMT
+Received: from [10.226.59.182] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.30; Thu, 10 Aug
+ 2023 09:15:20 -0700
+Message-ID: <7ce1110e-a462-08c5-b58a-80461041ca7f@quicinc.com>
+Date: Thu, 10 Aug 2023 10:15:19 -0600
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|SA1PR12MB8118:EE_
-X-MS-Office365-Filtering-Correlation-Id: 4ca29f58-6b91-4c0b-e2bb-08db99ba730f
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	1yjtdrx3o91Auy5VICMVvPwcm3WZFfE+/RHv4XKVvGk1qk4v+cMViWDowQuFOESAEOIpyDdLNyBcUfrmwlGg4vm9FxrwUCVd8o2+lgQjO1ChtaM7xZ99szYdAGyyQsuxkxwhGOqG9krVdWh11uHYR7j3hpYTbm4ws0A6oD3XfQBf/w3uwtWT+RnSfKOvj61InX/WO4snH9gYdDIcavAIWw7kqt2QRnbBywUym3rowoYu4yVZN6OmyPHYDmRVzA9879s8lrnltZkabxGWGys9joVwE7o9FQZYwXEIf6+AoDVj0DjZapAWKQrrdCTIaqs06CLYqMwbNCpOUeYLHcD7SxIgDbCTun2/371VqnwkLk4EZ+wgclz3ymNGBDW7jIotzYVipxlW7VTaQaDHzsTkLIQjmQemTw9/zmpygK8qWIppD+KYDAFCeoSEtpbjVtALeVtLZmQUpUGD85ggZSCOLrtGgI0D27zOA2DZihqtBf4e6bzcztlybv79oTkxsx9gY92NT18cJ2ynbNzkO1hmGvonM9+dyndWlaucljk/okjlcz2jw5Q27PssRg3I+nGV
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(136003)(396003)(376002)(366004)(346002)(39860400002)(1800799006)(186006)(451199021)(54906003)(36756003)(478600001)(6666004)(66946007)(6916009)(26005)(66476007)(6506007)(66556008)(6512007)(6486002)(4326008)(2906002)(41300700001)(316002)(7416002)(5660300002)(8936002)(8676002)(38100700002)(86362001)(83380400001)(2616005);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?/Vpwbf6o35ih7tkc/SCYREgbX52l3pg5/mH1aUJCdRtkOJQVexA15yF19GnW?=
- =?us-ascii?Q?gxHDFbClprgt5MVJceFuzHH8exIKTl0atGOK1dGBE7nM/HjHYe0Kz3nSWooK?=
- =?us-ascii?Q?yYbJzfQTBu7px44AcsUEUocC7ErFwAij2hgfeAuyZBcL2NeM2JoGl7QfObHC?=
- =?us-ascii?Q?qM1Qo4Qx/DEgFoNOXU4q9PXmHyj0yxCuJt8fC+smuOMr/cKEOLI+ObKnmcJ3?=
- =?us-ascii?Q?IBFl9xlViJ2zZjWZWWN90bGaHjktPSBOUg3L//KflUjQSgZiKmNK6GDq+RvF?=
- =?us-ascii?Q?3j+itTACNRs0zlnmQx6ynwSREV2E3sW0vEhOQVrikgQkRCgCyV9rInxe+ShR?=
- =?us-ascii?Q?0K0yENA66jubM5aLIOWaW4Az4rFCPDhTXfwn7O3VyUn6tPBvN+TVUd6ZIV7d?=
- =?us-ascii?Q?wBYvAZJwINBuRtrjUzqTxfnOeQSSZFJAT5SUtSu48O8vlaNNkZPh32q8QGBn?=
- =?us-ascii?Q?b7wCuehHRBHU36k5Il3mPA5szJCdhuGsGZBWb7c2dNvWyjuYjx/shkM7+o0x?=
- =?us-ascii?Q?ODdUHUCppSty86Au2mGJKvlGRBUKnQ47jH5vTkCLVFA2Cuz10OZSn2l+7VxA?=
- =?us-ascii?Q?LpxxjqmJAdPAJQawlFvIZyHOsdVN0b7M2J/P3bit7WzNLri8Hxhfv3G8MLXG?=
- =?us-ascii?Q?ZfWYCfs0XtxKK1PEJ4PRr6T6gpzvF6wXQSVNSpy1xZCTQJP3MBS0u4tZJabl?=
- =?us-ascii?Q?eA7fzITXws3w1LxJTGK3VND7A9qRjG7QSpeUbmxVfCLc4q2sZLUzbsbNdg4O?=
- =?us-ascii?Q?liKYskqfPjbdSdCJzKBNO5UieP1yWME9VUSplX3EOBwdzlqe9Cd2tlvd8+my?=
- =?us-ascii?Q?pzFEXc+pk8XmGkyCcf5rEn6HCMGt1NeOmQyXJBtw50HcMjcS2fhyTR4L4PgP?=
- =?us-ascii?Q?UiQBHR03+RtYyAsZ8Ql5dpI+cKFMJQpg2s1D6aZNHuimSrIqbm7P1q8rpfx5?=
- =?us-ascii?Q?Vgj+WTFBzJV/kG5AkknF/n8Y4sjvrsfEtDncdmwk/CnVR68ActqKcJwcG+XB?=
- =?us-ascii?Q?6x2AdxDvx/OvHFaWj5GvLccP9h6QEr25NsPNgwo80PD46l9gWN+qC+dcv3ep?=
- =?us-ascii?Q?/L3WFQPJeaJLl0l7v4u3l2tq/lFJe50MBaz6RcGdQ+eowDMYQeCVXnks3mGe?=
- =?us-ascii?Q?tbSPQr2sionNKVnKS+RYKdgrqYACtpGmmYA9PwJkraJrUybAwTICCBRgRfwt?=
- =?us-ascii?Q?oIllzyP4fEHcsi9GfyzQfPequ+1FYaFcvcZO/S+X+P5/r96jAvymkgjhZtkF?=
- =?us-ascii?Q?S57gJ61z5pbKpdb/PV4+3mamPWERmJnpvviYSVdtzHb9ode428mDJrwGHSq1?=
- =?us-ascii?Q?AlPCxRL4evDQGg5bPaYmr1/h7f0mIupTqdCvdjEPQMin829TA/JRusU60f8q?=
- =?us-ascii?Q?hlEnsj7Ugo9W/H6f+c7Psqha3VJV7j7LVhIa6Xv6TaYm0YYTNZaBGmsszGZz?=
- =?us-ascii?Q?IsWMrwCDmfpMeocyc1Zgq/nWe4/0ky+WNvpPdstxLTJpwQ1xjZ++VM6+Hgjh?=
- =?us-ascii?Q?j7S8JLfru0y5ZEPubWT6SO2TAoUS76qEaU2WR7DoSewIqwBVi3jDSL2eOANz?=
- =?us-ascii?Q?AEL72Gqne1Ay+QrYG6D+KE+WsOJg95+Znv29Ph9J?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4ca29f58-6b91-4c0b-e2bb-08db99ba730f
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Aug 2023 15:57:07.9159
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 5IE0DFGoAERbrQCyDYNiUOhtWbxP8FcTEZkuIb5hFuieEz6D2bt8v5xBvFlvia2n
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB8118
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Subject: Re: [PATCH v2 0/4] Fix device_lock deadlock on two probe() paths
+Content-Language: en-US
+To: Jason Gunthorpe <jgg@nvidia.com>, <iommu@lists.linux.dev>,
+        Joerg Roedel
+	<joro@8bytes.org>, Len Brown <lenb@kernel.org>,
+        <linux-acpi@vger.kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>
+CC: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <jroedel@suse.de>,
+        Kevin
+ Tian <kevin.tian@intel.com>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Chen-Yu Tsai <wenst@chromium.org>
+References: <0-v2-d2762acaf50a+16d-iommu_group_locking2_jgg@nvidia.com>
+From: Jeffrey Hugo <quic_jhugo@quicinc.com>
+In-Reply-To: <0-v2-d2762acaf50a+16d-iommu_group_locking2_jgg@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: r-aH6i_3hF0WH5po-Xy6EaD4zx_ELGMj
+X-Proofpoint-GUID: r-aH6i_3hF0WH5po-Xy6EaD4zx_ELGMj
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.267,Aquarius:18.0.957,Hydra:6.0.591,FMLib:17.11.176.26
+ definitions=2023-08-10_14,2023-08-10_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0
+ priorityscore=1501 impostorscore=0 phishscore=0 malwarescore=0 bulkscore=0
+ lowpriorityscore=0 clxscore=1011 suspectscore=0 mlxscore=0 mlxlogscore=999
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2306200000 definitions=main-2308100139
 
-On Thu, Aug 10, 2023 at 02:49:59AM +0000, Tian, Kevin wrote:
-> > From: Nicolin Chen <nicolinc@nvidia.com>
-> > Sent: Thursday, August 10, 2023 4:17 AM
-> > 
-> > On Wed, Aug 09, 2023 at 04:19:01PM -0300, Jason Gunthorpe wrote:
-> > > On Wed, Aug 09, 2023 at 12:12:25PM -0700, Nicolin Chen wrote:
-> > > > On Wed, Aug 09, 2023 at 01:24:56PM -0300, Jason Gunthorpe wrote:
-> > > > > Similarly for managing the array of invalidation commands.
-> > > >
-> > > > You mean an embedded uptr inside a driver user data struct right?
-> > > > Sure, that should go through the new helper too.
-> > >
-> > > If we are committed that all drivers have to process an array then put
-> > > the array in the top level struct and pass it in the same user_data
-> > > struct and use another helper to allow the driver to iterate through
-> > > it.
-> > 
-> > I see. Both VTD and SMMU pass uptr to the arrays of invalidation
-> > commands/requests. The only difference is that SMMU's array is a
-> > ring buffer other than a plain one indexing from the beginning.
-> > But the helper could take two index inputs, which should work for
-> > VTD case too. If another IOMMU driver only supports one request,
-> > rather than a array of requests, we can treat that as a single-
-> > entry array.
-> > 
+On 8/9/2023 8:43 AM, Jason Gunthorpe wrote:
+> I missed two paths where __iommu_probe_device() can be called while
+> already holding the device_lock() for the device that is to be probed.
 > 
-> I like this approach.
+> This causes a deadlock because __iommu_probe_device() will attempt to
+> re-acquire the lock.
+> 
+> Organize things so that these two paths can re-use the existing already
+> held device_lock by marking the call chains based on if the lock is held
+> or not.
+> 
+> Also the order of iommu_init_device() was not correct for
+> generic_single_device_group()
+> 
+> v2:
+>   - New patch to correct the order of setting iommu_dev during
+>     iommu_init_device()
+>   - Spelling fixes
+>   - Simply block probing the iommu device itself instead of trying to do it
+> v1: https://lore.kernel.org/r/0-v1-8612b9ef48da+333-iommu_group_locking2_jgg@nvidia.com
+> 
+> Jason Gunthorpe (4):
+>    iommu: Provide iommu_probe_device_locked()
+>    iommu: Pass in the iommu_device to probe for in bus_iommu_probe()
+>    iommu: Do not attempt to re-lock the iommu device when probing
+>    iommu: dev->iommu->iommu_dev must be set before ops->device_group()
+> 
+>   drivers/acpi/scan.c        |  5 +--
+>   drivers/iommu/iommu.c      | 65 +++++++++++++++++++++++++++-----------
+>   drivers/iommu/of_iommu.c   |  2 +-
+>   drivers/iommu/omap-iommu.c | 12 +++++--
+>   include/linux/iommu.h      |  6 +++-
+>   5 files changed, 65 insertions(+), 25 deletions(-)
+> 
+> 
+> base-commit: 8d3740021d5d461e1ec4c17fc5625b9b4237c2f8
 
-Do we need to worry about the ring wrap around? It is already the case
-that the VMM has to scan the ring and extract the invalidation
-commands, wouldn't it already just linearize them?
+I found that -next broke boot on the Lenovo Miix 630 laptop (Qualcomm 
+MSM8998).  Bisected to "iommu: Complete the locking for dev->iommu_group".
 
-Is there a use case for invaliation only SW emulated rings, and do we
-care about optimizing for the wrap around case?
+I applied this series and the boot hang failure shortly after iommu 
+probe goes away.
 
-Let's answer those questions before designing something complicated :)
-
-Jason
+Tested-by: Jeffrey Hugo <quic_jhugo@quicinc.com>
