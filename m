@@ -1,117 +1,98 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A356C1E1D2
-	for <iommu@lists.linux.dev>; Thu, 10 Aug 2023 16:16:00 +0000 (UTC)
-Received: from pps.filterd (m0279867.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 37AEVlbK032168;
-	Thu, 10 Aug 2023 16:15:23 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=qcppdkim1;
- bh=dsMpN15XnIE21muLE7ooraQPgiRpC1Gn/z0EoywcnfI=;
- b=CahBecJ6cUa1xX3zcF0auddztn2Sn0KCdIotPsU7Qu9vqq3QRwaMsu669mNjeuxBOi3V
- e64MzNS8ql3vHO4AxkW3KD+mZKYBixpHFQCZ+jGzKHzdck9LDVmmijMIzVPKI8ncF7Y2
- lsJmiHNmdpTuSgLrBxEYpNvnjv/1+sviMq0lJNzUiivcpkxPM2zJh0B6FtTq79Pydh0x
- 9tyzpMWZ4606+SAiWhB7S3Ci8loUPBn3EmjR/LhbT4kyEMpLGqBo3v/LaHjrqfiS7hJm
- WhfIsYiJ8o39F11VuZ6EFbvZdWmfGeG9JWv1CDmhEBMpB3tkv+WjTjdpUQFbu0fpadRM kA== 
-Received: from nalasppmta02.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3scqsj1nf2-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 10 Aug 2023 16:15:23 +0000
-Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-	by NALASPPMTA02.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 37AGFMlh005855
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 10 Aug 2023 16:15:22 GMT
-Received: from [10.226.59.182] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.30; Thu, 10 Aug
- 2023 09:15:20 -0700
-Message-ID: <7ce1110e-a462-08c5-b58a-80461041ca7f@quicinc.com>
-Date: Thu, 10 Aug 2023 10:15:19 -0600
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 772781E51F
+	for <iommu@lists.linux.dev>; Thu, 10 Aug 2023 16:27:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6AEA2C433C8;
+	Thu, 10 Aug 2023 16:27:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1691684870;
+	bh=dTku1OjG3tbVRFq4kPSk5Upl89gZucyzeix7zMe8F4A=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=iNo3vyzOHxV6dXUgQTscPsYAGXN8vOsYys+mEl3VLZ9agM6D+LtxCdFoZQzwdYFtr
+	 jn9SukqhEh1T4ariWZ9YMyZrCIyrx8qXWt1Ei4+gYsWkfpe3dF7USgCbeUfh1L4TfB
+	 HToZvdGHnVb4wqMrrzXFaaj96huazjiZa8PnkB2lDB4myCP9VUCaIcLj99w2oRO+oB
+	 kgMJPYvaB2eGjvaDhJ35SZY/UamKdQRYhsnKr7Tzw0SeBB2MTOM1SQxUMnpDXSJYHH
+	 9iu6GJpgbEOLSLvd5UJ+f17sOF9NhX/ekXceAxZhB3b15eerMLGW06daUCQDyjMWhL
+	 P/ANLN3Sefi/w==
+Date: Thu, 10 Aug 2023 17:27:45 +0100
+From: Will Deacon <will@kernel.org>
+To: Michael Shavit <mshavit@google.com>
+Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org, robin.murphy@arm.com,
+	nicolinc@nvidia.com, jgg@nvidia.com, jean-philippe@linaro.org
+Subject: Re: [PATCH v5 8/9] iommu/arm-smmu-v3: Skip cd sync if CD table isn't
+ active
+Message-ID: <20230810162745.GB5951@willie-the-truck>
+References: <20230808171446.2187795-1-mshavit@google.com>
+ <20230809011204.v5.8.Idedc0f496231e2faab3df057219c5e2d937bbfe4@changeid>
+ <20230809135011.GC4226@willie-the-truck>
+ <CAKHBV27LROax9-biR4ius2sXBYM+oJA82GTxsBo_LCd6zxVNgA@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [PATCH v2 0/4] Fix device_lock deadlock on two probe() paths
-Content-Language: en-US
-To: Jason Gunthorpe <jgg@nvidia.com>, <iommu@lists.linux.dev>,
-        Joerg Roedel
-	<joro@8bytes.org>, Len Brown <lenb@kernel.org>,
-        <linux-acpi@vger.kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>
-CC: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <jroedel@suse.de>,
-        Kevin
- Tian <kevin.tian@intel.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Chen-Yu Tsai <wenst@chromium.org>
-References: <0-v2-d2762acaf50a+16d-iommu_group_locking2_jgg@nvidia.com>
-From: Jeffrey Hugo <quic_jhugo@quicinc.com>
-In-Reply-To: <0-v2-d2762acaf50a+16d-iommu_group_locking2_jgg@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: r-aH6i_3hF0WH5po-Xy6EaD4zx_ELGMj
-X-Proofpoint-GUID: r-aH6i_3hF0WH5po-Xy6EaD4zx_ELGMj
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.267,Aquarius:18.0.957,Hydra:6.0.591,FMLib:17.11.176.26
- definitions=2023-08-10_14,2023-08-10_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0
- priorityscore=1501 impostorscore=0 phishscore=0 malwarescore=0 bulkscore=0
- lowpriorityscore=0 clxscore=1011 suspectscore=0 mlxscore=0 mlxlogscore=999
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2306200000 definitions=main-2308100139
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAKHBV27LROax9-biR4ius2sXBYM+oJA82GTxsBo_LCd6zxVNgA@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 
-On 8/9/2023 8:43 AM, Jason Gunthorpe wrote:
-> I missed two paths where __iommu_probe_device() can be called while
-> already holding the device_lock() for the device that is to be probed.
+On Thu, Aug 10, 2023 at 04:34:39PM +0800, Michael Shavit wrote:
+> On Wed, Aug 9, 2023 at 9:50 PM Will Deacon <will@kernel.org> wrote:
+> >
+> > On Wed, Aug 09, 2023 at 01:12:04AM +0800, Michael Shavit wrote:
+> > > This commit explicitly keeps track of whether a CD table is installed in
+> > > an STE so that arm_smmu_sync_cd can skip the sync when unnecessary. This
+> > > was previously achieved through the domain->devices list, but we are
+> > > moving to a model where arm_smmu_sync_cd directly operates on a master
+> > > and the master's CD table instead of a domain.
+> >
+> > Why is this path worth optimising?
 > 
-> This causes a deadlock because __iommu_probe_device() will attempt to
-> re-acquire the lock.
-> 
-> Organize things so that these two paths can re-use the existing already
-> held device_lock by marking the call chains based on if the lock is held
-> or not.
-> 
-> Also the order of iommu_init_device() was not correct for
-> generic_single_device_group()
-> 
-> v2:
->   - New patch to correct the order of setting iommu_dev during
->     iommu_init_device()
->   - Spelling fixes
->   - Simply block probing the iommu device itself instead of trying to do it
-> v1: https://lore.kernel.org/r/0-v1-8612b9ef48da+333-iommu_group_locking2_jgg@nvidia.com
-> 
-> Jason Gunthorpe (4):
->    iommu: Provide iommu_probe_device_locked()
->    iommu: Pass in the iommu_device to probe for in bus_iommu_probe()
->    iommu: Do not attempt to re-lock the iommu device when probing
->    iommu: dev->iommu->iommu_dev must be set before ops->device_group()
-> 
->   drivers/acpi/scan.c        |  5 +--
->   drivers/iommu/iommu.c      | 65 +++++++++++++++++++++++++++-----------
->   drivers/iommu/of_iommu.c   |  2 +-
->   drivers/iommu/omap-iommu.c | 12 +++++--
->   include/linux/iommu.h      |  6 +++-
->   5 files changed, 65 insertions(+), 25 deletions(-)
-> 
-> 
-> base-commit: 8d3740021d5d461e1ec4c17fc5625b9b4237c2f8
+> I have no idea what the practical impact of this optimization is, but
+> the motivation here was to make the overall series as close to a nop
+> as possible. This optimization existed before but is "broken" by the
+> previous patch. This patch restores it.
 
-I found that -next broke boot on the Lenovo Miix 630 laptop (Qualcomm 
-MSM8998).  Bisected to "iommu: Complete the locking for dev->iommu_group".
+I'm not sure it's necessary, tbh. It's not like we're calling
+arm_smmu_sync_cd() all over the place -- it's used when we're actually
+working with the CD.
 
-I applied this series and the boot hang failure shortly after iommu 
-probe goes away.
+> > Doesn't this interact badly with the sync in arm_smmu_detach_dev(), which I
+> > think happens after zapping the STE?
+> 
+> The arm_smmu_write_ctx_desc call added in arm_smmu_detach_dev() was
+> inserted after zapping the STE precisely so that we could skip the
+> sync. Is there a concern that a stale CD could be used when the
+> CDtable is re-inserted into the STE?
 
-Tested-by: Jeffrey Hugo <quic_jhugo@quicinc.com>
+Ah, sorry, I went and looked at the architecture and it says for
+CMD_CFGI_STE:
+
+  | This command invalidates all Context descriptors (including L1CD)
+  | that were cached using the given StreamID.
+
+so as long as we make the CD unreachable in the STE before the STE
+invalidation (which I think we do by setting the Config field to bypass or
+abort), then I agree that we don't need the subsequent CD invalidation.
+
+> > >               /*
+> > > -              * STE is live, and the SMMU might read dwords of this CD in any
+> > > +              * STE may be live, and the SMMU might read dwords of this CD in any
+> > >                * order. Ensure that it observes valid values before reading
+> > >                * V=1.
+> > >                */
+> >
+> > Why does this patch need to update this comment?
+> 
+> This is a drive-by to make this comment more accurate. Note how
+> (before this patch series) arm_smmu_domain_finalise_s1 explicitly
+> mentions that it calls arm_smmu_write_ctx_desc while the STE isn't
+> installed yet. Yet this comment asserts the STE *is* live.
+
+Can you do it as its own patch then, please?
+
+Will
