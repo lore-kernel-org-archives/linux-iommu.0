@@ -1,151 +1,197 @@
-Received: from mail-lf1-f54.google.com (mail-lf1-f54.google.com [209.85.167.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2064.outbound.protection.outlook.com [40.107.92.64])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 353BC62A
-	for <iommu@lists.linux.dev>; Thu, 10 Aug 2023 18:46:35 +0000 (UTC)
-Received: by mail-lf1-f54.google.com with SMTP id 2adb3069b0e04-4fe48d0ab0fso1900628e87.1
-        for <iommu@lists.linux.dev>; Thu, 10 Aug 2023 11:46:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1691693194; x=1692297994;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=b4xXKoYz0SscgeohStVGKJKHkeZRwf4W5KkjybW+eAI=;
-        b=QsqPYKHZ5NcoGCGetKyz+lsqn9hodhWUhLbQEA1zd982+X8DmKrAz+s3lQx8XLhkQQ
-         uZBNdTX3nQpzqwgm0qi4qwz6lv7/+u2zNr/4JWvsXo9dLeS74qTRgJM+j5jcRs1hDsAa
-         pw2ql5qcdSkRtlI3HzcCvyz/LwVb4hF8pygVRy9qfeXlXTzIJc8AY931YEapKtPq5tAq
-         3X2x3cRri/bCAaNu6nZ0XxIDb6esZ3CYUVRoZSclfAwFkLmjoG0m1p2KxZj+PefTSlKR
-         sgS6KYea0op11murxHqWK0B9wbbG7ykmEZoi8gzt5RfTxTNWFBWuWvsfVdDabHLF4f6B
-         NL+w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1691693194; x=1692297994;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=b4xXKoYz0SscgeohStVGKJKHkeZRwf4W5KkjybW+eAI=;
-        b=A2C2SRTA9b7Kw3fZtoxFbbzRCCBydwEEjY3CcRXnica4lUOxdHDKSoTaVVmwyimiFa
-         IbH7APAOakmkFwYZX0RUr80zn4vns20UVpRzJP/mvqZwN2CNFc3l1bFo35ae2SYIzEsP
-         bwR+ANU+ASjI6HkAirDtIQVwqauSbWbrx0X0uFLQ6Tq3fDMHTdsWgV6v3Fd93oKuiFf9
-         aPN89sZFkr1/oNdXInQjEtuuKNJ80SkqQyIsL1e5BUDlGbz86lalAZ9AaeJue0Uwr89r
-         AzU6vtpOePKzWNm9uWRlG8XTCBy1msH3nHJ7GOx+Xom8JWWKuLPmSZYbGugspyw6SnId
-         hI2A==
-X-Gm-Message-State: AOJu0YyD1CF2nECxeOKmSvwusnkUTyiq29AWJPW2wMmFRqB8A+ZTc8dD
-	UzHCLsmGFkRF3Nwn+quvlgTS6g==
-X-Google-Smtp-Source: AGHT+IFS6A4j2/jc16F+ODWRAHatCveHIxJXid+ZaYzs4Fr+4gretK+KfcljXYw8Aoh1Ve/YMSVo9w==
-X-Received: by 2002:a05:6512:31d5:b0:4fe:1b6c:7d37 with SMTP id j21-20020a05651231d500b004fe1b6c7d37mr2920279lfe.65.1691693193855;
-        Thu, 10 Aug 2023 11:46:33 -0700 (PDT)
-Received: from [192.168.1.101] (abxi185.neoplus.adsl.tpnet.pl. [83.9.2.185])
-        by smtp.gmail.com with ESMTPSA id e21-20020ac25475000000b004f37bd02a89sm386356lfn.287.2023.08.10.11.46.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 10 Aug 2023 11:46:33 -0700 (PDT)
-Message-ID: <868ee2b6-3b48-4d32-9614-fa9b3e057257@linaro.org>
-Date: Thu, 10 Aug 2023 20:46:29 +0200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C0095200A4
+	for <iommu@lists.linux.dev>; Thu, 10 Aug 2023 18:55:27 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=OIIPvGzyWYN24NFhgMWggsM9JaRiDbJA7fupdBk8q6k5vWChIjEj+P7Drrot+wiFYvphf8O82jyXL8dWa8Pnmu5nwOkA3FAP4Ta+7HBv0k25rvAzWPnKGfbvO+HR086bifxcYsifH36pVvhFkBzTR8dWfGAhvsgFntM0GPdqvB0Ik5DhQneOyHZZhQVQWOOI7k3Kkawn2rzduGe3Ivgb01Z8JW1r3/MXa+vpbK7ix6pI5bw9YQSdwrKMtlHxUfq3FBXifnxc6iDe6y52a/thwJZfgXUGSNFZGmqGqBiJzwxttiqzi9n+PzmEEqHBCjszuX7/7hLwWZe1A9sfJsCf0g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=W4dwVfH/l2HsACtR9tXV1+ky5EViZofhGo9Mi6jESr0=;
+ b=UqPdCBYSCatBKo4UjGjY9La5sZKMRNj47dBcOExyzEIRha4xmROzmQ5ph99NF0IjsnGqis/lPItssDf25zD2sOtsL7RD46bQin0G7JOylr4upwU7FDedHLy1fuDt2bBfs0NrX/J2KsA7X0+Gz2IlPoQ0DEmHKNlUI7/iqfDUAVLgqt3mMV6IbBYQJzuo9KDrzjjMIXLJufbyR/Rl/XzWge2P+963PTiAWBFbc7EDQSOKUQfux3LvFJesWDswzOrl0L8lMYFkgrmjJKF3OGo8Me66zeDwLUH4GZHpQFPQFGtAuje7S2yTyXY5HEbiHDhuYCRxfHih18/lEItQ+eWPEQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=W4dwVfH/l2HsACtR9tXV1+ky5EViZofhGo9Mi6jESr0=;
+ b=a4SEvWOH7CUv06dl9XCF1Z+awx0zcJ/Me/UKuc40x4iUzyBJgi3hEDhDDYNAAWvtUP8yOIgWsUwwusL5r6g66X9X66cBKkQvglARO35cVb92+KpsiFXCuceIUNigc276t7Ms+HuAQCRPIWN3d6CdcG5l3n0piqvHFUYYZonz5sASszek5JOG1ggpKzMhc66usKSXrEL3bSBIT3zYSPSEi99EMf18ZVF+P7c7c9NtNcfHroCi6s1EduK8chF0xQrqtbAFlJcoSPxvtIm86sp6tB4eb1KjTA1WbRWMqVMX0DdHuhSdFDNTPhQa4B1DN8fASV4uqfzC7TrI3u2EkqWuCA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by BL0PR12MB4897.namprd12.prod.outlook.com (2603:10b6:208:17e::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6652.30; Thu, 10 Aug
+ 2023 18:55:24 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::5111:16e8:5afe:1da1]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::5111:16e8:5afe:1da1%6]) with mapi id 15.20.6652.029; Thu, 10 Aug 2023
+ 18:55:24 +0000
+Date: Thu, 10 Aug 2023 15:55:22 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Joao Martins <joao.m.martins@oracle.com>
+Cc: Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
+	Kevin Tian <kevin.tian@intel.com>,
+	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
+	Lu Baolu <baolu.lu@linux.intel.com>, Yi Liu <yi.l.liu@intel.com>,
+	Yi Y Sun <yi.y.sun@intel.com>, Eric Auger <eric.auger@redhat.com>,
+	Nicolin Chen <nicolinc@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Will Deacon <will@kernel.org>,
+	Alex Williamson <alex.williamson@redhat.com>, kvm@vger.kernel.org
+Subject: Re: [PATCH RFCv2 04/24] iommu: Add iommu_domain ops for dirty
+ tracking
+Message-ID: <ZNUymqfxICNh0pUO@nvidia.com>
+References: <20230518204650.14541-1-joao.m.martins@oracle.com>
+ <20230518204650.14541-5-joao.m.martins@oracle.com>
+ <ZGdgNblpO4rE+IF4@nvidia.com>
+ <424d37fc-d1a4-f56c-e034-20fb96b69c86@oracle.com>
+ <ZGdipWrnZNI/C7mF@nvidia.com>
+ <29dc2b4c-691f-fe34-f198-f1fde229fdb0@oracle.com>
+ <ZGd5uvINBChBll31@nvidia.com>
+ <69511eee-69b5-2a83-b7b9-f4a2664e15e8@oracle.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <69511eee-69b5-2a83-b7b9-f4a2664e15e8@oracle.com>
+X-ClientProxiedBy: YT4PR01CA0132.CANPRD01.PROD.OUTLOOK.COM
+ (2603:10b6:b01:d5::22) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 5/6] clk: qcom: mmcc-msm8998: Fix the SMMU GDSC
-Content-Language: en-US
-To: Jeffrey Hugo <quic_jhugo@quicinc.com>, Andy Gross <agross@kernel.org>,
- Bjorn Andersson <andersson@kernel.org>, Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Conor Dooley <conor+dt@kernel.org>,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>,
- Michael Turquette <mturquette@baylibre.com>, Stephen Boyd
- <sboyd@kernel.org>, Jeffrey Hugo <jeffrey.l.hugo@gmail.com>,
- Imran Khan <kimran@codeaurora.org>, Rajendra Nayak
- <quic_rjendra@quicinc.com>, Joonwoo Park <joonwoop@codeaurora.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Joerg Roedel <joro@8bytes.org>
-Cc: Marijn Suijten <marijn.suijten@somainline.org>,
- Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
- Jami Kettunen <jami.kettunen@somainline.org>, linux-arm-msm@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- iommu@lists.linux.dev
-References: <20230531-topic-8998_mmssclk-v3-0-ba1b1fd9ee75@linaro.org>
- <20230531-topic-8998_mmssclk-v3-5-ba1b1fd9ee75@linaro.org>
- <23575f97-332b-0392-fc20-0a52775d03b9@quicinc.com>
-From: Konrad Dybcio <konrad.dybcio@linaro.org>
-Autocrypt: addr=konrad.dybcio@linaro.org; keydata=
- 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
- izWDgYvmBE8=
-In-Reply-To: <23575f97-332b-0392-fc20-0a52775d03b9@quicinc.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|BL0PR12MB4897:EE_
+X-MS-Office365-Filtering-Correlation-Id: 97c7f050-9be0-4589-d316-08db99d35ad3
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	whQb29O+/MM2Dutv1X29LJHo31Q/EF3BbD9qJ78LQozRqkhK00J/2aLrH5lXg8ovuOSZHgzvRtFG4aR/Z79/4eKE6AUQjB4tTgdjnyZzP8KT5LC7Jf/xyc6chblbxSqlsQfgdMH9l2Baut9C3hFoYqtMMGzSM5sdPK10/z3FciHxXdx93cMowo2WJmd2zrfRzIhhMtpwfZWj4c/icxfHq9Dk9g3Bd+FSUt/xgZuL2fVc2YxclbUFJKGk5MBx3VIpH5I6oq5bOOz807wZmlgTaO8XP483Fze25hWpg7GiwhFDNLJn3YuITdzmQuoF4DHPhexCbrBLmplxH8FVGFd9a7wrEamxF/Qcb01AY2f2hMunnhWirKY0LpmAvK+2o/4+69EBADee4NyLFOj3srkzICPR776EJUZTg2lZerqk5fFJx+iGb9s9IGGeIGbI87S+7PzaC9g7j48NY8lRn3XVTgpfXVtgcQ6fqNZo2Vhu9RWe53MHQhbMgUcF+svNXmZApa3kwWvSPdE8VhK49fE7T4LNZ/1NYgq/JC3ml2dgnuEhuV/IvHAnyUUj9e1CQ/D7gkMyB6yCKFf1aAkZob2NdyvuTMNIDie1tBFyDu2UPjHiNSfT9dptXjFXENKzRc7aAvAg/MAueI6NohNukYQFoQ==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(39860400002)(136003)(376002)(346002)(396003)(366004)(186006)(1800799006)(451199021)(4326008)(6916009)(316002)(478600001)(54906003)(7416002)(5660300002)(41300700001)(6506007)(26005)(86362001)(66946007)(36756003)(6512007)(66556008)(66476007)(8936002)(6486002)(8676002)(38100700002)(2616005)(2906002)(53546011)(83380400001)(21314003)(14143004);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?1H/s4rvgjjRLI/RTnHQBdhwlo2dZeqZt8DtCCnDXGHzyM6FSCJVk5ZGJiyxM?=
+ =?us-ascii?Q?UPCFzqRhT8LLfvuIulwwpMjX3BN57zLQz5VMYYQV4nf+6nzJ5z2HZyytSGHt?=
+ =?us-ascii?Q?SaG2LqU0lxcFoykmnMBuvz83zu7nK5s0zGozM5c7fUUfN17ljYoLjJuh/Y4v?=
+ =?us-ascii?Q?LjlW9SGo7bkes9YEUKh5nwPwTMv1AkM0TYlFKowXwPvPEWklJJqQdlnk2BzI?=
+ =?us-ascii?Q?VL0GyTxdufA+2bBMk8pQiMy2Agsy7Gf1TqiTAh4BBhRHEDu7FUyRLDIV535u?=
+ =?us-ascii?Q?SsqTp3ozP/nhhobiOl5o/kjmJ7+4LZllykjU5pVFIaEkd+VXjiXBytYywoyn?=
+ =?us-ascii?Q?UDqf4piKphTapz3a4oAzpsDA6OuN8CwDZ1DiFrZN9Rf8TrzyqNZizdgC13D+?=
+ =?us-ascii?Q?TJBYe/B5WpGiJVBEOsEwl+7tf1uzi/e+pBhKbZFjejVhXOUCGad+rLfDy6Ft?=
+ =?us-ascii?Q?yqyHyY7biPp4JdzibxObFAYLIFfUWRLAsspKrL2fumFNiEuDxMzy2XWoFg7a?=
+ =?us-ascii?Q?taD4kEkSrFPRbLZtNvhGpe10tDcMHPbCCIgL4L1GBa5ZAdAjAPhdpV8XoGJZ?=
+ =?us-ascii?Q?BgY96YPBTuXqyvwwSNcUzHeVcM9CY645ELESAOaq+QXR4po9HwGpzlfZ7VGT?=
+ =?us-ascii?Q?MobbG/1hZuJcX0RDgfJeMVEyvwG3jTazxM7PW5P3D7X6oC/WRRTmBMX7A5/S?=
+ =?us-ascii?Q?BMqkAo1F1NRKz5SE5i6VSG5h9alzZ0f+sro9AfjV9UNNwFJCF2C8Ju6g07Si?=
+ =?us-ascii?Q?HiiDZkKjuBORrRt7r/gulI0ne3kTxklniUkHE62Pd97rsy2tSbNA+9rTxlit?=
+ =?us-ascii?Q?pvnx1s0Pfab4c/aNOIgyf4vfLrHyewtddlHVvtw+zWMMvBMSANd29KhqOt35?=
+ =?us-ascii?Q?sk4X+2eldGS0XBAP3OhlNQ0egjifmSuEhsRJhF3bBLdZLXa+q+ONoo6PeOUg?=
+ =?us-ascii?Q?o/e/JNRX2xxHzfOC2rhypzZk/zc5XAkXHVqpK39wnRTgEb/qp98l0wDCFokN?=
+ =?us-ascii?Q?oZ+9ZBz8gR7c69KcPbazKZnbwMCW1LwoJo416M000BKWufHkTR6FPZAUVZP6?=
+ =?us-ascii?Q?S2ect0l5ZvSCNTimT/LxJjH6JixKL/7kzY87aKKSPZ827xkanoQsjm+mrJWI?=
+ =?us-ascii?Q?20aUHkC8zwccq+lokqGmfZISCjNwPWF28lkyZfcfrt2NNpXDAe3ZVS+r/1le?=
+ =?us-ascii?Q?bxCeQKuiGKsV0xiNcCZVs+2F99xP1wRjqd92qB9grgIciAhY/pA9DOrLe2iF?=
+ =?us-ascii?Q?LqL3pEzYJO+PX/MCoto0LEnHPByJO+zB+5/8B8Y0jeIO9zD/sDZ2qwL3+PXM?=
+ =?us-ascii?Q?gBlmbGgbiv4Slw9Zq0AYTmdPiTcpnVpqHjvy3JfTTkOd2l2U0KpBRZd9SIfC?=
+ =?us-ascii?Q?W7tEeADHq67k8MtO3Hm8GGKFRRYLQjFbUn8yf4FMYfVmICZiDf/5aNB2b1un?=
+ =?us-ascii?Q?xvjCHKbkVLi3LlD4W01QXMTqd+yNvW7tyyjUjJTc3juUTKDKPeKC8vfOQC5A?=
+ =?us-ascii?Q?Ct/LAzeGDSik8arwHk2csaNQ0QgTZJEt9PmSRuT92Kx5osieUH3VZWlfGVW/?=
+ =?us-ascii?Q?FDhWutl7+i7+Cpk+selLibMRFK2UbuKdIdcNLFWN?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 97c7f050-9be0-4589-d316-08db99d35ad3
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Aug 2023 18:55:24.6125
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: WcHEkOT2h/yUhwNcxz8nIihU84ADeb0kmT4YhbS0tZBFxPGW+vaS0oqAXjlgklZM
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR12MB4897
 
-On 10.08.2023 20:20, Jeffrey Hugo wrote:
-> On 8/9/2023 1:20 PM, Konrad Dybcio wrote:
->> The SMMU GDSC doesn't have to be ALWAYS-ON and shouldn't feature the
->> HW_CTRL flag (it's separate from hw_ctrl_addr).  In addition to that,
->> it should feature a cxc entry for bimc_smmu_axi_clk and be marked as
->> votable.
+On Thu, Aug 10, 2023 at 07:23:11PM +0100, Joao Martins wrote:
+> On 19/05/2023 14:29, Jason Gunthorpe wrote:
+> > On Fri, May 19, 2023 at 12:56:19PM +0100, Joao Martins wrote:
+> >> On 19/05/2023 12:51, Jason Gunthorpe wrote:
+> >>> On Fri, May 19, 2023 at 12:47:24PM +0100, Joao Martins wrote:
+> >>>> In practice it is done as soon after the domain is created but I understand what
+> >>>> you mean that both should be together; I have this implemented like that as my
+> >>>> first take as a domain_alloc passed flags, but I was a little undecided because
+> >>>> we are adding another domain_alloc() op for the user-managed pagetable and after
+> >>>> having another one we would end up with 3 ways of creating iommu domain -- but
+> >>>> maybe that's not an issue
+> >>>
+> >>> It should ride on the same user domain alloc op as some generic flags,
+> >>
+> >> OK, I suppose that makes sense specially with this being tied in HWPT_ALLOC
+> >> where all this new user domain alloc does.
+> > 
+> > Yes, it should be easy.
+> > 
+> > Then do what Robin said and make the domain ops NULL if the user
+> > didn't ask for dirty tracking and then attach can fail if there are
+> > domain incompatibility's.
+> > 
+> > Since alloc_user (or whatever it settles into) will have the struct
+> > device * argument this should be easy enough with out getting mixed
+> > with the struct bus cleanup.
 > 
-> I appear to have confused HW_CTRL with hw_ctrl_addr.  Thanks for fixing that.
-> 
-> I recall I made it always-on for display handoff.  The bootloader on the laptops will enable the display, which means the MDP is active and using the SMMU.  The SMMU is powered by the GDSC as you know.  The MDP is going to be polling a framebuffer in DDR, which EFI services (efifb) is going to be updating.  All of this is active during linux boot, which is how the kernel bootlog gets printed on screen.
-This is essentially a missing / mis-configuration from the linux/dt POV and
-I think the consensus for using display without describing it properly with
-mdss has been to do one of:
+> Taking a step back, the iommu domain ops are a shared global pointer in all
+> iommu domains AFAIU at least in all three iommu implementations I was targetting
+> with this -- init-ed from iommu_ops::domain_default_ops. Not something we can
+> "just" clear part of it as that's the same global pointer shared with every
+> other domain. We would have to duplicate for every vendor two domain ops: one
+> with dirty and another without dirty tracking; though the general sentiment
+> behind clearing makes sense
 
-- adding a simple-framebuffer node with all the necessary clocks/pds
-- adding "clk_ignore_unused pd_ignore_unused" to your cmdline
+Yes, the "domain_default_ops" is basically a transitional hack to
+help migrate to narrowly defined per-usage domain ops.
 
-> 
-> If I remember right, the GDSC will be registered.  When it is done probing, there will be no consumers.  So the Linux framework will step in and turn it off before the consumers come up.  This kills power to the SMMU.  If the SMMU doesn't come back on before the MDP polls DDR again, you get a bus hang and a crash.
-Yep
+eg things like blocking and identity should not have mapping ops.
 
-> I assumed that any msm8998 device would be using the MDP/GPU and thus the SMMU would pretty much always be powered on.
-This flag however bans putting it to sleep when not in use.
+Things that don't support dirty tracking should not have dirty
+tracking ops in the first place.
 
-> 
-> I expected this patch to break the laptop.  It does not in my testing. However, I see that I disabled the MMCC node in DT with a todo about the display.  So the GDSC is never registered, and then never gets turned off.  I believe that todo is pending some updates I need to make to the TI DSI/eDP bridge because the I2C port on the bridge is not wired up.  I should really dust that off and complete it.
-Right, so what you have now is a third, untold "solution" to the problem
-described above.. not really a supported configuration as it's not "correct"
+So the simplest version of this is that by default all domain
+allocations do not support dirty tracking. This ensures maximum
+cross-instance/device domain re-use.
 
-I'd happily see you wire up the bridge et al though!
+If userspace would like to use dirty tracking it signals it to
+iommufd, probably using the user domain alloc path.
 
+The driver, if it supports it, returns a dirty capable domain with
+matching dirty enabled ops.
 
-> Regardless, even with the todo addressed, I think removing always-on will still break the laptops unless the bootloader handoff of display was solved and I missed it.
-> 
-> I get that for your usecase, a phone where the bootloader does not init the display, always-on has the potential to burn extra power.  I'm not sure how to make both of us happy through.
-> 
-> Do you have any suggestions?
-Hope my replies above are enough.
+A dirty capable domain can only be attached to a device/instance that
+is compatible and continues to provide dirty tracking.
 
-Konrad
+This allows HW that has special restrictions to be properly supported.
+eg maybe HW can only support dirty on a specific page table
+format. It can select that format during alloc.
+
+> This is a bit simpler and as a bonus it avoids getting dependent on the
+> domain_alloc_user() nesting infra and no core iommu domain changes;
+
+We have to start tackling some of this and not just bodging on top of
+bodges :\
+
+I think the domain_alloc_user patches are in good enough shape you can
+rely on them.
+
+Return the IOMMU_CAP_DIRTY as generic data in the new GET_INFO
+Accept some generic flag in the alloc_hwpt requesting dirty
+Pass generic flags down to the driver.
+Reject set flags and drivers that don't implement alloc_domain_user.
+
+Driver returns a domain with the right ops 'XXX_domain_ops_dirty_paging'.
+Driver refuses to attach the dirty enabled domain to places that do
+dirty tracking.
+
+Jason
