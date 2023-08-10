@@ -1,151 +1,98 @@
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2056.outbound.protection.outlook.com [40.107.92.56])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f41.google.com (mail-lf1-f41.google.com [209.85.167.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B75E1E1C0
-	for <iommu@lists.linux.dev>; Thu, 10 Aug 2023 17:32:11 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=GGWC2QHVsprjSJkdIJUBqhGCLQHPgV+UzHPNOz0x3zJ/P6Z6ayT/1xmml2oClpDzkyDLVy7bvmfiSKGWY0BFLQIA2T/yqgx3Ed/d5WSU0NSb7MwCYs8t2z/5ES0V7DAx9hvFLjkRppHsrZR8Sc3AATiO3vDF8u5WBnhUmQKz1AApiJoLkq7qReM8FT+1nk/Ww32yYS4p6sFRY+CqIYLJBCCxUN+pddY0UZm2ieUhIcBGgSWEMAKaFAQGrw7A2gvSoGUWav9MDDcZDlpdXN7ktQaxJ9io3o4yZfVUcUJivhk4PGu8MF+F5r9Ov81iA3Lsqm2lObzCI5IdfjAovZqTtg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=JomUoqbClQ1zQd7Be+e0MTC1s6BJe/PZhCZ3UgUnQTM=;
- b=W3ImaomDm4EF+G8i+XeecoAKx+Kg9OKPA5oEUBn5lGyDphBWMnFWRUooVcQRg0z0hqtaECFbyOMHKpxkDBiEzFIrwA2fLthjW/H7qV0+hS7SFaHaFs0TN94WPJuGgQjHcVdmAtiIzPOYtmPs1W/u5N2BSjRPNnT20NWx+VpbmjycwDJQ09MoEmSZ5Lj/UynMK5iVV07DE+Z60gbGxe6QTEKIZxjtM905eXtSNFdsbWvqhvH7SGMBcjGtF3D0fQJqb97CrfMzCtJ7THCYIZ3cEvylocvhDYI7gE2tFUmypR2f1fsPVk2oZOkhOWJfpnnnSLAyg7ZPVvX+0ikjMjoUSg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JomUoqbClQ1zQd7Be+e0MTC1s6BJe/PZhCZ3UgUnQTM=;
- b=lipkZEO4rEl+A0nuB3vn3M5g1zkVQIKTfxJDxLv45q3qaZJIc2NugTwBimIP1taAoGiKF1hnxFIgv+4TzFxNWvvXNmEXbLuybvTUhHlvMO0xl2KTMI2mZJblb4LVi88X7KushSdgFAhsAVOlNY8QuveIgqjDgwKQfDgDeEi/CtXzdnvgMwdOkyGiiJRPR1eo8wJMtx2FPOl+DsJWpbmAmM1HMRG2vMKg/PirxrhZU2AVHQBKW+7ItyJ2af9RKA4fE2vJax3HEPjEkY6mo79zTI+A7pw0YJnruTCQitm0eZlNrcRz75bcVBFvQBBdCewkeVdOVlotWmoBfWx5NBSWXQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by DM6PR12MB4515.namprd12.prod.outlook.com (2603:10b6:5:2a1::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6652.30; Thu, 10 Aug
- 2023 17:32:09 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::5111:16e8:5afe:1da1]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::5111:16e8:5afe:1da1%6]) with mapi id 15.20.6652.029; Thu, 10 Aug 2023
- 17:32:09 +0000
-Date: Thu, 10 Aug 2023 14:32:07 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Michael Shavit <mshavit@google.com>
-Cc: Will Deacon <will@kernel.org>, iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	robin.murphy@arm.com, nicolinc@nvidia.com, jean-philippe@linaro.org
-Subject: Re: [PATCH v5 2/9] iommu/arm-smmu-v3: Replace s1_cfg with cdtab_cfg
-Message-ID: <ZNUfF1h5+SLlmwz/@nvidia.com>
-References: <ZNObxeogswAYyDQ5@nvidia.com>
- <20230809145542.GB4472@willie-the-truck>
- <ZNOr0ggoO9kXHJWl@nvidia.com>
- <20230809162254.GB4591@willie-the-truck>
- <ZNO+QVkXcHG78KG3@nvidia.com>
- <20230809162749.GA4663@willie-the-truck>
- <CAKHBV27JAFb56VkHJO2ZBZt=25aVregeiMjO2YJrg_fW9HQbYg@mail.gmail.com>
- <20230810094323.GC5365@willie-the-truck>
- <ZNTSU1Jm6OsauygC@nvidia.com>
- <CAKHBV254QmO3iXyEL6w0PqvVofm_UCDd13LKmpbhU-cEORB5ww@mail.gmail.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAKHBV254QmO3iXyEL6w0PqvVofm_UCDd13LKmpbhU-cEORB5ww@mail.gmail.com>
-X-ClientProxiedBy: CH0P221CA0045.NAMP221.PROD.OUTLOOK.COM
- (2603:10b6:610:11d::15) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D7ABF1E1C0
+	for <iommu@lists.linux.dev>; Thu, 10 Aug 2023 17:45:11 +0000 (UTC)
+Received: by mail-lf1-f41.google.com with SMTP id 2adb3069b0e04-4fe94dde7d7so56132e87.3
+        for <iommu@lists.linux.dev>; Thu, 10 Aug 2023 10:45:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1691689510; x=1692294310;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=IprqHOCHDt9UgE2LWF7Iqap53+eHPhwxhxAzQePbb8Q=;
+        b=y3F5cYkJZdt2elOTtoDxTgeZnjDMfApp6lgMiahEsU10ko7fnf25T3gFQZ1YNUBoc5
+         5GNbWV1ysWyZKdh5jq1NQgOIX69oYHKQuarqo6CofnzKR011poS7nsmo4U+qam/6pIOb
+         6nvkwThf9H1wFevZyLrOnOM1AxhqBt9b5u1gCM90y/Ou7L1hYHUdSL+IZJ7VX3YAYmDG
+         UeH+shSzWBAsbuRr5J+CA7Ix/QdEDlfE2kdLJvxbSd5LFEjikcl/RwEzHi1rR/WEWPA0
+         3IajwqPPTE041mMrMPopr0RCv6V5KhD280i2EjAJvrika9gyt+hQCiRhiuVS0zQ6XYH1
+         BYKQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1691689510; x=1692294310;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=IprqHOCHDt9UgE2LWF7Iqap53+eHPhwxhxAzQePbb8Q=;
+        b=YYAH0V3U0B1DHz761ZvXsz3INqxYPlvoSHMnFsU62XwirOvWS83or9v0Jt+Li19PxP
+         NzrSM/c61SRQfEcOq6QUQbYApOWyqW/eUqGpwOLFfmnvz9PNcn0Rd54lSdxQuWOFpIij
+         Qmj5/pmtOj7874ty2ohoS+OlTGWFkMSvK6U96cqA+1BK1eEAntPDbT2VBdT3elmk4sGg
+         ONhpUnlwH3O4Om8pC5LV19P4umlFdZ9+oZD9jFXLfvQ57CUmjpqZbBFcZRmma5A8lCux
+         SCGDjyFaJEP7ltf6gNeGvR3COXrr7f1vWOlEtZYvqQKyOk6aoKpt35OcpWp0ohSv3xJz
+         8lKA==
+X-Gm-Message-State: AOJu0YwYW6ifB5DlN9fVvmpHo+X04Xfw7rU6n3AwCF2f9WJR7DdCVq/+
+	B6LGNCf2ST3aFogGUy2aSfO1sw==
+X-Google-Smtp-Source: AGHT+IGzIG+XOfPpgbnX8tq3J/2LeGOtIb4bcrFJI27g1m8Vl7vjceb5s5aeelHl2ynHw5RhdRE0Kg==
+X-Received: by 2002:ac2:58d8:0:b0:4fb:8bcd:acd4 with SMTP id u24-20020ac258d8000000b004fb8bcdacd4mr2219875lfo.37.1691689509683;
+        Thu, 10 Aug 2023 10:45:09 -0700 (PDT)
+Received: from [192.168.1.101] (abxi185.neoplus.adsl.tpnet.pl. [83.9.2.185])
+        by smtp.gmail.com with ESMTPSA id v13-20020ac2558d000000b004fdfefdf4acsm364173lfg.39.2023.08.10.10.45.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Aug 2023 10:45:09 -0700 (PDT)
+From: Konrad Dybcio <konrad.dybcio@linaro.org>
+Subject: [PATCH 0/4] arm-smmu: pick up lost qcom impl compatibles
+Date: Thu, 10 Aug 2023 19:45:03 +0200
+Message-Id: <20230810-topic-lost_smmu_compats-v1-0-64a0d8749404@linaro.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|DM6PR12MB4515:EE_
-X-MS-Office365-Filtering-Correlation-Id: 3c0d168e-cecf-40f0-5ef7-08db99c7b97c
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	pigqlPond22nvs5S2e51I309krpzVyoUaKsq6iZbPfA+SB5epS1UIMVIVyOJSczD/2l5Yt7KcvnPFTaAbzIUlk82pzYAQPF+JGuPBpozwpFWaGH0+PX5x+JblFqRuoyMFRAMHwdPWhUkqSiwjIfMwt7uILzmtgwhiLI9p6ScAE6iT+78BYj0qhqtfwIl5sw7RSrx86BiMSjruVsXCcFKOxDA58USiUedB2RADTwra36GlpKOe9UD7fqnux0Z1+HutUMgFYYdXuc9obtf0xtqMMooRy75H2nsyceOjR5EqV1PLR+AkrJ5ixpWH7qCwFwmWMhgyzKBgBwEUour9IQAM4XCysYf/yUFpohAAHj2D6Fl3/NOhfc1cujOkywp7OlLsdifgjfuwSxRrgKeHZNY/wSbrPsKWsuvC5Jt8xZDc90aY2KOsIB+aZkxK8cim1Jqyxf/bz9tGPv9eh3jx+aXdfuuRMcGnNOjybGoQjCr6boiCRgU3pxo/zEJPO9KYvmhRc9jCiQ3+uBrZkvbyz3lDxt8K6fjQxBN/rhJViRvcpAjE6U4++djZPffe0gfQk6r7vO5qR7xPnbedh4BuECiqarPInyE6h2NKjH8Vvq4ergQktupJ8dTXvTNY9uyuzx+Gl+E5HLpBrh6dUOYAemyzA==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(346002)(136003)(376002)(366004)(39860400002)(396003)(186006)(451199021)(1800799006)(2906002)(6506007)(36756003)(478600001)(26005)(6512007)(6486002)(86362001)(316002)(8676002)(8936002)(6916009)(66556008)(4326008)(66476007)(5660300002)(41300700001)(66946007)(38100700002)(2616005)(66899021)(83380400001)(473944003)(414714003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?MJq6EoO9ro6mB/8KLhPlSxcUwrpSTA5n85F6ZzrbE2uGhXjIu07x/JHs5P1X?=
- =?us-ascii?Q?hKnJliD9V8QUk9z7yYH7lqBH651gli5xEFlcZdPeVc2UhuO28e4wW99C/DFJ?=
- =?us-ascii?Q?E3fbYxfxNvFdeqmGvc0UvAfPqUQRwimriYEqzaEZ0/srI7iGk+Sp2yFIeeVX?=
- =?us-ascii?Q?qIBkveLKWaypELM5mTlFrJgAGYitEHl6YfJPyk9scLW5i4vhUpsrlCyc2zLc?=
- =?us-ascii?Q?6FXbMhJrGpAMe0+SQlunBJs0et42SOnAFHFIEvTNAeN4LUdXfRW21D4zO7n0?=
- =?us-ascii?Q?43OkNtd7yYBGwRIiy3aweqgJlYhKyGXoafPRZILoED6GtwEKCjB1t7KezhUw?=
- =?us-ascii?Q?MfCbqDbNl1teExbeyCxUy3XQeBXJsCCKIiR0wQUsZCC/et6Mo00l+l9nee/v?=
- =?us-ascii?Q?9rdSzAn2Z9VfHjLEFDbtrQf97L4v3bnACJTPZvR1Vsecl4JarXXvhDlpvvrF?=
- =?us-ascii?Q?rFqyl0ykoqBib2GKfF5YCWS1vDEAAzDBLiX5OL0cS4sPhX4yaNzp9Rl1sJyI?=
- =?us-ascii?Q?sohUbrUYu1Gw7N/F6RQpUBQLnBYicyn6kr86GzJRf96Q9kw2fgloFBWB/aI8?=
- =?us-ascii?Q?mZllrWGFV7emNLVgdPJkGo53Xpp52/7RAItgphpJmoVZ54DTmYJ3Z5AoWhFK?=
- =?us-ascii?Q?V4LDxs+Up8nqcucjkoBBocmaprUFBLax4grYYqI9WtMrXpUUV/G8JaSMzwOd?=
- =?us-ascii?Q?rjEGHGude2MuWJ0a2lZDXtODvQJsPcaCu2WYZI3RkyiVwH+5mKS2JErFSChL?=
- =?us-ascii?Q?Yz3OAvnh6GGAjA2tEd/P+dtHs+WvwE2oSK5yL7a1cmvLTeATzQJjbidUOVVw?=
- =?us-ascii?Q?PHgiXCWEdRSAwNdRaMKt3pMLWOiJa4VUTDhWf4mYHdxzhqmUgj/QgvU/TqW7?=
- =?us-ascii?Q?NwuaLYaF8UmMeAx/Q1259Zfr42nWj3DKDzR0BcWknsdhGtH71BmuEeajsSdc?=
- =?us-ascii?Q?cnNFkA2ZOlBP/xq4eIEB6tX3PpGe7a1q429Ts+0qNyq9Yd/bZtj7mufMaf9P?=
- =?us-ascii?Q?ljtwg87aVQ11mteZdKodVie8QJ2zBiloAFyisjjnsTtSIn+mAceH/PN6GC59?=
- =?us-ascii?Q?kTabu6Ho17m0c84UlC41XzE8R6RTfH83pDISvhFn5brokgy0QMsphR80Peqf?=
- =?us-ascii?Q?SnCuEXTrw4pJifut0X9sOEG86XRBXPY+DxIUlcg8l47awvfK0IJeLZ8aBmTN?=
- =?us-ascii?Q?AejpnyeyVOfWGerpMjJx3MHipxVHCoz7BeYAblf/fF5731tFjtzIhHfBwb+M?=
- =?us-ascii?Q?F0xdDNoEG4nulj88QveZ9pP6CgfyzeO41dtqdkwRPKFn9y00z2ChS6cN7uOx?=
- =?us-ascii?Q?rqbS8AqqrMXUJhCh3zna2szHXDfWQXwDM2cFFI98y/YbKzq+079dKAU4oZOP?=
- =?us-ascii?Q?rjJNuEPuLsEJoWUtyw5DWqrX5lmmsZ2tz9Xk+nKntcoLN/PFHPF8CpfZ7J7A?=
- =?us-ascii?Q?7Ihi/Q3Eir2xYG+m76cOmGxrarOEY0CjFhdkgitHJOBGSygmrwSXkwr84m7Q?=
- =?us-ascii?Q?EJgSElxath8arWLQFr8gk15itexuQLutoakTM21EvMgpY03mksJziwVTdemn?=
- =?us-ascii?Q?N0aYf5pZhpwWye6ohdRwlusLIGTsTc9bL2OdzoCz?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3c0d168e-cecf-40f0-5ef7-08db99c7b97c
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Aug 2023 17:32:09.4052
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: YQIvlyoxdDtU66mW0wjIrPicixWEXyNFTYfwfmSYt6T4rlF1mbATD0SXQxQmLNeQ
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4515
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAB8i1WQC/x2NWwqDMBAAryL73UASodhepRRZ001dyItslIJ49
+ wY/Z2CYA4Qqk8BzOKDSzsI5dTC3AdyK6UuKP53BajvqyWjVcmGnQpY2S4zb7HIs2EQZc/eWHt6
+ OBqHXCwqppWJya+/TFkKXpZLn37V7vc/zDwU4or1+AAAA
+To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+ Joerg Roedel <joro@8bytes.org>
+Cc: Marijn Suijten <marijn.suijten@somainline.org>, 
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, 
+ linux-kernel@vger.kernel.org, Konrad Dybcio <konrad.dybcio@linaro.org>, 
+ Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, 
+ Konrad Dybcio <konrad.dybcio@somainline.org>
+X-Mailer: b4 0.12.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1691689508; l=902;
+ i=konrad.dybcio@linaro.org; s=20230215; h=from:subject:message-id;
+ bh=8aYgzmnUfjMZ2u3f2i9yQGK+3NqXmDs/UpCmbRyOvnE=;
+ b=nXpy1jKPP+VdaQLBsIMXxMRnzjPY+hKYhSdsz8l3k0kTs/AJkgoH/hfMwjEEzQIH1I2JsMYJL
+ rDJAH9VHcKXCqg1HVHrAf4RxUX5YDAqSdhaiW0wQBk6FYsnXbjUh0yc
+X-Developer-Key: i=konrad.dybcio@linaro.org; a=ed25519;
+ pk=iclgkYvtl2w05SSXO5EjjSYlhFKsJ+5OSZBjOkQuEms=
 
-On Fri, Aug 11, 2023 at 01:15:14AM +0800, Michael Shavit wrote:
-> > > > What dead code? Is the deal here that we keep the field, but still
-> > > > infer the value to write from (cd_table->l1_desc == null) in
-> > > > arm_smmu_write_strtab_ent??
-> > >
-> > > Keep the field and write it directly when populating the ste (i.e. don't
-> > > infer anything), but the field moves into 'struct arm_smmu_ctx_desc_cfg'.
-> >
-> > Yes - the 'dead code' is that we introduce storage for a field that is
-> > always a known constant (STRTAB_STE_0_S1FMT_64K_L2).
-> 
-> I'm not sure we're on the same page here. s1fmt could contain either
-> `STRTAB_STE_0_S1FMT_64K_L2` or `STRTAB_STE_0_S1FMT_LINEAR`, and this
-> value will be directly copied in arm_smmu_write_strtab_ent.
+I noticed that some of the compatibles for either matching SMMU probe
+or peripheral workarounds were lingering on my branch.
 
-Ah, I did not check this closely, Will said:
+This series collects them in an effort to get them merged.
 
- > But the computation isn't happening -- the STRTAB_STE_0_S1FMT_64K_L2
- > constant is hardcoded here.
+The bindings are all there.
 
-So the nuanced answer is that computation is happening because today
-the format of the CD table (linear vs 64k) is encoded in l1_desc:
+I don't think it makes sense for me to look for the source series of
+each patch.
 
- +				  cd_table->l1_desc ?
- +					  STRTAB_STE_0_S1FMT_64K_L2 :
- +					  STRTAB_STE_0_S1FMT_LINEAR);
+Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
+---
+Konrad Dybcio (4):
+      iommu/arm-smmu-qcom: Sort the compatible list alphabetically
+      iommu/arm-smmu-qcom: Add SM6375 DPU compatible
+      iommu/arm-smmu-qcom: Add SM6350 DPU compatible
+      iommu/arm-smmu-qcom: Add SM6375 SMMUv2
 
-So I would suggest that along with adding s1fmt to
-arm_smmu_ctx_desc_cfg you also go and normalize the usage:
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+---
+base-commit: 21ef7b1e17d039053edaeaf41142423810572741
+change-id: 20230810-topic-lost_smmu_compats-116f2e9f231a
 
-@@ -1030,7 +1030,7 @@ static __le64 *arm_smmu_get_cd_ptr(struct arm_smmu_master *master, u32 ssid)
-        struct arm_smmu_device *smmu = master->smmu;
-        struct arm_smmu_ctx_desc_cfg *cd_table = &master->cd_table;
- 
--       if (!cd_table->l1_desc)
-+       if (cd_table->s1fmt == STRTAB_STE_0_S1FMT_LINEAR)
-                return cd_table->cdtab + ssid * CTXDESC_CD_DWORDS;
+Best regards,
+-- 
+Konrad Dybcio <konrad.dybcio@linaro.org>
 
-Jason
