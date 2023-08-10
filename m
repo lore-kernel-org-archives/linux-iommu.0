@@ -1,46 +1,47 @@
-Received: from mail-lf1-f41.google.com (mail-lf1-f41.google.com [209.85.167.41])
+Received: from mail-lf1-f50.google.com (mail-lf1-f50.google.com [209.85.167.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D7ABF1E1C0
-	for <iommu@lists.linux.dev>; Thu, 10 Aug 2023 17:45:11 +0000 (UTC)
-Received: by mail-lf1-f41.google.com with SMTP id 2adb3069b0e04-4fe94dde7d7so56132e87.3
-        for <iommu@lists.linux.dev>; Thu, 10 Aug 2023 10:45:11 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D6EB5214E8
+	for <iommu@lists.linux.dev>; Thu, 10 Aug 2023 17:45:12 +0000 (UTC)
+Received: by mail-lf1-f50.google.com with SMTP id 2adb3069b0e04-4fe1489ced6so1856636e87.0
+        for <iommu@lists.linux.dev>; Thu, 10 Aug 2023 10:45:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1691689510; x=1692294310;
-        h=cc:to:content-transfer-encoding:mime-version:message-id:date
-         :subject:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=IprqHOCHDt9UgE2LWF7Iqap53+eHPhwxhxAzQePbb8Q=;
-        b=y3F5cYkJZdt2elOTtoDxTgeZnjDMfApp6lgMiahEsU10ko7fnf25T3gFQZ1YNUBoc5
-         5GNbWV1ysWyZKdh5jq1NQgOIX69oYHKQuarqo6CofnzKR011poS7nsmo4U+qam/6pIOb
-         6nvkwThf9H1wFevZyLrOnOM1AxhqBt9b5u1gCM90y/Ou7L1hYHUdSL+IZJ7VX3YAYmDG
-         UeH+shSzWBAsbuRr5J+CA7Ix/QdEDlfE2kdLJvxbSd5LFEjikcl/RwEzHi1rR/WEWPA0
-         3IajwqPPTE041mMrMPopr0RCv6V5KhD280i2EjAJvrika9gyt+hQCiRhiuVS0zQ6XYH1
-         BYKQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1691689510; x=1692294310;
-        h=cc:to:content-transfer-encoding:mime-version:message-id:date
-         :subject:from:x-gm-message-state:from:to:cc:subject:date:message-id
+        d=linaro.org; s=google; t=1691689511; x=1692294311;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=IprqHOCHDt9UgE2LWF7Iqap53+eHPhwxhxAzQePbb8Q=;
-        b=YYAH0V3U0B1DHz761ZvXsz3INqxYPlvoSHMnFsU62XwirOvWS83or9v0Jt+Li19PxP
-         NzrSM/c61SRQfEcOq6QUQbYApOWyqW/eUqGpwOLFfmnvz9PNcn0Rd54lSdxQuWOFpIij
-         Qmj5/pmtOj7874ty2ohoS+OlTGWFkMSvK6U96cqA+1BK1eEAntPDbT2VBdT3elmk4sGg
-         ONhpUnlwH3O4Om8pC5LV19P4umlFdZ9+oZD9jFXLfvQ57CUmjpqZbBFcZRmma5A8lCux
-         SCGDjyFaJEP7ltf6gNeGvR3COXrr7f1vWOlEtZYvqQKyOk6aoKpt35OcpWp0ohSv3xJz
-         8lKA==
-X-Gm-Message-State: AOJu0YwYW6ifB5DlN9fVvmpHo+X04Xfw7rU6n3AwCF2f9WJR7DdCVq/+
-	B6LGNCf2ST3aFogGUy2aSfO1sw==
-X-Google-Smtp-Source: AGHT+IGzIG+XOfPpgbnX8tq3J/2LeGOtIb4bcrFJI27g1m8Vl7vjceb5s5aeelHl2ynHw5RhdRE0Kg==
-X-Received: by 2002:ac2:58d8:0:b0:4fb:8bcd:acd4 with SMTP id u24-20020ac258d8000000b004fb8bcdacd4mr2219875lfo.37.1691689509683;
-        Thu, 10 Aug 2023 10:45:09 -0700 (PDT)
+        bh=BJ8fNoRhbMQbavYz3EL1f8wM8/yF7KTjRgYXkDMQaMA=;
+        b=dljhf77Tr4NJUgwvW7DEWrM77eYKaj1NZPVDcNqopcd2ADIHl1fR1PgaqlCeE/VQ/G
+         6VCfQgdfV6VOX2BZcMQeXfBQf7tk0qf00dWcwCObbS7FhFmASmUgZnosyuhS2pnLd5jA
+         EVyLw1wh8GeF3k9B1pNVZl0A3AU/4DAuZvOdTt+bwE5tXT1sfw4cVHuRKlg4MJI/b4zC
+         5+BTn5E6KPO2aTr6yMLL1nCYnQYrf5PP3udZ53rYrmphlygeUMEq4ogGijJzkCp4zJb7
+         0yFB89FzxLBtoIne4UyCZhRxUBUgdFcdy9Amyui/8xc9ysC3oAyeVMYj63wPvm4ZXge1
+         EwYw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1691689511; x=1692294311;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=BJ8fNoRhbMQbavYz3EL1f8wM8/yF7KTjRgYXkDMQaMA=;
+        b=ZB+k+vVcB+xMmBACiPvD7D5bz0SjtEwSIXyUf/Yb/4jBrOz6wRwW/QVFgxI5cGHTXw
+         kd4NBhrFqJZ8O8ft1KPwuF0+cMPUgBYiLRMcbNJBePLCio2mbcf71lJdgWNobMXHH8Q+
+         1XmIsU5wCry9t4hphX5oIPrIRdzuzQYqphP+rhxZ26mVyBrG/6T0e4Aor2QRdEJ9Rbr5
+         0d49M0LvYRwJqd2fEHo8ejo8Wj1h2hpGLOYiKA/a9DQeCVT8j3nQ7A5t0vDxKvE98Z0F
+         H7kCC2k3XEm5KWhgq0hmgCrAlmAe0jt+qcieKJqoWAfrRVxROdfNYFzK/g1OK0cmBJwV
+         e+Dg==
+X-Gm-Message-State: AOJu0YxvpB6i0Nl7eGZtabB0beX6mNAjwe/KXO8rtO1+fyDVLIcvDQeQ
+	YPAeAbbS4ieZuER5UUD7rmjNOw==
+X-Google-Smtp-Source: AGHT+IH3O45J0mhWQQdaSnbK/VkyJ1m35ng5Kc/xDbldxVSiEHLm1bnbl74iwcErP3kckBDfXP0ZtA==
+X-Received: by 2002:a05:6512:2520:b0:4fe:8f0:6aa with SMTP id be32-20020a056512252000b004fe08f006aamr3439265lfb.49.1691689510706;
+        Thu, 10 Aug 2023 10:45:10 -0700 (PDT)
 Received: from [192.168.1.101] (abxi185.neoplus.adsl.tpnet.pl. [83.9.2.185])
-        by smtp.gmail.com with ESMTPSA id v13-20020ac2558d000000b004fdfefdf4acsm364173lfg.39.2023.08.10.10.45.08
+        by smtp.gmail.com with ESMTPSA id v13-20020ac2558d000000b004fdfefdf4acsm364173lfg.39.2023.08.10.10.45.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Aug 2023 10:45:09 -0700 (PDT)
+        Thu, 10 Aug 2023 10:45:10 -0700 (PDT)
 From: Konrad Dybcio <konrad.dybcio@linaro.org>
-Subject: [PATCH 0/4] arm-smmu: pick up lost qcom impl compatibles
-Date: Thu, 10 Aug 2023 19:45:03 +0200
-Message-Id: <20230810-topic-lost_smmu_compats-v1-0-64a0d8749404@linaro.org>
+Date: Thu, 10 Aug 2023 19:45:04 +0200
+Subject: [PATCH 1/4] iommu/arm-smmu-qcom: Sort the compatible list
+ alphabetically
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -49,50 +50,50 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAB8i1WQC/x2NWwqDMBAAryL73UASodhepRRZ001dyItslIJ49
- wY/Z2CYA4Qqk8BzOKDSzsI5dTC3AdyK6UuKP53BajvqyWjVcmGnQpY2S4zb7HIs2EQZc/eWHt6
- OBqHXCwqppWJya+/TFkKXpZLn37V7vc/zDwU4or1+AAAA
+Message-Id: <20230810-topic-lost_smmu_compats-v1-1-64a0d8749404@linaro.org>
+References: <20230810-topic-lost_smmu_compats-v1-0-64a0d8749404@linaro.org>
+In-Reply-To: <20230810-topic-lost_smmu_compats-v1-0-64a0d8749404@linaro.org>
 To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
  Joerg Roedel <joro@8bytes.org>
 Cc: Marijn Suijten <marijn.suijten@somainline.org>, 
  linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, 
  linux-kernel@vger.kernel.org, Konrad Dybcio <konrad.dybcio@linaro.org>, 
- Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, 
- Konrad Dybcio <konrad.dybcio@somainline.org>
+ Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 X-Mailer: b4 0.12.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1691689508; l=902;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1691689508; l=1026;
  i=konrad.dybcio@linaro.org; s=20230215; h=from:subject:message-id;
- bh=8aYgzmnUfjMZ2u3f2i9yQGK+3NqXmDs/UpCmbRyOvnE=;
- b=nXpy1jKPP+VdaQLBsIMXxMRnzjPY+hKYhSdsz8l3k0kTs/AJkgoH/hfMwjEEzQIH1I2JsMYJL
- rDJAH9VHcKXCqg1HVHrAf4RxUX5YDAqSdhaiW0wQBk6FYsnXbjUh0yc
+ bh=QsYXprleFiyojpiKbE6Kw0XKenZmtLGgzHLB9aaIrjw=;
+ b=WMMj34R8wVtLr6EyGNZVl1+X0m1IGx4HSfAaxjcEtJ2WlM+ceIXOdP/694tFuv1SiqByGVCAg
+ FV4tVNagA2fCO94pQtttmg2xOjGEAkhExIBjE3RZHJ8B6vwiDXsshdU
 X-Developer-Key: i=konrad.dybcio@linaro.org; a=ed25519;
  pk=iclgkYvtl2w05SSXO5EjjSYlhFKsJ+5OSZBjOkQuEms=
 
-I noticed that some of the compatibles for either matching SMMU probe
-or peripheral workarounds were lingering on my branch.
+It got broken at some point, fix it up.
 
-This series collects them in an effort to get them merged.
-
-The bindings are all there.
-
-I don't think it makes sense for me to look for the source series of
-each patch.
-
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
 ---
-Konrad Dybcio (4):
-      iommu/arm-smmu-qcom: Sort the compatible list alphabetically
-      iommu/arm-smmu-qcom: Add SM6375 DPU compatible
-      iommu/arm-smmu-qcom: Add SM6350 DPU compatible
-      iommu/arm-smmu-qcom: Add SM6375 SMMUv2
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
- drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
----
-base-commit: 21ef7b1e17d039053edaeaf41142423810572741
-change-id: 20230810-topic-lost_smmu_compats-116f2e9f231a
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+index c71afda79d64..3800ab478216 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+@@ -251,10 +251,10 @@ static const struct of_device_id qcom_smmu_client_of_match[] __maybe_unused = {
+ 	{ .compatible = "qcom,sc7280-mss-pil" },
+ 	{ .compatible = "qcom,sc8180x-mdss" },
+ 	{ .compatible = "qcom,sc8280xp-mdss" },
+-	{ .compatible = "qcom,sm8150-mdss" },
+-	{ .compatible = "qcom,sm8250-mdss" },
+ 	{ .compatible = "qcom,sdm845-mdss" },
+ 	{ .compatible = "qcom,sdm845-mss-pil" },
++	{ .compatible = "qcom,sm8150-mdss" },
++	{ .compatible = "qcom,sm8250-mdss" },
+ 	{ }
+ };
+ 
 
-Best regards,
 -- 
-Konrad Dybcio <konrad.dybcio@linaro.org>
+2.41.0
 
