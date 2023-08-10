@@ -1,137 +1,153 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2046.outbound.protection.outlook.com [40.107.92.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A99E20CA8
-	for <iommu@lists.linux.dev>; Thu, 10 Aug 2023 19:51:25 +0000 (UTC)
-Received: from pps.filterd (m0279865.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 37AJmgGU024332;
-	Thu, 10 Aug 2023 19:50:21 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=qcppdkim1;
- bh=ON17pte0fAWnNDXQvwTNTiMcKz70Djo11ZzU/VVTxV0=;
- b=aH7oRT4jQWTjU/OYJm4vKIlq4k78K1q70kAbO4RGdScN65fIss5rX6OUDacw+GngDWKX
- Z7oF7tgR4nVSIwPMnB6Kn5dtu7cCyFiBBe2SV0L5EN6/lG0ENmJqQQ5kCvo/xu71a0jb
- z1iaIGAzo0LEutI5wV4tpUHLT6o6FmDwwGPkyUWmkUGIopJUSzNrNlt5fQyy5MJKSA8o
- JSP+8hWJuO8bAoVVoxeT6cBEAnT4zEnl44AR0PxD9MZYE7B90E6xf7frU2mG6Q0cQx3D
- g1P+qeR4UrtQEN9A06D3LwekUUd3SxKtcTkWa2XB4qlfG0hmEX/4Z7pK4V90Cmv4iHw4 zA== 
-Received: from nalasppmta01.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3scx4vscq4-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 10 Aug 2023 19:50:20 +0000
-Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-	by NALASPPMTA01.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 37AJoJwD006158
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 10 Aug 2023 19:50:19 GMT
-Received: from [10.226.59.182] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.30; Thu, 10 Aug
- 2023 12:50:17 -0700
-Message-ID: <fcf9fb85-0e78-21db-ee73-aee5193f37ce@quicinc.com>
-Date: Thu, 10 Aug 2023 13:50:16 -0600
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 41CAC20CA8
+	for <iommu@lists.linux.dev>; Thu, 10 Aug 2023 19:59:11 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=QFkUGCAb/sK5TNcQgKUVXmOk0NMBbUlhsYIRsi8ja6aQ1oVvRmrFTvgKKkx7JgNv9VgaURWOjDZ3VdKTTv6oOLIk3cwNDljg1t+50fvQMNtIbXyoEtacdf3LOWUTkd+rtYHGrFv7jO7fFw5Bz0+UPvJWEgpP284pGJnUF3OHHz2hqLgBRMP+oTvXpJtb2gedWRd8tqhRF3Z49EjPoxU33qC8hw8Lt+kAVWvzzLv6hpkTtn+2uyl/djFDiH3ZS/D7Sef8+eyj/HtiFsMCSn4PW3cU8/wDLJyG1xZkWjrzVCcmS9MD6/gKcB20kgKRH2eM6E8ruX9PqgMiD9lfkYBZzw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=wqbD74dDFFuEZ70Ohle1rseR7zAyo+q7HCZQRcDQnKc=;
+ b=ScZbzM1UrnxHxvvzD3KiX/KOeDNPH5h/RWpquYgPoKimpFH3qNmuM3mZ/571aqXoUT0Jda8thIMVQL16KmYW9tIFIuG5CgDButtF2tTwy6pJaNkuXtHF6RZeOJ+aC1SCz0/4E1rvy7IWc4txpojbPLrYaPmhJncec5BZM+NaOrMuei0vg0x4OMo0kdFvwTy8HdohN3JDfhLVyrs796tLeMINWN8l/FGO89OjZaPXPvoI2JSg0dqCmRATy+xfIcZJuGyi9lNVTAEeO+P1jfGli6xEpXlIOUa6L+50jk14fN/cw9YAkLWBfVX735MiOwfdbYNt3euXtTgDbzzBwfmotg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=huaweicloud.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=wqbD74dDFFuEZ70Ohle1rseR7zAyo+q7HCZQRcDQnKc=;
+ b=ez0umGkkkLf9ZtasjioxyP9zAAW/Dgo38nJ/xwVc6PNCkm5KfHIjjJLfzCCC1YJrOWu8qa/cHDRQVp7vCELMLbinH66JC6Qx9SK5SYL7jxhS2zfJJpfb2v6VvBuECr2HUnmYUzTii61oveQ7dP1LoDSp62T/JvRpqgaRGSZtJ6029MI6aIAJToJDfpw7cO6IyUr/KaiuIa2taAWLGYsIMjeWGrWKtIrVPDg0Fd86mJIfA07ERssuI1A9lLVVxxzEtY8yUQHlLGMfFTmAKFvkXbobRugxPDtPkxbqwCTXcZyW9oV7dfJ45V575bllwmIf71khDG0KiUIPbQpE5y9vXQ==
+Received: from DM6PR12CA0012.namprd12.prod.outlook.com (2603:10b6:5:1c0::25)
+ by DM4PR12MB9070.namprd12.prod.outlook.com (2603:10b6:8:bc::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6652.30; Thu, 10 Aug
+ 2023 19:59:09 +0000
+Received: from CY4PEPF0000EE33.namprd05.prod.outlook.com
+ (2603:10b6:5:1c0:cafe::97) by DM6PR12CA0012.outlook.office365.com
+ (2603:10b6:5:1c0::25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6652.30 via Frontend
+ Transport; Thu, 10 Aug 2023 19:59:09 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ CY4PEPF0000EE33.mail.protection.outlook.com (10.167.242.39) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6652.19 via Frontend Transport; Thu, 10 Aug 2023 19:59:08 +0000
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Thu, 10 Aug 2023
+ 12:58:59 -0700
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail202.nvidia.com
+ (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Thu, 10 Aug
+ 2023 12:58:59 -0700
+Received: from Asurada-Nvidia (10.127.8.13) by mail.nvidia.com (10.129.68.7)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37 via Frontend
+ Transport; Thu, 10 Aug 2023 12:58:58 -0700
+Date: Thu, 10 Aug 2023 12:58:56 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: "thunder.leizhen@huaweicloud.com" <thunder.leizhen@huaweicloud.com>
+CC: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, "Joerg
+ Roedel" <joro@8bytes.org>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Zhen Lei
+	<thunder.leizhen@huawei.com>, Tanmay Jagdale <tanmay@marvell.com>, "Jonathan
+ Cameron" <Jonathan.Cameron@Huawei.com>
+Subject: Re: [PATCH v2 1/2] iommu/arm-smmu-v3: Add support for ECMDQ register
+ mode
+Message-ID: <ZNVBgCb5w0daExIL@Asurada-Nvidia>
+References: <20230809131303.1355-1-thunder.leizhen@huaweicloud.com>
+ <20230809131303.1355-2-thunder.leizhen@huaweicloud.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [PATCH v3 5/6] clk: qcom: mmcc-msm8998: Fix the SMMU GDSC
-Content-Language: en-US
-To: Konrad Dybcio <konrad.dybcio@linaro.org>, Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Conor Dooley
-	<conor+dt@kernel.org>,
-        AngeloGioacchino Del Regno
-	<angelogioacchino.delregno@somainline.org>,
-        Michael Turquette
-	<mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Jeffrey Hugo
-	<jeffrey.l.hugo@gmail.com>,
-        Imran Khan <kimran@codeaurora.org>,
-        "Rajendra
- Nayak" <quic_rjendra@quicinc.com>,
-        Joonwoo Park <joonwoop@codeaurora.org>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>, "Joerg
- Roedel" <joro@8bytes.org>
-CC: Marijn Suijten <marijn.suijten@somainline.org>,
-        Dmitry Baryshkov
-	<dmitry.baryshkov@linaro.org>,
-        Jami Kettunen <jami.kettunen@somainline.org>,
-        <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-clk@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>
-References: <20230531-topic-8998_mmssclk-v3-0-ba1b1fd9ee75@linaro.org>
- <20230531-topic-8998_mmssclk-v3-5-ba1b1fd9ee75@linaro.org>
- <23575f97-332b-0392-fc20-0a52775d03b9@quicinc.com>
- <868ee2b6-3b48-4d32-9614-fa9b3e057257@linaro.org>
-From: Jeffrey Hugo <quic_jhugo@quicinc.com>
-In-Reply-To: <868ee2b6-3b48-4d32-9614-fa9b3e057257@linaro.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: LNS1hyyiaTAfk4vw9rA0AZEOHVvgjMGC
-X-Proofpoint-GUID: LNS1hyyiaTAfk4vw9rA0AZEOHVvgjMGC
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.267,Aquarius:18.0.957,Hydra:6.0.591,FMLib:17.11.176.26
- definitions=2023-08-10_16,2023-08-10_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 priorityscore=1501
- suspectscore=0 bulkscore=0 clxscore=1015 phishscore=0 adultscore=0
- lowpriorityscore=0 mlxlogscore=993 malwarescore=0 impostorscore=0
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2306200000 definitions=main-2308100172
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20230809131303.1355-2-thunder.leizhen@huaweicloud.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CY4PEPF0000EE33:EE_|DM4PR12MB9070:EE_
+X-MS-Office365-Filtering-Correlation-Id: 0aa97e5a-3d5c-4214-8127-08db99dc4276
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	AVovRlDF1rqc5svDevpb6YwcNWzrCHuCucHU0pQcDJZ5CwzcGFWJ44R2ZjSWuHaLczAVab8AYn57YyiqtRokjEMLM79ZUJlnJYqvHHqIJAua07rwYmKzG5FDUq3r73MEsiqhURWiWZpgpj0iZPmOGirql9NGEjHWF8aJM8MyyOv2kzV8ezTCmNmZZRibcNMCsRA3ois+UV3kg5dIaWQEkzRKIBsflWeOWsv3jMYAGA+EYUN0aW8ngCORtsjRnSUoGRwJv84LCBwNXxN6mgxPtIKrg7dlh4GwwZZt5KdDqs9YYWin48/f32FHWCfDLPKOlggQKERLc+tVTHTTfZRqV3j6a2HHep3uQQ9O7jed4s2vd8jVjmmjIL8w6ydVDV9tZea0MQJikUcKZbB/iAR8tVzp8SBMtkHsDZO+v1CJYM9D3GMnTTeJkh4m2aWUaZcVyU8g79NKafdrtNzyI1ZZjetneFTtxKLmsdPb6vk6vsu/zf1wjIYsPM0dtUAcymMV7UZS8SMcmyRDe9j1hHwrk9gjsGsWHnW7LMJuhws5cql1FL2QuTCULwGvsgr6dpioqlubRma4MO5/TAEAIeEUFfyzAhXOs9ZqZZCXAy1qLIbUDODjgtBDrsKdGpR7AY6Bt4clDI3XKzpaDy5MwccVHq6PwOsx7bt93R4z/WQCRXcPlnpLFfoEyeHE8b2ulGr5mA/4Xx+Y5GUj8MDvefoJKL3T3c3hLc3Q8miPMPeXAlTIDImhuYHi7kiZxdK8okxw
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(396003)(346002)(39860400002)(376002)(136003)(451199021)(186006)(1800799006)(82310400008)(40470700004)(46966006)(36840700001)(7636003)(356005)(82740400003)(86362001)(33716001)(40460700003)(55016003)(40480700001)(26005)(8676002)(8936002)(336012)(5660300002)(41300700001)(316002)(70586007)(2906002)(83380400001)(426003)(47076005)(54906003)(478600001)(70206006)(9686003)(6916009)(4326008)(36860700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Aug 2023 19:59:08.8567
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0aa97e5a-3d5c-4214-8127-08db99dc4276
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	CY4PEPF0000EE33.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB9070
 
-On 8/10/2023 12:46 PM, Konrad Dybcio wrote:
-> On 10.08.2023 20:20, Jeffrey Hugo wrote:
->> On 8/9/2023 1:20 PM, Konrad Dybcio wrote:
->>> The SMMU GDSC doesn't have to be ALWAYS-ON and shouldn't feature the
->>> HW_CTRL flag (it's separate from hw_ctrl_addr).  In addition to that,
->>> it should feature a cxc entry for bimc_smmu_axi_clk and be marked as
->>> votable.
->>
->> I appear to have confused HW_CTRL with hw_ctrl_addr.  Thanks for fixing that.
->>
->> I recall I made it always-on for display handoff.  The bootloader on the laptops will enable the display, which means the MDP is active and using the SMMU.  The SMMU is powered by the GDSC as you know.  The MDP is going to be polling a framebuffer in DDR, which EFI services (efifb) is going to be updating.  All of this is active during linux boot, which is how the kernel bootlog gets printed on screen.
-> This is essentially a missing / mis-configuration from the linux/dt POV and
-> I think the consensus for using display without describing it properly with
-> mdss has been to do one of:
-> 
-> - adding a simple-framebuffer node with all the necessary clocks/pds
-> - adding "clk_ignore_unused pd_ignore_unused" to your cmdline
-> 
->>
->> If I remember right, the GDSC will be registered.  When it is done probing, there will be no consumers.  So the Linux framework will step in and turn it off before the consumers come up.  This kills power to the SMMU.  If the SMMU doesn't come back on before the MDP polls DDR again, you get a bus hang and a crash.
-> Yep
-> 
->> I assumed that any msm8998 device would be using the MDP/GPU and thus the SMMU would pretty much always be powered on.
-> This flag however bans putting it to sleep when not in use.
-> 
->>
->> I expected this patch to break the laptop.  It does not in my testing. However, I see that I disabled the MMCC node in DT with a todo about the display.  So the GDSC is never registered, and then never gets turned off.  I believe that todo is pending some updates I need to make to the TI DSI/eDP bridge because the I2C port on the bridge is not wired up.  I should really dust that off and complete it.
-> Right, so what you have now is a third, untold "solution" to the problem
-> described above.. not really a supported configuration as it's not "correct"
-> 
-> I'd happily see you wire up the bridge et al though!
-> 
-> 
->> Regardless, even with the todo addressed, I think removing always-on will still break the laptops unless the bootloader handoff of display was solved and I missed it.
->>
->> I get that for your usecase, a phone where the bootloader does not init the display, always-on has the potential to burn extra power.  I'm not sure how to make both of us happy through.
->>
->> Do you have any suggestions?
-> Hope my replies above are enough.
+Hi Zhen,
 
-I still think there is an issue, but my setup is not as complete as your 
-on mainline.  I'll clean things up and we'll solve the issues when we 
-get to them.
+On Wed, Aug 09, 2023 at 06:13:02AM -0700, thunder.leizhen@huaweicloud.com wrote:
+> +static int arm_smmu_ecmdq_layout(struct arm_smmu_device *smmu)
+> +{
+> +       int cpu;
+> +       struct arm_smmu_ecmdq __percpu *ecmdq;
+> +
+> +       if (num_possible_cpus() <= smmu->nr_ecmdq) {
 
-Reviewed-by: Jeffrey Hugo <quic_jhugo@quicinc.com>
+Does the nr_ecmdq always physically match with the number of CPUs?
+I saw the spec saying "up to 256 pages", but not sure if they are
+always physically present, even if CPU number is smaller i.e. some
+of them would be unassigned/wasted.
 
+> +               ecmdq = devm_alloc_percpu(smmu->dev, *ecmdq);
+> +               if (!ecmdq)
+> +                       return -ENOMEM;
+> +
+> +               for_each_possible_cpu(cpu)
+> +                       *per_cpu_ptr(smmu->ecmdqs, cpu) = per_cpu_ptr(ecmdq, cpu);
+> +
+> +               /* A core requires at most one ECMDQ */
+> +               smmu->nr_ecmdq = num_possible_cpus();
+> +
+> +               return 0;
+> +       }
+> +
+> +       return -ENOSPC;
+
+This ENOSPC is a software limitation, isn't it? How about using
+"smp_processor_id() % smmu->nr_ecmdq" to select a queue?
+
+> +       shift_increment = order_base_2(num_possible_cpus() / smmu->nr_ecmdq);
+> +
+> +       offset = 0;
+> +       for_each_possible_cpu(cpu) {
+> +               struct arm_smmu_ecmdq *ecmdq;
+> +               struct arm_smmu_queue *q;
+> +
+> +               ecmdq = *per_cpu_ptr(smmu->ecmdqs, cpu);
+> +               ecmdq->base = cp_base + offset;
+> +
+> +               q = &ecmdq->cmdq.q;
+> +
+> +               q->llq.max_n_shift = ECMDQ_MAX_SZ_SHIFT + shift_increment;
+> +               ret = arm_smmu_init_one_queue(smmu, q, ecmdq->base, ARM_SMMU_ECMDQ_PROD,
+> +                               ARM_SMMU_ECMDQ_CONS, CMDQ_ENT_DWORDS, "ecmdq");
+
+Not getting why max_n_shift increases by shift_increment. Mind
+elaborating?
+
+Thanks
+Nicolin
