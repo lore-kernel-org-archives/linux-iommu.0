@@ -1,110 +1,193 @@
-Received: from mail-qv1-f41.google.com (mail-qv1-f41.google.com [209.85.219.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2069.outbound.protection.outlook.com [40.107.94.69])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D983420CA8
-	for <iommu@lists.linux.dev>; Thu, 10 Aug 2023 19:18:56 +0000 (UTC)
-Received: by mail-qv1-f41.google.com with SMTP id 6a1803df08f44-63cf28db24cso7959826d6.2
-        for <iommu@lists.linux.dev>; Thu, 10 Aug 2023 12:18:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1691695135; x=1692299935;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=6nK40dlXSEtV9j+1clrTX2RCnnQWiTsk3pHmbVPkUwY=;
-        b=VmBkafl1u25d2ecLyUc29ulrsvOSkhhEKJzuIU93CMtsoCspLy4ihE6XAu6q0FKV7H
-         7LnJGstvlp0byYFZseM2BaVUeXnNZLL+R2jOlaxU4o1Ud/nwJDZ3AlwHHAWddr1hdDAg
-         8Alv1t72xMjHMEMMtHU9bWogP2hPkCqxEH22qnX5LDAMnjcCIdacsNJpfbyNjw80iyd3
-         0Xa721kMEsJQYgnTNhLDNMaDAoCHiSoBnKuy0rN8Z+NmXMYhiCdRQJSBHOdZ5K2x7LBG
-         538LpY5D5oj+OGHc81pQ5kls8HpXumbdw5zvGYkIXTJUyb1xkQ++ypNWCPge9FRsMSvh
-         zm7Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1691695135; x=1692299935;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=6nK40dlXSEtV9j+1clrTX2RCnnQWiTsk3pHmbVPkUwY=;
-        b=RBL5ONIV++A4IZUyMtM2YzSZmcGi16S1VXddS4+tKJzMbU+aF4wZDmMNciSX+yu2FG
-         +JFxpWAdZPy3/SBwYHVRNEYDf4eQurWDFzehn3exiqKknTiUS248yRb/yvFbKPl/Mmbp
-         5KhshuXOausITWawIK2epAXud+f2Iks0bXj2d7xJ3HER2HbQ3FDrL+ACP16PYfIrS483
-         pRPojNWt9Tk02zMFsG9yu228katxKmWOOZYx/D2GHnfZ0B3XcABI6+NN/Lfrv9JASsSj
-         /9uae4siHAY6bIOmkWGvUWVxF4Lu6/4dM68Al31wqeOUcwNKRu2K8MgDYExDL4snHo67
-         q8HA==
-X-Gm-Message-State: AOJu0YzXWiWOHH04ZpDOIMD9r7zVK/g5djZGFdNQ/xLtgFmpyC1Z12mu
-	k7bBvp1fmuM3zo5uHzKHo98agA==
-X-Google-Smtp-Source: AGHT+IHH4IrROTfTjO5eB3vOPq41MQjpTBHKBaN/zPPR2N44/sTFeqgtLodbzZoyZt1KMjgv18nz0g==
-X-Received: by 2002:a05:6214:15c3:b0:635:e528:5213 with SMTP id p3-20020a05621415c300b00635e5285213mr3435331qvz.23.1691695135500;
-        Thu, 10 Aug 2023 12:18:55 -0700 (PDT)
-Received: from ziepe.ca ([206.223.160.26])
-        by smtp.gmail.com with ESMTPSA id i9-20020a0cab49000000b0063d316af55csm694456qvb.3.2023.08.10.12.18.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Aug 2023 12:18:54 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1qUBBO-005Ips-5n;
-	Thu, 10 Aug 2023 16:18:54 -0300
-Date: Thu, 10 Aug 2023 16:18:54 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>, iommu@lists.linux.dev,
-	kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 12/12] iommu: Add helper to set iopf handler for domain
-Message-ID: <ZNU4Hio8oAHH8RLn@ziepe.ca>
-References: <20230727054837.147050-1-baolu.lu@linux.intel.com>
- <20230727054837.147050-13-baolu.lu@linux.intel.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8FDC20CA8
+	for <iommu@lists.linux.dev>; Thu, 10 Aug 2023 19:27:08 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=VunhK0bY2RLxSuLOxiGo6jcwVEUKRxq2/YjYdqoHzNppkr9B8uhyB6wUo8R1xUjEeICwLAmb9xQcWkbjhXbPxhTy2PrmiCnW6BS9SeyN49h+INQ18fjbReaTg2kALHDapifBn/iKmDhJ+sFSvjhVZlRYvzHOrc1KdANOl7pTHEFeBloFf0nejfQnYjlIId890V+mEdsC+XxzniI5oM48Whkq2Jl/FrYwT96choTvjJb86FVbHvRoV8qwVop6/5xLO+jBli6ZSpOYfzBAz3S+qfbaiHeWVFbldGRMPfcSBp/WJTMk7b1t7uDjXDltutT6cJMMKPXKcGO7OBxD7/TP+Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Q3F4McPyFxGqcrpFD3UnsgWBqRYbCUWXSaak2/JZivU=;
+ b=GUObhE3Zr0JxtJD/vPDy1QLhz1eHUwguyXp45Q9uON8Xi8TCg8y7inFIKQekvZkvXmpESWD8wLebYAjJDq6DYgupnC2VkzwrG8BTSS5VcTHXEMOd9z7T0wKI8Fv3VYKKBfRFKnXKQRth79AKHAMqkHLvtkUcldXqAC+mxGeSgxnTbSdky6HaMLD4wTLowecwMgZrTSQ8+/TibzUI4PK1zLdor21jZxjAeQVAqitifUS60Ef/5wN/jSb79sYWjD0pwth4N5yT61Hmy4oPpksrAQC5qo3KRAQl+NBy4t2lI5gVDOHvkoRwMpNXvvZ0/F4qhkdWTn2c7kHG9lgN0Nv/9w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Q3F4McPyFxGqcrpFD3UnsgWBqRYbCUWXSaak2/JZivU=;
+ b=UN8Dd8bs3bsLkSocC/LvoCdFEKwlJhV2YE8Kgbm99JCuDOR9pIrhAM4uklXj6HMmpFH+OzuYx2JL3MKKDuEcaQMTw+v9Y5mhNiYBE6vqVBhUBDewvkCYkPVXfI6/v7AcqGnNxFajCJCejr7OVAqU8NI7EotsanlLFwrp4P7S8fkC/0/EuSmX1v/HL9VAT4qTcjZIIP8rrDxol8YfIZ/e8uNBJ7W3OKl0gXYTkTQ/cclYwOJQ2jSsQksa0n+0C1V9sMM4aWLpxF7jG9zVT8itoFnCd+g0+Jb7FsyRdAl9hUFXir1PpOnNmt2Mo3G4mkwI9GNta8T5u84higCYtYpytA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by SJ2PR12MB8829.namprd12.prod.outlook.com (2603:10b6:a03:4d0::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6652.30; Thu, 10 Aug
+ 2023 19:27:04 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::5111:16e8:5afe:1da1]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::5111:16e8:5afe:1da1%6]) with mapi id 15.20.6652.029; Thu, 10 Aug 2023
+ 19:27:04 +0000
+Date: Thu, 10 Aug 2023 16:27:02 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
+	"joro@8bytes.org" <joro@8bytes.org>,
+	"alex.williamson@redhat.com" <alex.williamson@redhat.com>,
+	"robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
+	"cohuck@redhat.com" <cohuck@redhat.com>,
+	"eric.auger@redhat.com" <eric.auger@redhat.com>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+	"mjrosato@linux.ibm.com" <mjrosato@linux.ibm.com>,
+	"chao.p.peng@linux.intel.com" <chao.p.peng@linux.intel.com>,
+	"yi.y.sun@linux.intel.com" <yi.y.sun@linux.intel.com>,
+	"peterx@redhat.com" <peterx@redhat.com>,
+	"jasowang@redhat.com" <jasowang@redhat.com>,
+	"shameerali.kolothum.thodi@huawei.com" <shameerali.kolothum.thodi@huawei.com>,
+	"lulu@redhat.com" <lulu@redhat.com>,
+	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+	"Duan, Zhenzhong" <zhenzhong.duan@intel.com>
+Subject: Re: [PATCH v4 09/12] iommu/vt-d: Add iotlb flush for nested domain
+Message-ID: <ZNU6BnTgNEWlwNYQ@nvidia.com>
+References: <DS0PR11MB7529C3646E38542457D7B75DC312A@DS0PR11MB7529.namprd11.prod.outlook.com>
+ <BN9PR11MB5276912120F662498910A1D48C12A@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <DS0PR11MB7529C310FAEA61B6E7988629C312A@DS0PR11MB7529.namprd11.prod.outlook.com>
+ <ZNO92PIx2IQ70+DY@nvidia.com>
+ <ZNPlGd4/72dahSs4@Asurada-Nvidia>
+ <ZNPmpW3/zDnjqxyU@nvidia.com>
+ <ZNP0UKGU6id5wfc6@Asurada-Nvidia>
+ <BN9PR11MB527683351B687B97AB84B51B8C13A@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <ZNUI0D7ZMvLWlBNx@nvidia.com>
+ <ZNUa/VmeiIo0YA0v@Asurada-Nvidia>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZNUa/VmeiIo0YA0v@Asurada-Nvidia>
+X-ClientProxiedBy: CH2PR20CA0018.namprd20.prod.outlook.com
+ (2603:10b6:610:58::28) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230727054837.147050-13-baolu.lu@linux.intel.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|SJ2PR12MB8829:EE_
+X-MS-Office365-Filtering-Correlation-Id: bd2d4786-e341-4705-9f6e-08db99d7c70b
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	a7iHKiaUzmgHIbafO/X8+Ewcw2ygAYMImHit9QvUWqIqsZmbBQw3SyDxTMhvIAeKrNRbfcLjus2ge/r2xKAq1FoX50D7vTERNQ4VW0h00YjStdYFUv+/MASjIADF9/Nfgwx3JNj2vUjeedaixUAJT2tbDVF0Mvu+Mb2m4bnG1tRWf0MMz5wsaYV7mk1z77RlJ22wKedj/eFhAU/uZ6ruwrS8jZG6ir7DDZudHXkFkVNuOM+tFUQa5O6VLLzeukL8BLk9gz9cjBHzdUlTkAfN0PLfG/BZHCYrhzPPwMJOBtdQxROQvBYzhUJ/8OeVBbIgHOL34LLDCkmRq1phlOs8q1/JimvfiJAIc7yKbZp8P1riw62kRToen6YwRj98vda5S8Qlxnh9DDSqkeuoGAEOX8bIndGTomDZtlfN7yqwwUt8SbE2IyUfCk+O8SHyqXbRoQK9x8o7u/alN6WNR0vB9PZTpV2ysJhZpr49e08t5xAd+cGZ2XJ26w5k7p1ZLhURkPQbJbVyN/j3APjK1SEYHLkF6kAK6xvtg6nh4F8FEHJ1+z9uRLl2+yA/Zc7XAOAw
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(346002)(136003)(376002)(366004)(39860400002)(396003)(186006)(1800799006)(451199021)(316002)(41300700001)(4326008)(6636002)(38100700002)(37006003)(54906003)(6862004)(5660300002)(8936002)(8676002)(66476007)(66946007)(66556008)(2616005)(86362001)(7416002)(478600001)(6506007)(83380400001)(6512007)(26005)(2906002)(36756003)(6486002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?KyduxKgZw0XSBy9TAkWCnsPc20pHa7ucJkMflrYovsentoELcN1fG59WFHM0?=
+ =?us-ascii?Q?IgHeD+wQN38LzBoz6Oyn+OZNPP5QzvhaggkWe5YMxyp0IwvSmWUuHTmtPYeh?=
+ =?us-ascii?Q?zTisgYvmn9VV9bNr9p2Zhn9H3nOO+xLZvKqeOqWauJk5gZOH66LPU8/dSCFD?=
+ =?us-ascii?Q?+61H7oqyky4RvGj0o4rkvZ9jKg6edk3BX4+LcjYzRjm4F+0Ct8n2SAWc1u61?=
+ =?us-ascii?Q?lHaiDyiBiw5U51FOuMOAUSI5uYAmZLYsbSrPtxTkq1h5xhU2mDJbR1xTXCYj?=
+ =?us-ascii?Q?lo/SUazrPLSY0ecIjOD59U0rwWW1xfWs2wdwwHNgL+YESXnQsW6MVcXDnGP/?=
+ =?us-ascii?Q?b3Clpg4FbFUtKOr9UAPSH3hk+EIXTaVm2VezRdSr/5QVvR+1kRcmqWNPcyLf?=
+ =?us-ascii?Q?WG0PvxEh3XFgOcwlN0AeSye71AQA2oJEvCNZc889wyvsHpOflMkgqBvidwm1?=
+ =?us-ascii?Q?gnsgzV+71uY0u6/dgkF8f4Lk4B4drgW8FJlYjpocpcV5HvL2vOu0lwhSBHXn?=
+ =?us-ascii?Q?Uvf85CFrfgDFZ9jH5IU+EFQsid8+wppnN01btDzAfYP7adtYPF9UdlCAEtnM?=
+ =?us-ascii?Q?Smqp5bOaaQf3FSPUg15wXHb/kKcj5fpHoahBvs0nSY67p16bGjh6dJaTvXTL?=
+ =?us-ascii?Q?Hz4QhnfNG5LtjhWeOrDI44Ja7ApLigIrrR7aLcMEsyKZQjk+miyLggXyZJTg?=
+ =?us-ascii?Q?PZ482LtmmorMrxsUSt0S8bcLa/a38Ek+8WC1VhYeMdnguOKgKRujKmjWPqPi?=
+ =?us-ascii?Q?HrEeSVi1LqhLlfjbsVQXxdSelp3hm/5jkizJ8v5g1/xHJLR2i5+kR/hI01Ev?=
+ =?us-ascii?Q?LAjKZKbi5kzUboX4ikUUiDHhTtMFfr3iWBu8mYoMLHZUn6n+aZKDix/j/GzD?=
+ =?us-ascii?Q?rMgYEG/VXWjK27UzXZJTlsh2uCIcKbsrCgYW5FZU+DrIL/n4ONQ52BxK4jy7?=
+ =?us-ascii?Q?Oz0NDk4/Myn0FXcMPxgsqKQ6bvP3B5cbQrsjmQ5Z3hqiyGBiR6BitgmU63hE?=
+ =?us-ascii?Q?OvZqNUL9Vm1cbhwleRTWokQ0g+qHfqEsjN8RZE8nWAYBMu5f2/uqnTduS2+7?=
+ =?us-ascii?Q?HdPq25VaMK18dIOmVCKb+DQdXvnsdvdnjIXKxdlXzOd4obCrL8mRnhT9uatY?=
+ =?us-ascii?Q?qlkUbUW5xdwBkU5oNug+CHhzI3TOByonIzYNYrIJkL+ofFzhCFvHcvOBHeNj?=
+ =?us-ascii?Q?4sJWhc5hDaImiY3cvLA/q1n2J+JDZGFBh5pZo5zm3lvhtfRahjAAiKZIMULo?=
+ =?us-ascii?Q?3MPBbSySS575NEZUMr0pOwDcCtWYuX6D3lLz1qv48NlcyTyvC9dBv9KVGF1P?=
+ =?us-ascii?Q?zWbYUpBv7FSZamU/Cs1t1LrmF+J06RaFfqO9pRSjweDgC6YxjngRhrzu18vF?=
+ =?us-ascii?Q?93Q3ExXEqEiakk5HT5rEsETeUbni6L1pVn5JtO5GObdhs91WwDshYqSc8utz?=
+ =?us-ascii?Q?rXG/VGB6JgfvVpUyK11lKK8sn3L4CGvt8TKkVR3eQCxQ8whOApRHwvqwi1Fd?=
+ =?us-ascii?Q?PWzo/Ldz2e3wTNNKm8UP04ZXLruihjKpD4ujMIBRQKemGLSeKlA3CcxzoNFO?=
+ =?us-ascii?Q?a/C9Llg818afBYLoHTyav1BMqve7KDqglNuC24u2?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: bd2d4786-e341-4705-9f6e-08db99d7c70b
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Aug 2023 19:27:04.1593
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 9Bj/FKG76Eokwkq7mGq50quiMf2cWgV1u80Sh/S2XGaozloJz1Ih3JqcvsV57cmx
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ2PR12MB8829
 
-On Thu, Jul 27, 2023 at 01:48:37PM +0800, Lu Baolu wrote:
-> To avoid open code everywhere.
+On Thu, Aug 10, 2023 at 10:14:37AM -0700, Nicolin Chen wrote:
+> On Thu, Aug 10, 2023 at 12:57:04PM -0300, Jason Gunthorpe wrote:
+> > On Thu, Aug 10, 2023 at 02:49:59AM +0000, Tian, Kevin wrote:
+> > > > From: Nicolin Chen <nicolinc@nvidia.com>
+> > > > Sent: Thursday, August 10, 2023 4:17 AM
+> > > > 
+> > > > On Wed, Aug 09, 2023 at 04:19:01PM -0300, Jason Gunthorpe wrote:
+> > > > > On Wed, Aug 09, 2023 at 12:12:25PM -0700, Nicolin Chen wrote:
+> > > > > > On Wed, Aug 09, 2023 at 01:24:56PM -0300, Jason Gunthorpe wrote:
+> > > > > > > Similarly for managing the array of invalidation commands.
+> > > > > >
+> > > > > > You mean an embedded uptr inside a driver user data struct right?
+> > > > > > Sure, that should go through the new helper too.
+> > > > >
+> > > > > If we are committed that all drivers have to process an array then put
+> > > > > the array in the top level struct and pass it in the same user_data
+> > > > > struct and use another helper to allow the driver to iterate through
+> > > > > it.
+> > > > 
+> > > > I see. Both VTD and SMMU pass uptr to the arrays of invalidation
+> > > > commands/requests. The only difference is that SMMU's array is a
+> > > > ring buffer other than a plain one indexing from the beginning.
+> > > > But the helper could take two index inputs, which should work for
+> > > > VTD case too. If another IOMMU driver only supports one request,
+> > > > rather than a array of requests, we can treat that as a single-
+> > > > entry array.
+> > > > 
+> > > 
+> > > I like this approach.
+> > 
+> > Do we need to worry about the ring wrap around? It is already the case
+> > that the VMM has to scan the ring and extract the invalidation
+> > commands, wouldn't it already just linearize them?
 > 
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> ---
->  include/linux/iommu.h | 11 ++++++++++-
->  drivers/iommu/iommu.c | 20 ++++++++++++++++++--
->  2 files changed, 28 insertions(+), 3 deletions(-)
+> I haven't got the chance to send the latest vSMMU series but I
+> pass down the raw user CMDQ to the host to go through, as it'd
+> be easier to stall the consumer index movement when a command
+> in the middle fails.
 
-Seems like overkill at this point..
+Don't some commands have to be executed by the VMM?
 
-Also, I think this is probably upside down.
+Even so, it seems straightforward enough for the kernel to report the
+number of commands it executed and the VMM can adjust the virtual
+consumer index.
+> 
+> > Is there a use case for invaliation only SW emulated rings, and do we
+> > care about optimizing for the wrap around case?
+> 
+> Hmm, why a SW emulated ring?
 
-We want to create the domains as fault enabled in the first place.
+That is what you are building. The VMM catches the write of the
+producer pointer and the VMM SW bundles it up to call into the kernel.
+ 
+> Yes for the latter question. SMMU kernel driver has something
+> like Q_WRP and other helpers, so it wasn't difficult to process
+> the user CMDQ in the same raw form. But it does complicates the
+> common code if we want to do it there.
 
-A fault enabled domain should never be attached to something that
-cannot support faults. It should also not support changing the fault
-handler while it exists.
+Optimizing wrap around means when the producer/consumer pointers pass
+the end of the queue memory we execute one, not two ioctls toward the
+kernel. That is possible a very minor optimization, it depends how big
+the queues are and how frequent multi-entry items will be present.
 
-Thus at the creation point would be the time to supply the fault handler
-as part of requesting faulting.
-
-Taking an existing domain and making it faulting enabled is going to
-be really messy in all the corner cases.
-
-My advice (and Robin will probably hate me), is to define a new op:
-
-struct domain_alloc_paging_args {
-       struct fault_handler *fault_handler;
-       void *fault_data
-};
-
-struct iommu_domain *domain_alloc_paging2(struct device *dev, struct
-       domain_alloc_paging_args *args)
-
-The point would be to leave the majority of drivers using the
-simplified, core assisted, domain_alloc_paging() interface and they
-just don't have to touch any of this stuff at all.
-
-Obviously if handler is given then the domain will be initialized as
-faulting.
-
-Jason
+Jaso
