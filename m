@@ -1,110 +1,151 @@
-Received: from mail-qk1-f178.google.com (mail-qk1-f178.google.com [209.85.222.178])
+Received: from mail-lf1-f54.google.com (mail-lf1-f54.google.com [209.85.167.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C90862A
-	for <iommu@lists.linux.dev>; Thu, 10 Aug 2023 18:46:29 +0000 (UTC)
-Received: by mail-qk1-f178.google.com with SMTP id af79cd13be357-76ca7b4782cso92847385a.0
-        for <iommu@lists.linux.dev>; Thu, 10 Aug 2023 11:46:29 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 353BC62A
+	for <iommu@lists.linux.dev>; Thu, 10 Aug 2023 18:46:35 +0000 (UTC)
+Received: by mail-lf1-f54.google.com with SMTP id 2adb3069b0e04-4fe48d0ab0fso1900628e87.1
+        for <iommu@lists.linux.dev>; Thu, 10 Aug 2023 11:46:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1691693188; x=1692297988;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=CsoST8P+iWgWsPf7zElyRhjW/tMFYzbMLrZME8gLp0k=;
-        b=ZQuJWn0VK80YzZIuNKmUCDAUJyL23bBqNMH3chTgGERDaScHJ91A/4qUj8OER1DJp3
-         FTo0SenhTP9f/Wp1KasdzdKIhxmg0nFDABfMdgEzvxjclYa5EpNPrHD+Fq5yVnYA6lPz
-         mGROrMGyzjOAWo9EX119rHRhiiyuzHCXYkPf40rGTGxKnA9YyTFhz2l0o1Rk+AgTWNje
-         iF/aRV5gcTGfo+6WSKoByrBFOIwP9vBi1ICE4ZW4GsLKkimFA40XrquhIXCZB3nzMzDL
-         EIK6wmZchjpDYxB7Gg4LoL0g0sBdlwUW4j5ZZgoIV33NPrhIugEVVP23j+1bqa2AYUoT
-         ESLw==
+        d=linaro.org; s=google; t=1691693194; x=1692297994;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=b4xXKoYz0SscgeohStVGKJKHkeZRwf4W5KkjybW+eAI=;
+        b=QsqPYKHZ5NcoGCGetKyz+lsqn9hodhWUhLbQEA1zd982+X8DmKrAz+s3lQx8XLhkQQ
+         uZBNdTX3nQpzqwgm0qi4qwz6lv7/+u2zNr/4JWvsXo9dLeS74qTRgJM+j5jcRs1hDsAa
+         pw2ql5qcdSkRtlI3HzcCvyz/LwVb4hF8pygVRy9qfeXlXTzIJc8AY931YEapKtPq5tAq
+         3X2x3cRri/bCAaNu6nZ0XxIDb6esZ3CYUVRoZSclfAwFkLmjoG0m1p2KxZj+PefTSlKR
+         sgS6KYea0op11murxHqWK0B9wbbG7ykmEZoi8gzt5RfTxTNWFBWuWvsfVdDabHLF4f6B
+         NL+w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1691693188; x=1692297988;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=CsoST8P+iWgWsPf7zElyRhjW/tMFYzbMLrZME8gLp0k=;
-        b=RHvpZCzR8lUAVKWGL5iJkzdThIORvtesYXJUc/Devfp8TZonVA8CfFbr9tMc3J4RHM
-         sfsynP1hhiI+Q33A+A1GDiPBn4iwu2kj575/Flu/lvLfqrEwKxBBLKcZZRwysctr7OWo
-         PcW8UA+vZ+086T1fLu1D/GcUWc9JOGfh8CXnIBSrzy4MXL0t6Zb8PUwrvconV1fZvye8
-         SYvoJUn/Qq/iiKf3FdojAxgS6fnb97tinW2oJKGnki4kXES+c/BByaMPavZ5qGtkQliH
-         T1EeTyLStEXLlxMfghGuvMnIGrsn/NIdGw72+ZWcSCtFcPuBs6YBcbiaCXXvUcHL1HBt
-         /+3A==
-X-Gm-Message-State: AOJu0YxxyEzRjk8+8jPu7AA3gtT3nKHFlHRFhE44dU4uFwhGJVQcmqN9
-	PNW+igdvY4fq5VYIBEKGxiywsw==
-X-Google-Smtp-Source: AGHT+IET1W3e6hO+x22N7pS0nUJ4fA6rmvxXCmowFm1HbIzbrqrYGlj1RXiVnna0iMsgpBXs2XE+ug==
-X-Received: by 2002:a05:620a:28c1:b0:765:7a1e:a456 with SMTP id l1-20020a05620a28c100b007657a1ea456mr3504767qkp.54.1691693188098;
-        Thu, 10 Aug 2023 11:46:28 -0700 (PDT)
-Received: from ziepe.ca ([206.223.160.26])
-        by smtp.gmail.com with ESMTPSA id i15-20020a05620a074f00b0076c60b95b87sm671044qki.96.2023.08.10.11.46.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Aug 2023 11:46:27 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1qUAfy-005IYu-Qe;
-	Thu, 10 Aug 2023 15:46:26 -0300
-Date: Thu, 10 Aug 2023 15:46:26 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>, iommu@lists.linux.dev,
-	kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 06/12] iommu: Make dev->fault_param static
-Message-ID: <ZNUwgjJ+2GHf2MOW@ziepe.ca>
-References: <20230727054837.147050-1-baolu.lu@linux.intel.com>
- <20230727054837.147050-7-baolu.lu@linux.intel.com>
- <ZNUqV5Mte2AsVa1L@ziepe.ca>
+        d=1e100.net; s=20221208; t=1691693194; x=1692297994;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=b4xXKoYz0SscgeohStVGKJKHkeZRwf4W5KkjybW+eAI=;
+        b=A2C2SRTA9b7Kw3fZtoxFbbzRCCBydwEEjY3CcRXnica4lUOxdHDKSoTaVVmwyimiFa
+         IbH7APAOakmkFwYZX0RUr80zn4vns20UVpRzJP/mvqZwN2CNFc3l1bFo35ae2SYIzEsP
+         bwR+ANU+ASjI6HkAirDtIQVwqauSbWbrx0X0uFLQ6Tq3fDMHTdsWgV6v3Fd93oKuiFf9
+         aPN89sZFkr1/oNdXInQjEtuuKNJ80SkqQyIsL1e5BUDlGbz86lalAZ9AaeJue0Uwr89r
+         AzU6vtpOePKzWNm9uWRlG8XTCBy1msH3nHJ7GOx+Xom8JWWKuLPmSZYbGugspyw6SnId
+         hI2A==
+X-Gm-Message-State: AOJu0YyD1CF2nECxeOKmSvwusnkUTyiq29AWJPW2wMmFRqB8A+ZTc8dD
+	UzHCLsmGFkRF3Nwn+quvlgTS6g==
+X-Google-Smtp-Source: AGHT+IFS6A4j2/jc16F+ODWRAHatCveHIxJXid+ZaYzs4Fr+4gretK+KfcljXYw8Aoh1Ve/YMSVo9w==
+X-Received: by 2002:a05:6512:31d5:b0:4fe:1b6c:7d37 with SMTP id j21-20020a05651231d500b004fe1b6c7d37mr2920279lfe.65.1691693193855;
+        Thu, 10 Aug 2023 11:46:33 -0700 (PDT)
+Received: from [192.168.1.101] (abxi185.neoplus.adsl.tpnet.pl. [83.9.2.185])
+        by smtp.gmail.com with ESMTPSA id e21-20020ac25475000000b004f37bd02a89sm386356lfn.287.2023.08.10.11.46.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 10 Aug 2023 11:46:33 -0700 (PDT)
+Message-ID: <868ee2b6-3b48-4d32-9614-fa9b3e057257@linaro.org>
+Date: Thu, 10 Aug 2023 20:46:29 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZNUqV5Mte2AsVa1L@ziepe.ca>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 5/6] clk: qcom: mmcc-msm8998: Fix the SMMU GDSC
+Content-Language: en-US
+To: Jeffrey Hugo <quic_jhugo@quicinc.com>, Andy Gross <agross@kernel.org>,
+ Bjorn Andersson <andersson@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Conor Dooley <conor+dt@kernel.org>,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>,
+ Michael Turquette <mturquette@baylibre.com>, Stephen Boyd
+ <sboyd@kernel.org>, Jeffrey Hugo <jeffrey.l.hugo@gmail.com>,
+ Imran Khan <kimran@codeaurora.org>, Rajendra Nayak
+ <quic_rjendra@quicinc.com>, Joonwoo Park <joonwoop@codeaurora.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Joerg Roedel <joro@8bytes.org>
+Cc: Marijn Suijten <marijn.suijten@somainline.org>,
+ Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+ Jami Kettunen <jami.kettunen@somainline.org>, linux-arm-msm@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ iommu@lists.linux.dev
+References: <20230531-topic-8998_mmssclk-v3-0-ba1b1fd9ee75@linaro.org>
+ <20230531-topic-8998_mmssclk-v3-5-ba1b1fd9ee75@linaro.org>
+ <23575f97-332b-0392-fc20-0a52775d03b9@quicinc.com>
+From: Konrad Dybcio <konrad.dybcio@linaro.org>
+Autocrypt: addr=konrad.dybcio@linaro.org; keydata=
+ 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
+ izWDgYvmBE8=
+In-Reply-To: <23575f97-332b-0392-fc20-0a52775d03b9@quicinc.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Thu, Aug 10, 2023 at 03:20:07PM -0300, Jason Gunthorpe wrote:
-> On Thu, Jul 27, 2023 at 01:48:31PM +0800, Lu Baolu wrote:
-> > diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> > index 4ba3bb692993..3e4ff984aa85 100644
-> > --- a/drivers/iommu/iommu.c
-> > +++ b/drivers/iommu/iommu.c
-> > @@ -302,7 +302,15 @@ static int dev_iommu_get(struct device *dev)
-> >  		return -ENOMEM;
-> >  
-> >  	mutex_init(&param->lock);
-> > +	param->fault_param = kzalloc(sizeof(*param->fault_param), GFP_KERNEL);
-> > +	if (!param->fault_param) {
-> > +		kfree(param);
-> > +		return -ENOMEM;
-> > +	}
-> > +	mutex_init(&param->fault_param->lock);
-> > +	INIT_LIST_HEAD(&param->fault_param->faults);
-> >  	dev->iommu = param;
+On 10.08.2023 20:20, Jeffrey Hugo wrote:
+> On 8/9/2023 1:20 PM, Konrad Dybcio wrote:
+>> The SMMU GDSC doesn't have to be ALWAYS-ON and shouldn't feature the
+>> HW_CTRL flag (it's separate from hw_ctrl_addr).  In addition to that,
+>> it should feature a cxc entry for bimc_smmu_axi_clk and be marked as
+>> votable.
 > 
-> This allocation seems pointless?
+> I appear to have confused HW_CTRL with hw_ctrl_addr.  Thanks for fixing that.
 > 
-> If we always allocate the fault param then just don't make it a
-> pointer in the first place.
+> I recall I made it always-on for display handoff.  The bootloader on the laptops will enable the display, which means the MDP is active and using the SMMU.  The SMMU is powered by the GDSC as you know.  The MDP is going to be polling a framebuffer in DDR, which EFI services (efifb) is going to be updating.  All of this is active during linux boot, which is how the kernel bootlog gets printed on screen.
+This is essentially a missing / mis-configuration from the linux/dt POV and
+I think the consensus for using display without describing it properly with
+mdss has been to do one of:
+
+- adding a simple-framebuffer node with all the necessary clocks/pds
+- adding "clk_ignore_unused pd_ignore_unused" to your cmdline
+
 > 
-> The appeal of allocation would be to save a few bytes in the common
-> case that the driver doesn't support faulting.
+> If I remember right, the GDSC will be registered.  When it is done probing, there will be no consumers.  So the Linux framework will step in and turn it off before the consumers come up.  This kills power to the SMMU.  If the SMMU doesn't come back on before the MDP polls DDR again, you get a bus hang and a crash.
+Yep
+
+> I assumed that any msm8998 device would be using the MDP/GPU and thus the SMMU would pretty much always be powered on.
+This flag however bans putting it to sleep when not in use.
+
 > 
-> Which means the driver needs to make some call to enable faulting for
-> a device. In this case I'd continue to lazy free on release like this
-> patch does.
+> I expected this patch to break the laptop.  It does not in my testing. However, I see that I disabled the MMCC node in DT with a todo about the display.  So the GDSC is never registered, and then never gets turned off.  I believe that todo is pending some updates I need to make to the TI DSI/eDP bridge because the I2C port on the bridge is not wired up.  I should really dust that off and complete it.
+Right, so what you have now is a third, untold "solution" to the problem
+described above.. not really a supported configuration as it's not "correct"
 
-For instance allocate the fault_param in iopf_queue_add_device() which
-is the only thing that needs it.
+I'd happily see you wire up the bridge et al though!
 
-Actually probably just merge struct iopf_device_param and
-iommu_fault_param ?
 
-When you call iopf_queue_add_device() it enables page faulting mode,
-does 1 additional allocation for all additional required per-device
-memory and thats it.
+> Regardless, even with the todo addressed, I think removing always-on will still break the laptops unless the bootloader handoff of display was solved and I missed it.
+> 
+> I get that for your usecase, a phone where the bootloader does not init the display, always-on has the potential to burn extra power.  I'm not sure how to make both of us happy through.
+> 
+> Do you have any suggestions?
+Hope my replies above are enough.
 
-Jason
+Konrad
