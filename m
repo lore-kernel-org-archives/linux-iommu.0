@@ -1,111 +1,168 @@
-Received: from mail-pj1-f49.google.com (mail-pj1-f49.google.com [209.85.216.49])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2083.outbound.protection.outlook.com [40.107.94.83])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA0591E1C0
-	for <iommu@lists.linux.dev>; Thu, 10 Aug 2023 16:47:11 +0000 (UTC)
-Received: by mail-pj1-f49.google.com with SMTP id 98e67ed59e1d1-2682e33509bso767247a91.1
-        for <iommu@lists.linux.dev>; Thu, 10 Aug 2023 09:47:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1691686031; x=1692290831;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Z1YxxQSx9jryP/gaiSlpxrcgwKgQeQJEh/0X+pazM0o=;
-        b=ce/9DcrCCwo6KPfVtyNMNZolyHGIshD4DR/Wwxcjvjqlu2XZC2ifdrhTlTMfIbIpeQ
-         9b90fyURIEL5MZ9OfK9porDeciE520+G8QtnkKssJ+XxcxmmKkEaLPYgHq4/SWdDOjy8
-         LlUjLXgVmYkOjGqOVyfTuMXSsLpV2rW7vChHQJrQWZmlTTBgJZJmxuZGZCMimvei99rP
-         ghT4UMiwO3FVTv8qcE912BIbrT9fazw4xMd4nFj5YEFvMO+dnOCEyHVFG65Bia2hYzwq
-         FxjZlGsyOIbe7GeyLd73rYRo4u1SYKYuPYchLPh0qDZ11YpBFSFTWWKehNUhm+P8FcbT
-         uitw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1691686031; x=1692290831;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Z1YxxQSx9jryP/gaiSlpxrcgwKgQeQJEh/0X+pazM0o=;
-        b=jm7ngKAj68Guv1yCyqr1P7tVaQL6r5mTVrw4t77jbeN8ZeExShOxcs2U2sjBtc10hr
-         +mc4VPR6UUN86uR0S3Ir/GDT/KFZhiIXOiOcinMLo/hPvaN6z9GmWlUcmqzpKpegSLzv
-         OXuXgl3UaFX5+fiNMYcPUuXiPFqJ4YAam9Iya7uvoZpswiKF5gUjc5Z4qzQak1LmQoul
-         oNe5facbjLY4LPG+ACyy00mXNa1YYaoaK+2SOyWH4H/KfD5JVpgAz7QcBoOEJXX2ruZX
-         CnGO8ZvV0wS+zPH8X0e28Vq99MfiIzbF9sGyez0Da9c6959Fe1/DeaEKqrF6BfE/juEd
-         ABuQ==
-X-Gm-Message-State: AOJu0YxXv39iSLbfVn9qIKdAodWVdOKNUcNMt1N3d8M4ema/1qz+7JFY
-	D4v5vn27o7k83hlVO88h4QOcdg==
-X-Google-Smtp-Source: AGHT+IEW7khYL0o4UiJXTotcmkvmJTY67L4z884ZB/Rx1B6m1oAZwsmTvmxd1WH9hKUE9QQ1nrFRXQ==
-X-Received: by 2002:a17:90a:ba92:b0:268:300b:ee82 with SMTP id t18-20020a17090aba9200b00268300bee82mr2781613pjr.19.1691686031121;
-        Thu, 10 Aug 2023 09:47:11 -0700 (PDT)
-Received: from ziepe.ca ([206.223.160.26])
-        by smtp.gmail.com with ESMTPSA id 19-20020a17090a1a5300b0026851759e9csm1842689pjl.29.2023.08.10.09.47.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Aug 2023 09:47:10 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1qU8oX-005H7B-4H;
-	Thu, 10 Aug 2023 13:47:09 -0300
-Date: Thu, 10 Aug 2023 13:47:09 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Cc: Baolu Lu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	"Liu, Yi L" <yi.l.liu@intel.com>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A923B1E1C0
+	for <iommu@lists.linux.dev>; Thu, 10 Aug 2023 17:14:51 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Ty0Cy7bwu6EDuCtwqH/w4q9aX2rPM9N6HJiflY3SKo6dOpSNYM0oasDn4uCG1sltxQE52UGjI+muxeDr3ri4tjXEVGDGwCbebf/wU9E2IUFu5hLM9Zue6ZO7QuYGgY+vGaChru+lkqhzeNtBO9lNdvKl25WqHS5XoF+TfMwyJgc+4sEjmI3d07BbELLo2NJyrUMdSgvkM0xPemNTRYBhiXj7J0g1PcurJFYBAF3egePnyHX8Nun56r1XGqKz7TWQ9Dpk0SFgbLhirgY1dbczjKfW3KxbhbSt3k2L8gZgTFGjWbNBKNGo4tCItLm3ca60xPz75FJt2cl5DWHuLNqeQA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Vgt/Mpcs8ArLfngkU8MD9Z9frW7tGAhbmUOzS59+OLE=;
+ b=Uhm+Q3TpwFfjx+hkEx5NoI2IYSiQ4ikvmzGsJORuxDWPg5CpNtnYpGucISa2byNJ7g9/EOl+Pf1QsadF8mGZQIOBnjoczSLOS+soq2NElxjSyOHRGSf+3Rq0AUW7FRLUsMpzMOqEp5llrIKxlmvoVogJqGAUao/tQyBcJJEzz0IUFWA7avQP2zq4gXSz6mH2U7bVosT1Uc9+21/cQxP07cq4lcjxDH9516+fa49vUHuaBTI4EjELTS849HdTqupjh+L9QTu0DyRBK3mKNDXDGN2k0otAxsdrpBZRW1xlpGWQSYUJJTvc4Ax+30Qj1FI/ZqlqldrF0c4hg/x36Opikw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.118.233) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Vgt/Mpcs8ArLfngkU8MD9Z9frW7tGAhbmUOzS59+OLE=;
+ b=XuhngiCuv5DIMGYBQZe15KBKDk/hTKRsenGWuyCn9J9f/TPYW+o1YF/2VQeS2G5mtqGE97o0w3utWhNPmspq/c6E4vGcmPrN/RwWA1ztOrnCW3g4VIEyw4EnFdOrmzQj+JGR19f42KBG/66p4Il7zhHV9HxDJ/Nejoft9a3pA8+wFpGmT3+MiRQcs98lQmtoF75A8aw2lKNSE3uVXnTGdqdv34jHr3+akaMbph5t+/ccrJhyCYjQW4XsYhJ1A4h57EVPiWRz7CjLF1apO3eKupesCTTdMDaLZH6eCyXk2TA3gmpVIVPkRfbfcpQWzFLV+O156hGrewqemu56yJDKnw==
+Received: from MW4PR03CA0048.namprd03.prod.outlook.com (2603:10b6:303:8e::23)
+ by CH3PR12MB9195.namprd12.prod.outlook.com (2603:10b6:610:1a3::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6652.30; Thu, 10 Aug
+ 2023 17:14:49 +0000
+Received: from CO1PEPF000044F7.namprd21.prod.outlook.com
+ (2603:10b6:303:8e:cafe::1d) by MW4PR03CA0048.outlook.office365.com
+ (2603:10b6:303:8e::23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6652.30 via Frontend
+ Transport; Thu, 10 Aug 2023 17:14:49 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.233) by
+ CO1PEPF000044F7.mail.protection.outlook.com (10.167.241.197) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6699.0 via Frontend Transport; Thu, 10 Aug 2023 17:14:49 +0000
+Received: from drhqmail202.nvidia.com (10.126.190.181) by mail.nvidia.com
+ (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Thu, 10 Aug 2023
+ 10:14:40 -0700
+Received: from drhqmail201.nvidia.com (10.126.190.180) by
+ drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.37; Thu, 10 Aug 2023 10:14:39 -0700
+Received: from Asurada-Nvidia (10.127.8.13) by mail.nvidia.com
+ (10.126.190.180) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37 via Frontend
+ Transport; Thu, 10 Aug 2023 10:14:38 -0700
+Date: Thu, 10 Aug 2023 10:14:37 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: "Tian, Kevin" <kevin.tian@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
+	"joro@8bytes.org" <joro@8bytes.org>, "alex.williamson@redhat.com"
+	<alex.williamson@redhat.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>, "cohuck@redhat.com"
+	<cohuck@redhat.com>, "eric.auger@redhat.com" <eric.auger@redhat.com>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>, "mjrosato@linux.ibm.com"
+	<mjrosato@linux.ibm.com>, "chao.p.peng@linux.intel.com"
+	<chao.p.peng@linux.intel.com>, "yi.y.sun@linux.intel.com"
+	<yi.y.sun@linux.intel.com>, "peterx@redhat.com" <peterx@redhat.com>,
+	"jasowang@redhat.com" <jasowang@redhat.com>,
+	"shameerali.kolothum.thodi@huawei.com"
+	<shameerali.kolothum.thodi@huawei.com>, "lulu@redhat.com" <lulu@redhat.com>,
+	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
 	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 08/12] iommu: Prepare for separating SVA and IOPF
-Message-ID: <ZNUUjXMrLyU3g5KM@ziepe.ca>
-References: <20230727054837.147050-1-baolu.lu@linux.intel.com>
- <20230727054837.147050-9-baolu.lu@linux.intel.com>
- <BN9PR11MB52769D22490BB09BB25E0C2E8C08A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <ZNKMz04uhzL9T7ya@ziepe.ca>
- <BN9PR11MB527629949E7D44BED080400C8C12A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <0771c28d-1b31-003e-7659-4f3f3cbf5546@linux.intel.com>
- <BN9PR11MB527686C925E33E0DCDF261CB8C13A@BN9PR11MB5276.namprd11.prod.outlook.com>
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>, "Duan,
+ Zhenzhong" <zhenzhong.duan@intel.com>
+Subject: Re: [PATCH v4 09/12] iommu/vt-d: Add iotlb flush for nested domain
+Message-ID: <ZNUa/VmeiIo0YA0v@Asurada-Nvidia>
+References: <BN9PR11MB5276BFFEC7E12EEBD4503BF08C12A@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <DS0PR11MB7529C3646E38542457D7B75DC312A@DS0PR11MB7529.namprd11.prod.outlook.com>
+ <BN9PR11MB5276912120F662498910A1D48C12A@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <DS0PR11MB7529C310FAEA61B6E7988629C312A@DS0PR11MB7529.namprd11.prod.outlook.com>
+ <ZNO92PIx2IQ70+DY@nvidia.com>
+ <ZNPlGd4/72dahSs4@Asurada-Nvidia>
+ <ZNPmpW3/zDnjqxyU@nvidia.com>
+ <ZNP0UKGU6id5wfc6@Asurada-Nvidia>
+ <BN9PR11MB527683351B687B97AB84B51B8C13A@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <ZNUI0D7ZMvLWlBNx@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <BN9PR11MB527686C925E33E0DCDF261CB8C13A@BN9PR11MB5276.namprd11.prod.outlook.com>
+In-Reply-To: <ZNUI0D7ZMvLWlBNx@nvidia.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CO1PEPF000044F7:EE_|CH3PR12MB9195:EE_
+X-MS-Office365-Filtering-Correlation-Id: effefcfb-ffe2-4752-0e15-08db99c54d8f
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	1GYsI/53v8xMfDc4L7h/H0CmH/qXPY0XP0kpaG4r8lUMqEIy0ljq5+pM20nmOHGmMIHXSqLbPtLCqeh0buGZ4fSif6tI4ogyF1MDYbvt2MiGr+NUVIHySAr06CtlSpl4j5L5VBJIQI/L5JAuw/5S33u/MXQAZy7Mvw6IoAnXleCoeLRRbmNXvHYIN1rw2yTKpRl3KQC0lSIzey189ViU97FfvkC4j1c02+WrRzzoC/zJC5bWJCcoYSALQN1SmSxpPswZMok0+k4hfvG3kktRApS45XuXy7YOHjoKO2eLtvpDwAnq6I8CVSlg0uYwgDuVXhnX4UmqzVSV8Hi1xHuRx7j3u8Q0XCnBexyEEVpdNcPOaVQNAkju9JcFOKgQZQ0m/FgAAdouqrCwLsEXIw7MOxFmVi1LdBjpeIEodFTM157vkZHFeSoIoiVx0H5KsQDTuGBLDJWz+xdB54aeeJGrk/co09mL72PMUcJ6D4q5g14cTGXLOJEFnS6TEOMOneIkZGXzqRcAIf2efKAin3cB/BmHWHgtgIP9v6YWCqzVOXvvCtpSObNa8Q2JxufBBIlSqFX96K42o7x+/RjfwojTJNFpQjkqkIYjjx63ycv49XUukq/sYpiltpEpjuXb9FS2otDWgEmZ5zaH8d/yP7cRgNvkpDGFNzcyWz2SboodLEDCwO2gFXoijLtlwDhtuj2hy0j4nIL4z0bcp/sT8rSAODRdcAnwFwj6mJui9wM9J+evsLnuGDUCIWaviFM+h2qe
+X-Forefront-Antispam-Report:
+	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(136003)(396003)(39860400002)(376002)(346002)(451199021)(186006)(1800799006)(82310400008)(36840700001)(46966006)(40470700004)(40460700003)(4326008)(6636002)(82740400003)(7416002)(356005)(7636003)(336012)(33716001)(41300700001)(70586007)(36860700001)(70206006)(40480700001)(47076005)(5660300002)(55016003)(426003)(83380400001)(316002)(54906003)(9686003)(8936002)(8676002)(6862004)(86362001)(2906002)(478600001)(26005);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Aug 2023 17:14:49.1103
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: effefcfb-ffe2-4752-0e15-08db99c54d8f
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	CO1PEPF000044F7.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR12MB9195
 
-On Thu, Aug 10, 2023 at 02:35:40AM +0000, Tian, Kevin wrote:
-> > From: Baolu Lu <baolu.lu@linux.intel.com>
-> > Sent: Wednesday, August 9, 2023 6:41 PM
+On Thu, Aug 10, 2023 at 12:57:04PM -0300, Jason Gunthorpe wrote:
+> On Thu, Aug 10, 2023 at 02:49:59AM +0000, Tian, Kevin wrote:
+> > > From: Nicolin Chen <nicolinc@nvidia.com>
+> > > Sent: Thursday, August 10, 2023 4:17 AM
+> > > 
+> > > On Wed, Aug 09, 2023 at 04:19:01PM -0300, Jason Gunthorpe wrote:
+> > > > On Wed, Aug 09, 2023 at 12:12:25PM -0700, Nicolin Chen wrote:
+> > > > > On Wed, Aug 09, 2023 at 01:24:56PM -0300, Jason Gunthorpe wrote:
+> > > > > > Similarly for managing the array of invalidation commands.
+> > > > >
+> > > > > You mean an embedded uptr inside a driver user data struct right?
+> > > > > Sure, that should go through the new helper too.
+> > > >
+> > > > If we are committed that all drivers have to process an array then put
+> > > > the array in the top level struct and pass it in the same user_data
+> > > > struct and use another helper to allow the driver to iterate through
+> > > > it.
+> > > 
+> > > I see. Both VTD and SMMU pass uptr to the arrays of invalidation
+> > > commands/requests. The only difference is that SMMU's array is a
+> > > ring buffer other than a plain one indexing from the beginning.
+> > > But the helper could take two index inputs, which should work for
+> > > VTD case too. If another IOMMU driver only supports one request,
+> > > rather than a array of requests, we can treat that as a single-
+> > > entry array.
+> > > 
 > > 
-> > On 2023/8/9 8:02, Tian, Kevin wrote:
-> > >> From: Jason Gunthorpe <jgg@ziepe.ca>
-> > >> Sent: Wednesday, August 9, 2023 2:43 AM
-> > >>
-> > >> On Thu, Aug 03, 2023 at 08:16:47AM +0000, Tian, Kevin wrote:
-> > >>
-> > >>> Is there plan to introduce further error in the future? otherwise this
-> > should
-> > >>> be void.
-> > >>>
-> > >>> btw the work queue is only for sva. If there is no other caller this can be
-> > >>> just kept in iommu-sva.c. No need to create a helper.
-> > >>
-> > >> I think more than just SVA will need a work queue context to process
-> > >> their faults.
-> > >>
-> > >
-> > > then this series needs more work. Currently the abstraction doesn't
-> > > include workqueue in the common fault reporting layer.
-> > 
-> > Do you mind elaborate a bit here? workqueue is a basic infrastructure in
-> > the fault handling framework, but it lets the consumers choose to use
-> > it, or not to.
-> > 
+> > I like this approach.
 > 
-> My understanding of Jason's comment was to make the workqueue the
-> default path instead of being opted by the consumer.. that is my 1st
-> impression but might be wrong...
+> Do we need to worry about the ring wrap around? It is already the case
+> that the VMM has to scan the ring and extract the invalidation
+> commands, wouldn't it already just linearize them?
 
-Yeah, that is one path. Do we have anyone that uses this that doesn't
-want the WQ? (actually who even uses this besides SVA?)
+I haven't got the chance to send the latest vSMMU series but I
+pass down the raw user CMDQ to the host to go through, as it'd
+be easier to stall the consumer index movement when a command
+in the middle fails.
 
-Jason
+> Is there a use case for invaliation only SW emulated rings, and do we
+> care about optimizing for the wrap around case?
+
+Hmm, why a SW emulated ring?
+
+Yes for the latter question. SMMU kernel driver has something
+like Q_WRP and other helpers, so it wasn't difficult to process
+the user CMDQ in the same raw form. But it does complicates the
+common code if we want to do it there.
+
+Thanks
+Nic
