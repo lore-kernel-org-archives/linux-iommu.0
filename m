@@ -1,167 +1,85 @@
-Received: from mail-ed1-f45.google.com (mail-ed1-f45.google.com [209.85.208.45])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.151])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 38F2337B
-	for <iommu@lists.linux.dev>; Thu, 10 Aug 2023 00:57:33 +0000 (UTC)
-Received: by mail-ed1-f45.google.com with SMTP id 4fb4d7f45d1cf-5223910acf2so3119a12.0
-        for <iommu@lists.linux.dev>; Wed, 09 Aug 2023 17:57:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1691629052; x=1692233852;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=pENb1t85EdhZr2S/NRQldNOIuogVZkW2tw0vSMoDYS4=;
-        b=DcyoSSCwJwp9vWokfe6dcIcLr97RyCLwBKjCbSskay0ACsx3/Izc9hLNsxwGuAVej/
-         wB2ynNNpnWSk9rjEmycLvjbxhdjuGCr4gLKPNdtYax8aYtgx0roYCOdnsQxs2XvY8Kyz
-         zm4+OHdnDZS1cSMHKnWNLEjHVbE+tLFR1H4cuVpsMI7fqGM3Rm7czFUMk2/pAODSkQ8h
-         qpa6v2aLXK8WqWZ0zBc0vDg3ZDBlNkD+nEgNFbauOexdn14Eul3ITgPmwpU+k0aY3DlC
-         U695WvJ65wCg4BdHjT1N2bzpnjEz1BPQGdzsN8A21gHFmb8YSwAg7Z0RT6ewZLnRVqRo
-         JX5g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1691629052; x=1692233852;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=pENb1t85EdhZr2S/NRQldNOIuogVZkW2tw0vSMoDYS4=;
-        b=PBT68kNT2WFKtkueRGKfeho+CnZcXma+qdOdf/rODEaA478bArO2h20MHOUBgwVKsi
-         m6OlNoW9eN/tQQZCXiJHGt+kLpto3K8p3S+um1YdxyK1WbEo31v9yOb9xTTlukJvbhI7
-         WUHVrCSLt9ZnBx0LgSQpuCilxBisOoyfabYO42CYfaSmwO0ZzNY6pJN6v3LrH74vJoG9
-         FWh4FLnPrZe6G3HqlPGQpApSjOXwQacbR9Gp2Ra1OzDKtJSDqZYMPaaQvAeUKu2PvSXo
-         pjgJxnfMsHnoWML3jilaSryVRcZveUOv09SiglLEjwQBYJ5K2tq5hvWwtV3LtJmkhKdF
-         tvyQ==
-X-Gm-Message-State: AOJu0Yzy53drW8G892dJSVEtidWDBf36RdSKJ5I5i1FoxJiLZHgp/mod
-	BKRRfBxdMeyAfyJITAcuCeHzXfRh6MR54qAqsxyl
-X-Google-Smtp-Source: AGHT+IGC3Ojhu3H3wyaJnO0AFrfMJr5XHWFXJ1jg2Nd0krAXKutumnTRxviNOopna7nevL3OGuuOsnupTL3vhP1snHY=
-X-Received: by 2002:a50:99db:0:b0:522:28a1:2095 with SMTP id
- n27-20020a5099db000000b0052228a12095mr191965edb.3.1691629052118; Wed, 09 Aug
- 2023 17:57:32 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C8CB634
+	for <iommu@lists.linux.dev>; Thu, 10 Aug 2023 01:23:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1691630614; x=1723166614;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=I3CngUi8vhKHabYkxIW1a+jmYrp3dBujJNCcldodz6s=;
+  b=lfxazE4ns1iGajA7g63GkfRJHQgAKXLKrk2g2A+SIjEJAr0tKWHpSGy6
+   zECEGTsS9+UHi5oiTkSH3DfOFft15R+OsuwsTo0IulbfPT6TwI9wxou/l
+   Q0Sw+qqRahoLV1zl4RkBHUCUanZFgeAtoKwbwJCEY59ndfM7VslADyL+y
+   UUOoUUpNG9ocgDXIwh0Zbs4G0SHRWw4PV7Q8sE6bipiFSGUMjm42E+V/o
+   URma/EabzeN3rtd8dHZEjOhwfylNIngASLtecNUj7lS/fHihVI/adTXYN
+   EpD595/EgY4ncRChlbSMsaUN8vFVMMcFMzK1ndPTUINOlyg1CVEepE1q4
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10797"; a="351573639"
+X-IronPort-AV: E=Sophos;i="6.01,160,1684825200"; 
+   d="scan'208";a="351573639"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Aug 2023 18:23:28 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10797"; a="978601698"
+X-IronPort-AV: E=Sophos;i="6.01,160,1684825200"; 
+   d="scan'208";a="978601698"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.254.214.239]) ([10.254.214.239])
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Aug 2023 18:23:25 -0700
+Message-ID: <84ee4ce8-8589-68da-b105-f96c961ade16@linux.intel.com>
+Date: Thu, 10 Aug 2023 09:23:23 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <1690598115-26287-1-git-send-email-quic_pintu@quicinc.com>
- <20230731112155.GA3662@lst.de> <CAOuPNLjnfq1JefngtNrg0Q+JdMTSRz+eEqxGQJFfx9+af+k9WA@mail.gmail.com>
- <20230801171838.GA14599@lst.de> <CANDhNCq+3OEosUcQJ5GFgk+5OyG+JqXKM43UAo0aPz-V27OgAA@mail.gmail.com>
- <20230802094725.GA28241@lst.de> <CAOuPNLjAOk0BOXDcjbY+evX_uxbZyptrJXMf0ULhReECzEX0CQ@mail.gmail.com>
- <CAOuPNLjn3b3YSgy=ObnF+cE7kj-9vdZ+6fFzMp-bJYLFq3MgWw@mail.gmail.com>
-In-Reply-To: <CAOuPNLjn3b3YSgy=ObnF+cE7kj-9vdZ+6fFzMp-bJYLFq3MgWw@mail.gmail.com>
-From: John Stultz <jstultz@google.com>
-Date: Wed, 9 Aug 2023 17:57:19 -0700
-Message-ID: <CANDhNCpJ_di5sjyExPw8itoSOfSoG5syy-t8CmKHzHBSp4qqFQ@mail.gmail.com>
-Subject: Re: [PATCH v2] dma-contiguous: define proper name for global cma region
-To: Pintu Agarwal <pintu.ping@gmail.com>
-Cc: Christoph Hellwig <hch@lst.de>, Pintu Kumar <quic_pintu@quicinc.com>, linux-kernel@vger.kernel.org, 
-	akpm@linux-foundation.org, linux-mm@kvack.org, m.szyprowski@samsung.com, 
-	robin.murphy@arm.com, iommu@lists.linux.dev, 
-	Sumit Semwal <sumit.semwal@linaro.org>, 
-	Benjamin Gaignard <benjamin.gaignard@collabora.com>, Liam Mark <lmark@codeaurora.org>, 
-	Laura Abbott <labbott@redhat.com>, Brian Starkey <Brian.Starkey@arm.com>, 
-	=?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>, 
-	linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org, 
-	linaro-mm-sig@lists.linaro.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.14.0
+Cc: baolu.lu@linux.intel.com, Tina Zhang <tina.zhang@intel.com>,
+ Kevin Tian <kevin.tian@intel.com>, Michael Shavit <mshavit@google.com>,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/5] Share sva domains with all devices bound to a mm
+To: Jason Gunthorpe <jgg@ziepe.ca>
+References: <20230808074944.7825-1-tina.zhang@intel.com>
+ <184044ad-880f-5452-727b-f7fd18330c22@linux.intel.com>
+ <ZNOmsfE3Eheuelv8@ziepe.ca>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <ZNOmsfE3Eheuelv8@ziepe.ca>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Wed, Aug 9, 2023 at 8:04=E2=80=AFAM Pintu Agarwal <pintu.ping@gmail.com>=
- wrote:
->
-> Hi,
->
-> On Thu, 3 Aug 2023 at 23:04, Pintu Agarwal <pintu.ping@gmail.com> wrote:
-> >
-> > Hi,
-> >
-> > On Wed, 2 Aug 2023 at 15:17, Christoph Hellwig <hch@lst.de> wrote:
-> > >
-> > > On Tue, Aug 01, 2023 at 10:39:04PM -0700, John Stultz wrote:
-> > > > So, forgive me, I've not had a chance to look into this, but my
-> > > > recollection was "reserved" is the name we see on x86, but other na=
-mes
-> > > > are possibly provided via the dts node?
-> > >
-> > No, I think "reserved" is the name hard-coded (for all arch) in Kernel
-> > for global-cma.
-> > So, I don't think this is x86 specific. I am checking on arm32 itself.
-> > When we can dma_alloc_coherent we see these in the logs (if dts region
-> > is not present).
-> > cma: cma_alloc(cma (ptrval), name: reserved, count 64, align 6)
-> > Now, with this change we will see this:
-> > cma: cma_alloc(cma (ptrval), name: global-cma-region, count 64, align 6=
-)
-> >
-> > > Indeed, dma_contiguous_default_area can also be set through
-> > > rmem_cma_setup, which then takes the name from DT.
-> > >
-> > I think this is a different case. If DT entry is present we get this:
-> > Reserved memory: created CMA memory pool at 0x98000000, name: name:
-> > linux,cma, size 128 MiB
-> > cma: cma_alloc(cma (ptrval), name: linux,cma, count 64, align 6)
-> >
-> > Here we are talking about the default hard-coded name in Kernel code
-> > if DT is not defined.
-> > So, in one of the boards, this DT entry was not present and it shows
-> > as "reserved".
-> >
-> > > > I believe on the hikey board its "linux,cma" is the name, so forcin=
-g
-> > > > it to reserved would break that.
-> > > >
-> > Yes, everywhere in the DT it's defined as "linux,cma".
-> > You mean this also should be changed to "linux,cma-global-region"
-> > everywhere with this change ?
-> >
-> > > > Maybe instead add a compat config option to force the cma name (so =
-x86
-> > > > can set it to "default" if needed)?
-> > >
-> > Yes, having it in config is also a good option instead of hard-coding i=
-n Kernel.
-> > >
-> > > I think we'll just need to leave it as-is.  I with dma-heaps had neve=
-r
-> > > exposed the name to userspace, but we'll have to l=D1=96ve with it no=
-w.
-> >
-> > Can you point me to the userspace utility we are talking about here ?
-> > I think we should not worry much about userspace name exposure.
-> > I guess it should fetch whatever is declared in Kernel or DTS, right ?
->
-> Just to follow-up on this.
-> For now, can we change the Kernel hard-coded value from "reserved" to
-> "global-cma-region" ?
-> Later, for the DTS defined name let it be "linux,cma" or change that
-> also to "linux,global-cma-region" ?
->
-> Will this make sense ?
+On 2023/8/9 22:46, Jason Gunthorpe wrote:
+> On Wed, Aug 09, 2023 at 08:18:18AM +0800, Baolu Lu wrote:
+>> On 2023/8/8 15:49, Tina Zhang wrote:
+>>> A sva domain's lifetime begins with binding a device to a mm and ends
+>>> by releasing all the bound devices from that sva domain. Technically,
+>>> there could be more than one sva domain identified by the mm PASID for
+>>> the use of bound devices issuing DMA transactions.
+>>>
+>>> To support mm PASID 1:n with sva domains, each mm needs to keep both a
+>>> reference list of allocated sva domains and the corresponding PASID.
+>>> However, currently, mm struct only has one pasid field for sva usage,
+>>> which is used to keep the info of an assigned PASID. That pasid field
+>>> cannot provide sufficient info to build up the 1:n mapping between PASID
+>>> and sva domains.
+>> Is it more appropriate to have the same life cycle for sva domain and mm
+>> pasid? I feel that they represent the same thing, that is, the address
+>> space shared by mm to a device.
+> No! The iommu_domain and the PASID are totally seperate objects with
+> their own lifecycles.
+> 
+> The SVA domain should NEVER be tied to the mm enqcmd PASID.
 
-Apologies, sorry for not responding to your earlier message, it slipped by.
+Okay. Fair enough.
 
-So, the concern is there may be allocators (like gralloc in Android)
-that allocate from the CMA region via the dma-buf heaps interface.
+> 
+> We might decide to free all the domains and keep the PASID around (can
+> we even revoke the enqcmd pasid while the MM is alive?)
 
-So by changing the name (either hardcoded or DTS names), you'll change
-the user-visible heap name, potentially breaking those userland
-allocators.
+We ever did this and was removed to make code simple.
 
-Now, the dmabuf heaps are designed to be like other dynamic devices
-(like disks or partitions), which may be different from device to
-device. However, changing the name would still be an inconvenience for
-folks who have hard-coded that name in their userland allocator which
-was designed for a single device.  This would be similar to the old
-issue of an existing fstab breaking from the ide (hda) to sata (sda)
-driver transition.  Or similar to what folks went through a while back
-with network device names changing from eth0 -> ens0 or whatever.
-
-That said, most android devices historically haven't upreved to new
-kernel versions wihtout major userspace changes, so the impact might
-be minimal, but that is likely to change in the future so we should be
-careful here.
-
-What I'd propose instead is to either leave it alone as Christoph
-suggested, or have a build option/boot argument so folks can preserve
-the legacy name if they need.
-
-thanks
--john
+Best regards,
+baolu
