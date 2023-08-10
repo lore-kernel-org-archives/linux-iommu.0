@@ -1,64 +1,63 @@
-Received: from mail-pl1-f171.google.com (mail-pl1-f171.google.com [209.85.214.171])
+Received: from mail-pg1-f172.google.com (mail-pg1-f172.google.com [209.85.215.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DDD7520FB7
-	for <iommu@lists.linux.dev>; Thu, 10 Aug 2023 16:30:49 +0000 (UTC)
-Received: by mail-pl1-f171.google.com with SMTP id d9443c01a7336-1bbf8cb694aso9693095ad.3
-        for <iommu@lists.linux.dev>; Thu, 10 Aug 2023 09:30:49 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C80261E1DA
+	for <iommu@lists.linux.dev>; Thu, 10 Aug 2023 16:36:38 +0000 (UTC)
+Received: by mail-pg1-f172.google.com with SMTP id 41be03b00d2f7-565403bda57so755415a12.3
+        for <iommu@lists.linux.dev>; Thu, 10 Aug 2023 09:36:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1691685049; x=1692289849;
+        d=ziepe.ca; s=google; t=1691685398; x=1692290198;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=BwRQL+AWUvKim0GQsGEOotK3a8TzoberHriHLEkkia4=;
-        b=mzJNdH7j3KXWCdbERyami1eWUZrwE1hCaBSAo2i2Oto6L8ZP39PhBlRnCfAsbbulgv
-         eWCxmIW+10HSi6CFKRHF3Zs2BZo7EHHSnVqypjjcyFCCaEyu64D9xJ8wpGX/uEH8Ma6O
-         y8LsxBXxMvGK/y1/PHiUlqtc/WXJFgih0Q1E9W43g/xd5E51ZDLkuveYyZZNgVqpBL2t
-         a4IJ/+dyfJkqZAiec1G/jo9wG4imwZCXdQn/yDJVlhdzVL83GMHz0pId5BEMkLS6qEEj
-         ZeTFSEhHNiApWuGK31f60wQ3Fjjct7i8IniyRZOSpLnmyRyeQe9X5tZZtt6RYeJiWbZP
-         +4Zw==
+        bh=OAmLYynJNs/JRcQ7yD4Mxp1X2smKrNsOj/BixVS0HCg=;
+        b=EwzA123zqRuBCUp3mBzJZO/MCbDuhKtsKqOmqiiUSIPF7GW4sIzA1kmam5Sv9EbhcS
+         sujDPRcIz2RJpmGrkkH41TanVkT4nF3kNCZC5LEj7uB+aqXFFzMX3lS3dXxmR5NtirD5
+         i7/iErfrBWWOuvMuPIvvjBEe6UsaQgkB483TPaJBcCWdehU6xkcI96tyODjzX2kZHt3Y
+         RBgqE4idU6N1zrS1q/QCqELnR4jSLrrUCXBsPiixpRfgS7zDR7LGo1bKpnfUN/pwS8ve
+         XFHtPPLxsjGxol0TuAREGFDa2+V5moEylhvLtnBs055TnHHCED8pKxZBwg3NOw4sqYzb
+         Q9pw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1691685049; x=1692289849;
+        d=1e100.net; s=20221208; t=1691685398; x=1692290198;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=BwRQL+AWUvKim0GQsGEOotK3a8TzoberHriHLEkkia4=;
-        b=grG++QEnUX2JEmgYrMm9BrgHFp7GzweX6bb+X/MYYYUT3UEKIqiK2F11uC/h/0ylhD
-         /CajN0l1v6aQMCgc8+0ee+CS6GKBBE5vzslJjj0DyUGQdtDxGYdTQry3qFQ537DK1dai
-         6kEghvwF7zzSAFee8s2pjbjFNuF/bNm9EeWSX/dIn9HYM3P28LrPGN8E1bgadRxx5bWW
-         LN7TQdqbD6adC9O65TxRPTy97RSbbi9rzP/Dp4hF0J7D8vWbsi1j/hNiDTIeE9aSB6B5
-         Jp6hOybXqYUCru6ngrcQIZMxe4PUYg5z8ZnHXX6MjspdsaNj0T0i0/QGsuyY01cjOvlp
-         mOIQ==
-X-Gm-Message-State: AOJu0YwlOLvq1XkiV6ZA5p08D2JzWu1lo0nknQhDSQedr5YLCGIjZz5N
-	ACpz7MPXMClOpI/OJr+hyDv3Iw==
-X-Google-Smtp-Source: AGHT+IE+7nKHZqP6buWiqUSlddecY7m4E5CwyR8YNx0+cTrP4l5fwKqhcNkHnbRErSgUOFxWvM8zqg==
-X-Received: by 2002:a17:903:32c8:b0:1bb:9b29:20d9 with SMTP id i8-20020a17090332c800b001bb9b2920d9mr3723397plr.20.1691685049135;
-        Thu, 10 Aug 2023 09:30:49 -0700 (PDT)
+        bh=OAmLYynJNs/JRcQ7yD4Mxp1X2smKrNsOj/BixVS0HCg=;
+        b=L7/GyAAARWGheXLuecruYplF0+/wDOJZWA3hncCj+3wGHvrEVY5mLOT0+foMwbx3FA
+         Qc47T4dr7NAFqn/27UG81+MsUn0X/+F2/b+RO6LmZgJAEdTde+VvM64gob9+mUy6rMO4
+         XixXjKAjHNGFyk4Yrg+EU29kublYKCRjd3ZFFfM715zjEV/3+svtQmfU7QBUzOHybsJ6
+         LcIMkYQ52na6f2BvLuGcDTFBC3XSyQoCxMzjrFBPDJ6lefbWj7boLUtuo0Td3Gq4dlMd
+         87bRWC7pMz6iirm9YEGup8jnfL4gJ/qFUeXQ1akO5cce7SHO/Aex96pvbNPHKMCqNpnl
+         FFbg==
+X-Gm-Message-State: AOJu0Yw5YbhYk0xoTEDx+4ri4kbplklHDQopA/Y7Aj+DogTxVIsx8HFV
+	zlAmS9Y3XBE8QZd7h6ZBOcZxOQ==
+X-Google-Smtp-Source: AGHT+IFqbDsbenFQiKdalqSq7WrY8AerqUj0j1LAUzLPJBk15OoizZx4GyWgXgpjeCFbG5P0N/3hNg==
+X-Received: by 2002:a17:90a:a50a:b0:268:5fd8:d8ff with SMTP id a10-20020a17090aa50a00b002685fd8d8ffmr2324584pjq.0.1691685398017;
+        Thu, 10 Aug 2023 09:36:38 -0700 (PDT)
 Received: from ziepe.ca ([206.223.160.26])
-        by smtp.gmail.com with ESMTPSA id q3-20020a170902788300b001bbd8cf6b57sm1980870pll.230.2023.08.10.09.30.48
+        by smtp.gmail.com with ESMTPSA id 9-20020a17090a190900b00268032f6a64sm3828826pjg.25.2023.08.10.09.36.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Aug 2023 09:30:48 -0700 (PDT)
+        Thu, 10 Aug 2023 09:36:37 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.95)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1qU8Yh-005Gyn-01;
-	Thu, 10 Aug 2023 13:30:47 -0300
-Date: Thu, 10 Aug 2023 13:30:46 -0300
+	id 1qU8eI-005H23-NJ;
+	Thu, 10 Aug 2023 13:36:34 -0300
+Date: Thu, 10 Aug 2023 13:36:34 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: "Tian, Kevin" <kevin.tian@intel.com>,
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Cc: Baolu Lu <baolu.lu@linux.intel.com>,
 	"Zhang, Tina" <tina.zhang@intel.com>,
 	Michael Shavit <mshavit@google.com>,
 	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
 	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 Subject: Re: [PATCH 2/5] iommu: Call helper function to get assigned pasid
  value
-Message-ID: <ZNUQtluLWek3PnEn@ziepe.ca>
+Message-ID: <ZNUSEiXTYbV7ML6x@ziepe.ca>
 References: <20230808074944.7825-1-tina.zhang@intel.com>
  <20230808074944.7825-3-tina.zhang@intel.com>
  <f3d8692e-b13d-97ee-2288-c2be1858dcfa@linux.intel.com>
  <BN9PR11MB52767F29A6C11157659D375B8C12A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <c0e94e88-94b8-69de-69c8-ed132ae28951@linux.intel.com>
- <ZNOnOGTfpXzrrRTz@ziepe.ca>
- <84494c88-66eb-a731-fbf0-4a83fb9102f1@linux.intel.com>
+ <ZNOH9lPdTnltb9JZ@ziepe.ca>
+ <BN9PR11MB5276A5E619DF6638677DFFA58C13A@BN9PR11MB5276.namprd11.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -67,24 +66,31 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <84494c88-66eb-a731-fbf0-4a83fb9102f1@linux.intel.com>
+In-Reply-To: <BN9PR11MB5276A5E619DF6638677DFFA58C13A@BN9PR11MB5276.namprd11.prod.outlook.com>
 
-On Thu, Aug 10, 2023 at 09:37:09AM +0800, Baolu Lu wrote:
+On Thu, Aug 10, 2023 at 07:52:52AM +0000, Tian, Kevin wrote:
 
-> > The core could put the mm_notifier in a common iommu_domain_sva struct
-> > and it could stick in the driver's invalidate ops, that would be a
-> > nice simplification (and discourage drivers from doing the crazy
-> > things they are currently doing)
+> > The driver should rely on there being exactly one iommu_domain for SVA
+> > per mm so it can hang the mm_notifier off the iommu_domain
 > 
-> Yes. So the iommu driver can retrieve the sva domain from struct
-> mmu_notifier. The callback implementation will still be domain centric.
-> Hence, there will be no need to use mm.
+> I'm confused. Isn't this series trying to allow multiple domains per mm?
 
-Remember the driver always needs the mm as it has to extract the page
-table address from it.
+It is doing both.
 
-At the end of the day installing the notifier is a single call in the
-SVA alloc op, so it may not be worth optimizing beyond allowing
-drivers to do it in their SVA alloc op.
+The main objective is to allow de-duplicating the SVA domains in the
+core code. The driver should be able to assume one SVA domain per
+instance, or even one SVA domain per compatible instance. The driver
+should not do any de-duplication.
+
+But we can't just store a single iommu_domain in the mm_struct - we
+have the same problem as iommufd and we need to create more domains if
+the domains we already have are incompatible with the device.
+
+Arguably this should not happen, and in any sane configuration we
+should have only 1 type of IOMMU driver that needs only 1 SVA domain.
+
+But right now things like SMMUv3 have problems crossing domains across
+instances, so we could have one SVA domain per IOMMU instance until
+that is fixed.
 
 Jason
