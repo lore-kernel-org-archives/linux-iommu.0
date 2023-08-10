@@ -1,185 +1,167 @@
-Received: from ms.lwn.net (ms.lwn.net [45.79.88.28])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f45.google.com (mail-ed1-f45.google.com [209.85.208.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3DB01D2F1
-	for <iommu@lists.linux.dev>; Wed,  9 Aug 2023 21:28:15 +0000 (UTC)
-Received: from localhost (unknown [IPv6:2601:281:8300:73::5f6])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by ms.lwn.net (Postfix) with ESMTPSA id 5DF4E218;
-	Wed,  9 Aug 2023 21:20:44 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net 5DF4E218
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
-	t=1691616044; bh=D3OCzS/TjQzlx859sDe4uhCo8ItizHSPamS05kU7M/E=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-	b=NXwT7fNZt30FAE6/rsWNAIxKfZAnHdE0QNzpPAfTcuuLXJv/8sSeNpRi/YYa5NjJC
-	 JPc/pZIj2m1/iKfmCA6z6g2y88sFf4ZH/bH/4XDB2qcRK5jWAwzLmabxM5iXzuAYwc
-	 gdH4oIFqQIHil75Is17wCUwIlXkrwODoldc2N5n5BFNAkaN5JRNZKvsISIklyJvP2F
-	 4+b3s2bgvKX3Qdk1NsvqoUWqBFM5kFpduA+bStZQdIeCWxvmzzb6PeCz24WoTHyNsu
-	 hckvkWe4mo+JyUGpbBEyCK3lFgQYmdeewhQkWR1ZSjYdvGexm2T+wCrOys5KDkkoTp
-	 DAFJ4ZWqDCc4Q==
-From: Jonathan Corbet <corbet@lwn.net>
-To: Petr Tesarik <petrtesarik@huaweicloud.com>, Stefano Stabellini
- <sstabellini@kernel.org>, Russell King <linux@armlinux.org.uk>, Thomas
- Bogendoerfer <tsbogend@alpha.franken.de>, Thomas Gleixner
- <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov
- <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>, "maintainer:X86
- ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>, "H. Peter Anvin"
- <hpa@zytor.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael
- J. Wysocki" <rafael@kernel.org>, Juergen Gross <jgross@suse.com>,
- Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>, Christoph Hellwig
- <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy
- <robin.murphy@arm.com>, Christoph Lameter <cl@linux.com>, Pekka Enberg
- <penberg@kernel.org>, David Rientjes <rientjes@google.com>, Joonsoo Kim
- <iamjoonsoo.kim@lge.com>, Andrew Morton <akpm@linux-foundation.org>,
- Vlastimil Babka <vbabka@suse.cz>, Roman Gushchin
- <roman.gushchin@linux.dev>, Hyeonggon Yoo <42.hyeyoo@gmail.com>, Petr
- Tesarik <petr.tesarik.ext@huawei.com>, Andy Shevchenko
- <andriy.shevchenko@linux.intel.com>, Hans de Goede <hdegoede@redhat.com>,
- James Seo <james@equiv.tech>, James Clark <james.clark@arm.com>, Kees Cook
- <keescook@chromium.org>, "moderated list:XEN HYPERVISOR ARM"
- <xen-devel@lists.xenproject.org>, "moderated list:ARM PORT"
- <linux-arm-kernel@lists.infradead.org>, open list
- <linux-kernel@vger.kernel.org>, "open list:MIPS"
- <linux-mips@vger.kernel.org>, "open list:XEN SWIOTLB SUBSYSTEM"
- <iommu@lists.linux.dev>, "open list:SLAB ALLOCATOR" <linux-mm@kvack.org>
-Cc: Roberto Sassu <roberto.sassu@huaweicloud.com>, petr@tesarici.cz
-Subject: Re: [PATCH v7 9/9] swiotlb: search the software IO TLB only if the
- device makes use of it
-In-Reply-To: <adea71bd1fa8660d4c3157a562431ad8127016d4.1690871004.git.petr.tesarik.ext@huawei.com>
-References: <cover.1690871004.git.petr.tesarik.ext@huawei.com>
- <adea71bd1fa8660d4c3157a562431ad8127016d4.1690871004.git.petr.tesarik.ext@huawei.com>
-Date: Wed, 09 Aug 2023 15:20:43 -0600
-Message-ID: <87a5uz3ob8.fsf@meer.lwn.net>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 38F2337B
+	for <iommu@lists.linux.dev>; Thu, 10 Aug 2023 00:57:33 +0000 (UTC)
+Received: by mail-ed1-f45.google.com with SMTP id 4fb4d7f45d1cf-5223910acf2so3119a12.0
+        for <iommu@lists.linux.dev>; Wed, 09 Aug 2023 17:57:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20221208; t=1691629052; x=1692233852;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=pENb1t85EdhZr2S/NRQldNOIuogVZkW2tw0vSMoDYS4=;
+        b=DcyoSSCwJwp9vWokfe6dcIcLr97RyCLwBKjCbSskay0ACsx3/Izc9hLNsxwGuAVej/
+         wB2ynNNpnWSk9rjEmycLvjbxhdjuGCr4gLKPNdtYax8aYtgx0roYCOdnsQxs2XvY8Kyz
+         zm4+OHdnDZS1cSMHKnWNLEjHVbE+tLFR1H4cuVpsMI7fqGM3Rm7czFUMk2/pAODSkQ8h
+         qpa6v2aLXK8WqWZ0zBc0vDg3ZDBlNkD+nEgNFbauOexdn14Eul3ITgPmwpU+k0aY3DlC
+         U695WvJ65wCg4BdHjT1N2bzpnjEz1BPQGdzsN8A21gHFmb8YSwAg7Z0RT6ewZLnRVqRo
+         JX5g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1691629052; x=1692233852;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=pENb1t85EdhZr2S/NRQldNOIuogVZkW2tw0vSMoDYS4=;
+        b=PBT68kNT2WFKtkueRGKfeho+CnZcXma+qdOdf/rODEaA478bArO2h20MHOUBgwVKsi
+         m6OlNoW9eN/tQQZCXiJHGt+kLpto3K8p3S+um1YdxyK1WbEo31v9yOb9xTTlukJvbhI7
+         WUHVrCSLt9ZnBx0LgSQpuCilxBisOoyfabYO42CYfaSmwO0ZzNY6pJN6v3LrH74vJoG9
+         FWh4FLnPrZe6G3HqlPGQpApSjOXwQacbR9Gp2Ra1OzDKtJSDqZYMPaaQvAeUKu2PvSXo
+         pjgJxnfMsHnoWML3jilaSryVRcZveUOv09SiglLEjwQBYJ5K2tq5hvWwtV3LtJmkhKdF
+         tvyQ==
+X-Gm-Message-State: AOJu0Yzy53drW8G892dJSVEtidWDBf36RdSKJ5I5i1FoxJiLZHgp/mod
+	BKRRfBxdMeyAfyJITAcuCeHzXfRh6MR54qAqsxyl
+X-Google-Smtp-Source: AGHT+IGC3Ojhu3H3wyaJnO0AFrfMJr5XHWFXJ1jg2Nd0krAXKutumnTRxviNOopna7nevL3OGuuOsnupTL3vhP1snHY=
+X-Received: by 2002:a50:99db:0:b0:522:28a1:2095 with SMTP id
+ n27-20020a5099db000000b0052228a12095mr191965edb.3.1691629052118; Wed, 09 Aug
+ 2023 17:57:32 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <1690598115-26287-1-git-send-email-quic_pintu@quicinc.com>
+ <20230731112155.GA3662@lst.de> <CAOuPNLjnfq1JefngtNrg0Q+JdMTSRz+eEqxGQJFfx9+af+k9WA@mail.gmail.com>
+ <20230801171838.GA14599@lst.de> <CANDhNCq+3OEosUcQJ5GFgk+5OyG+JqXKM43UAo0aPz-V27OgAA@mail.gmail.com>
+ <20230802094725.GA28241@lst.de> <CAOuPNLjAOk0BOXDcjbY+evX_uxbZyptrJXMf0ULhReECzEX0CQ@mail.gmail.com>
+ <CAOuPNLjn3b3YSgy=ObnF+cE7kj-9vdZ+6fFzMp-bJYLFq3MgWw@mail.gmail.com>
+In-Reply-To: <CAOuPNLjn3b3YSgy=ObnF+cE7kj-9vdZ+6fFzMp-bJYLFq3MgWw@mail.gmail.com>
+From: John Stultz <jstultz@google.com>
+Date: Wed, 9 Aug 2023 17:57:19 -0700
+Message-ID: <CANDhNCpJ_di5sjyExPw8itoSOfSoG5syy-t8CmKHzHBSp4qqFQ@mail.gmail.com>
+Subject: Re: [PATCH v2] dma-contiguous: define proper name for global cma region
+To: Pintu Agarwal <pintu.ping@gmail.com>
+Cc: Christoph Hellwig <hch@lst.de>, Pintu Kumar <quic_pintu@quicinc.com>, linux-kernel@vger.kernel.org, 
+	akpm@linux-foundation.org, linux-mm@kvack.org, m.szyprowski@samsung.com, 
+	robin.murphy@arm.com, iommu@lists.linux.dev, 
+	Sumit Semwal <sumit.semwal@linaro.org>, 
+	Benjamin Gaignard <benjamin.gaignard@collabora.com>, Liam Mark <lmark@codeaurora.org>, 
+	Laura Abbott <labbott@redhat.com>, Brian Starkey <Brian.Starkey@arm.com>, 
+	=?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>, 
+	linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org, 
+	linaro-mm-sig@lists.linaro.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Petr Tesarik <petrtesarik@huaweicloud.com> writes:
-
-> From: Petr Tesarik <petr.tesarik.ext@huawei.com>
+On Wed, Aug 9, 2023 at 8:04=E2=80=AFAM Pintu Agarwal <pintu.ping@gmail.com>=
+ wrote:
 >
-> Skip searching the software IO TLB if a device has never used it, making
-> sure these devices are not affected by the introduction of multiple IO TLB
-> memory pools.
+> Hi,
 >
-> Additional memory barrier is required to ensure that the new value of the
-> flag is visible to other CPUs after mapping a new bounce buffer. For
-> efficiency, the flag check should be inlined, and then the memory barrier
-> must be moved to is_swiotlb_buffer(). However, it can replace the existing
-> barrier in swiotlb_find_pool(), because all callers use is_swiotlb_buffer()
-> first to verify that the buffer address belongs to the software IO TLB.
+> On Thu, 3 Aug 2023 at 23:04, Pintu Agarwal <pintu.ping@gmail.com> wrote:
+> >
+> > Hi,
+> >
+> > On Wed, 2 Aug 2023 at 15:17, Christoph Hellwig <hch@lst.de> wrote:
+> > >
+> > > On Tue, Aug 01, 2023 at 10:39:04PM -0700, John Stultz wrote:
+> > > > So, forgive me, I've not had a chance to look into this, but my
+> > > > recollection was "reserved" is the name we see on x86, but other na=
+mes
+> > > > are possibly provided via the dts node?
+> > >
+> > No, I think "reserved" is the name hard-coded (for all arch) in Kernel
+> > for global-cma.
+> > So, I don't think this is x86 specific. I am checking on arm32 itself.
+> > When we can dma_alloc_coherent we see these in the logs (if dts region
+> > is not present).
+> > cma: cma_alloc(cma (ptrval), name: reserved, count 64, align 6)
+> > Now, with this change we will see this:
+> > cma: cma_alloc(cma (ptrval), name: global-cma-region, count 64, align 6=
+)
+> >
+> > > Indeed, dma_contiguous_default_area can also be set through
+> > > rmem_cma_setup, which then takes the name from DT.
+> > >
+> > I think this is a different case. If DT entry is present we get this:
+> > Reserved memory: created CMA memory pool at 0x98000000, name: name:
+> > linux,cma, size 128 MiB
+> > cma: cma_alloc(cma (ptrval), name: linux,cma, count 64, align 6)
+> >
+> > Here we are talking about the default hard-coded name in Kernel code
+> > if DT is not defined.
+> > So, in one of the boards, this DT entry was not present and it shows
+> > as "reserved".
+> >
+> > > > I believe on the hikey board its "linux,cma" is the name, so forcin=
+g
+> > > > it to reserved would break that.
+> > > >
+> > Yes, everywhere in the DT it's defined as "linux,cma".
+> > You mean this also should be changed to "linux,cma-global-region"
+> > everywhere with this change ?
+> >
+> > > > Maybe instead add a compat config option to force the cma name (so =
+x86
+> > > > can set it to "default" if needed)?
+> > >
+> > Yes, having it in config is also a good option instead of hard-coding i=
+n Kernel.
+> > >
+> > > I think we'll just need to leave it as-is.  I with dma-heaps had neve=
+r
+> > > exposed the name to userspace, but we'll have to l=D1=96ve with it no=
+w.
+> >
+> > Can you point me to the userspace utility we are talking about here ?
+> > I think we should not worry much about userspace name exposure.
+> > I guess it should fetch whatever is declared in Kernel or DTS, right ?
 >
-> Signed-off-by: Petr Tesarik <petr.tesarik.ext@huawei.com>
-> ---
-
-Excuse me if this is a silly question, but I'm not able to figure it out
-on my own...
-
->  include/linux/device.h  |  2 ++
->  include/linux/swiotlb.h |  7 ++++++-
->  kernel/dma/swiotlb.c    | 14 ++++++--------
->  3 files changed, 14 insertions(+), 9 deletions(-)
+> Just to follow-up on this.
+> For now, can we change the Kernel hard-coded value from "reserved" to
+> "global-cma-region" ?
+> Later, for the DTS defined name let it be "linux,cma" or change that
+> also to "linux,global-cma-region" ?
 >
-> diff --git a/include/linux/device.h b/include/linux/device.h
-> index 5fd89c9d005c..6fc808d22bfd 100644
-> --- a/include/linux/device.h
-> +++ b/include/linux/device.h
-> @@ -628,6 +628,7 @@ struct device_physical_location {
->   * @dma_io_tlb_mem: Software IO TLB allocator.  Not for driver use.
->   * @dma_io_tlb_pools:	List of transient swiotlb memory pools.
->   * @dma_io_tlb_lock:	Protects changes to the list of active pools.
-> + * @dma_uses_io_tlb: %true if device has used the software IO TLB.
->   * @archdata:	For arch-specific additions.
->   * @of_node:	Associated device tree node.
->   * @fwnode:	Associated device node supplied by platform firmware.
-> @@ -737,6 +738,7 @@ struct device {
->  #ifdef CONFIG_SWIOTLB_DYNAMIC
->  	struct list_head dma_io_tlb_pools;
->  	spinlock_t dma_io_tlb_lock;
-> +	bool dma_uses_io_tlb;
+> Will this make sense ?
 
-You add this new member here, fine...
+Apologies, sorry for not responding to your earlier message, it slipped by.
 
->  #endif
->  	/* arch specific additions */
->  	struct dev_archdata	archdata;
-> diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
-> index 8371c92a0271..b4536626f8ff 100644
-> --- a/include/linux/swiotlb.h
-> +++ b/include/linux/swiotlb.h
-> @@ -172,8 +172,13 @@ static inline bool is_swiotlb_buffer(struct device *dev, phys_addr_t paddr)
->  	if (!mem)
->  		return false;
->  
-> -	if (IS_ENABLED(CONFIG_SWIOTLB_DYNAMIC))
-> +	if (IS_ENABLED(CONFIG_SWIOTLB_DYNAMIC)) {
-> +		/* Pairs with smp_wmb() in swiotlb_find_slots() and
-> +		 * swiotlb_dyn_alloc(), which modify the RCU lists.
-> +		 */
-> +		smp_rmb();
->  		return swiotlb_find_pool(dev, paddr);
-> +	}
->  	return paddr >= mem->defpool.start && paddr < mem->defpool.end;
->  }
->  
-> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-> index adf80dec42d7..d7eac84f975b 100644
-> --- a/kernel/dma/swiotlb.c
-> +++ b/kernel/dma/swiotlb.c
-> @@ -730,7 +730,7 @@ static void swiotlb_dyn_alloc(struct work_struct *work)
->  
->  	add_mem_pool(mem, pool);
->  
-> -	/* Pairs with smp_rmb() in swiotlb_find_pool(). */
-> +	/* Pairs with smp_rmb() in is_swiotlb_buffer(). */
->  	smp_wmb();
->  }
->  
-> @@ -764,11 +764,6 @@ struct io_tlb_pool *swiotlb_find_pool(struct device *dev, phys_addr_t paddr)
->  	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
->  	struct io_tlb_pool *pool;
->  
-> -	/* Pairs with smp_wmb() in swiotlb_find_slots() and
-> -	 * swiotlb_dyn_alloc(), which modify the RCU lists.
-> -	 */
-> -	smp_rmb();
-> -
->  	rcu_read_lock();
->  	list_for_each_entry_rcu(pool, &mem->pools, node) {
->  		if (paddr >= pool->start && paddr < pool->end)
-> @@ -813,6 +808,7 @@ void swiotlb_dev_init(struct device *dev)
->  #ifdef CONFIG_SWIOTLB_DYNAMIC
->  	INIT_LIST_HEAD(&dev->dma_io_tlb_pools);
->  	spin_lock_init(&dev->dma_io_tlb_lock);
-> +	dev->dma_uses_io_tlb = false;
+So, the concern is there may be allocators (like gralloc in Android)
+that allocate from the CMA region via the dma-buf heaps interface.
 
-...here you initialize it, fine...
+So by changing the name (either hardcoded or DTS names), you'll change
+the user-visible heap name, potentially breaking those userland
+allocators.
 
->  #endif
->  }
->  
-> @@ -1157,9 +1153,11 @@ static int swiotlb_find_slots(struct device *dev, phys_addr_t orig_addr,
->  	list_add_rcu(&pool->node, &dev->dma_io_tlb_pools);
->  	spin_unlock_irqrestore(&dev->dma_io_tlb_lock, flags);
->  
-> -	/* Pairs with smp_rmb() in swiotlb_find_pool(). */
-> -	smp_wmb();
->  found:
-> +	dev->dma_uses_io_tlb = true;
-> +	/* Pairs with smp_rmb() in is_swiotlb_buffer() */
-> +	smp_wmb();
-> +
+Now, the dmabuf heaps are designed to be like other dynamic devices
+(like disks or partitions), which may be different from device to
+device. However, changing the name would still be an inconvenience for
+folks who have hard-coded that name in their userland allocator which
+was designed for a single device.  This would be similar to the old
+issue of an existing fstab breaking from the ide (hda) to sata (sda)
+driver transition.  Or similar to what folks went through a while back
+with network device names changing from eth0 -> ens0 or whatever.
 
-...and here you set it if swiotlb is used.
+That said, most android devices historically haven't upreved to new
+kernel versions wihtout major userspace changes, so the impact might
+be minimal, but that is likely to change in the future so we should be
+careful here.
 
-But, as far as I can tell, you don't actually *use* this field anywhere.
-What am I missing?
+What I'd propose instead is to either leave it alone as Christoph
+suggested, or have a build option/boot argument so folks can preserve
+the legacy name if they need.
 
-Thanks,
-
-jon
+thanks
+-john
