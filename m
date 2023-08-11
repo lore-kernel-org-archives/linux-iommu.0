@@ -1,180 +1,228 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.115])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-vs1-f45.google.com (mail-vs1-f45.google.com [209.85.217.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7A62A56
-	for <iommu@lists.linux.dev>; Fri, 11 Aug 2023 03:20:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1691724022; x=1723260022;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=TUg5ADLRiwYppVbjM8CmywzygOOAGarXUvmtPz8lb4o=;
-  b=ZTJcXaD4qt2nGURZ6mlJ6NciA8SOlV9adLU6FZRmnyWj9NuPr+b+puPG
-   BcX4N56ZgD/kAL7IHDCo4CuGXYfuB4i1kDrRuILZ+kIeELwPbREYtbl6w
-   MAFcxbeGFQ2ief4kN3Wc5JnDZbQXQtgVRMj3YsgLg+wt1vX7L6c6Kpii3
-   AnClBWB8d+G/yhKcdZqsEXT1dBTRyWT+U/L/4/ek0qHBvG0zD042sFGTc
-   54CTVH/StwreDSpVJe/UpqHXng2Jm3UM01BDq2p/jQAMN+BrdPgfoRTQp
-   sWNvpuDktxdWWBTGZvrf/qwRIEio+2S7/rY4epakgEg9Ga9xoZFqO75Su
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10798"; a="371588594"
-X-IronPort-AV: E=Sophos;i="6.01,164,1684825200"; 
-   d="scan'208";a="371588594"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2023 20:18:46 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.01,202,1684825200"; 
-   d="scan'208";a="876001002"
-Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
-  by fmsmga001.fm.intel.com with ESMTP; 10 Aug 2023 20:18:49 -0700
-Received: from orsmsx612.amr.corp.intel.com (10.22.229.25) by
- ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.27; Thu, 10 Aug 2023 20:18:46 -0700
-Received: from orsmsx603.amr.corp.intel.com (10.22.229.16) by
- ORSMSX612.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.27; Thu, 10 Aug 2023 20:18:45 -0700
-Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
- orsmsx603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.27 via Frontend Transport; Thu, 10 Aug 2023 20:18:45 -0700
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.107)
- by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.27; Thu, 10 Aug 2023 20:18:45 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=a9ZcipJsA2W0g2ZW9hvR7psrRhsfF/W/pFpu2ikcBv3jQzWlTAqQY9cp2sgXdSUKZcBNi61sbtnAi7Y5e9ls69euvTyiBefFBy2mnL2EqBJ1bCzFk5Wl488LzoWUzx7csLeXlZx8FlYW/5bNfQP+EuzbK/tXCPvDmQ0AdQKreS2PfZ0hUtoBI3mbhpkDrSqEoyJ5i4QorLWli4FnJ3wabRkEsl84qM8dt37gdI5Ly79Q9kCC8UEV6UE7TH4e54wXwZSeZ5T3PYTV4XFlZQvk42m5m9daUohTCdhaUcVZ5+Nmt8jx2OCxLBsuMNytYAWkDZkbzsCTqeCAuSQ29yIe1g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=TUg5ADLRiwYppVbjM8CmywzygOOAGarXUvmtPz8lb4o=;
- b=ZhDFkE4/j5Z8G0nia50qOEhPMKEymrKUBL9mv/K1C39TNzgVlFwmetXeMAvPWPatpRbGVrEuIDL9sbQwExsbq/mXF2Gnc+VJDhq18Q7a4ZGWrWeULt3o55vZ44RwxWLdb8VNo7BDC6pUH4ymeRQiRI4toexQpgJS0KV4nvaau8XTcbtZhTVh7Q1AOHnXCrZE1Qa11VbGk1rIx/gvZqhYryGGrn7uvtqXcjjVqr3xhkDfRQteWNeQdKoa/XnEvBsteMxQOwhpll/ZtZVM77DE4H6MtKYyZZErwzKUrD740djlKmDYZLCoswhFGJ6oS5YGnO2eeoJPvAAKFx4uuvdW0A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by PH8PR11MB6780.namprd11.prod.outlook.com (2603:10b6:510:1cb::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6678.19; Fri, 11 Aug
- 2023 03:18:41 +0000
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::dcf3:7bac:d274:7bed]) by BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::dcf3:7bac:d274:7bed%4]) with mapi id 15.20.6652.029; Fri, 11 Aug 2023
- 03:18:40 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-CC: Baolu Lu <baolu.lu@linux.intel.com>, "Zhang, Tina" <tina.zhang@intel.com>,
-	Michael Shavit <mshavit@google.com>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH 2/5] iommu: Call helper function to get assigned pasid
- value
-Thread-Topic: [PATCH 2/5] iommu: Call helper function to get assigned pasid
- value
-Thread-Index: AQHZyczxCRfFMGhSVk2JCjxjKYlmLq/hG1GAgACeSCCAAC6iAIABQplwgACTOACAALMLgA==
-Date: Fri, 11 Aug 2023 03:18:40 +0000
-Message-ID: <BN9PR11MB52762D093310D12FE5E5C76D8C10A@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <20230808074944.7825-1-tina.zhang@intel.com>
- <20230808074944.7825-3-tina.zhang@intel.com>
- <f3d8692e-b13d-97ee-2288-c2be1858dcfa@linux.intel.com>
- <BN9PR11MB52767F29A6C11157659D375B8C12A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <ZNOH9lPdTnltb9JZ@ziepe.ca>
- <BN9PR11MB5276A5E619DF6638677DFFA58C13A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <ZNUSEiXTYbV7ML6x@ziepe.ca>
-In-Reply-To: <ZNUSEiXTYbV7ML6x@ziepe.ca>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|PH8PR11MB6780:EE_
-x-ms-office365-filtering-correlation-id: 7cafaf41-d325-4061-091f-08db9a19a94d
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: lgoh8T9vxGDh3bSztxX32fCCXsK7KdEzJPHrMsLHk/Tg49R4wk0zIY5lyNf02PpRh5+ehSSsqIMxbxFXWkz9K2BpQ7nhH7yLoWapV/CSkeCsBLnjESiBD0l4OOjrXYZL1hUkA/rCpdn+JrwqXdkWBH0KiGQ4LeydESIUKsctvVTXcwCPOEKFDHs+nR44F29L9Ruh9T6Yv6BlMBNRJPU8s3CpolOMje8j/Mgbz5hFWriUBwq+9w6y0kF0SQzc3BPfXj04CiQ5ktQkozwCbE7DgMHEnkPWWN1zBM1wwmAVFlrmn30Q4C/QBeCmQRFh+awiKkDS2KjqrDyVaBcxlfyeoV28B7Iv783OcbpemptEuxlIMoLj+Z2epy3o+8LnTKOLhc9kxmoN9GTi6NQ+8TBAya6MVMM5mlaa31kI1aBmpIte3R7e7F0154sNNv7B1Pnd6idcRjaSg0DnsC1LOdySvm6Pf0yrxC3fKRcqlzQUhfnWzOaKIu2gtY4KlPZytGNSCuW/jU5gEIWnDllT3+3LS4AcWyQXCjfq2vSJbRcTb7CiD/1PbqGmUhkIffYt6Gn9VyfDc6ZygC1FnvJYN3kC0dHWGR1U7F2dkAQq7kbF0PFUHVV3pSNJIWScVZSfjnB/
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(346002)(366004)(396003)(39860400002)(376002)(136003)(451199021)(186006)(1800799006)(2906002)(5660300002)(8936002)(8676002)(52536014)(316002)(41300700001)(6916009)(4326008)(76116006)(66476007)(66556008)(66446008)(66946007)(64756008)(71200400001)(478600001)(7696005)(9686003)(54906003)(55016003)(33656002)(26005)(6506007)(38100700002)(122000001)(82960400001)(86362001)(38070700005);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?86z2zc3beYo2Oimsz5795LnRim+cS/KiRIGE1CdZueciwAIrsXHQ0AII5eMl?=
- =?us-ascii?Q?yXI4XSKlrySmFu/rKvdcBa0sYPFQADNYtvy/cyXsNVmadUTols5A+28vZRuo?=
- =?us-ascii?Q?/fhxJe+5+HaqAv/+mmxc5FkDAZNQfOwO3rUk1YcxEGi6KVgXGLkflAdEDjFh?=
- =?us-ascii?Q?Efrh/SRL5DiPNhHD3sxUsp4D1aX9PeDynor2UudoWsWyTK/LphZxk8d1q0XG?=
- =?us-ascii?Q?N/neZZHHhVrzrjiYgKPmURnlfyNy9L3KsKylcjTVKSotCzD2+LSl9tF/pU3I?=
- =?us-ascii?Q?OP34W1wUXNsiqeYHRvuLP4tgjU1V207Fl8LgnG3lkfh6zFx6MffR4ULR0RDR?=
- =?us-ascii?Q?4vwkoi+n6N7m1KCSZNNkcRWi7DL7+/MHTrKtzIfwGAROKkxN2jU6XY3IPkPR?=
- =?us-ascii?Q?zUoqBM6BdpinXYSX4mr/kNSD3YMfDtnemNnlPzn1jATr4PLOWoGyXS6FTaNQ?=
- =?us-ascii?Q?yJeCpeAgq2jsNsTwlZAmUDUFuFsFL6E3XcBPPvQqjJ3K58sE4cQu4K3ZLLji?=
- =?us-ascii?Q?BaAf8ZEyxfxXIGTygnfYqOcUvtKAVNzGUvSJehv/EkL6+5kR5W4dyM8GJ+qP?=
- =?us-ascii?Q?Nigezf+CrlPdQPw2xUfBbWnIFZ6q9odJlJ7meufZ6lzvcFoZM9Z+mSodLeWe?=
- =?us-ascii?Q?Y5kwFkvCC9fb8FsTM9K6N6haulUuRMpTNmbAIf6LOWB8fla0rLqKPGENfsXF?=
- =?us-ascii?Q?hSQV/rl0Hb4mq3TmBJCKNTWiE0HxW/Br/BEMboCG7Bj+q5cHi5Tsm7y/wIea?=
- =?us-ascii?Q?Amny4POAwjwr9QZIBbUj63g6cy0CSD4KNvh7jti3A0aM0SH+0YsWAyPtwND2?=
- =?us-ascii?Q?aX6dcHG6UFJDoVfTkkZEAYJt9tL/y2C60LifB8340EWFLHaLDupiHICrNYrW?=
- =?us-ascii?Q?m0fFj/aJISeyL8SxTUKzn2FNfFckHHyGdMKe8F98CFIv9Cy1uQji8GXOCWPn?=
- =?us-ascii?Q?JMDqj6nTg9ZNDCe3AEsmnne+2mSC7S62BXreVW8xZHfhX7AhlsKNtz8M1eVM?=
- =?us-ascii?Q?A1bMB1kAD+D5KiX1Q+hSKgS3sZ8iWQm664ly5v8NMWIMcjTIV9Lki26wrlSV?=
- =?us-ascii?Q?FJ9yMOWWfwNzaIMgBHf8DfHgf/5+btVAr110q67zvJEX6zVVDFzor7wF+uy5?=
- =?us-ascii?Q?3MXAeTi0og6h76/WHGLECXWU9bZQf4zp0hhqTOspfO8V/W9KFOpBPOjPYN2E?=
- =?us-ascii?Q?Xx0REdDX3oSWy+JvbOQsqjkdWHgRgizVeN1AQfTMs8EJJ+F/ukqUbeon3kNx?=
- =?us-ascii?Q?jT4Sw6WDNsnhUI7Q+ERo7YYVRCMcWrrKtW9LT0SveTx1tLxVetY0XU/QYFjS?=
- =?us-ascii?Q?Nl1RFojmtAboUduhtvALf+LHTzitYGSsRC1iQ8tnF01oXHwqugiUGB8cwuQe?=
- =?us-ascii?Q?l+bM2SW/Fk5p0nDI58nMyQiz0sOZmk0/KtKKOIOXWhPXy6ZtHLgW0hCJOZaV?=
- =?us-ascii?Q?FaaFYkupLgZSlttnuIZ7MwvrUV6BYYGvmUtew6uQwxrbsxMXIseQvPAZE4kQ?=
- =?us-ascii?Q?9hXOycFErFLIQYgw7B8ukpbKJZarV3/v2vRRvNAFrbvysbnitqwc52bypFwm?=
- =?us-ascii?Q?ZcRZm+neSGojhQlzTPb6OhK8SW1zUTCYar1uMo0i?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2489A47
+	for <iommu@lists.linux.dev>; Fri, 11 Aug 2023 03:31:09 +0000 (UTC)
+Received: by mail-vs1-f45.google.com with SMTP id ada2fe7eead31-447a4316052so684601137.0
+        for <iommu@lists.linux.dev>; Thu, 10 Aug 2023 20:31:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google; t=1691724668; x=1692329468;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=oQYON+sk+YoDUmSygKnXKh+XGqs62+U//VTWTOy9M5E=;
+        b=jxBh7pOn7yLgPCIG2YXxI0//3oA+/pThxQC4mdd9ML0q5RvXhW8KTgnNKvmYwoXBRG
+         DThAUcfHYd08GFowYSo322YQxEUblTQK09SoW5kE0c9+CUpWVa9AZ1L0RQAPLeuspSm4
+         v0NRslaSiIC3D82hXEqGm0CucqCepjdLOZSFA=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1691724668; x=1692329468;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=oQYON+sk+YoDUmSygKnXKh+XGqs62+U//VTWTOy9M5E=;
+        b=YZzesG2U3R0UnFKcrsgSKrcGMLDycDuKimhZVPYLVBujEWxywIiqGi5B1O306onpV/
+         hPzf9+v1eGQWPVczSY4F8kEfoAGMyhafIpVnU9lETHh7ZKK2URlHyxAmPqHvLbM9Jk0/
+         iVnkh5wHzfvO7FznCkkzZ2gPYs65WC7oyo6Tm+BATf1K2Y6OBxXGgUfLKAHNb5qU8kKU
+         BrLY6gGQRQ7G1UHGPtPooEF1WJU0mN+UXn6/yaGPpyCyxtAr8WtgWpJMUoYJrB7jqldP
+         b2Ujmo9mjKvHX+o8caeaTJbUDvx5B4RhN5WSa6/Lmz7DDBO97CajbvJ8VgpeBPhCGQu4
+         vweQ==
+X-Gm-Message-State: AOJu0YxBWlmRXQieUBNkqNG+8Ez2UUXqmeQ/FVkBiwOxFqx34YyD149x
+	ffu2K955Wdp3iWv9wlpqsioEBwYtSBSEeKp2KPf3Rw==
+X-Google-Smtp-Source: AGHT+IH+n/o66olPcYqU6dZDtkzs3QMHqa4XhdD+e9Yvl0xOcc5I/pNGVpcuircQyOiFWYpBl1Blo6Vc37PagqIihP4=
+X-Received: by 2002:a05:6102:3bd3:b0:447:ad77:f027 with SMTP id
+ a19-20020a0561023bd300b00447ad77f027mr559375vsv.6.1691724668480; Thu, 10 Aug
+ 2023 20:31:08 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7cafaf41-d325-4061-091f-08db9a19a94d
-X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Aug 2023 03:18:40.7754
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: ImI/4ffFNX798bjuQtHHoNOVkzWaIl9BNfOTVwos4L1gqa7/2tTRFyyGrnxpRe6DmIFpQiYjAfbc94ZswTyTxg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR11MB6780
-X-OriginatorOrg: intel.com
+References: <20230602090227.7264-1-yong.wu@mediatek.com> <20230602090227.7264-6-yong.wu@mediatek.com>
+ <CAGXv+5EKwvn-axETPcuxTpxRkUGLroymeDYL+kr4QW8duAymmQ@mail.gmail.com> <b695962fa3c3baac08f8be5202e6a5697e7826a0.camel@mediatek.com>
+In-Reply-To: <b695962fa3c3baac08f8be5202e6a5697e7826a0.camel@mediatek.com>
+From: Chen-Yu Tsai <wenst@chromium.org>
+Date: Fri, 11 Aug 2023 11:30:57 +0800
+Message-ID: <CAGXv+5EVqODJJ4Ck+EcB9sn1bTjG5yFrWLi9mHTfVa0sB4wsug@mail.gmail.com>
+Subject: Re: [PATCH v12 5/7] iommu/mediatek: Add MT8188 IOMMU Support
+To: =?UTF-8?B?WW9uZyBXdSAo5ZC05YuHKQ==?= <Yong.Wu@mediatek.com>
+Cc: "linux-mediatek@lists.infradead.org" <linux-mediatek@lists.infradead.org>, 
+	"robh+dt@kernel.org" <robh+dt@kernel.org>, 
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, 
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, 
+	=?UTF-8?B?SmlhbmppYW8gWmVuZyAo5pu+5YGl5aejKQ==?= <Jianjiao.Zeng@mediatek.com>, 
+	"robin.murphy@arm.com" <robin.murphy@arm.com>, "joro@8bytes.org" <joro@8bytes.org>, 
+	=?UTF-8?B?Q2hlbmdjaSBYdSAo6K645om/6LWQKQ==?= <Chengci.Xu@mediatek.com>, 
+	=?UTF-8?B?WUYgV2FuZyAo546L5LqR6aOeKQ==?= <YF.Wang@mediatek.com>, 
+	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, 
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>, 
+	"krzysztof.kozlowski+dt@linaro.org" <krzysztof.kozlowski+dt@linaro.org>, 
+	"matthias.bgg@gmail.com" <matthias.bgg@gmail.com>, 
+	=?UTF-8?B?TWluZ3l1YW4gTWEgKOmprOm4o+i/nCk=?= <Mingyuan.Ma@mediatek.com>, 
+	"angelogioacchino.delregno@collabora.com" <angelogioacchino.delregno@collabora.com>, 
+	"will@kernel.org" <will@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-> From: Jason Gunthorpe <jgg@ziepe.ca>
-> Sent: Friday, August 11, 2023 12:37 AM
->=20
-> On Thu, Aug 10, 2023 at 07:52:52AM +0000, Tian, Kevin wrote:
->=20
-> > > The driver should rely on there being exactly one iommu_domain for SV=
-A
-> > > per mm so it can hang the mm_notifier off the iommu_domain
+On Thu, Aug 10, 2023 at 8:23=E2=80=AFPM Yong Wu (=E5=90=B4=E5=8B=87) <Yong.=
+Wu@mediatek.com> wrote:
+>
+> On Tue, 2023-08-08 at 17:53 +0800, Chen-Yu Tsai wrote:
 > >
-> > I'm confused. Isn't this series trying to allow multiple domains per mm=
-?
->=20
-> It is doing both.
->=20
-> The main objective is to allow de-duplicating the SVA domains in the
-> core code. The driver should be able to assume one SVA domain per
-> instance, or even one SVA domain per compatible instance. The driver
-> should not do any de-duplication.
->=20
-> But we can't just store a single iommu_domain in the mm_struct - we
-> have the same problem as iommufd and we need to create more domains if
-> the domains we already have are incompatible with the device.
->=20
-> Arguably this should not happen, and in any sane configuration we
-> should have only 1 type of IOMMU driver that needs only 1 SVA domain.
->=20
-> But right now things like SMMUv3 have problems crossing domains across
-> instances, so we could have one SVA domain per IOMMU instance until
-> that is fixed.
->=20
+> > External email : Please do not click links or open attachments until
+> > you have verified the sender or the content.
+> >  On Fri, Jun 2, 2023 at 5:04=E2=80=AFPM Yong Wu <yong.wu@mediatek.com> =
+wrote:
+> > >
+> > > From: "Chengci.Xu" <chengci.xu@mediatek.com>
+> > >
+> > > MT8188 has 3 IOMMU, containing 2 MM IOMMUs, one is for vdo, the
+> > other
+> > > is for vpp. and 1 INFRA IOMMU.
+> > >
+> > > Signed-off-by: Chengci.Xu <chengci.xu@mediatek.com>
+> > > Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+> > > Reviewed-by: AngeloGioacchino Del Regno <
+> > angelogioacchino.delregno@collabora.com>
+> > > ---
+> > >  drivers/iommu/mtk_iommu.c | 49
+> > +++++++++++++++++++++++++++++++++++++++
+> > >  1 file changed, 49 insertions(+)
+> > >
+> > > diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+> > > index 9c89cf894a4d..5c66af0c45a8 100644
+> > > --- a/drivers/iommu/mtk_iommu.c
+> > > +++ b/drivers/iommu/mtk_iommu.c
+> > > @@ -170,6 +170,7 @@ enum mtk_iommu_plat {
+> > >         M4U_MT8173,
+> > >         M4U_MT8183,
+> > >         M4U_MT8186,
+> > > +       M4U_MT8188,
+> > >         M4U_MT8192,
+> > >         M4U_MT8195,
+> > >         M4U_MT8365,
+> > > @@ -1593,6 +1594,51 @@ static const struct mtk_iommu_plat_data
+> > mt8186_data_mm =3D {
+> > >         .iova_region_larb_msk =3D mt8186_larb_region_msk,
+> > >  };
+> > >
+> > > +static const struct mtk_iommu_plat_data mt8188_data_infra =3D {
+> > > +       .m4u_plat         =3D M4U_MT8188,
+> > > +       .flags            =3D WR_THROT_EN | DCM_DISABLE |
+> > STD_AXI_MODE | PM_CLK_AO |
+> > > +                           MTK_IOMMU_TYPE_INFRA |
+> > IFA_IOMMU_PCIE_SUPPORT |
+> > > +                           PGTABLE_PA_35_EN |
+> > CFG_IFA_MASTER_IN_ATF,
+> >
+> > FWIW, CFG_IFA_MASTER_IN_ATF should not be tied to the compatible
+> > string,
+> > but set via a DT property. The IOMMU controls are secured by
+> > firmware.
+> > It is not a property intrinsically tied to the hardware.
+>
+> The flag CFG_IFA_MASTER_IN_ATF means the registers which enable/disable
+> iommu are in the secure world. If the master like pcie want to enable
+> iommu, we have to enter secure world to configure it. It should be HW
+> intrinsical, right?
 
-Thanks for the explanation. Tina, please include this information in your
-next version so others can easily understand the motivation of introducing
-multiple sva domains per mm.
+If I understand correctly, this is forced by setting some registers.
+The registers are set by the firmware at boot time.
+
+So if a different firmware that doesn't set the registers is used,
+then the IOMMU is available to non-secure kernel, correct?
+
+That's why I said that it should not be tied to a particular hardware
+platform, but set using a boolean device tree property.
+
+> >
+> > If on some other project there is no such security requirement and
+> > the
+> > IOMMU is opened up to non-secure world, and ATF not even having
+> > support
+> > for the SMC call, this becomes unusable and hard to rectify without
+> > introducing a new compatible string.
+> >
+> > ChenYu
+> >
+> > > +       .inv_sel_reg      =3D REG_MMU_INV_SEL_GEN2,
+> > > +       .banks_num        =3D 1,
+> > > +       .banks_enable     =3D {true},
+> > > +       .iova_region      =3D single_domain,
+> > > +       .iova_region_nr   =3D ARRAY_SIZE(single_domain),
+> > > +};
+> > > +
+> > > +static const struct mtk_iommu_plat_data mt8188_data_vdo =3D {
+> > > +       .m4u_plat       =3D M4U_MT8188,
+> > > +       .flags          =3D HAS_BCLK | HAS_SUB_COMM_3BITS |
+> > OUT_ORDER_WR_EN |
+> > > +                         WR_THROT_EN | IOVA_34_EN | SHARE_PGTABLE
+> > |
+> > > +                         PGTABLE_PA_35_EN | MTK_IOMMU_TYPE_MM,
+> > > +       .hw_list        =3D &m4ulist,
+> > > +       .inv_sel_reg    =3D REG_MMU_INV_SEL_GEN2,
+> > > +       .banks_num      =3D 1,
+> > > +       .banks_enable   =3D {true},
+> > > +       .iova_region    =3D mt8192_multi_dom,
+> > > +       .iova_region_nr =3D ARRAY_SIZE(mt8192_multi_dom),
+> > > +       .larbid_remap   =3D {{2}, {0}, {21}, {0}, {19}, {9, 10,
+> > > +                          11 /* 11a */, 25 /* 11c */},
+> > > +                          {13, 0, 29 /* 16b */, 30 /* 17b */, 0},
+> > {5}},
+> > > +};
+> > > +
+> > > +static const struct mtk_iommu_plat_data mt8188_data_vpp =3D {
+> > > +       .m4u_plat       =3D M4U_MT8188,
+> > > +       .flags          =3D HAS_BCLK | HAS_SUB_COMM_3BITS |
+> > OUT_ORDER_WR_EN |
+> > > +                         WR_THROT_EN | IOVA_34_EN | SHARE_PGTABLE
+> > |
+> > > +                         PGTABLE_PA_35_EN | MTK_IOMMU_TYPE_MM,
+> > > +       .hw_list        =3D &m4ulist,
+> > > +       .inv_sel_reg    =3D REG_MMU_INV_SEL_GEN2,
+> > > +       .banks_num      =3D 1,
+> > > +       .banks_enable   =3D {true},
+> > > +       .iova_region    =3D mt8192_multi_dom,
+> > > +       .iova_region_nr =3D ARRAY_SIZE(mt8192_multi_dom),
+> > > +       .larbid_remap   =3D {{1}, {3}, {23}, {7},
+> > {MTK_INVALID_LARBID},
+> > > +                          {12, 15, 24 /* 11b */}, {14,
+> > MTK_INVALID_LARBID,
+> > > +                          16 /* 16a */, 17 /* 17a */,
+> > MTK_INVALID_LARBID,
+> > > +                          27, 28 /* ccu0 */, MTK_INVALID_LARBID},
+> > {4, 6}},
+> > > +};
+> > > +
+> > >  static const unsigned int
+> > mt8192_larb_region_msk[MT8192_MULTI_REGION_NR_MAX][MTK_LARB_NR_MAX] =3D
+> > {
+> > >         [0] =3D {~0, ~0},                         /* Region0: larb0/1
+> > */
+> > >         [1] =3D {0, 0, 0, 0, ~0, ~0, 0, ~0},      /* Region1:
+> > larb4/5/7 */
+> > > @@ -1701,6 +1747,9 @@ static const struct of_device_id
+> > mtk_iommu_of_ids[] =3D {
+> > >         { .compatible =3D "mediatek,mt8173-m4u", .data =3D
+> > &mt8173_data},
+> > >         { .compatible =3D "mediatek,mt8183-m4u", .data =3D
+> > &mt8183_data},
+> > >         { .compatible =3D "mediatek,mt8186-iommu-mm",    .data =3D
+> > &mt8186_data_mm}, /* mm: m4u */
+> > > +       { .compatible =3D "mediatek,mt8188-iommu-infra", .data =3D
+> > &mt8188_data_infra},
+> > > +       { .compatible =3D "mediatek,mt8188-iommu-vdo",   .data =3D
+> > &mt8188_data_vdo},
+> > > +       { .compatible =3D "mediatek,mt8188-iommu-vpp",   .data =3D
+> > &mt8188_data_vpp},
+> > >         { .compatible =3D "mediatek,mt8192-m4u", .data =3D
+> > &mt8192_data},
+> > >         { .compatible =3D "mediatek,mt8195-iommu-infra", .data =3D
+> > &mt8195_data_infra},
+> > >         { .compatible =3D "mediatek,mt8195-iommu-vdo",   .data =3D
+> > &mt8195_data_vdo},
+> > > --
+> > > 2.25.1
+> > >
+> > >
+> >
