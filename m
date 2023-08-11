@@ -1,64 +1,120 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2219B63B3
-	for <iommu@lists.linux.dev>; Fri, 11 Aug 2023 13:25:40 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 82E3F113E;
-	Fri, 11 Aug 2023 06:26:22 -0700 (PDT)
-Received: from [10.57.1.174] (unknown [10.57.1.174])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6D4C23F6C4;
-	Fri, 11 Aug 2023 06:25:38 -0700 (PDT)
-Message-ID: <3576aade-d13a-c887-d26b-fd157b82b9a5@arm.com>
-Date: Fri, 11 Aug 2023 14:25:31 +0100
+Received: from mail-pl1-f177.google.com (mail-pl1-f177.google.com [209.85.214.177])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 53EE263B3
+	for <iommu@lists.linux.dev>; Fri, 11 Aug 2023 13:27:13 +0000 (UTC)
+Received: by mail-pl1-f177.google.com with SMTP id d9443c01a7336-1bdb801c667so4596285ad.1
+        for <iommu@lists.linux.dev>; Fri, 11 Aug 2023 06:27:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1691760432; x=1692365232;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=F7v0CVgY9abtWYoDC5bZkBPB2nRR3jrM6lzMQZBvyuU=;
+        b=d1FmtARKaIJHCFVHZhIvjyWeh9YdGWhpXHg47bzfdOXmJHlxrslCa7zHg+/JD34q0e
+         E9/3cip0qUiYQyaSEfw8LW1KYUNSfz7+aubYzAfkCKxHzXz1aD/zcjb2url7DUGw3QFK
+         kXh/FNJld8j2cKTYqxjXigAi37lX18p01LLlG5uqSynfTOhbWhbZ0fNQFC7p238++VRQ
+         Zs3Uxt3iiHDirlnfq3y2keMcgFiobHWlXmeW33RUglZ5pN91g1cbMZjZhs4rHwsn9r1M
+         9rdF/SAB3CLwR+1IA27XUCeOTCmo4PB5RcAUhTvJUQJ7k0WobwUKOsY994haEl65WxVD
+         I38g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1691760432; x=1692365232;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=F7v0CVgY9abtWYoDC5bZkBPB2nRR3jrM6lzMQZBvyuU=;
+        b=bIVZxtq653CaovXvbgqZrz6sQzXELeDgVT5bTrZyEUIeVHHSO9DcRIEiMYiwj0mD//
+         n832p/KtAq2u+fUtpHskahkmb1CEKb95DE3vQCeMG3rLwEhH/EYJWimxPSG+dWUI34Vp
+         AWW0YRANdsGKNw4xPL9o6F+MZx+HxYvEEqS0sk2pzsgxTKxBsMZv4YOPL9woIpL+sb4L
+         2lQnNDUmzMB4xOr8vF4fvFakG0ydzTFuhg5fK9IRkwjx3X7cCr0Q9/teLYrEhSpS3RvI
+         hdVZKJvYyl9O0282AMbG1bkPq++YFyMBe90Aucl9YCLhWKejrHwcxQ0v6KPlW7IPHM5z
+         PM4g==
+X-Gm-Message-State: AOJu0YyA8+p/s9uu27wso43+M9vrrrJosw/M5lBdiru6SEFa8ak3u+B6
+	bBlnO9RrgyDnxgqB4NjbWY5Qqw==
+X-Google-Smtp-Source: AGHT+IHjQ/YmFnNuEbJzT7wjHKlxU7TvjYa59TJH7k5fgJjND7DThiWpL/8pFybIFQzN1/kVVWlFlQ==
+X-Received: by 2002:a17:902:f551:b0:1bb:97d0:c628 with SMTP id h17-20020a170902f55100b001bb97d0c628mr2378919plf.31.1691760432689;
+        Fri, 11 Aug 2023 06:27:12 -0700 (PDT)
+Received: from ziepe.ca ([206.223.160.26])
+        by smtp.gmail.com with ESMTPSA id s13-20020a170902988d00b001bdc664ecd3sm19894plp.307.2023.08.11.06.27.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 11 Aug 2023 06:27:12 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1qUSAY-005R9K-MW;
+	Fri, 11 Aug 2023 10:27:10 -0300
+Date: Fri, 11 Aug 2023 10:27:10 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Baolu Lu <baolu.lu@linux.intel.com>
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	"Liu, Yi L" <yi.l.liu@intel.com>,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 08/12] iommu: Prepare for separating SVA and IOPF
+Message-ID: <ZNY3LuW+FMAhK2xf@ziepe.ca>
+References: <20230727054837.147050-1-baolu.lu@linux.intel.com>
+ <20230727054837.147050-9-baolu.lu@linux.intel.com>
+ <BN9PR11MB52769D22490BB09BB25E0C2E8C08A@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <ZNKMz04uhzL9T7ya@ziepe.ca>
+ <BN9PR11MB527629949E7D44BED080400C8C12A@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <0771c28d-1b31-003e-7659-4f3f3cbf5546@linux.intel.com>
+ <BN9PR11MB527686C925E33E0DCDF261CB8C13A@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <ZNUUjXMrLyU3g5KM@ziepe.ca>
+ <f1dbfb6a-5a53-f440-5d3a-25772c67547f@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.13.0
-Subject: Re: [RESEND PATCH 0/2] iommu/iova: optimize the iova rcache
-To: Zhang Zekun <zhangzekun11@huawei.com>, joro@8bytes.org, will@kernel.org
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- baolu.lu@linux.intel.com, robh@kernel.org, nicolinc@nvidia.com,
- john.g.garry@oracle.com, kevin.tian@intel.com
-References: <20230811130246.42719-1-zhangzekun11@huawei.com>
-Content-Language: en-GB
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20230811130246.42719-1-zhangzekun11@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f1dbfb6a-5a53-f440-5d3a-25772c67547f@linux.intel.com>
 
-On 2023-08-11 14:02, Zhang Zekun wrote:
-> The number of iova_cpu_rcache can grow with the number of cpus in
-> iova_rcache, but the size of rcache->depot will not. The deeper of
-> rcache->depot can help iova_rcache cache more iovas, and can help
-> iova_rcache better dealing with senarios in which drivers allocating
-> and free iovas on different cpu cores. We only let the size of rcache->depot
-> to grow with the number of cpus which is larger than 32 to avoid potential
-> performance decrease on machines which don't have much cpus.
-
-Oh, that reminds me I had started working on this again just before I 
-was off, only my plan was to get rid of the depot allocation 
-altogether[1]. However I wanted to finish the second patch on that 
-branch (to reclaim wasted memory from the depot if the workload changes) 
-before posting anything - I was feeling really pleased that I'd made it 
-work until I realised it was leaking all the actual IOVAs... :(
-
-Thanks,
-Robin.
-
-[1] 
-https://gitlab.arm.com/linux-arm/linux-rm/-/commit/2f37ebe93eb282b534bf9e0fd4adc66cfe4b6693
-
+On Fri, Aug 11, 2023 at 09:53:41AM +0800, Baolu Lu wrote:
+> On 2023/8/11 0:47, Jason Gunthorpe wrote:
+> > On Thu, Aug 10, 2023 at 02:35:40AM +0000, Tian, Kevin wrote:
+> > > > From: Baolu Lu<baolu.lu@linux.intel.com>
+> > > > Sent: Wednesday, August 9, 2023 6:41 PM
+> > > > 
+> > > > On 2023/8/9 8:02, Tian, Kevin wrote:
+> > > > > > From: Jason Gunthorpe<jgg@ziepe.ca>
+> > > > > > Sent: Wednesday, August 9, 2023 2:43 AM
+> > > > > > 
+> > > > > > On Thu, Aug 03, 2023 at 08:16:47AM +0000, Tian, Kevin wrote:
+> > > > > > 
+> > > > > > > Is there plan to introduce further error in the future? otherwise this
+> > > > should
+> > > > > > > be void.
+> > > > > > > 
+> > > > > > > btw the work queue is only for sva. If there is no other caller this can be
+> > > > > > > just kept in iommu-sva.c. No need to create a helper.
+> > > > > > I think more than just SVA will need a work queue context to process
+> > > > > > their faults.
+> > > > > > 
+> > > > > then this series needs more work. Currently the abstraction doesn't
+> > > > > include workqueue in the common fault reporting layer.
+> > > > Do you mind elaborate a bit here? workqueue is a basic infrastructure in
+> > > > the fault handling framework, but it lets the consumers choose to use
+> > > > it, or not to.
+> > > > 
+> > > My understanding of Jason's comment was to make the workqueue the
+> > > default path instead of being opted by the consumer.. that is my 1st
+> > > impression but might be wrong...
+> > Yeah, that is one path. Do we have anyone that uses this that doesn't
+> > want the WQ? (actually who even uses this besides SVA?)
 > 
-> Also, it is unsafe to directly free cpu rcache magazines in free_iova_rcaches,
-> add check before freeing it.
-> 
-> Zhang Zekun (2):
->    iommu/iova: Add check for cpu_rcache in free_iova_rcaches
->    iommu/iova: allocate iova_rcache->depot dynamicly
-> 
->   drivers/iommu/iova.c | 36 +++++++++++++++++++++++++++++++-----
->   1 file changed, 31 insertions(+), 5 deletions(-)
-> 
+> I am still confused. When we forward iopf's to user space through the
+> iommufd, we don't need to schedule a WQ, right? Or I misunderstood
+> here?
+
+Yes, that could be true, iommufd could just queue it from the
+interrupt context and trigger a wakeup.
+
+But other iommufd modes would want to invoke hmm_range_fault() which
+would need the work queue.
+
+Jason
