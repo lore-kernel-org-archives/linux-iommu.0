@@ -1,275 +1,157 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.151])
+Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam02on2086.outbound.protection.outlook.com [40.107.212.86])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45B4E1FBB
-	for <iommu@lists.linux.dev>; Fri, 11 Aug 2023 07:15:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1691738117; x=1723274117;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=xXnjiBk5Rm1Wh/mIr4DvEInc/Fi8Guc3wJK5YvAkue4=;
-  b=k0yHNX0WD5b/Up1jDPFbdgeZ3uipy/iIbof+eVDXHNFBeE92VgCI8sfl
-   hciMzXUCv9mi7mDZ4iJF0ua+2Pz2C8sV3HPnQ2wNda5XGhqtWtJTUTd5V
-   xd0/y2ze6BZCf3GpcS4B9iXl2od8nL3MM0I8f8/qr+zXuC1g21sIrKQaW
-   Mk/Xx90Fu8oobKV18zc8hAl96wIfFc7ugOXNMSL84KCqOJSPK+AjpdRbW
-   RQvh+YzbdKLV8iavegWzqZJgl7hrwQ/kIkjDKamBbcUj7srQGutvzdTJL
-   gs0JFbM7TSNx4+xBb9HA8ebui5cXx7aAoqPhx+eHTndWMhnKcVunCru61
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10798"; a="351937719"
-X-IronPort-AV: E=Sophos;i="6.01,164,1684825200"; 
-   d="scan'208";a="351937719"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Aug 2023 00:15:08 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10798"; a="979142010"
-X-IronPort-AV: E=Sophos;i="6.01,164,1684825200"; 
-   d="scan'208";a="979142010"
-Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
-  by fmsmga006.fm.intel.com with ESMTP; 11 Aug 2023 00:15:07 -0700
-From: Yi Liu <yi.l.liu@intel.com>
-To: joro@8bytes.org,
-	alex.williamson@redhat.com,
-	jgg@nvidia.com,
-	kevin.tian@intel.com,
-	robin.murphy@arm.com,
-	baolu.lu@linux.intel.com
-Cc: cohuck@redhat.com,
-	eric.auger@redhat.com,
-	nicolinc@nvidia.com,
-	kvm@vger.kernel.org,
-	mjrosato@linux.ibm.com,
-	chao.p.peng@linux.intel.com,
-	yi.l.liu@intel.com,
-	yi.y.sun@linux.intel.com,
-	peterx@redhat.com,
-	jasowang@redhat.com,
-	shameerali.kolothum.thodi@huawei.com,
-	lulu@redhat.com,
-	suravee.suthikulpanit@amd.com,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	linux-kselftest@vger.kernel.org,
-	zhenzhong.duan@intel.com
-Subject: [PATCH v7 4/4] iommufd/selftest: Add coverage for IOMMU_GET_HW_INFO ioctl
-Date: Fri, 11 Aug 2023 00:15:01 -0700
-Message-Id: <20230811071501.4126-5-yi.l.liu@intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230811071501.4126-1-yi.l.liu@intel.com>
-References: <20230811071501.4126-1-yi.l.liu@intel.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79E6263C3
+	for <iommu@lists.linux.dev>; Fri, 11 Aug 2023 10:05:02 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=YTijmaWXyKBL4mnydqKR6pdmBx/wL36O4igN3PZP11a3Rp+/61mmMw602iHHtG3xjvvc18VUzeOzQeuxPLELjl3ax1/Qx0OavMP6fECT5OFTzifg0atYdi1BI15Mdl5kZDRwEgy3bMd9IpJkPc2Vew/tGn0+/jXQx8TCR3jk1OiR1wiFZuU7QcTSZ5hbg+TCKTPtuP+MRHuyEfHdBiV7feGNC84Ai6JvwuHwmHq9Ui68Tl9B+LIIbCKtt0DDcsYjH/GLCxAFnilW+1FEh66RPrPLnmP2sxmOCQrlqMDBNJLHIE7lqekQFn3pF36xdOo5Nox190w+cnOLeM0GHds+jg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=CHlTuD8YbAn+C05bERFEV4KnXOsH34inOGoDW1YdsJM=;
+ b=hgoxaRWEKYfkdDaeysIsDKMs1xC6+lOoajwyWW9hWT1hswEGIS1h5LwuU4hBiymbLZUVnK9VkrTVSMNzHjTp92bg3yNAnHSO7SGQilzBXiLDe6se8Yw1llZOhn7SRBsDtPD9lFO//dFNV5bywUoaKLSSX4YmZtxh8RyVqHKYG8ZKzgvjJ32OWaGqG8Gk8YPhdmSksTyqbQBLSKj+/prZHas735/iThu6zOrZk3q4a2mqINYAKXwt8MISv43bIbWROhIUWU5EdzSE+i7QiJHxgX/l1FwEfqI7p6gKXyTPWJjFOeppShrsIgTyMxeJnpADbyscBlhaOJLD6mv/Wa67vQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=CHlTuD8YbAn+C05bERFEV4KnXOsH34inOGoDW1YdsJM=;
+ b=QYD5Yr6/TAjOsmvpSqFgnevdB7kE4b9sDcj7PqbXewWifUNLDbXWCGhvZYJUlBWUIZB+ri1kBSjLArlfGQJ1sNyrMOzkLdld3iaHAve2a8qfoa9ApMIQDqalsWnaLZYSxT8OQpyQ8ZS1WY+N01Ut1u8ab/1VIam12M0XHSFGpl8=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DS7PR12MB6048.namprd12.prod.outlook.com (2603:10b6:8:9f::5) by
+ DS0PR12MB6654.namprd12.prod.outlook.com (2603:10b6:8:d1::11) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6652.30; Fri, 11 Aug 2023 10:04:59 +0000
+Received: from DS7PR12MB6048.namprd12.prod.outlook.com
+ ([fe80::67ec:80e:c478:df8e]) by DS7PR12MB6048.namprd12.prod.outlook.com
+ ([fe80::67ec:80e:c478:df8e%7]) with mapi id 15.20.6652.029; Fri, 11 Aug 2023
+ 10:04:59 +0000
+Message-ID: <7725dfde-2fed-ad61-eb5f-358edd2df052@amd.com>
+Date: Fri, 11 Aug 2023 15:34:46 +0530
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH 02/11] iommu/amd: Introduce struct
+ protection_domain.pd_mode
+Content-Language: en-US
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: iommu@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com,
+ wei.huang2@amd.com, jsnitsel@redhat.com
+References: <20230808100232.5977-1-vasant.hegde@amd.com>
+ <20230808100232.5977-3-vasant.hegde@amd.com> <ZNJflxeIWtJLC896@ziepe.ca>
+From: Vasant Hegde <vasant.hegde@amd.com>
+In-Reply-To: <ZNJflxeIWtJLC896@ziepe.ca>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: PN2PR01CA0111.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:c01:27::26) To DS7PR12MB6048.namprd12.prod.outlook.com
+ (2603:10b6:8:9f::5)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS7PR12MB6048:EE_|DS0PR12MB6654:EE_
+X-MS-Office365-Filtering-Correlation-Id: 0361dc52-a093-4ffc-438f-08db9a526b8c
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	rJH3LutPkldKzA4DCqW0PFSw0IC/bTvUdi1mJepihIDF0ordZ9ziX5upW7ejsFZIKbND1tyXjOQfVVCEIoo6nSulaFHq8JNhTTkzVBdOS8SHO6XC09CVMkkSyVRQhFecYuqINVDVBcXi5lXGcxhiyzkJTbNddPw1/ybOqVQG2e0XMkCaT8jOpYmiMKfuu6YJCWHxBVxvsWzoEf0dIQeP6Q5LjIlbUqyA+3PAvxkTTv4g/Rlu31HG11a6heSiqeFk7PwHTDvvhNSfXziT9HnnUslQoiQiqhA+9ciKYB77YcgiUy4z7U/E5ArkTNzPsKSSpeOLM+8t+z3h/1Yn0vN/uoah1EBBNM0xq0vnEV3O9Aut6MfxYI+sfy91BJYOV2gIDqMWMHT5mKJ3crHDCw9wFb9D6eubQ2S9v0UiWV0eTvk8sSjFDSQToO0W5zAE1yItwdinsIlwbNRkH6ZiN7XFYQlTUeoSxEt5q8Uu49EzSvKIfl59hyyMg8UCVBsaNATlDKI6OeJYMJjYupSQAFw2MxCVjJl6tHHqgqcWS78WkqEZA1dzc3HbHv61b9nZ40p+2rnVjwlYZe9tVTiFG8WBsxeYqCwkQ4zdqXMxxReE2aG3yyMJY7ctl3hNXoolOQI+JK2ZN91tiIJ2IvZQP7qXeQ==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6048.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(376002)(366004)(346002)(136003)(39860400002)(396003)(1800799006)(451199021)(186006)(8936002)(8676002)(26005)(6506007)(53546011)(41300700001)(36756003)(2616005)(2906002)(38100700002)(31696002)(86362001)(44832011)(6486002)(6512007)(66476007)(4326008)(66946007)(66556008)(6916009)(6666004)(478600001)(5660300002)(31686004)(316002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?MEU4NlpMekgwcyswU3Bsd1NkWmk0VzZNa2JnMVFDd3Npc01KSFFJc2hNUUFp?=
+ =?utf-8?B?dWJDQWU3NEI2eEJJbUVNZDVzYWR3SVkvdjlmTEFpUUJHWmpKN3gyRzZ5NzY5?=
+ =?utf-8?B?OUVlVmxrMHNTRWJsOURobE01WisvUXVDcndRZW1oZ1B2ZFdNOWFoQnJTQTNk?=
+ =?utf-8?B?czZXYVltck0wNUxPMzdtYUR6VkJCRjcvNDA4QlA0V2MyamI0Z0JpaUtDcEc2?=
+ =?utf-8?B?aUM2bWlCVjVYaUpLTjhDMGlCTWRjUzZBMVM2OUdGU3ZidWtvVkdEOVVhYlFI?=
+ =?utf-8?B?WHhHRUx5c0NZRzRTU09aQ09jTXk4ZEpsN0t1YWptOEg4ejNCd1N4R3p1cUpl?=
+ =?utf-8?B?eDYrbDh3bW1FS3V1SEowNDBQSXV5SDQ0VnJvVkpxaWNMQ2oxTVN2b3hBNThk?=
+ =?utf-8?B?MDlPbERoMXdzejRhOEdTUm01Nk5uTVZLbDR1OTZYU0Q3YkVUNmthRVFOLzRv?=
+ =?utf-8?B?S1JuMFhCRy94eWgvM1FXNERiV3FRK3FPUzFMMitlcWFvdFdtdUpWMFk5bW9i?=
+ =?utf-8?B?b2Q4c1FoYTVmN1Z3c3YwbXR2US81Q0tmTmQrejAwVGl4VzRKbWlzZkgzQkh6?=
+ =?utf-8?B?alZsTW5hRkpaUkVpM1pPVFV5cDBzaXZMT1FqcXNPOWV6UWJaK0paQkZFbEFZ?=
+ =?utf-8?B?a0h6eFVaZ3I0ek85RVRFQ0NpY0hNSmhrU3BZbEFJNTA1TUFqVFJuYURMKy9J?=
+ =?utf-8?B?Y0VhMDVhcncxL295aTIzRm5NZ010RU1Bbnc5WWZET25VNms3am1Ra1pCMnc1?=
+ =?utf-8?B?Qy8rVTRRQThuUUQzOERCU1JjRTZSRzBwWXFJZjFwbFArc2o4cGtCdWE1VWcx?=
+ =?utf-8?B?c1FoZzBpakZxZk9Ia1FrdGhWUzVva2E3ckZhU1NHOHJvdjBxNU40UzZPbzhq?=
+ =?utf-8?B?NXlNd29qN0hLbmgwRHVqMHBuZnljSFFOeTdyTDF2N09WdnNUdjZlRkdJTVB3?=
+ =?utf-8?B?QW1JajNLRlg4emFPbmk0U2pMSGVYT2RCVEZUM2NDUkYwd3BWK0UzanVwTXZR?=
+ =?utf-8?B?Y2JuMlAyei9MQnYvN1JTYnNRQXNMeDkrK2ZGVTJYYlF1dHJtRkc3SEJ0VndX?=
+ =?utf-8?B?dC9tL1Z3QUFmcThEengxa3ZqVE40cFNIbTJBeFhVWDlBZmt6MFdMM2FkU1lO?=
+ =?utf-8?B?UWtLeCtvajc1bnNSZkRhUWh4UWQwbXdOYmJNZjYxZUc4R25CSGNJYzk4SHZy?=
+ =?utf-8?B?R0pteEltaFNlQ3BoZmxUMGg5VnIydWNjZGk3TDZ5SXAvOG1JZDV0UVpNWjg2?=
+ =?utf-8?B?K3NjTm54NFAzTXEzQjczNUFRVDlqem5DT1pFTzVFaUM0WmZzeW5uU0FzZXRa?=
+ =?utf-8?B?aWhldHUwRk5CeGIvSFBWNnlkMlprcnd6bUFrZy9nUWorMXdVSElsWWk1aWk2?=
+ =?utf-8?B?c09UMFFGcHJ5UFZBTEl5RWxTL3R0YXhReUkrVS9RVG12RU4xTTFKcCtvZnRP?=
+ =?utf-8?B?VHhoMmM0MFBRbEtaTWFPUktTU0ZzZEVsbGx0R2N3VVFqZFcwUkdRK0ZVQTRm?=
+ =?utf-8?B?YjgyVHNBMjR5REJKazFLREowVDZvRmNjSWVDNVFsYldwVmtVUEZ2ZmZjOE40?=
+ =?utf-8?B?ZnJXYVZEdjJ0UjluWS9uNFJjSmExV3FPcVFlRkpxWGdHbWtUM2FMdGRpdWpB?=
+ =?utf-8?B?R2trL3VSK3VleTZrQm13OWlyUTdYUllJUW5rN2Y1WHRHM2Y5WlowaFpGNkxR?=
+ =?utf-8?B?RmxuWDNKNDFjbUdEK1F1UENPSWE3U2VhMHpEV2dmVmNXR2E1TytwTWFyUVJ0?=
+ =?utf-8?B?cldlQndYMm9iekEvc2VpdEhaZ1l3emxJa3FKclArRXM0VG9wWGs4bmhyNW5J?=
+ =?utf-8?B?MVVVeWl2dFVsZ2ZWbk1TcGlkN2QvdnJGNmo2U3R5SmJQTFhGS0hXVU9ZeEl0?=
+ =?utf-8?B?UEJqSVd2RXJBYVdJb1NzR0gwMFZBN0dnamR6TDljdmtBMlprTFBXM2dBTVBC?=
+ =?utf-8?B?V2RkRHRaRFJBZDlHdllsZUdzRTg0TUdlZUZBbSthS3RNMlRQd3ZsY2MvRjdr?=
+ =?utf-8?B?YkRpRkpGSEdDMWpYTnU2QWJteGE2N0RsakppZEpOL3pnZU00QVRQR1JXVXBE?=
+ =?utf-8?B?VGVNSHE3eTAvWFdkcGIyTVFRWkZFNHZ5c3JWNzlzNE52dGI1NWp5N0hSMmN6?=
+ =?utf-8?Q?K9GODwTHpigSawyzijvCQ2JoD?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0361dc52-a093-4ffc-438f-08db9a526b8c
+X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6048.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Aug 2023 10:04:59.1272
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: EipGF70X+y0YsWX7G9G6Ni8nyPHeBtWVUiAYzJG0PBcVWu9jyMCHwrI3fzCnuaaWwWcC7hQ98lIvB4tSWCRbrg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB6654
 
-From: Nicolin Chen <nicolinc@nvidia.com>
+Jason,
 
-Add a mock_domain_hw_info function and an iommu_test_hw_info data
-structure. This allows to test the IOMMU_GET_HW_INFO ioctl passing
-the test_reg value for the mock_dev.
 
-Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-Signed-off-by: Yi Liu <yi.l.liu@intel.com>
----
- drivers/iommu/iommufd/iommufd_test.h          |  9 ++++
- drivers/iommu/iommufd/selftest.c              | 16 +++++++
- tools/testing/selftests/iommu/iommufd.c       | 28 ++++++++++-
- .../selftests/iommu/iommufd_fail_nth.c        |  4 ++
- tools/testing/selftests/iommu/iommufd_utils.h | 47 +++++++++++++++++++
- 5 files changed, 103 insertions(+), 1 deletion(-)
+On 8/8/2023 9:00 PM, Jason Gunthorpe wrote:
+> On Tue, Aug 08, 2023 at 10:02:23AM +0000, Vasant Hegde wrote:
+>> From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+>>
+>> This enum variable is used to track the type of page table used by the
+>> protection domain. It will replace the protection_domain.flags in
+>> subsequent series.
+>>
+>> Suggested-by: Jason Gunthorpe <jgg@ziepe.ca>
+>> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+>> Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
+>> ---
+>>  drivers/iommu/amd/amd_iommu_types.h | 7 +++++++
+>>  drivers/iommu/amd/iommu.c           | 3 +++
+>>  2 files changed, 10 insertions(+)
+>>
+>> diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
+>> index 0d339e022572..5e89032b3dee 100644
+>> --- a/drivers/iommu/amd/amd_iommu_types.h
+>> +++ b/drivers/iommu/amd/amd_iommu_types.h
+>> @@ -555,6 +555,12 @@ struct amd_io_pgtable {
+>>  	u64			*pgd;		/* v2 pgtable pgd pointer */
+>>  };
+>>  
+>> +enum protection_domain_mode {
+>> +	PD_MODE_PT = 0,
+>> +	PD_MODE_V1,
+>> +	PD_MODE_V2,
+>> +};
+> 
+> PD_MODE_PT is redundant because the domain->type ==
+> IOMMU_DOMAIN_IDENTITY already indicates identity. It is better not to
+> denormalize the data structures.
 
-diff --git a/drivers/iommu/iommufd/iommufd_test.h b/drivers/iommu/iommufd/iommufd_test.h
-index 258de2253b61..3f3644375bf1 100644
---- a/drivers/iommu/iommufd/iommufd_test.h
-+++ b/drivers/iommu/iommufd/iommufd_test.h
-@@ -100,4 +100,13 @@ struct iommu_test_cmd {
- };
- #define IOMMU_TEST_CMD _IO(IOMMUFD_TYPE, IOMMUFD_CMD_BASE + 32)
- 
-+/* Mock structs for IOMMU_DEVICE_GET_HW_INFO ioctl */
-+#define IOMMU_HW_INFO_TYPE_SELFTEST	0xfeedbeef
-+#define IOMMU_HW_INFO_SELFTEST_REGVAL	0xdeadbeef
-+
-+struct iommu_test_hw_info {
-+	__u32 flags;
-+	__u32 test_reg;
-+};
-+
- #endif
-diff --git a/drivers/iommu/iommufd/selftest.c b/drivers/iommu/iommufd/selftest.c
-index bb2cd54ca7b6..ab4011e3a7c6 100644
---- a/drivers/iommu/iommufd/selftest.c
-+++ b/drivers/iommu/iommufd/selftest.c
-@@ -128,6 +128,21 @@ static struct iommu_domain mock_blocking_domain = {
- 	.ops = &mock_blocking_ops,
- };
- 
-+static void *mock_domain_hw_info(struct device *dev, u32 *length, u32 *type)
-+{
-+	struct iommu_test_hw_info *info;
-+
-+	info = kzalloc(sizeof(*info), GFP_KERNEL);
-+	if (!info)
-+		return ERR_PTR(-ENOMEM);
-+
-+	info->test_reg = IOMMU_HW_INFO_SELFTEST_REGVAL;
-+	*length = sizeof(*info);
-+	*type = IOMMU_HW_INFO_TYPE_SELFTEST;
-+
-+	return info;
-+}
-+
- static struct iommu_domain *mock_domain_alloc(unsigned int iommu_domain_type)
- {
- 	struct mock_iommu_domain *mock;
-@@ -279,6 +294,7 @@ static void mock_domain_set_plaform_dma_ops(struct device *dev)
- static const struct iommu_ops mock_ops = {
- 	.owner = THIS_MODULE,
- 	.pgsize_bitmap = MOCK_IO_PAGE_SIZE,
-+	.hw_info = mock_domain_hw_info,
- 	.domain_alloc = mock_domain_alloc,
- 	.capable = mock_domain_capable,
- 	.set_platform_dma_ops = mock_domain_set_plaform_dma_ops,
-diff --git a/tools/testing/selftests/iommu/iommufd.c b/tools/testing/selftests/iommu/iommufd.c
-index 8acd0af37aa5..7e0fdf372c12 100644
---- a/tools/testing/selftests/iommu/iommufd.c
-+++ b/tools/testing/selftests/iommu/iommufd.c
-@@ -113,6 +113,7 @@ TEST_F(iommufd, cmd_length)
- 	}
- 
- 	TEST_LENGTH(iommu_destroy, IOMMU_DESTROY);
-+	TEST_LENGTH(iommu_hw_info, IOMMU_GET_HW_INFO);
- 	TEST_LENGTH(iommu_ioas_alloc, IOMMU_IOAS_ALLOC);
- 	TEST_LENGTH(iommu_ioas_iova_ranges, IOMMU_IOAS_IOVA_RANGES);
- 	TEST_LENGTH(iommu_ioas_allow_iovas, IOMMU_IOAS_ALLOW_IOVAS);
-@@ -185,6 +186,7 @@ FIXTURE(iommufd_ioas)
- 	uint32_t ioas_id;
- 	uint32_t stdev_id;
- 	uint32_t hwpt_id;
-+	uint32_t device_id;
- 	uint64_t base_iova;
- };
- 
-@@ -211,7 +213,7 @@ FIXTURE_SETUP(iommufd_ioas)
- 
- 	for (i = 0; i != variant->mock_domains; i++) {
- 		test_cmd_mock_domain(self->ioas_id, &self->stdev_id,
--				     &self->hwpt_id, NULL);
-+				     &self->hwpt_id, &self->device_id);
- 		self->base_iova = MOCK_APERTURE_START;
- 	}
- }
-@@ -290,6 +292,30 @@ TEST_F(iommufd_ioas, ioas_area_auto_destroy)
- 	}
- }
- 
-+TEST_F(iommufd_ioas, get_hw_info)
-+{
-+	struct iommu_test_hw_info buffer_exact;
-+	struct iommu_test_hw_info_buffer {
-+		struct iommu_test_hw_info info;
-+		uint64_t trailing_bytes;
-+	} buffer_larger;
-+
-+	if (self->device_id) {
-+		/* Provide a user_buffer with exact size */
-+		test_cmd_get_hw_info(self->device_id, &buffer_exact, sizeof(buffer_exact));
-+		/*
-+		 * Provide a user_buffer with size larger than the exact size to check if
-+		 * kernel zero the trailing bytes.
-+		 */
-+		test_cmd_get_hw_info(self->device_id, &buffer_larger, sizeof(buffer_larger));
-+	} else {
-+		test_err_get_hw_info(ENOENT, self->device_id,
-+				     &buffer_exact, sizeof(buffer_exact));
-+		test_err_get_hw_info(ENOENT, self->device_id,
-+				     &buffer_larger, sizeof(buffer_larger));
-+	}
-+}
-+
- TEST_F(iommufd_ioas, area)
- {
- 	int i;
-diff --git a/tools/testing/selftests/iommu/iommufd_fail_nth.c b/tools/testing/selftests/iommu/iommufd_fail_nth.c
-index d4c552e56948..a220ca2a689d 100644
---- a/tools/testing/selftests/iommu/iommufd_fail_nth.c
-+++ b/tools/testing/selftests/iommu/iommufd_fail_nth.c
-@@ -576,6 +576,7 @@ TEST_FAIL_NTH(basic_fail_nth, access_pin_domain)
- /* device.c */
- TEST_FAIL_NTH(basic_fail_nth, device)
- {
-+	struct iommu_test_hw_info info;
- 	uint32_t ioas_id;
- 	uint32_t ioas_id2;
- 	uint32_t stdev_id;
-@@ -611,6 +612,9 @@ TEST_FAIL_NTH(basic_fail_nth, device)
- 				  &idev_id))
- 		return -1;
- 
-+	if (_test_cmd_get_hw_info(self->fd, idev_id, &info, sizeof(info)))
-+		return -1;
-+
- 	if (_test_cmd_hwpt_alloc(self->fd, idev_id, ioas_id, &hwpt_id))
- 		return -1;
- 
-diff --git a/tools/testing/selftests/iommu/iommufd_utils.h b/tools/testing/selftests/iommu/iommufd_utils.h
-index 70353e68e599..ccd0ef7833a0 100644
---- a/tools/testing/selftests/iommu/iommufd_utils.h
-+++ b/tools/testing/selftests/iommu/iommufd_utils.h
-@@ -348,3 +348,50 @@ static void teardown_iommufd(int fd, struct __test_metadata *_metadata)
- 	})
- 
- #endif
-+
-+static int _test_cmd_get_hw_info(int fd, __u32 device_id,
-+				 void *data, size_t data_len)
-+{
-+	struct iommu_hw_info cmd = {
-+		.size = sizeof(cmd),
-+		.dev_id = device_id,
-+		.data_len = data_len,
-+		.data_ptr = (uint64_t)data,
-+	};
-+	struct iommu_test_hw_info *info = (struct iommu_test_hw_info *)data;
-+	int ret;
-+
-+	ret = ioctl(fd, IOMMU_GET_HW_INFO, &cmd);
-+	if (ret)
-+		return ret;
-+
-+	assert(cmd.out_data_type == IOMMU_HW_INFO_TYPE_SELFTEST);
-+
-+	/*
-+	 * Trailing bytes should be 0 if user buffer is larger than
-+	 * the data that kernel reports.
-+	 */
-+	if (data_len > cmd.data_len) {
-+		char *ptr = (char *)(data + cmd.data_len);
-+		int idx = 0;
-+
-+		while (idx < data_len - cmd.data_len) {
-+			assert(!*(ptr + idx));
-+			idx++;
-+		}
-+	}
-+
-+	assert(info->test_reg == IOMMU_HW_INFO_SELFTEST_REGVAL);
-+	assert(!info->flags);
-+
-+	return 0;
-+}
-+
-+#define test_cmd_get_hw_info(device_id, data, data_len)         \
-+	ASSERT_EQ(0, _test_cmd_get_hw_info(self->fd, device_id, \
-+					   data, data_len))
-+
-+#define test_err_get_hw_info(_errno, device_id, data, data_len) \
-+	EXPECT_ERRNO(_errno,                                    \
-+		     _test_cmd_get_hw_info(self->fd, device_id, \
-+					   data, data_len))
--- 
-2.34.1
+We need to track how we have setup the hardware page table here. We can use
+`IOMMU_DOMAIN_IDENTITY` for PT mode, but we don't have anything for other two
+modes. So having macros makes it easy. Hence we have introduced new macros for
+protection domain.
 
+-Vasant
