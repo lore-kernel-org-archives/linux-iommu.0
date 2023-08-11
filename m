@@ -1,325 +1,162 @@
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2048.outbound.protection.outlook.com [40.107.93.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E51F63B1
-	for <iommu@lists.linux.dev>; Fri, 11 Aug 2023 14:15:08 +0000 (UTC)
-Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
-	by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 37BDHh7M003165;
-	Fri, 11 Aug 2023 14:14:22 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=corp-2023-03-30;
- bh=dJ5CdnhENpEHjVFOtVqSlIhSKUEy3EJzoRa1KmfH4+E=;
- b=cxa5YLWBzBaOHEX50eivCYLgL0QmxaXAcds9PJqspEsj8ssogMrUzjMDweG3SatjoVWz
- x0eAAtS63/KLLAWnkqJblC3W8JoCEzKGup6C3QbIdEtpTmAYnDJgxDSOuSQs947tePrw
- 7YFhWy7f93ud4qyXsmvqKLV3tLyjJm8K8f9JWskSz0Z0HxbtcScZhfzbTpr7GGUrWY/x
- VAbLaD6ajOWeRTHB00NiqnB/kQyw3Lg1tDod/hB5bVAfZiq0plTIX77ECKV2UTMu0kYU
- YUXi9nvzWaOhhVIoJC2p5hCD5Xyyh8NGqv19loNFD2MCayTRi5BNcspp+KLrIfSr1UGx 7w== 
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
-	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3sd8y5h4bm-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Fri, 11 Aug 2023 14:14:22 +0000
-Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.19/8.17.1.19) with ESMTP id 37BCe5KO009684;
-	Fri, 11 Aug 2023 14:14:21 GMT
-Received: from nam10-bn7-obe.outbound.protection.outlook.com (mail-bn7nam10lp2103.outbound.protection.outlook.com [104.47.70.103])
-	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3s9cvgdfnv-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Fri, 11 Aug 2023 14:14:21 +0000
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F41863B6
+	for <iommu@lists.linux.dev>; Fri, 11 Aug 2023 16:45:44 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=HATWXFlw9m1r96efObgjdAh1wGKOesGLicRJMfXloPeR/Nbd/tXu9ZVfVXttrXugzsYjV4O52ouRgtD7KgGNUj4SMgMuyxMaa37W5aPjsbFt2RF6CIWUS3JkNgRcMS59stMmDwjy5fo3AJHwSs/f+CQSBaBzE/AFEI+w79BBKU7PJaHBGQb4HdOOp8CXsZp5RpWfZoty04TUPV/NmmguV465BdtbAW7h6FTGmRz2+4e2ecuwsyxs6q21U7ThGz1hS+Gb9/Izz2CmXkKJ02i+0foWpHcu0iotqAvGrjtKmUqrNaPDFmTcAK2WUi7CJNthX53M1mvDWlLIGqWGs4JXlw==
+ b=a+EEMtDIl2QsaVJpNqdY4RhtaQBrZPE1OAA+zWGiCoUeu0TazPqJxatEUINI2bud05anopeYgSqQCWBGtKlj1LgNceAMQn7dtTI+OeDZnPgaCb4CrdMmyUlkzTlTSc/WBRbkfKQLt/AY/VUlzoe8nSPDP7+9PPLHU2Cckyxmr9je9sVUK8ivzdgh4Cv0T3tXJ5AlEP7umT8XSSD6W/vRqGe6HHDrANbJSj6J6PZlnZwh6x4wHSRXXQE1TfV60VQrPTObMa0cq2Od5ZKWgswrCUxIxTU4JI3ZXyrUsNRRtnpnxK4RhVgke0eNYxKeaqSacpA2necY8mZ39zWk4IDXnA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=dJ5CdnhENpEHjVFOtVqSlIhSKUEy3EJzoRa1KmfH4+E=;
- b=UzLxdohWcGbIQRLvU4Aeu0pROx/iHUxa2iJzyPWzCUrcE9s6XQRevJxDuMVffvIYrwBEjkc8Zz6bsa4oqfK2TXzExajZHDU3CKy2+ontJwq7rZ1XEse2ksJl/1YXt9L2RhteVhOtGsczNDTJrRoEWKdXzfsuRgtTHAT07/6PdcJTEAkfoZzhGUQ538P3BH4c2soUNsw5NQm0ZLtLxiSU+shH9HsL0Cr1x+VSpbxSLSBGJmacS7vflgCtW0ysfoTdwZlh9VzxtfO4IGTdOBOkEGVUWVwFLGZ3fYseAX7ujsXPPKG6w6lxSK54MZEJ2HK85wxy4mKPhp1pFpeW0bK1kg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ bh=OxEv3kdh7Y3oPUDR/cXKlVfg7Z8PMG719tE7nLKO/TU=;
+ b=J9w3b7sIFrAozdqXTb2NKYR3ivO0RsdTAqKIMeRT3Z+nnBwpUXxhCfh6gaYpW5BD4j+KCprU2vlIPXxRAYPLXy6VfUK7HhLUIFJQ2WQPe+IDzJ7zXjhGrHnI4sFA6aWLl5Gvs00PSbvredsyLo1cFtVb7z/9PvH9+2Stb3aQwOwBeHd8S7eSYb2QKsVYUql227vrFkC60tAiOBVpVnRkADTvsnaGHBCK3Ch/bZ9Bun2vNXYC8bBupLvTlzq4XgEU9pUgR37Q5YotDO0n2LRiIruN5NwdX8O+/NWyGBIb9s/trD9q8r0sndfIj36M6Z2iEJOfsgG8l19sNbTeW/DEOA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.160) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=dJ5CdnhENpEHjVFOtVqSlIhSKUEy3EJzoRa1KmfH4+E=;
- b=CPGPt1oyNDHDZ2ONeYBiInx9sjhbzu8RmKI14A4IYFAN75u174PpqFWU4I/UysyahaPMcPuVWtqEVlFDXkP+gdTLHVJQNmD+vVZ925T6d7nVl/KI2+fl+ABFcbKoCC3RLIywRgTw50vg6UIv1CcHQ8aPotKedOxa8Bxy+TLzgII=
-Received: from DM6PR10MB4313.namprd10.prod.outlook.com (2603:10b6:5:212::20)
- by SJ2PR10MB7785.namprd10.prod.outlook.com (2603:10b6:a03:56b::10) with
+ bh=OxEv3kdh7Y3oPUDR/cXKlVfg7Z8PMG719tE7nLKO/TU=;
+ b=QTVJASBwXya7/jt8IpfckFTyqUz+3ifSqQfGxTP9+7WMse4SIg2hQaCb3Y6HHxNMYdQ7XepMV2naFLK2NDECXOUPMz+gObiUbzUxIFO4+GMsgh3hbYWir+JBd+MZ6Y81QgLfTv3bCSLPs9hXXb8oR6GUHsIBka1rkkny60hlNn/Cpdyfi/Yg6zAsS//PUBc90LCqGdDrDWYZNABTDmlpSsK31rZAK2h8rHwC4bsNJeUS5sbhixB7jIRJ2k6CY6n/jcBWun70FOZtPWJY/07ZiD0JzHCJ3dQabtn7j/fmb5IiATB4IvwH9TJsxcb4LQThre1OR7aI+9k+disbduftDw==
+Received: from CH2PR19CA0019.namprd19.prod.outlook.com (2603:10b6:610:4d::29)
+ by LV2PR12MB5846.namprd12.prod.outlook.com (2603:10b6:408:175::6) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6652.30; Fri, 11 Aug
- 2023 14:14:19 +0000
-Received: from DM6PR10MB4313.namprd10.prod.outlook.com
- ([fe80::ebfd:c49c:6b8:6fce]) by DM6PR10MB4313.namprd10.prod.outlook.com
- ([fe80::ebfd:c49c:6b8:6fce%6]) with mapi id 15.20.6652.029; Fri, 11 Aug 2023
- 14:14:19 +0000
-Message-ID: <a190ba95-79d1-e9e2-1f62-97aa94a4be7b@oracle.com>
-Date: Fri, 11 Aug 2023 15:14:16 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.14.0
-Subject: Re: [RESEND PATCH 2/2] iommu/iova: allocate iova_rcache->depot
- dynamicly
-Content-Language: en-US
-To: Zhang Zekun <zhangzekun11@huawei.com>, robin.murphy@arm.com,
-        joro@8bytes.org, will@kernel.org
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-        baolu.lu@linux.intel.com, robh@kernel.org, nicolinc@nvidia.com,
-        kevin.tian@intel.com
-References: <20230811130246.42719-1-zhangzekun11@huawei.com>
- <20230811130246.42719-3-zhangzekun11@huawei.com>
-From: John Garry <john.g.garry@oracle.com>
-Organization: Oracle Corporation
-In-Reply-To: <20230811130246.42719-3-zhangzekun11@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: AS4PR09CA0008.eurprd09.prod.outlook.com
- (2603:10a6:20b:5e0::18) To DM6PR10MB4313.namprd10.prod.outlook.com
- (2603:10b6:5:212::20)
+ 2023 16:45:42 +0000
+Received: from MWH0EPF000989E9.namprd02.prod.outlook.com
+ (2603:10b6:610:4d:cafe::6) by CH2PR19CA0019.outlook.office365.com
+ (2603:10b6:610:4d::29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6652.31 via Frontend
+ Transport; Fri, 11 Aug 2023 16:45:42 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ MWH0EPF000989E9.mail.protection.outlook.com (10.167.241.136) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6652.19 via Frontend Transport; Fri, 11 Aug 2023 16:45:41 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Fri, 11 Aug 2023
+ 09:45:21 -0700
+Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Fri, 11 Aug
+ 2023 09:45:21 -0700
+Received: from Asurada-Nvidia (10.127.8.14) by mail.nvidia.com (10.129.68.6)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37 via Frontend
+ Transport; Fri, 11 Aug 2023 09:45:20 -0700
+Date: Fri, 11 Aug 2023 09:45:18 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+CC: Jason Gunthorpe <jgg@nvidia.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
+	"joro@8bytes.org" <joro@8bytes.org>, "alex.williamson@redhat.com"
+	<alex.williamson@redhat.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>, "cohuck@redhat.com"
+	<cohuck@redhat.com>, "eric.auger@redhat.com" <eric.auger@redhat.com>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>, "mjrosato@linux.ibm.com"
+	<mjrosato@linux.ibm.com>, "chao.p.peng@linux.intel.com"
+	<chao.p.peng@linux.intel.com>, "yi.y.sun@linux.intel.com"
+	<yi.y.sun@linux.intel.com>, "peterx@redhat.com" <peterx@redhat.com>,
+	"jasowang@redhat.com" <jasowang@redhat.com>,
+	"shameerali.kolothum.thodi@huawei.com"
+	<shameerali.kolothum.thodi@huawei.com>, "lulu@redhat.com" <lulu@redhat.com>,
+	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>, "Duan,
+ Zhenzhong" <zhenzhong.duan@intel.com>
+Subject: Re: [PATCH v4 09/12] iommu/vt-d: Add iotlb flush for nested domain
+Message-ID: <ZNZlnh+/Q5Vk5Kul@Asurada-Nvidia>
+References: <ZNO92PIx2IQ70+DY@nvidia.com>
+ <ZNPlGd4/72dahSs4@Asurada-Nvidia>
+ <ZNPmpW3/zDnjqxyU@nvidia.com>
+ <ZNP0UKGU6id5wfc6@Asurada-Nvidia>
+ <BN9PR11MB527683351B687B97AB84B51B8C13A@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <ZNUI0D7ZMvLWlBNx@nvidia.com>
+ <ZNUa/VmeiIo0YA0v@Asurada-Nvidia>
+ <ZNU6BnTgNEWlwNYQ@nvidia.com>
+ <ZNVQcmYp27ap7h30@Asurada-Nvidia>
+ <BN9PR11MB5276D0B3E0106C73C498B8018C10A@BN9PR11MB5276.namprd11.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <BN9PR11MB5276D0B3E0106C73C498B8018C10A@BN9PR11MB5276.namprd11.prod.outlook.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6PR10MB4313:EE_|SJ2PR10MB7785:EE_
-X-MS-Office365-Filtering-Correlation-Id: ce85d8d0-c707-4ef9-5a1d-08db9a7540c7
+X-MS-TrafficTypeDiagnostic: MWH0EPF000989E9:EE_|LV2PR12MB5846:EE_
+X-MS-Office365-Filtering-Correlation-Id: edc32989-36d3-4487-fcf8-08db9a8a6672
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 
-	SvK59aHAanU5O/MPycctjSlJ+7XriKmifU8ZaXqADCjwKo1Bltk5QN0OTSL/gQ5O+oOK/c4ZSODf1n5n/bC/CRRBt3dYBV02UF7AyhfrwbHldLnTPObi9tn3jfsHjEtkH68MLHIpkC//R69Tv5whFoOq8SDNH9L13OvDRp8giF/6evA7jkvN5QYfUbxCrv8k3DlAVx4SKZkJGWY7wxzo/uFB4nfaIsU7Mg0b3P329xgk6ROMavVOUjh4tO7IQ9ISUYbvUMwei+NRi7143GE9oczxbgj+kKxyP2ZRryRaHn6ZfmzRMrY+99hVVAIeffAqooTiVEjQZd0g4TKmsHXyd7qDM/POCowm1VFHioTVKEotOa8CPcUnpnuytFul7bp2Rwa/zThis9hrvZbXXG90JaCfPN12zK/Co5xgCfqW6k077fe0CIE/rfn+F84+kkUQ1I4rhZPhOYGxbl7LPDMTZhxsgixIq3SPDC5Xx71h21SVguEK5dpXdTnRpBL5s26HDCsiU7qHgIScBNY4SzeVTX06rnVTwMR3H8QzgXA6/xoPSjjO+Swdep9pjpeuIDaT3auYfXe1VhJWkSBsr75dSTtEDRwbi7aQznPsFY7Fvf1ultLz+XyGNVGty2DpeB482huY0qGcoefX1Nn/wHCHPw==
-X-Forefront-Antispam-Report: 
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR10MB4313.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(136003)(346002)(366004)(396003)(376002)(39860400002)(451199021)(1800799006)(186006)(6486002)(36916002)(2616005)(6666004)(36756003)(53546011)(6506007)(26005)(6512007)(31686004)(66946007)(316002)(38100700002)(4326008)(5660300002)(66556008)(66476007)(2906002)(83380400001)(31696002)(8936002)(41300700001)(478600001)(8676002)(7416002)(86362001)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: 
-	=?utf-8?B?MElTUFgySjQ0alVmQXFHVmRzM2JvZ0luUWxhYWVLQmYxU1lCQUQ1TkpGU0Fn?=
- =?utf-8?B?RmVUSGVWUmhsSE1UNTMvLzhXeXF0RlVpUWh1OFpHeE9xdjRMYWhsN05wNnV1?=
- =?utf-8?B?aVFjTEFiWUxMejVsaFZYckY5MmljL2pFQU95S0pIWXI3MVFWNm8rU0VIR1Z6?=
- =?utf-8?B?a2tRR3RaRm4wdzhaSHhycS8xRmVsRk44dmVXUFlCQ3orSnNnbjBBeXkyamEy?=
- =?utf-8?B?L0EzVDRTOVZ1MlFuVU84TmpCUVVlMUF5TFZEYkRDQW50cFIxMVZJWWhsSXdL?=
- =?utf-8?B?NnpraXJtWE9maXpUZmQ1N3V2eTg0aFlCNVhjT3A3Y1BaWHY4Mzd1d2w1QnVj?=
- =?utf-8?B?dW1oUGNlUHU5RitKVjhtanBWd3F6ZWhMbWM0NU15cDVxa1RHMzB6TVh0bnlE?=
- =?utf-8?B?cHdhN09QNzQ4a3NiNjVpM0grNzZaaHRXMHFhZ1FkQ3U0d1RGbThtUTNKTE9M?=
- =?utf-8?B?YlMzNTNNVGJjYVRaVDJpUUFWTUpsR0FQUG1ZQkZsVW80ME9GTDhwbXpGMXFn?=
- =?utf-8?B?bnNVYk5SWk1lTWljWGJPZHY5T2dqWkd4cVFjazYvUzJNTDVlTUpBMGdmK01F?=
- =?utf-8?B?OVZZdGtlUnBINXcrQmpOWkM5ZlBleksyZW9Wd3lteEtJdmZlWkt5TlZvYlJu?=
- =?utf-8?B?S3FuR3pxK2RLdEUxYXYxRitxdWVWV2ZXRjRNdW41SzNodHhYQlZJbnpqRDhz?=
- =?utf-8?B?ZTFhVjFSSlh0UExQNm45WW5IdVg0ck15VTdVVkdvZUlrQmd5anZaaUc2UUwx?=
- =?utf-8?B?TVkvUUNyRVBNNndTWU9iemlIM2VkWUVwWkE5RnNFZk9VWkdjcVJWWVVaaFh4?=
- =?utf-8?B?N2VZeHN2bFZBZURUOW5DWmQwME82bk5DN1J4YTFOZG9qeE9XWElGT3pFUktH?=
- =?utf-8?B?RVd1RUlxWHdlWFBWS3dPa3NPUkd5am55VkpUa2ZUWHA0Sy9leFdiMmlEV1V2?=
- =?utf-8?B?MWh4TUxaWVNWM05TYjkzdExiUmN1UTdKclNqV2dTN2FYczlPREU5cXNaSEVn?=
- =?utf-8?B?VXhJc3YzM2hqRmlRYVB0b28vdmxhN1lVU2ZNc09wYysvWHhSYi9yQzdqVGRH?=
- =?utf-8?B?OHEwaGx6VVhqSHlKYjc2a0FwdFBJc1JsM3AzNXFlN1R6K29KSG5vbXJwOVQ5?=
- =?utf-8?B?Sms2TXowdXd1QllvZG55bmRURXdsZGluQ3VCMjJFVmROVU40M1dGRUJqL3FB?=
- =?utf-8?B?bmNBOE82d1MxVUt2M2pGd29DNGxoK1FNZUhybTQ0Um5Ya01VQXRzRUdMM1FU?=
- =?utf-8?B?WGxCZC9XcUxYMlBLK1N6MjhtTzdYVWRvK3g0SFo4aEh5MHVTbzdWdUczUmZx?=
- =?utf-8?B?cmVLaFpSWFRmOVVSdG5vTGVuUlg4czFtemQ5NlJISnRFdWpTenZzeHo5aFpL?=
- =?utf-8?B?cVYremNqaGFtSVVCeVA0TGpsS3l1VTYxdHhTelY1K01PbG1RcDJmOFo5aTlP?=
- =?utf-8?B?MmtEUDhCVi9MYnJ6MnFVVkxwLzY2WUd2ZWJ1OEkrcXlvbVhoN3I2OFJNWXpW?=
- =?utf-8?B?dVdUSzhPMjhRdHY1UFBxbnZPbFoyUEpBWnNORm9DNnRMYXVpVXdGYXo4TFpi?=
- =?utf-8?B?RmxXM1hFTHJBVzNtbnl0NzIrOGJKVmk1SHhwTFRMdUFPWDlEZ1lFaUFOakIy?=
- =?utf-8?B?bXBQVDhrYXQyUFVqb1I4UzNKMGw1YUJ2aVFXazFoaVoxQW9mZUFSenpBNXg1?=
- =?utf-8?B?TjRZNVl6UVN4NTJJYWpRVnB3cWJrQkVrZU5RSTJ3NWFjTTVDcVprejhMWHY5?=
- =?utf-8?B?YlRMN25hUmdzdG80UzlKcG1SUGhvK2wwNG0xOC92Vmo4VjZ3MDh3RnVBU0Ur?=
- =?utf-8?B?Z2Z3cVIxc2dEeTlOanQyb3lmczhXTDB6MzlRcC9IZlNXMDhXaFBvTWk0Zm92?=
- =?utf-8?B?T1doZlBjY0NvM1AxU0JKWE95N3NONUtpeVB5QzV6SzdxYnJiWlZ0d3BRb2Fh?=
- =?utf-8?B?aVFwL2ZmSlpFVncyTDNBSXZES2I3enBjeFRjekNLUSttQUFOeEFWMkZIUVdW?=
- =?utf-8?B?T1BmUk1IZWI5eGlRL1oyWnBrVStLM0hGb0VwYUs5Yit0eTF1MUg2Z2RQV2Iv?=
- =?utf-8?B?VlIvTmZIMjM5NWExQUtzOUNoRTZkcTFiaU5uSEZuODB6TVRuT1gzZFZWcEps?=
- =?utf-8?Q?6DfdiLSK+ibr2cOFKt19BP7xr?=
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0: 
-	=?utf-8?B?TEF0ZktrSG5QMmIvdnFXWHc5akllYjFGenJzR1JUaG5BU3NBSmR1YXFhWkE5?=
- =?utf-8?B?UU5heSs3cDdBbWpKUUd0ZVVtZXZINktHdmlDMTduVHEvcGdEdDFwSkJBdWlI?=
- =?utf-8?B?RkJWQ3ErOUFadHR1TmZIbXRPZmtqdERWQUsrZ0prOGVTWFBhRnNjZXZ5b2J3?=
- =?utf-8?B?bTA5Z0RxWEFuaUJtb1N3cmhTQkxUNHdqNTRNMVVzM0p0T3BrN2JMNmd3Z3RW?=
- =?utf-8?B?bjVVcjM2VVpQaTZSbU4xNmZEZ3FGWCtQZ2ppaHYwR2FYd1RvV0IwdVc1RkJn?=
- =?utf-8?B?S211RmpXOEdBOFBVdHBPUnByaDFPaTVoL0tTMW14Tm9PcktaTHJBL1lIUE1T?=
- =?utf-8?B?cFpmdWZYc2NFY2xyNkJPblZZNU1yS2NuWDh3cll2eG50WTNjdGRMcWwwN01C?=
- =?utf-8?B?cTRTTXJlQlArVFZwdHk4YmZDdkZXVXhRbXAzd25nZ0lMUWVoZTdXOERCdnFV?=
- =?utf-8?B?dk16Y3FUa0xNQTV3SlAxT29jcUNNRlJPR1RvNG9BY0R1NE42R1FpdVI4UWJE?=
- =?utf-8?B?OHEwemNCOUZJQ3ZlUUVLN3Z6NWR1Um50ZDJqeHJMaTdJRjg1eTdWQ3R5WjVQ?=
- =?utf-8?B?R0FYTC93eXZWbG1FK0xvcG0yME9yTXBVQUNjTW9MeTlFUysvaUZsZEE2Sk9q?=
- =?utf-8?B?ZlJYOE1ZMEFCREsvYWZLU0haNVVuTHN6aDNCWG9BdzZ5ZkhLU0xZMVUwQVFV?=
- =?utf-8?B?ZWc3anN3Mmw2NVI5RCs0TG05Ulczc1JBYnQwbUZiekFzdmpUTFgzY3d2ZVlW?=
- =?utf-8?B?djB1YmxPTmNsNE8zTHlKTWlZSDhwNlVPSDVoREwyV3NOV203bTZQOExBT2Rr?=
- =?utf-8?B?d01IeThhWjVHZjBhYUVIVk9ON2pRLzQ5dkE2c3U1UzZCbEcvRWdTL1cwTkFE?=
- =?utf-8?B?bzN5dVplZ2F4Si9BMFpHeCtYSFNMeDlmUWdjdWo0VDV1cE5QTEpxTVd0SVV0?=
- =?utf-8?B?MUNtTGtNS1VwOS9LWjV0cm9qTE1uZy9BYTRiMkZpa0ROeGhXczdjUkxtckph?=
- =?utf-8?B?UlBYSWZmQmhPNWhEOVo4SjVuTVMyZzMvM2ZBelZPOGRSQUtNUWh3MUMwQmk4?=
- =?utf-8?B?c2JjaFdaVHdaNjVIcC9xN1MzUGttMWdnY0NISWEvVHJicTVmSVBOV0JVeS8w?=
- =?utf-8?B?TGMrb2NSdkt0OVhidHcxS0FrNjlicDg4cXUrQ3QrU0VHZmsrWXh5YmFneHNa?=
- =?utf-8?B?NkZJRm5pOUNCbjM4RE1YTnJjM2ZIQVF4aW4zM3hpQVB6Q0hjZmNLMXRGbzZY?=
- =?utf-8?B?alR0WFJPL1RvR1hGb3NvQTZYejZtaXZpaVZReG5iY2pqUDg1SGYrN25Oeiti?=
- =?utf-8?Q?SBSDExp/GHKmyeWfy7bBmhsSg8e1nWVLW1?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ce85d8d0-c707-4ef9-5a1d-08db9a7540c7
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR10MB4313.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Aug 2023 14:14:19.3861
+X-Microsoft-Antispam-Message-Info:
+	szGgPs26a6i2y1b83hmDK1Y3irF7cAqtvAlXi+X1cTxEbgKqfvAPapRDBimxg03cGHuhnM8XQIbIqKFAXXpI1B/Nr2wFtOsgBBOWtMxO7zwwlhNm9+ZSg34T1T8Aj2b6SgkymNquE+wBdse+M6rtMESeAcClvh7AJUfB3LUXcM8uo/hBDUPFCjYRfRLxX4NS7vvS7apfSdIo9VkzJPX2b7r1TBKy7ObCZp/2OuXT8WSRKfBd+tncSLwnFeMTlkhwdgD59SqhfDwlBuDCzontTEtkimw45D0W3R2dE9QEOkAgez2RiWi2NEOGn4Sj46SlmBDiJa2Gv9M5Ul+Ate2YEGT7j7Dlnj38GKKR2DHSlrtpU7wxSjIIdG6Vrfh3mwc+8OUBAVf6MrUqqEzKO78b2FndAFQV+vm7OTSAPyZT4yTEbsv55Irq1X5gEMLRtMfLOCODeaN68hSMcmWQgD3KLBEJ9jR+m4cfcqd6sHCbltPGR01+LbOptn6aG/5Dlv+Rb9Ae0AYLchXMK3tWPpWIAgjXkdhdTAMXannRsFQvF1G0hMg5wExrnNMiLFJQcj+ouDV/eMwDINcU2RZ1zgAl5aGl6yGq0FruaeP3+7nCgpElopf0D3ycLMzj5PZSHP3121Lik+yPOoRFaQw/CVjqTvFwXCkPMbEESHTMMBOS7xCVk25hRviOHkMloT5faxe3FknAxQD0LjLEl+qddZIPQ62jSaOXkw4m5FsZWOnES3UpMtHRHaAh3carwRApNji8
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(396003)(39860400002)(346002)(136003)(376002)(451199021)(1800799006)(186006)(82310400008)(40470700004)(36840700001)(46966006)(2906002)(55016003)(40480700001)(478600001)(82740400003)(356005)(54906003)(7636003)(40460700003)(5660300002)(7416002)(8936002)(8676002)(86362001)(33716001)(70206006)(4326008)(6916009)(70586007)(41300700001)(316002)(9686003)(36860700001)(83380400001)(426003)(47076005)(26005)(336012);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Aug 2023 16:45:41.6470
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 7L/2OSfreavuzgBxEz93zrb13vt+AQbkgKETTxwDdPDz1uiEfL83NyHuYKSWyVq+E/qj7huGQOOC95uh0L+vwQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ2PR10MB7785
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.267,Aquarius:18.0.957,Hydra:6.0.591,FMLib:17.11.176.26
- definitions=2023-08-11_06,2023-08-10_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 suspectscore=0 adultscore=0
- phishscore=0 mlxscore=0 mlxlogscore=999 spamscore=0 malwarescore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2306200000
- definitions=main-2308110130
-X-Proofpoint-ORIG-GUID: SonJWfvcUsjZ91md307q-UFAm_Ka0Mi1
-X-Proofpoint-GUID: SonJWfvcUsjZ91md307q-UFAm_Ka0Mi1
+X-MS-Exchange-CrossTenant-Network-Message-Id: edc32989-36d3-4487-fcf8-08db9a8a6672
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	MWH0EPF000989E9.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV2PR12MB5846
 
-On 11/08/2023 14:02, Zhang Zekun wrote:
-> In fio test with 4k,read,and allowed cpus to 0-255, we observe a performance
-> decrease of IOPS. The normal IOPS 
-
-What do you mean by normal IOPS? Describe this "normal" scenario.
-
-? can reach up to 1980k, but we can only
-> get about 1600k.
+On Fri, Aug 11, 2023 at 03:52:52AM +0000, Tian, Kevin wrote:
+ 
+> > From: Nicolin Chen <nicolinc@nvidia.com>
+> > Sent: Friday, August 11, 2023 5:03 AM
+> >
+> > > > > Is there a use case for invaliation only SW emulated rings, and do we
+> > > > > care about optimizing for the wrap around case?
+> > > >
+> > > > Hmm, why a SW emulated ring?
+> > >
+> > > That is what you are building. The VMM catches the write of the
+> > > producer pointer and the VMM SW bundles it up to call into the kernel.
+> >
+> > Still not fully getting it. Do you mean a ring that is prepared
+> > by the VMM? I think the only case that we need to handle a ring
+> > is what I did by forwarding the guest CMDQ (a ring) to the host
+> > directly. Not sure why VMM would need another ring for those
+> > linearized invalidation commands. Or maybe I misunderstood..
+> >
 > 
-> abormal IOPS:
-> Jobs: 12 (f=12): [R(12)][99.3%][r=6220MiB/s][r=1592k IOPS][eta 00m:12s]
-> Jobs: 12 (f=12): [R(12)][99.4%][r=6215MiB/s][r=1591k IOPS][eta 00m:11s]
-> Jobs: 12 (f=12): [R(12)][99.4%][r=6335MiB/s][r=1622k IOPS][eta 00m:10s]
-> Jobs: 12 (f=12): [R(12)][99.5%][r=6194MiB/s][r=1586k IOPS][eta 00m:09s]
-> Jobs: 12 (f=12): [R(12)][99.6%][r=6173MiB/s][r=1580k IOPS][eta 00m:08s]
-> Jobs: 12 (f=12): [R(12)][99.6%][r=5984MiB/s][r=1532k IOPS][eta 00m:07s]
-> Jobs: 12 (f=12): [R(12)][99.7%][r=6374MiB/s][r=1632k IOPS][eta 00m:06s]
-> Jobs: 12 (f=12): [R(12)][99.7%][r=6343MiB/s][r=1624k IOPS][eta 00m:05s]
-> 
-> normal IOPS:
-> Jobs: 12 (f=12): [R(12)][99.3%][r=7736MiB/s][r=1980k IOPS][eta 00m:12s]
-> Jobs: 12 (f=12): [R(12)][99.4%][r=7744MiB/s][r=1982k IOPS][eta 00m:11s]
-> Jobs: 12 (f=12): [R(12)][99.4%][r=7737MiB/s][r=1981k IOPS][eta 00m:10s]
-> Jobs: 12 (f=12): [R(12)][99.5%][r=7735MiB/s][r=1980k IOPS][eta 00m:09s]
-> Jobs: 12 (f=12): [R(12)][99.6%][r=7741MiB/s][r=1982k IOPS][eta 00m:08s]
-> Jobs: 12 (f=12): [R(12)][99.6%][r=7740MiB/s][r=1982k IOPS][eta 00m:07s]
-> Jobs: 12 (f=12): [R(12)][99.7%][r=7736MiB/s][r=1981k IOPS][eta 00m:06s]
-> Jobs: 12 (f=12): [R(12)][99.7%][r=7736MiB/s][r=1980k IOPS][eta 00m:05s]
-> 
-> The current struct of iova_rcache will have iova_cpu_rcache for every
-> cpu, and these iova_cpu_rcaches use a common buffer iova_rcache->depot to
-> exchange iovas among iova_cpu_rcaches. A machine with 256 cpus will have
-> 256 iova_cpu_rcaches and 1 iova_rcache->depot per iova_domain. However,
-> the max size of iova_rcache->depot is fixed to MAX_GLOBAL_MAGS which equals
-> to 32, and can't grow with the number of cpus, and this can cause problem
-> in some condition.
-> 
-> Some drivers will only free iovas in their irq call back function. For
-> the driver in this case it has 16 thread irqs to free iova, but these
-> irq call back function will only free iovas on 16 certain cpus(cpu{0,16,
-> 32...,240}). Thread irq which smp affinity is 0-15, will only free iova on
-> cpu 0. However, the driver will alloc iova on all cpus(cpu{0-255}), cpus
-> without free iova in local cpu_rcache need to get free iovas from
-> iova_rcache->depot. The current size of iova_rcache->depot max size is 32,
-> and it seems to be too small for 256 users (16 cpus will put iovas to
-> iova_rcache->depot and 240 cpus will try to get iova from it). Set
-> iova_rcache->depot grow with the num of possible cpus, and the decrease
-> of IOPS disappear.
+> iiuc the point of a ring-based native format is to maximum code reuse
+> when later in-kernel fast invalidation path (from kvm to smmu driver)
+> is enabled. Then both slow (via vmm) and fast (in-kernel) path use
+> the same logic to handle guest invalidation queue.
 
-Doesn't it take a long time for all the depots to fill for you? From the 
-description, this sounds like the hisilicon SAS controller which you are 
-experimenting with and I found there that it took a long time for the 
-depots to fill for high throughput testing.
+I see. That's about the fast path topic. Thanks for the input.
 
-Thanks,
-John
+> But if stepping back a bit supporting an array-based non-native format
+> could simplify the uAPI design and allows code sharing for array among
+> vendor drivers. You can still keep the entry as native format then the
+> only difference with future in-kernel fast path is just on walking an array
+> vs. walking a ring. And VMM doesn't need to expose non-invalidate
+> cmds to the kernel and then be skipped.
 
-> 
-> Signed-off-by: Zhang Zekun <zhangzekun11@huawei.com>
-> ---
->   drivers/iommu/iova.c | 26 ++++++++++++++++++++++----
->   1 file changed, 22 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-> index 3c784a28e9ed..df37a4501e98 100644
-> --- a/drivers/iommu/iova.c
-> +++ b/drivers/iommu/iova.c
-> @@ -238,6 +238,7 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
->   
->   static struct kmem_cache *iova_cache;
->   static unsigned int iova_cache_users;
-> +static unsigned int max_global_mags;
->   static DEFINE_MUTEX(iova_cache_mutex);
->   
->   static struct iova *alloc_iova_mem(void)
-> @@ -625,7 +626,6 @@ EXPORT_SYMBOL_GPL(reserve_iova);
->    * will be wasted.
->    */
->   #define IOVA_MAG_SIZE 127
-> -#define MAX_GLOBAL_MAGS 32	/* magazines per bin */
->   
->   struct iova_magazine {
->   	unsigned long size;
-> @@ -641,7 +641,7 @@ struct iova_cpu_rcache {
->   struct iova_rcache {
->   	spinlock_t lock;
->   	unsigned long depot_size;
-> -	struct iova_magazine *depot[MAX_GLOBAL_MAGS];
-> +	struct iova_magazine **depot;
->   	struct iova_cpu_rcache __percpu *cpu_rcaches;
->   };
->   
-> @@ -722,6 +722,13 @@ int iova_domain_init_rcaches(struct iova_domain *iovad)
->   	unsigned int cpu;
->   	int i, ret;
->   
-> +	/*
-> +	 * the size of max global mags should growth with the num of
-> +	 * cpus
-> +	 */
-> +	if (!max_global_mags)
-> +		max_global_mags = max_t(unsigned int, 32, num_possible_cpus());
-> +
->   	iovad->rcaches = kcalloc(IOVA_RANGE_CACHE_MAX_SIZE,
->   				 sizeof(struct iova_rcache),
->   				 GFP_KERNEL);
-> @@ -733,6 +740,12 @@ int iova_domain_init_rcaches(struct iova_domain *iovad)
->   		struct iova_rcache *rcache;
->   
->   		rcache = &iovad->rcaches[i];
-> +		rcache->depot = kcalloc(max_global_mags, sizeof(struct iova_magazine *),
-> +					GFP_KERNEL);
-> +		if (!rcache->depot) {
-> +			ret = -ENOMEM;
-> +			goto out_err;
-> +		}
->   		spin_lock_init(&rcache->lock);
->   		rcache->depot_size = 0;
->   		rcache->cpu_rcaches = __alloc_percpu(sizeof(*cpu_rcache),
-> @@ -798,7 +811,7 @@ static bool __iova_rcache_insert(struct iova_domain *iovad,
->   
->   		if (new_mag) {
->   			spin_lock(&rcache->lock);
-> -			if (rcache->depot_size < MAX_GLOBAL_MAGS) {
-> +			if (rcache->depot_size < max_global_mags) {
->   				rcache->depot[rcache->depot_size++] =
->   						cpu_rcache->loaded;
->   			} else {
-> @@ -903,8 +916,12 @@ static void free_iova_rcaches(struct iova_domain *iovad)
->   
->   	for (i = 0; i < IOVA_RANGE_CACHE_MAX_SIZE; ++i) {
->   		rcache = &iovad->rcaches[i];
-> -		if (!rcache->cpu_rcaches)
-> +		if (!rcache->depot)
-> +			break;
-> +		if (!rcache->cpu_rcaches) {
-> +			kfree(rcache->depot);
->   			break;
-> +		}
->   		for_each_possible_cpu(cpu) {
->   			cpu_rcache = per_cpu_ptr(rcache->cpu_rcaches, cpu);
->   			if (!cpu_rcache->loaded)
-> @@ -917,6 +934,7 @@ static void free_iova_rcaches(struct iova_domain *iovad)
->   		free_percpu(rcache->cpu_rcaches);
->   		for (j = 0; j < rcache->depot_size; ++j)
->   			iova_magazine_free(rcache->depot[j]);
-> +		kfree(rcache->depot);
->   	}
->   
->   	kfree(iovad->rcaches);
+Ah, so we might still design the uAPI to be ring based at this
+moment, yet don't support a case CONS > 0 to leave that to an
+upgrade in the future.
 
+I will try estimating a bit how complicated to implement the
+ring, to see if we could just start with that. Otherwise, will
+just start with an array.
+
+Thanks
+Nic
