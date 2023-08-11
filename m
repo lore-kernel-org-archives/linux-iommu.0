@@ -1,162 +1,180 @@
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2048.outbound.protection.outlook.com [40.107.93.48])
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2064.outbound.protection.outlook.com [40.107.220.64])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F41863B6
-	for <iommu@lists.linux.dev>; Fri, 11 Aug 2023 16:45:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D25A63B3
+	for <iommu@lists.linux.dev>; Fri, 11 Aug 2023 16:51:09 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=a+EEMtDIl2QsaVJpNqdY4RhtaQBrZPE1OAA+zWGiCoUeu0TazPqJxatEUINI2bud05anopeYgSqQCWBGtKlj1LgNceAMQn7dtTI+OeDZnPgaCb4CrdMmyUlkzTlTSc/WBRbkfKQLt/AY/VUlzoe8nSPDP7+9PPLHU2Cckyxmr9je9sVUK8ivzdgh4Cv0T3tXJ5AlEP7umT8XSSD6W/vRqGe6HHDrANbJSj6J6PZlnZwh6x4wHSRXXQE1TfV60VQrPTObMa0cq2Od5ZKWgswrCUxIxTU4JI3ZXyrUsNRRtnpnxK4RhVgke0eNYxKeaqSacpA2necY8mZ39zWk4IDXnA==
+ b=ksBve31e/k831qHrbDruwxGIUEAJJIRO7buaJ2oi5Zk2RVAZaoZUEu/YljEF9TBY/F5eTxSjnYZlNKayGbL+72bnsxuX8HUK7un22G7wHk6jwxIy5Hx40Z0Mso4+AiEErFgdgCtoAKE3epC279ykDGXSHndvKH8WA1mg/QTVbD9fyV3wTidMEt0dBbcysDMLES1ZgLYOy540ZgMh8d8oCI+YclrimM9i4c8gtD+pqDpR9bVjbO/IGi7KcfTOz2CUdaKuRwVKXQvliOya6xcAnOy0iAVi/9zRNxfe1YOM8Uvmv3t8a1Wvw2aAOlIt+bc2YlDreDNEXVnPiIX7okd0Ow==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=OxEv3kdh7Y3oPUDR/cXKlVfg7Z8PMG719tE7nLKO/TU=;
- b=J9w3b7sIFrAozdqXTb2NKYR3ivO0RsdTAqKIMeRT3Z+nnBwpUXxhCfh6gaYpW5BD4j+KCprU2vlIPXxRAYPLXy6VfUK7HhLUIFJQ2WQPe+IDzJ7zXjhGrHnI4sFA6aWLl5Gvs00PSbvredsyLo1cFtVb7z/9PvH9+2Stb3aQwOwBeHd8S7eSYb2QKsVYUql227vrFkC60tAiOBVpVnRkADTvsnaGHBCK3Ch/bZ9Bun2vNXYC8bBupLvTlzq4XgEU9pUgR37Q5YotDO0n2LRiIruN5NwdX8O+/NWyGBIb9s/trD9q8r0sndfIj36M6Z2iEJOfsgG8l19sNbTeW/DEOA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
+ bh=6bC2nv6wNKR1IvMGttq5npTTGMpz+NU7jsHf5Fciz9Y=;
+ b=kHuEu6YmHhDxnKhQKCiMwiiaLq5/zunPevF50gy1CtTtr53pzGRwzOoxjTmtIaRbblsBCsmI6KAAAn0K09fr1nxkuQUZ0sQDy6r0Hc3UVHS7t3b2G1904e/l+27/5hPmP4FQ4JRTPCXRoKMqoBPvnETLuaCgidfVLOkDSRI7DHae6/yKFgLMkRniSwJxDJnVLQr2q+Vsnc0M5JyxZDZSUaDh85ghEy1+6flhD8C+pWwaYAsSlQcuclGJqIMHjVa3uCKBW2a9kjyx3ED1WpHMxLWZg9plX+Xxpug5LZvBtCas5YQHP7i3mKhkPRWc7czp/vC0PHH9bFR3r1dOlP35EQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=OxEv3kdh7Y3oPUDR/cXKlVfg7Z8PMG719tE7nLKO/TU=;
- b=QTVJASBwXya7/jt8IpfckFTyqUz+3ifSqQfGxTP9+7WMse4SIg2hQaCb3Y6HHxNMYdQ7XepMV2naFLK2NDECXOUPMz+gObiUbzUxIFO4+GMsgh3hbYWir+JBd+MZ6Y81QgLfTv3bCSLPs9hXXb8oR6GUHsIBka1rkkny60hlNn/Cpdyfi/Yg6zAsS//PUBc90LCqGdDrDWYZNABTDmlpSsK31rZAK2h8rHwC4bsNJeUS5sbhixB7jIRJ2k6CY6n/jcBWun70FOZtPWJY/07ZiD0JzHCJ3dQabtn7j/fmb5IiATB4IvwH9TJsxcb4LQThre1OR7aI+9k+disbduftDw==
-Received: from CH2PR19CA0019.namprd19.prod.outlook.com (2603:10b6:610:4d::29)
- by LV2PR12MB5846.namprd12.prod.outlook.com (2603:10b6:408:175::6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6652.30; Fri, 11 Aug
- 2023 16:45:42 +0000
-Received: from MWH0EPF000989E9.namprd02.prod.outlook.com
- (2603:10b6:610:4d:cafe::6) by CH2PR19CA0019.outlook.office365.com
- (2603:10b6:610:4d::29) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6652.31 via Frontend
- Transport; Fri, 11 Aug 2023 16:45:42 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- MWH0EPF000989E9.mail.protection.outlook.com (10.167.241.136) with Microsoft
+ bh=6bC2nv6wNKR1IvMGttq5npTTGMpz+NU7jsHf5Fciz9Y=;
+ b=CWh4VTXjmE1Ha1Zo5yJ/Hbt7YLHP7eKAnKTG1EtRvMFd8dIvMYPQN2NScP41ClTUiW6RwN158PuE7+1+4mFgbyI+Rk6/apREENDo7J8i/XLSxNoca+g8WC6JeFbce/r0KDwguiNX2veugEkl9ir1rbAf7Zifwni0EHHVPDpR5ug=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DS7PR12MB6048.namprd12.prod.outlook.com (2603:10b6:8:9f::5) by
+ MW3PR12MB4441.namprd12.prod.outlook.com (2603:10b6:303:59::9) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6652.19 via Frontend Transport; Fri, 11 Aug 2023 16:45:41 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Fri, 11 Aug 2023
- 09:45:21 -0700
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Fri, 11 Aug
- 2023 09:45:21 -0700
-Received: from Asurada-Nvidia (10.127.8.14) by mail.nvidia.com (10.129.68.6)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37 via Frontend
- Transport; Fri, 11 Aug 2023 09:45:20 -0700
-Date: Fri, 11 Aug 2023 09:45:18 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-CC: Jason Gunthorpe <jgg@nvidia.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
-	"joro@8bytes.org" <joro@8bytes.org>, "alex.williamson@redhat.com"
-	<alex.williamson@redhat.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>, "cohuck@redhat.com"
-	<cohuck@redhat.com>, "eric.auger@redhat.com" <eric.auger@redhat.com>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>, "mjrosato@linux.ibm.com"
-	<mjrosato@linux.ibm.com>, "chao.p.peng@linux.intel.com"
-	<chao.p.peng@linux.intel.com>, "yi.y.sun@linux.intel.com"
-	<yi.y.sun@linux.intel.com>, "peterx@redhat.com" <peterx@redhat.com>,
-	"jasowang@redhat.com" <jasowang@redhat.com>,
-	"shameerali.kolothum.thodi@huawei.com"
-	<shameerali.kolothum.thodi@huawei.com>, "lulu@redhat.com" <lulu@redhat.com>,
-	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>, "Duan,
- Zhenzhong" <zhenzhong.duan@intel.com>
-Subject: Re: [PATCH v4 09/12] iommu/vt-d: Add iotlb flush for nested domain
-Message-ID: <ZNZlnh+/Q5Vk5Kul@Asurada-Nvidia>
-References: <ZNO92PIx2IQ70+DY@nvidia.com>
- <ZNPlGd4/72dahSs4@Asurada-Nvidia>
- <ZNPmpW3/zDnjqxyU@nvidia.com>
- <ZNP0UKGU6id5wfc6@Asurada-Nvidia>
- <BN9PR11MB527683351B687B97AB84B51B8C13A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <ZNUI0D7ZMvLWlBNx@nvidia.com>
- <ZNUa/VmeiIo0YA0v@Asurada-Nvidia>
- <ZNU6BnTgNEWlwNYQ@nvidia.com>
- <ZNVQcmYp27ap7h30@Asurada-Nvidia>
- <BN9PR11MB5276D0B3E0106C73C498B8018C10A@BN9PR11MB5276.namprd11.prod.outlook.com>
+ 15.20.6678.20; Fri, 11 Aug 2023 16:51:07 +0000
+Received: from DS7PR12MB6048.namprd12.prod.outlook.com
+ ([fe80::67ec:80e:c478:df8e]) by DS7PR12MB6048.namprd12.prod.outlook.com
+ ([fe80::67ec:80e:c478:df8e%7]) with mapi id 15.20.6652.029; Fri, 11 Aug 2023
+ 16:51:07 +0000
+Message-ID: <36a5f7ad-7d67-a818-2b0d-366722592887@amd.com>
+Date: Fri, 11 Aug 2023 22:20:56 +0530
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH 06/11] iommu/amd: Refactor helper function for attaching /
+ detaching device
+Content-Language: en-US
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: iommu@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com,
+ wei.huang2@amd.com, jsnitsel@redhat.com
+References: <20230808100232.5977-1-vasant.hegde@amd.com>
+ <20230808100232.5977-7-vasant.hegde@amd.com> <ZNJhw8RRvJZ+R61y@ziepe.ca>
+ <f08fc678-0bff-1e3a-302d-f673c952462d@amd.com> <ZNY1ligeAdFmILoT@ziepe.ca>
+From: Vasant Hegde <vasant.hegde@amd.com>
+In-Reply-To: <ZNY1ligeAdFmILoT@ziepe.ca>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: PN2PR01CA0201.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:c01:e9::13) To DS7PR12MB6048.namprd12.prod.outlook.com
+ (2603:10b6:8:9f::5)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <BN9PR11MB5276D0B3E0106C73C498B8018C10A@BN9PR11MB5276.namprd11.prod.outlook.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: MWH0EPF000989E9:EE_|LV2PR12MB5846:EE_
-X-MS-Office365-Filtering-Correlation-Id: edc32989-36d3-4487-fcf8-08db9a8a6672
+X-MS-TrafficTypeDiagnostic: DS7PR12MB6048:EE_|MW3PR12MB4441:EE_
+X-MS-Office365-Filtering-Correlation-Id: 7ef7311e-bbab-4035-6083-08db9a8b2868
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	szGgPs26a6i2y1b83hmDK1Y3irF7cAqtvAlXi+X1cTxEbgKqfvAPapRDBimxg03cGHuhnM8XQIbIqKFAXXpI1B/Nr2wFtOsgBBOWtMxO7zwwlhNm9+ZSg34T1T8Aj2b6SgkymNquE+wBdse+M6rtMESeAcClvh7AJUfB3LUXcM8uo/hBDUPFCjYRfRLxX4NS7vvS7apfSdIo9VkzJPX2b7r1TBKy7ObCZp/2OuXT8WSRKfBd+tncSLwnFeMTlkhwdgD59SqhfDwlBuDCzontTEtkimw45D0W3R2dE9QEOkAgez2RiWi2NEOGn4Sj46SlmBDiJa2Gv9M5Ul+Ate2YEGT7j7Dlnj38GKKR2DHSlrtpU7wxSjIIdG6Vrfh3mwc+8OUBAVf6MrUqqEzKO78b2FndAFQV+vm7OTSAPyZT4yTEbsv55Irq1X5gEMLRtMfLOCODeaN68hSMcmWQgD3KLBEJ9jR+m4cfcqd6sHCbltPGR01+LbOptn6aG/5Dlv+Rb9Ae0AYLchXMK3tWPpWIAgjXkdhdTAMXannRsFQvF1G0hMg5wExrnNMiLFJQcj+ouDV/eMwDINcU2RZ1zgAl5aGl6yGq0FruaeP3+7nCgpElopf0D3ycLMzj5PZSHP3121Lik+yPOoRFaQw/CVjqTvFwXCkPMbEESHTMMBOS7xCVk25hRviOHkMloT5faxe3FknAxQD0LjLEl+qddZIPQ62jSaOXkw4m5FsZWOnES3UpMtHRHaAh3carwRApNji8
+	A+3Uf+VyTnWdW4TUFfV40hZFAVDBu3hs5op2kzIcCiAWn92AW0TwyCiITS8c3QXxjvJWKXdfsn3uwo03ne/dbdVhH+NF4QaGJ/w9tGHJ2ofD044COzYvEZ9P8n4g0dEN4XIHCc5OodQWecfxnJGmLuXu4vk+P72AVHJI0Knc6TNy330eMf8cR1ZI8QKoCI6370XTMmlBW/gMh73Nll/LUUIt6aciQkR+Zv9dXps6YFp286GUGBblIrVrv8wrmuCGG1NtzU9WpS6NB7+nXVg+rAZ66ToLQmsbWOz3Iv0ynAisaLl+IjOTp8tZxgV17a22TP0+YFD8M118nP+AL2n7inNCMVOCK+IzRnG4rwGhYcmI3MLhXZaDAoKduRyEUKFz/zDEDw0uQyFh3C3jThBNFgOrDmxZ7TW5qGUwIZN70zcvIu8keKs9TKbNGEHWItw0IIMKABfJ6R6jxGklQV2W8CEamJpVf+eXcuWGeUvpOOfCsTeO2Uk4ZHtRGYPg+LwkDCr/tuyL7ItLWx835ze1+SZVXncIwCC2KhW6+k96rOs1sIomV4hCA1UpShqL2MsynekamcX0EV4phfZrwQkM3zZ6hhMI/padZVhLhyCG+bfcxEVhAOVuzErkjMZ3EdAA3HF+xJSJxfpMHK3mchf3Bg==
 X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(396003)(39860400002)(346002)(136003)(376002)(451199021)(1800799006)(186006)(82310400008)(40470700004)(36840700001)(46966006)(2906002)(55016003)(40480700001)(478600001)(82740400003)(356005)(54906003)(7636003)(40460700003)(5660300002)(7416002)(8936002)(8676002)(86362001)(33716001)(70206006)(4326008)(6916009)(70586007)(41300700001)(316002)(9686003)(36860700001)(83380400001)(426003)(47076005)(26005)(336012);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Aug 2023 16:45:41.6470
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6048.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(366004)(39860400002)(136003)(346002)(376002)(396003)(186006)(1800799006)(451199021)(31686004)(6512007)(36756003)(31696002)(86362001)(38100700002)(6506007)(53546011)(26005)(83380400001)(2616005)(478600001)(6666004)(6486002)(2906002)(41300700001)(4326008)(6916009)(316002)(8936002)(8676002)(66476007)(44832011)(66556008)(66946007)(5660300002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?T0VKdnZlZW13QW85SHFIbzZFelV6QTJzR2k1Nkw0cGE3OU1lZFh1WkFjNjdJ?=
+ =?utf-8?B?QVZyZ1U0bEswMHU4WW5EUDN2QXh3RTVhM0x4TnhtTnpyN2hoNEU4QzFPd2lX?=
+ =?utf-8?B?UjNEWUI4WGwwaDIzQnpOaTFzNlZybkJxQ05Mc01LT3JUMkIrM3NoaXErL1VI?=
+ =?utf-8?B?TzNhZHdHNTZvdElISnY1cFAyMENnazhueitub2RSWVEvUWl6LzZZclA4MFdS?=
+ =?utf-8?B?UndoUTlGQTFpazI2MXN4b3ZPbkgxdkhLWWNXbnY3MXdjK2xDa0VqY0NBTCtN?=
+ =?utf-8?B?bmsvTHZUeEcxYnVqQWhPSVNGL3ZpV1dER21qNnZUUTJ3VHVZRU1ISlExdnpV?=
+ =?utf-8?B?a0U5OWs2dWJrMTdxTEdGUGNjbVlKQ205NjVILzNFSE1QbnZJU3B2aUlBbGZk?=
+ =?utf-8?B?TzdVdU9xcThIRFh4RTNLbStGNjNmVS9HbG5iZmtlUFo2V3pBRXVXUFIvQW4z?=
+ =?utf-8?B?TjROWDNDaHcwVW5ESm5zdjlqNHF1bFZDU0J2NERFKy96UmFPZTQrdC94WWtI?=
+ =?utf-8?B?V1d1NFV5Zko1TFVOaFRtSEorcmRLUWI0dllBRXM2L3huSEpPMDBUVnhQMzBH?=
+ =?utf-8?B?TG5COVpXZTZjZGUzeS9vdklWWnhxdXBpSzZ0dDc5bEIvUURZNGEzMGJRdHo3?=
+ =?utf-8?B?ZkFoa0o1aWZaSW9OYWpobzRFdm5LTjJTR2Z1Z0ppdy9ucWZwL3Z4dXdEYTBu?=
+ =?utf-8?B?NDFaQWJURjFZT1RxbzROeGM2UTVYWjZ4VG93ZTMvTVNERlc4ODhuV0xRS0tr?=
+ =?utf-8?B?UUFTeXlmcSs3UThaVTN6SElWZDhwWlBYRXlNdXhnU25jR1h0WkpMT2l1RlZv?=
+ =?utf-8?B?SVh5Tzd5QmIxU1R5b3V5WGM3VzBESTZrQ3Ria1M4aVBMRlBGMVR3bzc0N0Fi?=
+ =?utf-8?B?M1hab0JZOHpJaGtxQyt5UzMzU1ZLSUhuZmJuMDYrOFZ6R3llRU1kWHNHNlor?=
+ =?utf-8?B?MGE0VDRsSE5Eb3llSXRNMzVKZ3JNb0QySnh6amloRUJ5NElNdTdqZEZodDh6?=
+ =?utf-8?B?QjB4UnNuR0FFNFdyWUI5NFZ4WjQ0Uk81cW9sbzdLTHpQS05hNHFkeTZJWkhz?=
+ =?utf-8?B?dkg5MXFEc09zc1h5SDR2aFNXWTk2ZUFJMGkvOGxZWVZKc1JCOEhRTlBOaWl2?=
+ =?utf-8?B?UTlvV0RwNG5vbDhvOW9Fa1FENS8walczK1VTSFFEVk9LNk4zVU9LYWpvVHpI?=
+ =?utf-8?B?OC9OTS9hbnkvMzlldDZDcTlkUUVBdWxGd0EwdlF3UUxjWUxwNjlNRFhiREZo?=
+ =?utf-8?B?NisyRWtPenpUQmprWW42VlI5UW91dFpWZEdGQjNlTDNNbUNnQ3lVTDlrNk1h?=
+ =?utf-8?B?dHJ4Q25xQyswTDlnUGV0RktYR1cxeU1NMHh2ekJoQS9pYkVQc0JKQU1XNHJn?=
+ =?utf-8?B?bmQxSFE5WkhwUDBSdjV2S0l2K1oxMDl6UVhqclpXelFjNHlOT3haNUVRWWc0?=
+ =?utf-8?B?SklKWTcwOFR3d3ZKR1lIVGw1NmFGeWJMWmJZalFzMEllZzU4VTJ3VVFHT0RU?=
+ =?utf-8?B?NzhvSy9CWE9KZmpnNmw4R1Fmb0lBbGFFVTFlbndGMHNMVFUzQ3h1Y3IrejMy?=
+ =?utf-8?B?NlB4YWt2VmJIRElBaC9WTURHTXRkTGMzazFXNmlKdmFZeTlYeGk1SmN5Tjlm?=
+ =?utf-8?B?RUx2N1FSN0Q3TUMyYkVVQzZEMmlVVWVZaVFFVEdRb1VNUm1nRmlYRkxLYmgv?=
+ =?utf-8?B?ZGFTZlBZWUpxWTF4V1ArWU8zdHNyWDhSK1hMZ083ZHVGME9HS0gyenBjRUNW?=
+ =?utf-8?B?VlZQc3ozRDl5VlBkZTZINjVVd0lnUVZVT3JBajNCWXRUMjVxYjhqaUxqb1h1?=
+ =?utf-8?B?dncyU0FNdGFPZEhIM3JSVzRkbmZnV1VMdUlWMjc0YW1LaUtPZ2hacjQxZW9K?=
+ =?utf-8?B?UW9zZkVqdlFyTHhDZXRrdVVVVXJQc2pXMDdEaGZRVDllMmI1YTBjSThmczRh?=
+ =?utf-8?B?N1NEcERMVmJMZnlLTGNvanA2YkY0NW5PRi8yZ1MrOVpNdVhPdnh1MTY3THFD?=
+ =?utf-8?B?V2NoKzF5NFJIMFNHMlB6MEZ5VGViRHV6M2l6OThjUDc4SGYrYW1idE90TVU2?=
+ =?utf-8?B?bmV1cTZnQ1VwR0w3dVNUdG9OYWFCTlhKb2JJQWJGU1hzNExhdEJaUUJiTE1q?=
+ =?utf-8?Q?41w65JsSCrgfJq0MXcmbEBb+u?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7ef7311e-bbab-4035-6083-08db9a8b2868
+X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6048.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Aug 2023 16:51:07.6430
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: edc32989-36d3-4487-fcf8-08db9a8a6672
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	MWH0EPF000989E9.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV2PR12MB5846
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: D2GC1dj+DMJbd+6nTT5CdwIscmd9sz1gayW2dbOZ/N1Slo9sV6n8d1Wo3ywuqxMVyP3cOGYGds6nQ3zN6FS/BA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR12MB4441
 
-On Fri, Aug 11, 2023 at 03:52:52AM +0000, Tian, Kevin wrote:
- 
-> > From: Nicolin Chen <nicolinc@nvidia.com>
-> > Sent: Friday, August 11, 2023 5:03 AM
-> >
-> > > > > Is there a use case for invaliation only SW emulated rings, and do we
-> > > > > care about optimizing for the wrap around case?
-> > > >
-> > > > Hmm, why a SW emulated ring?
-> > >
-> > > That is what you are building. The VMM catches the write of the
-> > > producer pointer and the VMM SW bundles it up to call into the kernel.
-> >
-> > Still not fully getting it. Do you mean a ring that is prepared
-> > by the VMM? I think the only case that we need to handle a ring
-> > is what I did by forwarding the guest CMDQ (a ring) to the host
-> > directly. Not sure why VMM would need another ring for those
-> > linearized invalidation commands. Or maybe I misunderstood..
-> >
+Jason,
+
+
+On 8/11/2023 6:50 PM, Jason Gunthorpe wrote:
+> On Fri, Aug 11, 2023 at 03:37:25PM +0530, Vasant Hegde wrote:
+>> Jason,
+>>
+>>
+>> On 8/8/2023 9:09 PM, Jason Gunthorpe wrote:
+>>> On Tue, Aug 08, 2023 at 10:02:27AM +0000, Vasant Hegde wrote:
+>>>> From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+>>>>
+>>>> To use the new helper function for setting up GCR3 table.
+>>>>
+>>>> If system is booted with V2 page table then setup default GCR3 with
+>>>> domain GCR3 pointer. So that all devices in the domain uses same page
+>>>> table for translation. Also return page table setup status from
+>>>> do_attach() function.
+>>>>
+>>>> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+>>>> Co-developed-by: Vasant Hegde <vasant.hegde@amd.com>
+>>>> Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
+>>>> ---
+>>>>  drivers/iommu/amd/iommu.c | 54 ++++++++++++++++++++++++++++++++++++---
+>>>>  1 file changed, 50 insertions(+), 4 deletions(-)
+>>>>
+>>>> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+>>>> index cc42732820dd..4fed3fbe069e 100644
+>>>> --- a/drivers/iommu/amd/iommu.c
+>>>> +++ b/drivers/iommu/amd/iommu.c
+>>>> @@ -1821,15 +1821,41 @@ static void clear_dte_entry(struct amd_iommu *iommu, u16 devid)
+>>>>  	amd_iommu_apply_erratum_63(iommu, devid);
+>>>>  }
+>>>>  
+>>>> -static void do_attach(struct iommu_dev_data *dev_data,
+>>>> -		      struct protection_domain *domain)
+>>>> +/*
+>>>> + * Note: This is currently used when booting w/ amd_iommu=pgtbl_v2
+>>>> + */
+>>>
+>>> I would drop all this commentary about amd_iommu=pgtbl_v2. That
+>>> command line option should be removed.
+>>
+>> AMD IOMMU can boot with PT, V1 page table and V2 page table. We need a way to
+>> tell what page table we want to use. Hence we have these command line options.
+>  
+> No, you don't, it is wrong.
 > 
-> iiuc the point of a ring-based native format is to maximum code reuse
-> when later in-kernel fast invalidation path (from kvm to smmu driver)
-> is enabled. Then both slow (via vmm) and fast (in-kernel) path use
-> the same logic to handle guest invalidation queue.
+> PT or not is controlled only by the core code using existing common
+> mechanims. Not by iommu drivers.
 
-I see. That's about the fast path topic. Thanks for the input.
+Yes. We don't have 'pt' in amd_iommu.
 
-> But if stepping back a bit supporting an array-based non-native format
-> could simplify the uAPI design and allows code sharing for array among
-> vendor drivers. You can still keep the entry as native format then the
-> only difference with future in-kernel fast path is just on walking an array
-> vs. walking a ring. And VMM doesn't need to expose non-invalidate
-> cmds to the kernel and then be skipped.
+> 
+> For v1/v2 kernel needs to automatically select the best page table
+> option, not try to make an admin figure it out with a command line option.
 
-Ah, so we might still design the uAPI to be ring based at this
-moment, yet don't support a case CONS > 0 to leave that to an
-upgrade in the future.
+Our hardware is capable to boot with either V1 or V2 page table. By default
+driver decides what is the best mode.
+But if user wants he has a flexibility to choose V1 vs V2 page table. In that
+mode we will adhere to user provided option and all devices will be put in that
+mode.
 
-I will try estimating a bit how complicated to implement the
-ring, to see if we could just start with that. Otherwise, will
-just start with an array.
+-Vasant
 
-Thanks
-Nic
