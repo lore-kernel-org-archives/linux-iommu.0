@@ -1,114 +1,64 @@
-Received: from mail-pl1-f174.google.com (mail-pl1-f174.google.com [209.85.214.174])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E5D2863B3
-	for <iommu@lists.linux.dev>; Fri, 11 Aug 2023 13:21:22 +0000 (UTC)
-Received: by mail-pl1-f174.google.com with SMTP id d9443c01a7336-1bda51aa6bdso10476315ad.2
-        for <iommu@lists.linux.dev>; Fri, 11 Aug 2023 06:21:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1691760082; x=1692364882;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=ZeCZ0pK84dGELrvPjmX4/k4Jc5A25NpxkoahG8bENUk=;
-        b=m+IFmrgTH5SfLaNt0/O/olWKvGxNmEcA/REiZzAEbNPDNI79TzS/Ix2Q5B7hMJtS1Y
-         2QN19K8DN9P1eSZZA/SqvGevDaZxiZKZBSTtHFmXDskygZ/mQt5VOPHfxk/HzLGxxq3e
-         qw1HzZf+/vuNBXQDSCy5jKkigCwcUSBviJSg9LZlWCuwILPx9gHzH9v+daBAFUPQduh6
-         2xDnMc64uHJt53Wm75uD6bM18f7z1xPlLfywflC7aUNg5NM/btlmNzGcVxADmWwk/eTk
-         IYDP+8oVCDr/3qQKrS4D0DR7FrSqV78oe/vnZ5pKmNAbpbqu9lWTkMd5O2yMXP941Qc7
-         NenA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1691760082; x=1692364882;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ZeCZ0pK84dGELrvPjmX4/k4Jc5A25NpxkoahG8bENUk=;
-        b=ZAIogBzrPyPx0/yyPBaUYZfzPNPPZQ+4IElowhatKlKL7EBjDDSvrD7QgiTjAxAbAD
-         4iz+SNp/oPJZCqjJMYUfBCRgS8ibnNIbgLgp2wPDSZbvRy5VDo9XFf2rvWAnTdwJLra4
-         YyeBW/MyYpnOWZRnAeBt17BiYdVRucMg+7Sb/SwbmVOqMN63eeBVWYMLL0cYf4zgj0t2
-         vgatFTNAvLfAnD/4la93YCFYwoNoOKA5UvIdxbQ64zqwrIBxf+Kid0VedFTUUSWD9/OV
-         GpwFI0eLVuAsSifMFM7ecmxyn0niBuED1HwgdqXvxdK6/83qwclDn33uJ00HvYX/Qb8N
-         iOIQ==
-X-Gm-Message-State: AOJu0YzWAOGnlwgMTM36NYcFI4ZRKOxSCAQDPPoUygw+6bG2Nb5uTiWr
-	ILm4THHNVq9ds/9BEgmVX3vzpw==
-X-Google-Smtp-Source: AGHT+IH6/uuBrAnsOm7F4wAtAo29f7kCltyS4IXvkG7MUjDFz4rXIVhdw+TV/WovICXgJHEqV/OYXw==
-X-Received: by 2002:a17:902:d352:b0:1b8:a812:7bc2 with SMTP id l18-20020a170902d35200b001b8a8127bc2mr1702926plk.8.1691760082247;
-        Fri, 11 Aug 2023 06:21:22 -0700 (PDT)
-Received: from ziepe.ca ([206.223.160.26])
-        by smtp.gmail.com with ESMTPSA id bi8-20020a170902bf0800b001bba3650448sm3859534plb.258.2023.08.11.06.21.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Aug 2023 06:21:21 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1qUS4u-005R6A-6p;
-	Fri, 11 Aug 2023 10:21:20 -0300
-Date: Fri, 11 Aug 2023 10:21:20 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Vasant Hegde <vasant.hegde@amd.com>
-Cc: iommu@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com,
-	wei.huang2@amd.com, jsnitsel@redhat.com
-Subject: Re: [PATCH 02/11] iommu/amd: Introduce struct
- protection_domain.pd_mode
-Message-ID: <ZNY10HmLfbmTRiiG@ziepe.ca>
-References: <20230808100232.5977-1-vasant.hegde@amd.com>
- <20230808100232.5977-3-vasant.hegde@amd.com>
- <ZNJflxeIWtJLC896@ziepe.ca>
- <7725dfde-2fed-ad61-eb5f-358edd2df052@amd.com>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2219B63B3
+	for <iommu@lists.linux.dev>; Fri, 11 Aug 2023 13:25:40 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 82E3F113E;
+	Fri, 11 Aug 2023 06:26:22 -0700 (PDT)
+Received: from [10.57.1.174] (unknown [10.57.1.174])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6D4C23F6C4;
+	Fri, 11 Aug 2023 06:25:38 -0700 (PDT)
+Message-ID: <3576aade-d13a-c887-d26b-fd157b82b9a5@arm.com>
+Date: Fri, 11 Aug 2023 14:25:31 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7725dfde-2fed-ad61-eb5f-358edd2df052@amd.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.13.0
+Subject: Re: [RESEND PATCH 0/2] iommu/iova: optimize the iova rcache
+To: Zhang Zekun <zhangzekun11@huawei.com>, joro@8bytes.org, will@kernel.org
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ baolu.lu@linux.intel.com, robh@kernel.org, nicolinc@nvidia.com,
+ john.g.garry@oracle.com, kevin.tian@intel.com
+References: <20230811130246.42719-1-zhangzekun11@huawei.com>
+Content-Language: en-GB
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20230811130246.42719-1-zhangzekun11@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Fri, Aug 11, 2023 at 03:34:46PM +0530, Vasant Hegde wrote:
-> Jason,
-> 
-> 
-> On 8/8/2023 9:00 PM, Jason Gunthorpe wrote:
-> > On Tue, Aug 08, 2023 at 10:02:23AM +0000, Vasant Hegde wrote:
-> >> From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-> >>
-> >> This enum variable is used to track the type of page table used by the
-> >> protection domain. It will replace the protection_domain.flags in
-> >> subsequent series.
-> >>
-> >> Suggested-by: Jason Gunthorpe <jgg@ziepe.ca>
-> >> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-> >> Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
-> >> ---
-> >>  drivers/iommu/amd/amd_iommu_types.h | 7 +++++++
-> >>  drivers/iommu/amd/iommu.c           | 3 +++
-> >>  2 files changed, 10 insertions(+)
-> >>
-> >> diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
-> >> index 0d339e022572..5e89032b3dee 100644
-> >> --- a/drivers/iommu/amd/amd_iommu_types.h
-> >> +++ b/drivers/iommu/amd/amd_iommu_types.h
-> >> @@ -555,6 +555,12 @@ struct amd_io_pgtable {
-> >>  	u64			*pgd;		/* v2 pgtable pgd pointer */
-> >>  };
-> >>  
-> >> +enum protection_domain_mode {
-> >> +	PD_MODE_PT = 0,
-> >> +	PD_MODE_V1,
-> >> +	PD_MODE_V2,
-> >> +};
-> > 
-> > PD_MODE_PT is redundant because the domain->type ==
-> > IOMMU_DOMAIN_IDENTITY already indicates identity. It is better not to
-> > denormalize the data structures.
-> 
-> We need to track how we have setup the hardware page table here. We can use
-> `IOMMU_DOMAIN_IDENTITY` for PT mode, but we don't have anything for other two
-> modes. So having macros makes it easy. Hence we have introduced new macros for
-> protection domain.
+On 2023-08-11 14:02, Zhang Zekun wrote:
+> The number of iova_cpu_rcache can grow with the number of cpus in
+> iova_rcache, but the size of rcache->depot will not. The deeper of
+> rcache->depot can help iova_rcache cache more iovas, and can help
+> iova_rcache better dealing with senarios in which drivers allocating
+> and free iovas on different cpu cores. We only let the size of rcache->depot
+> to grow with the number of cpus which is larger than 32 to avoid potential
+> performance decrease on machines which don't have much cpus.
 
-I think this was immediately abused in the next patch, so I'd prefer
-not to see this kind of duplication. It should describe the format of
-the IOPTEs and if the domain doesn't have IOPTEs then it shouldn't
-need to ever look at this value.
+Oh, that reminds me I had started working on this again just before I 
+was off, only my plan was to get rid of the depot allocation 
+altogether[1]. However I wanted to finish the second patch on that 
+branch (to reclaim wasted memory from the depot if the workload changes) 
+before posting anything - I was feeling really pleased that I'd made it 
+work until I realised it was leaking all the actual IOVAs... :(
 
-Jason
+Thanks,
+Robin.
+
+[1] 
+https://gitlab.arm.com/linux-arm/linux-rm/-/commit/2f37ebe93eb282b534bf9e0fd4adc66cfe4b6693
+
+> 
+> Also, it is unsafe to directly free cpu rcache magazines in free_iova_rcaches,
+> add check before freeing it.
+> 
+> Zhang Zekun (2):
+>    iommu/iova: Add check for cpu_rcache in free_iova_rcaches
+>    iommu/iova: allocate iova_rcache->depot dynamicly
+> 
+>   drivers/iommu/iova.c | 36 +++++++++++++++++++++++++++++++-----
+>   1 file changed, 31 insertions(+), 5 deletions(-)
+> 
