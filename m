@@ -1,137 +1,131 @@
-Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam04on2061.outbound.protection.outlook.com [40.107.101.61])
+Received: from dggsgout12.his.huawei.com (unknown [45.249.212.56])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 70458EDA
-	for <iommu@lists.linux.dev>; Fri, 11 Aug 2023 05:00:18 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SAC64Uj0Gk3vuLjgB+YZcPmpS0YfLqNC28j+fuqglw0YjEwKw7lk+VGSlac7CzqhRoS1ZfNzvh7Tfx630jYpj+FGWIJkUnJRXtP5pVJ5Sua8JRFC20fV/TJDkIKRKf2cPlTAYto5K9yV6B9eQp9q8m8g+qqHpQrg9iXhqRcr40upVEgTOUG+uzeCEaOhatSCGGRuNUTecSHWisETps4NRt/5vhW9zP0bXChuSnnXjkKeiXAYN1p0jRqj98B/exBheNOg0bsAgd7/PLe3auJayWOccus0wQsCOVi9om06hrZnCDszeKX8jhq7YuLbMuhdkB9UoOn/ODlTlHVbFzS2hA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=a9tXp+TKN9KY5TjCVF4BgMQQGFkyPR347ns9gEqSAvw=;
- b=J9kv/Q6LMdTC2SUOTA791TkxwxlumHsXXtbFdq0394X5esF1QnC0kr6UPFS+bm88RXqxyVWOrEEiF2q062P5jJ7TgZ7884KeoJJ5eilXHuypgGIC06+Ui4HJ06Z1ysXMhnSymZnhHJ0AEWdx5NGqXJcowvI6cQI37/CvpDafsZS90Nc6mvCsGMHfR/Vp8g/zri28PdAjVduNqdQTGGn55Lqpbgch/hbFiQ02PIMbXgRa0tQs3kDAMS5hKXeOF3VABak5lksbT1hf/tJEPG0NcE10m1YbF92k6PbqKe2D6rckxPskKiADoh8HBi6qXVI0lvJEw6eKZgunR0UaxbRJ+Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.232) smtp.rcpttodomain=huaweicloud.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=a9tXp+TKN9KY5TjCVF4BgMQQGFkyPR347ns9gEqSAvw=;
- b=Ujdt5hOdlRUelST1oSReLxUEaGpD+OJeblhk252nWNimeFqZsicvlzdSw41mzT1jf02SCa6B8vZVM5phY5Qj3cFIfue1fbQLQ574cyDbJTwCt+FV+BjJ4JnOzsxqT2Ag3xZHbXF9kPK2OYTRnWOkaUe7bib9N08wCFFFfKMkLWU/XHg6aoKufi+ijo3x6iFEcV3HnulvpcL1diFttoPdkV4b9MDWpv3KjGFN3idxQHY+VW/+RbuhGgjcXleYA16huNhjY5xGB40zATs3VPcubZ6fgDbEtXaRc44pgbpArYsGj/ZA6Ftx/IBIAyKVzKBzN2TkVrEn+Ds39IZfKk6DvA==
-Received: from CH2PR18CA0021.namprd18.prod.outlook.com (2603:10b6:610:4f::31)
- by MW4PR12MB6707.namprd12.prod.outlook.com (2603:10b6:303:1ee::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6652.30; Fri, 11 Aug
- 2023 05:00:16 +0000
-Received: from CY4PEPF0000EE3C.namprd03.prod.outlook.com
- (2603:10b6:610:4f:cafe::43) by CH2PR18CA0021.outlook.office365.com
- (2603:10b6:610:4f::31) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6652.30 via Frontend
- Transport; Fri, 11 Aug 2023 05:00:15 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.232) by
- CY4PEPF0000EE3C.mail.protection.outlook.com (10.167.242.16) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6652.19 via Frontend Transport; Fri, 11 Aug 2023 05:00:14 +0000
-Received: from drhqmail202.nvidia.com (10.126.190.181) by mail.nvidia.com
- (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Thu, 10 Aug 2023
- 22:00:02 -0700
-Received: from drhqmail201.nvidia.com (10.126.190.180) by
- drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.37; Thu, 10 Aug 2023 22:00:02 -0700
-Received: from Asurada-Nvidia (10.127.8.14) by mail.nvidia.com
- (10.126.190.180) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37 via Frontend
- Transport; Thu, 10 Aug 2023 22:00:01 -0700
-Date: Thu, 10 Aug 2023 22:00:00 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: "Leizhen (ThunderTown)" <thunder.leizhen@huaweicloud.com>
-CC: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, "Joerg
- Roedel" <joro@8bytes.org>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Zhen Lei
-	<thunder.leizhen@huawei.com>, Tanmay Jagdale <tanmay@marvell.com>, "Jonathan
- Cameron" <Jonathan.Cameron@Huawei.com>, "jgg@ziepe.ca" <jgg@ziepe.ca>
-Subject: Re: [PATCH v2 0/2] iommu/arm-smmu-v3: Add support for ECMDQ register
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E6AB1EC6
+	for <iommu@lists.linux.dev>; Fri, 11 Aug 2023 06:23:53 +0000 (UTC)
+Received: from mail02.huawei.com (unknown [172.30.67.143])
+	by dggsgout12.his.huawei.com (SkyGuard) with ESMTP id 4RMYdm6QRZz4f3mJL
+	for <iommu@lists.linux.dev>; Fri, 11 Aug 2023 14:23:40 +0800 (CST)
+Received: from [10.174.178.55] (unknown [10.174.178.55])
+	by APP4 (Coremail) with SMTP id gCh0CgAHl6nu09VkK5fCAQ--.32129S3;
+	Fri, 11 Aug 2023 14:23:43 +0800 (CST)
+Subject: Re: [PATCH v2 1/2] iommu/arm-smmu-v3: Add support for ECMDQ register
  mode
-Message-ID: <ZNXAUAVZ/nNXl7qK@Asurada-Nvidia>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Joerg Roedel <joro@8bytes.org>, "iommu@lists.linux.dev"
+ <iommu@lists.linux.dev>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ Zhen Lei <thunder.leizhen@huawei.com>, Tanmay Jagdale <tanmay@marvell.com>,
+ Jonathan Cameron <Jonathan.Cameron@Huawei.com>
 References: <20230809131303.1355-1-thunder.leizhen@huaweicloud.com>
- <20230809135603.GE4226@willie-the-truck>
- <eaa7758e-9ff4-a039-7f94-734f63c72ba6@huaweicloud.com>
+ <20230809131303.1355-2-thunder.leizhen@huaweicloud.com>
+ <ZNVBgCb5w0daExIL@Asurada-Nvidia>
+From: "Leizhen (ThunderTown)" <thunder.leizhen@huaweicloud.com>
+Message-ID: <8be55ce1-ae59-e7f0-c774-f0371272fd2a@huaweicloud.com>
+Date: Fri, 11 Aug 2023 14:23:41 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <eaa7758e-9ff4-a039-7f94-734f63c72ba6@huaweicloud.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY4PEPF0000EE3C:EE_|MW4PR12MB6707:EE_
-X-MS-Office365-Filtering-Correlation-Id: 4ec7eb8d-8afb-4950-0ac9-08db9a27d993
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	v8P/MTqLqGvQkWNgxUkMdy9X75USirFtVxSCdq8AYFDC6JSu9K3ulBRjWQ1pbSIrMa4De+3kq4GHDCuD5p/8SUCPxIbFFViIj9Qu4lzXfVpOM+VdkgNtQ3fQVn5c6+u4WFxIQG4GtcV+I69LM2kGSrfGtxWHG33+Mp57FVb6ihCJgWinbfFzMATfQ3pRktq50nH0c+Zzn0K+710PWSwMUCuMzdfGiWzJE10Guf8IMchWb2H9yR6UYMkcRU+AGTSI4vk0+qcV5WkY309AKeTDvhxGTRD5eSX+wQpa0kI1g5eD/HTAFMWOcjbmstjJfuglYvIG7TXq7SPoGv0luj0+/lZryKvv0RjEW2nIXU9jceDKfitB48G61r6guQ5/2PJVOTpvrs1mio/HcOngCAaQhZmxNg7jqiG6++z1sIWBAN7enhohL7A3vyEbfdlC6eEnbZsSFDIXTb3Il2QO+lgi5oowj69oYiZ+L3cjjx4nzB8K2A8MiRdi30sDwMa6jSxHzW2yZOgpui/RWl445Vpgl9/VyBVWaXaTl3byQq5XHPGKDh7KP387JsGiyByJkl8FHOoM9lbZ7fvaS2XkVlpqoAPsjVYGiaEOSH5Zfq5Q83k2SZGbjxBKhnCjmYDLiy7wGvEj9YCC5qxpWiB4K0RaPl/P2n1aSoP+H0uqijkrBiMvGYwZBYtgMgODAGYpn2iG/fX+8L0wCivcTT//gkjzxetU203AUZ4cbF+164FFR69XhGGfr57QGIIlC4HSYOkBPBIE/pIlr6fCdMlML+JxiKRUkSnmULg7yhkzsZ/QnjM=
-X-Forefront-Antispam-Report:
-	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(396003)(346002)(376002)(136003)(451199021)(82310400008)(1800799006)(186006)(46966006)(36840700001)(40470700004)(54906003)(5660300002)(47076005)(6916009)(36860700001)(70206006)(7416002)(70586007)(4326008)(478600001)(83380400001)(86362001)(41300700001)(8676002)(8936002)(316002)(2906002)(40460700003)(7636003)(426003)(82740400003)(356005)(40480700001)(55016003)(33716001)(9686003)(966005)(53546011)(336012)(26005);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Aug 2023 05:00:14.6814
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4ec7eb8d-8afb-4950-0ac9-08db9a27d993
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CY4PEPF0000EE3C.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR12MB6707
+In-Reply-To: <ZNVBgCb5w0daExIL@Asurada-Nvidia>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-CM-TRANSID:gCh0CgAHl6nu09VkK5fCAQ--.32129S3
+X-Coremail-Antispam: 1UD129KBjvJXoW7Cw1kKF43Jr4rXw4UWrWktFb_yoW8Zw4xpa
+	y8KayqyF1kJrn7Aw10vr1vqr1Dtws8CFy2ya1YgFZ0ywn0yr97ZF1UKw1FkrW8Cr1S9FnI
+	kw45XrZrC395WFJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+	9KBjDU0xBIdaVrnRJUUUyEb4IE77IF4wAFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k2
+	6cxKx2IYs7xG6r1S6rWUM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4
+	vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xIIjxv20xvEc7Cj
+	xVAFwI0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x
+	0267AKxVW0oVCq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG
+	6I80ewAv7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFV
+	Cjc4AY6r1j6r4UM4x0Y48IcVAKI48JMxk0xIA0c2IEe2xFo4CEbIxvr21l42xK82IYc2Ij
+	64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x
+	8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE
+	2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r1j6r4UMIIF0xvE42
+	xK8VAvwI8IcIk0rVWrZr1j6s0DMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIE
+	c7CjxVAFwI0_Jr0_GrUvcSsGvfC2KfnxnUUI43ZEXa7IU1zuWJUUUUU==
+X-CM-SenderInfo: hwkx0vthuozvpl2kv046kxt4xhlfz01xgou0bp/
+X-CFilter-Loop: Reflected
 
-On Wed, Aug 09, 2023 at 07:18:36PM -0700, Leizhen (ThunderTown) wrote:
-> On 2023/8/9 21:56, Will Deacon wrote:
-> > On Wed, Aug 09, 2023 at 09:13:01PM +0800, thunder.leizhen@huaweicloud.com wrote:
-> >> From: Zhen Lei <thunder.leizhen@huawei.com>
-> >>
-> >> v1 --> v2:
-> >
-> > Jason previously asked about performance numbers for ECMDQ:
-> >
-> > https://lore.kernel.org/r/ZL6n3f01yV7tc4yH@ziepe.ca
-> >
-> > Do you have any?
+
+
+On 2023/8/11 3:58, Nicolin Chen wrote:
+> Hi Zhen,
 > 
-> I asked my colleagues in the chip department, and they said that the chip
-> was not commercially available and the specific data could not be disclosed.
-> However, to be sure, the performance has improved, but not by much, the
-> public benchmark is only about 5%. Your optimization patch was so perfect
-> that it ruined our jobs.
+> On Wed, Aug 09, 2023 at 06:13:02AM -0700, thunder.leizhen@huaweicloud.com wrote:
+>> +static int arm_smmu_ecmdq_layout(struct arm_smmu_device *smmu)
+>> +{
+>> +       int cpu;
+>> +       struct arm_smmu_ecmdq __percpu *ecmdq;
+>> +
+>> +       if (num_possible_cpus() <= smmu->nr_ecmdq) {
 > 
-> However, since Marvell also implements ECMDQ, there are at least two users.
-> Do we think about making it available first?
+> Does the nr_ecmdq always physically match with the number of CPUs?
+> I saw the spec saying "up to 256 pages", but not sure if they are
+> always physically present, even if CPU number is smaller i.e. some
+> of them would be unassigned/wasted.
 
-I have seen something similar (~5%) with VCMDQ on NVIDIA Grace,
-when running, in host OS, TLB flush benchmark tests concurrently
-on different CPUs.
+This is considered in v1, but now priority is to support the most
+basic features. Another advantage is that if someone makes suggestions
+for improvement, the workload can be smaller.
 
-Although VCMDQ could be slightly different from ECMDQ, both have
-a multi-queue feature. And the amount of improvement in my case
-came from a reduction of congestion at issueing commands to the
-multi queues vs. a single queue. And I guess ECMDQ might benefit
-its 5% from that too.
+> 
+>> +               ecmdq = devm_alloc_percpu(smmu->dev, *ecmdq);
+>> +               if (!ecmdq)
+>> +                       return -ENOMEM;
+>> +
+>> +               for_each_possible_cpu(cpu)
+>> +                       *per_cpu_ptr(smmu->ecmdqs, cpu) = per_cpu_ptr(ecmdq, cpu);
+>> +
+>> +               /* A core requires at most one ECMDQ */
+>> +               smmu->nr_ecmdq = num_possible_cpus();
+>> +
+>> +               return 0;
+>> +       }
+>> +
+>> +       return -ENOSPC;
+> 
+> This ENOSPC is a software limitation, isn't it? How about using
+> "smp_processor_id() % smmu->nr_ecmdq" to select a queue?
+> 
+>> +       shift_increment = order_base_2(num_possible_cpus() / smmu->nr_ecmdq);
+>> +
+>> +       offset = 0;
+>> +       for_each_possible_cpu(cpu) {
+>> +               struct arm_smmu_ecmdq *ecmdq;
+>> +               struct arm_smmu_queue *q;
+>> +
+>> +               ecmdq = *per_cpu_ptr(smmu->ecmdqs, cpu);
+>> +               ecmdq->base = cp_base + offset;
+>> +
+>> +               q = &ecmdq->cmdq.q;
+>> +
+>> +               q->llq.max_n_shift = ECMDQ_MAX_SZ_SHIFT + shift_increment;
+>> +               ret = arm_smmu_init_one_queue(smmu, q, ecmdq->base, ARM_SMMU_ECMDQ_PROD,
+>> +                               ARM_SMMU_ECMDQ_CONS, CMDQ_ENT_DWORDS, "ecmdq");
+> 
+> Not getting why max_n_shift increases by shift_increment. Mind
+> elaborating?
 
-If we decide to move ECMDQ forward, perhaps we can converge some
-of the functions to support both :)
+For example:
+If a CPU exclusively occupies an ECMDQ, the number of queue elements is 256.
+If two cores share an ECMDQ, the number of queue elements increases to 512.
 
-Thanks
-Nicolin
+> 
+> Thanks
+> Nicolin
+> .
+> 
+
+-- 
+Regards,
+  Zhen Lei
+
