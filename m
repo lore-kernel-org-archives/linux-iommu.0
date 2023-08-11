@@ -1,228 +1,186 @@
-Received: from mail-vs1-f45.google.com (mail-vs1-f45.google.com [209.85.217.45])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.151])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2489A47
-	for <iommu@lists.linux.dev>; Fri, 11 Aug 2023 03:31:09 +0000 (UTC)
-Received: by mail-vs1-f45.google.com with SMTP id ada2fe7eead31-447a4316052so684601137.0
-        for <iommu@lists.linux.dev>; Thu, 10 Aug 2023 20:31:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1691724668; x=1692329468;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=oQYON+sk+YoDUmSygKnXKh+XGqs62+U//VTWTOy9M5E=;
-        b=jxBh7pOn7yLgPCIG2YXxI0//3oA+/pThxQC4mdd9ML0q5RvXhW8KTgnNKvmYwoXBRG
-         DThAUcfHYd08GFowYSo322YQxEUblTQK09SoW5kE0c9+CUpWVa9AZ1L0RQAPLeuspSm4
-         v0NRslaSiIC3D82hXEqGm0CucqCepjdLOZSFA=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1691724668; x=1692329468;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=oQYON+sk+YoDUmSygKnXKh+XGqs62+U//VTWTOy9M5E=;
-        b=YZzesG2U3R0UnFKcrsgSKrcGMLDycDuKimhZVPYLVBujEWxywIiqGi5B1O306onpV/
-         hPzf9+v1eGQWPVczSY4F8kEfoAGMyhafIpVnU9lETHh7ZKK2URlHyxAmPqHvLbM9Jk0/
-         iVnkh5wHzfvO7FznCkkzZ2gPYs65WC7oyo6Tm+BATf1K2Y6OBxXGgUfLKAHNb5qU8kKU
-         BrLY6gGQRQ7G1UHGPtPooEF1WJU0mN+UXn6/yaGPpyCyxtAr8WtgWpJMUoYJrB7jqldP
-         b2Ujmo9mjKvHX+o8caeaTJbUDvx5B4RhN5WSa6/Lmz7DDBO97CajbvJ8VgpeBPhCGQu4
-         vweQ==
-X-Gm-Message-State: AOJu0YxBWlmRXQieUBNkqNG+8Ez2UUXqmeQ/FVkBiwOxFqx34YyD149x
-	ffu2K955Wdp3iWv9wlpqsioEBwYtSBSEeKp2KPf3Rw==
-X-Google-Smtp-Source: AGHT+IH+n/o66olPcYqU6dZDtkzs3QMHqa4XhdD+e9Yvl0xOcc5I/pNGVpcuircQyOiFWYpBl1Blo6Vc37PagqIihP4=
-X-Received: by 2002:a05:6102:3bd3:b0:447:ad77:f027 with SMTP id
- a19-20020a0561023bd300b00447ad77f027mr559375vsv.6.1691724668480; Thu, 10 Aug
- 2023 20:31:08 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 11D38EA9
+	for <iommu@lists.linux.dev>; Fri, 11 Aug 2023 03:52:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1691725977; x=1723261977;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=Qzo82lbOK+suEkJbv21qFz0XRPWjwNi93usTE7In1Ic=;
+  b=XIuR/daPo/XQ800wZAVo3EB4Pk+RoBYVlCKBVNDlApK62aNcqwQVKHnh
+   pPifrPGgQm3u0SGNvpZF8jaNz4ElCZ43MjFgWHjvUIgTt0OXgdizayKra
+   psyYnKfMWq7clGk0zqtv6sbU1ZP/fYdKKwW4dj+AsVhY0H7DoJapuskvm
+   N4T7HHwxtwWIyneJjbcqaIV+pJtRotX0kxt6lSyK5q7dGOi/+m2MPxbbN
+   7J3Vgz59B7DrCz3ZFqN16YOwdB6etG6WMjwTJ9QxcueLhzM6Tp0T6h7aV
+   HYHAqsrD9s338/4Ba9rUWC0D+5OOflL8u7xzC0wYRPMOyMRzoNvcBIbBt
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10798"; a="351905006"
+X-IronPort-AV: E=Sophos;i="6.01,164,1684825200"; 
+   d="scan'208";a="351905006"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2023 20:52:56 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10798"; a="732522650"
+X-IronPort-AV: E=Sophos;i="6.01,164,1684825200"; 
+   d="scan'208";a="732522650"
+Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
+  by orsmga002.jf.intel.com with ESMTP; 10 Aug 2023 20:52:55 -0700
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.27; Thu, 10 Aug 2023 20:52:55 -0700
+Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
+ orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.27 via Frontend Transport; Thu, 10 Aug 2023 20:52:55 -0700
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.174)
+ by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.27; Thu, 10 Aug 2023 20:52:54 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Y0foAsAxas4ZqRNAWgskLA7TtxvT1+EmeDz1BynHAa41zm+8X8pKIdLp5Q4um9x/23a5HrrFDoeYbymtFlI8b+DuWA8IDQmKf8LV+JVwq582/c4tZPl8FMqZfT1zLkPDnSSlTMAbiwLWX0dY/o696DGATCYZE8WLSGcOlMaKiMWy8PMCZACWhgTGxcCPJk9/FQY4L5uYMbjzc4QoD3ukO12zHjzw272DoO+dS+p27o/9YxD29fw9a+JDN+WLmkhjuRxF3yXcQwWhaL3etv91IiJKF/HoxVP3G/jAvacsFi1VzDdpv6zJyVpQ01CXfM7kntrLuOG5V1ps/LjfEnGX5Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Qzo82lbOK+suEkJbv21qFz0XRPWjwNi93usTE7In1Ic=;
+ b=UfivX7tfWYv//Y17MLvQ/Ucgup+617o8FrTGp60h2otPj4rMw8VHRxZqt+FG1AczZ9YZ+1ILFi5MevBzunLiemMpioQ9V0jX70Gi5q4BDOeZ9TXPdIG6CrS+X/2gLWTZ80Je3OKceabHSpCamhn8TkHrEYIM8BoP5dXTi4gBPO2jO1fIJwuzsA75AS/3MJM/73rezdIpV+wGvH+HhDrh1lYv1l17ky/Z3fZ04vkSJNMQsntypo+XWW/HOABF80kxfpDUATF7wplmNqZ/4j3yUl3VpaZqmfwm1kAsDAQ6SjGZZU12ccKwD07pYLTid7KNloyKG8q3djhKkYa0KuMq1A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
+ by CY5PR11MB6510.namprd11.prod.outlook.com (2603:10b6:930:42::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6652.30; Fri, 11 Aug
+ 2023 03:52:52 +0000
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::dcf3:7bac:d274:7bed]) by BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::dcf3:7bac:d274:7bed%4]) with mapi id 15.20.6652.029; Fri, 11 Aug 2023
+ 03:52:52 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: Nicolin Chen <nicolinc@nvidia.com>, Jason Gunthorpe <jgg@nvidia.com>
+CC: "Liu, Yi L" <yi.l.liu@intel.com>, "joro@8bytes.org" <joro@8bytes.org>,
+	"alex.williamson@redhat.com" <alex.williamson@redhat.com>,
+	"robin.murphy@arm.com" <robin.murphy@arm.com>, "baolu.lu@linux.intel.com"
+	<baolu.lu@linux.intel.com>, "cohuck@redhat.com" <cohuck@redhat.com>,
+	"eric.auger@redhat.com" <eric.auger@redhat.com>, "kvm@vger.kernel.org"
+	<kvm@vger.kernel.org>, "mjrosato@linux.ibm.com" <mjrosato@linux.ibm.com>,
+	"chao.p.peng@linux.intel.com" <chao.p.peng@linux.intel.com>,
+	"yi.y.sun@linux.intel.com" <yi.y.sun@linux.intel.com>, "peterx@redhat.com"
+	<peterx@redhat.com>, "jasowang@redhat.com" <jasowang@redhat.com>,
+	"shameerali.kolothum.thodi@huawei.com"
+	<shameerali.kolothum.thodi@huawei.com>, "lulu@redhat.com" <lulu@redhat.com>,
+	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>, "Duan,
+ Zhenzhong" <zhenzhong.duan@intel.com>
+Subject: RE: [PATCH v4 09/12] iommu/vt-d: Add iotlb flush for nested domain
+Thread-Topic: [PATCH v4 09/12] iommu/vt-d: Add iotlb flush for nested domain
+Thread-Index: AQHZvh/uFyWMLiVXhUCSOYKFk2h4da/WraUQgAhYJoCAAMpSgIAAnN2AgABV8ACAAPMnQIAACsKAgAAAQaCAAArdAIAAc+AAgAAuy4CAAAHYgIAAEEsAgABtjjCAANwPAIAAFauAgAAk/wCAABq7AIAAbchg
+Date: Fri, 11 Aug 2023 03:52:52 +0000
+Message-ID: <BN9PR11MB5276D0B3E0106C73C498B8018C10A@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <BN9PR11MB5276912120F662498910A1D48C12A@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <DS0PR11MB7529C310FAEA61B6E7988629C312A@DS0PR11MB7529.namprd11.prod.outlook.com>
+ <ZNO92PIx2IQ70+DY@nvidia.com> <ZNPlGd4/72dahSs4@Asurada-Nvidia>
+ <ZNPmpW3/zDnjqxyU@nvidia.com> <ZNP0UKGU6id5wfc6@Asurada-Nvidia>
+ <BN9PR11MB527683351B687B97AB84B51B8C13A@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <ZNUI0D7ZMvLWlBNx@nvidia.com> <ZNUa/VmeiIo0YA0v@Asurada-Nvidia>
+ <ZNU6BnTgNEWlwNYQ@nvidia.com> <ZNVQcmYp27ap7h30@Asurada-Nvidia>
+In-Reply-To: <ZNVQcmYp27ap7h30@Asurada-Nvidia>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|CY5PR11MB6510:EE_
+x-ms-office365-filtering-correlation-id: 8cb2def5-f4fa-434b-37f3-08db9a1e7044
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 97JrjHG4SjDRylqNNKffs+SbYEXgTd/Z/XsQqJmOb6hlKlOdIM3DlegroROKaIds5ilswwUxndB+dYHpfnZD+ljL46MRbDxyLPaHGUpfKGNYxur6gYWMKNpRJkzVLVjR3kU+oQSkhodBiokHSpMkCnXfriTzq349f5RDFOldg3Ql++tBMBbrjI3dCkSfcr50Zu4FvkK6wuMcGJCU+bbfe02KaYVqqZAhwJJBx0QuhLcRdBO+Jq9KqTA/b8UbOoQRc824/Svnrsee+Xt37CdkDmEnzcuZLJpSIb9Nuf+RMEcry6AhtrNB4ReU9O99w9msbFmQoWXrk0RZjERRhAGxqIeVz3io0nWdtR4ohujBq8niUtFIZI/FuuYx03EDB02XLsqB48My14gNdhBdq0VXaLq8SKJqMr1YSc63Ddqe2rt36q7hUadiGMiXs4AyTMV0LoVAgBud3+DvKCE1531QcsBHJdlXbSr5OlSzhaiWb3UyELf7BgqFlbUhVgQAaYwRF2yGKWVb75IsTxSn6HDidwzWifkDjYrJOdtIIlrnJS55OIPVRK5trdWu9Ha0YMFjss8FrgkIwOQXMukeJL0eZYRoScjhPcKa9wEH1zvQYcelthVxBVgqbluauLRbtubF
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(376002)(366004)(136003)(396003)(346002)(39860400002)(186006)(451199021)(1800799006)(54906003)(66556008)(71200400001)(478600001)(110136005)(66446008)(6506007)(33656002)(76116006)(66946007)(66476007)(26005)(64756008)(9686003)(4326008)(2906002)(7696005)(82960400001)(41300700001)(316002)(7416002)(8936002)(52536014)(38100700002)(8676002)(5660300002)(86362001)(122000001)(38070700005)(83380400001)(55016003);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?rB+YHD/ROANefPhVNLU0Yn7YIpdE0TRS44Uqg6VBEejhEST0VRpNuaD3Ueb2?=
+ =?us-ascii?Q?OK1XvTsMNZlefZJccnWkSZX2xPGiaI9DGN3NVldQRxYI5uGqBuATqWKlfogy?=
+ =?us-ascii?Q?AgxQ921SpGTa0SCbgYBefvhfvkx/KzyHuV1VPGKemIF078GrEwfTeGGErh+W?=
+ =?us-ascii?Q?/rfoeL1kX778ReXulW3SmQQ6V4dioH4P2mfRtr9K9J4BnhbSeprjgmGN8Pe5?=
+ =?us-ascii?Q?OfyJYewLMRb/fm+bHF0+VKNIPYFKByoF1x9Otus7apdiSUjrzwrvOWvvzY5h?=
+ =?us-ascii?Q?9jXZQ022Q6IKXQ5Tdb0WAvqHRARpMYLHDiUPR8ooL9hYRaRjIpaiC5bLZapf?=
+ =?us-ascii?Q?y1WxfwnrsOfkuFnbZE8/F2OmycpgXN7BQbIlaefGWEwgQjejRRjSSpLBuA53?=
+ =?us-ascii?Q?GSjPlLxSwGdRDhxwx9ZmqUMIzD7PHofclBLvvPTE8/Yrt+w451A/YKXYI5jo?=
+ =?us-ascii?Q?UuXV+Yx/wG8nHTjQ3m9ZCqd7csT7jEo8e6nqSY5i+tYdKVhnYUyenAWl+eEE?=
+ =?us-ascii?Q?gJR73emVkM/31D2V4pBhRIZQKG8gToXDokI66ulIGk0H+5GMsjhZK08mqgUo?=
+ =?us-ascii?Q?J2+/kHJdI1K/qGm+a5Jt1Y3uw6OgX57xmm2IsgasgLJ0TvxB7+ZMX6JXoeCv?=
+ =?us-ascii?Q?lt9YzLJeiJfkzX42+jPJh3l4BJ8b4xBubFKvaXRzXs0uHQBqsk/T8PdZXKaW?=
+ =?us-ascii?Q?f3/zUP3OLUfnt6kFmpwY1aBLoccCt4XC9QSaZYgW2PEF1Jozm4318zEHtjoI?=
+ =?us-ascii?Q?cpXEKL0GnCohic5zKPi/J73ojffSkzr0wAUnSffqy1X2kucBt7ZyKfFCo3GT?=
+ =?us-ascii?Q?f4d2dN4TypiWcQwCBh4l7j1DblCAuynSVcfc2h3ynQrF80u7tFoAyGg7YtCK?=
+ =?us-ascii?Q?CfVzbnBCiRV2r1ntCy00FnaStBGndVjK4YqDVFEfJ9ksZ+TgYzzjSdyj3zo7?=
+ =?us-ascii?Q?N7ztb8sYoTTifxuXDu7M6QWFLylU4Lq4K/vU0Q3qIvJQCSZXSJ+y2Q1QU28V?=
+ =?us-ascii?Q?4P9gTKNuJcDQ7rM3Hdi4CbDbpAhzbmcrp5Q+fGbCBhrwLBLdlOKPTlLOcA/A?=
+ =?us-ascii?Q?d77PXogWWT+4N5mf23ighqnL8DLF+g+HeREviyNub/D6FZaCeKl1O5i3tsg+?=
+ =?us-ascii?Q?g+5231f2WinOqP4zjYK3x6rgefr7nV2JrE6KR65v2pOfBNHSiz8Nb7rYMK25?=
+ =?us-ascii?Q?XV3G+Vse6kGTSg/9UuJ59Do38uBdOsLvXqse2BgtZpYOoIEOgPp1slM0uUby?=
+ =?us-ascii?Q?zkXr+SeMKEvbrtMaSbRS3BQsL75K9fxINDT01B6wedluhR3cmFJKpVjqoX+5?=
+ =?us-ascii?Q?sZZ3EQt1EUmj4sWHQUsDSDSURGvaFf/xdgvURRD7QxGr4gYLNkmkcI7tdSzy?=
+ =?us-ascii?Q?UCwX1yOkDFCXFFcKoYrlpKho9jZpTxFRVu9tLR4xanxRFfT/j5kYADmgW5s0?=
+ =?us-ascii?Q?+Gmmf3XowC5O8w+GcU+dTjiKWaqxI5rQb1COQ57bC30zKEx2yMcaPGYDj36G?=
+ =?us-ascii?Q?igs4MZpMqVXULMBH2b0gcmDuQ8egRrhIEo2SHRuwxqEVgpt2nA4jsbTSamNz?=
+ =?us-ascii?Q?cv3XO1UFiilnC1GZDosrPgPc37zXWrrLN8JJLkHU?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20230602090227.7264-1-yong.wu@mediatek.com> <20230602090227.7264-6-yong.wu@mediatek.com>
- <CAGXv+5EKwvn-axETPcuxTpxRkUGLroymeDYL+kr4QW8duAymmQ@mail.gmail.com> <b695962fa3c3baac08f8be5202e6a5697e7826a0.camel@mediatek.com>
-In-Reply-To: <b695962fa3c3baac08f8be5202e6a5697e7826a0.camel@mediatek.com>
-From: Chen-Yu Tsai <wenst@chromium.org>
-Date: Fri, 11 Aug 2023 11:30:57 +0800
-Message-ID: <CAGXv+5EVqODJJ4Ck+EcB9sn1bTjG5yFrWLi9mHTfVa0sB4wsug@mail.gmail.com>
-Subject: Re: [PATCH v12 5/7] iommu/mediatek: Add MT8188 IOMMU Support
-To: =?UTF-8?B?WW9uZyBXdSAo5ZC05YuHKQ==?= <Yong.Wu@mediatek.com>
-Cc: "linux-mediatek@lists.infradead.org" <linux-mediatek@lists.infradead.org>, 
-	"robh+dt@kernel.org" <robh+dt@kernel.org>, 
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, 
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, 
-	=?UTF-8?B?SmlhbmppYW8gWmVuZyAo5pu+5YGl5aejKQ==?= <Jianjiao.Zeng@mediatek.com>, 
-	"robin.murphy@arm.com" <robin.murphy@arm.com>, "joro@8bytes.org" <joro@8bytes.org>, 
-	=?UTF-8?B?Q2hlbmdjaSBYdSAo6K645om/6LWQKQ==?= <Chengci.Xu@mediatek.com>, 
-	=?UTF-8?B?WUYgV2FuZyAo546L5LqR6aOeKQ==?= <YF.Wang@mediatek.com>, 
-	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, 
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>, 
-	"krzysztof.kozlowski+dt@linaro.org" <krzysztof.kozlowski+dt@linaro.org>, 
-	"matthias.bgg@gmail.com" <matthias.bgg@gmail.com>, 
-	=?UTF-8?B?TWluZ3l1YW4gTWEgKOmprOm4o+i/nCk=?= <Mingyuan.Ma@mediatek.com>, 
-	"angelogioacchino.delregno@collabora.com" <angelogioacchino.delregno@collabora.com>, 
-	"will@kernel.org" <will@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8cb2def5-f4fa-434b-37f3-08db9a1e7044
+X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Aug 2023 03:52:52.5865
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: f7Lp6wbw0Peg0C8JsKAONhUFKvXsidaWy2g+6LpEU7/UplhIRcwyGJhLA+LEcqnUZLUNyVFtBbH8lG/6pS7zcA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY5PR11MB6510
+X-OriginatorOrg: intel.com
 
-On Thu, Aug 10, 2023 at 8:23=E2=80=AFPM Yong Wu (=E5=90=B4=E5=8B=87) <Yong.=
-Wu@mediatek.com> wrote:
->
-> On Tue, 2023-08-08 at 17:53 +0800, Chen-Yu Tsai wrote:
+> From: Nicolin Chen <nicolinc@nvidia.com>
+> Sent: Friday, August 11, 2023 5:03 AM
+>=20
+> > > > Is there a use case for invaliation only SW emulated rings, and do =
+we
+> > > > care about optimizing for the wrap around case?
+> > >
+> > > Hmm, why a SW emulated ring?
 > >
-> > External email : Please do not click links or open attachments until
-> > you have verified the sender or the content.
-> >  On Fri, Jun 2, 2023 at 5:04=E2=80=AFPM Yong Wu <yong.wu@mediatek.com> =
-wrote:
-> > >
-> > > From: "Chengci.Xu" <chengci.xu@mediatek.com>
-> > >
-> > > MT8188 has 3 IOMMU, containing 2 MM IOMMUs, one is for vdo, the
-> > other
-> > > is for vpp. and 1 INFRA IOMMU.
-> > >
-> > > Signed-off-by: Chengci.Xu <chengci.xu@mediatek.com>
-> > > Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-> > > Reviewed-by: AngeloGioacchino Del Regno <
-> > angelogioacchino.delregno@collabora.com>
-> > > ---
-> > >  drivers/iommu/mtk_iommu.c | 49
-> > +++++++++++++++++++++++++++++++++++++++
-> > >  1 file changed, 49 insertions(+)
-> > >
-> > > diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-> > > index 9c89cf894a4d..5c66af0c45a8 100644
-> > > --- a/drivers/iommu/mtk_iommu.c
-> > > +++ b/drivers/iommu/mtk_iommu.c
-> > > @@ -170,6 +170,7 @@ enum mtk_iommu_plat {
-> > >         M4U_MT8173,
-> > >         M4U_MT8183,
-> > >         M4U_MT8186,
-> > > +       M4U_MT8188,
-> > >         M4U_MT8192,
-> > >         M4U_MT8195,
-> > >         M4U_MT8365,
-> > > @@ -1593,6 +1594,51 @@ static const struct mtk_iommu_plat_data
-> > mt8186_data_mm =3D {
-> > >         .iova_region_larb_msk =3D mt8186_larb_region_msk,
-> > >  };
-> > >
-> > > +static const struct mtk_iommu_plat_data mt8188_data_infra =3D {
-> > > +       .m4u_plat         =3D M4U_MT8188,
-> > > +       .flags            =3D WR_THROT_EN | DCM_DISABLE |
-> > STD_AXI_MODE | PM_CLK_AO |
-> > > +                           MTK_IOMMU_TYPE_INFRA |
-> > IFA_IOMMU_PCIE_SUPPORT |
-> > > +                           PGTABLE_PA_35_EN |
-> > CFG_IFA_MASTER_IN_ATF,
-> >
-> > FWIW, CFG_IFA_MASTER_IN_ATF should not be tied to the compatible
-> > string,
-> > but set via a DT property. The IOMMU controls are secured by
-> > firmware.
-> > It is not a property intrinsically tied to the hardware.
->
-> The flag CFG_IFA_MASTER_IN_ATF means the registers which enable/disable
-> iommu are in the secure world. If the master like pcie want to enable
-> iommu, we have to enter secure world to configure it. It should be HW
-> intrinsical, right?
+> > That is what you are building. The VMM catches the write of the
+> > producer pointer and the VMM SW bundles it up to call into the kernel.
+>=20
+> Still not fully getting it. Do you mean a ring that is prepared
+> by the VMM? I think the only case that we need to handle a ring
+> is what I did by forwarding the guest CMDQ (a ring) to the host
+> directly. Not sure why VMM would need another ring for those
+> linearized invalidation commands. Or maybe I misunderstood..
+>=20
 
-If I understand correctly, this is forced by setting some registers.
-The registers are set by the firmware at boot time.
+iiuc the point of a ring-based native format is to maximum code reuse
+when later in-kernel fast invalidation path (from kvm to smmu driver)
+is enabled. Then both slow (via vmm) and fast (in-kernel) path use
+the same logic to handle guest invalidation queue.
 
-So if a different firmware that doesn't set the registers is used,
-then the IOMMU is available to non-secure kernel, correct?
+But if stepping back a bit supporting an array-based non-native format
+could simplify the uAPI design and allows code sharing for array among
+vendor drivers. You can still keep the entry as native format then the
+only difference with future in-kernel fast path is just on walking an array
+vs. walking a ring. And VMM doesn't need to expose non-invalidate
+cmds to the kernel and then be skipped.
 
-That's why I said that it should not be tied to a particular hardware
-platform, but set using a boolean device tree property.
-
-> >
-> > If on some other project there is no such security requirement and
-> > the
-> > IOMMU is opened up to non-secure world, and ATF not even having
-> > support
-> > for the SMC call, this becomes unusable and hard to rectify without
-> > introducing a new compatible string.
-> >
-> > ChenYu
-> >
-> > > +       .inv_sel_reg      =3D REG_MMU_INV_SEL_GEN2,
-> > > +       .banks_num        =3D 1,
-> > > +       .banks_enable     =3D {true},
-> > > +       .iova_region      =3D single_domain,
-> > > +       .iova_region_nr   =3D ARRAY_SIZE(single_domain),
-> > > +};
-> > > +
-> > > +static const struct mtk_iommu_plat_data mt8188_data_vdo =3D {
-> > > +       .m4u_plat       =3D M4U_MT8188,
-> > > +       .flags          =3D HAS_BCLK | HAS_SUB_COMM_3BITS |
-> > OUT_ORDER_WR_EN |
-> > > +                         WR_THROT_EN | IOVA_34_EN | SHARE_PGTABLE
-> > |
-> > > +                         PGTABLE_PA_35_EN | MTK_IOMMU_TYPE_MM,
-> > > +       .hw_list        =3D &m4ulist,
-> > > +       .inv_sel_reg    =3D REG_MMU_INV_SEL_GEN2,
-> > > +       .banks_num      =3D 1,
-> > > +       .banks_enable   =3D {true},
-> > > +       .iova_region    =3D mt8192_multi_dom,
-> > > +       .iova_region_nr =3D ARRAY_SIZE(mt8192_multi_dom),
-> > > +       .larbid_remap   =3D {{2}, {0}, {21}, {0}, {19}, {9, 10,
-> > > +                          11 /* 11a */, 25 /* 11c */},
-> > > +                          {13, 0, 29 /* 16b */, 30 /* 17b */, 0},
-> > {5}},
-> > > +};
-> > > +
-> > > +static const struct mtk_iommu_plat_data mt8188_data_vpp =3D {
-> > > +       .m4u_plat       =3D M4U_MT8188,
-> > > +       .flags          =3D HAS_BCLK | HAS_SUB_COMM_3BITS |
-> > OUT_ORDER_WR_EN |
-> > > +                         WR_THROT_EN | IOVA_34_EN | SHARE_PGTABLE
-> > |
-> > > +                         PGTABLE_PA_35_EN | MTK_IOMMU_TYPE_MM,
-> > > +       .hw_list        =3D &m4ulist,
-> > > +       .inv_sel_reg    =3D REG_MMU_INV_SEL_GEN2,
-> > > +       .banks_num      =3D 1,
-> > > +       .banks_enable   =3D {true},
-> > > +       .iova_region    =3D mt8192_multi_dom,
-> > > +       .iova_region_nr =3D ARRAY_SIZE(mt8192_multi_dom),
-> > > +       .larbid_remap   =3D {{1}, {3}, {23}, {7},
-> > {MTK_INVALID_LARBID},
-> > > +                          {12, 15, 24 /* 11b */}, {14,
-> > MTK_INVALID_LARBID,
-> > > +                          16 /* 16a */, 17 /* 17a */,
-> > MTK_INVALID_LARBID,
-> > > +                          27, 28 /* ccu0 */, MTK_INVALID_LARBID},
-> > {4, 6}},
-> > > +};
-> > > +
-> > >  static const unsigned int
-> > mt8192_larb_region_msk[MT8192_MULTI_REGION_NR_MAX][MTK_LARB_NR_MAX] =3D
-> > {
-> > >         [0] =3D {~0, ~0},                         /* Region0: larb0/1
-> > */
-> > >         [1] =3D {0, 0, 0, 0, ~0, ~0, 0, ~0},      /* Region1:
-> > larb4/5/7 */
-> > > @@ -1701,6 +1747,9 @@ static const struct of_device_id
-> > mtk_iommu_of_ids[] =3D {
-> > >         { .compatible =3D "mediatek,mt8173-m4u", .data =3D
-> > &mt8173_data},
-> > >         { .compatible =3D "mediatek,mt8183-m4u", .data =3D
-> > &mt8183_data},
-> > >         { .compatible =3D "mediatek,mt8186-iommu-mm",    .data =3D
-> > &mt8186_data_mm}, /* mm: m4u */
-> > > +       { .compatible =3D "mediatek,mt8188-iommu-infra", .data =3D
-> > &mt8188_data_infra},
-> > > +       { .compatible =3D "mediatek,mt8188-iommu-vdo",   .data =3D
-> > &mt8188_data_vdo},
-> > > +       { .compatible =3D "mediatek,mt8188-iommu-vpp",   .data =3D
-> > &mt8188_data_vpp},
-> > >         { .compatible =3D "mediatek,mt8192-m4u", .data =3D
-> > &mt8192_data},
-> > >         { .compatible =3D "mediatek,mt8195-iommu-infra", .data =3D
-> > &mt8195_data_infra},
-> > >         { .compatible =3D "mediatek,mt8195-iommu-vdo",   .data =3D
-> > &mt8195_data_vdo},
-> > > --
-> > > 2.25.1
-> > >
-> > >
-> >
+Thanks
+Kevin
