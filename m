@@ -1,69 +1,62 @@
-Received: from mail-pl1-f177.google.com (mail-pl1-f177.google.com [209.85.214.177])
+Received: from mail-pj1-f43.google.com (mail-pj1-f43.google.com [209.85.216.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 53EE263B3
-	for <iommu@lists.linux.dev>; Fri, 11 Aug 2023 13:27:13 +0000 (UTC)
-Received: by mail-pl1-f177.google.com with SMTP id d9443c01a7336-1bdb801c667so4596285ad.1
-        for <iommu@lists.linux.dev>; Fri, 11 Aug 2023 06:27:13 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A54F663B3
+	for <iommu@lists.linux.dev>; Fri, 11 Aug 2023 13:29:20 +0000 (UTC)
+Received: by mail-pj1-f43.google.com with SMTP id 98e67ed59e1d1-26934bc3059so2239386a91.1
+        for <iommu@lists.linux.dev>; Fri, 11 Aug 2023 06:29:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1691760432; x=1692365232;
+        d=ziepe.ca; s=google; t=1691760560; x=1692365360;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=F7v0CVgY9abtWYoDC5bZkBPB2nRR3jrM6lzMQZBvyuU=;
-        b=d1FmtARKaIJHCFVHZhIvjyWeh9YdGWhpXHg47bzfdOXmJHlxrslCa7zHg+/JD34q0e
-         E9/3cip0qUiYQyaSEfw8LW1KYUNSfz7+aubYzAfkCKxHzXz1aD/zcjb2url7DUGw3QFK
-         kXh/FNJld8j2cKTYqxjXigAi37lX18p01LLlG5uqSynfTOhbWhbZ0fNQFC7p238++VRQ
-         Zs3Uxt3iiHDirlnfq3y2keMcgFiobHWlXmeW33RUglZ5pN91g1cbMZjZhs4rHwsn9r1M
-         9rdF/SAB3CLwR+1IA27XUCeOTCmo4PB5RcAUhTvJUQJ7k0WobwUKOsY994haEl65WxVD
-         I38g==
+        bh=8LOpgoLGoY3DjpumPQsfCr46GfyFnwJ6iRRs1mZps+8=;
+        b=P23nqss6FVvXml5SxPmyBOySoi8G56V8QNGw1aeNOAT1Kv2QSV9LHYmLlAxDbc2BTb
+         X6o6yj1C+5iPCmclzAsBq8c01yvJd63vxN4x4DoJMg8Duwxnq4/CBUagn0SavWX0d8eG
+         FJ6+frmZ0L/Z7WKdGHMkRKqKRmndj/aO/ZLYrUQk44b/3GpuP4AOux4smSG/g6cTP81L
+         UQES66jdJvnUvW9fQ1TBxkUAa3lCRldj3aZOn0ttqJ3pbfrJP6ie8cgr/i6ptVkfPDIm
+         bQYVuQiyXTMum16UfRPvpQLeEygFnDYFQx94Knx+zxFQuMzEy9Of8lEmoueGfMrwfH2P
+         ArKA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1691760432; x=1692365232;
+        d=1e100.net; s=20221208; t=1691760560; x=1692365360;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=F7v0CVgY9abtWYoDC5bZkBPB2nRR3jrM6lzMQZBvyuU=;
-        b=bIVZxtq653CaovXvbgqZrz6sQzXELeDgVT5bTrZyEUIeVHHSO9DcRIEiMYiwj0mD//
-         n832p/KtAq2u+fUtpHskahkmb1CEKb95DE3vQCeMG3rLwEhH/EYJWimxPSG+dWUI34Vp
-         AWW0YRANdsGKNw4xPL9o6F+MZx+HxYvEEqS0sk2pzsgxTKxBsMZv4YOPL9woIpL+sb4L
-         2lQnNDUmzMB4xOr8vF4fvFakG0ydzTFuhg5fK9IRkwjx3X7cCr0Q9/teLYrEhSpS3RvI
-         hdVZKJvYyl9O0282AMbG1bkPq++YFyMBe90Aucl9YCLhWKejrHwcxQ0v6KPlW7IPHM5z
-         PM4g==
-X-Gm-Message-State: AOJu0YyA8+p/s9uu27wso43+M9vrrrJosw/M5lBdiru6SEFa8ak3u+B6
-	bBlnO9RrgyDnxgqB4NjbWY5Qqw==
-X-Google-Smtp-Source: AGHT+IHjQ/YmFnNuEbJzT7wjHKlxU7TvjYa59TJH7k5fgJjND7DThiWpL/8pFybIFQzN1/kVVWlFlQ==
-X-Received: by 2002:a17:902:f551:b0:1bb:97d0:c628 with SMTP id h17-20020a170902f55100b001bb97d0c628mr2378919plf.31.1691760432689;
-        Fri, 11 Aug 2023 06:27:12 -0700 (PDT)
+        bh=8LOpgoLGoY3DjpumPQsfCr46GfyFnwJ6iRRs1mZps+8=;
+        b=A5nRg2GtUq5mXEtEgWWMP62fuuJJn3NHKUnDvVwV4uIYInWo43T0pXs2yJu5x4HI4+
+         Dc+QVX5ttEYLC+QW7c+DmUpQjy5iJ5gRBSUEJKiq2xG/Xw743mJakvWr4cCdQfAJF3Dp
+         /9L6yhe4o5mhjYfj/kPbQdAxGZbpkSly0u77g9MYGPAspAjqtecxA3SCtDcZb5HJUlii
+         tiiLLk35dLf4VdQvtht2R8Apvs86+S6ZUGsto1cwIA6IdGYV7/2Dblgk006dPJQgZOcJ
+         WUTo2/Jcab60dICrFQiJb31tKG3ANVyO5GGAHrKqjlMVGpee2i0SYfIE9CBKME9Bdnd+
+         3Mew==
+X-Gm-Message-State: AOJu0YzhteR0RWt/HyMiJmK8VimOAlFfeb8+VWSqDFUdn913CQ71eceB
+	/BQjhKK/cPLy1hZP0BMuBMwvww==
+X-Google-Smtp-Source: AGHT+IEufSgy3WFklLzEfOQ7QcpVLaiWk87ysEXVFOcUtUGT0SPAsgLe2hy3p5Ir4TzY4QNGL5dM/Q==
+X-Received: by 2002:a17:90a:648e:b0:268:220a:7080 with SMTP id h14-20020a17090a648e00b00268220a7080mr6628903pjj.2.1691760559815;
+        Fri, 11 Aug 2023 06:29:19 -0700 (PDT)
 Received: from ziepe.ca ([206.223.160.26])
-        by smtp.gmail.com with ESMTPSA id s13-20020a170902988d00b001bdc664ecd3sm19894plp.307.2023.08.11.06.27.11
+        by smtp.gmail.com with ESMTPSA id ju9-20020a170903428900b001a6d4ea7301sm3890733plb.251.2023.08.11.06.29.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Aug 2023 06:27:12 -0700 (PDT)
+        Fri, 11 Aug 2023 06:29:19 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.95)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1qUSAY-005R9K-MW;
-	Fri, 11 Aug 2023 10:27:10 -0300
-Date: Fri, 11 Aug 2023 10:27:10 -0300
+	id 1qUSCb-005RAj-Ge;
+	Fri, 11 Aug 2023 10:29:17 -0300
+Date: Fri, 11 Aug 2023 10:29:17 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
 To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Kevin Tian <kevin.tian@intel.com>,
 	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	"Liu, Yi L" <yi.l.liu@intel.com>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 08/12] iommu: Prepare for separating SVA and IOPF
-Message-ID: <ZNY3LuW+FMAhK2xf@ziepe.ca>
+	Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>, iommu@lists.linux.dev,
+	kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 10/12] iommu: Make iommu_queue_iopf() more generic
+Message-ID: <ZNY3rYJbBFEMFi80@ziepe.ca>
 References: <20230727054837.147050-1-baolu.lu@linux.intel.com>
- <20230727054837.147050-9-baolu.lu@linux.intel.com>
- <BN9PR11MB52769D22490BB09BB25E0C2E8C08A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <ZNKMz04uhzL9T7ya@ziepe.ca>
- <BN9PR11MB527629949E7D44BED080400C8C12A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <0771c28d-1b31-003e-7659-4f3f3cbf5546@linux.intel.com>
- <BN9PR11MB527686C925E33E0DCDF261CB8C13A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <ZNUUjXMrLyU3g5KM@ziepe.ca>
- <f1dbfb6a-5a53-f440-5d3a-25772c67547f@linux.intel.com>
+ <20230727054837.147050-11-baolu.lu@linux.intel.com>
+ <ZNU1Zev6j92IJRjn@ziepe.ca>
+ <7fc396d5-e2bd-b126-b3a6-88f8033c14b4@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -72,49 +65,47 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <f1dbfb6a-5a53-f440-5d3a-25772c67547f@linux.intel.com>
+In-Reply-To: <7fc396d5-e2bd-b126-b3a6-88f8033c14b4@linux.intel.com>
 
-On Fri, Aug 11, 2023 at 09:53:41AM +0800, Baolu Lu wrote:
-> On 2023/8/11 0:47, Jason Gunthorpe wrote:
-> > On Thu, Aug 10, 2023 at 02:35:40AM +0000, Tian, Kevin wrote:
-> > > > From: Baolu Lu<baolu.lu@linux.intel.com>
-> > > > Sent: Wednesday, August 9, 2023 6:41 PM
-> > > > 
-> > > > On 2023/8/9 8:02, Tian, Kevin wrote:
-> > > > > > From: Jason Gunthorpe<jgg@ziepe.ca>
-> > > > > > Sent: Wednesday, August 9, 2023 2:43 AM
-> > > > > > 
-> > > > > > On Thu, Aug 03, 2023 at 08:16:47AM +0000, Tian, Kevin wrote:
-> > > > > > 
-> > > > > > > Is there plan to introduce further error in the future? otherwise this
-> > > > should
-> > > > > > > be void.
-> > > > > > > 
-> > > > > > > btw the work queue is only for sva. If there is no other caller this can be
-> > > > > > > just kept in iommu-sva.c. No need to create a helper.
-> > > > > > I think more than just SVA will need a work queue context to process
-> > > > > > their faults.
-> > > > > > 
-> > > > > then this series needs more work. Currently the abstraction doesn't
-> > > > > include workqueue in the common fault reporting layer.
-> > > > Do you mind elaborate a bit here? workqueue is a basic infrastructure in
-> > > > the fault handling framework, but it lets the consumers choose to use
-> > > > it, or not to.
-> > > > 
-> > > My understanding of Jason's comment was to make the workqueue the
-> > > default path instead of being opted by the consumer.. that is my 1st
-> > > impression but might be wrong...
-> > Yeah, that is one path. Do we have anyone that uses this that doesn't
-> > want the WQ? (actually who even uses this besides SVA?)
+On Fri, Aug 11, 2023 at 10:21:20AM +0800, Baolu Lu wrote:
+
+> > This also has lifetime problems on the mm.
+> > 
+> > The domain should flow into the iommu_sva_handle_iopf() instead of the
+> > void *data.
 > 
-> I am still confused. When we forward iopf's to user space through the
-> iommufd, we don't need to schedule a WQ, right? Or I misunderstood
-> here?
+> Okay, but I still want to keep void *data as a private pointer of the
+> iopf consumer. For SVA, it's probably NULL.
 
-Yes, that could be true, iommufd could just queue it from the
-interrupt context and trigger a wakeup.
+I'd rather give the iommu_domain some 'private' void * than pass
+around weird pointers all over the place... That might be broadly
+useful, eg iommufd could store the hwpt in there.
 
-But other iommufd modes would want to invoke hmm_range_fault() which
-would need the work queue.
+> > We need to document/figure out some how to ensure that the faults are
+> > all done processing before a fault enabled domain can be freed.
+> 
+> This has been documented in drivers/iommu/io-pgfault.c:
+> 
+> [...]
+>  * Any valid page fault will be eventually routed to an iommu domain and the
+>  * page fault handler installed there will get called. The users of this
+>  * handling framework should guarantee that the iommu domain could only be
+>  * freed after the device has stopped generating page faults (or the iommu
+>  * hardware has been set to block the page faults) and the pending page
+> faults
+>  * have been flushed.
+>  *
+>  * Return: 0 on success and <0 on error.
+>  */
+> int iommu_queue_iopf(struct iommu_fault *fault, void *cookie)
+> [...]
+> 
+> > This patch would be better ordered before the prior patch.
+> 
+> Let me try this in the next version.
+
+Okay.. but can we have some debugging to enforce this maybe? Also add
+a comment when we obtain the domain on this path to see the above
+about the lifetime
 
 Jason
