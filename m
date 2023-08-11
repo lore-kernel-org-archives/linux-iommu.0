@@ -1,153 +1,142 @@
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2071.outbound.protection.outlook.com [40.107.94.71])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f178.google.com (mail-pl1-f178.google.com [209.85.214.178])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F01931868
-	for <iommu@lists.linux.dev>; Fri, 11 Aug 2023 12:01:25 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LdtpoRRlcxmHX5u+kfAQkQJNqzWbPWrnIfSxGKavozWjzIpZlLNZ4mZuSICnDXuycs4Dg/UXr2FNST3q10P5f9vF2CEqDo6eVV3gbCshwD3AyvuhCVVh3KtfuAmDZYNtjiwkAi4s9KsKw6A/mZsMg9MhrMFQauP9y/f70LJwyw4z71JWYILfv+a+al++XbCqNUhNs4lUJL2FNN7eRwIkMJTYcWlMv2Zr9/NNiZXlhvp7lzRK+WgQbDl/D3XoWsv6F9HHFehoyukZmPICxUA9N/tv2/R8Q1SfIPWz3QfGYnrZomg5HFraoViH2+tEuz+7jqOQctYqsri1B+/XP1DxsQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=wbrmd25XzUS/ENsg3zVYb7bdv4mXhY13qwTWphzyWZQ=;
- b=VZBjGkBSpc3wdOFLMdc1V4Q5MP8TXbUxALi8BPOwUrnd+4imbc7DGAc0QlsxxGSuAI9Dfx9UNaeED5GXSBAiHhO4PvfiCUJQjPQLVkVKcvzvnChVMFIRSLXmxfMr/LCpg/H8KWbVllV7u7GfO408wgjdmPmoM2q3rcXrn0BnbLNgRvCLYOk7i/inwjRacz4gDqWApOH6NajIAXjVxy85CSRNzoUZI7Mb8CibD8GIQgPGIqXByWxNys6I8XEuc3mzvrTovDWX671SeC7M6B+TvYMNAqPjgwOGMoEnk/ESUphb/fM8SsVWUOAMFgcF5xw2atlTevZl1Ninn8JXKhZgiw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=wbrmd25XzUS/ENsg3zVYb7bdv4mXhY13qwTWphzyWZQ=;
- b=o9kWHrkbINAjIGdihbBZjDRoJ9X7HARHaENQjNQTC+MAX1HhB/cYMirAHwdCEAh5uhKGQzvjYlDALQFPJI0noU8iHfSykQYXLY+2n/VZVeU98O7MfiYC7zuBAENyC4cEYv4FpqNfgXmzk1vBpSzJKLpF/FLUmrOdwr0ivLn1QXhs21TltfGnk1pHPArtuKSuQMZ2d9QVfB90YSMalIYpFjUvvQTFifyKAB7hHNDvXK4IAX8s3T2IMZp3gmpvUzXxWu1vPwA7+YT8WelezwJD050IZ8TFGWAbe+xBwRFhi163K3qCTMdsNRgFKkAJZTXTwWrYufUIRISYsm+xY+Fk/Q==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by SN7PR12MB8002.namprd12.prod.outlook.com (2603:10b6:806:34b::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6652.30; Fri, 11 Aug
- 2023 12:01:23 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::5111:16e8:5afe:1da1]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::5111:16e8:5afe:1da1%6]) with mapi id 15.20.6652.029; Fri, 11 Aug 2023
- 12:01:23 +0000
-Date: Fri, 11 Aug 2023 09:01:20 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: "Liu, Yi L" <yi.l.liu@intel.com>
-Cc: "joro@8bytes.org" <joro@8bytes.org>,
-	"alex.williamson@redhat.com" <alex.williamson@redhat.com>,
-	"Tian, Kevin" <kevin.tian@intel.com>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
-	"cohuck@redhat.com" <cohuck@redhat.com>,
-	"eric.auger@redhat.com" <eric.auger@redhat.com>,
-	"nicolinc@nvidia.com" <nicolinc@nvidia.com>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-	"mjrosato@linux.ibm.com" <mjrosato@linux.ibm.com>,
-	"chao.p.peng@linux.intel.com" <chao.p.peng@linux.intel.com>,
-	"yi.y.sun@linux.intel.com" <yi.y.sun@linux.intel.com>,
-	"peterx@redhat.com" <peterx@redhat.com>,
-	"jasowang@redhat.com" <jasowang@redhat.com>,
-	"shameerali.kolothum.thodi@huawei.com" <shameerali.kolothum.thodi@huawei.com>,
-	"lulu@redhat.com" <lulu@redhat.com>,
-	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-	"Duan, Zhenzhong" <zhenzhong.duan@intel.com>
-Subject: Re: [PATCH v6 4/4] iommufd/selftest: Add coverage for
- IOMMU_GET_HW_INFO ioctl
-Message-ID: <ZNYjEFpN7iZcM0sE@nvidia.com>
-References: <20230808153510.4170-1-yi.l.liu@intel.com>
- <20230808153510.4170-5-yi.l.liu@intel.com>
- <ZNPCtPTcHvITt6fk@nvidia.com>
- <DS0PR11MB7529441BE81F24EE5C947B5BC310A@DS0PR11MB7529.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <DS0PR11MB7529441BE81F24EE5C947B5BC310A@DS0PR11MB7529.namprd11.prod.outlook.com>
-X-ClientProxiedBy: SJ0PR03CA0148.namprd03.prod.outlook.com
- (2603:10b6:a03:33c::33) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7125163B3
+	for <iommu@lists.linux.dev>; Fri, 11 Aug 2023 13:06:51 +0000 (UTC)
+Received: by mail-pl1-f178.google.com with SMTP id d9443c01a7336-1bda9207132so11789275ad.0
+        for <iommu@lists.linux.dev>; Fri, 11 Aug 2023 06:06:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1691759210; x=1692364010;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=PvTL2oVJ0eiAc078W1yQ7hrHg2PkiBD3S5QRuBrCIeU=;
+        b=UaDL/fB8QEuFEO1d3w9bW3cFmCqaFmiZOBzXudSWb6PUfsqsDQ6JB6Q1gleEHshwoS
+         N76HHcVqLellvb4agRQkzYHsh/4rTMxiSwB2qPNrAfVqb4W9Zy7IiAkNqB9Jf9AHKpmA
+         NdTIMNd2uCIFKlYPbEwveqk3Op9+MY/L0I2v8iCgwf7T+8UrXxmta8t2+ygYiUUZ4Hy/
+         fEolecBVu0Zsd21wbiBrr3LdgJLb4p6k9P81f+u02DcvEbgEoRN3OVAfk4mFaJ7y93si
+         TFdtmATOCbJoOtY18c5cb5KXEO5wcfhfJSS3T+iJLjgwe/X8sfqI9SF0VGtIBelcwtms
+         OsYQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1691759210; x=1692364010;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=PvTL2oVJ0eiAc078W1yQ7hrHg2PkiBD3S5QRuBrCIeU=;
+        b=ByKLs8zzNA1bNZml2f9s72qUJg17UXu5Z+S3kUv/bq+/XMeeX4mOvH6Wax9WQdXUWi
+         zSkJoxo1eOZq39dwH188HDKgDyBI8IPzohKuvPAMlcuZ5SPWyQB9LAKOEvqEOwL5loZW
+         EYMdgxWQXaEY0WuEsnv1XyfdtWV91JeQCSJ4faRPnZ+X59WfrkNk3gCcqU8U1skMjGG3
+         sDxqFmU06r+/uOi95dir9aOZjdciDGMHKPRDsvK+iKbimdZxP1ENEKPqxSLayIDfwWfy
+         QzuKxtUIWtwVfeZqhauuS6v+AvpQxsapRDB2Y/oUhk/BQUZ7LaBFyJtjoVI/04sseEkQ
+         ikmA==
+X-Gm-Message-State: AOJu0Yzb0v+7K/IyYaUxs6vs+I1lthXOdV/+smkfEJFZ/nW7pnF2mLCX
+	WeNINfdmJ81YSe4p1uRvTAgPZA==
+X-Google-Smtp-Source: AGHT+IHajFS15kRqRTBhJy5rDfN5rnwogKEGXx6eTBpjTdeCtYbrW22ar55MnMLWpMdKhbI11faCFw==
+X-Received: by 2002:a17:902:d2cf:b0:1b8:b285:ec96 with SMTP id n15-20020a170902d2cf00b001b8b285ec96mr2016038plc.23.1691759210410;
+        Fri, 11 Aug 2023 06:06:50 -0700 (PDT)
+Received: from ziepe.ca ([206.223.160.26])
+        by smtp.gmail.com with ESMTPSA id b4-20020a170902d50400b001bb9b5e86b7sm3842460plg.91.2023.08.11.06.06.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 11 Aug 2023 06:06:49 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1qURqp-005Qt2-Rh;
+	Fri, 11 Aug 2023 10:06:47 -0300
+Date: Fri, 11 Aug 2023 10:06:47 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: "Suthikulpanit, Suravee" <suravee.suthikulpanit@amd.com>
+Cc: Vasant Hegde <vasant.hegde@amd.com>, iommu@lists.linux.dev,
+	joro@8bytes.org, wei.huang2@amd.com, jsnitsel@redhat.com
+Subject: Re: [PATCH 01/11] iommu/amd: Rename helper function
+ rlookup_amd_iommu()
+Message-ID: <ZNYyZzo66vu8VvTh@ziepe.ca>
+References: <20230808100232.5977-1-vasant.hegde@amd.com>
+ <20230808100232.5977-2-vasant.hegde@amd.com>
+ <ZNJfLQTJhOgorIHB@ziepe.ca>
+ <bcd2749c-d4de-fa8c-c865-ac9ed184ea17@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|SN7PR12MB8002:EE_
-X-MS-Office365-Filtering-Correlation-Id: eb40e61e-6e2f-4086-401a-08db9a62aeca
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	PnN3n1Xw+GH+OoBFiC5FonvJo2Tyh+g4wnyGaYheyfltd25r9Pao4ego2pK806LQA/K4TejYVQ2L7QgiMlh57ZkcEu+f+wCeY4uv0N6SHSiH09O0SGHN9jc1yB+9poNcKHJpM77Tv/aWN8IGNnAXfOJTc7PkpCAXNREfovM24kO0P//Oqd0fFDUV+QNfmeKIFeangoS1a0z4ELqNJaWP1K0tEYpXfjZFpWk5TG83d19YgXa3ESC9duRMHTV51omnr4hSJTAeM+DWzGaM2YB73tArUMLEy1tgIQaNt1VJeo46MyBUbT3uFzwqpu0nFonHunwT0N4V/JVHPMSZ33CQ/detNSd1I8qC5ltK0I8/9v+WHjdjL4xzSbKadVYXnJM26RC+15XAE/woSfmcjx6lwvNPwha1CoRF2h2LsA3luShadFk75KuH9ymkqCOllQpwsnzZIMBb7c+NzSsHVXYrMNSISHxW8RxamfxZFkgqlwlQxd2mSdWR3rugUWDioDU0tQUw4Nuxzge8BM6IbxJDnj6UlcaPs+JiNaaXJKSiRJPPwU1QvmyrXYStMOoTCgr9
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(136003)(396003)(346002)(376002)(39860400002)(366004)(451199021)(1800799006)(186006)(26005)(5660300002)(6506007)(8936002)(8676002)(41300700001)(36756003)(38100700002)(2906002)(83380400001)(2616005)(86362001)(7416002)(4326008)(66946007)(66556008)(66476007)(6916009)(6512007)(54906003)(6486002)(478600001)(316002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?c2QBgZfifIFIPvGM07Jp3JWxtj4Lj55yCkkTyFP4GR0B9djPHZ4ogw2xUnfV?=
- =?us-ascii?Q?aYzZCCUfxP4C2VxLytl9u1nyL2FV8uOfu6pznBwComTrlIfXNeq2QcEdIYkD?=
- =?us-ascii?Q?g3Qxj0xsJHEdGUdMVqBYjbEiKu3qV5wmRIP4rHMgFzo9ToqG6u1NCb+cVnxD?=
- =?us-ascii?Q?RckYRqoVN9EQZvD8ntpisjkelO9rX/baGAHhPJRw+MoMOsdj8rLp6gJx+ufg?=
- =?us-ascii?Q?wey5nuI0/DdnkYzfQRa7ShRcMk535ykP5j1EN3XkLcp65ICjmW41Dq6+Ys+k?=
- =?us-ascii?Q?WPjOzVQH8RdtPXT4AE0NdEsfRKs3te+Vymp8Rb/qqArID6lJREC8mypdv/KZ?=
- =?us-ascii?Q?VSS8YqWhrEdqsc6WpOvoZLdmTP1IY33DyPRr4LcFHv1Kdglp6xvvXA60tP5B?=
- =?us-ascii?Q?1YLC7wAe5bsBtMxTMfDa/mUpQKGogbpKUfxIZhHMrXVTWeWuOObQ2SGbWPr9?=
- =?us-ascii?Q?cmMWb2U6vg9PBjK114Dix910DsUELGeVHjAjKmXWFfHSzKayfNNjZ1sLrzC0?=
- =?us-ascii?Q?b1S24P/pSsHPRBFVHAlbTglmw0oziAFcMSkMzOC5gw5Q5QJCljVUAOOvwLeh?=
- =?us-ascii?Q?0h4F5/CVR09DgBPH+bDBisvtlbcHpJES+Tu/fl43dLEFrRag70934dIPU3pS?=
- =?us-ascii?Q?ieSVZgxXfjZIQ8VYWRad0war4M1kO54kyCCkrY+KeT4bLhEFK7NZBoYfkCxs?=
- =?us-ascii?Q?h1YyATL3IyDbdGKILY5L4GPhIfvCvSPh0eAZZIDVcSEWE8TX+uCIMli1ieNn?=
- =?us-ascii?Q?euHBnbWmacHPZx67WYnza78ZA9VcO13HNL5s29BQbgxltdeorSKO4zWw0bE5?=
- =?us-ascii?Q?hpQlRFFBl4ZuL1gdSeISuH1SRt7vnh1m0kRA8Fl2uoq/Cmq1NOe8uRLoaDwy?=
- =?us-ascii?Q?7nDkBPZ4jd3PWvo0DkRmEB1sN4XbWFJ+XeP7AyjdoLKw2tn5tswGWvWYHIgv?=
- =?us-ascii?Q?/WWLDRODqWgieUhjvzSRByusxYLnj0vzzK/2x4yes10n5bdBoAf6smB1Efw0?=
- =?us-ascii?Q?XtbDWcPEz8Gug1az5eyV8M78wLEjtepkhClps+pn0LT6nLxdYsZY4cxXzUNC?=
- =?us-ascii?Q?JnmOchtsNfrDB0GuMosSMjo0xP5G0L2/tU4q1L4lmFxW8yYHzU8+ClukzpJt?=
- =?us-ascii?Q?r9xtzelsOEDV+Jm3YZnDP5Ik8XIoKKnW4oKuWxZJAuedjpU7R+bLKXfDd355?=
- =?us-ascii?Q?eJwlTBP3eVhSaOX8uGeQ11a9L8mEvHWaWZEAAcDlt0kEZIpBFExwt6N6sGKy?=
- =?us-ascii?Q?dgOR9cSPrw860VQFZNjRSM+qgi7pGUD74fpz74f9czuMryetRKeBEQicXjHU?=
- =?us-ascii?Q?ycYFhfhBaFI3jdQ99oUOhfOH5gJIF0q5nGWR2IPr2FqCPyVuz9PHNInKmuoD?=
- =?us-ascii?Q?ENX6BNLovucf30mHcGtTazog3/alCw2pDdZcoczq9JIwcI9pJCUkMq61xZxi?=
- =?us-ascii?Q?9oPTelXvRrecmPu8rswRxd7CTfxry8ZHFn8IY2M/mrVIu/N8alsKdwyBukSv?=
- =?us-ascii?Q?R+nPJkleYOgkjZXki3PwGoqPh4KGDjENpn8PJSwvY5EK4vlW1YHpmm7ohiZ+?=
- =?us-ascii?Q?zclWJ5GYOI1LxZBWJr/QwWTszFx4jJ+FWNPza0Q8?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: eb40e61e-6e2f-4086-401a-08db9a62aeca
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Aug 2023 12:01:23.5143
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: t+n5XNE234IC5Pxrn99Yf45tx4wZT30eKg0fAbcU6pcFAoAPPuEGOOhpkxGasElB
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB8002
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <bcd2749c-d4de-fa8c-c865-ac9ed184ea17@amd.com>
 
-On Fri, Aug 11, 2023 at 06:57:34AM +0000, Liu, Yi L wrote:
-> > From: Jason Gunthorpe <jgg@nvidia.com>
-> > Sent: Thursday, August 10, 2023 12:46 AM
-> > 
-> > On Tue, Aug 08, 2023 at 08:35:10AM -0700, Yi Liu wrote:
-> > > From: Nicolin Chen <nicolinc@nvidia.com>
-> > >
-> > > Add a mock_domain_hw_info function and an iommu_test_hw_info data
-> > > structure. This allows to test the IOMMU_GET_HW_INFO ioctl passing
-> > > the test_reg value for the mock_dev.
-> > >
-> > > Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-> > > Signed-off-by: Yi Liu <yi.l.liu@intel.com>
-> > > ---
-> > >  drivers/iommu/iommufd/iommufd_test.h          |  9 +++++++
-> > >  drivers/iommu/iommufd/selftest.c              | 16 ++++++++++++
-> > >  tools/testing/selftests/iommu/iommufd.c       | 17 +++++++++++-
-> > >  tools/testing/selftests/iommu/iommufd_utils.h | 26 +++++++++++++++++++
-> > >  4 files changed, 67 insertions(+), 1 deletion(-)
-> > 
-> > Don't forget to add it to fail_nth
+On Thu, Aug 10, 2023 at 04:06:52PM -0700, Suthikulpanit, Suravee wrote:
 > 
-> Sure. Btw. Would you share us the rule on determining whether an ioctl/path
-> requires fail_nth case or not.
+> 
+> On 8/8/2023 8:28 AM, Jason Gunthorpe wrote:
+> > On Tue, Aug 08, 2023 at 10:02:22AM +0000, Vasant Hegde wrote:
+> > > From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+> > > 
+> > > Rename and make it available to other code.
+> > > 
+> > > Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+> > > Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
+> > > ---
+> > >   drivers/iommu/amd/amd_iommu.h |  1 +
+> > >   drivers/iommu/amd/iommu.c     | 30 +++++++++++++++---------------
+> > >   2 files changed, 16 insertions(+), 15 deletions(-)
+> > > 
+> > > diff --git a/drivers/iommu/amd/amd_iommu.h b/drivers/iommu/amd/amd_iommu.h
+> > > index 56996dc2868d..1471ab2dddd1 100644
+> > > --- a/drivers/iommu/amd/amd_iommu.h
+> > > +++ b/drivers/iommu/amd/amd_iommu.h
+> > > @@ -24,6 +24,7 @@ int amd_iommu_init_devices(void);
+> > >   void amd_iommu_uninit_devices(void);
+> > >   void amd_iommu_init_notifier(void);
+> > >   void amd_iommu_set_rlookup_table(struct amd_iommu *iommu, u16 devid);
+> > > +struct amd_iommu *amd_iommu_rlookup_iommu(struct device *dev);
+> > >   #ifdef CONFIG_AMD_IOMMU_DEBUGFS
+> > >   void amd_iommu_debugfs_setup(struct amd_iommu *iommu);
+> > > diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+> > > index 26e509ffe77a..77b913211c35 100644
+> > > --- a/drivers/iommu/amd/iommu.c
+> > > +++ b/drivers/iommu/amd/iommu.c
+> > > @@ -164,7 +164,7 @@ static struct amd_iommu *__rlookup_amd_iommu(u16 seg, u16 devid)
+> > >   	return NULL;
+> > >   }
+> > > -static struct amd_iommu *rlookup_amd_iommu(struct device *dev)
+> > > +struct amd_iommu *amd_iommu_rlookup_iommu(struct device *dev)
+> > >   {
+> > 
+> > Er, wah? This is a really confused function. It should just be:
+> > 
+> > static inline struct amd_iommu *amd_device_to_iommu(struct device *dev)
+> > {
+> > 	return container_of(dev->iommu->iommu_dev, struct amd_iommu, iommu);
+> > }
+> > 
+> > Right? At least for many of the call sites.
+> > 
+> > The core code maintains the association of the iommu_device with each
+> > probe'd device automatically. The drivers don't need tables and
+> > searching.
+> 
+> The rlookup table is setup from the information in the IVRS table, which
+> contains list of devices belong to an IOMMU instance. This information is
+> used to for setting dev->iommu during probing (See
+> drivers/iommu/amd/iommu.c: amd_iommu_probe_device()).
 
-It always requires it :)
+Yes, I saw that..
+
+> Subsequently, it should be able to use the amd_device_to_iommu() you
+> provided as long as the device has not been released.
+> 
+> So, we can add the helper function above, and make sure to check that
+> dev->iommu is not NULL before calling the container_of().
+
+There should not be a null check
+
+Such a function should only be called from one of the iommu ops and
+the core code guarentees it will not invoke the op without an attached
+iommu_driver
+
+Provide a little inline function in iommu.h to get the iommu_dev and
+give that explanation in a comment.
+
+If you want to do this outside the ops then you have a locking problem
+and have to address it properly. Try to avoid that.
 
 Jason
