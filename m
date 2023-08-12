@@ -1,34 +1,33 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.88])
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.151])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0058EEA2;
-	Sat, 12 Aug 2023 01:42:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 91DE0EDD;
+	Sat, 12 Aug 2023 01:52:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1691804526; x=1723340526;
+  t=1691805125; x=1723341125;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=5GY/e8XTSIPzCfiJLnCpeo3J53rYLGWoWboZiWN0iEY=;
-  b=CE/zCoHL9V6lhsza/mBWJ24YPScDAmUtlvz4yXXMwRCSJQGmhkbQkDRN
-   UMwu1MjYN+dTjgjORv240i2Wz74zL2VVbSGzlxYlKLtmRTzT1w7a93oGK
-   7xLnwHGGVipA3ttZiw8s6AVUhOFHdXT6sgTQtA2+xjQDREKavytbKNqjB
-   jmUxrqk7IpGGLpAQXRqNxx6wRkvnfcVuSEmXAJsuE4gYpIskGbjddA/N5
-   KS4iVj3mHQBJWyIFn+pEGEh7otkAIR16DoHqCBF5uXuzNkTWDc72mwetM
-   RUKfHk/MZbLuMYiqkpbiNQmhOhGle5dTb321TWfkUin+1zCEhv1U64MsG
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10799"; a="402773651"
+  bh=eUUEU5LEbeviw+Tdt86pjS6LMPIps7FsAMnnYjoKRyE=;
+  b=ALoadXrEpsalpeiuSu9RKA/c948YvWngPAJcKt9dDbiufhtPybSTIPgX
+   jKL3fh0HdzXGKCpor6UlMUm4Ge/F7c5wCvnaGxUB3GRB1153PCxxOOkGP
+   z+wTH98R1kCW3WM5u0lvwQWyuScLgD382kWz6XmkAH2gutM/C5ehAvw3Y
+   5a1C1Qq3IWXcg28kG4+n0eltI1jKBukeTib3JphSEAPOUCIuvRXSrRH3E
+   ERwIGnOep/BVAhw+mWXdxJOT5QZRUoHYhlK6teZV0437w29+Wz/DXQpXz
+   UcFz+dNMg8m+8XLYCtMFCj9cGZ/aA+3JsSBwODDVi569TitDmi/Mf6YKJ
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10799"; a="352121569"
 X-IronPort-AV: E=Sophos;i="6.01,167,1684825200"; 
-   d="scan'208";a="402773651"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Aug 2023 18:42:04 -0700
+   d="scan'208";a="352121569"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Aug 2023 18:52:04 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10799"; a="682718124"
-X-IronPort-AV: E=Sophos;i="6.01,167,1684825200"; 
-   d="scan'208";a="682718124"
+X-IronPort-AV: E=Sophos;i="6.01,202,1684825200"; 
+   d="scan'208";a="876364144"
 Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.254.215.79]) ([10.254.215.79])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Aug 2023 18:41:52 -0700
-Message-ID: <b772c318-80b0-944a-dfe9-beb70127dc88@linux.intel.com>
-Date: Sat, 12 Aug 2023 09:41:50 +0800
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Aug 2023 18:51:57 -0700
+Message-ID: <6bb11581-4b24-1e54-d3f6-674cde3e4539@linux.intel.com>
+Date: Sat, 12 Aug 2023 09:51:51 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -42,7 +41,7 @@ Cc: baolu.lu@linux.intel.com, Dmitry Osipenko <digetx@gmail.com>,
  Nicolin Chen <nicolinc@nvidia.com>, Niklas Schnelle
  <schnelle@linux.ibm.com>, Steven Price <steven.price@arm.com>,
  Thierry Reding <treding@nvidia.com>
-Subject: Re: [PATCH v6 02/25] iommu: Add IOMMU_DOMAIN_PLATFORM
+Subject: Re: [PATCH v6 06/25] iommu/tegra-gart: Remove tegra-gart
 Content-Language: en-US
 To: Jason Gunthorpe <jgg@nvidia.com>, Andy Gross <agross@kernel.org>,
  Alim Akhtar <alim.akhtar@samsung.com>, Bjorn Andersson
@@ -70,56 +69,51 @@ To: Jason Gunthorpe <jgg@nvidia.com>, Andy Gross <agross@kernel.org>,
  <vdumpa@nvidia.com>, Chen-Yu Tsai <wens@csie.org>,
  Will Deacon <will@kernel.org>, Yong Wu <yong.wu@mediatek.com>,
  Chunyan Zhang <zhang.lyra@gmail.com>
-References: <2-v6-e8114faedade+425-iommu_all_defdom_jgg@nvidia.com>
+References: <6-v6-e8114faedade+425-iommu_all_defdom_jgg@nvidia.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <2-v6-e8114faedade+425-iommu_all_defdom_jgg@nvidia.com>
+In-Reply-To: <6-v6-e8114faedade+425-iommu_all_defdom_jgg@nvidia.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 2023/8/3 8:07, Jason Gunthorpe wrote:
-> @@ -1967,7 +1978,8 @@ void iommu_domain_free(struct iommu_domain *domain)
->   	if (domain->type == IOMMU_DOMAIN_SVA)
->   		mmdrop(domain->mm);
->   	iommu_put_dma_cookie(domain);
-> -	domain->ops->free(domain);
-> +	if (domain->ops->free)
-> +		domain->ops->free(domain);
->   }
->   EXPORT_SYMBOL_GPL(iommu_domain_free);
->   
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index e05c93b6c37fba..87aebba474e093 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -64,6 +64,7 @@ struct iommu_domain_geometry {
->   #define __IOMMU_DOMAIN_DMA_FQ	(1U << 3)  /* DMA-API uses flush queue    */
->   
->   #define __IOMMU_DOMAIN_SVA	(1U << 4)  /* Shared process address space */
-> +#define __IOMMU_DOMAIN_PLATFORM	(1U << 5)
->   
->   #define IOMMU_DOMAIN_ALLOC_FLAGS ~__IOMMU_DOMAIN_DMA_FQ
->   /*
-> @@ -81,6 +82,8 @@ struct iommu_domain_geometry {
->    *				  invalidation.
->    *	IOMMU_DOMAIN_SVA	- DMA addresses are shared process addresses
->    *				  represented by mm_struct's.
-> + *	IOMMU_DOMAIN_PLATFORM	- Legacy domain for drivers that do their own
-> + *				  dma_api stuff. Do not use in new drivers.
->    */
->   #define IOMMU_DOMAIN_BLOCKED	(0U)
->   #define IOMMU_DOMAIN_IDENTITY	(__IOMMU_DOMAIN_PT)
-> @@ -91,6 +94,7 @@ struct iommu_domain_geometry {
->   				 __IOMMU_DOMAIN_DMA_API |	\
->   				 __IOMMU_DOMAIN_DMA_FQ)
->   #define IOMMU_DOMAIN_SVA	(__IOMMU_DOMAIN_SVA)
-> +#define IOMMU_DOMAIN_PLATFORM	(__IOMMU_DOMAIN_PLATFORM)
+> Thierry says this is not used anymore, and doesn't think it makes sense as
+> an iommu driver. The HW it supports is about 10 years old now and newer HW
+> uses different IOMMU drivers.
+> 
+> As this is the only driver with a GART approach, and it doesn't really
+> meet the driver expectations from the IOMMU core, let's just remove it
+> so we don't have to think about how to make it fit in.
+> 
+> It has a number of identified problems:
+>   - The assignment of iommu_groups doesn't match the HW behavior
+> 
+>   - It claims to have an UNMANAGED domain but it is really an IDENTITY
+>     domain with a translation aperture. This is inconsistent with the core
+>     expectation for security sensitive operations
+> 
+>   - It doesn't implement a SW page table under struct iommu_domain so
+>     * It can't accept a map until the domain is attached
+>     * It forgets about all maps after the domain is detached
+>     * It doesn't clear the HW of maps once the domain is detached
+>       (made worse by having the wrong groups)
+> 
+> Cc: Thierry Reding<treding@nvidia.com>
+> Cc: Dmitry Osipenko<digetx@gmail.com>
+> Acked-by: Thierry Reding<treding@nvidia.com>
+> Signed-off-by: Jason Gunthorpe<jgg@nvidia.com>
+> ---
+>   arch/arm/configs/multi_v7_defconfig |   1 -
+>   arch/arm/configs/tegra_defconfig    |   1 -
+>   drivers/iommu/Kconfig               |  11 -
+>   drivers/iommu/Makefile              |   1 -
+>   drivers/iommu/tegra-gart.c          | 371 ----------------------------
+>   drivers/memory/tegra/mc.c           |  34 ---
+>   drivers/memory/tegra/tegra20.c      |  28 ---
+>   include/soc/tegra/mc.h              |  26 --
+>   8 files changed, 473 deletions(-)
+>   delete mode 100644 drivers/iommu/tegra-gart.c
 
-Nit: As a default domain could be the type of IOMMU_DOMAIN_PLATFORM,
-
-static const char *iommu_domain_type_str(unsigned int t)
-
-needs to be updated, so that users can get a right string when reading 
-/sys/.../[group_id]/type.
+Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
 
 Best regards,
 baolu
