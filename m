@@ -1,34 +1,17 @@
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.65])
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E9E6E1849;
-	Sat, 12 Aug 2023 05:01:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1691816498; x=1723352498;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=8ESbiLHr+YCgav0uKLzgJWB6fuptDUr8xuFAEutcc9g=;
-  b=eIia5ItIbWR7COp6ipg1ZQK3kKUaSAtgQVwByV6TodkErLoK9i2Zsu0g
-   +w1MyPO8lc7EoPA1FiowUtDJNtte6F0JNuMqxWH3NJkNw3LcEj16zuk0L
-   ahq48G7XRZuPo9cPAyXURGBLC0ON1ZvJ0JBUZ7V6bYcu+RLcUeawojK+i
-   uy5RT1taXg+4yDuB4tT2pSd5g9QYfuj+a46/IYgOyeuhANSwkh8cJtKcK
-   +vMwvHXVkQ7Wtxwrkanxw9TEAW8ueR8nLB4oZrUjhtTe+6d6kgQav3iGy
-   TZolSmW8RXCs+AXptWYxThvEXUJ5AAzxesu45bcPmiTG0VlkkSTYf8Vg/
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10799"; a="375513660"
-X-IronPort-AV: E=Sophos;i="6.01,167,1684825200"; 
-   d="scan'208";a="375513660"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Aug 2023 22:01:38 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10799"; a="767872740"
-X-IronPort-AV: E=Sophos;i="6.01,167,1684825200"; 
-   d="scan'208";a="767872740"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.254.214.60]) ([10.254.214.60])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Aug 2023 22:01:26 -0700
-Message-ID: <d4451419-627b-36de-0b0f-3a7e8bc59a35@linux.intel.com>
-Date: Sat, 12 Aug 2023 13:01:24 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 420461CCB9
+	for <iommu@lists.linux.dev>; Sat, 12 Aug 2023 07:19:02 +0000 (UTC)
+Received: from kwepemi500019.china.huawei.com (unknown [172.30.72.54])
+	by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4RNBmj5PbPzTmNG;
+	Sat, 12 Aug 2023 15:16:53 +0800 (CST)
+Received: from [10.174.176.82] (10.174.176.82) by
+ kwepemi500019.china.huawei.com (7.221.188.117) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.27; Sat, 12 Aug 2023 15:18:51 +0800
+Message-ID: <36924a4d-e62c-68d5-3cb0-375b7fe1d5c0@huawei.com>
+Date: Sat, 12 Aug 2023 15:18:50 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -36,74 +19,104 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.14.0
-Cc: baolu.lu@linux.intel.com, Dmitry Osipenko <digetx@gmail.com>,
- Marek Szyprowski <m.szyprowski@samsung.com>,
- Nicolin Chen <nicolinc@nvidia.com>, Niklas Schnelle
- <schnelle@linux.ibm.com>, Steven Price <steven.price@arm.com>,
- Thierry Reding <treding@nvidia.com>
-Subject: Re: [PATCH v6 15/25] iommufd/selftest: Make the mock iommu driver
- into a real driver
-Content-Language: en-US
-To: Jason Gunthorpe <jgg@nvidia.com>, Andy Gross <agross@kernel.org>,
- Alim Akhtar <alim.akhtar@samsung.com>, Bjorn Andersson
- <andersson@kernel.org>,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
- Baolin Wang <baolin.wang@linux.alibaba.com>,
- Christophe Leroy <christophe.leroy@csgroup.eu>,
- Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
- Heiko Stuebner <heiko@sntech.de>, iommu@lists.linux.dev,
- Jernej Skrabec <jernej.skrabec@gmail.com>,
- Jonathan Hunter <jonathanh@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
- Kevin Tian <kevin.tian@intel.com>, Konrad Dybcio <konrad.dybcio@linaro.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
- linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
- linux-mediatek@lists.infradead.org, linux-rockchip@lists.infradead.org,
- linux-s390@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
- linux-sunxi@lists.linux.dev, linux-tegra@vger.kernel.org,
- Russell King <linux@armlinux.org.uk>, linuxppc-dev@lists.ozlabs.org,
- Matthias Brugger <matthias.bgg@gmail.com>,
- Matthew Rosato <mjrosato@linux.ibm.com>,
- Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>,
- Orson Zhai <orsonzhai@gmail.com>, Rob Clark <robdclark@gmail.com>,
- Robin Murphy <robin.murphy@arm.com>, Samuel Holland <samuel@sholland.org>,
- Thierry Reding <thierry.reding@gmail.com>, Krishna Reddy
- <vdumpa@nvidia.com>, Chen-Yu Tsai <wens@csie.org>,
- Will Deacon <will@kernel.org>, Yong Wu <yong.wu@mediatek.com>,
- Chunyan Zhang <zhang.lyra@gmail.com>
-References: <15-v6-e8114faedade+425-iommu_all_defdom_jgg@nvidia.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <15-v6-e8114faedade+425-iommu_all_defdom_jgg@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+ Thunderbird/102.1.1
+Subject: Re: [RESEND PATCH 2/2] iommu/iova: allocate iova_rcache->depot
+ dynamicly
+To: John Garry <john.g.garry@oracle.com>
+CC: <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
+	<baolu.lu@linux.intel.com>, <robh@kernel.org>, <nicolinc@nvidia.com>,
+	<kevin.tian@intel.com>, Robin Murphy <robin.murphy@arm.com>,
+	<joro@8bytes.org>, <will@kernel.org>
+References: <20230811130246.42719-1-zhangzekun11@huawei.com>
+ <20230811130246.42719-3-zhangzekun11@huawei.com>
+ <a190ba95-79d1-e9e2-1f62-97aa94a4be7b@oracle.com>
+From: "zhangzekun (A)" <zhangzekun11@huawei.com>
+In-Reply-To: <a190ba95-79d1-e9e2-1f62-97aa94a4be7b@oracle.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.176.82]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ kwepemi500019.china.huawei.com (7.221.188.117)
+X-CFilter-Loop: Reflected
 
-On 2023/8/3 8:08, Jason Gunthorpe wrote:
-> +/*
-> + * Register an iommu driver against a single bus. This is only used by iommufd
-> + * selftest to create a mock iommu driver. The caller must provide
-> + * some memory to hold a notifier_block.
-> + */
-> +int iommu_device_register_bus(struct iommu_device *iommu,
-> +			      const struct iommu_ops *ops, struct bus_type *bus,
-> +			      struct notifier_block *nb)
-> +{
-> +	int err;
-> +
-> +	iommu->ops = ops;
-> +	nb->notifier_call = iommu_bus_notifier;
-> +	err = bus_register_notifier(bus, nb);
-> +	if (err)
-> +		return err;
-> +
-> +	spin_lock(&iommu_device_lock);
-> +	list_add_tail(&iommu->list, &iommu_device_list);
-> +	spin_unlock(&iommu_device_lock);
-> +
-> +	bus->iommu_ops = ops;
-> +	err = bus_iommu_probe(bus);
 
-By the way, bus_iommu_probe() has been changed in iommu-next, so it
-needs to be rebased here.
 
-Best regards,
-baolu
+在 2023/8/11 22:14, John Garry 写道:
+> On 11/08/2023 14:02, Zhang Zekun wrote:
+>> In fio test with 4k,read,and allowed cpus to 0-255, we observe a 
+>> performance
+>> decrease of IOPS. The normal IOPS 
+>
+> What do you mean by normal IOPS? Describe this "normal" scenario.
+>
+Hi, John
+
+The reason why I think 1980K is normal is that I have test the iova_rache
+hit rate with all iova size, the average iova cache hit rate can reach up to
+around 99% (varys from diffent work loads and iova size), and I think
+iova_rcache behave well in our test work loads. Besides, the IOPS is
+behaving as expect which is acked by our test group.
+
+> ? can reach up to 1980k, but we can only
+>> get about 1600k.
+>>
+>> abormal IOPS:
+>> Jobs: 12 (f=12): [R(12)][99.3%][r=6220MiB/s][r=1592k IOPS][eta 00m:12s]
+>> Jobs: 12 (f=12): [R(12)][99.4%][r=6215MiB/s][r=1591k IOPS][eta 00m:11s]
+>> Jobs: 12 (f=12): [R(12)][99.4%][r=6335MiB/s][r=1622k IOPS][eta 00m:10s]
+>> Jobs: 12 (f=12): [R(12)][99.5%][r=6194MiB/s][r=1586k IOPS][eta 00m:09s]
+>> Jobs: 12 (f=12): [R(12)][99.6%][r=6173MiB/s][r=1580k IOPS][eta 00m:08s]
+>> Jobs: 12 (f=12): [R(12)][99.6%][r=5984MiB/s][r=1532k IOPS][eta 00m:07s]
+>> Jobs: 12 (f=12): [R(12)][99.7%][r=6374MiB/s][r=1632k IOPS][eta 00m:06s]
+>> Jobs: 12 (f=12): [R(12)][99.7%][r=6343MiB/s][r=1624k IOPS][eta 00m:05s]
+>>
+>> normal IOPS:
+>> Jobs: 12 (f=12): [R(12)][99.3%][r=7736MiB/s][r=1980k IOPS][eta 00m:12s]
+>> Jobs: 12 (f=12): [R(12)][99.4%][r=7744MiB/s][r=1982k IOPS][eta 00m:11s]
+>> Jobs: 12 (f=12): [R(12)][99.4%][r=7737MiB/s][r=1981k IOPS][eta 00m:10s]
+>> Jobs: 12 (f=12): [R(12)][99.5%][r=7735MiB/s][r=1980k IOPS][eta 00m:09s]
+>> Jobs: 12 (f=12): [R(12)][99.6%][r=7741MiB/s][r=1982k IOPS][eta 00m:08s]
+>> Jobs: 12 (f=12): [R(12)][99.6%][r=7740MiB/s][r=1982k IOPS][eta 00m:07s]
+>> Jobs: 12 (f=12): [R(12)][99.7%][r=7736MiB/s][r=1981k IOPS][eta 00m:06s]
+>> Jobs: 12 (f=12): [R(12)][99.7%][r=7736MiB/s][r=1980k IOPS][eta 00m:05s]
+>>
+>> The current struct of iova_rcache will have iova_cpu_rcache for every
+>> cpu, and these iova_cpu_rcaches use a common buffer 
+>> iova_rcache->depot to
+>> exchange iovas among iova_cpu_rcaches. A machine with 256 cpus will have
+>> 256 iova_cpu_rcaches and 1 iova_rcache->depot per iova_domain. However,
+>> the max size of iova_rcache->depot is fixed to MAX_GLOBAL_MAGS which 
+>> equals
+>> to 32, and can't grow with the number of cpus, and this can cause 
+>> problem
+>> in some condition.
+>>
+>> Some drivers will only free iovas in their irq call back function. For
+>> the driver in this case it has 16 thread irqs to free iova, but these
+>> irq call back function will only free iovas on 16 certain cpus(cpu{0,16,
+>> 32...,240}). Thread irq which smp affinity is 0-15, will only free 
+>> iova on
+>> cpu 0. However, the driver will alloc iova on all cpus(cpu{0-255}), cpus
+>> without free iova in local cpu_rcache need to get free iovas from
+>> iova_rcache->depot. The current size of iova_rcache->depot max size 
+>> is 32,
+>> and it seems to be too small for 256 users (16 cpus will put iovas to
+>> iova_rcache->depot and 240 cpus will try to get iova from it). Set
+>> iova_rcache->depot grow with the num of possible cpus, and the decrease
+>> of IOPS disappear.
+>
+> Doesn't it take a long time for all the depots to fill for you? From 
+> the description, this sounds like the hisilicon SAS controller which 
+> you are experimenting with and I found there that it took a long time 
+> for the depots to fill for high throughput testing.
+>
+> Thanks,
+> John
+
+Yes, it will take more time to fill rcahe->depot, but we don't need to fill
+all depots before using iova in them. We can use iova in rcache->depot
+when local cpu_rcache is empty and there are iova magazines in
+rcache->depot, which means "rcache->depot_size > 0". The larger depot
+size will help caching more iova magazines freed in __iova_rcache_insert()
+which means more potential memory cost for iova_rcache, and should not
+introduce performance issues.
