@@ -1,34 +1,34 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.43])
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.100])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87BCC8C0A
-	for <iommu@lists.linux.dev>; Sat, 12 Aug 2023 23:18:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EEA991FD5
+	for <iommu@lists.linux.dev>; Sun, 13 Aug 2023 11:19:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1691882339; x=1723418339;
+  t=1691925597; x=1723461597;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=YCFZ1BkJqg0tYLeycNbOu2/N2SOtbW+f40vRiIfcHdM=;
-  b=PE4alkh/Enz60fOI9cTJ+0tu4ncHLlKLpyKhQSvbVvya3Wl4eftXjz1v
-   2/9l/ODgMbeN+bDL1m3omuKrYbN8KIBMugIJj57fMGmblJ58sUmz4vE9q
-   10lKKvav9mE/P+hIbhlyLWfAUxx4UUjwr7Zji1pe7C6l/FH7RLVGSwEK/
-   QKZawUPV/I32ZYXA9/C4dgEXIhjlhT37nJ+BsBE5R+ndPUOvfeljPCDy4
-   Zip2HgfTt2zBkz8iLJ93VPpPpOqT0sCwJwOft264Vah/EDCx0ZRGqeiJ0
-   PVJPhTZKFR+MUW6ztNhdZFrjbzRdeE96gFdUk52AMrgpjaiB51oIKZ7sb
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10800"; a="458221655"
-X-IronPort-AV: E=Sophos;i="6.01,168,1684825200"; 
-   d="scan'208";a="458221655"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Aug 2023 16:18:58 -0700
+  bh=+CUXVj1jmKu9wNFCyhaP7miPAmbIeMOb158GcXhBV/M=;
+  b=hA1Q1p/hm6h3s62Vd79DvDaGCDb6sa3JPG2pXwIXUO7C9ZbE4w2yHH+k
+   zSk7FKFMLH0vcycOjaZlfMMl+9rfqXoWyW3aB1kVqEM8NWMJQAgQ6NDIy
+   bjilzJwXXJ+0rbwNAwYVYc2s7fM5tnJp+Lh+FW5WfM2hJAsQ709kRE8M3
+   8bXxq9T4TjwKc9gyUW1Xle29CRFWepkyDj8SCyB5rpBHnHu+qN8a/c9a4
+   CTIhVDAckv1KNR3IIMCs/BGO59FUDsxXkdYTdQtFB11qFNkfNGM03opwy
+   M/KP4OHHxm6CzgIfloM2cv9+r5M4j0G4MBHc+ogQlXD/iNZBWfXyVQhlw
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10800"; a="438222206"
+X-IronPort-AV: E=Sophos;i="6.01,170,1684825200"; 
+   d="scan'208";a="438222206"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Aug 2023 04:19:56 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10800"; a="733011957"
-X-IronPort-AV: E=Sophos;i="6.01,168,1684825200"; 
-   d="scan'208";a="733011957"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.254.211.171]) ([10.254.211.171])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Aug 2023 16:18:53 -0700
-Message-ID: <9f5a1e52-8217-7aba-135c-7610bf21d1de@linux.intel.com>
-Date: Sun, 13 Aug 2023 07:18:50 +0800
+X-IronPort-AV: E=McAfee;i="6600,9927,10800"; a="683016422"
+X-IronPort-AV: E=Sophos;i="6.01,170,1684825200"; 
+   d="scan'208";a="683016422"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.254.215.185]) ([10.254.215.185])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Aug 2023 04:19:53 -0700
+Message-ID: <08ef3338-535a-751e-0cc2-5f5af8107194@linux.intel.com>
+Date: Sun, 13 Aug 2023 19:19:51 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -37,82 +37,80 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.14.0
-Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Kevin Tian <kevin.tian@intel.com>,
+Cc: baolu.lu@linux.intel.com, "Tian, Kevin" <kevin.tian@intel.com>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>,
  Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>,
- Jacob Pan <jacob.jun.pan@linux.intel.com>, iommu@lists.linux.dev,
- kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 10/12] iommu: Make iommu_queue_iopf() more generic
+ Nicolin Chen <nicolinc@nvidia.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
+ Jacob Pan <jacob.jun.pan@linux.intel.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 08/12] iommu: Prepare for separating SVA and IOPF
+Content-Language: en-US
 To: Jason Gunthorpe <jgg@ziepe.ca>
 References: <20230727054837.147050-1-baolu.lu@linux.intel.com>
- <20230727054837.147050-11-baolu.lu@linux.intel.com>
- <ZNU1Zev6j92IJRjn@ziepe.ca>
- <7fc396d5-e2bd-b126-b3a6-88f8033c14b4@linux.intel.com>
- <ZNY3rYJbBFEMFi80@ziepe.ca>
-Content-Language: en-US
+ <20230727054837.147050-9-baolu.lu@linux.intel.com>
+ <BN9PR11MB52769D22490BB09BB25E0C2E8C08A@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <ZNKMz04uhzL9T7ya@ziepe.ca>
+ <BN9PR11MB527629949E7D44BED080400C8C12A@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <0771c28d-1b31-003e-7659-4f3f3cbf5546@linux.intel.com>
+ <BN9PR11MB527686C925E33E0DCDF261CB8C13A@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <ZNUUjXMrLyU3g5KM@ziepe.ca>
+ <f1dbfb6a-5a53-f440-5d3a-25772c67547f@linux.intel.com>
+ <ZNY3LuW+FMAhK2xf@ziepe.ca>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <ZNY3rYJbBFEMFi80@ziepe.ca>
+In-Reply-To: <ZNY3LuW+FMAhK2xf@ziepe.ca>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2023/8/11 21:29, Jason Gunthorpe wrote:
-> On Fri, Aug 11, 2023 at 10:21:20AM +0800, Baolu Lu wrote:
+On 2023/8/11 21:27, Jason Gunthorpe wrote:
+> On Fri, Aug 11, 2023 at 09:53:41AM +0800, Baolu Lu wrote:
+>> On 2023/8/11 0:47, Jason Gunthorpe wrote:
+>>> On Thu, Aug 10, 2023 at 02:35:40AM +0000, Tian, Kevin wrote:
+>>>>> From: Baolu Lu<baolu.lu@linux.intel.com>
+>>>>> Sent: Wednesday, August 9, 2023 6:41 PM
+>>>>>
+>>>>> On 2023/8/9 8:02, Tian, Kevin wrote:
+>>>>>>> From: Jason Gunthorpe<jgg@ziepe.ca>
+>>>>>>> Sent: Wednesday, August 9, 2023 2:43 AM
+>>>>>>>
+>>>>>>> On Thu, Aug 03, 2023 at 08:16:47AM +0000, Tian, Kevin wrote:
+>>>>>>>
+>>>>>>>> Is there plan to introduce further error in the future? otherwise this
+>>>>> should
+>>>>>>>> be void.
+>>>>>>>>
+>>>>>>>> btw the work queue is only for sva. If there is no other caller this can be
+>>>>>>>> just kept in iommu-sva.c. No need to create a helper.
+>>>>>>> I think more than just SVA will need a work queue context to process
+>>>>>>> their faults.
+>>>>>>>
+>>>>>> then this series needs more work. Currently the abstraction doesn't
+>>>>>> include workqueue in the common fault reporting layer.
+>>>>> Do you mind elaborate a bit here? workqueue is a basic infrastructure in
+>>>>> the fault handling framework, but it lets the consumers choose to use
+>>>>> it, or not to.
+>>>>>
+>>>> My understanding of Jason's comment was to make the workqueue the
+>>>> default path instead of being opted by the consumer.. that is my 1st
+>>>> impression but might be wrong...
+>>> Yeah, that is one path. Do we have anyone that uses this that doesn't
+>>> want the WQ? (actually who even uses this besides SVA?)
+>> I am still confused. When we forward iopf's to user space through the
+>> iommufd, we don't need to schedule a WQ, right? Or I misunderstood
+>> here?
+> Yes, that could be true, iommufd could just queue it from the
+> interrupt context and trigger a wakeup.
 > 
->>> This also has lifetime problems on the mm.
->>>
->>> The domain should flow into the iommu_sva_handle_iopf() instead of the
->>> void *data.
->>
->> Okay, but I still want to keep void *data as a private pointer of the
->> iopf consumer. For SVA, it's probably NULL.
-> 
-> I'd rather give the iommu_domain some 'private' void * than pass
-> around weird pointers all over the place... That might be broadly
-> useful, eg iommufd could store the hwpt in there.
+> But other iommufd modes would want to invoke hmm_range_fault() which
+> would need the work queue.
 
-Yes, you are right. With the private pointer stored in domain and domain
-is passed to the iopf handler, there will be no need for a @data
-parameter for iopf handler.
+Yes. That's the reason why I added below helper
 
-> 
->>> We need to document/figure out some how to ensure that the faults are
->>> all done processing before a fault enabled domain can be freed.
->>
->> This has been documented in drivers/iommu/io-pgfault.c:
->>
->> [...]
->>   * Any valid page fault will be eventually routed to an iommu domain and the
->>   * page fault handler installed there will get called. The users of this
->>   * handling framework should guarantee that the iommu domain could only be
->>   * freed after the device has stopped generating page faults (or the iommu
->>   * hardware has been set to block the page faults) and the pending page
->> faults
->>   * have been flushed.
->>   *
->>   * Return: 0 on success and <0 on error.
->>   */
->> int iommu_queue_iopf(struct iommu_fault *fault, void *cookie)
->> [...]
->>
->>> This patch would be better ordered before the prior patch.
->>
->> Let me try this in the next version.
-> 
-> Okay.. but can we have some debugging to enforce this maybe? Also add
-> a comment when we obtain the domain on this path to see the above
-> about the lifetime
+int iopf_queue_work(struct iopf_group *group, work_func_t func)
 
-Yes. Sure.
-
-Probably I will add a dev_warn() when get_domain for device or pasid
-returns NULL...
-
-In the paths of removing domain from device or pasid, I will add a check
-for pending faults. Will trigger a dev_warn() if there is any pending
-faults for the affected domain.
+in the patch 09/12.
 
 Best regards,
 baolu
-
