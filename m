@@ -1,34 +1,34 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.88])
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.93])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42FA71381;
-	Mon, 14 Aug 2023 02:35:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 613B27E2;
+	Mon, 14 Aug 2023 03:06:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1691980558; x=1723516558;
+  t=1691982387; x=1723518387;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=YYBhIRGoXj26+p4KmllL+U9dko7uaqAtFc2nK/rDhX4=;
-  b=Jbqsbqq2fJ8NHvIg2/3mzwm0k3zlA94SQTdiERAyTw/u+3IUax2rVHJJ
-   z7ZyUTWHk8D9pZh0l4ZIOh0SMuABBK5DKI89FD2pI7b3enHfI0UtklouR
-   T6hD7KkwrDIbHrGHahw4suwJxysZVvphJXHMkWIpJ7Y6Vd4s3FGzRSEwJ
-   jQ/GreWNNXcYiRrqD44ABQovhOl1Qidm9lp/9VamAozDMSChmmT+I6B8o
-   b9ChxUX8Fby7IAo4VW+jljtUW9np9zg/Pfxznpw5/4YrT7RpkzLn+aztC
-   tPxcNtIUCr8vOWd3xOpihPGp1M0sqAjcukGdpTPf9+ivP70WcilqFlPbD
+  bh=gy0wdGHdwqfhCuqKLzj0CQNWQFqYcsM4kuaHT4waVN4=;
+  b=TOOU6mqHn7KO570yuUUBgzS3DeBjFDbkRVzNZteC5NsrCQ8EDnT7Qkgj
+   NQycBCMizYR5Iyfby/+U8sXtrv85kcZbXPm7vfxuXLhjCHSikdDmuoI+/
+   oAS8aqea84+j2TMZPw3bk16cgljx0L5lLWzWhKSRU1Ez2WUT5TfQmLfCn
+   534cg9PL0+sccpQPKMd774+gDufneIleXj4SDa6pHRFyw2qje11lmw1c1
+   xutX4Xp38MWFBl4M0tuy7gUAE38ANvFCHN1SbaO4KjROo/O/FbaiOR4/A
+   uncHHgZEuoFw5wri7TC/s4kjmGEKaiWQJS5JSse/SffOybKZLEVfdyBaS
    g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10801"; a="402932183"
+X-IronPort-AV: E=McAfee;i="6600,9927,10801"; a="369422541"
 X-IronPort-AV: E=Sophos;i="6.01,171,1684825200"; 
-   d="scan'208";a="402932183"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Aug 2023 19:35:56 -0700
+   d="scan'208";a="369422541"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Aug 2023 20:06:26 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10801"; a="823280871"
+X-IronPort-AV: E=McAfee;i="6600,9927,10801"; a="856923909"
 X-IronPort-AV: E=Sophos;i="6.01,171,1684825200"; 
-   d="scan'208";a="823280871"
+   d="scan'208";a="856923909"
 Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.255.29.49]) ([10.255.29.49])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Aug 2023 19:35:46 -0700
-Message-ID: <00f84867-c66d-508c-00ac-7fe062905663@linux.intel.com>
-Date: Mon, 14 Aug 2023 10:35:43 +0800
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Aug 2023 20:06:14 -0700
+Message-ID: <7b6b8118-813a-f4cd-1067-d209d2b40025@linux.intel.com>
+Date: Mon, 14 Aug 2023 11:06:12 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -42,7 +42,7 @@ Cc: baolu.lu@linux.intel.com, Dmitry Osipenko <digetx@gmail.com>,
  Nicolin Chen <nicolinc@nvidia.com>, Niklas Schnelle
  <schnelle@linux.ibm.com>, Steven Price <steven.price@arm.com>,
  Thierry Reding <treding@nvidia.com>
-Subject: Re: [PATCH v6 05/25] iommu/fsl_pamu: Implement a PLATFORM domain
+Subject: Re: [PATCH v6 07/25] iommu/mtk_iommu_v1: Implement an IDENTITY domain
 Content-Language: en-US
 To: Jason Gunthorpe <jgg@nvidia.com>, Andy Gross <agross@kernel.org>,
  Alim Akhtar <alim.akhtar@samsung.com>, Bjorn Andersson
@@ -70,25 +70,99 @@ To: Jason Gunthorpe <jgg@nvidia.com>, Andy Gross <agross@kernel.org>,
  <vdumpa@nvidia.com>, Chen-Yu Tsai <wens@csie.org>,
  Will Deacon <will@kernel.org>, Yong Wu <yong.wu@mediatek.com>,
  Chunyan Zhang <zhang.lyra@gmail.com>
-References: <5-v6-e8114faedade+425-iommu_all_defdom_jgg@nvidia.com>
+References: <7-v6-e8114faedade+425-iommu_all_defdom_jgg@nvidia.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <5-v6-e8114faedade+425-iommu_all_defdom_jgg@nvidia.com>
+In-Reply-To: <7-v6-e8114faedade+425-iommu_all_defdom_jgg@nvidia.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 2023/8/3 8:07, Jason Gunthorpe wrote:
-> This driver is nonsensical. To not block migrating the core API away from
-> NULL default_domains give it a hacky of a PLATFORM domain that keeps it
-> working exactly as it always did.
+> What mtk does during mtk_iommu_v1_set_platform_dma() is actually putting
+> the iommu into identity mode. Make this available as a proper IDENTITY
+> domain.
 > 
-> Leave some comments around to warn away any future people looking at this.
+> The mtk_iommu_v1_def_domain_type() from
+> commit 8bbe13f52cb7 ("iommu/mediatek-v1: Add def_domain_type") explains
+> this was needed to allow probe_finalize() to be called, but now the
+> IDENTITY domain will do the same job so change the returned
+> def_domain_type.
 > 
-> Signed-off-by: Jason Gunthorpe<jgg@nvidia.com>
-> ---
->   drivers/iommu/fsl_pamu_domain.c | 41 ++++++++++++++++++++++++++++++---
->   1 file changed, 38 insertions(+), 3 deletions(-)
+> mkt_v1 is the only driver that returns IOMMU_DOMAIN_UNMANAGED from
+> def_domain_type().  This allows the next patch to enforce an IDENTITY
+> domain policy for this driver.
 
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+This code seems to be not working properly.
+
+  * @def_domain_type: device default domain type, return value:
+  *              - IOMMU_DOMAIN_IDENTITY: must use an identity domain
+  *              - IOMMU_DOMAIN_DMA: must use a dma domain
+  *              - 0: use the default setting
+
+The core code is not ready to accept any other return value.
+
+> 
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> ---
+>   drivers/iommu/mtk_iommu_v1.c | 21 +++++++++++++++++++--
+>   1 file changed, 19 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
+> index 8a0a5e5d049f4a..cc3e7d53d33ad9 100644
+> --- a/drivers/iommu/mtk_iommu_v1.c
+> +++ b/drivers/iommu/mtk_iommu_v1.c
+> @@ -319,11 +319,27 @@ static int mtk_iommu_v1_attach_device(struct iommu_domain *domain, struct device
+>   	return 0;
+>   }
+>   
+> -static void mtk_iommu_v1_set_platform_dma(struct device *dev)
+> +static int mtk_iommu_v1_identity_attach(struct iommu_domain *identity_domain,
+> +					struct device *dev)
+>   {
+>   	struct mtk_iommu_v1_data *data = dev_iommu_priv_get(dev);
+>   
+>   	mtk_iommu_v1_config(data, dev, false);
+> +	return 0;
+> +}
+> +
+> +static struct iommu_domain_ops mtk_iommu_v1_identity_ops = {
+> +	.attach_dev = mtk_iommu_v1_identity_attach,
+> +};
+> +
+> +static struct iommu_domain mtk_iommu_v1_identity_domain = {
+> +	.type = IOMMU_DOMAIN_IDENTITY,
+> +	.ops = &mtk_iommu_v1_identity_ops,
+> +};
+> +
+> +static void mtk_iommu_v1_set_platform_dma(struct device *dev)
+> +{
+> +	mtk_iommu_v1_identity_attach(&mtk_iommu_v1_identity_domain, dev);
+
+This callback seems to be a dead code now.
+
+>   }
+>   
+>   static int mtk_iommu_v1_map(struct iommu_domain *domain, unsigned long iova,
+> @@ -443,7 +459,7 @@ static int mtk_iommu_v1_create_mapping(struct device *dev, struct of_phandle_arg
+>   
+>   static int mtk_iommu_v1_def_domain_type(struct device *dev)
+>   {
+> -	return IOMMU_DOMAIN_UNMANAGED;
+> +	return IOMMU_DOMAIN_IDENTITY;
+
+def_domain_type can't be used for this purpose. But this seems to be a
+temporary code, as it will be removed in patch 09/25.
+
+>   }
+>   
+>   static struct iommu_device *mtk_iommu_v1_probe_device(struct device *dev)
+> @@ -578,6 +594,7 @@ static int mtk_iommu_v1_hw_init(const struct mtk_iommu_v1_data *data)
+>   }
+>   
+>   static const struct iommu_ops mtk_iommu_v1_ops = {
+> +	.identity_domain = &mtk_iommu_v1_identity_domain,
+>   	.domain_alloc	= mtk_iommu_v1_domain_alloc,
+>   	.probe_device	= mtk_iommu_v1_probe_device,
+>   	.probe_finalize = mtk_iommu_v1_probe_finalize,
 
 Best regards,
 baolu
