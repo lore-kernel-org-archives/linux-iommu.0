@@ -1,34 +1,34 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.115])
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.24])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED1AC185C;
-	Mon, 14 Aug 2023 06:32:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 20C2E1FA9;
+	Mon, 14 Aug 2023 06:34:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1691994777; x=1723530777;
+  t=1691994882; x=1723530882;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=8GKcCJfcJUphTqzm0WnLK4Rn40GEWwQ/J1t9r2W/Lgo=;
-  b=RWG4qsHZd7xuokNB49Um2IDL3bNB1qo5709R6OEf4oHv4D8WCd7lzNFc
-   OS7eFInQ8XjgMV8Fn7rMoj6bgqXOOyFC+SDjk2P1Lv708+apHotPVG1XC
-   lcH+5brspPCKBs3B56fy0VPpkgSCsvQBmguZZTbLBlJmEn4y2c4ArBrWs
-   +6EDzOriHdvgjJ00Vk6LfZRHPWowfKlDboIPX03vCsQLYpJn9gWXDvaQb
-   fz+ESJmohZtA4iTQ6sNLEI/H8A0DgaPOqFnLKKfsPjpJH6V4A+HyC3ctS
-   p/I6Hp4h6soeOHWteZvKmUvZOL0KZ6ZL1WTK0icFQ2SaJ4zPLphiPa1G2
+  bh=SV1XM/mW2ABuCqYRs/3iFjEijdHsFUSy0zTH9to0WAQ=;
+  b=a1M30bJ3oij+jiGDdimXTSm46phV02pLQTgVDeyguyDZOv/H407a5VqW
+   kWBYmPoefJm9pbETaVatZz964CYeNQ3DrHkXeD3ooqEFICTa5YobKrEN3
+   rAEe8sHRvxNanYYB3/mOe/+0W0MtlKFuiLwXMSEFfKrdo2cgdFtOmqekJ
+   U2LLcbTLmFBa8mi1MRKWANDv/b4SY595hswFR22dsYtuDiZAe5rFJonx/
+   jgOF2jLTa+8qORtZelJK3VnN7CJ2YoyYJwCeVy3CgQ/5P0+/H3zYFcszJ
+   TXqbyIuoF3gbU+AsHlNKzzkCix3aqSpsbMH0BCwacH1uj1Y74bsTO5Mce
    g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10801"; a="371976488"
+X-IronPort-AV: E=McAfee;i="6600,9927,10801"; a="374740567"
 X-IronPort-AV: E=Sophos;i="6.01,171,1684825200"; 
-   d="scan'208";a="371976488"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Aug 2023 23:32:46 -0700
+   d="scan'208";a="374740567"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Aug 2023 23:34:41 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10801"; a="823332925"
+X-IronPort-AV: E=McAfee;i="6600,9927,10801"; a="736431396"
 X-IronPort-AV: E=Sophos;i="6.01,171,1684825200"; 
-   d="scan'208";a="823332925"
+   d="scan'208";a="736431396"
 Received: from wentaox1-mobl.ccr.corp.intel.com (HELO [10.254.215.205]) ([10.254.215.205])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Aug 2023 23:32:36 -0700
-Message-ID: <8cef9a0d-15ba-f8af-7e22-d4d3063c97bf@linux.intel.com>
-Date: Mon, 14 Aug 2023 14:32:33 +0800
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Aug 2023 23:34:29 -0700
+Message-ID: <4af2fcdb-6c38-8b54-3043-c6da15198dcc@linux.intel.com>
+Date: Mon, 14 Aug 2023 14:34:27 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -42,7 +42,7 @@ Cc: baolu.lu@linux.intel.com, Dmitry Osipenko <digetx@gmail.com>,
  Nicolin Chen <nicolinc@nvidia.com>, Niklas Schnelle
  <schnelle@linux.ibm.com>, Steven Price <steven.price@arm.com>,
  Thierry Reding <treding@nvidia.com>
-Subject: Re: [PATCH v6 17/25] iommu/qcom_iommu: Add an IOMMU_IDENTITIY_DOMAIN
+Subject: Re: [PATCH v6 18/25] iommu/ipmmu: Add an IOMMU_IDENTITIY_DOMAIN
 Content-Language: en-US
 To: Jason Gunthorpe <jgg@nvidia.com>, Andy Gross <agross@kernel.org>,
  Alim Akhtar <alim.akhtar@samsung.com>, Bjorn Andersson
@@ -70,9 +70,9 @@ To: Jason Gunthorpe <jgg@nvidia.com>, Andy Gross <agross@kernel.org>,
  <vdumpa@nvidia.com>, Chen-Yu Tsai <wens@csie.org>,
  Will Deacon <will@kernel.org>, Yong Wu <yong.wu@mediatek.com>,
  Chunyan Zhang <zhang.lyra@gmail.com>
-References: <17-v6-e8114faedade+425-iommu_all_defdom_jgg@nvidia.com>
+References: <18-v6-e8114faedade+425-iommu_all_defdom_jgg@nvidia.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <17-v6-e8114faedade+425-iommu_all_defdom_jgg@nvidia.com>
+In-Reply-To: <18-v6-e8114faedade+425-iommu_all_defdom_jgg@nvidia.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
@@ -81,73 +81,13 @@ On 2023/8/3 8:08, Jason Gunthorpe wrote:
 > 1b932ceddd19 ("iommu: Remove detach_dev callbacks") deleted and turns it
 > into an IDENTITY domain.
 > 
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> ---
->   drivers/iommu/arm/arm-smmu/qcom_iommu.c | 39 +++++++++++++++++++++++++
->   1 file changed, 39 insertions(+)
+> Also reverts commit 584d334b1393 ("iommu/ipmmu-vmsa: Remove
+> ipmmu_utlb_disable()")
 > 
-> diff --git a/drivers/iommu/arm/arm-smmu/qcom_iommu.c b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-> index a503ed758ec302..9d7b9d8b4386d4 100644
-> --- a/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-> +++ b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-> @@ -387,6 +387,44 @@ static int qcom_iommu_attach_dev(struct iommu_domain *domain, struct device *dev
->   	return 0;
->   }
->   
-> +static int qcom_iommu_identity_attach(struct iommu_domain *identity_domain,
-> +				      struct device *dev)
-> +{
-> +	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
-> +	struct qcom_iommu_domain *qcom_domain;
-> +	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
-> +	struct qcom_iommu_dev *qcom_iommu = to_iommu(dev);
-> +	unsigned int i;
-> +
-> +	if (domain == identity_domain || !domain)
-> +		return 0;
-> +
-> +	qcom_domain = to_qcom_iommu_domain(domain);
-> +	if (WARN_ON(!qcom_domain->iommu))
-> +		return -EINVAL;
-> +
-> +	pm_runtime_get_sync(qcom_iommu->dev);
-> +	for (i = 0; i < fwspec->num_ids; i++) {
-> +		struct qcom_iommu_ctx *ctx = to_ctx(qcom_domain, fwspec->ids[i]);
-> +
-> +		/* Disable the context bank: */
-> +		iommu_writel(ctx, ARM_SMMU_CB_SCTLR, 0);
-> +
-> +		ctx->domain = NULL;
-
-Does setting ctx->domain to NULL still match this semantics?
-
-> +	}
-> +	pm_runtime_put_sync(qcom_iommu->dev);
-> +	return 0;
-> +}
-> +
-> +static struct iommu_domain_ops qcom_iommu_identity_ops = {
-> +	.attach_dev = qcom_iommu_identity_attach,
-> +};
-> +
-> +static struct iommu_domain qcom_iommu_identity_domain = {
-> +	.type = IOMMU_DOMAIN_IDENTITY,
-> +	.ops = &qcom_iommu_identity_ops,
-> +};
-> +
->   static int qcom_iommu_map(struct iommu_domain *domain, unsigned long iova,
->   			  phys_addr_t paddr, size_t pgsize, size_t pgcount,
->   			  int prot, gfp_t gfp, size_t *mapped)
-> @@ -553,6 +591,7 @@ static int qcom_iommu_of_xlate(struct device *dev, struct of_phandle_args *args)
->   }
->   
->   static const struct iommu_ops qcom_iommu_ops = {
-> +	.identity_domain = &qcom_iommu_identity_domain,
->   	.capable	= qcom_iommu_capable,
->   	.domain_alloc	= qcom_iommu_domain_alloc,
->   	.probe_device	= qcom_iommu_probe_device,
-
-Anyway,
+> Signed-off-by: Jason Gunthorpe<jgg@nvidia.com>
+> ---
+>   drivers/iommu/ipmmu-vmsa.c | 43 ++++++++++++++++++++++++++++++++++++++
+>   1 file changed, 43 insertions(+)
 
 Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
 
