@@ -1,79 +1,90 @@
-Received: from mx.treblig.org (mx.treblig.org [46.235.229.95])
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.65])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E456C5235
-	for <iommu@lists.linux.dev>; Sun, 13 Aug 2023 13:58:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=treblig.org
-	; s=bytemarkmx; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID
-	:Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID
-	:Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
-	Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe
-	:List-Post:List-Owner:List-Archive;
-	bh=32c6Mm00cywxiQeEBwm2QcUwjGNrZK2x4F4KY6NgXho=; b=E7FGsiYTH3wPJ7Tmf2adP5WNyD
-	Cvv102lMqPh9YoKqH5L2ogeYt3RCS2/hUkkZmskEj/JhuCoRmRcYpUFYybYargIzOnUfDWxaKr7/6
-	BYnAc/XGL+tHscgWuishetwlPG+GvANno729NutZ85R/sTfZdPkcIW0gYb6oPtmjWi1MXvTcU3Bwj
-	BTG1b3+mCaL4yvhQa3qasMCnEzFKCYDaR2jatUnmC5o7dABQ/yvuTOqFuqJG1cSLJ5+9DoJWrvW9F
-	VtM/QAkcsu1UHGbFxCJY+K9U2GojcUcSxiuU5Kr2Q5VX+tW4s/oBZhhS9vTjAJS3o/M3w40N5OeY5
-	eeYHjumQ==;
-Received: from dg by mx.treblig.org with local (Exim 4.94.2)
-	(envelope-from <dg@treblig.org>)
-	id 1qVAvC-006cZ6-8i; Sun, 13 Aug 2023 13:14:18 +0000
-Date: Sun, 13 Aug 2023 13:14:18 +0000
-From: "Dr. David Alan Gilbert" <dave@treblig.org>
-To: Hans Verkuil <hverkuil@xs4all.nl>
-Cc: Christoph Hellwig <hch@lst.de>, iommu@lists.linux.dev,
-	mchehab@kernel.org, linux-media@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: Regression: v4l/bttv vbi vs iommu
-Message-ID: <ZNjXKjCx3lH0s1m3@gallifrey>
-References: <Y9qSwkLxeMpffZK/@gallifrey>
- <d363902d-e465-8411-0c1e-58411b3a19b0@xs4all.nl>
- <20230203063500.GA23520@lst.de>
- <3a59ffba-a7fe-97b0-af76-7194f7b3896a@xs4all.nl>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A0A339D
+	for <iommu@lists.linux.dev>; Mon, 14 Aug 2023 01:20:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1691976029; x=1723512029;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=oe335Nlu8sc5VS5G7ofG+VOn5WK1MFpLS3mlAGuCpFo=;
+  b=AmYB/mjLC5wgRSySM/rffrDcf5e+ITBfHXj28s9lrfuvIj0z52aZKMaA
+   Ps5zEFr+Dx4o58D1CYXui18MRMfkVHSRYBasyEQueWuAffbZfMmFWW3VB
+   RCf6nmC1zRu2lppk3DaB0TpkASusexmkSBwQ5EavBnJPQcbyQ+IbRKU6E
+   qffxK+006HeR1aNTD8alhBGZwvKiWSZ8SPK6jOj2pIeRdsCVoUCMqrDUl
+   RO+cq/UhXACCMp4FqzTm4nLwimq5Iv0af/P7xKqo7/IP/epNNJt8GAHbG
+   CPDMfRdXeslE6ijCXti9hRQeaFfHXwOYhWiND77DISroTIt5mgp5Cc528
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10801"; a="375645292"
+X-IronPort-AV: E=Sophos;i="6.01,171,1684825200"; 
+   d="scan'208";a="375645292"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Aug 2023 18:20:28 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10801"; a="726842289"
+X-IronPort-AV: E=Sophos;i="6.01,171,1684825200"; 
+   d="scan'208";a="726842289"
+Received: from allen-box.sh.intel.com ([10.239.159.127])
+  by orsmga007.jf.intel.com with ESMTP; 13 Aug 2023 18:20:25 -0700
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Nicolin Chen <nicolinc@nvidia.com>
+Cc: Yi Liu <yi.l.liu@intel.com>,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>,
+	iommu@lists.linux.dev,
+	kvm@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH v2 0/3] iommu: Make pasid array per device
+Date: Mon, 14 Aug 2023 09:17:56 +0800
+Message-Id: <20230814011759.102089-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-In-Reply-To: <3a59ffba-a7fe-97b0-af76-7194f7b3896a@xs4all.nl>
-X-Chocolate: 70 percent or better cocoa solids preferably
-X-Operating-System: Linux/5.10.0-23-amd64 (x86_64)
-X-Uptime: 13:14:01 up 37 days, 22:45,  1 user,  load average: 0.00, 0.00, 0.00
-User-Agent: Mutt/2.0.5 (2021-01-21)
+Content-Transfer-Encoding: 8bit
 
-* Hans Verkuil (hverkuil@xs4all.nl) wrote:
-> On 03/02/2023 07:35, Christoph Hellwig wrote:
-> > On Wed, Feb 01, 2023 at 09:48:46PM +0100, Hans Verkuil wrote:
-> >> In fact, the plan is to replace the old and deprecated videobuf framework by the vb2
-> >> framework in the bttv driver in the next 2-3 months or so. That will also automatically
-> >> solve this problem.
-> > 
-> > It would be great to expedite removal of the old videbuf code given
-> > how many problems it has.
-> 
-> We're working on it. A lot of old drivers in drivers/staging/media/deprecated will
-> be removed in 6.3, and that leaves the cx18, bttv and saa7146 drivers that still use
-> vb1.
-> 
-> This week I posted patches converting cx18 to vb2 and someone else will work on the
-> bttv conversion. We thought we could remove saa7146 as well, but it turns out that
-> that is still very much in use (somewhat unexpectedly), so I plan to convert that
-> one this month (I hope).
-> 
-> I aim for removing vb1 in kernel 6.4 or 6.5.
+The PCI PASID enabling interface guarantees that the address space used
+by each PASID is unique. This is achieved by checking that the PCI ACS
+path is enabled for the device. If the path is not enabled, then the
+PASID feature cannot be used.
 
-Did this go in, I'm happy to give it a go if this is a world to test.
+    if (!pci_acs_path_enabled(pdev, NULL, PCI_ACS_RR | PCI_ACS_UF))
+            return -EINVAL;
 
-Dave
+The PASID array is not an attribute of the IOMMU group. It is more
+natural to store the PASID array in the per-device IOMMU data. This
+makes the code clearer and easier to understand.
 
-> Regards,
-> 
-> 	Hans
+Please help review and suggest.
+
+Change log:
+v2:
+ - Add an explict check for single-device group in the domain attaching
+   device pasid interface. (Jason)
+ - Make assert_pasid_dma_ownership() returns true or false. Refactor the
+   code in a way that does not change its exsiting behavior. (Kevin)
+
+v1: https://lore.kernel.org/linux-iommu/20230801063125.34995-1-baolu.lu@linux.intel.com/
+
+Lu Baolu (3):
+  iommu: Make single-device group for PASID explicit
+  iommu: Consolidate pasid dma ownership check
+  iommu: Move pasid array from group to device
+
+ include/linux/iommu.h |   2 +
+ drivers/iommu/iommu.c | 102 +++++++++++++++++++-----------------------
+ 2 files changed, 49 insertions(+), 55 deletions(-)
+
 -- 
- -----Open up your eyes, open up your mind, open up your code -------   
-/ Dr. David Alan Gilbert    |       Running GNU/Linux       | Happy  \ 
-\        dave @ treblig.org |                               | In Hex /
- \ _________________________|_____ http://www.treblig.org   |_______/
+2.34.1
+
