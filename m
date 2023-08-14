@@ -1,255 +1,104 @@
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.65])
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.115])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0584515AE
-	for <iommu@lists.linux.dev>; Mon, 14 Aug 2023 01:20:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 736A415A6;
+	Mon, 14 Aug 2023 02:13:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1691976039; x=1723512039;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=xz9IkjBL49Aqu2OLcjsslSruJe0mn1CqaV/hLG6938M=;
-  b=LoDGsb7PBZKgVGyaKwoW3K1U+On+2MI4JF4sOcAxpSRFwGdkJ27oJS/r
-   XzdjnfSloXRtMHdz1IM32uAcyUcizCIN7xZzsJ2saXRj6ceG92KzXhFRq
-   j95uWRD1Y2pnosc1p6cW6hllLMLVLmCo7m56NM2qdwVA1TJeTv6ZoRN3/
-   0bGd6bDvRWpE6Wg1Xh1Yqo/bCFrrHULezgypId2gBjtTXpykg5UWkqipM
-   Nf0XZgbWUAtXTITiwGssew6xa22ekyXryB2BqFVThhhtGRev83iwwozC/
-   bjvU8/UdInKviqnZd4P9hg1+hWBUsJzw6kmDiBrI99JUoz4hDWvmH4DJM
+  t=1691979239; x=1723515239;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=D0cMxkzz2W3U1WROUJDub6YFpGLwPPBS6a8Mkd5QN7w=;
+  b=mxZ/JMwtjUqpMBq1HS2sRs/4KM4v7x+ZyOk1nmb4hPiZnqurFCY1JCLT
+   ySod+08bWB5JfMN8SrGTuraYBCRXXnVg0WinLrWgL96brCJTmmrCB6EM9
+   PVXEZbtWIt5wCcHYQECNzcIfVuuuAY5xv29B7n7I36WZNosjcjJYcWZhV
+   QJTiLUheWJgUToSNjom+sixrbMMm0g4L5dlVRtcJShCMkt/AkbZPEYfUi
+   r/pSSDll9e0NDQcU4jzjEQArPpjQKWMbL7owrwQAj1VByZQepsImrLQpV
+   CTwrxLsG5u7xu3bOPM/w9E00sFDKRE/2tG7/jRfY7jcS3iIX16cMqY+OA
    w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10801"; a="375645337"
+X-IronPort-AV: E=McAfee;i="6600,9927,10801"; a="371948296"
 X-IronPort-AV: E=Sophos;i="6.01,171,1684825200"; 
-   d="scan'208";a="375645337"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Aug 2023 18:20:38 -0700
+   d="scan'208";a="371948296"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Aug 2023 19:13:58 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10801"; a="726842300"
+X-IronPort-AV: E=McAfee;i="6600,9927,10801"; a="823277535"
 X-IronPort-AV: E=Sophos;i="6.01,171,1684825200"; 
-   d="scan'208";a="726842300"
-Received: from allen-box.sh.intel.com ([10.239.159.127])
-  by orsmga007.jf.intel.com with ESMTP; 13 Aug 2023 18:20:35 -0700
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Nicolin Chen <nicolinc@nvidia.com>
-Cc: Yi Liu <yi.l.liu@intel.com>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>,
-	iommu@lists.linux.dev,
-	kvm@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v2 3/3] iommu: Move pasid array from group to device
-Date: Mon, 14 Aug 2023 09:17:59 +0800
-Message-Id: <20230814011759.102089-4-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230814011759.102089-1-baolu.lu@linux.intel.com>
-References: <20230814011759.102089-1-baolu.lu@linux.intel.com>
+   d="scan'208";a="823277535"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.255.29.49]) ([10.255.29.49])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Aug 2023 19:13:47 -0700
+Message-ID: <de9d9270-e510-b888-449c-d936a940d514@linux.intel.com>
+Date: Mon, 14 Aug 2023 10:13:45 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.14.0
+Cc: baolu.lu@linux.intel.com, Dmitry Osipenko <digetx@gmail.com>,
+ Marek Szyprowski <m.szyprowski@samsung.com>,
+ Nicolin Chen <nicolinc@nvidia.com>, Niklas Schnelle
+ <schnelle@linux.ibm.com>, Steven Price <steven.price@arm.com>,
+ Thierry Reding <treding@nvidia.com>
+Subject: Re: [PATCH v6 03/25] powerpc/iommu: Setup a default domain and remove
+ set_platform_dma_ops
+To: Jason Gunthorpe <jgg@nvidia.com>, Andy Gross <agross@kernel.org>,
+ Alim Akhtar <alim.akhtar@samsung.com>, Bjorn Andersson
+ <andersson@kernel.org>,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ Baolin Wang <baolin.wang@linux.alibaba.com>,
+ Christophe Leroy <christophe.leroy@csgroup.eu>,
+ Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+ Heiko Stuebner <heiko@sntech.de>, iommu@lists.linux.dev,
+ Jernej Skrabec <jernej.skrabec@gmail.com>,
+ Jonathan Hunter <jonathanh@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
+ Kevin Tian <kevin.tian@intel.com>, Konrad Dybcio <konrad.dybcio@linaro.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+ linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+ linux-mediatek@lists.infradead.org, linux-rockchip@lists.infradead.org,
+ linux-s390@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+ linux-sunxi@lists.linux.dev, linux-tegra@vger.kernel.org,
+ Russell King <linux@armlinux.org.uk>, linuxppc-dev@lists.ozlabs.org,
+ Matthias Brugger <matthias.bgg@gmail.com>,
+ Matthew Rosato <mjrosato@linux.ibm.com>,
+ Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>,
+ Orson Zhai <orsonzhai@gmail.com>, Rob Clark <robdclark@gmail.com>,
+ Robin Murphy <robin.murphy@arm.com>, Samuel Holland <samuel@sholland.org>,
+ Thierry Reding <thierry.reding@gmail.com>, Krishna Reddy
+ <vdumpa@nvidia.com>, Chen-Yu Tsai <wens@csie.org>,
+ Will Deacon <will@kernel.org>, Yong Wu <yong.wu@mediatek.com>,
+ Chunyan Zhang <zhang.lyra@gmail.com>
+References: <3-v6-e8114faedade+425-iommu_all_defdom_jgg@nvidia.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <3-v6-e8114faedade+425-iommu_all_defdom_jgg@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-The PASID (Process Address Space ID) feature is a device feature that
-allows a device driver to manage the PASID value and attach or detach
-its domain to the pasid. The pasid array, which is used to store the
-domain of each pasid, is currently stored in iommu group struct, but
-it would be more natural to move it to the device so that the device
-drivers don't need to understand the internal iommu group concept.
+On 2023/8/3 8:07, Jason Gunthorpe wrote:
+> POWER is using the set_platform_dma_ops() callback to hook up its private
+> dma_ops, but this is buired under some indirection and is weirdly
+> happening for a BLOCKED domain as well.
+> 
+> For better documentation create a PLATFORM domain to manage the dma_ops,
+> since that is what it is for, and make the BLOCKED domain an alias for
+> it. BLOCKED is required for VFIO.
+> 
+> Also removes the leaky allocation of the BLOCKED domain by using a global
+> static.
+> 
+> Signed-off-by: Jason Gunthorpe<jgg@nvidia.com>
+> ---
+>   arch/powerpc/kernel/iommu.c | 38 +++++++++++++++++--------------------
+>   1 file changed, 17 insertions(+), 21 deletions(-)
 
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- include/linux/iommu.h |  2 ++
- drivers/iommu/iommu.c | 80 +++++++++++++++----------------------------
- 2 files changed, 29 insertions(+), 53 deletions(-)
+Not sure how to fix the fake blocking domain in this driver.
 
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 411ce9b998dc..76c960741449 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -412,6 +412,7 @@ struct iommu_fault_param {
-  * @iopf_param:	 I/O Page Fault queue and data
-  * @fwspec:	 IOMMU fwspec data
-  * @iommu_dev:	 IOMMU device this device is linked to
-+ * @pasid_array: pasid-indexed array of domains attached to pasid
-  * @priv:	 IOMMU Driver private data
-  * @max_pasids:  number of PASIDs this device can consume
-  * @attach_deferred: the dma domain attachment is deferred
-@@ -427,6 +428,7 @@ struct dev_iommu {
- 	struct iopf_device_param	*iopf_param;
- 	struct iommu_fwspec		*fwspec;
- 	struct iommu_device		*iommu_dev;
-+	struct xarray			pasid_array;
- 	void				*priv;
- 	u32				max_pasids;
- 	u32				attach_deferred:1;
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index d4a06a37ce39..35cccfb5c24a 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -51,7 +51,6 @@ struct iommu_group {
- 	struct kobject kobj;
- 	struct kobject *devices_kobj;
- 	struct list_head devices;
--	struct xarray pasid_array;
- 	struct mutex mutex;
- 	void *iommu_data;
- 	void (*iommu_data_release)(void *iommu_data);
-@@ -310,6 +309,7 @@ static struct dev_iommu *dev_iommu_get(struct device *dev)
- 		return NULL;
- 
- 	mutex_init(&param->lock);
-+	xa_init(&param->pasid_array);
- 	dev->iommu = param;
- 	return param;
- }
-@@ -919,7 +919,6 @@ struct iommu_group *iommu_group_alloc(void)
- 	mutex_init(&group->mutex);
- 	INIT_LIST_HEAD(&group->devices);
- 	INIT_LIST_HEAD(&group->entry);
--	xa_init(&group->pasid_array);
- 
- 	ret = ida_alloc(&iommu_group_ida, GFP_KERNEL);
- 	if (ret < 0) {
-@@ -3135,9 +3134,15 @@ static bool iommu_is_default_domain(struct iommu_group *group)
-  */
- static bool assert_pasid_dma_ownership(struct iommu_group *group)
- {
-+	struct group_device *device;
-+
- 	lockdep_assert_held(&group->mutex);
-+	for_each_group_device(group, device) {
-+		if (WARN_ON(!xa_empty(&device->dev->iommu->pasid_array)))
-+			return false;
-+	}
- 
--	return !WARN_ON(!xa_empty(&group->pasid_array));
-+	return true;
- }
- 
- /**
-@@ -3371,33 +3376,6 @@ bool iommu_group_dma_owner_claimed(struct iommu_group *group)
- }
- EXPORT_SYMBOL_GPL(iommu_group_dma_owner_claimed);
- 
--static int __iommu_set_group_pasid(struct iommu_domain *domain,
--				   struct iommu_group *group, ioasid_t pasid)
--{
--	struct group_device *device;
--	int ret = 0;
--
--	for_each_group_device(group, device) {
--		ret = domain->ops->set_dev_pasid(domain, device->dev, pasid);
--		if (ret)
--			break;
--	}
--
--	return ret;
--}
--
--static void __iommu_remove_group_pasid(struct iommu_group *group,
--				       ioasid_t pasid)
--{
--	struct group_device *device;
--	const struct iommu_ops *ops;
--
--	for_each_group_device(group, device) {
--		ops = dev_iommu_ops(device->dev);
--		ops->remove_dev_pasid(device->dev, pasid);
--	}
--}
--
- /*
-  * iommu_attach_device_pasid() - Attach a domain to pasid of device
-  * @domain: the iommu domain.
-@@ -3411,6 +3389,7 @@ int iommu_attach_device_pasid(struct iommu_domain *domain,
- {
- 	/* Caller must be a probed driver on dev */
- 	struct iommu_group *group = dev->iommu_group;
-+	struct dev_iommu *param = dev->iommu;
- 	void *curr;
- 	int ret;
- 
-@@ -3422,23 +3401,23 @@ int iommu_attach_device_pasid(struct iommu_domain *domain,
- 
- 	mutex_lock(&group->mutex);
- 	if (list_count_nodes(&group->devices) != 1) {
--		ret = -EINVAL;
--		goto out_unlock;
-+		mutex_unlock(&group->mutex);
-+		return -EINVAL;
- 	}
-+	mutex_unlock(&group->mutex);
- 
--	curr = xa_cmpxchg(&group->pasid_array, pasid, NULL, domain, GFP_KERNEL);
-+	mutex_lock(&param->lock);
-+	curr = xa_cmpxchg(&param->pasid_array, pasid, NULL, domain, GFP_KERNEL);
- 	if (curr) {
- 		ret = xa_err(curr) ? : -EBUSY;
- 		goto out_unlock;
- 	}
- 
--	ret = __iommu_set_group_pasid(domain, group, pasid);
--	if (ret) {
--		__iommu_remove_group_pasid(group, pasid);
--		xa_erase(&group->pasid_array, pasid);
--	}
-+	ret = domain->ops->set_dev_pasid(domain, dev, pasid);
-+	if (ret)
-+		xa_erase(&param->pasid_array, pasid);
- out_unlock:
--	mutex_unlock(&group->mutex);
-+	mutex_unlock(&param->lock);
- 	return ret;
- }
- EXPORT_SYMBOL_GPL(iommu_attach_device_pasid);
-@@ -3455,13 +3434,13 @@ EXPORT_SYMBOL_GPL(iommu_attach_device_pasid);
- void iommu_detach_device_pasid(struct iommu_domain *domain, struct device *dev,
- 			       ioasid_t pasid)
- {
--	/* Caller must be a probed driver on dev */
--	struct iommu_group *group = dev->iommu_group;
-+	const struct iommu_ops *ops = dev_iommu_ops(dev);
-+	struct dev_iommu *param = dev->iommu;
- 
--	mutex_lock(&group->mutex);
--	__iommu_remove_group_pasid(group, pasid);
--	WARN_ON(xa_erase(&group->pasid_array, pasid) != domain);
--	mutex_unlock(&group->mutex);
-+	mutex_lock(&param->lock);
-+	ops->remove_dev_pasid(dev, pasid);
-+	WARN_ON(xa_erase(&param->pasid_array, pasid) != domain);
-+	mutex_unlock(&param->lock);
- }
- EXPORT_SYMBOL_GPL(iommu_detach_device_pasid);
- 
-@@ -3483,18 +3462,13 @@ struct iommu_domain *iommu_get_domain_for_dev_pasid(struct device *dev,
- 						    ioasid_t pasid,
- 						    unsigned int type)
- {
--	/* Caller must be a probed driver on dev */
--	struct iommu_group *group = dev->iommu_group;
- 	struct iommu_domain *domain;
- 
--	if (!group)
--		return NULL;
--
--	xa_lock(&group->pasid_array);
--	domain = xa_load(&group->pasid_array, pasid);
-+	xa_lock(&dev->iommu->pasid_array);
-+	domain = xa_load(&dev->iommu->pasid_array, pasid);
- 	if (type && domain && domain->type != type)
- 		domain = ERR_PTR(-EBUSY);
--	xa_unlock(&group->pasid_array);
-+	xa_unlock(&dev->iommu->pasid_array);
- 
- 	return domain;
- }
--- 
-2.34.1
+But it's not the purpose of this patch, so
 
+Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+
+Best regards,
+baolu
