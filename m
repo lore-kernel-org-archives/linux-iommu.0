@@ -1,34 +1,34 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.93])
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E3D146AE;
-	Mon, 14 Aug 2023 05:10:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A1315237;
+	Mon, 14 Aug 2023 05:53:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1691989847; x=1723525847;
+  t=1691992431; x=1723528431;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=TUpy0yCpdy1QocZ9SL6jg1gXIK1RHtcIWUumpNs6efA=;
-  b=Uwp/0Ua0pgDzAZwjgyNsRaLVOCF+OVBFYocNsHyq5C2piX48PAJCxJCV
-   w2HLlwhhzQ7lrkf4Sf7LwIL0VsUBl/3h/5YsLZ1sIBDbPG4H6NyIm5wln
-   2V8Rwb5hnsbQY3FR+ee+ygpj0t/mkaIpmGIep/XWE+SST1aEg6gJt/j+/
-   wh4kesZ2C/R34/Q5WjEvxIzHGGULNDe266rh5TKDvzT1OAaLl/Xh4Mena
-   D0BIP/ibAfi8whKvUJvD+VBlMNpuy0kTbsq66PhojWtBYnrlpaHAFyeEF
-   lXvDm+Mo//5hXmOFjqeTm0liJhlZlRp0E5veCjOcX0QuRbH2l4asfT/xo
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10801"; a="369434653"
+  bh=a2QSRt0CT0L60eG86wMpFcJf0hM4N1YS5dCIVT5BbyY=;
+  b=Hc8kylWTbp6hBp/bPe4+5b+/lgi/xSB6jomqrt06yRF1wqbdqfTf3Hcd
+   czxTJuShS3Iyim1IroaDXGo64y8UbezVHzV1dRcRFuUrBGiGTdAriE3Yf
+   qT6hbVYQ7iJ5bqUsEtAwHNpRvc2CwJpYiGF59+SfnR3UQYyJ1xqpJknMx
+   WrNBsPm+OXaBIbBuW9iRTOrmvlm0odh036Vru2UG7wxOt8kS2Dgx3Ble0
+   gcD78ToygohQhPIYrJNLSew/RodtAGxMKBUy4+kdHYRzwJGzSnH1U3+QD
+   ZNesC58oRTzcXhvG6y0VsQNShrOjWroKZMc45V32qS1XyXtg8dXhpkKpG
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10801"; a="458331943"
 X-IronPort-AV: E=Sophos;i="6.01,171,1684825200"; 
-   d="scan'208";a="369434653"
+   d="scan'208";a="458331943"
 Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Aug 2023 22:10:46 -0700
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Aug 2023 22:53:50 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10801"; a="710202088"
+X-IronPort-AV: E=McAfee;i="6600,9927,10801"; a="710209925"
 X-IronPort-AV: E=Sophos;i="6.01,171,1684825200"; 
-   d="scan'208";a="710202088"
+   d="scan'208";a="710209925"
 Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.255.29.49]) ([10.255.29.49])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Aug 2023 22:10:34 -0700
-Message-ID: <2997ef72-37bd-109b-d659-71f259c64eb5@linux.intel.com>
-Date: Mon, 14 Aug 2023 13:10:32 +0800
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Aug 2023 22:53:38 -0700
+Message-ID: <0fcc42b0-9e11-6787-b678-2714ca92efab@linux.intel.com>
+Date: Mon, 14 Aug 2023 13:53:36 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -42,7 +42,7 @@ Cc: baolu.lu@linux.intel.com, Dmitry Osipenko <digetx@gmail.com>,
  Nicolin Chen <nicolinc@nvidia.com>, Niklas Schnelle
  <schnelle@linux.ibm.com>, Steven Price <steven.price@arm.com>,
  Thierry Reding <treding@nvidia.com>
-Subject: Re: [PATCH v6 13/25] iommu/omap: Implement an IDENTITY domain
+Subject: Re: [PATCH v6 14/25] iommu/msm: Implement an IDENTITY domain
 Content-Language: en-US
 To: Jason Gunthorpe <jgg@nvidia.com>, Andy Gross <agross@kernel.org>,
  Alim Akhtar <alim.akhtar@samsung.com>, Bjorn Andersson
@@ -70,15 +70,15 @@ To: Jason Gunthorpe <jgg@nvidia.com>, Andy Gross <agross@kernel.org>,
  <vdumpa@nvidia.com>, Chen-Yu Tsai <wens@csie.org>,
  Will Deacon <will@kernel.org>, Yong Wu <yong.wu@mediatek.com>,
  Chunyan Zhang <zhang.lyra@gmail.com>
-References: <13-v6-e8114faedade+425-iommu_all_defdom_jgg@nvidia.com>
+References: <14-v6-e8114faedade+425-iommu_all_defdom_jgg@nvidia.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <13-v6-e8114faedade+425-iommu_all_defdom_jgg@nvidia.com>
+In-Reply-To: <14-v6-e8114faedade+425-iommu_all_defdom_jgg@nvidia.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 2023/8/3 8:08, Jason Gunthorpe wrote:
-> What omap does during omap_iommu_set_platform_dma() is actually putting
-> the iommu into identity mode.
+> What msm does during msm_iommu_set_platform_dma() is actually putting the
+> iommu into identity mode.
 > 
 > Move to the new core support for ARM_DMA_USE_IOMMU by defining
 > ops->identity_domain.
@@ -88,8 +88,8 @@ On 2023/8/3 8:08, Jason Gunthorpe wrote:
 > 
 > Signed-off-by: Jason Gunthorpe<jgg@nvidia.com>
 > ---
->   drivers/iommu/omap-iommu.c | 21 ++++++++++++++++++---
->   1 file changed, 18 insertions(+), 3 deletions(-)
+>   drivers/iommu/msm_iommu.c | 23 +++++++++++++++++++----
+>   1 file changed, 19 insertions(+), 4 deletions(-)
 
 Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
 
