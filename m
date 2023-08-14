@@ -1,239 +1,244 @@
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2077.outbound.protection.outlook.com [40.107.220.77])
+Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam02on2042.outbound.protection.outlook.com [40.107.212.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF40FDF51
-	for <iommu@lists.linux.dev>; Mon, 14 Aug 2023 21:57:50 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 023C9A925;
+	Mon, 14 Aug 2023 23:16:38 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=fZEeqgqkaU1GbN7KPpFzvHLL+102dTp246XNcuhtWR4r8PuQ7qIAjZSIQUck8PjKVAe3x19Yd4obU3GcSzz5fwfl3e6WoZ/RVXcberIPWKRbnFrn57Mz4Yrky1wVNSrvyZE6chRpMF9Hqg+HP3B330hx/dn64au3oqSt0ez0xX8sQFX84MrApLnRGFqN1vTcSjwOB1IH+V8WK/IklDQEzms7C/64PiiuyRoIloP2mDGTRp/3pjUDU4joP2MgFNW1KQO/o6aN4D057pvF1RiqMst4yfNfIAQZVQZR/1p53xTbFXGOYoYJXTkzEGNFFMjPYPkiVWJ1r7NKgKa2hhzMog==
+ b=RVQ4FO/Enqh/VKPzMVjzsfE7yrJApq3EH2WaYvnn/y89+eMTlPLbrJdG+2Rzjet3Eqe5Xi+drGyp1KTqF9Uil8EYAsScf1yymbQFlokMXHw6aexKnbAjIQTcwvdseaUXUR2HmLT8/a/kJ4LwzTQvO1rYBOlquyfGfy0K0ASMUJM+a+92z4XhS+MRl3YtEzyQSZlFJDwMTwz8xcEofj3sUGWRw+UqLu3ChPEusjTtS04y0XwQ1T+vhc/WgEuDMETMrXSUg4x71rNYRoHvcgKjQzvOgqrMAfeLCAf3fErMq1yn0L3LWj2LEdThW0p5fqLaa04ZrvFR9Sx/zCNLuNCiuA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=beUQ76tSj5K2D2PwzkA9ovNlIFXynAmvOPgwIE0NMjU=;
- b=h4WnofsFI1yB0cU3DyTSC39RHzKQ0FQtVJgXlmkfJxyEB1VBO/GOOZIwiQFNS7Npg5N3xsvzfDqpiRHBfFXaf3Ev1SqFMArPsPx3eDqLSyKgYe+QWJldyFWWYHuUv7vYGATG9mf04P4dXYPKQgu3wrPwA53KcDNk1tzaFM8umpC4YTVtH20fqXrMsPG92NymvguuR5ZsJNy6glPZ05o2p5VejxZQpqevTtqGqG4Vq+ULNzVQNMicEX1u0+5nAtq0wKwzG1pBzPiC5kw+3dK6ay9g+hUME0no7uyS+5uH5eQ/TMDsP02Mdqe4STwULjzvL3pY4gkd8xKt6iN4PeSvXQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
+ bh=JZjGfzrH1eClK/mZ5X0Dt6S40ebi5fILUHGMVa4uvhY=;
+ b=E/NOGQry6upoUqNydsnegyGhpdqK9+z3SWSVGUWrQMLxXhs7lLvcV/VuszEjBH70YOqNw66Drwq4wHGDpKwnoTEyStXuT4W96ovREPQp2lZf+lqmvRhBfxk4/lGrKQidxNNkv1+TJQCAICe+hWBfCasxpBtmlxTpyV3QA6uddIXUOsI+WL3JeBce+VMq0vvtDcLQkc0W4OEKVgCytV+Ly7SwUKzvRuSB039651zIBuSSepaEpZVrIloxI2TpjQKIivTQChFWaUSNkwLed/kJBrkTqlmQpARpdyQfhowFA9YzCmoUMpXBkM3lp+35DEcYwOzkg/ir5q4jnxnEAUEO0g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=beUQ76tSj5K2D2PwzkA9ovNlIFXynAmvOPgwIE0NMjU=;
- b=EfmCcsI2NML1shCbG/Xv25jgwNxq8F+Idi3Qdy6hc/t0dkJBU5CmI8rFF4v+oxcTSV1S5ncJfQwAcQJBhVmjfyCuKYQDenYc9TBGh/7IfAD9ZdBFm5LVODoOWk1l1SHTsdkT1e+or3JDATsjGYs2sD083FQ9PoLkHSfMaXjT9mP5GA7rL+ZM0i1F5NqPrQfUA8kE7rst7X/hY29KySV8F4gX/vOdbwVe+vz00MafzRHdKrNdbacbyBPYeW9GbO36r8uxZlsNkafj7QLmSdt16NdJ1jc6MmC1UNN5FW0uPE13xmEyHgEKtPkKjfnAYOwacOmm/n9aW47TgU1W4xmESw==
-Received: from CYZPR20CA0017.namprd20.prod.outlook.com (2603:10b6:930:a2::24)
- by PH8PR12MB6676.namprd12.prod.outlook.com (2603:10b6:510:1c3::9) with
+ bh=JZjGfzrH1eClK/mZ5X0Dt6S40ebi5fILUHGMVa4uvhY=;
+ b=TjAc3yZL058jLy5gCSoKsPon0/ZQ9h4Kx8M4MMU/j3GUKqvP5hQpEX7ur67liz9JK9z+lc/15zqBc166o3JrXTKNAw11PSoqz4WkqCF925Br1p2sJ586Jbsgqa8uFnrtZRRkLr0qoeSn6JxoJyw2Lv5g9YGqXpqlXu7Dvyyi19u8+9l2y5joZ3afI9zMF7sVgZNNgr3upYMmEGLtYeqBM1fDoRI5IRMnl8uQHtouXId1eB6siavaeXmxG7tn9GwfkMorKD4Ym7kyTP02Vn2kSSlH0qvcSBImM1aNfIbcgyGpFPTFeSTYfuEUaXRrAG9VJtUq9Ehj61SVdqA7FvtHLA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by SN7PR12MB7451.namprd12.prod.outlook.com (2603:10b6:806:29b::20) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6678.24; Mon, 14 Aug
- 2023 21:57:48 +0000
-Received: from CY4PEPF0000E9CE.namprd03.prod.outlook.com
- (2603:10b6:930:a2:cafe::b3) by CYZPR20CA0017.outlook.office365.com
- (2603:10b6:930:a2::24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6652.33 via Frontend
- Transport; Mon, 14 Aug 2023 21:57:48 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- CY4PEPF0000E9CE.mail.protection.outlook.com (10.167.241.141) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6699.12 via Frontend Transport; Mon, 14 Aug 2023 21:57:48 +0000
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Mon, 14 Aug 2023
- 14:57:35 -0700
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail202.nvidia.com
- (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Mon, 14 Aug
- 2023 14:57:35 -0700
-Received: from Asurada-Nvidia.nvidia.com (10.127.8.13) by mail.nvidia.com
- (10.129.68.7) with Microsoft SMTP Server id 15.2.986.37 via Frontend
- Transport; Mon, 14 Aug 2023 14:57:34 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: <will@kernel.org>, <robin.murphy@arm.com>
-CC: <joro@8bytes.org>, <jgg@nvidia.com>, <jean-philippe@linaro.org>,
-	<apopple@nvidia.com>, <linux-kernel@vger.kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>
-Subject: [PATCH] iommu/arm-smmu-v3: Add a configurable tlbi_range_max_n_shift for TLBI
-Date: Mon, 14 Aug 2023 14:57:01 -0700
-Message-ID: <20230814215701.5455-1-nicolinc@nvidia.com>
-X-Mailer: git-send-email 2.41.0
+ 2023 23:16:35 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::5111:16e8:5afe:1da1]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::5111:16e8:5afe:1da1%6]) with mapi id 15.20.6678.022; Mon, 14 Aug 2023
+ 23:16:35 +0000
+Date: Mon, 14 Aug 2023 20:16:33 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Andy Gross <agross@kernel.org>, Alim Akhtar <alim.akhtar@samsung.com>,
+	Bjorn Andersson <andersson@kernel.org>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+	Baolin Wang <baolin.wang@linux.alibaba.com>,
+	Christophe Leroy <christophe.leroy@csgroup.eu>,
+	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+	Heiko Stuebner <heiko@sntech.de>, iommu@lists.linux.dev,
+	Jernej Skrabec <jernej.skrabec@gmail.com>,
+	Jonathan Hunter <jonathanh@nvidia.com>,
+	Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
+	Konrad Dybcio <konrad.dybcio@linaro.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+	linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+	linux-mediatek@lists.infradead.org,
+	linux-rockchip@lists.infradead.org, linux-s390@vger.kernel.org,
+	linux-samsung-soc@vger.kernel.org, linux-sunxi@lists.linux.dev,
+	linux-tegra@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
+	linuxppc-dev@lists.ozlabs.org,
+	Matthias Brugger <matthias.bgg@gmail.com>,
+	Matthew Rosato <mjrosato@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	Orson Zhai <orsonzhai@gmail.com>, Rob Clark <robdclark@gmail.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Samuel Holland <samuel@sholland.org>,
+	Thierry Reding <thierry.reding@gmail.com>,
+	Krishna Reddy <vdumpa@nvidia.com>, Chen-Yu Tsai <wens@csie.org>,
+	Will Deacon <will@kernel.org>, Yong Wu <yong.wu@mediatek.com>,
+	Chunyan Zhang <zhang.lyra@gmail.com>
+Cc: Lu Baolu <baolu.lu@linux.intel.com>, Dmitry Osipenko <digetx@gmail.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Niklas Schnelle <schnelle@linux.ibm.com>,
+	Steven Price <steven.price@arm.com>,
+	Thierry Reding <treding@nvidia.com>
+Subject: Re: [PATCH v6 15/25] iommufd/selftest: Make the mock iommu driver
+ into a real driver
+Message-ID: <ZNq10UxCKerGqg5O@nvidia.com>
+References: <0-v6-e8114faedade+425-iommu_all_defdom_jgg@nvidia.com>
+ <15-v6-e8114faedade+425-iommu_all_defdom_jgg@nvidia.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <15-v6-e8114faedade+425-iommu_all_defdom_jgg@nvidia.com>
+X-ClientProxiedBy: CH2PR11CA0010.namprd11.prod.outlook.com
+ (2603:10b6:610:54::20) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY4PEPF0000E9CE:EE_|PH8PR12MB6676:EE_
-X-MS-Office365-Filtering-Correlation-Id: 3891343b-5611-4016-08b6-08db9d117f78
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|SN7PR12MB7451:EE_
+X-MS-Office365-Filtering-Correlation-Id: ae27e0cb-6672-47a7-3510-08db9d1c80a2
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	uDY++ddmInAo2+/ywtkf+Bp42W4mhz5xsJLeonYk5D9d0yGeYOIA77cEWqlsGk1Hna67KrnSw9lSJVt2lEHon5EcH68WTfPJ8ga/UMOD+ZJhiz25VDyu5/uuPGQLKYzjwpj4H3ypwShYn2ysYCFaGoYj3iKDxXWFzBamQPHdM0OJqV3RUPfIF0QYE+HDBmxDfoAGnYwEWjJJI/zn3xXj2GH2GELjvjzBlAOYpMN1KQJIabGgQuH019WkKPoZHmTpyD/hlpKNST+jNYO+citkiaBbglagrBEP0FvEEBuh+7YbByP7ZDZtWCVGwTPqHKMJd46Wv7XuvSCtHV+5GV6rnyeWM3HObGIYCS+9upes2pQyCUcwK8v1Sl8KWj68heQIadk/3x12M9okzuT4g+7s8ohoOhnLWvD8cIFUhIL+jDohAbPNlpgigSe3/gJfeVE8zaYfQgy0CirKg3dBl2DK5pzFLZClTtec5Y7tJb+VH42SxV3rJ4Zao3sP/CGg+iB+PJj32pEm+tTMkF5hJ1zU2H2ZQiFakI70aLNCLb18dFBzrrXvBuksFTrFU0Q93dpaccVreW8hTk8VUr/MMhdGGMO9tPjCTsmnbjwiiYuJtrB+Qi5bLq7HOreYVONkn2Fwda/tyPM02+vI7OzUq985Nqtk4xCKFb+9unacv4qAinwCqNtV6do0TelC1urdtsYnwo5QvOdBepI9pd8XYIlg+A35AtEPBpuSucZ93VpahOaKegdBRwKk6KH60QnYD6N6
+	PfYrMl9MfAoGN0AM2zjvB/rGvB+UMB/j74zdvyUU7zB7joXEBFu4bYARPZTtI2Zue+PPoN6QESezYSBjQMDx4oVHxJ3XW5yT5FBCBTf/u49XfG6YdfVEt44IJWD7jbZL7jC7mT4/vhQ3yznjCCvugiF1ZPOSbWtznYrJPT8k9tWLDXxWy3tKtuDSi0aQg1UycpwXbzTdpYeJYsBYoQEustmdysf3/IgiHgYw+sMmu7G/SpXH8ztxex8zTXVn3sqaQRrlwCN4C4Ibj6xhvpckDbAfqxZQD6/9tecKTm2WmP53HCpAy6xekTawkhBRaHBBjqm64Pz6ynh1kW6RRTGB3U9fylVj9hJ+IOmeyr5T4Zzhk7lp623joi7Wr2evEixTm/2ZnZH2azu8J1E6cllfFcE5Bct5vPJP0af/pzZo+e463ANj/3iacuDIkGttTRYxUTIiVvB5sIY0fOpjs3L9XfpeMDvq/U1C42A5zqb6i8un0uEb9p5a7UsxAK+v4sMpQEEDKYYlb0CFRkM3LnTl49Jl6WXa1jskgybsgv1uNPSi1ezshZqRPYm4jCbkWVC9H+u/uDHZr+kbaIF8Jtp/e4zXU88i4IYB4mQdZ3+CGaE=
 X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(396003)(376002)(346002)(136003)(39860400002)(186006)(1800799006)(82310400008)(451199021)(46966006)(36840700001)(40470700004)(40480700001)(40460700003)(478600001)(7636003)(356005)(82740400003)(6666004)(8676002)(8936002)(4326008)(41300700001)(316002)(70586007)(70206006)(110136005)(54906003)(83380400001)(36860700001)(47076005)(336012)(7696005)(1076003)(26005)(426003)(2616005)(86362001)(2906002)(5660300002)(36756003);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(346002)(39860400002)(376002)(366004)(136003)(396003)(186006)(1800799006)(451199021)(83380400001)(36756003)(86362001)(921005)(41300700001)(478600001)(66946007)(66476007)(54906003)(6512007)(66556008)(316002)(8676002)(110136005)(5660300002)(4326008)(8936002)(38100700002)(2616005)(107886003)(26005)(6486002)(2906002)(7416002)(6506007)(7406005);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?m+wgfV/4zOEh1RJN/JFaYwki7nBxnXUrSAlBXx4hvMW0mAlP2cKB4RqtruSj?=
+ =?us-ascii?Q?O1mTPhRLpBvRPWX7khThoFarjLGlGMRgBo0+Ro9hFRi9PEn5X1PEChI1ykM8?=
+ =?us-ascii?Q?z+CxMcjmZ+KqV29yDnmdoE+JHNWPfRGjns00wA8RpYO5RC1K1DtEpnD0j05x?=
+ =?us-ascii?Q?YT0Mb0wjc3WEcqP4HPVej5cv+UcIIRIfqUaC7oDNRBr4AvEAVJfj1JfajLca?=
+ =?us-ascii?Q?QegaAycQtPIZ2UGsNMCH48u319gdm9Y1av7yAbuYzI44tgh2KciXGQWp7nlf?=
+ =?us-ascii?Q?4bGbQDjWLoSXESmJOqnwwM8wogFo69qTYlp/DA0GCd9ouZ0xHAVwApx1uGfF?=
+ =?us-ascii?Q?CCEshwKf1mPP1VC5g7DtytOFHXq72lQ/IyQC7Y/R3ljVS6sM5zxKCPnHTRZT?=
+ =?us-ascii?Q?B6lieRORsvGpyzzDTQEeqLL7pxx5kfCCYsANboA0feUXCX7ELS2LiXHc6e0x?=
+ =?us-ascii?Q?/LHRoH7baEOxRYWPFmQCJ0KtphnkoS5XDWKv0OlyoTsGwFX0SaSpCEnu3eWW?=
+ =?us-ascii?Q?6ImJWn9N4n+5rXgDKyY76E/5CnSvjgjEYvbqJVpTwqWwsEENEKPViaZKbdl1?=
+ =?us-ascii?Q?RuwfyWOjscXgX4z9gzR18kV5cL4kKZKYhJZw4raSWiRxZSisg4uZ9iudk3CG?=
+ =?us-ascii?Q?HQ14/YmtEkJSue6MIdA04WL7Mr43Gea8Y+2usC9fsIig76eHVFaZkRT3Ho1p?=
+ =?us-ascii?Q?plM+Pfxxp77Abvc8wWC/QegcKF9e5SwfMxacemYLSB5CX4zuLrsbxKxVv3RF?=
+ =?us-ascii?Q?TFTzZKFulcHz69pgTIB1fi27tFpHfy6081FM2DrLdgbgrTWvIIVkR5W3hAU7?=
+ =?us-ascii?Q?VfR1R1XfW9dBIsp2wUVUU4huJPZQjlDWcZZLehqRWeIX9hKn1y9ZPfKeq/cT?=
+ =?us-ascii?Q?VASC029a5X0BkyRV8xCfiZ4zOlB7ogmrS9nJbTxlDdBeJOwhS2OfsOG6Kq5/?=
+ =?us-ascii?Q?N0UwUgHdcVzUfLH7ThCvR+XKlYSIhDRJzC8tHgN8gJvCoeD6E+ZQyc0S2zbJ?=
+ =?us-ascii?Q?FO7LitSrE15lhM0RO90UjV8KtK4L1a7Qod4lwQYvxdBs8U9NRdEznGuqYhvN?=
+ =?us-ascii?Q?b7/a0SKPJ0K1kmgWqwkKE2mHrx1DfYTSXBx/rO21m03v8Wqkc8Kq2ocGWaw8?=
+ =?us-ascii?Q?8anFI6DP8AJ22FfXZ6W3BRO9aMRlZyEs2ia/ZVNu+55Py7//fxo2u8cDUrCl?=
+ =?us-ascii?Q?K+a79IbvcG+vdHsgEHE7qE/P/h5Kh2vaaxwYwvjZb65ZKNrM72kt7bUcPZkX?=
+ =?us-ascii?Q?VwpmL8xeh01osof5564dVTHmKbEDKRSkc7XtWKvNUfyfio1+hQ+aYvks7Sz8?=
+ =?us-ascii?Q?nFnuvCHEN3oRrKiSL2AglZx/9Kl/YnzepizY8SGy4YR4tvx62IzOiVLZg9cn?=
+ =?us-ascii?Q?Glyh1NDL3lfRyIQAhf39VmByy7iM1J0SM+Hlf86y4Zpe+Fup7l0kAf/SIw/4?=
+ =?us-ascii?Q?u7PsGvIFwvv+fTQZj4DUpbtOLpxO1BzAkYhvJqbFjA9jrEvKOQkEzouVulib?=
+ =?us-ascii?Q?rlUK9Lvz9uVcU5tVGdEt/T7qCeKgR0f0Q0xV7YfYVYPaZXbWOYwEDglUMMp+?=
+ =?us-ascii?Q?2avF73qK83Qyi+P7ciwIAtiYWz3/DjK/wiXBSGVi?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Aug 2023 21:57:48.0228
+X-MS-Exchange-CrossTenant-Network-Message-Id: ae27e0cb-6672-47a7-3510-08db9d1c80a2
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Aug 2023 23:16:34.9342
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3891343b-5611-4016-08b6-08db9d117f78
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CY4PEPF0000E9CE.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR12MB6676
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: jXOO3M95Dbi8AYsMMbSx6l/KvHgkGJ7WQ4MzzlxPcW9UPtpbZ3KGuCGmLVq+5BvB
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB7451
 
-When receiving an __arm_smmu_tlb_inv_range() call with a large size, there
-could be a long latency at this function call: one part is coming from a
-large software overhead in the routine of building commands, and the other
-part is coming from CMDQ hardware consuming the large number of commands.
-This latency could be significantly large on an SMMU that does not support
-range invalidation commands, i.e. no ARM_SMMU_FEAT_RANGE_INV.
+On Wed, Aug 02, 2023 at 09:08:02PM -0300, Jason Gunthorpe wrote:
+> I've avoided doing this because there is no way to make this happen
+> without an intrusion into the core code. Up till now this has avoided
+> needing the core code's probe path with some hackery - but now that
+> default domains are becoming mandatory it is unavoidable. The core probe
+> path must be run to set the default_domain, only it can do it. Without
+> a default domain iommufd can't use the group.
+> 
+> Make it so that iommufd selftest can create a real iommu driver and bind
+> it only to is own private bus. Add iommu_device_register_bus() as a core
+> code helper to make this possible. It simply sets the right pointers and
+> registers the notifier block. The mock driver then works like any normal
+> driver should, with probe triggered by the bus ops
+> 
+> When the bus->iommu_ops stuff is fully unwound we can probably do better
+> here and remove this special case.
+> 
+> Remove set_platform_dma_ops from selftest and make it use a BLOCKED
+> default domain.
+> 
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> ---
+>  drivers/iommu/iommu-priv.h              |  16 +++
+>  drivers/iommu/iommu.c                   |  43 +++++++
+>  drivers/iommu/iommufd/iommufd_private.h |   5 +-
+>  drivers/iommu/iommufd/main.c            |   8 +-
+>  drivers/iommu/iommufd/selftest.c        | 149 +++++++++++++-----------
+>  5 files changed, 152 insertions(+), 69 deletions(-)
+>  create mode 100644 drivers/iommu/iommu-priv.h
 
-One way to optimize this is to replace a large number of VA invalidation
-commands with one single per-asid invalidation command, when the requested
-size is above a threshold. This threshold can be configurable depending on
-the SMMU implementaion, and its default value can be VA_BITS, so it'd even
-make sense for SMMUs with ARM_SMMU_FEAT_RANGE_INV to do such a replacement.
+Since this series will miss this kernel again I've taken this patch
+into the iommufd tree to fix the broken selftest.
 
-Add a tlbi_range_max_n_shift threshold per SMMU device and allow it to be
-configured via an SYSFS node, and then add an ABI doc for this new node.
+It needed two edits to make it work out of the context of this series
 
-Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
----
- .../ABI/testing/sysfs-class-iommu-arm-smmu-v3 |  8 +++
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 54 ++++++++++++++++++-
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  3 ++
- 3 files changed, 64 insertions(+), 1 deletion(-)
- create mode 100644 Documentation/ABI/testing/sysfs-class-iommu-arm-smmu-v3
+The core code still requires empty free functions:
 
-diff --git a/Documentation/ABI/testing/sysfs-class-iommu-arm-smmu-v3 b/Documentation/ABI/testing/sysfs-class-iommu-arm-smmu-v3
-new file mode 100644
-index 000000000000..ed1a8ead82d3
---- /dev/null
-+++ b/Documentation/ABI/testing/sysfs-class-iommu-arm-smmu-v3
-@@ -0,0 +1,8 @@
-+What:		/sys/class/iommu/<iommu>/arm-smmu-v3/tlbi_range_max_n_shift
-+Date:		August 2023
-+KernelVersion:	6.6
-+Contact:	Nicolin Chen <nicolinc@nvidia.com>
-+Description:
-+		Max number of shift to set up a threshold for SMMU to replace
-+		VA invalidation commands with a single per-asid invalidation.
-+		Format: %u
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 9b0dc3505601..e52eb8a0ffdf 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -1886,11 +1886,21 @@ static void __arm_smmu_tlb_inv_range(struct arm_smmu_cmdq_ent *cmd,
- 	struct arm_smmu_device *smmu = smmu_domain->smmu;
- 	unsigned long end = iova + size, num_pages = 0, tg = 0;
- 	size_t inv_range = granule;
-+	size_t max_size = 1UL << smmu->tlbi_range_max_n_shift;
- 	struct arm_smmu_cmdq_batch cmds;
- 
- 	if (!size)
- 		return;
- 
-+	/*
-+	 * Convert a large range/number of VA invalidation(s) to one single ASID
-+	 * invalidation, when the input size is greater than the threshold. This
-+	 * simplifies the command building routine, espeicaly on an SMMU without
-+	 * ARM_SMMU_FEAT_RANGE_INV.
-+	 */
-+	if (cmd->tlbi.asid && size >= max_size)
-+		return arm_smmu_tlb_inv_asid(smmu, cmd->tlbi.asid);
-+
- 	if (smmu->features & ARM_SMMU_FEAT_RANGE_INV) {
- 		/* Get the leaf page size */
- 		tg = __ffs(smmu_domain->domain.pgsize_bitmap);
-@@ -3107,6 +3117,7 @@ static int arm_smmu_init_structures(struct arm_smmu_device *smmu)
- {
- 	int ret;
- 
-+	smmu->tlbi_range_max_n_shift = VA_BITS;
- 	mutex_init(&smmu->streams_mutex);
- 	smmu->streams = RB_ROOT;
- 
-@@ -3808,6 +3819,47 @@ static void arm_smmu_rmr_install_bypass_ste(struct arm_smmu_device *smmu)
- 	iort_put_rmr_sids(dev_fwnode(smmu->dev), &rmr_list);
- }
- 
-+static ssize_t tlbi_range_max_n_shift_show(struct device *dev,
-+					   struct device_attribute *attr,
-+					   char *buf)
-+{
-+	struct arm_smmu_device *smmu = dev_get_drvdata(dev->parent);
-+
-+	return sprintf(buf, "%u\n", smmu->tlbi_range_max_n_shift);
-+}
-+static ssize_t tlbi_range_max_n_shift_store(struct device *dev,
-+					    struct device_attribute *attr,
-+					    const char *buf, size_t size)
-+{
-+	struct arm_smmu_device *smmu = dev_get_drvdata(dev->parent);
-+	unsigned int max_n_shift;
-+	int ret;
-+
-+	ret = kstrtou32(buf, 0, &max_n_shift);
-+	if (ret)
-+		return ret;
-+	if (max_n_shift > VA_BITS || max_n_shift < PAGE_SHIFT)
-+		return -EINVAL;
-+	smmu->tlbi_range_max_n_shift = max_n_shift;
-+	return size;
-+}
-+static DEVICE_ATTR_RW(tlbi_range_max_n_shift);
-+
-+static struct attribute *arm_smmu_attrs[] = {
-+	&dev_attr_tlbi_range_max_n_shift.attr,
-+	NULL,
-+};
-+
-+static struct attribute_group arm_smmu_group = {
-+	.name = "arm-smmu-v3",
-+	.attrs = arm_smmu_attrs,
-+};
-+
-+static const struct attribute_group *arm_smmu_groups[] = {
-+	&arm_smmu_group,
-+	NULL,
-+};
-+
- static int arm_smmu_device_probe(struct platform_device *pdev)
- {
- 	int irq, ret;
-@@ -3900,7 +3952,7 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
- 		return ret;
- 
- 	/* And we're up. Go go go! */
--	ret = iommu_device_sysfs_add(&smmu->iommu, dev, NULL,
-+	ret = iommu_device_sysfs_add(&smmu->iommu, dev, arm_smmu_groups,
- 				     "smmu3.%pa", &ioaddr);
- 	if (ret)
- 		return ret;
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-index dcab85698a4e..07636d596901 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-@@ -665,6 +665,9 @@ struct arm_smmu_device {
- 	unsigned long			oas; /* PA */
- 	unsigned long			pgsize_bitmap;
- 
-+	/* Threshold to convert VA range TLBI to asid TLBI */
-+	unsigned int			tlbi_range_max_n_shift;
-+
- #define ARM_SMMU_MAX_ASIDS		(1 << 16)
- 	unsigned int			asid_bits;
- 
--- 
-2.41.0
+    +@@ drivers/iommu/iommufd/selftest.c: static struct iommu_domain *mock_domain_alloc(unsigned int iommu_domain_type)
+    +   if (iommu_domain_type == IOMMU_DOMAIN_BLOCKED)
+    +           return &mock_blocking_domain;
+      
+    --static void mock_domain_blocking_free(struct iommu_domain *domain)
+    --{
+    --}
+    --
+    - static int mock_domain_nop_attach(struct iommu_domain *domain,
+    -                             struct device *dev)
+    - {
+    +@@ drivers/iommu/iommufd/selftest.c: static void mock_domain_set_plaform_dma_ops(struct device *dev)
+    +    */
+      }
+      
+    - static const struct iommu_domain_ops mock_blocking_ops = {
+    --  .free = mock_domain_blocking_free,
+    -   .attach_dev = mock_domain_nop_attach,
+    - };
+    - 
 
+And we can't use default_domain so rely on a NULL default domain and set_platform_dma_ops:
+
+    -@@ drivers/iommu/iommufd/selftest.c: static int mock_domain_nop_attach(struct iommu_domain *domain,
+    +-  if (WARN_ON(iommu_domain_type != IOMMU_DOMAIN_UNMANAGED))
+    ++  if (iommu_domain_type != IOMMU_DOMAIN_UNMANAGED)
+    +           return NULL;
+    + 
+    +   mock = kzalloc(sizeof(*mock), GFP_KERNEL);
+    -@@ drivers/iommu/iommufd/selftest.c: static bool mock_domain_capable(struct device *dev, enum iommu_cap cap)
+    -   return cap == IOMMU_CAP_CACHE_COHERENCY;
+    - }
+    - 
+    --static void mock_domain_set_plaform_dma_ops(struct device *dev)
+     +static struct iommu_device mock_iommu_device = {
+     +};
+     +
+     +static struct iommu_device *mock_probe_device(struct device *dev)
+    - {
+    --  /*
+    --   * mock doesn't setup default domains because we can't hook into the
+    --   * normal probe path
+    --   */
+    ++{
+     +  return &mock_iommu_device;
+    - }
+    - 
+    ++}
+    ++
+      static const struct iommu_ops mock_ops = {
+    -+  /*
+    -+   * IOMMU_DOMAIN_BLOCKED cannot be returned from def_domain_type()
+    -+   * because it is zero.
+    -+   */
+    -+  .default_domain = &mock_blocking_domain,
+        .owner = THIS_MODULE,
+        .pgsize_bitmap = MOCK_IO_PAGE_SIZE,
+        .domain_alloc = mock_domain_alloc,
+        .capable = mock_domain_capable,
+    --  .set_platform_dma_ops = mock_domain_set_plaform_dma_ops,
+    +   .set_platform_dma_ops = mock_domain_set_plaform_dma_ops,
+     +  .device_group = generic_device_group,
+     +  .probe_device = mock_probe_device,
+        .default_domain_ops =
+
+Otherwise it works the same and solves the same problem. There is a
+small merge conflict with the fixes in Joerg's tree around the
+bus_iommu_probe
+
+Thanks,
+Jason
