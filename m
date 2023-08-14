@@ -1,34 +1,34 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.93])
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.65])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E08CA3236;
-	Mon, 14 Aug 2023 06:45:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E105029AC;
+	Mon, 14 Aug 2023 06:58:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1691995518; x=1723531518;
+  t=1691996308; x=1723532308;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=s7w4QvLN+a+X+nJOo1ALAurEypsMjxpw55DQNKza1DY=;
-  b=m9IATXLl9bj8Cu/KBXrJ8APH7d3HDU2XfQ1wPYMlJ5c/crnRhNVBQIGw
-   iAotmWTLFWlBiTMvd5ofc6bPU8vSN8bZZRLjIR6KlPK9Ds2U39lMHTLZK
-   qYJllo7hklPMo3INanyWTkphM5RxlpZmDZ50pb+oF4/93mglo00AjinRn
-   OEKt32cZJW9R7vP/sJyraUiSUICjgH1K8Llh2fJlSW89UeT+FO3Ntv0mC
-   EEiRBDV7hIg8arPuztOn0tEeUHFRWUUA2N5afMEZC//Sws8sOjTxx4fIV
-   1XkJ3EiM1Emr/j/8pDRvuYJ2HkWsD4I41h3rzRNEFe9XMfBBX9qAM4EPL
+  bh=pa/NYcFW5ouBdif+FG84sip7NAyNlNfKz3i1h077D5I=;
+  b=eWbb+FAmq1uzk4/hmzaqmYu1jHoLHGr6sAnTCRZ9FSdCVXAIWl2j5rGs
+   QDXrGkam0Bt3CQE9gowYMQffWI5dC4Sq8WoZtwJORq1XQmWLTlL+rrVBE
+   9/y9lD5R6Ndpx2RfyGfZvigWL4Bh/zKDibFWfHbPV9P0Ocn+ODufkwKkT
+   F7nufXyK9vEp2ApdBvRc0zcLK4qgWJuEqQ2sDFXUkJCN0bnAddvpsb9bV
+   oUUyOz2riJZbmgf9H7z/tUrqMuJtXhO2FOe0Z+3zEruDczAnXwA+WrUPg
+   NXQAF5yT/DpLAYsIqKai+K9yNCGvTSaRp6nZFQXDAVuEEYxtFab7zd9Iu
    A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10801"; a="369445382"
+X-IronPort-AV: E=McAfee;i="6600,9927,10801"; a="375682856"
 X-IronPort-AV: E=Sophos;i="6.01,171,1684825200"; 
-   d="scan'208";a="369445382"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Aug 2023 23:45:05 -0700
+   d="scan'208";a="375682856"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Aug 2023 23:58:27 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10801"; a="856979583"
+X-IronPort-AV: E=McAfee;i="6600,9927,10801"; a="798721368"
 X-IronPort-AV: E=Sophos;i="6.01,171,1684825200"; 
-   d="scan'208";a="856979583"
+   d="scan'208";a="798721368"
 Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.254.215.205]) ([10.254.215.205])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Aug 2023 23:44:52 -0700
-Message-ID: <be5ce6ed-f078-a466-1d03-867e3cc4d6ee@linux.intel.com>
-Date: Mon, 14 Aug 2023 14:44:50 +0800
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Aug 2023 23:58:17 -0700
+Message-ID: <90d3070b-a3ff-7007-9b55-aef1e9b472aa@linux.intel.com>
+Date: Mon, 14 Aug 2023 14:58:14 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -42,7 +42,8 @@ Cc: baolu.lu@linux.intel.com, Dmitry Osipenko <digetx@gmail.com>,
  Nicolin Chen <nicolinc@nvidia.com>, Niklas Schnelle
  <schnelle@linux.ibm.com>, Steven Price <steven.price@arm.com>,
  Thierry Reding <treding@nvidia.com>
-Subject: Re: [PATCH v6 20/25] iommu/sun50i: Add an IOMMU_IDENTITIY_DOMAIN
+Subject: Re: [PATCH v6 24/25] iommu: Convert simple drivers with DOMAIN_DMA to
+ domain_alloc_paging()
 Content-Language: en-US
 To: Jason Gunthorpe <jgg@nvidia.com>, Andy Gross <agross@kernel.org>,
  Alim Akhtar <alim.akhtar@samsung.com>, Bjorn Andersson
@@ -70,58 +71,102 @@ To: Jason Gunthorpe <jgg@nvidia.com>, Andy Gross <agross@kernel.org>,
  <vdumpa@nvidia.com>, Chen-Yu Tsai <wens@csie.org>,
  Will Deacon <will@kernel.org>, Yong Wu <yong.wu@mediatek.com>,
  Chunyan Zhang <zhang.lyra@gmail.com>
-References: <20-v6-e8114faedade+425-iommu_all_defdom_jgg@nvidia.com>
+References: <24-v6-e8114faedade+425-iommu_all_defdom_jgg@nvidia.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20-v6-e8114faedade+425-iommu_all_defdom_jgg@nvidia.com>
+In-Reply-To: <24-v6-e8114faedade+425-iommu_all_defdom_jgg@nvidia.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 2023/8/3 8:08, Jason Gunthorpe wrote:
-> Prior to commit 1b932ceddd19 ("iommu: Remove detach_dev callbacks") the
-> sun50i_iommu_detach_device() function was being called by
-> ops->detach_dev().
+> These drivers are all trivially converted since the function is only
+> called if the domain type is going to be
+> IOMMU_DOMAIN_UNMANAGED/DMA.
 > 
-> This is an IDENTITY domain so convert sun50i_iommu_detach_device() into
-> sun50i_iommu_identity_attach() and a full IDENTITY domain and thus hook it
-> back up the same was as the old ops->detach_dev().
-> 
-> Signed-off-by: Jason Gunthorpe<jgg@nvidia.com>
+> Tested-by: Heiko Stuebner <heiko@sntech.de>
+> Tested-by: Steven Price <steven.price@arm.com>
+> Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
+> Tested-by: Nicolin Chen <nicolinc@nvidia.com>
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 > ---
->   drivers/iommu/sun50i-iommu.c | 26 +++++++++++++++++++-------
->   1 file changed, 19 insertions(+), 7 deletions(-)
-> 
+>   drivers/iommu/arm/arm-smmu/qcom_iommu.c | 6 ++----
+>   drivers/iommu/exynos-iommu.c            | 7 ++-----
+>   drivers/iommu/ipmmu-vmsa.c              | 7 ++-----
+>   drivers/iommu/mtk_iommu.c               | 7 ++-----
+>   drivers/iommu/rockchip-iommu.c          | 7 ++-----
+>   drivers/iommu/sprd-iommu.c              | 7 ++-----
+>   drivers/iommu/sun50i-iommu.c            | 9 +++------
+>   drivers/iommu/tegra-smmu.c              | 7 ++-----
+>   8 files changed, 17 insertions(+), 40 deletions(-)
+
+[...]
+
 > diff --git a/drivers/iommu/sun50i-iommu.c b/drivers/iommu/sun50i-iommu.c
-> index 74c5cb93e90027..0bf08b120cf105 100644
+> index 0bf08b120cf105..056832a367c2af 100644
 > --- a/drivers/iommu/sun50i-iommu.c
 > +++ b/drivers/iommu/sun50i-iommu.c
-> @@ -757,21 +757,32 @@ static void sun50i_iommu_detach_domain(struct sun50i_iommu *iommu,
->   	iommu->domain = NULL;
+> @@ -667,14 +667,11 @@ static phys_addr_t sun50i_iommu_iova_to_phys(struct iommu_domain *domain,
+>   		sun50i_iova_get_page_offset(iova);
 >   }
 >   
-> -static void sun50i_iommu_detach_device(struct iommu_domain *domain,
-> -				       struct device *dev)
-> +static int sun50i_iommu_identity_attach(struct iommu_domain *identity_domain,
-> +					struct device *dev)
->   {
-> -	struct sun50i_iommu_domain *sun50i_domain = to_sun50i_domain(domain);
->   	struct sun50i_iommu *iommu = dev_iommu_priv_get(dev);
-> +	struct sun50i_iommu_domain *sun50i_domain;
->   
->   	dev_dbg(dev, "Detaching from IOMMU domain\n");
->   
-> -	if (iommu->domain != domain)
-> -		return;
-> +	if (iommu->domain == identity_domain)
-> +		return 0;
->   
-> +	sun50i_domain = to_sun50i_domain(iommu->domain);
->   	if (refcount_dec_and_test(&sun50i_domain->refcnt))
->   		sun50i_iommu_detach_domain(iommu, sun50i_domain);
-> +	return 0;
->   }
+> -static struct iommu_domain *sun50i_iommu_domain_alloc(unsigned type)
+> +static struct iommu_domain *
+> +sun50i_iommu_domain_alloc_paging(struct device *paging)
 
-Does iommu->domain need to be set to identity_domain before returning?
+Why not "struct device *dev"?
+
+Typo? Or anything I missed?
+
+>   {
+>   	struct sun50i_iommu_domain *sun50i_domain;
+>   
+> -	if (type != IOMMU_DOMAIN_DMA &&
+> -	    type != IOMMU_DOMAIN_UNMANAGED)
+> -		return NULL;
+> -
+>   	sun50i_domain = kzalloc(sizeof(*sun50i_domain), GFP_KERNEL);
+>   	if (!sun50i_domain)
+>   		return NULL;
+> @@ -840,7 +837,7 @@ static const struct iommu_ops sun50i_iommu_ops = {
+>   	.identity_domain = &sun50i_iommu_identity_domain,
+>   	.pgsize_bitmap	= SZ_4K,
+>   	.device_group	= sun50i_iommu_device_group,
+> -	.domain_alloc	= sun50i_iommu_domain_alloc,
+> +	.domain_alloc_paging = sun50i_iommu_domain_alloc_paging,
+>   	.of_xlate	= sun50i_iommu_of_xlate,
+>   	.probe_device	= sun50i_iommu_probe_device,
+>   	.default_domain_ops = &(const struct iommu_domain_ops) {
+> diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
+> index 6cba034905edbf..69c40c191ce4f0 100644
+> --- a/drivers/iommu/tegra-smmu.c
+> +++ b/drivers/iommu/tegra-smmu.c
+> @@ -272,13 +272,10 @@ static void tegra_smmu_free_asid(struct tegra_smmu *smmu, unsigned int id)
+>   	clear_bit(id, smmu->asids);
+>   }
+>   
+> -static struct iommu_domain *tegra_smmu_domain_alloc(unsigned type)
+> +static struct iommu_domain *tegra_smmu_domain_alloc_paging(struct device *dev)
+>   {
+>   	struct tegra_smmu_as *as;
+>   
+> -	if (type != IOMMU_DOMAIN_UNMANAGED && type != IOMMU_DOMAIN_DMA)
+> -		return NULL;
+> -
+>   	as = kzalloc(sizeof(*as), GFP_KERNEL);
+>   	if (!as)
+>   		return NULL;
+> @@ -997,7 +994,7 @@ static const struct iommu_ops tegra_smmu_ops = {
+>   	.default_domain = &tegra_smmu_identity_domain,
+>   	.identity_domain = &tegra_smmu_identity_domain,
+>   	.def_domain_type = &tegra_smmu_def_domain_type,
+> -	.domain_alloc = tegra_smmu_domain_alloc,
+> +	.domain_alloc_paging = tegra_smmu_domain_alloc_paging,
+>   	.probe_device = tegra_smmu_probe_device,
+>   	.device_group = tegra_smmu_device_group,
+>   	.of_xlate = tegra_smmu_of_xlate,
+
+Anyway,
+
+Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
 
 Best regards,
 baolu
-
