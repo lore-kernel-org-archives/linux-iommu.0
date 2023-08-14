@@ -1,168 +1,80 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.93])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 613B27E2;
-	Mon, 14 Aug 2023 03:06:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1691982387; x=1723518387;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=gy0wdGHdwqfhCuqKLzj0CQNWQFqYcsM4kuaHT4waVN4=;
-  b=TOOU6mqHn7KO570yuUUBgzS3DeBjFDbkRVzNZteC5NsrCQ8EDnT7Qkgj
-   NQycBCMizYR5Iyfby/+U8sXtrv85kcZbXPm7vfxuXLhjCHSikdDmuoI+/
-   oAS8aqea84+j2TMZPw3bk16cgljx0L5lLWzWhKSRU1Ez2WUT5TfQmLfCn
-   534cg9PL0+sccpQPKMd774+gDufneIleXj4SDa6pHRFyw2qje11lmw1c1
-   xutX4Xp38MWFBl4M0tuy7gUAE38ANvFCHN1SbaO4KjROo/O/FbaiOR4/A
-   uncHHgZEuoFw5wri7TC/s4kjmGEKaiWQJS5JSse/SffOybKZLEVfdyBaS
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10801"; a="369422541"
-X-IronPort-AV: E=Sophos;i="6.01,171,1684825200"; 
-   d="scan'208";a="369422541"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Aug 2023 20:06:26 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10801"; a="856923909"
-X-IronPort-AV: E=Sophos;i="6.01,171,1684825200"; 
-   d="scan'208";a="856923909"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.255.29.49]) ([10.255.29.49])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Aug 2023 20:06:14 -0700
-Message-ID: <7b6b8118-813a-f4cd-1067-d209d2b40025@linux.intel.com>
-Date: Mon, 14 Aug 2023 11:06:12 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8BE70187C
+	for <iommu@lists.linux.dev>; Mon, 14 Aug 2023 03:25:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61E32C433D9;
+	Mon, 14 Aug 2023 03:25:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1691983509;
+	bh=gydjJyUCO/5hN3ZK6M7GS4n9Rqgo6EY8zQTaNi5iMRA=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=Lpk8jvFjXD9GDqAOfWP63nus5HXu8IUdnL26enLEdQlVcNxw18mn6RJt8a3MjlFdx
+	 yxM5SrWe9G5cGmFcr02YhnO6pTF+nOsNjNY+sLot73CPAQ7zyuAfcRpovYQehkeY6O
+	 X4Yo/J2TT/pdg2m+cQVM3OKytqwt33rJ6AJMP3C89pjBuJM0w/+CushykAopJHygnL
+	 Wis0/FJtNKAm0xS23MZbvnw2ecKB4+Zcawr09rN7ZXa62y2VfXfLdpyCWnK+bHpgCW
+	 31aNocKb6ArgoAtBk+N2TFRzIh/atnwagHD6FWu2s8zOYKW2t7617u0xKlgE0htJnE
+	 isO5n9pXqANKQ==
+From: Bjorn Andersson <andersson@kernel.org>
+To: Andy Gross <agross@kernel.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>,
+	Michael Turquette <mturquette@baylibre.com>,
+	Stephen Boyd <sboyd@kernel.org>,
+	Jeffrey Hugo <jeffrey.l.hugo@gmail.com>,
+	Imran Khan <kimran@codeaurora.org>,
+	Rajendra Nayak <quic_rjendra@quicinc.com>,
+	Joonwoo Park <joonwoop@codeaurora.org>,
+	Jeffrey Hugo <quic_jhugo@quicinc.com>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Konrad Dybcio <konrad.dybcio@linaro.org>
+Cc: Marijn Suijten <marijn.suijten@somainline.org>,
+	Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+	Jami Kettunen <jami.kettunen@somainline.org>,
+	linux-arm-msm@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-clk@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev,
+	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: Re: (subset) [PATCH v3 0/6] MMCC MSM8998 fixes
+Date: Sun, 13 Aug 2023 20:27:38 -0700
+Message-ID: <169198364310.2443702.11310037157299492335.b4-ty@kernel.org>
+X-Mailer: git-send-email 2.41.0
+In-Reply-To: <20230531-topic-8998_mmssclk-v3-0-ba1b1fd9ee75@linaro.org>
+References: <20230531-topic-8998_mmssclk-v3-0-ba1b1fd9ee75@linaro.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.14.0
-Cc: baolu.lu@linux.intel.com, Dmitry Osipenko <digetx@gmail.com>,
- Marek Szyprowski <m.szyprowski@samsung.com>,
- Nicolin Chen <nicolinc@nvidia.com>, Niklas Schnelle
- <schnelle@linux.ibm.com>, Steven Price <steven.price@arm.com>,
- Thierry Reding <treding@nvidia.com>
-Subject: Re: [PATCH v6 07/25] iommu/mtk_iommu_v1: Implement an IDENTITY domain
-Content-Language: en-US
-To: Jason Gunthorpe <jgg@nvidia.com>, Andy Gross <agross@kernel.org>,
- Alim Akhtar <alim.akhtar@samsung.com>, Bjorn Andersson
- <andersson@kernel.org>,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
- Baolin Wang <baolin.wang@linux.alibaba.com>,
- Christophe Leroy <christophe.leroy@csgroup.eu>,
- Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
- Heiko Stuebner <heiko@sntech.de>, iommu@lists.linux.dev,
- Jernej Skrabec <jernej.skrabec@gmail.com>,
- Jonathan Hunter <jonathanh@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
- Kevin Tian <kevin.tian@intel.com>, Konrad Dybcio <konrad.dybcio@linaro.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
- linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
- linux-mediatek@lists.infradead.org, linux-rockchip@lists.infradead.org,
- linux-s390@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
- linux-sunxi@lists.linux.dev, linux-tegra@vger.kernel.org,
- Russell King <linux@armlinux.org.uk>, linuxppc-dev@lists.ozlabs.org,
- Matthias Brugger <matthias.bgg@gmail.com>,
- Matthew Rosato <mjrosato@linux.ibm.com>,
- Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>,
- Orson Zhai <orsonzhai@gmail.com>, Rob Clark <robdclark@gmail.com>,
- Robin Murphy <robin.murphy@arm.com>, Samuel Holland <samuel@sholland.org>,
- Thierry Reding <thierry.reding@gmail.com>, Krishna Reddy
- <vdumpa@nvidia.com>, Chen-Yu Tsai <wens@csie.org>,
- Will Deacon <will@kernel.org>, Yong Wu <yong.wu@mediatek.com>,
- Chunyan Zhang <zhang.lyra@gmail.com>
-References: <7-v6-e8114faedade+425-iommu_all_defdom_jgg@nvidia.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <7-v6-e8114faedade+425-iommu_all_defdom_jgg@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 
-On 2023/8/3 8:07, Jason Gunthorpe wrote:
-> What mtk does during mtk_iommu_v1_set_platform_dma() is actually putting
-> the iommu into identity mode. Make this available as a proper IDENTITY
-> domain.
+
+On Wed, 09 Aug 2023 21:20:23 +0200, Konrad Dybcio wrote:
+> 8998 has a couple of issues related to its clock controllers. This series
+> attemps to fix some of them.
 > 
-> The mtk_iommu_v1_def_domain_type() from
-> commit 8bbe13f52cb7 ("iommu/mediatek-v1: Add def_domain_type") explains
-> this was needed to allow probe_finalize() to be called, but now the
-> IDENTITY domain will do the same job so change the returned
-> def_domain_type.
+> The DT patch should go in first for bisectability, otherwise
+> clk/pd_ignore_unused will need to be used, as the SMMU GDSC is no longer
+> considered always-on.
 > 
-> mkt_v1 is the only driver that returns IOMMU_DOMAIN_UNMANAGED from
-> def_domain_type().  This allows the next patch to enforce an IDENTITY
-> domain policy for this driver.
+> [...]
 
-This code seems to be not working properly.
+Applied, thanks!
 
-  * @def_domain_type: device default domain type, return value:
-  *              - IOMMU_DOMAIN_IDENTITY: must use an identity domain
-  *              - IOMMU_DOMAIN_DMA: must use a dma domain
-  *              - 0: use the default setting
-
-The core code is not ready to accept any other return value.
-
-> 
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> ---
->   drivers/iommu/mtk_iommu_v1.c | 21 +++++++++++++++++++--
->   1 file changed, 19 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
-> index 8a0a5e5d049f4a..cc3e7d53d33ad9 100644
-> --- a/drivers/iommu/mtk_iommu_v1.c
-> +++ b/drivers/iommu/mtk_iommu_v1.c
-> @@ -319,11 +319,27 @@ static int mtk_iommu_v1_attach_device(struct iommu_domain *domain, struct device
->   	return 0;
->   }
->   
-> -static void mtk_iommu_v1_set_platform_dma(struct device *dev)
-> +static int mtk_iommu_v1_identity_attach(struct iommu_domain *identity_domain,
-> +					struct device *dev)
->   {
->   	struct mtk_iommu_v1_data *data = dev_iommu_priv_get(dev);
->   
->   	mtk_iommu_v1_config(data, dev, false);
-> +	return 0;
-> +}
-> +
-> +static struct iommu_domain_ops mtk_iommu_v1_identity_ops = {
-> +	.attach_dev = mtk_iommu_v1_identity_attach,
-> +};
-> +
-> +static struct iommu_domain mtk_iommu_v1_identity_domain = {
-> +	.type = IOMMU_DOMAIN_IDENTITY,
-> +	.ops = &mtk_iommu_v1_identity_ops,
-> +};
-> +
-> +static void mtk_iommu_v1_set_platform_dma(struct device *dev)
-> +{
-> +	mtk_iommu_v1_identity_attach(&mtk_iommu_v1_identity_domain, dev);
-
-This callback seems to be a dead code now.
-
->   }
->   
->   static int mtk_iommu_v1_map(struct iommu_domain *domain, unsigned long iova,
-> @@ -443,7 +459,7 @@ static int mtk_iommu_v1_create_mapping(struct device *dev, struct of_phandle_arg
->   
->   static int mtk_iommu_v1_def_domain_type(struct device *dev)
->   {
-> -	return IOMMU_DOMAIN_UNMANAGED;
-> +	return IOMMU_DOMAIN_IDENTITY;
-
-def_domain_type can't be used for this purpose. But this seems to be a
-temporary code, as it will be removed in patch 09/25.
-
->   }
->   
->   static struct iommu_device *mtk_iommu_v1_probe_device(struct device *dev)
-> @@ -578,6 +594,7 @@ static int mtk_iommu_v1_hw_init(const struct mtk_iommu_v1_data *data)
->   }
->   
->   static const struct iommu_ops mtk_iommu_v1_ops = {
-> +	.identity_domain = &mtk_iommu_v1_identity_domain,
->   	.domain_alloc	= mtk_iommu_v1_domain_alloc,
->   	.probe_device	= mtk_iommu_v1_probe_device,
->   	.probe_finalize = mtk_iommu_v1_probe_finalize,
+[3/6] clk: qcom: gcc-msm8998: Don't check halt bit on some branch clks
+      commit: a6f1e8623836bb6ce64c347d110ecb6259ae73c4
+[4/6] clk: qcom: mmcc-msm8998: Don't check halt bit on some branch clks
+      (no commit info)
 
 Best regards,
-baolu
+-- 
+Bjorn Andersson <andersson@kernel.org>
