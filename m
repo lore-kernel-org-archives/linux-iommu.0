@@ -1,34 +1,34 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.115])
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.93])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EDB623236;
-	Mon, 14 Aug 2023 06:35:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E08CA3236;
+	Mon, 14 Aug 2023 06:45:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1691994947; x=1723530947;
+  t=1691995518; x=1723531518;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=dCNOqlWk74+ACIseLN11BwaIrH72VHkdICqUZOAYZvM=;
-  b=OkdmzwcVgScHvqtA1L8VzsxFbf/3OOC8jezEY4/GarACRAspMCqfOCQY
-   O0eQHHDBgAJVxUD51lMtAeDMnj4MV2u3YcX+/QPghyyjV1w/ld/ciaH8N
-   CoVYJFyyFXCu9dYaSScaQqcoUiIegeZjF7poO7nEdApHiFmwaZmocjk7K
-   50Btk490rrpfHIrJj017xKyTOtkkyJrpiKuoyDhS0WZOskNn2HKbsV6cI
-   kHZca1sFjR3iPpnQi6FDUd2jdSLQtIJj9Q2J9aHsOOtFkugAS8dM+FcLo
-   k2iO/IjS1YBTmUoOEIYTkQTUQCYeudYZhluYX4HD3y/k5XWYwmVxzXVht
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10801"; a="371976967"
+  bh=s7w4QvLN+a+X+nJOo1ALAurEypsMjxpw55DQNKza1DY=;
+  b=m9IATXLl9bj8Cu/KBXrJ8APH7d3HDU2XfQ1wPYMlJ5c/crnRhNVBQIGw
+   iAotmWTLFWlBiTMvd5ofc6bPU8vSN8bZZRLjIR6KlPK9Ds2U39lMHTLZK
+   qYJllo7hklPMo3INanyWTkphM5RxlpZmDZ50pb+oF4/93mglo00AjinRn
+   OEKt32cZJW9R7vP/sJyraUiSUICjgH1K8Llh2fJlSW89UeT+FO3Ntv0mC
+   EEiRBDV7hIg8arPuztOn0tEeUHFRWUUA2N5afMEZC//Sws8sOjTxx4fIV
+   1XkJ3EiM1Emr/j/8pDRvuYJ2HkWsD4I41h3rzRNEFe9XMfBBX9qAM4EPL
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10801"; a="369445382"
 X-IronPort-AV: E=Sophos;i="6.01,171,1684825200"; 
-   d="scan'208";a="371976967"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Aug 2023 23:35:47 -0700
+   d="scan'208";a="369445382"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Aug 2023 23:45:05 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10801"; a="823340280"
+X-IronPort-AV: E=McAfee;i="6600,9927,10801"; a="856979583"
 X-IronPort-AV: E=Sophos;i="6.01,171,1684825200"; 
-   d="scan'208";a="823340280"
-Received: from wentaox1-mobl.ccr.corp.intel.com (HELO [10.254.215.205]) ([10.254.215.205])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Aug 2023 23:35:36 -0700
-Message-ID: <2a98fdf6-f41a-bd9b-d939-2a6afa5bd150@linux.intel.com>
-Date: Mon, 14 Aug 2023 14:35:34 +0800
+   d="scan'208";a="856979583"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.254.215.205]) ([10.254.215.205])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Aug 2023 23:44:52 -0700
+Message-ID: <be5ce6ed-f078-a466-1d03-867e3cc4d6ee@linux.intel.com>
+Date: Mon, 14 Aug 2023 14:44:50 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -42,7 +42,7 @@ Cc: baolu.lu@linux.intel.com, Dmitry Osipenko <digetx@gmail.com>,
  Nicolin Chen <nicolinc@nvidia.com>, Niklas Schnelle
  <schnelle@linux.ibm.com>, Steven Price <steven.price@arm.com>,
  Thierry Reding <treding@nvidia.com>
-Subject: Re: [PATCH v6 19/25] iommu/mtk_iommu: Add an IOMMU_IDENTITIY_DOMAIN
+Subject: Re: [PATCH v6 20/25] iommu/sun50i: Add an IOMMU_IDENTITIY_DOMAIN
 Content-Language: en-US
 To: Jason Gunthorpe <jgg@nvidia.com>, Andy Gross <agross@kernel.org>,
  Alim Akhtar <alim.akhtar@samsung.com>, Bjorn Andersson
@@ -70,23 +70,58 @@ To: Jason Gunthorpe <jgg@nvidia.com>, Andy Gross <agross@kernel.org>,
  <vdumpa@nvidia.com>, Chen-Yu Tsai <wens@csie.org>,
  Will Deacon <will@kernel.org>, Yong Wu <yong.wu@mediatek.com>,
  Chunyan Zhang <zhang.lyra@gmail.com>
-References: <19-v6-e8114faedade+425-iommu_all_defdom_jgg@nvidia.com>
+References: <20-v6-e8114faedade+425-iommu_all_defdom_jgg@nvidia.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <19-v6-e8114faedade+425-iommu_all_defdom_jgg@nvidia.com>
+In-Reply-To: <20-v6-e8114faedade+425-iommu_all_defdom_jgg@nvidia.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 2023/8/3 8:08, Jason Gunthorpe wrote:
-> This brings back the ops->detach_dev() code that commit
-> 1b932ceddd19 ("iommu: Remove detach_dev callbacks") deleted and turns it
-> into an IDENTITY domain.
+> Prior to commit 1b932ceddd19 ("iommu: Remove detach_dev callbacks") the
+> sun50i_iommu_detach_device() function was being called by
+> ops->detach_dev().
+> 
+> This is an IDENTITY domain so convert sun50i_iommu_detach_device() into
+> sun50i_iommu_identity_attach() and a full IDENTITY domain and thus hook it
+> back up the same was as the old ops->detach_dev().
 > 
 > Signed-off-by: Jason Gunthorpe<jgg@nvidia.com>
 > ---
->   drivers/iommu/mtk_iommu.c | 23 +++++++++++++++++++++++
->   1 file changed, 23 insertions(+)
+>   drivers/iommu/sun50i-iommu.c | 26 +++++++++++++++++++-------
+>   1 file changed, 19 insertions(+), 7 deletions(-)
+> 
+> diff --git a/drivers/iommu/sun50i-iommu.c b/drivers/iommu/sun50i-iommu.c
+> index 74c5cb93e90027..0bf08b120cf105 100644
+> --- a/drivers/iommu/sun50i-iommu.c
+> +++ b/drivers/iommu/sun50i-iommu.c
+> @@ -757,21 +757,32 @@ static void sun50i_iommu_detach_domain(struct sun50i_iommu *iommu,
+>   	iommu->domain = NULL;
+>   }
+>   
+> -static void sun50i_iommu_detach_device(struct iommu_domain *domain,
+> -				       struct device *dev)
+> +static int sun50i_iommu_identity_attach(struct iommu_domain *identity_domain,
+> +					struct device *dev)
+>   {
+> -	struct sun50i_iommu_domain *sun50i_domain = to_sun50i_domain(domain);
+>   	struct sun50i_iommu *iommu = dev_iommu_priv_get(dev);
+> +	struct sun50i_iommu_domain *sun50i_domain;
+>   
+>   	dev_dbg(dev, "Detaching from IOMMU domain\n");
+>   
+> -	if (iommu->domain != domain)
+> -		return;
+> +	if (iommu->domain == identity_domain)
+> +		return 0;
+>   
+> +	sun50i_domain = to_sun50i_domain(iommu->domain);
+>   	if (refcount_dec_and_test(&sun50i_domain->refcnt))
+>   		sun50i_iommu_detach_domain(iommu, sun50i_domain);
+> +	return 0;
+>   }
 
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+Does iommu->domain need to be set to identity_domain before returning?
 
 Best regards,
 baolu
+
