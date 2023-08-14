@@ -1,223 +1,165 @@
-Received: from out30-113.freemail.mail.aliyun.com (out30-113.freemail.mail.aliyun.com [115.124.30.113])
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2049.outbound.protection.outlook.com [40.107.237.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C5736BE5A
-	for <iommu@lists.linux.dev>; Mon, 14 Aug 2023 12:26:12 +0000 (UTC)
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R101e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045192;MF=jijie.ji@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0Vpmucqn_1692015031;
-Received: from localhost.localdomain(mailfrom:jijie.ji@linux.alibaba.com fp:SMTPD_---0Vpmucqn_1692015031)
-          by smtp.aliyun-inc.com;
-          Mon, 14 Aug 2023 20:10:35 +0800
-From: Jie Ji <jijie.ji@linux.alibaba.com>
-To: dwmw2@infradead.org,
-	baolu.lu@linux.intel.com,
-	joro@8bytes.org,
-	will@kernel.org,
-	robin.murphy@arm.com
-Cc: iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	xianting.tian@linux.alibaba.com,
-	kaijieguo@linux.alibaba.com,
-	daishengdong@yeah.net,
-	Jie Ji <jijie.ji@linux.alibaba.com>
-Subject: [PATCH] iommu/vt-d: Atomic breakdown of IOPT into finer granularity
-Date: Mon, 14 Aug 2023 20:10:16 +0800
-Message-Id: <20230814121016.32613-1-jijie.ji@linux.alibaba.com>
-X-Mailer: git-send-email 2.39.3
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E1C15A923;
+	Mon, 14 Aug 2023 12:48:46 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=PXlAojO20EnM/Qzggu0gXvSC7vramsEqIrQPZ7VeNfwgYsAMqK9tfN/tjd8IEecfOhcTnDDIqi/V2zlv2VWg5hWQ3vtQmLcKqDW8kcrQ8FKV2BzHe0Vjbbz4lq+WfSqTpVUQasNyuL47uB1NnXObB+nZkXk1UwLMHQ034BJzqipP69+NMqRkfC7NHJ7fXzUjwX7ZfJR4/PJPEpPhDFD0SRuoWTYilAJeWT8ddA0Y3L4po49ZXxNKZAGl5i/Gdu2Ce6D4i9ceKy4PMcHSqVlC2EL2ZS4pm4BWciUGQjCJdY8Sj//IDwlSj0pKyETKBSyYmdRqPa7/g8FTIP7PFcwl2Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=K8vxjLIGC1lancS+oQ9tSZEL9COmkkdrY6vklSDupUA=;
+ b=WLmxM/+UWyQAEZcD5mVGh7dew/ZwaRFwDNjPq+ZMWUvy7ZQVt6tL2cx6HWTxUSnXCz3OCaT+MHrI1Hg1CMKIMRKbJnmoo6Z26HYpL0FyYpoh0Bxx2HmFGRUhRf6CMfIImvnbVHnlYyIcM4YRHG6i8OsPNz1X5bf/KuK/5A9EwCApEClIyS9KdLw1Uv0oQ4PRYNxhsYEQsffXlrrlfWqSSJxeVGpbR7O9jD2Cf4qd5SgIJK1gISRYWirzlczBWK6FUB8Vo2G2TdcotqIA9mZkLqbMqftmlpjPeL2LOlcrm0Kq+lRyfScd/VKixrprd+lARy1M2ICWgo+n400iQWDe/A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=K8vxjLIGC1lancS+oQ9tSZEL9COmkkdrY6vklSDupUA=;
+ b=Z/b3QCikJ43TgJOIZZfkjIRye0+A/8fRPm+Jy0weFWFekUly1gaLPOX5IWlpRdIAPQmsM8+lEo7h/HJztCY1lFS2TRmtKY0xipdTJFVIcoITL36OeVLDnW3znlnJeJWvFCWAejJ1UE8F/qcfjhKsebnmEBxnpmo1C/bpG/nNBl6znp9t43vnObMqz7nS8RkBaNk8bCnhKxKHInuwEd8LrfRl9/5sMI/ebMmhHeATgOFb/kZBqochYgdJ5GM89uNEy+P2JE1KuQubupyMIXSpo6MQZZfBrXqcWo/pfrY+trUQEYH+zOzbAUCewVGEgbW/vPkqfKXidQ5KeIuyoEBerQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by MW3PR12MB4444.namprd12.prod.outlook.com (2603:10b6:303:5c::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6678.24; Mon, 14 Aug
+ 2023 12:48:43 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::5111:16e8:5afe:1da1]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::5111:16e8:5afe:1da1%6]) with mapi id 15.20.6678.022; Mon, 14 Aug 2023
+ 12:48:43 +0000
+Date: Mon, 14 Aug 2023 09:48:41 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Baolu Lu <baolu.lu@linux.intel.com>
+Cc: Andy Gross <agross@kernel.org>, Alim Akhtar <alim.akhtar@samsung.com>,
+	Bjorn Andersson <andersson@kernel.org>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+	Baolin Wang <baolin.wang@linux.alibaba.com>,
+	Christophe Leroy <christophe.leroy@csgroup.eu>,
+	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+	Heiko Stuebner <heiko@sntech.de>, iommu@lists.linux.dev,
+	Jernej Skrabec <jernej.skrabec@gmail.com>,
+	Jonathan Hunter <jonathanh@nvidia.com>,
+	Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
+	Konrad Dybcio <konrad.dybcio@linaro.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+	linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+	linux-mediatek@lists.infradead.org,
+	linux-rockchip@lists.infradead.org, linux-s390@vger.kernel.org,
+	linux-samsung-soc@vger.kernel.org, linux-sunxi@lists.linux.dev,
+	linux-tegra@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
+	linuxppc-dev@lists.ozlabs.org,
+	Matthias Brugger <matthias.bgg@gmail.com>,
+	Matthew Rosato <mjrosato@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	Orson Zhai <orsonzhai@gmail.com>, Rob Clark <robdclark@gmail.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Samuel Holland <samuel@sholland.org>,
+	Thierry Reding <thierry.reding@gmail.com>,
+	Krishna Reddy <vdumpa@nvidia.com>, Chen-Yu Tsai <wens@csie.org>,
+	Will Deacon <will@kernel.org>, Yong Wu <yong.wu@mediatek.com>,
+	Chunyan Zhang <zhang.lyra@gmail.com>,
+	Dmitry Osipenko <digetx@gmail.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Niklas Schnelle <schnelle@linux.ibm.com>,
+	Steven Price <steven.price@arm.com>,
+	Thierry Reding <treding@nvidia.com>
+Subject: Re: [PATCH v6 10/25] iommu/exynos: Implement an IDENTITY domain
+Message-ID: <ZNoiqd0/5GM+8kZL@nvidia.com>
+References: <10-v6-e8114faedade+425-iommu_all_defdom_jgg@nvidia.com>
+ <0104371e-a824-8ace-eae3-da90df285c41@linux.intel.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0104371e-a824-8ace-eae3-da90df285c41@linux.intel.com>
+X-ClientProxiedBy: YT4PR01CA0035.CANPRD01.PROD.OUTLOOK.COM
+ (2603:10b6:b01:fe::21) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|MW3PR12MB4444:EE_
+X-MS-Office365-Filtering-Correlation-Id: 0f1c3ecd-5623-47f8-8a61-08db9cc4cab9
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	T3upvgdv7udyQHyGaudgbii9hPGpCa5jkelt/MXXkacjF6x0WvXJoLo6bg2JxO6SPFN6iWQcFmeLYtF1FOdwPSW+mX7pVgmJ0nZMrb94QRHM5aQyisl11dprLNIw3E/ZxAstJ/lzr7m85Uh9w0GqYAYJ9iGrd2bx7UvxoTlLeYqweprlypRX/0Zf20Aj3cPSYvCZcrFcAr0Y0r0qrNgPlWnX+eoZDvCOkxI9vBdVFivZWyPoedUXLNeMy2oJSbCkYbnaXXg/45jYfibxKLFkdtHH7rg+ASXksFeS2IghTiK/5ztEz3L4u4VafmHpJyRyZUe/WwjJDMCf2DDEHpEIpaF2HjXBQ9NxP/BLEQG9cpO7FfGJlWhzTGwWIKAJ/cdeJjZARrvf8T5YWxyyOCLAAOnmkPKcZzArjxCZtFpACnZpBVTd1XH3LmqDipuBqMrjr0srvHITFItDGBBriEA74K8yQJRfcUh97MjwfWEQrm8RbGZciCEtzRAFwvuP/L5COwSVo2jJs279u2VJPIOKIgVf4ZA5MdZzU0l6GQui0DLtoYI1z6/3zhFre814ATpv
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(346002)(39860400002)(366004)(396003)(136003)(376002)(186006)(1800799006)(451199021)(6512007)(6486002)(36756003)(86362001)(38100700002)(83380400001)(26005)(6506007)(107886003)(2906002)(7406005)(53546011)(54906003)(478600001)(2616005)(66556008)(66476007)(8936002)(5660300002)(8676002)(7416002)(66946007)(41300700001)(316002)(4326008)(6916009);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?PrBk5gIfi4+dr7m7nsH+UCnfa7o7gakM22rRHBC4mYZm8vTU78bpOwUFRG4y?=
+ =?us-ascii?Q?yu3S8DyhwXOMi6cUj+6aXKcVssQyneeSbvFnqKQpKdUYudpKRtct2HHYofnL?=
+ =?us-ascii?Q?v0MT8u6u100AQoKdYbrPYLhtO2c9/iq4u3jU5UZVWAnqFBIgPfc6SQId2Hlp?=
+ =?us-ascii?Q?ga9xYLWtqPKCEtOOKSeuXd5nfX5OwLrBVfzhTUmqGjl+5ocSHAI4Z2AfBtn8?=
+ =?us-ascii?Q?j9P8iXnj+elrNAddQsJDkZzt2CeLUNeZ3JppXeJfNwnGVxF32mchPaCF4nU0?=
+ =?us-ascii?Q?0dFYtB8zvDZujl8qYBiOb5VqFvlRG8VCZCnwJe/VpwQ9tLQwmktr2ZFA6L0r?=
+ =?us-ascii?Q?eOzOp0tFOZFF9vZrevA7toGLusxfdNsNX3hdGk6Xy/P+nMp42SHREsp14jMS?=
+ =?us-ascii?Q?gFFj0FYVgLgEQW1piBgK0OCUDMiZnV/UJIzRR40pheiLKvs2zQ9PDqeP9IZD?=
+ =?us-ascii?Q?F+Pg7QKrajEqy34UvIFhYs5dPvuzB21nOeBQV4A9hNcMY7smV01UjtTBCFoP?=
+ =?us-ascii?Q?M4by/CWT7Bis84EJsXK4iFrc1qgjjvyd0+NBaHuIZrMI3lVMjp/pgV7OrowG?=
+ =?us-ascii?Q?iqs2veBzJgWwbsgBVEMJIAHUEO3U0hHpir4pXFWd4JL5zUMJEzXqp0jqGf9O?=
+ =?us-ascii?Q?3B+Wk13wppmZO57Fm5xZyHtnxOgox3imONs6A4XxBtF5STB1jZZbAsfUJEzt?=
+ =?us-ascii?Q?+fuapKc9tlGV825GorpV834/470Ye60R+rsLTxTbQWnMwkth/pWGX6HY1YGn?=
+ =?us-ascii?Q?J6xbSGrxIkuZnXDrJcZaXyH4YQ/bIOrq+XdvthNbAQfbHhqNPispVVI79X8D?=
+ =?us-ascii?Q?ufeh/vABP5Lhw+8AXm3XCaLMazKiJ0MnA0sXmd6JliYKSVxn0K9GiqcrVXBe?=
+ =?us-ascii?Q?YT6a/OuXumu0/3H2Xm3r8bYkzRLwd9a5HzWaCMewN78vTBpzIBVXtFk7fPgv?=
+ =?us-ascii?Q?86+fua/cCZrh4sc8ghu88L/t2nOUbLf3Kk+Q0TwiRvwjZ8g0AqWp5i+mBklZ?=
+ =?us-ascii?Q?fgrwTF5pd36hXawJFVI/oMGnmzX/y6s1E0In3AT5+UnWXqOHibJDkvzW00dV?=
+ =?us-ascii?Q?km6QmIyapMNXz5ju/X9WJSE3FgyInMOAz5rTLFoptpfdJ4zNAi+Nz490qNr/?=
+ =?us-ascii?Q?PxMovjqEtoH5BA0Rr8GQEBi7yd2Kl2SLpZdlmm5sjfw9t9VWCQsBPLPvHfTc?=
+ =?us-ascii?Q?NuAZvIT6NxADm/jnHhMKCRGN1JOPAkBQJ7PCndOOzZCaUEKc38uuI/gIePjl?=
+ =?us-ascii?Q?5y0fMKFnTC9orSs+XW44Vvc2vIKa9eq2Pfwx9tIrioo6lpiZQnJTdNc1QFCX?=
+ =?us-ascii?Q?odHEitHvFydH6rSWyNn2Z7NX/cH16Yjv7oFRK/KQwsGsO669dUI8MGw2pyPp?=
+ =?us-ascii?Q?RQ4WRJBY3r/Fmww4RcxuNwcuCdGdUfWS6kJWJT0pruSIR/zPXYztK3U9HOM/?=
+ =?us-ascii?Q?rVP/2ssr2tJXE6rvsTPUWYNKI2TXummA9mhIlTaZCjxSQIut4NQQKS8wrsdl?=
+ =?us-ascii?Q?uYKgGm0v203SwLOg2rMpT1irbYkywPrmWgkbi2jR+gPESMZNEwWCmKTfp4UR?=
+ =?us-ascii?Q?j1l8JaEL3D+1w9xIotxcaCdnUdb4OUhrB1qU1Zy3?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0f1c3ecd-5623-47f8-8a61-08db9cc4cab9
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Aug 2023 12:48:43.5667
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: npYOKHbFbo7xyJdiz3XvDFLHX+I5Y6VQN+FwjxrMUS7AxbZSjzq+UBos/fZw81li
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR12MB4444
 
-With the addition of IOMMU support for IO page fault, it's now possible
-to unpin the memory which DMA remapping. However, the lack of support
-for unmapping a subrange of the I/O page table (IOPT) in IOMMU can lead
-to some issues.
+On Mon, Aug 14, 2023 at 12:52:34PM +0800, Baolu Lu wrote:
+> On 2023/8/3 8:07, Jason Gunthorpe wrote:
+> > What exynos calls exynos_iommu_detach_device is actually putting the iommu
+> > into identity mode.
+> > 
+> > Move to the new core support for ARM_DMA_USE_IOMMU by defining
+> > ops->identity_domain.
+> > 
+> > Tested-by: Marek Szyprowski<m.szyprowski@samsung.com>
+> > Acked-by: Marek Szyprowski<m.szyprowski@samsung.com>
+> > Signed-off-by: Jason Gunthorpe<jgg@nvidia.com>
+> > ---
+> >   drivers/iommu/exynos-iommu.c | 66 +++++++++++++++++-------------------
+> >   1 file changed, 32 insertions(+), 34 deletions(-)
+> > 
+> > diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+> > index c275fe71c4db32..5e12b85dfe8705 100644
+> > --- a/drivers/iommu/exynos-iommu.c
+> > +++ b/drivers/iommu/exynos-iommu.c
+> > @@ -24,6 +24,7 @@
+> >   typedef u32 sysmmu_iova_t;
+> >   typedef u32 sysmmu_pte_t;
+> > +static struct iommu_domain exynos_identity_domain;
+> 
+> Is there a conflict between above and below?
 
-For instance, a virtual machine can establish IOPT of 2M/1G for better
-performance, while the host system enable swap and attempts to swap out
-some 4K pages. Unfortunately, unmap subrange of the large-page mapping
-will make IOMMU page walk to error level, and finally cause kernel crash.
+No, this is a C forward declaration.
 
-This patch support splitting the page table to a finer granularity and
-atomic switch to it when unmap subrange of the large-page mapping. It
-is much better than the unmap then map method to change IOPT, because
-during interval time, all unmapped address space could trigger IO page
-fault, which is unacceptable.
-
-Signed-off-by: Jie Ji <jijie.ji@linux.alibaba.com>
-Reviewed-by: Kaijie Guo <kaijieguo@linux.alibaba.com>
----
- drivers/iommu/intel/iommu.c | 97 +++++++++++++++++++++++++++++--------
- drivers/iommu/intel/iommu.h |  1 +
- 2 files changed, 78 insertions(+), 20 deletions(-)
-
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 5c8c5cdc36cf..b1fe9d07c47b 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -1114,12 +1114,59 @@ static void dma_pte_list_pagetables(struct dmar_domain *domain,
- 	} while (!first_pte_in_page(pte));
- }
- 
--static void dma_pte_clear_level(struct dmar_domain *domain, int level,
--				struct dma_pte *pte, unsigned long pfn,
--				unsigned long start_pfn, unsigned long last_pfn,
--				struct list_head *freelist)
-+static int switch_to_small_page(struct dmar_domain *domain, int level,
-+				struct dma_pte *pte)
-+{
-+	u64 pteval, old_pteval, pfn;
-+	void *new_pte = NULL;
-+	u64 *ptep = NULL;
-+	u64 attr;
-+	int idx = 0;
-+
-+	/* Inherit attr from old pte */
-+	attr = pte->val & VTD_ATTR_MASK;
-+	if (level == 1)
-+		attr &= ~DMA_PTE_LARGE_PAGE;
-+
-+	/* Get old pte entry in case pte change during switch */
-+	old_pteval = pte->val;
-+	pfn = dma_pte_addr(pte) >> VTD_PAGE_SHIFT;
-+
-+	new_pte = alloc_pgtable_page(domain->nid, GFP_ATOMIC);
-+	if (unlikely(!new_pte))
-+		return -ENOMEM;
-+
-+	ptep = (u64 *)new_pte;
-+	for (idx = 0; idx < (1 << LEVEL_STRIDE); idx++) {
-+		pteval = (pfn & level_mask(level)) << VTD_PAGE_SHIFT | attr;
-+		ptep[idx] = pteval;
-+		pfn += level_size(level);
-+	}
-+
-+	pteval = ((unsigned long)virt_to_dma_pfn(new_pte) << VTD_PAGE_SHIFT);
-+	/* Snoop bit in page directory entry should be zero (reserve field) */
-+	pteval |= DMA_PTE_WRITE | DMA_PTE_READ;
-+
-+	if (cmpxchg64(&pte->val, old_pteval, pteval) != old_pteval) {
-+		pr_err("%s: original pte changed by others, switch fail\n", __func__);
-+		free_pgtable_page(new_pte);
-+		return -EBUSY;
-+	}
-+
-+	domain_flush_cache(domain, pte, sizeof(*pte));
-+
-+	pr_debug("%s: pte: %#llx->%#llx\n", __func__, old_pteval, pte->val);
-+
-+	return 0;
-+}
-+
-+static int dma_pte_clear_level(struct dmar_domain *domain, int level,
-+			       struct dma_pte *pte, unsigned long pfn,
-+			       unsigned long start_pfn, unsigned long last_pfn,
-+			       struct list_head *freelist)
- {
- 	struct dma_pte *first_pte = NULL, *last_pte = NULL;
-+	int ret;
- 
- 	pfn = max(start_pfn, pfn);
- 	pte = &pte[pfn_level_offset(pfn, level)];
-@@ -1143,6 +1190,17 @@ static void dma_pte_clear_level(struct dmar_domain *domain, int level,
- 				first_pte = pte;
- 			last_pte = pte;
- 		} else if (level > 1) {
-+			/* Switch to small page when unmap subrange */
-+			if (dma_pte_superpage(pte) &&
-+			    ((last_pfn - start_pfn + 1) < level_size(level))) {
-+				ret = switch_to_small_page(domain, level - 1, pte);
-+				if (ret) {
-+					pr_err("%s: switch to smaller page fail, ret = %d",
-+						__func__, ret);
-+					return ret;
-+				}
-+			}
-+
- 			/* Recurse down into a level that isn't *entirely* obsolete */
- 			dma_pte_clear_level(domain, level - 1,
- 					    phys_to_virt(dma_pte_addr(pte)),
-@@ -1156,21 +1214,27 @@ static void dma_pte_clear_level(struct dmar_domain *domain, int level,
- 	if (first_pte)
- 		domain_flush_cache(domain, first_pte,
- 				   (void *)++last_pte - (void *)first_pte);
-+
-+	return 0;
- }
- 
- /* We can't just free the pages because the IOMMU may still be walking
-    the page tables, and may have cached the intermediate levels. The
-    pages can only be freed after the IOTLB flush has been done. */
--static void domain_unmap(struct dmar_domain *domain, unsigned long start_pfn,
--			 unsigned long last_pfn, struct list_head *freelist)
-+static int domain_unmap(struct dmar_domain *domain, unsigned long start_pfn,
-+			unsigned long last_pfn, struct list_head *freelist)
- {
-+	int ret;
-+
- 	if (WARN_ON(!domain_pfn_supported(domain, last_pfn)) ||
- 	    WARN_ON(start_pfn > last_pfn))
--		return;
-+		return -EINVAL;
- 
- 	/* we don't need lock here; nobody else touches the iova range */
--	dma_pte_clear_level(domain, agaw_to_level(domain->agaw),
--			    domain->pgd, 0, start_pfn, last_pfn, freelist);
-+	ret = dma_pte_clear_level(domain, agaw_to_level(domain->agaw),
-+				  domain->pgd, 0, start_pfn, last_pfn, freelist);
-+	if (ret)
-+		return ret;
- 
- 	/* free pgd */
- 	if (start_pfn == 0 && last_pfn == DOMAIN_MAX_PFN(domain->gaw)) {
-@@ -1178,6 +1242,8 @@ static void domain_unmap(struct dmar_domain *domain, unsigned long start_pfn,
- 		list_add_tail(&pgd_page->lru, freelist);
- 		domain->pgd = NULL;
- 	}
-+
-+	return 0;
- }
- 
- /* iommu handling */
-@@ -4219,21 +4285,12 @@ static size_t intel_iommu_unmap(struct iommu_domain *domain,
- {
- 	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
- 	unsigned long start_pfn, last_pfn;
--	int level = 0;
--
--	/* Cope with horrid API which requires us to unmap more than the
--	   size argument if it happens to be a large-page mapping. */
--	if (unlikely(!pfn_to_dma_pte(dmar_domain, iova >> VTD_PAGE_SHIFT,
--				     &level, GFP_ATOMIC)))
--		return 0;
--
--	if (size < VTD_PAGE_SIZE << level_to_offset_bits(level))
--		size = VTD_PAGE_SIZE << level_to_offset_bits(level);
- 
- 	start_pfn = iova >> VTD_PAGE_SHIFT;
- 	last_pfn = (iova + size - 1) >> VTD_PAGE_SHIFT;
- 
--	domain_unmap(dmar_domain, start_pfn, last_pfn, &gather->freelist);
-+	if (domain_unmap(dmar_domain, start_pfn, last_pfn, &gather->freelist))
-+		return 0;
- 
- 	if (dmar_domain->max_addr == iova + size)
- 		dmar_domain->max_addr = iova;
-diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
-index 1c5e1d88862b..b4ccf134735f 100644
---- a/drivers/iommu/intel/iommu.h
-+++ b/drivers/iommu/intel/iommu.h
-@@ -33,6 +33,7 @@
- #define VTD_PAGE_SIZE		(1UL << VTD_PAGE_SHIFT)
- #define VTD_PAGE_MASK		(((u64)-1) << VTD_PAGE_SHIFT)
- #define VTD_PAGE_ALIGN(addr)	(((addr) + VTD_PAGE_SIZE - 1) & VTD_PAGE_MASK)
-+#define VTD_ATTR_MASK		(~VTD_PAGE_MASK)
- 
- #define VTD_STRIDE_SHIFT        (9)
- #define VTD_STRIDE_MASK         (((u64)-1) << VTD_STRIDE_SHIFT)
--- 
-2.32.0.3.g01195cf9f
-
+Jason
