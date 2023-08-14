@@ -1,32 +1,32 @@
 Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.65])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A0A339D
-	for <iommu@lists.linux.dev>; Mon, 14 Aug 2023 01:20:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1513E1105
+	for <iommu@lists.linux.dev>; Mon, 14 Aug 2023 01:20:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1691976029; x=1723512029;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=oe335Nlu8sc5VS5G7ofG+VOn5WK1MFpLS3mlAGuCpFo=;
-  b=AmYB/mjLC5wgRSySM/rffrDcf5e+ITBfHXj28s9lrfuvIj0z52aZKMaA
-   Ps5zEFr+Dx4o58D1CYXui18MRMfkVHSRYBasyEQueWuAffbZfMmFWW3VB
-   RCf6nmC1zRu2lppk3DaB0TpkASusexmkSBwQ5EavBnJPQcbyQ+IbRKU6E
-   qffxK+006HeR1aNTD8alhBGZwvKiWSZ8SPK6jOj2pIeRdsCVoUCMqrDUl
-   RO+cq/UhXACCMp4FqzTm4nLwimq5Iv0af/P7xKqo7/IP/epNNJt8GAHbG
-   CPDMfRdXeslE6ijCXti9hRQeaFfHXwOYhWiND77DISroTIt5mgp5Cc528
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10801"; a="375645292"
+  t=1691976032; x=1723512032;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=1VKEBWyIoCdoQh4ifxDFIHU7H3LnyvQp0GU6ahA/QQE=;
+  b=Qrv0sR5eRASz2+cnddIJc2aipVni2jlP8zyLSrTa2yiEXlIPkSy2f3kq
+   5hbFOFk4l84ZpIq7ncNPOGwAH6DOSayKba1Dx6PGj2LYfmGmQAPUdsVIm
+   75khmaGbGL3fkKqb8grqrLWCxYI1zVhcFcRGhm5OaOiJlDxMoX/DkyCFD
+   foyKxGLpTPwOvpmmDFU8pCyal3+EAwvk1AsMi7BDyPzHJvC7RBJi1RNdW
+   lzicgRlKgmLhUI76WDmzm1BWFxHeHIwMaqcStcbaXm2bEoeed+0tdkzBy
+   D8De356fcbE5gime2X5E6yP7GqKvSgSe3EcHShadsDCKiaDf4xrdXclQ5
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10801"; a="375645306"
 X-IronPort-AV: E=Sophos;i="6.01,171,1684825200"; 
-   d="scan'208";a="375645292"
+   d="scan'208";a="375645306"
 Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Aug 2023 18:20:28 -0700
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Aug 2023 18:20:31 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10801"; a="726842289"
+X-IronPort-AV: E=McAfee;i="6600,9927,10801"; a="726842292"
 X-IronPort-AV: E=Sophos;i="6.01,171,1684825200"; 
-   d="scan'208";a="726842289"
+   d="scan'208";a="726842292"
 Received: from allen-box.sh.intel.com ([10.239.159.127])
-  by orsmga007.jf.intel.com with ESMTP; 13 Aug 2023 18:20:25 -0700
+  by orsmga007.jf.intel.com with ESMTP; 13 Aug 2023 18:20:28 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>,
 	Will Deacon <will@kernel.org>,
@@ -41,10 +41,12 @@ Cc: Yi Liu <yi.l.liu@intel.com>,
 	kvm@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v2 0/3] iommu: Make pasid array per device
-Date: Mon, 14 Aug 2023 09:17:56 +0800
-Message-Id: <20230814011759.102089-1-baolu.lu@linux.intel.com>
+Subject: [PATCH v2 1/3] iommu: Make single-device group for PASID explicit
+Date: Mon, 14 Aug 2023 09:17:57 +0800
+Message-Id: <20230814011759.102089-2-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20230814011759.102089-1-baolu.lu@linux.intel.com>
+References: <20230814011759.102089-1-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -53,38 +55,39 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The PCI PASID enabling interface guarantees that the address space used
-by each PASID is unique. This is achieved by checking that the PCI ACS
-path is enabled for the device. If the path is not enabled, then the
-PASID feature cannot be used.
+The PASID interfaces have always supported only single-device groups.
+This was first introduced in commit 26b25a2b98e45 ("iommu: Bind process
+address spaces to devices"), and has been kept consistent in subsequent
+commits.
 
-    if (!pci_acs_path_enabled(pdev, NULL, PCI_ACS_RR | PCI_ACS_UF))
-            return -EINVAL;
+However, the core code doesn't explicitly check for this requirement
+after commit 201007ef707a8 ("PCI: Enable PASID only when ACS RR & UF
+enabled on upstream path"), which made this requirement implicit.
 
-The PASID array is not an attribute of the IOMMU group. It is more
-natural to store the PASID array in the per-device IOMMU data. This
-makes the code clearer and easier to understand.
+Restore the check to make it explicit that the PASID interfaces only
+support devices belonging to single-device groups.
 
-Please help review and suggest.
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+---
+ drivers/iommu/iommu.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-Change log:
-v2:
- - Add an explict check for single-device group in the domain attaching
-   device pasid interface. (Jason)
- - Make assert_pasid_dma_ownership() returns true or false. Refactor the
-   code in a way that does not change its exsiting behavior. (Kevin)
-
-v1: https://lore.kernel.org/linux-iommu/20230801063125.34995-1-baolu.lu@linux.intel.com/
-
-Lu Baolu (3):
-  iommu: Make single-device group for PASID explicit
-  iommu: Consolidate pasid dma ownership check
-  iommu: Move pasid array from group to device
-
- include/linux/iommu.h |   2 +
- drivers/iommu/iommu.c | 102 +++++++++++++++++++-----------------------
- 2 files changed, 49 insertions(+), 55 deletions(-)
-
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 71b9c41f2a9e..f1eba60e573f 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -3408,6 +3408,11 @@ int iommu_attach_device_pasid(struct iommu_domain *domain,
+ 		return -ENODEV;
+ 
+ 	mutex_lock(&group->mutex);
++	if (list_count_nodes(&group->devices) != 1) {
++		ret = -EINVAL;
++		goto out_unlock;
++	}
++
+ 	curr = xa_cmpxchg(&group->pasid_array, pasid, NULL, domain, GFP_KERNEL);
+ 	if (curr) {
+ 		ret = xa_err(curr) ? : -EBUSY;
 -- 
 2.34.1
 
