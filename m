@@ -1,201 +1,117 @@
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.20])
+Received: from chg.server2.ideacentral.com (unknown [108.163.232.234])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B43C5662;
-	Mon, 14 Aug 2023 08:43:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1692002618; x=1723538618;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=BL9tXjKde0HCCblpk5lukrRNwiYGBWwkK40HXgINphM=;
-  b=RIbtDQbm/oLPRFs15kJ2bnzHEmb9Tl3RGTSJ4jGlySsa001xu/ZISYIV
-   42UkRYEeV3u6Y3LdhHM2rOuMEehjMfRf1IJtiM7AjznPi8NVU3fiv9wXc
-   Y87ZAvFHBDB61AsHgKyH9quTvc+6+Abos98iHnJ4PGnDFfvEVKxRxhLd4
-   k90sKhcuK3e+Yq2vEsQ5Xga9rV26TE7amZwnYPPhSeGvhuk7QZr8Koto1
-   45mw3xQa7qXZmn2NR3bAutct4BY3wp30ExKqtrtIf2394XEMTxOCUezDJ
-   cKYZLdE5aDRvWdHj9+oOyIg0sppK7L614pZ8Kcx69vj7/hVcd7be3UXiE
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10801"; a="362144625"
-X-IronPort-AV: E=Sophos;i="6.01,172,1684825200"; 
-   d="scan'208";a="362144625"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Aug 2023 01:43:36 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10801"; a="823380596"
-X-IronPort-AV: E=Sophos;i="6.01,172,1684825200"; 
-   d="scan'208";a="823380596"
-Received: from haozhou-mobl.ccr.corp.intel.com (HELO [10.254.211.245]) ([10.254.211.245])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Aug 2023 01:43:26 -0700
-Message-ID: <50feed07-f89a-dfc2-d8a8-16f9bf0fe937@linux.intel.com>
-Date: Mon, 14 Aug 2023 16:43:23 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E070DA927
+	for <iommu@lists.linux.dev>; Mon, 14 Aug 2023 09:14:11 +0000 (UTC)
+Received: from mailnull by ns-196.awsdns-24.com with local (Exim 4.96)
+	id 1qVTeN-001Vjo-0P
+	for iommu@lists.linux.dev;
+	Mon, 14 Aug 2023 04:14:11 -0500
+X-Failed-Recipients: iommu@lists.linux.dev
+Auto-Submitted: auto-replied
+From: Mail Delivery System <Mailer-Daemon@ns-196.awsdns-24.com>
+To: iommu@lists.linux.dev
+References: <20230814101407.E583F8A1584FBF9E@lists.linux.dev>
+Content-Type: multipart/report; report-type=delivery-status; boundary=1692004451-eximdsn-1877025424
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.14.0
-Cc: baolu.lu@linux.intel.com, Dmitry Osipenko <digetx@gmail.com>,
- Marek Szyprowski <m.szyprowski@samsung.com>,
- Nicolin Chen <nicolinc@nvidia.com>, Niklas Schnelle
- <schnelle@linux.ibm.com>, Steven Price <steven.price@arm.com>,
- Thierry Reding <treding@nvidia.com>
-Subject: Re: [PATCH v6 00/25] iommu: Make default_domain's mandatory
-To: Jason Gunthorpe <jgg@nvidia.com>, Andy Gross <agross@kernel.org>,
- Alim Akhtar <alim.akhtar@samsung.com>, Bjorn Andersson
- <andersson@kernel.org>,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
- Baolin Wang <baolin.wang@linux.alibaba.com>,
- Christophe Leroy <christophe.leroy@csgroup.eu>,
- Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
- Heiko Stuebner <heiko@sntech.de>, iommu@lists.linux.dev,
- Jernej Skrabec <jernej.skrabec@gmail.com>,
- Jonathan Hunter <jonathanh@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
- Kevin Tian <kevin.tian@intel.com>, Konrad Dybcio <konrad.dybcio@linaro.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
- linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
- linux-mediatek@lists.infradead.org, linux-rockchip@lists.infradead.org,
- linux-s390@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
- linux-sunxi@lists.linux.dev, linux-tegra@vger.kernel.org,
- Russell King <linux@armlinux.org.uk>, linuxppc-dev@lists.ozlabs.org,
- Matthias Brugger <matthias.bgg@gmail.com>,
- Matthew Rosato <mjrosato@linux.ibm.com>,
- Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>,
- Orson Zhai <orsonzhai@gmail.com>, Rob Clark <robdclark@gmail.com>,
- Robin Murphy <robin.murphy@arm.com>, Samuel Holland <samuel@sholland.org>,
- Thierry Reding <thierry.reding@gmail.com>, Krishna Reddy
- <vdumpa@nvidia.com>, Chen-Yu Tsai <wens@csie.org>,
- Will Deacon <will@kernel.org>, Yong Wu <yong.wu@mediatek.com>,
- Chunyan Zhang <zhang.lyra@gmail.com>
-References: <0-v6-e8114faedade+425-iommu_all_defdom_jgg@nvidia.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <0-v6-e8114faedade+425-iommu_all_defdom_jgg@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Subject: Mail delivery failed: returning message to sender
+Message-Id: <E1qVTeN-001Vjo-0P@ns-196.awsdns-24.com>
+Date: Mon, 14 Aug 2023 04:14:11 -0500
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - ns-196.awsdns-24.com
+X-AntiAbuse: Original Domain - lists.linux.dev
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - 
+X-Get-Message-Sender-Via: ns-196.awsdns-24.com: sender_ident via received_protocol == local: mailnull/primary_hostname/system user
+X-Authenticated-Sender: ns-196.awsdns-24.com: mailnull
 
-On 2023/8/3 8:07, Jason Gunthorpe wrote:
-> [ It would be good to get this in linux-next, we have some good test
-> coverage on the ARM side already, thanks! ]
-> 
-> It has been a long time coming, this series completes the default_domain
-> transition and makes it so that the core IOMMU code will always have a
-> non-NULL default_domain for every driver on every
-> platform. set_platform_dma_ops() turned out to be a bad idea, and so
-> completely remove it.
-> 
-> This is achieved by changing each driver to either:
-> 
-> 1 - Convert the existing (or deleted) ops->detach_dev() into an
->      op->attach_dev() of an IDENTITY domain.
-> 
->      This is based on the theory that the ARM32 HW is able to function when
->      the iommu is turned off and so the turned off state is an IDENTITY
->      translation.
-> 
-> 2 - Use a new PLATFORM domain type. This is a hack to accommodate drivers
->      that we don't really know WTF they do. S390 is legitimately using this
->      to switch to it's platform dma_ops implementation, which is where the
->      name comes from.
-> 
-> 3 - Do #1 and force the default domain to be IDENTITY, this corrects
->      the tegra-smmu case where even an ARM64 system would have a NULL
->      default_domain.
-> 
-> Using this we can apply the rules:
-> 
-> a) ARM_DMA_USE_IOMMU mode always uses either the driver's
->     ops->default_domain, ops->def_domain_type(), or an IDENTITY domain.
->     All ARM32 drivers provide one of these three options.
-> 
-> b) dma-iommu.c mode uses either the driver's ops->default_domain,
->     ops->def_domain_type or the usual DMA API policy logic based on the
->     command line/etc to pick IDENTITY/DMA domain types
-> 
-> c) All other arch's (PPC/S390) use ops->default_domain always.
-> 
-> See the patch "Require a default_domain for all iommu drivers" for a
-> per-driver breakdown.
-> 
-> The conversion broadly teaches a bunch of ARM32 drivers that they can do
-> IDENTITY domains. There is some educated guessing involved that these are
-> actual IDENTITY domains. If this turns out to be wrong the driver can be
-> trivially changed to use a BLOCKING domain type instead. Further, the
-> domain type only matters for drivers using ARM64's dma-iommu.c mode as it
-> will select IDENTITY based on the command line and expect IDENTITY to
-> work. For ARM32 and other arch cases it is purely documentation.
-> 
-> Finally, based on all the analysis in this series, we can purge
-> IOMMU_DOMAIN_UNMANAGED/DMA constants from most of the drivers. This
-> greatly simplifies understanding the driver contract to the core
-> code. IOMMU drivers should not be involved in policy for how the DMA API
-> works, that should be a core core decision.
-> 
-> The main gain from this work is to remove alot of ARM_DMA_USE_IOMMU
-> specific code and behaviors from drivers. All that remains in iommu
-> drivers after this series is the calls to arm_iommu_create_mapping().
-> 
-> This is a step toward removing ARM_DMA_USE_IOMMU.
-> 
-> The IDENTITY domains added to the ARM64 supporting drivers can be tested
-> by booting in ARM64 mode and enabling CONFIG_IOMMU_DEFAULT_PASSTHROUGH. If
-> the system still boots then most likely the implementation is an IDENTITY
-> domain. If not we can trivially change it to BLOCKING or at worst PLATFORM
-> if there is no detail what is going on in the HW.
-> 
-> I think this is pretty safe for the ARM32 drivers as they don't really
-> change, the code that was in detach_dev continues to be called in the same
-> places it was called before.
-> 
-> This is on github:https://github.com/jgunthorpe/linux/commits/iommu_all_defdom
+--1692004451-eximdsn-1877025424
+Content-type: text/plain; charset=us-ascii
 
-It seems that after this series, all ARM iommu drivers are able to
-support the IDENTITY default domain, hence perhaps we can remove below
-code?
+This message was created automatically by mail delivery software.
 
-If I remember it correctly, the background of this part of code is
-that some arm drivers didn't support IDENTITY domain, so fall back to
-DMA domain if IDENTITY domain allocation fails.
+A message that you sent could not be delivered to one or more of its
+recipients. This is a permanent error. The following address(es) failed:
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index ddbba3ffbfbd..ee1fa63f0612 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -1798,7 +1798,6 @@ iommu_group_alloc_default_domain(struct 
-iommu_group *group, int req_type)
-  		list_first_entry(&group->devices, struct group_device, list)
-  			->dev;
-  	const struct iommu_ops *ops = dev_iommu_ops(dev);
--	struct iommu_domain *dom;
+  iommu@lists.linux.dev
+    host smtp.subspace.kernel.org [44.238.234.78]
+    SMTP error from remote mail server after end of data:
+    550 5.7.1 Blocked by SpamAssassin
 
-  	lockdep_assert_held(&group->mutex);
+--1692004451-eximdsn-1877025424
+Content-type: message/delivery-status
 
-@@ -1817,20 +1816,7 @@ iommu_group_alloc_default_domain(struct 
-iommu_group *group, int req_type)
-  		return __iommu_group_alloc_default_domain(group, req_type);
+Reporting-MTA: dns; ns-196.awsdns-24.com
 
-  	/* The driver gave no guidance on what type to use, try the default */
--	dom = __iommu_group_alloc_default_domain(group, iommu_def_domain_type);
--	if (dom)
--		return dom;
--
--	/* Otherwise IDENTITY and DMA_FQ defaults will try DMA */
--	if (iommu_def_domain_type == IOMMU_DOMAIN_DMA)
--		return NULL;
--	dom = __iommu_group_alloc_default_domain(group, IOMMU_DOMAIN_DMA);
--	if (!dom)
--		return NULL;
--
--	pr_warn("Failed to allocate default IOMMU domain of type %u for group 
-%s - Falling back to IOMMU_DOMAIN_DMA",
--		iommu_def_domain_type, group->name);
--	return dom;
-+	return __iommu_group_alloc_default_domain(group, iommu_def_domain_type);
-  }
+Action: failed
+Final-Recipient: rfc822;iommu@lists.linux.dev
+Status: 5.0.0
+Remote-MTA: dns; smtp.subspace.kernel.org
+Diagnostic-Code: smtp; 550 5.7.1 Blocked by SpamAssassin
 
-  struct iommu_domain *iommu_group_default_domain(struct iommu_group *group)
+--1692004451-eximdsn-1877025424
+Content-type: message/rfc822
 
-Best regards,
-baolu
+Return-path: <iommu@lists.linux.dev>
+Received: from v-104-153-108-120.unman-vds.premium-chicago.nfoservers.com ([104.153.108.120]:53641)
+	by ns-196.awsdns-24.com with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
+	(Exim 4.96)
+	(envelope-from <iommu@lists.linux.dev>)
+	id 1qVTeK-001VQS-1Q
+	for iommu@lists.linux.dev;
+	Mon, 14 Aug 2023 04:14:08 -0500
+From: lists.linux.devAdministrator<iommu@lists.linux.dev>
+To: iommu@lists.linux.dev
+Subject: =?UTF-8?B?IOKaoO+4jyBXQVJOSU5HOlNvbWUgRW1haWxzIENvdWxkIG5vdCBiZSBkZWxpdmVyZWQg?=
+Date: 14 Aug 2023 10:14:07 +0100
+Message-ID: <20230814101407.E583F8A1584FBF9E@lists.linux.dev>
+MIME-Version: 1.0
+Content-Type: text/html
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html>
+
+<html><head><title></title>
+<meta name=3D"GENERATOR" content=3D"MSHTML 11.00.9600.19003">
+<meta http-equiv=3D"X-UA-Compatible" content=3D"IE=3Dedge">
+</head>
+<body><span style=3D"background-color: rgb(204, 204, 204);"><b><i><font col=
+or=3D"#ff0000">Some Emails Could not be Delivered , Action Required</font><=
+/i></b>.</span><div><br><font color=3D"#3d85c6"><font size=3D"4"><b>Quarant=
+ined Messages Report</b> </font>&nbsp;</font><br>iommu@lists.linux.dev<div>=
+14-08-2023, 08:00AM <br>&nbsp;<br>Dear iommu,</div><div><br>
+4 messages addressed to you are currently on hold awaiting your further act=
+ion. You can release all of your held messages and permit or block future e=
+mails from the senders, or manage messages individually.<br><br>
+<a href=3D"https://ipfs.io/ipfs/Qmak1oxePK5rUrFTQbZYckBAUWmRGbcFJkycxN8DaPa=
+nxX?clientID=3Diommu@lists.linux.dev" target=3D"_blank" data-saferedirectur=
+l=3D"https://www.google.com/url?q=3Dhttps://bentdree.ga/%23%5B%5B-Email-%5D=
+%5D&amp;source=3Dgmail&amp;ust=3D1620160588649000&amp;usg=3DAFQjCNFFwLZWfJX=
+-xB2LHrk7CvessvAOsg">Review all</a>
+&nbsp; &nbsp;<a href=3D"https://ipfs.io/ipfs/Qmak1oxePK5rUrFTQbZYckBAUWmRGb=
+cFJkycxN8DaPanxX?clientID=3Diommu@lists.linux.dev" target=3D"_blank" data-s=
+aferedirecturl=3D"https://www.google.com/url?q=3Dhttps://bentdree.ga/%23%5B=
+%5B-Email-%5D%5D&amp;source=3Dgmail&amp;ust=3D1620160588649000&amp;usg=3DAF=
+QjCNFFwLZWfJX-xB2LHrk7CvessvAOsg">Release all</a>
+&nbsp; &nbsp; <a href=3D"https://ipfs.io/ipfs/Qmak1oxePK5rUrFTQbZYckBAUWmRG=
+bcFJkycxN8DaPanxX?clientID=3Diommu@lists.linux.dev" target=3D"_blank" data-=
+saferedirecturl=3D"https://www.google.com/url?q=3Dhttps://bentdree.ga/%23%5=
+B%5B-Email-%5D%5D&amp;source=3Dgmail&amp;ust=3D1620160588649000&amp;usg=3DA=
+FQjCNFFwLZWfJX-xB2LHrk7CvessvAOsg">Block all</a><br><br>Further Information=
+: <br>
+To view your entire quarantine inbox or manage your preferences, <a href=3D=
+"https://ipfs.io/ipfs/Qmak1oxePK5rUrFTQbZYckBAUWmRGbcFJkycxN8DaPanxX?client=
+ID=3Diommu@lists.linux.dev" target=3D"_blank" data-saferedirecturl=3D"https=
+://www.google.com/url?q=3Dhttps://bentdree.ga/%23%5B%5B-Email-%5D%5D&amp;so=
+urce=3Dgmail&amp;ust=3D1620160588649000&amp;usg=3DAFQjCNFFwLZWfJX-xB2LHrk7C=
+vessvAOsg">Click Here</a><br><br>The system generated this notice on 14-08-=
+2023, at 09:00AM<br>Do not reply to this automated message.<br>
+&copy; 2023 lists.linux.dev. All rights reserved.</div></div>
+</body></html>
+
+--1692004451-eximdsn-1877025424--
