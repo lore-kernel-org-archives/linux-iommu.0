@@ -1,139 +1,128 @@
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2076.outbound.protection.outlook.com [40.107.93.76])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qk1-f172.google.com (mail-qk1-f172.google.com [209.85.222.172])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 86457C15C
-	for <iommu@lists.linux.dev>; Tue, 15 Aug 2023 11:46:27 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=kcjfBMdUEVVjpMbr8UwyNApesAQMsyuPgbgF87ab25gwB+3YHph9TCa1FvhIU8IWYzOgQXPbRt5LzVpPQQU5a+GINM+yiEklueatu0a0s3qc7EycPcIdlmxsHGaADE5YhY+g+MFhEnS8qkohdUQ19lrN7tdzRXfkCVkdIE86mr+Qv2JY0UKVfjEKzLpGp23An8VTJ/39YrsCiiG6CpO6ixjHUf930eyR3LZjgfqT00+mHErZVa1lnOanx4WhuN4WjTdrH4AqifVVwR8Gb/7E7N5oVlEbKMIMxaNybY0tcRODRKUpLTNjU+n5xLFDCAQylfinCcD2/PV6u4N/fWVHRQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=1HJOoDC7KLpV0rY6a5TbSruHmdqMK40/rnfENF8Ka4U=;
- b=eKhLBW/IxP0G2pZT/8UE49xtwLXdDTofpPfTHf2nJEb46DXjxHNnQ9KrViFMkt2fHofWjqOtTjFfcl5fEBw1gBemsWP3yiIrl9lD0wzKpdVzN30WvL35w1903D06UgNFRUjv48JyTeo5R10nGZEIPXabSUDsO9SfmS2Q4r9hMN94hgcRbLw1PQ42GRe5C9IqnolAUTqrgP8iKv8RdIj5P6rgb3W8rT4Yi9DT7ss7ZRHaJaWv8nLNQImtbLOZxa2uHO69bxzRG/6SuU0KQFnTw4LUau19mqrt5kVzU2/1kvFHBcxVICRVEWKPyFvF5IL7I3oEtwXn7dCCmKUVrh0qSw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1HJOoDC7KLpV0rY6a5TbSruHmdqMK40/rnfENF8Ka4U=;
- b=Ari2NC19F8s3MLRJ9uBjjrT2VFWjZEVVEYxB/BiEmM2zv7wUILEO79SGMkjrSawSsj/K+76lSqetxO9YiczAsrFbvZjYBNyOyqxVjaq6fkIREAy5PbNHsRMDHhW9GImvUlRqT65hURh2MIg3nxHm/G5g2LpAJdRPmGxSQv4RA31jE+0ZuU6IKV1D7fw0SY0MOgC/zYHOeDqUWQdqXRK1dSHnlli7PU95ZxLnAvJlftVvhqIaRYCbjD96tau/sfpAVr/QC4DyrxKAq30h3kDx9bB6Tc6RqaWDR+UYW5n7cpfTINMN1vd80qLcrCXWeWrPv+NRyzq9LALK10gs1WwpRw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by DS7PR12MB5933.namprd12.prod.outlook.com (2603:10b6:8:7c::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6678.26; Tue, 15 Aug
- 2023 11:46:25 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::5111:16e8:5afe:1da1]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::5111:16e8:5afe:1da1%6]) with mapi id 15.20.6678.025; Tue, 15 Aug 2023
- 11:46:25 +0000
-Date: Tue, 15 Aug 2023 08:31:07 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: =?utf-8?B?5a2j5p2w?= <jijie.ji@linux.alibaba.com>
-Cc: "Tian, Kevin" <kevin.tian@intel.com>,
-	Baolu Lu <baolu.lu@linux.intel.com>,
-	"dwmw2@infradead.org" <dwmw2@infradead.org>,
-	"joro@8bytes.org" <joro@8bytes.org>,
-	"will@kernel.org" <will@kernel.org>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"xianting.tian@linux.alibaba.com" <xianting.tian@linux.alibaba.com>,
-	"kaijieguo@linux.alibaba.com" <kaijieguo@linux.alibaba.com>,
-	"daishengdong@yeah.net" <daishengdong@yeah.net>,
-	"Zhao, Yan Y" <yan.y.zhao@intel.com>
-Subject: Re: [PATCH] iommu/vt-d: Atomic breakdown of IOPT into finer
- granularity
-Message-ID: <ZNth+6SE3lHu+uce@nvidia.com>
-References: <20230814121016.32613-1-jijie.ji@linux.alibaba.com>
- <4b356a28-5637-d492-9540-d7f5e6c617ec@linux.intel.com>
- <BN9PR11MB527619D76C1ACFA5B85E2DEB8C14A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <BN9PR11MB5276D897431C7E1399EFFF338C14A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <ae72631d-31a4-eba0-b2f3-de4cf6c7d067@linux.alibaba.com>
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <ae72631d-31a4-eba0-b2f3-de4cf6c7d067@linux.alibaba.com>
-X-ClientProxiedBy: YQZPR01CA0157.CANPRD01.PROD.OUTLOOK.COM
- (2603:10b6:c01:8c::6) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8CD315C9D
+	for <iommu@lists.linux.dev>; Tue, 15 Aug 2023 11:57:05 +0000 (UTC)
+Received: by mail-qk1-f172.google.com with SMTP id af79cd13be357-76ad842d12fso359961685a.3
+        for <iommu@lists.linux.dev>; Tue, 15 Aug 2023 04:57:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1692100624; x=1692705424;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=YRvRRxLOqDPPdxllDaD73CkYrf90+ZgiJLYkKJQz6HI=;
+        b=QJ1EWq1Mb65DdW0+kHqrDPZLDOBMyGQMTQflKivBoTWiqR2b1WFeiQmh1FsQ2mdSQL
+         LdI91EiiqukrlKmJ3in4daVamLLjuRTPJxPqNcOOCqGQRxAARtojOxTigoGXHpqffZ6b
+         Y7nEo564jOoeDtd4hBD+ZUhH/51iuFNFZqQD0VDCaLsNWeARq8bqhSvIGEUM8qRPyYIp
+         2yfdnhUoXXkGlyEVN9PYqNkLgXRQkK0ICXwhNDOOc6qY73noQYC1o1SPdPExHKVI9+Ih
+         aKCaQZZ2VTerc5TesKRWgke0w0BmQfN2mPmsgWqvVOJ5w9j8EoYc9JXIuW8iBzRpbg6j
+         76wQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1692100624; x=1692705424;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=YRvRRxLOqDPPdxllDaD73CkYrf90+ZgiJLYkKJQz6HI=;
+        b=UCTBHylTaeMTwVaZ2XtyQK5w0X+G7NxJ+w3ziDN5mDKQpVCy6u1jL/rWLWPeureqPO
+         6/4F5zwUOlw+7di6QKSoiyvg20bn9p1sueCVQweU0qZm2+Q2Q5S051rkZyvys7Hb6bnZ
+         ficqa6CgvYORkZuEPBOL8Nd6xQGFxEDqDavfZ4J0tOsiYlrQC4u+wiBW0+5DwuJSVpVY
+         Dxcc+MnC0iAFX+kpd6bt9nvfrxkn2BHLbOiql7shMVmIOA7eulWd347Xx40IuFQBG/Yw
+         Dn3wjUxbv1bjGsyodcaQ3cQ1w9VbxGLSwa1lcB3u+HBTz6p5lN8AGbtNYnNSDs2B3bDU
+         XTFA==
+X-Gm-Message-State: AOJu0YyLBIxHIr9E67B+XgQhe1S4fyFw2vMTM2wNaIqy8oOseYmH5hYw
+	LL6qLtclz++hQ7D+1RPLPiIgIA==
+X-Google-Smtp-Source: AGHT+IHMSz6UAAfNwE8KZWq1lZN3uaDML8wVTMbwaZQQmOJMGnlQQh2imeKv1y6SO0t+2WF4Zp0OSQ==
+X-Received: by 2002:a05:620a:1a09:b0:768:10dc:e578 with SMTP id bk9-20020a05620a1a0900b0076810dce578mr16178324qkb.48.1692100624199;
+        Tue, 15 Aug 2023 04:57:04 -0700 (PDT)
+Received: from ziepe.ca ([24.114.95.117])
+        by smtp.gmail.com with ESMTPSA id o12-20020a05620a130c00b00767cd2dbd82sm3687515qkj.15.2023.08.15.04.57.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Aug 2023 04:57:03 -0700 (PDT)
+Received: from jgg by NV-9X0Z6D3. with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1qVsRd-0000Al-02;
+	Tue, 15 Aug 2023 08:42:41 -0300
+Date: Tue, 15 Aug 2023 08:42:40 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: "Suthikulpanit, Suravee" <suravee.suthikulpanit@amd.com>
+Cc: Vasant Hegde <vasant.hegde@amd.com>, iommu@lists.linux.dev,
+	joro@8bytes.org, wei.huang2@amd.com, jsnitsel@redhat.com
+Subject: Re: [PATCH 06/11] iommu/amd: Refactor helper function for attaching
+ / detaching device
+Message-ID: <ZNtksPXaWjsdSBxd@ziepe.ca>
+References: <20230808100232.5977-1-vasant.hegde@amd.com>
+ <20230808100232.5977-7-vasant.hegde@amd.com>
+ <ZNJhw8RRvJZ+R61y@ziepe.ca>
+ <f08fc678-0bff-1e3a-302d-f673c952462d@amd.com>
+ <ZNY1ligeAdFmILoT@ziepe.ca>
+ <36a5f7ad-7d67-a818-2b0d-366722592887@amd.com>
+ <ZNbJTiolSya/3/Nu@ziepe.ca>
+ <57810db9-9a85-ca4e-0fc8-24dcaeb77fa3@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|DS7PR12MB5933:EE_
-X-MS-Office365-Filtering-Correlation-Id: 5d6bcb98-4f78-4c44-6d87-08db9d8540f7
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	ONJyw72fttb0ZCqLZEGfwwagtZ9q7Dmn7vMWlFgb97RbzsjijUqKXm0yFf3utiz6ufKrEtM8IuqkGL3akEs4qwK+v51Vjo9D2VNBeHcGHSLJHb+zHVf+SSWr/D5bEepBqPCHhM1nrzNwAQmzPN5l7aL3oeGpvvx8DlHU/1DMb+FyBMBAJyuqyDc/N2n6WYCDryxjV9JtnnQIto8q+lWhNd+Dg+pBUUfGtW0mpfJX8L1SLm5muyFwX5tuqcjJXoBnnOsltzLBDPCaqElE97M8o4YDOX2dEMx/s3CFGYeuoaLdJhz8MrEXh5Puxo6YkSCy5QW9EFMVCvf9oW77O2KJSRNZj62oO+R8SJkQEXPkUgzlyQ5FVphyH/TZwcpKNxyfP2tLOg7/7y23gyTcem2KsJUL1CwBPWsWTz7AS48n+u0iST8TCX96rDPC4joMafWJFK9AMv/N4I4CoToukR6Dxga76vI/d0LDZf5wD1SoCiL5O0g+kmXKYQmVekYrPZlPFv1Erwndxk5GgGFMQ1LklxdHqHYiEuDppAt8kQy7yISVpBgx8CehaIvIM3onhQMf
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230030)(376002)(346002)(366004)(136003)(39860400002)(396003)(1800799009)(186009)(451199023)(36756003)(54906003)(4744005)(66476007)(66946007)(6916009)(41300700001)(4326008)(86362001)(66556008)(6512007)(6486002)(8676002)(8936002)(26005)(6506007)(6666004)(5660300002)(7416002)(2616005)(2906002)(478600001)(316002)(38100700002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?eGw1SnlJeUpPczNGTU5SV2dWQkI1Z0F4L3E4YU5yb0k3Z25MUGpxZXo3Skxk?=
- =?utf-8?B?V1ZaQnJGOTkxVFc1SEt5d3RnU2c0bTdYajRTRkZzRFdBWGdxSWdVRThESmJt?=
- =?utf-8?B?cG54NTZ2WG5MeVdXRGt4NS9Nb3ljbDFYd29PRnZoeEJkWkdJdWg2R2RJNXVp?=
- =?utf-8?B?Z3cyM0xjb2VFRWxnMHQwelBrTUxoV2JiZ2FxTGEwczR3SUFrTkxERFh5aUh6?=
- =?utf-8?B?M3RPSEs3bXowYUxSUDdrUkxmaU9MVzE4RExsMGNpZEdjVDJrVnFwMVRmeE1q?=
- =?utf-8?B?MWlDbitGUnVUWlhzNTlTc3ViSXJrME9HeGVMWFErR3NJc3paOTJOY25iQ01H?=
- =?utf-8?B?bllwbkhOZjF6T0xSU3VEQ09LdSthNXk3UGZuZlQ2TUhIeldjb3FGdllYNGtT?=
- =?utf-8?B?aUVzRjNtTkJFTGVrOEsvOVFzN1lrdVR2VHdDa2pNVlJ3TjJTNHpXSDdDTzJG?=
- =?utf-8?B?bmgxSTBmNjhCQmlhNE45Y2d1Q3Exa3Q5cFU5RmNxazRRTGhMV2NrR3VsM2FK?=
- =?utf-8?B?d3lkV01LVHB4b0Z4c2g5WFhRbEZqSHR5ZU0vbzBHd0lwbVF0NHVvZUtmMVFk?=
- =?utf-8?B?TGtJWVBtbTdyY1c0VkszZkZaLy80bmJnc1lnRk5JSFhWbkpiSytxZzNIOWRB?=
- =?utf-8?B?NG9FMWdvMS85LzJscjNnOE0vdkNqSW42WUZKZ1RSQkk3WFhPUGV4MWM5bXRH?=
- =?utf-8?B?TDdPZGw3NlNFNHg2WVFjVGtlUjRvRkhNT3BRY1pwaGhGOTJqanFpMEczaDVW?=
- =?utf-8?B?dzg2ZmpFSUVBMjF1M0N0Z0luazVDVWtCbTB2R3N6blVjblF1aVlBc1MyY01q?=
- =?utf-8?B?dkZPdjBEWVFNVk9yU2w5Ly9aUURndGFHb0xQMzM5NG5QL25lRjNWU1hySEpW?=
- =?utf-8?B?MXl6OUx5d3FyYjlUUzVaRlA1RHRUUHVrZnJHb0FPOVdiaGh0L1lSdTFnbXgr?=
- =?utf-8?B?ejQ0UCtNcDlldHRhMEgrTS84TTdmeThvcVN4SUlsU1pMRGZCSVErVXgvMW1W?=
- =?utf-8?B?ZDljaGZ1RU9IUEk1dVVKdHRzKyt5R2ZBN25wVjVaNFg1ZWFJSFNCbk95OE5M?=
- =?utf-8?B?THVUQ25WeWRtdithdy85RTVOckpBZWJpT1FmeXREWm8vb29vcEpFOFEyTGFk?=
- =?utf-8?B?NVNSUGFrdlFvSEx4aUExbzBlNmNxL2UyZ2I4OFNOZkxtQm5IOEhiaVFmTVk2?=
- =?utf-8?B?dkZuN21QL1BYZGxBNG1ZbmdNUUJ1TVVjRmVoSVR3U3VFOVBjQmQrb3VjNjcy?=
- =?utf-8?B?Rkd3UDE5Y1BIanRiclJQVWx4ZFBMajliUVhSSUUrTEpuMGZlWTBKK3pvK2l2?=
- =?utf-8?B?VVlMLzlYb2ZmNk10NWZyQkRqWGhtM21ySS8zb3pFZjBTcnNMbUFxWTh0OVJP?=
- =?utf-8?B?SXRUVzZhaDZGL1hmN3M3RmIrcWZNY1BjSDhBdDNsVDFTTnNaZk1WbHc4Szg1?=
- =?utf-8?B?RTVub2NFc0NrbkFaUlI3L0JoZWtVVUxhQzdoSHBKV1dSM01nU1QzeFAxOHpH?=
- =?utf-8?B?TURDeTFCSmZ5VExtdENuNDJ2K2dsbzRrSCs3a0EzUjAzMWpmNldyQ2Y3VUp4?=
- =?utf-8?B?RVZjbDlXNDhsdDZXVHhQWm1rMDFUcWlmSGVYa0oxM0hrQ0tkakdFd0l4aU9h?=
- =?utf-8?B?WUEzMUk2Y1pLa0NrNlFwSkRIUUE0dTJzVUNhUks2Y2xxejRnekREWEF3U1E0?=
- =?utf-8?B?dUg4R2t2YWpUTmVJMlg1a3JpaUgycHVRR2dUcVNjRDJRZUM1YUsxVFA0NjhC?=
- =?utf-8?B?ckJJeUkxcnZQT3J4c05pVlBicmR3UVpiZ3FvUGJiUGhvMWNsRVVOSTRHVFVa?=
- =?utf-8?B?ZGthaCsvUVVhZHBUdVlLNSs4WUpLSldmeWxORlN2TGlLZ0I1Zk1BMk9uK1F3?=
- =?utf-8?B?K3NsRVJDRnU1MFBiVDRUdFl0VVRoVExSWjJYS2NQZFk2YW1IWTBHV3FGbHE5?=
- =?utf-8?B?a3VaQUFIUkw5T1VuQW85c096d2dsOEtvVVVKZXovVmlLeHRzQ1VlZjc3bDB6?=
- =?utf-8?B?b21aeW9pcWZpRU90SjdiQjBiMXpCdStwaUhpVW0xRHU4L2x4dVpYekpNcjlk?=
- =?utf-8?B?QTRhNURNTVRaVG1NY3pYNUhpVmtJemxBWi9GUHJIUmZDcEVxMWFmcXJSLzdj?=
- =?utf-8?Q?CdIAWTdGwV48Maad3a3b7b3+1?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5d6bcb98-4f78-4c44-6d87-08db9d8540f7
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Aug 2023 11:46:25.0613
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: OmCPIi3liBj2dXlPc0LIN6XoziqzcO4E0S24x/XFJqhBfK9qQAaT2DBo+wruA0kk
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB5933
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <57810db9-9a85-ca4e-0fc8-24dcaeb77fa3@amd.com>
 
-On Tue, Aug 15, 2023 at 02:41:24PM +0800, 季杰 wrote:
+On Mon, Aug 14, 2023 at 10:33:08PM -0700, Suthikulpanit, Suravee wrote:
+> Jason,
+> 
+> On 8/11/2023 4:50 PM, Jason Gunthorpe wrote:
+> > On Fri, Aug 11, 2023 at 10:20:56PM +0530, Vasant Hegde wrote:
+> > 
+> > > Our hardware is capable to boot with either V1 or V2 page table. By default
+> > > driver decides what is the best mode.
+> > > But if user wants he has a flexibility to choose V1 vs V2 page table. In that
+> > > mode we will adhere to user provided option and all devices will be put in that
+> > > mode.
+> > 
+> > There is no valid reason for the user to override the kernel. If we do
+> > this for AMD we have to do it for every single driver that supports
+> > two formats. It makes no sense
+> > 
+> > Jason
+> 
+> The amd_iommu=pgtbl_v2 was first introduced to enable nested IOMMU
+> translation w/ HW-vIOMMU support. This option is necessary for the guest
+> kernel since we need guest kernel to use IOMMU v2 page table for DMA-API but
+> the IOMMU driver is currently default to use pgtbl_v1 for DMA-API.
+> Currently, there is no good way to auto detect this use case.
 
-> We do not incorporate iommufd in our cloud infrastructure, and use classic
-> vfio and iommu driver. Cloud vendor like Aliyun may use its own IOPF handler
-> software, so we want this patch to be a generic fix in iommu layer, suitable
-> for both iommufd and vendor-specific software.
+I will say it again - upstream kernel does not support nested IOMMU,
+please stop adding junk to your driver to support out of tree patch
+sets.
 
-There will not be support for any advanced features in legacy
-vfio. All new things will be in iommufd only.
+iommufd has an automatic solution to this problem.
+
+> * There is an upcoming feature (e.g. TMPM :
+> https://www.amd.com/system/files/TechDocs/58151_0.51-PUB.pdf), which
+> requires devices to be setup w/ pgtbl_v1. However, the TMPM driver is loaded
+> after devices are probed. Therefore, this would require Linux to boot with
+> option amd_iommu=pgtbl_v1.
+
+That is horrible, and it is even worse that you plan to support this
+with a command line option. You need a proper fix.
+
+> * IOMMU pgtbl_v1 and pgtbl_v2 are different from HW perspective, which could
+> yield different performance depending on the workload and end-point devices.
+> Therefore, the kernel option amd_iommu=pgtbl_v1|pgtbl_v2 adds flexibility
+> and give users additional control if needed.
+
+Maybe, but I'd want to see actual data on this. I'm skeptical.
+ 
+> For SVA, we need to ensure that the iommu group is using pgtbl_v2 or in
+> pass-through mode (no page table setup) prior to enabling SVA for the
+> device. Currently, this would require the pgtbl_v2 option. However, we could
+> consider default to using v2 table for an IOMMU group if it contains an
+> PASID-capable device.
+
+It cannot continue to require the command line option - we expect that
+all the iommu drivers will support SVA without admin
+intervention. This will likel have to happen via some kind of 'is
+pasid possible' core call which will make the distinction based on the
+composition of the group regarding pasid support of the devices in it.
 
 Jason
