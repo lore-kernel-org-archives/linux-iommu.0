@@ -1,57 +1,55 @@
-Received: from mail-pf1-f182.google.com (mail-pf1-f182.google.com [209.85.210.182])
+Received: from mail-pg1-f169.google.com (mail-pg1-f169.google.com [209.85.215.169])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 192771097E
-	for <iommu@lists.linux.dev>; Tue, 15 Aug 2023 14:34:39 +0000 (UTC)
-Received: by mail-pf1-f182.google.com with SMTP id d2e1a72fcca58-688779ffcfdso127855b3a.1
-        for <iommu@lists.linux.dev>; Tue, 15 Aug 2023 07:34:39 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F2BB259B
+	for <iommu@lists.linux.dev>; Tue, 15 Aug 2023 14:41:04 +0000 (UTC)
+Received: by mail-pg1-f169.google.com with SMTP id 41be03b00d2f7-5656a5b83e4so2730512a12.3
+        for <iommu@lists.linux.dev>; Tue, 15 Aug 2023 07:41:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1692110079; x=1692714879;
+        d=ziepe.ca; s=google; t=1692110463; x=1692715263;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=mk5Xa7cyeVl1bluWvoXLKdqUAVMQrPcF9EQrApvXWHE=;
-        b=U/G7HXJhlv9yn9z1NYj9jDW7/1AAb8yB79vOJK7v78ivtTnBlTcEpgDvKWF5y/NhPS
-         GpJMzmsdoh6FhJqrNrtWUU8TnMqpmYViri2nqHhVVLmaG0t65i1QxYxhVmWha6AUIyr0
-         3qjJSSXw6JtxgZ9otCLrmRisFh66LKVzrdN/z031ki81CXskjtXltILv/WW3/eeiCta5
-         dn+7/MM8A+Cd7dsvia1YnnXADru+vDih2poDzID0R3lfJ8llIEstDvU6+ngVmAhpo97c
-         EGPB/FmVHbzziLzxGC+7NaeFdgu0jY9R5CG7kadUbCkcMa3eexZI9nB+UlFaXwQpk6oj
-         lR4w==
+        bh=bHv9hk7aO9kMgyWcHEzwDOx/QhyHQSlbP6bU7K91qCY=;
+        b=R1qIrhz+QcaR5TTZOjDzt/rUJuoZPEFvnmBkfYSO0yMntTjeYMdm5DgOKUDIXJlNWb
+         NOB/EpxxzsQsNhzy2AXBTs7JufJEYgJ8k1LZ8ekxOurZCNhjjXbjE+Ifehj4iIhsqoyK
+         EyPJyaEokDShs1Ebw3YtVZZGNBJdPoFTY/azHmqMvPhBe1hP4O4NC9D8R6nAwPwbZNhm
+         VLNHkaQHNw3rk8xoNJt7IETrndCcTlq3ArmgSps5lKlRb3VCBofZ8Aj5sVS9IQwjKr73
+         iVMSaxiI0eZvP+Mg0p2awPNLEiVg8mloGVqczwtqr021RHyZmA+AGrr+EzdWn3aV06fM
+         4Wpg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1692110079; x=1692714879;
+        d=1e100.net; s=20221208; t=1692110463; x=1692715263;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=mk5Xa7cyeVl1bluWvoXLKdqUAVMQrPcF9EQrApvXWHE=;
-        b=SA2skuvRZ6O2d6Qev7CRDN6kDHyVQYCXaIjmi5YBCbESsGCW14QPzkX7El5giAm6h0
-         l4RkydDV/SZEAYKsRkZtuzNAcki+vwQKHdU5oFgKictBmpfWCltnjdCOcyV2Ejd+WOY+
-         0nvDm3oAmFu8lPwrDCSvNaJVohy9RMV0A0beplwKXFa4DVub5EHSWnnYsLZhjehEIKVi
-         MS4Fw/Qv81/omfvn6NxuQBqqquvD/qllCOV9Wd0kBH0WzmzFbJkJTfTSQ3y6JMGQPzpZ
-         oWZQL+7ivsZYCDbDVk87HaPy5wgCP5uUamb3cEiVmb88P3vOy3vxt2BZogE8ux+ox9y5
-         jMhg==
-X-Gm-Message-State: AOJu0Yxmfuo7wtUPqN9+T5F2BynYCsM9ScUXfFMOSEA19o/q3ejFqSIu
-	ZYGrVorokE6Swf+tvrnb0+0ZddP1ZPxHVjzL4KA=
-X-Google-Smtp-Source: AGHT+IHouB+tRrvRfpm5u59T/dtmJVgPNdzASQuv8oarIfDSYFlhLff7Ef3Yqu55vCGrO0FZPHhJXw==
-X-Received: by 2002:a05:6a00:3a12:b0:687:3e8f:2211 with SMTP id fj18-20020a056a003a1200b006873e8f2211mr12162427pfb.34.1692110079248;
-        Tue, 15 Aug 2023 07:34:39 -0700 (PDT)
+        bh=bHv9hk7aO9kMgyWcHEzwDOx/QhyHQSlbP6bU7K91qCY=;
+        b=LpUFEzhxaOrQ8piFxV9X7MLsREWr1eaVFus7dPf/l1okMFk/QqLyyxrFpBt2VMP2g+
+         8n9G1L6/Knv6uDO4QcrAnMSsM0TTmGXQjPLzHWtLDErKRVeHnr0FNQynaX14VM1Pg393
+         ipPlcJ+CAXp4UOOPJ5z+95V1V4oDavocW33Vy4GoI44DqodEWNn2U2ueukHqDOSUL+eE
+         pZmrFl/Me+8+BAxFV6PVctYhRxTen4VSAnLKn2m6/m+/Fet3Aw6uczgrBHcMenxUNsgw
+         flmx/Q8ul4vsK7Banqgv4i68U/loRKkxjGiRO6Aq5owKn0XO49Irw5yNXItO5u996BK3
+         gL1g==
+X-Gm-Message-State: AOJu0YyAOJM7I0mkeubLQ99sRZfXo0V7CHeVcYHYXRtRlmik2lRXupiB
+	N8Rk7GWcJnPt9BMocRxLKCl+Hw==
+X-Google-Smtp-Source: AGHT+IE0Cq0mDGXdyUc6C1NcwrBhagxLiwydfzMwtVwp2bB+k+PT/0snODUO0VRkDhfo5weB2n5PhQ==
+X-Received: by 2002:a05:6a20:970f:b0:134:d4d3:f0ab with SMTP id hr15-20020a056a20970f00b00134d4d3f0abmr10327289pzc.4.1692110463642;
+        Tue, 15 Aug 2023 07:41:03 -0700 (PDT)
 Received: from ziepe.ca ([206.223.160.26])
-        by smtp.gmail.com with ESMTPSA id q1-20020a63bc01000000b00565eb4fa8d1sm232221pge.16.2023.08.15.07.34.38
+        by smtp.gmail.com with ESMTPSA id e18-20020a62ee12000000b006870ff20254sm9374745pfi.125.2023.08.15.07.41.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Aug 2023 07:34:38 -0700 (PDT)
+        Tue, 15 Aug 2023 07:41:02 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.95)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1qVv7z-007bam-SR;
-	Tue, 15 Aug 2023 11:34:35 -0300
-Date: Tue, 15 Aug 2023 11:34:35 -0300
+	id 1qVvED-007bvG-4z;
+	Tue, 15 Aug 2023 11:41:01 -0300
+Date: Tue, 15 Aug 2023 11:41:01 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Jie Ji <jijie.ji@linux.alibaba.com>
-Cc: dwmw2@infradead.org, baolu.lu@linux.intel.com, joro@8bytes.org,
-	will@kernel.org, robin.murphy@arm.com, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, xianting.tian@linux.alibaba.com,
-	kaijieguo@linux.alibaba.com, daishengdong@yeah.net
-Subject: Re: [PATCH] iommu/vt-d: Atomic breakdown of IOPT into finer
- granularity
-Message-ID: <ZNuM+3R197oRfBer@ziepe.ca>
-References: <20230814121016.32613-1-jijie.ji@linux.alibaba.com>
+To: Vasant Hegde <vasant.hegde@amd.com>
+Cc: iommu@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com,
+	wei.huang2@amd.com, jsnitsel@redhat.com
+Subject: Re: [PATCH 0/4] iommu/amd: SVA Support (part 2) - deprecate iommu_v2
+ module
+Message-ID: <ZNuOfZIm6itzNkbu@ziepe.ca>
+References: <20230815103255.565295-1-vasant.hegde@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -60,19 +58,34 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230814121016.32613-1-jijie.ji@linux.alibaba.com>
+In-Reply-To: <20230815103255.565295-1-vasant.hegde@amd.com>
 
-On Mon, Aug 14, 2023 at 08:10:16PM +0800, Jie Ji wrote:
-> With the addition of IOMMU support for IO page fault, it's now possible
-> to unpin the memory which DMA remapping. However, the lack of support
-> for unmapping a subrange of the I/O page table (IOPT) in IOMMU can lead
-> to some issues.
+On Tue, Aug 15, 2023 at 10:32:51AM +0000, Vasant Hegde wrote:
+> This is part 2 of the 4-part series to introduce Share Virtual Address
+> (SVA) support. This series removes iommu_v2 module support.
 > 
-> For instance, a virtual machine can establish IOPT of 2M/1G for better
-> performance, while the host system enable swap and attempts to swap out
-> some 4K pages. Unfortunately, unmap subrange of the large-page mapping
-> will make IOMMU page walk to error level, and finally cause kernel crash.
+> AMD GPU driver which was the only in-kernel user of iommu_v2 module is
+> removing dependency on iommu_v2 module [1].
+> 
+> [1] https://patchwork.freedesktop.org/series/122124/
+> 
+> Also subsequent series will add SVA spuport in AMD IOMMU driver. Device
+> drivers are expected to use common SVA framework to enable device
+> PASID/PRI features.
+> 
+> Hence this series removes iommu_v2 module and the functions used to support
+> iommu_v2 modue. Note that there are certain functions (ex: PPR interrupt
+> handling code) which will be used in subsequent series for SVA support.
+> Hence not removed those functions.
+> 
+> This patch series is based on top of SVA Part 1 [1] :
+>   https://lore.kernel.org/linux-iommu/20230815102202.565012-1-vasant.hegde@amd.com/T/#t
+> 
+>   Also to build kernel with this series either we need above AMD GPU
+>   related changes [1] -OR- compile with kernel config 'CONFIG_HSA_AMD=n'.
 
-Nothing in-kernel does something like this.
+Why did you order it this way? Wouldn't part 1 be nicer if it doesn't
+have to worry about this code? Especially since part 1 is now not
+changing this code?
 
 Jason
