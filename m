@@ -1,121 +1,107 @@
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2059.outbound.protection.outlook.com [40.107.93.59])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pg1-f202.google.com (mail-pg1-f202.google.com [209.85.215.202])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C94301803F
-	for <iommu@lists.linux.dev>; Tue, 15 Aug 2023 18:58:19 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=n4K0PB11dvqK0i0vw35ZpXc4WscncV2e4j3A6nkPkMQPMnmLeutzwiDDEI0iHEk4YaMh2tL9O4t9HO3zT22YyP/EVq9uTTvjEWOYDyK9IYmLfv/jv39ymCGk16EM0IaOYYCFBmgHKq99nz5JWnCvyj4ZAKYp8P/D3INm+RMf6y8YkHmiODOvDFB/gDvTEd4JioolLbGfaAw2TJUa1m+GZVEDe3Vd005hJjPoQL1CMN7l9J1I7D9PxiHdRZIMAADJLo8YXHHwE4srJjN/UNpvkJJ70A8B/YrI4C6QJGmTdlw/QIb0hGy04yQFeCH0u9VkGgD4TWWzF8siDEhK12LSGQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=OKqViah37fP3xOxJrV4r6gKm1nQKV/HcX5onmLoDu0s=;
- b=X7N4AIQuREnq2i8MsdrS8CSd7rZ6+OucNiUy9hpyrk1ZC/INqjSi4AQ3Tc4NsZnzcXifX+AcYvRs+Z3xvVvTvzALzO/KPax8sPWViWt3BXq8ltbgnU74B7xaSgBPOC7SyGsqjpsj0SfxKbONRz0WddZcPPsBcSYe0xO8YzZLCMciLweYJn1bdckJyzfMGtgfdhFm2XCTIOy33XqkOF62ZM0yAbPlY/qGcpgP/R6rZFgzYraXBgQDIlV7LCJPajXgcmX/u67FeWnTK6lwKLZuGumbty7UxMqj4eB3pl33m6sOFlbDufGxLwIEO9mb8VXerRYhsuD76iIP5POVWxkmGw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=OKqViah37fP3xOxJrV4r6gKm1nQKV/HcX5onmLoDu0s=;
- b=QskNc22aJeFXUHZkhaaVOUYGlVKNf5SRzLW7j1HGvt3YVsSB4VEyV5KTtXKZ+M0EGrpGYBa895h0kQF93LZO2esg5CCpy7YfUETFM74NuU++BiyoxCwhfvQ45kD9+sBkj5HVdkOSa9noiZR9ZrGbpukPiDBROcLEEKv4L46EGXSaGvnXz6mEwaLpnR4HcqoFuCMPJRQ1ZINqP3wqYAZ0Wggyqc94C+f2rqM7Aw5P2lfkAy1kDAiwh2feuSnFBVDoM0LhOfLycCIQ5W4CW0oNcvgYOP3xJTqPkXmCU+leTPxFLYEUgaQ8263OF9j7rR/ha+rVo3ZbKVPLBWaBdW8siA==
-Received: from SA1P222CA0013.NAMP222.PROD.OUTLOOK.COM (2603:10b6:806:22c::29)
- by SA1PR12MB8597.namprd12.prod.outlook.com (2603:10b6:806:251::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6678.26; Tue, 15 Aug
- 2023 18:58:17 +0000
-Received: from SN1PEPF00026368.namprd02.prod.outlook.com
- (2603:10b6:806:22c:cafe::b) by SA1P222CA0013.outlook.office365.com
- (2603:10b6:806:22c::29) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6652.33 via Frontend
- Transport; Tue, 15 Aug 2023 18:58:17 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- SN1PEPF00026368.mail.protection.outlook.com (10.167.241.133) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6699.14 via Frontend Transport; Tue, 15 Aug 2023 18:58:17 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Tue, 15 Aug 2023
- 11:58:04 -0700
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Tue, 15 Aug
- 2023 11:58:03 -0700
-Received: from Asurada-Nvidia (10.127.8.13) by mail.nvidia.com (10.129.68.10)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37 via Frontend
- Transport; Tue, 15 Aug 2023 11:58:02 -0700
-Date: Tue, 15 Aug 2023 11:58:00 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: Yi Liu <yi.l.liu@intel.com>, <joro@8bytes.org>,
-	<alex.williamson@redhat.com>, <kevin.tian@intel.com>, <robin.murphy@arm.com>,
-	<baolu.lu@linux.intel.com>, <cohuck@redhat.com>, <eric.auger@redhat.com>,
-	<kvm@vger.kernel.org>, <mjrosato@linux.ibm.com>,
-	<chao.p.peng@linux.intel.com>, <yi.y.sun@linux.intel.com>,
-	<peterx@redhat.com>, <jasowang@redhat.com>,
-	<shameerali.kolothum.thodi@huawei.com>, <lulu@redhat.com>,
-	<suravee.suthikulpanit@amd.com>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
-	<zhenzhong.duan@intel.com>
-Subject: Re: [PATCH v7 3/4] iommufd: Add IOMMU_GET_HW_INFO
-Message-ID: <ZNvKuCFqCCWwIR24@Asurada-Nvidia>
-References: <20230811071501.4126-1-yi.l.liu@intel.com>
- <20230811071501.4126-4-yi.l.liu@intel.com>
- <ZNuogZV2eEeVwNX4@nvidia.com>
- <ZNu2XWS0BERqykIA@Asurada-Nvidia>
- <ZNvEAWF8ljWHrcws@nvidia.com>
- <ZNvJph2AHKroujFe@Asurada-Nvidia>
- <ZNvKZWcqrjp34zpe@nvidia.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3BAF7156FD
+	for <iommu@lists.linux.dev>; Tue, 15 Aug 2023 21:35:39 +0000 (UTC)
+Received: by mail-pg1-f202.google.com with SMTP id 41be03b00d2f7-56477bea06fso6297161a12.1
+        for <iommu@lists.linux.dev>; Tue, 15 Aug 2023 14:35:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20221208; t=1692135338; x=1692740138;
+        h=cc:to:from:subject:message-id:mime-version:date:reply-to:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=tVl3VRj57iGr8qaIRcvd93q5Wtl5mgpiK42P78vs0Wk=;
+        b=st/sTpRNP/idx5nlQZE0UaS24tJVAcF4CELTvWKEpOBxgj1C2QWWPrpIZvxmbTd0Ip
+         hr0jUZwnERWNdnSUZoMdaS0UF/GVcygUH6nlTEsQGb50HvVWmbsyS7kc9NWoj9r+MiGv
+         pH6vEZAwPcYxZGa4aZugNXLAQaJrV9kngpycQftIzDW2oeOeD0H0cN2VygiIouovp3oa
+         YAIKwVT2AG1eBqo2IISvcl0XDoSr2+US9Suzl23ovnjkQmczqdwvlmYpLQ698FmWd6DE
+         dXy/Alrh3bAytD25sizHNdi7CylUdgAMwj6udvCHrTw16L9SbRHJdsB8NaYGIzG1fpRW
+         5rLQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1692135338; x=1692740138;
+        h=cc:to:from:subject:message-id:mime-version:date:reply-to
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=tVl3VRj57iGr8qaIRcvd93q5Wtl5mgpiK42P78vs0Wk=;
+        b=C9zmvntlPwZK7jHE0luqv09oqwjAZk6Ub0MHxAEo1VmLbV9sI4s4yz6EpDB9FIJKw+
+         S8HKEOj0iT8KdaHNUSXXCuFvzwqcsUbgd3hv1z/S+VjQITHZgCiZ9uwxkt1CXRQJz/lq
+         Zhmj0rs5mkBwoCBtJ9dF0eR0sUPwRmVVEGj6IdTUEil/KezCXhefwPwMscmb1eAldB43
+         hKzHV1wTOI4qZLR16eka9yGJExXhkHA2AFNipqhia/JmlMpfD1IRIUG1UOsN8n1LfOEL
+         DUlKvvf4t6SQYYApi5bGlgLCvfTnkKlLQp85nB6bUw4ugl8xpnxmZddV75IvH+9aX8Md
+         igBw==
+X-Gm-Message-State: AOJu0YyyhgQa7JqsoUN5Ht/s+K496qqVeAyuTh2wO5AYVLGFtOukpXja
+	xfwt6GUQWK4Mr4QyBh+Sse7JwpawgJ8=
+X-Google-Smtp-Source: AGHT+IEQJUXjsmbqH1x4y9bzfU8nFQD6xuICpUdNtkubfBXgLbWJbZDHZj0rAyx8MSDnBexaefmpTUylrls=
+X-Received: from zagreus.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5c37])
+ (user=seanjc job=sendgmr) by 2002:a63:950c:0:b0:565:e2cd:c9e1 with SMTP id
+ p12-20020a63950c000000b00565e2cdc9e1mr8860pgd.11.1692135338581; Tue, 15 Aug
+ 2023 14:35:38 -0700 (PDT)
+Reply-To: Sean Christopherson <seanjc@google.com>
+Date: Tue, 15 Aug 2023 14:35:23 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <ZNvKZWcqrjp34zpe@nvidia.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SN1PEPF00026368:EE_|SA1PR12MB8597:EE_
-X-MS-Office365-Filtering-Correlation-Id: 1f924a04-df64-47f7-4e2e-08db9dc19645
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	EZvqeeMIF7bvIYUY6QLox2Y2nFc5Gxlhh8IeUTJqSy/TG34h4s4U0c+WugGLZyegolV/xyp6vivcj96DqxIdq7i5+EmS4CcQl7uzfIqB1qe05qWcVy/vq3e34Puy1NHaSgytaX7yPmmAzmIiknE3ZrN9fOZ1QWEZckb4Di1ZDp4CMWKO1wdWGcN04L1LHEcsaJGKLhYWvj3wwOuLl0VjgH6FyyUH8f+yuaqSO3BKNdX+Tj29/2svSZateZXP0ueryCeVKDRGHL2O3Bz+xrk9ntdjY8IrGOJxgTrTiJhTa8IvBKY/Ex0d+KWI2lWOFD9UuI52kEB7gNqQc7YQcS+vsRea69QPf3ybgAHSgzwpyGDlfnp3kuJfLVHvVeV4W1Hq9IN5hIkn151Uf7ISh0dWrl3Q8/nqVCfBczqs2eXBCF14Vc4EQr0uLA7H8wHv4E2xgTJqd7F/oPiOghDd1n3AzERwNPVlN4Y1W5r16aOVXpeNbX3ueb9zVZ2rTJhX7t4od0WCLPANdV3m6pDvARu89qbuajQP7cjIphO9Ka4bP6dP9XvwmW0EoN9B3uIgRtCqf/8Hn9Wy34WQYpEqt0oyu37VwAimZoUFJyXRFG5gtAbP6d0Scx+J1cjEF/BCwTsUTSST4n0ZcE9MUMbQy4iHpCm1cPSQjcUmk56lCa3ju8CsAfnpKYiQheZRUtRz27MrjmWQWbY61Gr1qme+rsWU+H1U3HgQZoetJlt2+tkXeIc=
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230031)(4636009)(376002)(396003)(39860400002)(346002)(136003)(1800799009)(186009)(82310400011)(451199024)(36840700001)(46966006)(40470700004)(54906003)(4744005)(82740400003)(41300700001)(70206006)(4326008)(86362001)(70586007)(8676002)(336012)(6862004)(40460700003)(33716001)(8936002)(26005)(5660300002)(426003)(7416002)(2906002)(9686003)(47076005)(478600001)(316002)(356005)(6636002)(36860700001)(7636003)(55016003)(40480700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Aug 2023 18:58:17.6867
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1f924a04-df64-47f7-4e2e-08db9dc19645
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	SN1PEPF00026368.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB8597
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.41.0.694.ge786442a9b-goog
+Message-ID: <20230815213533.548732-1-seanjc@google.com>
+Subject: [PATCH 00/10] VM: SVM: Honor KVM_MAX_VCPUS when AVIC is enabled
+From: Sean Christopherson <seanjc@google.com>
+To: Sean Christopherson <seanjc@google.com>, Paolo Bonzini <pbonzini@redhat.com>, 
+	Joerg Roedel <joro@8bytes.org>
+Cc: kvm@vger.kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
+	Maxim Levitsky <mlevitsk@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 
-On Tue, Aug 15, 2023 at 03:56:37PM -0300, Jason Gunthorpe wrote:
-> On Tue, Aug 15, 2023 at 11:53:26AM -0700, Nicolin Chen wrote:
-> > > 	ops = dev_iommu_ops(idev->dev);
-> > > 	if (!ops->hw_info) {
-> > > 		data = ops->hw_info(idev->dev, &data_len, &cmd->out_data_type);
-> > 
-> > It should be:
-> >  	if (ops->hw_info) {
-> 
-> Hmm, the test suite probably needs some more stuff then too since it
-> passed like that :)
+The only true functional change in this entire mess is to change KVM's
+handling of KVM_CREATE_VCPU when AVIC is enabled.  Currently, KVM rejects
+vCPU creation if the vcpu_id is unaddressable, i.e. if it's larger than
+what is suppported by AVIC/x2AVIC hardware.  That is a rather blatant
+violation of both KVM_CAP_MAX_VCPUS and KVM_CAP_MAX_VCPU_ID, as KVM will
+advertise a KVM_CAP_MAX_VCPUS as 1024 and KVM_CAP_MAX_VCPU_ID as 4096,
+but then reject vcpu_ids as low as 256 (AVIC).
 
-Ack. I will see what I can do.
+To fix the problem, add yet another AVIC inhibit to disable AVIC if
+userspace creates unaddressable vCPUs.  Alternatively, KVM could report
+different KVM_CAP_MAX_VCPUS and KVM_CAP_MAX_VCPU_ID values when AVIC is
+enabled, but IMO that path sets KVM up for failure, e.g. it would make it
+really hard for us to enable AVIC/x2AVIC by default, and we'd have to have
+to rework KVM selftests, which assume that KVM supports at least 512 vCPUs,
+e.g. recalc_apic_map_test fails when AVIC is enabled.
+
+The bulk of this series is cleaning up related code, most of which is
+purely opportunistic, e.g. the many pointless PA masks, but some of which
+are functionally "necessary", for some definitions of necessary.
+
+Lightly tested, and the IOMMU interaction is basically compile tested only.
+But this is firmly post-6.6 material, so no rush on anyone testing this
+(I wouldn't even care all that much if the darn selftests didn't fail).
+
+Sean Christopherson (10):
+  KVM: SVM: Drop pointless masking of default APIC base when setting
+    V_APIC_BAR
+  KVM: SVM: Use AVIC_HPA_MASK when initializing vCPU's Physical ID entry
+  KVM: SVM: Drop pointless masking of kernel page pa's with "AVIC's" HPA
+    mask
+  KVM: SVM: Add helper to deduplicate code for getting AVIC backing page
+  KVM: SVM: Drop vcpu_svm's pointless avic_backing_page field
+  iommu/amd: KVM: SVM: Use pi_desc_addr to derive ga_root_ptr
+  KVM: SVM: Inhibit AVIC if ID is too big instead of rejecting vCPU
+    creation
+  KVM: SVM: WARN if KVM attempts to create AVIC backing page with user
+    APIC
+  KVM: SVM: Drop redundant check in AVIC code on ID during vCPU creation
+  KVM: SVM: Rename "avic_physical_id_cache" to "avic_physical_id_entry"
+
+ arch/x86/include/asm/kvm_host.h |  6 +++
+ arch/x86/include/asm/svm.h      |  6 +--
+ arch/x86/kvm/svm/avic.c         | 79 +++++++++++++++------------------
+ arch/x86/kvm/svm/svm.h          |  6 +--
+ drivers/iommu/amd/iommu.c       |  2 +-
+ include/linux/amd-iommu.h       |  1 -
+ 6 files changed, 48 insertions(+), 52 deletions(-)
+
+
+base-commit: 240f736891887939571854bd6d734b6c9291f22e
+-- 
+2.41.0.694.ge786442a9b-goog
+
