@@ -1,34 +1,34 @@
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.20])
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.100])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9DA75625;
-	Tue, 15 Aug 2023 00:57:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0EAE5625;
+	Tue, 15 Aug 2023 01:19:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1692061025; x=1723597025;
+  t=1692062353; x=1723598353;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=EMtekiFoo0Tblby6wZQ8ziVNSJFBHzBXovBoPNar8KU=;
-  b=dUBnHrVqBwVz/BIyiNggvUg+BtAWocp/xySTicWL7ortznwzjr9KhBYC
-   bDJkRmiiwtcdL4gBQeDS0MvdYI3FuQoZyMITXLIzvv5RXA+tYcywDu8bZ
-   90nj2lJ8eToDokYSyvY+BNO1XkEna1sBxWZZAbu6pOQDMIo3gwDRhzMLV
-   qRNVRliridk0/pp6NXoXR/n0W26lWU8fxEefSxUbiOUkYfrFZE2+WS3zj
-   tMF9YTYQ1DW15tstjflfWw+ubJNh36VYZGUE5Q9DxWensGF9jWo54CYC5
-   Ci/P4IJ1Y0J9tk/Og5qzsAmVrwyvknXuHnGP6tThKg1abYNd1YG0TIF6n
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10802"; a="362322777"
+  bh=QvD+OczAXQfY3EnI/faV3RaAbFUkc5kfqnTaF1n9e4M=;
+  b=gLPSXIYC+nWUJ4rrJM1sWpvMAPnMjOJ9uL04nmcovxbhdMn4OqRGSHYp
+   N+De+0mkxy+SIHp4VnuJ7RPx5Ua71Ug6b4gu0t2jsNc9fM1jvqyiSeuZS
+   exnxpMVpu8DAEAlJXMcXbo0dxgw/pck8g+a4Zi4Gh3OaMTM4+4HxzC+4a
+   MMwDQ6+QXlIKUJmnlDMr0bi4jPA0M3Ri7XcjD8R8tsVp6FJiImfAjaIWe
+   7KB3cArQtlI5/5ORe6j1/4Xqp+3cjerXKKejtg6XOuWP+M7tfgvxvPyUD
+   mv62PD0eW/8MKJJ39X3QfhDniQrtdDW+rAp+BkjlJdD/d7pbTMeONii5g
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10802"; a="438516165"
 X-IronPort-AV: E=Sophos;i="6.01,173,1684825200"; 
-   d="scan'208";a="362322777"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Aug 2023 17:56:54 -0700
+   d="scan'208";a="438516165"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Aug 2023 18:19:12 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10802"; a="857243905"
+X-IronPort-AV: E=McAfee;i="6600,9927,10802"; a="823667919"
 X-IronPort-AV: E=Sophos;i="6.01,173,1684825200"; 
-   d="scan'208";a="857243905"
+   d="scan'208";a="823667919"
 Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.254.215.149]) ([10.254.215.149])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Aug 2023 17:56:42 -0700
-Message-ID: <d645ddff-f274-7a01-6b06-3f5a7afef8fe@linux.intel.com>
-Date: Tue, 15 Aug 2023 08:56:40 +0800
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Aug 2023 18:19:01 -0700
+Message-ID: <c24e7eff-b28c-8152-6022-325ca89c8074@linux.intel.com>
+Date: Tue, 15 Aug 2023 09:18:59 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -67,33 +67,130 @@ Cc: baolu.lu@linux.intel.com, Andy Gross <agross@kernel.org>,
  Nicolin Chen <nicolinc@nvidia.com>, Niklas Schnelle
  <schnelle@linux.ibm.com>, Steven Price <steven.price@arm.com>,
  Thierry Reding <treding@nvidia.com>
-Subject: Re: [PATCH v6 17/25] iommu/qcom_iommu: Add an IOMMU_IDENTITIY_DOMAIN
+Subject: Re: [PATCH v6 08/25] iommu: Reorganize
+ iommu_get_default_domain_type() to respect def_domain_type()
 Content-Language: en-US
 To: Jason Gunthorpe <jgg@nvidia.com>
-References: <17-v6-e8114faedade+425-iommu_all_defdom_jgg@nvidia.com>
- <8cef9a0d-15ba-f8af-7e22-d4d3063c97bf@linux.intel.com>
- <ZNpJ5irR4XeLw6qG@nvidia.com>
+References: <8-v6-e8114faedade+425-iommu_all_defdom_jgg@nvidia.com>
+ <b50a464a-fa28-e359-1bc5-4f2b105326ad@linux.intel.com>
+ <ZNpjmiBLneBC9oWe@nvidia.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <ZNpJ5irR4XeLw6qG@nvidia.com>
+In-Reply-To: <ZNpjmiBLneBC9oWe@nvidia.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2023/8/14 23:36, Jason Gunthorpe wrote:
-> On Mon, Aug 14, 2023 at 02:32:33PM +0800, Baolu Lu wrote:
-> 
->>> +	pm_runtime_get_sync(qcom_iommu->dev);
->>> +	for (i = 0; i < fwspec->num_ids; i++) {
->>> +		struct qcom_iommu_ctx *ctx = to_ctx(qcom_domain, fwspec->ids[i]);
->>> +
->>> +		/* Disable the context bank: */
->>> +		iommu_writel(ctx, ARM_SMMU_CB_SCTLR, 0);
->>> +
->>> +		ctx->domain = NULL;
->> Does setting ctx->domain to NULL still match this semantics?
-> Yes, I did not try to fix this driver. NULL means identity in the
-> ctx->domain.
+On 2023/8/15 1:25, Jason Gunthorpe wrote:
+> Ah, I went over all this again and decided to try again, it is too
+> complicated. This patch can do what the commit message says and the
+> following patches are even simpler:
 
-Okay.
+Yes. This method is more concise. Some nits below.
+
+> 
+> /*
+>   * Combine the driver's choosen def_domain_type across all the devices in a
+>   * group. Drivers must give a consistent result.
+>   */
+> static int iommu_get_def_domain_type(struct iommu_group *group,
+> 				     struct device *dev, int cur_type)
+> {
+> 	const struct iommu_ops *ops = group_iommu_ops(group);
+> 	int type;
+> 
+> 	if (!ops->def_domain_type)
+> 		return cur_type;
+> 
+> 	type = ops->def_domain_type(dev);
+> 	if (!type || cur_type == type)
+> 		return cur_type;
+> 	if (!cur_type)
+> 		return type;
+> 
+> 	dev_err_ratelimited(
+> 		dev,
+> 		"IOMMU driver error, requesting conflicting def_domain_type, %s and %s, for devices in group %u.\n",
+> 		iommu_domain_type_str(cur_type), iommu_domain_type_str(type),
+> 		group->id);
+> 
+> 	/*
+> 	 * Try to recover, drivers are allowed to force IDENITY or DMA, IDENTITY
+> 	 * takes precedence.
+> 	 */
+> 	if (cur_type || type == IOMMU_DOMAIN_IDENTITY)
+> 		return IOMMU_DOMAIN_IDENTITY;
+
+No need to check cur_type. It already returned if cur_type is 0.
+
+> 	return cur_type;
+> }
+> 
+> /*
+>   * A target_type of 0 will select the best domain type. 0 can be returned in
+>   * this case meaning the global default should be used.
+>   */
+> static int iommu_get_default_domain_type(struct iommu_group *group,
+> 					 int target_type)
+> {
+> 	struct device *untrusted = NULL;
+> 	struct group_device *gdev;
+> 	int driver_type = 0;
+> 
+> 	lockdep_assert_held(&group->mutex);
+> 
+> 	/*
+> 	 * ARM32 drivers supporting CONFIG_ARM_DMA_USE_IOMMU can declare an
+> 	 * identity_domain and it will automatically become their default
+> 	 * domain. Later on ARM_DMA_USE_IOMMU will install its UNMANAGED domain.
+> 	 * Override the selection to IDENTITY.
+> 	 */
+> 	if (IS_ENABLED(CONFIG_ARM_DMA_USE_IOMMU)) {
+> 		static_assert(!(IS_ENABLED(CONFIG_ARM_DMA_USE_IOMMU) &&
+> 				IS_ENABLED(CONFIG_IOMMU_DMA)));
+
+IS_ENABLED(CONFIG_ARM_DMA_USE_IOMMU) is duplicate with the condition in 
+the if statement. So only
+		static_assert(!IS_ENABLED(CONFIG_IOMMU_DMA));
+?
+
+> 		driver_type = IOMMU_DOMAIN_IDENTITY;
+> 	}
+> 
+> 	for_each_group_device(group, gdev) {
+> 		driver_type = iommu_get_def_domain_type(group, gdev->dev,
+> 							driver_type);
+
+No need to call this in the loop body?
+
+> 
+> 		if (dev_is_pci(gdev->dev) && to_pci_dev(gdev->dev)->untrusted) {
+> 			/*
+> 			 * No ARM32 using systems will set untrusted, it cannot
+> 			 * work.
+> 			 */
+> 			if (WARN_ON(IS_ENABLED(CONFIG_ARM_DMA_USE_IOMMU)))
+> 				return -1;
+> 			untrusted = gdev->dev;
+> 		}
+> 	}
+> 
+> 	if (untrusted) {
+> 		if (driver_type && driver_type != IOMMU_DOMAIN_DMA) {
+> 			dev_err_ratelimited(
+> 				untrusted,
+> 				"Device is not trusted, but driver is overriding group %u to %s, refusing to probe.\n",
+> 				group->id, iommu_domain_type_str(driver_type));
+> 			return -1;
+> 		}
+> 		driver_type = IOMMU_DOMAIN_DMA;
+> 	}
+> 
+> 	if (target_type) {
+> 		if (driver_type && target_type != driver_type)
+> 			return -1;
+> 		return target_type;
+> 	}
+> 	return driver_type;
+> }
 
 Best regards,
 baolu
