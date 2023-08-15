@@ -1,56 +1,55 @@
-Received: from mail-pl1-f171.google.com (mail-pl1-f171.google.com [209.85.214.171])
+Received: from mail-pl1-f180.google.com (mail-pl1-f180.google.com [209.85.214.180])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9FBB21803F
-	for <iommu@lists.linux.dev>; Tue, 15 Aug 2023 18:32:13 +0000 (UTC)
-Received: by mail-pl1-f171.google.com with SMTP id d9443c01a7336-1bbff6b2679so36590955ad.1
-        for <iommu@lists.linux.dev>; Tue, 15 Aug 2023 11:32:13 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0BC4B13ADD
+	for <iommu@lists.linux.dev>; Tue, 15 Aug 2023 18:33:08 +0000 (UTC)
+Received: by mail-pl1-f180.google.com with SMTP id d9443c01a7336-1bdaeb0f29aso30323765ad.2
+        for <iommu@lists.linux.dev>; Tue, 15 Aug 2023 11:33:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1692124333; x=1692729133;
+        d=ziepe.ca; s=google; t=1692124388; x=1692729188;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=9syoRTOSAzSEKBlQnF+U1GBxxRqq34plvvTlAfkaZaE=;
-        b=JWHHRmtsdyUwdBNj7Kgkm9GP8HuP7QNxFlq2hPgFfThDGolHMXdaR7fbH75lYdpToD
-         /qLfmH99NCxYUoahJhAEsv/cpUQVqA75M36WTDOIapfDNy4b0Hrk03/TLbofFtahMvUG
-         Z5OyvjG/1mo/TCOOv6OXD0xcHMXCki0xFSfDSGi1uLKy/Abh5WtnUR8IXtRSZErVThhg
-         9okmWF+Ft0fiZPbCYryCINzNZumFsxWPV1h8A9ni8ejIexxNwg5HblLENcdgyZyCmxur
-         qLkw6ZspnmcyKFosptflGrwSE2dkuVi8DhkvWpgQzmVe8h+oEHgTdnmEKAjUtNOfzKQ1
-         YTLA==
+        bh=Z/vBP+8HhRip3+9kTcLIMModJTfoZ5OkaFrov6bJX/0=;
+        b=ObqUvGkP7znE2FtsP+dCwpI9q/PeNXftpc08uRnKSGSKZ/lpx9ZM6QQkf0ISNEdLd2
+         skKki1DdK19JGLRrGwHOn5siVAPN2kbKTLx7eDOwKlHDNiU6PqG1WuAek/qEZGyyi3qM
+         A0BCMGhYvv4vgGFDSFc4tNf5xrRCG3HP7ku18Rq6GqBHfLsJR42l0Rc9uFbF74F2E3n+
+         6tkea4WQg2o+eQGyJ2Cp2xxbwToY2WM5lPYw3Kb3nCkjq4lwxKTVtrH7mqjHyeX+8hYY
+         36ryZAo3M+6qeWy8VF3ZvairYvRcIwLjtWkC2snKJtCGov1pEv65pVO1/LGi53PDiy0G
+         0vSQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1692124333; x=1692729133;
+        d=1e100.net; s=20221208; t=1692124388; x=1692729188;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=9syoRTOSAzSEKBlQnF+U1GBxxRqq34plvvTlAfkaZaE=;
-        b=kr0BULkuSmC6crqkVN9n8brMFKJnaYHaHRn2AMgX0wJm8xeCbv96Tt7ha2rJs1wMXj
-         pfIo4iY/8xhuB/a3oAt9JUsVI6s8ZmLRUhWTpcFFDWhVQfIj4ihgK4dsJBDNJ2wILB+0
-         R3hR9IUnF5Kk8Ko8ZxKTamVxWTumXsAEGoSxVI/bNUbfyjcRuhnvhC8pbCmJ+TjQcMU+
-         BTXETqy/CPVVCjBzW0z13KULuI8kDcwToddBIK/XJ4RgM+DwmXnTN30uphlZVynfQDfZ
-         76jQf8iu9ErJCJZ3BrZiBDCYUGa6H7cOlQM4a8nGfWnZfJPWvO6EDGs/AafvHyAVCkH0
-         DzgQ==
-X-Gm-Message-State: AOJu0Yz4T2PSC+MLC91/YmFoWMEaPGCTQ5jHpjnuJ6qyABTf82PnvgB1
-	KmJpMRDrC7+FObUzO9TwlZKy/g==
-X-Google-Smtp-Source: AGHT+IF0QgBRhtAis1hJtgm+xz85cqtqHQ5xOTBVLTVdCg8cZzTsJC/jHwvdDZl32j3IcT/5VPnxDw==
-X-Received: by 2002:a17:902:aa41:b0:1bc:3944:9391 with SMTP id c1-20020a170902aa4100b001bc39449391mr10848429plr.25.1692124332849;
-        Tue, 15 Aug 2023 11:32:12 -0700 (PDT)
+        bh=Z/vBP+8HhRip3+9kTcLIMModJTfoZ5OkaFrov6bJX/0=;
+        b=JoBjFYVBDPEBxn4Ije76vYpIz59uxzUHZswirgBXMUlVEy7Y7tnksFcsxfHkd0Vac9
+         NKoLxCBNE9YRgp1BnJEK+iUynDXrzi8WR10F+/GaK6zc0RoI//mYJQEI5zuvFFkxUYEb
+         kSZs3uVvqvQymZIXzm6Om/UiVZdnhAxQFXW1k9rKFZDmbW21mkeSaIBLd37aMKdmAAcz
+         8Z34sAebnJavOuNYBRbgAdQNw6ppg/Mrh9FbR+sgea+NU2OAHyLJdp1crB373wG5nTEn
+         l2dCH+c08jYhNnnEzBYFt+bzPDjjdwJFeOhnLCSJazAR2nUBHgwNZdy02MsuQA5cWEc7
+         fn4Q==
+X-Gm-Message-State: AOJu0YzYpaklq+h/RYi7lWgvfT2AQxvdxUmgCH0odLCVhYGDbym5dE+2
+	MJ1RQkgCk/kgczwBel8IFUoWpOUpp5rLRcOhYdA=
+X-Google-Smtp-Source: AGHT+IEvKx5LhEvmtNOPEzTwKA/8YwI0tCZHiwkJ5fu2Y1raSwx96SnNDgZ7Z1jeCHRxU1P9ZPVRNw==
+X-Received: by 2002:a17:902:db06:b0:1b8:9b17:f63d with SMTP id m6-20020a170902db0600b001b89b17f63dmr14136720plx.23.1692124388252;
+        Tue, 15 Aug 2023 11:33:08 -0700 (PDT)
 Received: from ziepe.ca ([206.223.160.26])
-        by smtp.gmail.com with ESMTPSA id o5-20020a170902d4c500b001bb9bc8d232sm11342169plg.61.2023.08.15.11.32.12
+        by smtp.gmail.com with ESMTPSA id y6-20020a17090322c600b001b8c689060dsm11334102plg.28.2023.08.15.11.33.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Aug 2023 11:32:12 -0700 (PDT)
+        Tue, 15 Aug 2023 11:33:07 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.95)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1qVypv-007hjE-2T;
-	Tue, 15 Aug 2023 15:32:11 -0300
-Date: Tue, 15 Aug 2023 15:32:11 -0300
+	id 1qVyqo-007hjf-AW;
+	Tue, 15 Aug 2023 15:33:06 -0300
+Date: Tue, 15 Aug 2023 15:33:06 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
 To: Vasant Hegde <vasant.hegde@amd.com>
 Cc: iommu@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com,
 	wei.huang2@amd.com, jsnitsel@redhat.com
-Subject: Re: [PATCH v4 09/14] iommu/amd: Modify logic for checking GT and PPR
- features
-Message-ID: <ZNvEq6lJ7Yfu/y10@ziepe.ca>
+Subject: Re: [PATCH v4 11/14] iommu/amd: Introduce iommu_dev_data.ppr
+Message-ID: <ZNvE4r/NOSM5N6Z/@ziepe.ca>
 References: <20230815102202.565012-1-vasant.hegde@amd.com>
- <20230815102202.565012-10-vasant.hegde@amd.com>
+ <20230815102202.565012-12-vasant.hegde@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -59,29 +58,44 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230815102202.565012-10-vasant.hegde@amd.com>
+In-Reply-To: <20230815102202.565012-12-vasant.hegde@amd.com>
 
-On Tue, Aug 15, 2023 at 10:21:57AM +0000, Vasant Hegde wrote:
+On Tue, Aug 15, 2023 at 10:21:59AM +0000, Vasant Hegde wrote:
 > From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 > 
-> In order to support v2 page table, IOMMU driver need to check if the
-> hardware can support Guest Translation (GT) and Peripheral Page Request
-> (PPR) features. Currently, IOMMU driver uses global (amd_iommu_v2_present)
-> and per-iommu (struct amd_iommu.is_iommu_v2) variables to track the
-> features. There variables area redundant since we could simply just check
-> the global EFR mask.
+> For AMD IOMMU, the PPR feature is needed to support IO page fault (IOPF).
+> PPR is enabled per PCI end-point device, and is configured by the PPR bit
+> in the IOMMU device table entry (i.e DTE[PPR]).
 > 
-> Therefore, replace it with a helper function with appropriate name.
+> Introducing struct iommu_dev_data.ppr track PPR setting for each device.
+> 
+> Also iommu_dev_data.ppr will be set only when IOMMU supports PPR. Hence
+> remove redundant feature support check in set_dte_entry().
 > 
 > Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 > Co-developed-by: Vasant Hegde <vasant.hegde@amd.com>
 > Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
 > ---
->  drivers/iommu/amd/amd_iommu.h       | 6 ++++++
->  drivers/iommu/amd/amd_iommu_types.h | 5 -----
->  drivers/iommu/amd/init.c            | 9 +--------
->  drivers/iommu/amd/iommu.c           | 2 +-
->  4 files changed, 8 insertions(+), 14 deletions(-)
+>  drivers/iommu/amd/amd_iommu_types.h |  1 +
+>  drivers/iommu/amd/iommu.c           | 10 ++++------
+>  2 files changed, 5 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
+> index 1c61dca63824..c9027119ab35 100644
+> --- a/drivers/iommu/amd/amd_iommu_types.h
+> +++ b/drivers/iommu/amd/amd_iommu_types.h
+> @@ -816,6 +816,7 @@ struct iommu_dev_data {
+>  	u8 ats_enabled  :1;		  /* ATS state */
+>  	u8 pri_tlp      :1;		  /* PASID TLB required for
+>  					     PPR completions */
+> +	bool ppr;			  /* Enable device PPR support */
+>  	bool use_vapic;			  /* Enable device to use vapic mode */
+>  	bool defer_attach;
+
+Linus would not like this if he saw it, continue using the u8 :1
+bitfield..
+
+Otherwise looks fine
 
 Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
