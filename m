@@ -1,102 +1,99 @@
-Received: from mail-pl1-f176.google.com (mail-pl1-f176.google.com [209.85.214.176])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.20])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D260417CB
-	for <iommu@lists.linux.dev>; Tue, 15 Aug 2023 00:40:06 +0000 (UTC)
-Received: by mail-pl1-f176.google.com with SMTP id d9443c01a7336-1bc7e65ea44so33170425ad.1
-        for <iommu@lists.linux.dev>; Mon, 14 Aug 2023 17:40:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1692060006; x=1692664806;
-        h=content-transfer-encoding:subject:from:cc:to:content-language
-         :user-agent:mime-version:date:message-id:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=5fMH5NUxHJYKatAlHbaGz3MMvlMMEAIyijBcdg08U7I=;
-        b=O60H9O6duSSWPxF9+cT5wCCX/xo1hb8xou6gNN2DLR7KaHrWBG6be/XWHXfIDDc5Vj
-         SN/2RnNQgFkt1SZcMwpkBJvg2M/1uwPghQg3SY9oMfCN1eL5esGOLuT+HJ/6tpYb8c1h
-         6k71lDJSKco/flRnsoruqrdkrpFaMH3MTGBN1iti9E1BoeV9UZJCkmedsrU4c+bHdz9S
-         NZciqQ+U3Nf+FRToptOpb9jaQ8Mnz1DKpImdGoNJK1MLgyOL6fmMXsmBhWoin/vsHIYl
-         zpPhtMdQEOkmHJtCrV4Q5xDGdhjHMu0kTBAf3n0NS79xpv+vdmIUJyRAj5Y/C0hMCyCM
-         Xccw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1692060006; x=1692664806;
-        h=content-transfer-encoding:subject:from:cc:to:content-language
-         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=5fMH5NUxHJYKatAlHbaGz3MMvlMMEAIyijBcdg08U7I=;
-        b=JvQHE00DXMjfG4VQbzUjMXT63Ll9hAq9Y/nTnW0xf+2t1SbAzYS84PUliUboUNqZom
-         KNmfnsA/MmBqoBUe0k043IzirjTdWcpksZrE9v6yPzuYoltENrqN2yQEbOORpbSnWmMC
-         SSvbCqbMoUHbAoroPFsmCaA01ODkpS03E8E6rcaE2S1M9FuKzQ+yW0PnnzXeqKvBbB4u
-         eu8PwT1xPXk485snsYaKr5JhNNQwTv4wp1DZpfHKychl/F0s3Pv+y/3benNZ//AZVR+m
-         KR2XI9+arl7ML119ozoE13pQtDaj/HXwohLkfnnHwzGV2rPw4JI24RTS0BwMILW9ig5T
-         lWjw==
-X-Gm-Message-State: AOJu0Yy/0S3quw4CBbxZXGpZoqr2duZ3057hC6z7/mLFJ/2qJJk8e4bN
-	AOlksdNU4x1MHtykH6QwFwU=
-X-Google-Smtp-Source: AGHT+IEEB6lflMWlhdrUmo5oN54WcibS/WJd1F77YfnrV1RIzKdDuvX9wskpOnr5e3Bi5m8h8e9QTA==
-X-Received: by 2002:a17:903:32d0:b0:1b8:8682:62fb with SMTP id i16-20020a17090332d000b001b8868262fbmr740355plr.4.1692060005978;
-        Mon, 14 Aug 2023 17:40:05 -0700 (PDT)
-Received: from [192.168.0.105] ([103.124.138.83])
-        by smtp.gmail.com with ESMTPSA id f2-20020a170902ab8200b001bbbc655ca1sm10023858plr.219.2023.08.14.17.40.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 14 Aug 2023 17:40:05 -0700 (PDT)
-Message-ID: <e75b57d9-9093-0a22-d53d-e510fd422279@gmail.com>
-Date: Tue, 15 Aug 2023 07:39:58 +0700
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9DA75625;
+	Tue, 15 Aug 2023 00:57:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1692061025; x=1723597025;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=EMtekiFoo0Tblby6wZQ8ziVNSJFBHzBXovBoPNar8KU=;
+  b=dUBnHrVqBwVz/BIyiNggvUg+BtAWocp/xySTicWL7ortznwzjr9KhBYC
+   bDJkRmiiwtcdL4gBQeDS0MvdYI3FuQoZyMITXLIzvv5RXA+tYcywDu8bZ
+   90nj2lJ8eToDokYSyvY+BNO1XkEna1sBxWZZAbu6pOQDMIo3gwDRhzMLV
+   qRNVRliridk0/pp6NXoXR/n0W26lWU8fxEefSxUbiOUkYfrFZE2+WS3zj
+   tMF9YTYQ1DW15tstjflfWw+ubJNh36VYZGUE5Q9DxWensGF9jWo54CYC5
+   Ci/P4IJ1Y0J9tk/Og5qzsAmVrwyvknXuHnGP6tThKg1abYNd1YG0TIF6n
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10802"; a="362322777"
+X-IronPort-AV: E=Sophos;i="6.01,173,1684825200"; 
+   d="scan'208";a="362322777"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Aug 2023 17:56:54 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10802"; a="857243905"
+X-IronPort-AV: E=Sophos;i="6.01,173,1684825200"; 
+   d="scan'208";a="857243905"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.254.215.149]) ([10.254.215.149])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Aug 2023 17:56:42 -0700
+Message-ID: <d645ddff-f274-7a01-6b06-3f5a7afef8fe@linux.intel.com>
+Date: Tue, 15 Aug 2023 08:56:40 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.14.0
+Cc: baolu.lu@linux.intel.com, Andy Gross <agross@kernel.org>,
+ Alim Akhtar <alim.akhtar@samsung.com>, Bjorn Andersson
+ <andersson@kernel.org>,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ Baolin Wang <baolin.wang@linux.alibaba.com>,
+ Christophe Leroy <christophe.leroy@csgroup.eu>,
+ Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+ Heiko Stuebner <heiko@sntech.de>, iommu@lists.linux.dev,
+ Jernej Skrabec <jernej.skrabec@gmail.com>,
+ Jonathan Hunter <jonathanh@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
+ Kevin Tian <kevin.tian@intel.com>, Konrad Dybcio <konrad.dybcio@linaro.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+ linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+ linux-mediatek@lists.infradead.org, linux-rockchip@lists.infradead.org,
+ linux-s390@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+ linux-sunxi@lists.linux.dev, linux-tegra@vger.kernel.org,
+ Russell King <linux@armlinux.org.uk>, linuxppc-dev@lists.ozlabs.org,
+ Matthias Brugger <matthias.bgg@gmail.com>,
+ Matthew Rosato <mjrosato@linux.ibm.com>,
+ Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>,
+ Orson Zhai <orsonzhai@gmail.com>, Rob Clark <robdclark@gmail.com>,
+ Robin Murphy <robin.murphy@arm.com>, Samuel Holland <samuel@sholland.org>,
+ Thierry Reding <thierry.reding@gmail.com>, Krishna Reddy
+ <vdumpa@nvidia.com>, Chen-Yu Tsai <wens@csie.org>,
+ Will Deacon <will@kernel.org>, Yong Wu <yong.wu@mediatek.com>,
+ Chunyan Zhang <zhang.lyra@gmail.com>, Dmitry Osipenko <digetx@gmail.com>,
+ Marek Szyprowski <m.szyprowski@samsung.com>,
+ Nicolin Chen <nicolinc@nvidia.com>, Niklas Schnelle
+ <schnelle@linux.ibm.com>, Steven Price <steven.price@arm.com>,
+ Thierry Reding <treding@nvidia.com>
+Subject: Re: [PATCH v6 17/25] iommu/qcom_iommu: Add an IOMMU_IDENTITIY_DOMAIN
 Content-Language: en-US
-To: Ilya Maximets <i.maximets@ovn.org>, =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?=
- <bjorn@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
- Daniel Borkmann <daniel@iogearbox.net>, Andrii Nakryiko <andrii@kernel.org>,
- Joseph Vance Reilly <Joseph.Reilly@uga.edu>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>
-Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- Linux BPF <bpf@vger.kernel.org>, Linux Networking <netdev@vger.kernel.org>,
- Linux IOMMU <iommu@lists.linux.dev>
-From: Bagas Sanjaya <bagasdotme@gmail.com>
-Subject: Fwd: AF-XDP program in multi-process/multi-threaded configuration
- IO_PAGEFAULT
-Content-Type: text/plain; charset=UTF-8
+To: Jason Gunthorpe <jgg@nvidia.com>
+References: <17-v6-e8114faedade+425-iommu_all_defdom_jgg@nvidia.com>
+ <8cef9a0d-15ba-f8af-7e22-d4d3063c97bf@linux.intel.com>
+ <ZNpJ5irR4XeLw6qG@nvidia.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <ZNpJ5irR4XeLw6qG@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-Hi,
+On 2023/8/14 23:36, Jason Gunthorpe wrote:
+> On Mon, Aug 14, 2023 at 02:32:33PM +0800, Baolu Lu wrote:
+> 
+>>> +	pm_runtime_get_sync(qcom_iommu->dev);
+>>> +	for (i = 0; i < fwspec->num_ids; i++) {
+>>> +		struct qcom_iommu_ctx *ctx = to_ctx(qcom_domain, fwspec->ids[i]);
+>>> +
+>>> +		/* Disable the context bank: */
+>>> +		iommu_writel(ctx, ARM_SMMU_CB_SCTLR, 0);
+>>> +
+>>> +		ctx->domain = NULL;
+>> Does setting ctx->domain to NULL still match this semantics?
+> Yes, I did not try to fix this driver. NULL means identity in the
+> ctx->domain.
 
-I notice a bug report on Bugzilla [1]. Quoting from it:
+Okay.
 
-> Hello,
-> 
-> I am currently doing research on AF_XDP and I encountered a bug that is present in multi-process and multi-threaded configurations of AF_XDP programs. I believe there is a race condition that causes an IO_PAGEFAULT and the entire OS to crash when it is encountered. This bug can be reproduced using Suricata release 7.0.0-rc1, or another program where multiple user space processes each with an AF_XDP socket are created.
-> 
-> I have attached some sample code that has should be able to reproduce the bug. This code creates n processes where n is the number of RX queues specified by the user. In my experience the higher the number of processes/RX queues used, the higher the likelihood of triggering the crash. 
-> 
-> To change the number of RX queues, use Ethtool to set the number of combined RX queues, this may vary depending on network card:
-> sudo ethtool -L <interface> combined <number of RX queues>
-> 
-> Compile the code using make and run the code as such:
-> sudo -E ./xdp_main.o <interface> <number of child processes> consec
-> 
-> To get the crash to show up, lots of traffic needs to be sent to the network interface. In our experimental setup, a machine using Pktgen is sending traffic to the machine running the AF_XDP code at max line rate. Using Pktgen, vary the IP/MAC addresses of each packet to make sure the packets are somewhat evenly distributed across each RX queue. This may help with reproducing the bug. Also be sure the interface is set to promiscuous mode.
-> 
-> While sending traffic at max line rate, send a SIGINT to the AF_XDP program receiving the traffic to terminate the program. Sometimes an IO_PAGEFAULT will occur. This is more common than not. Also attached are some screen shots of the terminal and of the output our server gives.
-> 
-> The bug occurs because each process has the same STDIN file descriptor and as a result each child process gets the same SIGINT signal at the same time causing them all to terminate at once. During this, I believe a race condition is reached where the AF_XDP program is still receiving packets and is trying to write them to a UMEM that no longer exists. The order of operations to cause this would be:
-> 1. XDP program looks up AF_XDP socket in XSKS_MAP 
-> 2. User space program deletes UMEM and/or AF_XDP socket 
-> 3. XDP program tries to write packet to UMEM
-> 
-> This can also be reproduced with Suricata as stated earlier with a similar traffic load as described for my personal program.
-> 
-> If more clarification is needed, please reach out to me. I would also like to know if this is an intended design or the cause of this bug. I look forward to hearing from you!
-
-See Bugzilla for the full thread and attached reproducer code.
-
-Thanks.
-
-[1]: https://bugzilla.kernel.org/show_bug.cgi?id=217712
-
--- 
-An old man doll... just what I always wanted! - Clara
+Best regards,
+baolu
