@@ -1,50 +1,54 @@
-Received: from mail-pg1-f202.google.com (mail-pg1-f202.google.com [209.85.215.202])
+Received: from mail-yw1-f202.google.com (mail-yw1-f202.google.com [209.85.128.202])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3BAF7156FD
-	for <iommu@lists.linux.dev>; Tue, 15 Aug 2023 21:35:39 +0000 (UTC)
-Received: by mail-pg1-f202.google.com with SMTP id 41be03b00d2f7-56477bea06fso6297161a12.1
-        for <iommu@lists.linux.dev>; Tue, 15 Aug 2023 14:35:39 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B3544156FD
+	for <iommu@lists.linux.dev>; Tue, 15 Aug 2023 21:35:41 +0000 (UTC)
+Received: by mail-yw1-f202.google.com with SMTP id 00721157ae682-589e5e46735so42518757b3.2
+        for <iommu@lists.linux.dev>; Tue, 15 Aug 2023 14:35:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1692135338; x=1692740138;
-        h=cc:to:from:subject:message-id:mime-version:date:reply-to:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=tVl3VRj57iGr8qaIRcvd93q5Wtl5mgpiK42P78vs0Wk=;
-        b=st/sTpRNP/idx5nlQZE0UaS24tJVAcF4CELTvWKEpOBxgj1C2QWWPrpIZvxmbTd0Ip
-         hr0jUZwnERWNdnSUZoMdaS0UF/GVcygUH6nlTEsQGb50HvVWmbsyS7kc9NWoj9r+MiGv
-         pH6vEZAwPcYxZGa4aZugNXLAQaJrV9kngpycQftIzDW2oeOeD0H0cN2VygiIouovp3oa
-         YAIKwVT2AG1eBqo2IISvcl0XDoSr2+US9Suzl23ovnjkQmczqdwvlmYpLQ698FmWd6DE
-         dXy/Alrh3bAytD25sizHNdi7CylUdgAMwj6udvCHrTw16L9SbRHJdsB8NaYGIzG1fpRW
-         5rLQ==
+        d=google.com; s=20221208; t=1692135340; x=1692740140;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:reply-to:from:to:cc:subject:date:message-id:reply-to;
+        bh=bCGvdYVO9EKbpa2jmZF0w8IsHUC4STqQLwNPEWIlFrg=;
+        b=4seg8jbUuzcf+Jrd/1/VCZUZyBFVOg1OI+RgVOOd17/vtRlmnaSGCfGp+yaEQXkaUV
+         T93drzsN5+fFePzUoNFE5SkAYPYATw3WDE7OlPsPwxwzAMhJUK4DDKasrG347gUl0E0m
+         bjiWWESP9bDXOkIXBXe5d/i1vj2ID5gyS8VmBT98ZfA0J7RSycx3pK9aDweUnUg1pEpZ
+         OMJRY5agn0k5JzWysk/6LYC5fkHk1aZcSyGv+bny6dm9yLROA7+zldsiELd3m9avnZ+y
+         AOqsx3XjHgeRNK9pgBLcqe3SoweWvFnkgZGQmTVd+2LdyxnWwa93d1buUfX/MTMzuYaq
+         imaA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1692135338; x=1692740138;
-        h=cc:to:from:subject:message-id:mime-version:date:reply-to
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=tVl3VRj57iGr8qaIRcvd93q5Wtl5mgpiK42P78vs0Wk=;
-        b=C9zmvntlPwZK7jHE0luqv09oqwjAZk6Ub0MHxAEo1VmLbV9sI4s4yz6EpDB9FIJKw+
-         S8HKEOj0iT8KdaHNUSXXCuFvzwqcsUbgd3hv1z/S+VjQITHZgCiZ9uwxkt1CXRQJz/lq
-         Zhmj0rs5mkBwoCBtJ9dF0eR0sUPwRmVVEGj6IdTUEil/KezCXhefwPwMscmb1eAldB43
-         hKzHV1wTOI4qZLR16eka9yGJExXhkHA2AFNipqhia/JmlMpfD1IRIUG1UOsN8n1LfOEL
-         DUlKvvf4t6SQYYApi5bGlgLCvfTnkKlLQp85nB6bUw4ugl8xpnxmZddV75IvH+9aX8Md
-         igBw==
-X-Gm-Message-State: AOJu0YyyhgQa7JqsoUN5Ht/s+K496qqVeAyuTh2wO5AYVLGFtOukpXja
-	xfwt6GUQWK4Mr4QyBh+Sse7JwpawgJ8=
-X-Google-Smtp-Source: AGHT+IEQJUXjsmbqH1x4y9bzfU8nFQD6xuICpUdNtkubfBXgLbWJbZDHZj0rAyx8MSDnBexaefmpTUylrls=
+        d=1e100.net; s=20221208; t=1692135340; x=1692740140;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:reply-to:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=bCGvdYVO9EKbpa2jmZF0w8IsHUC4STqQLwNPEWIlFrg=;
+        b=UHJUatiCiOOoBTqK6BiKsSqdEC5AvrtemuYhPwwzr0BrNYp2kijj/ynsYZcJIxDsP+
+         mSKRe33C4HRW5Ci1EEIjttidlcROegZXmDxVkpOSMKUioii4Db5xaOEf2wjGJtyjq2qw
+         obMCFNiJxpomXduY+SnBhgh1KV+5/6EKfYPToYYvAD+ekf5epNeaNALYNCFRTi5tr5AG
+         KcvzaaLNYvXUfcUmvhQwcIjWvH/GxUVfFG+BLFRAhueqoXKz0Sr7C36TZpEcd0Y7oWdp
+         cFLVFvRmUYfva7bMFikD1laCAw8/ASO5KTTBYQ5asqPJWIgUCAPP2Ha6/LbfE2Mdhilq
+         pWig==
+X-Gm-Message-State: AOJu0YwIXBxo7qYW3ussXGpzRtMJlHgH98Moh/63D+2lYW3GS0QTGvGB
+	apvCQV44QVoGt1RaWGTiqnQZs3oqaoI=
+X-Google-Smtp-Source: AGHT+IGRuzrjE+vpyIzdyF/OQOo1U5zpH5XKrPubx9S5xZyoHO/CMSeIvVbf4AW+/aR8z9iCg8Y6aE7RL/Y=
 X-Received: from zagreus.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5c37])
- (user=seanjc job=sendgmr) by 2002:a63:950c:0:b0:565:e2cd:c9e1 with SMTP id
- p12-20020a63950c000000b00565e2cdc9e1mr8860pgd.11.1692135338581; Tue, 15 Aug
- 2023 14:35:38 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a81:af27:0:b0:579:f832:74b with SMTP id
+ n39-20020a81af27000000b00579f832074bmr200736ywh.10.1692135340576; Tue, 15 Aug
+ 2023 14:35:40 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date: Tue, 15 Aug 2023 14:35:23 -0700
+Date: Tue, 15 Aug 2023 14:35:24 -0700
+In-Reply-To: <20230815213533.548732-1-seanjc@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
+References: <20230815213533.548732-1-seanjc@google.com>
 X-Mailer: git-send-email 2.41.0.694.ge786442a9b-goog
-Message-ID: <20230815213533.548732-1-seanjc@google.com>
-Subject: [PATCH 00/10] VM: SVM: Honor KVM_MAX_VCPUS when AVIC is enabled
+Message-ID: <20230815213533.548732-2-seanjc@google.com>
+Subject: [PATCH 01/10] KVM: SVM: Drop pointless masking of default APIC base
+ when setting V_APIC_BAR
 From: Sean Christopherson <seanjc@google.com>
 To: Sean Christopherson <seanjc@google.com>, Paolo Bonzini <pbonzini@redhat.com>, 
 	Joerg Roedel <joro@8bytes.org>
@@ -52,56 +56,45 @@ Cc: kvm@vger.kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
 	Maxim Levitsky <mlevitsk@redhat.com>
 Content-Type: text/plain; charset="UTF-8"
 
-The only true functional change in this entire mess is to change KVM's
-handling of KVM_CREATE_VCPU when AVIC is enabled.  Currently, KVM rejects
-vCPU creation if the vcpu_id is unaddressable, i.e. if it's larger than
-what is suppported by AVIC/x2AVIC hardware.  That is a rather blatant
-violation of both KVM_CAP_MAX_VCPUS and KVM_CAP_MAX_VCPU_ID, as KVM will
-advertise a KVM_CAP_MAX_VCPUS as 1024 and KVM_CAP_MAX_VCPU_ID as 4096,
-but then reject vcpu_ids as low as 256 (AVIC).
+Drop VMCB_AVIC_APIC_BAR_MASK, it's just a regurgitation of the maximum
+theoretical 4KiB-aligned physical address, i.e. is not novel in any way,
+and its only usage is to mask the default APIC base, which is 4KiB aligned
+and (obviously) a legal physical address.
 
-To fix the problem, add yet another AVIC inhibit to disable AVIC if
-userspace creates unaddressable vCPUs.  Alternatively, KVM could report
-different KVM_CAP_MAX_VCPUS and KVM_CAP_MAX_VCPU_ID values when AVIC is
-enabled, but IMO that path sets KVM up for failure, e.g. it would make it
-really hard for us to enable AVIC/x2AVIC by default, and we'd have to have
-to rework KVM selftests, which assume that KVM supports at least 512 vCPUs,
-e.g. recalc_apic_map_test fails when AVIC is enabled.
+No functional change intended.
 
-The bulk of this series is cleaning up related code, most of which is
-purely opportunistic, e.g. the many pointless PA masks, but some of which
-are functionally "necessary", for some definitions of necessary.
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+---
+ arch/x86/include/asm/svm.h | 2 --
+ arch/x86/kvm/svm/avic.c    | 2 +-
+ 2 files changed, 1 insertion(+), 3 deletions(-)
 
-Lightly tested, and the IOMMU interaction is basically compile tested only.
-But this is firmly post-6.6 material, so no rush on anyone testing this
-(I wouldn't even care all that much if the darn selftests didn't fail).
-
-Sean Christopherson (10):
-  KVM: SVM: Drop pointless masking of default APIC base when setting
-    V_APIC_BAR
-  KVM: SVM: Use AVIC_HPA_MASK when initializing vCPU's Physical ID entry
-  KVM: SVM: Drop pointless masking of kernel page pa's with "AVIC's" HPA
-    mask
-  KVM: SVM: Add helper to deduplicate code for getting AVIC backing page
-  KVM: SVM: Drop vcpu_svm's pointless avic_backing_page field
-  iommu/amd: KVM: SVM: Use pi_desc_addr to derive ga_root_ptr
-  KVM: SVM: Inhibit AVIC if ID is too big instead of rejecting vCPU
-    creation
-  KVM: SVM: WARN if KVM attempts to create AVIC backing page with user
-    APIC
-  KVM: SVM: Drop redundant check in AVIC code on ID during vCPU creation
-  KVM: SVM: Rename "avic_physical_id_cache" to "avic_physical_id_entry"
-
- arch/x86/include/asm/kvm_host.h |  6 +++
- arch/x86/include/asm/svm.h      |  6 +--
- arch/x86/kvm/svm/avic.c         | 79 +++++++++++++++------------------
- arch/x86/kvm/svm/svm.h          |  6 +--
- drivers/iommu/amd/iommu.c       |  2 +-
- include/linux/amd-iommu.h       |  1 -
- 6 files changed, 48 insertions(+), 52 deletions(-)
-
-
-base-commit: 240f736891887939571854bd6d734b6c9291f22e
+diff --git a/arch/x86/include/asm/svm.h b/arch/x86/include/asm/svm.h
+index 72ebd5e4e975..1e70600e84f7 100644
+--- a/arch/x86/include/asm/svm.h
++++ b/arch/x86/include/asm/svm.h
+@@ -257,8 +257,6 @@ struct __attribute__ ((__packed__)) vmcb_control_area {
+ 
+ #define AVIC_DOORBELL_PHYSICAL_ID_MASK			GENMASK_ULL(11, 0)
+ 
+-#define VMCB_AVIC_APIC_BAR_MASK				0xFFFFFFFFFF000ULL
+-
+ #define AVIC_UNACCEL_ACCESS_WRITE_MASK		1
+ #define AVIC_UNACCEL_ACCESS_OFFSET_MASK		0xFF0
+ #define AVIC_UNACCEL_ACCESS_VECTOR_MASK		0xFFFFFFFF
+diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
+index cfc8ab773025..7062164e4041 100644
+--- a/arch/x86/kvm/svm/avic.c
++++ b/arch/x86/kvm/svm/avic.c
+@@ -251,7 +251,7 @@ void avic_init_vmcb(struct vcpu_svm *svm, struct vmcb *vmcb)
+ 	vmcb->control.avic_backing_page = bpa & AVIC_HPA_MASK;
+ 	vmcb->control.avic_logical_id = lpa & AVIC_HPA_MASK;
+ 	vmcb->control.avic_physical_id = ppa & AVIC_HPA_MASK;
+-	vmcb->control.avic_vapic_bar = APIC_DEFAULT_PHYS_BASE & VMCB_AVIC_APIC_BAR_MASK;
++	vmcb->control.avic_vapic_bar = APIC_DEFAULT_PHYS_BASE;
+ 
+ 	if (kvm_apicv_activated(svm->vcpu.kvm))
+ 		avic_activate_vmcb(svm);
 -- 
 2.41.0.694.ge786442a9b-goog
 
