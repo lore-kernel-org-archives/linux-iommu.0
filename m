@@ -1,170 +1,216 @@
-Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam04on2065.outbound.protection.outlook.com [40.107.100.65])
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2056.outbound.protection.outlook.com [40.107.237.56])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 451B43D8C
-	for <iommu@lists.linux.dev>; Tue, 15 Aug 2023 05:33:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 16F9E567E
+	for <iommu@lists.linux.dev>; Tue, 15 Aug 2023 06:19:10 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=IlJoPr8ZvtOXkbzlBbAn5vLldVTzUflUxWCxkf+28Uk9Jr9VMEhlel9qcjSYM8XkIAMy2Q0d2jQRm4P7bwHTJxQ0I6H260pVDo1rFllCpmz78MKgeQUGuD/2IH+txvyKO7uU9tMdcYok7vBhA3QwkjAd4XB6erYcbyYEhF75SyN1hO2AgpXB8L/chiRCXLiLWJkhxo2hJI637wRKKbyxt8ClAKgxrFO7Gu6ALjHYUqdd9Qw/n6cMGT/ZM+MMve5aF9nO+0HDvFyY8fM39tebBwISTNQW2APiDFJAtpgWRwCr/ycP/Fs3hRDK4VONyXBsi59AOPGDv2WJI9Ot7t9amQ==
+ b=Sq6D+PEyk2wOlCrDqd7t0kivyCfMFdFIF19QfLHQEP757QkMU9g6DR+p3e/ZYYNVyAYb9pfvoWqEKBIQ+qJiGWCDRuJhE2E9Sz5ihuq821j9cVUlR2oRIVqreZ3fAcd+uOY6yiaiSMMJEIikHRNTmDRNvZ89TvLcFdBN0HwMzbUGBq5pF8TSZtG0i2Sjz/BNOaWZ0rKjgHOxLf6ZCcnujgztZIKNLE+47NQWcVefXk67fGYAjkyTd1oQqyb9zbq/kvx3bDPQ6xrca0jRiz8goSOjMtvGQzlUvBwMYihpR/bgsiJyvXJFxYkQrWgyeS5G6TwUie/3ZGI8J5prGO+JUg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=FiMnFJMQ0U5pebbp5+CcMayRgDaQcRebrG2DZ7tc8X4=;
- b=hQXDkSwkDF1ZD2Pnc6ANr+ORQUOYcxGtr3Yex0eWfBO/Ca9ZI4Cwlq3mpBRp/WEe47ULMchXDkwHDJeyroGKn6bGQKoJN3XXefknYPxHWrokCLPch3WccUXyTubLyi35Y+hsGAzvBm7vll3vJZd2E7U0/LzEZemQt0+zrp/WnczT3mN55aMyThfZB+RPh2icEYsO+qIUPL9DDwLTuMHYyN7Q+tyr7oIUc1JpLvX3LYJcRnzFOsqTbkoOP/+NAJtzwVqK2HV8E3/9KqQkDzZy4gOK1/AQoUlQKERqzYl5ab0KL18eycUf4ySyq9GUAodfOdkcqirzpmjk/ifjhENXig==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ bh=FZwS7FskMnaQKUKk2d98edQHxbswOuQza+DxRrTTVuI=;
+ b=mSO3TiDOBeJNFqjgDqzMqS2EgG+r7Wwk8F0Hm0kAeoj0LcFm2a+0bPJ9NoZZibCGa77tgqgLY04gzJLxEM/07znYePTMLlQ2m28ZtTw9ZenJzouaJqu2sq2jnuh+Xcs6eLDEvVhkcEv4+Ce8XNrJjTKlJE9jl7XiuKoFdTRCEQe0ZmSmqEsAUt10THxq4CvRV4RnTGWQTHCCUO90lMdzMLt0DuxLBG/Fp7AeHLJsVwT8ftCw5Jmu1sS1yciIi+i0isJmdnFapRE4WwNjGZmlblpGSe9SxPOss0rrK+4GIeSyQ6Xmnp6rbssMybIUEUtEZ0URxlwbH5TTQv/a7OLKaQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.160) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=FiMnFJMQ0U5pebbp5+CcMayRgDaQcRebrG2DZ7tc8X4=;
- b=4+W/DU2AWNnD6n+/sN/foYFNW/rgvsvoKw0Pixre6QwzK5tD1SLiQp7qIBgkROZ1G/xpoG6vQyTffbyaP6f6lwtoQF/SaO+7jDRTb5DYEgzkpZyQcum+WIIWLpjKHZTLDvQjBFvIBKh7ERcQ1HjpW2SONiYGxsmjl3QRqTIfZWU=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DM8PR12MB5445.namprd12.prod.outlook.com (2603:10b6:8:24::7) by
- CH0PR12MB8485.namprd12.prod.outlook.com (2603:10b6:610:193::18) with
+ bh=FZwS7FskMnaQKUKk2d98edQHxbswOuQza+DxRrTTVuI=;
+ b=HEzZ/LmeqjskRlsYkgBPI41tkSvhuPfcyXglhiFtXz/Qe4U3cZpHGXQBcDgeSajAfksuXtvE2FTubnlye3UWhIgdwDTaOdN7tyZTSpJ3boHGcVrO4XOArQfiNkSZv0+BNNZuejmz3o2O41r5UJvU6OUM4/CdqfmX76fg0TorTHlDwQRllKAWhsImeQxlyhzu4WJ3ezbL1kJLvg8KpKzqqrEKnUtduQeCx4oA2L3blXVUNGmhlJAdKYKy1cnTTIVNaEzSqqWjC4bSdzyRmMqbVygFgTlZrD7lp2U+dWzeYOAv0asoa6gMvH3lN2cw7WIfjSXiRpmYH9Dwcgs+Wml4NQ==
+Received: from PH0PR07CA0026.namprd07.prod.outlook.com (2603:10b6:510:5::31)
+ by MN0PR12MB5835.namprd12.prod.outlook.com (2603:10b6:208:37a::6) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6678.26; Tue, 15 Aug
- 2023 05:33:11 +0000
-Received: from DM8PR12MB5445.namprd12.prod.outlook.com
- ([fe80::12ec:a62b:b286:d309]) by DM8PR12MB5445.namprd12.prod.outlook.com
- ([fe80::12ec:a62b:b286:d309%7]) with mapi id 15.20.6678.025; Tue, 15 Aug 2023
- 05:33:11 +0000
-Message-ID: <57810db9-9a85-ca4e-0fc8-24dcaeb77fa3@amd.com>
-Date: Mon, 14 Aug 2023 22:33:08 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.1
-Subject: Re: [PATCH 06/11] iommu/amd: Refactor helper function for attaching /
- detaching device
-Content-Language: en-US
-To: Jason Gunthorpe <jgg@ziepe.ca>, Vasant Hegde <vasant.hegde@amd.com>
-Cc: iommu@lists.linux.dev, joro@8bytes.org, wei.huang2@amd.com,
- jsnitsel@redhat.com
-References: <20230808100232.5977-1-vasant.hegde@amd.com>
- <20230808100232.5977-7-vasant.hegde@amd.com> <ZNJhw8RRvJZ+R61y@ziepe.ca>
- <f08fc678-0bff-1e3a-302d-f673c952462d@amd.com> <ZNY1ligeAdFmILoT@ziepe.ca>
- <36a5f7ad-7d67-a818-2b0d-366722592887@amd.com> <ZNbJTiolSya/3/Nu@ziepe.ca>
-From: "Suthikulpanit, Suravee" <suravee.suthikulpanit@amd.com>
-In-Reply-To: <ZNbJTiolSya/3/Nu@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SJ0PR03CA0179.namprd03.prod.outlook.com
- (2603:10b6:a03:338::34) To DM8PR12MB5445.namprd12.prod.outlook.com
- (2603:10b6:8:24::7)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6678.24; Tue, 15 Aug
+ 2023 06:19:08 +0000
+Received: from SA2PEPF000015C9.namprd03.prod.outlook.com
+ (2603:10b6:510:5:cafe::47) by PH0PR07CA0026.outlook.office365.com
+ (2603:10b6:510:5::31) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6652.33 via Frontend
+ Transport; Tue, 15 Aug 2023 06:19:07 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ SA2PEPF000015C9.mail.protection.outlook.com (10.167.241.199) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6699.14 via Frontend Transport; Tue, 15 Aug 2023 06:19:07 +0000
+Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Mon, 14 Aug 2023
+ 23:18:50 -0700
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail204.nvidia.com
+ (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Mon, 14 Aug
+ 2023 23:18:49 -0700
+Received: from Asurada-Nvidia (10.127.8.13) by mail.nvidia.com (10.129.68.8)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37 via Frontend
+ Transport; Mon, 14 Aug 2023 23:18:48 -0700
+Date: Mon, 14 Aug 2023 23:18:46 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Jason Gunthorpe <jgg@nvidia.com>, "Liu, Yi L" <yi.l.liu@intel.com>, "Tian,
+ Kevin" <kevin.tian@intel.com>
+CC: "joro@8bytes.org" <joro@8bytes.org>, "alex.williamson@redhat.com"
+	<alex.williamson@redhat.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>, "cohuck@redhat.com"
+	<cohuck@redhat.com>, "eric.auger@redhat.com" <eric.auger@redhat.com>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>, "mjrosato@linux.ibm.com"
+	<mjrosato@linux.ibm.com>, "chao.p.peng@linux.intel.com"
+	<chao.p.peng@linux.intel.com>, "yi.y.sun@linux.intel.com"
+	<yi.y.sun@linux.intel.com>, "peterx@redhat.com" <peterx@redhat.com>,
+	"jasowang@redhat.com" <jasowang@redhat.com>,
+	"shameerali.kolothum.thodi@huawei.com"
+	<shameerali.kolothum.thodi@huawei.com>, "lulu@redhat.com" <lulu@redhat.com>,
+	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>, "Duan,
+ Zhenzhong" <zhenzhong.duan@intel.com>
+Subject: Re: [PATCH v4 09/12] iommu/vt-d: Add iotlb flush for nested domain
+Message-ID: <ZNsYxta9Pi7USDoR@Asurada-Nvidia>
+References: <ZNPlGd4/72dahSs4@Asurada-Nvidia>
+ <ZNPmpW3/zDnjqxyU@nvidia.com>
+ <ZNP0UKGU6id5wfc6@Asurada-Nvidia>
+ <BN9PR11MB527683351B687B97AB84B51B8C13A@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <ZNUI0D7ZMvLWlBNx@nvidia.com>
+ <ZNUa/VmeiIo0YA0v@Asurada-Nvidia>
+ <ZNU6BnTgNEWlwNYQ@nvidia.com>
+ <ZNVQcmYp27ap7h30@Asurada-Nvidia>
+ <BN9PR11MB5276D0B3E0106C73C498B8018C10A@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <ZNZlnh+/Q5Vk5Kul@Asurada-Nvidia>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <ZNZlnh+/Q5Vk5Kul@Asurada-Nvidia>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM8PR12MB5445:EE_|CH0PR12MB8485:EE_
-X-MS-Office365-Filtering-Correlation-Id: bcac09d0-3ed6-4489-f908-08db9d511cff
+X-MS-TrafficTypeDiagnostic: SA2PEPF000015C9:EE_|MN0PR12MB5835:EE_
+X-MS-Office365-Filtering-Correlation-Id: ad8caa0d-6d5e-445a-b423-08db9d578853
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	0OyPyZ4lit5HGowLAwuZYej4fcGzoCk2YrsK9iC5hsqV2tU4z9aztoFs9lXrpYto7w2dQBE4t47a3uMmlsIwtp+YeGwKLbHxV11bCQ8IIUPXO4mlj2iga/v5etvEFm0aVW2hNO7JRiUgs3lUnxLmL4S+kI3SEWKewut0YsO1/TL4vKmZ63mEBm//42iXt2AYZ2biQ1KDj87LNh+0sb14c/y4f1zKVN3uZlB5PdRoi1vApiCVyLq57UFm0g+nnzoezG+tfCRASI5C8E8LtF+aaMlFQJRTOv+luODxOGu5lFOSOIclbvNOYn+X9F8Aj88+45unHkPdEI0vmXISuOFasvFeoZIEDx+w/5LUHfZt3+8etLx3QHbh+F+X3hvaSOOp4psOfGvOH8pI/e313Z35M/z4c79SYbGcoNIO6VLCmatcgGkUJdPyH0Z4iGjVbl04N6TWIBFbw+3AO05hoZ82ebwAEBJWWUyvedGGjFvx/HEe/bzZgi/H/WgWDfPJJp6E26/IjmoLqPkb/bmp7hmD1Qzhgfb9esAL/xdz7aJb/mbNxAkyBM+kJXsu+3PHcZpsYZCqeP7c7Bwlez8Ax5ZbRH8gbD+7DjuGjhfv0Lo/rBSyqbbuJ2+TFhVEIUUAqldgnZJMQxJQ6/jB8TW829oWFA==
+	o5MVQmuOE0kTj5pHekgSZIfklaNoptJJ3XnXoPpkm1z+pDzL5E7g3vGpMZIBqZ+zfkX3KchsJllHHV1+exHMWkD6L0Yst1BRoVzPilnnaJgADysrZ3+6sXbWbZCBhTELq6046pSLNPIS1uK1NoyafOQRw4/ZqmxNw63edZEyR2yeTzqa/s33bH4fxo1ftzVXX8Ok3aRgH/VacRxm5B4uYhXb2ur+kH5xicxugPLdAlrAEyELRaxNmHAsB7I0ON8OQO3/wY00xwUG7uUfGgKeAxn51iFOWfTckLf0d8rdYA0G0je0q2Scv0hEIOF+d72HzFKDv1+h51/XR5ATC16DxkimRpGeq0zTwzDqZbmKbkfZXyKml5Q+z9FY9pE3DuPracmBqKp9TZ4w3hGnKh0AFX6vLxo+0tQ262cje6dg4J+TcGZrG3SjdqNyW2WQUd75Fm/gm8YYcjVMbpWOjM1bZWw9HqUEz/v8FsZXEuQM6WpYKYjyJhLDJyxELiBC+f3/JrFJ28XMX7NcgonSDk0hq82so9aAHJl2hiTbp1Z2Ds/FWDsIbySyWByyQQBO8N3JYEmWB2sGx5b04n/Tf3TeKZ1NcYemZisI0oSnrzUzEKO9IZHfDPE0yOLIvgSJr14MdHprFDFsXWyXufznWb3wxnxezaVAjl+OPXE6fWN/ggWcaBA3pR6/MT4S7j/gLUPVM54CzhB4AbX/y41lkYYmJ3H2i0G5yw8hghboEXU+sw/Pbh0j1e1NrZLy37K9KkMB
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM8PR12MB5445.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(346002)(376002)(39860400002)(136003)(396003)(366004)(451199021)(186006)(1800799006)(478600001)(110136005)(86362001)(31696002)(41300700001)(6486002)(6666004)(6512007)(966005)(5660300002)(66946007)(66476007)(66556008)(38100700002)(316002)(4326008)(6636002)(2906002)(8676002)(8936002)(26005)(6506007)(53546011)(36756003)(83380400001)(31686004)(2616005)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?ZkhIQU1WK25YSHd5STN1aHB2UXNMaTRBUlp1YmhUaGJZWVZlSytYNjBNZjdq?=
- =?utf-8?B?RUM0WDErUTVrMm50ZWtBdVkzNDF2Q1hDZnB5d1hWMVd1d1ptQTUvQUtOU0pn?=
- =?utf-8?B?SVdvYzBadmpGeUlHdWhOendQWlBBbGdPZHJydUFaM1c5ZzlkcTZJZVVQWmhZ?=
- =?utf-8?B?ZkhnTVZoVFkzaXdleXhkU29kQjFRNHVrdlkvMTRsTFo2V2JHK2Rva1J1bmVl?=
- =?utf-8?B?NmliM2Y2VStyb3lLNnF2OVZyVUs4OXVSeTkydk54U2xGME5TaHZnUUJFTU80?=
- =?utf-8?B?UklIbmdQeW4wZDYxMkFwL0hZTExTWlVFeHNoTndST0NFUW5McXR3Nmc2eVhx?=
- =?utf-8?B?UXByWFF3MmlRRWFaRXNFdDlEV0p2SEZ2bXB1akNlaFZmRklSYnJyUEdSWmZy?=
- =?utf-8?B?OFRlYkorYnNqc3NVeWd5c1hSRC9xVlZRWlRpckZVa0NVcFExdlFNUkRPbkxL?=
- =?utf-8?B?K2dzWG8rN0xXdmpoVXhEYm1JVmJGSko2MHZHbGlhYVlhUGVjZE1oSmliUS9S?=
- =?utf-8?B?aDJvMUcxQ241T1hVa1RicmR3SUwyWmV0cFFNUXNPSlVGeTZBZjFEdXhLWFdO?=
- =?utf-8?B?bTJZb2dJSnFZK1VOeDhyaElUTkZGUEpYZlFUSTdSc1F2RHNaOWZNWGtvOHZx?=
- =?utf-8?B?aUw0WDd5clRpV1lEd2FrRFJxL1FCUkRhVEdRSkZHTmhsaXVNZUg3MGV3R0lx?=
- =?utf-8?B?UHBNSGJyY0t2TDIzejdCU1JUM2NyUVA0OWpDcEJUV3pEZDhneFBybzhsaEgx?=
- =?utf-8?B?cy9FTjBWWDAxTGVIR0M0dGIyMjVnajdNM000dkUyK2o2MnJDUTFET2VyaDU0?=
- =?utf-8?B?NGlteTJTdW8xeVdKb3JuNWVVMk8zRU4xRkNvSHJHM0Q2T216VnY2YUp4VEZm?=
- =?utf-8?B?Wm5LVkdiNmFId2YvaWl4K2dYTUtIMnI3N0xWWjlKK1BNQ3RBYkwrWHVleGM2?=
- =?utf-8?B?cFVzSHMzb3JPY2oyYnpNZGdzakV5bklqVCtzWDN2ZXNITktmQTgwT052SkEz?=
- =?utf-8?B?eXozSFN2VVQrUmNzMUcyUkNQbkJYT0lHZS9Xa3ltKzlBL3p4V25kRU5XWTlX?=
- =?utf-8?B?RTN5bnBoZ29VTlh2MHJhTDZpKzVFWHAzR002aUhWTUM2dWJsdG01bzhlV0V5?=
- =?utf-8?B?U2dvNVRJaGxMTnR0TGhpUDVZc0RDUFE3TVF2dUJ4U1k5SlNEVE1EU1VyQkVi?=
- =?utf-8?B?SzU1a1gySVFpTTQ5cks4WGlWQ3BjZHI4NkhzVFpSRy9NMzdXb0hoMGhUbHJr?=
- =?utf-8?B?YUs2TUF4ZlIxT3Q1Y2VzYU4vOFdlQUpTNXRlcjVhczJHMGFlWFV2V0lLOVlt?=
- =?utf-8?B?ZDN4eHhDMG0xaStnc0hRRjdkVkptUHRGTkRrL1NwUWludHVYeUs1YzI4YUw0?=
- =?utf-8?B?a0dTWlJSOUhndlVINTNYYlFPY2hQdnFwNWEyeDNXYnZtaGYvcTE3RTNFVkQ3?=
- =?utf-8?B?WUE0c25RWUFzcllHaWczalZNZmlzdzUxRVlaYVRFZHg5endlemZOVStmejY5?=
- =?utf-8?B?ek00TjdDTzBqK09XblJCSHNFWW5GOTlSbFVEaTN4Qy9zMmREZHFNYk45a1Ix?=
- =?utf-8?B?UzV0eTNxT1JNSmloZG5lYXpTays4c0VYaHF3Z2dhWlVibVR5ZVZvU0NTNnd6?=
- =?utf-8?B?a3V1M1ZVdE5kaXloZWdMdkxTUVJpN3ZvV0ZRT2V1YnZaanp2WkVQT3MzOVFi?=
- =?utf-8?B?SEpiS0Q4bFNJbXlFeU4wWGViWElEdWFjUHhGc2tsUVZXQktwck51dEJENkN1?=
- =?utf-8?B?WkhVUFBCTW9OQzZkWUw3TXNMQmpOcGVkYXNHUFA1VU0rckNRdkwwWjNBK1ZX?=
- =?utf-8?B?eXhDRHdaRW9VSUpKazRJSDluWEJySDcyRzVXUU1oRjZHZVpSQzU3OFZXQnZT?=
- =?utf-8?B?MEZ1ZmtDYU02bFg2MXNpVjZ6dUFHVHNkb1M1UVluajRpd1E2bnVkY2h6cm92?=
- =?utf-8?B?TjR2dlU4NFlhN3Z3VGdQN1lNbTYrYUtRVE5CdFZJQSthb1BoSmpibU9UdDRG?=
- =?utf-8?B?VldvNWJRKzJqVFZHNElOVmdJVmZLTGNTNEUrVFkxQ3pzRDhyOEVzOXVKVkdy?=
- =?utf-8?B?ZkdZT3hqOEF6eEUyaUk4RXUzbmpxWk92a04wVDJRamV4aW44UFU0dHNpMjNC?=
- =?utf-8?Q?AWC/UTid58xjWotYHO2tA8Mo2?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: bcac09d0-3ed6-4489-f908-08db9d511cff
-X-MS-Exchange-CrossTenant-AuthSource: DM8PR12MB5445.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Aug 2023 05:33:10.9285
+	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(346002)(39860400002)(376002)(136003)(396003)(186006)(1800799006)(451199021)(82310400008)(40470700004)(36840700001)(46966006)(83380400001)(426003)(33716001)(336012)(47076005)(36860700001)(86362001)(40480700001)(55016003)(41300700001)(478600001)(356005)(7636003)(54906003)(70586007)(70206006)(9686003)(316002)(8676002)(110136005)(5660300002)(4326008)(82740400003)(8936002)(40460700003)(26005)(2906002)(7416002);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Aug 2023 06:19:07.6553
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: RkQnoSsqqEvp8vogDwMdadO36x04MvHlQz/0JOjsPB/MbG7eRGTY5zP4tv3DRU93QxCzkA8ks5WvqvUrZ8Sglw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR12MB8485
+X-MS-Exchange-CrossTenant-Network-Message-Id: ad8caa0d-6d5e-445a-b423-08db9d578853
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	SA2PEPF000015C9.namprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR12MB5835
 
-Jason,
+On Fri, Aug 11, 2023 at 09:45:21AM -0700, Nicolin Chen wrote:
 
-On 8/11/2023 4:50 PM, Jason Gunthorpe wrote:
-> On Fri, Aug 11, 2023 at 10:20:56PM +0530, Vasant Hegde wrote:
+> > But if stepping back a bit supporting an array-based non-native format
+> > could simplify the uAPI design and allows code sharing for array among
+> > vendor drivers. You can still keep the entry as native format then the
+> > only difference with future in-kernel fast path is just on walking an array
+> > vs. walking a ring. And VMM doesn't need to expose non-invalidate
+> > cmds to the kernel and then be skipped.
 > 
->> Our hardware is capable to boot with either V1 or V2 page table. By default
->> driver decides what is the best mode.
->> But if user wants he has a flexibility to choose V1 vs V2 page table. In that
->> mode we will adhere to user provided option and all devices will be put in that
->> mode.
+> Ah, so we might still design the uAPI to be ring based at this
+> moment, yet don't support a case CONS > 0 to leave that to an
+> upgrade in the future.
 > 
-> There is no valid reason for the user to override the kernel. If we do
-> this for AMD we have to do it for every single driver that supports
-> two formats. It makes no sense
-> 
-> Jason
+> I will try estimating a bit how complicated to implement the
+> ring, to see if we could just start with that. Otherwise, will
+> just start with an array.
 
-The amd_iommu=pgtbl_v2 was first introduced to enable nested IOMMU 
-translation w/ HW-vIOMMU support. This option is necessary for the guest 
-kernel since we need guest kernel to use IOMMU v2 page table for DMA-API 
-but the IOMMU driver is currently default to use pgtbl_v1 for DMA-API. 
-Currently, there is no good way to auto detect this use case.
+I drafted a uAPI structure for a ring-based SW queue. While I am
+trying an implementation, I'd like to collect some comments at the
+structure, to see if it overall makes sense.
 
-In bare-metal environment, both pgtbl_v1 and pgtbl_v2 are supported. In 
-the future, we might consider migrate to use pgtbl_v2 by default. 
-However, there are certain concerns and restrictions w/ the use of pgtbl_v2:
+One thing that I couldn't add to this common structure for SMMU
+is the hardware error code, which should be encoded in the higher
+bits of the consumer index register, following the SMMU spec:
+    ERR, bits [30:24] Error reason code.
+    - When a command execution error is detected, ERR is set to a
+      reason code and then the SMMU_GERROR.CMDQ_ERR global error
+      becomes active.
+    - The value in this field is UNKNOWN when the CMDQ_ERR global
+      error is not active. This field resets to an UNKNOWN value.
 
-* pgtbl_v2 is not supported with SNP-enabled system. SNP-enablement can 
-be detected with amd_iommu_snp_en, which is initialized early when the 
-amd_iommu_snp_enable() is called. So, IOMMU driver should be able to 
-automatically switch to use pgtbl_v1.
+But, I feel it odd to do the same to the generic structure. So,
+perhaps an optional @out_error can be added to this structure. Or
+some other idea?
 
-* There is an upcoming feature (e.g. TMPM : 
-https://www.amd.com/system/files/TechDocs/58151_0.51-PUB.pdf), which 
-requires devices to be setup w/ pgtbl_v1. However, the TMPM driver is 
-loaded after devices are probed. Therefore, this would require Linux to 
-boot with option amd_iommu=pgtbl_v1.
+Thanks
+Nic
 
-* IOMMU pgtbl_v1 and pgtbl_v2 are different from HW perspective, which 
-could yield different performance depending on the workload and 
-end-point devices. Therefore, the kernel option 
-amd_iommu=pgtbl_v1|pgtbl_v2 adds flexibility and give users additional 
-control if needed.
-
-For SVA, we need to ensure that the iommu group is using pgtbl_v2 or in 
-pass-through mode (no page table setup) prior to enabling SVA for the 
-device. Currently, this would require the pgtbl_v2 option. However, we 
-could consider default to using v2 table for an IOMMU group if it 
-contains an PASID-capable device.
-
-Thanks,
-Suravee
-
+/**
+ * struct iommu_hwpt_invalidate - ioctl(IOMMU_HWPT_INVALIDATE)
+ * @size: sizeof(struct iommu_hwpt_invalidate)
+ * @hwpt_id: HWPT ID of target hardware page table for the invalidation
+ * @q_uptr: User pointer to an invalidation queue, which can be used as a flat
+ *          array or a circular ring queue. The entiry(s) in the queue must be
+ *          at a fixed width @q_entry_len, containing a user data structure for
+ *          an invalidation request, specific to the given hardware pagetable.
+ * @q_cons_uptr: User pointer to the consumer index (with its wrap flag) of an
+ *               invalidation queue. This pointer must point to a __u32 type of
+ *               memory location. The consumer index tells kernel to read from
+ *               the entry pointed by it (and then its next entry) until kernel
+ *               reaches the entry pointed by the producer index @q_prod, and
+ *               allows kernel to update the consumer index to where it stops:
+ *               on success, it should be updated to @q_prod; otherwise, to the
+ *               index pointing to the failed entry.
+ * @q_prod: Producer index (with its wrap flag) of an invalidation queue. This
+ *          index points to the entry next to the last requested entry in the
+ *          invalidation queue. In case of using the queue as a flat array, it
+ *          equals to the number of entries @q_entry_num.
+ * @q_index_bits: Effective bits of both indexes. Defines the maximum value an
+ *                index can be. Must not be greater than 31 bits. A wrap flag
+ *                is defined at the next higher bit adjacent to the index bits:
+ *                e.g. if @q_index_bits is 20, @q_prod[19:0] are the index bits
+ *                and @q_prod[20] is the wrap flag. The wrap flag, acting like
+ *                a sign flag, must be toggled each time an index overflow and
+ *                wraps to the lower end of the circular queue.
+ * @q_entry_num: Totaly number of the entries in an invalidation queue
+ * @q_entry_len: Length (in bytes) of an entry of an invalidation queue
+ *
+ * Invalidate the iommu cache for user-managed page table. Modifications on a
+ * user-managed page table should be followed by this operation to sync cache.
+ *
+ * One request supports multiple invalidations via a multi-entry queue:
+ *   |<----------- Length of Queue = @q_entry_num * @q_entry_len ------------>|
+ *   --------------------------------------------------------------------------
+ *   | 0 | 1 | 2 | 3 | ... | @q_entry_num-3 | @q_entry_num-2 | @q_entry_num-1 |
+ *   --------------------------------------------------------------------------
+ *   ^           ^                          ^                |<-@q_entry_len->|
+ *   |           |                          |
+ * @q_uptr  @q_cons_uptr                 @q_prod
+ *
+ * A queue index can wrap its index bits off the high end of the queue and back
+ * onto the low end by toggling its wrap flag: e.g. when @q_entry_num=0x10 and
+ * @q_index_bits=4, *@q_cons_uptr=0xf and @q_prod=0x11 inputs mean the producer
+ * index is wrapped to 0x1 with its wrap flag set, so kernel reads/handles the
+ * entry starting from by the consumer index (0xf) and wraps it back to 0x0 and
+ * 0x1 by toggling the wrap flag, i.e. *@q_cons_uptr has a final value of 0x11.
+ */
+struct iommu_hwpt_invalidate {
+	__u32 size;
+	__u32 hwpt_id;
+	__aligned_u64 q_uptr;
+	__aligned_u64 q_cons_uptr;
+	__u32 q_prod;
+	__u32 q_index_bits;
+	__u32 q_entry_num;
+	__u32 q_entry_len;
+};
+#define IOMMU_HWPT_INVALIDATE _IO(IOMMUFD_TYPE, IOMMUFD_CMD_HWPT_INVALIDATE)
