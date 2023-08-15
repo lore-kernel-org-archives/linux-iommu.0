@@ -1,109 +1,136 @@
-Received: from mail-qt1-f170.google.com (mail-qt1-f170.google.com [209.85.160.170])
+Received: from mail-qt1-f180.google.com (mail-qt1-f180.google.com [209.85.160.180])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C0034100DD
-	for <iommu@lists.linux.dev>; Tue, 15 Aug 2023 12:04:17 +0000 (UTC)
-Received: by mail-qt1-f170.google.com with SMTP id d75a77b69052e-40c72caec5cso209071cf.0
-        for <iommu@lists.linux.dev>; Tue, 15 Aug 2023 05:04:17 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 122E55C9D
+	for <iommu@lists.linux.dev>; Tue, 15 Aug 2023 12:11:08 +0000 (UTC)
+Received: by mail-qt1-f180.google.com with SMTP id d75a77b69052e-40c72caec5cso211281cf.0
+        for <iommu@lists.linux.dev>; Tue, 15 Aug 2023 05:11:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1692101056; x=1692705856;
+        d=google.com; s=20221208; t=1692101467; x=1692706267;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=wa4ijFpMRNMdDOXZdXXDwrY7fporBKZPPmAwJ4muH1s=;
-        b=NlAy2nuZM6YR9j6uv9fE7TfLbdb84+Dc3bcHB1de2on8b3q9QHMMiUaqqpZrkQfTCc
-         4GQCzEK7vdfxxw4y51dSVfVL5+t+OL1kgGBV16+kVaFL6/m7Plodl3JNAfx682/FQ75x
-         lTTt95SINOfPa4ECwMwnQH5R2b7ltvoy+KtDxfhvyR63QJqhmnkyqfbLqxZN3lcbE1Mi
-         2LwENFpd6RuTxX+JnFJRI/4C3etxUfRuZLDPOo3lCxVXT0ARk6k6X4MTXweHPW9Ux3+N
-         QxDvCF3OfjBV9yE9mL+o97vo1SoBWDXgU5WY0VvlZeZhLPpJqqXmPqhkOdLPtyJpGwLP
-         XNUQ==
+        bh=s8CNsFvRpwTwwqm07wAYxu9f1X6A+KEOcEVL6oP8Ffs=;
+        b=jW+4S1UDSh2D4B5h++gFLUzk2kuwDyEZbyEAmIkB1x2JPtpZ9i09g1aGecTsGmDKhI
+         HjuPNd761RauwQXs5VVIi9AAYejfThNHtpYEwPlVnQxqARMDYWSACzY/tdRB7k8LDWX2
+         jOJLoOE+yg2N2YOz0VqQmT4Hd0EekCXL6kJtSzPHrOKliLMhBzGSfPkwyF/pDfbY0edd
+         pG5X3gVsVMPK2W/NRoikES2s0krOJGBtzWDLhbuGK9Hp9Hs0s3Eq58sUP3wWWy9rZssa
+         datCYiaG6olWZYpSgQc9OSV3EV6a6DXYdh7mg4iKtS7xGSyiVBu81DTm9/UQyXgvwQJY
+         FTmA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1692101056; x=1692705856;
+        d=1e100.net; s=20221208; t=1692101467; x=1692706267;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=wa4ijFpMRNMdDOXZdXXDwrY7fporBKZPPmAwJ4muH1s=;
-        b=BeJraWKytXwC4KMd35zDkzpR0kL7IqkNV//Bwdh6yfndEiyDodiG6l3gAnUGHhe6Bk
-         MAyRZC6OjleYANySlvMP75zyS6Wi/MBZyhU3rvUgb8Q2fv/5Pces6/V5DBwp9mtX/Okf
-         1hFe0EI67PGHOS1jcCTbHpp7Nz5AVTFwVJtc/kM/DigfwjMN77OGsH5VYX3yMmV/z3Xt
-         MyTImOzFrLIIVOgsjBKrwhnXwFJBp5vwongNPlEaZ7eR21pHB8maZt+UyP3c9nGVVmPP
-         CpSKfgDqLWqm1rxfyPc/JmWSdl95bFuiyRiEmcz84WJvMjL3QeoqiXshyOwJzo3SHJm1
-         C9uA==
-X-Gm-Message-State: AOJu0YylPizOSreOrOwWA2pvU1DojNBdW2WdmRU0znQzCBbKtKUyZFFa
-	5ARsndhsUOPRuyuRApnMRV+LOmtw2i+e6ebM7Bki8ufQX/ldVI2D96EQmw==
-X-Google-Smtp-Source: AGHT+IFLbYrlXJqUODynvyJHT9/v4qYbX+kKrxOxLI/Ska83ZEsKVQNmI3ZCRWkbxaNCpQQIqaVcBPaHoOU23NqKoq0=
-X-Received: by 2002:a05:622a:1822:b0:403:f5b8:2bd2 with SMTP id
- t34-20020a05622a182200b00403f5b82bd2mr660297qtc.9.1692101056467; Tue, 15 Aug
- 2023 05:04:16 -0700 (PDT)
+        bh=s8CNsFvRpwTwwqm07wAYxu9f1X6A+KEOcEVL6oP8Ffs=;
+        b=ScuPSkIoqDSL3mg/Oi2msfeLnm8VdE8f0f6fYpqjUBgBV7oGLHvpDdGc69aJa3yWuJ
+         7We+Rsz1YrlB25hLqg5FWw/HIOoBQ3EboVrOMlnjXgt0VvjHO2aZaN7lm3rn0W2RoA1D
+         x7sJXtVSVnZ9ogWKMsPwyMbinaYiQ0pBIPNcS2Ef3z7N+8AMwDkbYLtTPLqrwaVTNo+8
+         ipnMeHNhvnAvTS8WuJH0bPR8pscRhAOPekTTUsZXu8n/gNNsV1Li5WZoYJn36uDVYsAq
+         PaXaYBq3Cdbr9H1dqYjbELPfjAlXZXtmBD+/QIeLZGgp6U2bfdEryTuoN+4vC3Y1fGHL
+         CRgw==
+X-Gm-Message-State: AOJu0YwoyM4Jn+xxBdcUgqzVUwiLP90W+ZYQJMavhWsI9S8n/JxKzXCc
+	TUgqtwsa1WUklgkgWJ6H8oJlt0F67KQ2NNJy7kbCERSL94T66GcCiYVnzA==
+X-Google-Smtp-Source: AGHT+IE1pWnFbq+bvNkANHEa6F9HgMq0nCpQURFTjbb3C8JLnaNzzyafy7rk9qiFfj7skQbIddqqZO1GMIggXTjT9jc=
+X-Received: by 2002:a05:622a:c1:b0:410:4c49:1aeb with SMTP id
+ p1-20020a05622a00c100b004104c491aebmr418242qtw.7.1692101467558; Tue, 15 Aug
+ 2023 05:11:07 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20230808171446.2187795-1-mshavit@google.com> <20230809011204.v5.5.I219054a6cf538df5bb22f4ada2d9933155d6058c@changeid>
- <20230809134959.GB4226@willie-the-truck> <CAKHBV25CQYfqm80a1ztHXn3s6kj7KCuJBwJz4EZk5cog4n6R+A@mail.gmail.com>
- <20230810144051.GD5795@willie-the-truck> <ZNUEuIlPmrckwMyn@nvidia.com>
- <CAKHBV24SLBNw-yWn3m6BtvvHUgD0h1e1QkEb1LrUcWSwpR85Yg@mail.gmail.com> <ZNtgD3LKwS4eatoe@nvidia.com>
-In-Reply-To: <ZNtgD3LKwS4eatoe@nvidia.com>
+References: <20230808171446.2187795-1-mshavit@google.com> <20230809011204.v5.6.Ice063dcf87d1b777a72e008d9e3406d2bcf6d876@changeid>
+In-Reply-To: <20230809011204.v5.6.Ice063dcf87d1b777a72e008d9e3406d2bcf6d876@changeid>
 From: Michael Shavit <mshavit@google.com>
-Date: Tue, 15 Aug 2023 20:03:40 +0800
-Message-ID: <CAKHBV25YKMGnAs2L0a5EwdaXrpwb9RPJqBcJjO6ahD7UMgEd2Q@mail.gmail.com>
-Subject: Re: [PATCH v5 5/9] iommu/arm-smmu-v3: Refactor write_ctx_desc
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Will Deacon <will@kernel.org>, iommu@lists.linux.dev, 
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
-	robin.murphy@arm.com, nicolinc@nvidia.com, jean-philippe@linaro.org
+Date: Tue, 15 Aug 2023 20:10:31 +0800
+Message-ID: <CAKHBV24royJvLUHemST07i1G+xhEizO=VdTX0Q9itpi_dLv=4A@mail.gmail.com>
+Subject: Re: [PATCH v5 6/9] iommu/arm-smmu-v3: Move CD table to arm_smmu_master
+To: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
+	linux-kernel@vger.kernel.org
+Cc: will@kernel.org, robin.murphy@arm.com, nicolinc@nvidia.com, jgg@nvidia.com, 
+	jean-philippe@linaro.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Aug 15, 2023 at 7:38=E2=80=AFPM Jason Gunthorpe <jgg@nvidia.com> wr=
-ote:
+On Wed, Aug 9, 2023 at 1:15=E2=80=AFAM Michael Shavit <mshavit@google.com> =
+wrote:
 >
-> On Tue, Aug 15, 2023 at 01:20:04PM +0800, Michael Shavit wrote:
-> > On Thu, Aug 10, 2023 at 11:39=E2=80=AFPM Jason Gunthorpe <jgg@nvidia.co=
-m> wrote:
-> > >
-> > > Actually, I don't think this even works as nothing on the PASID path
-> > > adds to the list that arm_smmu_write_ctx_desc_devices() iterates over=
- ??
-> > >
-> > > Then the remaining two calls:
-> > >
-> > > arm_smmu_share_asid(struct mm_struct *mm, u16 asid)
-> > >         arm_smmu_write_ctx_desc_devices(smmu_domain, 0, cd);
-> > >
-> > >         This is OK only if the sketchy assumption that the CD
-> > >         we extracted for a conflicting ASID is not asigned to a PASID=
-.
-> > >
-> > > static void arm_smmu_mm_release(struct mmu_notifier *mn, struct mm_st=
-ruct *mm)
-> > >         arm_smmu_write_ctx_desc_devices(smmu_domain, mm->pasid, &quie=
-t_cd);
-> > >
-> > >         This doesn't work because we didn't add the master to the lis=
-t
-> > >         during __arm_smmu_sva_bind and this path is expressly working
-> > >         on the PASID binds, not the RID binds.
-> >
-> > Actually it is working on the RID attached domain (as returned by
-> > iommu_get_domain_for_dev() at sva_bind time) not the SVA domain
-> > here...
->
-> That can't be right, the purpose of that call and arm_smmu_mm_release is =
-to
-> disable the PASID that is about the UAF the mm's page table.
->
-> Jason
 
-For the sake of this message, let's call "primary domain" whatever RID
-domain was attached to a master at the time set_dev_pasid() was called
-on that master. That RID domain is locked in while SVA is enabled and
-cannot be detached.
+> -static int arm_smmu_domain_finalise_s1(struct arm_smmu_domain *smmu_doma=
+in,
+> +static int arm_smmu_domain_finalise_cd(struct arm_smmu_domain *smmu_doma=
+in,
+>                                        struct arm_smmu_master *master,
+>                                        struct io_pgtable_cfg *pgtbl_cfg)
+>  {
+> @@ -2115,10 +2110,6 @@ static int arm_smmu_domain_finalise_s1(struct arm_=
+smmu_domain *smmu_domain,
+>         if (ret)
+>                 goto out_unlock;
+>
+> -       ret =3D arm_smmu_alloc_cd_tables(smmu_domain, master);
+> -       if (ret)
+> -               goto out_free_asid;
+> -
+>         cd->asid        =3D (u16)asid;
+>         cd->ttbr        =3D pgtbl_cfg->arm_lpae_s1_cfg.ttbr;
+>         cd->tcr         =3D FIELD_PREP(CTXDESC_CD_0_TCR_T0SZ, tcr->tsz) |
+> @@ -2130,17 +2121,9 @@ static int arm_smmu_domain_finalise_s1(struct arm_=
+smmu_domain *smmu_domain,
+>                           CTXDESC_CD_0_TCR_EPD1 | CTXDESC_CD_0_AA64;
+>         cd->mair        =3D pgtbl_cfg->arm_lpae_s1_cfg.mair;
+>
+> -       ret =3D arm_smmu_write_ctx_desc(master, 0, cd);
+> -       if (ret)
+> -               goto out_free_cd_tables;
+> -
+>         mutex_unlock(&arm_smmu_asid_lock);
+>         return 0;
+>
+> -out_free_cd_tables:
+> -       arm_smmu_free_cd_tables(smmu_domain);
+> -out_free_asid:
+> -       arm_smmu_free_asid(cd);
+>  out_unlock:
+>         mutex_unlock(&arm_smmu_asid_lock);
+>         return ret;
+...
+> @@ -2465,6 +2450,22 @@ static int arm_smmu_attach_dev(struct iommu_domain=
+ *domain, struct device *dev)
+>         if (smmu_domain->stage !=3D ARM_SMMU_DOMAIN_BYPASS)
+>                 master->ats_enabled =3D arm_smmu_ats_supported(master);
+>
+> +       if (smmu_domain->stage =3D=3D ARM_SMMU_DOMAIN_S1) {
+> +               if (!master->cd_table.cdtab) {
+> +                       ret =3D arm_smmu_alloc_cd_tables(master);
+> +                       if (ret) {
+> +                               master->domain =3D NULL;
+> +                               return ret;
+> +                       }
+> +               }
+> +
+> +               ret =3D arm_smmu_write_ctx_desc(master, 0, &smmu_domain->=
+cd);
+> +               if (ret) {
+> +                       master->domain =3D NULL;
+> +                       return ret;
+> +               }
+> +       }
+> +
+>         arm_smmu_install_ste_for_dev(master);
+>
+>         spin_lock_irqsave(&smmu_domain->devices_lock, flags);
+> @@ -2472,10 +2473,7 @@ static int arm_smmu_attach_dev(struct iommu_domain=
+ *domain, struct device *dev)
+>         spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
+>
+>         arm_smmu_enable_ats(master);
 
-The arm-smmu-v3-sva.c implementation creates a mapping between an SVA
-domain and this primary domain (through the sva domain's mm). In
-arm_smmu_mm_release, the primary domain is looked up and
-arm_smmu_write_ctx_desc() is called on all masters that this domain is
-attached to.
+All this talk of locking on the other thread made me realize there's
+an issue here. We are no longer holding the arm_smmu_asid_lock while
+arm_smmu_write_ctx_desc is called due to its move out of
+arm_smmu_domain_finalise_s1. This can race with arm_smmu_share_asid
+which may modify the asid after we've written it, but before we've
+updated the CD's smmu_domain->devices list.
