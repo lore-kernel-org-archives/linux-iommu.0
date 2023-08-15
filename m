@@ -1,42 +1,42 @@
-Received: from mail-pl1-f201.google.com (mail-pl1-f201.google.com [209.85.214.201])
+Received: from mail-pg1-f201.google.com (mail-pg1-f201.google.com [209.85.215.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4307C18B1C
-	for <iommu@lists.linux.dev>; Tue, 15 Aug 2023 21:35:48 +0000 (UTC)
-Received: by mail-pl1-f201.google.com with SMTP id d9443c01a7336-1bddcaed7d7so30312535ad.0
-        for <iommu@lists.linux.dev>; Tue, 15 Aug 2023 14:35:48 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8BDA918B1C
+	for <iommu@lists.linux.dev>; Tue, 15 Aug 2023 21:35:49 +0000 (UTC)
+Received: by mail-pg1-f201.google.com with SMTP id 41be03b00d2f7-56385c43eaeso5855409a12.1
+        for <iommu@lists.linux.dev>; Tue, 15 Aug 2023 14:35:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1692135347; x=1692740147;
+        d=google.com; s=20221208; t=1692135349; x=1692740149;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:reply-to:from:to:cc:subject:date:message-id:reply-to;
-        bh=CHnuPfUXbmZWu5F2MvTRaFvjEQfMFtfyp4fO+JPGxbI=;
-        b=kVAV3xXrMTAbLQ3rPVK4qegv5MzcfS8e5dljWpr6AvcDuBCLiIlKECoYWD0XJVho2d
-         jGHvwxgZljxFQgu9npgxS0x58JZUu5bU6WNjVCyPnO35SrWnCN2H+7CpCT70QXB8cRcr
-         Pm68+mIdMG7Vl/qw6lSltNtd2pWdOLis+Zl8fjgJ6ApWsU6cxkl4XOtNCEDxY2oiqK5g
-         eHSIZrYlahQWr00vrJsklrB6UFyfC5BbaAtr0DMTu0XBUvY5RFq/76/YBxjT4ujsAS2m
-         vAqC/DTBbvrhK664IFPuNgeJmAz/J50Ejod+21zKsCGZ5Otsf7bOl91ky9QfiCR7/JOz
-         00ow==
+        bh=jXXlrX5DzE4Hghu7ToUaWJNzp/mTz7CuA6+i3yYWT20=;
+        b=USjc9iB3NqYv1bv2FZwD7xwEEynvodyTs0vCg/keKBBbTvxsxOjxknFq9MHnwQ665M
+         eSQqAqV66fZIdfZFXD2bmMhEmAisBI78aYi9OP+x1eaVpHRzEJZrDwbwB4ep4ObGkWnF
+         gN+mveNmI46n7FTJcfDySmGbvsGmYjA9jk1oU9PkQb902bONPll6NLl01s9WMmWhH4XZ
+         n5Hpf9Us0QgLfPrMV5ANSkTDiADkT8EegqmGBbf2dkvcO8dcbxet6I+QQY23PCRO26S3
+         7Z41veYXH0HWxpS7gQikz5YJdMdIQvfaQ7jZS2eEQl17qUqFGVhs/KTMiU03AMAGPJz4
+         C+OA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1692135347; x=1692740147;
+        d=1e100.net; s=20221208; t=1692135349; x=1692740149;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:reply-to:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=CHnuPfUXbmZWu5F2MvTRaFvjEQfMFtfyp4fO+JPGxbI=;
-        b=UmeDlJyAvLGX0XnyA+gQtBCBsQK0NeRn4QKkv0Sw7wSdm5AdtLkmzUtHSu8tQTlzVD
-         7+vmaQ/Dw71JbtPgV5ZOLFFN7oU/9pyXJ5vYzZ0TR7o1tA8cvk6ClqlgMbYCvYYsWBkX
-         zkcOXiXaZ+4CW0Hl6MY4Zh4433BJaIA/aMvEMp4tLf0cVS+o1DrYzEIp7PL+e+PQwB/p
-         r2WuP/atj+/sjK6C+wiA/MPihEHK7j75kgteA6cronoOk6xxxRcSHiXz9VutrH4+184A
-         Q+fxiz5+ZJUE7If9OXhPcxnrcJyeOm3vQ8dDSxVsUghU66Y77acAnqGA+I/UhFsddTg1
-         JK4w==
-X-Gm-Message-State: AOJu0Ywf7/F3hUHkCpADx0598LaAA2p0xKITlq/MokdK9DWXlAKZtQyz
-	lKwMHqUdvwZ3tGcJJRmY3K68Aq/b0/Q=
-X-Google-Smtp-Source: AGHT+IGZpFTzWg3Yj6yV3ARgS1gRpt4WlnLvCCsXQ6y9zKKLCPAYed5RzAVM7pWLFGE752cW0iko5FNITv0=
+        bh=jXXlrX5DzE4Hghu7ToUaWJNzp/mTz7CuA6+i3yYWT20=;
+        b=gUNQ1W7YHEwS3tEA/5JvG+qskWapkCDhpAi/kqVGqC/5aIDY7vpVs2vNeO+wyMvvWT
+         zF5PlawJCaHVdeWTGDcVvLpBAd/mjafhEF1uEMRcsRrsaRr7AGYBvVcSUO/fSSbauALQ
+         JbiYD/9evkNM4139z88IVnAYvUAOfH5wNrA6JpicPpXxjFlwfjHfJogHUL/46jV/xZx4
+         bBuf1PdMgEZwfIjmegs5yRb7akVsRmvpi6tHXyp9eiEhoVLzDbhc4JLbKAo07/LbHV8T
+         kxLntRDd5WzH3+9yuBb2tEfPnwJbfcWI7PTsll2J58xgNcuc471TB5eBqNWbz7bmDVRx
+         +JEA==
+X-Gm-Message-State: AOJu0YxjDpVc1pp79OR29fX60rCvWi4uK35lL0JRTpy733rQd3xDCCe3
+	DAA9mWlvMGQUhMOwNV2XV/1VB1p0/rg=
+X-Google-Smtp-Source: AGHT+IFk0HNZ30dHY5GX2GHPf9vSUKa+3cF4WUclVLhZGcIW2/yXqodNdtcU6wu1QFuNC3eybCy1wlJf+aA=
 X-Received: from zagreus.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5c37])
- (user=seanjc job=sendgmr) by 2002:a17:903:1c3:b0:1b5:2496:8c0d with SMTP id
- e3-20020a17090301c300b001b524968c0dmr24608plh.3.1692135347694; Tue, 15 Aug
- 2023 14:35:47 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a17:90a:db52:b0:269:84ec:7140 with SMTP id
+ u18-20020a17090adb5200b0026984ec7140mr838342pjx.2.1692135349548; Tue, 15 Aug
+ 2023 14:35:49 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date: Tue, 15 Aug 2023 14:35:28 -0700
+Date: Tue, 15 Aug 2023 14:35:29 -0700
 In-Reply-To: <20230815213533.548732-1-seanjc@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -46,8 +46,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20230815213533.548732-1-seanjc@google.com>
 X-Mailer: git-send-email 2.41.0.694.ge786442a9b-goog
-Message-ID: <20230815213533.548732-6-seanjc@google.com>
-Subject: [PATCH 05/10] KVM: SVM: Drop vcpu_svm's pointless avic_backing_page field
+Message-ID: <20230815213533.548732-7-seanjc@google.com>
+Subject: [PATCH 06/10] iommu/amd: KVM: SVM: Use pi_desc_addr to derive ga_root_ptr
 From: Sean Christopherson <seanjc@google.com>
 To: Sean Christopherson <seanjc@google.com>, Paolo Bonzini <pbonzini@redhat.com>, 
 	Joerg Roedel <joro@8bytes.org>
@@ -55,57 +55,57 @@ Cc: kvm@vger.kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
 	Maxim Levitsky <mlevitsk@redhat.com>
 Content-Type: text/plain; charset="UTF-8"
 
-Drop vcpu_svm's avic_backing_page pointer and instead grab the physical
-address of KVM's vAPIC page directly from the source.  Getting a physical
-address from a kernel virtual address is not an expensive operation, and
-getting the physical address from a struct page is *more* expensive for
-CONFIG_SPARSEMEM=y kernels.  Regardless, none of the paths that consume
-the address are hot paths, i.e. shaving cycles is not a priority.
-
-Eliminating the "cache" means KVM doesn't have to worry about the cache
-being invalid, which will simplify a future fix when dealing with vCPU IDs
-that are too big.
+Use vcpu_data.pi_desc_addr instead of amd_iommu_pi_data.base to get the
+GA root pointer.  KVM is the only source of amd_iommu_pi_data.base, and
+KVM's one and only path for writing amd_iommu_pi_data.base computes the
+exact same value for vcpu_data.pi_desc_addr and amd_iommu_pi_data.base,
+and fills amd_iommu_pi_data.base if and only if vcpu_data.pi_desc_addr is
+valid, i.e. amd_iommu_pi_data.base is fully redundant.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- arch/x86/kvm/svm/avic.c | 4 +---
- arch/x86/kvm/svm/svm.h  | 1 -
- 2 files changed, 1 insertion(+), 4 deletions(-)
+ arch/x86/kvm/svm/avic.c   | 1 -
+ drivers/iommu/amd/iommu.c | 2 +-
+ include/linux/amd-iommu.h | 1 -
+ 3 files changed, 1 insertion(+), 3 deletions(-)
 
 diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
-index 954bdb45033b..e49b682c8469 100644
+index e49b682c8469..bd81e3517838 100644
 --- a/arch/x86/kvm/svm/avic.c
 +++ b/arch/x86/kvm/svm/avic.c
-@@ -243,7 +243,7 @@ int avic_vm_init(struct kvm *kvm)
+@@ -919,7 +919,6 @@ int avic_pi_update_irte(struct kvm *kvm, unsigned int host_irq,
+ 			struct amd_iommu_pi_data pi;
  
- static phys_addr_t avic_get_backing_page_address(struct vcpu_svm *svm)
- {
--	return __sme_set(page_to_phys(svm->avic_backing_page));
-+	return __sme_set(__pa(svm->vcpu.arch.apic->regs));
- }
+ 			/* Try to enable guest_mode in IRTE */
+-			pi.base = avic_get_backing_page_address(svm);
+ 			pi.ga_tag = AVIC_GATAG(to_kvm_svm(kvm)->avic_vm_id,
+ 						     svm->vcpu.vcpu_id);
+ 			pi.is_guest_mode = true;
+diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+index c3b58a8389b9..9814df73b9a7 100644
+--- a/drivers/iommu/amd/iommu.c
++++ b/drivers/iommu/amd/iommu.c
+@@ -3622,7 +3622,7 @@ static int amd_ir_set_vcpu_affinity(struct irq_data *data, void *vcpu_info)
  
- void avic_init_vmcb(struct vcpu_svm *svm, struct vmcb *vmcb)
-@@ -305,8 +305,6 @@ static int avic_init_backing_page(struct kvm_vcpu *vcpu)
- 			return ret;
- 	}
- 
--	svm->avic_backing_page = virt_to_page(vcpu->arch.apic->regs);
--
- 	/* Setting AVIC backing page address in the phy APIC ID table */
- 	entry = avic_get_physical_id_entry(vcpu, id);
- 	if (!entry)
-diff --git a/arch/x86/kvm/svm/svm.h b/arch/x86/kvm/svm/svm.h
-index 2237230aad98..a9fde1bb85ee 100644
---- a/arch/x86/kvm/svm/svm.h
-+++ b/arch/x86/kvm/svm/svm.h
-@@ -261,7 +261,6 @@ struct vcpu_svm {
- 
- 	u32 ldr_reg;
- 	u32 dfr_reg;
--	struct page *avic_backing_page;
- 	u64 *avic_physical_id_cache;
- 
- 	/*
+ 	pi_data->prev_ga_tag = ir_data->cached_ga_tag;
+ 	if (pi_data->is_guest_mode) {
+-		ir_data->ga_root_ptr = (pi_data->base >> 12);
++		ir_data->ga_root_ptr = (vcpu_pi_info->pi_desc_addr >> 12);
+ 		ir_data->ga_vector = vcpu_pi_info->vector;
+ 		ir_data->ga_tag = pi_data->ga_tag;
+ 		ret = amd_iommu_activate_guest_mode(ir_data);
+diff --git a/include/linux/amd-iommu.h b/include/linux/amd-iommu.h
+index 953e6f12fa1c..30d19ad0e8a9 100644
+--- a/include/linux/amd-iommu.h
++++ b/include/linux/amd-iommu.h
+@@ -20,7 +20,6 @@ struct amd_iommu;
+ struct amd_iommu_pi_data {
+ 	u32 ga_tag;
+ 	u32 prev_ga_tag;
+-	u64 base;
+ 	bool is_guest_mode;
+ 	struct vcpu_data *vcpu_data;
+ 	void *ir_data;
 -- 
 2.41.0.694.ge786442a9b-goog
 
