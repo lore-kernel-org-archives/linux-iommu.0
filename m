@@ -1,34 +1,34 @@
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.31])
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.126])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 22A3317C4;
-	Tue, 15 Aug 2023 01:34:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 536CE17C4
+	for <iommu@lists.linux.dev>; Tue, 15 Aug 2023 02:06:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1692063284; x=1723599284;
+  t=1692065165; x=1723601165;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=jkr/6uy80FBJ1zVM9rO0oVAo4kuNs+82saVQaD5txn0=;
-  b=O91pmpZhWOUplfzsbpbaCjTCf7t4R+uB2LvPPMUqGuCJBQ0n6GjD2iuN
-   MPSURO3h6uidav/BdE0r2nDvWTEV3WQtG2i0gdFWiySiuVDqJ8CZRFXDf
-   yHrBKnl+lVWdz6oY8DsoBCA6jvE4zGP9bLXrZzbxRLfKGCzFf4w6ERDBB
-   WLkqqAevRC/u2IU8E3up9qbeNa32b/UfltBmy2PbSPrYwa8lEN/QsFIRx
-   eeRpN06XnDqD4QveUCnQxjuU0fu8zSHtAfICoZ3OH+G4KZvFRMIBOkOw0
-   duXZNZOiCEsNamJLolm+OH90M9WLK1tP1x5nxfAZpW63eBJq8FR58FNa5
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10802"; a="436073282"
+  bh=MKYGLe8IyShNbMGzrNuYJbpA1fTUIc5suwq/YoZTq9A=;
+  b=grcOMewubbY4cwtFEAJ4I4CQRb4V/llJRGTmirpY6PxEJ/hG6weA9xFJ
+   uEUcy/z/n9GXy5iBBhhd1YdBhldQvhzzBEnXoHzTt7t1fV4pqEl3SDOya
+   l8kXnLVnlQPIOYWaJ8tJobYgxrCmL2gIkni89v1Hqgdr8ofyXlrDdJ6yo
+   IObxnFlRgfSF33NCNFYO3VuPW00bE6DyDa80M+G4FCjNpUSqoDdrGzSf4
+   em+PtZ9jdo+87HFH6oUlLm8l/oBhw6++ubebzG0/na3v0ZlgQUKcXhAjo
+   hdCYsZnN8PUe8sXObIvPODb+WbNvySyAwKwr8G04z9CFPrBSkuDrmrekf
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10802"; a="357148187"
 X-IronPort-AV: E=Sophos;i="6.01,173,1684825200"; 
-   d="scan'208";a="436073282"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Aug 2023 18:34:43 -0700
+   d="scan'208";a="357148187"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Aug 2023 19:06:04 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10802"; a="768654964"
+X-IronPort-AV: E=McAfee;i="6600,9927,10802"; a="736739582"
 X-IronPort-AV: E=Sophos;i="6.01,173,1684825200"; 
-   d="scan'208";a="768654964"
+   d="scan'208";a="736739582"
 Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.254.215.149]) ([10.254.215.149])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Aug 2023 18:34:30 -0700
-Message-ID: <7fdbf6a5-87a2-65c1-7c1e-d7b936dd3a67@linux.intel.com>
-Date: Tue, 15 Aug 2023 09:34:28 +0800
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Aug 2023 19:06:00 -0700
+Message-ID: <4b356a28-5637-d492-9540-d7f5e6c617ec@linux.intel.com>
+Date: Tue, 15 Aug 2023 10:05:58 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -37,92 +37,59 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.14.0
-Cc: baolu.lu@linux.intel.com, Andy Gross <agross@kernel.org>,
- Alim Akhtar <alim.akhtar@samsung.com>, Bjorn Andersson
- <andersson@kernel.org>,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
- Baolin Wang <baolin.wang@linux.alibaba.com>,
- Christophe Leroy <christophe.leroy@csgroup.eu>,
- Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
- Heiko Stuebner <heiko@sntech.de>, iommu@lists.linux.dev,
- Jernej Skrabec <jernej.skrabec@gmail.com>,
- Jonathan Hunter <jonathanh@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
- Kevin Tian <kevin.tian@intel.com>, Konrad Dybcio <konrad.dybcio@linaro.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
- linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
- linux-mediatek@lists.infradead.org, linux-rockchip@lists.infradead.org,
- linux-s390@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
- linux-sunxi@lists.linux.dev, linux-tegra@vger.kernel.org,
- Russell King <linux@armlinux.org.uk>, linuxppc-dev@lists.ozlabs.org,
- Matthias Brugger <matthias.bgg@gmail.com>,
- Matthew Rosato <mjrosato@linux.ibm.com>,
- Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>,
- Orson Zhai <orsonzhai@gmail.com>, Rob Clark <robdclark@gmail.com>,
- Robin Murphy <robin.murphy@arm.com>, Samuel Holland <samuel@sholland.org>,
- Thierry Reding <thierry.reding@gmail.com>, Krishna Reddy
- <vdumpa@nvidia.com>, Chen-Yu Tsai <wens@csie.org>,
- Will Deacon <will@kernel.org>, Yong Wu <yong.wu@mediatek.com>,
- Chunyan Zhang <zhang.lyra@gmail.com>, Dmitry Osipenko <digetx@gmail.com>,
- Marek Szyprowski <m.szyprowski@samsung.com>,
- Nicolin Chen <nicolinc@nvidia.com>, Niklas Schnelle
- <schnelle@linux.ibm.com>, Steven Price <steven.price@arm.com>,
- Thierry Reding <treding@nvidia.com>
-Subject: Re: [PATCH v6 00/25] iommu: Make default_domain's mandatory
+Cc: baolu.lu@linux.intel.com, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, xianting.tian@linux.alibaba.com,
+ kaijieguo@linux.alibaba.com, daishengdong@yeah.net
+Subject: Re: [PATCH] iommu/vt-d: Atomic breakdown of IOPT into finer
+ granularity
 Content-Language: en-US
-To: Jason Gunthorpe <jgg@nvidia.com>
-References: <0-v6-e8114faedade+425-iommu_all_defdom_jgg@nvidia.com>
- <50feed07-f89a-dfc2-d8a8-16f9bf0fe937@linux.intel.com>
- <ZNpksUtIY+3N1Hn3@nvidia.com>
+To: Jie Ji <jijie.ji@linux.alibaba.com>, dwmw2@infradead.org,
+ joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
+ Kevin Tian <kevin.tian@intel.com>,
+ Alex Williamson <alex.williamson@redhat.com>
+References: <20230814121016.32613-1-jijie.ji@linux.alibaba.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <ZNpksUtIY+3N1Hn3@nvidia.com>
+In-Reply-To: <20230814121016.32613-1-jijie.ji@linux.alibaba.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2023/8/15 1:30, Jason Gunthorpe wrote:
-> On Mon, Aug 14, 2023 at 04:43:23PM +0800, Baolu Lu wrote:
-> 
->>> This is on github:https://github.com/jgunthorpe/linux/commits/iommu_all_defdom
->> It seems that after this series, all ARM iommu drivers are able to
->> support the IDENTITY default domain, hence perhaps we can remove below
->> code?
-> Yes, but this code is still used
-> 
->> If I remember it correctly, the background of this part of code is
->> that some arm drivers didn't support IDENTITY domain, so fall back to
->> DMA domain if IDENTITY domain allocation fails.
-> Not quite..
-> 
-> 	if (req_type)
-> 		return __iommu_group_alloc_default_domain(group, req_type);
-> 
-> req_type == 0 can still happen because it depends on what
-> def_domain_type returns, which is still 0 in alot of cases
-> 
-> 	/* The driver gave no guidance on what type to use, try the default */
-> 	dom = __iommu_group_alloc_default_domain(group, iommu_def_domain_type);
-> 	if (dom)
-> 		return dom;
-> 
-> So we try the default which might be IDENTITY/DMA/DMA_FQ - still have
-> to do this.
-> 
-> 	/* Otherwise IDENTITY and DMA_FQ defaults will try DMA */
-> 	if (iommu_def_domain_type == IOMMU_DOMAIN_DMA)
-> 		return NULL;
-> 	dom = __iommu_group_alloc_default_domain(group, IOMMU_DOMAIN_DMA);
-> 	if (!dom)
-> 		return NULL;
-> 
-> 	pr_warn("Failed to allocate default IOMMU domain of type %u for group %s - Falling back to IOMMU_DOMAIN_DMA",
-> 		iommu_def_domain_type, group->name);
-> 
-> And this hunk is primarily a fallback in case the DMA_FQ didn't
-> work. Then we try normal DMA.
-> 
-> That it also protected against not implementing IDENTITY is a side
-> effect, so I think we have to keep all of this still.
+[Please allow me to include Kevin and Alex in this thread.]
 
-Okay, fair enough. Thanks for the explanation.
+On 2023/8/14 20:10, Jie Ji wrote:
+> With the addition of IOMMU support for IO page fault, it's now possible
+> to unpin the memory which DMA remapping. However, the lack of support
+> for unmapping a subrange of the I/O page table (IOPT) in IOMMU can lead
+> to some issues.
+
+Is this the right contract about how iommu_map/unmap() should be used?
+If I remember it correctly, IOVA ranges should be mapped in pairs. That
+means, if a range is mapped by iommu_map(), the same range should be
+unmapped with iommu_unmap().
+
+Any misunderstanding or anything changed?
+
+> 
+> For instance, a virtual machine can establish IOPT of 2M/1G for better
+> performance, while the host system enable swap and attempts to swap out
+> some 4K pages. Unfortunately, unmap subrange of the large-page mapping
+> will make IOMMU page walk to error level, and finally cause kernel crash.
+
+Sorry that I can't fully understand this use case. Are you talking about
+the nested translation where user spaces manage their own IO page
+tables? But how can those pages been swapped out?
+
+> This patch support splitting the page table to a finer granularity and
+> atomic switch to it when unmap subrange of the large-page mapping. It
+> is much better than the unmap then map method to change IOPT, because
+> during interval time, all unmapped address space could trigger IO page
+> fault, which is unacceptable.
+> 
+> Signed-off-by: Jie Ji<jijie.ji@linux.alibaba.com>
+> Reviewed-by: Kaijie Guo<kaijieguo@linux.alibaba.com>
+> ---
+>   drivers/iommu/intel/iommu.c | 97 +++++++++++++++++++++++++++++--------
+>   drivers/iommu/intel/iommu.h |  1 +
+>   2 files changed, 78 insertions(+), 20 deletions(-)
 
 Best regards,
 baolu
