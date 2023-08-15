@@ -1,128 +1,109 @@
-Received: from mail-qk1-f172.google.com (mail-qk1-f172.google.com [209.85.222.172])
+Received: from mail-qt1-f170.google.com (mail-qt1-f170.google.com [209.85.160.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8CD315C9D
-	for <iommu@lists.linux.dev>; Tue, 15 Aug 2023 11:57:05 +0000 (UTC)
-Received: by mail-qk1-f172.google.com with SMTP id af79cd13be357-76ad842d12fso359961685a.3
-        for <iommu@lists.linux.dev>; Tue, 15 Aug 2023 04:57:05 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C0034100DD
+	for <iommu@lists.linux.dev>; Tue, 15 Aug 2023 12:04:17 +0000 (UTC)
+Received: by mail-qt1-f170.google.com with SMTP id d75a77b69052e-40c72caec5cso209071cf.0
+        for <iommu@lists.linux.dev>; Tue, 15 Aug 2023 05:04:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1692100624; x=1692705424;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=YRvRRxLOqDPPdxllDaD73CkYrf90+ZgiJLYkKJQz6HI=;
-        b=QJ1EWq1Mb65DdW0+kHqrDPZLDOBMyGQMTQflKivBoTWiqR2b1WFeiQmh1FsQ2mdSQL
-         LdI91EiiqukrlKmJ3in4daVamLLjuRTPJxPqNcOOCqGQRxAARtojOxTigoGXHpqffZ6b
-         Y7nEo564jOoeDtd4hBD+ZUhH/51iuFNFZqQD0VDCaLsNWeARq8bqhSvIGEUM8qRPyYIp
-         2yfdnhUoXXkGlyEVN9PYqNkLgXRQkK0ICXwhNDOOc6qY73noQYC1o1SPdPExHKVI9+Ih
-         aKCaQZZ2VTerc5TesKRWgke0w0BmQfN2mPmsgWqvVOJ5w9j8EoYc9JXIuW8iBzRpbg6j
-         76wQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1692100624; x=1692705424;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+        d=google.com; s=20221208; t=1692101056; x=1692705856;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=YRvRRxLOqDPPdxllDaD73CkYrf90+ZgiJLYkKJQz6HI=;
-        b=UCTBHylTaeMTwVaZ2XtyQK5w0X+G7NxJ+w3ziDN5mDKQpVCy6u1jL/rWLWPeureqPO
-         6/4F5zwUOlw+7di6QKSoiyvg20bn9p1sueCVQweU0qZm2+Q2Q5S051rkZyvys7Hb6bnZ
-         ficqa6CgvYORkZuEPBOL8Nd6xQGFxEDqDavfZ4J0tOsiYlrQC4u+wiBW0+5DwuJSVpVY
-         Dxcc+MnC0iAFX+kpd6bt9nvfrxkn2BHLbOiql7shMVmIOA7eulWd347Xx40IuFQBG/Yw
-         Dn3wjUxbv1bjGsyodcaQ3cQ1w9VbxGLSwa1lcB3u+HBTz6p5lN8AGbtNYnNSDs2B3bDU
-         XTFA==
-X-Gm-Message-State: AOJu0YyLBIxHIr9E67B+XgQhe1S4fyFw2vMTM2wNaIqy8oOseYmH5hYw
-	LL6qLtclz++hQ7D+1RPLPiIgIA==
-X-Google-Smtp-Source: AGHT+IHMSz6UAAfNwE8KZWq1lZN3uaDML8wVTMbwaZQQmOJMGnlQQh2imeKv1y6SO0t+2WF4Zp0OSQ==
-X-Received: by 2002:a05:620a:1a09:b0:768:10dc:e578 with SMTP id bk9-20020a05620a1a0900b0076810dce578mr16178324qkb.48.1692100624199;
-        Tue, 15 Aug 2023 04:57:04 -0700 (PDT)
-Received: from ziepe.ca ([24.114.95.117])
-        by smtp.gmail.com with ESMTPSA id o12-20020a05620a130c00b00767cd2dbd82sm3687515qkj.15.2023.08.15.04.57.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Aug 2023 04:57:03 -0700 (PDT)
-Received: from jgg by NV-9X0Z6D3. with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1qVsRd-0000Al-02;
-	Tue, 15 Aug 2023 08:42:41 -0300
-Date: Tue, 15 Aug 2023 08:42:40 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: "Suthikulpanit, Suravee" <suravee.suthikulpanit@amd.com>
-Cc: Vasant Hegde <vasant.hegde@amd.com>, iommu@lists.linux.dev,
-	joro@8bytes.org, wei.huang2@amd.com, jsnitsel@redhat.com
-Subject: Re: [PATCH 06/11] iommu/amd: Refactor helper function for attaching
- / detaching device
-Message-ID: <ZNtksPXaWjsdSBxd@ziepe.ca>
-References: <20230808100232.5977-1-vasant.hegde@amd.com>
- <20230808100232.5977-7-vasant.hegde@amd.com>
- <ZNJhw8RRvJZ+R61y@ziepe.ca>
- <f08fc678-0bff-1e3a-302d-f673c952462d@amd.com>
- <ZNY1ligeAdFmILoT@ziepe.ca>
- <36a5f7ad-7d67-a818-2b0d-366722592887@amd.com>
- <ZNbJTiolSya/3/Nu@ziepe.ca>
- <57810db9-9a85-ca4e-0fc8-24dcaeb77fa3@amd.com>
+        bh=wa4ijFpMRNMdDOXZdXXDwrY7fporBKZPPmAwJ4muH1s=;
+        b=NlAy2nuZM6YR9j6uv9fE7TfLbdb84+Dc3bcHB1de2on8b3q9QHMMiUaqqpZrkQfTCc
+         4GQCzEK7vdfxxw4y51dSVfVL5+t+OL1kgGBV16+kVaFL6/m7Plodl3JNAfx682/FQ75x
+         lTTt95SINOfPa4ECwMwnQH5R2b7ltvoy+KtDxfhvyR63QJqhmnkyqfbLqxZN3lcbE1Mi
+         2LwENFpd6RuTxX+JnFJRI/4C3etxUfRuZLDPOo3lCxVXT0ARk6k6X4MTXweHPW9Ux3+N
+         QxDvCF3OfjBV9yE9mL+o97vo1SoBWDXgU5WY0VvlZeZhLPpJqqXmPqhkOdLPtyJpGwLP
+         XNUQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1692101056; x=1692705856;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=wa4ijFpMRNMdDOXZdXXDwrY7fporBKZPPmAwJ4muH1s=;
+        b=BeJraWKytXwC4KMd35zDkzpR0kL7IqkNV//Bwdh6yfndEiyDodiG6l3gAnUGHhe6Bk
+         MAyRZC6OjleYANySlvMP75zyS6Wi/MBZyhU3rvUgb8Q2fv/5Pces6/V5DBwp9mtX/Okf
+         1hFe0EI67PGHOS1jcCTbHpp7Nz5AVTFwVJtc/kM/DigfwjMN77OGsH5VYX3yMmV/z3Xt
+         MyTImOzFrLIIVOgsjBKrwhnXwFJBp5vwongNPlEaZ7eR21pHB8maZt+UyP3c9nGVVmPP
+         CpSKfgDqLWqm1rxfyPc/JmWSdl95bFuiyRiEmcz84WJvMjL3QeoqiXshyOwJzo3SHJm1
+         C9uA==
+X-Gm-Message-State: AOJu0YylPizOSreOrOwWA2pvU1DojNBdW2WdmRU0znQzCBbKtKUyZFFa
+	5ARsndhsUOPRuyuRApnMRV+LOmtw2i+e6ebM7Bki8ufQX/ldVI2D96EQmw==
+X-Google-Smtp-Source: AGHT+IFLbYrlXJqUODynvyJHT9/v4qYbX+kKrxOxLI/Ska83ZEsKVQNmI3ZCRWkbxaNCpQQIqaVcBPaHoOU23NqKoq0=
+X-Received: by 2002:a05:622a:1822:b0:403:f5b8:2bd2 with SMTP id
+ t34-20020a05622a182200b00403f5b82bd2mr660297qtc.9.1692101056467; Tue, 15 Aug
+ 2023 05:04:16 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <57810db9-9a85-ca4e-0fc8-24dcaeb77fa3@amd.com>
+References: <20230808171446.2187795-1-mshavit@google.com> <20230809011204.v5.5.I219054a6cf538df5bb22f4ada2d9933155d6058c@changeid>
+ <20230809134959.GB4226@willie-the-truck> <CAKHBV25CQYfqm80a1ztHXn3s6kj7KCuJBwJz4EZk5cog4n6R+A@mail.gmail.com>
+ <20230810144051.GD5795@willie-the-truck> <ZNUEuIlPmrckwMyn@nvidia.com>
+ <CAKHBV24SLBNw-yWn3m6BtvvHUgD0h1e1QkEb1LrUcWSwpR85Yg@mail.gmail.com> <ZNtgD3LKwS4eatoe@nvidia.com>
+In-Reply-To: <ZNtgD3LKwS4eatoe@nvidia.com>
+From: Michael Shavit <mshavit@google.com>
+Date: Tue, 15 Aug 2023 20:03:40 +0800
+Message-ID: <CAKHBV25YKMGnAs2L0a5EwdaXrpwb9RPJqBcJjO6ahD7UMgEd2Q@mail.gmail.com>
+Subject: Re: [PATCH v5 5/9] iommu/arm-smmu-v3: Refactor write_ctx_desc
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Will Deacon <will@kernel.org>, iommu@lists.linux.dev, 
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
+	robin.murphy@arm.com, nicolinc@nvidia.com, jean-philippe@linaro.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, Aug 14, 2023 at 10:33:08PM -0700, Suthikulpanit, Suravee wrote:
-> Jason,
-> 
-> On 8/11/2023 4:50 PM, Jason Gunthorpe wrote:
-> > On Fri, Aug 11, 2023 at 10:20:56PM +0530, Vasant Hegde wrote:
-> > 
-> > > Our hardware is capable to boot with either V1 or V2 page table. By default
-> > > driver decides what is the best mode.
-> > > But if user wants he has a flexibility to choose V1 vs V2 page table. In that
-> > > mode we will adhere to user provided option and all devices will be put in that
-> > > mode.
-> > 
-> > There is no valid reason for the user to override the kernel. If we do
-> > this for AMD we have to do it for every single driver that supports
-> > two formats. It makes no sense
-> > 
-> > Jason
-> 
-> The amd_iommu=pgtbl_v2 was first introduced to enable nested IOMMU
-> translation w/ HW-vIOMMU support. This option is necessary for the guest
-> kernel since we need guest kernel to use IOMMU v2 page table for DMA-API but
-> the IOMMU driver is currently default to use pgtbl_v1 for DMA-API.
-> Currently, there is no good way to auto detect this use case.
+On Tue, Aug 15, 2023 at 7:38=E2=80=AFPM Jason Gunthorpe <jgg@nvidia.com> wr=
+ote:
+>
+> On Tue, Aug 15, 2023 at 01:20:04PM +0800, Michael Shavit wrote:
+> > On Thu, Aug 10, 2023 at 11:39=E2=80=AFPM Jason Gunthorpe <jgg@nvidia.co=
+m> wrote:
+> > >
+> > > Actually, I don't think this even works as nothing on the PASID path
+> > > adds to the list that arm_smmu_write_ctx_desc_devices() iterates over=
+ ??
+> > >
+> > > Then the remaining two calls:
+> > >
+> > > arm_smmu_share_asid(struct mm_struct *mm, u16 asid)
+> > >         arm_smmu_write_ctx_desc_devices(smmu_domain, 0, cd);
+> > >
+> > >         This is OK only if the sketchy assumption that the CD
+> > >         we extracted for a conflicting ASID is not asigned to a PASID=
+.
+> > >
+> > > static void arm_smmu_mm_release(struct mmu_notifier *mn, struct mm_st=
+ruct *mm)
+> > >         arm_smmu_write_ctx_desc_devices(smmu_domain, mm->pasid, &quie=
+t_cd);
+> > >
+> > >         This doesn't work because we didn't add the master to the lis=
+t
+> > >         during __arm_smmu_sva_bind and this path is expressly working
+> > >         on the PASID binds, not the RID binds.
+> >
+> > Actually it is working on the RID attached domain (as returned by
+> > iommu_get_domain_for_dev() at sva_bind time) not the SVA domain
+> > here...
+>
+> That can't be right, the purpose of that call and arm_smmu_mm_release is =
+to
+> disable the PASID that is about the UAF the mm's page table.
+>
+> Jason
 
-I will say it again - upstream kernel does not support nested IOMMU,
-please stop adding junk to your driver to support out of tree patch
-sets.
+For the sake of this message, let's call "primary domain" whatever RID
+domain was attached to a master at the time set_dev_pasid() was called
+on that master. That RID domain is locked in while SVA is enabled and
+cannot be detached.
 
-iommufd has an automatic solution to this problem.
-
-> * There is an upcoming feature (e.g. TMPM :
-> https://www.amd.com/system/files/TechDocs/58151_0.51-PUB.pdf), which
-> requires devices to be setup w/ pgtbl_v1. However, the TMPM driver is loaded
-> after devices are probed. Therefore, this would require Linux to boot with
-> option amd_iommu=pgtbl_v1.
-
-That is horrible, and it is even worse that you plan to support this
-with a command line option. You need a proper fix.
-
-> * IOMMU pgtbl_v1 and pgtbl_v2 are different from HW perspective, which could
-> yield different performance depending on the workload and end-point devices.
-> Therefore, the kernel option amd_iommu=pgtbl_v1|pgtbl_v2 adds flexibility
-> and give users additional control if needed.
-
-Maybe, but I'd want to see actual data on this. I'm skeptical.
- 
-> For SVA, we need to ensure that the iommu group is using pgtbl_v2 or in
-> pass-through mode (no page table setup) prior to enabling SVA for the
-> device. Currently, this would require the pgtbl_v2 option. However, we could
-> consider default to using v2 table for an IOMMU group if it contains an
-> PASID-capable device.
-
-It cannot continue to require the command line option - we expect that
-all the iommu drivers will support SVA without admin
-intervention. This will likel have to happen via some kind of 'is
-pasid possible' core call which will make the distinction based on the
-composition of the group regarding pasid support of the devices in it.
-
-Jason
+The arm-smmu-v3-sva.c implementation creates a mapping between an SVA
+domain and this primary domain (through the sva domain's mm). In
+arm_smmu_mm_release, the primary domain is looked up and
+arm_smmu_write_ctx_desc() is called on all masters that this domain is
+attached to.
