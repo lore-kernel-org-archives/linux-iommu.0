@@ -1,101 +1,137 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9FA3C8FF
-	for <iommu@lists.linux.dev>; Wed, 16 Aug 2023 16:26:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1692203208;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=jQkaFytZGX7yJJ2vsYreBzQaDeKKS8xau1s4UNGJwzI=;
-	b=JsCVJHGqnerRixj/xpa4BOPVN2D43wyu/RX8ODymU/ta1Jk/frIsYPU2oVBNsgVrRzVBke
-	dygfuFdqPHAAvsHBN6QDSNYhHiVHXuFjD1u+M2t3uodRCKGwBcfLvDqZUwDzOhAgdsb4eQ
-	tvF7xwh5lOXTmw5eQ5lKLRUHrC9uETA=
-Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
- [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-355-kxNAoEr0OoinDWvSXWrptg-1; Wed, 16 Aug 2023 12:26:45 -0400
-X-MC-Unique: kxNAoEr0OoinDWvSXWrptg-1
-Received: by mail-qt1-f198.google.com with SMTP id d75a77b69052e-40ff2434811so71304461cf.0
-        for <iommu@lists.linux.dev>; Wed, 16 Aug 2023 09:26:45 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1692203205; x=1692808005;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=jQkaFytZGX7yJJ2vsYreBzQaDeKKS8xau1s4UNGJwzI=;
-        b=GzOQjvbItbGJMRoRoEGjqs/65HELvP6bA7Rj6PwaCT4P9PGYzfh89YX6mm26s3tTWh
-         Urw8LQu8A+F2KyMoT+BKEzYJTsY3wF9vqnDlVHIyeTX2A857hOsGn6b1AoaKmRVc/MFq
-         2lK91PWch9p1y9H/Z6osFeZ9iDgY+j2hxZHts0vSBO2GCWSSY8JPNytHEUyO1W1Paqj0
-         4OvK8l3xYV4VgL4fdmjoUl7yiBPQzPsfJsN+XuvUaAp9qyse/c5PnMPooZ+G116RFi0L
-         hbt0t+yRooDSg8wKWTmhExmsFNq4iRqBnGSVwaU7FfcV7/xqhxC6cjzTnn5YN+ebOrxL
-         ALqw==
-X-Gm-Message-State: AOJu0YxR7UX99efQ2RZPpQMSRym0tkspWhCenCc5nhu42WM6adEhzK3N
-	Criyj6HENS8YnkVwIAgBZS4hgxZpCHYKZS5HRlnQ8aulZz9vpne6V1Ghnpr4qcDqnZUxv4j0Jm/
-	fYG2SgDWVkpyiL6Y=
-X-Received: by 2002:a05:622a:148b:b0:40f:ce6d:775e with SMTP id t11-20020a05622a148b00b0040fce6d775emr3068032qtx.42.1692203205117;
-        Wed, 16 Aug 2023 09:26:45 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IH/GIHUNnf0oTe9+lJSswuapo1QCkEBRxNQD7m9vEFR9QkAuiRF7N23s0B5uwbYvEuT3jqcMw==
-X-Received: by 2002:a05:622a:148b:b0:40f:ce6d:775e with SMTP id t11-20020a05622a148b00b0040fce6d775emr3068016qtx.42.1692203204888;
-        Wed, 16 Aug 2023 09:26:44 -0700 (PDT)
-Received: from localhost (ip98-179-76-75.ph.ph.cox.net. [98.179.76.75])
-        by smtp.gmail.com with ESMTPSA id cg3-20020a05622a408300b003f872332a9asm4553935qtb.64.2023.08.16.09.26.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Aug 2023 09:26:44 -0700 (PDT)
-Date: Wed, 16 Aug 2023 09:26:42 -0700
-From: Jerry Snitselaar <jsnitsel@redhat.com>
-To: Vasant Hegde <vasant.hegde@amd.com>
-Cc: iommu@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com, 
-	wei.huang2@amd.com, jgg@ziepe.ca, Jason Gunthorpe <jgg@nvidia.com>
-Subject: Re: [PATCH v4 06/14] iommu/amd: Do not set amd_iommu_pgtable in
- pass-through mode
-Message-ID: <g7pvo7zmaswoni5jzrrrwd7driuoucyujd72qvrx5fm25ozb4b@jlaupn67xvvz>
-References: <20230815102202.565012-1-vasant.hegde@amd.com>
- <20230815102202.565012-7-vasant.hegde@amd.com>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9403520E7
+	for <iommu@lists.linux.dev>; Wed, 16 Aug 2023 16:52:30 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 8CAB5D75;
+	Wed, 16 Aug 2023 09:53:10 -0700 (PDT)
+Received: from [10.57.90.114] (unknown [10.57.90.114])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 564723F6C4;
+	Wed, 16 Aug 2023 09:52:28 -0700 (PDT)
+Message-ID: <24ba4cd6-0a28-3c22-c5b5-dadaa67600cf@arm.com>
+Date: Wed, 16 Aug 2023 17:52:24 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <20230815102202.565012-7-vasant.hegde@amd.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.14.0
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH 2/2] iommu/iova: Manage the depot list size
+To: "zhangzekun (A)" <zhangzekun11@huawei.com>
+Cc: will@kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ john.g.garry@oracle.com, joro@8bytes.org
+References: <cover.1692033783.git.robin.murphy@arm.com>
+ <abc5a322584f5c8a44f7a0a7f709899053c5df01.1692033783.git.robin.murphy@arm.com>
+ <70e7dcc8-819f-d957-f43c-75b7818a3a96@huawei.com>
+Content-Language: en-GB
+In-Reply-To: <70e7dcc8-819f-d957-f43c-75b7818a3a96@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Tue, Aug 15, 2023 at 10:21:54AM +0000, Vasant Hegde wrote:
-> Since AMD IOMMU page table is not used in passthrough mode, switching to
-> v1 page table is not required.
+On 15/08/2023 3:11 pm, zhangzekun (A) wrote:
 > 
-> Therefore, remove redundant amd_iommu_pgtable update and misleading
-> warning message.
 > 
-> Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
-> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+> 在 2023/8/15 1:53, Robin Murphy 写道:
+>> Automatically scaling the depot up to suit the peak capacity of a
+>> workload is all well and good, but it would be nice to have a way to
+>> scale it back down again if the workload changes. To that end, add
+>> automatic reclaim that will gradually free unused magazines if the
+>> depot size remains above a reasonable threshold for long enough.
+>>
+>> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+>> ---
+>>   drivers/iommu/iova.c | 29 +++++++++++++++++++++++++++++
+>>   1 file changed, 29 insertions(+)
+>>
+>> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+>> index d2de6fb0e9f4..76a7d694708e 100644
+>> --- a/drivers/iommu/iova.c
+>> +++ b/drivers/iommu/iova.c
+>> @@ -11,6 +11,7 @@
+>>   #include <linux/smp.h>
+>>   #include <linux/bitops.h>
+>>   #include <linux/cpu.h>
+>> +#include <linux/workqueue.h>
+>>   /* The anchor node sits above the top of the usable address space */
+>>   #define IOVA_ANCHOR    ~0UL
+>> @@ -626,6 +627,8 @@ EXPORT_SYMBOL_GPL(reserve_iova);
+>>    */
+>>   #define IOVA_MAG_SIZE 127
+>> +#define IOVA_DEPOT_DELAY msecs_to_jiffies(100)
+>> +
+>>   struct iova_magazine {
+>>       /*
+>>        * Only full magazines are inserted into the depot, so we can avoid
+>> @@ -646,8 +649,11 @@ struct iova_cpu_rcache {
+>>   struct iova_rcache {
+>>       spinlock_t lock;
+>> +    unsigned int depot_size;
+>>       struct iova_magazine *depot;
+>>       struct iova_cpu_rcache __percpu *cpu_rcaches;
+>> +    struct iova_domain *iovad;
+>> +    struct delayed_work work;
+>>   };
+>>   static struct iova_magazine *iova_magazine_alloc(gfp_t flags)
+>> @@ -728,6 +734,7 @@ static struct iova_magazine *iova_depot_pop(struct 
+>> iova_rcache *rcache)
+>>       rcache->depot = mag->next;
+>>       mag->size = IOVA_MAG_SIZE;
+>> +    rcache->depot_size--;
+>>       return mag;
+>>   }
+>> @@ -735,6 +742,24 @@ static void iova_depot_push(struct iova_rcache 
+>> *rcache, struct iova_magazine *ma
+>>   {
+>>       mag->next = rcache->depot;
+>>       rcache->depot = mag;
+>> +    rcache->depot_size++;
+>> +}
+>> +
+>> +static void iova_depot_work_func(struct work_struct *work)
+>> +{
+>> +    struct iova_rcache *rcache = container_of(work, typeof(*rcache), 
+>> work.work);
+>> +    struct iova_magazine *mag = NULL;
+>> +
+>> +    spin_lock(&rcache->lock);
+>> +    if (rcache->depot_size > num_online_cpus())
+>> +        mag = iova_depot_pop(rcache);
+>> +    spin_unlock(&rcache->lock);
+>> +
+>> +    if (mag) {
+>> +        iova_magazine_free_pfns(mag, rcache->iovad);
+>> +        iova_magazine_free(mag);
+>> +        schedule_delayed_work(&rcache->work, 
+>> msecs_to_jiffies(IOVA_DEPOT_DELAY));
+> Hi, Robin,
+> 
+> I am a little confused why IOVA_DEPOT_DELAY need to be calculated twice 
+> in iova_depot_work_func(), as it already equals to 
+> "msecs_to_jiffies(100)".
 
-Reviewed-by: Jerry Snitselaar <jsnitsel@redhat.com>
+Oof, not sure how I managed to leave a mere 3-line refactoring 
+half-finished... yeah, this msecs_to_jiffies() just shouldn't be here :)
 
-> ---
->  drivers/iommu/amd/init.c | 3 ---
->  1 file changed, 3 deletions(-)
-> 
-> diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-> index 852e40b13d20..2b01dfde6cab 100644
-> --- a/drivers/iommu/amd/init.c
-> +++ b/drivers/iommu/amd/init.c
-> @@ -2134,9 +2134,6 @@ static int __init iommu_init_pci(struct amd_iommu *iommu)
->  		    !iommu_feature(iommu, FEATURE_GT)) {
->  			pr_warn("Cannot enable v2 page table for DMA-API. Fallback to v1.\n");
->  			amd_iommu_pgtable = AMD_IOMMU_V1;
-> -		} else if (iommu_default_passthrough()) {
-> -			pr_warn("V2 page table doesn't support passthrough mode. Fallback to v1.\n");
-> -			amd_iommu_pgtable = AMD_IOMMU_V1;
->  		}
->  	}
->  
-> -- 
-> 2.31.1
-> 
+> Besides, do we really need to invoke a 
+> delayed_work in iova_depot_work_func()? As each time we put a iova 
+> magazine to depot, a delayed_work will be invoked which is reponsible to 
+> free a iova magazine in depot if the depot size is greater than 
+> num_online_cpus().
 
+The idea is to free excess magazines one at a time at a relatively low 
+rate, so as not to interfere too much with "bursty" workloads which 
+might release a large number of IOVAs at once, but then want to 
+reallocate them again relatively soon. I'm hoping that the overhead of 
+scheduling the reclaim work unconditionally whenever the depot grows is 
+sufficiently negligible to avoid having to check the threshold in 
+multiple places, as that's the part which I anticipate might grow more 
+complex in future. As far as I could see it should be pretty minimal if 
+the work is already scheduled, which I'd expect to be the case most of 
+the time while the depot is busy. The reason the work also reschedules 
+itself is to handle the opposite situation, and make sure it can run to 
+completion after the depot goes idle.
+
+Thanks,
+Robin.
