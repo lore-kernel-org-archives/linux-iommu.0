@@ -1,214 +1,116 @@
-Received: from mail-yw1-f202.google.com (mail-yw1-f202.google.com [209.85.128.202])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1nam02on2052.outbound.protection.outlook.com [40.107.96.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A8E1DF60
-	for <iommu@lists.linux.dev>; Wed, 16 Aug 2023 13:20:18 +0000 (UTC)
-Received: by mail-yw1-f202.google.com with SMTP id 00721157ae682-589a45c1b0fso86791997b3.1
-        for <iommu@lists.linux.dev>; Wed, 16 Aug 2023 06:20:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1692192018; x=1692796818;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=ULiADrwuuyAPPSdtsv7UOpy5pMPTnatyz8i4B9Dtah0=;
-        b=JCPjawwO0fDc/tPWH2pf6+st1doeLj9RMiU38a2Szh2nGo6BdwM2brgtHX+EEcG88b
-         n3HS649Cy/5FZ12QfG1g+fGKDBl3KmwDr/WVSW7eEAiKZ4SO2MOUaTWIexFZPcZIIwIC
-         HLplCZ5DLfrsuaL9o/S3Z/dOs2uc8niNVFAkqOJLwFYddXBngyPhXV/MUrhZ9/DGhJlo
-         qdBQqniK1uYeUYX6kl3R/jUHQdUzuskz4B1yKewKffO53T3ofDWFHNT5Zr7rGpX3KyiF
-         hgNYqsRd3jI6jTy7V4jMuKKILWuIV4TUDpmvi1YyNOJ7QvSx0hhIg83PeVxHMTXLz9m0
-         3HiA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1692192018; x=1692796818;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=ULiADrwuuyAPPSdtsv7UOpy5pMPTnatyz8i4B9Dtah0=;
-        b=hbAcroV97H4cgXNRIFtLVAFgT8nnA8VHbDdrn/Z7LVn1iW/G48xc+YMrYUbZaJXPUG
-         sXkgAecGbuwPB4DQNcWyDM8n90wr008N/y4guAbY7IypVf2bG2+mUqK5vM7B525riVKr
-         +JDyVvGS5Qe933/G/qHJnaGLaDzJSWrSIAsX7WJJcP//wB6OJh++bbRKJ7VTUuqia2KW
-         aDueA/IXaYAbZbN1FXHqXYmhIsHQF6gxzlvc49l7p62H3s8duTGX7e4yoaOI8lNPVSly
-         +SadgUVHvBntIritrepnGms7tCYiaQMhn5rC+/wkyVM7qxbkXWQFW1vO7yxMknt3q6fy
-         Hk/w==
-X-Gm-Message-State: AOJu0YxhDnkQYgBlv7mdgCTM1fzhmjNtrn0bdH/UWzYsssXEudSIbx2V
-	hIAQsKxUT/HpW+irBI2pLhnnj2KVsi3Ppq9LPO/v38VGg2caDiRGFOBvkEfht89+tNJq65P3Uxg
-	+XS/lQg6ijgkhANTdt5wW2dD7xlKx2DyhN/LhsBCwk3GKXv8ozglLqafMDppnK9k=
-X-Google-Smtp-Source: AGHT+IFmOt0mY8cA4WSeCxAz4F0m9qQ69xcRa9qrkhLnnEQxW5VsK9pri8S7NNbJFSEhmAJ5tHME784zCo/t
-X-Received: from mshavit.ntc.corp.google.com ([2401:fa00:95:20c:ae98:2006:2abd:3434])
- (user=mshavit job=sendgmr) by 2002:a81:b245:0:b0:581:3939:59a2 with SMTP id
- q66-20020a81b245000000b00581393959a2mr24381ywh.3.1692192017627; Wed, 16 Aug
- 2023 06:20:17 -0700 (PDT)
-Date: Wed, 16 Aug 2023 21:18:50 +0800
-In-Reply-To: <20230816131925.2521220-1-mshavit@google.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B104EDF60
+	for <iommu@lists.linux.dev>; Wed, 16 Aug 2023 14:00:26 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=d2YobW/SOD0+/PxC08siavtHifmsdy8TKOf23QodyNIFRrgaDzcyNhKfDufVtD1CPBh1SubS3KVZJ7tvkv9r1ei6wyKWCxgHFRYd2AgeSQG0HSL3vMpxITfPXNVcydT/EqwfaXwd2hH2Cc0k5Ugn3bMufzNQX2uBN36cm+mkNijKab7Lg1rChG84ECaR4+GxSTM1/x/beSWfYgYkJzogcCtVKzbIjyXwCLrnm9HtO84J0KVmWDiapqgZrSJaq20lYruT18NodYowfVSci6Y2UPLzTjXdgrMAckE2euY0vEdlHcLqYGXWX690DvhQJapEWvJLWEbt3m57qrQ/QV2/fg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=72NJmz+XB74FvVRRkdrQ8riTLnwKUXe6ZchF42+xFAQ=;
+ b=BlvJf6SxbJmK6GCaVTaquplENTWr0j9osNRnDGt95+Oc5RP2YySY56JuS1v7kyPM6Qwzsqx5FygZ3liRav8lt2a6IS/d674dAx+ATBQFKRP9QYCiUDzuTS6c2fqfOU5BpdBFHR26//IEUkB3Xb4S5yjlRkhmxJo4ET6doSNL2lp0MioJbhNbZmaND4LiiiYRP55cu6Nq8qQGMgQGY+gnN8iKFcJtEtiKeUm5xMJsFRl4c53AuZz3++K3Tc0BunZ+DMnHohwVPeeaiJ1HrevYlCd+2p3lByJUoMR08Yp67hbbh6lZmLbwiSpse15lwO9D7odbFvqq5IKIYf4JcEu4sw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=72NJmz+XB74FvVRRkdrQ8riTLnwKUXe6ZchF42+xFAQ=;
+ b=slZ1D9oqctUbA1DmEEvK8vh2Ns1a11q7UsFrlqUWlM7+OVv8ADIMDS/ItpZe1HcwioX54hN9MQzrXdcUHnG/XB1XzfvGpAMQAMeKPstBgSUNUTEBPPFeKYo/pgu4ZAPcgRmhWUn1JOdUlhwHE/ZqUiKs6y3lsdDptFZtnzL3+vlV/fNEWHE2IrVLIR1vTUGf0dILMOadGQZcz4ZUGFb20xYI4rR1UMwAtnts1GyB3vNAicHnYZmSCIaDUbyhJFOw/apTKRrHEHDCGMIipAVJPsUIPzcd+jWMW4Eiu9SqjgHTUXeFm4yKaWByQhXNbfJG6EbkSDqGyyvbEzo/Gsci3A==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by IA1PR12MB8407.namprd12.prod.outlook.com (2603:10b6:208:3d9::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6678.29; Wed, 16 Aug
+ 2023 14:00:24 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::5111:16e8:5afe:1da1]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::5111:16e8:5afe:1da1%6]) with mapi id 15.20.6678.025; Wed, 16 Aug 2023
+ 14:00:24 +0000
+Date: Wed, 16 Aug 2023 11:00:20 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Michael Shavit <mshavit@google.com>
+Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org, robin.murphy@arm.com, will@kernel.org,
+	jean-philippe@linaro.org, nicolinc@nvidia.com
+Subject: Re: [PATCH v6 08/10] iommu/arm-smmu-v3: Update comment about STE
+ liveness
+Message-ID: <ZNzWdDbALA1HH47q@nvidia.com>
+References: <20230816131925.2521220-1-mshavit@google.com>
+ <20230816211849.v6.8.I7a8beb615e2520ad395d96df94b9ab9708ee0d9c@changeid>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230816211849.v6.8.I7a8beb615e2520ad395d96df94b9ab9708ee0d9c@changeid>
+X-ClientProxiedBy: BY5PR13CA0001.namprd13.prod.outlook.com
+ (2603:10b6:a03:180::14) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <20230816131925.2521220-1-mshavit@google.com>
-X-Mailer: git-send-email 2.41.0.694.ge786442a9b-goog
-Message-ID: <20230816211849.v6.10.I5ee79793b444ddb933e8bc1eb7b77e728d7f8350@changeid>
-Subject: [PATCH v6 10/10] iommu/arm-smmu-v3: Rename cdcfg to cd_table
-From: Michael Shavit <mshavit@google.com>
-To: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
-	linux-kernel@vger.kernel.org
-Cc: robin.murphy@arm.com, will@kernel.org, jean-philippe@linaro.org, 
-	jgg@nvidia.com, nicolinc@nvidia.com, Michael Shavit <mshavit@google.com>
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|IA1PR12MB8407:EE_
+X-MS-Office365-Filtering-Correlation-Id: 714fe536-06e4-4d2c-f661-08db9e6122ed
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	lss5O/pGPg7p5T7Vt25ixMRkR+alrT5pVYsfdGN91xVl0s4TFONOG4gRGsyPpP2oya27RlXspWaOUj+zfIJcOaEJ7X+68k1p+juk4mH+NyC+Jj6C/PZDaTN90ip6FVenPYphxDG8QsZu4Nn59AOwV2U6e9ocQCkvvHtckI2Mds9UrVrOtULWBmw2zW9mZQCrZTGqNGuhny5ayr7rfDiQqzOodKovqYGMJ0+e/W8w5Aa7qEgswmiEAil2hCRxJKXJYgUo6b/GS1bRUyRxB59CvMreNhsK9ixX44qHlIcoPx1LjS5lV1QnSqlUrbTUG0Lo2uFu8gaam0avfVheY/EA5Eq3LgWgMw5zBDwLONwD45box2J9XPO3WERtcWmKCN4fQn1IoB7BNqz1dnir2McLJX3vYMcf6S93P86C/cNoyDvNllmCt2nQ39X/FNcfttRBS1PtS0spApoEuVRL1FtcJSYrMFKU5bds7wCWYatj+HPUdu56GUWVQObYUC3rsl50eXBDO8VRY4CEsYELOUwRUh3bPH16cK+d5oxEYdpyEz2TwtuObftf33uDLFiUVY1b
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(396003)(39860400002)(346002)(366004)(376002)(136003)(1800799009)(451199024)(186009)(316002)(6916009)(66946007)(66476007)(66556008)(41300700001)(5660300002)(38100700002)(8676002)(4326008)(8936002)(2906002)(15650500001)(4744005)(83380400001)(26005)(478600001)(86362001)(6512007)(107886003)(6506007)(36756003)(6666004)(2616005)(6486002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?5jHBbAiLZ1T2ADoW5EY/CJZH16JiLkRt4UruzhRGH8v5yOpPdFlW3Ubbxt4j?=
+ =?us-ascii?Q?mqzPpXDF60JMK7U+sf/ThFvOKH/t5CSS5xgxYnbMPG9w9+glUTf3nVENjyBz?=
+ =?us-ascii?Q?Iex+3CmpG5szyiBrchUVcssFAytD8v7zGqaqkLSyr7x40CDptRyhaxYL9nKI?=
+ =?us-ascii?Q?Kibn5UYDyn1KChGluOD1WiWnTCI7pFw02UY5z7QAGz24pj17rkELWQOdgSg5?=
+ =?us-ascii?Q?ELbU0HPJCt4JJhGIX3nU0iyKKNSChzCEam+/ZVdfnrpuTV0aSoKLW8cnSGGb?=
+ =?us-ascii?Q?qZ1uCl+7rZSjFuMJXC9ez9YdYnR+P11vATu0pfKm08wy3aF72YxvJ7GV3C3B?=
+ =?us-ascii?Q?oEzepJcAg8MjckFzx2G8hUyBoNlnoQ80snnKCCqe8oqFutPKWGoaQ3Fj5ioC?=
+ =?us-ascii?Q?xGPrSAWLl+q156obV1yiRrPqSAxshM9HtwM/WY1x9hypWOoVcA63tNTmcgCC?=
+ =?us-ascii?Q?8kmW/0l/q2usY3mfn9FNpZ2CkoU5p/5LF4V8lyk9DL4a6IZT1jJ884JPpxMx?=
+ =?us-ascii?Q?+22KNsxM06S7qXR3noU8vqSsOIDyslQR7L9gj+LYNe+84fg0WKYjr79Snabg?=
+ =?us-ascii?Q?zB8Eh8A7sM6WtHL6FvGKAIaOXZcEwjNXyO3hQMcAY5oIgMIWEYNRk37U9dlH?=
+ =?us-ascii?Q?yublQ9tf8z+WNCSM7ehaMSQobhVoxL2pNYgniG0wjpLz6aK6nKojxljAHfVR?=
+ =?us-ascii?Q?lfrPmhB5H49V90MxL8oZE9BFKcSqxikIT7bgf6ycEiztL4bxL3nMR0eFoDmz?=
+ =?us-ascii?Q?GQPBoTeAYrhMHSUGc6Ql5I3CyuWwNXUvwH9vLJYaHj14fU+7xdjdhr5YtriF?=
+ =?us-ascii?Q?RPk3pdf6v+9Ui/uX7iWDlTZB1HQfigXJoyZGp3vkpStHYIC0rHIqWGg4Anjw?=
+ =?us-ascii?Q?IZryOHCOXmgK+iOkRNWA0IZceSNedIVGFP7jx/o7ogqi/woKhMMY7nHatjG3?=
+ =?us-ascii?Q?6LIkEq4jKZAhZ5EygRDM8Y5Ka0ao8JE++o9kgE7RBwi8SjmkBqECD9zIr5kx?=
+ =?us-ascii?Q?AlZ9GS/zO1jFEAXf/pDT6ZGiLE+XrqrTbmVnIELN240aOgcDRMitYTg5NM6y?=
+ =?us-ascii?Q?ey9Tk3aFAFHC7o7rmgUKVpBXqe24bgaXI+KJTvGpRy4qll2S2tyFS3Y1lLM4?=
+ =?us-ascii?Q?Zar/tyaS8Tcb2fW3oQkVWalYYQuzfjcezoPSFsvx+MKcYN/KDRyEpulz3xgm?=
+ =?us-ascii?Q?7cGrtd6HQ1uPIqxnzea0eSuxF+fiOVvAr0XfAnkFMmBvQj8P3kMbzoQmtelV?=
+ =?us-ascii?Q?q2IUUfcMUvhklaWzOECH+VafHfOAek4DiUPL/Lo6xhKMT+cpbq+cwLQGbx43?=
+ =?us-ascii?Q?bFm6sJ7d6iC9SMqeYiGv9aYURY80Eocyald4QKUXyA7W4FzgdzmRYA0VqyEx?=
+ =?us-ascii?Q?gvMIIEoi9BlX+Oa2Ce3dx68gNXze5uC0O8TSY4+gxROqLqsfFGkfYOTZJuf+?=
+ =?us-ascii?Q?h09oArVo8rugY2dtlWBUOczqJoUDvrBe6Otpn5BA+UMY/pMRJDFvdbJ/JT5w?=
+ =?us-ascii?Q?WMh+BqLpTqbbWiJHp8lxeOa9DyP9k+htfBtAXMcXhGQA1wDt1PQ4wPDOZ3uW?=
+ =?us-ascii?Q?VW6Ea6Xker3kxTIATdAasMOllO4Rqsq5S+RmdQEY?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 714fe536-06e4-4d2c-f661-08db9e6122ed
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Aug 2023 14:00:23.9932
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: QeyvAlfYyS+NXEfGz5hIRUK+2PtdxOkYR0BcLgdNAKOPO5Q8NC9gonhd3hu5zUyH
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB8407
 
-cdcfg is a confusing name, especially given other variables with the cfg
-suffix in this driver. cd_table more clearly describes what is being
-operated on.
+On Wed, Aug 16, 2023 at 09:18:48PM +0800, Michael Shavit wrote:
+> Update the comment to reflect the fact that the STE is not always
+> installed. arm_smmu_domain_finalise_s1 intentionnaly calls
+> arm_smmu_write_ctx_desc while the STE is not installed.
+> 
+> Signed-off-by: Michael Shavit <mshavit@google.com>
+> ---
 
 Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
-Signed-off-by: Michael Shavit <mshavit@google.com>
----
 
-(no changes since v3)
-
-Changes in v3:
-- Commit message update
-
-Changes in v2:
-- New commit
-
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 70 ++++++++++-----------
- 1 file changed, 35 insertions(+), 35 deletions(-)
-
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 104b8d6ea5972..b27011b2bec9b 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -1028,18 +1028,18 @@ static __le64 *arm_smmu_get_cd_ptr(struct arm_smmu_master *master, u32 ssid)
- 	unsigned int idx;
- 	struct arm_smmu_l1_ctx_desc *l1_desc;
- 	struct arm_smmu_device *smmu = master->smmu;
--	struct arm_smmu_ctx_desc_cfg *cdcfg = &master->cd_table;
-+	struct arm_smmu_ctx_desc_cfg *cd_table = &master->cd_table;
- 
--	if (cdcfg->s1fmt == STRTAB_STE_0_S1FMT_LINEAR)
--		return cdcfg->cdtab + ssid * CTXDESC_CD_DWORDS;
-+	if (cd_table->s1fmt == STRTAB_STE_0_S1FMT_LINEAR)
-+		return cd_table->cdtab + ssid * CTXDESC_CD_DWORDS;
- 
- 	idx = ssid >> CTXDESC_SPLIT;
--	l1_desc = &cdcfg->l1_desc[idx];
-+	l1_desc = &cd_table->l1_desc[idx];
- 	if (!l1_desc->l2ptr) {
- 		if (arm_smmu_alloc_cd_leaf_table(smmu, l1_desc))
- 			return NULL;
- 
--		l1ptr = cdcfg->cdtab + idx * CTXDESC_L1_DESC_DWORDS;
-+		l1ptr = cd_table->cdtab + idx * CTXDESC_L1_DESC_DWORDS;
- 		arm_smmu_write_cd_l1_desc(l1ptr, l1_desc);
- 		/* An invalid L1CD can be cached */
- 		arm_smmu_sync_cd(master, ssid, false);
-@@ -1134,35 +1134,35 @@ static int arm_smmu_alloc_cd_tables(struct arm_smmu_master *master)
- 	size_t l1size;
- 	size_t max_contexts;
- 	struct arm_smmu_device *smmu = master->smmu;
--	struct arm_smmu_ctx_desc_cfg *cdcfg = &master->cd_table;
-+	struct arm_smmu_ctx_desc_cfg *cd_table = &master->cd_table;
- 
--	cdcfg->stall_enabled = master->stall_enabled;
--	cdcfg->s1cdmax = master->ssid_bits;
--	max_contexts = 1 << cdcfg->s1cdmax;
-+	cd_table->stall_enabled = master->stall_enabled;
-+	cd_table->s1cdmax = master->ssid_bits;
-+	max_contexts = 1 << cd_table->s1cdmax;
- 
- 	if (!(smmu->features & ARM_SMMU_FEAT_2_LVL_CDTAB) ||
- 	    max_contexts <= CTXDESC_L2_ENTRIES) {
--		cdcfg->s1fmt = STRTAB_STE_0_S1FMT_LINEAR;
--		cdcfg->num_l1_ents = max_contexts;
-+		cd_table->s1fmt = STRTAB_STE_0_S1FMT_LINEAR;
-+		cd_table->num_l1_ents = max_contexts;
- 
- 		l1size = max_contexts * (CTXDESC_CD_DWORDS << 3);
- 	} else {
--		cdcfg->s1fmt = STRTAB_STE_0_S1FMT_64K_L2;
--		cdcfg->num_l1_ents = DIV_ROUND_UP(max_contexts,
-+		cd_table->s1fmt = STRTAB_STE_0_S1FMT_64K_L2;
-+		cd_table->num_l1_ents = DIV_ROUND_UP(max_contexts,
- 						  CTXDESC_L2_ENTRIES);
- 
--		cdcfg->l1_desc = devm_kcalloc(smmu->dev, cdcfg->num_l1_ents,
--					      sizeof(*cdcfg->l1_desc),
-+		cd_table->l1_desc = devm_kcalloc(smmu->dev, cd_table->num_l1_ents,
-+					      sizeof(*cd_table->l1_desc),
- 					      GFP_KERNEL);
--		if (!cdcfg->l1_desc)
-+		if (!cd_table->l1_desc)
- 			return -ENOMEM;
- 
--		l1size = cdcfg->num_l1_ents * (CTXDESC_L1_DESC_DWORDS << 3);
-+		l1size = cd_table->num_l1_ents * (CTXDESC_L1_DESC_DWORDS << 3);
- 	}
- 
--	cdcfg->cdtab = dmam_alloc_coherent(smmu->dev, l1size, &cdcfg->cdtab_dma,
-+	cd_table->cdtab = dmam_alloc_coherent(smmu->dev, l1size, &cd_table->cdtab_dma,
- 					   GFP_KERNEL);
--	if (!cdcfg->cdtab) {
-+	if (!cd_table->cdtab) {
- 		dev_warn(smmu->dev, "failed to allocate context descriptor\n");
- 		ret = -ENOMEM;
- 		goto err_free_l1;
-@@ -1171,9 +1171,9 @@ static int arm_smmu_alloc_cd_tables(struct arm_smmu_master *master)
- 	return 0;
- 
- err_free_l1:
--	if (cdcfg->l1_desc) {
--		devm_kfree(smmu->dev, cdcfg->l1_desc);
--		cdcfg->l1_desc = NULL;
-+	if (cd_table->l1_desc) {
-+		devm_kfree(smmu->dev, cd_table->l1_desc);
-+		cd_table->l1_desc = NULL;
- 	}
- 	return ret;
- }
-@@ -1183,30 +1183,30 @@ static void arm_smmu_free_cd_tables(struct arm_smmu_master *master)
- 	int i;
- 	size_t size, l1size;
- 	struct arm_smmu_device *smmu = master->smmu;
--	struct arm_smmu_ctx_desc_cfg *cdcfg = &master->cd_table;
-+	struct arm_smmu_ctx_desc_cfg *cd_table = &master->cd_table;
- 
--	if (cdcfg->l1_desc) {
-+	if (cd_table->l1_desc) {
- 		size = CTXDESC_L2_ENTRIES * (CTXDESC_CD_DWORDS << 3);
- 
--		for (i = 0; i < cdcfg->num_l1_ents; i++) {
--			if (!cdcfg->l1_desc[i].l2ptr)
-+		for (i = 0; i < cd_table->num_l1_ents; i++) {
-+			if (!cd_table->l1_desc[i].l2ptr)
- 				continue;
- 
- 			dmam_free_coherent(smmu->dev, size,
--					   cdcfg->l1_desc[i].l2ptr,
--					   cdcfg->l1_desc[i].l2ptr_dma);
-+					   cd_table->l1_desc[i].l2ptr,
-+					   cd_table->l1_desc[i].l2ptr_dma);
- 		}
--		devm_kfree(smmu->dev, cdcfg->l1_desc);
--		cdcfg->l1_desc = NULL;
-+		devm_kfree(smmu->dev, cd_table->l1_desc);
-+		cd_table->l1_desc = NULL;
- 
--		l1size = cdcfg->num_l1_ents * (CTXDESC_L1_DESC_DWORDS << 3);
-+		l1size = cd_table->num_l1_ents * (CTXDESC_L1_DESC_DWORDS << 3);
- 	} else {
--		l1size = cdcfg->num_l1_ents * (CTXDESC_CD_DWORDS << 3);
-+		l1size = cd_table->num_l1_ents * (CTXDESC_CD_DWORDS << 3);
- 	}
- 
--	dmam_free_coherent(smmu->dev, l1size, cdcfg->cdtab, cdcfg->cdtab_dma);
--	cdcfg->cdtab_dma = 0;
--	cdcfg->cdtab = NULL;
-+	dmam_free_coherent(smmu->dev, l1size, cd_table->cdtab, cd_table->cdtab_dma);
-+	cd_table->cdtab_dma = 0;
-+	cd_table->cdtab = NULL;
- }
- 
- bool arm_smmu_free_asid(struct arm_smmu_ctx_desc *cd)
--- 
-2.41.0.694.ge786442a9b-goog
-
+Jason
