@@ -1,132 +1,160 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.136])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ADF373D92
-	for <iommu@lists.linux.dev>; Wed, 16 Aug 2023 04:11:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1692159081; x=1723695081;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=4+AGSqBUOkC77nRQkn+4Zy4NeYFwDDx95fpuE62seCM=;
-  b=Me3UT6+KDJBcxloLv1S1jyaCLD56u7NYOUBh3FkONOt0f62Qtagp72Y2
-   uO2VJ3Ig8Qo4Z/EfbdV8b10qbyBaw+Z7f41aDnrMJCpubxw4amFXCNgJS
-   i9uG1AKYbdwZzFm7FDvAnq77206Mi/IXi5OYnG7EcE/IlWZAZAz+GjDdp
-   ZV8kU6oT63Jt1IjR6OzAmKn7/a8IfvxVkM8nGvKgSP7lAA390d5Yw8i4S
-   zBQ7g8aMKwJbNUhtp1iNhGRYX8+PcqKt3bLWbhvmQgPG+hA05E3LbY9vR
-   ojJImtdZisuNVf+/ha7HwKjq5BowBBCgpz4M4kQEfFLR8l49Pzpm9XX1r
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10803"; a="352023644"
-X-IronPort-AV: E=Sophos;i="6.01,175,1684825200"; 
-   d="scan'208";a="352023644"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Aug 2023 21:10:33 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10803"; a="737140064"
-X-IronPort-AV: E=Sophos;i="6.01,175,1684825200"; 
-   d="scan'208";a="737140064"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.254.209.88]) ([10.254.209.88])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Aug 2023 21:10:28 -0700
-Message-ID: <e9d339f0-89c6-10b4-3171-9c5b1725b76c@linux.intel.com>
-Date: Wed, 16 Aug 2023 12:10:26 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8CEEE3D92
+	for <iommu@lists.linux.dev>; Wed, 16 Aug 2023 04:25:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1692159949;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=Ip39erQL05vM1EfoUzr0gxFHM5VqQHryueh/4GpGeoc=;
+	b=TnV0arEm5+wBHJQWpADk4sa7Ge6mwSAS11Qka4LRBy2dnv0syUbrpj80cQpJ32sB5knIHm
+	zqAq41BUdqJPyGAK2wG4M3np459WrrLIPDfawx9qv7ukCQ4YdaqTyEC+fzzIFDWTMZtBPc
+	Ay+dz/xCsxOhBbM+gSXPbp+ZT6wS0Ok=
+Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
+ [209.85.222.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-157-NftykmbAMTemnkykzy8BLA-1; Wed, 16 Aug 2023 00:25:45 -0400
+X-MC-Unique: NftykmbAMTemnkykzy8BLA-1
+Received: by mail-qk1-f197.google.com with SMTP id af79cd13be357-76d35f344b0so667162185a.0
+        for <iommu@lists.linux.dev>; Tue, 15 Aug 2023 21:25:45 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1692159945; x=1692764745;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=Ip39erQL05vM1EfoUzr0gxFHM5VqQHryueh/4GpGeoc=;
+        b=YvWMhRCKO9mxkox4lievnsS5w+I3jAWd8aych2Jb6urn15A30S4FwQKH+O5ASb9Ij8
+         xpKiHAqx6JESj085N1Ou/Otwt9vC86ll5/eunlxLoKZvlA5n+Fy3j4Ea1oVxjPp3jkNo
+         I9kFhC8s7LH/+weRAvcia5d+udCT6h+EZXJtxZpu4xZntJiMM8odTxyEhQ177K0IaKqN
+         rBQjUDYvhGvkWMK2lfeUfDOP2/LT/lsJVkdx3unLvqVaiea05uEs+yKdgBBhKWzM6MnC
+         fO9iit4XIa9BD7nAtW4ofKs2FGdDM68dsc/K/uXItq+malmRC3Km5ICjEKiUsubhqleH
+         zNZw==
+X-Gm-Message-State: AOJu0YyTFB3tpNoR+ld6A5/YpZvL2koWBGqF3yMrtlJUOYthqOVBQJCm
+	vXl1gMsfpoQYMSFHhRe0/2EpfcOxuSlX31ak9WICC2PvVU/YHU4rBgb7itBKZHIUFj6tRxSSuyQ
+	IjrqnFFsYzgsHzMc=
+X-Received: by 2002:a05:620a:bc8:b0:76c:de57:7b61 with SMTP id s8-20020a05620a0bc800b0076cde577b61mr973673qki.25.1692159945123;
+        Tue, 15 Aug 2023 21:25:45 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IHGr6aYlrh82DZ/hL7UsMEar2vLjwlrqUpt6dQpM33QY1109L6Qr9W32PzkRFKCPIldoiLtsQ==
+X-Received: by 2002:a05:620a:bc8:b0:76c:de57:7b61 with SMTP id s8-20020a05620a0bc800b0076cde577b61mr973650qki.25.1692159944853;
+        Tue, 15 Aug 2023 21:25:44 -0700 (PDT)
+Received: from localhost (ip98-179-76-75.ph.ph.cox.net. [98.179.76.75])
+        by smtp.gmail.com with ESMTPSA id oq15-20020a05620a610f00b0076d4bb714afsm2579213qkn.50.2023.08.15.21.25.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Aug 2023 21:25:44 -0700 (PDT)
+Date: Tue, 15 Aug 2023 21:25:42 -0700
+From: Jerry Snitselaar <jsnitsel@redhat.com>
+To: "zhangzekun (A)" <zhangzekun11@huawei.com>
+Cc: Robin Murphy <robin.murphy@arm.com>, will@kernel.org, 
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org, john.g.garry@oracle.com, 
+	joro@8bytes.org
+Subject: Re: [PATCH 2/2] iommu/iova: Manage the depot list size
+Message-ID: <2eq236vycub7mrxlxos2dnbzgqptkeclbprsh6rsml64eoapdx@xumsokaj6rfy>
+References: <cover.1692033783.git.robin.murphy@arm.com>
+ <abc5a322584f5c8a44f7a0a7f709899053c5df01.1692033783.git.robin.murphy@arm.com>
+ <70e7dcc8-819f-d957-f43c-75b7818a3a96@huawei.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.14.0
-Cc: baolu.lu@linux.intel.com, Anup Patel <apatel@ventanamicro.com>,
- Tomasz Jeznach <tjeznach@rivosinc.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Paul Walmsley <paul.walmsley@sifive.com>, Albert Ou <aou@eecs.berkeley.edu>,
- linux@rivosinc.com, linux-kernel@vger.kernel.org,
- Sebastien Boeuf <seb@rivosinc.com>, iommu@lists.linux.dev,
- Palmer Dabbelt <palmer@dabbelt.com>, Nick Kossifidis <mick@ics.forth.gr>,
- linux-riscv@lists.infradead.org
-Subject: Re: [PATCH 03/11] dt-bindings: Add RISC-V IOMMU bindings
-Content-Language: en-US
-To: Zong Li <zong.li@sifive.com>, Jason Gunthorpe <jgg@ziepe.ca>
-References: <CAK9=C2Vg9eR5LJPeqDDQ0pHZcrT5DOUzA8_wYEVEjfnhb6s8pw@mail.gmail.com>
- <CANXhq0oTrU_-OQroW7H+hvxcU7YROhkgdCF9g_WtPTzVFQL7gA@mail.gmail.com>
- <CAK9=C2XoQjPzZ5yB5jfTbee4-Pb8GgFAZRbfcMwMk9pyo39WxQ@mail.gmail.com>
- <CANXhq0q7R9Srx6U=fReq7LDLFgW6rMmjKH=o6MzDT5AWNRXP6w@mail.gmail.com>
- <592edb17-7fa4-3b5b-2803-e8c50c322eee@linux.intel.com>
- <CANXhq0pS_=YxgrxSKbdfrFdGcBduzk3LTyC4vp_hqoJTbX3e0g@mail.gmail.com>
- <ZMEO1kNGfGjN6kZM@ziepe.ca>
- <CANXhq0qMWS_j0n_aUO8BVFSedYCjuMM=Z_tsnK05ZhG+Ob6pqw@mail.gmail.com>
- <ZNOpbac4i5zfmHj4@ziepe.ca>
- <CANXhq0rzz1Sn8dKvNt7acvKN_g5yXFN9u6XPiRHr9ay7q2VbzA@mail.gmail.com>
- <ZNvGH91EmlOAaxBK@ziepe.ca>
- <CANXhq0pQ5wisNtbVjm031btUiO=y_MmA9rfbWwnMFo_1y2d50w@mail.gmail.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <CANXhq0pQ5wisNtbVjm031btUiO=y_MmA9rfbWwnMFo_1y2d50w@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+In-Reply-To: <70e7dcc8-819f-d957-f43c-75b7818a3a96@huawei.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
 
-On 2023/8/16 10:16, Zong Li wrote:
-> On Wed, Aug 16, 2023 at 2:38 AM Jason Gunthorpe<jgg@ziepe.ca>  wrote:
->> On Tue, Aug 15, 2023 at 09:28:54AM +0800, Zong Li wrote:
->>> On Wed, Aug 9, 2023 at 10:57 PM Jason Gunthorpe<jgg@ziepe.ca>  wrote:
->>>> On Thu, Jul 27, 2023 at 10:42:47AM +0800, Zong Li wrote:
->>>>
->>>>> Perhaps this question could be related to the scenarios in which
->>>>> devices wish to be in bypass mode when the IOMMU is in translation
->>>>> mode, and why IOMMU defines/supports this case. Currently, I could
->>>>> envision a scenario where a device is already connected to the IOMMU
->>>>> in hardware, but it is not functioning correctly, or there are
->>>>> performance impacts. If modifying the hardware is not feasible, a
->>>>> default configuration that allows bypass mode could be provided as a
->>>>> solution. There might be other scenarios that I might have overlooked.
->>>>> It seems to me since IOMMU supports this configuration, it would be
->>>>> advantageous to have an approach to achieve it, and DT might be a
->>>>> flexible way.
->>>> So far we've taken the approach that broken hardware is quirked in the
->>>> kernel by matching OF compatible string pattners. This is HW that is
->>>> completely broken and the IOMMU doesn't work at all for it.
->>>>
->>>> HW that is slow or whatever is not quirked and this is an admin policy
->>>> choice where the system should land on the security/performance
->>>> spectrum.
->>>>
->>>> So I'm not sure adding DT makes sense here.
->>>>
->>> Hi Jason,
->>> Sorry for being late here, I hadn't noticed this reply earlier. The
->>> approach seems to address the situation. Could you kindly provide
->>> information about the location of the patches? I was wondering about
->>> further details regarding this particular implementation. Thanks
->> There are a couple versions, eg
->>   arm_smmu_def_domain_type()
->>   qcom_smmu_def_domain_type()
->>
-> I thought what you mentioned earlier is that there is a new approach
-> being considered for this. I think what you point out is the same as
-> Anup mentioned. However, as I mentioned earlier, I am exploring a more
-> flexible approach to achieve this objective. This way, we can avoid
-> hard coding anything (i.e.list compatible string) in the driver or
-> requiring a kernel rebuild every time we need to change the mode for
-> specific devices. For example, the driver could parse the device node
-> to determine and record if a device will be set to bypass, and then
-> the .def_domain_type could be used to set to IOMMU_DOMAIN_IDENTITY by
-> the record. I'm not sure if it makes sense for everyone, it seems to
-> me that it would be great if there is a way to do this. 😄
+On Tue, Aug 15, 2023 at 10:11:51PM +0800, zhangzekun (A) wrote:
+> 
+> 
+> 在 2023/8/15 1:53, Robin Murphy 写道:
+> > Automatically scaling the depot up to suit the peak capacity of a
+> > workload is all well and good, but it would be nice to have a way to
+> > scale it back down again if the workload changes. To that end, add
+> > automatic reclaim that will gradually free unused magazines if the
+> > depot size remains above a reasonable threshold for long enough.
+> > 
+> > Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+> > ---
+> >   drivers/iommu/iova.c | 29 +++++++++++++++++++++++++++++
+> >   1 file changed, 29 insertions(+)
+> > 
+> > diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+> > index d2de6fb0e9f4..76a7d694708e 100644
+> > --- a/drivers/iommu/iova.c
+> > +++ b/drivers/iommu/iova.c
+> > @@ -11,6 +11,7 @@
+> >   #include <linux/smp.h>
+> >   #include <linux/bitops.h>
+> >   #include <linux/cpu.h>
+> > +#include <linux/workqueue.h>
+> >   /* The anchor node sits above the top of the usable address space */
+> >   #define IOVA_ANCHOR	~0UL
+> > @@ -626,6 +627,8 @@ EXPORT_SYMBOL_GPL(reserve_iova);
+> >    */
+> >   #define IOVA_MAG_SIZE 127
+> > +#define IOVA_DEPOT_DELAY msecs_to_jiffies(100)
+> > +
+> >   struct iova_magazine {
+> >   	/*
+> >   	 * Only full magazines are inserted into the depot, so we can avoid
+> > @@ -646,8 +649,11 @@ struct iova_cpu_rcache {
+> >   struct iova_rcache {
+> >   	spinlock_t lock;
+> > +	unsigned int depot_size;
+> >   	struct iova_magazine *depot;
+> >   	struct iova_cpu_rcache __percpu *cpu_rcaches;
+> > +	struct iova_domain *iovad;
+> > +	struct delayed_work work;
+> >   };
+> >   static struct iova_magazine *iova_magazine_alloc(gfp_t flags)
+> > @@ -728,6 +734,7 @@ static struct iova_magazine *iova_depot_pop(struct iova_rcache *rcache)
+> >   	rcache->depot = mag->next;
+> >   	mag->size = IOVA_MAG_SIZE;
+> > +	rcache->depot_size--;
+> >   	return mag;
+> >   }
+> > @@ -735,6 +742,24 @@ static void iova_depot_push(struct iova_rcache *rcache, struct iova_magazine *ma
+> >   {
+> >   	mag->next = rcache->depot;
+> >   	rcache->depot = mag;
+> > +	rcache->depot_size++;
+> > +}
+> > +
+> > +static void iova_depot_work_func(struct work_struct *work)
+> > +{
+> > +	struct iova_rcache *rcache = container_of(work, typeof(*rcache), work.work);
+> > +	struct iova_magazine *mag = NULL;
+> > +
+> > +	spin_lock(&rcache->lock);
+> > +	if (rcache->depot_size > num_online_cpus())
+> > +		mag = iova_depot_pop(rcache);
+> > +	spin_unlock(&rcache->lock);
+> > +
+> > +	if (mag) {
+> > +		iova_magazine_free_pfns(mag, rcache->iovad);
+> > +		iova_magazine_free(mag);
+> > +		schedule_delayed_work(&rcache->work, msecs_to_jiffies(IOVA_DEPOT_DELAY));
+> Hi, Robin,
+> 
+> I am a little confused why IOVA_DEPOT_DELAY need to be calculated twice in
+> iova_depot_work_func(), as it already equals to "msecs_to_jiffies(100)".
 
-What you described applies to the case where the device is *quirky*, it
-"is not functioning correctly" when the IOMMU is configured in DMA
-translation mode.
+I think it was a typo, and is meant to be IOVA_DEPOT_DELAY like it is in
+__iova_rcache_insert.
 
-But it could not be used in another case, as described above, where
-IOMMU translation has performance impacts on the device's DMA
-efficiency. This is a kind of a user policy and should not be achieved
-through the "DT/APCI + def_domain_type" mechanism.
+Regards,
+Jerry
 
-The iommu subsystem has provided a sysfs interface that users can use to
-change the domain type for devices. This means that users can change the
-domain type at their wishes, without having to modify the kernel
-configuration.
-
-Best regards,
-baolu
+> Besides, do we really need to invoke a delayed_work in
+> iova_depot_work_func()? As each time we put a iova magazine to depot, a
+> delayed_work will be invoked which is reponsible to free a iova magazine in
+> depot if the depot size is greater than num_online_cpus().
+> 
+> Thanks,
+> Zekun
 
