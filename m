@@ -1,311 +1,251 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id BC0AC14A80
-	for <iommu@lists.linux.dev>; Wed, 16 Aug 2023 19:08:22 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D8AC4D75;
-	Wed, 16 Aug 2023 12:09:02 -0700 (PDT)
-Received: from [10.57.90.114] (unknown [10.57.90.114])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 72A813F6C4;
-	Wed, 16 Aug 2023 12:08:19 -0700 (PDT)
-Message-ID: <9510695e-407c-53b6-2e91-cd8209d86c84@arm.com>
-Date: Wed, 16 Aug 2023 20:08:14 +0100
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2070.outbound.protection.outlook.com [40.107.223.70])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AEBAD17E9
+	for <iommu@lists.linux.dev>; Wed, 16 Aug 2023 20:44:13 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=RBD5hAkuJeqKH+HLz6l56K8yLuh/jz7QpD2a9VQ88t3NUoV1Ga1QbZFAtQ8EoamzyzZ+MXYUuoPx84VElnShWl2HXiSsduelM5Yih3qB7pMv4WiwTXvdKidzi1A2Cw5WJ2486FFsQftPsqr5C/F4WVMAL6IBwq7Pd9E2+tiTRpufuhE9x5x0mV0qG60P6lUvT4zMcJPxVj0LGTgAhLHqYZ/MrTbCELJ6Abq0/oviquwLxHRR4af2E4G+hLmMQrUd6n1Xp2CCyqeYr8NAcRMsZOFfOalagHjwhuOKfapM0MtK+/mIQBDZouOS3/Mkfa4Bc6IP/9HtVIt7MRT/kA0Trw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Dacav0U4vsHOQ64r1S+qHLIve50VJheW/ItzPAB8E3s=;
+ b=iZzZX0xuDgTxeJLx1UfZ4se4PtVBfHlNl/ViDJU3MsLVv3+9QzZDKoMdTqBM8OH6zCuTbsyCg44O/3OdV89+RoJ5BoE90xSzYBMnnZojsnhyPd4cd3Ki3MDbSbd0JGyjcMz9ut39kRbY7BhrVoBVZECNGbEjJTn2KzVOXmlPCfwuwyWSUMvkm8s4mfeqv0EqjypxKE/sAbLPnjGfPnEV4ini1rs4rpPtIFpLIEytySRjBX59ZtE/OzcLlTj+t36uk45Or9azVlieGECmi5knq+NcSjC+IGa2H8YWcX8x71IUgs8RLFM8E6v7p7IT+qsR+ycGJbYNEsfFeJCA6F/XWw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Dacav0U4vsHOQ64r1S+qHLIve50VJheW/ItzPAB8E3s=;
+ b=QRppNsZSZRBmHxRoy3Q6hkIfULwRs8Ep/bHNd10S5l6Q7+lTJnONXBKdIAgAIcYoFeRJfZUULM5btrcj5TXi8JfYFxl5Hqj7+NmugCYvystFTpIHAyi0Fo0MESTb9d2SIZuEfRQmpPP2LN4QctTSMHhy4mByOmnR4fB5ZV1DfOM/KrI8QXSiJ2YZ1OmCvb+ultG7vFDJGN6o5uVBABgAYzpa+/bhkUfWHdEmn0VELQcAoq65FkzVOUHXfilMZE5iU8UX4GoDra7fsgcyOJLTKNmsKZq93VDnIhWivpfRyvRjmtnjsyJjlJ6SpH6+S2L1jxaSLDg0LMXlw6EdwfaR0Q==
+Received: from SA9PR13CA0149.namprd13.prod.outlook.com (2603:10b6:806:27::34)
+ by PH7PR12MB7235.namprd12.prod.outlook.com (2603:10b6:510:206::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6652.30; Wed, 16 Aug
+ 2023 20:44:11 +0000
+Received: from SN1PEPF0002636C.namprd02.prod.outlook.com
+ (2603:10b6:806:27:cafe::ab) by SA9PR13CA0149.outlook.office365.com
+ (2603:10b6:806:27::34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6699.14 via Frontend
+ Transport; Wed, 16 Aug 2023 20:44:11 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ SN1PEPF0002636C.mail.protection.outlook.com (10.167.241.137) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6699.15 via Frontend Transport; Wed, 16 Aug 2023 20:44:11 +0000
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Wed, 16 Aug 2023
+ 13:44:00 -0700
+Received: from rnnvmail205.nvidia.com (10.129.68.10) by rnnvmail202.nvidia.com
+ (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Wed, 16 Aug
+ 2023 13:44:00 -0700
+Received: from Asurada-Nvidia.nvidia.com (10.127.8.10) by mail.nvidia.com
+ (10.129.68.10) with Microsoft SMTP Server id 15.2.986.37 via Frontend
+ Transport; Wed, 16 Aug 2023 13:43:59 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: <will@kernel.org>, <robin.murphy@arm.com>, <jgg@nvidia.com>
+CC: <joro@8bytes.org>, <jean-philippe@linaro.org>, <apopple@nvidia.com>,
+	<linux-kernel@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+	<iommu@lists.linux.dev>
+Subject: [PATCH v2] iommu/arm-smmu-v3: Add a user-configurable tlb_invalidate_threshold
+Date: Wed, 16 Aug 2023 13:43:50 -0700
+Message-ID: <20230816204350.29150-1-nicolinc@nvidia.com>
+X-Mailer: git-send-email 2.41.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.14.0
-Subject: Re: [PATCH 07/11] RISC-V: drivers/iommu/riscv: Add device context
- support
-Content-Language: en-GB
-To: Tomasz Jeznach <tjeznach@rivosinc.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Paul Walmsley <paul.walmsley@sifive.com>
-Cc: Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>,
- Anup Patel <apatel@ventanamicro.com>, Sunil V L <sunilvl@ventanamicro.com>,
- Nick Kossifidis <mick@ics.forth.gr>, Sebastien Boeuf <seb@rivosinc.com>,
- iommu@lists.linux.dev, linux-riscv@lists.infradead.org,
- linux-kernel@vger.kernel.org, linux@rivosinc.com
-References: <cover.1689792825.git.tjeznach@rivosinc.com>
- <702670f5be2b641a231f2dda84be12024afd2002.1689792825.git.tjeznach@rivosinc.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <702670f5be2b641a231f2dda84be12024afd2002.1689792825.git.tjeznach@rivosinc.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SN1PEPF0002636C:EE_|PH7PR12MB7235:EE_
+X-MS-Office365-Filtering-Correlation-Id: ee13ad29-2a47-46ea-8e9c-08db9e998b94
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	o27Rjn1EI/0cyw5CC9odOzm2hNT4HBhNN3y/s05nJtCHlUHGndvs9k5ufkxUN+nephuFTQqMrziVgz3Dnv7q1bwGmDBhUu8IFdNX9DVQGkkaIYDxsxZEDyLd/c/2hBFz6aCV1CA1Zzb/g9Hc8R2rLm+goz47aJVUvR3fa0PL8fvppjsB/sP3CYO7d8lbEmp2HtNV6DmzeTUaq48p6UtNo+nPdAqz/oyBn3I0kRz57vdlVKQVqtWzc+mClOUTzmCeYYwxJ/pbqDNwZG8MyUHrzqdt9w/YnGiAzGHOAx79VQ/Sqbyq2R2Ri7nGHNSkHw3c0LIqDch0XgAnczxzM/qAIKmhJ4h2wajE0leYnp6WmcQCRW9EcgM5zVFXUYrcrOfSsZXMIDOuhzep4B6tl/lBW4QzczPiUykGSi/Le2TekPPjq8wyLF36fbMsSP7HOi/uhvGKuwpSb5F8gAa+J709sEKvuKyl7j/mwjn0i8y2KeLXadm25NRCu0aKbZ99BLMPFmFozLfIbuoVPdOD2wJq6efHxUtIzumvlEu06sce64p3wQt8qAxchmxDD8sAa4SFecoq8TT6cy9nFhakqcmPQ0xq8EM3IiaubftOQuTm+BfVvmtKyiB57QQYjyjLFSfvdK1R0nMmk7thQp8GIB9sF6fxyyrctDmrU928V/Y/S+hm8hec9Z4Na2x7r7SclkyQiNG7E9m8lFY5SO2pwCvLAyjmQ6u9kB3FCesCSqIfTeCuObHhxSMJVMZqhCM6Vp07gFXDKBiWO/+t219NWngqGA==
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230031)(4636009)(39860400002)(376002)(396003)(136003)(346002)(451199024)(1800799009)(186009)(82310400011)(40470700004)(36840700001)(46966006)(7636003)(316002)(54906003)(356005)(82740400003)(6636002)(110136005)(70586007)(70206006)(966005)(5660300002)(41300700001)(36860700001)(47076005)(8676002)(4326008)(8936002)(2906002)(40460700003)(83380400001)(26005)(40480700001)(478600001)(426003)(336012)(86362001)(7696005)(36756003)(6666004)(1076003)(2616005);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Aug 2023 20:44:11.0604
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: ee13ad29-2a47-46ea-8e9c-08db9e998b94
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	SN1PEPF0002636C.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB7235
 
-On 2023-07-19 20:33, Tomasz Jeznach wrote:
-> Introduces per device translation context, with 1,2 or 3 tree level
-> device tree structures.
-> 
-> Signed-off-by: Tomasz Jeznach <tjeznach@rivosinc.com>
-> ---
->   drivers/iommu/riscv/iommu.c | 163 ++++++++++++++++++++++++++++++++++--
->   drivers/iommu/riscv/iommu.h |   1 +
->   2 files changed, 158 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
-> index 5c4cf9875302..9ee7d2b222b5 100644
-> --- a/drivers/iommu/riscv/iommu.c
-> +++ b/drivers/iommu/riscv/iommu.c
-> @@ -41,7 +41,7 @@ MODULE_ALIAS("riscv-iommu");
->   MODULE_LICENSE("GPL v2");
->   
->   /* Global IOMMU params. */
-> -static int ddt_mode = RISCV_IOMMU_DDTP_MODE_BARE;
-> +static int ddt_mode = RISCV_IOMMU_DDTP_MODE_3LVL;
->   module_param(ddt_mode, int, 0644);
->   MODULE_PARM_DESC(ddt_mode, "Device Directory Table mode.");
->   
-> @@ -452,6 +452,14 @@ static bool riscv_iommu_post(struct riscv_iommu_device *iommu,
->   	return riscv_iommu_post_sync(iommu, cmd, false);
->   }
->   
-> +static bool riscv_iommu_iodir_inv_devid(struct riscv_iommu_device *iommu, unsigned devid)
-> +{
-> +	struct riscv_iommu_command cmd;
-> +	riscv_iommu_cmd_iodir_inval_ddt(&cmd);
-> +	riscv_iommu_cmd_iodir_set_did(&cmd, devid);
-> +	return riscv_iommu_post(iommu, &cmd);
-> +}
-> +
->   static bool riscv_iommu_iofence_sync(struct riscv_iommu_device *iommu)
->   {
->   	struct riscv_iommu_command cmd;
-> @@ -671,6 +679,94 @@ static bool riscv_iommu_capable(struct device *dev, enum iommu_cap cap)
->   	return false;
->   }
->   
-> +/* TODO: implement proper device context management, e.g. teardown flow */
-> +
-> +/* Lookup or initialize device directory info structure. */
-> +static struct riscv_iommu_dc *riscv_iommu_get_dc(struct riscv_iommu_device *iommu,
-> +						 unsigned devid)
-> +{
-> +	const bool base_format = !(iommu->cap & RISCV_IOMMU_CAP_MSI_FLAT);
-> +	unsigned depth = iommu->ddt_mode - RISCV_IOMMU_DDTP_MODE_1LVL;
-> +	u8 ddi_bits[3] = { 0 };
-> +	u64 *ddtp = NULL, ddt;
-> +
-> +	if (iommu->ddt_mode == RISCV_IOMMU_DDTP_MODE_OFF ||
-> +	    iommu->ddt_mode == RISCV_IOMMU_DDTP_MODE_BARE)
-> +		return NULL;
+When receiving an __arm_smmu_tlb_inv_range() call with a large size, there
+could be a long latency at this function call: one part is coming from a
+large software overhead in the routine of building commands, and the other
+part is coming from CMDQ hardware consuming the large number of commands.
+This latency could be significantly large on an SMMU that does not support
+range invalidation commands, i.e. no ARM_SMMU_FEAT_RANGE_INV.
 
-I don't see how the driver can ever be useful without a DDT - I'd have 
-thought that you only ever want to use one of those modes on probe 
-failure or remove.
+One way to optimize this is to replace a large number of VA invalidation
+commands with one single per-asid invalidation command, when the requested
+size reaches a threshold. This threshold can be configurable depending on
+the SMMU implementaion.
 
-> +
-> +	/* Make sure the mode is valid */
-> +	if (iommu->ddt_mode > RISCV_IOMMU_DDTP_MODE_MAX)
-> +		return NULL;
-> +
-> +	/*
-> +	 * Device id partitioning for base format:
-> +	 * DDI[0]: bits 0 - 6   (1st level) (7 bits)
-> +	 * DDI[1]: bits 7 - 15  (2nd level) (9 bits)
-> +	 * DDI[2]: bits 16 - 23 (3rd level) (8 bits)
-> +	 *
-> +	 * For extended format:
-> +	 * DDI[0]: bits 0 - 5   (1st level) (6 bits)
-> +	 * DDI[1]: bits 6 - 14  (2nd level) (9 bits)
-> +	 * DDI[2]: bits 15 - 23 (3rd level) (9 bits)
-> +	 */
-> +	if (base_format) {
-> +		ddi_bits[0] = 7;
-> +		ddi_bits[1] = 7 + 9;
-> +		ddi_bits[2] = 7 + 9 + 8;
-> +	} else {
-> +		ddi_bits[0] = 6;
-> +		ddi_bits[1] = 6 + 9;
-> +		ddi_bits[2] = 6 + 9 + 9;
-> +	}
-> +
-> +	/* Make sure device id is within range */
-> +	if (devid >= (1 << ddi_bits[depth]))
-> +		return NULL;
-> +
-> +	/* Get to the level of the non-leaf node that holds the device context */
-> +	for (ddtp = (u64 *) iommu->ddtp; depth-- > 0;) {
-> +		const int split = ddi_bits[depth];
-> +		/*
-> +		 * Each non-leaf node is 64bits wide and on each level
-> +		 * nodes are indexed by DDI[depth].
-> +		 */
-> +		ddtp += (devid >> split) & 0x1FF;
-> +
-> + retry:
-> +		/*
-> +		 * Check if this node has been populated and if not
-> +		 * allocate a new level and populate it.
-> +		 */
-> +		ddt = READ_ONCE(*ddtp);
-> +		if (ddt & RISCV_IOMMU_DDTE_VALID) {
-> +			ddtp = __va(ppn_to_phys(ddt));
-> +		} else {
-> +			u64 old, new = get_zeroed_page(GFP_KERNEL);
-> +			if (!new)
-> +				return NULL;
-> +
-> +			old = cmpxchg64_relaxed(ddtp, ddt,
-> +						phys_to_ppn(__pa(new)) |
-> +						RISCV_IOMMU_DDTE_VALID);
-> +
-> +			if (old != ddt) {
-> +				free_page(new);
-> +				goto retry;
-> +			}
-> +
-> +			ddtp = (u64 *) new;
-> +		}
-> +	}
-> +
-> +	/*
-> +	 * Grab the node that matches DDI[depth], note that when using base
-> +	 * format the device context is 4 * 64bits, and the extended format
-> +	 * is 8 * 64bits, hence the (3 - base_format) below.
-> +	 */
-> +	ddtp += (devid & ((64 << base_format) - 1)) << (3 - base_format);
-> +	return (struct riscv_iommu_dc *)ddtp;
-> +}
-> +
->   static struct iommu_device *riscv_iommu_probe_device(struct device *dev)
->   {
->   	struct riscv_iommu_device *iommu;
-> @@ -708,6 +804,9 @@ static struct iommu_device *riscv_iommu_probe_device(struct device *dev)
->   	ep->iommu = iommu;
->   	ep->dev = dev;
->   
-> +	/* Initial DC pointer can be NULL if IOMMU is configured in OFF or BARE mode */
-> +	ep->dc = riscv_iommu_get_dc(iommu, ep->devid);
-> +
->   	dev_info(iommu->dev, "adding device to iommu with devid %i in domain %i\n",
->   		ep->devid, ep->domid);
->   
-> @@ -734,6 +833,16 @@ static void riscv_iommu_release_device(struct device *dev)
->   	list_del(&ep->domain);
->   	mutex_unlock(&ep->lock);
->   
-> +	if (ep->dc) {
-> +		// this should be already done by domain detach.
+Add a tlb_invalidate_threshold threshold per SMMU device, and allow it to
+be configured via an SYSFS node. Set its default value next to the highest
+address SMMU translates, meaning by default there would be no replacement
+until a user sets the threshold. Also, add an ABI doc for this new node
+with a "%llu" format so the threshold can be 4GB size on a 32-bit kernel.
 
-What's domain detach? ;)
+Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+---
 
-> +		ep->dc->tc = 0ULL;
-> +		wmb();
-> +		ep->dc->fsc = 0ULL;
-> +		ep->dc->iohgatp = 0ULL;
-> +		wmb();
-> +		riscv_iommu_iodir_inv_devid(iommu, ep->devid);
-> +	}
-> +
->   	/* Remove endpoint from IOMMU tracking structures */
->   	mutex_lock(&iommu->eps_mutex);
->   	rb_erase(&ep->node, &iommu->eps);
-> @@ -853,11 +962,21 @@ static int riscv_iommu_domain_finalize(struct riscv_iommu_domain *domain,
->   	return 0;
->   }
->   
-> +static u64 riscv_iommu_domain_atp(struct riscv_iommu_domain *domain)
-> +{
-> +	u64 atp = FIELD_PREP(RISCV_IOMMU_DC_FSC_MODE, domain->mode);
-> +	if (domain->mode != RISCV_IOMMU_DC_FSC_MODE_BARE)
-> +		atp |= FIELD_PREP(RISCV_IOMMU_DC_FSC_PPN, virt_to_pfn(domain->pgd_root));
-> +	return atp;
-> +}
-> +
->   static int riscv_iommu_attach_dev(struct iommu_domain *iommu_domain, struct device *dev)
->   {
->   	struct riscv_iommu_domain *domain = iommu_domain_to_riscv(iommu_domain);
->   	struct riscv_iommu_endpoint *ep = dev_iommu_priv_get(dev);
-> +	struct riscv_iommu_dc *dc = ep->dc;
->   	int ret;
-> +	u64 val;
->   
->   	/* PSCID not valid */
->   	if ((int)domain->pscid < 0)
-> @@ -880,17 +999,44 @@ static int riscv_iommu_attach_dev(struct iommu_domain *iommu_domain, struct devi
->   		return ret;
->   	}
->   
-> -	if (ep->iommu->ddt_mode != RISCV_IOMMU_DDTP_MODE_BARE ||
-> -	    domain->domain.type != IOMMU_DOMAIN_IDENTITY) {
-> -		dev_warn(dev, "domain type %d not supported\n",
-> -		    domain->domain.type);
-> +	if (ep->iommu->ddt_mode == RISCV_IOMMU_DDTP_MODE_BARE &&
-> +	    domain->domain.type == IOMMU_DOMAIN_IDENTITY) {
-> +		dev_info(dev, "domain type %d attached w/ PSCID %u\n",
-> +		    domain->domain.type, domain->pscid);
-> +		return 0;
-> +	}
-> +
-> +	if (!dc) {
->   		return -ENODEV;
->   	}
->   
-> +	/*
-> +	 * S-Stage translation table. G-Stage remains unmodified (BARE).
-> +	 */
-> +	val = FIELD_PREP(RISCV_IOMMU_DC_TA_PSCID, domain->pscid);
-> +
-> +	dc->ta = cpu_to_le64(val);
-> +	dc->fsc = cpu_to_le64(riscv_iommu_domain_atp(domain));
-> +
-> +	wmb();
-> +
-> +	/* Mark device context as valid, synchronise device context cache. */
-> +	val = RISCV_IOMMU_DC_TC_V;
-> +
-> +	if (ep->iommu->cap & RISCV_IOMMU_CAP_AMO) {
-> +		val |= RISCV_IOMMU_DC_TC_GADE |
-> +		       RISCV_IOMMU_DC_TC_SADE;
-> +	}
-> +
-> +	dc->tc = cpu_to_le64(val);
-> +	wmb();
-> +
->   	list_add_tail(&ep->domain, &domain->endpoints);
->   	mutex_unlock(&ep->lock);
->   	mutex_unlock(&domain->lock);
->   
-> +	riscv_iommu_iodir_inv_devid(ep->iommu, ep->devid);
-> +
->   	dev_info(dev, "domain type %d attached w/ PSCID %u\n",
->   	    domain->domain.type, domain->pscid);
->   
-> @@ -1239,7 +1385,12 @@ int riscv_iommu_init(struct riscv_iommu_device *iommu)
->   		goto fail;
->   
->    no_ats:
-> -	ret = riscv_iommu_enable(iommu, RISCV_IOMMU_DDTP_MODE_BARE);
-> +	if (iommu_default_passthrough()) {
-> +		dev_info(dev, "iommu set to passthrough mode\n");
-> +		ret = riscv_iommu_enable(iommu, RISCV_IOMMU_DDTP_MODE_BARE);
+Changelog
+v2:
+ * Renamed the sysfs node and changed it to represent size in bytes
+ * Set the upper/lower values of the threshold to be more related to SMMU
+ * Revised the ABI description accordingly and added upper/lower values
+ * Dropped the "arm-smmu-v3" subdirectory for the new sysfs node
+ * Some minor coding style and doc/comments updating
+v1: https://lore.kernel.org/all/20230814215701.5455-1-nicolinc@nvidia.com/
 
-Yeah, disabling the whole IOMMU is not what default passthrough means... 
-drivers should not care about that at all, it only affects the core 
-code's choice of default domain type. Even if that is identity, 
-translation absolutely still needs to be available on a per-device 
-basis, for unmanaged domains or default domain changes via sysfs.
+ .../ABI/testing/sysfs-class-iommu-arm-smmu-v3 | 13 +++++
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 54 ++++++++++++++++++-
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  3 ++
+ 3 files changed, 69 insertions(+), 1 deletion(-)
+ create mode 100644 Documentation/ABI/testing/sysfs-class-iommu-arm-smmu-v3
 
-Thanks,
-Robin.
+diff --git a/Documentation/ABI/testing/sysfs-class-iommu-arm-smmu-v3 b/Documentation/ABI/testing/sysfs-class-iommu-arm-smmu-v3
+new file mode 100644
+index 000000000000..2509bc90487c
+--- /dev/null
++++ b/Documentation/ABI/testing/sysfs-class-iommu-arm-smmu-v3
+@@ -0,0 +1,13 @@
++What:		/sys/class/iommu/<iommu>/tlb_invalidate_threshold
++Date:		August 2023
++KernelVersion:	6.6
++Contact:	Nicolin Chen <nicolinc@nvidia.com>
++Description:
++		Size threshold in bytes for SMMU to replace VA TLB-invalidation
++		commands with one single per-asid TLB-invalidation command. Its
++		default value is set next to the highest address that the SMMU
++		translates, so there will be no replacement of TLB-invalidation
++		commands by default. It is also the maximum value the threshold
++		can be set to. Its minimum value is the smallest page size SMMU
++		supports.
++		Format: %llu
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index 9b0dc3505601..96cc2f4d8a2e 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -1891,6 +1891,14 @@ static void __arm_smmu_tlb_inv_range(struct arm_smmu_cmdq_ent *cmd,
+ 	if (!size)
+ 		return;
+ 
++	/*
++	 * Convert a large range/number of VA invalidation(s) to one single ASID
++	 * invalidation when the input size reaches the threshold. It simplifies
++	 * the command issuing, especially on SMMU w/o ARM_SMMU_FEAT_RANGE_INV.
++	 */
++	if (cmd->tlbi.asid && size >= smmu->tlb_invalidate_threshold)
++		return arm_smmu_tlb_inv_asid(smmu, cmd->tlbi.asid);
++
+ 	if (smmu->features & ARM_SMMU_FEAT_RANGE_INV) {
+ 		/* Get the leaf page size */
+ 		tg = __ffs(smmu_domain->domain.pgsize_bitmap);
+@@ -3683,6 +3691,7 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
+ 			 "failed to set DMA mask for table walker\n");
+ 
+ 	smmu->ias = max(smmu->ias, smmu->oas);
++	smmu->tlb_invalidate_threshold = 1UL << smmu->ias;
+ 
+ 	if ((smmu->features & ARM_SMMU_FEAT_TRANS_S1) &&
+ 	    (smmu->features & ARM_SMMU_FEAT_TRANS_S2))
+@@ -3808,6 +3817,49 @@ static void arm_smmu_rmr_install_bypass_ste(struct arm_smmu_device *smmu)
+ 	iort_put_rmr_sids(dev_fwnode(smmu->dev), &rmr_list);
+ }
+ 
++static ssize_t tlb_invalidate_threshold_show(struct device *dev,
++					     struct device_attribute *attr,
++					     char *buf)
++{
++	struct arm_smmu_device *smmu = dev_get_drvdata(dev->parent);
++
++	return sysfs_emit(buf, "%llu\n", smmu->tlb_invalidate_threshold);
++}
++
++static ssize_t tlb_invalidate_threshold_store(struct device *dev,
++					      struct device_attribute *attr,
++					      const char *buf, size_t size)
++{
++	struct arm_smmu_device *smmu = dev_get_drvdata(dev->parent);
++	unsigned long long tlb_invalidate_threshold;
++	int ret;
++
++	ret = kstrtoull(buf, 0, &tlb_invalidate_threshold);
++	if (ret)
++		return ret;
++	if (tlb_invalidate_threshold > 1UL << smmu->ias ||
++	    tlb_invalidate_threshold < 1 << __ffs(smmu->pgsize_bitmap))
++		return -EINVAL;
++	smmu->tlb_invalidate_threshold = tlb_invalidate_threshold;
++	return size;
++}
++
++static DEVICE_ATTR_RW(tlb_invalidate_threshold);
++
++static struct attribute *arm_smmu_attrs[] = {
++	&dev_attr_tlb_invalidate_threshold.attr,
++	NULL,
++};
++
++static struct attribute_group arm_smmu_group = {
++	.attrs = arm_smmu_attrs,
++};
++
++static const struct attribute_group *arm_smmu_groups[] = {
++	&arm_smmu_group,
++	NULL,
++};
++
+ static int arm_smmu_device_probe(struct platform_device *pdev)
+ {
+ 	int irq, ret;
+@@ -3900,7 +3952,7 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+ 		return ret;
+ 
+ 	/* And we're up. Go go go! */
+-	ret = iommu_device_sysfs_add(&smmu->iommu, dev, NULL,
++	ret = iommu_device_sysfs_add(&smmu->iommu, dev, arm_smmu_groups,
+ 				     "smmu3.%pa", &ioaddr);
+ 	if (ret)
+ 		return ret;
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+index dcab85698a4e..9af8d543aab0 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+@@ -665,6 +665,9 @@ struct arm_smmu_device {
+ 	unsigned long			oas; /* PA */
+ 	unsigned long			pgsize_bitmap;
+ 
++	/* Size threshold in bytes to convert VA range TLBI to asid TLBI */
++	unsigned long long		tlb_invalidate_threshold;
++
+ #define ARM_SMMU_MAX_ASIDS		(1 << 16)
+ 	unsigned int			asid_bits;
+ 
+-- 
+2.41.0
 
-> +	} else {
-> +		ret = riscv_iommu_enable(iommu, ddt_mode);
-> +	}
->   
->   	if (ret) {
->   		dev_err(dev, "cannot enable iommu device (%d)\n", ret);
-> diff --git a/drivers/iommu/riscv/iommu.h b/drivers/iommu/riscv/iommu.h
-> index 04148a2a8ffd..9140df71e17b 100644
-> --- a/drivers/iommu/riscv/iommu.h
-> +++ b/drivers/iommu/riscv/iommu.h
-> @@ -105,6 +105,7 @@ struct riscv_iommu_endpoint {
->   	unsigned devid;      			/* PCI bus:device:function number */
->   	unsigned domid;    			/* PCI domain number, segment */
->   	struct rb_node node;    		/* device tracking node (lookup by devid) */
-> +	struct riscv_iommu_dc *dc;		/* device context pointer */
->   	struct riscv_iommu_device *iommu;	/* parent iommu device */
->   
->   	struct mutex lock;
