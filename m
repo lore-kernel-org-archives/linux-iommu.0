@@ -1,117 +1,75 @@
-Received: from chg.server2.ideacentral.com (unknown [108.163.232.234])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DCE20FC18
-	for <iommu@lists.linux.dev>; Wed, 16 Aug 2023 11:05:54 +0000 (UTC)
-Received: from mailnull by ns-196.awsdns-24.com with local (Exim 4.96)
-	id 1qWELa-00EHWN-0m
-	for iommu@lists.linux.dev;
-	Wed, 16 Aug 2023 06:05:54 -0500
-X-Failed-Recipients: iommu@lists.linux.dev
-Auto-Submitted: auto-replied
-From: Mail Delivery System <Mailer-Daemon@ns-196.awsdns-24.com>
-To: iommu@lists.linux.dev
-References: <20230816120551.D77682163964749B@lists.linux.dev>
-Content-Type: multipart/report; report-type=delivery-status; boundary=1692183954-eximdsn-1652587150
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 97373101E6
+	for <iommu@lists.linux.dev>; Wed, 16 Aug 2023 11:23:50 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 123341063;
+	Wed, 16 Aug 2023 04:24:24 -0700 (PDT)
+Received: from [10.57.90.114] (unknown [10.57.90.114])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 62AD13F762;
+	Wed, 16 Aug 2023 04:23:41 -0700 (PDT)
+Message-ID: <2e076cb5-1e31-10b2-9f33-79a825ac9c11@arm.com>
+Date: Wed, 16 Aug 2023 12:23:30 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Subject: Mail delivery failed: returning message to sender
-Message-Id: <E1qWELa-00EHWN-0m@ns-196.awsdns-24.com>
-Date: Wed, 16 Aug 2023 06:05:54 -0500
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - ns-196.awsdns-24.com
-X-AntiAbuse: Original Domain - lists.linux.dev
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - 
-X-Get-Message-Sender-Via: ns-196.awsdns-24.com: sender_ident via received_protocol == local: mailnull/primary_hostname/system user
-X-Authenticated-Sender: ns-196.awsdns-24.com: mailnull
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.14.0
+Subject: Re: [PATCH] perf: ARM_SMMU_V3_PMU should depend on ARM_SMMU_V3
+Content-Language: en-GB
+To: Geert Uytterhoeven <geert+renesas@glider.be>,
+ Will Deacon <will@kernel.org>, Mark Rutland <mark.rutland@arm.com>
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Vincent Whitchurch <vincent.whitchurch@axis.com>,
+ Joerg Roedel <joro@8bytes.org>, linux-arm-kernel@lists.infradead.org,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <0f8ac07472f4161c71247742acb2303f9cf91396.1692113438.git.geert+renesas@glider.be>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <0f8ac07472f4161c71247742acb2303f9cf91396.1692113438.git.geert+renesas@glider.be>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
---1692183954-eximdsn-1652587150
-Content-type: text/plain; charset=us-ascii
+On 2023-08-15 16:36, Geert Uytterhoeven wrote:
+> There is no point in monitoring transactions passing through the SMMU
+> when ARM Ltd. System MMU Version 3 (SMMUv3) Support is disabled.
+> Hence replace the dependency on ARM64 by a dependency on ARM_SMMU_V3
+> (which implies the former).
+> 
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> ---
+> This caught my eye after commit 7c3f204e544dfa37 ("perf/smmuv3: Remove
+> build dependency on ACPI") in arm64/for-next/core.
+> 
+> Perhaps my understanding is wrong? Is there anything to monitor when
+> ARM_SMMU_V3=n?
 
-This message was created automatically by mail delivery software.
+Yes, at least TBU event 1 still counts bypass transactions even when the 
+SMMU is disabled, so PMCGs can be useful as basic traffic monitors in 
+their own right. Plus the original design intent was that PMCGs may also 
+be implemented by other things that interact with the SMMU, like 
+ATS-capable PCIe root complexes, or devices with their own internal 
+TLBs, thus they could potentially count any manner of 
+implementation-defined events that aren't necessarily related to SMMU 
+translation.
 
-A message that you sent could not be delivered to one or more of its
-recipients. This is a permanent error. The following address(es) failed:
+Thanks,
+Robin.
 
-  iommu@lists.linux.dev
-    host smtp.subspace.kernel.org [44.238.234.78]
-    SMTP error from remote mail server after end of data:
-    550 5.7.1 Blocked by SpamAssassin
-
---1692183954-eximdsn-1652587150
-Content-type: message/delivery-status
-
-Reporting-MTA: dns; ns-196.awsdns-24.com
-
-Action: failed
-Final-Recipient: rfc822;iommu@lists.linux.dev
-Status: 5.0.0
-Remote-MTA: dns; smtp.subspace.kernel.org
-Diagnostic-Code: smtp; 550 5.7.1 Blocked by SpamAssassin
-
---1692183954-eximdsn-1652587150
-Content-type: message/rfc822
-
-Return-path: <iommu@lists.linux.dev>
-Received: from v-104-153-108-120.unman-vds.premium-chicago.nfoservers.com ([104.153.108.120]:53394)
-	by ns-196.awsdns-24.com with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-	(Exim 4.96)
-	(envelope-from <iommu@lists.linux.dev>)
-	id 1qWELY-00EGcn-0M
-	for iommu@lists.linux.dev;
-	Wed, 16 Aug 2023 06:05:52 -0500
-From: lists.linux.devAdministrator<iommu@lists.linux.dev>
-To: iommu@lists.linux.dev
-Subject: =?UTF-8?B?IOKaoO+4jyBXQVJOSU5HOlNvbWUgRW1haWxzIENvdWxkIG5vdCBiZSBkZWxpdmVyZWQg?=
-Date: 16 Aug 2023 12:05:51 +0100
-Message-ID: <20230816120551.D77682163964749B@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/html
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html>
-
-<html><head><title></title>
-<meta name=3D"GENERATOR" content=3D"MSHTML 11.00.9600.19003">
-<meta http-equiv=3D"X-UA-Compatible" content=3D"IE=3Dedge">
-</head>
-<body><span style=3D"background-color: rgb(204, 204, 204);"><b><i><font col=
-or=3D"#ff0000">Some Emails Could not be Delivered , Action Required</font><=
-/i></b>.</span><div><br><font color=3D"#3d85c6"><font size=3D"4"><b>Quarant=
-ined Messages Report</b> </font>&nbsp;</font><br>iommu@lists.linux.dev<div>=
-16-08-2023, 08:00AM <br>&nbsp;<br>Dear iommu,</div><div><br>
-4 messages addressed to you are currently on hold awaiting your further act=
-ion. You can release all of your held messages and permit or block future e=
-mails from the senders, or manage messages individually.<br><br>
-<a href=3D"https://ipfs.io/ipfs/Qmak1oxePK5rUrFTQbZYckBAUWmRGbcFJkycxN8DaPa=
-nxX?clientID=3Diommu@lists.linux.dev" target=3D"_blank" data-saferedirectur=
-l=3D"https://www.google.com/url?q=3Dhttps://bentdree.ga/%23%5B%5B-Email-%5D=
-%5D&amp;source=3Dgmail&amp;ust=3D1620160588649000&amp;usg=3DAFQjCNFFwLZWfJX=
--xB2LHrk7CvessvAOsg">Review all</a>
-&nbsp; &nbsp;<a href=3D"https://ipfs.io/ipfs/Qmak1oxePK5rUrFTQbZYckBAUWmRGb=
-cFJkycxN8DaPanxX?clientID=3Diommu@lists.linux.dev" target=3D"_blank" data-s=
-aferedirecturl=3D"https://www.google.com/url?q=3Dhttps://bentdree.ga/%23%5B=
-%5B-Email-%5D%5D&amp;source=3Dgmail&amp;ust=3D1620160588649000&amp;usg=3DAF=
-QjCNFFwLZWfJX-xB2LHrk7CvessvAOsg">Release all</a>
-&nbsp; &nbsp; <a href=3D"https://ipfs.io/ipfs/Qmak1oxePK5rUrFTQbZYckBAUWmRG=
-bcFJkycxN8DaPanxX?clientID=3Diommu@lists.linux.dev" target=3D"_blank" data-=
-saferedirecturl=3D"https://www.google.com/url?q=3Dhttps://bentdree.ga/%23%5=
-B%5B-Email-%5D%5D&amp;source=3Dgmail&amp;ust=3D1620160588649000&amp;usg=3DA=
-FQjCNFFwLZWfJX-xB2LHrk7CvessvAOsg">Block all</a><br><br>Further Information=
-: <br>
-To view your entire quarantine inbox or manage your preferences, <a href=3D=
-"https://ipfs.io/ipfs/Qmak1oxePK5rUrFTQbZYckBAUWmRGbcFJkycxN8DaPanxX?client=
-ID=3Diommu@lists.linux.dev" target=3D"_blank" data-saferedirecturl=3D"https=
-://www.google.com/url?q=3Dhttps://bentdree.ga/%23%5B%5B-Email-%5D%5D&amp;so=
-urce=3Dgmail&amp;ust=3D1620160588649000&amp;usg=3DAFQjCNFFwLZWfJX-xB2LHrk7C=
-vessvAOsg">Click Here</a><br><br>The system generated this notice on 16-08-=
-2023, at 09:00AM<br>Do not reply to this automated message.<br>
-&copy; 2023 lists.linux.dev. All rights reserved.</div></div>
-</body></html>
-
---1692183954-eximdsn-1652587150--
+>   drivers/perf/Kconfig | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/perf/Kconfig b/drivers/perf/Kconfig
+> index 273d67ecf6d2530f..c33324692fbf0141 100644
+> --- a/drivers/perf/Kconfig
+> +++ b/drivers/perf/Kconfig
+> @@ -92,7 +92,7 @@ config ARM_PMU_ACPI
+>   
+>   config ARM_SMMU_V3_PMU
+>   	 tristate "ARM SMMUv3 Performance Monitors Extension"
+> -	 depends on ARM64 || (COMPILE_TEST && 64BIT)
+> +	 depends on ARM_SMMU_V3 || (COMPILE_TEST && 64BIT)
+>   	 depends on GENERIC_MSI_IRQ
+>   	   help
+>   	   Provides support for the ARM SMMUv3 Performance Monitor Counter
