@@ -1,207 +1,148 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8D1F2182C8
-	for <iommu@lists.linux.dev>; Wed, 16 Aug 2023 21:43:35 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C7E1FD75;
-	Wed, 16 Aug 2023 14:44:15 -0700 (PDT)
-Received: from [10.57.90.114] (unknown [10.57.90.114])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6748A3F762;
-	Wed, 16 Aug 2023 14:43:32 -0700 (PDT)
-Message-ID: <0b2b9365-5e8c-35a0-38ac-ffcbdfdb9886@arm.com>
-Date: Wed, 16 Aug 2023 22:43:11 +0100
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2067.outbound.protection.outlook.com [40.107.93.67])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1578ED2F1
+	for <iommu@lists.linux.dev>; Wed, 16 Aug 2023 22:37:16 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=lJq2u8/nq0JnBDEplkAkltTdAIj7VsOEthovJe0ZL/w4aH+NUR27bK5iKAF48EppkZy1NjlCGQBCA1p1YppPbEE8nqE9RjoHWrbVV2hutu8IGczFKNDrnK82UWx7D772HMAgAE3yLgPAnKgRsJWBqcWPQ50TfdxsTFRMs/4M+mUHV+JZWyG52yRlaKanpP35i9/2kwFCbHFGsSi7nH03TtzpOh+GWGUDIdWdGGLzgfgm7JSoWGCFBqmRKnGMS0O2Ta8SvAPf+vB15e/KgQV7AYJM33lQQ4HHKjXyXIh1AmpjUQ5ErlBkuv/jcz3Ffu02aaXweecz8KC+2fU+QcYf+w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=dL37bXHPp8xR+9aLkUDAAAkv2580g7eDI9iiN5PH/7A=;
+ b=eg7jpvbGCG4IBloAIAcjm6HFjo+0aJeO1mkaSaxprYWezIbr6GkBMNH56M5boACnRGeNXWvowx3KWNOS2D18S6yiQdOavbVXuesdWbNID1H3c5Itz8sJ+6g84g7TXW1aCr5uW1InwnfgVseCXhRuBMJY2RjgpB2tMOFIlIyVDGF6iZAbEkZtmTUpXkgTMDhXyzpgdDyf0UpFWcP2wn+dox835ev+cCYaPBUxKbiOwo8+aYI3dUaqdoHpU58UkZWvKyOZs9oYDdST7QQw89YLpjAFMBHZriHz/QSG2yHfWnWrIbh6UPW+pE+cwYpHCaLlm+kJhT8BEbxq8S3lJXe5bw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.160) smtp.rcpttodomain=google.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=dL37bXHPp8xR+9aLkUDAAAkv2580g7eDI9iiN5PH/7A=;
+ b=fFTWrtpGZ2zK+bJgYGdFpSbZr4QJymw0Xpm8KVrzGgQ50W9JsMI5LTf3SABZBqsZ4p1ae57gsy7GCBB7A2ndGzGcTKIkqGmPbvOG/bvIcfCSFeQnMtuF2frz+j/7IUlngPP15ydzZpoF0jQE2by+4HipExyOLBVWQBJqNtsBl7NN7i9JJ1PCSaxuVmz289mYK5A3aFUcedV18IwTchhGYJmkGz2oT79Fx+2YWw/euVHtCAMmZ55qQBUqCl+FBE8TtdaXUvTV7bv1/dFEAvd4gvp+7P3fJoAMWT42bxb+8uLkJC/l6Gv0Mzum23Jf9RJaosEAsOI+4TWK9O8o+wrrJg==
+Received: from CH2PR02CA0021.namprd02.prod.outlook.com (2603:10b6:610:4e::31)
+ by PH7PR12MB6441.namprd12.prod.outlook.com (2603:10b6:510:1fb::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6678.26; Wed, 16 Aug
+ 2023 22:37:14 +0000
+Received: from CO1PEPF000044F7.namprd21.prod.outlook.com
+ (2603:10b6:610:4e:cafe::b7) by CH2PR02CA0021.outlook.office365.com
+ (2603:10b6:610:4e::31) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6652.33 via Frontend
+ Transport; Wed, 16 Aug 2023 22:37:13 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ CO1PEPF000044F7.mail.protection.outlook.com (10.167.241.197) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6723.6 via Frontend Transport; Wed, 16 Aug 2023 22:37:13 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Wed, 16 Aug 2023
+ 15:37:00 -0700
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Wed, 16 Aug
+ 2023 15:37:00 -0700
+Received: from Asurada-Nvidia (10.127.8.10) by mail.nvidia.com (10.129.68.7)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37 via Frontend
+ Transport; Wed, 16 Aug 2023 15:36:59 -0700
+Date: Wed, 16 Aug 2023 15:36:58 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Michael Shavit <mshavit@google.com>
+CC: <iommu@lists.linux.dev>, <linux-arm-kernel@lists.infradead.org>,
+	<linux-kernel@vger.kernel.org>, <robin.murphy@arm.com>, <will@kernel.org>,
+	<jean-philippe@linaro.org>, <jgg@nvidia.com>
+Subject: Re: [PATCH v6 05/10] iommu/arm-smmu-v3: Refactor write_ctx_desc
+Message-ID: <ZN1Piqq8EpwOy2e6@Asurada-Nvidia>
+References: <20230816131925.2521220-1-mshavit@google.com>
+ <20230816211849.v6.5.I219054a6cf538df5bb22f4ada2d9933155d6058c@changeid>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.14.0
-Subject: Re: [PATCH 10/11] RISC-V: drivers/iommu/riscv: Add MSI identity
- remapping
-Content-Language: en-GB
-To: Tomasz Jeznach <tjeznach@rivosinc.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Paul Walmsley <paul.walmsley@sifive.com>
-Cc: Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>,
- Anup Patel <apatel@ventanamicro.com>, Sunil V L <sunilvl@ventanamicro.com>,
- Nick Kossifidis <mick@ics.forth.gr>, Sebastien Boeuf <seb@rivosinc.com>,
- iommu@lists.linux.dev, linux-riscv@lists.infradead.org,
- linux-kernel@vger.kernel.org, linux@rivosinc.com
-References: <cover.1689792825.git.tjeznach@rivosinc.com>
- <660b7a8707e494a6bb2706e10569a7414c3640a7.1689792825.git.tjeznach@rivosinc.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <660b7a8707e494a6bb2706e10569a7414c3640a7.1689792825.git.tjeznach@rivosinc.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20230816211849.v6.5.I219054a6cf538df5bb22f4ada2d9933155d6058c@changeid>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CO1PEPF000044F7:EE_|PH7PR12MB6441:EE_
+X-MS-Office365-Filtering-Correlation-Id: e5954fe7-fc3e-4fdb-5eb4-08db9ea95650
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	WEWhzYJgrGqpbQHDsY2zEebUcnICkyeLguu+k1rq61tvQqM91Squ6nepgsHAli1IddYVYnq7Qpc86BWsTC94eTzsoypY0aJrJmA9D/pqE6tmIi/ez6Oi2JNgwv/Ms3ZTYH52BcFRWdRrgN0LUDs9VZgcjhH0Y/w27gcOcfTMO94w8sMHdlwCOvQ6idQlmcJ80SpqWIK5b8oyLmBYE44ZcRanSrZhGRV/h2HlN/03+Dzf75FYR5ja+pyIEDb4bAaIGM8vlOTknT1TN7MLiw1BHfnW8C4RalfQxjmsHMKTMcebSmUYL9nqF5Bga/ROLcBSGZW52ib7SrSHONMwQubmZZybtkHo0epK18DqKZ++sGIyNt+sBpOi9EiXPXZvT21yPETQx8vHbM2NLWpro8InAv2zOk+/kbPRo6+1Yzxyf4EVjeTf1rMFq/P8xuJyYI9aGJRGX/gLvut1OhXRlUD6OWpIzEA4dgAJDQA0ve9bzwWSe51p7lXb7yth5jPBRssUqeYAvsWfhJmteD+vZ2EcCkqB5taFjeCrRSZVfeco5xoVyYT/BDoVIuya9d3f+5eCdY0GQHLJaz4XbOZEwvtVq3+y75QhJPmKfv+pj3iubmMaOKQVp+cRHxL8+EuvdgNCL+ixkw9essufvwrlenr2s1nUzKVbNq+PtLB/QsnuuMsGd5IFGCbMhVvxxjohMgdoa43fO+K8IPOEJSpsCWy7/Vwg+OE08vJgDHPhG2XuvKdtoJWB8PGdujyvVnlB4Lmi
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230031)(4636009)(376002)(346002)(136003)(396003)(39860400002)(1800799009)(451199024)(82310400011)(186009)(40470700004)(36840700001)(46966006)(2906002)(40460700003)(83380400001)(66899024)(26005)(86362001)(40480700001)(478600001)(426003)(336012)(107886003)(9686003)(55016003)(5660300002)(36860700001)(41300700001)(54906003)(82740400003)(356005)(316002)(7636003)(70206006)(70586007)(6916009)(8676002)(4326008)(8936002)(33716001)(47076005);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Aug 2023 22:37:13.6888
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: e5954fe7-fc3e-4fdb-5eb4-08db9ea95650
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	CO1PEPF000044F7.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB6441
 
-On 2023-07-19 20:33, Tomasz Jeznach wrote:
-> This change provides basic identity mapping support to
-> excercise MSI_FLAT hardware capability.
-> 
-> Signed-off-by: Tomasz Jeznach <tjeznach@rivosinc.com>
-> ---
->   drivers/iommu/riscv/iommu.c | 81 +++++++++++++++++++++++++++++++++++++
->   drivers/iommu/riscv/iommu.h |  3 ++
->   2 files changed, 84 insertions(+)
-> 
-> diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
-> index 6042c35be3ca..7b3e3e135cf6 100644
-> --- a/drivers/iommu/riscv/iommu.c
-> +++ b/drivers/iommu/riscv/iommu.c
-> @@ -61,6 +61,9 @@ MODULE_PARM_DESC(priq_length, "Page request interface queue length.");
->   #define RISCV_IOMMU_MAX_PSCID	(1U << 20)
->   static DEFINE_IDA(riscv_iommu_pscids);
->   
-> +/* TODO: Enable MSI remapping */
-> +#define RISCV_IMSIC_BASE	0x28000000
-> +
->   /* 1 second */
->   #define RISCV_IOMMU_TIMEOUT	riscv_timebase
->   
-> @@ -932,6 +935,72 @@ static irqreturn_t riscv_iommu_priq_process(int irq, void *data)
->    * Endpoint management
->    */
->   
-> +static int riscv_iommu_enable_ir(struct riscv_iommu_endpoint *ep)
+On Wed, Aug 16, 2023 at 09:18:45PM +0800, Michael Shavit wrote:
+ 
+> +/*
+> + * Write the CD to the CD tables for all masters that this domain is attached
+> + * to. Note that this is used to update the non-pasid CD entry when SVA takes
+> + * over an existing ASID, as well as to write new pasid CD entries when
+> + * attaching an SVA domain (although the domain passed as the parameter is the
+> + * RID domain that this domain is mapped to).
+> + */
+> +static int arm_smmu_write_ctx_desc_devices(struct arm_smmu_domain *smmu_domain,
+
+Iterating the entire device list of a domain looks like the
+arm_smmu_atc_inv_domain(). So it feels to me that it could be
+called arm_smmu_write_ctx_desc_domain()? Not a critical thing
+though..
+
+> +                                          int ssid,
+> +                                          struct arm_smmu_ctx_desc *cd)
 > +{
-> +	struct riscv_iommu_device *iommu = ep->iommu;
-> +	struct iommu_resv_region *entry;
-> +	struct irq_domain *msi_domain;
-> +	u64 val;
-> +	int i;
+> +       struct arm_smmu_master *master;
+> +       unsigned long flags;
+> +       int ret;
 > +
-> +	/* Initialize MSI remapping */
-> +	if (!ep->dc || !(iommu->cap & RISCV_IOMMU_CAP_MSI_FLAT))
-> +		return 0;
-> +
-> +	ep->msi_root = (struct riscv_iommu_msi_pte *)get_zeroed_page(GFP_KERNEL);
-> +	if (!ep->msi_root)
-> +		return -ENOMEM;
-> +
-> +	for (i = 0; i < 256; i++) {
-> +		ep->msi_root[i].pte = RISCV_IOMMU_MSI_PTE_V |
-> +		    FIELD_PREP(RISCV_IOMMU_MSI_PTE_M, 3) |
-> +		    phys_to_ppn(RISCV_IMSIC_BASE + i * PAGE_SIZE);
-> +	}
-> +
-> +	entry = iommu_alloc_resv_region(RISCV_IMSIC_BASE, PAGE_SIZE * 256, 0,
-> +					IOMMU_RESV_SW_MSI, GFP_KERNEL);
-> +	if (entry)
-> +		list_add_tail(&entry->list, &ep->regions);
-> +
-> +	val = virt_to_pfn(ep->msi_root) |
-> +	    FIELD_PREP(RISCV_IOMMU_DC_MSIPTP_MODE, RISCV_IOMMU_DC_MSIPTP_MODE_FLAT);
-> +	ep->dc->msiptp = cpu_to_le64(val);
-> +
-> +	/* Single page of MSIPTP, 256 IMSIC files */
-> +	ep->dc->msi_addr_mask = cpu_to_le64(255);
-> +	ep->dc->msi_addr_pattern = cpu_to_le64(RISCV_IMSIC_BASE >> 12);
-> +	wmb();
-> +
-> +	/* set msi domain for the device as isolated. hack. */
+> +       spin_lock_irqsave(&smmu_domain->devices_lock, flags);
+> +       list_for_each_entry(master, &smmu_domain->devices, domain_head) {
+> +               ret = arm_smmu_write_ctx_desc(master, ssid, cd);
+> +               if (ret) {
+> +                       list_for_each_entry_from_reverse(master, &smmu_domain->devices, domain_head)
+> +                               arm_smmu_write_ctx_desc(master, ssid, NULL);
+                                                                        ^
+Here it always reverts back to NULL, which isn't ideal since
+an CD entry could be something valid other than NULL prior to
+this function call. IIUIC the conversation in v5, we'd need
+another SVA series to clean up domain sharing, so this would
+be cleaned up too after that? If so, perhaps we could note it
+down in the comments above too.
 
-Hack because this should be implemented as a proper hierarchical MSI 
-domain, or hack because it doesn't actually represent isolation? Nothing 
-really jumps out at me from the IOMMU and IMSIC specs, so I'm leaning 
-towards the hunch that there's no real isolation, it's more just 
-implicit in the assumption that each distinct VM/process with devices 
-assigned should get its own interrupt file. I can't easily see how that 
-would be achieved for things like VFIO :/
+> @@ -2458,8 +2446,7 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+>                 ret = -EINVAL;
+>                 goto out_unlock;
+>         } else if (smmu_domain->stage == ARM_SMMU_DOMAIN_S1 &&
+> -                  smmu_domain->cd_table.stall_enabled !=
+> -                          master->stall_enabled) {
+> +                  smmu_domain->cd_table.stall_enabled != master->stall_enabled) {
+>                 ret = -EINVAL;
+>                 goto out_unlock;
 
-Thanks,
-Robin.
+This doesn't seem to be a related change? Probably should be in
+one of the previous patches, or just dropped.
 
-> +	msi_domain = dev_get_msi_domain(ep->dev);
-> +	if (msi_domain) {
-> +		msi_domain->flags |= IRQ_DOMAIN_FLAG_ISOLATED_MSI;
-> +	}
-> +
-> +	dev_dbg(ep->dev, "RV-IR enabled\n");
-> +
-> +	ep->ir_enabled = true;
-> +
-> +	return 0;
-> +}
-> +
-> +static void riscv_iommu_disable_ir(struct riscv_iommu_endpoint *ep)
-> +{
-> +	if (!ep->ir_enabled)
-> +		return;
-> +
-> +	ep->dc->msi_addr_pattern = 0ULL;
-> +	ep->dc->msi_addr_mask = 0ULL;
-> +	ep->dc->msiptp = 0ULL;
-> +	wmb();
-> +
-> +	dev_dbg(ep->dev, "RV-IR disabled\n");
-> +
-> +	free_pages((unsigned long)ep->msi_root, 0);
-> +	ep->msi_root = NULL;
-> +	ep->ir_enabled = false;
-> +}
-> +
->   /* Endpoint features/capabilities */
->   static void riscv_iommu_disable_ep(struct riscv_iommu_endpoint *ep)
->   {
-> @@ -1226,6 +1295,7 @@ static struct iommu_device *riscv_iommu_probe_device(struct device *dev)
->   
->   	mutex_init(&ep->lock);
->   	INIT_LIST_HEAD(&ep->domain);
-> +	INIT_LIST_HEAD(&ep->regions);
->   
->   	if (dev_is_pci(dev)) {
->   		ep->devid = pci_dev_id(to_pci_dev(dev));
-> @@ -1248,6 +1318,7 @@ static struct iommu_device *riscv_iommu_probe_device(struct device *dev)
->   	dev_iommu_priv_set(dev, ep);
->   	riscv_iommu_add_device(iommu, dev);
->   	riscv_iommu_enable_ep(ep);
-> +	riscv_iommu_enable_ir(ep);
->   
->   	return &iommu->iommu;
->   }
-> @@ -1279,6 +1350,7 @@ static void riscv_iommu_release_device(struct device *dev)
->   		riscv_iommu_iodir_inv_devid(iommu, ep->devid);
->   	}
->   
-> +	riscv_iommu_disable_ir(ep);
->   	riscv_iommu_disable_ep(ep);
->   
->   	/* Remove endpoint from IOMMU tracking structures */
-> @@ -1301,6 +1373,15 @@ static struct iommu_group *riscv_iommu_device_group(struct device *dev)
->   
->   static void riscv_iommu_get_resv_regions(struct device *dev, struct list_head *head)
->   {
-> +	struct iommu_resv_region *entry, *new_entry;
-> +	struct riscv_iommu_endpoint *ep = dev_iommu_priv_get(dev);
-> +
-> +	list_for_each_entry(entry, &ep->regions, list) {
-> +		new_entry = kmemdup(entry, sizeof(*entry), GFP_KERNEL);
-> +		if (new_entry)
-> +			list_add_tail(&new_entry->list, head);
-> +	}
-> +
->   	iommu_dma_get_resv_regions(dev, head);
->   }
->   
-> diff --git a/drivers/iommu/riscv/iommu.h b/drivers/iommu/riscv/iommu.h
-> index 83e8d00fd0f8..55418a1144fb 100644
-> --- a/drivers/iommu/riscv/iommu.h
-> +++ b/drivers/iommu/riscv/iommu.h
-> @@ -117,14 +117,17 @@ struct riscv_iommu_endpoint {
->   	struct riscv_iommu_dc *dc;		/* device context pointer */
->   	struct riscv_iommu_pc *pc;		/* process context root, valid if pasid_enabled is true */
->   	struct riscv_iommu_device *iommu;	/* parent iommu device */
-> +	struct riscv_iommu_msi_pte *msi_root;	/* interrupt re-mapping */
->   
->   	struct mutex lock;
->   	struct list_head domain;		/* endpoint attached managed domain */
-> +	struct list_head regions;		/* reserved regions, interrupt remapping window */
->   
->   	/* end point info bits */
->   	unsigned pasid_bits;
->   	unsigned pasid_feat;
->   	bool pasid_enabled;
-> +	bool ir_enabled;
->   };
->   
->   /* Helper functions and macros */
+Thanks
+Nicolin
