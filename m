@@ -1,199 +1,150 @@
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2059.outbound.protection.outlook.com [40.107.92.59])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yw1-f201.google.com (mail-yw1-f201.google.com [209.85.128.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2102DF60;
-	Wed, 16 Aug 2023 12:44:46 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=IWb9Q+f2EXppGaziNP28OUnaeQjMXy4c/b9vVVTlK6KKfHtX92XfP1H9noW6h15v8BeBYAOHbsa+Pgw5y+I/VF1jQRVaSntwQIGuhvqozmS/bFCGIvsOnKSapQjAtTkJq7oXseGNPdabVGpsznLHaka8Nerxf8DICVC7MMuSZftGXvl1O0Jgu2a5dJ2CY9RKqOcQPbLHtOxK3Jme4x7SMFsVrp7dFJvIjVwIAZ1XmMbtdiwDZ6rg2+hEAGUKZ2mC+KNu4xL5EyIUO9+K3qtijyCDgA03D2WvhpKzJm678Uihrbb70JSkwaZjnzCgzYbPq9uEEHxB9TZCN8Aq1t6FAQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=HTIS3tL6o8HXFow2YwPQlHE6eJ8x2zeA+YIsj9Z+Vbg=;
- b=K6+bLeOXOBBTbqjHoDEzbM8EcvtWgnkJ2F4fCPdXSxZefTQJ/Tv2DSZRFILp5OQMxplw4LE0p5dOnpeAW5mpq9JN3DD+3f3tvzhX7VrpkCd9u7uUJLTWyaxqAtxJSSs3f3yxc3zqIl/UTZJIMDHYSVv9oXCPAEnYyRGprfTqPl83NuNisKZDbYKtKbfa2f6GsN3xg2oE/Uejs/FF/FeBR602WGirKo7V7RLGAA36znHvC+rVG2HswV/Q7pdpllxgvwyRu5BTBosmKMVjgxQWQAD/2veQJZDSiPuixSOL5lDa2m5Zf/Ppf8ENB3QrfjoT+pJfUYkuL7voEL3lp7rhog==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HTIS3tL6o8HXFow2YwPQlHE6eJ8x2zeA+YIsj9Z+Vbg=;
- b=MvUcAMIqiNrh/5CBIMIilz1XobwuGwolomHxiVTgo2wex2AdsHvE9g4a1rIC/VIxVrqa4wVmYQ2vbVBXjYTTYQ2wY9yiYVIbO+nee49m0BHoS0g+SvOjQcLvSsRaqrRvfAihXK/slbWnAh5dxEXIMIeyytb/oLM2fHn8pcZFFRYXi41aY5aLhiS9wLIr5N+4+nmtoch9tV5lafCu5TscvtcmuEeJhCoICkui6Xp/3cDlI6xzcAX8bFe5tm0BO4cqC3Q7LEdPZ8qGCaSrz/HnOp9vMmmJHZS9GVgOLkWM9dCvJoLVoJNejXoRGDNzs23+70ImH5AWQn2kc+KWVWVisA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by PH8PR12MB7445.namprd12.prod.outlook.com (2603:10b6:510:217::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6678.26; Wed, 16 Aug
- 2023 12:44:43 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::5111:16e8:5afe:1da1]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::5111:16e8:5afe:1da1%6]) with mapi id 15.20.6678.025; Wed, 16 Aug 2023
- 12:44:43 +0000
-Date: Wed, 16 Aug 2023 09:44:41 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: Andy Gross <agross@kernel.org>, Alim Akhtar <alim.akhtar@samsung.com>,
-	Bjorn Andersson <andersson@kernel.org>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-	Baolin Wang <baolin.wang@linux.alibaba.com>,
-	Christophe Leroy <christophe.leroy@csgroup.eu>,
-	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-	Heiko Stuebner <heiko@sntech.de>, iommu@lists.linux.dev,
-	Jernej Skrabec <jernej.skrabec@gmail.com>,
-	Jonathan Hunter <jonathanh@nvidia.com>,
-	Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
-	Konrad Dybcio <konrad.dybcio@linaro.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-	linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
-	linux-mediatek@lists.infradead.org,
-	linux-rockchip@lists.infradead.org, linux-s390@vger.kernel.org,
-	linux-samsung-soc@vger.kernel.org, linux-sunxi@lists.linux.dev,
-	linux-tegra@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
-	linuxppc-dev@lists.ozlabs.org,
-	Matthias Brugger <matthias.bgg@gmail.com>,
-	Matthew Rosato <mjrosato@linux.ibm.com>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	Orson Zhai <orsonzhai@gmail.com>, Rob Clark <robdclark@gmail.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Samuel Holland <samuel@sholland.org>,
-	Thierry Reding <thierry.reding@gmail.com>,
-	Krishna Reddy <vdumpa@nvidia.com>, Chen-Yu Tsai <wens@csie.org>,
-	Will Deacon <will@kernel.org>, Yong Wu <yong.wu@mediatek.com>,
-	Chunyan Zhang <zhang.lyra@gmail.com>,
-	Dmitry Osipenko <digetx@gmail.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Niklas Schnelle <schnelle@linux.ibm.com>,
-	Steven Price <steven.price@arm.com>,
-	Thierry Reding <treding@nvidia.com>
-Subject: Re: [PATCH v6 08/25] iommu: Reorganize
- iommu_get_default_domain_type() to respect def_domain_type()
-Message-ID: <ZNzEubbluKrz6lWs@nvidia.com>
-References: <8-v6-e8114faedade+425-iommu_all_defdom_jgg@nvidia.com>
- <b50a464a-fa28-e359-1bc5-4f2b105326ad@linux.intel.com>
- <ZNpjmiBLneBC9oWe@nvidia.com>
- <c24e7eff-b28c-8152-6022-325ca89c8074@linux.intel.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <c24e7eff-b28c-8152-6022-325ca89c8074@linux.intel.com>
-X-ClientProxiedBy: CH2PR20CA0028.namprd20.prod.outlook.com
- (2603:10b6:610:58::38) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C9D6FC01
+	for <iommu@lists.linux.dev>; Wed, 16 Aug 2023 13:19:32 +0000 (UTC)
+Received: by mail-yw1-f201.google.com with SMTP id 00721157ae682-58d428d4956so3046657b3.0
+        for <iommu@lists.linux.dev>; Wed, 16 Aug 2023 06:19:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20221208; t=1692191972; x=1692796772;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=cFp68mVNc3zD0WpZGdDicdW6hVzQCXNZQbBR0zKXsLo=;
+        b=mSWbLjbo+a8ukPytvzmsMY4R6OsgeTw7geH2QiyNzNF0EI4OfIkNJkfcZW5uo8aoEi
+         1YblQYR+0SYtf1w8HrgUiTUMFRIAepGPJJ++voQreoX8/j9Hzws4n59VI9XrPg4HI+i7
+         fyEhftM+Z8SxeZyhhpXibPhZkRgkM36su7c0kMbvr4ttE3gBEFL7NUq4belRgSQFtiK/
+         O18CMoF1mw0o/8Ujn2piwnN3xOqla/lBSTi3U/X6PgY/3I0HO515uQZ9M/hQFAE4y+v3
+         JGr7twCPcQAq5UQMNOjN+egHA0dqLeRq+OHqrHgw8mc5mF30RsUGZjxyQztipMv7Dm+i
+         037A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1692191972; x=1692796772;
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=cFp68mVNc3zD0WpZGdDicdW6hVzQCXNZQbBR0zKXsLo=;
+        b=R3YBDxjHVq/LaQ/vqhjQIIMqHDZwyCtpKKi0gHHO+JUTYWuliCAQ3QFGgH5ByCAmkS
+         EVzLhc0O21c9jiEiDK1rv8K6pcUHJgB1kSufFz/5FOJ4daK2wazyL4kGnKuwlpWhxaIy
+         aOxxH3+owmUE9IUk0a3jyqRULRuYAurpH/NqiaBb3MOrPKfTPRflTH7dCih6+H/SXZ96
+         sEbTUo3xhcsxoYtXAB2tYYi1RGmP3GrNY/ZizAltLO1AYUXU4lX9LygUEjxOKXJXdcyQ
+         d3qmd67OGZTd+VfMNBOhK50KpxgkF459Zf2n4jDP2yM9FQPI9yQK8OHWZV/klwE48iAl
+         27Eg==
+X-Gm-Message-State: AOJu0YxZ/sC+eSKmfVous3UjNIz2Z6erLuRC0XXgF+Es+YUmBxK4dBif
+	WPwXAMxfehNPfwiNgmWy6cdEPBtJI80SdqR8DcghMp6AkdaFbAuQBfUdQs7NSs/TxP5+LQkV6u7
+	ST4ydcYvZlAw5LPa6brgnFyQq9Zim6OT7On+vy8ZPt+GfmOtG6O+4WBE3tc3XyQk=
+X-Google-Smtp-Source: AGHT+IFptDPVwuTKLjZZfmu+XC50egRaTONZ0DqUxp3ayBws3zvg5ys8Ai8bqzxd9fFitLfwCGXj+NLBCw2w
+X-Received: from mshavit.ntc.corp.google.com ([2401:fa00:95:20c:ae98:2006:2abd:3434])
+ (user=mshavit job=sendgmr) by 2002:a81:4524:0:b0:58c:b8c4:2b4a with SMTP id
+ s36-20020a814524000000b0058cb8c42b4amr21884ywa.4.1692191971662; Wed, 16 Aug
+ 2023 06:19:31 -0700 (PDT)
+Date: Wed, 16 Aug 2023 21:18:40 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|PH8PR12MB7445:EE_
-X-MS-Office365-Filtering-Correlation-Id: d3f25203-f6e6-48bf-b6da-08db9e56907a
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	EfcWWQv83+YJofu3dlHUx8ZSpBkFv+ou/rL0iku77GS2fpxFKJtHuYR99H88r7YwTu7XWtnYrVa7lO3DUS5jg8ypZ5J5cSAszyEHisZ2Ql15iOhOOwYX4OYSwYRFr6SzYX2xJkWqUXxN4QOEu5M+ugzcIukpqYLhd0N55391j8MEKrRJpoj44nMcYUiJEyprP79yToyix806bmGZmcqoMC0PPTB2ZtYN7NVzjuPBkU1Z0UQ1QGxzD3vpWvDzCGOo7fW/BHqdKnAfJrljMMEeCkltKXUpO0jm1Yv1N8rkNczIkAz4+BuW2J8u1P5TQEQAY9EILDskOEqhHZvuOp30v1Q+9H7VPoNsMOCUmuOIugcvm8TMshmI4n3G+ra/ndrZ4+74bx0rry+eFS1uKCmesG0rNKFlztzqpkeDIKnqLQlASrnmEv1cbz4w/r8w7ZhVqBVSXivNgEsUks5HI7IPm90r4Cc60V5zAV9vfIDnigyGapjuDfh0weyR6ZDbXrUzEimM5qMo+fNiSgD3QEWqKJt2rWdMm6KPDmEG9cUbM+8A27/LkG7pe8FMpc3Dr0Dh
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(396003)(39860400002)(346002)(366004)(376002)(136003)(1800799009)(451199024)(186009)(316002)(54906003)(6916009)(66946007)(66476007)(66556008)(41300700001)(5660300002)(38100700002)(8676002)(4326008)(8936002)(2906002)(83380400001)(26005)(478600001)(7416002)(7406005)(86362001)(6512007)(107886003)(6506007)(36756003)(2616005)(6486002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?YEFh7EViI9sw9XM5u/anGA7DFEO/4ik18m+UjLV1E9owrdDWtGikl4IJ5704?=
- =?us-ascii?Q?dQyxu5DpSr6jRzjPV2KGWSR4FPc/c5FqbYwMR8J3CMxQz+b/mqlMHGFxj8aC?=
- =?us-ascii?Q?P4li1BDiqm0fq3p1efavgYUFkoiMr37jkQljLO04ORJnT3spTfwBlOqFOM2A?=
- =?us-ascii?Q?4buifHbEKKiLvdjs/1vocGVQtEguGC6EFVmG0ge+urssgvEgM197Jde7ePEX?=
- =?us-ascii?Q?MdOVaf106dyKRxZ1EPg0Cqt30L380Qnbi4YaG0NsbFjbJ7NrivR9kGZjq4dM?=
- =?us-ascii?Q?9ZuDJVmYXJKxkrO7FAl33onaEIZ/LjiIXcvuRk4y5rWg0fV806ybq99CpIci?=
- =?us-ascii?Q?sxrSB7e3ztnsteXYqu8kGh7Y+aRa68Q+AVlEQLoMVTqDNaicNcj7Hd6yaNv4?=
- =?us-ascii?Q?u4Ht219ivTAciyo/iRW8mVGZyrf2rhDmaDHhc3WYrqkAaIIj2YOO4uSDzZnV?=
- =?us-ascii?Q?BcseGP7Tvo3D4/UZkFaC88C+8TDmGF2LilWRGjyME+8YqCZU3AxLr69SqGrD?=
- =?us-ascii?Q?YBiG+r9xt+FNt3ojTb+iRlwpZdtXgEPMAg6YcTXNhdgrqBI1xTQAveBt3wS7?=
- =?us-ascii?Q?Zr9OZO3ueeEsYFKyoW4/lZB/RNHCEb3y/ricMnhP+/9AofCy0X537zkZWfwG?=
- =?us-ascii?Q?4bn1eS8k/l8jS+zXDLsB3ib68rZGWyNSQLyDaz93DYY4ZkUojd75vL2k8rSs?=
- =?us-ascii?Q?cTDLG38jq2MFi7F1bjG+5hJjQqroY0Wf7HzaisqMg5rG9dp4bKzSkvhYbyum?=
- =?us-ascii?Q?bhU+cPcgJUKqiQhpQ3C/EVZ5qN6fURT2otcjzN9UMCOfDsQBQH7tbuq/jg0A?=
- =?us-ascii?Q?XK3xEpMUhOyGtThZB3nwjdNULwjSG+sg/CmdIBanIGXa+jOb02sXL5uF6SHP?=
- =?us-ascii?Q?6oDb6O/8JA2YO3nX0eD6UKFqXACI9zoBHqTYXKnoy7qnaw4H4ph2M2gMNqt3?=
- =?us-ascii?Q?4z30ETvBrpEDly3/IcbDsDVZiVxAJCeXgX2PykNr5HHNPQ1ZtWxDBS89xCXN?=
- =?us-ascii?Q?841P9DveR/c+7NC9GLPFK2ROlIlqi6MRIf98v0nLSDC6nuJccvy47qahrcgG?=
- =?us-ascii?Q?zHbee8pyTwwfd+FBYOxMlOEVO14KHpz86vDuwTd9PJgOtiYQ4f7SNDHWR1jZ?=
- =?us-ascii?Q?VBii4Um7hAvjsLMSlBHiqg4a4iM+8O7YcevYHOdK1nslrW1OUm1Jq4EQY38/?=
- =?us-ascii?Q?/U/FVZ2dUZEtfmhIkGqMtw42FiFJgclG8xr7Hf/4V2kECpuyifT0twKz6reH?=
- =?us-ascii?Q?h4G2DnoiMf8Fd9VUdY/dzhKXIec8gfUPgOyTooVBXZ289X+mQDuVbUTvRB5w?=
- =?us-ascii?Q?0wkv+mNBb40+M/42WeZt1Px0ym5qbRNNo8iOE6QQ/Dz3gapl2HAHA9OAzTkv?=
- =?us-ascii?Q?hosqrRJ+FWq/rz+6Q+B4zHDGYCB+f61uc+N3h4fa/WeWiiwdKZEHRpwLs7/N?=
- =?us-ascii?Q?oNg5tchl0zBvCNRhLXVUO9rpuw/nYzY6JZRLnXFZQta52wkLa0dJmQmEQXv/?=
- =?us-ascii?Q?ywrktU8BJFXMyxj3Q/RY4bcNrA4t4HbuaVUIR5evMLlZneiQ0ycageRlNG0Z?=
- =?us-ascii?Q?HTFhFvUEy7GB1qQ9XoExhL/bV2n6oknOx66RMf51?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d3f25203-f6e6-48bf-b6da-08db9e56907a
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Aug 2023 12:44:43.4838
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: XvkAla3FxciIfevCAI0JAvhgNXpBl1AUzC0EBX68AI1S/+CGyZcR9y9L1Hw0cA0m
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR12MB7445
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.41.0.694.ge786442a9b-goog
+Message-ID: <20230816131925.2521220-1-mshavit@google.com>
+Subject: [PATCH v6 00/10] Refactor the SMMU's CD table ownership
+From: Michael Shavit <mshavit@google.com>
+To: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
+	linux-kernel@vger.kernel.org
+Cc: robin.murphy@arm.com, will@kernel.org, jean-philippe@linaro.org, 
+	jgg@nvidia.com, nicolinc@nvidia.com, Michael Shavit <mshavit@google.com>
+Content-Type: text/plain; charset="UTF-8"
 
-On Tue, Aug 15, 2023 at 09:18:59AM +0800, Baolu Lu wrote:
 
-> > 	/*
-> > 	 * Try to recover, drivers are allowed to force IDENITY or DMA, IDENTITY
-> > 	 * takes precedence.
-> > 	 */
-> > 	if (cur_type || type == IOMMU_DOMAIN_IDENTITY)
-> > 		return IOMMU_DOMAIN_IDENTITY;
-> 
-> No need to check cur_type. It already returned if cur_type is 0.
+Hi all,
 
-Yep
- 
-> > 	return cur_type;
-> > }
-> > 
-> > /*
-> >   * A target_type of 0 will select the best domain type. 0 can be returned in
-> >   * this case meaning the global default should be used.
-> >   */
-> > static int iommu_get_default_domain_type(struct iommu_group *group,
-> > 					 int target_type)
-> > {
-> > 	struct device *untrusted = NULL;
-> > 	struct group_device *gdev;
-> > 	int driver_type = 0;
-> > 
-> > 	lockdep_assert_held(&group->mutex);
-> > 
-> > 	/*
-> > 	 * ARM32 drivers supporting CONFIG_ARM_DMA_USE_IOMMU can declare an
-> > 	 * identity_domain and it will automatically become their default
-> > 	 * domain. Later on ARM_DMA_USE_IOMMU will install its UNMANAGED domain.
-> > 	 * Override the selection to IDENTITY.
-> > 	 */
-> > 	if (IS_ENABLED(CONFIG_ARM_DMA_USE_IOMMU)) {
-> > 		static_assert(!(IS_ENABLED(CONFIG_ARM_DMA_USE_IOMMU) &&
-> > 				IS_ENABLED(CONFIG_IOMMU_DMA)));
-> 
-> IS_ENABLED(CONFIG_ARM_DMA_USE_IOMMU) is duplicate with the condition in the
-> if statement. So only
-> 		static_assert(!IS_ENABLED(CONFIG_IOMMU_DMA));
-> ?
+This series refactors stage 1 domains so that they describe a single CD
+entry. These entries are now inserted into a CD table that is owned by
+the arm_smmu_master instead of the domain.
+This is conceptually cleaner and unblocks other features, such as
+attaching domains with PASID (for unmanaged/dma domains).
 
-static_assert doesn't work that way, it ignores its calling context
-and always checks during compilation, so the duplication is required
+This patch series was originally part of a larger patch series that
+implemented the set_dev_pasid callback for non-SVA domains but is now
+split into a distinct series.
 
-> > 
-> > 	for_each_group_device(group, gdev) {
-> > 		driver_type = iommu_get_def_domain_type(group, gdev->dev,
-> > 							driver_type);
-> 
-> No need to call this in the loop body?
-
-Do need it, this only gets the def_domain_type of a single device so
-we have to iterate over all the devices in the group to 'reduce' the
-type for the group.
+This patch series is also available on gerrit with Jean's SMMU test
+engine patches cherry-picked on top for testing:
+https://linux-review.googlesource.com/c/linux/kernel/git/torvalds/linux/+/24770/9
 
 Thanks,
-Jason
+Michael Shavit
+
+Changes in v6:
+- Undo removal of s1fmt and renaming of s1cdmax
+- Unwind the loop in amr_smmu_write_ctx_desc_devices to NULL out the CD
+  entries we succesfully wrote on failure.
+- Add a comment clarifying the different usages of
+  amr_smmu_write_ctx_desc_devices
+- Grab the asid lock while writing the RID CD to prevent a race with
+  SVA.
+- Add the device to the devices list before writing the CD to the table
+  and installing the CD table.
+- Link to v5: https://lore.kernel.org/all/20230808171446.2187795-1-mshavit@google.com/
+
+Changes in v5:
+- Clear the 0th CD entry when the domain is detached. Not clearing it
+  caused a bug in arm_smmu_write_ctx_desc which doesn't expect the entry
+  to already be set.
+- Fix an issue where cd_table.installed wasn't correctly updated.
+- Added commit to clean-up now unused master parameter in
+  arm_smmu_domain_finalise
+- Link to v4: https://lore.kernel.org/all/20230802163328.2623773-1-mshavit@google.com/
+
+Changes in v4:
+- Added comment about the cd_table's dependency on the iommu core's
+  group mutex.
+- Narrowed the range of code for which the domain's init_mutex is held
+  on attach since it now only protects the arm_smmu_domain_finalise
+  call.
+- Link to v3: https://lore.kernel.org/all/20230801183845.4026101-1-mshavit@google.com/
+
+Changes in v3:
+- Add a helper to write a CD to all masters that a domain is attached
+  to.
+- Fixed an issue where an arm_smmu_write_ctx_desc error return wasn't
+  correctly handled by its caller.
+- Flip the cd_table.installed bit back off when table is detached
+- re-order the commit later in the series since flipping the installed
+  bit to off isn't obvious when the cd_table is still shared by multiple
+  masters.
+- Link to v2: https://lore.kernel.org/all/20230731104833.800114-1-mshavit@google.com/
+
+Changes in v2:
+- Allocate CD table when it's first needed instead of on probe.
+- Minor changes
+- Added commit to rename remaining usages of cdcfg to cd_table
+- Link to v1: https://lore.kernel.org/all/20230727182647.4106140-1-mshavit@google.com/#r
+
+Changes in v1:
+- Replace s1_cfg with arm_smmu_ctx_desc_cfg representing the CD table
+- Assume that the CD table is owned by the SMMU master for most
+  operations. This is forward-compatible with the nested patch series as
+  these operations wouldn't be called when the installed CD table comes
+  from nested domains.
+- Split off as a distinct patch series from https://lore.kernel.org/all/20230621063825.268890-1-mshavit@google.com/
+
+Michael Shavit (10):
+  iommu/arm-smmu-v3: Move ctx_desc out of s1_cfg
+  iommu/arm-smmu-v3: Replace s1_cfg with cdtab_cfg
+  iommu/arm-smmu-v3: Encapsulate ctx_desc_cfg init in alloc_cd_tables
+  iommu/arm-smmu-v3: move stall_enabled to the cd table
+  iommu/arm-smmu-v3: Refactor write_ctx_desc
+  iommu/arm-smmu-v3: Move CD table to arm_smmu_master
+  iommu/arm-smmu-v3: Cleanup arm_smmu_domain_finalise
+  iommu/arm-smmu-v3: Update comment about STE liveness
+  iommu/arm-smmu-v3: Skip cd sync if CD table isn't active
+  iommu/arm-smmu-v3: Rename cdcfg to cd_table
+
+ .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   |  40 ++-
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 259 +++++++++---------
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  19 +-
+ 3 files changed, 176 insertions(+), 142 deletions(-)
+
+
+base-commit: 6eaae198076080886b9e7d57f4ae06fa782f90ef
+-- 
+2.41.0.694.ge786442a9b-goog
+
