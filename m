@@ -1,14 +1,14 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6D01CD50F
-	for <iommu@lists.linux.dev>; Wed, 16 Aug 2023 21:13:50 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8D1F2182C8
+	for <iommu@lists.linux.dev>; Wed, 16 Aug 2023 21:43:35 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D706BD75;
-	Wed, 16 Aug 2023 14:14:30 -0700 (PDT)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C7E1FD75;
+	Wed, 16 Aug 2023 14:44:15 -0700 (PDT)
 Received: from [10.57.90.114] (unknown [10.57.90.114])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 817793F762;
-	Wed, 16 Aug 2023 14:13:47 -0700 (PDT)
-Message-ID: <a0061d0c-2a74-9f32-e6ab-d3d9d06d9fd4@arm.com>
-Date: Wed, 16 Aug 2023 22:13:43 +0100
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6748A3F762;
+	Wed, 16 Aug 2023 14:43:32 -0700 (PDT)
+Message-ID: <0b2b9365-5e8c-35a0-38ac-ffcbdfdb9886@arm.com>
+Date: Wed, 16 Aug 2023 22:43:11 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -17,8 +17,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
  Thunderbird/102.14.0
-Subject: Re: [PATCH 11/11] RISC-V: drivers/iommu/riscv: Add G-Stage
- translation support
+Subject: Re: [PATCH 10/11] RISC-V: drivers/iommu/riscv: Add MSI identity
+ remapping
 Content-Language: en-GB
 To: Tomasz Jeznach <tjeznach@rivosinc.com>, Joerg Roedel <joro@8bytes.org>,
  Will Deacon <will@kernel.org>, Paul Walmsley <paul.walmsley@sifive.com>
@@ -28,162 +28,180 @@ Cc: Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>,
  iommu@lists.linux.dev, linux-riscv@lists.infradead.org,
  linux-kernel@vger.kernel.org, linux@rivosinc.com
 References: <cover.1689792825.git.tjeznach@rivosinc.com>
- <0c391072fe0be52b3bdf3d826e4313d960aecba0.1689792825.git.tjeznach@rivosinc.com>
+ <660b7a8707e494a6bb2706e10569a7414c3640a7.1689792825.git.tjeznach@rivosinc.com>
 From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <0c391072fe0be52b3bdf3d826e4313d960aecba0.1689792825.git.tjeznach@rivosinc.com>
+In-Reply-To: <660b7a8707e494a6bb2706e10569a7414c3640a7.1689792825.git.tjeznach@rivosinc.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 2023-07-19 20:33, Tomasz Jeznach wrote:
-> This change introduces 2nd stage translation configuration
-> support, enabling nested translation for IOMMU hardware.
-> Pending integration with VMM IOMMUFD interfaces to manage
-> 1st stage translation and IOMMU virtialization interfaces.
+> This change provides basic identity mapping support to
+> excercise MSI_FLAT hardware capability.
 > 
 > Signed-off-by: Tomasz Jeznach <tjeznach@rivosinc.com>
 > ---
->   drivers/iommu/riscv/iommu.c | 58 ++++++++++++++++++++++++++++---------
->   drivers/iommu/riscv/iommu.h |  3 +-
->   2 files changed, 46 insertions(+), 15 deletions(-)
+>   drivers/iommu/riscv/iommu.c | 81 +++++++++++++++++++++++++++++++++++++
+>   drivers/iommu/riscv/iommu.h |  3 ++
+>   2 files changed, 84 insertions(+)
 > 
 > diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
-> index 7b3e3e135cf6..3ca2f0194d3c 100644
+> index 6042c35be3ca..7b3e3e135cf6 100644
 > --- a/drivers/iommu/riscv/iommu.c
 > +++ b/drivers/iommu/riscv/iommu.c
-> @@ -1418,6 +1418,19 @@ static struct iommu_domain *riscv_iommu_domain_alloc(unsigned type)
->   	return &domain->domain;
->   }
+> @@ -61,6 +61,9 @@ MODULE_PARM_DESC(priq_length, "Page request interface queue length.");
+>   #define RISCV_IOMMU_MAX_PSCID	(1U << 20)
+>   static DEFINE_IDA(riscv_iommu_pscids);
 >   
-> +/* mark domain as second-stage translation */
-> +static int riscv_iommu_enable_nesting(struct iommu_domain *iommu_domain)
+> +/* TODO: Enable MSI remapping */
+> +#define RISCV_IMSIC_BASE	0x28000000
+> +
+>   /* 1 second */
+>   #define RISCV_IOMMU_TIMEOUT	riscv_timebase
+>   
+> @@ -932,6 +935,72 @@ static irqreturn_t riscv_iommu_priq_process(int irq, void *data)
+>    * Endpoint management
+>    */
+>   
+> +static int riscv_iommu_enable_ir(struct riscv_iommu_endpoint *ep)
+> +{
+> +	struct riscv_iommu_device *iommu = ep->iommu;
+> +	struct iommu_resv_region *entry;
+> +	struct irq_domain *msi_domain;
+> +	u64 val;
+> +	int i;
+> +
+> +	/* Initialize MSI remapping */
+> +	if (!ep->dc || !(iommu->cap & RISCV_IOMMU_CAP_MSI_FLAT))
+> +		return 0;
+> +
+> +	ep->msi_root = (struct riscv_iommu_msi_pte *)get_zeroed_page(GFP_KERNEL);
+> +	if (!ep->msi_root)
+> +		return -ENOMEM;
+> +
+> +	for (i = 0; i < 256; i++) {
+> +		ep->msi_root[i].pte = RISCV_IOMMU_MSI_PTE_V |
+> +		    FIELD_PREP(RISCV_IOMMU_MSI_PTE_M, 3) |
+> +		    phys_to_ppn(RISCV_IMSIC_BASE + i * PAGE_SIZE);
+> +	}
+> +
+> +	entry = iommu_alloc_resv_region(RISCV_IMSIC_BASE, PAGE_SIZE * 256, 0,
+> +					IOMMU_RESV_SW_MSI, GFP_KERNEL);
+> +	if (entry)
+> +		list_add_tail(&entry->list, &ep->regions);
+> +
+> +	val = virt_to_pfn(ep->msi_root) |
+> +	    FIELD_PREP(RISCV_IOMMU_DC_MSIPTP_MODE, RISCV_IOMMU_DC_MSIPTP_MODE_FLAT);
+> +	ep->dc->msiptp = cpu_to_le64(val);
+> +
+> +	/* Single page of MSIPTP, 256 IMSIC files */
+> +	ep->dc->msi_addr_mask = cpu_to_le64(255);
+> +	ep->dc->msi_addr_pattern = cpu_to_le64(RISCV_IMSIC_BASE >> 12);
+> +	wmb();
+> +
+> +	/* set msi domain for the device as isolated. hack. */
 
-Please don't add more instances of enable_nesting. It's a dead end that 
-has never actually been used and should be removed fairly soon. The new 
-nesting infrastructure is all still in flight, but the current patchsets 
-should give a good idea of what you'd want to work towards:
-
-https://lore.kernel.org/linux-iommu/20230724110406.107212-1-yi.l.liu@intel.com/
-https://lore.kernel.org/linux-iommu/20230724111335.107427-1-yi.l.liu@intel.com/
-https://lore.kernel.org/linux-iommu/cover.1683688960.git.nicolinc@nvidia.com/
+Hack because this should be implemented as a proper hierarchical MSI 
+domain, or hack because it doesn't actually represent isolation? Nothing 
+really jumps out at me from the IOMMU and IMSIC specs, so I'm leaning 
+towards the hunch that there's no real isolation, it's more just 
+implicit in the assumption that each distinct VM/process with devices 
+assigned should get its own interrupt file. I can't easily see how that 
+would be achieved for things like VFIO :/
 
 Thanks,
 Robin.
 
-> +{
-> +	struct riscv_iommu_domain *domain = iommu_domain_to_riscv(iommu_domain);
+> +	msi_domain = dev_get_msi_domain(ep->dev);
+> +	if (msi_domain) {
+> +		msi_domain->flags |= IRQ_DOMAIN_FLAG_ISOLATED_MSI;
+> +	}
 > +
-> +	mutex_lock(&domain->lock);
-> +	if (list_empty(&domain->endpoints))
-> +		domain->g_stage = true;
-> +	mutex_unlock(&domain->lock);
+> +	dev_dbg(ep->dev, "RV-IR enabled\n");
 > +
-> +	return domain->g_stage ? 0 : -EBUSY;
+> +	ep->ir_enabled = true;
+> +
+> +	return 0;
 > +}
 > +
->   static void riscv_iommu_domain_free(struct iommu_domain *iommu_domain)
+> +static void riscv_iommu_disable_ir(struct riscv_iommu_endpoint *ep)
+> +{
+> +	if (!ep->ir_enabled)
+> +		return;
+> +
+> +	ep->dc->msi_addr_pattern = 0ULL;
+> +	ep->dc->msi_addr_mask = 0ULL;
+> +	ep->dc->msiptp = 0ULL;
+> +	wmb();
+> +
+> +	dev_dbg(ep->dev, "RV-IR disabled\n");
+> +
+> +	free_pages((unsigned long)ep->msi_root, 0);
+> +	ep->msi_root = NULL;
+> +	ep->ir_enabled = false;
+> +}
+> +
+>   /* Endpoint features/capabilities */
+>   static void riscv_iommu_disable_ep(struct riscv_iommu_endpoint *ep)
 >   {
->   	struct riscv_iommu_domain *domain = iommu_domain_to_riscv(iommu_domain);
-> @@ -1433,7 +1446,7 @@ static void riscv_iommu_domain_free(struct iommu_domain *iommu_domain)
->   		free_io_pgtable_ops(&domain->pgtbl.ops);
+> @@ -1226,6 +1295,7 @@ static struct iommu_device *riscv_iommu_probe_device(struct device *dev)
 >   
->   	if (domain->pgd_root)
-> -		free_pages((unsigned long)domain->pgd_root, 0);
-> +		free_pages((unsigned long)domain->pgd_root, domain->g_stage ? 2 : 0);
+>   	mutex_init(&ep->lock);
+>   	INIT_LIST_HEAD(&ep->domain);
+> +	INIT_LIST_HEAD(&ep->regions);
 >   
->   	if ((int)domain->pscid > 0)
->   		ida_free(&riscv_iommu_pscids, domain->pscid);
-> @@ -1483,7 +1496,8 @@ static int riscv_iommu_domain_finalize(struct riscv_iommu_domain *domain,
+>   	if (dev_is_pci(dev)) {
+>   		ep->devid = pci_dev_id(to_pci_dev(dev));
+> @@ -1248,6 +1318,7 @@ static struct iommu_device *riscv_iommu_probe_device(struct device *dev)
+>   	dev_iommu_priv_set(dev, ep);
+>   	riscv_iommu_add_device(iommu, dev);
+>   	riscv_iommu_enable_ep(ep);
+> +	riscv_iommu_enable_ir(ep);
 >   
->   	/* TODO: Fix this for RV32 */
->   	domain->mode = satp_mode >> 60;
-> -	domain->pgd_root = (pgd_t *) __get_free_pages(GFP_KERNEL | __GFP_ZERO, 0);
-> +	domain->pgd_root = (pgd_t *) __get_free_pages(GFP_KERNEL | __GFP_ZERO,
-> +						      domain->g_stage ? 2 : 0);
->   
->   	if (!domain->pgd_root)
->   		return -ENOMEM;
-> @@ -1499,6 +1513,8 @@ static u64 riscv_iommu_domain_atp(struct riscv_iommu_domain *domain)
->   	u64 atp = FIELD_PREP(RISCV_IOMMU_DC_FSC_MODE, domain->mode);
->   	if (domain->mode != RISCV_IOMMU_DC_FSC_MODE_BARE)
->   		atp |= FIELD_PREP(RISCV_IOMMU_DC_FSC_PPN, virt_to_pfn(domain->pgd_root));
-> +	if (domain->g_stage)
-> +		atp |= FIELD_PREP(RISCV_IOMMU_DC_IOHGATP_GSCID, domain->pscid);
->   	return atp;
+>   	return &iommu->iommu;
 >   }
->   
-> @@ -1541,20 +1557,30 @@ static int riscv_iommu_attach_dev(struct iommu_domain *iommu_domain, struct devi
->   	if (!dc)
->   		return -ENODEV;
->   
-> -	/*
-> -	 * S-Stage translation table. G-Stage remains unmodified (BARE).
-> -	 */
-> -	val = FIELD_PREP(RISCV_IOMMU_DC_TA_PSCID, domain->pscid);
-> -
-> -	if (ep->pasid_enabled) {
-> -		ep->pc[0].ta = cpu_to_le64(val | RISCV_IOMMU_PC_TA_V);
-> -		ep->pc[0].fsc = cpu_to_le64(riscv_iommu_domain_atp(domain));
-> +	if (domain->g_stage) {
-> +		/*
-> +		 * Enable G-Stage translation with initial pass-through mode
-> +		 * for S-Stage. VMM is responsible for more restrictive
-> +		 * guest VA translation scheme configuration.
-> +		 */
->   		dc->ta = 0;
-> -		dc->fsc = cpu_to_le64(virt_to_pfn(ep->pc) |
-> -		    FIELD_PREP(RISCV_IOMMU_DC_FSC_MODE, RISCV_IOMMU_DC_FSC_PDTP_MODE_PD8));
-> +		dc->fsc = 0ULL; /* RISCV_IOMMU_DC_FSC_MODE_BARE */ ;
-> +		dc->iohgatp = cpu_to_le64(riscv_iommu_domain_atp(domain));
->   	} else {
-> -		dc->ta = cpu_to_le64(val);
-> -		dc->fsc = cpu_to_le64(riscv_iommu_domain_atp(domain));
-> +		/* S-Stage translation table. G-Stage remains unmodified. */
-> +		if (ep->pasid_enabled) {
-> +			val = FIELD_PREP(RISCV_IOMMU_DC_TA_PSCID, domain->pscid);
-> +			ep->pc[0].ta = cpu_to_le64(val | RISCV_IOMMU_PC_TA_V);
-> +			ep->pc[0].fsc = cpu_to_le64(riscv_iommu_domain_atp(domain));
-> +			dc->ta = 0;
-> +			val = FIELD_PREP(RISCV_IOMMU_DC_FSC_MODE,
-> +					  RISCV_IOMMU_DC_FSC_PDTP_MODE_PD8);
-> +			dc->fsc = cpu_to_le64(val | virt_to_pfn(ep->pc));
-> +		} else {
-> +			val = FIELD_PREP(RISCV_IOMMU_DC_TA_PSCID, domain->pscid);
-> +			dc->ta = cpu_to_le64(val);
-> +			dc->fsc = cpu_to_le64(riscv_iommu_domain_atp(domain));
-> +		}
+> @@ -1279,6 +1350,7 @@ static void riscv_iommu_release_device(struct device *dev)
+>   		riscv_iommu_iodir_inv_devid(iommu, ep->devid);
 >   	}
 >   
->   	wmb();
-> @@ -1599,6 +1625,9 @@ static int riscv_iommu_set_dev_pasid(struct iommu_domain *iommu_domain,
->   	if (!iommu_domain || !iommu_domain->mm)
->   		return -EINVAL;
+> +	riscv_iommu_disable_ir(ep);
+>   	riscv_iommu_disable_ep(ep);
 >   
-> +	if (domain->g_stage)
-> +		return -EINVAL;
+>   	/* Remove endpoint from IOMMU tracking structures */
+> @@ -1301,6 +1373,15 @@ static struct iommu_group *riscv_iommu_device_group(struct device *dev)
+>   
+>   static void riscv_iommu_get_resv_regions(struct device *dev, struct list_head *head)
+>   {
+> +	struct iommu_resv_region *entry, *new_entry;
+> +	struct riscv_iommu_endpoint *ep = dev_iommu_priv_get(dev);
 > +
->   	/* Driver uses TC.DPE mode, PASID #0 is incorrect. */
->   	if (pasid == 0)
->   		return -EINVAL;
-> @@ -1969,6 +1998,7 @@ static const struct iommu_domain_ops riscv_iommu_domain_ops = {
->   	.iotlb_sync = riscv_iommu_iotlb_sync,
->   	.iotlb_sync_map = riscv_iommu_iotlb_sync_map,
->   	.flush_iotlb_all = riscv_iommu_flush_iotlb_all,
-> +	.enable_nesting = riscv_iommu_enable_nesting,
->   };
+> +	list_for_each_entry(entry, &ep->regions, list) {
+> +		new_entry = kmemdup(entry, sizeof(*entry), GFP_KERNEL);
+> +		if (new_entry)
+> +			list_add_tail(&new_entry->list, head);
+> +	}
+> +
+>   	iommu_dma_get_resv_regions(dev, head);
+>   }
 >   
->   static const struct iommu_ops riscv_iommu_ops = {
 > diff --git a/drivers/iommu/riscv/iommu.h b/drivers/iommu/riscv/iommu.h
-> index 55418a1144fb..55e5aafea5bc 100644
+> index 83e8d00fd0f8..55418a1144fb 100644
 > --- a/drivers/iommu/riscv/iommu.h
 > +++ b/drivers/iommu/riscv/iommu.h
-> @@ -102,8 +102,9 @@ struct riscv_iommu_domain {
->   	struct riscv_iommu_device *iommu;
+> @@ -117,14 +117,17 @@ struct riscv_iommu_endpoint {
+>   	struct riscv_iommu_dc *dc;		/* device context pointer */
+>   	struct riscv_iommu_pc *pc;		/* process context root, valid if pasid_enabled is true */
+>   	struct riscv_iommu_device *iommu;	/* parent iommu device */
+> +	struct riscv_iommu_msi_pte *msi_root;	/* interrupt re-mapping */
 >   
->   	unsigned mode;		/* RIO_ATP_MODE_* enum */
-> -	unsigned pscid;		/* RISC-V IOMMU PSCID */
-> +	unsigned pscid;		/* RISC-V IOMMU PSCID / GSCID */
->   	ioasid_t pasid;		/* IOMMU_DOMAIN_SVA: Cached PASID */
-> +	bool g_stage;		/* 2nd stage translation domain */
+>   	struct mutex lock;
+>   	struct list_head domain;		/* endpoint attached managed domain */
+> +	struct list_head regions;		/* reserved regions, interrupt remapping window */
 >   
->   	pgd_t *pgd_root;	/* page table root pointer */
+>   	/* end point info bits */
+>   	unsigned pasid_bits;
+>   	unsigned pasid_feat;
+>   	bool pasid_enabled;
+> +	bool ir_enabled;
 >   };
+>   
+>   /* Helper functions and macros */
