@@ -1,138 +1,127 @@
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2070.outbound.protection.outlook.com [40.107.237.70])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-il1-f174.google.com (mail-il1-f174.google.com [209.85.166.174])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9BB6D392
-	for <iommu@lists.linux.dev>; Wed, 16 Aug 2023 01:11:07 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BaiL79rmsGEyaMAwiSw7BlUoYrRpOecVihAeociitZzhSaLvfJYPsTaIArXpJBp6Ngbz0XxZvZNv6EqVMx7ElkKbth6KyIiALTWiIYfKwFZtPaYa58e7SagH+FtOoOwv+e4Au0T0uODM6Q1hchGEOV2jj0R+rEoCppvU1YCKoE3r0ogY6nl8fsvWgL4vOkov7ibL11veoAb1NXLJ7i/WKvU2ci7Tr9ecXZodj7Ma5Rx+SSCodxvOGPBMcZxgyPYXYK8aT6jBLdbvoUOoItFjJau/OZpu6v8LoNbmIRaHCKtNA+/phz0uvgsXFyMfR5tX4vQEfr/fmPRrurdgjO+FQg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=dsBNKmzFTxb3rf4otJgKmzDEhq+MarQc2xuLxTuZ/ug=;
- b=R9cEy2QWlm7tda0yL4KCOLuriNUKdQDHUwK/LpqCgjd8ML2ilscl0j0tIeZVvgMlHvyISVl1YE9USqNiHMSk5vEoPSoj/xxWTXAQRwXCxXd+DrCz7gs96EEkJiKUET8aGxdTo964tVy1DrxUa/uB8SKGE+yEwNszxoyLj40Wq+DW84miwRLa3XzcJh64ieZMqtmunROUgj6VRXmcSNiYOTMlWJ+0GloRtNm2o2rFcH+E66mWzEeXkroSdhZRpigV2rMbKMiKMWWYyWPDBb2bG1oZrT5dHXsRf/jAU1GvN6l7FIuyit0cVhRNc4lurWUgVez90xzoEdurDk8fYOj2xQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.232) smtp.rcpttodomain=linux.intel.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=dsBNKmzFTxb3rf4otJgKmzDEhq+MarQc2xuLxTuZ/ug=;
- b=VbmmU+bSb3elt8lmYWNeOTaLe2IqoEyoFla58JLkYLsIKzSQnRbVzfV5nCmduQiD608L/KRfqBGxT/lWMZFwuqmSVt74FSYPAb92kn8XJUPJtjktTvPamb4nI3mSb9ebmttgh0+0IAzq2gPdExj4uZ4k4mFPEYDm5n5K+nalv3radmcdjJtushuE7lb/xI3Cx1qEhac7P5j2O74XL991nCJrvbc5Ea+IkBUw4dRHrgXXn4xuIMOEEUzrATRKkPhh7Ljblr9VTpAX4IvsqenOTfMqRVIXU2QICZhszhDL35MhPn8lROSxVvchvhDb5AsoGov4uAxuVdQlzVV0iSJm/w==
-Received: from MW4P220CA0002.NAMP220.PROD.OUTLOOK.COM (2603:10b6:303:115::7)
- by PH7PR12MB6665.namprd12.prod.outlook.com (2603:10b6:510:1a7::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6678.26; Wed, 16 Aug
- 2023 01:11:05 +0000
-Received: from CO1PEPF000044F7.namprd21.prod.outlook.com
- (2603:10b6:303:115:cafe::37) by MW4P220CA0002.outlook.office365.com
- (2603:10b6:303:115::7) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6699.14 via Frontend
- Transport; Wed, 16 Aug 2023 01:11:04 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.232) by
- CO1PEPF000044F7.mail.protection.outlook.com (10.167.241.197) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6723.3 via Frontend Transport; Wed, 16 Aug 2023 01:11:04 +0000
-Received: from drhqmail203.nvidia.com (10.126.190.182) by mail.nvidia.com
- (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Tue, 15 Aug 2023
- 18:11:00 -0700
-Received: from drhqmail202.nvidia.com (10.126.190.181) by
- drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.37; Tue, 15 Aug 2023 18:11:00 -0700
-Received: from Asurada-Nvidia (10.127.8.10) by mail.nvidia.com
- (10.126.190.181) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37 via Frontend
- Transport; Tue, 15 Aug 2023 18:10:58 -0700
-Date: Tue, 15 Aug 2023 18:10:56 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-CC: Jason Gunthorpe <jgg@nvidia.com>, Yi Liu <yi.l.liu@intel.com>,
-	<joro@8bytes.org>, <alex.williamson@redhat.com>, <kevin.tian@intel.com>,
-	<robin.murphy@arm.com>, <cohuck@redhat.com>, <eric.auger@redhat.com>,
-	<kvm@vger.kernel.org>, <mjrosato@linux.ibm.com>,
-	<chao.p.peng@linux.intel.com>, <yi.y.sun@linux.intel.com>,
-	<peterx@redhat.com>, <jasowang@redhat.com>,
-	<shameerali.kolothum.thodi@huawei.com>, <lulu@redhat.com>,
-	<suravee.suthikulpanit@amd.com>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
-	<zhenzhong.duan@intel.com>
-Subject: Re: [PATCH v4 11/12] iommu/vt-d: Implement hw_info for iommu
- capability query
-Message-ID: <ZNwiIFM9N9ZXSnrG@Asurada-Nvidia>
-References: <20230724111335.107427-1-yi.l.liu@intel.com>
- <20230724111335.107427-12-yi.l.liu@intel.com>
- <ZNuoWRH/HthxsLMd@nvidia.com>
- <c6c6a390-d1d1-a5f7-cbdb-2120043eceec@linux.intel.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A4F617E8
+	for <iommu@lists.linux.dev>; Wed, 16 Aug 2023 02:16:48 +0000 (UTC)
+Received: by mail-il1-f174.google.com with SMTP id e9e14a558f8ab-3491568afd4so19286895ab.0
+        for <iommu@lists.linux.dev>; Tue, 15 Aug 2023 19:16:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sifive.com; s=google; t=1692152207; x=1692757007;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=+5huse4n9suq/IRdDuONMgabd7JYMxtoLtQg6/wMeyM=;
+        b=IscYDGR4az4TTZH0SjNN8xrwfiOJ3+5fCWmMPGTcsGwlqldoMp99VOy7NUfjYa0b1h
+         OvNhjMP8ZCxAcM2mBpcSEJKYteHvo2dwg56cp91saAzxpsxkcXnsfxTMQab/VeKkpHq4
+         Sfiz3/Ufi2biWbNcH00M1BuRC7ij5pfGk64GmXXdkmqt/I6IAnv13w4Dekp9hsTVmM+W
+         oW4JnVGnUBzRtk4wSTvyWWR9dkY3EZjGjq5EE1N6pASrB5WNNDQOejcUqAq8sXeO0CCF
+         0doLQk/SKkZ8R50scXnMLKF9OqmfuQz4BVNF2gF47Ydx/JJdJg5/whBDeMuker/9Kzne
+         ofUQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1692152207; x=1692757007;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=+5huse4n9suq/IRdDuONMgabd7JYMxtoLtQg6/wMeyM=;
+        b=GKFQdu35cyq86/QdeEFxqfiRUMBKT4pEH9xX9ipcJ0/fH9DwqKlfhFT5TlMNsQXKo9
+         qabTL2KqStHVlVpoKUV+ZtIJoiEslGd3syd9vqT/BJQ5EbsuU+bbOcqN6auMNRo8vAPX
+         XipXzfZkcXG4eTziE/mPdgP/GOexZpdviItkDEDed38HrS5DlJ7uo8xTX+wAHdMaZc2+
+         TIK3IqvbgPCnPQaIJdr9BvnYU9FdHmPoZOAweFfyvQC3NxEMpy/6gwPXPTr1f31OGZ2W
+         o8nWwNC7Hkjs2/d9r6NRQuaHPVJENab1I/XYY07m8AGA9gJ756VWi6Md09TmpCLpZpuF
+         f1Pg==
+X-Gm-Message-State: AOJu0YxGo/5rxQZD2x/MGnGD0mjCQ3msoj2nCkOl5d8Nv9gIwbpxAYj4
+	TWCIoc04h9AQ0hwTFBb6M//1d6mc/YSrZlRUrpCU+Q==
+X-Google-Smtp-Source: AGHT+IH431ilN76iz617qfeJ/MYCKOhQ/JnGxm4Dea7qJyl3nVI1JisTa9E0HD2OrPtsfVR4zKyTC/1t/Hb8Kb3ObSs=
+X-Received: by 2002:a05:6e02:1a2b:b0:349:8811:fc51 with SMTP id
+ g11-20020a056e021a2b00b003498811fc51mr904026ile.20.1692152207491; Tue, 15 Aug
+ 2023 19:16:47 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <c6c6a390-d1d1-a5f7-cbdb-2120043eceec@linux.intel.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1PEPF000044F7:EE_|PH7PR12MB6665:EE_
-X-MS-Office365-Filtering-Correlation-Id: 374b13f5-e398-4410-a644-08db9df5a9c5
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	7/MJt5CBbRLrVG5HEqo/YjyrUMQsroJwN7E6fVEmUZt1Scwkeh+m0SZ5KTrA7zCxm5jZus5S11JiiyIhr3baHP6zCfXJRmiDDQgmqrCQmPc8ftAT5GKhZizdx7IKu0Wdn3eCD/nWwlxHL132QYMKRskKhyYCS2LrZNuLzuFmMNCv2LESBFKoZUhAbJR255qh6s0hh28YboMkv+NQqGrij5/EVWVg7xZT2rvhmYosB2ufa438xya/skw2ppDeotfNPgWe7ykXw0SnxGZGdIcfsuv8gbj/QPzCpKs3W7yzuUj4RukKmF2UAQIjX7070Q44yDXXSajy+8h1NLjvklUpoTH5WYb0ffJPtqjc2igbpdkWKlX1v93Eqr2I7YPnil6FRqEb70gyNt1t731RJq05+OgZKp1zg6eea7ILLX1CzruyQvzlwIQP4rYH2wxBINQ3F8cfKSFbdoKP9vN6pEfdl122qbV0XhGbXTpnzSb77kluoU0oneKPOhsMKdtUkXp/Sd7kHfW42Ae8Ltyu+FF288aYMvs0cmgOo4nqzXWIMUL9a5T4eGzz6UQ1JUlQeJJhPQ+o4OLIJy/5l2QGocEko5JXXEvVNusBW/pRalEuXt+0tur1hDWW561lDnoq99rTRJlu1gqgApiECz21E+fvBlAVMpsGiT5PAR+cOzfLH0OiUuzNJ6Vss5gc6K8MwTqgPMO/j/QSyWOclK6o1/7GMofTyxIOFV1ky5DEUU+aWTNAb44LwF4COSPg1vB/ND1v
-X-Forefront-Antispam-Report:
-	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230031)(4636009)(396003)(39860400002)(376002)(346002)(136003)(451199024)(186009)(1800799009)(82310400011)(46966006)(36840700001)(40470700004)(4326008)(86362001)(9686003)(316002)(6916009)(7416002)(47076005)(82740400003)(2906002)(53546011)(26005)(36860700001)(478600001)(8676002)(70586007)(40460700003)(426003)(356005)(55016003)(7636003)(40480700001)(5660300002)(54906003)(33716001)(41300700001)(8936002)(336012)(70206006);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Aug 2023 01:11:04.2970
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 374b13f5-e398-4410-a644-08db9df5a9c5
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CO1PEPF000044F7.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB6665
+References: <CAK9=C2Vg9eR5LJPeqDDQ0pHZcrT5DOUzA8_wYEVEjfnhb6s8pw@mail.gmail.com>
+ <CANXhq0oTrU_-OQroW7H+hvxcU7YROhkgdCF9g_WtPTzVFQL7gA@mail.gmail.com>
+ <CAK9=C2XoQjPzZ5yB5jfTbee4-Pb8GgFAZRbfcMwMk9pyo39WxQ@mail.gmail.com>
+ <CANXhq0q7R9Srx6U=fReq7LDLFgW6rMmjKH=o6MzDT5AWNRXP6w@mail.gmail.com>
+ <592edb17-7fa4-3b5b-2803-e8c50c322eee@linux.intel.com> <CANXhq0pS_=YxgrxSKbdfrFdGcBduzk3LTyC4vp_hqoJTbX3e0g@mail.gmail.com>
+ <ZMEO1kNGfGjN6kZM@ziepe.ca> <CANXhq0qMWS_j0n_aUO8BVFSedYCjuMM=Z_tsnK05ZhG+Ob6pqw@mail.gmail.com>
+ <ZNOpbac4i5zfmHj4@ziepe.ca> <CANXhq0rzz1Sn8dKvNt7acvKN_g5yXFN9u6XPiRHr9ay7q2VbzA@mail.gmail.com>
+ <ZNvGH91EmlOAaxBK@ziepe.ca>
+In-Reply-To: <ZNvGH91EmlOAaxBK@ziepe.ca>
+From: Zong Li <zong.li@sifive.com>
+Date: Wed, 16 Aug 2023 10:16:36 +0800
+Message-ID: <CANXhq0pQ5wisNtbVjm031btUiO=y_MmA9rfbWwnMFo_1y2d50w@mail.gmail.com>
+Subject: Re: [PATCH 03/11] dt-bindings: Add RISC-V IOMMU bindings
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Baolu Lu <baolu.lu@linux.intel.com>, Anup Patel <apatel@ventanamicro.com>, 
+	Tomasz Jeznach <tjeznach@rivosinc.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Paul Walmsley <paul.walmsley@sifive.com>, 
+	Albert Ou <aou@eecs.berkeley.edu>, linux@rivosinc.com, linux-kernel@vger.kernel.org, 
+	Sebastien Boeuf <seb@rivosinc.com>, iommu@lists.linux.dev, 
+	Palmer Dabbelt <palmer@dabbelt.com>, Nick Kossifidis <mick@ics.forth.gr>, linux-riscv@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Wed, Aug 16, 2023 at 08:35:00AM +0800, Baolu Lu wrote:
- 
-> On 2023/8/16 0:31, Jason Gunthorpe wrote:
-> > On Mon, Jul 24, 2023 at 04:13:33AM -0700, Yi Liu wrote:
-> > > Add intel_iommu_hw_info() to report cap_reg and ecap_reg information.
-> > > 
-> > > Signed-off-by: Lu Baolu<baolu.lu@linux.intel.com>
-> > > Signed-off-by: Nicolin Chen<nicolinc@nvidia.com>
-> > > Signed-off-by: Yi Liu<yi.l.liu@intel.com>
-> > > ---
-> > >   drivers/iommu/intel/iommu.c  | 19 +++++++++++++++++++
-> > >   include/uapi/linux/iommufd.h | 23 +++++++++++++++++++++++
-> > >   2 files changed, 42 insertions(+)
-> > I would like to pick this patch out of this series to go with the main
-> > get_info stuff so that we have drivers implementing what is merged. I
-> > made the trivial fixup.
-> > 
-> > Lu are you OK?
-> 
-> Yes.
-> 
-> Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+On Wed, Aug 16, 2023 at 2:38=E2=80=AFAM Jason Gunthorpe <jgg@ziepe.ca> wrot=
+e:
+>
+> On Tue, Aug 15, 2023 at 09:28:54AM +0800, Zong Li wrote:
+> > On Wed, Aug 9, 2023 at 10:57=E2=80=AFPM Jason Gunthorpe <jgg@ziepe.ca> =
+wrote:
+> > >
+> > > On Thu, Jul 27, 2023 at 10:42:47AM +0800, Zong Li wrote:
+> > >
+> > > > Perhaps this question could be related to the scenarios in which
+> > > > devices wish to be in bypass mode when the IOMMU is in translation
+> > > > mode, and why IOMMU defines/supports this case. Currently, I could
+> > > > envision a scenario where a device is already connected to the IOMM=
+U
+> > > > in hardware, but it is not functioning correctly, or there are
+> > > > performance impacts. If modifying the hardware is not feasible, a
+> > > > default configuration that allows bypass mode could be provided as =
+a
+> > > > solution. There might be other scenarios that I might have overlook=
+ed.
+> > > > It seems to me since IOMMU supports this configuration, it would be
+> > > > advantageous to have an approach to achieve it, and DT might be a
+> > > > flexible way.
+> > >
+> > > So far we've taken the approach that broken hardware is quirked in th=
+e
+> > > kernel by matching OF compatible string pattners. This is HW that is
+> > > completely broken and the IOMMU doesn't work at all for it.
+> > >
+> > > HW that is slow or whatever is not quirked and this is an admin polic=
+y
+> > > choice where the system should land on the security/performance
+> > > spectrum.
+> > >
+> > > So I'm not sure adding DT makes sense here.
+> > >
+> >
+> > Hi Jason,
+> > Sorry for being late here, I hadn't noticed this reply earlier. The
+> > approach seems to address the situation. Could you kindly provide
+> > information about the location of the patches? I was wondering about
+> > further details regarding this particular implementation. Thanks
+>
+> There are a couple versions, eg
+>  arm_smmu_def_domain_type()
+>  qcom_smmu_def_domain_type()
+>
 
-Hmm...
+I thought what you mentioned earlier is that there is a new approach
+being considered for this. I think what you point out is the same as
+Anup mentioned. However, as I mentioned earlier, I am exploring a more
+flexible approach to achieve this objective. This way, we can avoid
+hard coding anything (i.e.list compatible string) in the driver or
+requiring a kernel rebuild every time we need to change the mode for
+specific devices. For example, the driver could parse the device node
+to determine and record if a device will be set to bypass, and then
+the .def_domain_type could be used to set to IOMMU_DOMAIN_IDENTITY by
+the record. I'm not sure if it makes sense for everyone, it seems to
+me that it would be great if there is a way to do this. :)
 
-We have Yi in the author line and Baolu in the first signed-off
-line, and now Baolu with "Reviewed-by" again...
-
-I guess we might need a bit of fix or re-arrange? :)
-
-Thanks
-Nic
+> Jason
