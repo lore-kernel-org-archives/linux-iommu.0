@@ -1,104 +1,115 @@
-Received: from mail-yb1-f202.google.com (mail-yb1-f202.google.com [209.85.219.202])
+Received: from mail-qt1-f170.google.com (mail-qt1-f170.google.com [209.85.160.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B726D14AA6
-	for <iommu@lists.linux.dev>; Thu, 17 Aug 2023 18:21:46 +0000 (UTC)
-Received: by mail-yb1-f202.google.com with SMTP id 3f1490d57ef6-cf4cb742715so157820276.2
-        for <iommu@lists.linux.dev>; Thu, 17 Aug 2023 11:21:46 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D29917750
+	for <iommu@lists.linux.dev>; Thu, 17 Aug 2023 18:29:59 +0000 (UTC)
+Received: by mail-qt1-f170.google.com with SMTP id d75a77b69052e-4036bd4fff1so44591cf.0
+        for <iommu@lists.linux.dev>; Thu, 17 Aug 2023 11:29:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1692296505; x=1692901305;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=oBooMpaGlkQ+FKKABWmvIlNH9aUPRTcSS6CTCMQ9kRM=;
-        b=IU2UOZ1QAkZfOcMGg5vcsJJHh9ZQj9hhxtEDAYymf3rWNhFaqWW+6INaMkoyKxt/oE
-         Kaqvuj+X/pxgIK2TiTFUz0WzsHSgyKWS2ZHyj2Hj43tq7Hr69oibRlmjOv8YImpM7OIV
-         9u3bHZgKiIQbgOPeaKpTQ+kaemWaVvBB3iWU+3PEWGmyQY6v+wO7PHV/kAo4zw+G1ugz
-         mhFC+iuG27Yd3uMkvWXhaPZhcM8v7uoVO4GDfIWF9C6ZmyyycifTgv9BjPqaUlTr8GVS
-         r6LVXt1zs+RHdu5RadGCtpslOLsMzFZd/mXaGR/d8Zfs3hVW2VKBl03OxCrI41Dupwpr
-         gSAw==
+        d=google.com; s=20221208; t=1692296999; x=1692901799;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=LwYh+kePTjMmxljMAz9Xt13TYo4scp9mgDZ0UyhkoJA=;
+        b=A8Oj0MA6eqOQbzanZvqIHAdaiSCKjoFGl6cNKY88LVT0R9Nzi1jbf3TkqeDF8oqfmM
+         5i9LWvb+oewmkabEd7USKmAMDaaxNGt3wjL6vV6xiz5NEuCJH0cOdUMSeobbsjQzC3XS
+         lq7XRRseqFIov2FzXG4Xvi9t+eP2akaMsNjWQ5vLAnxGueiayEc2iz+Xa5A6mFrM4cVV
+         fJIKYuJMP1n7xtm+b4IAiMWc0hzeSCgUiya9XoLOEhfMNJ0Dyn7Km27w4UPwvCQQK2jt
+         olSVfXU7FxoDopdHKQaYfc08uIKp5uFvgFk6wGag1nEwuj/iVO1P2tULRs51Ig+zGdfX
+         kxMg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1692296505; x=1692901305;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=oBooMpaGlkQ+FKKABWmvIlNH9aUPRTcSS6CTCMQ9kRM=;
-        b=NumB/aY0Cg6/TnwrO0g4zx1/q1dXPDgRBXaaDuxlaHJKaQSuug9FUMaANY5JGzGP6o
-         kPKKxjvU+hgUVdtKTHzSZrnh/cE9plzuK8iECC4HHqofezkSAgke2l1P/4ylL30DEZaL
-         +7tl/PYV/aFAOJ0IsVJJY59cu9Z1zkIS1UO8Id8iYxZvUvG1qus3ad7Z94OZB+U5Qtr2
-         12NEkyHOuAQYBpDZk0L3g5lio02VZF/VtKPFtzbRccz/I2rnFLjHPnLYNAYaFEFqTBnx
-         Go5sgxlpp7IAjY3i/BL3Jseepv27ma3fHpfyCTe9RUML6qt4vLxFtl8NJBJwOB8ohFb5
-         v9SQ==
-X-Gm-Message-State: AOJu0Yw2+SrVFOQRty9Fj0QysmzjRO/kcDA0BCTvVWsM15TgrSqwUKHe
-	LTSpbDvCyuyTYb3bD8k8sH+CxLljo2LriZ1AJ7n2w7FYnZfB678H5rqKNlgX6cyHQ71CHC8Ragi
-	P+aFj+MCqa3FWzD5yCs9+vDXRt30vHz4kZHXd3gjQbamxmXmUAdahgCA14HlXaCA=
-X-Google-Smtp-Source: AGHT+IEqqWWy632gyVQWnMmINQsSMRfInztWWbMpGG+vOabJBtHCJeGHnGFeZG2cljxVwoXwgg50KcnBmYwN
-X-Received: from mshavit.ntc.corp.google.com ([2401:fa00:95:20c:4a77:fd20:7069:bdf9])
- (user=mshavit job=sendgmr) by 2002:a25:494:0:b0:d12:d6e4:a08d with SMTP id
- 142-20020a250494000000b00d12d6e4a08dmr4183ybe.7.1692296505437; Thu, 17 Aug
- 2023 11:21:45 -0700 (PDT)
-Date: Fri, 18 Aug 2023 02:16:30 +0800
-In-Reply-To: <20230817182055.1770180-1-mshavit@google.com>
+        d=1e100.net; s=20221208; t=1692296999; x=1692901799;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=LwYh+kePTjMmxljMAz9Xt13TYo4scp9mgDZ0UyhkoJA=;
+        b=Ti0HIfDrnBf4zH65eqBTE5uaeKYCRHBnO4SmfUwfPlu30wdshQTKvcXhnbiYnuO0do
+         ecFn2ez9ErsJF05iRmAISKOIAhOVnvTIQiqmFexcAJnu0s1LYU+w1hI1wlBf5sisq9JU
+         Sj20lkZ4hNuLZqfMP9NiNAeK8ehQwFjYkMsNnMY/jxzoy1s84uXiq9p+n+X01WSLQVSv
+         CGna/oVmqjdm9ZaZFl10/T5RwKf4muUSpRkZAgCDAU1gZtd/ZT+mATcIz0rmfPGVDKRc
+         P9ZFjbA5Cn11523tBYcPrZV1zOmoNYYvwhiXoGApYO3xD3IoF2SiOI0Y7h9+DeS1uiaD
+         A7HA==
+X-Gm-Message-State: AOJu0YzVAn4pAZ97FVxWMNOyONVFbtFrdsEeVSRij5svK9a3uAUfR3Rw
+	HQCEqB95FicxmT6tvzAN7peRctexMYwXOTLAeZBjJw==
+X-Google-Smtp-Source: AGHT+IGDDMM5gCD6SYSVcMwn8Bjh/47KrTKCzkFUsgyPorQbeGqAjOh0vvOtUcO4zGG5I/VRexzOoK4u8GPQqhWlwXA=
+X-Received: by 2002:ac8:7d03:0:b0:3fd:ad1b:4e8a with SMTP id
+ g3-20020ac87d03000000b003fdad1b4e8amr38751qtb.22.1692296998646; Thu, 17 Aug
+ 2023 11:29:58 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <20230817182055.1770180-1-mshavit@google.com>
-X-Mailer: git-send-email 2.42.0.rc1.204.g551eb34607-goog
-Message-ID: <20230818021629.RFC.v1.8.I5d374dbc818b209e911ef5fbf43de6df0d7ac40b@changeid>
-Subject: [RFC PATCH v1 8/8] iommu/arm-smmu-v3: allow multi-SMMU domain installs
+MIME-Version: 1.0
+References: <20230818000321.1.Ibca43cc8d1bcad3ac3deef5726b9745128aea634@changeid>
+ <928822fd-642a-5ca7-7b42-dc7885f3cf51@arm.com> <CAKHBV27bsDWsS_dUsj=xdTfnc0CDhcH+0ZLZ2z481BZMsBQX4w@mail.gmail.com>
+ <a8623bd8-1df4-42b7-4993-006316594818@arm.com>
+In-Reply-To: <a8623bd8-1df4-42b7-4993-006316594818@arm.com>
 From: Michael Shavit <mshavit@google.com>
-To: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
+Date: Fri, 18 Aug 2023 02:29:22 +0800
+Message-ID: <CAKHBV27W+7P_A1DbU0MBxQ9vzRDR+sPH2SyASKXSr5fXvUwyWg@mail.gmail.com>
+Subject: Re: [PATCH] iommu/arm-smmu-v3: Simplify stage selection logic
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: iommu@lists.linux.dev, Jason Gunthorpe <jgg@ziepe.ca>, 
+	Jean-Philippe Brucker <jean-philippe@linaro.org>, Joerg Roedel <joro@8bytes.org>, 
+	Lu Baolu <baolu.lu@linux.intel.com>, Nicolin Chen <nicolinc@nvidia.com>, 
+	Tomas Krcka <krckatom@amazon.de>, Will Deacon <will@kernel.org>, 
+	Yicong Yang <yangyicong@hisilicon.com>, linux-arm-kernel@lists.infradead.org, 
 	linux-kernel@vger.kernel.org
-Cc: will@kernel.org, jgg@nvidia.com, nicolinc@nvidia.com, tina.zhang@intel.com, 
-	jean-philippe@linaro.org, robin.murphy@arm.com, 
-	Michael Shavit <mshavit@google.com>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Remove the arm_smmu_domain->smmu handle now that a domain may be
-attached to devices with different upstream SMMUs.
+On Fri, Aug 18, 2023 at 2:19=E2=80=AFAM Robin Murphy <robin.murphy@arm.com>=
+ wrote:
+>
+> On 2023-08-17 18:06, Michael Shavit wrote:
+> > On Fri, Aug 18, 2023 at 12:35=E2=80=AFAM Robin Murphy <robin.murphy@arm=
+.com> wrote:
+> >>
+> >> The reason it's like this is because of arm_smmu_enable_nesting(), whi=
+ch
+> >> *is* the additional thing that's going on with the stage selection log=
+ic.
+> >>
+> >> Thanks,
+> >> Robin.
+> >
+> > Right, but arm_smmu_enable_nesting isn't involved in this computation
+> > at this point in the flow.
+> >
+> > arm_smmu_enable_nesting returns early if smmu_domain->smmu isn't set,
+> > and smmu_domain->smmu is only set after arm_smmu_domain_finalise.
+> > So at this point, smmu_domain->stage is being initialized for the
+> > first time. If this code is responsible for handling some special
+> > nesting case, then it's probably not working as intended.
+>
+> I think you may have misread that code...
 
-Signed-off-by: Michael Shavit <mshavit@google.com>
----
+oof, yes, I did indeed misread.
 
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 9 ++-------
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h | 3 +--
- 2 files changed, 3 insertions(+), 9 deletions(-)
+>
+> Anyway, the point of the logic here is that it is not "selection", it
+> is, as the comment says, "restriction" - i.e. it is checking that the
+> already-selected stage is actually supported, and coercing it if not.
+> The default selection for a newly-allocated domain is always implicitly
+> ARM_SMMU_DOMAIN_S1 (which is explicitly defined as 0 to convey that
+> significance), but it may be set to ARM_SMMU_DOMAIN_NESTED before the
+> first attach finalises the pagetable format.
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index c9f89f4f47721..08594612a81a8 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -2587,13 +2587,8 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
- 
- 	mutex_lock(&smmu_domain->init_mutex);
- 
--	if (!smmu_domain->smmu) {
--		smmu_domain->smmu = smmu;
--		ret = arm_smmu_domain_finalise(domain, smmu);
--		if (ret)
--			smmu_domain->smmu = NULL;
--	} else if (smmu_domain->smmu != smmu)
--		ret = -EINVAL;
-+	if (!smmu_domain->pgtbl_ops)
-+		ret = arm_smmu_domain_finalise(&smmu_domain->domain, smmu);
- 
- 	mutex_unlock(&smmu_domain->init_mutex);
- 	if (ret)
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-index 143b287be2f8b..342fa6ef837ab 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-@@ -726,8 +726,7 @@ enum arm_smmu_domain_stage {
- };
- 
- struct arm_smmu_domain {
--	struct arm_smmu_device		*smmu;
--	struct mutex			init_mutex; /* Protects smmu pointer */
-+	struct mutex			init_mutex; /* Protects pgtbl_ops pointer */
- 
- 	struct io_pgtable_ops		*pgtbl_ops;
- 	struct io_pgtable_cfg		pgtbl_cfg;
--- 
-2.42.0.rc1.204.g551eb34607-goog
+Thanks for the explanation, that does make sense :) .
 
+> Obviously this could be clearer, especially for anyone not so familiar
+> with all the history, but at this point I honestly don't think it's
+> worth doing anything without completely ripping out
+> arm_smmu_enable_nesting() as well. Jason already had a patch a while
+> ago, and my bus rework is now also very close to the point of finally
+> fixing iommu_domain_alloc() to be able to return working domains, such
+> that all the "domain_finalise" bodges go away and that whole "modify the
+> domain between allocation and attach" paradigm is no longer valid at all.
+>
+> By this point I'm not too fussed about breaking the current meaning of
+> ARM_SMMU_DOMAIN_NESTED any more. But what I definitely don't want to do
+> is have a change like this which subtly but decisively breaks it while
+> still leaving all the now-dead code in place ;)
+
+Ack, will drop this change.
