@@ -1,110 +1,131 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39407100B3
-	for <iommu@lists.linux.dev>; Thu, 17 Aug 2023 22:48:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1692312523;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=AXs83oe+jiUngsGC+iU+QF+/YIyq3LUwh3cj5wAqVM8=;
-	b=WQ6tGa0G+uoNZRYGeDwcLIOe/+xUIaVTEH9E1s5mRuPaRpiYlbbGBPRCoxPl8mqLrEcTO8
-	1azzhbY0wG867yx3G6oIVxyt9epIgue5tXQ8DKsatBQDGToZR4M8AB/+zpka6Fa1dKafVd
-	043uLv1H4zlploOvy5bA4xRcC0UFAYU=
-Received: from mail-oa1-f69.google.com (mail-oa1-f69.google.com
- [209.85.160.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-394-n-K1vhsbM4y4DXJFyqSLtQ-1; Thu, 17 Aug 2023 18:48:39 -0400
-X-MC-Unique: n-K1vhsbM4y4DXJFyqSLtQ-1
-Received: by mail-oa1-f69.google.com with SMTP id 586e51a60fabf-1b728bfb372so266471fac.2
-        for <iommu@lists.linux.dev>; Thu, 17 Aug 2023 15:48:39 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1692312519; x=1692917319;
-        h=content-transfer-encoding:mime-version:organization:references
-         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=AXs83oe+jiUngsGC+iU+QF+/YIyq3LUwh3cj5wAqVM8=;
-        b=j8iflhH+9gFKU0PMAG8Md29d8lOzYmRtjrZNU5zEqBdi4TJzn5L06SfQBWTL530sYS
-         mESFPDZNeKm1+7vsZv/dxycnIsTEZaWF2MG0WIB6hkfHXcivnY+dMl8j0N5IxnxQ2pwq
-         6iBJtPm7GhsgkFJZPgkZgnrCCXn1RDrost5pP9i9Z6SSms8j3OVX+Th3rs7EcGzpgj/W
-         Kez+DWbx1S4HE7ri/b3JukfPnP1mC/41hhuLvU3YX1ceUdbJj7y8AU+s9gs1q/bBpQMq
-         U/ycPVgxznOrX3wHHsX1inrX6PW9uX8dolXhO8wP+vUm7HUoHaIaD8+Mi60bwl+FYZ7d
-         bwNw==
-X-Gm-Message-State: AOJu0YzVNJc6o641sSPx38l5C8lU7gXNOUhwuBMhMH4VQ0Ezq8z8gsnT
-	Ni0TdF8/nwp4uZShozQH5C/2xQt7U4RAaw/tlVwW6wQwEweUyhg7Hs5tl38z1UBLN/Zs74aDC3A
-	PaqdwdApiZOYK1aw=
-X-Received: by 2002:a05:6870:c6a8:b0:1bf:ce5b:436 with SMTP id cv40-20020a056870c6a800b001bfce5b0436mr1043388oab.58.1692312518926;
-        Thu, 17 Aug 2023 15:48:38 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IEgQU++51ftwhQ+Snud+8ZeqO8TZK2RxDc98dX0vPi5MbvU8WbZ3C+GYYuWCEGXKJRiM1igZQ==
-X-Received: by 2002:a05:6870:c6a8:b0:1bf:ce5b:436 with SMTP id cv40-20020a056870c6a800b001bfce5b0436mr1043371oab.58.1692312518692;
-        Thu, 17 Aug 2023 15:48:38 -0700 (PDT)
-Received: from redhat.com ([38.15.60.12])
-        by smtp.gmail.com with ESMTPSA id n7-20020a4a4007000000b0055516447257sm224025ooa.29.2023.08.17.15.48.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Aug 2023 15:48:38 -0700 (PDT)
-Date: Thu, 17 Aug 2023 16:48:35 -0600
-From: Alex Williamson <alex.williamson@redhat.com>
-To: liulongfang <liulongfang@huawei.com>
-Cc: <joro@8bytes.org>, <will@kernel.org>, <robin.murphy@arm.com>,
- <iommu@lists.linux.dev>, <linux-arm-kernel@lists.infradead.org>,
- "kvm@vger.kernel.org" <kvm@vger.kernel.org>, Shameer Kolothum
- <shameerali.kolothum.thodi@huawei.com>
-Subject: Re: [PATCH v13 0/4] add debugfs to migration driver
-Message-ID: <20230817164835.5c219dc0.alex.williamson@redhat.com>
-In-Reply-To: <20230816094205.37389-1-liulongfang@huawei.com>
-References: <20230816094205.37389-1-liulongfang@huawei.com>
-Organization: Red Hat
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E654D101EA
+	for <iommu@lists.linux.dev>; Thu, 17 Aug 2023 23:43:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1692315805; x=1723851805;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=3CR3oyO/mGcZM3mHjBnqHofn1DAFmkHUrhAS10kr7wU=;
+  b=hM4hcXlSFjWVJF5ShjBVy4fuHzblWkDvBBNNsGNE7Y7d+dFdUmp/cxaW
+   dAqEjqc+KW9g9kQKb7XyefTMES1OXqnwnZ7vB5QGtkUuYf7TeIsR4K8Ct
+   fQD5hURMFRN4lYipW+1xib4mTQMx5sq4aq72H2mv9aNpTo6rEBKvYvFAS
+   +JxkzGUI3v+QrzYHaUiU/jiyrRbxhuRNVtkpmH6pLhtcqgwr34Cj18R1W
+   w6Wgl+Rh8s0DAUEmrwYIjYpdbX34P9SWtIA28kl5Bb3ENy7cpar2UnLfC
+   yoIy6ooBdktn5sewe45pefLLzzfArwFZHaTuRPYakjWoE2nC8XzDHboLT
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10805"; a="352551928"
+X-IronPort-AV: E=Sophos;i="6.01,181,1684825200"; 
+   d="scan'208";a="352551928"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Aug 2023 16:43:24 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10805"; a="849051751"
+X-IronPort-AV: E=Sophos;i="6.01,181,1684825200"; 
+   d="scan'208";a="849051751"
+Received: from allen-box.sh.intel.com ([10.239.159.127])
+  by fmsmga002.fm.intel.com with ESMTP; 17 Aug 2023 16:43:20 -0700
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Nicolin Chen <nicolinc@nvidia.com>
+Cc: Yi Liu <yi.l.liu@intel.com>,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>,
+	iommu@lists.linux.dev,
+	kvm@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH v3 00/11] iommu: Prepare to deliver page faults to user space
+Date: Fri, 18 Aug 2023 07:40:36 +0800
+Message-Id: <20230817234047.195194-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On Wed, 16 Aug 2023 17:42:01 +0800
-liulongfang <liulongfang@huawei.com> wrote:
+When a user-managed page table is attached to an IOMMU, it is necessary
+to deliver IO page faults to user space so that they can be handled
+appropriately. One use case for this is nested translation, which is
+currently being discussed in the mailing list.
 
-> Add a debugfs function to the migration driver in VFIO to provide
-> a step-by-step test function for the migration driver.
-> 
-> When the execution of live migration fails, the user can view the
-> status and data during the migration process separately from the
-> source and the destination, which is convenient for users to analyze
-> and locate problems.
-> 
-> Changes v12 -> v13
-> 	Solve the problem of open and close competition to debugfs.
+I have posted a RFC series [1] that describes the implementation of
+delivering page faults to user space through IOMMUFD. This series has
+received several comments on the IOMMU refactoring, which I am trying to
+address in this series.
 
-Hi,
+The major refactoring includes:
 
-I'm not sure if the new To: list is a mistake or if this is an appeal
-to a different set of maintainers for a more favorable response than
-previous postings[1], but kvm@vger.kernel.org remains the list for this
-driver, which is under the perview of vfio [adding the correct list and
-co-maintainer].
+- [PATCH 01 ~ 04] Move include/uapi/linux/iommu.h to
+  include/linux/iommu.h. Remove the unrecoverable fault data definition.
+- [PATCH 05 ~ 06] Remove iommu_[un]register_device_fault_handler().
+- [PATCH 07 ~ 11] Separate SVA and IOPF. Make IOPF a generic page fault
+  handling framework. 
 
-I believe there is still a concern whether this is a valid and
-worthwhile debugfs interface.  It has been suggested that much of what
-this provides could be done through userspace drivers to exercise the
-migration interfaces and/or userspace debugging techniques to examine
-the device migration data.  I haven't seen a satisfactory conclusion
-for these comments yet.
+This is also available at github [2]. I would appreciate your feedback
+on this series.
 
-I think we have general consensus that the first couple patches are ok
-and useful, exposing the migration state generically and supporting a
-minor cleanup within the hisi_acc driver.  However, the new approach to
-try to lock the device with igate is certainly not the correct (igate
-is used for serializing interrupt configuration) and the proposed
-hisi_acc specific debugfs interfaces themselves are not settled.
-Thanks,
+[1] https://lore.kernel.org/linux-iommu/20230530053724.232765-1-baolu.lu@linux.intel.com/
+[2] https://github.com/LuBaolu/intel-iommu/commits/preparatory-io-pgfault-delivery-v3
 
-Alex
+Change log:
+v3:
+ - Convert the fault data structures from uAPI to kAPI.
+ - Merge iopf_device_param into iommu_fault_param.
+ - Add debugging on domain lifetime for iopf.
+ - Remove patch "iommu: Change the return value of dev_iommu_get()".
+ - Remove patch "iommu: Add helper to set iopf handler for domain".
+ - Misc code refactoring and refining.
 
-[1]https://lore.kernel.org/all/20230728072104.64834-1-liulongfang@huawei.com/
+v2: https://lore.kernel.org/linux-iommu/20230727054837.147050-1-baolu.lu@linux.intel.com/
+ - Remove unrecoverable fault data definition as suggested by Kevin.
+ - Drop the per-device fault cookie code considering that doesn't make
+   much sense for SVA.
+ - Make the IOMMU page fault handling framework generic. So that it can
+   avaible for use cases other than SVA.
+
+v1: https://lore.kernel.org/linux-iommu/20230711010642.19707-1-baolu.lu@linux.intel.com/
+
+Lu Baolu (11):
+  iommu: Move iommu fault data to linux/iommu.h
+  iommu/arm-smmu-v3: Remove unrecoverable faults reporting
+  iommu: Remove unrecoverable fault data
+  iommu: Cleanup iopf data structure definitions
+  iommu: Merge iopf_device_param into iommu_fault_param
+  iommu: Remove iommu_[un]register_device_fault_handler()
+  iommu: Prepare for separating SVA and IOPF
+  iommu: Move iopf_handler() to iommu-sva.c
+  iommu: Make iommu_queue_iopf() more generic
+  iommu: Add debugging on domain lifetime for iopf
+  iommu: Separate SVA and IOPF in Makefile and Kconfig
+
+ include/linux/iommu.h                         | 202 ++++++++++++++---
+ drivers/iommu/iommu-sva.h                     |  71 ------
+ include/uapi/linux/iommu.h                    | 161 --------------
+ .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   |  14 +-
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |  47 ++--
+ drivers/iommu/intel/iommu.c                   |  25 +--
+ drivers/iommu/intel/svm.c                     |   1 -
+ drivers/iommu/io-pgfault.c                    | 208 ++++++++----------
+ drivers/iommu/iommu-sva.c                     |  49 ++++-
+ drivers/iommu/iommu.c                         | 132 +++--------
+ MAINTAINERS                                   |   1 -
+ drivers/iommu/Kconfig                         |   4 +
+ drivers/iommu/Makefile                        |   3 +-
+ drivers/iommu/intel/Kconfig                   |   1 +
+ 14 files changed, 362 insertions(+), 557 deletions(-)
+ delete mode 100644 drivers/iommu/iommu-sva.h
+ delete mode 100644 include/uapi/linux/iommu.h
+
+-- 
+2.34.1
 
