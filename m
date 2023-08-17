@@ -1,71 +1,68 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 95EB520F8
-	for <iommu@lists.linux.dev>; Thu, 17 Aug 2023 19:41:14 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A6A6CD75;
-	Thu, 17 Aug 2023 12:41:54 -0700 (PDT)
-Received: from [10.57.90.41] (unknown [10.57.90.41])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E0D883F64C;
-	Thu, 17 Aug 2023 12:41:11 -0700 (PDT)
-Message-ID: <05f69a1a-97c9-ebca-5e01-c0b00699c93e@arm.com>
-Date: Thu, 17 Aug 2023 20:41:08 +0100
+Received: from mail-lj1-f176.google.com (mail-lj1-f176.google.com [209.85.208.176])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B0FC01ADC4
+	for <iommu@lists.linux.dev>; Thu, 17 Aug 2023 20:17:48 +0000 (UTC)
+Received: by mail-lj1-f176.google.com with SMTP id 38308e7fff4ca-2bb97f2c99cso3138441fa.0
+        for <iommu@lists.linux.dev>; Thu, 17 Aug 2023 13:17:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1692303466; x=1692908266;
+        h=to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=Ff2AaOO5GVflY+bf7LJFqgwCYhGi1upYqHWzZWCwCTM=;
+        b=GxzVe33CxHSnsQVg4vV2CCTPd1mvSZO4ZCi3mLu8FGoWFuv+jIMDlGGoCsiyGFr7IK
+         trc3ozLRH8FRulcAq41lTULdQncXtMHTA3fnPJhNB6rk3ohXv1PJG4nVaYNjjyDuu2WI
+         CApb7vDd8tD+bfaUaGO3uszeTfqWRfYTOhdGr2/rFKVZssiUJf+gqLGmWvYI5vlLUV1Q
+         D17UCiNNwUt2JQl4fB8sIjEec5AalEdTvO+VXb0c7f7LZOlTutCcjvOab73i6hT5Rni+
+         32YlV6DQPZjMBJe4yByqao3vgdT36EWVSZC2Pu7fz7s1gYUydYvNektgAFTYQT5Db0Rr
+         bbPg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1692303466; x=1692908266;
+        h=to:subject:message-id:date:from:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=Ff2AaOO5GVflY+bf7LJFqgwCYhGi1upYqHWzZWCwCTM=;
+        b=KHL7C8Qy0OWLJmHM6U2n5I0p3I3/CgQm5FRh+K0JpXpgGMuk0Ci2f2UhbeAuJvBVkQ
+         f4EFvrbipDRt56DesthnSmoINjhhIA2Ta35v8b/hWPE4VjTZLhdMolRscFMLK0nIr0jc
+         DU3gj8LOoBbfvkwmPg8+5cYl+9lHWP7ilOwZ62N2ncOHrmlwudQ0N6FZh2ReTz/YoY8Z
+         d029RR6gt0oC61sYv1axJqFyA6jdHRisA1lGp8TWsKuY6UKvu95enGeNB8njWftwb0vs
+         Y7zs8J854yuKK0NLeRXpKHaj70t6QK+Un/WUn9HtPtfQARPmnSFTm4w+D98pcTx6mi6C
+         Qp6Q==
+X-Gm-Message-State: AOJu0YzmiB0ZXfryeFDwC9Q8yYXHQ9JyYe16dHiaMnKdQ8etzzNVDsy+
+	HDfyFIDewcxMaqQH+ATTpArnxx3uhUdGeAIj77JBMO8gsc7I5Q==
+X-Google-Smtp-Source: AGHT+IHuV8DEy9Go/Mr8ROdxcp09NjL6wjbafqEfK7pVV/EOGjz3B2p6UIEtfDGGHqiJxYmmTObUG7yaTavoeeQ+Wws=
+X-Received: by 2002:a2e:8457:0:b0:2b6:cf0f:1fbf with SMTP id
+ u23-20020a2e8457000000b002b6cf0f1fbfmr294223ljh.42.1692303465808; Thu, 17 Aug
+ 2023 13:17:45 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.14.0
-Subject: Re: [RFC PATCH v1 2/8] iommu/arm-smmu-v3: Perform invalidations over
- installed_smmus
-Content-Language: en-GB
-To: Jason Gunthorpe <jgg@nvidia.com>, Michael Shavit <mshavit@google.com>
-Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
- linux-kernel@vger.kernel.org, will@kernel.org, nicolinc@nvidia.com,
- tina.zhang@intel.com, jean-philippe@linaro.org
-References: <20230817182055.1770180-1-mshavit@google.com>
- <20230818021629.RFC.v1.2.I782000a264a60e00ecad1bee06fd1413685f9253@changeid>
- <ZN5y4N8ffSoiR/sm@nvidia.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <ZN5y4N8ffSoiR/sm@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+From: Chathura Rajapaksha <chathura.abeyrathne.lk@gmail.com>
+Date: Thu, 17 Aug 2023 16:17:34 -0400
+Message-ID: <CAD7mqrygN8W59SmeS2nEVppNVeoW3FsiVtOG_PH7fcV4C16YEg@mail.gmail.com>
+Subject: Software bounce buffers Vs allocating DMA buffers in page granularity
+To: iommu@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 
-On 2023-08-17 20:20, Jason Gunthorpe wrote:
-> On Fri, Aug 18, 2023 at 02:16:24AM +0800, Michael Shavit wrote:
->> Prepare and batch invalidation commands for each SMMU that a domain is
->> installed onto.
->> Move SVA's check against the smmu's ARM_SMMU_FEAT_BTM bit into
->> arm_smmu_tlb_inv_range_asid so that it can be checked against each
->> installed SMMU.
->>
->> Signed-off-by: Michael Shavit <mshavit@google.com>
->> ---
->> It's not obvious to me whether skipping the tlb_inv_range_asid when
->> ARM_SMMU_FEAT_BTM is somehow specific to SVA? Is moving the check into
->> arm_smmu_tlb_inv_range_asid still valid if that function were called
->> outside of SVA?
-> 
-> Logically it should be linked to SVA, and specifically to the mmu
-> notifier callback. The mmu notifier callback is done whenever the CPU
-> did an invalidation and BTM means the SMMU tracks exactly those
-> automatically. Thus we don't need to duplicated it. Indeed, we should
-> probably not even register a mmu notifier on BTM capable devices.
+Hi All,
 
-Almost - broadcast invalidates from the CPU only apply to SMMU TLBs; we 
-still need the notifier for the sake of issuing ATC invalidate commands 
-to endpoints.
+I have a question regarding the IOMMU software bounce buffer feature.
+I understand that this feature was introduced as a mitigation to
+sub-page vulnerabilities (which were shown to be exploitable by
+Thunderclap).
 
-> It is certainly wrong to skip invalidations generated for any other
-> reason.
-> 
->  From what I can tell SVA domains should have their CD table entry
-> programmed with "ASET=0" and normal paging domains should be
-> programmed with "ASET=1". This causes only the SVA domains to listen
-> to the BTM invalidations.
+My question is:
+Can allocating DMA buffers in page granularity (multiples of 4KB pages)
+be a feasible alternative solution to software bounce buffers?
 
-Correct.
+I am trying to understand the challenges and performance impact of
+such a solution (compared to SW bounce buffers) if someone were to
+proposed it.
+In other words, I am trying to find the reasons why SW bounce buffers
+were introduced rather than allocating DMA buffers in page granularity.
 
-Thanks,
-Robin.
+Thanks in advance.
+Regards,
+Chathura
