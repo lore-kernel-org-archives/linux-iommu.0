@@ -1,110 +1,186 @@
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2040.outbound.protection.outlook.com [40.107.220.40])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C339F1549E
-	for <iommu@lists.linux.dev>; Thu, 17 Aug 2023 16:21:22 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DZ5jKqMl0kYwkrxYy72LW6gB0OjYqDUbbVw0J2qBpduyGYSimvXIEGrTIuPorp5SMuWlRvPy7pOA0jVpWM9n/1brHmJfug7Yar6BBXZQCC7lK0bnPTposYFdT2Gqa7Y4Uk/9ytoooA6QR20EeiiYmhQptove6/wmTeE+DR+58uiu55K7TeqPmRdK8A+etnec9wwIRFj780w0OBPmd+wdaC9tpcjdenQS8tpJ9EZX1qe5zotGQ6ZIbkD017VkZCE6nZNc6Ce6c95TPSJ2Wi3K5zeEaJjjGJKK/HCELmP8G+ap8HjrITadizb+3TF7vj/XfBGXba6LB4oU3x1QHlQnzA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=CmQqgyWurG+SrUt5LwoJlQQ5Cq4MlBa3kzl+yj/bhHs=;
- b=YprK80OdK7VfoMP1Z6Hs+/JaK2AzGxcTvJtzgoD/XihDNTCKU5N1ZFHHLPR0vUxoV33uXlLBBvfpFjR00+2Fs4lrgOSnlePccZDm7a6MX3AZwLG9wmLxGo1gpOshwvajve8CKPH+IaKTJrRQJU5vfWgY+uZ4UIybTERFazb8OWlaV+Z6C63uALD4lchYYHnff7gCZ5zNyNiJ6LE4vKQ3GkEcz4jwY/AndzG0UWV+21UqkbT1OyW0X2solNfFwPzI4k4To7mNDEbWDi+S39fGea7ID3gV5By8DISyy1QICQfRNjCBJESToVAnSwDKGPKz79ZT7F9BJaNKB8LS7qcC8A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=google.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=CmQqgyWurG+SrUt5LwoJlQQ5Cq4MlBa3kzl+yj/bhHs=;
- b=RZAFWRF7zDgVXLUIseA4B/lMCVX5Wse3qfVC5bmq8g34bqxnE4OAuXhw/bHpPzajuMjZ3x8Bf9Bm/WsppGexCCWDs+Me3AgeSIkbpNUw28AQcXdH3+IaFS9Nz69+cXP8MGnlbHU+h4UXW51ytEvBneVRBpOsFtvxHLY4zhGSKuWduVI98EXRIfNhDtwBz2xikIJSTsPi7so3giJqJ/cHdKd9VZT1YV1dS4zvblHmncimwCFy+/MA5WojVzTUcGa8nd2ECbljujnQU3KvGMYbTwNXP6kFMO0SV1Je2PWU6X1fhjteqboKkJ/bkGBrli6w50SUSlNnwwEG+ckpZGtx7Q==
-Received: from DS7PR05CA0104.namprd05.prod.outlook.com (2603:10b6:8:56::16) by
- PH7PR12MB8154.namprd12.prod.outlook.com (2603:10b6:510:2b9::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6678.26; Thu, 17 Aug
- 2023 16:21:20 +0000
-Received: from CY4PEPF0000EDD4.namprd03.prod.outlook.com
- (2603:10b6:8:56:cafe::bf) by DS7PR05CA0104.outlook.office365.com
- (2603:10b6:8:56::16) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6723.6 via Frontend
- Transport; Thu, 17 Aug 2023 16:21:20 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- CY4PEPF0000EDD4.mail.protection.outlook.com (10.167.241.208) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6699.14 via Frontend Transport; Thu, 17 Aug 2023 16:21:20 +0000
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Thu, 17 Aug 2023
- 09:21:09 -0700
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail204.nvidia.com
- (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Thu, 17 Aug
- 2023 09:21:09 -0700
-Received: from Asurada-Nvidia (10.127.8.10) by mail.nvidia.com (10.129.68.7)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37 via Frontend
- Transport; Thu, 17 Aug 2023 09:21:08 -0700
-Date: Thu, 17 Aug 2023 09:21:07 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Michael Shavit <mshavit@google.com>
-CC: <iommu@lists.linux.dev>, Jason Gunthorpe <jgg@ziepe.ca>, "Jean-Philippe
- Brucker" <jean-philippe@linaro.org>, Joerg Roedel <joro@8bytes.org>, Lu Baolu
-	<baolu.lu@linux.intel.com>, Robin Murphy <robin.murphy@arm.com>, Tomas Krcka
-	<krckatom@amazon.de>, Will Deacon <will@kernel.org>, Yicong Yang
-	<yangyicong@hisilicon.com>, <linux-arm-kernel@lists.infradead.org>,
-	<linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] iommu/arm-smmu-v3: Simplify stage selection logic
-Message-ID: <ZN5I88rsUHb693H/@Asurada-Nvidia>
-References: <20230818000321.1.Ibca43cc8d1bcad3ac3deef5726b9745128aea634@changeid>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A081914011
+	for <iommu@lists.linux.dev>; Thu, 17 Aug 2023 16:25:04 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 68C2AD75;
+	Thu, 17 Aug 2023 09:25:39 -0700 (PDT)
+Received: from [10.57.90.41] (unknown [10.57.90.41])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 10F523F64C;
+	Thu, 17 Aug 2023 09:24:56 -0700 (PDT)
+Message-ID: <9ba29982-ae96-bf53-f021-21cb1b22643a@arm.com>
+Date: Thu, 17 Aug 2023 17:24:51 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20230818000321.1.Ibca43cc8d1bcad3ac3deef5726b9745128aea634@changeid>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY4PEPF0000EDD4:EE_|PH7PR12MB8154:EE_
-X-MS-Office365-Filtering-Correlation-Id: 1f8210e2-6945-49fd-371d-08db9f3dfdc1
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	A7LOV9Er1a5zJnTDJB8XQhtycDTDEXQpLcxK5iG9gi2lJt9bUZ+KN3ILF6w1AinnShUBgG1eEqxs7EOomGJwhmisxg90I4zeNhPU/A9SsBqa2ETvMkI692mwiRKQryEvu6HD1vvjGpXHaQCZDKatL6wnXGldn9ecyaCkPl9+dldH4sEnJCKyxyRTIVTr6y0cNqPkElRAq4Cu5fyH/+g1dLpuFSfme1PvhgrjEQgFQP1B1/5CqY08Go3ndeYVPTD86Wl7ulkdwVYV9fT+r6Y2iAm+ejCGRR3PbzD0W2zEFVbwNJRsOs/3VJxX1OMNQR/Xqbrls+eI3EUXUM2xPhKCHsrN1SnanBKqxufLHiMmp22+KE0XHJwEZRTolkDO1IEbpOMKNGSiKgYRmoshQ4c5I34w7n2IE1wGHmr3+AECQ/pajNPnAMeMGMjT/vWx/w8yT/kNPeP1JwVJCKxxa6+Qbu0Rem7HjYpMJq7Hyfr2nQto/a/3culprG+3whOXZVyneiQNyNhQXlokUxS0lbW+39wMrFBNpnP1rw2wYWKOIaQWaoakq1MY7uhJ8Z+RokK5t2nf0yaw1BggLdTvV6UlFhb2Ai8UZk5nZb6xA6Ga2nhuTjqTVE2M5CYIpzQaejJcd0YDHJY4sye77u91rwtdnbYNHr10EzYgiBAbIqvpQJiwZPvGEuCVvD0PyrRcQeLlr3wntKiNRMkR0NaDoyasG861Uuc4scwMdjX8qdVNzPbf3X+Hp+1f0NNPKp+kz7uV
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230031)(4636009)(136003)(376002)(39860400002)(396003)(346002)(186009)(451199024)(1800799009)(82310400011)(46966006)(40470700004)(36840700001)(2906002)(40460700003)(4744005)(26005)(86362001)(7416002)(40480700001)(336012)(478600001)(426003)(9686003)(55016003)(5660300002)(36860700001)(41300700001)(82740400003)(356005)(7636003)(54906003)(316002)(70586007)(70206006)(6916009)(4326008)(8676002)(8936002)(33716001)(47076005);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Aug 2023 16:21:20.0614
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1f8210e2-6945-49fd-371d-08db9f3dfdc1
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CY4PEPF0000EDD4.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB8154
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.14.0
+Subject: Re: [PATCH v2] iommu/arm-smmu-v3: Allow default substream bypass with
+ a pasid support
+Content-Language: en-GB
+To: Jason Gunthorpe <jgg@nvidia.com>, Nicolin Chen <nicolinc@nvidia.com>
+Cc: will@kernel.org, joro@8bytes.org, mshavit@google.com,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ iommu@lists.linux.dev
+References: <20230817042135.32822-1-nicolinc@nvidia.com>
+ <ZN46upjIBFcI4mL+@nvidia.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <ZN46upjIBFcI4mL+@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Fri, Aug 18, 2023 at 12:03:30AM +0800, Michael Shavit wrote:
-
-> It is invalid for an arm-smmu-v3 to have neither FEAT_TRANS_S1 nor
-> FEAT_TRANS_S2 bits set, and this is even checked in the probe.
+On 2023-08-17 16:20, Jason Gunthorpe wrote:
+> On Wed, Aug 16, 2023 at 09:21:35PM -0700, Nicolin Chen wrote:
+>> When an iommu_domain is set to IOMMU_DOMAIN_IDENTITY, the driver sets the
+>> arm_smmu_domain->stage to ARM_SMMU_DOMAIN_BYPASS and skips the allocation
+>> of a CD table, and then sets STRTAB_STE_0_CFG_BYPASS to the CONFIG field
+>> of the STE. This works well for devices that only have one substream, i.e.
+>> pasid disabled.
+>>
+>> With a pasid-capable device, however, there could be a use case where it
+>> allows an IDENTITY domain attachment without disabling its pasid feature.
+>> This requires the driver to allocate a multi-entry CD table to attach the
+>> IDENTITY domain to its default substream and to configure the S1DSS filed
+>> of the STE to STRTAB_STE_1_S1DSS_BYPASS. So, there is a missing link here
+>> between the STE setup and an IDENTITY domain attachment.
+>>
+>> Add a new stage ARM_SMMU_DOMAIN_BYPASS_S1DSS to tag this configuration by
+>> overriding the ARM_SMMU_DOMAIN_BYPASS if the device has pasid capability.
+>> This new tag will allow the driver allocating a CD table yet skipping an
+>> CD insertion from the IDENTITY domain, and setting up the STE accordingly.
+>>
+>> In a use case of ARM_SMMU_DOMAIN_BYPASS_S1DSS, the SHCFG field of the STE
+>> should be set to STRTAB_STE_1_SHCFG_INCOMING. In other cases of having a
+>> CD table, the shareability comes from a CD, not the SHCFG field: according
+>> to "13.5 Summary of attribute/permission configuration fields" in the spec
+>> the SHCFG field value is irrelevant. So, always configure the SHCFG field
+>> of the STE to STRTAB_STE_1_SHCFG_INCOMING when a CD table is present, for
+>> simplification.
+>>
+>> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+>> ---
+>>
+>> Changelog
+>> v2:
+>>   * Rebased on top of Michael's series reworking CD table ownership:
+>>     https://lore.kernel.org/all/20230816131925.2521220-1-mshavit@google.com/
+>>   * Added a new ARM_SMMU_DOMAIN_BYPASS_S1DSS stage to tag the use case
+>> v1: https://lore.kernel.org/all/20230627033326.5236-1-nicolinc@nvidia.com/
 > 
-> Only set ARM_SMMU_DOMAIN_S2 if FEAT_TRANS_S1 isn't supported, otherwise set
-> ARM_SMMU_DOMAIN_S1. This is clearer as the existing code implies that
-> something more sophisticated is going on with the stage selection logic.
+> After rebasing there really shouldn't be a
+> ARM_SMMU_DOMAIN_BYPASS_S1DSS. I want to get to a model where the
+> identity domain is a global static, so it can't be changing depending
+> on how it is attched.
 > 
-> Signed-off-by: Michael Shavit <mshavit@google.com>
+> I continue to think that the right way to think about this is to have
+> the CD table code generate the STE it wants and when doing so it will
+> inspect what SSID0 is. If it is the IDENTITY domain then it fills
+> s1dss / etc
 
-Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
+Indeed, that's what I was getting at with "generalisation of
+ARM_SMMU_DOMAIN_BYPASS based on s1cdmax" - just one type all the way 
+down to the bowels of arm_smmu_write_strtab_ent(), which then decides 
+whether it means touching S1DSS or Config in the given STE.
+
+>> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>> index b27011b2bec9..860db4fbb995 100644
+>> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>> @@ -1271,6 +1271,7 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_master *master, u32 sid,
+>>   	 * 3. Update Config, sync
+>>   	 */
+>>   	u64 val = le64_to_cpu(dst[0]);
+>> +	u8 s1dss = STRTAB_STE_1_S1DSS_SSID0;
+>>   	bool ste_live = false;
+>>   	struct arm_smmu_device *smmu = NULL;
+>>   	struct arm_smmu_ctx_desc_cfg *cd_table = NULL;
+>> @@ -1290,6 +1291,9 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_master *master, u32 sid,
+>>   
+>>   	if (smmu_domain) {
+>>   		switch (smmu_domain->stage) {
+>> +		case ARM_SMMU_DOMAIN_BYPASS_S1DSS:
+>> +			s1dss = STRTAB_STE_1_S1DSS_BYPASS;
+>> +			fallthrough;
+>>   		case ARM_SMMU_DOMAIN_S1:
+>>   			cd_table = &master->cd_table;
+>>   			break;
+> 
+> Eg, I think the code looks much nicer if the logic here is more like:
+> 
+> if (master->cd_table.cdtab)
+>     arm_smmu_cd_table_get_ste(master->cd_table, &ste)
+> else if (master->domain)
+>     arm_smmu_domain_get_ste(master->domain, &ste);
+> else
+>     ste = not attached
+> 
+> And you'd check in arm_smmu_cd_table_get_ste() to learn the CD
+> parameters and also what SSID=0 is. If SSID=0 is IDENTITY then
+> arm_smmu_cd_table_get_ste would return with S1DSS set.
+> 
+> arm_smmu_domain_get_ste() would multiplex based on the domain type.
+> 
+>> @@ -2435,6 +2440,16 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+>>   	} else if (smmu_domain->smmu != smmu)
+>>   		ret = -EINVAL;
+>>   
+>> +	/*
+>> +	 * When attaching an IDENTITY domain to a master with pasid capability,
+>> +	 * the master can still enable SVA feature by allocating a multi-entry
+>> +	 * CD table and attaching the IDENTITY domain to its default substream
+>> +	 * that alone can be byassed using the S1DSS field of the STE.
+>> +	 */
+>> +	if (smmu_domain->stage == ARM_SMMU_DOMAIN_BYPASS && master->ssid_bits &&
+>> +	    smmu->features & ARM_SMMU_FEAT_TRANS_S1)
+>> +		smmu_domain->stage = ARM_SMMU_DOMAIN_BYPASS_S1DSS;
+> 
+> Then you don't technically need to do this.
+> 
+> Though if we can't atomically change the STE from IDENTITY to IDENTIY
+> with a CD then you still have to do something here,
+
+Strictly I think we are safe to do that - fill in all the S1* fields 
+while Config[0] is still 0 and they're ignored, sync, then set 
+Config[0]. Adding a CD table under a translation domain should be 
+achievable as well, since S1CDMax, S1ContextPtr and S1Fmt can all be 
+updated together atomically (although it's still the kind of switcheroo 
+where I'd be scared of a massive boulder suddenly rolling out of the 
+ceiling...)
+
+> but really what we
+> want is to force a CD table for all cases if PASID is enabled, and
+> force DMA domains to be S2 domains as well.
+
+Wut? No, DMA domains really want to be stage 1, for many reasons. 
+Implementing them with stage 2 when stage 1 isn't supported was always a 
+bit of a bodge, but thankfully I'm not aware of anyone ever building a 
+stage-2-only SMMUv3 anyway.
+
+The most glaringly obvious one, though, is that I think people like 
+PASID support and SVA to actually work ;)
+
+Thanks,
+Robin.
+
+>>   	mutex_unlock(&smmu_domain->init_mutex);
+>>   	if (ret)
+>>   		return ret;
+>> @@ -2456,7 +2471,8 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+>>   	list_add(&master->domain_head, &smmu_domain->devices);
+>>   	spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
+>>   
+>> -	if (smmu_domain->stage == ARM_SMMU_DOMAIN_S1) {
+>> +	if (smmu_domain->stage == ARM_SMMU_DOMAIN_S1 ||
+>> +	    smmu_domain->stage == ARM_SMMU_DOMAIN_BYPASS_S1DSS) {
+>>   		if (!master->cd_table.cdtab) {
+>>   			ret = arm_smmu_alloc_cd_tables(master);
+>>   			if (ret) {
+> 
+> So more like:
+> 
+>   if (smmu_domain == IDENTIY && arm_smmu_support_ssid(dev))
+>       arm_smmu_alloc_cd_tables()
+> 
+> Jason
