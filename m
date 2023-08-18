@@ -1,505 +1,146 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DAC6E1B7D2;
-	Fri, 18 Aug 2023 18:17:15 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 00538D75;
-	Fri, 18 Aug 2023 11:17:50 -0700 (PDT)
-Received: from [10.57.91.158] (unknown [10.57.91.158])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D63BC3F762;
-	Fri, 18 Aug 2023 11:17:00 -0700 (PDT)
-Message-ID: <9a466109-01c5-96b0-bf03-304123f435ee@arm.com>
-Date: Fri, 18 Aug 2023 19:16:56 +0100
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 23AFB63A0
+	for <iommu@lists.linux.dev>; Fri, 18 Aug 2023 18:20:59 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=nqrz77RSpoLIcL4lpC/4l9TlFdcgKeEz+UxjTcIY7UZHwLPd/TJ6A5ROQJMLZ+ucP0qjDBN/0jiV66HGoRH449XiBK0TPGj0jBN3s1zdqfnZ3QFz1f4sz7GLzlO6yNacA+feB1OSrvd1EyYndAPMJX38VYzjFH9xfJr+Ekbc9rLfBR5HL7oMvys075Hs0sWInwYGxTHmpnS0x5UtCUK+czUUUlDfagCMIIPNwUWucPKxMV5JvI8B5IINpRDx7ihpKbAANFcCx5VOJTOteX6Q7dWcmTQMGvCjAV0D5nqAbKaiiEMAZaeHeAIBe7r1n0X7hEq9wuDL2yH6N9oYBea04g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=tuxTT9iHrZYenLY+VIMaYg5Ykkh0m5Xkpjnsn7XUwDY=;
+ b=iHHrML+ideo8dCUixA+DRnLe7GaKVnn2JAyjFgAsL5AxJoTNZa3wt7uG6JgpbSemuMOuIsl6ha54WSftURTzJT9JpANnMTsvYklpReMQO/sS6CLXCJmUXeenasE288Sh9IhKWrfObRjkQAWCyJ/kkWA5ndNLXlyv5jipqheeGmU3ceMYEdYtdjLY1AQ0OrkKHTx5XyEEkIdghQyC/wuUYwRLuEm4O9rHEUTFKWqdTcNetPsRofhaGH+Vh3z5EEsFsKhhED90NEhAEG4pcIpjWdC87+FQOX7FoOT8hv9x+98J00Sc0kaY4twaFgIqklIhh450TJH2c/Um9J+eqPEd4w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=tuxTT9iHrZYenLY+VIMaYg5Ykkh0m5Xkpjnsn7XUwDY=;
+ b=CE+1WTQtG9rIOy5nfRzN4h5Iuyh0xO7YQMQQ+sGF87I3C4tqwhAD7xxd+frmUw3p0GZNIST+mA8iLzS8LPaPNvcXJYlhLTyO+WM64T+jzuu3g+tnpnVVFLZAXV8nz2luvyypYtvUBvi8tb8Xct77VjVCsd5XNua+ARO+dQ6p9ikNLQeBqMxPZZy44vclu9sgrWdWuzCWdPLWtfJI1WPp017p/WMew3Khq6vw/9y1Bucxcmt6m+Mx9cABYn+YQK6UvX3zYH+cczPg9IUF5Nfo0Yj3J/it0V2b82M5VsxpZbrQF5AVjpmexIXqaHvzZ0c2PoCjvTkM100yqyl4Nj/M2w==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by PH8PR12MB7205.namprd12.prod.outlook.com (2603:10b6:510:227::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6699.20; Fri, 18 Aug
+ 2023 18:20:57 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::5111:16e8:5afe:1da1]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::5111:16e8:5afe:1da1%6]) with mapi id 15.20.6678.031; Fri, 18 Aug 2023
+ 18:20:57 +0000
+Date: Fri, 18 Aug 2023 15:20:55 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: "Liu, Yi L" <yi.l.liu@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>,
+	"joro@8bytes.org" <joro@8bytes.org>,
+	"alex.williamson@redhat.com" <alex.williamson@redhat.com>,
+	"robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
+	"cohuck@redhat.com" <cohuck@redhat.com>,
+	"eric.auger@redhat.com" <eric.auger@redhat.com>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+	"mjrosato@linux.ibm.com" <mjrosato@linux.ibm.com>,
+	"chao.p.peng@linux.intel.com" <chao.p.peng@linux.intel.com>,
+	"yi.y.sun@linux.intel.com" <yi.y.sun@linux.intel.com>,
+	"peterx@redhat.com" <peterx@redhat.com>,
+	"jasowang@redhat.com" <jasowang@redhat.com>,
+	"shameerali.kolothum.thodi@huawei.com" <shameerali.kolothum.thodi@huawei.com>,
+	"lulu@redhat.com" <lulu@redhat.com>,
+	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+	"Duan, Zhenzhong" <zhenzhong.duan@intel.com>
+Subject: Re: [PATCH v4 09/12] iommu/vt-d: Add iotlb flush for nested domain
+Message-ID: <ZN+2h5rpTUI5aG3M@nvidia.com>
+References: <BN9PR11MB527683351B687B97AB84B51B8C13A@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <ZNUI0D7ZMvLWlBNx@nvidia.com>
+ <ZNUa/VmeiIo0YA0v@Asurada-Nvidia>
+ <ZNU6BnTgNEWlwNYQ@nvidia.com>
+ <ZNVQcmYp27ap7h30@Asurada-Nvidia>
+ <BN9PR11MB5276D0B3E0106C73C498B8018C10A@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <ZNZlnh+/Q5Vk5Kul@Asurada-Nvidia>
+ <ZNsYxta9Pi7USDoR@Asurada-Nvidia>
+ <ZN+i1pEoN/NsWPKS@nvidia.com>
+ <ZN+w3fahQpM2W9Yx@Asurada-Nvidia>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZN+w3fahQpM2W9Yx@Asurada-Nvidia>
+X-ClientProxiedBy: BLAPR05CA0016.namprd05.prod.outlook.com
+ (2603:10b6:208:36e::22) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.14.0
-Subject: Re: [PATCH v11 5/6] iommu/dma: Allow a single FQ in addition to
- per-CPU FQs
-Content-Language: en-GB
-To: Niklas Schnelle <schnelle@linux.ibm.com>, Joerg Roedel <joro@8bytes.org>,
- Matthew Rosato <mjrosato@linux.ibm.com>, Will Deacon <will@kernel.org>,
- Wenjia Zhang <wenjia@linux.ibm.com>, Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Gerd Bayer <gbayer@linux.ibm.com>, Julian Ruess <julianr@linux.ibm.com>,
- Pierre Morel <pmorel@linux.ibm.com>, Alexandra Winter
- <wintera@linux.ibm.com>, Heiko Carstens <hca@linux.ibm.com>,
- Vasily Gorbik <gor@linux.ibm.com>, Alexander Gordeev
- <agordeev@linux.ibm.com>, Christian Borntraeger <borntraeger@linux.ibm.com>,
- Sven Schnelle <svens@linux.ibm.com>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Hector Martin <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
- Alyssa Rosenzweig <alyssa@rosenzweig.io>,
- David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>,
- Andy Gross <agross@kernel.org>, Bjorn Andersson <andersson@kernel.org>,
- Konrad Dybcio <konrad.dybcio@linaro.org>, Yong Wu <yong.wu@mediatek.com>,
- Matthias Brugger <matthias.bgg@gmail.com>,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
- Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
- Orson Zhai <orsonzhai@gmail.com>, Baolin Wang
- <baolin.wang@linux.alibaba.com>, Chunyan Zhang <zhang.lyra@gmail.com>,
- Chen-Yu Tsai <wens@csie.org>, Jernej Skrabec <jernej.skrabec@gmail.com>,
- Samuel Holland <samuel@sholland.org>,
- Thierry Reding <thierry.reding@gmail.com>, Krishna Reddy
- <vdumpa@nvidia.com>, Jonathan Hunter <jonathanh@nvidia.com>,
- Jonathan Corbet <corbet@lwn.net>, linux-s390@vger.kernel.org,
- netdev@vger.kernel.org, linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
- asahi@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
- linux-arm-msm@vger.kernel.org, linux-mediatek@lists.infradead.org,
- linux-sunxi@lists.linux.dev, linux-tegra@vger.kernel.org,
- linux-doc@vger.kernel.org
-References: <20230717-dma_iommu-v11-0-a7a0b83c355c@linux.ibm.com>
- <20230717-dma_iommu-v11-5-a7a0b83c355c@linux.ibm.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20230717-dma_iommu-v11-5-a7a0b83c355c@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|PH8PR12MB7205:EE_
+X-MS-Office365-Filtering-Correlation-Id: 391475ea-ffed-41db-2966-08dba017dddd
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	TheGJsBxQNYoPFDJzvXypHEorpo0P4ZNWhQdaAgs4HcxFXgKD37RD80hrsDzvFLB69+OADn4+icWEsnRIGcLV6CM12TlJJf33gpYa7MtcW21y6kjPu3vH+rD+bC9H4r2pQBs20WgEAMSwnbqkMy6DF6Lhit5XyEpoMQALGBz0XkgihrgjXeHUidglH2CsrBl84q9czL/qHtZ2f4UG3ldJX3qzqOtTyj5SX9H5T5xl5zFpc8WDWEl+tsa+7UtpZdA9NKEmTVySTOWCn9EHJEaH2VpF8l7EhFyU5Pr+bEuFeGz6oRURxYsI71CtWw4npL/xmcC5NdGuucWMsqpxgYFQxi57wziZwCxeY9Z27TnjVgDNBL63GnVXL22UjdL1llcrTnFrcbZB/a7vNpokc8wbBTa5xd2hKqW57SdB5/R8HwFhpBKnig/VH4quXxxG81EN125UkimRBA30UqHCcFLoIn1zM5JKyFTLI5Fy9U6EWgvywiDa6sGTk9Ksr7nqxGcpFoM/8bYrb16tgP5Ved8BKe8sdzWaSlOYvn7jX3wVSIFt0A8GZsGwPOzMA4ED2DQd8uP/0BOaZRCymBywP1rCD3wELCQBmx/qjX7OsJ3EBs=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(136003)(396003)(39860400002)(346002)(376002)(366004)(186009)(1800799009)(451199024)(86362001)(36756003)(66946007)(6636002)(66476007)(316002)(37006003)(66556008)(54906003)(478600001)(41300700001)(38100700002)(6512007)(6486002)(26005)(6506007)(2616005)(4326008)(8676002)(5660300002)(8936002)(6862004)(4744005)(7416002)(2906002)(67856001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?ybfnfArvabBUEXDBiOMGHGztdWJmVSPQYGU4GYtvfiqk4/M8uSrpLEvkuzyZ?=
+ =?us-ascii?Q?yB5sxDmRwSX+/jzQVpW9xw+Z0b4ICnpnRnFy+Nz0JlhCiJock+g6W+uFdMA7?=
+ =?us-ascii?Q?+3dCGJyPGewDJaQMpXb+F0A4tqPNodnphJezD7xZmzGSX/4jw2VRy5Oi1mUT?=
+ =?us-ascii?Q?aZSxI1rbq7Vc4nTqGw4NVKlm5CNrNqZ5tJtqm1n/hHjaud/bAqpuq9jo1Of9?=
+ =?us-ascii?Q?OWyMEpLch9AB9Ib5ZYx/j39cTiky3t5J+jGFuvRQJg+JOSM+AaBTHCSF06OR?=
+ =?us-ascii?Q?SHNHE5wuYHjm9HRBm//uDpOFQhS4biGtob3tuH/MMxDgEdTO3cDT8C8AwwnC?=
+ =?us-ascii?Q?4OyvQpvuZeLJOb1101gTc4MykVslfFESxUCqIQ54G5YMwTVo08CRm8jNrxzf?=
+ =?us-ascii?Q?sR3qT63Uk2/AikVOkv75sv8ptUESzQDo8IzOKuB7QYGBqCLxjChln7ws1jrp?=
+ =?us-ascii?Q?1SKuul2Mz0WVdFFJq0YpxYwr6HybKYoo7fLi5TpilFxJ+in/OwQy3fXtly8H?=
+ =?us-ascii?Q?3yQmN/yHRE9MnZQQ0exEwOkjxGXB4Tl6h7zgzC8WS6ZvZk8zNwDXzHmcE6r5?=
+ =?us-ascii?Q?+I3njymZcjO3agjydN4RlQy/4QR2wW5banuw8Cb0hl3LWnD2ogPiWLKNDDwr?=
+ =?us-ascii?Q?X8owhQ+EnNUxeU+O4dZp6AUaroJcCyGu0yfxizV2TfCK2epMcPTuLFTKTM/y?=
+ =?us-ascii?Q?ym3eIdFxaZJensw2KZq935h370llfF06aY7DFOdERsac0mV4A5j6uMSpRQcA?=
+ =?us-ascii?Q?B8+vsH6FzndIMiiqgyq+hisUJJG+5gz/V3J6DjCCzhxKmAoRAjFTNLtbgKPj?=
+ =?us-ascii?Q?A/tBAV+ilZst+f3FwnSEnAW69/bW3Shi6dFzx+EeqxY2juyuLMmaZTWmvkbI?=
+ =?us-ascii?Q?Fu9hsLc9LsH1VVpRAg37UpRGPpen28E4nTYwnoOzh7WoRsz7yAZ9IKzXqDHz?=
+ =?us-ascii?Q?YeWo8SpwUrUm+2RwDtV0W4uvjZZkhjH51diKwpmYaNfttpac638BSgOMLiug?=
+ =?us-ascii?Q?lif6Ky6wDpKFa+NMfpURreGnwov42U7ep5NO3RYz9J9ixcqx+QqtVi5DKYlf?=
+ =?us-ascii?Q?5BFBwdrkr7SsH0uVgCxxYOuE40HCsV/RsJYacG7VlgwT/KyFCmvHMl8W/D/n?=
+ =?us-ascii?Q?SowUdveX/ctr24SkT58Gapg0qpqM3Tdq9HUHEpUELFtHc7ZMFxpVO8FovEqD?=
+ =?us-ascii?Q?/B1jiESnCi4+hCQmah4lF67hiwQmZ74zDAacZFavx4KGtT/No2BaeucdNd8n?=
+ =?us-ascii?Q?d2OnO8VhedRy6aLgwijq1aBjpjmYI3q/kshgXwgGipNI351vhUBElkBVOItd?=
+ =?us-ascii?Q?hnDBE2giU0s6yuKlvnk5is6p23WJxLcTyPOknH9RuFxwl92pGny+ApOtqbq8?=
+ =?us-ascii?Q?TfHnuGv0NJsH8vfgDAO0f0ZpcHj04dx5iuNeeXjVLuDnA/6BO1m12aNDuRoV?=
+ =?us-ascii?Q?KRw6kUOIdOHVi3O19hy02vrprnrSlmeax3UcVmnQsv49P4ENpZhM4+Oey1v5?=
+ =?us-ascii?Q?FlIoM3m1/0DT/9dOPpPQbICkb+PDTtomozW3F8Wix1CMsDuOihvkO79v+wqq?=
+ =?us-ascii?Q?00vYWbKIujXvCk379/tcNG6xJoxXyxw2KGuT777H?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 391475ea-ffed-41db-2966-08dba017dddd
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Aug 2023 18:20:57.2038
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Ohzlt/lQnmfMc5BF8iTv5z1MkJilpi2wJKzZwwsuNUyLUNgT59XJ6kGbdK+xt6mX
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR12MB7205
 
-On 2023-07-17 12:00, Niklas Schnelle wrote:
-> In some virtualized environments, including s390 paged memory guests,
-> IOTLB flushes are used to update IOMMU shadow tables. Due to this, they
-> are much more expensive than in typical bare metal environments or
-> non-paged s390 guests. In addition they may parallelize poorly in
-> virtualized environments. This changes the trade off for flushing IOVAs
-> such that minimizing the number of IOTLB flushes trumps any benefit of
-> cheaper queuing operations or increased paralellism.
+On Fri, Aug 18, 2023 at 10:56:45AM -0700, Nicolin Chen wrote:
+
+> > The highest array index sounds generic, the error code maybe is too
 > 
-> In this scenario per-CPU flush queues pose several problems. Firstly
-> per-CPU memory is often quite limited prohibiting larger queues.
-> Secondly collecting IOVAs per-CPU but flushing via a global timeout
-> reduces the number of IOVAs flushed for each timeout especially on s390
-> where PCI interrupts may not be bound to a specific CPU.
+> We could do in its and report the error code in its raw form:
+> 	__u32 out_array_index;
+> 	/* number of bits used to report error code in the returned array_index */
+> 	__u32 out_array_index_error_code_bits;
+> Or just:
+> 	__u32 out_array_index;
+> 	__u32 out_error_code;
 > 
-> Let's introduce a single flush queue mode that reuses the same queue
-> logic but only allocates a single global queue. This mode is selected by
-> dma-iommu if a newly introduced .shadow_on_flush flag is set in struct
-> dev_iommu. As a first user the s390 IOMMU driver sets this flag during
-> probe_device. With the unchanged small FQ size and timeouts this setting
-> is worse than per-CPU queues but a follow up patch will make the FQ size
-> and timeout variable. Together this allows the common IOVA flushing code
-> to more closely resemble the global flush behavior used on s390's
-> previous internal DMA API implementation.
-> 
-> Link: https://lore.kernel.org/linux-iommu/3e402947-61f9-b7e8-1414-fde006257b6f@arm.com/
-> Reviewed-by: Matthew Rosato <mjrosato@linux.ibm.com> #s390
-> Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
-> ---
->   drivers/iommu/dma-iommu.c  | 178 +++++++++++++++++++++++++++++++++------------
->   drivers/iommu/iommu.c      |  20 +----
+> Do we have to define a list of generic error code?
 
-The hunks in iommu.c appear to be an inadvertent reversion of patch #1?
+out_driver_error_code may be OK
 
-A few bonus nits below which you can take or leave, but otherwise, with 
-the rebase-mishap fixed:
-
-Acked-by: Robin Murphy <robin.murphy@arm.com>
-
->   drivers/iommu/s390-iommu.c |   3 +
->   include/linux/iommu.h      |   2 +
->   4 files changed, 142 insertions(+), 61 deletions(-)
-> 
-> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> index e57724163835..4ada8b9749c9 100644
-> --- a/drivers/iommu/dma-iommu.c
-> +++ b/drivers/iommu/dma-iommu.c
-> @@ -43,14 +43,23 @@ enum iommu_dma_cookie_type {
->   	IOMMU_DMA_MSI_COOKIE,
->   };
->   
-> +struct dma_iommu_options {
-> +#define IOMMU_DMA_OPTS_PER_CPU_QUEUE	0L
-
-Nit: if the intent is to add more flags then that will no longer make 
-sense, and if not then we may as well just have a bool ;)
-
-> +#define IOMMU_DMA_OPTS_SINGLE_QUEUE	BIT(0)
-> +	u64	flags;
-> +};
-> +
->   struct iommu_dma_cookie {
->   	enum iommu_dma_cookie_type	type;
->   	union {
->   		/* Full allocator for IOMMU_DMA_IOVA_COOKIE */
->   		struct {
->   			struct iova_domain	iovad;
-> -
-> -			struct iova_fq __percpu *fq;	/* Flush queue */
-> +			/* Flush queue */
-> +			union {
-> +				struct iova_fq	*single_fq;
-> +				struct iova_fq	__percpu *percpu_fq;
-> +			};
->   			/* Number of TLB flushes that have been started */
->   			atomic64_t		fq_flush_start_cnt;
->   			/* Number of TLB flushes that have been finished */
-> @@ -67,6 +76,8 @@ struct iommu_dma_cookie {
->   
->   	/* Domain for flush queue callback; NULL if flush queue not in use */
->   	struct iommu_domain		*fq_domain;
-> +	/* Options for dma-iommu use */
-> +	struct dma_iommu_options	options;
->   	struct mutex			mutex;
->   };
->   
-> @@ -124,7 +135,7 @@ static inline unsigned int fq_ring_add(struct iova_fq *fq)
->   	return idx;
->   }
->   
-> -static void fq_ring_free(struct iommu_dma_cookie *cookie, struct iova_fq *fq)
-> +static void fq_ring_free_locked(struct iommu_dma_cookie *cookie, struct iova_fq *fq)
->   {
->   	u64 counter = atomic64_read(&cookie->fq_flush_finish_cnt);
->   	unsigned int idx;
-> @@ -145,6 +156,15 @@ static void fq_ring_free(struct iommu_dma_cookie *cookie, struct iova_fq *fq)
->   	}
->   }
->   
-> +static void fq_ring_free(struct iommu_dma_cookie *cookie, struct iova_fq *fq)
-> +{
-> +	unsigned long flags;
-> +
-> +	spin_lock_irqsave(&fq->lock, flags);
-> +	fq_ring_free_locked(cookie, fq);
-> +	spin_unlock_irqrestore(&fq->lock, flags);
-> +}
-> +
->   static void fq_flush_iotlb(struct iommu_dma_cookie *cookie)
->   {
->   	atomic64_inc(&cookie->fq_flush_start_cnt);
-> @@ -152,23 +172,29 @@ static void fq_flush_iotlb(struct iommu_dma_cookie *cookie)
->   	atomic64_inc(&cookie->fq_flush_finish_cnt);
->   }
->   
-> +static void fq_flush_percpu(struct iommu_dma_cookie *cookie)
-> +{
-> +	int cpu;
-> +
-> +	for_each_possible_cpu(cpu) {
-> +		struct iova_fq *fq;
-> +
-> +		fq = per_cpu_ptr(cookie->percpu_fq, cpu);
-> +		fq_ring_free(cookie, fq);
-> +	}
-> +}
-> +
->   static void fq_flush_timeout(struct timer_list *t)
->   {
->   	struct iommu_dma_cookie *cookie = from_timer(cookie, t, fq_timer);
-> -	int cpu;
->   
->   	atomic_set(&cookie->fq_timer_on, 0);
->   	fq_flush_iotlb(cookie);
->   
-> -	for_each_possible_cpu(cpu) {
-> -		unsigned long flags;
-> -		struct iova_fq *fq;
-> -
-> -		fq = per_cpu_ptr(cookie->fq, cpu);
-> -		spin_lock_irqsave(&fq->lock, flags);
-> -		fq_ring_free(cookie, fq);
-> -		spin_unlock_irqrestore(&fq->lock, flags);
-> -	}
-> +	if (cookie->options.flags & IOMMU_DMA_OPTS_SINGLE_QUEUE)
-> +		fq_ring_free(cookie, cookie->single_fq);
-> +	else
-> +		fq_flush_percpu(cookie);
-
-Nit: honestly I'd just inline that as:
-
-	else for_each_possible_cpu(cpu)
-		fq_ring_free(cookie, per_cpu_ptr(cookie->percpu_fq, cpu));
-
-(possibly with extra braces if you don't feel brave enough to join the 
-elite "else for" club...)
-
->   }
->   
->   static void queue_iova(struct iommu_dma_cookie *cookie,
-> @@ -188,7 +214,11 @@ static void queue_iova(struct iommu_dma_cookie *cookie,
->   	 */
->   	smp_mb();
->   
-> -	fq = raw_cpu_ptr(cookie->fq);
-> +	if (cookie->options.flags & IOMMU_DMA_OPTS_SINGLE_QUEUE)
-> +		fq = cookie->single_fq;
-> +	else
-> +		fq = raw_cpu_ptr(cookie->percpu_fq);
-> +
->   	spin_lock_irqsave(&fq->lock, flags);
->   
->   	/*
-> @@ -196,11 +226,11 @@ static void queue_iova(struct iommu_dma_cookie *cookie,
->   	 * flushed out on another CPU. This makes the fq_full() check below less
->   	 * likely to be true.
->   	 */
-> -	fq_ring_free(cookie, fq);
-> +	fq_ring_free_locked(cookie, fq);
->   
->   	if (fq_full(fq)) {
->   		fq_flush_iotlb(cookie);
-> -		fq_ring_free(cookie, fq);
-> +		fq_ring_free_locked(cookie, fq);
->   	}
->   
->   	idx = fq_ring_add(fq);
-> @@ -219,31 +249,90 @@ static void queue_iova(struct iommu_dma_cookie *cookie,
->   			  jiffies + msecs_to_jiffies(IOVA_FQ_TIMEOUT));
->   }
->   
-> -static void iommu_dma_free_fq(struct iommu_dma_cookie *cookie)
-> +static void iommu_dma_free_fq_single(struct iova_fq *fq)
-> +{
-> +	int idx;
-> +
-> +	if (!fq)
-> +		return;
-
-Nit: That should never be true if cookie->fq_domain was set
-
-> +	fq_ring_for_each(idx, fq)
-> +		put_pages_list(&fq->entries[idx].freelist);
-> +	vfree(fq);
-> +}
-> +
-> +static void iommu_dma_free_fq_percpu(struct iova_fq __percpu *percpu_fq)
->   {
->   	int cpu, idx;
->   
-> -	if (!cookie->fq)
-> -		return;
-> -
-> -	del_timer_sync(&cookie->fq_timer);
->   	/* The IOVAs will be torn down separately, so just free our queued pages */
->   	for_each_possible_cpu(cpu) {
-> -		struct iova_fq *fq = per_cpu_ptr(cookie->fq, cpu);
-> +		struct iova_fq *fq = per_cpu_ptr(percpu_fq, cpu);
->   
->   		fq_ring_for_each(idx, fq)
->   			put_pages_list(&fq->entries[idx].freelist);
->   	}
->   
-> -	free_percpu(cookie->fq);
-> +	free_percpu(percpu_fq);
-> +}
-> +
-> +static void iommu_dma_free_fq(struct iommu_dma_cookie *cookie)
-> +{
-> +	if (!cookie->fq_domain)
-> +		return;
-> +
-> +	del_timer_sync(&cookie->fq_timer);
-> +	if (cookie->options.flags & IOMMU_DMA_OPTS_SINGLE_QUEUE)
-> +		iommu_dma_free_fq_single(cookie->single_fq);
-> +	else
-> +		iommu_dma_free_fq_percpu(cookie->percpu_fq);
-> +}
-> +
-> +static void iommu_dma_init_one_fq(struct iova_fq *fq)
-> +{
-> +	int i;
-> +
-> +	fq->head = 0;
-> +	fq->tail = 0;
-> +
-> +	spin_lock_init(&fq->lock);
-> +
-> +	for (i = 0; i < IOVA_FQ_SIZE; i++)
-> +		INIT_LIST_HEAD(&fq->entries[i].freelist);
-> +}
-> +
-> +static int iommu_dma_init_fq_single(struct iommu_dma_cookie *cookie)
-> +{
-> +	struct iova_fq *queue;
-> +
-> +	queue = vzalloc(sizeof(*queue));
-
-Nit: vmalloc() - no need to zero the whole thing when the percpu path 
-doesn't.
-
-> +	if (!queue)
-> +		return -ENOMEM;
-> +	iommu_dma_init_one_fq(queue);
-> +	cookie->single_fq = queue;
-> +
-> +	return 0;
-> +}
-> +
-> +static int iommu_dma_init_fq_percpu(struct iommu_dma_cookie *cookie)
-> +{
-> +	struct iova_fq __percpu *queue;
-> +	int cpu;
-> +
-> +	queue = alloc_percpu(struct iova_fq);
-> +	if (!queue)
-> +		return -ENOMEM;
-> +
-> +	for_each_possible_cpu(cpu)
-> +		iommu_dma_init_one_fq(per_cpu_ptr(queue, cpu));
-> +	cookie->percpu_fq = queue;
-> +	return 0;
->   }
->   
->   /* sysfs updates are serialised by the mutex of the group owning @domain */
->   int iommu_dma_init_fq(struct iommu_domain *domain)
->   {
->   	struct iommu_dma_cookie *cookie = domain->iova_cookie;
-> -	struct iova_fq __percpu *queue;
-> -	int i, cpu;
-> +	int rc;
->   
->   	if (cookie->fq_domain)
->   		return 0;
-> @@ -251,26 +340,16 @@ int iommu_dma_init_fq(struct iommu_domain *domain)
->   	atomic64_set(&cookie->fq_flush_start_cnt,  0);
->   	atomic64_set(&cookie->fq_flush_finish_cnt, 0);
->   
-> -	queue = alloc_percpu(struct iova_fq);
-> -	if (!queue) {
-> +	if (cookie->options.flags & IOMMU_DMA_OPTS_SINGLE_QUEUE)
-> +		rc = iommu_dma_init_fq_single(cookie);
-> +	else
-> +		rc = iommu_dma_init_fq_percpu(cookie);
-> +
-> +	if (rc) {
->   		pr_warn("iova flush queue initialization failed\n");
->   		return -ENOMEM;
->   	}
->   
-> -	for_each_possible_cpu(cpu) {
-> -		struct iova_fq *fq = per_cpu_ptr(queue, cpu);
-> -
-> -		fq->head = 0;
-> -		fq->tail = 0;
-> -
-> -		spin_lock_init(&fq->lock);
-> -
-> -		for (i = 0; i < IOVA_FQ_SIZE; i++)
-> -			INIT_LIST_HEAD(&fq->entries[i].freelist);
-> -	}
-> -
-> -	cookie->fq = queue;
-> -
->   	timer_setup(&cookie->fq_timer, fq_flush_timeout, 0);
->   	atomic_set(&cookie->fq_timer_on, 0);
->   	/*
-> @@ -297,6 +376,7 @@ static struct iommu_dma_cookie *cookie_alloc(enum iommu_dma_cookie_type type)
->   	if (cookie) {
->   		INIT_LIST_HEAD(&cookie->msi_page_list);
->   		cookie->type = type;
-> +		cookie->options.flags = IOMMU_DMA_OPTS_PER_CPU_QUEUE;
-
-You see, this confused me into thinking it does something and I had to 
-go back and check ;)
-
->   	}
->   	return cookie;
->   }
-> @@ -614,10 +694,18 @@ static int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
->   	if (ret)
->   		goto done_unlock;
->   
-> -	/* If the FQ fails we can simply fall back to strict mode */
-> -	if (domain->type == IOMMU_DOMAIN_DMA_FQ &&
-> -	    (!device_iommu_capable(dev, IOMMU_CAP_DEFERRED_FLUSH) || iommu_dma_init_fq(domain)))
-> -		domain->type = IOMMU_DOMAIN_DMA;
-> +	if (domain->type == IOMMU_DOMAIN_DMA_FQ) {
-> +		/* Expensive shadowing IOTLB flushes require some tuning */
-> +		if (dev->iommu->shadow_on_flush)
-> +			cookie->options.flags |= IOMMU_DMA_OPTS_SINGLE_QUEUE;
-
-It would probably be better to set this regardless of the domain type, 
-in case the FQ is only brought up later via sysfs.
-
-> +
-> +		/* If the FQ fails we can simply fall back to strict mode */
-> +		if (!device_iommu_capable(dev, IOMMU_CAP_DEFERRED_FLUSH) ||
-> +		    iommu_dma_init_fq(domain)) {
-> +			domain->type = IOMMU_DOMAIN_DMA;
-> +			cookie->options.flags &= ~IOMMU_DMA_OPTS_SINGLE_QUEUE;
-
-...and either way there should be no need to clear it again - if it was 
-true once it will always be true.
-
-Cheers,
-Robin.
-
-> +		}
-> +	}
->   
->   	ret = iova_reserve_iommu_regions(dev, domain);
->   
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index fd9f79731d6a..caaf563d38ae 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -2413,17 +2413,8 @@ int iommu_map(struct iommu_domain *domain, unsigned long iova,
->   		return -EINVAL;
->   
->   	ret = __iommu_map(domain, iova, paddr, size, prot, gfp);
-> -	if (ret == 0 && ops->iotlb_sync_map) {
-> -		ret = ops->iotlb_sync_map(domain, iova, size);
-> -		if (ret)
-> -			goto out_err;
-> -	}
-> -
-> -	return ret;
-> -
-> -out_err:
-> -	/* undo mappings already done */
-> -	iommu_unmap(domain, iova, size);
-> +	if (ret == 0 && ops->iotlb_sync_map)
-> +		ops->iotlb_sync_map(domain, iova, size);
->   
->   	return ret;
->   }
-> @@ -2564,11 +2555,8 @@ ssize_t iommu_map_sg(struct iommu_domain *domain, unsigned long iova,
->   			sg = sg_next(sg);
->   	}
->   
-> -	if (ops->iotlb_sync_map) {
-> -		ret = ops->iotlb_sync_map(domain, iova, mapped);
-> -		if (ret)
-> -			goto out_err;
-> -	}
-> +	if (ops->iotlb_sync_map)
-> +		ops->iotlb_sync_map(domain, iova, mapped);
->   	return mapped;
->   
->   out_err:
-> diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
-> index 020cc538e4c4..63c56a440c9d 100644
-> --- a/drivers/iommu/s390-iommu.c
-> +++ b/drivers/iommu/s390-iommu.c
-> @@ -468,6 +468,9 @@ static struct iommu_device *s390_iommu_probe_device(struct device *dev)
->   	if (zdev->end_dma > ZPCI_TABLE_SIZE_RT - 1)
->   		zdev->end_dma = ZPCI_TABLE_SIZE_RT - 1;
->   
-> +	if (zdev->tlb_refresh)
-> +		dev->iommu->shadow_on_flush = 1;
-> +
->   	return &zdev->iommu_dev;
->   }
->   
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index 182cc4c71e62..c3687e066ed7 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -409,6 +409,7 @@ struct iommu_fault_param {
->    * @priv:	 IOMMU Driver private data
->    * @max_pasids:  number of PASIDs this device can consume
->    * @attach_deferred: the dma domain attachment is deferred
-> + * @shadow_on_flush: IOTLB flushes are used to sync shadow tables
->    *
->    * TODO: migrate other per device data pointers under iommu_dev_data, e.g.
->    *	struct iommu_group	*iommu_group;
-> @@ -422,6 +423,7 @@ struct dev_iommu {
->   	void				*priv;
->   	u32				max_pasids;
->   	u32				attach_deferred:1;
-> +	u32				shadow_on_flush:1;
->   };
->   
->   int iommu_device_register(struct iommu_device *iommu,
-> 
+Jason
