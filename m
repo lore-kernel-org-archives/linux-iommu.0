@@ -1,150 +1,68 @@
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2057.outbound.protection.outlook.com [40.107.237.57])
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C6CCA375
-	for <iommu@lists.linux.dev>; Fri, 18 Aug 2023 00:54:24 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=aSUJPQK2Lfata11kvQIoimWF3yedDJDJfudBmlCAsHY7MWKpr6IzzWxid27g5xF9iIUDpUikzQeD5dXuDJcVkV39ZTcwzowmNEAw8UTuj1GDp/i8QhQiOxa0KBk6SISAz8VkGT9pyFtKgBxpOEmlGgBk1VnDKm9n2/j0pFOL8Od0E29wzys318OXTiI3F/47mM6+4WSQHGmf4h3zPRmzHa9K5ai0drDf7tV7aauwvyWWDnX3mQpVkcMRIMXHD5BXMNhIx4qjfmWR8BHh7BrzhiXTpVFLzVZeaKApAk+a52soW3FEwa9HnkADT2B/Ol7SnzLBnWzxshTMVlHQu9/Vhw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=yHzsmlTsAVpzhs1ImNeAGuzxhkYruxKkkD2ZMlSblc4=;
- b=AtJJWtzjFvjm7kJK43MesS8NfotKQ2zQ8P/NBkNi8mJoFOJy1VUNbacbsfAty4VXxVoSjkJS8se+tGGEG3W3kmEXbXIiRPIQprh7JRyFrXCxKi9Qr3QsKvVYYFITKma1+rGuQVmsbpHpSfZarz/1wQoQdIFmRRGCWbvFqHhnszXVIyEySkYeS4LrFpTIznWvpgVALL6gtMgmcrLBvAX6yG39MgtTBUxJmgEI/mDhL/Umku+r5yOUjVfTiy4E5+2a4aDZnmgc1OWEytGwkNyG3PFgCidAkyLX6HxJ1iwYnBISkWm5somztLB/ZZR1xK5WKxbKBoSl0rwQ5beKymA4WA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=yHzsmlTsAVpzhs1ImNeAGuzxhkYruxKkkD2ZMlSblc4=;
- b=OJbytGOQV34LJ2BzaqZr7oR6ZsZ343xSEqJ6FGWFMTrZK0lC0qHjDutfCsTt/rHsYkm2QCzNsg1uPU8cnk4YnOxZEOGf7tIZO70bb9w2Ts3FKeGv3S3riLoEmtrihmMCEerTeeQC1Wcja3DjFdLB2DvOJH/X+6qnlGOfapkSL1mRjPw+IYvrR0H4xtUKzeTXOQK19ZzhfWduiVZxE0zS/7Dfud3rh5+Av6dmnRzanT+zZgdGkAUW4Q0g1nha7XOVDLUtI3YM/X/xt/mI8wTYSs9MxrLPqqxc0dprMmB73A7CV1nlC4Fs85rbj4qtRVNi8BxA1uWtW00ZHC8DZV46Rg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by CH3PR12MB8910.namprd12.prod.outlook.com (2603:10b6:610:179::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6678.29; Fri, 18 Aug
- 2023 00:54:21 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::5111:16e8:5afe:1da1]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::5111:16e8:5afe:1da1%6]) with mapi id 15.20.6678.031; Fri, 18 Aug 2023
- 00:54:21 +0000
-Date: Thu, 17 Aug 2023 21:54:20 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: "Liu, Yi L" <yi.l.liu@intel.com>
-Cc: Nicolin Chen <nicolinc@nvidia.com>,
-	"Tian, Kevin" <kevin.tian@intel.com>,
-	"joro@8bytes.org" <joro@8bytes.org>,
-	"alex.williamson@redhat.com" <alex.williamson@redhat.com>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
-	"cohuck@redhat.com" <cohuck@redhat.com>,
-	"eric.auger@redhat.com" <eric.auger@redhat.com>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-	"mjrosato@linux.ibm.com" <mjrosato@linux.ibm.com>,
-	"chao.p.peng@linux.intel.com" <chao.p.peng@linux.intel.com>,
-	"yi.y.sun@linux.intel.com" <yi.y.sun@linux.intel.com>,
-	"peterx@redhat.com" <peterx@redhat.com>,
-	"jasowang@redhat.com" <jasowang@redhat.com>,
-	"shameerali.kolothum.thodi@huawei.com" <shameerali.kolothum.thodi@huawei.com>,
-	"lulu@redhat.com" <lulu@redhat.com>,
-	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-	"Duan, Zhenzhong" <zhenzhong.duan@intel.com>
-Subject: Re: [PATCH v8 3/5] iommufd: Add IOMMU_GET_HW_INFO
-Message-ID: <ZN7BPMra5fC7YBcs@nvidia.com>
-References: <20230816121349.104436-1-yi.l.liu@intel.com>
- <20230816121349.104436-4-yi.l.liu@intel.com>
- <BN9PR11MB527620AAA752DEFEECF260918C1AA@BN9PR11MB5276.namprd11.prod.outlook.com>
- <ZN6MKnCOk7ufYnV8@Asurada-Nvidia>
- <DS0PR11MB7529F6CA52479527F7B87B00C31BA@DS0PR11MB7529.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <DS0PR11MB7529F6CA52479527F7B87B00C31BA@DS0PR11MB7529.namprd11.prod.outlook.com>
-X-ClientProxiedBy: BL1PR13CA0240.namprd13.prod.outlook.com
- (2603:10b6:208:2bf::35) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 92C25375
+	for <iommu@lists.linux.dev>; Fri, 18 Aug 2023 01:23:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1692321818; x=1723857818;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=wq92PvLflxstlVH6JDii+UZnycqNrlpgrgbBGqunPMs=;
+  b=fkUWQx8Qdbhblg4Mv8yJlWz1Pe4mna4PyTZHmF2R0YbIXdUlXKGLbcpM
+   QyeTlXKME7nUcii2dcFCZFBsESIPKZjSvzvnlMwb01zvlFn0wp31/BANw
+   fN4046RyPFLCyi/GBgxQGHRHRu6F8q5My2pDMboaAltSXJh1vD0SzM4oU
+   qlliBnzbyEMpcfKIhMvHpS6EG9NmBFTuAfMMQjHsqr+rFNzJ3oKdhKlpg
+   ruCJ0qaaxdTrrC/kTA9lWK4YjV5V+RITrWNRecub7FJm5Gk+ww/Npukaq
+   C/CUKPa6a9N8aJZ86WTgimuF1jA/3AyO1bLQtBmL0tAu/cWtWyaSGYASA
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10805"; a="363141995"
+X-IronPort-AV: E=Sophos;i="6.01,181,1684825200"; 
+   d="scan'208";a="363141995"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Aug 2023 18:23:37 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10805"; a="728401389"
+X-IronPort-AV: E=Sophos;i="6.01,181,1684825200"; 
+   d="scan'208";a="728401389"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.252.185.113]) ([10.252.185.113])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Aug 2023 18:23:36 -0700
+Message-ID: <fdc6b5fc-0e26-965d-ae53-fd4a0f87d1ea@linux.intel.com>
+Date: Fri, 18 Aug 2023 09:23:32 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|CH3PR12MB8910:EE_
-X-MS-Office365-Filtering-Correlation-Id: 1cf69673-2c40-43e1-7d61-08db9f85a8cd
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	7+64Pgcc7/4Ja/Yvdx//85oGVkIG8P+O2DhEpffNpuSNi15iHamPPA/4TcSZKel8OxeS+aEoSUtwBSYXKY7+23YIlgjVf14tMy5oI/l3FE6Auh3ktZqWI6Xzs2+JH+96P3JNmCMrVGDAx+qZXPK/MtK7EVGvXQn6Ytz/qwuMyeUUdgF/xb2/cUdhYV6A2AdIn+M3cjpAMbOWgL/gW7dOFQZkKtagkR1skrEYA/jrZdChEEapiBhy/lYSl0iEyjxYBAZX1Zxkk4WxmXKQbLxU99SQes4LsIJCZ7/rut7q2jXqIAyyz3BUVLvMM29Os+QLLD7KPQni/cc1sDLlqlWCoBC909TfpVJKWgmLdkxdXwu+8OzrAne5cK0v+CbFCGlpTW9nyKmA8TNTSMZLP8IazoEjq/dwtP8pQZifaGY74N1KrMbkpzP4PEEJMaV7fMVb5cgT5znYCaSdNeUTpQAuwAwDp/a7O5MVDd1eP38mOoi7WVj86dypoiB9MmjUy3WDvSDPMHM3OfUxqOnsEPqOCxe39CQLpqME4fbf39WrbRt/jVUq87f8liNwvkYrWDae
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(39860400002)(136003)(366004)(396003)(346002)(376002)(451199024)(186009)(1800799009)(54906003)(316002)(66946007)(66556008)(66476007)(6916009)(5660300002)(41300700001)(38100700002)(8936002)(8676002)(4326008)(26005)(2906002)(4744005)(478600001)(86362001)(7416002)(6512007)(36756003)(6506007)(6486002)(2616005);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?vsRjHuZIHYOGdNvpC80GZMPKt5s4JMwDUAqEzyjVgeMRhWqp89WZAml2v6SI?=
- =?us-ascii?Q?EDFAKvcsz2Sf0AE+QmBL/CdvURInFiq62d6LRuRZ2uXkazSQ5KC9xRcE0dA3?=
- =?us-ascii?Q?nbRWhla+t9DDqzvjPQQKzg6dfM7mtNm35SmNa/hxje0527L9l2RMpBHx5+WC?=
- =?us-ascii?Q?NTEQd7BsxGul9zluEzXLmTbt6tYJ0SgoupGyuCjsWYNhEDwZTJzZZmVLpuVZ?=
- =?us-ascii?Q?33+jX68UJmMouHC2PLmBytuKgTnjFWm86SzX0AJHJwzzHJsJtkOiyynvdoSa?=
- =?us-ascii?Q?0BdODUypFZ0iCXxd5b7rbXfuB7BBj/v7YLyfgtQaOe5Z3bKt2Fh/68bgRe9N?=
- =?us-ascii?Q?f0rsdf9yNlMBV3hAQFKg7wLbuLRDzx68z4O0FUeXU0VVPgPmJtMo9dtwaICI?=
- =?us-ascii?Q?fhUBmibAUWkgKk/Q7Oht3JenyDOtlybSnfTOkdtyGzDOV7cAcsyntiqNIjxj?=
- =?us-ascii?Q?xdU5ipADO6pPCDAeHBhqxplXlgUhWbnWYJUSryMPOUdJ2Xm2QK8bN9wLs4rY?=
- =?us-ascii?Q?kfPTNwf2aGTmzYqrAiv5Xt37fwNe5DGvPqDyMbGxUjfK55kQEogfWkuYrewf?=
- =?us-ascii?Q?qj85jMqIDvcHXxsTA7Tj3ghIJrTj63CsITBYaePyRXhSoTl5u8AQsM7cKk1H?=
- =?us-ascii?Q?Gleaf0pafmL5/pZ8TXgFYK8WbyJ5K4tKk+hWbxoXftIgNllKcpDSUynALF4G?=
- =?us-ascii?Q?hjeS/nHGa7POdq0ePS8qC2znUUCgYVKaJm2RDKrDuICwHQbSmJ6wUXijSkTt?=
- =?us-ascii?Q?bG4ELVYo9SUn6+kZkbkA4uWcP8wxAkYmlcBVmEVyfcVrNBlMhvuC70tX4aK4?=
- =?us-ascii?Q?HRY1kFrVUqnH9ykP9cgzV3Dv6MUOSMP/lXgGsk0Qv2Qrv6HNX2YibGYusl5C?=
- =?us-ascii?Q?EJOoMyv2v2NwVtV/mKJayCW2nP3SCxS5zLt7vk5e+oJCnmxQFtphl/BlPAbh?=
- =?us-ascii?Q?kakY/ZSauh77B+QlM2mvfTyBvoHmDpl7C4R/Pp4s6X4OveO/EshYllftK25V?=
- =?us-ascii?Q?e9JVPGHmTTqPwqx3amrLpngHJdNWcQwkYyCIjha+LcrG1olYYweD+/pcM2EX?=
- =?us-ascii?Q?EKJcyF/fOaq0tRlvnSR4YKkNbxMUXm7lb6jl5dmyOJnqU7itmttNdfVMayD+?=
- =?us-ascii?Q?J4wPXSy3ezF1NAkyL7rqliZuoJtWcc962LbBD6IRQ+eMXcUQ4OA7We6MIpPN?=
- =?us-ascii?Q?Xq9KwkRdRXRB4qe7w5036EvTsmzo4Lt+GSlWS/EeqcvyPvgGufEt5GuAJgDi?=
- =?us-ascii?Q?l4njSIcVp1KTy4y8Rzk8yD7CFo3EQG1LY0f7mY6rLUnxYMR9LYy/eW84x7/1?=
- =?us-ascii?Q?Mx2iPTA1/CZbwhd9JsBPDyny5Owml5rS3LDzoJoBwxLViOFJTGJ3cfkLfs/S?=
- =?us-ascii?Q?MJH8ZDoZ7qrOEyCk0AYEI4XT3+VucGIcZZQ0ZlPwWibU8VVZARjPyl3TX3HI?=
- =?us-ascii?Q?ggzvPqwbE5iqpfaqnvIZUuZqsVXX1p5DnuQBkfhx2d8yPMgYC02qek+GaYem?=
- =?us-ascii?Q?MjmqN6yBQPhvKLWzK4XvadvxSmOPv6PAK3Ap747SFP4g90/ssuLPNHFybJH2?=
- =?us-ascii?Q?OI3hOrGheDM7ty2dHFxEjRr16AX9mq/88x07oYTa?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1cf69673-2c40-43e1-7d61-08db9f85a8cd
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Aug 2023 00:54:21.5915
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 5Sha9wAPlBVr0CAJv9SsX1sEhCPzmeQu6tEeooYCXa2G28P/YffH4p260E/OYubf
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR12MB8910
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.14.0
+Cc: baolu.lu@linux.intel.com
+Subject: Re: Software bounce buffers Vs allocating DMA buffers in page
+ granularity
+To: Chathura Rajapaksha <chathura.abeyrathne.lk@gmail.com>,
+ iommu@lists.linux.dev
+References: <CAD7mqrygN8W59SmeS2nEVppNVeoW3FsiVtOG_PH7fcV4C16YEg@mail.gmail.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <CAD7mqrygN8W59SmeS2nEVppNVeoW3FsiVtOG_PH7fcV4C16YEg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Fri, Aug 18, 2023 at 12:04:29AM +0000, Liu, Yi L wrote:
-> > > > +int iommufd_get_hw_info(struct iommufd_ucmd *ucmd)
-> > > > +{
-> > > > +     struct iommu_hw_info *cmd = ucmd->cmd;
-> > > > +     void __user *user_ptr = u64_to_user_ptr(cmd->data_uptr);
-> > > > +     const struct iommu_ops *ops;
-> > > > +     struct iommufd_device *idev;
-> > > > +     unsigned int data_len;
-> > > > +     unsigned int copy_len;
-> > > > +     void *data = NULL;
-> > [..]
-> > > > +     } else {
-> > > > +             cmd->out_data_type = IOMMU_HW_INFO_TYPE_NONE;
-> > > > +             data_len = 0;
-> > > > +             data = NULL;
-> > >
-> > > data is already initialized as NULL.
+On 2023/8/18 4:17, Chathura Rajapaksha wrote:
+> Hi All,
 > 
-> Probably we can set data_len = 0 and the out_data_type to _NONE is
-> the top as well. Any preference?
+> I have a question regarding the IOMMU software bounce buffer feature.
+> I understand that this feature was introduced as a mitigation to
+> sub-page vulnerabilities (which were shown to be exploitable by
+> Thunderclap).
+> 
+> My question is:
+> Can allocating DMA buffers in page granularity (multiples of 4KB pages)
+> be a feasible alternative solution to software bounce buffers?
 
-I think it is clear to remove the variable initialization so this
-branch is more explicit
+Yes. I remember that we skip software bounce buffer if the buffer size
+is one or multiple PAGE_SIZE(s). Any change during recent evolution?
 
-Jason
+Best regards,
+baolu
