@@ -1,186 +1,231 @@
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2074.outbound.protection.outlook.com [40.107.92.74])
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 36F81168BD
-	for <iommu@lists.linux.dev>; Fri, 18 Aug 2023 17:57:07 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=kCygJMUNBluVlLtvfhGV78o/RqsAcUtOE/C1Q20SiBVXJssNCq+YH2V3ae3OUJuYwvvl6WWIscToAVg6QCoh9J5vhoAFlNpTM6h0KY9WYudSeVxxwRSdinKYwtoPtnLG6ZfMQjvb9K02UTfEHl9ctteL5VgkH6BWDv0DmZwoeO5FYV6X+GaTYsaUoBQno4/KtHZSfe4bMERBw9fAutPMBL/UOIqce+3bOIELZdLwn0uCN9jF82QhTctJrpqteC8krqujCOk2IDgFIXq4estdF/zA8Q4luvxnkpdoe70BMUecq0L6BRzbApw1RJPFw0APLs0oGC2GU8solekMGtBeJg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=/K/c8Erp/IMlMSdc/V2CbjzOmFyMBlggSOYhu6tscRw=;
- b=d7ACt4eM4QXhX2MCCmvLX6OykkwrYapKkVpRkgvnt+blCYnQi9AoEhF3aTwT/Tbn60pE/gouEApFJibhoEOKIFcQM7iB53CYuf8NKfuMeBuHq2CKV2TUjyDG45n2/Il/92kjavfPLfn9yfVq8RnEBDcbKZ9f0E+ndIkBgsPdJr1Q8P/0bJKAzBNuLZ2EAI7z0lqia7eyQLIQFBC3uD6knWZY68UUkb/il3PPs3gwZoNxbxFJm0O6QTN3swCRl9EsBPFXi+ZoCm18IB0H3SB4Q1EZMCqrAvZEALKbKNiU5ROUoQkHBS0JSdyvh7kLiDoxEjoA4GGF4/t3aJS8JwLbcg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/K/c8Erp/IMlMSdc/V2CbjzOmFyMBlggSOYhu6tscRw=;
- b=tW+sJ03/L2zFLXl5h+hNc57iaJmmur4k2W8YB6nNN3QG5107wVnvpGOH3WBIJZLTKX3BBwx0cxTdICVKMbBVCzvEZ8T+Rz88BvjJPwYj8BfpbXyJdjxXQiYXHnkjsCrG9dfdSAVHgnf2XZGXo67QqenBS1hW0IF91jKFDFoam1wU/wMXZhrlvkKWaAAp7bMs4NrYOEO8rlAartyty+Wjb7KaUHs11dU6yj7F7P2uJAm12GOxjS/6DRo3hmMcv+gF0RbQSXiX5OsUHOwpgVlOTMhsQRzztMim0lpMSxjyW/Auof4+Sovl/djnjHeWYPvB1scQRVGiolSKK6DAjm9kyw==
-Received: from MW4PR03CA0135.namprd03.prod.outlook.com (2603:10b6:303:8c::20)
- by SJ2PR12MB9163.namprd12.prod.outlook.com (2603:10b6:a03:559::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6699.20; Fri, 18 Aug
- 2023 17:57:05 +0000
-Received: from MWH0EPF000989EA.namprd02.prod.outlook.com
- (2603:10b6:303:8c:cafe::6f) by MW4PR03CA0135.outlook.office365.com
- (2603:10b6:303:8c::20) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6699.20 via Frontend
- Transport; Fri, 18 Aug 2023 17:57:05 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- MWH0EPF000989EA.mail.protection.outlook.com (10.167.241.137) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6699.14 via Frontend Transport; Fri, 18 Aug 2023 17:57:04 +0000
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Fri, 18 Aug 2023
- 10:56:48 -0700
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail205.nvidia.com
- (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Fri, 18 Aug
- 2023 10:56:48 -0700
-Received: from Asurada-Nvidia (10.127.8.10) by mail.nvidia.com (10.129.68.7)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37 via Frontend
- Transport; Fri, 18 Aug 2023 10:56:47 -0700
-Date: Fri, 18 Aug 2023 10:56:45 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: "Liu, Yi L" <yi.l.liu@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>,
-	"joro@8bytes.org" <joro@8bytes.org>, "alex.williamson@redhat.com"
-	<alex.williamson@redhat.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>, "cohuck@redhat.com"
-	<cohuck@redhat.com>, "eric.auger@redhat.com" <eric.auger@redhat.com>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>, "mjrosato@linux.ibm.com"
-	<mjrosato@linux.ibm.com>, "chao.p.peng@linux.intel.com"
-	<chao.p.peng@linux.intel.com>, "yi.y.sun@linux.intel.com"
-	<yi.y.sun@linux.intel.com>, "peterx@redhat.com" <peterx@redhat.com>,
-	"jasowang@redhat.com" <jasowang@redhat.com>,
-	"shameerali.kolothum.thodi@huawei.com"
-	<shameerali.kolothum.thodi@huawei.com>, "lulu@redhat.com" <lulu@redhat.com>,
-	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>, "Duan,
- Zhenzhong" <zhenzhong.duan@intel.com>
-Subject: Re: [PATCH v4 09/12] iommu/vt-d: Add iotlb flush for nested domain
-Message-ID: <ZN+w3fahQpM2W9Yx@Asurada-Nvidia>
-References: <ZNP0UKGU6id5wfc6@Asurada-Nvidia>
- <BN9PR11MB527683351B687B97AB84B51B8C13A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <ZNUI0D7ZMvLWlBNx@nvidia.com>
- <ZNUa/VmeiIo0YA0v@Asurada-Nvidia>
- <ZNU6BnTgNEWlwNYQ@nvidia.com>
- <ZNVQcmYp27ap7h30@Asurada-Nvidia>
- <BN9PR11MB5276D0B3E0106C73C498B8018C10A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <ZNZlnh+/Q5Vk5Kul@Asurada-Nvidia>
- <ZNsYxta9Pi7USDoR@Asurada-Nvidia>
- <ZN+i1pEoN/NsWPKS@nvidia.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C0F46108
+	for <iommu@lists.linux.dev>; Fri, 18 Aug 2023 18:00:43 +0000 (UTC)
+Received: from pps.filterd (m0360083.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 37IHr4pA006391;
+	Fri, 18 Aug 2023 18:00:25 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=FjK6Qk297I6FQIeWHczgjk8DBvOjxzQVed81ZCIFzpM=;
+ b=naMhw4zwg07FeJjJ0dX26LiCgpwVnBK1+6/SX+Y7uYprhffL5uCLCiiCNy50GE/pVRnj
+ AVyyCcCMM26Qw8GhW7mDm6v2HdwCbv62h/WcdpjQA6+173zArbSNh0oaKlZ6RKO3Iy9Y
+ 1WrW1+SishQhSOP3NXlCbLfgz5Yqqo7TCCLqlNXYv1B74SPDYxby60oOWOWNFMQJIPG8
+ 1Ndaarcv/gGglXW8JDo8dnLbNJwNTcHmez2xm1k8wOBY2VeuQJ21RaGspz9ThWwzOFkB
+ uR5K3iV/KwOqWeGdkVGNFOzJYxut4IyLbUkeULkzP3L/+xXvTv8Rp0TQ1a6/ZGnVA/qC iA== 
+Received: from ppma11.dal12v.mail.ibm.com (db.9e.1632.ip4.static.sl-reverse.com [50.22.158.219])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3sjdedg6ub-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 18 Aug 2023 18:00:24 +0000
+Received: from pps.filterd (ppma11.dal12v.mail.ibm.com [127.0.0.1])
+	by ppma11.dal12v.mail.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 37IH5eei018920;
+	Fri, 18 Aug 2023 18:00:23 GMT
+Received: from smtprelay01.wdc07v.mail.ibm.com ([172.16.1.68])
+	by ppma11.dal12v.mail.ibm.com (PPS) with ESMTPS id 3seq428ce7-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 18 Aug 2023 18:00:23 +0000
+Received: from smtpav06.dal12v.mail.ibm.com (smtpav06.dal12v.mail.ibm.com [10.241.53.105])
+	by smtprelay01.wdc07v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 37II0Mwf35062114
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Fri, 18 Aug 2023 18:00:23 GMT
+Received: from smtpav06.dal12v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id BDA2858061;
+	Fri, 18 Aug 2023 18:00:22 +0000 (GMT)
+Received: from smtpav06.dal12v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id C2A1458043;
+	Fri, 18 Aug 2023 18:00:21 +0000 (GMT)
+Received: from li-479af74c-31f9-11b2-a85c-e4ddee11713b.ibm.com (unknown [9.61.79.45])
+	by smtpav06.dal12v.mail.ibm.com (Postfix) with ESMTP;
+	Fri, 18 Aug 2023 18:00:21 +0000 (GMT)
+Message-ID: <bff750f47b326c7c0066f1debc5411a8208a128c.camel@linux.ibm.com>
+Subject: Re: [PATCH v2 0/4] Fix device_lock deadlock on two probe() paths
+From: Eric Farman <farman@linux.ibm.com>
+To: Jason Gunthorpe <jgg@nvidia.com>, Joerg Roedel <jroedel@suse.de>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux.dev,
+        Joerg Roedel <joro@8bytes.org>, Len Brown <lenb@kernel.org>,
+        linux-acpi@vger.kernel.org, "Rafael J. Wysocki" <rafael@kernel.org>,
+        Robin
+ Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
+        Lu Baolu
+ <baolu.lu@linux.intel.com>,
+        Kevin Tian <kevin.tian@intel.com>, Chen-Yu Tsai
+ <wenst@chromium.org>
+Date: Fri, 18 Aug 2023 14:00:21 -0400
+In-Reply-To: <ZN+XE7dk04f2C3D7@nvidia.com>
+References: 
+	<CGME20230809144403eucas1p1345aec6ec34440f1794594426e0402ab@eucas1p1.samsung.com>
+	 <0-v2-d2762acaf50a+16d-iommu_group_locking2_jgg@nvidia.com>
+	 <d090f196-a5c2-b188-31bf-e42553d8d251@samsung.com>
+	 <ZN5n7GnlrTS6s5Yg@nvidia.com> <ZN-UpDFHab0vGuXp@suse.de>
+	 <ZN+XE7dk04f2C3D7@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.48.4 (3.48.4-1.fc38) 
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <ZN+i1pEoN/NsWPKS@nvidia.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: MWH0EPF000989EA:EE_|SJ2PR12MB9163:EE_
-X-MS-Office365-Filtering-Correlation-Id: 06f330e1-22f8-4b0a-97fd-08dba0148867
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	wQ6TUWS4HL0pdHQ0EmlZMc9K7nA5FOd87A1Dd2ndKxLBvO5gu6rJR7o0Nzce1C+NQ0XGLtxQ/SJqyRUK4126Ns+vt1kpIBwFiSS+fzgcMc20c2JnoGi5V8LMk0cO7WkWxlNKodtPGqoroV//rUMGIld+N888SWuk+6wuIa4XB7bSc+3ptbOhsTvN9DRwk2c+oXs40DpkUwT6d/pfChK7yycYCtrRIn4aRlBpsgKvaz2Mz/j6COg6Axxcs4jUdwH/pYkFxoZ8bZ4WC+kY+vF+jjVHiNWIwBvcuarVrvd/r/1Poy3nFNQmw+p59D6gE8+TZbz5k315VGowV5L82mJP/g72mOrgNz4e2CaZ6boDotT9cYudgJOd56xUyyjX3V4D6wWWnjuLAokFhAz+5y8mpGhJqlYeF3rmdXbThSsUEfC+RwOaU1qPmV8eBRXQWWB2nzakHik02n0sVJdCzpEI/jC+9hPfCmjDwhnSMe+0AeYe9T+pQuEwGRMnW+Y9tTBSJCBRhshqmzYu9AMdlFpW0GpTaaVUb1DWxPL/3u0qUqloQp6zFVgqQEnrAfOptPqM26BdO9IKe+0CzMBNJwCQ4r5XbYEy7nHO2k4scFUROSDmEyIheRDhhvIl7R+BxLo4IR+y2qtJtxr25tigfZ4pWji+ABGTa9baAgE0d16OswnJfYd4OqEcTY104WWtnumy7kpVX52HSU/3FgCnH/HZe9eZAeG6rOlZNFobHBXFbEdsKiChFHQGM0SBCWo/Lch8QTrq5HBEjN4hVl/Wx+oFHP+ZgdblyGLcV9vhN9jgwCO7WLJeQPQVGT0anBEpG1+/
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230031)(4636009)(136003)(346002)(376002)(396003)(39860400002)(186009)(1800799009)(82310400011)(451199024)(46966006)(40470700004)(36840700001)(9686003)(40460700003)(36860700001)(426003)(336012)(55016003)(26005)(40480700001)(83380400001)(47076005)(33716001)(7636003)(82740400003)(356005)(86362001)(2906002)(54906003)(316002)(6636002)(41300700001)(70206006)(70586007)(5660300002)(7416002)(8676002)(6862004)(4326008)(8936002)(478600001)(67856001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Aug 2023 17:57:04.9775
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 06f330e1-22f8-4b0a-97fd-08dba0148867
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	MWH0EPF000989EA.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ2PR12MB9163
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: Ppcchw2uaytaXBlr7S9gRwkfiNJ29soo
+X-Proofpoint-GUID: Ppcchw2uaytaXBlr7S9gRwkfiNJ29soo
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.267,Aquarius:18.0.957,Hydra:6.0.601,FMLib:17.11.176.26
+ definitions=2023-08-18_22,2023-08-18_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011 impostorscore=0
+ priorityscore=1501 mlxlogscore=999 mlxscore=0 spamscore=0 suspectscore=0
+ phishscore=0 adultscore=0 bulkscore=0 malwarescore=0 lowpriorityscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2306200000
+ definitions=main-2308180162
 
-On Fri, Aug 18, 2023 at 01:56:54PM -0300, Jason Gunthorpe wrote:
-> On Mon, Aug 14, 2023 at 11:18:46PM -0700, Nicolin Chen wrote:
-> > On Fri, Aug 11, 2023 at 09:45:21AM -0700, Nicolin Chen wrote:
-> > 
-> > > > But if stepping back a bit supporting an array-based non-native format
-> > > > could simplify the uAPI design and allows code sharing for array among
-> > > > vendor drivers. You can still keep the entry as native format then the
-> > > > only difference with future in-kernel fast path is just on walking an array
-> > > > vs. walking a ring. And VMM doesn't need to expose non-invalidate
-> > > > cmds to the kernel and then be skipped.
-> > > 
-> > > Ah, so we might still design the uAPI to be ring based at this
-> > > moment, yet don't support a case CONS > 0 to leave that to an
-> > > upgrade in the future.
-> > > 
-> > > I will try estimating a bit how complicated to implement the
-> > > ring, to see if we could just start with that. Otherwise, will
-> > > just start with an array.
-> > 
-> > I drafted a uAPI structure for a ring-based SW queue. While I am
-> > trying an implementation, I'd like to collect some comments at the
-> > structure, to see if it overall makes sense.
-> 
-> I don't think a ring makes alot of sense at this point. The only thing
-> it optimizes is a system call if the kernel needs to wrap around the
-> tail of the ring. It would possibly be better to have a small gather
-> list than try to describe the ring logic..
-> 
-> Further, the VMM already has to process it, so the vmm already knows
-> what ops are going to kernel are not. The VMM can just organize them
-> in a linear list in one way or another. We need to copy and read this
-> stuff in the VMM anyhow to protect against a hostile VM.
+On Fri, 2023-08-18 at 13:06 -0300, Jason Gunthorpe wrote:
+> On Fri, Aug 18, 2023 at 05:56:20PM +0200, Joerg Roedel wrote:
+> > On Thu, Aug 17, 2023 at 03:33:16PM -0300, Jason Gunthorpe wrote:
+> > > Bascially.. Yikes!
+> >=20
+> > Hmm, that is a difficult situation. Even if the problem is a misuse
+> > of
+> > the APIs we can not just blindly break other drivers by our core
+> > changes.
+>=20
+> They are not broken, they just throw a lockdep warning and keep going
+> as before. This is what triggers:
+>=20
+> static inline void device_lock_assert(struct device *dev)
+> {
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0lockdep_assert_held(&dev-=
+>mutex);
+> }
+>=20
+> So non-debug builds won't even see anything.
+>=20
+> > We need to resolve this situation pretty soon, otherwise I need to
+> > remove the locking rework patches from the IOMMU tree until the
+> > callers are fixed.
+> >=20
+> > Is there a way to keep the broken drivers working for now?
+>=20
+> Historically we've tolerated lockdep warnings as a way to motivate
+> people who care to fix their stuff properly. eg the Intel VT-D had a
+> lockdep warning at kernel boot for many releases before it was fixed.
+>=20
+> The series doesn't make things any functionally worse for these
+> places
+> misusing the API, but it now does throw a warning in some cases.
 
-OK. Then an linear array it is.
+Hi Jason,
 
-> > One thing that I couldn't add to this common structure for SMMU
-> > is the hardware error code, which should be encoded in the higher
-> > bits of the consumer index register, following the SMMU spec:
-> >     ERR, bits [30:24] Error reason code.
-> >     - When a command execution error is detected, ERR is set to a
-> >       reason code and then the SMMU_GERROR.CMDQ_ERR global error
-> >       becomes active.
-> >     - The value in this field is UNKNOWN when the CMDQ_ERR global
-> >       error is not active. This field resets to an UNKNOWN value.
-> 
-> The invalidate ioctl should fail in some deterministic way and report
-> back the error code and the highest array index that maybe could have
-> triggered it.
+Well, I'm trying to chase down an apparent deadlock in the mdev cases
+that is introduced with the commit [1] blamed by these fixes. Seems
+that when iommu_group_{add|remove}_device gets called out of vfio (for
+example, vfio-ap or -ccw), the device lock is already held so
+attempting to get it again isn't going to go well.
 
-Yea. Having an error code in the highest bits of array_index,
-"array_index != array_max" could be the deterministic way to
-indicate a failure. And a kernel errno could be returned also
-to the invalidate ioctl.
+As near as I see, mdev_device_create calls device_driver_attach, which
+acquires the lock and eventually gets us into the vfio code, and then
+vfio_device_set_group get us into the iommu side. Not sure how to best
+untangle that.
 
-> The highest array index sounds generic, the error code maybe is too
+I'm puzzled why lockdep isn't shouting over this for me, so I added a
+lockdep_assert_not_held() in those paths to get a proper callchain:
 
-We could do in its and report the error code in its raw form:
-	__u32 out_array_index;
-	/* number of bits used to report error code in the returned array_index */
-	__u32 out_array_index_error_code_bits;
-Or just:
-	__u32 out_array_index;
-	__u32 out_error_code;
+[   49.319508] ------------[ cut here ]------------
+[   49.319546] WARNING: CPU: 0 PID: 4472 at drivers/iommu/iommu.c:1216
+iommu_group_add_device+0xfc/0x120
+[   49.319562] Modules linked in: vhost_vsock
+vmw_vsock_virtio_transport_common vsock vhost vhost_iotlb algif_hash
+af_alg lcs ctcm fsm kvm xt_MASQUERADE xt_conntrack ipt_REJECT
+nf_reject_ipv4 xt_tcpudp iptable_mangle iptable_nat nf_nat nf_conntrack
+nf_defrag_ipv6 nf_defrag_ipv4 iptable_filter ip_tables x_tables bridge
+stp llc vfio_ccw zcrypt_cex4 eadm_sch mdev vfio_iommu_type1 vfio loop
+configfs zram zsmalloc ghash_s390 prng aes_s390 des_s390 libdes qeth_l2
+sha512_s390 sha256_s390 sha1_s390 sha_common pkey zcrypt rng_core
+dm_multipath dm_mod autofs4
+[   49.319721] CPU: 0 PID: 4472 Comm: python Kdump: loaded Not tainted
+6.5.0-rc6-next-20230818-dirty #2
+[   49.319728] Hardware name: IBM 2964 NE1 749 (LPAR)
+[   49.319734] Krnl PSW : 0704f00180000000 0000000190aab690
+(iommu_group_add_device+0x100/0x120)
+[   49.319748]            R:0 T:1 IO:1 EX:1 Key:0 M:1 W:0 P:0 AS:3 CC:3
+PM:0 RI:0 EA:3
+[   49.319758] Krnl GPRS: 0000000000000000 0000000100000000
+0000000000000001 00000000ae8924f0
+[   49.319765]            00000001bc05a920 000000008e7f8000
+0000000000000000 0000000000000001
+[   49.319772]            00000000ae892400 00000000ae892400
+000000008d23b200 0000000000000000
+[   49.319779]            000003ff901d8d18 000003ff90616a08
+0000000190aab686 0000038005c8ba50
+[   49.319792] Krnl Code: 0000000190aab680:
+c0e5001e5624	brasl	%r14,0000000190e762c8
+                          0000000190aab686:
+ec26ff9f017e	cij	%r2,1,6,0000000190aab5c4
+                         #0000000190aab68c:
+af000000		mc	0,0
+                         >0000000190aab690:
+a7f4ff9a		brc	15,0000000190aab5c4
+                          0000000190aab694:
+b9040028		lgr	%r2,%r8
+                          0000000190aab698:
+c0e5001eb210	brasl	%r14,0000000190e81ab8
+                          0000000190aab69e:
+182b		lr	%r2,%r11
+                          0000000190aab6a0:
+eb6ff0a00004	lmg	%r6,%r15,160(%r15)
+[   49.319872] Call Trace:
+[   49.319878]  [<0000000190aab690>] iommu_group_add_device+0x100/0x120
+[   49.319886] ([<0000000190aab686>] iommu_group_add_device+0xf6/0x120)
+[   49.319894]  [<000003ff8002f404>] vfio_device_set_group+0x9c/0x128
+[vfio]=20
+[   49.319909]  [<000003ff8002cf12>]
+vfio_register_emulated_iommu_dev+0x6a/0xd0 [vfio]=20
+[   49.319918]  [<000003ff80083906>] vfio_ccw_mdev_probe+0xce/0x108
+[vfio_ccw]=20
+[   49.319931]  [<0000000190abdbc8>] really_probe+0xd0/0x338=20
+[   49.319939]  [<0000000190abe3cc>] device_driver_attach+0x5c/0xc8=20
+[   49.319947]  [<000003ff8003ca30>] mdev_device_create+0x200/0x278
+[mdev]=20
+[   49.319956]  [<000003ff8003ce1c>] create_store+0x8c/0xb8 [mdev]=20
+[   49.319964]  [<000000019059fba2>] kernfs_fop_write_iter+0x142/0x1d8=20
+[   49.319975]  [<00000001904c7c76>] vfs_write+0x1de/0x440=20
+[   49.319986]  [<00000001904c814e>] ksys_write+0x6e/0x100=20
+[   49.320024]  [<0000000190e75bfe>] __do_syscall+0x1de/0x208=20
+[   49.320033]  [<0000000190e8c470>] system_call+0x70/0x98=20
+[   49.320042] 5 locks held by python/4472:
+[   49.320048]  #0: 0000000086d86440 (sb_writers#3){.+.+}-{0:0}, at:
+ksys_write+0x6e/0x100
+[   49.320074]  #1: 000000008d239c90 (&of->mutex){+.+.}-{3:3}, at:
+kernfs_fop_write_iter+0x102/0x1d8
+[   49.320095]  #2: 000000008ad95428 (kn->active#266){.+.+}-{0:0}, at:
+kernfs_fop_write_iter+0x10e/0x1d8
+[   49.320119]  #3: 00000000ae888b78 (&parent->unreg_sem){.+.+}-{3:3},
+at: mdev_device_create+0x1b0/0x278 [mdev]
+[   49.320141]  #4: 00000000ae8924f0 (&dev->mutex){....}-{3:3}, at:
+device_driver_attach+0x4e/0xc8
+[   49.320162] Last Breaking-Event-Address:
+[   49.320168]  [<0000000190f7734c>] __s390_indirect_jump_r14+0x0/0xc
+[   49.320179] irq event stamp: 147555
+[   49.320185] hardirqs last  enabled at (147563): [<00000001901edcb4>]
+console_unlock+0x10c/0x118
+[   49.320194] hardirqs last disabled at (147570): [<00000001901edc96>]
+console_unlock+0xee/0x118
+[   49.320201] softirqs last  enabled at (147304): [<0000000190e8e674>]
+__do_softirq+0x47c/0x510
+[   49.320209] softirqs last disabled at (147295): [<000000019015732a>]
+__irq_exit_rcu+0x11a/0x130
+[   49.320218] ---[ end trace 0000000000000000 ]---
 
-Do we have to define a list of generic error code?
+Thanks,
+Eric
 
-Thanks!
-Nic
+[1] a16b5d1681ab ("iommu: Complete the locking for dev->iommu_group")
+
+>=20
+> IMHO I'd rather keep the warning rather than supress it by adding
+> device_locks(). Do you agree?
+>=20
+> Jason
+
