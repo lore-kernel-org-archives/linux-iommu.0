@@ -1,120 +1,66 @@
-Received: from pegase1.c-s.fr (unknown [90.115.179.12])
+Received: from out30-119.freemail.mail.aliyun.com (out30-119.freemail.mail.aliyun.com [115.124.30.119])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1674E15AE3
-	for <iommu@lists.linux.dev>; Fri, 18 Aug 2023 08:21:10 +0000 (UTC)
-Received: from localhost (mailhub3.si.c-s.fr [192.168.12.233])
-	by localhost (Postfix) with ESMTP id 4RRvLh446Nz9yYL;
-	Fri, 18 Aug 2023 09:55:40 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase1.c-s.fr ([192.168.12.234])
-	by localhost (pegase1.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id fcxylVjVF3Iq; Fri, 18 Aug 2023 09:55:40 +0200 (CEST)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-	by pegase1.c-s.fr (Postfix) with ESMTP id 4RRvLh34Trz9yYJ;
-	Fri, 18 Aug 2023 09:55:40 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-	by messagerie.si.c-s.fr (Postfix) with ESMTP id 6332F8B76C;
-	Fri, 18 Aug 2023 09:55:40 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-	by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-	with ESMTP id kZjxaA0XkgDf; Fri, 18 Aug 2023 09:55:40 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (PO17626.IDSI0.si.c-s.fr [172.19.54.29])
-	by messagerie.si.c-s.fr (Postfix) with ESMTP id 203C48B763;
-	Fri, 18 Aug 2023 09:55:40 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
-	by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 37I7tVsv044178
-	(version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-	Fri, 18 Aug 2023 09:55:31 +0200
-Received: (from chleroy@localhost)
-	by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 37I7tT6e044167;
-	Fri, 18 Aug 2023 09:55:29 +0200
-X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
-From: Christophe Leroy <christophe.leroy@csgroup.eu>
-To: Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Robin Murphy <robin.murphy@arm.com>
-Cc: Christophe Leroy <christophe.leroy@csgroup.eu>,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        iommu@lists.linux.dev, Arnd Bergmann <arnd@arndb.de>
-Subject: [PATCH] dma-mapping, powerpc: Move arch_dma_set_mask() prototype into dma-map-ops.h
-Date: Fri, 18 Aug 2023 09:55:13 +0200
-Message-ID: <008c4b0a118d37abac6b1ec89b5677b1c6e347ae.1692345210.git.christophe.leroy@csgroup.eu>
-X-Mailer: git-send-email 2.41.0
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BCBE017AB7
+	for <iommu@lists.linux.dev>; Fri, 18 Aug 2023 09:16:25 +0000 (UTC)
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046049;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0Vq1xg1D_1692350166;
+Received: from localhost(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0Vq1xg1D_1692350166)
+          by smtp.aliyun-inc.com;
+          Fri, 18 Aug 2023 17:16:14 +0800
+From: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+To: dwmw2@infradead.org
+Cc: baolu.lu@linux.intel.com,
+	joro@8bytes.org,
+	will@kernel.org,
+	robin.murphy@arm.com,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
+	Abaci Robot <abaci@linux.alibaba.com>
+Subject: [PATCH] iommu/vt-d: Remove unused function
+Date: Fri, 18 Aug 2023 17:16:03 +0800
+Message-Id: <20230818091603.64800-1-jiapeng.chong@linux.alibaba.com>
+X-Mailer: git-send-email 2.20.1.7.g153144c
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1692345312; l=2113; i=christophe.leroy@csgroup.eu; s=20211009; h=from:subject:message-id; bh=Y8eR5MYIcGQkcPhwL0fVutBBQ/r7VCI5rheBSQoEqXk=; b=XO0T0FdUaUCymsyFZIYpYhC/EYUO1TDuNQGEqyGRodx/ilSA1rtSQB+c2Ub6Pu5R7Xe6/jM+2 QNCruSdjUmcDFBaAS5JI25U06C5tlzYtRASAOEhqv8mPbApsymhu4dx
-X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
 Content-Transfer-Encoding: 8bit
 
-To fix the following error,
+The function are defined in the pasid.c file, but not called
+elsewhere, so delete the unused function.
 
-  CC      arch/powerpc/kernel/dma-mask.o
-arch/powerpc/kernel/dma-mask.c:7:6: error: no previous prototype for 'arch_dma_set_mask' [-Werror=missing-prototypes]
-    7 | void arch_dma_set_mask(struct device *dev, u64 dma_mask)
-      |      ^~~~~~~~~~~~~~~~~
+drivers/iommu/intel/pasid.c:342:20: warning: unused function 'pasid_set_wpe'.
 
-Move arch_dma_set_mask() definition into dma-map-ops.h and
-include it in arch/powerpc/kernel/dma-mask.c
-
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Cc: Arnd Bergmann <arnd@arndb.de>
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Closes: https://bugzilla.openanolis.cn/show_bug.cgi?id=6185
+Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
 ---
- arch/powerpc/kernel/dma-mask.c | 1 +
- include/linux/dma-map-ops.h    | 6 ++++++
- kernel/dma/mapping.c           | 6 ------
- 3 files changed, 7 insertions(+), 6 deletions(-)
+ drivers/iommu/intel/pasid.c | 9 ---------
+ 1 file changed, 9 deletions(-)
 
-diff --git a/arch/powerpc/kernel/dma-mask.c b/arch/powerpc/kernel/dma-mask.c
-index ffbbbc432612..5b07ca7b73aa 100644
---- a/arch/powerpc/kernel/dma-mask.c
-+++ b/arch/powerpc/kernel/dma-mask.c
-@@ -1,6 +1,7 @@
- // SPDX-License-Identifier: GPL-2.0
- 
- #include <linux/dma-mapping.h>
-+#include <linux/dma-map-ops.h>
- #include <linux/export.h>
- #include <asm/machdep.h>
- 
-diff --git a/include/linux/dma-map-ops.h b/include/linux/dma-map-ops.h
-index 9bf19b5bf755..6bca67e21bc1 100644
---- a/include/linux/dma-map-ops.h
-+++ b/include/linux/dma-map-ops.h
-@@ -509,4 +509,10 @@ pci_p2pdma_map_segment(struct pci_p2pdma_map_state *state, struct device *dev,
+diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
+index 8f92b92f3d2a..06ddb3c927f5 100644
+--- a/drivers/iommu/intel/pasid.c
++++ b/drivers/iommu/intel/pasid.c
+@@ -335,15 +335,6 @@ static inline void pasid_set_fault_enable(struct pasid_entry *pe)
+ 	pasid_set_bits(&pe->val[0], 1 << 1, 0);
  }
- #endif /* CONFIG_PCI_P2PDMA */
  
-+#ifdef CONFIG_ARCH_HAS_DMA_SET_MASK
-+void arch_dma_set_mask(struct device *dev, u64 mask);
-+#else
-+#define arch_dma_set_mask(dev, mask)	do { } while (0)
-+#endif
-+
- #endif /* _LINUX_DMA_MAP_OPS_H */
-diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
-index 9a4db5cce600..e323ca48f7f2 100644
---- a/kernel/dma/mapping.c
-+++ b/kernel/dma/mapping.c
-@@ -760,12 +760,6 @@ bool dma_pci_p2pdma_supported(struct device *dev)
- }
- EXPORT_SYMBOL_GPL(dma_pci_p2pdma_supported);
- 
--#ifdef CONFIG_ARCH_HAS_DMA_SET_MASK
--void arch_dma_set_mask(struct device *dev, u64 mask);
--#else
--#define arch_dma_set_mask(dev, mask)	do { } while (0)
--#endif
+-/*
+- * Setup the WPE(Write Protect Enable) field (Bit 132) of a
+- * scalable mode PASID entry.
+- */
+-static inline void pasid_set_wpe(struct pasid_entry *pe)
+-{
+-	pasid_set_bits(&pe->val[2], 1 << 4, 1 << 4);
+-}
 -
- int dma_set_mask(struct device *dev, u64 mask)
- {
- 	/*
+ /*
+  * Setup the P(Present) field (Bit 0) of a scalable mode PASID
+  * entry.
 -- 
-2.41.0
+2.20.1.7.g153144c
 
