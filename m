@@ -1,263 +1,146 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 37E1D19BAE
-	for <iommu@lists.linux.dev>; Fri, 18 Aug 2023 16:06:18 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 060BB1FB;
-	Fri, 18 Aug 2023 09:06:58 -0700 (PDT)
-Received: from [10.57.91.158] (unknown [10.57.91.158])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 007453F762;
-	Fri, 18 Aug 2023 09:06:14 -0700 (PDT)
-Message-ID: <6ef158ef-c592-64fe-d204-4e7a526b4e47@arm.com>
-Date: Fri, 18 Aug 2023 17:06:14 +0100
+Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam02on2059.outbound.protection.outlook.com [40.107.212.59])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 05D3B182B5
+	for <iommu@lists.linux.dev>; Fri, 18 Aug 2023 16:06:46 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=GvKRH8buyVP9G4OnVogzUOP61N8GOavYAHx1ZIbv4Os4MGlVb+L1OZhDOTYuIttGxLv82fv0ZtDa+sYQTzVOJOQz+DqXKyucmJAPnZ7UlRCWhNaSqTxpong6AKjd8KPMoM+N2QxVEwcrJAC74Ss5UQkanOJwTGKJScFY+UOYPGG/MIykatRRFXL73o0dpJ32AUyBM/cWSRIanFu8b1DwyMgCjuNR6PII+OzsLxP4W9bPE4b90U/litt0eBUea07Tnmjkx2lhe0Z7/0mdxmtzPGy+zDRgO0XK3tXD7836XsMxUmBag24dOOG0RxFoIIp49JQEo5hvbAHm7FjMWezkog==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=zSfFsF9oV6k6xTud9gJvzH6X6jH0yAPr/JjuGNpFVVc=;
+ b=iVAnG/nrSF4apg/xV798uHKiAHgJdtBWPfPUL5G+Tg9ktO27i7URoZ/n4wske69bUOV3Q8srBHCmLFlKhhB9v6PypBfDJUlBIOqTDNKDg/VS6sQBwltxwVakQZIvoI7DXohNqEEEwD5CMHaTw9l9z3lkq5xv4TCEhQ9x5PoT0IgfBSoTGqa35fQRk1Tz6AgD4Gjy0Amm9ztkxOTMYq2o12u6mY+d4jaRHOe5aA+W7Z+FkT6XGsgo8QKM5CQCJHDnIAftBUEbKQgjvGKbvTd+DzuN2Cjb9D1Ydiyqamw/OHm099vP2cEuemczUA9jH8THzdKKMXnQZtj8mujhTOqiuQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=zSfFsF9oV6k6xTud9gJvzH6X6jH0yAPr/JjuGNpFVVc=;
+ b=nETiDpz43NkqRgXTqrFBzx7VDq4Nd7t/jL26Jh8nbyh+syunVnDpgKo8mZM+hHL1l2WOY0A/oDJFFvYQWaXE031EhPwlUrJyDj3sWjlVD+bkYNxsWRTyz3qgznIPrQHocUQQxMJWLFUyidSA+o1buWQVR4evmjU5l5uII2WSfReR+/NmfwdKLnL2DSupcKHDvsg9WWKfBuOzwjVWJ8zxY90Q82F/ZH7uk+5ByKUGlUZpcq1Zc2mw3C+03NxmVtR/8Tz/PZSf8incKrQn8haOMXNxfe4lr+8RsG5NGatuxz9VCfn7TEHNlLKc9jnJJzhOMJh6/sneiMrDCAlh0uV2Ww==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by LV8PR12MB9136.namprd12.prod.outlook.com (2603:10b6:408:18e::5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6699.20; Fri, 18 Aug
+ 2023 16:06:44 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::5111:16e8:5afe:1da1]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::5111:16e8:5afe:1da1%6]) with mapi id 15.20.6678.031; Fri, 18 Aug 2023
+ 16:06:44 +0000
+Date: Fri, 18 Aug 2023 13:06:43 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Joerg Roedel <jroedel@suse.de>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux.dev,
+	Joerg Roedel <joro@8bytes.org>, Len Brown <lenb@kernel.org>,
+	linux-acpi@vger.kernel.org, "Rafael J. Wysocki" <rafael@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Chen-Yu Tsai <wenst@chromium.org>
+Subject: Re: [PATCH v2 0/4] Fix device_lock deadlock on two probe() paths
+Message-ID: <ZN+XE7dk04f2C3D7@nvidia.com>
+References: <CGME20230809144403eucas1p1345aec6ec34440f1794594426e0402ab@eucas1p1.samsung.com>
+ <0-v2-d2762acaf50a+16d-iommu_group_locking2_jgg@nvidia.com>
+ <d090f196-a5c2-b188-31bf-e42553d8d251@samsung.com>
+ <ZN5n7GnlrTS6s5Yg@nvidia.com>
+ <ZN-UpDFHab0vGuXp@suse.de>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZN-UpDFHab0vGuXp@suse.de>
+X-ClientProxiedBy: MN2PR15CA0045.namprd15.prod.outlook.com
+ (2603:10b6:208:237::14) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.14.0
-Subject: Re: [RFC PATCH] iommu: arm-smmu-nvidia: Add default domain type
- implementation op
-Content-Language: en-GB
-To: Thierry Reding <thierry.reding@gmail.com>,
- Baolu Lu <baolu.lu@linux.intel.com>
-Cc: Stanimir Varbanov <stanimir.varbanov@suse.com>,
- Stanimir Varbanov <svarbanov@suse.de>, linux-tegra@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, Krishna Reddy <vdumpa@nvidia.com>,
- Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>,
- Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Conor Dooley <conor+dt@kernel.org>, devicetree@vger.kernel.org
-References: <20230710082252.9702-1-svarbanov@suse.de> <ZKvgG4-IzqiYPSUT@orome>
- <93026b47-3b72-8439-486e-e0cda21dd0fe@suse.com> <ZK17X4ueSI5rWKVL@orome>
- <ZK_8uU2XJAWMk23M@orome>
- <2a6fe812-3881-8dc9-1e7e-237ce7490155@linux.intel.com>
- <ZLDxrDMoLsniQx4x@orome>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <ZLDxrDMoLsniQx4x@orome>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|LV8PR12MB9136:EE_
+X-MS-Office365-Filtering-Correlation-Id: dcd7351d-77c9-4e62-9322-08dba0051de1
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	UaYy895+bAe19gNvLi9GKmhHj72PxFb9M8JVevfn8eBeUdZ/m7x0ngB36/ySde+22q+R1InUSdQZwaYiiK5bSEYjdpcuLbWQuN/uaZHnrlM8xr5w+wys8Mys5l3a75gWckM31Z+7ifGnRZ2uGV3Ojx19i/wlSrOz/8yp47lO7KMDoVjnt7LBIcavVTq/n3U6j5iyvmoFNf7+gXs4Lm6fx3HhP5ihGkkdManC0ksvqiigBSDHdM+C7dPU3erXYLH6cFRYBO7l+PjfX/PMxPc/R73gywvOm2VCRbyv2ew+GzSRKxMHTCI/cFhSKSfzLW85kuLn7mDoPSQyv6uLwjjWkw3vm+XIdcIg4H1OaBnfu2nvFMZDY3SDhhPLMtiiFVw2IpDxMGQ/NqWrmx9Jx8/1WrwJQuCAqA2Hh6XdlNL+cg/WCA5mUUqJUUH8YIcH/6p8Ixvgt8/s1QO9Scl+AXkxDmilIEObFqtJDGujkeE4cAxVp1zAxm4ygK+wXs2HaSHQUFHzF31UBdMRHxPu3y7xa4oefPabVFIegfwe/xyNoydV6VotGdYZU5ElBb577z808tdlL3QoDgLadF7NE151LbeUPidit4SZGYn4YZG+XFU=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(39860400002)(396003)(376002)(366004)(136003)(346002)(451199024)(186009)(1800799009)(5660300002)(2616005)(41300700001)(2906002)(66476007)(66556008)(316002)(6916009)(66946007)(54906003)(7416002)(8676002)(4326008)(8936002)(478600001)(86362001)(6486002)(38100700002)(6506007)(6512007)(36756003)(83380400001)(26005)(67856001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?XCHM9gDIqVKOtzd2ojGSaP2JQ3d2HbDYDBu3YsyLULqlFSkCaDTcscjERwgR?=
+ =?us-ascii?Q?jeKhcHuvjDggohE3ySEYpzQrZhdMeCS9O1+CQaQxfo2KYtiO3UfCMx1XPSsn?=
+ =?us-ascii?Q?mfsOwpBoCBShSt8WwID/qmZClbu57Rg6zF7Mc1l+g06abiCP0cvf7oKnQc90?=
+ =?us-ascii?Q?o/TqkP6UlYaA3ZIB98ibqMkYOVhRTuBwepyo1A5/bYbhUERBXQnn38DfbqQB?=
+ =?us-ascii?Q?KGHa5y+ngt+Gv7KETuk/7ZGkplvFQpAFGOFzGT+cTF4BXkqG8bPK++G7h5Mr?=
+ =?us-ascii?Q?+Et8NRB6BSTirwrNurWDwbD0xtZusrgIMOeCVp2ss9/+/isLvpw5AMhr3gUq?=
+ =?us-ascii?Q?PfnfA95fmAp9LrHjldl30xwLsJA8tPhJa4Cn/aeeYapd3eGtz/dWQzNpAXwl?=
+ =?us-ascii?Q?HL3XtgZvccIwi0Dg0WYt+M4o7jDzCnjysrmFnM9qseFmALkgL3Vc+9ksJyWR?=
+ =?us-ascii?Q?xYczQspF9etHk2MzkntsjxHrEVSZbcICbK96ersMgQMN7yRroPVyBT+LHmWA?=
+ =?us-ascii?Q?nb3n949HHv8JDCfgwzQYKYpYOA3EsbbaP9WI1MjY8g/4H8ghFLn4CS3b5SQU?=
+ =?us-ascii?Q?HwL8VbnRNKh28gHL28HRtslUTZFGj6quo1W0YqwaCdmllGrAV6k0zmyA5H4O?=
+ =?us-ascii?Q?1I0+wl4qxitqw+kg0ll6CbZJ/bcBa+uouqzZUDDzPDQnxxFXwPOg+1hsIciG?=
+ =?us-ascii?Q?ywArvgwEzz7k5W5WdOM0KngsfU4owCT+MdQaNeJ5nIua6Jc9waOadTX/uzN/?=
+ =?us-ascii?Q?wxS3Kh6YY9GzMiUdz/YuPiZx2Vx3CHRSdLcM11Y7WrKgxwVyyfzTtYLGl1Ho?=
+ =?us-ascii?Q?HBIGpAzTtlNYTeYxE4W8ZBtBzFakr0uHHVEdE3UsOTMnvPl5uKSH5H1yqgqT?=
+ =?us-ascii?Q?0UXRrrPD8tfSGBO2LJzXby7Stc367KTkbE5mSXRquBhKLQPVGJJpw0UVOfKz?=
+ =?us-ascii?Q?GY0zrn23tVlggvVnDpQ0wFP2+t3YYYFxPbzGdBz9x4S+4KbPw5tF0Oa49BkS?=
+ =?us-ascii?Q?EF+Bomuv5KvrwXO2OK9nSbCdptrN6f6ldJQvP4+10yoxYYor5kqnreWeM39P?=
+ =?us-ascii?Q?Jwh1wbc/1KbQCDDvwSx9QxO+c0oPEnNzLbLxWJqvPzOisM33l+ntJBMShloI?=
+ =?us-ascii?Q?IRYMzpNx6OVMgdd6aXzrN/tmn4wFRG0nbIgPDLrU86PdvhDivLwmbQAKgB1b?=
+ =?us-ascii?Q?H2wpdItp4ioLvIA5qZXr4FsQYGUlaTnwiJ4TpvXk8WcnJKJclvEyf6pYzoa2?=
+ =?us-ascii?Q?mGZVDxK2AA8WxFA6lwnkZDqPmYOL8bADh8yhvjFpkJEe2SggOdczM82J3oQB?=
+ =?us-ascii?Q?sW9tPWVo+d36ZF6jGqwQl3beBo75YOLtoN1Lq1cVuYq6lBpNMDs7f6/FxLj7?=
+ =?us-ascii?Q?nuQcxbA2+4auzFLe69RATrjE+3qhYvnk+TZhnI1DoXRJlxV0VCMHlXugcS+5?=
+ =?us-ascii?Q?Mx8Ypdk46XRFJKRNVDYOxDf41GZfij7q+nUyQCfVrWshqLpAzxPofiPvYAbs?=
+ =?us-ascii?Q?+vBh6x+4ddsl4LwAHpNS94tt4xMmL/oVwzkmaw8BLkv8Xa0rOW5Jj9SDu95R?=
+ =?us-ascii?Q?C/DH4pX4vwm7NkuN1QNJoAYHCBUWqaw4B7gbrYDI?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: dcd7351d-77c9-4e62-9322-08dba0051de1
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Aug 2023 16:06:44.0758
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: ASwRW8OpSl0ixpekI+5EUTdoMjYYQ7nfDRIA1edMooypZMOPmPlkBpB3hPB54/ok
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV8PR12MB9136
 
-On 2023-07-14 07:56, Thierry Reding wrote:
-> On Fri, Jul 14, 2023 at 11:14:08AM +0800, Baolu Lu wrote:
->> On 2023/7/13 21:31, Thierry Reding wrote:
->>> On Tue, Jul 11, 2023 at 05:55:11PM +0200, Thierry Reding wrote:
->>>> On Tue, Jul 11, 2023 at 01:58:34PM +0300, Stanimir Varbanov wrote:
->>>>> Hi Thierry,
->>>>>
->>>>> Thank you for the comments!
->>>>>
->>>>> On 7/10/23 13:40, Thierry Reding wrote:
->>>>>> On Mon, Jul 10, 2023 at 11:22:52AM +0300, Stanimir Varbanov wrote:
->>>>>>> Add def_domain_type implementation op and override default IOMMU
->>>>>>> domain Kconfig option (CONFIG_IOMMU_DEFAULT_PASSTHROUGH=y), which
->>>>>>> could be enabled on some distros. The current quirk has been done
->>>>>>> for Tegra234 machine, because I found the issue on it. The issue
->>>>>>> itself appears on USB host controller which cannot be initialized
->>>>>>> without IOMMU translation. Something more, we proved that IOMMU
->>>>>>> translation is needed for display and GPU drivers as well.
->>>>>>>
->>>>>>> I evaluated few possible options to solve that:
->>>>>>>
->>>>>>>    a) select default IOMMU domain from .def_domain_type op
->>>>>>>    b) Unset CONFIG_IOMMU_DEFAULT_PASSTHROUGH=n
->>>>>>>    c) add iommu.passthrough=0 on the kernel cmdline
->>>>>>>    d) firmware - ACPI / DT
->>>>>>>
->>>>>>> a) This option is implemented in the proposed patch.
->>>>>>>
->>>>>>> b) Since that the community has agreed that pass-through is preferred
->>>>>>> as a default IOMMU domain option because this will avoid performance
->>>>>>> impacts on some of the platforms [1]. On the other side we have examples
->>>>>>> where you cannot even install Linux distribution on a machine where the
->>>>>>> storage media cannot be detected and the system just hangs.
->>>>>>
->>>>>> That's not how I read that thread. It sounds more to me like Will and
->>>>>> Robin had ideas on how to improve the performance and were planning to
->>>>>> address these issues. It doesn't exactly sound to me like there was
->>>>>> concensus to make passthrough the default.
->>>>>>
->>>>>> Having said that, given that it's possible for distributions and users
->>>>>> to set CONFIG_IOMMU_DEFAULT_PASSTHROUGH=y, I think it would be useful in
->>>>>> general to have a way of enforcing IOMMU translations if it's needed by
->>>>>> the hardware.
->>>>>
->>>>> Exactly, the problem is that some platforms prefer passthrough to avoid
->>>>> performance impacts but others cannot even boot the kernel (and thus
->>>>> installation failure). Passing iommu.passthrough=0 should be an
->>>>> administrator decision, balancing between security and performance.
->>>>>
->>>>> On the other hand the aforementioned mail thread gave some performance
->>>>> numbers which might be are outdated having the improvements made in smmu
->>>>> driver in mind. Unfortunately, I cannot confirm that the performance has
->>>>> been improved during that time.
->>>>>
->>>>>>
->>>>>> I'm not sure I fully understand the particular problems that you're
->>>>>> seeing on Tegra234, though. I'm not aware of anything in the USB host
->>>>>> controller driver (or hardware, for that matter) that would require the
->>>>>> IOMMU to be enabled. The only peculiarity that I can think of is the
->>>>>> firmware, which is typically loaded by an early bootloader and therefore
->>>>>> might perhaps need the IOMMU to properly map this in the kernel.
->>>>>> However, my understanding is that this firmware is loaded into special
->>>>>> carveout regions which don't require remapping.
->>>>>
->>>>> On Jetson Orin AGX (R35.2.1) I see these errors:
->>>>>
->>>>> tegra-mc 2c00000.memory-controller: unknown: write @0x0000000000000080:
->>>>> EMEM address decode error (EMEM decode error)
->>>>>
->>>>> tegra-xusb 3610000.usb: Error while assigning device slot ID
->>>>> tegra-xusb 3610000.usb: Max number of devices this xHCI host supports is 36.
->>>>> usb usb2-port3: couldn't allocate usb_device
->>>>> tegra-mc 2c00000.memory-controller: unknown: write @0x0000000000000090:
->>>>> EMEM address decode error (EMEM decode error)
->>>>> tegra-xusb 3610000.usb: Error while assigning device slot ID
->>>>> tegra-xusb 3610000.usb: Max number of devices this xHCI host supports is 36.
->>>>> usb usb1-port3: couldn't allocate usb_device
->>>>>
->>>>> tegra-mc 2c00000.memory-controller: unknown: write @0x00000000000000a0:
->>>>> EMEM address decode error (EMEM decode error)
->>>>> tegra-xusb 3610000.usb: Error while assigning device slot ID
->>>>> tegra-xusb 3610000.usb: Max number of devices this xHCI host supports is 36.
->>>>> usb usb1-port4: couldn't allocate usb_device
->>>>>
->>>>>>
->>>>>> However, passthrough is admittedly not something that we've thoroughly
->>>>>> tested, so it's possible you're running into a use-case that I'm not
->>>>>> aware of. In that case, could you provide a few more specifics (such as
->>>>>> the DTB and .config) of your build configuration so that I can try and
->>>>>> reproduce?
->>>>>
->>>>> To reproduce you have to add iommu.passthrough=1 on kernel cmdline. The
->>>>> dtb is from Jetpack.
->>>>
->>>> I was able to reproduce this on Jetson Orin NX (the differences to AGX
->>>> Orin should be negligible in this context), though I ended up patching
->>>> the DTB to disable all SMMUs. What fixed it for me was to drop the
->>>> dma-coherent property from the usb@3610000 node. Can you try that on
->>>> your end to see if that works for you as well?
->>>>
->>>> Not that that's a proper solution, of course, but just trying to find
->>>> out if there's perhaps something else going on.
->>>>
->>>>   From the looks of it, it seems like these devices aren't actually DMA
->>>> coherent inherently, but rather the SMMU translations make the accesses
->>>> to memory coherent. I'm trying to find out the exact details, but if it
->>>> turns out to be the case, then what we really want is a way for an IOMMU
->>>> to mark any devices that get attached to it as DMA coherent. It's not
->>>> sufficient to hard-code this in DT because there are various ways in
->>>> which device can end up not attached to an IOMMU despite what the DT
->>>> says.
->>>>
->>>> Jason, or anyone of the IOMMU folks, any thoughts on how this could be
->>>> achieved? DT already has a way of walking up the "DMA hierarchy" looking
->>>> for a DMA coherent parent, but again, making this rely entirely on DT
->>>> seems insufficient.
->>>
->>> I've got a bit more information on what's happening here. There are
->>> three different ways that a device's memory accesses can coherent on
->>> Tegra: 1) when translated through the ARM SMMU, 2) some devices can
->>> force coherency through configuration registers and 3) each device can
->>> be forced to be coherent via the memory controller.
->>>
->>> Option 3) is not something we have much control over because this is
->>> configured during early boot and the corresponding registers locked
->>> down, so the OS can at maximum read out the configuration.
->>>
->>> Option 1) is what is typically used, so a common pattern is that if we
->>> enable IOMMU translations via DT, we also set dma-coherent. Conversely,
->>> if IOMMU translations are disabled via DT, the dma-coherent property
->>> should also be removed because by default most devices will not be
->>> hardcoded to be DMA coherent via option 3). Most device drivers will
->>> also not program the device's configuration registers.
->>>
->>> As a result the desired configuration is to always enable SMMU and rely
->>> on the SMMU translations to provide DMA coherency. As we've seen this
->>> can be problematic, because the device tree doesn't always tell the true
->>> story. For example even if the iommus property exists, the device may
->>> not end up attached to the IOMMU for a number of reasons (the IOMMU
->>> could itself be disabled, a kernel command-line option could prevent the
->>> attachment, or a device could even be detached explicitly).
->>>
->>> So I think what we want to avoid is to mark all device tree nodes as
->>> dma-coherent because it can lead to inconsistencies. A better option
->>> would be to have this property inherited via the IOMMU if the IOMMU
->>> translations themselves cause the coherency to be established. Now it
->>> seems like DT already contains a way of doing that via the "DMA parent".
->>> This works by looking up a special interconnects path called "dma-mem".
->>> We already use this on Tegra to make the memory controller the DMA
->>> parent of all memory clients (i.e. all DMA capable hardware blocks) in
->>> order to enforce a bus-level DMA mask.
->>>
->>> However, in order for the DMA parent mechanism to work for IOMMU, we'd
->>> need to redirect the DMA parent to be the IOMMU, but in that case we
->>> loose the link to the memory controller. Unless, perhaps, if there's a
->>> way to construct an ICC path from device to IOMMU and then to memory
->>> controller and external memory controller (EMC).
->>>
->>> For reference, here's roughly what the data path looks like on Tegra:
->>>
->>> 	device --> MC --> SMMU enabled --> SMMU --> EMC --> DRAM
->>> 	              |                          ^
->>> 	              --> SMMU bypass -----------|
->>>
->>> SMMU can be enabled/disabled per device via a stream ID override
->>> register in the memory controller.
->>>
->>> The biggest downside of that mechanism is still that it's a static
->>> configuration and doesn't respect the actual runtime attachment of a
->>> device to an IOMMU.
->>>
->>> Adding the DT folks to see if they have any good ideas on how best to
->>> represent this from a DT point of view. Would it perhaps be an option
->>> to consider the iommus property when walking up the DMA ancestry?
->>
->> Is it possible to handle this dynamically in the code? Say, set device
->> to be DMA coherent in probe_finalize callback of Tegra iommu driver if
->> the IOMMU translation for this device is on. And clear it in the iommu
->> release device path.
->>
->> Normally we switch the DMA ops in the probe_finalize callback and iommu
->> device release.
+On Fri, Aug 18, 2023 at 05:56:20PM +0200, Joerg Roedel wrote:
+> On Thu, Aug 17, 2023 at 03:33:16PM -0300, Jason Gunthorpe wrote:
+> > Bascially.. Yikes!
 > 
-> Yeah, I had looked into this as well. Intel, AMD and VirtIO all seem to
-> do this during .probe_finalize(), whereas on ARM64 this happens as part
-> of the bus' .dma_configure() callback.
+> Hmm, that is a difficult situation. Even if the problem is a misuse of
+> the APIs we can not just blindly break other drivers by our core
+> changes.
+
+They are not broken, they just throw a lockdep warning and keep going
+as before. This is what triggers:
+
+static inline void device_lock_assert(struct device *dev)
+{
+	lockdep_assert_held(&dev->mutex);
+}
+
+So non-debug builds won't even see anything.
+
+> We need to resolve this situation pretty soon, otherwise I need to
+> remove the locking rework patches from the IOMMU tree until the
+> callers are fixed.
 > 
-> One thing that we could potentially do is fiddle with the struct device
-> .dma_coherent member in .probe_finalize() and .release_device(), but I'm
-> not sure about the potential ramifications. That is, do we have places
-> in the code that assume dev->dma_coherent to be statically set during
-> device instantiation?
-> 
-> We would have to default to not marking devices as dma-coherent in DT
-> for that to work, though, because otherwise if someone were to disable
-> the IOMMU altogether, .probe_finalize() and .release_device() would
-> never get called and we'd never get a chance to override.
-> 
-> I wonder if we could also use this to dynamically switch a device into
-> coherent mode. For example, if it is marked as dma-coherent in device
-> tree but doesn't end up as dev->dma_coherent when the driver probes, we
-> could try and force coherency via the device's configuration registers.
+> Is there a way to keep the broken drivers working for now?
 
-Indeed, if the device itself can control the memory attributes it 
-outputs, then take a look at most users of device_get_dma_attr() for 
-examples of doing exactly that.
+Historically we've tolerated lockdep warnings as a way to motivate
+people who care to fix their stuff properly. eg the Intel VT-D had a
+lockdep warning at kernel boot for many releases before it was fixed.
 
-> I don't know yet if that's really a good idea, though. For correctness
-> it would be enough if we can detect at runtime whether a device is DMA
-> coherent or not via the IOMMU.
+The series doesn't make things any functionally worse for these places
+misusing the API, but it now does throw a warning in some cases.
 
-It would be pretty trivial to hook up dynamic coherency through the 
-IOMMU API too, but the problem is that in general the IOMMU doesn't 
-necessarily know. In ACPI, IORT includes the nifty "Coherent Path to 
-Memory" attribute, but no equivalent exists for DT. A "dma-coherent" 
-property on the IOMMU node only says that the IOMMU's own memory 
-accesses are coherent, but that doesn't guarantee that all of its 
-translation interfaces are on coherent paths as well.
+IMHO I'd rather keep the warning rather than supress it by adding
+device_locks(). Do you agree?
 
-Thanks,
-Robin.
+Jason
