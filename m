@@ -1,113 +1,139 @@
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2079.outbound.protection.outlook.com [40.107.92.79])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C18FB1AA8A
-	for <iommu@lists.linux.dev>; Fri, 18 Aug 2023 18:24:04 +0000 (UTC)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id E0A4D2188D;
-	Fri, 18 Aug 2023 18:24:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-	t=1692383042; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=SX+D2sM86o3QGpOyvkgvl+QwlBYRKQsPyzgbZzO4nyA=;
-	b=q/qgiyfrEHdFU6TeGd0d+esDu0V4IHfuBebB/dN6UmXgoNUHpwOvKBuvrAF1Bm1s5OUjlp
-	EyogPYXQOvdheT2V079uiUZBNJNnL73SRGY+umBuy5vMnWnEPhqC5u+4IMM1tqdMAzMoUS
-	sg0o5v+/uEcwrvtb0tzecD+40YV0mHA=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-	s=susede2_ed25519; t=1692383042;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=SX+D2sM86o3QGpOyvkgvl+QwlBYRKQsPyzgbZzO4nyA=;
-	b=YKUqdP3ZLE7Qh/O516Dsfs9/jy5m5Zx2mbBdxa48rO+L5tyVr+KSNcuqxNGifZn44HG6Jv
-	5GhILpJ6bE5CvYAQ==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-	(No client certificate requested)
-	by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 988CE13441;
-	Fri, 18 Aug 2023 18:24:02 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-	by imap2.suse-dmz.suse.de with ESMTPSA
-	id CB0NJEK332SqMAAAMHmgww
-	(envelope-from <jroedel@suse.de>); Fri, 18 Aug 2023 18:24:02 +0000
-Date: Fri, 18 Aug 2023 20:24:01 +0200
-From: Joerg Roedel <jroedel@suse.de>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DCC8A4437
+	for <iommu@lists.linux.dev>; Fri, 18 Aug 2023 18:26:09 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Fh3sCToGqRWvMsXxebzs7IkYSXU8lTDBdcsDsRqiXn0y4puVqVIvfnp64AkTFZbE0bqa7r459A59twgDbpG37H7ISNBm0NJLkQoer4JzsFL5X+O6wGcfjDI1JClKJU2aFroOTyfAvapNWoq3OuYgmY2Dx0kPPplveBqXx+maJz5QAf2L1WlSLgqpniZ27F2uMOqdc+1ZelNXXC0EdSuNRkDFR4dvD60gUV1TG7z8+kn3EMTJsHAzPLdgEDDmKsWJBcqwBLNu7YH4/HIyYMb/BlgzMFZktLlsDKeNCewbzcmB4aBuuPNNrfA5+YJxbr/uhgWi9CumEuOZ/fCXKEzIew==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=BX3wc+WFwWbFGcxhW4+aWoJPJma26gO3eOloFJQuV9U=;
+ b=G+D34DXOZt1FCNjEiry22MNPG7C2YRfNPJl/KcW7nnjUrlhh1ukKr37YBUU3ZZhwSE21B2fJPkP5j5zSkZriV9OEarc8pwOARfsMpQ9ok+f6CC24WWarABGDTqOVuvXKDS0Pa13ZCgQ8Ua3cB8kfPzr013cHfuq4BiRIH3hsuAr4J62XS9sUX1/tuPqB43pFaPade2jNFjWFSP21uK0rugq/U9uO+Et7uDvKmYxulav+RjK4+amux3/2YfvmHqtfefUJQOQP6iquHMdCuV11hY9Y8i6lL+MQPoBCZ+4y3sFSwxnWn9nFzImJuPRbm41k8akqhWbG31Sa6IeH+KuZkw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.118.233) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=BX3wc+WFwWbFGcxhW4+aWoJPJma26gO3eOloFJQuV9U=;
+ b=o5QR0W+g2Jrk0H+BixIe19F1Bp2idZjpwbFVNu2E6iv1UCvwPtZVJ5BeuGpyYHo1QxegVZu2Agvk369bQYx2WGYmvbtzvxNLCVcSmm6fcFnrtN69oiCOwbsKXkqdEEO9+fbgHihkje+EttnQa31Dlfpt7z5WlK4q1bRLy5s7r9/mBiHazBeipx8iQco2gdV5LB/ScZLEznH3nguQiwta/G1mkVjoBJeI00I/nugXENMgbexeQgzLC/P+TEYU3uOwmWiPDUZ9xZgn0NxullI2RZQU7tia7dSMYrmNNpngKfveIFT9sgkrEkD7/01cKkPdNhuj6yTUDmOs2WIApIVgIg==
+Received: from CYXPR02CA0083.namprd02.prod.outlook.com (2603:10b6:930:ce::18)
+ by IA1PR12MB6481.namprd12.prod.outlook.com (2603:10b6:208:3aa::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6678.26; Fri, 18 Aug
+ 2023 18:26:07 +0000
+Received: from CY4PEPF0000EDD2.namprd03.prod.outlook.com
+ (2603:10b6:930:ce:cafe::e5) by CYXPR02CA0083.outlook.office365.com
+ (2603:10b6:930:ce::18) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6699.20 via Frontend
+ Transport; Fri, 18 Aug 2023 18:26:07 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.233) by
+ CY4PEPF0000EDD2.mail.protection.outlook.com (10.167.241.206) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6699.14 via Frontend Transport; Fri, 18 Aug 2023 18:26:07 +0000
+Received: from drhqmail202.nvidia.com (10.126.190.181) by mail.nvidia.com
+ (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Fri, 18 Aug 2023
+ 11:25:57 -0700
+Received: from drhqmail203.nvidia.com (10.126.190.182) by
+ drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.37; Fri, 18 Aug 2023 11:25:57 -0700
+Received: from Asurada-Nvidia (10.127.8.10) by mail.nvidia.com
+ (10.126.190.182) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37 via Frontend
+ Transport; Fri, 18 Aug 2023 11:25:56 -0700
+Date: Fri, 18 Aug 2023 11:25:54 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
 To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux.dev,
-	Joerg Roedel <joro@8bytes.org>, Len Brown <lenb@kernel.org>,
-	linux-acpi@vger.kernel.org, "Rafael J. Wysocki" <rafael@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Chen-Yu Tsai <wenst@chromium.org>
-Subject: Re: [PATCH v2 0/4] Fix device_lock deadlock on two probe() paths
-Message-ID: <ZN-3Qfp3CyNiwJBK@suse.de>
-References: <CGME20230809144403eucas1p1345aec6ec34440f1794594426e0402ab@eucas1p1.samsung.com>
- <0-v2-d2762acaf50a+16d-iommu_group_locking2_jgg@nvidia.com>
- <d090f196-a5c2-b188-31bf-e42553d8d251@samsung.com>
- <ZN5n7GnlrTS6s5Yg@nvidia.com>
- <ZN-UpDFHab0vGuXp@suse.de>
- <ZN+XE7dk04f2C3D7@nvidia.com>
+CC: "Liu, Yi L" <yi.l.liu@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>,
+	"joro@8bytes.org" <joro@8bytes.org>, "alex.williamson@redhat.com"
+	<alex.williamson@redhat.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>, "cohuck@redhat.com"
+	<cohuck@redhat.com>, "eric.auger@redhat.com" <eric.auger@redhat.com>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>, "mjrosato@linux.ibm.com"
+	<mjrosato@linux.ibm.com>, "chao.p.peng@linux.intel.com"
+	<chao.p.peng@linux.intel.com>, "yi.y.sun@linux.intel.com"
+	<yi.y.sun@linux.intel.com>, "peterx@redhat.com" <peterx@redhat.com>,
+	"jasowang@redhat.com" <jasowang@redhat.com>,
+	"shameerali.kolothum.thodi@huawei.com"
+	<shameerali.kolothum.thodi@huawei.com>, "lulu@redhat.com" <lulu@redhat.com>,
+	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>, "Duan,
+ Zhenzhong" <zhenzhong.duan@intel.com>
+Subject: Re: [PATCH v4 09/12] iommu/vt-d: Add iotlb flush for nested domain
+Message-ID: <ZN+3spv3/8N2IDVa@Asurada-Nvidia>
+References: <ZNUI0D7ZMvLWlBNx@nvidia.com>
+ <ZNUa/VmeiIo0YA0v@Asurada-Nvidia>
+ <ZNU6BnTgNEWlwNYQ@nvidia.com>
+ <ZNVQcmYp27ap7h30@Asurada-Nvidia>
+ <BN9PR11MB5276D0B3E0106C73C498B8018C10A@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <ZNZlnh+/Q5Vk5Kul@Asurada-Nvidia>
+ <ZNsYxta9Pi7USDoR@Asurada-Nvidia>
+ <ZN+i1pEoN/NsWPKS@nvidia.com>
+ <ZN+w3fahQpM2W9Yx@Asurada-Nvidia>
+ <ZN+2h5rpTUI5aG3M@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <ZN+XE7dk04f2C3D7@nvidia.com>
+In-Reply-To: <ZN+2h5rpTUI5aG3M@nvidia.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CY4PEPF0000EDD2:EE_|IA1PR12MB6481:EE_
+X-MS-Office365-Filtering-Correlation-Id: d283e4ff-a1b7-4fdf-50d4-08dba01896bb
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	f78JlCcgbamYaiP684t9nsjVx4/Xg+2q/+ZuMi2ApFiCpQnwHUS6lmbU+LKXyBFSu8hj8GwKhPK+wI+QmivpcN0LLg6joUqtOJqgyNg/mQ0R+gqDTUqzTfx+s/plIZLLa/ZZ193DoLmuSeKnUnxmGRD7Nfjs+8dDCtMbopL2vwFjPtc7X/CBBt7lhaU7ex+w1Xcs56/GrLsgozTJinfQXr3kBVEv/WadirTFHWLTxVLFvjNN/vH0iI5lGX97XEPkSkBWLv8SNFtgWFwjJov6TjVd0kuaIES3PCtQJ8XxpmdzH10Ze+xYCTZJeyyvFACxGefaGghYOJjeGKcqxwQVoSBTDruFMKbDxCwhEphJUIW/EBlFQ0tTG2InKxU7VY8JxPYh7jQGils6ho/qbDQNdQCYb9PEMjqu3jOHaFYqcwps40GhXqor9EqVh6vBxvlKbMMYrUyBr7TTJLwrV/qBrExQFoAjFR2USM9/2OZbGWjCeV6mPhMpd8GCWpNbOVfgCfvlgKdfrUq0RBcVGs0tMNrRc7P9FAImMm36J5lNY945JcqJ9FM8N7Exj1HmgOZ/BmIZzRMm/3driEbH4QwPA0RbiqeY5T/uwx4TDy07AtigQW/TE19nZNbtSe9OxniFGtK5jyZzIx7R2UDUD4O9MPPuDIb0Xp+yRnD//gqiOHgAof+fODDOECU0vxoNXdajjvcK7lrceK4ZOT+qWsM3kvrE+0wSzNJkKg7lbCi6AdvNGxuJUxZlHw+tZhqvLTO2
+X-Forefront-Antispam-Report:
+	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230031)(4636009)(376002)(346002)(39860400002)(396003)(136003)(451199024)(186009)(82310400011)(1800799009)(46966006)(40470700004)(36840700001)(54906003)(82740400003)(7636003)(356005)(316002)(70206006)(6636002)(70586007)(5660300002)(41300700001)(36860700001)(47076005)(4326008)(8676002)(6862004)(8936002)(33716001)(26005)(40460700003)(2906002)(4744005)(55016003)(40480700001)(336012)(478600001)(426003)(7416002)(86362001)(9686003);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Aug 2023 18:26:07.0637
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: d283e4ff-a1b7-4fdf-50d4-08dba01896bb
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	CY4PEPF0000EDD2.namprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB6481
 
-On Fri, Aug 18, 2023 at 01:06:43PM -0300, Jason Gunthorpe wrote:
-> On Fri, Aug 18, 2023 at 05:56:20PM +0200, Joerg Roedel wrote:
-> > On Thu, Aug 17, 2023 at 03:33:16PM -0300, Jason Gunthorpe wrote:
-> > > Bascially.. Yikes!
+On Fri, Aug 18, 2023 at 03:20:55PM -0300, Jason Gunthorpe wrote:
+> On Fri, Aug 18, 2023 at 10:56:45AM -0700, Nicolin Chen wrote:
+> 
+> > > The highest array index sounds generic, the error code maybe is too
 > > 
-> > Hmm, that is a difficult situation. Even if the problem is a misuse of
-> > the APIs we can not just blindly break other drivers by our core
-> > changes.
+> > We could do in its and report the error code in its raw form:
+> > 	__u32 out_array_index;
+> > 	/* number of bits used to report error code in the returned array_index */
+> > 	__u32 out_array_index_error_code_bits;
+> > Or just:
+> > 	__u32 out_array_index;
+> > 	__u32 out_error_code;
+> > 
+> > Do we have to define a list of generic error code?
 > 
-> They are not broken, they just throw a lockdep warning and keep going
-> as before. This is what triggers:
-> 
-> static inline void device_lock_assert(struct device *dev)
-> {
-> 	lockdep_assert_held(&dev->mutex);
-> }
-> 
-> So non-debug builds won't even see anything.
+> out_driver_error_code may be OK
 
-But this still means that a function is called without holding the
-proper lock.
+Ack. Will implement the array in that way.
 
-> Historically we've tolerated lockdep warnings as a way to motivate
-> people who care to fix their stuff properly. eg the Intel VT-D had a
-> lockdep warning at kernel boot for many releases before it was fixed.
-
-There is a difference between knowingly introducing new lockdep warnings
-into upstream and letting warnings discovered upstream rot for a while.
-
-I can't send anything with known problems upstream.
-
-Regards,
-
--- 
-Jörg Rödel
-jroedel@suse.de
-
-SUSE Software Solutions Germany GmbH
-Frankenstraße 146
-90461 Nürnberg
-Germany
-
-(HRB 36809, AG Nürnberg)
-Geschäftsführer: Ivo Totev, Andrew Myers, Andrew McDonald, Boudien Moerman
-
+Thanks!
+Nic
