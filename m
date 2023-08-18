@@ -1,55 +1,76 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id CFAF1374
-	for <iommu@lists.linux.dev>; Fri, 18 Aug 2023 15:09:03 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 85BE3D75;
-	Fri, 18 Aug 2023 08:09:43 -0700 (PDT)
-Received: from [10.57.91.158] (unknown [10.57.91.158])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 857E03F64C;
-	Fri, 18 Aug 2023 08:09:02 -0700 (PDT)
-Message-ID: <9a4b0bf3-2eb1-9428-1905-2225ce0874ee@arm.com>
-Date: Fri, 18 Aug 2023 16:08:56 +0100
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B1112EACB
+	for <iommu@lists.linux.dev>; Fri, 18 Aug 2023 15:42:05 +0000 (UTC)
+Received: from localhost.localdomain (93-41-0-106.ip79.fastwebnet.it [93.41.0.106])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	(Authenticated sender: laura.nao)
+	by madras.collabora.co.uk (Postfix) with ESMTPSA id 1EFE4660724F;
+	Fri, 18 Aug 2023 16:42:03 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+	s=mail; t=1692373324;
+	bh=+Hv9exfgv7xX14b0KoI7ObSiwdSECkno/LP+jJg9ooQ=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=Vmy/G2bKH6FeAMy35lKKk+oJcCxYOwNm/Cc4IC4K6DsOHDkjd+uKO4DqSXP8hHHOf
+	 asenBDMHlh5j5geVgJnQ8l9gvaeMzNtXX2ks/7NyRtw1L8iCmG8KRil8yuNn85nsdb
+	 2MgurU6RtpMgmi9yI56xUZLiyuKnzj6uQ786C8q/KlwxEi7OHVwt/R1eSOFkiSe+Zr
+	 tXv8bcM39/h6KnzFTvaQkmJw0TDIPoge4RufR2qawErNKRLa72Gyu9UN3jhy5pRku2
+	 DOeFJZ3r160AJORKKMB0jcMFAfcMh2hmBsKGA/Ro0W3wOsBldOUN3OAYIzqC0wl/lI
+	 H7uBezxrCMkwA==
+From: Laura Nao <laura.nao@collabora.com>
+To: yong.wu@mediatek.com
+Cc: angelogioacchino.delregno@collabora.com,
+	chengci.xu@mediatek.com,
+	devicetree@vger.kernel.org,
+	iommu@lists.linux.dev,
+	jianjiao.zeng@mediatek.com,
+	joro@8bytes.org,
+	krzysztof.kozlowski+dt@linaro.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	linux-mediatek@lists.infradead.org,
+	matthias.bgg@gmail.com,
+	mingyuan.ma@mediatek.com,
+	robh+dt@kernel.org,
+	robin.murphy@arm.com,
+	will@kernel.org,
+	yf.wang@mediatek.com,
+	kernel@collabora.com
+Subject: Re: [PATCH v12 2/7] iommu/mediatek: Fix two IOMMU share pagetable issue
+Date: Fri, 18 Aug 2023 17:41:56 +0200
+Message-Id: <20230818154156.314742-1-laura.nao@collabora.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20230602090227.7264-3-yong.wu@mediatek.com>
+References: <20230602090227.7264-3-yong.wu@mediatek.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.14.0
-Subject: Re: Software bounce buffers Vs allocating DMA buffers in page
- granularity
-Content-Language: en-GB
-To: Chathura Rajapaksha <chathura.abeyrathne.lk@gmail.com>,
- iommu@lists.linux.dev
-References: <CAD7mqrygN8W59SmeS2nEVppNVeoW3FsiVtOG_PH7fcV4C16YEg@mail.gmail.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <CAD7mqrygN8W59SmeS2nEVppNVeoW3FsiVtOG_PH7fcV4C16YEg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 2023-08-17 21:17, Chathura Rajapaksha wrote:
-> Hi All,
-> 
-> I have a question regarding the IOMMU software bounce buffer feature.
-> I understand that this feature was introduced as a mitigation to
-> sub-page vulnerabilities (which were shown to be exploitable by
-> Thunderclap).
-> 
-> My question is:
-> Can allocating DMA buffers in page granularity (multiples of 4KB pages)
-> be a feasible alternative solution to software bounce buffers?
-> 
-> I am trying to understand the challenges and performance impact of
-> such a solution (compared to SW bounce buffers) if someone were to
-> proposed it.
-> In other words, I am trying to find the reasons why SW bounce buffers
-> were introduced rather than allocating DMA buffers in page granularity.
+Hello,
 
-Dedicated DMA buffers (dma_alloc_*()) *are* allocated at page 
-granularity. SWIOTLB is used by the streaming DMA API (dma_map_*()), 
-where the data already exists somewhere in memory, outside our control. 
-If a streaming mapping request does happen to be aligned to the IOMMU 
-page size already, it isn't bounced.
+This patch is causing fluster tests to fail on MT8192, IOMMU read and write faults are reported in the log. Here's an extract is from the VP9 tests:
 
-Robin.
+mtk-iommu 1401d000.m4u: fault type=0x280 iova=0x1ff7c0000 pa=0x0 master=0x5000480(larb=5 port=0) layer=0 read
+mtk-iommu 1401d000.m4u: fault type=0x280 iova=0x1fe3ee000 pa=0x0 master=0x5000492(larb=5 port=4) layer=0 write
+
+Tests are failing for H264, VP8 and VP9 decoding on next-20230817 with fluster in the same way, complete logs can be found here: 
+- H264: https://storage.kernelci.org/next/master/next-20230817/arm64/defconfig+arm64-chromebook+videodec/gcc-10/lab-collabora/v4l2-decoder-conformance-h264-mt8192-asurada-spherion-r0.html
+- VP8: https://storage.kernelci.org/next/master/next-20230817/arm64/defconfig+arm64-chromebook+videodec/gcc-10/lab-collabora/v4l2-decoder-conformance-vp8-mt8192-asurada-spherion-r0.html
+- VP9: https://storage.kernelci.org/next/master/next-20230817/arm64/defconfig+arm64-chromebook+videodec/gcc-10/lab-collabora/v4l2-decoder-conformance-vp9-mt8192-asurada-spherion-r0.html
+
+Reverting this patch fixes the issue. 
+
+From my understanding, on MT8192 the 16GB iova space is partitioned between display, vcodec and camera. The iommu domain configuration for vcodec was loaded from frstdata->bank[0]->m4u_dom (vcodec is preassigned to a specific iova range), while after this patch a new pagetable is created instead. 
+
+Do you have any insight on how to fix this while keeping compatibility with MT8188 and MT8195?
+
+Best,
+
+Laura
