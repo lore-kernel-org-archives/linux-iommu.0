@@ -1,105 +1,110 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2F7EA2C;
-	Fri, 18 Aug 2023 22:47:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5936C433C8;
-	Fri, 18 Aug 2023 22:47:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1692398846;
-	bh=GERRINsAE4jFIhYWdb4073xkrV0e7fJw3JwzPleFkGE=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=cyuL5Iht3FYQhRsQPZ882/GmkeF4L5szu8lARMrLLwnl/0ywm7mtvMs22mHQfpQEV
-	 PfMAoZI9wLWJ88CsiWMyPcyIZlbf2PVYElReCYpEyqPx79/9xEz0p2o24WJqS7cfEd
-	 3ppg3GlffC8lgib60tR67hmDMT96+jDVyO7khBg5IfTrrrzO8vR2si+EvKu7D/bwFl
-	 BOQJwbKJE47igkOtaP04PX5ASifTwmFRyzEb76CWj1pq1lFsCFcdYnoSNsmw3bbopA
-	 jb4Cy2tCBGbxN1MIv7KK7Nkz6ZeGN4hzis7MN6B2iZymCsTslqic6QQ0etjZshT3RI
-	 t7o66s2q1HFRw==
-Date: Fri, 18 Aug 2023 23:47:11 +0100
-From: Mark Brown <broonie@kernel.org>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Andy Gross <agross@kernel.org>, David Airlie <airlied@gmail.com>,
-	alsa-devel@alsa-project.org, Bjorn Andersson <andersson@kernel.org>,
-	Andrzej Hajda <andrzej.hajda@intel.com>, ath10k@lists.infradead.org,
-	ath11k@lists.infradead.org,
-	Bryan O'Donoghue <bryan.odonoghue@linaro.org>,
-	Christian Gmeiner <christian.gmeiner@gmail.com>,
-	Daniel Vetter <daniel@ffwll.ch>, devicetree@vger.kernel.org,
-	dmaengine@vger.kernel.org,
-	Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-	dri-devel@lists.freedesktop.org, Emma Anholt <emma@anholt.net>,
-	etnaviv@lists.freedesktop.org, freedreno@lists.freedesktop.org,
-	Frank Rowand <frowand.list@gmail.com>, iommu@lists.linux.dev,
-	Jernej Skrabec <jernej.skrabec@gmail.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Konrad Dybcio <konrad.dybcio@linaro.org>,
-	Kalle Valo <kvalo@kernel.org>, Lucas Stach <l.stach@pengutronix.de>,
-	Liam Girdwood <lgirdwood@gmail.com>,
-	Russell King <linux+etnaviv@armlinux.org.uk>,
-	linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
-	linux-media@vger.kernel.org, linux-sunxi@lists.linux.dev,
-	linux-tegra@vger.kernel.org, linux-wireless@vger.kernel.org,
-	Marijn Suijten <marijn.suijten@somainline.org>,
-	Mauro Carvalho Chehab <mchehab@kernel.org>,
-	Mikko Perttunen <mperttunen@nvidia.com>,
-	Maxime Ripard <mripard@kernel.org>, Sinan Kaya <okaya@kernel.org>,
-	Jaroslav Kysela <perex@perex.cz>,
-	Abhinav Kumar <quic_abhinavk@quicinc.com>,
-	Jeff Johnson <quic_jjohnson@quicinc.com>,
-	Vikash Garodia <quic_vgarodia@quicinc.com>,
-	Rob Clark <robdclark@gmail.com>, Rob Herring <robh+dt@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Samuel Holland <samuel@sholland.org>, Sean Paul <sean@poorly.run>,
-	Stanimir Varbanov <stanimir.k.varbanov@gmail.com>,
-	Thierry Reding <thierry.reding@gmail.com>,
-	Takashi Iwai <tiwai@suse.com>, Vinod Koul <vkoul@kernel.org>,
-	Chen-Yu Tsai <wens@csie.org>, Will Deacon <will@kernel.org>,
-	=?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <jroedel@suse.de>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Chen-Yu Tsai <wenst@chromium.org>
-Subject: Re: [PATCH] iommu: Remove the device_lock_assert() from
- __iommu_probe_device()
-Message-ID: <1b53ea1e-3522-43db-a7db-dd4b460f0bc6@sirena.org.uk>
-References: <0-v1-98d20e768c66+7-of_dma_lock_jgg@nvidia.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 040B24A0C
+	for <iommu@lists.linux.dev>; Sat, 19 Aug 2023 08:30:08 +0000 (UTC)
+X-UUID: 7bd5c0023e6811eeb20a276fd37b9834-20230819
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+	h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Date:Subject:CC:To:From; bh=Ls0IdxKcV0zs2a86C/WRgplohD3oAveG5LkpKErqf4o=;
+	b=e25wXzzMCPCZMMVxd37r0srcZinKRp3OFHRaHxHKzOz8ExRI3vqn5FLGWRK0Llz4a4t0Geo/BdTFOYxABj2If6aVplRAWUtLEo85GnAgIP5dG677+haYd7Y6wc8mgtzrFwn9tzESq6ntz7IOkJFsYf9WAmaGsaqqKa43OB22dYw=;
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.31,REQID:fffad3fa-33d9-483c-8b01-7f56a007f487,IP:0,U
+	RL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION:
+	release,TS:0
+X-CID-META: VersionHash:0ad78a4,CLOUDID:6ff0811f-33fd-4aaa-bb43-d3fd68d9d5ae,B
+	ulkID:nil,BulkQuantity:0,Recheck:0,SF:102,TC:nil,Content:0,EDM:-3,IP:nil,U
+	RL:1,File:nil,Bulk:nil,QS:nil,BEC:nil,COL:0,OSI:0,OSA:0,AV:0,LES:1,SPR:NO,
+	DKR:0,DKP:0,BRR:0,BRE:0
+X-CID-BVR: 0
+X-CID-BAS: 0,_,0,_
+X-CID-FACTOR: TF_CID_SPAM_SNR,TF_CID_SPAM_ULS
+X-UUID: 7bd5c0023e6811eeb20a276fd37b9834-20230819
+Received: from mtkmbs11n1.mediatek.inc [(172.21.101.185)] by mailgw02.mediatek.com
+	(envelope-from <yong.wu@mediatek.com>)
+	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+	with ESMTP id 815612229; Sat, 19 Aug 2023 16:14:57 +0800
+Received: from mtkmbs13n2.mediatek.inc (172.21.101.108) by
+ mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.26; Sat, 19 Aug 2023 16:14:55 +0800
+Received: from mhfsdcap04.gcn.mediatek.inc (10.17.3.154) by
+ mtkmbs13n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.2.1118.26 via Frontend Transport; Sat, 19 Aug 2023 16:14:55 +0800
+From: Yong Wu <yong.wu@mediatek.com>
+To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Matthias
+ Brugger <matthias.bgg@gmail.com>
+CC: Robin Murphy <robin.murphy@arm.com>, AngeloGioacchino Del Regno
+	<angelogioacchino.delregno@collabora.com>, Yong Wu <yong.wu@mediatek.com>,
+	<iommu@lists.linux.dev>, <linux-mediatek@lists.infradead.org>,
+	<linux-kernel@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>, Laura
+ Nao <laura.nao@collabora.com>
+Subject: [PATCH] iommu/mediatek: Fix share pgtable for iova over 4GB
+Date: Sat, 19 Aug 2023 16:14:43 +0800
+Message-ID: <20230819081443.8333-1-yong.wu@mediatek.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="sBznzgBGlLdaocvC"
-Content-Disposition: inline
-In-Reply-To: <0-v1-98d20e768c66+7-of_dma_lock_jgg@nvidia.com>
-X-Cookie: Your aim is high and to the right.
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-MTK: N
 
+In mt8192/mt8186, there is only one MM IOMMU that supports 16GB iova
+space, which is shared by display, vcodec and camera. These two SoC use
+one pgtable and have not the flag SHARE_PGTABLE, we should also keep
+share pgtable for this case.
 
---sBznzgBGlLdaocvC
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+In mtk_iommu_domain_finalise, MM IOMMU always share pgtable, thus remove
+the flag SHARE_PGTABLE checking. Infra IOMMU always uses independent
+pgtable.
 
-On Fri, Aug 18, 2023 at 06:32:28PM -0300, Jason Gunthorpe wrote:
-> It turns out several drivers are calling of_dma_configure() outside the
-> expected bus_type.dma_configure op. This ends up being mis-locked and
-> triggers a lockdep assertion, or instance:
+Fixes: cf69ef46dbd9 ("iommu/mediatek: Fix two IOMMU share pagetable issue")
+Reported-by: Laura Nao <laura.nao@collabora.com>
+Closes: https://lore.kernel.org/linux-iommu/20230818154156.314742-1-laura.nao@collabora.com/
+Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+---
+Base on next-20230818.
+---
+ drivers/iommu/mtk_iommu.c | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
-Acked-by: Mark Brown <broonie@kernel.org>
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index b17d3e7288a7..b5fcba305d2a 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -262,7 +262,7 @@ struct mtk_iommu_data {
+ 	struct device			*smicomm_dev;
+ 
+ 	struct mtk_iommu_bank_data	*bank;
+-	struct mtk_iommu_domain		*share_dom; /* For 2 HWs share pgtable */
++	struct mtk_iommu_domain		*share_dom;
+ 
+ 	struct regmap			*pericfg;
+ 	struct mutex			mutex; /* Protect m4u_group/m4u_dom above */
+@@ -643,8 +643,8 @@ static int mtk_iommu_domain_finalise(struct mtk_iommu_domain *dom,
+ 	struct mtk_iommu_domain	*share_dom = data->share_dom;
+ 	const struct mtk_iommu_iova_region *region;
+ 
+-	/* Always use share domain in sharing pgtable case */
+-	if (MTK_IOMMU_HAS_FLAG(data->plat_data, SHARE_PGTABLE) && share_dom) {
++	/* Share pgtable when 2 MM IOMMU share the pgtable or one IOMMU use multiple iova ranges */
++	if (share_dom) {
+ 		dom->iop = share_dom->iop;
+ 		dom->cfg = share_dom->cfg;
+ 		dom->domain.pgsize_bitmap = share_dom->cfg.pgsize_bitmap;
+@@ -677,8 +677,7 @@ static int mtk_iommu_domain_finalise(struct mtk_iommu_domain *dom,
+ 	/* Update our support page sizes bitmap */
+ 	dom->domain.pgsize_bitmap = dom->cfg.pgsize_bitmap;
+ 
+-	if (MTK_IOMMU_HAS_FLAG(data->plat_data, SHARE_PGTABLE))
+-		data->share_dom = dom;
++	data->share_dom = dom;
+ 
+ update_iova_region:
+ 	/* Update the iova region for this domain */
+-- 
+2.25.1
 
---sBznzgBGlLdaocvC
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmTf9O4ACgkQJNaLcl1U
-h9CQkgf/U+glO2B163vQwi/fCAxSj8fyw/4Fx89WMOmUEwj0C05hkeR75k8U4pW8
-4U0vPSpT0yaPcjKGpztFpE3uMIf/40CZ1SbbKuvZ4RcYoumOqLIWVcQzYmEiQSml
-M4NjnYXvs3xppLRtxlnWYCzwmvijPoQfs/Ot1VBn9TsoGz70YwLD3JfjHXnztUHF
-y9wAVvMF5OgDayDuWedbuh63H4kRGS7LIhIu9cPgnV14RWL9SmYat6UKcto2FePd
-th2ai/d8CMoJ8oHV7BOaf86sQXul26EvMiWSqgyc9uGX/ag9RYCA465U/QXlVQZc
-M7hwZKW9rlZZsKXxSdbNPklRZ/Mdqg==
-=cHW/
------END PGP SIGNATURE-----
-
---sBznzgBGlLdaocvC--
