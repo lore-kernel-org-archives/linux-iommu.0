@@ -1,57 +1,74 @@
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2085.outbound.protection.outlook.com [40.107.92.85])
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 722FD525E
-	for <iommu@lists.linux.dev>; Mon, 21 Aug 2023 11:58:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2C8B525E
+	for <iommu@lists.linux.dev>; Mon, 21 Aug 2023 12:03:45 +0000 (UTC)
+Received: from pps.filterd (m0246627.ppops.net [127.0.0.1])
+	by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 37LBpwqT031859;
+	Mon, 21 Aug 2023 12:03:25 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=message-id : date :
+ subject : to : cc : references : from : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=corp-2023-03-30;
+ bh=J+k6OlNx0JmFkCFrraFX/YSaerVeUhUKykMN03r/GyY=;
+ b=GW7hmGx9y5G4J5MuuEBNNwiYwqrDP1Qv52WN2bGeXXdk+2ANBGIGlcMN01+moRgpbaUH
+ F/gts2Vr6kHjb2s0jS2j456U5AvbmKWYe3Erc8dWQgDtBIQqTyZ7z2PtsGu5TFtYx5ci
+ tty5sa4G2lfTtzktQH6CZQkS2RKUZhsns777G6ZqhbeWijAqsAVLLZt7fWQvQbEYMIfM
+ zkcZkneC4hleGvj8VIW/7O//Azllzjfjd1dNu4dz6OXeYKeEkvlWaEGUTqspGf3SmTDe
+ JdEB0YEIcY5k+6Fqwp+nUJlYyY5j0SGBauKUa9V8I6qP4af6Ouw0+RR/hojTI3ogqYPK /g== 
+Received: from phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta01.appoci.oracle.com [138.1.114.2])
+	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3sjmb1tr7k-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Mon, 21 Aug 2023 12:03:25 +0000
+Received: from pps.filterd (phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
+	by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (8.17.1.19/8.17.1.19) with ESMTP id 37LB5Bjt030357;
+	Mon, 21 Aug 2023 12:03:24 GMT
+Received: from nam10-mw2-obe.outbound.protection.outlook.com (mail-mw2nam10lp2100.outbound.protection.outlook.com [104.47.55.100])
+	by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 3sjm63c44w-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Mon, 21 Aug 2023 12:03:24 +0000
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VlDd7xTDcpagX9b/ip/jruN8bmqJiZ1v3VRUiIVhFDgsc4OM2U2POjgy0De/pXnnmJEQKkfHsO9MECWjgN7c12Mp3ntWbmNFBkDpSw5/ysY1KtcGB6wWLkYOt3Q+1NjEvSe3W2gK6pZRFLaUsZXpOo8WMOMCa7OQc6/NaO3IJyVXJyP20Gkdkncj4xqPi5DpoD25rmnPe4h8Pi6qCQVBnpMeRTJU83CRNMJQ3MPYmOekriB5xi5/WVTu5xarZaP7pyBqAI2Tq51suwbQkrYK+HhvYMpQ/GOVbFAteDM/qgL6BWNVsFdpGwv/NEqApkUmvKUaJNobGo3A2GxNRVDd/w==
+ b=foKjFB35FN9UDaqBcatb6UnrMWkaosOc7GT9pr33AjCorEhgY3XojyR2Z4wPSfZnWTgnvbx5sqtf47jDPlXw1ncryN4ycLOrhDsLu+DmC0TaVRfd3MdV1jH+pEiceIKyAcvYlxsPhROmZ46zOddmYeIQq5TbRdS2gORo39+ELsQTKdqKUPL8m5glCCYCReMKKro0nXSJ8YypVgGAU5e9WX92a48Bf+VaIaU9BfM6okhro4J9HcWQGaC+6avuGN5EamJgm6VJ4JD1D9LSpUAZ7FRiD8t3OJcieMH1rFcm7a76g/umTaTHMBJetd+V18qr9DlHrx42RLXSPWc1DvLkow==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ycxcvEF+6SH7MC07D9iAEJ6msqu6OJSablnofSa1Syw=;
- b=aWYy0nDk8QbfOWy/6WG76IWQ+g6bein8VDJ1KLdEDMgxJVtj0iUgZMhRTRwXMkyymkf7hNSjH7orgG9MixiJmDVKg+wAE5hPLRtO+9SPxc42jFAvKldyDy3jakDGkwhXtYXf769EWsFyE/yM33txLug6G04lC49UYprpXB1iIlNZ115TA+frYHLzoKUJAIJnSC/LqJYlBz2b0cNcORwAzdwuAdTwr67MNUjPmP4zQ8vSJOnMo8qC/9E5h40aZq+OKWHdohG4b+4INfITWJvc7SxpAGB8WwpSZsfDR4jEmbNCpP5AFSNAfY3XxJYVkHs1gD8AarCjmxiB9ZaRbRyYLw==
+ bh=J+k6OlNx0JmFkCFrraFX/YSaerVeUhUKykMN03r/GyY=;
+ b=Ij3V4/pbVR/B1yksXWDBfKR3k8HRsOdgz9sE5dzeQ0fcKQwb4QUIUryHUQC+poFoeWPC+XEzMmHHlV9qWVQ508ukYQLuzEdhPhylz5ReftruAN4ImQq39W6aP/lnK2MQNWD6g2r451YytapGon0jUHqLRbs2EYDRrnncmo4TroDJebJBu83pV5ykV03Vu2vLj3vJN8ylbyOMnOFvi4y7WpzpsV5fmQx+4b0mQxcZc2SK/KtSmeikIPWbrOOluNo8jcfAXz79aKV8BtpwdBV9uPD/AUoDY+8KVPxdxGUl6kFmfEWgeZefii2BZjIaMtknOlU3DRHxGJcPO9b3TiQkRQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ycxcvEF+6SH7MC07D9iAEJ6msqu6OJSablnofSa1Syw=;
- b=b/0ShrksF5rlV46jb0gS+MZ3zCKI8dDFXP5sd3zSMkGuu2Cx+/tEGzSVBpkQU1FgfsjzYW+Rss9oZbR9W9ZJsQkjuheSXxij/LUg+IsobZ3UUKHv7Jj6utiHQQ/PPPxqYQuxJ3dttAnBLUFceMUbSfvJLhs2qTV83ojSRKa7ljkfwCs57joj/PQioE9T8EhjTZ21QRd3fysQWhzPBLwztmRdvXDgl6HTIED7EXMwUWcadn9ys3m+QYS3A13hvJ2F1oLjOwE8J4XG8lmqBaNkGOMeeGVOZcCTPe8BmywyUc2xqagfiGV4OaBD0fnTwflbIwF3bZGifx36yrm13SmDYw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by BY5PR12MB4132.namprd12.prod.outlook.com (2603:10b6:a03:209::22) with
+ bh=J+k6OlNx0JmFkCFrraFX/YSaerVeUhUKykMN03r/GyY=;
+ b=q7AM1pEPXMnPAXGB/xfOWWWQTMedZFdptTPX2I3rMANVPS3N0UQlkQMWZIdDGXdwzhMi36jKjdGAYuJd7I0GmSrDM/OEM3dsRonak5HRBDHHSu1xyBrSN1DnxeATBqmPHRzo1glaY1XwSUCzfaiDU5QtbsVNlFzbQ2XfAqEZ6to=
+Received: from DM6PR10MB4313.namprd10.prod.outlook.com (2603:10b6:5:212::20)
+ by BLAPR10MB4897.namprd10.prod.outlook.com (2603:10b6:208:30f::11) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6699.24; Mon, 21 Aug
- 2023 11:57:59 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::5111:16e8:5afe:1da1]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::5111:16e8:5afe:1da1%6]) with mapi id 15.20.6699.020; Mon, 21 Aug 2023
- 11:57:59 +0000
-Date: Mon, 21 Aug 2023 08:57:58 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Michael Shavit <mshavit@google.com>
-Cc: Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	will@kernel.org, nicolinc@nvidia.com, tina.zhang@intel.com,
-	jean-philippe@linaro.org
-Subject: Re: [RFC PATCH v1 2/8] iommu/arm-smmu-v3: Perform invalidations over
- installed_smmus
-Message-ID: <ZONRRubvUK7GXO4i@nvidia.com>
-References: <20230817182055.1770180-1-mshavit@google.com>
- <20230818021629.RFC.v1.2.I782000a264a60e00ecad1bee06fd1413685f9253@changeid>
- <ZN5y4N8ffSoiR/sm@nvidia.com>
- <05f69a1a-97c9-ebca-5e01-c0b00699c93e@arm.com>
- <CAKHBV27suc5nDoH7gMHebjYBONTNqsugWvxbo2E-fRjRGs288w@mail.gmail.com>
- <ZN93TO9mRIrX1grw@nvidia.com>
- <CAKHBV24L7pTajkStWCRiW7976+B8VtDHRDpo+Emta0RshkvRhQ@mail.gmail.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAKHBV24L7pTajkStWCRiW7976+B8VtDHRDpo+Emta0RshkvRhQ@mail.gmail.com>
-X-ClientProxiedBy: MN2PR05CA0043.namprd05.prod.outlook.com
- (2603:10b6:208:236::12) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6699.25; Mon, 21 Aug
+ 2023 12:02:57 +0000
+Received: from DM6PR10MB4313.namprd10.prod.outlook.com
+ ([fe80::ebfd:c49c:6b8:6fce]) by DM6PR10MB4313.namprd10.prod.outlook.com
+ ([fe80::ebfd:c49c:6b8:6fce%7]) with mapi id 15.20.6699.022; Mon, 21 Aug 2023
+ 12:02:57 +0000
+Message-ID: <7dc73727-014b-5e48-8336-73d34bc7b818@oracle.com>
+Date: Mon, 21 Aug 2023 13:02:52 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.14.0
+Subject: Re: [PATCH 1/2] iommu/iova: Make the rcache depot scale better
+Content-Language: en-US
+To: Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org
+Cc: will@kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+        zhangzekun11@huawei.com
+References: <cover.1692033783.git.robin.murphy@arm.com>
+ <2c3a0f6b381ae5f743c1b28bbc6eae486160f3b7.1692033783.git.robin.murphy@arm.com>
+From: John Garry <john.g.garry@oracle.com>
+Organization: Oracle Corporation
+In-Reply-To: <2c3a0f6b381ae5f743c1b28bbc6eae486160f3b7.1692033783.git.robin.murphy@arm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: LO4P123CA0652.GBRP123.PROD.OUTLOOK.COM
+ (2603:10a6:600:296::13) To DM6PR10MB4313.namprd10.prod.outlook.com
+ (2603:10b6:5:212::20)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -59,91 +76,260 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|BY5PR12MB4132:EE_
-X-MS-Office365-Filtering-Correlation-Id: a4d5c0cf-26b2-415d-96b5-08dba23ddd5c
+X-MS-TrafficTypeDiagnostic: DM6PR10MB4313:EE_|BLAPR10MB4897:EE_
+X-MS-Office365-Filtering-Correlation-Id: 7e9d2301-6788-4d6f-8665-08dba23e8ed3
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	VI/rzJpwMkqX7dojogKJYI7EJbRGcY2gnBg9pRIFYl0uIIEDkEEpw2w2iQIXzoHrTb55VJJ/NIWQb4X9gCZXP/t/xN1d174tytd/Pjb27XFOixZyx+RCVG0o2uvs51D7yyG+KtyUJe7FFlYTsoSL1EC/Fdtn2+YWXnMbjhnvBBjcSSoE/nKoIYkOztSjomClIaZ2Gm06G/Va/05jloliQcIfUbenOMuc2iVB+49c6Wo27sXBCcf6SO9BK70dSzjZ9D8AhQlXUgNRboBoxxG/BmzTLBTeRKcocgC0BcFUEyS1veWFLR0IKItL5f0r1VjrqJj98YLEUgc15GQoH5GzW7JcNdawrsSHpjfgHsbmcOSoOuonIQ24MMu0QlHmivp1+IEqWhYSuw8mi1kztG1J5L3yR03SwHemuOt8yywX36okM3jOaKQL9I+aPTNVvM9wAnT8bvyGwkLCghyEWZcs/Z6PJ2WvGaBdfU+xf0DXD3lUcZheiLyp7iuDU4k7VWiN+jRxJwHK2ZFcZc6hXSWUYaXbSzJQKO6yU9BvJmW3+HVt8W827yQJh2TLaon+0R2k
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(39850400004)(376002)(366004)(346002)(136003)(396003)(451199024)(186009)(1800799009)(2906002)(38100700002)(6506007)(6486002)(83380400001)(5660300002)(26005)(86362001)(8676002)(2616005)(8936002)(4326008)(316002)(66946007)(6512007)(6916009)(66556008)(66476007)(478600001)(36756003)(41300700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: 
+	y38N0oE3ebtk5oUUwqGdKbSuWApu1f1GmOTkyJk/yCP+Ui3IcABQWlkbZyE+GpcYB8xHqA74jUYB9pnsNb8ZGU89T5zwUF57leKIBvM1gxncHi/2lJRXeNDFbOfDqr/li/a65Z13PK57YpvNSWEodGwZhDigN4MOFdlLLS7jPICLBbpiGfTZDpVqv5LT3Oul/fXvJziGvOWNoQ6pwUhkmBOP5kv5r4w07e6wZPMoUs8S4XXBeKsu8YWhQM5JDSvHliNcCklQWlxjh6HOeqpL3YAXskAlSS6Vlb8N+SSSTX8ni38xS4Wh5LrfookGENb9VVVXqMGBqF9jDcCnJjjm+lOErFBmJZWEEwDST+utfQwDZFdbBd3rHnUaXDItAR0e+OVQQIW8IpZcY2o02BZwwflBzjQl2wOsQBFo3HgOAM/PnbrE4V+WJj780p6P0Tfs9DKlENh2QhlqRManxJfquj4QYxnIM1B7amY6z5mAHyb4onC2lstXHbd6BLi4aoseh5SlHsv0tcM6AmMWkChldnjKVQ6u5m7tde6wNDWp3cfHB8mu4xGXDtk4WayW5k0fRnkiJdvTvX2c69JIHq7RRUJ+/KiJaZ1UOWcCrnYcvpRkBpgZImrLbYpTYzM2yV9f/5BjR9a6ifjLd2Ggqx7WlQ==
+X-Forefront-Antispam-Report: 
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR10MB4313.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(376002)(396003)(136003)(346002)(366004)(39860400002)(186009)(1800799009)(451199024)(66946007)(66556008)(66476007)(316002)(6512007)(8676002)(8936002)(2616005)(4326008)(41300700001)(36756003)(478600001)(6666004)(38100700002)(36916002)(53546011)(6506007)(6486002)(2906002)(83380400001)(86362001)(31696002)(31686004)(5660300002)(26005)(45980500001)(43740500002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?2vTH4LQKnu51UqMt2k9cVaNv2W5Et2cPJsEqH7HT3lAcGb/RdcNVaOgD/KTh?=
- =?us-ascii?Q?tLOp8HTrD1euMmtpvn1uwL0WO1aVWGwCmF/m8PFonvpyoD5NhXlRaKP7UrZA?=
- =?us-ascii?Q?rAWYaP358HJv9oHhlmBHgHvHYefULzgxsA6AeOf7QDlvQG+zWAFeRoFJJHAx?=
- =?us-ascii?Q?l9GiSkXdcpdhwYcimcYU3u/a8Q8kzSiD2+hjqi2IEzC/jQUpFnWnmSO7uxUi?=
- =?us-ascii?Q?bzYNYsgtYZArY01mLImGF/MY/YmvBhwntVbnCrUtB3bTPBI4rTSzw+O4I9ro?=
- =?us-ascii?Q?0RaGdY1xCw5EBtP6CzUDzWxH1cUe/kiYVf3yJF+BHBIZLBiz1jVuQHyQHQ+8?=
- =?us-ascii?Q?rAWOxV6puRjPG3A77tiTYX+a1scggcftomqsax+YxHciMoXm4hcTJnTw/1n+?=
- =?us-ascii?Q?sbJJsfyRaklgiLUYHNSVgwyYYaDXSPPLzltZn7t0GkCVSwvNPuxdEI+UkfhD?=
- =?us-ascii?Q?X2Qh1fNpxYTFThuBgXvF6wjwaKSGA8jcMue0hn5ESFLWMnMzSVYMnhxFSYH3?=
- =?us-ascii?Q?kl7sumtxAxHYWM+G04T2U81bW0kdJ/g+e3ooxKPf+gPyxf7x2USMFPt/bbgs?=
- =?us-ascii?Q?58/iE5lq6bVjnGJKYP/0sBLq0cxa3eLlBwIKFzH3s8r3UT0Z46qIY45oKPVT?=
- =?us-ascii?Q?vy+fs/A1M4Kqi3PRXFe7IzMu88/yHhMMsyLIa0aEGcEtuK7vi0Q7yeItHCRJ?=
- =?us-ascii?Q?J+v+iD3tNHBPKpNC6w0x9rN0bYOGNB1J8CuJ4XFrgUyzoQZifHHBoLSeaka0?=
- =?us-ascii?Q?whkMgvd+DfXMiOIkklxr69+aWuvlI1+qsi8VI7RCiPe2PwFoUd+GEyO+rO1l?=
- =?us-ascii?Q?jnDdMMhRnRGoJRq/7fQcKEoG9orLq9Gbmih3hrgN6mXCeFweDmcm1fj0FChb?=
- =?us-ascii?Q?fGs++zLhYX91TNWtk6LWQn1iBC2o1cLCL3r+9Mbc7TQyUCClpnxXs+ni8mHr?=
- =?us-ascii?Q?2lKqFiBCGD6K6lJpmQ07MxaNTsOGVDKFK865SUU9VmuKk6HD+ayZXf6YapDc?=
- =?us-ascii?Q?C5XPFzl847SJ4riHZR5bldN5ilBGmMAnUHLH//8/xAgHliou6TTGxdWoYww5?=
- =?us-ascii?Q?9T63kUhAI2OXqViE4ZB2yZLEa6O10rJKoWr9DpbRrH4gYEMxu320ttD5xaSA?=
- =?us-ascii?Q?6ebnG7iiDEmSPDXaecNDOyA7g8Wg/0BWTkR69pgnMzPQyjN0gR7LRXrVtQFa?=
- =?us-ascii?Q?rhHR1YS9DVqZi3UZhw67EXn7U6KodZpahP7LS5XVmOahCQT8Vp7B8iY8BKxg?=
- =?us-ascii?Q?Oagav62Msyr91WH9ndy8O4PJ84K+XTJNur22kK/H42ewUlt8WpeiVHdETzX5?=
- =?us-ascii?Q?g0O5eJphX3w678QaqL5DSvTSOPAn0M8CApplPp/V92GqkOzNH8ZzKUESbjnR?=
- =?us-ascii?Q?mUxU6YKZkwKu/5NCrae4gTNUfR83BUUT/1t0ROPFcrmxXlcBbemxwyYKeSuE?=
- =?us-ascii?Q?G3hfQptuD/FBtV2dYqqc3rPZ5N5qwSifUMQ2sjtnJAn7FTFPPBZJzfdEccqa?=
- =?us-ascii?Q?zmSHX9Kj5AC84cE5JaH5BYU7UmSg/wRbed4KLcVDJ3ElB5dMTKlncBG4elJx?=
- =?us-ascii?Q?A3c8aV8RVqQnDlEyRgQuJxyNdDKcSXVvJprUf7C4?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a4d5c0cf-26b2-415d-96b5-08dba23ddd5c
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: 
+	=?utf-8?B?NkozR1o4Q2xPdVY2OHRlVVh3dlNtK2k2QmowNXdLRHR0QlNTMkQvMHQ4TUFh?=
+ =?utf-8?B?Z1g4TlhHbzRaeFFNY25ST3RydmtqMWF1bTlSWTdnd0liSWVEajkrbEEra3hH?=
+ =?utf-8?B?NDJEbVFEZVlYcVdFMHUvQkp4Q3Q0WU0yMHlPMnl4S3llb3Y4Q1ozU1d4a3Ax?=
+ =?utf-8?B?aDNwRnhOMDRaS2UvMkhRcXNLVVhDbXlRTGhMS0h0YkcxbTR2VFBTeEhCUDJ6?=
+ =?utf-8?B?L1NreTByQVFlSUpDVkFHVVZnQ1RoNGc1cDVLSFZNdXBqVVpkbFBnand2WUlt?=
+ =?utf-8?B?Y0lhQlhMZGxNTE1pMkZpaDl4OU0wWEorQkZacFpHSW1YNy9oVFBtdnFWWGg5?=
+ =?utf-8?B?T3VVS2JHV2lkSGxZUHJQVDJyNzZTYkpEcE5qL0lHT3RDZ2VBTWY2eHllb2VV?=
+ =?utf-8?B?QWNhUkxDdlJ4Y2F5N3ZrWVdjUnBJblEwajNsekl3cmR3OHVtZmoyZ0d3OE5W?=
+ =?utf-8?B?VDVTd2x4YjV0cWtVR090Z1J5eG1IZ0NsUEpMUlltL2JmYU9UbThmQzYzM1pH?=
+ =?utf-8?B?Zmh4alpsUDFFbVpYb2pteHB4OGtpcXBhYkduLzVVVjdjdWg3NDEvd29SaDI4?=
+ =?utf-8?B?eTBEWHVkRitYMzhYVHR4US9Jc2JOY2g2SDA3WkQwYnE4dWNiSG9Cakd2N3lI?=
+ =?utf-8?B?ZkZ4UGc3dVRBTlFraEJIbXFZYzJoRHJjYlJPT0RzSTUycENWM3hZdFFaQzVs?=
+ =?utf-8?B?Y1pQdGdtSW9mVDJxWDNRWjZFNHFyVnl4TTZlOGg2QnY4WTN2S1NlZTE1UjdE?=
+ =?utf-8?B?MnJ1UWJiYlNxRlVFY0h2WVl2L01QUjliWXBCOWoxSy8vZ0lFWndqZ0tkbFNn?=
+ =?utf-8?B?a080dDRaTG51d3F0cXhhajFuaC9OVzVzU2tUai9zQmtFc2N6T050TE9SS0VP?=
+ =?utf-8?B?cDdrbWdWS0pKVlFKMFhiNVZWVnhQVlRHc2MrTUl5NnVTNzNWN2RUQUZMRHZZ?=
+ =?utf-8?B?TC9XbUFNTVhuN2dIZ3pNbkpwUFhOak5CalVteUZHYU9uOERnbGVvUWc2c2Q3?=
+ =?utf-8?B?L0FNc0hMTWVKVERmbTg2ZzIrQk1XMGt0OHZiMzM3ZjMxM2Jxck50WmVXVU1P?=
+ =?utf-8?B?QXBKQ1ZZekF3QUpHQ01PbCszdXBvRlQ3VGRuMDZiMG9mcWhySllFL3MvNklL?=
+ =?utf-8?B?QXdGbnVTdk1Sa1JVN2p5OXJpRnZnSFdEcFZqSVZJejVUcHBPNnF4bkpoQTha?=
+ =?utf-8?B?QWhQVkpJVnUzeEZHTjJiY0xaRjlEUHFTOSswcXhJK0Z6M1RLT3AyaXJxVktQ?=
+ =?utf-8?B?TTFQU25rL3ROZ094WWlmY3ljUlRWQldJTjJPdHc3YVZSa3plQy9SVndjZ2JN?=
+ =?utf-8?B?Rjd3QkxHS0QwU3FVSTNVTnBqa3NFbU1Ed01lL1RnOFU2clBZWk9lUGlxR0x6?=
+ =?utf-8?B?ZEVPNlppMjlkS2RpQVM3aG04eE5oQlNmcHM2RDRIMDU0V3lrOVcxVzZlWlVX?=
+ =?utf-8?B?a3VSZnNHR2lvNUlYSHlNUFBYUjRRaUNXeW1BNHBmeVREemd2bm9KdUhrcWxO?=
+ =?utf-8?B?TGplVnNKRzJ1TDM2VFoyYjFwZEZBWnpIb0RlTUhZZXl4aXVKNXJDMGJwWjZn?=
+ =?utf-8?B?STJ6TGdDajNrb2IvM0M3dng2QWdpOTNDN2lacU8vZmZrRzhFOGtNc1BoUVpE?=
+ =?utf-8?B?QVdCQ2k1dnk4RWVITGxWc2hSUjMrTGxsUjlVMlIyQTBkSUFkU0llRk43TWc2?=
+ =?utf-8?B?Mm1jcmhtckprTUd4dlIzVThGazRROXpqZHlBTHZBUFpzNnJ0SmZIRWlqbGhZ?=
+ =?utf-8?B?NWVjenhKbm80Y1NOTXA3cVNLU0N1MzV2UTRxMzBnTFRSRTZ3OTNVc0ZBOWRM?=
+ =?utf-8?B?bkNaWXlDR0EyYUNkeGhBUGRKVHZFTDVhWmthS2tMN1k0LzllMXVMYXFkMzZ2?=
+ =?utf-8?B?MFRmSUpTRVZRUS9WTTNOK3VuaURiaU1JcUJTa3B2eWJwTnZWTTFKNkhQemhI?=
+ =?utf-8?B?d0piVkQva04yWkRCUkpOMGZHZzZDM1liaEtwRVZDM0tyWkJTeW9ndFUzWmtD?=
+ =?utf-8?B?cTRzdHdmU3hVRElnVlBjN2w3MmplcmxzOEpyWlJMRUNCT29FYThmVGhDdzJz?=
+ =?utf-8?B?cGhqL3N1Y2FWT1FiYkduQWhvR1d2a1NCUW94dFlDQ1A3M0l1SUdFYXJ6MllG?=
+ =?utf-8?Q?1zDhCSvqOTmPprz9joJ3akQAr?=
+X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0: 
+	9J5l+fII+cu5U1MQfpUQ2ru+ALuYO2Isck0rdGWcpjqWnQsTpBMlYcWaVPwtZDBK9hV5O9dGSl6oiriEWXMbE9kak/2ERbLHzM6xgLKpospdSFfll4zuQcm4xTblHK+adQb/lKakLwl8qoro0I/zfXSTLKZXlS+vhmhQ7IxZzvIxVrWFAIp834CWzJhBgz+B4q0PJK8A9gJbMGzo+TxkXWqoI2wvIDloiN+LOYsk0QLhK0HkzY2VJdVIRoaYR0r4IS0MFlMROC76X9pJy67jagQWg+hl7w0vjK76xJQl3tYS6piAEUD3+QHjFa4TkqaoHklyWEXeQPBy9Qx0xJvvG+Fw4uovgYIHIIrKrJujVc5Il5pYPMG50thZrz3QB5h0HJfe/1NaVEOR6PgunLU4TEaioSVBwFKUk19pX495eDj6Yq1Ujh+aOHxLS3mw/NC5sM2RnNwQvOyvERcsCgy1PlH5talEzYGGTjihAgz6Hhehm0bPq18Cn2LwMQMrMW0wyrk2By4eN/ZnqFXIk0RkpDezFnWYqusqE6mmNd7C4yyXvmEVzfVNIYNEaWfD/P1Lk/O40qTXDsKQ2RUnMmww+7kpVH7yFxqLyTZCtqfHZ75zz3S3a76UOz+KDNa3TAI4txtP3HTH2ULoaOdXpjBwpT5iYFgQD3+oTNxoKRWfySA47FF9XOWn3u+UqSnm/U2+JWN23Yc9qTtVrvPQmcrTfcPqjLSZtWQqGLnTtX3CnFqOL1PjSUPqA5cXcnsmXC2Z57tJ3pgXSR/5sXsB4BU8wXc63VXnBmbOZLDcbhZ3iDWpuHKezw5RhzPL/h3YL/zVg3hAoxJh1/NmhtPqdbJko9gaeqczkgONhpaDzvbG7Xcw9znXAQ9Wuyou4Gmb0A8ybFLejaYELyX2fQ2WM5/flIQpbxlGy6r0EJJxinYo7T8=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7e9d2301-6788-4d6f-8665-08dba23e8ed3
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR10MB4313.namprd10.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Aug 2023 11:57:59.5048
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Aug 2023 12:02:57.3098
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 0H80KMD52KtGi5Gma3st4Y8SrhnzUZpB3ozjaUGkh4ipNi9fWb+LGnqvdrOUJHcs
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4132
+X-MS-Exchange-CrossTenant-UserPrincipalName: 4WJC2ZQLvvICvcss7EqTvs/zawbBOS7+Xx8FKtd3ruKLeufQbmfqlU7B87rplx8fjA7HxV/Ef5XQTfPxCCTjCw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BLAPR10MB4897
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.267,Aquarius:18.0.957,Hydra:6.0.601,FMLib:17.11.176.26
+ definitions=2023-08-21_01,2023-08-18_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 mlxscore=0 spamscore=0
+ mlxlogscore=999 malwarescore=0 bulkscore=0 adultscore=0 phishscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2306200000
+ definitions=main-2308210112
+X-Proofpoint-ORIG-GUID: 2kBd43CS97Lv3fm_eilOFuEeZ7Z58Y3b
+X-Proofpoint-GUID: 2kBd43CS97Lv3fm_eilOFuEeZ7Z58Y3b
 
-On Mon, Aug 21, 2023 at 04:33:36PM +0800, Michael Shavit wrote:
-> > Notice that arm_smmu_tlb_inv_range_asid() already duplicates
-> > arm_smmu_tlb_inv_range_domain().
-> >
-> > IMHO I would split the ATC step out of arm_smmu_mm_invalidate_range(),
-> > get rid of arm_smmu_tlb_inv_range_domain(), and have the mmu notifier
-> > just do as it already does:
-> >
-> >         if (!(smmu_domain->smmu->features & ARM_SMMU_FEAT_BTM))
-> >                 arm_smmu_tlb_inv_range_domain_no_atc(start, size, smmu_mn->cd->asid,
-> >                                             PAGE_SIZE, false, smmu_domain);
-> >         arm_smmu_atc_inv_domain(smmu_domain, start, size);
-> >
-> > And make arm_smmu_tlb_inv_range_domain() just call
-> >    arm_smmu_tlb_inv_range_domain_no_atc();
-> >    arm_smmu_atc_inv_domain();
+On 14/08/2023 18:53, Robin Murphy wrote:
+> The algorithm in the original paper specifies the storage of full
+> magazines in the depot as an unbounded list rather than a fixed-size
+> array. It turns out to be pretty straightforward to do this in our
+> implementation with no significant loss of efficiency. This allows
+> the depot to scale up to the working set sizes of larger systems,
+> while also potentially saving some memory on smaller ones too.
 > 
-> That's a nice clean-up but doesn't really solve the problem faced by this patch.
->
-> This patch series eliminates the smmu_domain->smmu handle, replacing
-> it for a list of SMMUs. So SVA can no longer optimize the
-> arm_smmu_tlb_inv_range_asid call away by checking whether the SMMU BTM
-> feature is enabled since there's now a list of SMMUs with possibly
-> heterogeneous support for the feature. 
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 
-You could also go in the direction of making a SVA BTM and SV non-BTM
-domain type and then you know what to do immediately in the notifier.
+This looks ok (ignoring the crash reported), so feel free to add:
 
-> Since there's now a loop over a series of SMMUs inside
-> arm_smmu_tlb_inv_range_asid, it makes sense to move the check into
-> that loop. This technically works because only SVA is calling
-> arm_smmu_tlb_inv_range_asid but can (IMO) risk introducing bugs in
-> the future since it's not obvious from the function name.
+Reviewed-by: John Garry <john.g.garry@oracle.com>
 
-Well, I would remove the duplication and add an argument if you intend
-to share the function that loops
+A small comment and question below.
 
-Jason
+> ---
+>   drivers/iommu/iova.c | 65 ++++++++++++++++++++++++--------------------
+>   1 file changed, 36 insertions(+), 29 deletions(-)
+> 
+> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+> index 10b964600948..d2de6fb0e9f4 100644
+> --- a/drivers/iommu/iova.c
+> +++ b/drivers/iommu/iova.c
+> @@ -625,10 +625,16 @@ EXPORT_SYMBOL_GPL(reserve_iova);
+>    * will be wasted.
+>    */
+>   #define IOVA_MAG_SIZE 127
+> -#define MAX_GLOBAL_MAGS 32	/* magazines per bin */
+>   
+>   struct iova_magazine {
+> -	unsigned long size;
+> +	/*
+> +	 * Only full magazines are inserted into the depot, so we can avoid
+> +	 * a separate list head and preserve maximum space-efficiency.
+
+It might be worth explicitly mentioning that we try to keep total mag 
+size as power-of-2
+
+> +	 */
+> +	union {
+> +		unsigned long size;
+> +		struct iova_magazine *next;
+> +	};
+>   	unsigned long pfns[IOVA_MAG_SIZE];
+>   };
+>   
+> @@ -640,8 +646,7 @@ struct iova_cpu_rcache {
+>   
+>   struct iova_rcache {
+>   	spinlock_t lock;
+> -	unsigned long depot_size;
+> -	struct iova_magazine *depot[MAX_GLOBAL_MAGS];
+> +	struct iova_magazine *depot;
+>   	struct iova_cpu_rcache __percpu *cpu_rcaches;
+>   };
+>   
+> @@ -717,6 +722,21 @@ static void iova_magazine_push(struct iova_magazine *mag, unsigned long pfn)
+>   	mag->pfns[mag->size++] = pfn;
+>   }
+>   
+> +static struct iova_magazine *iova_depot_pop(struct iova_rcache *rcache)
+> +{
+> +	struct iova_magazine *mag = rcache->depot;
+> +
+> +	rcache->depot = mag->next;
+> +	mag->size = IOVA_MAG_SIZE;
+> +	return mag;
+> +}
+> +
+> +static void iova_depot_push(struct iova_rcache *rcache, struct iova_magazine *mag)
+> +{
+> +	mag->next = rcache->depot;
+> +	rcache->depot = mag;
+> +}
+> +
+>   int iova_domain_init_rcaches(struct iova_domain *iovad)
+>   {
+>   	unsigned int cpu;
+> @@ -734,7 +754,6 @@ int iova_domain_init_rcaches(struct iova_domain *iovad)
+>   
+>   		rcache = &iovad->rcaches[i];
+>   		spin_lock_init(&rcache->lock);
+> -		rcache->depot_size = 0;
+>   		rcache->cpu_rcaches = __alloc_percpu(sizeof(*cpu_rcache),
+>   						     cache_line_size());
+>   		if (!rcache->cpu_rcaches) {
+> @@ -776,7 +795,6 @@ static bool __iova_rcache_insert(struct iova_domain *iovad,
+>   				 struct iova_rcache *rcache,
+>   				 unsigned long iova_pfn)
+>   {
+> -	struct iova_magazine *mag_to_free = NULL;
+>   	struct iova_cpu_rcache *cpu_rcache;
+>   	bool can_insert = false;
+>   	unsigned long flags;
+> @@ -794,12 +812,7 @@ static bool __iova_rcache_insert(struct iova_domain *iovad,
+>   
+>   		if (new_mag) {
+>   			spin_lock(&rcache->lock);
+> -			if (rcache->depot_size < MAX_GLOBAL_MAGS) {
+> -				rcache->depot[rcache->depot_size++] =
+> -						cpu_rcache->loaded;
+> -			} else {
+> -				mag_to_free = cpu_rcache->loaded;
+> -			}
+> +			iova_depot_push(rcache, cpu_rcache->loaded);
+>   			spin_unlock(&rcache->lock);
+
+Out of curiosity, do you know why we take the approach (prior to this 
+change) to free the loaded mag and alloc a new empty mag? Why not 
+instead just say that we can't insert and bail out?
+
+>   
+>   			cpu_rcache->loaded = new_mag;
+> @@ -812,11 +825,6 @@ static bool __iova_rcache_insert(struct iova_domain *iovad,
+>   
+>   	spin_unlock_irqrestore(&cpu_rcache->lock, flags);
+>   
+> -	if (mag_to_free) {
+> -		iova_magazine_free_pfns(mag_to_free, iovad);
+> -		iova_magazine_free(mag_to_free);
+> -	}
+> -
+>   	return can_insert;
+>   }
+>   
+> @@ -854,9 +862,9 @@ static unsigned long __iova_rcache_get(struct iova_rcache *rcache,
+>   		has_pfn = true;
+>   	} else {
+>   		spin_lock(&rcache->lock);
+> -		if (rcache->depot_size > 0) {
+> +		if (rcache->depot) {
+>   			iova_magazine_free(cpu_rcache->loaded);
+> -			cpu_rcache->loaded = rcache->depot[--rcache->depot_size];
+> +			cpu_rcache->loaded = iova_depot_pop(rcache);
+>   			has_pfn = true;
+>   		}
+>   		spin_unlock(&rcache->lock);
+> @@ -894,10 +902,10 @@ static void free_iova_rcaches(struct iova_domain *iovad)
+>   {
+>   	struct iova_rcache *rcache;
+>   	struct iova_cpu_rcache *cpu_rcache;
+> +	struct iova_magazine *mag;
+>   	unsigned int cpu;
+> -	int i, j;
+>   
+> -	for (i = 0; i < IOVA_RANGE_CACHE_MAX_SIZE; ++i) {
+> +	for (int i = 0; i < IOVA_RANGE_CACHE_MAX_SIZE; ++i) {
+>   		rcache = &iovad->rcaches[i];
+>   		if (!rcache->cpu_rcaches)
+>   			break;
+> @@ -907,8 +915,8 @@ static void free_iova_rcaches(struct iova_domain *iovad)
+>   			iova_magazine_free(cpu_rcache->prev);
+>   		}
+>   		free_percpu(rcache->cpu_rcaches);
+> -		for (j = 0; j < rcache->depot_size; ++j)
+> -			iova_magazine_free(rcache->depot[j]);
+> +		while ((mag = iova_depot_pop(rcache)))
+> +			iova_magazine_free(mag);
+>   	}
+>   
+>   	kfree(iovad->rcaches);
+> @@ -941,17 +949,16 @@ static void free_cpu_cached_iovas(unsigned int cpu, struct iova_domain *iovad)
+>   static void free_global_cached_iovas(struct iova_domain *iovad)
+>   {
+>   	struct iova_rcache *rcache;
+> +	struct iova_magazine *mag;
+>   	unsigned long flags;
+> -	int i, j;
+>   
+> -	for (i = 0; i < IOVA_RANGE_CACHE_MAX_SIZE; ++i) {
+> +	for (int i = 0; i < IOVA_RANGE_CACHE_MAX_SIZE; ++i) {
+>   		rcache = &iovad->rcaches[i];
+>   		spin_lock_irqsave(&rcache->lock, flags);
+> -		for (j = 0; j < rcache->depot_size; ++j) {
+> -			iova_magazine_free_pfns(rcache->depot[j], iovad);
+> -			iova_magazine_free(rcache->depot[j]);
+> +		while ((mag = iova_depot_pop(rcache))) {
+> +			iova_magazine_free_pfns(mag, iovad);
+> +			iova_magazine_free(mag);
+>   		}
+> -		rcache->depot_size = 0;
+>   		spin_unlock_irqrestore(&rcache->lock, flags);
+>   	}
+>   }
+
