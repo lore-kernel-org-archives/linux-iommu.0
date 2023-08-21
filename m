@@ -1,178 +1,108 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C89B627
-	for <iommu@lists.linux.dev>; Mon, 21 Aug 2023 01:24:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EAA8815B6
+	for <iommu@lists.linux.dev>; Mon, 21 Aug 2023 05:44:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1692581046; x=1724117046;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=Gb8amgNMxwqEnPhyW1Zr72hfgwYg1sPB+CiSSb35MlA=;
-  b=DHf/g3Cq6kWfrzVLQ5TWuqo3wvd0rJLaX4XrLvH8/kd06VwuAITXdqTD
-   2LUEuaDj7S7GuwgRpqwhj6lXOJ+PVIn/QUFtFis9bPrTZ+dMF6+ij1Uge
-   +UWxB1sBCMeHlqvs9gqYBAEsjXLiz5F0+3bqEPz7XqbM/HgSzyks4KdQ3
-   3nxp++z3O/gCpbkkAYR9NZ7a+qpvcPNcE+vwWtiTysu1zS3v8QVY/mIg3
-   lv6HTLrZ7FscALzrkLUtEcv1b51UsrkoirhvuoBplUdbRz4PbW5uCDchk
-   +zjYGAqxXT6UKV7jtX+hhwh3qi/Wsu3U+jabvyhWw0r3POzHMTIpsuEpe
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10808"; a="459835474"
+  t=1692596683; x=1724132683;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=Gx3SgnfGV8hbt3rcGhG27+mleRZghv8tlf8VVTaLsFI=;
+  b=St3fGZgDt35K6o0A5vhsqFZS4yttSqTXI5D0I8E+En60k16RlkhD6tVP
+   4/GRCgCav5cVU6+taKLUEUlFbnL8tmpW6VuPiTHeV9duy57gxD+NUy3dA
+   VEROw2i96fBNezT8WvzS131HneVak8PnKUy3u6mVkIVEWgcru6bQNkOd2
+   Oz68qdquyZDY3iiSavNhYB5md2kEDIJzV8lQy/17/i/XwbbM2NLY5XH7h
+   N1SSgrEC9g2R1i/U+KhbBXXi+HGxejqjJ6uzkETT7KCuyRI67OIuc8Ur9
+   ZvbbC8rz64O64pFr9DMo8CwSFtHXQmPK8wG+X/n+ZT4ZwwPuLmturYXiP
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10808"; a="459869111"
 X-IronPort-AV: E=Sophos;i="6.01,189,1684825200"; 
-   d="scan'208";a="459835474"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Aug 2023 18:24:05 -0700
+   d="scan'208";a="459869111"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Aug 2023 22:44:42 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10808"; a="685487917"
+X-IronPort-AV: E=McAfee;i="6600,9927,10808"; a="738780305"
 X-IronPort-AV: E=Sophos;i="6.01,189,1684825200"; 
-   d="scan'208";a="685487917"
-Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
-  by orsmga003.jf.intel.com with ESMTP; 20 Aug 2023 18:24:04 -0700
-Received: from orsmsx603.amr.corp.intel.com (10.22.229.16) by
- ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.27; Sun, 20 Aug 2023 18:24:03 -0700
-Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
- orsmsx603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.27 via Frontend Transport; Sun, 20 Aug 2023 18:24:03 -0700
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.109)
- by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.27; Sun, 20 Aug 2023 18:24:03 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MnMCx/KLAhgo19Ops/SjCOoq10Z34FhdQs/X2y9Yk17TXnZLF6mRNinEGUfa2cJeYJkJqyXfQ+/zZMMTSJO9maVX9SoMF9tGCxBbofaWOQhhBPh5d4RhGnFSPLjTAZvM7vd0RM4EuaDKdQrdFKSxRVWe2xGLskt5hhU5d/SbfygaeTFpz21Qy1lxVKrmGowHP5uK8pRUSECvw4BZUpDA3c8UlVueThxhfG5k+nwpSK1niDuOvDSpSo0E3iuIYR6YifCkWxT9ka65PzNhCD4qMcgetstbEcuJJoZfYYT+c7XmPKwexNGX30npnwtMOcj8kolAD6c5mRKaFOK/EhnjFw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=TutKDHp2bNOhXvEvQbONypThZgA+UtR2pAQ35RICJ98=;
- b=mj0UX6LZVqCzOdqVbgMVyqJkjiBifYudlb0lwPziyPoKx9/S70Dx+J0ktbHIjHsIrrxdGXMPvadEsAeE4JvcmV/MmDZ7Yep4vFsEVMazO33UL/1UC766q0fUxapSqVaoy7BgS1Rf2mqlNnQb2YXkbek8C/WlZGkI1b2o0hYB2RHv2hv03Kz2xmpCdMwsLxryaqiwK4YylM7HfaEsJ3dPCB+YQqG9PgIDiyV5aS2qUVPYfQUKpEYf/j9c4JhuFX6+AyB4mYEt7gS/uv81IYYy0vb5pBwH91QL1qke83IO3b265wSosNsz1kJ5CWqG1l+0mvZO6D5KtCORLFRYa0+0Dw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by CY8PR11MB6916.namprd11.prod.outlook.com (2603:10b6:930:58::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6699.24; Mon, 21 Aug
- 2023 01:24:01 +0000
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::dcf3:7bac:d274:7bed]) by BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::dcf3:7bac:d274:7bed%4]) with mapi id 15.20.6699.022; Mon, 21 Aug 2023
- 01:24:01 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Nicolin Chen <nicolinc@nvidia.com>, Jason Gunthorpe <jgg@nvidia.com>
-CC: "Liu, Yi L" <yi.l.liu@intel.com>, "joro@8bytes.org" <joro@8bytes.org>,
-	"alex.williamson@redhat.com" <alex.williamson@redhat.com>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>, "baolu.lu@linux.intel.com"
-	<baolu.lu@linux.intel.com>, "cohuck@redhat.com" <cohuck@redhat.com>,
-	"eric.auger@redhat.com" <eric.auger@redhat.com>, "kvm@vger.kernel.org"
-	<kvm@vger.kernel.org>, "mjrosato@linux.ibm.com" <mjrosato@linux.ibm.com>,
-	"chao.p.peng@linux.intel.com" <chao.p.peng@linux.intel.com>,
-	"yi.y.sun@linux.intel.com" <yi.y.sun@linux.intel.com>, "peterx@redhat.com"
-	<peterx@redhat.com>, "jasowang@redhat.com" <jasowang@redhat.com>,
-	"shameerali.kolothum.thodi@huawei.com"
-	<shameerali.kolothum.thodi@huawei.com>, "lulu@redhat.com" <lulu@redhat.com>,
-	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>, "Duan,
- Zhenzhong" <zhenzhong.duan@intel.com>
-Subject: RE: [PATCH v4 09/12] iommu/vt-d: Add iotlb flush for nested domain
-Thread-Topic: [PATCH v4 09/12] iommu/vt-d: Add iotlb flush for nested domain
-Thread-Index: AQHZvh/uFyWMLiVXhUCSOYKFk2h4da/WraUQgAhYJoCAAMpSgIAAnN2AgABV8ACAAPMnQIAACsKAgAAAQaCAAArdAIAAc+AAgAAuy4CAAAHYgIAAEEsAgABtjjCAANwPAIAAFauAgAAk/wCAABq7AIAAbchggADcogCABZpGAIAFaUoAgAAQuYCAAAbAgIAAAWQAgAOZJwA=
-Date: Mon, 21 Aug 2023 01:24:01 +0000
-Message-ID: <BN9PR11MB527666891DBDA346D9EA58018C1EA@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <ZNUI0D7ZMvLWlBNx@nvidia.com> <ZNUa/VmeiIo0YA0v@Asurada-Nvidia>
- <ZNU6BnTgNEWlwNYQ@nvidia.com> <ZNVQcmYp27ap7h30@Asurada-Nvidia>
- <BN9PR11MB5276D0B3E0106C73C498B8018C10A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <ZNZlnh+/Q5Vk5Kul@Asurada-Nvidia> <ZNsYxta9Pi7USDoR@Asurada-Nvidia>
- <ZN+i1pEoN/NsWPKS@nvidia.com> <ZN+w3fahQpM2W9Yx@Asurada-Nvidia>
- <ZN+2h5rpTUI5aG3M@nvidia.com> <ZN+3spv3/8N2IDVa@Asurada-Nvidia>
-In-Reply-To: <ZN+3spv3/8N2IDVa@Asurada-Nvidia>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|CY8PR11MB6916:EE_
-x-ms-office365-filtering-correlation-id: 1172c134-7c83-4285-b0d6-08dba1e54ceb
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: gslB1VmOt9ERHOq0IRouAou0p9xIH3boYTLsd7XaBsgv32DlyGgsxHBnxtmmwQ5LGKadY1lR7pDhrzO3DLZWb3zj9UmdsGTTtXQtxE8VTTqVUI/sxSEPKX63eFFY6zu1wQPRWxh076pCtr6QOj+c8hpegwQS3fJ6EIgdFePk6W/5Orv+VC5taozHNaHXTSMIG2zyYeneI08N5tALbhAGEc6dmmpQeIBWdGDS1ms4+ljSbBGUYX7bT5e9rZWN6270EpkgvdLjl1fzDUG80GJNv7l2AyMiTE+Z4V1/TCb3cwQew5YWSDCKKNQ9Oi9WguydgP1YiRQsfVt7lABaOwQCCSsgTGKfv5QSiTvHXfYHh6WPnIysQpBp5hoIO5ESiP0OSzukp9a5UR3hyXrLhISx0VrZnpXZyHVsDM87z5lrZuLs1KcyhmEo96iDeoxwayRWZO/7d/RYofzc0b58hxdDxjeaZKQG2qOoXJ9yovkhRh69CCqFdlUQ+gNjiIpdA1XTvwBA9Oh5qK4vflFOw19hTThUaFwjWJZW4BDsm5Hi874t8LaAYhxV9u/Gt2E+W2sBYDd6nh8ws4dZq8qGdF/5SrLRNhQ2oOPgvCo1NyPAlOcXOvjQKE7cX0zDfFKvMy6g
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(396003)(136003)(376002)(346002)(366004)(39860400002)(186009)(1800799009)(451199024)(66446008)(66476007)(64756008)(54906003)(76116006)(66556008)(66946007)(316002)(9686003)(82960400001)(110136005)(8676002)(8936002)(4326008)(41300700001)(122000001)(478600001)(71200400001)(55016003)(38070700005)(7696005)(38100700002)(6506007)(4744005)(2906002)(7416002)(86362001)(5660300002)(33656002)(26005)(52536014);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?EgpBX8yLhKFt7UNqn/1DzlrmTR7+1fVWNb2dLV7thEFV9wQBbkQsdqzOHp7r?=
- =?us-ascii?Q?u/0sgMh1dN1eNt7V89VPqfP/kV+Y0kEog0X5HcRpXylvLRux74iztOPiskbv?=
- =?us-ascii?Q?+RpnAIfP6VSYoz0IvgjqWldSth7zHkiCX+z9bQB0zZcvpnn00K5ZjNnieD3A?=
- =?us-ascii?Q?q8un/MonIvGvy/yM/TuTmRgtsKoMimiOQz+wuFZuJ2DgbyHScWyOE7fDnysO?=
- =?us-ascii?Q?1Oae4t6c5mSSI5ZRvzdQYM2/IUmDUKiHAeXVYKhSYCSBESWW5ubQjsI2FMUG?=
- =?us-ascii?Q?dwCTD+OCVj05I6T8Yj7+YACCjgRvyOFDXjaH9TYbiOd8bE7PTG+F+X8vLs7M?=
- =?us-ascii?Q?OCv0NJWX+xYpEfCv3NclyKn6xbYm+WxeUW6rrIjdDQxY3lcWtwYQC3ui1qa+?=
- =?us-ascii?Q?N4jK6z/OMYxcmO+LzOOuSahn98J+p04Taku8DvO8MqnKT/jSXHEXdB9iCy54?=
- =?us-ascii?Q?slsPjudp7ywlDL6JX5nJa/ooK0x2qN64T5R3jH1QYpdM5/I3uZTHLDtvegL2?=
- =?us-ascii?Q?Ytr2fkRQ3Gcg5lGk7EdicK+71l0gvUojgIBG5WqWqhZWKKG4Ez5/XnOCWw7o?=
- =?us-ascii?Q?AGFMB0h11+i0Vs/AdmgASUVSszGjomPRoMzLFimPZizT6L+Go+s6Bc5Wvf6J?=
- =?us-ascii?Q?kikIVQqEDkv9/matbkW/ct1OP8ab5r7uSDZxrgkdY9OhWmnH47JbOFL5nR3b?=
- =?us-ascii?Q?DqypbtkTtB3F2lZNCS99wRKgIyRrE+ChThcvu6DFgJKysJBKvkP0kCp5R0Kc?=
- =?us-ascii?Q?NDz1xHnJSFaqUoXu0hSzcRxEew8PclIudBfUDSe12ZF2/N2dJQBDhsx9txTB?=
- =?us-ascii?Q?XsgkPZGC5Msgmfeiz/929gNlxLxdNXeRCO12S5Wz+fAQEU8/7j9ApOm1it6l?=
- =?us-ascii?Q?Qn5jb/6AvNMsvojO591o+nbakDyMb7aC15i929MDc8VVR+APg1/T2jEeFpoh?=
- =?us-ascii?Q?T7BngZjoLEa9lxRW/LrgJ1aFMV6CE6CWwDSl/1a+a36AfQk9v5OeHXtiU5ug?=
- =?us-ascii?Q?9UAFsmvuwk2WACMoIsaHsWm3I+Wif7MUbpMKj6dXgAEVKYfaY1CYqxQUXT+B?=
- =?us-ascii?Q?j3+KQdDhCPQKwvYMGXDm8Ss4jcN8FL/Axtr4nGu2+3IYVzpikfxFf7OHr7hm?=
- =?us-ascii?Q?scz4DT5qCTECXoRNqa6wIVqCrS7uY4u4yidWEyz0dU8YdWvbG0OMC0yFZZuV?=
- =?us-ascii?Q?G6uP+aHbpiLkjF98WVzTMqjH+a0JJLYk90lJ2UPH8z5xrL5LV3vhhChWTXwF?=
- =?us-ascii?Q?gS8oLVFcJqToOXN7J4ortKTPb+tcNwKro3i3FNQfksewKw/kGADdemrhHwDG?=
- =?us-ascii?Q?cH7qtcMYQ/SFmyQ6NKCOe5MUvRiyifvpQdr+ktyZUH/ZFfgJ2Gl07tCujyoQ?=
- =?us-ascii?Q?+6NfoU1UD0SzoIhKEbq4KhUHHOOC3KrFTsWhv5iGVKY3RW2QthtVeoksZSds?=
- =?us-ascii?Q?CAXHiQWvFI0rg//LHOI2tfAN9OCobOkn+BTya8kRP7xw1scasCUkAdsOY+m1?=
- =?us-ascii?Q?M2j1oBjtcQ4et76LE5ZPAT8N2TlM8f3AjIMnIuDJNhtBHKPG5cNs4WBFzGnf?=
- =?us-ascii?Q?uGPtit6soFPv1a6qXGiKAK5LoPSUDXBLfdCbyE4g?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+   d="scan'208";a="738780305"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.252.185.204]) ([10.252.185.204])
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Aug 2023 22:44:37 -0700
+Message-ID: <51dfc143-aafd-fea2-26fe-e2e9025fcd21@linux.intel.com>
+Date: Mon, 21 Aug 2023 13:44:33 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1172c134-7c83-4285-b0d6-08dba1e54ceb
-X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Aug 2023 01:24:01.3146
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: dAwDRoNamg30mz9zdJR+BjkWtevTvWdUI91+g/c8upU3Xqowv8dMmk/GecOcSBfedvCtwSkQyrBvnoWDdDXL7g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR11MB6916
-X-OriginatorOrg: intel.com
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.14.0
+Cc: baolu.lu@linux.intel.com, "Liu, Yi L" <yi.l.liu@intel.com>,
+ Jacob Pan <jacob.jun.pan@linux.intel.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 1/3] iommu: Make single-device group for PASID explicit
+To: "Tian, Kevin" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Jason Gunthorpe <jgg@ziepe.ca>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Nicolin Chen <nicolinc@nvidia.com>
+References: <20230814011759.102089-1-baolu.lu@linux.intel.com>
+ <20230814011759.102089-2-baolu.lu@linux.intel.com>
+ <BN9PR11MB5276E3C3D99C2DFA963805C98C1BA@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <BN9PR11MB5276E3C3D99C2DFA963805C98C1BA@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-> From: Nicolin Chen <nicolinc@nvidia.com>
-> Sent: Saturday, August 19, 2023 2:26 AM
->=20
-> On Fri, Aug 18, 2023 at 03:20:55PM -0300, Jason Gunthorpe wrote:
-> > On Fri, Aug 18, 2023 at 10:56:45AM -0700, Nicolin Chen wrote:
-> >
-> > > > The highest array index sounds generic, the error code maybe is too
-> > >
-> > > We could do in its and report the error code in its raw form:
-> > > 	__u32 out_array_index;
-> > > 	/* number of bits used to report error code in the returned
-> array_index */
-> > > 	__u32 out_array_index_error_code_bits;
-> > > Or just:
-> > > 	__u32 out_array_index;
-> > > 	__u32 out_error_code;
-> > >
-> > > Do we have to define a list of generic error code?
-> >
-> > out_driver_error_code may be OK
->=20
-> Ack. Will implement the array in that way.
->=20
+On 2023/8/18 11:56, Tian, Kevin wrote:
+>> From: Lu Baolu <baolu.lu@linux.intel.com>
+>> Sent: Monday, August 14, 2023 9:18 AM
+>>
+>> The PASID interfaces have always supported only single-device groups.
+>> This was first introduced in commit 26b25a2b98e45 ("iommu: Bind process
+>> address spaces to devices"), and has been kept consistent in subsequent
+>> commits.
+>>
+>> However, the core code doesn't explicitly check for this requirement
+>> after commit 201007ef707a8 ("PCI: Enable PASID only when ACS RR & UF
+>> enabled on upstream path"), which made this requirement implicit.
+>>
+>> Restore the check to make it explicit that the PASID interfaces only
+>> support devices belonging to single-device groups.
+>>
+>> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+>> ---
+>>   drivers/iommu/iommu.c | 5 +++++
+>>   1 file changed, 5 insertions(+)
+>>
+>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+>> index 71b9c41f2a9e..f1eba60e573f 100644
+>> --- a/drivers/iommu/iommu.c
+>> +++ b/drivers/iommu/iommu.c
+>> @@ -3408,6 +3408,11 @@ int iommu_attach_device_pasid(struct
+>> iommu_domain *domain,
+>>   		return -ENODEV;
+>>
+>>   	mutex_lock(&group->mutex);
+>> +	if (list_count_nodes(&group->devices) != 1) {
+>> +		ret = -EINVAL;
+>> +		goto out_unlock;
+>> +	}
+>> +
+> 
+> I wonder whether we should also block adding new device to this
+> group once the single-device has pasid enabled. Otherwise the
 
-Yes. Error code is driver specific. Just having a field to carry it is
-sufficient.
+This has been guaranteed by pci_enable_pasid():
+
+         if (!pci_acs_path_enabled(pdev, NULL, PCI_ACS_RR | PCI_ACS_UF))
+                 return -EINVAL;
+
+> check alone at attach time doesn't mean this group won't be
+> expanded to have multiple devices later.
+
+Best regards,
+baolu
