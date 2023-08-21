@@ -1,269 +1,51 @@
-Received: from mail-qk1-f181.google.com (mail-qk1-f181.google.com [209.85.222.181])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2E4A2F2B
-	for <iommu@lists.linux.dev>; Mon, 21 Aug 2023 17:11:23 +0000 (UTC)
-Received: by mail-qk1-f181.google.com with SMTP id af79cd13be357-76dafe9574bso17645985a.1
-        for <iommu@lists.linux.dev>; Mon, 21 Aug 2023 10:11:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1692637882; x=1693242682;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=DZQ59N6at0zbBieDZtWXJGjAejF7XYSgNeSZUJ/Ek3E=;
-        b=bubdLBZKqa22OI94f2vUw7HIQe/Y1oDy1YGiTPGnDEt0ni7Wg3SYPyx9VnV4TQl4mC
-         5u1Isb3wLJvyvzaNiPRKBwB/rjlmKWaP2jDgo34bOYjZFArDuZKTgHSio/FMXF0NFcg6
-         oFJQtbcxtZiS/uXRI4mkdubJdvc8ZSagJ8p7cAzMsEfD2O4+Us96+ou6Yk9H1B7JGsHT
-         M0rc0OJedwzh0O5dJ0NV9n/dp4hzlb7Igc0DeWWbZQcePuRlLPhXiR7VAws0hxlfmWfT
-         0EUpJXDi2oje6rv6/RU7tpijdtWYqM4NZn5XjK1JxftkgC+5h5La27n7qTjvkhZ6gdjr
-         +WhQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1692637882; x=1693242682;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=DZQ59N6at0zbBieDZtWXJGjAejF7XYSgNeSZUJ/Ek3E=;
-        b=Xekcxwt5RYfzTnwf7bL7ALR86UrzRjQU+dgHxYGr7wMlYclUA2X/ZH368j6wJoqkUu
-         le9MI7Pzwvi13z/96YQP/he/QkTNope5Qx2vmUDjdqd4z2OFsV04ht9hACwe5lia/JLc
-         rVqWZU5KTkLpWjCjer1CUYnqtbULkTynwW0vfT5JJ6wTUj+u0rM879auvzXT3E/VoaXt
-         /8BEyRDlKzbNburhJnGHbAzWFD4wyNEOvcB94icJFzgWiSug9gkzY1pbrKGQKP28InXN
-         /TgSjzUHyV8noTlIQri+JL3TBQ5z+/aKy85yVAvwGPKuDXEYylZ1gQ7nMU4pCl0CzvnP
-         gu7w==
-X-Gm-Message-State: AOJu0Ywn+NyJu8aARMrtjHWQU16Gcy6WWcbUnE9PiJusCsdu5kwa3dB7
-	wqOcD91lZcxM/L5+2rHsdXTp1Y/zzB51pnF8R2k=
-X-Google-Smtp-Source: AGHT+IH+ma5zsrikDgBqZbfg/lBTwpLwrxV8rmHy0wDGJg7fciff2u7AqewHPoadTAmit1jAmacP2Q==
-X-Received: by 2002:a05:620a:1026:b0:76c:c90d:2eef with SMTP id a6-20020a05620a102600b0076cc90d2eefmr8357328qkk.42.1692637882428;
-        Mon, 21 Aug 2023 10:11:22 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-25-194.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.25.194])
-        by smtp.gmail.com with ESMTPSA id c8-20020a05620a134800b0076dae4753efsm274426qkl.14.2023.08.21.10.11.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Aug 2023 10:11:21 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1qY8Qz-00DvG9-DQ;
-	Mon, 21 Aug 2023 14:11:21 -0300
-Date: Mon, 21 Aug 2023 14:11:21 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>, iommu@lists.linux.dev,
-	kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 09/11] iommu: Make iommu_queue_iopf() more generic
-Message-ID: <ZOOauSJpcE2YgIzG@ziepe.ca>
-References: <20230817234047.195194-1-baolu.lu@linux.intel.com>
- <20230817234047.195194-10-baolu.lu@linux.intel.com>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8806F8F48
+	for <iommu@lists.linux.dev>; Mon, 21 Aug 2023 18:22:58 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 92C972F4;
+	Mon, 21 Aug 2023 11:23:38 -0700 (PDT)
+Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 617D83F762;
+	Mon, 21 Aug 2023 11:22:56 -0700 (PDT)
+From: Robin Murphy <robin.murphy@arm.com>
+To: joro@8bytes.org
+Cc: will@kernel.org,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	zhangzekun11@huawei.com,
+	john.g.garry@oracle.com,
+	dheerajkumar.srivastava@amd.com,
+	jsnitsel@redhat.com
+Subject: [PATCH v2 0/2] iommu/iova: Make the rcache depot properly flexible
+Date: Mon, 21 Aug 2023 19:22:50 +0100
+Message-Id: <cover.1692641204.git.robin.murphy@arm.com>
+X-Mailer: git-send-email 2.39.2.101.g768bb238c484.dirty
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230817234047.195194-10-baolu.lu@linux.intel.com>
+Content-Transfer-Encoding: 8bit
 
-On Fri, Aug 18, 2023 at 07:40:45AM +0800, Lu Baolu wrote:
-> This completely separates the IO page fault handling framework from the
-> SVA implementation. Previously, the SVA implementation was tightly coupled
-> with the IO page fault handling framework. This makes SVA a "customer" of
-> the IO page fault handling framework by converting domain's page fault
-> handler to handle a group of faults and calling it directly from
-> iommu_queue_iopf().
-> 
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> ---
->  include/linux/iommu.h      |  5 +++--
->  drivers/iommu/iommu-sva.h  |  8 --------
->  drivers/iommu/io-pgfault.c | 16 +++++++++++++---
->  drivers/iommu/iommu-sva.c  | 14 ++++----------
->  drivers/iommu/iommu.c      |  4 ++--
->  5 files changed, 22 insertions(+), 25 deletions(-)
-> 
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index ff292eea9d31..cf1cb0bb46af 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -41,6 +41,7 @@ struct iommu_sva;
->  struct iommu_fault_event;
->  struct iommu_dma_cookie;
->  struct iopf_queue;
-> +struct iopf_group;
->  
->  #define IOMMU_FAULT_PERM_READ	(1 << 0) /* read */
->  #define IOMMU_FAULT_PERM_WRITE	(1 << 1) /* write */
-> @@ -175,8 +176,7 @@ struct iommu_domain {
->  	unsigned long pgsize_bitmap;	/* Bitmap of page sizes in use */
->  	struct iommu_domain_geometry geometry;
->  	struct iommu_dma_cookie *iova_cookie;
-> -	enum iommu_page_response_code (*iopf_handler)(struct iommu_fault *fault,
-> -						      void *data);
-> +	int (*iopf_handler)(struct iopf_group *group);
->  	void *fault_data;
->  	union {
->  		struct {
-> @@ -526,6 +526,7 @@ struct iopf_group {
->  	struct list_head		faults;
->  	struct work_struct		work;
->  	struct device			*dev;
-> +	void				*data;
->  };
->  
->  int iommu_device_register(struct iommu_device *iommu,
-> diff --git a/drivers/iommu/iommu-sva.h b/drivers/iommu/iommu-sva.h
-> index 510a7df23fba..cf41e88fac17 100644
-> --- a/drivers/iommu/iommu-sva.h
-> +++ b/drivers/iommu/iommu-sva.h
-> @@ -22,8 +22,6 @@ int iopf_queue_flush_dev(struct device *dev);
->  struct iopf_queue *iopf_queue_alloc(const char *name);
->  void iopf_queue_free(struct iopf_queue *queue);
->  int iopf_queue_discard_partial(struct iopf_queue *queue);
-> -enum iommu_page_response_code
-> -iommu_sva_handle_iopf(struct iommu_fault *fault, void *data);
->  void iopf_free_group(struct iopf_group *group);
->  int iopf_queue_work(struct iopf_group *group, work_func_t func);
->  int iommu_sva_handle_iopf_group(struct iopf_group *group);
-> @@ -65,12 +63,6 @@ static inline int iopf_queue_discard_partial(struct iopf_queue *queue)
->  	return -ENODEV;
->  }
->  
-> -static inline enum iommu_page_response_code
-> -iommu_sva_handle_iopf(struct iommu_fault *fault, void *data)
-> -{
-> -	return IOMMU_PAGE_RESP_INVALID;
-> -}
-> -
->  static inline void iopf_free_group(struct iopf_group *group)
->  {
->  }
-> diff --git a/drivers/iommu/io-pgfault.c b/drivers/iommu/io-pgfault.c
-> index 00c2e447b740..a61c2aabd1b8 100644
-> --- a/drivers/iommu/io-pgfault.c
-> +++ b/drivers/iommu/io-pgfault.c
-> @@ -11,8 +11,6 @@
->  #include <linux/slab.h>
->  #include <linux/workqueue.h>
->  
-> -#include "iommu-sva.h"
-> -
->  /**
->   * struct iopf_queue - IO Page Fault queue
->   * @wq: the fault workqueue
-> @@ -93,6 +91,7 @@ int iommu_queue_iopf(struct iommu_fault *fault, struct device *dev)
->  {
->  	int ret;
->  	struct iopf_group *group;
-> +	struct iommu_domain *domain;
->  	struct iopf_fault *iopf, *next;
->  	struct iommu_fault_param *iopf_param;
->  	struct dev_iommu *param = dev->iommu;
-> @@ -124,6 +123,16 @@ int iommu_queue_iopf(struct iommu_fault *fault, struct device *dev)
->  		return 0;
->  	}
->  
-> +	if (fault->prm.flags & IOMMU_FAULT_PAGE_REQUEST_PASID_VALID)
-> +		domain = iommu_get_domain_for_dev_pasid(dev, fault->prm.pasid, 0);
-> +	else
-> +		domain = iommu_get_domain_for_dev(dev);
-> +
-> +	if (!domain || !domain->iopf_handler) {
-> +		ret = -ENODEV;
-> +		goto cleanup_partial;
-> +	}
-> +
->  	group = kzalloc(sizeof(*group), GFP_KERNEL);
->  	if (!group) {
->  		/*
-> @@ -137,6 +146,7 @@ int iommu_queue_iopf(struct iommu_fault *fault, struct device *dev)
->  
->  	group->dev = dev;
->  	group->last_fault.fault = *fault;
-> +	group->data = domain->fault_data;
->  	INIT_LIST_HEAD(&group->faults);
->  	list_add(&group->last_fault.list, &group->faults);
->  
-> @@ -147,7 +157,7 @@ int iommu_queue_iopf(struct iommu_fault *fault, struct device *dev)
->  			list_move(&iopf->list, &group->faults);
->  	}
->  
-> -	ret = iommu_sva_handle_iopf_group(group);
-> +	ret = domain->iopf_handler(group);
->  	if (ret)
->  		iopf_free_group(group);
->  
-> diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
-> index df8734b6ec00..2811f34947ab 100644
-> --- a/drivers/iommu/iommu-sva.c
-> +++ b/drivers/iommu/iommu-sva.c
-> @@ -148,13 +148,14 @@ EXPORT_SYMBOL_GPL(iommu_sva_get_pasid);
->  /*
->   * I/O page fault handler for SVA
->   */
-> -enum iommu_page_response_code
-> +static enum iommu_page_response_code
->  iommu_sva_handle_iopf(struct iommu_fault *fault, void *data)
->  {
->  	vm_fault_t ret;
->  	struct vm_area_struct *vma;
-> -	struct mm_struct *mm = data;
->  	unsigned int access_flags = 0;
-> +	struct iommu_domain *domain = data;
-> +	struct mm_struct *mm = domain->mm;
->  	unsigned int fault_flags = FAULT_FLAG_REMOTE;
->  	struct iommu_fault_page_request *prm = &fault->prm;
->  	enum iommu_page_response_code status = IOMMU_PAGE_RESP_INVALID;
-> @@ -231,23 +232,16 @@ static void iommu_sva_iopf_handler(struct work_struct *work)
->  {
->  	struct iopf_fault *iopf;
->  	struct iopf_group *group;
-> -	struct iommu_domain *domain;
->  	enum iommu_page_response_code status = IOMMU_PAGE_RESP_SUCCESS;
->  
->  	group = container_of(work, struct iopf_group, work);
-> -	domain = iommu_get_domain_for_dev_pasid(group->dev,
-> -				group->last_fault.fault.prm.pasid, 0);
-> -	if (!domain || !domain->iopf_handler)
-> -		status = IOMMU_PAGE_RESP_INVALID;
-> -
->  	list_for_each_entry(iopf, &group->faults, list) {
->  		/*
->  		 * For the moment, errors are sticky: don't handle subsequent
->  		 * faults in the group if there is an error.
->  		 */
->  		if (status == IOMMU_PAGE_RESP_SUCCESS)
-> -			status = domain->iopf_handler(&iopf->fault,
-> -						      domain->fault_data);
-> +			status = iommu_sva_handle_iopf(&iopf->fault, group->data);
->  	}
->  
->  	iommu_sva_complete_iopf(group->dev, &group->last_fault, status);
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index b280b9f4d8b4..9b622088c741 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -3395,8 +3395,8 @@ struct iommu_domain *iommu_sva_domain_alloc(struct device *dev,
->  	domain->type = IOMMU_DOMAIN_SVA;
->  	mmgrab(mm);
->  	domain->mm = mm;
-> -	domain->iopf_handler = iommu_sva_handle_iopf;
-> -	domain->fault_data = mm;
-> +	domain->iopf_handler = iommu_sva_handle_iopf_group;
-> +	domain->fault_data = domain;
+v1: https://lore.kernel.org/linux-iommu/cover.1692033783.git.robin.murphy@arm.com/
 
-Why fault_data? The domain handling the fault should be passed
-through naturally without relying on fault_data.
+Hi all,
 
-eg make 
+Here's a quick update, cleaning up the silly bugs from v1 and taking
+John's suggestion to improve the comments.
 
-  iommu_sva_handle_iopf(struct iommu_fault *fault, void *data)
+Cheers,
+Robin.
 
-into
-  iommu_sva_handle_iopf(struct iommu_fault *fault, struct iommu_domain *domain)
 
-And delete domain->fault_data until we have some use for it.
+Robin Murphy (2):
+  iommu/iova: Make the rcache depot scale better
+  iommu/iova: Manage the depot list size
 
-The core code should be keeping track of the iommu_domain lifetime.
+ drivers/iommu/iova.c | 94 ++++++++++++++++++++++++++++++--------------
+ 1 file changed, 64 insertions(+), 30 deletions(-)
 
-Jason
+-- 
+2.39.2.101.g768bb238c484.dirty
+
