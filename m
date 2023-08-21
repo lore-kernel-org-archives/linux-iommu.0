@@ -1,177 +1,168 @@
-Received: from mail-qt1-f174.google.com (mail-qt1-f174.google.com [209.85.160.174])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2086.outbound.protection.outlook.com [40.107.94.86])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1479D15C0
-	for <iommu@lists.linux.dev>; Mon, 21 Aug 2023 14:39:51 +0000 (UTC)
-Received: by mail-qt1-f174.google.com with SMTP id d75a77b69052e-407db3e9669so416021cf.1
-        for <iommu@lists.linux.dev>; Mon, 21 Aug 2023 07:39:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1692628791; x=1693233591;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ArMZ01EM52zYzsgGJfkmTs+2DiL/6v3Hz+klqWiqUbM=;
-        b=H9nMrL1eOKFEj+UeeGDnf3Y/frvD3I27cCZxUrfeXUyr4f4bFtP+Pcwf6L7Elgt2Sb
-         6z7DI6mpMkknwtblDqOTTm7NcCupvWKUG+boYEJ/3Mg5vTdpS3JZNw1NxYNtliIYZL7a
-         ocPnVIVuLI+gzPjX8teN/RANLjcYJ9LWPbkqwxuinl3nqpbyT5rDp0X+rPJnKIhGsQJ4
-         614mGvYtUZNtvI38ykfqHzpQbxO7I2XVPvG21L+sQKI+bCzYOJYywLk+Abuim6b/8E+R
-         KtCiv7qjRP7Wb7zZdh0wjVlBwUEb5G1OmadahUiav5UQFc0u9xy+00CnkUSMySehfZ7o
-         9jTg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1692628791; x=1693233591;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=ArMZ01EM52zYzsgGJfkmTs+2DiL/6v3Hz+klqWiqUbM=;
-        b=Z7aMnblnqPDoqdY4muKxpRL/4hz6WT2Opeb8dKII5H+lRtYOxwV1N9Oy6s2LEJbrzn
-         DG8a7Qt+3n8H4IIqke+RRL9PvqdJqkaNDORcdzpxt5eNXMpXFXmIkv7fiqOWABTEV9Fk
-         MiXa7yQr2xbS573DgpXTce1eGFqfLZUoR9FnE+69VVwi2cm5frGFI/I7ccwrQFC0dyvN
-         /JlegmzvWEAEHqqzqfLsEYgS/IY+GMLCNPeYzZedwRbALWYrQPzpQXbdLfgtb6dRVjTV
-         zRWvCKcthBWJRv48UOY2f9WRZvj3miTklrhYvdV/gx/PyiGHsBLJdZsGHbMourrB/fyj
-         XPUg==
-X-Gm-Message-State: AOJu0YylQ8QAh8oMWe87qd9VOKLojQGbeFSL2J07UsIKlJu53lDSbYLW
-	5ceQ4M1oPeFd0Q7JesCDyL+PCSPBBEZXcBqgl0PwCQ==
-X-Google-Smtp-Source: AGHT+IFsq3S91/JP9f4k0pNBd9EFygJqj/eC6WY1wM3xxG/fLTWNmZNC/DxpUNvBhJNSM1i0pRivt+i5WU0WMuKGIY4=
-X-Received: by 2002:ac8:5fc9:0:b0:410:839d:941d with SMTP id
- k9-20020ac85fc9000000b00410839d941dmr474264qta.20.1692628790499; Mon, 21 Aug
- 2023 07:39:50 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C75C15C0;
+	Mon, 21 Aug 2023 14:40:16 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=FqR6XiXmV3BY+EpAHE8FCJlP0IzPGUnzEgI3sRlDQ48JlHkLFIIidlwWGtRQqQe86U3g7bZ39mdRoNoFx6FXx/0vL7lW8/Um9hIcB2wXycbjV1M7BM5/kKhcSKXu4U/jqXwUO8TKP3eZnKEThhhhHyftAQkAOiY9arTCkV+qMPFbnHREuNvcL7PVEAJSnZswJB8yFHCN9ccn6XsR9RgLbdrvWwHlinh70Kt2rL/EbC9m1iyTU9o5diZKIqURLGu48dWdXV5R6zV8gM5yD9QVBlHM8YJ5HV7BeHig5zRvQEHzqHpeFOBB9aa7f+QK6JfZ5IcTDZc4iy4HapBghUYKXA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=AzIiINzI5HMFB8guwkBjReqCogCcqivAGWLLHsp41XI=;
+ b=V7+uhSO4S/tgaOdBpRlR8QaCVW6Q/vGFdLzGxswSh7Zj0peAsB9S2R955RgD20AhfEYsyOriE/KrHmwLQvjdgwXmSy6yaxqJ4KqFm3vPRyHbNzr9iR7NOZPROnl4ltZDQs35WBQaY14xLa1PuvNMKwdQgdT6YLkngb5TvZW1RlVoFwGRtOMs9VvaLOKwUnor2WBpInmzmwAmwLBK70mf6ZGxr7e3usflS7/hruaKaXxIhxTiN7wcgeGrimSaKd8ZoYdK/k1mxEBAs6gYiB8VvYzBC6kFKHOgAD4E36Rz25I+SE5LMUP+4FEfQAgVFP1ceki6YFb7M5DssjJLX6hFWA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AzIiINzI5HMFB8guwkBjReqCogCcqivAGWLLHsp41XI=;
+ b=FHvQ9kpc8vEvW2BvvKhfwntoMIxoNLb8zILA/7hJEdAID1mYcT6+fHovqN53MTYTldpPW4vwmTRjIWLHN7iifH2qj939AJuMoyFNk48e4X4RCo+zL3uOLDzWxI96iUpPqlthaPB22XMYHm0P5n9Hke56jt+QuVk8DVwCzBX6HwdQHwbfzgmJpKHgVj0B5DGnwQqwBSz+eV1xbkDwpNAwHZ+MgzlOmCDhSZckVGZ0ixw6KiE6btbyGWRfNdJdRsDBEdE6uxeICZXumh/IjXkFgrWZo7I13+zTXx21ukOOjV9U2IRlucAIcSbt+ZdFmsNyvgmOn6jgowM+R46vucF8Tw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by LV8PR12MB9081.namprd12.prod.outlook.com (2603:10b6:408:188::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6699.24; Mon, 21 Aug
+ 2023 14:40:14 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::5111:16e8:5afe:1da1]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::5111:16e8:5afe:1da1%6]) with mapi id 15.20.6699.020; Mon, 21 Aug 2023
+ 14:40:14 +0000
+Date: Mon, 21 Aug 2023 11:40:12 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Joerg Roedel <joro@8bytes.org>
+Cc: Robin Murphy <robin.murphy@arm.com>, Andy Gross <agross@kernel.org>,
+	David Airlie <airlied@gmail.com>, alsa-devel@alsa-project.org,
+	Bjorn Andersson <andersson@kernel.org>,
+	Andrzej Hajda <andrzej.hajda@intel.com>, ath10k@lists.infradead.org,
+	ath11k@lists.infradead.org, Mark Brown <broonie@kernel.org>,
+	Bryan O'Donoghue <bryan.odonoghue@linaro.org>,
+	Christian Gmeiner <christian.gmeiner@gmail.com>,
+	Daniel Vetter <daniel@ffwll.ch>, devicetree@vger.kernel.org,
+	dmaengine@vger.kernel.org,
+	Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+	dri-devel@lists.freedesktop.org, Emma Anholt <emma@anholt.net>,
+	etnaviv@lists.freedesktop.org, freedreno@lists.freedesktop.org,
+	Frank Rowand <frowand.list@gmail.com>, iommu@lists.linux.dev,
+	Jernej Skrabec <jernej.skrabec@gmail.com>,
+	Konrad Dybcio <konrad.dybcio@linaro.org>,
+	Kalle Valo <kvalo@kernel.org>, Lucas Stach <l.stach@pengutronix.de>,
+	Liam Girdwood <lgirdwood@gmail.com>,
+	Russell King <linux+etnaviv@armlinux.org.uk>,
+	linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+	linux-media@vger.kernel.org, linux-sunxi@lists.linux.dev,
+	linux-tegra@vger.kernel.org, linux-wireless@vger.kernel.org,
+	Marijn Suijten <marijn.suijten@somainline.org>,
+	Mauro Carvalho Chehab <mchehab@kernel.org>,
+	Mikko Perttunen <mperttunen@nvidia.com>,
+	Maxime Ripard <mripard@kernel.org>, Sinan Kaya <okaya@kernel.org>,
+	Jaroslav Kysela <perex@perex.cz>,
+	Abhinav Kumar <quic_abhinavk@quicinc.com>,
+	Jeff Johnson <quic_jjohnson@quicinc.com>,
+	Vikash Garodia <quic_vgarodia@quicinc.com>,
+	Rob Clark <robdclark@gmail.com>, Rob Herring <robh+dt@kernel.org>,
+	Samuel Holland <samuel@sholland.org>, Sean Paul <sean@poorly.run>,
+	Stanimir Varbanov <stanimir.k.varbanov@gmail.com>,
+	Thierry Reding <thierry.reding@gmail.com>,
+	Takashi Iwai <tiwai@suse.com>, Vinod Koul <vkoul@kernel.org>,
+	Chen-Yu Tsai <wens@csie.org>, Will Deacon <will@kernel.org>,
+	=?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
+	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <jroedel@suse.de>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Chen-Yu Tsai <wenst@chromium.org>
+Subject: Re: [PATCH] iommu: Remove the device_lock_assert() from
+ __iommu_probe_device()
+Message-ID: <ZON3TNmYXqdfovRm@nvidia.com>
+References: <0-v1-98d20e768c66+7-of_dma_lock_jgg@nvidia.com>
+ <78114fd6-9b83-92ba-418f-6cc7bda9df9b@arm.com>
+ <ZONdwclGOBaxxqtq@nvidia.com>
+ <ZON2gRogBhjmpNIl@8bytes.org>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZON2gRogBhjmpNIl@8bytes.org>
+X-ClientProxiedBy: MN2PR15CA0063.namprd15.prod.outlook.com
+ (2603:10b6:208:237::32) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20230817182055.1770180-1-mshavit@google.com> <20230818021629.RFC.v1.3.I326c62dc062aed8d901d319aa665dbe983c7904c@changeid>
- <ZN5pK03Drao/egeF@nvidia.com> <CAKHBV27k8F0ZLy=RA=WhjJ7+C9JMHRRnKs=4W4pJMNmxrMEXxw@mail.gmail.com>
- <ZONQgNh6qarqgA+f@nvidia.com> <CAKHBV26oTZLssq5bopePojqgrEJwukKHYEbhU02nAvHHVB13mw@mail.gmail.com>
- <ZONrkVX6kZjX/wus@nvidia.com> <CAKHBV27PL=2jxOd0BoYdoBMTu_0rm4z_JP6iG+SVi5Ag7w2kWw@mail.gmail.com>
- <ZON0E3KV46EEPw/p@nvidia.com>
-In-Reply-To: <ZON0E3KV46EEPw/p@nvidia.com>
-From: Michael Shavit <mshavit@google.com>
-Date: Mon, 21 Aug 2023 22:39:14 +0800
-Message-ID: <CAKHBV25P9kNGkM7f5Xc-HsozK362XzMz+NnLa8FcWiu3FFr13g@mail.gmail.com>
-Subject: Re: [RFC PATCH v1 3/8] iommu/arm-smmu-v3-sva: Allocate new ASID from installed_smmus
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
-	linux-kernel@vger.kernel.org, will@kernel.org, nicolinc@nvidia.com, 
-	tina.zhang@intel.com, jean-philippe@linaro.org, robin.murphy@arm.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|LV8PR12MB9081:EE_
+X-MS-Office365-Filtering-Correlation-Id: 8b2e8db9-ab10-42f4-6559-08dba2548788
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	HgyALB5deKd/E/UO6KXUDvzjKRMQlrG78YiPcGWRQIR0zeK/GP01IumM+XAWhoGsqAiHJKfXjx2YLxCf85VKcu8mszZQ4H00gNIKZQv5JDnCy7P2Xe/gLdK9r4M+3br2cCvFXE8zTJiuHZ0fEeGfg7i1oAJozpSDzHeUjipuMJInQIVgcs6RkUy52jp6fFiFaPVT1emrSkEPrdYlfhnAlQ0MgrmbDMouk1P7cMRg81pxkrb1udes+/IpSNrVp88Tk/qeU1sok1oxLuD456tBpYB3v/S982HUJJs1VQ7uk9H7AwI8NQ0RFzs6YfGj/OskXXE4MtKd3RNxXmxh/1wiWt9ubxxSFOByqzzM6CB5EZxFsNPqrQCbk/fbXdiD58sRANf7D2JW402N2135nVA3RJaSlCJw+OV1oGJtsZE77rZkvORS49F35ZciUeX75EUUNAu9MvE5ZN+oNUJsCW2IYlvkJKAOyN7OzLRmTzsVaOFDHAsukIlgEtlo9jFGDreLcAeW0oSnsVCL2B+0U5yThPFq6skAmw2J7o+2huVOj1Ycku+4V2JTT+BxR+qEcE8a
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(346002)(366004)(39860400002)(376002)(136003)(396003)(451199024)(186009)(1800799009)(2906002)(4744005)(7416002)(7366002)(7406005)(38100700002)(6506007)(6486002)(83380400001)(5660300002)(26005)(86362001)(8676002)(2616005)(8936002)(4326008)(316002)(66946007)(6512007)(54906003)(6916009)(66556008)(66476007)(478600001)(36756003)(41300700001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?0VcySalc7lJMstEA0d6FSbcTBLowbQm6euasl/pSclCA7m6WS0/F5E1n2+Mq?=
+ =?us-ascii?Q?QAVmIAZMcaEmARZsKz9Y2fhB0WMaHf0IuQd+FGvfchH0s0kZrlIqSrx+EURX?=
+ =?us-ascii?Q?yDs+mGIQ0Cm3TQtTXLTu1rZ4DuJkssC23wiwFRIjLuxvddyaV6Ri74Nj7jjL?=
+ =?us-ascii?Q?EVWJo/g1aP2zRsz/259c60JeRQ3S/kFvc2sKJW2zO2W63fVxGXk3E7IexJ+3?=
+ =?us-ascii?Q?dFCsMXFJrBTeXSi+12KbOu9vb5YiR7Sp4ff5PnY3ynVEAU6/nCddVpSoTu0a?=
+ =?us-ascii?Q?SHbujYSHFwFGNJ7f2iAhQsDnMFK+M9xUjD7C+k2apiSffpmIi2Sa3CZKl1kb?=
+ =?us-ascii?Q?w7whXrvkFCxrC3UxhdY8MRRbw+rwIOOlBgArC0bBxmWvFAF/UF3qh+CaatkK?=
+ =?us-ascii?Q?eglMlygQqM6Rg4FXJPioEFYZzsNpSRZXG/F/oO28Du6JphlKrDZNTeLQv3n0?=
+ =?us-ascii?Q?6h6nu2LgrPPyXkxYP/FMm6NoLLhabk4vmH/ZABQLd5OOaQ4IkVIS64mcXKmO?=
+ =?us-ascii?Q?PB8KOGbnYa294AtpyvaIRAJUQzSXfJt2PXVHrXKaCwRA0Lzar631GDO1TJx3?=
+ =?us-ascii?Q?m+6JJXU910a2eBg2ZZu+Rikw66TkSGGcRenR36aOf0w19xe4ueAcUFM6jDPH?=
+ =?us-ascii?Q?qBwr/UbNuN0fehBhdOTI0XHHzeIbS4Gwh6vE6gTnknYgbWzZZ2+LMau5gmc/?=
+ =?us-ascii?Q?GZdW/Gm0id/Z4gKl+eXPyPzCDGABzQGgJWj4twLpxSI3qKJeT6kaLGXwVRPs?=
+ =?us-ascii?Q?Hn3NqI1yfHxk9JBaC6qNZoJppTfYU7tkohfvzojL1Xpxs3Kxms48useG19DV?=
+ =?us-ascii?Q?HQNDqMzI8p63usrTNwo01J5z5LiyRypJ+dCIQg/T/ttxVNvkKpJa/g+CjFUu?=
+ =?us-ascii?Q?7vlXB0SR9lP3nOuNQyDRElPoi1ROZBGcO0TZ/CVZsjoB72EFKlaQc7JqndvF?=
+ =?us-ascii?Q?fuaPbrVUUsBKfVUXZ7KHHA2Xr4Dxdt7KaAcrJXWtG4ydTcR5GymtASVVh/BY?=
+ =?us-ascii?Q?NzpyLJzCKPAXq3fTOEzM+pgwJHBChArLmwzvZ2/yTlQX+/jMmCFHfSTZg0W7?=
+ =?us-ascii?Q?DHAOtfzWv9vUsp2D8NP3aKEhcD+txaTNu76Fr/w/jkTqBwc4Lz7PAIAVVX+u?=
+ =?us-ascii?Q?NRVpFF/0z/NYnTAB4tJq07r9EnoHy7kVsh+HJmLPxXITZ0y71ti8f17GzrsO?=
+ =?us-ascii?Q?qAjMT90xSKfi7ZzJ3cGkjwVINppqjsJqAgzzPduVLvBQp9ADXr6m0vqKcFnY?=
+ =?us-ascii?Q?oCd6elPqK5A8YE98gLuqHg70asPvKu/yWmrWVP3pq59r4fbwN14coD9F8h7n?=
+ =?us-ascii?Q?sV+XuLhePprbsv0Cudx0HXp5TtK3hHp2hO1BZQkhdGkYjiYr35p7tdsMcVm6?=
+ =?us-ascii?Q?/vmb7fQyexrcUKLCwsqlkpRIu3Gtop8pgdbVo41nLwRUSYZPlgxVWN/VIS60?=
+ =?us-ascii?Q?7L3cfHHFfIvlV3rPERQnuYJRJ9GHerFkreGENWXuBasq0Mtmc3GB4A5GtRz+?=
+ =?us-ascii?Q?CoX0jgNLpeq+j0Az0gQUJ7kr9ZrUyyNSIEm0sT6lS44fc41KRCWRkycKAo8+?=
+ =?us-ascii?Q?tuo7itCAqshuDIpL/f43Z+ysvRvU3hSSFC6QTop+?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8b2e8db9-ab10-42f4-6559-08dba2548788
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Aug 2023 14:40:14.1021
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: SeRmv+15vdiFqIY3c/XgLKw7ymAk1g5vcsz0l6Q6HutXT7nd1PNbo9kmUtsI6u8L
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV8PR12MB9081
 
-On Mon, Aug 21, 2023 at 10:26=E2=80=AFPM Jason Gunthorpe <jgg@nvidia.com> w=
-rote:
->
-> On Mon, Aug 21, 2023 at 10:16:54PM +0800, Michael Shavit wrote:
-> > On Mon, Aug 21, 2023 at 9:50=E2=80=AFPM Jason Gunthorpe <jgg@nvidia.com=
-> wrote:
-> > >
-> > > On Mon, Aug 21, 2023 at 09:38:40PM +0800, Michael Shavit wrote:
-> > > > On Mon, Aug 21, 2023 at 7:54=E2=80=AFPM Jason Gunthorpe <jgg@nvidia=
-.com> wrote:
-> > > > >
-> > > > > On Mon, Aug 21, 2023 at 05:31:23PM +0800, Michael Shavit wrote:
-> > > > > > On Fri, Aug 18, 2023 at 2:38=E2=80=AFAM Jason Gunthorpe <jgg@nv=
-idia.com> wrote:
-> > > > > > >
-> > > > > > > On Fri, Aug 18, 2023 at 02:16:25AM +0800, Michael Shavit wrot=
-e:
-> > > > > > > > Pick an ASID that is within the supported range of all SMMU=
-s that the
-> > > > > > > > domain is installed to.
-> > > > > > > >
-> > > > > > > > Signed-off-by: Michael Shavit <mshavit@google.com>
-> > > > > > > > ---
-> > > > > > >
-> > > > > > > This seems like a pretty niche scenario, maybe we should just=
- keep a
-> > > > > > > global for the max ASID?
-> > > > > > >
-> > > > > > > Otherwise we need a code to change the ASID, even for non-SVA=
- domains,
-> > > > > > > when the domain is installed in different devices if the curr=
-ent ASID
-> > > > > > > is over the instance max..
-> > > > > >
-> > > > > > This RFC took the other easy way out for this problem by reject=
-ing
-> > > > > > attaching a domain if its currently assigned ASID/VMID
-> > > > > > is out of range when attaching to a new SMMU. But I'm not sure
-> > > > > > which of the two options is the right trade-off.
-> > > > > > Especially if we move VMID to a global allocator (which I plan =
-to add
-> > > > > > for v2), setting a global maximum for VMID of 256 sounds small.
-> > > > >
-> > > > > IMHO the simplest and best thing is to make both vmid and asid as
-> > > > > local allocators. Then alot of these problems disappear
-> > > >
-> > > > Well that does sound like the most flexible, but IMO quite a lot mo=
-re
-> > > > complicated.
-> > > >
-> > > > I'll post a v2 RFC that removes the `iommu/arm-smmu-v3: Add list of
-> > > > installed_smmus` patch and uses a flat master list in smmu_domain a=
-s
-> > > > suggested by Robin, for comparison with the v1. But at a glance usi=
-ng a
-> > > > local allocator would require:
-> > >
-> > > > 1. Keeping that patch so we can track the asid/vmid for a domain on=
- a
-> > > > per smmu instance
-> > >
-> > > You'd have to store the cache tag in the per-master struct on that
-> > > list and take it out of the domain struct.
-> > >
-> > > Ie the list of attached masters contains the per-master cache tag
-> > > instead of a global cache tag.
-> > >
-> > > The only place you need the cache tag is when iterating over the list
-> > > of masters, so it is OK.
-> > >
-> > > If the list of masters is sorted by smmu then the first master of eac=
-h
-> > > smmu can be used to perform the cache tag invalidation, then the rest
-> > > of the list is the ATC invalidation.
-> > >
-> > > The looping code will be a bit ugly.
-> >
-> > I suppose that could work.... but I'm worried it's gonna be messy,
-> > especially if we think about how the PASID feature would interact.
-> > With PASID, there could be multiple domains attached to a master. So
-> > we won't be able to store a single cache tag/asid for the currently
-> > attached domain on the arm_smmu_master.
->
-> I wasn't suggesting to store it in the arm_smmu_master, I was
-> suggesting to store it in the same place you store the per-master
-> PASID.
->
-> eg I expect that on attach the domain will allocate new memory to
-> store the pasid/cache tag/master/domain and thread that memory on a
-> list of attached masters.
+On Mon, Aug 21, 2023 at 04:36:49PM +0200, Joerg Roedel wrote:
+> On Mon, Aug 21, 2023 at 09:51:13AM -0300, Jason Gunthorpe wrote:
+> > So now that Joerg has dropped it - what is your big idea to make the
+> > locking actually work right?
+> 
+> I am not opposed to the general idea.
 
-Gotcha.
+Well, I think Robin is opposed to the device_lock, and I don't know
+what his view of the alternative is.
 
-> > > > (on a loop over every smmu the domain in arm_smmu_mmu_notifier_get =
-is
-> > > > attached to, which just at a glance looks headache inducing because=
- of
-> > > > sva's piggybacking on the rid domain.)
-> > >
-> > > Not every smmu, just the one you are *currently* attaching to. We
-> > > don't care if the *other* smmu's have different ASIDs, maybe they are
-> > > not using BTM, or won't use SVA.
-> >
-> > I mean because the domain in arm_smmu_mmu_notifier_get is the RID
-> > domain (not the SVA domain, same issue we discussed in previous
-> > thread) , which can be attached to multiple SMMUs.
->
-> Oh that is totally nonsensical. I expect you will need to fix that
-> sooner than later. Once the CD table is moved and there is a proper
-> way to track the PASID it should not be needed. It shouldn't fall into
-> the decision making about where to put the ASID xarray.
+> When putting it into the tree I wasn't aware how many users still
+> need to be adapted to properly work with this.
 
-Right I got a bit of a chicken and egg problem with all these series.
+It is surprising to me too!
 
-Can we keep the simpler solutions where ASID/VMID across SMMUs has
-non-optimal constraints and re-consider this after all the other
-changes land (this series, set_dev_pasid series, fixing sva)?
+> We can do another try once the issues have been sorted out and you have
+> agreed with Robin on a workable way forward.
+
+I will repost just the group part of that series after rc1, as they've
+been in -next for a while now they should be still good. It is a nice
+cleanup that doesn't leak out.
+
+Thanks,
+Jason
