@@ -1,91 +1,228 @@
-Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 13B7D185B;
-	Mon, 21 Aug 2023 12:27:56 +0000 (UTC)
-Received: from 8bytes.org (pd9fe95be.dip0.t-ipconnect.de [217.254.149.190])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 14D6D28194F;
-	Mon, 21 Aug 2023 14:27:49 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1692620870;
-	bh=FixGPDbY1JGUzoXJGnGCpBH8LX7vfPyc85NTwmVIvZk=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=1GNfM2qXUHu69LlGLcBH8KY7o7o7XmY+SCrGkW/UUIs2KGTpDHXZZbMpPGz6QSYZs
-	 UPnFUxDcsVEY3pjS1DruthDw9f83ySojUQCSB+rWg+GUD0/AhHwU/y7CvGp4ChZNfv
-	 PF0U1t4Yrw0S3cKVt3Z1VBJMi6C4Yubn+JBgQ0h8akaCgHt2/SoukE6zqp52PyQtal
-	 mSBFlaAtIaUSfX6biqD/5UJPh1qGAUoCalqefQ1b2bqiPcVjHwugqG0e+YrG5Eef+K
-	 UDBnBPokoAbTS28F+RA/gZgu4I/tGuWG+hC4PlSSGwOqv9iwEYEE1WLsVZflD78r+Z
-	 CJt+ubMPFXzmw==
-Date: Mon, 21 Aug 2023 14:27:47 +0200
-From: Joerg Roedel <joro@8bytes.org>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Jason Gunthorpe <jgg@nvidia.com>, Andy Gross <agross@kernel.org>,
-	David Airlie <airlied@gmail.com>, alsa-devel@alsa-project.org,
-	Bjorn Andersson <andersson@kernel.org>,
-	Andrzej Hajda <andrzej.hajda@intel.com>, ath10k@lists.infradead.org,
-	ath11k@lists.infradead.org, Mark Brown <broonie@kernel.org>,
-	Bryan O'Donoghue <bryan.odonoghue@linaro.org>,
-	Christian Gmeiner <christian.gmeiner@gmail.com>,
-	Daniel Vetter <daniel@ffwll.ch>, devicetree@vger.kernel.org,
-	dmaengine@vger.kernel.org,
-	Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-	dri-devel@lists.freedesktop.org, Emma Anholt <emma@anholt.net>,
-	etnaviv@lists.freedesktop.org, freedreno@lists.freedesktop.org,
-	Frank Rowand <frowand.list@gmail.com>, iommu@lists.linux.dev,
-	Jernej Skrabec <jernej.skrabec@gmail.com>,
-	Konrad Dybcio <konrad.dybcio@linaro.org>,
-	Kalle Valo <kvalo@kernel.org>, Lucas Stach <l.stach@pengutronix.de>,
-	Liam Girdwood <lgirdwood@gmail.com>,
-	Russell King <linux+etnaviv@armlinux.org.uk>,
-	linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
-	linux-media@vger.kernel.org, linux-sunxi@lists.linux.dev,
-	linux-tegra@vger.kernel.org, linux-wireless@vger.kernel.org,
-	Marijn Suijten <marijn.suijten@somainline.org>,
-	Mauro Carvalho Chehab <mchehab@kernel.org>,
-	Mikko Perttunen <mperttunen@nvidia.com>,
-	Maxime Ripard <mripard@kernel.org>, Sinan Kaya <okaya@kernel.org>,
-	Jaroslav Kysela <perex@perex.cz>,
-	Abhinav Kumar <quic_abhinavk@quicinc.com>,
-	Jeff Johnson <quic_jjohnson@quicinc.com>,
-	Vikash Garodia <quic_vgarodia@quicinc.com>,
-	Rob Clark <robdclark@gmail.com>, Rob Herring <robh+dt@kernel.org>,
-	Samuel Holland <samuel@sholland.org>, Sean Paul <sean@poorly.run>,
-	Stanimir Varbanov <stanimir.k.varbanov@gmail.com>,
-	Thierry Reding <thierry.reding@gmail.com>,
-	Takashi Iwai <tiwai@suse.com>, Vinod Koul <vkoul@kernel.org>,
-	Chen-Yu Tsai <wens@csie.org>, Will Deacon <will@kernel.org>,
-	=?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <jroedel@suse.de>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Chen-Yu Tsai <wenst@chromium.org>
-Subject: Re: [PATCH] iommu: Remove the device_lock_assert() from
- __iommu_probe_device()
-Message-ID: <ZONYQyMSG17YMc_b@8bytes.org>
-References: <0-v1-98d20e768c66+7-of_dma_lock_jgg@nvidia.com>
- <78114fd6-9b83-92ba-418f-6cc7bda9df9b@arm.com>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id F2A1D185B
+	for <iommu@lists.linux.dev>; Mon, 21 Aug 2023 12:28:41 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C0C092F4;
+	Mon, 21 Aug 2023 05:29:21 -0700 (PDT)
+Received: from [10.57.3.137] (unknown [10.57.3.137])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id EDC1F3F762;
+	Mon, 21 Aug 2023 05:28:39 -0700 (PDT)
+Message-ID: <70fa216c-c6cc-73b1-cc43-24c3740a2984@arm.com>
+Date: Mon, 21 Aug 2023 13:28:30 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <78114fd6-9b83-92ba-418f-6cc7bda9df9b@arm.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.14.0
+Subject: Re: [PATCH 1/2] iommu/iova: Make the rcache depot scale better
+Content-Language: en-GB
+To: John Garry <john.g.garry@oracle.com>, joro@8bytes.org
+Cc: will@kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ zhangzekun11@huawei.com
+References: <cover.1692033783.git.robin.murphy@arm.com>
+ <2c3a0f6b381ae5f743c1b28bbc6eae486160f3b7.1692033783.git.robin.murphy@arm.com>
+ <7dc73727-014b-5e48-8336-73d34bc7b818@oracle.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <7dc73727-014b-5e48-8336-73d34bc7b818@oracle.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Mon, Aug 21, 2023 at 12:06:40PM +0100, Robin Murphy wrote:
-> The solution is to drop those locking patches entirely and rethink the whole
-> thing.
+On 2023-08-21 13:02, John Garry wrote:
+> On 14/08/2023 18:53, Robin Murphy wrote:
+>> The algorithm in the original paper specifies the storage of full
+>> magazines in the depot as an unbounded list rather than a fixed-size
+>> array. It turns out to be pretty straightforward to do this in our
+>> implementation with no significant loss of efficiency. This allows
+>> the depot to scale up to the working set sizes of larger systems,
+>> while also potentially saving some memory on smaller ones too.
+>>
+>> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+> 
+> This looks ok (ignoring the crash reported), so feel free to add:
+> 
+> Reviewed-by: John Garry <john.g.garry@oracle.com>
 
-Agreed, that was exactly what I thought when looking at this patch.
+Thanks!
 
-I dropped the original 10 patches and the 4 fixes on-top from the IOMMU
-tree. This needs more investigation and adaption of the actual API users
-before it can be reconsidered.
+> A small comment and question below.
+> 
+>> ---
+>>   drivers/iommu/iova.c | 65 ++++++++++++++++++++++++--------------------
+>>   1 file changed, 36 insertions(+), 29 deletions(-)
+>>
+>> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+>> index 10b964600948..d2de6fb0e9f4 100644
+>> --- a/drivers/iommu/iova.c
+>> +++ b/drivers/iommu/iova.c
+>> @@ -625,10 +625,16 @@ EXPORT_SYMBOL_GPL(reserve_iova);
+>>    * will be wasted.
+>>    */
+>>   #define IOVA_MAG_SIZE 127
+>> -#define MAX_GLOBAL_MAGS 32    /* magazines per bin */
+>>   struct iova_magazine {
+>> -    unsigned long size;
+>> +    /*
+>> +     * Only full magazines are inserted into the depot, so we can avoid
+>> +     * a separate list head and preserve maximum space-efficiency.
+> 
+> It might be worth explicitly mentioning that we try to keep total mag 
+> size as power-of-2
 
-Regards,
+Sure, I can tie it in with the existing comment above, which might 
+actually end up more readable anyway.
 
-	Joerg
+>> +     */
+>> +    union {
+>> +        unsigned long size;
+>> +        struct iova_magazine *next;
+>> +    };
+>>       unsigned long pfns[IOVA_MAG_SIZE];
+>>   };
+>> @@ -640,8 +646,7 @@ struct iova_cpu_rcache {
+>>   struct iova_rcache {
+>>       spinlock_t lock;
+>> -    unsigned long depot_size;
+>> -    struct iova_magazine *depot[MAX_GLOBAL_MAGS];
+>> +    struct iova_magazine *depot;
+>>       struct iova_cpu_rcache __percpu *cpu_rcaches;
+>>   };
+>> @@ -717,6 +722,21 @@ static void iova_magazine_push(struct 
+>> iova_magazine *mag, unsigned long pfn)
+>>       mag->pfns[mag->size++] = pfn;
+>>   }
+>> +static struct iova_magazine *iova_depot_pop(struct iova_rcache *rcache)
+>> +{
+>> +    struct iova_magazine *mag = rcache->depot;
+>> +
+>> +    rcache->depot = mag->next;
+>> +    mag->size = IOVA_MAG_SIZE;
+>> +    return mag;
+>> +}
+>> +
+>> +static void iova_depot_push(struct iova_rcache *rcache, struct 
+>> iova_magazine *mag)
+>> +{
+>> +    mag->next = rcache->depot;
+>> +    rcache->depot = mag;
+>> +}
+>> +
+>>   int iova_domain_init_rcaches(struct iova_domain *iovad)
+>>   {
+>>       unsigned int cpu;
+>> @@ -734,7 +754,6 @@ int iova_domain_init_rcaches(struct iova_domain 
+>> *iovad)
+>>           rcache = &iovad->rcaches[i];
+>>           spin_lock_init(&rcache->lock);
+>> -        rcache->depot_size = 0;
+>>           rcache->cpu_rcaches = __alloc_percpu(sizeof(*cpu_rcache),
+>>                                cache_line_size());
+>>           if (!rcache->cpu_rcaches) {
+>> @@ -776,7 +795,6 @@ static bool __iova_rcache_insert(struct 
+>> iova_domain *iovad,
+>>                    struct iova_rcache *rcache,
+>>                    unsigned long iova_pfn)
+>>   {
+>> -    struct iova_magazine *mag_to_free = NULL;
+>>       struct iova_cpu_rcache *cpu_rcache;
+>>       bool can_insert = false;
+>>       unsigned long flags;
+>> @@ -794,12 +812,7 @@ static bool __iova_rcache_insert(struct 
+>> iova_domain *iovad,
+>>           if (new_mag) {
+>>               spin_lock(&rcache->lock);
+>> -            if (rcache->depot_size < MAX_GLOBAL_MAGS) {
+>> -                rcache->depot[rcache->depot_size++] =
+>> -                        cpu_rcache->loaded;
+>> -            } else {
+>> -                mag_to_free = cpu_rcache->loaded;
+>> -            }
+>> +            iova_depot_push(rcache, cpu_rcache->loaded);
+>>               spin_unlock(&rcache->lock);
+> 
+> Out of curiosity, do you know why we take the approach (prior to this 
+> change) to free the loaded mag and alloc a new empty mag? Why not 
+> instead just say that we can't insert and bail out?
 
+I have a feeling it must have been mentioned at some point, since my 
+memory says there was a deliberate intent to keep the flow through the 
+critical section simple and consistent, and minimise time spent holding 
+the rcache lock, and I'm 99% sure that isn't my own inferred reasoning...
+
+Cheers,
+Robin.
+
+>>               cpu_rcache->loaded = new_mag;
+>> @@ -812,11 +825,6 @@ static bool __iova_rcache_insert(struct 
+>> iova_domain *iovad,
+>>       spin_unlock_irqrestore(&cpu_rcache->lock, flags);
+>> -    if (mag_to_free) {
+>> -        iova_magazine_free_pfns(mag_to_free, iovad);
+>> -        iova_magazine_free(mag_to_free);
+>> -    }
+>> -
+>>       return can_insert;
+>>   }
+>> @@ -854,9 +862,9 @@ static unsigned long __iova_rcache_get(struct 
+>> iova_rcache *rcache,
+>>           has_pfn = true;
+>>       } else {
+>>           spin_lock(&rcache->lock);
+>> -        if (rcache->depot_size > 0) {
+>> +        if (rcache->depot) {
+>>               iova_magazine_free(cpu_rcache->loaded);
+>> -            cpu_rcache->loaded = rcache->depot[--rcache->depot_size];
+>> +            cpu_rcache->loaded = iova_depot_pop(rcache);
+>>               has_pfn = true;
+>>           }
+>>           spin_unlock(&rcache->lock);
+>> @@ -894,10 +902,10 @@ static void free_iova_rcaches(struct iova_domain 
+>> *iovad)
+>>   {
+>>       struct iova_rcache *rcache;
+>>       struct iova_cpu_rcache *cpu_rcache;
+>> +    struct iova_magazine *mag;
+>>       unsigned int cpu;
+>> -    int i, j;
+>> -    for (i = 0; i < IOVA_RANGE_CACHE_MAX_SIZE; ++i) {
+>> +    for (int i = 0; i < IOVA_RANGE_CACHE_MAX_SIZE; ++i) {
+>>           rcache = &iovad->rcaches[i];
+>>           if (!rcache->cpu_rcaches)
+>>               break;
+>> @@ -907,8 +915,8 @@ static void free_iova_rcaches(struct iova_domain 
+>> *iovad)
+>>               iova_magazine_free(cpu_rcache->prev);
+>>           }
+>>           free_percpu(rcache->cpu_rcaches);
+>> -        for (j = 0; j < rcache->depot_size; ++j)
+>> -            iova_magazine_free(rcache->depot[j]);
+>> +        while ((mag = iova_depot_pop(rcache)))
+>> +            iova_magazine_free(mag);
+>>       }
+>>       kfree(iovad->rcaches);
+>> @@ -941,17 +949,16 @@ static void free_cpu_cached_iovas(unsigned int 
+>> cpu, struct iova_domain *iovad)
+>>   static void free_global_cached_iovas(struct iova_domain *iovad)
+>>   {
+>>       struct iova_rcache *rcache;
+>> +    struct iova_magazine *mag;
+>>       unsigned long flags;
+>> -    int i, j;
+>> -    for (i = 0; i < IOVA_RANGE_CACHE_MAX_SIZE; ++i) {
+>> +    for (int i = 0; i < IOVA_RANGE_CACHE_MAX_SIZE; ++i) {
+>>           rcache = &iovad->rcaches[i];
+>>           spin_lock_irqsave(&rcache->lock, flags);
+>> -        for (j = 0; j < rcache->depot_size; ++j) {
+>> -            iova_magazine_free_pfns(rcache->depot[j], iovad);
+>> -            iova_magazine_free(rcache->depot[j]);
+>> +        while ((mag = iova_depot_pop(rcache))) {
+>> +            iova_magazine_free_pfns(mag, iovad);
+>> +            iova_magazine_free(mag);
+>>           }
+>> -        rcache->depot_size = 0;
+>>           spin_unlock_irqrestore(&rcache->lock, flags);
+>>       }
+>>   }
+> 
