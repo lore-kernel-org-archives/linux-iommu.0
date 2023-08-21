@@ -1,47 +1,47 @@
-Received: from mail-qv1-f42.google.com (mail-qv1-f42.google.com [209.85.219.42])
+Received: from mail-qv1-f54.google.com (mail-qv1-f54.google.com [209.85.219.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F190C2F2B
-	for <iommu@lists.linux.dev>; Mon, 21 Aug 2023 17:01:02 +0000 (UTC)
-Received: by mail-qv1-f42.google.com with SMTP id 6a1803df08f44-649a653479bso18392956d6.0
-        for <iommu@lists.linux.dev>; Mon, 21 Aug 2023 10:01:02 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 878968BE5
+	for <iommu@lists.linux.dev>; Mon, 21 Aug 2023 17:04:41 +0000 (UTC)
+Received: by mail-qv1-f54.google.com with SMTP id 6a1803df08f44-6490c2c4702so18261946d6.2
+        for <iommu@lists.linux.dev>; Mon, 21 Aug 2023 10:04:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1692637261; x=1693242061;
+        d=ziepe.ca; s=google; t=1692637480; x=1693242280;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Qp0mp4oKv9QJH2WNBMG+dMHV2S+Emhcg8pj4eiwry6I=;
-        b=owUGxInYWGETc4Byt9qhOufCBlVpnQr39WF5+gGKIgsoShD+J8oyY6c8cXx6JLmJQh
-         o3k7KiU6gAg+P3ufYR+t+aLNXl2l2o9ATj/s+OML35OLWn22moFaCxPzfEnwkOHU6etn
-         D4DEYVIOIvJ3j/T+beSJPKauBBj1mX6moMVdZcZsKyOkx0DGBe96RFqaE+NPvm88AI98
-         sZDPwbfPaqBwneSsIRDK1BL/tmEMlbYBcnGmY8eRNfsXAAoqd8VQSm/RC1iNUtTbwL7y
-         4ws+ht1grGxMjzZuY44/MMkxrVJdd8h5VHNqGPapA/kAclCDwXEorlkLi1IbjvtXgQkT
-         bbgw==
+        bh=N09QE0C3lW8oGWF50bQOxZXPyK36qtYOYonsxv0HH8c=;
+        b=W8UiYFg+/p47ajmvb6c1GFVVsTww14hmsjS5g9VC4iS2FHmq5Kh2J4UXCkjHEV2psl
+         wOnx7oxSVJMPy87Jhn+p/NmwbERhsnldbAJss4S/NI39ueJJE3zW0AlKAPZ1xL7/5RWE
+         ZmAKI6n90zrXzrNKDL22m3mDMYky5E6pY9IDza2nNh92AXqoQQtwzfBMGtLzId4zpzf6
+         cqqfU6USK+z9/mpRopcvcmWHGSCak6EZxzEUMDK0bepYk8UrqpqCrsO9h4NhxMJm0Ri6
+         BYJy5qoIh2ZLiXuISwm8iYIwh/bXAZRTBxunmW2e1/CZcg/8bpG+tPoRTTHRR+susG1M
+         6gCA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1692637261; x=1693242061;
+        d=1e100.net; s=20221208; t=1692637480; x=1693242280;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Qp0mp4oKv9QJH2WNBMG+dMHV2S+Emhcg8pj4eiwry6I=;
-        b=cmOQAlnM4JBOgs1cnoPuncEjnCkxKXl4QZNhdHCHKHexOWofEV8HTDfiZd71PXz4/6
-         0bSfL+IPN/KGszlmahGaESTlWN3mqOQ3JSTbIMzIqgUDZwgmnQaUW5g5bR1fZ8Z+TAM3
-         uJQOb0ty7yu83PYMsDAPttxbOnr238GSBGwnKwx2NoWiZjWVSG1OFxoqXCZuP5+8uC6z
-         Xte0fDL9FlOQyQ1a3kMWYi68JN1+Ix34wSD+O8r0nSnfTdELoAWl6bzXId3nW88newY8
-         CW9yJiovv48QYnJymdHA4uJ50mfSZAFScpRFHHgO41o8MZJe/efK+bPGuKXCJiB3HxEs
-         MUAw==
-X-Gm-Message-State: AOJu0YyAqKOgOVY5tqUK4FEd/rdClF7fqiEoTksR59b5jWstaypnQgW1
-	1u56U6djFhvZdt94GBBgzGlzlg==
-X-Google-Smtp-Source: AGHT+IHlN4tly8d2T2RVI8aDQ+SFzup3PPM5KO0yIMtl0SMNI2iXsSHA0d9eUjaH5xpnlr6zrfUOPA==
-X-Received: by 2002:a0c:b455:0:b0:649:c4f:8d81 with SMTP id e21-20020a0cb455000000b006490c4f8d81mr5856142qvf.5.1692637261620;
-        Mon, 21 Aug 2023 10:01:01 -0700 (PDT)
+        bh=N09QE0C3lW8oGWF50bQOxZXPyK36qtYOYonsxv0HH8c=;
+        b=jed8bwSHJBZipc5cKgi8XuaNJZvChwAfXc7fLXvoScv7dP8d1AwEUf7kcTvDaeK2CX
+         odsKMJOA/xYt3nV5kUQUD9VXChZUZN6SwKCA1v9kXhhpZFnfVbSTcgiTd7v0k1qba+xy
+         hlRuQ33cOHBg+/BdneILF+1IP7AtIZQbywnebJK0WWN2UZf8tnYWOl87EgPPsLnSgs9U
+         mSoEXXIh6CYz024j4RlGC15vHZQA6GpSe1D9RqswFWoXQiZ9Ws0HrWGQf9MafYqR3t6c
+         32KmacInIdzQw2sWa7NxRDVW+4dieyV9BnFgdqjXsND+ecCZ1oASFs3shFWPxgt4BgSy
+         oCbA==
+X-Gm-Message-State: AOJu0YykXZOT/r29fdh2iMqkNJadDrKHM1f9OU4WDPuhlWe0MJN/RQfR
+	LytxIYikXLhX94uhEdi3IgxvlA==
+X-Google-Smtp-Source: AGHT+IFE3U9YWvQ4iNtyRxFqDyhWmNE+Ii8wn6FvWBNTRn+lXBSa2bgUJEP4lLxtiNKJjpRUuW8z8w==
+X-Received: by 2002:a0c:a9d8:0:b0:64f:3b07:c50b with SMTP id c24-20020a0ca9d8000000b0064f3b07c50bmr5161926qvb.43.1692637480297;
+        Mon, 21 Aug 2023 10:04:40 -0700 (PDT)
 Received: from ziepe.ca (hlfxns017vw-142-68-25-194.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.25.194])
-        by smtp.gmail.com with ESMTPSA id p6-20020a0ce186000000b0063f88855ef2sm2987702qvl.101.2023.08.21.10.01.00
+        by smtp.gmail.com with ESMTPSA id i26-20020a05620a145a00b00767b0c35c15sm2590622qkl.91.2023.08.21.10.04.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Aug 2023 10:01:01 -0700 (PDT)
+        Mon, 21 Aug 2023 10:04:39 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.95)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1qY8Gy-00DumB-IP;
-	Mon, 21 Aug 2023 14:01:00 -0300
-Date: Mon, 21 Aug 2023 14:01:00 -0300
+	id 1qY8KV-00Duwr-Bb;
+	Mon, 21 Aug 2023 14:04:39 -0300
+Date: Mon, 21 Aug 2023 14:04:39 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
 To: Lu Baolu <baolu.lu@linux.intel.com>
 Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
@@ -51,10 +51,11 @@ Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
 	Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>,
 	Jacob Pan <jacob.jun.pan@linux.intel.com>, iommu@lists.linux.dev,
 	kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 04/11] iommu: Cleanup iopf data structure definitions
-Message-ID: <ZOOYTLmgJuV3zxYm@ziepe.ca>
+Subject: Re: [PATCH v3 05/11] iommu: Merge iopf_device_param into
+ iommu_fault_param
+Message-ID: <ZOOZJ/aQNKY2UDxj@ziepe.ca>
 References: <20230817234047.195194-1-baolu.lu@linux.intel.com>
- <20230817234047.195194-5-baolu.lu@linux.intel.com>
+ <20230817234047.195194-6-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -63,19 +64,40 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230817234047.195194-5-baolu.lu@linux.intel.com>
+In-Reply-To: <20230817234047.195194-6-baolu.lu@linux.intel.com>
 
-On Fri, Aug 18, 2023 at 07:40:40AM +0800, Lu Baolu wrote:
-> struct iommu_fault_page_request and struct iommu_page_response are not
-> part of uAPI anymore. Convert them to data structures for kAPI.
-> 
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> ---
->  include/linux/iommu.h      | 27 +++++++++++----------------
->  drivers/iommu/io-pgfault.c |  1 -
->  drivers/iommu/iommu.c      |  4 ----
->  3 files changed, 11 insertions(+), 21 deletions(-)
+On Fri, Aug 18, 2023 at 07:40:41AM +0800, Lu Baolu wrote:
+> @@ -472,21 +473,31 @@ struct iommu_fault_event {
+>   * struct iommu_fault_param - per-device IOMMU fault data
+>   * @handler: Callback function to handle IOMMU faults at device level
+>   * @data: handler private data
+> - * @faults: holds the pending faults which needs response
+>   * @lock: protect pending faults list
+> + * @dev: the device that owns this param
+> + * @queue: IOPF queue
+> + * @queue_list: index into queue->devices
+> + * @partial: faults that are part of a Page Request Group for which the last
+> + *           request hasn't been submitted yet.
+> + * @faults: holds the pending faults which needs response
+>   */
+>  struct iommu_fault_param {
+>  	iommu_dev_fault_handler_t handler;
+>  	void *data;
+> -	struct list_head faults;
+> -	struct mutex lock;
+> +	struct mutex			lock;
+> +
+> +	struct device			*dev;
+> +	struct iopf_queue		*queue;
+> +	struct list_head		queue_list;
+> +
+> +	struct list_head		partial;
+> +	struct list_head		faults;
+>  };
+
+Don't add the horizontal spaces
 
 Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
 Jason
+-
