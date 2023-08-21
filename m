@@ -1,77 +1,55 @@
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2088.outbound.protection.outlook.com [40.107.223.88])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 459794A3B
-	for <iommu@lists.linux.dev>; Mon, 21 Aug 2023 11:35:44 +0000 (UTC)
-Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
-	by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 37KMQ2T6022818;
-	Mon, 21 Aug 2023 11:35:23 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=corp-2023-03-30;
- bh=WmtnrtUlPIXW/qhH4tLidvVsHXPBpOxAvlLme6U7z+8=;
- b=ksWQJl+zagNg19NL6rlv29oBMYvf4xgKhwqSMhA7TbI1v7FkqqjwV60I+/j887+OsrEO
- LLFnsUgvaIJAJlz9WPWPPDyB5ry0PxCEcE8DDQn5Td7Y3NsLRjm0YVm1uxg4fyAJqCfS
- t+5azSJdEWtD5w48kt+gtuG2yVuqw76VMAbJ77pPMzuLlUJ09z6bJ5JjiaFZgcvEtwKi
- 6poxNuvi+Sl2XgpgLoTX035BVb8BdL57pFTrTYssJ8XsfEsZZHV+wWrEIx6qDaL4JpoJ
- zwmM92dpaa4dyyqP8RYpBmgWyi5XaJDevcApC+3Qvjsq8/pgNW/EXWZVvfFKAD/sII0S 9w== 
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
-	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3sjmh3anqr-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Mon, 21 Aug 2023 11:35:22 +0000
-Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.19/8.17.1.19) with ESMTP id 37LB0vk6029937;
-	Mon, 21 Aug 2023 11:35:22 GMT
-Received: from nam11-bn8-obe.outbound.protection.outlook.com (mail-bn8nam11lp2168.outbound.protection.outlook.com [104.47.58.168])
-	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3sjm69txhh-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Mon, 21 Aug 2023 11:35:22 +0000
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 92C5F5383
+	for <iommu@lists.linux.dev>; Mon, 21 Aug 2023 11:54:44 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LybA1TAJNHW1kDLoeWv3elUC6F2AABeFVhPTB5DLGK5YdRmIXOxSdmoX1sEajRzjAJ6wEWxklwy0pVW9MGlpQBfB2R2VlQC0KFwrsbHG9LczB+j/5Jd/M4gTzIPhiqnNKAcgLWtEqod0tfdP3WXj85ylFmuaXrAes5udVaa1CQP9TWvJcZ7nhrb8WWU57tgY6xPlSY76WDpy+KxvblOgsGfe2wxUIShc8MuT27WeKUGMLcuKB+4A0ssu5QnzkwCwug/HD5dWD2Qc5X9+cV5K715cYw+x2u//3n7Od6hs7R8fK++4IjMjy34X6xzz2v7D/dTXpb44tnfINq88sUFckQ==
+ b=mdDlEZeNiq9rxb2/mW3v/nd2KK0syOz9O9S6YCp4HOQ13Z+yGgrqCYTSuTiXn8fsrcSm8yeA5kE8FOu8ka2eJg5ksqMZOMxF0zbmYZNbzpr5KKQNDT899LyyIPAO9vRm9Sk+dPQb71AEt4aMqD5wKmtrMfCdEUtJtvSy9Z/tazYmKVDqgHVrDHZ4LGipUNYht6EmgpBnbgy00PSNQe0Tw5Tvf1fs8o2WECQmkVy7PCIMGCTsr8vm2yUwCPXhSRFglqD/zElUIBD0+fPaHniOi6xFZuVs/ixSsr9Rghevouq4kFk2gIV/lQM1tw6tjlEzAcmQfZrXbfmaUMt+soUEqQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=WmtnrtUlPIXW/qhH4tLidvVsHXPBpOxAvlLme6U7z+8=;
- b=loGS/eThnIT01vGE0VfX6YfqX6sEiAuNqr0OSY39EiaLi6BSonSsrOyYXYwTbp5vp11TRRWVRxyCREyyj6/V1lsUIjsqG8ayxqDGcgysONVZlF4mbuGg4mMoZLl+9kWgEey4M8yMK4PYUFk8ZZYkQDsPKoBv5igsVQ/SiUOMnuO6cV9NSvTp7fQFcvLnPHJg3MjnIgdHl2q0VADvltX4GLzMkLcUD+1XpyujD6PZ4pirIObZ8c+z05fB+eDW/YPComJ+Osr5N6xZyB2SIGvAqTYZSR9Td02VBsUG+W2jMF9/NyJk3dzejU738WNu5iac53zxI9Dr1gaRT4ZwTh3tyw==
+ bh=UPCjdg6G5GlRahv5dFok27QTHrcNBTBezZCaIlx1xow=;
+ b=gOyB2byhPPHlk5bNv2Tb0KlmyySGZea1OHUSA0RYYXXIJNGD59r7O4ICKTDds7xgiGI199xbP12+kFbgZcqTOKhP5Wu6kOs8hzKBbMRVQg02o0VnswOtAj+uRoB7/fLp+/HDpBYyGtk0B9mvMvpW9f4x7LmtGtyr0mHAFMVpdwJrF1Y5k51lk5mLarQoKNEeEuqqL8Z1CouT4nH/qsyyOfmp/QAVIzC/vnKNfik2tkGQiaDeuqdptR2PhCd89oLWQvfl/+usRGsRuTTLfzoF8etrfDVPomLRT7x67Hq2Lo8TtUrXF+8M15r/X3ZYHzHrOlBNXoPtm4qJRJGQVG7p4w==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=WmtnrtUlPIXW/qhH4tLidvVsHXPBpOxAvlLme6U7z+8=;
- b=JTeup+b01dFxxscWqAz1g7DjWU/FCER5sFID7F3yUbyJoBdUqG8HORbWO3iPFBUog5yJZpXf8fM/MQcnqZLPWExPsZVXQBpnv/fOA+aScKu6q4RkMkHT5DkMJomDh9J+uWFxFaRFt1oZzy+pr/YkdbVYDY88Lcegb9JRdjRPL24=
-Received: from DM6PR10MB4313.namprd10.prod.outlook.com (2603:10b6:5:212::20)
- by SA1PR10MB6469.namprd10.prod.outlook.com (2603:10b6:806:29d::8) with
+ bh=UPCjdg6G5GlRahv5dFok27QTHrcNBTBezZCaIlx1xow=;
+ b=n9UiD/DEWQ86jN/YhgeCxvDtnW1fCXt5ke3M/lu1c9YZVNR/7YDfTb3z8EEzGQN3KxukhtZqistVxXcow2kjlN+05jDJx3qBacmueSgyZT8oszl9Dc84cuUhjdg0yC2oZ3hl8v/gM0cps90htGr8DJ1c+FYHFk+/lzmG7cCpAliBqeeDo4kFEBlH+lxrqR15HJGLEAiVIczcIZOzpad8SAv/+y8XAAshu8g4hTW2zOg0rQbyYSMP890lUUcZCy9iF4RA+4IjFbhSKkIvnFlDmr3sxlu+MMYVuJbvG8QIcPl4rMVQgfSp1STYQ0+QVTQgqbU9y6cUTf0z61uyYUrbKg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by PH0PR12MB8821.namprd12.prod.outlook.com (2603:10b6:510:28d::19) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6699.20; Mon, 21 Aug
- 2023 11:35:20 +0000
-Received: from DM6PR10MB4313.namprd10.prod.outlook.com
- ([fe80::ebfd:c49c:6b8:6fce]) by DM6PR10MB4313.namprd10.prod.outlook.com
- ([fe80::ebfd:c49c:6b8:6fce%7]) with mapi id 15.20.6699.022; Mon, 21 Aug 2023
- 11:35:20 +0000
-Message-ID: <9aba4d8b-6a46-6c08-2568-2e7490723526@oracle.com>
-Date: Mon, 21 Aug 2023 12:35:14 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.14.0
-Subject: Re: [PATCH 0/2] iommu/iova: Make the rcache depot properly flexible
-To: Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org
-Cc: will@kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-        zhangzekun11@huawei.com
-References: <cover.1692033783.git.robin.murphy@arm.com>
- <80fb865a-eb45-e783-277d-0d2e044c28f5@oracle.com>
- <b9bda816-612c-b646-63e7-54cb3fedf1f4@arm.com>
- <1aa1ecad-bdf0-84c8-a37f-94e1d0fb8a03@oracle.com>
- <d0fe22e2-dea9-123c-6c8b-d89fe31b6592@arm.com>
-Content-Language: en-US
-From: John Garry <john.g.garry@oracle.com>
-Organization: Oracle Corporation
-In-Reply-To: <d0fe22e2-dea9-123c-6c8b-d89fe31b6592@arm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6699.24; Mon, 21 Aug
+ 2023 11:54:42 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::5111:16e8:5afe:1da1]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::5111:16e8:5afe:1da1%6]) with mapi id 15.20.6699.020; Mon, 21 Aug 2023
+ 11:54:42 +0000
+Date: Mon, 21 Aug 2023 08:54:40 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Michael Shavit <mshavit@google.com>
+Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org, will@kernel.org, nicolinc@nvidia.com,
+	tina.zhang@intel.com, jean-philippe@linaro.org,
+	robin.murphy@arm.com
+Subject: Re: [RFC PATCH v1 3/8] iommu/arm-smmu-v3-sva: Allocate new ASID from
+ installed_smmus
+Message-ID: <ZONQgNh6qarqgA+f@nvidia.com>
+References: <20230817182055.1770180-1-mshavit@google.com>
+ <20230818021629.RFC.v1.3.I326c62dc062aed8d901d319aa665dbe983c7904c@changeid>
+ <ZN5pK03Drao/egeF@nvidia.com>
+ <CAKHBV27k8F0ZLy=RA=WhjJ7+C9JMHRRnKs=4W4pJMNmxrMEXxw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: AM0PR04CA0111.eurprd04.prod.outlook.com
- (2603:10a6:208:55::16) To DM6PR10MB4313.namprd10.prod.outlook.com
- (2603:10b6:5:212::20)
+In-Reply-To: <CAKHBV27k8F0ZLy=RA=WhjJ7+C9JMHRRnKs=4W4pJMNmxrMEXxw@mail.gmail.com>
+X-ClientProxiedBy: BL1PR13CA0137.namprd13.prod.outlook.com
+ (2603:10b6:208:2bb::22) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -79,161 +57,90 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6PR10MB4313:EE_|SA1PR10MB6469:EE_
-X-MS-Office365-Filtering-Correlation-Id: 2f3d4b5c-565f-4344-1d6a-08dba23ab330
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|PH0PR12MB8821:EE_
+X-MS-Office365-Filtering-Correlation-Id: ecd7a99d-868e-4490-b6db-08dba23d67b3
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 
-	xQGYPgDDve0RGf37PjAxY9/Uqo15Ci/Ofq70fJCzCP4t4N8q3ywWGqy+itR+36kcsvbGF3xCO6tnGiUCK7rMe1gqagjHINnJJZbN6e78xBTTtCbTgiihEzqeq04ZIW8aQ2sdssJbLkvxnW70aftzvm3snKsGel/2TmP7jKO5v1jIOvUpOG4K8js0PIj99qG+lRum1XIwqNQ+IF0vARQ+KyqXtS3UrilYuiDS5e51CccL6CHYaZpD8r8iwPem5T2uB5OQ33SfInmjfB+4edJc4VmFXClTwaUe/1qjOGe3cx8oGmkJGUto6jb8XPX7Vy5bDtklrbZPPVoLBXUZambtmC0mz+zhLYx6y/vWU5xqXLkmM7lIYVfYsDSwO1en5G0yacvXamZEjbKo61fY6cPJiP4sfan9Iwyr7gJU1HHGYmoN6+sFZ3lGVi4YhJdZtwgqp/krj5qc6E1rAvLa/t5lrKqYCq8IVmA4WkACmECZycPqMeUX3ExQdOXFZvLjIwgdPVsjgA7miR54YGjaFtsr5BUaXySky8jKMwnXGqAFvEFe9J0axVfKq3eAuGl5ntcnaLiYnAT9A2N5piwnZP8qjVmHyDyY6jOyFtd5s1eARzZWro1r3GEoyRVnyigUlTein5Ghn+nUdS2GVk08YhroYzJeTiyYPFs7Y50ORrBPHmgpEMlNjyB7U/7J9AjFeL0I
-X-Forefront-Antispam-Report: 
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR10MB4313.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(376002)(366004)(346002)(136003)(39860400002)(396003)(451199024)(186009)(1800799009)(2906002)(53546011)(38100700002)(36916002)(6506007)(6486002)(83380400001)(5660300002)(26005)(86362001)(31686004)(31696002)(8676002)(2616005)(8936002)(4326008)(316002)(66946007)(6512007)(66556008)(66476007)(966005)(478600001)(6666004)(36756003)(41300700001)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info:
+	Xxa61HHch5ycapu3nhn4aYW0abI/or4nb22DhUB2pH1U/V7lKVVE4gu1kIh/xkir7gAC3rY5YSGk9sKw1lR73Ezhb+UzxHBQgdv80pF0cxCWeA626LSEGgNahzLn1vHYAUqi7mDX4l1nkpYfB/MaEtaxWPv1FtDsW4Gh88dnqFYiJcyLeDLD7W4eJpgPqediNip8yasji0gjgitu7AONBJ2zIziA0nglm3/fJzUEfycrJ6QWIz2nk8AO+tYaT3NMd+IVkbf+05IDjBwPEGiWwp+tMXTx2JBeVE0xxjnFbW+Lwf653hyS6EfCjs4A1lxe41+BRIrP7K7noWoGRDWz50Y7q5XHukJl9eOT7850GRUmUK3x5Z0+viB/U2LYZH9cMauOX2FpakijexU3Sq2FX7ito6+eCTJZeD8VulcOg3/XS1cGItu2G4ycYPYey0BakK3hgiJH9+lJXYQYAicEipG08JMpTzWLlbuJ7tM5MjjjSzrlxaWYg25TKsNoU4HiryJ43SSx2Yn+/JLZXvvvGv6UTZqyAaV97WywsRdERWfytK3GXJmN4V6RdP6/3B6f1Z6w0G3RQ+K0f7RY2iGKYLKSFWZWCJ//CIPTliw+mm0=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(376002)(366004)(346002)(136003)(39860400002)(396003)(451199024)(186009)(1800799009)(2906002)(53546011)(38100700002)(6506007)(6486002)(5660300002)(26005)(86362001)(8676002)(2616005)(8936002)(4326008)(316002)(66946007)(6512007)(6916009)(66556008)(66476007)(478600001)(36756003)(41300700001)(67856001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: 
-	=?utf-8?B?VTEzSXNiRFZXcWpiZlRiTkFLWjRSaG9EanR6QWxOSldLbklwczFUd1VPcVdt?=
- =?utf-8?B?cTVUNnN2NWk2dk13Y0t0MWFSekRyOUhuTWRWSGIzNmtHK1lNcXRjM2dwMWFo?=
- =?utf-8?B?aFZtMEZiL2p6SVJEb2gwY0hVQU1CWVJ1VjNKMmVKaUU1bFJjenhiem5vQVho?=
- =?utf-8?B?eDk1bnpqMWRoaTRFWStUZmMrMlJTMk9JcUZzekRRZ2JUcDhkNmZ1SXN4ZGxn?=
- =?utf-8?B?M0dlbE9TNzltNlc5enozdFUvaEJYb2czaDNwL2dBeFMydkdrbk85anFzaHll?=
- =?utf-8?B?R2x3NFdCeC9Fbzk4Q0FSS2VJREdCQTdOenJmNXlYWE9CRkVTMEQwQXdhVURh?=
- =?utf-8?B?VERpRXZsazRvaitGcU1KNURtY1ZTTGlKZWpJMkZnMFI3Mk5IdDBUTlVnNmI4?=
- =?utf-8?B?ckRTV1F1WExBb1NpbS9ta1FqRWk2VzFVbUpyTThGMVRvajFBYU5CKy9xSmpm?=
- =?utf-8?B?K2w5cVpDV1dmRUd5RmVyN21tamRhK0t2YlVaSlFDL3hTS3V1MDB3dGhlbVgz?=
- =?utf-8?B?ZWNaVE9aMHNHRVB3cHpGR0laakxyc044c0xnQUVhOGFEbHJJU1hka1FXazRE?=
- =?utf-8?B?OUtYdlpsZFpiclJwQnVIWmpMdWNDZFE2MSt3ZzRoMm43dHlCTEJTb1pvNS9J?=
- =?utf-8?B?Zk1xcmZ3am5RNThQU2ZSV0ZmNnlTNjlTOEZHRS94eWw3K1czRWRoU1dSenFB?=
- =?utf-8?B?VytTa21MWmR1RzNtSWhUTHp2UWpTdDN6WWtXbi9RTUNESWk2eVVjN01CRDJ6?=
- =?utf-8?B?OVFPczVzOUQyek5oUzVEZThFZGNydkthdk16c2JUK3pQYUswVlZNYlh5WXF3?=
- =?utf-8?B?QVNvckxzRHNBbEJ5dWhXVWtucFVJMVZUNVo5T29BTnpCdDFMMnJGMDZjY2xG?=
- =?utf-8?B?bVJZdlo0aVFXVFhRbGdUYnpBZE5pSXc5WHBPeXJMV2tBWiticVM1VWIrTEc5?=
- =?utf-8?B?eDRZVlAxN1d4OUdFZC8relE0V3IxUWJ6angwRHhYd24zUUh2ZTRRZDlVdnRD?=
- =?utf-8?B?MHAwR3VnNkpoRmIwT01ETGFXbitvSjl1cUo2ZGZxbEhNSU4zRnBRcXJqS2Nj?=
- =?utf-8?B?RHk4d3BYYmNjVGllVU9qaFM4OFBzL2lvTkQ2bnRBWkl3NU03RC9HQlFQaTND?=
- =?utf-8?B?eFllQldOUzlWenExYTJmbSt4VDVYL0Y2MHkvSUc3aUNpc0pHdGJEVXJhZ2xM?=
- =?utf-8?B?SFdBZFp0MDVOKzRFdWpiZHFmbVowUUlQY1JldFBKWnJ6b1U1VE8rV1BhRE1x?=
- =?utf-8?B?Q3Yrd3BIQmJFS0lwTWpQNWN4WVltZXVaTndDTHk0MkZEZFlwZmZReUoyUE9l?=
- =?utf-8?B?OXhVM21jM1RUWkx5a285SVh4MFplSWNtYzRJM21RLzkzMkp3b2ZZUEVVTGdW?=
- =?utf-8?B?WFk3YVQ3UVdndGpsWkV5K2cwRjlSUXJ5Y2M0NTAzVEpoQmkvTDFRQ05IbTNx?=
- =?utf-8?B?WlJ5WTR3Y1g1alJVdzlUZFhlSks2THVjZEJOcmxnUXF3SEJTamh2T1ZTU0VX?=
- =?utf-8?B?U3ZjUjR2R3NlTE5zam5RR2c1RHJZWjZWR3JNYUVJSXNDN3FtdXJDZk9aakUr?=
- =?utf-8?B?ZGRtcDJ6NmN6UlNsZ1haWnp0ZjNrZG1UWFVWQlV3T3BjZ0Y1cDRjTHR2dGFY?=
- =?utf-8?B?K3AwbWFNQ0dFMWVjL1diU0NWN0tBSnFnZHZ0S3Z1UGV3S1ZzK3IybVRXbCtr?=
- =?utf-8?B?VVNJZzNnaHIxZC9JNmhhazhzZ24rUjhtUG5rdUtobDcxb1BsOGNBdk1mYUMv?=
- =?utf-8?B?NE44bVVFZDNyM09TZ1pDWW0rdWttT0JLRW5XWXF3d1U1SGQ0STVhZkNYNHgz?=
- =?utf-8?B?YW0vRVlhY28zSXRkSEIyUG5IaUNKWVU1OUk4NU5nYlIzNGFQQlhYM2RHVmxv?=
- =?utf-8?B?QmVlbmlmWmF0eU9pMDVXYlV1S3o4Z0psT016ZC9OeER4Y3I5MEt4RHFUVDZP?=
- =?utf-8?B?US85MklNdTNrcmFxblQvL3VvNFlLelJXK1grNzdsSHRGMS9VRy9RTFUycDVy?=
- =?utf-8?B?U1U3anQ1OWd4WnNac1pCRkMwdlVUa25ZNUFlKzg1M0VmTW9GQ3lOWnhjTnUv?=
- =?utf-8?B?SWFFaUJsUGFCOU4vQkdHUS92dFVoREdXRVFkQ3RWYjFnSmcrK1Y3TDVvRENX?=
- =?utf-8?Q?OOlbfR8BDZv8NmhiVmfigWCvO?=
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0: 
-	Y/eeYKbW52fgdv1rI0tsgu9QPAjJol9xE1WryZuwDKKD+t9g9dKS7BmxYySGtk9mUFLVeDxYYXGhS5oS4WSTk5/CVMVb1exlqSEm1Ue4T/OAfMAAPZ5Ia0yKiX4qMjip4O+hpgF/UaJ7O5o8E1sztk6J5Nz7JNiCpABiIWaVdK58Llji7EtgIVu1kjnBKJdWazbZaaJvc0BZiP1FVwAefnY+NE5TRkN6hA1FqNAlcbwST0hrS5ZnTIyLRxdHD/upaO9QMLHG3Ub28GED5v+IRvhWC3TH/YdDaB+O1bCb6TBRJBj2DwbR+Wc3cbQUAYMTBK9ygNQI+33Z+mnn8SMqI7tsdoyAggXLgZiglZpkqgJJRjErh3rSxUvheb5F+BHjmNPXwG+GA4ua/RLmtJSPqixz4oKHiXT3wockE9RWMJxVqXRz5trxX/drMee/t858ys3MwbxHcIOypyQpY0wcqmj8DMzC6A9/WLSFWCqAluaf0UBkIDcXsOYeYMxm8lAB89sIMr9aPcynpIaaZkQMKikG9nDKpapk4so2nsP/DGNdj2Fl2gPAu7JaipVR19Eye874HIn1Q9GcaKNgExY14wmT8GHRc3Og5Ee7Vb8JY680g6bP48m9R58U374wApgOy6Pp2rnrezlue7FCuQz2YxJ/v2uOJrQWQGN3plU812nO4ZJ7JGZDMr+c1V+B28mjeNMR/fNAYIfANC6UpZ+ImT5W85/txpv8MGsyYD+jq4wcJ3W8e2yXkXzmxK23QqABIEApQ+YmmbD5oIK+Fm0st2bQT+OSafHVu1pi3xDQewm1vs1Wuz8GERF4Ytz+92IicDNRJuoY4PZa+WBo8Z8+l7orKOGE6muhzNekCG3LWWV2v18jfFpzUopvPMDBChKbnX5v94fbwpluE0G1xyEFSAbKrKWFYpHUDaiZKJmhdi8=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2f3d4b5c-565f-4344-1d6a-08dba23ab330
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR10MB4313.namprd10.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?eE5lTXBldlIxbXFENW5wMyswRGIrN2V1NDV3SmtqUGczYkwxWkhjNVNRSnZS?=
+ =?utf-8?B?alNFQzMrTGhNTmtWWlZRRkdLOWxtcE9XYUpzMHB5WkdWSHdJdHdNb1RjeEJs?=
+ =?utf-8?B?SE5xY3dMN3N2SEFSSCsyS3Zpd3R5M1FxaitmdFFUZUxPeEZLWSt0bjFzYlVH?=
+ =?utf-8?B?U1V1c1JOT2JiMnUrMS8veVdWelZnbVBSUi8wcTN6MS9UWWtaV0dOaW0zMXcz?=
+ =?utf-8?B?NTVpVEtzMjF3dUlTS1ZuMkxEV0NocHdKMHFhVFV4QmdQdEoydjB3b2xkajEx?=
+ =?utf-8?B?UXExZWQ1RTRLTnM1KzUzUUQzY3dQNDNQQmpRdU90SGhDSjhWd0tVWWdaRmJM?=
+ =?utf-8?B?UFVJQi8xd1dFT1BEQ3paVm00RkRWU05kZGlSQUxFb3RubHluUVZlNHlFNFJm?=
+ =?utf-8?B?K0Q0aHNNZ2xySmJZSU1EaGJ0b3l5eTZqS3hpSG1DVFBPYW03QWFNOFVCUzB6?=
+ =?utf-8?B?TnZXbEFhNzlNQ2lTMEt1N3U4RUlsaDZENGMyN2Q3djBpUTZEYmkrTmJuZkFM?=
+ =?utf-8?B?aDF0NHdONktjS2xmcDNFRlVtR0tReVNMK3Vrd1FuazNuNnVIQ2pud2c1dlUr?=
+ =?utf-8?B?dmQ5c0c4S0hMUmdkVll3SE5aZ09lbUFhMmV5ME1yeGdlMndLSTRRUXhxdm1S?=
+ =?utf-8?B?d1E2U21YTzdjamdTcS8xTWVKYmp6OTlaZDlrd1A4SjZ1OFRPMVZHd21mcUl0?=
+ =?utf-8?B?TktGS3pZbGFEUEFvUklTenNjNHU3SE12T1diakxRRCtwdTZmb2dRekhLUEdV?=
+ =?utf-8?B?aERjcnRCSmpvc3FVS0REdnQxd2o2VlJjbmt5RVdTNzQwZ3FrUnp5UW5jRUpj?=
+ =?utf-8?B?bDBYdlBTeWZUbTNZRElvaSs2T0w0SEYxanlSQjNYNHAwb3RKMVdIWFB6b01L?=
+ =?utf-8?B?czV0M2dvaFFEQmMxeCtvRGR2Q1FvV1RPQnVPVmN6VlJHSVhzUFdIOWUwcGk5?=
+ =?utf-8?B?V2J4SXcyTDV0Mm9RWE1yQUJNQlNWS2VmUXpWVWtkNTlHVkNTOXBOUkgwczVY?=
+ =?utf-8?B?d0xKdnZ1Z3c5QStldTdyRXFMUVJWN3VIVHh2R1ViUXBGbGoxTjQvOU16RUJY?=
+ =?utf-8?B?YVZCRkFNTkk0YVRzVHp1b2xaemlUbmpJd20xODZHdDBNOTBiUlhSQlVsOTNa?=
+ =?utf-8?B?WWkrU283TlRXNjUvUWNTTlZLcWhWU2t1ckhjZzVpaVhUbjllcUtER24vRGF2?=
+ =?utf-8?B?ZnMyOU5qeEQwT0xucHRHdEVHcUlrQjVUR2swZlFUZFZ2MjFJenl4TDloZXcx?=
+ =?utf-8?B?Z3NrRWFMcDdoQldmZExxdGx0cnhvNjV1Vi9ZdlpUTXkwOE8vQXZPMnlXOGhr?=
+ =?utf-8?B?MFIvSHFsRE9ZVWEvN21xT2xsb0dVNEpLZTdiZHpabTcwT2FFNDhGUEh1aVVu?=
+ =?utf-8?B?bit4VUprSTRpMndHemFqM3pSZjdpTTRLZHRoeStTTW9lSGVhR05jTjI1NHI3?=
+ =?utf-8?B?azNMTUQzVCticjNTM2IxME4xcmpMOTFTMWEwN24vbmw0VGxXSWVWc0oyZUdL?=
+ =?utf-8?B?TmpFK092MGM5eWNkS2RGNmFHczhkcWpNUEh4cTFYbnFOMi95bHhoOUMvTnZS?=
+ =?utf-8?B?Qkpkc01vT1BIOEZQOXpaOW1MWStTbk5LSGNiZGpTU0hZdUN1dFBNQm5ueHZx?=
+ =?utf-8?B?bXJoQk9ZQ3BtQmdCNkduYXVBMDlTa2dPa1FWMXFYQWRTTnRESVRRYW5aeTlQ?=
+ =?utf-8?B?azFUWEZWWHpwazQ3WGZ0QWppMXFpbmlObWFOa0V1cmFkbnh2L0h6OFRSSFhD?=
+ =?utf-8?B?VU5rSktEckNDQUxTelJVNjJRUndWbjEyVGNRTERESkNGbDAyUmw5cjZPTm9k?=
+ =?utf-8?B?MUg3VVZPd3RNalJaeHFmUmxxWVRkck96UzNNVDc1K01NWTBrdEJGb084bTB0?=
+ =?utf-8?B?anNWQndHejVSU0ZPSUFHMHV1S3lXbERwK3RzSFcxMUJBSUZoM1YrcmZVMnc3?=
+ =?utf-8?B?WWZPUXlVZ21vQjhIM2pLays1VHhMMXcxL3M4c1hZSS9CVTBBeTdoV0pZQ2RP?=
+ =?utf-8?B?RjVXWDhMUVRlV0hEZ1RFalN0ZDgxa1BBK0owWnh3YWw1eVlGdGFPNnUwVWxh?=
+ =?utf-8?B?dGVzdDZmNjhRbGNZWm4zSkM5TWRlNzBBdi8xSGx3OUczNGRWcWY1aG5HenNz?=
+ =?utf-8?Q?AUDQ=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ecd7a99d-868e-4490-b6db-08dba23d67b3
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Aug 2023 11:35:20.3420
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Aug 2023 11:54:42.1773
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: T6jjAZ/6QaVRgSS3w4pyV93kyRn7WD2+Jm+9RfXrUWpzZ/W72eYeA1aC+GWGn9estEAfnWiz9IzCnG/1HYGVeA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR10MB6469
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.267,Aquarius:18.0.957,Hydra:6.0.601,FMLib:17.11.176.26
- definitions=2023-08-21_01,2023-08-18_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 phishscore=0 suspectscore=0
- bulkscore=0 malwarescore=0 mlxscore=0 adultscore=0 mlxlogscore=999
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2306200000
- definitions=main-2308210107
-X-Proofpoint-ORIG-GUID: _1eZr8CELm7f05IQujfxfjj54ApYd3nZ
-X-Proofpoint-GUID: _1eZr8CELm7f05IQujfxfjj54ApYd3nZ
+X-MS-Exchange-CrossTenant-UserPrincipalName: 8UrcjmZKL0oqDravLSPxy4eIRSYIoKSxMC8IaUcY3RjcSwn5TRzE1pHW8vpeEyfT
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR12MB8821
 
-On 16/08/2023 16:10, Robin Murphy wrote:
-> On 15/08/2023 2:35 pm, John Garry wrote:
->> On 15/08/2023 12:11, Robin Murphy wrote:
->>>>
->>>> This threshold is the number of online CPUs, right?
->>>
->>> Yes, that's nominally half of the current fixed size (based on all 
->>> the performance figures from the original series seemingly coming 
->>> from a 16-thread machine, 
->>
->> If you are talking about 
->> https://urldefense.com/v3/__https://lore.kernel.org/linux-iommu/20230811130246.42719-1-zhangzekun11@huawei.com/__;!!ACWV5N9M2RV99hQ!Op6GUnd7phh1sFyJwVOngmoeyKKbHWbSsNkhPB_7BpG45JFOHmN0HQ0Y7NOZZQ7VduKXaRYCXTta8LjrS99neyg$ ,
+On Mon, Aug 21, 2023 at 05:31:23PM +0800, Michael Shavit wrote:
+> On Fri, Aug 18, 2023 at 2:38 AM Jason Gunthorpe <jgg@nvidia.com> wrote:
+> >
+> > On Fri, Aug 18, 2023 at 02:16:25AM +0800, Michael Shavit wrote:
+> > > Pick an ASID that is within the supported range of all SMMUs that the
+> > > domain is installed to.
+> > >
+> > > Signed-off-by: Michael Shavit <mshavit@google.com>
+> > > ---
+> >
+> > This seems like a pretty niche scenario, maybe we should just keep a
+> > global for the max ASID?
+> >
+> > Otherwise we need a code to change the ASID, even for non-SVA domains,
+> > when the domain is installed in different devices if the current ASID
+> > is over the instance max..
 > 
-> No, I mean the *original* rcache patch submission, and its associated 
-> paper:
-> 
-> https://urldefense.com/v3/__https://lore.kernel.org/linux-iommu/cover.1461135861.git.mad@cs.technion.ac.il/__;!!ACWV5N9M2RV99hQ!Op6GUnd7phh1sFyJwVOngmoeyKKbHWbSsNkhPB_7BpG45JFOHmN0HQ0Y7NOZZQ7VduKXaRYCXTta8LjrOGggfnA$
+> This RFC took the other easy way out for this problem by rejecting
+> attaching a domain if its currently assigned ASID/VMID
+> is out of range when attaching to a new SMMU. But I'm not sure
+> which of the two options is the right trade-off.
+> Especially if we move VMID to a global allocator (which I plan to add
+> for v2), setting a global maximum for VMID of 256 sounds small.
 
-oh, that one :)
+IMHO the simplest and best thing is to make both vmid and asid as
+local allocators. Then alot of these problems disappear
 
->> then I think it's a 256-CPU system and the DMA controller has 16 HW 
->> queues. The 16 HW queues are relevant as the per-completion queue 
->> interrupt handler runs on a fixed CPU from the set of 16 CPUs in the 
->> HW queue interrupt handler affinity mask. And what this means is while 
->> any CPU may alloc an IOVA, only those 16 CPUs handling each HW queue 
->> interrupt will be free'ing IOVAs.
->>
->>> but seemed like a fair compromise. I am of course keen to see how 
->>> real-world testing actually pans out.
->>>
->>>>> it's enough of a challenge to get my 4-core dev board with spinning 
->>>>> disk
->>>>> and gigabit ethernet to push anything into a depot at all 😄
->>>>>
->>>>
->>>> I have to admit that I was hoping to also see a more aggressive 
->>>> reclaim strategy, where we also trim the per-CPU rcaches when not in 
->>>> use. Leizhen proposed something like this a long time ago.
->>>
->>> Don't think I haven't been having various elaborate ideas for making 
->>> it cleverer with multiple thresholds and self-tuning, however I have 
->>> managed to restrain myself 😉
->>>
->>
->> OK, understood. My main issue WRT scalability is that the total 
->> cacheable IOVAs (CPU and depot rcache) scales up with the number of 
->> CPUs, but many DMA controllers have a fixed number of max in-flight 
->> requests.
->>
->> Consider a SCSI storage controller on a 256-CPU system. The in-flight 
->> limit for this example controller is 4096, which would typically never 
->> be even used up or may not be even usable.
->>
->> For this device, we need 4096 * 6 [IOVA rcache range] = ~24K cached 
->> IOVAs if we were to pre-allocate them all - obviously I am ignoring 
->> that we have the per-CPU rcache for speed and it would not make sense 
->> to share one set. However, according to current IOVA driver, we can in 
->> theory cache upto ((256 [CPUs] * 2 [loaded + prev]) + 32 [depot size]) 
->> * 6 [rcache range] * 128 (IOVA per mag) = ~420K IOVAs. That's ~17x 
->> what we would ever need.
->>
->> Something like NVMe is different, as its total requests can scale up 
->> with the CPU count, but only to a limit. I am not sure about network 
->> controllers.
-> 
-> Remember that this threshold only represents a point at which we 
-> consider the cache to have grown "big enough" to start background 
-> reclaim - over the short term it is neither an upper nor a lower limit 
-> on the cache capacity itself. Indeed it will be larger than the working 
-> set of some workloads, but then it still wants to be enough of a buffer 
-> to be useful for others which do make big bursts of allocations only 
-> periodically.
-> 
-
-It would be interesting to see what zhangzekun finds for this series. He 
-was testing on a 5.10-based kernel - things have changed a lot since 
-then and I am not really sure what the problem could have been there.
-
->> Anyway, this is just something which I think should be considered - 
->> which I guess already has been.
-> 
-> Indeed, I would tend to assume that machines with hundreds of CPUs are 
-> less likely to be constrained on overall memory and/or IOVA space, 
-
-Cheers,
-John
-
+Jason
