@@ -1,239 +1,129 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DEB031C10
-	for <iommu@lists.linux.dev>; Mon, 21 Aug 2023 08:56:15 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 945122F4;
-	Mon, 21 Aug 2023 01:56:49 -0700 (PDT)
-Received: from [10.57.3.137] (unknown [10.57.3.137])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B0C6F3F762;
-	Mon, 21 Aug 2023 01:56:02 -0700 (PDT)
-Message-ID: <f8c62974-eea8-f58f-cb67-9e2f13b242fd@arm.com>
-Date: Mon, 21 Aug 2023 09:55:59 +0100
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1nam02on2089.outbound.protection.outlook.com [40.107.96.89])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CBEA546A7
+	for <iommu@lists.linux.dev>; Mon, 21 Aug 2023 09:03:16 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Njs8D4PZhGfrFmm8MFfC4px+XBEi3dW2aX6hqhfmrUUjvs027m72sYAOg2V/kuvAVCH7DX8x8XazHX4OampjIoykdKpohLtNMfDez88oP9LBezOfryqZTBmOgoS/ziG3ZnKyNkTQMjLTl83rVxAH9Dth9XfQHDfYo3MR300j4UywrhUodFyOPSBHHA32VXXWLmxDUTOl1n/EjDPcqX3/KW1ZzseuPUU85iQWb98BLfqtN2bxu0cnZAgWVItM8Jmpw/wdp4jLoBrUJ4AaUcs8R+Y5hbN/BeUoJbdny5pW/iXSHpKmSFCsWKiwLm9g58Uq8T8W+apKS4p5Si9DsUqD3A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=FCwT7s/KlJCT+RhhQ9OrMCDgpSZoElsURqWIWNLjKdw=;
+ b=JSsA26WX+ljEjvPGX45+7uP9eG1pM9e7iqpiIyQT9QGPNFErnjI0zh2Nx7ckIrAFplMddK2tqBLR90ottmYQzTtNJK1+WLKi1Fb9h9Av/xFRp3fpDgkxkZ43b3op81DpxoV7i5/LrSSE9Wq6G0dtXs3JpAQdx+g971Ha+PmdE9I0EjBXTzXtsjAE1MSyY0UX6AXt5J8LPZoxObPuvvDfCEkRTmgY993dJu4g/Szi1XKhWD36uxDWSRcASO8DFwKzb+VciscIrxM+clXdwWvUyIeXavrl3/DAkLMAlbzDoX7BqVU6yjlO01AiA2tkvx6JQKaYx61bbAMZtcDpEhDOqg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=FCwT7s/KlJCT+RhhQ9OrMCDgpSZoElsURqWIWNLjKdw=;
+ b=yvQfF61cu+j4kr/4JlXZQRgaDL8kGGcP2M4Pu3ktKyxncxQmRJIQLr4GvXjtDISiGbYEPaC4n7mco8pLrBrR7nFnDYpB23VV0DitVZ6FRigUI1cRbEPTfEvaVzDhUEKcyxVBuGwPzDCRShc+jpRR2elRHW8hlJiI1jZaj2V2HHA=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from BN9PR12MB5163.namprd12.prod.outlook.com (2603:10b6:408:11c::7)
+ by PH7PR12MB6717.namprd12.prod.outlook.com (2603:10b6:510:1b0::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6699.24; Mon, 21 Aug
+ 2023 09:03:14 +0000
+Received: from BN9PR12MB5163.namprd12.prod.outlook.com
+ ([fe80::266b:49f3:3cba:406d]) by BN9PR12MB5163.namprd12.prod.outlook.com
+ ([fe80::266b:49f3:3cba:406d%4]) with mapi id 15.20.6699.022; Mon, 21 Aug 2023
+ 09:03:14 +0000
+Message-ID: <1f618ab9-389f-e3ec-58fd-fdda14e3b800@amd.com>
+Date: Mon, 21 Aug 2023 14:33:04 +0530
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Subject: Re: [PATCH 1/2] iommu/iova: Make the rcache depot scale better
+Content-Language: en-US
+To: Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org
+Cc: will@kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ john.g.garry@oracle.com, zhangzekun11@huawei.com
+References: <cover.1692033783.git.robin.murphy@arm.com>
+ <2c3a0f6b381ae5f743c1b28bbc6eae486160f3b7.1692033783.git.robin.murphy@arm.com>
+ <3689f036-5d48-0e4d-56fc-9d96823b9547@amd.com>
+ <f8c62974-eea8-f58f-cb67-9e2f13b242fd@arm.com>
+From: "Srivastava, Dheeraj Kumar" <dheerajkumar.srivastava@amd.com>
+In-Reply-To: <f8c62974-eea8-f58f-cb67-9e2f13b242fd@arm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: PN2PR01CA0004.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:c01:25::9) To BN9PR12MB5163.namprd12.prod.outlook.com
+ (2603:10b6:408:11c::7)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.14.0
-Subject: Re: [PATCH 1/2] iommu/iova: Make the rcache depot scale better
-To: "Srivastava, Dheeraj Kumar" <dheerajkumar.srivastava@amd.com>,
- joro@8bytes.org
-Cc: will@kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- john.g.garry@oracle.com, zhangzekun11@huawei.com
-References: <cover.1692033783.git.robin.murphy@arm.com>
- <2c3a0f6b381ae5f743c1b28bbc6eae486160f3b7.1692033783.git.robin.murphy@arm.com>
- <3689f036-5d48-0e4d-56fc-9d96823b9547@amd.com>
-Content-Language: en-GB
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <3689f036-5d48-0e4d-56fc-9d96823b9547@amd.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BN9PR12MB5163:EE_|PH7PR12MB6717:EE_
+X-MS-Office365-Filtering-Correlation-Id: f177fb85-86af-487e-4d7d-08dba2257386
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	jBmi83I1FGZ+UaVPAqOkFOO1EJWXIt+vAXPbt9iYOQVOExxqotIKcy9rAL3MzwO/EFCpSfkO4ii95CCYW+UTscA/UqzLpiATmzed+MoEBeS1veJ+Y75BD6XKBsupNTCvLloMYCaPtsys/C+a/3F1HZe8cUDgUOAvFXnJRERFVIYflms9bC8hPXkXuhAUzDBTKaNfei0leLPaEVkveqxhvbaC6W6rZzv5G0g+80fZ1LmlYZXOh/8Zbd5AucO3M2pjqo2Einc50nz9EPXj0uY5RHz9twk4J3TJS93IYck5FOsLCieJ4LB2oAeAPk1cy6HM7eWUdnggsHUa5a6WGLTrp5Eptr7e6dXPGSdv75tx5A+xE9X8kg9yQy9EdbkuCxXdkCDWT2DktWC/1uokkv6KWCIe7I0tS3geF+HZEe3VEqYfYMfhOTqICiyZrheIcPRCTco3oCBpescrtbHf2XxQf1mlw5n7G9P+b8sEJf1H4CZdj57UL2oMMYc+Fx9B9tAK6O8+UjoQXOzlgq2yMSEClhO3/rbrWIN3rdQ+PBEuKVir0iWLvpTQa26TrKl5PC02Eu9M7bJlVJBBhjrhhtNITlF1OSOEX9iNox0VYJCXXRhhq35eAMCTf5obogWY+dHPbiRZr+Mn+5R5Yp1Im1IHlw==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR12MB5163.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366004)(346002)(376002)(396003)(136003)(39860400002)(451199024)(186009)(1800799009)(2906002)(4744005)(83380400001)(53546011)(38100700002)(6506007)(6486002)(5660300002)(26005)(86362001)(31686004)(31696002)(8676002)(2616005)(8936002)(4326008)(316002)(66946007)(6512007)(66556008)(66476007)(478600001)(6666004)(41300700001)(36756003)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?TGozSzEvRXIyQTQrUmhxenk5N0J2Z1YyV25DQ2laVzBpNmI2bElWSmVmYkFD?=
+ =?utf-8?B?WUVFWXRCaFdyWXhPbHFCMzZ2RStDVUN5bGxpRGdPVHQ5QU8wTWlUTUxkYVJC?=
+ =?utf-8?B?TUFibHd2dEd1WGtXZ2FnQVhTLzljWGI5WDBaQ2h1NjV5a0JYUFpOZTNKVkdM?=
+ =?utf-8?B?TlQrTHhUUGFYSWZJaDJKUzhCemY0dThybDFqM2pZd0lGWis0dzhhV1cxTnFn?=
+ =?utf-8?B?Vi8xcmNUaWx0QlpqeVgzcmNQamVNVmNDL1lZaGZFcmtDZSt1UVA3RURCeE02?=
+ =?utf-8?B?aFBRS2FpQ04rUkMxVmZpYTFmYVU1VVZQWm5tWDhhbW9vajFldzRQcTkvYnFN?=
+ =?utf-8?B?R0xZNFF3YXhOU0d3WU5PSU54YWxJbm1jd0I2b0tabGJyZ1RGRFBqenlUc3Z1?=
+ =?utf-8?B?ZC9hak81d3lPMm9hOGk3VVBqQ0t6aGdWNjFUMTUwSnFNOFlPS0tEdWpDV09J?=
+ =?utf-8?B?NklWUGFmUlJyaW05K1VVWVYwM0lJdU4zWXJFSFBvZ2ZoOGt0OWJBcmprbHBS?=
+ =?utf-8?B?NjFzUkwwbTI1LzV6VjVWRFF2S0lnUWl4VFpXd2loSmo2UmF6Q3ZaUkZOY2Js?=
+ =?utf-8?B?bVRSR1N6QlZwWmxCb2ZSNmplMWxMRFJZOWxwU3pGendyVjZYbERqYno2d0Q3?=
+ =?utf-8?B?cDZHS0NIZ3hzVzJaNTR3bXM4emY0bzRMTmJrZnk1clo1cy9OUHpWSHh4UVdo?=
+ =?utf-8?B?U0pQOGFWbkZNZkRlUmVGM1U3amdIa2dvby9rNUNDWGRHUEFVOFZTMURGdFhQ?=
+ =?utf-8?B?U0MwcFpKYTJoQStkUXFWWmtleFlRWThqd1RrNTh6OVduSGtBNHJtSThhb2FD?=
+ =?utf-8?B?T3VCYUJyZ0oxSUhDWHlPVHNPaWJqVzRIZm1Udy9HWlpkQXBkVXdlN2NLOWxu?=
+ =?utf-8?B?azIrcXYrcHppelFrQmR2U1ZGcmNTWXM0bkFRSlF4LzlLUS9SeUhoalBkalBx?=
+ =?utf-8?B?MktnK2xiRXoxQVpiWVRGd3hJZVVvZytwTk9nU0R5eDBPK0x3bDVxblMybTJH?=
+ =?utf-8?B?TDcxUjgwaWhGTTU5OFdOckIwQzUvek5QbjBTQUhRT1ZJejNBeVdQSGJrWGNk?=
+ =?utf-8?B?ZjAzMGRSc1ZpZmF1ZkVnd252SmZNV1lDUnY2TWp3a2VURW5TcllYUXZ4d0M5?=
+ =?utf-8?B?SzRWWElrT0NIUWtmOTdFMmcyVS96ejlicEFGRjMzSnZ5OVhndDFDT24wM2pC?=
+ =?utf-8?B?OXZUMDNlUElIaDhGaFk4M294WWdUQWlwdzRqSmxIQlVBYm5pTSsrbytjZ0dj?=
+ =?utf-8?B?czBPaDEyUnY4aEtmM3VtZXVLOGVWWUx4eXhnUS94bW5wYWJ4YzlITnR1dFFF?=
+ =?utf-8?B?c1NZd1MxRlg3c3FMdmdqbE51SDBockZpajVKZWdDdHc3OG00NUdCUTNOWXhl?=
+ =?utf-8?B?K0NUWndTNXlxdFBsMWlEVWQrdVQ2SlZodERYQWpDSmhwdDNYa3pIWVN1d01x?=
+ =?utf-8?B?Mk5jcVVJMHMrWnJmblcyTU9sbHd2aXR6dHArL3VzS1VwTTZIeHpDZy9LR2xo?=
+ =?utf-8?B?VXlNdmN3bERhWnNJTEJ0ZHdpWFovME1LVWtjc0paQks3eEdDOWpCbFVoMlVC?=
+ =?utf-8?B?Q3Z5Y1pzRmd3S0FZcXZ0OTIzTU1BdG9OVVQzOWJmeXNFaGUvT1NGRjkzTU9a?=
+ =?utf-8?B?SGlkM2tWN1lxZ0ZhRnJYSklvRTZEYlg1eTU5bHVBM3JBbFNSaXNkWngyMUdi?=
+ =?utf-8?B?eVgyeXBDNDg2clFDWEFielI0Kyt1YW00T0VOTURYOWZzNmFhUkVsNVAyaXRS?=
+ =?utf-8?B?YnlPODRySW81eDZjZFNPd21zNGhpQkpyNkw2cVN0N2c1MkR5QWFvZXdZVXlW?=
+ =?utf-8?B?aTVPdEpVZmtjSzYrV2ppaVNzcTFQMGcySjhuVnc5ZlorK2kwWDZzU3BlVmZI?=
+ =?utf-8?B?YmhYQm5GN2QxNkdzWjNvaGpPNFRyNmhBNGd2bFVUQlBkUmJtUUhJclVCR09G?=
+ =?utf-8?B?Zml4eXZwVkRxbEZDd2V1S0ltUVBiN1pFanpKN043OHdZQ1kwQVE1dTU4Yklm?=
+ =?utf-8?B?NmZ4RjBBNkZWeTd0U3ArTUwvYmRsN29UNENHRXpuRDdUMVQ1V0VZcExBRmZl?=
+ =?utf-8?B?eDFGVWgrTnZuVzdtTkVobi9vVmJsbzEvZWRoWGZiSkVBRTMycXRTSnZBMThY?=
+ =?utf-8?Q?nESihxpiitH6eoy2SqjxyRyDc?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f177fb85-86af-487e-4d7d-08dba2257386
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR12MB5163.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Aug 2023 09:03:14.2507
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 1AzlVOC1UPDLYTJ5c7hUJN/Gc1tkUqgromIpOofdaUKlO3k1xmlld1lavkTc/kY2yYRT3kD1bryr7KMNkWSEYQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB6717
 
-On 2023-08-21 09:11, Srivastava, Dheeraj Kumar wrote:
-> Hello Robin,
-> 
-> On 8/14/2023 11:23 PM, Robin Murphy wrote:
->> The algorithm in the original paper specifies the storage of full
->> magazines in the depot as an unbounded list rather than a fixed-size
->> array. It turns out to be pretty straightforward to do this in our
->> implementation with no significant loss of efficiency. This allows
->> the depot to scale up to the working set sizes of larger systems,
->> while also potentially saving some memory on smaller ones too.
->>
->> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
->> ---
->>   drivers/iommu/iova.c | 65 ++++++++++++++++++++++++--------------------
->>   1 file changed, 36 insertions(+), 29 deletions(-)
->>
->> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
->> index 10b964600948..d2de6fb0e9f4 100644
->> --- a/drivers/iommu/iova.c
->> +++ b/drivers/iommu/iova.c
->> @@ -625,10 +625,16 @@ EXPORT_SYMBOL_GPL(reserve_iova);
->>    * will be wasted.
->>    */
->>   #define IOVA_MAG_SIZE 127
->> -#define MAX_GLOBAL_MAGS 32    /* magazines per bin */
->>   struct iova_magazine {
->> -    unsigned long size;
->> +    /*
->> +     * Only full magazines are inserted into the depot, so we can avoid
->> +     * a separate list head and preserve maximum space-efficiency.
->> +     */
->> +    union {
->> +        unsigned long size;
->> +        struct iova_magazine *next;
->> +    };
->>       unsigned long pfns[IOVA_MAG_SIZE];
->>   };
->> @@ -640,8 +646,7 @@ struct iova_cpu_rcache {
->>   struct iova_rcache {
->>       spinlock_t lock;
->> -    unsigned long depot_size;
->> -    struct iova_magazine *depot[MAX_GLOBAL_MAGS];
->> +    struct iova_magazine *depot;
->>       struct iova_cpu_rcache __percpu *cpu_rcaches;
->>   };
->> @@ -717,6 +722,21 @@ static void iova_magazine_push(struct 
->> iova_magazine *mag, unsigned long pfn)
->>       mag->pfns[mag->size++] = pfn;
->>   }
->> +static struct iova_magazine *iova_depot_pop(struct iova_rcache *rcache)
->> +{
->> +    struct iova_magazine *mag = rcache->depot;
->> +
->> +    rcache->depot = mag->next;
-> 
-> While doing routine domain change test for a device ("unbind device from 
-> driver -> change domain of the device -> bind device back to the 
-> driver"), i ran into the following NULL pointer dereferencing issue.
-> 
-> [  599.020261] BUG: kernel NULL pointer dereference, address: 
-> 0000000000000000
-> [  599.020986] #PF: supervisor read access in kernel mode
-> [  599.021588] #PF: error_code(0x0000) - not-present page
-> [  599.022180] PGD 0 P4D 0
-> [  599.022770] Oops: 0000 [#1] PREEMPT SMP NOPTI
-> [  599.023365] CPU: 68 PID: 3122 Comm: avocado Not tainted 
-> 6.5.0-rc6-ChngDomainIssue #16
-> [  599.023970] Hardware name: Dell Inc. PowerEdge R6515/07PXPY, BIOS 
-> 2.3.6 07/06/2021
-> [  599.024571] RIP: 0010:free_iova_rcaches+0x9c/0x110
-> [  599.025170] Code: d1 ff 39 05 36 d2 bc 01 48 89 c3 77 b4 49 8b 7f 10 
-> e8 b8 69 93 ff 49 8d 7f 20 e8 6f e4 6b ff eb 05 e8 48 ba 93 ff 49 8b 7f 
-> 08 <48> 8b 07 49 89 47 08 48 c7 07 7f 00 00 00 41 83 6f 04 01 48 85 ff
-> [  599.026436] RSP: 0018:ffffb78b4c9f7c68 EFLAGS: 00010296
-> [  599.027075] RAX: ffffffff9fa8c100 RBX: 0000000000000080 RCX: 
-> 0000000000000005
-> [  599.027719] RDX: 0000000000000000 RSI: 000000007fffffff RDI: 
-> 0000000000000000
-> [  599.028359] RBP: ffffb78b4c9f7c98 R08: 0000000000000000 R09: 
-> 0000000000000006
-> [  599.028995] R10: 0000000000000000 R11: 0000000000000000 R12: 
-> 0000000000000000
-> [  599.029636] R13: ffff93910d9c6008 R14: ffffd78b3bde1000 R15: 
-> ffff9391144ebc00
-> [  599.030283] FS:  00007fa5c9e5c000(0000) GS:ffff93cf72700000(0000) 
-> knlGS:0000000000000000
-> [  599.030941] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [  599.031588] CR2: 0000000000000000 CR3: 000000013f526006 CR4: 
-> 0000000000770ee0
-> [  599.032237] PKRU: 55555554
-> [  599.032878] Call Trace:
-> [  599.033512]  <TASK>
-> [  599.034140]  ? show_regs+0x6e/0x80
-> [  599.034769]  ? __die+0x29/0x70
-> [  599.035393]  ? page_fault_oops+0x154/0x4a0
-> [  599.036021]  ? __x86_return_thunk+0x9/0x10
-> [  599.036647]  ? do_user_addr_fault+0x318/0x6b0
-> [  599.037258]  ? __x86_return_thunk+0x9/0x10
-> [  599.037866]  ? __slab_free+0xc7/0x320
-> [  599.038472]  ? exc_page_fault+0x7d/0x190
-> [  599.039074]  ? asm_exc_page_fault+0x2b/0x30
-> [  599.039683]  ? free_iova_rcaches+0x9c/0x110
-> [  599.040286]  ? free_iova_rcaches+0x91/0x110
-> [  599.040875]  ? __x86_return_thunk+0x9/0x10
-> [  599.041460]  put_iova_domain+0x32/0xa0
-> [  599.042041]  iommu_put_dma_cookie+0x177/0x1b0
-> [  599.042620]  iommu_domain_free+0x1f/0x50
-> [  599.043194]  iommu_setup_default_domain+0x2fb/0x420
-> [  599.043774]  iommu_group_store_type+0xb6/0x210
-> [  599.044362]  iommu_group_attr_store+0x21/0x40
-> [  599.044938]  sysfs_kf_write+0x42/0x50
-> [  599.045511]  kernfs_fop_write_iter+0x143/0x1d0
-> [  599.046084]  vfs_write+0x2c2/0x3f0
-> [  599.046653]  ksys_write+0x6b/0xf0
-> [  599.047219]  __x64_sys_write+0x1d/0x30
-> [  599.047782]  do_syscall_64+0x60/0x90
-> [  599.048346]  ? syscall_exit_to_user_mode+0x2a/0x50
-> [  599.048911]  ? __x64_sys_lseek+0x1c/0x30
-> [  599.049465]  ? __x86_return_thunk+0x9/0x10
-> [  599.050013]  ? do_syscall_64+0x6d/0x90
-> [  599.050562]  ? do_syscall_64+0x6d/0x90
-> [  599.051098]  ? do_syscall_64+0x6d/0x90
-> [  599.051625]  ? __x86_return_thunk+0x9/0x10
-> [  599.052149]  ? exc_page_fault+0x8e/0x190
-> [  599.052665]  entry_SYSCALL_64_after_hwframe+0x73/0xdd
-> [  599.053180] RIP: 0033:0x7fa5c9d14a6f
-> [  599.053670] Code: 89 54 24 18 48 89 74 24 10 89 7c 24 08 e8 19 c0 f7 
-> ff 48 8b 54 24 18 48 8b 74 24 10 41 89 c0 8b 7c 24 08 b8 01 00 00 00 0f 
-> 05 <48> 3d 00 f0 ff ff 77 31 44 89 c7 48 89 44 24 08 e8 5c c0 f7 ff 48
-> [  599.054672] RSP: 002b:00007ffdeb05f540 EFLAGS: 00000293 ORIG_RAX: 
-> 0000000000000001
-> [  599.055182] RAX: ffffffffffffffda RBX: 0000557de3275a80 RCX: 
-> 00007fa5c9d14a6f
-> [  599.055692] RDX: 0000000000000003 RSI: 0000557de418ff60 RDI: 
-> 0000000000000011
-> [  599.056203] RBP: 0000557de39a25e0 R08: 0000000000000000 R09: 
-> 0000000000000000
-> [  599.056718] R10: 0000000000000000 R11: 0000000000000293 R12: 
-> 0000000000000003
-> [  599.057227] R13: 00007fa5c9e5bf80 R14: 0000000000000011 R15: 
-> 0000557de418ff60
-> [  599.057738]  </TASK>
-> [  599.058227] Modules linked in: xt_CHECKSUM xt_MASQUERADE xt_conntrack 
-> ipt_REJECT nf_reject_ipv4 xt_tcpudp nft_compat nft_chain_nat nf_nat 
-> nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 nf_tables nfnetlink bridge 
-> stp llc ipmi_ssif binfmt_misc nls_iso8859_1 intel_rapl_msr 
-> intel_rapl_common amd64_edac edac_mce_amd kvm_amd kvm dell_smbios dcdbas 
-> rapl dell_wmi_descriptor wmi_bmof joydev input_leds ccp ptdma k10temp 
-> acpi_ipmi ipmi_si acpi_power_meter mac_hid sch_fq_codel dm_multipath 
-> scsi_dh_rdac ipmi_devintf scsi_dh_emc ipmi_msghandler scsi_dh_alua msr 
-> ramoops reed_solomon pstore_blk pstore_zone efi_pstore ip_tables 
-> x_tables autofs4 hid_generic usbhid hid btrfs blake2b_generic raid10 
-> raid456 async_raid6_recov async_memcpy async_pq async_xor async_tx xor 
-> raid6_pq libcrc32c raid1 raid0 multipath linear mgag200 i2c_algo_bit 
-> drm_shmem_helper drm_kms_helper crct10dif_pclmul crc32_pclmul 
-> ghash_clmulni_intel sha512_ssse3 aesni_intel crypto_simd cryptd nvme drm 
-> mpt3sas tg3 ahci nvme_core libahci xhci_pci raid_class i2c_piix4
-> [  599.058423]  xhci_pci_renesas scsi_transport_sas wmi
-> [  599.064210] CR2: 0000000000000000
-> [  599.064841] ---[ end trace 0000000000000000 ]---
-> -- 
-> 
-> Looking at the RIP: free_iova_rcaches+0x9c/0x110 pointed me to the above 
-> line leading me to believe we are popping element from an empty stack. 
-> Following hunk fixed the issue for me:
+Hello Robin,
 
-Oh dear... looks like this was a brainfart when I factored out the 
-push/pop helpers to replace the original list_head-based prototype. 
-Thanks for the catch!
+Thanks for the quick reply.
 
-This fix is functionally fine, but I think what I'll do for v2 is 
-change those "while ((mag = iova_depot_pop(rcache)))" loops, since 
-assignment-in-the-loop-condition logic tends to look a bit suspect 
-anyway. Other than that, though, were you able to notice any difference 
-(good or bad) in CPU load or memory consumption overall?
+On 8/21/2023 2:25 PM, Robin Murphy wrote:
+> Other than that, though, were you able to notice any difference (good or 
+> bad) in CPU load or memory consumption overall?
 
-Thanks,
-Robin.
+I am still in process of testing the patches. I will let you know if any 
+observe any improvement in CPU load or memory consumption.
 
-> 
-> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-> index 76a7d694708e..899f1c2ba62a 100644
-> --- a/drivers/iommu/iova.c
-> +++ b/drivers/iommu/iova.c
-> @@ -732,6 +732,9 @@ static struct iova_magazine *iova_depot_pop(struct 
-> iova_rcache *rcache)
->   {
->       struct iova_magazine *mag = rcache->depot;
-> 
-> +    if (!mag)
-> +        return NULL;
-> +
->       rcache->depot = mag->next;
->       mag->size = IOVA_MAG_SIZE;
->       rcache->depot_size--;
-> -- 
-> 
->> +    mag->size = IOVA_MAG_SIZE;
->> +    return mag;
->> +}
->> +
-> 
-> -- 
-> Thanks and Regards
-> Dheeraj Kumar Srivastava
-> 
+Thanks and Regards,
+Dheeraj Kumar Srivastava
