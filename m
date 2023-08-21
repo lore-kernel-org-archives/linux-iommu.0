@@ -1,113 +1,105 @@
-Received: from mail-qv1-f45.google.com (mail-qv1-f45.google.com [209.85.219.45])
+Received: from mail-qt1-f176.google.com (mail-qt1-f176.google.com [209.85.160.176])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D44CC6FDF
-	for <iommu@lists.linux.dev>; Mon, 21 Aug 2023 13:36:42 +0000 (UTC)
-Received: by mail-qv1-f45.google.com with SMTP id 6a1803df08f44-64a8826dde2so19697896d6.1
-        for <iommu@lists.linux.dev>; Mon, 21 Aug 2023 06:36:42 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 057D37472
+	for <iommu@lists.linux.dev>; Mon, 21 Aug 2023 13:39:17 +0000 (UTC)
+Received: by mail-qt1-f176.google.com with SMTP id d75a77b69052e-40c72caec5cso447331cf.0
+        for <iommu@lists.linux.dev>; Mon, 21 Aug 2023 06:39:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1692625001; x=1693229801;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=FDY56LX20XWtO5aIYmJVebUwmR4LKKiq4VQM/rHOBB4=;
-        b=ooS4RhJ0I5Ylu44zZY127XD1LQes/9L4pWD1hJfwLNp700n+0EoM1p+u0XTI0wGEPy
-         /i967/4BDMkfpjwrIe/6/RIHBNRqQaV190Ut/4JyJQINBPWESsGDPH8lXe+2EeV/x7Jq
-         cwgVUNBrbRV7l7NvD95OKm7jdau80Axs7SsS+DKRIW8GRkcho+uYbm7PUvQquuvH9Txt
-         e36YTsFuXYp62f0AUG+nqjr5x/jfIDiK4LurM0aLdkoQnqFwAs4nlHhyB/UGSswxxJf2
-         Fs/HEZ906z2aSubifaFrsts0CHsU9Ke7ud9NOuEBU8S4Z/wGf92dxTGQKz0a2FgspIr8
-         kUng==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1692625001; x=1693229801;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+        d=google.com; s=20221208; t=1692625156; x=1693229956;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=FDY56LX20XWtO5aIYmJVebUwmR4LKKiq4VQM/rHOBB4=;
-        b=lKJOVI+yNZkgevGlAQY2a8ANhHp596SqjaMVzgffKBT0hr40mlDr0E1c5W7mf2x5XF
-         X4PsN+EysMz+dsGaGzRYMiGOx3Mb1f+0K/jDb23+cetv+9jgldhZZ+y1Cn5BNrq05Pwd
-         5QMbONwol0Up8EZJt2WfhuZjlLaPuDUNX4x85YWpOg31QEDQysHefczXcfpNxE+NRlBt
-         4crSux+5rzjb5SGu5/1qkMPB/on4hAtwlc/azWYmmaOTlx5Ng1lITHwOUNNL0i9vd/vj
-         01/8bXYl8Exnk5Y+WIH+fiOC7RtsQSyhvjgWzuvDHY88ldzS+mc0WyiMWmDQhf0GFMLP
-         YaKQ==
-X-Gm-Message-State: AOJu0Yy/AgyaopBkN6l51ax3lKyYadh0BZS9PPI+mR69+jp9n7yirirj
-	PtbvAlXcOJdfAMRCU7S8a5tfpWQONZ1ChX/gUf8=
-X-Google-Smtp-Source: AGHT+IE2bG+1LwWqVsS+WCEV0UytMLi2ydkILUQeNiCi6YG1sasYmfos+twjlsNpbDVqpVXCU/ncHA==
-X-Received: by 2002:a0c:f106:0:b0:64a:3ab9:266f with SMTP id i6-20020a0cf106000000b0064a3ab9266fmr7340455qvl.49.1692625001559;
-        Mon, 21 Aug 2023 06:36:41 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-25-194.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.25.194])
-        by smtp.gmail.com with ESMTPSA id g6-20020a0cdf06000000b0064718983683sm308495qvl.117.2023.08.21.06.36.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Aug 2023 06:36:41 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1qY55E-00DiI3-I1;
-	Mon, 21 Aug 2023 10:36:40 -0300
-Date: Mon, 21 Aug 2023 10:36:40 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Vasant Hegde <vasant.hegde@amd.com>
-Cc: iommu@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com,
-	wei.huang2@amd.com, jsnitsel@redhat.com
-Subject: Re: [PATCH v2 0/5] iommu/amd: SVA Support (part 2) - deprecate
- iommu_v2 module
-Message-ID: <ZONoaEJpCuKPQ5Mn@ziepe.ca>
-References: <20230821104956.707235-1-vasant.hegde@amd.com>
+        bh=QPjzY4omsOysbo+WaFOemYqJ4xkslRZB8mPYNwUSQ6A=;
+        b=w0I4haQ45UNsLNRiNXn71OMBdA6RsRmbCrX3Eo4uMIBz6usK8BIz3jjoqHsU58oYRc
+         lur/ned6K0IBLZsvTzELh7g4+Swiy+UWxYrbvfmCicIzkcp1FXq4A19Ss7V0Hih3EzSW
+         rkrBSnLJMaGCWH6gMU1KeOgXghoXfJNBu4aGsBbLGgeBoKPKu6xZsITNNluHOWjNQeim
+         uLAhIKSNrVkpDM950F8nk2R93L6UjkuVdVPFtyIblupJpRfo8IUAptwe5WjMW20meJe2
+         0zKHrHhku5m74GQ1Nwl/WdafDuwRGkW/8BmsulXpT32nZlWJswWz40fus+buJR8Q02cP
+         aQ+w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1692625156; x=1693229956;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=QPjzY4omsOysbo+WaFOemYqJ4xkslRZB8mPYNwUSQ6A=;
+        b=BTyhoTaVnddRFT3RVUBQJtPuSuOTjSCcsgL/AHHvzKvdE9ybDpsYoYmphrNl8zGOhb
+         phmwfSMh5mQbBCspZraNzT7RXvVeWb6mTPBLTaucvZ2TdTJ1R61hCXiIizwVojobEtAU
+         zFe32iEWHXTrw6Mbcgqw7PcuGlDtn4nO7puJin8yeVB5gy96AnVM+Hq9ZrqKFWAirSbm
+         5r4cg/x9h4VRmIGohtUSqT3cHnw/wCvsseI6DxrKNtV1X0QDyCUABG/9e4dLuC9y8cCy
+         3JfIxdIeeGbHEXyOzI9BdhDsUxiDXkt5JPdRTJt8pfzmSp9hhkw/DumNjnUfhE0hjM5F
+         7NaQ==
+X-Gm-Message-State: AOJu0YxCp30AoAvl4BSFfh+T12U1KZLGSBCu+0tlcT2s/Jqp+6BTH5EG
+	hrPCBf6pFDRejkwtv4KOnjXHl0lR1sP0DW//dCQaCeECm7EwQkLApAM=
+X-Google-Smtp-Source: AGHT+IETYip2DW6kZitAYkXOvPOKFFGmGfQS6VsuXvAMuzQdOcSsCUd4w3zy3HaeYzjV4q49oU7NBYYBlP61f1REQBY=
+X-Received: by 2002:ac8:5984:0:b0:410:88a5:92f with SMTP id
+ e4-20020ac85984000000b0041088a5092fmr395349qte.0.1692625156476; Mon, 21 Aug
+ 2023 06:39:16 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230821104956.707235-1-vasant.hegde@amd.com>
+References: <20230817182055.1770180-1-mshavit@google.com> <20230818021629.RFC.v1.3.I326c62dc062aed8d901d319aa665dbe983c7904c@changeid>
+ <ZN5pK03Drao/egeF@nvidia.com> <CAKHBV27k8F0ZLy=RA=WhjJ7+C9JMHRRnKs=4W4pJMNmxrMEXxw@mail.gmail.com>
+ <ZONQgNh6qarqgA+f@nvidia.com>
+In-Reply-To: <ZONQgNh6qarqgA+f@nvidia.com>
+From: Michael Shavit <mshavit@google.com>
+Date: Mon, 21 Aug 2023 21:38:40 +0800
+Message-ID: <CAKHBV26oTZLssq5bopePojqgrEJwukKHYEbhU02nAvHHVB13mw@mail.gmail.com>
+Subject: Re: [RFC PATCH v1 3/8] iommu/arm-smmu-v3-sva: Allocate new ASID from installed_smmus
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
+	linux-kernel@vger.kernel.org, will@kernel.org, nicolinc@nvidia.com, 
+	tina.zhang@intel.com, jean-philippe@linaro.org, robin.murphy@arm.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, Aug 21, 2023 at 10:49:51AM +0000, Vasant Hegde wrote:
-> This is part 2 of the 4-part series to introduce Share Virtual Address
-> (SVA) support. This series removes iommu_v2 module support.
-> 
-> AMD GPU driver which was the only in-kernel user of iommu_v2 module is
-> removing dependency on iommu_v2 module [1].
-> 
-> [1] https://patchwork.freedesktop.org/series/122124/
-> 
-> Also subsequent series will add SVA spuport in AMD IOMMU driver. Device
-> drivers are expected to use common SVA framework to enable device
-> PASID/PRI features.
-> 
-> Hence this series removes iommu_v2 module and the functions used to support
-> iommu_v2 modue. Note that there are certain functions (ex: PPR interrupt
-> handling code) which will be used in subsequent series for SVA support.
-> Hence not removed those functions.
-> 
-> This patch series is based on top of SVA Part 1 [1] :
->   https://lore.kernel.org/linux-iommu/20230821104227.706997-1-vasant.hegde@amd.com/T/#t
-> 
->   Also to build kernel with this series either we need above AMD GPU
->   related changes [1] -OR- compile with kernel config 'CONFIG_HSA_AMD=n'.
-> 
-> This is also available at github :
->   https://github.com/AMDESE/linux/tree/iommu_sva_part2_v2_iommu_v2_v6.5_rc1
-> 
-> Thanks Jason for reviewing previous versions and providing feedbacks.
-> 
-> 
-> Changes from v1 -> v2:
->   - Added patch to revert commit 2380f1e8195e
-> 
-> v1 : https://lore.kernel.org/linux-iommu/20230815103255.565295-1-vasant.hegde@amd.com/
-> 
-> 
-> Thank you,
-> Vasant / Suravee
-> 
-> Vasant Hegde (5):
->   iommu/amd: Remove iommu_v2 module
->   iommu/amd: Remove PPR support
->   iommu/amd: Remove amd_iommu_device_info()
->   iommu/amd: Remove unused EXPORT_SYMBOLS
->   Revert "iommu: Fix false ownership failure on AMD systems with PASID activated"
+On Mon, Aug 21, 2023 at 7:54=E2=80=AFPM Jason Gunthorpe <jgg@nvidia.com> wr=
+ote:
+>
+> On Mon, Aug 21, 2023 at 05:31:23PM +0800, Michael Shavit wrote:
+> > On Fri, Aug 18, 2023 at 2:38=E2=80=AFAM Jason Gunthorpe <jgg@nvidia.com=
+> wrote:
+> > >
+> > > On Fri, Aug 18, 2023 at 02:16:25AM +0800, Michael Shavit wrote:
+> > > > Pick an ASID that is within the supported range of all SMMUs that t=
+he
+> > > > domain is installed to.
+> > > >
+> > > > Signed-off-by: Michael Shavit <mshavit@google.com>
+> > > > ---
+> > >
+> > > This seems like a pretty niche scenario, maybe we should just keep a
+> > > global for the max ASID?
+> > >
+> > > Otherwise we need a code to change the ASID, even for non-SVA domains=
+,
+> > > when the domain is installed in different devices if the current ASID
+> > > is over the instance max..
+> >
+> > This RFC took the other easy way out for this problem by rejecting
+> > attaching a domain if its currently assigned ASID/VMID
+> > is out of range when attaching to a new SMMU. But I'm not sure
+> > which of the two options is the right trade-off.
+> > Especially if we move VMID to a global allocator (which I plan to add
+> > for v2), setting a global maximum for VMID of 256 sounds small.
+>
+> IMHO the simplest and best thing is to make both vmid and asid as
+> local allocators. Then alot of these problems disappear
 
-For the series
+Well that does sound like the most flexible, but IMO quite a lot more
+complicated.
 
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-
-Jason
+I'll post a v2 RFC that removes the `iommu/arm-smmu-v3: Add list of
+installed_smmus` patch and uses a flat master list in smmu_domain as
+suggested by Robin, for comparison with the v1. But at a glance using a
+local allocator would require:
+1. Keeping that patch so we can track the asid/vmid for a domain on a
+per smmu instance
+2. Keeping a map in the smmu struct so that arm_smmu_share_asid can
+find any arm_smmu_installed_smmu that need to have their asid updated
+(on a loop over every smmu the domain in arm_smmu_mmu_notifier_get is
+attached to, which just at a glance looks headache inducing because of
+sva's piggybacking on the rid domain.)
