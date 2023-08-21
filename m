@@ -1,34 +1,34 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EAA8815B6
-	for <iommu@lists.linux.dev>; Mon, 21 Aug 2023 05:44:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B2B5915B6
+	for <iommu@lists.linux.dev>; Mon, 21 Aug 2023 05:46:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1692596683; x=1724132683;
+  t=1692596813; x=1724132813;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=Gx3SgnfGV8hbt3rcGhG27+mleRZghv8tlf8VVTaLsFI=;
-  b=St3fGZgDt35K6o0A5vhsqFZS4yttSqTXI5D0I8E+En60k16RlkhD6tVP
-   4/GRCgCav5cVU6+taKLUEUlFbnL8tmpW6VuPiTHeV9duy57gxD+NUy3dA
-   VEROw2i96fBNezT8WvzS131HneVak8PnKUy3u6mVkIVEWgcru6bQNkOd2
-   Oz68qdquyZDY3iiSavNhYB5md2kEDIJzV8lQy/17/i/XwbbM2NLY5XH7h
-   N1SSgrEC9g2R1i/U+KhbBXXi+HGxejqjJ6uzkETT7KCuyRI67OIuc8Ur9
-   ZvbbC8rz64O64pFr9DMo8CwSFtHXQmPK8wG+X/n+ZT4ZwwPuLmturYXiP
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10808"; a="459869111"
+  bh=DZPw1NWTFq7LuLCGSWf0Br/UddGbCKlhkmuvqbcJsYo=;
+  b=fqSQuqX+OTvfVLo08SbGZ7Auat513GLnWpsqdYa7HFMu1Kko3OXEOccg
+   iFz0XVBM4me3aGSw2lCvLC/9wtYmUcL8puMFUeIoaqXw4k9DIdwhHaDW4
+   K9LZFnbvqGZEljp9KRjVg6rkHaLMsIbXMV+uelH/VKbd2WnvKNDoufpzf
+   SFbsu2eGSHxBoxU7EtaJykd0BHvlIYnEkkymCoc44R+Gl+WHIaiRkxWFM
+   EnGrhME0MSm3H0WQF2344JVckCzaeNKtr8pnds6FERtTEDlZ1oplNwLxU
+   x1o5NbyRghD8F7J1arnZYaT6Y7jTcpDsMgZGaMY3NSj4fVconsJ11NDUg
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10808"; a="459869397"
 X-IronPort-AV: E=Sophos;i="6.01,189,1684825200"; 
-   d="scan'208";a="459869111"
+   d="scan'208";a="459869397"
 Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Aug 2023 22:44:42 -0700
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Aug 2023 22:46:52 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10808"; a="738780305"
+X-IronPort-AV: E=McAfee;i="6600,9927,10808"; a="738781142"
 X-IronPort-AV: E=Sophos;i="6.01,189,1684825200"; 
-   d="scan'208";a="738780305"
+   d="scan'208";a="738781142"
 Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.252.185.204]) ([10.252.185.204])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Aug 2023 22:44:37 -0700
-Message-ID: <51dfc143-aafd-fea2-26fe-e2e9025fcd21@linux.intel.com>
-Date: Mon, 21 Aug 2023 13:44:33 +0800
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Aug 2023 22:46:47 -0700
+Message-ID: <6d5303a7-18d2-2481-18d1-c3d8fcf0d864@linux.intel.com>
+Date: Mon, 21 Aug 2023 13:46:44 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -37,72 +37,57 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.14.0
-Cc: baolu.lu@linux.intel.com, "Liu, Yi L" <yi.l.liu@intel.com>,
- Jacob Pan <jacob.jun.pan@linux.intel.com>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 1/3] iommu: Make single-device group for PASID explicit
-To: "Tian, Kevin" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
+Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
  Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Jason Gunthorpe <jgg@ziepe.ca>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Nicolin Chen <nicolinc@nvidia.com>
-References: <20230814011759.102089-1-baolu.lu@linux.intel.com>
- <20230814011759.102089-2-baolu.lu@linux.intel.com>
- <BN9PR11MB5276E3C3D99C2DFA963805C98C1BA@BN9PR11MB5276.namprd11.prod.outlook.com>
+ Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>, Yi Liu
+ <yi.l.liu@intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>,
+ iommu@lists.linux.dev, kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/3] iommu: Consolidate pasid dma ownership check
 Content-Language: en-US
+To: Nicolin Chen <nicolinc@nvidia.com>
+References: <20230814011759.102089-1-baolu.lu@linux.intel.com>
+ <20230814011759.102089-3-baolu.lu@linux.intel.com>
+ <ZN8FAKHCzWODGRmC@Asurada-Nvidia>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <BN9PR11MB5276E3C3D99C2DFA963805C98C1BA@BN9PR11MB5276.namprd11.prod.outlook.com>
+In-Reply-To: <ZN8FAKHCzWODGRmC@Asurada-Nvidia>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2023/8/18 11:56, Tian, Kevin wrote:
->> From: Lu Baolu <baolu.lu@linux.intel.com>
->> Sent: Monday, August 14, 2023 9:18 AM
+On 2023/8/18 13:43, Nicolin Chen wrote:
+> On Mon, Aug 14, 2023 at 09:17:58AM +0800, Lu Baolu wrote:
+> 
+>> When switching device DMA ownership, it is required that all the device's
+>> pasid DMA be disabled. This is done by checking if the pasid array of the
+>> group is empty. Consolidate all the open code into a single helper. No
+>> intentional functionality change.
 >>
->> The PASID interfaces have always supported only single-device groups.
->> This was first introduced in commit 26b25a2b98e45 ("iommu: Bind process
->> address spaces to devices"), and has been kept consistent in subsequent
->> commits.
->>
->> However, the core code doesn't explicitly check for this requirement
->> after commit 201007ef707a8 ("PCI: Enable PASID only when ACS RR & UF
->> enabled on upstream path"), which made this requirement implicit.
->>
->> Restore the check to make it explicit that the PASID interfaces only
->> support devices belonging to single-device groups.
->>
->> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+>> Signed-off-by: Lu Baolu<baolu.lu@linux.intel.com>
 >> ---
->>   drivers/iommu/iommu.c | 5 +++++
->>   1 file changed, 5 insertions(+)
+>>   drivers/iommu/iommu.c | 23 ++++++++++++++++++-----
+>>   1 file changed, 18 insertions(+), 5 deletions(-)
 >>
 >> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->> index 71b9c41f2a9e..f1eba60e573f 100644
+>> index f1eba60e573f..d4a06a37ce39 100644
 >> --- a/drivers/iommu/iommu.c
 >> +++ b/drivers/iommu/iommu.c
->> @@ -3408,6 +3408,11 @@ int iommu_attach_device_pasid(struct
->> iommu_domain *domain,
->>   		return -ENODEV;
+>> @@ -3127,6 +3127,19 @@ static bool iommu_is_default_domain(struct iommu_group *group)
+>>          return false;
+>>   }
 >>
->>   	mutex_lock(&group->mutex);
->> +	if (list_count_nodes(&group->devices) != 1) {
->> +		ret = -EINVAL;
->> +		goto out_unlock;
->> +	}
->> +
+>> +/*
+>> + * Assert no PASID DMA when claiming or releasing group's DMA ownership.
+>               ^
+> 	     |...
 > 
-> I wonder whether we should also block adding new device to this
-> group once the single-device has pasid enabled. Otherwise the
+>> + * The device pasid interfaces are only for device drivers that have
+>> + * claimed the DMA ownership. Return true if no pasid DMA setup, otherwise
+>> + * return false with a WARN().
+>> + */
+>> +static bool assert_pasid_dma_ownership(struct iommu_group *group)
+> ... should it be assert_no_pasid_dma_ownership?
 
-This has been guaranteed by pci_enable_pasid():
-
-         if (!pci_acs_path_enabled(pdev, NULL, PCI_ACS_RR | PCI_ACS_UF))
-                 return -EINVAL;
-
-> check alone at attach time doesn't mean this group won't be
-> expanded to have multiple devices later.
+Fair enough. Or, perhaps just assert_no_pasid_dma()?
 
 Best regards,
 baolu
