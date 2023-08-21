@@ -1,80 +1,77 @@
-Received: from mail-qt1-f179.google.com (mail-qt1-f179.google.com [209.85.160.179])
+Received: from mail-qt1-f177.google.com (mail-qt1-f177.google.com [209.85.160.177])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DFCC22F50
-	for <iommu@lists.linux.dev>; Mon, 21 Aug 2023 09:32:00 +0000 (UTC)
-Received: by mail-qt1-f179.google.com with SMTP id d75a77b69052e-40c72caec5cso373131cf.0
-        for <iommu@lists.linux.dev>; Mon, 21 Aug 2023 02:32:00 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30FBF4A29
+	for <iommu@lists.linux.dev>; Mon, 21 Aug 2023 10:16:45 +0000 (UTC)
+Received: by mail-qt1-f177.google.com with SMTP id d75a77b69052e-40a47e8e38dso323141cf.1
+        for <iommu@lists.linux.dev>; Mon, 21 Aug 2023 03:16:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1692610319; x=1693215119;
+        d=google.com; s=20221208; t=1692613005; x=1693217805;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=laAe1Bo4NZ8AdV8W9Bh3WsToh2Bjfo6A1xgGVoYjoyQ=;
-        b=dLa7m7YOFXaI8f3LH4rmihbtsr0xg3WAuCXck0gHdLLzonLi1YVjZzMuNX+7sPul3v
-         gSojDkMsPLSogLdEbUM6mySPFZTo7tXT8cWUxXiHJM18TI0HXs10W24ppFH4eywBoQ0P
-         SjjvA3ak2E/K7OTROdIm789q+Hj60/+PZwxX479WbHalkuq7FfhUWWYDdXDgkqYIa+Cq
-         IGfAuXNtJSpMseZUcI1g7EV9hmyv4X5DqBtA/QdTWMU0Zx/bDqPjei50o3dF87DSfPqB
-         U/vqX4L71zson4Sjp52xAf8fD4z3DJHLzscqUpLgHRTMOQ+8HbJfPyBAOJaxB/n69CM8
-         P/bw==
+        bh=4DBlaKc14FwN7oz3yb3olsvOOqmt5j3x+R4hTmIZQs4=;
+        b=FNcTkll9b2OQnSTIUj9oooC6DOgVDY8CQJjvh4hSROYjpLVwHPXk7BIiBc9Zn2rfN5
+         zmFhMetAOKN0N37o+cGuNKUqpt1wAHDI4+v+2rCPEOp/5H6Cht28SKNI7cKyUY3JrlIS
+         5JxoxqftTexzBMTLrfBoxvUTfqxmtMCG6DWOIvUlsiX2PE0V61D68jCp5dmDKTv78pqG
+         +SH05jm2peGOBr/AuRQUFmMu12SV3O+9bpGtuc2F4aGp3ry/+ciQ+j7C1FAV5C9jM23B
+         BK4ogzi7gUmt/QEESoJ6PZTooygwHo2Xh8Sri2f3FVx6EEcON+rHIO3t6K82FHBWDtFS
+         IOyQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1692610319; x=1693215119;
+        d=1e100.net; s=20221208; t=1692613005; x=1693217805;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=laAe1Bo4NZ8AdV8W9Bh3WsToh2Bjfo6A1xgGVoYjoyQ=;
-        b=Gy8Nt1XMqIzk8c5FW81l4KHZjv16icUvs8bwxZiFqEnXdVQsoPB2anN6JS6B6RDlMv
-         oq39J4MxN9NDz+/p3H8Cd9LpTptCGf7x1hEU1AbBU7VSNLdL+MzSucmEmRcSuW4BnkK4
-         NL8LIv5Xv/raH+Vn1lg/mNR+S1SYrROJgW73MUB59cwcksglpYRmdCyMV9LowHmWVyp6
-         BCHacsZtBVGdUFBcXptdJlf3Kf+h8KlxaDcUYP8QXwN2JB4iPxAiht27DfaexlBiJKO/
-         I2xHrNtkTiOX9LcqUYa6LRD0Dug6kRTXkVeplq0MQyAcqwq2a5OKLXoIXMX9wvdOM89j
-         R+uQ==
-X-Gm-Message-State: AOJu0Yzpeva7sqoL1jmRr9yGh8YY09R9J0p+unyA1AtN6yKt+2BJBXEI
-	UXvDmlYPJX5WznFsv6je/6WaYyx4f778GMIHQT7inA==
-X-Google-Smtp-Source: AGHT+IGsyBh91ymEq6DEeNpzIVHw7+WcMyX8lYQffIO3qca7jbZOrPGYPHweVK6U14iNXO73ZrJVgVuQHp3pHi8oVcE=
-X-Received: by 2002:a05:622a:1801:b0:3f0:af20:1a37 with SMTP id
- t1-20020a05622a180100b003f0af201a37mr510984qtc.15.1692610319419; Mon, 21 Aug
- 2023 02:31:59 -0700 (PDT)
+        bh=4DBlaKc14FwN7oz3yb3olsvOOqmt5j3x+R4hTmIZQs4=;
+        b=A12Uk7mNO2cGVpFj74aD4rINVbPVOXElk5ZV3xh+gbMO4kIefjb9DkY2I7IZg7MzEW
+         sNNuukbkTpZBFsAnOOMoF8Xh0N1gwFhaVinnAtY7xEZqOzX7p+7sQ07/eImrAHGy37iD
+         yn/jfkWF+T298IB+nkO5Bg6VLs0BxIVwDZQynDb34Kd06y2aVLSkw5FhbliXpprR+JM8
+         6gRTztsCt8mgq6nXPiEizYCKyur/MrU5ssDzbcPSAsivGCHsKC9NSx0TmkXLtIVcSpzI
+         sf9hd3tOaadpCH4m39803NGjcIaUiQpCeIv4isrF3TH6yAwimzcO6i/TOfDIWtKw3wZz
+         QgYA==
+X-Gm-Message-State: AOJu0YxN1JJB0l8fpt65zq6lpnNe3ZuRw7iVD/ug471XHeWYiEJ50fKE
+	AK+y9NkCFHwv0gKQGoiky4jKb+IZ2eS/Zb3UpGpfsj3cwMLQGF6lDuw=
+X-Google-Smtp-Source: AGHT+IHR+XOAWuayL0J0548thwTL5vNN/km9VwmcCAbpWlgoxTxZq9SZ2XoemRnY4jNkovDAtrOPYb+nUZ2rZU01heI=
+X-Received: by 2002:ac8:5703:0:b0:403:f5b8:2bd2 with SMTP id
+ 3-20020ac85703000000b00403f5b82bd2mr444300qtw.9.1692613004602; Mon, 21 Aug
+ 2023 03:16:44 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20230817182055.1770180-1-mshavit@google.com> <20230818021629.RFC.v1.3.I326c62dc062aed8d901d319aa665dbe983c7904c@changeid>
- <ZN5pK03Drao/egeF@nvidia.com>
-In-Reply-To: <ZN5pK03Drao/egeF@nvidia.com>
+References: <20230816131925.2521220-1-mshavit@google.com> <20230816211849.v6.9.Idedc0f496231e2faab3df057219c5e2d937bbfe4@changeid>
+In-Reply-To: <20230816211849.v6.9.Idedc0f496231e2faab3df057219c5e2d937bbfe4@changeid>
 From: Michael Shavit <mshavit@google.com>
-Date: Mon, 21 Aug 2023 17:31:23 +0800
-Message-ID: <CAKHBV27k8F0ZLy=RA=WhjJ7+C9JMHRRnKs=4W4pJMNmxrMEXxw@mail.gmail.com>
-Subject: Re: [RFC PATCH v1 3/8] iommu/arm-smmu-v3-sva: Allocate new ASID from installed_smmus
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
-	linux-kernel@vger.kernel.org, will@kernel.org, nicolinc@nvidia.com, 
-	tina.zhang@intel.com, jean-philippe@linaro.org, robin.murphy@arm.com
+Date: Mon, 21 Aug 2023 18:16:08 +0800
+Message-ID: <CAKHBV274tBz2ydskRfghR2C_u-ibxh9MuEn3dGSaS7tGm8FuTQ@mail.gmail.com>
+Subject: Re: [PATCH v6 09/10] iommu/arm-smmu-v3: Skip cd sync if CD table
+ isn't active
+To: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
+	linux-kernel@vger.kernel.org, Will Deacon <will@kernel.org>
+Cc: robin.murphy@arm.com, jean-philippe@linaro.org, jgg@nvidia.com, 
+	nicolinc@nvidia.com
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Aug 18, 2023 at 2:38=E2=80=AFAM Jason Gunthorpe <jgg@nvidia.com> wr=
-ote:
+On Wed, Aug 16, 2023 at 9:20=E2=80=AFPM Michael Shavit <mshavit@google.com>=
+ wrote:
 >
-> On Fri, Aug 18, 2023 at 02:16:25AM +0800, Michael Shavit wrote:
-> > Pick an ASID that is within the supported range of all SMMUs that the
-> > domain is installed to.
-> >
-> > Signed-off-by: Michael Shavit <mshavit@google.com>
-> > ---
+> This commit explicitly keeps track of whether a CD table is installed in
+> an STE so that arm_smmu_sync_cd can skip the sync when unnecessary. This
+> was previously achieved through the domain->devices list, but we are
+> moving to a model where arm_smmu_sync_cd directly operates on a master
+> and the master's CD table instead of a domain.
 >
-> This seems like a pretty niche scenario, maybe we should just keep a
-> global for the max ASID?
->
-> Otherwise we need a code to change the ASID, even for non-SVA domains,
-> when the domain is installed in different devices if the current ASID
-> is over the instance max..
+> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+> Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
+> Signed-off-by: Michael Shavit <mshavit@google.com>
+> ---
+> Happy to drop this commit if we don't think it's useful.
 
-This RFC took the other easy way out for this problem by rejecting
-attaching a domain if its currently assigned ASID/VMID
-is out of range when attaching to a new SMMU. But I'm not sure
-which of the two options is the right trade-off.
-Especially if we move VMID to a global allocator (which I plan to add
-for v2), setting a global maximum for VMID of 256 sounds small.
+Hi Will,
+Do you have any recommendations for keeping or dropping this commit in
+the end? It's only purpose is to minimize any potential performance
+impact from the refactor but can certainly be dropped if you don't
+think it's worth the complication.
