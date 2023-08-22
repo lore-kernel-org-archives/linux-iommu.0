@@ -1,99 +1,125 @@
-Received: from mail-qk1-f169.google.com (mail-qk1-f169.google.com [209.85.222.169])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.88])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A3AF1170E
-	for <iommu@lists.linux.dev>; Mon, 21 Aug 2023 18:31:42 +0000 (UTC)
-Received: by mail-qk1-f169.google.com with SMTP id af79cd13be357-76ca7b4782cso249002785a.0
-        for <iommu@lists.linux.dev>; Mon, 21 Aug 2023 11:31:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1692642701; x=1693247501;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=qa8AAhwTy8YVFRv18LCXMk4AitxTlf/jcp6uThOwTlI=;
-        b=l5SYXEQEwNSLSpOqdZ7OFW/9Ozb1e02BEhCThpq+gziOR6jGc/3fhOTIkqj8+7DWtV
-         F1/qyOcX4Sc3kjJJAxThcjvSY6ia/rdTdWclGKe+uXJqbtm2mMOObOqfvFAT+3HZw5XO
-         8nu+6h+mAbl26TlNA3xmflqADodafTE2J6chgjzlYhiJ4vD7VFo3YwKo1yK8yhUMd4KV
-         qky6rV59c/y93FwGgnG5ZevLbtCgovrG3VIBG/xBY07UwSROH7qEW55xflMG4wf7MLR1
-         DrGkL8t6nv7iGMZ1HDBWIOqh8AaQVViFvktJV06V5CklxDcTaRhI0tQwlY1z8BZzGRXw
-         gXJQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1692642701; x=1693247501;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=qa8AAhwTy8YVFRv18LCXMk4AitxTlf/jcp6uThOwTlI=;
-        b=avgD6naopx3Z1O7L3JaiSrXeKKoe7CaS41iwHR9Er939146q+ACSgKjLagE23rzlzD
-         DAarV2TJXTCoGxQAA6braceN5B5EByyAcH8mZ6SOSqvgVoIk6/cZuipZtiEk4NvW55QG
-         SolKUPodOffB+zTGsEiwdm0rZL0P6nCVcWLaDX/8zRO814sbsWIjepepT9YyjRJE580Z
-         GyE+H0bdF6Z+ZkGZcs0dWQ+dXgPW5cHcfUUS7Syn1AXyMSe1lTNVk4UUE6Q83NARDi8q
-         qDBJd+Bgl0w6tmJjsfvhggvsjk9Kr3aAQm4mJrUkm9N97B/vh+DIR3iQgnqA5kAxnz8P
-         7G7w==
-X-Gm-Message-State: AOJu0YxHzuq8c0YMW7WXwXgx6bJgd1L0iYjyeL3WNobCrUk2ZM+1BoNP
-	jqJZwGt4sYaW2wcapMoU2vomEw==
-X-Google-Smtp-Source: AGHT+IEJB+mpBoo2O0eM3iFfDQGTfF2egcAVTPb5TnSsKiZjFNPmdYIulJ1Rkf9qhiRRCV7nCD4Uow==
-X-Received: by 2002:a05:620a:462b:b0:768:1031:4028 with SMTP id br43-20020a05620a462b00b0076810314028mr9919562qkb.30.1692642701703;
-        Mon, 21 Aug 2023 11:31:41 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-25-194.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.25.194])
-        by smtp.gmail.com with ESMTPSA id c16-20020a05620a165000b0076da29c4497sm1316113qko.112.2023.08.21.11.31.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Aug 2023 11:31:41 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1qY9gi-00DzLb-HN;
-	Mon, 21 Aug 2023 15:31:40 -0300
-Date: Mon, 21 Aug 2023 15:31:40 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>, iommu@lists.linux.dev,
-	kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 00/11] iommu: Prepare to deliver page faults to user
- space
-Message-ID: <ZOOtjJLumarsBzwN@ziepe.ca>
-References: <20230817234047.195194-1-baolu.lu@linux.intel.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9169017EE
+	for <iommu@lists.linux.dev>; Tue, 22 Aug 2023 06:36:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1692686211; x=1724222211;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=afCoa/ZZo8JlXd4rmTwsUfx9qsQ2KBQvigqx0/qmV5A=;
+  b=JDKkXbZk2eyh9pqnqeGIsNar/Qhfs3H3P3TWWYO/pBqtBgwhoMRNXnrI
+   pjeTFmwloXKdtm+jyqNe+D8TrASk7Vn9B594EaX0oSTgJaSKXwJIXFR6s
+   XNRnU227ia8XYDDUot1riimsNvhhFUYEiZt4IViDCjS4SqUdf6krtzKAA
+   LQseG/5Y07syHnlXHjYztKkhiFfpxLf2KB4oyVR6ak/o6za/kl8s7PvvZ
+   yRygm9iq8Yhp0NlexljjfhPrsqD9ZnowqPf4oGEwcTihtkcFqp1kaD5G2
+   c6UneL7IpY6nrllsYXG6kPXrcvikwarOxCJSiscidGhN8ZOHVvz+xUx3Z
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10809"; a="404795977"
+X-IronPort-AV: E=Sophos;i="6.01,192,1684825200"; 
+   d="scan'208";a="404795977"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Aug 2023 23:36:50 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10809"; a="801540554"
+X-IronPort-AV: E=Sophos;i="6.01,192,1684825200"; 
+   d="scan'208";a="801540554"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.252.189.107]) ([10.252.189.107])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Aug 2023 23:36:44 -0700
+Message-ID: <93811e0c-ff04-366d-493e-7186e4588359@linux.intel.com>
+Date: Tue, 22 Aug 2023 14:36:40 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230817234047.195194-1-baolu.lu@linux.intel.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.14.0
+Cc: baolu.lu@linux.intel.com, "Liu, Yi L" <yi.l.liu@intel.com>,
+ Jacob Pan <jacob.jun.pan@linux.intel.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 1/3] iommu: Make single-device group for PASID explicit
+To: "Tian, Kevin" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Jason Gunthorpe <jgg@ziepe.ca>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Nicolin Chen <nicolinc@nvidia.com>
+References: <20230814011759.102089-1-baolu.lu@linux.intel.com>
+ <20230814011759.102089-2-baolu.lu@linux.intel.com>
+ <BN9PR11MB5276E3C3D99C2DFA963805C98C1BA@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <51dfc143-aafd-fea2-26fe-e2e9025fcd21@linux.intel.com>
+ <BN9PR11MB5276EBE5788713FBA99332F88C1EA@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <BN9PR11MB5276EBE5788713FBA99332F88C1EA@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Fri, Aug 18, 2023 at 07:40:36AM +0800, Lu Baolu wrote:
-> When a user-managed page table is attached to an IOMMU, it is necessary
-> to deliver IO page faults to user space so that they can be handled
-> appropriately. One use case for this is nested translation, which is
-> currently being discussed in the mailing list.
+On 2023/8/21 14:33, Tian, Kevin wrote:
+>> From: Baolu Lu <baolu.lu@linux.intel.com>
+>> Sent: Monday, August 21, 2023 1:45 PM
+>>
+>> On 2023/8/18 11:56, Tian, Kevin wrote:
+>>>> From: Lu Baolu <baolu.lu@linux.intel.com>
+>>>> Sent: Monday, August 14, 2023 9:18 AM
+>>>>
+>>>> The PASID interfaces have always supported only single-device groups.
+>>>> This was first introduced in commit 26b25a2b98e45 ("iommu: Bind
+>> process
+>>>> address spaces to devices"), and has been kept consistent in subsequent
+>>>> commits.
+>>>>
+>>>> However, the core code doesn't explicitly check for this requirement
+>>>> after commit 201007ef707a8 ("PCI: Enable PASID only when ACS RR & UF
+>>>> enabled on upstream path"), which made this requirement implicit.
+>>>>
+>>>> Restore the check to make it explicit that the PASID interfaces only
+>>>> support devices belonging to single-device groups.
+>>>>
+>>>> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+>>>> ---
+>>>>    drivers/iommu/iommu.c | 5 +++++
+>>>>    1 file changed, 5 insertions(+)
+>>>>
+>>>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+>>>> index 71b9c41f2a9e..f1eba60e573f 100644
+>>>> --- a/drivers/iommu/iommu.c
+>>>> +++ b/drivers/iommu/iommu.c
+>>>> @@ -3408,6 +3408,11 @@ int iommu_attach_device_pasid(struct
+>>>> iommu_domain *domain,
+>>>>    		return -ENODEV;
+>>>>
+>>>>    	mutex_lock(&group->mutex);
+>>>> +	if (list_count_nodes(&group->devices) != 1) {
+>>>> +		ret = -EINVAL;
+>>>> +		goto out_unlock;
+>>>> +	}
+>>>> +
+>>>
+>>> I wonder whether we should also block adding new device to this
+>>> group once the single-device has pasid enabled. Otherwise the
+>>
+>> This has been guaranteed by pci_enable_pasid():
+>>
+>>           if (!pci_acs_path_enabled(pdev, NULL, PCI_ACS_RR | PCI_ACS_UF))
+>>                   return -EINVAL;
+>>
 > 
-> I have posted a RFC series [1] that describes the implementation of
-> delivering page faults to user space through IOMMUFD. This series has
-> received several comments on the IOMMU refactoring, which I am trying to
-> address in this series.
+> well since you are adding generic core check then it's not good to
+> rely on the fact of a specific bus...
 
-Looking at this after all the patches are applied..
+We attempted to do this in the patch linked below.
 
-iommu_report_device_fault() and iommu_queue_iopf() should be put in
-the same file.
+https://lore.kernel.org/linux-iommu/20220705050710.2887204-5-baolu.lu@linux.intel.com/
 
-iommu_queue_iopf() seems misnamed since it isn't queuing anything. It
-is delivering the fault to the domain.
+After long discussion, we decided to move it to the pci_enable_pasid()
+interface. The non-static single device group is only relevant to PCI
+fabrics that support hot-plugging without ACS support on the upstream
+path.
 
-It is weird that iommu_sva_domain_alloc is not in the sva file
-
-iopf_queue_work() wrappers a work queue, but it should trampoline
-through another function before invoking the driver's callback and not
-invoke it with a weird work_struct - decode the group and get back the
-domain. Every single handler will require the group and domain.
-
-Same for domain->iopf_handler, the domain should be an argument if we
-are invoking the function on a domain.
-
-Perhaps group->domain is a simple answer.
-
-Jason
+Best regards,
+baolu
