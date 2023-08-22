@@ -1,34 +1,34 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.88])
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.24])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9169017EE
-	for <iommu@lists.linux.dev>; Tue, 22 Aug 2023 06:36:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5916333E2
+	for <iommu@lists.linux.dev>; Tue, 22 Aug 2023 07:32:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1692686211; x=1724222211;
+  t=1692689556; x=1724225556;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=afCoa/ZZo8JlXd4rmTwsUfx9qsQ2KBQvigqx0/qmV5A=;
-  b=JDKkXbZk2eyh9pqnqeGIsNar/Qhfs3H3P3TWWYO/pBqtBgwhoMRNXnrI
-   pjeTFmwloXKdtm+jyqNe+D8TrASk7Vn9B594EaX0oSTgJaSKXwJIXFR6s
-   XNRnU227ia8XYDDUot1riimsNvhhFUYEiZt4IViDCjS4SqUdf6krtzKAA
-   LQseG/5Y07syHnlXHjYztKkhiFfpxLf2KB4oyVR6ak/o6za/kl8s7PvvZ
-   yRygm9iq8Yhp0NlexljjfhPrsqD9ZnowqPf4oGEwcTihtkcFqp1kaD5G2
-   c6UneL7IpY6nrllsYXG6kPXrcvikwarOxCJSiscidGhN8ZOHVvz+xUx3Z
+  bh=2WDGroCf9hVRdMg3TmwFYLJHYRQhPfk99Hlw9ivghVQ=;
+  b=I63MPDUfeXXWJENVAhs+7ue/zYBsxlwRsKGIN5FlOqDB8Hqch00l4f1S
+   vE5BM3yt9kChiB+53Go8cTQJyDpe399WUSFilNpHRVxk7Le4VpgxQTAo7
+   5Hr3VVYWak/akY7Z+MVBoxjCq9HNq9QyfJ6xyteJuhzIIiTP6DCxCdw4f
+   D4y33zo1fLbKro0B8oIPEolalDpiJbdTfuzT0VMb51H3+9Mj9xvhIi6aq
+   2vSMnISpAXBNTmU1Hk34h2jWgJpkW/84duv4PdQ53UvXcNYIGhgVlQlgV
+   mC47kcC/UkViEW94NYSWEiEvMvZUNgrMq3ggsuQjqbaTwNVHsMZ71lqYp
    w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10809"; a="404795977"
+X-IronPort-AV: E=McAfee;i="6600,9927,10809"; a="376540903"
 X-IronPort-AV: E=Sophos;i="6.01,192,1684825200"; 
-   d="scan'208";a="404795977"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Aug 2023 23:36:50 -0700
+   d="scan'208";a="376540903"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2023 00:32:35 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10809"; a="801540554"
+X-IronPort-AV: E=McAfee;i="6600,9927,10809"; a="685944607"
 X-IronPort-AV: E=Sophos;i="6.01,192,1684825200"; 
-   d="scan'208";a="801540554"
+   d="scan'208";a="685944607"
 Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.252.189.107]) ([10.252.189.107])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Aug 2023 23:36:44 -0700
-Message-ID: <93811e0c-ff04-366d-493e-7186e4588359@linux.intel.com>
-Date: Tue, 22 Aug 2023 14:36:40 +0800
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2023 00:32:30 -0700
+Message-ID: <fe03b53a-c9f9-cc6b-a1fd-d6fd2f1a1ddc@linux.intel.com>
+Date: Tue, 22 Aug 2023 15:32:26 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -37,89 +37,52 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.14.0
-Cc: baolu.lu@linux.intel.com, "Liu, Yi L" <yi.l.liu@intel.com>,
- Jacob Pan <jacob.jun.pan@linux.intel.com>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 1/3] iommu: Make single-device group for PASID explicit
-To: "Tian, Kevin" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Jason Gunthorpe <jgg@ziepe.ca>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Nicolin Chen <nicolinc@nvidia.com>
-References: <20230814011759.102089-1-baolu.lu@linux.intel.com>
- <20230814011759.102089-2-baolu.lu@linux.intel.com>
- <BN9PR11MB5276E3C3D99C2DFA963805C98C1BA@BN9PR11MB5276.namprd11.prod.outlook.com>
- <51dfc143-aafd-fea2-26fe-e2e9025fcd21@linux.intel.com>
- <BN9PR11MB5276EBE5788713FBA99332F88C1EA@BN9PR11MB5276.namprd11.prod.outlook.com>
+Cc: baolu.lu@linux.intel.com, kvm@vger.kernel.org, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, joro@8bytes.org, will@kernel.org,
+ robin.murphy@arm.com, kevin.tian@intel.com, jacob.jun.pan@linux.intel.com,
+ yi.l.liu@intel.com, yi.y.sun@intel.com
+Subject: Re: [PATCH] iommu/vt-d: Introduce a rb_tree for looking up device
 Content-Language: en-US
+To: Jason Gunthorpe <jgg@ziepe.ca>, Huang Jiaqing <jiaqing.huang@intel.com>
+References: <20230821071659.123981-1-jiaqing.huang@intel.com>
+ <ZOOWMUmwG2jXOaXL@ziepe.ca>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <BN9PR11MB5276EBE5788713FBA99332F88C1EA@BN9PR11MB5276.namprd11.prod.outlook.com>
+In-Reply-To: <ZOOWMUmwG2jXOaXL@ziepe.ca>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2023/8/21 14:33, Tian, Kevin wrote:
->> From: Baolu Lu <baolu.lu@linux.intel.com>
->> Sent: Monday, August 21, 2023 1:45 PM
+On 2023/8/22 0:52, Jason Gunthorpe wrote:
+> On Mon, Aug 21, 2023 at 12:16:59AM -0700, Huang Jiaqing wrote:
+>> The existing IO page fault handler locates the PCI device by calling
+>> pci_get_domain_bus_and_slot(), which searches the list of all PCI
+>> devices until the desired PCI device is found. This is inefficient
+>> because the algorithm efficiency of searching a list is O(n). In the
+>> critical path of handling an IO page fault, this can cause a significant
+>> performance bottleneck.
 >>
->> On 2023/8/18 11:56, Tian, Kevin wrote:
->>>> From: Lu Baolu <baolu.lu@linux.intel.com>
->>>> Sent: Monday, August 14, 2023 9:18 AM
->>>>
->>>> The PASID interfaces have always supported only single-device groups.
->>>> This was first introduced in commit 26b25a2b98e45 ("iommu: Bind
->> process
->>>> address spaces to devices"), and has been kept consistent in subsequent
->>>> commits.
->>>>
->>>> However, the core code doesn't explicitly check for this requirement
->>>> after commit 201007ef707a8 ("PCI: Enable PASID only when ACS RR & UF
->>>> enabled on upstream path"), which made this requirement implicit.
->>>>
->>>> Restore the check to make it explicit that the PASID interfaces only
->>>> support devices belonging to single-device groups.
->>>>
->>>> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
->>>> ---
->>>>    drivers/iommu/iommu.c | 5 +++++
->>>>    1 file changed, 5 insertions(+)
->>>>
->>>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->>>> index 71b9c41f2a9e..f1eba60e573f 100644
->>>> --- a/drivers/iommu/iommu.c
->>>> +++ b/drivers/iommu/iommu.c
->>>> @@ -3408,6 +3408,11 @@ int iommu_attach_device_pasid(struct
->>>> iommu_domain *domain,
->>>>    		return -ENODEV;
->>>>
->>>>    	mutex_lock(&group->mutex);
->>>> +	if (list_count_nodes(&group->devices) != 1) {
->>>> +		ret = -EINVAL;
->>>> +		goto out_unlock;
->>>> +	}
->>>> +
->>>
->>> I wonder whether we should also block adding new device to this
->>> group once the single-device has pasid enabled. Otherwise the
+>> To improve the performance of the IO page fault handler, replace
+>> pci_get_domain_bus_and_slot() with a local red-black tree. A red-black
+>> tree is a self-balancing binary search tree, which means that the
+>> average time complexity of searching a red-black tree is O(log(n)). This
+>> is significantly faster than O(n), so it can significantly improve the
+>> performance of the IO page fault handler.
 >>
->> This has been guaranteed by pci_enable_pasid():
+>> In addition, we can only insert the affected devices (those that have IO
+>> page fault enabled) into the red-black tree. This can further improve
+>> the performance of the IO page fault handler.
 >>
->>           if (!pci_acs_path_enabled(pdev, NULL, PCI_ACS_RR | PCI_ACS_UF))
->>                   return -EINVAL;
->>
-> 
-> well since you are adding generic core check then it's not good to
-> rely on the fact of a specific bus...
+>> Signed-off-by: Huang Jiaqing<jiaqing.huang@intel.com>
+>> ---
+>>   drivers/iommu/intel/iommu.c | 68 +++++++++++++++++++++++++++++++++++++
+>>   drivers/iommu/intel/iommu.h |  8 +++++
+>>   drivers/iommu/intel/svm.c   | 13 +++----
+>>   3 files changed, 81 insertions(+), 8 deletions(-)
+> I feel like this should be a helper library provided by the core
+> code, doesn't every PRI driver basically need the same thing?
 
-We attempted to do this in the patch linked below.
-
-https://lore.kernel.org/linux-iommu/20220705050710.2887204-5-baolu.lu@linux.intel.com/
-
-After long discussion, we decided to move it to the pci_enable_pasid()
-interface. The non-static single device group is only relevant to PCI
-fabrics that support hot-plugging without ACS support on the upstream
-path.
+It seems to be. pci_get_domain_bus_and_slot() is also used in the amd
+driver. And the risc-v iommu driver under discussion is also proposing
+this.
 
 Best regards,
 baolu
