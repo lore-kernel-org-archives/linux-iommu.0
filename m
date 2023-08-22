@@ -1,107 +1,100 @@
-Received: from mail-qt1-f171.google.com (mail-qt1-f171.google.com [209.85.160.171])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3E0C98C10
-	for <iommu@lists.linux.dev>; Tue, 22 Aug 2023 08:54:11 +0000 (UTC)
-Received: by mail-qt1-f171.google.com with SMTP id d75a77b69052e-407db3e9669so175101cf.1
-        for <iommu@lists.linux.dev>; Tue, 22 Aug 2023 01:54:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1692694451; x=1693299251;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=RYH3dUSDs9v17pTi1zWcJ78xVX1MVU0RCa4MT/4Yxs0=;
-        b=dTMvSSoIZ6kCkSkQgwlYvjOKZYbVKzTROd6wTJyMbhG2TMp03D98PMAghcvl/h+hHu
-         v84CG1UiYIIc2LyzEHkyxizjc0xn/ADi2RZTWcuCbRpjG4a/kGRuNquQxe4yi+iWSf5O
-         sf+EwEdak5IHHYB/Md6PNeo8AVtGHoAlpjYsnyhPFexkqzXCkG8lfVSbhjA7GiRCmsgu
-         iJFBBGmZ2EPddQtqHsVE6HTZTgVJlQKO+k91RFDlDTL5yR9M5fU+GGa6x5K8RKKivopp
-         2AogkOOr2NHy5NvG0P1U6V8Va6rp0/WTfOeq/UpeykDQZ81xCpHvEwc21SWdJ+0evg/U
-         vfuQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1692694451; x=1693299251;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=RYH3dUSDs9v17pTi1zWcJ78xVX1MVU0RCa4MT/4Yxs0=;
-        b=Jw2TuM+RCZn2iBqJtJJ85DB9W/e72CUSm7a2dIGAubQq5jqrZiadDJEO74xtagtAEe
-         1bLwlHX9oGcC8CZebAN91cK34FLhczJZ+ev3NbjBiksA/KWdeLE/uXuqeapIbQhGRtRn
-         8jgaMObKe5zpwEy9/y7t8zMx9covaA75X9Pffz5tfciLV74OUTFUPEIOU9R0uKbhe9Ll
-         Y96NDJao3akI6X9BcKE5aq2Uwo4HerjIGfab3Mcx4DJUDpm8/yAUeA8IHWi9Lx/pRP/3
-         YKRBChznGo6qyWmCg1gB5FsFomSELzwpqwqV81kze8wWAsO6yiXfJwgGpA7oK9MaKbPQ
-         2yAA==
-X-Gm-Message-State: AOJu0Yz38uNJi3VbnAn2rJZ8vrplLlDLyADlACHY5bta3N9dRoDZjOU7
-	cy/3+ycgLNEkO5+fhzAW2bIZ0Oj5fBo54PQk0eDrDQyqB/2Zk68hq0A=
-X-Google-Smtp-Source: AGHT+IHPkk75C1bdYvP+EuL7CdVDVQ8If+W8vM2KpDrVG9bYqoQnKM8zJlD52OebVy67O9zqx96hbGEcbRh8shKmECs=
-X-Received: by 2002:a05:622a:144a:b0:3f2:2c89:f1ef with SMTP id
- v10-20020a05622a144a00b003f22c89f1efmr115447qtx.5.1692694450838; Tue, 22 Aug
- 2023 01:54:10 -0700 (PDT)
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D56D06FA2
+	for <iommu@lists.linux.dev>; Tue, 22 Aug 2023 09:19:34 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 031D911FB;
+	Tue, 22 Aug 2023 02:20:09 -0700 (PDT)
+Received: from [10.57.5.95] (unknown [10.57.5.95])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id BF3EC3F64C;
+	Tue, 22 Aug 2023 02:19:26 -0700 (PDT)
+Message-ID: <f468b461-b203-5179-eb6d-9432b9911329@arm.com>
+Date: Tue, 22 Aug 2023 10:19:21 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20230817182055.1770180-1-mshavit@google.com> <20230818021629.RFC.v1.3.I326c62dc062aed8d901d319aa665dbe983c7904c@changeid>
- <ZN5pK03Drao/egeF@nvidia.com> <CAKHBV27k8F0ZLy=RA=WhjJ7+C9JMHRRnKs=4W4pJMNmxrMEXxw@mail.gmail.com>
- <ZONQgNh6qarqgA+f@nvidia.com> <CAKHBV26oTZLssq5bopePojqgrEJwukKHYEbhU02nAvHHVB13mw@mail.gmail.com>
- <ZONrkVX6kZjX/wus@nvidia.com> <CAKHBV27PL=2jxOd0BoYdoBMTu_0rm4z_JP6iG+SVi5Ag7w2kWw@mail.gmail.com>
- <ZON0E3KV46EEPw/p@nvidia.com> <CAKHBV25P9kNGkM7f5Xc-HsozK362XzMz+NnLa8FcWiu3FFr13g@mail.gmail.com>
- <ZON7Dt4Hkf8iwaDC@nvidia.com>
-In-Reply-To: <ZON7Dt4Hkf8iwaDC@nvidia.com>
-From: Michael Shavit <mshavit@google.com>
-Date: Tue, 22 Aug 2023 16:53:33 +0800
-Message-ID: <CAKHBV24qFgbw4uBY7qQkPeWowZ=F9d6YW-WeqsTG7Y_z0Yw85g@mail.gmail.com>
-Subject: Re: [RFC PATCH v1 3/8] iommu/arm-smmu-v3-sva: Allocate new ASID from installed_smmus
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
-	linux-kernel@vger.kernel.org, will@kernel.org, nicolinc@nvidia.com, 
-	tina.zhang@intel.com, jean-philippe@linaro.org, robin.murphy@arm.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.14.0
+Subject: Re: [PATCH 1/3] iommu/io-pgtable-arm: Add nents_per_pgtable in struct
+ io_pgtable_cfg
+Content-Language: en-GB
+To: Nicolin Chen <nicolinc@nvidia.com>, will@kernel.org, jgg@nvidia.com
+Cc: joro@8bytes.org, jean-philippe@linaro.org, apopple@nvidia.com,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ iommu@lists.linux.dev
+References: <cover.1692693557.git.nicolinc@nvidia.com>
+ <0fe68babdb3a07adf024ed471fead4e3eb7e703f.1692693557.git.nicolinc@nvidia.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <0fe68babdb3a07adf024ed471fead4e3eb7e703f.1692693557.git.nicolinc@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Mon, Aug 21, 2023 at 10:56=E2=80=AFPM Jason Gunthorpe <jgg@nvidia.com> w=
-rote:
->
-> On Mon, Aug 21, 2023 at 10:39:14PM +0800, Michael Shavit wrote:
-> > > > > > (on a loop over every smmu the domain in arm_smmu_mmu_notifier_=
-get is
-> > > > > > attached to, which just at a glance looks headache inducing bec=
-ause of
-> > > > > > sva's piggybacking on the rid domain.)
-> > > > >
-> > > > > Not every smmu, just the one you are *currently* attaching to. We
-> > > > > don't care if the *other* smmu's have different ASIDs, maybe they=
- are
-> > > > > not using BTM, or won't use SVA.
-> > > >
-> > > > I mean because the domain in arm_smmu_mmu_notifier_get is the RID
-> > > > domain (not the SVA domain, same issue we discussed in previous
-> > > > thread) , which can be attached to multiple SMMUs.
-> > >
-> > > Oh that is totally nonsensical. I expect you will need to fix that
-> > > sooner than later. Once the CD table is moved and there is a proper
-> > > way to track the PASID it should not be needed. It shouldn't fall int=
-o
-> > > the decision making about where to put the ASID xarray.
-> >
-> > Right I got a bit of a chicken and egg problem with all these series.
->
-> Yes, I'm not surprised to hear this
->
-> Still, it would nice to move forward without going in a weird
-> direction too much.
->
-> Once the CD table is moved to the master what do you think is blocking
-> fixing up the SVA stuff to not rely on a RID domain?
+On 2023-08-22 09:45, Nicolin Chen wrote:
+> Add a new nents_per_pgtable in struct io_pgtable_cfg to store the number
+> of entries per IO pagetable, so it can be passed back to an IOMMU driver.
+> It will be used by one of the following changes to set the maximum number
+> of TLBI operations in the arm-smmu-v3 driver.
+> 
+> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+> ---
+>   drivers/iommu/io-pgtable-arm.c | 3 +++
+>   include/linux/io-pgtable.h     | 2 ++
+>   2 files changed, 5 insertions(+)
+> 
+> diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+> index 72dcdd468cf3..7583d9ecca2b 100644
+> --- a/drivers/iommu/io-pgtable-arm.c
+> +++ b/drivers/iommu/io-pgtable-arm.c
+> @@ -891,6 +891,7 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
+>   
+>   	/* TTBR */
+>   	cfg->arm_lpae_s1_cfg.ttbr = virt_to_phys(data->pgd);
+> +	cfg->nents_per_pgtable = 1 << data->bits_per_level;
+>   	return &data->iop;
+>   
+>   out_free_data:
+> @@ -993,6 +994,7 @@ arm_64_lpae_alloc_pgtable_s2(struct io_pgtable_cfg *cfg, void *cookie)
+>   
+>   	/* VTTBR */
+>   	cfg->arm_lpae_s2_cfg.vttbr = virt_to_phys(data->pgd);
+> +	cfg->nents_per_pgtable = 1 << data->bits_per_level;
+>   	return &data->iop;
+>   
+>   out_free_data:
+> @@ -1071,6 +1073,7 @@ arm_mali_lpae_alloc_pgtable(struct io_pgtable_cfg *cfg, void *cookie)
+>   					  ARM_MALI_LPAE_TTBR_ADRMODE_TABLE;
+>   	if (cfg->coherent_walk)
+>   		cfg->arm_mali_lpae_cfg.transtab |= ARM_MALI_LPAE_TTBR_SHARE_OUTER;
+> +	cfg->nents_per_pgtable = 1 << data->bits_per_level;
 
-These aren't necessarily strict dependencies, but ideally I'd like to:
-1. Natively support PASID attachments in the smmu domain (patch(es)
-from the set_dev_pasid series)
-2. Support attaching a domain to multiple SMMUs (this series)
-3. SVA framework support for allocating a single SVA domain per MM
-struct (Tina's series)
+The result of this highly complex and expensive calculation is clearly 
+redundant with the existing bits_per_level field, so why do we need to 
+waste space storing when the driver could simply use bits_per_level?
 
-SVA can then directly attach an sva domain to a master in its
-set_dev_pasid call, without having to do any sort of sharing of
-smmu_notifiers or CDs across domains. The SVA domain allocated would
-directly be attached to the master.
+Thanks,
+Robin.
+
+>   	return &data->iop;
+>   
+> diff --git a/include/linux/io-pgtable.h b/include/linux/io-pgtable.h
+> index 1b7a44b35616..4b55a327abc1 100644
+> --- a/include/linux/io-pgtable.h
+> +++ b/include/linux/io-pgtable.h
+> @@ -55,6 +55,7 @@ struct iommu_flush_ops {
+>    *                 tables.
+>    * @ias:           Input address (iova) size, in bits.
+>    * @oas:           Output address (paddr) size, in bits.
+> + * @nents_per_pgtable: Number of entries per page table.
+>    * @coherent_walk  A flag to indicate whether or not page table walks made
+>    *                 by the IOMMU are coherent with the CPU caches.
+>    * @tlb:           TLB management callbacks for this set of tables.
+> @@ -96,6 +97,7 @@ struct io_pgtable_cfg {
+>   	unsigned long			pgsize_bitmap;
+>   	unsigned int			ias;
+>   	unsigned int			oas;
+> +	unsigned int			nents_per_pgtable;
+>   	bool				coherent_walk;
+>   	const struct iommu_flush_ops	*tlb;
+>   	struct device			*iommu_dev;
