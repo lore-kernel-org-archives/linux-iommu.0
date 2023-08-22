@@ -1,41 +1,41 @@
-Received: from mail-pj1-f74.google.com (mail-pj1-f74.google.com [209.85.216.74])
+Received: from mail-yw1-f201.google.com (mail-yw1-f201.google.com [209.85.128.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 53132944D
-	for <iommu@lists.linux.dev>; Tue, 22 Aug 2023 10:58:04 +0000 (UTC)
-Received: by mail-pj1-f74.google.com with SMTP id 98e67ed59e1d1-26f51613d05so2296053a91.2
-        for <iommu@lists.linux.dev>; Tue, 22 Aug 2023 03:58:04 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2A64944D
+	for <iommu@lists.linux.dev>; Tue, 22 Aug 2023 10:58:09 +0000 (UTC)
+Received: by mail-yw1-f201.google.com with SMTP id 00721157ae682-58419550c3aso64371267b3.0
+        for <iommu@lists.linux.dev>; Tue, 22 Aug 2023 03:58:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1692701883; x=1693306683;
+        d=google.com; s=20221208; t=1692701888; x=1693306688;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=klUumB39dl+OBWmiMAnKOGBWf0KJAFVzeJ+KKuR3vwQ=;
-        b=QOdvPyWOFijq9vdM4JKXlc9Z/yC655EJi71UDoHdIoa3E1exEkCClclZJ3AnpfSNdy
-         2DZ07wdWinF4bADwtdysdonB6RVLAp6DvagkAG/F0pU/aytEVm0Z4NDJGVsDdGBnP5DW
-         HBUbLjBDPewVyHjv46VGKLZSz342zyA3Ol8D0ntbfYTBh831xO+tsO6mLkF+5hr3Ze/A
-         2wXSFj1UY72mn5v5R6GkBTJsHH1PdZhlqGBpmToV8MySPdOkSXKZlL1eaujIjBBLB1R1
-         nFYWLrQjysbpQlG0Q2UM95vgzfFfCNjkiceengnYypACUamkijXuM43gQhjXt4T/OpSq
-         oDTA==
+        bh=ZPo4bS6bgF3iXXZFHRw7dDnws1JAiCkzNYGL3i11bCA=;
+        b=G9KK9ylHQI5OWSDfOp+7cRr1Fivor9iPR8DIjXzyjBh044lMNgN1fqnAOfydp6Hhmw
+         kTncI4gWfYaJubVdTrkAK0lAzqIYbcwLYJ5Jn2LBO5EhgPMsU4Nj3H91PzOJRXPr52+T
+         5Sj2nysxAoFLiMLc/n9zevqR+3/RYVauTWETV9FWRAeIR2qwnyrVqB5wh43B1GqPl9iP
+         tX+ACphS8chVFv5ZnZ4LkuoVuivQmIySAmW4ghHjXZASRC88TJX5az/jegGpffuSHq7r
+         SU6o4J2Lm2nYNPs4qh5fN+XOhBbDWZko7TGPrVTj3I81cYkD9E5v4+LK5AR8RHvS3wgn
+         AORQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1692701883; x=1693306683;
+        d=1e100.net; s=20221208; t=1692701888; x=1693306688;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=klUumB39dl+OBWmiMAnKOGBWf0KJAFVzeJ+KKuR3vwQ=;
-        b=kBIzDJWDKLo2j33NespPAYjnaOz0JPUsYkh7FfbKugam+SB4MhY+BSbrtg/7854rvb
-         GPoJEVXHLBqL+GbwQK7I0j9WhRRlauL1+hfLgSY1jMZmJ8B9TzIf+8neyH4QRkKvPfEr
-         PAv8BQpYkqz8ExAyVb2QVYxvPEz0r7kQMvUeCatgFi3vemiwlwXYYGKMt5Xjv0xbQZ4m
-         JG16+J5yuVWrHgd4BDxPOgqw574zTFiOOIPISQoyH3IIyZqb8MIF7J1vd6M/aoJKGr+a
-         zCdhO/fjG6SouVL5JtaLEZ8/yZQ2h2MFtfRtb4QTwjpTmsJXPMFsJTovfYQyB/q/M9WU
-         aLpQ==
-X-Gm-Message-State: AOJu0YygjHUHdQTOeaLInfrioF0d1QYjgWwwaCPKVDhc0OR31JPzOGdi
-	Mqoz68Tc1Ymm//lUnMdTod4iHhaekWslBtMsZzV7aNFi0Rl9A6IO9E+sTFz9u4TakgcbzwDfxVK
-	pYaPPiDyfmMgMzjBxqbHMDE8ovOlTq2c3rTeEasJa9m0inxiMOYUsIbrw4Qyd92w=
-X-Google-Smtp-Source: AGHT+IGvy5fADWCBcGzxzY/Im00oXNvC+VMa0VGSdAqQOVHtJdVI4FD8dSTU2tOb1ulf37dD57VvtOXSyH1Z
+        bh=ZPo4bS6bgF3iXXZFHRw7dDnws1JAiCkzNYGL3i11bCA=;
+        b=Rd2uRJ6hlXcwdwnzrxFpLA7+BtEgs4wWg/uXaRvsZxlbnpwRBgliPs5daLe8uF878g
+         mMV5XbdsU0lcrsc9mn722P0QALw4S3tMtpq2vxXNQfAVk612lOdVZV+hCitJgDqyF9Rn
+         jlHjwTees5Oayp7RKeDIn8UUFySFb4uhx2He55oP6v6utyMXiaXYXUrPdlX56dWoxWz6
+         pfEBOZXDCKzsLICCIorIzLsQjoHXjmvGMGYk0yBnnDsQI0FF2ql8dNphHcbd4Sj1ydJO
+         KkO6G4ASuN3tZJN5JF1XCHAbvzhHehb6NPS9Kf0nrVAGmfUIZi+WhS1TUS/qCNhPaKdw
+         RQgQ==
+X-Gm-Message-State: AOJu0YyUWGZpsQfaC88bGjQi8wE3VJVn0CVc3T+pXWq+/jRBp/awz+Fx
+	LQIKiWLjopwPMRmQDaP6OZk5mgt2oSQDxBdod0fd8H+dJhJr4llpcVMPwMkYkK1+44KWd1hsPGw
+	E7ms6ZaK4As+KCf0G7wPSSjRCquYIZ1OdsgA2ludo2Rnqc+l7rGmLUizDmhtm1Qc=
+X-Google-Smtp-Source: AGHT+IGycL7gl1G8U6+jtg4VRe9A9eG9SI5H/YWMDuChD5JZkIw+01izdKdnZi/mhqaqG1fmzSy3xGc6ZnnE
 X-Received: from mshavit.ntc.corp.google.com ([2401:fa00:95:20c:44ad:3968:8aaa:c4fe])
- (user=mshavit job=sendgmr) by 2002:a17:90a:e38f:b0:268:3469:d86e with SMTP id
- b15-20020a17090ae38f00b002683469d86emr1952119pjz.1.1692701883529; Tue, 22 Aug
- 2023 03:58:03 -0700 (PDT)
-Date: Tue, 22 Aug 2023 18:57:00 +0800
+ (user=mshavit job=sendgmr) by 2002:a05:690c:368b:b0:589:dbc8:3d11 with SMTP
+ id fu11-20020a05690c368b00b00589dbc83d11mr97018ywb.9.1692701888099; Tue, 22
+ Aug 2023 03:58:08 -0700 (PDT)
+Date: Tue, 22 Aug 2023 18:57:01 +0800
 In-Reply-To: <20230822105738.1607365-1-mshavit@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -45,8 +45,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20230822105738.1607365-1-mshavit@google.com>
 X-Mailer: git-send-email 2.42.0.rc1.204.g551eb34607-goog
-Message-ID: <20230822185632.RFC.v2.4.I326c62dc062aed8d901d319aa665dbe983c7904c@changeid>
-Subject: [RFC PATCH v2 4/9] iommu/arm-smmu-v3-sva: Allocate new ASID from installed_smmus
+Message-ID: <20230822185632.RFC.v2.5.If0dc099688d13ce9e661a1e4a1339030f243ff39@changeid>
+Subject: [RFC PATCH v2 5/9] iommu/arm-smmu-v3: Alloc vmid from global pool
 From: Michael Shavit <mshavit@google.com>
 To: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
 	linux-kernel@vger.kernel.org
@@ -58,66 +58,90 @@ Cc: nicolinc@nvidia.com, tina.zhang@intel.com, jean-philippe@linaro.org,
 	Mark Brown <broonie@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 
-Pick an ASID that is within the supported range of all SMMUs that the
-domain is installed to.
+Consistent with how ASIDs are allocated, allocate VMIds from a global
+pool instead of a per-SMMU pool. This allows the domain to be attached
+onto multiple SMMUs.
 
 Signed-off-by: Michael Shavit <mshavit@google.com>
 ---
+As discussed in v1 RFC, an alternative would be to support assigning a
+different VMID/ASID to a domain for each SMMU that it is installed to.
+This is more flexible but will require more work to achieve.
 
 (no changes since v1)
 
- .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   | 23 +++++++++++++++----
- 1 file changed, 19 insertions(+), 4 deletions(-)
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 10 +++-------
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  1 -
+ 2 files changed, 3 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-index fe88a7880ad57..92d2f8c4e90a8 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-@@ -66,6 +66,20 @@ static int arm_smmu_write_ctx_desc_devices(struct arm_smmu_domain *smmu_domain,
- 	return ret;
- }
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index 1d072fd38a2d6..9adc2cedd487b 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -73,6 +73,7 @@ struct arm_smmu_option_prop {
  
-+static u32 arm_smmu_domain_max_asid_bits(struct arm_smmu_domain *smmu_domain)
-+{
-+	struct arm_smmu_master *master;
-+	unsigned long flags;
-+	u32 asid_bits = 16;
-+
-+	spin_lock_irqsave(&smmu_domain->devices_lock, flags);
-+	list_for_each_entry(master, &smmu_domain->devices,
-+			    domain_head)
-+		asid_bits = min(asid_bits, master->smmu->asid_bits);
-+	spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
-+	return asid_bits;
-+}
-+
+ DEFINE_XARRAY_ALLOC1(arm_smmu_asid_xa);
+ DEFINE_MUTEX(arm_smmu_asid_lock);
++DEFINE_IDA(arm_smmu_vmid_ida);
+ 
  /*
-  * Check if the CPU ASID is available on the SMMU side. If a private context
-  * descriptor is using it, try to replace it.
-@@ -76,7 +90,6 @@ arm_smmu_share_asid(struct mm_struct *mm, u16 asid)
- 	int ret;
- 	u32 new_asid;
- 	struct arm_smmu_ctx_desc *cd;
--	struct arm_smmu_device *smmu;
- 	struct arm_smmu_domain *smmu_domain;
+  * Special value used by SVA when a process dies, to quiesce a CD without
+@@ -2130,7 +2131,6 @@ static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
+ static void arm_smmu_domain_free(struct iommu_domain *domain)
+ {
+ 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+-	struct arm_smmu_device *smmu = smmu_domain->smmu;
  
- 	cd = xa_load(&arm_smmu_asid_xa, asid);
-@@ -92,10 +105,12 @@ arm_smmu_share_asid(struct mm_struct *mm, u16 asid)
+ 	free_io_pgtable_ops(smmu_domain->pgtbl_ops);
+ 
+@@ -2143,7 +2143,7 @@ static void arm_smmu_domain_free(struct iommu_domain *domain)
+ 	} else {
+ 		struct arm_smmu_s2_cfg *cfg = &smmu_domain->s2_cfg;
+ 		if (cfg->vmid)
+-			ida_free(&smmu->vmid_map, cfg->vmid);
++			ida_free(&arm_smmu_vmid_ida, cfg->vmid);
  	}
  
- 	smmu_domain = container_of(cd, struct arm_smmu_domain, cd);
--	smmu = smmu_domain->smmu;
+ 	kfree(smmu_domain);
+@@ -2195,7 +2195,7 @@ static int arm_smmu_domain_finalise_s2(struct arm_smmu_domain *smmu_domain,
+ 	typeof(&pgtbl_cfg->arm_lpae_s2_cfg.vtcr) vtcr;
  
--	ret = xa_alloc(&arm_smmu_asid_xa, &new_asid, cd,
--		       XA_LIMIT(1, (1 << smmu->asid_bits) - 1), GFP_KERNEL);
-+	ret = xa_alloc(
-+		&arm_smmu_asid_xa, &new_asid, cd,
-+		XA_LIMIT(1,
-+			 (1 << arm_smmu_domain_max_asid_bits(smmu_domain)) - 1),
-+		GFP_KERNEL);
- 	if (ret)
- 		return ERR_PTR(-ENOSPC);
- 	/*
+ 	/* Reserve VMID 0 for stage-2 bypass STEs */
+-	vmid = ida_alloc_range(&smmu->vmid_map, 1, (1 << smmu->vmid_bits) - 1,
++	vmid = ida_alloc_range(&arm_smmu_vmid_ida, 1, (1 << smmu->vmid_bits) - 1,
+ 			       GFP_KERNEL);
+ 	if (vmid < 0)
+ 		return vmid;
+@@ -3169,9 +3169,6 @@ static int arm_smmu_init_strtab(struct arm_smmu_device *smmu)
+ 	reg  = smmu->strtab_cfg.strtab_dma & STRTAB_BASE_ADDR_MASK;
+ 	reg |= STRTAB_BASE_RA;
+ 	smmu->strtab_cfg.strtab_base = reg;
+-
+-	ida_init(&smmu->vmid_map);
+-
+ 	return 0;
+ }
+ 
+@@ -3995,7 +3992,6 @@ static void arm_smmu_device_remove(struct platform_device *pdev)
+ 	iommu_device_sysfs_remove(&smmu->iommu);
+ 	arm_smmu_device_disable(smmu);
+ 	iopf_queue_free(smmu->evtq.iopf);
+-	ida_destroy(&smmu->vmid_map);
+ }
+ 
+ static void arm_smmu_device_shutdown(struct platform_device *pdev)
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+index b0cf9c33e6bcd..1661d3252bac5 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+@@ -670,7 +670,6 @@ struct arm_smmu_device {
+ 
+ #define ARM_SMMU_MAX_VMIDS		(1 << 16)
+ 	unsigned int			vmid_bits;
+-	struct ida			vmid_map;
+ 
+ 	unsigned int			ssid_bits;
+ 	unsigned int			sid_bits;
 -- 
 2.42.0.rc1.204.g551eb34607-goog
 
