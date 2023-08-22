@@ -1,41 +1,41 @@
-Received: from mail-yb1-f202.google.com (mail-yb1-f202.google.com [209.85.219.202])
+Received: from mail-pj1-f74.google.com (mail-pj1-f74.google.com [209.85.216.74])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BDBC2944D
-	for <iommu@lists.linux.dev>; Tue, 22 Aug 2023 10:58:00 +0000 (UTC)
-Received: by mail-yb1-f202.google.com with SMTP id 3f1490d57ef6-d7494be34f8so3034712276.2
-        for <iommu@lists.linux.dev>; Tue, 22 Aug 2023 03:58:00 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 53132944D
+	for <iommu@lists.linux.dev>; Tue, 22 Aug 2023 10:58:04 +0000 (UTC)
+Received: by mail-pj1-f74.google.com with SMTP id 98e67ed59e1d1-26f51613d05so2296053a91.2
+        for <iommu@lists.linux.dev>; Tue, 22 Aug 2023 03:58:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1692701879; x=1693306679;
+        d=google.com; s=20221208; t=1692701883; x=1693306683;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=hzkdckhsYM5HseENVN/oabL1JwMNZ1FUebMgW7plyuY=;
-        b=eX5QmfSAFa0qUY0A/svbfjXsSnaM7Lq1++mhTi04y1JpkGTj6Z9k+aThUpCK2Qu5bJ
-         DCrnGehbJlOcZk+Q9RNw9LN+Qmw55EhIaunbiudCBYzz1DpSXcz7JQceHv1iBY6FBFdX
-         qmV9uB9hmcYREXGki8XaTnQN7SqN4S03GOvHVxMjxP26Gpdwo7MvUzuN7hvsNUNPD8vy
-         vyO+DabGYbLIq/BjRbVVxx6ez+n1nIH+5RH6aZcSuzmendJYWYCRfKwj9UWRKZH2hSv7
-         W9vihc3e3X8iy+kCkngZmkiLbOYls1c80o89A3gkBb3hnst3rNiGwPQ72zhfLV2i4R3X
-         gKbQ==
+        bh=klUumB39dl+OBWmiMAnKOGBWf0KJAFVzeJ+KKuR3vwQ=;
+        b=QOdvPyWOFijq9vdM4JKXlc9Z/yC655EJi71UDoHdIoa3E1exEkCClclZJ3AnpfSNdy
+         2DZ07wdWinF4bADwtdysdonB6RVLAp6DvagkAG/F0pU/aytEVm0Z4NDJGVsDdGBnP5DW
+         HBUbLjBDPewVyHjv46VGKLZSz342zyA3Ol8D0ntbfYTBh831xO+tsO6mLkF+5hr3Ze/A
+         2wXSFj1UY72mn5v5R6GkBTJsHH1PdZhlqGBpmToV8MySPdOkSXKZlL1eaujIjBBLB1R1
+         nFYWLrQjysbpQlG0Q2UM95vgzfFfCNjkiceengnYypACUamkijXuM43gQhjXt4T/OpSq
+         oDTA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1692701879; x=1693306679;
+        d=1e100.net; s=20221208; t=1692701883; x=1693306683;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=hzkdckhsYM5HseENVN/oabL1JwMNZ1FUebMgW7plyuY=;
-        b=U1WkenBmM+R5FZ/H+SPIQC/VkN3WG+e4/RmB7L7LHYS+o/qW0OEzUAKLhnFtTY6NtK
-         bibSRGhXBnvjvwhESjwVEt5nYjCjO84fln48huuzlNNj40ott70jXZqwSnoQzGpRSQZW
-         j4ntMIlCXsJ00drTU0Xm8gi0Ysc5pSz5NcbTQs6WW3qZh6gvNE2cWHblJl2E2nb21WWO
-         nedM0MqRlEh7wJ2eQ1JXYJDE/o3OCTtdPRp8x0Re/qeD3mFS5yznaWdPe2TRRAhh4VCd
-         UJZfLu4Y07PiIZ1utLJNPnhn8Cu8mS5ev2L4QH6QwxOez+sSGhBKOEThMsbR2q3YAeLq
-         9p/Q==
-X-Gm-Message-State: AOJu0Yy4yBnNHhNP2V/ls8sGiVi/2fihzey55Qg4m//+6H1YQPnaI3E5
-	T64haNwXliOGaJoajfIQKlz/zUt/BQ+rqozH09MBLB06HyUyyXho8LKxrSpzK+Bg+7AlMQuscUS
-	RSoSXoTs8IwZbaXEWnd7m6+n/n3iZcpfi3mJyQc0EDmJwfqJm1Q7AXcORjhHayWw=
-X-Google-Smtp-Source: AGHT+IFV24bkiqmyen2UBSpUN7ZUKb9y13tOay2zxIEBPlAvfXUwWlmoel9TmmFxhWiwkf4OA7z/lmbcvdzi
+        bh=klUumB39dl+OBWmiMAnKOGBWf0KJAFVzeJ+KKuR3vwQ=;
+        b=kBIzDJWDKLo2j33NespPAYjnaOz0JPUsYkh7FfbKugam+SB4MhY+BSbrtg/7854rvb
+         GPoJEVXHLBqL+GbwQK7I0j9WhRRlauL1+hfLgSY1jMZmJ8B9TzIf+8neyH4QRkKvPfEr
+         PAv8BQpYkqz8ExAyVb2QVYxvPEz0r7kQMvUeCatgFi3vemiwlwXYYGKMt5Xjv0xbQZ4m
+         JG16+J5yuVWrHgd4BDxPOgqw574zTFiOOIPISQoyH3IIyZqb8MIF7J1vd6M/aoJKGr+a
+         zCdhO/fjG6SouVL5JtaLEZ8/yZQ2h2MFtfRtb4QTwjpTmsJXPMFsJTovfYQyB/q/M9WU
+         aLpQ==
+X-Gm-Message-State: AOJu0YygjHUHdQTOeaLInfrioF0d1QYjgWwwaCPKVDhc0OR31JPzOGdi
+	Mqoz68Tc1Ymm//lUnMdTod4iHhaekWslBtMsZzV7aNFi0Rl9A6IO9E+sTFz9u4TakgcbzwDfxVK
+	pYaPPiDyfmMgMzjBxqbHMDE8ovOlTq2c3rTeEasJa9m0inxiMOYUsIbrw4Qyd92w=
+X-Google-Smtp-Source: AGHT+IGvy5fADWCBcGzxzY/Im00oXNvC+VMa0VGSdAqQOVHtJdVI4FD8dSTU2tOb1ulf37dD57VvtOXSyH1Z
 X-Received: from mshavit.ntc.corp.google.com ([2401:fa00:95:20c:44ad:3968:8aaa:c4fe])
- (user=mshavit job=sendgmr) by 2002:a05:6902:118a:b0:d05:7ba4:67f9 with SMTP
- id m10-20020a056902118a00b00d057ba467f9mr92617ybu.3.1692701879189; Tue, 22
- Aug 2023 03:57:59 -0700 (PDT)
-Date: Tue, 22 Aug 2023 18:56:59 +0800
+ (user=mshavit job=sendgmr) by 2002:a17:90a:e38f:b0:268:3469:d86e with SMTP id
+ b15-20020a17090ae38f00b002683469d86emr1952119pjz.1.1692701883529; Tue, 22 Aug
+ 2023 03:58:03 -0700 (PDT)
+Date: Tue, 22 Aug 2023 18:57:00 +0800
 In-Reply-To: <20230822105738.1607365-1-mshavit@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -45,9 +45,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20230822105738.1607365-1-mshavit@google.com>
 X-Mailer: git-send-email 2.42.0.rc1.204.g551eb34607-goog
-Message-ID: <20230822185632.RFC.v2.3.I0f149f177e5478e28dc3223c2d10729d8f28d53a@changeid>
-Subject: [RFC PATCH v2 3/9] iommu/arm-smmu-v3: Issue invalidations commands to
- multiple SMMUs
+Message-ID: <20230822185632.RFC.v2.4.I326c62dc062aed8d901d319aa665dbe983c7904c@changeid>
+Subject: [RFC PATCH v2 4/9] iommu/arm-smmu-v3-sva: Allocate new ASID from installed_smmus
 From: Michael Shavit <mshavit@google.com>
 To: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
 	linux-kernel@vger.kernel.org
@@ -59,303 +58,66 @@ Cc: nicolinc@nvidia.com, tina.zhang@intel.com, jean-philippe@linaro.org,
 	Mark Brown <broonie@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 
-Assume that devices in the smmu_domain->domain list that belong to the
-same SMMU are adjacent to each other in the list.
-Batch TLB/ATC invalidation commands for an smmu_domain by the SMMU
-devices that the domain is installed to.
+Pick an ASID that is within the supported range of all SMMUs that the
+domain is installed to.
 
 Signed-off-by: Michael Shavit <mshavit@google.com>
 ---
 
-Changes in v2:
-- Moved the ARM_SMMU_FEAT_BTM changes into a new prepatory commit
+(no changes since v1)
 
- .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   |   6 +-
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 134 +++++++++++++-----
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |   2 +-
- 3 files changed, 104 insertions(+), 38 deletions(-)
+ .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   | 23 +++++++++++++++----
+ 1 file changed, 19 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-index 53f65a89a55f9..fe88a7880ad57 100644
+index fe88a7880ad57..92d2f8c4e90a8 100644
 --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
 +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-@@ -112,7 +112,7 @@ arm_smmu_share_asid(struct mm_struct *mm, u16 asid)
- 	arm_smmu_write_ctx_desc_devices(smmu_domain, 0, cd);
- 
- 	/* Invalidate TLB entries previously associated with that context */
--	arm_smmu_tlb_inv_asid(smmu, asid);
-+	arm_smmu_tlb_inv_asid(smmu_domain, asid);
- 
- 	xa_erase(&arm_smmu_asid_xa, asid);
- 	return NULL;
-@@ -252,7 +252,7 @@ static void arm_smmu_mm_release(struct mmu_notifier *mn, struct mm_struct *mm)
- 	 */
- 	arm_smmu_write_ctx_desc_devices(smmu_domain, mm->pasid, &quiet_cd);
- 
--	arm_smmu_tlb_inv_asid(smmu_domain->smmu, smmu_mn->cd->asid);
-+	arm_smmu_tlb_inv_asid(smmu_domain, smmu_mn->cd->asid);
- 	arm_smmu_atc_inv_domain(smmu_domain, mm->pasid, 0, 0);
- 
- 	smmu_mn->cleared = true;
-@@ -340,7 +340,7 @@ static void arm_smmu_mmu_notifier_put(struct arm_smmu_mmu_notifier *smmu_mn)
- 	 * new TLB entry can have been formed.
- 	 */
- 	if (!smmu_mn->cleared) {
--		arm_smmu_tlb_inv_asid(smmu_domain->smmu, cd->asid);
-+		arm_smmu_tlb_inv_asid(smmu_domain, cd->asid);
- 		arm_smmu_atc_inv_domain(smmu_domain, mm->pasid, 0, 0);
- 	}
- 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index db4df9d6aef10..1d072fd38a2d6 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -960,15 +960,28 @@ static int arm_smmu_page_response(struct device *dev,
+@@ -66,6 +66,20 @@ static int arm_smmu_write_ctx_desc_devices(struct arm_smmu_domain *smmu_domain,
+ 	return ret;
  }
  
- /* Context descriptor manipulation functions */
--void arm_smmu_tlb_inv_asid(struct arm_smmu_device *smmu, u16 asid)
-+void arm_smmu_tlb_inv_asid(struct arm_smmu_domain *smmu_domain, u16 asid)
- {
-+	struct arm_smmu_device *smmu = NULL;
++static u32 arm_smmu_domain_max_asid_bits(struct arm_smmu_domain *smmu_domain)
++{
 +	struct arm_smmu_master *master;
- 	struct arm_smmu_cmdq_ent cmd = {
--		.opcode	= smmu->features & ARM_SMMU_FEAT_E2H ?
--			CMDQ_OP_TLBI_EL2_ASID : CMDQ_OP_TLBI_NH_ASID,
- 		.tlbi.asid = asid,
- 	};
 +	unsigned long flags;
- 
--	arm_smmu_cmdq_issue_cmd_with_sync(smmu, &cmd);
++	u32 asid_bits = 16;
++
 +	spin_lock_irqsave(&smmu_domain->devices_lock, flags);
 +	list_for_each_entry(master, &smmu_domain->devices,
-+			    domain_head) {
-+		if (!smmu)
-+			smmu = master->smmu;
-+		if (smmu != master->smmu ||
-+		    list_is_last(&master->domain_head, &smmu_domain->devices)) {
-+			cmd.opcode = smmu->features & ARM_SMMU_FEAT_E2H ?
-+			CMDQ_OP_TLBI_EL2_ASID : CMDQ_OP_TLBI_NH_ASID,
-+			arm_smmu_cmdq_issue_cmd_with_sync(smmu, &cmd);
-+		}
-+	}
++			    domain_head)
++		asid_bits = min(asid_bits, master->smmu->asid_bits);
 +	spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
- }
- 
- static void arm_smmu_sync_cd(struct arm_smmu_master *master,
-@@ -1811,14 +1824,13 @@ int arm_smmu_atc_inv_domain(struct arm_smmu_domain *smmu_domain, int ssid,
- 			    unsigned long iova, size_t size)
- {
- 	int i;
-+	int ret = 0;
- 	unsigned long flags;
- 	struct arm_smmu_cmdq_ent cmd;
-+	struct arm_smmu_device *smmu = NULL;
- 	struct arm_smmu_master *master;
- 	struct arm_smmu_cmdq_batch cmds;
- 
--	if (!(smmu_domain->smmu->features & ARM_SMMU_FEAT_ATS))
--		return 0;
--
- 	/*
- 	 * Ensure that we've completed prior invalidation of the main TLBs
- 	 * before we read 'nr_ats_masters' in case of a concurrent call to
-@@ -1839,28 +1851,56 @@ int arm_smmu_atc_inv_domain(struct arm_smmu_domain *smmu_domain, int ssid,
- 	arm_smmu_atc_inv_to_cmd(ssid, iova, size, &cmd);
- 
- 	cmds.num = 0;
--
- 	spin_lock_irqsave(&smmu_domain->devices_lock, flags);
- 	list_for_each_entry(master, &smmu_domain->devices, domain_head) {
- 		if (!master->ats_enabled)
- 			continue;
-+		if (!smmu)
-+			smmu = master->smmu;
-+		if (smmu != master->smmu ||
-+		    list_is_last(&master->domain_head, &smmu_domain->devices)) {
-+			ret = arm_smmu_cmdq_batch_submit(smmu, &cmds);
-+			if (ret)
-+				break;
-+			cmds.num = 0;
-+		}
- 
- 		for (i = 0; i < master->num_streams; i++) {
- 			cmd.atc.sid = master->streams[i].id;
--			arm_smmu_cmdq_batch_add(smmu_domain->smmu, &cmds, &cmd);
-+			arm_smmu_cmdq_batch_add(smmu, &cmds, &cmd);
- 		}
- 	}
- 	spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
- 
--	return arm_smmu_cmdq_batch_submit(smmu_domain->smmu, &cmds);
-+	return ret;
++	return asid_bits;
 +}
 +
-+static void arm_smmu_tlb_inv_vmid(struct arm_smmu_domain *smmu_domain)
-+{
-+	struct arm_smmu_device *smmu = NULL;
-+	struct arm_smmu_master *master;
-+	struct arm_smmu_cmdq_ent cmd = {
-+		.opcode = CMDQ_OP_TLBI_S12_VMALL,
-+		.tlbi.vmid = smmu_domain->s2_cfg.vmid,
-+	};
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&smmu_domain->devices_lock, flags);
-+	list_for_each_entry(master, &smmu_domain->devices,
-+			    domain_head) {
-+		if (!smmu)
-+			smmu = master->smmu;
-+		if (smmu != master->smmu ||
-+		    list_is_last(&master->domain_head, &smmu_domain->devices))
-+			arm_smmu_cmdq_issue_cmd_with_sync(smmu, &cmd);
-+	}
-+	spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
- }
+ /*
+  * Check if the CPU ASID is available on the SMMU side. If a private context
+  * descriptor is using it, try to replace it.
+@@ -76,7 +90,6 @@ arm_smmu_share_asid(struct mm_struct *mm, u16 asid)
+ 	int ret;
+ 	u32 new_asid;
+ 	struct arm_smmu_ctx_desc *cd;
+-	struct arm_smmu_device *smmu;
+ 	struct arm_smmu_domain *smmu_domain;
  
- /* IO_PGTABLE API */
- static void arm_smmu_tlb_inv_context(void *cookie)
- {
- 	struct arm_smmu_domain *smmu_domain = cookie;
--	struct arm_smmu_device *smmu = smmu_domain->smmu;
--	struct arm_smmu_cmdq_ent cmd;
- 
- 	/*
- 	 * NOTE: when io-pgtable is in non-strict mode, we may get here with
-@@ -1870,11 +1910,9 @@ static void arm_smmu_tlb_inv_context(void *cookie)
- 	 * careful, 007.
- 	 */
- 	if (smmu_domain->stage == ARM_SMMU_DOMAIN_S1) {
--		arm_smmu_tlb_inv_asid(smmu, smmu_domain->cd.asid);
-+		arm_smmu_tlb_inv_asid(smmu_domain, smmu_domain->cd.asid);
- 	} else {
--		cmd.opcode	= CMDQ_OP_TLBI_S12_VMALL;
--		cmd.tlbi.vmid	= smmu_domain->s2_cfg.vmid;
--		arm_smmu_cmdq_issue_cmd_with_sync(smmu, &cmd);
-+		arm_smmu_tlb_inv_vmid(smmu_domain);
+ 	cd = xa_load(&arm_smmu_asid_xa, asid);
+@@ -92,10 +105,12 @@ arm_smmu_share_asid(struct mm_struct *mm, u16 asid)
  	}
- 	arm_smmu_atc_inv_domain(smmu_domain, 0, 0, 0);
- }
-@@ -1882,9 +1920,9 @@ static void arm_smmu_tlb_inv_context(void *cookie)
- static void __arm_smmu_tlb_inv_range(struct arm_smmu_cmdq_ent *cmd,
- 				     unsigned long iova, size_t size,
- 				     size_t granule,
--				     struct arm_smmu_domain *smmu_domain)
-+				     struct arm_smmu_domain *smmu_domain,
-+				     struct arm_smmu_device *smmu)
- {
--	struct arm_smmu_device *smmu = smmu_domain->smmu;
- 	unsigned long end = iova + size, num_pages = 0, tg = 0;
- 	size_t inv_range = granule;
- 	struct arm_smmu_cmdq_batch cmds;
-@@ -1949,21 +1987,36 @@ static void arm_smmu_tlb_inv_range_domain(unsigned long iova, size_t size,
- 					  size_t granule, bool leaf,
- 					  struct arm_smmu_domain *smmu_domain)
- {
-+	struct arm_smmu_device *smmu = NULL;
-+	struct arm_smmu_master *master;
- 	struct arm_smmu_cmdq_ent cmd = {
- 		.tlbi = {
- 			.leaf	= leaf,
- 		},
- 	};
-+	unsigned long flags;
  
--	if (smmu_domain->stage == ARM_SMMU_DOMAIN_S1) {
--		cmd.opcode	= smmu_domain->smmu->features & ARM_SMMU_FEAT_E2H ?
--				  CMDQ_OP_TLBI_EL2_VA : CMDQ_OP_TLBI_NH_VA;
--		cmd.tlbi.asid	= smmu_domain->cd.asid;
--	} else {
--		cmd.opcode	= CMDQ_OP_TLBI_S2_IPA;
--		cmd.tlbi.vmid	= smmu_domain->s2_cfg.vmid;
-+	spin_lock_irqsave(&smmu_domain->devices_lock, flags);
-+	list_for_each_entry(master, &smmu_domain->devices, domain_head) {
-+		if (!smmu)
-+			smmu = master->smmu;
-+		if (smmu != master->smmu ||
-+		    list_is_last(&master->domain_head, &smmu_domain->devices)) {
-+			if (smmu_domain->stage == ARM_SMMU_DOMAIN_S1) {
-+				cmd.opcode = smmu->features &
-+							     ARM_SMMU_FEAT_E2H ?
-+						     CMDQ_OP_TLBI_EL2_VA :
-+						     CMDQ_OP_TLBI_NH_VA;
-+				cmd.tlbi.asid = smmu_domain->cd.asid;
-+			} else {
-+				cmd.opcode = CMDQ_OP_TLBI_S2_IPA;
-+				cmd.tlbi.vmid = smmu_domain->s2_cfg.vmid;
-+			}
-+			__arm_smmu_tlb_inv_range(&cmd, iova, size, granule,
-+						 smmu_domain, smmu);
-+		}
- 	}
--	__arm_smmu_tlb_inv_range(&cmd, iova, size, granule, smmu_domain);
-+	spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
+ 	smmu_domain = container_of(cd, struct arm_smmu_domain, cd);
+-	smmu = smmu_domain->smmu;
  
+-	ret = xa_alloc(&arm_smmu_asid_xa, &new_asid, cd,
+-		       XA_LIMIT(1, (1 << smmu->asid_bits) - 1), GFP_KERNEL);
++	ret = xa_alloc(
++		&arm_smmu_asid_xa, &new_asid, cd,
++		XA_LIMIT(1,
++			 (1 << arm_smmu_domain_max_asid_bits(smmu_domain)) - 1),
++		GFP_KERNEL);
+ 	if (ret)
+ 		return ERR_PTR(-ENOSPC);
  	/*
- 	 * Unfortunately, this can't be leaf-only since we may have
-@@ -1977,19 +2030,33 @@ void arm_smmu_tlb_inv_range_asid(unsigned long iova, size_t size, int asid,
- 				 bool skip_btm_capable_devices,
- 				 struct arm_smmu_domain *smmu_domain)
- {
-+	struct arm_smmu_device *smmu = NULL;
-+	struct arm_smmu_master *master;
- 	struct arm_smmu_cmdq_ent cmd = {
--		.opcode	= smmu_domain->smmu->features & ARM_SMMU_FEAT_E2H ?
--			  CMDQ_OP_TLBI_EL2_VA : CMDQ_OP_TLBI_NH_VA,
- 		.tlbi = {
- 			.asid	= asid,
- 			.leaf	= leaf,
- 		},
- 	};
-+	unsigned long flags;
- 
--	if (skip_btm_capable_devices &&
--	    smmu_domain->smmu->features & ARM_SMMU_FEAT_BTM)
--		return;
--	__arm_smmu_tlb_inv_range(&cmd, iova, size, granule, smmu_domain);
-+	spin_lock_irqsave(&smmu_domain->devices_lock, flags);
-+	list_for_each_entry(master, &smmu_domain->devices, domain_head) {
-+		if (!smmu)
-+			smmu = master->smmu;
-+		if (smmu != master->smmu ||
-+		    list_is_last(&master->domain_head, &smmu_domain->devices)) {
-+			if (skip_btm_capable_devices &&
-+			    smmu->features & ARM_SMMU_FEAT_BTM)
-+				continue;
-+			cmd.opcode = smmu->features & ARM_SMMU_FEAT_E2H ?
-+					     CMDQ_OP_TLBI_EL2_VA :
-+					     CMDQ_OP_TLBI_NH_VA;
-+			__arm_smmu_tlb_inv_range(&cmd, iova, size, granule,
-+						 smmu_domain, smmu);
-+		}
-+	}
-+	spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
- }
- 
- static void arm_smmu_tlb_inv_page_nosync(struct iommu_iotlb_gather *gather,
-@@ -2523,8 +2590,7 @@ static void arm_smmu_flush_iotlb_all(struct iommu_domain *domain)
- {
- 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
- 
--	if (smmu_domain->smmu)
--		arm_smmu_tlb_inv_context(smmu_domain);
-+	arm_smmu_tlb_inv_context(smmu_domain);
- }
- 
- static void arm_smmu_iotlb_sync(struct iommu_domain *domain,
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-index 05599914eb0a0..b0cf9c33e6bcd 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-@@ -748,7 +748,7 @@ extern struct arm_smmu_ctx_desc quiet_cd;
- 
- int arm_smmu_write_ctx_desc(struct arm_smmu_master *smmu_master, int ssid,
- 			    struct arm_smmu_ctx_desc *cd);
--void arm_smmu_tlb_inv_asid(struct arm_smmu_device *smmu, u16 asid);
-+void arm_smmu_tlb_inv_asid(struct arm_smmu_domain *smmu_domain, u16 asid);
- void arm_smmu_tlb_inv_range_asid(unsigned long iova, size_t size, int asid,
- 				 size_t granule, bool leaf,
- 				 bool skip_btm_capable_devices,
 -- 
 2.42.0.rc1.204.g551eb34607-goog
 
