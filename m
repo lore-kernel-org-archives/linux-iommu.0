@@ -1,14 +1,14 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5C4188BFD
-	for <iommu@lists.linux.dev>; Tue, 22 Aug 2023 09:30:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id AFF638F59
+	for <iommu@lists.linux.dev>; Tue, 22 Aug 2023 09:40:35 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 615A511FB;
-	Tue, 22 Aug 2023 02:31:23 -0700 (PDT)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id AECE211FB;
+	Tue, 22 Aug 2023 02:41:15 -0700 (PDT)
 Received: from [10.57.5.95] (unknown [10.57.5.95])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 0EE1F3F64C;
-	Tue, 22 Aug 2023 02:30:40 -0700 (PDT)
-Message-ID: <3f630d3d-c59a-f454-14db-2bf9b8e76877@arm.com>
-Date: Tue, 22 Aug 2023 10:30:35 +0100
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 84D073F64C;
+	Tue, 22 Aug 2023 02:40:33 -0700 (PDT)
+Message-ID: <7e97b5a5-6be0-87a8-aaf7-89980b0a35d1@arm.com>
+Date: Tue, 22 Aug 2023 10:40:18 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -17,96 +17,84 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
  Thunderbird/102.14.0
-Subject: Re: [PATCH 3/3] iommu/arm-smmu-v3: Add a max_tlbi_ops for
- __arm_smmu_tlb_inv_range()
+Subject: Re: [PATCH 2/3] iommu/arm-smmu-v3: Add an arm_smmu_tlb_inv_domain
+ helper
 Content-Language: en-GB
 To: Nicolin Chen <nicolinc@nvidia.com>, will@kernel.org, jgg@nvidia.com
 Cc: joro@8bytes.org, jean-philippe@linaro.org, apopple@nvidia.com,
  linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
  iommu@lists.linux.dev
 References: <cover.1692693557.git.nicolinc@nvidia.com>
- <3ba332e141102d31b756326cdc4078cac1f5ab1c.1692693557.git.nicolinc@nvidia.com>
+ <854e2b3f2d4f1b76f916fcfc288b34526d4d4162.1692693557.git.nicolinc@nvidia.com>
 From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <3ba332e141102d31b756326cdc4078cac1f5ab1c.1692693557.git.nicolinc@nvidia.com>
+In-Reply-To: <854e2b3f2d4f1b76f916fcfc288b34526d4d4162.1692693557.git.nicolinc@nvidia.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 2023-08-22 09:45, Nicolin Chen wrote:
-> When receiving an __arm_smmu_tlb_inv_range() call with a large size, there
-> could be a long latency at this function call: one part is coming from a
-> large software overhead in the routine of building commands, and the other
-> part is coming from CMDQ hardware consuming the large number of commands.
-> This latency could be significantly large on an SMMU that does not support
-> range invalidation commands, i.e. no ARM_SMMU_FEAT_RANGE_INV.
-> 
-> One way to optimize this is to replace a large number of VA invalidation
-> commands with one single per-asid or per-vmid invalidation command, if an
-> invalidation size reaches a preset threshold using the number of entries
-> per io-pgtable, similar to the MAX_TLBI_OPS in arm64's tlbflush.h.
-> 
-> Add a max_tlbi_ops in arm_smmu_domain, and convert a large number of per-
-> granule TLBI commands to one single per-asid or per-vmid TLBI command, on
-> SMMUs without ARM_SMMU_FEAT_RANGE_INV.
-> 
-> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-> ---
->   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 10 +++++++++-
->   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  1 +
->   2 files changed, 10 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index d6c647e1eb01..3f0db30932bd 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -1897,7 +1897,14 @@ static void __arm_smmu_tlb_inv_range(struct arm_smmu_cmdq_ent *cmd,
->   	if (!size)
->   		return;
->   
-> -	if (smmu->features & ARM_SMMU_FEAT_RANGE_INV) {
-> +	if (!(smmu->features & ARM_SMMU_FEAT_RANGE_INV)) {
-> +		/*
-> +		 * When the size reaches a threshold, replace per-granule TLBI
-> +		 * commands with one single per-asid or per-vmid TLBI command.
-> +		 */
-> +		if (size >= granule * smmu_domain->max_tlbi_ops)
-> +			return arm_smmu_tlb_inv_domain(smmu_domain);
+> Move the part of per-asid or per-vmid invalidation command issuing into a
+> new helper function, which will be used in the following change.
 
-This looks like it's at the wrong level - we should have figured this 
-out before we got as far as low-level command-building. I'd have thought 
-it would be a case of short-circuiting directly from 
-arm_smmu_tlb_inv_range_domain() to arm_smmu_tlb_inv_context().
-
-> +	} else {
->   		/* Get the leaf page size */
->   		tg = __ffs(smmu_domain->domain.pgsize_bitmap);
->   
-> @@ -2258,6 +2265,7 @@ static int arm_smmu_domain_finalise(struct iommu_domain *domain,
->   	}
->   
->   	smmu_domain->pgtbl_ops = pgtbl_ops;
-> +	smmu_domain->max_tlbi_ops = pgtbl_cfg.nents_per_pgtable;
-
-And now we're carrying *three* copies of the same information around 
-everywhere? Honestly, just pull cfg->bits_per_level out of the 
-io_pgtable_ops at the point where you need it, like the pagetable code 
-itself manages to do perfectly happily. Wrap it in an io-pgtable helper 
-if you think that's cleaner.
+Why? This achieves nothing except make the code harder to follow and 
+disconnect the rather important comment even further from the code it is 
+significant to. It's not like we need a specific prototype to take a 
+function pointer from, it's just another internal call - see 
+arm_smmu_flush_iotlb_all() for instance. We know the cookie is an 
+arm_smmu_domain pointer because we put it there, and converting it back 
+from a void pointer is exactly the same *at* the function call boundary 
+as immediately afterwards.
 
 Thanks,
 Robin.
 
->   	return 0;
+> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+> ---
+>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 24 +++++++++++++--------
+>   1 file changed, 15 insertions(+), 9 deletions(-)
+> 
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index 9b0dc3505601..d6c647e1eb01 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -1854,12 +1854,24 @@ int arm_smmu_atc_inv_domain(struct arm_smmu_domain *smmu_domain, int ssid,
+>   	return arm_smmu_cmdq_batch_submit(smmu_domain->smmu, &cmds);
 >   }
 >   
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> index dcab85698a4e..f68c95a2e24f 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> @@ -721,6 +721,7 @@ struct arm_smmu_domain {
->   	struct io_pgtable_ops		*pgtbl_ops;
->   	bool				stall_enabled;
->   	atomic_t			nr_ats_masters;
-> +	unsigned long			max_tlbi_ops;
+> +static void arm_smmu_tlb_inv_domain(struct arm_smmu_domain *smmu_domain)
+> +{
+> +	struct arm_smmu_device *smmu = smmu_domain->smmu;
+> +	struct arm_smmu_cmdq_ent cmd;
+> +
+> +	if (smmu_domain->stage == ARM_SMMU_DOMAIN_S1) {
+> +		arm_smmu_tlb_inv_asid(smmu, smmu_domain->s1_cfg.cd.asid);
+> +	} else {
+> +		cmd.opcode	= CMDQ_OP_TLBI_S12_VMALL;
+> +		cmd.tlbi.vmid	= smmu_domain->s2_cfg.vmid;
+> +		arm_smmu_cmdq_issue_cmd_with_sync(smmu, &cmd);
+> +	}
+> +}
+> +
+>   /* IO_PGTABLE API */
+>   static void arm_smmu_tlb_inv_context(void *cookie)
+>   {
+>   	struct arm_smmu_domain *smmu_domain = cookie;
+> -	struct arm_smmu_device *smmu = smmu_domain->smmu;
+> -	struct arm_smmu_cmdq_ent cmd;
 >   
->   	enum arm_smmu_domain_stage	stage;
->   	union {
+>   	/*
+>   	 * NOTE: when io-pgtable is in non-strict mode, we may get here with
+> @@ -1868,13 +1880,7 @@ static void arm_smmu_tlb_inv_context(void *cookie)
+>   	 * insertion to guarantee those are observed before the TLBI. Do be
+>   	 * careful, 007.
+>   	 */
+> -	if (smmu_domain->stage == ARM_SMMU_DOMAIN_S1) {
+> -		arm_smmu_tlb_inv_asid(smmu, smmu_domain->s1_cfg.cd.asid);
+> -	} else {
+> -		cmd.opcode	= CMDQ_OP_TLBI_S12_VMALL;
+> -		cmd.tlbi.vmid	= smmu_domain->s2_cfg.vmid;
+> -		arm_smmu_cmdq_issue_cmd_with_sync(smmu, &cmd);
+> -	}
+> +	arm_smmu_tlb_inv_domain(smmu_domain);
+>   	arm_smmu_atc_inv_domain(smmu_domain, 0, 0, 0);
+>   }
+>   
