@@ -1,110 +1,162 @@
-Received: from mail-pj1-f73.google.com (mail-pj1-f73.google.com [209.85.216.73])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2078.outbound.protection.outlook.com [40.107.244.78])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B1217944D
-	for <iommu@lists.linux.dev>; Tue, 22 Aug 2023 10:58:26 +0000 (UTC)
-Received: by mail-pj1-f73.google.com with SMTP id 98e67ed59e1d1-268476c3b2aso6561296a91.1
-        for <iommu@lists.linux.dev>; Tue, 22 Aug 2023 03:58:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1692701906; x=1693306706;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=gv8qs8tb5+ht3xEXCO2MlfdAXc51HHEhUztVM4QYf7k=;
-        b=XxR0LNcd6ZMLLCXEsgVSgiM0m2dvGOpGJ0H2y2I3Ztbzt8plf5Zs/4VNYjeQOFpry+
-         PH2HqrjjVyT6YxZ0ZowGRVgJRmlhAZziZAfr8pHS5GaUhXmpfF+xIN8sFcmU+VoQt6jf
-         vg3KT/vuCq2HJIN/0b20FjE97XCf5ZOP7uVIA8O/OCVtNAP0HVbSntANTxWg/EcMcSxH
-         R2UP3T6vuQvik0z9gG1HI/Zbn+2pPHPvZv+kPu+c7PlQhUh/60zo8gc/U/LQaRzF5NLz
-         gJKIgjHkQfwHgvdR7MHN1Gw86BsVoxJ55knBkY5sEEGZdpPjIn/teqw7obJvPgVEFyXC
-         Op7Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1692701906; x=1693306706;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=gv8qs8tb5+ht3xEXCO2MlfdAXc51HHEhUztVM4QYf7k=;
-        b=C6JxhF7Mshv3Ltdr0pHZpOifFF48iTKw045wtnsAvpQWU6phJeg35w3+P9JelFVFpS
-         C6SNSfLrA2AOnjqSkcDzhpyDS38qgQ5EUTNaXIcifrrzZcze/wHeeIp0WzoChGHTUk1J
-         DWyjgZSMr8sL8aQ4o0IY6vocFvdQ89GUSDAECyIw4Dsltmi7U8f/T2lUAiOaXOaLEeCE
-         o+cFc9bO31HMx/t7hLZG7suanjbqOlchd0ES7FjP19W3+ZujMzR/KvsYbYIiAT6O+Gfo
-         AhEZNIWlLUJlw54uBdSh4wHMJ7vdV2Ax1sLs5GlrEU4Rj0iPtAPSHrP3Ia1dd9nfdGZE
-         AKdg==
-X-Gm-Message-State: AOJu0YxcvZ965Hzy+8rXvgKaBERWhHJFX6RjfCtLHLe/uDTqFguopNsa
-	QBwf7Hjw7+XyaUCttXs+k5I//f4wFlziCDHk2ivupz1jp3H9TofgwTUEIGY31lDCEflhXN2iLW6
-	La60qtcVQEzeiO90/4qJWohkzEg5eFlHQ7R1MpzsQYSGQU+xZPutmSvISkKwgkYw=
-X-Google-Smtp-Source: AGHT+IHY7P3AGtuprqqUV/dDekDb2kOfyGnlyTzMrT8+CEylyDp3RWzdk6ztQiyu+b0tkcWobWMgKFfrKVgj
-X-Received: from mshavit.ntc.corp.google.com ([2401:fa00:95:20c:44ad:3968:8aaa:c4fe])
- (user=mshavit job=sendgmr) by 2002:a17:90a:a58f:b0:268:38e3:34f0 with SMTP id
- b15-20020a17090aa58f00b0026838e334f0mr1756657pjq.2.1692701906060; Tue, 22 Aug
- 2023 03:58:26 -0700 (PDT)
-Date: Tue, 22 Aug 2023 18:57:05 +0800
-In-Reply-To: <20230822105738.1607365-1-mshavit@google.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C9867F
+	for <iommu@lists.linux.dev>; Tue, 22 Aug 2023 12:49:24 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=faDhJjzSv8N7J1EdMSJsVJHR3aF/QOMPLL4Jiim+NzCESwfyC1TBBj8rMnCSggfqWFmQFaY0Z92oUFeqzJD3jzPSDWn8R5laI8rZF/DRwOCKx2MnM11AtbxDlCFqj+Xty8E6h5zHRkqH472knpomFLNrZ+umUUVC1esNUVjrupYCrw08gXYsraKv3p9P6KFGZF54ips+1YQV+ihW6Xm4v/0MHyIQQsAzhwN7kZcuwSngzvE0xdt82v9ih0V91OUhmya25Rs7jafUYhVL/Ea869BSEjd7w9te/ukNfNCDnJpObFQlzX15h7jr8jYdt5qVulbV0VnaCnCkzpliE2NwaQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=tXP+1CX2YXOjNpIHBx/SLOI1OAhFtDCz8IgFEQ+sqpo=;
+ b=HHcJMwdWQbnc5COOAQOMg3cGJ1ZBmdXcLnWFwCh8CXVo1/P9E6XysUBWvI/rBCKO2aSLnQIrmrSxiGLw+E2L/C1AlMyCd7TBu8iUf6gBtRokZddjfzavcIoTSUhOnj/rObeYmHTGZ3HcAOw8Swx8nY+1r0gGnO1JAdsELAY8G0E6UD9SKu+hwihuSbAQTBh8SnLhtJiEuviOlXbGxjUocNXu+8Q6e1YFhIAq+v7JQG394cZ1qZQmdM/pJaB8WZvTurh8REpDYJQYpeCpdkxqziyeQz71XF0k1ZYRRak48oEjDLAxq2PHxju9HMhFeniZBGWnpignH5TWOnVbszSYKg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=tXP+1CX2YXOjNpIHBx/SLOI1OAhFtDCz8IgFEQ+sqpo=;
+ b=hJZ/7eKWipGrV9MYj0yYXHQXcncTSrXD2rcYCFIM2WQ71Vy+EiqqeDrjbtzWhLbDwuIxou23cu+susYcdepAwKQNeBkXGe9hdCDns8+PDflofeVRYal8cxn0gQ+bAQO5iOFClg3HibODZzKMQ2vUEQBz5pu1a+L7U+lGR7V67conSWwrYRTZvxstC7uekBjAUkzm24AQjsEiij9fG64D7R0VvFzTDj/Z5tyttWypK8QVertDsGQ/e+3GN2kVYhTDjIeLvlvWWTPIii9ayj04iRxfLLsJPS5IjZ9Fz9jC7lKYZVmvwuQXOoQdRfd1L3Qrd1cCP7QnjWeJMX3Qdc8M/A==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by PH8PR12MB6890.namprd12.prod.outlook.com (2603:10b6:510:1ca::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6699.24; Tue, 22 Aug
+ 2023 12:49:21 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::5111:16e8:5afe:1da1]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::5111:16e8:5afe:1da1%6]) with mapi id 15.20.6699.020; Tue, 22 Aug 2023
+ 12:49:21 +0000
+Date: Tue, 22 Aug 2023 09:49:19 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Michael Shavit <mshavit@google.com>
+Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org, nicolinc@nvidia.com,
+	tina.zhang@intel.com, jean-philippe@linaro.org, will@kernel.org,
+	robin.murphy@arm.com, Dawei Li <set_pte_at@outlook.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	"Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Mark Brown <broonie@kernel.org>
+Subject: Re: [RFC PATCH v2 1/9] iommu/arm-smmu-v3: group attached devices by
+ smmu
+Message-ID: <ZOSuz+16JD5E0k3z@nvidia.com>
+References: <20230822105738.1607365-1-mshavit@google.com>
+ <20230822185632.RFC.v2.1.Ib87a2696f25414e0fc39cc22dc74e31a4415c2a1@changeid>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230822185632.RFC.v2.1.Ib87a2696f25414e0fc39cc22dc74e31a4415c2a1@changeid>
+X-ClientProxiedBy: BL1PR13CA0257.namprd13.prod.outlook.com
+ (2603:10b6:208:2ba::22) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <20230822105738.1607365-1-mshavit@google.com>
-X-Mailer: git-send-email 2.42.0.rc1.204.g551eb34607-goog
-Message-ID: <20230822185632.RFC.v2.9.I5d374dbc818b209e911ef5fbf43de6df0d7ac40b@changeid>
-Subject: [RFC PATCH v2 9/9] iommu/arm-smmu-v3: allow multi-SMMU domain installs.
-From: Michael Shavit <mshavit@google.com>
-To: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
-	linux-kernel@vger.kernel.org
-Cc: nicolinc@nvidia.com, tina.zhang@intel.com, jean-philippe@linaro.org, 
-	will@kernel.org, robin.murphy@arm.com, jgg@nvidia.com, 
-	Michael Shavit <mshavit@google.com>, Dawei Li <set_pte_at@outlook.com>, 
-	Jason Gunthorpe <jgg@ziepe.ca>, Joerg Roedel <joro@8bytes.org>, 
-	"Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>, Lu Baolu <baolu.lu@linux.intel.com>, 
-	Mark Brown <broonie@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|PH8PR12MB6890:EE_
+X-MS-Office365-Filtering-Correlation-Id: 05061f68-e105-4b18-0171-08dba30e34ae
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	8fACaFkMWGRvGDHEi41XzQQCWVuMtrgo5BpjQ/JSQLoypNv25soao5QEbFvgxBlCtW9mkq2KTAcBmGq6vi5Z27fi/qa3a+zHwYyJ5Pwt1bJqaNBzVajVlVKk3Hk11aFzAFUhVKvKwSAjLFNsiry+dEk5qjegD/fWH8BbzRyltxJzpcMWczBg2HTgtQDHO/B6MGrfO7S2QP7xDxOIs7qQPTR+bpDEZQckJCG7tMociR3DCfIevE73knNcoRIudKMy0k6C6MwFK+aq4CG/VgsUtsizG8X70LBwLfIkBQbi4lh2EhfsbVLqNdK6tLUKo0PfBI098vOEqfZ/kUeAGh2omvtznGwuwJKUkNxTLEwH8TJQ/s6/cSvsbQATMjPfx+pzwx7oAsjs8L8fyWD9qOWMyk2f3RJi68+Y8P06VKk5xYtYiDQky+Kzb4nbWKpNxtZdGhE3pc/s4D0vge5uY5ePA1kc0KagFNysievsHvctEBFWoOqrEia5GHR8qesx3WFGZZKSaql3+/YzxDEgGRlcPiHCkH2ipH/pViIhj4XQtX+brlW0yrt79UHoWJDPW6ErYJkQ0yIGlrqqQPJdkCBazBiav6HUA1n0T8NqegZGsF4=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(136003)(376002)(396003)(366004)(39860400002)(346002)(1800799009)(186009)(451199024)(54906003)(6916009)(66476007)(66556008)(316002)(66946007)(6512007)(8676002)(8936002)(2616005)(4326008)(36756003)(41300700001)(478600001)(38100700002)(6486002)(6506007)(83380400001)(2906002)(7416002)(86362001)(5660300002)(26005)(67856001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?1LkUZ05TMyB3aDWEZ+jxGIlgn6kFvy5WhZ6Y9eHYC8se7EeBsOjIKzss5WBA?=
+ =?us-ascii?Q?hYxSvm9HTs/iS6rRnUVaCkAgznj530T+w0JHii7qehd2cwLQCmoYIl75E9AJ?=
+ =?us-ascii?Q?3pDujd6oGXK+abywKUNSOQpzNHVyrk5SWEpbq09+170zJ6r1QQ9cjoNusvQ6?=
+ =?us-ascii?Q?y/OtAiKi/uwDl8/yZd04kfCI/3XmyT3Br8vcJYb1bGJvjh5nWFKZ6+1J5her?=
+ =?us-ascii?Q?UzfdOKN5jWhtK7K2vppjaAMy/JgVnCL7NQoZ4y/VftbwVdsBSFogcZwRMbRf?=
+ =?us-ascii?Q?dbMR5CikZyoE+8stEDJdXDSV+5jTIx0XgmTJyexdCDzXGI20ctHIbh1u8cVc?=
+ =?us-ascii?Q?ptzmWh4X7kmrzJJZQ4uxS3RIDex/in/CX11etiSARQ2r/RKdiESlLfY+QJVL?=
+ =?us-ascii?Q?OiRCnsh+UO6OdLxtiXoOa06KlhSql1v2vY0UxGt+/5WJt2lkt/Zet7g7egt8?=
+ =?us-ascii?Q?2EaE1vw4Ki0ixZk8bNl4GHHE57cF9DarWd3D/Rcfl4TxLEjYpydt2NQgShw7?=
+ =?us-ascii?Q?Dpps28UP1DgZ3VQAZIqmGD0kco/xpFe9cKXzhuboOlBGtySdWWha8kB5YI8f?=
+ =?us-ascii?Q?rCz9NF7Jj34zNIV5sVCFvinvWLXldVE0TWsTBwy6OD4tlnksYFitkHd2Mrmo?=
+ =?us-ascii?Q?RvTs+LAY/N4M95VKPHEFf0JPueTdavmktOm8YOlXoTWEIfZPKWHqfrLUpBoK?=
+ =?us-ascii?Q?2B7rN58yBhCT9EbR4/StrXD+8hJKyYhYvswV90pC6jPdi0+ickrriwsw5CEc?=
+ =?us-ascii?Q?KveMLyl6XH4GGwixjF780ElV/qr0U+L3uUoFa4/Lf5zsFoKhd73JMlQ9mEIm?=
+ =?us-ascii?Q?8CKCrrI1PQEDXB/d8nfQ9SzxEIzElM+8fexxV+sTA6UFtT/s3nskXqIv7idG?=
+ =?us-ascii?Q?RjwKQK3R3d0rQPbxaM5AaIKkE0b0ECd3kbzWeA48g3cxztpbn2CdT0dsoFR8?=
+ =?us-ascii?Q?FO38LLC9FKBZ1L3us2i3dI83I3rd8btKeXoGnakcpZ1l1pmYOIeVoSCo+nBc?=
+ =?us-ascii?Q?zw1uIbA3sDM+Qek3Gfjxp98yYOKYP63N5lflUVOCktnveh7jImbwHnfQkH8/?=
+ =?us-ascii?Q?OYxhSTZrWT7TaDoxC/D1WvxfZUpvBanVt9uQdf8AK4jMK9GpLq9kgSDB+pvf?=
+ =?us-ascii?Q?25q2ATUaKDfKUn4pddGjFsm8GCySqatZRe362um980meET0S8KI4CHFD43k2?=
+ =?us-ascii?Q?pSH1FQoqOjTDDbreLozAcZgNhWdLGbNbWZvo2PUQfoV+yNJ/PjbWCT17EjvN?=
+ =?us-ascii?Q?nefGpNA+OvzV9vuBQZZGgUGEAdSWyqaoMndlsBv1vz2ag9JAQBTay10XOyfM?=
+ =?us-ascii?Q?9Hso9O7j54P/xrUfSaatRqj5FIo2Bpe6D+eeEq5iJrZPCsFqIG4+9HvRE8bQ?=
+ =?us-ascii?Q?nIwfYapt1/TltBEB4tkhSonSnH7S7hqbSq+UW9lR3TCqjQOpXwhcQzGji0qH?=
+ =?us-ascii?Q?fYnWJMLIcBKoR+6a+WI0rbXOB8Sg9IOdOzBVfd7dRzx64msJCHqJTHUqMxW7?=
+ =?us-ascii?Q?TvHDfrd4NiQZ9ZWPKXw+VFg21nlH3sX3E2HyVKA6TQ8ncXmsOC9XIwK4wr/7?=
+ =?us-ascii?Q?uUFjcGPhr55WKri70ZAljjIv4B9PtmyGNc5rtf07?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 05061f68-e105-4b18-0171-08dba30e34ae
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Aug 2023 12:49:21.2951
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Xa3yGy7UDpQSnlYHLlwNx7iYZQXt7lUYkb0FGYmpyhs9nKRPcajDbbGffJgGQ8r0
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR12MB6890
 
-Remove the arm_smmu_domain->smmu handle now that a domain may be
-attached to devices with different upstream SMMUs.
+On Tue, Aug 22, 2023 at 06:56:57PM +0800, Michael Shavit wrote:
+> Always insert a new master in the devices_list besides other masters
+> that belong to the same smmu.
+> This allows code to batch commands by SMMU when iterating over masters
+> that a domain is attached to.
+> 
+> Signed-off-by: Michael Shavit <mshavit@google.com>
+> ---
+> 
+> Changes in v2:
+> - New commit
+> 
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 22 ++++++++++++++++++---
+>  1 file changed, 19 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index f17704c35858d..37b9223c145ba 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -2382,6 +2382,24 @@ static void arm_smmu_detach_dev(struct arm_smmu_master *master)
+>  		arm_smmu_write_ctx_desc(master, 0, NULL);
+>  }
+>  
+> +static void arm_smmu_domain_device_list_add(struct arm_smmu_domain *smmu_domain,
+> +					   struct arm_smmu_master *master)
+> +{
+> +	struct arm_smmu_master *iter;
+> +	unsigned long flags;
+> +
+> +	spin_lock_irqsave(&smmu_domain->devices_lock, flags);
+> +	if (list_empty(&smmu_domain->devices))
+> +		list_add(&master->domain_head, &smmu_domain->devices);
+> +	else {
+> +		list_for_each_entry(iter, &smmu_domain->devices, domain_head)
+> +			if (iter->smmu == master->smmu)
+> +				break;
+> +		list_add(&master->domain_head, &iter->domain_head);
+> +	}
 
-Signed-off-by: Michael Shavit <mshavit@google.com>
----
+IIRC you are not supposed to touch iter after the list_for_each. Like this:
 
-(no changes since v1)
+ list_for_each_entry(iter, &smmu_domain->devices, domain_head) {
+      if (iter->smmu == master->smmu) {
+          list_add(&master->domain_head, iter->domain_head);
+ 	  goto out;
+      }
+ }
+ list_add(&master->domain_head, &smmu_domain->devices);
+out:
+ spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
 
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 10 +++-------
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  3 +--
- 2 files changed, 4 insertions(+), 9 deletions(-)
-
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 9f8b701771fc3..55c0b8aecfb0a 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -2564,13 +2564,9 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
- 
- 	mutex_lock(&smmu_domain->init_mutex);
- 
--	if (!smmu_domain->smmu) {
--		smmu_domain->smmu = smmu;
--		ret = arm_smmu_domain_finalise(domain, smmu);
--		if (ret)
--			smmu_domain->smmu = NULL;
--	} else if (smmu_domain->smmu != smmu ||
--		   !arm_smmu_verify_domain_compatible(smmu, smmu_domain))
-+	if (!smmu_domain->pgtbl_ops)
-+		ret = arm_smmu_domain_finalise(&smmu_domain->domain, smmu);
-+	else if (!arm_smmu_verify_domain_compatible(smmu, smmu_domain))
- 		ret = -EINVAL;
- 
- 	mutex_unlock(&smmu_domain->init_mutex);
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-index 1661d3252bac5..fcf3845f4659c 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-@@ -716,8 +716,7 @@ enum arm_smmu_domain_stage {
- };
- 
- struct arm_smmu_domain {
--	struct arm_smmu_device		*smmu;
--	struct mutex			init_mutex; /* Protects smmu pointer */
-+	struct mutex			init_mutex; /* Protects pgtbl_ops pointer */
- 
- 	struct io_pgtable_ops		*pgtbl_ops;
- 	atomic_t			nr_ats_masters;
--- 
-2.42.0.rc1.204.g551eb34607-goog
-
+Jason
