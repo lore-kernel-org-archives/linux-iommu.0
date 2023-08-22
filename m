@@ -1,160 +1,275 @@
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2047.outbound.protection.outlook.com [40.107.102.47])
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.151])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B4786748F
-	for <iommu@lists.linux.dev>; Tue, 22 Aug 2023 08:46:18 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gydNOHO/GYHf5Wn1Umw2FNgb2GHc72j1jJoNKsryECrojXSScWpjGhFWljtMkLPKWOX6F8tFL1UHNohROWitFMRX/VeHT0x3BIR7BEzgZoW+np8xvLKggyYLNyiH/QjOP0xpvpOT6kTOqKVe6VzWZ1zP+8pxFGmfklH62iXwsox4oClXNyhO8KlLwEjPWIHjbfr7aesxiSIMWPhQS07H/QfQZuPdkGcNkk3F+WQpG+s9wWsHU1jQx0vwk2ZisUtpUnGPrP0okWJc48rd++m6WKUv6i66+8CbAyuGm42BTeseq54drm8kifGoOUG5RzMYPSwsnp5yvxIQeMJJJKAhxw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=exbFn+06LxGydnN9f3efOq+WhuDJHyoZOkF8RLssHmE=;
- b=kC1/0VA7PGe+QE9mQMG8hvBhBHAYiSbF8MaNLP7RJipHDX9PZuuj88Tx7FyVe+AWljlUKliSexNUxXW92pS25tm6EwP/zxQFKkRNdaBoFpEX7XUsS+N2XnDZnESucFVZXVLpdFPWnbirf8XvKXdD5wqhl4l9EzI11JQxugtRrO5vaHUzlgwNe365AW0eo/UYRTUF8SnuoMlIxgwfbzD9YUG7KrbkmUMAm6SSaAuzYCY6tgwiZn5Nrpe0XKVnMZKw2f3ag1D+TIahHb9QMbiXpkgatWTEoKycAdXB17EHZjfT5X3pFfJexcMu3X25lvSj+zl3wYb88BdXB1yDFzHlgw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.232) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=exbFn+06LxGydnN9f3efOq+WhuDJHyoZOkF8RLssHmE=;
- b=px9yANd000IGTlO9V5Mi+sMISTTUbL50ZZAkL9Q3sfhHfN/Rd7Z+FQt9wGLCLP1MHhYz8hWbH7dnwpYK1R558YFL8l+qAii+Ddzi5JMnvbnqrifH/3ZhsgddHgdHerUttMmOyHELH1jF+Ohs/oQ92MJBB5PEN6A2GNlCwIKK0WzW5qITHCOUBNnjbanK9azHh8hgGIqONmrFE5UAq9ek5r/Xe7+n7Km/pi3apwPusESMIr+7uWV0OAqkk+ncRTE7lU0E2Syjc2hrD8iGy3QhaoKhWzVWWpojp00PxSHvRe2ezX2kjtwoMkofIptNEps6VcQEIw7kRDyvmVTnBozX7A==
-Received: from CY8PR10CA0028.namprd10.prod.outlook.com (2603:10b6:930:4b::18)
- by CY8PR12MB7513.namprd12.prod.outlook.com (2603:10b6:930:91::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6699.24; Tue, 22 Aug
- 2023 08:46:16 +0000
-Received: from CY4PEPF0000EDD6.namprd03.prod.outlook.com
- (2603:10b6:930:4b:cafe::9a) by CY8PR10CA0028.outlook.office365.com
- (2603:10b6:930:4b::18) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6699.20 via Frontend
- Transport; Tue, 22 Aug 2023 08:46:16 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.232) by
- CY4PEPF0000EDD6.mail.protection.outlook.com (10.167.241.210) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6699.15 via Frontend Transport; Tue, 22 Aug 2023 08:46:16 +0000
-Received: from drhqmail201.nvidia.com (10.126.190.180) by mail.nvidia.com
- (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Tue, 22 Aug 2023
- 01:46:06 -0700
-Received: from drhqmail203.nvidia.com (10.126.190.182) by
- drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.37; Tue, 22 Aug 2023 01:46:05 -0700
-Received: from Asurada-Nvidia.nvidia.com (10.127.8.13) by mail.nvidia.com
- (10.126.190.182) with Microsoft SMTP Server id 15.2.986.37 via Frontend
- Transport; Tue, 22 Aug 2023 01:46:05 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: <will@kernel.org>, <robin.murphy@arm.com>, <jgg@nvidia.com>
-CC: <joro@8bytes.org>, <jean-philippe@linaro.org>, <apopple@nvidia.com>,
-	<linux-kernel@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
-	<iommu@lists.linux.dev>
-Subject: [PATCH 3/3] iommu/arm-smmu-v3: Add a max_tlbi_ops for __arm_smmu_tlb_inv_range()
-Date: Tue, 22 Aug 2023 01:45:53 -0700
-Message-ID: <3ba332e141102d31b756326cdc4078cac1f5ab1c.1692693557.git.nicolinc@nvidia.com>
-X-Mailer: git-send-email 2.41.0
-In-Reply-To: <cover.1692693557.git.nicolinc@nvidia.com>
-References: <cover.1692693557.git.nicolinc@nvidia.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9BAB8F40
+	for <iommu@lists.linux.dev>; Tue, 22 Aug 2023 08:48:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1692694085; x=1724230085;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=V7k1Zg/RPqdwWHATuNXhAjOqDVUVwOY4KgEaXrdvYjc=;
+  b=g/7Rq9Y08UDfyFGQqyw1xbxpxGscAdvWP6O2KDvgBYp2a/SoWDGWf3Z4
+   e7XiIXKXdPrW8SXZkUmpzNoaNz3Fu7uTZRNR/tp2Kxt+aixYu7dMyMMTO
+   axmouE+6cVxyz5V2nnJvJvo3nF3/7DRcVRCixi9n2eMLBjUmkdBmJKpqS
+   UmjO3Q1DalUnWbaZP1OBTHIMR2XsR4KT8eRMIFDgRm/EiGQmIiSUJiSNY
+   JEPrpJVrs48HP0GSd8MZJZnObkD7RYh94ijDaaxdfGnnPeSUOiA6LErer
+   84mvYb1raFOZpdCTS+AuEAul7FVOH54vECfRatp0y05czqZ8HTpLygzMp
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10809"; a="354160587"
+X-IronPort-AV: E=Sophos;i="6.01,192,1684825200"; 
+   d="scan'208";a="354160587"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2023 01:48:04 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10809"; a="713076519"
+X-IronPort-AV: E=Sophos;i="6.01,192,1684825200"; 
+   d="scan'208";a="713076519"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.252.189.107]) ([10.252.189.107])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2023 01:47:58 -0700
+Message-ID: <f67333a7-cfea-f595-90f0-d3e1f18d5b74@linux.intel.com>
+Date: Tue, 22 Aug 2023 16:47:55 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY4PEPF0000EDD6:EE_|CY8PR12MB7513:EE_
-X-MS-Office365-Filtering-Correlation-Id: a1d623d5-b85b-41b3-c450-08dba2ec3faa
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	gacf5GrHIILcwjkqNSkdcDUiArWzmPyj28PITy8IXXt5d+va2HWnOTusGYEAmz1ViFQEvRWUaOjKfyPaskrv8QaoPs0m/mAGv0BtrTtiFPtYlDLlXn1OJ8cepcWe5WNLskoBNmXk4OsXyUdnhVE5rUdRQAoFpKPoD/nJP6gSLSyorBN2j1iwWFOXG++r0vV7767tJ32c+1PRUBapE8oCFxEpym1utyVhsMJJBGnOa9Jhn0EsQCjU6qyO63AjlWgazdsB2aXqMZQrLscxErIvsp3cUib+MhPmqN4iFRzEkXYj5tUtR9LoakCsNSwR6QUcnlIEqIwtpwplgT53Iu4OI3bDJ9Ej6a4n2IX7XxeF9huyiwx69z+EgtRIpX0RLNxZENgqnrz/FdchEK7lS0tsXjKmyZohwzHJ9hnt+LbUZ/fS7RzikjDPjWKpgyUshbfHb0ctGFINBRw7S1KFvt8vMPNs2O5BVPdyd/uihfHZWmGAGXgS92eQ5VjyhqBR4lIED5DVrzKrF5sptzLnDg4erSUSS562OxBb1KJ7MF0TmaADar/aSCvBAQ9sqi0aFWLfnBTuy7h4jqH73ZEmzWO/V0/kCRTPeQtz3h01+q3GBhsR2GgKes5hlYi8jBO5keV5onpxOfj+3qu9GtuImbnJ3xGR7gKVPOr8+yFvquJDP9xGwDkTwn3UmUgdUTUA5HKN1reVAyedVrI9m08Ks638ZaX1i5irvRDx1waYGtRUKlA=
-X-Forefront-Antispam-Report:
-	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230031)(4636009)(396003)(136003)(39860400002)(346002)(376002)(1800799009)(186009)(451199024)(82310400011)(46966006)(36840700001)(40470700004)(54906003)(6636002)(70206006)(70586007)(316002)(110136005)(8676002)(8936002)(2616005)(4326008)(7636003)(40460700003)(36756003)(41300700001)(82740400003)(356005)(478600001)(6666004)(40480700001)(83380400001)(2906002)(86362001)(7696005)(47076005)(36860700001)(336012)(426003)(5660300002)(26005);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Aug 2023 08:46:16.6257
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: a1d623d5-b85b-41b3-c450-08dba2ec3faa
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CY4PEPF0000EDD6.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR12MB7513
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.14.0
+Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Kevin Tian <kevin.tian@intel.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>,
+ Jacob Pan <jacob.jun.pan@linux.intel.com>, iommu@lists.linux.dev,
+ kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 09/11] iommu: Make iommu_queue_iopf() more generic
+Content-Language: en-US
+To: Jason Gunthorpe <jgg@ziepe.ca>
+References: <20230817234047.195194-1-baolu.lu@linux.intel.com>
+ <20230817234047.195194-10-baolu.lu@linux.intel.com>
+ <ZOOauSJpcE2YgIzG@ziepe.ca>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <ZOOauSJpcE2YgIzG@ziepe.ca>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-When receiving an __arm_smmu_tlb_inv_range() call with a large size, there
-could be a long latency at this function call: one part is coming from a
-large software overhead in the routine of building commands, and the other
-part is coming from CMDQ hardware consuming the large number of commands.
-This latency could be significantly large on an SMMU that does not support
-range invalidation commands, i.e. no ARM_SMMU_FEAT_RANGE_INV.
+On 2023/8/22 1:11, Jason Gunthorpe wrote:
+> On Fri, Aug 18, 2023 at 07:40:45AM +0800, Lu Baolu wrote:
+>> This completely separates the IO page fault handling framework from the
+>> SVA implementation. Previously, the SVA implementation was tightly coupled
+>> with the IO page fault handling framework. This makes SVA a "customer" of
+>> the IO page fault handling framework by converting domain's page fault
+>> handler to handle a group of faults and calling it directly from
+>> iommu_queue_iopf().
+>>
+>> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+>> ---
+>>   include/linux/iommu.h      |  5 +++--
+>>   drivers/iommu/iommu-sva.h  |  8 --------
+>>   drivers/iommu/io-pgfault.c | 16 +++++++++++++---
+>>   drivers/iommu/iommu-sva.c  | 14 ++++----------
+>>   drivers/iommu/iommu.c      |  4 ++--
+>>   5 files changed, 22 insertions(+), 25 deletions(-)
+>>
+>> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+>> index ff292eea9d31..cf1cb0bb46af 100644
+>> --- a/include/linux/iommu.h
+>> +++ b/include/linux/iommu.h
+>> @@ -41,6 +41,7 @@ struct iommu_sva;
+>>   struct iommu_fault_event;
+>>   struct iommu_dma_cookie;
+>>   struct iopf_queue;
+>> +struct iopf_group;
+>>   
+>>   #define IOMMU_FAULT_PERM_READ	(1 << 0) /* read */
+>>   #define IOMMU_FAULT_PERM_WRITE	(1 << 1) /* write */
+>> @@ -175,8 +176,7 @@ struct iommu_domain {
+>>   	unsigned long pgsize_bitmap;	/* Bitmap of page sizes in use */
+>>   	struct iommu_domain_geometry geometry;
+>>   	struct iommu_dma_cookie *iova_cookie;
+>> -	enum iommu_page_response_code (*iopf_handler)(struct iommu_fault *fault,
+>> -						      void *data);
+>> +	int (*iopf_handler)(struct iopf_group *group);
+>>   	void *fault_data;
+>>   	union {
+>>   		struct {
+>> @@ -526,6 +526,7 @@ struct iopf_group {
+>>   	struct list_head		faults;
+>>   	struct work_struct		work;
+>>   	struct device			*dev;
+>> +	void				*data;
+>>   };
+>>   
+>>   int iommu_device_register(struct iommu_device *iommu,
+>> diff --git a/drivers/iommu/iommu-sva.h b/drivers/iommu/iommu-sva.h
+>> index 510a7df23fba..cf41e88fac17 100644
+>> --- a/drivers/iommu/iommu-sva.h
+>> +++ b/drivers/iommu/iommu-sva.h
+>> @@ -22,8 +22,6 @@ int iopf_queue_flush_dev(struct device *dev);
+>>   struct iopf_queue *iopf_queue_alloc(const char *name);
+>>   void iopf_queue_free(struct iopf_queue *queue);
+>>   int iopf_queue_discard_partial(struct iopf_queue *queue);
+>> -enum iommu_page_response_code
+>> -iommu_sva_handle_iopf(struct iommu_fault *fault, void *data);
+>>   void iopf_free_group(struct iopf_group *group);
+>>   int iopf_queue_work(struct iopf_group *group, work_func_t func);
+>>   int iommu_sva_handle_iopf_group(struct iopf_group *group);
+>> @@ -65,12 +63,6 @@ static inline int iopf_queue_discard_partial(struct iopf_queue *queue)
+>>   	return -ENODEV;
+>>   }
+>>   
+>> -static inline enum iommu_page_response_code
+>> -iommu_sva_handle_iopf(struct iommu_fault *fault, void *data)
+>> -{
+>> -	return IOMMU_PAGE_RESP_INVALID;
+>> -}
+>> -
+>>   static inline void iopf_free_group(struct iopf_group *group)
+>>   {
+>>   }
+>> diff --git a/drivers/iommu/io-pgfault.c b/drivers/iommu/io-pgfault.c
+>> index 00c2e447b740..a61c2aabd1b8 100644
+>> --- a/drivers/iommu/io-pgfault.c
+>> +++ b/drivers/iommu/io-pgfault.c
+>> @@ -11,8 +11,6 @@
+>>   #include <linux/slab.h>
+>>   #include <linux/workqueue.h>
+>>   
+>> -#include "iommu-sva.h"
+>> -
+>>   /**
+>>    * struct iopf_queue - IO Page Fault queue
+>>    * @wq: the fault workqueue
+>> @@ -93,6 +91,7 @@ int iommu_queue_iopf(struct iommu_fault *fault, struct device *dev)
+>>   {
+>>   	int ret;
+>>   	struct iopf_group *group;
+>> +	struct iommu_domain *domain;
+>>   	struct iopf_fault *iopf, *next;
+>>   	struct iommu_fault_param *iopf_param;
+>>   	struct dev_iommu *param = dev->iommu;
+>> @@ -124,6 +123,16 @@ int iommu_queue_iopf(struct iommu_fault *fault, struct device *dev)
+>>   		return 0;
+>>   	}
+>>   
+>> +	if (fault->prm.flags & IOMMU_FAULT_PAGE_REQUEST_PASID_VALID)
+>> +		domain = iommu_get_domain_for_dev_pasid(dev, fault->prm.pasid, 0);
+>> +	else
+>> +		domain = iommu_get_domain_for_dev(dev);
+>> +
+>> +	if (!domain || !domain->iopf_handler) {
+>> +		ret = -ENODEV;
+>> +		goto cleanup_partial;
+>> +	}
+>> +
+>>   	group = kzalloc(sizeof(*group), GFP_KERNEL);
+>>   	if (!group) {
+>>   		/*
+>> @@ -137,6 +146,7 @@ int iommu_queue_iopf(struct iommu_fault *fault, struct device *dev)
+>>   
+>>   	group->dev = dev;
+>>   	group->last_fault.fault = *fault;
+>> +	group->data = domain->fault_data;
+>>   	INIT_LIST_HEAD(&group->faults);
+>>   	list_add(&group->last_fault.list, &group->faults);
+>>   
+>> @@ -147,7 +157,7 @@ int iommu_queue_iopf(struct iommu_fault *fault, struct device *dev)
+>>   			list_move(&iopf->list, &group->faults);
+>>   	}
+>>   
+>> -	ret = iommu_sva_handle_iopf_group(group);
+>> +	ret = domain->iopf_handler(group);
+>>   	if (ret)
+>>   		iopf_free_group(group);
+>>   
+>> diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
+>> index df8734b6ec00..2811f34947ab 100644
+>> --- a/drivers/iommu/iommu-sva.c
+>> +++ b/drivers/iommu/iommu-sva.c
+>> @@ -148,13 +148,14 @@ EXPORT_SYMBOL_GPL(iommu_sva_get_pasid);
+>>   /*
+>>    * I/O page fault handler for SVA
+>>    */
+>> -enum iommu_page_response_code
+>> +static enum iommu_page_response_code
+>>   iommu_sva_handle_iopf(struct iommu_fault *fault, void *data)
+>>   {
+>>   	vm_fault_t ret;
+>>   	struct vm_area_struct *vma;
+>> -	struct mm_struct *mm = data;
+>>   	unsigned int access_flags = 0;
+>> +	struct iommu_domain *domain = data;
+>> +	struct mm_struct *mm = domain->mm;
+>>   	unsigned int fault_flags = FAULT_FLAG_REMOTE;
+>>   	struct iommu_fault_page_request *prm = &fault->prm;
+>>   	enum iommu_page_response_code status = IOMMU_PAGE_RESP_INVALID;
+>> @@ -231,23 +232,16 @@ static void iommu_sva_iopf_handler(struct work_struct *work)
+>>   {
+>>   	struct iopf_fault *iopf;
+>>   	struct iopf_group *group;
+>> -	struct iommu_domain *domain;
+>>   	enum iommu_page_response_code status = IOMMU_PAGE_RESP_SUCCESS;
+>>   
+>>   	group = container_of(work, struct iopf_group, work);
+>> -	domain = iommu_get_domain_for_dev_pasid(group->dev,
+>> -				group->last_fault.fault.prm.pasid, 0);
+>> -	if (!domain || !domain->iopf_handler)
+>> -		status = IOMMU_PAGE_RESP_INVALID;
+>> -
+>>   	list_for_each_entry(iopf, &group->faults, list) {
+>>   		/*
+>>   		 * For the moment, errors are sticky: don't handle subsequent
+>>   		 * faults in the group if there is an error.
+>>   		 */
+>>   		if (status == IOMMU_PAGE_RESP_SUCCESS)
+>> -			status = domain->iopf_handler(&iopf->fault,
+>> -						      domain->fault_data);
+>> +			status = iommu_sva_handle_iopf(&iopf->fault, group->data);
+>>   	}
+>>   
+>>   	iommu_sva_complete_iopf(group->dev, &group->last_fault, status);
+>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+>> index b280b9f4d8b4..9b622088c741 100644
+>> --- a/drivers/iommu/iommu.c
+>> +++ b/drivers/iommu/iommu.c
+>> @@ -3395,8 +3395,8 @@ struct iommu_domain *iommu_sva_domain_alloc(struct device *dev,
+>>   	domain->type = IOMMU_DOMAIN_SVA;
+>>   	mmgrab(mm);
+>>   	domain->mm = mm;
+>> -	domain->iopf_handler = iommu_sva_handle_iopf;
+>> -	domain->fault_data = mm;
+>> +	domain->iopf_handler = iommu_sva_handle_iopf_group;
+>> +	domain->fault_data = domain;
+> 
+> Why fault_data? The domain handling the fault should be passed
+> through naturally without relying on fault_data.
+> 
+> eg make
+> 
+>    iommu_sva_handle_iopf(struct iommu_fault *fault, void *data)
+> 
+> into
+>    iommu_sva_handle_iopf(struct iommu_fault *fault, struct iommu_domain *domain)
 
-One way to optimize this is to replace a large number of VA invalidation
-commands with one single per-asid or per-vmid invalidation command, if an
-invalidation size reaches a preset threshold using the number of entries
-per io-pgtable, similar to the MAX_TLBI_OPS in arm64's tlbflush.h.
+See your point now. I will remove "void *data" and move "domain" to
+"group->domain".
 
-Add a max_tlbi_ops in arm_smmu_domain, and convert a large number of per-
-granule TLBI commands to one single per-asid or per-vmid TLBI command, on
-SMMUs without ARM_SMMU_FEAT_RANGE_INV.
+> 
+> And delete domain->fault_data until we have some use for it.
 
-Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
----
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 10 +++++++++-
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  1 +
- 2 files changed, 10 insertions(+), 1 deletion(-)
+Perhaps we will soon have a use for it.
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index d6c647e1eb01..3f0db30932bd 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -1897,7 +1897,14 @@ static void __arm_smmu_tlb_inv_range(struct arm_smmu_cmdq_ent *cmd,
- 	if (!size)
- 		return;
- 
--	if (smmu->features & ARM_SMMU_FEAT_RANGE_INV) {
-+	if (!(smmu->features & ARM_SMMU_FEAT_RANGE_INV)) {
-+		/*
-+		 * When the size reaches a threshold, replace per-granule TLBI
-+		 * commands with one single per-asid or per-vmid TLBI command.
-+		 */
-+		if (size >= granule * smmu_domain->max_tlbi_ops)
-+			return arm_smmu_tlb_inv_domain(smmu_domain);
-+	} else {
- 		/* Get the leaf page size */
- 		tg = __ffs(smmu_domain->domain.pgsize_bitmap);
- 
-@@ -2258,6 +2265,7 @@ static int arm_smmu_domain_finalise(struct iommu_domain *domain,
- 	}
- 
- 	smmu_domain->pgtbl_ops = pgtbl_ops;
-+	smmu_domain->max_tlbi_ops = pgtbl_cfg.nents_per_pgtable;
- 	return 0;
- }
- 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-index dcab85698a4e..f68c95a2e24f 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-@@ -721,6 +721,7 @@ struct arm_smmu_domain {
- 	struct io_pgtable_ops		*pgtbl_ops;
- 	bool				stall_enabled;
- 	atomic_t			nr_ats_masters;
-+	unsigned long			max_tlbi_ops;
- 
- 	enum arm_smmu_domain_stage	stage;
- 	union {
--- 
-2.41.0
+In the iommufd case, the iommufd iopf handler has a need to retrieve the
+hwpt pointer from a domain pointer, right? With the domain->fault_data
+pointing to the hwpt, the iopf handler has no need to lookup it in the
+critical path.
 
+> 
+> The core code should be keeping track of the iommu_domain lifetime.
+
+I added the debugging code in the next patch as you suggested.
+
+Best regards,
+baolu
