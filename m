@@ -1,182 +1,207 @@
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2040.outbound.protection.outlook.com [40.107.220.40])
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3FA564C75
-	for <iommu@lists.linux.dev>; Wed, 23 Aug 2023 10:48:27 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=WADSWMKHSzMoVU3QTNjUJfM5728qQ3WVkYqJXCKL+6dxAjXkg72Pvd7VQgdyk3eWuDnjE7BLVcsUPHsC5FHfuxwcTYknVE875PuSERwokScATQ81nxzDw0+u7694qFcUyhf39m15MmwMgl9x8hc8kVeDTgOxm+vfeaQkzPvfqYOzyFWpnroY3X6irk5ClMjoF5SRxJjOCaY4Cb1lQY0juFcft1vnfGHAso1dSoK0FN1Ua4tsaEA+u99b7kCeFftDk89Rak1EfUNk8SxgGyv8aPz1lyByZgvxn8I99aGwIXI9Mi+jlS4N/dga5FDkHL52VwVrVeppLk5RWRvhyJLoZQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ykBkZyGb5o7ploD5O5uJ/SyrTM/sBcRM5WB2jhi/SVg=;
- b=PNkyVHQAjCSplo7iQyeEnOwli2Qq88QumZWtG/pD93XZ2Y3ZPUqYbpjvhRlDt2NeSLnrvIJnLtXXpJzRSvVmbA7UNW6d8/WtI6Fs0AM1LPrKa3zyEXxKzktakYNSkiQOQte3N8Qnh1ILxQl9FfxpjVGzgJYxH+MyFb+XsewHObdR3+uTnrYgLYC5scopfOkaJZWAkKQnf35wxY2NyCG9I5Wao3UCNOarvnC7MWpYIC9Nk/rmFXztbTVHhWOu/+LqA9GYXt+r9/LTfLl9Y8i12lHO4RRea9/TYM/jY+ZJoEekgDTBlyumCQGql9jei7l5gzuHVXRfxjRUnLjSKihR0g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ykBkZyGb5o7ploD5O5uJ/SyrTM/sBcRM5WB2jhi/SVg=;
- b=hLvJOIr/jfxGgf5ewhVXVW3vpSG7hP28b6m4QQE/887k5HZnedNqcFwFGfbGQ1EDp8uYhp+KX+9iUsl4O/qRnDiAqS3NyPJBkVBeXnBc1sndP9MAn+iaR/iCbj9oD7UmTQvIERtk4dSqUlQBx2wwN9h3cx6RJ77i+xzv5MWYsJg=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DS7PR12MB6048.namprd12.prod.outlook.com (2603:10b6:8:9f::5) by
- SA1PR12MB8886.namprd12.prod.outlook.com (2603:10b6:806:375::6) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6699.25; Wed, 23 Aug 2023 10:48:24 +0000
-Received: from DS7PR12MB6048.namprd12.prod.outlook.com
- ([fe80::67ec:80e:c478:df8e]) by DS7PR12MB6048.namprd12.prod.outlook.com
- ([fe80::67ec:80e:c478:df8e%7]) with mapi id 15.20.6699.022; Wed, 23 Aug 2023
- 10:48:24 +0000
-Message-ID: <d67d016c-fe8b-ce2e-e335-02d4e598d6e6@amd.com>
-Date: Wed, 23 Aug 2023 16:18:12 +0530
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v5 04/14] iommu/amd: Refactor protection domain allocation
- code
-Content-Language: en-US
-To: Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
- joro@8bytes.org
-Cc: suravee.suthikulpanit@amd.com, wei.huang2@amd.com, jsnitsel@redhat.com,
- jgg@ziepe.ca, Jason Gunthorpe <jgg@nvidia.com>
-References: <20230821104227.706997-1-vasant.hegde@amd.com>
- <20230821104227.706997-5-vasant.hegde@amd.com>
- <4e785061-b35b-774b-be06-2f2529de7774@arm.com>
-From: Vasant Hegde <vasant.hegde@amd.com>
-In-Reply-To: <4e785061-b35b-774b-be06-2f2529de7774@arm.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: PN3PR01CA0058.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:c01:99::17) To DS7PR12MB6048.namprd12.prod.outlook.com
- (2603:10b6:8:9f::5)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D3904C75;
+	Wed, 23 Aug 2023 10:53:50 +0000 (UTC)
+Received: from pps.filterd (m0353729.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 37NAnB9r030951;
+	Wed, 23 Aug 2023 10:53:11 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=3eNJ1F1ZIh5qb5ABj3u6R40fpkitePvKxhd0FlU+G8s=;
+ b=VKt8IydGFnohWH59XRysxy6TXiX7WNJup4ggmXgZsJgtwJ0A17CkWAmXdihvozm7b8b7
+ RpfJB/mi8aDIlezw6SNvhk9occtvjPu8efnV7vSE/pWXbGTLRKpVvrsHx6qd7CneFaoy
+ i7RUQlIHzHGCSFEhkbo99IHpGeRRV4LHo7w0KNQyKD8D6uvtr5WBHoitFTotQ69fhAdn
+ wUu2uKRyEo30lmgj58dFk9lTzaGFc1sPjA+XFMEhviWb6/bloLfVQUKmIC2d+t2OLwQ3
+ SkuttcS/e3Or3U9TfQrcjQfiqMZW2oy37iHOUaLQULIq0b1UMVu2gN3yFnI+GqrIEqER hg== 
+Received: from pps.reinject (localhost [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3sngpfr1qa-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 23 Aug 2023 10:53:11 +0000
+Received: from m0353729.ppops.net (m0353729.ppops.net [127.0.0.1])
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 37NAnGSX031081;
+	Wed, 23 Aug 2023 10:53:10 GMT
+Received: from ppma13.dal12v.mail.ibm.com (dd.9e.1632.ip4.static.sl-reverse.com [50.22.158.221])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3sngpfr1pt-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 23 Aug 2023 10:53:10 +0000
+Received: from pps.filterd (ppma13.dal12v.mail.ibm.com [127.0.0.1])
+	by ppma13.dal12v.mail.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 37N9Ujs5020144;
+	Wed, 23 Aug 2023 10:53:09 GMT
+Received: from smtprelay06.fra02v.mail.ibm.com ([9.218.2.230])
+	by ppma13.dal12v.mail.ibm.com (PPS) with ESMTPS id 3sn22adnqx-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 23 Aug 2023 10:53:08 +0000
+Received: from smtpav01.fra02v.mail.ibm.com (smtpav01.fra02v.mail.ibm.com [10.20.54.100])
+	by smtprelay06.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 37NAr6TJ45089220
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Wed, 23 Aug 2023 10:53:06 GMT
+Received: from smtpav01.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 1494B2004D;
+	Wed, 23 Aug 2023 10:53:06 +0000 (GMT)
+Received: from smtpav01.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id B274420040;
+	Wed, 23 Aug 2023 10:53:03 +0000 (GMT)
+Received: from [9.171.92.225] (unknown [9.171.92.225])
+	by smtpav01.fra02v.mail.ibm.com (Postfix) with ESMTP;
+	Wed, 23 Aug 2023 10:53:03 +0000 (GMT)
+Message-ID: <67ec0e36908b7e6d7a6eba642ec76ef87d0d4945.camel@linux.ibm.com>
+Subject: Re: [PATCH v11 4/6] iommu/s390: Force ISM devices to use
+ IOMMU_DOMAIN_DMA
+From: Niklas Schnelle <schnelle@linux.ibm.com>
+To: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+        Matthew Rosato <mjrosato@linux.ibm.com>, Will Deacon <will@kernel.org>,
+        Wenjia Zhang <wenjia@linux.ibm.com>, Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Gerd Bayer <gbayer@linux.ibm.com>, Julian Ruess <julianr@linux.ibm.com>,
+        Pierre Morel <pmorel@linux.ibm.com>,
+        Alexandra Winter
+ <wintera@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik
+ <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian
+ Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle
+ <svens@linux.ibm.com>,
+        Suravee Suthikulpanit
+ <suravee.suthikulpanit@amd.com>,
+        Hector Martin <marcan@marcan.st>, Sven
+ Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        David
+ Woodhouse <dwmw2@infradead.org>,
+        Lu Baolu <baolu.lu@linux.intel.com>, Andy
+ Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad
+ Dybcio <konrad.dybcio@linaro.org>,
+        Yong Wu <yong.wu@mediatek.com>,
+        Matthias
+ Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno
+ <angelogioacchino.delregno@collabora.com>,
+        Gerald Schaefer
+ <gerald.schaefer@linux.ibm.com>,
+        Orson Zhai <orsonzhai@gmail.com>,
+        Baolin
+ Wang <baolin.wang@linux.alibaba.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>, Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Thierry Reding
+ <thierry.reding@gmail.com>,
+        Krishna Reddy <vdumpa@nvidia.com>,
+        Jonathan
+ Hunter <jonathanh@nvidia.com>,
+        Jonathan Corbet <corbet@lwn.net>, linux-s390@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        iommu@lists.linux.dev, asahi@lists.linux.dev,
+        linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        linux-tegra@vger.kernel.org, linux-doc@vger.kernel.org
+Date: Wed, 23 Aug 2023 12:53:03 +0200
+In-Reply-To: <ba1e0b29-52e0-2fc0-2eb9-475735febacf@arm.com>
+References: <20230717-dma_iommu-v11-0-a7a0b83c355c@linux.ibm.com>
+	 <20230717-dma_iommu-v11-4-a7a0b83c355c@linux.ibm.com>
+	 <ba1e0b29-52e0-2fc0-2eb9-475735febacf@arm.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.48.4 (3.48.4-1.fc38) 
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS7PR12MB6048:EE_|SA1PR12MB8886:EE_
-X-MS-Office365-Filtering-Correlation-Id: a9a78b42-cdb6-4542-0305-08dba3c6799f
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	jh7/w6pKt2MN+U3Jnp0ImBm5CDxse7Gx/+AyKNtyA2AGI7LQKO9Rd9NMqxUz/EUF+iLthaXWCVnuWZpC+qj4nj/GbMDL3DIg6Hb25gJHG5yhRF2wLCs8EehWiUwSiJOTmtzzC2xa+eLieWYMu25PVTwHA05+PaWCOEg7EG9UYPnvnV6LK9VYH1+uIC4FIRZJTJO438bkoetoe8BPSlwEI/RM4TVvl48KovAF+pSnRWK/KErWOubbYQLaCIDPVRosckJQ6f1Xlg1DEgw9K7SOQrGbIx87v1KFjk+G3HmD5HHikTXWBf6XPZOnXDiBcAqVX2/S0hTuTWAf7aVXc/JnooBxnhpD4ibc+h6kaSlkQEzKxVL7wGwH82eNnss3510qau5MG3zyOb0yo0M7VXFahKFfBSqqkVyVzFGuv9LLcFhN6suAeI5vcutKRs6/Q2FFLa61bKh5e7n6z6RlPVh4DG8uaJbHJbw5LGe1O+T0p519jd00KkCPhtHat/j+Dz18V3/33u2azFMObjgEmWmmJ/tv0P1JwAfA9UWoaezQdxMOMV6d61Yk/QXv1J5ebezD3V/iQ56bTGKiDPIVWSnPpHWchZAMlnTtIJR0dVETuuYrVTPCR11Km4O/aCy0lLGQ8ZW6i6er9oT/8oKcaxWIjg==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6048.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(376002)(396003)(346002)(39860400002)(136003)(366004)(186009)(451199024)(1800799009)(5660300002)(2616005)(6486002)(6506007)(53546011)(316002)(4326008)(8676002)(8936002)(66556008)(66946007)(66476007)(6512007)(41300700001)(26005)(44832011)(6666004)(478600001)(31686004)(83380400001)(31696002)(86362001)(36756003)(2906002)(38100700002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?YkNiVXhOOGYxZzNDaUk4L2hBMXlDcm9sNlBpckxXWFNjNFJRd29VL04vSTNE?=
- =?utf-8?B?cFh5OCs4VHpvaEV0bXUxbERXMFJYbzFyaGJ4UzVlMncwd1hEQ3RNa0VRWHZW?=
- =?utf-8?B?dnV6OFhka29hakhjdnBXcS91RXdvU3A5WkZ2OCtTQU5QeS9GUWpOVGFzM0Uy?=
- =?utf-8?B?dGEvOVB5TmMyQVBrU2p2SGNmZHJwbGF2UGdPL3RPRFhyWlVSUmcyVmxOblFx?=
- =?utf-8?B?b1UxVm1VV0cwMjNHOC9qekF2ZWJzcDQweUtYTElGSGE4dm5KSTI5QzhZai9n?=
- =?utf-8?B?dkY2OHhFVUttd2F1Qm4wK0srQkQvTEJHTTN6Z3lhV25lSkF6Ry9xM3pyUm9q?=
- =?utf-8?B?dXZETDFvZ3JENjhYYWR4cXBISlFJZGgyN0NBVGRDWE13ZEdoREtXcFBEU1g2?=
- =?utf-8?B?RnpnUTFwQUVHcEZkSDExbE9YUHBOa0tzL3ZrL091Y0hsVEcwL1d4YWNpZVpv?=
- =?utf-8?B?Uk5ScERVcFdiaFgwKzB5U2crSnVVdXpDbE1kOXUxZHFvem5VclpkSTFrNzBq?=
- =?utf-8?B?OU1EbFRGZ2gxdUljSGhNOEppS1BBSGdkWVJZWCtYenlJRzgrWGgybUhTWGxQ?=
- =?utf-8?B?SUxWdVlnb0JCaEg1RU5aTEZ1bUE3VGZUcE52NFd5ODlPWCtMWlowcmUzWkE5?=
- =?utf-8?B?K28zSnNlWGx6NGdIcG1ENFNuTWttZFZ4UWtONk1wTkhIcVM5VGhWeVVsOXhl?=
- =?utf-8?B?dkxOVkFnNnl3UnJXQklzQ25aV1YvYWdMcXkrMFI3c0EvS1RHS2tyUHdQTHVj?=
- =?utf-8?B?Rkh5NjRoRm00amRibVYyVzN0ZFJKSE9BcWIrQjVBMnJYK0hSdFdUOE9ILzI1?=
- =?utf-8?B?cFo2SGsrWEJqOGNwL1FoR0M4Rzc4K2ZuVEhrSWlqWGEwdnlXYjBCeHdBNjVK?=
- =?utf-8?B?bllXTENnSlpqenBlT2RQeGl6Z0VhRkNXS1RTWlgrRCtvOVZNQjh5L1h6R2ht?=
- =?utf-8?B?ZzFBV2pjOTBZWFlqdjZuSEQzNlkwMmpSVFZjNFFSUG1SRGQ2RitOdlErQTIr?=
- =?utf-8?B?ajV0ZVZIOUdaUlNOdnVNWThyYmFlVDczZkZYR0hrNFhPckVTOTF5YTNVR2tD?=
- =?utf-8?B?ZmxUanRJdEVvM0Y4cEdLMjU1LzZHbDJXV1FuYkROVGRTR0xFR2JQUWtuV0Fj?=
- =?utf-8?B?dXdMbytTdWRKTFZSK2MvQ0oycWlJRGt3Uzd2Y2dMTGI4S0RKUE0wUFIyeVNF?=
- =?utf-8?B?cHNhM2VnMWtPNFg3Q2NTeElMVzI5M0VDcTZzdXZ1MG1JSVZtYmttVVV1bFRo?=
- =?utf-8?B?VTRkR2tuQ3NhSUptZ3Z6STc5U21WTTZsejNYYnp2THFvMTM2Ulo3Q2Nna0t4?=
- =?utf-8?B?UytNRkM5U0M1dS8rSUVBTEE0cldGSnVUS1h1dGQvZUxiRnE2c2lha29US29k?=
- =?utf-8?B?S3Uyc0Y2WWc5ekJGeko4TzlnNTJ1cTdlOE5vck9NdjVIUkgvMzM5MU8va2Y1?=
- =?utf-8?B?enZwNWxTR2loNFVkeTNUd2hQN1JwNEhvZGRUaEJKQzMyOVptWWhBc2pyN3Na?=
- =?utf-8?B?aEtKTjFxOFZYczZHNmY4R3VPVDN4b3NMK3AweEowbTBBTGpxaW1GaEZ6U1g1?=
- =?utf-8?B?NlcyZHBVSGNCYkk1R1RTNW05b1ZMQjNOOVlrNHFNZkJOVVJsMHlqZW5oSUc0?=
- =?utf-8?B?NHdleld2VzBZUGQvTXdqdUltazJsNFdtQUtkV1plczhoSmtNOXpGVG1kZTIv?=
- =?utf-8?B?SXNvMFQ5ck1TMGZmMmVmUTFEL2JRZE9FWGFvTTR4U25NQzROaHYwK0VaZENM?=
- =?utf-8?B?REF3WUZVZDhrbGVEcU1JeGhXQ0JXSUh2TWhxa3NOOXhkTlVXNk5DeThPU1ZP?=
- =?utf-8?B?QXlEUTJNOFNFRHFrMzhtZVdqbFc0WFp0NGhHUTQxUWxtREplelZMWTdBZTdy?=
- =?utf-8?B?djVaUW0rYm9panlXYXQvblFjak9FY1FDdEpCVy9HVTJJMERLem9xUExNOTRh?=
- =?utf-8?B?OUpmZk1RbHEvVVZDNWxqVklFd04vTEhZajNnbjhiU2dWVjkwbHk2cjY0b2x1?=
- =?utf-8?B?M0RjVVJZZkw0QS9XWjlYV3ExbGRXeDVTb3E4WnorU1RWZDBkSTh5SFZ3TzBN?=
- =?utf-8?B?VW95elMrVWJMcS9wRkFoVmN3SnA1aDk5eGYrVjVwVnFkQit3dk5yaWlFcVFn?=
- =?utf-8?Q?COOnS3Xu1mLlnPtuYZRNew1UP?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a9a78b42-cdb6-4542-0305-08dba3c6799f
-X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6048.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Aug 2023 10:48:24.6648
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ZqSpBTHZ54w9xrP1NJ/59X7eYTb47ci7n37eiKLcMBsozvqpEJiucWAJgYlhZQadeRG6NONTpy6OOd+SV6yOrg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB8886
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: Dn5I7UigftX5RBKQwAj9CDPxUIpK94FJ
+X-Proofpoint-GUID: X6PgzynOD1cJFA8yBLSkFvc2jrgZNG5R
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.267,Aquarius:18.0.957,Hydra:6.0.601,FMLib:17.11.176.26
+ definitions=2023-08-23_06,2023-08-22_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011
+ priorityscore=1501 lowpriorityscore=0 mlxscore=0 malwarescore=0
+ spamscore=0 phishscore=0 adultscore=0 impostorscore=0 bulkscore=0
+ suspectscore=0 mlxlogscore=999 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2308100000 definitions=main-2308230096
 
-Hi Robin,
+On Fri, 2023-08-18 at 20:10 +0100, Robin Murphy wrote:
+> On 2023-07-17 12:00, Niklas Schnelle wrote:
+> > ISM devices are virtual PCI devices used for cross-LPAR communication.
+> > Unlike real PCI devices ISM devices do not use the hardware IOMMU but
+> > inspects IOMMU translation tables directly on IOTLB flush (s390 RPCIT
+> > instruction).
+> >=20
+> > While ISM devices keep their DMA allocations static and only very rarel=
+y
+> > DMA unmap at all, For each IOTLB flush that occurs after unmap the ISM
+> > devices will inspect the area of the IOVA space indicated by the flush.
+> > This means that for the global IOTLB flushes used by the flush queue
+> > mechanism the entire IOVA space would be inspected. In principle this
+> > would be fine, albeit potentially unnecessarily slow, it turns out
+> > however that ISM devices are sensitive to seeing IOVA addresses that ar=
+e
+> > currently in use in the IOVA range being flushed. Seeing such in-use
+> > IOVA addresses will cause the ISM device to enter an error state and
+> > become unusable.
+> >=20
+> > Fix this by forcing IOMMU_DOMAIN_DMA to be used for ISM devices. This
+> > makes sure IOTLB flushes only cover IOVAs that have been unmapped and
+> > also restricts the range of the IOTLB flush potentially reducing latenc=
+y
+> > spikes.
+>=20
+> Would it not be simpler to return false for IOMMU_CAP_DEFERRED_FLUSH for=
+=20
+> these devices?
+>=20
+> Cheers,
+> Robin.
 
+Nice idea thank you. This is indeed less code, basically just return
+zdev->pft !=3D PCI_FUNC_TYPE_ISM for the IOMMU_CAP_DEFERRED_FLUSH check.
+I think it's also semantically more clear in that we don't really care
+about the domain type but about not getting deferred flushes.
 
-On 8/22/2023 1:36 PM, Robin Murphy wrote:
-> On 2023-08-21 11:42, Vasant Hegde wrote:
->> To replace if-else with switch-case statement due to increasing number of
->> domain types.
->>
->> No functional changes intended.
->>
->> Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
->> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
->> Reviewed-by: Jerry Snitselaar <jsnitsel@redhat.com>
->> ---
->>   drivers/iommu/amd/iommu.c | 45 +++++++++++++++++++--------------------
->>   1 file changed, 22 insertions(+), 23 deletions(-)
->>
->> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
->> index c2cb541b0553..d5569eec0fe9 100644
->> --- a/drivers/iommu/amd/iommu.c
->> +++ b/drivers/iommu/amd/iommu.c
->> @@ -2078,24 +2078,8 @@ static struct protection_domain
->> *protection_domain_alloc(unsigned int type)
->>       struct io_pgtable_ops *pgtbl_ops;
->>       struct protection_domain *domain;
->>       int pgtable;
->> -    int mode = DEFAULT_PGTABLE_LEVEL;
->>       int ret;
->>   -    /*
->> -     * Force IOMMU v1 page table when iommu=pt and
->> -     * when allocating domain for pass-through devices.
->> -     */
->> -    if (type == IOMMU_DOMAIN_IDENTITY) {
->> -        pgtable = AMD_IOMMU_V1;
->> -        mode = PAGE_MODE_NONE;
->> -    } else if (type == IOMMU_DOMAIN_UNMANAGED) {
->> -        pgtable = AMD_IOMMU_V1;
->> -    } else if (type == IOMMU_DOMAIN_DMA || type == IOMMU_DOMAIN_DMA_FQ) {
->> -        pgtable = amd_iommu_pgtable;
->> -    } else {
->> -        return NULL;
->> -    }
->> -
->>       domain = kzalloc(sizeof(*domain), GFP_KERNEL);
->>       if (!domain)
->>           return NULL;
->> @@ -2106,27 +2090,42 @@ static struct protection_domain
->> *protection_domain_alloc(unsigned int type)
->>         spin_lock_init(&domain->lock);
->>       INIT_LIST_HEAD(&domain->dev_list);
->> +    domain->nid = NUMA_NO_NODE;
->> +
->> +    switch (type) {
->> +    /* No need to allocate io pgtable ops in passthrough mode */
->> +    case IOMMU_DOMAIN_IDENTITY:
->> +        return domain;
->> +    case IOMMU_DOMAIN_DMA:
->> +    case IOMMU_DOMAIN_DMA_FQ:
-> 
-> Nit: drivers won't see DMA_FQ any more, so you don't need it here (looks like
-> the addition of the original line above crossed over with me removing it from
-> other drivers).
+Thanks,
+Niklas
 
-Thanks Robin. I will have follow up patch to drop DMA_FQ.
+>=20
+> > Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
+> > ---
+> >   drivers/iommu/s390-iommu.c | 10 ++++++++++
+> >   1 file changed, 10 insertions(+)
+> >=20
+> > diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
+> > index f6d6c60e5634..020cc538e4c4 100644
+> > --- a/drivers/iommu/s390-iommu.c
+> > +++ b/drivers/iommu/s390-iommu.c
+> > @@ -710,6 +710,15 @@ struct zpci_iommu_ctrs *zpci_get_iommu_ctrs(struct=
+ zpci_dev *zdev)
+> >   	return &zdev->s390_domain->ctrs;
+> >   }
+> >  =20
+> > +static int s390_iommu_def_domain_type(struct device *dev)
+> > +{
+> > +	struct zpci_dev *zdev =3D to_zpci_dev(dev);
+> > +
+> > +	if (zdev->pft =3D=3D PCI_FUNC_TYPE_ISM)
+> > +		return IOMMU_DOMAIN_DMA;
+> > +	return 0;
+> > +}
+> > +
+> >   int zpci_init_iommu(struct zpci_dev *zdev)
+> >   {
+> >   	u64 aperture_size;
+> > @@ -789,6 +798,7 @@ static const struct iommu_ops s390_iommu_ops =3D {
+> >   	.probe_device =3D s390_iommu_probe_device,
+> >   	.probe_finalize =3D s390_iommu_probe_finalize,
+> >   	.release_device =3D s390_iommu_release_device,
+> > +	.def_domain_type =3D s390_iommu_def_domain_type,
+> >   	.device_group =3D generic_device_group,
+> >   	.pgsize_bitmap =3D SZ_4K,
+> >   	.get_resv_regions =3D s390_iommu_get_resv_regions,
+> >=20
+>=20
 
--Vasant
