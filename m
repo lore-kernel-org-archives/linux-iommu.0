@@ -1,489 +1,179 @@
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2048.outbound.protection.outlook.com [40.107.93.48])
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2072.outbound.protection.outlook.com [40.107.243.72])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2F1A0BE4D
-	for <iommu@lists.linux.dev>; Wed, 23 Aug 2023 12:06:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CFBB3BE4D
+	for <iommu@lists.linux.dev>; Wed, 23 Aug 2023 12:07:15 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=dRDS588wsS7wnZi1540QV7H9+d4zxLBJTwIKPLL0rdeBK98hKx9YdVfUbpN0zBJNVMD6AZbsmIACUmVBUy+N3s+gFNWd1VW/YWakTBAdne6zgC+ApJ3sXKAcWtRPpEc/K0PiXni2IGFrBbkviqK933rh35wVG/syCujuDnHIbFC5Mjtvt0jIOqCNbQDKFYN/Ewvdk7dEftEKFHScBwOSF1JzCdS7l/O62IPUelSvYDYXV3A67V3l2rmXx+CvJNAlVL906scERmZFZE6IA8SLkQSqK3Md9tIg6Th1rLyBbOsvWhWLRXacyHHOE3AMOVC9HI38mhQqutG/NkpsxQt3Ng==
+ b=X+jeJhCeKGHktsGUe/Wx//ZdfEKAHMk6qyWYCKHPzxECbz5BJYfoSkUtjlEF0WmNsj+fHXDNvtY5kymE1KjeqLeESQDqWnaUnKjyfNZkn8lojVWXVVMfq5AEu3r9c1T3AS8sC5cWF/aLROFXA2Qz67QS3pVkbpqlHD+XuRXmlRjMcypm3SV3AkPNHFh19s4N5wWjsNCApdmgdMaZMtf1Ae+RXeMekefV5wrE3wiglkgzzH7dy4v+kUJsL3E73cf5U6Jorpe7hrTq7XJW9wgJj+AVqjVR09F3DP1DKlhtrYkFlbKXa51rC57HbrNKdBeFDyJdytqpyY2pgHMkWbDuRg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=QxAQrrm1x6nDf7/nEBlXjUbiK4iMRZ8+3x7EvYQXEjA=;
- b=dpjpnH0NPUVqkqQiYYprWViL/yleLZl+eV4BaBq5hWNS2/8NlySkh3exiPu9Amo/FCk5fhwWWJ+VQ2AlOWoPWsL1ihyVSQvvg30elKtlDlVo/3UCo7RnSWbI4o07Ku7cIgf755hVaRP1rSGGgW+b+A1dqV+8h2/64XlQYJmrjnpP/ttPbYqxhBPimYf1wNq3KJehOICwdkmVWLl4n+nc0VvXqwRqz7c0hwNwx67OKg1/E451W6VVXnuOTGONvdxtwd1OhHr9sASGvjDoOIq/9SaLdaX1Ay72uV+qlhmNPhYGq7lRV8h8MxtbqcMgVoZinNcEQBVRdJh4CaCSGlWPbw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none
+ bh=yrNPXHiINxKXq2P2U1fVYA2kn6/9UIN/IB6ZQ86fp+k=;
+ b=YjBl7S8KGv/lESYfuy4w7VSQjCTF34k6XBPVweO2ZyxmRRbqjMj9r5+WxeZkHVDTComsOgrDj7mQS+y0x9uo2P3IHJZ8FAbK/VjPXoKmFT5zv/Hd68CHqfELmTb0aJJRKeX32nfhbTKHjJv0oHOYrHRup25z4ZI8VfL2EmvLjLCSC+od6fCJiKKbNt54TeMugCSP2WBUXfCCDwqRta47JEenBeCUZoXw6vC8PbAtdY5VURnTpdkAit+H6bVwz+1dKwjFhFE5JJJyup+Du4TMFa46e+OG+mMOKF5xvt3ICR/4+fVjram3U077Rc57B92niywfj7i9taGkR2/h0k1LgA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=QxAQrrm1x6nDf7/nEBlXjUbiK4iMRZ8+3x7EvYQXEjA=;
- b=fA86eAKOhvdWJRqle0IVk2e57Ge6K3d5IHkRvgHXJSBjHjcA6NautBzIolbgkz4yeym+YqJZAeYYcqOwhdzcL6rlxacHAub3Cf9LeSWCs4K3icFFXmo8msRx5XylKCzegYa/cc5yQKEMuzEsLQEdTZC7KtfYDp8rUUWciGme3fY=
-Received: from CY8PR11CA0035.namprd11.prod.outlook.com (2603:10b6:930:4a::21)
- by SJ0PR12MB6878.namprd12.prod.outlook.com (2603:10b6:a03:483::16) with
+ bh=yrNPXHiINxKXq2P2U1fVYA2kn6/9UIN/IB6ZQ86fp+k=;
+ b=fbKt/8MBQ7YNCGM1OXTh95WEtOi5Q8PSKdjY/6PFTQuk38GntDnEk2hioEfTHm6Myh5j8IXm2aySCeEA6RNJyGhA+KNqAAJ5lyyk+8cBpcsMIWK4ZrE3dnYZnVy3HEi0Hcy7lJP3VmjNlQ9LRvCxCGsAOFWvSb7LwWMKqaJsdUU=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DS7PR12MB6048.namprd12.prod.outlook.com (2603:10b6:8:9f::5) by
+ IA1PR12MB9062.namprd12.prod.outlook.com (2603:10b6:208:3aa::14) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6699.20; Wed, 23 Aug
- 2023 12:05:58 +0000
-Received: from CY4PEPF0000E9D4.namprd03.prod.outlook.com
- (2603:10b6:930:4a:cafe::27) by CY8PR11CA0035.outlook.office365.com
- (2603:10b6:930:4a::21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6699.26 via Frontend
- Transport; Wed, 23 Aug 2023 12:05:58 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CY4PEPF0000E9D4.mail.protection.outlook.com (10.167.241.147) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.6699.15 via Frontend Transport; Wed, 23 Aug 2023 12:05:58 +0000
-Received: from kali.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.27; Wed, 23 Aug
- 2023 07:05:35 -0500
-From: Vasant Hegde <vasant.hegde@amd.com>
-To: <iommu@lists.linux.dev>, <joro@8bytes.org>
-CC: <suravee.suthikulpanit@amd.com>, <wei.huang2@amd.com>,
-	<jsnitsel@redhat.com>, <jgg@ziepe.ca>, Vasant Hegde <vasant.hegde@amd.com>
-Subject: [PATCH 05/10] iommu/amd: Move PPR-related functions into ppr.c
-Date: Wed, 23 Aug 2023 12:02:19 +0000
-Message-ID: <20230823120230.727935-10-vasant.hegde@amd.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230823120230.727935-1-vasant.hegde@amd.com>
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6699.25; Wed, 23 Aug
+ 2023 12:07:13 +0000
+Received: from DS7PR12MB6048.namprd12.prod.outlook.com
+ ([fe80::67ec:80e:c478:df8e]) by DS7PR12MB6048.namprd12.prod.outlook.com
+ ([fe80::67ec:80e:c478:df8e%7]) with mapi id 15.20.6699.022; Wed, 23 Aug 2023
+ 12:07:12 +0000
+Message-ID: <284961d7-15c5-5c12-b3cf-5e9256ed2da3@amd.com>
+Date: Wed, 23 Aug 2023 17:37:00 +0530
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH 00/10] iommu/amd: SVA Support (Part 4) - SVA and IOPF
+Content-Language: en-US
+To: iommu@lists.linux.dev, joro@8bytes.org
+Cc: suravee.suthikulpanit@amd.com, wei.huang2@amd.com, jsnitsel@redhat.com,
+ jgg@ziepe.ca
 References: <20230823120230.727935-1-vasant.hegde@amd.com>
+From: Vasant Hegde <vasant.hegde@amd.com>
+In-Reply-To: <20230823120230.727935-1-vasant.hegde@amd.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: PN3PR01CA0172.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:c01:de::16) To DS7PR12MB6048.namprd12.prod.outlook.com
+ (2603:10b6:8:9f::5)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY4PEPF0000E9D4:EE_|SJ0PR12MB6878:EE_
-X-MS-Office365-Filtering-Correlation-Id: be11c095-189b-42e3-c7b8-08dba3d14f8d
+X-MS-TrafficTypeDiagnostic: DS7PR12MB6048:EE_|IA1PR12MB9062:EE_
+X-MS-Office365-Filtering-Correlation-Id: 20f6f796-55d5-4cf4-7924-08dba3d17be8
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	SlpCVRHEcCxzZ4qxnL+BYblFOYOsI2Z46cDKZ953aXpblEw+FmV1Z8VMiQ91llCTvgTZMpXtqjuK5A5TVlQD52USHR0z8Iewlb1Yz+h2XbfWObh/agutjgd4mARqN7kmjLisu7DYcsh6gJRIwdSbmVSLT5jy2i0T0u/1l6ZZPh632iHXVDlbP121P2wnFinQM/eE0CLHSgAV0aivP38POfE3u66L0efxDXTG/UgiiOwVKDZUGgzZalngJ2RI5AUCvuuJ7RmmIWYRpstUUXgTs6MdbcDb6vuQLaPrd2rtAO5bJfuPiQyS0L4igqGW1cvcD4mqZbGzaU0y3yLETAyWu2KQ64EJAZyxyLFIznL5l50x+2Q54fSF03GpbIf7c04v+63VnAN/Q4jL22ehoJJSKF/lJDRf89BDqEV1pXAlyHPsP9DI2nocX0AmFAYt+TWtPOV0Fy8mKLwtM9KtxLrh/208QR3Zi8s2RRtvlP/lORCeImUtGBUIG3l5/FR/i0B1SWgdADPXNH9Uh4g/0WydKAuMbP3d3xQtztJTr6xtCq9Ds3Ja/5wdcC6seGaDbQDoaGEDtOOIt/k4SzQ01arGg1Mz4X0qULC/TPkNubyB0BKAJpVSZqG0sdkUhKjbTjhQifJBpS63RZchkk2Cy1KBB7F0BQ42fbCDXwsu9nfkhi16gl0U8W+x5m4ShaQjAadRtO0SFNNUnhag1CGFOmhtv8nBRt3nf3x2HIcuG3c021k9/ZEwiYDMWBO+YpSnx/7KCyRKC3Dq5UtEG+ylBctX7g==
+	yo2Z3o/9elYbhMeY2EyPadg+1l5LsaDfh7SPnjfTIlS1FrnrYhl6JvrHUmwqhEGbz71zC21CX0noh915L9lfPZMponF+qKqeF2i5mu34NFm6AkgF44BecOq7St1GK18uFeVZvWeTX0DHI68dLGEECqAOuxl74ROthbU+Y10HpD8GprT66jKjxQWsUh5HI34ktS0929xN/tGnPFzzUfT+FCQfkKlobwdzdn2bWVkzb5lGhFrBdO73+k3p2Wt4+jPdkZyf3L6h+qtBIizxqr/rDl1jxmYhjQMrKeq3aIXDS4lvFV/qZDO+CpaWoYSjQRKz+/H5VRsR5Qh5+GDFy8MAPcietr9dFUU4SZ9fClIXekkDR6tObPFP+jQfh/NVGs4j6W9DSVndYl2nN5M2191oyUVq0oMuea8/B2QzmpiBH5xSneTXICUFtFFZsCE0kyckIAES/DNrY60OUvZjwWkMemuOcYP74NQ9DOUsQkt4w4tQl8tYvl8DVMe5gttd6bmKF6S++aLMHvaL8aX4ew+YrcbaA0cYUceHxAXWTFBLUCPGQFrrBYXN9BaEhD0x8uNeQESpsD60g1a5UyyBTJns462PJhM+D5Sazl52AVTI31V6zjxF/3FvccmPr74Igr50lEQGG8WkwYJXz8fLaWmQxop8EYXKQOc/ybQbezJy4vAQrM5eYbQega/+a3PjmuIV
 X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230031)(4636009)(136003)(396003)(39860400002)(376002)(346002)(1800799009)(186009)(82310400011)(451199024)(36840700001)(40470700004)(46966006)(54906003)(316002)(70586007)(70206006)(110136005)(8676002)(8936002)(2616005)(4326008)(36756003)(40460700003)(41300700001)(1076003)(356005)(81166007)(82740400003)(478600001)(6666004)(40480700001)(83380400001)(30864003)(2906002)(47076005)(7696005)(36860700001)(86362001)(426003)(336012)(44832011)(5660300002)(16526019)(26005)(36900700001);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6048.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(376002)(346002)(366004)(136003)(39860400002)(396003)(1800799009)(186009)(451199024)(6666004)(53546011)(6506007)(6486002)(2616005)(6512007)(86362001)(66556008)(31696002)(4326008)(5660300002)(44832011)(2906002)(38100700002)(8676002)(8936002)(66946007)(36756003)(41300700001)(66476007)(316002)(966005)(478600001)(83380400001)(31686004)(26005)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?QzhxZUFOd2VmMDFxTGZOU0hqSjdISUJZd0s2SFlVZ2NSY2lILzR4R09SL0dw?=
+ =?utf-8?B?WEpzZ2ZQS2tFR0piTTBsQ2JiaXV1WmFLT2IxNWVQN1k0Q2RMNXl0NWZwWHBh?=
+ =?utf-8?B?Vm1aT1YxVEE0VmFxdFpYMWhNbHRpYm1VNVcwTGVudGJlTjllamFIaVF1dW9U?=
+ =?utf-8?B?VVhhNDR5SGtzVHlnTUVINUI2Q2VJYnNFUXh6MGRLRkthZ2lRTWx4d1RIa245?=
+ =?utf-8?B?bHVUS2VxMStzaWNrZWlvbnZnelZxWXFoeFk3N29MWXVGNFhYdHEwa2tpdzJ4?=
+ =?utf-8?B?NS9MQytKYkQvby82dHRCYWxpQXkzSzNFWm5YU01QaWdmaTBEbjQzUzhnVU9Y?=
+ =?utf-8?B?OWFPdndGVTBxTEF3YTQvSkdMamMxblR4OXllU3JUZS9meXNYZmZBWDJNdk1H?=
+ =?utf-8?B?OVdKNEpqNGZkK3dNb0NBYkwzQWVocDcwUlJXSWF3WitNK243NWFZNGVGZ2NL?=
+ =?utf-8?B?QmxaZzR5bjZvd29oWW9iQVcrSTNRL2kyZDh4YjhhMEJ2OC8zVVkyVkg4Y2N1?=
+ =?utf-8?B?Q1o5NXBDQkt6WDc2cTJQb1ZwdDkveUw0SnVZNUpEZVhyazN3UzduMjl1TTN0?=
+ =?utf-8?B?d1E5QkFKYkVJd1BOanh0d2RvcmdpRmJKYW9LZ1l2SHo1MER4dFJaWkY4OUVD?=
+ =?utf-8?B?Q0lteXl5alRXUSs5Y214TzJNSW9hNEVSYk5zb0haSVdSR1MwWm1qeE1EVEIz?=
+ =?utf-8?B?VTRvK2hxWEpDazIrL2R4N2Z2QkVvUjFWWXBpS2pPNmVzWDBMNm10cGZLWjRY?=
+ =?utf-8?B?Q21OWjJWNFNtck9HVmtqSzltS0EwSkJoclBic3pwRU1VaXU1UGN1d1ZZNlR6?=
+ =?utf-8?B?VndaMDRKQ0xEQUQwbk01czRmVFhtR1BOZDV3Q3JpQjFHQ1p5dDMwYnZoRGh0?=
+ =?utf-8?B?aU56Z3I3OEV4RmJCMkI2NVM4UjROa0R1WUw2UmwwazVkUXJObklQZkpNcTRC?=
+ =?utf-8?B?SVVFR0w1RGorak11R2RvTXlFN05NY1h4cyt5dVBzRDBwTElER1dVYlF2bVJV?=
+ =?utf-8?B?ckF1ejk4YjJySU53QWt4dmpMUGZ4TlVRTG14dVlrQmNxcXJHVWtyN1l3YW1Z?=
+ =?utf-8?B?ZXd4Q2Y5S3FoVUY5T2NQR0VGRG02a1NkVWpHSkhTMUhzZVRzTEdtK2pwcHo4?=
+ =?utf-8?B?M05Hd01rUnRVM2tETG5ydVNWUjBISGlMSFJyR1cwVlRBemVyVVRMMVJsUGlK?=
+ =?utf-8?B?M1k2U3FmUysxVVNudE0rSXFrNEVaU2FYUXZzaWU0WjRxQlhvb3RtZEZNQWg3?=
+ =?utf-8?B?OWtUbC90a2ZTM0FaRFJocjZ2RGtodmRjS1UzYWZGMzZoSzZkNm5sUjIxKzVO?=
+ =?utf-8?B?RGlheStzSmExVXhxK1llMDBvQ1lLWVd3RXp5aUZjNG1qeWVkbFRiOUpvSkVa?=
+ =?utf-8?B?U3E1VXZpdHQyV3JIWVRWTTZvbXlhcTlocGJ0bGc5K0tuaGd4Ym9KbmhKM1hL?=
+ =?utf-8?B?QjNYR0tCQWtwWFY4eEJhWk1EdVJBZTI5TjJ4RlhEMmYxMnhHV3BLOExSbE5N?=
+ =?utf-8?B?bU1kdWwxRmljZ3p6aG9qNXRpREk5RURtZjlSUjM0K3JiQkM3Y0I5N2pVcHRj?=
+ =?utf-8?B?OXFRTmJVd1ZOMWZjcVhPOGRibVdaVWFVeVN2cTZSdGdZb0lCeUN3OGhqSlJB?=
+ =?utf-8?B?clBkRm9US0F1YUxIODVsRDhCcFhtYnE2MmFJQ1Bqa3FQdUVzRFRUdEtRMUQy?=
+ =?utf-8?B?N2lzdkYwSkJIZ0FPeVg0TE04dkoxRGhCd1R4U2QvU0VsMC9aSlN5OWYweTBr?=
+ =?utf-8?B?MlRhT3ExbjhQalc2WElQZExILzlTc1lVYUNsbVJsdVcvK0NoRkNocGY0YjNo?=
+ =?utf-8?B?cGVjSDIyeXh6VGhyeXlSM1dQclozWnZDOWhYbE43WEk5ZXVNMk5Pajd1dXdi?=
+ =?utf-8?B?RUhqbWJwSVN5ZXRGRkdEQ2N5dHFvaTZaT2ViNGZHYldTMXJNTDRsZmRzamIy?=
+ =?utf-8?B?eEhJUm9BUFI5MldIUEtNNjZwM1c0UERLdDRhU09ZajlmTXZtaGZqQk9yeHhw?=
+ =?utf-8?B?eGdXTFNWdm04RG1Ia3ZkNHErQ3p1Y3F5VFdwUTlHS3JkZ2ZjOC9YWlU5L2tK?=
+ =?utf-8?B?YVNReXc2V2pOVVhCYnZQdFhNUU1neWNQV2tYOFh6dzc1cE14OTgwcGhJYjlL?=
+ =?utf-8?Q?ZgzDhG0SCuUBENrTfo+waGV24?=
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Aug 2023 12:05:58.0147
+X-MS-Exchange-CrossTenant-Network-Message-Id: 20f6f796-55d5-4cf4-7924-08dba3d17be8
+X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6048.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Aug 2023 12:07:12.8934
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: be11c095-189b-42e3-c7b8-08dba3d14f8d
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CY4PEPF0000E9D4.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR12MB6878
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: qsJjniTOhn5q1E6rg+6LuEUQK0EF9EbBfpsk3zJCUSa96jwcil9kNVVTtE+Lc0l0hkFpOjWflRRCWneIzabtMA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB9062
 
-From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Hi All,
 
-In preparation to subsequent PPR-related patches, and also remove static
-declaration for certain helper functions so that it can be reused in other
-files.
+Please ignore this series. Looks like I did mess up while generating patchset
+and accidentally included some test patches! I will resend the series.
 
-Also rename below functions:
-  alloc_ppr_log        -> amd_iommu_alloc_ppr_log
-  iommu_enable_ppr_log -> amd_iommu_enable_ppr_log
-  free_ppr_log         -> amd_iommu_free_ppr_log
-  iommu_poll_ppr_log   -> amd_iommu_poll_ppr_log
+-Vasant
 
-Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Co-developed-by: Vasant Hegde <vasant.hegde@amd.com>
-Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
----
- drivers/iommu/amd/Makefile    |   2 +-
- drivers/iommu/amd/amd_iommu.h |  17 +++++-
- drivers/iommu/amd/init.c      |  65 +++-----------------
- drivers/iommu/amd/iommu.c     |  55 +----------------
- drivers/iommu/amd/ppr.c       | 112 ++++++++++++++++++++++++++++++++++
- 5 files changed, 137 insertions(+), 114 deletions(-)
- create mode 100644 drivers/iommu/amd/ppr.c
-
-diff --git a/drivers/iommu/amd/Makefile b/drivers/iommu/amd/Makefile
-index 848c89fa5238..a6601d885c5b 100644
---- a/drivers/iommu/amd/Makefile
-+++ b/drivers/iommu/amd/Makefile
-@@ -1,3 +1,3 @@
- # SPDX-License-Identifier: GPL-2.0-only
--obj-$(CONFIG_AMD_IOMMU) += iommu.o init.o quirks.o io_pgtable.o io_pgtable_v2.o sva.o
-+obj-$(CONFIG_AMD_IOMMU) += iommu.o init.o quirks.o io_pgtable.o io_pgtable_v2.o sva.o ppr.o
- obj-$(CONFIG_AMD_IOMMU_DEBUGFS) += debugfs.o
-diff --git a/drivers/iommu/amd/amd_iommu.h b/drivers/iommu/amd/amd_iommu.h
-index 3f7ddf19ed72..31e6cb3ba5d6 100644
---- a/drivers/iommu/amd/amd_iommu.h
-+++ b/drivers/iommu/amd/amd_iommu.h
-@@ -17,6 +17,9 @@ irqreturn_t amd_iommu_int_thread_pprlog(int irq, void *data);
- irqreturn_t amd_iommu_int_thread_galog(int irq, void *data);
- irqreturn_t amd_iommu_int_handler(int irq, void *data);
- void amd_iommu_apply_erratum_63(struct amd_iommu *iommu, u16 devid);
-+void amd_iommu_restart_log(struct amd_iommu *iommu, const char *evt_type,
-+			   u8 cntrl_intr, u8 cntrl_log,
-+			   u32 status_run_mask, u32 status_overflow_mask);
- void amd_iommu_restart_event_logging(struct amd_iommu *iommu);
- void amd_iommu_restart_ga_log(struct amd_iommu *iommu);
- void amd_iommu_restart_ppr_log(struct amd_iommu *iommu);
-@@ -24,6 +27,9 @@ int amd_iommu_init_devices(void);
- void amd_iommu_uninit_devices(void);
- void amd_iommu_init_notifier(void);
- void amd_iommu_set_rlookup_table(struct amd_iommu *iommu, u16 devid);
-+void iommu_feature_enable(struct amd_iommu *iommu, u8 bit);
-+void *__init iommu_alloc_4k_pages(struct amd_iommu *iommu,
-+				  gfp_t gfp, size_t size);
- 
- #ifdef CONFIG_AMD_IOMMU_DEBUGFS
- void amd_iommu_debugfs_setup(struct amd_iommu *iommu);
-@@ -69,6 +75,14 @@ int amd_iommu_set_gcr3(struct iommu_dev_data *dev_data,
- 		       u32 pasid, unsigned long gcr3);
- int amd_iommu_clear_gcr3(struct iommu_dev_data *dev_data, u32 pasid);
- 
-+/* PPR */
-+int __init amd_iommu_alloc_ppr_log(struct amd_iommu *iommu);
-+void __init amd_iommu_free_ppr_log(struct amd_iommu *iommu);
-+void amd_iommu_enable_ppr_log(struct amd_iommu *iommu);
-+void amd_iommu_poll_ppr_log(struct amd_iommu *iommu);
-+int amd_iommu_complete_ppr(struct pci_dev *pdev, u32 pasid,
-+			   int status, int tag);
-+
- int amd_iommu_flush_page(struct protection_domain *domain, u32 pasid, u64 address);
- void amd_iommu_update_and_flush_device_table(struct protection_domain *domain);
- void amd_iommu_domain_update(struct protection_domain *domain);
-@@ -89,9 +103,6 @@ static inline int amd_iommu_create_irq_domain(struct amd_iommu *iommu)
- #define PPR_INVALID			0x1
- #define PPR_FAILURE			0xf
- 
--int amd_iommu_complete_ppr(struct pci_dev *pdev, u32 pasid,
--			   int status, int tag);
--
- static inline bool is_rd890_iommu(struct pci_dev *pdev)
- {
- 	return (pdev->vendor == PCI_VENDOR_ID_ATI) &&
-diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index 3820ae738088..a20a7f998ecd 100644
---- a/drivers/iommu/amd/init.c
-+++ b/drivers/iommu/amd/init.c
-@@ -418,7 +418,7 @@ static void iommu_set_device_table(struct amd_iommu *iommu)
- }
- 
- /* Generic functions to enable/disable certain features of the IOMMU. */
--static void iommu_feature_enable(struct amd_iommu *iommu, u8 bit)
-+void iommu_feature_enable(struct amd_iommu *iommu, u8 bit)
- {
- 	u64 ctrl;
- 
-@@ -745,9 +745,9 @@ static int __init alloc_command_buffer(struct amd_iommu *iommu)
-  * Interrupt handler has processed all pending events and adjusted head
-  * and tail pointer. Reset overflow mask and restart logging again.
-  */
--static void amd_iommu_restart_log(struct amd_iommu *iommu, const char *evt_type,
--				  u8 cntrl_intr, u8 cntrl_log,
--				  u32 status_run_mask, u32 status_overflow_mask)
-+void amd_iommu_restart_log(struct amd_iommu *iommu, const char *evt_type,
-+			   u8 cntrl_intr, u8 cntrl_log,
-+			   u32 status_run_mask, u32 status_overflow_mask)
- {
- 	u32 status;
- 
-@@ -788,17 +788,6 @@ void amd_iommu_restart_ga_log(struct amd_iommu *iommu)
- 			      MMIO_STATUS_GALOG_OVERFLOW_MASK);
- }
- 
--/*
-- * This function restarts ppr logging in case the IOMMU experienced
-- * PPR log overflow.
-- */
--void amd_iommu_restart_ppr_log(struct amd_iommu *iommu)
--{
--	amd_iommu_restart_log(iommu, "PPR", CONTROL_PPRINT_EN,
--			      CONTROL_PPRLOG_EN, MMIO_STATUS_PPR_RUN_MASK,
--			      MMIO_STATUS_PPR_OVERFLOW_MASK);
--}
--
- /*
-  * This function resets the command buffer if the IOMMU stopped fetching
-  * commands from it.
-@@ -847,8 +836,8 @@ static void __init free_command_buffer(struct amd_iommu *iommu)
- 	free_pages((unsigned long)iommu->cmd_buf, get_order(CMD_BUFFER_SIZE));
- }
- 
--static void *__init iommu_alloc_4k_pages(struct amd_iommu *iommu,
--					 gfp_t gfp, size_t size)
-+void *__init iommu_alloc_4k_pages(struct amd_iommu *iommu, gfp_t gfp,
-+				  size_t size)
- {
- 	int order = get_order(size);
- 	void *buf = (void *)__get_free_pages(gfp, order);
-@@ -903,42 +892,6 @@ static void __init free_event_buffer(struct amd_iommu *iommu)
- 	free_pages((unsigned long)iommu->evt_buf, get_order(EVT_BUFFER_SIZE));
- }
- 
--/* allocates the memory where the IOMMU will log its events to */
--static int __init alloc_ppr_log(struct amd_iommu *iommu)
--{
--	iommu->ppr_log = iommu_alloc_4k_pages(iommu, GFP_KERNEL | __GFP_ZERO,
--					      PPR_LOG_SIZE);
--
--	return iommu->ppr_log ? 0 : -ENOMEM;
--}
--
--static void iommu_enable_ppr_log(struct amd_iommu *iommu)
--{
--	u64 entry;
--
--	if (iommu->ppr_log == NULL)
--		return;
--
--	iommu_feature_enable(iommu, CONTROL_PPR_EN);
--
--	entry = iommu_virt_to_phys(iommu->ppr_log) | PPR_LOG_SIZE_512;
--
--	memcpy_toio(iommu->mmio_base + MMIO_PPR_LOG_OFFSET,
--		    &entry, sizeof(entry));
--
--	/* set head and tail to zero manually */
--	writel(0x00, iommu->mmio_base + MMIO_PPR_HEAD_OFFSET);
--	writel(0x00, iommu->mmio_base + MMIO_PPR_TAIL_OFFSET);
--
--	iommu_feature_enable(iommu, CONTROL_PPRLOG_EN);
--	iommu_feature_enable(iommu, CONTROL_PPRINT_EN);
--}
--
--static void __init free_ppr_log(struct amd_iommu *iommu)
--{
--	free_pages((unsigned long)iommu->ppr_log, get_order(PPR_LOG_SIZE));
--}
--
- static void free_ga_log(struct amd_iommu *iommu)
- {
- #ifdef CONFIG_IRQ_REMAP
-@@ -1682,7 +1635,7 @@ static void __init free_iommu_one(struct amd_iommu *iommu)
- 	free_cwwb_sem(iommu);
- 	free_command_buffer(iommu);
- 	free_event_buffer(iommu);
--	free_ppr_log(iommu);
-+	amd_iommu_free_ppr_log(iommu);
- 	free_ga_log(iommu);
- 	iommu_unmap_mmio_space(iommu);
- }
-@@ -2095,7 +2048,7 @@ static int __init iommu_init_pci(struct amd_iommu *iommu)
- 			amd_iommu_max_glx_val = min(amd_iommu_max_glx_val, glxval);
- 	}
- 
--	if (check_feature(FEATURE_PPR) && alloc_ppr_log(iommu))
-+	if (check_feature(FEATURE_PPR) && amd_iommu_alloc_ppr_log(iommu))
- 		return -ENOMEM;
- 
- 	if (iommu->cap & (1UL << IOMMU_CAP_NPCACHE)) {
-@@ -2839,7 +2792,7 @@ static void enable_iommus_v2(void)
- 	struct amd_iommu *iommu;
- 
- 	for_each_iommu(iommu) {
--		iommu_enable_ppr_log(iommu);
-+		amd_iommu_enable_ppr_log(iommu);
- 		iommu_enable_gt(iommu);
- 	}
- }
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index 4868eee4c4f9..5234b1ee8f8b 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -820,59 +820,6 @@ static void iommu_poll_events(struct amd_iommu *iommu)
- 	writel(head, iommu->mmio_base + MMIO_EVT_HEAD_OFFSET);
- }
- 
--static void iommu_poll_ppr_log(struct amd_iommu *iommu)
--{
--	u32 head, tail;
--
--	if (iommu->ppr_log == NULL)
--		return;
--
--	head = readl(iommu->mmio_base + MMIO_PPR_HEAD_OFFSET);
--	tail = readl(iommu->mmio_base + MMIO_PPR_TAIL_OFFSET);
--
--	while (head != tail) {
--		volatile u64 *raw;
--		u64 entry[2];
--		int i;
--
--		raw = (u64 *)(iommu->ppr_log + head);
--
--		/*
--		 * Hardware bug: Interrupt may arrive before the entry is
--		 * written to memory. If this happens we need to wait for the
--		 * entry to arrive.
--		 */
--		for (i = 0; i < LOOP_TIMEOUT; ++i) {
--			if (PPR_REQ_TYPE(raw[0]) != 0)
--				break;
--			udelay(1);
--		}
--
--		/* Avoid memcpy function-call overhead */
--		entry[0] = raw[0];
--		entry[1] = raw[1];
--
--		/*
--		 * To detect the hardware errata 733 we need to clear the
--		 * entry back to zero. This issue does not exist on SNP
--		 * enabled system. Also this buffer is not writeable on
--		 * SNP enabled system.
--		 */
--		if (!amd_iommu_snp_en)
--			raw[0] = raw[1] = 0UL;
--
--		/* Update head pointer of hardware ring-buffer */
--		head = (head + PPR_ENTRY_SIZE) % PPR_LOG_SIZE;
--		writel(head, iommu->mmio_base + MMIO_PPR_HEAD_OFFSET);
--
--		/* TODO: PPR Handler will be added when we add IOPF support */
--
--		/* Refresh ring-buffer information */
--		head = readl(iommu->mmio_base + MMIO_PPR_HEAD_OFFSET);
--		tail = readl(iommu->mmio_base + MMIO_PPR_TAIL_OFFSET);
--	}
--}
--
- #ifdef CONFIG_IRQ_REMAP
- static int (*iommu_ga_log_notifier)(u32);
- 
-@@ -993,7 +940,7 @@ irqreturn_t amd_iommu_int_thread_pprlog(int irq, void *data)
- {
- 	amd_iommu_handle_irq(data, "PPR", MMIO_STATUS_PPR_INT_MASK,
- 			     MMIO_STATUS_PPR_OVERFLOW_MASK,
--			     iommu_poll_ppr_log, amd_iommu_restart_ppr_log);
-+			     amd_iommu_poll_ppr_log, amd_iommu_restart_ppr_log);
- 
- 	return IRQ_HANDLED;
- }
-diff --git a/drivers/iommu/amd/ppr.c b/drivers/iommu/amd/ppr.c
-new file mode 100644
-index 000000000000..673fcc30f9dc
---- /dev/null
-+++ b/drivers/iommu/amd/ppr.c
-@@ -0,0 +1,112 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * Copyright (C) 2023 Advanced Micro Devices, Inc.
-+ */
-+
-+#define pr_fmt(fmt)     "AMD-Vi: " fmt
-+#define dev_fmt(fmt)    pr_fmt(fmt)
-+
-+#include <linux/amd-iommu.h>
-+#include <linux/delay.h>
-+#include <linux/mmu_notifier.h>
-+
-+#include "amd_iommu.h"
-+#include "amd_iommu_types.h"
-+
-+int __init amd_iommu_alloc_ppr_log(struct amd_iommu *iommu)
-+{
-+	iommu->ppr_log = iommu_alloc_4k_pages(iommu, GFP_KERNEL | __GFP_ZERO,
-+					      PPR_LOG_SIZE);
-+	return iommu->ppr_log ? 0 : -ENOMEM;
-+}
-+
-+void amd_iommu_enable_ppr_log(struct amd_iommu *iommu)
-+{
-+	u64 entry;
-+
-+	if (iommu->ppr_log == NULL)
-+		return;
-+
-+	iommu_feature_enable(iommu, CONTROL_PPR_EN);
-+
-+	entry = iommu_virt_to_phys(iommu->ppr_log) | PPR_LOG_SIZE_512;
-+
-+	memcpy_toio(iommu->mmio_base + MMIO_PPR_LOG_OFFSET,
-+		    &entry, sizeof(entry));
-+
-+	/* set head and tail to zero manually */
-+	writel(0x00, iommu->mmio_base + MMIO_PPR_HEAD_OFFSET);
-+	writel(0x00, iommu->mmio_base + MMIO_PPR_TAIL_OFFSET);
-+
-+	iommu_feature_enable(iommu, CONTROL_PPRINT_EN);
-+	iommu_feature_enable(iommu, CONTROL_PPRLOG_EN);
-+}
-+
-+void __init amd_iommu_free_ppr_log(struct amd_iommu *iommu)
-+{
-+	free_pages((unsigned long)iommu->ppr_log, get_order(PPR_LOG_SIZE));
-+}
-+
-+/*
-+ * This function restarts ppr logging in case the IOMMU experienced
-+ * PPR log overflow.
-+ */
-+void amd_iommu_restart_ppr_log(struct amd_iommu *iommu)
-+{
-+	amd_iommu_restart_log(iommu, "PPR", CONTROL_PPRINT_EN,
-+			      CONTROL_PPRLOG_EN, MMIO_STATUS_PPR_RUN_MASK,
-+			      MMIO_STATUS_PPR_OVERFLOW_MASK);
-+}
-+
-+void amd_iommu_poll_ppr_log(struct amd_iommu *iommu)
-+{
-+	u32 head, tail;
-+
-+	if (iommu->ppr_log == NULL)
-+		return;
-+
-+	head = readl(iommu->mmio_base + MMIO_PPR_HEAD_OFFSET);
-+	tail = readl(iommu->mmio_base + MMIO_PPR_TAIL_OFFSET);
-+
-+	while (head != tail) {
-+		volatile u64 *raw;
-+		u64 entry[2];
-+		int i;
-+
-+		raw = (u64 *)(iommu->ppr_log + head);
-+
-+		/*
-+		 * Hardware bug: Interrupt may arrive before the entry is
-+		 * written to memory. If this happens we need to wait for the
-+		 * entry to arrive.
-+		 */
-+		for (i = 0; i < LOOP_TIMEOUT; ++i) {
-+			if (PPR_REQ_TYPE(raw[0]) != 0)
-+				break;
-+			udelay(1);
-+		}
-+
-+		/* Avoid memcpy function-call overhead */
-+		entry[0] = raw[0];
-+		entry[1] = raw[1];
-+
-+		/*
-+		 * To detect the hardware errata 733 we need to clear the
-+		 * entry back to zero. This issue does not exist on SNP
-+		 * enabled system. Also this buffer is not writeable on
-+		 * SNP enabled system.
-+		 */
-+		if (!amd_iommu_snp_en)
-+			raw[0] = raw[1] = 0UL;
-+
-+		/* Update head pointer of hardware ring-buffer */
-+		head = (head + PPR_ENTRY_SIZE) % PPR_LOG_SIZE;
-+		writel(head, iommu->mmio_base + MMIO_PPR_HEAD_OFFSET);
-+
-+		/* TODO: PPR Handler will be added when we add IOPF support */
-+
-+		/* Refresh ring-buffer information */
-+		head = readl(iommu->mmio_base + MMIO_PPR_HEAD_OFFSET);
-+		tail = readl(iommu->mmio_base + MMIO_PPR_TAIL_OFFSET);
-+	}
-+}
--- 
-2.31.1
-
+On 8/23/2023 5:32 PM, Vasant Hegde wrote:
+> This is part 4 of the 4-part series to introduce Share Virtual Address
+> (SVA) support for devices, which can support PCI ATS, PASID and PRI
+> capabilities. These devices are referred to as SVA-capable devices in
+> this series.
+> 
+> Patch series organization
+> -------------------------
+> 
+> This series is organized as following:
+> 
+> * Patch 1 - 2:
+>   Rename / add support to enable/disable features
+> 
+> * Patch 3 - 4:
+>   Introduce SVA support
+> 
+> * Patch 5 - 10:
+>   Add IOPF support
+> 
+> This patch series is based on top of SVA Part 3 [1].
+>   [1] https://lore.kernel.org/linux-iommu/20230816174031.634453-1-vasant.hegde@amd.com/
+> 
+> This is also available at github :
+>   https://github.com/AMDESE/linux/tree/iommu_sva_part4_v1_v6.5_rc1
+> 
+> 
+> Thank you,
+> Vasant / Suravee
+> 
+> 
+> Suravee Suthikulpanit (5):
+>   iommu/amd: Add support to enable/disable SVA feature
+>   iommu/amd: Move PPR-related functions into ppr.c
+>   iommu/amd: Define per-IOMMU iopf_queue
+>   iommu/amd: Add support for page response
+>   iommu/amd: Introduce logic to enable/disable IOPF
+> 
+> Vasant Hegde (2):
+>   iommu/amd: Rename amd_iommu_v2_supported() as amd_iommu_sva_supported()
+>   iommu/amd: Initial SVA support for AMD IOMMU
+> 
+> Wei Huang (3):
+>   iommu/amd: Add support for enabling/disabling IOMMU features
+>   iommu/amd: Add support for add/remove device for IOPF
+>   iommu/amd: Add IO page fault notifier handler
+> 
+>  drivers/iommu/amd/Kconfig           |   1 +
+>  drivers/iommu/amd/Makefile          |   2 +-
+>  drivers/iommu/amd/amd_iommu.h       |  41 ++-
+>  drivers/iommu/amd/amd_iommu_types.h |  22 ++
+>  drivers/iommu/amd/init.c            |  72 ++----
+>  drivers/iommu/amd/iommu.c           | 170 ++++++++-----
+>  drivers/iommu/amd/ppr.c             | 377 ++++++++++++++++++++++++++++
+>  drivers/iommu/amd/sva.c             | 328 ++++++++++++++++++++++++
+>  8 files changed, 894 insertions(+), 119 deletions(-)
+>  create mode 100644 drivers/iommu/amd/ppr.c
+>  create mode 100644 drivers/iommu/amd/sva.c
+> 
