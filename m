@@ -1,33 +1,33 @@
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2080.outbound.protection.outlook.com [40.107.94.80])
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2040.outbound.protection.outlook.com [40.107.236.40])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 46BBFC131
-	for <iommu@lists.linux.dev>; Wed, 23 Aug 2023 14:07:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 36768C131
+	for <iommu@lists.linux.dev>; Wed, 23 Aug 2023 14:07:17 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=FVmhmdspz55BRivLLa3AhBNXYS3lDnZVSxEHA1jrtvMQY5oGXoPPJhAnVzmbAAy+mNCA5btc2pta73P3DD1nU07pIzC6fl8L9spV1rOAdAgPppWb2Gyy8JiIRAltE354OKvSn9oo7srtg5G+TYQ3YuCA6nX3O2EMvt6QEfGOdijHSgd1QSGX6lKkIyU0iApsojdc1R2bqRrs24oQf/cCCZosqNr9fiH10R5plDaS8FPyfjLujVVJjYTkYW0PHL5CPCUwn20yKVK2hXG6pxczL2K4Gr4PKzJjrrfNAmQ0lOPLAhBrN9s1kDXw/zrLXzMrdkcu6i0TIKRPVOINxCi1DA==
+ b=UY7S0FR7apJsK7l5lnqfkn7DHBo0XfaMsP2KyqjcSBh+FRs8bCXH0VCa7PQLHu2WbPWaRR/4GA+2xqVPwLKC+Ac5mJMADVO4Xd7p8Ig0geO4CPaLRzLL/jDmMwN9zOBPJT5xcT7xix7kJ13h5U8OCZF9n/nbhshlfqwLoDcK0k2Ju7O1fKFJNJLTGhR8cAPvHZmGX7SeCHQDckMi9IBSnAvhtIBHpB2uHNW8hPjbZWe3ZSvvXbzaxnY8TofVJA7RFyNTlCNGK/8f5ZwYKJrbe+hvx52hnHLYWLvQaLXJMy5dXkqY5nDRvbhFWt2mKWHGdygQbdSd7Axa03b0SrB7VQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=dtWksWB/E516cljUkNd1uEt9SCHl6pw7D4LCkl4eZ50=;
- b=GQYPAazrCQ5o4DDnT15qw2JAxQN5idd5WOpduTSgYxT+TknMnEJvCLsHvE8qw3BbBe6NVxpFbbwcJRqD8H243UIr/imHR0BFIq0lgLPtCofVWuATnklTp0QXUGVdC0aFrTdCZ6zhvkOhx5oSbGGRO+tCl3QutL/VoaA3y//QSmIBNZdlf3Wg0SnsNOrU1lCqE8ICiF9T1cGDX8TfLHZ1++M4j064Ip2EpQy4mTKwfrhZIqYT37uMv9EM4K0q+0RlzGbp87l5VLKaTOpL0UCSlAyMXZgakvZ2NeR0SgCdYJR5GJmTKBUMmo10IwO29OB9iUi85rO7iiLfXzq+gi6h9g==
+ bh=bBypXC4rWOgwnym2aYmgLLCcxC/mcP3jYynhtpxKWE8=;
+ b=PcYwSi2qKmQYO1rNgWAl0bKusE0wIOgbHOG/JgbeL1W4zBZijoi/8BIDFou70DxHxlrPaC/3jA04CaVQJAsH5QYVdPqnaT1/NP9D9QBB32SvTr226SpKULb22Q8bHpR5wvMYhhhQ7gQrvLqNqBB+Bp21WjVdmsTx7S0w8l57i0L92WJPE0ARDfDeCiL8FfcsklXCDHNcAZEqrR+pLE/FeDq52+pOIcmQu6/wjr2UO6XSWnnm43iNuQV4P1PkAvYtgrjvxTSsYKLvPlytd4HZEbCHtf88waOkjxIpkn6q95VQH4CKhPvdL56n9vxkav21a83ijeZ6ALrow+W9UaKvZw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=amd.com;
  dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
  header.from=amd.com; dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=dtWksWB/E516cljUkNd1uEt9SCHl6pw7D4LCkl4eZ50=;
- b=2vWLMOBTUusnth3ANxLFpXGHF7IF1s3l+uk9AAAJVPfPWzI7QcGC8lXk3NFMTnDRxr8LRsMTYKRdyUPKXUT2BvQrk50EmuKW8Bg5ck7R3WCwO6GV4HZEdtsKwmgi0ZplAP7afu+ulpQmV5iFmkv0nZVFxVH5XM5/5C84Xa7aHDI=
-Received: from MW4PR03CA0355.namprd03.prod.outlook.com (2603:10b6:303:dc::30)
- by DM4PR12MB8452.namprd12.prod.outlook.com (2603:10b6:8:184::18) with
+ bh=bBypXC4rWOgwnym2aYmgLLCcxC/mcP3jYynhtpxKWE8=;
+ b=ZxeU7o4ohr02NEj1y/bVvuHCKd3fL5pK4vgDkYpufECFz+QCUVBB1h8l1rKs0I60E5fQ1jO8ScJNYiy7HfdJt00yKcq8MvXbDvSymM0TL8ivaWFT2ZO5x4qsvl3XS+UKpcgJv3Jwfv6YBLJXIkTREn5vaxOZEWbPb30o4MT1YGg=
+Received: from SJ0PR13CA0162.namprd13.prod.outlook.com (2603:10b6:a03:2c7::17)
+ by SA1PR12MB7200.namprd12.prod.outlook.com (2603:10b6:806:2bb::7) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6699.26; Wed, 23 Aug
- 2023 14:06:59 +0000
-Received: from CO1PEPF000042AE.namprd03.prod.outlook.com
- (2603:10b6:303:dc:cafe::8f) by MW4PR03CA0355.outlook.office365.com
- (2603:10b6:303:dc::30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6699.26 via Frontend
- Transport; Wed, 23 Aug 2023 14:06:59 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6699.20; Wed, 23 Aug
+ 2023 14:07:15 +0000
+Received: from CO1PEPF000042AC.namprd03.prod.outlook.com
+ (2603:10b6:a03:2c7:cafe::21) by SJ0PR13CA0162.outlook.office365.com
+ (2603:10b6:a03:2c7::17) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6699.14 via Frontend
+ Transport; Wed, 23 Aug 2023 14:07:15 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -35,20 +35,20 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
  client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
 Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CO1PEPF000042AE.mail.protection.outlook.com (10.167.243.43) with Microsoft
+ CO1PEPF000042AC.mail.protection.outlook.com (10.167.243.41) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.6699.15 via Frontend Transport; Wed, 23 Aug 2023 14:06:58 +0000
+ 15.20.6699.14 via Frontend Transport; Wed, 23 Aug 2023 14:07:14 +0000
 Received: from kali.amd.com (10.180.168.240) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.27; Wed, 23 Aug
- 2023 09:06:55 -0500
+ 2023 09:07:11 -0500
 From: Vasant Hegde <vasant.hegde@amd.com>
 To: <iommu@lists.linux.dev>, <joro@8bytes.org>
 CC: <suravee.suthikulpanit@amd.com>, <wei.huang2@amd.com>,
 	<jsnitsel@redhat.com>, <jgg@ziepe.ca>, Vasant Hegde <vasant.hegde@amd.com>
-Subject: [PATCH RESEND 08/10] iommu/amd: Add support for add/remove device for IOPF
-Date: Wed, 23 Aug 2023 14:04:13 +0000
-Message-ID: <20230823140415.729050-9-vasant.hegde@amd.com>
+Subject: [PATCH RESEND 09/10] iommu/amd: Add IO page fault notifier handler
+Date: Wed, 23 Aug 2023 14:04:14 +0000
+Message-ID: <20230823140415.729050-10-vasant.hegde@amd.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230823140415.729050-1-vasant.hegde@amd.com>
 References: <20230823140415.729050-1-vasant.hegde@amd.com>
@@ -65,32 +65,38 @@ X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
  (10.181.40.145)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1PEPF000042AE:EE_|DM4PR12MB8452:EE_
-X-MS-Office365-Filtering-Correlation-Id: bead9e45-4aa5-40bf-2145-08dba3e23762
+X-MS-TrafficTypeDiagnostic: CO1PEPF000042AC:EE_|SA1PR12MB7200:EE_
+X-MS-Office365-Filtering-Correlation-Id: 7e53d1a3-5343-4463-d8ab-08dba3e240f2
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	2EduZzDY3NgnA7Gw9JZLAdILPCyOYFfGDG+dyxVNszFwUxNpvSp/PS8YnQsP3nZhBPIRkgBiq3cmwal7PjUzriKyNeItOhrTHkBg4ugupXZ8/4MrlCeS+FVcRC4QkR7zaFf/iCbwh8ovFeTsPxV3qWNTsA+UWIsU58Yw8UA25iAIa4mz34Jlr0ZezrqXFtsM/uLey0U1+gDbM2VE3cFvMK7p/+HWJdCrmxr8XfFkyUts7MCLJ1O0WRZpdEkWrC5ofJQb3GuRWoXy4JvluTiFt6JiTiqUo929aRdp162Q19RPdCw/oYneOxeRPuoVJEm15e0FdbjSLkvzc0fUqAUl0q3U2RIILNIqqoN0vAwhiJwvMsCVDc3Smz2NyHMztyJvcf6onK/wDIjTaTy3akX8DFChQPtPJXQjNUV/lapy6YGXXrru2mWEe3DU+qlk1XHmzsYLproI6YL9wBt9kzBC8kNuE60rqYKOo6gFOvxBUuZl9GB6V/90NGNVstsN1yYqxRZK5z2J5d/9kHDnzkvuHak1eljnPpsk4YMXohXYnFZq+FueAuP0Iy3oiByg/T7fn2gWRLe96gy7hbkD/HXpQU1NG0b0K+vezOBoFp/l/M8eoZukWSXuGYQxIawT4zoXFshIpDYXdtd7Njjfl0lfFxXWFH1DS+X07RIsiovqVzVdfh6Qh26Gwqc52iHF1Ksxbm8nYWF9ON7DLgVG/5M680BiuuBhCTRTUdBPr6DwbBmcznKuujCcSzPH7oK1QtrmsEbHZQM/mYHF1oWEgYY2jw==
+	BCW0/WOoqQFuOOcmGXc/Kb7ZkVNnX4x1Q6XKMLNKLbeami+T7tI5CEpZ7BeXib9NdXsqI1DAPGd7gVHY5aBXLLh+3Jwkw2LiI9816Gf31yit9/9bnVxVJytLyt9SGxIfflGGbiVjMeoTydrpqFHF6EACkLGlFBThM8eH8bKWLSYrhriuYgp7dzJqZIOeAJZ8rBfB8dQRv9c2U14eIrczwF882cfUOGW7HYilNvYrTEFrNjg4o4TWDUchgddl00dDX7ViMu2ylVY1mRj6MwROzlAzfMpAzpUDlknDrTtGlLH2yBgTN2EVI87HPa0XvL6Fgo2mFkgZZO7hdJR18VchaQafpt3X+/GMpQXLGp5aarbbwUI/wZfThx4dTMDJm8sG6mqqpXswO5zAhRIllsV4rHv6QMOo5j/Gy2IezTU+8ZmaymCt4GTEESOj2AG+m66sDBL8YNDlr0iOUfPIpDQncD8MfGeOR7wZoxVIywpH9BRVBVgM2OKGdrwNuSOkV3V8fld3BxOMUdugpUc7aQYvj5WDdTjrs5PGE5VS3DjA3piIhlNQWYLspE2LLv0C1XkBftT9dnml+ijtO3VnoYfPMlDvq/lwFSeK099H4aI9j0xjoX3c3euFtF1NcJ+RjLeYW6KZgYw3q4CrFIqDJFmx7rlsGplGRyqS+g00+YnqjR/9KUQNwwzE0wipVnVLNRWkIn0TteXMdywhs14LPB1F3c/1N6KfVMSnsy0T4ZgPoHAhC/h1xLDoDjrW0WUsA+GBQzx6y4y0vyx9awD5NzXtOQ==
 X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230031)(4636009)(39860400002)(346002)(136003)(376002)(396003)(451199024)(82310400011)(1800799009)(186009)(46966006)(36840700001)(40470700004)(70586007)(70206006)(54906003)(110136005)(44832011)(5660300002)(2616005)(41300700001)(316002)(2906002)(478600001)(86362001)(8676002)(4326008)(8936002)(81166007)(6666004)(40460700003)(82740400003)(356005)(7696005)(336012)(426003)(1076003)(36756003)(83380400001)(36860700001)(16526019)(26005)(40480700001)(47076005)(36900700001);DIR:OUT;SFP:1101;
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230031)(4636009)(39860400002)(346002)(136003)(396003)(376002)(451199024)(82310400011)(186009)(1800799009)(46966006)(36840700001)(40470700004)(2906002)(40480700001)(83380400001)(5660300002)(44832011)(426003)(336012)(26005)(16526019)(36860700001)(86362001)(47076005)(7696005)(8676002)(2616005)(8936002)(4326008)(316002)(70586007)(54906003)(110136005)(70206006)(478600001)(82740400003)(356005)(81166007)(40460700003)(36756003)(41300700001)(1076003)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Aug 2023 14:06:58.8608
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Aug 2023 14:07:14.9088
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: bead9e45-4aa5-40bf-2145-08dba3e23762
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7e53d1a3-5343-4463-d8ab-08dba3e240f2
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	CO1PEPF000042AE.namprd03.prod.outlook.com
+	CO1PEPF000042AC.namprd03.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB8452
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB7200
 
 From: Wei Huang <wei.huang2@amd.com>
 
-Which adds/removes the device to the corresponding per-IOMMU iopf_queue.
-It also registers device fault handler. These interfaces are called
-from IOPF feature enable/disable path.
+Whenever there is a page fault IOMMU logs entry to ppr log and sends
+interrupt to host. We have to handle the page fault and respond to
+IOMMU.
+
+Currentlty we have page fault handler support for V2API mode. Let us add
+support for SVA mode. We will use core IOMMU page fault handler. We just
+need to validate the request and call core iommu fault handler interface.
+
+Also rename search_dev_data() -> amd_iommu_search_dev_data().
 
 Signed-off-by: Wei Huang <wei.huang2@amd.com>
 Co-developed-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
@@ -98,81 +104,197 @@ Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 Co-developed-by: Vasant Hegde <vasant.hegde@amd.com>
 Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
 ---
- drivers/iommu/amd/amd_iommu.h |  2 ++
- drivers/iommu/amd/ppr.c       | 50 +++++++++++++++++++++++++++++++++++
- 2 files changed, 52 insertions(+)
+ drivers/iommu/amd/amd_iommu.h       |   2 +
+ drivers/iommu/amd/amd_iommu_types.h |   8 +++
+ drivers/iommu/amd/iommu.c           |   7 +-
+ drivers/iommu/amd/ppr.c             | 103 +++++++++++++++++++++++++++-
+ 4 files changed, 116 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/iommu/amd/amd_iommu.h b/drivers/iommu/amd/amd_iommu.h
-index 167541bdcf1d..85b9ed9b350a 100644
+index 85b9ed9b350a..d2dfd7b6b6e2 100644
 --- a/drivers/iommu/amd/amd_iommu.h
 +++ b/drivers/iommu/amd/amd_iommu.h
-@@ -60,6 +60,8 @@ int amd_iommu_sva_gcr3_uninit(struct iommu_dev_data *dev_data);
- /* IOPF */
- int amd_iommu_iopf_init(struct amd_iommu *iommu);
- void amd_iommu_iopf_uninit(struct amd_iommu *iommu);
-+int amd_iommu_iopf_add_device(struct amd_iommu *iommu, struct device *dev);
-+int amd_iommu_iopf_remove_device(struct amd_iommu *iommu, struct device *dev);
- int amd_iommu_page_response(struct device *dev,
- 			    struct iommu_fault_event *event,
- 			    struct iommu_page_response *resp);
+@@ -30,6 +30,8 @@ void amd_iommu_set_rlookup_table(struct amd_iommu *iommu, u16 devid);
+ void iommu_feature_enable(struct amd_iommu *iommu, u8 bit);
+ void *__init iommu_alloc_4k_pages(struct amd_iommu *iommu,
+ 				  gfp_t gfp, size_t size);
++struct iommu_dev_data *amd_iommu_search_dev_data(struct amd_iommu *iommu,
++						 u16 devid);
+ 
+ #ifdef CONFIG_AMD_IOMMU_DEBUGFS
+ void amd_iommu_debugfs_setup(struct amd_iommu *iommu);
+diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
+index d09ce37cd3e9..8fd5798a5992 100644
+--- a/drivers/iommu/amd/amd_iommu_types.h
++++ b/drivers/iommu/amd/amd_iommu_types.h
+@@ -248,6 +248,14 @@
+ #define PPR_ENTRY_SIZE		16
+ #define PPR_LOG_SIZE		(PPR_ENTRY_SIZE * PPR_LOG_ENTRIES)
+ 
++/* PAGE_SERVICE_REQUEST PPR Log Buffer Entry flags */
++#define PPR_FLAG_EXEC		0x002	/* Execute permission requested */
++#define PPR_FLAG_READ		0x004	/* Read permission requested */
++#define PPR_FLAG_WRITE		0x020	/* Write permission requested */
++#define PPR_FLAG_US		0x040	/* 1: User, 0: Supervisor */
++#define PPR_FLAG_RVSD		0x080	/* Reserved bit not zero */
++#define PPR_FLAG_GN		0x100	/* GVA and PASID is valid */
++
+ #define PPR_REQ_TYPE(x)		(((x) >> 60) & 0xfULL)
+ #define PPR_FLAGS(x)		(((x) >> 48) & 0xfffULL)
+ #define PPR_DEVID(x)		((x) & 0xffffULL)
+diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+index 948f9bf47e68..7734e6bba624 100644
+--- a/drivers/iommu/amd/iommu.c
++++ b/drivers/iommu/amd/iommu.c
+@@ -201,7 +201,8 @@ static struct iommu_dev_data *alloc_dev_data(struct amd_iommu *iommu, u16 devid)
+ 	return dev_data;
+ }
+ 
+-static struct iommu_dev_data *search_dev_data(struct amd_iommu *iommu, u16 devid)
++struct iommu_dev_data *amd_iommu_search_dev_data(struct amd_iommu *iommu,
++						 u16 devid)
+ {
+ 	struct iommu_dev_data *dev_data;
+ 	struct llist_node *node;
+@@ -285,7 +286,7 @@ static struct iommu_dev_data *find_dev_data(struct amd_iommu *iommu, u16 devid)
+ {
+ 	struct iommu_dev_data *dev_data;
+ 
+-	dev_data = search_dev_data(iommu, devid);
++	dev_data = amd_iommu_search_dev_data(iommu, devid);
+ 
+ 	if (dev_data == NULL) {
+ 		dev_data = alloc_dev_data(iommu, devid);
+@@ -3631,7 +3632,7 @@ static int amd_ir_set_vcpu_affinity(struct irq_data *data, void *vcpu_info)
+ 	if (ir_data->iommu == NULL)
+ 		return -EINVAL;
+ 
+-	dev_data = search_dev_data(ir_data->iommu, irte_info->devid);
++	dev_data = amd_iommu_search_dev_data(ir_data->iommu, irte_info->devid);
+ 
+ 	/* Note:
+ 	 * This device has never been set up for guest mode.
 diff --git a/drivers/iommu/amd/ppr.c b/drivers/iommu/amd/ppr.c
-index 8cbcdb9c1669..2e5ca4847eda 100644
+index 2e5ca4847eda..db4fa4534cd6 100644
 --- a/drivers/iommu/amd/ppr.c
 +++ b/drivers/iommu/amd/ppr.c
-@@ -168,3 +168,53 @@ int amd_iommu_page_response(struct device *dev,
- 	return amd_iommu_complete_ppr(pdev, resp->pasid, resp->code,
- 				      resp->grpid);
+@@ -59,6 +59,106 @@ void amd_iommu_restart_ppr_log(struct amd_iommu *iommu)
+ 			      MMIO_STATUS_PPR_OVERFLOW_MASK);
  }
-+
-+int amd_iommu_iopf_add_device(struct amd_iommu *iommu, struct device *dev)
+ 
++static inline u32 ppr_flag_to_fault_perm(u16 flag)
 +{
-+	unsigned long flags;
-+	int ret = -EINVAL;
++	int perm = 0;
 +
-+	raw_spin_lock_irqsave(&iommu->lock, flags);
++	if (flag & PPR_FLAG_READ)
++		perm |= IOMMU_FAULT_PERM_READ;
++	if (flag & PPR_FLAG_WRITE)
++		perm |= IOMMU_FAULT_PERM_WRITE;
++	if (flag & PPR_FLAG_EXEC)
++		perm |= IOMMU_FAULT_PERM_EXEC;
++	if (!(flag & PPR_FLAG_US))
++		perm |= IOMMU_FAULT_PERM_PRIV;
 +
-+	if (!iommu->iopf_queue)
-+		goto out;
-+
-+	ret = iopf_queue_add_device(iommu->iopf_queue, dev);
-+	if (ret)
-+		goto out;
-+
-+	ret = iommu_register_device_fault_handler(dev, iommu_queue_iopf, dev);
-+	if (ret)
-+		iopf_queue_remove_device(iommu->iopf_queue, dev);
-+
-+out:
-+	raw_spin_unlock_irqrestore(&iommu->lock, flags);
-+	return ret;
++	return perm;
 +}
 +
-+int amd_iommu_iopf_remove_device(struct amd_iommu *iommu, struct device *dev)
++static bool ppr_is_valid(struct amd_iommu *iommu, u64 *raw)
 +{
-+	unsigned long flags;
++	struct device *dev = iommu->iommu.dev;
++	u16 devid = PPR_DEVID(raw[0]);
++
++	if (!(PPR_FLAGS(raw[0]) & PPR_FLAG_GN)) {
++		dev_warn(dev, "PPR logged [Request ignored due to GN=0 (device=%04x:%02x:%02x.%x "
++			 "pasid=0x%05llx address=0x%llx flags=0x%04llx tag=0x%03llx]\n",
++			 iommu->pci_seg->id, PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
++			 PPR_PASID(raw[0]), raw[1], PPR_FLAGS(raw[0]), PPR_TAG(raw[0]));
++		return false;
++	}
++
++	if (PPR_FLAGS(raw[0]) & PPR_FLAG_RVSD) {
++		dev_warn(dev, "PPR logged [Invalid request format (device=%04x:%02x:%02x.%x "
++			 "pasid=0x%05llx address=0x%llx flags=0x%04llx tag=0x%03llx]\n",
++			 iommu->pci_seg->id, PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
++			 PPR_PASID(raw[0]), raw[1], PPR_FLAGS(raw[0]), PPR_TAG(raw[0]));
++		return false;
++	}
++
++	return true;
++}
++
++static void iommu_call_iopf_notifier(struct amd_iommu *iommu, u64 *raw)
++{
++	struct iommu_fault_event event;
++	struct pci_dev *pdev;
 +	int ret = -EINVAL;
++	u16 devid = PPR_DEVID(raw[0]);
 +
-+	raw_spin_lock_irqsave(&iommu->lock, flags);
++	if (PPR_REQ_TYPE(raw[0]) != PPR_REQ_FAULT) {
++		pr_err_ratelimited("Unknown PPR request received\n");
++		return;
++	}
 +
-+	if (!iommu->iopf_queue)
++	if (!ppr_is_valid(iommu, raw))
 +		goto out;
 +
-+	ret = iommu_unregister_device_fault_handler(dev);
-+	if (ret) {
-+		pr_warn("Failed to unregister device (0x%x) fault handler\n",
-+			dev->id);
++	pdev = pci_get_domain_bus_and_slot(iommu->pci_seg->id, PCI_BUS_NUM(devid),
++					   devid & 0xff);
++	if (!pdev)
++		goto out;
++
++	memset(&event, 0, sizeof(struct iommu_fault_event));
++
++	event.fault.type = IOMMU_FAULT_PAGE_REQ;
++	event.fault.prm.perm = ppr_flag_to_fault_perm(PPR_FLAGS(raw[0]));
++	event.fault.prm.addr = (u64)(raw[1] & PAGE_MASK);
++	event.fault.prm.pasid = PPR_PASID(raw[0]);
++	event.fault.prm.grpid = PPR_TAG(raw[0]) & 0x1FF;
++
++	/*
++	 * PASID zero is used for requests from the I/O device without
++	 * a PASID
++	 */
++	if (event.fault.prm.pasid == 0 ||
++	    event.fault.prm.pasid >= pdev->dev.iommu->max_pasids) {
++		pr_info_ratelimited("Invalid PASID : 0x%x, device : 0x%x\n",
++				    event.fault.prm.pasid, pdev->dev.id);
++		goto out;
 +	}
 +
-+	ret = iopf_queue_remove_device(iommu->iopf_queue, dev);
-+	if (ret) {
-+		pr_warn("Failed to remove device (0x%x) from iopf queue\n",
-+			dev->id);
-+	}
++
++	event.fault.prm.flags |= IOMMU_FAULT_PAGE_RESPONSE_NEEDS_PASID;
++	event.fault.prm.flags |= IOMMU_FAULT_PAGE_REQUEST_PASID_VALID;
++	if (PPR_TAG(raw[0]) & 0x200)
++		event.fault.prm.flags |= IOMMU_FAULT_PAGE_REQUEST_LAST_PAGE;
++
++	/* Submit event */
++	ret = iommu_report_device_fault(&pdev->dev, &event);
 +
 +out:
-+	raw_spin_unlock_irqrestore(&iommu->lock, flags);
-+	return ret;
++	if (ret) {
++		/* Nobody cared, abort */
++		struct iommu_page_response resp = {
++			.pasid = PPR_PASID(raw[0]),
++			.grpid = PPR_TAG(raw[0]) & 0x1FF,
++			.code = IOMMU_PAGE_RESP_FAILURE,
++		};
++		amd_iommu_page_response(&pdev->dev, &event, &resp);
++	}
 +}
++
+ void amd_iommu_poll_ppr_log(struct amd_iommu *iommu)
+ {
+ 	u32 head, tail;
+@@ -104,7 +204,8 @@ void amd_iommu_poll_ppr_log(struct amd_iommu *iommu)
+ 		head = (head + PPR_ENTRY_SIZE) % PPR_LOG_SIZE;
+ 		writel(head, iommu->mmio_base + MMIO_PPR_HEAD_OFFSET);
+ 
+-		/* TODO: PPR Handler will be added when we add IOPF support */
++		/* Handle PPR entry */
++		iommu_call_iopf_notifier(iommu, entry);
+ 
+ 		/* Refresh ring-buffer information */
+ 		head = readl(iommu->mmio_base + MMIO_PPR_HEAD_OFFSET);
 -- 
 2.31.1
 
