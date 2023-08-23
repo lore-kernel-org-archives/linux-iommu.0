@@ -1,32 +1,33 @@
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
+Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2063.outbound.protection.outlook.com [40.107.102.63])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE003BA48
-	for <iommu@lists.linux.dev>; Wed, 23 Aug 2023 12:04:37 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4A8C3BE5B
+	for <iommu@lists.linux.dev>; Wed, 23 Aug 2023 12:04:53 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=f4kuGS7Lr68cWNBfKM61TZwv/Dl/SNi4JwMBzKg4M0n5fcwIBznfncLeH+NXnBk7GfWLuK1z+gdgKCzJbM2olQQVqP1uJmzPoyu6wbLa/jCTTX7XBJO/sZKCKu3LKYPtV4mSE3kCLmi+0fbRlIzsv4c9iocwEusqqIanUBQfGuXq+6q6W/waAhZoAjAa9e9QYPi+IizveSERp5X5bRCFgrfJeaUOjxJTD/FIKocL/UMfsDL9FjRRGHK6KWzOhMqGOWhHVNX9ni4BDZRrPLxc0Q/MBbwccYIzWJmKjlmugKXG15dMVNCf2a6BN+Hpe7QTnwbheAgymxWmJkaX1tV5HA==
+ b=ICO1XKjkv1z6QSPz6ESKMi+sLa6Y9CP6fvrtrWOf607oPBTpsLCi36BEQKAPZaAsd3EiKJT5ppw1vR49qrhGb6Ef2iI8p0zYNkdeO3y4jiPun3RWGyrVo1eaYftbTg9wgXJ7jfx3OuAc0I1iu75iO6Ac2JdNsDiRTOUy3v6/eGv4sTw3LXolXA4XWBVBQ59dWK/olpYLT/3JuMFAHRSzV7wipRMm2wp3+GnnaOaj3jGF4wIkg2iBuPKQIiNXY5HSVaGCwrEvTqaIR56XYRyVcO7j8lINoQSqGifkXEUHGQF0mhrQwo9tJtpbzkx9ZtKes+8R1UN35aMuPcu35dYLtQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=M3LYPKZr2nZ/s27BAM10+ctGNeW1dQjPpG0ER5krJsI=;
- b=cOrQXuo/KPpuG8L57iwVYqYVEH3lw/hq0svHAeMXildtOYutqmWTx4//HjpvKj9cWf9dv1taWhJZRoSyZMWxwqtyEhxJGWcVmby5TX/NOCOGZTNWhvKAvxVQPO/ejPxwDmwGTCjaOVVLZRX3bvVyiLla1r8A2fcOlpJeL+jepvv6vAqU8XCKVCalodBsuswa5+I+ujM8YcTLiPQygW6dooZhnFvmqt/KhjMfc0sjklWwLp3BBW0L2UsGSlDZyqiV3TW6VfCUwl+azeKy94V8pZ5ZH/GFBQAwVLv8XLaRtu/58wjxxD4Bd0cGolzWK26kW2SaIaS7UL4OVI3JB5dt5w==
+ bh=/2gf6N/Ns1imekVUQ/kAuICWsXsUFLwDJOEUkd/Iu84=;
+ b=c1A0fySkxVTC58Xq477De4GCAz2rO9sR2DFKGWeO4osOvOw0stkeeSL2RZ6nK/8+fb8+DOe+qnnrBZV8MKAfwf0JRUuR/kVOVsgFX+l7XNJDUbVh7fczfUJn81DKtoyj4u+6Nz+Qrh3Rr4nQHDl3bI0u7dmjcos9TAhGOFtb8hZjzFImV3iZC0gUTNMBCzVX5wufVlbAWfSEpCmXVPMmP+3T2NV4CIkXIbpunq5jp8XTR9F1WzPEFYSJcGSBXEyCSlxnofnhzcLAYrn11pfoCvj4A4DhbbIPaplVV/Q9ZxrKOaQf9C/JHlJf2659s9bo6sRNHmBv8aZuZVGI0WAJLg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=amd.com;
  dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
  header.from=amd.com; dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=M3LYPKZr2nZ/s27BAM10+ctGNeW1dQjPpG0ER5krJsI=;
- b=IPAQZHUlpzwTYcuRAKdKcU0CamsdjNK7vsG8jRmf5RYJJWoFCrYEAnHZLzFY/xhG2MR7VDAwgZM/qAhJyTRnM7QNDs3/wmELo3BHMP29YC0I3NLwh61tssKyBitjcw3exjTo4DNCY1XPHpYwmq5q5b959PtumkOfcxQo4NCcD08=
-Received: from CY5PR13CA0023.namprd13.prod.outlook.com (2603:10b6:930::9) by
- CY8PR12MB7097.namprd12.prod.outlook.com (2603:10b6:930:51::17) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6699.26; Wed, 23 Aug 2023 12:04:35 +0000
-Received: from CY4PEPF0000E9CD.namprd03.prod.outlook.com
- (2603:10b6:930:0:cafe::28) by CY5PR13CA0023.outlook.office365.com
- (2603:10b6:930::9) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6699.15 via Frontend
- Transport; Wed, 23 Aug 2023 12:04:35 +0000
+ bh=/2gf6N/Ns1imekVUQ/kAuICWsXsUFLwDJOEUkd/Iu84=;
+ b=bfoi2UCuJH6cGuxqythy9LUcYQXELrcUR6PYZ4qg9H9cJY4gUXzrfYInV0zn6jgB2MAkdjlXCpH0NuXpDtUYhZglN6yhHWN0akZiy9sAXJTjKgwdfiZodqTontAPO+SWSNqeD2zl6lpX8ZEICDD6bfG1lnm5Nx6gbI3RbtRIvXM=
+Received: from CY8PR11CA0039.namprd11.prod.outlook.com (2603:10b6:930:4a::27)
+ by IA1PR12MB6116.namprd12.prod.outlook.com (2603:10b6:208:3e8::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6699.24; Wed, 23 Aug
+ 2023 12:04:51 +0000
+Received: from CY4PEPF0000E9D4.namprd03.prod.outlook.com
+ (2603:10b6:930:4a:cafe::85) by CY8PR11CA0039.outlook.office365.com
+ (2603:10b6:930:4a::27) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6699.26 via Frontend
+ Transport; Wed, 23 Aug 2023 12:04:51 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -34,20 +35,20 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
  client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
 Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CY4PEPF0000E9CD.mail.protection.outlook.com (10.167.241.140) with Microsoft
+ CY4PEPF0000E9D4.mail.protection.outlook.com (10.167.241.147) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.6699.15 via Frontend Transport; Wed, 23 Aug 2023 12:04:34 +0000
+ 15.20.6699.15 via Frontend Transport; Wed, 23 Aug 2023 12:04:50 +0000
 Received: from kali.amd.com (10.180.168.240) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.27; Wed, 23 Aug
- 2023 07:04:31 -0500
+ 2023 07:04:47 -0500
 From: Vasant Hegde <vasant.hegde@amd.com>
 To: <iommu@lists.linux.dev>, <joro@8bytes.org>
 CC: <suravee.suthikulpanit@amd.com>, <wei.huang2@amd.com>,
-	<jsnitsel@redhat.com>, <jgg@ziepe.ca>
-Subject: [PATCH 03/10] dma/sdxi: Disable event log register read temporarily
-Date: Wed, 23 Aug 2023 12:02:15 +0000
-Message-ID: <20230823120230.727935-6-vasant.hegde@amd.com>
+	<jsnitsel@redhat.com>, <jgg@ziepe.ca>, Vasant Hegde <vasant.hegde@amd.com>
+Subject: [PATCH 03/10] iommu/amd: Initial SVA support for AMD IOMMU
+Date: Wed, 23 Aug 2023 12:02:16 +0000
+Message-ID: <20230823120230.727935-7-vasant.hegde@amd.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230823120230.727935-1-vasant.hegde@amd.com>
 References: <20230823120230.727935-1-vasant.hegde@amd.com>
@@ -64,59 +65,468 @@ X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
  (10.181.40.145)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY4PEPF0000E9CD:EE_|CY8PR12MB7097:EE_
-X-MS-Office365-Filtering-Correlation-Id: b92f57dc-d8ce-4842-e63f-08dba3d11e0f
+X-MS-TrafficTypeDiagnostic: CY4PEPF0000E9D4:EE_|IA1PR12MB6116:EE_
+X-MS-Office365-Filtering-Correlation-Id: cc53b985-dc7d-4d20-0e6d-08dba3d12784
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	sh/ydM+D2od9a1Yb8C6I0qqVL56dnjNxBeGcGQxYPnwmbnA2+O6K5GosSaCPKjGbuf+l4GKCDf/i/f4Ho+L5eOs9fBzmSZOnV40rvIjal/eq8jmyhkVhCCXiiLazXN92m8sNiANuVuyvg7R5fTcXfso/ae92gtWtlbqCCaEdTrhW0G0SElaINVvDubCFu3/AN0l78SmmB40hTo8Kd05OW6RbuHN0sd7fDjNFzUoGL018MRLp5e8TZdmS9MiTpb0XNILn91EpOpBhRcC4bYkYjxZT7+ZE5SK8aFVlVD46z1RcIvwq7TV0m7lU/p4izaVHXipWYSPbQjoxL0X75jqwPdbpKv/33Nqo/aG+5opIcEYhsIXwIWwHhmAA6qQ/umc0WW01sfInsXe0r5QbOw4PPY1aQ8m7Ldh03w1Mccu4ojJAtpEPWeOxfnP+QMJLTnlQ8JcQLChLBgPiHo0VlYKyQA21v8EODNjqWTz6nCalMj584Ef4N/IRSm+LJIWl4BGI87vgfCSyDV96bo8F/UmrW0dYgjgHJz/mDtDY6PHwxuIO1s5jplhWGbxg9z8/irBruKw0jzt4Z+A9/8PQuYDW+gTTGcJB70SngHJ8gk7O7QLwks/0yA/4oQrCr+miUzYilvpu9j0SwATMEKr93xt8LPZsKcwVo/ALHWzhBP0EM/zA6lMK47I88Cuax2XOw0/pGZny66Z/uvqDDHiYfzAPjfNQxhNLKNzSP5d6fVOQ5fotLnPl3D4mGZ3Yd89M+S0CCbrD5xPFljyNakWryvK8Sw==
+	i/2h+LkCMmtiPqY3QAwzuK/ZrGZP3lVGESKf5P32JUfWz5COSLT+/Uxqbhivwqwi0hge74sBh1TL/1KJf8py4kjF+qzLfDSnhmBLjVba6AN2J3K+BSwupEq/L86FelcU1YrqrzVpn0nwtIbqwPc8G91jlWs9JU39a8msUZ/3baq04dM0CzHFDDPpbCJ898zt9qK3KSS23ynTAhe9SuwpXVUwhc0LHDskkS2F9gOavjRh/fYPgc3+4WzHl7jClqK0mn/zbxAmoxd79OV9ks71ECtiA3PjEhh/OnCumBEzcuyjQFpBx2kP9cPiNjczCyXM/+DhZVla0PszUuQ+DNKyaAImm+314oxhKFK2xrIQ9ifN5MMvWUusAbQSTqT3VwtojPGwmhlMMpLDzmr3BMUQURdCt+LkRcJ5pl8QA6cXORy7jP9Xsqpm79fKBhTAVeOf+Y6Fu8FeApNLGuIEX+F4MN62qAVLutLlCQZrPix3rT488vy50qpoZElMIAPjfuS+ZmAyu1LCfYN+LLpd10ujezk8gWWZC1y+coHes66d1vrZZE0hCPIhCpdz+YNXNTiVn/eVXJ2NRhtcupqwvxaKEL2Wes/BHUD6BdsWrvUAiiVTOWMGAGWp0/BQoUF4vqubuxPA/VHRfZ/3RkT4ggZTLKrQB47ew6p7P599hr9C89kUWLjrbUFzptNrAeBkdNDUcHOM7DgoHDq27T5CFP+DsaHLWI4lbdY1FBcyjEgBstIqEpknEq+AT2uK4/mlQUjbMNAB5g/K6urI++GPD3wn0w==
 X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230031)(4636009)(396003)(346002)(136003)(39860400002)(376002)(451199024)(82310400011)(186009)(1800799009)(40470700004)(36840700001)(46966006)(36756003)(478600001)(86362001)(44832011)(316002)(7696005)(54906003)(70206006)(70586007)(110136005)(6666004)(81166007)(41300700001)(8676002)(4326008)(8936002)(5660300002)(82740400003)(1076003)(356005)(26005)(2616005)(16526019)(83380400001)(336012)(426003)(40480700001)(4744005)(36860700001)(40460700003)(47076005)(2906002)(36900700001);DIR:OUT;SFP:1101;
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230031)(4636009)(346002)(39860400002)(396003)(376002)(136003)(82310400011)(451199024)(1800799009)(186009)(46966006)(36840700001)(40470700004)(2906002)(30864003)(83380400001)(40480700001)(7696005)(5660300002)(44832011)(336012)(426003)(16526019)(26005)(47076005)(86362001)(36860700001)(8676002)(8936002)(2616005)(4326008)(70206006)(316002)(70586007)(54906003)(110136005)(478600001)(81166007)(82740400003)(356005)(6666004)(36756003)(40460700003)(41300700001)(1076003)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Aug 2023 12:04:34.9970
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Aug 2023 12:04:50.8421
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: b92f57dc-d8ce-4842-e63f-08dba3d11e0f
+X-MS-Exchange-CrossTenant-Network-Message-Id: cc53b985-dc7d-4d20-0e6d-08dba3d12784
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	CY4PEPF0000E9CD.namprd03.prod.outlook.com
+	CY4PEPF0000E9D4.namprd03.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR12MB7097
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB6116
 
-From: Wei Huang <wei.huang2@amd.com>
+This includes :
+  - Add support to allocate SVA domain. It also sets 'set_dev_pasid'
+    to bind PASID to device and make necessary updates to DTE.
 
-It seems the driver is having issues during MMIO register read when
-error log is triggered. This can potentially be FW issue. Let us
-disable it for now.
+  - Add iommu_ops.remove_dev_pasid support. It will unbind PASID from
+    device and makes necessary update to DTE.
 
+  - PASID management
+    xarray to keep track the PASIDs
+    struct amd_sva_pasid
+      It will contain mm struct, mmu notifier, protection domain and list
+      of devices within IOMMU group using this pasid.
+    struct amd_sva_dev
+      This contains device list and pointer to iommu_dev_data. So that we
+      can track pasid to device binding.
+
+  - mmu notifier for iotlb invalidation
+
+  - Add IOMMU_SVA as dependency to AMD_IOMMU driver
+
+Co-developed-by: Wei Huang <wei.huang2@amd.com>
 Signed-off-by: Wei Huang <wei.huang2@amd.com>
+Co-developed-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
 ---
- drivers/dma/sdxi/pci.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/iommu/amd/Kconfig           |   1 +
+ drivers/iommu/amd/Makefile          |   2 +-
+ drivers/iommu/amd/amd_iommu.h       |   5 +
+ drivers/iommu/amd/amd_iommu_types.h |  10 +
+ drivers/iommu/amd/iommu.c           |  10 +
+ drivers/iommu/amd/sva.c             | 299 ++++++++++++++++++++++++++++
+ 6 files changed, 326 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/iommu/amd/sva.c
 
-diff --git a/drivers/dma/sdxi/pci.c b/drivers/dma/sdxi/pci.c
-index d51c190a3cb7..a7c3aaa3ff12 100644
---- a/drivers/dma/sdxi/pci.c
-+++ b/drivers/dma/sdxi/pci.c
-@@ -81,14 +81,14 @@ static void sdxi_do_cmd_complete(unsigned long data)
+diff --git a/drivers/iommu/amd/Kconfig b/drivers/iommu/amd/Kconfig
+index 75132ae861a2..cabf4ccde1ed 100644
+--- a/drivers/iommu/amd/Kconfig
++++ b/drivers/iommu/amd/Kconfig
+@@ -10,6 +10,7 @@ config AMD_IOMMU
+ 	select IOMMU_API
+ 	select IOMMU_IOVA
+ 	select IOMMU_IO_PGTABLE
++	select IOMMU_SVA
+ 	depends on X86_64 && PCI && ACPI && HAVE_CMPXCHG_DOUBLE
+ 	help
+ 	  With this option you can enable support for AMD IOMMU hardware in
+diff --git a/drivers/iommu/amd/Makefile b/drivers/iommu/amd/Makefile
+index f454fbb1569e..848c89fa5238 100644
+--- a/drivers/iommu/amd/Makefile
++++ b/drivers/iommu/amd/Makefile
+@@ -1,3 +1,3 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+-obj-$(CONFIG_AMD_IOMMU) += iommu.o init.o quirks.o io_pgtable.o io_pgtable_v2.o
++obj-$(CONFIG_AMD_IOMMU) += iommu.o init.o quirks.o io_pgtable.o io_pgtable_v2.o sva.o
+ obj-$(CONFIG_AMD_IOMMU_DEBUGFS) += debugfs.o
+diff --git a/drivers/iommu/amd/amd_iommu.h b/drivers/iommu/amd/amd_iommu.h
+index f236d540c917..6fdad7a54781 100644
+--- a/drivers/iommu/amd/amd_iommu.h
++++ b/drivers/iommu/amd/amd_iommu.h
+@@ -41,7 +41,12 @@ extern int amd_iommu_guest_ir;
+ extern enum io_pgtable_fmt amd_iommu_pgtable;
+ extern int amd_iommu_gpt_level;
  
- static irqreturn_t sdxi_irq_thread(int irq, void *data)
++/* SVA */
+ bool amd_iommu_sva_supported(void);
++int amd_iommu_set_dev_pasid(struct iommu_domain *domain,
++			    struct device *dev, ioasid_t pasid);
++void amd_iommu_remove_dev_pasid(struct device *dev, ioasid_t pasid);
++
+ struct amd_iommu *get_amd_iommu(unsigned int idx);
+ u8 amd_iommu_pc_get_max_banks(unsigned int idx);
+ bool amd_iommu_pc_supported(void);
+diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
+index b1a54d8c7506..88b9e41b6fbc 100644
+--- a/drivers/iommu/amd/amd_iommu_types.h
++++ b/drivers/iommu/amd/amd_iommu_types.h
+@@ -922,6 +922,16 @@ static inline int get_hpet_devid(int id)
+ 	return -EINVAL;
+ }
+ 
++static inline struct protection_domain *amd_iommu_get_pdomain(struct device *dev)
++{
++	struct iommu_dev_data *dev_data = dev_iommu_priv_get(dev);
++
++	if (!dev_data || !dev_data->domain)
++		return NULL;
++
++	return dev_data->domain;
++}
++
+ enum amd_iommu_intr_mode_type {
+ 	AMD_IOMMU_GUEST_IR_LEGACY,
+ 
+diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+index 8fd647c0d657..46bb1bfdc322 100644
+--- a/drivers/iommu/amd/iommu.c
++++ b/drivers/iommu/amd/iommu.c
+@@ -76,6 +76,7 @@ struct iommu_cmd {
+ struct kmem_cache *amd_iommu_irq_cache;
+ 
+ static void detach_device(struct device *dev);
++static void amd_iommu_domain_free(struct iommu_domain *dom);
+ 
+ static void set_dte_entry(struct amd_iommu *iommu, u16 devid,
+ 			  struct gcr3_tbl_info *gcr3_info,
+@@ -2187,6 +2188,11 @@ static int protection_domain_init_v2(struct protection_domain *pdom)
+ 	return 0;
+ }
+ 
++static const struct iommu_domain_ops amd_svm_domain_ops = {
++	.set_dev_pasid = amd_iommu_set_dev_pasid,
++	.free	       = amd_iommu_domain_free
++};
++
+ static struct protection_domain *protection_domain_alloc(unsigned int type)
  {
--	struct sdxi_dev *sdxi = (struct sdxi_dev *)data;
-+	/*struct sdxi_dev *sdxi = (struct sdxi_dev *)data;
- 	u64 status = reg_read64(sdxi->ctrl_regs + ERR_LOG_STS_OFFSET);
- 
- 	while (status & ERR_LOG_STATUS_MASK) {
- 		printk(KERN_ERR "read status\n");
- 		sdxi_handle_err(sdxi);
- 		status = reg_read64(sdxi->ctrl_regs + ERR_LOG_STS_OFFSET);
--	}
-+		}*/
- 
- 	/* sdxi_do_cmd_complete((ulong)&sdxi->tdata); */
- 
+ 	struct io_pgtable_ops *pgtbl_ops;
+@@ -2221,6 +2227,9 @@ static struct protection_domain *protection_domain_alloc(unsigned int type)
+ 	case IOMMU_DOMAIN_UNMANAGED:
+ 		pgtable = AMD_IOMMU_V1;
+ 		break;
++	case IOMMU_DOMAIN_SVA:
++		domain->domain.ops = &amd_svm_domain_ops;
++		return domain;
+ 	default:
+ 		goto out_err;
+ 	}
+@@ -2602,6 +2611,7 @@ const struct iommu_ops amd_iommu_ops = {
+ 	.def_domain_type = amd_iommu_def_domain_type,
+ 	.dev_enable_feat = amd_iommu_dev_enable_feature,
+ 	.dev_disable_feat = amd_iommu_dev_disable_feature,
++	.remove_dev_pasid = amd_iommu_remove_dev_pasid,
+ 	.default_domain_ops = &(const struct iommu_domain_ops) {
+ 		.attach_dev	= amd_iommu_attach_device,
+ 		.map_pages	= amd_iommu_map_pages,
+diff --git a/drivers/iommu/amd/sva.c b/drivers/iommu/amd/sva.c
+new file mode 100644
+index 000000000000..c7c7e7cb5414
+--- /dev/null
++++ b/drivers/iommu/amd/sva.c
+@@ -0,0 +1,299 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * Copyright (C) 2023 Advanced Micro Devices, Inc.
++ */
++
++#define pr_fmt(fmt)     "AMD-Vi: " fmt
++#define dev_fmt(fmt)    pr_fmt(fmt)
++
++#include <linux/iommu.h>
++#include <linux/mm_types.h>
++#include <linux/mmu_notifier.h>
++
++#include "amd_iommu.h"
++#include "../iommu-sva.h"
++
++struct amd_sva_pasid {
++	u32			pasid;	/* PASID index */
++	struct mm_struct	*mm;	/* mm_struct for the faults */
++	struct mmu_notifier	mn;	/* mmu_notifier handle */
++	struct list_head	dev_list; /* List of devices for this pasid */
++};
++
++struct amd_sva_dev {
++	struct device		*dev;
++	struct iommu_dev_data	*dev_data;
++	struct list_head	list;
++	struct rcu_head		rcu;
++};
++
++static DEFINE_MUTEX(pasid_mutex);
++static DEFINE_XARRAY_ALLOC(sva_pasid_array);
++
++
++static int sva_pasid_private_add(u32 pasid, void *priv)
++{
++	return xa_alloc(&sva_pasid_array, &pasid, priv,
++			XA_LIMIT(pasid, pasid), GFP_ATOMIC);
++}
++
++static void sva_pasid_private_remove(u32 pasid)
++{
++	xa_erase(&sva_pasid_array, pasid);
++}
++
++static void *sva_pasid_private_find(u32 pasid)
++{
++	return xa_load(&sva_pasid_array, pasid);
++}
++
++static struct amd_sva_dev *sva_dev_alloc(struct device *dev)
++{
++	struct amd_sva_dev *sva_dev;
++	struct iommu_dev_data *dev_data = dev_iommu_priv_get(dev);
++
++	sva_dev = kzalloc(sizeof(*sva_dev), GFP_KERNEL);
++	if (!sva_dev)
++		return NULL;
++
++	sva_dev->dev = dev;
++	sva_dev->dev_data = dev_data;
++	init_rcu_head(&sva_dev->rcu);
++
++	return sva_dev;
++}
++
++static inline void sva_dev_free(struct amd_sva_dev *sva_dev)
++{
++	kfree_rcu(sva_dev, rcu);
++}
++
++static void sva_mn_invalidate_range(struct mmu_notifier *mn,
++				    struct mm_struct *mm,
++				    unsigned long start, unsigned long end)
++{
++	struct amd_sva_pasid *sva_pasid;
++	struct amd_sva_dev *sva_dev;
++
++	rcu_read_lock();
++
++	sva_pasid = container_of(mn, struct amd_sva_pasid, mn);
++	if (!sva_pasid) {
++		rcu_read_unlock();
++		return;
++	}
++
++	list_for_each_entry_rcu(sva_dev, &sva_pasid->dev_list, list) {
++		if ((start ^ (end - 1)) < PAGE_SIZE)
++			amd_iommu_flush_page(sva_dev->dev_data->domain, sva_pasid->pasid, start);
++		else
++			amd_iommu_flush_tlb(sva_dev->dev_data->domain, sva_pasid->pasid);
++	}
++
++	rcu_read_unlock();
++}
++
++static void sva_mn_release(struct mmu_notifier *mn, struct mm_struct *mm)
++{
++	struct amd_sva_pasid *sva_pasid;
++	struct amd_sva_dev *sva_dev;
++
++	rcu_read_lock();
++
++	sva_pasid = container_of(mn, struct amd_sva_pasid, mn);
++	if (!sva_pasid) {
++		rcu_read_unlock();
++		return;
++	}
++
++	/* make it visible */
++	smp_wmb();
++
++	/*
++	 * This might end up being called from exit_mmap(), *before* unbinding
++	 * the PASID. In such cases we clear the PASID table and flush IOTLB.
++	 */
++	list_for_each_entry_rcu(sva_dev, &sva_pasid->dev_list, list)
++		amd_iommu_clear_gcr3(sva_dev->dev_data, sva_pasid->pasid);
++
++	rcu_read_unlock();
++}
++
++static const struct mmu_notifier_ops sva_mn = {
++	.invalidate_range = sva_mn_invalidate_range,
++	.release = sva_mn_release,
++};
++
++static struct amd_sva_pasid *sva_pasid_alloc(struct mm_struct *mm)
++{
++	struct amd_sva_pasid *sva_pasid;
++
++	sva_pasid = kzalloc(sizeof(*sva_pasid), GFP_KERNEL);
++	if (!sva_pasid)
++		return NULL;
++
++	sva_pasid->pasid = mm->pasid;
++	sva_pasid->mm = mm;
++	sva_pasid->mn.ops = &sva_mn;
++	INIT_LIST_HEAD(&sva_pasid->dev_list);
++
++	return sva_pasid;
++}
++
++static inline void sva_pasid_free(struct amd_sva_pasid *sva_pasid)
++{
++	kfree(sva_pasid);
++}
++
++static struct amd_sva_dev *pasid_to_sva_dev(struct device *dev,
++					    struct amd_sva_pasid *sva_pasid)
++{
++	struct amd_sva_dev *sva_dev;
++
++	rcu_read_lock();
++
++	list_for_each_entry_rcu(sva_dev, &sva_pasid->dev_list, list) {
++		if (sva_dev->dev == dev) {
++			rcu_read_unlock();
++			return sva_dev;
++		}
++	}
++
++	rcu_read_unlock();
++	return NULL;
++}
++
++static int sva_bind_mm(struct device *dev, struct mm_struct *mm)
++{
++	struct amd_sva_pasid *sva_pasid;
++	struct amd_sva_dev *sva_dev;
++	struct iommu_dev_data *dev_data = dev_iommu_priv_get(dev);
++	int ret = -EINVAL;
++
++	sva_dev = sva_dev_alloc(dev);
++	if (!sva_dev)
++		return ret;
++
++	sva_pasid = sva_pasid_private_find(mm->pasid);
++	if (!sva_pasid) {
++		sva_pasid = sva_pasid_alloc(mm);
++		if (!sva_pasid)
++			goto out_sva_dev;
++
++		ret = sva_pasid_private_add(sva_pasid->pasid, sva_pasid);
++		if (ret)
++			goto out_sva_pasid;
++
++		ret = amd_iommu_set_gcr3(dev_data, sva_pasid->pasid,
++					 iommu_virt_to_phys(sva_pasid->mm->pgd));
++		if (ret)
++			goto out_pasid_remove;
++
++		ret = mmu_notifier_register(&sva_pasid->mn, mm);
++		if (ret)
++			goto out_clear_gcr3;
++	}
++
++	/* Add sva_dev into list */
++	list_add(&sva_dev->list, &sva_pasid->dev_list);
++	return 0;
++
++out_clear_gcr3:
++	amd_iommu_clear_gcr3(dev_data, sva_pasid->pasid);
++
++out_pasid_remove:
++	sva_pasid_private_remove(sva_pasid->pasid);
++
++out_sva_pasid:
++	sva_pasid_free(sva_pasid);
++
++out_sva_dev:
++	sva_dev_free(sva_dev);
++	return ret;
++}
++
++static void sva_unbind_mm(struct device *dev, u32 pasid)
++{
++	struct amd_sva_pasid *sva_pasid;
++	struct amd_sva_dev *sva_dev;
++
++	sva_pasid = sva_pasid_private_find(pasid);
++	if (!sva_pasid)
++		return;
++
++	sva_dev = pasid_to_sva_dev(dev, sva_pasid);
++	if (!sva_dev)
++		return;
++
++	/* make it visible */
++	smp_wmb();
++
++	/* Update GCR3 table and flush IOTLB */
++	amd_iommu_clear_gcr3(sva_dev->dev_data, sva_pasid->pasid);
++
++	list_del_rcu(&sva_dev->list);
++	sva_dev_free(sva_dev);
++
++	if (list_empty(&sva_pasid->dev_list)) {
++		if (sva_pasid->mn.ops)
++			mmu_notifier_unregister(&sva_pasid->mn, sva_pasid->mm);
++
++		sva_pasid_private_remove(pasid);
++		sva_pasid_free(sva_pasid);
++	}
++}
++
++int amd_iommu_set_dev_pasid(struct iommu_domain *domain,
++			    struct device *dev, ioasid_t pasid)
++{
++	struct protection_domain *pdom;
++	struct mm_struct *mm = domain->mm;
++	struct iommu_dev_data *dev_data = dev_iommu_priv_get(dev);
++	int ret = -EINVAL;
++
++	/* PASID zero is used for requests from the I/O device without PASID */
++	if (pasid == 0 || pasid >= dev->iommu->max_pasids)
++		return ret;
++
++	/* Make sure SVA mode is enabled for device default domain */
++	pdom = amd_iommu_get_pdomain(dev);
++
++	if (!pdom || pdom->pd_mode != PD_MODE_V2 ||
++	    dev_data->gcr3_info.gcr3_tbl == NULL)
++		return ret;
++
++	/* Init sva_pasid and bind mm */
++	mutex_lock(&pasid_mutex);
++	ret = sva_bind_mm(dev, mm);
++	mutex_unlock(&pasid_mutex);
++
++	return ret;
++}
++
++void amd_iommu_remove_dev_pasid(struct device *dev, ioasid_t pasid)
++{
++	struct iommu_domain *domain;
++
++	if (pasid == 0 || pasid >= dev->iommu->max_pasids)
++		return;
++
++	/* Get SVA domain */
++	domain = iommu_get_domain_for_dev_pasid(dev, pasid, 0);
++	if (!domain)
++		return;
++
++	switch (domain->type) {
++	case IOMMU_DOMAIN_SVA:
++		/* Ensure that all queued faults have been processed */
++		iopf_queue_flush_dev(dev);
++
++		mutex_lock(&pasid_mutex);
++		sva_unbind_mm(dev, pasid);
++		mutex_unlock(&pasid_mutex);
++		break;
++	default:
++		/* Should never reach here */
++		WARN_ON(1);
++		break;
++	}
++}
 -- 
 2.31.1
 
