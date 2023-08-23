@@ -1,74 +1,127 @@
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.20])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f174.google.com (mail-qt1-f174.google.com [209.85.160.174])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 970C364A
-	for <iommu@lists.linux.dev>; Wed, 23 Aug 2023 02:42:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1692758562; x=1724294562;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=j2fcy9XeTyi7lyzHRzENS3KkHahyZ7go/+rVh3lLPqM=;
-  b=nsZO5FK/Rd+1CdQpGKSm3ZPmY7v6mCVu+AIa2NsSUCGgN8PvyUUEGtT1
-   GiiBV11cx9pT+XUd4z/BTtKZNXevUMsq5LEQCqgAjHgd1Ib2y8nzhPtx9
-   ZVJfSJn7D/LYhxe86WXLin6l/XULHwmGjMdb1MOELjkHnMTpdKdIhDDit
-   TX9Q1wtLrqART9K5WvuPoUrhSWVdE5FI6rzMPrU/nlDu6sENqgRSQS4Dn
-   5fe5yEXuaTAak3EPeoaWqFG6kFBHvNMOVO6Bcx+KoItsP+PnIh4fED4oJ
-   v67CVnhwjevvOQuNLIDuiDCPBl7gNnVrTFwuR+YBteFxRw/bF07Gp0Tv3
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10810"; a="364226472"
-X-IronPort-AV: E=Sophos;i="6.01,194,1684825200"; 
-   d="scan'208";a="364226472"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2023 19:42:39 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10810"; a="826551870"
-X-IronPort-AV: E=Sophos;i="6.01,194,1684825200"; 
-   d="scan'208";a="826551870"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.252.189.105]) ([10.252.189.105])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2023 19:42:33 -0700
-Message-ID: <4ba43e04-965a-4002-ac8d-58a798c25975@linux.intel.com>
-Date: Wed, 23 Aug 2023 10:42:29 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 33EEF20EE3
+	for <iommu@lists.linux.dev>; Wed, 23 Aug 2023 07:26:37 +0000 (UTC)
+Received: by mail-qt1-f174.google.com with SMTP id d75a77b69052e-407db3e9669so169521cf.1
+        for <iommu@lists.linux.dev>; Wed, 23 Aug 2023 00:26:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20221208; t=1692775597; x=1693380397;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=IKY7CwPvf4+r1qLRL9M25q8Xqba9hENCU7mXfg2rhjk=;
+        b=oG7ku6fNiRTPSk5zpqst1UtlXF/tbr6lOVM47HAENj4iP9AVida2PEaMzVt4/7FJr2
+         LLCU689z7LRhtzKFZSgpLasQWAgTZWIcZeVnIJ5Nq7fk9jQGcOuMvNloyEMpGa79pSd7
+         u8e5wz8CLsupHHz4U5GSQB3RLli81DkZvWmwMHBhCTjt9wI0a7vJ+3mV/wMkOc/7P+3i
+         ca4+eN2zRbjyQJYlAxpO+OwGOLsCqMFdpbzI0T9Vd+e/kykTB1/PyZz9UxFQnkfnA7iM
+         omZQOb+yUgs9cecQZh8hxYZRq/Q3hHD2/p+6bMGO4zEgAn8jsqfB8RV9eQTrvefpYtIc
+         A30g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1692775597; x=1693380397;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=IKY7CwPvf4+r1qLRL9M25q8Xqba9hENCU7mXfg2rhjk=;
+        b=YFwH3LPn4XKLEL7wm4xzNN49MdFp/mQ/2u+Pf3MyoFctHD7+voWAbzoFN78R3wOo4u
+         iFD/nkszEYdAb9QkTOBjQWhSopFshm5XdankvLrDSX5KGfQJ0Gtll8MmcHv6SrbclXdG
+         2jpZk8UZUDuXr6rvsIR5ONZnsjxlqk7TSLzFw/QBvJUrpTbhHBKr4LUEeUWoLHQhGrjm
+         2cScGeHAUZyaKhByHmJbCy9RPt5uwc5Vdd49SWcwYPI3AtKxse63BB3HxDeLRry5fiGi
+         RNn8SI+pGn9qViMiGW6xZohqNqlc826Bo/2X2xZt3vdjhSfS35MyJH4f7EPsPNKFPYrQ
+         XOIA==
+X-Gm-Message-State: AOJu0Yy5/fbH5SoSGgnwGXZpJVM4INcDWNQxR+/IhOkwmU7qllZH+qcx
+	fypJ1exSCEsHif02hOhfCQKF5zigtsH2vG6rdAvzgQ==
+X-Google-Smtp-Source: AGHT+IGaR52Qen29UQuUR2cKn5Mefa8W6aQNGUUfBB5g3k3BE2dzPP8J0dm1AB1r5FvZ3UEf40orx2scFcp9F1Dm1Ck=
+X-Received: by 2002:a05:622a:144a:b0:3f2:2c89:f1ef with SMTP id
+ v10-20020a05622a144a00b003f22c89f1efmr369689qtx.5.1692775596551; Wed, 23 Aug
+ 2023 00:26:36 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.14.0
-Cc: baolu.lu@linux.intel.com, nicolinc@nvidia.com, tina.zhang@intel.com,
- jean-philippe@linaro.org, will@kernel.org, robin.murphy@arm.com,
- jgg@nvidia.com, Dawei Li <set_pte_at@outlook.com>,
- Jason Gunthorpe <jgg@ziepe.ca>, Joerg Roedel <joro@8bytes.org>,
- "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
- Mark Brown <broonie@kernel.org>
-Subject: Re: [RFC PATCH v2 0/9] Install domain onto multiple smmus
-Content-Language: en-US
-To: Michael Shavit <mshavit@google.com>, iommu@lists.linux.dev,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20230822105738.1607365-1-mshavit@google.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20230822105738.1607365-1-mshavit@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20230822105738.1607365-1-mshavit@google.com> <20230822185632.RFC.v2.4.I326c62dc062aed8d901d319aa665dbe983c7904c@changeid>
+ <ZOS18J4ytKjHFT+N@nvidia.com>
+In-Reply-To: <ZOS18J4ytKjHFT+N@nvidia.com>
+From: Michael Shavit <mshavit@google.com>
+Date: Wed, 23 Aug 2023 15:26:00 +0800
+Message-ID: <CAKHBV27tdN6Wqovy41iOQ3dzSPWD4XSHgJgyBPoW_ttDCD3eyw@mail.gmail.com>
+Subject: Re: [RFC PATCH v2 4/9] iommu/arm-smmu-v3-sva: Allocate new ASID from installed_smmus
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
+	linux-kernel@vger.kernel.org, nicolinc@nvidia.com, tina.zhang@intel.com, 
+	jean-philippe@linaro.org, will@kernel.org, robin.murphy@arm.com, 
+	Dawei Li <set_pte_at@outlook.com>, Joerg Roedel <joro@8bytes.org>, 
+	"Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>, Lu Baolu <baolu.lu@linux.intel.com>, 
+	Mark Brown <broonie@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 2023/8/22 18:56, Michael Shavit wrote:
-> 
-> Hi all,
-> 
-> This series refactors the arm-smmu-v3 driver to support attaching
-> domains onto masters belonging to different smmu devices.
-> 
-> The main objective of this series is allow further refactorings of
-> arm-smmu-v3-sva. Specifically, we'd like to reach the state where:
-> 1. A single SVA domain is allocated per MM/ASID
+On Tue, Aug 22, 2023 at 9:19=E2=80=AFPM Jason Gunthorpe <jgg@nvidia.com> wr=
+ote:
+>
+> On Tue, Aug 22, 2023 at 06:57:00PM +0800, Michael Shavit wrote:
+> > Pick an ASID that is within the supported range of all SMMUs that the
+> > domain is installed to.
+> >
+> > Signed-off-by: Michael Shavit <mshavit@google.com>
+> > ---
+> >
+> > (no changes since v1)
+> >
+> >  .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   | 23 +++++++++++++++----
+> >  1 file changed, 19 insertions(+), 4 deletions(-)
+> >
+> > diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/=
+iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+> > index fe88a7880ad57..92d2f8c4e90a8 100644
+> > --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+> > +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+> > @@ -66,6 +66,20 @@ static int arm_smmu_write_ctx_desc_devices(struct ar=
+m_smmu_domain *smmu_domain,
+> >       return ret;
+> >  }
+> >
+> > +static u32 arm_smmu_domain_max_asid_bits(struct arm_smmu_domain *smmu_=
+domain)
+> > +{
+> > +     struct arm_smmu_master *master;
+> > +     unsigned long flags;
+> > +     u32 asid_bits =3D 16;
+> > +
+> > +     spin_lock_irqsave(&smmu_domain->devices_lock, flags);
+> > +     list_for_each_entry(master, &smmu_domain->devices,
+> > +                         domain_head)
+> > +             asid_bits =3D min(asid_bits, master->smmu->asid_bits);
+> > +     spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
+> > +     return asid_bits;
+> > +}
+>
+> I still don't like this, it is not locked properly. You release the
+> devices_lock which means the max_asid could change before we get to
+> arm_smmu_write_ctx_desc()
 
-The core side of this work is under discussion.
+Good point.
 
-https://lore.kernel.org/linux-iommu/20230808074944.7825-1-tina.zhang@intel.com/
+> If you want to take this shortcut temporarily then a global max_asid
+> is probably a better plan. Change it to a per-master allocation later
+> to remove that.
 
-Just FYI.
+Two options there:
+1. When allocating a new ASID in arm_smmu_share_asid, limit ourselves
+to 8-bit-wide ASIDs regardless of whether all the installed SMMUs
+support 16bit ASIDs.
+2. In addition, also use a maximum 8-bit-wide ASID when allocating
+asids in arm_smmu_domain_finalise_s1.
 
-Best regards,
-baolu
+The first one has minimal impact since arm_smmu_share_asid is
+supposedly rare, and is a simple replacement for this patch.
+
+The second one is more intrusive since we'd be limiting the number of
+dma/unmanaged domains to a fairly small number, but it has the
+advantage of allowing those domains to always successfully attach to
+masters belonging to SMMUs with different asid_bits values (without
+having to re-allocate a new ASID for the domain arm_smmu_share_asid
+style). Where-as this series simply fails to attach the domain in such
+scenarios.
