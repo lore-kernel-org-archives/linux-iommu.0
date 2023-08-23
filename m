@@ -1,127 +1,122 @@
-Received: from mail-qt1-f174.google.com (mail-qt1-f174.google.com [209.85.160.174])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.65])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 33EEF20EE3
-	for <iommu@lists.linux.dev>; Wed, 23 Aug 2023 07:26:37 +0000 (UTC)
-Received: by mail-qt1-f174.google.com with SMTP id d75a77b69052e-407db3e9669so169521cf.1
-        for <iommu@lists.linux.dev>; Wed, 23 Aug 2023 00:26:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1692775597; x=1693380397;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=IKY7CwPvf4+r1qLRL9M25q8Xqba9hENCU7mXfg2rhjk=;
-        b=oG7ku6fNiRTPSk5zpqst1UtlXF/tbr6lOVM47HAENj4iP9AVida2PEaMzVt4/7FJr2
-         LLCU689z7LRhtzKFZSgpLasQWAgTZWIcZeVnIJ5Nq7fk9jQGcOuMvNloyEMpGa79pSd7
-         u8e5wz8CLsupHHz4U5GSQB3RLli81DkZvWmwMHBhCTjt9wI0a7vJ+3mV/wMkOc/7P+3i
-         ca4+eN2zRbjyQJYlAxpO+OwGOLsCqMFdpbzI0T9Vd+e/kykTB1/PyZz9UxFQnkfnA7iM
-         omZQOb+yUgs9cecQZh8hxYZRq/Q3hHD2/p+6bMGO4zEgAn8jsqfB8RV9eQTrvefpYtIc
-         A30g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1692775597; x=1693380397;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=IKY7CwPvf4+r1qLRL9M25q8Xqba9hENCU7mXfg2rhjk=;
-        b=YFwH3LPn4XKLEL7wm4xzNN49MdFp/mQ/2u+Pf3MyoFctHD7+voWAbzoFN78R3wOo4u
-         iFD/nkszEYdAb9QkTOBjQWhSopFshm5XdankvLrDSX5KGfQJ0Gtll8MmcHv6SrbclXdG
-         2jpZk8UZUDuXr6rvsIR5ONZnsjxlqk7TSLzFw/QBvJUrpTbhHBKr4LUEeUWoLHQhGrjm
-         2cScGeHAUZyaKhByHmJbCy9RPt5uwc5Vdd49SWcwYPI3AtKxse63BB3HxDeLRry5fiGi
-         RNn8SI+pGn9qViMiGW6xZohqNqlc826Bo/2X2xZt3vdjhSfS35MyJH4f7EPsPNKFPYrQ
-         XOIA==
-X-Gm-Message-State: AOJu0Yy5/fbH5SoSGgnwGXZpJVM4INcDWNQxR+/IhOkwmU7qllZH+qcx
-	fypJ1exSCEsHif02hOhfCQKF5zigtsH2vG6rdAvzgQ==
-X-Google-Smtp-Source: AGHT+IGaR52Qen29UQuUR2cKn5Mefa8W6aQNGUUfBB5g3k3BE2dzPP8J0dm1AB1r5FvZ3UEf40orx2scFcp9F1Dm1Ck=
-X-Received: by 2002:a05:622a:144a:b0:3f2:2c89:f1ef with SMTP id
- v10-20020a05622a144a00b003f22c89f1efmr369689qtx.5.1692775596551; Wed, 23 Aug
- 2023 00:26:36 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6AB3BA92F;
+	Wed, 23 Aug 2023 10:20:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1692786003; x=1724322003;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=J/smH+od+JQo9e6T8OxoQJwtGe7Bs2VOOafthAAhtBs=;
+  b=ly7RPjJa9pPchWinWLJkwPPoX7NDIBTz6HcdkrMX2qVMrPb1LwTJYhlM
+   FkY5E07VyHjkSJ5OjDGguhmJDucfU0DDvaMnKc7iDeX+dG5ecNGetTtJx
+   yH1AGal06klx+X8nx5LQqi8KTC3opBLoW/ItZ5NEL0gIOBXv3YP40rJuy
+   +YseZMuZQRwybtVwnEJs3wH64hJX6CsfnARGk17RJUATJd5GcViVwTQgV
+   I+XZ+RJSmx3QWopPnYVaEYwDMbDSef8ehKVTKauNj3XY54z+v/8cettp6
+   FDXJUkhZLZcyZ/zO8L2N2n2l3mANqlEZtvb5p1KniHiBcdr/oB+cq93M7
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10810"; a="377884497"
+X-IronPort-AV: E=Sophos;i="6.01,195,1684825200"; 
+   d="scan'208";a="377884497"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2023 03:20:00 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10810"; a="730169336"
+X-IronPort-AV: E=Sophos;i="6.01,195,1684825200"; 
+   d="scan'208";a="730169336"
+Received: from lkp-server02.sh.intel.com (HELO daf8bb0a381d) ([10.239.97.151])
+  by orsmga007.jf.intel.com with ESMTP; 23 Aug 2023 03:19:57 -0700
+Received: from kbuild by daf8bb0a381d with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1qYkxw-00016C-0r;
+	Wed, 23 Aug 2023 10:19:56 +0000
+Date: Wed, 23 Aug 2023 18:19:40 +0800
+From: kernel test robot <lkp@intel.com>
+To: Huang Jiaqing <jiaqing.huang@intel.com>, kvm@vger.kernel.org,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev, joro@8bytes.org,
+	will@kernel.org, robin.murphy@arm.com, kevin.tian@intel.com,
+	baolu.lu@linux.intel.com, jacob.jun.pan@linux.intel.com,
+	yi.l.liu@intel.com, yi.y.sun@intel.com, jiaqing.huang@intel.com
+Subject: Re: [PATCH] iommu/vt-d: Introduce a rb_tree for looking up device
+Message-ID: <202308231801.6MtvqTmB-lkp@intel.com>
+References: <20230821071659.123981-1-jiaqing.huang@intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20230822105738.1607365-1-mshavit@google.com> <20230822185632.RFC.v2.4.I326c62dc062aed8d901d319aa665dbe983c7904c@changeid>
- <ZOS18J4ytKjHFT+N@nvidia.com>
-In-Reply-To: <ZOS18J4ytKjHFT+N@nvidia.com>
-From: Michael Shavit <mshavit@google.com>
-Date: Wed, 23 Aug 2023 15:26:00 +0800
-Message-ID: <CAKHBV27tdN6Wqovy41iOQ3dzSPWD4XSHgJgyBPoW_ttDCD3eyw@mail.gmail.com>
-Subject: Re: [RFC PATCH v2 4/9] iommu/arm-smmu-v3-sva: Allocate new ASID from installed_smmus
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
-	linux-kernel@vger.kernel.org, nicolinc@nvidia.com, tina.zhang@intel.com, 
-	jean-philippe@linaro.org, will@kernel.org, robin.murphy@arm.com, 
-	Dawei Li <set_pte_at@outlook.com>, Joerg Roedel <joro@8bytes.org>, 
-	"Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>, Lu Baolu <baolu.lu@linux.intel.com>, 
-	Mark Brown <broonie@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230821071659.123981-1-jiaqing.huang@intel.com>
 
-On Tue, Aug 22, 2023 at 9:19=E2=80=AFPM Jason Gunthorpe <jgg@nvidia.com> wr=
-ote:
->
-> On Tue, Aug 22, 2023 at 06:57:00PM +0800, Michael Shavit wrote:
-> > Pick an ASID that is within the supported range of all SMMUs that the
-> > domain is installed to.
-> >
-> > Signed-off-by: Michael Shavit <mshavit@google.com>
-> > ---
-> >
-> > (no changes since v1)
-> >
-> >  .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   | 23 +++++++++++++++----
-> >  1 file changed, 19 insertions(+), 4 deletions(-)
-> >
-> > diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/=
-iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-> > index fe88a7880ad57..92d2f8c4e90a8 100644
-> > --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-> > +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-> > @@ -66,6 +66,20 @@ static int arm_smmu_write_ctx_desc_devices(struct ar=
-m_smmu_domain *smmu_domain,
-> >       return ret;
-> >  }
-> >
-> > +static u32 arm_smmu_domain_max_asid_bits(struct arm_smmu_domain *smmu_=
-domain)
-> > +{
-> > +     struct arm_smmu_master *master;
-> > +     unsigned long flags;
-> > +     u32 asid_bits =3D 16;
-> > +
-> > +     spin_lock_irqsave(&smmu_domain->devices_lock, flags);
-> > +     list_for_each_entry(master, &smmu_domain->devices,
-> > +                         domain_head)
-> > +             asid_bits =3D min(asid_bits, master->smmu->asid_bits);
-> > +     spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
-> > +     return asid_bits;
-> > +}
->
-> I still don't like this, it is not locked properly. You release the
-> devices_lock which means the max_asid could change before we get to
-> arm_smmu_write_ctx_desc()
+Hi Huang,
 
-Good point.
+kernel test robot noticed the following build warnings:
 
-> If you want to take this shortcut temporarily then a global max_asid
-> is probably a better plan. Change it to a per-master allocation later
-> to remove that.
+[auto build test WARNING on v6.5-rc7]
+[also build test WARNING on linus/master]
+[cannot apply to joro-iommu/next next-20230823]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-Two options there:
-1. When allocating a new ASID in arm_smmu_share_asid, limit ourselves
-to 8-bit-wide ASIDs regardless of whether all the installed SMMUs
-support 16bit ASIDs.
-2. In addition, also use a maximum 8-bit-wide ASID when allocating
-asids in arm_smmu_domain_finalise_s1.
+url:    https://github.com/intel-lab-lkp/linux/commits/Huang-Jiaqing/iommu-vt-d-Introduce-a-rb_tree-for-looking-up-device/20230821-151945
+base:   v6.5-rc7
+patch link:    https://lore.kernel.org/r/20230821071659.123981-1-jiaqing.huang%40intel.com
+patch subject: [PATCH] iommu/vt-d: Introduce a rb_tree for looking up device
+config: x86_64-rhel-8.3-rust (https://download.01.org/0day-ci/archive/20230823/202308231801.6MtvqTmB-lkp@intel.com/config)
+compiler: clang version 15.0.7 (https://github.com/llvm/llvm-project.git 8dfdcc7b7bf66834a761bd8de445840ef68e4d1a)
+reproduce: (https://download.01.org/0day-ci/archive/20230823/202308231801.6MtvqTmB-lkp@intel.com/reproduce)
 
-The first one has minimal impact since arm_smmu_share_asid is
-supposedly rare, and is a simple replacement for this patch.
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202308231801.6MtvqTmB-lkp@intel.com/
 
-The second one is more intrusive since we'd be limiting the number of
-dma/unmanaged domains to a fairly small number, but it has the
-advantage of allowing those domains to always successfully attach to
-masters belonging to SMMUs with different asid_bits values (without
-having to re-allocate a new ASID for the domain arm_smmu_share_asid
-style). Where-as this series simply fails to attach the domain in such
-scenarios.
+All warnings (new ones prefixed by >>):
+
+>> drivers/iommu/intel/iommu.c:239:28: warning: no previous prototype for function 'device_rbtree_find' [-Wmissing-prototypes]
+   struct device_domain_info *device_rbtree_find(struct intel_iommu *iommu, u8 bus, u8 devfn)
+                              ^
+   drivers/iommu/intel/iommu.c:239:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   struct device_domain_info *device_rbtree_find(struct intel_iommu *iommu, u8 bus, u8 devfn)
+   ^
+   static 
+   1 warning generated.
+
+
+vim +/device_rbtree_find +239 drivers/iommu/intel/iommu.c
+
+   237	
+   238	
+ > 239	struct device_domain_info *device_rbtree_find(struct intel_iommu *iommu, u8 bus, u8 devfn)
+   240	{
+   241		struct device_domain_info *data = NULL;
+   242		struct rb_node *node;
+   243	
+   244		down_read(&iommu->iopf_device_sem);
+   245	
+   246		node = iommu->iopf_device_rbtree.rb_node;
+   247		while (node) {
+   248			data = container_of(node, struct device_domain_info, node);
+   249			s16 result = RB_NODE_CMP(bus, devfn, data->bus, data->devfn);
+   250	
+   251			if (result < 0)
+   252				node = node->rb_left;
+   253			else if (result > 0)
+   254				node = node->rb_right;
+   255			else
+   256				break;
+   257		}
+   258		up_read(&iommu->iopf_device_sem);
+   259	
+   260		return node ? data : NULL;
+   261	}
+   262	
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
