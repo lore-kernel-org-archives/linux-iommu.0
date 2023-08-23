@@ -1,56 +1,56 @@
-Received: from mail-oi1-f172.google.com (mail-oi1-f172.google.com [209.85.167.172])
+Received: from mail-qk1-f178.google.com (mail-qk1-f178.google.com [209.85.222.178])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 13E6AC8C5
-	for <iommu@lists.linux.dev>; Wed, 23 Aug 2023 15:36:04 +0000 (UTC)
-Received: by mail-oi1-f172.google.com with SMTP id 5614622812f47-3a7781225b4so3798342b6e.3
-        for <iommu@lists.linux.dev>; Wed, 23 Aug 2023 08:36:04 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A93DCC139
+	for <iommu@lists.linux.dev>; Wed, 23 Aug 2023 16:42:25 +0000 (UTC)
+Received: by mail-qk1-f178.google.com with SMTP id af79cd13be357-76d7bcefe8bso380015885a.1
+        for <iommu@lists.linux.dev>; Wed, 23 Aug 2023 09:42:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1692804963; x=1693409763;
+        d=ziepe.ca; s=google; t=1692808944; x=1693413744;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=ZhIISOuNzj6uKgd2RwPdmIiiPIXsOaH4chNQd3+7Qsg=;
-        b=f7fvwKPKAjt/csJO1SjQNsUhLFpWB2M/ajMaFOKSdCPLoVqB98A+ArSl9XQB+EDkvb
-         CcbSzYDAoJFbnzvk7PQOTjjpF/CklrAaqJo2BRQRi0ck9U8ulwUqwWFS2vIRCakGiqa7
-         7M7xVsMCaW8lYLDldwPrQVocE3LhVcQ7FLYd4I9ntdHNM7vqP30znAMjTilA92DZakav
-         fS4/I/6c9JEUEI+CYSOPsYT9BZruZz3F8YxRiph2d8O4a4ri+pbyctZvjFVc41JKb7I1
-         QBaj36yzkCYLup1JQ7r6vkvfXK90nNkXTVIWl+hClMFsFmAzHelpBziPiGF84pM/jYf9
-         q6pw==
+        bh=VfBDD1PmTnnvcURuc5daPszooEHHsodIfUZSukSvxYo=;
+        b=YhxzYwcs0WtVvmHA2Lb1kW3Y1NLU45rxRLVM0PeMxozugGNEcTeOwbitt2tqhieo3Y
+         KNdcQL9djlO0shwvBbwsjcdOxZoUgX+o1vR9pRqyMDkL/5z5TJbeQHrOGtjdCxDEbLKc
+         jVEydTG/i+O0QY39qAWZZV9CndGtSlXFcoz+iX6ixgWzm43wTO97muOyUSVJtVx7ffku
+         byR7C23nQ01MB1TFD8iLV0OY3ViXWjSNHh8HdpMOhIPkf4qT+9AY4VffuF5WnzmuENj7
+         X9flxeN7Gm2va975hHrLe9SLbaYhk3HorM4jIDpdKoTQ1JiXB5erxLl8sfrmkBSrKkGM
+         2y1Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1692804963; x=1693409763;
+        d=1e100.net; s=20221208; t=1692808944; x=1693413744;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=ZhIISOuNzj6uKgd2RwPdmIiiPIXsOaH4chNQd3+7Qsg=;
-        b=i8Z7PiFBJKR6rLFnbdf9gQBpHcUJI5pG84aAi0lfV+Yn+fykZHZ7dLHKx3cE+/7psK
-         YguR8NcCGKxxJb8oQPiQUCu0ZBKpXgFp+GASNw/sQE2HMXlKHqjZvIC68pb/PHvj8VZy
-         hols1KQyPNG0pYrpzB6zVCbr4dXRMkCPRKOKnHg1u/At6HMIAaDw4TYruOktU0iYU8NQ
-         AtPECZIc4P30wJFbutKfRiGPxe2geSk6dPs3sjMMswnIoRBUrCXRV20UlKH4bV3zlGMW
-         Z4aXNqpnpuDHJi3j6XUZqqRLhz8eNGWPvi8D7GrZzQ9yw98xjWecUm00aGg40BMp8Jj0
-         hj5w==
-X-Gm-Message-State: AOJu0Yzz47qnTuYwfP9ilMddNlxlEqXAChKRgCNEPxF92yxvbBu7IllN
-	VmyPj5/sVFWm0BUFZNr78qeDtw==
-X-Google-Smtp-Source: AGHT+IH3ifUuzSMaFXi3fDXsvxcyPQgl7B8ph4889LVZbUqFzxoaA3WjB5Bm1K7dWDd+u9iJJpOoLQ==
-X-Received: by 2002:a05:6808:5c9:b0:3a7:3ccd:2634 with SMTP id d9-20020a05680805c900b003a73ccd2634mr11869271oij.44.1692804963724;
-        Wed, 23 Aug 2023 08:36:03 -0700 (PDT)
+        bh=VfBDD1PmTnnvcURuc5daPszooEHHsodIfUZSukSvxYo=;
+        b=MEZDgiJEuDIP4aawaZcfI/cGLMSALZZWecz66gDI0tQo2TbOhjJCP26lOosG0RaEqk
+         4j3AbknvftIpP+kqcowQy2yOkxZ8aHRLuRTqI+YO4GL2iMK8Y4/814/a+PuBnO2Fwtzt
+         Uh8LGrRRL4vtrfVOoGkmRt9+/yLXwJURT0nw6PqtIs3chaz4s1g9XTb9ATAlG3WBkmh9
+         wus8gjVbtKW0ksA2cS/tRf1ukvShyaZU2i9QRiMXOJ0FXeme/gfnW5MuvR1GXtlP2Ys9
+         Wlluw6V+8P6w9OTycrkCYIrrprh9ydrXwKt52NlLf1C89OdQjrLX5pI321N9sg7aoqIp
+         x3CQ==
+X-Gm-Message-State: AOJu0YxD1W6wS6XhQoLK0ctuEEgmJ847kqn/wua/H6t5C489PXtY/x5s
+	/MOclmJ20YZ9APFIjh5veJIA3wFvuMh/J7JqDk0=
+X-Google-Smtp-Source: AGHT+IFgSdZEi8kbkfjMbgCJ3Z6HIgLUQbI/F9Co+fvjOM7SRaAnxq64wcMZaSQm67qfKmfQUpbflQ==
+X-Received: by 2002:a05:622a:1049:b0:400:9390:d129 with SMTP id f9-20020a05622a104900b004009390d129mr18002664qte.36.1692808943976;
+        Wed, 23 Aug 2023 09:42:23 -0700 (PDT)
 Received: from ziepe.ca (hlfxns017vw-142-68-25-194.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.25.194])
-        by smtp.gmail.com with ESMTPSA id a24-20020a637058000000b0056c2843d80dsm5816935pgn.10.2023.08.23.08.36.03
+        by smtp.gmail.com with ESMTPSA id w23-20020ac843d7000000b004054db6da1bsm3828047qtn.53.2023.08.23.09.42.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Aug 2023 08:36:03 -0700 (PDT)
+        Wed, 23 Aug 2023 09:42:23 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.95)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1qYptq-00HTpm-2k;
-	Wed, 23 Aug 2023 12:36:02 -0300
-Date: Wed, 23 Aug 2023 12:36:02 -0300
+	id 1qYqw2-00HWzL-Cy;
+	Wed, 23 Aug 2023 13:42:22 -0300
+Date: Wed, 23 Aug 2023 13:42:22 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
 To: Vasant Hegde <vasant.hegde@amd.com>
 Cc: iommu@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com,
 	wei.huang2@amd.com, jsnitsel@redhat.com
-Subject: Re: [PATCH RESEND 10/10] iommu/amd: Introduce logic to
- enable/disable IOPF
-Message-ID: <ZOYnYrNjneEa2XVS@ziepe.ca>
-References: <20230823140415.729050-1-vasant.hegde@amd.com>
- <20230823140415.729050-11-vasant.hegde@amd.com>
+Subject: Re: [PATCH v2 01/10] iommu/amd: Use struct protection_domain in
+ helper functions
+Message-ID: <ZOY27tt9lBFPLlHB@ziepe.ca>
+References: <20230816174031.634453-1-vasant.hegde@amd.com>
+ <20230816174031.634453-2-vasant.hegde@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -59,90 +59,61 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230823140415.729050-11-vasant.hegde@amd.com>
+In-Reply-To: <20230816174031.634453-2-vasant.hegde@amd.com>
 
-On Wed, Aug 23, 2023 at 02:04:15PM +0000, Vasant Hegde wrote:
-> diff --git a/drivers/iommu/amd/ppr.c b/drivers/iommu/amd/ppr.c
-> index db4fa4534cd6..8c197b768b4a 100644
-> --- a/drivers/iommu/amd/ppr.c
-> +++ b/drivers/iommu/amd/ppr.c
-> @@ -9,6 +9,7 @@
->  #include <linux/amd-iommu.h>
->  #include <linux/delay.h>
->  #include <linux/mmu_notifier.h>
-> +#include <linux/pci-ats.h>
+On Wed, Aug 16, 2023 at 05:40:22PM +0000, Vasant Hegde wrote:
+> From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+> 
+> To simplify the unnecessary use of container_of() on the struct
+> iommu_domain to get the container structure.
+> 
+> No functional changes intended.
+> 
+> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+> Co-developed-by: Vasant Hegde <vasant.hegde@amd.com>
+> Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
+> ---
+>  drivers/iommu/amd/amd_iommu.h     | 13 +++++++++----
+>  drivers/iommu/amd/io_pgtable_v2.c |  8 ++++----
+>  drivers/iommu/amd/iommu.c         | 18 ++++--------------
+>  3 files changed, 17 insertions(+), 22 deletions(-)
+> 
+> diff --git a/drivers/iommu/amd/amd_iommu.h b/drivers/iommu/amd/amd_iommu.h
+> index 8b586effbefc..87739d95ea8b 100644
+> --- a/drivers/iommu/amd/amd_iommu.h
+> +++ b/drivers/iommu/amd/amd_iommu.h
+> @@ -55,15 +55,15 @@ int amd_iommu_pc_set_reg(struct amd_iommu *iommu, u8 bank, u8 cntr,
+>  int amd_iommu_pdev_enable_cap_pri(struct pci_dev *pdev);
+>  void amd_iommu_pdev_disable_cap_pri(struct pci_dev *pdev);
 >  
->  #include "amd_iommu.h"
->  #include "amd_iommu_types.h"
-> @@ -319,3 +320,58 @@ int amd_iommu_iopf_remove_device(struct amd_iommu *iommu, struct device *dev)
->  	raw_spin_unlock_irqrestore(&iommu->lock, flags);
->  	return ret;
+> -int amd_iommu_flush_page(struct iommu_domain *dom, u32 pasid, u64 address);
+> +int amd_iommu_flush_page(struct protection_domain *domain, u32 pasid, u64 address);
+>  void amd_iommu_update_and_flush_device_table(struct protection_domain *domain);
+>  void amd_iommu_domain_update(struct protection_domain *domain);
+>  void amd_iommu_domain_flush_complete(struct protection_domain *domain);
+>  void amd_iommu_domain_flush_tlb_pde(struct protection_domain *domain);
+> -int amd_iommu_flush_tlb(struct iommu_domain *dom, u32 pasid);
+> -int amd_iommu_domain_set_gcr3(struct iommu_domain *dom, u32 pasid,
+> +int amd_iommu_flush_tlb(struct protection_domain *domain, u32 pasid);
+> +int amd_iommu_domain_set_gcr3(struct protection_domain *domain, u32 pasid,
+>  			      unsigned long cr3);
+> -int amd_iommu_domain_clear_gcr3(struct iommu_domain *dom, u32 pasid);
+> +int amd_iommu_domain_clear_gcr3(struct protection_domain *domain, u32 pasid);
+>  
+>  #ifdef CONFIG_IRQ_REMAP
+>  int amd_iommu_create_irq_domain(struct amd_iommu *iommu);
+> @@ -147,6 +147,11 @@ static inline void *alloc_pgtable_page(int nid, gfp_t gfp)
+>  	return page ? page_address(page) : NULL;
 >  }
-> +
-> +static int amd_iommu_iopf_update(struct device *dev, bool enable)
+>  
+> +static inline struct protection_domain *to_pdomain(struct iommu_domain *dom)
 > +{
-> +	unsigned long flags;
-> +	int ret;
-> +	struct pci_dev *pdev = dev_is_pci(dev) ? to_pci_dev(dev) : NULL;
-> +	struct amd_iommu *iommu = get_amd_iommu_from_dev(dev);
-> +	struct iommu_dev_data *dev_data = dev_iommu_priv_get(dev);
-> +	struct protection_domain *pdom = amd_iommu_get_pdomain(dev);
-> +
-> +	if (!pdev || !iommu || !dev_data)
-> +		return -EINVAL;
-> +
-> +	spin_lock_irqsave(&pdom->lock, flags);
-> +
-> +	if (enable) {
-> +		ret = amd_iommu_iopf_add_device(iommu, dev);
-> +		if (ret)
-> +			goto out;
-> +
-> +		dev_data->ppr = true;
-> +	} else {
-> +		ret = amd_iommu_iopf_remove_device(iommu, dev);
-> +		dev_data->ppr = false;
-> +	}
-> +
-> +	amd_iommu_domain_update(pdom);
-> +
-> +out:
-> +	spin_unlock_irqrestore(&pdom->lock, flags);
-> +	return ret;
+> +	return container_of(dom, struct protection_domain, domain);
 > +}
 > +
-> +int amd_iommu_iopf_enable(struct device *dev)
-> +{
-> +	struct iommu_dev_data *dev_data = dev_iommu_priv_get(dev);
-> +
-> +	if (!(dev_data->flags & AMD_IOMMU_DEVICE_FLAG_PRI_SUP))
-> +		return -ENODEV;
-> +
-> +	if (!dev_data->ats_enabled || !dev_data->pri_enabled)
-> +		return -EINVAL;
-> +
-> +	return amd_iommu_iopf_update(dev, true);
-> +}
-> +
-> +int amd_iommu_iopf_disable(struct device *dev)
-> +{
-> +	struct iommu_dev_data *dev_data = dev_iommu_priv_get(dev);
-> +
-> +	if (!dev_data->pri_enabled)
-> +		return -EINVAL;
-> +
-> +	return amd_iommu_iopf_update(dev, false);
-> +}
 
-These features also look like a mistake..
+The change looks fine, but why did this patch move this into a header?
 
-PRI is enabled if the domain has an iopf handler, when that domain is
-attached to the RID/PASID.
-
-It remains enabled so long as any IOPF enabled domain is present on
-the device.
-
-So again, these should be checks but otherwise NOPs and any actual
-working has to be pushed into the domain attach code.
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
 Jason
