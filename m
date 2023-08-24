@@ -1,83 +1,80 @@
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0CD977F
-	for <iommu@lists.linux.dev>; Thu, 24 Aug 2023 02:10:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3DA947F
+	for <iommu@lists.linux.dev>; Thu, 24 Aug 2023 02:19:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1692843042;
+	s=mimecast20190719; t=1692843549;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=KSYESjWEiNbg/Ww5PNz+iJIOwo6YpTdcr5a1DFt8t84=;
-	b=VThBtCT2TXciP9vZx5ckmAnEzYHjTP+dUqQL4VLAcmyP0+7zy1fT5YnaD7+ajTOUht/tfR
-	MFUhoeyF9X80sQJl5xBKHgo64Ikd/f9puOW5Xr+Y3dv+0Fvc2unJDqfZRE+cOP3ywqZe90
-	26VTI6unudpDZt/3+tyRBROgrvQvvhc=
-Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
- [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
+	bh=kjyrJuiuyw5/c+ULlykdTnAo9m0wv1wzEmUNte99zG8=;
+	b=NcsW9QDrW73YmarPyuFtp66UOmAYW/17eXlMlBzcKX56ESmtOD5ynhuFook86PhgN3J1ym
+	eB+fjTd474xsFIEkJsf4CUZUhbQtzsb08YdQqbT0ldNutjvSR9niG8vtgB3JxB1PmcqtU4
+	IvbEm0X+g9/6T172CEeWVBPugKW4fcc=
+Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
+ [209.85.219.70]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-529-FsvTvsN6NQuObfLi3c-79g-1; Wed, 23 Aug 2023 22:10:41 -0400
-X-MC-Unique: FsvTvsN6NQuObfLi3c-79g-1
-Received: by mail-qt1-f198.google.com with SMTP id d75a77b69052e-410f0988ea6so14547001cf.3
-        for <iommu@lists.linux.dev>; Wed, 23 Aug 2023 19:10:41 -0700 (PDT)
+ us-mta-643-mCb_f1o6Pga1JoZT1Ie7bA-1; Wed, 23 Aug 2023 22:19:07 -0400
+X-MC-Unique: mCb_f1o6Pga1JoZT1Ie7bA-1
+Received: by mail-qv1-f70.google.com with SMTP id 6a1803df08f44-6491907dba4so3678616d6.1
+        for <iommu@lists.linux.dev>; Wed, 23 Aug 2023 19:19:07 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1692843040; x=1693447840;
+        d=1e100.net; s=20221208; t=1692843547; x=1693448347;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=KSYESjWEiNbg/Ww5PNz+iJIOwo6YpTdcr5a1DFt8t84=;
-        b=inLEi2ZzTIGgRP1sLptQExV4CF+Rbz75TtuKvgl0zGaGtB9oUqEmKB6kjxKOlfxIZF
-         ZWKQQNLJOsH5/rfiSamt0UbzAYiINMlwBvTp814ka6uGemNv20RmfON6Ygm0ngj2xj0N
-         bUj/uw7W7jVhI+SVejgUocSL7DsLfnkdZ79rRdQMCvKTFysQ4Bbl6J+hKdn3M6z9gZ0R
-         TxgtadUC7oEVpxzZMhhPVxob16v/dAoK48O+9OiIct8wBQ2+gH5mvLGENK7DrUu84a3k
-         QhM31ohZLOg58oZQI0LJ//7oN+f65rmDTbEBLVdCKR80Zp2QNHQf7LFQTAV/xNB3A8gc
-         pLAQ==
-X-Gm-Message-State: AOJu0YyeCkwbmFaguonyc15Cdfxy7cQNZotcrWbYyUhPypzQ3k5OlpSb
-	8UqEpob4MJIn1ILOlt8H3hV6u7bBLCAQbFYiyZkFn1JXy2il+8X93/yvyJJI9mcGynl+KAuB99o
-	HFGhaDxLz+gwYJdyc0sDoO5M=
-X-Received: by 2002:a05:622a:1454:b0:410:9b0f:e68a with SMTP id v20-20020a05622a145400b004109b0fe68amr12398345qtx.65.1692843040526;
-        Wed, 23 Aug 2023 19:10:40 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IEYHDtEhUyZCRD/qwKBPVhM2PG3wG8RCzsiZHXjUAvV2p6ytmno1Pj/cJM9ENHtLHRP2gFaHQ==
-X-Received: by 2002:a05:622a:1454:b0:410:9b0f:e68a with SMTP id v20-20020a05622a145400b004109b0fe68amr12398332qtx.65.1692843040308;
-        Wed, 23 Aug 2023 19:10:40 -0700 (PDT)
+        bh=kjyrJuiuyw5/c+ULlykdTnAo9m0wv1wzEmUNte99zG8=;
+        b=CMhPAatrQbrisLy/DsydNSaTatMGpjz5d8DqLMrXDFXbL8Qt98mDELZ1NRQyagDz4V
+         Ewd4ovIw5sMrJw55pHduWfL+mprMr+ug1qwUfbGZEfMbgPakcLRWMUCtAryR8TWYb2I5
+         MZLUQQhO6y0CMr9foaAsnRkKjXYMBQ+av4HW0vPBSB7RvHD+un3F/LZTNsIDA9ewgZta
+         usk4TdTGH6TwAOI/V7K15kopkUCS5ONOrl19mDhGx7RJPSFFcZT12ambrljMaGGWmY/L
+         XH1w9N/4gzHlGq2v+SPabiLhIiKJOQoZLK58fPT4w6ysn78LZjx+cQjuTZrTGM/bscS6
+         Dyzw==
+X-Gm-Message-State: AOJu0Yxowzj0tbRopHsOeXuVR3tbYAQuMR3UQXkWzeHR2ws3AJgtSSK2
+	JZQsona1n58NJHawiJMWAV87btXwFYIefRM3ZRB3GLkmX3FSSo5RGGCZ1adKFjqi0J5KDjXBgeW
+	c87AT9MvGU8GMbl4=
+X-Received: by 2002:a0c:c247:0:b0:647:18f8:36eb with SMTP id w7-20020a0cc247000000b0064718f836ebmr19657842qvh.27.1692843547223;
+        Wed, 23 Aug 2023 19:19:07 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IHsAyQTN7E+yf8zdrnxg92Q7QB9sk70F7PZ9o/b1wFxrUeryV9zDHBgM3QH+yCkPUuUWW3DSQ==
+X-Received: by 2002:a0c:c247:0:b0:647:18f8:36eb with SMTP id w7-20020a0cc247000000b0064718f836ebmr19657827qvh.27.1692843547000;
+        Wed, 23 Aug 2023 19:19:07 -0700 (PDT)
 Received: from localhost (ip98-179-76-75.ph.ph.cox.net. [98.179.76.75])
-        by smtp.gmail.com with ESMTPSA id z9-20020a0cf009000000b0064bdd4239f3sm4596260qvk.126.2023.08.23.19.10.39
+        by smtp.gmail.com with ESMTPSA id d25-20020a0caa19000000b0062629cbff11sm5022757qvb.11.2023.08.23.19.19.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Aug 2023 19:10:39 -0700 (PDT)
-Date: Wed, 23 Aug 2023 19:10:38 -0700
+        Wed, 23 Aug 2023 19:19:06 -0700 (PDT)
+Date: Wed, 23 Aug 2023 19:19:05 -0700
 From: Jerry Snitselaar <jsnitsel@redhat.com>
 To: Vasant Hegde <vasant.hegde@amd.com>
 Cc: iommu@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com, 
-	wei.huang2@amd.com, jgg@ziepe.ca
-Subject: Re: [PATCH v5 12/14] iommu/amd: Introduce iommu_dev_data.flags to
- track device capabilities
-Message-ID: <lo5ff7x4dcl27lebiaupb337cjncrsxatruavtb4onbwkldu3u@ylkqyaslvsz7>
+	wei.huang2@amd.com, jgg@ziepe.ca, Jason Gunthorpe <jgg@nvidia.com>
+Subject: Re: [PATCH v5 13/14] iommu/amd: Enable device ATS/PASID/PRI
+ capabilities independently
+Message-ID: <vk34wbtpm35qd66k2o4srkt6ypfxl4yk4acbqohxurz7hovmb4@pdkstw62ctes>
 References: <20230821104227.706997-1-vasant.hegde@amd.com>
- <20230821104227.706997-13-vasant.hegde@amd.com>
+ <20230821104227.706997-14-vasant.hegde@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <20230821104227.706997-13-vasant.hegde@amd.com>
+In-Reply-To: <20230821104227.706997-14-vasant.hegde@amd.com>
 X-Mimecast-Spam-Score: 0
 X-Mimecast-Originator: redhat.com
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 
-On Mon, Aug 21, 2023 at 10:42:25AM +0000, Vasant Hegde wrote:
-> Currently we use struct iommu_dev_data.iommu_v2 to keep track of the device
-> ATS, PRI, and PASID capabilities. But these capabilities can be enabled
-> independently (except PRI requires ATS support). Hence, replace
-> the iommu_v2 variable with a flags variable, which keep track of the device
-> capabilities.
+On Mon, Aug 21, 2023 at 10:42:26AM +0000, Vasant Hegde wrote:
+> Introduce helper functions to enable/disable device ATS/PASID/PRI
+> capabilities independently along with the new pasid_enabled and
+> pri_enabled variables in struct iommu_dev_data to keep track,
+> which allows attach_device() and detach_device() to be simplified.
 > 
-> From commit 9bf49e36d718 ("PCI/ATS: Handle sharing of PF PRI Capability
-> with all VFs"), device PRI/PASID is shared between PF and any associated
-> VFs. Hence use pci_pri_supported() and pci_pasid_features() instead of
-> pci_find_ext_capability() to check device PRI/PASID support.
-> 
+> Co-developed-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 > Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
+> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
 Reviewed-by: Jerry Snitselaar <jsnitsel@redhat.com>
 
