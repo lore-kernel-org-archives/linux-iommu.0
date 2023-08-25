@@ -1,55 +1,54 @@
 Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B4E38C8FA;
-	Fri, 25 Aug 2023 10:13:02 +0000 (UTC)
-Received: from pps.filterd (m0353729.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 37P9VjKl014265;
-	Fri, 25 Aug 2023 10:12:13 GMT
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B090BC8DF;
+	Fri, 25 Aug 2023 10:13:01 +0000 (UTC)
+Received: from pps.filterd (m0353726.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 37P9reLw011078;
+	Fri, 25 Aug 2023 10:12:17 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : date : subject :
  mime-version : content-type : content-transfer-encoding : message-id :
  references : in-reply-to : to : cc; s=pp1;
- bh=rodPNwLfHsIuiQQiFeOVrCe92jgLqk9u0QoV1c2yRD8=;
- b=MLyUwM9akeonxRlNxNi2BlTZcA007q61svceegOcp6lAfwpjdu4RiEPtncZQxbO3ZSDg
- TgCNk3VkyRf2ZdcQRyUacWM5PFUP6jxX1U58R7uWYg5DZ5yBSHruCrItgUecywi16YMB
- yWUPRHyvcS94/mkqIR0MO+b/nMQ+Ug6fr4ENuhol6i+BoFqyRl5O/kq94QseC4cvYq9v
- RigElacENA2ciPIuZ/i6WmO/3+YLskDI8+KmQRZgRqCVWRmKUuptl+8dEriiUBDKWcON
- G6tE0AWUcCjcHaib3XY69TD/55kAU0Z/5twJj3IdNQaenUjcS/Vp/G3SBubd0cguc+nc AQ== 
+ bh=SSLj+Ki6TB5wXp7to6+Q916IbuoRLePE00oJA8RLfOQ=;
+ b=V9mQ8jZUqs5LT1LV0ooUbpps9S0gywjAanhuSqgIlafNGqZzy8lTcBvUsGMqiRvDDUrW
+ WbKb//k1aeszQa7U1NfhszJAym7k1+AAqKfQAKSudcLnIx8oZg9ULJnZ+BYSpoxMt4ZI
+ jxapcO0w68gqYFAdY+o92lPkbJ90pDwwemrcfM84bRIvzTsfpL8tZYkPIrStuCgj98Hi
+ ccKSlSMIiOx2CfWFyNrj4YkPxhWpADp3lvdC6MJmvoPqLnugaYYxyqlH16K9rCjdCrfz
+ DTtIwt6tpcnp61Vgg0oBH807+LDODS8UWu6zSi3LB0T5bZOgvgcu4WQH/0TcROMrVwf/ Jg== 
 Received: from pps.reinject (localhost [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3spsrf9742-1
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3spt2d0g7h-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 25 Aug 2023 10:12:13 +0000
-Received: from m0353729.ppops.net (m0353729.ppops.net [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 37P9xTBJ028309;
-	Fri, 25 Aug 2023 10:12:12 GMT
-Received: from ppma12.dal12v.mail.ibm.com (dc.9e.1632.ip4.static.sl-reverse.com [50.22.158.220])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3spsrf973m-1
+	Fri, 25 Aug 2023 10:12:16 +0000
+Received: from m0353726.ppops.net (m0353726.ppops.net [127.0.0.1])
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 37PACFMQ015695;
+	Fri, 25 Aug 2023 10:12:15 GMT
+Received: from ppma13.dal12v.mail.ibm.com (dd.9e.1632.ip4.static.sl-reverse.com [50.22.158.221])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3spt2d0g6w-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 25 Aug 2023 10:12:12 +0000
-Received: from pps.filterd (ppma12.dal12v.mail.ibm.com [127.0.0.1])
-	by ppma12.dal12v.mail.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 37PA2ik9018230;
-	Fri, 25 Aug 2023 10:12:11 GMT
-Received: from smtprelay07.fra02v.mail.ibm.com ([9.218.2.229])
-	by ppma12.dal12v.mail.ibm.com (PPS) with ESMTPS id 3sn21sxqbp-1
+	Fri, 25 Aug 2023 10:12:15 +0000
+Received: from pps.filterd (ppma13.dal12v.mail.ibm.com [127.0.0.1])
+	by ppma13.dal12v.mail.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 37P9vlmo026143;
+	Fri, 25 Aug 2023 10:12:14 GMT
+Received: from smtprelay03.fra02v.mail.ibm.com ([9.218.2.224])
+	by ppma13.dal12v.mail.ibm.com (PPS) with ESMTPS id 3snqgte3hu-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 25 Aug 2023 10:12:10 +0000
+	Fri, 25 Aug 2023 10:12:14 +0000
 Received: from smtpav06.fra02v.mail.ibm.com (smtpav06.fra02v.mail.ibm.com [10.20.54.105])
-	by smtprelay07.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 37PAC7wh61145366
+	by smtprelay03.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 37PACA3p20447758
 	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Fri, 25 Aug 2023 10:12:07 GMT
+	Fri, 25 Aug 2023 10:12:10 GMT
 Received: from smtpav06.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id BA1FB2005A;
-	Fri, 25 Aug 2023 10:12:07 +0000 (GMT)
+	by IMSVA (Postfix) with ESMTP id 9352B2005A;
+	Fri, 25 Aug 2023 10:12:10 +0000 (GMT)
 Received: from smtpav06.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 659342006A;
-	Fri, 25 Aug 2023 10:12:06 +0000 (GMT)
+	by IMSVA (Postfix) with ESMTP id 3F4E52006C;
+	Fri, 25 Aug 2023 10:12:09 +0000 (GMT)
 Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
 	by smtpav06.fra02v.mail.ibm.com (Postfix) with ESMTP;
-	Fri, 25 Aug 2023 10:12:06 +0000 (GMT)
+	Fri, 25 Aug 2023 10:12:09 +0000 (GMT)
 From: Niklas Schnelle <schnelle@linux.ibm.com>
-Date: Fri, 25 Aug 2023 12:11:17 +0200
-Subject: [PATCH v12 2/6] s390/pci: prepare is_passed_through() for
- dma-iommu
+Date: Fri, 25 Aug 2023 12:11:19 +0200
+Subject: [PATCH v12 4/6] iommu/s390: Disable deferred flush for ISM devices
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -58,7 +57,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20230825-dma_iommu-v12-2-4134455994a7@linux.ibm.com>
+Message-Id: <20230825-dma_iommu-v12-4-4134455994a7@linux.ibm.com>
 References: <20230825-dma_iommu-v12-0-4134455994a7@linux.ibm.com>
 In-Reply-To: <20230825-dma_iommu-v12-0-4134455994a7@linux.ibm.com>
 To: Joerg Roedel <joro@8bytes.org>, Matthew Rosato <mjrosato@linux.ibm.com>,
@@ -98,79 +97,72 @@ Cc: Gerd Bayer <gbayer@linux.ibm.com>, Julian Ruess <julianr@linux.ibm.com>,
         linux-mediatek@lists.infradead.org, linux-sunxi@lists.linux.dev,
         linux-tegra@vger.kernel.org, linux-doc@vger.kernel.org
 X-Mailer: b4 0.12.3
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1902;
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1892;
  i=schnelle@linux.ibm.com; h=from:subject:message-id;
- bh=JnpBPtIA02SvkModRZiVKujLXSYwAXU0tTNoKrRKqJY=;
- b=owGbwMvMwCH2Wz534YHOJ2GMp9WSGFJe1IUcc9h7XHu51WPvO+zv3cOYzPd2B7b++/Ax3NmOR
- efghglzOkpZGMQ4GGTFFFkWdTn7rSuYYronqL8DZg4rE8gQBi5OAZhIhwUjw/GnR3aIdUxw02Ov
- 8tpoI8iY7K9StnbFlHsMmi/LbC41f2dkeOZf9X++fE7duYbvzFfuVlnUFuzMW+LQe39mw4O5YrX
- 5PAA=
+ bh=sZt9Lzfm5qJ8uDwKZETwychABFMsygrpaOEr/Rdj2rc=;
+ b=owGbwMvMwCH2Wz534YHOJ2GMp9WSGFJe1CU458l8XmRau+e7jwxnmoT96tfWO3qnxp/SslLvy
+ Gd5pvylo5SFQYyDQVZMkWVRl7PfuoIppnuC+jtg5rAygQxh4OIUgImof2JkWHDyUfzG9Af3y/+f
+ n6Z6QVblVcgxZs8vv7/c6S4/IP5qZzDD/9Skc0kln36uV9+6W3PiY69FNceLDJ6c/NNz8Im36Wv
+ RdD4A
 X-Developer-Key: i=schnelle@linux.ibm.com; a=openpgp;
  fpr=9DB000B2D2752030A5F72DDCAFE43F15E8C26090
 X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: utpUsFVahlz9Ze1DedlzglGm8EfATxwy
-X-Proofpoint-ORIG-GUID: dvRLjZZnSsxMCbDCwCnGe28_Mn6pPYfD
+X-Proofpoint-ORIG-GUID: 3pEDTQfUTMM0hDVSNmO03KlcAB47ZIkd
+X-Proofpoint-GUID: a6iCCkNgFtr42AReMJZPR3-EGq-EDxhI
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.267,Aquarius:18.0.957,Hydra:6.0.601,FMLib:17.11.176.26
  definitions=2023-08-25_08,2023-08-24_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 impostorscore=0
- lowpriorityscore=0 mlxscore=0 mlxlogscore=953 spamscore=0 phishscore=0
- priorityscore=1501 suspectscore=0 adultscore=0 malwarescore=0
- clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2308100000 definitions=main-2308250087
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015
+ lowpriorityscore=0 malwarescore=0 suspectscore=0 spamscore=0 mlxscore=0
+ priorityscore=1501 adultscore=0 phishscore=0 mlxlogscore=999
+ impostorscore=0 bulkscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2308100000 definitions=main-2308250087
 
-With the IOMMU always controlled through the IOMMU driver testing for
-zdev->s390_domain is not a valid indication of the device being
-passed-through. Instead test if zdev->kzdev is set.
+ISM devices are virtual PCI devices used for cross-LPAR communication.
+Unlike real PCI devices ISM devices do not use the hardware IOMMU but
+inspects IOMMU translation tables directly on IOTLB flush (s390 RPCIT
+instruction).
 
-Reviewed-by: Pierre Morel <pmorel@linux.ibm.com>
-Reviewed-by: Matthew Rosato <mjrosato@linux.ibm.com>
+ISM devices keep their DMA allocations static and only very rarely DMA
+unmap at all. For each IOTLB flush that occurs after unmap the ISM
+devices will however inspect the area of the IOVA space indicated by the
+flush. This means that for the global IOTLB flushes used by the flush
+queue mechanism the entire IOVA space would be inspected. In principle
+this would be fine, albeit potentially unnecessarily slow, it turns out
+however that ISM devices are sensitive to seeing IOVA addresses that are
+currently in use in the IOVA range being flushed. Seeing such in-use
+IOVA addresses will cause the ISM device to enter an error state and
+become unusable.
+
+Fix this by claiming IOMMU_CAP_DEFERRED_FLUSH only for non-ISM devices.
+This makes sure IOTLB flushes only cover IOVAs that have been unmapped
+and also restricts the range of the IOTLB flush potentially reducing
+latency spikes.
+
 Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
 ---
- arch/s390/pci/pci_event.c | 15 +++++++++++----
- 1 file changed, 11 insertions(+), 4 deletions(-)
+ drivers/iommu/s390-iommu.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/arch/s390/pci/pci_event.c b/arch/s390/pci/pci_event.c
-index b9324ca2eb94..4ef5a6a1d618 100644
---- a/arch/s390/pci/pci_event.c
-+++ b/arch/s390/pci/pci_event.c
-@@ -59,9 +59,16 @@ static inline bool ers_result_indicates_abort(pci_ers_result_t ers_res)
- 	}
- }
+diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
+index f6d6c60e5634..8310180a102c 100644
+--- a/drivers/iommu/s390-iommu.c
++++ b/drivers/iommu/s390-iommu.c
+@@ -315,11 +315,13 @@ static struct s390_domain *to_s390_domain(struct iommu_domain *dom)
  
--static bool is_passed_through(struct zpci_dev *zdev)
-+static bool is_passed_through(struct pci_dev *pdev)
+ static bool s390_iommu_capable(struct device *dev, enum iommu_cap cap)
  {
--	return zdev->s390_domain;
-+	struct zpci_dev *zdev = to_zpci(pdev);
-+	bool ret;
++	struct zpci_dev *zdev = to_zpci_dev(dev);
 +
-+	mutex_lock(&zdev->kzdev_lock);
-+	ret = !!zdev->kzdev;
-+	mutex_unlock(&zdev->kzdev_lock);
-+
-+	return ret;
- }
- 
- static bool is_driver_supported(struct pci_driver *driver)
-@@ -176,7 +183,7 @@ static pci_ers_result_t zpci_event_attempt_error_recovery(struct pci_dev *pdev)
+ 	switch (cap) {
+ 	case IOMMU_CAP_CACHE_COHERENCY:
+ 		return true;
+ 	case IOMMU_CAP_DEFERRED_FLUSH:
+-		return true;
++		return zdev->pft != PCI_FUNC_TYPE_ISM;
+ 	default:
+ 		return false;
  	}
- 	pdev->error_state = pci_channel_io_frozen;
- 
--	if (is_passed_through(to_zpci(pdev))) {
-+	if (is_passed_through(pdev)) {
- 		pr_info("%s: Cannot be recovered in the host because it is a pass-through device\n",
- 			pci_name(pdev));
- 		goto out_unlock;
-@@ -239,7 +246,7 @@ static void zpci_event_io_failure(struct pci_dev *pdev, pci_channel_state_t es)
- 	 * we will inject the error event and let the guest recover the device
- 	 * itself.
- 	 */
--	if (is_passed_through(to_zpci(pdev)))
-+	if (is_passed_through(pdev))
- 		goto out;
- 	driver = to_pci_driver(pdev->dev.driver);
- 	if (driver && driver->err_handler && driver->err_handler->error_detected)
 
 -- 
 2.39.2
