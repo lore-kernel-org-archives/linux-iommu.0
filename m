@@ -1,78 +1,181 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam04on2080.outbound.protection.outlook.com [40.107.100.80])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 464DB107A8
-	for <iommu@lists.linux.dev>; Fri, 25 Aug 2023 17:01:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1692982908;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=aJ2tJi24zuLFj3A+pu+XP5QHGUTmirfNDkb8cZUXPw8=;
-	b=AYMKd+JY4MCbi35KIcC1gRfVfgTIenEDccJqyFf2UrxXJzfM+HG83ZoFlrRoSnmNLPnvCe
-	wsDd14XOZ46V12MTHqars0iEJShvTEYmqzuU5xZHRkAznsbvffOCbOXdVkD6SYDhcvcZ2y
-	ZR489CwCBzNoK7harSY8qyiDP9mnHbA=
-Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
- [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-556-vZ3P5oGUPOinXKsbkriKPQ-1; Fri, 25 Aug 2023 13:01:46 -0400
-X-MC-Unique: vZ3P5oGUPOinXKsbkriKPQ-1
-Received: by mail-qk1-f199.google.com with SMTP id af79cd13be357-76de9c1d13cso118567485a.2
-        for <iommu@lists.linux.dev>; Fri, 25 Aug 2023 10:01:46 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1692982906; x=1693587706;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=aJ2tJi24zuLFj3A+pu+XP5QHGUTmirfNDkb8cZUXPw8=;
-        b=JbPIe386Nm6uEH8B/H8fr+sIDSMCUuDQI7x814yvkFHcPTkW2GLNVsPGWgAsMPWdu9
-         8ShfyylR6804WLwmbxAWeg/SqRzBUpW7hjVhwaKzB6L5BPHp7EAgQTDtxsVkEMqMmQeT
-         DITGqMdgyz3eAyrk0NN4zevA/L30HuYd9NS0cfHiZyDEreElktYXtJCeVMBVo3eumTYg
-         0Ih9JZYhXv1WxZuMmFC87+nN94NMH0cxP+ZGQIps+i5JY9ze+477dUuh/2JSE6+8hsvd
-         tNOSNTDhexInwZA+24amg1iaEvnT2dDDDlk2TuDSKoSD5l6qCZTJswJ/VkgtawZN3AdB
-         VQxw==
-X-Gm-Message-State: AOJu0YwoyBdrDhp1tv5TGiVOUiETPIiFs4Gj0IGxH13HNXfKp4brerhM
-	LewPAucCxIPEWYf/zdur4UAMBzl2RZTsKPecTfjr7rBzTqo7+juPG2NeT7Pdgu3mQDmIFSKrmEp
-	Su/nsbuXZlgSdK6o=
-X-Received: by 2002:a05:620a:4512:b0:767:3a10:d6de with SMTP id t18-20020a05620a451200b007673a10d6demr22732099qkp.58.1692982906148;
-        Fri, 25 Aug 2023 10:01:46 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IF9r+hgC07ICJNI/lmyGO6j9NPtPE1qa1auLnJ7Ql2oN7fd3LKPda8+yzOutuYVdg7B7oo5aw==
-X-Received: by 2002:a05:620a:4512:b0:767:3a10:d6de with SMTP id t18-20020a05620a451200b007673a10d6demr22732079qkp.58.1692982905906;
-        Fri, 25 Aug 2023 10:01:45 -0700 (PDT)
-Received: from localhost (ip98-179-76-75.ph.ph.cox.net. [98.179.76.75])
-        by smtp.gmail.com with ESMTPSA id g24-20020ae9e118000000b00767e2668536sm644165qkm.17.2023.08.25.10.01.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Aug 2023 10:01:45 -0700 (PDT)
-Date: Fri, 25 Aug 2023 10:01:43 -0700
-From: Jerry Snitselaar <jsnitsel@redhat.com>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: joro@8bytes.org, will@kernel.org, iommu@lists.linux.dev, 
-	linux-kernel@vger.kernel.org, zhangzekun11@huawei.com, john.g.garry@oracle.com, 
-	dheerajkumar.srivastava@amd.com
-Subject: Re: [PATCH v2 2/2] iommu/iova: Manage the depot list size
-Message-ID: <tfub6qlwprlwhvbuyfzhiqbsdbnzlbnhmteb4xcqd7crrrmopd@2eotamfjn5t6>
-References: <cover.1692641204.git.robin.murphy@arm.com>
- <4eb00390132b93bbc113bef2205e9df54f888710.1692641204.git.robin.murphy@arm.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B197F107A8;
+	Fri, 25 Aug 2023 17:40:16 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=earOp9wCjbvXhNpxjZk6iiF1c5jKGxaHfnVf0WMl1z1Xaxeq27UJk8/RlIaGp0FYbWFN3iFZ0CPvBVTJBGB2SzYSP5AaGgHwpBCbpwtwR0Ep8I7xcg7b1iXrj/H8qFhJVOzdLT+YsigkHD5Sm9LMG6nWZyXNR7ck2Ht05IZVeTZ+z8ngPGO3iNzdIADnU54tTXThbLxcZoc8Qk6HaSYKYbjQ7IF2fN6JmM+Cwa3VZzcTJjhPBQJCJGAmRBWg9Dydgs+QWeQOcSDbBIykWrZ4DONfg+BIm37LRjwOBx7LB10RVBILNnPFEoMc2qcRRys5l9Ye3irQ5DeGzW5UBJw/nQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=OimMWhjF3ieb++tVHK4fhFxIVzoG4uTQFZmSsIrjuv8=;
+ b=P9hdq7UEBhwu9Va4C1XThgQhBmo8qzUkf2+BalVJ8QvMcy5Lu1kRfFWwlVCcic9/GflR5XCnAAaBlPvuSjZQ9A/pIwjrpr3wxK0UPtZBXWHUmyy6vU79fUWgJNyH7Fe90V3x6b9WghR3vXRoJkKhhnmF/rVh0/ZQAm8lBQYGDw7u6snPfdOc1HsQJbQIuJCyDlH9CnE9UA5DVRklrYDWPJdeOPV6Jv7q46rztsnE06x4FZxJetVWRhc45HDIAAUdzqYli9wiSy4JDzPNYg92P87m57uH7CoP/jqU3cKlh7116WL5avy3ROqEDcnbkZopSOJ0lg0MfcunjqKOA1Yxrw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=OimMWhjF3ieb++tVHK4fhFxIVzoG4uTQFZmSsIrjuv8=;
+ b=bOByqItZSNBSr5J9I12IpliLcN6gb8qorA3kBFiAdHzE7OmejI8GAaLgqMpisO9lg6S1gbz/Y1FwiB28/ezSKqAwapV8/t9zwSD1FkVfR/7p6ZUOk6r6wQEx6c6uj5aHQ00jjXMBiH8YVDn4ISH/5vDxNFfgTk9aRT1Wm6rzH1i+LUJfQc74+X56zsdS7ivUqxrCNpGJi9a7Wc0I1izxcrVoTMruHgHwQSOBEXlXU0C2HPAdDlC8S2B74Rem3rOwA3zkh5f7QU+ohyTKo68WtLu00gsJ/LXTJIUXKJhFQ/CbZOAdj7c8MJUHHKCOp8Me3MRvl7NBYo1dVlguWcnncA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by DM3PR12MB9326.namprd12.prod.outlook.com (2603:10b6:0:3d::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6699.30; Fri, 25 Aug
+ 2023 17:40:13 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::5111:16e8:5afe:1da1]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::5111:16e8:5afe:1da1%6]) with mapi id 15.20.6699.032; Fri, 25 Aug 2023
+ 17:40:13 +0000
+Date: Fri, 25 Aug 2023 14:40:10 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Jerry Snitselaar <jsnitsel@redhat.com>
+Cc: Andy Gross <agross@kernel.org>, Alim Akhtar <alim.akhtar@samsung.com>,
+	Bjorn Andersson <andersson@kernel.org>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+	Baolin Wang <baolin.wang@linux.alibaba.com>,
+	Christophe Leroy <christophe.leroy@csgroup.eu>,
+	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+	Heiko Stuebner <heiko@sntech.de>, iommu@lists.linux.dev,
+	Jernej Skrabec <jernej.skrabec@gmail.com>,
+	Jonathan Hunter <jonathanh@nvidia.com>,
+	Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
+	Konrad Dybcio <konrad.dybcio@linaro.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+	linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+	linux-mediatek@lists.infradead.org,
+	linux-rockchip@lists.infradead.org, linux-s390@vger.kernel.org,
+	linux-samsung-soc@vger.kernel.org, linux-sunxi@lists.linux.dev,
+	linux-tegra@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
+	linuxppc-dev@lists.ozlabs.org,
+	Matthias Brugger <matthias.bgg@gmail.com>,
+	Matthew Rosato <mjrosato@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	Orson Zhai <orsonzhai@gmail.com>, Rob Clark <robdclark@gmail.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Samuel Holland <samuel@sholland.org>,
+	Thierry Reding <thierry.reding@gmail.com>,
+	Krishna Reddy <vdumpa@nvidia.com>, Chen-Yu Tsai <wens@csie.org>,
+	Will Deacon <will@kernel.org>, Yong Wu <yong.wu@mediatek.com>,
+	Chunyan Zhang <zhang.lyra@gmail.com>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Dmitry Osipenko <digetx@gmail.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Niklas Schnelle <schnelle@linux.ibm.com>,
+	Steven Price <steven.price@arm.com>,
+	Thierry Reding <treding@nvidia.com>
+Subject: Re: [PATCH v7 02/24] iommu: Add IOMMU_DOMAIN_PLATFORM
+Message-ID: <ZOjneiqLzRRD7ulL@nvidia.com>
+References: <0-v7-de04a3217c48+15055-iommu_all_defdom_jgg@nvidia.com>
+ <2-v7-de04a3217c48+15055-iommu_all_defdom_jgg@nvidia.com>
+ <hbmfqpq2oyjjz3loccfbslpalzhlsyr2w3bpx6qasq23kyrfso@e6kry74ifgnt>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <hbmfqpq2oyjjz3loccfbslpalzhlsyr2w3bpx6qasq23kyrfso@e6kry74ifgnt>
+X-ClientProxiedBy: SJ0PR05CA0141.namprd05.prod.outlook.com
+ (2603:10b6:a03:33d::26) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <4eb00390132b93bbc113bef2205e9df54f888710.1692641204.git.robin.murphy@arm.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|DM3PR12MB9326:EE_
+X-MS-Office365-Filtering-Correlation-Id: 58786a3e-aa3c-45af-dcc2-08dba59255eb
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	a8Gnigr2aF9SIPJCrxuBJK0DSHHSWMBbcxYk0WxAHH+TojN1Gvlky7nyxLoGUigqZx+wWQse5Eif5ixtjUTWxNw9v/ugMBXUFH6ND0qCuEcW2sc66uhLKr000hB29sEehLToAiTtbrDLvgB9LLezXQAJkbL5mcBuM27vGR8hpiHLc0xvDiuDHbQYSI7vflacHe8ThaM5nwDXzuvuF0v37H66N+VRIK/vsAfKSXD8lxYEn44ZLMkfG5cafZvhqjDh5TwZWJrX6YLR4j8eo1w97hRkW3uLun6CdwqPZWly8fBhvcdHwHzkbI2xhH6fh+6t6nn8Jgk1IslBiooHII9xrzoe7VFEzSmUP8snbrSDrDeCLm+nEbgrpy/ux0jCvar5lsqaaqL/ZsmLDMAi5esuLJ+YFl8gBWqM03xfVSmmvT/XRvlwmnLSeuW0/Dfve/gJKJG0JxK+TK9yvPInRO4lg/2ANi2TvXQ9b+ktVpDKTiK9GdEK3Se3Qwcj17nXmn3FoOwl7gEY2mV0uGvJFo0op67WrPjfNH0/1nNJDMDfxlPJRGy7ebPGUaVIVjiOr5zN
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(39860400002)(136003)(376002)(396003)(366004)(346002)(1800799009)(186009)(451199024)(5660300002)(83380400001)(86362001)(6512007)(6506007)(26005)(2616005)(6486002)(38100700002)(107886003)(36756003)(66946007)(478600001)(54906003)(4326008)(8936002)(6916009)(8676002)(66476007)(316002)(66556008)(41300700001)(7406005)(7416002)(2906002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?vvgV5ntNbJnFy5TerXzlekncoqxnviQO4r6DerMaR7/Xw8peRzERjkiAau8j?=
+ =?us-ascii?Q?YTRWOFswON+4fKllm1SrjUXZX4pLpQiXapVA3glR1/fM9N8Bj1qs4ffqBhZF?=
+ =?us-ascii?Q?XSwuk6COHMfBSoNhdw7hroan2o36kidxruhSGM28UFBsyWuy55LgWCOwPX9s?=
+ =?us-ascii?Q?BBOSbJhmmvE1NbFaSfZNsLzCzifVVKZRALPhkZCzZ6qOnJcjm9eQc+3A1oj9?=
+ =?us-ascii?Q?It52NOulwurqZfk23csGiIc3WYS2j3v9cHwU3QiNZeKRkab0bW1FucSMqdix?=
+ =?us-ascii?Q?m4Zmbg0GGSK9Nemgc24cZ1hNo46qrLpVVDep8FZxjdGf6VSXMhNV7Y/J3jy+?=
+ =?us-ascii?Q?t0hgqAp9Vlyp+nXc5OzPJpRymYwoNHD8RXhf13kaGDRnjlfZHb4nzAzZr4t/?=
+ =?us-ascii?Q?DhlcCY23vNG1SFcK5OkTVogVaTZgo7kS0dZhoBmXDwsHyfRxpLR0SsadzUTx?=
+ =?us-ascii?Q?7PVSKoMB9epwl9ji04a92GCaVxv1heeNbfUroQIrMyvPn5O9udlZYgb/pW8x?=
+ =?us-ascii?Q?pLHUV4daK2vjxfwRPldDcqlENxHVrqr9FoqRaGugEEHi0QQp7wqD/vfeooNh?=
+ =?us-ascii?Q?d6XrbBH5VDQKv22/hln8SQtf+SpAZE5APLoziCBPZ36ShGGmRY49X9g1axx4?=
+ =?us-ascii?Q?jP5RfcrqATYeFMvilpsdGZqVYZKU+cdHkJF5+T20kW9EPVoYA5jgi5Pa07Bx?=
+ =?us-ascii?Q?4GSxCVm2pDuffgCfh/AhO6RUke6ldQz/P5i4VM22WDrpXyb+lA0oLvsK+3U4?=
+ =?us-ascii?Q?T8i/9qMXqWfrBBdOV16xiOaSM0Q5odNsD9A8ufbUC6wAqwCiYjeZXd/E72ol?=
+ =?us-ascii?Q?Jnhn3TxxRQGeTosqkt0vaQlB9sqFQ3hPIyTHxG6RxHiIaqRTMWPhZ9rpXNQQ?=
+ =?us-ascii?Q?g7IgJjiu7byaYZj9M0VeTNCVLr/jMxgz8mg/KVTroZFQM/vAOcIA41pzQtei?=
+ =?us-ascii?Q?VDV+VEGmyTCCWwYBW3uYU6D8RV61C2Lv8MGFD9F/Dy2xSESbAKWkYhx1AD3J?=
+ =?us-ascii?Q?s2p3TQKoRpAOPHN6sOEReEi1BfCE78EeehELV/TdIVapsK96ovX/b7FCAPoY?=
+ =?us-ascii?Q?8OJVV0jevWjA0o84otiauvU0hOwsuxY02Lda3knBRrI/pbg1E/MV2uC0K95f?=
+ =?us-ascii?Q?Nk4A/jt1adEHhTvsEyNRoOgqVc7tlqQ2WeiDOheHJHJo+cPZ4yAbyOzwrA9/?=
+ =?us-ascii?Q?agi1uFJKwTzqUp7d1ACXHEzfdz0d7pnXhOon6p8qGMjwXHqjUF7xkNlTbFr+?=
+ =?us-ascii?Q?B+8/P53OdCSSRhwGvFg/zsLwnDpO14wHNsaJNwyGdCVDNShuv4/+rYLa6ouY?=
+ =?us-ascii?Q?2er0IWGnsD/PXHQSvYY8SYu0wRpmApig2zVHMVFtGiRx7lE/SBoqOPzJvuk3?=
+ =?us-ascii?Q?E0Q2Py+SENB8FMtyEFKrX4DzEZoTQEcN4ZBxMYyp4owAXD1222aCRO0cDaP/?=
+ =?us-ascii?Q?ZhDJ/4G6mdu9JakGiSYrFXVDQTNQMqW7BQEgDIySWAP8keEExA9/p1kxwW7M?=
+ =?us-ascii?Q?e/IoAeX2HuRg37EhGM+UiXcbLY9L1EXOueraZu/Jinq8K5h34zk+LqWcqnvs?=
+ =?us-ascii?Q?MD54E5k+9Lu2J+Rb5HHttaheDoy+0aXMw709c2md?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 58786a3e-aa3c-45af-dcc2-08dba59255eb
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Aug 2023 17:40:13.0741
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: c/lHqPfLm8ZdGGXUSmMC6bjlG6PP0TtcgCXnvFIc/GCrpMVM1mXDhZvZRzMfHio0
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM3PR12MB9326
 
-On Mon, Aug 21, 2023 at 07:22:52PM +0100, Robin Murphy wrote:
-> Automatically scaling the depot up to suit the peak capacity of a
-> workload is all well and good, but it would be nice to have a way to
-> scale it back down again if the workload changes. To that end, add
-> backround reclaim that will gradually free surplus magazines if the
-> depot size remains above a reasonable threshold for long enough.
+On Thu, Aug 24, 2023 at 06:51:48PM -0700, Jerry Snitselaar wrote:
+
+> > +	/*
+> > +	 * Allow legacy drivers to specify the domain that will be the default
+> > +	 * domain. This should always be either an IDENTITY or PLATFORM domain.
+> > +	 * Do not use in new drivers.
+> > +	 */
 > 
-> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+> Would it be worthwhile to mention this in iommu.h for the iommu_ops default_domain?
 
-Reviewed-by: Jerry Snitselaar <jsnitsel@redhat.com>
+I did this:
 
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 11d47f9ac9b345..7fa53d28feca87 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -1757,8 +1757,8 @@ iommu_group_alloc_default_domain(struct iommu_group *group, int req_type)
+ 
+        /*
+         * Allow legacy drivers to specify the domain that will be the default
+-        * domain. This should always be either an IDENTITY or PLATFORM domain.
+-        * Do not use in new drivers.
++        * domain. This should always be either an IDENTITY/BLOCKED/PLATFORM
++        * domain. Do not use in new drivers.
+         */
+        if (ops->default_domain) {
+                if (req_type)
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 7e9d94a56f473e..6f9e0aacc4431a 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -267,6 +267,8 @@ struct iommu_iotlb_gather {
+  * @blocked_domain: An always available, always attachable blocking
+  *                  translation.
+  * @default_domain: If not NULL this will always be set as the default domain.
++ *                  This should be an IDENTITY/BLOCKED/PLATFORM domain.
++ *                  Do not use in new drivers.
+  */
+ struct iommu_ops {
+        bool (*capable)(struct device *dev, enum iommu_cap);
+
+Thanks,
+Jason
