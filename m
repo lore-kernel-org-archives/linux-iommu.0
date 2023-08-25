@@ -1,137 +1,143 @@
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 69891125D2;
-	Fri, 25 Aug 2023 18:27:23 +0000 (UTC)
-Received: from pps.filterd (m0353729.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 37PHuYWF017369;
-	Fri, 25 Aug 2023 18:27:00 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=QHQOxiPuUa0ebvOp4zeF41oQRZYAzTOs8FVVwIp9Ljk=;
- b=fxnjY7pa/kjrEjYsAn3f830wFpCa/pqiFmmssVqUCVajBH7x0d3Z7b+szRJJK2n7EvvZ
- m/0mxjm3m4ZSW2RFapYNT9kcRBym4ds2RoJ38RygPWd8SF/MZxnDjRmJCKmN9kzRSzEw
- 8I0uPAFHRTbugceMPcELPp3L1tcI+r0cXo3Tm5EXkPkEsPkMeoHQFPXgaMMjkN5rg3K9
- gk4W5GX/UGrgdsRsyFDViK6VOwAZzWQ1OQw0woGDuZZbm0id+qS0iYZLkDKatSGOwRIA
- YkJ0RIkIGgKDYHEqIuUrsswDvpF84AMTKNM7lLuqDHUrKUlTiMHkSsY/doHiy1nCX/Ca qw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3sq1528vru-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 25 Aug 2023 18:26:59 +0000
-Received: from m0353729.ppops.net (m0353729.ppops.net [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 37PIHT0S004200;
-	Fri, 25 Aug 2023 18:26:58 GMT
-Received: from ppma21.wdc07v.mail.ibm.com (5b.69.3da9.ip4.static.sl-reverse.com [169.61.105.91])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3sq1528vr8-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 25 Aug 2023 18:26:58 +0000
-Received: from pps.filterd (ppma21.wdc07v.mail.ibm.com [127.0.0.1])
-	by ppma21.wdc07v.mail.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 37PI48X6016687;
-	Fri, 25 Aug 2023 18:26:57 GMT
-Received: from smtprelay02.wdc07v.mail.ibm.com ([172.16.1.69])
-	by ppma21.wdc07v.mail.ibm.com (PPS) with ESMTPS id 3sn2289ner-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 25 Aug 2023 18:26:57 +0000
-Received: from smtpav01.wdc07v.mail.ibm.com (smtpav01.wdc07v.mail.ibm.com [10.39.53.228])
-	by smtprelay02.wdc07v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 37PIQuda1770098
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Fri, 25 Aug 2023 18:26:56 GMT
-Received: from smtpav01.wdc07v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 1B91258055;
-	Fri, 25 Aug 2023 18:26:56 +0000 (GMT)
-Received: from smtpav01.wdc07v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 7EBBD5804B;
-	Fri, 25 Aug 2023 18:26:51 +0000 (GMT)
-Received: from [9.61.160.138] (unknown [9.61.160.138])
-	by smtpav01.wdc07v.mail.ibm.com (Postfix) with ESMTP;
-	Fri, 25 Aug 2023 18:26:51 +0000 (GMT)
-Message-ID: <240c26d3-b821-8410-3142-62e9a8656146@linux.ibm.com>
-Date: Fri, 25 Aug 2023 14:26:51 -0400
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 70C111803F
+	for <iommu@lists.linux.dev>; Fri, 25 Aug 2023 20:23:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1692995031;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=6UBqcsz+qyHMazVNsnwC+GgF7rp1trrk3H8y0CxPC4U=;
+	b=h/IiRGuHzZzKuF7AeqrNzrlcYnWBY9ijKnSCsySjI6ejiJL170XTlomgMvf1CPPZLXTPTI
+	kTmD/cltb3QDNugiaDR0gmcsCO6WVKHawqHnal+N0NHunjoJWbhdS+bYD8FLKWSnVpAqkA
+	EIAdceJGV461QgRB1yxUggtTeTYnntA=
+Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
+ [209.85.219.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-455-aDkztMygOl-h1dMNY58HMw-1; Fri, 25 Aug 2023 16:23:50 -0400
+X-MC-Unique: aDkztMygOl-h1dMNY58HMw-1
+Received: by mail-qv1-f70.google.com with SMTP id 6a1803df08f44-64f3be16f48so15205446d6.3
+        for <iommu@lists.linux.dev>; Fri, 25 Aug 2023 13:23:49 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1692995029; x=1693599829;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=6UBqcsz+qyHMazVNsnwC+GgF7rp1trrk3H8y0CxPC4U=;
+        b=JwfoTz5xj5/u/SQNwPy1/Pk6UQVQ86BgZwG/uHMG1wzfwJzLtQsE0dB++LxpB0gjAq
+         dUArSmcnuhEkwqumR0PrMs1KyixxyQszUlwHXVXg5QeBKVBU2lcaLm21xtQiJBRbinQ0
+         dtm26eEWPDZ81/uU4mNiP1BXC+MdiJylg1KI3L42I213rffYymtrS76h8n0j7PrdPVDc
+         ZEt7x4DauSrHnDskfr3FOPb8XZK7ZikVjIwlIp3Kux1ZZm1T8P5jyvJn8wdZRlpZ6PWT
+         xr0nOmZw9QvF5SUJQBYlF5jvnXc1x9HR9pc4tnWL7N+gpCftc6D+TCVQM8GuL4bCBUO3
+         G0eQ==
+X-Gm-Message-State: AOJu0YyC4vzpKFQ5ZdkobbAHN4Rb+HlZL+b1BMOEco4lBpBps0irWcdz
+	BHiKXMcgbqu5y2croCG2EnjBGvRJ7/OJgoaPsNninSa8a23W6K70X5tFBV1xIUW+8OfGtflE4JC
+	DvmRWyKJ8hVPxFUs=
+X-Received: by 2002:a0c:9c06:0:b0:64f:3e2d:93db with SMTP id v6-20020a0c9c06000000b0064f3e2d93dbmr20305573qve.6.1692995029621;
+        Fri, 25 Aug 2023 13:23:49 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IGhcq54IOGRl9sNdHkLdvPnzpjB/PihT5afG6dr52Z2uB4cbUOhKAsFPETyVjj3ta3v5KMJ7g==
+X-Received: by 2002:a0c:9c06:0:b0:64f:3e2d:93db with SMTP id v6-20020a0c9c06000000b0064f3e2d93dbmr20305555qve.6.1692995029386;
+        Fri, 25 Aug 2023 13:23:49 -0700 (PDT)
+Received: from localhost (ip98-179-76-75.ph.ph.cox.net. [98.179.76.75])
+        by smtp.gmail.com with ESMTPSA id a6-20020a05620a124600b0076c72dad35dsm738410qkl.63.2023.08.25.13.23.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 25 Aug 2023 13:23:48 -0700 (PDT)
+Date: Fri, 25 Aug 2023 13:23:47 -0700
+From: Jerry Snitselaar <jsnitsel@redhat.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Andy Gross <agross@kernel.org>, Alim Akhtar <alim.akhtar@samsung.com>, 
+	Bjorn Andersson <andersson@kernel.org>, 
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, Baolin Wang <baolin.wang@linux.alibaba.com>, 
+	Christophe Leroy <christophe.leroy@csgroup.eu>, Gerald Schaefer <gerald.schaefer@linux.ibm.com>, 
+	Heiko Stuebner <heiko@sntech.de>, iommu@lists.linux.dev, Jernej Skrabec <jernej.skrabec@gmail.com>, 
+	Jonathan Hunter <jonathanh@nvidia.com>, Joerg Roedel <joro@8bytes.org>, 
+	Kevin Tian <kevin.tian@intel.com>, Konrad Dybcio <konrad.dybcio@linaro.org>, 
+	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, linux-arm-kernel@lists.infradead.org, 
+	linux-arm-msm@vger.kernel.org, linux-mediatek@lists.infradead.org, 
+	linux-rockchip@lists.infradead.org, linux-s390@vger.kernel.org, linux-samsung-soc@vger.kernel.org, 
+	linux-sunxi@lists.linux.dev, linux-tegra@vger.kernel.org, 
+	Russell King <linux@armlinux.org.uk>, linuxppc-dev@lists.ozlabs.org, 
+	Matthias Brugger <matthias.bgg@gmail.com>, Matthew Rosato <mjrosato@linux.ibm.com>, 
+	Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, 
+	Orson Zhai <orsonzhai@gmail.com>, Rob Clark <robdclark@gmail.com>, 
+	Robin Murphy <robin.murphy@arm.com>, Samuel Holland <samuel@sholland.org>, 
+	Thierry Reding <thierry.reding@gmail.com>, Krishna Reddy <vdumpa@nvidia.com>, Chen-Yu Tsai <wens@csie.org>, 
+	Will Deacon <will@kernel.org>, Yong Wu <yong.wu@mediatek.com>, 
+	Chunyan Zhang <zhang.lyra@gmail.com>, Lu Baolu <baolu.lu@linux.intel.com>, 
+	Dmitry Osipenko <digetx@gmail.com>, Marek Szyprowski <m.szyprowski@samsung.com>, 
+	Nicolin Chen <nicolinc@nvidia.com>, Niklas Schnelle <schnelle@linux.ibm.com>, 
+	Steven Price <steven.price@arm.com>, Thierry Reding <treding@nvidia.com>
+Subject: Re: [PATCH v7 02/24] iommu: Add IOMMU_DOMAIN_PLATFORM
+Message-ID: <uwi23vasgop7nrnrvalquu6e4jepyiub7aopj7bcgiaw26zx2x@xslngjsllztb>
+References: <0-v7-de04a3217c48+15055-iommu_all_defdom_jgg@nvidia.com>
+ <2-v7-de04a3217c48+15055-iommu_all_defdom_jgg@nvidia.com>
+ <hbmfqpq2oyjjz3loccfbslpalzhlsyr2w3bpx6qasq23kyrfso@e6kry74ifgnt>
+ <ZOjneiqLzRRD7ulL@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.13.0
-Subject: Re: [PATCH v12 0/6] iommu/dma: s390 DMA API conversion and optimized
- IOTLB flushing
-Content-Language: en-US
-To: Niklas Schnelle <schnelle@linux.ibm.com>, Joerg Roedel <joro@8bytes.org>,
-        Will Deacon <will@kernel.org>, Wenjia Zhang <wenjia@linux.ibm.com>,
-        Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Gerd Bayer <gbayer@linux.ibm.com>, Julian Ruess <julianr@linux.ibm.com>,
-        Pierre Morel <pmorel@linux.ibm.com>,
-        Alexandra Winter
- <wintera@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev
- <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-        Hector Martin <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        David Woodhouse <dwmw2@infradead.org>,
-        Lu Baolu <baolu.lu@linux.intel.com>, Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>,
-        Yong Wu <yong.wu@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-        Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Baolin Wang
- <baolin.wang@linux.alibaba.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>, Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Krishna Reddy
- <vdumpa@nvidia.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Jonathan Corbet <corbet@lwn.net>, linux-s390@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        iommu@lists.linux.dev, asahi@lists.linux.dev,
-        linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
-        linux-mediatek@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        linux-tegra@vger.kernel.org, linux-doc@vger.kernel.org
-References: <20230825-dma_iommu-v12-0-4134455994a7@linux.ibm.com>
-From: Matthew Rosato <mjrosato@linux.ibm.com>
-In-Reply-To: <20230825-dma_iommu-v12-0-4134455994a7@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: gJVEk2wQaewkyrtQ9b__FpQB1m2yDbYi
-X-Proofpoint-ORIG-GUID: plJWB3elhf65jTBHYa7I2-RRr5Ln9Ish
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.267,Aquarius:18.0.957,Hydra:6.0.601,FMLib:17.11.176.26
- definitions=2023-08-25_16,2023-08-25_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 impostorscore=0
- malwarescore=0 mlxlogscore=758 lowpriorityscore=0 clxscore=1015
- suspectscore=0 bulkscore=0 adultscore=0 mlxscore=0 priorityscore=1501
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2308100000 definitions=main-2308250162
+In-Reply-To: <ZOjneiqLzRRD7ulL@nvidia.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-On 8/25/23 6:11 AM, Niklas Schnelle wrote:
-> Hi All,
+On Fri, Aug 25, 2023 at 02:40:10PM -0300, Jason Gunthorpe wrote:
+> On Thu, Aug 24, 2023 at 06:51:48PM -0700, Jerry Snitselaar wrote:
 > 
-> This patch series converts s390's PCI support from its platform specific DMA
-> API implementation in arch/s390/pci/pci_dma.c to the common DMA IOMMU layer.
-> The conversion itself is done in patches 3-4 with patch 2 providing the final
-> necessary IOMMU driver improvement to handle s390's special IOTLB flush
-> out-of-resource indication in virtualized environments. The conversion
-> itself only touches the s390 IOMMU driver and s390 arch code moving over
-> remaining functions from the s390 DMA API implementation. No changes to
-> common code are necessary.
+> > > +	/*
+> > > +	 * Allow legacy drivers to specify the domain that will be the default
+> > > +	 * domain. This should always be either an IDENTITY or PLATFORM domain.
+> > > +	 * Do not use in new drivers.
+> > > +	 */
+> > 
+> > Would it be worthwhile to mention this in iommu.h for the iommu_ops default_domain?
+> 
+> I did this:
+> 
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 11d47f9ac9b345..7fa53d28feca87 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -1757,8 +1757,8 @@ iommu_group_alloc_default_domain(struct iommu_group *group, int req_type)
+>  
+>         /*
+>          * Allow legacy drivers to specify the domain that will be the default
+> -        * domain. This should always be either an IDENTITY or PLATFORM domain.
+> -        * Do not use in new drivers.
+> +        * domain. This should always be either an IDENTITY/BLOCKED/PLATFORM
+> +        * domain. Do not use in new drivers.
+>          */
+>         if (ops->default_domain) {
+>                 if (req_type)
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index 7e9d94a56f473e..6f9e0aacc4431a 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -267,6 +267,8 @@ struct iommu_iotlb_gather {
+>   * @blocked_domain: An always available, always attachable blocking
+>   *                  translation.
+>   * @default_domain: If not NULL this will always be set as the default domain.
+> + *                  This should be an IDENTITY/BLOCKED/PLATFORM domain.
+> + *                  Do not use in new drivers.
+>   */
+>  struct iommu_ops {
+>         bool (*capable)(struct device *dev, enum iommu_cap);
+> 
+> Thanks,
+> Jason
 > 
 
-I also picked up this latest version and ran various tests with ISM, mlx5 and some NVMe drives.  FWIW, I have been including versions of this series in my s390 dev environments for a number of months now and have also been building my s390 pci iommufd nested translation series on top of this, so it's seen quite a bit of testing from me at least.
+For all of 02/24
 
-So as far as I'm concerned anyway, this series is ready for -next (after the merge window). 
+Reviewed-by: Jerry Snitselaar <jsnitsel@redhat.com>
 
-Thanks,
-Matt
+> _______________________________________________
+> Linux-rockchip mailing list
+> Linux-rockchip@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-rockchip
 
