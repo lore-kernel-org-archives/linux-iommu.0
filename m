@@ -1,137 +1,85 @@
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C5BC10791
-	for <iommu@lists.linux.dev>; Fri, 25 Aug 2023 15:22:11 +0000 (UTC)
-Received: from pps.filterd (m0353725.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 37PFA67r015306;
-	Fri, 25 Aug 2023 15:22:01 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : date : subject :
- content-type : message-id : references : in-reply-to : to : cc :
- content-transfer-encoding : mime-version; s=pp1;
- bh=efLCKGZCR9lDIN/VAOS7Dh5waTAZ2HrUFv8uYRKeG/4=;
- b=TWpAs0DfVaV9GREtarDfBv88uDik+yvX4WUFRYsCMhhxQ9YWBfRFayjZPGDmMNEhx1nO
- aJDyjwItu6L4ClA7Gv45NQ6QI0096xEDhpu1SM0GVus7KiKvJXJ2jwnFhaojcA/JqhjP
- mDZCZX8JyE8u6yeMzE7huAfhxpxp5fZT9Qk0dTkJIb4XZ9jWf9S0Yvo9oHTdvAWkoEcB
- ObO8tWXqmifCPVtEy8i8urIMf0wpLSKys/RyBXi6pwwiK9MNrFwISdIt1mc7CVD9EoIb
- Nau14M9Dhn0aBwYfvBlqboHFY7BYXKDZ7VowUhaRZ+uOzOH+n0VhLmBRY3I5mV2VFa/o hA== 
-Received: from ppma23.wdc07v.mail.ibm.com (5d.69.3da9.ip4.static.sl-reverse.com [169.61.105.93])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3spvrmc1qu-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 25 Aug 2023 15:22:01 +0000
-Received: from pps.filterd (ppma23.wdc07v.mail.ibm.com [127.0.0.1])
-	by ppma23.wdc07v.mail.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 37PFLLQE027323;
-	Fri, 25 Aug 2023 15:22:00 GMT
-Received: from smtprelay01.fra02v.mail.ibm.com ([9.218.2.227])
-	by ppma23.wdc07v.mail.ibm.com (PPS) with ESMTPS id 3sn20t0kww-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 25 Aug 2023 15:22:00 +0000
-Received: from smtpav02.fra02v.mail.ibm.com (smtpav02.fra02v.mail.ibm.com [10.20.54.101])
-	by smtprelay01.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 37PFLwG020775536
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Fri, 25 Aug 2023 15:21:58 GMT
-Received: from smtpav02.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 5207420040;
-	Fri, 25 Aug 2023 15:21:58 +0000 (GMT)
-Received: from smtpav02.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 06F1720043;
-	Fri, 25 Aug 2023 15:21:58 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-	by smtpav02.fra02v.mail.ibm.com (Postfix) with ESMTP;
-	Fri, 25 Aug 2023 15:21:57 +0000 (GMT)
-From: Niklas Schnelle <schnelle@linux.ibm.com>
-Date: Fri, 25 Aug 2023 17:21:26 +0200
-Subject: [PATCH 2/2] iommu/virtio: Add ops->flush_iotlb_all and enable
- deferred flush
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <20230825-viommu-sync-map-v1-2-56bdcfaa29ec@linux.ibm.com>
-References: <20230825-viommu-sync-map-v1-0-56bdcfaa29ec@linux.ibm.com>
-In-Reply-To: <20230825-viommu-sync-map-v1-0-56bdcfaa29ec@linux.ibm.com>
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>
-Cc: virtualization@lists.linux-foundation.org, iommu@lists.linux.dev,
-        linux-kernel@vger.kernel.org, Niklas Schnelle <schnelle@linux.ibm.com>
-X-Mailer: b4 0.12.3
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1850;
- i=schnelle@linux.ibm.com; h=from:subject:message-id;
- bh=o3fVLj72u2OA+MsG2VQnhGTOnVRyrNfk57kmMnyTq2U=;
- b=owGbwMvMwCH2Wz534YHOJ2GMp9WSGFJeHOf9zr09kfN83R6vuDVzeBeWbd0+6/7snc0VyxW+L
- mibkLfmfkcpC4MYB4OsmCLLoi5nv3UFU0z3BPV3wMxhZQIZwsDFKQATEbnH8L+uTtjo7Dz5vUrs
- 611nvSipim4Idsmx0VS4VabM9Gr99FxGht/ZsXzO7s+PKFVv0LKNu3ZIZnrGBab1B3sVdunvf6f
- cwAUA
-X-Developer-Key: i=schnelle@linux.ibm.com; a=openpgp;
- fpr=9DB000B2D2752030A5F72DDCAFE43F15E8C26090
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: SfmiqD5vSiZ6UpayPOG_pJPY3hqn3Vy9
-X-Proofpoint-ORIG-GUID: SfmiqD5vSiZ6UpayPOG_pJPY3hqn3Vy9
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 613A9101CA
+	for <iommu@lists.linux.dev>; Fri, 25 Aug 2023 16:55:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1692982504;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=w+kuzpbbgam9B45lp1NOAHkhMMTQTFbfFGLvI71Il4Q=;
+	b=Ep9QNxU1zEafnEg5ZDk0BtIoDJvwewIw572faeqrBrUtR1kEq8I8fQWZ9rx+tm/k0zr/sO
+	gsD6cJBrMOPdXCOmwUMo9yRUl63FDx8N1Cz7Nlb5k3lldpfy8utfvbXIGcBiAr8accNhSS
+	4hq1qBM8MLJ1+8ekJ5B0X7vHquXqXFE=
+Received: from mail-ua1-f72.google.com (mail-ua1-f72.google.com
+ [209.85.222.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-331-B0JTPVKbP7e_8OmeK8FGXg-1; Fri, 25 Aug 2023 12:55:03 -0400
+X-MC-Unique: B0JTPVKbP7e_8OmeK8FGXg-1
+Received: by mail-ua1-f72.google.com with SMTP id a1e0cc1a2514c-79a068ccf5cso385435241.2
+        for <iommu@lists.linux.dev>; Fri, 25 Aug 2023 09:55:02 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1692982502; x=1693587302;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=w+kuzpbbgam9B45lp1NOAHkhMMTQTFbfFGLvI71Il4Q=;
+        b=flomsC1kU0YEJFG8XPsavhq9OQJuFo0JsY7plbxm702Jr8iye1KSjHwws/UiJYnMEQ
+         70dLqWKQpRL06GwUCTMbwWfynxE0vdNfNHJzTYD4MOkrxzD4QUeOco3kBHiuAylKyxRV
+         j1imkPOLhvy7Tg/a+z9lIiAon+vQrJIDNWp+usvpc1La9XTGB0ARPvqi5XQ+YQeVS7ct
+         +A4M283qHuS/3kdt9RBY9RV8nN0qfyOYhnzQoX/Y6UR1B4l7TQt2xzdYwcMjhPdmsV/a
+         u2kHYJXtJPAZa3JuuptGiDZgaokvBm9QcJQBcrYhyfIAcOLwZNgFvRpCcXab3KyKHe9w
+         OBzw==
+X-Gm-Message-State: AOJu0YyhwVRgIS11zfm8/V0JrHEmyrjmP0p5xtxSZpitQcAVuW5k5ozF
+	o1xF1NkCyTplkCYveDwbIENHT3wX2r38NO4AcUvn2f59MYd9T6LMMlg3NXg59yGE8BjP/YrowaA
+	Le8gqFsLujv/I5XI=
+X-Received: by 2002:a67:fb88:0:b0:44e:9d4f:1ffb with SMTP id n8-20020a67fb88000000b0044e9d4f1ffbmr4661581vsr.11.1692982502503;
+        Fri, 25 Aug 2023 09:55:02 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IGJHUcXGtBB0jsSsUCaYK4Ywqg+0sSZuvf61wthRYX4YE+f077r/a3H5gRwGIIX2XhPhD1/Pg==
+X-Received: by 2002:a67:fb88:0:b0:44e:9d4f:1ffb with SMTP id n8-20020a67fb88000000b0044e9d4f1ffbmr4661566vsr.11.1692982502304;
+        Fri, 25 Aug 2023 09:55:02 -0700 (PDT)
+Received: from localhost (ip98-179-76-75.ph.ph.cox.net. [98.179.76.75])
+        by smtp.gmail.com with ESMTPSA id n6-20020a0ce486000000b006490a9946b6sm656091qvl.119.2023.08.25.09.55.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 25 Aug 2023 09:55:01 -0700 (PDT)
+Date: Fri, 25 Aug 2023 09:55:00 -0700
+From: Jerry Snitselaar <jsnitsel@redhat.com>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: joro@8bytes.org, will@kernel.org, iommu@lists.linux.dev, 
+	linux-kernel@vger.kernel.org, zhangzekun11@huawei.com, john.g.garry@oracle.com, 
+	dheerajkumar.srivastava@amd.com
+Subject: Re: [PATCH v2 1/2] iommu/iova: Make the rcache depot scale better
+Message-ID: <ob2tqg6amvr3ozxdrjtotc6gpfzlyvftncu7jw7zgau6qso6rx@h33gsipsnmuc>
+References: <cover.1692641204.git.robin.murphy@arm.com>
+ <fe7beab68167c4d86e770eb309985dfd3905bd8b.1692641204.git.robin.murphy@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.267,Aquarius:18.0.957,Hydra:6.0.601,FMLib:17.11.176.26
- definitions=2023-08-25_13,2023-08-25_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- clxscore=1015 phishscore=0 impostorscore=0 malwarescore=0 adultscore=0
- mlxlogscore=870 spamscore=0 mlxscore=0 priorityscore=1501 bulkscore=0
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2308100000 definitions=main-2308250134
+In-Reply-To: <fe7beab68167c4d86e770eb309985dfd3905bd8b.1692641204.git.robin.murphy@arm.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Add ops->flush_iotlb_all operation to enable virtio-iommu for the
-dma-iommu deferred flush scheme. This results inn a significant increase
-in performance in exchange for a window in which devices can still
-access previously IOMMU mapped memory. To get back to the prior behavior
-iommu.strict=1 may be set on the kernel command line.
+On Mon, Aug 21, 2023 at 07:22:51PM +0100, Robin Murphy wrote:
+> The algorithm in the original paper specifies the storage of full
+> magazines in the depot as an unbounded list rather than a fixed-size
+> array. It turns out to be pretty straightforward to do this in our
+> implementation with no significant loss of efficiency. This allows
+> the depot to scale up to the working set sizes of larger systems,
+> while also potentially saving some memory on smaller ones too.
+> 
+> Since this involves touching struct iova_magazine with the requisite
+> care, we may as well reinforce the comment with a proper assertion too.
+> 
+> Reviewed-by: John Garry <john.g.garry@oracle.com>
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+> ---
 
-Link: https://lore.kernel.org/lkml/20230802123612.GA6142@myrica/
-Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
----
- drivers/iommu/virtio-iommu.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
 
-diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
-index fb73dec5b953..1b7526494490 100644
---- a/drivers/iommu/virtio-iommu.c
-+++ b/drivers/iommu/virtio-iommu.c
-@@ -924,6 +924,15 @@ static int viommu_iotlb_sync_map(struct iommu_domain *domain,
- 	return viommu_sync_req(vdomain->viommu);
- }
- 
-+static void viommu_flush_iotlb_all(struct iommu_domain *domain)
-+{
-+	struct viommu_domain *vdomain = to_viommu_domain(domain);
-+
-+	if (!vdomain->nr_endpoints)
-+		return;
-+	viommu_sync_req(vdomain->viommu);
-+}
-+
- static void viommu_get_resv_regions(struct device *dev, struct list_head *head)
- {
- 	struct iommu_resv_region *entry, *new_entry, *msi = NULL;
-@@ -1049,6 +1058,8 @@ static bool viommu_capable(struct device *dev, enum iommu_cap cap)
- 	switch (cap) {
- 	case IOMMU_CAP_CACHE_COHERENCY:
- 		return true;
-+	case IOMMU_CAP_DEFERRED_FLUSH:
-+		return true;
- 	default:
- 		return false;
- 	}
-@@ -1069,6 +1080,7 @@ static struct iommu_ops viommu_ops = {
- 		.map_pages		= viommu_map_pages,
- 		.unmap_pages		= viommu_unmap_pages,
- 		.iova_to_phys		= viommu_iova_to_phys,
-+		.flush_iotlb_all	= viommu_flush_iotlb_all,
- 		.iotlb_sync		= viommu_iotlb_sync,
- 		.iotlb_sync_map		= viommu_iotlb_sync_map,
- 		.free			= viommu_domain_free,
-
--- 
-2.39.2
+Reviewed-by: Jerry Snitselaar <jsnitsel@redhat.com>
 
