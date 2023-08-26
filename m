@@ -1,101 +1,76 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.88])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F118015AB
-	for <iommu@lists.linux.dev>; Sat, 26 Aug 2023 08:10:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1693037443; x=1724573443;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=jlu0jGsz3YUaNHKDYc4hDn69ED5yf7AXMnsAeLD1XTY=;
-  b=b+ck2E9Gst/4kpB/ME68nFsnM/itHxTR6KakSeqhLS6Ly8Lzeyj6QD89
-   KueAwGgz903ExrpCJV/sg/rH1dlhe+qWpHv8PCeMTGn68PSWFzX/D77YO
-   zxzYtXm73Px0+ybBT8WXxWht0AygXX4DtPqovsKPdtBQaqVPO1RIqd0qz
-   yN6pmd8kGdAq3e65b0RyUvJK4+PAjwgRKXF0K7S10JUFPZ+5wTkwG7wHW
-   bYWzqzFYHXMJdUJ9WKjZgYsrsUPOSOJjsSu7uWSoLXCTyzpmCjlm5/3gO
-   t0KSDd5wWBG7ED+QpAao87Nx5uFkFhjuQZel61d78xsFh3isiDZ9M2BVR
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10813"; a="405853121"
-X-IronPort-AV: E=Sophos;i="6.02,203,1688454000"; 
-   d="scan'208";a="405853121"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2023 01:10:42 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10813"; a="772735780"
-X-IronPort-AV: E=Sophos;i="6.02,203,1688454000"; 
-   d="scan'208";a="772735780"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
-  by orsmga001.jf.intel.com with ESMTP; 26 Aug 2023 01:10:39 -0700
-Message-ID: <3b893bf4-a566-9a1f-49da-17efdd7e4661@linux.intel.com>
-Date: Sat, 26 Aug 2023 16:08:03 +0800
+Received: from ustc.edu.cn (smtp2.ustc.edu.cn [202.38.64.46])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 700C41C29
+	for <iommu@lists.linux.dev>; Sat, 26 Aug 2023 09:01:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=mail.ustc.edu.cn; s=dkim; h=Received:From:To:Cc:Subject:Date:
+	Message-Id:MIME-Version:Content-Transfer-Encoding; bh=7RvoeyXeXC
+	Oi4+UG2k+CAb5XozdjZDVYVoNklTU6WVg=; b=audV+xeg7phbMOb58zdzTQQUHg
+	P2MeHduKtAHx/iqwizblNz7lhEkYY33s6+wlTwcZA9IBuesRbPnlAcQOLvgxZZEd
+	RFdQ0g0q71F8ZOtQC/mpdwVv42cfiB8h92LctRFMgGzIisxTUUk7vRaegdGogbUK
+	sqLNOk/SlNu0RIiLE=
+Received: from localhost.localdomain (unknown [101.88.124.132])
+	by newmailweb.ustc.edu.cn (Coremail) with SMTP id LkAmygBn6_ikvelkAscYAQ--.8734S2;
+	Sat, 26 Aug 2023 16:54:01 +0800 (CST)
+From: Chunhui He <hchunhui@mail.ustc.edu.cn>
+To: Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>
+Cc: iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Chunhui He <hchunhui@mail.ustc.edu.cn>
+Subject: [PATCH 1/2] dma/pool: trivial: add semicolon after label attributes
+Date: Sat, 26 Aug 2023 08:53:17 +0000
+Message-Id: <20230826085317.69713-1-hchunhui@mail.ustc.edu.cn>
+X-Mailer: git-send-email 2.39.2
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.13.0
-Cc: baolu.lu@linux.intel.com, "Liu, Yi L" <yi.l.liu@intel.com>,
- Jacob Pan <jacob.jun.pan@linux.intel.com>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v4 09/10] iommu: Make iommu_queue_iopf() more generic
-Content-Language: en-US
-To: "Tian, Kevin" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Jason Gunthorpe <jgg@ziepe.ca>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Nicolin Chen <nicolinc@nvidia.com>
-References: <20230825023026.132919-1-baolu.lu@linux.intel.com>
- <20230825023026.132919-10-baolu.lu@linux.intel.com>
- <BN9PR11MB52762A33BC9F41AB424915688CE3A@BN9PR11MB5276.namprd11.prod.outlook.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <BN9PR11MB52762A33BC9F41AB424915688CE3A@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID:LkAmygBn6_ikvelkAscYAQ--.8734S2
+X-Coremail-Antispam: 1UD129KBjvdXoWrZF43AFy5uF1UWr13Aw1DWrg_yoWfXFc_Gw
+	1UWwnFgrs8uFZF9w1UA395tw1vq3s5WF48ua1IyFWqka1Dtan8XF1qg395Wr9rCw48Wa4j
+	kas8XrWDKrW3WjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+	9fnUUIcSsGvfJTRUUUbz8FF20E14v26r1j6r4UM7CY07I20VC2zVCF04k26cxKx2IYs7xG
+	6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
+	A2z4x0Y4vE2Ix0cI8IcVAFwI0_Gr0_Xr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr0_
+	Cr1l84ACjcxK6I8E87Iv67AKxVWxJr0_GcWl84ACjcxK6I8E87Iv6xkF7I0E14v26F4UJV
+	W0owAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
+	I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r
+	4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCF04k20xvY0x0EwIxG
+	rwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4
+	vE14v26r106r1rMI8E67AF67kF1VAFwI0_JF0_Jw1lIxkGc2Ij64vIr41lIxAIcVC0I7IY
+	x2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr0_Gr1lIxAIcVCF04k26c
+	xKx2IYs7xG6rW3Jr0E3s1lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x02
+	67AKxVWUJVW8JbIYCTnIWIevJa73UjIFyTuYvjfU5WlkUUUUU
+X-CM-SenderInfo: pkfk30xkxlqzxdloh3xvwfhvlgxou0/
 
-On 8/25/23 4:17 PM, Tian, Kevin wrote:
->> +
->> +	list_for_each_entry(iopf, &iopf_param->faults, list) {
->> +		if (WARN_ON(iopf->fault.prm.pasid == pasid))
->> +			break;
->> +	}
->> +	mutex_unlock(&iopf_param->lock);
->> +}
->> +
->>   void iommu_detach_device(struct iommu_domain *domain, struct device
->> *dev)
->>   {
->>   	struct iommu_group *group;
->> @@ -1959,6 +1980,7 @@ void iommu_detach_device(struct iommu_domain
->> *domain, struct device *dev)
->>   	if (!group)
->>   		return;
->>
->> +	assert_no_pending_iopf(dev, IOMMU_NO_PASID);
->>   	mutex_lock(&group->mutex);
->>   	if (WARN_ON(domain != group->domain) ||
->>   	    WARN_ON(list_count_nodes(&group->devices) != 1))
->> @@ -3269,6 +3291,7 @@ void iommu_detach_device_pasid(struct
->> iommu_domain *domain, struct device *dev,
->>   {
->>   	struct iommu_group *group = iommu_group_get(dev);
->>
->> +	assert_no_pending_iopf(dev, pasid);
-> this doesn't look correct. A sane driver will stop triggering new
-> page request before calling detach but there are still pending ones
-> not drained until iopf_queue_flush_dev() called by
-> ops->remove_dev_pasid().
-> 
-> then this check will cause false warning.
-> 
+The gcc document says label attributes are ambiguous if they are
+not immediately followed by a semicolon. Although the ambiguity
+does not arise in C90/99, it would be better to add it.
 
-You are right. It is not only incorrect but also pointless. The iommu
-driver should flush the iopf queues in the path of detaching domains. I
-will remove it if no objection.
+Link: https://gcc.gnu.org/onlinedocs/gcc/Attribute-Syntax.html#Label-Attributes-2
+Signed-off-by: Chunhui He <hchunhui@mail.ustc.edu.cn>
+---
+ kernel/dma/pool.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Best regards,
-baolu
+diff --git a/kernel/dma/pool.c b/kernel/dma/pool.c
+index 1acec2e22827..f99f02b88c40 100644
+--- a/kernel/dma/pool.c
++++ b/kernel/dma/pool.c
+@@ -136,7 +136,7 @@ static int atomic_pool_expand(struct gen_pool *pool, size_t pool_size,
+ #ifdef CONFIG_DMA_DIRECT_REMAP
+ 	dma_common_free_remap(addr, pool_size);
+ #endif
+-free_page: __maybe_unused
++free_page: __maybe_unused;
+ 	__free_pages(page, order);
+ out:
+ 	return ret;
+-- 
+2.39.2
+
+
