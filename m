@@ -1,34 +1,34 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.151])
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.100])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD83B137D
-	for <iommu@lists.linux.dev>; Sat, 26 Aug 2023 08:03:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 65B59137D
+	for <iommu@lists.linux.dev>; Sat, 26 Aug 2023 08:06:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1693037036; x=1724573036;
+  t=1693037212; x=1724573212;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=4WuaqgVS84ILp+nQYZ24EIA/OW8M4Tg/kexsQpfKmwQ=;
-  b=fZ02nuhqNT6Q7966UoMZFAYWZLtVE0RdMFlzvZ6Sww6Sox5+NwrJg17J
-   qy08vJcupCJ3MacL3gtDCYntDEJnxIRmV0WCPKQTTafXvWr2u9UM2pcG5
-   QEiKPjt+j2MnBRkFzBuRh2/OisBbT0mfaRJrWH+9jmwviZDREpGrwrzwV
-   ASrz+oYEVTF61u2taBXgug22qR+DwgvXut/dgt7eyV+udc2b7zkFripmM
-   FtX/O8asCmPwSvsRTDtzVTYv3qZ+qLvgZjs6HGBUI9jkIU2JbFGvt2dZ+
-   cGPZHQr/LVBcmx1VBTtEGCRUgLFrgyGMaC0HOmxXRZeA/GPukZ6rkRotO
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10813"; a="355190949"
+  bh=UhARcOy9YMTwuaxIShQFvNQvOf5srjiw1fqZq+/wgA0=;
+  b=Ecb7Aj1j7+9BEclYK7Dmd4wjS9RlKYUJSgoaTt+DltBXH1ELsUglVO1F
+   MZWqd8iorgvfsRtIqKTYxybtLvT+b8sytV56721Ed3SuFqYGLWLBDX5w7
+   rl0AMJdiJeFwBEpds5NgIoIEFmFmC9yq11T2d2cDg7SNHl3t3BvegCDnd
+   WV26MjF+l6PDFVTezsRyx1q0SoRfoQ4IkSnOGJLPt2OZufot17jtXVbcx
+   xwySl2Z+UbdTaIWg9x3x+Nns/qSelbm22HxCGN1oW+CAjASRXHylhhh2h
+   MXi+6VlRaght80QIB0Go/fMzS9wbPMGH0SLBH/e1VS81DuQwRzvBVsN1R
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10813"; a="441205048"
 X-IronPort-AV: E=Sophos;i="6.02,203,1688454000"; 
-   d="scan'208";a="355190949"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2023 01:03:55 -0700
+   d="scan'208";a="441205048"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2023 01:06:51 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10813"; a="767153317"
+X-IronPort-AV: E=McAfee;i="6600,9927,10813"; a="731286368"
 X-IronPort-AV: E=Sophos;i="6.02,203,1688454000"; 
-   d="scan'208";a="767153317"
+   d="scan'208";a="731286368"
 Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
-  by orsmga008.jf.intel.com with ESMTP; 26 Aug 2023 01:03:52 -0700
-Message-ID: <cbfbe969-1a92-52bf-f00c-3fb89feefd66@linux.intel.com>
-Date: Sat, 26 Aug 2023 16:01:16 +0800
+  by orsmga007.jf.intel.com with ESMTP; 26 Aug 2023 01:06:48 -0700
+Message-ID: <cfd9e0b8-167e-a79b-9ef1-b3bfa38c9199@linux.intel.com>
+Date: Sat, 26 Aug 2023 16:04:12 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -58,29 +58,25 @@ Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 8/25/23 4:17 PM, Tian, Kevin wrote:
+>> +static void assert_no_pending_iopf(struct device *dev, ioasid_t pasid)
+>> +{
+>> +	struct iommu_fault_param *iopf_param = dev->iommu-
+>>> fault_param;
+>> +	struct iopf_fault *iopf;
 >> +
->>   /**
->>    * iopf_queue_flush_dev - Ensure that all queued faults have been
->> processed
->>    * @dev: the endpoint whose faults need to be flushed.
-> Presumably we also need a flush callback per domain given now
-> the use of workqueue is optional then flush_workqueue() might
-> not be sufficient.
+>> +	if (!iopf_param)
+>> +		return;
+>> +
+>> +	mutex_lock(&iopf_param->lock);
+>> +	list_for_each_entry(iopf, &iopf_param->partial, list) {
+>> +		if (WARN_ON(iopf->fault.prm.pasid == pasid))
+>> +			break;
+>> +	}
+> partial list is protected by dev_iommu lock.
 > 
 
-The iopf_queue_flush_dev() function flushes all pending faults from the
-IOMMU queue for a specific device. It has no means to flush fault queues
-out of iommu core.
-
-The iopf_queue_flush_dev() function is typically called when a domain is
-detaching from a PASID. Hence it's necessary to flush the pending faults
-from top to bottom. For example, iommufd should flush pending faults in
-its fault queues after detaching the domain from the pasid.
-
-The fault_param->lock mutex is sufficient to avoid the race condition if
-the workqueue is not used. However, if the workqueue is used, then it is
-possible for a workqueue thread to be in the middle of delivering a
-fault while the fault queue is being flushed.
+Ah, do you mind elaborating a bit more? In my mind, partial list is
+protected by dev_iommu->fault_param->lock.
 
 Best regards,
 baolu
