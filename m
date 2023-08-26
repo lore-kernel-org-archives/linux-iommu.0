@@ -1,34 +1,34 @@
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.100])
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.88])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 65B59137D
-	for <iommu@lists.linux.dev>; Sat, 26 Aug 2023 08:06:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F118015AB
+	for <iommu@lists.linux.dev>; Sat, 26 Aug 2023 08:10:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1693037212; x=1724573212;
+  t=1693037443; x=1724573443;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=UhARcOy9YMTwuaxIShQFvNQvOf5srjiw1fqZq+/wgA0=;
-  b=Ecb7Aj1j7+9BEclYK7Dmd4wjS9RlKYUJSgoaTt+DltBXH1ELsUglVO1F
-   MZWqd8iorgvfsRtIqKTYxybtLvT+b8sytV56721Ed3SuFqYGLWLBDX5w7
-   rl0AMJdiJeFwBEpds5NgIoIEFmFmC9yq11T2d2cDg7SNHl3t3BvegCDnd
-   WV26MjF+l6PDFVTezsRyx1q0SoRfoQ4IkSnOGJLPt2OZufot17jtXVbcx
-   xwySl2Z+UbdTaIWg9x3x+Nns/qSelbm22HxCGN1oW+CAjASRXHylhhh2h
-   MXi+6VlRaght80QIB0Go/fMzS9wbPMGH0SLBH/e1VS81DuQwRzvBVsN1R
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10813"; a="441205048"
+  bh=jlu0jGsz3YUaNHKDYc4hDn69ED5yf7AXMnsAeLD1XTY=;
+  b=b+ck2E9Gst/4kpB/ME68nFsnM/itHxTR6KakSeqhLS6Ly8Lzeyj6QD89
+   KueAwGgz903ExrpCJV/sg/rH1dlhe+qWpHv8PCeMTGn68PSWFzX/D77YO
+   zxzYtXm73Px0+ybBT8WXxWht0AygXX4DtPqovsKPdtBQaqVPO1RIqd0qz
+   yN6pmd8kGdAq3e65b0RyUvJK4+PAjwgRKXF0K7S10JUFPZ+5wTkwG7wHW
+   bYWzqzFYHXMJdUJ9WKjZgYsrsUPOSOJjsSu7uWSoLXCTyzpmCjlm5/3gO
+   t0KSDd5wWBG7ED+QpAao87Nx5uFkFhjuQZel61d78xsFh3isiDZ9M2BVR
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10813"; a="405853121"
 X-IronPort-AV: E=Sophos;i="6.02,203,1688454000"; 
-   d="scan'208";a="441205048"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2023 01:06:51 -0700
+   d="scan'208";a="405853121"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2023 01:10:42 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10813"; a="731286368"
+X-IronPort-AV: E=McAfee;i="6600,9927,10813"; a="772735780"
 X-IronPort-AV: E=Sophos;i="6.02,203,1688454000"; 
-   d="scan'208";a="731286368"
+   d="scan'208";a="772735780"
 Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
-  by orsmga007.jf.intel.com with ESMTP; 26 Aug 2023 01:06:48 -0700
-Message-ID: <cfd9e0b8-167e-a79b-9ef1-b3bfa38c9199@linux.intel.com>
-Date: Sat, 26 Aug 2023 16:04:12 +0800
+  by orsmga001.jf.intel.com with ESMTP; 26 Aug 2023 01:10:39 -0700
+Message-ID: <3b893bf4-a566-9a1f-49da-17efdd7e4661@linux.intel.com>
+Date: Sat, 26 Aug 2023 16:08:03 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -58,25 +58,44 @@ Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 8/25/23 4:17 PM, Tian, Kevin wrote:
->> +static void assert_no_pending_iopf(struct device *dev, ioasid_t pasid)
->> +{
->> +	struct iommu_fault_param *iopf_param = dev->iommu-
->>> fault_param;
->> +	struct iopf_fault *iopf;
 >> +
->> +	if (!iopf_param)
->> +		return;
->> +
->> +	mutex_lock(&iopf_param->lock);
->> +	list_for_each_entry(iopf, &iopf_param->partial, list) {
+>> +	list_for_each_entry(iopf, &iopf_param->faults, list) {
 >> +		if (WARN_ON(iopf->fault.prm.pasid == pasid))
 >> +			break;
 >> +	}
-> partial list is protected by dev_iommu lock.
+>> +	mutex_unlock(&iopf_param->lock);
+>> +}
+>> +
+>>   void iommu_detach_device(struct iommu_domain *domain, struct device
+>> *dev)
+>>   {
+>>   	struct iommu_group *group;
+>> @@ -1959,6 +1980,7 @@ void iommu_detach_device(struct iommu_domain
+>> *domain, struct device *dev)
+>>   	if (!group)
+>>   		return;
+>>
+>> +	assert_no_pending_iopf(dev, IOMMU_NO_PASID);
+>>   	mutex_lock(&group->mutex);
+>>   	if (WARN_ON(domain != group->domain) ||
+>>   	    WARN_ON(list_count_nodes(&group->devices) != 1))
+>> @@ -3269,6 +3291,7 @@ void iommu_detach_device_pasid(struct
+>> iommu_domain *domain, struct device *dev,
+>>   {
+>>   	struct iommu_group *group = iommu_group_get(dev);
+>>
+>> +	assert_no_pending_iopf(dev, pasid);
+> this doesn't look correct. A sane driver will stop triggering new
+> page request before calling detach but there are still pending ones
+> not drained until iopf_queue_flush_dev() called by
+> ops->remove_dev_pasid().
+> 
+> then this check will cause false warning.
 > 
 
-Ah, do you mind elaborating a bit more? In my mind, partial list is
-protected by dev_iommu->fault_param->lock.
+You are right. It is not only incorrect but also pointless. The iommu
+driver should flush the iopf queues in the path of detaching domains. I
+will remove it if no objection.
 
 Best regards,
 baolu
