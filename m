@@ -1,34 +1,34 @@
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.100])
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.151])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF424EDC
-	for <iommu@lists.linux.dev>; Sat, 26 Aug 2023 07:34:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD83B137D
+	for <iommu@lists.linux.dev>; Sat, 26 Aug 2023 08:03:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1693035286; x=1724571286;
+  t=1693037036; x=1724573036;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=4Nkh8xv3trB4dz36XZ8VniCHhsFapO4ri86v39Sr/X0=;
-  b=VeeCBgKTcLhaFvtESe73WZJeRQSbLwOz0hbtTNpjTvIPWVu6eG51cLVO
-   l4Xepyy1xzaxTqjiNMxthNJk6pm3zVSQdNXgebSHkV7d+Uscsv5McKNt2
-   CAgQqQgEwHR/00wEsFKdBKTdZohol+GABOK5EuVmbwJ5/RCthfA36VbCj
-   CxNEJhQapAgmBg/mbEwrpzzofxyCTL+S4XdFlNJxK8Ohe1uiAfZKit3az
-   DpPzC+vbTetKKjDZkGksVBOZuzAJFsU6PZxrGgTPvFgU1bJkPWpIG1R4G
-   cScLgmqzQajunkZy5bGLr2aEkFNa7FB67COYTzjXvlce+vChfg2i8kcZW
+  bh=4WuaqgVS84ILp+nQYZ24EIA/OW8M4Tg/kexsQpfKmwQ=;
+  b=fZ02nuhqNT6Q7966UoMZFAYWZLtVE0RdMFlzvZ6Sww6Sox5+NwrJg17J
+   qy08vJcupCJ3MacL3gtDCYntDEJnxIRmV0WCPKQTTafXvWr2u9UM2pcG5
+   QEiKPjt+j2MnBRkFzBuRh2/OisBbT0mfaRJrWH+9jmwviZDREpGrwrzwV
+   ASrz+oYEVTF61u2taBXgug22qR+DwgvXut/dgt7eyV+udc2b7zkFripmM
+   FtX/O8asCmPwSvsRTDtzVTYv3qZ+qLvgZjs6HGBUI9jkIU2JbFGvt2dZ+
+   cGPZHQr/LVBcmx1VBTtEGCRUgLFrgyGMaC0HOmxXRZeA/GPukZ6rkRotO
    A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10813"; a="441203817"
+X-IronPort-AV: E=McAfee;i="6600,9927,10813"; a="355190949"
 X-IronPort-AV: E=Sophos;i="6.02,203,1688454000"; 
-   d="scan'208";a="441203817"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2023 00:34:45 -0700
+   d="scan'208";a="355190949"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2023 01:03:55 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10813"; a="687563883"
+X-IronPort-AV: E=McAfee;i="6600,9927,10813"; a="767153317"
 X-IronPort-AV: E=Sophos;i="6.02,203,1688454000"; 
-   d="scan'208";a="687563883"
+   d="scan'208";a="767153317"
 Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
-  by orsmga003.jf.intel.com with ESMTP; 26 Aug 2023 00:34:42 -0700
-Message-ID: <9ace23a3-ecf9-551f-1c5e-be5b6502c563@linux.intel.com>
-Date: Sat, 26 Aug 2023 15:32:06 +0800
+  by orsmga008.jf.intel.com with ESMTP; 26 Aug 2023 01:03:52 -0700
+Message-ID: <cbfbe969-1a92-52bf-f00c-3fb89feefd66@linux.intel.com>
+Date: Sat, 26 Aug 2023 16:01:16 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -58,42 +58,29 @@ Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 8/25/23 4:17 PM, Tian, Kevin wrote:
->> From: Lu Baolu <baolu.lu@linux.intel.com>
->> Sent: Friday, August 25, 2023 10:30 AM
->>
->> +	if (fault->prm.flags & IOMMU_FAULT_PAGE_REQUEST_PASID_VALID)
->> +		domain = iommu_get_domain_for_dev_pasid(dev, fault-
->>> prm.pasid, 0);
->> +	else
->> +		domain = iommu_get_domain_for_dev(dev);
 >> +
->> +	if (!domain || !domain->iopf_handler) {
->> +		dev_warn_ratelimited(dev,
->> +			"iopf from pasid %d received without handler
->> installed\n",
+>>   /**
+>>    * iopf_queue_flush_dev - Ensure that all queued faults have been
+>> processed
+>>    * @dev: the endpoint whose faults need to be flushed.
+> Presumably we also need a flush callback per domain given now
+> the use of workqueue is optional then flush_workqueue() might
+> not be sufficient.
 > 
-> "without domain attached or handler installed"
 
-Okay.
+The iopf_queue_flush_dev() function flushes all pending faults from the
+IOMMU queue for a specific device. It has no means to flush fault queues
+out of iommu core.
 
-> 
->>
->> +int iommu_sva_handle_iopf(struct iopf_group *group)
->> +{
->> +	struct iommu_fault_param *fault_param = group->dev->iommu-
->>> fault_param;
->> +
->> +	INIT_WORK(&group->work, iopf_handler);
->> +	if (!queue_work(fault_param->queue->wq, &group->work))
->> +		return -EBUSY;
->> +
->> +	return 0;
->> +}
-> 
-> this function is generic so the name should not tie to 'sva'.
+The iopf_queue_flush_dev() function is typically called when a domain is
+detaching from a PASID. Hence it's necessary to flush the pending faults
+from top to bottom. For example, iommufd should flush pending faults in
+its fault queues after detaching the domain from the pasid.
 
-Currently only sva uses it. It's fine to make it generic later when any
-new use comes. Does it work to you?
+The fault_param->lock mutex is sufficient to avoid the race condition if
+the workqueue is not used. However, if the workqueue is used, then it is
+possible for a workqueue thread to be in the middle of delivering a
+fault while the fault queue is being flushed.
 
 Best regards,
 baolu
