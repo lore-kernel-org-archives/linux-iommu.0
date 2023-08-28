@@ -1,99 +1,127 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1FA5B10F4
-	for <iommu@lists.linux.dev>; Mon, 28 Aug 2023 21:31:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1693258314;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=dVb5tmc8EbITtSkSc6gJJy1RyzNckSiwLu+iLvVILak=;
-	b=Lau8zgtjsq1xfaMsthbVscRzJDNaG8nLYcBgVoic9zvHk6QFdxuluFVZKet/GoIK5D6yTT
-	6SQDtNWX+oT04JxNjcG7ejEc/OxOXnTni1gSNyVIUqOX11ZnuMwzonHStJyQVGdHK2GMht
-	gC5xhzr2m0Vwvmz6rwcgQ9d99Ip7hP8=
-Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
- [209.85.222.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-44-eMyv1CA8OtufG43EBHLasQ-1; Mon, 28 Aug 2023 17:31:52 -0400
-X-MC-Unique: eMyv1CA8OtufG43EBHLasQ-1
-Received: by mail-qk1-f198.google.com with SMTP id af79cd13be357-76de9c09746so463762085a.3
-        for <iommu@lists.linux.dev>; Mon, 28 Aug 2023 14:31:52 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1693258312; x=1693863112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=dVb5tmc8EbITtSkSc6gJJy1RyzNckSiwLu+iLvVILak=;
-        b=BqAeYLm77KugleOzptElrIzcdbFS74Wad1t+nffAP5/jcuBj+PT+9E0ejcMlkbvDeU
-         D8giVhV0QyU47A/a2oKn7NPgebPl7CjcRNp1iD3ltVKxZ+/BBc1XGOzNiAMaLh5Zlhxz
-         eTr9xDl8O/LAGGlKGAkqC8yVhqC6TYGaPtHUxn3BPWMz1XhQoAVSopmF4ugsQX7ojjC0
-         VWQqinFY94a6nWNXXB27SGpyBgP25VJWI9spenhJIBoHb+AGl3GhyZdJFVgtOdWsfMR7
-         2kcSpzGPKA13K4tWry0wa3dGa2vvBdErcWDPqs9wFFX0QtQYws7ROlAmLQCNFqrD8mTr
-         6SFg==
-X-Gm-Message-State: AOJu0Yw6yuc5aqKCSkwoThLoTFxS5yioYxTGsQ5T9Lc0LzXhMK3LObx+
-	ZId8dQRaNqdo6kHrV3NdWkNbjba0KTRyXBpkMyxF32x2ToObodEoZA07qSY9m6iqdiG70nD/zoo
-	5YAJGuB33ra2gf0c=
-X-Received: by 2002:a05:620a:9c7:b0:766:fe28:35a3 with SMTP id y7-20020a05620a09c700b00766fe2835a3mr28616585qky.32.1693258312046;
-        Mon, 28 Aug 2023 14:31:52 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IHuVcTMTBbnLPs86MnCDU8eGTgJIDkNhQ+SHq++g5N+BlxbjD8TqX467y2sj6EMGyNhF/9w9w==
-X-Received: by 2002:a05:620a:9c7:b0:766:fe28:35a3 with SMTP id y7-20020a05620a09c700b00766fe2835a3mr28616567qky.32.1693258311828;
-        Mon, 28 Aug 2023 14:31:51 -0700 (PDT)
-Received: from localhost (ip98-179-76-75.ph.ph.cox.net. [98.179.76.75])
-        by smtp.gmail.com with ESMTPSA id a12-20020a05620a124c00b0076f16a00693sm697233qkl.47.2023.08.28.14.31.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Aug 2023 14:31:51 -0700 (PDT)
-Date: Mon, 28 Aug 2023 14:31:49 -0700
-From: Jerry Snitselaar <jsnitsel@redhat.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Andy Gross <agross@kernel.org>, Alim Akhtar <alim.akhtar@samsung.com>, 
-	Bjorn Andersson <andersson@kernel.org>, 
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, Baolin Wang <baolin.wang@linux.alibaba.com>, 
-	Christophe Leroy <christophe.leroy@csgroup.eu>, Gerald Schaefer <gerald.schaefer@linux.ibm.com>, 
-	Heiko Stuebner <heiko@sntech.de>, iommu@lists.linux.dev, Jernej Skrabec <jernej.skrabec@gmail.com>, 
-	Jonathan Hunter <jonathanh@nvidia.com>, Joerg Roedel <joro@8bytes.org>, 
-	Kevin Tian <kevin.tian@intel.com>, Konrad Dybcio <konrad.dybcio@linaro.org>, 
-	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, linux-arm-kernel@lists.infradead.org, 
-	linux-arm-msm@vger.kernel.org, linux-mediatek@lists.infradead.org, 
-	linux-rockchip@lists.infradead.org, linux-s390@vger.kernel.org, linux-samsung-soc@vger.kernel.org, 
-	linux-sunxi@lists.linux.dev, linux-tegra@vger.kernel.org, 
-	Russell King <linux@armlinux.org.uk>, linuxppc-dev@lists.ozlabs.org, 
-	Matthias Brugger <matthias.bgg@gmail.com>, Matthew Rosato <mjrosato@linux.ibm.com>, 
-	Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, 
-	Orson Zhai <orsonzhai@gmail.com>, Rob Clark <robdclark@gmail.com>, 
-	Robin Murphy <robin.murphy@arm.com>, Samuel Holland <samuel@sholland.org>, 
-	Thierry Reding <thierry.reding@gmail.com>, Krishna Reddy <vdumpa@nvidia.com>, Chen-Yu Tsai <wens@csie.org>, 
-	Will Deacon <will@kernel.org>, Yong Wu <yong.wu@mediatek.com>, 
-	Chunyan Zhang <zhang.lyra@gmail.com>, Lu Baolu <baolu.lu@linux.intel.com>, 
-	Dmitry Osipenko <digetx@gmail.com>, Marek Szyprowski <m.szyprowski@samsung.com>, 
-	Nicolin Chen <nicolinc@nvidia.com>, Niklas Schnelle <schnelle@linux.ibm.com>, 
-	Steven Price <steven.price@arm.com>, Thierry Reding <treding@nvidia.com>
-Subject: Re: [PATCH v7 21/24] iommu: Add __iommu_group_domain_alloc()
-Message-ID: <dwrebxdzqjhnryum3czsh6zroapbhpjre7untly3cvl2tn3nij@hpckzx65oxx6>
-References: <0-v7-de04a3217c48+15055-iommu_all_defdom_jgg@nvidia.com>
- <21-v7-de04a3217c48+15055-iommu_all_defdom_jgg@nvidia.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 37F271107
+	for <iommu@lists.linux.dev>; Mon, 28 Aug 2023 21:35:30 +0000 (UTC)
+Received: from pps.filterd (m0279867.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 37SLXZBh000646;
+	Mon, 28 Aug 2023 21:35:12 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=qcppdkim1;
+ bh=QX0IWt4Uo65a2ZO0nHly3/Zk1oxm5PDDbCMTrurBS8w=;
+ b=LfWFB3Ljlm/8g8PK+3/AA1WFGlOwxDRvP/WJ6jJUj65h3YLD5JXUm/fU5gG1WLyraVov
+ TP2DHn+UK6fZj/1DDMc2JboBUzzZmaliTeSD8BSZybX+uUwyK+6eu0SrRETriwP16AQz
+ j6hCRYMRowQLSiXUbCaKnKPy0SL9Qyvq9l6SUnBzNgM7qdZ5y6DuS7WmMN1n+ryut5Ls
+ 9CZNp+Q4SBY/cd1dGxEr2Y0e7gtxq45BaV4mU7ZkxJVI1s0SflW0dE/pvaWMdy+3R886
+ po4N45yy3FpdHaAnuyauATRF4eDUwCC3hdRKOifRCmC2GYGPNXMSPoNpvQzBYdBhkg+9 2Q== 
+Received: from nasanppmta01.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3ss3fr00dn-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 28 Aug 2023 21:35:11 +0000
+Received: from nasanex01a.na.qualcomm.com (nasanex01a.na.qualcomm.com [10.52.223.231])
+	by NASANPPMTA01.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 37SLZBnF002730
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 28 Aug 2023 21:35:11 GMT
+Received: from [10.110.112.60] (10.80.80.8) by nasanex01a.na.qualcomm.com
+ (10.52.223.231) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.36; Mon, 28 Aug
+ 2023 14:35:10 -0700
+Message-ID: <c06a31fd-e3b5-1f58-9e4f-7fafd8aa3f28@quicinc.com>
+Date: Mon, 28 Aug 2023 14:35:09 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <21-v7-de04a3217c48+15055-iommu_all_defdom_jgg@nvidia.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.2
+Subject: Re: [PATCH] iommu/arm-smmu-qcom: NULL pointer check for driver data
+Content-Language: en-US
+To: Rob Clark <robdclark@chromium.org>
+CC: <will@kernel.org>, <joro@8bytes.org>, <robin.murphy@arm.com>,
+        <dmitry.baryshkov@linaro.org>, <quic_bjorande@quicinc.com>,
+        <konrad.dybcio@linaro.org>, <quic_eberman@quicinc.com>,
+        <quic_psodagud@quicinc.com>, <quic_rvishwak@quicinc.com>,
+        <quic_saipraka@quicinc.com>, <quic_molvera@quicinc.com>,
+        <marijn.suijten@somainline.org>, <mani@kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
+        <linux-arm-msm@vger.kernel.org>
+References: <20230816225509.11070-1-quic_aprasann@quicinc.com>
+ <CAJs_Fx7132o3iHDH0ZR7L9G69o2YV2-jC0v15shQcEhH6=-6RA@mail.gmail.com>
+From: Aravind Vijayakumar <quic_aprasann@quicinc.com>
+In-Reply-To: <CAJs_Fx7132o3iHDH0ZR7L9G69o2YV2-jC0v15shQcEhH6=-6RA@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nasanex01a.na.qualcomm.com (10.52.223.231)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: Zh__iUlPR0h4jW3lq5ydSAoJjAQ-h5_n
+X-Proofpoint-ORIG-GUID: Zh__iUlPR0h4jW3lq5ydSAoJjAQ-h5_n
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.267,Aquarius:18.0.957,Hydra:6.0.601,FMLib:17.11.176.26
+ definitions=2023-08-28_18,2023-08-28_04,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 mlxscore=0
+ adultscore=0 spamscore=0 phishscore=0 bulkscore=0 mlxlogscore=999
+ impostorscore=0 suspectscore=0 lowpriorityscore=0 malwarescore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2308100000 definitions=main-2308280186
 
-On Wed, Aug 23, 2023 at 01:47:35PM -0300, Jason Gunthorpe wrote:
-> Allocate a domain from a group. Automatically obtains the iommu_ops to use
-> from the device list of the group. Convert the internal callers to use it.
-> 
-> Tested-by: Steven Price <steven.price@arm.com>
-> Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
-> Tested-by: Nicolin Chen <nicolinc@nvidia.com>
-> Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> ---
 
-Reviewed-by: Jerry Snitselaar <jsnitsel@redhat.com>
+On 8/16/2023 6:01 PM, Rob Clark wrote:
+> On Wed, Aug 16, 2023 at 3:55 PM Aravind Vijayakumar
+> <quic_aprasann@quicinc.com> wrote:
+>> The driver_data is NULL when qcom_adreno_smmu_init_context()
+>> is called before the dev_set_drvdata() from the client driver
+>> and is resulting in kernel crash.
+>>
+>> So add a null pointer check to handle the scenario
+>> where the client driver for the GPU SMMU device would
+>> be setting the driver data after the smmu client device
+>> probe is done and not necessarily before that. The function
+>> qcom_adreno_smmu_init_context() assumes that the client
+>> driver always set the driver data using dev_set_drvdata()
+>> before the smmu client device probe, but this assumption
+>> is not always true.
+>>
+>> Signed-off-by: Aravind Vijayakumar <quic_aprasann@quicinc.com>
+>> ---
+>>   drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 3 +++
+>>   1 file changed, 3 insertions(+)
+>>
+>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>> index c71afda79d64..5323f82264ca 100644
+>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>> @@ -231,6 +231,9 @@ static int qcom_adreno_smmu_init_context(struct arm_smmu_domain *smmu_domain,
+>>           */
+>>
+>>          priv = dev_get_drvdata(dev);
+>> +       if (!priv)
+>> +               return 0;
+> could this -EPROBE_DEFER instead, or something like that?  I think you
+> patch as proposed would result in per-process gpu pgtables silently
+> failing
+>
+> BR,
+> -R
 
+Thanks for the review comments. Returning -EPROBE_DEFER wont work 
+because the probe of the client driver (which sets the driver data) will 
+never get triggered. However, the probe of the client driver succeeds if 
+we return -ENODATA. would that be acceptable?
+
+Regards,
+
+Aravind
+
+>> +
+>>          priv->cookie = smmu_domain;
+>>          priv->get_ttbr1_cfg = qcom_adreno_smmu_get_ttbr1_cfg;
+>>          priv->set_ttbr0_cfg = qcom_adreno_smmu_set_ttbr0_cfg;
+>> --
+>> 2.40.1
+>>
