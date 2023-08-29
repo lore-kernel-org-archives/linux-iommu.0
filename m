@@ -1,197 +1,181 @@
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2078.outbound.protection.outlook.com [40.107.237.78])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 21F3A1802F
-	for <iommu@lists.linux.dev>; Tue, 29 Aug 2023 22:16:14 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BUdOpspd91w2v8LyN8hYN3UWG87OffPX546QXKOWXOaIG93evlOEp0MR/E14ZuO8YDxgD8QQ0/fnSaUoeZgq06orbUNtKHNPTIeG+gx7w4XzLBgRXKm+pjeIC2tZZcrC4BiwS9ISDiOVBBe0Mc2voKJsWXOHCWsJKaNOaikE2kIHW3xzZ+/iiNRhZ9ga+Q/qvdVR/rbz2opVqqu2kMhjiffsZ6YWoGuVza8SKMkUkdnJiifPX9Hu4bmtSTKWFvAluk7FQxMX3V2uRHZt2TEHv2a03+lMyXgomU1n4sNngRhm58Om+onueArDwRbVbGwcl3xfO2SCSHKgF1tiayhsRA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=attlM3jLNW5mCPh3vHHDT/LcsooG5pWmbrU3bbQqnp0=;
- b=G1I8BoG9C61RgLlJaOSZzEP0WNzNA+2dHBy9KWySArPxplk8vU8rIazjW7TkBT+hcGt4jEJQNTp723Z1o05bWq+JQoFEmZTRDt5XGbanxlXfNWCGmq3bBCtp36EA3RBOotNqzz8p/kmVBvGS0BS6Ul3HYLF0XPavfUXU8EaPji1GjZJI2XeB65ka7R0H06J/zS3VnSJWJT17gV50oeSxffr3iIBnUzBBHggXQtVlsj4U6Jdyn8zU5pseADQYdGC48MXE8A+0LpAUh5wdYr12Knk49KL8OyuBeYCP7pK84q81NFfla0AbwxELMX9gzSctHedZtB7xiS7FfDJ95vaa1w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=attlM3jLNW5mCPh3vHHDT/LcsooG5pWmbrU3bbQqnp0=;
- b=fdXcsZNuCZGpCdp0Lupp9JT7sFXeSCH9d+ZjhhBYEwrTDzpvuk6dE7r8zyNcUQcBEcn/ra4t/ffowKPk2ZxdlTPNG0oIO/IBJ0McX2XGhoQ7hfZtZMZNbK33yf0sbbD+XSsdiM0abBRjzNsPqmocBxbApKl47haIDri3sU4YLQ3fIF81MmhP/AfmudOpCodonb2xIGyNFyGzzlAMCZWpe9aQ5NLdyoPiXzHZnR6Ba/Z33ptYby3z6dg27YDqDdt37hSQOfwRN4JJ4L62KGsi56VdZwUfdxNC2dxDwW56m+9dl3hj0bkPdS2+NEhVrlnl/wVUL7R82GxQBMbzQPoWzg==
-Received: from DM5PR08CA0029.namprd08.prod.outlook.com (2603:10b6:4:60::18) by
- DS0PR12MB8219.namprd12.prod.outlook.com (2603:10b6:8:de::10) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6699.34; Tue, 29 Aug 2023 22:16:09 +0000
-Received: from SA2PEPF00001506.namprd04.prod.outlook.com
- (2603:10b6:4:60:cafe::a7) by DM5PR08CA0029.outlook.office365.com
- (2603:10b6:4:60::18) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6699.36 via Frontend
- Transport; Tue, 29 Aug 2023 22:16:09 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- SA2PEPF00001506.mail.protection.outlook.com (10.167.242.38) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6745.17 via Frontend Transport; Tue, 29 Aug 2023 22:16:09 +0000
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Tue, 29 Aug 2023
- 15:15:55 -0700
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail202.nvidia.com
- (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Tue, 29 Aug
- 2023 15:15:54 -0700
-Received: from Asurada-Nvidia (10.127.8.10) by mail.nvidia.com (10.129.68.6)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37 via Frontend
- Transport; Tue, 29 Aug 2023 15:15:54 -0700
-Date: Tue, 29 Aug 2023 15:15:52 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>
-CC: <jgg@nvidia.com>, <joro@8bytes.org>, <jean-philippe@linaro.org>,
-	<apopple@nvidia.com>, <linux-kernel@vger.kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>
-Subject: Re: [PATCH 1/3] iommu/io-pgtable-arm: Add nents_per_pgtable in
- struct io_pgtable_cfg
-Message-ID: <ZO5uGKzGsaliQ1fF@Asurada-Nvidia>
-References: <cover.1692693557.git.nicolinc@nvidia.com>
- <0fe68babdb3a07adf024ed471fead4e3eb7e703f.1692693557.git.nicolinc@nvidia.com>
- <f468b461-b203-5179-eb6d-9432b9911329@arm.com>
- <ZOTlcFs2NG6nJEPN@Asurada-Nvidia>
- <61f9b371-7c45-26b1-ec0f-600765280c89@arm.com>
- <ZO5R5i4n2WI2GnKQ@Asurada-Nvidia>
- <d234fa8d-d945-3f7f-1110-fe55bea88587@arm.com>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B88FA29AF
+	for <iommu@lists.linux.dev>; Tue, 29 Aug 2023 22:40:36 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 31BC52F4;
+	Tue, 29 Aug 2023 15:41:15 -0700 (PDT)
+Received: from [10.57.2.162] (unknown [10.57.2.162])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 5A70D3F64C;
+	Tue, 29 Aug 2023 15:40:34 -0700 (PDT)
+Message-ID: <dc99bc7b-b6bc-1b82-3d8e-8e385596070b@arm.com>
+Date: Tue, 29 Aug 2023 23:40:29 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <d234fa8d-d945-3f7f-1110-fe55bea88587@arm.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SA2PEPF00001506:EE_|DS0PR12MB8219:EE_
-X-MS-Office365-Filtering-Correlation-Id: c8a105e1-cd93-4e9b-9862-08dba8dd8c21
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	36Q/nr5+R6QcITBDMjOeHr7NRN1/QYJWcfeVjVsbwi3h8NU7HxkK7/Yw83vtmoTF6doJK1h0LudwUkZocs5odxpsq6x+3XPwfDTA/sbuV/kv85uyMTfyXBX8h1KLSJ14Y114z0ZqF0iBCoGfug413ThGyXdJBBuksCFtg62nrAf8gl1WtlFyEnA8Xa664oDeZnwz59iYtLm/H2PO7FoBv7X++nP22zcoPSy7II2iyCD04aAja16b82IfAnt4RR5vZ8dO/LhQHhjbvSd76DHwH6BXTqZTVC/vktNrhCc1Bf49lOYgx6uVGriDfDPXYVUHBtC9oKLCi8QW8dG+IpkSL3YZRxjcfILV295bnFnvSN/wzwIM1VwJKfRz45y+ysWoyVSclAyziEmwII+yeIRTtsmBPwU8tAHHR/yhX3X1EPNtV3hpby2WzOt37ICDHShRXRF6rZuIpjsm93R/VROG4cCqf3Ct2cC+WP6P3gPIhSZqEqw7Sblp2NWmUlfCUAePg2xaCX2eGv68G+x5oBsTUR7REgCWkyQ2LoOTHcSSE5gQReZvKL0EipGMA2QBCvJI99WJblBpRa4y8BMq06EAsDz0UrkUi8HYvMRV0ovQGtf+uUGJjCzassurjLxrLKcP4wDaBJutpg2FvgatY6NwAQWBtUHVsZS4RYznpYT7zQW38KozrNVPDd2uP0gJiI6HBm+aNAr3kR5MpJmWIMHwqcAAIxr9eO/mzO93AQ8jG7jmVDmMXbQrIHnaWhIo2JS2
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230031)(4636009)(376002)(39860400002)(396003)(136003)(346002)(82310400011)(451199024)(1800799009)(186009)(46966006)(36840700001)(40470700004)(8936002)(8676002)(4326008)(54906003)(110136005)(316002)(70206006)(70586007)(5660300002)(2906002)(66899024)(336012)(40460700003)(41300700001)(36860700001)(26005)(9686003)(426003)(55016003)(40480700001)(82740400003)(7636003)(33716001)(478600001)(83380400001)(356005)(86362001)(47076005);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Aug 2023 22:16:09.4057
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: c8a105e1-cd93-4e9b-9862-08dba8dd8c21
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	SA2PEPF00001506.namprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB8219
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.14.0
+Subject: Re: [PATCH 3/3] iommu/arm-smmu-v3: Add a max_tlbi_ops for
+ __arm_smmu_tlb_inv_range()
+Content-Language: en-GB
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: will@kernel.org, jgg@nvidia.com, joro@8bytes.org,
+ jean-philippe@linaro.org, apopple@nvidia.com, linux-kernel@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev
+References: <cover.1692693557.git.nicolinc@nvidia.com>
+ <3ba332e141102d31b756326cdc4078cac1f5ab1c.1692693557.git.nicolinc@nvidia.com>
+ <3f630d3d-c59a-f454-14db-2bf9b8e76877@arm.com>
+ <ZOTjGIJU8Kfl1Q4f@Asurada-Nvidia> <ZOU+6hsKy4R099B3@Asurada-Nvidia>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <ZOU+6hsKy4R099B3@Asurada-Nvidia>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Tue, Aug 29, 2023 at 10:25:10PM +0100, Robin Murphy wrote:
-
-> > > Bleh, apologies, I always confuse myself trying to remember the fiddly
-> > > design of io-pgtable data. However, I think this then ends up proving
-> > > the opposite point - the number of pages per table only happens to be a
-> > > fixed constant for certain formats like LPAE, but does not necessarily
-> > > generalise. For instance for a single v7s config it would be 1024 or 256
-> > > or 16 depending on what has actually been unmapped.
-> > > 
-> > > The mechanism as proposed implicitly assumes LPAE format, so I still
-> > > think we're better off making that assumption explicit. And at that
-> > > point arm-smmu-v3 can then freely admit it already knows the number is
-> > > simply 1/8th of the domain page size.
-> > 
-> > Hmm, I am not getting that "1/8th" part, would you mind elaborating?
+On 2023-08-23 00:04, Nicolin Chen wrote:
+> Hi Robin,
 > 
-> If we know the format is LPAE, then we already know that nearly all
-> pagetable levels are one full page, and the PTEs are 64 bits long. No
-> magic data conduit required.
-
-Oh, I see!
-
-> > Also, what we need is actually an arbitrary number for max_tlbi_ops.
-> > And I think it could be irrelevant to the page size, i.e. either a
-> > 4K pgsize or a 64K pgsize could use the same max_tlbi_ops number,
-> > because what eventually impacts the latency is the number of loops
-> > of building/issuing commands.
+> On Tue, Aug 22, 2023 at 09:32:26AM -0700, Nicolin Chen wrote:
+>> On Tue, Aug 22, 2023 at 10:30:35AM +0100, Robin Murphy wrote:
+>>
+>>>> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>>>> index d6c647e1eb01..3f0db30932bd 100644
+>>>> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>>>> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>>>> @@ -1897,7 +1897,14 @@ static void __arm_smmu_tlb_inv_range(struct arm_smmu_cmdq_ent *cmd,
+>>>>        if (!size)
+>>>>                return;
+>>>>
+>>>> -     if (smmu->features & ARM_SMMU_FEAT_RANGE_INV) {
+>>>> +     if (!(smmu->features & ARM_SMMU_FEAT_RANGE_INV)) {
+>>>> +             /*
+>>>> +              * When the size reaches a threshold, replace per-granule TLBI
+>>>> +              * commands with one single per-asid or per-vmid TLBI command.
+>>>> +              */
+>>>> +             if (size >= granule * smmu_domain->max_tlbi_ops)
+>>>> +                     return arm_smmu_tlb_inv_domain(smmu_domain);
+>>>
+>>> This looks like it's at the wrong level - we should have figured this
+>>> out before we got as far as low-level command-building. I'd have thought
+>>> it would be a case of short-circuiting directly from
+>>> arm_smmu_tlb_inv_range_domain() to arm_smmu_tlb_inv_context().
+>>
+>> OK, I could do that. We would have copies of this same routine
+>> though. Also, the shortcut applies to !ARM_SMMU_FEAT_RANGE_INV
+>> cases only, so this function feels convenient to me.
 > 
-> Although there is perhaps a counter-argument for selective invalidation,
-> that if you're using 64K pages to improve TLB hit rates vs. 4K, then you
-> have more to lose from overinvalidation, so maybe a single threshold
-> isn't so appropriate for both.
+> I was trying to say that we would need the same piece in both
+> arm_smmu_tlb_inv_range_domain() and arm_smmu_tlb_inv_range_asid(),
+> though the latter one only needs to call arm_smmu_tlb_inv_asid().
+
+Its not like arm_smmu_tlb_inv_range_asid() doesn't already massively 
+overlap with arm_smmu_tlb_inv_range_domain() anyway, so a little further 
+duplication hardly seems like it would hurt. Checking 
+ARM_SMMU_FEAT_RANGE_INV should be cheap (otherwise we'd really want to 
+split __arm_smmu_tlb_inv_range() into separate RIL vs. non-RIL versions 
+to avoid having it in the loop), and it makes the intent clear. What I 
+just really don't like is a flow where we construct a specific command, 
+then call the low-level function to issue it, only that function then 
+actually jumps back out into another high-level function which 
+constructs a *different* command. This code is already a maze of twisty 
+little passages...
+
+> Also, arm_smmu_tlb_inv_context() does a full range ATC invalidation
+> instead of a given range like what arm_smmu_tlb_inv_range_domain()
+> currently does. So, it might be a bit overkill.
 > 
-> Yes, ultimately it all comes down to picking an arbitrary number, but
-> the challenge is that we want to pick a *good* one, and ideally have
-> some reasoning behind it. As Will suggested, copying what the mm layer
-> does gives us an easy line of reasoning, even if it's just in the form
-> of passing the buck. And that's actually quite attractive, since
-> otherwise we'd then have to get into the question of what really is the
-> latency of building and issuing commands, since that clearly depends on
-> how fast the CPU is, and how fast the SMMU is, and how busy the SMMU is,
-> and how large the command queue is, and how many other CPUs are also
-> contending for the command queue... and very quickly it becomes hard to
-> believe that any simple constant can be good for all possible systems.
+> Combining all your comments, we'd have something like this:
 
-Yea, I had trouble with deciding the number at the first place, so
-the previous solution ended up with an SYSFS node. I do agree that
-copying from the mm layer solution gives a strong justification of
-picking a arbitrary number. My concern here is about whether it'll
-be overly too often or not at triggering a full-as invalidation.
+TBH I'd be inclined to refactor a bit harder, maybe break out some 
+VMID-based helpers for orthogonality, and aim for a flow like:
 
-Meanwhile, by re-looking at Will's commit log:
-    arm64: tlbi: Set MAX_TLBI_OPS to PTRS_PER_PTE
+	if (over threshold)
+		tlb_inv_domain()
+	else if (stage 1)
+		tlb_inv_range_asid()
+	else
+		tlb_inv_range_vmid()
+	atc_inv_range()
 
-    In order to reduce the possibility of soft lock-ups, we bound the
-    maximum number of TLBI operations performed by a single call to
-    flush_tlb_range() to an arbitrary constant of 1024.
+or possibly if you prefer:
 
-    Whilst this does the job of avoiding lock-ups, we can actually be a bit
-    smarter by defining this as PTRS_PER_PTE. Due to the structure of our
-    page tables, using PTRS_PER_PTE means that an outer loop calling
-    flush_tlb_range() for entire table entries will end up performing just a
-    single TLBI operation for each entry. As an example, mremap()ing a 1GB
-    range mapped using 4k pages now requires only 512 TLBI operations when
-    moving the page tables as opposed to 262144 operations (512*512) when
-    using the current threshold of 1024.
+	if (stage 1) {
+		if (over threshold)
+			tlb_inv_asid()
+		else
+			tlb_inv_range_asid()
+	} else {
+		if (over threshold)
+			tlb_inv_vmid()
+		else
+			tlb_inv_range_vmid()
+	}
+	atc_inv_range()
 
-I found that I am actually not quite getting the calculation at the
-end for the comparison between 512 and 262144.
+where the latter maybe trades more verbosity for less duplication 
+overall - I'd probably have to try both to see which looks nicer in the 
+end. And obviously if there's any chance of inventing a clear and 
+consistent naming scheme in the process, that would be lovely.
 
-For a 4K pgsize setup, MAX_TLBI_OPS is set to 512, calculated from
-4096 / 8. Then, any VA range >= 2MB will trigger a flush_tlb_all().
-By setting the threshold to 1024, the 2MB size bumps up to 4MB, i.e.
-the condition becomes range >= 4MB.
+Thanks,
+Robin.
 
-So, it seems to me that requesting a 1GB invalidation will trigger
-a flush_tlb_all() in either case of having a 2MB or a 4MB threshold?
-
-I can get that the 262144 is the number of pages in a 1GB size, so
-the number of per-page invalidations will be 262144 operations if
-there was no threshold to replace with a full-as invalidation. Yet,
-that wasn't the case since we had a 4MB threshold with an arbitrary
-1024 for MAX_TLBI_OPS?
-
-> > So, combining your narrative above that nents_per_pgtable isn't so
-> > general as we have in the tlbflush for MMU,
+> -------------------------------------------------------------------
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index 7614739ea2c1..2967a6634c7c 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -1937,12 +1937,22 @@ static void arm_smmu_tlb_inv_range_domain(unsigned long iova, size_t size,
+>   					  size_t granule, bool leaf,
+>   					  struct arm_smmu_domain *smmu_domain)
+>   {
+> +	struct io_pgtable_cfg *cfg =
+> +		&io_pgtable_ops_to_pgtable(smmu_domain->pgtbl_ops)->cfg;
+>   	struct arm_smmu_cmdq_ent cmd = {
+>   		.tlbi = {
+>   			.leaf	= leaf,
+>   		},
+>   	};
+>   
+> +	/*
+> +	 * If the given size is too large that would end up with too many TLBI
+> +	 * commands in CMDQ, short circuit directly to a full invalidation
+> +	 */
+> +	if (!(smmu_domain->smmu->features & ARM_SMMU_FEAT_RANGE_INV) &&
+> +	    size >= granule * (1UL << cfg->bits_per_level))
+> +		return arm_smmu_tlb_inv_context(smmu_domain);
+> +
+>   	if (smmu_domain->stage == ARM_SMMU_DOMAIN_S1) {
+>   		cmd.opcode	= smmu_domain->smmu->features & ARM_SMMU_FEAT_E2H ?
+>   				  CMDQ_OP_TLBI_EL2_VA : CMDQ_OP_TLBI_NH_VA;
+> @@ -1964,6 +1974,8 @@ void arm_smmu_tlb_inv_range_asid(unsigned long iova, size_t size, int asid,
+>   				 size_t granule, bool leaf,
+>   				 struct arm_smmu_domain *smmu_domain)
+>   {
+> +	struct io_pgtable_cfg *cfg =
+> +		&io_pgtable_ops_to_pgtable(smmu_domain->pgtbl_ops)->cfg;
+>   	struct arm_smmu_cmdq_ent cmd = {
+>   		.opcode	= smmu_domain->smmu->features & ARM_SMMU_FEAT_E2H ?
+>   			  CMDQ_OP_TLBI_EL2_VA : CMDQ_OP_TLBI_NH_VA,
+> @@ -1973,6 +1985,14 @@ void arm_smmu_tlb_inv_range_asid(unsigned long iova, size_t size, int asid,
+>   		},
+>   	};
+>   
+> +	/*
+> +	 * If the given size is too large that would end up with too many TLBI
+> +	 * commands in CMDQ, short circuit directly to a full invalidation
+> +	 */
+> +	if (!(smmu_domain->smmu->features & ARM_SMMU_FEAT_RANGE_INV) &&
+> +	    size >= granule * (1UL << cfg->bits_per_level))
+> +		return arm_smmu_tlb_inv_asid(smmu_domain->smmu, asid);
+> +
+>   	__arm_smmu_tlb_inv_range(&cmd, iova, size, granule, smmu_domain);
+>   }
+>   
+> -------------------------------------------------------------------
 > 
-> FWIW I meant it doesn't generalise well enough to be a common io-pgtable
-> interface; I have no issue with it forming the basis of an
-> SMMUv3-specific heuristic when it *is* a relevant concept to all the
-> pagetable formats SMMUv3 can possibly support.
-
-OK.
-
-Thanks
-Nicolin
+> You're sure that you prefer this, right?
+> 
+> Thanks
+> Nicolin
