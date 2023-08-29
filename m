@@ -1,15 +1,15 @@
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2055.outbound.protection.outlook.com [40.107.220.55])
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2050.outbound.protection.outlook.com [40.107.94.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1088A6FBA
-	for <iommu@lists.linux.dev>; Tue, 29 Aug 2023 23:03:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE4376AAC
+	for <iommu@lists.linux.dev>; Tue, 29 Aug 2023 23:15:03 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gOeM9ZC80MipnftHhMj5sJucYdS7rE0bGUPQS6UmCI63i/AXklcIjUVbVKoI+4awwOqLYZZegPNJx9SNSfdecW1rDsQvg+JGxIPBKMdx793EggqlvhScCkL156Bh5px6cq1NOVhqOmgcMx0EJ2ayDm9nnrvCx5u52aXqF53wnqhQ/RMTZvWUeqRdMxCRWNv+wznPgZSX+z5npcd6T4SsOOKi+9Fir1y9hUbRAXeOBJ2Dto3QtWjV5Xyy/AOQJZrrBnqDqwwnbou3xgTUMHYVOAkMWppR2r7mZQFQZB4dlELmjNH5gBPxiSBaM0EwSPCHOwkYjtCWfdU6llcdn8R2pA==
+ b=XJ4w531SD+9BSE17JlzHpOOVNbOcuGhd4XL1dn9BA7oj+qUaJTMa78eZ+phjdLan/qjiFHuvS8cy3ts/Kf7/P1aSjTj1ZWdVqqrHh2EUhHKv/T6UGHeZ3o847uUX1ta9xh6GrKc81kBltdZK8OdLSsmSscsjWjvVejandKRbHyMEx+aUiROoHbFmrehnW6q+eDnwN4qelTQs8aD5wiZdpd92rH9yQ7KSIgvs3hvVZT65eyhCy1rjgizqK4xAIQaeonfPKZxaagNFwwJYagXF0lof99dRkVRBOjJAeMN5w9asxOUsmFsExLiJZYd5s/3vOeOPxLwevcsO3WxtTtXmJQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=rr43ZS1dym+rYgHfwmSxyBQZ0BGWV5W6ETkq0KHaEFY=;
- b=J3BxmfiNpXr+s8oj35pqQOYgt2u+2rZ6T1kENmbW+7Hp7itmApxWltgUHCyjxKG2EH6XWCVp/cNnIQQvNjq6WnGFmQtreNfbxyd/g2jkS4OJR6I5dFcJ6ae16VdUPHr3wBKikgGf2mMCf0vkdniItF0EhTysVIxMn+kFznxONTk8xQOtx8u0FRNOjqxpqzvPCke7x57Qvc5Z+zZQ5f3oJX2v0AGkf+NdQoO1x/ZUcgNPSiKpcxdr5gqHl9KqmDDwcFxUboU2Ib3VMcALW3RWhOJOgLG/q3r/hCZziozG+q0jccO+H5tUcT+xneNj4KfTaiPfS7mh5AFCyu+RqdQbog==
+ bh=emey6KvzuQa3i/UogGJRMtonYBo+Rh0SFk0wHI7Iq+U=;
+ b=EA+t1+nModC5dDoXIcZ1QNw4YAT+pVK838UhSW06AkSVMD/b357S+Kv2ibIaGhT32z1At9vQ6rYneix9s4N/Cng6CpSEBK6s7SR1VqRYm/sI++bEs+51IjeUdQbaf5E5hwmMh5VSMPgpbOC6cKA68WgQjs+wYxaIRtwBPPkrmtV/FmP6F0osKZU7J4GyMEPB5vYUY3IBveVrNkNgMs/fznDWpWFma1XNYKf4Uzb1TK1e7seHtZl+F5jzX9lJqOe5wWqtANJBwsgMRsQes9/roAI7iYiSysDYr1efiR111WJ1Ddvalf5RyASljbLZg5UYxTXbDzqb1x1WeM7AJsFZOg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  216.228.117.160) smtp.rcpttodomain=arm.com smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
@@ -17,18 +17,18 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=rr43ZS1dym+rYgHfwmSxyBQZ0BGWV5W6ETkq0KHaEFY=;
- b=gCtzlSqcYdZFSG159uIUkverq0W37iLWnaO0y2NUcTUvhCscxEdf8IqixrEOIHrVGAlUyWDtDZtfqS4kScVXthYeQ6iaY2qsjXq9QLkXGajF4r8sSoqK/FXk2a83+40zbBdg+zvIBaiMHPB6QOlEjof+muMO8cT/aUTum6txdrIQy8h5cdHdKI4eFd2CncHpBV7goxo0VOW0qc2C8c3RF7vYG60FYEdZJJUKCnOTx0T3WV8BQbFNRCDu5wAfJW5hZPC40LAkWZ60cZjyJm/7bgqUa5gAfJqvVsR0h7j7MSEg5WZbSciu24ORFfk8nyp7WTzfX63HlSfLBbxVyZj3uA==
-Received: from BYAPR06CA0038.namprd06.prod.outlook.com (2603:10b6:a03:14b::15)
- by DS7PR12MB5861.namprd12.prod.outlook.com (2603:10b6:8:78::12) with
+ bh=emey6KvzuQa3i/UogGJRMtonYBo+Rh0SFk0wHI7Iq+U=;
+ b=bwNJei1oJZop0vNHAvld1D5mRpqGgEXQzmcUKqEIxuzn2jucT3VEKKLuf7iE1NsLqx39SVN/nA8OEz/oFqlc+MZJCHnCN1lwwDmp2IBbpd79di9ZPUgoZyw6oZhoI2bqilwqiw6vcjvC62H8VATw2azhO5ndvX8tTQcE6EbE9HBnq6tuFf7otWWKLbC0aRr+QuFXNYRo6ziIV1Qsfl8uapCZlFM2fNnUXyWHe7iDK7xu2CqbHRTFFYTrVVAs0rrJb6anfDwPxU7XUUGPzPmSvKjaUB4YD6MLcyEkLiGO7sEiT3JmPNOxkjP1sgLgqgczvdeXB3OwkxZ1jE5MtRb1nw==
+Received: from DM6PR21CA0020.namprd21.prod.outlook.com (2603:10b6:5:174::30)
+ by CH3PR12MB8910.namprd12.prod.outlook.com (2603:10b6:610:179::19) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6745.18; Tue, 29 Aug
- 2023 23:03:55 +0000
-Received: from MWH0EPF000971E4.namprd02.prod.outlook.com
- (2603:10b6:a03:14b:cafe::fa) by BYAPR06CA0038.outlook.office365.com
- (2603:10b6:a03:14b::15) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6699.36 via Frontend
- Transport; Tue, 29 Aug 2023 23:03:54 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6699.35; Tue, 29 Aug
+ 2023 23:15:01 +0000
+Received: from CY4PEPF0000EE39.namprd03.prod.outlook.com
+ (2603:10b6:5:174:cafe::45) by DM6PR21CA0020.outlook.office365.com
+ (2603:10b6:5:174::30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6768.8 via Frontend
+ Transport; Tue, 29 Aug 2023 23:15:01 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
@@ -36,36 +36,37 @@ Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
  216.228.117.160 as permitted sender) receiver=protection.outlook.com;
  client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
 Received: from mail.nvidia.com (216.228.117.160) by
- MWH0EPF000971E4.mail.protection.outlook.com (10.167.243.72) with Microsoft
+ CY4PEPF0000EE39.mail.protection.outlook.com (10.167.242.13) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6745.17 via Frontend Transport; Tue, 29 Aug 2023 23:03:54 +0000
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by mail.nvidia.com
+ 15.20.6745.16 via Frontend Transport; Tue, 29 Aug 2023 23:15:01 +0000
+Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
  (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Tue, 29 Aug 2023
- 16:03:46 -0700
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail203.nvidia.com
- (10.129.68.9) with Microsoft SMTP Server (version=TLS1_2,
+ 16:14:50 -0700
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail204.nvidia.com
+ (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Tue, 29 Aug
- 2023 16:03:45 -0700
-Received: from Asurada-Nvidia (10.127.8.10) by mail.nvidia.com (10.129.68.7)
+ 2023 16:14:50 -0700
+Received: from Asurada-Nvidia (10.127.8.10) by mail.nvidia.com (10.129.68.8)
  with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37 via Frontend
- Transport; Tue, 29 Aug 2023 16:03:44 -0700
-Date: Tue, 29 Aug 2023 16:03:43 -0700
+ Transport; Tue, 29 Aug 2023 16:14:49 -0700
+Date: Tue, 29 Aug 2023 16:14:47 -0700
 From: Nicolin Chen <nicolinc@nvidia.com>
 To: Robin Murphy <robin.murphy@arm.com>
 CC: <will@kernel.org>, <jgg@nvidia.com>, <joro@8bytes.org>,
 	<jean-philippe@linaro.org>, <apopple@nvidia.com>,
 	<linux-kernel@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
 	<iommu@lists.linux.dev>
-Subject: Re: [PATCH 2/3] iommu/arm-smmu-v3: Add an arm_smmu_tlb_inv_domain
- helper
-Message-ID: <ZO55Tw4aTlMyaYO+@Asurada-Nvidia>
+Subject: Re: [PATCH 3/3] iommu/arm-smmu-v3: Add a max_tlbi_ops for
+ __arm_smmu_tlb_inv_range()
+Message-ID: <ZO5755PjMx8mofa3@Asurada-Nvidia>
 References: <cover.1692693557.git.nicolinc@nvidia.com>
- <854e2b3f2d4f1b76f916fcfc288b34526d4d4162.1692693557.git.nicolinc@nvidia.com>
- <7e97b5a5-6be0-87a8-aaf7-89980b0a35d1@arm.com>
- <ZOTqXmzs/wqgI1s6@Asurada-Nvidia>
- <d1bf37be-6ce5-a446-2f5b-db94fa6a0776@arm.com>
+ <3ba332e141102d31b756326cdc4078cac1f5ab1c.1692693557.git.nicolinc@nvidia.com>
+ <3f630d3d-c59a-f454-14db-2bf9b8e76877@arm.com>
+ <ZOTjGIJU8Kfl1Q4f@Asurada-Nvidia>
+ <ZOU+6hsKy4R099B3@Asurada-Nvidia>
+ <dc99bc7b-b6bc-1b82-3d8e-8e385596070b@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -74,127 +75,114 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <d1bf37be-6ce5-a446-2f5b-db94fa6a0776@arm.com>
+In-Reply-To: <dc99bc7b-b6bc-1b82-3d8e-8e385596070b@arm.com>
 X-NV-OnPremToCloud: ExternallySecured
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: MWH0EPF000971E4:EE_|DS7PR12MB5861:EE_
-X-MS-Office365-Filtering-Correlation-Id: 2bf588a1-7a3b-4900-0629-08dba8e437bb
+X-MS-TrafficTypeDiagnostic: CY4PEPF0000EE39:EE_|CH3PR12MB8910:EE_
+X-MS-Office365-Filtering-Correlation-Id: 8ea613e9-998b-4545-92dc-08dba8e5c541
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	npTZ3STHo3p5xrwaVf9Y7rhYvxTPxWIrs3d/xztWimCZCoi4NzzYFlcGzThszUBoYPjVtMKl7QjLOXN/xjNTL2xiGf6YYWGZJcspwsF9B07B7I0YXW9J+5lGYZYUuQpId+OWxlFxyhP78sAoDYAMsuqRqZsTkgDnDAfR6JTZorLs41fLXCpgZWOtHjInT9EhZGGgC32avcRvvGUDlZZIiY2fCR5xwDg7rm981ELsbR72c4z+hARPHP/I7MjgVOdqxQFMP7kWZ4Nd4n2KGdVGwzPxBiTIMpdNGN9RC0Hq3cxTG4ksoFA4rKPkY9Mc3Mcqkf/WK6Q5PAv6DC6IzdQy5D1l/QF5S+tQvEUIcaIPPv7fxhHE/6foTeiG10o9uEhG5P5ZKbkfV3oW7WcNOKKoYE82jdhZvbpvjGNCQqHxKSnEKN65aNt9piWwD6pww8PkFn1K+2Sx2Fk015/fIAJym0h4MvoB4yvONYETQUkInOgC3wV/vyb/m8AYr86WeJpb0q3utX1/mdPMxEAPSOYWeyzVSZihrmUElIUcKuKIoDHDglMfkFOfdvQUuODrdhQw5wNBbnEiUWsMFy8IK9i2sZc93jvDPBRIH/TSYQ9qHGYsvwxytNvNwp6rIrToZL4UbteDvGkSb1cxiTgtJa96C2y1yOJxRu8N2Nf6DL5MIRUY/p4rp412+Js3MYUq5Bm3dvMsD+C1pYJlw3vzx5iqHMewjH4m5Y6lN1BdkNJDR6UF+Ju6uiEqeL1mjLRfTfXE
+	sOrke6bDZt7v06acsWjxfr3jxz9YmRxnNpGOnvnO6RLopoOdmHvq3a91vHb5O9ER4783lWfaVeKpgEAlntCnRuhC/0wBcTOyCkWjH8P2Cv91AzWegsqQn96gLkndcuUVp8xK6IthDCdwXxvQf69W6o0rqoFunR94zh5Qt60UYOk+nw1xcb5B/4TUkHYb3019tTPecUTjMlXzTs+XO0i42OUl9LbD5wGG9pBcfQfDNElwC9TpFMaJx2mR+DPfEvKCWhc5BsXwrtqBouEmpvmB9AnSaLfxQNT8OIvXq4gHLTIk3yqVJZN6ZZgDUeWvb0p5jbUr3AAtj895EgNU+Vz+F+WEU0QKQ/+8cNlpso29HzdW6iDtBpDrrRe/1HW4JM7PdMR5OssNAyaxKiPWxALpj4M/uJcWmU7MUa9kDGRFEp94pyGSkLh0Men8Su9XDH0Gyw5z2sOsuWC3IjZC+u0C+LppjR2bAIWHfUv5VimKDvtOd6sFjdJApFZjO4UCgjC5wLU4ayZ17EASw9bl7uy37pIv2pG93WSR0j1pI3QY/JQn5VAgv5i2VgSiV8UDdLzMmPBs/fYcu0pUd/4hwlVV/qwhzFkyZfC25yl3vvFrA350LqvwrdZg042wiNLlwNn6EGLWbXwkzgWckIlwYjYCgJk/kY3iTkb6bkJhA+B2qNxO/sOMLzUBP2QkdPfh2HTrN+lMNw7ii21XhvA/AFVm5sg9q8F2xYwrG1N/O/p4EZRNnRt/Z1dGi2FEEKHMHvpB
 X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230031)(4636009)(39860400002)(396003)(376002)(136003)(346002)(82310400011)(451199024)(1800799009)(186009)(40470700004)(36840700001)(46966006)(40460700003)(9686003)(316002)(41300700001)(6916009)(66899024)(4326008)(426003)(336012)(83380400001)(2906002)(47076005)(86362001)(33716001)(55016003)(26005)(5660300002)(8676002)(40480700001)(36860700001)(8936002)(7636003)(82740400003)(356005)(54906003)(70206006)(53546011)(70586007)(478600001);DIR:OUT;SFP:1101;
+	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230031)(4636009)(376002)(396003)(346002)(136003)(39860400002)(1800799009)(186009)(82310400011)(451199024)(36840700001)(46966006)(40470700004)(356005)(82740400003)(7636003)(8936002)(70206006)(70586007)(478600001)(54906003)(316002)(41300700001)(426003)(9686003)(40460700003)(5660300002)(8676002)(26005)(33716001)(2906002)(6916009)(86362001)(47076005)(40480700001)(55016003)(36860700001)(336012)(4326008);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Aug 2023 23:03:54.3133
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Aug 2023 23:15:01.2505
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2bf588a1-7a3b-4900-0629-08dba8e437bb
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8ea613e9-998b-4545-92dc-08dba8e5c541
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	MWH0EPF000971E4.namprd02.prod.outlook.com
+	CY4PEPF0000EE39.namprd03.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB5861
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR12MB8910
 
-On Tue, Aug 29, 2023 at 10:54:00PM +0100, Robin Murphy wrote:
-> On 2023-08-22 18:03, Nicolin Chen wrote:
-> > On Tue, Aug 22, 2023 at 10:40:18AM +0100, Robin Murphy wrote:
-> > 
-> > > On 2023-08-22 09:45, Nicolin Chen wrote:
-> > > > Move the part of per-asid or per-vmid invalidation command issuing into a
-> > > > new helper function, which will be used in the following change.
+On Tue, Aug 29, 2023 at 11:40:29PM +0100, Robin Murphy wrote:
+
+> > > > > -     if (smmu->features & ARM_SMMU_FEAT_RANGE_INV) {
+> > > > > +     if (!(smmu->features & ARM_SMMU_FEAT_RANGE_INV)) {
+> > > > > +             /*
+> > > > > +              * When the size reaches a threshold, replace per-granule TLBI
+> > > > > +              * commands with one single per-asid or per-vmid TLBI command.
+> > > > > +              */
+> > > > > +             if (size >= granule * smmu_domain->max_tlbi_ops)
+> > > > > +                     return arm_smmu_tlb_inv_domain(smmu_domain);
+> > > > 
+> > > > This looks like it's at the wrong level - we should have figured this
+> > > > out before we got as far as low-level command-building. I'd have thought
+> > > > it would be a case of short-circuiting directly from
+> > > > arm_smmu_tlb_inv_range_domain() to arm_smmu_tlb_inv_context().
 > > > 
-> > > Why? This achieves nothing except make the code harder to follow and
-> > > disconnect the rather important comment even further from the code it is
+> > > OK, I could do that. We would have copies of this same routine
+> > > though. Also, the shortcut applies to !ARM_SMMU_FEAT_RANGE_INV
+> > > cases only, so this function feels convenient to me.
 > > 
-> > We need the same if-else routine to issue a per-asid or per-vmid
-> > TLBI command. If making a copy of this same routine feels better
-> > to you, yea, I can change that.
+> > I was trying to say that we would need the same piece in both
+> > arm_smmu_tlb_inv_range_domain() and arm_smmu_tlb_inv_range_asid(),
+> > though the latter one only needs to call arm_smmu_tlb_inv_asid().
+> 
+> Its not like arm_smmu_tlb_inv_range_asid() doesn't already massively
+> overlap with arm_smmu_tlb_inv_range_domain() anyway, so a little further
+> duplication hardly seems like it would hurt. Checking
+> ARM_SMMU_FEAT_RANGE_INV should be cheap (otherwise we'd really want to
+> split __arm_smmu_tlb_inv_range() into separate RIL vs. non-RIL versions
+> to avoid having it in the loop), and it makes the intent clear. What I
+> just really don't like is a flow where we construct a specific command,
+> then call the low-level function to issue it, only that function then
+> actually jumps back out into another high-level function which
+> constructs a *different* command. This code is already a maze of twisty
+> little passages...
+
+OK. That sounds convincing to me. We can do at the higher level.
+
+> > Also, arm_smmu_tlb_inv_context() does a full range ATC invalidation
+> > instead of a given range like what arm_smmu_tlb_inv_range_domain()
+> > currently does. So, it might be a bit overkill.
 > > 
-> > > significant to. It's not like we need a specific prototype to take a
-> > > function pointer from, it's just another internal call - see
-> > > arm_smmu_flush_iotlb_all() for instance. We know the cookie is an
-> > > arm_smmu_domain pointer because we put it there, and converting it back
-> > > from a void pointer is exactly the same *at* the function call boundary
-> > > as immediately afterwards.
-> > 
-> > Hmm, I am not quite following this. What do you suggest here?
+> > Combining all your comments, we'd have something like this:
 > 
-> Oh, this is becoming quite the lesson in not reviewing patches in a hurry :(
+> TBH I'd be inclined to refactor a bit harder, maybe break out some
+> VMID-based helpers for orthogonality, and aim for a flow like:
 > 
-> Apparently I managed to misread the diff and the horribly subtle
-> difference between "arm_smmu_tlb_inv_domain" and
-> "arm_smmu_atc_inv_domain", and think that arm_smmu_tlb_inv_context() was
-> already just dealing with the TLBI command and you were moving the
-> entire body into the new helper. Sorry about that.
+>        if (over threshold)
+>                tlb_inv_domain()
+>        else if (stage 1)
+>                tlb_inv_range_asid()
+>        else
+>                tlb_inv_range_vmid()
+>        atc_inv_range()
 > 
-> Still, the part about the comment remains true, and I think it goes to
-> show what a thoroughly horrible naming scheme it is to have "tlb_inv"
-> denote a function responsible for TLBI commands and "atc_inv" denote a
-> function responsible for ATC commands and "tlb_inv" denote a function
-> responsible for both TLBI and ATC commands...
+> or possibly if you prefer:
+> 
+>        if (stage 1) {
+>                if (over threshold)
+>                        tlb_inv_asid()
+>                else
+>                        tlb_inv_range_asid()
+>        } else {
+>                if (over threshold)
+>                        tlb_inv_vmid()
+>                else
+>                        tlb_inv_range_vmid()
+>        }
+>        atc_inv_range()
+> 
+> where the latter maybe trades more verbosity for less duplication
+> overall - I'd probably have to try both to see which looks nicer in the
+> end. And obviously if there's any chance of inventing a clear and
+> consistent naming scheme in the process, that would be lovely.
 
-Well, "atc_inv" is quite clear I think. But the"tlb_inv" might
-not be, as you pointed out.
+Oh, I just replied you in another email, asking for a refactor,
+though that didn't include the over-threshold part yet.
 
-So, we have:
- tlb_inv_range_asid: tlbi only (NH_VA/EL2_VA) // used by SVA too
- tlb_inv_range_domain:
- 	if (S1)
-		tlb_inv_range_asid();	// NH_VA/EL2_VA
-	else
-		tlbi only (S2_IPA);
-	atc();
- tlb_inv_asid: tlbi (NH_ASID)	// only used by tlb_inv_context()
- tlb_inv_context:
- 	if (S1)
-		tlb_inv_asid();	// NH_ASID
-	else
-		tlbi only (S2_VMALL);
-	atc();
+Anyway, I think I got your point now and will bear in mind that
+we want something clean overall with less duplication among the
+"inv" functions.
 
-Then, what this patch wants another non-atc:
- tlb_inv_asid: tlbi (NH_ASID)	// only used by tlb_inv_domain()
- tlb_inv_domain: 		// new
- 	if (S1)
-		tlb_inv_asid();	// NH_ASID
-	else
-		tlbi only (S2_VMALL);
- tlb_inv_context:
- 	tlb_inv_domain();
-	atc();
-
-The problem of this is that it conflicts with the naming used in
-other tlb_inv_range_domain() that does an atc().
-
-Perhaps, we could rename to the following patterns?
- tlb_inv_range_asid:	// used by SVA too
- tlb_inv_range_domain:
- 	if (S1)
-		return tlb_inv_range_asid();
-	else
-		tlbi only (S2_IPA)
- tlb_inv_range_domain_with_atc:
- 	tlb_inv_range_domain();
-	atc();
-
- # remove tlb_inv_asid() since it doesn't help much
- tlb_inv_domain:
- 	if (S1)
-		tlbi only (NH_ASID)
-	else
-		tlbi only (S2_VMALL)
- tlb_inv_domain_with_atc:
- 	tlb_inv_domain();
-	atc();
-
- tlb_inv_context:
- 	struct arm_smmu_domain *smmu_domain =
-		(struct arm_smmu_domain *cookie);
-	tlb_inv_domain_with_atc(smmu_domain);
+Let me try some rewriting. And we can see how it looks after.
 
 Thanks
 Nicolin
