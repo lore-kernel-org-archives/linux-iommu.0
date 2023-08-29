@@ -1,124 +1,72 @@
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B879514AA7
-	for <iommu@lists.linux.dev>; Tue, 29 Aug 2023 14:18:50 +0000 (UTC)
-Received: from pps.filterd (m0353724.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 37TEFKWc032735;
-	Tue, 29 Aug 2023 14:18:44 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=NTFNqU89pPbUUEpiNDjKB1jRT0a8KGm3TKx2+MSzp1g=;
- b=FcsAVPETodblDcAIEX2nAP/q1td8k0rD+9N7EFi4eTZ74oK79a6iR0Rq35kvWC/afPoH
- OFE7wtDGWG7f1Hqg+As/m6uFd+wYWlrM21ymZLGX74mBlOv+b85I0YkI5ke+IFf6DSSK
- a9jNpmrtt4HMnXdQieFU/DjNV+zGQEoEFN26aKVWCi5Uga9pIXgaB0eUB41nPf7Q4cmL
- iVFHvVep0ocjREzqGQMq6yopNR2lIkwGqweH/pZGDIk1097qXI0N5KZ2VlncTnAvPvKv
- UX78CIzPr6ng9lYa+4i+ZOJH3IDrucdgUZ8/uyyp3u9kmfJvRYviCOtfpGIn7b3cBc9D eg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3ssht2168c-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 29 Aug 2023 14:18:43 +0000
-Received: from m0353724.ppops.net (m0353724.ppops.net [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 37TDgups004033;
-	Tue, 29 Aug 2023 14:18:43 GMT
-Received: from ppma23.wdc07v.mail.ibm.com (5d.69.3da9.ip4.static.sl-reverse.com [169.61.105.93])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3ssht21683-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 29 Aug 2023 14:18:43 +0000
-Received: from pps.filterd (ppma23.wdc07v.mail.ibm.com [127.0.0.1])
-	by ppma23.wdc07v.mail.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 37TD60qZ009907;
-	Tue, 29 Aug 2023 14:18:42 GMT
-Received: from smtprelay03.fra02v.mail.ibm.com ([9.218.2.224])
-	by ppma23.wdc07v.mail.ibm.com (PPS) with ESMTPS id 3sqw7kbtyx-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 29 Aug 2023 14:18:42 +0000
-Received: from smtpav03.fra02v.mail.ibm.com (smtpav03.fra02v.mail.ibm.com [10.20.54.102])
-	by smtprelay03.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 37TEIexV262734
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Tue, 29 Aug 2023 14:18:40 GMT
-Received: from smtpav03.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 9009D20043;
-	Tue, 29 Aug 2023 14:18:40 +0000 (GMT)
-Received: from smtpav03.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 2254720040;
-	Tue, 29 Aug 2023 14:18:40 +0000 (GMT)
-Received: from [9.179.1.138] (unknown [9.179.1.138])
-	by smtpav03.fra02v.mail.ibm.com (Postfix) with ESMTP;
-	Tue, 29 Aug 2023 14:18:40 +0000 (GMT)
-Message-ID: <4394654c47c4fcc2dc389cd916590bd643d18def.camel@linux.ibm.com>
-Subject: Re: [PATCH v2 5/5] mm: Deprecate pasid field
-From: Niklas Schnelle <schnelle@linux.ibm.com>
-To: Tina Zhang <tina.zhang@intel.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-        Kevin
- Tian <kevin.tian@intel.com>,
-        Lu Baolu <baolu.lu@linux.intel.com>,
-        Michael
- Shavit <mshavit@google.com>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Date: Tue, 29 Aug 2023 16:18:39 +0200
-In-Reply-To: <20230827084401.819852-6-tina.zhang@intel.com>
-References: <20230827084401.819852-1-tina.zhang@intel.com>
-	 <20230827084401.819852-6-tina.zhang@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.48.4 (3.48.4-1.fc38) 
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0FF8D17AAA
+	for <iommu@lists.linux.dev>; Tue, 29 Aug 2023 14:22:33 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 982712F4;
+	Tue, 29 Aug 2023 07:23:12 -0700 (PDT)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 731133F64C;
+	Tue, 29 Aug 2023 07:22:32 -0700 (PDT)
+Message-ID: <6f936d6e-9f27-ba72-68de-0ed27c0dbbe1@arm.com>
+Date: Tue, 29 Aug 2023 15:22:22 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: YadWYYEyo8TvladLOPCf3kCtHVszjp9H
-X-Proofpoint-GUID: 7s7n6GdozBcB78Fo3PWni1Rj5UsE6bDx
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.267,Aquarius:18.0.957,Hydra:6.0.601,FMLib:17.11.176.26
- definitions=2023-08-29_11,2023-08-29_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011 mlxscore=0
- mlxlogscore=469 priorityscore=1501 suspectscore=0 malwarescore=0
- lowpriorityscore=0 bulkscore=0 impostorscore=0 phishscore=0 adultscore=0
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2308100000 definitions=main-2308290121
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:102.0) Gecko/20100101
+ Thunderbird/102.13.0
+Subject: Re: [PATCH 1/2] dma/pool: trivial: add semicolon after label
+ attributes
+To: Chunhui He <hchunhui@mail.ustc.edu.cn>, Christoph Hellwig <hch@lst.de>,
+ Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <20230826085317.69713-1-hchunhui@mail.ustc.edu.cn>
+Content-Language: en-GB
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20230826085317.69713-1-hchunhui@mail.ustc.edu.cn>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Sun, 2023-08-27 at 16:44 +0800, Tina Zhang wrote:
-> Drop the pasid field, as all the information needed for sva domain
-> management has been moved to the newly added iommu_mm field.
+On 26/08/2023 9:53 am, Chunhui He wrote:
+> The gcc document says label attributes are ambiguous if they are
+> not immediately followed by a semicolon. Although the ambiguity
+> does not arise in C90/99, it would be better to add it.
 
-I think it should say "Drop" instead of "Deprecate" in the subject line
-as well since this is field is completely removed.
+AFAICS, what that clearly says is that *C++* label attributes can be 
+ambiguous. This is not C++ code. Even in C11, declarations still cannot 
+be labelled, so it should still be the case that, per the same GCC 
+documentation, "the ambiguity does not arise". And even if the language 
+did allow it, an inline declaration at that point at the end of a 
+function would be downright weird and against the kernel coding style 
+anyway.
 
->=20
-> Signed-off-by: Tina Zhang <tina.zhang@intel.com>
+So, I don't really see what's "better" about cluttering up C code with 
+unnecessary C++isms; it's just weird noise to me. The only thing I think 
+it *does* achieve is introduce the chance that the static checker 
+brigade eventually identifies a redundant semicolon and we get more 
+patches to remove it again.
+
+Thanks,
+Robin.
+
+> Link: https://gcc.gnu.org/onlinedocs/gcc/Attribute-Syntax.html#Label-Attributes-2
+> Signed-off-by: Chunhui He <hchunhui@mail.ustc.edu.cn>
 > ---
->  include/linux/mm_types.h | 1 -
->  mm/init-mm.c             | 3 ---
->  2 files changed, 4 deletions(-)
->=20
-> diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
-> index 3fd65b7537f0e..6cb5cc53c4803 100644
-> --- a/include/linux/mm_types.h
-> +++ b/include/linux/mm_types.h
-> @@ -808,7 +808,6 @@ struct mm_struct {
->  		struct work_struct async_put_work;
-> =20
->  #ifdef CONFIG_IOMMU_SVA
-> -		u32 pasid;
->  		struct iommu_mm_data *iommu_mm;
->  #endif
->  #ifdef CONFIG_KSM
-> diff --git a/mm/init-mm.c b/mm/init-mm.c
-> index efa97b57acfd8..69719291463ed 100644
-> --- a/mm/init-mm.c
-> +++ b/mm/init-mm.c
-> @@ -42,9 +42,6 @@ struct mm_struct init_mm =3D {
->  #endif
->  	.user_ns	=3D &init_user_ns,
->  	.cpu_bitmap	=3D CPU_BITS_NONE,
-> -#ifdef CONFIG_IOMMU_SVA
-> -	.pasid		=3D IOMMU_PASID_INVALID,
-> -#endif
->  	INIT_MM_CONTEXT(init_mm)
->  };
-> =20
-
+>   kernel/dma/pool.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/kernel/dma/pool.c b/kernel/dma/pool.c
+> index 1acec2e22827..f99f02b88c40 100644
+> --- a/kernel/dma/pool.c
+> +++ b/kernel/dma/pool.c
+> @@ -136,7 +136,7 @@ static int atomic_pool_expand(struct gen_pool *pool, size_t pool_size,
+>   #ifdef CONFIG_DMA_DIRECT_REMAP
+>   	dma_common_free_remap(addr, pool_size);
+>   #endif
+> -free_page: __maybe_unused
+> +free_page: __maybe_unused;
+>   	__free_pages(page, order);
+>   out:
+>   	return ret;
