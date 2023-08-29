@@ -1,14 +1,14 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 865A8182BC
-	for <iommu@lists.linux.dev>; Tue, 29 Aug 2023 21:25:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8DAB214AAF
+	for <iommu@lists.linux.dev>; Tue, 29 Aug 2023 21:54:13 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id EC8072F4;
-	Tue, 29 Aug 2023 14:25:56 -0700 (PDT)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 894642F4;
+	Tue, 29 Aug 2023 14:54:45 -0700 (PDT)
 Received: from [10.57.2.162] (unknown [10.57.2.162])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 2FF393F740;
-	Tue, 29 Aug 2023 14:25:16 -0700 (PDT)
-Message-ID: <d234fa8d-d945-3f7f-1110-fe55bea88587@arm.com>
-Date: Tue, 29 Aug 2023 22:25:10 +0100
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id BAA5A3F64C;
+	Tue, 29 Aug 2023 14:54:04 -0700 (PDT)
+Message-ID: <d1bf37be-6ce5-a446-2f5b-db94fa6a0776@arm.com>
+Date: Tue, 29 Aug 2023 22:54:00 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -17,96 +17,114 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
  Thunderbird/102.14.0
-Subject: Re: [PATCH 1/3] iommu/io-pgtable-arm: Add nents_per_pgtable in struct
- io_pgtable_cfg
+Subject: Re: [PATCH 2/3] iommu/arm-smmu-v3: Add an arm_smmu_tlb_inv_domain
+ helper
+Content-Language: en-GB
 To: Nicolin Chen <nicolinc@nvidia.com>
 Cc: will@kernel.org, jgg@nvidia.com, joro@8bytes.org,
  jean-philippe@linaro.org, apopple@nvidia.com, linux-kernel@vger.kernel.org,
  linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev
 References: <cover.1692693557.git.nicolinc@nvidia.com>
- <0fe68babdb3a07adf024ed471fead4e3eb7e703f.1692693557.git.nicolinc@nvidia.com>
- <f468b461-b203-5179-eb6d-9432b9911329@arm.com>
- <ZOTlcFs2NG6nJEPN@Asurada-Nvidia>
- <61f9b371-7c45-26b1-ec0f-600765280c89@arm.com>
- <ZO5R5i4n2WI2GnKQ@Asurada-Nvidia>
-Content-Language: en-GB
+ <854e2b3f2d4f1b76f916fcfc288b34526d4d4162.1692693557.git.nicolinc@nvidia.com>
+ <7e97b5a5-6be0-87a8-aaf7-89980b0a35d1@arm.com>
+ <ZOTqXmzs/wqgI1s6@Asurada-Nvidia>
 From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <ZO5R5i4n2WI2GnKQ@Asurada-Nvidia>
+In-Reply-To: <ZOTqXmzs/wqgI1s6@Asurada-Nvidia>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2023-08-29 21:15, Nicolin Chen wrote:
-> On Tue, Aug 29, 2023 at 04:37:00PM +0100, Robin Murphy wrote:
-> 
->> On 2023-08-22 17:42, Nicolin Chen wrote:
->>> On Tue, Aug 22, 2023 at 10:19:21AM +0100, Robin Murphy wrote:
->>>
->>>>>     out_free_data:
->>>>> @@ -1071,6 +1073,7 @@ arm_mali_lpae_alloc_pgtable(struct io_pgtable_cfg *cfg, void *cookie)
->>>>>                                           ARM_MALI_LPAE_TTBR_ADRMODE_TABLE;
->>>>>         if (cfg->coherent_walk)
->>>>>                 cfg->arm_mali_lpae_cfg.transtab |= ARM_MALI_LPAE_TTBR_SHARE_OUTER;
->>>>> +     cfg->nents_per_pgtable = 1 << data->bits_per_level;
->>>>
->>>> The result of this highly complex and expensive calculation is clearly
->>>> redundant with the existing bits_per_level field, so why do we need to
->>>> waste space storing when the driver could simply use bits_per_level?
->>>
->>> bits_per_level is in the private struct arm_lpae_io_pgtable, while
->>> drivers can only access struct io_pgtable_cfg. Are you suggesting
->>> to move bits_per_level out of the private struct arm_lpae_io_pgtable
->>> to the public struct io_pgtable_cfg?
->>>
->>> Or am I missing another bits_per_level?
+On 2023-08-22 18:03, Nicolin Chen wrote:
+> On Tue, Aug 22, 2023 at 10:40:18AM +0100, Robin Murphy wrote:
+>   
+>> On 2023-08-22 09:45, Nicolin Chen wrote:
+>>> Move the part of per-asid or per-vmid invalidation command issuing into a
+>>> new helper function, which will be used in the following change.
 >>
->> Bleh, apologies, I always confuse myself trying to remember the fiddly
->> design of io-pgtable data. However, I think this then ends up proving
->> the opposite point - the number of pages per table only happens to be a
->> fixed constant for certain formats like LPAE, but does not necessarily
->> generalise. For instance for a single v7s config it would be 1024 or 256
->> or 16 depending on what has actually been unmapped.
->>
->> The mechanism as proposed implicitly assumes LPAE format, so I still
->> think we're better off making that assumption explicit. And at that
->> point arm-smmu-v3 can then freely admit it already knows the number is
->> simply 1/8th of the domain page size.
+>> Why? This achieves nothing except make the code harder to follow and
+>> disconnect the rather important comment even further from the code it is
 > 
-> Hmm, I am not getting that "1/8th" part, would you mind elaborating?
+> We need the same if-else routine to issue a per-asid or per-vmid
+> TLBI command. If making a copy of this same routine feels better
+> to you, yea, I can change that.
+> 
+>> significant to. It's not like we need a specific prototype to take a
+>> function pointer from, it's just another internal call - see
+>> arm_smmu_flush_iotlb_all() for instance. We know the cookie is an
+>> arm_smmu_domain pointer because we put it there, and converting it back
+>> from a void pointer is exactly the same *at* the function call boundary
+>> as immediately afterwards.
+> 
+> Hmm, I am not quite following this. What do you suggest here?
 
-If we know the format is LPAE, then we already know that nearly all 
-pagetable levels are one full page, and the PTEs are 64 bits long. No 
-magic data conduit required.
+Oh, this is becoming quite the lesson in not reviewing patches in a hurry :(
 
-> Also, what we need is actually an arbitrary number for max_tlbi_ops.
-> And I think it could be irrelevant to the page size, i.e. either a
-> 4K pgsize or a 64K pgsize could use the same max_tlbi_ops number,
-> because what eventually impacts the latency is the number of loops
-> of building/issuing commands.
+Apparently I managed to misread the diff and the horribly subtle 
+difference between "arm_smmu_tlb_inv_domain" and 
+"arm_smmu_atc_inv_domain", and think that arm_smmu_tlb_inv_context() was 
+already just dealing with the TLBI command and you were moving the 
+entire body into the new helper. Sorry about that.
 
-Although there is perhaps a counter-argument for selective invalidation, 
-that if you're using 64K pages to improve TLB hit rates vs. 4K, then you 
-have more to lose from overinvalidation, so maybe a single threshold 
-isn't so appropriate for both.
-
-Yes, ultimately it all comes down to picking an arbitrary number, but 
-the challenge is that we want to pick a *good* one, and ideally have 
-some reasoning behind it. As Will suggested, copying what the mm layer 
-does gives us an easy line of reasoning, even if it's just in the form 
-of passing the buck. And that's actually quite attractive, since 
-otherwise we'd then have to get into the question of what really is the 
-latency of building and issuing commands, since that clearly depends on 
-how fast the CPU is, and how fast the SMMU is, and how busy the SMMU is, 
-and how large the command queue is, and how many other CPUs are also 
-contending for the command queue... and very quickly it becomes hard to 
-believe that any simple constant can be good for all possible systems.
-
-> So, combining your narrative above that nents_per_pgtable isn't so
-> general as we have in the tlbflush for MMU,
-
-FWIW I meant it doesn't generalise well enough to be a common io-pgtable 
-interface; I have no issue with it forming the basis of an 
-SMMUv3-specific heuristic when it *is* a relevant concept to all the 
-pagetable formats SMMUv3 can possibly support.
+Still, the part about the comment remains true, and I think it goes to 
+show what a thoroughly horrible naming scheme it is to have "tlb_inv" 
+denote a function responsible for TLBI commands and "atc_inv" denote a 
+function responsible for ATC commands and "tlb_inv" denote a function 
+responsible for both TLBI and ATC commands...
 
 Thanks,
 Robin.
+
+> 
+> Thanks
+> Nic
+> 
+>>> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+>>> ---
+>>>    drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 24 +++++++++++++--------
+>>>    1 file changed, 15 insertions(+), 9 deletions(-)
+>>>
+>>> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>>> index 9b0dc3505601..d6c647e1eb01 100644
+>>> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>>> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>>> @@ -1854,12 +1854,24 @@ int arm_smmu_atc_inv_domain(struct arm_smmu_domain *smmu_domain, int ssid,
+>>>        return arm_smmu_cmdq_batch_submit(smmu_domain->smmu, &cmds);
+>>>    }
+>>>
+>>> +static void arm_smmu_tlb_inv_domain(struct arm_smmu_domain *smmu_domain)
+>>> +{
+>>> +     struct arm_smmu_device *smmu = smmu_domain->smmu;
+>>> +     struct arm_smmu_cmdq_ent cmd;
+>>> +
+>>> +     if (smmu_domain->stage == ARM_SMMU_DOMAIN_S1) {
+>>> +             arm_smmu_tlb_inv_asid(smmu, smmu_domain->s1_cfg.cd.asid);
+>>> +     } else {
+>>> +             cmd.opcode      = CMDQ_OP_TLBI_S12_VMALL;
+>>> +             cmd.tlbi.vmid   = smmu_domain->s2_cfg.vmid;
+>>> +             arm_smmu_cmdq_issue_cmd_with_sync(smmu, &cmd);
+>>> +     }
+>>> +}
+>>> +
+>>>    /* IO_PGTABLE API */
+>>>    static void arm_smmu_tlb_inv_context(void *cookie)
+>>>    {
+>>>        struct arm_smmu_domain *smmu_domain = cookie;
+>>> -     struct arm_smmu_device *smmu = smmu_domain->smmu;
+>>> -     struct arm_smmu_cmdq_ent cmd;
+>>>
+>>>        /*
+>>>         * NOTE: when io-pgtable is in non-strict mode, we may get here with
+>>> @@ -1868,13 +1880,7 @@ static void arm_smmu_tlb_inv_context(void *cookie)
+>>>         * insertion to guarantee those are observed before the TLBI. Do be
+>>>         * careful, 007.
+>>>         */
+>>> -     if (smmu_domain->stage == ARM_SMMU_DOMAIN_S1) {
+>>> -             arm_smmu_tlb_inv_asid(smmu, smmu_domain->s1_cfg.cd.asid);
+>>> -     } else {
+>>> -             cmd.opcode      = CMDQ_OP_TLBI_S12_VMALL;
+>>> -             cmd.tlbi.vmid   = smmu_domain->s2_cfg.vmid;
+>>> -             arm_smmu_cmdq_issue_cmd_with_sync(smmu, &cmd);
+>>> -     }
+>>> +     arm_smmu_tlb_inv_domain(smmu_domain);
+>>>        arm_smmu_atc_inv_domain(smmu_domain, 0, 0, 0);
+>>>    }
+>>>
