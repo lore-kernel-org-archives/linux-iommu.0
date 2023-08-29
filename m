@@ -1,238 +1,200 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B30226AAC
-	for <iommu@lists.linux.dev>; Tue, 29 Aug 2023 22:56:17 +0000 (UTC)
-Received: from skinsburskii. (unknown [167.220.2.160])
-	by linux.microsoft.com (Postfix) with ESMTPSA id BD1912129BE5;
-	Tue, 29 Aug 2023 15:56:10 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com BD1912129BE5
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1693349770;
-	bh=nyvYnGsEyShboBzxmQn3PSwN8FW7roJbS77GrA4ZnHA=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=M094I3z0+sDFf4NH62cv9xn0kA5fiOZFW8oUlyz8r+Z721lbaCUwd6HhhyHTrvA5s
-	 74CNBSZyibMMbt2f0M/P++HQ4RUeYGESvLP60lfK11iQwuLdyVuw60xgDTT6zQaL8F
-	 g8+YRjosvfws530u3xpW1Xpn2RhLtPGkFNrnCkAk=
-Date: Tue, 29 Aug 2023 15:07:40 -0700
-From: Stanislav Kinsburskii <skinsburskii@linux.microsoft.com>
-To: Alexander Graf <graf@amazon.de>
-Cc: "Gowans, James" <jgowans@amazon.com>,
-	"gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-	"rppt@kernel.org" <rppt@kernel.org>,
-	"madvenka@linux.microsoft.com" <madvenka@linux.microsoft.com>,
-	"anthony.yznaga@oracle.com" <anthony.yznaga@oracle.com>,
-	"steven.sistare@oracle.com" <steven.sistare@oracle.com>,
-	"stanislav.kinsburskii@gmail.com" <stanislav.kinsburskii@gmail.com>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"seanjc@google.com" <seanjc@google.com>,
-	"pbonzini@redhat.com" <pbonzini@redhat.com>,
-	"kys@microsoft.com" <kys@microsoft.com>,
-	"arnd@arndb.de" <arnd@arndb.de>,
-	"wei.liu@kernel.org" <wei.liu@kernel.org>,
-	"anrayabh@linux.microsoft.com" <anrayabh@linux.microsoft.com>,
-	"dragan.cvetic@amd.com" <dragan.cvetic@amd.com>,
-	"jinankjain@linux.microsoft.com" <jinankjain@linux.microsoft.com>,
-	"derek.kiernan@amd.com" <derek.kiernan@amd.com>,
-	"linux-mm@kvack.org" <linux-mm@kvack.org>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	kexec@lists.infradead.org, iommu@lists.linux.dev,
-	kvm <kvm@vger.kernel.org>
-Subject: Re: [RFC PATCH] Introduce persistent memory pool
-Message-ID: <20230829220740.GA26605@skinsburskii.>
-References: <64e7cbf7.050a0220.114c7.b70dSMTPIN_ADDED_BROKEN@mx.google.com>
- <2023082506-enchanted-tripping-d1d5@gregkh>
- <c26ad989dcc6737dd295e980c78ef53740098810.camel@amazon.com>
- <20230823024500.GA25462@skinsburskii.>
- <e0ed9fb9-8e7a-44ad-976a-27362f6e537a@amazon.de>
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2055.outbound.protection.outlook.com [40.107.220.55])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1088A6FBA
+	for <iommu@lists.linux.dev>; Tue, 29 Aug 2023 23:03:59 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=gOeM9ZC80MipnftHhMj5sJucYdS7rE0bGUPQS6UmCI63i/AXklcIjUVbVKoI+4awwOqLYZZegPNJx9SNSfdecW1rDsQvg+JGxIPBKMdx793EggqlvhScCkL156Bh5px6cq1NOVhqOmgcMx0EJ2ayDm9nnrvCx5u52aXqF53wnqhQ/RMTZvWUeqRdMxCRWNv+wznPgZSX+z5npcd6T4SsOOKi+9Fir1y9hUbRAXeOBJ2Dto3QtWjV5Xyy/AOQJZrrBnqDqwwnbou3xgTUMHYVOAkMWppR2r7mZQFQZB4dlELmjNH5gBPxiSBaM0EwSPCHOwkYjtCWfdU6llcdn8R2pA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=rr43ZS1dym+rYgHfwmSxyBQZ0BGWV5W6ETkq0KHaEFY=;
+ b=J3BxmfiNpXr+s8oj35pqQOYgt2u+2rZ6T1kENmbW+7Hp7itmApxWltgUHCyjxKG2EH6XWCVp/cNnIQQvNjq6WnGFmQtreNfbxyd/g2jkS4OJR6I5dFcJ6ae16VdUPHr3wBKikgGf2mMCf0vkdniItF0EhTysVIxMn+kFznxONTk8xQOtx8u0FRNOjqxpqzvPCke7x57Qvc5Z+zZQ5f3oJX2v0AGkf+NdQoO1x/ZUcgNPSiKpcxdr5gqHl9KqmDDwcFxUboU2Ib3VMcALW3RWhOJOgLG/q3r/hCZziozG+q0jccO+H5tUcT+xneNj4KfTaiPfS7mh5AFCyu+RqdQbog==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.160) smtp.rcpttodomain=arm.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=rr43ZS1dym+rYgHfwmSxyBQZ0BGWV5W6ETkq0KHaEFY=;
+ b=gCtzlSqcYdZFSG159uIUkverq0W37iLWnaO0y2NUcTUvhCscxEdf8IqixrEOIHrVGAlUyWDtDZtfqS4kScVXthYeQ6iaY2qsjXq9QLkXGajF4r8sSoqK/FXk2a83+40zbBdg+zvIBaiMHPB6QOlEjof+muMO8cT/aUTum6txdrIQy8h5cdHdKI4eFd2CncHpBV7goxo0VOW0qc2C8c3RF7vYG60FYEdZJJUKCnOTx0T3WV8BQbFNRCDu5wAfJW5hZPC40LAkWZ60cZjyJm/7bgqUa5gAfJqvVsR0h7j7MSEg5WZbSciu24ORFfk8nyp7WTzfX63HlSfLBbxVyZj3uA==
+Received: from BYAPR06CA0038.namprd06.prod.outlook.com (2603:10b6:a03:14b::15)
+ by DS7PR12MB5861.namprd12.prod.outlook.com (2603:10b6:8:78::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6745.18; Tue, 29 Aug
+ 2023 23:03:55 +0000
+Received: from MWH0EPF000971E4.namprd02.prod.outlook.com
+ (2603:10b6:a03:14b:cafe::fa) by BYAPR06CA0038.outlook.office365.com
+ (2603:10b6:a03:14b::15) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6699.36 via Frontend
+ Transport; Tue, 29 Aug 2023 23:03:54 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ MWH0EPF000971E4.mail.protection.outlook.com (10.167.243.72) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6745.17 via Frontend Transport; Tue, 29 Aug 2023 23:03:54 +0000
+Received: from rnnvmail203.nvidia.com (10.129.68.9) by mail.nvidia.com
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Tue, 29 Aug 2023
+ 16:03:46 -0700
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail203.nvidia.com
+ (10.129.68.9) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Tue, 29 Aug
+ 2023 16:03:45 -0700
+Received: from Asurada-Nvidia (10.127.8.10) by mail.nvidia.com (10.129.68.7)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37 via Frontend
+ Transport; Tue, 29 Aug 2023 16:03:44 -0700
+Date: Tue, 29 Aug 2023 16:03:43 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Robin Murphy <robin.murphy@arm.com>
+CC: <will@kernel.org>, <jgg@nvidia.com>, <joro@8bytes.org>,
+	<jean-philippe@linaro.org>, <apopple@nvidia.com>,
+	<linux-kernel@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+	<iommu@lists.linux.dev>
+Subject: Re: [PATCH 2/3] iommu/arm-smmu-v3: Add an arm_smmu_tlb_inv_domain
+ helper
+Message-ID: <ZO55Tw4aTlMyaYO+@Asurada-Nvidia>
+References: <cover.1692693557.git.nicolinc@nvidia.com>
+ <854e2b3f2d4f1b76f916fcfc288b34526d4d4162.1692693557.git.nicolinc@nvidia.com>
+ <7e97b5a5-6be0-87a8-aaf7-89980b0a35d1@arm.com>
+ <ZOTqXmzs/wqgI1s6@Asurada-Nvidia>
+ <d1bf37be-6ce5-a446-2f5b-db94fa6a0776@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <e0ed9fb9-8e7a-44ad-976a-27362f6e537a@amazon.de>
+In-Reply-To: <d1bf37be-6ce5-a446-2f5b-db94fa6a0776@arm.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: MWH0EPF000971E4:EE_|DS7PR12MB5861:EE_
+X-MS-Office365-Filtering-Correlation-Id: 2bf588a1-7a3b-4900-0629-08dba8e437bb
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	npTZ3STHo3p5xrwaVf9Y7rhYvxTPxWIrs3d/xztWimCZCoi4NzzYFlcGzThszUBoYPjVtMKl7QjLOXN/xjNTL2xiGf6YYWGZJcspwsF9B07B7I0YXW9J+5lGYZYUuQpId+OWxlFxyhP78sAoDYAMsuqRqZsTkgDnDAfR6JTZorLs41fLXCpgZWOtHjInT9EhZGGgC32avcRvvGUDlZZIiY2fCR5xwDg7rm981ELsbR72c4z+hARPHP/I7MjgVOdqxQFMP7kWZ4Nd4n2KGdVGwzPxBiTIMpdNGN9RC0Hq3cxTG4ksoFA4rKPkY9Mc3Mcqkf/WK6Q5PAv6DC6IzdQy5D1l/QF5S+tQvEUIcaIPPv7fxhHE/6foTeiG10o9uEhG5P5ZKbkfV3oW7WcNOKKoYE82jdhZvbpvjGNCQqHxKSnEKN65aNt9piWwD6pww8PkFn1K+2Sx2Fk015/fIAJym0h4MvoB4yvONYETQUkInOgC3wV/vyb/m8AYr86WeJpb0q3utX1/mdPMxEAPSOYWeyzVSZihrmUElIUcKuKIoDHDglMfkFOfdvQUuODrdhQw5wNBbnEiUWsMFy8IK9i2sZc93jvDPBRIH/TSYQ9qHGYsvwxytNvNwp6rIrToZL4UbteDvGkSb1cxiTgtJa96C2y1yOJxRu8N2Nf6DL5MIRUY/p4rp412+Js3MYUq5Bm3dvMsD+C1pYJlw3vzx5iqHMewjH4m5Y6lN1BdkNJDR6UF+Ju6uiEqeL1mjLRfTfXE
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230031)(4636009)(39860400002)(396003)(376002)(136003)(346002)(82310400011)(451199024)(1800799009)(186009)(40470700004)(36840700001)(46966006)(40460700003)(9686003)(316002)(41300700001)(6916009)(66899024)(4326008)(426003)(336012)(83380400001)(2906002)(47076005)(86362001)(33716001)(55016003)(26005)(5660300002)(8676002)(40480700001)(36860700001)(8936002)(7636003)(82740400003)(356005)(54906003)(70206006)(53546011)(70586007)(478600001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Aug 2023 23:03:54.3133
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2bf588a1-7a3b-4900-0629-08dba8e437bb
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	MWH0EPF000971E4.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB5861
 
-On Mon, Aug 28, 2023 at 10:50:19PM +0200, Alexander Graf wrote:
-> +kexec, iommu, kvm
-> 
-> On 23.08.23 04:45, Stanislav Kinsburskii wrote:
+On Tue, Aug 29, 2023 at 10:54:00PM +0100, Robin Murphy wrote:
+> On 2023-08-22 18:03, Nicolin Chen wrote:
+> > On Tue, Aug 22, 2023 at 10:40:18AM +0100, Robin Murphy wrote:
 > > 
-> > +akpm, +linux-mm
+> > > On 2023-08-22 09:45, Nicolin Chen wrote:
+> > > > Move the part of per-asid or per-vmid invalidation command issuing into a
+> > > > new helper function, which will be used in the following change.
+> > > 
+> > > Why? This achieves nothing except make the code harder to follow and
+> > > disconnect the rather important comment even further from the code it is
 > > 
-> > On Fri, Aug 25, 2023 at 01:32:40PM +0000, Gowans, James wrote:
-> > > On Fri, 2023-08-25 at 10:05 +0200, Greg Kroah-Hartman wrote:
-> > > 
-> > > Thanks for adding me to this thread Greg!
-> > > 
-> > > > On Tue, Aug 22, 2023 at 11:34:34AM -0700, Stanislav Kinsburskii wrote:
-> > > > > This patch addresses the need for a memory allocator dedicated to
-> > > > > persistent memory within the kernel. This allocator will preserve
-> > > > > kernel-specific states like DMA passthrough device states, IOMMU state, and
-> > > > > more across kexec.
-> > > > > The proposed solution offers a foundational implementation for potential
-> > > > > custom solutions that might follow. Though the implementation is
-> > > > > intentionally kept concise and straightforward to foster discussion and
-> > > > > feedback, it's fully functional in its current state.
-> > > Hi Stanislav, it looks like we're working on similar things. I'm looking
-> > > to develop a mechanism to support hypervisor live update for when KVM is
-> > > running VMs with PCI device passthrough. VMs with device passthrough
-> > > also necessitates passing and re-hydrating IOMMU state so that DMA can
-> > > continue during live update.
-> > > 
-> > > Planning on having an LPC session on this topic:
-> > > https://lpc.events/event/17/abstracts/1629/ (currently it's only a
-> > > submitted abstract so not sure if visible, hopefully it will be soon).
-> > > 
-> > > We are looking at implementing persistence across kexec via an in-memory
-> > > filesystem on top of reserved memory. This would have files for anything
-> > > that needs to be persisted. That includes files for IOMMU pgtables, for
-> > > guest memory or userspace-accessible memory.
-> > > 
-> > > It may be nice to solve all kexec persistence requirements with one
-> > > solution, but we can consider IOMMU separately. There are at least three
-> > > ways that this can be done:
-> > > a) carving out reserved memory for pgtables. This is done by your
-> > > proposal here, as well as my suggestion of a filesystem.
-> > > b) pre/post kexec hooks for drivers to serialise state and pass it
-> > > across in a structured format from old to new kernel.
-> > > c) Reconstructing IOMMU state in the new kernel by starting at the
-> > > hardware registers and walking the page tables. No state passing needed.
-> > > 
-> > > Have you considered option (b) and (c) here? One of the implications of
-> > > (b) and (c) are that they would need to hook into the buddy allocator
-> > > really early to be able to carve out the reconstructed page tables
-> > > before the allocator is used. Similar to how pkram [0] hooks in early to
-> > > carve out pages used for its filesystem.
-> > > 
-> > Hi James,
+> > We need the same if-else routine to issue a per-asid or per-vmid
+> > TLBI command. If making a copy of this same routine feels better
+> > to you, yea, I can change that.
 > > 
-> > We are indeed working on similar things, so thanks for chiming in.
-> > I've seen pkram proposal as well as your comments there.
+> > > significant to. It's not like we need a specific prototype to take a
+> > > function pointer from, it's just another internal call - see
+> > > arm_smmu_flush_iotlb_all() for instance. We know the cookie is an
+> > > arm_smmu_domain pointer because we put it there, and converting it back
+> > > from a void pointer is exactly the same *at* the function call boundary
+> > > as immediately afterwards.
 > > 
-> > I think (b) will need some persistent-over-kexec memory to pass the
-> > state across kexec as well as some key-value store persisted as well.
-> > And the proposed persistent memory pool is aimed exactly for this
-> > purpose.
-> > Or do you imply some other way to pass driver's data accross kexec?
+> > Hmm, I am not quite following this. What do you suggest here?
 > 
+> Oh, this is becoming quite the lesson in not reviewing patches in a hurry :(
 > 
-> If I had to build this, I'd probably do it just like device tree passing on
-> ARM. It's a single, physically contiguous blob of data whose entry point you
-> pass to the target kernel. IIRC ACPI passing works similarly. This would
-> just be one more opaque data structure that then needs very strict
-> versioning and forward/backward compat guarantees.
+> Apparently I managed to misread the diff and the horribly subtle
+> difference between "arm_smmu_tlb_inv_domain" and
+> "arm_smmu_atc_inv_domain", and think that arm_smmu_tlb_inv_context() was
+> already just dealing with the TLBI command and you were moving the
+> entire body into the new helper. Sorry about that.
 > 
+> Still, the part about the comment remains true, and I think it goes to
+> show what a thoroughly horrible naming scheme it is to have "tlb_inv"
+> denote a function responsible for TLBI commands and "atc_inv" denote a
+> function responsible for ATC commands and "tlb_inv" denote a function
+> responsible for both TLBI and ATC commands...
 
-Device tree or ACPI are options indeed. However AFAIU in case of DT user
-space has to involved into the picture to modify and complie it, while
-ACPI isn't flexible or easily extendable.
-Also, AFAIU both these standards were designed with passing
-hardware-specific data in mind from bootstrap software to an OS kernel
-and thus were never really intended to be used for creating a persistent
-state accross kexec.
-To me, an attempt to use either of them to pass kernel-specific data looks
-like an abuse (or misuse) excused by the simplicity of implementation.
+Well, "atc_inv" is quite clear I think. But the"tlb_inv" might
+not be, as you pointed out.
 
-> 
-> > I dind't consider (c) yet, thanks for for the pointer.
-> > 
-> > I have a question in this scope: how is PCI devices registers state is persisted
-> > across kexec with the files system you are working on? I.e. how does
-> > driver know, that the device shouldn't not be reinitialized?
-> 
-> 
-> The easiest way to do it initially would be kernel command line options that
-> hack up the drivers. But I suppose depending on the option we go with, you
-> can also use the respective "natural" path:
-> 
-> (a) A special metadata file that explains the state to the driver
-> (b) An entry in the structured file format that explains the state to the
-> target driver
-> (c) Compatible target drivers try to enumerate state from the target
-> device's register file
-> 
+So, we have:
+ tlb_inv_range_asid: tlbi only (NH_VA/EL2_VA) // used by SVA too
+ tlb_inv_range_domain:
+ 	if (S1)
+		tlb_inv_range_asid();	// NH_VA/EL2_VA
+	else
+		tlbi only (S2_IPA);
+	atc();
+ tlb_inv_asid: tlbi (NH_ASID)	// only used by tlb_inv_context()
+ tlb_inv_context:
+ 	if (S1)
+		tlb_inv_asid();	// NH_ASID
+	else
+		tlbi only (S2_VMALL);
+	atc();
 
-Command line option is the simplest way to go indeed, but from my POV
-it's good only for pointing to a particualr object, which is persisted
-somehow else. But it we have a persistence mechanism, then I think we
-can make another step forward and don't use command line at all (which
-is a bit cumbersome and errorprone due to it's human-readable and
-serialized nature).
+Then, what this patch wants another non-atc:
+ tlb_inv_asid: tlbi (NH_ASID)	// only used by tlb_inv_domain()
+ tlb_inv_domain: 		// new
+ 	if (S1)
+		tlb_inv_asid();	// NH_ASID
+	else
+		tlbi only (S2_VMALL);
+ tlb_inv_context:
+ 	tlb_inv_domain();
+	atc();
 
-I'm leaning towards some kind of "natural" path you mentioned... I guess
-I'm a bit confused with the word "file" here, as it sounds line it
-implies a file system driver, and I'm not sure that's what we want for
-driver specific data.
+The problem of this is that it conflicts with the naming used in
+other tlb_inv_range_domain() that does an atc().
 
-> 
-> > 
-> > > > > Potential applications include:
-> > > > > 
-> > > > >    1. Allowing various in-kernel entities to allocate persistent pages from
-> > > > >       a singular memory pool, eliminating the need for multiple region
-> > > > >       reservations.
-> > > > > 
-> > > > >    2. For in-kernel components that require the allocation address to be
-> > > > >       available on kernel kexec, this address can be exposed to user space and
-> > > > >       then passed via the command line.
-> > > Do you have specific examples of other state that needs to be passed
-> > > across? Trying to see whether tailoring specifically to the IOMMU case
-> > > is okay. Conceptually IOMMU state can be reconstructed starting with
-> > > hardware registers, not needing reserved memory. Other use-cases may not
-> > > have this option.
-> > > 
-> > Well, basically it's IOMMU state and PCI devices to skip/avoid
-> > initializing.
-> > I bet there can be other misc (and unrelated things) like persistent
-> > filesystems, block devices, etc. But I don't have a solid set of use
-> > cases to present.
-> 
-> 
-> Would be great if you could think through the problem space until LPC so we
-> can have a solid conversation there :)
-> 
+Perhaps, we could rename to the following patterns?
+ tlb_inv_range_asid:	// used by SVA too
+ tlb_inv_range_domain:
+ 	if (S1)
+		return tlb_inv_range_asid();
+	else
+		tlbi only (S2_IPA)
+ tlb_inv_range_domain_with_atc:
+ 	tlb_inv_range_domain();
+	atc();
 
-Yeah, I have a few ideas I'll try to implement and share before LPC.
-Unfortunatelly I'm not planning to attend it this year, so this
-conversation will be without me.
-But I'll do my best to provide as much content to discuss as I can.
+ # remove tlb_inv_asid() since it doesn't help much
+ tlb_inv_domain:
+ 	if (S1)
+		tlbi only (NH_ASID)
+	else
+		tlbi only (S2_VMALL)
+ tlb_inv_domain_with_atc:
+ 	tlb_inv_domain();
+	atc();
 
-> 
-> > 
-> > > > As you have no in-kernel users of this, it's not something we can even
-> > > > consider at the moment for obvious reasons (neither would you want us
-> > > > to.)
-> > > > 
-> > > > Can you make this part of a patch series that actually adds a user,
-> > > > probably more than one, so that we can see if any of this even makes
-> > > > sense?
-> > > I'm very keen to see this as well. The way that the IOMMU drivers are
-> > > enlightened to hook into your memory pool will likely be similar to how
-> > > they would hook into my proposal of an in-memory filesystem.
-> > > Do you have code available showing the IOMMU integration?
-> > > 
-> > No, I don't have such a code yet.
-> > But I was thinking that using such a allocator in the mempool allows
-> > to hide this implementation under the hood of an existent generic
-> > mechanism, which is then can be used to create persistent objects (file
-> > system, for example) on top of it.
-> 
-> 
-> Unfortunately it's practically impossible to have a solid conversation on
-> generic mechanisms without actual users to see how they fit in with the real
-> world. That's Greg's answer to your patch set and I tend to agree. What if
-> (b) or (c) turn out much more viable? Then we've wasted a lot of effort in
-> shaping up the allocator for no good reason.
-> 
+ tlb_inv_context:
+ 	struct arm_smmu_domain *smmu_domain =
+		(struct arm_smmu_domain *cookie);
+	tlb_inv_domain_with_atc(smmu_domain);
 
-This is fair.
-I sent such a small piece, because I wanted to get some opinions about
-the approach in general without too much investement into.
-Thanks to you and Greg, I now have the feadeback I was looking for, so
-I'm planning to come up with a series including in-kernel users, like
-Greg suggested.
-
-Thanks,
-Stanislav
-
+Thanks
+Nicolin
