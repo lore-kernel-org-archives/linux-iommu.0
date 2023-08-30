@@ -1,145 +1,159 @@
-Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com [209.85.221.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2042.outbound.protection.outlook.com [40.107.93.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB64920E2
-	for <iommu@lists.linux.dev>; Wed, 30 Aug 2023 12:49:24 +0000 (UTC)
-Received: by mail-wr1-f42.google.com with SMTP id ffacd0b85a97d-31c615eb6feso4648295f8f.3
-        for <iommu@lists.linux.dev>; Wed, 30 Aug 2023 05:49:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1693399763; x=1694004563; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=icItx3AAoUpU7OYRWsoDm1Wmtkp4XHu2/zCUAdAv9gQ=;
-        b=mvi6OouLgGBkywCHHJ7cTFi2HSaXmQeokn0NViqu0giVJIUuBObwLv6QwFYYkVJbZH
-         tsJhRWqDC3mwTFde/kVPpomN4X2/Ow7yjm1yXrxS7VFmDau7ShNc2J1ff3CA0dALo0KP
-         zeOT1/cd0SMlDOtqoPaH9lNI1O15byzFSXS65k7Qpq60phvF+dafe7zA4SiLD7iAoYhQ
-         cWpXWvYlc2v1N1rynOcrfmYStSSWgp2Wlb1e3miMjOTmN0SFf3VOrqEm9I4q/hMSAVK4
-         oxj4WcHs2usU0qLWEoFwUqHql8x9kE38eYJ/Mve9NqcgiExE6jay01XkMICZaC9U7d3r
-         /ugw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1693399763; x=1694004563;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=icItx3AAoUpU7OYRWsoDm1Wmtkp4XHu2/zCUAdAv9gQ=;
-        b=Pi539jlRdCSTpZQwh3ULT2YLFntzO88ozapx2Rm/HKqifOXzzgzdJvoGF+BRIYCMnz
-         2oCZtrduGBqTJrjREVxLOJbIs6Bc9K9bPK4cQGYmHxHgKKGvYdTLW4sufji3bQ+Q/pTP
-         EYj/7zdzJB3fN9cmORfVnFg8R8VAxKOQNdfjV5OEhvFxKw07BTUBFB9RVDFquxI7zmT9
-         WQyj/aRNR//BYEruW4amy3+Kd8R0Np0kEXn69kgryphMp6TfG+4q1bgM6Ljng+66vHv8
-         AoQdntEi8w/cYHEpunlew3TPFaLGKBz0bCS7FNkQkUx9mf3RqwKhKgmcPJf7GXVr31eW
-         psdA==
-X-Gm-Message-State: AOJu0YxaP6UeY0qSyC8QzVG3M6znJsG+wAdf6wty5qerGiIkk+qEWalh
-	0mqyI/WdXBKU2b9GbVQatkyxAA==
-X-Google-Smtp-Source: AGHT+IFlrU3LzNvhPuoIhYIOnZuXm+ouW+s6lNZGIAycwz4s7bnL1qAxU7DUK56J7UtJR+G7QVKLVA==
-X-Received: by 2002:adf:efc7:0:b0:319:6d91:28bf with SMTP id i7-20020adfefc7000000b003196d9128bfmr1741339wrp.60.1693399762716;
-        Wed, 30 Aug 2023 05:49:22 -0700 (PDT)
-Received: from myrica ([2.220.83.24])
-        by smtp.gmail.com with ESMTPSA id n9-20020a5d6609000000b0030647449730sm16542269wru.74.2023.08.30.05.49.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 30 Aug 2023 05:49:22 -0700 (PDT)
-Date: Wed, 30 Aug 2023 13:49:19 +0100
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: Vasant Hegde <vasant.hegde@amd.com>
-Cc: "Tian, Kevin" <kevin.tian@intel.com>,
-	Baolu Lu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>, Nicolin Chen <nicolinc@nvidia.com>,
-	"Liu, Yi L" <yi.l.liu@intel.com>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v4 09/10] iommu: Make iommu_queue_iopf() more generic
-Message-ID: <20230830124919.GA2855675@myrica>
-References: <20230825023026.132919-1-baolu.lu@linux.intel.com>
- <20230825023026.132919-10-baolu.lu@linux.intel.com>
- <BN9PR11MB52762A33BC9F41AB424915688CE3A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <cbfbe969-1a92-52bf-f00c-3fb89feefd66@linux.intel.com>
- <BN9PR11MB52768891BC89107AD291E45C8CE6A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <a4fc5fa2-a234-286b-e108-7f54a7c70862@amd.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B88B33D7C
+	for <iommu@lists.linux.dev>; Wed, 30 Aug 2023 14:34:17 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=QgP9sgyTzgQ4gODBvLMAOFG/iO7WMd5h8DLi5++dGRIB1JCPHxLE2QMnnaUaGsPU3PgvcS+9EF9nty2COZqESc+QDH7re37rbSkSlgCWSOkpX41gy63goTWhztR6mQocMC+IAA7bTD1/j2k4lexe5JFHqDdcg7JyvUuC11JYrEtuqf/p3Vu0vDIemJc+T2BeDOjHAB2tKgHqYNegUMYL8dZv+4e5vWc+GQl9veu2Ipi4D6rzFJ4ApO+0f7SkvxPF+J9JCtHphIKjvHYR+BP1SClqbDeWgMMP4qhJ+mmp0xOjUtVlffTC5os2Kc2Y6rj7oCXykzxl7GpBE28VQ/UD1A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=I+3b/ZGKE1DhfHC+/4J2deKOkA4MdJ8/Eda+IoWw/ns=;
+ b=YXt6fR9S9pzo3r+Lbwox0/5iaskp0+tLaJSraWJ+zNkvuCUI/3oQ1Wrii7db6FLuos1FaugqPgq6NdnAuUGTcOsdqkqAwZS/sijbwOKoNZkLttj0epqe96vZLW3n+mXDWcX7oAccrZHC66NABw2vBefTX1/loFRu6bEznzozgS4fptCBO7scuMETmqFRZfDUgRbktnjc6XIQGwCD6S28H6nGfiibTzltERnsPHgAMlYx97GYu72D3SqRZiRebNnhRqyYXiWFP3uy/P8TOwcf8e2SbIjNcWK8OfNmTpOKX6VzP+REn4ApRw1TEXB8yDyPCaA/51S+MMsDwGR0yCjOOA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=I+3b/ZGKE1DhfHC+/4J2deKOkA4MdJ8/Eda+IoWw/ns=;
+ b=JXoVOVM3YTQtlk1X+/SDQvdORLdtnviCtiVkEiFn1p3BSPODxAdSKov6y6zLuLFfHPPAbmq/ErsA+ovpIzC7K+pswPmkZRLj+a7SpkVTWooWWFeGZ8iXnt9Ny9BJ+b5NJDL7AgceVwKymgNAx8C8gFQOsmFmJW0sMyg9gcpxdQw=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DS7PR12MB6048.namprd12.prod.outlook.com (2603:10b6:8:9f::5) by
+ SN7PR12MB8130.namprd12.prod.outlook.com (2603:10b6:806:32e::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6699.34; Wed, 30 Aug
+ 2023 14:34:14 +0000
+Received: from DS7PR12MB6048.namprd12.prod.outlook.com
+ ([fe80::67ec:80e:c478:df8e]) by DS7PR12MB6048.namprd12.prod.outlook.com
+ ([fe80::67ec:80e:c478:df8e%7]) with mapi id 15.20.6745.020; Wed, 30 Aug 2023
+ 14:34:13 +0000
+Message-ID: <af157bc3-e3b8-3969-fb53-b81f4b24d76b@amd.com>
+Date: Wed, 30 Aug 2023 20:04:00 +0530
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH RESEND 08/10] iommu/amd: Add support for add/remove device
+ for IOPF
+Content-Language: en-US
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: iommu@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com,
+ wei.huang2@amd.com, jsnitsel@redhat.com
+References: <20230823140415.729050-1-vasant.hegde@amd.com>
+ <20230823140415.729050-9-vasant.hegde@amd.com> <ZOYmtQiwsodtm/Eu@ziepe.ca>
+From: Vasant Hegde <vasant.hegde@amd.com>
+In-Reply-To: <ZOYmtQiwsodtm/Eu@ziepe.ca>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: PN3PR01CA0062.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:c01:99::11) To DS7PR12MB6048.namprd12.prod.outlook.com
+ (2603:10b6:8:9f::5)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <a4fc5fa2-a234-286b-e108-7f54a7c70862@amd.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS7PR12MB6048:EE_|SN7PR12MB8130:EE_
+X-MS-Office365-Filtering-Correlation-Id: 7d3ef434-2cff-448c-d7dd-08dba9662e87
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	t7aI/ikcFIFtKNT7jjujzl8kHhtOdOSt4BmxudpEDcH1wV1hQMN88sPGk91s4nknk4NBkX8WhtF6pE+SrqzpUbyrecPUPUtvsDJnAXSYfr7Kchv6CR28cryu0jrmVeMovVS6auYtA4Xl6R67RuU+qifrUAg8OhYZyf3kQPfkqjL2TcIyHkz3op6wzx8AHGfCwx8U3p2IR44yHPtlaeUpJoqkP5qWHz1Y/YXUSDUhu4bpaiiHYqdp0aTjEIJz8/ZLt8L+8ARTP7DwFRaSPQJa800GIZRGuuMxnMMvVCTdS6G2vj2RMLyvgpORU3NJu2g6Xl0zlxNIBnKUc8grKCzWFm9Yhp48DBNmeYR62++N0Fnp25NoBVKwM+XLMIy4JZl0aTtqubfCBHy2cj0FN385Mvv/39UlJPugoQupzkevxX6WzJG3UYpwogGWhwsIzXrma6w5SRhXkBZuAKHTS1YEQx6rU60VUhTvFtVMeL2Mxb3Xboz+j9FIuwteX0RxK2DPmhCKq8pyDXwmorDYire11dtG17QvlvWF+sHvZjRSgXMZUjjRG3uV51koDB/Tp19MAfUoATRg/9XJxEH4nBPi/qOubH6ymJUWbIbF7mzDj8up6Whv7WLtkKbfhJrvWjzBCa5CT+/H5aEL6hx3ttK6KA==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6048.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(39860400002)(366004)(376002)(396003)(136003)(346002)(451199024)(186009)(1800799009)(31696002)(6506007)(6512007)(6666004)(53546011)(2616005)(6486002)(8936002)(66556008)(5660300002)(2906002)(86362001)(36756003)(6916009)(4326008)(66946007)(316002)(41300700001)(66476007)(38100700002)(8676002)(44832011)(83380400001)(478600001)(966005)(26005)(31686004)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?ZGpjSnJBK1Z1K0lXeW1TbUZYeUY0cDkyaXVGK0hwSFFzUHpqUFppaXh1Ujla?=
+ =?utf-8?B?QU0yTktJSkkyZ3h0TXlHTFFnRGdoc1d3S2hQZHYrWDRMb2QyWFQvZ3FCd0xS?=
+ =?utf-8?B?R3RKM25SdEZrb29ndzd2TCsvRngyUEhoYVE5NU83c0ZLVnI1bktFZEhBZ1Nu?=
+ =?utf-8?B?ZWx5NzdKejJJQmQ3aGFMekY4QTlHbjlDWVFVL0RGY3UwL3V6Z2R6TGlSVDlx?=
+ =?utf-8?B?OGFFcmZTYkRJWW1keEVSSWtxNHZZL1c4Y3VEemYvaHdmSHJnTUJHbDZZTUMw?=
+ =?utf-8?B?V2JFamYrVGVEdGJtYkFzS0RhWjI1RU00dzB5K2pqdjR6bXoydUFFUkN0K281?=
+ =?utf-8?B?M05ubU1yMU1FcVk4Y01nYXBCZk90OHBwdEJ1clgycXpwUVZsK1NYenhyck1V?=
+ =?utf-8?B?WDFWbUczZjN5U3hCVEFYMGQvNlc0Vkp5d1MwT0xiNzkrUkFMMDJHdk95cVVk?=
+ =?utf-8?B?UjBxMGVyU1Y2Sjk4NFpEK3JXUjlSSk1uRmJVcktJVlNsOUZjL2dNNFNnczA0?=
+ =?utf-8?B?YTJ2bTZQWGNpbVhVS0lKR0xHN3Z1RFUrOVRGTUhiYjNnTjNrZWJBZnBhTkxl?=
+ =?utf-8?B?eHJkSWFDZWxKNzFjR0ZZT2YwcXJaeEpoR0xDNXlsdnVOWkd4eVpvUEcrK01i?=
+ =?utf-8?B?UXNxSklLeXBPdENYRG5lOTVpMHJUdE5GU2gxcWluQkpON0JkL0pzemRmd2x5?=
+ =?utf-8?B?N2poRFBPVnd0VmNzU2VqY0NZVGFKeVVXQmtOZ3FIWkV5dmt4bWpzbGt5eXFn?=
+ =?utf-8?B?L05NT3pmOHdyM3laLzV5R0UzQS9UZzMzUVZXY0MzYW9WNTdLVGErTE9GY2No?=
+ =?utf-8?B?cG4rTUcwZlVmRnNadHhlU1VHa2ZESUpTVTkvS1hScjVEUUl5NHRrRC93TW5v?=
+ =?utf-8?B?YjE2Qldqb0dBOHNzdEd6L2JLbjZiVXQ0UjMwdU5wSEU5U3A5ZndXWXJRT2ZN?=
+ =?utf-8?B?czdQdWwyY24yTHV4dWhVRjg2T3hFL0tjcm1POVA5dVVKZ294Vm5xbWFVZlN1?=
+ =?utf-8?B?K0FvaksxRHhEZlFwR0lOOTdoWnBuVEpNT1U1L3p4blpCekRpUko3Wlhqa3FY?=
+ =?utf-8?B?eW95SnZ5dU5UV2tPa0l6MnpQdUdkWithYTk1dGhNeXg0OU53aW5sVmw4dzJR?=
+ =?utf-8?B?SDJxYUN3THhpejAxZEpUejZ0SFpjS1AxZDdwb1JnQ3dRZG1PZzJYcEdYVzY1?=
+ =?utf-8?B?amxHRlpLTVl6ZmlaM0VvaHRTMkdxb292dXRQR2U3aVFrMlFzYmJ4TStiM2ht?=
+ =?utf-8?B?TisrM0s5L3RWaFdUUEhnSWt5SU9qNnRFTFhPRkpzM2MrR00xdU1RekdLOERa?=
+ =?utf-8?B?RDl0ODdvU1d4NW1jNFhEWnZYUFFTMHZWakNIeWI4RkxpYWpwSEcwYXQxa0RB?=
+ =?utf-8?B?Ly9kOGZMTWRtVjRZY1RWRmhyMVRPM3RBS1FNNDhUSGtjOG45VktDZzFDV3Bj?=
+ =?utf-8?B?aUtyNGRScE03dXVrOWZtWmVwUzdpb3dLK2M2K2RhdDNoeTFCdUZHOXFzK3JL?=
+ =?utf-8?B?eThEZHBCUzdYNzB5NGhqKzd6dU8zam5LVkZpTFVhcSt4VnphYlFKREtvTFdl?=
+ =?utf-8?B?LzloZmRRM2s4TE5CUDFMMUJjcldpWHZOS3JjTnBVWm43N08wYWFVK3lHOU5D?=
+ =?utf-8?B?YzZVRHRya0tQdnhFbm9kN2JmOUxZT1lkOTBDNmZZUjNaazZSMzZQRm9aak5X?=
+ =?utf-8?B?Uy9odlpTRmpFcE4rN3JxNFlrV2MrR3hDZUVuei9zZGJMTWtmRkpZYXljUkFp?=
+ =?utf-8?B?YWl6SGtIN3BDVU5IS3ZkVkFlMjdaRlRmVDNvUFhBdHRwNWdIV0VyenhHVEtO?=
+ =?utf-8?B?RkJTUDJFcUZRWkZaV2M3VmZMN29hekpPakUxNmJNTFd6WndJSHVjNklFeFY5?=
+ =?utf-8?B?R0ZmL3M4V1g4UW5VZFFlelNhMXh6OVdLeGRMRnBoNVlzc01namFEQWZvaDdn?=
+ =?utf-8?B?dXRpbk1ncCtGQkRsV3NCUjVVZG9YWEg0QktkL2o1bHZMMkkveWV0b2RnU3By?=
+ =?utf-8?B?ak1CQStINnhUajBTL1MvOGFUUTdmUm9taUFFekZXakk1Yk1qQ21Bd0NaUnpY?=
+ =?utf-8?B?djFUNE8rSDNOSEFmREpyWUd5YWN3MmgrZ2FVUmh0aDFRdUkraFR1ZW1kVGxC?=
+ =?utf-8?Q?jxFjtq5Z1CQ2n1rgaNlKDibZQ?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7d3ef434-2cff-448c-d7dd-08dba9662e87
+X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6048.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Aug 2023 14:34:13.7593
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: VQFLFnGLwY7vUXqyZ9pH1/CNQWuRlR8mgwFy72gTNyzsVrZkUZ4FYqAZmgQ5yck6+qBfEz/e0swVyHa9fw1dfA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB8130
 
-On Wed, Aug 30, 2023 at 04:32:47PM +0530, Vasant Hegde wrote:
-> Tian, Baolu,
-> 
-> On 8/30/2023 1:13 PM, Tian, Kevin wrote:
-> >> From: Baolu Lu <baolu.lu@linux.intel.com>
-> >> Sent: Saturday, August 26, 2023 4:01 PM
-> >>
-> >> On 8/25/23 4:17 PM, Tian, Kevin wrote:
-> >>>> +
-> >>>>   /**
-> >>>>    * iopf_queue_flush_dev - Ensure that all queued faults have been
-> >>>> processed
-> >>>>    * @dev: the endpoint whose faults need to be flushed.
-> >>> Presumably we also need a flush callback per domain given now
-> >>> the use of workqueue is optional then flush_workqueue() might
-> >>> not be sufficient.
-> >>>
-> >>
-> >> The iopf_queue_flush_dev() function flushes all pending faults from the
-> >> IOMMU queue for a specific device. It has no means to flush fault queues
-> >> out of iommu core.
-> >>
-> >> The iopf_queue_flush_dev() function is typically called when a domain is
-> >> detaching from a PASID. Hence it's necessary to flush the pending faults
-> >> from top to bottom. For example, iommufd should flush pending faults in
-> >> its fault queues after detaching the domain from the pasid.
-> >>
-> > 
-> > Is there an ordering problem? The last step of intel_svm_drain_prq()
-> > in the detaching path issues a set of descriptors to drain page requests
-> > and responses in hardware. It cannot complete if not all software queues
-> > are drained and it's counter-intuitive to drain a software queue after 
-> > the hardware draining has already been completed.
-> > 
-> > btw just flushing requests is probably insufficient in iommufd case since
-> > the responses are received asynchronously. It requires an interface to
-> > drain both requests and responses (presumably with timeouts in case
-> > of a malicious guest which never responds) in the detach path.
-> > 
-> > it's not a problem for sva as responses are synchrounsly delivered after
-> > handling mm fault. So fine to not touch it in this series but certainly
-> > this area needs more work when moving to support iommufd. 😊
-> > 
-> > btw why is iopf_queue_flush_dev() called only in intel-iommu driver?
-> > Isn't it a common requirement for all sva-capable drivers?
+Jason,
 
-It's not needed by the SMMUv3 driver because it doesn't implement PRI yet,
-only the Arm-specific stall fault model where DMA transactions are held in
-the SMMU while waiting for the OS to handle IOPFs. Since a device driver
-must complete all DMA transactions before calling unbind(), with the stall
-model there are no pending IOPFs to flush on unbind(). PRI support with
-Stop Markers would add a call to iopf_queue_flush_dev() after flushing the
-SMMU PRI queue [2].
+On 8/23/2023 9:03 PM, Jason Gunthorpe wrote:
+> On Wed, Aug 23, 2023 at 02:04:13PM +0000, Vasant Hegde wrote:
+> 
+>> diff --git a/drivers/iommu/amd/ppr.c b/drivers/iommu/amd/ppr.c
+>> index 8cbcdb9c1669..2e5ca4847eda 100644
+>> --- a/drivers/iommu/amd/ppr.c
+>> +++ b/drivers/iommu/amd/ppr.c
+>> @@ -168,3 +168,53 @@ int amd_iommu_page_response(struct device *dev,
+>>  	return amd_iommu_complete_ppr(pdev, resp->pasid, resp->code,
+>>  				      resp->grpid);
+>>  }
+>> +
+>> +int amd_iommu_iopf_add_device(struct amd_iommu *iommu, struct device *dev)
+>> +{
+>> +	unsigned long flags;
+>> +	int ret = -EINVAL;
+>> +
+>> +	raw_spin_lock_irqsave(&iommu->lock, flags);
+>> +
+>> +	if (!iommu->iopf_queue)
+>> +		goto out;
+>> +
+>> +	ret = iopf_queue_add_device(iommu->iopf_queue, dev);
+>> +	if (ret)
+>> +		goto out;
+>> +
+>> +	ret = iommu_register_device_fault_handler(dev, iommu_queue_iopf, dev);
+>> +	if (ret)
+>> +		iopf_queue_remove_device(iommu->iopf_queue, dev);
+>> +
+>> +out:
+>> +	raw_spin_unlock_irqrestore(&iommu->lock, flags);
+>> +	return ret;
+>> +}
+> 
+> Please assume the iopf rework will arrive before your series:
+> 
+> https://lore.kernel.org/linux-iommu/20230817234047.195194-1-baolu.lu@linux.intel.com/
 
-Moving the flush to the core shouldn't be a problem, as long as the driver
-gets a chance to flush the hardware queue first.
+Sure. I will rebase/rework patches on top of this series.
 
-Thanks,
-Jean
-
-[2] https://jpbrucker.net/git/linux/commit/?h=sva/2020-12-14&id=bba76fb4ec631bec96f98f14a6cd13b2df81e5ce
-
-> 
-> I had same question when we did SVA implementation for AMD IOMMU [1]. Currently
-> we call queue_flush from remove_dev_pasid() path. Since PASID can be enabled
-> without ATS/PRI, I thought its individual drivers responsibility.
-> But looking this series, does it make sense to handle queue_flush in core layer?
-> 
-> [1]
-> https://lore.kernel.org/linux-iommu/20230823140415.729050-1-vasant.hegde@amd.com/T/#t
-> 
-> -Vasant
-> 
-> 
+-Vasant
