@@ -1,87 +1,133 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from wout2-smtp.messagingengine.com (wout2-smtp.messagingengine.com [64.147.123.25])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 07F95749B
-	for <iommu@lists.linux.dev>; Wed, 30 Aug 2023 21:50:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C09E1C433C7;
-	Wed, 30 Aug 2023 21:50:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1693432204;
-	bh=OGc+LfkYBQySHlSntBlsKXI/UcufIS548SjZfr7mroQ=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=Rd8Q6DhBwUgRClZMRUKSEtwN+6EDSNQNpVA6FiKuJBnQqyJpF6gZFIb8quGIcb98H
-	 iTP73712DKtlzoti6gemSAePS8lw2/HXExBVPWLM1vOAeykoKCr8kSskeK9uWCI9AJ
-	 GhjTiXJPvmx6hCAHk4SWdAX2tVVD3JBBozMWBQ9PKq+q2F6EKbDDywiKytQgMO9DNa
-	 KDeei3iDgN4iSl3oRaHB4PzRi6Xb9UpO39ErUtl9DETNSQ/GSpU14Ojk9PSOtN3AkY
-	 O8H3Bi2n4ymg08fd3dTTh6qdcoQzm2kvv2e8aH4O12IlVIiL7ssD10FLC5rdfa2PWd
-	 yysHdw5ehQ8Sg==
-Date: Wed, 30 Aug 2023 22:49:59 +0100
-From: Will Deacon <will@kernel.org>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: Robin Murphy <robin.murphy@arm.com>, jgg@nvidia.com, joro@8bytes.org,
-	jean-philippe@linaro.org, apopple@nvidia.com,
-	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev
-Subject: Re: [PATCH 1/3] iommu/io-pgtable-arm: Add nents_per_pgtable in
- struct io_pgtable_cfg
-Message-ID: <20230830214958.GA30121@willie-the-truck>
-References: <cover.1692693557.git.nicolinc@nvidia.com>
- <0fe68babdb3a07adf024ed471fead4e3eb7e703f.1692693557.git.nicolinc@nvidia.com>
- <f468b461-b203-5179-eb6d-9432b9911329@arm.com>
- <ZOTlcFs2NG6nJEPN@Asurada-Nvidia>
- <61f9b371-7c45-26b1-ec0f-600765280c89@arm.com>
- <ZO5R5i4n2WI2GnKQ@Asurada-Nvidia>
- <d234fa8d-d945-3f7f-1110-fe55bea88587@arm.com>
- <ZO5uGKzGsaliQ1fF@Asurada-Nvidia>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 004FB6FA1
+	for <iommu@lists.linux.dev>; Wed, 30 Aug 2023 23:39:43 +0000 (UTC)
+Received: from compute6.internal (compute6.nyi.internal [10.202.2.47])
+	by mailout.west.internal (Postfix) with ESMTP id 9DB6C32008FB;
+	Wed, 30 Aug 2023 19:39:40 -0400 (EDT)
+Received: from imap51 ([10.202.2.101])
+  by compute6.internal (MEProxy); Wed, 30 Aug 2023 19:39:42 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
+	:cc:content-type:content-type:date:date:from:from:in-reply-to
+	:in-reply-to:message-id:mime-version:references:reply-to:sender
+	:subject:subject:to:to; s=fm3; t=1693438780; x=1693525180; bh=M9
+	gCOekIM2huAR+ziQ0XQjqHbftSph1uDZZYkRIXuOY=; b=h0nbIFQABAhkUtYLOb
+	Nc80hXI+gmNKqPcCnLnMjBtZq38DP3F7i1vexStaKEZtfIl0l0X4JJ7jLPZf4CWp
+	RrYIbrwHVosg+gMbqdOFjoi/HpXZSgXAbYRfWfQnp9sXkxcGwRFe+hSjkOi5agDO
+	4pcMR6WRbtzbtH0r9BJ8lLBtrfUBWPls5LdOEYPwuBJ7FPJkswg5Y0A+k40RbRjl
+	GgK0xD3yx8j+iVu13aZImwLK0pZO+CVOk3I1zQSb99e5L+7fKTieHfCfSkxMBmby
+	mUvB8wnqOTYDolIXih7WcxLG6jqiSwBXsnCUt4WeJDZ3/hRvil1yMyQYTNiVVppM
+	SEmA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-type:content-type:date:date
+	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
+	:message-id:mime-version:references:reply-to:sender:subject
+	:subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+	:x-sasl-enc; s=fm1; t=1693438780; x=1693525180; bh=M9gCOekIM2huA
+	R+ziQ0XQjqHbftSph1uDZZYkRIXuOY=; b=QEKf/B1hGP+3+lNgIbPPHKf6dWjAv
+	Kl3cKbpGmMeyoz1x39J42uhNWzDtFm86wco3daCRHL5X1YJkdPCQg+sJWQQFsHOG
+	XEzju8k85UTDZaiG+HB69EI5g6cLpVBSCQ0tq5lnJfiFnOrVch9v5NPiHAtgpyJ8
+	0/uergth478HofL+FedcUigFE9Ykbqk8F3BEYaxI3eH/wuHlaRmqT29W/80I70vn
+	Y+7Bd9DyacXJSbZ7+NTNuTiZ5nIbDGQMTOF/h0XdX5pOs5I2HsQgPDEmCYNxfL3M
+	3L5ADpyteoc67NJRZnq/c+h2gms0EueCAIfdjTSTPOq8EAyg0KpZChpaQ==
+X-ME-Sender: <xms:O9PvZOqOKu1IV6AEth8ocsibmTvUGjaTopAfD6P9AzWfyxjjwEVcXw>
+    <xme:O9PvZMoxMys15V9ewrjpNPKjLqvAb0Fiwv4EeszY18XziVeNvLY8l-WKzfhqAwVho
+    VzRRTsA5dcBGlYEzCc>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedviedrudefledgvdefucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepofgfggfkjghffffhvfevufgtsehttdertderredtnecuhfhrohhmpedftehr
+    nhguuceuvghrghhmrghnnhdfuceorghrnhgusegrrhhnuggsrdguvgeqnecuggftrfgrth
+    htvghrnhepffehueegteeihfegtefhjefgtdeugfegjeelheejueethfefgeeghfektdek
+    teffnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomheprg
+    hrnhgusegrrhhnuggsrdguvg
+X-ME-Proxy: <xmx:O9PvZDMHIG2lbMPjEE-g_PZeLNcOEKbzKnDTBTN8ltDWAaanw9Q8xw>
+    <xmx:O9PvZN5OAl8OhVR1-o53t5KivDGBF0969OiI5lu86ko1b8f1rkHxfQ>
+    <xmx:O9PvZN7MwvvntaIA6F2pcUpiYYS1T3ThbNKk8RK4u5fVrBARqPzBsg>
+    <xmx:PNPvZL59z4MU1L3Z1URriTzvOKkfUzUeNgZKIsrxaY4yuxbr8u4G1A>
+Feedback-ID: i56a14606:Fastmail
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+	id 27699B60089; Wed, 30 Aug 2023 19:39:39 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.9.0-alpha0-701-g9b2f44d3ee-fm-20230823.001-g9b2f44d3
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZO5uGKzGsaliQ1fF@Asurada-Nvidia>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Mime-Version: 1.0
+Message-Id: <1697efce-665a-43d5-b0be-7c03c0a4d850@app.fastmail.com>
+In-Reply-To: <82416797-01aa-471a-a737-471297e37c4c@amazon.de>
+References: <64e7cbf7.050a0220.114c7.b70dSMTPIN_ADDED_BROKEN@mx.google.com>
+ <2023082506-enchanted-tripping-d1d5@gregkh>
+ <c26ad989dcc6737dd295e980c78ef53740098810.camel@amazon.com>
+ <20230823024500.GA25462@skinsburskii.>
+ <e0ed9fb9-8e7a-44ad-976a-27362f6e537a@amazon.de>
+ <20230829220740.GA26605@skinsburskii.>
+ <82416797-01aa-471a-a737-471297e37c4c@amazon.de>
+Date: Wed, 30 Aug 2023 19:39:18 -0400
+From: "Arnd Bergmann" <arnd@arndb.de>
+To: "Alexander Graf" <graf@amazon.de>,
+ "Stanislav Kinsburskii" <skinsburskii@linux.microsoft.com>
+Cc: "Gowans, James" <jgowans@amazon.com>,
+ "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+ "Mike Rapoport" <rppt@kernel.org>,
+ "madvenka@linux.microsoft.com" <madvenka@linux.microsoft.com>,
+ "anthony.yznaga@oracle.com" <anthony.yznaga@oracle.com>,
+ "steven.sistare@oracle.com" <steven.sistare@oracle.com>,
+ "Stanislav Kinsburskii" <stanislav.kinsburskii@gmail.com>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "Sean Christopherson" <seanjc@google.com>,
+ "Paolo Bonzini" <pbonzini@redhat.com>,
+ "K. Y. Srinivasan" <kys@microsoft.com>, "Wei Liu" <wei.liu@kernel.org>,
+ "anrayabh@linux.microsoft.com" <anrayabh@linux.microsoft.com>,
+ "dragan.cvetic@amd.com" <dragan.cvetic@amd.com>,
+ "jinankjain@linux.microsoft.com" <jinankjain@linux.microsoft.com>,
+ "derek.kiernan@amd.com" <derek.kiernan@amd.com>,
+ "linux-mm@kvack.org" <linux-mm@kvack.org>,
+ "Andrew Morton" <akpm@linux-foundation.org>, kexec@lists.infradead.org,
+ iommu@lists.linux.dev, kvm <kvm@vger.kernel.org>
+Subject: Re: [RFC PATCH] Introduce persistent memory pool
+Content-Type: text/plain
 
-On Tue, Aug 29, 2023 at 03:15:52PM -0700, Nicolin Chen wrote:
-> Meanwhile, by re-looking at Will's commit log:
->     arm64: tlbi: Set MAX_TLBI_OPS to PTRS_PER_PTE
-> 
->     In order to reduce the possibility of soft lock-ups, we bound the
->     maximum number of TLBI operations performed by a single call to
->     flush_tlb_range() to an arbitrary constant of 1024.
-> 
->     Whilst this does the job of avoiding lock-ups, we can actually be a bit
->     smarter by defining this as PTRS_PER_PTE. Due to the structure of our
->     page tables, using PTRS_PER_PTE means that an outer loop calling
->     flush_tlb_range() for entire table entries will end up performing just a
->     single TLBI operation for each entry. As an example, mremap()ing a 1GB
->     range mapped using 4k pages now requires only 512 TLBI operations when
->     moving the page tables as opposed to 262144 operations (512*512) when
->     using the current threshold of 1024.
-> 
-> I found that I am actually not quite getting the calculation at the
-> end for the comparison between 512 and 262144.
-> 
-> For a 4K pgsize setup, MAX_TLBI_OPS is set to 512, calculated from
-> 4096 / 8. Then, any VA range >= 2MB will trigger a flush_tlb_all().
-> By setting the threshold to 1024, the 2MB size bumps up to 4MB, i.e.
-> the condition becomes range >= 4MB.
-> 
-> So, it seems to me that requesting a 1GB invalidation will trigger
-> a flush_tlb_all() in either case of having a 2MB or a 4MB threshold?
-> 
-> I can get that the 262144 is the number of pages in a 1GB size, so
-> the number of per-page invalidations will be 262144 operations if
-> there was no threshold to replace with a full-as invalidation. Yet,
-> that wasn't the case since we had a 4MB threshold with an arbitrary
-> 1024 for MAX_TLBI_OPS?
+On Wed, Aug 30, 2023, at 03:20, Alexander Graf wrote:
+> On 30.08.23 00:07, Stanislav Kinsburskii wrote:
+>> On Mon, Aug 28, 2023 at 10:50:19PM +0200, Alexander Graf wrote:
 
-I think this is because you can't always batch up the entire range as
-you'd like due to things like locking concerns. For example,
-move_page_tables() can end up invalidating 2MiB at a time, which is
-too low to trigger the old threshold and so you end up doing ever single
-pte individually.
+>> Device tree or ACPI are options indeed. However AFAIU in case of DT user
+>> space has to involved into the picture to modify and complie it, while
+>> ACPI isn't flexible or easily extendable.
+>> Also, AFAIU both these standards were designed with passing
+>> hardware-specific data in mind from bootstrap software to an OS kernel
+>> and thus were never really intended to be used for creating a persistent
+>> state accross kexec.
+>> To me, an attempt to use either of them to pass kernel-specific data looks
+>> like an abuse (or misuse) excused by the simplicity of implementation.
+>
+>
+> What I was describing above is that the Linux boot protocol already has 
+> natural ways to pass a DT (arm) or set of ACPI tables (x86) to the 
+> target kernel. Whatever we do here should either piggy back on top of 
+> those natural mechanisms (e.g. /chosen node in DT) or be on the same 
+> level (e.g. pass DT in one register, pass metadata structure in another 
+> register).
+>
+> When it comes to the actual content of the metadata, I'm personally also 
+> leaning towards DT. We already have libfdt inside the kernel. It gives 
+> is a very simple, well understood structured file format that you can 
+> extend, version, etc etc. And the kernel has mechanisms to modify fdt 
+> contents.
 
-Will
+Agreed. This also makes a lot of sense since the fdt format was
+originally introduced for this exact purpose, to be a key-value
+store to pass data from the running kernel to the next one after
+kexec when the original source of the data (originally open
+firmware) is gone. It only turned into the generic way to
+describe embedded systems later on, but both the fdt binary
+format and the kexec infrastructure for manipulating and
+passing the blob should be easy to reuse for additional purposes
+as long as the contents are put into appropriate namespaces that
+don't clash with existing usage.
+
+       Arnd
