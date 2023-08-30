@@ -1,58 +1,38 @@
-Received: from mail-qk1-f174.google.com (mail-qk1-f174.google.com [209.85.222.174])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8418079C0
-	for <iommu@lists.linux.dev>; Wed, 30 Aug 2023 20:36:24 +0000 (UTC)
-Received: by mail-qk1-f174.google.com with SMTP id af79cd13be357-76ef8b91a4bso5813585a.2
-        for <iommu@lists.linux.dev>; Wed, 30 Aug 2023 13:36:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1693427783; x=1694032583; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Z9olKQHKl7i+BW/Fox3jX2swhAkTGXKGKjmjdi6zQOQ=;
-        b=HTUcoTLVMJKPopZPx5brkas77UDvQYIjC7naYepzkdyyLzaJgfCC4cC5JwAlVN0zw1
-         5odTw/6Hh+io9S7cO6rfMvYLDEIO31IiUr2Ztxc0c4RXaRW/AQxyvJt7L8RhEjF+70Q5
-         CpGWsPg7PSJD4GIAbJjZLxoJza2f1yWwsk2G5rXvuB0C6AuXl1N4ZTOo0aE/BzZe1ry/
-         DeU82ThH2Wp8XHdQvgsrZKiwnykZkwQ6JyF/yK2A3WmiYJekHvF6whUxF6TON22sjDS0
-         aYFBHQUZvzQ/x5K83sbvTba63wgYXeHxAC8YZ2ftW2bpIroxOrkiRrsDr016wMs08bUZ
-         TOHg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1693427783; x=1694032583;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Z9olKQHKl7i+BW/Fox3jX2swhAkTGXKGKjmjdi6zQOQ=;
-        b=N3t8KpPeCdpl3ovEziJExMS2TzfDmuLgcHzaFAV3ThfvU2TXE02ul7SwXdkR5YGCqS
-         s8fccVVBxjo+k3OTRDsYH+qhBa6+plgk+JfOoYzEzRMVAkYGoUcwBESohasLRs2DE7gF
-         qMzC0iQ4s4WnifNsTMBPanKFWwDMIw44LnRhaQ/Rr50HIWqkpI3iw9T9/o2g6P9ilDD3
-         Cao/QCnG3BUc+S3ami6yNJzVcwmvMICTvusRupocjH53YkQO8sD45KKTFBEw/Gg4is1+
-         8jC+oLEDGCG7R6ptRBh2/NxkRE3GpKPJDJR+5orKk0/ivWuT9v8S2dVKsJs60CC9t5Jo
-         AMsg==
-X-Gm-Message-State: AOJu0YzNKgXs173U8UkDF4HQwAjyiz1F5gxk9NBWOM60Rf+pNUUNXdAF
-	XoebsEKuuzyIowr11w5DVQFgwA==
-X-Google-Smtp-Source: AGHT+IGF4MU0rD+iQwT0aCopRevdjBpeHCOTE0yYV5wWvsuXnz48NfHVfNaBhCyzBhEFTczQi1j9zA==
-X-Received: by 2002:a05:620a:3727:b0:768:1572:e9af with SMTP id de39-20020a05620a372700b007681572e9afmr1073374qkb.8.1693427783197;
-        Wed, 30 Aug 2023 13:36:23 -0700 (PDT)
-Received: from ziepe.ca ([206.223.160.26])
-        by smtp.gmail.com with ESMTPSA id pj37-20020a05620a1da500b0076da620166bsm3998312qkn.103.2023.08.30.13.36.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 30 Aug 2023 13:36:22 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1qbRvI-000DB0-Qb;
-	Wed, 30 Aug 2023 17:36:20 -0300
-Date: Wed, 30 Aug 2023 17:36:20 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Vasant Hegde <vasant.hegde@amd.com>
-Cc: Tina Zhang <tina.zhang@intel.com>, Kevin Tian <kevin.tian@intel.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Michael Shavit <mshavit@google.com>, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 4/5] iommu: Support mm PASID 1:n with sva domains
-Message-ID: <ZO+oRPOf9jyNG2+B@ziepe.ca>
-References: <20230827084401.819852-1-tina.zhang@intel.com>
- <20230827084401.819852-5-tina.zhang@intel.com>
- <aa834f12-ce45-fe15-430b-2a9c3446a5ba@amd.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 07F95749B
+	for <iommu@lists.linux.dev>; Wed, 30 Aug 2023 21:50:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C09E1C433C7;
+	Wed, 30 Aug 2023 21:50:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1693432204;
+	bh=OGc+LfkYBQySHlSntBlsKXI/UcufIS548SjZfr7mroQ=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=Rd8Q6DhBwUgRClZMRUKSEtwN+6EDSNQNpVA6FiKuJBnQqyJpF6gZFIb8quGIcb98H
+	 iTP73712DKtlzoti6gemSAePS8lw2/HXExBVPWLM1vOAeykoKCr8kSskeK9uWCI9AJ
+	 GhjTiXJPvmx6hCAHk4SWdAX2tVVD3JBBozMWBQ9PKq+q2F6EKbDDywiKytQgMO9DNa
+	 KDeei3iDgN4iSl3oRaHB4PzRi6Xb9UpO39ErUtl9DETNSQ/GSpU14Ojk9PSOtN3AkY
+	 O8H3Bi2n4ymg08fd3dTTh6qdcoQzm2kvv2e8aH4O12IlVIiL7ssD10FLC5rdfa2PWd
+	 yysHdw5ehQ8Sg==
+Date: Wed, 30 Aug 2023 22:49:59 +0100
+From: Will Deacon <will@kernel.org>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: Robin Murphy <robin.murphy@arm.com>, jgg@nvidia.com, joro@8bytes.org,
+	jean-philippe@linaro.org, apopple@nvidia.com,
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev
+Subject: Re: [PATCH 1/3] iommu/io-pgtable-arm: Add nents_per_pgtable in
+ struct io_pgtable_cfg
+Message-ID: <20230830214958.GA30121@willie-the-truck>
+References: <cover.1692693557.git.nicolinc@nvidia.com>
+ <0fe68babdb3a07adf024ed471fead4e3eb7e703f.1692693557.git.nicolinc@nvidia.com>
+ <f468b461-b203-5179-eb6d-9432b9911329@arm.com>
+ <ZOTlcFs2NG6nJEPN@Asurada-Nvidia>
+ <61f9b371-7c45-26b1-ec0f-600765280c89@arm.com>
+ <ZO5R5i4n2WI2GnKQ@Asurada-Nvidia>
+ <d234fa8d-d945-3f7f-1110-fe55bea88587@arm.com>
+ <ZO5uGKzGsaliQ1fF@Asurada-Nvidia>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -61,21 +41,47 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <aa834f12-ce45-fe15-430b-2a9c3446a5ba@amd.com>
+In-Reply-To: <ZO5uGKzGsaliQ1fF@Asurada-Nvidia>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 
-On Mon, Aug 28, 2023 at 02:02:52PM +0530, Vasant Hegde wrote:
+On Tue, Aug 29, 2023 at 03:15:52PM -0700, Nicolin Chen wrote:
+> Meanwhile, by re-looking at Will's commit log:
+>     arm64: tlbi: Set MAX_TLBI_OPS to PTRS_PER_PTE
+> 
+>     In order to reduce the possibility of soft lock-ups, we bound the
+>     maximum number of TLBI operations performed by a single call to
+>     flush_tlb_range() to an arbitrary constant of 1024.
+> 
+>     Whilst this does the job of avoiding lock-ups, we can actually be a bit
+>     smarter by defining this as PTRS_PER_PTE. Due to the structure of our
+>     page tables, using PTRS_PER_PTE means that an outer loop calling
+>     flush_tlb_range() for entire table entries will end up performing just a
+>     single TLBI operation for each entry. As an example, mremap()ing a 1GB
+>     range mapped using 4k pages now requires only 512 TLBI operations when
+>     moving the page tables as opposed to 262144 operations (512*512) when
+>     using the current threshold of 1024.
+> 
+> I found that I am actually not quite getting the calculation at the
+> end for the comparison between 512 and 262144.
+> 
+> For a 4K pgsize setup, MAX_TLBI_OPS is set to 512, calculated from
+> 4096 / 8. Then, any VA range >= 2MB will trigger a flush_tlb_all().
+> By setting the threshold to 1024, the 2MB size bumps up to 4MB, i.e.
+> the condition becomes range >= 4MB.
+> 
+> So, it seems to me that requesting a 1GB invalidation will trigger
+> a flush_tlb_all() in either case of having a 2MB or a 4MB threshold?
+> 
+> I can get that the 262144 is the number of pages in a 1GB size, so
+> the number of per-page invalidations will be 262144 operations if
+> there was no threshold to replace with a full-as invalidation. Yet,
+> that wasn't the case since we had a 4MB threshold with an arbitrary
+> 1024 for MAX_TLBI_OPS?
 
-> I am not sure whether I understood the flow completely. Just wondering why you
-> are not freeing pasid in iommu_sva_unbind_device().
-> I mean once iommu_mm->sva_domains becomes free shouldn't we free the
-> iommu_mm->pasid?
+I think this is because you can't always batch up the entire range as
+you'd like due to things like locking concerns. For example,
+move_page_tables() can end up invalidating 2MiB at a time, which is
+too low to trigger the old threshold and so you end up doing ever single
+pte individually.
 
-No, for Intel use cases that PASID permanently becomes part of the
-ENQCMD MSR and cannot be revoked once it has been set
- 
-> Also in this function (mm_pasid_drop()), should we check/free sva domains?
-
-No, the driver must support a SVA domain with an empty mm_struct, eg
-by hooking release.
-
-Jason
+Will
