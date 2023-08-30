@@ -1,196 +1,74 @@
-Received: from ms.lwn.net (ms.lwn.net [45.79.88.28])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f43.google.com (mail-lf1-f43.google.com [209.85.167.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 009FD23BD
-	for <iommu@lists.linux.dev>; Wed, 30 Aug 2023 15:05:00 +0000 (UTC)
-Received: from localhost (unknown [IPv6:2601:281:8300:73::646])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by ms.lwn.net (Postfix) with ESMTPSA id D64B2723;
-	Wed, 30 Aug 2023 14:55:51 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net D64B2723
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
-	t=1693407352; bh=fzJ2W9IhY60MhTdZXk/DpUQem9Gos7AXFeOTf6bpkgk=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-	b=ayp4wECHVmkq6o66QyWfc6SlfuEuvpm+WukmOx5EBL0WA3Tjchi2jo5kGRHspHxVA
-	 SwNE0PV6W74pP1HvvyJCHB/HJYXdsaX4+4ZI0su0BVn6R+VI7Tnk+SxakXQgQrDYih
-	 Z7CQyMXFkE4YJDU+Om1rR00QEfdnYIWD9fjVr+blRBhgj0LoCL3jNuzNRZhYpqW+p0
-	 cYKX3nqF1lwrwueOku+7j0jjgfhYSo1zZyLEoQmRZNJ3O1yACrBNRDLLvh6G3bfTMY
-	 WpF89u4BJ/ycMvRDSiVGQ/AAIYX143xN8fzRqY2GeLgAn1LjYuzkrTUAEkN4Pm5lw+
-	 ttcU/ACVSPYKw==
-From: Jonathan Corbet <corbet@lwn.net>
-To: Petr Tesarik <petrtesarik@huaweicloud.com>, Stefano Stabellini
- <sstabellini@kernel.org>, Russell King <linux@armlinux.org.uk>, Thomas
- Bogendoerfer <tsbogend@alpha.franken.de>, Thomas Gleixner
- <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov
- <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>, "maintainer:X86
- ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>, "H. Peter Anvin"
- <hpa@zytor.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael
- J. Wysocki" <rafael@kernel.org>, Juergen Gross <jgross@suse.com>, Oleksandr
- Tyshchenko <oleksandr_tyshchenko@epam.com>, Christoph Hellwig
- <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy
- <robin.murphy@arm.com>, Christoph Lameter <cl@linux.com>, Pekka Enberg
- <penberg@kernel.org>, David Rientjes <rientjes@google.com>, Joonsoo Kim
- <iamjoonsoo.kim@lge.com>, Andrew Morton <akpm@linux-foundation.org>,
- Vlastimil Babka <vbabka@suse.cz>, Roman Gushchin
- <roman.gushchin@linux.dev>, Hyeonggon Yoo <42.hyeyoo@gmail.com>, Petr
- Tesarik <petr.tesarik.ext@huawei.com>, Andy Shevchenko
- <andriy.shevchenko@linux.intel.com>, Hans de Goede <hdegoede@redhat.com>,
- James Seo <james@equiv.tech>, James Clark <james.clark@arm.com>, Kees Cook
- <keescook@chromium.org>, "moderated list:XEN HYPERVISOR ARM"
- <xen-devel@lists.xenproject.org>, "moderated list:ARM PORT"
- <linux-arm-kernel@lists.infradead.org>, open list
- <linux-kernel@vger.kernel.org>, "open list:MIPS"
- <linux-mips@vger.kernel.org>, "open list:XEN SWIOTLB SUBSYSTEM"
- <iommu@lists.linux.dev>, "open list:SLAB ALLOCATOR" <linux-mm@kvack.org>
-Cc: Roberto Sassu <roberto.sassu@huaweicloud.com>, petr@tesarici.cz
-Subject: Re: [PATCH v7 9/9] swiotlb: search the software IO TLB only if the
- device makes use of it
-In-Reply-To: <87a5uz3ob8.fsf@meer.lwn.net>
-References: <cover.1690871004.git.petr.tesarik.ext@huawei.com>
- <adea71bd1fa8660d4c3157a562431ad8127016d4.1690871004.git.petr.tesarik.ext@huawei.com>
- <87a5uz3ob8.fsf@meer.lwn.net>
-Date: Wed, 30 Aug 2023 08:55:51 -0600
-Message-ID: <87il8wr348.fsf@meer.lwn.net>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1CAF15398
+	for <iommu@lists.linux.dev>; Wed, 30 Aug 2023 15:17:06 +0000 (UTC)
+Received: by mail-lf1-f43.google.com with SMTP id 2adb3069b0e04-4fe15bfb1adso8935933e87.0
+        for <iommu@lists.linux.dev>; Wed, 30 Aug 2023 08:17:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google; t=1693408624; x=1694013424; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=y2Lq1UEtVYfmaVSMBjGqn/DzODksXNcJpAcn5BFpVcs=;
+        b=AGnXU8qN04tsBTFB6+FbmskwPm8+A9azOwKsYHeA7SjYqtZYDi+v0Vgy9maUfAG1a3
+         HMQMM6uaZuJJ14YOSSb3Eb9AH91p7E9bK/5iadrwfG+CZpsteKwsWj4jYNonWlJyX2gS
+         goKt8D2sz7hqH/Cm+Ee3PRFcnaiUuRKDc9GR0=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1693408624; x=1694013424;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=y2Lq1UEtVYfmaVSMBjGqn/DzODksXNcJpAcn5BFpVcs=;
+        b=NXdUyCWSIrji2VNrZJk6EtQb2xdNW0TV9fHJtnG279tGCDz3pWjsYh2XB4gVtupIkE
+         /wLMfCIKG/jf6T0eifov9y/HSlwFdVqn/M1NCAfbwvqoZVAfkY1UHeFt+3DRlHJrDRC3
+         We2b0Sy3W+U4Plum3aO4hoO5yh8ESypCEKgDKLuCFRs37HHBy5iXgWHOuEYJ6ybSn7iY
+         tXenmyHNB8FOtrWp7ZuMsFJR7aVsn72K0MfPw1zYESpIUMmVgDdUcxmZOikSdOIroJor
+         kwk+JVQZs/8cg/K9M65KG2pTfGCwlGjk06g+LOpzPrQjD26bnSsP1cTbkhHtkvvMOZDp
+         6k7w==
+X-Gm-Message-State: AOJu0YygZh7osbKgifZjhUlh/ksob70bvQ3Zhv5LnZAD0JbZpU1+3Arq
+	i8NTjVpvXFv73YybMX6JLUuFhTbshw5NiuFEA7dotKHC
+X-Google-Smtp-Source: AGHT+IGbC6wDGV6aLS4vsBcxY1Z3txpejMfu0y+r/NqZ5UQQeSSsBKqIP3/xaCeRMBlhl30iX2Icww==
+X-Received: by 2002:a19:9106:0:b0:500:79a6:38d4 with SMTP id t6-20020a199106000000b0050079a638d4mr1655901lfd.40.1693408624573;
+        Wed, 30 Aug 2023 08:17:04 -0700 (PDT)
+Received: from mail-lj1-f174.google.com (mail-lj1-f174.google.com. [209.85.208.174])
+        by smtp.gmail.com with ESMTPSA id u1-20020ac24c21000000b004fe4ba4cdc3sm2433217lfq.89.2023.08.30.08.17.03
+        for <iommu@lists.linux.dev>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 30 Aug 2023 08:17:04 -0700 (PDT)
+Received: by mail-lj1-f174.google.com with SMTP id 38308e7fff4ca-2bb9a063f26so87752741fa.2
+        for <iommu@lists.linux.dev>; Wed, 30 Aug 2023 08:17:03 -0700 (PDT)
+X-Received: by 2002:a2e:7e09:0:b0:2b6:cdfb:d06a with SMTP id
+ z9-20020a2e7e09000000b002b6cdfbd06amr2210430ljc.22.1693408623545; Wed, 30 Aug
+ 2023 08:17:03 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <ZO4NUZ+k4Q4zPu6X@infradead.org> <CAHk-=wik9Df4Si7aYOqgyhf=io2OaP=7Yur-xpbNe6oHuxSFAg@mail.gmail.com>
+ <ZO7iy/Ei+wZK0I/d@infradead.org>
+In-Reply-To: <ZO7iy/Ei+wZK0I/d@infradead.org>
+From: Linus Torvalds <torvalds@linux-foundation.org>
+Date: Wed, 30 Aug 2023 08:16:46 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wiwuJckhd76veFTJeDefktAdbpWrZh-U+AGb+NN3B_XLg@mail.gmail.com>
+Message-ID: <CAHk-=wiwuJckhd76veFTJeDefktAdbpWrZh-U+AGb+NN3B_XLg@mail.gmail.com>
+Subject: Re: [GIT PULL] dma-mapping updates for Linux 6.6
+To: Christoph Hellwig <hch@infradead.org>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
+	Petr Tesarik <petr.tesarik.ext@huawei.com>, Yajun Deng <yajun.deng@linux.dev>
+Content-Type: text/plain; charset="UTF-8"
 
-So it seems this code got merged without this question ever being
-answered.  Sorry if it's a dumb one, but I don't think this
-functionality works as advertised...
+On Tue, 29 Aug 2023 at 23:33, Christoph Hellwig <hch@infradead.org> wrote:
+>
+> It actually does..
 
-Thanks,
+Ahh, bah, mea culpa. That's what I get for having mindlessly looked at
+the config part (which was, in my defense, about 90% of it), and
+missed the one-liner that actually moved the call from the arm64 init
+to the dma init.
 
-jon
+But yes, please do look out for making things 'default y' - even if
+that 'y' is then a bit indirect.
 
-Jonathan Corbet <corbet@lwn.net> writes:
-
-> Petr Tesarik <petrtesarik@huaweicloud.com> writes:
->
->> From: Petr Tesarik <petr.tesarik.ext@huawei.com>
->>
->> Skip searching the software IO TLB if a device has never used it, making
->> sure these devices are not affected by the introduction of multiple IO TLB
->> memory pools.
->>
->> Additional memory barrier is required to ensure that the new value of the
->> flag is visible to other CPUs after mapping a new bounce buffer. For
->> efficiency, the flag check should be inlined, and then the memory barrier
->> must be moved to is_swiotlb_buffer(). However, it can replace the existing
->> barrier in swiotlb_find_pool(), because all callers use is_swiotlb_buffer()
->> first to verify that the buffer address belongs to the software IO TLB.
->>
->> Signed-off-by: Petr Tesarik <petr.tesarik.ext@huawei.com>
->> ---
->
-> Excuse me if this is a silly question, but I'm not able to figure it out
-> on my own...
->
->>  include/linux/device.h  |  2 ++
->>  include/linux/swiotlb.h |  7 ++++++-
->>  kernel/dma/swiotlb.c    | 14 ++++++--------
->>  3 files changed, 14 insertions(+), 9 deletions(-)
->>
->> diff --git a/include/linux/device.h b/include/linux/device.h
->> index 5fd89c9d005c..6fc808d22bfd 100644
->> --- a/include/linux/device.h
->> +++ b/include/linux/device.h
->> @@ -628,6 +628,7 @@ struct device_physical_location {
->>   * @dma_io_tlb_mem: Software IO TLB allocator.  Not for driver use.
->>   * @dma_io_tlb_pools:	List of transient swiotlb memory pools.
->>   * @dma_io_tlb_lock:	Protects changes to the list of active pools.
->> + * @dma_uses_io_tlb: %true if device has used the software IO TLB.
->>   * @archdata:	For arch-specific additions.
->>   * @of_node:	Associated device tree node.
->>   * @fwnode:	Associated device node supplied by platform firmware.
->> @@ -737,6 +738,7 @@ struct device {
->>  #ifdef CONFIG_SWIOTLB_DYNAMIC
->>  	struct list_head dma_io_tlb_pools;
->>  	spinlock_t dma_io_tlb_lock;
->> +	bool dma_uses_io_tlb;
->
-> You add this new member here, fine...
->
->>  #endif
->>  	/* arch specific additions */
->>  	struct dev_archdata	archdata;
->> diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
->> index 8371c92a0271..b4536626f8ff 100644
->> --- a/include/linux/swiotlb.h
->> +++ b/include/linux/swiotlb.h
->> @@ -172,8 +172,13 @@ static inline bool is_swiotlb_buffer(struct device *dev, phys_addr_t paddr)
->>  	if (!mem)
->>  		return false;
->>  
->> -	if (IS_ENABLED(CONFIG_SWIOTLB_DYNAMIC))
->> +	if (IS_ENABLED(CONFIG_SWIOTLB_DYNAMIC)) {
->> +		/* Pairs with smp_wmb() in swiotlb_find_slots() and
->> +		 * swiotlb_dyn_alloc(), which modify the RCU lists.
->> +		 */
->> +		smp_rmb();
->>  		return swiotlb_find_pool(dev, paddr);
->> +	}
->>  	return paddr >= mem->defpool.start && paddr < mem->defpool.end;
->>  }
->>  
->> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
->> index adf80dec42d7..d7eac84f975b 100644
->> --- a/kernel/dma/swiotlb.c
->> +++ b/kernel/dma/swiotlb.c
->> @@ -730,7 +730,7 @@ static void swiotlb_dyn_alloc(struct work_struct *work)
->>  
->>  	add_mem_pool(mem, pool);
->>  
->> -	/* Pairs with smp_rmb() in swiotlb_find_pool(). */
->> +	/* Pairs with smp_rmb() in is_swiotlb_buffer(). */
->>  	smp_wmb();
->>  }
->>  
->> @@ -764,11 +764,6 @@ struct io_tlb_pool *swiotlb_find_pool(struct device *dev, phys_addr_t paddr)
->>  	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
->>  	struct io_tlb_pool *pool;
->>  
->> -	/* Pairs with smp_wmb() in swiotlb_find_slots() and
->> -	 * swiotlb_dyn_alloc(), which modify the RCU lists.
->> -	 */
->> -	smp_rmb();
->> -
->>  	rcu_read_lock();
->>  	list_for_each_entry_rcu(pool, &mem->pools, node) {
->>  		if (paddr >= pool->start && paddr < pool->end)
->> @@ -813,6 +808,7 @@ void swiotlb_dev_init(struct device *dev)
->>  #ifdef CONFIG_SWIOTLB_DYNAMIC
->>  	INIT_LIST_HEAD(&dev->dma_io_tlb_pools);
->>  	spin_lock_init(&dev->dma_io_tlb_lock);
->> +	dev->dma_uses_io_tlb = false;
->
-> ...here you initialize it, fine...
->
->>  #endif
->>  }
->>  
->> @@ -1157,9 +1153,11 @@ static int swiotlb_find_slots(struct device *dev, phys_addr_t orig_addr,
->>  	list_add_rcu(&pool->node, &dev->dma_io_tlb_pools);
->>  	spin_unlock_irqrestore(&dev->dma_io_tlb_lock, flags);
->>  
->> -	/* Pairs with smp_rmb() in swiotlb_find_pool(). */
->> -	smp_wmb();
->>  found:
->> +	dev->dma_uses_io_tlb = true;
->> +	/* Pairs with smp_rmb() in is_swiotlb_buffer() */
->> +	smp_wmb();
->> +
->
-> ...and here you set it if swiotlb is used.
->
-> But, as far as I can tell, you don't actually *use* this field anywhere.
-> What am I missing?
->
-> Thanks,
->
-> jon
+          Linus
