@@ -1,41 +1,41 @@
-Received: from mail-yb1-f202.google.com (mail-yb1-f202.google.com [209.85.219.202])
+Received: from mail-yw1-f201.google.com (mail-yw1-f201.google.com [209.85.128.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C47911CB6
-	for <iommu@lists.linux.dev>; Thu, 31 Aug 2023 17:46:15 +0000 (UTC)
-Received: by mail-yb1-f202.google.com with SMTP id 3f1490d57ef6-d782f4b4feeso936881276.3
-        for <iommu@lists.linux.dev>; Thu, 31 Aug 2023 10:46:15 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 34E1F11CB6
+	for <iommu@lists.linux.dev>; Thu, 31 Aug 2023 17:46:18 +0000 (UTC)
+Received: by mail-yw1-f201.google.com with SMTP id 00721157ae682-58e4d2b7d16so14055147b3.0
+        for <iommu@lists.linux.dev>; Thu, 31 Aug 2023 10:46:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1693503974; x=1694108774; darn=lists.linux.dev;
+        d=google.com; s=20221208; t=1693503978; x=1694108778; darn=lists.linux.dev;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=i7VjOD8paVBTT/i2kkoQBwaJlSloOfoXnTHQ1Eza9rY=;
-        b=VvXfrmfgr6e43iWrWYAkp9M6HAJR+uiN2IgDqZBzN+GEnSBgNWLUVjWx77Gz3+tfxl
-         ACbBZl10GmhHuhvbB0pFtPFvKGTVzfnuc/uNIw/Lj46ksBUGt8so8EdWlG/Sf8kBnSVw
-         hG6TeZILwWZCeghKPqOUzljvTg8+AXMnnue3d2VgW6amgA35y0FiYpTY9w274qk7f3Js
-         wqkgUVcockpDyN4K1hAIeeZDLgpUbt36YpHFB+O7XD+1cPxcfYdSufiVO/vjbRK0qr7y
-         jIWWuNw39WQZqKVko1R73peJpxVRDqYba8vLsVR3V9K1+yUIoeeoYPaC7hGmGD/Lj/Zk
-         lmtw==
+        bh=HUyVKDl0lhQ7W0ufBBYFd9SmCuZO/76W4U+SUNg412A=;
+        b=Fbh6GnDqtkWZSEiidw29WQgaTnezRgyAkXWnKThYSXvzEjFHe3jtbqLNw3IgNAL2D4
+         J8ATiGe8FjYX5BXFUBUdzp7uhEfmvDoySSC0Qq+B4b7iyJRSbSsPnfzm3N6Stw9q+u1W
+         moWL0EMf4wrdDiII9BqRGgMg7SbSgtbb2fqnqncmC2dZANfuKcAxFApVWeW1GC5vrHNC
+         GdEHW34k1WfxXDiPzLq13NZXhp0UpsdYaauJzkVjnqzCzwyUjxaL1oWvZfoAKHq3RF1b
+         uVJhsWPlAZCyuYEQ/7aJzmq4QyQZtQUVyqF/IAiozeh5y8bufS0ClsndSywES8H+wUbT
+         UvwQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1693503974; x=1694108774;
+        d=1e100.net; s=20221208; t=1693503978; x=1694108778;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=i7VjOD8paVBTT/i2kkoQBwaJlSloOfoXnTHQ1Eza9rY=;
-        b=UxKiWjh3TmzWftEvsdCHOKMz/7j/PmWUq3lWABbA5fxYCiMFYoeU51DJFiPogc960p
-         uvCUbtXefsW+iATAw9mggSOq/gJow7vrKu2NadtTt9kP/0qWddevc2ZQR6GUsdAQDTM8
-         8Mq5JSh8L/vJehXTtJJAR+GrBbjLC1x/bC2wm8GEAAePIOI1VV4mHQ7YS+AXSGOpIhi2
-         U6O9mAKHFgTmRyOGLNT8y0BIyoi+TGOe3souTH9EmMK0Y5uhERTo955DwxCfNhQ+GSNG
-         z9NURGoAbQmw+ZS52M4abSl4s+H8JMhHu+awy6wyo7IopAyBc6TxbHvKG2yDGmvYbVzk
-         V2lg==
-X-Gm-Message-State: AOJu0YzESj5JANgyaKv0++zCi0LzyzPZlgjZ/zKoE+Jz55wSQHvAX2TS
-	muV41PJzAzsIY3q15iQ3HZDwEvpoKqM7eoIL0waLpcWrBym3NsYa7PR5qrfOSrtLR3UrEU6jHza
-	G1hjG3JnK6EiXOrMzUSZMtOAPq9p10TMT+lRKYvVTGKds2t9RNoMvUzvnp07FCtU=
-X-Google-Smtp-Source: AGHT+IHRa4lOvgolrcThFwuiSmnWSM47tU5dtwzo9XjBsvC5OMF90W0tNaj+15w7MHzP+4BubJnyK4n2OPmz
+        bh=HUyVKDl0lhQ7W0ufBBYFd9SmCuZO/76W4U+SUNg412A=;
+        b=bAji9KvWxSevaKRAzJzN3vkb9gRM4y1Ku6fqkUt67YNtjPVE8N9iO6ufGohfaUjsxm
+         CABvu6r+UrYB/9XAvS0dDwAApUTVfIkMHHq7Fx3kWI9G0HBWRMHe3GKnrM2rZuHBqSXc
+         Ya9LzWKROdmouEdgCTwTZoDVmjdgljkA8zVA44WjIdJvV+gH2rGBRfNSKT1Q74tf8vhC
+         BcF6lxlbFKn/Z+2elC7bEi7myTYatbvSvVp+7FVYAelt/L1Yw/xNQqB25hH6NuevTy3b
+         sWmd4P8wdAu1dpXWfC3rFCj5BfqURj0coavM3GIB2RXTrUDEoPuv0Wv2pwWj/i/SrsVn
+         oiiw==
+X-Gm-Message-State: AOJu0YyyT8zJoUo/6LhxaOWKfTJkkzfIzO5o9ahVEfg6fPHaXZlkQcG1
+	gnxyi7Ew7m0OXMGuM0tvvFGW8b7ZlIj7n9wgx/IW7kKoPe8jDWej+8/StFyDIs72k5hFEcwJYUq
+	qB/w5s9QsUJ/yyqXNyIn3eXH4QPsb1xBYOeAG+A3TkSjI9nGwAEUlLd9q0XMIm7M=
+X-Google-Smtp-Source: AGHT+IEMJF3dc+25Kv4DjBVppSk/8Bx2EoVHGZaHW80P0+xgsookLYMJvqJ8CPuNFyU7AvC8AVo2BLS8XijP
 X-Received: from mshavit.ntc.corp.google.com ([2401:fa00:95:20c:1a0a:7338:4a5a:5f83])
- (user=mshavit job=sendgmr) by 2002:a25:ba90:0:b0:d72:8661:ee29 with SMTP id
- s16-20020a25ba90000000b00d728661ee29mr9278ybg.2.1693503973962; Thu, 31 Aug
- 2023 10:46:13 -0700 (PDT)
-Date: Fri,  1 Sep 2023 01:44:35 +0800
+ (user=mshavit job=sendgmr) by 2002:a81:ae1f:0:b0:592:7a39:e4b4 with SMTP id
+ m31-20020a81ae1f000000b005927a39e4b4mr3028ywh.6.1693503977969; Thu, 31 Aug
+ 2023 10:46:17 -0700 (PDT)
+Date: Fri,  1 Sep 2023 01:44:36 +0800
 In-Reply-To: <20230831174536.103472-1-mshavit@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -45,8 +45,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20230831174536.103472-1-mshavit@google.com>
 X-Mailer: git-send-email 2.42.0.283.g2d96d420d3-goog
-Message-ID: <20230901014413.v7.6.Ice063dcf87d1b777a72e008d9e3406d2bcf6d876@changeid>
-Subject: [PATCH v7 6/9] iommu/arm-smmu-v3: Move CD table to arm_smmu_master
+Message-ID: <20230901014413.v7.7.Iff18df41564b9df82bf40b3ec7af26b87f08ef6e@changeid>
+Subject: [PATCH v7 7/9] iommu/arm-smmu-v3: Cleanup arm_smmu_domain_finalise
 From: Michael Shavit <mshavit@google.com>
 To: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
 	linux-kernel@vger.kernel.org
@@ -57,295 +57,78 @@ Cc: will@kernel.org, robin.murphy@arm.com, jean-philippe@linaro.org,
 	Mark Brown <broonie@kernel.org>, Yicong Yang <yangyicong@hisilicon.com>
 Content-Type: text/plain; charset="UTF-8"
 
-With this change, each master will now own its own CD table instead of
-sharing one with other masters attached to the same domain. Attaching a
-stage 1 domain installs CD entries into the master's CD table. SVA
-writes its CD entries into each master's CD table if the domain is
-shared across masters.
+Remove unused master parameter now that the CD table is allocated
+elsewhere.
 
-Also add the device to the devices list before writing the CD to the
-table so that SVA will know that the CD needs to be re-written to this
-device's CD table as well if it decides to update the CD's ASID
-concurrently with this function.
-
-Tested-by: Nicolin Chen <nicolinc@nvidia.com>
+Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
 Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Michael Shavit <mshavit@google.com>
 ---
 
-Changes in v7:
-- Update commit message to be more clear about locking purpose.
-- Removed redundant newline
-
-Changes in v6:
-- Grab the asid lock while writing the RID CD to prevent a race with
-  SVA.
-- Add the device to the devices list before writing the CD to the table
-  and installing the CD table.
-- Undo arm_smmu_finalise_s1 rename
-- Minor comment fix
-- Consistently check cdtab pointer instead of cdtab_dma
+(no changes since v5)
 
 Changes in v5:
-- Clear the 0th CD entry when the domain is detached. Not clearing it
-  caused a bug in arm_smmu_write_ctx_desc which doesn't expect the entry
-  to already be set.
+- New commit
 
-Changes in v4:
-- Added comment about the cd_table's dependency on the iommu core's
-  group mutex.
-- Narrowed the range of code for which the domain's init_mutex is held
-  on attach since it now only protects the arm_smmu_domain_finalise
-  call.
-
-Changes in v2:
-- Allocate CD table when it's first needed instead of on probe.
-
-Changes in v1:
-- The master's CD table allocation was previously split to a different
-  commit. This change now atomically allocates the new CD table, uses
-  it, and removes the old one.
-
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 100 +++++++++++---------
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |   7 +-
- 2 files changed, 58 insertions(+), 49 deletions(-)
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 10 +++-------
+ 1 file changed, 3 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 69b9bb5c7f773..bcc94a67640d6 100644
+index bcc94a67640d6..8d177ed550054 100644
 --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
 +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -1025,7 +1025,7 @@ static __le64 *arm_smmu_get_cd_ptr(struct arm_smmu_master *master, u32 ssid)
- 	unsigned int idx;
- 	struct arm_smmu_l1_ctx_desc *l1_desc;
- 	struct arm_smmu_device *smmu = master->smmu;
--	struct arm_smmu_ctx_desc_cfg *cdcfg = &master->domain->cd_table;
-+	struct arm_smmu_ctx_desc_cfg *cdcfg = &master->cd_table;
- 
- 	if (cdcfg->s1fmt == STRTAB_STE_0_S1FMT_LINEAR)
- 		return cdcfg->cdtab + ssid * CTXDESC_CD_DWORDS;
-@@ -1062,7 +1062,7 @@ int arm_smmu_write_ctx_desc(struct arm_smmu_master *master, int ssid,
- 	u64 val;
- 	bool cd_live;
- 	__le64 *cdptr;
--	struct arm_smmu_ctx_desc_cfg *cd_table = &master->domain->cd_table;
-+	struct arm_smmu_ctx_desc_cfg *cd_table = &master->cd_table;
- 
- 	if (WARN_ON(ssid >= (1 << cd_table->s1cdmax)))
- 		return -E2BIG;
-@@ -1125,14 +1125,13 @@ int arm_smmu_write_ctx_desc(struct arm_smmu_master *master, int ssid,
- 	return 0;
+@@ -2090,7 +2090,6 @@ static void arm_smmu_domain_free(struct iommu_domain *domain)
  }
  
--static int arm_smmu_alloc_cd_tables(struct arm_smmu_domain *smmu_domain,
--				    struct arm_smmu_master *master)
-+static int arm_smmu_alloc_cd_tables(struct arm_smmu_master *master)
+ static int arm_smmu_domain_finalise_s1(struct arm_smmu_domain *smmu_domain,
+-				       struct arm_smmu_master *master,
+ 				       struct io_pgtable_cfg *pgtbl_cfg)
  {
  	int ret;
- 	size_t l1size;
- 	size_t max_contexts;
- 	struct arm_smmu_device *smmu = master->smmu;
--	struct arm_smmu_ctx_desc_cfg *cdcfg = &smmu_domain->cd_table;
-+	struct arm_smmu_ctx_desc_cfg *cdcfg = &master->cd_table;
- 
- 	cdcfg->stall_enabled = master->stall_enabled;
- 	cdcfg->s1cdmax = master->ssid_bits;
-@@ -1176,12 +1175,12 @@ static int arm_smmu_alloc_cd_tables(struct arm_smmu_domain *smmu_domain,
- 	return ret;
+@@ -2128,7 +2127,6 @@ static int arm_smmu_domain_finalise_s1(struct arm_smmu_domain *smmu_domain,
  }
  
--static void arm_smmu_free_cd_tables(struct arm_smmu_domain *smmu_domain)
-+static void arm_smmu_free_cd_tables(struct arm_smmu_master *master)
+ static int arm_smmu_domain_finalise_s2(struct arm_smmu_domain *smmu_domain,
+-				       struct arm_smmu_master *master,
+ 				       struct io_pgtable_cfg *pgtbl_cfg)
  {
- 	int i;
- 	size_t size, l1size;
--	struct arm_smmu_device *smmu = smmu_domain->smmu;
--	struct arm_smmu_ctx_desc_cfg *cdcfg = &smmu_domain->cd_table;
-+	struct arm_smmu_device *smmu = master->smmu;
-+	struct arm_smmu_ctx_desc_cfg *cdcfg = &master->cd_table;
- 
- 	if (cdcfg->l1_desc) {
- 		size = CTXDESC_L2_ENTRIES * (CTXDESC_CD_DWORDS << 3);
-@@ -1289,7 +1288,7 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_master *master, u32 sid,
- 	if (smmu_domain) {
- 		switch (smmu_domain->stage) {
- 		case ARM_SMMU_DOMAIN_S1:
--			cd_table = &smmu_domain->cd_table;
-+			cd_table = &master->cd_table;
- 			break;
- 		case ARM_SMMU_DOMAIN_S2:
- 		case ARM_SMMU_DOMAIN_NESTED:
-@@ -2075,14 +2074,10 @@ static void arm_smmu_domain_free(struct iommu_domain *domain)
- 
- 	free_io_pgtable_ops(smmu_domain->pgtbl_ops);
- 
--	/* Free the CD and ASID, if we allocated them */
-+	/* Free the ASID or VMID */
- 	if (smmu_domain->stage == ARM_SMMU_DOMAIN_S1) {
--		struct arm_smmu_ctx_desc_cfg *cd_table = &smmu_domain->cd_table;
--
- 		/* Prevent SVA from touching the CD while we're freeing it */
- 		mutex_lock(&arm_smmu_asid_lock);
--		if (cd_table->cdtab)
--			arm_smmu_free_cd_tables(smmu_domain);
- 		arm_smmu_free_asid(&smmu_domain->cd);
- 		mutex_unlock(&arm_smmu_asid_lock);
- 	} else {
-@@ -2113,10 +2108,6 @@ static int arm_smmu_domain_finalise_s1(struct arm_smmu_domain *smmu_domain,
- 	if (ret)
- 		goto out_unlock;
- 
--	ret = arm_smmu_alloc_cd_tables(smmu_domain, master);
--	if (ret)
--		goto out_free_asid;
--
- 	cd->asid	= (u16)asid;
- 	cd->ttbr	= pgtbl_cfg->arm_lpae_s1_cfg.ttbr;
- 	cd->tcr		= FIELD_PREP(CTXDESC_CD_0_TCR_T0SZ, tcr->tsz) |
-@@ -2128,17 +2119,9 @@ static int arm_smmu_domain_finalise_s1(struct arm_smmu_domain *smmu_domain,
- 			  CTXDESC_CD_0_TCR_EPD1 | CTXDESC_CD_0_AA64;
- 	cd->mair	= pgtbl_cfg->arm_lpae_s1_cfg.mair;
- 
--	ret = arm_smmu_write_ctx_desc(master, 0, cd);
--	if (ret)
--		goto out_free_cd_tables;
--
- 	mutex_unlock(&arm_smmu_asid_lock);
+ 	int vmid;
+@@ -2153,8 +2151,7 @@ static int arm_smmu_domain_finalise_s2(struct arm_smmu_domain *smmu_domain,
  	return 0;
- 
--out_free_cd_tables:
--	arm_smmu_free_cd_tables(smmu_domain);
--out_free_asid:
--	arm_smmu_free_asid(cd);
- out_unlock:
- 	mutex_unlock(&arm_smmu_asid_lock);
- 	return ret;
-@@ -2400,6 +2383,14 @@ static void arm_smmu_detach_dev(struct arm_smmu_master *master)
- 	master->domain = NULL;
- 	master->ats_enabled = false;
- 	arm_smmu_install_ste_for_dev(master);
-+	/*
-+	 * Clearing the CD entry isn't strictly required to detach the domain
-+	 * since the table is uninstalled anyway, but it helps avoid confusion
-+	 * in the call to arm_smmu_write_ctx_desc on the next attach (which
-+	 * expects the entry to be empty).
-+	 */
-+	if (smmu_domain->stage == ARM_SMMU_DOMAIN_S1 && master->cd_table.cdtab)
-+		arm_smmu_write_ctx_desc(master, 0, NULL);
  }
  
- static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
-@@ -2434,23 +2425,14 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+-static int arm_smmu_domain_finalise(struct iommu_domain *domain,
+-				    struct arm_smmu_master *master)
++static int arm_smmu_domain_finalise(struct iommu_domain *domain)
+ {
+ 	int ret;
+ 	unsigned long ias, oas;
+@@ -2162,7 +2159,6 @@ static int arm_smmu_domain_finalise(struct iommu_domain *domain,
+ 	struct io_pgtable_cfg pgtbl_cfg;
+ 	struct io_pgtable_ops *pgtbl_ops;
+ 	int (*finalise_stage_fn)(struct arm_smmu_domain *,
+-				 struct arm_smmu_master *,
+ 				 struct io_pgtable_cfg *);
+ 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+ 	struct arm_smmu_device *smmu = smmu_domain->smmu;
+@@ -2214,7 +2210,7 @@ static int arm_smmu_domain_finalise(struct iommu_domain *domain,
+ 	domain->geometry.aperture_end = (1UL << pgtbl_cfg.ias) - 1;
+ 	domain->geometry.force_aperture = true;
+ 
+-	ret = finalise_stage_fn(smmu_domain, master, &pgtbl_cfg);
++	ret = finalise_stage_fn(smmu_domain, &pgtbl_cfg);
+ 	if (ret < 0) {
+ 		free_io_pgtable_ops(pgtbl_ops);
+ 		return ret;
+@@ -2424,7 +2420,7 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+ 
  	if (!smmu_domain->smmu) {
  		smmu_domain->smmu = smmu;
- 		ret = arm_smmu_domain_finalise(domain, master);
--		if (ret) {
-+		if (ret)
+-		ret = arm_smmu_domain_finalise(domain, master);
++		ret = arm_smmu_domain_finalise(domain);
+ 		if (ret)
  			smmu_domain->smmu = NULL;
--			goto out_unlock;
--		}
--	} else if (smmu_domain->smmu != smmu) {
--		ret = -EINVAL;
--		goto out_unlock;
--	} else if (smmu_domain->stage == ARM_SMMU_DOMAIN_S1 &&
--		   master->ssid_bits != smmu_domain->cd_table.s1cdmax) {
-+	} else if (smmu_domain->smmu != smmu)
- 		ret = -EINVAL;
--		goto out_unlock;
--	} else if (smmu_domain->stage == ARM_SMMU_DOMAIN_S1 &&
--		   smmu_domain->cd_table.stall_enabled !=
--			   master->stall_enabled) {
--		ret = -EINVAL;
--		goto out_unlock;
--	}
-+
-+	mutex_unlock(&smmu_domain->init_mutex);
-+	if (ret)
-+		return ret;
- 
- 	master->domain = smmu_domain;
- 
-@@ -2464,16 +2446,42 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
- 	if (smmu_domain->stage != ARM_SMMU_DOMAIN_BYPASS)
- 		master->ats_enabled = arm_smmu_ats_supported(master);
- 
--	arm_smmu_install_ste_for_dev(master);
--
- 	spin_lock_irqsave(&smmu_domain->devices_lock, flags);
- 	list_add(&master->domain_head, &smmu_domain->devices);
- 	spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
- 
-+	if (smmu_domain->stage == ARM_SMMU_DOMAIN_S1) {
-+		if (!master->cd_table.cdtab) {
-+			ret = arm_smmu_alloc_cd_tables(master);
-+			if (ret) {
-+				master->domain = NULL;
-+				goto out_list_del;
-+			}
-+		}
-+
-+		/*
-+		 * Prevent SVA from concurrently modifying the CD or writing to
-+		 * the CD entry
-+		 */
-+		mutex_lock(&arm_smmu_asid_lock);
-+		ret = arm_smmu_write_ctx_desc(master, 0, &smmu_domain->cd);
-+		mutex_unlock(&arm_smmu_asid_lock);
-+		if (ret) {
-+			master->domain = NULL;
-+			goto out_list_del;
-+		}
-+	}
-+
-+	arm_smmu_install_ste_for_dev(master);
-+
- 	arm_smmu_enable_ats(master);
-+	return 0;
-+
-+out_list_del:
-+	spin_lock_irqsave(&smmu_domain->devices_lock, flags);
-+	list_del(&master->domain_head);
-+	spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
- 
--out_unlock:
--	mutex_unlock(&smmu_domain->init_mutex);
- 	return ret;
- }
- 
-@@ -2718,6 +2726,8 @@ static void arm_smmu_release_device(struct device *dev)
- 	arm_smmu_detach_dev(master);
- 	arm_smmu_disable_pasid(master);
- 	arm_smmu_remove_master(master);
-+	if (master->cd_table.cdtab)
-+		arm_smmu_free_cd_tables(master);
- 	kfree(master);
- }
- 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-index 00f8e6388848e..2f4b832e0deb4 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-@@ -695,6 +695,8 @@ struct arm_smmu_master {
- 	struct arm_smmu_domain		*domain;
- 	struct list_head		domain_head;
- 	struct arm_smmu_stream		*streams;
-+	/* Locked by the iommu core using the group mutex */
-+	struct arm_smmu_ctx_desc_cfg	cd_table;
- 	unsigned int			num_streams;
- 	bool				ats_enabled;
- 	bool				stall_enabled;
-@@ -721,11 +723,8 @@ struct arm_smmu_domain {
- 
- 	enum arm_smmu_domain_stage	stage;
- 	union {
--		struct {
- 		struct arm_smmu_ctx_desc	cd;
--		struct arm_smmu_ctx_desc_cfg	cd_table;
--		};
--		struct arm_smmu_s2_cfg	s2_cfg;
-+		struct arm_smmu_s2_cfg		s2_cfg;
- 	};
- 
- 	struct iommu_domain		domain;
+ 	} else if (smmu_domain->smmu != smmu)
 -- 
 2.42.0.283.g2d96d420d3-goog
 
