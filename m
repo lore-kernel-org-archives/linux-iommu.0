@@ -1,70 +1,53 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.136])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3E24EA1
-	for <iommu@lists.linux.dev>; Thu, 31 Aug 2023 02:45:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1693449924; x=1724985924;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=GvqqUn/QYIsd9Wy6pXz11sbZ+wHEshiG1oiKNfieeGo=;
-  b=FB40op/cS1dHjaRAkY5RhAua/5GSniOSkoac84DuN6RwPM782U4ZmgUW
-   wq5KvNcPI5NQifM0unVNHOTPhjnKYgZgfABv3rZiqVdHQe95nScwJfv3e
-   B1LZEuD+/iCh58Gp2ifUoF8gup9fVnD9LQ8YcK6cQhI4RQ73z2RoSZb3A
-   xTqNuqCq2Ay8RI0Dvwbg0TlWPnnOtcDH9a4YeUrGCd4PIVzcEdx1s7xAw
-   OaSJzyQ6RVJvXJpzuKDlnF2yHX0k0LHC6xmLztBIfJypr+X/EJ7S62QLU
-   XZbIjbDEIYiadfrE+dN0h5rka396pnP6NRf+HLVhSipU9o7bg7s6pXUF3
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10818"; a="355294608"
-X-IronPort-AV: E=Sophos;i="6.02,215,1688454000"; 
-   d="scan'208";a="355294608"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2023 19:45:22 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10818"; a="716148213"
-X-IronPort-AV: E=Sophos;i="6.02,215,1688454000"; 
-   d="scan'208";a="716148213"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.254.210.87]) ([10.254.210.87])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2023 19:45:20 -0700
-Message-ID: <92bceb62-b33f-2380-9229-af9634b12c95@linux.intel.com>
-Date: Thu, 31 Aug 2023 10:45:17 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9BA2715A0
+	for <iommu@lists.linux.dev>; Thu, 31 Aug 2023 03:50:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 1414CC433C8;
+	Thu, 31 Aug 2023 03:50:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1693453828;
+	bh=t3EE8gZClnitP93lMZaNUDvdu2WS6qWOWyQTFfsI4qU=;
+	h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+	b=O3Ha+sz9dIMCNFbnTBwmLrw/KPsX0TcZNQnqc5bDVS/kADWwPOa/5YQO1lcgj6cYA
+	 pZ39400zoG6EcGzycnAHKvtBRsNYBHzSmq85jLqD9QA/swZQ1ONq0F5tJZA/U5fUQW
+	 I5TSMKjDDJtLxN03xb1CiFkpqIzBHTzPtlh24FZIZHbEOsWHAR/wgLiybLNkdgM+tw
+	 SAz5tkpNIV5qPSXIAqvFzOeJXrlRgDnpoiFAdwb9G0/ZaYY8pIggm1ImzNkNpBinX+
+	 FaMY1WsCG/N6RQEtTrZT8WsodcVsUT/b2E8Y8HdliFnEx0iTDWKnAnI5ogEOIFHT/8
+	 c4wlrw+GxFJow==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 027CBC3274C;
+	Thu, 31 Aug 2023 03:50:28 +0000 (UTC)
+Subject: Re: [GIT PULL] Please pull IOMMUFD subsystem changes
+From: pr-tracker-bot@kernel.org
+In-Reply-To: <ZO/Te6LU1ENf58ZW@nvidia.com>
+References: <ZO/Te6LU1ENf58ZW@nvidia.com>
+X-PR-Tracked-List-Id: <kvm.vger.kernel.org>
+X-PR-Tracked-Message-Id: <ZO/Te6LU1ENf58ZW@nvidia.com>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/jgg/iommufd.git tags/for-linus-iommufd
+X-PR-Tracked-Commit-Id: eb501c2d96cfce6b42528e8321ea085ec605e790
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 4debf77169ee459c46ec70e13dc503bc25efd7d2
+Message-Id: <169345382800.18053.13760113364662858886.pr-tracker-bot@kernel.org>
+Date: Thu, 31 Aug 2023 03:50:28 +0000
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, iommu@lists.linux.dev, kvm@vger.kernel.org, linux-kernel@vger.kernel.org, Kevin Tian <kevin.tian@intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.14.0
-Cc: baolu.lu@linux.intel.com, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 3/5] mm: Add structure to keep sva information
-Content-Language: en-US
-To: Tina Zhang <tina.zhang@intel.com>, Jason Gunthorpe <jgg@ziepe.ca>,
- Kevin Tian <kevin.tian@intel.com>, Michael Shavit <mshavit@google.com>
-References: <20230827084401.819852-1-tina.zhang@intel.com>
- <20230827084401.819852-4-tina.zhang@intel.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20230827084401.819852-4-tina.zhang@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
 
-On 2023/8/27 16:43, Tina Zhang wrote:
-> Introduce iommu_mm_data structure to keep sva information (pasid and the
-> related sva domains). Add iommu_mm pointer, pointing to an instance of
-> iommu_mm_data structure, to mm.
-> 
-> Signed-off-by: Tina Zhang<tina.zhang@intel.com>
-> ---
->   include/linux/iommu.h    | 5 +++++
->   include/linux/mm_types.h | 2 ++
->   2 files changed, 7 insertions(+)
+The pull request you sent on Wed, 30 Aug 2023 20:40:43 -0300:
 
-Nit:
+> git://git.kernel.org/pub/scm/linux/kernel/git/jgg/iommufd.git tags/for-linus-iommufd
 
-iommu also has a per-device private pointer, it's defined as struct
-dev_iommu and stored at dev->iommu. Is it valuable to align both?
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/4debf77169ee459c46ec70e13dc503bc25efd7d2
 
-Best regards,
-baolu
+Thank you!
+
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
