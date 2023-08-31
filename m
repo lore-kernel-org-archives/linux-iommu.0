@@ -1,60 +1,79 @@
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 508968C13
-	for <iommu@lists.linux.dev>; Thu, 31 Aug 2023 12:39:02 +0000 (UTC)
-Received: from kwepemi500008.china.huawei.com (unknown [172.30.72.53])
-	by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4Rc0zZ3xVKz1L9Fs;
-	Thu, 31 Aug 2023 20:37:14 +0800 (CST)
-Received: from huawei.com (10.90.53.73) by kwepemi500008.china.huawei.com
- (7.221.188.139) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.31; Thu, 31 Aug
- 2023 20:38:53 +0800
-From: Jinjie Ruan <ruanjinjie@huawei.com>
-To: <linux-tegra@vger.kernel.org>, <iommu@lists.linux.dev>, Thierry Reding
-	<thierry.reding@gmail.com>, Krishna Reddy <vdumpa@nvidia.com>, Joerg Roedel
-	<joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy
-	<robin.murphy@arm.com>, Jonathan Hunter <jonathanh@nvidia.com>
-CC: <ruanjinjie@huawei.com>
-Subject: [PATCH] iommu/tegra-smmu: Fix the NULL vs IS_ERR() bug for debugfs_create_dir()
-Date: Thu, 31 Aug 2023 20:38:46 +0800
-Message-ID: <20230831123846.3137304-1-ruanjinjie@huawei.com>
-X-Mailer: git-send-email 2.34.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 131897481
+	for <iommu@lists.linux.dev>; Thu, 31 Aug 2023 12:51:27 +0000 (UTC)
+Received: by verein.lst.de (Postfix, from userid 2407)
+	id C99B468C4E; Thu, 31 Aug 2023 14:51:10 +0200 (CEST)
+Date: Thu, 31 Aug 2023 14:51:09 +0200
+From: Christoph Hellwig <hch@lst.de>
+To: Jonathan Corbet <corbet@lwn.net>
+Cc: Petr Tesarik <petrtesarik@huaweicloud.com>,
+	Stefano Stabellini <sstabellini@kernel.org>,
+	Russell King <linux@armlinux.org.uk>,
+	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+	Dave Hansen <dave.hansen@linux.intel.com>,
+	"maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
+	"H. Peter Anvin" <hpa@zytor.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Juergen Gross <jgross@suse.com>,
+	Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
+	Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Christoph Lameter <cl@linux.com>, Pekka Enberg <penberg@kernel.org>,
+	David Rientjes <rientjes@google.com>,
+	Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Vlastimil Babka <vbabka@suse.cz>,
+	Roman Gushchin <roman.gushchin@linux.dev>,
+	Hyeonggon Yoo <42.hyeyoo@gmail.com>,
+	Petr Tesarik <petr.tesarik.ext@huawei.com>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Hans de Goede <hdegoede@redhat.com>, James Seo <james@equiv.tech>,
+	James Clark <james.clark@arm.com>,
+	Kees Cook <keescook@chromium.org>,
+	"moderated list:XEN HYPERVISOR ARM" <xen-devel@lists.xenproject.org>,
+	"moderated list:ARM PORT" <linux-arm-kernel@lists.infradead.org>,
+	open list <linux-kernel@vger.kernel.org>,
+	"open list:MIPS" <linux-mips@vger.kernel.org>,
+	"open list:XEN SWIOTLB SUBSYSTEM" <iommu@lists.linux.dev>,
+	"open list:SLAB ALLOCATOR" <linux-mm@kvack.org>,
+	Roberto Sassu <roberto.sassu@huaweicloud.com>, petr@tesarici.cz
+Subject: Re: [PATCH v7 9/9] swiotlb: search the software IO TLB only if the
+ device makes use of it
+Message-ID: <20230831125109.GA11562@lst.de>
+References: <cover.1690871004.git.petr.tesarik.ext@huawei.com> <adea71bd1fa8660d4c3157a562431ad8127016d4.1690871004.git.petr.tesarik.ext@huawei.com> <87a5uz3ob8.fsf@meer.lwn.net>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.90.53.73]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- kwepemi500008.china.huawei.com (7.221.188.139)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87a5uz3ob8.fsf@meer.lwn.net>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 
-The debugfs_create_dir() function returns error pointers.
-It never returns NULL. So use IS_ERR() to check it.
+On Wed, Aug 09, 2023 at 03:20:43PM -0600, Jonathan Corbet wrote:
+> >  	spin_unlock_irqrestore(&dev->dma_io_tlb_lock, flags);
+> >  
+> > -	/* Pairs with smp_rmb() in swiotlb_find_pool(). */
+> > -	smp_wmb();
+> >  found:
+> > +	dev->dma_uses_io_tlb = true;
+> > +	/* Pairs with smp_rmb() in is_swiotlb_buffer() */
+> > +	smp_wmb();
+> > +
+> 
+> ...and here you set it if swiotlb is used.
+> 
+> But, as far as I can tell, you don't actually *use* this field anywhere.
+> What am I missing?
 
-Fixes: d1313e7896e9 ("iommu/tegra-smmu: Add debugfs support")
-Signed-off-by: Jinjie Ruan <ruanjinjie@huawei.com>
----
- drivers/iommu/tegra-smmu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-index e445f80d0226..cd1d80c4c673 100644
---- a/drivers/iommu/tegra-smmu.c
-+++ b/drivers/iommu/tegra-smmu.c
-@@ -1056,7 +1056,7 @@ DEFINE_SHOW_ATTRIBUTE(tegra_smmu_clients);
- static void tegra_smmu_debugfs_init(struct tegra_smmu *smmu)
- {
- 	smmu->debugfs = debugfs_create_dir("smmu", NULL);
--	if (!smmu->debugfs)
-+	if (IS_ERR(smmu->debugfs))
- 		return;
- 
- 	debugfs_create_file("swgroups", S_IRUGO, smmu->debugfs, smmu,
--- 
-2.34.1
-
+It's very much unused.  Petr, I guess you wanted to use this in
+is_swiotlb_buffer to avoid the lookup unless required.  Can you send
+a follow up?
