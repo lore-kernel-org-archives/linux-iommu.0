@@ -1,110 +1,109 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2F2A68F71
-	for <iommu@lists.linux.dev>; Thu, 31 Aug 2023 11:24:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1693481087; x=1725017087;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=4rqbmzPeLwpZ36uQPiLAzAn3sRKRt2FDC24MP4o0xkM=;
-  b=eAxcxt7SjDjBhSLK0e8S74QTE+r6Kv7bOlimdZwPX411AQLypq/7++Bw
-   3PNHGdzA142jPc/iw06fWQjPl+uELo/x65f574IctxsWMM6xag5gLXY1o
-   H7xVuRRWkY97A1uyeeOmMtv6+/AggYRDbBp2odCbFzPZ8zzzgYxjj6EHX
-   /FMjQN47lbGc/RactxDSDAWZzcFFECqv+DawQszAY27fu0s40IPj4eQ4U
-   pN61cn9roiJjkJseSpwyl/C9s1EEduDWacr7LfW8a9mNIve5LePF5xKWX
-   XuCoJvqcnN9Z9N1F5Kogvf2pJC1mfO0NCP6eXQtwDKfzaYEfDogl0Cw/4
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10818"; a="462280837"
-X-IronPort-AV: E=Sophos;i="6.02,216,1688454000"; 
-   d="scan'208";a="462280837"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2023 04:24:46 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10818"; a="689286681"
-X-IronPort-AV: E=Sophos;i="6.02,216,1688454000"; 
-   d="scan'208";a="689286681"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.254.210.87]) ([10.254.210.87])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2023 04:24:42 -0700
-Message-ID: <ed11a5c4-7256-e6ea-e94e-0dfceba6ddbf@linux.intel.com>
-Date: Thu, 31 Aug 2023 19:24:40 +0800
+Received: from ustc.edu.cn (smtp2.ustc.edu.cn [202.38.64.46])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B3B5F944D
+	for <iommu@lists.linux.dev>; Thu, 31 Aug 2023 11:59:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=mail.ustc.edu.cn; s=dkim; h=Received:Date:Message-Id:To:Cc:
+	Subject:From:In-Reply-To:References:Mime-Version:Content-Type:
+	Content-Transfer-Encoding; bh=XB0WHbbAg+OjhsS9TDKeQE27W5Q+vohE/H
+	d1XoRzsrg=; b=sHDX34ydiuCZ22PHqTOJqpm7393caR7Ff2oFbvr2EF6Qw1DOmc
+	G8yesL1vNy6MsDxY0BV+94p888R3zR1+BmWA86Egkzv5CWtAnG9L8LT4afB1pRHp
+	2CJzJUCg5sJZ0YqruKqkt1gi8RD0CRzFfRaKvCNV2eJM9/R2SPC7E4kKA=
+Received: from localhost (unknown [101.88.124.132])
+	by newmailweb.ustc.edu.cn (Coremail) with SMTP id LkAmygCHjKyngPBkUCqlAQ--.2708S2;
+	Thu, 31 Aug 2023 19:59:39 +0800 (CST)
+Date: Thu, 31 Aug 2023 11:59:37 +0000 (UTC)
+Message-Id: <20230831.115937.924195103727242070.hchunhui@mail.ustc.edu.cn>
+To: robin.murphy@arm.com
+Cc: hch@lst.de, m.szyprowski@samsung.com, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] dma/pool: trivial: add semicolon after label
+ attributes
+From: Chunhui He <hchunhui@mail.ustc.edu.cn>
+In-Reply-To: <d5ef27f1-9e6d-5e3c-b7ea-4b0abca623ed@arm.com>
+References: <6f936d6e-9f27-ba72-68de-0ed27c0dbbe1@arm.com>
+	<20230829151216.GA4211@lst.de>
+	<d5ef27f1-9e6d-5e3c-b7ea-4b0abca623ed@arm.com>
+X-Mailer: Mew version 6.8 on Emacs 28.2
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.14.0
-Cc: baolu.lu@linux.intel.com, "Liu, Yi L" <yi.l.liu@intel.com>,
- Jacob Pan <jacob.jun.pan@linux.intel.com>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v4 09/10] iommu: Make iommu_queue_iopf() more generic
-Content-Language: en-US
-To: "Tian, Kevin" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Jason Gunthorpe <jgg@ziepe.ca>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Nicolin Chen <nicolinc@nvidia.com>
-References: <20230825023026.132919-1-baolu.lu@linux.intel.com>
- <20230825023026.132919-10-baolu.lu@linux.intel.com>
- <BN9PR11MB52762A33BC9F41AB424915688CE3A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <cfd9e0b8-167e-a79b-9ef1-b3bfa38c9199@linux.intel.com>
- <BN9PR11MB5276926066CC3A8FCCFD3DB08CE6A@BN9PR11MB5276.namprd11.prod.outlook.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <BN9PR11MB5276926066CC3A8FCCFD3DB08CE6A@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
+X-CM-TRANSID:LkAmygCHjKyngPBkUCqlAQ--.2708S2
+X-Coremail-Antispam: 1UD129KBjvJXoW7ZryfWF47CFykGw18uFWfKrg_yoW8tFy3pF
+	y8JF1DK3yDJFn3Gr9Fyrs29F1Yvw4aq3y5GFnxJr1SyanrXw1SvryjqFZ09FZxKr4kGwsa
+	qrWjqa9rXw45ua7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+	9KBjDU0xBIdaVrnRJUUUyab7Iv0xC_KF4lb4IE77IF4wAFF20E14v26r1j6r4UM7CY07I2
+	0VC2zVCF04k26cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rw
+	A2F7IY1VAKz4vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Ar0_tr1l84ACjcxK6xII
+	jxv20xvEc7CjxVAFwI0_Cr0_Gr1UM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I
+	8E87Iv6xkF7I0E14v26rxl6s0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI
+	64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r106r15McIj6I8E87Iv67AKxVWUJVW8Jw
+	Am72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41l42xK82IYc2Ij64vIr41l4I8I
+	3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxV
+	WUGVWUWwC2zVAF1VAY17CE14v26r126r1DMIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAF
+	wI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r1j6r4UMIIF0xvE42xK8VAvwI8IcI
+	k0rVWrZr1j6s0DMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_
+	Jr0_GrUvcSsGvfC2KfnxnUUI43ZEXa7IU8xHUDUUUUU==
+X-CM-SenderInfo: pkfk30xkxlqzxdloh3xvwfhvlgxou0/
 
-On 2023/8/30 15:55, Tian, Kevin wrote:
->> From: Baolu Lu <baolu.lu@linux.intel.com>
->> Sent: Saturday, August 26, 2023 4:04 PM
->>
->> On 8/25/23 4:17 PM, Tian, Kevin wrote:
->>>> +static void assert_no_pending_iopf(struct device *dev, ioasid_t pasid)
->>>> +{
->>>> +	struct iommu_fault_param *iopf_param = dev->iommu-
->>>>> fault_param;
->>>> +	struct iopf_fault *iopf;
->>>> +
->>>> +	if (!iopf_param)
->>>> +		return;
->>>> +
->>>> +	mutex_lock(&iopf_param->lock);
->>>> +	list_for_each_entry(iopf, &iopf_param->partial, list) {
->>>> +		if (WARN_ON(iopf->fault.prm.pasid == pasid))
->>>> +			break;
->>>> +	}
->>> partial list is protected by dev_iommu lock.
+
+On Tue, 29 Aug 2023 16:28:05 +0100, Robin Murphy <robin.murphy@arm.com> wrote:
+> On 29/08/2023 4:12 pm, Christoph Hellwig wrote:
+>> On Tue, Aug 29, 2023 at 03:22:22PM +0100, Robin Murphy wrote:
+>>> AFAICS, what that clearly says is that *C++* label attributes can be
+>>> ambiguous. This is not C++ code. Even in C11, declarations still
+>>> cannot be
+>>> labelled, so it should still be the case that, per the same GCC
+>>> documentation, "the ambiguity does not arise". And even if the
+>>> language did
+>>> allow it, an inline declaration at that point at the end of a function
+>>> would be downright weird and against the kernel coding style anyway.
 >>>
->>
->> Ah, do you mind elaborating a bit more? In my mind, partial list is
->> protected by dev_iommu->fault_param->lock.
->>
-> 
-> well, it's not how the code is currently written. iommu_queue_iopf()
-> doesn't hold dev_iommu->fault_param->lock to update the partial
-> list.
-> 
-> while at it looks there is also a mislocking in iopf_queue_discard_partial()
-> which only acquires queue->lock.
-> 
-> So we have three places touching the partial list all with different locks:
-> 
-> - iommu_queue_iopf() relies on dev_iommu->lock
-> - iopf_queue_discard_partial() relies on queue->lock
-> - this new assert function uses dev_iommu->fault_param->lock
+>>> So, I don't really see what's "better" about cluttering up C code with
+>>> unnecessary C++isms; it's just weird noise to me. The only thing I
+>>> think it
+>>> *does* achieve is introduce the chance that the static checker brigade
+>>> eventually identifies a redundant semicolon and we get more patches to
+>>> remove it again.
 
-Yeah, I see your point now. Thanks for the explanation.
+Inline declaration is a GNU C extension, so the ambiguity may arise.
+Adding ';' makes the compiler easier to parse correctly, so I say
+"better". The commit 13a453c241b78934a945b1af572d0533612c9bd1
+(sched/fair: Add ';' after label attributes) also says the same.
 
-So, my understanding is that dev_iommu->lock protects the whole
-pointer of dev_iommu->fault_param, while dev_iommu->fault_param->lock
-protects the lists inside it.
+>> Agreed.  Even more importantly that attribute looks rather
+>> questionable
+>> to start with as it can be dropped by just moving the #endif a little:
+>> diff --git a/kernel/dma/pool.c b/kernel/dma/pool.c
+>> index 1acec2e228273f..da03c4a57cebe3 100644
+>> --- a/kernel/dma/pool.c
+>> +++ b/kernel/dma/pool.c
+>> @@ -135,8 +135,8 @@ static int atomic_pool_expand(struct gen_pool
+>> *pool, size_t pool_size,
+>>   remove_mapping:
+>>   #ifdef CONFIG_DMA_DIRECT_REMAP
+>>   	dma_common_free_remap(addr, pool_size);
+>> +free_page:
+>>   #endif
+>> -free_page: __maybe_unused
+>>   	__free_pages(page, order);
+>>   out:
+>>   	return ret;
+> 
+> Oh, indeed - I hadn't really looked at the context itself. My
+> non-exhaustive grep skills show a couple of hundred instances of
+> label-above-#endif vs. three (!) instances of __maybe_unused, so ack
+> to making that cleanup to just remove the question entirely.
+> 
+> Cheers,
+> Robin.
 
-Is this locking mechanism different from what you think?
+I agree label-above-#endif remove the question entirely.
 
-Best regards,
-baolu
+Cheers,
+Chunhui.
+
