@@ -1,82 +1,107 @@
-Received: from ustc.edu.cn (smtp2.ustc.edu.cn [202.38.64.46])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2A7669470
-	for <iommu@lists.linux.dev>; Thu, 31 Aug 2023 12:10:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=mail.ustc.edu.cn; s=dkim; h=Received:Date:Message-Id:To:Cc:
-	Subject:From:In-Reply-To:References:Mime-Version:Content-Type:
-	Content-Transfer-Encoding; bh=Qq8Or05Z3wupAqn+SJQ9X4Kn3q8NHmmiK9
-	CjrR91gH8=; b=rgNp4kUdq4N0sUNapWTMToG9TbDrP77a8Hpgu57vGuNfKyMiP1
-	8UE6FVBe/3VgjwN+7AO2kUklAJHRi9vTy6vulgNSf0Plf2aTGMQp7YwNVzF5fWC/
-	w2/M0ttER885IWy9VUeiXbk5u0QPEj0oD0ZU/raEa4UrAvNtdN7rrHDxQ=
-Received: from localhost (unknown [101.88.124.132])
-	by newmailweb.ustc.edu.cn (Coremail) with SMTP id LkAmygDn7xshg_Bk8vSlAQ--.5239S2;
-	Thu, 31 Aug 2023 20:10:09 +0800 (CST)
-Date: Thu, 31 Aug 2023 12:10:11 +0000 (UTC)
-Message-Id: <20230831.121011.290302981294821287.hchunhui@mail.ustc.edu.cn>
-To: hch@lst.de
-Cc: m.szyprowski@samsung.com, robin.murphy@arm.com, iommu@lists.linux.dev
-Subject: Re: [PATCH] dma-pool: remove a __maybe_unused label in
- atomic_pool_expand
-From: Chunhui He <hchunhui@mail.ustc.edu.cn>
-In-Reply-To: <20230830092804.148776-1-hch@lst.de>
-References: <20230830092804.148776-1-hch@lst.de>
-X-Mailer: Mew version 6.8 on Emacs 28.2
+Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A97A3125B7
+	for <iommu@lists.linux.dev>; Thu, 31 Aug 2023 12:31:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+	MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
+	Content-ID:Content-Description:In-Reply-To:References;
+	bh=v7NZxvNPnyRQlSede9ZISRThidYdm2NHUeIAAgWaTrM=; b=ak1VrsUX0fhsX1qDO1zGgetfEZ
+	18uwBG5d55Rm3LBBa7cUeliSClnV8LgqdECppU5GRCDhzhb7hBpxG93fQJebUBOHux5+xETKX37jJ
+	wQ+OtGYlhhNhY6SfmmBit8aZJlkCdED6goGr6ViskmdJ3nAnuuBji4NRXbLr3a/CmLkgzIuk26TVc
+	ng3zZ7gIjuuy9X+xhk+WEwOcN8e91nZB4rfdjkT2wVH28WXuOa/Ey4LFMzI4Ojlg4qp0zKmFIrXzc
+	WGsAjHfJv2gcOIHpWaB8hISWog9wZtwybEi5W9cNkDwUHqqa80dInmSpb2V+S06SHH6nY0l5V9MCN
+	NFuZnz0A==;
+Received: from 2a02-8389-2341-5b80-39d3-4735-9a3c-88d8.cable.dynamic.v6.surfer.at ([2a02:8389:2341:5b80:39d3:4735:9a3c:88d8] helo=localhost)
+	by bombadil.infradead.org with esmtpsa (Exim 4.96 #2 (Red Hat Linux))
+	id 1qbgpJ-00FHjc-2C;
+	Thu, 31 Aug 2023 12:31:10 +0000
+From: Christoph Hellwig <hch@lst.de>
+To: joro@8bytes.org
+Cc: suravee.suthikulpanit@amd.com,
+	iommu@lists.linux.dev
+Subject: [PATCH] iommu/amd: remove amd_iommu_snp_enable
+Date: Thu, 31 Aug 2023 14:31:07 +0200
+Message-Id: <20230831123107.280998-1-hch@lst.de>
+X-Mailer: git-send-email 2.39.2
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-CM-TRANSID:LkAmygDn7xshg_Bk8vSlAQ--.5239S2
-X-Coremail-Antispam: 1UD129KBjvdXoWrtry8urW8GryUXF1DAryfCrg_yoWfXrb_J3
-	43Gw1fuFs8XFs7Z3WUCws3Xrn5Ka4DWrZ3ua17JFWYkFyDJrZIqFn7Jws5WryDJw47GFWU
-	CasrurWDKr1aqjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-	9fnUUIcSsGvfJTRUUUbw8YjsxI4VWxJwAYFVCjjxCrM7AC8VAFwI0_Jr0_Gr1l1xkIjI8I
-	6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM2
-	8CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVW7JVWDJwA2z4x0Y4vE2Ix0
-	cI8IcVCY1x0267AKxVW8Jr0_Cr1UM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I
-	8E87Iv6xkF7I0E14v26rxl6s0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI
-	64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1Y6r17McIj6I8E87Iv67AKxVWUJVW8Jw
-	Am72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41l42xK82IYc2Ij64vIr41l4I8I
-	3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxV
-	WUGVWUWwC2zVAF1VAY17CE14v26r126r1DMIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAF
-	wI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r1j6r4UMIIF0xvE42xK8VAvwI8IcI
-	k0rVWrJr0_WFyUJwCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v2
-	6r1j6r4UYxBIdaVFxhVjvjDU0xZFpf9x07jn3ktUUUUU=
-X-CM-SenderInfo: pkfk30xkxlqzxdloh3xvwfhvlgxou0/
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 
+amd_iommu_snp_enable is unused and has been since it was added in commit
+fb2accadaa94 ("iommu/amd: Introduce function to check and enable SNP").
 
-On Wed, 30 Aug 2023 11:28:04 +0200, Christoph Hellwig <hch@lst.de> wrote:
-> Move the #endif a line so that free_page label is only seen by the
-> compile pass when actually used.
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+---
+ drivers/iommu/amd/init.c  | 38 --------------------------------------
+ include/linux/amd-iommu.h |  4 ----
+ 2 files changed, 42 deletions(-)
 
-Reviewed-by: Chunhui He <hchunhui@mail.ustc.edu.cn>
-
-> 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> ---
->  kernel/dma/pool.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/kernel/dma/pool.c b/kernel/dma/pool.c
-> index 1acec2e228273f..b481c48a31a630 100644
-> --- a/kernel/dma/pool.c
-> +++ b/kernel/dma/pool.c
-> @@ -135,9 +135,9 @@ static int atomic_pool_expand(struct gen_pool *pool, size_t pool_size,
->  remove_mapping:
->  #ifdef CONFIG_DMA_DIRECT_REMAP
->  	dma_common_free_remap(addr, pool_size);
-> -#endif
-> -free_page: __maybe_unused
-> +free_page:
->  	__free_pages(page, order);
-> +#endif
->  out:
->  	return ret;
->  }
-> -- 
-> 2.39.2
-> 
+diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+index ea0f1ab9417837..9f22e469da973b 100644
+--- a/drivers/iommu/amd/init.c
++++ b/drivers/iommu/amd/init.c
+@@ -3744,41 +3744,3 @@ int amd_iommu_pc_set_reg(struct amd_iommu *iommu, u8 bank, u8 cntr, u8 fxn, u64
+ 
+ 	return iommu_pc_get_set_reg(iommu, bank, cntr, fxn, value, true);
+ }
+-
+-#ifdef CONFIG_AMD_MEM_ENCRYPT
+-int amd_iommu_snp_enable(void)
+-{
+-	/*
+-	 * The SNP support requires that IOMMU must be enabled, and is
+-	 * not configured in the passthrough mode.
+-	 */
+-	if (no_iommu || iommu_default_passthrough()) {
+-		pr_err("SNP: IOMMU is disabled or configured in passthrough mode, SNP cannot be supported");
+-		return -EINVAL;
+-	}
+-
+-	/*
+-	 * Prevent enabling SNP after IOMMU_ENABLED state because this process
+-	 * affect how IOMMU driver sets up data structures and configures
+-	 * IOMMU hardware.
+-	 */
+-	if (init_state > IOMMU_ENABLED) {
+-		pr_err("SNP: Too late to enable SNP for IOMMU.\n");
+-		return -EINVAL;
+-	}
+-
+-	amd_iommu_snp_en = check_feature_on_all_iommus(FEATURE_SNP);
+-	if (!amd_iommu_snp_en)
+-		return -EINVAL;
+-
+-	pr_info("SNP enabled\n");
+-
+-	/* Enforce IOMMU v1 pagetable when SNP is enabled. */
+-	if (amd_iommu_pgtable != AMD_IOMMU_V1) {
+-		pr_warn("Force to using AMD IOMMU v1 page table due to SNP\n");
+-		amd_iommu_pgtable = AMD_IOMMU_V1;
+-	}
+-
+-	return 0;
+-}
+-#endif
+diff --git a/include/linux/amd-iommu.h b/include/linux/amd-iommu.h
+index 953e6f12fa1c30..58e6c3806c09d4 100644
+--- a/include/linux/amd-iommu.h
++++ b/include/linux/amd-iommu.h
+@@ -206,8 +206,4 @@ int amd_iommu_pc_get_reg(struct amd_iommu *iommu, u8 bank, u8 cntr, u8 fxn,
+ 		u64 *value);
+ struct amd_iommu *get_amd_iommu(unsigned int idx);
+ 
+-#ifdef CONFIG_AMD_MEM_ENCRYPT
+-int amd_iommu_snp_enable(void);
+-#endif
+-
+ #endif /* _ASM_X86_AMD_IOMMU_H */
+-- 
+2.39.2
 
