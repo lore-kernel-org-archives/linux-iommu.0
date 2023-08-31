@@ -1,218 +1,107 @@
-Received: from mail-yb1-f202.google.com (mail-yb1-f202.google.com [209.85.219.202])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam04on2065.outbound.protection.outlook.com [40.107.101.65])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DDAC111CB6
-	for <iommu@lists.linux.dev>; Thu, 31 Aug 2023 17:46:28 +0000 (UTC)
-Received: by mail-yb1-f202.google.com with SMTP id 3f1490d57ef6-d7494be34f8so873569276.2
-        for <iommu@lists.linux.dev>; Thu, 31 Aug 2023 10:46:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1693503988; x=1694108788; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=BVGe3ocDlSgxiMEa8lcY/QWlgjj80MFNgCzLX2p0tDY=;
-        b=tKr8QGw71xmc1I7sVhG+kNf+fBYS58LjveaKsPTukf/1uqIjuu4Idu2OSHKnbu1f/u
-         +5zrkECUyBWb4r+c3/EYE9GkJ0mCJ+WdMcBseVnAWoYxnKovJgdlIs0nop3E/Z820eNk
-         YP69n+Rdwr/+iGdqWORZUsNryVRa2Kz21AwAzMWrDgBwEvUbdnNNCINzsKTnOJ9HZJKi
-         KtFkYCzjDny7dsPaf2S68Po8hO4P7wyytZEMIU6MUC85zNhclnDA2bCptC2KUx/bWffs
-         Ixa8YmFEk7EQOSHidJkRYTOOK+JzLzvoKyMIVj7IQifmT9KQC9hw/2Am+ft/HqdUMn6H
-         gVuw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1693503988; x=1694108788;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=BVGe3ocDlSgxiMEa8lcY/QWlgjj80MFNgCzLX2p0tDY=;
-        b=OEjy6W+PkOX4A4KnwGGFpRwdtBFEW0yzOz9Lcm6ylmTBx3m5XJs9tsLe4DrMmBvIT5
-         qBHPMDCw7qAB3vR6jRlgYlHRoyOduxlLIMAbN47rXuDzdYSJZHujAQyvyReOY6RXyihZ
-         zlJR4vuR+HZmrDJOoZiZ0Wr7lFcTE2mfVp5LrBbm2ybD3/8O7Ntn6wyLIhoCY4kjkjXg
-         0Y+8NOxvrRNElE5++9auN8EaYrVA2RGh+4bjvpYY6IAZesfqTw50WbKM3K4boS4gLJDt
-         Mf5OoQTjobgeqMopaEqudskoVvG3tmSTtDBK+8TG/89VJOrvTUqwZKDR+7Cvn3z5WjPI
-         07BQ==
-X-Gm-Message-State: AOJu0YxGc5C+7LCbygsJ63SdUFC0wXCltVS60pyTGBxMFmzkykQGeXgF
-	HyQEU33e+n3SMUOlzwwcXjrKkc534G2RI9I3xh7OzVFp2F5IvRpKZiNcbuRGf4gmB2+kppKtThT
-	zl5IlJJDjTI9Aa2BQWVbvG30Hr8ubTHaZ80wq9kXb+pEob6ZlpRxjrnr2SnQIuXo=
-X-Google-Smtp-Source: AGHT+IFaSB6HBgvhLtm2ZCYKoljlP2y2v5i6TCK+iey0s2bWUEUuQTMR+PajRcXkL3yK+J7lDuMudjIUVdFR
-X-Received: from mshavit.ntc.corp.google.com ([2401:fa00:95:20c:1a0a:7338:4a5a:5f83])
- (user=mshavit job=sendgmr) by 2002:a5b:81:0:b0:d77:ab03:790c with SMTP id
- b1-20020a5b0081000000b00d77ab03790cmr12667ybp.0.1693503987381; Thu, 31 Aug
- 2023 10:46:27 -0700 (PDT)
-Date: Fri,  1 Sep 2023 01:44:38 +0800
-In-Reply-To: <20230831174536.103472-1-mshavit@google.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 941DC8F57;
+	Thu, 31 Aug 2023 18:03:59 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=hqCJWn5Qd/0sKuPwVsxhc4mJKbWLAH4x9wX/TZ7VYeWUBqZ19Xdc9e/1A8Hwp+XaHL5H84cWFRW5DXvKlIW/sPxeLylEx/u7Owr3nY7vniLfJoICUYX/2i7dLexpi00Bphi6DZcIvcZBUpBBwStEH/bCcWINuB3qJm5YerPnVlwnAkZuIVKXfJkgc5nMVHB3Um+VAaEWe4Q1isr5XSjd3B3Qgrxivz5KEdap4qw5VhrKNMcS0Fy8tAoQgC0XEzGhAjhXoH7e39YsrYy40Dngz08ADllXTKlda0KMVGhvZEacgBcEnmyYsvSCvoyl/VTbWHHlGc95E0wX3F0EUrFkDA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=fILcOJURw29+vX4/kZ077MGdt5BQJXNogaFSpQz5Pp8=;
+ b=MPcZsc8+m2DXUSkg1EQazzx5vCmZT5pTYFKJgWlwtx2MKJudIN70kYrRivvl1W7bwo9XRR/qbjJ8ff57iRTjkkrLgh7BSFxejGW+IvePeKppGY1JkIZEsBeSim73zHih0H/pWd4nVqRjxOTMDGEPn0pbJOlX+XXRq169Sk+je8OzcSIxoQmcYsp9s/SjcuFmtBT5hbTnI8b60i/x7ezV/reqfHAGwviJPG/PS4Lz21Ce3sL4kw5OEcXzopSeYupHk4IDJaejIfE4rYH4TIBqY6VtHOz6cT0Q5ZUgPqhfmAII+lU9fivpxQhokdxrr6dPNA4+HjhQzHwkOPBkviXbHA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=lst.de smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=fILcOJURw29+vX4/kZ077MGdt5BQJXNogaFSpQz5Pp8=;
+ b=pG3vZwkzHOq7yweb2d4DPh72vfFtDe9u8MXLR/mS3snDOCZiKU4dq9sXM66o3T/8+D1gt/c0LG1Qq/1I1GakkctfMF0pgJkIb76JaKoc1YFJNF2PZxL1udtCILhqqmPEXyP4PU0aU8AerDYj1cklxnyL45Fq5tOWsBLuv462Mlg=
+Received: from DS7PR03CA0158.namprd03.prod.outlook.com (2603:10b6:5:3b2::13)
+ by MW4PR12MB7358.namprd12.prod.outlook.com (2603:10b6:303:22b::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6745.22; Thu, 31 Aug
+ 2023 18:03:56 +0000
+Received: from DS1PEPF00017096.namprd05.prod.outlook.com
+ (2603:10b6:5:3b2:cafe::cf) by DS7PR03CA0158.outlook.office365.com
+ (2603:10b6:5:3b2::13) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6745.22 via Frontend
+ Transport; Thu, 31 Aug 2023 18:03:56 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ DS1PEPF00017096.mail.protection.outlook.com (10.167.18.100) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.6745.20 via Frontend Transport; Thu, 31 Aug 2023 18:03:55 +0000
+Received: from [10.236.30.70] (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.27; Thu, 31 Aug
+ 2023 13:03:54 -0500
+Message-ID: <d33f6abe-5de1-fdba-6a69-51bcbf568c81@amd.com>
+Date: Thu, 31 Aug 2023 13:03:53 -0500
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <20230831174536.103472-1-mshavit@google.com>
-X-Mailer: git-send-email 2.42.0.283.g2d96d420d3-goog
-Message-ID: <20230901014413.v7.9.I5ee79793b444ddb933e8bc1eb7b77e728d7f8350@changeid>
-Subject: [PATCH v7 9/9] iommu/arm-smmu-v3: Rename cdcfg to cd_table
-From: Michael Shavit <mshavit@google.com>
-To: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
-	linux-kernel@vger.kernel.org
-Cc: will@kernel.org, robin.murphy@arm.com, jean-philippe@linaro.org, 
-	jgg@nvidia.com, nicolinc@nvidia.com, Michael Shavit <mshavit@google.com>, 
-	Jason Gunthorpe <jgg@ziepe.ca>, Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>, 
-	"Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>, Lu Baolu <baolu.lu@linux.intel.com>, 
-	Mark Brown <broonie@kernel.org>, Yicong Yang <yangyicong@hisilicon.com>
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.13.0
+To: Christoph Hellwig <hch@lst.de>, <joro@8bytes.org>
+CC: <suravee.suthikulpanit@amd.com>, <iommu@lists.linux.dev>, Michael Roth
+	<michael.roth@amd.com>, "Kalra, Ashish" <Ashish.Kalra@amd.com>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>, <linux-coco@lists.linux.dev>
+References: <20230831123107.280998-1-hch@lst.de>
+Content-Language: en-US
+From: Kim Phillips <kim.phillips@amd.com>
+Subject: Re: [PATCH] iommu/amd: remove amd_iommu_snp_enable
+In-Reply-To: <20230831123107.280998-1-hch@lst.de>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS1PEPF00017096:EE_|MW4PR12MB7358:EE_
+X-MS-Office365-Filtering-Correlation-Id: befd4d0b-ccc8-424b-8c02-08dbaa4ca46b
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	QPImhrp+PUeq8I6F13KdiXimDUDJ07KjH/nIyfC2eDtckR4C9pkTFz5DAM6FxI2rLM5+9JymCngJO5mHfPeFFFeiy0XOj4CoDKr6ekC0S4VjgREP8AQDpUSTPE9ZD3CegsMDdFvEwzmLlRLRdjB4Vm+t2hQzo1pOkf9k16orUOmX5OR7cak1Dpm6ZRf/bF80BzPMiyfHZy6lE7RxX0Q+ZNyYJ3jtxr2gJJnqAXEUmhz1T5pevezPrmGEdPVheiD7CDOw/6LT1INJF34nxKIutEN/gRcZ+6uLoMnt/e+OqKEvnh5NW2B0iKJHSgmDO4P35aWTe7b8iFGaB7b9v1sGD5D1vbtnQ5O7JHmjg6MjLrbdg28O2f5N4nCol9at9Nr0rWI624ZcQuMsZtiy8SV1fwyRv5cn2ijf6MzK/ce+/NVm1UALcPBVxYJjc+WGJKJ6mc3MPit0pXGBfKQINTaClwddu1eB4RpBLYAoazXt4FijHG81LzO3JqRn2DOUvgslTwlpKfMLr6wpfMVGPVjb4nPhVKSWQuHYI/ydGfE8JUWAwY+Sli8zEwX9OfdWRdhHDN3g4gbSsIZqDlz2ibFNP9gydepJjGQAYXd4NulhVchriUOH5PgeQvruI4kTdbph17gS2iF87kYX+wLtQoPB2lvkP2Yzuwl9k3zG6Jsvwpj2dm2n6sBL5yFjCmrCwaeIcETcp9KOrX31ffI3WUPjlXNUO0UDdsmg6w37AqBppPRJexCqwOvngkpIxDiOh5BkkAVrvgh7ubHnSDPN4NChyIwU82IbnGSFllHbuFnSv+c=
+X-Forefront-Antispam-Report:
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230031)(4636009)(396003)(376002)(136003)(39860400002)(346002)(82310400011)(186009)(1800799009)(451199024)(40470700004)(36840700001)(46966006)(40480700001)(82740400003)(36756003)(41300700001)(336012)(426003)(966005)(26005)(40460700003)(16526019)(356005)(54906003)(110136005)(70586007)(70206006)(81166007)(316002)(16576012)(478600001)(2906002)(4744005)(53546011)(86362001)(5660300002)(31696002)(44832011)(8936002)(2616005)(8676002)(31686004)(36860700001)(47076005)(4326008)(36900700001)(43740500002);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Aug 2023 18:03:55.5023
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: befd4d0b-ccc8-424b-8c02-08dbaa4ca46b
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	DS1PEPF00017096.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR12MB7358
 
-cdcfg is a confusing name, especially given other variables with the cfg
-suffix in this driver. cd_table more clearly describes what is being
-operated on.
++Mike Roth, Ashish
 
-Tested-by: Nicolin Chen <nicolinc@nvidia.com>
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
-Signed-off-by: Michael Shavit <mshavit@google.com>
----
+On 8/31/23 7:31 AM, Christoph Hellwig wrote:
+> amd_iommu_snp_enable is unused and has been since it was added in commit
+> fb2accadaa94 ("iommu/amd: Introduce function to check and enable SNP").
+> 
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> ---
 
-(no changes since v3)
+It is used by the forthcoming host SNP support:
 
-Changes in v3:
-- Commit message update
+https://lore.kernel.org/lkml/20230612042559.375660-8-michael.roth@amd.com/
 
-Changes in v2:
-- New commit
+Thanks,
 
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 70 ++++++++++-----------
- 1 file changed, 35 insertions(+), 35 deletions(-)
-
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index adede66621163..0a9b832f8bd81 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -1025,18 +1025,18 @@ static __le64 *arm_smmu_get_cd_ptr(struct arm_smmu_master *master, u32 ssid)
- 	unsigned int idx;
- 	struct arm_smmu_l1_ctx_desc *l1_desc;
- 	struct arm_smmu_device *smmu = master->smmu;
--	struct arm_smmu_ctx_desc_cfg *cdcfg = &master->cd_table;
-+	struct arm_smmu_ctx_desc_cfg *cd_table = &master->cd_table;
- 
--	if (cdcfg->s1fmt == STRTAB_STE_0_S1FMT_LINEAR)
--		return cdcfg->cdtab + ssid * CTXDESC_CD_DWORDS;
-+	if (cd_table->s1fmt == STRTAB_STE_0_S1FMT_LINEAR)
-+		return cd_table->cdtab + ssid * CTXDESC_CD_DWORDS;
- 
- 	idx = ssid >> CTXDESC_SPLIT;
--	l1_desc = &cdcfg->l1_desc[idx];
-+	l1_desc = &cd_table->l1_desc[idx];
- 	if (!l1_desc->l2ptr) {
- 		if (arm_smmu_alloc_cd_leaf_table(smmu, l1_desc))
- 			return NULL;
- 
--		l1ptr = cdcfg->cdtab + idx * CTXDESC_L1_DESC_DWORDS;
-+		l1ptr = cd_table->cdtab + idx * CTXDESC_L1_DESC_DWORDS;
- 		arm_smmu_write_cd_l1_desc(l1ptr, l1_desc);
- 		/* An invalid L1CD can be cached */
- 		arm_smmu_sync_cd(master, ssid, false);
-@@ -1131,35 +1131,35 @@ static int arm_smmu_alloc_cd_tables(struct arm_smmu_master *master)
- 	size_t l1size;
- 	size_t max_contexts;
- 	struct arm_smmu_device *smmu = master->smmu;
--	struct arm_smmu_ctx_desc_cfg *cdcfg = &master->cd_table;
-+	struct arm_smmu_ctx_desc_cfg *cd_table = &master->cd_table;
- 
--	cdcfg->stall_enabled = master->stall_enabled;
--	cdcfg->s1cdmax = master->ssid_bits;
--	max_contexts = 1 << cdcfg->s1cdmax;
-+	cd_table->stall_enabled = master->stall_enabled;
-+	cd_table->s1cdmax = master->ssid_bits;
-+	max_contexts = 1 << cd_table->s1cdmax;
- 
- 	if (!(smmu->features & ARM_SMMU_FEAT_2_LVL_CDTAB) ||
- 	    max_contexts <= CTXDESC_L2_ENTRIES) {
--		cdcfg->s1fmt = STRTAB_STE_0_S1FMT_LINEAR;
--		cdcfg->num_l1_ents = max_contexts;
-+		cd_table->s1fmt = STRTAB_STE_0_S1FMT_LINEAR;
-+		cd_table->num_l1_ents = max_contexts;
- 
- 		l1size = max_contexts * (CTXDESC_CD_DWORDS << 3);
- 	} else {
--		cdcfg->s1fmt = STRTAB_STE_0_S1FMT_64K_L2;
--		cdcfg->num_l1_ents = DIV_ROUND_UP(max_contexts,
-+		cd_table->s1fmt = STRTAB_STE_0_S1FMT_64K_L2;
-+		cd_table->num_l1_ents = DIV_ROUND_UP(max_contexts,
- 						  CTXDESC_L2_ENTRIES);
- 
--		cdcfg->l1_desc = devm_kcalloc(smmu->dev, cdcfg->num_l1_ents,
--					      sizeof(*cdcfg->l1_desc),
-+		cd_table->l1_desc = devm_kcalloc(smmu->dev, cd_table->num_l1_ents,
-+					      sizeof(*cd_table->l1_desc),
- 					      GFP_KERNEL);
--		if (!cdcfg->l1_desc)
-+		if (!cd_table->l1_desc)
- 			return -ENOMEM;
- 
--		l1size = cdcfg->num_l1_ents * (CTXDESC_L1_DESC_DWORDS << 3);
-+		l1size = cd_table->num_l1_ents * (CTXDESC_L1_DESC_DWORDS << 3);
- 	}
- 
--	cdcfg->cdtab = dmam_alloc_coherent(smmu->dev, l1size, &cdcfg->cdtab_dma,
-+	cd_table->cdtab = dmam_alloc_coherent(smmu->dev, l1size, &cd_table->cdtab_dma,
- 					   GFP_KERNEL);
--	if (!cdcfg->cdtab) {
-+	if (!cd_table->cdtab) {
- 		dev_warn(smmu->dev, "failed to allocate context descriptor\n");
- 		ret = -ENOMEM;
- 		goto err_free_l1;
-@@ -1168,9 +1168,9 @@ static int arm_smmu_alloc_cd_tables(struct arm_smmu_master *master)
- 	return 0;
- 
- err_free_l1:
--	if (cdcfg->l1_desc) {
--		devm_kfree(smmu->dev, cdcfg->l1_desc);
--		cdcfg->l1_desc = NULL;
-+	if (cd_table->l1_desc) {
-+		devm_kfree(smmu->dev, cd_table->l1_desc);
-+		cd_table->l1_desc = NULL;
- 	}
- 	return ret;
- }
-@@ -1180,30 +1180,30 @@ static void arm_smmu_free_cd_tables(struct arm_smmu_master *master)
- 	int i;
- 	size_t size, l1size;
- 	struct arm_smmu_device *smmu = master->smmu;
--	struct arm_smmu_ctx_desc_cfg *cdcfg = &master->cd_table;
-+	struct arm_smmu_ctx_desc_cfg *cd_table = &master->cd_table;
- 
--	if (cdcfg->l1_desc) {
-+	if (cd_table->l1_desc) {
- 		size = CTXDESC_L2_ENTRIES * (CTXDESC_CD_DWORDS << 3);
- 
--		for (i = 0; i < cdcfg->num_l1_ents; i++) {
--			if (!cdcfg->l1_desc[i].l2ptr)
-+		for (i = 0; i < cd_table->num_l1_ents; i++) {
-+			if (!cd_table->l1_desc[i].l2ptr)
- 				continue;
- 
- 			dmam_free_coherent(smmu->dev, size,
--					   cdcfg->l1_desc[i].l2ptr,
--					   cdcfg->l1_desc[i].l2ptr_dma);
-+					   cd_table->l1_desc[i].l2ptr,
-+					   cd_table->l1_desc[i].l2ptr_dma);
- 		}
--		devm_kfree(smmu->dev, cdcfg->l1_desc);
--		cdcfg->l1_desc = NULL;
-+		devm_kfree(smmu->dev, cd_table->l1_desc);
-+		cd_table->l1_desc = NULL;
- 
--		l1size = cdcfg->num_l1_ents * (CTXDESC_L1_DESC_DWORDS << 3);
-+		l1size = cd_table->num_l1_ents * (CTXDESC_L1_DESC_DWORDS << 3);
- 	} else {
--		l1size = cdcfg->num_l1_ents * (CTXDESC_CD_DWORDS << 3);
-+		l1size = cd_table->num_l1_ents * (CTXDESC_CD_DWORDS << 3);
- 	}
- 
--	dmam_free_coherent(smmu->dev, l1size, cdcfg->cdtab, cdcfg->cdtab_dma);
--	cdcfg->cdtab_dma = 0;
--	cdcfg->cdtab = NULL;
-+	dmam_free_coherent(smmu->dev, l1size, cd_table->cdtab, cd_table->cdtab_dma);
-+	cd_table->cdtab_dma = 0;
-+	cd_table->cdtab = NULL;
- }
- 
- bool arm_smmu_free_asid(struct arm_smmu_ctx_desc *cd)
--- 
-2.42.0.283.g2d96d420d3-goog
-
+Kim
