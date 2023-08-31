@@ -1,87 +1,167 @@
-Received: from mail-ej1-f46.google.com (mail-ej1-f46.google.com [209.85.218.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.31])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4843D15A0
-	for <iommu@lists.linux.dev>; Thu, 31 Aug 2023 03:59:36 +0000 (UTC)
-Received: by mail-ej1-f46.google.com with SMTP id a640c23a62f3a-9a58dbd5daeso34392766b.2
-        for <iommu@lists.linux.dev>; Wed, 30 Aug 2023 20:59:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google; t=1693454374; x=1694059174; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=32Wr8NYu6HSmc0mkG+FLn0sx5HN2+FhcGiqyKWtv7y8=;
-        b=c/QP3YhRgxe8ubgJHmCULLb2MD8Yi1Arjfb2iX1cSfA2oEzXGnhhhM/gXOhFlxbhwj
-         rLBBeOeMnqIXn9XmruGIB7GKu9g+9YBlsu79B9d08Ch+OhD9eQlQzDfPO18FaJqvIO51
-         ZyTfYNuJrCI49vveh6z632OL16LdH0JsoOLsA=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1693454374; x=1694059174;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=32Wr8NYu6HSmc0mkG+FLn0sx5HN2+FhcGiqyKWtv7y8=;
-        b=isGN/GDSUwBOuxcrzE+WRDMOTZyYbYY210eKcoxVRsuUpJ1kcB4PRy4ZISnyBOg5Kx
-         hs85XO0aC8gJBVwVT9YH3bKgoKLeBa/vhpdyShEi6qDRMcu3aGFb9o+f1XF4q9Vp0M6w
-         4jgJvyHqJH/055JfsEsUaE1YgcSi6FrAxj9whnhzhmcJ7eLyuf25zOSbvqw7Zec/g4Xx
-         HgMRUF9mbmk2YlzhytPNyU/pKcqZ7hUE9EtxmiRAlGKMrAYlpNj+GZzkHg9O555gMmxZ
-         TOY+VZ5Cv596ZXo7VLp7p/WFxwoFYWYE+rqOy+DCi5cXmYvG4g7IXutU7+J6fxUxr5E+
-         OlfQ==
-X-Gm-Message-State: AOJu0YxZcf/63VCblKQVzn3UadOWIdI5P79t+t/tvi7qjCxewXaPhAV4
-	Eq3rGBr0NLQ/0w6C8RxH6XucrvD8VIk8iFNB1wgWhQ==
-X-Google-Smtp-Source: AGHT+IEaVvRtIW3I04c9Ta0Vya0rxLF/7PDChpZ+0Mwa5ASFxgjwPSYEKqe+k3WsQArKenro8JNH/Q==
-X-Received: by 2002:a17:906:8441:b0:9a2:292d:ea63 with SMTP id e1-20020a170906844100b009a2292dea63mr2868438ejy.37.1693454374302;
-        Wed, 30 Aug 2023 20:59:34 -0700 (PDT)
-Received: from mail-ej1-f54.google.com (mail-ej1-f54.google.com. [209.85.218.54])
-        by smtp.gmail.com with ESMTPSA id ox29-20020a170907101d00b00992ea405a79sm268415ejb.166.2023.08.30.20.59.33
-        for <iommu@lists.linux.dev>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 30 Aug 2023 20:59:33 -0700 (PDT)
-Received: by mail-ej1-f54.google.com with SMTP id a640c23a62f3a-99bf1f632b8so35450966b.1
-        for <iommu@lists.linux.dev>; Wed, 30 Aug 2023 20:59:33 -0700 (PDT)
-X-Received: by 2002:a17:907:7844:b0:9a5:c4ae:9fec with SMTP id
- lb4-20020a170907784400b009a5c4ae9fecmr3151324ejc.52.1693454372889; Wed, 30
- Aug 2023 20:59:32 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 07A331846
+	for <iommu@lists.linux.dev>; Thu, 31 Aug 2023 05:14:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1693458869; x=1724994869;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=x63OFnkgYBO4J0C1Iau8KdwgfiuUJOj5wLWGv3sCQFU=;
+  b=KGc/iBZ73qJswurDp+K1CNSxU9iblMJjGHb8sV10sheqTeeu4sEI8d1D
+   9wSdzzM2BcMeXmz/TwasoKk4Zyph9Ks8Nkp4xCFmOLwMzkc3V4SRye3Pr
+   d25aEO3W5B/O8TPkjy9cpR87h/TovnCM1OTjsTPwIT7d6Wh7bO2zA/sre
+   FAk9cjQpYOYN3kj9kqMK/sKEcqUehM5jR/FIJnQVyGcTTXibxEitAsCsq
+   pZJoAYkfwHgXjoTaQxUu55UEN4zxMMID2SaYphqM81fX1Bs1EZVL4jn8f
+   oAD3H+3gPqL4v75wOpp7JSYrN/A/f75o7JgPHA3iIy3FjfKrYjRuOV8dn
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10818"; a="439766785"
+X-IronPort-AV: E=Sophos;i="6.02,215,1688454000"; 
+   d="scan'208";a="439766785"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2023 22:14:29 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10818"; a="689176464"
+X-IronPort-AV: E=Sophos;i="6.02,215,1688454000"; 
+   d="scan'208";a="689176464"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.254.210.87]) ([10.254.210.87])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2023 22:14:25 -0700
+Message-ID: <7000c8d5-6989-0329-05ad-b96ed68631c0@linux.intel.com>
+Date: Thu, 31 Aug 2023 13:14:20 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <ZO/Te6LU1ENf58ZW@nvidia.com>
-In-Reply-To: <ZO/Te6LU1ENf58ZW@nvidia.com>
-From: Linus Torvalds <torvalds@linux-foundation.org>
-Date: Wed, 30 Aug 2023 20:59:15 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wg_L-97_06_ruO7xL7vxX4QpaqGQKw-6LtKAR_CB1cyYw@mail.gmail.com>
-Message-ID: <CAHk-=wg_L-97_06_ruO7xL7vxX4QpaqGQKw-6LtKAR_CB1cyYw@mail.gmail.com>
-Subject: Re: [GIT PULL] Please pull IOMMUFD subsystem changes
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, kvm@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	Kevin Tian <kevin.tian@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.14.0
+Cc: baolu.lu@linux.intel.com, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/5] iommu: Introduce mm_get_pasid() helper function
+Content-Language: en-US
+To: Tina Zhang <tina.zhang@intel.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+ Kevin Tian <kevin.tian@intel.com>, Michael Shavit <mshavit@google.com>
+References: <20230827084401.819852-1-tina.zhang@intel.com>
+ <20230827084401.819852-3-tina.zhang@intel.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20230827084401.819852-3-tina.zhang@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Wed, 30 Aug 2023 at 16:40, Jason Gunthorpe <jgg@nvidia.com> wrote:
->
-> This includes a shared branch with VFIO:
->
->  - Enhance VFIO_DEVICE_GET_PCI_HOT_RESET_INFO so it can work with iommufd
->    FDs, not just group FDs. [...]
+On 2023/8/27 16:43, Tina Zhang wrote:
+> diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
+> index e95b339e9cdc0..e6377cff6a935 100644
+> --- a/drivers/iommu/intel/svm.c
+> +++ b/drivers/iommu/intel/svm.c
+> @@ -306,13 +306,13 @@ static int intel_svm_bind_mm(struct intel_iommu *iommu, struct device *dev,
+>   	unsigned long sflags;
+>   	int ret = 0;
+>   
+> -	svm = pasid_private_find(mm->pasid);
+> +	svm = pasid_private_find(mm_get_pasid(mm));
+>   	if (!svm) {
+>   		svm = kzalloc(sizeof(*svm), GFP_KERNEL);
+>   		if (!svm)
+>   			return -ENOMEM;
+>   
+> -		svm->pasid = mm->pasid;
+> +		svm->pasid = mm_get_pasid(mm);
+>   		svm->mm = mm;
+>   		INIT_LIST_HEAD_RCU(&svm->devs);
+>   
+> @@ -350,7 +350,7 @@ static int intel_svm_bind_mm(struct intel_iommu *iommu, struct device *dev,
+>   
+>   	/* Setup the pasid table: */
+>   	sflags = cpu_feature_enabled(X86_FEATURE_LA57) ? PASID_FLAG_FL5LP : 0;
+> -	ret = intel_pasid_setup_first_level(iommu, dev, mm->pgd, mm->pasid,
+> +	ret = intel_pasid_setup_first_level(iommu, dev, mm->pgd, mm_get_pasid(mm),
+>   					    FLPT_DEFAULT_DID, sflags);
+>   	if (ret)
+>   		goto free_sdev;
+> @@ -364,7 +364,7 @@ static int intel_svm_bind_mm(struct intel_iommu *iommu, struct device *dev,
+>   free_svm:
+>   	if (list_empty(&svm->devs)) {
+>   		mmu_notifier_unregister(&svm->notifier, mm);
+> -		pasid_private_remove(mm->pasid);
+> +		pasid_private_remove(mm_get_pasid(mm));
+>   		kfree(svm);
+>   	}
 
-So because I had pulled the vfio changes independently with their own
-merge message, I ended up editing out all the commentary you had about
-the vfio side of the changes.
+There is no need to use mm_get_pasid(mm) in the set_dev_pasid path. The
+pasid has already passed as a parameter. Perhaps, pass domain and pasid
+to intel_svm_bind_mm(), or simply merge intel_svm_bind_mm() to
+intel_svm_set_dev_pasid()?
 
-Which is kind of sad, since you arguably put some more information and
-effort into it than Alex had done in his vfio pull request. But the
-vfio parts just weren't part of the merge any more.
+Something like below?
 
-I did put a link to your pull request in the commit, so people can
-find this info, but I thought I'd mention how I ruthlessly edited down
-the merge commit message to just the parts that were new to the merge.
+diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
+index 8f6d68006ab6..de490b3409cc 100644
+--- a/drivers/iommu/intel/svm.c
++++ b/drivers/iommu/intel/svm.c
+@@ -298,21 +298,22 @@ static int pasid_to_svm_sdev(struct device *dev, 
+unsigned int pasid,
+  }
 
-I appreciate the extra background, even if I then decided that by the
-time I merged your part, some of it was "old news" and not actually
-about what I merged when I pulled your branch.
+  static int intel_svm_bind_mm(struct intel_iommu *iommu, struct device 
+*dev,
+-			     struct mm_struct *mm)
++			     struct iommu_domain *domain, ioasid_t pasid)
+  {
+  	struct device_domain_info *info = dev_iommu_priv_get(dev);
++	struct mm_struct *mm = domain->mm;
+  	struct intel_svm_dev *sdev;
+  	struct intel_svm *svm;
+  	unsigned long sflags;
+  	int ret = 0;
 
-.. and if I had realized when I merged the vfio parts, I probably
-could have added your commentary to that merge. Oh well.
+-	svm = pasid_private_find(mm->pasid);
++	svm = pasid_private_find(pasid);
+  	if (!svm) {
+  		svm = kzalloc(sizeof(*svm), GFP_KERNEL);
+  		if (!svm)
+  			return -ENOMEM;
 
-                  Linus
+-		svm->pasid = mm->pasid;
++		svm->pasid = pasid;
+  		svm->mm = mm;
+  		INIT_LIST_HEAD_RCU(&svm->devs);
+
+@@ -350,7 +351,7 @@ static int intel_svm_bind_mm(struct intel_iommu 
+*iommu, struct device *dev,
+
+  	/* Setup the pasid table: */
+  	sflags = cpu_feature_enabled(X86_FEATURE_LA57) ? PASID_FLAG_FL5LP : 0;
+-	ret = intel_pasid_setup_first_level(iommu, dev, mm->pgd, mm->pasid,
++	ret = intel_pasid_setup_first_level(iommu, dev, mm->pgd, pasid,
+  					    FLPT_DEFAULT_DID, sflags);
+  	if (ret)
+  		goto free_sdev;
+@@ -364,7 +365,7 @@ static int intel_svm_bind_mm(struct intel_iommu 
+*iommu, struct device *dev,
+  free_svm:
+  	if (list_empty(&svm->devs)) {
+  		mmu_notifier_unregister(&svm->notifier, mm);
+-		pasid_private_remove(mm->pasid);
++		pasid_private_remove(pasid);
+  		kfree(svm);
+  	}
+
+@@ -839,11 +840,10 @@ static int intel_svm_set_dev_pasid(struct 
+iommu_domain *domain,
+  {
+  	struct device_domain_info *info = dev_iommu_priv_get(dev);
+  	struct intel_iommu *iommu = info->iommu;
+-	struct mm_struct *mm = domain->mm;
+  	int ret;
+
+  	mutex_lock(&pasid_mutex);
+-	ret = intel_svm_bind_mm(iommu, dev, mm);
++	ret = intel_svm_bind_mm(iommu, dev, domain, pasid);
+  	mutex_unlock(&pasid_mutex);
+
+  	return ret;
+
+Best regards,
+baolu
