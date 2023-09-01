@@ -1,73 +1,97 @@
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D31DD79D8
-	for <iommu@lists.linux.dev>; Fri,  1 Sep 2023 07:31:11 +0000 (UTC)
-Received: from kwepemi500008.china.huawei.com (unknown [172.30.72.57])
-	by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4RcV5s1nzPzrRh6;
-	Fri,  1 Sep 2023 15:29:21 +0800 (CST)
-Received: from huawei.com (10.90.53.73) by kwepemi500008.china.huawei.com
- (7.221.188.139) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.31; Fri, 1 Sep
- 2023 15:31:02 +0800
-From: Jinjie Ruan <ruanjinjie@huawei.com>
-To: <linux-tegra@vger.kernel.org>, <iommu@lists.linux.dev>,
-	<baolu.lu@linux.intel.com>, Thierry Reding <thierry.reding@gmail.com>,
-	Krishna Reddy <vdumpa@nvidia.com>, Joerg Roedel <joro@8bytes.org>, Will
- Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Jonathan
- Hunter <jonathanh@nvidia.com>
-CC: <ruanjinjie@huawei.com>
-Subject: [PATCH v2] iommu/tegra-smmu: Drop unnecessary error check for  for debugfs_create_dir()
-Date: Fri, 1 Sep 2023 15:30:56 +0800
-Message-ID: <20230901073056.1364755-1-ruanjinjie@huawei.com>
-X-Mailer: git-send-email 2.34.1
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 285E2399
+	for <iommu@lists.linux.dev>; Fri,  1 Sep 2023 08:56:44 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 553F9FEC;
+	Fri,  1 Sep 2023 01:57:17 -0700 (PDT)
+Received: from [10.57.5.33] (unknown [10.57.5.33])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D9FC83FBD2;
+	Fri,  1 Sep 2023 01:56:37 -0700 (PDT)
+Message-ID: <f3bec3b9-e938-bea4-f89f-b0b698c4e302@arm.com>
+Date: Fri, 1 Sep 2023 09:56:32 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.14.0
+Subject: Re: [PATCH 1/2] dma/pool: trivial: add semicolon after label
+ attributes
+Content-Language: en-GB
+To: Chunhui He <hchunhui@mail.ustc.edu.cn>
+Cc: hch@lst.de, m.szyprowski@samsung.com, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+References: <6f936d6e-9f27-ba72-68de-0ed27c0dbbe1@arm.com>
+ <20230829151216.GA4211@lst.de> <d5ef27f1-9e6d-5e3c-b7ea-4b0abca623ed@arm.com>
+ <20230831.115937.924195103727242070.hchunhui@mail.ustc.edu.cn>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20230831.115937.924195103727242070.hchunhui@mail.ustc.edu.cn>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.90.53.73]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- kwepemi500008.china.huawei.com (7.221.188.139)
-X-CFilter-Loop: Reflected
 
-The debugfs_create_dir() function returns error pointers.
-It never returns NULL.
+On 2023-08-31 12:59, Chunhui He wrote:
+> 
+> On Tue, 29 Aug 2023 16:28:05 +0100, Robin Murphy <robin.murphy@arm.com> wrote:
+>> On 29/08/2023 4:12 pm, Christoph Hellwig wrote:
+>>> On Tue, Aug 29, 2023 at 03:22:22PM +0100, Robin Murphy wrote:
+>>>> AFAICS, what that clearly says is that *C++* label attributes can be
+>>>> ambiguous. This is not C++ code. Even in C11, declarations still
+>>>> cannot be
+>>>> labelled, so it should still be the case that, per the same GCC
+>>>> documentation, "the ambiguity does not arise". And even if the
+>>>> language did
+>>>> allow it, an inline declaration at that point at the end of a function
+>>>> would be downright weird and against the kernel coding style anyway.
+>>>>
+>>>> So, I don't really see what's "better" about cluttering up C code with
+>>>> unnecessary C++isms; it's just weird noise to me. The only thing I
+>>>> think it
+>>>> *does* achieve is introduce the chance that the static checker brigade
+>>>> eventually identifies a redundant semicolon and we get more patches to
+>>>> remove it again.
+> 
+> Inline declaration is a GNU C extension, so the ambiguity may arise.
+> Adding ';' makes the compiler easier to parse correctly, so I say
+> "better". The commit 13a453c241b78934a945b1af572d0533612c9bd1
+> (sched/fair: Add ';' after label attributes) also says the same.
 
-As Baolu suggested, this patch removes the error checking for
-debugfs_create_dir in tegra-smmu.c. This is because the DebugFS kernel API
-is developed in a way that the caller can safely ignore the errors that
-occur during the creation of DebugFS nodes. The debugfs APIs have
-a IS_ERR() judge in start_creating() which can handle it gracefully. So
-these checks are unnecessary.
+And that commit was also wrong. Nobody suggested C11 doesn't support 
+inline declarations - it demonstrably does - the fact in question is 
+that *attributes* on declarations is a C++ thing and not valid in C:
 
-Fixes: d1313e7896e9 ("iommu/tegra-smmu: Add debugfs support")
-Signed-off-by: Jinjie Ruan <ruanjinjie@huawei.com>
-Suggested-by: Baolu Lu <baolu.lu@linux.intel.com>
----
-v2:
-- Remove the err check instead of using IS_ERR to replace NULL check.
-- Update the commit message and title.
----
- drivers/iommu/tegra-smmu.c | 2 --
- 1 file changed, 2 deletions(-)
+~/src/linux$ git diff
+diff --git a/kernel/dma/pool.c b/kernel/dma/pool.c
+index 1acec2e22827..e1354235cb9c 100644
+--- a/kernel/dma/pool.c
++++ b/kernel/dma/pool.c
+@@ -137,7 +137,8 @@ static int atomic_pool_expand(struct gen_pool *pool, 
+size_t pool_size,
+         dma_common_free_remap(addr, pool_size);
+  #endif
+  free_page: __maybe_unused
+-       __free_pages(page, order);
++       int x = order;
++       __free_pages(page, x);
+  out:
+         return ret;
+  }
+~/src/linux$ make -j32
+   CALL    scripts/checksyscalls.sh
+   CC      kernel/dma/pool.o
+kernel/dma/pool.c: In function ‘atomic_pool_expand’:
+kernel/dma/pool.c:140:2: error: a label can only be part of a statement 
+and a declaration is not a statement
+   140 |  int x = order;
+       |  ^~~
+make[4]: *** [scripts/Makefile.build:243: kernel/dma/pool.o] Error 1
+make[3]: *** [scripts/Makefile.build:480: kernel/dma] Error 2
+make[2]: *** [scripts/Makefile.build:480: kernel] Error 2
+make[2]: *** Waiting for unfinished jobs....
+make[1]: *** [/home/robmur01/src/linux/Makefile:2032: .] Error 2
+make: *** [Makefile:234: __sub-make] Error 2
 
-diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-index 1cbf063ccf14..2137040b7efa 100644
---- a/drivers/iommu/tegra-smmu.c
-+++ b/drivers/iommu/tegra-smmu.c
-@@ -1056,8 +1056,6 @@ DEFINE_SHOW_ATTRIBUTE(tegra_smmu_clients);
- static void tegra_smmu_debugfs_init(struct tegra_smmu *smmu)
- {
- 	smmu->debugfs = debugfs_create_dir("smmu", NULL);
--	if (!smmu->debugfs)
--		return;
- 
- 	debugfs_create_file("swgroups", S_IRUGO, smmu->debugfs, smmu,
- 			    &tegra_smmu_swgroups_fops);
--- 
-2.34.1
 
+Thanks,
+Robin.
