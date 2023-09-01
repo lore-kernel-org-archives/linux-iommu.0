@@ -1,308 +1,145 @@
-Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2FF86BE66
-	for <iommu@lists.linux.dev>; Fri,  1 Sep 2023 14:11:11 +0000 (UTC)
-Received: from 8bytes.org (pd9fe9d6f.dip0.t-ipconnect.de [217.254.157.111])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 66933269FFB;
-	Fri,  1 Sep 2023 16:11:05 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1693577465;
-	bh=nSFtFeyXTuklogjUQuXzaAJdkKneyZ9AvBVAjwoFtOA=;
-	h=Date:From:To:Cc:Subject:From;
-	b=uvOzyfE2DUYVspUDvfPYOuDqaQrrPd5FO/ik5gGgBsiHA2J2Jy+z1eXS3x2ws9fy7
-	 yyK9DP5H8bBUWhR1STNuSotsQ2Qj1Noftkq7NaOU6vf3H4JCzwdeGC+1jdZp12/grX
-	 lKRi0cAOoPclVaOzyv0jDYL+Bg1+xNFLMg0JO5GHEdD+xUKsFSndObxVXyaVd1iwFA
-	 3pdY2C3q7PzwPqxQW9FJktA4U6TMQ/OI4taixToGbYmIiO+341htRYHH+HIzHZpobt
-	 MPk2y10aPadJe+Yjd3u1mxM1rA/ztHvNFUx9dKJHMvq8R/4XhNwMja/Yz1aU3tBbj4
-	 NmKqLzO7BDFtw==
-Date: Fri, 1 Sep 2023 16:11:04 +0200
-From: Joerg Roedel <joro@8bytes.org>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev
-Subject: [git pull] IOMMU Updates for Linux v6.6
-Message-ID: <ZPHw-MSyehz1wF7c@8bytes.org>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C9B59C134
+	for <iommu@lists.linux.dev>; Fri,  1 Sep 2023 18:02:28 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5D2B8FEC;
+	Fri,  1 Sep 2023 11:03:06 -0700 (PDT)
+Received: from [10.57.5.33] (unknown [10.57.5.33])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 5ACC73F8A4;
+	Fri,  1 Sep 2023 11:02:26 -0700 (PDT)
+Message-ID: <58fbd72b-32bc-c6da-15b2-0b8a284df60a@arm.com>
+Date: Fri, 1 Sep 2023 19:02:19 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="admroTXvaqUJoes2"
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.15.0
+Subject: Re: [PATCH 1/3] iommu/io-pgtable-arm: Add nents_per_pgtable in struct
+ io_pgtable_cfg
+Content-Language: en-GB
+To: Nicolin Chen <nicolinc@nvidia.com>, Will Deacon <will@kernel.org>
+Cc: jgg@nvidia.com, joro@8bytes.org, jean-philippe@linaro.org,
+ apopple@nvidia.com, linux-kernel@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev
+References: <cover.1692693557.git.nicolinc@nvidia.com>
+ <0fe68babdb3a07adf024ed471fead4e3eb7e703f.1692693557.git.nicolinc@nvidia.com>
+ <f468b461-b203-5179-eb6d-9432b9911329@arm.com>
+ <ZOTlcFs2NG6nJEPN@Asurada-Nvidia>
+ <61f9b371-7c45-26b1-ec0f-600765280c89@arm.com>
+ <ZO5R5i4n2WI2GnKQ@Asurada-Nvidia>
+ <d234fa8d-d945-3f7f-1110-fe55bea88587@arm.com>
+ <ZO5uGKzGsaliQ1fF@Asurada-Nvidia> <20230830214958.GA30121@willie-the-truck>
+ <ZPDQPs9UL2sksblM@Asurada-Nvidia> <ZPErio3R5redmDNU@Asurada-Nvidia>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <ZPErio3R5redmDNU@Asurada-Nvidia>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
+On 2023-09-01 01:08, Nicolin Chen wrote:
+> Hi Will/Robin,
+> 
+> On Thu, Aug 31, 2023 at 10:39:15AM -0700, Nicolin Chen wrote:
+>   
+>> Though I have not dig enough, I assume that this worst case could
+>> happen to SVA too, since the IOTLB invalidation is from MMU code.
+>> But the same worst case might not happen to non-SVA pathway, i.e.
+>> TLBI ops for IO Page Table doesn't really benefit from this?
+>>
+>> With that being questioned, I got Robin's remarks that it wouldn't
+>> be easy to decide the arbitrary number, so we could just take the
+>> worst case from SVA pathway as the common threshold.
+>>
+>> Then, SVA uses the CPU page table, so perhaps we should highlight
+>> that SMMU sets the threshold directly reusing the MAX_TLBI_OPS of
+>> CPU page table rather than calculating from IO page table, though
+>> both of them are in the same format?
+> 
+> Our test team encountered a soft lockup in this path today:
+> --------------------------------------------------------------------
+> watchdog: BUG: soft lockup - CPU#244 stuck for 26s!
 
---admroTXvaqUJoes2
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+That's a lot of TLBIs!
 
-Hi Linus,
+> pstate: 83400009 (Nzcv daif +PAN -UAO +TCO +DIT -SSBS BTYPE=--)
+> pc : arm_smmu_cmdq_issue_cmdlist+0x178/0xa50
+> lr : arm_smmu_cmdq_issue_cmdlist+0x150/0xa50
+> sp : ffff8000d83ef290
+> x29: ffff8000d83ef290 x28: 000000003b9aca00 x27: 0000000000000000
+> x26: ffff8000d83ef3c0 x25: da86c0812194a0e8 x24: 0000000000000000
+> x23: 0000000000000040 x22: ffff8000d83ef340 x21: ffff0000c63980c0
+> x20: 0000000000000001 x19: ffff0000c6398080 x18: 0000000000000000
+> x17: 0000000000000000 x16: 0000000000000000 x15: ffff3000b4a3bbb0
+> x14: ffff3000b4a30888 x13: ffff3000b4a3cf60 x12: 0000000000000000
+> x11: 0000000000000000 x10: 0000000000000000 x9 : ffffc08120e4d6bc
+> x8 : 0000000000000000 x7 : 0000000000000000 x6 : 0000000000048cfa
+> x5 : 0000000000000000 x4 : 0000000000000001 x3 : 000000000000000a
+> x2 : 0000000080000000 x1 : 0000000000000000 x0 : 0000000000000001
+> Call trace:
+>   arm_smmu_cmdq_issue_cmdlist+0x178/0xa50
+>   __arm_smmu_tlb_inv_range+0x118/0x254
+>   arm_smmu_tlb_inv_range_asid+0x6c/0x130
+>   arm_smmu_mm_invalidate_range+0xa0/0xa4
+>   __mmu_notifier_invalidate_range_end+0x88/0x120
+>   unmap_vmas+0x194/0x1e0
+>   unmap_region+0xb4/0x144
+>   do_mas_align_munmap+0x290/0x490
+>   do_mas_munmap+0xbc/0x124
+>   __vm_munmap+0xa8/0x19c
+>   __arm64_sys_munmap+0x28/0x50
+>   invoke_syscall+0x78/0x11c
+>   el0_svc_common.constprop.0+0x58/0x1c0
+>   do_el0_svc+0x34/0x60
+>   el0_svc+0x2c/0xd4
+>   el0t_64_sync_handler+0x114/0x140
+>   el0t_64_sync+0x1a4/0x1a8
+> --------------------------------------------------------------------
+> 
+> 
+> I think it is the same problem that we fixed in tlbflush.h using
+> MAX_TLBI_OPS. So, I plan to send a cleaner bug fix (cc stable):
+> --------------------------------------------------------------------
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+> index a5a63b1c947e..e3ea7d2a6308 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+> @@ -186,6 +186,9 @@ static void arm_smmu_free_shared_cd(struct arm_smmu_ctx_desc *cd)
+>          }
+>   }
+> 
+> +/* Copid from arch/arm64/include/asm/tlbflush.h to avoid similar soft lockups */
+> +#define MAX_TLBI_OPS   (1 << (PAGE_SHIFT - 3))
+> +
+>   static void arm_smmu_mm_invalidate_range(struct mmu_notifier *mn,
+>                                           struct mm_struct *mm,
+>                                           unsigned long start, unsigned long end)
+> @@ -201,9 +204,14 @@ static void arm_smmu_mm_invalidate_range(struct mmu_notifier *mn,
+>           */
+>          size = end - start;
+> 
+> -       if (!(smmu_domain->smmu->features & ARM_SMMU_FEAT_BTM))
+> -               arm_smmu_tlb_inv_range_asid(start, size, smmu_mn->cd->asid,
+> -                                           PAGE_SIZE, false, smmu_domain);
+> +       if (!(smmu_domain->smmu->features & ARM_SMMU_FEAT_BTM)) {
+> +               if (!(smmu_domain->smmu->features & ARM_SMMU_FEAT_RANGE_INV) &&
+> +                   size >= MAX_TLBI_OPS * PAGE_SIZE)
+> +                       arm_smmu_tlb_inv_asid(smmu_domain->smmu, smmu_mn->cd->asid);
+> +               else
+> +                       arm_smmu_tlb_inv_range_asid(start, size, smmu_mn->cd->asid,
+> +                                                   PAGE_SIZE, false, smmu_domain);
+> +       }
+>          arm_smmu_atc_inv_domain(smmu_domain, mm->pasid, start, size);
+>   }
+> --------------------------------------------------------------------
+> 
+> What do you think about it?
 
-Two things to notice on this PR:
-
-	1. It includes another try of optimizing the IOVA allocation
-	   path for cases when the first 4GB begin to fill up. Previous
-	   tries to do so have caused issues and got reverted, so this
-	   time the optimization is explicitly disabled for PCI devices
-	   (which are the primary reason of this allocation strategy
-	    anyway). The change has been in linux-next for several weeks
-	   and no problems were reported. So I am confident that it is a
-	   real improvement this time and will not cause major issues.
-
-	2. Stephen reported merge conflicts with iommfd tree, but I
-	   couldn't reproduce them in my test-merge with your latest
-	   tree. This might be due to removal of some problematic
-	   patches from the IOMMU tree last week, as the iommufd tree
-	   updates seem to be merged already. Anyway, if you run into
-	   any problems please let me know.
-
-With that said:
-
-The following changes since commit 706a741595047797872e669b3101429ab8d378ef:
-
-  Linux 6.5-rc7 (2023-08-20 15:02:52 +0200)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-updates-v6.6
-
-for you to fetch changes up to d8fe59f11096d6470b5f53739e49cdce67f3e127:
-
-  Merge branches 'apple/dart', 'arm/mediatek', 'arm/renesas', 'arm/rockchip', 'arm/smmu', 'unisoc', 'x86/vt-d', 'x86/amd' and 'core' into next (2023-08-21 14:18:43 +0200)
-
-----------------------------------------------------------------
-IOMMU Updates for Linux v6.6
-
-Including:
-
-	- Core changes:
-	  - Consolidate probe_device path
-	  - Make the PCI-SAC IOVA allocation trick PCI-only
-
-	- AMD IOMMU:
-	  - Consolidate PPR log handling
-	  - Interrupt handling improvements
-	  - Refcount fixes for amd_iommu_v2 driver
-
-	- Intel VT-d driver:
-	  - Enable idxd device DMA with pasid through iommu dma ops.
-	  - Lift RESV_DIRECT check from VT-d driver to core.
-	  - Miscellaneous cleanups and fixes.
-
-	- ARM-SMMU drivers:
-	  - Device-tree binding updates:
-	    - Add additional compatible strings for Qualcomm SoCs
-	    - Allow ASIDs to be configured in the DT to work around Qualcomm's
-	      broken hypervisor
-	    - Fix clocks for Qualcomm's MSM8998 SoC
-	  - SMMUv2:
-	    - Support for Qualcomm's legacy firmware implementation featured on
-	      at least MSM8956 and MSM8976.
-	    - Match compatible strings for Qualcomm SM6350 and SM6375 SoC variants
-	  - SMMUv3:
-	    - Use 'ida' instead of a bitmap for VMID allocation
-
-	  - Rockchip IOMMU:
-	    - Lift page-table allocation restrictions on newer hardware
-
-	  - Mediatek IOMMU:
-	    - Add MT8188 IOMMU Support
-
-	  - Renesas IOMMU:
-	    - Allow PCIe devices
-
-	- Usual set of cleanups an smaller fixes
-
-----------------------------------------------------------------
-AngeloGioacchino Del Regno (6):
-      dt-bindings: iommu: qcom,iommu: Add qcom,ctx-asid property
-      dt-bindings: iommu: qcom,iommu: Add QSMMUv2 and MSM8976 compatibles
-      iommu/qcom: Use the asid read from device-tree if specified
-      iommu/qcom: Disable and reset context bank before programming
-      iommu/qcom: Index contexts by asid number to allow asid 0
-      iommu/qcom: Add support for QSMMUv2 and QSMMU-500 secured contexts
-
-Chengci.Xu (5):
-      dt-bindings: mediatek: mt8188: Add binding for MM & INFRA IOMMU
-      iommu/mediatek: Fix two IOMMU share pagetable issue
-      iommu/mediatek: Adjust mtk_iommu_config flow
-      iommu/mediatek: Add enable IOMMU SMC command for INFRA masters
-      iommu/mediatek: Add MT8188 IOMMU Support
-
-Daniel Marcovitch (1):
-      iommu/amd/iommu_v2: Fix pasid_state refcount dec hit 0 warning on pasid unbind
-
-Dawei Li (1):
-      iommu/arm-smmu-v3: Change vmid alloc strategy from bitmap to ida
-
-Geert Uytterhoeven (1):
-      iommu/ipmmu-vmsa: Convert to read_poll_timeout_atomic()
-
-Jacob Pan (3):
-      iommu: Generalize PASID 0 for normal DMA w/o PASID
-      iommu: Move global PASID allocation from SVA to core
-      dmaengine/idxd: Re-enable kernel workqueue under DMA API
-
-Jason Gunthorpe (11):
-      iommu: Have __iommu_probe_device() check for already probed devices
-      iommu: Use iommu_group_ref_get/put() for dev->iommu_group
-      iommu: Inline iommu_group_get_for_dev() into __iommu_probe_device()
-      iommu: Simplify the __iommu_group_remove_device() flow
-      iommu: Add iommu_init/deinit_device() paired functions
-      iommu: Move the iommu driver sysfs setup into iommu_init/deinit_device()
-      iommu: Do not export iommu_device_link/unlink()
-      iommu: Always destroy the iommu_group during iommu_release_device()
-      iommu: Split iommu_group_add_device()
-      iommu: Avoid locking/unlocking for iommu_probe_device()
-      iommu/sprd: Add missing force_aperture
-
-Joerg Roedel (2):
-      Merge tag 'arm-smmu-updates' of git://git.kernel.org/pub/scm/linux/kernel/git/will/linux into arm/smmu
-      Merge branches 'apple/dart', 'arm/mediatek', 'arm/renesas', 'arm/rockchip', 'arm/smmu', 'unisoc', 'x86/vt-d', 'x86/amd' and 'core' into next
-
-Jonas Karlman (2):
-      iommu: rockchip: Fix directory table address encoding
-      iommu: rockchip: Allocate tables from all available memory for IOMMU v2
-
-Konrad Dybcio (5):
-      dt-bindings: arm-smmu: Fix MSM8998 clocks description
-      iommu/arm-smmu-qcom: Sort the compatible list alphabetically
-      iommu/arm-smmu-qcom: Add SM6375 DPU compatible
-      iommu/arm-smmu-qcom: Add SM6350 DPU compatible
-      iommu/arm-smmu-qcom: Add SM6375 SMMUv2
-
-Lu Baolu (7):
-      iommu/vt-d: Add domain_flush_pasid_iotlb()
-      iommu/vt-d: Remove pasid_mutex
-      iommu/vt-d: Make prq draining code generic
-      iommu/vt-d: Prepare for set_dev_pasid callback
-      iommu/vt-d: Add set_dev_pasid callback for dma domain
-      iommu: Prevent RESV_DIRECT devices from blocking domains
-      iommu/vt-d: Remove rmrr check in domain attaching device path
-
-Min-Hua Chen (1):
-      iommu/apple-dart: mark apple_dart_pm_ops static
-
-Rob Herring (1):
-      iommu: Explicitly include correct DT includes
-
-Robin Murphy (1):
-      iommu: Optimise PCI SAC address trick
-
-Vasant Hegde (9):
-      iommu/amd/iommu_v2: Clear pasid state in free path
-      iommu/amd: Generalize log overflow handling
-      iommu/amd: Handle PPR log overflow
-      iommu/amd: Refactor IOMMU interrupt handling logic for Event, PPR, and GA logs
-      iommu/amd: Enable separate interrupt for PPR and GA log
-      iommu/amd: Disable PPR log/interrupt in iommu_disable()
-      iommu/amd: Consolidate PPR log enablement
-      iommu/amd: Enable PPR/GA interrupt after interrupt handler setup
-      iommu/amd: Rearrange DTE bit definations
-
-Will Deacon (1):
-      Merge branch 'for-joerg/arm-smmu/bindings' into for-joerg/arm-smmu/updates
-
-Yanfei Xu (2):
-      iommu/vt-d: Fix to flush cache of PASID directory table
-      iommu/vt-d: Fix to convert mm pfn to dma pfn
-
-Yangtao Li (1):
-      iommu/arm-smmu: Clean up resource handling during Qualcomm context probe
-
-Yong Wu (2):
-      iommu/mediatek: mt8188: Add iova_region_larb_msk
-      MAINTAINERS: iommu/mediatek: Update the header file name
-
-Yoshihiro Shimoda (1):
-      iommu/ipmmu-vmsa: Allow PCIe devices
-
-Yue Haibing (1):
-      iommu/amd: Remove unused declarations
-
-YueHaibing (2):
-      iommu/amd: Remove unsued extern declaration amd_iommu_init_hardware()
-      iommu/vt-d: Remove unused extern declaration dmar_parse_dev_scope()
-
-Zhu Wang (1):
-      iommu: Remove kernel-doc warnings
-
- .../devicetree/bindings/iommu/arm,smmu.yaml        |  41 ++
- .../devicetree/bindings/iommu/mediatek,iommu.yaml  |  12 +-
- .../devicetree/bindings/iommu/qcom,iommu.yaml      |  22 +-
- MAINTAINERS                                        |   1 +
- drivers/acpi/scan.c                                |   2 +-
- drivers/dma/idxd/device.c                          |  39 +-
- drivers/dma/idxd/dma.c                             |   5 +-
- drivers/dma/idxd/idxd.h                            |   9 +
- drivers/dma/idxd/init.c                            |  54 ++-
- drivers/dma/idxd/sysfs.c                           |   7 -
- drivers/iommu/amd/amd_iommu.h                      |   7 +-
- drivers/iommu/amd/amd_iommu_types.h                |  22 +-
- drivers/iommu/amd/init.c                           | 131 ++++--
- drivers/iommu/amd/iommu.c                          |  86 ++--
- drivers/iommu/amd/iommu_v2.c                       |   7 +-
- drivers/iommu/apple-dart.c                         |   2 +-
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c    |   2 +-
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c        |  45 +-
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h        |   2 +-
- drivers/iommu/arm/arm-smmu/arm-smmu-qcom-debug.c   |   2 +-
- drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c         |   7 +-
- drivers/iommu/arm/arm-smmu/arm-smmu.c              |   1 -
- drivers/iommu/arm/arm-smmu/qcom_iommu.c            |  71 ++-
- drivers/iommu/dma-iommu.c                          |  26 +-
- drivers/iommu/dma-iommu.h                          |   8 +
- drivers/iommu/intel/iommu.c                        | 244 ++++++----
- drivers/iommu/intel/iommu.h                        |   9 +
- drivers/iommu/intel/pasid.c                        |   4 +-
- drivers/iommu/intel/pasid.h                        |   2 -
- drivers/iommu/intel/svm.c                          |  62 +--
- drivers/iommu/iommu-sva.c                          |  29 +-
- drivers/iommu/iommu-sysfs.c                        |   8 -
- drivers/iommu/iommu.c                              | 483 +++++++++++---------
- drivers/iommu/ipmmu-vmsa.c                         |  21 +-
- drivers/iommu/mtk_iommu.c                          | 151 +++++--
- drivers/iommu/of_iommu.c                           |   2 +-
- drivers/iommu/rockchip-iommu.c                     |  50 +--
- drivers/iommu/sprd-iommu.c                         |   2 +
- drivers/iommu/tegra-smmu.c                         |   2 +-
- drivers/iommu/virtio-iommu.c                       |   2 +-
- .../memory/mediatek,mt8188-memory-port.h           | 489 +++++++++++++++++++++
- include/linux/amd-iommu.h                          |   1 -
- include/linux/dmar.h                               |   2 -
- include/linux/iommu.h                              |  15 +
- include/soc/mediatek/smi.h                         |   1 +
- 45 files changed, 1518 insertions(+), 672 deletions(-)
- create mode 100644 include/dt-bindings/memory/mediatek,mt8188-memory-port.h
-
-Please pull.
+Looks reasonable to me - I think it's the right shape to foreshadow the 
+bigger refactoring we discussed, and I can't object to using 
+PAGE_{SIZE,SHIFT} for the calculation when it's specifically in the 
+context of SVA.
 
 Thanks,
-
-	Joerg
-
---admroTXvaqUJoes2
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEEr9jSbILcajRFYWYyK/BELZcBGuMFAmTx8PEACgkQK/BELZcB
-GuNYqBAAqYa4yaGWkTWhVALiy16JMJU2TaBtrQwA94wVrCYp6eHIqg+pn9bsKywj
-0TDWcUgDGMu928plR7KrAVHicSa8JMVp9oHx24VCcZbRL6R6BtV1CEyCiFIVPB2k
-F8JHHTRmVgOzyBROKi2e0qRzo+ajvrdnl+rGwmtGjYOkdzfs/WZtz37aTF945X2W
-RSsgHRdGz0+Vs0he18mT6PcZUyzM+Bvxng57V+yCTJyP5BKRmi8VEvYXFAWon9qZ
-CAYSoV10r8WsQ2200vY2hVSGee09alnQ14SnMVixmoEcrTPavGGyeR8Rc1a8hJ0n
-izp3ub1+GRGnXoaWa1f1l76IzWCCSpEqh4NDEMEePp8VO8/gRGa+k6i8Eo4iNaJ5
-a5M/NNtL9kv2vHnuNG+S8xbwt3DWJkYZ0zK9KFUgH9uhVWC2hl1P3Kq0+I3Fk/U4
-QOkcyZjErysSY34gtw8fZpGt5F9Sw7c8nyh6aMv0Lr0mGxfS21/Uq5fR3BWTInrb
-tqWrmxW5sg+23CZV2LxtsU7E/+FVx/JT5vbjLEdH/zMdalFDyj8ScTucKzQKF9Z+
-K6uwcbYJ8cAfaaoqFw3J0yfxP3RZO1UQjwB7kAND7JhWRCoQ3GOrMc9kWQhEW9Eo
-tpSA3m+MEb0P4D4DdnLcEAx+soR/3B9RxtII1BDn0AfPWw97qEo=
-=+gaV
------END PGP SIGNATURE-----
-
---admroTXvaqUJoes2--
+Robin.
