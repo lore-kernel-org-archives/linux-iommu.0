@@ -1,145 +1,136 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C9B59C134
-	for <iommu@lists.linux.dev>; Fri,  1 Sep 2023 18:02:28 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5D2B8FEC;
-	Fri,  1 Sep 2023 11:03:06 -0700 (PDT)
-Received: from [10.57.5.33] (unknown [10.57.5.33])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 5ACC73F8A4;
-	Fri,  1 Sep 2023 11:02:26 -0700 (PDT)
-Message-ID: <58fbd72b-32bc-c6da-15b2-0b8a284df60a@arm.com>
-Date: Fri, 1 Sep 2023 19:02:19 +0100
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2057.outbound.protection.outlook.com [40.107.93.57])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17647BA2D
+	for <iommu@lists.linux.dev>; Fri,  1 Sep 2023 18:23:53 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=TFCHVHVWf5VOI/TNFm8heyW21owu4EgFhnYYBm8a3NZ+YGPz2UqyVfvAgmg0uwb0RB9LvyNJJlHkPUDhS6y5nhxzjeRtgLH1by1IQnP33pTXtTXwC1uInqqh2HbGMmbA6PAsCQgGB8T9Ycj2BBd3hwFZ4pN/LjwN3Mcck5HUmsDM2woqx8NcYXq4fFf6UNd+gvJZSBMJPW3hGfJcXGy+NNB4WoWLcqjjwPsvV6GUH0nX4dIH8eqn32fuwyXQvfE5Ldvl0ad+W9zAbL0Vw023TNxYF3Y0Sblh0cuSAv3zFZkLXu9fk7dRF/j8LKYRClGXpD7LZtbP+zxsRtFk4cAlPg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=9Q0bG6ZZgd0ZViv/qyjlKEKVFfv3Ptjvp/m+QMS+HoY=;
+ b=Ok9V1Fw+ip6cceteX/mBHydvcjkOCvFeB444Nc7I+LW9lS8K6z9u1mDyIl1zrMLMFsZRolaDSXWoS8NmUW9m3VsXki5mE/1CuvPO6W374bm08iuWfvNDLNzFaV6U8Fv0LpBvYNl5NCreB+ZwcNBTbMv6hJsiZL0jZrd96/LIPtZO2cXCScLLlV6U73FyZ8TIzPf64J85ILwjiLdwLzpZTNLSFx51bN2QHjjEcpsRlC0v+SDeb9eWpwi0rdR9EL/OuOnzZKt1+wxP+2ew1HnVoGPbH4AYPYGQdQBs4AbsjCLjYd5hHTHFq3p4/b1/ydOwJ7w54yiiJ4X9DhutlrqEWg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.160) smtp.rcpttodomain=arm.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=9Q0bG6ZZgd0ZViv/qyjlKEKVFfv3Ptjvp/m+QMS+HoY=;
+ b=ryctFklMnDryWTUhwzmNDsNwCm0C4l32XMjnlPj+2muyE856ufjzwFoqM/PlJvD/pYfHv5ew4wNFq9CaLzzqGMwVA+JFkFAiDGr4ByregYpT1DuWE8V+9vrBNGALKe60DpLGVJzLaOBFmHJfmkcuTLl9aM6Idmp1Q63IQv7ZedYyldDMiw2xwIqOhP60TIjWLLPuxhpbDPwBy7/txS4b3t/jdzHrFxSoC3Qxbq7sKSkX9UsmPv8yyJVfLRt7V8yXR4zCWk81aaDweOyJmEHCpxt2YA8+dBrQO0lp5k1L2DTpiCPDdAQ1OYsmdGnIaUo3zJt3Dk/GY5YqYIa0AYC2lg==
+Received: from DM6PR07CA0080.namprd07.prod.outlook.com (2603:10b6:5:337::13)
+ by MW4PR12MB7484.namprd12.prod.outlook.com (2603:10b6:303:212::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6699.35; Fri, 1 Sep
+ 2023 18:23:51 +0000
+Received: from DS3PEPF000099DB.namprd04.prod.outlook.com
+ (2603:10b6:5:337:cafe::5f) by DM6PR07CA0080.outlook.office365.com
+ (2603:10b6:5:337::13) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6745.27 via Frontend
+ Transport; Fri, 1 Sep 2023 18:23:51 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ DS3PEPF000099DB.mail.protection.outlook.com (10.167.17.197) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6745.20 via Frontend Transport; Fri, 1 Sep 2023 18:23:50 +0000
+Received: from rnnvmail203.nvidia.com (10.129.68.9) by mail.nvidia.com
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Fri, 1 Sep 2023
+ 11:23:37 -0700
+Received: from rnnvmail205.nvidia.com (10.129.68.10) by rnnvmail203.nvidia.com
+ (10.129.68.9) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Fri, 1 Sep 2023
+ 11:23:36 -0700
+Received: from Asurada-Nvidia (10.127.8.10) by mail.nvidia.com (10.129.68.10)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37 via Frontend
+ Transport; Fri, 1 Sep 2023 11:23:36 -0700
+Date: Fri, 1 Sep 2023 11:23:34 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Robin Murphy <robin.murphy@arm.com>
+CC: Will Deacon <will@kernel.org>, <jgg@nvidia.com>, <joro@8bytes.org>,
+	<jean-philippe@linaro.org>, <apopple@nvidia.com>,
+	<linux-kernel@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+	<iommu@lists.linux.dev>
+Subject: Re: [PATCH 1/3] iommu/io-pgtable-arm: Add nents_per_pgtable in
+ struct io_pgtable_cfg
+Message-ID: <ZPIsJl832r68bUaU@Asurada-Nvidia>
+References: <f468b461-b203-5179-eb6d-9432b9911329@arm.com>
+ <ZOTlcFs2NG6nJEPN@Asurada-Nvidia>
+ <61f9b371-7c45-26b1-ec0f-600765280c89@arm.com>
+ <ZO5R5i4n2WI2GnKQ@Asurada-Nvidia>
+ <d234fa8d-d945-3f7f-1110-fe55bea88587@arm.com>
+ <ZO5uGKzGsaliQ1fF@Asurada-Nvidia>
+ <20230830214958.GA30121@willie-the-truck>
+ <ZPDQPs9UL2sksblM@Asurada-Nvidia>
+ <ZPErio3R5redmDNU@Asurada-Nvidia>
+ <58fbd72b-32bc-c6da-15b2-0b8a284df60a@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.15.0
-Subject: Re: [PATCH 1/3] iommu/io-pgtable-arm: Add nents_per_pgtable in struct
- io_pgtable_cfg
-Content-Language: en-GB
-To: Nicolin Chen <nicolinc@nvidia.com>, Will Deacon <will@kernel.org>
-Cc: jgg@nvidia.com, joro@8bytes.org, jean-philippe@linaro.org,
- apopple@nvidia.com, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev
-References: <cover.1692693557.git.nicolinc@nvidia.com>
- <0fe68babdb3a07adf024ed471fead4e3eb7e703f.1692693557.git.nicolinc@nvidia.com>
- <f468b461-b203-5179-eb6d-9432b9911329@arm.com>
- <ZOTlcFs2NG6nJEPN@Asurada-Nvidia>
- <61f9b371-7c45-26b1-ec0f-600765280c89@arm.com>
- <ZO5R5i4n2WI2GnKQ@Asurada-Nvidia>
- <d234fa8d-d945-3f7f-1110-fe55bea88587@arm.com>
- <ZO5uGKzGsaliQ1fF@Asurada-Nvidia> <20230830214958.GA30121@willie-the-truck>
- <ZPDQPs9UL2sksblM@Asurada-Nvidia> <ZPErio3R5redmDNU@Asurada-Nvidia>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <ZPErio3R5redmDNU@Asurada-Nvidia>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <58fbd72b-32bc-c6da-15b2-0b8a284df60a@arm.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS3PEPF000099DB:EE_|MW4PR12MB7484:EE_
+X-MS-Office365-Filtering-Correlation-Id: d86282a2-d2cc-46a6-f870-08dbab189755
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	jyZJb/OtASxQt5Tm7YzF4r5iX5Ntc/VYVW4OQ+trlcIEfO2d9NdnuG9cA/l2oOSjEbAetsyPVdj9NrvEM4hCgr/QjuMl5l3CxyTM0H6BLzshebDY2Lpsq8EDZae1PWRa2C5KH/rNBxT5nCLjN44otUk3udCa1qhUnXhd3PEyz3iM0Fo1T04V85r8REMenDr/0FRuOXoINo9z3rTY8b4tKoZfN19DGqKC2V8TBtiQiLZ3fAFz5X5S/qptFvRD8H4fdBIhkZhSVO0X0yvhjPqNUjInS/61lQI2+k3BjNy6zuRF5mymbYNChc2rlaKSypVEKA6rpOC888sgZIZ3LXc/LgH79JnybX1cuFG4ITx51Wkg63qPQpSLfrEHEbtHdth+u5yBT1KFsqufFVw235FDgkS842jHuSLQANoC8zvYXgyHnN6x5C1XMhWff1vLkGWDW91kcQgobFxB2Xjgk66W0QcbBd7iURLwDc4L4QMrR5NT7B+EbLnb1bmIKgqi39sz7mJDLaoFU2nF3cp8HS0ZP19hFnySDVT7wEXYwDq/cfcAXX4QkKeu/OuebGVRRJHMKJP2l2WEuX9B1oy9q+cLO954Fdu94bwHxXKHIa9RIhRKCAzZcTlfhb4iPUjlw0kxEwZkSyaW3qoaMqjNzfUA5dWAsf8t3iuYgYm8oAecYRvnfqaM0LaoJ+shz3YpQsGD+2MzTWjkNxFdydrWrNwmCdG89K6jyPcvDvi14UiUfvLE+Ewmn+/hHiDIpdM4x3nL
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230031)(4636009)(396003)(376002)(346002)(39860400002)(136003)(82310400011)(451199024)(186009)(1800799009)(36840700001)(40470700004)(46966006)(41300700001)(82740400003)(2906002)(9686003)(478600001)(6916009)(70206006)(426003)(26005)(5660300002)(336012)(33716001)(54906003)(8676002)(316002)(4326008)(70586007)(83380400001)(40480700001)(47076005)(40460700003)(356005)(7636003)(86362001)(36860700001)(55016003)(8936002);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Sep 2023 18:23:50.8209
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: d86282a2-d2cc-46a6-f870-08dbab189755
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	DS3PEPF000099DB.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR12MB7484
 
-On 2023-09-01 01:08, Nicolin Chen wrote:
-> Hi Will/Robin,
-> 
-> On Thu, Aug 31, 2023 at 10:39:15AM -0700, Nicolin Chen wrote:
->   
->> Though I have not dig enough, I assume that this worst case could
->> happen to SVA too, since the IOTLB invalidation is from MMU code.
->> But the same worst case might not happen to non-SVA pathway, i.e.
->> TLBI ops for IO Page Table doesn't really benefit from this?
->>
->> With that being questioned, I got Robin's remarks that it wouldn't
->> be easy to decide the arbitrary number, so we could just take the
->> worst case from SVA pathway as the common threshold.
->>
->> Then, SVA uses the CPU page table, so perhaps we should highlight
->> that SMMU sets the threshold directly reusing the MAX_TLBI_OPS of
->> CPU page table rather than calculating from IO page table, though
->> both of them are in the same format?
-> 
-> Our test team encountered a soft lockup in this path today:
-> --------------------------------------------------------------------
-> watchdog: BUG: soft lockup - CPU#244 stuck for 26s!
+On Fri, Sep 01, 2023 at 07:02:19PM +0100, Robin Murphy wrote:
 
-That's a lot of TLBIs!
+> > Our test team encountered a soft lockup in this path today:
+> > --------------------------------------------------------------------
+> > watchdog: BUG: soft lockup - CPU#244 stuck for 26s!
+> 
+> That's a lot of TLBIs!
 
-> pstate: 83400009 (Nzcv daif +PAN -UAO +TCO +DIT -SSBS BTYPE=--)
-> pc : arm_smmu_cmdq_issue_cmdlist+0x178/0xa50
-> lr : arm_smmu_cmdq_issue_cmdlist+0x150/0xa50
-> sp : ffff8000d83ef290
-> x29: ffff8000d83ef290 x28: 000000003b9aca00 x27: 0000000000000000
-> x26: ffff8000d83ef3c0 x25: da86c0812194a0e8 x24: 0000000000000000
-> x23: 0000000000000040 x22: ffff8000d83ef340 x21: ffff0000c63980c0
-> x20: 0000000000000001 x19: ffff0000c6398080 x18: 0000000000000000
-> x17: 0000000000000000 x16: 0000000000000000 x15: ffff3000b4a3bbb0
-> x14: ffff3000b4a30888 x13: ffff3000b4a3cf60 x12: 0000000000000000
-> x11: 0000000000000000 x10: 0000000000000000 x9 : ffffc08120e4d6bc
-> x8 : 0000000000000000 x7 : 0000000000000000 x6 : 0000000000048cfa
-> x5 : 0000000000000000 x4 : 0000000000000001 x3 : 000000000000000a
-> x2 : 0000000080000000 x1 : 0000000000000000 x0 : 0000000000000001
-> Call trace:
->   arm_smmu_cmdq_issue_cmdlist+0x178/0xa50
->   __arm_smmu_tlb_inv_range+0x118/0x254
->   arm_smmu_tlb_inv_range_asid+0x6c/0x130
->   arm_smmu_mm_invalidate_range+0xa0/0xa4
->   __mmu_notifier_invalidate_range_end+0x88/0x120
->   unmap_vmas+0x194/0x1e0
->   unmap_region+0xb4/0x144
->   do_mas_align_munmap+0x290/0x490
->   do_mas_munmap+0xbc/0x124
->   __vm_munmap+0xa8/0x19c
->   __arm64_sys_munmap+0x28/0x50
->   invoke_syscall+0x78/0x11c
->   el0_svc_common.constprop.0+0x58/0x1c0
->   do_el0_svc+0x34/0x60
->   el0_svc+0x2c/0xd4
->   el0t_64_sync_handler+0x114/0x140
->   el0t_64_sync+0x1a4/0x1a8
-> --------------------------------------------------------------------
-> 
-> 
-> I think it is the same problem that we fixed in tlbflush.h using
-> MAX_TLBI_OPS. So, I plan to send a cleaner bug fix (cc stable):
-> --------------------------------------------------------------------
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-> index a5a63b1c947e..e3ea7d2a6308 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-> @@ -186,6 +186,9 @@ static void arm_smmu_free_shared_cd(struct arm_smmu_ctx_desc *cd)
->          }
->   }
-> 
-> +/* Copid from arch/arm64/include/asm/tlbflush.h to avoid similar soft lockups */
-> +#define MAX_TLBI_OPS   (1 << (PAGE_SHIFT - 3))
-> +
->   static void arm_smmu_mm_invalidate_range(struct mmu_notifier *mn,
->                                           struct mm_struct *mm,
->                                           unsigned long start, unsigned long end)
-> @@ -201,9 +204,14 @@ static void arm_smmu_mm_invalidate_range(struct mmu_notifier *mn,
->           */
->          size = end - start;
-> 
-> -       if (!(smmu_domain->smmu->features & ARM_SMMU_FEAT_BTM))
-> -               arm_smmu_tlb_inv_range_asid(start, size, smmu_mn->cd->asid,
-> -                                           PAGE_SIZE, false, smmu_domain);
-> +       if (!(smmu_domain->smmu->features & ARM_SMMU_FEAT_BTM)) {
-> +               if (!(smmu_domain->smmu->features & ARM_SMMU_FEAT_RANGE_INV) &&
-> +                   size >= MAX_TLBI_OPS * PAGE_SIZE)
-> +                       arm_smmu_tlb_inv_asid(smmu_domain->smmu, smmu_mn->cd->asid);
-> +               else
-> +                       arm_smmu_tlb_inv_range_asid(start, size, smmu_mn->cd->asid,
-> +                                                   PAGE_SIZE, false, smmu_domain);
-> +       }
->          arm_smmu_atc_inv_domain(smmu_domain, mm->pasid, start, size);
->   }
-> --------------------------------------------------------------------
-> 
-> What do you think about it?
+Well, imagining the use cases of NVIDIA Grace, I'd expect it soon
+to be no longer a surprise that we see more stressful cases :-/
 
-Looks reasonable to me - I think it's the right shape to foreshadow the 
-bigger refactoring we discussed, and I can't object to using 
-PAGE_{SIZE,SHIFT} for the calculation when it's specifically in the 
-context of SVA.
+> > I think it is the same problem that we fixed in tlbflush.h using
+> > MAX_TLBI_OPS. So, I plan to send a cleaner bug fix (cc stable)
 
-Thanks,
-Robin.
+> > What do you think about it?
+> 
+> Looks reasonable to me - I think it's the right shape to foreshadow the
+> bigger refactoring we discussed, 
+
+Cool! Thanks for the quick ack. And I could move the MAX_TLBI_OPS
+to the SMMU header so a later change in smmu.c can just use it.
+
+> and I can't object to using
+> PAGE_{SIZE,SHIFT} for the calculation when it's specifically in the
+> context of SVA.
+
+Yea, the current SVA code passes in PAGE_SIZE as the TLBI granule.
+
+Thanks
+Nic
