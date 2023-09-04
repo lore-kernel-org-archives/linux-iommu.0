@@ -1,53 +1,54 @@
-Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com [209.85.221.51])
+Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9EDC8C14C
-	for <iommu@lists.linux.dev>; Mon,  4 Sep 2023 15:26:29 +0000 (UTC)
-Received: by mail-wr1-f51.google.com with SMTP id ffacd0b85a97d-31f4950333cso754413f8f.3
-        for <iommu@lists.linux.dev>; Mon, 04 Sep 2023 08:26:29 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B469FC13A
+	for <iommu@lists.linux.dev>; Mon,  4 Sep 2023 15:34:00 +0000 (UTC)
+Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-401d80f4ef8so16958045e9.1
+        for <iommu@lists.linux.dev>; Mon, 04 Sep 2023 08:34:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1693841187; x=1694445987; darn=lists.linux.dev;
+        d=linaro.org; s=google; t=1693841638; x=1694446438; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=fDf3q7+EQu7w2zbw3JsPePbQVuqHBAlzwY6aMD3wySI=;
-        b=pDzt7uQIBs7EkH6xFL4uR0+nLrihodiR1sCz9u0g93r9CVDts+kOvBJjtB29qRrZev
-         50ulY0VHqDmj/fKxzY79YC7MUumEnEo10DxFu17XB88hShBoDWeHRdCSYjF4/h5A+VB5
-         Nb71rGf741VDi4L4grLkKFnH150B0myPKBTqsFA+SfjOG8EloOgaiGbpltYG5hu+idTf
-         K6+E9ewhqYCpTG4JoquE/mTCvnF/r1PLkkvYqMivL4T6TdfJ1E1d96Mp7UVMeH0dVDS5
-         1WpBlJZ+LA9EEwXmzolfCNBaEgs2rWdd1TUGK4c1qeJnGX376Rc9cdcbgqJ1zPgxEi6w
-         6urQ==
+        bh=8mKB1k2ZE2G/ciLlCDtCzQ5wGQ8xRQbZHnxa2+q17Z8=;
+        b=PrYwclXHSm8v/iN3DxjMqdJ1SuqVjU7UKN2Ng8ZyoUvWORz38i2NM5DUCaFWwR5M/r
+         NwpYb5DBw3+bACoEI2DsugsTlsJBwxfCJC9+Y25Uht7EX/uMu60TBBceNEN29O5bIoeH
+         nhO8QqHTssENVgCQs5AY0evwVAKphp1kR1yDxoANClFvbM20+WLwmPN8f0UOEvVsCgVG
+         0gx9HEHDjf8X/ERrZcXBY0Fgjk1S1Exg5YDfPU+UNuO7a3xBN6KD8b7fuhScN6wMRxvl
+         2+jTZJAo6XmTX1UlmqvHefUPm4PLrLzJ10azst8vo24v7iemA4v3KTYp+w9/rkDnRdLR
+         E0TA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1693841187; x=1694445987;
+        d=1e100.net; s=20221208; t=1693841638; x=1694446438;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=fDf3q7+EQu7w2zbw3JsPePbQVuqHBAlzwY6aMD3wySI=;
-        b=aKgu3RqBw9xDjXDTPyzu6cFeiPjMmZhDeZODwW3eSajsDxiBNi6r0zS6T09tbrTKaU
-         aNFjXKmddtsEVcdN5tF/joyTIbiIRO8lgM2VDmaL7X8wlTnJ2sPhMOXIDsALmKIEA42b
-         ChbW5i59MUEUtZX+aFkZmMdnjbocE6g44EynNE+H3qiwSZWfsjkB1GC4yVAzMSPDVi58
-         GBazttBz/JfLvXFIHkPdrL5uLPvBuUZqzrcNVrVLOoi07xK4fJGXaqdBFURK+hCIe6zd
-         8ynZfrktdSNxG+PpzdU+HBIzCuXNLsztALlUFrFIoIoeAoc6AsVU439wyHXxKA21+bIK
-         VNMQ==
-X-Gm-Message-State: AOJu0YxpQKqZFEKc54V8OLAp06vOBNre2qQvmxfbGAF3UZ9uTUhs9Psx
-	GsXbd7VnT+DkUw0YfngaHTLkptWynESVgY+k6MU=
-X-Google-Smtp-Source: AGHT+IHWxHR1EFAYshcTB7RB95vh4F3SsbWMVSXXFSxXBH5grbtimj3wW7/bF5tK15QkRFCPr/KWYg==
-X-Received: by 2002:a5d:66ce:0:b0:317:d048:8d87 with SMTP id k14-20020a5d66ce000000b00317d0488d87mr6659141wrw.61.1693841187508;
-        Mon, 04 Sep 2023 08:26:27 -0700 (PDT)
+        bh=8mKB1k2ZE2G/ciLlCDtCzQ5wGQ8xRQbZHnxa2+q17Z8=;
+        b=lkjL2m6bdQdCeRFPdPFT5Uus/SasCmcc9wF4m41S/5oqZRuA8QyGmRAFu/U8ZBQfmH
+         G68JttRF0a2rxVQSFRzr2UcO3B0LDkKzQSPfsD5BXZdfn6eBllbsgl4JSXRDdeiSK1/r
+         ij815A/HNcQ3PnRTJI1H8q5lwWQTCbTYN+FJIccDY6ZuBZCJHtD8Epcxt4UXDSq56ZW5
+         W7xHMGcnYKLChzXugxZPhn0Ch8hxEbFJ8JitReyoT10qFxRHUBGk2aaV3OYPoJCGWXzZ
+         pradkzerhwJfXGRrj845WXwZhiT0a5awsOTxjBSKCnsxQkHjx5lzt2FQlq+jv3B3b+gC
+         mtyw==
+X-Gm-Message-State: AOJu0YwUnj0KtgVX+/JfoVlXnhiwmHtWQBOz8QAB8NQTaUuBN67eO6Pr
+	VwClqon9xSFw82VozA2N+wUb5EUvYuDDop660K4=
+X-Google-Smtp-Source: AGHT+IGhYh7h7UosmsP+axnCskrqTn/m5wl+B+KT+YE2nQBzRYMTV/Fur6gSkA0GnBJj6rv+rEUuzA==
+X-Received: by 2002:a05:600c:2945:b0:3fe:89be:cd3 with SMTP id n5-20020a05600c294500b003fe89be0cd3mr7728851wmd.22.1693841638575;
+        Mon, 04 Sep 2023 08:33:58 -0700 (PDT)
 Received: from myrica ([2.220.83.24])
-        by smtp.gmail.com with ESMTPSA id z23-20020a1c4c17000000b00401d8181f8bsm17377650wmf.25.2023.09.04.08.26.26
+        by smtp.gmail.com with ESMTPSA id o24-20020a05600c379800b003fed70fb09dsm14379467wmr.26.2023.09.04.08.33.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Sep 2023 08:26:27 -0700 (PDT)
-Date: Mon, 4 Sep 2023 16:26:32 +0100
+        Mon, 04 Sep 2023 08:33:58 -0700 (PDT)
+Date: Mon, 4 Sep 2023 16:34:03 +0100
 From: Jean-Philippe Brucker <jean-philippe@linaro.org>
 To: Niklas Schnelle <schnelle@linux.ibm.com>
 Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
 	Robin Murphy <robin.murphy@arm.com>,
 	virtualization@lists.linux-foundation.org, iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] iommu/virtio: Make use of ops->iotlb_sync_map
-Message-ID: <20230904152632.GA815284@myrica>
+Subject: Re: [PATCH 2/2] iommu/virtio: Add ops->flush_iotlb_all and enable
+ deferred flush
+Message-ID: <20230904153403.GB815284@myrica>
 References: <20230825-viommu-sync-map-v1-0-56bdcfaa29ec@linux.ibm.com>
- <20230825-viommu-sync-map-v1-1-56bdcfaa29ec@linux.ibm.com>
+ <20230825-viommu-sync-map-v1-2-56bdcfaa29ec@linux.ibm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -56,81 +57,72 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230825-viommu-sync-map-v1-1-56bdcfaa29ec@linux.ibm.com>
+In-Reply-To: <20230825-viommu-sync-map-v1-2-56bdcfaa29ec@linux.ibm.com>
 
-Hi Niklas,
+On Fri, Aug 25, 2023 at 05:21:26PM +0200, Niklas Schnelle wrote:
+> Add ops->flush_iotlb_all operation to enable virtio-iommu for the
+> dma-iommu deferred flush scheme. This results inn a significant increase
 
-Thanks for following up with these patches
+in
 
-On Fri, Aug 25, 2023 at 05:21:25PM +0200, Niklas Schnelle wrote:
-> Pull out the sync operation from viommu_map_pages() by implementing
-> ops->iotlb_sync_map. This allows the common IOMMU code to map multiple
-> elements of an sg with a single sync (see iommu_map_sg()). Furthermore,
-> it is also a requirement for IOMMU_CAP_DEFERRED_FLUSH.
+> in performance in exchange for a window in which devices can still
+> access previously IOMMU mapped memory. To get back to the prior behavior
+> iommu.strict=1 may be set on the kernel command line.
+
+Maybe add that it depends on CONFIG_IOMMU_DEFAULT_DMA_{LAZY,STRICT} as
+well, because I've seen kernel configs that enable either.
+
 > 
-> Link: https://lore.kernel.org/lkml/20230726111433.1105665-1-schnelle@linux.ibm.com/
+> Link: https://lore.kernel.org/lkml/20230802123612.GA6142@myrica/
 > Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
 > ---
->  drivers/iommu/virtio-iommu.c | 15 ++++++++++++++-
->  1 file changed, 14 insertions(+), 1 deletion(-)
+>  drivers/iommu/virtio-iommu.c | 12 ++++++++++++
+>  1 file changed, 12 insertions(+)
 > 
 > diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
-> index 3551ed057774..fb73dec5b953 100644
+> index fb73dec5b953..1b7526494490 100644
 > --- a/drivers/iommu/virtio-iommu.c
 > +++ b/drivers/iommu/virtio-iommu.c
-> @@ -843,7 +843,7 @@ static int viommu_map_pages(struct iommu_domain *domain, unsigned long iova,
->  			.flags		= cpu_to_le32(flags),
->  		};
->  
-> -		ret = viommu_send_req_sync(vdomain->viommu, &map, sizeof(map));
-> +		ret = viommu_add_req(vdomain->viommu, &map, sizeof(map));
->  		if (ret) {
->  			viommu_del_mappings(vdomain, iova, end);
->  			return ret;
-> @@ -909,9 +909,21 @@ static void viommu_iotlb_sync(struct iommu_domain *domain,
->  {
->  	struct viommu_domain *vdomain = to_viommu_domain(domain);
->  
-> +	if (!vdomain->nr_endpoints)
-> +		return;
-
-I was wondering about these nr_endpoints checks, which seemed unnecessary:
-if map()/unmap() were called with no attached endpoints, then no requests
-were added to the queue, and viommu_sync_req() below is a nop.
-
-But at least viommu_iotlb_sync_map() and viommu_flush_iotlb_all() need to
-handle being called before the domain is finalized (for example by
-iommu_create_device_direct_mappings()). In that case vdomain->viommu is
-NULL so if you add a NULL check in viommu_sync_req() then you should be
-able to drop the nr_endpoints checks in both patches.
-
-Thanks,
-Jean
-
->  	viommu_sync_req(vdomain->viommu);
+> @@ -924,6 +924,15 @@ static int viommu_iotlb_sync_map(struct iommu_domain *domain,
+>  	return viommu_sync_req(vdomain->viommu);
 >  }
 >  
-> +static int viommu_iotlb_sync_map(struct iommu_domain *domain,
-> +				 unsigned long iova, size_t size)
+> +static void viommu_flush_iotlb_all(struct iommu_domain *domain)
 > +{
 > +	struct viommu_domain *vdomain = to_viommu_domain(domain);
 > +
 > +	if (!vdomain->nr_endpoints)
-> +		return 0;
-> +	return viommu_sync_req(vdomain->viommu);
+> +		return;
+
+As for patch 1, a NULL check in viommu_sync_req() would allow dropping
+this one
+
+Thanks,
+Jean
+
+> +	viommu_sync_req(vdomain->viommu);
 > +}
 > +
 >  static void viommu_get_resv_regions(struct device *dev, struct list_head *head)
 >  {
 >  	struct iommu_resv_region *entry, *new_entry, *msi = NULL;
-> @@ -1058,6 +1070,7 @@ static struct iommu_ops viommu_ops = {
+> @@ -1049,6 +1058,8 @@ static bool viommu_capable(struct device *dev, enum iommu_cap cap)
+>  	switch (cap) {
+>  	case IOMMU_CAP_CACHE_COHERENCY:
+>  		return true;
+> +	case IOMMU_CAP_DEFERRED_FLUSH:
+> +		return true;
+>  	default:
+>  		return false;
+>  	}
+> @@ -1069,6 +1080,7 @@ static struct iommu_ops viommu_ops = {
+>  		.map_pages		= viommu_map_pages,
 >  		.unmap_pages		= viommu_unmap_pages,
 >  		.iova_to_phys		= viommu_iova_to_phys,
+> +		.flush_iotlb_all	= viommu_flush_iotlb_all,
 >  		.iotlb_sync		= viommu_iotlb_sync,
-> +		.iotlb_sync_map		= viommu_iotlb_sync_map,
+>  		.iotlb_sync_map		= viommu_iotlb_sync_map,
 >  		.free			= viommu_domain_free,
->  	}
->  };
 > 
 > -- 
 > 2.39.2
