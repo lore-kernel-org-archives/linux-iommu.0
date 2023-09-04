@@ -1,29 +1,53 @@
-Received: from bg1.exmail.qq.com (bg1.exmail.qq.com [114.132.62.65])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com [209.85.221.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 70C7937E
-	for <iommu@lists.linux.dev>; Mon,  4 Sep 2023 02:39:35 +0000 (UTC)
-X-QQ-mid: bizesmtp62t1693794758twa69jzb
-Received: from localhost ( [221.216.117.35])
-	by bizesmtp.qq.com (ESMTP) with 
-	id ; Mon, 04 Sep 2023 10:32:36 +0800 (CST)
-X-QQ-SSF: 0140000000000010B000000A0000000
-X-QQ-FEAT: tSQw27OYC23XBEqWAG0b/gTmfSNbAKillH2LUjy1Y2LDOPl/U8lWxIKgXVvVx
-	MLTV21ye1KpLb/hbWDfY01FkK0KYbpuZjFieCaTbQP6lLhzTZnbDUVSBBpIrY71Qf065rpX
-	1LP8ATObXQAfZJytn/j/UG4NoSLbLYU7Moac48ZU/9upewz4d7fR+z1F86kCMa/1D4Rl92e
-	hdbAsvyLc+ynboOkXUYwTHHeuvwVtPSfUjuXnUm8a/qSSECZfvFswb+uaSG3F77usy0Pdg0
-	zQNuT753vw6RYU11MMboLqXSbBogycvswg5N6xA5yo15bXaD1rqdKY1ViiUI5AvY5Ql7LzV
-	l1rd7qcfnxhkqq5WeD4xHvRv1NYPx1afqBa2iSHPwdx8wxMlV8=
-X-QQ-GoodBg: 2
-X-BIZMAIL-ID: 2023375898041890435
-Date: Mon, 4 Sep 2023 10:32:36 +0800
-From: GuokaiXu <xuguokai@ucas.com.cn>
-To: jgg@ziepe.ca, kevin.tian@intel.com, shuah@kernel.org
-Cc: iommu@lists.linux.dev, linux-kselftest@vger.kernel.org,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9EDC8C14C
+	for <iommu@lists.linux.dev>; Mon,  4 Sep 2023 15:26:29 +0000 (UTC)
+Received: by mail-wr1-f51.google.com with SMTP id ffacd0b85a97d-31f4950333cso754413f8f.3
+        for <iommu@lists.linux.dev>; Mon, 04 Sep 2023 08:26:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1693841187; x=1694445987; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=fDf3q7+EQu7w2zbw3JsPePbQVuqHBAlzwY6aMD3wySI=;
+        b=pDzt7uQIBs7EkH6xFL4uR0+nLrihodiR1sCz9u0g93r9CVDts+kOvBJjtB29qRrZev
+         50ulY0VHqDmj/fKxzY79YC7MUumEnEo10DxFu17XB88hShBoDWeHRdCSYjF4/h5A+VB5
+         Nb71rGf741VDi4L4grLkKFnH150B0myPKBTqsFA+SfjOG8EloOgaiGbpltYG5hu+idTf
+         K6+E9ewhqYCpTG4JoquE/mTCvnF/r1PLkkvYqMivL4T6TdfJ1E1d96Mp7UVMeH0dVDS5
+         1WpBlJZ+LA9EEwXmzolfCNBaEgs2rWdd1TUGK4c1qeJnGX376Rc9cdcbgqJ1zPgxEi6w
+         6urQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1693841187; x=1694445987;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=fDf3q7+EQu7w2zbw3JsPePbQVuqHBAlzwY6aMD3wySI=;
+        b=aKgu3RqBw9xDjXDTPyzu6cFeiPjMmZhDeZODwW3eSajsDxiBNi6r0zS6T09tbrTKaU
+         aNFjXKmddtsEVcdN5tF/joyTIbiIRO8lgM2VDmaL7X8wlTnJ2sPhMOXIDsALmKIEA42b
+         ChbW5i59MUEUtZX+aFkZmMdnjbocE6g44EynNE+H3qiwSZWfsjkB1GC4yVAzMSPDVi58
+         GBazttBz/JfLvXFIHkPdrL5uLPvBuUZqzrcNVrVLOoi07xK4fJGXaqdBFURK+hCIe6zd
+         8ynZfrktdSNxG+PpzdU+HBIzCuXNLsztALlUFrFIoIoeAoc6AsVU439wyHXxKA21+bIK
+         VNMQ==
+X-Gm-Message-State: AOJu0YxpQKqZFEKc54V8OLAp06vOBNre2qQvmxfbGAF3UZ9uTUhs9Psx
+	GsXbd7VnT+DkUw0YfngaHTLkptWynESVgY+k6MU=
+X-Google-Smtp-Source: AGHT+IHWxHR1EFAYshcTB7RB95vh4F3SsbWMVSXXFSxXBH5grbtimj3wW7/bF5tK15QkRFCPr/KWYg==
+X-Received: by 2002:a5d:66ce:0:b0:317:d048:8d87 with SMTP id k14-20020a5d66ce000000b00317d0488d87mr6659141wrw.61.1693841187508;
+        Mon, 04 Sep 2023 08:26:27 -0700 (PDT)
+Received: from myrica ([2.220.83.24])
+        by smtp.gmail.com with ESMTPSA id z23-20020a1c4c17000000b00401d8181f8bsm17377650wmf.25.2023.09.04.08.26.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Sep 2023 08:26:27 -0700 (PDT)
+Date: Mon, 4 Sep 2023 16:26:32 +0100
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: Niklas Schnelle <schnelle@linux.ibm.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	virtualization@lists.linux-foundation.org, iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH 1/1] tools/testing/selftests/iommu:Fixed spelling errors in
- comments
-Message-ID: <31680D47D9533D91+20230904023236.GA12494@xgk8823>
+Subject: Re: [PATCH 1/2] iommu/virtio: Make use of ops->iotlb_sync_map
+Message-ID: <20230904152632.GA815284@myrica>
+References: <20230825-viommu-sync-map-v1-0-56bdcfaa29ec@linux.ibm.com>
+ <20230825-viommu-sync-map-v1-1-56bdcfaa29ec@linux.ibm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -32,46 +56,82 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:ucas.com.cn:qybglogicsvrgz:qybglogicsvrgz5a-1
+In-Reply-To: <20230825-viommu-sync-map-v1-1-56bdcfaa29ec@linux.ibm.com>
 
-From c4e404036e0a7ffcaedc5760bee234713ccfe4a4 Mon Sep 17 00:00:00 2001
-From: GuokaiXu <xuguokai@ucas.com.cn>
-Date: Mon, 4 Sep 2023 10:18:04 +0800
-Subject: [PATCH 1/1] Fix the spelling errors in comments
+Hi Niklas,
 
-Signed-off-by: GuokaiXu <xuguokai@ucas.com.cn>
----
- tools/testing/selftests/iommu/iommufd.c          | 2 +-
- tools/testing/selftests/iommu/iommufd_fail_nth.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+Thanks for following up with these patches
 
-diff --git a/tools/testing/selftests/iommu/iommufd.c b/tools/testing/selftests/iommu/iommufd.c
-index 33d08600be13..b7249ffc6750 100644
---- a/tools/testing/selftests/iommu/iommufd.c
-+++ b/tools/testing/selftests/iommu/iommufd.c
-@@ -1729,7 +1729,7 @@ TEST_F(vfio_compat_mock_domain, map)
- 	ASSERT_EQ(0, ioctl(self->fd, VFIO_IOMMU_UNMAP_DMA, &unmap_cmd));
- 	ASSERT_EQ(BUFFER_SIZE, unmap_cmd.size);
- 
--	/* UNMAP_FLAG_ALL requres 0 iova/size */
-+	/* UNMAP_FLAG_ALL requires 0 iova/size */
- 	ASSERT_EQ(0, ioctl(self->fd, VFIO_IOMMU_MAP_DMA, &map_cmd));
- 	unmap_cmd.flags = VFIO_DMA_UNMAP_FLAG_ALL;
- 	EXPECT_ERRNO(EINVAL, ioctl(self->fd, VFIO_IOMMU_UNMAP_DMA, &unmap_cmd));
-diff --git a/tools/testing/selftests/iommu/iommufd_fail_nth.c b/tools/testing/selftests/iommu/iommufd_fail_nth.c
-index a220ca2a689d..36e7aa4f615c 100644
---- a/tools/testing/selftests/iommu/iommufd_fail_nth.c
-+++ b/tools/testing/selftests/iommu/iommufd_fail_nth.c
-@@ -105,7 +105,7 @@ static bool fail_nth_next(struct __test_metadata *_metadata,
- 
- 	/*
- 	 * This is just an arbitrary limit based on the current kernel
--	 * situation. Changes in the kernel can dramtically change the number of
-+	 * situation. Changes in the kernel can dramatically change the number of
- 	 * required fault injection sites, so if this hits it doesn't
- 	 * necessarily mean a test failure, just that the limit has to be made
- 	 * bigger.
--- 
-2.25.1
+On Fri, Aug 25, 2023 at 05:21:25PM +0200, Niklas Schnelle wrote:
+> Pull out the sync operation from viommu_map_pages() by implementing
+> ops->iotlb_sync_map. This allows the common IOMMU code to map multiple
+> elements of an sg with a single sync (see iommu_map_sg()). Furthermore,
+> it is also a requirement for IOMMU_CAP_DEFERRED_FLUSH.
+> 
+> Link: https://lore.kernel.org/lkml/20230726111433.1105665-1-schnelle@linux.ibm.com/
+> Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
+> ---
+>  drivers/iommu/virtio-iommu.c | 15 ++++++++++++++-
+>  1 file changed, 14 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
+> index 3551ed057774..fb73dec5b953 100644
+> --- a/drivers/iommu/virtio-iommu.c
+> +++ b/drivers/iommu/virtio-iommu.c
+> @@ -843,7 +843,7 @@ static int viommu_map_pages(struct iommu_domain *domain, unsigned long iova,
+>  			.flags		= cpu_to_le32(flags),
+>  		};
+>  
+> -		ret = viommu_send_req_sync(vdomain->viommu, &map, sizeof(map));
+> +		ret = viommu_add_req(vdomain->viommu, &map, sizeof(map));
+>  		if (ret) {
+>  			viommu_del_mappings(vdomain, iova, end);
+>  			return ret;
+> @@ -909,9 +909,21 @@ static void viommu_iotlb_sync(struct iommu_domain *domain,
+>  {
+>  	struct viommu_domain *vdomain = to_viommu_domain(domain);
+>  
+> +	if (!vdomain->nr_endpoints)
+> +		return;
 
+I was wondering about these nr_endpoints checks, which seemed unnecessary:
+if map()/unmap() were called with no attached endpoints, then no requests
+were added to the queue, and viommu_sync_req() below is a nop.
+
+But at least viommu_iotlb_sync_map() and viommu_flush_iotlb_all() need to
+handle being called before the domain is finalized (for example by
+iommu_create_device_direct_mappings()). In that case vdomain->viommu is
+NULL so if you add a NULL check in viommu_sync_req() then you should be
+able to drop the nr_endpoints checks in both patches.
+
+Thanks,
+Jean
+
+>  	viommu_sync_req(vdomain->viommu);
+>  }
+>  
+> +static int viommu_iotlb_sync_map(struct iommu_domain *domain,
+> +				 unsigned long iova, size_t size)
+> +{
+> +	struct viommu_domain *vdomain = to_viommu_domain(domain);
+> +
+> +	if (!vdomain->nr_endpoints)
+> +		return 0;
+> +	return viommu_sync_req(vdomain->viommu);
+> +}
+> +
+>  static void viommu_get_resv_regions(struct device *dev, struct list_head *head)
+>  {
+>  	struct iommu_resv_region *entry, *new_entry, *msi = NULL;
+> @@ -1058,6 +1070,7 @@ static struct iommu_ops viommu_ops = {
+>  		.unmap_pages		= viommu_unmap_pages,
+>  		.iova_to_phys		= viommu_iova_to_phys,
+>  		.iotlb_sync		= viommu_iotlb_sync,
+> +		.iotlb_sync_map		= viommu_iotlb_sync_map,
+>  		.free			= viommu_domain_free,
+>  	}
+>  };
+> 
+> -- 
+> 2.39.2
+> 
