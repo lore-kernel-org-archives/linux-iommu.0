@@ -1,162 +1,238 @@
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2043.outbound.protection.outlook.com [40.107.244.43])
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.88])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 795B4657
-	for <iommu@lists.linux.dev>; Tue,  5 Sep 2023 04:59:50 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=btyCde85eyTrHr/xMRwCHtNTk9UiTr3FoOWdm/aF2qikKN85hLr8VXrIgVvM+ew0mfFdIpgphJHgjgKX9ovWrJG2Yip3bdr01zaecq897kyIRaBzbtMjyyUPNuEhxXkutFI/BW1rDoe5/lcRTe1YMzBexXqZvY5BTEQhCITO6hUkCtcOl2rGyKRTLcEUCGJFashERiNDvUq3Lh8k1MrvRoFNqRF58bDQMMdwakOUam1KSPHzGWRa0fs424d6zTy1VzgHVY7uxDnpA3pozdKkYCeAA+qaEj3yvxYzXxBtAIqiEVQeDsDAJ4QV10KnsYc+tezS19/yW9OBVvFMPZccVg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=fYJgreYm2BDx3Pn7mlW1MlWFcOARTpXIonVvGEAr5F0=;
- b=X0mBeqVZ7QWXA+j+sMViPGTZtAL0MmzJGarDwD28SPzn7t+I9Ic5gZG/eAuv2f0yr+bOIA1mMQYNSxZKzPAtworJOKlND1amo4FHYV/aosYoSw6/Hkd4+ogyOmT2mcKfuvSlT0QkloCTKeBexb4l7LD5cRGnQnt38XbZ/mZO7LQLZf1nok+y70MrHfLuuYeiNen9k4XDWTNJD4cfooGqWigzs2uwxdGN21VLaZJ1YjT0jLNGzMXjHix7Qijn++4TKRcRlf80uPmSopbP8+w/FU2MLpNTB6w6VSL9Qo5dbhNkfYZdYo7m5RKAnxLzsfz9ybls/0XgN5zlyMG85zPh3g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=fYJgreYm2BDx3Pn7mlW1MlWFcOARTpXIonVvGEAr5F0=;
- b=SOdv8nKNky7pjtap8IFGvumWKBDaJ7zkqI7KqfB8yWYaJcdPskGVRkpyAsH2VkIf5ZMKt+qFq03k1+DWUklMDN+bnyzsT2eAxEbdaE1sSvM2Be8Zy40U64fxvqD5IyuVCD2sOt0F+LB0KqoqM5/cTKp+ZuWV/KkpdY9usn2LFI4=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DS7PR12MB6048.namprd12.prod.outlook.com (2603:10b6:8:9f::5) by
- DS7PR12MB9042.namprd12.prod.outlook.com (2603:10b6:8:ed::14) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6745.32; Tue, 5 Sep 2023 04:59:48 +0000
-Received: from DS7PR12MB6048.namprd12.prod.outlook.com
- ([fe80::67ec:80e:c478:df8e]) by DS7PR12MB6048.namprd12.prod.outlook.com
- ([fe80::67ec:80e:c478:df8e%7]) with mapi id 15.20.6745.030; Tue, 5 Sep 2023
- 04:59:48 +0000
-Message-ID: <8be32518-ce53-744a-9fe5-9f2a33095c18@amd.com>
-Date: Tue, 5 Sep 2023 10:29:37 +0530
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v3 6/6] mm: Deprecate pasid field
-Content-Language: en-US
-To: Tina Zhang <tina.zhang@intel.com>, Jason Gunthorpe <jgg@ziepe.ca>,
- Kevin Tian <kevin.tian@intel.com>, Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Michael Shavit <mshavit@google.com>, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org
-References: <20230905000930.24515-1-tina.zhang@intel.com>
- <20230905000930.24515-7-tina.zhang@intel.com>
-From: Vasant Hegde <vasant.hegde@amd.com>
-In-Reply-To: <20230905000930.24515-7-tina.zhang@intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: PN2PR01CA0179.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:c01:26::34) To DS7PR12MB6048.namprd12.prod.outlook.com
- (2603:10b6:8:9f::5)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF5467F3
+	for <iommu@lists.linux.dev>; Tue,  5 Sep 2023 05:19:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1693891195; x=1725427195;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=bvHQeHLkknHZ/9vJp80UHxLBNoyfMy8CBO1mOy/WJps=;
+  b=GSoZYj/Fwvqg2CwiTPhv0jDJo1sOUmvKzJVFok1Zhr2ug/Z1eY56iPob
+   hemftubSHI3RQzNkQDJivrzZ2r8UR7CVupy5VubFm43459420XddLtHZF
+   t70nrU6YB5ZaepWVsFJmmDij2Rc7TlN9zHmd2mXDbMLB1hX3lGObMi+b9
+   dsQc+Oy1/4uzVft/S3O70qaNRhJDrhseZXSlUFWf5e0YWX9qd/OHpOhV5
+   29H23kCqM8enAOaXUOjWR714RNfsJI5BeYumWMh6pvz1p1UybxsbBsSU0
+   ulRif4fNa2xszsIvPlhHD3cUJiu/rWe0LNZQK7JqO5ivlUm66J50I6BNb
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10823"; a="407693820"
+X-IronPort-AV: E=Sophos;i="6.02,228,1688454000"; 
+   d="scan'208";a="407693820"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Sep 2023 22:19:54 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10823"; a="740983062"
+X-IronPort-AV: E=Sophos;i="6.02,228,1688454000"; 
+   d="scan'208";a="740983062"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.254.214.54]) ([10.254.214.54])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Sep 2023 22:19:50 -0700
+Message-ID: <068e3e43-a5c9-596b-3d39-782b7893dbcc@linux.intel.com>
+Date: Tue, 5 Sep 2023 13:19:48 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS7PR12MB6048:EE_|DS7PR12MB9042:EE_
-X-MS-Office365-Filtering-Correlation-Id: e9bd1b61-71f4-43dd-99d8-08dbadccede1
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	EHwog3dRxwlISPiRi6Yw5itGSFJYxHA+174GfhTNNcwYDT9pvPrbxUl404kue1wi/kap12LIaeku55cvbo1kF+bydCIDlH/jYBA9v0z+guPIQlvMudNYb8bAaFoYuyIjHcW7I+cU7DZz9siX2x9emHlxTRWfloNOKnfb3J6dyZwCKT2eH6TmO6fWtTABRF+CCahCdwhW8oRrRMGI8VUsEIDQT+elCozucSGORJdkNRQcAMTIMSjPr1kg35hArN9k/IHW3jVb2f8I9mDrP3tNL2ZFSxHWQ8U5WfXrPj8H+SjaJY0z+FXyw8r8eD9JLoNAq5q8aQyIKXNsA9dry0mWnwlZLI/Tonpy3tRnPmaKQuiXsYQebow2H7Di+5clqHTOYhiJemAhxPhvAmEwIbOOBdokw6COnrICQiOaWlJFiaBPEuxj7On1MvE9BzFZBZ6M+GwRNfFywIavEA6mHwTGoo17a/u7vPHp3L82Kb1h8Z+nYD8BmzuF4KTIyQGl6grJmr3XTaehalPaK1OgdQzX17aN2JyG3I9LDTnDYGL5CUNvc8Fl5s5iEXtqt8359z+IUNcIs43i9KDZ14ky4AWbZPwlIBzwYi9vZPDb31yTsEGndWaxrz/505SXj2mr4jnLImWrZX2OLErDndEyGOXy8A==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6048.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(376002)(366004)(396003)(39860400002)(136003)(346002)(186009)(1800799009)(451199024)(41300700001)(6506007)(6486002)(6666004)(53546011)(478600001)(83380400001)(2616005)(26005)(6512007)(38100700002)(66476007)(36756003)(2906002)(110136005)(66946007)(316002)(66556008)(86362001)(31696002)(31686004)(5660300002)(8936002)(44832011)(8676002)(4326008)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?czI0K1EvT2haTDRyMHFKenZubU5Yb0dzQ29rOXlBcS9TRGlTdU9EQ1NVZ2lq?=
- =?utf-8?B?R1F5SlhHdWs4Y2cvMGdaNVRZNTZRZmdUeUExcXRzQUFWVjBSUXBKK1k0VHli?=
- =?utf-8?B?Z3BqVHcwcWZYSEpjRjFTMzN1dkpWSU1UbFRaWUVkbkdyaDJ6aXlNb0pOVnlp?=
- =?utf-8?B?QnNadUJLQlZCeDFZbEw2UUJPNUtLUVNJdHh0ZDdWeWV0OGFwc2FyL3FhNm5X?=
- =?utf-8?B?dmgxNHR3bnhlbnFzZkhaWjVkU1FVeDF2dnc0ZU0rZ25QelFqU1lCRG9Rd245?=
- =?utf-8?B?QjVseTZCTjhCUGxEckV0d3UzUGswRVVkc2lYOHR4WDM4ckM1SENpNGRramdZ?=
- =?utf-8?B?QlpJeUJNOG9tZWZtd1BwRE5jZGV0L1hoOWNGaVpTMC9qWWxDNGxRWmx3ZmIx?=
- =?utf-8?B?NVUxWVlJMjV2M1gwbE1sVXlxeExtVHREL1ZZVGIraHg1dE40TEV1RURtOTUy?=
- =?utf-8?B?QTcwSlczQnVzQ1ZXNjBkQ0NZNWFWd2xpbGFBMVhEM2JjNnN0b0drSmNtT0JX?=
- =?utf-8?B?MGtQYVhmeUZ1Qi9UNDRFODRJZUFYcW43Y2R6K2gzUVVCZDladGUvSStMakdZ?=
- =?utf-8?B?STdlYU5TUndUMmQxYk1MSTJ0L2VmSzdpTHR1Z21xdjVWNUFyMHI2dnRLRGM0?=
- =?utf-8?B?K0xhT0VyMDV3Ym9WQlRmdmdTaG81bUhRQVM0Q3lpdjFRdTZOV0hLZVJrdGJZ?=
- =?utf-8?B?aGlmOW11TWtPWmVvZUdQUE1jQkFwbVRkU0Rja0xXVHoxTS8yWlp0MVJsK2dE?=
- =?utf-8?B?UlRtSmhtZ3pPMS9VZUlJeEI5NnhleHVHdUFVditpUHNmdFBQWE9LbVNKU0xk?=
- =?utf-8?B?ZUdyMDZ0SU9sejR4S28wekQ5WXVRdFJRRTFUSGx2T1d5Q3lQVTNIdUczQWtG?=
- =?utf-8?B?WnVuUDZEVzRYZ0hZOWdlcXNDSnRTaFVwVDI3d2VVOEV3Y2hZOVEzV082MzZU?=
- =?utf-8?B?S1RDYXo3aHhHUytLZkI2emphZldHNzY0anNXY3U1QlBhUG0yMjBRcHJXUVBL?=
- =?utf-8?B?bHJNRE4xY2NBcmZzcEFzU2Z2MDRBK3kvNCtKZ1hSMFYyMTZQMy9LcEoyRXJG?=
- =?utf-8?B?UFdXTjl1Vm8zL2trcHZGWEpQYWxNYmJmVWtVcjd0RFJSZHB3enl5UlpETldQ?=
- =?utf-8?B?UjhuKzl6WTBRd1pnYzlqMWhQMWtMUytDaEN3TEVacFpsdk5qSWxyOHk2ZzhZ?=
- =?utf-8?B?Qlc0a1lJaEp5NlJyVUMwRVFkaERNVUdMVThCcWZoeUlyc1U4VUd2ZTl1ald2?=
- =?utf-8?B?dWQvZ2NMZjFqcEVTRllXRWNlM2d2VERTMVRud29UaGlRYkMxL1RaQlhwYzR1?=
- =?utf-8?B?VVhINXFpT0ZVODdjZEI0UndVVlMzYUFyYkxwZEd5TTV5NCt0WmF0SmQ0NTF0?=
- =?utf-8?B?djg1Yk42VElmUGJaNXdFdURhOHdOWVc0SG1SVlAxRkh0NXRERXUzYVVKN3dC?=
- =?utf-8?B?YkEyazBzdVhkditXM3prNVNkY0p5a1daU0tiNWdvc1pDeVRBc0U1Z0ZsdlFj?=
- =?utf-8?B?NlkxakFJMnI5UVZjdVplWWZiODJXTDRtNjFoRXNFcHNtRDFNQnFKVHpmZmZI?=
- =?utf-8?B?d1RGeFlEN2IvYk1pNzU5RlZJMS9oWUtCVWlpUEM1MTViMFNZWFo2c2ZIWGYv?=
- =?utf-8?B?a2RYaWtaTm1zNDlrbTM1cUFvK2RnVG1TZTRUR0psZ0tnU2tuUFlteUVxNmht?=
- =?utf-8?B?M3dVc28wd3JrNnl3REM2UVZIekNySDhNR2RtazBkSEhEUTlya3l4RG9xQUdM?=
- =?utf-8?B?NEVCa2VuMGpxUUVkUUlEOE0rTkxhS3RRUU1MdGRDTDZ5T2ZSZzFST01MLzZW?=
- =?utf-8?B?RGl1TStXdmx2dWNxZ2VUSTNYVy9xbTdmaFF3TzZIa2NqRFYrQm53MXlSTHVB?=
- =?utf-8?B?UXdnL251Vi9DZGtJRzFmMTd3RGZVbUw2cUh1clFUdWpnMEZRTWdwMXByRUFO?=
- =?utf-8?B?OUhxU1ZUMXdzVEZFekxZRmo1YlQ0cUN0SStiSTFZeS8zcnFMU05oZXhRUXg3?=
- =?utf-8?B?YmluMHJSQlg5VlJEV25udU5MN3Q1Y1Rxbmx2M2t5R2pCdVgvdS9vSVRZb3Jw?=
- =?utf-8?B?bkpQbHE2MzA1VWZpQlhXTGgyblJUL0ZKME0xd1NkQ3lhTWpPcGRYL1I2U01Z?=
- =?utf-8?Q?65tN+nxSJNxCfhrK/vlPLRndk?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e9bd1b61-71f4-43dd-99d8-08dbadccede1
-X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6048.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Sep 2023 04:59:48.2312
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ZdcMzuRf9QJYLZ9V9anOvxaNSZo2N5ZJhRZvVf+6wRCrBHmKLXc+h7vS4Ddsvj1Pwnx1IvYAw+M36/zy5aej9A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB9042
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.15.0
+Cc: baolu.lu@linux.intel.com, "Liu, Yi L" <yi.l.liu@intel.com>,
+ Jacob Pan <jacob.jun.pan@linux.intel.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v4 09/10] iommu: Make iommu_queue_iopf() more generic
+To: "Tian, Kevin" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Jason Gunthorpe <jgg@ziepe.ca>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Nicolin Chen <nicolinc@nvidia.com>
+References: <20230825023026.132919-1-baolu.lu@linux.intel.com>
+ <20230825023026.132919-10-baolu.lu@linux.intel.com>
+ <BN9PR11MB52762A33BC9F41AB424915688CE3A@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <cbfbe969-1a92-52bf-f00c-3fb89feefd66@linux.intel.com>
+ <BN9PR11MB52768891BC89107AD291E45C8CE6A@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <67aa00ae-01e6-0dd8-499f-279cb6df3ddd@linux.intel.com>
+ <BN9PR11MB527610423B186F1C5E734A4B8CE4A@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <BN9PR11MB527610423B186F1C5E734A4B8CE4A@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
+On 2023/9/1 10:49, Tian, Kevin wrote:
+>> From: Baolu Lu<baolu.lu@linux.intel.com>
+>> Sent: Thursday, August 31, 2023 5:28 PM
+>>
+>> On 2023/8/30 15:43, Tian, Kevin wrote:
+>>>> From: Baolu Lu<baolu.lu@linux.intel.com>
+>>>> Sent: Saturday, August 26, 2023 4:01 PM
+>>>>
+>>>> On 8/25/23 4:17 PM, Tian, Kevin wrote:
+>>>>>> +
+>>>>>>     /**
+>>>>>>      * iopf_queue_flush_dev - Ensure that all queued faults have been
+>>>>>> processed
+>>>>>>      * @dev: the endpoint whose faults need to be flushed.
+>>>>> Presumably we also need a flush callback per domain given now
+>>>>> the use of workqueue is optional then flush_workqueue() might
+>>>>> not be sufficient.
+>>>>>
+>>>> The iopf_queue_flush_dev() function flushes all pending faults from the
+>>>> IOMMU queue for a specific device. It has no means to flush fault queues
+>>>> out of iommu core.
+>>>>
+>>>> The iopf_queue_flush_dev() function is typically called when a domain is
+>>>> detaching from a PASID. Hence it's necessary to flush the pending faults
+>>>> from top to bottom. For example, iommufd should flush pending faults in
+>>>> its fault queues after detaching the domain from the pasid.
+>>>>
+>>> Is there an ordering problem? The last step of intel_svm_drain_prq()
+>>> in the detaching path issues a set of descriptors to drain page requests
+>>> and responses in hardware. It cannot complete if not all software queues
+>>> are drained and it's counter-intuitive to drain a software queue after
+>>> the hardware draining has already been completed.
+>>>
+>>> btw just flushing requests is probably insufficient in iommufd case since
+>>> the responses are received asynchronously. It requires an interface to
+>>> drain both requests and responses (presumably with timeouts in case
+>>> of a malicious guest which never responds) in the detach path.
+>> You are right. Good catch.
+>>
+>> To put it simply, iopf_queue_flush_dev() is insufficient to support the
+>> case of forwarding iopf's over iommufd. Do I understand it right?
+> yes
 
+I added below patch to address the iopf_queue_flush_dev() issue. What do
+you think of this？
 
-On 9/5/2023 5:39 AM, Tina Zhang wrote:
-> Drop the pasid field, as all the information needed for sva domain
-> management has been moved to the newly added iommu_mm field.
-> 
-> Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
-> Signed-off-by: Tina Zhang <tina.zhang@intel.com>
+iommu: Improve iopf_queue_flush_dev()
 
-Looks good to me.
+The iopf_queue_flush_dev() is called by the iommu driver before releasing
+a PASID. It ensures that all pending faults for this PASID have been
+handled or cancelled, and won't hit the address space that reuses this
+PASID. The driver must make sure that no new fault is added to the queue.
 
-Reviewed-by: Vasant Hegde <vasant.hegde@amd.com>
+The SMMUv3 driver doesn't use it because it only implements the
+Arm-specific stall fault model where DMA transactions are held in the SMMU
+while waiting for the OS to handle iopf's. Since a device driver must
+complete all DMA transactions before detaching domain, there are no
+pending iopf's with the stall model. PRI support requires adding a call to
+iopf_queue_flush_dev() after flushing the hardware page fault queue.
 
--Vasant
+The current implementation of iopf_queue_flush_dev() is a simplified
+version. It is only suitable for SVA case in which the processing of iopf
+is implemented in the inner loop of the iommu subsystem.
 
+Improve this interface to make it also work for handling iopf out of the
+iommu core.
 
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+---
+  include/linux/iommu.h      |  4 ++--
+  drivers/iommu/intel/svm.c  |  2 +-
+  drivers/iommu/io-pgfault.c | 40 ++++++++++++++++++++++++++++++++++++--
+  3 files changed, 41 insertions(+), 5 deletions(-)
 
-> ---
->  include/linux/mm_types.h | 1 -
->  mm/init-mm.c             | 3 ---
->  2 files changed, 4 deletions(-)
-> 
-> diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
-> index b486f521afee..fb0e4416d9d7 100644
-> --- a/include/linux/mm_types.h
-> +++ b/include/linux/mm_types.h
-> @@ -808,7 +808,6 @@ struct mm_struct {
->  		struct work_struct async_put_work;
->  
->  #ifdef CONFIG_IOMMU_SVA
-> -		u32 pasid;
->  		struct iommu_mm_data *iommu_mm;
->  #endif
->  #ifdef CONFIG_KSM
-> diff --git a/mm/init-mm.c b/mm/init-mm.c
-> index efa97b57acfd..69719291463e 100644
-> --- a/mm/init-mm.c
-> +++ b/mm/init-mm.c
-> @@ -42,9 +42,6 @@ struct mm_struct init_mm = {
->  #endif
->  	.user_ns	= &init_user_ns,
->  	.cpu_bitmap	= CPU_BITS_NONE,
-> -#ifdef CONFIG_IOMMU_SVA
-> -	.pasid		= IOMMU_PASID_INVALID,
-> -#endif
->  	INIT_MM_CONTEXT(init_mm)
->  };
->  
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 77ad33ffe3ac..465e23e945d0 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -1275,7 +1275,7 @@ iommu_sva_domain_alloc(struct device *dev, struct 
+mm_struct *mm)
+  #ifdef CONFIG_IOMMU_IOPF
+  int iopf_queue_add_device(struct iopf_queue *queue, struct device *dev);
+  int iopf_queue_remove_device(struct iopf_queue *queue, struct device 
+*dev);
+-int iopf_queue_flush_dev(struct device *dev);
++int iopf_queue_flush_dev(struct device *dev, ioasid_t pasid);
+  struct iopf_queue *iopf_queue_alloc(const char *name);
+  void iopf_queue_free(struct iopf_queue *queue);
+  int iopf_queue_discard_partial(struct iopf_queue *queue);
+@@ -1295,7 +1295,7 @@ iopf_queue_remove_device(struct iopf_queue *queue, 
+struct device *dev)
+  	return -ENODEV;
+  }
+
+-static inline int iopf_queue_flush_dev(struct device *dev)
++static inline int iopf_queue_flush_dev(struct device *dev, ioasid_t pasid)
+  {
+  	return -ENODEV;
+  }
+diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
+index 780c5bd73ec2..4c3f4533e337 100644
+--- a/drivers/iommu/intel/svm.c
++++ b/drivers/iommu/intel/svm.c
+@@ -495,7 +495,7 @@ void intel_drain_pasid_prq(struct device *dev, u32 
+pasid)
+  		goto prq_retry;
+  	}
+
+-	iopf_queue_flush_dev(dev);
++	iopf_queue_flush_dev(dev, pasid);
+
+  	/*
+  	 * Perform steps described in VT-d spec CH7.10 to drain page
+diff --git a/drivers/iommu/io-pgfault.c b/drivers/iommu/io-pgfault.c
+index 3e6845bc5902..84728fb89ac7 100644
+--- a/drivers/iommu/io-pgfault.c
++++ b/drivers/iommu/io-pgfault.c
+@@ -309,17 +309,53 @@ EXPORT_SYMBOL_GPL(iommu_page_response);
+   *
+   * Return: 0 on success and <0 on error.
+   */
+-int iopf_queue_flush_dev(struct device *dev)
++int iopf_queue_flush_dev(struct device *dev, ioasid_t pasid)
+  {
+  	struct iommu_fault_param *iopf_param = iopf_get_dev_fault_param(dev);
++	const struct iommu_ops *ops = dev_iommu_ops(dev);
++	struct iommu_page_response resp;
++	struct iopf_fault *iopf, *next;
++	int ret = 0;
+
+  	if (!iopf_param)
+  		return -ENODEV;
+
+  	flush_workqueue(iopf_param->queue->wq);
++
++	mutex_lock(&iopf_param->lock);
++	list_for_each_entry_safe(iopf, next, &iopf_param->partial, list) {
++		if (!(iopf->fault.prm.flags & IOMMU_FAULT_PAGE_REQUEST_PASID_VALID) ||
++		    iopf->fault.prm.pasid != pasid)
++			break;
++
++		list_del(&iopf->list);
++		kfree(iopf);
++	}
++
++	list_for_each_entry_safe(iopf, next, &iopf_param->faults, list) {
++		if (!(iopf->fault.prm.flags & IOMMU_FAULT_PAGE_REQUEST_PASID_VALID) ||
++		    iopf->fault.prm.pasid != pasid)
++			continue;
++
++		memset(&resp, 0, sizeof(struct iommu_page_response));
++		resp.pasid = iopf->fault.prm.pasid;
++		resp.grpid = iopf->fault.prm.grpid;
++		resp.code = IOMMU_PAGE_RESP_INVALID;
++
++		if (iopf->fault.prm.flags & IOMMU_FAULT_PAGE_RESPONSE_NEEDS_PASID)
++			resp.flags = IOMMU_PAGE_RESP_PASID_VALID;
++
++		ret = ops->page_response(dev, iopf, &resp);
++		if (ret)
++			break;
++
++		list_del(&iopf->list);
++		kfree(iopf);
++	}
++	mutex_unlock(&iopf_param->lock);
+  	iopf_put_dev_fault_param(iopf_param);
+
+-	return 0;
++	return ret;
+  }
+  EXPORT_SYMBOL_GPL(iopf_queue_flush_dev);
+
+Best regards,
+baolu
