@@ -1,41 +1,41 @@
-Received: from mail-yb1-f202.google.com (mail-yb1-f202.google.com [209.85.219.202])
+Received: from mail-yw1-f201.google.com (mail-yw1-f201.google.com [209.85.128.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 71A72CA6B
-	for <iommu@lists.linux.dev>; Tue,  5 Sep 2023 11:50:44 +0000 (UTC)
-Received: by mail-yb1-f202.google.com with SMTP id 3f1490d57ef6-d7b9a334ccfso3961759276.0
-        for <iommu@lists.linux.dev>; Tue, 05 Sep 2023 04:50:44 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD98BCA6B
+	for <iommu@lists.linux.dev>; Tue,  5 Sep 2023 11:50:48 +0000 (UTC)
+Received: by mail-yw1-f201.google.com with SMTP id 00721157ae682-58e49935630so39261447b3.0
+        for <iommu@lists.linux.dev>; Tue, 05 Sep 2023 04:50:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1693914643; x=1694519443; darn=lists.linux.dev;
+        d=google.com; s=20221208; t=1693914648; x=1694519448; darn=lists.linux.dev;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=7YfE4KQ/9gmtzN9iZMl6VnrHqz0Jm4lc2KvR4R04sGA=;
-        b=QYv5IOJq85jAL5GSjqFQfUpmUijE2pVz3cBwmhidOGWTkieeWhLEMdYz7Szus1Fhaq
-         QFxM/2RcgCTiQUqMFRPlllpRgML2dhQBgQqg/DzwLGgH2s7BUy0ID/COYMJI6Wt6YCau
-         boFtQcvQRJaXDmPtV7z45bx4n4Mfyrt6IOS3QX9Y8o8/3r5DawhBAvutdktkjCeOeksz
-         6YDWNruv8hZJ5T5QnXV6+HFkvAr98aiVxspriyNTHbLOLStJ1xfZ5IjQ4S4wFY+zsZfQ
-         tjDkAd32GSRI2n4MJj3UTbVJ4DQ2uEqR5xuZlSvlb9rP0UZSqZa5uuTRxc+KOmzt8sSb
-         w06Q==
+        bh=kiLWhPR0jjr+cIjF17/kc7vpb8l797DMDN7j160OqHY=;
+        b=4+oAFmGddvHk+UoWWWUTtYaMOE3UHfEy+O0XhJAq5n+tTU/Oq3MFla94BiJThZN7+B
+         q5229DiyKn28yEbiNopfhRghrijvb8XQka+fAM7v+aABHr2zI6OzLJLysmJj0CkTAmIr
+         MHoDcde2Fpl4+o1O6THQbGtfcMiiX1z23z0tjx6IbbQUuJ4sgrDbu3leBhk4crGlEvws
+         9v3OaIdLgNEZscWRTK6HPXs1BNzetIYcsrovq+7go5tzXdTNDBhJfyU5yS6Tb+Ea4DPn
+         283vngAWcRQVH+fcLB5qXO/jivgVrK9LKSRrCemI5l07BZekdCwH0/B1CItpDq20oDcf
+         Nd/g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1693914643; x=1694519443;
+        d=1e100.net; s=20221208; t=1693914648; x=1694519448;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=7YfE4KQ/9gmtzN9iZMl6VnrHqz0Jm4lc2KvR4R04sGA=;
-        b=CLoRVd2+EschHBtVVNOYX9W0GascuRed0qGHrvfokwIeMBKfxE38+51beb5IYYwUID
-         A3R1SnubdMrquezrwXQczVCl0iQcljUZTSgThZlW9JVs96MLiONk57HpOQcUSDPd0FDU
-         KtHWpDHa9/jXN0vXf4JsLvEyqDfg3gkUQC5Hr5yMsua4Pj5CVFgOrafvSgb8JSuqdIWj
-         NchT/ZUrRUiLzSEueeCfiJL4cL1TuNL/VS2McGeUNlIkejYeBLlcrFeXG18THy0MVy2x
-         TVdiYeedB/l04oipEHm2zjFi4rODWhVdeElFF6x/yEInohDSn5sQU94/5Tner0h1Sabj
-         Lr7A==
-X-Gm-Message-State: AOJu0YxyIXZq1qniBeHiKDwqpCZ/xIUcKNXCCBIn762Ugx8hkgsgBoYl
-	PtJsVAUdGNhFYm0+uo8n8nSwauN5Ugx+vQOIN4/9c/qL7HQCweSHv1Myvk58vtMheBhRlPdfhzx
-	e+EqkawDwFpzt59/0Z6E2AlD6arL6x2OXhVD6p1Ym1vFfkdoznNbrfAsIBPShGTE=
-X-Google-Smtp-Source: AGHT+IFMJMhyDh+Mk2ZERpecJKF5C6idpkbhpOKinywWmUZVBJ+h6wHJCjYqmxx/sEbPLpU9spECoGysuOhb
+        bh=kiLWhPR0jjr+cIjF17/kc7vpb8l797DMDN7j160OqHY=;
+        b=XbtWJs7qRpIresvEUy9JAaxdw4PJ5PPBz3sqyZPshBtMAz+5TspxYCUEhjY+Ij/MGl
+         on1jz1GgxrRvr63ASX+zu9FURkR18O3dfYMeJf6cnMS+x2JfjV1Gi/XE90LBUbphOjbi
+         5BkwQGy3yoslD3V1SyEkF8Q5yuyeS1QOi0EogQziR8jxDJ64FR6obtbTna9oOtMj5uFJ
+         z0KrhsDg58mEIktyNSQ+iqRLk8jrB3L2ZvIurgH7pXOB0wa7Zb7NeCerz71W2Ym2O5j0
+         1Ia1/AZR4F/PtGcfWPyGZ59zQLEC49hTAb3hKmJXUWa8GF+T9XIyKJRt6r+/fR/8xFl4
+         QHmg==
+X-Gm-Message-State: AOJu0Yz1E1oxKo4WyiNKWyXYrdu7Xrgdjcn7v/gbdNoGDpceybmH/0dH
+	una3Y3HLBmniUpIX0hiQfDDrNkC8gKJIHnDid/MJQyTSDA6u4qbCxDtaQ1iy5bp9W//4Q0wuoUA
+	uUxjzDmWGzeJt+16vpRd3lAEZOECVgwvMxiLeQwS+cjU0a+6dj0IIxX0a4jxrEBw=
+X-Google-Smtp-Source: AGHT+IGymTxyTPXDcoYXyE6qZoihZHB7S/W+Yq4eYVfv8eLSmaPP4Buo5WAaDyqII2ZPuy1FBGzp51eq/fFg
 X-Received: from mshavit.ntc.corp.google.com ([2401:fa00:95:20c:c4a8:fdce:d8d3:7b02])
- (user=mshavit job=sendgmr) by 2002:a25:ad03:0:b0:d7b:b648:f0da with SMTP id
- y3-20020a25ad03000000b00d7bb648f0damr403350ybi.6.1693914643302; Tue, 05 Sep
- 2023 04:50:43 -0700 (PDT)
-Date: Tue,  5 Sep 2023 19:49:12 +0800
+ (user=mshavit job=sendgmr) by 2002:a05:690c:2b8b:b0:594:f596:e232 with SMTP
+ id en11-20020a05690c2b8b00b00594f596e232mr325586ywb.2.1693914647753; Tue, 05
+ Sep 2023 04:50:47 -0700 (PDT)
+Date: Tue,  5 Sep 2023 19:49:13 +0800
 In-Reply-To: <20230905115013.1572240-1-mshavit@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -45,8 +45,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20230905115013.1572240-1-mshavit@google.com>
 X-Mailer: git-send-email 2.42.0.283.g2d96d420d3-goog
-Message-ID: <20230905194849.v1.1.Ib483f67c9e2ad90ea2254b4b5ac696e4b68aa638@changeid>
-Subject: [PATCH v1 1/3] iommu/arm-smmu-v3-sva: Remove unused iommu_sva handle
+Message-ID: <20230905194849.v1.2.Id3ab7cf665bcead097654937233a645722a4cce3@changeid>
+Subject: [PATCH v1 2/3] iommu/arm-smmu-v3-sva: Remove bond refcount
 From: Michael Shavit <mshavit@google.com>
 To: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
 	linux-kernel@vger.kernel.org
@@ -59,87 +59,72 @@ Cc: will@kernel.org, robin.murphy@arm.com, nicolinc@nvidia.com,
 	Yicong Yang <yangyicong@hisilicon.com>
 Content-Type: text/plain; charset="UTF-8"
 
-The __arm_smmu_sva_bind function returned an unused iommu_sva handle
-that can be removed.
+Always allocate a new arm_smmu_bond in __arm_smmu_sva_bind and remove
+the bond refcount since arm_smmu_bond can never be shared across calls
+to __arm_smmu_sva_bind.
+
+The iommu framework will not allocate multiple SVA domains for the same
+(device/mm) pair, nor will it call set_dev_pasid for a device if a
+domain is already attached on the given pasid. There's also a one-to-one
+mapping between MM and PASID. __arm_smmu_sva_bind is therefore never
+called with the same (device/mm) pair, and so there's no reason to try
+and normalize allocations of the arm_smmu_bond struct for a (device/mm)
+pair across set_dev_pasid.
 
 Signed-off-by: Michael Shavit <mshavit@google.com>
 ---
+Note that this is true today because iommu_sva_bind_device calls
+iommu_get_domain_for_dev_pasid to elude the iommu_attach_device_pasid if
+a domain is already attached.
+But even with Tina's patch series where iommu_get_domain_for_dev_pasid
+is no longer used, iommu_attach_device_pasid also checks whether a
+domain is already attached in the group's pasid_array.
 
- .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c    | 18 ++++++------------
- 1 file changed, 6 insertions(+), 12 deletions(-)
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c | 12 +-----------
+ 1 file changed, 1 insertion(+), 11 deletions(-)
 
 diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-index a5a63b1c947eb..32784758ccce6 100644
+index 32784758ccce6..9fb6907c5e7d4 100644
 --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
 +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-@@ -25,7 +25,6 @@ struct arm_smmu_mmu_notifier {
- #define mn_to_smmu(mn) container_of(mn, struct arm_smmu_mmu_notifier, mn)
- 
- struct arm_smmu_bond {
--	struct iommu_sva		sva;
+@@ -28,7 +28,6 @@ struct arm_smmu_bond {
  	struct mm_struct		*mm;
  	struct arm_smmu_mmu_notifier	*smmu_mn;
  	struct list_head		list;
-@@ -320,8 +319,7 @@ static void arm_smmu_mmu_notifier_put(struct arm_smmu_mmu_notifier *smmu_mn)
- 	arm_smmu_free_shared_cd(cd);
- }
+-	refcount_t			refs;
+ };
  
--static struct iommu_sva *
--__arm_smmu_sva_bind(struct device *dev, struct mm_struct *mm)
-+static int __arm_smmu_sva_bind(struct device *dev, struct mm_struct *mm)
- {
- 	int ret;
- 	struct arm_smmu_bond *bond;
-@@ -330,7 +328,7 @@ __arm_smmu_sva_bind(struct device *dev, struct mm_struct *mm)
- 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
- 
+ #define sva_to_bond(handle) \
+@@ -330,20 +329,11 @@ static int __arm_smmu_sva_bind(struct device *dev, struct mm_struct *mm)
  	if (!master || !master->sva_enabled)
--		return ERR_PTR(-ENODEV);
-+		return -ENODEV;
+ 		return -ENODEV;
  
- 	/* If bind() was already called for this {dev, mm} pair, reuse it. */
- 	list_for_each_entry(bond, &master->bonds, list) {
-@@ -342,10 +340,9 @@ __arm_smmu_sva_bind(struct device *dev, struct mm_struct *mm)
- 
+-	/* If bind() was already called for this {dev, mm} pair, reuse it. */
+-	list_for_each_entry(bond, &master->bonds, list) {
+-		if (bond->mm == mm) {
+-			refcount_inc(&bond->refs);
+-			return &bond->sva;
+-		}
+-	}
+-
  	bond = kzalloc(sizeof(*bond), GFP_KERNEL);
  	if (!bond)
--		return ERR_PTR(-ENOMEM);
-+		return -ENOMEM;
+ 		return -ENOMEM;
  
  	bond->mm = mm;
--	bond->sva.dev = dev;
- 	refcount_set(&bond->refs, 1);
+-	refcount_set(&bond->refs, 1);
  
  	bond->smmu_mn = arm_smmu_mmu_notifier_get(smmu_domain, mm);
-@@ -355,11 +352,11 @@ __arm_smmu_sva_bind(struct device *dev, struct mm_struct *mm)
+ 	if (IS_ERR(bond->smmu_mn)) {
+@@ -522,7 +512,7 @@ void arm_smmu_sva_remove_dev_pasid(struct iommu_domain *domain,
+ 		}
  	}
  
- 	list_add(&bond->list, &master->bonds);
--	return &bond->sva;
-+	return 0;
- 
- err_free_bond:
- 	kfree(bond);
--	return ERR_PTR(ret);
-+	return ret;
- }
- 
- bool arm_smmu_sva_supported(struct arm_smmu_device *smmu)
-@@ -537,13 +534,10 @@ static int arm_smmu_sva_set_dev_pasid(struct iommu_domain *domain,
- 				      struct device *dev, ioasid_t id)
- {
- 	int ret = 0;
--	struct iommu_sva *handle;
- 	struct mm_struct *mm = domain->mm;
- 
- 	mutex_lock(&sva_lock);
--	handle = __arm_smmu_sva_bind(dev, mm);
--	if (IS_ERR(handle))
--		ret = PTR_ERR(handle);
-+	ret = __arm_smmu_sva_bind(dev, mm);
- 	mutex_unlock(&sva_lock);
- 
- 	return ret;
+-	if (!WARN_ON(!bond) && refcount_dec_and_test(&bond->refs)) {
++	if (!WARN_ON(!bond)) {
+ 		list_del(&bond->list);
+ 		arm_smmu_mmu_notifier_put(bond->smmu_mn);
+ 		kfree(bond);
 -- 
 2.42.0.283.g2d96d420d3-goog
 
