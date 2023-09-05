@@ -1,418 +1,345 @@
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.20])
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2064.outbound.protection.outlook.com [40.107.95.64])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4D4C7F3
-	for <iommu@lists.linux.dev>; Tue,  5 Sep 2023 05:24:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1693891474; x=1725427474;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=7yRpurzzwCMrF3BW5n2uSjqy7aK/uDwBCGx05tS4LrI=;
-  b=flAiemb0Mp8d2UGF4GIVSydyXVFX0Mq/d0VGuYoZHojAHFlVCskY76un
-   R9RshMz+GYe/A5ezb6VuR5wGBhJmQTIOYBlx45XwcTOU2H/hcMXe30/u9
-   XfmOXO4K7qcX21pmP+w7XrGL/o+XPYcEHGnxOvl+jxU/dPkVUY6oJZH7o
-   cagn0XF03uxF3c/M3Gehw6UQfX+9wlsGzCQjqWeKJHsGUEFeQK/S1kRts
-   sUHC3YlxevchlSwB6XKP7DbHPfCgCGDSLUzN42zHtfom9rRSISfVX7FzW
-   VCY1dH0gqAG9R6oZfNAIBWG0rrJkHwLHKATioC1OrIfRih9oCsbpP+Rl9
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10823"; a="366935208"
-X-IronPort-AV: E=Sophos;i="6.02,228,1688454000"; 
-   d="scan'208";a="366935208"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Sep 2023 22:24:34 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10823"; a="734505788"
-X-IronPort-AV: E=Sophos;i="6.02,228,1688454000"; 
-   d="scan'208";a="734505788"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.254.214.54]) ([10.254.214.54])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Sep 2023 22:24:29 -0700
-Message-ID: <c9228377-0a5c-adf8-d0ef-9a791226603d@linux.intel.com>
-Date: Tue, 5 Sep 2023 13:24:26 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C805EBC
+	for <iommu@lists.linux.dev>; Tue,  5 Sep 2023 06:18:46 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=i37FLaf/CBNr2gP8mUi/I6w1dkDs57Km6K3HgbBZ4cpp1362hnWpitb7YKZczAfqnqrJD7WjtUg+9DEIkNejvluYjjvsQ0Rycn1nVB+0z8yj7OFHskLxNPb5ses+91ob+jkqxbCwiSPzY4zwPLbcnhAA4W115LtYdOmu/54mOPPIm4b425KOhFaDlkrAxV0s85IuLZvfH7wUbrZmP1xmUubJICaFk8WGwgJPctwD+30G6jH6MgWtyq9NrvS+TxnDgeErrHUmr4emMgMburgovTIPSi2UAaGK7fgNWq/Aqdbm403bcUllIzWl53yFX0lGeFdqniul7vdzO91U3URbag==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=QwyNUuUVsV6Ht9lo+lf/dhFQ+Co8woXjpo1q3B92Z1A=;
+ b=ZFY6hHA5Uf14kbWvqB/rqORmxUCI3tjEDk8qLjpfaaARFkVuO5FQ9mPOTa6hnkCYtUiOLzG3I6WFChCknXYXsaK1uAS72m780gs4fnJCliLAVeanc/or6cLGs6ZUCAe5DJitZpbUfvgHH1RqKmpb62RhRJd07FqZnlYjULtmnTvStjdkM2ybAJRwNOAFZQYi895+tQRszz3Ly2amKXTU1FXdZ+10DmHCTDLG//zcV2/cS8WXH8YDkREjNx8mzpVM29G4PqqpfSRjIVVS3dTNfYhFIqgEKV2d0mJqMJb9PKgtt2RO2Z4m4FdoYDBErpmEfPuX5+0Mohp7s3nmr29Lxg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=QwyNUuUVsV6Ht9lo+lf/dhFQ+Co8woXjpo1q3B92Z1A=;
+ b=RzYzOlbMQl6K1IiV+6WMeE9U0Z7Oq1ZnQ1LJxrLh1bG5QvcEms8EcBbmSa70lCuAz/aPbAKOTPM8ZgsmpQm34NHmJ34KLWrLPH0AT+LnuBLMFtDpsDKHXKgVwUOqe3ibCXhzeNvrNMb8liyANlxVdQ/C+u96KTZ+RxRYcz7yE3s=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DS7PR12MB6048.namprd12.prod.outlook.com (2603:10b6:8:9f::5) by
+ BL1PR12MB5923.namprd12.prod.outlook.com (2603:10b6:208:39a::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6745.32; Tue, 5 Sep
+ 2023 06:18:44 +0000
+Received: from DS7PR12MB6048.namprd12.prod.outlook.com
+ ([fe80::67ec:80e:c478:df8e]) by DS7PR12MB6048.namprd12.prod.outlook.com
+ ([fe80::67ec:80e:c478:df8e%7]) with mapi id 15.20.6745.030; Tue, 5 Sep 2023
+ 06:18:43 +0000
+Message-ID: <d64d8066-7cee-46c6-2403-76eaa969fe53@amd.com>
+Date: Tue, 5 Sep 2023 11:48:31 +0530
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH RESEND 03/10] iommu/amd: Initial SVA support for AMD IOMMU
+Content-Language: en-US
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: iommu@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com,
+ wei.huang2@amd.com, jsnitsel@redhat.com
+References: <20230823140415.729050-1-vasant.hegde@amd.com>
+ <20230823140415.729050-4-vasant.hegde@amd.com> <ZOYXoMPBQZ5KK9IJ@ziepe.ca>
+ <fc17e0fb-e712-824f-93f9-f9edf5707395@amd.com> <ZO93WJnhxl+sC9zA@ziepe.ca>
+From: Vasant Hegde <vasant.hegde@amd.com>
+In-Reply-To: <ZO93WJnhxl+sC9zA@ziepe.ca>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: PN3PR01CA0166.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:c01:de::10) To DS7PR12MB6048.namprd12.prod.outlook.com
+ (2603:10b6:8:9f::5)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.15.0
-Cc: baolu.lu@linux.intel.com, "Liu, Yi L" <yi.l.liu@intel.com>,
- Jacob Pan <jacob.jun.pan@linux.intel.com>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v4 09/10] iommu: Make iommu_queue_iopf() more generic
-Content-Language: en-US
-To: "Tian, Kevin" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Jason Gunthorpe <jgg@ziepe.ca>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Nicolin Chen <nicolinc@nvidia.com>
-References: <20230825023026.132919-1-baolu.lu@linux.intel.com>
- <20230825023026.132919-10-baolu.lu@linux.intel.com>
- <BN9PR11MB52762A33BC9F41AB424915688CE3A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <cfd9e0b8-167e-a79b-9ef1-b3bfa38c9199@linux.intel.com>
- <BN9PR11MB5276926066CC3A8FCCFD3DB08CE6A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <ed11a5c4-7256-e6ea-e94e-0dfceba6ddbf@linux.intel.com>
- <BN9PR11MB5276622C8271402487FA44708CE4A@BN9PR11MB5276.namprd11.prod.outlook.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <BN9PR11MB5276622C8271402487FA44708CE4A@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS7PR12MB6048:EE_|BL1PR12MB5923:EE_
+X-MS-Office365-Filtering-Correlation-Id: c6b23d17-9164-4b17-03cd-08dbadd7f3f2
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	stFPrag7FpRyhay3OYzzaHQfev7LmDKvBi/LWsh4KzF4vVRN6fR/2L1ZwAVt7bauN7nsnhbKwVYlsebheDkcKVqqR465LtCMR41K/G5hYXP8W3JlJKE6gJF4Ynv147hvczqE1KhBXW64bKO2rP/VL/c9ZBeNiNXcscNhW8o6ipIYwRwC2qwEuqjvSnTUguUgUr/4Ue/MHWPlv6f0KupHhfCH/hwMzT7F+P5dQSTTYZzCcDjZnKlgCtjpIQli9Z1rrPYTsjfj1Uvw4S+GwlTPUB8w4gAdwlPd8Zn/mVNkVPx2XEnPJpsSjFUMuO9H1lR9HdTJ+FwsojGmJ2oYcFpEapiVvDrFnz52GKItPF3OOlzjDgkXtofLUUGGJ3xPFh5LY6hCqgEAl99ac2b8iMIM1mqK+Blj/2SKbRnbEYAeFbDsEj+kK5zenPb5p/VGazngyqW0rtrUn8KTJdZid0v/9nX6hh8r87GUzR5+T5V/ueVASeS6Nviumr3Xq1uP9vDHMZEGMGCe6wA0nZmCIXke0SleKr1ezDktyJIq+kbaYWQmwMK0ouHp7m7tGu4ApED2KC8WVEIGCC/gdJCgh6Mm6DeuXNJdyZMk3j1bZ6miPXjxekwFiWEqhcy1spYIUYvQmQfwAZj1p5sa29mMOJLIWg==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6048.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366004)(136003)(376002)(346002)(39860400002)(396003)(1800799009)(186009)(451199024)(5660300002)(41300700001)(2616005)(26005)(2906002)(86362001)(31696002)(38100700002)(36756003)(44832011)(4326008)(8936002)(8676002)(83380400001)(6512007)(6666004)(53546011)(6506007)(31686004)(6486002)(478600001)(966005)(316002)(6916009)(66946007)(66476007)(66556008)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?OGlQd3RQc0hhSWltZHVRMkJRWUdxRHY4R2RqWDZRRk9iZVlkM1dvUkY4Rllh?=
+ =?utf-8?B?QThQU0EzTkk5WXFLNEhsQ0t5VlpTcGJZNmJXSWUwU09RZVVOTnNtSm5LVk81?=
+ =?utf-8?B?TlI3bFgvYSs4b2Q3ajJvVnJwTzc4TmpQeUw1VzFJVlg2Q3RoK2tpR0hLV1lT?=
+ =?utf-8?B?T3VLdEo1SFZiRGhBckt1c1UzZUVvWmZMcmw5Q3A5d1A1SDU4K2l0Um1YWWRt?=
+ =?utf-8?B?d2tBak0wTzhhdmxtRHNHaHRHQkw1ZExWV3lSNkd4SXV1WllERmozZnFCdklk?=
+ =?utf-8?B?aXFjVVJlMXV2U21ZL3ZkWVpnTXVuZzhsd2FmampsVWtCb3NiVzJLMGg4WnNs?=
+ =?utf-8?B?ejJGWEhUN0VJN29peWowMVNZYko1VlhKZTFyelhMZzR1a2JtdThReWRIR1Ir?=
+ =?utf-8?B?d0lPYm9IcmhRdlNzZHdFamxHN2lBY1l4aWxmOVEyWllEUHVQT2YxK1pWK3Ez?=
+ =?utf-8?B?akRDQzR5TWtkb2NnRkVRZWJlbkxUTkhqUFVjTjRmaTJVWU5VcEFsTk5PaVI3?=
+ =?utf-8?B?bGZHL2VJTmd6endJYTFtb280RDgyVmF5cnJGOW8xVmNMUkhjbzlPOEZrYTFS?=
+ =?utf-8?B?UFVzbjJHQmJ5Sy8xcEFvbEZSQlhRWncvZlBTUzYxUjRDRkd1QUxzdUJ6R1Nq?=
+ =?utf-8?B?OFpmSkd2N1ZKRkplOVk5SkEzSzZUZ1Jpd1M0aGRWb09BbGx6VEs4NXFkVTBa?=
+ =?utf-8?B?d3ZIcmVGRG05M0FmMG9xUFhhejdsL2hSUk91Y3NmeWJuYWgxeHhIVGt3ZzlY?=
+ =?utf-8?B?Z0lvUkxUMEkzaURqdDdQZ2VVV3BPOExqd0lOMnROcXJIeG1xNlQ3clRYTlFN?=
+ =?utf-8?B?SkU1UEloUXlUV0VXa25ZMUwrMmh6bzlIQVlhWGZUdnpKSzVVN2l0NFhxSnBo?=
+ =?utf-8?B?NzRPZ3EwZkJTdktoUytQd3FYTUw3NUgweTVvNXFPVmlBYncwQy84a3hzM05J?=
+ =?utf-8?B?ajBNTE80RkJWdlVJLy96M05lSFcrNFMwSnVudFMrUkNxQ1RCZTcvSlF5bnFD?=
+ =?utf-8?B?cFloeFNPMENhOXpxU2NjN1dVTytidlV6WXVWVkVodGcxMDFCR2d5bU41ZG0v?=
+ =?utf-8?B?dWtIbFhmM1NWdUovejJtc1FQNG1yeW11a1dWQVpPSXZmbkI0UlFkanJmdjMw?=
+ =?utf-8?B?bXpmQ3lhM05yQU9RQlY3RFBlK1ptVVdOdzlhUHlPeWtWbVJhRnRNdUJZaU5E?=
+ =?utf-8?B?UVE1MnVzeXBURmRVYm1IVzdxL1Y3U0dkUmwwQW1lZWRPdTZLZEpHTytVY0xI?=
+ =?utf-8?B?anNJL0pqcWdWZ0lrOGFVdzY3MUVIRHlKbW1lVkFvTXE1c3g4ZTZVVkMwNkx4?=
+ =?utf-8?B?YnlWWDI4cCs3SmRmNlVyVFk4eHhXblo0SGFVUjZDWDRITXpRdzFZUUtqSWtY?=
+ =?utf-8?B?cjhUV0RoUkl4YStPak1mUlBvMVJLVXllckVEUHE4SEV2cW9mM1lYVEJBWGJt?=
+ =?utf-8?B?NTNtcHkxSFJHSFpOT1ZCc1h1UXpNOTYwK0h2VEJSS2ZXbzF2RFhiQUhTdHZw?=
+ =?utf-8?B?Q1E5ek90Z0Z0THpvV0I3cUhCejRoenlETkd3K0lPWWwzNHpXRXlHWUNWVmtx?=
+ =?utf-8?B?RytFd25hYi9Ua0Izc1lMU1BLclpqUWtTYVpiaHBJS3BMWUNNSGtJYm1iOC91?=
+ =?utf-8?B?TG9UQjdWanBnaXNIRDZ5L1dMRk1sOC81bTE1TVhTejlyODRhMWFySjl0ZW1W?=
+ =?utf-8?B?NW9pV041M2pUVi9NK0wwWW53UER0anRtK1Y1bm13dDQ4YnJaR3NWTzQzdnlx?=
+ =?utf-8?B?QitwRFI2N09vRTl5SmNjOUM5RERSb0krNDVrSkY3M1VxNXhvTHZyWk43cGtG?=
+ =?utf-8?B?MTlzMmVOUkpYb013blEwUmY3L3BKWE1kdnZuLyt3aUdRbWdDS3dYdkpETkww?=
+ =?utf-8?B?TERFMnpGdW9oejYvb0t0SGJLLzdJY3lpb3lEWGdLQnplZ0JpYkNsOEx5MVNr?=
+ =?utf-8?B?TnNxZjY1K1ZSS2orcnRmNUJGcHdDbUdMVGFKV1I2Zjh3OVRvNk9OdDVFZmho?=
+ =?utf-8?B?VE1Sbkk1a3dxUnB3Nm96RDZoM3Q4MUlGdEt4a2crQXJieGZGQU5TYlM0enB2?=
+ =?utf-8?B?MDB0bmRUM29yOGZvZklIWTZkNWhoMXFkVXJ3T1VDMlU3bWtvOVZ2ci9vUHNi?=
+ =?utf-8?Q?Rda2Vd4l5CZ3zfsolFF1t862+?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c6b23d17-9164-4b17-03cd-08dbadd7f3f2
+X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6048.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Sep 2023 06:18:42.8632
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: bS1a2M8iEZmEu0hvusE833lX7+gCue4fo83LqnvCBu7ETXJ1+NiFpnjA0MR1OB9s9NkyYGSnWvbVDQdEMJA7bw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5923
 
-On 2023/9/1 10:50, Tian, Kevin wrote:
->> From: Baolu Lu <baolu.lu@linux.intel.com>
->> Sent: Thursday, August 31, 2023 7:25 PM
->>
->> On 2023/8/30 15:55, Tian, Kevin wrote:
->>>> From: Baolu Lu <baolu.lu@linux.intel.com>
->>>> Sent: Saturday, August 26, 2023 4:04 PM
->>>>
->>>> On 8/25/23 4:17 PM, Tian, Kevin wrote:
->>>>>> +static void assert_no_pending_iopf(struct device *dev, ioasid_t pasid)
->>>>>> +{
->>>>>> +	struct iommu_fault_param *iopf_param = dev->iommu-
->>>>>>> fault_param;
->>>>>> +	struct iopf_fault *iopf;
->>>>>> +
->>>>>> +	if (!iopf_param)
->>>>>> +		return;
->>>>>> +
->>>>>> +	mutex_lock(&iopf_param->lock);
->>>>>> +	list_for_each_entry(iopf, &iopf_param->partial, list) {
->>>>>> +		if (WARN_ON(iopf->fault.prm.pasid == pasid))
->>>>>> +			break;
->>>>>> +	}
->>>>> partial list is protected by dev_iommu lock.
->>>>>
->>>>
->>>> Ah, do you mind elaborating a bit more? In my mind, partial list is
->>>> protected by dev_iommu->fault_param->lock.
->>>>
->>>
->>> well, it's not how the code is currently written. iommu_queue_iopf()
->>> doesn't hold dev_iommu->fault_param->lock to update the partial
->>> list.
->>>
->>> while at it looks there is also a mislocking in iopf_queue_discard_partial()
->>> which only acquires queue->lock.
->>>
->>> So we have three places touching the partial list all with different locks:
->>>
->>> - iommu_queue_iopf() relies on dev_iommu->lock
->>> - iopf_queue_discard_partial() relies on queue->lock
->>> - this new assert function uses dev_iommu->fault_param->lock
->>
->> Yeah, I see your point now. Thanks for the explanation.
->>
->> So, my understanding is that dev_iommu->lock protects the whole
->> pointer of dev_iommu->fault_param, while dev_iommu->fault_param->lock
->> protects the lists inside it.
->>
+Jason,
+
+
+On 8/30/2023 10:37 PM, Jason Gunthorpe wrote:
+> On Mon, Aug 28, 2023 at 04:09:16PM +0530, Vasant Hegde wrote:
 > 
-> yes. let's use fault_param->lock consistently for those lists in all paths.
+>>>> +static void *sva_pasid_private_find(u32 pasid)
+>>>> +{
+>>>> +	return xa_load(&sva_pasid_array, pasid);
+>>>> +}
+>>>
+>>> No PASID stuff in SVA code at all please, all of this is wrong.
+>>
+>> This is based on upstream code!
+> 
+> Yes, and we are changing all of this because how wrong the drivers
+> went with stuff like this. :(
+> 
+>>> No per-PASID struct. AMD enablement should go after this series:
+>>>
+>>>  https://lore.kernel.org/linux-iommu/20230808074944.7825-1-tina.zhang@intel.com/
+>>>
+>>> Put the mmu_notifier directly into the protection_domain. Assume you
+>>> have a single protection_domain per mm.
+>>
+>> Actually we have protection domain for each IOMMU group (or multiple group in
+>> case of VM). 
+> 
+> Why would you do that for SVA? That is not the direction we are going.
+> One iommu_domain per mm, managed by the core code.
+> 
+> Driver assumes this and optimizes based on it.
+> 
+> If driver needs per device/pasid/whatever data then it keeps only that
+> data in a list hanging off the single iommu_domain.
+> 
+> It should be *exactly the same* data that an unmanaged domain needs to
+> manage its invalidations and ATC.
+> 
+>>> Also amd_sva_dev is not appropriate, the list of PASIDs (and masters)
+>>> a domain is associated with is part of the generic PASID support in
+>>> the protection_domain itself.
+>>
+>> You mean to say, we maintain PASID list in device protection_domain
+>> and then in
+> 
+> yes, a linked list of devices RID and PASIDs that the domain is
+> attached to.
+> 
+> This is mandatory to issue any form of invalidation, an UNMANAGED
+> domains should use the same list, and same mechanism to invalidate
+> their PASID attachments as well.
+> 
+>> invalidation path (somehow) we retrieve protection domain and use it
+>> for
+> 
+> Yes, obtain the domain trivially via container_of(mmu_notifier). Store
+> the notifier in the SVA iommu_domain's driver struct
+> (protection_domain) to do this.
 
-Hi Kevin,
+Reading through the discussion so far again and the other series, my
+understanding is :
+  - set_dev_pasid() will check the compatibility and bind device/pasid only if
+its compatibility. In AMD case we will check against protection domain. Ex:
+ If we have two devices (devA and devB) in two different protection domain then:
+   set_dev_pasid(sva_domain, devA, pasidX) - SUCCESS
+   set_dev_pasid(sva_domain, devB, pasidX) - Compatibility check fail
+   Core will allocate new SVA domain (sva_domain_new)
+   set_dev_pasid(sva_domain_new, devB, pasidX) - SUCCESS
 
-I am trying to address this issue in below patch. Does it looks sane to
-you?
+  - We will track mmu notifier and other data required for invalidation in SVA
+protection domain.
 
-iommu: Consolidate per-device fault data management
+  - During invalidation, we will retrieve SVA protection domain using mmu
+notifier. Use device protection domain which was tracked in this SVA domain for
+invalidation.
 
-The per-device fault data is a data structure that is used to store
-information about faults that occur on a device. This data is allocated
-when IOPF is enabled on the device and freed when IOPF is disabled. The
-data is used in the paths of iopf reporting, handling, responding, and
-draining.
+Does above flow makes sense? I do have a code based on above flow. I will try to
+post soon.
 
-The fault data is protected by two locks:
 
-- dev->iommu->lock: This lock is used to protect the allocation and
-   freeing of the fault data.
-- dev->iommu->fault_parameter->lock: This lock is used to protect the
-   fault data itself.
 
-Improve the iopf code to enforce this lock mechanism and add a reference
-counter in the fault data to avoid use-after-free issue.
+> 
+> This is why the core code helps the driver by de-duplicating the SVA
+> domains, it can assume the iommu_domain is already minimal and it can
+> then safely place the notifier there. The drivers should not try to
+> de-duplicate the notifier with refcounting/etc.
+> 
+>>> These details would be clearer if you start from enabling PASID
+>>> support for an UNMANAGED domain.
+>>
+>> We don't support PASID with V1 page table.
+> 
+> I didn't say V1 page table, I said enabling PASID support for
+> UNMANGED domains. This means you need a flavour of UNMANAGED domain
+> that is V2 page table. Just like ARM does. You already have this
+> support in the driver.
+> 
+>>>> +static void sva_mn_invalidate_range(struct mmu_notifier *mn,
+>>>> +				    struct mm_struct *mm,
+>>>> +				    unsigned long start, unsigned long end)
+>>>> +{
+>>>> +	struct amd_sva_pasid *sva_pasid;
+>>>> +	struct amd_sva_dev *sva_dev;
+>>>> +
+>>>> +	rcu_read_lock();
+>>>> +
+>>>> +	sva_pasid = container_of(mn, struct amd_sva_pasid, mn);
+>>>> +	if (!sva_pasid) {
+>>>> +		rcu_read_unlock();
+>>>> +		return;
+>>>> +	}
+>>>> +
+>>>> +	list_for_each_entry_rcu(sva_dev, &sva_pasid->dev_list, list) {
+>>>> +		if ((start ^ (end - 1)) < PAGE_SIZE)
+>>>> +			amd_iommu_flush_page(sva_dev->dev_data->domain, sva_pasid->pasid, start);
+>>>> +		else
+>>>> +			amd_iommu_flush_tlb(sva_dev->dev_data->domain, sva_pasid->pasid);
+>>>> +	}
+>>>
+>>> SVA invalidation should be the same as normal PASID invalidation. You
+>>
+>> Its same (Currently we have two different functions based on PAGE_SIZE. We have
+>> a separate series to improve our invalidation logic).
+> 
+> It is not the same, you have this weird sva_pasid thing in here. PASID
+> is NOT part of the SVA layer.
+> 
+> The API expects UNMANAGED domains will support PASID attach as well,
+> that is a significant use case.
 
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
-  include/linux/iommu.h      |   3 +
-  drivers/iommu/io-pgfault.c | 122 +++++++++++++++++++++++--------------
-  2 files changed, 79 insertions(+), 46 deletions(-)
+Can you elaborate the use cases you are referring here?
 
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 1697ac168f05..77ad33ffe3ac 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -480,6 +480,8 @@ struct iommu_device {
-  /**
-   * struct iommu_fault_param - per-device IOMMU fault data
-   * @lock: protect pending faults list
-+ * @users: user counter to manage the lifetime of the data, this field
-+ *         is protected by dev->iommu->lock.
-   * @dev: the device that owns this param
-   * @queue: IOPF queue
-   * @queue_list: index into queue->devices
-@@ -489,6 +491,7 @@ struct iommu_device {
-   */
-  struct iommu_fault_param {
-  	struct mutex lock;
-+	int users;
+We do have use cases for PASID and PASID+PRI. But I am not aware of any use case
+for UNMANAGED domain.
 
-  	struct device *dev;
-  	struct iopf_queue *queue;
-diff --git a/drivers/iommu/io-pgfault.c b/drivers/iommu/io-pgfault.c
-index 7e5c6798ce24..3e6845bc5902 100644
---- a/drivers/iommu/io-pgfault.c
-+++ b/drivers/iommu/io-pgfault.c
-@@ -26,6 +26,49 @@ void iopf_free_group(struct iopf_group *group)
-  }
-  EXPORT_SYMBOL_GPL(iopf_free_group);
 
-+/*
-+ * Return the fault parameter of a device if it exists. Otherwise, 
-return NULL.
-+ * On a successful return, the caller takes a reference of this 
-parameter and
-+ * should put it after use by calling iopf_put_dev_fault_param().
-+ */
-+static struct iommu_fault_param *iopf_get_dev_fault_param(struct device 
-*dev)
-+{
-+	struct dev_iommu *param = dev->iommu;
-+	struct iommu_fault_param *fault_param;
-+
-+	if (!param)
-+		return NULL;
-+
-+	mutex_lock(&param->lock);
-+	fault_param = param->fault_param;
-+	if (fault_param)
-+		fault_param->users++;
-+	mutex_unlock(&param->lock);
-+
-+	return fault_param;
-+}
-+
-+/* Caller must hold a reference of the fault parameter. */
-+static void iopf_put_dev_fault_param(struct iommu_fault_param *fault_param)
-+{
-+	struct device *dev = fault_param->dev;
-+	struct dev_iommu *param = dev->iommu;
-+
-+	mutex_lock(&param->lock);
-+	if (WARN_ON(fault_param->users <= 0 ||
-+		    fault_param != param->fault_param)) {
-+		mutex_unlock(&param->lock);
-+		return;
-+	}
-+
-+	if (--fault_param->users == 0) {
-+		param->fault_param = NULL;
-+		kfree(fault_param);
-+		put_device(dev);
-+	}
-+	mutex_unlock(&param->lock);
-+}
-+
-  /**
-   * iommu_handle_iopf - IO Page Fault handler
-   * @fault: fault event
-@@ -72,23 +115,14 @@ static int iommu_handle_iopf(struct iommu_fault 
-*fault, struct device *dev)
-  	struct iopf_group *group;
-  	struct iommu_domain *domain;
-  	struct iopf_fault *iopf, *next;
--	struct iommu_fault_param *iopf_param;
--	struct dev_iommu *param = dev->iommu;
-+	struct iommu_fault_param *iopf_param = dev->iommu->fault_param;
+> 
+>>> Use container_of(mn) to get back to the SVA protection domain and then
+>>> you can access the protection domains list of PASIDs & masters.
+>>
+>> I don't think I understood this. Even with Tina's patch series, we can get the
+>> SVA domain list. But we don't have a way to get device base protection domain.
+> 
+> Tina's patch series allows you to place the mmu_notifier struct
+> directly in the protection_domain struct.
+> 
+> When you get the invalidate() callback you go back to the
+> iommu_domain/protection domain that is affiliated with this MM.
+> 
+> From there you have all the information you can possibly need:
+> 
+>  - Global information in the protect_domain shared by all the devices
+>    (eg ARM uses this to put the shared cache tag)
+> 
+>  - Per attachment information (RID & PASID/etc) for each attachment.
+>    Iterate over this list to get the PASID/etc.
 
--	lockdep_assert_held(&param->lock);
-+	lockdep_assert_held(&iopf_param->lock);
+Got it. Thanks.
 
-  	if (fault->type != IOMMU_FAULT_PAGE_REQ)
-  		/* Not a recoverable page fault */
-  		return -EOPNOTSUPP;
 
--	/*
--	 * As long as we're holding param->lock, the queue can't be unlinked
--	 * from the device and therefore cannot disappear.
--	 */
--	iopf_param = param->fault_param;
--	if (!iopf_param)
--		return -ENODEV;
--
-  	if (!(fault->prm.flags & IOMMU_FAULT_PAGE_REQUEST_LAST_PAGE)) {
-  		iopf = kzalloc(sizeof(*iopf), GFP_KERNEL);
-  		if (!iopf)
-@@ -167,18 +201,15 @@ static int iommu_handle_iopf(struct iommu_fault 
-*fault, struct device *dev)
-   */
-  int iommu_report_device_fault(struct device *dev, struct iopf_fault *evt)
-  {
--	struct dev_iommu *param = dev->iommu;
-+	struct iommu_fault_param *fault_param;
-  	struct iopf_fault *evt_pending = NULL;
--	struct iommu_fault_param *fparam;
-  	int ret = 0;
+> 
+>>>> +static int sva_bind_mm(struct device *dev, struct mm_struct *mm)
+>>>> +{
+>>>> +	struct amd_sva_pasid *sva_pasid;
+>>>> +	struct amd_sva_dev *sva_dev;
+>>>> +	struct iommu_dev_data *dev_data = dev_iommu_priv_get(dev);
+>>>> +	int ret = -EINVAL;
+>>>> +
+>>>> +	sva_dev = sva_dev_alloc(dev);
+>>>> +	if (!sva_dev)
+>>>> +		return ret;
+>>>> +
+>>>> +	sva_pasid = sva_pasid_private_find(mm->pasid);
+>>>> +	if (!sva_pasid) {
+>>>> +		sva_pasid = sva_pasid_alloc(mm);
+>>>> +		if (!sva_pasid)
+>>>> +			goto out_sva_dev;
+>>>> +
+>>>> +		ret = sva_pasid_private_add(sva_pasid->pasid, sva_pasid);
+>>>> +		if (ret)
+>>>> +			goto out_sva_pasid;
+>>>> +
+>>>> +		ret = amd_iommu_set_gcr3(dev_data, sva_pasid->pasid,
+>>>> +					 iommu_virt_to_phys(sva_pasid->mm->pgd));
+>>>> +		if (ret)
+>>>> +			goto out_pasid_remove;
+>>>> +
+>>>> +		ret = mmu_notifier_register(&sva_pasid->mn, mm);
+>>>> +		if (ret)
+>>>> +			goto out_clear_gcr3;
+>>>> +	}
+>>>
+>>> The mmu_notifier should be setup when the domain is allocated, not
+>>> during bind.
+>>
+>> We need to program (at least with AMD IOMMU) device PASID table before it can
+>> handle the invalidation notifications. Not sure how it will work if we move mmu
+>> notifier setup to domain allocation path.
+> 
+> The device list will be empty so there will be no PASIDs to
+> invalidate at this point. There will be seperate locking to protect
+> the device list, ensure that locking properly covers populating the
+> device list and setting up the HW to respond to the PASID.
+> 
+>>>> +void amd_iommu_remove_dev_pasid(struct device *dev, ioasid_t pasid)
+>>>> +{
+>>>> +	struct iommu_domain *domain;
+>>>> +
+>>>> +	if (pasid == 0 || pasid >= dev->iommu->max_pasids)
+>>>> +		return;
+>>>
+>>> We should probably have the core code pass in the old domain to this
+>>> function, it is looking more like a mistake we didn't do that.
+>>
+>> I don't think I understood this. Well, honestly I never understood why
+>> remove_dev_pasid() is part of iommu_ops while set_dev_pasid is part of domain ops.
+> 
+> Yeah, that is a bit weird, not sure there is a good reason
+> 
+> Regardless, the API should take in the current domain parmeter and
+> drivers shouldn't call the core to look it up in the xarray if that is
+> what drivers need to do.
 
--	if (!param || !evt)
-+	fault_param = iopf_get_dev_fault_param(dev);
-+	if (!fault_param)
-  		return -EINVAL;
+Yeah. All I care is retrieving SVA domain. Using SVA domain I can get the
+protection domain and do rest of the stuff.
 
--	/* we only report device fault if there is a handler registered */
--	mutex_lock(&param->lock);
--	fparam = param->fault_param;
--
-+	mutex_lock(&fault_param->lock);
-  	if (evt->fault.type == IOMMU_FAULT_PAGE_REQ &&
-  	    (evt->fault.prm.flags & IOMMU_FAULT_PAGE_REQUEST_LAST_PAGE)) {
-  		evt_pending = kmemdup(evt, sizeof(struct iopf_fault),
-@@ -187,20 +218,18 @@ int iommu_report_device_fault(struct device *dev, 
-struct iopf_fault *evt)
-  			ret = -ENOMEM;
-  			goto done_unlock;
-  		}
--		mutex_lock(&fparam->lock);
--		list_add_tail(&evt_pending->list, &fparam->faults);
--		mutex_unlock(&fparam->lock);
-+		list_add_tail(&evt_pending->list, &fault_param->faults);
-  	}
+With all new changes, it makes sense to pass sva domain to remove_dev_pasid.
 
-  	ret = iommu_handle_iopf(&evt->fault, dev);
-  	if (ret && evt_pending) {
--		mutex_lock(&fparam->lock);
-  		list_del(&evt_pending->list);
--		mutex_unlock(&fparam->lock);
-  		kfree(evt_pending);
-  	}
-  done_unlock:
--	mutex_unlock(&param->lock);
-+	mutex_unlock(&fault_param->lock);
-+	iopf_put_dev_fault_param(fault_param);
-+
-  	return ret;
-  }
-  EXPORT_SYMBOL_GPL(iommu_report_device_fault);
-@@ -212,19 +241,20 @@ int iommu_page_response(struct device *dev,
-  	int ret = -EINVAL;
-  	struct iopf_fault *evt;
-  	struct iommu_fault_page_request *prm;
--	struct dev_iommu *param = dev->iommu;
-+	struct iommu_fault_param *fault_param;
-  	const struct iommu_ops *ops = dev_iommu_ops(dev);
-  	bool has_pasid = msg->flags & IOMMU_PAGE_RESP_PASID_VALID;
-
-  	if (!ops->page_response)
-  		return -ENODEV;
-
--	if (!param || !param->fault_param)
--		return -EINVAL;
-+	fault_param = iopf_get_dev_fault_param(dev);
-+	if (!fault_param)
-+		return -ENODEV;
-
-  	/* Only send response if there is a fault report pending */
--	mutex_lock(&param->fault_param->lock);
--	if (list_empty(&param->fault_param->faults)) {
-+	mutex_lock(&fault_param->lock);
-+	if (list_empty(&fault_param->faults)) {
-  		dev_warn_ratelimited(dev, "no pending PRQ, drop response\n");
-  		goto done_unlock;
-  	}
-@@ -232,7 +262,7 @@ int iommu_page_response(struct device *dev,
-  	 * Check if we have a matching page request pending to respond,
-  	 * otherwise return -EINVAL
-  	 */
--	list_for_each_entry(evt, &param->fault_param->faults, list) {
-+	list_for_each_entry(evt, &fault_param->faults, list) {
-  		prm = &evt->fault.prm;
-  		if (prm->grpid != msg->grpid)
-  			continue;
-@@ -260,7 +290,9 @@ int iommu_page_response(struct device *dev,
-  	}
-
-  done_unlock:
--	mutex_unlock(&param->fault_param->lock);
-+	mutex_unlock(&fault_param->lock);
-+	iopf_put_dev_fault_param(fault_param);
-+
-  	return ret;
-  }
-  EXPORT_SYMBOL_GPL(iommu_page_response);
-@@ -279,22 +311,15 @@ EXPORT_SYMBOL_GPL(iommu_page_response);
-   */
-  int iopf_queue_flush_dev(struct device *dev)
-  {
--	int ret = 0;
--	struct iommu_fault_param *iopf_param;
--	struct dev_iommu *param = dev->iommu;
-+	struct iommu_fault_param *iopf_param = iopf_get_dev_fault_param(dev);
-
--	if (!param)
-+	if (!iopf_param)
-  		return -ENODEV;
-
--	mutex_lock(&param->lock);
--	iopf_param = param->fault_param;
--	if (iopf_param)
--		flush_workqueue(iopf_param->queue->wq);
--	else
--		ret = -ENODEV;
--	mutex_unlock(&param->lock);
-+	flush_workqueue(iopf_param->queue->wq);
-+	iopf_put_dev_fault_param(iopf_param);
-
--	return ret;
-+	return 0;
-  }
-  EXPORT_SYMBOL_GPL(iopf_queue_flush_dev);
-
-@@ -318,11 +343,13 @@ int iopf_queue_discard_partial(struct iopf_queue 
-*queue)
-
-  	mutex_lock(&queue->lock);
-  	list_for_each_entry(iopf_param, &queue->devices, queue_list) {
-+		mutex_lock(&iopf_param->lock);
-  		list_for_each_entry_safe(iopf, next, &iopf_param->partial,
-  					 list) {
-  			list_del(&iopf->list);
-  			kfree(iopf);
-  		}
-+		mutex_unlock(&iopf_param->lock);
-  	}
-  	mutex_unlock(&queue->lock);
-  	return 0;
-@@ -361,6 +388,7 @@ int iopf_queue_add_device(struct iopf_queue *queue, 
-struct device *dev)
-  	INIT_LIST_HEAD(&fault_param->faults);
-  	INIT_LIST_HEAD(&fault_param->partial);
-  	fault_param->dev = dev;
-+	fault_param->users = 1;
-  	list_add(&fault_param->queue_list, &queue->devices);
-  	fault_param->queue = queue;
-
-@@ -413,9 +441,11 @@ int iopf_queue_remove_device(struct iopf_queue 
-*queue, struct device *dev)
-  	list_for_each_entry_safe(iopf, next, &fault_param->partial, list)
-  		kfree(iopf);
-
--	param->fault_param = NULL;
--	kfree(fault_param);
--	put_device(dev);
-+	if (--fault_param->users == 0) {
-+		param->fault_param = NULL;
-+		kfree(fault_param);
-+		put_device(dev);
-+	}
-  unlock:
-  	mutex_unlock(&param->lock);
-  	mutex_unlock(&queue->lock);
--- 
-2.34.1
-
-Best regards,
-baolu
+-Vasant
