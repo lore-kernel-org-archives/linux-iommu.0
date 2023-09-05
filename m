@@ -1,111 +1,128 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 994D21C02
-	for <iommu@lists.linux.dev>; Mon,  4 Sep 2023 16:33:57 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6CA53143D;
-	Mon,  4 Sep 2023 09:34:34 -0700 (PDT)
-Received: from [10.57.5.181] (unknown [10.57.5.181])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 5EF223F766;
-	Mon,  4 Sep 2023 09:33:55 -0700 (PDT)
-Message-ID: <f1259993-2419-9c9e-30d3-0631ef938679@arm.com>
-Date: Mon, 4 Sep 2023 17:33:46 +0100
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F07F19B
+	for <iommu@lists.linux.dev>; Tue,  5 Sep 2023 00:09:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1693872595; x=1725408595;
+  h=from:to:cc:subject:date:message-id;
+  bh=LnuSPU6zQwNsG3fxx0Jj30ftXpwVRUJOHYsjI8oZaDE=;
+  b=LTqC2nhEDSkqdQA21xBazayWUcceez2vhnOtUCsesqXArohf/RftRxFP
+   WuLL/WMsQeGctWYwJMxmeR9UK76mKdKzqGfx5/7gl+QBcNGUJ9icbrSxa
+   h2i7LF+nbEO9Q89GDmSW1D34xNTJ9mZpcrZI8l/pgwDikmVdKxMYZUZcg
+   pqkBgewkgur4N7Ms+sW/DulajFJpjzUd0aaHl0o72rwL8bw9M3GfgXPm9
+   Z9nP0InQHwAQA+qA4HEs98zD3jwyD/XFikGqjzAJuTt7gy+a85jjCPYno
+   YE7/cilSepBUEpuwDVtqSnPez2zJr+7zbVriL6GRZXodu0ei7E9SjjvIX
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10823"; a="463039953"
+X-IronPort-AV: E=Sophos;i="6.02,227,1688454000"; 
+   d="scan'208";a="463039953"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Sep 2023 17:09:54 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10823"; a="884125105"
+X-IronPort-AV: E=Sophos;i="6.02,227,1688454000"; 
+   d="scan'208";a="884125105"
+Received: from kechen-optiplex-9020.bj.intel.com ([10.238.157.62])
+  by fmsmga001.fm.intel.com with ESMTP; 04 Sep 2023 17:09:45 -0700
+From: Tina Zhang <tina.zhang@intel.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Lu Baolu <baolu.lu@linux.intel.com>
+Cc: Michael Shavit <mshavit@google.com>,
+	Vasant Hegde <vasant.hegde@amd.com>,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Tina Zhang <tina.zhang@intel.com>
+Subject: [PATCH v3 0/6] Share sva domains with all devices bound to a mm
+Date: Tue,  5 Sep 2023 08:09:24 +0800
+Message-Id: <20230905000930.24515-1-tina.zhang@intel.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.15.0
-Subject: Re: [PATCH 2/2] iommu/virtio: Add ops->flush_iotlb_all and enable
- deferred flush
-Content-Language: en-GB
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Niklas Schnelle <schnelle@linux.ibm.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- virtualization@lists.linux-foundation.org, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org
-References: <20230825-viommu-sync-map-v1-0-56bdcfaa29ec@linux.ibm.com>
- <20230825-viommu-sync-map-v1-2-56bdcfaa29ec@linux.ibm.com>
- <20230904153403.GB815284@myrica>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20230904153403.GB815284@myrica>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
 
-On 2023-09-04 16:34, Jean-Philippe Brucker wrote:
-> On Fri, Aug 25, 2023 at 05:21:26PM +0200, Niklas Schnelle wrote:
->> Add ops->flush_iotlb_all operation to enable virtio-iommu for the
->> dma-iommu deferred flush scheme. This results inn a significant increase
-> 
-> in
-> 
->> in performance in exchange for a window in which devices can still
->> access previously IOMMU mapped memory. To get back to the prior behavior
->> iommu.strict=1 may be set on the kernel command line.
-> 
-> Maybe add that it depends on CONFIG_IOMMU_DEFAULT_DMA_{LAZY,STRICT} as
-> well, because I've seen kernel configs that enable either.
+This series is to share sva(shared virtual addressing) domains with all
+devices bound to one mm.
 
-Indeed, I'd be inclined phrase it in terms of the driver now actually 
-being able to honour lazy mode when requested (which happens to be the 
-default on x86), rather than as if it might be some 
-potentially-unexpected change in behaviour.
+Problem
+-------
+In the current iommu core code, sva domain is allocated per IOMMU group,
+when device driver is binding a process address space to a device (which is
+handled in iommu_sva_bind_device()). If one than more device is bound to
+the same process address space, there must be more than one sva domain
+instance, with each device having one. In other words, the sva domain
+doesn't share between those devices bound to the same process address
+space, and that leads to two problems:
+1) device driver has to duplicate sva domains with enqcmd, as those sva
+domains have the same PASID and are relevant to one virtual address space.
+This makes the sva domain handling complex in device drivers.
+2) IOMMU driver cannot get sufficient info of the IOMMUs that have
+devices behind them bound to the same virtual address space, when handling
+mmu_notifier_ops callbacks. As a result, IOMMU IOTLB invalidation is
+performed per device instead of per IOMMU, and that may lead to
+superfluous IOTLB invalidation issue, especially in a virtualization
+environment where all devices may be behind one virtual IOMMU.
 
-Thanks,
-Robin.
+Solution
+--------
+This patch-set tries to fix those two problems by allowing sharing sva
+domains with all devices bound to a mm. To achieve this, a new structure
+pointer is introduced to mm to replace the old PASID field, which can keep
+the info of PASID as well as the corresponding shared sva domains.
+Besides, function iommu_sva_bind_device() is updated to ensure a new sva
+domain can only be allocated when the old ones cannot work for the IOMMU.
+With these changes, a device driver can expect one sva domain could work
+for per PASID instance(e.g., enqcmd PASID instance), and therefore may get
+rid of handling sva domain duplication. Besides, IOMMU driver (e.g., intel
+vt-d driver) can get sufficient info (e.g., the info of the IOMMUs having
+their devices bound to one virtual address space) when handling
+mmu_notifier_ops callbacks, to remove the redundant IOTLB invalidations.
 
->> Link: https://lore.kernel.org/lkml/20230802123612.GA6142@myrica/
->> Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
->> ---
->>   drivers/iommu/virtio-iommu.c | 12 ++++++++++++
->>   1 file changed, 12 insertions(+)
->>
->> diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
->> index fb73dec5b953..1b7526494490 100644
->> --- a/drivers/iommu/virtio-iommu.c
->> +++ b/drivers/iommu/virtio-iommu.c
->> @@ -924,6 +924,15 @@ static int viommu_iotlb_sync_map(struct iommu_domain *domain,
->>   	return viommu_sync_req(vdomain->viommu);
->>   }
->>   
->> +static void viommu_flush_iotlb_all(struct iommu_domain *domain)
->> +{
->> +	struct viommu_domain *vdomain = to_viommu_domain(domain);
->> +
->> +	if (!vdomain->nr_endpoints)
->> +		return;
-> 
-> As for patch 1, a NULL check in viommu_sync_req() would allow dropping
-> this one
-> 
-> Thanks,
-> Jean
-> 
->> +	viommu_sync_req(vdomain->viommu);
->> +}
->> +
->>   static void viommu_get_resv_regions(struct device *dev, struct list_head *head)
->>   {
->>   	struct iommu_resv_region *entry, *new_entry, *msi = NULL;
->> @@ -1049,6 +1058,8 @@ static bool viommu_capable(struct device *dev, enum iommu_cap cap)
->>   	switch (cap) {
->>   	case IOMMU_CAP_CACHE_COHERENCY:
->>   		return true;
->> +	case IOMMU_CAP_DEFERRED_FLUSH:
->> +		return true;
->>   	default:
->>   		return false;
->>   	}
->> @@ -1069,6 +1080,7 @@ static struct iommu_ops viommu_ops = {
->>   		.map_pages		= viommu_map_pages,
->>   		.unmap_pages		= viommu_unmap_pages,
->>   		.iova_to_phys		= viommu_iova_to_phys,
->> +		.flush_iotlb_all	= viommu_flush_iotlb_all,
->>   		.iotlb_sync		= viommu_iotlb_sync,
->>   		.iotlb_sync_map		= viommu_iotlb_sync_map,
->>   		.free			= viommu_domain_free,
->>
->> -- 
->> 2.39.2
->>
+Arguably there shouldn't be more than one sva_domain with the same PASID,
+and in any sane configuration there should be only 1 type of IOMMU driver
+that needs only 1 SVA domain. However, in reality, IOMMUs on one platform
+may not be identical to each other. Thus, attaching a sva domain that has
+been successfully bound to device A behind a IOMMU A, to device B behind
+IOMMU B may get failed due to the difference between IOMMU A and IOMMU
+B. In this case, a new sva domain with the same PASID needs to be
+allocated to work with IOMMU B. That's why we need a list to keep sva
+domains of one PASID. For the platform where IOMMUs are compatible to each
+other, there should be one sva domain in the list.
+
+v3:
+ - Add a comment describing domain->next.
+ - Expand explanation of why PASID isn't released in
+   iommu_sva_unbind_device().
+ - Add a patch to remove mm->pasid in intel_sva_bind_mm()
+
+v2:
+ - Add mm_get_enqcmd_pasid().
+ - Update commit message.
+
+v1: https://lore.kernel.org/linux-iommu/20230808074944.7825-1-tina.zhang@intel.com/
+
+Tina Zhang (6):
+  iommu: Add mm_get_enqcmd_pasid() helper function
+  iommu/vt-d: Remove mm->pasid in intel_sva_bind_mm()
+  iommu: Introduce mm_get_pasid() helper function
+  mm: Add structure to keep sva information
+  iommu: Support mm PASID 1:n with sva domains
+  mm: Deprecate pasid field
+
+ arch/x86/kernel/traps.c                       |  2 +-
+ .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   | 12 ++---
+ drivers/iommu/intel/svm.c                     | 14 +++---
+ drivers/iommu/iommu-sva.c                     | 50 ++++++++++++-------
+ include/linux/iommu.h                         | 31 ++++++++++--
+ include/linux/mm_types.h                      |  3 +-
+ kernel/fork.c                                 |  1 -
+ mm/init-mm.c                                  |  3 --
+ 8 files changed, 73 insertions(+), 43 deletions(-)
+
+-- 
+2.17.1
+
