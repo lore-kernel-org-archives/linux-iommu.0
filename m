@@ -1,79 +1,95 @@
-Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yb1-f202.google.com (mail-yb1-f202.google.com [209.85.219.202])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9CC14379
-	for <iommu@lists.linux.dev>; Tue,  5 Sep 2023 06:44:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-	MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
-	Content-ID:Content-Description:In-Reply-To:References;
-	bh=VKfcUZ86TZT2GiIlvErDGETaTcWKGuD89U1H9/xTNPo=; b=Hm174494/tFRub37zV8kfA8z0P
-	Pmrt4PpdrXp+zjJrDgzE/P3IrcAcgBHWvjLtwVf00ZO8/9gj5/2b/TF8p86QJtEbe9PKEL+uKR+k4
-	oWFzZsLN9j9o5kOxDK1xcwB9YcQYeeH7b1fByVicejQPW3WxxJmyupwRaC+iApShi2Gg9yxjUEOCw
-	CkwFNzzBtTCCozEgS7EB1r+qYJKy9NSG8GeLYTIw3xnhwyv+cEqSPB1oR6QBq4HydF48HCAQ781l8
-	zK2cbc8rVJXKuhL/iH/tZsHTSkz2p154rlRJo9tqp/wJIqmsaIBzGqPQEVb4ofVKonerjDOzoWJHW
-	XyFCcFxQ==;
-Received: from 2a02-8389-2341-5b80-39d3-4735-9a3c-88d8.cable.dynamic.v6.surfer.at ([2a02:8389:2341:5b80:39d3:4735:9a3c:88d8] helo=localhost)
-	by bombadil.infradead.org with esmtpsa (Exim 4.96 #2 (Red Hat Linux))
-	id 1qdPnp-005LsQ-2F;
-	Tue, 05 Sep 2023 06:44:46 +0000
-From: Christoph Hellwig <hch@lst.de>
-To: m.szyprowski@samsung.com,
-	robin.murphy@arm.com,
-	petr.tesarik.ext@huawei.com
-Cc: iommu@lists.linux.dev,
-	Jonathan Corbet <corbet@lwn.net>
-Subject: [PATCH] swiotlb: add the missing dynamic swiotlb check in is_swiotlb_buffer
-Date: Tue,  5 Sep 2023 08:44:41 +0200
-Message-Id: <20230905064441.127588-1-hch@lst.de>
-X-Mailer: git-send-email 2.39.2
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 51172CA6B
+	for <iommu@lists.linux.dev>; Tue,  5 Sep 2023 11:50:39 +0000 (UTC)
+Received: by mail-yb1-f202.google.com with SMTP id 3f1490d57ef6-d7eaffe2f99so2015167276.2
+        for <iommu@lists.linux.dev>; Tue, 05 Sep 2023 04:50:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20221208; t=1693914639; x=1694519439; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=SzB7/p5kiVgqDZadgU1A1MlN/VGpPTK51C1Zm9U7VD8=;
+        b=nOZwosgolCTWFEZdA1U+Uf8VdQvjyHeH7KaFKl4trOKQQk6yxbDOdRO0FMNzABaVrm
+         CVUWmTSRUAj6UBt9N5O5ggEalRFFjvfnO5d2bHKYgDXro8S9vYiGgpDhXlw8+KGme1rp
+         jWwEkpjtzv+de1CEEz9/S7yZ5AOWHOHEZjDJiKntM7qtyF3BQzcAIELlvBdIaYaX8yKI
+         Mg6B2LBQRrdEr2UqUMgUCaF3jUx0TgNfEKBqleNm0ozFIPICJ4gD05SUt/89HQuWm/f2
+         Ac9XtF9OZFeDpRfLdO7oV3ePgKNWF+k+/VMDIE4ohsyClDagTPeOm9dhXyZk8QhKLmv+
+         5ePQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1693914639; x=1694519439;
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=SzB7/p5kiVgqDZadgU1A1MlN/VGpPTK51C1Zm9U7VD8=;
+        b=OdzwvAzI+UKXQaIxwuE64o3bfejBvfQhD/0VEw+BDXRjp6dHMjcXqPBDPikKSSEYjJ
+         FKy5bib0TjVedf6SKBiA4TFpgg8DKMoZUlTX9UfdF1rS992p/I8R0g/E/FKee1/AWjnp
+         NXPEscX3G0aVo8XgYGLYlAVHR1+TfPANS64khjNjKXNNoFx9apAUA8IW22GbLt2hroxa
+         gK44wFe5+Z4ILniHdIQLWNssjqciaOmbhOWi4NzLMXgGk78iePU+RVZWc5DguVOzI8m9
+         OW/xDP/FjJrGiVZqsnnoS65IdEeDKz5rnYLJ/w6VfILV9Ow/tpMID+XvjfMXwGXC1JEq
+         F2ag==
+X-Gm-Message-State: AOJu0Ywg+x9z0NMLVCddaEdqZkodD2Ka+/CzcXPxNks+sU3czXPRoKmo
+	FTgt+LLKU7G30z1XNaxP2JLJSn2Aaa+/vfK9AfBPAIJSIRjRHBrunFlMievlVC0y5+C1DSoOSUz
+	vss8TOwjMV2NRWYfp8PrXuGNhxrndydyxMNIuLfpy82Z6S0ri2H+9axWB8h2xMDQ=
+X-Google-Smtp-Source: AGHT+IHnCMAXRadb7D/VG+uuqzw6rDCLizjl0eoGPjlSpcOcMPhC2fjWoy8tcBS4IofcN1BaFhx2zvF7ED8E
+X-Received: from mshavit.ntc.corp.google.com ([2401:fa00:95:20c:c4a8:fdce:d8d3:7b02])
+ (user=mshavit job=sendgmr) by 2002:a25:2543:0:b0:d4d:8ade:4dfa with SMTP id
+ l64-20020a252543000000b00d4d8ade4dfamr331712ybl.1.1693914638742; Tue, 05 Sep
+ 2023 04:50:38 -0700 (PDT)
+Date: Tue,  5 Sep 2023 19:49:11 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.42.0.283.g2d96d420d3-goog
+Message-ID: <20230905115013.1572240-1-mshavit@google.com>
+Subject: [PATCH v1 0/3] Clean-up arm-smmu-v3-sva.c: remove arm_smmu_bond
+From: Michael Shavit <mshavit@google.com>
+To: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
+	linux-kernel@vger.kernel.org
+Cc: will@kernel.org, robin.murphy@arm.com, nicolinc@nvidia.com, 
+	jean-philippe@linaro.org, jgg@nvidia.com, tina.zhang@intel.com, 
+	Michael Shavit <mshavit@google.com>, Jason Gunthorpe <jgg@ziepe.ca>, Joerg Roedel <joro@8bytes.org>, 
+	Kevin Tian <kevin.tian@intel.com>, 
+	"Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>, Lu Baolu <baolu.lu@linux.intel.com>, 
+	Mark Brown <broonie@kernel.org>, Tomas Krcka <krckatom@amazon.de>, 
+	Yicong Yang <yangyicong@hisilicon.com>
+Content-Type: text/plain; charset="UTF-8"
 
-Commit 1395706a1490 ("swiotlb: search the software IO TLB only if the
-device makes use of it") claims to avoid the dynamic swiotlb lookup
-unless dynamic allocations are actually used.  And while it adds all
-the infrastructure for doing that, it misses the final bit of actually
-checking the flag.  Actually add the check for this functionality to
-work.
 
-Fixes: 1395706a1490 ("swiotlb: search the software IO TLB only if the device makes use of it")
-Reported-by: Jonathan Corbet <corbet@lwn.net>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
----
- include/linux/swiotlb.h | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+This small series was originally part of a larger effort to support
+set_dev_pasid in arm-smmu-v3.c and a related SVA refactoring. But it can
+also stand on its own as an initial and prepatory clean-up.
 
-diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
-index b4536626f8ff35..a188025389836b 100644
---- a/include/linux/swiotlb.h
-+++ b/include/linux/swiotlb.h
-@@ -172,13 +172,17 @@ static inline bool is_swiotlb_buffer(struct device *dev, phys_addr_t paddr)
- 	if (!mem)
- 		return false;
- 
--	if (IS_ENABLED(CONFIG_SWIOTLB_DYNAMIC)) {
--		/* Pairs with smp_wmb() in swiotlb_find_slots() and
-+#ifdef CONFIG_SWIOTLB_DYNAMIC
-+	if (dev->dma_uses_io_tlb) {
-+		/*
-+		 * Pairs with smp_wmb() in swiotlb_find_slots() and
- 		 * swiotlb_dyn_alloc(), which modify the RCU lists.
- 		 */
- 		smp_rmb();
- 		return swiotlb_find_pool(dev, paddr);
- 	}
-+#endif
-+
- 	return paddr >= mem->defpool.start && paddr < mem->defpool.end;
- }
- 
+The crux of this series relies on the observation that SVA won't
+allocate multiple SVA domains for the same device and mm pair. There's
+therefore no reason for the driver to try to normalize data allocated
+for a device/mm pair across set_dev_pasid calls. This simplification
+then allows set_dev_pasid to use the SVA iommu_domain to hold
+information instead of allocating a "bond" to represent the attachement.
+Note that long term, we'll likely want to represent the SVA domain using
+the same arm_smmu_domain struct used in arm-smmu-v3. This series serves
+as an interim step to make those later refactors easier to reason about.
+
+Note that arm-smmu-v3-sva performs a second level of normalization by
+mapping multiple bonds (now SVA domains) attached to devices with the
+same SMMU (if those devices have the same RID domain attached) to a
+single arm_smmu_mmu_notifier. This is not affected by these patches.
+
+
+Michael Shavit (3):
+  iommu/arm-smmu-v3-sva: Remove unused iommu_sva handle
+  iommu/arm-smmu-v3-sva: Remove bond refcount
+  iommu/arm-smmu-v3-sva: Remove arm_smmu_bond
+
+ .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   | 90 ++++++-------------
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |  1 -
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  2 +-
+ 3 files changed, 28 insertions(+), 65 deletions(-)
+
+
+base-commit: 6eaae198076080886b9e7d57f4ae06fa782f90ef
 -- 
-2.39.2
+2.42.0.283.g2d96d420d3-goog
 
