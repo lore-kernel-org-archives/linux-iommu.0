@@ -1,59 +1,57 @@
-Received: from mail-pf1-f182.google.com (mail-pf1-f182.google.com [209.85.210.182])
+Received: from mail-pf1-f170.google.com (mail-pf1-f170.google.com [209.85.210.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 69599DF5D
-	for <iommu@lists.linux.dev>; Wed,  6 Sep 2023 13:36:54 +0000 (UTC)
-Received: by mail-pf1-f182.google.com with SMTP id d2e1a72fcca58-68bed2c786eso2580577b3a.0
-        for <iommu@lists.linux.dev>; Wed, 06 Sep 2023 06:36:54 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B9716DF5A
+	for <iommu@lists.linux.dev>; Wed,  6 Sep 2023 13:44:26 +0000 (UTC)
+Received: by mail-pf1-f170.google.com with SMTP id d2e1a72fcca58-68e26165676so706075b3a.0
+        for <iommu@lists.linux.dev>; Wed, 06 Sep 2023 06:44:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1694007413; x=1694612213; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1694007866; x=1694612666; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Td6a6sw5kxMExUrt1cEVr4QfSz/8/zuHKWsclB1jWMA=;
-        b=AF6rbkdb8XtdGHicDtXaMgpjnKaOaKht4eAXBPAA8vE0IcmcYRvsGh+5I2qFFAdiIX
-         x4cSQyZXWyf5f5kzpzAWB31Bb0xCoW2l597CzgDemZe69g0p12k89jBvT2cNS4mbpmEk
-         FnAhnqOPZaAKSDK/9d1RWzF4/AtF9s1i2/TqMeFdgppuOenMfqiEQK+FUYKpJCkgcf+E
-         VuaAgV6gl/ivYjOhnYPalKsLdyxUumw3YGlx6343X5XSZLEOGHzQkRZ5I8WTFjN69yJ5
-         TtwRF7QPEiCkDRirvENo87hA8VO6RNneSdOO3UQhOlTAQs//76Vbk9CVmpOcD966CzMd
-         2YEA==
+        bh=PBTSwwsb/W1c8hHwSDDAKIWq22po1/l3/4/knj00hG0=;
+        b=hpxUZ8xkJdTJYzz6a5mAJYg7Jy3lXtzUpmSuxim4dVJKYka+jB4hAzsk2jyYIVcLLv
+         YkVPzj0f60RNAjS2ijmJPv6M7hubbSA8Ocgjx7dHKTcARDUaAlGn0ZdyxadOHQwXBFZ0
+         t+5P4Ls8PsYRlOHouhITX+WRHF+Kcfb/mzwe81DzTlJSE9YSQzTsO7nozNrjqA6Eppkd
+         muNPj+Lbi/gt6BmKoUXpZ2mYBDA7MCkhArGJ7szDLYxLRnNeNmvqvzxSUq168MhpFOiq
+         1al6EnoKzSNOfiBlnEycSH1nXs1XnVYCA41mxmOrJrJ1Ey1NCd966fqzhNof6nD0+Os1
+         SX5A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1694007413; x=1694612213;
+        d=1e100.net; s=20221208; t=1694007866; x=1694612666;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Td6a6sw5kxMExUrt1cEVr4QfSz/8/zuHKWsclB1jWMA=;
-        b=UFa7XFWbnfy2Bg32NajhMdbMX37Jbniyhh7zLEWz+rEGymTx6uQcDHjIT3Pdsvzjcq
-         WrlpeUhz7B5IzkDuciy9SeIEXUzMKZHkMwiOeycngaZQumcJmB+REu7Wsz3zb/iCMwW6
-         LtKbgnrjll4Gan5hL1tdMHI+8LJazEncset2+mVuL6oXNKeBWQxS4GXImbfT+vlp8iVZ
-         pbmVD/apRNZQRSso+obKRhb7KceWwN1+xGFiXA6UYqeDPt1zRgz9DFiadaSvfd+Ho8oD
-         DX5t9gOHq4WraE4DvPByuINWMsfPehxsk5kd0Y6vB2j6YksXhetlMWZRbSsArqONCkRx
-         51ng==
-X-Gm-Message-State: AOJu0Yx4dmY/+Zqx+t7lnUHYFT+GS3em6TUx7mjx9LCqO5BQtsO4q1RN
-	B8nj64sobOtSkrkZPPQVglXNFA==
-X-Google-Smtp-Source: AGHT+IGOwRHPmAKNRaGsD/hGYssr/5Y0BJzqOelNvybA7jZN/WxhNoLttPYaPUwO81J4iLj5RhHYKA==
-X-Received: by 2002:a05:6a00:2e84:b0:68a:52ec:3d36 with SMTP id fd4-20020a056a002e8400b0068a52ec3d36mr17143606pfb.31.1694007413553;
-        Wed, 06 Sep 2023 06:36:53 -0700 (PDT)
+        bh=PBTSwwsb/W1c8hHwSDDAKIWq22po1/l3/4/knj00hG0=;
+        b=NcYq28LjUz9REZDzjCuTXkGkiKf8+TB+AM1Dpo5RB/8E8LBWQR3E+RhceD/JqnZ/t8
+         d07qS4q22KTlU3tU7jV+UEO5bnn0v3IIJJ26+ayxT/u82Ks29v2WsbLw9BCDbz2X6akr
+         ryY7IXkAZGnfMWZEo/c+VI0qtptQKcnMQB4V4OX1IlT89t/R8c2uxnCwmhELOOxUEQC9
+         QiwKDdO5NmtIiwzYk6RYQPxookwV5Dai1KK3m7ZU+HEAlpIjL7mh1elxmkx9BS58Nk4c
+         emPd1ms9PRX+xo9ttfov3lcg9f3kDbIMV+OVaYzIUfaxlrvIQ/LInEMJJ0YiE2gi9fbN
+         Up0A==
+X-Gm-Message-State: AOJu0YyLCAffU77Tf8eY5CiH2/DzDotrP1oQdTUfkt7/b5GTxyO9rwfT
+	6FqEYWA+K1Yd8bAXkM2oh6BlWA==
+X-Google-Smtp-Source: AGHT+IH3auFQXYhq6wffFgeKtTAEUAj64zbzZu/yQwgY50Aarrfn1j2Sjh0CKkMc+Nt5taNEj2Hfpg==
+X-Received: by 2002:a05:6a20:2453:b0:13f:b3b4:1986 with SMTP id t19-20020a056a20245300b0013fb3b41986mr18218727pzc.12.1694007865927;
+        Wed, 06 Sep 2023 06:44:25 -0700 (PDT)
 Received: from ziepe.ca (hlfxns017vw-142-68-25-194.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.25.194])
-        by smtp.gmail.com with ESMTPSA id g20-20020a62e314000000b00688214cff65sm10826298pfh.44.2023.09.06.06.36.52
+        by smtp.gmail.com with ESMTPSA id w12-20020a637b0c000000b005651c9351e1sm11055496pgc.64.2023.09.06.06.44.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Sep 2023 06:36:52 -0700 (PDT)
+        Wed, 06 Sep 2023 06:44:24 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.95)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1qdsiB-000yIl-HZ;
-	Wed, 06 Sep 2023 10:36:51 -0300
-Date: Wed, 6 Sep 2023 10:36:51 -0300
+	id 1qdspR-000yKq-GK;
+	Wed, 06 Sep 2023 10:44:21 -0300
+Date: Wed, 6 Sep 2023 10:44:21 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: Jinjie Ruan <ruanjinjie@huawei.com>, linux-tegra@vger.kernel.org,
-	iommu@lists.linux.dev, Thierry Reding <thierry.reding@gmail.com>,
-	Krishna Reddy <vdumpa@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
+To: Jingqi Liu <Jingqi.liu@intel.com>
+Cc: iommu@lists.linux.dev, Lu Baolu <baolu.lu@linux.intel.com>,
+	Tian Kevin <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
 	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Jonathan Hunter <jonathanh@nvidia.com>
-Subject: Re: [PATCH] iommu/tegra-smmu: Fix the NULL vs IS_ERR() bug for
- debugfs_create_dir()
-Message-ID: <ZPiAc4MuNAJfnTaY@ziepe.ca>
-References: <20230831123846.3137304-1-ruanjinjie@huawei.com>
- <8830ecd1-f7a3-a708-66b1-2d9698d0d477@linux.intel.com>
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iommu/vt-d: debugfs: Fix race with iommu unmap when
+ traversing
+Message-ID: <ZPiCNTbGp64MRfhQ@ziepe.ca>
+References: <20230903144050.11277-1-Jingqi.liu@intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -62,35 +60,30 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <8830ecd1-f7a3-a708-66b1-2d9698d0d477@linux.intel.com>
+In-Reply-To: <20230903144050.11277-1-Jingqi.liu@intel.com>
 
-On Fri, Sep 01, 2023 at 11:05:48AM +0800, Baolu Lu wrote:
-> On 2023/8/31 20:38, Jinjie Ruan wrote:
-> > The debugfs_create_dir() function returns error pointers.
-> > It never returns NULL. So use IS_ERR() to check it.
-> > 
-> > Fixes: d1313e7896e9 ("iommu/tegra-smmu: Add debugfs support")
-> > Signed-off-by: Jinjie Ruan <ruanjinjie@huawei.com>
-> > ---
-> >   drivers/iommu/tegra-smmu.c | 2 +-
-> >   1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-> > index e445f80d0226..cd1d80c4c673 100644
-> > --- a/drivers/iommu/tegra-smmu.c
-> > +++ b/drivers/iommu/tegra-smmu.c
-> > @@ -1056,7 +1056,7 @@ DEFINE_SHOW_ATTRIBUTE(tegra_smmu_clients);
-> >   static void tegra_smmu_debugfs_init(struct tegra_smmu *smmu)
-> >   {
-> >   	smmu->debugfs = debugfs_create_dir("smmu", NULL);
-> > -	if (!smmu->debugfs)
-> > +	if (IS_ERR(smmu->debugfs))
-> >   		return;
+On Sun, Sep 03, 2023 at 10:40:50PM +0800, Jingqi Liu wrote:
+> When traversing page table, it may race with iommu unmap.
 > 
-> There is no need to check the return value of debugfs_create_dir(). This
-> change cannot fix anything as far as I can see. Just remove the
-> check.
+> For the page table page pointed to by a PDPE/PDE, there are three
+> scenarios in the iommu unmap path.
+> 
+>   1) The page has been freed.
+> 
+>      If the page has a refcount of zero, it has been freed. The
+>      debugfs should avoid to traverse it.
+> 
+>      In the debugfs, the refcount of a page table page is checked
+>      before traversing it. If its refcount is zero, the page will not
+>      be traversed. If the refcount is not zero, increment its refcount
+>      before traversal and decrement its refcount after traversal.
 
-Right
+No, you can't do this - the page can have been reallocated already.
+
+A sane design would be to RCU free the page table entries and have
+this walker be RCU protected. I think I said that already once..
+
+There is some infrastructure we should build to make this sensible,
+but it is the right direction.
 
 Jason
