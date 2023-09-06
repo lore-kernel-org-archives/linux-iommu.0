@@ -1,60 +1,59 @@
-Received: from mail-pj1-f53.google.com (mail-pj1-f53.google.com [209.85.216.53])
+Received: from mail-pf1-f182.google.com (mail-pf1-f182.google.com [209.85.210.182])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 899A5DF5D
-	for <iommu@lists.linux.dev>; Wed,  6 Sep 2023 13:36:23 +0000 (UTC)
-Received: by mail-pj1-f53.google.com with SMTP id 98e67ed59e1d1-26f38171174so2641363a91.3
-        for <iommu@lists.linux.dev>; Wed, 06 Sep 2023 06:36:23 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 69599DF5D
+	for <iommu@lists.linux.dev>; Wed,  6 Sep 2023 13:36:54 +0000 (UTC)
+Received: by mail-pf1-f182.google.com with SMTP id d2e1a72fcca58-68bed2c786eso2580577b3a.0
+        for <iommu@lists.linux.dev>; Wed, 06 Sep 2023 06:36:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1694007382; x=1694612182; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1694007413; x=1694612213; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=OwzQ6/Z2kMD31IVSoE96irLcXCzsjxsenR7GQgWXnQk=;
-        b=DzTiEUnGQPxAbo8Eav7xUMrx0ngl0JwPJjV7T+TdDc0sZbsuNeyXqAqaagZ8/SvXtM
-         bvk8JBJTLmpRoV0bGBiK4UQ0d9K/I+bxZ3AnLfiMIwemagnmSoBPnuSzhZF2OB/grDub
-         AqnlU3WEv5s7+LuZ6CcN2A4EbrGoEK4dRCOg5l2c+qi8ZBLK/YHYpTppJPt4A4wb1044
-         2Qx728o0kekPRMKH2upX7n3alOLJMJoro3rWmV1fVBs+xKAXpGOP6nQScDJO5Pcilu1o
-         xJsUXap7Or01YmKeQKDXJ6WMOUCz4bTN+n3FwQzizUhN9xbXetuhz9V+kLX4K99d8rLe
-         bFXQ==
+        bh=Td6a6sw5kxMExUrt1cEVr4QfSz/8/zuHKWsclB1jWMA=;
+        b=AF6rbkdb8XtdGHicDtXaMgpjnKaOaKht4eAXBPAA8vE0IcmcYRvsGh+5I2qFFAdiIX
+         x4cSQyZXWyf5f5kzpzAWB31Bb0xCoW2l597CzgDemZe69g0p12k89jBvT2cNS4mbpmEk
+         FnAhnqOPZaAKSDK/9d1RWzF4/AtF9s1i2/TqMeFdgppuOenMfqiEQK+FUYKpJCkgcf+E
+         VuaAgV6gl/ivYjOhnYPalKsLdyxUumw3YGlx6343X5XSZLEOGHzQkRZ5I8WTFjN69yJ5
+         TtwRF7QPEiCkDRirvENo87hA8VO6RNneSdOO3UQhOlTAQs//76Vbk9CVmpOcD966CzMd
+         2YEA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1694007382; x=1694612182;
+        d=1e100.net; s=20221208; t=1694007413; x=1694612213;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=OwzQ6/Z2kMD31IVSoE96irLcXCzsjxsenR7GQgWXnQk=;
-        b=jxQPCvPtUpAWQ/z2VuJxdm4ThR9ZfdYKnUIw73Z6jRY2rqx3/Wmsg0u1Xf05FFF26F
-         SnaKP7oxT+yhcNPKcSAqVEHlD0H1kF432Ncw/43Ob+sWw5oKpxIqYv/9EpIsqT0PIjZu
-         Q62WxD/pJ4dDAZv3cjIxS9Qpqy4HvxjgbhYwriU+A2Dg33Mpe1SllZa4ZUH3hehDKeTK
-         8+2LIpAphfmLrizZQazr8NZ0rm621hE0ieL0+Z0DwHl2uG02rq0HdMoWYRsjazYVDjGW
-         arTDldYxQBTZ5S58guM0mYxYTdgjOGOLGaRzsS6NWynGpSAYzbZqRo3oUSBxuBlQ7HXt
-         yNnA==
-X-Gm-Message-State: AOJu0YyKrLNxukQ9rCkVlRvD7GU/xA+CMYSRPFpBMe1lyiy0qc0G7EdH
-	KWSZZUEtKyB8v9cU1CmY6MbBbQ==
-X-Google-Smtp-Source: AGHT+IGQ4vqLE4lDnmS6Kx79SJrsu1YaEhgU7Y1QgV+88opC+oy++oplaXWLVpq8ZWayNQq4SvaXuA==
-X-Received: by 2002:a17:90b:2317:b0:273:441a:dae6 with SMTP id mt23-20020a17090b231700b00273441adae6mr14950231pjb.19.1694007382653;
-        Wed, 06 Sep 2023 06:36:22 -0700 (PDT)
+        bh=Td6a6sw5kxMExUrt1cEVr4QfSz/8/zuHKWsclB1jWMA=;
+        b=UFa7XFWbnfy2Bg32NajhMdbMX37Jbniyhh7zLEWz+rEGymTx6uQcDHjIT3Pdsvzjcq
+         WrlpeUhz7B5IzkDuciy9SeIEXUzMKZHkMwiOeycngaZQumcJmB+REu7Wsz3zb/iCMwW6
+         LtKbgnrjll4Gan5hL1tdMHI+8LJazEncset2+mVuL6oXNKeBWQxS4GXImbfT+vlp8iVZ
+         pbmVD/apRNZQRSso+obKRhb7KceWwN1+xGFiXA6UYqeDPt1zRgz9DFiadaSvfd+Ho8oD
+         DX5t9gOHq4WraE4DvPByuINWMsfPehxsk5kd0Y6vB2j6YksXhetlMWZRbSsArqONCkRx
+         51ng==
+X-Gm-Message-State: AOJu0Yx4dmY/+Zqx+t7lnUHYFT+GS3em6TUx7mjx9LCqO5BQtsO4q1RN
+	B8nj64sobOtSkrkZPPQVglXNFA==
+X-Google-Smtp-Source: AGHT+IGOwRHPmAKNRaGsD/hGYssr/5Y0BJzqOelNvybA7jZN/WxhNoLttPYaPUwO81J4iLj5RhHYKA==
+X-Received: by 2002:a05:6a00:2e84:b0:68a:52ec:3d36 with SMTP id fd4-20020a056a002e8400b0068a52ec3d36mr17143606pfb.31.1694007413553;
+        Wed, 06 Sep 2023 06:36:53 -0700 (PDT)
 Received: from ziepe.ca (hlfxns017vw-142-68-25-194.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.25.194])
-        by smtp.gmail.com with ESMTPSA id z2-20020a17090ad78200b002680dfd368dsm10901898pju.51.2023.09.06.06.36.21
+        by smtp.gmail.com with ESMTPSA id g20-20020a62e314000000b00688214cff65sm10826298pfh.44.2023.09.06.06.36.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Sep 2023 06:36:21 -0700 (PDT)
+        Wed, 06 Sep 2023 06:36:52 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.95)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1qdshf-000yIH-QK;
-	Wed, 06 Sep 2023 10:36:19 -0300
-Date: Wed, 6 Sep 2023 10:36:19 -0300
+	id 1qdsiB-000yIl-HZ;
+	Wed, 06 Sep 2023 10:36:51 -0300
+Date: Wed, 6 Sep 2023 10:36:51 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Christoph Hellwig <hch@lst.de>
-Cc: Kim Phillips <kim.phillips@amd.com>, joro@8bytes.org,
-	suravee.suthikulpanit@amd.com, iommu@lists.linux.dev,
-	Michael Roth <michael.roth@amd.com>,
-	"Kalra, Ashish" <Ashish.Kalra@amd.com>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-	linux-coco@lists.linux.dev
-Subject: Re: [PATCH] iommu/amd: remove amd_iommu_snp_enable
-Message-ID: <ZPiAUx9Qysw0AKNq@ziepe.ca>
-References: <20230831123107.280998-1-hch@lst.de>
- <d33f6abe-5de1-fdba-6a69-51bcbf568c81@amd.com>
- <20230901055020.GA31908@lst.de>
+To: Baolu Lu <baolu.lu@linux.intel.com>
+Cc: Jinjie Ruan <ruanjinjie@huawei.com>, linux-tegra@vger.kernel.org,
+	iommu@lists.linux.dev, Thierry Reding <thierry.reding@gmail.com>,
+	Krishna Reddy <vdumpa@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Jonathan Hunter <jonathanh@nvidia.com>
+Subject: Re: [PATCH] iommu/tegra-smmu: Fix the NULL vs IS_ERR() bug for
+ debugfs_create_dir()
+Message-ID: <ZPiAc4MuNAJfnTaY@ziepe.ca>
+References: <20230831123846.3137304-1-ruanjinjie@huawei.com>
+ <8830ecd1-f7a3-a708-66b1-2d9698d0d477@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -63,36 +62,35 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230901055020.GA31908@lst.de>
+In-Reply-To: <8830ecd1-f7a3-a708-66b1-2d9698d0d477@linux.intel.com>
 
-On Fri, Sep 01, 2023 at 07:50:20AM +0200, Christoph Hellwig wrote:
-> On Thu, Aug 31, 2023 at 01:03:53PM -0500, Kim Phillips wrote:
-> > +Mike Roth, Ashish
-> >
-> > On 8/31/23 7:31 AM, Christoph Hellwig wrote:
-> >> amd_iommu_snp_enable is unused and has been since it was added in commit
-> >> fb2accadaa94 ("iommu/amd: Introduce function to check and enable SNP").
-> >>
-> >> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> >> ---
-> >
-> > It is used by the forthcoming host SNP support:
-> >
-> > https://lore.kernel.org/lkml/20230612042559.375660-8-michael.roth@amd.com/
+On Fri, Sep 01, 2023 at 11:05:48AM +0800, Baolu Lu wrote:
+> On 2023/8/31 20:38, Jinjie Ruan wrote:
+> > The debugfs_create_dir() function returns error pointers.
+> > It never returns NULL. So use IS_ERR() to check it.
+> > 
+> > Fixes: d1313e7896e9 ("iommu/tegra-smmu: Add debugfs support")
+> > Signed-off-by: Jinjie Ruan <ruanjinjie@huawei.com>
+> > ---
+> >   drivers/iommu/tegra-smmu.c | 2 +-
+> >   1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
+> > index e445f80d0226..cd1d80c4c673 100644
+> > --- a/drivers/iommu/tegra-smmu.c
+> > +++ b/drivers/iommu/tegra-smmu.c
+> > @@ -1056,7 +1056,7 @@ DEFINE_SHOW_ATTRIBUTE(tegra_smmu_clients);
+> >   static void tegra_smmu_debugfs_init(struct tegra_smmu *smmu)
+> >   {
+> >   	smmu->debugfs = debugfs_create_dir("smmu", NULL);
+> > -	if (!smmu->debugfs)
+> > +	if (IS_ERR(smmu->debugfs))
+> >   		return;
 > 
-> Then resend it with that support, but don't waste resources and everyones
-> time now.
+> There is no need to check the return value of debugfs_create_dir(). This
+> change cannot fix anything as far as I can see. Just remove the
+> check.
 
-+1
-
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-
-I've said this many times lately. There are other things in this
-driver that have no upstream justification too, like nesting
-"support".
-
-Please organize this SNP support into series that makes sense and are
-self complete :( I'm not sure a 51 patch series is a productive way to
-approach this..
+Right
 
 Jason
