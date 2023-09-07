@@ -1,62 +1,54 @@
-Received: from mail-ot1-f54.google.com (mail-ot1-f54.google.com [209.85.210.54])
+Received: from mail-oo1-f43.google.com (mail-oo1-f43.google.com [209.85.161.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C7486134A7
-	for <iommu@lists.linux.dev>; Thu,  7 Sep 2023 16:10:23 +0000 (UTC)
-Received: by mail-ot1-f54.google.com with SMTP id 46e09a7af769-6c0bbbbad81so310202a34.3
-        for <iommu@lists.linux.dev>; Thu, 07 Sep 2023 09:10:23 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 867E612B8D
+	for <iommu@lists.linux.dev>; Thu,  7 Sep 2023 16:39:00 +0000 (UTC)
+Received: by mail-oo1-f43.google.com with SMTP id 006d021491bc7-573ac2fa37aso679116eaf.3
+        for <iommu@lists.linux.dev>; Thu, 07 Sep 2023 09:39:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1694103022; x=1694707822; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1694104739; x=1694709539; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=SgLgd1SPc6YB6mb40hQjfa5ZZlpVScz+27QCEpD3rcU=;
-        b=hBVvB72sATgJasOWaikiVSEXm0BdMcJ8hM6GQIpNTvealwCr+oZtTWs3gmTOnOflVJ
-         O4lvYqvEgA9+n9nJyfRKITEcXM26KLVSYj1LNMK+AmUN5+fAvxhKZu13b1e0zikdp+9U
-         qSrb4vJWcR8MhupF+eP6ALipTfZPci2br8Mvy1LmFzGSUNttNl4pmVd4jRpCVqKsVfAs
-         tmi2/3ZJuvu+Xo4uXwGZ412zeQfxLLls81+GzCeskGFXUb8BwWeg7yZYr9ADEy/pAEMN
-         E57sH3qOR0/VebjICS6Yz7GppuSljfmjR2WTB3Rz01fpaBUxw/4vqRS/nfw1TpcsaojC
-         INkg==
+        bh=CAiBvTcyRsOXkihjAXwijX2b79d/6jZ/7uZYgdQjwfg=;
+        b=LTQIEA5RWNM/5pbawYX32iv7g12qNYK+1j7Kol6ksa822I17kSBDzWXxmh33WGTwab
+         HvBGlzLFv7xblYGfmBTMsENIEmlivoZFiwfTU5bPYGHeBWYiOwEKqq4NG+CKCSz/+Hmo
+         TpnC4qaet4D/KyoiuC7o7XyDgspglXU+6avYJCdevGh8yOn9n7Nm8NS+uLje5TKi56v0
+         31Yx1CAGWHk3+dAlkl12bOf3LYqTBHW/Hgp24xCk16b0OXjo9DngXnGzIu2r4cpnscsn
+         W+Ocj6+qn64E9KuYqSntYqJHBy2l1PWxWgE2K/GKK9DUbxEKEOEThrJl1uKhlprXLaIl
+         9uaQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1694103022; x=1694707822;
+        d=1e100.net; s=20230601; t=1694104739; x=1694709539;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=SgLgd1SPc6YB6mb40hQjfa5ZZlpVScz+27QCEpD3rcU=;
-        b=Ags8J3FucBCnv2E3nc/R+j/3JHngVcaut3dsVKyxWF0VVc1PyMPYYiSBK/WFC4ppA/
-         JV3W1qDZ8Zl/R596Xz3krEFLYA0B7dg5oaHhSbl/t0XTYO94IUpw7pLz2Z0VQ++PZn8J
-         ZRWD58kq7snsr2i7Ee8b03TuL4urte0owdSiXIx6hP3MIr7o+njOc6/ryC4yjRfkjFTU
-         rlpGT30M654j1j5RmNn11UYKLaXHN74ZmrK0uBR/xEkOwptJrCfCscn11yDDimpEnz+N
-         kKeFWwVZ3ZGb2V5N0Lsl0xhygjKqAsPe5OgYHFeYwyyhD4P4cXSFHbYMEiufCIrWFZBK
-         Xg8A==
-X-Gm-Message-State: AOJu0YxAQBeBz5IJH5uy6pgtKynVKhXznEFPPuvCD7ptcYxbZkoTXno5
-	Gkj5CXzQqNyfuv1Q338UH58UDQ==
-X-Google-Smtp-Source: AGHT+IERsBNl+Au3IHrRw2kUYGqmyQ32p3bRKRylRe/SD4Zg8jGBdBHeqpIHcghYXGcvloCt2IKYGg==
-X-Received: by 2002:a05:6358:52c8:b0:134:e964:134c with SMTP id z8-20020a05635852c800b00134e964134cmr8509262rwz.11.1694103022523;
-        Thu, 07 Sep 2023 09:10:22 -0700 (PDT)
+        bh=CAiBvTcyRsOXkihjAXwijX2b79d/6jZ/7uZYgdQjwfg=;
+        b=Z79AQ4eNDNpTzoDenf3HLP8jLB+YpyezaumfZwfJP+b+QWGHGXG5IYADzU8JzgzBXj
+         hKrpeGoTzyDbSdgsuyUzzx4qijt49KAYqiI1OPjamDcjanmoo09QZOFt8WffRZpgx0lF
+         YsST5BqWi/nb01efonPwNuYOK5Ufhz1iDuQrWWPBD796PQYKMX63folwAEVGNF4spXQ3
+         8rqeixZ+utGU9Rl2K5Bho0baZ5m7pq2L3p1VK0d1flPDA30yGn+h7j+Wr2jILQYS7cAn
+         hQOKvWo8Zh+dGKcsMDV12YYmwLy9BYNFg3Xz/dveZhsG0F0nUit4PAjUisRq0D380v+F
+         l9dQ==
+X-Gm-Message-State: AOJu0YxDgWqNm6US+MF6g7WNd/alsH3x6wO4FSfOn31TV1cZul1zC14G
+	Yw4YNtQRi0mnfQunmIeV4QkDYw==
+X-Google-Smtp-Source: AGHT+IEuRWnwHgc+ZBKdtmJS94abNZCPgqRUkNRZbk5rlBgeJt8BMHp1bCJwoTQZQ3OLP1WMH8+BQg==
+X-Received: by 2002:a05:6358:7e42:b0:135:69d5:1b13 with SMTP id p2-20020a0563587e4200b0013569d51b13mr21167rwm.0.1694104737828;
+        Thu, 07 Sep 2023 09:38:57 -0700 (PDT)
 Received: from ziepe.ca (hlfxns017vw-134-41-202-196.dhcp-dynamic.fibreop.ns.bellaliant.net. [134.41.202.196])
-        by smtp.gmail.com with ESMTPSA id m17-20020a0cdb91000000b006418c076f59sm6395881qvk.100.2023.09.07.09.10.21
+        by smtp.gmail.com with ESMTPSA id u12-20020a0cdd0c000000b0064f5d312babsm6510838qvk.46.2023.09.07.09.38.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Sep 2023 09:10:21 -0700 (PDT)
+        Thu, 07 Sep 2023 09:38:57 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.95)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1qeHaG-00170I-NH;
-	Thu, 07 Sep 2023 13:10:20 -0300
-Date: Thu, 7 Sep 2023 13:10:20 -0300
+	id 1qeI1w-0017Sj-R3;
+	Thu, 07 Sep 2023 13:38:56 -0300
+Date: Thu, 7 Sep 2023 13:38:56 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
-To: "Suthikulpanit, Suravee" <suravee.suthikulpanit@amd.com>
-Cc: Christoph Hellwig <hch@lst.de>, Kim Phillips <kim.phillips@amd.com>,
-	joro@8bytes.org, iommu@lists.linux.dev,
-	Michael Roth <michael.roth@amd.com>,
-	"Kalra, Ashish" <Ashish.Kalra@amd.com>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-	linux-coco@lists.linux.dev
-Subject: Re: [PATCH] iommu/amd: remove amd_iommu_snp_enable
-Message-ID: <ZPn17E94bVUKIs+U@ziepe.ca>
-References: <20230831123107.280998-1-hch@lst.de>
- <d33f6abe-5de1-fdba-6a69-51bcbf568c81@amd.com>
- <20230901055020.GA31908@lst.de>
- <ZPiAUx9Qysw0AKNq@ziepe.ca>
- <d230d9f5-53bd-8ea1-d4c7-717b0e8be9b9@amd.com>
+To: Bo Liu <liubo03@inspur.com>
+Cc: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iommu/omap: Use helper function IS_ERR_OR_NULL()
+Message-ID: <ZPn8oKc2s0HeBw1A@ziepe.ca>
+References: <20230907071409.3805-1-liubo03@inspur.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -65,23 +57,58 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <d230d9f5-53bd-8ea1-d4c7-717b0e8be9b9@amd.com>
+In-Reply-To: <20230907071409.3805-1-liubo03@inspur.com>
 
-On Thu, Sep 07, 2023 at 04:55:52PM +0700, Suthikulpanit, Suravee wrote:
-
-> > I've said this many times lately. There are other things in this
-> > driver that have no upstream justification too, like nesting
-> > "support".
+On Thu, Sep 07, 2023 at 03:14:09AM -0400, Bo Liu wrote:
+> Use IS_ERR_OR_NULL() to detect an error pointer or a null pointer
+> open-coding to simplify the code.
 > 
-> Jason, there is no need to keep repeating and polluting this thread. I am
-> happy to discuss and clarify any points of your concern on the "nesting
-> support" in a separate discussion thread :)
+> Signed-off-by: Bo Liu <liubo03@inspur.com>
+> ---
+>  drivers/iommu/omap-iommu.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
-It is not polluting this thread. We are, again, asking AMD to follow
-the rules please.
+Please no, IS_ERR_OR_NULL is an abomination.
 
-None of the other threads about the nesting has resulted in acceptance
-that code needs to be removed as well. Go respond in one of those if
-you have something to add.
+There are only two callers:
+
+	for (i = 0; i < omap_domain->num_iommus; i++, iommu--, arch_data--) {
+		oiommu = iommu->iommu_dev;
+		iopgtable_clear_entry_all(oiommu);
+
+		omap_iommu_detach(oiommu);
+
+Obviously oiommu is not NULL or ERR since we derefed it
+
+The second:
+
+attach_fail:
+	while (i--) {
+		iommu--;
+		arch_data--;
+		oiommu = iommu->iommu_dev;
+		omap_iommu_detach(oiommu);
+		iommu->iommu_dev = NULL;
+		oiommu->domain = NULL;
+
+And here I don't see how iomm->iommu_dev can ever be NULL or
+ERR_PTR. The i-- follows this:
+
+	iommu = omap_domain->iommus;
+	for (i = 0; i < omap_domain->num_iommus; i++, iommu++, arch_data++) {
+		/* configure and enable the omap iommu */
+		oiommu = arch_data->iommu_dev;
+		ret = omap_iommu_attach(oiommu, iommu->pgtable);
+		if (ret) {
+			dev_err(dev, "can't get omap iommu: %d\n", ret);
+			goto attach_fail;
+		}
+
+		oiommu->domain = domain;
+		iommu->iommu_dev = oiommu;
+
+And again we have always deref'd iommu->iommu_dev.
+
+It is just wrong defensive coding, remove it.
 
 Jason
