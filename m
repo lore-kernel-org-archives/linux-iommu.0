@@ -1,222 +1,128 @@
-Received: from bee.tesarici.cz (bee.tesarici.cz [77.93.223.253])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qk1-f173.google.com (mail-qk1-f173.google.com [209.85.222.173])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 692CE568B
-	for <iommu@lists.linux.dev>; Thu,  7 Sep 2023 11:19:55 +0000 (UTC)
-Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by bee.tesarici.cz (Postfix) with ESMTPSA id EA87A18CBB2;
-	Thu,  7 Sep 2023 13:12:24 +0200 (CEST)
-Authentication-Results: mail.tesarici.cz; dmarc=fail (p=none dis=none) header.from=tesarici.cz
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tesarici.cz; s=mail;
-	t=1694085145; bh=fbplRXoTU4SArEuqSCeWcBdBKDzKAfUk7UIh+zzJ294=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=UeWu1Ze8yhdkAQSYLwMwA5Evs8is8jd9+WRDve9QstEAJCVJk4EyPrZUvt2GlulJO
-	 Acv8RNSZT4NRo56VbHVjN1Qces1eN30pA/Z8XXCRCYRiG42VIaxfqRB+JiaUWDiSNI
-	 7vNLYKFtmaNGH7exnrZYJl77SUb4GDfp5VfGRbajxxQjYFEMgAhMtBIGZd04dwv9py
-	 LsW5QNMFeGMU27vzeZa8jYcSznJj+rq7+myvFYGpQ5xn1ltALy9BQiZ0pdCtmt5J0/
-	 dC6nWffmW3QcD4g/Ya4kxdbnZOi4vIJaCWhouPtZgmgytg1/Um76VBACnHThhWcUwa
-	 sohl8kzvr6NyA==
-Date: Thu, 7 Sep 2023 13:12:23 +0200
-From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
-To: Jonathan Corbet <corbet@lwn.net>
-Cc: Petr Tesarik <petrtesarik@huaweicloud.com>, Stefano Stabellini
- <sstabellini@kernel.org>, Russell King <linux@armlinux.org.uk>, Thomas
- Bogendoerfer <tsbogend@alpha.franken.de>, Thomas Gleixner
- <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov
- <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>, "maintainer:X86
- ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>, "H. Peter Anvin"
- <hpa@zytor.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael
- J. Wysocki" <rafael@kernel.org>, Juergen Gross <jgross@suse.com>, Oleksandr
- Tyshchenko <oleksandr_tyshchenko@epam.com>, Christoph Hellwig <hch@lst.de>,
- Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy
- <robin.murphy@arm.com>, Christoph Lameter <cl@linux.com>, Pekka Enberg
- <penberg@kernel.org>, David Rientjes <rientjes@google.com>, Joonsoo Kim
- <iamjoonsoo.kim@lge.com>, Andrew Morton <akpm@linux-foundation.org>,
- Vlastimil Babka <vbabka@suse.cz>, Roman Gushchin
- <roman.gushchin@linux.dev>, Hyeonggon Yoo <42.hyeyoo@gmail.com>, Petr
- Tesarik <petr.tesarik.ext@huawei.com>, Andy Shevchenko
- <andriy.shevchenko@linux.intel.com>, Hans de Goede <hdegoede@redhat.com>,
- James Seo <james@equiv.tech>, James Clark <james.clark@arm.com>, Kees Cook
- <keescook@chromium.org>, "moderated list:XEN HYPERVISOR ARM"
- <xen-devel@lists.xenproject.org>, "moderated list:ARM PORT"
- <linux-arm-kernel@lists.infradead.org>, open list
- <linux-kernel@vger.kernel.org>, "open list:MIPS"
- <linux-mips@vger.kernel.org>, "open list:XEN SWIOTLB SUBSYSTEM"
- <iommu@lists.linux.dev>, "open list:SLAB ALLOCATOR" <linux-mm@kvack.org>,
- Roberto Sassu <roberto.sassu@huaweicloud.com>
-Subject: Re: [PATCH v7 9/9] swiotlb: search the software IO TLB only if the
- device makes use of it
-Message-ID: <20230907131223.587c1a88@meshulam.tesarici.cz>
-In-Reply-To: <87il8wr348.fsf@meer.lwn.net>
-References: <cover.1690871004.git.petr.tesarik.ext@huawei.com>
-	<adea71bd1fa8660d4c3157a562431ad8127016d4.1690871004.git.petr.tesarik.ext@huawei.com>
-	<87a5uz3ob8.fsf@meer.lwn.net>
-	<87il8wr348.fsf@meer.lwn.net>
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; x86_64-suse-linux-gnu)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E03A65695
+	for <iommu@lists.linux.dev>; Thu,  7 Sep 2023 12:04:42 +0000 (UTC)
+Received: by mail-qk1-f173.google.com with SMTP id af79cd13be357-76ee895a3cbso54211785a.0
+        for <iommu@lists.linux.dev>; Thu, 07 Sep 2023 05:04:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1694088281; x=1694693081; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=wTwRgqdQIzqbrQVReLAS0ja2qn8xe1ecJIq4ztY54IE=;
+        b=R6xBFK2rguIuMZRqnsps6gW8Sqt0iHp0Y9bZ3YFv6xzoSrHTOq6yMSQF3fpFg222pL
+         5LLOarIAzqWzBoOFHf+2AVFg4I0dGWhS5F6xyOfdbolNP+4SjHK3ATDY+PX2H2AAWQHs
+         TUwZsAXlWdxV2H+sRujsv2r57nCjFfWymk4FMIeAiERlt4YrU/QEOPxNJvdG3i73ty9/
+         XtmRVhhzG/ak2KaaA4hn46zpttpTUFe6Sby59zaBwt7YDNN1Mv04F+//6bPH8qCeX3pv
+         UulvNhSX09GqHPaEOzbUZbPlEmnIB9S6to9toXu9oRQ+mODYPIk35grSd74XgaZ9ypyE
+         BtuA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1694088281; x=1694693081;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=wTwRgqdQIzqbrQVReLAS0ja2qn8xe1ecJIq4ztY54IE=;
+        b=fM6hjrSOfpW+QzgXYtWt4WLb17YEhNuC/fkGQMZEZa2Nn3WUagorlOa9O0JsH277c6
+         mcxaeg34uMtp5bwPfaesjmbQ13ztdxwfq+YaCmHGYc/kjMpCIv715K9clojBOaTEoXxh
+         Gjjr3PvUnW30BJ3HKQGT8f7/Aj05x7lWaxspjNzZgqgF3+b4r7mfDAsDNGBHXAYiOQMO
+         hFz5koCx2Uy2AlpRVw0Rm/I/yAGXomujoidz3ag36e/IDN1Jk7iJJfVG+69b19Rl8oDu
+         c02p6zkD88EiUeGxdTtMbLebjOx7HalAczNLAG/P5JgpQWFRLyMvErUdV/l+lrHBJh3m
+         /Tng==
+X-Gm-Message-State: AOJu0YwRtiNE3Ki827YS+TTuSPKzJeiSjKvmjRfJsoxpPeFaZBqW83lN
+	CLff3htETpg/j3pTI3yDfn2c2w==
+X-Google-Smtp-Source: AGHT+IEyk0Aw0D2u3XuqbUHZDGwLcYzho8FmAvdDysIUEQbV8PiUuSfmHid1fcoC7EMo2/yPoETkHg==
+X-Received: by 2002:a05:620a:2f2:b0:76e:8403:8b2 with SMTP id a18-20020a05620a02f200b0076e840308b2mr18811212qko.42.1694088280949;
+        Thu, 07 Sep 2023 05:04:40 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-134-41-202-196.dhcp-dynamic.fibreop.ns.bellaliant.net. [134.41.202.196])
+        by smtp.gmail.com with ESMTPSA id d4-20020a05620a140400b0075772c756e0sm5708436qkj.101.2023.09.07.05.04.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Sep 2023 05:04:40 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1qeDkV-0015P9-Gg;
+	Thu, 07 Sep 2023 09:04:39 -0300
+Date: Thu, 7 Sep 2023 09:04:39 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Vasant Hegde <vasant.hegde@amd.com>
+Cc: iommu@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com,
+	wei.huang2@amd.com, jsnitsel@redhat.com
+Subject: Re: [PATCH RESEND 04/10] iommu/amd: Add support to enable/disable
+ SVA feature
+Message-ID: <ZPm8V5C28scC0kgi@ziepe.ca>
+References: <20230823140415.729050-1-vasant.hegde@amd.com>
+ <20230823140415.729050-5-vasant.hegde@amd.com>
+ <ZOYljfDOgbzVeBeX@ziepe.ca>
+ <cbf043cb-aa4e-ff00-5d13-7b09ceaf0986@amd.com>
+ <ZO93zPITePX52FaE@ziepe.ca>
+ <7f231d1c-30d8-d30c-8cc3-82179066909d@amd.com>
+ <ZO/U6WfzSerXUaj7@ziepe.ca>
+ <e1e3b265-c39c-3288-092c-4293b7f3b83a@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <e1e3b265-c39c-3288-092c-4293b7f3b83a@amd.com>
 
-Hi all,
-
-sorry for my late reply; I've been away from my work setup for a
-month...
-
-On Wed, 30 Aug 2023 08:55:51 -0600
-Jonathan Corbet <corbet@lwn.net> wrote:
-
-> So it seems this code got merged without this question ever being
-> answered.  Sorry if it's a dumb one, but I don't think this
-> functionality works as advertised...
-
-Yes, I believe the check was originally in is_swiotlb_buffer(), but it
-got lost during one of the numerous rebases of this patch set. Let me
-send a follow-up patch after making sure it actually works.
-
-Petr T
-
-> Thanks,
+On Thu, Sep 07, 2023 at 12:45:01PM +0530, Vasant Hegde wrote:
+> Jason,
 > 
-> jon
 > 
-> Jonathan Corbet <corbet@lwn.net> writes:
+> On 8/31/2023 5:16 AM, Jason Gunthorpe wrote:
+> > On Thu, Aug 31, 2023 at 12:30:21AM +0530, Vasant Hegde wrote:
+> >>>>>> +int amd_iommu_sva_disable(struct device *dev)
+> >>>>>> +{
+> >>>>>> +	struct amd_iommu *iommu = get_amd_iommu_from_dev(dev);
+> >>>>>> +	struct iommu_dev_data *dev_data = dev_iommu_priv_get(dev);
+> >>>>>> +
+> >>>>>> +	if (!iommu || !dev_data)
+> >>>>>> +		return -EINVAL;
+> >>>>>> +
+> >>>>>> +	return amd_iommu_sva_gcr3_uninit(dev_data);
+> >>>>>> +}
+> >>>>>
+> >>>>> I think these features are a mistake, you need to implement them for
+> >>>>> now but I wouldn't touch the gcr3 table, and disable should be a NOP.
+> >>>>
+> >>>> We need to configure Device Table Entry when we enable/disable SVA.
+> >>>
+> >>> The DTE should only be changed by bind/unbind of RID/PASID - it has
+> >>> nothing to do with these APIs.
+> >>
+> >> Above functions are called during enable_feature(SVA) path. Not in PASID
+> >> bind/unbind path. In PASID bind/unbind path we just update PASID table.
+> > 
+> > I know, which is why they can't change anything about the IOMMU
+> > HW. Only attach/bind/unbind should change HW state.
+> > 
+> > I intend to remove these APIs once ARM is fixed, so please don't start
+> > to rely on them. The driver is doing something wrong if it is changing
+> > HW setups outside of attach/bind/unbind.
 > 
-> > Petr Tesarik <petrtesarik@huaweicloud.com> writes:
-> >  
-> >> From: Petr Tesarik <petr.tesarik.ext@huawei.com>
-> >>
-> >> Skip searching the software IO TLB if a device has never used it,
-> >> making sure these devices are not affected by the introduction of
-> >> multiple IO TLB memory pools.
-> >>
-> >> Additional memory barrier is required to ensure that the new value
-> >> of the flag is visible to other CPUs after mapping a new bounce
-> >> buffer. For efficiency, the flag check should be inlined, and then
-> >> the memory barrier must be moved to is_swiotlb_buffer(). However,
-> >> it can replace the existing barrier in swiotlb_find_pool(),
-> >> because all callers use is_swiotlb_buffer() first to verify that
-> >> the buffer address belongs to the software IO TLB.
-> >>
-> >> Signed-off-by: Petr Tesarik <petr.tesarik.ext@huawei.com>
-> >> ---  
-> >
-> > Excuse me if this is a silly question, but I'm not able to figure
-> > it out on my own...
-> >  
-> >>  include/linux/device.h  |  2 ++
-> >>  include/linux/swiotlb.h |  7 ++++++-
-> >>  kernel/dma/swiotlb.c    | 14 ++++++--------
-> >>  3 files changed, 14 insertions(+), 9 deletions(-)
-> >>
-> >> diff --git a/include/linux/device.h b/include/linux/device.h
-> >> index 5fd89c9d005c..6fc808d22bfd 100644
-> >> --- a/include/linux/device.h
-> >> +++ b/include/linux/device.h
-> >> @@ -628,6 +628,7 @@ struct device_physical_location {
-> >>   * @dma_io_tlb_mem: Software IO TLB allocator.  Not for driver
-> >> use.
-> >>   * @dma_io_tlb_pools:	List of transient swiotlb memory
-> >> pools.
-> >>   * @dma_io_tlb_lock:	Protects changes to the list of
-> >> active pools.
-> >> + * @dma_uses_io_tlb: %true if device has used the software IO TLB.
-> >>   * @archdata:	For arch-specific additions.
-> >>   * @of_node:	Associated device tree node.
-> >>   * @fwnode:	Associated device node supplied by platform
-> >> firmware. @@ -737,6 +738,7 @@ struct device {
-> >>  #ifdef CONFIG_SWIOTLB_DYNAMIC
-> >>  	struct list_head dma_io_tlb_pools;
-> >>  	spinlock_t dma_io_tlb_lock;
-> >> +	bool dma_uses_io_tlb;  
-> >
-> > You add this new member here, fine...
-> >  
-> >>  #endif
-> >>  	/* arch specific additions */
-> >>  	struct dev_archdata	archdata;
-> >> diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
-> >> index 8371c92a0271..b4536626f8ff 100644
-> >> --- a/include/linux/swiotlb.h
-> >> +++ b/include/linux/swiotlb.h
-> >> @@ -172,8 +172,13 @@ static inline bool is_swiotlb_buffer(struct
-> >> device *dev, phys_addr_t paddr) if (!mem)
-> >>  		return false;
-> >>  
-> >> -	if (IS_ENABLED(CONFIG_SWIOTLB_DYNAMIC))
-> >> +	if (IS_ENABLED(CONFIG_SWIOTLB_DYNAMIC)) {
-> >> +		/* Pairs with smp_wmb() in swiotlb_find_slots()
-> >> and
-> >> +		 * swiotlb_dyn_alloc(), which modify the RCU
-> >> lists.
-> >> +		 */
-> >> +		smp_rmb();
-> >>  		return swiotlb_find_pool(dev, paddr);
-> >> +	}
-> >>  	return paddr >= mem->defpool.start && paddr <
-> >> mem->defpool.end; }
-> >>  
-> >> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-> >> index adf80dec42d7..d7eac84f975b 100644
-> >> --- a/kernel/dma/swiotlb.c
-> >> +++ b/kernel/dma/swiotlb.c
-> >> @@ -730,7 +730,7 @@ static void swiotlb_dyn_alloc(struct
-> >> work_struct *work) 
-> >>  	add_mem_pool(mem, pool);
-> >>  
-> >> -	/* Pairs with smp_rmb() in swiotlb_find_pool(). */
-> >> +	/* Pairs with smp_rmb() in is_swiotlb_buffer(). */
-> >>  	smp_wmb();
-> >>  }
-> >>  
-> >> @@ -764,11 +764,6 @@ struct io_tlb_pool *swiotlb_find_pool(struct
-> >> device *dev, phys_addr_t paddr) struct io_tlb_mem *mem =
-> >> dev->dma_io_tlb_mem; struct io_tlb_pool *pool;
-> >>  
-> >> -	/* Pairs with smp_wmb() in swiotlb_find_slots() and
-> >> -	 * swiotlb_dyn_alloc(), which modify the RCU lists.
-> >> -	 */
-> >> -	smp_rmb();
-> >> -
-> >>  	rcu_read_lock();
-> >>  	list_for_each_entry_rcu(pool, &mem->pools, node) {
-> >>  		if (paddr >= pool->start && paddr < pool->end)
-> >> @@ -813,6 +808,7 @@ void swiotlb_dev_init(struct device *dev)
-> >>  #ifdef CONFIG_SWIOTLB_DYNAMIC
-> >>  	INIT_LIST_HEAD(&dev->dma_io_tlb_pools);
-> >>  	spin_lock_init(&dev->dma_io_tlb_lock);
-> >> +	dev->dma_uses_io_tlb = false;  
-> >
-> > ...here you initialize it, fine...
-> >  
-> >>  #endif
-> >>  }
-> >>  
-> >> @@ -1157,9 +1153,11 @@ static int swiotlb_find_slots(struct device
-> >> *dev, phys_addr_t orig_addr, list_add_rcu(&pool->node,
-> >> &dev->dma_io_tlb_pools);
-> >> spin_unlock_irqrestore(&dev->dma_io_tlb_lock, flags); 
-> >> -	/* Pairs with smp_rmb() in swiotlb_find_pool(). */
-> >> -	smp_wmb();
-> >>  found:
-> >> +	dev->dma_uses_io_tlb = true;
-> >> +	/* Pairs with smp_rmb() in is_swiotlb_buffer() */
-> >> +	smp_wmb();
-> >> +  
-> >
-> > ...and here you set it if swiotlb is used.
-> >
-> > But, as far as I can tell, you don't actually *use* this field
-> > anywhere. What am I missing?
-> >
-> > Thanks,
-> >
-> > jon  
+> 
+> If you intend to remove enable_feature(SVA) API completely, then you help us to
+> figure out how to handle below issues?
+> 
+> 1) During attach_device() we don't know whether device is really going to use
+> SVA or not. So we want to start with minimal GCR3 table (that can handle just
+> PASID 0) and during enable_feature(SVA) we want to enable GCR3 table that can
+> handle max_pasids supported by a device. That way we can avoid performance
+> penalty if device is not using SVA (extra GCR3 table walk).
 
+Resize the GCR3 table when the first pasid using attach happens.
+
+We can discuss if/when it should be shrunk back to minimal.
+
+> 2) If we boot with passthrough mode, then during attach_device() we are not
+> allocating GCR3 table. It will be allocated only when its needed. That way we
+> are not wasting memory.
+
+> Do you suggest that the driver setup GCR3 table at the first PASID binding to
+> the device?
+
+Yes. PASID must work correctly stand alone.
+
+Jason
