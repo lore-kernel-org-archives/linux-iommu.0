@@ -1,106 +1,103 @@
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EDCE01C15
-	for <iommu@lists.linux.dev>; Thu,  7 Sep 2023 08:22:15 +0000 (UTC)
-Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	(Authenticated sender: kholk11)
-	by madras.collabora.co.uk (Postfix) with ESMTPSA id 95C2566072BE;
-	Thu,  7 Sep 2023 09:22:13 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-	s=mail; t=1694074934;
-	bh=0QQVv6jlMc3BXhzBHqUu8xLqyScvz33I/+GvzdQguMU=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=g4NZCvLeUZCbl/IEdNcZBmNQtxVQUqWVm3hFjqIfmd1kifIQvSsgonlPl8Mu8TQyX
-	 3J2qi/yywlOtky+59zLO+SDWIWtxSrgC1TdHZxoGkz0F0v7ApBYtE+p6tmp9V/TAte
-	 nt3AmylDPwnKOh3YGg+yy+8wBLdMgTFvPxFb45EuV1zF+Ody5zNbBCCEFs2dePBbO/
-	 0fsInLcpoybezFl/JlTlaaO7PQCfXNvj/P34sXSLIajcRJoPTmMo/jm88fGsDhxmM2
-	 +d5HQ7CbZQV8b/vKC6W8L4HQcqWv85IJKEYp4LkWcR52h89R0uDVgfNW/w4w3JxqE7
-	 LA18ulLzj6Fyw==
-Message-ID: <21e6631e-a99c-0b09-feb4-23407465ea55@collabora.com>
-Date: Thu, 7 Sep 2023 10:22:10 +0200
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 53C207F1
+	for <iommu@lists.linux.dev>; Thu,  7 Sep 2023 08:57:14 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 386EA139F;
+	Thu,  7 Sep 2023 01:57:51 -0700 (PDT)
+Received: from [10.57.30.76] (unknown [10.57.30.76])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 28B5B3F64C;
+	Thu,  7 Sep 2023 01:57:12 -0700 (PDT)
+Message-ID: <d2c93c6c-86d8-1a1f-e58c-8e9d29e9ddb0@arm.com>
+Date: Thu, 7 Sep 2023 09:57:02 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
  Thunderbird/102.15.0
-Subject: Re: [PATCH] iommu/mediatek: Fix share pgtable for iova over 4GB
-To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>
-Cc: Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
- linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, Laura Nao <laura.nao@collabora.com>
-References: <20230819081443.8333-1-yong.wu@mediatek.com>
-Content-Language: en-US
-From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20230819081443.8333-1-yong.wu@mediatek.com>
+Subject: Re: [PATCH] Revert "dma-contiguous: check for memory region overlap"
+Content-Language: en-GB
+To: Zhenhua Huang <quic_zhenhuah@quicinc.com>, hch@lst.de,
+ m.szyprowski@samsung.com
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ quic_pkondeti@quicinc.com, quic_tingweiz@quicinc.com
+References: <1694073836-5125-1-git-send-email-quic_zhenhuah@quicinc.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <1694073836-5125-1-git-send-email-quic_zhenhuah@quicinc.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-Il 19/08/23 10:14, Yong Wu ha scritto:
-> In mt8192/mt8186, there is only one MM IOMMU that supports 16GB iova
-> space, which is shared by display, vcodec and camera. These two SoC use
-> one pgtable and have not the flag SHARE_PGTABLE, we should also keep
-> share pgtable for this case.
+On 2023-09-07 09:03, Zhenhua Huang wrote:
+> This reverts commit 3fa6456ebe13adab3ba1817c8e515a5b88f95dce.
 > 
-> In mtk_iommu_domain_finalise, MM IOMMU always share pgtable, thus remove
-> the flag SHARE_PGTABLE checking. Infra IOMMU always uses independent
-> pgtable.
+> The Commit broke the CMA region creation through DT on arm64,
+> as showed below logs with "memblock=debug":
+> [    0.000000] memblock_phys_alloc_range: 41943040 bytes align=0x200000
+> from=0x0000000000000000 max_addr=0x00000000ffffffff
+> early_init_dt_alloc_reserved_memory_arch+0x34/0xa0
+> [    0.000000] memblock_reserve: [0x00000000fd600000-0x00000000ffdfffff]
+> memblock_alloc_range_nid+0xc0/0x19c
+> [    0.000000] Reserved memory: overlap with other memblock reserved region
 > 
-> Fixes: cf69ef46dbd9 ("iommu/mediatek: Fix two IOMMU share pagetable issue")
-> Reported-by: Laura Nao <laura.nao@collabora.com>
-> Closes: https://lore.kernel.org/linux-iommu/20230818154156.314742-1-laura.nao@collabora.com/
-> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-
-This is urgent. Fixes multiple machines.
-
+>  From call flow, region we defined in DT was always reserved before entering
+> into rmem_cma_setup. Also, rmem_cma_setup has one routine cma_init_reserved_mem
+> to ensure the region was reserved. Checking the region not reserved here seems
+> not correct.
+> 
+> early_init_fdt_scan_reserved_mem:
+>      fdt_scan_reserved_mem
+>          __reserved_mem_reserve_reg
+> 		early_init_dt_reserve_memory
+> 			memblock_reserve(using “reg” prop case)
+>          fdt_init_reserved_mem
+> 		__reserved_mem_alloc_size
+> 			*early_init_dt_alloc_reserved_memory_arch*
+> 				memblock_reserve(dynamic alloc case)
+>          __reserved_mem_init_node
+> 		rmem_cma_setup(region overlap check here should always fail)
+> 
+> Example DT can be used to reproduce issue:
+> 
+>      dump_mem: mem_dump_region {
+>              compatible = "shared-dma-pool";
+>              alloc-ranges = <0x0 0x00000000 0x0 0xffffffff>;
+>              reusable;
+>              size = <0 0x2800000>;
+>      };
+> 
+> Signed-off-by: Zhenhua Huang <quic_zhenhuah@quicinc.com>
 > ---
-> Base on next-20230818.
-> ---
->   drivers/iommu/mtk_iommu.c | 9 ++++-----
->   1 file changed, 4 insertions(+), 5 deletions(-)
+>   kernel/dma/contiguous.c | 5 -----
+>   1 file changed, 5 deletions(-)
 > 
-> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-> index b17d3e7288a7..b5fcba305d2a 100644
-> --- a/drivers/iommu/mtk_iommu.c
-> +++ b/drivers/iommu/mtk_iommu.c
-> @@ -262,7 +262,7 @@ struct mtk_iommu_data {
->   	struct device			*smicomm_dev;
+> diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
+> index 88c595e..f005c66 100644
+> --- a/kernel/dma/contiguous.c
+> +++ b/kernel/dma/contiguous.c
+> @@ -473,11 +473,6 @@ static int __init rmem_cma_setup(struct reserved_mem *rmem)
+>   		return -EBUSY;
+>   	}
 >   
->   	struct mtk_iommu_bank_data	*bank;
-> -	struct mtk_iommu_domain		*share_dom; /* For 2 HWs share pgtable */
-> +	struct mtk_iommu_domain		*share_dom;
->   
->   	struct regmap			*pericfg;
->   	struct mutex			mutex; /* Protect m4u_group/m4u_dom above */
-> @@ -643,8 +643,8 @@ static int mtk_iommu_domain_finalise(struct mtk_iommu_domain *dom,
->   	struct mtk_iommu_domain	*share_dom = data->share_dom;
->   	const struct mtk_iommu_iova_region *region;
->   
-> -	/* Always use share domain in sharing pgtable case */
-> -	if (MTK_IOMMU_HAS_FLAG(data->plat_data, SHARE_PGTABLE) && share_dom) {
-> +	/* Share pgtable when 2 MM IOMMU share the pgtable or one IOMMU use multiple iova ranges */
-> +	if (share_dom) {
->   		dom->iop = share_dom->iop;
->   		dom->cfg = share_dom->cfg;
->   		dom->domain.pgsize_bitmap = share_dom->cfg.pgsize_bitmap;
-> @@ -677,8 +677,7 @@ static int mtk_iommu_domain_finalise(struct mtk_iommu_domain *dom,
->   	/* Update our support page sizes bitmap */
->   	dom->domain.pgsize_bitmap = dom->cfg.pgsize_bitmap;
->   
-> -	if (MTK_IOMMU_HAS_FLAG(data->plat_data, SHARE_PGTABLE))
-> -		data->share_dom = dom;
-> +	data->share_dom = dom;
->   
->   update_iova_region:
->   	/* Update the iova region for this domain */
+> -	if (memblock_is_region_reserved(rmem->base, rmem->size)) {
+> -		pr_info("Reserved memory: overlap with other memblock reserved region\n");
+> -		return -EBUSY;
+> -	}
 
+Um, indeed... failing to process a reserved memory region if it is 
+reserved is clearly nonsensical. I mean, a few steps later we reach 
+cma_init_reserved_mem() which already relies on the exact opposite check:
 
+	if (!size || !memblock_is_region_reserved(base, size))
+		return -EINVAL;
+
+There's no way 3fa6456ebe13 could have worked or been properly tested :/
+
+Thanks,
+Robin.
+
+> -
+>   	if (!of_get_flat_dt_prop(node, "reusable", NULL) ||
+>   	    of_get_flat_dt_prop(node, "no-map", NULL))
+>   		return -EINVAL;
