@@ -1,174 +1,222 @@
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2044.outbound.protection.outlook.com [40.107.223.44])
+Received: from bee.tesarici.cz (bee.tesarici.cz [77.93.223.253])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A6C220FA;
-	Thu,  7 Sep 2023 09:56:06 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UertFvhdCLVSyitG/UHesJ8tUp2HWNdmBQFcwI35eG3CBw+gc4IXzsSQfidmSi+G98kgp1WA2rl/qKVD/eU0Q1Ny3itoahX2ovx0F/av943hHv2yP/94SfoMS6kIlegWHT+vq4WLpVsxI7g8sIquTIAt00AsNF7o/igwRsIG9J7LLlmcYM0WuUdjKm2yMVhAStepxyKSOgHoAJ2XSmTm+6XLlpg6NsRjkVwmn0tvOU5usCC6BGHvtrk8Td4IXjcZRRpUKRh25IhtIUACkGR0q/FcsFFYtoan28m9J92kII8IlNr1lYxTo/kO89LnRMfWI70OoN1ZWGgjWk/2YyfprQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=HF57vorCQbKt/NWp5/25prdYVR4NUurlk8mCilezb2M=;
- b=mZvgOuB0/4A2MnkJ5cQLooLKvFbhq60Xnj3h8G0j2ZfOFaKSvmQcQqFPWn++FEll8jT5Ow9YkafEnGMhgrgn7Z/GaiIsfJ8GWT07dCSpUJiPLvCUscrpN04Z22XCDtqtKXJOgs9LnboB6Bdzcpcs/mUMyLwNpY5WKlDRTpraULUy/a+DLqFFXqqd/6+RdPGfcCUQy8HuvKKfpMS4Zz5yhmrwBXSIvbUsVn68iGecOhB7TCUA+be/zo9feBoEPA+NFHgN2fzb4LfN+67VeWFz+qOCemOQkYsQ1ioStF2ZkKghXmLp8rv4+I6xakX48oUMFn2h9U/ap6vKxBbb8BPP8A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HF57vorCQbKt/NWp5/25prdYVR4NUurlk8mCilezb2M=;
- b=Zi7enVXnEO8mYetR6Mz2+QsA2Koc6WMKmC2wjlq42kpxFPaUYbqjiQJTtfuoL6uKbYih8Mj39d+DmMzQH5FdNxAPCd0F13YI+guYtx+MrxdOUNVH9Wwmy0RsW/UXXz3dUhF/Lu+LIr0y/7LOGbvn4+mijnvxdijnw/D4y9hkNcw=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DM8PR12MB5445.namprd12.prod.outlook.com (2603:10b6:8:24::7) by
- SJ2PR12MB8184.namprd12.prod.outlook.com (2603:10b6:a03:4f2::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6745.34; Thu, 7 Sep
- 2023 09:56:02 +0000
-Received: from DM8PR12MB5445.namprd12.prod.outlook.com
- ([fe80::12ec:a62b:b286:d309]) by DM8PR12MB5445.namprd12.prod.outlook.com
- ([fe80::12ec:a62b:b286:d309%7]) with mapi id 15.20.6768.029; Thu, 7 Sep 2023
- 09:56:01 +0000
-Message-ID: <d230d9f5-53bd-8ea1-d4c7-717b0e8be9b9@amd.com>
-Date: Thu, 7 Sep 2023 16:55:52 +0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.1
-Subject: Re: [PATCH] iommu/amd: remove amd_iommu_snp_enable
-Content-Language: en-US
-To: Jason Gunthorpe <jgg@ziepe.ca>, Christoph Hellwig <hch@lst.de>
-Cc: Kim Phillips <kim.phillips@amd.com>, joro@8bytes.org,
- iommu@lists.linux.dev, Michael Roth <michael.roth@amd.com>,
- "Kalra, Ashish" <Ashish.Kalra@amd.com>,
- "kvm@vger.kernel.org" <kvm@vger.kernel.org>, linux-coco@lists.linux.dev
-References: <20230831123107.280998-1-hch@lst.de>
- <d33f6abe-5de1-fdba-6a69-51bcbf568c81@amd.com>
- <20230901055020.GA31908@lst.de> <ZPiAUx9Qysw0AKNq@ziepe.ca>
-From: "Suthikulpanit, Suravee" <suravee.suthikulpanit@amd.com>
-In-Reply-To: <ZPiAUx9Qysw0AKNq@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: SI2PR01CA0028.apcprd01.prod.exchangelabs.com
- (2603:1096:4:192::21) To DM8PR12MB5445.namprd12.prod.outlook.com
- (2603:10b6:8:24::7)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 692CE568B
+	for <iommu@lists.linux.dev>; Thu,  7 Sep 2023 11:19:55 +0000 (UTC)
+Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by bee.tesarici.cz (Postfix) with ESMTPSA id EA87A18CBB2;
+	Thu,  7 Sep 2023 13:12:24 +0200 (CEST)
+Authentication-Results: mail.tesarici.cz; dmarc=fail (p=none dis=none) header.from=tesarici.cz
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tesarici.cz; s=mail;
+	t=1694085145; bh=fbplRXoTU4SArEuqSCeWcBdBKDzKAfUk7UIh+zzJ294=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=UeWu1Ze8yhdkAQSYLwMwA5Evs8is8jd9+WRDve9QstEAJCVJk4EyPrZUvt2GlulJO
+	 Acv8RNSZT4NRo56VbHVjN1Qces1eN30pA/Z8XXCRCYRiG42VIaxfqRB+JiaUWDiSNI
+	 7vNLYKFtmaNGH7exnrZYJl77SUb4GDfp5VfGRbajxxQjYFEMgAhMtBIGZd04dwv9py
+	 LsW5QNMFeGMU27vzeZa8jYcSznJj+rq7+myvFYGpQ5xn1ltALy9BQiZ0pdCtmt5J0/
+	 dC6nWffmW3QcD4g/Ya4kxdbnZOi4vIJaCWhouPtZgmgytg1/Um76VBACnHThhWcUwa
+	 sohl8kzvr6NyA==
+Date: Thu, 7 Sep 2023 13:12:23 +0200
+From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
+To: Jonathan Corbet <corbet@lwn.net>
+Cc: Petr Tesarik <petrtesarik@huaweicloud.com>, Stefano Stabellini
+ <sstabellini@kernel.org>, Russell King <linux@armlinux.org.uk>, Thomas
+ Bogendoerfer <tsbogend@alpha.franken.de>, Thomas Gleixner
+ <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov
+ <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>, "maintainer:X86
+ ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>, "H. Peter Anvin"
+ <hpa@zytor.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael
+ J. Wysocki" <rafael@kernel.org>, Juergen Gross <jgross@suse.com>, Oleksandr
+ Tyshchenko <oleksandr_tyshchenko@epam.com>, Christoph Hellwig <hch@lst.de>,
+ Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy
+ <robin.murphy@arm.com>, Christoph Lameter <cl@linux.com>, Pekka Enberg
+ <penberg@kernel.org>, David Rientjes <rientjes@google.com>, Joonsoo Kim
+ <iamjoonsoo.kim@lge.com>, Andrew Morton <akpm@linux-foundation.org>,
+ Vlastimil Babka <vbabka@suse.cz>, Roman Gushchin
+ <roman.gushchin@linux.dev>, Hyeonggon Yoo <42.hyeyoo@gmail.com>, Petr
+ Tesarik <petr.tesarik.ext@huawei.com>, Andy Shevchenko
+ <andriy.shevchenko@linux.intel.com>, Hans de Goede <hdegoede@redhat.com>,
+ James Seo <james@equiv.tech>, James Clark <james.clark@arm.com>, Kees Cook
+ <keescook@chromium.org>, "moderated list:XEN HYPERVISOR ARM"
+ <xen-devel@lists.xenproject.org>, "moderated list:ARM PORT"
+ <linux-arm-kernel@lists.infradead.org>, open list
+ <linux-kernel@vger.kernel.org>, "open list:MIPS"
+ <linux-mips@vger.kernel.org>, "open list:XEN SWIOTLB SUBSYSTEM"
+ <iommu@lists.linux.dev>, "open list:SLAB ALLOCATOR" <linux-mm@kvack.org>,
+ Roberto Sassu <roberto.sassu@huaweicloud.com>
+Subject: Re: [PATCH v7 9/9] swiotlb: search the software IO TLB only if the
+ device makes use of it
+Message-ID: <20230907131223.587c1a88@meshulam.tesarici.cz>
+In-Reply-To: <87il8wr348.fsf@meer.lwn.net>
+References: <cover.1690871004.git.petr.tesarik.ext@huawei.com>
+	<adea71bd1fa8660d4c3157a562431ad8127016d4.1690871004.git.petr.tesarik.ext@huawei.com>
+	<87a5uz3ob8.fsf@meer.lwn.net>
+	<87il8wr348.fsf@meer.lwn.net>
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; x86_64-suse-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM8PR12MB5445:EE_|SJ2PR12MB8184:EE_
-X-MS-Office365-Filtering-Correlation-Id: 5b3fd39a-2224-42cb-8dd8-08dbaf88a4a6
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	09qKP1w8DFWW714Nzvhqwh47DXyotezvFN3z1OkuPs/VVkp/hAoOyj/oPfWyZpSKsp1BBinOKCbLvuB7KdnExFQApjVFckT4xjXuRy8I62RhKEie9r2yGv1sV3PrYtlTuxBBrfJqkB3QWn0x1J63Df9BiBiNfyxWzl+1K3HZ1BO3UY1V8Q9C0pJA39dtjB1N022boagR9OigdRQ49DknU+MzWzeTAhnT+rNe13TALLn5SyoXaVbOPdUr/d+w2hpiX7MrlP+okgl2tIRLPCLXS4kkrTYW7t2MZICP3ltapOfw6qMyc3CICCiJ8O6yjU2gXWc5Oy8Qq2HMy8BbCNQDxr5LoSBcLs4Qb/p/H27t86zGGrfMl+eXm75Y5QEN4Mv7Dcp5VADsM65OnO+x+vItdzRYmnx/9smonMVTT9xghlrsybicZ97kWXY66hAXWvJ9RQHnlux6cTisLRhKnajdJeAWkao7gRDKgaVwaHIpEe8ufpr3LYhkRi/dPOSlt9JQmPusRJ1DqswPQcPu6/oBoWd9mdREUxJEEWeLHjXRdQkfxn7leyr+9PsyN7dKbbx5hl/xJnMaM7g6nkQquLSBcxkXd6eS7x8kFZ/uK0PXjcCfC6n9b75Ce1MwIOktu/LnRflp52Gdw66fnBZe6HOJoA==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM8PR12MB5445.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(39860400002)(346002)(366004)(136003)(396003)(376002)(186009)(1800799009)(451199024)(8676002)(6666004)(6486002)(6506007)(53546011)(966005)(478600001)(26005)(2906002)(6512007)(316002)(110136005)(66556008)(41300700001)(66476007)(54906003)(8936002)(66946007)(5660300002)(4326008)(2616005)(36756003)(86362001)(31696002)(38100700002)(31686004)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?MW1qQUlJMUVtbW50alVKQ1FOSjF3Nm83OUlDRWNtSjhqeWFPVjBlYUxoN2pw?=
- =?utf-8?B?bmwyL2VuY25YZUdKQ04rTHZGbFB3aWZhZndESG55U1k3dXB6N2dvbEt6Z0tz?=
- =?utf-8?B?UkNiVTBHTnFGcFFCRVJjRFM0R1dodDF0UFcwa3VlcFZ4cmh5a2l1Szl6MGtT?=
- =?utf-8?B?NFR0UmR0bEl6TWhLcjBOQmNsakpYMzhZaFZzdnRrR3BCMXJWaHRQdWFsdUxT?=
- =?utf-8?B?YkxEKzdGZEFVOUF0TnJmQWt2YzNLT3RpTC9kaE94YytZOUlhTHBDY1N6Rm5j?=
- =?utf-8?B?dHhQNm5UcEh5N215cjRPL3lHaE1oeVhUeGtzNVdINUdDdjRaYTkydXdBV2pT?=
- =?utf-8?B?d01VYisyTURYZGdJTU5SMldqL0NyQTd4ZTl6bVc0YXNXVHRObm1LVm1YYXNN?=
- =?utf-8?B?a2d4UWVXYzJ1NmxhWlgxRHZXVDJ3dEl5YlFlVnB6VFZJeEN2U2ZVc1E4R1du?=
- =?utf-8?B?WXB4RWgxT3hHa3UyN1VoR2JrZllKWWZRZTJjZ01MRGplOE4raituZjR4Q0s1?=
- =?utf-8?B?UmRtRVRkSWJUd2tRdkpNc3E2enRsK2hRM3pEYURrVVpObENsNFBwNG1kaHVS?=
- =?utf-8?B?Y2xTQkV0TW5VMndRMG9RT1FHMmE3dHRjRnoxQUltaklaM0N4YkxBUG9TUEdY?=
- =?utf-8?B?aS9tNnpncEtTdFQ0VENUWG41b1p4eHFYbWRBbFR1dXoxNVpzS3BCdGY1U0dK?=
- =?utf-8?B?bWpHK0p1VWdpWlhhMjkyNG1qcWhyWERpb0RXOVk0NFhsM1B1K0p1S3Y0REVH?=
- =?utf-8?B?NDBnTFVkRlVKZ2gxTjBaYllsWUtqckNXemdRLzRubEJ1cGdhVXRaYUFKeExX?=
- =?utf-8?B?MkYvUXpNK3hZbWkzUGo2QUFmQUszYTFEc2FIcW4wcjY3WjNyNy9xSk0vVC85?=
- =?utf-8?B?K0hJVlhobE5CMkFYWm9sbkNuVlFxYjRuRThHN05GVDcrZys3WjNKTHVHQm5i?=
- =?utf-8?B?WmlibExBY3BReXY5eTF5VWNFWGFqdFZGTVl4UzF4ZjhyYlBjaDFEZU5KSS9Y?=
- =?utf-8?B?TEhpYkpUYWY3eHlNdHdJT2RUMndJcEdpcEdneDBVV1o2OHUrRGhLbXlkTjk0?=
- =?utf-8?B?aVpKMmJ6WHR0bmNCcU5nWXlGcnlCUVZ5RFlCM2NrOVhQTW1oWmttRXk3R3Q4?=
- =?utf-8?B?Q1BNN0xiWk15TzdhR1ArajJTOUU4ZHJiaC9HU3FYTW1XYm5uRVFHWXZYY2wv?=
- =?utf-8?B?ZDllbFF2RlVsTkNreHE1R1h5SHFVQytRTENoWXQyVHlNS1o0K2VINnpGRXN3?=
- =?utf-8?B?eDhPSFVPZUVzcjBDSHJPTS9jdkt5dythekR1UVlRQ3VyM1BaQzVnRkJIVEYy?=
- =?utf-8?B?aVpJc2Z6bmw0TWhaTVJXMm83M2l3dGRXTUMzaVMwNWZNNFBNRk5Pb3VSQmRo?=
- =?utf-8?B?TXBWT21kVUNsZDlyQ0xqMVphcXJFVE1jSGlHNlZONWJNNkdVWFNCL2w1QWdW?=
- =?utf-8?B?ZWZPdXNvV2JBdUt4VHBheXV2QllnVlVMVVRwUFRRNGZUQWIrUXlVSHdUU2o1?=
- =?utf-8?B?NEU5Q1VUMHN6YmthZ1FJdzhsSnJkNjVqZUlFMUhKa0h4emtlTlV1MXJuYzRL?=
- =?utf-8?B?MWxZUmNLMmpOUDZNOTBSYXU2Vmw0QnFzblVQdndkSUFHZHo0bSt4U1BiRytH?=
- =?utf-8?B?elpvOWcvbmJaNHVIZ3dZTHhGdWgydWF0Mm5BQlFzTnU5eksyVW5odXNnTUxD?=
- =?utf-8?B?UTlEUjdKL0ZvQ0s2c3dtNGNqMGhJMEE0Vkl5VXQydkd6azdhUDRUUE9yb3Va?=
- =?utf-8?B?UnYrMVNzby92OGRvKzJSZStSME9EdDRncDlyeVJSbFVrL1VmdUZNcU14Unhi?=
- =?utf-8?B?bG80ZlY5cnIzVTJZYm8rNUtVRkVlbDBPQ3hJY2IwdnhCRzRXQ2JZN1lPWnB4?=
- =?utf-8?B?THhLVlY3Z2RMSkZGb1pCRysvaGpuc0R6Wi9KOTJYWGhFVXp4M0hTWndrK0o2?=
- =?utf-8?B?cDE4SXBMZ3ZTY1RBWi8xejJhcnc5bkkvK1A4Q0ZJSzZmWnA4ZWtJZzRIdWFL?=
- =?utf-8?B?ZzhKalliU1FjM2ttQTBXZ0swUjBReFBnd1BLUUYvbzd3Z0JiZGVpRjI1US8y?=
- =?utf-8?B?VENYZTdwRER3L2JRaFZGN2RDSU42NndQTkpDZmFvelkwdk92bmZxNzRCV2dJ?=
- =?utf-8?Q?bm15UHHrTx8pNJCmFRPsLfSN2?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5b3fd39a-2224-42cb-8dd8-08dbaf88a4a6
-X-MS-Exchange-CrossTenant-AuthSource: DM8PR12MB5445.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Sep 2023 09:56:01.9049
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 9jTGwZVXz6YDLnmUG5MCJCuZjRuc9qU1mDLxbY9l4dq87EOeLeMsqEQnUxUFB6fL8Vwb+5s6MlY4MTSzha6VPQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ2PR12MB8184
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
+Hi all,
 
+sorry for my late reply; I've been away from my work setup for a
+month...
 
-On 9/6/2023 8:36 PM, Jason Gunthorpe wrote:
-> On Fri, Sep 01, 2023 at 07:50:20AM +0200, Christoph Hellwig wrote:
->> On Thu, Aug 31, 2023 at 01:03:53PM -0500, Kim Phillips wrote:
->>> +Mike Roth, Ashish
->>>
->>> On 8/31/23 7:31 AM, Christoph Hellwig wrote:
->>>> amd_iommu_snp_enable is unused and has been since it was added in commit
->>>> fb2accadaa94 ("iommu/amd: Introduce function to check and enable SNP").
->>>>
->>>> Signed-off-by: Christoph Hellwig <hch@lst.de>
->>>> ---
->>>
->>> It is used by the forthcoming host SNP support:
->>>
->>> https://lore.kernel.org/lkml/20230612042559.375660-8-michael.roth@amd.com/
->>
->> Then resend it with that support, but don't waste resources and everyones
->> time now.
+On Wed, 30 Aug 2023 08:55:51 -0600
+Jonathan Corbet <corbet@lwn.net> wrote:
+
+> So it seems this code got merged without this question ever being
+> answered.  Sorry if it's a dumb one, but I don't think this
+> functionality works as advertised...
+
+Yes, I believe the check was originally in is_swiotlb_buffer(), but it
+got lost during one of the numerous rebases of this patch set. Let me
+send a follow-up patch after making sure it actually works.
+
+Petr T
+
+> Thanks,
 > 
-> +1
+> jon
 > 
-> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+> Jonathan Corbet <corbet@lwn.net> writes:
+> 
+> > Petr Tesarik <petrtesarik@huaweicloud.com> writes:
+> >  
+> >> From: Petr Tesarik <petr.tesarik.ext@huawei.com>
+> >>
+> >> Skip searching the software IO TLB if a device has never used it,
+> >> making sure these devices are not affected by the introduction of
+> >> multiple IO TLB memory pools.
+> >>
+> >> Additional memory barrier is required to ensure that the new value
+> >> of the flag is visible to other CPUs after mapping a new bounce
+> >> buffer. For efficiency, the flag check should be inlined, and then
+> >> the memory barrier must be moved to is_swiotlb_buffer(). However,
+> >> it can replace the existing barrier in swiotlb_find_pool(),
+> >> because all callers use is_swiotlb_buffer() first to verify that
+> >> the buffer address belongs to the software IO TLB.
+> >>
+> >> Signed-off-by: Petr Tesarik <petr.tesarik.ext@huawei.com>
+> >> ---  
+> >
+> > Excuse me if this is a silly question, but I'm not able to figure
+> > it out on my own...
+> >  
+> >>  include/linux/device.h  |  2 ++
+> >>  include/linux/swiotlb.h |  7 ++++++-
+> >>  kernel/dma/swiotlb.c    | 14 ++++++--------
+> >>  3 files changed, 14 insertions(+), 9 deletions(-)
+> >>
+> >> diff --git a/include/linux/device.h b/include/linux/device.h
+> >> index 5fd89c9d005c..6fc808d22bfd 100644
+> >> --- a/include/linux/device.h
+> >> +++ b/include/linux/device.h
+> >> @@ -628,6 +628,7 @@ struct device_physical_location {
+> >>   * @dma_io_tlb_mem: Software IO TLB allocator.  Not for driver
+> >> use.
+> >>   * @dma_io_tlb_pools:	List of transient swiotlb memory
+> >> pools.
+> >>   * @dma_io_tlb_lock:	Protects changes to the list of
+> >> active pools.
+> >> + * @dma_uses_io_tlb: %true if device has used the software IO TLB.
+> >>   * @archdata:	For arch-specific additions.
+> >>   * @of_node:	Associated device tree node.
+> >>   * @fwnode:	Associated device node supplied by platform
+> >> firmware. @@ -737,6 +738,7 @@ struct device {
+> >>  #ifdef CONFIG_SWIOTLB_DYNAMIC
+> >>  	struct list_head dma_io_tlb_pools;
+> >>  	spinlock_t dma_io_tlb_lock;
+> >> +	bool dma_uses_io_tlb;  
+> >
+> > You add this new member here, fine...
+> >  
+> >>  #endif
+> >>  	/* arch specific additions */
+> >>  	struct dev_archdata	archdata;
+> >> diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
+> >> index 8371c92a0271..b4536626f8ff 100644
+> >> --- a/include/linux/swiotlb.h
+> >> +++ b/include/linux/swiotlb.h
+> >> @@ -172,8 +172,13 @@ static inline bool is_swiotlb_buffer(struct
+> >> device *dev, phys_addr_t paddr) if (!mem)
+> >>  		return false;
+> >>  
+> >> -	if (IS_ENABLED(CONFIG_SWIOTLB_DYNAMIC))
+> >> +	if (IS_ENABLED(CONFIG_SWIOTLB_DYNAMIC)) {
+> >> +		/* Pairs with smp_wmb() in swiotlb_find_slots()
+> >> and
+> >> +		 * swiotlb_dyn_alloc(), which modify the RCU
+> >> lists.
+> >> +		 */
+> >> +		smp_rmb();
+> >>  		return swiotlb_find_pool(dev, paddr);
+> >> +	}
+> >>  	return paddr >= mem->defpool.start && paddr <
+> >> mem->defpool.end; }
+> >>  
+> >> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+> >> index adf80dec42d7..d7eac84f975b 100644
+> >> --- a/kernel/dma/swiotlb.c
+> >> +++ b/kernel/dma/swiotlb.c
+> >> @@ -730,7 +730,7 @@ static void swiotlb_dyn_alloc(struct
+> >> work_struct *work) 
+> >>  	add_mem_pool(mem, pool);
+> >>  
+> >> -	/* Pairs with smp_rmb() in swiotlb_find_pool(). */
+> >> +	/* Pairs with smp_rmb() in is_swiotlb_buffer(). */
+> >>  	smp_wmb();
+> >>  }
+> >>  
+> >> @@ -764,11 +764,6 @@ struct io_tlb_pool *swiotlb_find_pool(struct
+> >> device *dev, phys_addr_t paddr) struct io_tlb_mem *mem =
+> >> dev->dma_io_tlb_mem; struct io_tlb_pool *pool;
+> >>  
+> >> -	/* Pairs with smp_wmb() in swiotlb_find_slots() and
+> >> -	 * swiotlb_dyn_alloc(), which modify the RCU lists.
+> >> -	 */
+> >> -	smp_rmb();
+> >> -
+> >>  	rcu_read_lock();
+> >>  	list_for_each_entry_rcu(pool, &mem->pools, node) {
+> >>  		if (paddr >= pool->start && paddr < pool->end)
+> >> @@ -813,6 +808,7 @@ void swiotlb_dev_init(struct device *dev)
+> >>  #ifdef CONFIG_SWIOTLB_DYNAMIC
+> >>  	INIT_LIST_HEAD(&dev->dma_io_tlb_pools);
+> >>  	spin_lock_init(&dev->dma_io_tlb_lock);
+> >> +	dev->dma_uses_io_tlb = false;  
+> >
+> > ...here you initialize it, fine...
+> >  
+> >>  #endif
+> >>  }
+> >>  
+> >> @@ -1157,9 +1153,11 @@ static int swiotlb_find_slots(struct device
+> >> *dev, phys_addr_t orig_addr, list_add_rcu(&pool->node,
+> >> &dev->dma_io_tlb_pools);
+> >> spin_unlock_irqrestore(&dev->dma_io_tlb_lock, flags); 
+> >> -	/* Pairs with smp_rmb() in swiotlb_find_pool(). */
+> >> -	smp_wmb();
+> >>  found:
+> >> +	dev->dma_uses_io_tlb = true;
+> >> +	/* Pairs with smp_rmb() in is_swiotlb_buffer() */
+> >> +	smp_wmb();
+> >> +  
+> >
+> > ...and here you set it if swiotlb is used.
+> >
+> > But, as far as I can tell, you don't actually *use* this field
+> > anywhere. What am I missing?
+> >
+> > Thanks,
+> >
+> > jon  
 
-Duly noted :)
-
-The reason we introduced this change separately from the SNP series was 
-because it is part of a different subsystem, which normally get pulled 
-in separately. Unfortunately the main series takes a long time to get 
-into upstream Linux kernel. So, this code appears as unused, which I can 
-see how it can be confusing to other developers.
-
-FYI: This is just removing a function to enable SNP support in AMD IOMMU 
-driver. The underlying logic to enable the hardware still exist, which 
-is part of the SNP feature enablement of the AMD IOMMU driver.
-
-Reviewed-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-
-> I've said this many times lately. There are other things in this
-> driver that have no upstream justification too, like nesting
-> "support".
-
-Jason, there is no need to keep repeating and polluting this thread. I 
-am happy to discuss and clarify any points of your concern on the 
-"nesting support" in a separate discussion thread :)
-
-> Please organize this SNP support into series that makes sense and are
-> self complete :( I'm not sure a 51 patch series is a productive way to
-> approach this..
-
-We have discussed with Michael Roth (the author of the series "Add AMD 
-Secure Nested Paging (SEV-SNP) Hypervisor Support"​), and he will start 
-including the removed function in the next revision of his series.
-
-Regards,
-Suravee
