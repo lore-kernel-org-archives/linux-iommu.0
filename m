@@ -1,103 +1,63 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 53C207F1
-	for <iommu@lists.linux.dev>; Thu,  7 Sep 2023 08:57:14 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 386EA139F;
-	Thu,  7 Sep 2023 01:57:51 -0700 (PDT)
-Received: from [10.57.30.76] (unknown [10.57.30.76])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 28B5B3F64C;
-	Thu,  7 Sep 2023 01:57:12 -0700 (PDT)
-Message-ID: <d2c93c6c-86d8-1a1f-e58c-8e9d29e9ddb0@arm.com>
-Date: Thu, 7 Sep 2023 09:57:02 +0100
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95BD453B8
+	for <iommu@lists.linux.dev>; Thu,  7 Sep 2023 09:21:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2028C433AB;
+	Thu,  7 Sep 2023 09:21:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1694078483;
+	bh=/GS1WwYYzNZinEQSmtBBhJz/YUvo1u0JiMvkD09lhto=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=hLGGR9u26RiI01krmX9vBDimL0Lxm9Fb1+00GbFy9eMyD0781Yn1ssVROhCWIbObg
+	 bJtsbYG+P02WGz2QsZ5jcfD6pa3DwJDaRmGiKDnEhHWGknZmw1pBg48RJTZDnTQG0u
+	 M1scnrJJQKMqHyZOitKjt9pukCr202LcOkjUxjXwrO1Em773MbAJASU1Gri/YJR/KP
+	 fyNxw0KLR8Nwp2L6R1rN9s2Ocu+uwmyoBhOFZqW8SiqE8x5FDi+eXi038+FSF2hsLN
+	 DZ6xi0fSHkn3WaYGrgyBOoUkR99X0jPl6/E48ooQxalzJelR/kT3HGkzR/v9BdZNnl
+	 ML2o5x+e73GEA==
+Date: Thu, 7 Sep 2023 10:21:17 +0100
+From: Will Deacon <will@kernel.org>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Easwar Hariharan <eahariha@linux.microsoft.com>,
+	zhurui <zhurui3@huawei.com>, Nicolin Chen <nicolinc@nvidia.com>,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, Joerg Roedel <joro@8bytes.org>,
+	Lu Baolu <baolu.lu@linux.intel.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+	Yicong Yang <yangyicong@hisilicon.com>,
+	Tomas Krcka <krckatom@amazon.de>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>
+Subject: Re: [PATCH v2 1/1] iommu/arm-smmu-v3: Fix error case of range command
+Message-ID: <20230907092116.GA5731@willie-the-truck>
+References: <661a7bb5-99e1-de16-d860-0cd17f7a0470@arm.com>
+ <20230808162409.GB2890@willie-the-truck>
+ <80ead8ee-4dbe-7b3c-44f5-944073a2a39d@arm.com>
+ <412886be-644a-5b46-9bfa-1c9a358f9a5d@huawei.com>
+ <280d0be7-7d41-ed78-bf4b-3db6c0076e22@arm.com>
+ <197e87cd-91a2-dce8-716c-488b379abbaf@arm.com>
+ <20230818162114.GB16216@willie-the-truck>
+ <d05378c0-5b85-caaf-ae0d-49576adf7d86@huawei.com>
+ <dafbccb4-f7be-838f-c037-91ff2dc324e4@linux.microsoft.com>
+ <a71e17d8-f5c2-113b-b1ca-e2c011630850@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.15.0
-Subject: Re: [PATCH] Revert "dma-contiguous: check for memory region overlap"
-Content-Language: en-GB
-To: Zhenhua Huang <quic_zhenhuah@quicinc.com>, hch@lst.de,
- m.szyprowski@samsung.com
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- quic_pkondeti@quicinc.com, quic_tingweiz@quicinc.com
-References: <1694073836-5125-1-git-send-email-quic_zhenhuah@quicinc.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <1694073836-5125-1-git-send-email-quic_zhenhuah@quicinc.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a71e17d8-f5c2-113b-b1ca-e2c011630850@arm.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 
-On 2023-09-07 09:03, Zhenhua Huang wrote:
-> This reverts commit 3fa6456ebe13adab3ba1817c8e515a5b88f95dce.
+On Wed, Sep 06, 2023 at 01:59:55PM +0100, Robin Murphy wrote:
+> On 2023-09-06 06:05, Easwar Hariharan wrote:
+> > Could you please send out this patch since ZhuRui has confirmed it fixes
+> > their issue and CC it to stable for v5.15+? Or if Will is willing to
+> > pick it up off this thread, I can do the backport to stable.
 > 
-> The Commit broke the CMA region creation through DT on arm64,
-> as showed below logs with "memblock=debug":
-> [    0.000000] memblock_phys_alloc_range: 41943040 bytes align=0x200000
-> from=0x0000000000000000 max_addr=0x00000000ffffffff
-> early_init_dt_alloc_reserved_memory_arch+0x34/0xa0
-> [    0.000000] memblock_reserve: [0x00000000fd600000-0x00000000ffdfffff]
-> memblock_alloc_range_nid+0xc0/0x19c
-> [    0.000000] Reserved memory: overlap with other memblock reserved region
-> 
->  From call flow, region we defined in DT was always reserved before entering
-> into rmem_cma_setup. Also, rmem_cma_setup has one routine cma_init_reserved_mem
-> to ensure the region was reserved. Checking the region not reserved here seems
-> not correct.
-> 
-> early_init_fdt_scan_reserved_mem:
->      fdt_scan_reserved_mem
->          __reserved_mem_reserve_reg
-> 		early_init_dt_reserve_memory
-> 			memblock_reserve(using “reg” prop case)
->          fdt_init_reserved_mem
-> 		__reserved_mem_alloc_size
-> 			*early_init_dt_alloc_reserved_memory_arch*
-> 				memblock_reserve(dynamic alloc case)
->          __reserved_mem_init_node
-> 		rmem_cma_setup(region overlap check here should always fail)
-> 
-> Example DT can be used to reproduce issue:
-> 
->      dump_mem: mem_dump_region {
->              compatible = "shared-dma-pool";
->              alloc-ranges = <0x0 0x00000000 0x0 0xffffffff>;
->              reusable;
->              size = <0 0x2800000>;
->      };
-> 
-> Signed-off-by: Zhenhua Huang <quic_zhenhuah@quicinc.com>
-> ---
->   kernel/dma/contiguous.c | 5 -----
->   1 file changed, 5 deletions(-)
-> 
-> diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
-> index 88c595e..f005c66 100644
-> --- a/kernel/dma/contiguous.c
-> +++ b/kernel/dma/contiguous.c
-> @@ -473,11 +473,6 @@ static int __init rmem_cma_setup(struct reserved_mem *rmem)
->   		return -EBUSY;
->   	}
->   
-> -	if (memblock_is_region_reserved(rmem->base, rmem->size)) {
-> -		pr_info("Reserved memory: overlap with other memblock reserved region\n");
-> -		return -EBUSY;
-> -	}
+> I can resend after -rc1 if Will would prefer that. It's tagged as a fix so
+> should hopefully get picked for stable automatically once it hits mainline.
 
-Um, indeed... failing to process a reserved memory region if it is 
-reserved is clearly nonsensical. I mean, a few steps later we reach 
-cma_init_reserved_mem() which already relies on the exact opposite check:
+Yes, please! Then I can queue it next week and send it to Joerg as a fix.
 
-	if (!size || !memblock_is_region_reserved(base, size))
-		return -EINVAL;
-
-There's no way 3fa6456ebe13 could have worked or been properly tested :/
-
-Thanks,
-Robin.
-
-> -
->   	if (!of_get_flat_dt_prop(node, "reusable", NULL) ||
->   	    of_get_flat_dt_prop(node, "no-map", NULL))
->   		return -EINVAL;
+Will
