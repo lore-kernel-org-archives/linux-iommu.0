@@ -1,266 +1,250 @@
-Received: from mail-yb1-f171.google.com (mail-yb1-f171.google.com [209.85.219.171])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.88])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8F20417FF
-	for <iommu@lists.linux.dev>; Mon, 11 Sep 2023 03:43:42 +0000 (UTC)
-Received: by mail-yb1-f171.google.com with SMTP id 3f1490d57ef6-d7eccc1b8c6so3721895276.0
-        for <iommu@lists.linux.dev>; Sun, 10 Sep 2023 20:43:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1694403821; x=1695008621; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=b/A0+Q/JKZUt0hgBHJHGOo4adaIlNnlFRTqpKY4rTnI=;
-        b=IS1pHbh0rcVuqya2cDoqI66khONoh76XMVftCMm7PEXhu7WTONRSUQ6Xqt0sZ46M3G
-         0ltz8XR4D27c8jbsow1uFB2xj7KUgB9xDVbBOhf5jh5OXj7SFbMFtPbXP6pyWgymlWgH
-         f9wns/zZRX4RuUJThoZeUWA//1aaPLcXdo6YENI/Ag5wn39JMWRlP1ABqZzGUbV1RcVW
-         IUYDl9rW2wBZ6UoUtHcIYMDZeMfzTvayam3mh2a8Yd2twHNE9HzSvHvcnWfLpAPzNP/m
-         /3HBsHdMMatWC+AzyYJ36CYdmG1dMA2rSusxX1LSsd+5RVW4HBjAo4BSEJOSsMFSWHvg
-         w0Kg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1694403821; x=1695008621;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=b/A0+Q/JKZUt0hgBHJHGOo4adaIlNnlFRTqpKY4rTnI=;
-        b=bWVriPf/RfELwj/KHpDdOGgf2oiEqLHdlrZMz1oMhaT2zFFAEcCN4MXtOCHzy6oBvU
-         ERWw/9nIVnAdZhxvvApjmNjJypO+i1zHK8weCjjSdCgxHD55vEtl+n3/HuvhI3qWxlGo
-         Lucvsj/Gp1yN3h8TXRK7qZeuBza73S2phHCdlSpihTadpCxfZN5WRaqjPchc1/diV5TX
-         d+G/upywJdSNUk3nuddAo0wl1PZuoJS3Y3nKjGK+nbKdp7lVmvhORW1Spio0w5kk2Yel
-         8vjELXZpWOwr2TMB5d2BTLc68b8+n/ILZErqxMtrMY+HfCoqOLxzvmA0XqoFOp2TU9Hp
-         wP2A==
-X-Gm-Message-State: AOJu0Yydjmp2a3cX9QIKvu+Ndwjgs8uR1UhU+78n99HWFb0HpkNcW0B/
-	TtIVrKjwZiHJtPz65YjeRcs+qqDgMp0lWvJIIRw=
-X-Google-Smtp-Source: AGHT+IEn9RWnqeL5Hq8eEsJ3qj42E3U3Zw9Hx5jf9g/hYYKL/Sp3rNoe/D+yDp11vXGlXX/alCwCTiOtiZ1CI7NEqS4=
-X-Received: by 2002:a25:680e:0:b0:d4d:b6de:69bd with SMTP id
- d14-20020a25680e000000b00d4db6de69bdmr7880693ybc.23.1694403821413; Sun, 10
- Sep 2023 20:43:41 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3BCED188
+	for <iommu@lists.linux.dev>; Mon, 11 Sep 2023 06:35:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1694414127; x=1725950127;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=XSfVQm+Gq5fbjDMJ/qDf5u/2wgEklFAdlecevkhXZ2Q=;
+  b=Q67M2Gw4ZRCU7j9Uk+AHcXOActULfG3C4FNWfOkBvr+uMpGWXxz9ot2A
+   BPS8uSi3pNLa9BZrz6UGuJRu0GtC/bJ0/xF8BrlVPtBmM6ppC84EOvPmM
+   Wk+uIowkqwXxxaVr1hZHE7nu0nUuUsa1upiBRh0nxs5djnAZO9P/oj2RQ
+   IH8LgKaplfeYJLagM+/Ao5Rn7XUV9r8Ec6gJnjGvo+7TOOSgp0p25vpr0
+   5ZF82/FAeU6MARmJd4WS+Hv84DjtGHBahwvyCNS4tvxu7LaMgtiICxRl+
+   08o6o7RGHLRpsE7bcEz64oxeQbRxbgvg8NMr/nwLd6v/CAPu+8dNijjfg
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10829"; a="408974589"
+X-IronPort-AV: E=Sophos;i="6.02,243,1688454000"; 
+   d="scan'208";a="408974589"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Sep 2023 23:35:23 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10829"; a="916922403"
+X-IronPort-AV: E=Sophos;i="6.02,243,1688454000"; 
+   d="scan'208";a="916922403"
+Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
+  by orsmga005.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 10 Sep 2023 23:35:21 -0700
+Received: from orsmsx601.amr.corp.intel.com (10.22.229.14) by
+ ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.32; Sun, 10 Sep 2023 23:35:21 -0700
+Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
+ orsmsx601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.32 via Frontend Transport; Sun, 10 Sep 2023 23:35:21 -0700
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com (104.47.73.175)
+ by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.32; Sun, 10 Sep 2023 23:35:20 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=oVYNR14cNrx2zQXnkPbR1pcITfu0SbSgQGkIFmCJpmiuIGzMnA9E0h+xui94QNYYFPU94eL+sgzkxOmgA/SThBgAAqXjGisNJOFob5eu8iLuaJA7+S5MeRbRCH71Mopd1q5HPJfu3XFopbMQvSB6PuVoebPIHt7wkqzBMPN8EonSNAjYuscb6cfViumspWQYLEFMiGYiNyjI7HlOne6qa3VojvCE/rB+tptMI2gUxvv/WTtOrSWz+JShR7E0Cxb5WtzPmUFHlK4OMssiwpOBFkhhkZZ1IjQU4ouYexT+YTHpCEWlUHuuAOnB6qImFinS46DiJmkuBs8QfcEiPrVDAQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=XSfVQm+Gq5fbjDMJ/qDf5u/2wgEklFAdlecevkhXZ2Q=;
+ b=JURoiHPEdDydrjnA1N4YzBl2aexdxTGITpVVFh/g3vRU9ErW6VnS8F0+dXstlnoqLzrLcEcr1mYQ5WmeyrKbmhD4RwiUktxJawVdaO1LEr5uvAXJL48i4j7W8X4ldS9eUBNF/zuz1qKaKFx4JX62FoDaWMN/4WxxFPTBwEJyX2U9Z45JEH26aJQnvL88ioAw/Xy9BeRUUhNdy7RBtW40MqN1xQiaTxEjEjRh3IofUxEd8FOwKv3EPrOZGpQMxXLX9DJDLVU59jznD4B0H5czTqSTcrGcQJVuVtLlzMjvlK2efbvrR2NhVLyQfo66AUwwKz8LtZkdM242sjDcCM5eLQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
+ by SJ0PR11MB8296.namprd11.prod.outlook.com (2603:10b6:a03:47a::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6745.36; Mon, 11 Sep
+ 2023 06:35:18 +0000
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::ddda:2559:a7a6:8323]) by BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::ddda:2559:a7a6:8323%7]) with mapi id 15.20.6768.029; Mon, 11 Sep 2023
+ 06:35:18 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: Baolu Lu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, "Will
+ Deacon" <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, "Jason
+ Gunthorpe" <jgg@ziepe.ca>, Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Nicolin Chen <nicolinc@nvidia.com>
+CC: "Liu, Yi L" <yi.l.liu@intel.com>, Jacob Pan
+	<jacob.jun.pan@linux.intel.com>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH v4 09/10] iommu: Make iommu_queue_iopf() more generic
+Thread-Topic: [PATCH v4 09/10] iommu: Make iommu_queue_iopf() more generic
+Thread-Index: AQHZ1vydYVSBpw8DUkS1M41ymLRuMK/6p/jwgAGRCACABkHzwIABseKAgAEiyiCABnOVAIAJgYCQ
+Date: Mon, 11 Sep 2023 06:35:18 +0000
+Message-ID: <BN9PR11MB52768F9AEBC4BF39300E44478CF2A@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <20230825023026.132919-1-baolu.lu@linux.intel.com>
+ <20230825023026.132919-10-baolu.lu@linux.intel.com>
+ <BN9PR11MB52762A33BC9F41AB424915688CE3A@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <cbfbe969-1a92-52bf-f00c-3fb89feefd66@linux.intel.com>
+ <BN9PR11MB52768891BC89107AD291E45C8CE6A@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <67aa00ae-01e6-0dd8-499f-279cb6df3ddd@linux.intel.com>
+ <BN9PR11MB527610423B186F1C5E734A4B8CE4A@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <068e3e43-a5c9-596b-3d39-782b7893dbcc@linux.intel.com>
+In-Reply-To: <068e3e43-a5c9-596b-3d39-782b7893dbcc@linux.intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|SJ0PR11MB8296:EE_
+x-ms-office365-filtering-correlation-id: febe0702-c5e6-4b5b-6238-08dbb2914401
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: tognyT7yEPv8xjeF2w6NTbuDqJ5SgWSogQOpAjtf4/OAkBvqn507UfVxfuUxvb0BHC5X1yX3Z0NrMVzjy8K9hd74UFwxIdMCI/pi5JiuvOpm5do7Tz4U0CDswaiaPmWFcWweoKrn53eBX1wAhioHM/UnGYnKjJ0w6yrPojpJh2Snyc63eK2V5jc3erk2ozS2+a9DIY3K26PAv7ZfmwwWWa633wfWPFnMP9BCnGoq6DuKehy3YeyzC9xd1i70ZUn07aV+Gv9Ak1wB9DeT+H6cMkXpq0hO0KggRU9PB+yma16RFuMeaUFJaJEY4qCqX8sztAA401RJLPTB5c0AZxDHEY97B4euz0R28EW+FEl+nZoD7AoDweNcV08u9lRUWcxws7KfOudIbYxRKTZ0GooVz3ptCHeiIMBmaG/poPULfadjigMkcqBT/qfkbqDVZ2XQefuC3JEo6C5UCmKmLspjBNNhJKf4i9MeMXKn8hXMim1ZIpC9s+MPLU88tKw7+m1OvvdkR8IqRg/5MD+dRcZRCmvl1TcEOXWnWMHWv3HK75yE13a+QQBIwe5eiEl25HXJOEqZ1kt70yz51O38rHPtERzrqX5PrkahVtvsD+0W3l1jGaolrM0wGtjGrCl+kY8UC5CuRxhS2WpyfgdV9cMnwA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366004)(136003)(39860400002)(396003)(376002)(346002)(451199024)(186009)(1800799009)(2906002)(52536014)(55016003)(26005)(7416002)(316002)(41300700001)(66446008)(66556008)(54906003)(64756008)(66476007)(66946007)(76116006)(110136005)(478600001)(5660300002)(8936002)(8676002)(4326008)(6506007)(7696005)(9686003)(71200400001)(83380400001)(33656002)(38100700002)(82960400001)(38070700005)(86362001)(122000001)(41533002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?T1I5SkoyNzFMaFhGa2NoVG5aU0NKaVN2Z0UyVWlMd3ZyUTJoQ3c2c0k5dVNB?=
+ =?utf-8?B?Zi9EenpsT2Q1WC9vTXdxTlM2Y1FlSSswOUplZmRPNEVyenBkYnpwRUM5VmVa?=
+ =?utf-8?B?Y0Y5V1ZwYTNVbXhOUldJdEU3Q3FFYmFoZnBKbG53THk3L0g2aEdRRFpaZkNw?=
+ =?utf-8?B?TXQyeS9VQ0VxQ3dheHZBQXVialhZL1JuYkRhWlBqeUZ5bVJNQXU2cmdNb21D?=
+ =?utf-8?B?VmpiN0czL1B1Y1pqaldrdk51aEpYT0dxUFJNZC9aYzRwR3JFSzBaTlJwUGQ0?=
+ =?utf-8?B?RHV4SFR1ekFFU2pxZUFEZEQrUXBqK0tIMzNGTEs2eFpuZ2tHeE84UmZ2MEZN?=
+ =?utf-8?B?OUgvS2hPTFF5UEprdGNWODBTQXBrYWZLekVPNDkxWk1UOFRVM09WQjg2TkMz?=
+ =?utf-8?B?SzBGMEYxc3NLOEQ3Q081SzVIV1hyTnZqb2pXRmJwdE8zSjV5a2hvVzlGcXNu?=
+ =?utf-8?B?ZnhyUWVPWkR2VkpkeXJsb0FCYmY4MDQxcnZiZmR2a2VEZWlvUXpnTUcyQXZa?=
+ =?utf-8?B?S3ZTUFRpYVdqbkllc0hLcUNBSTNnVUJwYnVZT2RVdGFlNU9rTzNqbGpaeFg3?=
+ =?utf-8?B?MHEvem1IQnM2TkJUVGl6UnB1WDFESTR4TDljQ1dCZTNpNW44R0xjVk83RFJ3?=
+ =?utf-8?B?NWxyTy82ckVSVEtjNkQyNnVCemhZWHBDL0lzdUNDcmZHQm1zOC9KbGpZTlZM?=
+ =?utf-8?B?MGlrWjRodlNRRFNJUW1TM2hDbUVJM0NtV29ZN3BNT3EzcmpnbERRQmVBdDJT?=
+ =?utf-8?B?MGU3OTF0VGhPT0Q5ZUNrUTdPbk9CRXVrNE9kd3RpLzdGVUVYMDVob010YitL?=
+ =?utf-8?B?eXNJTThLY2J4ejhOYm1GVm1DbXpXUmhuN0FQSXF4Z0hYS1U0UWM1MEdsOW5J?=
+ =?utf-8?B?VXRFbURDbEdoVStpN0hDYmZVZGd4N1ZleDkvRTZ2WVFQOTFTV0VJMk1abHBo?=
+ =?utf-8?B?Q0lyNHQrUWorREhDZ0JSMHM2di9PZnZ5cGpnZUU0b3lMTUVwYmdOd01XZzhQ?=
+ =?utf-8?B?dTl1cUl2Y0Y2M1BGVVdDWDV0V1F2TFFkeXRkWkFoQllZeWpHQVl0R2UxUE9U?=
+ =?utf-8?B?Z2I2dk15SHN1TFI5Z2k0bFU1RDlQZGdHWjdsZ0I4dXhuVFJFYWZxandtTzhB?=
+ =?utf-8?B?Z3AxeHlmR3JIcFk1UzdQeWZCc3YwbFF3RlpPU2VCTEw0OHlWVEFySktzNWJ0?=
+ =?utf-8?B?UVV6aDJGYTZIV2FWYUlHcHJoc0ZCY09LRUVxT2pOZUh1aHRKMFZnbG9pNUtI?=
+ =?utf-8?B?S2dIaFdPQzJCaWQ1cWFJdjlabDVHR2RSeE15bi9tUEdGcVo2UHgvOXduYjRG?=
+ =?utf-8?B?OWo1azVBQ29vZVV6dUcrTVppRElTRS9BdEkxYUdMM0lPYlY4YWNqbVJzOTdo?=
+ =?utf-8?B?WWk2TWZDbU9nWWhMNVNXakdOZWN3OGpRaVRScGZZbVhhaGN4enRmdkd5a2hw?=
+ =?utf-8?B?NWQxRXdqRXBiYWo0Q0FjNnl6K3NVTWZvdUlsS0tzSVJiVlh6MzloakVSQ1BN?=
+ =?utf-8?B?Tlo5ZkNGS0V5QnlLL3FLcEdxZytlTFdGQUtsbkVwczBqWWE4Ymd0ZTNKSzBh?=
+ =?utf-8?B?SXdqV0tiSklWUVpwTjZSWUtJWUR3TE1VZ01jdFg0cGMvQmNOWk5xTUxOSVVO?=
+ =?utf-8?B?MEpOaElRTXY0WjZpVWJwNWg5Z1ZIWVc4NE9JRUh5SDNJSy9XQWJJVk8vL3dk?=
+ =?utf-8?B?U2h0RU0xeTJ6UllPZTJPZnF6VkZkdkorSlNlZnU3SUltMEZBTjlrRjBLQVRK?=
+ =?utf-8?B?ZjVkdFNBQVNXaHR6aHEwR3ExUDlubHowL3AxcnFjUkVJSlVVYU04cVJ6OCtH?=
+ =?utf-8?B?bnJ2K3R6MTRKSFRjRjhoU3BQaFhabEZycVZDZEZab0xnNUgwSUJWVFFoL2h5?=
+ =?utf-8?B?WTlGc1JsdmdSdDVGZkZZSzFvcXN1aHpweXVlZmJPWHhrUHJidjdEV3ViZk90?=
+ =?utf-8?B?bkdPTDZlVU9wNTFlaFI4QTNJU215ZTJTeWN2emFkcWFDbEhxcnd6aVdOMEtJ?=
+ =?utf-8?B?SWZSOGhVUU5QZlVqSkpCRkc5U0xrYWF5eWFxQVp6cmtPbjdCWjFvb2hRZ2Jj?=
+ =?utf-8?B?OEx5cG1xT0VoMFZIcDk2TDhQczI3QzlaeW5pcjdvOE1tKzN3aXZheFhiaU9i?=
+ =?utf-8?Q?Y5OknLM+/Mjr8TbiDB8xZRv73?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20230726142823.6356-1-l3b2w1@gmail.com> <8c3fe8ce-4716-73f0-fb8a-ee982f212371@arm.com>
-In-Reply-To: <8c3fe8ce-4716-73f0-fb8a-ee982f212371@arm.com>
-From: binglei wang <l3b2w1@gmail.com>
-Date: Mon, 11 Sep 2023 11:43:30 +0800
-Message-ID: <CAJ3C4Kz+sRrBmz0ivEzrkR+g0toi+3ozheo+Xm9Zbo_6JuQieA@mail.gmail.com>
-Subject: Re: [PATCH v3] cma: check for memory region overlapping
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: hch@lst.de, m.szyprowski@samsung.com, iommu@lists.linux.dev, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: febe0702-c5e6-4b5b-6238-08dbb2914401
+X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Sep 2023 06:35:18.3640
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: a/wofyyg69pEbM7MOFzxZNajHdEB2umBG2rVsL0kV8JIJkW9etrD5ZfZ2fxPGpfjLGBPeKPXTK2ELy0fTxXYoA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR11MB8296
+X-OriginatorOrg: intel.com
 
-Hi Murphy:
-
-Thanks for your reply.
-
-This patch just want to print a warning message when detecting that
-dts cma area overlaps with kernel code/data memory region.
-If overlapping detected, it will fall back to default cma area
-selected by kernel automatically.
-The attachment is the full startup log.
-
-for example cma setup in dts as follow:
-        reserved-memory {
-                #address-cells =3D <0x00000002>;
-                #size-cells =3D <0x00000002>;
-                ranges;
-                phandle =3D <0x0000014e>;
-                linux,cma {
-                        compatible =3D "shared-dma-pool";
-                        inactive;
-                        reusable;
-                        reg =3D <0x00000000 0x81000000 0x00000000
-0x01000000>; // this area will be reserved successfully.
-                        linux,cma-default;
-                };
-        };
-
-when system boot, we get panic "Unable to handle kernel write to
-read-only memory at virtual address ffff0000010c0000"
-
-[    0.000000] Booting Linux on physical CPU 0x0000000201 [0x700f3034]
-[    0.000000] Linux version 6.5.2 (linux@ubuntu)
-(aarch64-linux-gnu-gcc (Linaro GCC 7.5-2019.12) 7.5.0, GNU ld
-(Linaro_Binutils-2019.12) 2.28.2.20170706) #2 SMP PREEMPT Mon Sep 11
-10:45:07 CST 2023
-[    0.000000] KASLR disabled due to lack of seed
-[    0.000000] Machine model: E2000Q DEMO DDR4
-[    0.000000] earlycon: pl11 at MMIO 0x000000002800d000 (options '')
-[    0.000000] printk: bootconsole [pl11] enabled
-[    0.000000] efi: UEFI not found.
-[    0.000000] Reserved memory: created CMA memory pool at
-0x0000000081000000, size 16 MiB
-[    0.000000] OF: reserved mem: initialized node linux,cma,
-compatible id shared-dma-pool
-[    0.000000] OF: reserved mem:
-0x0000000081000000..0x0000000081ffffff (16384 KiB) map reusable
-linux,cma
-[    0.000000] NUMA: No NUMA configuration found
-[    0.000000] NUMA: Faking a node at [mem
-0x0000000080000000-0x00000000fbffffff]
-[    0.000000] NUMA: NODE_DATA [mem 0xfbbfb9c0-0xfbbfdfff]
-[    0.000000] Zone ranges:
-[    0.000000]   DMA      [mem 0x0000000080000000-0x00000000fbffffff]
-[    0.000000]   DMA32    empty
-[    0.000000]   Normal   empty
-[    0.000000] Movable zone start for each node
-[    0.000000] Early memory node ranges
-[    0.000000]   node   0: [mem 0x0000000080000000-0x00000000fbffffff]
-[    0.000000] Initmem setup node 0 [mem 0x0000000080000000-0x00000000fbfff=
-fff]
-[    0.000000] On node 0, zone DMA: 16384 pages in unavailable ranges
-......
-[    1.854067] Unable to handle kernel write to read-only memory at
-virtual address ffff0000010c0000
-[    1.862342] Initramfs unpacking failed: invalid magic at start of
-compressed archive
-[    1.862937] Mem abort info:
-[    1.873450]   ESR =3D 0x000000009600004e
-[    1.877191]   EC =3D 0x25: DABT (current EL), IL =3D 32 bits
-[    1.882494]   SET =3D 0, FnV =3D 0
-[    1.885539]   EA =3D 0, S1PTW =3D 0
-[    1.888668]   FSC =3D 0x0e: level 2 permission fault
-[    1.893450] Data abort info:
-[    1.896319]   ISV =3D 0, ISS =3D 0x0000004e, ISS2 =3D 0x00000000
-[    1.898409] Freeing initrd memory: 117760K
-[    1.901794]   CM =3D 0, WnR =3D 1, TnD =3D 0, TagAccess =3D 0
-[    1.901797]   GCS =3D 0, Overlay =3D 0, DirtyBit =3D 0, Xs =3D 0
-[    1.901799] swapper pgtable: 4k pages, 48-bit VAs, pgdp=3D0000000081b590=
-00
-[    1.901802] [ffff0000010c0000] pgd=3D18000000fbff7803,
-p4d=3D18000000fbff7803, pud=3D18000000fbff6803, pmd=3D0060000081000f81
-[    1.933524] Internal error: Oops: 000000009600004e [#1] PREEMPT SMP
-[    1.939780] Modules linked in:
-[    1.942825] CPU: 2 PID: 1 Comm: swapper/0 Tainted: G S
-   6.5.2 #2
-[    1.950124] Hardware name: E2000Q DEMO DDR4 (DT)
-[    1.954730] pstate: 40000005 (nZcv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=
-=3D--)
-[    1.961681] pc : __memset+0x16c/0x188
-[    1.965339] lr : dma_direct_alloc+0xfc/0x344
-[    1.969602] sp : ffff80008004b870
-[    1.972905] x29: ffff80008004b870 x28: ffff0000038ba480 x27: ffff8000815=
-20a90
-[    1.980033] x26: ffff000002f19010 x25: ffff800080195d74 x24: fffffc00000=
-43000
-[    1.987160] x23: ffff000002f19010 x22: ffff0000010c0000 x21: 00000000000=
-17000
-[    1.994287] x20: ffff80008004b9e0 x19: ffff800081ad2000 x18: fffffc00000=
-44008
-[    2.001413] x17: 0000000000000040 x16: 0000000000000001 x15: fffffc00000=
-00000
-[    2.008540] x14: 00000000f0000080 x13: 00000000f0000000 x12: ffff800081a=
-d3000
-[    2.015667] x11: 0000000000000129 x10: 0000000000000008 x9 : 00000000000=
-00000
-[    2.022794] x8 : ffff0000010c0000 x7 : 0000000000000000 x6 : 00000000000=
-0003f
-[    2.029921] x5 : 0000000000000040 x4 : 0000000000000000 x3 : 00000000000=
-00004
-[    2.037047] x2 : 0000000000016fc0 x1 : 0000000000000000 x0 : ffff0000010=
-c0000
-[    2.044174] Call trace:
-[    2.046610]  __memset+0x16c/0x188
-[    2.049915]  dma_alloc_attrs+0x88/0x104
-[    2.053741]  dmam_alloc_attrs+0x70/0xc8
-[    2.057568]  ahci_port_start+0xa4/0x238
-[    2.061396]  ata_host_start.part.36+0x100/0x21c
-[    2.065918]  ata_host_activate+0x6c/0x148
-[    2.069917]  ahci_host_activate+0x18c/0x1f0
-[    2.074090]  ahci_platform_init_host+0x2b0/0x2f0
-[    2.078697]  ahci_probe+0xb8/0xe0
-[    2.082003]  platform_probe+0x68/0xd8
-[    2.085656]  really_probe+0x150/0x2a4
-[    2.089308]  __driver_probe_device+0x7c/0x130
-[    2.093653]  driver_probe_device+0x38/0x114
-[    2.097825]  __driver_attach+0xac/0x134
-[    2.101649]  bus_for_each_dev+0x7c/0xdc
-[    2.105477]  driver_attach+0x24/0x30
-[    2.109042]  bus_add_driver+0xf0/0x20c
-[    2.112782]  driver_register+0x60/0x128
-[    2.116607]  __platform_driver_register+0x28/0x34
-[    2.121301]  ahci_driver_init+0x1c/0x28
-[    2.125128]  do_one_initcall+0x60/0x1d4
-[    2.128955]  kernel_init_freeable+0x1d8/0x2a0
-[    2.133304]  kernel_init+0x24/0x130
-[    2.136783]  ret_from_fork+0x10/0x20
-[    2.140350] Code: 91010108 54ffff4a 8b040108 cb050042 (d50b7428)
-[    2.146433] ---[ end trace 0000000000000000 ]---
-[    2.151061] Kernel panic - not syncing: Attempted to kill init!
-exitcode=3D0x0000000b
-[    2.158706] SMP: stopping secondary CPUs
-[    2.162620] Kernel Offset: 0x80000 from 0xffff800080000000
-[    2.168094] PHYS_OFFSET: 0x80000000
-[    2.171570] CPU features: 0x00000000,80010000,0800421b
-[    2.176697] Memory Limit: none
-[    2.179741] ---[ end Kernel panic - not syncing: Attempted to kill
-init! exitcode=3D0x0000000b ]---
-
-Best wishes.
-Binglei Wang.
-
-
-Robin Murphy <robin.murphy@arm.com> =E4=BA=8E2023=E5=B9=B49=E6=9C=887=E6=97=
-=A5=E5=91=A8=E5=9B=9B 20:57=E5=86=99=E9=81=93=EF=BC=9A
->
-> On 26/07/2023 3:28 pm, Binglei Wang wrote:
-> > From: Binglei Wang <l3b2w1@gmail.com>
-> >
-> > In the process of parsing the DTS, checks
-> > whether the memory region specified by the DTS CMA node area
-> > overlaps with the kernel text memory space reserved by memblock
-> > before calling early_init_fdt_scan_reserved_mem.
->
-> This description bears no relation to what the code actually does.
-> rmem_cma_setup() happens well after parsing the DTS, as it is that
-> initial parsing process in fdt_scan_reserved_mem() which *makes* the
-> memblock reservations in the first place. Thus, as the revert patch
-> demonstrates, by the time we get here to start *using* the reserved
-> region via fdt_init_reserved_mem(), it is always guaranteed to overlap a
-> reserved region because it trivially overlaps with itself.
->
-> Furthermore, even if the bootloader does stupidly load a non-relocatable
-> kernel into memory that it's described as reserved, the kernel text
-> pages should not be available for CMA to allocate from - and if they
-> were, that would be a far more fundamental bug elsewhere - so what is
-> the exact problem you're trying to solve here?
->
-> Thanks,
-> Robin.
->
-> > Maybe it's better to have some warning prompts printed.
-> >
-> > Signed-off-by: Binglei Wang <l3b2w1@gmail.com>
-> > ---
-> >
-> > Notes:
-> >      v3: fix compile error.
-> >      v2: delete the logic code for handling return -EBUSY.
-> >      v1: return -EBUSY when detect overlapping and handle the return ca=
-se.
-> >
-> >   kernel/dma/contiguous.c | 5 +++++
-> >   1 file changed, 5 insertions(+)
-> >
-> > diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
-> > index 6ea80ae42..dc6d2af1e 100644
-> > --- a/kernel/dma/contiguous.c
-> > +++ b/kernel/dma/contiguous.c
-> > @@ -410,6 +410,11 @@ static int __init rmem_cma_setup(struct reserved_m=
-em *rmem)
-> >               return -EBUSY;
-> >       }
-> >
-> > +     if (memblock_is_region_reserved(rmem->base, rmem->size)) {
-> > +             pr_info("Reserved memory: overlap with other memblock res=
-erved region\n");
-> > +             return -EBUSY;
-> > +     }
-> > +
-> >       if (!of_get_flat_dt_prop(node, "reusable", NULL) ||
-> >           of_get_flat_dt_prop(node, "no-map", NULL))
-> >               return -EINVAL;
+PiBGcm9tOiBCYW9sdSBMdSA8YmFvbHUubHVAbGludXguaW50ZWwuY29tPg0KPiBTZW50OiBUdWVz
+ZGF5LCBTZXB0ZW1iZXIgNSwgMjAyMyAxOjIwIFBNDQo+IA0KPiBJIGFkZGVkIGJlbG93IHBhdGNo
+IHRvIGFkZHJlc3MgdGhlIGlvcGZfcXVldWVfZmx1c2hfZGV2KCkgaXNzdWUuIFdoYXQgZG8NCj4g
+eW91IHRoaW5rIG9mIHRoaXPvvJ8NCj4gDQo+IGlvbW11OiBJbXByb3ZlIGlvcGZfcXVldWVfZmx1
+c2hfZGV2KCkNCj4gDQo+IFRoZSBpb3BmX3F1ZXVlX2ZsdXNoX2RldigpIGlzIGNhbGxlZCBieSB0
+aGUgaW9tbXUgZHJpdmVyIGJlZm9yZSByZWxlYXNpbmcNCj4gYSBQQVNJRC4gSXQgZW5zdXJlcyB0
+aGF0IGFsbCBwZW5kaW5nIGZhdWx0cyBmb3IgdGhpcyBQQVNJRCBoYXZlIGJlZW4NCj4gaGFuZGxl
+ZCBvciBjYW5jZWxsZWQsIGFuZCB3b24ndCBoaXQgdGhlIGFkZHJlc3Mgc3BhY2UgdGhhdCByZXVz
+ZXMgdGhpcw0KPiBQQVNJRC4gVGhlIGRyaXZlciBtdXN0IG1ha2Ugc3VyZSB0aGF0IG5vIG5ldyBm
+YXVsdCBpcyBhZGRlZCB0byB0aGUgcXVldWUuDQo+IA0KPiBUaGUgU01NVXYzIGRyaXZlciBkb2Vz
+bid0IHVzZSBpdCBiZWNhdXNlIGl0IG9ubHkgaW1wbGVtZW50cyB0aGUNCj4gQXJtLXNwZWNpZmlj
+IHN0YWxsIGZhdWx0IG1vZGVsIHdoZXJlIERNQSB0cmFuc2FjdGlvbnMgYXJlIGhlbGQgaW4gdGhl
+IFNNTVUNCj4gd2hpbGUgd2FpdGluZyBmb3IgdGhlIE9TIHRvIGhhbmRsZSBpb3BmJ3MuIFNpbmNl
+IGEgZGV2aWNlIGRyaXZlciBtdXN0DQo+IGNvbXBsZXRlIGFsbCBETUEgdHJhbnNhY3Rpb25zIGJl
+Zm9yZSBkZXRhY2hpbmcgZG9tYWluLCB0aGVyZSBhcmUgbm8NCj4gcGVuZGluZyBpb3BmJ3Mgd2l0
+aCB0aGUgc3RhbGwgbW9kZWwuIFBSSSBzdXBwb3J0IHJlcXVpcmVzIGFkZGluZyBhIGNhbGwgdG8N
+Cj4gaW9wZl9xdWV1ZV9mbHVzaF9kZXYoKSBhZnRlciBmbHVzaGluZyB0aGUgaGFyZHdhcmUgcGFn
+ZSBmYXVsdCBxdWV1ZS4NCj4gDQo+IFRoZSBjdXJyZW50IGltcGxlbWVudGF0aW9uIG9mIGlvcGZf
+cXVldWVfZmx1c2hfZGV2KCkgaXMgYSBzaW1wbGlmaWVkDQo+IHZlcnNpb24uIEl0IGlzIG9ubHkg
+c3VpdGFibGUgZm9yIFNWQSBjYXNlIGluIHdoaWNoIHRoZSBwcm9jZXNzaW5nIG9mIGlvcGYNCj4g
+aXMgaW1wbGVtZW50ZWQgaW4gdGhlIGlubmVyIGxvb3Agb2YgdGhlIGlvbW11IHN1YnN5c3RlbS4N
+Cj4gDQo+IEltcHJvdmUgdGhpcyBpbnRlcmZhY2UgdG8gbWFrZSBpdCBhbHNvIHdvcmsgZm9yIGhh
+bmRsaW5nIGlvcGYgb3V0IG9mIHRoZQ0KPiBpb21tdSBjb3JlLg0KPiANCj4gU2lnbmVkLW9mZi1i
+eTogTHUgQmFvbHUgPGJhb2x1Lmx1QGxpbnV4LmludGVsLmNvbT4NCj4gLS0tDQo+ICAgaW5jbHVk
+ZS9saW51eC9pb21tdS5oICAgICAgfCAgNCArKy0tDQo+ICAgZHJpdmVycy9pb21tdS9pbnRlbC9z
+dm0uYyAgfCAgMiArLQ0KPiAgIGRyaXZlcnMvaW9tbXUvaW8tcGdmYXVsdC5jIHwgNDANCj4gKysr
+KysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrLS0NCj4gICAzIGZpbGVzIGNoYW5nZWQs
+IDQxIGluc2VydGlvbnMoKyksIDUgZGVsZXRpb25zKC0pDQo+IA0KPiBkaWZmIC0tZ2l0IGEvaW5j
+bHVkZS9saW51eC9pb21tdS5oIGIvaW5jbHVkZS9saW51eC9pb21tdS5oDQo+IGluZGV4IDc3YWQz
+M2ZmZTNhYy4uNDY1ZTIzZTk0NWQwIDEwMDY0NA0KPiAtLS0gYS9pbmNsdWRlL2xpbnV4L2lvbW11
+LmgNCj4gKysrIGIvaW5jbHVkZS9saW51eC9pb21tdS5oDQo+IEBAIC0xMjc1LDcgKzEyNzUsNyBA
+QCBpb21tdV9zdmFfZG9tYWluX2FsbG9jKHN0cnVjdCBkZXZpY2UgKmRldiwNCj4gc3RydWN0DQo+
+IG1tX3N0cnVjdCAqbW0pDQo+ICAgI2lmZGVmIENPTkZJR19JT01NVV9JT1BGDQo+ICAgaW50IGlv
+cGZfcXVldWVfYWRkX2RldmljZShzdHJ1Y3QgaW9wZl9xdWV1ZSAqcXVldWUsIHN0cnVjdCBkZXZp
+Y2UgKmRldik7DQo+ICAgaW50IGlvcGZfcXVldWVfcmVtb3ZlX2RldmljZShzdHJ1Y3QgaW9wZl9x
+dWV1ZSAqcXVldWUsIHN0cnVjdCBkZXZpY2UNCj4gKmRldik7DQo+IC1pbnQgaW9wZl9xdWV1ZV9m
+bHVzaF9kZXYoc3RydWN0IGRldmljZSAqZGV2KTsNCj4gK2ludCBpb3BmX3F1ZXVlX2ZsdXNoX2Rl
+dihzdHJ1Y3QgZGV2aWNlICpkZXYsIGlvYXNpZF90IHBhc2lkKTsNCj4gICBzdHJ1Y3QgaW9wZl9x
+dWV1ZSAqaW9wZl9xdWV1ZV9hbGxvYyhjb25zdCBjaGFyICpuYW1lKTsNCj4gICB2b2lkIGlvcGZf
+cXVldWVfZnJlZShzdHJ1Y3QgaW9wZl9xdWV1ZSAqcXVldWUpOw0KPiAgIGludCBpb3BmX3F1ZXVl
+X2Rpc2NhcmRfcGFydGlhbChzdHJ1Y3QgaW9wZl9xdWV1ZSAqcXVldWUpOw0KPiBAQCAtMTI5NSw3
+ICsxMjk1LDcgQEAgaW9wZl9xdWV1ZV9yZW1vdmVfZGV2aWNlKHN0cnVjdCBpb3BmX3F1ZXVlDQo+
+ICpxdWV1ZSwNCj4gc3RydWN0IGRldmljZSAqZGV2KQ0KPiAgIAlyZXR1cm4gLUVOT0RFVjsNCj4g
+ICB9DQo+IA0KPiAtc3RhdGljIGlubGluZSBpbnQgaW9wZl9xdWV1ZV9mbHVzaF9kZXYoc3RydWN0
+IGRldmljZSAqZGV2KQ0KPiArc3RhdGljIGlubGluZSBpbnQgaW9wZl9xdWV1ZV9mbHVzaF9kZXYo
+c3RydWN0IGRldmljZSAqZGV2LCBpb2FzaWRfdCBwYXNpZCkNCj4gICB7DQo+ICAgCXJldHVybiAt
+RU5PREVWOw0KPiAgIH0NCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUvaW50ZWwvc3ZtLmMg
+Yi9kcml2ZXJzL2lvbW11L2ludGVsL3N2bS5jDQo+IGluZGV4IDc4MGM1YmQ3M2VjMi4uNGMzZjQ1
+MzNlMzM3IDEwMDY0NA0KPiAtLS0gYS9kcml2ZXJzL2lvbW11L2ludGVsL3N2bS5jDQo+ICsrKyBi
+L2RyaXZlcnMvaW9tbXUvaW50ZWwvc3ZtLmMNCj4gQEAgLTQ5NSw3ICs0OTUsNyBAQCB2b2lkIGlu
+dGVsX2RyYWluX3Bhc2lkX3BycShzdHJ1Y3QgZGV2aWNlICpkZXYsIHUzMg0KPiBwYXNpZCkNCj4g
+ICAJCWdvdG8gcHJxX3JldHJ5Ow0KPiAgIAl9DQo+IA0KPiAtCWlvcGZfcXVldWVfZmx1c2hfZGV2
+KGRldik7DQo+ICsJaW9wZl9xdWV1ZV9mbHVzaF9kZXYoZGV2LCBwYXNpZCk7DQo+IA0KPiAgIAkv
+Kg0KPiAgIAkgKiBQZXJmb3JtIHN0ZXBzIGRlc2NyaWJlZCBpbiBWVC1kIHNwZWMgQ0g3LjEwIHRv
+IGRyYWluIHBhZ2UNCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUvaW8tcGdmYXVsdC5jIGIv
+ZHJpdmVycy9pb21tdS9pby1wZ2ZhdWx0LmMNCj4gaW5kZXggM2U2ODQ1YmM1OTAyLi44NDcyOGZi
+ODlhYzcgMTAwNjQ0DQo+IC0tLSBhL2RyaXZlcnMvaW9tbXUvaW8tcGdmYXVsdC5jDQo+ICsrKyBi
+L2RyaXZlcnMvaW9tbXUvaW8tcGdmYXVsdC5jDQo+IEBAIC0zMDksMTcgKzMwOSw1MyBAQCBFWFBP
+UlRfU1lNQk9MX0dQTChpb21tdV9wYWdlX3Jlc3BvbnNlKTsNCj4gICAgKg0KPiAgICAqIFJldHVy
+bjogMCBvbiBzdWNjZXNzIGFuZCA8MCBvbiBlcnJvci4NCj4gICAgKi8NCj4gLWludCBpb3BmX3F1
+ZXVlX2ZsdXNoX2RldihzdHJ1Y3QgZGV2aWNlICpkZXYpDQo+ICtpbnQgaW9wZl9xdWV1ZV9mbHVz
+aF9kZXYoc3RydWN0IGRldmljZSAqZGV2LCBpb2FzaWRfdCBwYXNpZCkNCj4gICB7DQo+ICAgCXN0
+cnVjdCBpb21tdV9mYXVsdF9wYXJhbSAqaW9wZl9wYXJhbSA9DQo+IGlvcGZfZ2V0X2Rldl9mYXVs
+dF9wYXJhbShkZXYpOw0KPiArCWNvbnN0IHN0cnVjdCBpb21tdV9vcHMgKm9wcyA9IGRldl9pb21t
+dV9vcHMoZGV2KTsNCj4gKwlzdHJ1Y3QgaW9tbXVfcGFnZV9yZXNwb25zZSByZXNwOw0KPiArCXN0
+cnVjdCBpb3BmX2ZhdWx0ICppb3BmLCAqbmV4dDsNCj4gKwlpbnQgcmV0ID0gMDsNCj4gDQo+ICAg
+CWlmICghaW9wZl9wYXJhbSkNCj4gICAJCXJldHVybiAtRU5PREVWOw0KPiANCj4gICAJZmx1c2hf
+d29ya3F1ZXVlKGlvcGZfcGFyYW0tPnF1ZXVlLT53cSk7DQo+ICsNCj4gKwltdXRleF9sb2NrKCZp
+b3BmX3BhcmFtLT5sb2NrKTsNCj4gKwlsaXN0X2Zvcl9lYWNoX2VudHJ5X3NhZmUoaW9wZiwgbmV4
+dCwgJmlvcGZfcGFyYW0tPnBhcnRpYWwsIGxpc3QpIHsNCj4gKwkJaWYgKCEoaW9wZi0+ZmF1bHQu
+cHJtLmZsYWdzICYNCj4gSU9NTVVfRkFVTFRfUEFHRV9SRVFVRVNUX1BBU0lEX1ZBTElEKSB8fA0K
+PiArCQkgICAgaW9wZi0+ZmF1bHQucHJtLnBhc2lkICE9IHBhc2lkKQ0KPiArCQkJYnJlYWs7DQo+
+ICsNCj4gKwkJbGlzdF9kZWwoJmlvcGYtPmxpc3QpOw0KPiArCQlrZnJlZShpb3BmKTsNCj4gKwl9
+DQo+ICsNCj4gKwlsaXN0X2Zvcl9lYWNoX2VudHJ5X3NhZmUoaW9wZiwgbmV4dCwgJmlvcGZfcGFy
+YW0tPmZhdWx0cywgbGlzdCkgew0KPiArCQlpZiAoIShpb3BmLT5mYXVsdC5wcm0uZmxhZ3MgJg0K
+PiBJT01NVV9GQVVMVF9QQUdFX1JFUVVFU1RfUEFTSURfVkFMSUQpIHx8DQo+ICsJCSAgICBpb3Bm
+LT5mYXVsdC5wcm0ucGFzaWQgIT0gcGFzaWQpDQo+ICsJCQljb250aW51ZTsNCj4gKw0KPiArCQlt
+ZW1zZXQoJnJlc3AsIDAsIHNpemVvZihzdHJ1Y3QgaW9tbXVfcGFnZV9yZXNwb25zZSkpOw0KPiAr
+CQlyZXNwLnBhc2lkID0gaW9wZi0+ZmF1bHQucHJtLnBhc2lkOw0KPiArCQlyZXNwLmdycGlkID0g
+aW9wZi0+ZmF1bHQucHJtLmdycGlkOw0KPiArCQlyZXNwLmNvZGUgPSBJT01NVV9QQUdFX1JFU1Bf
+SU5WQUxJRDsNCj4gKw0KPiArCQlpZiAoaW9wZi0+ZmF1bHQucHJtLmZsYWdzICYNCj4gSU9NTVVf
+RkFVTFRfUEFHRV9SRVNQT05TRV9ORUVEU19QQVNJRCkNCj4gKwkJCXJlc3AuZmxhZ3MgPSBJT01N
+VV9QQUdFX1JFU1BfUEFTSURfVkFMSUQ7DQoNCk91dCBvZiBjdXJpb3NpdHkuIElzIGl0IGEgdmFs
+aWQgY29uZmlndXJhdGlvbiB3aGljaCBoYXMgUkVRVUVTVF9QQVNJRF9WQUxJRA0Kc2V0IGJ1dCBS
+RVNQX1BBU0lEX1ZBTElEIGNsZWFyZWQ/IEknbSB1bmNsZWFyIHdoeSBhbm90aGVyIHJlc3BvbnNl
+DQpmbGFnIGlzIHJlcXVpcmVkIGJleW9uZCB3aGF0IHRoZSByZXF1ZXN0IGZsYWcgaGFzIHRvbGQu
+Li4NCg0KPiArDQo+ICsJCXJldCA9IG9wcy0+cGFnZV9yZXNwb25zZShkZXYsIGlvcGYsICZyZXNw
+KTsNCj4gKwkJaWYgKHJldCkNCj4gKwkJCWJyZWFrOw0KPiArDQo+ICsJCWxpc3RfZGVsKCZpb3Bm
+LT5saXN0KTsNCj4gKwkJa2ZyZWUoaW9wZik7DQo+ICsJfQ0KPiArCW11dGV4X3VubG9jaygmaW9w
+Zl9wYXJhbS0+bG9jayk7DQo+ICAgCWlvcGZfcHV0X2Rldl9mYXVsdF9wYXJhbShpb3BmX3BhcmFt
+KTsNCj4gDQo+IC0JcmV0dXJuIDA7DQo+ICsJcmV0dXJuIHJldDsNCj4gICB9DQo+ICAgRVhQT1JU
+X1NZTUJPTF9HUEwoaW9wZl9xdWV1ZV9mbHVzaF9kZXYpOw0KPiANCg0KVGhpcyBsb29rcyBPSy4g
+QW5vdGhlciBuaXQgaXMgdGhhdCB0aGUgd2FybmluZyBvZiAibm8gcGVuZGluZyBQUlEiDQppbiBp
+b21tdV9wYWdlX3Jlc3BvbnNlKCkgc2hvdWxkIGJlIHJlbW92ZWQgZ2l2ZW4gd2l0aCBhYm92ZQ0K
+Y2hhbmdlIGl0J3MgZXhwZWN0ZWQgZm9yIGlvbW11ZmQgcmVzcG9uc2VzIHRvIGJlIHJlY2VpdmVk
+IGFmdGVyIHRoaXMNCmZsdXNoIG9wZXJhdGlvbiBpbiBpb21tdSBjb3JlLg0K
