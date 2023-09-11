@@ -1,199 +1,163 @@
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2070.outbound.protection.outlook.com [40.107.223.70])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A26FC2D9;
-	Mon, 11 Sep 2023 12:10:47 +0000 (UTC)
-Received: from pps.filterd (m0353726.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 38BBcf8k020281;
-	Mon, 11 Sep 2023 12:09:51 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=HGXHlyuW7tI3KkroRX3EwubPO1mf8HTAk2ndjhHoNFs=;
- b=PWIIEP2lmDUfa1mp9pmw/oaZwzdtcpnlqzQ75hk9+FpJGvJYDU60r9trS5Z/VtLyDHft
- 9WX+n5snuJJ5jbu5vUpOHlKrmCud7gkjCafXw2JlLlwDtpuM9LO25/9hM4ZNnK9/vKhf
- l1qU1LZtGDxzxdwXmQxEa86eJVFAmwBgVfDVbQFx2Nm1Almhe4faCXCK8QzNT1ejl8yF
- QR+nEvWye7K6HENvui0bkEIhPwedV8GX8xMoeAVJHxAzGF7xr7/nFp13TH8Xj3KOQHcr
- h7xH4BM63pjFCbfz/lLveE+A3kojVUwJbk8xCa7Q1WSyEsQ7FXyRLhW42+3i3S8xCX16 Ug== 
-Received: from pps.reinject (localhost [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3t1wuq0aj0-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 11 Sep 2023 12:09:50 +0000
-Received: from m0353726.ppops.net (m0353726.ppops.net [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 38BBedp6028128;
-	Mon, 11 Sep 2023 12:07:02 GMT
-Received: from ppma13.dal12v.mail.ibm.com (dd.9e.1632.ip4.static.sl-reverse.com [50.22.158.221])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3t1wuq08ya-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 11 Sep 2023 12:07:02 +0000
-Received: from pps.filterd (ppma13.dal12v.mail.ibm.com [127.0.0.1])
-	by ppma13.dal12v.mail.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 38BBOZ8H002318;
-	Mon, 11 Sep 2023 12:06:36 GMT
-Received: from smtprelay03.fra02v.mail.ibm.com ([9.218.2.224])
-	by ppma13.dal12v.mail.ibm.com (PPS) with ESMTPS id 3t158jsvr1-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 11 Sep 2023 12:06:35 +0000
-Received: from smtpav03.fra02v.mail.ibm.com (smtpav03.fra02v.mail.ibm.com [10.20.54.102])
-	by smtprelay03.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 38BC6XqU66978064
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Mon, 11 Sep 2023 12:06:33 GMT
-Received: from smtpav03.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id E64F02004B;
-	Mon, 11 Sep 2023 12:06:32 +0000 (GMT)
-Received: from smtpav03.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 1D9F220043;
-	Mon, 11 Sep 2023 12:06:30 +0000 (GMT)
-Received: from [9.171.58.134] (unknown [9.171.58.134])
-	by smtpav03.fra02v.mail.ibm.com (Postfix) with ESMTP;
-	Mon, 11 Sep 2023 12:06:30 +0000 (GMT)
-Message-ID: <c5ac1459d2967c17e472d1c51d5017beb39e4714.camel@linux.ibm.com>
-Subject: Re: [PATCH v12 5/6] iommu/dma: Allow a single FQ in addition to
- per-CPU FQs
-From: Niklas Schnelle <schnelle@linux.ibm.com>
-To: Joerg Roedel <joro@8bytes.org>, Matthew Rosato <mjrosato@linux.ibm.com>,
-        Will Deacon <will@kernel.org>, Wenjia Zhang <wenjia@linux.ibm.com>,
-        Robin
- Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Gerd Bayer <gbayer@linux.ibm.com>, Julian Ruess <julianr@linux.ibm.com>,
-        Pierre Morel <pmorel@linux.ibm.com>,
-        Alexandra Winter
- <wintera@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik
- <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian
- Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle
- <svens@linux.ibm.com>,
-        Suravee Suthikulpanit
- <suravee.suthikulpanit@amd.com>,
-        Hector Martin <marcan@marcan.st>, Sven
- Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        David
- Woodhouse <dwmw2@infradead.org>,
-        Lu Baolu <baolu.lu@linux.intel.com>, Andy
- Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad
- Dybcio <konrad.dybcio@linaro.org>,
-        Yong Wu <yong.wu@mediatek.com>,
-        Matthias
- Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno
- <angelogioacchino.delregno@collabora.com>,
-        Gerald Schaefer
- <gerald.schaefer@linux.ibm.com>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Baolin
- Wang <baolin.wang@linux.alibaba.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>, Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Thierry Reding
- <thierry.reding@gmail.com>,
-        Krishna Reddy <vdumpa@nvidia.com>,
-        Jonathan
- Hunter <jonathanh@nvidia.com>,
-        Jonathan Corbet <corbet@lwn.net>, linux-s390@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        iommu@lists.linux.dev, asahi@lists.linux.dev,
-        linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
-        linux-mediatek@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        linux-tegra@vger.kernel.org, linux-doc@vger.kernel.org
-Date: Mon, 11 Sep 2023 14:06:29 +0200
-In-Reply-To: <20230825-dma_iommu-v12-5-4134455994a7@linux.ibm.com>
-References: <20230825-dma_iommu-v12-0-4134455994a7@linux.ibm.com>
-	 <20230825-dma_iommu-v12-5-4134455994a7@linux.ibm.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.48.4 (3.48.4-1.fc38) 
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: 36tUcYWsI3-kwg7TjwTB82g2_ly-u1Zp
-X-Proofpoint-ORIG-GUID: CMa4t0Ot4oG8TuboxO12mxpMT2o-4HQO
-Content-Transfer-Encoding: quoted-printable
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7FBECF9C2
+	for <iommu@lists.linux.dev>; Mon, 11 Sep 2023 12:11:39 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=bE5pI5R9LjRT6JaDlRB1iFEeyNUWi2/O7ZkJyLSn3PvmVXHnVlQLnVX9FgWMiy8DBBSkj3QpMjG0xa+1yKKxPYYAd5IffjG4fCFkYxkLc+qUM6cPHhqVEp3981wUN++DsXRIZ+qcqieYDKbOmlGnAiYuGhVsjH9FASl3yhpVPP6u7aSL4CBB5SInsORQ7fPBVX8KefHR5oJtaiFFvmcC2OX1XjahquaebkvXECsiNMFXaSMV/BmRoL6j3RF+j0J+64IR6l66szqMPeQ/7gycFawq9C5x2kod3SRIIbP5v1QVAYo43l7oAMnOB6UDroL4UMqQ8GpUf/Hc2v7/aHZIhQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=6ZA6vHRU92GA6gdGgr8Q3DZPY3JCdeVR8EwtQhYfH40=;
+ b=exUQf0CPXFlRSiEbeFi8rgHr1s8bMeNxy0Vjxs46Ak8R4spUQVOzhV7wfKP/gsEkXb37AYyttTAGykjRUotx2cCxTWwWM068N9WFTJZ/Aafv7QpazFPTT6ymr7/CpVsvOLaDEHaJArl4jQ3tzSBhpfjJFNpxO66dI/jjxdTNIUt3TFD3lG2LAfqi7zOzAI4ZAL+Go5J1DRiJi3zS5alJ/GzjfRZ3rwGQ5Dk1738YPotpQjgQYvHImcY+clqJvG6A0Q617o+obAaq4atzPjgiEknucc2HJPHA1S4oA2oRypoGiePmT5An+3OwG8g3oxE3c949SeR/ZVOEm+6WJ9qE1w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=6ZA6vHRU92GA6gdGgr8Q3DZPY3JCdeVR8EwtQhYfH40=;
+ b=dapMqwsF7DNWKua0E9KHVIGDDOlj1c+2aFEvdxFteeDRRfjWSlObOX+O+GRni4SLLJTVX8/bd+sa6wl33Itrs6+AfpP+lvFyz8wGba0S7HC04X74952aRGMQpbvW53pQJSIIMr+SBogtyRRmlFi5xZtfJa2SjpmXCe69iybkDso=
+Received: from SN4PR0501CA0052.namprd05.prod.outlook.com
+ (2603:10b6:803:41::29) by SJ1PR12MB6051.namprd12.prod.outlook.com
+ (2603:10b6:a03:48a::18) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6768.30; Mon, 11 Sep
+ 2023 12:11:36 +0000
+Received: from SN1PEPF000252A0.namprd05.prod.outlook.com
+ (2603:10b6:803:41:cafe::2c) by SN4PR0501CA0052.outlook.office365.com
+ (2603:10b6:803:41::29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6792.16 via Frontend
+ Transport; Mon, 11 Sep 2023 12:11:36 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ SN1PEPF000252A0.mail.protection.outlook.com (10.167.242.7) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.6792.17 via Frontend Transport; Mon, 11 Sep 2023 12:11:36 +0000
+Received: from kali.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.27; Mon, 11 Sep
+ 2023 07:11:00 -0500
+From: Vasant Hegde <vasant.hegde@amd.com>
+To: <iommu@lists.linux.dev>, <joro@8bytes.org>
+CC: <suravee.suthikulpanit@amd.com>, <wei.huang2@amd.com>,
+	<jsnitsel@redhat.com>, <jgg@ziepe.ca>, Vasant Hegde <vasant.hegde@amd.com>
+Subject: [PATCH v2 00/11] iommu/amd: SVA Support (Part 4) - SVA and IOPF
+Date: Mon, 11 Sep 2023 12:10:35 +0000
+Message-ID: <20230911121046.1025732-1-vasant.hegde@amd.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.267,Aquarius:18.0.957,Hydra:6.0.601,FMLib:17.11.176.26
- definitions=2023-09-11_06,2023-09-05_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 spamscore=0
- priorityscore=1501 clxscore=1011 impostorscore=0 suspectscore=0
- adultscore=0 phishscore=0 bulkscore=0 malwarescore=0 mlxlogscore=957
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2308100000 definitions=main-2309110110
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SN1PEPF000252A0:EE_|SJ1PR12MB6051:EE_
+X-MS-Office365-Filtering-Correlation-Id: 4f8e1f00-ce8d-421f-c4d1-08dbb2c03ef6
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	0EUfBtTHyqTA2C4ydPoHn72cbfLxMdUeKK47XSmL/KO3I1oP/2X4P5BE5CkoT30lXodfBTT2oH8CvuSMRHGCjvrMLlFCqWt/pilgimmjmc7nIKU9V3qDvFWN1Eq2HOFHK64mcnB/2169d/jJPHbBqOQZzyWRiwG+6+p0VeQOVd01BuRD/VMPNI08iD0XDUy567dorODeQ4MaodlGSoYQEPq9INspQX7FFtNgx5nl2Fq+Ifxv23pSpYDtJxSH5gZjkPo9giaJ/FzQC52Rz6vDggmtXA+hfBLLB9JYtRPft2TJvaCvnhYKe6zm314xRjv6oElFqSAK9LK8mGKEw1Z/PoonJ3aF/vB0SvfTb+mFVY5qaueDNKJKTa3UDMSMtLywGfSjpYwG8CzcnhgMTnDbrEMF5srKQ5JdMJFIYj3aFMuFuCDTb6ma98vlxwPnAf+x7fcPGgmtGMMauvHmDRbtQPU2HGQZapA1D3cDB2kUJZ54Y68PVPdy515B6X7TDqgSCNt1JMBlRg0RZhLEfcGyKyC3WuTc/3ck4S9xpnvSTDf0ZSUxe8/n5fIKfyl/qUKzQfDWmOn/pRsZezaUbdCEcrYYQdr/uU76MEkJRGXwUN3qUrK6AC5NUbhgMMFsB/qF/sU4qnjXNUEbClG/ZD2q8z6Ie1LliidwpsviDo5qn4a5Vda2Dv0fNUwwNCGGLbGeSdgcFCycA/Yj0Ph93ybuMeRMqbVvGiHtBYERRbuyOxKcdltXUiGoWP71cjn+YAgypVjDjj8x6auY1LQ9Vhkr4R0Wo17SYmo3HbV2UfSxiFU=
+X-Forefront-Antispam-Report:
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230031)(4636009)(39850400004)(346002)(396003)(136003)(376002)(186009)(1800799009)(82310400011)(451199024)(36840700001)(40470700004)(46966006)(6666004)(7696005)(83380400001)(478600001)(1076003)(16526019)(426003)(26005)(2906002)(336012)(966005)(44832011)(54906003)(316002)(41300700001)(70206006)(110136005)(8676002)(70586007)(5660300002)(4326008)(8936002)(36756003)(40480700001)(2616005)(47076005)(40460700003)(82740400003)(86362001)(36860700001)(81166007)(356005)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Sep 2023 12:11:36.2412
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4f8e1f00-ce8d-421f-c4d1-08dbb2c03ef6
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	SN1PEPF000252A0.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ1PR12MB6051
 
-On Fri, 2023-08-25 at 12:11 +0200, Niklas Schnelle wrote:
-> In some virtualized environments, including s390 paged memory guests,
-> IOTLB flushes are used to update IOMMU shadow tables. Due to this, they
-> are much more expensive than in typical bare metal environments or
-> non-paged s390 guests. In addition they may parallelize poorly in
-> virtualized environments. This changes the trade off for flushing IOVAs
-> such that minimizing the number of IOTLB flushes trumps any benefit of
-> cheaper queuing operations or increased paralellism.
->=20
-> In this scenario per-CPU flush queues pose several problems. Firstly
-> per-CPU memory is often quite limited prohibiting larger queues.
-> Secondly collecting IOVAs per-CPU but flushing via a global timeout
-> reduces the number of IOVAs flushed for each timeout especially on s390
-> where PCI interrupts may not be bound to a specific CPU.
->=20
-> Let's introduce a single flush queue mode that reuses the same queue
-> logic but only allocates a single global queue. This mode is selected by
-> dma-iommu if a newly introduced .shadow_on_flush flag is set in struct
-> dev_iommu. As a first user the s390 IOMMU driver sets this flag during
-> probe_device. With the unchanged small FQ size and timeouts this setting
-> is worse than per-CPU queues but a follow up patch will make the FQ size
-> and timeout variable. Together this allows the common IOVA flushing code
-> to more closely resemble the global flush behavior used on s390's
-> previous internal DMA API implementation.
->=20
-> Link: https://lore.kernel.org/all/9a466109-01c5-96b0-bf03-304123f435ee@ar=
-m.com/
-> Acked-by: Robin Murphy <robin.murphy@arm.com>
-> Reviewed-by: Matthew Rosato <mjrosato@linux.ibm.com> #s390
-> Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
-> ---
->  drivers/iommu/dma-iommu.c  | 168 ++++++++++++++++++++++++++++++++++-----=
-------
->  drivers/iommu/s390-iommu.c |   3 +
->  include/linux/iommu.h      |   2 +
->  3 files changed, 134 insertions(+), 39 deletions(-)
->=20
->=20
----8<---
->=20=20
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index 182cc4c71e62..c3687e066ed7 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -409,6 +409,7 @@ struct iommu_fault_param {
->   * @priv:	 IOMMU Driver private data
->   * @max_pasids:  number of PASIDs this device can consume
->   * @attach_deferred: the dma domain attachment is deferred
-> + * @shadow_on_flush: IOTLB flushes are used to sync shadow tables
->   *
->   * TODO: migrate other per device data pointers under iommu_dev_data, e.=
-g.
->   *	struct iommu_group	*iommu_group;
-> @@ -422,6 +423,7 @@ struct dev_iommu {
->  	void				*priv;
->  	u32				max_pasids;
->  	u32				attach_deferred:1;
-> +	u32				shadow_on_flush:1;
+This is part 4 of the 4-part series to introduce Share Virtual Address
+(SVA) support for devices, which can support PCI ATS, PASID and PRI
+capabilities. These devices are referred to as SVA-capable devices in
+this series.
 
-This causes a merge conflict with a48ce36e2786f ("iommu: Prevent
-RESV_DIRECT devices from blocking domains"), The resolution is trivial
-though in that shadow_on_flush:1 can just be added after (or before)
-require_direct:1. @Joro do you want me to sent a version with this
-resolution regardless or will you resolve this when applying?
+It contains the following enhancements:
 
->  };
->=20=20
->  int iommu_device_register(struct iommu_device *iommu,
->=20
+* Patch 1 - 3:
+  Rename / add support to enable/disable features
+
+* Patch 4 - 5:
+  Introduce SVA support
+
+* Patch 6 - 11:
+  Add IOPF support
+
+
+This patch series is based on top of SVA Part 3.
+  https://lore.kernel.org/linux-iommu/20230816174031.634453-1-vasant.hegde@amd.com/
+
+Also depends on :
+  1) Tina's SVA domain improvement
+     https://lore.kernel.org/linux-iommu/20230827084401.819852-1-tina.zhang@intel.com/
+
+  2) Baolu's IOPF improvement
+     https://lore.kernel.org/linux-iommu/cbfbe969-1a92-52bf-f00c-3fb89feefd66@linux.intel.com/
+
+
+This is also available at github :
+  https://github.com/AMDESE/linux/tree/iommu_sva_part4_v2_v6.5_rc7
+
+
+Thanks everyone who reviewed previous version and provided valuable feedbacks.
+
+Changes from v1 -> v2:
+  - Added new patch to fix PASID override issue in GCR3 table
+  - Complete rework of SVA code on top of Tina's SVA series.
+  - Rework SVA enable code
+  - Reworked IOPF handler code on top of Baolu's IOPF improvement series.
+
+v1: https://lore.kernel.org/linux-iommu/20230823140415.729050-1-vasant.hegde@amd.com/T/#t
+
+Thank you,
+Vasant / Suravee
+
+Suravee Suthikulpanit (5):
+  iommu/amd: Add support to enable/disable PASID feature
+  iommu/amd: Move PPR-related functions into ppr.c
+  iommu/amd: Define per-IOMMU iopf_queue
+  iommu/amd: Add support for page response
+  iommu/amd: Introduce logic to enable/disable IOPF
+
+Vasant Hegde (3):
+  iommu/amd: Rename amd_iommu_v2_supported() as amd_iommu_sva_supported()
+  iommu/amd: Do not override PASID entry in GCR3 table
+  iommu/amd: Initial SVA support for AMD IOMMU
+
+Wei Huang (3):
+  iommu/amd: Add support for enabling/disabling IOMMU features
+  iommu/amd: Add support for add/remove device for IOPF
+  iommu/amd: Add IO page fault notifier handler
+
+ drivers/iommu/amd/Kconfig           |   2 +
+ drivers/iommu/amd/Makefile          |   2 +-
+ drivers/iommu/amd/amd_iommu.h       |  44 +++-
+ drivers/iommu/amd/amd_iommu_types.h |  37 +++
+ drivers/iommu/amd/init.c            |  72 ++----
+ drivers/iommu/amd/iommu.c           | 166 ++++++++-----
+ drivers/iommu/amd/ppr.c             | 364 ++++++++++++++++++++++++++++
+ drivers/iommu/amd/sva.c             | 221 +++++++++++++++++
+ 8 files changed, 784 insertions(+), 124 deletions(-)
+ create mode 100644 drivers/iommu/amd/ppr.c
+ create mode 100644 drivers/iommu/amd/sva.c
+
+-- 
+2.31.1
 
