@@ -1,273 +1,164 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.120])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qv1-f44.google.com (mail-qv1-f44.google.com [209.85.219.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 63DF2F51E
-	for <iommu@lists.linux.dev>; Mon, 11 Sep 2023 12:26:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1694435201; x=1725971201;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=ZeJFG3p0amLf2aZVuMJVpjZKpOancQKu1R8Tg7UuK28=;
-  b=fMqStOoNW1mzKvZgaVnT8uki36ph0M2EugsysuvKiiRsmKW4WFGj6ZlO
-   CN1czUNiicIzDgyGmbb4MOXwMnVqHPoDJEGkmkVIOC7ypJQxkIt7sgp/I
-   AgK/PVpQqX8OddIY4cvfbLoCsHKyIdieAT5nu0BXBkgJmOvrTsxyS9gDr
-   1BUimi30zuIA7kQ1AR9sWbmf3XQhwUUR8pIUkQTsgsdTElfUIWZQF+JxX
-   T7s31KMgUEmxVDHplj/wXKAwOy5HwRdkOiJ3/JpACR+ZA4RTJfnYNLgDc
-   g+WnL2yG9H3JUywHEwTrsbbTi8sDiYK+U2SHN9GXdfq7oKHUMjmqdLfDD
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10830"; a="376979527"
-X-IronPort-AV: E=Sophos;i="6.02,244,1688454000"; 
-   d="scan'208";a="376979527"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Sep 2023 05:26:40 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10830"; a="813351012"
-X-IronPort-AV: E=Sophos;i="6.02,244,1688454000"; 
-   d="scan'208";a="813351012"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.255.28.234]) ([10.255.28.234])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Sep 2023 05:26:37 -0700
-Message-ID: <926da2a0-6b3e-cb24-23d1-1d9bce93b997@linux.intel.com>
-Date: Mon, 11 Sep 2023 20:26:34 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49D364432
+	for <iommu@lists.linux.dev>; Mon, 11 Sep 2023 12:41:09 +0000 (UTC)
+Received: by mail-qv1-f44.google.com with SMTP id 6a1803df08f44-6556d05a55fso23848446d6.3
+        for <iommu@lists.linux.dev>; Mon, 11 Sep 2023 05:41:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1694436069; x=1695040869; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=oSVHEbu4qz1dzQzbes7Fwb0hsR2PcXZ/e/1zdR8Gxjw=;
+        b=Dpo9kbSTJxDxt9ZjrnvnmxpRn4DxGo+KzJ6VyQtG3QbRrklGFJIzMR1WmQ0JMBKGmQ
+         c8GJSJYXRmQMUNpzNkH58TN+7FHKumeYfcnKSCksvG85eHqs+2DtP6LUC65qBQKdWAUc
+         4NMctKOiPIPEr5tv98F39mlEPZehDStoZYZzh0BAidYM1fJF2AAdD5+KljjjiS55W+w6
+         NP4dWWbM44mjWUWMyo1qCpkhk/Y3hkvgfErg3ClLrbHOHznV0SZNDnDyeAomOZ2UImIi
+         5crjbGj56OdtsveBffrHOemWg2plpdcOArYC8pAuqQNVq4WMMgNxg3q9YB6AGKTmKBHp
+         ujoQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1694436069; x=1695040869;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=oSVHEbu4qz1dzQzbes7Fwb0hsR2PcXZ/e/1zdR8Gxjw=;
+        b=CZ23y3gT2y1nR0IjrQ+jd379LsCGe/xu+P6hWJ+gT4A1eiCfF7x6Sf8w2bOwJ5BjCi
+         cMzbiJZGjxdaueJYC9xUQL1DkpUjyvQK5pJKdz23Y72FncbXoldSxQl1gyTiPvXwwygS
+         bELaVVyVDEOeK1nMHR5hHBU0KhDiGKpSu4hHOSuzNBA3uBfSa3mKFf5GUpJtL+0cC+6/
+         jpU84bU45bg/xmio+0clMISmJxnlmkwwKnkaxx4mkT47QXR4veR/r47Xu+bTlQKm6Ehc
+         FxtevE9pQBmxJw220dHf4j+lX5LpCTMTyr+iMRdAcd5FF414eXhYecpbEg7mNSQq1y3x
+         Kqvg==
+X-Gm-Message-State: AOJu0YxQ2BkObQrvMaD3gmIUuJrubVej+hKsQmQiQ+n7yxJ1y//vAkM8
+	rWy71boXmg3faYFiOxPcDUmF1g==
+X-Google-Smtp-Source: AGHT+IHU0VXm8gwrPeOgBRdL4Q5P/++Qiz2JgUZq3DjOz2XD7EaxOM686nn9xoIcEqTjP16E4GiFfg==
+X-Received: by 2002:a05:6214:5004:b0:63f:7c62:63dd with SMTP id jo4-20020a056214500400b0063f7c6263ddmr10958644qvb.46.1694436069057;
+        Mon, 11 Sep 2023 05:41:09 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-134-41-202-196.dhcp-dynamic.fibreop.ns.bellaliant.net. [134.41.202.196])
+        by smtp.gmail.com with ESMTPSA id f17-20020a05620a15b100b0076f21383b6csm2489763qkk.112.2023.09.11.05.41.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Sep 2023 05:41:08 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1qfgDz-001XjM-O0;
+	Mon, 11 Sep 2023 09:41:07 -0300
+Date: Mon, 11 Sep 2023 09:41:07 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Vasant Hegde <vasant.hegde@amd.com>
+Cc: iommu@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com,
+	wei.huang2@amd.com, jsnitsel@redhat.com
+Subject: Re: [PATCH RESEND 03/10] iommu/amd: Initial SVA support for AMD IOMMU
+Message-ID: <ZP8K40ASDPAcp+/X@ziepe.ca>
+References: <20230823140415.729050-1-vasant.hegde@amd.com>
+ <20230823140415.729050-4-vasant.hegde@amd.com>
+ <ZOYXoMPBQZ5KK9IJ@ziepe.ca>
+ <fc17e0fb-e712-824f-93f9-f9edf5707395@amd.com>
+ <ZO93WJnhxl+sC9zA@ziepe.ca>
+ <d64d8066-7cee-46c6-2403-76eaa969fe53@amd.com>
+ <ZPcejmNW153rcRFA@ziepe.ca>
+ <38845842-d535-b621-1e6b-16d8db52a1bb@amd.com>
+ <ZPdv8P4zTNJODcXD@ziepe.ca>
+ <14ab1dbd-26f1-3935-65d7-1d1835cb062d@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.15.0
-Cc: baolu.lu@linux.intel.com, "Liu, Yi L" <yi.l.liu@intel.com>,
- Jacob Pan <jacob.jun.pan@linux.intel.com>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v4 09/10] iommu: Make iommu_queue_iopf() more generic
-To: "Tian, Kevin" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Jason Gunthorpe <jgg@ziepe.ca>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Nicolin Chen <nicolinc@nvidia.com>
-References: <20230825023026.132919-1-baolu.lu@linux.intel.com>
- <20230825023026.132919-10-baolu.lu@linux.intel.com>
- <BN9PR11MB52762A33BC9F41AB424915688CE3A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <cbfbe969-1a92-52bf-f00c-3fb89feefd66@linux.intel.com>
- <BN9PR11MB52768891BC89107AD291E45C8CE6A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <67aa00ae-01e6-0dd8-499f-279cb6df3ddd@linux.intel.com>
- <BN9PR11MB527610423B186F1C5E734A4B8CE4A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <068e3e43-a5c9-596b-3d39-782b7893dbcc@linux.intel.com>
- <BN9PR11MB52768F9AEBC4BF39300E44478CF2A@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <BN9PR11MB52768F9AEBC4BF39300E44478CF2A@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <14ab1dbd-26f1-3935-65d7-1d1835cb062d@amd.com>
 
-Hi Kevin,
-
-Thanks for looking at my patches.
-
-On 2023/9/11 14:35, Tian, Kevin wrote:
->> From: Baolu Lu <baolu.lu@linux.intel.com>
->> Sent: Tuesday, September 5, 2023 1:20 PM
->>
->> I added below patch to address the iopf_queue_flush_dev() issue. What do
->> you think of this？
->>
->> iommu: Improve iopf_queue_flush_dev()
->>
->> The iopf_queue_flush_dev() is called by the iommu driver before releasing
->> a PASID. It ensures that all pending faults for this PASID have been
->> handled or cancelled, and won't hit the address space that reuses this
->> PASID. The driver must make sure that no new fault is added to the queue.
->>
->> The SMMUv3 driver doesn't use it because it only implements the
->> Arm-specific stall fault model where DMA transactions are held in the SMMU
->> while waiting for the OS to handle iopf's. Since a device driver must
->> complete all DMA transactions before detaching domain, there are no
->> pending iopf's with the stall model. PRI support requires adding a call to
->> iopf_queue_flush_dev() after flushing the hardware page fault queue.
->>
->> The current implementation of iopf_queue_flush_dev() is a simplified
->> version. It is only suitable for SVA case in which the processing of iopf
->> is implemented in the inner loop of the iommu subsystem.
->>
->> Improve this interface to make it also work for handling iopf out of the
->> iommu core.
->>
->> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
->> ---
->>    include/linux/iommu.h      |  4 ++--
->>    drivers/iommu/intel/svm.c  |  2 +-
->>    drivers/iommu/io-pgfault.c | 40
->> ++++++++++++++++++++++++++++++++++++--
->>    3 files changed, 41 insertions(+), 5 deletions(-)
->>
->> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
->> index 77ad33ffe3ac..465e23e945d0 100644
->> --- a/include/linux/iommu.h
->> +++ b/include/linux/iommu.h
->> @@ -1275,7 +1275,7 @@ iommu_sva_domain_alloc(struct device *dev,
->> struct
->> mm_struct *mm)
->>    #ifdef CONFIG_IOMMU_IOPF
->>    int iopf_queue_add_device(struct iopf_queue *queue, struct device *dev);
->>    int iopf_queue_remove_device(struct iopf_queue *queue, struct device
->> *dev);
->> -int iopf_queue_flush_dev(struct device *dev);
->> +int iopf_queue_flush_dev(struct device *dev, ioasid_t pasid);
->>    struct iopf_queue *iopf_queue_alloc(const char *name);
->>    void iopf_queue_free(struct iopf_queue *queue);
->>    int iopf_queue_discard_partial(struct iopf_queue *queue);
->> @@ -1295,7 +1295,7 @@ iopf_queue_remove_device(struct iopf_queue
->> *queue,
->> struct device *dev)
->>    	return -ENODEV;
->>    }
->>
->> -static inline int iopf_queue_flush_dev(struct device *dev)
->> +static inline int iopf_queue_flush_dev(struct device *dev, ioasid_t pasid)
->>    {
->>    	return -ENODEV;
->>    }
->> diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
->> index 780c5bd73ec2..4c3f4533e337 100644
->> --- a/drivers/iommu/intel/svm.c
->> +++ b/drivers/iommu/intel/svm.c
->> @@ -495,7 +495,7 @@ void intel_drain_pasid_prq(struct device *dev, u32
->> pasid)
->>    		goto prq_retry;
->>    	}
->>
->> -	iopf_queue_flush_dev(dev);
->> +	iopf_queue_flush_dev(dev, pasid);
->>
->>    	/*
->>    	 * Perform steps described in VT-d spec CH7.10 to drain page
->> diff --git a/drivers/iommu/io-pgfault.c b/drivers/iommu/io-pgfault.c
->> index 3e6845bc5902..84728fb89ac7 100644
->> --- a/drivers/iommu/io-pgfault.c
->> +++ b/drivers/iommu/io-pgfault.c
->> @@ -309,17 +309,53 @@ EXPORT_SYMBOL_GPL(iommu_page_response);
->>     *
->>     * Return: 0 on success and <0 on error.
->>     */
->> -int iopf_queue_flush_dev(struct device *dev)
->> +int iopf_queue_flush_dev(struct device *dev, ioasid_t pasid)
->>    {
->>    	struct iommu_fault_param *iopf_param =
->> iopf_get_dev_fault_param(dev);
->> +	const struct iommu_ops *ops = dev_iommu_ops(dev);
->> +	struct iommu_page_response resp;
->> +	struct iopf_fault *iopf, *next;
->> +	int ret = 0;
->>
->>    	if (!iopf_param)
->>    		return -ENODEV;
->>
->>    	flush_workqueue(iopf_param->queue->wq);
->> +
->> +	mutex_lock(&iopf_param->lock);
->> +	list_for_each_entry_safe(iopf, next, &iopf_param->partial, list) {
->> +		if (!(iopf->fault.prm.flags &
->> IOMMU_FAULT_PAGE_REQUEST_PASID_VALID) ||
->> +		    iopf->fault.prm.pasid != pasid)
->> +			break;
->> +
->> +		list_del(&iopf->list);
->> +		kfree(iopf);
->> +	}
->> +
->> +	list_for_each_entry_safe(iopf, next, &iopf_param->faults, list) {
->> +		if (!(iopf->fault.prm.flags &
->> IOMMU_FAULT_PAGE_REQUEST_PASID_VALID) ||
->> +		    iopf->fault.prm.pasid != pasid)
->> +			continue;
->> +
->> +		memset(&resp, 0, sizeof(struct iommu_page_response));
->> +		resp.pasid = iopf->fault.prm.pasid;
->> +		resp.grpid = iopf->fault.prm.grpid;
->> +		resp.code = IOMMU_PAGE_RESP_INVALID;
->> +
->> +		if (iopf->fault.prm.flags &
->> IOMMU_FAULT_PAGE_RESPONSE_NEEDS_PASID)
->> +			resp.flags = IOMMU_PAGE_RESP_PASID_VALID;
+On Mon, Sep 11, 2023 at 05:46:39PM +0530, Vasant Hegde wrote:
+> Jason,
 > 
-> Out of curiosity. Is it a valid configuration which has REQUEST_PASID_VALID
-> set but RESP_PASID_VALID cleared? I'm unclear why another response
-> flag is required beyond what the request flag has told...
-
-This seems to have uncovered a bug in VT-d driver.
-
-The PCIe spec (Section 10.4.2.2) states:
-
-"
-If a Page Request has a PASID, the corresponding PRG Response Message
-may optionally contain one as well.
-
-If the PRG Response PASID Required bit is Clear, PRG Response Messages
-do not have a PASID. If the PRG Response PASID Required bit is Set, PRG
-Response Messages have a PASID if the Page Request also had one. The
-Function is permitted to use the PASID value from the prefix in
-conjunction with the PRG Index to match requests and responses.
-"
-
-The "PRG Response PASID Required bit" is a read-only field in the PCI
-page request status register. It is represented by
-"pdev->pasid_required".
-
-So below code in VT-d driver is not correct:
-
-542 static int intel_svm_prq_report(struct intel_iommu *iommu, struct 
-device *dev,
-543                                 struct page_req_dsc *desc)
-544 {
-
-[...]
-
-556
-557         if (desc->lpig)
-558                 event.fault.prm.flags |= 
-IOMMU_FAULT_PAGE_REQUEST_LAST_PAGE;
-559         if (desc->pasid_present) {
-560                 event.fault.prm.flags |= 
-IOMMU_FAULT_PAGE_REQUEST_PASID_VALID;
-561                 event.fault.prm.flags |= 
-IOMMU_FAULT_PAGE_RESPONSE_NEEDS_PASID;
-562         }
-[...]
-
-The right logic should be
-
-	if (pdev->pasid_required)
-		event.fault.prm.flags |= IOMMU_FAULT_PAGE_RESPONSE_NEEDS_PASID;
-
-Thoughts?
-
->> +
->> +		ret = ops->page_response(dev, iopf, &resp);
->> +		if (ret)
->> +			break;
->> +
->> +		list_del(&iopf->list);
->> +		kfree(iopf);
->> +	}
->> +	mutex_unlock(&iopf_param->lock);
->>    	iopf_put_dev_fault_param(iopf_param);
->>
->> -	return 0;
->> +	return ret;
->>    }
->>    EXPORT_SYMBOL_GPL(iopf_queue_flush_dev);
->>
+> On 9/5/2023 11:44 PM, Jason Gunthorpe wrote:
+> > On Tue, Sep 05, 2023 at 08:09:39PM +0530, Vasant Hegde wrote:
+> >>>>   - set_dev_pasid() will check the compatibility and bind device/pasid only if
+> >>>> its compatibility. In AMD case we will check against protection domain. Ex:
+> >>>>  If we have two devices (devA and devB) in two different protection domain then:
+> >>>>    set_dev_pasid(sva_domain, devA, pasidX) - SUCCESS
+> >>>>    set_dev_pasid(sva_domain, devB, pasidX) - Compatibility check fail
+> >>
+> >> Here I expect it to fails as devB is in different protection domain. From
+> >> invalidation point of view, devA and devB are not compatible. Hence I think it
+> >> should fail binding.
+> > 
+> > No, that isn't the best thing to do - you could do this, but it will
+> > be more inefficient.
 > 
-> This looks OK. Another nit is that the warning of "no pending PRQ"
-> in iommu_page_response() should be removed given with above
-> change it's expected for iommufd responses to be received after this
-> flush operation in iommu core.
+> What inefficiency are you referring? Allocating extra SVA domain -OR- mmu
+> notifier getting called for each SVA domain -OR- something else?
 
-Yeah! Addressed.
+Primarily multiple mmu notifiers is not so great
 
-Best regards,
-baolu
+> Then I am wondering why not just create single SVA domain for a PASID and let
+> individual driver handle underneath requirement like target invalidation? Am I
+> missing here?
 
+domains are not connected to PASIDs - PASID is part of the attachment.
+
+We want drivers to support one domain per IOPTE table and allow all
+possible combinations of compatible attachments.
+
+> > We have use cases to share a KVM page table with PRI.
+> > 
+> > Google apparently has some usecase since they are fixing it in ARM.
+> > 
+> > Besides that, it is the IOMMU API, drivers have to implement it, you
+> > don't get to pick and choose.
+> 
+> Is there any documentation on the mentioned use case and the
+> required IOMMU API because this is new to me. I would like to
+> understand things better before making the change in AMD IOMMU
+> driver.
+
+Just the API definitions we have been working toward and the
+dicussions on the list.
+
+It is not a complex concept, UNMANAGED paging domains need to support
+PRI and PASID.
+
+> > You are not going to get SVA without also properly doing all
+> > infrastructure to enable paging and unmanaged - I won't support
+> > another shortcut hackjob for SVA that needs unwinding like ARM has.
+> 
+> The goal of this series is to introduce the SVA support for AMD IOMMU driver.
+> 
+> So far we have been accommodating all the review comments.
+>   - Dropping iommu_v2 module before getting SVA
+>   - Reworking SVA top of Tina's series
+>   - Reworking IOPF on top of Baolu's IOPF enhancement
+
+If you would prefer to have a more stable base to work on then wait a
+few months until ARM and Intel drviers are fully fixed. Otherwise you
+are going to have to keep pace with the advancing work.
+
+> Adding PASID support for the unmanaged domain is a new requirement
+> and not relevant to this series.
+
+It is not. It is what the iommu API is designed to do, ARM got
+grandfathered in with their half implementation because it already
+existed. New drivers must implement the API properly and not take
+shortcuts.
+
+> It will also require a considerable amount of changes
+> in AMD IOMMU driver that we need to further investigate to better
+> understand.
+
+Exactly. I do not want to see new drivers follow down the path of
+ARM at exctly the same time we are trying to fix ARM to work properly!
+This undermines all the progress we are making! The API has been
+defined, please follow it!
+
+On ARM unwinding the bad design without breaking SVA is proving very
+hard after the fact. You even say it will be hard on AMD, so NO, do it
+right to start with.
+
+Every single thing you need to implement to support SVA is also needed
+to support generic PRI+PASID. The request here is to layer the code
+correctly so that the PASID and PRI bits are not linked to SVA.
+
+You don't need to *test* PRI+PASID but you do need to layer the code
+correctly so that it is trivial to implement.
+
+Jason
