@@ -1,71 +1,23 @@
-Received: from esa6.hc3370-68.iphmx.com (esa6.hc3370-68.iphmx.com [216.71.155.175])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF4DD523B
-	for <iommu@lists.linux.dev>; Mon, 11 Sep 2023 10:34:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=citrix.com; s=securemail; t=1694428451;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=vr7M0lJDP6Yqe/QM1nLbUlF67hKLZvdZZflgFleV6io=;
-  b=Exy/FC7zV+JfeRemiJ9ziqhi/46wAzulN4pXNccRQ9sT+nr1IvLEhhHJ
-   rG4TofBlGq0TXI6FnOqQNOsDBFghkpGBmWlfT8y7gp/+kMURI3XQx81LY
-   MTM4xu+K3X1z1Rj/gy+UhhaZo+VD8utL0L2Vt+w+ZU3zCZdYEGTwmRB21
-   0=;
-X-CSE-ConnectionGUID: f32WsORCRIiO4z3zlOcPDw==
-X-CSE-MsgGUID: iUDnIAWSSES1TKydEgDDRw==
-Authentication-Results: esa6.hc3370-68.iphmx.com; dkim=none (message not signed) header.i=none
-X-SBRS: 4.0
-X-MesageID: 121511210
-X-Ironport-Server: esa6.hc3370-68.iphmx.com
-X-Remote-IP: 162.221.156.123
-X-Policy: $RELAYED
-X-ThreatScanner-Verdict: Negative
-IronPort-Data: A9a23:rOyfHqB1Jm9rqBVW/8njw5YqxClBgxIJ4kV8jS/XYbTApDxw0mMPz
- 2VKWzjQbKmKamDyfd5zPY2w/U8P657UztBrQQY4rX1jcSlH+JHPbTi7wuUcHAvJd5GeExg3h
- yk6QoOdRCzhZiaE/n9BCpC48D8kk/nOH+KgYAL9EngZbRd+Tys8gg5Ulec8g4p56fC0GArIs
- t7pyyHlEAbNNwVcbCRMscpvlDs15K6p4GJB5gRlDRx2lAS2e0c9Xcp3yZ6ZdxMUcqEMdsamS
- uDKyq2O/2+x13/B3fv8z94X2mVTKlLjFVDmZkh+AsBOsTAbzsAG6Y4pNeJ0VKtio27hc+ada
- jl6ncfYpQ8BZsUgkQmGOvVSO3kW0aZuoNcrLZUj2CA6IoKvn3bEmp1T4E8K0YIw9L0tPnppz
- 9ciCTEqMgLYleaRy4qXVbw57igjBJGD0II3v3hhyXfSDOo8QICFSKLPjTNa9G5u3IYUR6+YP
- pdHL2M1N3wsYDUWUrsTIIg5h/zugnDwfidHoVaRjaE2/3LS3Ep6172F3N/9I4bTGJwMxB/Az
- o7A12XELhc7HeOk8he+q06Pl+Pikg/XYp1HQdVU8dY12QbOlwT/EiY+VFy+pOSRjk+lR8kZL
- 00S5zpooaUsnGSrRdnVWwak5nKJ1jYZHcFCAvUg7x6Wyav8+A+cHXUCQXhKb9lOnNUxTz0sk
- FqUhcvpFBRmqrjTQnWYnp+MoC+ofzQYNmYYZCxCQBsZy9n+qZ4+j1TESdMLOLSyhNDvBTa22
- DmRtzUWh6gaksMKka68+Dj6bymE/8aTCFRvv0OOAzzjt1kiDGK4W2C2wVaAt8lbC7yydHiAm
- yQWwNqay+s2IY7YwURhX94xNL2u4v+ENhjVjlhuA4Qt+lyRxpKzQWxDyGogfRk0a67obResO
- RaO4l0JuPe/KVPwNcdKj5SN59PGJEQKPfDsTbjqY9VHefCdnyfXrXg1NSZ8M40A+XXAcJ3T2
- 7/BIa5A7l5AU8yLKQZaoM9EitcWKtgWnz+7eHwC503PPUCiTHCUU6wZF1CFc/o06qiJyC2Mr
- YcDbpLTl0UHC7GmCsUyzWL1BQpaRZTcLcqqw/G7i8bZelY2cI3fI6C5LUwdl3xNwP0Oy7agE
- oCVUU5E0lvv7UAr2i3TAk2PnIjHBM4lxVpiZHxEALpd8yR7CWpZxPtFJsRfkHhO3LAL8MOYu
- NFcIpjQWaQSFG6Wk9nfBLGkxLFfmN2QrVrmF0KYjPIXJvaMmyShFgfYQzbS
-IronPort-HdrOrdr: A9a23:LU4loqNQDwN3ZMBcT2T155DYdb4zR+YMi2TDiHoedfUFSKOlfp
- 6V8Mjy1XfP+U4ssRYb6KG90ci7MA3hHPtOgLX5Uo3SJjUOhlHYeb2KgbGSpQEJ9UXFh79gPY
- kJSdksNDTbNykksS7CiDPIQ+rJKrG8gfKVbJ7lvilQpGJRGt5dBmVCe3um+xZNNVV77PMCff
- L2jKcm1lnQHQVxUimiPAhhLqz+TvLw5cbbiHU9dmUaAWe1/EqVAH+TKWnD4v9IOAk/sovKxV
- K14TARq5/T+c2T+1v57Sv+/p5WkNzuxp9qA9GNsNEcLnHWhgOhdO1aKvS/VGRempDM1H8a1P
- 335zswNcV67H3cOkuvpwH25gXm2DEyr1f/1F6xmxLY0I/EbQN/L/AEqZNScxPf5UZllsp7yr
- h302WQsIcSJQ/cnR76+8PDW3hR5wqJSEIZ4KwuZkFkIMUjgf5q3MMiFXpuYds99ffBmcEa+O
- oHNrCr2B8ZSyLeU5njhBgZ/DWdZAVHIv64eDl3hiXs6UkroJj3p3FomfD3vk1wvK7VGKM0rN
- gsZZ4Y5I2mCPVmIJ5VNaM6WMOyPGTGXBLLNwupUA/aPZBCAWvEr6j96K5d3pDyRLU4iKEqkJ
- D2S19As3UuEnieUfGm7dlw6xjIdn+2Wy/go/suoaRRi/nHXbLuBzeITksjpcumvpwkc4rmZ8
- o=
-X-Talos-CUID: =?us-ascii?q?9a23=3ANXLMcGuciVKoNoA3zQL/HIKB6IsrKSfi11DqCHW?=
- =?us-ascii?q?ZCEE1WuaHTXibwI97xp8=3D?=
-X-Talos-MUID: =?us-ascii?q?9a23=3ARd74Ow/BigCI5RQBhRMfuPSQf8ZVz6KPIX82qrg?=
- =?us-ascii?q?94vWnJCBdNBuxtiviFw=3D=3D?=
-X-IronPort-AV: E=Sophos;i="6.02,243,1688443200"; 
-   d="scan'208";a="121511210"
-From: Ross Lagerwall <ross.lagerwall@citrix.com>
-To: <iommu@lists.linux.dev>
-CC: Christoph Hellwig <hch@lst.de>, Marek Szyprowski
-	<m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Petr Tesarik
-	<petr.tesarik.ext@huawei.com>, Roberto Sassu <roberto.sassu@huawei.com>,
-	"Ross Lagerwall" <ross.lagerwall@citrix.com>
-Subject: [PATCH] swiotlb: Use the calculated number of areas
-Date: Mon, 11 Sep 2023 11:32:51 +0100
-Message-ID: <20230911103251.572558-1-ross.lagerwall@citrix.com>
-X-Mailer: git-send-email 2.41.0
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 11CFEBE6F
+	for <iommu@lists.linux.dev>; Mon, 11 Sep 2023 11:57:13 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0C0A2D75;
+	Mon, 11 Sep 2023 04:57:49 -0700 (PDT)
+Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id ECF4E3F67D;
+	Mon, 11 Sep 2023 04:57:10 -0700 (PDT)
+From: Robin Murphy <robin.murphy@arm.com>
+To: will@kernel.org,
+	joro@8bytes.org
+Cc: iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org,
+	eahariha@linux.microsoft.com,
+	Rui Zhu <zhurui3@huawei.com>
+Subject: [PATCH] iommu/arm-smmu-v3: Avoid constructing invalid range commands
+Date: Mon, 11 Sep 2023 12:57:04 +0100
+Message-Id: <b99cfe71af2bd93a8a2930f20967fb2a4f7748dd.1694432734.git.robin.murphy@arm.com>
+X-Mailer: git-send-email 2.39.2.101.g768bb238c484.dirty
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -73,43 +25,62 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 
-Commit 8ac04063354a ("swiotlb: reduce the number of areas to match
-actual memory pool size") calculated the reduced number of areas in
-swiotlb_init_remap() but didn't actually use the value. Replace usage of
-default_nareas accordingly.
+Although io-pgtable's non-leaf invalidations are always for full tables,
+I missed that SVA also uses non-leaf invalidations, while being at the
+mercy of whatever range the MMU notifier throws at it. This means it
+definitely wants the previous TTL fix as well, since it also doesn't
+know exactly which leaf level(s) may need invalidating, but it can also
+give us less-aligned ranges wherein certain corners may lead to building
+an invalid command where TTL, Num and Scale are all 0. It should be fine
+to handle this by over-invalidating an extra page, since falling back to
+a non-range command opens up a whole can of errata-flavoured worms.
 
-Fixes: 8ac04063354a ("swiotlb: reduce the number of areas to match actual memory pool size")
-Signed-off-by: Ross Lagerwall <ross.lagerwall@citrix.com>
+Fixes: 6833b8f2e199 ("iommu/arm-smmu-v3: Set TTL invalidation hint better")
+Reported-by: Rui Zhu <zhurui3@huawei.com>
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 ---
 
-Compile-tested only since I saw this just from code inspection.
+Proper resend of previous inline patch[1], now based on 6.6-rc1.
 
- kernel/dma/swiotlb.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+[1] https://lore.kernel.org/linux-iommu/280d0be7-7d41-ed78-bf4b-3db6c0076e22@arm.com/
 
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index 394494a6b1f3..85dd94323b98 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -399,14 +399,13 @@ void __init swiotlb_init_remap(bool addressing_limit, unsigned int flags,
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index e82bf1c449a3..bd0a596f9863 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -1895,18 +1895,23 @@ static void __arm_smmu_tlb_inv_range(struct arm_smmu_cmdq_ent *cmd,
+ 		/* Get the leaf page size */
+ 		tg = __ffs(smmu_domain->domain.pgsize_bitmap);
+ 
++		num_pages = size >> tg;
++
+ 		/* Convert page size of 12,14,16 (log2) to 1,2,3 */
+ 		cmd->tlbi.tg = (tg - 10) / 2;
+ 
+ 		/*
+-		 * Determine what level the granule is at. For non-leaf, io-pgtable
+-		 * assumes .tlb_flush_walk can invalidate multiple levels at once,
+-		 * so ignore the nominal last-level granule and leave TTL=0.
++		 * Determine what level the granule is at. For non-leaf, both
++		 * io-pgtable and SVA pass a nominal last-level granule because
++		 * they don't know what level(s) actually apply, so ignore that
++		 * and leave TTL=0. However for various errata reasons we still
++		 * want to use a range command, so avoid the SVA corner case
++		 * where both scale and num could be 0 as well.
+ 		 */
+ 		if (cmd->tlbi.leaf)
+ 			cmd->tlbi.ttl = 4 - ((ilog2(granule) - 3) / (tg - 3));
+-
+-		num_pages = size >> tg;
++		else if ((num_pages & CMDQ_TLBI_RANGE_NUM_MAX) == 1)
++			num_pages++;
  	}
  
- 	mem->areas = memblock_alloc(array_size(sizeof(struct io_tlb_area),
--		default_nareas), SMP_CACHE_BYTES);
-+		nareas), SMP_CACHE_BYTES);
- 	if (!mem->areas) {
- 		pr_warn("%s: Failed to allocate mem->areas.\n", __func__);
- 		return;
- 	}
- 
--	swiotlb_init_io_tlb_pool(mem, __pa(tlb), nslabs, false,
--				 default_nareas);
-+	swiotlb_init_io_tlb_pool(mem, __pa(tlb), nslabs, false, nareas);
- 	add_mem_pool(&io_tlb_default_mem, mem);
- 
- 	if (flags & SWIOTLB_VERBOSE)
+ 	cmds.num = 0;
 -- 
-2.41.0
+2.39.2.101.g768bb238c484.dirty
 
