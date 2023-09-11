@@ -1,53 +1,207 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E87367460
-	for <iommu@lists.linux.dev>; Sat,  9 Sep 2023 18:53:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 6F223C433C8;
-	Sat,  9 Sep 2023 18:53:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1694285625;
-	bh=PtyEBnBLcTmBKI6CQDuhWfJGvDYdeg7kTLGUQXuhuAc=;
-	h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-	b=jn9HZ9Y/ZcGNZRpAODspAvtlP3l2XVdwVdzAnhTvo5kVA+UMr59MOBiynQCP9f3g8
-	 C0qBaW6vGPCH1zP0Dt8atxw1JlDPopwbnU3C/YDQyKzevUccpQcxtNAT4oT2TzbMKr
-	 lYEqCi+tMOM1rGPQq2XslLYdtLHFmb+jE3kuRYSfsGs9ltEa3v9l1XjbpUsZhguqgu
-	 MNfvwg5f6/+/f2BKkrQxyBj2bZB9gCWTQHWHTV92wPRe1dr6BP6F7x3becH2BNMSWc
-	 mvlyYoqwcOo10Vd5hb6sW7HevKIGlCcwSA5tk6usN0ocqFZ2bs9ugErhnhUFqHu6KF
-	 EEfs24D9aKkOQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 5E756E505B7;
-	Sat,  9 Sep 2023 18:53:45 +0000 (UTC)
-Subject: Re: [GIT PULL] dma-mapping fixes for Linux 6.6
-From: pr-tracker-bot@kernel.org
-In-Reply-To: <ZPwxAWSXvmJNgj0X@infradead.org>
-References: <ZPwxAWSXvmJNgj0X@infradead.org>
-X-PR-Tracked-List-Id: <iommu.lists.linux.dev>
-X-PR-Tracked-Message-Id: <ZPwxAWSXvmJNgj0X@infradead.org>
-X-PR-Tracked-Remote: git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-6.6-2023-09-09
-X-PR-Tracked-Commit-Id: f875db4f20f4ec2e4fa3b3be0e5081976e0b5dad
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 474197a4f7921a97aa1aabc6f759823a024ff25f
-Message-Id: <169428562538.13340.9813278453236449776.pr-tracker-bot@kernel.org>
-Date: Sat, 09 Sep 2023 18:53:45 +0000
-To: Christoph Hellwig <hch@infradead.org>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, linux-kernel@vger.kernel.org, iommu@lists.linux.dev
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6BD7AA23
+	for <iommu@lists.linux.dev>; Mon, 11 Sep 2023 01:18:22 +0000 (UTC)
+X-UUID: 16e0f44c504111eea33bb35ae8d461a2-20230911
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+	h=Content-Type:Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=zpWxbdBjG4DzjaMymktKP3OHsgtAV4RScZ8r6Nj4Evs=;
+	b=XSkns3G0FR2/AJPi0xSPWVvwZ7jiqlvHzhThJdBAtKEwi5+Opvj/+yHYwaSzJVIitLzeAipmpL6a4hfOm4SwL3PgdHwzyVpz3scA3Qbf4bMynMbl0zbNKE7C7OztMgU9wImAp5Hwrd8vI8MAY8sbheQgJ/QVZW4l1BMww8FhNCo=;
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.31,REQID:4d843f53-c6ac-4b27-99be-0594da854f30,IP:0,U
+	RL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION:
+	release,TS:0
+X-CID-META: VersionHash:0ad78a4,CLOUDID:a85eacbe-14cc-44ca-b657-2d2783296e72,B
+	ulkID:nil,BulkQuantity:0,Recheck:0,SF:102,TC:nil,Content:0,EDM:-3,IP:nil,U
+	RL:0,File:nil,Bulk:nil,QS:nil,BEC:nil,COL:0,OSI:0,OSA:0,AV:0,LES:1,SPR:NO,
+	DKR:0,DKP:0,BRR:0,BRE:0
+X-CID-BVR: 0
+X-CID-BAS: 0,_,0,_
+X-CID-FACTOR: TF_CID_SPAM_SNR
+X-UUID: 16e0f44c504111eea33bb35ae8d461a2-20230911
+Received: from mtkmbs11n1.mediatek.inc [(172.21.101.185)] by mailgw01.mediatek.com
+	(envelope-from <yong.wu@mediatek.com>)
+	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+	with ESMTP id 1548425401; Mon, 11 Sep 2023 09:18:18 +0800
+Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
+ MTKMBS14N1.mediatek.inc (172.21.101.75) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.26; Mon, 11 Sep 2023 09:18:16 +0800
+Received: from mhfsdcap04.gcn.mediatek.inc (10.17.3.154) by
+ mtkmbs11n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.2.1118.26 via Frontend Transport; Mon, 11 Sep 2023 09:18:15 +0800
+From: Yong Wu <yong.wu@mediatek.com>
+To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, "Matthias
+ Brugger" <matthias.bgg@gmail.com>
+CC: Robin Murphy <robin.murphy@arm.com>, Krzysztof Kozlowski
+	<krzysztof.kozlowski+dt@linaro.org>, Yong Wu <yong.wu@mediatek.com>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+	<iommu@lists.linux.dev>, <linux-mediatek@lists.infradead.org>,
+	<linux-kernel@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+	<anan.sun@mediatek.com>, <yf.wang@mediatek.com>, <mingyuan.ma@mediatek.com>,
+	"T . J . Mercier" <tjmercier@google.com>
+Subject: [PATCH 2/4] iommu/mediatek: Add irq handle for secure bank
+Date: Mon, 11 Sep 2023 09:17:49 +0800
+Message-ID: <20230911011751.29906-3-yong.wu@mediatek.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20230911011751.29906-1-yong.wu@mediatek.com>
+References: <20230911011751.29906-1-yong.wu@mediatek.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-TM-AS-Product-Ver: SMEX-14.0.0.3152-9.1.1006-23728.005
+X-TM-AS-Result: No-10--3.487300-8.000000
+X-TMASE-MatchedRID: CrmPfhth5sAe1373YKeGbzo39wOA02LhI2kuSWhUaPVUvqB5o/Lqc2qs
+	CKGiHb6RM4ggfKBPXnEfD8YWt0BqVja5NNzGfDJl7/U7JmMpiiHw2EELF/pHwzb9TB28UbkiXOZ
+	tmYQXU7jT01A2vEikVgG2ORx9EyapjlL1EhinUT7hG1IOMb7PsDQAp53S718H4G/FgWE3B0wWQo
+	lg+d2D28rdT5sfS91szxsUxA3eca555Kivg4hQPnV7tdtvoibauoYFb0nRiqNV3TNCtkugS6PFj
+	JEFr+olwXCBO/GKkVr3FLeZXNZS4CiM3WUt6LtFD8Bd7h+QFyBmkeDsCfD1DAHgxpsT2kcuWyLG
+	sWdglSs+TtFFN0PPlK+STEuTRCUKipUrFgDYq2feWo4xyyASh6RpmdJTNAHDHP4+GiOUtS56/Rg
+	9M3zrxAGqr7/5oYKxS7Rtx98AtcQ=
+X-TM-AS-User-Approved-Sender: No
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--3.487300-8.000000
+X-TMASE-Version: SMEX-14.0.0.3152-9.1.1006-23728.005
+X-TM-SNTS-SMTP:
+	B3785E9B5E1CB1F3591F845352B769369AAE57118E67637C0935C4CBFBF001752000:8
+X-MTK: N
 
-The pull request you sent on Sat, 9 Sep 2023 05:46:57 -0300:
+The secure bank registers are protected and can only be accessed in
+the secure world, thus it won't be initialised in linux. In kernel, we only
+need register the irq handle to report which iommu HW the secure
+translation fault happen in.
 
-> git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-6.6-2023-09-09
+We will enter the ATF to read the detail fault information. If ATF fail or
+ATF isn't the debug load, we won't get the fault information, just print
+a simple "secure bank fault" log.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/474197a4f7921a97aa1aabc6f759823a024ff25f
+Signed-off-by: Anan Sun <anan.sun@mediatek.com>
+Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+---
+ drivers/iommu/mtk_iommu.c  | 61 +++++++++++++++++++++++++++-----------
+ include/soc/mediatek/smi.h |  1 +
+ 2 files changed, 45 insertions(+), 17 deletions(-)
 
-Thank you!
-
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index 4a2cffb28c61..e1faf2339b9a 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -465,22 +465,38 @@ static irqreturn_t mtk_iommu_isr(int irq, void *dev_id)
+ 	struct mtk_iommu_data *data = bank->parent_data;
+ 	struct mtk_iommu_domain *dom = bank->m4u_dom;
+ 	unsigned int fault_larb = MTK_INVALID_LARBID, fault_port = 0, sub_comm = 0;
+-	u32 int_state, regval, va34_32, pa34_32;
+ 	const struct mtk_iommu_plat_data *plat_data = data->plat_data;
++	u32 int_state = ~0, regval = 0, va34_32, pa34_32;
++	u64 fault_iova = ~0ULL, fault_pa = ~0ULL;
+ 	void __iomem *base = bank->base;
+-	u64 fault_iova, fault_pa;
++	struct arm_smccc_res res;
+ 	bool layer, write;
+ 
+-	/* Read error info from registers */
+-	int_state = readl_relaxed(base + REG_MMU_FAULT_ST1);
+-	if (int_state & F_REG_MMU0_FAULT_MASK) {
+-		regval = readl_relaxed(base + REG_MMU0_INT_ID);
+-		fault_iova = readl_relaxed(base + REG_MMU0_FAULT_VA);
+-		fault_pa = readl_relaxed(base + REG_MMU0_INVLD_PA);
++	if (bank->is_secure) {
++		/* Enter to secure world to Read fault status if it is secure bank. */
++		arm_smccc_smc(MTK_SIP_KERNEL_IOMMU_CONTROL,
++			      IOMMU_ATF_CMD_GET_SECURE_IOMMU_STATUS,
++			      bank->sec_bank_base, 0, 0, 0, 0, 0, &res);
++		if (res.a0 == 0) {
++			fault_iova = res.a1;
++			fault_pa = res.a2;
++			regval = res.a3;
++		} else {
++			dev_err_ratelimited(bank->parent_dev, "secure bank fault\n");
++			goto tlb_flush_all;
++		}
+ 	} else {
+-		regval = readl_relaxed(base + REG_MMU1_INT_ID);
+-		fault_iova = readl_relaxed(base + REG_MMU1_FAULT_VA);
+-		fault_pa = readl_relaxed(base + REG_MMU1_INVLD_PA);
++		/* Read error info from registers */
++		int_state = readl_relaxed(base + REG_MMU_FAULT_ST1);
++		if (int_state & F_REG_MMU0_FAULT_MASK) {
++			regval = readl_relaxed(base + REG_MMU0_INT_ID);
++			fault_iova = readl_relaxed(base + REG_MMU0_FAULT_VA);
++			fault_pa = readl_relaxed(base + REG_MMU0_INVLD_PA);
++		} else {
++			regval = readl_relaxed(base + REG_MMU1_INT_ID);
++			fault_iova = readl_relaxed(base + REG_MMU1_FAULT_VA);
++			fault_pa = readl_relaxed(base + REG_MMU1_INVLD_PA);
++		}
+ 	}
+ 	layer = fault_iova & F_MMU_FAULT_VA_LAYER_BIT;
+ 	write = fault_iova & F_MMU_FAULT_VA_WRITE_BIT;
+@@ -515,16 +531,19 @@ static irqreturn_t mtk_iommu_isr(int irq, void *dev_id)
+ 			       write ? IOMMU_FAULT_WRITE : IOMMU_FAULT_READ)) {
+ 		dev_err_ratelimited(
+ 			bank->parent_dev,
+-			"fault type=0x%x iova=0x%llx pa=0x%llx master=0x%x(larb=%d port=%d) layer=%d %s\n",
+-			int_state, fault_iova, fault_pa, regval, fault_larb, fault_port,
++			"bank(%u) fault type=0x%x iova=0x%llx pa=0x%llx master=0x%x(larb=%d port=%d) layer=%d %s\n",
++			bank->id, int_state, fault_iova, fault_pa, regval, fault_larb, fault_port,
+ 			layer, write ? "write" : "read");
+ 	}
+ 
+ 	/* Interrupt clear */
+-	regval = readl_relaxed(base + REG_MMU_INT_CONTROL0);
+-	regval |= F_INT_CLR_BIT;
+-	writel_relaxed(regval, base + REG_MMU_INT_CONTROL0);
++	if (!bank->is_secure) {
++		regval = readl_relaxed(base + REG_MMU_INT_CONTROL0);
++		regval |= F_INT_CLR_BIT;
++		writel_relaxed(regval, base + REG_MMU_INT_CONTROL0);
++	}
+ 
++tlb_flush_all:
+ 	mtk_iommu_tlb_flush_all(data);
+ 
+ 	return IRQ_HANDLED;
+@@ -1333,6 +1352,14 @@ static int mtk_iommu_probe(struct platform_device *pdev)
+ 		bank->parent_dev = dev;
+ 		bank->parent_data = data;
+ 		spin_lock_init(&bank->tlb_lock);
++
++		/* Secure bank is initialised in secure world. Only need register irq here */
++		if (!bank->is_secure)
++			continue;
++		ret = devm_request_irq(bank->parent_dev, bank->irq, mtk_iommu_isr,
++				       0, dev_name(bank->parent_dev), (void *)bank);
++		if (ret)
++			return ret;
+ 	} while (++i < banks_num);
+ 
+ 	if (MTK_IOMMU_HAS_FLAG(data->plat_data, HAS_BCLK)) {
+@@ -1426,7 +1453,7 @@ static void mtk_iommu_remove(struct platform_device *pdev)
+ 	pm_runtime_disable(&pdev->dev);
+ 	for (i = 0; i < data->plat_data->banks_num; i++) {
+ 		bank = &data->bank[i];
+-		if (!bank->m4u_dom)
++		if (!bank->m4u_dom && !data->bank[i].is_secure)
+ 			continue;
+ 		devm_free_irq(&pdev->dev, bank->irq, bank);
+ 	}
+diff --git a/include/soc/mediatek/smi.h b/include/soc/mediatek/smi.h
+index 000eb1cf68b7..294550240aa6 100644
+--- a/include/soc/mediatek/smi.h
++++ b/include/soc/mediatek/smi.h
+@@ -14,6 +14,7 @@
+ enum iommu_atf_cmd {
+ 	IOMMU_ATF_CMD_CONFIG_SMI_LARB,		/* For mm master to en/disable iommu */
+ 	IOMMU_ATF_CMD_CONFIG_INFRA_IOMMU,	/* For infra master to enable iommu */
++	IOMMU_ATF_CMD_GET_SECURE_IOMMU_STATUS,	/* Get secure iommu translation fault status */
+ 	IOMMU_ATF_CMD_MAX,
+ };
+ 
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+2.25.1
+
