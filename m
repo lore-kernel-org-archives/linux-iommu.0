@@ -1,142 +1,128 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id BA89C18C3F
-	for <iommu@lists.linux.dev>; Tue, 12 Sep 2023 16:28:19 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 89091C15;
-	Tue, 12 Sep 2023 09:28:56 -0700 (PDT)
-Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 1CBE73F738;
-	Tue, 12 Sep 2023 09:28:17 -0700 (PDT)
-From: Robin Murphy <robin.murphy@arm.com>
-To: joro@8bytes.org
-Cc: will@kernel.org,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	zhangzekun11@huawei.com,
-	john.g.garry@oracle.com,
-	dheerajkumar.srivastava@amd.com,
-	jsnitsel@redhat.com
-Subject: [PATCH v3 2/2] iommu/iova: Manage the depot list size
-Date: Tue, 12 Sep 2023 17:28:06 +0100
-Message-Id: <03170665c56d89c6ce6081246b47f68d4e483308.1694535580.git.robin.murphy@arm.com>
-X-Mailer: git-send-email 2.39.2.101.g768bb238c484.dirty
-In-Reply-To: <cover.1694535580.git.robin.murphy@arm.com>
-References: <cover.1694535580.git.robin.murphy@arm.com>
+Received: from mail-qt1-f177.google.com (mail-qt1-f177.google.com [209.85.160.177])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5BC5919BB4
+	for <iommu@lists.linux.dev>; Tue, 12 Sep 2023 16:32:13 +0000 (UTC)
+Received: by mail-qt1-f177.google.com with SMTP id d75a77b69052e-4124e1909edso36485461cf.1
+        for <iommu@lists.linux.dev>; Tue, 12 Sep 2023 09:32:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1694536333; x=1695141133; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=htC+hW4XEwdC1kHNbpyEHGroFcchZC3k5a1wXMHon8Q=;
+        b=Ff+ydghV7LXUTXcssJoM0znuocYqpDclhWFTpM5RZSg+BT5CvL+o/Po4qYWv/mPJbP
+         yWNHsJbeBs0e2sBxHexN/rG1mMOT0qPHIBuhm8bnz+yImI/nyEuf4iKTHbdErTQHZN6W
+         SrIQnxuKnvoAx6vcU/+vLHJ/Kt99nY1FrSocOPD0qNq+YKE3YVJszTcOsi1igJ0P+hru
+         FpJau4ofN+WHwXgj6OwSZKQgFQMdFLaoUoJRCaII44leF619lRsEiUMsq9iw2vzRAwLn
+         0qILw5Q2dYKoFQOn4ZKUu1COgBYxxBslCCwYFOmzk2H2OiBsGcdUa+TXev6XYSKJNdvv
+         bs5w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1694536333; x=1695141133;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=htC+hW4XEwdC1kHNbpyEHGroFcchZC3k5a1wXMHon8Q=;
+        b=ik2DDBTKG5gQct80IssUBD2D9Xt58i9RZa0RVJYYYM4tPNXzhrps8+FRI8ncVFLbZQ
+         guDFFzPIPvy6/hu0SQg2Bdw07BiaYcCGMWSXDbJ26IgfYbatk9P2uZ38BUeMe+8Zf9xk
+         1wnLj+VahlTTnZggX4s2rjwC4vGklCR5b8MKOMNbVeaZSnGyBt+/F/z5REUb3GDNO/lh
+         kiVt4cJRhr6gCpSn5bHFNM/VbflckbTzNuz1VltsVIo9midfWPmK7/iuqJWrPC0HDZA7
+         W/KG+JGkD+0WQHQFzIZURw6B6bb7OijPeyRsJIvulTeyK5EG9ezLqWYzvfEphcpCHkt+
+         QO0w==
+X-Gm-Message-State: AOJu0Yw19oO9PceAWEWAdgEIqf9OF1TnBCDQ2UTAQOPKERVTfXI/tA+i
+	VgyIoNlNBIB0RqVxQ2BR3zXf2A==
+X-Google-Smtp-Source: AGHT+IFXgoroCV0ThPod+ysYao+NpHHyyHYMoW7IVn5ZNv6cK7cP4oIqdKV4gTJvnWj5PLKAZ09zLg==
+X-Received: by 2002:a05:622a:2:b0:412:20b7:5941 with SMTP id x2-20020a05622a000200b0041220b75941mr15905469qtw.44.1694536333097;
+        Tue, 12 Sep 2023 09:32:13 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-134-41-202-196.dhcp-dynamic.fibreop.ns.bellaliant.net. [134.41.202.196])
+        by smtp.gmail.com with ESMTPSA id h5-20020ac87145000000b00407ffb2c24dsm3369353qtp.63.2023.09.12.09.32.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Sep 2023 09:32:12 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1qg6J9-002FWM-EW;
+	Tue, 12 Sep 2023 13:32:11 -0300
+Date: Tue, 12 Sep 2023 13:32:11 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Vasant Hegde <vasant.hegde@amd.com>
+Cc: iommu@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com,
+	wei.huang2@amd.com, jsnitsel@redhat.com
+Subject: Re: [PATCH v2 11/11] iommu/amd: Introduce logic to enable/disable
+ IOPF
+Message-ID: <ZQCSi6ROWVrIZEux@ziepe.ca>
+References: <20230911121046.1025732-1-vasant.hegde@amd.com>
+ <20230911121046.1025732-12-vasant.hegde@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230911121046.1025732-12-vasant.hegde@amd.com>
 
-Automatically scaling the depot up to suit the peak capacity of a
-workload is all well and good, but it would be nice to have a way to
-scale it back down again if the workload changes. To that end, add
-backround reclaim that will gradually free surplus magazines if the
-depot size remains above a reasonable threshold for long enough.
+On Mon, Sep 11, 2023 at 12:10:46PM +0000, Vasant Hegde wrote:
+> diff --git a/drivers/iommu/amd/ppr.c b/drivers/iommu/amd/ppr.c
+> index 2891f67a6ca0..86c0cb836a71 100644
+> --- a/drivers/iommu/amd/ppr.c
+> +++ b/drivers/iommu/amd/ppr.c
+> @@ -9,6 +9,7 @@
+>  #include <linux/amd-iommu.h>
+>  #include <linux/delay.h>
+>  #include <linux/mmu_notifier.h>
+> +#include <linux/pci-ats.h>
+>  
+>  #include "amd_iommu.h"
+>  #include "amd_iommu_types.h"
+> @@ -306,3 +307,58 @@ int amd_iommu_iopf_remove_device(struct amd_iommu *iommu, struct device *dev)
+>  	raw_spin_unlock_irqrestore(&iommu->lock, flags);
+>  	return ret;
+>  }
+> +
+> +static int amd_iommu_iopf_update(struct device *dev, bool enable)
+> +{
+> +	unsigned long flags;
+> +	int ret;
+> +	struct pci_dev *pdev = dev_is_pci(dev) ? to_pci_dev(dev) : NULL;
+> +	struct amd_iommu *iommu = get_amd_iommu_from_dev(dev);
+> +	struct iommu_dev_data *dev_data = dev_iommu_priv_get(dev);
+> +	struct protection_domain *pdom = amd_iommu_get_pdomain(dev);
+> +
+> +	if (!pdev || !iommu || !dev_data)
+> +		return -EINVAL;
+> +
+> +	spin_lock_irqsave(&pdom->lock, flags);
+> +
+> +	if (enable) {
+> +		ret = amd_iommu_iopf_add_device(iommu, dev);
+> +		if (ret)
+> +			goto out;
+> +
+> +		dev_data->ppr = true;
+> +	} else {
+> +		ret = amd_iommu_iopf_remove_device(iommu, dev);
+> +		dev_data->ppr = false;
+> +	}
+> +
+> +	amd_iommu_domain_update(pdom);
+> +
+> +out:
+> +	spin_unlock_irqrestore(&pdom->lock, flags);
+> +	return ret;
+> +}
 
-Reviewed-by: Jerry Snitselaar <jsnitsel@redhat.com>
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
----
+Same remarks as for the SVA, this is in the wrong place.
 
-v3: Make sure iova_depot_work_func() locking is IRQ-safe
+iopf_queue_add_device() should be done when a PRI enabled domain is
+attached to a device, not in feature things. I also want to remove
+these too once ARM is fixed..
 
- drivers/iommu/iova.c | 30 ++++++++++++++++++++++++++++++
- 1 file changed, 30 insertions(+)
+And the iopf is a device wide thing, it makes no sense that some
+random pdom->lock is protecting dev_dev->ppr..
 
-diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-index dd2309e9a6c5..d30e453d0fb4 100644
---- a/drivers/iommu/iova.c
-+++ b/drivers/iommu/iova.c
-@@ -11,6 +11,7 @@
- #include <linux/smp.h>
- #include <linux/bitops.h>
- #include <linux/cpu.h>
-+#include <linux/workqueue.h>
- 
- /* The anchor node sits above the top of the usable address space */
- #define IOVA_ANCHOR	~0UL
-@@ -627,6 +628,8 @@ EXPORT_SYMBOL_GPL(reserve_iova);
-  */
- #define IOVA_MAG_SIZE 127
- 
-+#define IOVA_DEPOT_DELAY msecs_to_jiffies(100)
-+
- struct iova_magazine {
- 	union {
- 		unsigned long size;
-@@ -644,8 +647,11 @@ struct iova_cpu_rcache {
- 
- struct iova_rcache {
- 	spinlock_t lock;
-+	unsigned int depot_size;
- 	struct iova_magazine *depot;
- 	struct iova_cpu_rcache __percpu *cpu_rcaches;
-+	struct iova_domain *iovad;
-+	struct delayed_work work;
- };
- 
- static struct iova_magazine *iova_magazine_alloc(gfp_t flags)
-@@ -726,6 +732,7 @@ static struct iova_magazine *iova_depot_pop(struct iova_rcache *rcache)
- 
- 	rcache->depot = mag->next;
- 	mag->size = IOVA_MAG_SIZE;
-+	rcache->depot_size--;
- 	return mag;
- }
- 
-@@ -733,6 +740,25 @@ static void iova_depot_push(struct iova_rcache *rcache, struct iova_magazine *ma
- {
- 	mag->next = rcache->depot;
- 	rcache->depot = mag;
-+	rcache->depot_size++;
-+}
-+
-+static void iova_depot_work_func(struct work_struct *work)
-+{
-+	struct iova_rcache *rcache = container_of(work, typeof(*rcache), work.work);
-+	struct iova_magazine *mag = NULL;
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&rcache->lock, flags);
-+	if (rcache->depot_size > num_online_cpus())
-+		mag = iova_depot_pop(rcache);
-+	spin_unlock_irqrestore(&rcache->lock, flags);
-+
-+	if (mag) {
-+		iova_magazine_free_pfns(mag, rcache->iovad);
-+		iova_magazine_free(mag);
-+		schedule_delayed_work(&rcache->work, IOVA_DEPOT_DELAY);
-+	}
- }
- 
- int iova_domain_init_rcaches(struct iova_domain *iovad)
-@@ -752,6 +778,8 @@ int iova_domain_init_rcaches(struct iova_domain *iovad)
- 
- 		rcache = &iovad->rcaches[i];
- 		spin_lock_init(&rcache->lock);
-+		rcache->iovad = iovad;
-+		INIT_DELAYED_WORK(&rcache->work, iova_depot_work_func);
- 		rcache->cpu_rcaches = __alloc_percpu(sizeof(*cpu_rcache),
- 						     cache_line_size());
- 		if (!rcache->cpu_rcaches) {
-@@ -812,6 +840,7 @@ static bool __iova_rcache_insert(struct iova_domain *iovad,
- 			spin_lock(&rcache->lock);
- 			iova_depot_push(rcache, cpu_rcache->loaded);
- 			spin_unlock(&rcache->lock);
-+			schedule_delayed_work(&rcache->work, IOVA_DEPOT_DELAY);
- 
- 			cpu_rcache->loaded = new_mag;
- 			can_insert = true;
-@@ -912,6 +941,7 @@ static void free_iova_rcaches(struct iova_domain *iovad)
- 			iova_magazine_free(cpu_rcache->prev);
- 		}
- 		free_percpu(rcache->cpu_rcaches);
-+		cancel_delayed_work_sync(&rcache->work);
- 		while (rcache->depot)
- 			iova_magazine_free(iova_depot_pop(rcache));
- 	}
--- 
-2.39.2.101.g768bb238c484.dirty
+amd_iommu_get_pdomain() has improper locking, it needs to hold some
+kind of dev_data lock to access dev_data->domain. (and really this
+would all be clearer if it was just written dev_data->domain instead
+of the redundant function)
 
+Jason
