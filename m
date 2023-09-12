@@ -1,12 +1,12 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id AB9BB168CB
-	for <iommu@lists.linux.dev>; Tue, 12 Sep 2023 16:18:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 41E9718056
+	for <iommu@lists.linux.dev>; Tue, 12 Sep 2023 16:19:01 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id AF2C4C15;
-	Tue, 12 Sep 2023 09:19:36 -0700 (PDT)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4CC83D75;
+	Tue, 12 Sep 2023 09:19:38 -0700 (PDT)
 Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 25E983F738;
-	Tue, 12 Sep 2023 09:18:58 -0700 (PDT)
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id B6B873F738;
+	Tue, 12 Sep 2023 09:18:59 -0700 (PDT)
 From: Robin Murphy <robin.murphy@arm.com>
 To: joro@8bytes.org,
 	will@kernel.org
@@ -17,9 +17,9 @@ Cc: iommu@lists.linux.dev,
 	jernej.skrabec@gmail.com,
 	thierry.reding@gmail.com,
 	vdumpa@nvidia.com
-Subject: [PATCH 6/8] iommu/tegra-smmu: Update to {map,unmap}_pages
-Date: Tue, 12 Sep 2023 17:18:42 +0100
-Message-Id: <338c520ed947d6d5b9d0509ccb4588908bd9ce1e.1694525662.git.robin.murphy@arm.com>
+Subject: [PATCH 7/8] iommu: Retire map/unmap ops
+Date: Tue, 12 Sep 2023 17:18:43 +0100
+Message-Id: <d2afdf13b2fbf537713c3ec642dfd49d16dd9e6a.1694525662.git.robin.murphy@arm.com>
 X-Mailer: git-send-email 2.39.2.101.g768bb238c484.dirty
 In-Reply-To: <cover.1694525662.git.robin.murphy@arm.com>
 References: <cover.1694525662.git.robin.murphy@arm.com>
@@ -31,55 +31,151 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Trivially update map/unmap to the new interface, which is quite happy
-for drivers to still process just one page per call.
+With everyone now implementing the new interfaces, clean up the last
+remnants of the old map/unmap ops and simplify the calling logic again.
 
 Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 ---
- drivers/iommu/tegra-smmu.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+ drivers/iommu/iommu.c | 60 ++++++++++---------------------------------
+ include/linux/iommu.h |  6 -----
+ 2 files changed, 13 insertions(+), 53 deletions(-)
 
-diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-index e445f80d0226..4cd2153bb076 100644
---- a/drivers/iommu/tegra-smmu.c
-+++ b/drivers/iommu/tegra-smmu.c
-@@ -751,7 +751,8 @@ __tegra_smmu_unmap(struct iommu_domain *domain, unsigned long iova,
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 3bfc56df4f78..c83f2e4c56f5 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -2417,30 +2417,6 @@ static size_t iommu_pgsize(struct iommu_domain *domain, unsigned long iova,
+ 	return pgsize;
  }
  
- static int tegra_smmu_map(struct iommu_domain *domain, unsigned long iova,
--			  phys_addr_t paddr, size_t size, int prot, gfp_t gfp)
-+			  phys_addr_t paddr, size_t size, size_t count,
-+			  int prot, gfp_t gfp, size_t *mapped)
+-static int __iommu_map_pages(struct iommu_domain *domain, unsigned long iova,
+-			     phys_addr_t paddr, size_t size, int prot,
+-			     gfp_t gfp, size_t *mapped)
+-{
+-	const struct iommu_domain_ops *ops = domain->ops;
+-	size_t pgsize, count;
+-	int ret;
+-
+-	pgsize = iommu_pgsize(domain, iova, paddr, size, &count);
+-
+-	pr_debug("mapping: iova 0x%lx pa %pa pgsize 0x%zx count %zu\n",
+-		 iova, &paddr, pgsize, count);
+-
+-	if (ops->map_pages) {
+-		ret = ops->map_pages(domain, iova, paddr, pgsize, count, prot,
+-				     gfp, mapped);
+-	} else {
+-		ret = ops->map(domain, iova, paddr, pgsize, prot, gfp);
+-		*mapped = ret ? 0 : pgsize;
+-	}
+-
+-	return ret;
+-}
+-
+ static int __iommu_map(struct iommu_domain *domain, unsigned long iova,
+ 		       phys_addr_t paddr, size_t size, int prot, gfp_t gfp)
  {
- 	struct tegra_smmu_as *as = to_smmu_as(domain);
- 	unsigned long flags;
-@@ -761,11 +762,14 @@ static int tegra_smmu_map(struct iommu_domain *domain, unsigned long iova,
- 	ret = __tegra_smmu_map(domain, iova, paddr, size, prot, gfp, &flags);
- 	spin_unlock_irqrestore(&as->lock, flags);
+@@ -2451,8 +2427,7 @@ static int __iommu_map(struct iommu_domain *domain, unsigned long iova,
+ 	phys_addr_t orig_paddr = paddr;
+ 	int ret = 0;
  
-+	if (!ret)
-+		*mapped = size;
+-	if (unlikely(!(ops->map || ops->map_pages) ||
+-		     domain->pgsize_bitmap == 0UL))
++	if (unlikely(!ops->map_pages || domain->pgsize_bitmap == 0UL))
+ 		return -ENODEV;
+ 
+ 	if (unlikely(!(domain->type & __IOMMU_DOMAIN_PAGING)))
+@@ -2475,10 +2450,14 @@ static int __iommu_map(struct iommu_domain *domain, unsigned long iova,
+ 	pr_debug("map: iova 0x%lx pa %pa size 0x%zx\n", iova, &paddr, size);
+ 
+ 	while (size) {
+-		size_t mapped = 0;
++		size_t pgsize, count, mapped = 0;
+ 
+-		ret = __iommu_map_pages(domain, iova, paddr, size, prot, gfp,
+-					&mapped);
++		pgsize = iommu_pgsize(domain, iova, paddr, size, &count);
 +
- 	return ret;
++		pr_debug("mapping: iova 0x%lx pa %pa pgsize 0x%zx count %zu\n",
++			 iova, &paddr, pgsize, count);
++		ret = ops->map_pages(domain, iova, paddr, pgsize, count, prot,
++				     gfp, &mapped);
+ 		/*
+ 		 * Some pages may have been mapped, even if an error occurred,
+ 		 * so we should account for those so they can be unmapped.
+@@ -2522,19 +2501,6 @@ int iommu_map(struct iommu_domain *domain, unsigned long iova,
  }
+ EXPORT_SYMBOL_GPL(iommu_map);
  
- static size_t tegra_smmu_unmap(struct iommu_domain *domain, unsigned long iova,
--			       size_t size, struct iommu_iotlb_gather *gather)
-+			       size_t size, size_t count, struct iommu_iotlb_gather *gather)
- {
- 	struct tegra_smmu_as *as = to_smmu_as(domain);
- 	unsigned long flags;
-@@ -971,8 +975,8 @@ static const struct iommu_ops tegra_smmu_ops = {
- 	.pgsize_bitmap = SZ_4K,
- 	.default_domain_ops = &(const struct iommu_domain_ops) {
- 		.attach_dev	= tegra_smmu_attach_dev,
--		.map		= tegra_smmu_map,
--		.unmap		= tegra_smmu_unmap,
-+		.map_pages	= tegra_smmu_map,
-+		.unmap_pages	= tegra_smmu_unmap,
- 		.iova_to_phys	= tegra_smmu_iova_to_phys,
- 		.free		= tegra_smmu_domain_free,
- 	}
+-static size_t __iommu_unmap_pages(struct iommu_domain *domain,
+-				  unsigned long iova, size_t size,
+-				  struct iommu_iotlb_gather *iotlb_gather)
+-{
+-	const struct iommu_domain_ops *ops = domain->ops;
+-	size_t pgsize, count;
+-
+-	pgsize = iommu_pgsize(domain, iova, iova, size, &count);
+-	return ops->unmap_pages ?
+-	       ops->unmap_pages(domain, iova, pgsize, count, iotlb_gather) :
+-	       ops->unmap(domain, iova, pgsize, iotlb_gather);
+-}
+-
+ static size_t __iommu_unmap(struct iommu_domain *domain,
+ 			    unsigned long iova, size_t size,
+ 			    struct iommu_iotlb_gather *iotlb_gather)
+@@ -2544,8 +2510,7 @@ static size_t __iommu_unmap(struct iommu_domain *domain,
+ 	unsigned long orig_iova = iova;
+ 	unsigned int min_pagesz;
+ 
+-	if (unlikely(!(ops->unmap || ops->unmap_pages) ||
+-		     domain->pgsize_bitmap == 0UL))
++	if (unlikely(!ops->unmap_pages || domain->pgsize_bitmap == 0UL))
+ 		return 0;
+ 
+ 	if (unlikely(!(domain->type & __IOMMU_DOMAIN_PAGING)))
+@@ -2572,9 +2537,10 @@ static size_t __iommu_unmap(struct iommu_domain *domain,
+ 	 * or we hit an area that isn't mapped.
+ 	 */
+ 	while (unmapped < size) {
+-		unmapped_page = __iommu_unmap_pages(domain, iova,
+-						    size - unmapped,
+-						    iotlb_gather);
++		size_t pgsize, count;
++
++		pgsize = iommu_pgsize(domain, iova, iova, size - unmapped, &count);
++		unmapped_page = ops->unmap_pages(domain, iova, pgsize, count, iotlb_gather);
+ 		if (!unmapped_page)
+ 			break;
+ 
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index c50a769d569a..5c347029cf70 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -312,10 +312,8 @@ struct iommu_ops {
+  * * ENODEV	- device specific errors, not able to be attached
+  * * <others>	- treated as ENODEV by the caller. Use is discouraged
+  * @set_dev_pasid: set an iommu domain to a pasid of device
+- * @map: map a physically contiguous memory region to an iommu domain
+  * @map_pages: map a physically contiguous set of pages of the same size to
+  *             an iommu domain.
+- * @unmap: unmap a physically contiguous memory region from an iommu domain
+  * @unmap_pages: unmap a number of pages of the same size from an iommu domain
+  * @flush_iotlb_all: Synchronously flush all hardware TLBs for this domain
+  * @iotlb_sync_map: Sync mappings created recently using @map to the hardware
+@@ -334,13 +332,9 @@ struct iommu_domain_ops {
+ 	int (*set_dev_pasid)(struct iommu_domain *domain, struct device *dev,
+ 			     ioasid_t pasid);
+ 
+-	int (*map)(struct iommu_domain *domain, unsigned long iova,
+-		   phys_addr_t paddr, size_t size, int prot, gfp_t gfp);
+ 	int (*map_pages)(struct iommu_domain *domain, unsigned long iova,
+ 			 phys_addr_t paddr, size_t pgsize, size_t pgcount,
+ 			 int prot, gfp_t gfp, size_t *mapped);
+-	size_t (*unmap)(struct iommu_domain *domain, unsigned long iova,
+-			size_t size, struct iommu_iotlb_gather *iotlb_gather);
+ 	size_t (*unmap_pages)(struct iommu_domain *domain, unsigned long iova,
+ 			      size_t pgsize, size_t pgcount,
+ 			      struct iommu_iotlb_gather *iotlb_gather);
 -- 
 2.39.2.101.g768bb238c484.dirty
 
