@@ -1,12 +1,12 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B3C62168CB
-	for <iommu@lists.linux.dev>; Tue, 12 Sep 2023 16:18:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 83C4618056
+	for <iommu@lists.linux.dev>; Tue, 12 Sep 2023 16:18:55 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5474C1007;
-	Tue, 12 Sep 2023 09:19:30 -0700 (PDT)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E52ACC15;
+	Tue, 12 Sep 2023 09:19:31 -0700 (PDT)
 Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id BF2DE3F738;
-	Tue, 12 Sep 2023 09:18:51 -0700 (PDT)
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 5BDC53F738;
+	Tue, 12 Sep 2023 09:18:53 -0700 (PDT)
 From: Robin Murphy <robin.murphy@arm.com>
 To: joro@8bytes.org,
 	will@kernel.org
@@ -17,9 +17,9 @@ Cc: iommu@lists.linux.dev,
 	jernej.skrabec@gmail.com,
 	thierry.reding@gmail.com,
 	vdumpa@nvidia.com
-Subject: [PATCH 2/8] iommu/omap: Update to {map,unmap}_pages
-Date: Tue, 12 Sep 2023 17:18:38 +0100
-Message-Id: <7bad94ffccd4cba32bded72e0860974012881e24.1694525662.git.robin.murphy@arm.com>
+Subject: [PATCH 3/8] iommu/rockchip: Update to {map,unmap}_pages
+Date: Tue, 12 Sep 2023 17:18:39 +0100
+Message-Id: <ccc21bf7d1d0da8989d4d517a13d0846d6b71a38.1694525662.git.robin.murphy@arm.com>
 X-Mailer: git-send-email 2.39.2.101.g768bb238c484.dirty
 In-Reply-To: <cover.1694525662.git.robin.murphy@arm.com>
 References: <cover.1694525662.git.robin.murphy@arm.com>
@@ -36,50 +36,49 @@ for drivers to still process just one page per call.
 
 Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 ---
- drivers/iommu/omap-iommu.c | 11 +++++++----
+ drivers/iommu/rockchip-iommu.c | 11 +++++++----
  1 file changed, 7 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
-index 537e402f9bba..9e07dc94af76 100644
---- a/drivers/iommu/omap-iommu.c
-+++ b/drivers/iommu/omap-iommu.c
-@@ -1318,7 +1318,8 @@ static u32 iotlb_init_entry(struct iotlb_entry *e, u32 da, u32 pa, int pgsz)
+diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
+index 8ff69fbf9f65..bb00c67c1015 100644
+--- a/drivers/iommu/rockchip-iommu.c
++++ b/drivers/iommu/rockchip-iommu.c
+@@ -817,7 +817,8 @@ static int rk_iommu_map_iova(struct rk_iommu_domain *rk_domain, u32 *pte_addr,
  }
  
- static int omap_iommu_map(struct iommu_domain *domain, unsigned long da,
--			  phys_addr_t pa, size_t bytes, int prot, gfp_t gfp)
-+			  phys_addr_t pa, size_t bytes, size_t count,
-+			  int prot, gfp_t gfp, size_t *mapped)
+ static int rk_iommu_map(struct iommu_domain *domain, unsigned long _iova,
+-			phys_addr_t paddr, size_t size, int prot, gfp_t gfp)
++			phys_addr_t paddr, size_t size, size_t count,
++			int prot, gfp_t gfp, size_t *mapped)
  {
- 	struct omap_iommu_domain *omap_domain = to_omap_domain(domain);
- 	struct device *dev = omap_domain->dev;
-@@ -1356,13 +1357,15 @@ static int omap_iommu_map(struct iommu_domain *domain, unsigned long da,
- 			oiommu = iommu->iommu_dev;
- 			iopgtable_clear_entry(oiommu, da);
- 		}
-+	} else {
-+		*mapped = bytes;
- 	}
+ 	struct rk_iommu_domain *rk_domain = to_rk_domain(domain);
+ 	unsigned long flags;
+@@ -850,12 +851,14 @@ static int rk_iommu_map(struct iommu_domain *domain, unsigned long _iova,
+ 				paddr, size, prot);
+ 
+ 	spin_unlock_irqrestore(&rk_domain->dt_lock, flags);
++	if (!ret)
++		*mapped = size;
  
  	return ret;
  }
  
- static size_t omap_iommu_unmap(struct iommu_domain *domain, unsigned long da,
--			       size_t size, struct iommu_iotlb_gather *gather)
-+			       size_t size, size_t count, struct iommu_iotlb_gather *gather)
+ static size_t rk_iommu_unmap(struct iommu_domain *domain, unsigned long _iova,
+-			     size_t size, struct iommu_iotlb_gather *gather)
++			     size_t size, size_t count, struct iommu_iotlb_gather *gather)
  {
- 	struct omap_iommu_domain *omap_domain = to_omap_domain(domain);
- 	struct device *dev = omap_domain->dev;
-@@ -1740,8 +1743,8 @@ static const struct iommu_ops omap_iommu_ops = {
- 	.pgsize_bitmap	= OMAP_IOMMU_PGSIZES,
+ 	struct rk_iommu_domain *rk_domain = to_rk_domain(domain);
+ 	unsigned long flags;
+@@ -1197,8 +1200,8 @@ static const struct iommu_ops rk_iommu_ops = {
+ 	.of_xlate = rk_iommu_of_xlate,
  	.default_domain_ops = &(const struct iommu_domain_ops) {
- 		.attach_dev	= omap_iommu_attach_dev,
--		.map		= omap_iommu_map,
--		.unmap		= omap_iommu_unmap,
-+		.map_pages	= omap_iommu_map,
-+		.unmap_pages	= omap_iommu_unmap,
- 		.iova_to_phys	= omap_iommu_iova_to_phys,
- 		.free		= omap_iommu_domain_free,
+ 		.attach_dev	= rk_iommu_attach_device,
+-		.map		= rk_iommu_map,
+-		.unmap		= rk_iommu_unmap,
++		.map_pages	= rk_iommu_map,
++		.unmap_pages	= rk_iommu_unmap,
+ 		.iova_to_phys	= rk_iommu_iova_to_phys,
+ 		.free		= rk_iommu_domain_free,
  	}
 -- 
 2.39.2.101.g768bb238c484.dirty
