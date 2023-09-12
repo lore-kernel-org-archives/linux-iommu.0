@@ -1,46 +1,46 @@
-Received: from mail-lf1-f47.google.com (mail-lf1-f47.google.com [209.85.167.47])
+Received: from mail-ed1-f50.google.com (mail-ed1-f50.google.com [209.85.208.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 33795377
-	for <iommu@lists.linux.dev>; Tue, 12 Sep 2023 13:31:56 +0000 (UTC)
-Received: by mail-lf1-f47.google.com with SMTP id 2adb3069b0e04-50078e52537so9505088e87.1
-        for <iommu@lists.linux.dev>; Tue, 12 Sep 2023 06:31:55 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87F17377
+	for <iommu@lists.linux.dev>; Tue, 12 Sep 2023 13:31:58 +0000 (UTC)
+Received: by mail-ed1-f50.google.com with SMTP id 4fb4d7f45d1cf-52f9a45b4bdso1184352a12.3
+        for <iommu@lists.linux.dev>; Tue, 12 Sep 2023 06:31:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1694525514; x=1695130314; darn=lists.linux.dev;
+        d=linaro.org; s=google; t=1694525517; x=1695130317; darn=lists.linux.dev;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=Aby31Dy3sRvYCseJbVFaOLlk+QjTt8y5N0c9zPR8ufo=;
-        b=DED0E8LY2aOc5qGDZ9BQMAKODwOs9XHlR2l/bTeihzPjdbTwFHa0Sv06TJ5cfjZRJ0
-         prrx6d7u2+TYS9FqGyfvo3m/qNYPo20YA6gQD3Jx92gdnl9P8c3K+ByH/WtiI1JNptmv
-         9KcLInuGfvnS+ePwVM3lZhVXjjqambywA7Kkgzlu3mYNg/w9t1xNTdoLZeKAamv05or9
-         zVbzo6GUbd8vAtBSG4f73Pu31ndR5Mg1j/hlVFa/lE/FhBFkilrkdfa6YOf5k+gk5RZL
-         lMMzhFcypejDyxyxMoSYqNkr7RJ2uDuV+qncrCOZ9Qq4fskZHmInfLDBqUwcrgDldqzs
-         b6hg==
+        bh=hprXduSERdcXr8fQPDcH/kOBSydAG/66jnnLTNoJnrQ=;
+        b=g6IYWn5t28D7fqFqXbkOwLckIwVdoZEAFkVet25Pu2GETqvTgsjOSttHqp9HT9zbmN
+         DD+SxcxPdVProFDtHcTIonCadZ4CkDTvNIqEhQ3KhdJEnonDo5rVP0K53SEU+5u1qfIj
+         wT80RgU5cEy5bA3XnbJeXCXMkX2F1pxHgwPboZDlVaQQePcKckiPK2Iu/cly3/pdXQGx
+         mAHS9QAchRJsB0rd4NIQqqO31yoeRbwRajT9aQJ07hpiV1MivxjAO2AQLQpUD2wSIqXy
+         KJ8GBmeSVZegpHHOX+k2njBnuP5k4pdg/Y55nJoElsfQdk+qWa12OdSylY+k9N4LWoB3
+         fxpQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1694525514; x=1695130314;
+        d=1e100.net; s=20230601; t=1694525517; x=1695130317;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=Aby31Dy3sRvYCseJbVFaOLlk+QjTt8y5N0c9zPR8ufo=;
-        b=QbsXZP9XoLdvPQLQnWYu4hHXFZEKIrPl2RRS7E0IHIO7JZTmXAROpFp9f0FVjpvvZD
-         hW/7FDSUDkBdt9MGqJbUwuFhSTLPLl8YVY6B4hrFWVBE7cHC5SO8RDoC/ppWTAv7byDn
-         jDePz6soQ0LhRTz01pLgIYzd7dGBjEW7Ti53sUv8R5iIfwznh7UOSo6sMxSPmFGfi7ci
-         ZUlDctoO7wmvtk6CB1X7n5fnB64AqQzInt6I1i+g3PTNqunHAMFczfiJNoJ3uZSvkU7E
-         7rwoiqOvOqvaPBMPOBo7a98E7zl+lVFYNYsvd/lTuevfjCUMz/LHvtMbaEosRcuafhVb
-         qWKQ==
-X-Gm-Message-State: AOJu0YwQ4FCJDq9a/xpe5hp7PvUIavSMupiDAPUsFgyF2pDCplRww6/s
-	CWyzl5uFlT0WBIBUDRJdMs2L5w==
-X-Google-Smtp-Source: AGHT+IGitYmBkgkDWLSUP/hqdunkKg4+XgDzDLG69n03cDAVQWkDehzLwjYkdh+olbp2hd4+BN7ZaA==
-X-Received: by 2002:a05:6512:3082:b0:4f7:6453:f3f1 with SMTP id z2-20020a056512308200b004f76453f3f1mr12382111lfd.15.1694525514362;
-        Tue, 12 Sep 2023 06:31:54 -0700 (PDT)
+        bh=hprXduSERdcXr8fQPDcH/kOBSydAG/66jnnLTNoJnrQ=;
+        b=gSQTITRurqbK/i7oMtTcdcsdtFdg+HUh9R0l/ZxF7lSjPI6/6hxcVWX3lgWw5VJObW
+         5Jia/cFmp/iHeQdR+9lSxV0gftx/0mbpszyiXyTrBXWfwnimIIwrC6v2bVgXkBSOUa8n
+         nccTXumGCZH+NiHQt+TLy5bYJIhu/orCaALluDcnriYuD4ZawUMIrLDx1TCIhwpd6kS/
+         aSvS68zlro5zGcUjtZlrrzODEX2n1AFqyJrYjfpaFj4DjC95R80rmOtiC3jH7xFIymzz
+         az5YVfrDndqEOvzvW8a6y+s6Lf/gBS0t+yiP89+Gm5zOnYimxcvUuonrRjn6GvWCjewR
+         9K0Q==
+X-Gm-Message-State: AOJu0YyfibvOIRMFmmmVfvo2Eh7LFMUHkKuiBquhvX4stE8v5QmxmKN+
+	Vs98LYsJdMK1q7JezigAGZ5uCg==
+X-Google-Smtp-Source: AGHT+IHWdhKZNYbyCtwrTut/EnB7j26nTWPkwhyp7Lg2aisMkxMZ5TeczzzhrCocrjZIdTy380fTsQ==
+X-Received: by 2002:aa7:d58f:0:b0:52b:d169:b374 with SMTP id r15-20020aa7d58f000000b0052bd169b374mr10440089edq.3.1694525516691;
+        Tue, 12 Sep 2023 06:31:56 -0700 (PDT)
 Received: from [10.167.154.1] (178235177248.dynamic-4-waw-k-1-1-0.vectranet.pl. [178.235.177.248])
-        by smtp.gmail.com with ESMTPSA id j2-20020aa7ca42000000b0052a401d8ef6sm5983830edt.71.2023.09.12.06.31.52
+        by smtp.gmail.com with ESMTPSA id j2-20020aa7ca42000000b0052a401d8ef6sm5983830edt.71.2023.09.12.06.31.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Sep 2023 06:31:54 -0700 (PDT)
+        Tue, 12 Sep 2023 06:31:56 -0700 (PDT)
 From: Konrad Dybcio <konrad.dybcio@linaro.org>
-Date: Tue, 12 Sep 2023 15:31:42 +0200
-Subject: [PATCH v2 04/14] dt-bindings: arm-smmu: Fix SDM630 clocks
+Date: Tue, 12 Sep 2023 15:31:43 +0200
+Subject: [PATCH v2 05/14] dt-bindings: usb: qcom,dwc3: Fix SDM660 clock
  description
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -50,7 +50,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20230721-topic-rpm_clk_cleanup-v2-4-1e506593b1bd@linaro.org>
+Message-Id: <20230721-topic-rpm_clk_cleanup-v2-5-1e506593b1bd@linaro.org>
 References: <20230721-topic-rpm_clk_cleanup-v2-0-1e506593b1bd@linaro.org>
 In-Reply-To: <20230721-topic-rpm_clk_cleanup-v2-0-1e506593b1bd@linaro.org>
 To: Andy Gross <agross@kernel.org>, Bjorn Andersson <andersson@kernel.org>, 
@@ -69,46 +69,54 @@ Cc: Marijn Suijten <marijn.suijten@somainline.org>,
  linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, 
  linux-usb@vger.kernel.org, Konrad Dybcio <konrad.dybcio@linaro.org>
 X-Mailer: b4 0.12.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1694525501; l=1204;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1694525501; l=1330;
  i=konrad.dybcio@linaro.org; s=20230215; h=from:subject:message-id;
- bh=xOXLCwUDc6wbp5lgmZN0L2nK0COMDmBWvidVIRQZaEM=;
- b=9rLnt5RKSrJMRFdngo5FKCbjpslTV8Cgk2lRTkIJu0MXN2kamhiEW4QKh2iqUto0uklN8jmmB
- RJYZYYDcHW/DK8tejnqcKw+w+Nc+bm6mUhq241rpD7dt2X/C+0XTq7z
+ bh=oKjuNkgzsVv0G3/eKjMFGrCERVPsFFgQT84K83ka8+U=;
+ b=MJI6Zkjgyl4e/MBwCcdEzH8lpMhZ2KVzQxUnEtjyLeHGmT6e7heMAaUtUwnoDHT26EvzWZBNP
+ +YNiyOZcIsxBUbOqbN8aA8+DhPq+d1np3mYs4n3yRdSyzMq/mH7fMiD
 X-Developer-Key: i=konrad.dybcio@linaro.org; a=ed25519;
  pk=iclgkYvtl2w05SSXO5EjjSYlhFKsJ+5OSZBjOkQuEms=
 
-SDM630 was abusingly referencing one of the internal bus clocks, that
+SDM660 was abusingly referencing one of the internal bus clocks, that
 were recently dropped from Linux (because the original implementation
 did not make much sense), circumventing the interconnect framework.
 
-Fix it by dropping the bus-mm clock (which requires separating 630 from
-similar entries) and keeping the rest as-is.
+Drop it.
 
 Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
 ---
- Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ Documentation/devicetree/bindings/usb/qcom,dwc3.yaml | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-index cf29ab10501c..b1b2cf81b42f 100644
---- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-+++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-@@ -270,6 +270,7 @@ allOf:
-           contains:
-             enum:
-               - qcom,msm8998-smmu-v2
-+              - qcom,sdm630-smmu-v2
+diff --git a/Documentation/devicetree/bindings/usb/qcom,dwc3.yaml b/Documentation/devicetree/bindings/usb/qcom,dwc3.yaml
+index 67591057f234..820878031d47 100644
+--- a/Documentation/devicetree/bindings/usb/qcom,dwc3.yaml
++++ b/Documentation/devicetree/bindings/usb/qcom,dwc3.yaml
+@@ -283,8 +283,8 @@ allOf:
      then:
-       anyOf:
-         - properties:
-@@ -311,7 +312,6 @@ allOf:
-         compatible:
-           contains:
-             enum:
--              - qcom,sdm630-smmu-v2
-               - qcom,sm6375-smmu-v2
-     then:
-       anyOf:
+       properties:
+         clocks:
+-          minItems: 5
+-          maxItems: 6
++          minItems: 4
++          maxItems: 5
+         clock-names:
+           oneOf:
+             - items:
+@@ -293,13 +293,11 @@ allOf:
+                 - const: iface
+                 - const: sleep
+                 - const: mock_utmi
+-                - const: bus
+             - items:
+                 - const: cfg_noc
+                 - const: core
+                 - const: sleep
+                 - const: mock_utmi
+-                - const: bus
+ 
+   - if:
+       properties:
 
 -- 
 2.42.0
