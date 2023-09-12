@@ -1,210 +1,134 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B7D1514F63
-	for <iommu@lists.linux.dev>; Tue, 12 Sep 2023 11:57:18 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E5521C15;
-	Tue, 12 Sep 2023 04:57:54 -0700 (PDT)
-Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 0FE083F67D;
-	Tue, 12 Sep 2023 04:57:16 -0700 (PDT)
-Message-ID: <2b4a7aee-1997-cf2f-e8e8-19ab4adc09b5@arm.com>
-Date: Tue, 12 Sep 2023 12:57:12 +0100
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.115])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B993E171BA
+	for <iommu@lists.linux.dev>; Tue, 12 Sep 2023 12:59:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1694523588; x=1726059588;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=imtiLFkDp+qt4Mfxgc764xTzhAS0qgKYmQIrlfbKTgI=;
+  b=HH2UkIq1lqZRC1ocGSSRXJpzaGuzSkBeAS00CxRCNqUYs+vilcKxLVuD
+   TJWL7uTqkaotSqDWz0ge5or4ZWwGjkIUq+o0dd5Al6JeFTsvWVZ5ZDfZF
+   olPQmxtU27tK1H4qLgJFwj+U2X2tKyIFworJu2eY2HES8519M9fTGR3uC
+   Z2kBbX+X6Zw8csDdVPsFvgNn8yayQP5/Y6Exxgf3/3CsaJWbBVBnTuK0u
+   MXrYVDRf83hHZe2g3lwcEZEY9T58kz9m3Z9UxdXrzTE/8m2x2Cbgii3tY
+   FnDYG4FaI7dicZy/OKrIsdfRl+1B0hfNkmmgCgYngyKSunodUqQiRz/9s
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10831"; a="378277293"
+X-IronPort-AV: E=Sophos;i="6.02,139,1688454000"; 
+   d="scan'208";a="378277293"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Sep 2023 05:59:47 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10831"; a="858799208"
+X-IronPort-AV: E=Sophos;i="6.02,139,1688454000"; 
+   d="scan'208";a="858799208"
+Received: from tongshi-mobl.ccr.corp.intel.com (HELO tinazhan-desk1.intel.com) ([10.255.28.214])
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Sep 2023 05:59:45 -0700
+From: Tina Zhang <tina.zhang@intel.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Lu Baolu <baolu.lu@linux.intel.com>
+Cc: Michael Shavit <mshavit@google.com>,
+	Vasant Hegde <vasant.hegde@amd.com>,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Tina Zhang <tina.zhang@intel.com>
+Subject: [PATCH v4 0/6] Share sva domains with all devices bound to a mm
+Date: Tue, 12 Sep 2023 20:59:30 +0800
+Message-Id: <20230912125936.722348-1-tina.zhang@intel.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:102.0) Gecko/20100101
- Thunderbird/102.15.0
-Subject: Re: [PATCH] dma-mapping: fix dma_addressing_limited if dma_range_map
- is scanned
-Content-Language: en-GB
-To: Jia He <justin.he@arm.com>, Christoph Hellwig <hch@lst.de>,
- Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux.dev
-Cc: linux-kernel@vger.kernel.org
-References: <20230912084002.2168-1-justin.he@arm.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20230912084002.2168-1-justin.he@arm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 12/09/2023 9:40 am, Jia He wrote:
-> After scanning the dma_range_map, if it is found that not all of the
-> system RAM ranges are encompassed within it, an incorrect calculation
-> occurs for dma_addressing_limited(), which prevents the nvme device
-> dma mapping in the checking path of phys_to_dma().
+This series is to share sva(shared virtual addressing) domains with all
+devices bound to one mm.
 
-Nit: the subject and this description aren't very clear - the key point 
-here is the unusual case that the range map covers right up to the top 
-of system RAM, but leaves a hole somewhere lower down. There's no issue 
-with the more typical case where some RAM exists above the top of the 
-range map, since bus_dma_limit will capture that and work as expected.
+Problem
+-------
+In the current iommu core code, sva domain is allocated per IOMMU group,
+when device driver is binding a process address space to a device (which is
+handled in iommu_sva_bind_device()). If one than more device is bound to
+the same process address space, there must be more than one sva domain
+instance, with each device having one. In other words, the sva domain
+doesn't share between those devices bound to the same process address
+space, and that leads to two problems:
+1) device driver has to duplicate sva domains with enqcmd, as those sva
+domains have the same PASID and are relevant to one virtual address space.
+This makes the sva domain handling complex in device drivers.
+2) IOMMU driver cannot get sufficient info of the IOMMUs that have
+devices behind them bound to the same virtual address space, when handling
+mmu_notifier_ops callbacks. As a result, IOMMU IOTLB invalidation is
+performed per device instead of per IOMMU, and that may lead to
+superfluous IOTLB invalidation issue, especially in a virtualization
+environment where all devices may be behind one virtual IOMMU.
 
-> E.g. On an Armv8 Ampere server, the dsdt ACPI table is:
->   Method (_DMA, 0, Serialized)  // _DMA: Direct Memory Access
->              {
->                  Name (RBUF, ResourceTemplate ()
->                  {
->                      QWordMemory (ResourceConsumer, PosDecode, MinFixed,
-> MaxFixed, Cacheable, ReadWrite,
->                          0x0000000000000000, // Granularity
->                          0x0000000000000000, // Range Minimum
->                          0x00000000FFFFFFFF, // Range Maximum
->                          0x0000000000000000, // Translation Offset
->                          0x0000000100000000, // Length
->                          ,, , AddressRangeMemory, TypeStatic)
->                      QWordMemory (ResourceConsumer, PosDecode, MinFixed,
-> MaxFixed, Cacheable, ReadWrite,
->                          0x0000000000000000, // Granularity
->                          0x0000006010200000, // Range Minimum
->                          0x000000602FFFFFFF, // Range Maximum
->                          0x0000000000000000, // Translation Offset
->                          0x000000001FE00000, // Length
->                          ,, , AddressRangeMemory, TypeStatic)
->                      QWordMemory (ResourceConsumer, PosDecode, MinFixed,
-> MaxFixed, Cacheable, ReadWrite,
->                          0x0000000000000000, // Granularity
->                          0x00000060F0000000, // Range Minimum
->                          0x00000060FFFFFFFF, // Range Maximum
->                          0x0000000000000000, // Translation Offset
->                          0x0000000010000000, // Length
->                          ,, , AddressRangeMemory, TypeStatic)
->                      QWordMemory (ResourceConsumer, PosDecode, MinFixed,
-> MaxFixed, Cacheable, ReadWrite,
->                          0x0000000000000000, // Granularity
->                          0x0000007000000000, // Range Minimum
->                          0x000003FFFFFFFFFF, // Range Maximum
->                          0x0000000000000000, // Translation Offset
->                          0x0000039000000000, // Length
->                          ,, , AddressRangeMemory, TypeStatic)
->                  })
-> 
-> But the System RAM ranges are:
-> cat /proc/iomem |grep -i ram
-> 90000000-91ffffff : System RAM
-> 92900000-fffbffff : System RAM
-> 880000000-fffffffff : System RAM
-> 8800000000-bff5990fff : System RAM
-> bff59d0000-bff5a4ffff : System RAM
-> bff8000000-bfffffffff : System RAM
-> So some RAM ranges are out of dma_range_map.
-> 
-> Fixes it by checking whether each of the system RAM resources can be
-> properly encompassed within the dma_range_map.
-> 
-> Signed-off-by: Jia He <justin.he@arm.com>
-> ---
->   include/linux/dma-mapping.h |  8 +++++--
->   kernel/dma/mapping.c        | 45 +++++++++++++++++++++++++++++++++++++
->   2 files changed, 51 insertions(+), 2 deletions(-)
-> 
-> diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-> index f0ccca16a0ac..d9d1c67c8579 100644
-> --- a/include/linux/dma-mapping.h
-> +++ b/include/linux/dma-mapping.h
-> @@ -144,6 +144,7 @@ bool dma_pci_p2pdma_supported(struct device *dev);
->   int dma_set_mask(struct device *dev, u64 mask);
->   int dma_set_coherent_mask(struct device *dev, u64 mask);
->   u64 dma_get_required_mask(struct device *dev);
-> +bool all_ram_in_dma_range_map(struct device *dev);
->   size_t dma_max_mapping_size(struct device *dev);
->   size_t dma_opt_mapping_size(struct device *dev);
->   bool dma_need_sync(struct device *dev, dma_addr_t dma_addr);
-> @@ -475,8 +476,11 @@ static inline int dma_coerce_mask_and_coherent(struct device *dev, u64 mask)
->    */
->   static inline bool dma_addressing_limited(struct device *dev)
->   {
-> -	return min_not_zero(dma_get_mask(dev), dev->bus_dma_limit) <
-> -			    dma_get_required_mask(dev);
-> +	if (min_not_zero(dma_get_mask(dev), dev->bus_dma_limit) <
-> +						dma_get_required_mask(dev))
+Solution
+--------
+This patch-set tries to fix those two problems by allowing sharing sva
+domains with all devices bound to a mm. To achieve this, a new structure
+pointer is introduced to mm to replace the old PASID field, which can keep
+the info of PASID as well as the corresponding shared sva domains.
+Besides, function iommu_sva_bind_device() is updated to ensure a new sva
+domain can only be allocated when the old ones cannot work for the IOMMU.
+With these changes, a device driver can expect one sva domain could work
+for per PASID instance(e.g., enqcmd PASID instance), and therefore may get
+rid of handling sva domain duplication. Besides, IOMMU driver (e.g., intel
+vt-d driver) can get sufficient info (e.g., the info of the IOMMUs having
+their devices bound to one virtual address space) when handling
+mmu_notifier_ops callbacks, to remove the redundant IOTLB invalidations.
 
-Nit: indentation
+Arguably there shouldn't be more than one sva_domain with the same PASID,
+and in any sane configuration there should be only 1 type of IOMMU driver
+that needs only 1 SVA domain. However, in reality, IOMMUs on one platform
+may not be identical to each other. Thus, attaching a sva domain that has
+been successfully bound to device A behind a IOMMU A, to device B behind
+IOMMU B may get failed due to the difference between IOMMU A and IOMMU
+B. In this case, a new sva domain with the same PASID needs to be
+allocated to work with IOMMU B. That's why we need a list to keep sva
+domains of one PASID. For the platform where IOMMUs are compatible to each
+other, there should be one sva domain in the list.
 
-> +		return true;
-> +
-> +	return !all_ram_in_dma_range_map(dev);
->   }
->   
->   static inline unsigned int dma_get_max_seg_size(struct device *dev)
-> diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
-> index e323ca48f7f2..ab407deb81b8 100644
-> --- a/kernel/dma/mapping.c
-> +++ b/kernel/dma/mapping.c
-> @@ -14,6 +14,7 @@
->   #include <linux/of_device.h>
->   #include <linux/slab.h>
->   #include <linux/vmalloc.h>
-> +#include <linux/dma-direct.h>
+v4:
+ - Rebase to v6.6-rc1.
 
-Nit: please keep the includes sorted alphabetically, however I do wonder 
-whether this whole thing shouldn't belong in dma-direct anyway.
+v3:
+ - Add a comment describing domain->next.
+ - Expand explanation of why PASID isn't released in
+   iommu_sva_unbind_device().
+ - Add a patch to remove mm->pasid in intel_sva_bind_mm()
 
->   #include "debug.h"
->   #include "direct.h"
->   
-> @@ -819,6 +820,50 @@ size_t dma_opt_mapping_size(struct device *dev)
->   }
->   EXPORT_SYMBOL_GPL(dma_opt_mapping_size);
->   
-> +/*
-> + * To check whether all ram resource ranges are mapped in dma range map
-> + * Returns 0 when continuous check is needed
-> + * Returns 1 if there is some ram range can't be mapped to dma_range_map
-> + */
-> +static int check_ram_in_range_map(unsigned long start_pfn,
-> +				  unsigned long nr_pages, void *data)
-> +{
-> +	phys_addr_t end_paddr = (start_pfn + nr_pages) << PAGE_SHIFT;
+v2:
+ - Add mm_get_enqcmd_pasid().
+ - Update commit message.
 
-This could still wrap to 0 on 32-bit. I think the robust thing to do is 
-either spray some extra -1s and +1s around to make all the "end" values 
-inclusive limits, or maybe just do everything in units of pages rather 
-than bytes (i.e. use PFN_DOWN() on the bus_dma_region entry values).
+v1: https://lore.kernel.org/linux-iommu/20230808074944.7825-1-tina.zhang@intel.com/
 
-> +	phys_addr_t start_paddr = start_pfn << PAGE_SHIFT;
-> +	struct device *dev = (struct device *)data;
-> +	struct bus_dma_region *region = NULL;
-> +	const struct bus_dma_region *m;
-> +
-> +	while (start_paddr < end_paddr) {
-> +		// find region containing start_paddr
+Tina Zhang (6):
+  iommu: Add mm_get_enqcmd_pasid() helper function
+  iommu/vt-d: Remove mm->pasid in intel_sva_bind_mm()
+  iommu: Introduce mm_get_pasid() helper function
+  mm: Add structure to keep sva information
+  iommu: Support mm PASID 1:n with sva domains
+  mm: Deprecate pasid field
 
-Nit: inconsistent comment style (although it's not a particularly 
-valuable comment anyway, IMO the loop itself is clear enough).
+ arch/x86/kernel/traps.c                       |  2 +-
+ .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   | 12 ++---
+ drivers/iommu/intel/svm.c                     | 14 +++---
+ drivers/iommu/iommu-sva.c                     | 45 ++++++++++++-------
+ include/linux/iommu.h                         | 31 ++++++++++---
+ include/linux/mm_types.h                      |  3 +-
+ kernel/fork.c                                 |  1 -
+ mm/init-mm.c                                  |  3 --
+ 8 files changed, 70 insertions(+), 41 deletions(-)
 
-Thanks,
-Robin.
+-- 
+2.34.1
 
-> +		for (m = dev->dma_range_map; m->size; m++) {
-> +			if (start_paddr >= m->cpu_start
-> +			    && start_paddr - m->cpu_start < m->size) {
-> +				region = (struct bus_dma_region *)m;
-> +				break;
-> +			}
-> +		}
-> +		if (!region)
-> +			return 1;
-> +
-> +		start_paddr = region->cpu_start + region->size;
-> +		/* handle overflow of phys_addr_t */
-> +		if (start_paddr == 0)
-> +			break;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +bool all_ram_in_dma_range_map(struct device *dev)
-> +{
-> +	if (!dev->dma_range_map)
-> +		return 1;
-> +
-> +	return !walk_system_ram_range(0, ULONG_MAX, dev, check_ram_in_range_map);
-> +}
-> +EXPORT_SYMBOL_GPL(all_ram_in_dma_range_map);
-> +
->   bool dma_need_sync(struct device *dev, dma_addr_t dma_addr)
->   {
->   	const struct dma_map_ops *ops = get_dma_ops(dev);
