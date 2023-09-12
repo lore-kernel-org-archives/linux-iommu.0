@@ -1,47 +1,47 @@
-Received: from mail-ed1-f47.google.com (mail-ed1-f47.google.com [209.85.208.47])
+Received: from mail-ed1-f52.google.com (mail-ed1-f52.google.com [209.85.208.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B657377
-	for <iommu@lists.linux.dev>; Tue, 12 Sep 2023 13:32:14 +0000 (UTC)
-Received: by mail-ed1-f47.google.com with SMTP id 4fb4d7f45d1cf-52bcd4db4cbso7124603a12.1
-        for <iommu@lists.linux.dev>; Tue, 12 Sep 2023 06:32:14 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C401377
+	for <iommu@lists.linux.dev>; Tue, 12 Sep 2023 13:32:18 +0000 (UTC)
+Received: by mail-ed1-f52.google.com with SMTP id 4fb4d7f45d1cf-52683da3f5cso7258347a12.3
+        for <iommu@lists.linux.dev>; Tue, 12 Sep 2023 06:32:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1694525533; x=1695130333; darn=lists.linux.dev;
+        d=linaro.org; s=google; t=1694525536; x=1695130336; darn=lists.linux.dev;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=45YFU5JcmronSMHtWIJchtM2DzmSuCT4y1WBsd7RbnI=;
-        b=xbyPnRNr4zlGzDDw+PbzMUpVluOjJd4ZTAEfFSuq10wnJBtg/+quhuQtDpPpD8VDD6
-         DzJ6mf38O6vIXbhqKFqsq15KjmrIkmVs5VlAjV5gR8l2SQG7W3VApoxjLwg309qhX4Uk
-         CnHj1C1dqIQV8iMffkVpaoPW7K5LSJi6SqHL5oktJOAtatSij/gqvhuNP3Q24GsrdfFo
-         UciOxxTDqnKXvuunPtpdH0zHuRpEIfAWgcuqX/E2dlBCwzXp1kZywX1tnm0jxCASGxXN
-         FxRGwC/4vQy82IrQStgY0+wFSvzut6f7DLrDrULV+1htBUbJ7fBB7m5Ic/UqVNFigopx
-         c4CA==
+        bh=MKOk76xGHFUbMYlGoo5EB0SwWts0yrobcw5xDMLmD9M=;
+        b=OMZ7cgPap4z/G+Le/uMH4BOVf6hXZQoSzoyz4Pmqe4AxfgJkY9BNdV23gEC87IcaHa
+         Jzw4q65G8JVy2i2rmyiXiaRrhUfyxGAA7sTKp4p+dE8l/JxULRIQTF8bxGdFY8XS6xYQ
+         nP/qcyNWAcJCfFJK6wA+VMB9LcjupEbZrYPqnGPxTHFMPkhOfOYF0sh5bOF9iMwLzb6/
+         eVmQ4RDN0tlCMPO3eJdF7+rDOVCkro0x2yUe4xQ6giT3xPF+f3ne8FBASwaTI3Odqikj
+         QPZWMIx9e5BoYa/rFQGaxYeMjDTRA80atMZjkHZTQiDRhH4BzZIQNhE40AUZurW6IQIN
+         cZAw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1694525533; x=1695130333;
+        d=1e100.net; s=20230601; t=1694525536; x=1695130336;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=45YFU5JcmronSMHtWIJchtM2DzmSuCT4y1WBsd7RbnI=;
-        b=Lu8ghgWSSySIPnzEOTYVsihyaVYJ0gbx3P6QFo7nrUI/ZHHMllfWl95GDFKob432VC
-         zb7phZ4UX9wsri2YSNWTNbFtkokfjxaYz/du+SKGQizz0J5/9Yg7jdnwzhPUvUjGi8Ao
-         QPHFu9Kd2xauXc9lcJgqHBXCmMZ5lJsFbflSMt/ejJZiSfnw8Irz42eC8tAg0pzjjR7N
-         P7g1ZWai3AUrRaNINwsyULXmbsWY6QHXPcDhgbnXMsWuCeOgVuN2hd6W2lAAhBZgvZgI
-         5K43jW5B+n9xvRgBq4KTi/tQUyf0Apd8tzNCNphowboCjfV3RqiigvNyszxPBTkenFd2
-         DDZw==
-X-Gm-Message-State: AOJu0YxkeuLGEZN/T1WEWDuTXsQyxRnAP4yWynNPEeiuEKuYAtxDk+Rv
-	jzN356E4Q8BD3qB7pAd4ALJK6A==
-X-Google-Smtp-Source: AGHT+IFqpnswu8OnBmINYA+lldI8HWxw2rBKgaEqSn1Lel8BXqQ52DxoMkZOSrQPuXC7VTtdKwRz5Q==
-X-Received: by 2002:a50:fe8e:0:b0:52c:84c4:a0bf with SMTP id d14-20020a50fe8e000000b0052c84c4a0bfmr10274612edt.30.1694525533476;
-        Tue, 12 Sep 2023 06:32:13 -0700 (PDT)
+        bh=MKOk76xGHFUbMYlGoo5EB0SwWts0yrobcw5xDMLmD9M=;
+        b=u2+yuHuLMXK6DtvQpEw1BgomPufq6kDoUC2f4OqIujpWSCeZlb48y6DKB51CgzYfLd
+         2TXC+HLZN/8XLllS3m/QXzV11j5LzIDlPfrTvK4zQ8x2Y44Xz5K/lluHs0GZCp4kKi8b
+         RDXSbV2oWgNOhmpX5ZKI6dCoNUPaEdqOg0kGGVzJFUsqLHkmQP4Y2Ix+nsRBBdV67bD+
+         Tq6RJ0fRPrx1S+z1DmGu9DTLHiHJC1+MN3fv/Evoz2RCO4+boy96UPTVtuB8wVV4wbi0
+         vXxJ2xm6omCkSXqA4KKbmpEAvcgBiPcMs3YgF0dmP9IfuVrlXMUhOdBLH3MGD4HBCLQs
+         CbFA==
+X-Gm-Message-State: AOJu0Yx3Y24LBHR0WeNdfm3vWHr28iNzfKUF2xXebzOx8PyGsaY0P3/T
+	x1tJJ3yY/p12In3V05342kJ8XA==
+X-Google-Smtp-Source: AGHT+IEXVUF3G/Xcm+nMiybcrFyyq4s8W7w7OhkeqVd3qfU2FWiQP5LwPnw4hZHXbTm8d+d1t5mTYg==
+X-Received: by 2002:a05:6402:1d99:b0:52f:a162:f4c2 with SMTP id dk25-20020a0564021d9900b0052fa162f4c2mr1789820edb.22.1694525535894;
+        Tue, 12 Sep 2023 06:32:15 -0700 (PDT)
 Received: from [10.167.154.1] (178235177248.dynamic-4-waw-k-1-1-0.vectranet.pl. [178.235.177.248])
-        by smtp.gmail.com with ESMTPSA id j2-20020aa7ca42000000b0052a401d8ef6sm5983830edt.71.2023.09.12.06.32.11
+        by smtp.gmail.com with ESMTPSA id j2-20020aa7ca42000000b0052a401d8ef6sm5983830edt.71.2023.09.12.06.32.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Sep 2023 06:32:13 -0700 (PDT)
+        Tue, 12 Sep 2023 06:32:15 -0700 (PDT)
 From: Konrad Dybcio <konrad.dybcio@linaro.org>
-Date: Tue, 12 Sep 2023 15:31:50 +0200
-Subject: [PATCH v2 12/14] arm64: dts: qcom: msm8996: Remove AGGRE2 clock
- from SLPI
+Date: Tue, 12 Sep 2023 15:31:51 +0200
+Subject: [PATCH v2 13/14] arm64: dts: qcom: msm8996: Remove PNoC clock from
+ MSS
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -50,7 +50,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20230721-topic-rpm_clk_cleanup-v2-12-1e506593b1bd@linaro.org>
+Message-Id: <20230721-topic-rpm_clk_cleanup-v2-13-1e506593b1bd@linaro.org>
 References: <20230721-topic-rpm_clk_cleanup-v2-0-1e506593b1bd@linaro.org>
 In-Reply-To: <20230721-topic-rpm_clk_cleanup-v2-0-1e506593b1bd@linaro.org>
 To: Andy Gross <agross@kernel.org>, Bjorn Andersson <andersson@kernel.org>, 
@@ -69,39 +69,47 @@ Cc: Marijn Suijten <marijn.suijten@somainline.org>,
  linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, 
  linux-usb@vger.kernel.org, Konrad Dybcio <konrad.dybcio@linaro.org>
 X-Mailer: b4 0.12.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1694525501; l=853;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1694525501; l=1234;
  i=konrad.dybcio@linaro.org; s=20230215; h=from:subject:message-id;
- bh=lSiwdkbvQabczgwyXIMk1Ll81JJNyjV8OASMQGT5ls0=;
- b=FbB1+RF12wYQcbxElETqL0vcuCj9+AfFrDtI5q+xrU73UuBoobmmh6+VIjF0kpYJwu7InjkhH
- Q6L3caabD81Be/2QZCyXYTsVkF1cq09ZG/XMoNlJ1Bxc+C2QeyTW8C4
+ bh=+4AEIxoF5np+WSzLavg0MzIg1Zm1W4ES6peXAOsQrzE=;
+ b=a/q3ZM5c50UH+82ZWPiBaAUiYrtUYjAebMJvulsLiD6VOw94VYmKJaM0WeTyoWQN1YRB5vfBw
+ ZsM5Pv0GBp7DTKfRmFqB3PphmdxTuw8TSaDyJgglP3kYtV8O3lbpD9p
 X-Developer-Key: i=konrad.dybcio@linaro.org; a=ed25519;
  pk=iclgkYvtl2w05SSXO5EjjSYlhFKsJ+5OSZBjOkQuEms=
 
-The AGGRE2 clock is a clock for the entire AGGRE2 bus, managed from
-within the interconnect driver. Attaching it to SLPI was a total hack.
-Get rid of it.
+The PNoC clock is a clock for the entire PNoC bus, managed from
+within the interconnect driver. Attaching it to MSS was a total hack.
+Get rid of it and take the liberty to make the clock-names entries
+more readable.
 
 Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
 ---
- arch/arm64/boot/dts/qcom/msm8996.dtsi | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ arch/arm64/boot/dts/qcom/msm8996.dtsi | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
 diff --git a/arch/arm64/boot/dts/qcom/msm8996.dtsi b/arch/arm64/boot/dts/qcom/msm8996.dtsi
-index acef67ab0581..7061a8e12c81 100644
+index 7061a8e12c81..51db5ddcef88 100644
 --- a/arch/arm64/boot/dts/qcom/msm8996.dtsi
 +++ b/arch/arm64/boot/dts/qcom/msm8996.dtsi
-@@ -2433,9 +2433,8 @@ slpi_pil: remoteproc@1c00000 {
- 					  "handover",
- 					  "stop-ack";
+@@ -2479,10 +2479,15 @@ mss_pil: remoteproc@2080000 {
+ 				 <&gcc GCC_MSS_GPLL0_DIV_CLK>,
+ 				 <&gcc GCC_MSS_SNOC_AXI_CLK>,
+ 				 <&gcc GCC_MSS_MNOC_BIMC_AXI_CLK>,
+-				 <&rpmcc RPM_SMD_PCNOC_CLK>,
+ 				 <&rpmcc RPM_SMD_QDSS_CLK>;
+-			clock-names = "iface", "bus", "mem", "xo", "gpll0_mss",
+-				      "snoc_axi", "mnoc_axi", "pnoc", "qdss";
++			clock-names = "iface",
++				      "bus",
++				      "mem",
++				      "xo",
++				      "gpll0_mss",
++				      "snoc_axi",
++				      "mnoc_axi",
++				      "qdss";
  
--			clocks = <&xo_board>,
--				 <&rpmcc RPM_SMD_AGGR2_NOC_CLK>;
--			clock-names = "xo", "aggre2";
-+			clocks = <&xo_board>;
-+			clock-names = "xo";
- 
- 			memory-region = <&slpi_mem>;
- 
+ 			resets = <&gcc GCC_MSS_RESTART>;
+ 			reset-names = "mss_restart";
 
 -- 
 2.42.0
