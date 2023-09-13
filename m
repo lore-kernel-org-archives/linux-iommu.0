@@ -1,85 +1,96 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 70D0337F
-	for <iommu@lists.linux.dev>; Wed, 13 Sep 2023 18:46:55 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A9E511FB;
-	Wed, 13 Sep 2023 11:47:30 -0700 (PDT)
-Received: from [10.57.93.239] (unknown [10.57.93.239])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D953D3F5A1;
-	Wed, 13 Sep 2023 11:46:51 -0700 (PDT)
-Message-ID: <8c8451aa-d0d7-058e-cfc2-7402f9002234@arm.com>
-Date: Wed, 13 Sep 2023 19:46:45 +0100
+Received: from fallback24.i.mail.ru (fallback24.i.mail.ru [79.137.243.78])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9FE37397
+	for <iommu@lists.linux.dev>; Wed, 13 Sep 2023 19:03:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=jiaxyga.com; s=mailru;
+	h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:From:Subject:Content-Type:Content-Transfer-Encoding:To:Cc; bh=VlAwcbr1PJv+/CvDMGSnTL8UEAvraX/AxaiH9ZBa4FY=;
+	t=1694631804;x=1694721804; 
+	b=n2etCEzTFkEz2U+F/2PZsF3ho30EiZjslL/Wv9OtFmUbgjdxZZNqKjXr3f7Dj49kp6OEPl1TunWFb7IOhpmQS0oHcW/796KK+pSqArSsSGcaFBy3WbXcwsRMuXuR8y9yALbyDZe77YXvJ6OVu8uXIPrEK5SaCFDlHJggP5aJ3gs=;
+Received: from [10.12.4.26] (port=60990 helo=smtp50.i.mail.ru)
+	by fallback24.i.mail.ru with esmtp (envelope-from <danila@jiaxyga.com>)
+	id 1qgUsQ-002kYI-GD
+	for iommu@lists.linux.dev; Wed, 13 Sep 2023 21:46:14 +0300
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=jiaxyga.com
+	; s=mailru; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
+	Message-ID:Date:Subject:Cc:To:From:From:Sender:Reply-To:To:Cc:Content-Type:
+	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive:
+	X-Cloud-Ids:Disposition-Notification-To;
+	bh=VlAwcbr1PJv+/CvDMGSnTL8UEAvraX/AxaiH9ZBa4FY=; t=1694630774; x=1694720774; 
+	b=lLMWTechmJ9ofIYSxw0wM80PTWn93Fzk6nnqIkU2OjAu66R7mwEKQl2g167jGJfHvUdJJsH34pP
+	cm4/mQ7IeGhP8DJsAOfCfTqYW7peMb9K/GNIsY1BGY+y0L7RVZ1M/j5cUICG4hczIXT6B1U4IKwbk
+	b6F6MPf8zoOPV6awJyE=;
+Received: by smtp50.i.mail.ru with esmtpa (envelope-from <danila@jiaxyga.com>)
+	id 1qgUrt-0035qJ-1o; Wed, 13 Sep 2023 21:45:42 +0300
+From: Danila Tikhonov <danila@jiaxyga.com>
+To: will@kernel.org,
+	robin.murphy@arm.com,
+	joro@8bytes.org,
+	robh+dt@kernel.org,
+	krzysztof.kozlowski+dt@linaro.org,
+	conor+dt@kernel.org,
+	dmitry.baryshkov@linaro.org,
+	konrad.dybcio@linaro.org,
+	quic_saipraka@quicinc.com,
+	quic_bjorande@quicinc.com,
+	a39.skl@gmail.com,
+	robdclark@chromium.org,
+	mani@kernel.org
+Cc: linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Danila Tikhonov <danila@jiaxyga.com>
+Subject: [PATCH 2/2] iommu/arm-smmu-qcom: Add SM7150 SMMUv2
+Date: Wed, 13 Sep 2023 21:45:25 +0300
+Message-ID: <20230913184526.20016-3-danila@jiaxyga.com>
+X-Mailer: git-send-email 2.41.0
+In-Reply-To: <20230913184526.20016-1-danila@jiaxyga.com>
+References: <20230913184526.20016-1-danila@jiaxyga.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.15.0
-Subject: Re: [PATCH 8/8] iommu: Improve map/unmap sanity checks
-Content-Language: en-GB
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: joro@8bytes.org, will@kernel.org, iommu@lists.linux.dev,
- linux-arm-kernel@lists.infradead.org, m.szyprowski@samsung.com,
- heiko@sntech.de, jernej.skrabec@gmail.com, thierry.reding@gmail.com,
- vdumpa@nvidia.com
-References: <cover.1694525662.git.robin.murphy@arm.com>
- <524db1ec0139c964d26928a6a264945aa66d010c.1694525662.git.robin.murphy@arm.com>
- <ZQHJoK0Er/nekjL6@ziepe.ca>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <ZQHJoK0Er/nekjL6@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Mailru-Src: smtp
+X-7564579A: B8F34718100C35BD
+X-77F55803: 4F1203BC0FB41BD927CFE6CA1630A10CAE547C3CB81491E147B0A519B3A90A1300894C459B0CD1B9FCADAFC12146BA0B77109B367F67D16FD6A2906DA3674A73AF5C6C36E0A87868
+X-7FA49CB5: FF5795518A3D127A4AD6D5ED66289B5278DA827A17800CE77633BACAB33B9508C2099A533E45F2D0395957E7521B51C2CFCAF695D4D8E9FCEA1F7E6F0F101C6778DA827A17800CE72AC9FB60380F23AEEA1F7E6F0F101C6723150C8DA25C47586E58E00D9D99D84E1BDDB23E98D2D38BE5CCB53A13BC8DBA789224ABAF5047F16D28B030BD9E2863CC7F00164DA146DAFE8445B8C89999728AA50765F7900637CAEE156C82D3D7D9389733CBF5DBD5E9C8A9BA7A39EFB766F5D81C698A659EA7CC7F00164DA146DA9985D098DBDEAEC821E93C0F2A571C7BF6B57BC7E6449061A352F6E88A58FB86F5D81C698A659EA73AA81AA40904B5D9A18204E546F3947C6D3A1509E1113711302FCEF25BFAB3454AD6D5ED66289B523666184CF4C3C14F6136E347CC761E07725E5C173C3A84C3A09E6C134B021B95BA3038C0950A5D36B5C8C57E37DE458B330BD67F2E7D9AF16D1867E19FE14079C09775C1D3CA48CF3D321E7403792E342EB15956EA79C166A417C69337E82CC275ECD9A6C639B01B78DA827A17800CE7BA474C34E03C8BE3731C566533BA786AA5CC5B56E945C8DA
+X-C1DE0DAB: 0D63561A33F958A5640C74D9821470FA031D1C92F0B967683729D7C6F4FA30E4F87CCE6106E1FC07E67D4AC08A07B9B04D3DDB508812D9009C5DF10A05D560A950611B66E3DA6D700B0A020F03D25A0997E3FB2386030E77
+X-C8649E89: 1C3962B70DF3F0ADE00A9FD3E00BEEDF77DD89D51EBB7742D3581295AF09D3DF87807E0823442EA2ED31085941D9CD0AF7F820E7B07EA4CF9438D6C3C1AAFCD1EF70536961DB6D581DF6077A8BD9B6F182F3ECCA93B9ADBAEC58EB6354A2D53AC4B8F2E8CFB8F571C5E147D6D01543BBD0509EA1E0215B42E4EB81C25D25832B4C41F94D744909CE4BCAC77546666B612CC0CD5AA9A1B9887EE09F5AAA95A50543082AE146A756F3
+X-D57D3AED: 3ZO7eAau8CL7WIMRKs4sN3D3tLDjz0dLbV79QFUyzQ2Ujvy7cMT6pYYqY16iZVKkSc3dCLJ7zSJH7+u4VD18S7Vl4ZUrpaVfd2+vE6kuoey4m4VkSEu530nj6fImhcD4MUrOEAnl0W826KZ9Q+tr5ycPtXkTV4k65bRjmOUUP8cvGozZ33TWg5HZplvhhXbhDGzqmQDTd6OAevLeAnq3Ra9uf7zvY2zzsIhlcp/Y7m53TZgf2aB4JOg4gkr2biojoMTWofjSWSRcjs8RgJWcJg==
+X-Mailru-Sender: 9EB879F2C80682A09F26F806C73949812764E3BEC62920434EFC06FC47E31AA75E6A6BA515280ED4643683D8C0F3ED1CA3C71A376745D86BBE86167304C7680C3980CE5AAA35C7CD60F22E8815EDE5EAEAB4BC95F72C04283CDA0F3B3F5B9367
+X-Mras: Ok
+X-7564579A: 646B95376F6C166E
+X-77F55803: 6242723A09DB00B4CCFDD92D2340B86DAE84E8624EAA1CB8868E7C6451627E6D049FFFDB7839CE9EA21101AE4D7A6B82A3718D3E5E4E40178B9B77FECB32D0AD014B117A8471DF03
+X-D57D3AED: 3ZO7eAau8CL7WIMRKs4sN3D3tLDjz0dLbV79QFUyzQ2Ujvy7cMT6pYYqY16iZVKkSc3dCLJ7zSJH7+u4VD18S7Vl4ZUrpaVfd2+vE6kuoey4m4VkSEu530nj6fImhcD4MUrOEAnl0W826KZ9Q+tr5xhPKz0ZEsZ5k6NOOPWz5QAiZSCXKGQRq3/7KxbCLSB2ESzQkaOXqCBFZPLWFrEGlV1shfWe2EVcxl5toh0c/aCGOghz/frdRhzMe95NxDFdaloFI76w+pLcpYLkaGMnxQ==
+X-Mailru-MI: C000000000000800
+X-Mras: Ok
 
-On 2023-09-13 15:39, Jason Gunthorpe wrote:
-> On Tue, Sep 12, 2023 at 05:18:44PM +0100, Robin Murphy wrote:
->> The current checks for the __IOMMU_DOMAIN_PAGING capability seem a
->> bit stifled, since it is quite likely now that a non-paging domain
->> won't have a pgsize_bitmap and/or mapping ops, and thus get caught
->> by the earlier condition anyway. Swap them around to test the more
->> fundamental condition first, then we can reasonably also upgrade
->> the other to a WARN_ON, since if a driver does ever expose a paging
->> domain without the means to actually page, it's clearly very broken.
-> 
->> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
->> ---
->>   drivers/iommu/iommu.c | 10 +++++-----
->>   1 file changed, 5 insertions(+), 5 deletions(-)
->>
->> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->> index c83f2e4c56f5..391bcae4d02d 100644
->> --- a/drivers/iommu/iommu.c
->> +++ b/drivers/iommu/iommu.c
->> @@ -2427,12 +2427,12 @@ static int __iommu_map(struct iommu_domain *domain, unsigned long iova,
->>   	phys_addr_t orig_paddr = paddr;
->>   	int ret = 0;
->>   
->> -	if (unlikely(!ops->map_pages || domain->pgsize_bitmap == 0UL))
->> -		return -ENODEV;
->> -
->>   	if (unlikely(!(domain->type & __IOMMU_DOMAIN_PAGING)))
->>   		return -EINVAL;
-> 
-> Why isn't this a WARN_ON? The caller is clearly lost its mind if it
-> is calling map on a non paging domain..
+SM7150 uses a qcom,smmu-v2-style SMMU just for Adreno and friends.
+Add a compatible for it.
 
-Sure it's a dumb thing to do, however I don't think we can reasonably 
-say without question that an external caller being dumb represents an 
-unexpected and serious loss of internal consistency.
+Signed-off-by: Danila Tikhonov <danila@jiaxyga.com>
+---
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 1 +
+ 1 file changed, 1 insertion(+)
 
->> +	if (WARN_ON(!ops->map_pages || domain->pgsize_bitmap == 0UL))
->> +		return -ENODEV;
->> +
-> 
-> And these could be moved to after attach so they are not in any fast
-> path, and eventually to after alloc..
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+index 7f52ac67495f..47e28945a8a0 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+@@ -532,6 +532,7 @@ static const struct of_device_id __maybe_unused qcom_smmu_impl_of_match[] = {
+ 	{ .compatible = "qcom,sm6350-smmu-500", .data = &qcom_smmu_500_impl0_data },
+ 	{ .compatible = "qcom,sm6375-smmu-v2", .data = &qcom_smmu_v2_data },
+ 	{ .compatible = "qcom,sm6375-smmu-500", .data = &qcom_smmu_500_impl0_data },
++	{ .compatible = "qcom,sm7150-smmu-v2", .data = &qcom_smmu_v2_data },
+ 	{ .compatible = "qcom,sm8150-smmu-500", .data = &qcom_smmu_500_impl0_data },
+ 	{ .compatible = "qcom,sm8250-smmu-500", .data = &qcom_smmu_500_impl0_data },
+ 	{ .compatible = "qcom,sm8350-smmu-500", .data = &qcom_smmu_500_impl0_data },
+-- 
+2.41.0
 
-Perhaps, although TBH I can't imagine it making any appreciable 
-difference - they're both values we need to load and use soon anyway, so 
-on a sensible CPU, the additional overhead should only really be a 
-couple of not-taken branch-if-zero instructions, which is nothing at all 
-compared to how much goes on in the main loop and the driver op call itself.
-
-Thanks,
-Robin.
