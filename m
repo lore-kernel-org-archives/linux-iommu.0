@@ -1,49 +1,48 @@
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.65])
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.100])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA337A20
-	for <iommu@lists.linux.dev>; Wed, 13 Sep 2023 04:26:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A8A0B65B
+	for <iommu@lists.linux.dev>; Wed, 13 Sep 2023 06:19:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1694579193; x=1726115193;
+  t=1694585944; x=1726121944;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=KgyPr+Cgj+GJvemhLB38JTJgS0QW58VqrqaihkXJdmU=;
-  b=GI6fa4YBwV/BAfvErgHVVJF3B21JZg5lHtCKX2ujYbVVVa4Z7YFKfEKe
-   4f6vlAX7LOMSNKbrWwZQNNhrGhyoRxlRwWDyojzAvLO96O34Mgpj4FFYr
-   1BYIIhHyCoY4lowujZuDysC/6BDLbZJpPEDsqzwvroL6SYaR0gtmKM+1m
-   /9HGbUYiOW5jST69BxG+sOkUJTWHY5hjIfgAfXA9t9ri/LNu/BFbX8Oi/
-   3k9w8XciMnzt8wCtowrkRI3GLkW8rc73Lkde4rFPRidv8ZyZFq7MUzdjW
-   CKWtkoibkbCB3OiHexrujL/Koz+GcGKimgAcPzfZXmNU5wu/o6r3RyhVM
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10831"; a="382368651"
+  bh=gXx1hvpx2HZolUiJN5DvXobD3nkeVdRetajrTVny9lU=;
+  b=kE32guir/itE28cbcNSCek90pdhRYP/9HH6iCknX9UHM5jEvdVpvLkdf
+   5Ob+l15RsyBAD9L8rH0x+ZBtpvA/MEV1TQZydZW5DJl7sxWfoJjsd9WBl
+   YCmN9I/zz4UQ9AJ5QztHV72GvwU1uvg46qxfAOJ0rlPtPrdzdXL+l2HoU
+   642kLBOeOQBc0fxM1dZIKDnRDZnTA+wEpsQ3LcvcVowd5h1sXZGY3rjLK
+   t/s3lSO3CMgrYqVHac46LlDgC5djjicwmu8Ib0EsHrp/NsHxyZ2Coc1rL
+   CWlthsk5XBsshDrqtm46u3Yet7zRhx0K4pKV1JQ4V5oGYyIKREnUFsZ47
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10831"; a="445015013"
 X-IronPort-AV: E=Sophos;i="6.02,142,1688454000"; 
-   d="scan'208";a="382368651"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Sep 2023 21:26:32 -0700
+   d="scan'208";a="445015013"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Sep 2023 23:19:03 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10831"; a="743969821"
+X-IronPort-AV: E=McAfee;i="6600,9927,10831"; a="779079996"
 X-IronPort-AV: E=Sophos;i="6.02,142,1688454000"; 
-   d="scan'208";a="743969821"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
-  by orsmga002.jf.intel.com with ESMTP; 12 Sep 2023 21:26:29 -0700
-Message-ID: <b48e14ed-693a-8c88-3391-76cacb0850b9@linux.intel.com>
-Date: Wed, 13 Sep 2023 12:23:31 +0800
+   d="scan'208";a="779079996"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.255.28.153]) ([10.255.28.153])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Sep 2023 23:18:58 -0700
+Message-ID: <2d41220e-cab0-b931-b8be-b394ee8f301e@linux.intel.com>
+Date: Wed, 13 Sep 2023 14:18:56 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.13.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.15.0
 Cc: baolu.lu@linux.intel.com, "Liu, Yi L" <yi.l.liu@intel.com>,
  Jacob Pan <jacob.jun.pan@linux.intel.com>,
  "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
  "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
  "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 Subject: Re: [PATCH v4 09/10] iommu: Make iommu_queue_iopf() more generic
-Content-Language: en-US
 To: "Tian, Kevin" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
  Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
  Jason Gunthorpe <jgg@ziepe.ca>,
@@ -60,17 +59,18 @@ References: <20230825023026.132919-1-baolu.lu@linux.intel.com>
  <BN9PR11MB52764790D53DF8AB4ED417098CF2A@BN9PR11MB5276.namprd11.prod.outlook.com>
  <eca39154-bc45-3c7d-88a9-b377f4d248f9@linux.intel.com>
  <BN9PR11MB52769C830A65FCE6CBA037278CF0A@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Language: en-US
 From: Baolu Lu <baolu.lu@linux.intel.com>
 In-Reply-To: <BN9PR11MB52769C830A65FCE6CBA037278CF0A@BN9PR11MB5276.namprd11.prod.outlook.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 9/13/23 10:34 AM, Tian, Kevin wrote:
->> From: Baolu Lu <baolu.lu@linux.intel.com>
+On 2023/9/13 10:34, Tian, Kevin wrote:
+>> From: Baolu Lu<baolu.lu@linux.intel.com>
 >> Sent: Monday, September 11, 2023 8:46 PM
 >>
 >> On 2023/9/11 14:57, Tian, Kevin wrote:
->>>> From: Baolu Lu <baolu.lu@linux.intel.com>
+>>>> From: Baolu Lu<baolu.lu@linux.intel.com>
 >>>> Sent: Tuesday, September 5, 2023 1:24 PM
 >>>>
 >>>> Hi Kevin,
@@ -97,10 +97,8 @@ On 9/13/23 10:34 AM, Tian, Kevin wrote:
 >> reference
 >>>> counter in the fault data to avoid use-after-free issue.
 >>>>
->>>
 >>> Can you elaborate the use-after-free issue and why a new user count
 >>> is required?
->>
 >> I was concerned that when iommufd uses iopf, page fault report/response
 >> may occur simultaneously with enable/disable PRI.
 >>
@@ -108,29 +106,44 @@ On 9/13/23 10:34 AM, Tian, Kevin wrote:
 >> path. In the future, we may discard this interface and enable PRI when
 >> attaching the first PRI-capable domain, and disable it when detaching
 >> the last PRI-capable domain.
-> 
 > Then let's not do it now until there is a real need after you have a
 > thorough design for iommufd.
 
-Okay, fair enough.
+I revisited this part of code and found that it's still valuable to make
+the code clean and simple. The fault parameter is accessed in various
+paths, such as reporting iopf, responding iopf, draining iopf's, adding
+queue and removing queue. In each path, we need to repeat below locking
+code:
 
-> 
->>
->>>
->>> btw a Fix tag is required given this mislocking issue has been there for
->>> quite some time...
->>
->> I don't see any real issue fixed by this change. It's only a lock
->> refactoring after the code refactoring and preparing it for iommufd use.
->> Perhaps I missed anything?
->>
-> 
-> mislocking already exists today for the partial list:
-> 
->    - iommu_queue_iopf() uses dev->iommu->lock;
->    - iopf_queue_discard_partial() uses queue->lock;
+	mutex_lock(&dev->iommu->lock);
+	fault_param = dev->iommu->fault_param;
+	if (!fault_param) {
+		mutex_unlock(&dev->iommu->lock);
+		return -ENODEV;
+	}
 
-So, if it's worth it, let me try splitting a fix patch.
+	/* use the fault parameter */
+	... ...
+
+	mutex_unlock(&dev->iommu->lock);
+
+The order of the locks is also important. Otherwise, a possible deadlock
+issue will be reported by lockdep.
+
+By consolidating above code in iopf_get/put_dev_fault_param() helpers,
+it could be simplified as:
+
+	fault_param = iopf_get_dev_fault_param(dev);
+	if (!fault_param)
+		return -ENODEV;
+
+	/* use the fault parameter */
+	... ...
+
+	iopf_put_dev_fault_param(fault_param);
+
+The lock order issue is removed. And it will make the code simpler and
+easier for maintenance.
 
 Best regards,
 baolu
