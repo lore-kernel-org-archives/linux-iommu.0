@@ -1,58 +1,56 @@
-Received: from mail-ed1-f42.google.com (mail-ed1-f42.google.com [209.85.208.42])
+Received: from mail-ej1-f48.google.com (mail-ej1-f48.google.com [209.85.218.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 059EF1401B
-	for <iommu@lists.linux.dev>; Wed, 13 Sep 2023 07:19:19 +0000 (UTC)
-Received: by mail-ed1-f42.google.com with SMTP id 4fb4d7f45d1cf-529fb04a234so8540895a12.3
-        for <iommu@lists.linux.dev>; Wed, 13 Sep 2023 00:19:19 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C51163D6C
+	for <iommu@lists.linux.dev>; Wed, 13 Sep 2023 08:47:37 +0000 (UTC)
+Received: by mail-ej1-f48.google.com with SMTP id a640c23a62f3a-99c3c8adb27so834747566b.1
+        for <iommu@lists.linux.dev>; Wed, 13 Sep 2023 01:47:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1694589558; x=1695194358; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
+        d=linaro.org; s=google; t=1694594856; x=1695199656; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=A3hr2Dkoscy8OKR4lP2RVrqnAFjnoPD9KTW+WVQxYRY=;
-        b=SGbP4l4kE/WgzXmif9jRw8RfqsORZ4KJL5w0PwjqBUnLT88je4q1xQbU3/7tpVukgA
-         SBZ4XRwyPTFNGzxzyIWhfWC5moTDIFAPMe/QSfj7AuxMuh/alfp8hriBDKhTQ3UkW94j
-         h21vVL3zGtg9+QglLmywrq28y74FaqGlwXlnBUOd/f3qTabeOJW6J3lav/z8O2oGy/jK
-         jrDlXhH/lIhz9EcCjB+FlZXA1I0cqpojC5jj7H7H8zd2TxlM/E1sipQ5VhfaKwii9bPg
-         3DwoVQ4nW1rtmKh5EtPuO7ye6VWyu/R526Dj+xu9355G7HrarU0PTOzHxVtio5jtq5jt
-         LLxA==
+        bh=PQEFQQxMh0h+78yTeEwiIcC35VL/vG6Gf1kdzuQcwiU=;
+        b=kvXrq8wDsjlXeJkv4sIKk5YOywhmc2AqY57Y8YuR2srD6Tw9XwWM9DNZe+3G/I66e6
+         W7Qr9RBSol9wPpYo6js21sbOoJ4MMZeVkoZ3CF90niHXuNDUBevlmeGx29fMtl5YFIF5
+         JXU3cGScUjJ1Pp9KB3Vm1mINlNR7bJ9xKvY9JLv4hi9t3IInnfDpidky7c0bLoHaVZfb
+         5KLc8nH8k8HnUZQnVsaMWbTvmWFjVW9T6Yto36zQ+K9S3nErg081vOndIPk320XycTLL
+         b56Ww9BURzmXmdXefUtY9JFA4q4QF8fPQ+9L0JG3PBx55M7sahTDZXkecReLiTd4MkwJ
+         9UtQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1694589558; x=1695194358;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
+        d=1e100.net; s=20230601; t=1694594856; x=1695199656;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=A3hr2Dkoscy8OKR4lP2RVrqnAFjnoPD9KTW+WVQxYRY=;
-        b=XtTCyu2d/wm61llOiQHtZcnBOl//XOZ2/GOWClq9xIHQtbXaSK5+QLlHYMlsAswZL1
-         wo2ZUv51erT1+Zqi70MVAHuXT5r+2qkkiEzlDbIka4ZwvIzbmrFgVzu+YvJ1Vaf1D/Cl
-         bayDTvxzG3oQjAszmQLhxA1HD+WxXPN10Y2FdWm5Pxri+79giZvfKWlosbKZvSRKc2CU
-         qc2nZMvIWcSDL0OXzc4cYPkbSBv3uklOjH8Eo1aNS5N6k6sgaFu/5k2H4dQz1CPkJqm2
-         zEyY5XDsKvpmHQUC/MU7w75T7kSRwnQjc0L2iqbIAEMx9VpEcLBRuHAPrcTbSP4OOBRr
-         I2Wg==
-X-Gm-Message-State: AOJu0Yzs03kDYtNY70QF93oWbYGCm58ES59nYcMRDurGuJXo75mmO7Pk
-	wJTAZo83r3j0Gp96M/E/UbF5QA==
-X-Google-Smtp-Source: AGHT+IE6YcmXnG2kZ7MVJ5DQQSPqKNTw5IPlBCUXbJfyxM9ZFvK7mh0xGHZANganLb81Af/8FOzTiQ==
-X-Received: by 2002:a05:6402:48f:b0:528:90d7:a19 with SMTP id k15-20020a056402048f00b0052890d70a19mr1734134edv.11.1694589558276;
-        Wed, 13 Sep 2023 00:19:18 -0700 (PDT)
-Received: from [192.168.1.20] ([178.197.214.188])
-        by smtp.gmail.com with ESMTPSA id b7-20020aa7c6c7000000b0052328d4268asm6841519eds.81.2023.09.13.00.19.16
+        bh=PQEFQQxMh0h+78yTeEwiIcC35VL/vG6Gf1kdzuQcwiU=;
+        b=et8Hi3mCVtycWd4ct8H/aFaephjDwnov/loW+JZ6SrcB24qz1iJTMZz/v22WkV8jLF
+         efLgjx++NfTTaQclXF+LzUeBDi7/DeDkDb9iCgLwj6GveHvoM/z7lmopxr/nhDJPN8Le
+         uYxZbn1xnQFwp2m/S/IEuzozbSZQi9m++2outUZXxhFlmFIropNW1WqQvaBZsZuMGtnR
+         MiUzJK1p5RC0fml8S8PuPF5rSt7Or0mmIHu/F9M8Ok8YEyBZGpBJOlto6Dh90fQGdQvF
+         PVY5aKluE8wmX0JETiFZv8toCrGLv2oyHilC91WBkVSExn4+BbNueygwPc4lLOjUPY2A
+         HU7A==
+X-Gm-Message-State: AOJu0Yy7fNpDLM957j993+SS6M7NmT+4qZxZOqPRD4I/OvQFw7z9ZNwe
+	lmKyOzo4Mjk3Dl9mZFm9lm3n0Q==
+X-Google-Smtp-Source: AGHT+IHq8G/vDNKzkpyTrGivbPniBIGyuPjI+ArBrWWcige0YNQz3a3Kfta7CjCjsNCGDZAP+7Uqvg==
+X-Received: by 2002:a17:906:d8:b0:9aa:186:959a with SMTP id 24-20020a17090600d800b009aa0186959amr1364510eji.31.1694594855877;
+        Wed, 13 Sep 2023 01:47:35 -0700 (PDT)
+Received: from [192.168.37.232] (178235177106.dynamic-4-waw-k-1-1-0.vectranet.pl. [178.235.177.106])
+        by smtp.gmail.com with ESMTPSA id mb8-20020a170906eb0800b00992b71d8f19sm7983312ejb.133.2023.09.13.01.47.33
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 13 Sep 2023 00:19:17 -0700 (PDT)
-Message-ID: <43cd38f5-20ce-a97d-0906-55faf228b377@linaro.org>
-Date: Wed, 13 Sep 2023 09:19:15 +0200
+        Wed, 13 Sep 2023 01:47:35 -0700 (PDT)
+Message-ID: <ac501bcc-80a1-4b65-ba24-272152d1c95c@linaro.org>
+Date: Wed, 13 Sep 2023 10:47:33 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.15.0
-Subject: Re: [PATCH v2 14/14] arm64: dts: qcom: sdm630: Fix USB2 clock-names
- order
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 01/14] arm64: dts: qcom: msm8916: Drop RPM bus clocks
 Content-Language: en-US
-To: Konrad Dybcio <konrad.dybcio@linaro.org>, Andy Gross <agross@kernel.org>,
- Bjorn Andersson <andersson@kernel.org>,
+To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+ Andy Gross <agross@kernel.org>, Bjorn Andersson <andersson@kernel.org>,
  Mathieu Poirier <mathieu.poirier@linaro.org>,
  Rob Herring <robh+dt@kernel.org>,
  Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
@@ -68,46 +66,70 @@ Cc: Marijn Suijten <marijn.suijten@somainline.org>,
  linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
  linux-usb@vger.kernel.org
 References: <20230721-topic-rpm_clk_cleanup-v2-0-1e506593b1bd@linaro.org>
- <20230721-topic-rpm_clk_cleanup-v2-14-1e506593b1bd@linaro.org>
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20230721-topic-rpm_clk_cleanup-v2-14-1e506593b1bd@linaro.org>
+ <20230721-topic-rpm_clk_cleanup-v2-1-1e506593b1bd@linaro.org>
+ <bd11d1b1-efe5-4f96-43e7-163fca5d3278@linaro.org>
+From: Konrad Dybcio <konrad.dybcio@linaro.org>
+Autocrypt: addr=konrad.dybcio@linaro.org; keydata=
+ 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
+ izWDgYvmBE8=
+In-Reply-To: <bd11d1b1-efe5-4f96-43e7-163fca5d3278@linaro.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 12/09/2023 15:31, Konrad Dybcio wrote:
-> The last 2 clock-names entries for the USB2 controller were swapped,
-> resulting in schema warnings:
+On 13.09.2023 09:07, Krzysztof Kozlowski wrote:
+> On 12/09/2023 15:31, Konrad Dybcio wrote:
+>> These clocks are now handled from within the icc framework and are
 > 
-> ['cfg_noc', 'core', 'mock_utmi', 'sleep'] is too short
->         'iface' was expected
->         'sleep' was expected
->         'mock_utmi' was expected
-> 
-> Fix it and take the liberty to make the clock-names entries more
-> readable.
-> 
-> Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
-> ---
->  arch/arm64/boot/dts/qcom/sdm630.dtsi | 6 ++++--
->  1 file changed, 4 insertions(+), 2 deletions(-)
-> 
-> diff --git a/arch/arm64/boot/dts/qcom/sdm630.dtsi b/arch/arm64/boot/dts/qcom/sdm630.dtsi
-> index f11d2a07508c..316c8fd224e0 100644
-> --- a/arch/arm64/boot/dts/qcom/sdm630.dtsi
-> +++ b/arch/arm64/boot/dts/qcom/sdm630.dtsi
-> @@ -1394,8 +1394,10 @@ usb2: usb@c2f8800 {
->  				 <&gcc GCC_USB20_MASTER_CLK>,
->  				 <&gcc GCC_USB20_MOCK_UTMI_CLK>,
->  				 <&gcc GCC_USB20_SLEEP_CLK>;
-> -			clock-names = "cfg_noc", "core",
-> -				      "mock_utmi", "sleep";
-> +			clock-names = "cfg_noc",
-> +				      "core",
-> +				      "sleep",
-> +				      "mock_utmi";
+> That's a driver behavior, not hardware.
+I believe we've been over this already..
 
-Plus this is just incorrect... :(
+The rationale behind this change is: that hardware, which falls
+under the "interconnect" class, was previously misrepresented as
+a bunch of clocks. There are clocks underneath, but accessing them
+directly would be equivalent to e.g. circumventing the PHY subsystem
+and initializing your UFS PHY from within the UFS device.
 
-Best regards,
-Krzysztof
-
+Konrad
+> 
+>> no longer registered from within the CCF. Remove them.
+>>
+> 
+> Changes in Linux clock drivers should not cause some clocks to disappear
+> from DTS...
+> 
+> 
+> Best regards,
+> Krzysztof
+> 
