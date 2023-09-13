@@ -1,84 +1,167 @@
-Received: from fallback1.i.mail.ru (fallback1.i.mail.ru [79.137.243.67])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 06590378
-	for <iommu@lists.linux.dev>; Wed, 13 Sep 2023 19:42:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=jiaxyga.com; s=mailru;
-	h=Content-Transfer-Encoding:MIME-Version:Message-ID:Date:Subject:Cc:To:From:From:Subject:Content-Type:Content-Transfer-Encoding:To:Cc; bh=uC/GvK0VJb251p0QooAtVuKXPJInsZMKbwarV/LC65Q=;
-	t=1694634154;x=1694724154; 
-	b=HSK8a/qjz1pNRnpJewr/Y3V9bfPJVT8/mMjWXfI5cv6DFIIb26VtLZJQjEtEWIAXq7FgQVgxYcLHZpGbGJlQXCUu+qvXAB28S7trvAS3GXOWMs0ZBfWZ5Cq554SxGKIJcy3GZO2eFEnkzy5HXM6U16Ab4h8adqm4c3nNwqBKlho=;
-Received: from [10.12.4.26] (port=40010 helo=smtp50.i.mail.ru)
-	by fallback1.i.mail.ru with esmtp (envelope-from <danila@jiaxyga.com>)
-	id 1qgUsJ-007AFc-KK
-	for iommu@lists.linux.dev; Wed, 13 Sep 2023 21:46:07 +0300
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=jiaxyga.com
-	; s=mailru; h=Content-Transfer-Encoding:MIME-Version:Message-ID:Date:Subject:
-	Cc:To:From:From:Sender:Reply-To:To:Cc:Content-Type:Content-Transfer-Encoding:
-	Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-	Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
-	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive:
-	X-Cloud-Ids:Disposition-Notification-To;
-	bh=uC/GvK0VJb251p0QooAtVuKXPJInsZMKbwarV/LC65Q=; t=1694630767; x=1694720767; 
-	b=PpVKs18S/isCn0j95T1N34UtN3ef4qL2WDi8mmHmHGi69eijsVkTBnBDUkRdp+pNgdq+G67OVLZ
-	JQlsw3r8VmboyeGhLyx5WOniQP7Po3L9EkndE5CTUj+0hc5OzQ2V5+77iT29uLEnNbLk+uwaD3ymv
-	RyD85WVV+YpZwBM74lI=;
-Received: by smtp50.i.mail.ru with esmtpa (envelope-from <danila@jiaxyga.com>)
-	id 1qgUrm-0035qJ-2i; Wed, 13 Sep 2023 21:45:35 +0300
-From: Danila Tikhonov <danila@jiaxyga.com>
-To: will@kernel.org,
-	robin.murphy@arm.com,
-	joro@8bytes.org,
-	robh+dt@kernel.org,
-	krzysztof.kozlowski+dt@linaro.org,
-	conor+dt@kernel.org,
-	dmitry.baryshkov@linaro.org,
-	konrad.dybcio@linaro.org,
-	quic_saipraka@quicinc.com,
-	quic_bjorande@quicinc.com,
-	a39.skl@gmail.com,
-	robdclark@chromium.org,
-	mani@kernel.org
-Cc: linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Danila Tikhonov <danila@jiaxyga.com>
-Subject: [PATCH 0/2] Add SMMUv2 support for SM7150
-Date: Wed, 13 Sep 2023 21:45:23 +0300
-Message-ID: <20230913184526.20016-1-danila@jiaxyga.com>
-X-Mailer: git-send-email 2.41.0
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4A4D71DA42;
+	Wed, 13 Sep 2023 20:20:24 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9776D1FB;
+	Wed, 13 Sep 2023 13:21:00 -0700 (PDT)
+Received: from [10.57.93.239] (unknown [10.57.93.239])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E20A63F738;
+	Wed, 13 Sep 2023 13:20:21 -0700 (PDT)
+Message-ID: <157d5041-96ac-6bad-9137-19a78fbf3591@arm.com>
+Date: Wed, 13 Sep 2023 21:20:15 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Mailru-Src: smtp
-X-7564579A: EEAE043A70213CC8
-X-77F55803: 4F1203BC0FB41BD902203E0DD57300EC89AAED3EA3F32E92EBA3BF9EE48D578D182A05F5380850404C228DA9ACA6FE27A482D244EA0E52CE8C490B82B4933EA9F35BE37809CE72BABBEB785991F343D9
-X-7FA49CB5: FF5795518A3D127A4AD6D5ED66289B5278DA827A17800CE7D298878E5C9226A3EA1F7E6F0F101C67BD4B6F7A4D31EC0BCC500DACC3FED6E28638F802B75D45FF8AA50765F7900637BB46061768088B55EA1F7E6F0F101C6723150C8DA25C47586E58E00D9D99D84E1BDDB23E98D2D38BE5CCB53A13BC8DBAC7BCD8C45EDABD4975B8F87FD08413F5CC7F00164DA146DAFE8445B8C89999728AA50765F7900637BA939FD1B3BAB99B389733CBF5DBD5E9C8A9BA7A39EFB766F5D81C698A659EA7CC7F00164DA146DA9985D098DBDEAEC8744B801E316CB65FF6B57BC7E6449061A352F6E88A58FB86F5D81C698A659EA73AA81AA40904B5D9A18204E546F3947C6D3A1509E1113711BA3038C0950A5D36C8A9BA7A39EFB766D91E3A1F190DE8FDBA3038C0950A5D36D5E8D9A59859A8B6AFFDA16987AEDD6B3AA81AA40904B5D99C9F4D5AE37F343AD1F44FA8B9022EA23BBE47FD9DD3FB595F5C1EE8F4F765FC72CEEB2601E22B093A03B725D353964B2FFDA4F57982C5F435872C767BF85DA227C277FBC8AE2E8BF783223E2FFF4BA875ECD9A6C639B01B4E70A05D1297E1BBCB5012B2E24CD356
-X-C1DE0DAB: 0D63561A33F958A557454068F431977F031D1C92F0B967687DE98A16635393DAF87CCE6106E1FC07E67D4AC08A07B9B08ED1AC82D843A2BB9C5DF10A05D560A950611B66E3DA6D700B0A020F03D25A0997E3FB2386030E77
-X-C8649E89: 1C3962B70DF3F0ADE00A9FD3E00BEEDF77DD89D51EBB7742D3581295AF09D3DF87807E0823442EA2ED31085941D9CD0AF7F820E7B07EA4CF683A57FDD2AEDC3755F9A89B3D25FCCBE48000011D0BCD8CD4A835B1DE932CF830FDAC359DA24632C4B8F2E8CFB8F57155B7AD3890BE6EE088F9DB833DDDE066E4EB81C25D25832B4C41F94D744909CE4BCAC77546666B612CC0CD5AA9A1B9887EE09F5AAA95A50543082AE146A756F3
-X-D57D3AED: 3ZO7eAau8CL7WIMRKs4sN3D3tLDjz0dLbV79QFUyzQ2Ujvy7cMT6pYYqY16iZVKkSc3dCLJ7zSJH7+u4VD18S7Vl4ZUrpaVfd2+vE6kuoey4m4VkSEu530nj6fImhcD4MUrOEAnl0W826KZ9Q+tr5ycPtXkTV4k65bRjmOUUP8cvGozZ33TWg5HZplvhhXbhDGzqmQDTd6OAevLeAnq3Ra9uf7zvY2zzsIhlcp/Y7m53TZgf2aB4JOg4gkr2biojoMTWofjSWSS/HwZJA1JtNw==
-X-Mailru-Sender: 9EB879F2C80682A09F26F806C73949812764E3BEC629204346C41B774C00143D8B323A312B9E97B1643683D8C0F3ED1CA3C71A376745D86BBE86167304C7680C3980CE5AAA35C7CD60F22E8815EDE5EAEAB4BC95F72C04283CDA0F3B3F5B9367
-X-Mras: Ok
-X-7564579A: B8F34718100C35BD
-X-77F55803: 6242723A09DB00B4CCFDD92D2340B86DAE84E8624EAA1CB84988109EA335834A049FFFDB7839CE9EA21101AE4D7A6B820E75EB11A66BC17919CC9FF804FB15B0D369C56D339B7D4B
-X-D57D3AED: 3ZO7eAau8CL7WIMRKs4sN3D3tLDjz0dLbV79QFUyzQ2Ujvy7cMT6pYYqY16iZVKkSc3dCLJ7zSJH7+u4VD18S7Vl4ZUrpaVfd2+vE6kuoey4m4VkSEu530nj6fImhcD4MUrOEAnl0W826KZ9Q+tr5xhPKz0ZEsZ5k6NOOPWz5QAiZSCXKGQRq3/7KxbCLSB2ESzQkaOXqCBFZPLWFrEGlV1shfWe2EVcxl5toh0c/aCGOghz/frdRhzMe95NxDFdaloFI76w+pI4RllkULJkAQ==
-X-Mailru-MI: C000000000000800
-X-Mras: Ok
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.15.0
+Subject: Re: [PATCH] iommu/sun50i: Convert to map_pages/unmap_pages
+Content-Language: en-GB
+To: Jernej Skrabec <jernej.skrabec@gmail.com>, joro@8bytes.org,
+ will@kernel.org
+Cc: wens@csie.org, samuel@sholland.org, iommu@lists.linux.dev,
+ linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+References: <20230912181941.2971036-1-jernej.skrabec@gmail.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20230912181941.2971036-1-jernej.skrabec@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-This series adds SMMUv2 support for Qualcomm SM7150 SoC.
+On 2023-09-12 19:19, Jernej Skrabec wrote:
+> Convert driver to use map_pages and unmap_pages. Since functions operate
+> on page table, extend them to be able to operate on whole table, not
+> just one entry.
+> 
+> Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+> ---
+> Hi!
+> 
+> I'm not sure if it makes sense to check validity of page table entry when
+> unmaping pages makes sense. What do you think?
 
-Danila Tikhonov (2):
-  dt-bindings: arm-smmu: Add SM7150 GPU SMMUv2
-  iommu/arm-smmu-qcom: Add SM7150 SMMUv2
+As things currently stand it's largely a matter of opinion - some 
+drivers consider that unmapping something which hasn't been mapped is 
+nonsensical, and almost always represents the caller having gone wrong, 
+thus report it as an error; others take the view that as long as they 
+can achieve the requested end result, they're not going to think too 
+hard about how they got there. The same arguments apply to whether you'd 
+quietly replace an existing PTE or not when mapping, so I'd say the main 
+thing is to at least be self-consistent one way or the other.
 
- Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 2 ++
- drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c            | 1 +
- 2 files changed, 3 insertions(+)
+Cheers,
+Robin.
 
--- 
-2.41.0
-
+> 
+> Best regards,
+> Jernej
+> 
+>   drivers/iommu/sun50i-iommu.c | 55 +++++++++++++++++++++---------------
+>   1 file changed, 33 insertions(+), 22 deletions(-)
+> 
+> diff --git a/drivers/iommu/sun50i-iommu.c b/drivers/iommu/sun50i-iommu.c
+> index 74c5cb93e900..be6102730a56 100644
+> --- a/drivers/iommu/sun50i-iommu.c
+> +++ b/drivers/iommu/sun50i-iommu.c
+> @@ -589,11 +589,12 @@ static u32 *sun50i_dte_get_page_table(struct sun50i_iommu_domain *sun50i_domain,
+>   }
+>   
+>   static int sun50i_iommu_map(struct iommu_domain *domain, unsigned long iova,
+> -			    phys_addr_t paddr, size_t size, int prot, gfp_t gfp)
+> +			    phys_addr_t paddr, size_t pgsize, size_t pgcount,
+> +			    int prot, gfp_t gfp, size_t *mapped)
+>   {
+>   	struct sun50i_iommu_domain *sun50i_domain = to_sun50i_domain(domain);
+>   	struct sun50i_iommu *iommu = sun50i_domain->iommu;
+> -	u32 pte_index;
+> +	u32 pte_index, count, i;
+>   	u32 *page_table, *pte_addr;
+>   	int ret = 0;
+>   
+> @@ -604,45 +605,55 @@ static int sun50i_iommu_map(struct iommu_domain *domain, unsigned long iova,
+>   	}
+>   
+>   	pte_index = sun50i_iova_get_pte_index(iova);
+> -	pte_addr = &page_table[pte_index];
+> -	if (unlikely(sun50i_pte_is_page_valid(*pte_addr))) {
+> -		phys_addr_t page_phys = sun50i_pte_get_page_address(*pte_addr);
+> -		dev_err(iommu->dev,
+> -			"iova %pad already mapped to %pa cannot remap to %pa prot: %#x\n",
+> -			&iova, &page_phys, &paddr, prot);
+> -		ret = -EBUSY;
+> -		goto out;
+> +	count = min(pgcount, (size_t)NUM_PT_ENTRIES - pte_index);
+> +	for (i = 0; i < count; i++) {
+> +		pte_addr = &page_table[pte_index + i];
+> +		if (unlikely(sun50i_pte_is_page_valid(*pte_addr))) {
+> +			phys_addr_t page_phys = sun50i_pte_get_page_address(*pte_addr);
+> +
+> +			dev_err(iommu->dev,
+> +				"iova %pad already mapped to %pa cannot remap to %pa prot: %#x\n",
+> +				&iova, &page_phys, &paddr, prot);
+> +			ret = -EBUSY;
+> +			goto out;
+> +		}
+> +		*pte_addr = sun50i_mk_pte(paddr, prot);
+> +		paddr += SPAGE_SIZE;
+>   	}
+>   
+> -	*pte_addr = sun50i_mk_pte(paddr, prot);
+> -	sun50i_table_flush(sun50i_domain, pte_addr, 1);
+> +	sun50i_table_flush(sun50i_domain, &page_table[pte_index], i);
+> +	*mapped = i * SPAGE_SIZE;
+>   
+>   out:
+>   	return ret;
+>   }
+>   
+>   static size_t sun50i_iommu_unmap(struct iommu_domain *domain, unsigned long iova,
+> -				 size_t size, struct iommu_iotlb_gather *gather)
+> +				 size_t pgsize, size_t pgcount,
+> +				 struct iommu_iotlb_gather *gather)
+>   {
+>   	struct sun50i_iommu_domain *sun50i_domain = to_sun50i_domain(domain);
+> +	u32 dte, count, i, pte_index;
+>   	phys_addr_t pt_phys;
+>   	u32 *pte_addr;
+> -	u32 dte;
+>   
+>   	dte = sun50i_domain->dt[sun50i_iova_get_dte_index(iova)];
+>   	if (!sun50i_dte_is_pt_valid(dte))
+>   		return 0;
+>   
+>   	pt_phys = sun50i_dte_get_pt_address(dte);
+> -	pte_addr = (u32 *)phys_to_virt(pt_phys) + sun50i_iova_get_pte_index(iova);
+> +	pte_index = sun50i_iova_get_pte_index(iova);
+> +	pte_addr = (u32 *)phys_to_virt(pt_phys) + pte_index;
+>   
+> -	if (!sun50i_pte_is_page_valid(*pte_addr))
+> -		return 0;
+> +	count = min(pgcount, (size_t)NUM_PT_ENTRIES - pte_index);
+> +	for (i = 0; i < count; i++)
+> +		if (!sun50i_pte_is_page_valid(pte_addr[i]))
+> +			break;
+>   
+> -	memset(pte_addr, 0, sizeof(*pte_addr));
+> -	sun50i_table_flush(sun50i_domain, pte_addr, 1);
+> +	memset(pte_addr, 0, sizeof(*pte_addr) * i);
+> +	sun50i_table_flush(sun50i_domain, pte_addr, i);
+>   
+> -	return SZ_4K;
+> +	return i * SPAGE_SIZE;
+>   }
+>   
+>   static phys_addr_t sun50i_iommu_iova_to_phys(struct iommu_domain *domain,
+> @@ -838,8 +849,8 @@ static const struct iommu_ops sun50i_iommu_ops = {
+>   		.iotlb_sync_map = sun50i_iommu_iotlb_sync_map,
+>   		.iotlb_sync	= sun50i_iommu_iotlb_sync,
+>   		.iova_to_phys	= sun50i_iommu_iova_to_phys,
+> -		.map		= sun50i_iommu_map,
+> -		.unmap		= sun50i_iommu_unmap,
+> +		.map_pages	= sun50i_iommu_map,
+> +		.unmap_pages	= sun50i_iommu_unmap,
+>   		.free		= sun50i_iommu_domain_free,
+>   	}
+>   };
