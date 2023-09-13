@@ -1,57 +1,55 @@
-Received: from mail-qt1-f175.google.com (mail-qt1-f175.google.com [209.85.160.175])
+Received: from mail-qv1-f51.google.com (mail-qv1-f51.google.com [209.85.219.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 58DA03D6C
-	for <iommu@lists.linux.dev>; Wed, 13 Sep 2023 14:40:09 +0000 (UTC)
-Received: by mail-qt1-f175.google.com with SMTP id d75a77b69052e-41368601e92so43179241cf.3
-        for <iommu@lists.linux.dev>; Wed, 13 Sep 2023 07:40:09 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 25B5E9472
+	for <iommu@lists.linux.dev>; Wed, 13 Sep 2023 14:42:06 +0000 (UTC)
+Received: by mail-qv1-f51.google.com with SMTP id 6a1803df08f44-64b3504144cso38193706d6.2
+        for <iommu@lists.linux.dev>; Wed, 13 Sep 2023 07:42:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1694616008; x=1695220808; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1694616126; x=1695220926; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=2QPP+TPZFJRPRV+Uxt6zI2nlZhVLYECkBOgOUQMGQmU=;
-        b=mOk9etnk/Xld7XuqGUHgdqDAAM9xltrf+NVbNHFiWwnywr554q7jP8nzpFjpz83Uig
-         PLb1/Pp/edNLT5U34nAW+Mh1vbNk7neFWqG87xlUORsI7/IoHITWw49K8lDLZ5abZGY8
-         eNqD7O/nGsA8WRk08JzBQ8lJl/18H6lyvFA1+DjgNfrVbU2rGMBLDtGBg/4ihTLtY18a
-         yk1Gelh3zWzciH0Hg0bVI1hfJSORX+P7jWVjSJezOnU+f8aK39U/kFMycGaxRyrB4qpV
-         U3GnUStbGvmhI3n6Nzxeo+fTAxz9meASZEa4U8ReVZ7nl4L3qVcneZO1MhFVqdSBUvpj
-         ZZYg==
+        bh=TLMIm80/NqMAwUtQeNK/AozzxGhvlZkC/vnttV9OljA=;
+        b=BrldP/FhGVPuRgLTj/Orf7O3uGNG4c3rPfzSvPrcxULB6CRlKfuotYY9Sah0Mstylv
+         G7Gdopxnmb3iyEt+sGJXSl5qs/XALnaL84aG5Vo3cQd7gIuEhAGKp99wS+oR95cspBB+
+         tLqvg6iJqNYL4YZ7wP3B0muOxZ3lR6t5g7M/A2d6hrggwNGqAX8YN/TUWogNpbD7LcqN
+         PRavRP2PUG40gkKNHFE0KXTJAbkgFAIBRSSg6XueTCofxKUfXCdOy5fKJeyecNlg/V3U
+         vXzY8S/h/g1B/a48WZhMZ8rPZrUyaMFt3H7tLSzOJeEKIYmsqSfwsv35F/eYO3OKzeGb
+         Yu8g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1694616008; x=1695220808;
+        d=1e100.net; s=20230601; t=1694616126; x=1695220926;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=2QPP+TPZFJRPRV+Uxt6zI2nlZhVLYECkBOgOUQMGQmU=;
-        b=lpM8UBbUWP4I2wPh/ALwzRGKpmFSiqEOM+2WFQi5AY3CgUDuzn9qgs5Lolt7hbnz3B
-         iHTJD5S0wrVSsuL+WLlACj8rDXLyx2GwOO7x/DSewwdB7Q6E/Npo4iyXJU1jS3HOGGTG
-         VUsiPjxRoIxdpbiQg1lbtjq2kIqsLRpjPfvvYlSMbBQdAHJtZLiQ61to2a2yy7oPCukI
-         5WxrKJoPswlZ0H9rWpqK3qkhoHdWYpuzLqRaer1SHcy+q4oAhMxpvfR0OboOIJP3rLVo
-         zj8vELWzebEFFsKmHNo3JNnqK8FU8HsVWn6ouZGaLXKd2oD86zpOQk1AX5qPf3cYSJg3
-         cELw==
-X-Gm-Message-State: AOJu0YzODc24gV+XHmug1C5qXRPY243Apu6uz69G2myY6AXQUfAjPWOE
-	Rk+2/ATP7Z4SBR5erACRAyl04Q==
-X-Google-Smtp-Source: AGHT+IE5LjmqBrHGWk7sTKAQmgPyFal4xZnTDzkx7aB8rSny51UAk0B2xTYwNOybfTOFwuolegpGBg==
-X-Received: by 2002:a0c:e287:0:b0:655:fc53:873a with SMTP id r7-20020a0ce287000000b00655fc53873amr2568010qvl.24.1694616008070;
-        Wed, 13 Sep 2023 07:40:08 -0700 (PDT)
+        bh=TLMIm80/NqMAwUtQeNK/AozzxGhvlZkC/vnttV9OljA=;
+        b=p4i10aHUjZS0KtINO8RvBjN7kqwUDDC9ulMhK6x3qOkeSF+u4i8pCaUghm666ncAFp
+         dOryyQX+KA5HOpxEDtJg0Tvn8yaH7g2isZdX+gHWY14HEtfOKZ1GX8i4ASM7YxvAXzse
+         BULFLspMTdm3fZSZ5JgAxlQJEF0gTdEPKBOQBg3wmStearEGfxYObRQsry9uPt/8jkVB
+         Aj/rfTyhzHXYRCqVAW9UtOQGZBwbIxbKFCxbBB4GtRGuCyMXC1nydjwY+LGEwODGGZKp
+         9JgYaxB9WWlTEp+A5ox6d3RqKy1zcByRZN65M0AZQH+IA882Qxb1Otc5Z9PjIsEIW4Uz
+         aBQQ==
+X-Gm-Message-State: AOJu0YyV8LgL53YNK8e+F2VKJY02oHjr4fx0GNRsrNPWp6SK/MQeOPZ4
+	gUhn6P9JXSePvGgDVEJHTYHbag==
+X-Google-Smtp-Source: AGHT+IF+VaL/WSe1wDP7z7hBlIPxE6En7FNsMN/iw6fc3vn3U/OGIpKX6RmO0F/MH0LkfeF3d/dE2Q==
+X-Received: by 2002:a0c:ca06:0:b0:64b:e16:a3c3 with SMTP id c6-20020a0cca06000000b0064b0e16a3c3mr2395417qvk.24.1694616126007;
+        Wed, 13 Sep 2023 07:42:06 -0700 (PDT)
 Received: from ziepe.ca (hlfxns017vw-134-41-202-196.dhcp-dynamic.fibreop.ns.bellaliant.net. [134.41.202.196])
-        by smtp.gmail.com with ESMTPSA id s1-20020a0cdc01000000b0064f3b0d0143sm4385549qvk.142.2023.09.13.07.40.07
+        by smtp.gmail.com with ESMTPSA id a15-20020a0cca8f000000b006490a9946b6sm4480524qvk.119.2023.09.13.07.42.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Sep 2023 07:40:07 -0700 (PDT)
+        Wed, 13 Sep 2023 07:42:05 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.95)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1qgR2F-003eeP-0z;
-	Wed, 13 Sep 2023 11:40:07 -0300
-Date: Wed, 13 Sep 2023 11:40:07 -0300
+	id 1qgR48-003efh-R9;
+	Wed, 13 Sep 2023 11:42:04 -0300
+Date: Wed, 13 Sep 2023 11:42:04 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: joro@8bytes.org, will@kernel.org, iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, m.szyprowski@samsung.com,
-	heiko@sntech.de, jernej.skrabec@gmail.com, thierry.reding@gmail.com,
-	vdumpa@nvidia.com
-Subject: Re: [PATCH 7/8] iommu: Retire map/unmap ops
-Message-ID: <ZQHJx3FWRQrsNYsC@ziepe.ca>
-References: <cover.1694525662.git.robin.murphy@arm.com>
- <d2afdf13b2fbf537713c3ec642dfd49d16dd9e6a.1694525662.git.robin.murphy@arm.com>
+To: Vasant Hegde <vasant.hegde@amd.com>
+Cc: iommu@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com,
+	wei.huang2@amd.com, jsnitsel@redhat.com
+Subject: Re: [PATCH v2 02/10] iommu/amd: Introduce get_amd_iommu_from_dev()
+Message-ID: <ZQHKPGwp02jUXwuZ@ziepe.ca>
+References: <20230816174031.634453-1-vasant.hegde@amd.com>
+ <20230816174031.634453-3-vasant.hegde@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -60,17 +58,33 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <d2afdf13b2fbf537713c3ec642dfd49d16dd9e6a.1694525662.git.robin.murphy@arm.com>
+In-Reply-To: <20230816174031.634453-3-vasant.hegde@amd.com>
 
-On Tue, Sep 12, 2023 at 05:18:43PM +0100, Robin Murphy wrote:
-> With everyone now implementing the new interfaces, clean up the last
-> remnants of the old map/unmap ops and simplify the calling logic again.
-> 
-> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-> ---
->  drivers/iommu/iommu.c | 60 ++++++++++---------------------------------
->  include/linux/iommu.h |  6 -----
->  2 files changed, 13 insertions(+), 53 deletions(-)
+On Wed, Aug 16, 2023 at 05:40:23PM +0000, Vasant Hegde wrote:
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index f1e18e81fca7..5a44567678ce 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -446,6 +446,20 @@ static inline struct iommu_device *dev_to_iommu_device(struct device *dev)
+>  	return (struct iommu_device *)dev_get_drvdata(dev);
+>  }
+>  
+> +/**
+> + * iommu_get_iommu_dev - Get iommu_device for a device
+> + *
+> + * @dev: an end-point device
+
+No space before kdoc parameters
+
+> + *
+> + * Note that this function must be called from of of the iommu_ops
+> + * to retrieve the iommu_device for a device, which the core code
+> + * guarentees it will not invoke the op without an attached iommu.
+> + */
+> +static inline struct iommu_device *iommu_get_iommu_dev(struct device *dev)
+> +{
+> +	return dev->iommu->iommu_dev;
+> +}
 
 Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
