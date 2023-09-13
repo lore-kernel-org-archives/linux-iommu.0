@@ -1,45 +1,45 @@
-Received: from mail-ed1-f43.google.com (mail-ed1-f43.google.com [209.85.208.43])
+Received: from mail-ed1-f52.google.com (mail-ed1-f52.google.com [209.85.208.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 835B31FD6
-	for <iommu@lists.linux.dev>; Wed, 13 Sep 2023 07:16:36 +0000 (UTC)
-Received: by mail-ed1-f43.google.com with SMTP id 4fb4d7f45d1cf-52a3ff5f0abso8309060a12.1
-        for <iommu@lists.linux.dev>; Wed, 13 Sep 2023 00:16:36 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B932CAD5C
+	for <iommu@lists.linux.dev>; Wed, 13 Sep 2023 07:18:01 +0000 (UTC)
+Received: by mail-ed1-f52.google.com with SMTP id 4fb4d7f45d1cf-52a1ce529fdso8540421a12.1
+        for <iommu@lists.linux.dev>; Wed, 13 Sep 2023 00:18:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1694589395; x=1695194195; darn=lists.linux.dev;
+        d=linaro.org; s=google; t=1694589480; x=1695194280; darn=lists.linux.dev;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=yn21ujmkr4Sp+EA0gnf8dygODVc/XuXdjn0LI3sjZCE=;
-        b=aAkgXbSV9ax7kwAKj59YLGZfHNEkS3VocVHsxNr+U/P48svqDAYzsx8px+dSJ6503T
-         hDZBP6TA9eWEXRKgG5SWik4uTP0kHAnoHPyhmThFXZcIkhDzx350U8K9jQtoqjmnyD+n
-         LOKftlhMorCTADfVLca3VEAWD2Mu7wutyPwxZdsGIDvx0+LQt6jWnWgmph3VTMhXQ6DY
-         lAGgIsctL6CX3B2eVMRnQCxY1KARZzlfNaul7Gf3YQ0UGiSr9tvkvu/b/V8V/FNCDD0O
-         XIFxpQxj8Z9LVdOnOrdu9E3lhD+nf+DriMPy4hKeCHUgl8NN2ltmtfb9Hp5SzntzSV5n
-         y3eg==
+        bh=5E2GWmaKgMk9eaNY11kumMiKx9QbIcNvdM4XUjWrJ44=;
+        b=qzAxZjvBsdL/B2mA6EZ/My4P1Lz2gybSMwpJZYKg734k843TgPtXEKwDk5XD94Q87B
+         c0ogYidhzxfT+Pbxr+YRWc9bhaRguI9eL12F79Ql1JD1xwMBdp7Hb63x/whlCFtBG3tr
+         EbS28/3bmPnhTckJAR3RzzTZv9zCzTw/+XEONuGRezWMEvg8SlXPzR9kY0kziPzUunSq
+         hncfPhwkm/BV24FR+KY5b+XIs34MwN0wN/NdnYouS8+WCc8dGkYhcl1XycO8MVpT18l1
+         bA7gIRPCrSz+NP8dVvP6q64Y0seTVbk+rb3Knrwn2iJi8WSImMusgfIg12AsYwmTcOH2
+         RQFA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1694589395; x=1695194195;
+        d=1e100.net; s=20230601; t=1694589480; x=1695194280;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=yn21ujmkr4Sp+EA0gnf8dygODVc/XuXdjn0LI3sjZCE=;
-        b=nC9+jXJZI7XRj853FwLTlDNWXewi16F2laO6wXOI5ezN8GfyRikaudlngocGB6Kb8Y
-         7rDuGEhiRlW61lwOvCTjQkfnkl8RbcdOa4c/xPtg5mMODfHyOcZ/bUcfY/55TBp1bWUr
-         c4YBVBtU4eTjmMIGVAMOi/z2UE7/JHscNSIreHlmPgfOdnvtsA5e3FlF4YxokeUnBSRS
-         PhdmmrTYHsOccM0qTcxg4RFGohjiKiUROz2ZIReGOmyM1a4ldCf62tPCNMSdhA4XwSoh
-         g8vxxr+eNqQUz1cutRpw49KqhE9YZw6qdnfXMkFjWlDE1k4jbxmXPUjKHCl7p3YyMQSc
-         4slA==
-X-Gm-Message-State: AOJu0Yx5gP3YxH7bgFkycV2yGQiVVuJ6vuwe1krtXp1B7Sv74DTM0gG1
-	SP8awmnrGxBRg5jZhc6TQcyomA==
-X-Google-Smtp-Source: AGHT+IFyf9Fx/pf35KrNLfez0lmkNaBYKL0JSrB9CFz9ETZ9MnkjYUX40l83RXA8JXM9raiowLn7Ng==
-X-Received: by 2002:a50:ec8a:0:b0:523:2274:91cb with SMTP id e10-20020a50ec8a000000b00523227491cbmr1504709edr.12.1694589394834;
-        Wed, 13 Sep 2023 00:16:34 -0700 (PDT)
+        bh=5E2GWmaKgMk9eaNY11kumMiKx9QbIcNvdM4XUjWrJ44=;
+        b=TsAaDBtBt4M1xIqsYqajmWal1gMWQ4VZCklXbOFYD5S26rjWswnNHpfFPmGjLcjOFu
+         vPOxI0uQumVntlkLLvA0iCp4jfnGAVgXS0vOYQKG/ttgBAqbW/UhPmhH8goTcBQGfUjs
+         RR8o4HulfrQYnOnuMt3B/jSaEr3oip4qr5eKwUznHmVAS5IsgAttuXvv4Hkyw5DoPiub
+         iXzkfa8J8CAQyixCQJgamzSIbxUcvunCXwXFSuRmkAlQJ5Bwvta7V0EJ9IQSJCItDxT7
+         5vpEneiWUxC0WxqTqbxRTi86aoiakQ8hLdlnM8Pyh884wmqCw7r97zicylnQLbND+jNX
+         x1sA==
+X-Gm-Message-State: AOJu0YydLkyDTV2Xh5kgOTVOdZg8OoDIYf14pa2R0dCjuSx1PoWDFDTr
+	XVIrTIkaY27YD+E7p3Z0dkkHEQ==
+X-Google-Smtp-Source: AGHT+IEIxkxJMHTHddH6e9vxURb7vyya0U8l8ijNR3g0bzw+qT3mlAGtTd1Mz3CsBWlsWVc9jIz9CQ==
+X-Received: by 2002:aa7:d1d6:0:b0:525:528d:836f with SMTP id g22-20020aa7d1d6000000b00525528d836fmr1588780edp.18.1694589479936;
+        Wed, 13 Sep 2023 00:17:59 -0700 (PDT)
 Received: from [192.168.1.20] ([178.197.214.188])
-        by smtp.gmail.com with ESMTPSA id eg27-20020a056402289b00b0052f3e8c84fesm4786096edb.29.2023.09.13.00.16.33
+        by smtp.gmail.com with ESMTPSA id bc3-20020a056402204300b0052348d74865sm6702364edb.61.2023.09.13.00.17.57
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 13 Sep 2023 00:16:34 -0700 (PDT)
-Message-ID: <af5b83c7-94af-1779-68da-78976fc68fc7@linaro.org>
-Date: Wed, 13 Sep 2023 09:16:32 +0200
+        Wed, 13 Sep 2023 00:17:59 -0700 (PDT)
+Message-ID: <c4420c00-5c45-c46b-ae73-15c6d8af0694@linaro.org>
+Date: Wed, 13 Sep 2023 09:17:56 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -48,8 +48,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.15.0
-Subject: Re: [PATCH v2 08/14] dt-bindings: remoteproc: qcom,adsp: Remove
- AGGRE2 clock
+Subject: Re: [PATCH v2 14/14] arm64: dts: qcom: sdm630: Fix USB2 clock-names
+ order
 Content-Language: en-US
 To: Konrad Dybcio <konrad.dybcio@linaro.org>, Andy Gross <agross@kernel.org>,
  Bjorn Andersson <andersson@kernel.org>,
@@ -68,22 +68,27 @@ Cc: Marijn Suijten <marijn.suijten@somainline.org>,
  linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
  linux-usb@vger.kernel.org
 References: <20230721-topic-rpm_clk_cleanup-v2-0-1e506593b1bd@linaro.org>
- <20230721-topic-rpm_clk_cleanup-v2-8-1e506593b1bd@linaro.org>
+ <20230721-topic-rpm_clk_cleanup-v2-14-1e506593b1bd@linaro.org>
 From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20230721-topic-rpm_clk_cleanup-v2-8-1e506593b1bd@linaro.org>
+In-Reply-To: <20230721-topic-rpm_clk_cleanup-v2-14-1e506593b1bd@linaro.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
 On 12/09/2023 15:31, Konrad Dybcio wrote:
-> The AGGRE2 clock is a clock for the entire AGGRE2 bus, managed from
-> within the interconnect driver. Attaching it to SLPI was a total hack.
-> Get rid of it.
+> The last 2 clock-names entries for the USB2 controller were swapped,
+> resulting in schema warnings:
 > 
-> Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
-> ---
+> ['cfg_noc', 'core', 'mock_utmi', 'sleep'] is too short
+>         'iface' was expected
+>         'sleep' was expected
+>         'mock_utmi' was expected
+> 
+> Fix it and take the liberty to make the clock-names entries more
+> readable.
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+This was already fixed:
 
+https://lore.kernel.org/all/20230723141849.93078-2-krzysztof.kozlowski@linaro.org/
 
 Best regards,
 Krzysztof
