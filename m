@@ -1,20 +1,20 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D8339369
-	for <iommu@lists.linux.dev>; Thu, 14 Sep 2023 01:55:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FB10C433CA;
-	Thu, 14 Sep 2023 01:55:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 056E817D3
+	for <iommu@lists.linux.dev>; Thu, 14 Sep 2023 01:55:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D583C43391;
+	Thu, 14 Sep 2023 01:55:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1694656530;
-	bh=JS37t7SkNjf+2/wZczBhA8zl2JA753ddV8NUy5wGEV8=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=N4OTuPwBRlsv3RZOUHaYtT+WKvh8zPnH6sCdQD6sf6mhyRDALAyXHNA/kn5UfyGCW
-	 tsE4oqk/53PCnsaficJ8hzVjXBTihwsqfBffdMR9mOhfWCef2F2eZw2OVdTcyauE5C
-	 PB04MsseA5oEbSVvtD49eiBA9FMx7bbTmAYw7TiXFz4TlUDYxg8amSFTkny3oz1Slz
-	 5eomI7rBkxPGBscLjCTB8ak2id9vY6vJ1/CDpZ1a8Pyseyq5OoLWni2PsEPncodJ1v
-	 cJwdYgkYwNcZNz2IDLxOZiQGqIGYAe96lmpHXGNscxQwmHKzQZ4uDadyOeeU0IHTAu
-	 goML1Rmt/qR3Q==
+	s=k20201202; t=1694656539;
+	bh=I3zBOcMYDFrR8nYkfNCgRDhP1py5VYaP3hBqLhNqbeY=;
+	h=From:To:Cc:Subject:Date:From;
+	b=N5wihnDyTizef0bId2MLAKNCk/0Q1ynfMckDuHQL9ciDVRqAIRIoWoJ/W+qmPtx1B
+	 yAVIzBLBZXicTuylzkJCNINmSwMz7ii/3SzwfL8G/pRrPjeUhxrm9JIqP2Uj07Ol5b
+	 QE+XncM5Wlw2fQI+Qnnx2oI2S/Bdz0/x1Cu9dPUK4bQGEd82w5hcgRy1F3Qg+Nsh+S
+	 HVJfI2VNJqpY5DAwFFi5dwnofGf3HC0B9KpHDF7Yz6vUT8AYLWSkWUG+R9dp7ZgtXH
+	 syg/bd0bS+rHm24+za1TwwEjOAmPNxJYD6rYEWqYT8A+Rq59j4YVFWBlxo1tnZFGzJ
+	 bNwFvJ0OVmPBA==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
@@ -25,12 +25,10 @@ Cc: Sergey Senozhatsky <senozhatsky@chromium.org>,
 	Sasha Levin <sashal@kernel.org>,
 	m.szyprowski@samsung.com,
 	iommu@lists.linux.dev
-Subject: [PATCH AUTOSEL 6.1 3/6] dma-debug: don't call __dma_entry_alloc_check_leak() under free_entries_lock
-Date: Wed, 13 Sep 2023 21:55:13 -0400
-Message-Id: <20230914015523.51894-3-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.15 1/3] dma-debug: don't call __dma_entry_alloc_check_leak() under free_entries_lock
+Date: Wed, 13 Sep 2023 21:55:34 -0400
+Message-Id: <20230914015536.51984-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.40.1
-In-Reply-To: <20230914015523.51894-1-sashal@kernel.org>
-References: <20230914015523.51894-1-sashal@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -39,7 +37,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
-X-stable-base: Linux 6.1.53
+X-stable-base: Linux 5.15.131
 Content-Transfer-Encoding: 8bit
 
 From: Sergey Senozhatsky <senozhatsky@chromium.org>
@@ -187,10 +185,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 15 insertions(+), 5 deletions(-)
 
 diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
-index 18c93c2276cae..3ff7089d11a92 100644
+index 2caafd13f8aac..1f9a8cee42241 100644
 --- a/kernel/dma/debug.c
 +++ b/kernel/dma/debug.c
-@@ -603,15 +603,19 @@ static struct dma_debug_entry *__dma_entry_alloc(void)
+@@ -605,15 +605,19 @@ static struct dma_debug_entry *__dma_entry_alloc(void)
  	return entry;
  }
  
@@ -214,7 +212,7 @@ index 18c93c2276cae..3ff7089d11a92 100644
  	}
  }
  
-@@ -622,8 +626,10 @@ static void __dma_entry_alloc_check_leak(void)
+@@ -624,8 +628,10 @@ static void __dma_entry_alloc_check_leak(void)
   */
  static struct dma_debug_entry *dma_entry_alloc(void)
  {
@@ -225,7 +223,7 @@ index 18c93c2276cae..3ff7089d11a92 100644
  
  	spin_lock_irqsave(&free_entries_lock, flags);
  	if (num_free_entries == 0) {
-@@ -633,13 +639,17 @@ static struct dma_debug_entry *dma_entry_alloc(void)
+@@ -635,13 +641,17 @@ static struct dma_debug_entry *dma_entry_alloc(void)
  			pr_err("debugging out of memory - disabling\n");
  			return NULL;
  		}
