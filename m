@@ -1,165 +1,212 @@
-Received: from mail-ed1-f48.google.com (mail-ed1-f48.google.com [209.85.208.48])
+Received: from mail-wr1-f43.google.com (mail-wr1-f43.google.com [209.85.221.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC9121C13
-	for <iommu@lists.linux.dev>; Thu, 14 Sep 2023 07:41:07 +0000 (UTC)
-Received: by mail-ed1-f48.google.com with SMTP id 4fb4d7f45d1cf-52a1ce529fdso700494a12.1
-        for <iommu@lists.linux.dev>; Thu, 14 Sep 2023 00:41:07 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ABFE2EBC
+	for <iommu@lists.linux.dev>; Thu, 14 Sep 2023 08:07:44 +0000 (UTC)
+Received: by mail-wr1-f43.google.com with SMTP id ffacd0b85a97d-307d20548adso607997f8f.0
+        for <iommu@lists.linux.dev>; Thu, 14 Sep 2023 01:07:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1694677266; x=1695282066; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to;
-        bh=BTTFLmHVcCEeGdB9PLCErU99zAFCDRERFukfsKEjoJU=;
-        b=XbP5kD7b/P2lmZzDtY2IIXGylDR9PZ1OJP3wbEDtGlxibcCYMI+dUy6PZCWT3A32Ac
-         Q+JuPCe0JAe72RQc0EqvRe8eEtw3JG6r7ta/L123o3+RXxmOEYswQVf8DanF9gMu7bEs
-         3HpAY0CVBRZUppDNoLDuSDXLPmpwMHWm5ZtjPC5BkoJH4AKjmTXcNKqG3y2cD0VxrVJa
-         yS/37ux7dgBdWX8OPHPGkLR6rLRe0xusJW0EqxSrilNkR9RxOtmgtk+JZe2/rC7lRHgJ
-         7dSQYBFyfxdFjk5sFl7N9QH1AGZ/KJy6efZO/F0m4FmRMbRt977fuWrW1ZbyPDhtjlZo
-         mdtg==
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1694678862; x=1695283662; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=0JKcQNz7/LxVTphbNd7WfpGxCIp3rFN7/X1ftN+SaLE=;
+        b=0QK5PhGSZBtz1qW7l8CECkG1C62uq80yCArb0kUgVfz0QtPzo/46Qbyb5wPJzzuXs/
+         xED6a4dBqWAh3atyAIN2hJpZeTS2MvFWX5usAwK9F9yIWyT4faZSecK0tmrTBhZgaUlL
+         SWyJtznpXBNRT9+M26tJpe47tPVBnXbWST4uN/8no9hiFNBT9kdTNXubHntuhTfktCvU
+         3M5U6ILoRBrIKWtQpL716//8Kr4Z8yVh3vYrKiNnBOXBoETktnQygogKJbIAXrv8Tajm
+         GLd7rGtH/TOAeiTRjTz5xRrk2JUyeFLKxSU3qih/ytiTEm18y5Nhm/hMhIJz8O2vN0rH
+         dgug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1694677266; x=1695282066;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=BTTFLmHVcCEeGdB9PLCErU99zAFCDRERFukfsKEjoJU=;
-        b=q08DVQNl09eizogY/S25cVS19AhvfHDxmuX+5EO0ZZ+i6yIqtD/ueNpYXIcvJa2Dv7
-         ByJPP7xTHoJJG65jh205AWllWV9vLjZDGGZ8/81DEx1MWio365aR+5yVfPyoNJG2R319
-         Ny9R3uQpTYHwMqAiMqmOADZilHqdiriXssln+BuMVYyr4A3vBR3+iKtT0LM+58/IgHnn
-         hdS2cKwG3pB6c2xbnEy06OJmjBGokN3zLCjG1T9skEJ7iCZHOe8VWHgD7UVi27tIVjTx
-         n4EzF47rg8Ky0pU8QThE9j4wooTlA/SCqU2f2fFmFNmOqmPAyQlhsb+33zl+LPCLMmXM
-         Vs/g==
-X-Gm-Message-State: AOJu0Yy2DAuceq26VCK39PM1oHvjmaC3oRVdlVi5BeGStn6/qFdlhi1R
-	QVAv4+a2Y4/Qek/oNV0EU1T/Ww==
-X-Google-Smtp-Source: AGHT+IHlbblsKiu2gEtKrdgm90QMFr8E3CuYF/8VHvCB/T7LrlXyHxwj/f1cU1M0mOLP9SJFk3qWLQ==
-X-Received: by 2002:a17:906:3051:b0:99e:6a0:5f64 with SMTP id d17-20020a170906305100b0099e06a05f64mr3654818ejd.36.1694677265829;
-        Thu, 14 Sep 2023 00:41:05 -0700 (PDT)
-Received: from [192.168.37.232] (178235177172.dynamic-4-waw-k-1-1-0.vectranet.pl. [178.235.177.172])
-        by smtp.gmail.com with ESMTPSA id v7-20020a1709064e8700b00977cad140a8sm589467eju.218.2023.09.14.00.41.02
+        d=1e100.net; s=20230601; t=1694678862; x=1695283662;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=0JKcQNz7/LxVTphbNd7WfpGxCIp3rFN7/X1ftN+SaLE=;
+        b=jC+1IMz2+5GWpuUQUZ7Mc+9PTtkUzdLO2gN+ANMohjT8jGAJHVJ09pykhr5FDklRsR
+         c3iRe5s/Ui2qLtY+6DztijVS8uaeKm3+abUMxHCgSt4+z1uFqZR/ZrF09hg/hsM9DWJs
+         r1K5OA9YsSc8px1MR6jMr/LMz3YU8FmcneSQjqyVKQ1/LhB6yhl61FCD2YulXAML9SlS
+         uYXN7TVb8EM4bAmlSWDGAGQc47jiyKEXVV32rh8GqZZoFfL27jS99D4wr7+uvhoCss0m
+         6H/5q5xoj7rVA4plzaBjjXtb793UqNGGIzKBGLgO93ZhgVWB9ew55TtZ1COI1dw02ine
+         2Rtw==
+X-Gm-Message-State: AOJu0YyFSgq3/3qsZBu81jkKXAhJkEYC/xP3D91hJIcb14OS6lOVaPRm
+	Y6+FvkssjJ5yE+DeExjS/wUtEw==
+X-Google-Smtp-Source: AGHT+IHQwbAwrzoJqX6EDFEjCD6cZ11exncxwjKKLNqXlQ/L9nCe/YfpzClC3irrIQyDR+Bhh+A2TA==
+X-Received: by 2002:adf:e984:0:b0:31f:b364:a6ba with SMTP id h4-20020adfe984000000b0031fb364a6bamr3439077wrm.52.1694678862539;
+        Thu, 14 Sep 2023 01:07:42 -0700 (PDT)
+Received: from ?IPV6:2a04:cec2:21:518d:60be:d1a1:47e5:d622? ([2a04:cec2:21:518d:60be:d1a1:47e5:d622])
+        by smtp.gmail.com with ESMTPSA id f13-20020a5d568d000000b0031fd849e797sm1024494wrv.105.2023.09.14.01.07.39
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 14 Sep 2023 00:41:05 -0700 (PDT)
-Message-ID: <098f0a07-a67a-4209-8dbb-ff8d5b699dfe@linaro.org>
-Date: Thu, 14 Sep 2023 09:41:01 +0200
+        Thu, 14 Sep 2023 01:07:41 -0700 (PDT)
+Message-ID: <68673ccd-d136-075e-6704-7d1558388784@baylibre.com>
+Date: Thu, 14 Sep 2023 10:07:37 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 06/14] arm64: dts: qcom: sdm630: Drop RPM bus clocks
-To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
- Andy Gross <agross@kernel.org>, Bjorn Andersson <andersson@kernel.org>,
- Mathieu Poirier <mathieu.poirier@linaro.org>,
- Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Conor Dooley <conor+dt@kernel.org>, Manivannan Sadhasivam <mani@kernel.org>,
- Sibi Sankar <quic_sibis@quicinc.com>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Wesley Cheng <quic_wcheng@quicinc.com>
-Cc: Marijn Suijten <marijn.suijten@somainline.org>,
- Alexey Minnekhanov <alexeymin@postmarketos.org>,
- linux-arm-msm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
- linux-usb@vger.kernel.org
-References: <20230721-topic-rpm_clk_cleanup-v2-0-1e506593b1bd@linaro.org>
- <20230721-topic-rpm_clk_cleanup-v2-6-1e506593b1bd@linaro.org>
- <70b2a9d7-1a3e-25da-3d78-7bfa5d3a1e05@linaro.org>
- <c3dd5f68-af75-4880-83c2-ca7723561ae9@linaro.org>
- <7796431f-ae52-58b6-499e-566a17292725@linaro.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.15.0
+Subject: Re: [PATCH 2/3] iommu: mediatek: Add support of unmanaged iommu
+ domain
 Content-Language: en-US
-From: Konrad Dybcio <konrad.dybcio@linaro.org>
-Autocrypt: addr=konrad.dybcio@linaro.org; keydata=
- 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
- izWDgYvmBE8=
-In-Reply-To: <7796431f-ae52-58b6-499e-566a17292725@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+To: =?UTF-8?B?WW9uZyBXdSAo5ZC05YuHKQ==?= <Yong.Wu@mediatek.com>,
+ "robin.murphy@arm.com" <robin.murphy@arm.com>,
+ "joro@8bytes.org" <joro@8bytes.org>, "will@kernel.org" <will@kernel.org>
+Cc: "linux-mediatek@lists.infradead.org"
+ <linux-mediatek@lists.infradead.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "robh+dt@kernel.org" <robh+dt@kernel.org>,
+ "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+ "krzysztof.kozlowski@linaro.org" <krzysztof.kozlowski@linaro.org>,
+ "linux-arm-kernel@lists.infradead.org"
+ <linux-arm-kernel@lists.infradead.org>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "matthias.bgg@gmail.com" <matthias.bgg@gmail.com>
+References: <20230130102722.133271-1-abailon@baylibre.com>
+ <20230130102722.133271-3-abailon@baylibre.com>
+ <741920ba-8637-5e28-695c-699b46351590@arm.com>
+ <f126c61f-6373-d6c5-59c8-24dea9d9d168@baylibre.com>
+ <0e9f677b-846d-809d-9bc3-30906f703fda@arm.com>
+ <21fef8eb-6482-fd8c-118a-c4d9da4cfbaf@baylibre.com>
+ <2b8e19488386b5ca523f010b8ded750a4213f84e.camel@mediatek.com>
+From: Alexandre Bailon <abailon@baylibre.com>
+In-Reply-To: <2b8e19488386b5ca523f010b8ded750a4213f84e.camel@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On 14.09.2023 08:26, Krzysztof Kozlowski wrote:
-> On 13/09/2023 14:08, Konrad Dybcio wrote:
->> On 13.09.2023 09:13, Krzysztof Kozlowski wrote:
->>> On 12/09/2023 15:31, Konrad Dybcio wrote:
->>>> These clocks are now handled from within the icc framework and are
->>>> no longer registered from within the CCF. Remove them.
+Hi,
+
+Sorry for long delay before the response.
+
+On 2/14/23 06:48, Yong Wu (吴勇) wrote:
+> On Tue, 2023-01-31 at 16:31 +0100, Alexandre Bailon wrote:
+>>
+>> On 1/31/23 15:15, Robin Murphy wrote:
+>>> On 31/01/2023 1:08 pm, Alexandre Bailon wrote:
+>>>> Hi Robin
 >>>>
->>>> Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
->>>> ---
->> [...]
->>
->>>>  		anoc2_smmu: iommu@16c0000 {
->>>>  			compatible = "qcom,sdm630-smmu-v2", "qcom,smmu-v2";
->>>>  			reg = <0x016c0000 0x40000>;
->>>> -
->>>> -			assigned-clocks = <&rpmcc RPM_SMD_AGGR2_NOC_CLK>;
->>>> -			assigned-clock-rates = <1000>;
->>>> -			clocks = <&rpmcc RPM_SMD_AGGR2_NOC_CLK>;
->>>> -			clock-names = "bus";
+>>>> On 1/30/23 13:04, Robin Murphy wrote:
+>>>>> On 2023-01-30 10:27, Alexandre Bailon wrote:
+>>>>>> Currently, the driver can allocate an unmanaged iommu domain.
+>>>>>> But, this only works for SoC having multiple bank or multiple
+>>>>>> iova
+>>>>>> region.
+>>>>>
+>>>>> That is for good reason - there is only a single pagetable per
+>>>>> bank,
+>>>>> so if there are multiple devices assigned to a single bank,
+>>>>> they
+>>>>> cannot possibly be attached to different domains at the same
+>>>>> time.
+>>>>> Hence why the banks are modelled as groups.
+>>>>
+>>>> I understand.
+>>>> I am trying to upstream a remoteproc driver but the remote
+>>>> processor is
+>>>> behind the iommu.
+>>>> remoteproc can manage the iommu but it requires an unmanaged
+>>>> domain.
+>>>> I tried a couple of things but this cause code duplication,
+>>>> implies many hacks and not always reliable.
+>>>> Do you have any suggestion ?
 >>>
->>> This is also against bindings. After your patch #4, such bus clock (or
->>> other combinations) is still required.
->> So, we have 4 SMMU instances on this platform:
+>>> If there are other active devices behind the same IOMMU, and the
+>>> remoteproc device cannot be isolated into its own bank using the
+>>> existing IOMMU driver logic, then the remoteproc driver cannot
+>>> manage
+>>> the IOMMU directly, and must just use the regular DMA API. There's
+>>> no
+>>> way around it; you can't have two different parts of the kernel
+>>> both
+>>> thinking they have exclusive control of a single IOMMU address
+>>> space at
+>>> the same time. Similarly, remoteproc also cannot take explicit
+>>> control
+>>> of a multi-device group if it's not actually in control of the
+>>> other
+>>> devices, since their drivers will not be expecting the DMA address
+>>> space
+>>> to suddenly change underfoot - that's why iommu_attach_device() has
+>>> the
+>>> check which you presumably ran into.
 >>
->> MMSS (described, iface, mem, mem_iface)
->> GPU (described, iface-mm, iface-smmu, bus-smmu)
->>
->> ANOC2 (this one, no clocks after removing rpmcc bus)
->> LPASS (no clocks)
+>> Unfortunately, we can't just use the regular DMA API.
+>> Basically, the firmware use static addresses (and the remote core is
+>> only supposed to access addresses between 0x60000000 and 0x70000000).
+>> When we use DMA API, we get a random address that doesn't match what
+>> the
+>> firmware would expect.
+>> remoteproc use directly the iommu API to map physical address to the
+>> static address expected by the firmware when DMA API can't be use.
 > 
-> Ah, I did not notice it.
+> If this master can only support this special address, We could handle
+> it inside this driver.
 > 
->>
->> Should I then create a new entry in the bindings, replicating
->> what's there for msm8998[1] and dropping the entry with just "bus"
->> from anyOf?
+> Could you help try to add these two patches [3/11] and [4/11]?
 > 
-> So this passes the bindings, right?
-Yes
+> [3/11]
+> https://patchwork.kernel.org/project/linux-mediatek/patch/20230214031114.926-4-yong.wu@mediatek.com/
+> [4/11]
+> https://patchwork.kernel.org/project/linux-mediatek/patch/20230214031114.926-5-yong.wu@mediatek.com/
+> 
+> 
+> and, then add the logical for mt8365(I see the APU is larb0 port10/11
+> in the binding):
+> --------------------------------
+> 
+> +#define MT8365_REGION_NR		2
+> +
+> +static const struct mtk_iommu_iova_region
+> mt8365_multi_rgn[MT8365_REGION_NR] = {
+> +	{ .iova_base = 0x0,		.size = SZ_4G},	       /* 0 ~
+> 4G. */
+> +	{ .iova_base = 0x60000000,	.size = SZ_256M},      /* APU
+> */
+> +};
+> +
+> 
+> xxxxxxxxxxx
+> 
+> +static const unsigned int
+> mt8365_larb_region_msk[MT8365_REGION_NR][MTK_LARB_NR_MAX] = {
+> +	[0] = {~(u32)(BIT(10) | BIT(11)), ~0, ~0, ~0, ~0, ~0},
+> +	[1] = {[0] = BIT(10) | BIT(11)},
+> +};
+> +
+>   static const struct mtk_iommu_plat_data mt8365_data = {
+>   	.m4u_plat	= M4U_MT8365,
+>   	.flags		= RESET_AXI | INT_ID_PORT_WIDTH_6,
+>   	.inv_sel_reg	= REG_MMU_INV_SEL_GEN1,
+>   	.banks_num	= 1,
+>   	.banks_enable	= {true},
+> -	.iova_region	= single_domain,
+> -	.iova_region_nr	= ARRAY_SIZE(single_domain),
+> +	.iova_region	= mt8365_multi_rgn,
+> +	.iova_region_nr	= ARRAY_SIZE(mt8365_multi_rgn),
+> +	.iova_region_larb_msk = mt8365_larb_region_msk,
+>   	.larbid_remap	= {{0}, {1}, {2}, {3}, {4}, {5}}, /* Linear
+> mapping. */
+>   };
+> --------------------------------
+> 
+> After that, If we call DMA API with the device whose dtsi has
+> M4U_PORT_APU_READ/M4U_PORT_APU_WRITE. The iova should be located at
+> that special address. Sorry, I have no board to test.
+> 
 
-anyOf: in the binding should allow
-> also no match, so this should be fine. However indeed we need to drop
-> the "bus" entry, because it is not valid anymore.
-Actually, looks like the LPASS smmu may require a single
-clock. We can reuse that single-"bus"-clock entry for
-HLOS1_VOTE_LPASS_ADSP_SMMU_CLK.
+I have not yet tested the patches but it will only address one part of 
+the problem.
+Using your patches, I could allocate some shared memory using DMA API 
+but the main issue still remain.
+The firmware is not relocatable at all. So, once the firmware is built, 
+it is expected to be loaded at a specific address.
+Remoteproc framework support this use case. Using the resource table, 
+the firmware expose to remoteproc what device address is expect and 
+remoteproc manually call iommu_map to satisfy this requirement.
+Using DMA_API, I could allocate the memory to load the firmware but I 
+could not be sure that the DMA address will be the one expected by firmware.
 
-The device didn't crash when trying to access LPASS SMMU
-with that clock absent, but I guess it may have just
-been luck, things may change once more hardware is parked..
-
-Konrad
+Thanks,
+Alexandre
