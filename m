@@ -1,122 +1,128 @@
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2077.outbound.protection.outlook.com [40.107.92.77])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qv1-f42.google.com (mail-qv1-f42.google.com [209.85.219.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A7C31D524
-	for <iommu@lists.linux.dev>; Thu, 14 Sep 2023 10:26:52 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=is0q8LeCKEYf84Fjhv2e+mbWBAqyHK4jlABhSrXn+84adXFiBPoF2e9jLcF4ZG9l/0GLZ5T3lZCa6AAEO3N1b5ZksyxndP064Ku6xlng2SXYzeP1jYcu9KzXcgin/90TrbMxBMCfeoB8ATF+Zt12s1X9VRBjn2s9dFfdvrfMFreUtr3jimFoEPbDZicn6m/hHUgYSndYx346FIv2Qer404zlQefBJ/LaAvYMRLb5DFxshg5sdyTfQ8bQ6SXgkoOJPWdtI+XsQPM3X/s1UoCyuyJvcneDMfZDcaqMlNx5VpXwT/T61K5uaLcGJSWkjqAM3QAOBDTBz1aOWbvsgIPkYA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=GQs9DQGtNEwGyMiW5mJiarQOkzlF+E62D0Fcmysr7I8=;
- b=msr5F8C3JhiFsDa0CzYF8MHV3fX+aF+s91drWEic6gJAFcD3hYa4c9v7HTzmMhTH9bAHBEZ2QQMx5W5GQ6dn7uFNxa+M/YqGpYRyvnmTAUMCAhpQmuwKWh6wtvGyaM3pcYOOazUjhr2FdSDxXqL2KLiosb/i5/hT5Lyl6SeQSyIiBhwJ6eh6yjiHDzpH5kPQKVEK/7ukbOx1YfVBIemeB4QxrsepTO7XtlKDLrJq4GivaKurRMNhe16idHNBUA/Qh59+15onmW+gPelQxRI3rlusF5y52lYKZyeN1KXzwD2FnmdiESaTViOfjL3Di7W97yS8rwgNzUHXwEys+T0qDQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=google.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=GQs9DQGtNEwGyMiW5mJiarQOkzlF+E62D0Fcmysr7I8=;
- b=QjkgrS7/pAfjhypTOKEDLgnBQciGm7FT/U2/E6SpCPXg3/4VBGOXuR9Pt38pHmaoa5oFH3+rKFxc3JWAXmhzzdPihsc98TQhpCoe2lv8ECQdFJMw3tt3sGHzfaZ7MDrbbjozF5laS8owZ4IbGArljPTaUiXHFBmDasYU94XttVKS04t+v2AIzRcmrpbgWxwoUtuPEN43WinYpIAS8IlPhYduXI5OCPp1yC208bPpw/O5M5O/SU1WkrJGmA3tIPdZnfHnYKXF4AhnQbwu0Llgs4Kr/9d7yJodl1PGJQqaf5Rt1F8obcwFh9krVvEfbELbzaKXUcK0zZKCopt9IyLZUQ==
-Received: from BYAPR02CA0006.namprd02.prod.outlook.com (2603:10b6:a02:ee::19)
- by PH7PR12MB5593.namprd12.prod.outlook.com (2603:10b6:510:133::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6768.30; Thu, 14 Sep
- 2023 10:26:49 +0000
-Received: from CO1PEPF000044F3.namprd05.prod.outlook.com
- (2603:10b6:a02:ee:cafe::81) by BYAPR02CA0006.outlook.office365.com
- (2603:10b6:a02:ee::19) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6792.19 via Frontend
- Transport; Thu, 14 Sep 2023 10:26:49 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- CO1PEPF000044F3.mail.protection.outlook.com (10.167.241.73) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6792.19 via Frontend Transport; Thu, 14 Sep 2023 10:26:49 +0000
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Thu, 14 Sep
- 2023 03:26:44 -0700
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by rnnvmail202.nvidia.com
- (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Thu, 14 Sep
- 2023 03:26:44 -0700
-Received: from Asurada-Nvidia (10.127.8.14) by mail.nvidia.com (10.129.68.10)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41 via Frontend
- Transport; Thu, 14 Sep 2023 03:26:43 -0700
-Date: Thu, 14 Sep 2023 03:26:42 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Michael Shavit <mshavit@google.com>
-CC: Aahil Awatramani <aahila@google.com>, <robin.murphy@arm.com>,
-	<will@kernel.org>, <jgg@nvidia.com>, <joro@8bytes.org>,
-	<shameerali.kolothum.thodi@huawei.com>, <yangyicong@hisilicon.com>,
-	<jean-philippe@linaro.org>, <linux-arm-kernel@lists.infradead.org>,
-	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v1] iommu/arm-smmu-v3: Allow default substream bypass
- with a pasid support
-Message-ID: <ZQLf4uNNQ2YSnD4L@Asurada-Nvidia>
-References: <20230627033326.5236-1-nicolinc@nvidia.com>
- <CAGfWUPziSWNMc_px4E-i+_V_Jxdb_WSwOLXHZ+PANz2Tv5pFPA@mail.gmail.com>
- <ZQJbunPj6Q8XRcpV@Asurada-Nvidia>
- <CAKHBV25dfy2q73DmU7X6j_2XNTfgk8kbstanMczy8oZo_WFxrA@mail.gmail.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C7FB241EE
+	for <iommu@lists.linux.dev>; Thu, 14 Sep 2023 12:48:47 +0000 (UTC)
+Received: by mail-qv1-f42.google.com with SMTP id 6a1803df08f44-65617075b6fso4125856d6.1
+        for <iommu@lists.linux.dev>; Thu, 14 Sep 2023 05:48:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1694695726; x=1695300526; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=/hDY3jBRB8QH3yOR0YRex0tFByVoHyqIzvOIxxftR4g=;
+        b=h8LrRAT5RhJ7VLQVpi8KmoOZC0UapfVQyRqLmgnJVApkLvaEK1UrdjBhcXwmKCJqKv
+         aDGSAblas28C/KmHH6a8DWcX9GZyzcwnehU202jtDCFXHV7FQhVyUh+PK/OkzS6zOsvg
+         T6XGD9CT8ClLtufryX40PZWRiau7UA395fkVj+MPbVvC4WMKUWccTY7OY5BHfzB+pOF/
+         tQAb3cSkdUr44nT+tUQSItfPRAxB4eKUkNqRvw/ze3gZ9X+RlRD/iZ8ZpouQQbPDnaNA
+         KFWXLc/c6TW2b/Z1BDd2hM2eSTfvj/TcV1RToZN/4qRPXtUVXYl8Ud6tst5fUOi9twMv
+         0wDw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1694695726; x=1695300526;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=/hDY3jBRB8QH3yOR0YRex0tFByVoHyqIzvOIxxftR4g=;
+        b=BGvFYSPrYgS2sgxMhzaB3JndLuoIRJ/V4KhEjDtLz1Ele5NoKRscqDV2Qk/ORLs5mR
+         99zgQchbmaHoVlV3NCQTkzKFd7HvA4sOnx7xSpGsukSVU5CwS2K96IBhG3HSgK/ZpBUU
+         R9JF13pDUfBpX19d3JOxpuRUEi7W8wnrvYBnBwU1AiL1cINGKpQLrZryOG1xSkV4q4UH
+         9RT8QoIccP1YJ+hsmSYJEY+dq3PcpZpPfa1Bc/XduI1lVTxfIMp3MZMy4CwUFp5dWE7d
+         cHR7gZdmRoBuSo1bxpgJBwWiwMvSRyDhLoubq5Il38+6rh4DEHgP2Yciiusl4v6qV+B2
+         CP+g==
+X-Gm-Message-State: AOJu0Yx/tddUtfIu4LoQIqypsrE7NO8vpNuGlWB9WktGQoFkX2o/n5+e
+	eH8rTdpezUfMhcRqK5p4u31nLg==
+X-Google-Smtp-Source: AGHT+IFb+31j8aguJo3o5v/yxAzNfgc3FgIXMcgrFLafSVt2YfOorz1Vk8Xqwy3zW3uCpoZ3Q9/vlA==
+X-Received: by 2002:a05:6214:acc:b0:62d:ddeb:3770 with SMTP id g12-20020a0562140acc00b0062dddeb3770mr1706096qvi.0.1694695726278;
+        Thu, 14 Sep 2023 05:48:46 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-134-41-202-196.dhcp-dynamic.fibreop.ns.bellaliant.net. [134.41.202.196])
+        by smtp.gmail.com with ESMTPSA id c9-20020a0ce149000000b00655d6d3147bsm447704qvl.14.2023.09.14.05.48.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Sep 2023 05:48:45 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1qglm0-003jPR-7n;
+	Thu, 14 Sep 2023 09:48:44 -0300
+Date: Thu, 14 Sep 2023 09:48:44 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: joro@8bytes.org, will@kernel.org, iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, m.szyprowski@samsung.com,
+	heiko@sntech.de, jernej.skrabec@gmail.com, thierry.reding@gmail.com,
+	vdumpa@nvidia.com
+Subject: Re: [PATCH 8/8] iommu: Improve map/unmap sanity checks
+Message-ID: <ZQMBLFB20ke4hv9t@ziepe.ca>
+References: <cover.1694525662.git.robin.murphy@arm.com>
+ <524db1ec0139c964d26928a6a264945aa66d010c.1694525662.git.robin.murphy@arm.com>
+ <ZQHJoK0Er/nekjL6@ziepe.ca>
+ <8c8451aa-d0d7-058e-cfc2-7402f9002234@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAKHBV25dfy2q73DmU7X6j_2XNTfgk8kbstanMczy8oZo_WFxrA@mail.gmail.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1PEPF000044F3:EE_|PH7PR12MB5593:EE_
-X-MS-Office365-Filtering-Correlation-Id: c7a35649-922b-43e7-02bb-08dbb50d1aea
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	jgz1cbxHG5f9cr6dXn346lJxgcHfX+a+tBJ5aGZRizdY/NUp+UJOecWgDKZ1pK9rqP5m80XDUWI8CbFEjLODGHVBnZUK13K+dehyy4OfKzeQ5KVNCvtgcXHa2N6Avg7dOk/iYFSUfI0GQWInrvOPMzZqcza+d2oJWU8lRzMQNnPnVFmNwI/vZq/N2YzA2GU0x4x4IEEK369p0WozqxMPuGMxWuUF6KFpjI3c++4MW3OXdma4i3Tt3JYsnUAyxZsSqakYS66IpBcFWsGU5T62E7pDtwxPjKlDhVMyXdrxWfn/qKppTkKHJNUx4q2i64F1ioRoF9tQIE/5HpU1S0Jpr94EqLtGA46OqwaSwIKaC3Rf/uJRmS+MxLj46xmWk12wdrxV46O/veBRvx+Bu6YafelJjfD+8T6rb9lezWfR0eysrvJh7zC4qyisgYAadY4nqwmxPvc+mI2qNv/auI2gmt1FyYjzdyRoBMStCfLI3CTQQwaTumudj/QO8lp17lteXRiEQgbjFkoKj+MbL7XwQmUZAlxStgXDABPGFJU5bxW8a3hw4Nf0JvurxS3xe/Ww0YZtMmjqcWKSa1DUo3Ln9fz7lNrogEZ2ZFX0KxT5/LREFiuWhUgqkOEB8GVcn9gbCxnUPLAYAUFHQeVlYXvXPs5kI76R+LlzKZeHvbZWY59JBKtan3xLJvPQrbk+f3NPAiSaZjFCUIEZmZJc+OMAsPjeySbmAFg2ah+lAo645uaM2PvqVCq48esLhe4U1Osr
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230031)(4636009)(346002)(39860400002)(396003)(376002)(136003)(186009)(1800799009)(82310400011)(451199024)(40470700004)(36840700001)(46966006)(53546011)(41300700001)(70206006)(40460700003)(7416002)(6916009)(7636003)(33716001)(316002)(82740400003)(2906002)(4744005)(478600001)(86362001)(356005)(70586007)(54906003)(40480700001)(5660300002)(8936002)(4326008)(8676002)(26005)(47076005)(336012)(426003)(55016003)(36860700001)(9686003);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Sep 2023 10:26:49.2865
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: c7a35649-922b-43e7-02bb-08dbb50d1aea
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CO1PEPF000044F3.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB5593
+In-Reply-To: <8c8451aa-d0d7-058e-cfc2-7402f9002234@arm.com>
 
-On Thu, Sep 14, 2023 at 05:01:58PM +0800, Michael Shavit wrote:
-> On Thu, Sep 14, 2023 at 9:03 AM Nicolin Chen <nicolinc@nvidia.com> wrote:
-> >
-> > This has another version [1] rebased on top of Michael's refactor
-> > series [2]. We'd need Michael to respin the refactor sereis and I
-> > will resend mine.
+On Wed, Sep 13, 2023 at 07:46:45PM +0100, Robin Murphy wrote:
+> On 2023-09-13 15:39, Jason Gunthorpe wrote:
+> > On Tue, Sep 12, 2023 at 05:18:44PM +0100, Robin Murphy wrote:
+> > > The current checks for the __IOMMU_DOMAIN_PAGING capability seem a
+> > > bit stifled, since it is quite likely now that a non-paging domain
+> > > won't have a pgsize_bitmap and/or mapping ops, and thus get caught
+> > > by the earlier condition anyway. Swap them around to test the more
+> > > fundamental condition first, then we can reasonably also upgrade
+> > > the other to a WARN_ON, since if a driver does ever expose a paging
+> > > domain without the means to actually page, it's clearly very broken.
+> > 
+> > > Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+> > > ---
+> > >   drivers/iommu/iommu.c | 10 +++++-----
+> > >   1 file changed, 5 insertions(+), 5 deletions(-)
+> > > 
+> > > diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> > > index c83f2e4c56f5..391bcae4d02d 100644
+> > > --- a/drivers/iommu/iommu.c
+> > > +++ b/drivers/iommu/iommu.c
+> > > @@ -2427,12 +2427,12 @@ static int __iommu_map(struct iommu_domain *domain, unsigned long iova,
+> > >   	phys_addr_t orig_paddr = paddr;
+> > >   	int ret = 0;
+> > > -	if (unlikely(!ops->map_pages || domain->pgsize_bitmap == 0UL))
+> > > -		return -ENODEV;
+> > > -
+> > >   	if (unlikely(!(domain->type & __IOMMU_DOMAIN_PAGING)))
+> > >   		return -EINVAL;
+> > 
+> > Why isn't this a WARN_ON? The caller is clearly lost its mind if it
+> > is calling map on a non paging domain..
 > 
-> Just to clarify, you'd like me to rebase off master and re-send? Or do
-> you mean something else by respin?
+> Sure it's a dumb thing to do, however I don't think we can reasonably say
+> without question that an external caller being dumb represents an unexpected
+> and serious loss of internal consistency.
 
-Usually we resend patches that were not accepted in the previous
-cycle, rebasing on top of the new rc1. So, I would checkout the
-6.6-rc1 branch and rebase the series with necessary editing, and
-then send another version.
+WARN_ON is not just for "serious loss of internal consistency" it
+should be use in all places where invariant are violated. We can't
+guess why the caller is using this wrong (most likely it is UAF or
+memory corruption), but if this fires something definately has gone
+wrong with the kernel.
 
-That refactor series is quite crucial for other feature series.
-So, it'd be nicer to merge it as early as possible.
+eg if syzkaller somehow hits this we want the WARN_ON so it reports
+it.
 
-Thanks
-Nicolin
+> > > +	if (WARN_ON(!ops->map_pages || domain->pgsize_bitmap == 0UL))
+> > > +		return -ENODEV;
+> > > +
+> > 
+> > And these could be moved to after attach so they are not in any fast
+> > path, and eventually to after alloc..
+> 
+> Perhaps, although TBH I can't imagine it making any appreciable difference -
+> they're both values we need to load and use soon anyway, so on a sensible
+> CPU, the additional overhead should only really be a couple of not-taken
+> branch-if-zero instructions, which is nothing at all compared to how much
+> goes on in the main loop and the driver op call itself.
+
+IMHO it is a cleaner pattern to check the objects the driver creates
+when it creates them, not when we go to try to use them..
+
+Jason
