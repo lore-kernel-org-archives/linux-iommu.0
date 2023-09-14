@@ -1,113 +1,249 @@
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C6EF369
-	for <iommu@lists.linux.dev>; Thu, 14 Sep 2023 01:03:08 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gg5b4OFNo/JfPj6D8FOzYN+xEIq4BykNo9Hki0IEZL6yu7JH2k0QD5gy2kV/37dqx9WoYhFS+A4i0suneTVmEUL6NSXEUN3OSUJ1effdptEAJcrq0ykCLEAP8840cVKtkF9fxl0o7McaapX9guv4mn4tZR8Tda4GuQJvlFxTY7hf+X8ZYrj4vAAZ5e6pVyikvasiAGK+l+ovmR6TqGEJ+rtX8QRRriE8fy+B1czo06kmsVZcDV+fctiTyrSpvr+XzjSDyS+8EcanbruSJU5qCJ1JJ8nWuU3Zhw/f2tc56C7FtEONdUBbTJl+AWivC+cRXmtbILDzpPobwOao8jnezQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=vmyydSmDOzkO40VGcWQhq2zqsZnpC+chFnCvKTOJU1w=;
- b=JVVTrPGzzEFYdCwnCKc+DjgmZPI3crDAb5IchBZFkuR/LuRV+xkxaPcMeLT6yeiRG7qvB6lleuO/rU1khlti88m86JibNRCOvoAfjaszehi6cpRAeCrFXqMK0AQ3eRPe3bmmu6XJJYiTFU+fLC4EYzm0tUZCAvepWuEL90t5Bdylne36McAUor56OYlJNMrrD0mn9DJHUtHiEMoEW5Hq1NjrheSmvpc11X9ib1bHy/PtPaut04fygpQTFi3VTnh14x55wxlNFtSbGABT1Mn5ycFmiZZ8jem0jp+EQnVweDs8/Ot1EtFRyuGGXTNI9qvuXpXC+Iq3SVelHmWJNVPJzA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=google.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vmyydSmDOzkO40VGcWQhq2zqsZnpC+chFnCvKTOJU1w=;
- b=NFoy5bZZq03c1rvKLbf/AQ5vNPriTZq8PG1Qr2LEMwChDcUerr8kodsA2c/nUNt2zV4xh/BGb0+97E29TuBmz4iWcQy0GIfaEXNOVCXV+PP69ltQWFc9I/Ypp7GdjUWz7IaXKX8aUs6kNitMW5FMsLP8NMFlRhioEVbJM4XoLvLWKS/Hqlad1frYloju/YWubo7s7Lo3S8Mj6pPT8H9p8dSPHOKQXxN9iCyEimcFgnglmeHbNSU4P5cjUMAaQ+/rSQoTih5nk0zue2X5LNAJE6YxzXKNQpQrqgCXV84RdNqoNhbKykVFOxS1rmrUL3DxV1kHRWjyJNfOW43rYZphfw==
-Received: from DS7PR03CA0195.namprd03.prod.outlook.com (2603:10b6:5:3b6::20)
- by SA1PR12MB8118.namprd12.prod.outlook.com (2603:10b6:806:333::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6768.31; Thu, 14 Sep
- 2023 01:03:05 +0000
-Received: from DS2PEPF00003441.namprd04.prod.outlook.com
- (2603:10b6:5:3b6:cafe::84) by DS7PR03CA0195.outlook.office365.com
- (2603:10b6:5:3b6::20) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6792.20 via Frontend
- Transport; Thu, 14 Sep 2023 01:03:05 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- DS2PEPF00003441.mail.protection.outlook.com (10.167.17.68) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6792.20 via Frontend Transport; Thu, 14 Sep 2023 01:03:05 +0000
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Wed, 13 Sep
- 2023 18:02:53 -0700
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail205.nvidia.com
- (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Wed, 13 Sep
- 2023 18:02:52 -0700
-Received: from Asurada-Nvidia (10.127.8.14) by mail.nvidia.com (10.129.68.9)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41 via Frontend
- Transport; Wed, 13 Sep 2023 18:02:52 -0700
-Date: Wed, 13 Sep 2023 18:02:50 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Aahil Awatramani <aahila@google.com>, <mshavit@google.com>
-CC: <robin.murphy@arm.com>, <will@kernel.org>, <jgg@nvidia.com>,
-	<joro@8bytes.org>, <shameerali.kolothum.thodi@huawei.com>,
-	<yangyicong@hisilicon.com>, <jean-philippe@linaro.org>,
-	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v1] iommu/arm-smmu-v3: Allow default substream bypass
- with a pasid support
-Message-ID: <ZQJbunPj6Q8XRcpV@Asurada-Nvidia>
-References: <20230627033326.5236-1-nicolinc@nvidia.com>
- <CAGfWUPziSWNMc_px4E-i+_V_Jxdb_WSwOLXHZ+PANz2Tv5pFPA@mail.gmail.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9700A369
+	for <iommu@lists.linux.dev>; Thu, 14 Sep 2023 01:55:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0CC77C433C7;
+	Thu, 14 Sep 2023 01:55:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1694656507;
+	bh=r9y65+1pzqVVxmFYagLRvmVyc4Ch3S21HgyzAmfy0C8=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=IAAzTA3Yrt8+qAGGAvR45pCVOsRvIlzlppi+Sm2WKCRwoMprshwt+RQIAti7p52Bf
+	 zYWQeoYOD+rX6DA/BfIc1Nm8Gz+YrAxUYauRmPZxERT4Yp7Laq4GDaXbqlDm/uEKAc
+	 wfZqUKV+2+aeMkyJsIIYoOG63TxyhvlPQwQPcCGAUxYY2OskZ8ahUP5G7W607oAFRs
+	 i428jDfdCes2VW6TvznXuGE8XBlv3Fi6mwOObeK3ItRakTm2pAeP48uu2QS4tjRVWO
+	 81IzfikMysj1rnE7G5fICO7FVWgYJb9F7KnR3TwX7TNeV6/6k/ucLXb/BWsEIGw1UM
+	 P2rdU1OJR92mQ==
+From: Sasha Levin <sashal@kernel.org>
+To: linux-kernel@vger.kernel.org,
+	stable@vger.kernel.org
+Cc: Sergey Senozhatsky <senozhatsky@chromium.org>,
+	Rob Clark <robdclark@chromium.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Christoph Hellwig <hch@lst.de>,
+	Sasha Levin <sashal@kernel.org>,
+	m.szyprowski@samsung.com,
+	iommu@lists.linux.dev
+Subject: [PATCH AUTOSEL 6.5 3/7] dma-debug: don't call __dma_entry_alloc_check_leak() under free_entries_lock
+Date: Wed, 13 Sep 2023 21:54:47 -0400
+Message-Id: <20230914015459.51740-3-sashal@kernel.org>
+X-Mailer: git-send-email 2.40.1
+In-Reply-To: <20230914015459.51740-1-sashal@kernel.org>
+References: <20230914015459.51740-1-sashal@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <CAGfWUPziSWNMc_px4E-i+_V_Jxdb_WSwOLXHZ+PANz2Tv5pFPA@mail.gmail.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS2PEPF00003441:EE_|SA1PR12MB8118:EE_
-X-MS-Office365-Filtering-Correlation-Id: e086fb46-d322-46b6-4266-08dbb4be5a5c
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	3DuOTFO1BY3RPbv4bVz0vGLUvLn7yubNvkk7DfZNIPnBFJMulGsteJqOgz8Xz9tRnqooJme4jtUUGnLwrMLsQ/hfrPL/gx1FJQF/6zQbIFDh55sICsvz8QK/DF5iqpun+7dYHlrErbgIA3hqsPDWzWv+HDIF1NnIYQq/nSo0/iaurA2HMgMCTVKV0rJZXSdXHVOBZaDPygBm6BCvB0AqVO0JinfIDXtQ92cSnqYUza2EFpCoe14QfNZSNpgj7oW2ye4GH7yXZzl1gGRLWSRFAvM1uEgjUifYUzwp+H/LxV3yU1W5R8SuTfSCfhsTpjATpCy/L0ufetcu17RcCrIuCXut7eq0I7Lp++x40SLqbJbeNpzT/SbW4/ZOSAM7MPtIESigYmQTF1XTaVyR2lI8gf+lAVzzDKNdFvJwnJaN5vfd5ZijBiTwafr7ZKmGyF+73ak3Yyvyhlygf7mEjaZWB8j59WWRr4RQZ/xP2OVNqqRWwIYITmAfzMuI6j+bpWp26XhJ3YvBu8tGoOlZqiXPWIOngWf2UtoRuYpQUA36Ha3S6QSORLN/TBZ1qNIAe4WtXSoebWQ/J2xedMqeU6u09uPa7eWkgK6iBEVge+eJakDcs38Ita2dleppoUTLqZEmACH5vwtFzkv8LlBqMwkmafyim8ijeZ6y/K6z3IE6jU5N2PfrmpnfXiPDbjJsvmNrMGryOc/19lUhG2fehjMsN1OBig7hpDLXDSovfzClosjDljBIxDPMIN1zRUHPQG7C3E0S+/bwPFhWP45CC+Mex3bST12zenKS6g94JhMCzow=
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230031)(4636009)(39860400002)(346002)(376002)(396003)(136003)(451199024)(186009)(82310400011)(1800799009)(36840700001)(40470700004)(46966006)(356005)(966005)(9686003)(478600001)(336012)(4744005)(426003)(2906002)(26005)(33716001)(7416002)(41300700001)(70206006)(8676002)(5660300002)(8936002)(4326008)(54906003)(70586007)(40480700001)(40460700003)(36860700001)(82740400003)(47076005)(86362001)(55016003)(110136005)(316002)(7636003);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Sep 2023 01:03:05.4588
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: e086fb46-d322-46b6-4266-08dbb4be5a5c
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	DS2PEPF00003441.namprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB8118
+X-stable: review
+X-Patchwork-Hint: Ignore
+X-stable-base: Linux 6.5.3
+Content-Transfer-Encoding: 8bit
 
-On Tue, Sep 12, 2023 at 03:13:25PM -0700, Aahil Awatramani wrote:
-> 
-> We have a use-case for this patch to help in avoiding the map/unmap
-> overhead in some cases but still maintaining support for PASIDs.
+From: Sergey Senozhatsky <senozhatsky@chromium.org>
 
-This has another version [1] rebased on top of Michael's refactor
-series [2]. We'd need Michael to respin the refactor sereis and I
-will resend mine.
+[ Upstream commit fb5a4315591dae307a65fc246ca80b5159d296e1 ]
 
-[1] https://lore.kernel.org/linux-iommu/cover.1692959239.git.nicolinc@nvidia.com/
-[2] https://lore.kernel.org/linux-iommu/ZPEpl9D%2FCqQWYhzk@Asurada-Nvidia/
+__dma_entry_alloc_check_leak() calls into printk -> serial console
+output (qcom geni) and grabs port->lock under free_entries_lock
+spin lock, which is a reverse locking dependency chain as qcom_geni
+IRQ handler can call into dma-debug code and grab free_entries_lock
+under port->lock.
 
-Thanks
-Nicolin
+Move __dma_entry_alloc_check_leak() call out of free_entries_lock
+scope so that we don't acquire serial console's port->lock under it.
+
+Trimmed-down lockdep splat:
+
+ The existing dependency chain (in reverse order) is:
+
+               -> #2 (free_entries_lock){-.-.}-{2:2}:
+        _raw_spin_lock_irqsave+0x60/0x80
+        dma_entry_alloc+0x38/0x110
+        debug_dma_map_page+0x60/0xf8
+        dma_map_page_attrs+0x1e0/0x230
+        dma_map_single_attrs.constprop.0+0x6c/0xc8
+        geni_se_rx_dma_prep+0x40/0xcc
+        qcom_geni_serial_isr+0x310/0x510
+        __handle_irq_event_percpu+0x110/0x244
+        handle_irq_event_percpu+0x20/0x54
+        handle_irq_event+0x50/0x88
+        handle_fasteoi_irq+0xa4/0xcc
+        handle_irq_desc+0x28/0x40
+        generic_handle_domain_irq+0x24/0x30
+        gic_handle_irq+0xc4/0x148
+        do_interrupt_handler+0xa4/0xb0
+        el1_interrupt+0x34/0x64
+        el1h_64_irq_handler+0x18/0x24
+        el1h_64_irq+0x64/0x68
+        arch_local_irq_enable+0x4/0x8
+        ____do_softirq+0x18/0x24
+        ...
+
+               -> #1 (&port_lock_key){-.-.}-{2:2}:
+        _raw_spin_lock_irqsave+0x60/0x80
+        qcom_geni_serial_console_write+0x184/0x1dc
+        console_flush_all+0x344/0x454
+        console_unlock+0x94/0xf0
+        vprintk_emit+0x238/0x24c
+        vprintk_default+0x3c/0x48
+        vprintk+0xb4/0xbc
+        _printk+0x68/0x90
+        register_console+0x230/0x38c
+        uart_add_one_port+0x338/0x494
+        qcom_geni_serial_probe+0x390/0x424
+        platform_probe+0x70/0xc0
+        really_probe+0x148/0x280
+        __driver_probe_device+0xfc/0x114
+        driver_probe_device+0x44/0x100
+        __device_attach_driver+0x64/0xdc
+        bus_for_each_drv+0xb0/0xd8
+        __device_attach+0xe4/0x140
+        device_initial_probe+0x1c/0x28
+        bus_probe_device+0x44/0xb0
+        device_add+0x538/0x668
+        of_device_add+0x44/0x50
+        of_platform_device_create_pdata+0x94/0xc8
+        of_platform_bus_create+0x270/0x304
+        of_platform_populate+0xac/0xc4
+        devm_of_platform_populate+0x60/0xac
+        geni_se_probe+0x154/0x160
+        platform_probe+0x70/0xc0
+        ...
+
+               -> #0 (console_owner){-...}-{0:0}:
+        __lock_acquire+0xdf8/0x109c
+        lock_acquire+0x234/0x284
+        console_flush_all+0x330/0x454
+        console_unlock+0x94/0xf0
+        vprintk_emit+0x238/0x24c
+        vprintk_default+0x3c/0x48
+        vprintk+0xb4/0xbc
+        _printk+0x68/0x90
+        dma_entry_alloc+0xb4/0x110
+        debug_dma_map_sg+0xdc/0x2f8
+        __dma_map_sg_attrs+0xac/0xe4
+        dma_map_sgtable+0x30/0x4c
+        get_pages+0x1d4/0x1e4 [msm]
+        msm_gem_pin_pages_locked+0x38/0xac [msm]
+        msm_gem_pin_vma_locked+0x58/0x88 [msm]
+        msm_ioctl_gem_submit+0xde4/0x13ac [msm]
+        drm_ioctl_kernel+0xe0/0x15c
+        drm_ioctl+0x2e8/0x3f4
+        vfs_ioctl+0x30/0x50
+        ...
+
+ Chain exists of:
+   console_owner --> &port_lock_key --> free_entries_lock
+
+  Possible unsafe locking scenario:
+
+        CPU0                    CPU1
+        ----                    ----
+   lock(free_entries_lock);
+                                lock(&port_lock_key);
+                                lock(free_entries_lock);
+   lock(console_owner);
+
+                *** DEADLOCK ***
+
+ Call trace:
+  dump_backtrace+0xb4/0xf0
+  show_stack+0x20/0x30
+  dump_stack_lvl+0x60/0x84
+  dump_stack+0x18/0x24
+  print_circular_bug+0x1cc/0x234
+  check_noncircular+0x78/0xac
+  __lock_acquire+0xdf8/0x109c
+  lock_acquire+0x234/0x284
+  console_flush_all+0x330/0x454
+  console_unlock+0x94/0xf0
+  vprintk_emit+0x238/0x24c
+  vprintk_default+0x3c/0x48
+  vprintk+0xb4/0xbc
+  _printk+0x68/0x90
+  dma_entry_alloc+0xb4/0x110
+  debug_dma_map_sg+0xdc/0x2f8
+  __dma_map_sg_attrs+0xac/0xe4
+  dma_map_sgtable+0x30/0x4c
+  get_pages+0x1d4/0x1e4 [msm]
+  msm_gem_pin_pages_locked+0x38/0xac [msm]
+  msm_gem_pin_vma_locked+0x58/0x88 [msm]
+  msm_ioctl_gem_submit+0xde4/0x13ac [msm]
+  drm_ioctl_kernel+0xe0/0x15c
+  drm_ioctl+0x2e8/0x3f4
+  vfs_ioctl+0x30/0x50
+  ...
+
+Reported-by: Rob Clark <robdclark@chromium.org>
+Signed-off-by: Sergey Senozhatsky <senozhatsky@chromium.org>
+Acked-by: Robin Murphy <robin.murphy@arm.com>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ kernel/dma/debug.c | 20 +++++++++++++++-----
+ 1 file changed, 15 insertions(+), 5 deletions(-)
+
+diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
+index f190651bcaddc..06366acd27b08 100644
+--- a/kernel/dma/debug.c
++++ b/kernel/dma/debug.c
+@@ -637,15 +637,19 @@ static struct dma_debug_entry *__dma_entry_alloc(void)
+ 	return entry;
+ }
+ 
+-static void __dma_entry_alloc_check_leak(void)
++/*
++ * This should be called outside of free_entries_lock scope to avoid potential
++ * deadlocks with serial consoles that use DMA.
++ */
++static void __dma_entry_alloc_check_leak(u32 nr_entries)
+ {
+-	u32 tmp = nr_total_entries % nr_prealloc_entries;
++	u32 tmp = nr_entries % nr_prealloc_entries;
+ 
+ 	/* Shout each time we tick over some multiple of the initial pool */
+ 	if (tmp < DMA_DEBUG_DYNAMIC_ENTRIES) {
+ 		pr_info("dma_debug_entry pool grown to %u (%u00%%)\n",
+-			nr_total_entries,
+-			(nr_total_entries / nr_prealloc_entries));
++			nr_entries,
++			(nr_entries / nr_prealloc_entries));
+ 	}
+ }
+ 
+@@ -656,8 +660,10 @@ static void __dma_entry_alloc_check_leak(void)
+  */
+ static struct dma_debug_entry *dma_entry_alloc(void)
+ {
++	bool alloc_check_leak = false;
+ 	struct dma_debug_entry *entry;
+ 	unsigned long flags;
++	u32 nr_entries;
+ 
+ 	spin_lock_irqsave(&free_entries_lock, flags);
+ 	if (num_free_entries == 0) {
+@@ -667,13 +673,17 @@ static struct dma_debug_entry *dma_entry_alloc(void)
+ 			pr_err("debugging out of memory - disabling\n");
+ 			return NULL;
+ 		}
+-		__dma_entry_alloc_check_leak();
++		alloc_check_leak = true;
++		nr_entries = nr_total_entries;
+ 	}
+ 
+ 	entry = __dma_entry_alloc();
+ 
+ 	spin_unlock_irqrestore(&free_entries_lock, flags);
+ 
++	if (alloc_check_leak)
++		__dma_entry_alloc_check_leak(nr_entries);
++
+ #ifdef CONFIG_STACKTRACE
+ 	entry->stack_len = stack_trace_save(entry->stack_entries,
+ 					    ARRAY_SIZE(entry->stack_entries),
+-- 
+2.40.1
+
