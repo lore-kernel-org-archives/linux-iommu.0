@@ -1,128 +1,137 @@
-Received: from mail-qv1-f42.google.com (mail-qv1-f42.google.com [209.85.219.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-he1eur04on2080.outbound.protection.outlook.com [40.107.7.80])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C7FB241EE
-	for <iommu@lists.linux.dev>; Thu, 14 Sep 2023 12:48:47 +0000 (UTC)
-Received: by mail-qv1-f42.google.com with SMTP id 6a1803df08f44-65617075b6fso4125856d6.1
-        for <iommu@lists.linux.dev>; Thu, 14 Sep 2023 05:48:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1694695726; x=1695300526; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=/hDY3jBRB8QH3yOR0YRex0tFByVoHyqIzvOIxxftR4g=;
-        b=h8LrRAT5RhJ7VLQVpi8KmoOZC0UapfVQyRqLmgnJVApkLvaEK1UrdjBhcXwmKCJqKv
-         aDGSAblas28C/KmHH6a8DWcX9GZyzcwnehU202jtDCFXHV7FQhVyUh+PK/OkzS6zOsvg
-         T6XGD9CT8ClLtufryX40PZWRiau7UA395fkVj+MPbVvC4WMKUWccTY7OY5BHfzB+pOF/
-         tQAb3cSkdUr44nT+tUQSItfPRAxB4eKUkNqRvw/ze3gZ9X+RlRD/iZ8ZpouQQbPDnaNA
-         KFWXLc/c6TW2b/Z1BDd2hM2eSTfvj/TcV1RToZN/4qRPXtUVXYl8Ud6tst5fUOi9twMv
-         0wDw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1694695726; x=1695300526;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=/hDY3jBRB8QH3yOR0YRex0tFByVoHyqIzvOIxxftR4g=;
-        b=BGvFYSPrYgS2sgxMhzaB3JndLuoIRJ/V4KhEjDtLz1Ele5NoKRscqDV2Qk/ORLs5mR
-         99zgQchbmaHoVlV3NCQTkzKFd7HvA4sOnx7xSpGsukSVU5CwS2K96IBhG3HSgK/ZpBUU
-         R9JF13pDUfBpX19d3JOxpuRUEi7W8wnrvYBnBwU1AiL1cINGKpQLrZryOG1xSkV4q4UH
-         9RT8QoIccP1YJ+hsmSYJEY+dq3PcpZpPfa1Bc/XduI1lVTxfIMp3MZMy4CwUFp5dWE7d
-         cHR7gZdmRoBuSo1bxpgJBwWiwMvSRyDhLoubq5Il38+6rh4DEHgP2Yciiusl4v6qV+B2
-         CP+g==
-X-Gm-Message-State: AOJu0Yx/tddUtfIu4LoQIqypsrE7NO8vpNuGlWB9WktGQoFkX2o/n5+e
-	eH8rTdpezUfMhcRqK5p4u31nLg==
-X-Google-Smtp-Source: AGHT+IFb+31j8aguJo3o5v/yxAzNfgc3FgIXMcgrFLafSVt2YfOorz1Vk8Xqwy3zW3uCpoZ3Q9/vlA==
-X-Received: by 2002:a05:6214:acc:b0:62d:ddeb:3770 with SMTP id g12-20020a0562140acc00b0062dddeb3770mr1706096qvi.0.1694695726278;
-        Thu, 14 Sep 2023 05:48:46 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-134-41-202-196.dhcp-dynamic.fibreop.ns.bellaliant.net. [134.41.202.196])
-        by smtp.gmail.com with ESMTPSA id c9-20020a0ce149000000b00655d6d3147bsm447704qvl.14.2023.09.14.05.48.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Sep 2023 05:48:45 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1qglm0-003jPR-7n;
-	Thu, 14 Sep 2023 09:48:44 -0300
-Date: Thu, 14 Sep 2023 09:48:44 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: joro@8bytes.org, will@kernel.org, iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, m.szyprowski@samsung.com,
-	heiko@sntech.de, jernej.skrabec@gmail.com, thierry.reding@gmail.com,
-	vdumpa@nvidia.com
-Subject: Re: [PATCH 8/8] iommu: Improve map/unmap sanity checks
-Message-ID: <ZQMBLFB20ke4hv9t@ziepe.ca>
-References: <cover.1694525662.git.robin.murphy@arm.com>
- <524db1ec0139c964d26928a6a264945aa66d010c.1694525662.git.robin.murphy@arm.com>
- <ZQHJoK0Er/nekjL6@ziepe.ca>
- <8c8451aa-d0d7-058e-cfc2-7402f9002234@arm.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1EAC8241EE
+	for <iommu@lists.linux.dev>; Thu, 14 Sep 2023 12:53:18 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=dqyGrRDnYg65hFOsLwEJooKtwH43Kmg+qrDu6yRi2tdo5c9TWs8gRW3fdWoRsAktrgqpCBy22NYgKMjwu1sv4QoHr9UunSNoa164tXSfgtWBm/PaOa4vvualJ8PdWKR3zTd+eR8VlQYgSmInkaVBBD0wdWHKOyJXY9atmvQqGBi4SLSQx9BTowt3Tvm0fWizCcePdHLezdXWUjZhncZtvqbSBTD6LZdhfqvD23uSD+LB2BCO133+KlKe3EtN79riG0qlQGAqD24gM8LZln9udZTJhzhs/NRodp6LLBnmPEATUUrRB4i3F7t8ttZDqTMeV4H7+AFYsi1AGK6/gs7UQg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=tC34ha27AmK0m22M8o22cgYRmo6ZGR7N6XZ4HFI/Whk=;
+ b=OYNnQXSgd4T+ypD0OpNnkiiy9vT0cLQa3NSgZ8GfumY2BAA0lWd2Sk4BTLNbEP6Gt0TOvRvPSorQ4fuHfPHFyjXxw44gEpJKpJwdv2aj6lWnGnZ8vqZPsB/MxFh28sytwqhrJCKfCzd8XnAHo+ARQ0xEVszJmfFUA68QehhVvp+QrS+qhRcEG+iK0cWRCPtcIZ2UxAWn54NE1mxmh/AyuQZmWGaRXpUvitOUNYWxpVpFRHjwh4ROFzX3JvZvRqr+qAapwvdXS3eBYyuqHpBQa5DyZ2y+277UIhNlDOw3x/1ebQZuNReyfVt+ez1VHl/1fBWkiToxTXtoxklnG+APRA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=tC34ha27AmK0m22M8o22cgYRmo6ZGR7N6XZ4HFI/Whk=;
+ b=XsN2+wif0UOOg852whm8VnE0D6Ie5D5vhwDnROfbqqULdzytMtw+Pl//xBgNQ59xRNLdDtXpirPKiMuqfFyOY2mS/DBiARozxhpx+JyX+3NPRHT6jRPWRXpakqb5XBA2BVleZQzxm2xUuvBdilk3axbj7OzPWCVZE9Eb/ehWebo=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from DB9PR04MB9380.eurprd04.prod.outlook.com (2603:10a6:10:368::16)
+ by PA4PR04MB7808.eurprd04.prod.outlook.com (2603:10a6:102:c8::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6792.20; Thu, 14 Sep
+ 2023 12:53:15 +0000
+Received: from DB9PR04MB9380.eurprd04.prod.outlook.com
+ ([fe80::179f:1c4a:4573:acb9]) by DB9PR04MB9380.eurprd04.prod.outlook.com
+ ([fe80::179f:1c4a:4573:acb9%4]) with mapi id 15.20.6768.029; Thu, 14 Sep 2023
+ 12:53:14 +0000
+From: Laurentiu Tudor <laurentiu.tudor@nxp.com>
+To: joro@8bytes.org,
+	will@kernel.org,
+	robin.murphy@arm.com,
+	treding@nvidia.com,
+	jgg@nvidia.com,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Cc: Laurentiu Tudor <laurentiu.tudor@nxp.com>
+Subject: [PATCH v2] iommu: map reserved memory as cacheable if device is coherent
+Date: Thu, 14 Sep 2023 15:52:58 +0300
+Message-Id: <20230914125258.19640-1-laurentiu.tudor@nxp.com>
+X-Mailer: git-send-email 2.17.1
+Content-Type: text/plain
+X-ClientProxiedBy: AM0PR03CA0107.eurprd03.prod.outlook.com
+ (2603:10a6:208:69::48) To DB9PR04MB9380.eurprd04.prod.outlook.com
+ (2603:10a6:10:368::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <8c8451aa-d0d7-058e-cfc2-7402f9002234@arm.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DB9PR04MB9380:EE_|PA4PR04MB7808:EE_
+X-MS-Office365-Filtering-Correlation-Id: 978f98e1-f969-4274-40b6-08dbb5218f41
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	VjWXXzjqLY5LWwJmnekGYqgDr2Sy54ucoHkDiIEpSzKBUZcBpkfJFfdFAHnDDhzOAAh+xhiXicQGrCg2cly7GizqxKCrH4oMZ82uaMme6O2SiWkco6U/0uSZge8XTOaIDPypMaXvDLedVSxePAATxC4IvXhln+MxYszJZpTOMn+mu4s0TnhJLQZ3sA/ycfRvjfWYMVb7Wye0HOQilqC0shsQdiuZHCXfilb9d2qniTR/DzSkjZkSWWJzcIv3N/SJj09P7QwBipUEzrDeapzwWMbMn9UqgrKGHkarTtAqOcxQDSTRs6ze1e9O2FxUkN8Lh/RuNZobuDqNoQXIS/+0+VuIrLXxtRa0aGWmpgsXDVrDQdmMbLzbVv2HpSeQoLPzp2BwI2Amh5oFtQxEKTy1+rEwx/vKQnBF7vM6Tt96k/PyFdHmMVYFMarIG0JvviWMKeJaiSh+KVRkZ3wJ+tMV+wc/6r3JsWcqg3WmEcVIcbRffyC+RAN7X0nvpAEaEXH7fJYdBFzssqtX/SbPTdK5Lz6RsERzckflGfpYXDBUYoEvDYeI12AePD6k0f7Adke4TXsh4sqPcT3hhJtEUeinPymXNvza0oefakyD8BOEh7wSy5t3YP4xiJegpEi4i6Zk
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR04MB9380.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(346002)(136003)(376002)(39860400002)(396003)(366004)(451199024)(1800799009)(186009)(8676002)(2616005)(8936002)(4326008)(6486002)(52116002)(6666004)(6506007)(478600001)(66946007)(41300700001)(2906002)(86362001)(38100700002)(38350700002)(36756003)(316002)(44832011)(6512007)(5660300002)(66556008)(66476007)(1076003)(83380400001)(26005);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?xLnh2Dy1ZDuXcpc50BAdJ1oL0cVe3qvzAS5J0n3X446rj27bPF+ZMj/+9P1X?=
+ =?us-ascii?Q?uJ6LWEw1pXFrttXpZksggVYnUR0meT0z6Wo6YKV5T0krGp8TpUTJzexvzFWs?=
+ =?us-ascii?Q?gGkAcTl6wt1nZ0JWgKIaccN+CIi5GkP046jV2asACDm7xfwEt1udhsfQa/cf?=
+ =?us-ascii?Q?DgJPPkhCp4cBZxVMEgc2UIIC0mwL67BWuN3W90mxmxqNbQ4lnvyUWLbWu6XS?=
+ =?us-ascii?Q?m1wd2JlD2da7xam56lWQTB/WmouPeNYA6M8YPvn7RlwlGRf1dx5rxSkrHXb+?=
+ =?us-ascii?Q?/yk/cigHqm+LXJi63KUdke1n6YFV+2JLFEAAfOQlJR5eZ4RJoej0eJyHHCOw?=
+ =?us-ascii?Q?UTZNLTruvwZGCyMtZadlE6S6cAtUXAk+F92CYgnd2eVM+qQueykCutCtH3LG?=
+ =?us-ascii?Q?HN6LDMGVzZ0OWV+benhI0IQr6mNRjg4dKUoWnWaiHuaoun+MMZG8RWVPwuRG?=
+ =?us-ascii?Q?dMFdG0iUts+xK9GCT5VwXLf/+ZkENcIJzZx6yYhI1PV4vtmjFC4hvylM6vct?=
+ =?us-ascii?Q?rYQUshbJsncd9OLReriwi5dFpPp+aAlxjfZaVWdSuxZ5Sj8GSrc9CPqePCyU?=
+ =?us-ascii?Q?LAN2d7H+A9z+IA1MY/NMvsVoSlbpOKlKVojrAphj3Tu3ZmdagI6+AoVM6Eby?=
+ =?us-ascii?Q?m0adrnr48fuXgSlRuAnUTGomcDnYY7tp4ephRUGDFZFwpbYWFUa5GKC/EVmr?=
+ =?us-ascii?Q?GWu5PSobgNVbgWjA6YTKZ1N0JxJK9EjUqxzPt2iv+uRZoFFE6UowS/L72puZ?=
+ =?us-ascii?Q?wqnhzV+7bc3dVJH+dHlAe05ONJ944pIcfRabT0n9LZ6ZpPYYdtA25ZiCz3uN?=
+ =?us-ascii?Q?KDMbmd65S3TdoNFKSma82tAoqkRq1s3shrm84HKgxKftClfQfJU60ETy/BIy?=
+ =?us-ascii?Q?3FlXpfoWTV8THfzYX1Zcl/nq+g/cdOrxHCRZqmzPyDrtFUYjv3+AXJhy2ghd?=
+ =?us-ascii?Q?6w7v0/yYIS71CecmlR0GqgmiNbJp7VCrKqmFQr1stHO0eSr4d7+gq/dWKqiK?=
+ =?us-ascii?Q?s0QUeD7+mbNdFgKY16P9wVoSGhVEy0NFWFUP3Yee/B9GpHNJyrKF2m2mcl7z?=
+ =?us-ascii?Q?p2BSIVZqiPSSYcx4/TkCR1YNUZps8ZJD4hsYpddScHbHtJgctOcJ8qrnRbdn?=
+ =?us-ascii?Q?yAvJBCbKpe2DUswXatUbdYFT8nJh4Zk7FLjWYGy+OLX+KA5QhUdXrVUZUCxa?=
+ =?us-ascii?Q?l9YwEh8mqhkl01W/A79O4E5RbI3MS62XQ+ThP8+nMAHQh+UBlxp+ThW+6a6b?=
+ =?us-ascii?Q?O7cLBSq8jJuZbQzRNHpBMNhs+nXSHXIxkMJt4wTr4mi3dce5xlq1eX4bmRHK?=
+ =?us-ascii?Q?e1NZcSg+FDJKQpkEHR10kVUQ8wk05TSW7SjgI6Ivyv2DjGfWhDiKMPta79RZ?=
+ =?us-ascii?Q?NMu1SuDaAN94GgSF4mQLhiXkWG4BuzCedF2ROtL8IrqWPr9EjWT38++0CQQI?=
+ =?us-ascii?Q?7cOaelDw/eomIxtqEkm5/PzjRMzCkXvgYvdepIF9qZ5oRWKTAIwCS+mz++D2?=
+ =?us-ascii?Q?ZxUnhfLCDQ3vlqfCYpl8ghAhN227leqL+FXeeKsBy2oZn/3SJylNy4RwCMHi?=
+ =?us-ascii?Q?zJVQnQtpPmTox+OBPt1r+QUxiY/7EIc6o+aHdW5d?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 978f98e1-f969-4274-40b6-08dbb5218f41
+X-MS-Exchange-CrossTenant-AuthSource: DB9PR04MB9380.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Sep 2023 12:53:14.7606
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: N6T1joLTnlzr716OCJGmhjfSeEBouRTkF7pr8Y4u0UVRdHOeMOw2DrBtqrA98bUd8EAAZCvpPP7e0aJpBOb5mA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PA4PR04MB7808
 
-On Wed, Sep 13, 2023 at 07:46:45PM +0100, Robin Murphy wrote:
-> On 2023-09-13 15:39, Jason Gunthorpe wrote:
-> > On Tue, Sep 12, 2023 at 05:18:44PM +0100, Robin Murphy wrote:
-> > > The current checks for the __IOMMU_DOMAIN_PAGING capability seem a
-> > > bit stifled, since it is quite likely now that a non-paging domain
-> > > won't have a pgsize_bitmap and/or mapping ops, and thus get caught
-> > > by the earlier condition anyway. Swap them around to test the more
-> > > fundamental condition first, then we can reasonably also upgrade
-> > > the other to a WARN_ON, since if a driver does ever expose a paging
-> > > domain without the means to actually page, it's clearly very broken.
-> > 
-> > > Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-> > > ---
-> > >   drivers/iommu/iommu.c | 10 +++++-----
-> > >   1 file changed, 5 insertions(+), 5 deletions(-)
-> > > 
-> > > diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> > > index c83f2e4c56f5..391bcae4d02d 100644
-> > > --- a/drivers/iommu/iommu.c
-> > > +++ b/drivers/iommu/iommu.c
-> > > @@ -2427,12 +2427,12 @@ static int __iommu_map(struct iommu_domain *domain, unsigned long iova,
-> > >   	phys_addr_t orig_paddr = paddr;
-> > >   	int ret = 0;
-> > > -	if (unlikely(!ops->map_pages || domain->pgsize_bitmap == 0UL))
-> > > -		return -ENODEV;
-> > > -
-> > >   	if (unlikely(!(domain->type & __IOMMU_DOMAIN_PAGING)))
-> > >   		return -EINVAL;
-> > 
-> > Why isn't this a WARN_ON? The caller is clearly lost its mind if it
-> > is calling map on a non paging domain..
-> 
-> Sure it's a dumb thing to do, however I don't think we can reasonably say
-> without question that an external caller being dumb represents an unexpected
-> and serious loss of internal consistency.
+Check if the device is marked as DMA coherent in the DT and if so,
+map its reserved memory as cacheable in the IOMMU.
+This fixes the recently added IOMMU reserved memory support which
+uses IOMMU_RESV_DIRECT without properly building the PROT for the
+mapping.
 
-WARN_ON is not just for "serious loss of internal consistency" it
-should be use in all places where invariant are violated. We can't
-guess why the caller is using this wrong (most likely it is UAF or
-memory corruption), but if this fires something definately has gone
-wrong with the kernel.
+Fixes: a5bf3cfce8cb ("iommu: Implement of_iommu_get_resv_regions()")
+Signed-off-by: Laurentiu Tudor <laurentiu.tudor@nxp.com>
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+---
+Changes in v2:
+ - added Reviewed-by tag
 
-eg if syzkaller somehow hits this we want the WARN_ON so it reports
-it.
+ drivers/iommu/of_iommu.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-> > > +	if (WARN_ON(!ops->map_pages || domain->pgsize_bitmap == 0UL))
-> > > +		return -ENODEV;
-> > > +
-> > 
-> > And these could be moved to after attach so they are not in any fast
-> > path, and eventually to after alloc..
-> 
-> Perhaps, although TBH I can't imagine it making any appreciable difference -
-> they're both values we need to load and use soon anyway, so on a sensible
-> CPU, the additional overhead should only really be a couple of not-taken
-> branch-if-zero instructions, which is nothing at all compared to how much
-> goes on in the main loop and the driver op call itself.
+diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+index 157b286e36bf..5b3631ba5a45 100644
+--- a/drivers/iommu/of_iommu.c
++++ b/drivers/iommu/of_iommu.c
+@@ -254,6 +254,9 @@ void of_iommu_get_resv_regions(struct device *dev, struct list_head *list)
+ 				phys_addr_t iova;
+ 				size_t length;
+ 
++				if (of_dma_is_coherent(dev->of_node))
++					prot |= IOMMU_CACHE;
++
+ 				maps = of_translate_dma_region(np, maps, &iova, &length);
+ 				type = iommu_resv_region_get_type(dev, &phys, iova, length);
+ 
+-- 
+2.17.1
 
-IMHO it is a cleaner pattern to check the objects the driver creates
-when it creates them, not when we go to try to use them..
-
-Jason
