@@ -1,105 +1,244 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8F046EBC
-	for <iommu@lists.linux.dev>; Thu, 14 Sep 2023 14:24:05 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D65741FB;
-	Thu, 14 Sep 2023 07:24:41 -0700 (PDT)
-Received: from [10.57.93.68] (unknown [10.57.93.68])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 0184D3F738;
-	Thu, 14 Sep 2023 07:24:02 -0700 (PDT)
-Message-ID: <e37085dc-cac4-b7f4-8c2e-e51e56a66887@arm.com>
-Date: Thu, 14 Sep 2023 15:23:46 +0100
+Received: from mail-lj1-f170.google.com (mail-lj1-f170.google.com [209.85.208.170])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 03FE239C;
+	Thu, 14 Sep 2023 15:09:31 +0000 (UTC)
+Received: by mail-lj1-f170.google.com with SMTP id 38308e7fff4ca-2bfbd7d49e7so17113861fa.1;
+        Thu, 14 Sep 2023 08:09:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1694704170; x=1695308970; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=q0p2Fq5+hhl2cqW/SVj6LzHkxBEiQPEgkqZ0kedkzFo=;
+        b=JzII9vnQX1ZxPlYxfdd/38J9J54MtIjAvyrHSvcBsj3Pv0bj3OJNfESKM9LniIp3ML
+         dWxzd9gZTQThcMb2BiwNARlXDbR2h8ggaI7OaKIp5ukc4UkPe1I8fmMBsolhpBw4J5BG
+         kf9wMTfMcUUd0BX4y7BdlGs9p7ShQyeFwgJvzfEBy2hN2Ei79D1o/MzX5dxuA/Co8+mB
+         wLQ8HKpkRiIsI7WhIxodvDtP7sPKUMGjeCLtje8++0mRxiEqP24F4qIiLU0gy1DYhNRU
+         kYdSUqE1CaiI/fCguWkO1SATPSWRlxUUcbjXiMfMvTl65UvEQ1RvYhTo+GXyK7Rx3AJ3
+         zGMw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1694704170; x=1695308970;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=q0p2Fq5+hhl2cqW/SVj6LzHkxBEiQPEgkqZ0kedkzFo=;
+        b=GOnlNrW534BBz8fNfrFS72N85hp2q8VkRvHpmeKV6/pSp9ws2BBmq+CKjUnx9u50dK
+         gvYDjo+Y3WzCWpnuRj0A3AexmcTgdAZtqt5mk6Lzp6frwh+zC3HLJD980rWJtezr0fSa
+         AbCrHOZzNBrSne+CJVnO2UddmEbQ35HhpMQOuswcOj7Vk0eXyphdFG/84IuirFZcvv8H
+         iN/pDyEP+FYJRvF259RrEi/KeEPgHFb/8xGqpd8DE2sLonXlzNcSCiXsZq5yErNSHLOi
+         lOia/+wq551mjInsAQK2QzaWU1AaJfiNF6o7/NygkwSvf89cXJylMVjYcxqTmE3E1ff8
+         ly8Q==
+X-Gm-Message-State: AOJu0Yyg/tBWOjI1mhUqky6ElUmWtezMPlJDMfqhHNjdTiAqP/InCw3W
+	oZSXuNoWg7+93CRKSJQhus4=
+X-Google-Smtp-Source: AGHT+IH4YOeufwCrX/hbygxPlNKDg8361e4VDmQWvIJ0vsQn9E6uQVWHXteDHYpafcchB+dIAnqyDA==
+X-Received: by 2002:a05:651c:103b:b0:2b6:dc55:c3c7 with SMTP id w27-20020a05651c103b00b002b6dc55c3c7mr5758747ljm.20.1694704169528;
+        Thu, 14 Sep 2023 08:09:29 -0700 (PDT)
+Received: from jernej-laptop.localnet (82-149-12-148.dynamic.telemach.net. [82.149.12.148])
+        by smtp.gmail.com with ESMTPSA id m18-20020a1709066d1200b00993a37aebc5sm1121294ejr.50.2023.09.14.08.09.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Sep 2023 08:09:29 -0700 (PDT)
+From: Jernej =?utf-8?B?xaBrcmFiZWM=?= <jernej.skrabec@gmail.com>
+To: joro@8bytes.org, will@kernel.org, Robin Murphy <robin.murphy@arm.com>
+Cc: wens@csie.org, samuel@sholland.org, iommu@lists.linux.dev,
+ linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iommu/sun50i: Convert to map_pages/unmap_pages
+Date: Thu, 14 Sep 2023 17:09:28 +0200
+Message-ID: <5708623.DvuYhMxLoT@jernej-laptop>
+In-Reply-To: <157d5041-96ac-6bad-9137-19a78fbf3591@arm.com>
+References:
+ <20230912181941.2971036-1-jernej.skrabec@gmail.com>
+ <157d5041-96ac-6bad-9137-19a78fbf3591@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.15.1
-Subject: Re: [PATCH 8/8] iommu: Improve map/unmap sanity checks
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: joro@8bytes.org, will@kernel.org, iommu@lists.linux.dev,
- linux-arm-kernel@lists.infradead.org, m.szyprowski@samsung.com,
- heiko@sntech.de, jernej.skrabec@gmail.com, thierry.reding@gmail.com,
- vdumpa@nvidia.com
-References: <cover.1694525662.git.robin.murphy@arm.com>
- <524db1ec0139c964d26928a6a264945aa66d010c.1694525662.git.robin.murphy@arm.com>
- <ZQHJoK0Er/nekjL6@ziepe.ca> <8c8451aa-d0d7-058e-cfc2-7402f9002234@arm.com>
- <ZQMBLFB20ke4hv9t@ziepe.ca>
-Content-Language: en-GB
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <ZQMBLFB20ke4hv9t@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 
-On 2023-09-14 13:48, Jason Gunthorpe wrote:
-> On Wed, Sep 13, 2023 at 07:46:45PM +0100, Robin Murphy wrote:
->> On 2023-09-13 15:39, Jason Gunthorpe wrote:
->>> On Tue, Sep 12, 2023 at 05:18:44PM +0100, Robin Murphy wrote:
->>>> The current checks for the __IOMMU_DOMAIN_PAGING capability seem a
->>>> bit stifled, since it is quite likely now that a non-paging domain
->>>> won't have a pgsize_bitmap and/or mapping ops, and thus get caught
->>>> by the earlier condition anyway. Swap them around to test the more
->>>> fundamental condition first, then we can reasonably also upgrade
->>>> the other to a WARN_ON, since if a driver does ever expose a paging
->>>> domain without the means to actually page, it's clearly very broken.
->>>
->>>> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
->>>> ---
->>>>    drivers/iommu/iommu.c | 10 +++++-----
->>>>    1 file changed, 5 insertions(+), 5 deletions(-)
->>>>
->>>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->>>> index c83f2e4c56f5..391bcae4d02d 100644
->>>> --- a/drivers/iommu/iommu.c
->>>> +++ b/drivers/iommu/iommu.c
->>>> @@ -2427,12 +2427,12 @@ static int __iommu_map(struct iommu_domain *domain, unsigned long iova,
->>>>    	phys_addr_t orig_paddr = paddr;
->>>>    	int ret = 0;
->>>> -	if (unlikely(!ops->map_pages || domain->pgsize_bitmap == 0UL))
->>>> -		return -ENODEV;
->>>> -
->>>>    	if (unlikely(!(domain->type & __IOMMU_DOMAIN_PAGING)))
->>>>    		return -EINVAL;
->>>
->>> Why isn't this a WARN_ON? The caller is clearly lost its mind if it
->>> is calling map on a non paging domain..
->>
->> Sure it's a dumb thing to do, however I don't think we can reasonably say
->> without question that an external caller being dumb represents an unexpected
->> and serious loss of internal consistency.
+Dne sreda, 13. september 2023 ob 22:20:15 CEST je Robin Murphy napisal(a):
+> On 2023-09-12 19:19, Jernej Skrabec wrote:
+> > Convert driver to use map_pages and unmap_pages. Since functions operate
+> > on page table, extend them to be able to operate on whole table, not
+> > just one entry.
+> > 
+> > Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+> > ---
+> > Hi!
+> > 
+> > I'm not sure if it makes sense to check validity of page table entry when
+> > unmaping pages makes sense. What do you think?
 > 
-> WARN_ON is not just for "serious loss of internal consistency" it
-> should be use in all places where invariant are violated. We can't
-> guess why the caller is using this wrong (most likely it is UAF or
-> memory corruption), but if this fires something definately has gone
-> wrong with the kernel.
+> As things currently stand it's largely a matter of opinion - some
+> drivers consider that unmapping something which hasn't been mapped is
+> nonsensical, and almost always represents the caller having gone wrong,
+> thus report it as an error; others take the view that as long as they
+> can achieve the requested end result, they're not going to think too
+> hard about how they got there. The same arguments apply to whether you'd
+> quietly replace an existing PTE or not when mapping, so I'd say the main
+> thing is to at least be self-consistent one way or the other.
 
-Has it? It's not *functionally* incorrect to obtain a valid domain by 
-calling iommu_get_domain_for_dev(), pass that domain to iommu_map(), and 
-handle any failure returned. Sure, it's *semantically* questionable, but 
-so is calling iommu_iova_to_phys() on non-paging domains, and we have to 
-support that, because callers are dumb, and "callers aren't dumb" is not 
-a realistic invariant which we can uphold.
+Ok, I preserved strict checks in this update, which is consistent and same as 
+before.
 
-> eg if syzkaller somehow hits this we want the WARN_ON so it reports
-> it.
+Best regards,
+Jernej
 
-But then an "IOMMU bug" is reported to us, and we say "yeah, that's not 
-ours, that's some code somewhere down in the middle of that callstack 
-being dumb", and then what? I know I don't have the time or inclination 
-to go off debugging and redesigning random other bits of the kernel for 
-calling our API in ways that look sketchy but aren't technically 
-invalid, do you?
+> 
+> Cheers,
+> Robin.
+> 
+> > Best regards,
+> > Jernej
+> > 
+> >   drivers/iommu/sun50i-iommu.c | 55 +++++++++++++++++++++---------------
+> >   1 file changed, 33 insertions(+), 22 deletions(-)
+> > 
+> > diff --git a/drivers/iommu/sun50i-iommu.c b/drivers/iommu/sun50i-iommu.c
+> > index 74c5cb93e900..be6102730a56 100644
+> > --- a/drivers/iommu/sun50i-iommu.c
+> > +++ b/drivers/iommu/sun50i-iommu.c
+> > @@ -589,11 +589,12 @@ static u32 *sun50i_dte_get_page_table(struct
+> > sun50i_iommu_domain *sun50i_domain,> 
+> >   }
+> >   
+> >   static int sun50i_iommu_map(struct iommu_domain *domain, unsigned long
+> >   iova,> 
+> > -			    phys_addr_t paddr, size_t size, int 
+prot, gfp_t gfp)
+> > +			    phys_addr_t paddr, size_t pgsize, size_t 
+pgcount,
+> > +			    int prot, gfp_t gfp, size_t *mapped)
+> > 
+> >   {
+> >   
+> >   	struct sun50i_iommu_domain *sun50i_domain = 
+to_sun50i_domain(domain);
+> >   	struct sun50i_iommu *iommu = sun50i_domain->iommu;
+> > 
+> > -	u32 pte_index;
+> > +	u32 pte_index, count, i;
+> > 
+> >   	u32 *page_table, *pte_addr;
+> >   	int ret = 0;
+> > 
+> > @@ -604,45 +605,55 @@ static int sun50i_iommu_map(struct iommu_domain
+> > *domain, unsigned long iova,> 
+> >   	}
+> >   	
+> >   	pte_index = sun50i_iova_get_pte_index(iova);
+> > 
+> > -	pte_addr = &page_table[pte_index];
+> > -	if (unlikely(sun50i_pte_is_page_valid(*pte_addr))) {
+> > -		phys_addr_t page_phys = 
+sun50i_pte_get_page_address(*pte_addr);
+> > -		dev_err(iommu->dev,
+> > -			"iova %pad already mapped to %pa cannot 
+remap to %pa prot: %#x\n",
+> > -			&iova, &page_phys, &paddr, prot);
+> > -		ret = -EBUSY;
+> > -		goto out;
+> > +	count = min(pgcount, (size_t)NUM_PT_ENTRIES - pte_index);
+> > +	for (i = 0; i < count; i++) {
+> > +		pte_addr = &page_table[pte_index + i];
+> > +		if (unlikely(sun50i_pte_is_page_valid(*pte_addr))) {
+> > +			phys_addr_t page_phys = 
+sun50i_pte_get_page_address(*pte_addr);
+> > +
+> > +			dev_err(iommu->dev,
+> > +				"iova %pad already mapped to %pa 
+cannot remap to %pa prot: %#x\n",
+> > +				&iova, &page_phys, &paddr, prot);
+> > +			ret = -EBUSY;
+> > +			goto out;
+> > +		}
+> > +		*pte_addr = sun50i_mk_pte(paddr, prot);
+> > +		paddr += SPAGE_SIZE;
+> > 
+> >   	}
+> > 
+> > -	*pte_addr = sun50i_mk_pte(paddr, prot);
+> > -	sun50i_table_flush(sun50i_domain, pte_addr, 1);
+> > +	sun50i_table_flush(sun50i_domain, &page_table[pte_index], i);
+> > +	*mapped = i * SPAGE_SIZE;
+> > 
+> >   out:
+> >   	return ret;
+> >   
+> >   }
+> >   
+> >   static size_t sun50i_iommu_unmap(struct iommu_domain *domain, unsigned
+> >   long iova,> 
+> > -				 size_t size, struct 
+iommu_iotlb_gather *gather)
+> > +				 size_t pgsize, size_t pgcount,
+> > +				 struct iommu_iotlb_gather 
+*gather)
+> > 
+> >   {
+> >   
+> >   	struct sun50i_iommu_domain *sun50i_domain = 
+to_sun50i_domain(domain);
+> > 
+> > +	u32 dte, count, i, pte_index;
+> > 
+> >   	phys_addr_t pt_phys;
+> >   	u32 *pte_addr;
+> > 
+> > -	u32 dte;
+> > 
+> >   	dte = sun50i_domain->dt[sun50i_iova_get_dte_index(iova)];
+> >   	if (!sun50i_dte_is_pt_valid(dte))
+> >   	
+> >   		return 0;
+> >   	
+> >   	pt_phys = sun50i_dte_get_pt_address(dte);
+> > 
+> > -	pte_addr = (u32 *)phys_to_virt(pt_phys) +
+> > sun50i_iova_get_pte_index(iova); +	pte_index =
+> > sun50i_iova_get_pte_index(iova);
+> > +	pte_addr = (u32 *)phys_to_virt(pt_phys) + pte_index;
+> > 
+> > -	if (!sun50i_pte_is_page_valid(*pte_addr))
+> > -		return 0;
+> > +	count = min(pgcount, (size_t)NUM_PT_ENTRIES - pte_index);
+> > +	for (i = 0; i < count; i++)
+> > +		if (!sun50i_pte_is_page_valid(pte_addr[i]))
+> > +			break;
+> > 
+> > -	memset(pte_addr, 0, sizeof(*pte_addr));
+> > -	sun50i_table_flush(sun50i_domain, pte_addr, 1);
+> > +	memset(pte_addr, 0, sizeof(*pte_addr) * i);
+> > +	sun50i_table_flush(sun50i_domain, pte_addr, i);
+> > 
+> > -	return SZ_4K;
+> > +	return i * SPAGE_SIZE;
+> > 
+> >   }
+> >   
+> >   static phys_addr_t sun50i_iommu_iova_to_phys(struct iommu_domain
+> >   *domain,
+> > 
+> > @@ -838,8 +849,8 @@ static const struct iommu_ops sun50i_iommu_ops = {
+> > 
+> >   		.iotlb_sync_map = sun50i_iommu_iotlb_sync_map,
+> >   		.iotlb_sync	= sun50i_iommu_iotlb_sync,
+> >   		.iova_to_phys	= sun50i_iommu_iova_to_phys,
+> > 
+> > -		.map		= sun50i_iommu_map,
+> > -		.unmap		= sun50i_iommu_unmap,
+> > +		.map_pages	= sun50i_iommu_map,
+> > +		.unmap_pages	= sun50i_iommu_unmap,
+> > 
+> >   		.free		= sun50i_iommu_domain_free,
+> >   	
+> >   	}
+> >   
+> >   };
 
-iommu_map() can already fail for numerous reasons that may or may not 
-represent a bug in the caller, like the IOVA or PA being out-of-range, 
-or the IOVA already being mapped, or whatever. The wrong type of domain 
-is just another reason to fail (in, as far as we're concerned, an 
-entirely safe and manageable way). Callers have to be prepared to handle 
-failure, but it's up to them how unexpected or serious it is; we can't 
-second-guess them.
 
-Thanks,
-Robin.
+
+
