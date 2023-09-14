@@ -1,20 +1,20 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9700A369
-	for <iommu@lists.linux.dev>; Thu, 14 Sep 2023 01:55:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0CC77C433C7;
-	Thu, 14 Sep 2023 01:55:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D8339369
+	for <iommu@lists.linux.dev>; Thu, 14 Sep 2023 01:55:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FB10C433CA;
+	Thu, 14 Sep 2023 01:55:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1694656507;
-	bh=r9y65+1pzqVVxmFYagLRvmVyc4Ch3S21HgyzAmfy0C8=;
+	s=k20201202; t=1694656530;
+	bh=JS37t7SkNjf+2/wZczBhA8zl2JA753ddV8NUy5wGEV8=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=IAAzTA3Yrt8+qAGGAvR45pCVOsRvIlzlppi+Sm2WKCRwoMprshwt+RQIAti7p52Bf
-	 zYWQeoYOD+rX6DA/BfIc1Nm8Gz+YrAxUYauRmPZxERT4Yp7Laq4GDaXbqlDm/uEKAc
-	 wfZqUKV+2+aeMkyJsIIYoOG63TxyhvlPQwQPcCGAUxYY2OskZ8ahUP5G7W607oAFRs
-	 i428jDfdCes2VW6TvznXuGE8XBlv3Fi6mwOObeK3ItRakTm2pAeP48uu2QS4tjRVWO
-	 81IzfikMysj1rnE7G5fICO7FVWgYJb9F7KnR3TwX7TNeV6/6k/ucLXb/BWsEIGw1UM
-	 P2rdU1OJR92mQ==
+	b=N4OTuPwBRlsv3RZOUHaYtT+WKvh8zPnH6sCdQD6sf6mhyRDALAyXHNA/kn5UfyGCW
+	 tsE4oqk/53PCnsaficJ8hzVjXBTihwsqfBffdMR9mOhfWCef2F2eZw2OVdTcyauE5C
+	 PB04MsseA5oEbSVvtD49eiBA9FMx7bbTmAYw7TiXFz4TlUDYxg8amSFTkny3oz1Slz
+	 5eomI7rBkxPGBscLjCTB8ak2id9vY6vJ1/CDpZ1a8Pyseyq5OoLWni2PsEPncodJ1v
+	 cJwdYgkYwNcZNz2IDLxOZiQGqIGYAe96lmpHXGNscxQwmHKzQZ4uDadyOeeU0IHTAu
+	 goML1Rmt/qR3Q==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
@@ -25,12 +25,12 @@ Cc: Sergey Senozhatsky <senozhatsky@chromium.org>,
 	Sasha Levin <sashal@kernel.org>,
 	m.szyprowski@samsung.com,
 	iommu@lists.linux.dev
-Subject: [PATCH AUTOSEL 6.5 3/7] dma-debug: don't call __dma_entry_alloc_check_leak() under free_entries_lock
-Date: Wed, 13 Sep 2023 21:54:47 -0400
-Message-Id: <20230914015459.51740-3-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 6.1 3/6] dma-debug: don't call __dma_entry_alloc_check_leak() under free_entries_lock
+Date: Wed, 13 Sep 2023 21:55:13 -0400
+Message-Id: <20230914015523.51894-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.40.1
-In-Reply-To: <20230914015459.51740-1-sashal@kernel.org>
-References: <20230914015459.51740-1-sashal@kernel.org>
+In-Reply-To: <20230914015523.51894-1-sashal@kernel.org>
+References: <20230914015523.51894-1-sashal@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -39,7 +39,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
-X-stable-base: Linux 6.5.3
+X-stable-base: Linux 6.1.53
 Content-Transfer-Encoding: 8bit
 
 From: Sergey Senozhatsky <senozhatsky@chromium.org>
@@ -187,10 +187,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 15 insertions(+), 5 deletions(-)
 
 diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
-index f190651bcaddc..06366acd27b08 100644
+index 18c93c2276cae..3ff7089d11a92 100644
 --- a/kernel/dma/debug.c
 +++ b/kernel/dma/debug.c
-@@ -637,15 +637,19 @@ static struct dma_debug_entry *__dma_entry_alloc(void)
+@@ -603,15 +603,19 @@ static struct dma_debug_entry *__dma_entry_alloc(void)
  	return entry;
  }
  
@@ -214,7 +214,7 @@ index f190651bcaddc..06366acd27b08 100644
  	}
  }
  
-@@ -656,8 +660,10 @@ static void __dma_entry_alloc_check_leak(void)
+@@ -622,8 +626,10 @@ static void __dma_entry_alloc_check_leak(void)
   */
  static struct dma_debug_entry *dma_entry_alloc(void)
  {
@@ -225,7 +225,7 @@ index f190651bcaddc..06366acd27b08 100644
  
  	spin_lock_irqsave(&free_entries_lock, flags);
  	if (num_free_entries == 0) {
-@@ -667,13 +673,17 @@ static struct dma_debug_entry *dma_entry_alloc(void)
+@@ -633,13 +639,17 @@ static struct dma_debug_entry *dma_entry_alloc(void)
  			pr_err("debugging out of memory - disabling\n");
  			return NULL;
  		}
