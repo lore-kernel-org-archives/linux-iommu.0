@@ -1,203 +1,69 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f178.google.com (mail-qt1-f178.google.com [209.85.160.178])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49ED4224C5
-	for <iommu@lists.linux.dev>; Thu, 14 Sep 2023 09:00:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1694682029; x=1726218029;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=ZtOXclHsAEIRIFEpox6fhTrVNI+nxlXlWz9EfU2LP9M=;
-  b=U7/uUt6vzfMkk3xVHij06Q5y6vBrvjKMedpOs8mEnX1GM2+HKvDfpX4Q
-   AN+TX6lR02m1LFo4Uxm+2QUbtnPEu/mg5vwxhRDwUOv0KXXmuqvIZ624t
-   dInEcQ6mV/YtnOvISRA4dDj1jfjilbBpEn+Sr/gNSvPd6AU0DXB/TgTrQ
-   fITPgUGAXXyG7jG1kKitoU//fvoJstLkqVKcLlXAV4XO/uA0Oq2aWKdY4
-   mrVMPSKVG8YMS/3kksvvNT/hEOqaOUzhOcq64I5gRhWexoGGRRK6GdkLt
-   iIx1I9PJWbFrguxFs6pphOd8Qg0g9LjgBk9k4L8JTz8e75q1hnk26taVA
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10832"; a="465266534"
-X-IronPort-AV: E=Sophos;i="6.02,145,1688454000"; 
-   d="scan'208";a="465266534"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Sep 2023 02:00:28 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10832"; a="859613429"
-X-IronPort-AV: E=Sophos;i="6.02,145,1688454000"; 
-   d="scan'208";a="859613429"
-Received: from allen-box.sh.intel.com ([10.239.159.127])
-  by fmsmga002.fm.intel.com with ESMTP; 14 Sep 2023 02:00:25 -0700
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Nicolin Chen <nicolinc@nvidia.com>
-Cc: Yi Liu <yi.l.liu@intel.com>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>,
-	iommu@lists.linux.dev,
-	kvm@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v5 12/12] iommu: Improve iopf_queue_flush_dev()
-Date: Thu, 14 Sep 2023 16:56:38 +0800
-Message-Id: <20230914085638.17307-13-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230914085638.17307-1-baolu.lu@linux.intel.com>
-References: <20230914085638.17307-1-baolu.lu@linux.intel.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B0F8915EBA
+	for <iommu@lists.linux.dev>; Thu, 14 Sep 2023 09:02:35 +0000 (UTC)
+Received: by mail-qt1-f178.google.com with SMTP id d75a77b69052e-414ba610766so235431cf.0
+        for <iommu@lists.linux.dev>; Thu, 14 Sep 2023 02:02:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1694682154; x=1695286954; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=N1uEkZ8AewlH4VkHXLgnDcZZ4NDv2GyDPMI8S1n2Giw=;
+        b=uSitbITNzDp9XsFMdKgGBrfG6ZqVzw0LgN9UGWG4HlDsTjdEHkcmge0QPxthvcTQ9A
+         FIH5perRPVOOvnadcAkxeMYxe1V3CgV0833isfKGxTPEFSXYdYhz23/7rN+ElABFuuwv
+         YrNabBRRLwauba1GtcRgGAL21QnYG0H7DCZ+vtCpT2l1F2zwx0F5kRPVHsyeIaq5qFlc
+         GaZAbuk6WX1YnVY32Wy7pHP07xti5sX/wB9zBv6HQsTcTluampqWTapQOjNkF+WgXTjD
+         sM2zQO810x/+I8Twwi9iWU3OcHrvGkfd+0k5ge8x0bXdrR3tWNKnjWsq8keB/QUKEK3s
+         hstQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1694682154; x=1695286954;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=N1uEkZ8AewlH4VkHXLgnDcZZ4NDv2GyDPMI8S1n2Giw=;
+        b=ku4AjzS2zG1b3DoAtMyr9PKwqwWiBj/ol+FUBojmv49Ne4tEgZ32/k2HoUqh1Clcpa
+         SpsWqGF3HUx2hpQ55c9FeDc09JQ5S6lfh7mYPFGMFMeELIuNIwkTWdLma8gm0UqxQfs4
+         Ybw5ExyPPR4xI3Xx6mABHhlzPwLJU1j3U93Xu/VOsQsA48Z+J0XyJIQKJ31z1VSJKbx5
+         RR/h7Z0dmLawTqc+OZRpkFacbdtF1cPtGoj7ehP8eZa200EzOzXTcOzbMUwZ6lZR5zw3
+         X+up2uBNm1ZryUEmt+jyr2bnX4LRoLUP02Y7OWqxJhUWzTCM7gX0IWVOX3yQwF9tKnYb
+         sQDA==
+X-Gm-Message-State: AOJu0Yy0Ok5gmNyeCrY+ndFxNXCavot5g6g5BDMAPzdZw96UYtvjV+32
+	rqFXNK9KUD0XJz3Be1OSgUGsfrV8wIxLh2PIbsb3HA==
+X-Google-Smtp-Source: AGHT+IGLYvslnZ50So6mjixflAeizPqblOjFot0SC0qSJrxPgXATQW71P15tPNcPhMGfUdBdiLJYjPvjl/0Re3DbDZ8=
+X-Received: by 2002:ac8:5951:0:b0:410:385c:d1e0 with SMTP id
+ 17-20020ac85951000000b00410385cd1e0mr467589qtz.25.1694682154431; Thu, 14 Sep
+ 2023 02:02:34 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20230627033326.5236-1-nicolinc@nvidia.com> <CAGfWUPziSWNMc_px4E-i+_V_Jxdb_WSwOLXHZ+PANz2Tv5pFPA@mail.gmail.com>
+ <ZQJbunPj6Q8XRcpV@Asurada-Nvidia>
+In-Reply-To: <ZQJbunPj6Q8XRcpV@Asurada-Nvidia>
+From: Michael Shavit <mshavit@google.com>
+Date: Thu, 14 Sep 2023 17:01:58 +0800
+Message-ID: <CAKHBV25dfy2q73DmU7X6j_2XNTfgk8kbstanMczy8oZo_WFxrA@mail.gmail.com>
+Subject: Re: [PATCH v1] iommu/arm-smmu-v3: Allow default substream bypass with
+ a pasid support
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: Aahil Awatramani <aahila@google.com>, robin.murphy@arm.com, will@kernel.org, 
+	jgg@nvidia.com, joro@8bytes.org, shameerali.kolothum.thodi@huawei.com, 
+	yangyicong@hisilicon.com, jean-philippe@linaro.org, 
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, 
+	linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-The iopf_queue_flush_dev() is called by the iommu driver before releasing
-a PASID. It ensures that all pending faults for this PASID have been
-handled or cancelled, and won't hit the address space that reuses this
-PASID. The driver must make sure that no new fault is added to the queue.
+On Thu, Sep 14, 2023 at 9:03=E2=80=AFAM Nicolin Chen <nicolinc@nvidia.com> =
+wrote:
+>
+> This has another version [1] rebased on top of Michael's refactor
+> series [2]. We'd need Michael to respin the refactor sereis and I
+> will resend mine.
 
-The SMMUv3 driver doesn't use it because it only implements the
-Arm-specific stall fault model where DMA transactions are held in the SMMU
-while waiting for the OS to handle iopf's. Since a device driver must
-complete all DMA transactions before detaching domain, there are no
-pending iopf's with the stall model. PRI support requires adding a call to
-iopf_queue_flush_dev() after flushing the hardware page fault queue.
-
-The current implementation of iopf_queue_flush_dev() is a simplified
-version. It is only suitable for SVA case in which the processing of iopf
-is implemented in the inner loop of the iommu subsystem.
-
-Improve this interface to make it also work for handling iopf out of the
-iommu core. Remove a warning message in iommu_page_response() since the
-iopf queue might get flushed before possible pending responses.
-
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- include/linux/iommu.h      |  4 ++--
- drivers/iommu/intel/svm.c  |  2 +-
- drivers/iommu/io-pgfault.c | 46 +++++++++++++++++++++++++++++++++-----
- 3 files changed, 44 insertions(+), 8 deletions(-)
-
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 77ad33ffe3ac..465e23e945d0 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -1275,7 +1275,7 @@ iommu_sva_domain_alloc(struct device *dev, struct mm_struct *mm)
- #ifdef CONFIG_IOMMU_IOPF
- int iopf_queue_add_device(struct iopf_queue *queue, struct device *dev);
- int iopf_queue_remove_device(struct iopf_queue *queue, struct device *dev);
--int iopf_queue_flush_dev(struct device *dev);
-+int iopf_queue_flush_dev(struct device *dev, ioasid_t pasid);
- struct iopf_queue *iopf_queue_alloc(const char *name);
- void iopf_queue_free(struct iopf_queue *queue);
- int iopf_queue_discard_partial(struct iopf_queue *queue);
-@@ -1295,7 +1295,7 @@ iopf_queue_remove_device(struct iopf_queue *queue, struct device *dev)
- 	return -ENODEV;
- }
- 
--static inline int iopf_queue_flush_dev(struct device *dev)
-+static inline int iopf_queue_flush_dev(struct device *dev, ioasid_t pasid)
- {
- 	return -ENODEV;
- }
-diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
-index 780c5bd73ec2..4c3f4533e337 100644
---- a/drivers/iommu/intel/svm.c
-+++ b/drivers/iommu/intel/svm.c
-@@ -495,7 +495,7 @@ void intel_drain_pasid_prq(struct device *dev, u32 pasid)
- 		goto prq_retry;
- 	}
- 
--	iopf_queue_flush_dev(dev);
-+	iopf_queue_flush_dev(dev, pasid);
- 
- 	/*
- 	 * Perform steps described in VT-d spec CH7.10 to drain page
-diff --git a/drivers/iommu/io-pgfault.c b/drivers/iommu/io-pgfault.c
-index 3e6845bc5902..8d81688f715d 100644
---- a/drivers/iommu/io-pgfault.c
-+++ b/drivers/iommu/io-pgfault.c
-@@ -254,10 +254,9 @@ int iommu_page_response(struct device *dev,
- 
- 	/* Only send response if there is a fault report pending */
- 	mutex_lock(&fault_param->lock);
--	if (list_empty(&fault_param->faults)) {
--		dev_warn_ratelimited(dev, "no pending PRQ, drop response\n");
-+	if (list_empty(&fault_param->faults))
- 		goto done_unlock;
--	}
-+
- 	/*
- 	 * Check if we have a matching page request pending to respond,
- 	 * otherwise return -EINVAL
-@@ -300,6 +299,7 @@ EXPORT_SYMBOL_GPL(iommu_page_response);
- /**
-  * iopf_queue_flush_dev - Ensure that all queued faults have been processed
-  * @dev: the endpoint whose faults need to be flushed.
-+ * @pasid: the PASID of the endpoint.
-  *
-  * The IOMMU driver calls this before releasing a PASID, to ensure that all
-  * pending faults for this PASID have been handled, and won't hit the address
-@@ -309,17 +309,53 @@ EXPORT_SYMBOL_GPL(iommu_page_response);
-  *
-  * Return: 0 on success and <0 on error.
-  */
--int iopf_queue_flush_dev(struct device *dev)
-+int iopf_queue_flush_dev(struct device *dev, ioasid_t pasid)
- {
- 	struct iommu_fault_param *iopf_param = iopf_get_dev_fault_param(dev);
-+	const struct iommu_ops *ops = dev_iommu_ops(dev);
-+	struct iommu_page_response resp;
-+	struct iopf_fault *iopf, *next;
-+	int ret = 0;
- 
- 	if (!iopf_param)
- 		return -ENODEV;
- 
- 	flush_workqueue(iopf_param->queue->wq);
-+
-+	mutex_lock(&iopf_param->lock);
-+	list_for_each_entry_safe(iopf, next, &iopf_param->partial, list) {
-+		if (!(iopf->fault.prm.flags & IOMMU_FAULT_PAGE_REQUEST_PASID_VALID) ||
-+		    iopf->fault.prm.pasid != pasid)
-+			break;
-+
-+		list_del(&iopf->list);
-+		kfree(iopf);
-+	}
-+
-+	list_for_each_entry_safe(iopf, next, &iopf_param->faults, list) {
-+		if (!(iopf->fault.prm.flags & IOMMU_FAULT_PAGE_REQUEST_PASID_VALID) ||
-+		    iopf->fault.prm.pasid != pasid)
-+			continue;
-+
-+		memset(&resp, 0, sizeof(struct iommu_page_response));
-+		resp.pasid = iopf->fault.prm.pasid;
-+		resp.grpid = iopf->fault.prm.grpid;
-+		resp.code = IOMMU_PAGE_RESP_INVALID;
-+
-+		if (iopf->fault.prm.flags & IOMMU_FAULT_PAGE_RESPONSE_NEEDS_PASID)
-+			resp.flags = IOMMU_PAGE_RESP_PASID_VALID;
-+
-+		ret = ops->page_response(dev, iopf, &resp);
-+		if (ret)
-+			break;
-+
-+		list_del(&iopf->list);
-+		kfree(iopf);
-+	}
-+	mutex_unlock(&iopf_param->lock);
- 	iopf_put_dev_fault_param(iopf_param);
- 
--	return 0;
-+	return ret;
- }
- EXPORT_SYMBOL_GPL(iopf_queue_flush_dev);
- 
--- 
-2.34.1
-
+Just to clarify, you'd like me to rebase off master and re-send? Or do
+you mean something else by respin?
