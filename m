@@ -1,20 +1,20 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 056E817D3
-	for <iommu@lists.linux.dev>; Thu, 14 Sep 2023 01:55:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D583C43391;
-	Thu, 14 Sep 2023 01:55:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7233C1C02
+	for <iommu@lists.linux.dev>; Thu, 14 Sep 2023 01:55:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B94BDC433C7;
+	Thu, 14 Sep 2023 01:55:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1694656539;
-	bh=I3zBOcMYDFrR8nYkfNCgRDhP1py5VYaP3hBqLhNqbeY=;
+	s=k20201202; t=1694656546;
+	bh=LZ6DzAt5mVz1QiKYVFmaZ9L+EBTYTuGsjlufbB5PfBc=;
 	h=From:To:Cc:Subject:Date:From;
-	b=N5wihnDyTizef0bId2MLAKNCk/0Q1ynfMckDuHQL9ciDVRqAIRIoWoJ/W+qmPtx1B
-	 yAVIzBLBZXicTuylzkJCNINmSwMz7ii/3SzwfL8G/pRrPjeUhxrm9JIqP2Uj07Ol5b
-	 QE+XncM5Wlw2fQI+Qnnx2oI2S/Bdz0/x1Cu9dPUK4bQGEd82w5hcgRy1F3Qg+Nsh+S
-	 HVJfI2VNJqpY5DAwFFi5dwnofGf3HC0B9KpHDF7Yz6vUT8AYLWSkWUG+R9dp7ZgtXH
-	 syg/bd0bS+rHm24+za1TwwEjOAmPNxJYD6rYEWqYT8A+Rq59j4YVFWBlxo1tnZFGzJ
-	 bNwFvJ0OVmPBA==
+	b=TNhCUyPMFdmf4ldrxH2gpfnSez5Dxozru0j13G/IqzTtos6IOPc98JhzJV4YRiQla
+	 aplc+YwA47KFoi3dnedH1Tgugl+CZCJ9bTOQ7zQ6y4OEFdiIzQGXuZx70J9bgL6B3y
+	 nAqvCHfBiUukznAOA7lNXxuOuwOpMOmdNydaqZ68XUmELoWevfdasIh+PsfBP6pdyh
+	 kYqHu3+CiMcPRRUKNfxBkr+WixHN+AkJhF0SXrnnHuqoft4jGGyeXkYr0WlmYTqWtz
+	 1ksErfHk4Zak435oO1PObnAvt1ULaezzg8WyTEUQoNdt5p3G9dJ87CqYLT9V1Q2I9b
+	 wZI0c9g4X6Nyg==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
@@ -25,9 +25,9 @@ Cc: Sergey Senozhatsky <senozhatsky@chromium.org>,
 	Sasha Levin <sashal@kernel.org>,
 	m.szyprowski@samsung.com,
 	iommu@lists.linux.dev
-Subject: [PATCH AUTOSEL 5.15 1/3] dma-debug: don't call __dma_entry_alloc_check_leak() under free_entries_lock
-Date: Wed, 13 Sep 2023 21:55:34 -0400
-Message-Id: <20230914015536.51984-1-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.10] dma-debug: don't call __dma_entry_alloc_check_leak() under free_entries_lock
+Date: Wed, 13 Sep 2023 21:55:43 -0400
+Message-Id: <20230914015543.52035-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.40.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -37,7 +37,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
-X-stable-base: Linux 5.15.131
+X-stable-base: Linux 5.10.194
 Content-Transfer-Encoding: 8bit
 
 From: Sergey Senozhatsky <senozhatsky@chromium.org>
@@ -185,10 +185,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 15 insertions(+), 5 deletions(-)
 
 diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
-index 2caafd13f8aac..1f9a8cee42241 100644
+index ae9fc1ee6d206..0263983089097 100644
 --- a/kernel/dma/debug.c
 +++ b/kernel/dma/debug.c
-@@ -605,15 +605,19 @@ static struct dma_debug_entry *__dma_entry_alloc(void)
+@@ -606,15 +606,19 @@ static struct dma_debug_entry *__dma_entry_alloc(void)
  	return entry;
  }
  
@@ -212,7 +212,7 @@ index 2caafd13f8aac..1f9a8cee42241 100644
  	}
  }
  
-@@ -624,8 +628,10 @@ static void __dma_entry_alloc_check_leak(void)
+@@ -625,8 +629,10 @@ static void __dma_entry_alloc_check_leak(void)
   */
  static struct dma_debug_entry *dma_entry_alloc(void)
  {
@@ -223,7 +223,7 @@ index 2caafd13f8aac..1f9a8cee42241 100644
  
  	spin_lock_irqsave(&free_entries_lock, flags);
  	if (num_free_entries == 0) {
-@@ -635,13 +641,17 @@ static struct dma_debug_entry *dma_entry_alloc(void)
+@@ -636,13 +642,17 @@ static struct dma_debug_entry *dma_entry_alloc(void)
  			pr_err("debugging out of memory - disabling\n");
  			return NULL;
  		}
