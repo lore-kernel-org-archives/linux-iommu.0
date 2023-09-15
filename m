@@ -1,12 +1,12 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9BDD611CB4
-	for <iommu@lists.linux.dev>; Fri, 15 Sep 2023 16:58:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A270E125C3
+	for <iommu@lists.linux.dev>; Fri, 15 Sep 2023 16:58:30 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7A023C15;
-	Fri, 15 Sep 2023 09:59:00 -0700 (PDT)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3C1FB139F;
+	Fri, 15 Sep 2023 09:59:07 -0700 (PDT)
 Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 2912D3F5A1;
-	Fri, 15 Sep 2023 09:58:22 -0700 (PDT)
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id DCAF13F5A1;
+	Fri, 15 Sep 2023 09:58:28 -0700 (PDT)
 From: Robin Murphy <robin.murphy@arm.com>
 To: joro@8bytes.org,
 	will@kernel.org
@@ -15,9 +15,9 @@ Cc: iommu@lists.linux.dev,
 	linux-arm-kernel@lists.infradead.org,
 	jgg@nvidia.com,
 	baolu.lu@linux.intel.com
-Subject: [PATCH v3 1/7] iommu: Factor out some helpers
-Date: Fri, 15 Sep 2023 17:58:05 +0100
-Message-Id: <a24acdd821a87ddab2ed4f5dc4e5ba047e126404.1694693889.git.robin.murphy@arm.com>
+Subject: [PATCH v3 4/7] iommu: Switch __iommu_domain_alloc() to device ops
+Date: Fri, 15 Sep 2023 17:58:08 +0100
+Message-Id: <404d8395cf4252c6fe6d98f317f3570127451778.1694693889.git.robin.murphy@arm.com>
 X-Mailer: git-send-email 2.39.2.101.g768bb238c484.dirty
 In-Reply-To: <cover.1694693889.git.robin.murphy@arm.com>
 References: <cover.1694693889.git.robin.murphy@arm.com>
@@ -29,131 +29,144 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The pattern for picking the first device out of the group list is
-repeated a few times now, so it's clearly worth factoring out, which
-also helps hide the iommu_group_dev detail from places that don't need
-to know. Similarly, the safety check for dev_iommu_ops() at certain
-public interfaces starts looking a bit repetitive, and might not be
-completely obvious at first glance, so let's factor that out for clarity
-as well, in preparation for more uses of both.
+In all the places we allocate default domains, we have (or can easily
+get hold of) a device from which to resolve the right IOMMU ops; only
+the public iommu_domain_alloc() interface actually depends on bus ops.
+Reworking the public API is a big enough mission in its own right, but
+in the meantime we can still decouple it from bus ops internally to move
+forward.
 
 Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
 Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 
 ---
 
-v3: Rename dev_iommu_ops_valid() to reflect what it's actually checking,
-    rather than an implied consequence.
+v3: Make sure blocking domains are covered as well
 ---
- drivers/iommu/iommu.c | 40 +++++++++++++++++++++++++---------------
- 1 file changed, 25 insertions(+), 15 deletions(-)
+ drivers/iommu/iommu.c | 50 +++++++++++++++++++++++++++++--------------
+ 1 file changed, 34 insertions(+), 16 deletions(-)
 
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 3bfc56df4f78..4566d0001cd3 100644
+index f4cc91227b22..29ebb4b57df4 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
-@@ -363,6 +363,15 @@ static void dev_iommu_free(struct device *dev)
- 	kfree(param);
+@@ -96,7 +96,7 @@ static const char * const iommu_group_resv_type_string[] = {
+ static int iommu_bus_notifier(struct notifier_block *nb,
+ 			      unsigned long action, void *data);
+ static void iommu_release_device(struct device *dev);
+-static struct iommu_domain *__iommu_domain_alloc(const struct bus_type *bus,
++static struct iommu_domain *__iommu_domain_alloc(struct device *dev,
+ 						 unsigned type);
+ static int __iommu_attach_device(struct iommu_domain *domain,
+ 				 struct device *dev);
+@@ -1745,12 +1745,11 @@ static int iommu_get_def_domain_type(struct device *dev)
  }
  
-+/*
-+ * Internal equivalent of device_iommu_mapped() for when we care that a device
-+ * actually has API ops, and don't want false positives from VFIO-only groups.
-+ */
-+static bool dev_has_iommu(struct device *dev)
-+{
-+	return dev->iommu && dev->iommu->iommu_dev;
-+}
-+
- static u32 dev_iommu_get_max_pasids(struct device *dev)
+ static struct iommu_domain *
+-__iommu_group_alloc_default_domain(const struct bus_type *bus,
+-				   struct iommu_group *group, int req_type)
++__iommu_group_alloc_default_domain(struct iommu_group *group, int req_type)
  {
- 	u32 max_pasids = 0, bits = 0;
-@@ -614,7 +623,7 @@ static void __iommu_group_remove_device(struct device *dev)
- 
- 		list_del(&device->list);
- 		__iommu_group_free_device(group, device);
--		if (dev->iommu && dev->iommu->iommu_dev)
-+		if (dev_has_iommu(dev))
- 			iommu_deinit_device(dev);
- 		else
- 			dev->iommu_group = NULL;
-@@ -1218,6 +1227,12 @@ void iommu_group_remove_device(struct device *dev)
+ 	if (group->default_domain && group->default_domain->type == req_type)
+ 		return group->default_domain;
+-	return __iommu_domain_alloc(bus, req_type);
++	return __iommu_domain_alloc(iommu_group_first_dev(group), req_type);
  }
- EXPORT_SYMBOL_GPL(iommu_group_remove_device);
  
-+static struct device *iommu_group_first_dev(struct iommu_group *group)
-+{
-+	lockdep_assert_held(&group->mutex);
-+	return list_first_entry(&group->devices, struct group_device, list)->dev;
-+}
-+
- /**
-  * iommu_group_for_each_dev - iterate over each device in the group
-  * @group: the group
-@@ -1745,9 +1760,7 @@ __iommu_group_alloc_default_domain(const struct bus_type *bus,
+ /*
+@@ -1760,23 +1759,22 @@ __iommu_group_alloc_default_domain(const struct bus_type *bus,
  static struct iommu_domain *
  iommu_group_alloc_default_domain(struct iommu_group *group, int req_type)
  {
--	const struct bus_type *bus =
--		list_first_entry(&group->devices, struct group_device, list)
--			->dev->bus;
-+	const struct bus_type *bus = iommu_group_first_dev(group)->bus;
+-	const struct bus_type *bus = iommu_group_first_dev(group)->bus;
  	struct iommu_domain *dom;
  
  	lockdep_assert_held(&group->mutex);
-@@ -1912,7 +1925,7 @@ bool device_iommu_capable(struct device *dev, enum iommu_cap cap)
- {
- 	const struct iommu_ops *ops;
  
--	if (!dev->iommu || !dev->iommu->iommu_dev)
+ 	if (req_type)
+-		return __iommu_group_alloc_default_domain(bus, group, req_type);
++		return __iommu_group_alloc_default_domain(group, req_type);
+ 
+ 	/* The driver gave no guidance on what type to use, try the default */
+-	dom = __iommu_group_alloc_default_domain(bus, group, iommu_def_domain_type);
++	dom = __iommu_group_alloc_default_domain(group, iommu_def_domain_type);
+ 	if (dom)
+ 		return dom;
+ 
+ 	/* Otherwise IDENTITY and DMA_FQ defaults will try DMA */
+ 	if (iommu_def_domain_type == IOMMU_DOMAIN_DMA)
+ 		return NULL;
+-	dom = __iommu_group_alloc_default_domain(bus, group, IOMMU_DOMAIN_DMA);
++	dom = __iommu_group_alloc_default_domain(group, IOMMU_DOMAIN_DMA);
+ 	if (!dom)
+ 		return NULL;
+ 
+@@ -1997,16 +1995,13 @@ void iommu_set_fault_handler(struct iommu_domain *domain,
+ }
+ EXPORT_SYMBOL_GPL(iommu_set_fault_handler);
+ 
+-static struct iommu_domain *__iommu_domain_alloc(const struct bus_type *bus,
++static struct iommu_domain *__iommu_domain_alloc(struct device *dev,
+ 						 unsigned type)
+ {
+-	const struct iommu_ops *ops = bus ? bus->iommu_ops : NULL;
++	const struct iommu_ops *ops = dev_iommu_ops(dev);
+ 	struct iommu_domain *domain;
+ 	unsigned int alloc_type = type & IOMMU_DOMAIN_ALLOC_FLAGS;
+ 
+-	if (!ops)
+-		return NULL;
+-
+ 	domain = ops->domain_alloc(alloc_type);
+ 	if (!domain)
+ 		return NULL;
+@@ -2030,9 +2025,28 @@ static struct iommu_domain *__iommu_domain_alloc(const struct bus_type *bus,
+ 	return domain;
+ }
+ 
++static int __iommu_domain_alloc_dev(struct device *dev, void *data)
++{
++	struct device **alloc_dev = data;
++
 +	if (!dev_has_iommu(dev))
- 		return false;
- 
- 	ops = dev_iommu_ops(dev);
-@@ -2903,8 +2916,8 @@ EXPORT_SYMBOL_GPL(iommu_fwspec_add_ids);
-  */
- int iommu_dev_enable_feature(struct device *dev, enum iommu_dev_features feat)
++		return 0;
++
++	WARN_ONCE(*alloc_dev && dev_iommu_ops(dev) != dev_iommu_ops(*alloc_dev),
++		  "Multiple IOMMU drivers present, which the public IOMMU API can't fully support yet. You may still need to disable one or more to get the expected result here, sorry!\n");
++
++	*alloc_dev = dev;
++	return 0;
++}
++
+ struct iommu_domain *iommu_domain_alloc(const struct bus_type *bus)
  {
--	if (dev->iommu && dev->iommu->iommu_dev) {
--		const struct iommu_ops *ops = dev->iommu->iommu_dev->ops;
-+	if (dev_has_iommu(dev)) {
-+		const struct iommu_ops *ops = dev_iommu_ops(dev);
+-	return __iommu_domain_alloc(bus, IOMMU_DOMAIN_UNMANAGED);
++	struct device *dev = NULL;
++
++	if (bus_for_each_dev(bus, NULL, &dev, __iommu_domain_alloc_dev))
++		return NULL;
++
++	return __iommu_domain_alloc(dev, IOMMU_DOMAIN_UNMANAGED);
+ }
+ EXPORT_SYMBOL_GPL(iommu_domain_alloc);
  
- 		if (ops->dev_enable_feat)
- 			return ops->dev_enable_feat(dev, feat);
-@@ -2919,8 +2932,8 @@ EXPORT_SYMBOL_GPL(iommu_dev_enable_feature);
-  */
- int iommu_dev_disable_feature(struct device *dev, enum iommu_dev_features feat)
- {
--	if (dev->iommu && dev->iommu->iommu_dev) {
--		const struct iommu_ops *ops = dev->iommu->iommu_dev->ops;
-+	if (dev_has_iommu(dev)) {
-+		const struct iommu_ops *ops = dev_iommu_ops(dev);
- 
- 		if (ops->dev_disable_feat)
- 			return ops->dev_disable_feat(dev, feat);
-@@ -3190,21 +3203,18 @@ void iommu_device_unuse_default_domain(struct device *dev)
- 
- static int __iommu_group_alloc_blocking_domain(struct iommu_group *group)
- {
--	struct group_device *dev =
--		list_first_entry(&group->devices, struct group_device, list);
-+	struct device *dev = iommu_group_first_dev(group);
- 
+@@ -3228,13 +3242,17 @@ static int __iommu_group_alloc_blocking_domain(struct iommu_group *group)
  	if (group->blocking_domain)
  		return 0;
  
--	group->blocking_domain =
--		__iommu_domain_alloc(dev->dev->bus, IOMMU_DOMAIN_BLOCKED);
-+	group->blocking_domain = __iommu_domain_alloc(dev->bus, IOMMU_DOMAIN_BLOCKED);
+-	group->blocking_domain = __iommu_domain_alloc(dev->bus, IOMMU_DOMAIN_BLOCKED);
++	/* noiommu groups should never be here */
++	if (WARN_ON(!dev_has_iommu(dev)))
++		return -ENODEV;
++
++	group->blocking_domain = __iommu_domain_alloc(dev, IOMMU_DOMAIN_BLOCKED);
  	if (!group->blocking_domain) {
  		/*
  		 * For drivers that do not yet understand IOMMU_DOMAIN_BLOCKED
  		 * create an empty domain instead.
  		 */
--		group->blocking_domain = __iommu_domain_alloc(
--			dev->dev->bus, IOMMU_DOMAIN_UNMANAGED);
-+		group->blocking_domain = __iommu_domain_alloc(dev->bus, IOMMU_DOMAIN_UNMANAGED);
+-		group->blocking_domain = __iommu_domain_alloc(dev->bus, IOMMU_DOMAIN_UNMANAGED);
++		group->blocking_domain = __iommu_domain_alloc(dev, IOMMU_DOMAIN_UNMANAGED);
  		if (!group->blocking_domain)
  			return -EINVAL;
  	}
