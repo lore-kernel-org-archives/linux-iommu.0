@@ -1,221 +1,720 @@
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2071.outbound.protection.outlook.com [40.107.92.71])
+Received: from EUR02-DB5-obe.outbound.protection.outlook.com (mail-db5eur02on2060.outbound.protection.outlook.com [40.107.249.60])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F9043FEF
-	for <iommu@lists.linux.dev>; Fri, 15 Sep 2023 07:43:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A876ED309;
+	Fri, 15 Sep 2023 08:11:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=armh.onmicrosoft.com;
+ s=selector2-armh-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=oHnF2dn7gpjLvRT4CnH9NlN46uasuT1tU/RjhlQ+bTk=;
+ b=XknwgywSrz1fEeL6PvyjPpzsBgvnbFzHyA4kU0MN3VqPs1nQGkwPmu7cAS1AQS7cpMy4zDfU8CIp+mAaGdwhFvGcqrAzeCk88VIbEKieAPByCZc+idQwFu+itoDO0o7T6E3cIhqEWEhQ2J6wEgssp8EQrWUqRFQVx+jdoz02hWE=
+Received: from AS9PR06CA0281.eurprd06.prod.outlook.com (2603:10a6:20b:45a::30)
+ by AM0PR08MB5313.eurprd08.prod.outlook.com (2603:10a6:208:17f::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6792.20; Fri, 15 Sep
+ 2023 08:11:11 +0000
+Received: from AM7EUR03FT013.eop-EUR03.prod.protection.outlook.com
+ (2603:10a6:20b:45a:cafe::d0) by AS9PR06CA0281.outlook.office365.com
+ (2603:10a6:20b:45a::30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6792.21 via Frontend
+ Transport; Fri, 15 Sep 2023 08:11:11 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 63.35.35.123)
+ smtp.mailfrom=arm.com; dkim=pass (signature was verified)
+ header.d=armh.onmicrosoft.com;dmarc=pass action=none header.from=arm.com;
+Received-SPF: Pass (protection.outlook.com: domain of arm.com designates
+ 63.35.35.123 as permitted sender) receiver=protection.outlook.com;
+ client-ip=63.35.35.123; helo=64aa7808-outbound-1.mta.getcheckrecipient.com;
+ pr=C
+Received: from 64aa7808-outbound-1.mta.getcheckrecipient.com (63.35.35.123) by
+ AM7EUR03FT013.mail.protection.outlook.com (100.127.140.191) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6792.21 via Frontend Transport; Fri, 15 Sep 2023 08:11:11 +0000
+Received: ("Tessian outbound 0b7d6027328f:v175"); Fri, 15 Sep 2023 08:11:10 +0000
+X-CheckRecipientChecked: true
+X-CR-MTA-CID: 38c591e275bd0eb2
+X-CR-MTA-TID: 64aa7808
+Received: from d82c9cdd5773.1
+	by 64aa7808-outbound-1.mta.getcheckrecipient.com id 7AC90F10-9144-475B-BA2B-48488FA97D09.1;
+	Fri, 15 Sep 2023 08:10:59 +0000
+Received: from EUR05-DB8-obe.outbound.protection.outlook.com
+    by 64aa7808-outbound-1.mta.getcheckrecipient.com with ESMTPS id d82c9cdd5773.1
+    (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384);
+    Fri, 15 Sep 2023 08:10:59 +0000
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=kr4ppbqvQZdkmpgBrJBE7hTytVywd/S/3RDFk9K+0X/MQFaRQKZTCo2+l+cANxvBxrgvh7PFE8wSB98GenCj8/Gg1KehAFshVKNiQ8uKjrN91AYrQa7y/mMRfZqSnbrXMOr3Y7BlPTtjXUQt9GrZ9jbf4CSm6BbpOSVU0CPrWBwInzfOvehjsph4ayaGoDaDTiQlN4aUmk2X53KanVE7uxSiLB0MZ3XI6YUrsuBX9LNws2rDACUsCGbh+Rtuh+cP/K0Cen6p+WO1RMUR/WqefMKFJCu3GMqWhK9aB9t1ZUj3D/oubSUWGZsq02iy2GUQPPnffe3j/hQyK7MiM4QdCg==
+ b=dAhvmwFXIDhRA/xww4igXiNocmWAFDcC3z4CZ59uSq/vHYU9V0RN/291OTJ914GeC0Sfzr0/uxu6K9J6kgcaFd6TIdv3IP1pz3V3Q1V0jh91YTwP91ABd5yY14mKWAudqV+m2UlPqaHwhgrpR6ZkZYY9em8PytDQCRvh0wgE489LU1/zgcIfN+NY7xPZynHmh5NyQnXML5ghYjuGlzl7050V1qs6/nf3VWrqs+ghoVlDqnuUXUVv6z7oSzdC6j6QNcSMj/NamBV3ru8DST7pvz0saWba5g+y+3Uxe/XrUAGtP5aQm9N96Wv4jnzAlJoX5z20Z0sNvmXHojCAec36fw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ZLRlaseHNfvFqAUPP1xqLvAociwLP7WPJuxWRONT/kw=;
- b=CQ5MSHBxuZ7HPMAKZfDbmZC8RAc7OHR6r+IemiIMqRXNwtzW9GxtcSKcHJpg5gshgACVcp1tyoAU7peNi5H0OD82wYgZdFNdsja6qqwnIAhVzglz9Q40R/ARePIkCnmF+KTk8+sLimr06bba42CkjDXUDoqESpLZRF4m9Nb1F1/1zR2nMBF7zkFlKWJrnA91nSBFqPOxOkCP2VGxtKY1fHabCf4Y+dFCxLSvuh1f1ZHSvP+WIEsrrefMADapma2/+idRbUIHePvsJA8C5g5lqxXywk2ixgxJ9grG8iJee/rNnSyDaG2nZCvH+puap4A9iK+LNG925tQDU4zROwgxXQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
+ bh=oHnF2dn7gpjLvRT4CnH9NlN46uasuT1tU/RjhlQ+bTk=;
+ b=lZQJrorzjk+N/YCM4CzviUvUOt6oeCaJ34OB5tcAIa+9H5rHeMQw0V4m5igpYY1KDlhAY1KqcTnfC44XbFdU1fiiciNJ4ZDHKUpr5i25V55Rx6doHDjdGtwWRE8QZ4tT3gVQmJfnArUI9ll2PMOiJGDkOCp5QmnH6GDu/arzDOqN3Ohf3k92Y8QaT95ByLYGT/rkYsLfcPRk+fTHX4TQuUtp8ymf8jJDvKxNu2pYm8x+gL0wuBGbKYDaYCCGOnQgvMfLg2GelpBxr1qRhxu06sLIKgb4pt9K28W058+r+2OZ4/QCL+yWa6vcg/2RG8jyyve73qu74DEn2T8GA0SJaw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=arm.com; dmarc=pass action=none header.from=arm.com; dkim=pass
+ header.d=arm.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=armh.onmicrosoft.com;
+ s=selector2-armh-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ZLRlaseHNfvFqAUPP1xqLvAociwLP7WPJuxWRONT/kw=;
- b=VlWjsBRkaFKC+0eWwHqKfUH8CHoZOMb8PFH3koju5l3KX6FykFc3U3vW/v7xpZtK0hnUywv/tnNgQWDyaqrKYApr3DdRVAKLrdEPwwQ7wwWHE7osRaPobz810ulMrJFmZoUjhFSelvQG7tvGJQzKZm2kuSC6LRDVrgTJcb0Ou4i3kUzDUAA+TzUvvg7w6ollW5knmkO2dgMPBCgyvt21CENRf9YNwZNcJ5mWMoVU2n0Whq98oQpVDUVcWoio54ucznse3msERoyvvCriELS6dXO9nVqS60bWZLWpIymmf6POlsb5uiYjkEuyntVMWrIhF8Oqds4FB7sj84o613JB7A==
-Received: from MW2PR16CA0011.namprd16.prod.outlook.com (2603:10b6:907::24) by
- PH0PR12MB7815.namprd12.prod.outlook.com (2603:10b6:510:28a::15) with
+ bh=oHnF2dn7gpjLvRT4CnH9NlN46uasuT1tU/RjhlQ+bTk=;
+ b=XknwgywSrz1fEeL6PvyjPpzsBgvnbFzHyA4kU0MN3VqPs1nQGkwPmu7cAS1AQS7cpMy4zDfU8CIp+mAaGdwhFvGcqrAzeCk88VIbEKieAPByCZc+idQwFu+itoDO0o7T6E3cIhqEWEhQ2J6wEgssp8EQrWUqRFQVx+jdoz02hWE=
+Received: from DBBPR08MB4538.eurprd08.prod.outlook.com (2603:10a6:10:d2::15)
+ by PAVPR08MB9329.eurprd08.prod.outlook.com (2603:10a6:102:305::19) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6792.20; Fri, 15 Sep
- 2023 07:43:56 +0000
-Received: from MWH0EPF000989EC.namprd02.prod.outlook.com
- (2603:10b6:907:0:cafe::b) by MW2PR16CA0011.outlook.office365.com
- (2603:10b6:907::24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6792.21 via Frontend
- Transport; Fri, 15 Sep 2023 07:43:56 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- MWH0EPF000989EC.mail.protection.outlook.com (10.167.241.139) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6792.19 via Frontend Transport; Fri, 15 Sep 2023 07:43:56 +0000
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Fri, 15 Sep
- 2023 00:43:53 -0700
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail204.nvidia.com
- (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Fri, 15 Sep
- 2023 00:43:52 -0700
-Received: from Asurada-Nvidia (10.127.8.14) by mail.nvidia.com (10.129.68.8)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41 via Frontend
- Transport; Fri, 15 Sep 2023 00:43:51 -0700
-Date: Fri, 15 Sep 2023 00:43:50 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: <will@kernel.org>, <robin.murphy@arm.com>
-CC: <joro@8bytes.org>, <jgg@nvidia.com>, <jean-philippe@linaro.org>,
-	<apopple@nvidia.com>, <linux-kernel@vger.kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
-	<stable@vger.kernel.org>
-Subject: Re: [PATCH] iommu/arm-smmu-v3: Fix soft lockup triggered by
- arm_smmu_mm_invalidate_range
-Message-ID: <ZQQLNmmAOsNmvtDs@Asurada-Nvidia>
-References: <20230901203904.4073-1-nicolinc@nvidia.com>
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6768.30; Fri, 15 Sep
+ 2023 08:10:56 +0000
+Received: from DBBPR08MB4538.eurprd08.prod.outlook.com
+ ([fe80::7e2f:184:7fc7:6448]) by DBBPR08MB4538.eurprd08.prod.outlook.com
+ ([fe80::7e2f:184:7fc7:6448%7]) with mapi id 15.20.6792.021; Fri, 15 Sep 2023
+ 08:10:56 +0000
+From: Justin He <Justin.He@arm.com>
+To: kernel test robot <lkp@intel.com>, Christoph Hellwig <hch@lst.de>, Marek
+ Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <Robin.Murphy@arm.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>
+CC: "llvm@lists.linux.dev" <llvm@lists.linux.dev>,
+	"oe-kbuild-all@lists.linux.dev" <oe-kbuild-all@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, nd
+	<nd@arm.com>
+Subject: RE: [PATCH] dma-mapping: fix dma_addressing_limited if dma_range_map
+ is scanned
+Thread-Topic: [PATCH] dma-mapping: fix dma_addressing_limited if dma_range_map
+ is scanned
+Thread-Index: AQHZ5VTJb5HgcbylTEiPRH8iRHuc47AXgymAgAQJ3fA=
+Date: Fri, 15 Sep 2023 08:10:56 +0000
+Message-ID:
+ <DBBPR08MB4538DFF8BA4D9C098A8FC7B0F7F6A@DBBPR08MB4538.eurprd08.prod.outlook.com>
+References: <20230912084002.2168-1-justin.he@arm.com>
+ <202309130234.COIfUg9W-lkp@intel.com>
+In-Reply-To: <202309130234.COIfUg9W-lkp@intel.com>
+Accept-Language: en-US, zh-CN
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+Authentication-Results-Original: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=arm.com;
+x-ms-traffictypediagnostic:
+	DBBPR08MB4538:EE_|PAVPR08MB9329:EE_|AM7EUR03FT013:EE_|AM0PR08MB5313:EE_
+X-MS-Office365-Filtering-Correlation-Id: 8cfb4c18-283b-43bb-c711-08dbb5c352a9
+x-checkrecipientrouted: true
+nodisclaimer: true
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam-Untrusted: BCL:0;
+X-Microsoft-Antispam-Message-Info-Original:
+ W4pe2LpsG5Ly/BK6cYx0pLPWfrHlao7TX3oi4Zos+t78w6O7C/zbqf0ugnufWERglUO3H4/Qe4fsxQsRsVQyR9tgpibHxMxYjC3RI1XciYHL6jNnktz7f50kDoMWDSltA6PBxIiFqyLYsYPZRJ/RLFftRKcGVAMYd4pyoCWBdpny/RjjVPQQJdliZCYSwyC01hI69zz65cc38wnPku6Qd/Hg2TICf6dGofN6v7w65N2ekvlgkZ2AoCE/xy6hs5QppxNAlZONmNstTjDEBA6PX78G4pytbn/ttNrmbk9eF3SXSlTQt+N9uNLbvd3MxoPHH7u5J7+QVZG0lXsbdQL3scq01WHR8hrdJeLaZ3hO1tslqEalmdBIXHWUR0OTRCAx/CxaFDsQaXbSdJM5a5Y5WTuBcJhjaoAtrupdOjgKrmBVd9cGIU5uKNV5NQWt+howpNFX4ZwITwZpkFwnVPQ22aoyWRVMBxKXUaJcEGlOcnDTqHtj8e9ridAMns4Q+9FAOf5lJSef4v9WdpOWBfkshizboMId0nl3exLCibqAWTdsDDG0CZXz2zOEteQukSD6s62ezIhpLMW+8A2OAfpGuSnuXiztEU13NanladzGj1Fn8VD/Gxl0Vq4cflwQ9kzOZB2kqSO8d7vzoRvleLC0Ug==
+X-Forefront-Antispam-Report-Untrusted:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DBBPR08MB4538.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(396003)(376002)(346002)(136003)(366004)(39860400002)(1800799009)(186009)(451199024)(52536014)(71200400001)(53546011)(7696005)(6506007)(2906002)(86362001)(122000001)(33656002)(38070700005)(55016003)(38100700002)(8936002)(30864003)(26005)(9686003)(66446008)(478600001)(110136005)(83380400001)(966005)(64756008)(4326008)(5660300002)(8676002)(41300700001)(66476007)(66946007)(66556008)(316002)(76116006)(54906003)(579004)(559001);DIR:OUT;SFP:1101;
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20230901203904.4073-1-nicolinc@nvidia.com>
-X-NV-OnPremToCloud: ExternallySecured
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAVPR08MB9329
+Original-Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=arm.com;
 X-EOPAttributedMessage: 0
+X-MS-Exchange-Transport-CrossTenantHeadersStripped:
+ AM7EUR03FT013.eop-EUR03.prod.protection.outlook.com
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: MWH0EPF000989EC:EE_|PH0PR12MB7815:EE_
-X-MS-Office365-Filtering-Correlation-Id: 7e8ab1e6-37d7-4d34-b612-08dbb5bf8452
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
+X-MS-Office365-Filtering-Correlation-Id-Prvs:
+	760e5684-d939-4ae8-2267-08dbb5c349c0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	3MAuxDwagh1DDI5VtckgUF9rp8/QEi5GZimdpGQQKuwByT4lHSNR58RlG2wLEEILWR8hiAvYpWVdrqAQ2IzRXBm6OehfCStRjh0sVJXqScSfVrv3IGQ99Ib0k5LA1wVFlfjB1+Z9n/h+oCSu84cV+szG+5Do/VVzCRFMMsRslEB4eatL7NaAOSZw7a2xrnmStrt1YoqNkoH4Q84ZKGllvyKZeQTqmmYv+psSIvs4vNBIrbtycpIAItiAvYjUWTR7LzPFNWAcsUQmUinnHfaYm5LaNEEonzSfJ6ANSOzB1EAN381QZfU3APwn1XoJ/m45gmyLPFngLfHZ4YgcQfPw+qsEdLayjHzksbq8GqzooyxFWMZzjs+6oqBgbdJNg/FBs3d91g6oEZBQRFb3QSD3xGgoJ/L3eAqrBQ0q839GVwtGmUNQduxVLYPXoFvA1pVBC3A6QVQ6DqeBTXv9itd+sxfCI65N+Xs/FgZt1yAhUmhmNY4R4r0U0GJmsKJvY5Bl46SEANj7yT8xqdn/AYgUKhBkyRcGGxBZ7lOt+sX8hbqKYzSfK3+Ee+UgZ4x8p2DvxrTFV8HbQdeI/RRCqnCSrgH6hMrJn8FtqlCd5vvfSCZk2FvswvUev2bQF+bpNOlEx3gwgCIS0nSKh4uOai5usCYln8QJ8w4xF4bei0UBD3NUY7m0ZaSWGQrUwd7z7Gqs0laJO+C1tXWrhfZ2nNM9q6QGoJCbIB6d1zwJBceYKLJJjmGxqgfYeaby+7yzGeuC
+	jx98+vGBfRZPVXBOzo+fKPxdUwTuX8wA9ncA7B2DNkeQBEC07sbvXgkcbL2n8V+UqQDH8K8AvgrP82n8B95/dP3xMJyS+pIUggxASqdyhn57zM170XhY3Lrwp73vuqi4ZveTV7vRL6iqFF80hS89dWrc64Km+wSpzKJIxOwrH2ARGrz19k+QfuAClN7c/3v0b0Ur7k/YCSkJAge/XSgMTf+jVmL9HSTgClniDaF9L7dxJieMFY8SlnLd+eA64xXFwY6whpZaacGUCJCJAam8hDOBsxCaFFLTdLHmZwLaBmPVFTIqteLMkcseeuRJFQoRADiloJYnnrLHJL+D5jah6qW+fqMTtnKTF1gUrgz4vEkB77k+wPGppAmfjTsBZPaEeRV+tgoWnatDA9Su0ipxteB4h6B174PVwDVDl048rjI3Z1tJMv5pTB0mvoiGKJJrxMd/Q30/YbvgaopTz1qlrlVMEL00UmbzO+lVU5EbOIlSwqFPOkpaKTVP/s5shm8tCHYg2u8dJABnIiIAFxc1QzAa0kBt7qgg7XZBfNgyPXt3990VrFpITBJ/dkvMl2eEQL1HgQ6ZQ2dYw4YtWwIX5CgTs7dsl2GgeyjB8veumUmQDB2A/enA+dQA+p8m56ymBuzATt1szn65V1/iFZnO8ihqItM7K76HBGXOLnPCj2F0Vty9lg8LrhDmkV1j5conFJ6pRscgXtG6E/dLoChXIqU2QyNbUuWzRbRX6rtxNljJhvziVKJ+ZB+XxUtuxSvfUoJHqfMmyE5dfS7KgUfGMw==
 X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230031)(4636009)(136003)(396003)(346002)(376002)(39860400002)(82310400011)(186009)(451199024)(1800799009)(40470700004)(46966006)(36840700001)(83380400001)(336012)(426003)(4326008)(8936002)(5660300002)(8676002)(26005)(82740400003)(47076005)(9686003)(36860700001)(7636003)(356005)(478600001)(55016003)(110136005)(316002)(40480700001)(41300700001)(54906003)(70206006)(70586007)(86362001)(33716001)(2906002)(40460700003);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Sep 2023 07:43:56.5357
+	CIP:63.35.35.123;CTRY:IE;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:64aa7808-outbound-1.mta.getcheckrecipient.com;PTR:ec2-63-35-35-123.eu-west-1.compute.amazonaws.com;CAT:NONE;SFS:(13230031)(4636009)(376002)(136003)(396003)(346002)(39860400002)(1800799009)(451199024)(82310400011)(186009)(40470700004)(36840700001)(46966006)(40480700001)(55016003)(316002)(70586007)(54906003)(70206006)(478600001)(33656002)(81166007)(47076005)(26005)(336012)(40460700003)(41300700001)(83380400001)(110136005)(2906002)(356005)(9686003)(82740400003)(36860700001)(52536014)(86362001)(5660300002)(966005)(53546011)(6506007)(7696005)(8936002)(450100002)(30864003)(8676002)(4326008);DIR:OUT;SFP:1101;
+X-OriginatorOrg: arm.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Sep 2023 08:11:11.2071
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7e8ab1e6-37d7-4d34-b612-08dbb5bf8452
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8cfb4c18-283b-43bb-c711-08dbb5c352a9
+X-MS-Exchange-CrossTenant-Id: f34e5979-57d9-4aaa-ad4d-b122a662184d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=f34e5979-57d9-4aaa-ad4d-b122a662184d;Ip=[63.35.35.123];Helo=[64aa7808-outbound-1.mta.getcheckrecipient.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	MWH0EPF000989EC.namprd02.prod.outlook.com
+	AM7EUR03FT013.eop-EUR03.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR12MB7815
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR08MB5313
 
-I found this patch cannot be applied to v6.6-rc1 due to conflicts
-with some new commits that were merged during the previous cycle.
 
-I can redo a version rebasing on the v6.6-rc1, yet the new version
-won't apply to earlier kernel stable trees. Is there a way to make
-it happen that both mainline and earlier trees can have this fix?
 
+> -----Original Message-----
+> From: kernel test robot <lkp@intel.com>
+> Sent: Wednesday, September 13, 2023 2:28 AM
+> To: Justin He <Justin.He@arm.com>; Christoph Hellwig <hch@lst.de>; Marek
+> Szyprowski <m.szyprowski@samsung.com>; Robin Murphy
+> <Robin.Murphy@arm.com>; iommu@lists.linux.dev
+> Cc: llvm@lists.linux.dev; oe-kbuild-all@lists.linux.dev;
+> linux-kernel@vger.kernel.org; Justin He <Justin.He@arm.com>
+> Subject: Re: [PATCH] dma-mapping: fix dma_addressing_limited if
+> dma_range_map is scanned
+>=20
+> Hi Jia,
+>=20
+> kernel test robot noticed the following build errors:
+>=20
+> [auto build test ERROR on linus/master]
+> [also build test ERROR on v6.6-rc1 next-20230912] [If your patch is appli=
+ed to
+> the wrong git tree, kindly drop us a note.
+> And when submitting patch, we suggest to use '--base' as documented in
+> https://git-scm.com/docs/git-format-patch#_base_tree_information]
+>=20
+> url:
+> https://github.com/intel-lab-lkp/linux/commits/Jia-He/dma-mapping-fix-dma=
+_
+> addressing_limited-if-dma_range_map-is-scanned/20230912-164126
+> base:   linus/master
+> patch link:
+> https://lore.kernel.org/r/20230912084002.2168-1-justin.he%40arm.com
+> patch subject: [PATCH] dma-mapping: fix dma_addressing_limited if
+> dma_range_map is scanned
+> config: um-allyesconfig
+> (https://download.01.org/0day-ci/archive/20230913/202309130234.COIfUg9
+> W-lkp@intel.com/config)
+> compiler: clang version 14.0.6 (https://github.com/llvm/llvm-project.git
+> f28c006a5895fc0e329fe15fead81e37457cb1d1)
+> reproduce (this is a W=3D1 build):
+> (https://download.01.org/0day-ci/archive/20230913/202309130234.COIfUg9
+> W-lkp@intel.com/reproduce)
+>=20
+> If you fix the issue in a separate patch/commit (i.e. not just a new vers=
+ion of
+> the same patch/commit), kindly add following tags
+> | Reported-by: kernel test robot <lkp@intel.com>
+> | Closes:
+> | https://lore.kernel.org/oe-kbuild-all/202309130234.COIfUg9W-lkp@intel.
+> | com/
+>=20
+> All errors (new ones prefixed by >>):
+>=20
+>    In file included from init/main.c:21:
+>    In file included from include/linux/syscalls.h:90:
+>    In file included from include/trace/syscall.h:7:
+>    In file included from include/linux/trace_events.h:9:
+>    In file included from include/linux/hardirq.h:11:
+>    In file included from arch/um/include/asm/hardirq.h:5:
+>    In file included from include/asm-generic/hardirq.h:17:
+>    In file included from include/linux/irq.h:20:
+>    In file included from include/linux/io.h:13:
+>    In file included from arch/um/include/asm/io.h:24:
+>    include/asm-generic/io.h:547:31: warning: performing pointer arithmeti=
+c
+> on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+>            val =3D __raw_readb(PCI_IOBASE + addr);
+>                              ~~~~~~~~~~ ^
+>    include/asm-generic/io.h:560:61: warning: performing pointer arithmeti=
+c
+> on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+>            val =3D __le16_to_cpu((__le16 __force)__raw_readw(PCI_IOBASE +
+> addr));
+>=20
+> ~~~~~~~~~~ ^
+>    include/uapi/linux/byteorder/little_endian.h:37:51: note: expanded fro=
+m
+> macro '__le16_to_cpu'
+>    #define __le16_to_cpu(x) ((__force __u16)(__le16)(x))
+>                                                      ^
+>    In file included from init/main.c:21:
+>    In file included from include/linux/syscalls.h:90:
+>    In file included from include/trace/syscall.h:7:
+>    In file included from include/linux/trace_events.h:9:
+>    In file included from include/linux/hardirq.h:11:
+>    In file included from arch/um/include/asm/hardirq.h:5:
+>    In file included from include/asm-generic/hardirq.h:17:
+>    In file included from include/linux/irq.h:20:
+>    In file included from include/linux/io.h:13:
+>    In file included from arch/um/include/asm/io.h:24:
+>    include/asm-generic/io.h:573:61: warning: performing pointer arithmeti=
+c
+> on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+>            val =3D __le32_to_cpu((__le32 __force)__raw_readl(PCI_IOBASE +
+> addr));
+>=20
+> ~~~~~~~~~~ ^
+>    include/uapi/linux/byteorder/little_endian.h:35:51: note: expanded fro=
+m
+> macro '__le32_to_cpu'
+>    #define __le32_to_cpu(x) ((__force __u32)(__le32)(x))
+>                                                      ^
+>    In file included from init/main.c:21:
+>    In file included from include/linux/syscalls.h:90:
+>    In file included from include/trace/syscall.h:7:
+>    In file included from include/linux/trace_events.h:9:
+>    In file included from include/linux/hardirq.h:11:
+>    In file included from arch/um/include/asm/hardirq.h:5:
+>    In file included from include/asm-generic/hardirq.h:17:
+>    In file included from include/linux/irq.h:20:
+>    In file included from include/linux/io.h:13:
+>    In file included from arch/um/include/asm/io.h:24:
+>    include/asm-generic/io.h:584:33: warning: performing pointer arithmeti=
+c
+> on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+>            __raw_writeb(value, PCI_IOBASE + addr);
+>                                ~~~~~~~~~~ ^
+>    include/asm-generic/io.h:594:59: warning: performing pointer arithmeti=
+c
+> on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+>            __raw_writew((u16 __force)cpu_to_le16(value), PCI_IOBASE +
+> addr);
+>                                                          ~~~~~~~~~~
+> ^
+>    include/asm-generic/io.h:604:59: warning: performing pointer arithmeti=
+c
+> on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+>            __raw_writel((u32 __force)cpu_to_le32(value), PCI_IOBASE +
+> addr);
+>                                                          ~~~~~~~~~~
+> ^
+>    include/asm-generic/io.h:692:20: warning: performing pointer arithmeti=
+c
+> on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+>            readsb(PCI_IOBASE + addr, buffer, count);
+>                   ~~~~~~~~~~ ^
+>    include/asm-generic/io.h:700:20: warning: performing pointer arithmeti=
+c
+> on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+>            readsw(PCI_IOBASE + addr, buffer, count);
+>                   ~~~~~~~~~~ ^
+>    include/asm-generic/io.h:708:20: warning: performing pointer arithmeti=
+c
+> on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+>            readsl(PCI_IOBASE + addr, buffer, count);
+>                   ~~~~~~~~~~ ^
+>    include/asm-generic/io.h:717:21: warning: performing pointer arithmeti=
+c
+> on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+>            writesb(PCI_IOBASE + addr, buffer, count);
+>                    ~~~~~~~~~~ ^
+>    include/asm-generic/io.h:726:21: warning: performing pointer arithmeti=
+c
+> on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+>            writesw(PCI_IOBASE + addr, buffer, count);
+>                    ~~~~~~~~~~ ^
+>    include/asm-generic/io.h:735:21: warning: performing pointer arithmeti=
+c
+> on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+>            writesl(PCI_IOBASE + addr, buffer, count);
+>                    ~~~~~~~~~~ ^
+>    In file included from init/main.c:102:
+>    In file included from include/net/net_namespace.h:43:
+>    In file included from include/linux/skbuff.h:28:
+> >> include/linux/dma-mapping.h:483:10: error: implicit declaration of
+> >> function 'all_ram_in_dma_range_map' is invalid in C99
+> >> [-Werror,-Wimplicit-function-declaration]
+>            return !all_ram_in_dma_range_map(dev);
+Seems I need to define a stub when DMA Kconfig is disabled.
 Thanks
-Nicolin
 
-On Fri, Sep 01, 2023 at 01:39:04PM -0700, Nicolin Chen wrote:
-> When running an SVA case, the following soft lockup is triggered:
-> --------------------------------------------------------------------
-> watchdog: BUG: soft lockup - CPU#244 stuck for 26s!
-> pstate: 83400009 (Nzcv daif +PAN -UAO +TCO +DIT -SSBS BTYPE=--)
-> pc : arm_smmu_cmdq_issue_cmdlist+0x178/0xa50
-> lr : arm_smmu_cmdq_issue_cmdlist+0x150/0xa50
-> sp : ffff8000d83ef290
-> x29: ffff8000d83ef290 x28: 000000003b9aca00 x27: 0000000000000000
-> x26: ffff8000d83ef3c0 x25: da86c0812194a0e8 x24: 0000000000000000
-> x23: 0000000000000040 x22: ffff8000d83ef340 x21: ffff0000c63980c0
-> x20: 0000000000000001 x19: ffff0000c6398080 x18: 0000000000000000
-> x17: 0000000000000000 x16: 0000000000000000 x15: ffff3000b4a3bbb0
-> x14: ffff3000b4a30888 x13: ffff3000b4a3cf60 x12: 0000000000000000
-> x11: 0000000000000000 x10: 0000000000000000 x9 : ffffc08120e4d6bc
-> x8 : 0000000000000000 x7 : 0000000000000000 x6 : 0000000000048cfa
-> x5 : 0000000000000000 x4 : 0000000000000001 x3 : 000000000000000a
-> x2 : 0000000080000000 x1 : 0000000000000000 x0 : 0000000000000001
-> Call trace:
->  arm_smmu_cmdq_issue_cmdlist+0x178/0xa50
->  __arm_smmu_tlb_inv_range+0x118/0x254
->  arm_smmu_tlb_inv_range_asid+0x6c/0x130
->  arm_smmu_mm_invalidate_range+0xa0/0xa4
->  __mmu_notifier_invalidate_range_end+0x88/0x120
->  unmap_vmas+0x194/0x1e0
->  unmap_region+0xb4/0x144
->  do_mas_align_munmap+0x290/0x490
->  do_mas_munmap+0xbc/0x124
->  __vm_munmap+0xa8/0x19c
->  __arm64_sys_munmap+0x28/0x50
->  invoke_syscall+0x78/0x11c
->  el0_svc_common.constprop.0+0x58/0x1c0
->  do_el0_svc+0x34/0x60
->  el0_svc+0x2c/0xd4
->  el0t_64_sync_handler+0x114/0x140
->  el0t_64_sync+0x1a4/0x1a8
-> --------------------------------------------------------------------
-> 
-> The commit 06ff87bae8d3 ("arm64: mm: remove unused functions and variable
-> protoypes") fixed a similar lockup on the CPU MMU side. Yet, it can occur
-> to SMMU too since arm_smmu_mm_invalidate_range() is typically called next
-> to MMU tlb flush function, e.g.
->         tlb_flush_mmu_tlbonly {
->                 tlb_flush {
->                         __flush_tlb_range {
->                                 // check MAX_TLBI_OPS
->                         }
->                 }
->                 mmu_notifier_invalidate_range {
->                         arm_smmu_mm_invalidate_range {
->                                 // does not check MAX_TLBI_OPS
->                         }
->                 }
->         }
-> 
-> Clone a CMDQ_MAX_TLBI_OPS from the MAX_TLBI_OPS in tlbflush.h, since in an
-> SVA case SMMU uses the CPU page table, so it makes sense to align with the
-> tlbflush code. Then, replace per-page TLBI commands with a single per-asid
-> TLBI command, if the request size hits this threshold.
-> 
-> Fixes: 51d113c3be09 ("iommu/arm-smmu-v3: Make BTM optional for SVA")
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-> ---
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c | 11 ++++++++---
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h     |  9 +++++++++
->  2 files changed, 17 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-> index a5a63b1c947e..7ec3f5219250 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-> @@ -201,9 +201,14 @@ static void arm_smmu_mm_invalidate_range(struct mmu_notifier *mn,
->          */
->         size = end - start;
-> 
-> -       if (!(smmu_domain->smmu->features & ARM_SMMU_FEAT_BTM))
-> -               arm_smmu_tlb_inv_range_asid(start, size, smmu_mn->cd->asid,
-> -                                           PAGE_SIZE, false, smmu_domain);
-> +       if (!(smmu_domain->smmu->features & ARM_SMMU_FEAT_BTM)) {
-> +               if (!(smmu_domain->smmu->features & ARM_SMMU_FEAT_RANGE_INV) &&
-> +                   size >= CMDQ_MAX_TLBI_OPS * PAGE_SIZE)
-> +                       arm_smmu_tlb_inv_asid(smmu_domain->smmu, smmu_mn->cd->asid);
-> +               else
-> +                       arm_smmu_tlb_inv_range_asid(start, size, smmu_mn->cd->asid,
-> +                                                   PAGE_SIZE, false, smmu_domain);
-> +       }
->         arm_smmu_atc_inv_domain(smmu_domain, mm->pasid, start, size);
->  }
-> 
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> index dcab85698a4e..79a81eed1dcc 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> @@ -326,6 +326,15 @@
->   */
->  #define CMDQ_BATCH_ENTRIES             BITS_PER_LONG
-> 
-> +/*
-> + * Cloned from the MAX_TLBI_OPS in arch/arm64/include/asm/tlbflush.h, this
-> + * is used as a threshold to replace per-page TLBI commands to issue in the
-> + * command queue with an address-space TLBI command, when SMMU w/o a range
-> + * invalidation feature handles too many per-page TLBI commands, which will
-> + * otherwise result in a soft lockup.
-> + */
-> +#define CMDQ_MAX_TLBI_OPS              (1 << (PAGE_SHIFT - 3))
-> +
->  #define CMDQ_0_OP                      GENMASK_ULL(7, 0)
->  #define CMDQ_0_SSV                     (1UL << 11)
-> 
+--
+Cheers,
+Justin (Jia He)
+
+>                    ^
+>    12 warnings and 1 error generated.
 > --
-> 2.42.0
-> 
-> 
+>    In file included from arch/um/os-Linux/drivers/ethertap_kern.c:10:
+>    In file included from include/linux/netdevice.h:38:
+>    In file included from include/net/net_namespace.h:43:
+>    In file included from include/linux/skbuff.h:17:
+>    In file included from include/linux/bvec.h:10:
+>    In file included from include/linux/highmem.h:12:
+>    In file included from include/linux/hardirq.h:11:
+>    In file included from arch/um/include/asm/hardirq.h:5:
+>    In file included from include/asm-generic/hardirq.h:17:
+>    In file included from include/linux/irq.h:20:
+>    In file included from include/linux/io.h:13:
+>    In file included from arch/um/include/asm/io.h:24:
+>    include/asm-generic/io.h:547:31: warning: performing pointer arithmeti=
+c
+> on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+>            val =3D __raw_readb(PCI_IOBASE + addr);
+>                              ~~~~~~~~~~ ^
+>    include/asm-generic/io.h:560:61: warning: performing pointer arithmeti=
+c
+> on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+>            val =3D __le16_to_cpu((__le16 __force)__raw_readw(PCI_IOBASE +
+> addr));
+>=20
+> ~~~~~~~~~~ ^
+>    include/uapi/linux/byteorder/little_endian.h:37:51: note: expanded fro=
+m
+> macro '__le16_to_cpu'
+>    #define __le16_to_cpu(x) ((__force __u16)(__le16)(x))
+>                                                      ^
+>    In file included from arch/um/os-Linux/drivers/ethertap_kern.c:10:
+>    In file included from include/linux/netdevice.h:38:
+>    In file included from include/net/net_namespace.h:43:
+>    In file included from include/linux/skbuff.h:17:
+>    In file included from include/linux/bvec.h:10:
+>    In file included from include/linux/highmem.h:12:
+>    In file included from include/linux/hardirq.h:11:
+>    In file included from arch/um/include/asm/hardirq.h:5:
+>    In file included from include/asm-generic/hardirq.h:17:
+>    In file included from include/linux/irq.h:20:
+>    In file included from include/linux/io.h:13:
+>    In file included from arch/um/include/asm/io.h:24:
+>    include/asm-generic/io.h:573:61: warning: performing pointer arithmeti=
+c
+> on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+>            val =3D __le32_to_cpu((__le32 __force)__raw_readl(PCI_IOBASE +
+> addr));
+>=20
+> ~~~~~~~~~~ ^
+>    include/uapi/linux/byteorder/little_endian.h:35:51: note: expanded fro=
+m
+> macro '__le32_to_cpu'
+>    #define __le32_to_cpu(x) ((__force __u32)(__le32)(x))
+>                                                      ^
+>    In file included from arch/um/os-Linux/drivers/ethertap_kern.c:10:
+>    In file included from include/linux/netdevice.h:38:
+>    In file included from include/net/net_namespace.h:43:
+>    In file included from include/linux/skbuff.h:17:
+>    In file included from include/linux/bvec.h:10:
+>    In file included from include/linux/highmem.h:12:
+>    In file included from include/linux/hardirq.h:11:
+>    In file included from arch/um/include/asm/hardirq.h:5:
+>    In file included from include/asm-generic/hardirq.h:17:
+>    In file included from include/linux/irq.h:20:
+>    In file included from include/linux/io.h:13:
+>    In file included from arch/um/include/asm/io.h:24:
+>    include/asm-generic/io.h:584:33: warning: performing pointer arithmeti=
+c
+> on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+>            __raw_writeb(value, PCI_IOBASE + addr);
+>                                ~~~~~~~~~~ ^
+>    include/asm-generic/io.h:594:59: warning: performing pointer arithmeti=
+c
+> on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+>            __raw_writew((u16 __force)cpu_to_le16(value), PCI_IOBASE +
+> addr);
+>                                                          ~~~~~~~~~~
+> ^
+>    include/asm-generic/io.h:604:59: warning: performing pointer arithmeti=
+c
+> on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+>            __raw_writel((u32 __force)cpu_to_le32(value), PCI_IOBASE +
+> addr);
+>                                                          ~~~~~~~~~~
+> ^
+>    include/asm-generic/io.h:692:20: warning: performing pointer arithmeti=
+c
+> on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+>            readsb(PCI_IOBASE + addr, buffer, count);
+>                   ~~~~~~~~~~ ^
+>    include/asm-generic/io.h:700:20: warning: performing pointer arithmeti=
+c
+> on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+>            readsw(PCI_IOBASE + addr, buffer, count);
+>                   ~~~~~~~~~~ ^
+>    include/asm-generic/io.h:708:20: warning: performing pointer arithmeti=
+c
+> on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+>            readsl(PCI_IOBASE + addr, buffer, count);
+>                   ~~~~~~~~~~ ^
+>    include/asm-generic/io.h:717:21: warning: performing pointer arithmeti=
+c
+> on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+>            writesb(PCI_IOBASE + addr, buffer, count);
+>                    ~~~~~~~~~~ ^
+>    include/asm-generic/io.h:726:21: warning: performing pointer arithmeti=
+c
+> on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+>            writesw(PCI_IOBASE + addr, buffer, count);
+>                    ~~~~~~~~~~ ^
+>    include/asm-generic/io.h:735:21: warning: performing pointer arithmeti=
+c
+> on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+>            writesl(PCI_IOBASE + addr, buffer, count);
+>                    ~~~~~~~~~~ ^
+>    In file included from arch/um/os-Linux/drivers/ethertap_kern.c:10:
+>    In file included from include/linux/netdevice.h:38:
+>    In file included from include/net/net_namespace.h:43:
+>    In file included from include/linux/skbuff.h:28:
+> >> include/linux/dma-mapping.h:483:10: error: implicit declaration of
+> >> function 'all_ram_in_dma_range_map' is invalid in C99
+> >> [-Werror,-Wimplicit-function-declaration]
+>            return !all_ram_in_dma_range_map(dev);
+>                    ^
+>    arch/um/os-Linux/drivers/ethertap_kern.c:66:5: warning: no previous
+> prototype for function 'ethertap_setup' [-Wmissing-prototypes]
+>    int ethertap_setup(char *str, char **mac_out, void *data)
+>        ^
+>    arch/um/os-Linux/drivers/ethertap_kern.c:66:1: note: declare 'static' =
+if the
+> function is not intended to be used outside of this translation unit
+>    int ethertap_setup(char *str, char **mac_out, void *data)
+>    ^
+>    static
+>    13 warnings and 1 error generated.
+> --
+>    In file included from arch/um/os-Linux/drivers/tuntap_kern.c:6:
+>    In file included from include/linux/netdevice.h:38:
+>    In file included from include/net/net_namespace.h:43:
+>    In file included from include/linux/skbuff.h:17:
+>    In file included from include/linux/bvec.h:10:
+>    In file included from include/linux/highmem.h:12:
+>    In file included from include/linux/hardirq.h:11:
+>    In file included from arch/um/include/asm/hardirq.h:5:
+>    In file included from include/asm-generic/hardirq.h:17:
+>    In file included from include/linux/irq.h:20:
+>    In file included from include/linux/io.h:13:
+>    In file included from arch/um/include/asm/io.h:24:
+>    include/asm-generic/io.h:547:31: warning: performing pointer arithmeti=
+c
+> on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+>            val =3D __raw_readb(PCI_IOBASE + addr);
+>                              ~~~~~~~~~~ ^
+>    include/asm-generic/io.h:560:61: warning: performing pointer arithmeti=
+c
+> on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+>            val =3D __le16_to_cpu((__le16 __force)__raw_readw(PCI_IOBASE +
+> addr));
+>=20
+> ~~~~~~~~~~ ^
+>    include/uapi/linux/byteorder/little_endian.h:37:51: note: expanded fro=
+m
+> macro '__le16_to_cpu'
+>    #define __le16_to_cpu(x) ((__force __u16)(__le16)(x))
+>                                                      ^
+>    In file included from arch/um/os-Linux/drivers/tuntap_kern.c:6:
+>    In file included from include/linux/netdevice.h:38:
+>    In file included from include/net/net_namespace.h:43:
+>    In file included from include/linux/skbuff.h:17:
+>    In file included from include/linux/bvec.h:10:
+>    In file included from include/linux/highmem.h:12:
+>    In file included from include/linux/hardirq.h:11:
+>    In file included from arch/um/include/asm/hardirq.h:5:
+>    In file included from include/asm-generic/hardirq.h:17:
+>    In file included from include/linux/irq.h:20:
+>    In file included from include/linux/io.h:13:
+>    In file included from arch/um/include/asm/io.h:24:
+>    include/asm-generic/io.h:573:61: warning: performing pointer arithmeti=
+c
+> on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+>            val =3D __le32_to_cpu((__le32 __force)__raw_readl(PCI_IOBASE +
+> addr));
+>=20
+> ~~~~~~~~~~ ^
+>    include/uapi/linux/byteorder/little_endian.h:35:51: note: expanded fro=
+m
+> macro '__le32_to_cpu'
+>    #define __le32_to_cpu(x) ((__force __u32)(__le32)(x))
+>                                                      ^
+>    In file included from arch/um/os-Linux/drivers/tuntap_kern.c:6:
+>    In file included from include/linux/netdevice.h:38:
+>    In file included from include/net/net_namespace.h:43:
+>    In file included from include/linux/skbuff.h:17:
+>    In file included from include/linux/bvec.h:10:
+>    In file included from include/linux/highmem.h:12:
+>    In file included from include/linux/hardirq.h:11:
+>    In file included from arch/um/include/asm/hardirq.h:5:
+>    In file included from include/asm-generic/hardirq.h:17:
+>    In file included from include/linux/irq.h:20:
+>    In file included from include/linux/io.h:13:
+>    In file included from arch/um/include/asm/io.h:24:
+>    include/asm-generic/io.h:584:33: warning: performing pointer arithmeti=
+c
+> on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+>            __raw_writeb(value, PCI_IOBASE + addr);
+>                                ~~~~~~~~~~ ^
+>    include/asm-generic/io.h:594:59: warning: performing pointer arithmeti=
+c
+> on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+>            __raw_writew((u16 __force)cpu_to_le16(value), PCI_IOBASE +
+> addr);
+>                                                          ~~~~~~~~~~
+> ^
+>    include/asm-generic/io.h:604:59: warning: performing pointer arithmeti=
+c
+> on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+>            __raw_writel((u32 __force)cpu_to_le32(value), PCI_IOBASE +
+> addr);
+>                                                          ~~~~~~~~~~
+> ^
+>    include/asm-generic/io.h:692:20: warning: performing pointer arithmeti=
+c
+> on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+>            readsb(PCI_IOBASE + addr, buffer, count);
+>                   ~~~~~~~~~~ ^
+>    include/asm-generic/io.h:700:20: warning: performing pointer arithmeti=
+c
+> on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+>            readsw(PCI_IOBASE + addr, buffer, count);
+>                   ~~~~~~~~~~ ^
+>    include/asm-generic/io.h:708:20: warning: performing pointer arithmeti=
+c
+> on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+>            readsl(PCI_IOBASE + addr, buffer, count);
+>                   ~~~~~~~~~~ ^
+>    include/asm-generic/io.h:717:21: warning: performing pointer arithmeti=
+c
+> on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+>            writesb(PCI_IOBASE + addr, buffer, count);
+>                    ~~~~~~~~~~ ^
+>    include/asm-generic/io.h:726:21: warning: performing pointer arithmeti=
+c
+> on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+>            writesw(PCI_IOBASE + addr, buffer, count);
+>                    ~~~~~~~~~~ ^
+>    include/asm-generic/io.h:735:21: warning: performing pointer arithmeti=
+c
+> on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+>            writesl(PCI_IOBASE + addr, buffer, count);
+>                    ~~~~~~~~~~ ^
+>    In file included from arch/um/os-Linux/drivers/tuntap_kern.c:6:
+>    In file included from include/linux/netdevice.h:38:
+>    In file included from include/net/net_namespace.h:43:
+>    In file included from include/linux/skbuff.h:28:
+> >> include/linux/dma-mapping.h:483:10: error: implicit declaration of
+> >> function 'all_ram_in_dma_range_map' is invalid in C99
+> >> [-Werror,-Wimplicit-function-declaration]
+>            return !all_ram_in_dma_range_map(dev);
+>                    ^
+>    arch/um/os-Linux/drivers/tuntap_kern.c:56:5: warning: no previous
+> prototype for function 'tuntap_setup' [-Wmissing-prototypes]
+>    int tuntap_setup(char *str, char **mac_out, void *data)
+>        ^
+>    arch/um/os-Linux/drivers/tuntap_kern.c:56:1: note: declare 'static' if=
+ the
+> function is not intended to be used outside of this translation unit
+>    int tuntap_setup(char *str, char **mac_out, void *data)
+>    ^
+>    static
+>    13 warnings and 1 error generated.
+> --
+>    In file included from net/ipv4/route.c:67:
+>    In file included from include/linux/memblock.h:13:
+>    In file included from arch/um/include/asm/dma.h:5:
+>    In file included from arch/um/include/asm/io.h:24:
+>    include/asm-generic/io.h:547:31: warning: performing pointer arithmeti=
+c
+> on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+>            val =3D __raw_readb(PCI_IOBASE + addr);
+>                              ~~~~~~~~~~ ^
+>    include/asm-generic/io.h:560:61: warning: performing pointer arithmeti=
+c
+> on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+>            val =3D __le16_to_cpu((__le16 __force)__raw_readw(PCI_IOBASE +
+> addr));
+>=20
+> ~~~~~~~~~~ ^
+>    include/uapi/linux/byteorder/little_endian.h:37:51: note: expanded fro=
+m
+> macro '__le16_to_cpu'
+>    #define __le16_to_cpu(x) ((__force __u16)(__le16)(x))
+>                                                      ^
+>    In file included from net/ipv4/route.c:67:
+>    In file included from include/linux/memblock.h:13:
+>    In file included from arch/um/include/asm/dma.h:5:
+>    In file included from arch/um/include/asm/io.h:24:
+>    include/asm-generic/io.h:573:61: warning: performing pointer arithmeti=
+c
+> on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+>            val =3D __le32_to_cpu((__le32 __force)__raw_readl(PCI_IOBASE +
+> addr));
+>=20
+> ~~~~~~~~~~ ^
+>    include/uapi/linux/byteorder/little_endian.h:35:51: note: expanded fro=
+m
+> macro '__le32_to_cpu'
+>    #define __le32_to_cpu(x) ((__force __u32)(__le32)(x))
+>                                                      ^
+>    In file included from net/ipv4/route.c:67:
+>    In file included from include/linux/memblock.h:13:
+>    In file included from arch/um/include/asm/dma.h:5:
+>    In file included from arch/um/include/asm/io.h:24:
+>    include/asm-generic/io.h:584:33: warning: performing pointer arithmeti=
+c
+> on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+>            __raw_writeb(value, PCI_IOBASE + addr);
+>                                ~~~~~~~~~~ ^
+>    include/asm-generic/io.h:594:59: warning: performing pointer arithmeti=
+c
+> on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+>            __raw_writew((u16 __force)cpu_to_le16(value), PCI_IOBASE +
+> addr);
+>                                                          ~~~~~~~~~~
+> ^
+>    include/asm-generic/io.h:604:59: warning: performing pointer arithmeti=
+c
+> on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+>            __raw_writel((u32 __force)cpu_to_le32(value), PCI_IOBASE +
+> addr);
+>                                                          ~~~~~~~~~~
+> ^
+>    include/asm-generic/io.h:692:20: warning: performing pointer arithmeti=
+c
+> on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+>            readsb(PCI_IOBASE + addr, buffer, count);
+>                   ~~~~~~~~~~ ^
+>    include/asm-generic/io.h:700:20: warning: performing pointer arithmeti=
+c
+> on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+>            readsw(PCI_IOBASE + addr, buffer, count);
+>                   ~~~~~~~~~~ ^
+>    include/asm-generic/io.h:708:20: warning: performing pointer arithmeti=
+c
+> on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+>            readsl(PCI_IOBASE + addr, buffer, count);
+>                   ~~~~~~~~~~ ^
+>    include/asm-generic/io.h:717:21: warning: performing pointer arithmeti=
+c
+> on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+>            writesb(PCI_IOBASE + addr, buffer, count);
+>                    ~~~~~~~~~~ ^
+>    include/asm-generic/io.h:726:21: warning: performing pointer arithmeti=
+c
+> on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+>            writesw(PCI_IOBASE + addr, buffer, count);
+>                    ~~~~~~~~~~ ^
+>    include/asm-generic/io.h:735:21: warning: performing pointer arithmeti=
+c
+> on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+>            writesl(PCI_IOBASE + addr, buffer, count);
+>                    ~~~~~~~~~~ ^
+>    In file included from net/ipv4/route.c:71:
+>    In file included from include/linux/inet.h:42:
+>    In file included from include/net/net_namespace.h:43:
+>    In file included from include/linux/skbuff.h:28:
+> >> include/linux/dma-mapping.h:483:10: error: implicit declaration of
+> >> function 'all_ram_in_dma_range_map' is invalid in C99
+> >> [-Werror,-Wimplicit-function-declaration]
+>            return !all_ram_in_dma_range_map(dev);
+>                    ^
+>    net/ipv4/route.c:880:6: warning: variable 'log_martians' set but not u=
+sed
+> [-Wunused-but-set-variable]
+>            int log_martians;
+>                ^
+>    13 warnings and 1 error generated.
+> ..
+>=20
+>=20
+> vim +/all_ram_in_dma_range_map +483 include/linux/dma-mapping.h
+>=20
+>    468
+>    469	/**
+>    470	 * dma_addressing_limited - return if the device is addressing
+> limited
+>    471	 * @dev:	device to check
+>    472	 *
+>    473	 * Return %true if the devices DMA mask is too small to address al=
+l
+> memory in
+>    474	 * the system, else %false.  Lack of addressing bits is the prime
+> reason for
+>    475	 * bounce buffering, but might not be the only one.
+>    476	 */
+>    477	static inline bool dma_addressing_limited(struct device *dev)
+>    478	{
+>    479		if (min_not_zero(dma_get_mask(dev), dev->bus_dma_limit) <
+>    480							dma_get_required_mask(dev))
+>    481			return true;
+>    482
+>  > 483		return !all_ram_in_dma_range_map(dev);
+>    484	}
+>    485
+>=20
+> --
+> 0-DAY CI Kernel Test Service
+> https://github.com/intel/lkp-tests/wiki
