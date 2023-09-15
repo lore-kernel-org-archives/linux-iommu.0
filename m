@@ -1,269 +1,163 @@
-Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2054.outbound.protection.outlook.com [40.107.21.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BCE3DD2FB
-	for <iommu@lists.linux.dev>; Fri, 15 Sep 2023 09:42:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=armh.onmicrosoft.com;
- s=selector2-armh-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=c5de9P6blzGhytrmp3ovTvUNy8cXEn8GoK7iBXCq1H4=;
- b=J4VBDo/uRfMk5REx+/U0vz4lJEGVhEhpkl7Y1BddJ+u+qUfz5kfE0F+kgIXZ7/DVLyjioE+VKx1+9BQzUxQaQKOYQ4n0wSmJvYjlofpsvkvekxQhj0BacBWHNpmcAmB8DlngPoG+D2zf4Sv+p49Hs+FALcjwi0hLKEpNZR1aNRQ=
-Received: from AM6P193CA0121.EURP193.PROD.OUTLOOK.COM (2603:10a6:209:85::26)
- by AM9PR08MB6642.eurprd08.prod.outlook.com (2603:10a6:20b:2ff::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6792.21; Fri, 15 Sep
- 2023 09:42:56 +0000
-Received: from AM7EUR03FT056.eop-EUR03.prod.protection.outlook.com
- (2603:10a6:209:85:cafe::6f) by AM6P193CA0121.outlook.office365.com
- (2603:10a6:209:85::26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6792.21 via Frontend
- Transport; Fri, 15 Sep 2023 09:42:56 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 63.35.35.123)
- smtp.mailfrom=arm.com; dkim=pass (signature was verified)
- header.d=armh.onmicrosoft.com;dmarc=pass action=none header.from=arm.com;
-Received-SPF: Pass (protection.outlook.com: domain of arm.com designates
- 63.35.35.123 as permitted sender) receiver=protection.outlook.com;
- client-ip=63.35.35.123; helo=64aa7808-outbound-1.mta.getcheckrecipient.com;
- pr=C
-Received: from 64aa7808-outbound-1.mta.getcheckrecipient.com (63.35.35.123) by
- AM7EUR03FT056.mail.protection.outlook.com (100.127.140.107) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6792.21 via Frontend Transport; Fri, 15 Sep 2023 09:42:56 +0000
-Received: ("Tessian outbound d084e965c4eb:v175"); Fri, 15 Sep 2023 09:42:56 +0000
-X-CheckRecipientChecked: true
-X-CR-MTA-CID: 240affc03f652910
-X-CR-MTA-TID: 64aa7808
-Received: from 937c3b1f2673.2
-	by 64aa7808-outbound-1.mta.getcheckrecipient.com id B2391B64-9582-46D9-99E2-F54DCC56FD09.1;
-	Fri, 15 Sep 2023 09:42:50 +0000
-Received: from EUR04-VI1-obe.outbound.protection.outlook.com
-    by 64aa7808-outbound-1.mta.getcheckrecipient.com with ESMTPS id 937c3b1f2673.2
-    (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384);
-    Fri, 15 Sep 2023 09:42:50 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VCEf16pKDzWWY13WW5bXyYtIVwhNWxn0cSwYVdaRkv3t4pBxjNz/xlclgxwrMsuR2QFJWDZqh25a9+fUgyVNJRXrfSVm8eRF+aaOuTQ6peiiUCCZMJqP5USJYhody5Sydg+n1c4Af1K7PvcK/vSWSBgpmd9V7/P96tY0sb/OtJQcP4+G/5jSb54axus9BrTzE96RDwk1XU9Ja0YJ1n4eC5p4KKQs/Ff8WgW/RP+F1VLmHhKFwuOv7c6lrHgQs2vVREUynoVXTkUc54FmEUNpn9Y8bCXSZYztazrTd2lr9kW3vxMGLLeu1XQXevJkytWtIFhWy5AleIqEMGzPc/t9Kg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=c5de9P6blzGhytrmp3ovTvUNy8cXEn8GoK7iBXCq1H4=;
- b=RKXy9Mghb6hWwouvdMhDN8Jr5FZQ6ZMGJTVggalG89u4lRJBi9wI3KA9Qc2ZRQHFI5vwWvNRwvJJxu7ZSmMn5+iFv9iWziGIwXkjgIpDQcZw0M9pnhd/nf2L/AwPpbTM3RduT3hUo31HVmGQ9YDnNj40WpQw5HSslYTOhiArfGmY5pflhtbvCRbLq+so3V05VXvtla/J1Kwe5VuIPgaXKhLJuBD0Vrp0rchqYaK+ErKgkuLdp/fBJo7RVAlaYXWSLUFh3Eqk84QddM5gYEh9g4YkPTqxpkYLTb+eXf8iYBuvDRlOMcNGp8w430yjK/pxtOgC0twpVnnsWqvxgWHATw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=arm.com; dmarc=pass action=none header.from=arm.com; dkim=pass
- header.d=arm.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=armh.onmicrosoft.com;
- s=selector2-armh-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=c5de9P6blzGhytrmp3ovTvUNy8cXEn8GoK7iBXCq1H4=;
- b=J4VBDo/uRfMk5REx+/U0vz4lJEGVhEhpkl7Y1BddJ+u+qUfz5kfE0F+kgIXZ7/DVLyjioE+VKx1+9BQzUxQaQKOYQ4n0wSmJvYjlofpsvkvekxQhj0BacBWHNpmcAmB8DlngPoG+D2zf4Sv+p49Hs+FALcjwi0hLKEpNZR1aNRQ=
-Received: from DBBPR08MB4538.eurprd08.prod.outlook.com (2603:10a6:10:d2::15)
- by GV1PR08MB7313.eurprd08.prod.outlook.com (2603:10a6:150:1c::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6792.20; Fri, 15 Sep
- 2023 09:42:44 +0000
-Received: from DBBPR08MB4538.eurprd08.prod.outlook.com
- ([fe80::7e2f:184:7fc7:6448]) by DBBPR08MB4538.eurprd08.prod.outlook.com
- ([fe80::7e2f:184:7fc7:6448%7]) with mapi id 15.20.6792.021; Fri, 15 Sep 2023
- 09:42:43 +0000
-From: Justin He <Justin.He@arm.com>
-To: Robin Murphy <Robin.Murphy@arm.com>, Christoph Hellwig <hch@lst.de>, Marek
- Szyprowski <m.szyprowski@samsung.com>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>
-CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, nd
-	<nd@arm.com>
-Subject: RE: [PATCH] dma-mapping: fix dma_addressing_limited if dma_range_map
- is scanned
-Thread-Topic: [PATCH] dma-mapping: fix dma_addressing_limited if dma_range_map
- is scanned
-Thread-Index: AQHZ5VTJb5HgcbylTEiPRH8iRHuc47AXFd0AgASO8NA=
-Date: Fri, 15 Sep 2023 09:42:43 +0000
-Message-ID:
- <DBBPR08MB4538A34E4C8ADF6344956AC3F7F6A@DBBPR08MB4538.eurprd08.prod.outlook.com>
-References: <20230912084002.2168-1-justin.he@arm.com>
- <2b4a7aee-1997-cf2f-e8e8-19ab4adc09b5@arm.com>
-In-Reply-To: <2b4a7aee-1997-cf2f-e8e8-19ab4adc09b5@arm.com>
-Accept-Language: en-US, zh-CN
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-Authentication-Results-Original: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=arm.com;
-x-ms-traffictypediagnostic:
-	DBBPR08MB4538:EE_|GV1PR08MB7313:EE_|AM7EUR03FT056:EE_|AM9PR08MB6642:EE_
-X-MS-Office365-Filtering-Correlation-Id: ca8456e7-a221-4b90-909f-08dbb5d02423
-x-checkrecipientrouted: true
-nodisclaimer: true
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam-Untrusted: BCL:0;
-X-Microsoft-Antispam-Message-Info-Original:
- OectdTmuGarwAPxRGul6HcAeFsHt90O7F7dvd7gICROwaTiuJd2NFndATk8Wv5LoODkQmcdNyWb9r8pVLmfpgAmSMD4j7k9ZVa3d3+t4qMMolBx37d35Usflbo0WoY8//XfZ8H4gEWZ1Z3s8IJzZfJHzXF+uMiQ4wbytcHRHCGPcf3Rz8YI/mV1kW6lbkzUYu6+lKhKY0fm8CZOSiAQByQpxJmhRczVUlc4qwTa1RX9bEnGMiugiOkHVw4Goh0KYVoenyU9ORXQa4MYBl8s6LKmAZTYHlIAwRxkft3k/HhcGK/N19YpKrL1AgcUpbZ+80cpFFu8QI8+nKOJ0qke2Z2kn0Afa1p2W4/KLr+/1rib1F6mhNaIH6/2YoKnxkBmSHSjHe38gOoEgmZd0ByrB9PADFq51L9FulmGxk5acKzkgrx9K4p/MLuMOMZSoSkV/Ed2Te+MCHc+LzlMxHoDGWnjNXd1uAemNojO/8HxN+Ccc4qGCRkr93tXWcvONprsfyzS5UpDVw4TVoIzPy7MUnplYjVL73FZtghRjEBt79qp1QsUht0DU9lZVwifSbG6T2H1a7e0O5Sgo6LhsEsN6nXGuPdLor/f+ScCJQNberkTOhEDdeAjFiaDmDcR4q+WZ
-X-Forefront-Antispam-Report-Untrusted:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DBBPR08MB4538.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(376002)(39860400002)(136003)(396003)(366004)(346002)(1800799009)(186009)(451199024)(66946007)(76116006)(110136005)(55016003)(41300700001)(66446008)(54906003)(64756008)(66556008)(66476007)(9686003)(316002)(5660300002)(26005)(83380400001)(52536014)(33656002)(122000001)(38070700005)(2906002)(86362001)(38100700002)(8676002)(4326008)(8936002)(71200400001)(6506007)(478600001)(7696005)(53546011);DIR:OUT;SFP:1101;
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 89C14DDC6
+	for <iommu@lists.linux.dev>; Fri, 15 Sep 2023 10:08:22 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0B9DC1FB;
+	Fri, 15 Sep 2023 03:08:59 -0700 (PDT)
+Received: from [10.57.94.147] (unknown [10.57.94.147])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E1B1D3F67D;
+	Fri, 15 Sep 2023 03:08:18 -0700 (PDT)
+Message-ID: <39a08615-d05c-3835-faaf-df9fc56c8f3f@arm.com>
+Date: Fri, 15 Sep 2023 11:08:09 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: GV1PR08MB7313
-Original-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=arm.com;
-X-EOPAttributedMessage: 0
-X-MS-Exchange-Transport-CrossTenantHeadersStripped:
- AM7EUR03FT056.eop-EUR03.prod.protection.outlook.com
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id-Prvs:
-	92f2f0b3-7a40-4ac9-2f0c-08dbb5d01c2b
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	YBPhyTgpsMcHjZtB6NG5gYS62lBqpwxcmZ33IkIzG60Il5dn+B1Ktael8nLwp6MYFtcRceXqRAbiY6L2v+AtBfNbscfly+m5g04IJwhR87DEZ3lu1Tvk21DyI3YiK/vLSdTiN7NkP8jsVW+9W4veIbLTwJ4yb5lDuRx3Pp04mO8wKoN2tJPdEVDtq2QKIXqQ/6urRF9+Fq9ZuGnYpDRgACBVxJDTRM9oM4Fiee7f0dpXMbQ0EK9h3VjuCNzl8+H87LNYkk59sgHtarxof2PnON8J8eimBqYvecUZpzpD81cwFupQhG3oSwP7XCDTW83png+DVv2cjVlwqcUaUpAjZQGkUvjr5MfPu8Jum7el1uBjQCFuc13xB9qz6SLyOEUG2SY9xureBnTQOGuk9IgG/JYPeYodJMQ9Acr3z9adS6l4ZW/Qyu55Pb7iQg27kGI/D01OBN7fRdD3fFb3GEj6JT8haKVRBSjzAZyAuzBU+gAQEKuYOQnajDlGNJpmDDerCYcOPqHZ8BwRjZ25hVgebeu9Oth98qCHBnA8tAKZh5QxQYZo35Ub6m0CPRr8LQeUgB2Or8zMQ1sz8QSL28an+p98AF/8KipM2NH4bUFXV3uqyQIGA9tBBb5lUAsLqc10PeQ43DunBzfibuY7sRoaoGiZQ3c310Tw8R0PRSHWMF/aviKIr8uugSxRDu0l0vPNdTFD365eJCGwRXbf03tjCOCtwqtEl1fN0IVj9iXmQMAZCvZPQjT93S5eYyMcjTFr
-X-Forefront-Antispam-Report:
-	CIP:63.35.35.123;CTRY:IE;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:64aa7808-outbound-1.mta.getcheckrecipient.com;PTR:ec2-63-35-35-123.eu-west-1.compute.amazonaws.com;CAT:NONE;SFS:(13230031)(4636009)(39860400002)(346002)(136003)(396003)(376002)(186009)(1800799009)(82310400011)(451199024)(40470700004)(36840700001)(46966006)(40460700003)(47076005)(52536014)(5660300002)(55016003)(40480700001)(8676002)(8936002)(41300700001)(54906003)(316002)(4326008)(110136005)(70586007)(36860700001)(70206006)(9686003)(33656002)(336012)(83380400001)(2906002)(7696005)(6506007)(53546011)(82740400003)(356005)(81166007)(86362001)(26005)(478600001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: arm.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Sep 2023 09:42:56.6411
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: ca8456e7-a221-4b90-909f-08dbb5d02423
-X-MS-Exchange-CrossTenant-Id: f34e5979-57d9-4aaa-ad4d-b122a662184d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=f34e5979-57d9-4aaa-ad4d-b122a662184d;Ip=[63.35.35.123];Helo=[64aa7808-outbound-1.mta.getcheckrecipient.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	AM7EUR03FT056.eop-EUR03.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9PR08MB6642
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.15.1
+Subject: Re: [PATCH] iommu/arm-smmu-qcom: NULL pointer check for driver data
+Content-Language: en-GB
+To: Aravind Vijayakumar <quic_aprasann@quicinc.com>,
+ Rob Clark <robdclark@chromium.org>
+Cc: will@kernel.org, joro@8bytes.org, dmitry.baryshkov@linaro.org,
+ quic_bjorande@quicinc.com, konrad.dybcio@linaro.org,
+ quic_eberman@quicinc.com, quic_psodagud@quicinc.com,
+ quic_rvishwak@quicinc.com, quic_saipraka@quicinc.com,
+ quic_molvera@quicinc.com, marijn.suijten@somainline.org, mani@kernel.org,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ linux-arm-msm@vger.kernel.org
+References: <20230816225509.11070-1-quic_aprasann@quicinc.com>
+ <CAJs_Fx7132o3iHDH0ZR7L9G69o2YV2-jC0v15shQcEhH6=-6RA@mail.gmail.com>
+ <c06a31fd-e3b5-1f58-9e4f-7fafd8aa3f28@quicinc.com>
+ <CAJs_Fx464vFbfLaaWWs2Y0pTmhXrJS=AWFTwEyQjifJoU72rCQ@mail.gmail.com>
+ <ead35ae9-b9cf-4f3f-e967-7d66a88fb8d5@quicinc.com>
+ <8c5035d7-1a65-774c-5490-87cdbcb25542@arm.com>
+ <7bff908a-f4f2-6a57-23ea-ab5cc82cde09@quicinc.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <7bff908a-f4f2-6a57-23ea-ab5cc82cde09@quicinc.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-SGkgUm9iaW4sDQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogUm9iaW4g
-TXVycGh5IDxyb2Jpbi5tdXJwaHlAYXJtLmNvbT4NCj4gU2VudDogVHVlc2RheSwgU2VwdGVtYmVy
-IDEyLCAyMDIzIDc6NTcgUE0NCj4gVG86IEp1c3RpbiBIZSA8SnVzdGluLkhlQGFybS5jb20+OyBD
-aHJpc3RvcGggSGVsbHdpZyA8aGNoQGxzdC5kZT47IE1hcmVrDQo+IFN6eXByb3dza2kgPG0uc3p5
-cHJvd3NraUBzYW1zdW5nLmNvbT47IGlvbW11QGxpc3RzLmxpbnV4LmRldg0KPiBDYzogbGludXgt
-a2VybmVsQHZnZXIua2VybmVsLm9yZw0KPiBTdWJqZWN0OiBSZTogW1BBVENIXSBkbWEtbWFwcGlu
-ZzogZml4IGRtYV9hZGRyZXNzaW5nX2xpbWl0ZWQgaWYNCj4gZG1hX3JhbmdlX21hcCBpcyBzY2Fu
-bmVkDQo+IA0KPiBPbiAxMi8wOS8yMDIzIDk6NDAgYW0sIEppYSBIZSB3cm90ZToNCj4gPiBBZnRl
-ciBzY2FubmluZyB0aGUgZG1hX3JhbmdlX21hcCwgaWYgaXQgaXMgZm91bmQgdGhhdCBub3QgYWxs
-IG9mIHRoZQ0KPiA+IHN5c3RlbSBSQU0gcmFuZ2VzIGFyZSBlbmNvbXBhc3NlZCB3aXRoaW4gaXQs
-IGFuIGluY29ycmVjdCBjYWxjdWxhdGlvbg0KPiA+IG9jY3VycyBmb3IgZG1hX2FkZHJlc3Npbmdf
-bGltaXRlZCgpLCB3aGljaCBwcmV2ZW50cyB0aGUgbnZtZSBkZXZpY2UNCj4gPiBkbWEgbWFwcGlu
-ZyBpbiB0aGUgY2hlY2tpbmcgcGF0aCBvZiBwaHlzX3RvX2RtYSgpLg0KPiANCj4gTml0OiB0aGUg
-c3ViamVjdCBhbmQgdGhpcyBkZXNjcmlwdGlvbiBhcmVuJ3QgdmVyeSBjbGVhciAtIHRoZSBrZXkg
-cG9pbnQgaGVyZSBpcyB0aGUNCj4gdW51c3VhbCBjYXNlIHRoYXQgdGhlIHJhbmdlIG1hcCBjb3Zl
-cnMgcmlnaHQgdXAgdG8gdGhlIHRvcCBvZiBzeXN0ZW0gUkFNLCBidXQNCj4gbGVhdmVzIGEgaG9s
-ZSBzb21ld2hlcmUgbG93ZXIgZG93bi4gVGhlcmUncyBubyBpc3N1ZSB3aXRoIHRoZSBtb3JlIHR5
-cGljYWwNCj4gY2FzZSB3aGVyZSBzb21lIFJBTSBleGlzdHMgYWJvdmUgdGhlIHRvcCBvZiB0aGUg
-cmFuZ2UgbWFwLCBzaW5jZQ0KPiBidXNfZG1hX2xpbWl0IHdpbGwgY2FwdHVyZSB0aGF0IGFuZCB3
-b3JrIGFzIGV4cGVjdGVkLg0KPiANCk9rLCBob3cgYWJvdXQgDQpkbWEtbWFwcGluZzogZml4IGRt
-YV9hZGRyZXNzaW5nX2xpbWl0ZWQgaWYgZG1hX3JhbmdlX21hcCBjYW4ndCBjb3ZlciBhbGwgc3lz
-dGVtIFJBTQ0KDQo+ID4gRS5nLiBPbiBhbiBBcm12OCBBbXBlcmUgc2VydmVyLCB0aGUgZHNkdCBB
-Q1BJIHRhYmxlIGlzOg0KPiA+ICAgTWV0aG9kIChfRE1BLCAwLCBTZXJpYWxpemVkKSAgLy8gX0RN
-QTogRGlyZWN0IE1lbW9yeSBBY2Nlc3MNCj4gPiAgICAgICAgICAgICAgew0KPiA+ICAgICAgICAg
-ICAgICAgICAgTmFtZSAoUkJVRiwgUmVzb3VyY2VUZW1wbGF0ZSAoKQ0KPiA+ICAgICAgICAgICAg
-ICAgICAgew0KPiA+ICAgICAgICAgICAgICAgICAgICAgIFFXb3JkTWVtb3J5IChSZXNvdXJjZUNv
-bnN1bWVyLCBQb3NEZWNvZGUsDQo+ID4gTWluRml4ZWQsIE1heEZpeGVkLCBDYWNoZWFibGUsIFJl
-YWRXcml0ZSwNCj4gPiAgICAgICAgICAgICAgICAgICAgICAgICAgMHgwMDAwMDAwMDAwMDAwMDAw
-LCAvLyBHcmFudWxhcml0eQ0KPiA+ICAgICAgICAgICAgICAgICAgICAgICAgICAweDAwMDAwMDAw
-MDAwMDAwMDAsIC8vIFJhbmdlIE1pbmltdW0NCj4gPiAgICAgICAgICAgICAgICAgICAgICAgICAg
-MHgwMDAwMDAwMEZGRkZGRkZGLCAvLyBSYW5nZSBNYXhpbXVtDQo+ID4gICAgICAgICAgICAgICAg
-ICAgICAgICAgIDB4MDAwMDAwMDAwMDAwMDAwMCwgLy8gVHJhbnNsYXRpb24gT2Zmc2V0DQo+ID4g
-ICAgICAgICAgICAgICAgICAgICAgICAgIDB4MDAwMDAwMDEwMDAwMDAwMCwgLy8gTGVuZ3RoDQo+
-ID4gICAgICAgICAgICAgICAgICAgICAgICAgICwsICwgQWRkcmVzc1JhbmdlTWVtb3J5LCBUeXBl
-U3RhdGljKQ0KPiA+ICAgICAgICAgICAgICAgICAgICAgIFFXb3JkTWVtb3J5IChSZXNvdXJjZUNv
-bnN1bWVyLCBQb3NEZWNvZGUsDQo+ID4gTWluRml4ZWQsIE1heEZpeGVkLCBDYWNoZWFibGUsIFJl
-YWRXcml0ZSwNCj4gPiAgICAgICAgICAgICAgICAgICAgICAgICAgMHgwMDAwMDAwMDAwMDAwMDAw
-LCAvLyBHcmFudWxhcml0eQ0KPiA+ICAgICAgICAgICAgICAgICAgICAgICAgICAweDAwMDAwMDYw
-MTAyMDAwMDAsIC8vIFJhbmdlIE1pbmltdW0NCj4gPiAgICAgICAgICAgICAgICAgICAgICAgICAg
-MHgwMDAwMDA2MDJGRkZGRkZGLCAvLyBSYW5nZSBNYXhpbXVtDQo+ID4gICAgICAgICAgICAgICAg
-ICAgICAgICAgIDB4MDAwMDAwMDAwMDAwMDAwMCwgLy8gVHJhbnNsYXRpb24gT2Zmc2V0DQo+ID4g
-ICAgICAgICAgICAgICAgICAgICAgICAgIDB4MDAwMDAwMDAxRkUwMDAwMCwgLy8gTGVuZ3RoDQo+
-ID4gICAgICAgICAgICAgICAgICAgICAgICAgICwsICwgQWRkcmVzc1JhbmdlTWVtb3J5LCBUeXBl
-U3RhdGljKQ0KPiA+ICAgICAgICAgICAgICAgICAgICAgIFFXb3JkTWVtb3J5IChSZXNvdXJjZUNv
-bnN1bWVyLCBQb3NEZWNvZGUsDQo+ID4gTWluRml4ZWQsIE1heEZpeGVkLCBDYWNoZWFibGUsIFJl
-YWRXcml0ZSwNCj4gPiAgICAgICAgICAgICAgICAgICAgICAgICAgMHgwMDAwMDAwMDAwMDAwMDAw
-LCAvLyBHcmFudWxhcml0eQ0KPiA+ICAgICAgICAgICAgICAgICAgICAgICAgICAweDAwMDAwMDYw
-RjAwMDAwMDAsIC8vIFJhbmdlIE1pbmltdW0NCj4gPiAgICAgICAgICAgICAgICAgICAgICAgICAg
-MHgwMDAwMDA2MEZGRkZGRkZGLCAvLyBSYW5nZSBNYXhpbXVtDQo+ID4gICAgICAgICAgICAgICAg
-ICAgICAgICAgIDB4MDAwMDAwMDAwMDAwMDAwMCwgLy8gVHJhbnNsYXRpb24gT2Zmc2V0DQo+ID4g
-ICAgICAgICAgICAgICAgICAgICAgICAgIDB4MDAwMDAwMDAxMDAwMDAwMCwgLy8gTGVuZ3RoDQo+
-ID4gICAgICAgICAgICAgICAgICAgICAgICAgICwsICwgQWRkcmVzc1JhbmdlTWVtb3J5LCBUeXBl
-U3RhdGljKQ0KPiA+ICAgICAgICAgICAgICAgICAgICAgIFFXb3JkTWVtb3J5IChSZXNvdXJjZUNv
-bnN1bWVyLCBQb3NEZWNvZGUsDQo+ID4gTWluRml4ZWQsIE1heEZpeGVkLCBDYWNoZWFibGUsIFJl
-YWRXcml0ZSwNCj4gPiAgICAgICAgICAgICAgICAgICAgICAgICAgMHgwMDAwMDAwMDAwMDAwMDAw
-LCAvLyBHcmFudWxhcml0eQ0KPiA+ICAgICAgICAgICAgICAgICAgICAgICAgICAweDAwMDAwMDcw
-MDAwMDAwMDAsIC8vIFJhbmdlIE1pbmltdW0NCj4gPiAgICAgICAgICAgICAgICAgICAgICAgICAg
-MHgwMDAwMDNGRkZGRkZGRkZGLCAvLyBSYW5nZSBNYXhpbXVtDQo+ID4gICAgICAgICAgICAgICAg
-ICAgICAgICAgIDB4MDAwMDAwMDAwMDAwMDAwMCwgLy8gVHJhbnNsYXRpb24gT2Zmc2V0DQo+ID4g
-ICAgICAgICAgICAgICAgICAgICAgICAgIDB4MDAwMDAzOTAwMDAwMDAwMCwgLy8gTGVuZ3RoDQo+
-ID4gICAgICAgICAgICAgICAgICAgICAgICAgICwsICwgQWRkcmVzc1JhbmdlTWVtb3J5LCBUeXBl
-U3RhdGljKQ0KPiA+ICAgICAgICAgICAgICAgICAgfSkNCj4gPg0KPiA+IEJ1dCB0aGUgU3lzdGVt
-IFJBTSByYW5nZXMgYXJlOg0KPiA+IGNhdCAvcHJvYy9pb21lbSB8Z3JlcCAtaSByYW0NCj4gPiA5
-MDAwMDAwMC05MWZmZmZmZiA6IFN5c3RlbSBSQU0NCj4gPiA5MjkwMDAwMC1mZmZiZmZmZiA6IFN5
-c3RlbSBSQU0NCj4gPiA4ODAwMDAwMDAtZmZmZmZmZmZmIDogU3lzdGVtIFJBTQ0KPiA+IDg4MDAw
-MDAwMDAtYmZmNTk5MGZmZiA6IFN5c3RlbSBSQU0NCj4gPiBiZmY1OWQwMDAwLWJmZjVhNGZmZmYg
-OiBTeXN0ZW0gUkFNDQo+ID4gYmZmODAwMDAwMC1iZmZmZmZmZmZmIDogU3lzdGVtIFJBTQ0KPiA+
-IFNvIHNvbWUgUkFNIHJhbmdlcyBhcmUgb3V0IG9mIGRtYV9yYW5nZV9tYXAuDQo+ID4NCj4gPiBG
-aXhlcyBpdCBieSBjaGVja2luZyB3aGV0aGVyIGVhY2ggb2YgdGhlIHN5c3RlbSBSQU0gcmVzb3Vy
-Y2VzIGNhbiBiZQ0KPiA+IHByb3Blcmx5IGVuY29tcGFzc2VkIHdpdGhpbiB0aGUgZG1hX3Jhbmdl
-X21hcC4NCj4gPg0KPiA+IFNpZ25lZC1vZmYtYnk6IEppYSBIZSA8anVzdGluLmhlQGFybS5jb20+
-DQo+ID4gLS0tDQo+ID4gICBpbmNsdWRlL2xpbnV4L2RtYS1tYXBwaW5nLmggfCAgOCArKysrKy0t
-DQo+ID4gICBrZXJuZWwvZG1hL21hcHBpbmcuYyAgICAgICAgfCA0NQ0KPiArKysrKysrKysrKysr
-KysrKysrKysrKysrKysrKysrKysrKysrDQo+ID4gICAyIGZpbGVzIGNoYW5nZWQsIDUxIGluc2Vy
-dGlvbnMoKyksIDIgZGVsZXRpb25zKC0pDQo+ID4NCj4gPiBkaWZmIC0tZ2l0IGEvaW5jbHVkZS9s
-aW51eC9kbWEtbWFwcGluZy5oIGIvaW5jbHVkZS9saW51eC9kbWEtbWFwcGluZy5oDQo+ID4gaW5k
-ZXggZjBjY2NhMTZhMGFjLi5kOWQxYzY3Yzg1NzkgMTAwNjQ0DQo+ID4gLS0tIGEvaW5jbHVkZS9s
-aW51eC9kbWEtbWFwcGluZy5oDQo+ID4gKysrIGIvaW5jbHVkZS9saW51eC9kbWEtbWFwcGluZy5o
-DQo+ID4gQEAgLTE0NCw2ICsxNDQsNyBAQCBib29sIGRtYV9wY2lfcDJwZG1hX3N1cHBvcnRlZChz
-dHJ1Y3QgZGV2aWNlDQo+ICpkZXYpOw0KPiA+ICAgaW50IGRtYV9zZXRfbWFzayhzdHJ1Y3QgZGV2
-aWNlICpkZXYsIHU2NCBtYXNrKTsNCj4gPiAgIGludCBkbWFfc2V0X2NvaGVyZW50X21hc2soc3Ry
-dWN0IGRldmljZSAqZGV2LCB1NjQgbWFzayk7DQo+ID4gICB1NjQgZG1hX2dldF9yZXF1aXJlZF9t
-YXNrKHN0cnVjdCBkZXZpY2UgKmRldik7DQo+ID4gK2Jvb2wgYWxsX3JhbV9pbl9kbWFfcmFuZ2Vf
-bWFwKHN0cnVjdCBkZXZpY2UgKmRldik7DQo+ID4gICBzaXplX3QgZG1hX21heF9tYXBwaW5nX3Np
-emUoc3RydWN0IGRldmljZSAqZGV2KTsNCj4gPiAgIHNpemVfdCBkbWFfb3B0X21hcHBpbmdfc2l6
-ZShzdHJ1Y3QgZGV2aWNlICpkZXYpOw0KPiA+ICAgYm9vbCBkbWFfbmVlZF9zeW5jKHN0cnVjdCBk
-ZXZpY2UgKmRldiwgZG1hX2FkZHJfdCBkbWFfYWRkcik7IEBADQo+ID4gLTQ3NSw4ICs0NzYsMTEg
-QEAgc3RhdGljIGlubGluZSBpbnQgZG1hX2NvZXJjZV9tYXNrX2FuZF9jb2hlcmVudChzdHJ1Y3QN
-Cj4gZGV2aWNlICpkZXYsIHU2NCBtYXNrKQ0KPiA+ICAgICovDQo+ID4gICBzdGF0aWMgaW5saW5l
-IGJvb2wgZG1hX2FkZHJlc3NpbmdfbGltaXRlZChzdHJ1Y3QgZGV2aWNlICpkZXYpDQo+ID4gICB7
-DQo+ID4gLQlyZXR1cm4gbWluX25vdF96ZXJvKGRtYV9nZXRfbWFzayhkZXYpLCBkZXYtPmJ1c19k
-bWFfbGltaXQpIDwNCj4gPiAtCQkJICAgIGRtYV9nZXRfcmVxdWlyZWRfbWFzayhkZXYpOw0KPiA+
-ICsJaWYgKG1pbl9ub3RfemVybyhkbWFfZ2V0X21hc2soZGV2KSwgZGV2LT5idXNfZG1hX2xpbWl0
-KSA8DQo+ID4gKwkJCQkJCWRtYV9nZXRfcmVxdWlyZWRfbWFzayhkZXYpKQ0KPiANCj4gTml0OiBp
-bmRlbnRhdGlvbg0KPiANCj4gPiArCQlyZXR1cm4gdHJ1ZTsNCj4gPiArDQo+ID4gKwlyZXR1cm4g
-IWFsbF9yYW1faW5fZG1hX3JhbmdlX21hcChkZXYpOw0KPiA+ICAgfQ0KPiA+DQo+ID4gICBzdGF0
-aWMgaW5saW5lIHVuc2lnbmVkIGludCBkbWFfZ2V0X21heF9zZWdfc2l6ZShzdHJ1Y3QgZGV2aWNl
-ICpkZXYpDQo+ID4gZGlmZiAtLWdpdCBhL2tlcm5lbC9kbWEvbWFwcGluZy5jIGIva2VybmVsL2Rt
-YS9tYXBwaW5nLmMgaW5kZXgNCj4gPiBlMzIzY2E0OGY3ZjIuLmFiNDA3ZGViODFiOCAxMDA2NDQN
-Cj4gPiAtLS0gYS9rZXJuZWwvZG1hL21hcHBpbmcuYw0KPiA+ICsrKyBiL2tlcm5lbC9kbWEvbWFw
-cGluZy5jDQo+ID4gQEAgLTE0LDYgKzE0LDcgQEANCj4gPiAgICNpbmNsdWRlIDxsaW51eC9vZl9k
-ZXZpY2UuaD4NCj4gPiAgICNpbmNsdWRlIDxsaW51eC9zbGFiLmg+DQo+ID4gICAjaW5jbHVkZSA8
-bGludXgvdm1hbGxvYy5oPg0KPiA+ICsjaW5jbHVkZSA8bGludXgvZG1hLWRpcmVjdC5oPg0KPiAN
-Cj4gTml0OiBwbGVhc2Uga2VlcCB0aGUgaW5jbHVkZXMgc29ydGVkIGFscGhhYmV0aWNhbGx5LCBo
-b3dldmVyIEkgZG8gd29uZGVyDQo+IHdoZXRoZXIgdGhpcyB3aG9sZSB0aGluZyBzaG91bGRuJ3Qg
-YmVsb25nIGluIGRtYS1kaXJlY3QgYW55d2F5Lg0KVGhlIGRtYS1kaXJlY3QuaCBpcyBmb3IgaW5j
-bHVkaW5nIHN0cnVjdCBidXNfZG1hX3JlZ2lvbiBvbmx5Lg0KTWF5YmUgSSBuZWVkIHRvIG1vdmUg
-c3RydWN0IGJ1c19kbWFfcmVnaW9uIHRvIGEgcHJvcGVyIGhlYWRlciBmaWxlPw0KDQo+IA0KPiA+
-ICAgI2luY2x1ZGUgImRlYnVnLmgiDQo+ID4gICAjaW5jbHVkZSAiZGlyZWN0LmgiDQo+ID4NCj4g
-PiBAQCAtODE5LDYgKzgyMCw1MCBAQCBzaXplX3QgZG1hX29wdF9tYXBwaW5nX3NpemUoc3RydWN0
-IGRldmljZSAqZGV2KQ0KPiA+ICAgfQ0KPiA+ICAgRVhQT1JUX1NZTUJPTF9HUEwoZG1hX29wdF9t
-YXBwaW5nX3NpemUpOw0KPiA+DQo+ID4gKy8qDQo+ID4gKyAqIFRvIGNoZWNrIHdoZXRoZXIgYWxs
-IHJhbSByZXNvdXJjZSByYW5nZXMgYXJlIG1hcHBlZCBpbiBkbWEgcmFuZ2UNCj4gPiArbWFwDQo+
-ID4gKyAqIFJldHVybnMgMCB3aGVuIGNvbnRpbnVvdXMgY2hlY2sgaXMgbmVlZGVkDQo+ID4gKyAq
-IFJldHVybnMgMSBpZiB0aGVyZSBpcyBzb21lIHJhbSByYW5nZSBjYW4ndCBiZSBtYXBwZWQgdG8N
-Cj4gPiArZG1hX3JhbmdlX21hcCAgKi8gc3RhdGljIGludCBjaGVja19yYW1faW5fcmFuZ2VfbWFw
-KHVuc2lnbmVkIGxvbmcNCj4gPiArc3RhcnRfcGZuLA0KPiA+ICsJCQkJICB1bnNpZ25lZCBsb25n
-IG5yX3BhZ2VzLCB2b2lkICpkYXRhKSB7DQo+ID4gKwlwaHlzX2FkZHJfdCBlbmRfcGFkZHIgPSAo
-c3RhcnRfcGZuICsgbnJfcGFnZXMpIDw8IFBBR0VfU0hJRlQ7DQo+IA0KPiBUaGlzIGNvdWxkIHN0
-aWxsIHdyYXAgdG8gMCBvbiAzMi1iaXQuIEkgdGhpbmsgdGhlIHJvYnVzdCB0aGluZyB0byBkbyBp
-cyBlaXRoZXIgc3ByYXkNCj4gc29tZSBleHRyYSAtMXMgYW5kICsxcyBhcm91bmQgdG8gbWFrZSBh
-bGwgdGhlICJlbmQiIHZhbHVlcyBpbmNsdXNpdmUgbGltaXRzLCBvcg0KPiBtYXliZSBqdXN0IGRv
-IGV2ZXJ5dGhpbmcgaW4gdW5pdHMgb2YgcGFnZXMgcmF0aGVyIHRoYW4gYnl0ZXMgKGkuZS4gdXNl
-DQo+IFBGTl9ET1dOKCkgb24gdGhlIGJ1c19kbWFfcmVnaW9uIGVudHJ5IHZhbHVlcykuDQo+IA0K
-T2ssIGxldCBtZSB0cnkgdGhlIGxhdHRlciBvbmUsIHdoaWNoIGxvb2tzIGVhc2llciB0byBtZS4N
-Cg0KPiA+ICsJcGh5c19hZGRyX3Qgc3RhcnRfcGFkZHIgPSBzdGFydF9wZm4gPDwgUEFHRV9TSElG
-VDsNCj4gPiArCXN0cnVjdCBkZXZpY2UgKmRldiA9IChzdHJ1Y3QgZGV2aWNlICopZGF0YTsNCj4g
-PiArCXN0cnVjdCBidXNfZG1hX3JlZ2lvbiAqcmVnaW9uID0gTlVMTDsNCj4gPiArCWNvbnN0IHN0
-cnVjdCBidXNfZG1hX3JlZ2lvbiAqbTsNCj4gPiArDQo+ID4gKwl3aGlsZSAoc3RhcnRfcGFkZHIg
-PCBlbmRfcGFkZHIpIHsNCj4gPiArCQkvLyBmaW5kIHJlZ2lvbiBjb250YWluaW5nIHN0YXJ0X3Bh
-ZGRyDQo+IA0KPiBOaXQ6IGluY29uc2lzdGVudCBjb21tZW50IHN0eWxlIChhbHRob3VnaCBpdCdz
-IG5vdCBhIHBhcnRpY3VsYXJseSB2YWx1YWJsZQ0KPiBjb21tZW50IGFueXdheSwgSU1PIHRoZSBs
-b29wIGl0c2VsZiBpcyBjbGVhciBlbm91Z2gpLg0KPiANClN1cmUsIGxldCBtZSByZW1vdmUgaXQu
-DQoNCg0KLS0NCkNoZWVycywNCkp1c3RpbiAoSmlhIEhlKQ0KDQoNCg==
+On 2023-09-15 01:20, Aravind Vijayakumar wrote:
+> 
+> On 9/8/2023 5:21 AM, Robin Murphy wrote:
+>> On 2023-09-08 06:17, Aravind Vijayakumar wrote:
+>>>
+>>> On 8/29/2023 7:30 AM, Rob Clark wrote:
+>>>> On Mon, Aug 28, 2023 at 2:35 PM Aravind Vijayakumar
+>>>> <quic_aprasann@quicinc.com> wrote:
+>>>>>
+>>>>> On 8/16/2023 6:01 PM, Rob Clark wrote:
+>>>>>> On Wed, Aug 16, 2023 at 3:55 PM Aravind Vijayakumar
+>>>>>> <quic_aprasann@quicinc.com> wrote:
+>>>>>>> The driver_data is NULL when qcom_adreno_smmu_init_context()
+>>>>>>> is called before the dev_set_drvdata() from the client driver
+>>>>>>> and is resulting in kernel crash.
+>>>>>>>
+>>>>>>> So add a null pointer check to handle the scenario
+>>>>>>> where the client driver for the GPU SMMU device would
+>>>>>>> be setting the driver data after the smmu client device
+>>>>>>> probe is done and not necessarily before that. The function
+>>>>>>> qcom_adreno_smmu_init_context() assumes that the client
+>>>>>>> driver always set the driver data using dev_set_drvdata()
+>>>>>>> before the smmu client device probe, but this assumption
+>>>>>>> is not always true.
+>>>>>>>
+>>>>>>> Signed-off-by: Aravind Vijayakumar <quic_aprasann@quicinc.com>
+>>>>>>> ---
+>>>>>>>    drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 3 +++
+>>>>>>>    1 file changed, 3 insertions(+)
+>>>>>>>
+>>>>>>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c 
+>>>>>>> b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>>>>>> index c71afda79d64..5323f82264ca 100644
+>>>>>>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>>>>>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>>>>>> @@ -231,6 +231,9 @@ static int 
+>>>>>>> qcom_adreno_smmu_init_context(struct arm_smmu_domain *smmu_domain,
+>>>>>>>            */
+>>>>>>>
+>>>>>>>           priv = dev_get_drvdata(dev);
+>>>>>>> +       if (!priv)
+>>>>>>> +               return 0;
+>>>>>> could this -EPROBE_DEFER instead, or something like that? I think you
+>>>>>> patch as proposed would result in per-process gpu pgtables silently
+>>>>>> failing
+>>>>>>
+>>>>>> BR,
+>>>>>> -R
+>>>>> Thanks for the review comments. Returning -EPROBE_DEFER wont work
+>>>>> because the probe of the client driver (which sets the driver data) 
+>>>>> will
+>>>>> never get triggered. However, the probe of the client driver 
+>>>>> succeeds if
+>>>>> we return -ENODATA. would that be acceptable?
+>>>> I _think_ so.. I need to page back in the sequence of how this works,
+>>>> but I do have some warn_on's in drm/msm to complain loudly if we don't
+>>>> get per-process pgtables.  I'd be interested to see the callstack
+>>>> where you hit this issue.  From what I remember the sequence should
+>>>> be:
+>>>>
+>>>> 1) before the client dev probes, arm-smmu probes and attaches the
+>>>> dma-api managed iommu_domain (which IIRC should be an identity domain,
+>>>> and is otherwise unused).. at this point drvdata is NULL
+>>>> 2) the drm/msm can probe
+>>>> 3) at some point later when GPU fw is avail the GPU is loaded, drvdata
+>>>> is set, and we start creating and attaching the iommu_domain's that
+>>>> are actually used (one for kernel context and one each for userspace
+>>>> processes using the GPU
+>>>>
+>>>> I guess maybe if you are hitting this case of NULL drvdata, then you
+>>>> aren't getting an identity context for the dma-api managed
+>>>> iommu_domain?
+>>>>
+>>>> BR,
+>>>> -R
+>>>>
+>>> Yes, there are some warn_ons in io-pgtable.c, which have helped a lot 
+>>> during debugging. The following is the call stack when we are hitting 
+>>> the issue:
+>>>
+>>>    qcom_adreno_smmu_init_context+0x28/0x100
+>>>    arm_smmu_init_domain_context+0x1fc/0x4cc
+>>>    arm_smmu_attach_dev+0x7c/0x410
+>>>    __iommu_attach_device+0x28/0x110
+>>>    iommu_probe_device+0x98/0x144
+>>>    of_iommu_configure+0x1f0/0x278
+>>>    of_dma_configure_id+0x15c/0x320
+>>>    platform_dma_configure+0x24/0x90
+>>>    really_probe+0x138/0x39c
+>>>    __driver_probe_device+0x114/0x190
+>>>    device_driver_attach+0x4c/0xac
+>>>    bind_store+0xb8/0x110
+>>
+>> OK, so it looks like you are indeed getting a non-identity default 
+>> domain as Rob suspected. I guess that means qcom_smmu_client_of_match 
+>> needs updating for this platform? (In which case, maybe a WARN() here 
+>> to point in that direction might be handy as well?)
+>>
+>> Thanks,
+>> Robin.
+>>
+> Hi Rob and Robin,
+> 
+> With the NULL check and return -ENODATA, we are getting the dma-api 
+> managed iommu domain, and reattach the device to iommu domain by calling 
+> "of_dma_configure" from the driver probe, but without the NULL check it 
+> will be a kernel crash.
+
+Um, what? Drivers should absolutely not be calling of_dma_configure() on 
+their own devices, that is a massively egregious abuse of the API.
+
+> Also, with the NULL check we don't have to update the 
+> qcom_smmu_client_of_match and we can use the existing function - 
+> "qcom_adreno_smmu_init_context" itself.
+
+So making a bunch of conceptually-wrong code changes "saves" making the 
+correct 1-line data change for the mechanism to work as designed? That 
+hardly sounds like a good justification to me :/
+
+Thanks,
+Robin.
