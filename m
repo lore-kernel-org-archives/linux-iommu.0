@@ -1,32 +1,32 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4C5CA3C
-	for <iommu@lists.linux.dev>; Fri, 15 Sep 2023 02:16:24 +0000 (UTC)
-Received: from pps.filterd (m0279869.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 38F1wdou003642;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7EB7DA48
+	for <iommu@lists.linux.dev>; Fri, 15 Sep 2023 02:16:30 +0000 (UTC)
+Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 38F1kQ1u006005;
 	Fri, 15 Sep 2023 02:16:10 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-type; s=qcppdkim1;
- bh=3ppWNq+o4HxesWQNafJv2udrLR9075sFNEUE755QjCc=;
- b=jWsdr5jWLm2m81w5NXCNAUO1KlM1CR5ekc/uF0SM1mOaUkIat7i7Mr4r3+qzYE8Pp06i
- ZVecehtPXWoyOJzi4M9KQfZZyd6LBd1yjKfIIp4xcxcy9iRG2NKQtfHyruQup6nV/ywr
- ZXB1vL9s9jTUmuWayNWyvzKoCfdT2U3Nd7xNWB/dl5FYx0YWqx0DUrPGXA/RGtbFtpWD
- T7ZyLILax38Kk5KX9WqMBDfTlhOkUZCXDPSYipgsXI6i2SXLMFci/+CkqV7FlkflKx63
- Smtj54gSmMXaW9znmYZRwYmTBEvlAhV9U7vf3w9B40DUhLkxkp5GugC1sbMyzLMuYxbd qw== 
-Received: from nalasppmta02.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3t4e2b01gf-1
+ bh=HXfmrwraKHCTGKdEye19XEXOahD/K6cQmPz0RvUS+U4=;
+ b=bXsVu5yUnrIp/4h2BS2KujSu2LXa+1R7aFZ7jsuC5B5WupMpib85b05cHr5xagsHlLfK
+ QrIVNHFHPCJ4tsrSPYLRl+vdwnDQQjLoH0g+oZHW8qLa1BvSztsbtFPu0fCJXtlliYbZ
+ 5kzzho0PPL2qDcY/MXnshxXKy4K53A2+avj5Nc9T2JWX/pBwcuPkzDoQViZxUKLY1S7L
+ BZXKT3DKYbl9pr0uZIDer5lCyylbsQrPlS6Sx1CQrAFhM1uMfXu1NpnXcITVdT/B7HHq
+ dZVcTQwNOLlFkNkIXKHYwIdPZpJk2hIVDDdFHa0hQwbn+kr1wilBckdUrc3LWW9JhBxZ sQ== 
+Received: from nalasppmta04.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3t4dvqr1c1-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
 	Fri, 15 Sep 2023 02:16:10 +0000
 Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-	by NALASPPMTA02.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 38F2FnJ7005707
+	by NALASPPMTA04.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 38F2G9Jr024593
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 15 Sep 2023 02:15:49 GMT
+	Fri, 15 Sep 2023 02:16:09 GMT
 Received: from tengfan2-gv.qualcomm.com (10.80.80.8) by
  nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.36; Thu, 14 Sep 2023 19:15:40 -0700
+ 15.2.1118.36; Thu, 14 Sep 2023 19:16:01 -0700
 From: Tengfei Fan <quic_tengfan@quicinc.com>
 To: <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
         <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
@@ -42,9 +42,9 @@ CC: <geert+renesas@glider.be>, <arnd@arndb.de>, <neil.armstrong@linaro.org>,
         <quic_aiquny@quicinc.com>, <kernel@quicinc.com>,
         Tengfei Fan
 	<quic_tengfan@quicinc.com>
-Subject: [PATCH v2 1/8] dt-bindings: firmware: document Qualcomm SM4450 SCM
-Date: Fri, 15 Sep 2023 10:15:01 +0800
-Message-ID: <20230915021509.25773-2-quic_tengfan@quicinc.com>
+Subject: [PATCH v2 3/8] dt-bindings: interrupt-controller: qcom,pdc: document qcom,sm4450-pdc
+Date: Fri, 15 Sep 2023 10:15:04 +0800
+Message-ID: <20230915021509.25773-5-quic_tengfan@quicinc.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20230915021509.25773-1-quic_tengfan@quicinc.com>
 References: <20230915021509.25773-1-quic_tengfan@quicinc.com>
@@ -60,53 +60,37 @@ X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
  nalasex01a.na.qualcomm.com (10.47.209.196)
 X-QCInternal: smtphost
 X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: kCFh2FqF7tzrMSf-3N_7taO4EFasHCEL
-X-Proofpoint-ORIG-GUID: kCFh2FqF7tzrMSf-3N_7taO4EFasHCEL
+X-Proofpoint-GUID: eZV2oX_aAsAoxvkZ-6I6H1TGRUECTJik
+X-Proofpoint-ORIG-GUID: eZV2oX_aAsAoxvkZ-6I6H1TGRUECTJik
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.267,Aquarius:18.0.980,Hydra:6.0.601,FMLib:17.11.176.26
  definitions=2023-09-15_02,2023-09-14_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 spamscore=0
- priorityscore=1501 malwarescore=0 suspectscore=0 adultscore=0 mlxscore=0
- lowpriorityscore=0 impostorscore=0 clxscore=1015 phishscore=0
- mlxlogscore=940 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 suspectscore=0
+ lowpriorityscore=0 spamscore=0 impostorscore=0 bulkscore=0 clxscore=1015
+ mlxlogscore=863 phishscore=0 adultscore=0 malwarescore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2308100000 definitions=main-2309150018
 
-Document the compatible for Qualcomm SM4450 SCM.
+Add SM4450 PDC, which will used in SM4450 DTS.
 
 Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Signed-off-by: Tengfei Fan <quic_tengfan@quicinc.com>
 ---
- Documentation/devicetree/bindings/firmware/qcom,scm.yaml | 3 +++
- 1 file changed, 3 insertions(+)
+ .../devicetree/bindings/interrupt-controller/qcom,pdc.yaml       | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/Documentation/devicetree/bindings/firmware/qcom,scm.yaml b/Documentation/devicetree/bindings/firmware/qcom,scm.yaml
-index 4233ea839bfc..1cff4e11f732 100644
---- a/Documentation/devicetree/bindings/firmware/qcom,scm.yaml
-+++ b/Documentation/devicetree/bindings/firmware/qcom,scm.yaml
-@@ -52,6 +52,7 @@ properties:
-           - qcom,scm-sdx55
-           - qcom,scm-sdx65
-           - qcom,scm-sdx75
-+          - qcom,scm-sm4450
-           - qcom,scm-sm6115
-           - qcom,scm-sm6125
-           - qcom,scm-sm6350
-@@ -177,6 +178,7 @@ allOf:
-               enum:
-                 - qcom,scm-qdu1000
-                 - qcom,scm-sc8280xp
-+                - qcom,scm-sm4450
-                 - qcom,scm-sm8450
-                 - qcom,scm-sm8550
-     then:
-@@ -190,6 +192,7 @@ allOf:
-           compatible:
-             contains:
-               enum:
-+                - qcom,scm-sm4450
-                 - qcom,scm-sm8450
-                 - qcom,scm-sm8550
-     then:
+diff --git a/Documentation/devicetree/bindings/interrupt-controller/qcom,pdc.yaml b/Documentation/devicetree/bindings/interrupt-controller/qcom,pdc.yaml
+index 4847b04be1a1..86d61896f591 100644
+--- a/Documentation/devicetree/bindings/interrupt-controller/qcom,pdc.yaml
++++ b/Documentation/devicetree/bindings/interrupt-controller/qcom,pdc.yaml
+@@ -35,6 +35,7 @@ properties:
+           - qcom,sdm845-pdc
+           - qcom,sdx55-pdc
+           - qcom,sdx65-pdc
++          - qcom,sm4450-pdc
+           - qcom,sm6350-pdc
+           - qcom,sm8150-pdc
+           - qcom,sm8250-pdc
 -- 
 2.17.1
 
