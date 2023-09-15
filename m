@@ -1,201 +1,132 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A2D4E125CD
-	for <iommu@lists.linux.dev>; Fri, 15 Sep 2023 16:58:39 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4ED48C15;
-	Fri, 15 Sep 2023 09:59:16 -0700 (PDT)
-Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id F23EC3F5A1;
-	Fri, 15 Sep 2023 09:58:37 -0700 (PDT)
-From: Robin Murphy <robin.murphy@arm.com>
-To: joro@8bytes.org,
-	will@kernel.org
-Cc: iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	jgg@nvidia.com,
-	baolu.lu@linux.intel.com
-Subject: [PATCH v3 7/7] iommu: Clean up open-coded ownership checks
-Date: Fri, 15 Sep 2023 17:58:11 +0100
-Message-Id: <05f95c41ec644440f2f375b1dc04c8254f667316.1694693889.git.robin.murphy@arm.com>
-X-Mailer: git-send-email 2.39.2.101.g768bb238c484.dirty
-In-Reply-To: <cover.1694693889.git.robin.murphy@arm.com>
-References: <cover.1694693889.git.robin.murphy@arm.com>
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C59AC1097B
+	for <iommu@lists.linux.dev>; Fri, 15 Sep 2023 17:09:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A176EC433C7;
+	Fri, 15 Sep 2023 17:09:30 +0000 (UTC)
+Date: Fri, 15 Sep 2023 18:09:28 +0100
+From: Catalin Marinas <catalin.marinas@arm.com>
+To: Petr =?utf-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
+Cc: Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>,
+	open list <linux-kernel@vger.kernel.org>,
+	Roberto Sassu <roberto.sassu@huaweicloud.com>,
+	Jonathan Corbet <corbet@lwn.net>
+Subject: Re: [PATCH] swiotlb: fix the check whether a device has used
+ software IO TLB
+Message-ID: <ZQSPyBRjnSISNFmD@arm.com>
+References: <20230913114016.17752-1-petr@tesarici.cz>
+ <20230913121403.GB4544@lst.de>
+ <20230913142656.29e135d6@meshulam.tesarici.cz>
+ <ZQNQscYr0rQWdw66@arm.com>
+ <20230915111343.01496320@meshulam.tesarici.cz>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20230915111343.01496320@meshulam.tesarici.cz>
 
-Some drivers already implement their own defence against the possibility
-of being given someone else's device. Since this is now taken care of by
-the core code (and via a slightly different path from the original
-fwspec-based idea), let's clean them up.
+On Fri, Sep 15, 2023 at 11:13:43AM +0200, Petr Tesařík wrote:
+> On Thu, 14 Sep 2023 19:28:01 +0100
+> Catalin Marinas <catalin.marinas@arm.com> wrote:
+> > What do the smp_wmb() barriers in swiotlb_find_slots() and
+> > swiotlb_dyn_alloc() order? The latter is even more unclear as it's at
+> > the end of the function and the "pairing" comment doesn't help.
+> 
+> By the time swiotlb_find_slots() returns a valid slot index, the new
+> value of dev->dma_uses_io_tlb must be visible by all CPUs in
+> is_swiotlb_buffer(). The index is used to calculate the bounce buffer
+> address returned to device drivers. This address may be passed to
+> another CPU and used as an argument to is_swiotlb_buffer().
 
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
----
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c |  3 ---
- drivers/iommu/arm/arm-smmu/arm-smmu.c       |  9 +--------
- drivers/iommu/arm/arm-smmu/qcom_iommu.c     | 14 ++------------
- drivers/iommu/mtk_iommu.c                   |  7 +------
- drivers/iommu/mtk_iommu_v1.c                |  3 ---
- drivers/iommu/sprd-iommu.c                  |  8 +-------
- drivers/iommu/virtio-iommu.c                |  3 ---
- 7 files changed, 5 insertions(+), 42 deletions(-)
+Ah, I remember now. So the smp_wmb() ensures that dma_uses_io_tlb is
+seen by other CPUs before the slot address (presumably passed via other
+memory write). It may be worth updating the comment in the code (I'm
+sure I'll forget it in a month time). The smp_rmb() before READ_ONCE()
+in this patch is also needed for the same reasons (ordering after the
+read of the address passed to is_swiotlb_buffer()).
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index e82bf1c449a3..01ea307c7791 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -2653,9 +2653,6 @@ static struct iommu_device *arm_smmu_probe_device(struct device *dev)
- 	struct arm_smmu_master *master;
- 	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
- 
--	if (!fwspec || fwspec->ops != &arm_smmu_ops)
--		return ERR_PTR(-ENODEV);
--
- 	if (WARN_ON_ONCE(dev_iommu_priv_get(dev)))
- 		return ERR_PTR(-EBUSY);
- 
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-index 4b83a3adacd6..4d09c0047892 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-@@ -1116,11 +1116,6 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
- 	struct arm_smmu_device *smmu;
- 	int ret;
- 
--	if (!fwspec || fwspec->ops != &arm_smmu_ops) {
--		dev_err(dev, "cannot attach to SMMU, is it on the same bus?\n");
--		return -ENXIO;
--	}
--
- 	/*
- 	 * FIXME: The arch/arm DMA API code tries to attach devices to its own
- 	 * domains between of_xlate() and probe_device() - we have no way to cope
-@@ -1357,10 +1352,8 @@ static struct iommu_device *arm_smmu_probe_device(struct device *dev)
- 		fwspec = dev_iommu_fwspec_get(dev);
- 		if (ret)
- 			goto out_free;
--	} else if (fwspec && fwspec->ops == &arm_smmu_ops) {
--		smmu = arm_smmu_get_by_fwnode(fwspec->iommu_fwnode);
- 	} else {
--		return ERR_PTR(-ENODEV);
-+		smmu = arm_smmu_get_by_fwnode(fwspec->iommu_fwnode);
- 	}
- 
- 	ret = -EINVAL;
-diff --git a/drivers/iommu/arm/arm-smmu/qcom_iommu.c b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-index 775a3cbaff4e..b86fcd761ff7 100644
---- a/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-+++ b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-@@ -79,16 +79,6 @@ static struct qcom_iommu_domain *to_qcom_iommu_domain(struct iommu_domain *dom)
- 
- static const struct iommu_ops qcom_iommu_ops;
- 
--static struct qcom_iommu_dev * to_iommu(struct device *dev)
--{
--	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
--
--	if (!fwspec || fwspec->ops != &qcom_iommu_ops)
--		return NULL;
--
--	return dev_iommu_priv_get(dev);
--}
--
- static struct qcom_iommu_ctx * to_ctx(struct qcom_iommu_domain *d, unsigned asid)
- {
- 	struct qcom_iommu_dev *qcom_iommu = d->iommu;
-@@ -374,7 +364,7 @@ static void qcom_iommu_domain_free(struct iommu_domain *domain)
- 
- static int qcom_iommu_attach_dev(struct iommu_domain *domain, struct device *dev)
- {
--	struct qcom_iommu_dev *qcom_iommu = to_iommu(dev);
-+	struct qcom_iommu_dev *qcom_iommu = dev_iommu_priv_get(dev);
- 	struct qcom_iommu_domain *qcom_domain = to_qcom_iommu_domain(domain);
- 	int ret;
- 
-@@ -499,7 +489,7 @@ static bool qcom_iommu_capable(struct device *dev, enum iommu_cap cap)
- 
- static struct iommu_device *qcom_iommu_probe_device(struct device *dev)
- {
--	struct qcom_iommu_dev *qcom_iommu = to_iommu(dev);
-+	struct qcom_iommu_dev *qcom_iommu = dev_iommu_priv_get(dev);
- 	struct device_link *link;
- 
- 	if (!qcom_iommu)
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 640275873a27..dc292aeb6dbf 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -844,16 +844,11 @@ static phys_addr_t mtk_iommu_iova_to_phys(struct iommu_domain *domain,
- static struct iommu_device *mtk_iommu_probe_device(struct device *dev)
- {
- 	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
--	struct mtk_iommu_data *data;
-+	struct mtk_iommu_data *data = dev_iommu_priv_get(dev);
- 	struct device_link *link;
- 	struct device *larbdev;
- 	unsigned int larbid, larbidx, i;
- 
--	if (!fwspec || fwspec->ops != &mtk_iommu_ops)
--		return ERR_PTR(-ENODEV); /* Not a iommu client device */
--
--	data = dev_iommu_priv_get(dev);
--
- 	if (!MTK_IOMMU_IS_TYPE(data->plat_data, MTK_IOMMU_TYPE_MM))
- 		return &data->iommu;
- 
-diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
-index 8a0a5e5d049f..2a764b73eb32 100644
---- a/drivers/iommu/mtk_iommu_v1.c
-+++ b/drivers/iommu/mtk_iommu_v1.c
-@@ -478,9 +478,6 @@ static struct iommu_device *mtk_iommu_v1_probe_device(struct device *dev)
- 		idx++;
- 	}
- 
--	if (!fwspec || fwspec->ops != &mtk_iommu_v1_ops)
--		return ERR_PTR(-ENODEV); /* Not a iommu client device */
--
- 	data = dev_iommu_priv_get(dev);
- 
- 	/* Link the consumer device with the smi-larb device(supplier) */
-diff --git a/drivers/iommu/sprd-iommu.c b/drivers/iommu/sprd-iommu.c
-index 2fa9afebd4f5..a69680fbb519 100644
---- a/drivers/iommu/sprd-iommu.c
-+++ b/drivers/iommu/sprd-iommu.c
-@@ -388,13 +388,7 @@ static phys_addr_t sprd_iommu_iova_to_phys(struct iommu_domain *domain,
- 
- static struct iommu_device *sprd_iommu_probe_device(struct device *dev)
- {
--	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
--	struct sprd_iommu_device *sdev;
--
--	if (!fwspec || fwspec->ops != &sprd_iommu_ops)
--		return ERR_PTR(-ENODEV);
--
--	sdev = dev_iommu_priv_get(dev);
-+	struct sprd_iommu_device *sdev = dev_iommu_priv_get(dev);
- 
- 	return &sdev->iommu;
- }
-diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
-index 17dcd826f5c2..bb2e795a80d0 100644
---- a/drivers/iommu/virtio-iommu.c
-+++ b/drivers/iommu/virtio-iommu.c
-@@ -969,9 +969,6 @@ static struct iommu_device *viommu_probe_device(struct device *dev)
- 	struct viommu_dev *viommu = NULL;
- 	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
- 
--	if (!fwspec || fwspec->ops != &viommu_ops)
--		return ERR_PTR(-ENODEV);
--
- 	viommu = viommu_get_by_fwnode(fwspec->iommu_fwnode);
- 	if (!viommu)
- 		return ERR_PTR(-ENODEV);
+BTW, you may want to use WRITE_ONCE() when setting dma_uses_io_tlb (it
+also matches the READ_ONCE() in is_swiotlb_buffer()). Or you can use
+smp_store_mb() (but check its semantics first).
+
+> I am not sure that the smp_wmb() in swiotlb_dyn_alloc() is needed, but
+> let me explain my thinking. Even if the dev->dma_uses_io_tlb flag is
+> set, is_swiotlb_buffer() returns false unless the buffer address is
+> found in the RCU list of swiotlb pools, which is walked without taking
+> any lock. In some iterations of the patch series, there was a direct
+> call to swiotlb_dyn_alloc(), and a smp_wmb() was necessary to make sure
+> that the list of swiotlb pools cannot be observed as empty by another
+> CPU. You have already explained to me that taking a spin lock in
+> add_mem_pool() is not sufficient, because it does not invalidate a
+> value that might have been speculatively read by another CPU before
+> entering the critical section. OTOH swiotlb_dyn_alloc() is always
+> called through schedule_work() in the current version. If that
+> implicitly provides necessary barriers, this smp_wmb() can be removed.
+
+Normally you'd need a barrier between pool update and flag update:
+
+	list_add_rcu(&pool->node, &mem->pools);
+	smp_wmb();
+	WRITE_ONCE(dev->dma_uses_io_tlb, true);
+
+The lock around mem->pools update doesn't help since since it only has
+release semantics on the unlock path (which doesn't prevent the
+dma_uses_io_tlb write from being reordered before).
+
+On the reader side, you need to make sure that if the dma_uses_io_tlb is
+true, the mem->pools access was not speculated and read earlier as
+empty, so another dma_rmb():
+
+	if (READ_ONCE(dev->dma_uses_io_tlb)) {
+		dma_rmb();
+		swiotlb_find_pool(...);
+	}
+
+That's missing in the code currently (and rcu_read_lock() only has
+acquire semantics).
+
+However, what confuses me is that mem->pools is populated asynchronously
+via schedule_work(). Not sure how the barriers help since the work can
+be scheduled on any CPU at any point after, potentially after
+dma_uses_io_tlb has been updated.
+
+On the transient dev->dma_io_tlb_pools updated in swiotlb_find_slots(),
+you'd need the barriers as I mentioned above (unless I misunderstood how
+this pool searching works; not entirely sure why swiotlb_find_pool()
+searches both).
+
+> FTR list_add_rcu() alone is not sufficient. It adds the new element
+> using rcu_assign_pointer(), which modifies the forward link with
+> smp_store_release(). However, list_for_each_entry_rcu() reads the head
+> with list_entry_rcu(), which is a simple READ_ONCE(); there is no
+> ACQUIRE semantics.
+> 
+> Actually, I wonder when a newly added RCU list element is guaranteed to
+> be visible by all CPUs. Existing documentation deals mainly with
+> element removal, explaining that both the old state and the new state
+> of an RCU list are valid after addition. Is it assumed that the old
+> state of an RCU list after addition is valid indefinitely?
+
+When some write becomes visible to other CPUs, I don't think the
+architectures define precisely (more like in vague terms as
+"eventually"). That's why we can't talk about barriers in relation to a
+single write as the barrier doesn't make a write visible but rather
+makes it visible _before_ a subsequent write becomes visible (whenever
+that may be).
+
+Anyway, as above, I think the current code is still missing some
+barriers between dma_uses_io_tlb update or read and the actual pool
+writes. But I haven't figured out how this works with the asynchronous
+swiotlb_dyn_alloc().
+
 -- 
-2.39.2.101.g768bb238c484.dirty
-
+Catalin
