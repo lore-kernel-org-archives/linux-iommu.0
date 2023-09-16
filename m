@@ -1,61 +1,38 @@
-Received: from mail-lj1-f176.google.com (mail-lj1-f176.google.com [209.85.208.176])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0340E7E
-	for <iommu@lists.linux.dev>; Sat, 16 Sep 2023 20:32:08 +0000 (UTC)
-Received: by mail-lj1-f176.google.com with SMTP id 38308e7fff4ca-2bffe2840adso1085651fa.2
-        for <iommu@lists.linux.dev>; Sat, 16 Sep 2023 13:32:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1694896327; x=1695501127; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=t5mjBpKZbelK1K5551Sm8tr2/hAoMs9/xBV0waOZAl0=;
-        b=U/4ZwB9xFPrxRzmTKJCY5pIh6uMQVpZ1YkXUe/pshYZ79jUUeHfOjkzfBwHQzy4/cM
-         Ini2VaZXS7E98jrcyhmvm9rIMHbPwrkp9NRP+eFBK3ciHPDM0OYhrHKcGUvO8kvYh25a
-         F1ouXC59mZoi/q+VJuroJ1T2JnhTE7VNfKTBDzVo8juIerNyNRFtaYBP5qietm+or5il
-         mA9yojeeDULn80PymAoaZIYIyO/iecXHYUkJa4uiC62RAhJjl8bPCDgdwknw9eMTM3Lp
-         Sks0ENf+H1Nsgv32C41qzlwTbXZCsyHhS5HzfaCo3q0M3vLP4dRM7/YQ3JMpwW80Snvt
-         i+6g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1694896327; x=1695501127;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=t5mjBpKZbelK1K5551Sm8tr2/hAoMs9/xBV0waOZAl0=;
-        b=kqMg4A5mLEkq6Rm4rFIkS/F16dYjbpJ8yEs3AjrVQwkboSkW3L+sIoTjoVvCGHlvhk
-         2vSIGpd8RVqhfrUbbSC3DjC1CPpLTGYQXzsl/aNpxzSlg3BWKUjhxpSO4JA9olQYP8qU
-         LpzdFIjC9cCGQhcSB/WmegZLtxZBmj+QKpfIZ31YfjLXe2EFDxXukre/xDSxsD8j3WFg
-         Wz7Lm4AlwwWJdDlk37nKDiODWKGphR6Wz7Q9e7mNcNQHyNwR4FXI+d6bb33EaGY87SvE
-         uhBymx8bl9F6zA5Pwu0rihSSzKuYox0wcdvIy0j0LP63qmLCHDlCpYkEXSoLrVH2y1TQ
-         VaUg==
-X-Gm-Message-State: AOJu0Yxge4T+hzZNFVV6Ok8rz+jmIQJJYvXiGs14Tee2027vh2IquQIN
-	w+jtjRXKGV7LOli+vi9FF8CwEw==
-X-Google-Smtp-Source: AGHT+IFcpcTHStCyOX8YWi1KCGkCbnJakGWklpllFg1hg6VPq8emBGtJKM2mfPoRqWYfL5RLNmYFZQ==
-X-Received: by 2002:a05:6512:788:b0:4f8:7772:3dfd with SMTP id x8-20020a056512078800b004f877723dfdmr4411295lfr.11.1694896326389;
-        Sat, 16 Sep 2023 13:32:06 -0700 (PDT)
-Received: from [192.168.1.77] (150-140-187-31.ftth.glasoperator.nl. [31.187.140.150])
-        by smtp.gmail.com with ESMTPSA id q5-20020aa7cc05000000b0052a1a623267sm3835534edt.62.2023.09.16.13.32.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 16 Sep 2023 13:32:05 -0700 (PDT)
-Message-ID: <accb4814-4826-ff97-3527-4e3fbadcd4ff@linaro.org>
-Date: Sat, 16 Sep 2023 22:32:04 +0200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CEF1D1BDEF;
+	Sat, 16 Sep 2023 22:55:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A53FDC433C7;
+	Sat, 16 Sep 2023 22:55:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1694904943;
+	bh=H0ZrldvnfeVZPHSa0DBgUu2f3ukwWSY37W0/p+0tIhI=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=ag8IiPH8W7OwjdVeYpesBaJoyAXRmOIXJsXTFpoE84VDbGPNGyQudghhqjzq8K/dZ
+	 pxIHoAR4vlb8pjKRfMUyQniHI9jjgQiJ5nANkzKYlPwKYHrKVyiRjGStasWKtMM+5B
+	 YmLkFcNo5/FE+yu1NxYgmrXMQ8DqkR3tR1OxIrmgpfsWFavLSVLJPWjiAYwuaVlh6Q
+	 qoCOie//ELyq9T+xs7ykm6MQ22C5QzigIEpIl5VRzN9H7V5tZITybEiixX8nkpTGxO
+	 HFbpAqnyJ7h1Il7U5zqisyM3YazGtwlMbXHciwmks725eksyLHFjYuHlz+ElTZ9h5v
+	 IAlgLCQukcYjQ==
+Message-ID: <c11fd3c2-770a-4d40-8cf3-d8bc81f7c480@kernel.org>
+Date: Sun, 17 Sep 2023 01:55:34 +0300
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.15.0
+User-Agent: Mozilla Thunderbird
 Subject: Re: [PATCH v2 8/8] arm64: defconfig: enable interconnect and pinctrl
  for SM4450
 Content-Language: en-US
-To: Georgi Djakov <djakov@kernel.org>, Trilok Soni <quic_tsoni@quicinc.com>,
- Tengfei Fan <quic_tengfan@quicinc.com>, will@kernel.org,
- robin.murphy@arm.com, joro@8bytes.org, robh+dt@kernel.org,
- krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org, agross@kernel.org,
- andersson@kernel.org, konrad.dybcio@linaro.org, catalin.marinas@arm.com
+To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+ Trilok Soni <quic_tsoni@quicinc.com>, Tengfei Fan
+ <quic_tengfan@quicinc.com>, will@kernel.org, robin.murphy@arm.com,
+ joro@8bytes.org, robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+ conor+dt@kernel.org, agross@kernel.org, andersson@kernel.org,
+ konrad.dybcio@linaro.org, catalin.marinas@arm.com
 Cc: geert+renesas@glider.be, arnd@arndb.de, neil.armstrong@linaro.org,
  nfraprado@collabora.com, rafal@milecki.pl, peng.fan@nxp.com,
  linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
@@ -73,47 +50,62 @@ References: <20230915021509.25773-1-quic_tengfan@quicinc.com>
  <01c020ae-a019-e4eb-14cb-64503bde05a6@quicinc.com>
  <212f9bfa-6d4c-bba2-60d2-272c001a4322@quicinc.com>
  <e30870d5-a0cc-4210-a2b0-c7621ea5ecfa@kernel.org>
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <e30870d5-a0cc-4210-a2b0-c7621ea5ecfa@kernel.org>
-Content-Type: text/plain; charset=UTF-8
+ <accb4814-4826-ff97-3527-4e3fbadcd4ff@linaro.org>
+From: Georgi Djakov <djakov@kernel.org>
+In-Reply-To: <accb4814-4826-ff97-3527-4e3fbadcd4ff@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 16/09/2023 17:13, Georgi Djakov wrote:
->
->>
->> Complete list here, and it is inconsistent. Latest 8550 is also =y. Do we document
->> the reasons somewhere on why they are added as =y?
->>
->> CONFIG_INTERCONNECT_QCOM=y
->> CONFIG_INTERCONNECT_QCOM_MSM8916=m
->> CONFIG_INTERCONNECT_QCOM_MSM8996=m
->> CONFIG_INTERCONNECT_QCOM_OSM_L3=m
->> CONFIG_INTERCONNECT_QCOM_QCM2290=m
->> CONFIG_INTERCONNECT_QCOM_QCS404=m
->> CONFIG_INTERCONNECT_QCOM_SA8775P=y
->> CONFIG_INTERCONNECT_QCOM_SC7180=y
->> CONFIG_INTERCONNECT_QCOM_SC7280=y
->> CONFIG_INTERCONNECT_QCOM_SC8180X=y
->> CONFIG_INTERCONNECT_QCOM_SC8280XP=y
->> CONFIG_INTERCONNECT_QCOM_SDM845=y
->> CONFIG_INTERCONNECT_QCOM_SM8150=m
->> CONFIG_INTERCONNECT_QCOM_SM8250=m
->> CONFIG_INTERCONNECT_QCOM_SM8350=m
->> CONFIG_INTERCONNECT_QCOM_SM8450=y
->> CONFIG_INTERCONNECT_QCOM_SM8550=y
-> 
-> If the device can boot (to console/initramfs) with =m, we go with that.
-> But if something critical like the UART depends on the interconnect
-> provider, then we make it built-in.
-> 
-> On SM8550 for example, we have enabled bandwidth scaling support for QUP
-> and that's why it needs to be =y.
-> 
-> It looks like on SM4450 this should be =y too.
+Hi Krzysztof,
 
-I asked why SM4450 has to be =y and there was no answer. The argument
-that SM8450 is a module, is not applicable.
+On 16.09.23 23:32, Krzysztof Kozlowski wrote:
+> On 16/09/2023 17:13, Georgi Djakov wrote:
+>>
+>>>
+>>> Complete list here, and it is inconsistent. Latest 8550 is also =y. Do we document
+>>> the reasons somewhere on why they are added as =y?
+>>>
+>>> CONFIG_INTERCONNECT_QCOM=y
+>>> CONFIG_INTERCONNECT_QCOM_MSM8916=m
+>>> CONFIG_INTERCONNECT_QCOM_MSM8996=m
+>>> CONFIG_INTERCONNECT_QCOM_OSM_L3=m
+>>> CONFIG_INTERCONNECT_QCOM_QCM2290=m
+>>> CONFIG_INTERCONNECT_QCOM_QCS404=m
+>>> CONFIG_INTERCONNECT_QCOM_SA8775P=y
+>>> CONFIG_INTERCONNECT_QCOM_SC7180=y
+>>> CONFIG_INTERCONNECT_QCOM_SC7280=y
+>>> CONFIG_INTERCONNECT_QCOM_SC8180X=y
+>>> CONFIG_INTERCONNECT_QCOM_SC8280XP=y
+>>> CONFIG_INTERCONNECT_QCOM_SDM845=y
+>>> CONFIG_INTERCONNECT_QCOM_SM8150=m
+>>> CONFIG_INTERCONNECT_QCOM_SM8250=m
+>>> CONFIG_INTERCONNECT_QCOM_SM8350=m
+>>> CONFIG_INTERCONNECT_QCOM_SM8450=y
+>>> CONFIG_INTERCONNECT_QCOM_SM8550=y
+>>
+>> If the device can boot (to console/initramfs) with =m, we go with that.
+>> But if something critical like the UART depends on the interconnect
+>> provider, then we make it built-in.
+>>
+>> On SM8550 for example, we have enabled bandwidth scaling support for QUP
+>> and that's why it needs to be =y.
+>>
+>> It looks like on SM4450 this should be =y too.
+> 
+> I asked why SM4450 has to be =y and there was no answer. The argument
+> that SM8450 is a module, is not applicable.
 
-Best regards,
-Krzysztof
+ From the hardware description i see in patch 7, the serial engine depends
+on some interconnect provider. But as the serial console driver is only
+available as built-in, the interconnect provider also needs be built-in
+for the UART device to probe and register the console.
+
+So the answer to your question should be that this is needed by the UART
+device (at least).
+
+Such details of course deserve to be mentioned in the commit message of
+this patch.
+
+BR,
+Georgi
 
