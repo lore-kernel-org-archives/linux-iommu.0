@@ -1,139 +1,206 @@
-Received: from mail-ej1-f53.google.com (mail-ej1-f53.google.com [209.85.218.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from bee.tesarici.cz (bee.tesarici.cz [77.93.223.253])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6284F1865
-	for <iommu@lists.linux.dev>; Sun, 17 Sep 2023 07:35:26 +0000 (UTC)
-Received: by mail-ej1-f53.google.com with SMTP id a640c23a62f3a-9a6190af24aso460778566b.0
-        for <iommu@lists.linux.dev>; Sun, 17 Sep 2023 00:35:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1694936124; x=1695540924; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=GVg4iMqyFo6GXp2VZ+N/pcY2Y8g5Wn2f/zmdGd2t3MI=;
-        b=VkO2Ri9M0h5OIAHl7esiuBdevBsucXkixoRvFy7Cp+WT8/+nhQtuUnf0ZwZ9Ss82AN
-         LLClHtPT2b4jfpucYJ54+J0mKOd2Rbas7pylRaOMFjzDa2jtIVjVl7bxgSbJaPDfDQjI
-         W6ZpqUuO3VfwAvgSfqH2gQcUJlhd6XkSQ6F6OVs5WQ8QMXyQ+tBu3V85NExmh0Qh5M6Z
-         ZthtIJAewhIJrOK3/iPHP0zBabVOZDqXPtIe/aE688WUtm0OVfUQ/eFTxKY2D+7M8qry
-         toIBBPy5bDJ1Gdt6UufyW4R2g7FxEGNss4GyFC5FEWQ9GEqchr4FwZL1aXAlBQYizCgY
-         ejWQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1694936124; x=1695540924;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=GVg4iMqyFo6GXp2VZ+N/pcY2Y8g5Wn2f/zmdGd2t3MI=;
-        b=dvdeGInqyaQy8uhAZ6SaZjbNpO+FXPqAeAHWQkr+u5EX+6QZkwgAOf0YdFEQQDoCbg
-         0U787nwfURJd4bt9vzwIkNulUN2SXXUQ6shWV9A6KQ+Irx+szl0cju6D9YYD6YUeCYuZ
-         GuN6pYCRyQYDuz1BBL9/6qj6/MxlTeCyImNvdWAApL5h7UnBHc8Na+xrlNRhKGHCA8WN
-         IQdBq2GOZbT0coIDZ39Ou8JgKtvha2xt/4Zzbmgr66OtPnc3D6YFeGnjUTS/gYteWx8z
-         iRKJHJ3esF6dfHCMOVOhOrZvLp5ur24OlVqar+ciQzJUEryPY7G2WaNHbzq119tzSkRq
-         gO8Q==
-X-Gm-Message-State: AOJu0Yx0BpLApJdD3/4xvztYB2SzR++5qNya/7YNdUs18HgNj5fijgtX
-	+73mNn9L3DnqN08Hg015ZZKF3A==
-X-Google-Smtp-Source: AGHT+IHV9X9GTjPS8Rpcs9R2kxN8xI/rL5gF7b1VuZpWiQozu9bvvyJUcivpO+mDfPfyOicv9EQkxw==
-X-Received: by 2002:a17:907:775a:b0:9a2:16e2:353 with SMTP id kx26-20020a170907775a00b009a216e20353mr5651059ejc.6.1694936124406;
-        Sun, 17 Sep 2023 00:35:24 -0700 (PDT)
-Received: from [192.168.1.77] (150-140-187-31.ftth.glasoperator.nl. [31.187.140.150])
-        by smtp.gmail.com with ESMTPSA id r20-20020a170906365400b0099bd1a78ef5sm4640735ejb.74.2023.09.17.00.35.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 17 Sep 2023 00:35:23 -0700 (PDT)
-Message-ID: <54fcf0c2-c8e2-6ee8-5f6c-4de914c56c19@linaro.org>
-Date: Sun, 17 Sep 2023 09:35:17 +0200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 98F091FB3
+	for <iommu@lists.linux.dev>; Sun, 17 Sep 2023 09:47:50 +0000 (UTC)
+Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by bee.tesarici.cz (Postfix) with ESMTPSA id 52CC6171C50;
+	Sun, 17 Sep 2023 11:47:43 +0200 (CEST)
+Authentication-Results: mail.tesarici.cz; dmarc=fail (p=none dis=none) header.from=tesarici.cz
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tesarici.cz; s=mail;
+	t=1694944063; bh=oNG7MiE6U4mHWwCW/Ds7gGpn6Pq5Xr3QIiIPctqNAws=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=WdL5ARj/XdZutq+ii76phpXRetOJWOtu6dUb3OuduAG0LfdERb4BEJOBk9IptVAAR
+	 6LbGaoAlrml2hHHXTeFyzpdpAwzfgmHj8Z79rHCVMpw0gxNW4yAZgIsWVkaTzTy8OX
+	 znQLQY1yK6zbTRnIE3uWvKQ1Uh5kXRYLEHMTWz7JKQ1bqpCsnEq6ZslwQN23cKc51/
+	 igL2yHcri4Nz+CQQQqqvUb4ojAuebDizcNdaca3L87z4U7mWK4aW5QmKCOEHvfcaBU
+	 fuPc1itxQoh0Lv9VvzbzLGf8LGqA8GVDS7hzQr/Hz9qcomd9jD4A40ssi5spO/2X7G
+	 XM7GGReCqvbOw==
+Date: Sun, 17 Sep 2023 11:47:41 +0200
+From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
+To: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Christoph Hellwig <hch@lst.de>, Marek Szyprowski
+ <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, "open
+ list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>, open list
+ <linux-kernel@vger.kernel.org>, Roberto Sassu
+ <roberto.sassu@huaweicloud.com>, Jonathan Corbet <corbet@lwn.net>
+Subject: Re: [PATCH] swiotlb: fix the check whether a device has used
+ software IO TLB
+Message-ID: <20230917114741.01a23364@meshulam.tesarici.cz>
+In-Reply-To: <ZQSPyBRjnSISNFmD@arm.com>
+References: <20230913114016.17752-1-petr@tesarici.cz>
+	<20230913121403.GB4544@lst.de>
+	<20230913142656.29e135d6@meshulam.tesarici.cz>
+	<ZQNQscYr0rQWdw66@arm.com>
+	<20230915111343.01496320@meshulam.tesarici.cz>
+	<ZQSPyBRjnSISNFmD@arm.com>
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; x86_64-suse-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.15.0
-Subject: Re: [PATCH v2 8/8] arm64: defconfig: enable interconnect and pinctrl
- for SM4450
-To: Georgi Djakov <djakov@kernel.org>, Trilok Soni <quic_tsoni@quicinc.com>,
- Tengfei Fan <quic_tengfan@quicinc.com>, will@kernel.org,
- robin.murphy@arm.com, joro@8bytes.org, robh+dt@kernel.org,
- krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org, agross@kernel.org,
- andersson@kernel.org, konrad.dybcio@linaro.org, catalin.marinas@arm.com
-Cc: geert+renesas@glider.be, arnd@arndb.de, neil.armstrong@linaro.org,
- nfraprado@collabora.com, rafal@milecki.pl, peng.fan@nxp.com,
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-arm-msm@vger.kernel.org, quic_shashim@quicinc.com,
- quic_kaushalk@quicinc.com, quic_tdas@quicinc.com, quic_tingweiz@quicinc.com,
- quic_aiquny@quicinc.com, kernel@quicinc.com
-References: <20230915021509.25773-1-quic_tengfan@quicinc.com>
- <20230915021509.25773-10-quic_tengfan@quicinc.com>
- <8f2c9664-a2c8-50dc-8a1c-e50a071ebeb2@linaro.org>
- <e9ff05b3-2742-416e-b417-5e2414036008@quicinc.com>
- <0a34dd35-7aea-4655-4cdd-e7196a1ba52b@linaro.org>
- <f76e1cc8-fc48-4208-bbe4-9204d9d28363@quicinc.com>
- <b7398390-23bc-467c-5b83-411110d60f43@linaro.org>
- <01c020ae-a019-e4eb-14cb-64503bde05a6@quicinc.com>
- <212f9bfa-6d4c-bba2-60d2-272c001a4322@quicinc.com>
- <e30870d5-a0cc-4210-a2b0-c7621ea5ecfa@kernel.org>
- <accb4814-4826-ff97-3527-4e3fbadcd4ff@linaro.org>
- <c11fd3c2-770a-4d40-8cf3-d8bc81f7c480@kernel.org>
-Content-Language: en-US
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <c11fd3c2-770a-4d40-8cf3-d8bc81f7c480@kernel.org>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
 
-On 17/09/2023 00:55, Georgi Djakov wrote:
-> Hi Krzysztof,
-> 
-> On 16.09.23 23:32, Krzysztof Kozlowski wrote:
->> On 16/09/2023 17:13, Georgi Djakov wrote:
->>>
->>>>
->>>> Complete list here, and it is inconsistent. Latest 8550 is also =y. Do we document
->>>> the reasons somewhere on why they are added as =y?
->>>>
->>>> CONFIG_INTERCONNECT_QCOM=y
->>>> CONFIG_INTERCONNECT_QCOM_MSM8916=m
->>>> CONFIG_INTERCONNECT_QCOM_MSM8996=m
->>>> CONFIG_INTERCONNECT_QCOM_OSM_L3=m
->>>> CONFIG_INTERCONNECT_QCOM_QCM2290=m
->>>> CONFIG_INTERCONNECT_QCOM_QCS404=m
->>>> CONFIG_INTERCONNECT_QCOM_SA8775P=y
->>>> CONFIG_INTERCONNECT_QCOM_SC7180=y
->>>> CONFIG_INTERCONNECT_QCOM_SC7280=y
->>>> CONFIG_INTERCONNECT_QCOM_SC8180X=y
->>>> CONFIG_INTERCONNECT_QCOM_SC8280XP=y
->>>> CONFIG_INTERCONNECT_QCOM_SDM845=y
->>>> CONFIG_INTERCONNECT_QCOM_SM8150=m
->>>> CONFIG_INTERCONNECT_QCOM_SM8250=m
->>>> CONFIG_INTERCONNECT_QCOM_SM8350=m
->>>> CONFIG_INTERCONNECT_QCOM_SM8450=y
->>>> CONFIG_INTERCONNECT_QCOM_SM8550=y
->>>
->>> If the device can boot (to console/initramfs) with =m, we go with that.
->>> But if something critical like the UART depends on the interconnect
->>> provider, then we make it built-in.
->>>
->>> On SM8550 for example, we have enabled bandwidth scaling support for QUP
->>> and that's why it needs to be =y.
->>>
->>> It looks like on SM4450 this should be =y too.
->>
->> I asked why SM4450 has to be =y and there was no answer. The argument
->> that SM8450 is a module, is not applicable.
-> 
->  From the hardware description i see in patch 7, the serial engine depends
-> on some interconnect provider. But as the serial console driver is only
-> available as built-in, the interconnect provider also needs be built-in
-> for the UART device to probe and register the console.
-> 
-> So the answer to your question should be that this is needed by the UART
-> device (at least).
-> 
-> Such details of course deserve to be mentioned in the commit message of
-> this patch.
+Hi Catalin,
 
-If you mean here the debug UART with console, then it is the same valid
-reason as in my change for others. This should be mentioned in commit msg.
+thank you for your reply!
 
-Best regards,
-Krzysztof
+On Fri, 15 Sep 2023 18:09:28 +0100
+Catalin Marinas <catalin.marinas@arm.com> wrote:
 
+> On Fri, Sep 15, 2023 at 11:13:43AM +0200, Petr Tesa=C5=99=C3=ADk wrote:
+> > On Thu, 14 Sep 2023 19:28:01 +0100
+> > Catalin Marinas <catalin.marinas@arm.com> wrote: =20
+> > > What do the smp_wmb() barriers in swiotlb_find_slots() and
+> > > swiotlb_dyn_alloc() order? The latter is even more unclear as it's at
+> > > the end of the function and the "pairing" comment doesn't help. =20
+> >=20
+> > By the time swiotlb_find_slots() returns a valid slot index, the new
+> > value of dev->dma_uses_io_tlb must be visible by all CPUs in
+> > is_swiotlb_buffer(). The index is used to calculate the bounce buffer
+> > address returned to device drivers. This address may be passed to
+> > another CPU and used as an argument to is_swiotlb_buffer(). =20
+>=20
+> Ah, I remember now. So the smp_wmb() ensures that dma_uses_io_tlb is
+> seen by other CPUs before the slot address (presumably passed via other
+> memory write). It may be worth updating the comment in the code (I'm
+> sure I'll forget it in a month time). The smp_rmb() before READ_ONCE()
+> in this patch is also needed for the same reasons (ordering after the
+> read of the address passed to is_swiotlb_buffer()).
+
+I agree. The comment should definitely mention the implicitly assumed
+memory write done by device drivers, because it is not obvious which
+two writes are being ordered.
+
+> BTW, you may want to use WRITE_ONCE() when setting dma_uses_io_tlb (it
+> also matches the READ_ONCE() in is_swiotlb_buffer()). Or you can use
+> smp_store_mb() (but check its semantics first).
+
+I can use WRITE_ONCE(), although I believe it does not make much
+difference thanks to the barrier provided by smp_wmb().
+
+Using smp_store_mb() should also work, but it inserts a full memory
+barrier, which is more than is needed IMO.
+
+> > I am not sure that the smp_wmb() in swiotlb_dyn_alloc() is needed, but
+> > let me explain my thinking. Even if the dev->dma_uses_io_tlb flag is
+> > set, is_swiotlb_buffer() returns false unless the buffer address is
+> > found in the RCU list of swiotlb pools, which is walked without taking
+> > any lock. In some iterations of the patch series, there was a direct
+> > call to swiotlb_dyn_alloc(), and a smp_wmb() was necessary to make sure
+> > that the list of swiotlb pools cannot be observed as empty by another
+> > CPU. You have already explained to me that taking a spin lock in
+> > add_mem_pool() is not sufficient, because it does not invalidate a
+> > value that might have been speculatively read by another CPU before
+> > entering the critical section. OTOH swiotlb_dyn_alloc() is always
+> > called through schedule_work() in the current version. If that
+> > implicitly provides necessary barriers, this smp_wmb() can be removed. =
+=20
+>=20
+> Normally you'd need a barrier between pool update and flag update:
+>=20
+> 	list_add_rcu(&pool->node, &mem->pools);
+> 	smp_wmb();
+> 	WRITE_ONCE(dev->dma_uses_io_tlb, true);
+
+I agree. However, if is_swiotlb_buffer() gets an address allocated from
+a swiotlb pool that was added here, then it also had to be returned by
+swiotlb_find_slots(), where smp_wmb() makes sure that all writes are
+visible before the above-mentioned assumed write of the buffer pointer
+into a private data field, performed by driver code.
+
+> The lock around mem->pools update doesn't help since since it only has
+> release semantics on the unlock path (which doesn't prevent the
+> dma_uses_io_tlb write from being reordered before).
+
+Yes.
+
+> On the reader side, you need to make sure that if the dma_uses_io_tlb is
+> true, the mem->pools access was not speculated and read earlier as
+> empty, so another dma_rmb():
+>=20
+> 	if (READ_ONCE(dev->dma_uses_io_tlb)) {
+> 		dma_rmb();
+
+I think this is a typo, and you mean smp_rmb(); at least I can't see
+which consistent DMA memory would be accessed here.
+
+> 		swiotlb_find_pool(...);
+> 	}
+>=20
+> That's missing in the code currently (and rcu_read_lock() only has
+> acquire semantics).
+>=20
+> However, what confuses me is that mem->pools is populated
+> asynchronously via schedule_work(). Not sure how the barriers help
+> since the work can be scheduled on any CPU at any point after,
+> potentially after dma_uses_io_tlb has been updated.
+
+Ah... You may have a point after all if this sequence of events is
+possible:
+
+- CPU 0 writes new value to mem->pools->next in swiotlb_dyn_alloc().
+
+- CPU 1 observes the new value in swiotlb_find_slots(), even though it
+  is not guaranteed by any barrier, allocates a slot and sets the
+  dev->dma_uses_io_tlb flag.
+
+- CPU 1 (driver code) writes the returned buffer address into its
+  private struct. This write is ordered after dev->dma_uses_io_tlb
+  thanks to the smp_wmb() in swiotlb_find_slots().
+
+- CPU 2 (driver code) reads the buffer address, and DMA core passes it
+  to is_swiotlb_buffer(), which contains smp_rmb().
+
+- IIUC CPU 2 is guaranteed to observe the new value of
+  dev->dma_uses_io_tlb, but it may still use the old value of
+  mem->pools->next, because the write on CPU 0 was not ordered
+  against anything. The fact that the new value was observed by CPU 1
+  does not mean that it is also observed by CPU 2.
+
+If this is what can happen, then I'm not sure how these events can be
+properly ordered in a lockless fashion.
+
+> On the transient dev->dma_io_tlb_pools updated in
+> swiotlb_find_slots(), you'd need the barriers as I mentioned above
+> (unless I misunderstood how this pool searching works; not entirely
+> sure why swiotlb_find_pool() searches both).
+
+The transient pool list is updated only in swiotlb_find_slots() before
+setting dev->dma_uses_io_tlb. AFAICS this write should is already
+ordered with the same smp_wmb().
+
+>[...]
+> > Actually, I wonder when a newly added RCU list element is
+> > guaranteed to be visible by all CPUs. Existing documentation deals
+> > mainly with element removal, explaining that both the old state and
+> > the new state of an RCU list are valid after addition. Is it
+> > assumed that the old state of an RCU list after addition is valid
+> > indefinitely? =20
+>=20
+> When some write becomes visible to other CPUs, I don't think the
+> architectures define precisely (more like in vague terms as
+> "eventually"). That's why we can't talk about barriers in relation to
+> a single write as the barrier doesn't make a write visible but rather
+> makes it visible _before_ a subsequent write becomes visible (whenever
+> that may be).
+
+This is understood. It's just that list_add_rcu() updates the next
+pointer in the previous list entry using smp_store_release(), ordering
+writes on this next pointer, but I don't see the matching loads with
+acquire semantics anywhere. It's probably required to detect RCU grace
+period...
+
+Anyway, I was merely wondering when the new list entry is visible on
+all CPUs, and your answer seems to confirm that the RCU list primitives
+do not provide any guarantees. IOW if correct operation requires that
+the new value is observed before something else (like here), it needs
+additional synchronization.
+
+Petr T
