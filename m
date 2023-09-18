@@ -1,137 +1,108 @@
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lj1-f173.google.com (mail-lj1-f173.google.com [209.85.208.173])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8F771CA89
-	for <iommu@lists.linux.dev>; Mon, 18 Sep 2023 11:52:25 +0000 (UTC)
-Received: from pps.filterd (m0356517.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 38IBbfLK008464;
-	Mon, 18 Sep 2023 11:52:08 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : date : subject :
- content-type : message-id : references : in-reply-to : to : cc :
- content-transfer-encoding : mime-version; s=pp1;
- bh=S7l4oCz3CN9sIQ+C3C1TlbBopkTjD4JFHrUqpeIImB4=;
- b=lJhUXSTs7GRWSbWARv91oH7qiq2PxArNkhxZAvgJA18DQ/jEgpPRyeOYuXayZ7l0PMLq
- MpamHoPfnk5Fp/U0WdEa0cdHvfeS6eYukATvvXh7qlQalC9PLymGKaw0DRQyn1R/6qgX
- ACHwJkOOwnLjUJn582gGeamSnUrF/iHENOUUGbsSOY8ElxGZYFyKEafjdR2QQHq+E99a
- jHzu12yZ6FheiahqHz1fPHkw18zpQw7CFr3/LGlTNc9mAq/k8lfVKNS/NF73I7vDXQQ2
- zK5mjMHxy2FywPwaed9zInaqQEZYRclS/haJY0/E/Yag7spqoEg++Kh1Pppw6KLgZ7SY Xg== 
-Received: from ppma22.wdc07v.mail.ibm.com (5c.69.3da9.ip4.static.sl-reverse.com [169.61.105.92])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3t6nks8htw-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 18 Sep 2023 11:52:07 +0000
-Received: from pps.filterd (ppma22.wdc07v.mail.ibm.com [127.0.0.1])
-	by ppma22.wdc07v.mail.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 38I9UGNM005625;
-	Mon, 18 Sep 2023 11:52:06 GMT
-Received: from smtprelay01.fra02v.mail.ibm.com ([9.218.2.227])
-	by ppma22.wdc07v.mail.ibm.com (PPS) with ESMTPS id 3t5q2yajud-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 18 Sep 2023 11:52:06 +0000
-Received: from smtpav02.fra02v.mail.ibm.com (smtpav02.fra02v.mail.ibm.com [10.20.54.101])
-	by smtprelay01.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 38IBq4A913173290
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Mon, 18 Sep 2023 11:52:04 GMT
-Received: from smtpav02.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id A381520040;
-	Mon, 18 Sep 2023 11:52:04 +0000 (GMT)
-Received: from smtpav02.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 7671720043;
-	Mon, 18 Sep 2023 11:52:04 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-	by smtpav02.fra02v.mail.ibm.com (Postfix) with ESMTP;
-	Mon, 18 Sep 2023 11:52:04 +0000 (GMT)
-From: Niklas Schnelle <schnelle@linux.ibm.com>
-Date: Mon, 18 Sep 2023 13:51:44 +0200
-Subject: [PATCH v2 2/2] iommu/virtio: Add ops->flush_iotlb_all and enable
- deferred flush
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <20230918-viommu-sync-map-v2-2-f33767f6cf7a@linux.ibm.com>
-References: <20230918-viommu-sync-map-v2-0-f33767f6cf7a@linux.ibm.com>
-In-Reply-To: <20230918-viommu-sync-map-v2-0-f33767f6cf7a@linux.ibm.com>
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>
-Cc: virtualization@lists.linux-foundation.org, iommu@lists.linux.dev,
-        linux-kernel@vger.kernel.org, Niklas Schnelle <schnelle@linux.ibm.com>
-X-Mailer: b4 0.12.3
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1894;
- i=schnelle@linux.ibm.com; h=from:subject:message-id;
- bh=upC1g4Fnu/iYtsn6wk97A7klYWVGcSCe9jbIua7krSA=;
- b=owGbwMvMwCH2Wz534YHOJ2GMp9WSGFI5LO9N22yyT5l1n+BSiQbdi2JFVxW83qxm1BNoyeXZ8
- dDuzKeIjlIWBjEOBlkxRZZFXc5+6wqmmO4J6u+AmcPKBDKEgYtTACai3c7wP/Ki8bV/C28aNB+5
- V2F/+rfCh7fGPoEWnLK7EuZFmFxMdWFkOH7bUn/W4WATr4u9XRZyM054aYmXFR+7ekw6YYNX7M8
- jHAA=
-X-Developer-Key: i=schnelle@linux.ibm.com; a=openpgp;
- fpr=9DB000B2D2752030A5F72DDCAFE43F15E8C26090
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: NQSOylXlbSs1IxTybC6OPNSLWoeCBIxG
-X-Proofpoint-ORIG-GUID: NQSOylXlbSs1IxTybC6OPNSLWoeCBIxG
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 576BB1C69F
+	for <iommu@lists.linux.dev>; Mon, 18 Sep 2023 11:54:31 +0000 (UTC)
+Received: by mail-lj1-f173.google.com with SMTP id 38308e7fff4ca-2bb9a063f26so69973091fa.2
+        for <iommu@lists.linux.dev>; Mon, 18 Sep 2023 04:54:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1695038069; x=1695642869; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=+XTuYj+doNNU72YBaw1CaA5ZGAyKTkm1rkVWPnny88Q=;
+        b=mo5roe3jVS6SWGTS4+lxN68Wrp4ovcejzRPlimhZHgPgiitkD+eVcPy7MBXbQiWfEo
+         wcci/57udk5HbUpXZlKY+psKcJPzM8eVaDKjqXpTRUyW9pFKvM+oUcDqA96slCasaJbR
+         Te+aNWbbpsyp93Fl1KgmNgsVnodztRWHrOxtp7TycM8XxVCGykIlPOXwlNYb1eBjcVMX
+         eqhYIY3q6i9wExwxCxjVxGiaA35oxC+V6Mx82KcoQkZSvTI5EO2NlobfOKnTSZlzG9ID
+         5sVHthSsuDAU6WpKhCuIWyqEaQiD8Fx2BgHGUCfAIrcZR+JZxLpvXuu0SOD/KcA4y3SG
+         aVEA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1695038069; x=1695642869;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=+XTuYj+doNNU72YBaw1CaA5ZGAyKTkm1rkVWPnny88Q=;
+        b=Ala8rUkZ6+QVtcHBWcOkzTcxEM1/m8x2jEGLNIdPGk68RFNALejcdPOawZXBYzqfBg
+         /I30wfyMXDAm2IbQowMVfkH9bHj9H3EL6EM0HksonfrqZhDZTqAotGBSNrEcfOs7NDc5
+         +6OUPDyLaWodr5lYSF+s+M7fqezr+T2AEWGrLqWxdHPGETdaC4diYXMMhp+HBysVxFdW
+         HsqUPcdsunEtQam0f9vzcrVE72kQ+s0iH2APOGYrH1VXC5iaq/OqubU2kMWlrBWQZX2O
+         cTX7Z+BExV1OHwXhasma06zLmWbyTYa1zN93V2v/fEJh4hg2C9PHCndeLZXF7I0OFJx2
+         Iu5A==
+X-Gm-Message-State: AOJu0YyA/dIMwig6qSde4+QBIcE02SLrkd/zS/anoPV+CzbmLXHMqDjp
+	LgfQ4tQPt0LFOwK5NWd5oRINBg==
+X-Google-Smtp-Source: AGHT+IFFJVzuNiojURIGIa0Y2S0/cv6X2tyb8l1Ch14n1dQLx1ebsX7rXJSwkNoFewVC8Flj1/YkLg==
+X-Received: by 2002:a2e:95cb:0:b0:2b6:a3a0:5f7 with SMTP id y11-20020a2e95cb000000b002b6a3a005f7mr7882460ljh.9.1695038069338;
+        Mon, 18 Sep 2023 04:54:29 -0700 (PDT)
+Received: from [172.25.80.114] ([217.67.225.27])
+        by smtp.gmail.com with ESMTPSA id g11-20020a170906198b00b009926928d486sm6324008ejd.35.2023.09.18.04.54.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 18 Sep 2023 04:54:28 -0700 (PDT)
+Message-ID: <b71c60f2-6781-02fa-ec31-13060af05c7a@linaro.org>
+Date: Mon, 18 Sep 2023 13:54:27 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.267,Aquarius:18.0.980,Hydra:6.0.601,FMLib:17.11.176.26
- definitions=2023-09-18_04,2023-09-18_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 phishscore=0
- suspectscore=0 priorityscore=1501 mlxlogscore=833 malwarescore=0
- lowpriorityscore=0 impostorscore=0 mlxscore=0 bulkscore=0 clxscore=1015
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2308100000 definitions=main-2309180101
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.15.1
+Subject: Re: [PATCH v2 6/8] arm64: dts: qcom: sm4450: Add RPMH and Global
+ clock controller
+To: Tengfei Fan <quic_tengfan@quicinc.com>, will@kernel.org,
+ robin.murphy@arm.com, joro@8bytes.org, robh+dt@kernel.org,
+ krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org, agross@kernel.org,
+ andersson@kernel.org, konrad.dybcio@linaro.org, catalin.marinas@arm.com
+Cc: geert+renesas@glider.be, arnd@arndb.de, neil.armstrong@linaro.org,
+ nfraprado@collabora.com, rafal@milecki.pl, peng.fan@nxp.com,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-arm-msm@vger.kernel.org, quic_tsoni@quicinc.com,
+ quic_shashim@quicinc.com, quic_kaushalk@quicinc.com, quic_tdas@quicinc.com,
+ quic_tingweiz@quicinc.com, quic_aiquny@quicinc.com, kernel@quicinc.com,
+ Ajit Pandey <quic_ajipan@quicinc.com>
+References: <20230915021509.25773-1-quic_tengfan@quicinc.com>
+ <20230915021509.25773-8-quic_tengfan@quicinc.com>
+ <c4e95307-3f09-5704-e5ea-cb42befb9921@linaro.org>
+ <1a7fdafb-e75e-46a1-94be-36a9c3c94c15@quicinc.com>
+Content-Language: en-US
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <1a7fdafb-e75e-46a1-94be-36a9c3c94c15@quicinc.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-Add ops->flush_iotlb_all operation to enable virtio-iommu for the
-dma-iommu deferred flush scheme. This results in a significant increase
-in performance in exchange for a window in which devices can still
-access previously IOMMU mapped memory when running with
-CONFIG_IOMMU_DEFAULT_DMA_LAZY. The previous strict behavior can be
-achieved with iommu.strict=1 on the kernel command line or
-CONFIG_IOMMU_DEFAULT_DMA_STRICT.
+On 18/09/2023 12:34, Tengfei Fan wrote:
+> 
+> 
+> 在 9/15/2023 3:22 PM, Krzysztof Kozlowski 写道:
+>> On 15/09/2023 04:15, Tengfei Fan wrote:
+>>> From: Ajit Pandey <quic_ajipan@quicinc.com>
+>>>
+>>> Add device node for RPMH and Global clock controller on Qualcomm
+>>> SM4450 platform.
+>>>
+>>> Signed-off-by: Ajit Pandey <quic_ajipan@quicinc.com>
+>>> Signed-off-by: Tengfei Fan <quic_tengfan@quicinc.com>
+>>
+>> Warnings in your code:
+>> sm4450-qrd.dtb: clock-controller@100000: clocks: [[28, 0], [29]] is too
+>> short
+>>
+>>
+>>
+>> Best regards,
+>> Krzysztof
+>>
+> Hi Krzyszrof,
+> Want to know how did you find this warning?
+> I cannot find this warning when I do dt check(make ARCH=arm64 
+> DT_CHECKER_FLAGS=-m dtbs_check) or kernel compile(make -j8 ARCH=arm64 
+> CROSS_COMPILE=aarch64-linux-gnu- Image.gz dtbs modules).
+> 
 
-Link: https://lore.kernel.org/lkml/20230802123612.GA6142@myrica/
-Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
----
- drivers/iommu/virtio-iommu.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+I just applied dependencies and these patches, and run dtbs_check.
 
-diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
-index 3649586f0e5c..4dd330fbcbdd 100644
---- a/drivers/iommu/virtio-iommu.c
-+++ b/drivers/iommu/virtio-iommu.c
-@@ -926,6 +926,13 @@ static int viommu_iotlb_sync_map(struct iommu_domain *domain,
- 	return viommu_sync_req(vdomain->viommu);
- }
- 
-+static void viommu_flush_iotlb_all(struct iommu_domain *domain)
-+{
-+	struct viommu_domain *vdomain = to_viommu_domain(domain);
-+
-+	viommu_sync_req(vdomain->viommu);
-+}
-+
- static void viommu_get_resv_regions(struct device *dev, struct list_head *head)
- {
- 	struct iommu_resv_region *entry, *new_entry, *msi = NULL;
-@@ -1051,6 +1058,8 @@ static bool viommu_capable(struct device *dev, enum iommu_cap cap)
- 	switch (cap) {
- 	case IOMMU_CAP_CACHE_COHERENCY:
- 		return true;
-+	case IOMMU_CAP_DEFERRED_FLUSH:
-+		return true;
- 	default:
- 		return false;
- 	}
-@@ -1071,6 +1080,7 @@ static struct iommu_ops viommu_ops = {
- 		.map_pages		= viommu_map_pages,
- 		.unmap_pages		= viommu_unmap_pages,
- 		.iova_to_phys		= viommu_iova_to_phys,
-+		.flush_iotlb_all	= viommu_flush_iotlb_all,
- 		.iotlb_sync		= viommu_iotlb_sync,
- 		.iotlb_sync_map		= viommu_iotlb_sync_map,
- 		.free			= viommu_domain_free,
-
--- 
-2.39.2
+Best regards,
+Krzysztof
 
