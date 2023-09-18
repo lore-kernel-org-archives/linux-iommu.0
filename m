@@ -1,144 +1,153 @@
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.126])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5311D5384
-	for <iommu@lists.linux.dev>; Mon, 18 Sep 2023 06:14:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1695017647; x=1726553647;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=kUpHOK5IBjbqfbjc9MQ81MuDWUW3Xr1pW4Y/QY8RBCE=;
-  b=QbDy/rHBS7N0L08Lb2/NsJoZqLSBaq4wHJ0Sg5zeWPl1G5uoOEbaR1VF
-   vcIPenAkmXODF04mWFaQtu93DNqAyQj+8G8EEQJF9Um3AzvL+xVoMJFp9
-   2LY+JDH/m0scehIYN1uqjU5srwZWldFeregAMdGkZX8SP05GyntVRPlLg
-   MhVeQwaydLlZrx4yDe8bAs9SOMvFZe30JwIqGKHh3FRMknS9x29SgaZdj
-   mZWaDJKUW0hQKPHMcdtSNxhLOg42RapEIdC0jftEbD49JjtOyN88qqG/z
-   0UMQdrzeglcFfV3m5npXxJmtV3klVGHpNVySwCsSW2XCqBMkHqSgHhTDZ
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10836"; a="364618653"
-X-IronPort-AV: E=Sophos;i="6.02,155,1688454000"; 
-   d="scan'208";a="364618653"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Sep 2023 23:14:06 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10836"; a="722351024"
-X-IronPort-AV: E=Sophos;i="6.02,155,1688454000"; 
-   d="scan'208";a="722351024"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
-  by orsmga006.jf.intel.com with ESMTP; 17 Sep 2023 23:14:04 -0700
-Message-ID: <e0a7969a-60e3-6b3c-4f74-592654d4407f@linux.intel.com>
-Date: Mon, 18 Sep 2023 14:10:58 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D67E111A1
+	for <iommu@lists.linux.dev>; Mon, 18 Sep 2023 09:22:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BA2BC433C8;
+	Mon, 18 Sep 2023 09:22:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1695028961;
+	bh=3asbmydlTrYFQRQpW0z4htJw7Y1DdXlksy2ai5XGF3s=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=U25Zl5wBkmgG4S5D9v0GeETOwm362dPqsm8gwoZXWJh4l3byhm9EgT1BwFqHZOeKR
+	 fSGfllCESBDbOTHY1G0yHaXNxdLZoVCarINWv/nLFxGTa7n1SUpmdQg3oobp8fY/LL
+	 ZDtpNX+4fOJJvGAqIiYzKC5jp60c69w2d7LPsfjqWnYYTpT5gCzFU7eaP4RLD7DPj6
+	 D7dHkVO7YCKCUESf4O9sm5lngD2eWblC9J6fLNvnamEiB9f3/6FPTOXjqNLmeQ9hXF
+	 /iGpvnUTLXv03IYu6FJ9bxoLuj6kWGWZE543AA4NgoQZDDV2XoDbbeyn56jnGbXeyT
+	 6CUbBv/LoNErQ==
+Date: Mon, 18 Sep 2023 10:22:36 +0100
+From: Will Deacon <will@kernel.org>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: robin.murphy@arm.com, joro@8bytes.org, jgg@nvidia.com,
+	jean-philippe@linaro.org, apopple@nvidia.com,
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev, stable@vger.kernel.org
+Subject: Re: [PATCH] iommu/arm-smmu-v3: Fix soft lockup triggered by
+ arm_smmu_mm_invalidate_range
+Message-ID: <20230918092235.GA17341@willie-the-truck>
+References: <20230901203904.4073-1-nicolinc@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.15.0
-Cc: baolu.lu@linux.intel.com, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- jgg@nvidia.com
-Subject: Re: [PATCH v3 4/7] iommu: Switch __iommu_domain_alloc() to device ops
-Content-Language: en-US
-To: Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org, will@kernel.org
-References: <cover.1694693889.git.robin.murphy@arm.com>
- <404d8395cf4252c6fe6d98f317f3570127451778.1694693889.git.robin.murphy@arm.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <404d8395cf4252c6fe6d98f317f3570127451778.1694693889.git.robin.murphy@arm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230901203904.4073-1-nicolinc@nvidia.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 
-On 9/16/23 12:58 AM, Robin Murphy wrote:
-> @@ -1997,16 +1995,13 @@ void iommu_set_fault_handler(struct iommu_domain *domain,
->   }
->   EXPORT_SYMBOL_GPL(iommu_set_fault_handler);
->   
-> -static struct iommu_domain *__iommu_domain_alloc(const struct bus_type *bus,
-> +static struct iommu_domain *__iommu_domain_alloc(struct device *dev,
->   						 unsigned type)
->   {
-> -	const struct iommu_ops *ops = bus ? bus->iommu_ops : NULL;
-> +	const struct iommu_ops *ops = dev_iommu_ops(dev);
->   	struct iommu_domain *domain;
->   	unsigned int alloc_type = type & IOMMU_DOMAIN_ALLOC_FLAGS;
->   
-> -	if (!ops)
-> -		return NULL;
-> -
->   	domain = ops->domain_alloc(alloc_type);
->   	if (!domain)
->   		return NULL;
-> @@ -2030,9 +2025,28 @@ static struct iommu_domain *__iommu_domain_alloc(const struct bus_type *bus,
->   	return domain;
->   }
->   
-> +static int __iommu_domain_alloc_dev(struct device *dev, void *data)
-> +{
-> +	struct device **alloc_dev = data;
-> +
-> +	if (!dev_has_iommu(dev))
-> +		return 0;
-> +
-> +	WARN_ONCE(*alloc_dev && dev_iommu_ops(dev) != dev_iommu_ops(*alloc_dev),
-> +		  "Multiple IOMMU drivers present, which the public IOMMU API can't fully support yet. You may still need to disable one or more to get the expected result here, sorry!\n");
-> +
-> +	*alloc_dev = dev;
-> +	return 0;
-> +}
-> +
->   struct iommu_domain *iommu_domain_alloc(const struct bus_type *bus)
->   {
-> -	return __iommu_domain_alloc(bus, IOMMU_DOMAIN_UNMANAGED);
-> +	struct device *dev = NULL;
-> +
-> +	if (bus_for_each_dev(bus, NULL, &dev, __iommu_domain_alloc_dev))
-> +		return NULL;
+On Fri, Sep 01, 2023 at 01:39:04PM -0700, Nicolin Chen wrote:
+> When running an SVA case, the following soft lockup is triggered:
+> --------------------------------------------------------------------
+> watchdog: BUG: soft lockup - CPU#244 stuck for 26s!
+> pstate: 83400009 (Nzcv daif +PAN -UAO +TCO +DIT -SSBS BTYPE=--)
+> pc : arm_smmu_cmdq_issue_cmdlist+0x178/0xa50
+> lr : arm_smmu_cmdq_issue_cmdlist+0x150/0xa50
+> sp : ffff8000d83ef290
+> x29: ffff8000d83ef290 x28: 000000003b9aca00 x27: 0000000000000000
+> x26: ffff8000d83ef3c0 x25: da86c0812194a0e8 x24: 0000000000000000
+> x23: 0000000000000040 x22: ffff8000d83ef340 x21: ffff0000c63980c0
+> x20: 0000000000000001 x19: ffff0000c6398080 x18: 0000000000000000
+> x17: 0000000000000000 x16: 0000000000000000 x15: ffff3000b4a3bbb0
+> x14: ffff3000b4a30888 x13: ffff3000b4a3cf60 x12: 0000000000000000
+> x11: 0000000000000000 x10: 0000000000000000 x9 : ffffc08120e4d6bc
+> x8 : 0000000000000000 x7 : 0000000000000000 x6 : 0000000000048cfa
+> x5 : 0000000000000000 x4 : 0000000000000001 x3 : 000000000000000a
+> x2 : 0000000080000000 x1 : 0000000000000000 x0 : 0000000000000001
+> Call trace:
+>  arm_smmu_cmdq_issue_cmdlist+0x178/0xa50
+>  __arm_smmu_tlb_inv_range+0x118/0x254
+>  arm_smmu_tlb_inv_range_asid+0x6c/0x130
+>  arm_smmu_mm_invalidate_range+0xa0/0xa4
+>  __mmu_notifier_invalidate_range_end+0x88/0x120
+>  unmap_vmas+0x194/0x1e0
+>  unmap_region+0xb4/0x144
+>  do_mas_align_munmap+0x290/0x490
+>  do_mas_munmap+0xbc/0x124
+>  __vm_munmap+0xa8/0x19c
+>  __arm64_sys_munmap+0x28/0x50
+>  invoke_syscall+0x78/0x11c
+>  el0_svc_common.constprop.0+0x58/0x1c0
+>  do_el0_svc+0x34/0x60
+>  el0_svc+0x2c/0xd4
+>  el0t_64_sync_handler+0x114/0x140
+>  el0t_64_sync+0x1a4/0x1a8
+> --------------------------------------------------------------------
+> 
+> The commit 06ff87bae8d3 ("arm64: mm: remove unused functions and variable
+> protoypes") fixed a similar lockup on the CPU MMU side. Yet, it can occur
+> to SMMU too since arm_smmu_mm_invalidate_range() is typically called next
+> to MMU tlb flush function, e.g.
+> 	tlb_flush_mmu_tlbonly {
+> 		tlb_flush {
+> 			__flush_tlb_range {
+> 				// check MAX_TLBI_OPS
+> 			}
+> 		}
+> 		mmu_notifier_invalidate_range {
+> 			arm_smmu_mm_invalidate_range {
+> 				// does not check MAX_TLBI_OPS
+> 			}
+> 		}
+> 	}
+> 
+> Clone a CMDQ_MAX_TLBI_OPS from the MAX_TLBI_OPS in tlbflush.h, since in an
+> SVA case SMMU uses the CPU page table, so it makes sense to align with the
+> tlbflush code. Then, replace per-page TLBI commands with a single per-asid
+> TLBI command, if the request size hits this threshold.
+> 
+> Fixes: 51d113c3be09 ("iommu/arm-smmu-v3: Make BTM optional for SVA")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+> ---
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c | 11 ++++++++---
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h     |  9 +++++++++
+>  2 files changed, 17 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+> index a5a63b1c947e..7ec3f5219250 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+> @@ -201,9 +201,14 @@ static void arm_smmu_mm_invalidate_range(struct mmu_notifier *mn,
+>  	 */
+>  	size = end - start;
+>  
+> -	if (!(smmu_domain->smmu->features & ARM_SMMU_FEAT_BTM))
+> -		arm_smmu_tlb_inv_range_asid(start, size, smmu_mn->cd->asid,
+> -					    PAGE_SIZE, false, smmu_domain);
+> +	if (!(smmu_domain->smmu->features & ARM_SMMU_FEAT_BTM)) {
+> +		if (!(smmu_domain->smmu->features & ARM_SMMU_FEAT_RANGE_INV) &&
+> +		    size >= CMDQ_MAX_TLBI_OPS * PAGE_SIZE)
+> +			arm_smmu_tlb_inv_asid(smmu_domain->smmu, smmu_mn->cd->asid);
+> +		else
+> +			arm_smmu_tlb_inv_range_asid(start, size, smmu_mn->cd->asid,
+> +						    PAGE_SIZE, false, smmu_domain);
 
-__iommu_domain_alloc_dev() always returns 0. Hence above if condition
-will never be true. Perhaps, in __iommu_domain_alloc_dev(),
+cosmetic nit: Please use braces for the multi-line conditionals.
 
-	if (WARN_ON(*alloc_dev && dev_iommu_ops(dev) !=
-             dev_iommu_ops(*alloc_dev))
-		return -EPERM;
+> +	}
+>  	arm_smmu_atc_inv_domain(smmu_domain, mm->pasid, start, size);
+>  }
+>  
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> index dcab85698a4e..79a81eed1dcc 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> @@ -326,6 +326,15 @@
+>   */
+>  #define CMDQ_BATCH_ENTRIES		BITS_PER_LONG
+>  
+> +/*
+> + * Cloned from the MAX_TLBI_OPS in arch/arm64/include/asm/tlbflush.h, this
+> + * is used as a threshold to replace per-page TLBI commands to issue in the
+> + * command queue with an address-space TLBI command, when SMMU w/o a range
+> + * invalidation feature handles too many per-page TLBI commands, which will
+> + * otherwise result in a soft lockup.
+> + */
+> +#define CMDQ_MAX_TLBI_OPS		(1 << (PAGE_SHIFT - 3))
 
-?
+Maybe stick "SVA" in the name of this somewhere, since that's the reason why
+looking at PAGE_SHIFT is relevant?
 
-> +
-> +	return __iommu_domain_alloc(dev, IOMMU_DOMAIN_UNMANAGED);
-
-Is it possible that all devices on this bus have dev_has_iommu() to be
-false? If so, we probably need something like below:
-
-	if (!dev_has_iommu(dev))
-		return -ENODEV;
-
-?
-
->   }
->   EXPORT_SYMBOL_GPL(iommu_domain_alloc);
->   
-> @@ -3228,13 +3242,17 @@ static int __iommu_group_alloc_blocking_domain(struct iommu_group *group)
->   	if (group->blocking_domain)
->   		return 0;
->   
-> -	group->blocking_domain = __iommu_domain_alloc(dev->bus, IOMMU_DOMAIN_BLOCKED);
-> +	/* noiommu groups should never be here */
-> +	if (WARN_ON(!dev_has_iommu(dev)))
-> +		return -ENODEV;
-> +
-> +	group->blocking_domain = __iommu_domain_alloc(dev, IOMMU_DOMAIN_BLOCKED);
->   	if (!group->blocking_domain) {
->   		/*
->   		 * For drivers that do not yet understand IOMMU_DOMAIN_BLOCKED
->   		 * create an empty domain instead.
->   		 */
-> -		group->blocking_domain = __iommu_domain_alloc(dev->bus, IOMMU_DOMAIN_UNMANAGED);
-> +		group->blocking_domain = __iommu_domain_alloc(dev, IOMMU_DOMAIN_UNMANAGED);
->   		if (!group->blocking_domain)
->   			return -EINVAL;
->   	}
-
-Best regards,
-baolu
+Will
