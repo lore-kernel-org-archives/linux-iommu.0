@@ -1,70 +1,135 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 12000111A1
-	for <iommu@lists.linux.dev>; Mon, 18 Sep 2023 09:23:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7CA40C433C8;
-	Mon, 18 Sep 2023 09:23:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1695029027;
-	bh=W9tDmRFz0n8cGL2lDybhVkX8mgpWmONNFSrwMAaOJ+w=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=n1ehrI5spUg4sXe5a8Yv6+CAa8T3JsQFIm8CA1nIgLkzdg4EsKxtmy1OQ6CxzU92k
-	 6+mY5jQ7T8cDV4ooCZcZxOTNm+B5FKGStdncc5ST759apYEOMQb0h0dmknvkvPTino
-	 fo/LTL7I7Hxwed/jKGdIVTbnQbP5s7jcWYWUdQpgovY8N07txFWcYso23OdUkqc1sz
-	 tK7MkNZcWwWOiTzzidwYoumlFHNGKi2LEzlEtNUsY8DLENIxCJ39mFSBHkMkFdelSA
-	 0aUOoSa42UT8Pe6s29TzO/6Nr3QdfNMByf65+yp0rY61fvnzi8KyxVvNHwEEcTdeIv
-	 DDo7gBLhQKZ9w==
-Date: Mon, 18 Sep 2023 10:23:42 +0100
-From: Will Deacon <will@kernel.org>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: Nicolin Chen <nicolinc@nvidia.com>, robin.murphy@arm.com,
-	joro@8bytes.org, jgg@nvidia.com, jean-philippe@linaro.org,
-	apopple@nvidia.com, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	stable@vger.kernel.org
-Subject: Re: [PATCH] iommu/arm-smmu-v3: Fix soft lockup triggered by
- arm_smmu_mm_invalidate_range
-Message-ID: <20230918092341.GB17341@willie-the-truck>
-References: <20230901203904.4073-1-nicolinc@nvidia.com>
- <ZQQLNmmAOsNmvtDs@Asurada-Nvidia>
- <9334dfcd-7749-6ae1-1170-b4952f2b8181@linux.intel.com>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7CFE81BDC5
+	for <iommu@lists.linux.dev>; Mon, 18 Sep 2023 10:08:37 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DBE211FB;
+	Mon, 18 Sep 2023 03:09:12 -0700 (PDT)
+Received: from [10.57.94.165] (unknown [10.57.94.165])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 5E0C63F67D;
+	Mon, 18 Sep 2023 03:08:34 -0700 (PDT)
+Message-ID: <1f9088b5-b52a-3fa0-2bb1-90ee83294d46@arm.com>
+Date: Mon, 18 Sep 2023 11:08:34 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <9334dfcd-7749-6ae1-1170-b4952f2b8181@linux.intel.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.15.1
+Subject: Re: [PATCH v3 3/7] iommu: Validate that devices match domains
+Content-Language: en-GB
+To: Baolu Lu <baolu.lu@linux.intel.com>, joro@8bytes.org, will@kernel.org
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, jgg@nvidia.com
+References: <cover.1694693889.git.robin.murphy@arm.com>
+ <d29334e44c0e6489629dbe13c969c47d4285a877.1694693889.git.robin.murphy@arm.com>
+ <a39dcdcb-e904-a09d-f553-66bac5257205@linux.intel.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <a39dcdcb-e904-a09d-f553-66bac5257205@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Mon, Sep 18, 2023 at 01:33:31PM +0800, Baolu Lu wrote:
-> On 9/15/23 3:43 PM, Nicolin Chen wrote:
-> > I found this patch cannot be applied to v6.6-rc1 due to conflicts
-> > with some new commits that were merged during the previous cycle.
-> > 
-> > I can redo a version rebasing on the v6.6-rc1, yet the new version
-> > won't apply to earlier kernel stable trees. Is there a way to make
-> > it happen that both mainline and earlier trees can have this fix?
+On 2023-09-18 06:49, Baolu Lu wrote:
+> On 9/16/23 12:58 AM, Robin Murphy wrote:
+>> Before we can allow drivers to coexist, we need to make sure that one
+>> driver's domain ops can't misinterpret another driver's dev_iommu_priv
+>> data. To that end, add a token to the domain so we can remember how it
+>> was allocated - for now this may as well be the device ops, since they
+>> still correlate 1:1 with drivers. We can trust ourselves for internal
+>> default domain attachment, so add the check where it covers both the
+>> external attach interfaces.
+>>
+>> Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+>> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+>> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+>> ---
+>>   drivers/iommu/iommu.c | 13 +++++++++----
+>>   include/linux/iommu.h |  1 +
+>>   2 files changed, 10 insertions(+), 4 deletions(-)
+>>
+>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+>> index 2f29ee9dea64..f4cc91227b22 100644
+>> --- a/drivers/iommu/iommu.c
+>> +++ b/drivers/iommu/iommu.c
+>> @@ -2000,26 +2000,28 @@ EXPORT_SYMBOL_GPL(iommu_set_fault_handler);
+>>   static struct iommu_domain *__iommu_domain_alloc(const struct 
+>> bus_type *bus,
+>>                            unsigned type)
+>>   {
+>> +    const struct iommu_ops *ops = bus ? bus->iommu_ops : NULL;
+>>       struct iommu_domain *domain;
+>>       unsigned int alloc_type = type & IOMMU_DOMAIN_ALLOC_FLAGS;
+>> -    if (bus == NULL || bus->iommu_ops == NULL)
+>> +    if (!ops)
+>>           return NULL;
+>> -    domain = bus->iommu_ops->domain_alloc(alloc_type);
+>> +    domain = ops->domain_alloc(alloc_type);
+>>       if (!domain)
+>>           return NULL;
+>>       domain->type = type;
+>> +    domain->owner = ops;
+>>       /*
+>>        * If not already set, assume all sizes by default; the driver
+>>        * may override this later
+>>        */
+>>       if (!domain->pgsize_bitmap)
+>> -        domain->pgsize_bitmap = bus->iommu_ops->pgsize_bitmap;
+>> +        domain->pgsize_bitmap = ops->pgsize_bitmap;
+>>       if (!domain->ops)
+>> -        domain->ops = bus->iommu_ops->default_domain_ops;
+>> +        domain->ops = ops->default_domain_ops;
+>>       if (iommu_is_dma_domain(domain) && iommu_get_dma_cookie(domain)) {
+>>           iommu_domain_free(domain);
+>> @@ -2176,6 +2178,9 @@ static int __iommu_attach_group(struct 
+>> iommu_domain *domain,
+>>           group->domain != group->blocking_domain)
+>>           return -EBUSY;
+>> +    if (dev_iommu_ops(iommu_group_first_dev(group)) != domain->owner)
+>> +        return -EINVAL;
 > 
-> Normally, bug fixes should first be submitted to the mainline kernel
-> (also known as Linus's tree). If you use the "Fixes" and "CC-stable"
-> tags, the patch will be automatically picked up for the appropriate
-> stable kernels.
-> 
-> If the patch does not apply to any stable kernel that you want it to be
-> there, you can then post a back-ported patch to the stable mailing list.
-> 
-> When doing so, it's better to include the following information:
-> 
-> - The mainline commit ID of the back-ported patch.
-> - The versions of the stable kernel(s) to which you want the back-ported
->   patch to be applied.
-> 
-> Hope this helps.
+> Should we apply this check in iommu_attach_device_pasid()?
 
-Yup, please send a version against -rc1 so we can land that first.
+Oh, probably - I don't think I've really noticed that we've grown yet 
+another attach interface since I started this. Looks like current users 
+are passing appropriate domains by construction, but I concur that that 
+path wants covering as well for completeness.
 
-Will
+Thanks,
+Robin.
+
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 3bfc56df4f78..43acf1b8ed56 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -3414,6 +3414,9 @@ int iommu_attach_device_pasid(struct iommu_domain 
+> *domain,
+>          if (!group)
+>                  return -ENODEV;
+> 
+> +       if (dev_iommu_ops(dev) != domain->owner)
+> +               return -EINVAL;
+> +
+>          mutex_lock(&group->mutex);
+>          curr = xa_cmpxchg(&group->pasid_array, pasid, NULL, domain, 
+> GFP_KERNEL);
+>          if (curr) {
+> 
+>> +
+>>       return __iommu_group_set_domain(group, domain);
+>>   }
+>> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+>> index a249e10c8e9f..75ffcac199e3 100644
+>> --- a/include/linux/iommu.h
+>> +++ b/include/linux/iommu.h
+>> @@ -95,6 +95,7 @@ struct iommu_domain_geometry {
+>>   struct iommu_domain {
+>>       unsigned type;
+>>       const struct iommu_domain_ops *ops;
+>> +    const struct iommu_ops *owner; /* Whose domain_alloc we came from */
+>>       unsigned long pgsize_bitmap;    /* Bitmap of page sizes in use */
+>>       struct iommu_domain_geometry geometry;
+>>       struct iommu_dma_cookie *iova_cookie;
+> 
+> Best regards,
+> baolu
