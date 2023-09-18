@@ -1,208 +1,121 @@
-Received: from mail-qt1-f179.google.com (mail-qt1-f179.google.com [209.85.160.179])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2085.outbound.protection.outlook.com [40.107.223.85])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4BF338F8F
-	for <iommu@lists.linux.dev>; Mon, 18 Sep 2023 12:53:31 +0000 (UTC)
-Received: by mail-qt1-f179.google.com with SMTP id d75a77b69052e-4124e1909edso26263271cf.1
-        for <iommu@lists.linux.dev>; Mon, 18 Sep 2023 05:53:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1695041610; x=1695646410; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=MUSqejwgoG4kFKLq84d1iERlj/5/09g18v6WjLidEnE=;
-        b=DAKnOUQHoWw34/hVJWKuAyxSYA2qL9nuoenWA09vHL+txqKrQcbdPvSCnjn0yjV1kU
-         MgFBQQUEtGiIgjL8bqurQW0AnPVBnQczF4FcPd1aS79z3SpVDm2XzBkFrsdhCQNuEeXk
-         YuYMrnbLQJ2jOukBqk+dtxakkS210AvAbjaI9ldaG4rORcBbj8fKSDjaP501b+sDHoef
-         4D8xTs3wueqPlYI0HILhqFGYd7IMs8VcsVmoMOrb0eKa94DILsuLPLErF6oPYR5WzC7t
-         E4OSbnjyRATkAf3Sz2ypZ3SBhKf+HLQjbkcOXtV5FUEFXoumEH/BqMktne3uXiCWhaXR
-         ScRQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1695041610; x=1695646410;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=MUSqejwgoG4kFKLq84d1iERlj/5/09g18v6WjLidEnE=;
-        b=HLMSGuSmHNwVygU88E1YL6ZoFJAURB6mLyKCST4v4BMLct7I0iRDswwVUrrPG0BNX8
-         SgBKT9bSSxYQm9T4xzMJL7VLHHHnkL4aYABrQKOsBrMnIUuaU4mF3oEfWjxJgnSIIehH
-         xslt17tDjWJm7UU9CQ7J8ZLydJFjFflYQrrZ4Hs9M1PsyOGrGy2z2m1czmIRZfn8Ptjt
-         ZTm2n5e4gs+6U7fo5XSQxHM6fOv4RXC/Js8woZ342gon9dSz2KljpZxahYbEyQ8Fpv+A
-         MSNnTUDBtWWoGoTL0Snb1lywGFZz21FIvMUTN/OSOgA2JBSzoJHP10s0jWUabpgC6WZN
-         XzUw==
-X-Gm-Message-State: AOJu0YwILUViP30NVxDmNr332HnWGyiidl48lBiqJva8GwbXfuDs92bd
-	ncl/IkDZXror3j6NStTYS1zKeA==
-X-Google-Smtp-Source: AGHT+IG9pr0IaK3PvnoYkO0+ozJ5IHP6XaBvobwiPpB1iqzQEklX6xBHB6lwthk8glbf2LLXEA7LKA==
-X-Received: by 2002:ac8:4e89:0:b0:40f:e176:ddc5 with SMTP id 9-20020ac84e89000000b0040fe176ddc5mr11707882qtp.34.1695041610721;
-        Mon, 18 Sep 2023 05:53:30 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-26-201.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.26.201])
-        by smtp.gmail.com with ESMTPSA id t4-20020ac87604000000b004109d386323sm2955018qtq.66.2023.09.18.05.53.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Sep 2023 05:53:29 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1qiDkm-0004DD-PC;
-	Mon, 18 Sep 2023 09:53:28 -0300
-Date: Mon, 18 Sep 2023 09:53:28 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Vasant Hegde <vasant.hegde@amd.com>
-Cc: iommu@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com,
-	wei.huang2@amd.com, jsnitsel@redhat.com
-Subject: Re: [PATCH v2 04/11] iommu/amd: Initial SVA support for AMD IOMMU
-Message-ID: <20230918125328.GD13795@ziepe.ca>
-References: <20230911121046.1025732-1-vasant.hegde@amd.com>
- <20230911121046.1025732-5-vasant.hegde@amd.com>
- <ZQCWMFFgbbcBN+0n@ziepe.ca>
- <2d863928-6ffa-4bf7-d4d6-689d779ad701@amd.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7188B1170A
+	for <iommu@lists.linux.dev>; Mon, 18 Sep 2023 14:58:59 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ZpJovo5p/5cmdk/KbTVUikLjSmUJyCbWW7T0EDzyUb/VMc5IlhXe9nqfIVVCdtMigEmKXcF70P9qoKTcrD0MXzaUzvAXxiNtNKGNd8FhIfGJnYLyUOJzA8OlWWnzDXKqcpIAzQEW0bPKu74/KVIuUaUgO4PS3DPjJUtn5kF7CyeO4xDburJzI6zQ4yElGosSLuDf5S/6jnLBoad7wNSLz2NxidacsR353ssaixayHwaECMYQgQ34uoHhxFnzXINX2pqn0sq85OidypyupVx5FC9BJ3NWOFvi3HcbaKXNPg5UzRBdsEpTOejEuedTZyhXYm4Z/+7FOd/XNmKe1qQIvg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=4nCzCmilvp3Su1FcnK3u++hsUeUE9frZQ5nt1rg3F8k=;
+ b=hgepvnpqltMNvkfMxdq7MnF3pR9HGGpgaZ1CIxzvObFI7urM0iEVqctthy0MCm0iaRJaMbsiKOfNV+wzD3WT+rs/Ya723EMvwtUcF/pWyfsNQUy1e5dM0RrrqVF7ud4UYDynCbpMPYIfCTUWMUkR0JamV7RK4xtU8pMkdjDheW1mTpnJnRu7TRREZSWbbU8dQg5kwgAzSskbhJx4+YbgGOrz+eU74Q8NQ0BL/3hFdjxtBUILIc0URGXK4/J551WDXYR7g5lp9fz5g4zDFSuaRiZk8HxQdxqSSR7A02cb46C4OByvyrSUv0DuZLw6b0ylsfjEdPztcBehVEadLWIHFw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=linux.intel.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=4nCzCmilvp3Su1FcnK3u++hsUeUE9frZQ5nt1rg3F8k=;
+ b=KWi4jU020GUmhoDZ6cbhG6j7G7/Yp3WHtFYxzBIUCeUwGf3OBPkf47mpTV9SkOfykRD4HBizfKJJiinXWZxhArrspxWuyf7Ebz61qb8jqGhCOhINK/Uy5zNKzH4q2oGKZa4uzDGoWXdKHpVZNpDF60hynf3J9SmJb5wv9iwG5dh4zRODNDGXBmwG8GDio0B9zV/U7bQEKDzQm4lF/8K2Nes7xh+D1/8NYqYazdsdvIyFVg8di+c+zIVxQ10c6+sjV8g8E4bCbUQkFan5fpmC4nkbN0TMElo0n6ZuDqdKhQEEGBMZ71IeneACiO0or5uoIyrOd2NFzkEemoQoWFS0OA==
+Received: from DM6PR14CA0071.namprd14.prod.outlook.com (2603:10b6:5:18f::48)
+ by CYYPR12MB8653.namprd12.prod.outlook.com (2603:10b6:930:c5::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6792.26; Mon, 18 Sep
+ 2023 14:58:51 +0000
+Received: from DS1PEPF00017095.namprd03.prod.outlook.com
+ (2603:10b6:5:18f:cafe::c7) by DM6PR14CA0071.outlook.office365.com
+ (2603:10b6:5:18f::48) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6792.27 via Frontend
+ Transport; Mon, 18 Sep 2023 14:58:51 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ DS1PEPF00017095.mail.protection.outlook.com (10.167.17.138) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6792.19 via Frontend Transport; Mon, 18 Sep 2023 14:58:51 +0000
+Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Mon, 18 Sep
+ 2023 07:58:41 -0700
+Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail204.nvidia.com
+ (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Mon, 18 Sep
+ 2023 07:58:41 -0700
+Received: from Asurada-Nvidia (10.127.8.14) by mail.nvidia.com (10.129.68.6)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41 via Frontend
+ Transport; Mon, 18 Sep 2023 07:58:41 -0700
+Date: Mon, 18 Sep 2023 07:58:39 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Baolu Lu <baolu.lu@linux.intel.com>, Will Deacon <will@kernel.org>
+CC: <robin.murphy@arm.com>, <joro@8bytes.org>, <jgg@nvidia.com>,
+	<jean-philippe@linaro.org>, <apopple@nvidia.com>,
+	<linux-kernel@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+	<iommu@lists.linux.dev>, <stable@vger.kernel.org>
+Subject: Re: [PATCH] iommu/arm-smmu-v3: Fix soft lockup triggered by
+ arm_smmu_mm_invalidate_range
+Message-ID: <ZQhln3EQ5DeXhfEU@Asurada-Nvidia>
+References: <20230901203904.4073-1-nicolinc@nvidia.com>
+ <ZQQLNmmAOsNmvtDs@Asurada-Nvidia>
+ <9334dfcd-7749-6ae1-1170-b4952f2b8181@linux.intel.com>
+ <20230918092341.GB17341@willie-the-truck>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <2d863928-6ffa-4bf7-d4d6-689d779ad701@amd.com>
+In-Reply-To: <20230918092341.GB17341@willie-the-truck>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS1PEPF00017095:EE_|CYYPR12MB8653:EE_
+X-MS-Office365-Filtering-Correlation-Id: 31b086e0-55b6-4c60-377d-08dbb857c53f
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	d4xzwbFXRdpu6/qOj1aajcXbCnN2iHqp6MVewkMVxiZ52esvOdbO10np35Vp33pg0C5S3QYnKZQKZlKkm9bYoFv7P6zWngq/cTcvt/7ldYW+Bl+TWaEFR+P/ExOP3zibFBVl6Ke4oyMvmGfsp3D8/oHQzDxA6t5Bfk49SYCOBGc0k9XjWkFHQwEneHSDxtM8vbNAIsNWVBGikh7E6X5k8Bo92AltpBRRRgcToOSxanLl217Tu3fOlQrYKZadF1wc5tpdHIHjQW/0ev2LuK95goUsf9D1aRKxVZGgpIu6kz14/bY2yIsiINsZ9oZ06m6DWe6mXQYM9U6XpgjiMsZl5mGPwKgnwCHmd89wfR9/99TavWFvQj1GIS0o7oXC1s4IokmRtYfdhWSWN8BMZHtovS4M2BATI3jwxc7ykpEnqDV49LwHqpGeNR4YuXp41NmdRhYiJfl560+pyJ6XAzVdWqttRUPZuFNGY21151ZOBSQTmK7tn7lnGum2vyPi+KQ+ZJM7mLGSrpmxrbK9Sz3kOGj+DQoBQ9gsF3PJEaaE+tgjMdsx8wmfOsOPNBAmmTGq1qv1NcUFjCugGclnWS/wlYrKr1xgG6wF/bwvkP4g5VWEk63I3OpjHQ0J26ar8hIbjfQrTjMHB91YYJwjBOV7h8EhLO7aAl4yrlr9oeUikOV7Q+0XKvaf2C61d+k01+QhgLkSFBQYFEUZ8xAISm6Y8Gy/UYzutm5ePVu2oPcuiGmkB26S7ehQqvAqaL+DBe9r
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230031)(4636009)(346002)(396003)(376002)(39860400002)(136003)(82310400011)(186009)(1800799009)(451199024)(40470700004)(36840700001)(46966006)(9686003)(478600001)(26005)(4744005)(336012)(426003)(47076005)(2906002)(33716001)(70206006)(54906003)(70586007)(316002)(110136005)(8676002)(5660300002)(4326008)(8936002)(41300700001)(40460700003)(40480700001)(36860700001)(7636003)(356005)(82740400003)(86362001)(55016003);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Sep 2023 14:58:51.2414
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 31b086e0-55b6-4c60-377d-08dbb857c53f
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	DS1PEPF00017095.namprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CYYPR12MB8653
 
-On Fri, Sep 15, 2023 at 02:20:32PM +0530, Vasant Hegde wrote:
+On Mon, Sep 18, 2023 at 10:23:42AM +0100, Will Deacon wrote:
 
-> >> +		dev_data = pasid_data->dev_data;
-> >> +
-> >> +		if ((start ^ (end - 1)) < PAGE_SIZE) {
-> >> +			amd_iommu_flush_page(dev_data->domain,
-> >> +					     pasid_data->pasid, start);
-> >> +		} else {
-> >> +			amd_iommu_flush_tlb(dev_data->domain,
-> >> +					    pasid_data->pasid);
-> >> +		}
-> > 
-> > It is baffling why dev_data->domain would be used here, and it isn't
-> > locked properly so this is a problem.
-> > 
-> > Looking into __flush_pasid it doesn't really make sense. The PASID
-> > domain definately can't assume that the RID domain has the the same
-> > set of iommus. Most likely the SVA domain has a wider set of iommus,
-> > at least I didn't notice any logic preventing this in set_dev_pasid.
-> 
-> Right. SVA protection domain will just add dev/PASID combination without
-> worrying device protection domain/iommu.
->
-> In invalidation path, I walk the `pasid_list` from SVA protection domain, get
-> dev_data/PASID info and use those for invaliation. Since invalidation needs
-> device protection domain I have to refer dev_data->domain.
+> > If the patch does not apply to any stable kernel that you want it to be
+> > there, you can then post a back-ported patch to the stable mailing list.
+> >
+> > When doing so, it's better to include the following information:
+> >
+> > - The mainline commit ID of the back-ported patch.
+> > - The versions of the stable kernel(s) to which you want the back-ported
+> >   patch to be applied.
+> >
+> > Hope this helps.
 
-See my other email, this area looks quite troubled.
+Yes! Thanks :)
 
-> > Also, didn't you say you wanted to de-duplicate the IOTLB and ATC
-> > invalidations like ARM is doing?
-> 
-> I don't have the understanding of ARM. But our invalidation
-> interfaces needs improvement. Like current code does unncessary
-> complete_wait() calls. Those will be fixed along with other
-> invalidation cleanup.
+> Yup, please send a version against -rc1 so we can land that first.
 
-Future fix is fine
- 
-> > 
-> >> +static const struct mmu_notifier_ops sva_mn = {
-> >> +	.invalidate_range = sva_mn_invalidate_range,
-> >> +	.release = sva_mn_release,
-> >> +};
-> > 
-> > Why an empty release function?
-> > 
-> > That can't be right, when release is called the driver has to stop
-> > using iommu_virt_to_phys(domain->mm->pgd)) because it will be freed
-> > memory. It should replace it with a global empty pgd and flush caches
-> > before release returns.
-> 
-> In remove_dev_pasid() its already removed PASID from GCR3 table, flushing IOMMU.
-> Also if its last device unbind, then it also does mmu_notifier_unregister().
->
-> I thought remove_dev_pasid() always gets called before mmu notifier releases.
-> Is there any chance of mmu notifier relase() getting called before
-> remove_dev_pasid().
+Yea, will send a new version.
 
-Yes it can be called in that order. An empty release function here is buggy.
-
-> >> +	pasid_data->pasid = pasid;
-> >> +	pasid_data->dev_data = dev_data;
-> >> +
-> >> +	/* Setup GCR3 table */
-> >> +	ret = amd_iommu_set_gcr3(dev_data, pasid,
-> >> +				 iommu_virt_to_phys(domain->mm->pgd));
-> >> +	if (ret)
-> >> +		goto out_free_pasid_data;
-> >> +
-> >> +	if (list_empty(&sva_pdom->pasid_list)) {
-> >> +		sva_pdom->mn.ops = &sva_mn;
-> >> +
-> >> +		ret = mmu_notifier_register(&sva_pdom->mn, domain->mm);
-> >> +		if (ret)
-> >> +			goto out_clear_gcr3;
-> >> +	}
-> > 
-> > Looks to me like mmu_notifier_register() should be done before
-> > amd_iommu_set_gcr3() so we don't have a risk of stale iotlb data.
-> 
-> Actually we need to update GCR3 table with PASID before registering mmu
-> notifier. So that hardware is ready to handle the invalidations. Otherwise we
-> will have a redudant invalidations.
-
-If you register the mmu and the paslid_list is empty (or locked) then the
-invalidation handler does nothing. So this cannot be a concern.
-
-Putting it out of order like this creates an edge case where the HW
-could concivable cache a translation and miss a notification. It is
-definately wrong.
-
-> >> +void amd_iommu_remove_dev_pasid(struct device *dev, ioasid_t pasid)
-> >> +{
-> >> +	struct pdom_pasid_data *pasid_data;
-> >> +	struct protection_domain *sva_pdom;
-> >> +	struct iommu_domain *domain;
-> >> +	struct iommu_dev_data *dev_data = dev_iommu_priv_get(dev);
-> >> +	unsigned long flags;
-> >> +
-> >> +	if (pasid == 0 || pasid >= dev->iommu->max_pasids)
-> >> +		return;
-> >> +
-> >> +	/* Get protection domain */
-> >> +	domain = iommu_get_domain_for_dev_pasid(dev, pasid, IOMMU_DOMAIN_SVA);
-> >> +	if (!domain)
-> >> +		return;
-> >> +	sva_pdom = to_pdomain(domain);
-> >> +
-> >> +	/* Ensure that all queued faults have been processed */
-> >> +	iopf_queue_flush_dev(dev);
-> >> +
-> >> +	spin_lock_irqsave(&sva_pdom->lock, flags);
-> >> +
-> >> +	pasid_data = get_pdom_pasid_data(sva_pdom, dev, pasid);
-> >> +	if (!pasid_data) {
-> >> +		spin_unlock_irqrestore(&sva_pdom->lock, flags);
-> >> +		return;
-> >> +	}
-> >> +
-> >> +	list_del(&pasid_data->pdom_link);
-> >> +	kfree(pasid_data);
-> >> +
-> >> +	/* make it visible */
-> >> +	smp_wmb();
-> >> +
-> >> +	/* Update GCR3 table and flush IOTLB */
-> >> +	amd_iommu_clear_gcr3(dev_data, pasid);
-> >> +
-> >> +	spin_unlock_irqrestore(&sva_pdom->lock, flags);
-> >> +
-> >> +	if (list_empty(&sva_pdom->pasid_list))
-> >> +		mmu_notifier_unregister(&sva_pdom->mn, domain->mm);
-> > 
-> > Can't drop the spinlock before doing this, it is racy.
-> 
-> Yeah. Its racy. But we cannot call mmu_notifier_unregister() with spinlock held.
-> May be I will introduce some lock to handle notifier.
-
-If you reoganize things so the notifier is always registered then you
-don't need to have the spinlock protecting it anymore. this requires
-putting the unregister in the domain deallocation routine.
-
-Jason
+Thank you
+Nicolin
