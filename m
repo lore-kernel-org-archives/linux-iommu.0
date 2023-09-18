@@ -1,67 +1,147 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A99B38F8E
-	for <iommu@lists.linux.dev>; Mon, 18 Sep 2023 11:05:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9A3CC433C9;
-	Mon, 18 Sep 2023 11:05:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1695035155;
-	bh=yLpITHOqBwaXWsLZuL6tIec5rcjO1kx3VfSTyZ+Wmug=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=UbqQQeUK0N3zM7tT8mb96q8JlwyOfxFaKI88Ga27R3zqfJnVTSVyiImG4/CUCHHbV
-	 8lnSkNrzDSy0E5cgyA4oeCbvgant+dedJeLYbHt/TRkqcuj+BzFrxkT4D4lD9l+Uwy
-	 xowWnIAhun/JkNPcgV6SadtHXFQyyn0qACD0FIylUoe6hmNr3CF49GmewHEMjvrLY6
-	 cFhfXoLxNYJSo9FyxLRtQyEBryze45XBZhQxng9MJOY8O9SrVkP09xwHaCjrFLNFio
-	 TwlnzXy5Q4CmOd+XGP2GlQWIi1w3rXKnwl4RL9G0aJboKgS9LDm9a3io/S15Tj5MCU
-	 2o9iFTaC+2qug==
-From: Will Deacon <will@kernel.org>
-To: joro@8bytes.org,
-	Robin Murphy <robin.murphy@arm.com>
-Cc: catalin.marinas@arm.com,
-	kernel-team@android.com,
-	Will Deacon <will@kernel.org>,
-	linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev,
-	Rui Zhu <zhurui3@huawei.com>,
-	eahariha@linux.microsoft.com
-Subject: Re: [PATCH] iommu/arm-smmu-v3: Avoid constructing invalid range commands
-Date: Mon, 18 Sep 2023 12:05:22 +0100
-Message-Id: <169502858467.264332.7820981729907746151.b4-ty@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <b99cfe71af2bd93a8a2930f20967fb2a4f7748dd.1694432734.git.robin.murphy@arm.com>
-References: <b99cfe71af2bd93a8a2930f20967fb2a4f7748dd.1694432734.git.robin.murphy@arm.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5CD4E38F88
+	for <iommu@lists.linux.dev>; Mon, 18 Sep 2023 11:52:22 +0000 (UTC)
+Received: from pps.filterd (m0353723.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 38IBgMnY028468;
+	Mon, 18 Sep 2023 11:52:07 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : date : subject :
+ content-type : message-id : references : in-reply-to : to : cc :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=9jzteoHEIzdqh8tOaro7yj/VFvME4x3Qvpq6QEzYKTU=;
+ b=mHakv94Tlcmr5Enx1U87Z8ow6TLq9bJ9YUlCV7AyrsK3W7hMy+JrWdnp4w1xRwagLvWD
+ K9xJTvxgTrwxBFLnzjQdag8JAuyaf6RHxzetWEJduGZgmiKZSszC1Lcv84P6h5UB6VXY
+ oOUUx/pw6cOYBB6XiUj1T8B50r1iUaJiF+OaTo452AH1SdOmhtIJJy8GSUNv8Eyz0OQg
+ 17HV+/TWpO5abhrw7y8TxqsXs3H+bcJP6IuQ2/FoXed9e56g1Ml0xp8BPNrYfHJ7hPPv
+ qAmCTqi3IP/+p/TEqRlSPWxZ1tRrGIMS99Y1VC6kn0uRuY8vpkYwKz5/L6tQazLpmq23 qQ== 
+Received: from ppma21.wdc07v.mail.ibm.com (5b.69.3da9.ip4.static.sl-reverse.com [169.61.105.91])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3t6nwhr6eb-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 18 Sep 2023 11:52:07 +0000
+Received: from pps.filterd (ppma21.wdc07v.mail.ibm.com [127.0.0.1])
+	by ppma21.wdc07v.mail.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 38IA0Q90011683;
+	Mon, 18 Sep 2023 11:52:06 GMT
+Received: from smtprelay01.fra02v.mail.ibm.com ([9.218.2.227])
+	by ppma21.wdc07v.mail.ibm.com (PPS) with ESMTPS id 3t5qpn2bdy-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 18 Sep 2023 11:52:06 +0000
+Received: from smtpav02.fra02v.mail.ibm.com (smtpav02.fra02v.mail.ibm.com [10.20.54.101])
+	by smtprelay01.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 38IBq43S7144038
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Mon, 18 Sep 2023 11:52:04 GMT
+Received: from smtpav02.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 6F02120040;
+	Mon, 18 Sep 2023 11:52:04 +0000 (GMT)
+Received: from smtpav02.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 40F3C2004F;
+	Mon, 18 Sep 2023 11:52:04 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+	by smtpav02.fra02v.mail.ibm.com (Postfix) with ESMTP;
+	Mon, 18 Sep 2023 11:52:04 +0000 (GMT)
+From: Niklas Schnelle <schnelle@linux.ibm.com>
+Date: Mon, 18 Sep 2023 13:51:43 +0200
+Subject: [PATCH v2 1/2] iommu/virtio: Make use of ops->iotlb_sync_map
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <20230918-viommu-sync-map-v2-1-f33767f6cf7a@linux.ibm.com>
+References: <20230918-viommu-sync-map-v2-0-f33767f6cf7a@linux.ibm.com>
+In-Reply-To: <20230918-viommu-sync-map-v2-0-f33767f6cf7a@linux.ibm.com>
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>
+Cc: virtualization@lists.linux-foundation.org, iommu@lists.linux.dev,
+        linux-kernel@vger.kernel.org, Niklas Schnelle <schnelle@linux.ibm.com>
+X-Mailer: b4 0.12.3
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2246;
+ i=schnelle@linux.ibm.com; h=from:subject:message-id;
+ bh=9DWWTNpNbWK0dWH80r17ghRqxZ4r9lAHmGntuH/H0Ls=;
+ b=owGbwMvMwCH2Wz534YHOJ2GMp9WSGFI5LK8fmXclesfsUzZMLytLdrtsfi8x2XvxrpT1yYcqf
+ zTIszMqdJSyMIhxMMiKKbIs6nL2W1cwxXRPUH8HzBxWJpAhDFycAjARYyeGf+rHxM2n8in9vRa4
+ 92Pevj8SwRf0f1uzKiW6iaqXLK5kSGf479Txhy06+Zf4YbfNFX+rxB4l7ks1W1DGfv3jvOIXyzd
+ e5QEA
+X-Developer-Key: i=schnelle@linux.ibm.com; a=openpgp;
+ fpr=9DB000B2D2752030A5F72DDCAFE43F15E8C26090
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: w6vAB7KI49RqmI13ttuXNrChbd2X2jXW
+X-Proofpoint-GUID: w6vAB7KI49RqmI13ttuXNrChbd2X2jXW
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.267,Aquarius:18.0.980,Hydra:6.0.601,FMLib:17.11.176.26
+ definitions=2023-09-18_04,2023-09-18_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 phishscore=0
+ suspectscore=0 adultscore=0 malwarescore=0 bulkscore=0 spamscore=0
+ mlxlogscore=340 priorityscore=1501 mlxscore=0 impostorscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2308100000 definitions=main-2309180101
 
-On Mon, 11 Sep 2023 12:57:04 +0100, Robin Murphy wrote:
-> Although io-pgtable's non-leaf invalidations are always for full tables,
-> I missed that SVA also uses non-leaf invalidations, while being at the
-> mercy of whatever range the MMU notifier throws at it. This means it
-> definitely wants the previous TTL fix as well, since it also doesn't
-> know exactly which leaf level(s) may need invalidating, but it can also
-> give us less-aligned ranges wherein certain corners may lead to building
-> an invalid command where TTL, Num and Scale are all 0. It should be fine
-> to handle this by over-invalidating an extra page, since falling back to
-> a non-range command opens up a whole can of errata-flavoured worms.
-> 
-> [...]
+Pull out the sync operation from viommu_map_pages() by implementing
+ops->iotlb_sync_map. This allows the common IOMMU code to map multiple
+elements of an sg with a single sync (see iommu_map_sg()). Furthermore,
+it is also a requirement for IOMMU_CAP_DEFERRED_FLUSH.
 
-Applied to will (for-joerg/arm-smmu/fixes), thanks!
+Link: https://lore.kernel.org/lkml/20230726111433.1105665-1-schnelle@linux.ibm.com/
+Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
+---
+ drivers/iommu/virtio-iommu.c | 17 ++++++++++++++++-
+ 1 file changed, 16 insertions(+), 1 deletion(-)
 
-[1/1] iommu/arm-smmu-v3: Avoid constructing invalid range commands
-      https://git.kernel.org/will/c/eb6c97647be2
+diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
+index 17dcd826f5c2..3649586f0e5c 100644
+--- a/drivers/iommu/virtio-iommu.c
++++ b/drivers/iommu/virtio-iommu.c
+@@ -189,6 +189,12 @@ static int viommu_sync_req(struct viommu_dev *viommu)
+ 	int ret;
+ 	unsigned long flags;
+ 
++	/*
++	 * .iotlb_sync_map and .flush_iotlb_all may be called before the viommu
++	 * is initialized e.g. via iommu_create_device_direct_mappings()
++	 */
++	if (!viommu)
++		return 0;
+ 	spin_lock_irqsave(&viommu->request_lock, flags);
+ 	ret = __viommu_sync_req(viommu);
+ 	if (ret)
+@@ -843,7 +849,7 @@ static int viommu_map_pages(struct iommu_domain *domain, unsigned long iova,
+ 			.flags		= cpu_to_le32(flags),
+ 		};
+ 
+-		ret = viommu_send_req_sync(vdomain->viommu, &map, sizeof(map));
++		ret = viommu_add_req(vdomain->viommu, &map, sizeof(map));
+ 		if (ret) {
+ 			viommu_del_mappings(vdomain, iova, end);
+ 			return ret;
+@@ -912,6 +918,14 @@ static void viommu_iotlb_sync(struct iommu_domain *domain,
+ 	viommu_sync_req(vdomain->viommu);
+ }
+ 
++static int viommu_iotlb_sync_map(struct iommu_domain *domain,
++				 unsigned long iova, size_t size)
++{
++	struct viommu_domain *vdomain = to_viommu_domain(domain);
++
++	return viommu_sync_req(vdomain->viommu);
++}
++
+ static void viommu_get_resv_regions(struct device *dev, struct list_head *head)
+ {
+ 	struct iommu_resv_region *entry, *new_entry, *msi = NULL;
+@@ -1058,6 +1072,7 @@ static struct iommu_ops viommu_ops = {
+ 		.unmap_pages		= viommu_unmap_pages,
+ 		.iova_to_phys		= viommu_iova_to_phys,
+ 		.iotlb_sync		= viommu_iotlb_sync,
++		.iotlb_sync_map		= viommu_iotlb_sync_map,
+ 		.free			= viommu_domain_free,
+ 	}
+ };
 
-Cheers,
 -- 
-Will
+2.39.2
 
-https://fixes.arm64.dev
-https://next.arm64.dev
-https://will.arm64.dev
