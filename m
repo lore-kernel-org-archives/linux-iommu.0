@@ -1,135 +1,108 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7CFE81BDC5
-	for <iommu@lists.linux.dev>; Mon, 18 Sep 2023 10:08:37 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DBE211FB;
-	Mon, 18 Sep 2023 03:09:12 -0700 (PDT)
-Received: from [10.57.94.165] (unknown [10.57.94.165])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 5E0C63F67D;
-	Mon, 18 Sep 2023 03:08:34 -0700 (PDT)
-Message-ID: <1f9088b5-b52a-3fa0-2bb1-90ee83294d46@arm.com>
-Date: Mon, 18 Sep 2023 11:08:34 +0100
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 628C838FA9
+	for <iommu@lists.linux.dev>; Mon, 18 Sep 2023 10:34:42 +0000 (UTC)
+Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 38I9hXZg027122;
+	Mon, 18 Sep 2023 10:34:18 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=qcppdkim1;
+ bh=T+txr2ye61IUfnpU9SRWfUYE35JY6BsBVJV5qifYwjc=;
+ b=fkz3niR0S7/BLwO9foPYw/q6W3YKKfvyvLR/yup5Rdlryxz7IoGCZdYK16nB4gPJ+Xnc
+ WnLLz67vUVOIKNl9ze9sOD1QeESe3/h4cTBr/d9WXqdUqde5K9xI24NDGgKF/YMwlFMH
+ WZfCle+dScSwNSeYLulVOo/koFrKdTH6Hx+WeRjNuWi/OiKoc/5VLNghxGT96wB7NWAR
+ H/y+aZX4JS7gVxMvxxkPv7WhRlUJr4xOlTC+Pzgff3s3shDC0OKpUs0D/TVTaceXYxR+
+ EJvWWXBVjSCijj2TgRU9EG+yJQHbBRxLoAnHQXoST6ZCfkbW+3yVVW7fp2QyEkOVlu4x WQ== 
+Received: from nalasppmta01.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3t53ps2trg-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 18 Sep 2023 10:34:18 +0000
+Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
+	by NALASPPMTA01.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 38IAYGlN005858
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 18 Sep 2023 10:34:16 GMT
+Received: from [10.239.132.204] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.36; Mon, 18 Sep
+ 2023 03:34:08 -0700
+Message-ID: <1a7fdafb-e75e-46a1-94be-36a9c3c94c15@quicinc.com>
+Date: Mon, 18 Sep 2023 18:34:06 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.15.1
-Subject: Re: [PATCH v3 3/7] iommu: Validate that devices match domains
-Content-Language: en-GB
-To: Baolu Lu <baolu.lu@linux.intel.com>, joro@8bytes.org, will@kernel.org
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, jgg@nvidia.com
-References: <cover.1694693889.git.robin.murphy@arm.com>
- <d29334e44c0e6489629dbe13c969c47d4285a877.1694693889.git.robin.murphy@arm.com>
- <a39dcdcb-e904-a09d-f553-66bac5257205@linux.intel.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <a39dcdcb-e904-a09d-f553-66bac5257205@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 6/8] arm64: dts: qcom: sm4450: Add RPMH and Global
+ clock controller
+To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, <will@kernel.org>,
+        <robin.murphy@arm.com>, <joro@8bytes.org>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <conor+dt@kernel.org>,
+        <agross@kernel.org>, <andersson@kernel.org>,
+        <konrad.dybcio@linaro.org>, <catalin.marinas@arm.com>
+CC: <geert+renesas@glider.be>, <arnd@arndb.de>, <neil.armstrong@linaro.org>,
+        <nfraprado@collabora.com>, <rafal@milecki.pl>, <peng.fan@nxp.com>,
+        <linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-msm@vger.kernel.org>, <quic_tsoni@quicinc.com>,
+        <quic_shashim@quicinc.com>, <quic_kaushalk@quicinc.com>,
+        <quic_tdas@quicinc.com>, <quic_tingweiz@quicinc.com>,
+        <quic_aiquny@quicinc.com>, <kernel@quicinc.com>,
+        Ajit Pandey
+	<quic_ajipan@quicinc.com>
+References: <20230915021509.25773-1-quic_tengfan@quicinc.com>
+ <20230915021509.25773-8-quic_tengfan@quicinc.com>
+ <c4e95307-3f09-5704-e5ea-cb42befb9921@linaro.org>
+From: Tengfei Fan <quic_tengfan@quicinc.com>
+In-Reply-To: <c4e95307-3f09-5704-e5ea-cb42befb9921@linaro.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: UJ96XdCTDZ-UeHyYLrp6swZMtqUMmrad
+X-Proofpoint-GUID: UJ96XdCTDZ-UeHyYLrp6swZMtqUMmrad
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.267,Aquarius:18.0.980,Hydra:6.0.601,FMLib:17.11.176.26
+ definitions=2023-09-18_02,2023-09-15_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 mlxscore=0
+ suspectscore=0 lowpriorityscore=0 clxscore=1015 adultscore=0
+ malwarescore=0 mlxlogscore=482 spamscore=0 bulkscore=0 impostorscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2308100000 definitions=main-2309180092
 
-On 2023-09-18 06:49, Baolu Lu wrote:
-> On 9/16/23 12:58 AM, Robin Murphy wrote:
->> Before we can allow drivers to coexist, we need to make sure that one
->> driver's domain ops can't misinterpret another driver's dev_iommu_priv
->> data. To that end, add a token to the domain so we can remember how it
->> was allocated - for now this may as well be the device ops, since they
->> still correlate 1:1 with drivers. We can trust ourselves for internal
->> default domain attachment, so add the check where it covers both the
->> external attach interfaces.
+
+
+在 9/15/2023 3:22 PM, Krzysztof Kozlowski 写道:
+> On 15/09/2023 04:15, Tengfei Fan wrote:
+>> From: Ajit Pandey <quic_ajipan@quicinc.com>
 >>
->> Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
->> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
->> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
->> ---
->>   drivers/iommu/iommu.c | 13 +++++++++----
->>   include/linux/iommu.h |  1 +
->>   2 files changed, 10 insertions(+), 4 deletions(-)
+>> Add device node for RPMH and Global clock controller on Qualcomm
+>> SM4450 platform.
 >>
->> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->> index 2f29ee9dea64..f4cc91227b22 100644
->> --- a/drivers/iommu/iommu.c
->> +++ b/drivers/iommu/iommu.c
->> @@ -2000,26 +2000,28 @@ EXPORT_SYMBOL_GPL(iommu_set_fault_handler);
->>   static struct iommu_domain *__iommu_domain_alloc(const struct 
->> bus_type *bus,
->>                            unsigned type)
->>   {
->> +    const struct iommu_ops *ops = bus ? bus->iommu_ops : NULL;
->>       struct iommu_domain *domain;
->>       unsigned int alloc_type = type & IOMMU_DOMAIN_ALLOC_FLAGS;
->> -    if (bus == NULL || bus->iommu_ops == NULL)
->> +    if (!ops)
->>           return NULL;
->> -    domain = bus->iommu_ops->domain_alloc(alloc_type);
->> +    domain = ops->domain_alloc(alloc_type);
->>       if (!domain)
->>           return NULL;
->>       domain->type = type;
->> +    domain->owner = ops;
->>       /*
->>        * If not already set, assume all sizes by default; the driver
->>        * may override this later
->>        */
->>       if (!domain->pgsize_bitmap)
->> -        domain->pgsize_bitmap = bus->iommu_ops->pgsize_bitmap;
->> +        domain->pgsize_bitmap = ops->pgsize_bitmap;
->>       if (!domain->ops)
->> -        domain->ops = bus->iommu_ops->default_domain_ops;
->> +        domain->ops = ops->default_domain_ops;
->>       if (iommu_is_dma_domain(domain) && iommu_get_dma_cookie(domain)) {
->>           iommu_domain_free(domain);
->> @@ -2176,6 +2178,9 @@ static int __iommu_attach_group(struct 
->> iommu_domain *domain,
->>           group->domain != group->blocking_domain)
->>           return -EBUSY;
->> +    if (dev_iommu_ops(iommu_group_first_dev(group)) != domain->owner)
->> +        return -EINVAL;
+>> Signed-off-by: Ajit Pandey <quic_ajipan@quicinc.com>
+>> Signed-off-by: Tengfei Fan <quic_tengfan@quicinc.com>
 > 
-> Should we apply this check in iommu_attach_device_pasid()?
-
-Oh, probably - I don't think I've really noticed that we've grown yet 
-another attach interface since I started this. Looks like current users 
-are passing appropriate domains by construction, but I concur that that 
-path wants covering as well for completeness.
-
-Thanks,
-Robin.
-
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 3bfc56df4f78..43acf1b8ed56 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -3414,6 +3414,9 @@ int iommu_attach_device_pasid(struct iommu_domain 
-> *domain,
->          if (!group)
->                  return -ENODEV;
+> Warnings in your code:
+> sm4450-qrd.dtb: clock-controller@100000: clocks: [[28, 0], [29]] is too
+> short
 > 
-> +       if (dev_iommu_ops(dev) != domain->owner)
-> +               return -EINVAL;
-> +
->          mutex_lock(&group->mutex);
->          curr = xa_cmpxchg(&group->pasid_array, pasid, NULL, domain, 
-> GFP_KERNEL);
->          if (curr) {
 > 
->> +
->>       return __iommu_group_set_domain(group, domain);
->>   }
->> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
->> index a249e10c8e9f..75ffcac199e3 100644
->> --- a/include/linux/iommu.h
->> +++ b/include/linux/iommu.h
->> @@ -95,6 +95,7 @@ struct iommu_domain_geometry {
->>   struct iommu_domain {
->>       unsigned type;
->>       const struct iommu_domain_ops *ops;
->> +    const struct iommu_ops *owner; /* Whose domain_alloc we came from */
->>       unsigned long pgsize_bitmap;    /* Bitmap of page sizes in use */
->>       struct iommu_domain_geometry geometry;
->>       struct iommu_dma_cookie *iova_cookie;
 > 
 > Best regards,
-> baolu
+> Krzysztof
+> 
+Hi Krzyszrof,
+Want to know how did you find this warning?
+I cannot find this warning when I do dt check(make ARCH=arm64 
+DT_CHECKER_FLAGS=-m dtbs_check) or kernel compile(make -j8 ARCH=arm64 
+CROSS_COMPILE=aarch64-linux-gnu- Image.gz dtbs modules).
+
+-- 
+Thx and BRs,
+Tengfei Fan
