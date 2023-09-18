@@ -1,118 +1,128 @@
-Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com [209.85.221.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2053.outbound.protection.outlook.com [40.107.244.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 73EF663CC
-	for <iommu@lists.linux.dev>; Mon, 18 Sep 2023 15:59:10 +0000 (UTC)
-Received: by mail-wr1-f52.google.com with SMTP id ffacd0b85a97d-317c3ac7339so4214699f8f.0
-        for <iommu@lists.linux.dev>; Mon, 18 Sep 2023 08:59:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1695052748; x=1695657548; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=3XBJAiGdnAah6NYpzFbKj5jrg8y8Zyfvfwd8mgzKL8c=;
-        b=wGauVfGSqeerqccc4TEZAOqMs0yjsSYXyv68I8bp00F0g5xpL4o9N3TGNp+N/0imFg
-         17Brxt0bpEdlgrn9vPAGNgC92ZlKQYBUVoiaUPO1Q6PaUbItpNN0WCQ4qYiUYQGqypEI
-         VHMlg0uziVW5SYG9CYYxvW/gz2j70XmIdmwnLbBHP2Fb4l9L4nD3qDXXYGCcCTb8r4LH
-         IlVrYkKSvzlhr/3g9X+W+nroap8jwC4FEyEXA471NjK0T4/Q30k4zaHJqjmx4onhMIBF
-         HWiKNh1AEFbinrOwTSNqSVj+iDSQNTUWVywUdw+razaWpxRpgaJ2uI2OI9B4GIdCIbty
-         fmHw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1695052748; x=1695657548;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=3XBJAiGdnAah6NYpzFbKj5jrg8y8Zyfvfwd8mgzKL8c=;
-        b=hBzCQBEndIz8Tn8fyqE39lGRKJrLpmZM0UdDWJnOp7d32oQ9Q0f1NUCRAWj18NdePc
-         8IabCsBKnLPFV8CZ2nl4CkoFBhXNMpIpzAE8ffpmCfLDsqYLh3MZhFmTEhO1CyAf3d1e
-         /wGxj7x34PND9UKt5zKAALZZ/ANtuTXlOZw/oB10CM4xiDp81QOJYH/BMWV8t9V4mlCh
-         1CM8XNyq0PlLwsSRB4TodM4TEVV8x5J1OS8ABRJG5f50Dv+ynOmXSz0S6M/a8Nz8pvkU
-         Lx+zPjr2hGXLzb6Bj99OBg8zlmN/G65cOR6LTS+y+hZu9SH0IUMEZxMnWOLkjW0rd4TM
-         NvYQ==
-X-Gm-Message-State: AOJu0YwD2I1r5P9qM3tSx7dZLP1yKZDwSi2rwNJCDEkIeVAtvYHdfbLB
-	pfe4jiDgbO0h4Io8a/uxUoSX/Q==
-X-Google-Smtp-Source: AGHT+IGKCbH5H/HzgTN4rOlc0G7gV3sYCmmjllMp3MZ0mg9AwdHJzCYa0YtI/bnTzf2Hxk/+Rx6GTQ==
-X-Received: by 2002:a5d:56ce:0:b0:314:1230:29b0 with SMTP id m14-20020a5d56ce000000b00314123029b0mr8616133wrw.52.1695052748670;
-        Mon, 18 Sep 2023 08:59:08 -0700 (PDT)
-Received: from myrica ([2a02:c7c:7290:b00:fd32:2b31:6755:400c])
-        by smtp.gmail.com with ESMTPSA id 8-20020a05600c028800b00402c0a8a084sm15481477wmk.17.2023.09.18.08.59.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Sep 2023 08:59:07 -0700 (PDT)
-Date: Mon, 18 Sep 2023 16:59:11 +0100
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: Niklas Schnelle <schnelle@linux.ibm.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	virtualization@lists.linux-foundation.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] iommu/virtio: Add ops->flush_iotlb_all and enable
- deferred flush
-Message-ID: <20230918155911.GB2751287@myrica>
-References: <20230918-viommu-sync-map-v2-0-f33767f6cf7a@linux.ibm.com>
- <20230918-viommu-sync-map-v2-2-f33767f6cf7a@linux.ibm.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B5A201CA87
+	for <iommu@lists.linux.dev>; Mon, 18 Sep 2023 16:24:12 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=aPdMx7lkPPkH4szuAvcaOUAjhtqhZekxJG+iCHHZyXdowyDlKXtBJy5nb6s5qwpZfxeE4CpKDis8tB6XSb08TDt8tWS+7g2qEoQ+pw13CeypkuGsijOUB4/MJjECpjhT0kQcEkRk8lY+2uLDSxBFwQwMIYD64jke9IOATkTr++Hnn2aTVrjYSc+Yc4UQ72xi3TMRgcQih4uXdjIurZ3VUE/B3n2ENJnWGn5nQfPcnefynk7fTbHKvAUVGCkRGB8wPZVR4eHql1IJHhZJs612KA5WgKs5dLyiA2nCFhfRgOt8o4PcamAxcer729+nTyY1cF326z4hEQ1oKP6EU1Ir+w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=tyfvf6o3M1177WCa/UX1b/Li/kIT/mkkNlaVhPdbfLI=;
+ b=EBA65kk2srObrm1O+WEhBPGGJ0QMRPfVvea4SbmX+pRaGh934uhOt1/QlMK/ZS46Rrg7/mNU8eqAGMh2FcDsVUINf6wXxMVpWWEi2OF7Grp4tzqsa8cBp0KpE/4BGjvf00tLrQJsHGkbj/gC+iPgRUkF7elRd9no2gg0RaBfkXDkoX8Fn5iYuzjuPp2UfuMVdtdcm7bC8Uk66ECDnQEvwHUFJBZSSeGbyUxzjCGQnmODE0b74oAhrNN7P9pF2z7s0jak0o4WwRFcfvtOqcjCE18+wpjt0XQiILaZENiZYJe7L7ZMH3yOoO+/iHb02ELyLtm6OcZAuSCO3fG+vGJQxA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=tyfvf6o3M1177WCa/UX1b/Li/kIT/mkkNlaVhPdbfLI=;
+ b=qXvY15FSKYGDol+KMtDs487aoIMNbJDwwMTfYM1nfMsV1iYLT9YpekcEvUTJufARq3xP04S3zTh2PNocZb4zgiYeDYLQMIWNag3hpDTqQiZJ1mlXwOoW2sLRInM82LRGY4FBWQ0QHC7I0l8IlPde6O5Ibd/Hp3YvMf781mlxe4YGFOmnq6JlemtXBPuqTcW/0Qvs9RDMcGeEpSo+jzsVQLkn2rV3sP7E8LiMZzd2NwYRG7ELFFxpvBt89Vq8Md0boV/CP5gTq4KJcBspmEbAvcuVfgQum2+ZveGiNHhBxrY7zgMErbQesBZ6YRzSY/83sAX1mn55xn79zg4j6eiYfA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by SJ2PR12MB8782.namprd12.prod.outlook.com (2603:10b6:a03:4d0::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6792.27; Mon, 18 Sep
+ 2023 16:24:10 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::faf:4cd0:ae27:1073]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::faf:4cd0:ae27:1073%6]) with mapi id 15.20.6792.026; Mon, 18 Sep 2023
+ 16:24:09 +0000
+Date: Mon, 18 Sep 2023 13:24:08 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: joro@8bytes.org, will@kernel.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	baolu.lu@linux.intel.com
+Subject: Re: [PATCH v3 0/7] Iommu: Retire bus ops
+Message-ID: <20230918162408.GI13733@nvidia.com>
+References: <cover.1694693889.git.robin.murphy@arm.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cover.1694693889.git.robin.murphy@arm.com>
+X-ClientProxiedBy: MN2PR07CA0002.namprd07.prod.outlook.com
+ (2603:10b6:208:1a0::12) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230918-viommu-sync-map-v2-2-f33767f6cf7a@linux.ibm.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|SJ2PR12MB8782:EE_
+X-MS-Office365-Filtering-Correlation-Id: d78ea6ca-9247-47a3-2e38-08dbb863af76
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	Y1LvXPi8Fz14DWdG8/TjpTgxrfVNB5QY9JgIJFdXWyO7BEnrm6DdWXAdiHSY5vXUSMTOktNjzNgm8rbLc0ZblXpg59FAh72wZKoN6Ek4aG6BPVh+z0rPw1KNAOEA8opyv5vQ15Qfj5Q6sTw7nwP73EdkjTiTBB21+G1wROO2WR3PMrxDd68Pb/bPsuQHjAxPFUt6hn8WAiCbjWXRQa6PB9+XgrYBwBE74pFKshtNIGhzRiGDJQDah1KkPilVDNsiHF6Fi49O5vtDuzG4iGPvOzBoQXZJPZ6qBheWilwRCBpVnx5Bu6yguRi9Sg6NYqt58Jf/N3E8kDPvy1REABZcB46mo1/JwXXDNQeoRGOG83l01Jwl8FLuZ9jGwqa+HW0je4n9uBXJ2l2NORx1bpGEAOsNpOK7sW/5V5Kocw08+JIzRqSpEXu8hDnIo/B1j36Y2+HyAM06gR895rq20baEVv5grTF17ErJxHnkvpAZvtBH8NFIo1AgJizPDj6gcw2oDh07OydesQpG7FHnebhn28D967O/hxoZ5i+isx3alt68X2DefTGWbiDyUkY/3aynbWnbB+ifNU03yQCku6K10XK60/5ExzAWUgUdH4HEhZs=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366004)(136003)(376002)(346002)(39860400002)(396003)(186009)(1800799009)(451199024)(2616005)(26005)(5660300002)(1076003)(8936002)(4326008)(8676002)(2906002)(4744005)(86362001)(38100700002)(33656002)(36756003)(83380400001)(6506007)(966005)(6486002)(66946007)(66476007)(66556008)(478600001)(6512007)(41300700001)(316002)(6916009);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?5EsT5CBl7F+OiCmeNMhRfbs/h7Z4yGXTYKGzmNxibHbtRd1XURbxKW+5KIy9?=
+ =?us-ascii?Q?52RVRmwCHuigyc9kUITexE37XTuwj1Fz7W1VuL9bFI5o547OsioOkop/ANLw?=
+ =?us-ascii?Q?R79JhSsTwVWgGFAiw6UD9yPNMXsrkISyyMdXDu0Y2aoZiBIkq+gIajOmQfip?=
+ =?us-ascii?Q?SY7QRnLVJZAPgx7QlwH3oiUY43yUle5n5FbDnk8ScM2sYEJPPasioS0CA3Cp?=
+ =?us-ascii?Q?UbnNRHtGUpUAozTXYmOMGWtwV7EcnDs+sV47kDfAQTzAG+hpmuOJ5R4R1YKx?=
+ =?us-ascii?Q?5KWEmlgAUTq+Wp7wUp2YB0RtVq5f3U5BjP5IuVrJs2rGcNtWRhDc2MOnR4Xf?=
+ =?us-ascii?Q?aBJfJjV18qV1s4maGTdPJfm52oCPQmKatEDxRmCvlBQBybAfJmxi0XLMBBre?=
+ =?us-ascii?Q?Tsfe/Zmio5sbvZmZ0Gn20QKm2km7fk3kCv4aw5w4GH26tOfIV6LOplzDqRTy?=
+ =?us-ascii?Q?maZoTqOYDMmrFWLh+0NkMVUiVjL9y46DnmKwBxuQXbeEUlPpbfJvNlGtJpD3?=
+ =?us-ascii?Q?apPA/MDjHipgIJTvFUEmg3vtgkdvoyYEqwn51Q2TLphUx9aL6/Bl6rNnFCoh?=
+ =?us-ascii?Q?eSuiZsKMSGiJ2n8OX7b4pT38j6OwMFb+LojU3fBZYQHB1vKVExOQWXZss5ee?=
+ =?us-ascii?Q?ruu+aT6WDLPyUuIMDsQxOdleH/gKZGZQKu1859paCV+L1uWY/WL8mcA31zXM?=
+ =?us-ascii?Q?esV2rQYO2mfMM1ZihtqVNMKNBbaCV7u3rSQJYY9/C0l/ZcL8WdKtIZJT3HRm?=
+ =?us-ascii?Q?2H8IK+aulyEseiIf84zXURRYYtn2yJ+8KCnYjPaPnvJ69O6ZSuehMElisDTV?=
+ =?us-ascii?Q?GjDGdjnrvwcbgWWa9FGWRTJ48p09KGLrWCRlqBcD/Cj0GtjNJpIw2PPuyuC2?=
+ =?us-ascii?Q?Q0I/jeI/4gJsMoEEeZl5YLzP1ITV7FvWHPEhlV9lnM5tFBTo1woMO9DczBqb?=
+ =?us-ascii?Q?QZpfwsaImZ0P+0tVHiRnZ4740Z27b+WLmPOnOnWW8+n3aU4V/HOoCzkmygi0?=
+ =?us-ascii?Q?zSsbTfHF1bM3pxHA/5kA6T2VDiW4t1BH6p9uJteENP4SQpzDxcdPgEx80HVs?=
+ =?us-ascii?Q?SWEvsxRctOB+6qHHgTCUBX7xfM8hK3TfOATztFEP+GssoSJZsKLm9EEb+0Oa?=
+ =?us-ascii?Q?NXxXWGz9NLc18j1xMLeD1NwxGUNzg2vM0lxuYKS3Pu+mMthgkYjkyY0KXe+G?=
+ =?us-ascii?Q?sKN8ASY9H7gUYXewSrBZ+lq675lW2xWyJsAwhMoPQDQDzHxLX8veItw6iAMu?=
+ =?us-ascii?Q?/CbOw0PNrphTNfLJsiJ3800Nlz8xfTv3gb5rtX+YkXD2dKAped0JxmCliF4X?=
+ =?us-ascii?Q?WxAfxlzfoOp02mnPNGBKKqTiWyZpmAkieH7/uGgtUDbv3WzuGzzErHoo8ZxA?=
+ =?us-ascii?Q?2SlVF7049tCO6wmngHakQm83Ui4R6DbcXj7d0355zGRVoisFMwonjysmCbaC?=
+ =?us-ascii?Q?J6kGAGoEcPsscrfHkX+trmcSDsynmxn6Ya9nTg6mdMWypK4BmhGyZYgUXPrP?=
+ =?us-ascii?Q?kG6syjKxHidPzlHucVaCNktAbtNsLw0IZ+5v0RpxRN9zCZjrdaSQzRzN5Ljx?=
+ =?us-ascii?Q?DgoNzwUKCdv7cU2J0l3jc4VLTNaBuAJsQfvsj57x?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d78ea6ca-9247-47a3-2e38-08dbb863af76
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Sep 2023 16:24:09.0093
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: C7ILMYxk7f/rC0nCpJvPUVdRWVdvVX6Hu3n5pYdnSWPeR6J7tByXDRzvozdafPVE
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ2PR12MB8782
 
-On Mon, Sep 18, 2023 at 01:51:44PM +0200, Niklas Schnelle wrote:
-> Add ops->flush_iotlb_all operation to enable virtio-iommu for the
-> dma-iommu deferred flush scheme. This results in a significant increase
-> in performance in exchange for a window in which devices can still
-> access previously IOMMU mapped memory when running with
-> CONFIG_IOMMU_DEFAULT_DMA_LAZY. The previous strict behavior can be
-> achieved with iommu.strict=1 on the kernel command line or
-> CONFIG_IOMMU_DEFAULT_DMA_STRICT.
+On Fri, Sep 15, 2023 at 05:58:04PM +0100, Robin Murphy wrote:
+> v2: https://lore.kernel.org/linux-iommu/cover.1674753627.git.robin.murphy@arm.com/
 > 
-> Link: https://lore.kernel.org/lkml/20230802123612.GA6142@myrica/
-> Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
+> Hi all,
+> 
+> I've finally been able to get back to this again, and I think it is now
+> hopefully ready to go. Changes from v3 are quite minor - basically a few
+> cosmetics and small tweaks (where I've taken the liberty of keeping
+> Baolu and Jason's review tags; hope that's OK!), the one functional
 
-Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Looks OK
 
-> ---
->  drivers/iommu/virtio-iommu.c | 10 ++++++++++
->  1 file changed, 10 insertions(+)
-> 
-> diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
-> index 3649586f0e5c..4dd330fbcbdd 100644
-> --- a/drivers/iommu/virtio-iommu.c
-> +++ b/drivers/iommu/virtio-iommu.c
-> @@ -926,6 +926,13 @@ static int viommu_iotlb_sync_map(struct iommu_domain *domain,
->  	return viommu_sync_req(vdomain->viommu);
->  }
->  
-> +static void viommu_flush_iotlb_all(struct iommu_domain *domain)
-> +{
-> +	struct viommu_domain *vdomain = to_viommu_domain(domain);
-> +
-> +	viommu_sync_req(vdomain->viommu);
-> +}
-> +
->  static void viommu_get_resv_regions(struct device *dev, struct list_head *head)
->  {
->  	struct iommu_resv_region *entry, *new_entry, *msi = NULL;
-> @@ -1051,6 +1058,8 @@ static bool viommu_capable(struct device *dev, enum iommu_cap cap)
->  	switch (cap) {
->  	case IOMMU_CAP_CACHE_COHERENCY:
->  		return true;
-> +	case IOMMU_CAP_DEFERRED_FLUSH:
-> +		return true;
->  	default:
->  		return false;
->  	}
-> @@ -1071,6 +1080,7 @@ static struct iommu_ops viommu_ops = {
->  		.map_pages		= viommu_map_pages,
->  		.unmap_pages		= viommu_unmap_pages,
->  		.iova_to_phys		= viommu_iova_to_phys,
-> +		.flush_iotlb_all	= viommu_flush_iotlb_all,
->  		.iotlb_sync		= viommu_iotlb_sync,
->  		.iotlb_sync_map		= viommu_iotlb_sync_map,
->  		.free			= viommu_domain_free,
-> 
-> -- 
-> 2.39.2
-> 
+> thing around blocking domains fixed, and plenty of reshuffling from
+> rebases. I'm happy to see that the IOMMUFD selftest problem has resolved
+> itself in the meantime, and it might even be able to use the standard
+> registration flow after this, however I'll leave that for someone else
+> more motivated,
+
+The main issue is the dedicated bus the test needs.
+
+We can change the two wonky interfaces to two new APIs to add/remove a
+new bus from iommu monitoring. Then the normal register APIs are
+probably OK after this series.
+
+Jason
