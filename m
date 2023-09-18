@@ -1,149 +1,99 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 968FA6FC3
-	for <iommu@lists.linux.dev>; Mon, 18 Sep 2023 10:36:24 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1A4BD1FB;
-	Mon, 18 Sep 2023 03:37:01 -0700 (PDT)
-Received: from [10.57.94.165] (unknown [10.57.94.165])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 862883F67D;
-	Mon, 18 Sep 2023 03:36:22 -0700 (PDT)
-Message-ID: <5c2746a3-ef3a-2747-c600-395159f668ba@arm.com>
-Date: Mon, 18 Sep 2023 11:36:18 +0100
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ACC7F38F93
+	for <iommu@lists.linux.dev>; Mon, 18 Sep 2023 10:41:10 +0000 (UTC)
+Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 38IA6DNe031947;
+	Mon, 18 Sep 2023 10:40:55 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=qcppdkim1;
+ bh=B/syoctX9E+0f5BY3ihWhiNWKIhOTa+1cKiNrQMlXAw=;
+ b=d/rrt51jHmxYQ6ZK1Ek6joQRsqp7TSdiBpTB2Qyx5qnvfMdPWRw0XmaFcQ/hOHA5/F0u
+ VEFqqYGDGu8pRqJ22xHdXNIx7+X9GuHvDrrFZ8DbGIosDDq2NLURbmTeFY7laEG0L55j
+ iSp20H37mZTYfMSicY+3wD88QU/MXfNyXCrudPrKU8xGBcilmZk3O1JZFAuK8UdC4aJi
+ mIxQT0vAsMcbN4xAKWrImIUW/kikXg2MTglsGNcWbGy3eUELXZMakAaGKWRlBlgUsY5J
+ Tu9CS9ordpPcHibWsn+FAqj44xEM2ZNltWsKCw1i8QBe9rflmLO2HTNKDOCXNTMNwLAg kw== 
+Received: from nalasppmta02.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3t53ps2u91-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 18 Sep 2023 10:40:55 +0000
+Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
+	by NALASPPMTA02.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 38IAesN0002326
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 18 Sep 2023 10:40:54 GMT
+Received: from [10.239.132.204] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.36; Mon, 18 Sep
+ 2023 03:40:46 -0700
+Message-ID: <a8b512ed-c03c-4e81-aee9-079f18f45da1@quicinc.com>
+Date: Mon, 18 Sep 2023 18:40:43 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.15.1
-Subject: Re: [PATCH v3 4/7] iommu: Switch __iommu_domain_alloc() to device ops
-Content-Language: en-GB
-To: Baolu Lu <baolu.lu@linux.intel.com>, joro@8bytes.org, will@kernel.org
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, jgg@nvidia.com
-References: <cover.1694693889.git.robin.murphy@arm.com>
- <404d8395cf4252c6fe6d98f317f3570127451778.1694693889.git.robin.murphy@arm.com>
- <e0a7969a-60e3-6b3c-4f74-592654d4407f@linux.intel.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <e0a7969a-60e3-6b3c-4f74-592654d4407f@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 7/8] arm64: dts: qcom: add uart console support for
+ SM4450
+To: Konrad Dybcio <konrad.dybcio@linaro.org>, <will@kernel.org>,
+        <robin.murphy@arm.com>, <joro@8bytes.org>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <conor+dt@kernel.org>,
+        <agross@kernel.org>, <andersson@kernel.org>, <catalin.marinas@arm.com>
+CC: <geert+renesas@glider.be>, <arnd@arndb.de>, <neil.armstrong@linaro.org>,
+        <nfraprado@collabora.com>, <rafal@milecki.pl>, <peng.fan@nxp.com>,
+        <linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-msm@vger.kernel.org>, <quic_tsoni@quicinc.com>,
+        <quic_shashim@quicinc.com>, <quic_kaushalk@quicinc.com>,
+        <quic_tdas@quicinc.com>, <quic_tingweiz@quicinc.com>,
+        <quic_aiquny@quicinc.com>, <kernel@quicinc.com>
+References: <20230915021509.25773-1-quic_tengfan@quicinc.com>
+ <20230915021509.25773-9-quic_tengfan@quicinc.com>
+ <f1795027-cbb5-44fe-83ac-dd2b079d65ad@linaro.org>
+From: Tengfei Fan <quic_tengfan@quicinc.com>
+In-Reply-To: <f1795027-cbb5-44fe-83ac-dd2b079d65ad@linaro.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: lgC4iExz9KqOaoeDh8g-0Y9YessK-dwZ
+X-Proofpoint-GUID: lgC4iExz9KqOaoeDh8g-0Y9YessK-dwZ
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.267,Aquarius:18.0.980,Hydra:6.0.601,FMLib:17.11.176.26
+ definitions=2023-09-18_02,2023-09-15_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 mlxscore=0
+ suspectscore=0 lowpriorityscore=0 clxscore=1015 adultscore=0
+ malwarescore=0 mlxlogscore=495 spamscore=0 bulkscore=0 impostorscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2308100000 definitions=main-2309180093
 
-On 2023-09-18 07:10, Baolu Lu wrote:
-> On 9/16/23 12:58 AM, Robin Murphy wrote:
->> @@ -1997,16 +1995,13 @@ void iommu_set_fault_handler(struct 
->> iommu_domain *domain,
->>   }
->>   EXPORT_SYMBOL_GPL(iommu_set_fault_handler);
->> -static struct iommu_domain *__iommu_domain_alloc(const struct 
->> bus_type *bus,
->> +static struct iommu_domain *__iommu_domain_alloc(struct device *dev,
->>                            unsigned type)
->>   {
->> -    const struct iommu_ops *ops = bus ? bus->iommu_ops : NULL;
->> +    const struct iommu_ops *ops = dev_iommu_ops(dev);
->>       struct iommu_domain *domain;
->>       unsigned int alloc_type = type & IOMMU_DOMAIN_ALLOC_FLAGS;
->> -    if (!ops)
->> -        return NULL;
->> -
->>       domain = ops->domain_alloc(alloc_type);
->>       if (!domain)
->>           return NULL;
->> @@ -2030,9 +2025,28 @@ static struct iommu_domain 
->> *__iommu_domain_alloc(const struct bus_type *bus,
->>       return domain;
->>   }
->> +static int __iommu_domain_alloc_dev(struct device *dev, void *data)
->> +{
->> +    struct device **alloc_dev = data;
->> +
->> +    if (!dev_has_iommu(dev))
->> +        return 0;
->> +
->> +    WARN_ONCE(*alloc_dev && dev_iommu_ops(dev) != 
->> dev_iommu_ops(*alloc_dev),
->> +          "Multiple IOMMU drivers present, which the public IOMMU API 
->> can't fully support yet. You may still need to disable one or more to 
->> get the expected result here, sorry!\n");
->> +
->> +    *alloc_dev = dev;
->> +    return 0;
->> +}
->> +
->>   struct iommu_domain *iommu_domain_alloc(const struct bus_type *bus)
->>   {
->> -    return __iommu_domain_alloc(bus, IOMMU_DOMAIN_UNMANAGED);
->> +    struct device *dev = NULL;
->> +
->> +    if (bus_for_each_dev(bus, NULL, &dev, __iommu_domain_alloc_dev))
->> +        return NULL;
-> 
-> __iommu_domain_alloc_dev() always returns 0. Hence above if condition
-> will never be true. Perhaps, in __iommu_domain_alloc_dev(),
 
-Oh bugger, seems I screwed up the unnecessarily overcomplicated rebase 
-that I made for myself, and managed to put this back to the v1 code, so 
-it's just wrong (bus_for_each_dev() can return an error itself if the 
-bus isn't properly initialised, but it also returns success if the bus 
-has no devices, which was handled properly in v2 that you actually R-b'd).
 
+在 9/15/2023 8:12 PM, Konrad Dybcio 写道:
+> On 15.09.2023 04:15, Tengfei Fan wrote:
+>> Add base description of UART, TLMM, interconnect, TCSRCC and SMMU nodes
+>> which helps SM4450 boot to shell with console on boards with this SoC.
+>>
+>> Signed-off-by: Tengfei Fan <quic_tengfan@quicinc.com>
+>> ---
+> You're adding multiple independent hardware blocks at once.
+> This is impossible to bisect if anyone ever encounters an
+> issue with one of them.
 > 
->      if (WARN_ON(*alloc_dev && dev_iommu_ops(dev) !=
->              dev_iommu_ops(*alloc_dev))
->          return -EPERM;
+> Konrad
 
-I went back and forth on this initially, but in the end I figured since 
-the other patches are meant to be making the rest of the public API 
-sufficiently robust, then if someone does try it with multiple drivers 
-before full support can be finished, they can at least have some chance 
-of getting the desired result, rather than a guarantee of not. I am 
-still open to being convinced otherwise, though.
+Hi Konrad,
 
-Thanks,
-Robin.
+Because all these DT nodes are for support enable uart console. Put all 
+these DT nodes in one patch to form a complete funcitonal body, so add 
+multiple independent hardware blocks in one patch.
 
-> 
-> ?
-> 
->> +
->> +    return __iommu_domain_alloc(dev, IOMMU_DOMAIN_UNMANAGED);
-> 
-> Is it possible that all devices on this bus have dev_has_iommu() to be
-> false? If so, we probably need something like below:
-> 
->      if (!dev_has_iommu(dev))
->          return -ENODEV;
-> 
-> ?
-> 
->>   }
->>   EXPORT_SYMBOL_GPL(iommu_domain_alloc);
->> @@ -3228,13 +3242,17 @@ static int 
->> __iommu_group_alloc_blocking_domain(struct iommu_group *group)
->>       if (group->blocking_domain)
->>           return 0;
->> -    group->blocking_domain = __iommu_domain_alloc(dev->bus, 
->> IOMMU_DOMAIN_BLOCKED);
->> +    /* noiommu groups should never be here */
->> +    if (WARN_ON(!dev_has_iommu(dev)))
->> +        return -ENODEV;
->> +
->> +    group->blocking_domain = __iommu_domain_alloc(dev, 
->> IOMMU_DOMAIN_BLOCKED);
->>       if (!group->blocking_domain) {
->>           /*
->>            * For drivers that do not yet understand IOMMU_DOMAIN_BLOCKED
->>            * create an empty domain instead.
->>            */
->> -        group->blocking_domain = __iommu_domain_alloc(dev->bus, 
->> IOMMU_DOMAIN_UNMANAGED);
->> +        group->blocking_domain = __iommu_domain_alloc(dev, 
->> IOMMU_DOMAIN_UNMANAGED);
->>           if (!group->blocking_domain)
->>               return -EINVAL;
->>       }
-> 
-> Best regards,
-> baolu
+-- 
+Thx and BRs,
+Tengfei Fan
