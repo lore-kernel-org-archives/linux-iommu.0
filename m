@@ -1,218 +1,135 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7762F1F5F4
-	for <iommu@lists.linux.dev>; Mon, 18 Sep 2023 15:45:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 399A5C4167D;
-	Mon, 18 Sep 2023 15:45:37 +0000 (UTC)
-Date: Mon, 18 Sep 2023 16:45:34 +0100
-From: Catalin Marinas <catalin.marinas@arm.com>
-To: Petr =?utf-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
-Cc: Christoph Hellwig <hch@lst.de>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A912D63CC
+	for <iommu@lists.linux.dev>; Mon, 18 Sep 2023 15:58:05 +0000 (UTC)
+Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-402d0eda361so51138085e9.0
+        for <iommu@lists.linux.dev>; Mon, 18 Sep 2023 08:58:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1695052684; x=1695657484; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=BuWLNVcWzC6ASPZz9GEuSYcaG6pqUJBDXR7IC05cfLo=;
+        b=GguGeBII4mnLRFRAG+HUuUry0B5UDvLx4VbrfvoqAnyYoCmZyZnK4s5ZnwhWgo6Qa7
+         amcmSlR3XHaVtUG7zXCPl8jGP/D+iFY34EALm9A5YSfgFW81NpK8IDu26rWN/OYq6cjt
+         f8kFFFt25OBIicPi2+rSm26esqok6v+vbTxD6xmQOEBgfJK4+j7d/Ba2X2JNsC6uvZfA
+         MPFY9/Y4JJeBDDN5F8jMyAa2PFkfIM675xxmG+5+hj0+yY7awdBknP+2N20yXDZvATYL
+         XlGfChIhg9KlUVptzJePPdt14+i17tWp4+jWboJ+a4cwyZ81VFNM6O1+UHzzuo+BEdEK
+         ghKw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1695052684; x=1695657484;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=BuWLNVcWzC6ASPZz9GEuSYcaG6pqUJBDXR7IC05cfLo=;
+        b=gqdtvIgRB6kcFbxvqdJHfXxkZFaayn/WqW1WUPXMcVdp142jJ5cPoLPjaUe7GMm+Cs
+         JmXregBRDYYeDJQr7Oddsbn2HYVD3MxbXe3Dldx7wsyPIMEv/bxeJ85w38QHZPdj/ENP
+         B4+ZbnCqLSiugsePpjx5sP34UcsaRkIwb48+l5k23oq22XbFB0R5j5iyZkfDXPHnTMiB
+         VdC1cV/5LW35HYqaEqc+Gw7ws+tC+1vyIBjjtItNNCeK6CeVmRvhPNZPlQUm7kzIcAQR
+         fTEOuKOi2LSOCkpEAVUeOJ0yYnQbmjfe3D5gvghUiKfL91ZWha5005XEFKTZBFQgAK14
+         djnA==
+X-Gm-Message-State: AOJu0YyW2Th4Gijb4tt7V0eMkrQzOWWJE/mSbnCMHCWpmTXHVt1rSL50
+	cOGd9pqmSTojS/TLHlxxdK4SwQ==
+X-Google-Smtp-Source: AGHT+IFkwjfPBd2yc8mJTKncE3vqTaKfj1taiCNjhQjrYNC7gDR/8luatOeD/+/M95Nq3Fi20OUQWg==
+X-Received: by 2002:a05:600c:3784:b0:3fb:4055:1ddd with SMTP id o4-20020a05600c378400b003fb40551dddmr7641400wmr.28.1695052683796;
+        Mon, 18 Sep 2023 08:58:03 -0700 (PDT)
+Received: from myrica ([2a02:c7c:7290:b00:fd32:2b31:6755:400c])
+        by smtp.gmail.com with ESMTPSA id ay18-20020a05600c1e1200b003fef5e76f2csm3022438wmb.0.2023.09.18.08.57.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Sep 2023 08:57:59 -0700 (PDT)
+Date: Mon, 18 Sep 2023 16:58:00 +0100
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: Niklas Schnelle <schnelle@linux.ibm.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
 	Robin Murphy <robin.murphy@arm.com>,
-	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>,
-	open list <linux-kernel@vger.kernel.org>,
-	Roberto Sassu <roberto.sassu@huaweicloud.com>,
-	Jonathan Corbet <corbet@lwn.net>
-Subject: Re: [PATCH] swiotlb: fix the check whether a device has used
- software IO TLB
-Message-ID: <ZQhwnhOQbDp3j8y7@arm.com>
-References: <20230913114016.17752-1-petr@tesarici.cz>
- <20230913121403.GB4544@lst.de>
- <20230913142656.29e135d6@meshulam.tesarici.cz>
- <ZQNQscYr0rQWdw66@arm.com>
- <20230915111343.01496320@meshulam.tesarici.cz>
- <ZQSPyBRjnSISNFmD@arm.com>
- <20230917114741.01a23364@meshulam.tesarici.cz>
+	virtualization@lists.linux-foundation.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/2] iommu/virtio: Make use of ops->iotlb_sync_map
+Message-ID: <20230918155800.GA2751287@myrica>
+References: <20230918-viommu-sync-map-v2-0-f33767f6cf7a@linux.ibm.com>
+ <20230918-viommu-sync-map-v2-1-f33767f6cf7a@linux.ibm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230917114741.01a23364@meshulam.tesarici.cz>
+In-Reply-To: <20230918-viommu-sync-map-v2-1-f33767f6cf7a@linux.ibm.com>
 
-On Sun, Sep 17, 2023 at 11:47:41AM +0200, Petr Tesařík wrote:
-> On Fri, 15 Sep 2023 18:09:28 +0100
-> Catalin Marinas <catalin.marinas@arm.com> wrote:
-> > On Fri, Sep 15, 2023 at 11:13:43AM +0200, Petr Tesařík wrote:
-> > > On Thu, 14 Sep 2023 19:28:01 +0100
-> > > Catalin Marinas <catalin.marinas@arm.com> wrote:  
-> > > > What do the smp_wmb() barriers in swiotlb_find_slots() and
-> > > > swiotlb_dyn_alloc() order? The latter is even more unclear as it's at
-> > > > the end of the function and the "pairing" comment doesn't help.  
-> > > 
-> > > By the time swiotlb_find_slots() returns a valid slot index, the new
-> > > value of dev->dma_uses_io_tlb must be visible by all CPUs in
-> > > is_swiotlb_buffer(). The index is used to calculate the bounce buffer
-> > > address returned to device drivers. This address may be passed to
-> > > another CPU and used as an argument to is_swiotlb_buffer().  
-> > 
-> > Ah, I remember now. So the smp_wmb() ensures that dma_uses_io_tlb is
-> > seen by other CPUs before the slot address (presumably passed via other
-> > memory write). It may be worth updating the comment in the code (I'm
-> > sure I'll forget it in a month time). The smp_rmb() before READ_ONCE()
-> > in this patch is also needed for the same reasons (ordering after the
-> > read of the address passed to is_swiotlb_buffer()).
+On Mon, Sep 18, 2023 at 01:51:43PM +0200, Niklas Schnelle wrote:
+> Pull out the sync operation from viommu_map_pages() by implementing
+> ops->iotlb_sync_map. This allows the common IOMMU code to map multiple
+> elements of an sg with a single sync (see iommu_map_sg()). Furthermore,
+> it is also a requirement for IOMMU_CAP_DEFERRED_FLUSH.
 > 
-> I agree. The comment should definitely mention the implicitly assumed
-> memory write done by device drivers, because it is not obvious which
-> two writes are being ordered.
+> Link: https://lore.kernel.org/lkml/20230726111433.1105665-1-schnelle@linux.ibm.com/
+> Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
+
+Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+
+This must be merged after "iommu/dma: s390 DMA API conversion and
+optimized IOTLB flushing" because of the updated iotlb_sync_map()
+prototype.
+
+Thanks,
+Jean
+
+> ---
+>  drivers/iommu/virtio-iommu.c | 17 ++++++++++++++++-
+>  1 file changed, 16 insertions(+), 1 deletion(-)
 > 
-> > BTW, you may want to use WRITE_ONCE() when setting dma_uses_io_tlb (it
-> > also matches the READ_ONCE() in is_swiotlb_buffer()). Or you can use
-> > smp_store_mb() (but check its semantics first).
+> diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
+> index 17dcd826f5c2..3649586f0e5c 100644
+> --- a/drivers/iommu/virtio-iommu.c
+> +++ b/drivers/iommu/virtio-iommu.c
+> @@ -189,6 +189,12 @@ static int viommu_sync_req(struct viommu_dev *viommu)
+>  	int ret;
+>  	unsigned long flags;
+>  
+> +	/*
+> +	 * .iotlb_sync_map and .flush_iotlb_all may be called before the viommu
+> +	 * is initialized e.g. via iommu_create_device_direct_mappings()
+> +	 */
+> +	if (!viommu)
+> +		return 0;
+>  	spin_lock_irqsave(&viommu->request_lock, flags);
+>  	ret = __viommu_sync_req(viommu);
+>  	if (ret)
+> @@ -843,7 +849,7 @@ static int viommu_map_pages(struct iommu_domain *domain, unsigned long iova,
+>  			.flags		= cpu_to_le32(flags),
+>  		};
+>  
+> -		ret = viommu_send_req_sync(vdomain->viommu, &map, sizeof(map));
+> +		ret = viommu_add_req(vdomain->viommu, &map, sizeof(map));
+>  		if (ret) {
+>  			viommu_del_mappings(vdomain, iova, end);
+>  			return ret;
+> @@ -912,6 +918,14 @@ static void viommu_iotlb_sync(struct iommu_domain *domain,
+>  	viommu_sync_req(vdomain->viommu);
+>  }
+>  
+> +static int viommu_iotlb_sync_map(struct iommu_domain *domain,
+> +				 unsigned long iova, size_t size)
+> +{
+> +	struct viommu_domain *vdomain = to_viommu_domain(domain);
+> +
+> +	return viommu_sync_req(vdomain->viommu);
+> +}
+> +
+>  static void viommu_get_resv_regions(struct device *dev, struct list_head *head)
+>  {
+>  	struct iommu_resv_region *entry, *new_entry, *msi = NULL;
+> @@ -1058,6 +1072,7 @@ static struct iommu_ops viommu_ops = {
+>  		.unmap_pages		= viommu_unmap_pages,
+>  		.iova_to_phys		= viommu_iova_to_phys,
+>  		.iotlb_sync		= viommu_iotlb_sync,
+> +		.iotlb_sync_map		= viommu_iotlb_sync_map,
+>  		.free			= viommu_domain_free,
+>  	}
+>  };
 > 
-> I can use WRITE_ONCE(), although I believe it does not make much
-> difference thanks to the barrier provided by smp_wmb().
-
-WRITE_ONCE() is about atomicity rather than ordering (and avoiding
-compiler optimisations messing things). While I don't see the compiler
-generating multiple accesses for a boolean write, using these accessors
-also helps tools like kcsan.
-
-> Using smp_store_mb() should also work, but it inserts a full memory
-> barrier, which is more than is needed IMO.
-
-True.
-
-> > > I am not sure that the smp_wmb() in swiotlb_dyn_alloc() is needed, but
-> > > let me explain my thinking. Even if the dev->dma_uses_io_tlb flag is
-> > > set, is_swiotlb_buffer() returns false unless the buffer address is
-> > > found in the RCU list of swiotlb pools, which is walked without taking
-> > > any lock. In some iterations of the patch series, there was a direct
-> > > call to swiotlb_dyn_alloc(), and a smp_wmb() was necessary to make sure
-> > > that the list of swiotlb pools cannot be observed as empty by another
-> > > CPU. You have already explained to me that taking a spin lock in
-> > > add_mem_pool() is not sufficient, because it does not invalidate a
-> > > value that might have been speculatively read by another CPU before
-> > > entering the critical section. OTOH swiotlb_dyn_alloc() is always
-> > > called through schedule_work() in the current version. If that
-> > > implicitly provides necessary barriers, this smp_wmb() can be removed.  
-> > 
-> > Normally you'd need a barrier between pool update and flag update:
-> > 
-> > 	list_add_rcu(&pool->node, &mem->pools);
-> > 	smp_wmb();
-> > 	WRITE_ONCE(dev->dma_uses_io_tlb, true);
+> -- 
+> 2.39.2
 > 
-> I agree. However, if is_swiotlb_buffer() gets an address allocated from
-> a swiotlb pool that was added here, then it also had to be returned by
-> swiotlb_find_slots(), where smp_wmb() makes sure that all writes are
-> visible before the above-mentioned assumed write of the buffer pointer
-> into a private data field, performed by driver code.
-
-You are right, we have a dependency on this assumed write, so it should
-be fine (no need to sprinkle more barriers).
-
-> > The lock around mem->pools update doesn't help since since it only has
-> > release semantics on the unlock path (which doesn't prevent the
-> > dma_uses_io_tlb write from being reordered before).
-> 
-> Yes.
-> 
-> > On the reader side, you need to make sure that if the dma_uses_io_tlb is
-> > true, the mem->pools access was not speculated and read earlier as
-> > empty, so another dma_rmb():
-> > 
-> > 	if (READ_ONCE(dev->dma_uses_io_tlb)) {
-> > 		dma_rmb();
-> 
-> I think this is a typo, and you mean smp_rmb(); at least I can't see
-> which consistent DMA memory would be accessed here.
-
-Yes, smp_rmb().
-
-> > 		swiotlb_find_pool(...);
-> > 	}
-> > 
-> > That's missing in the code currently (and rcu_read_lock() only has
-> > acquire semantics).
-> > 
-> > However, what confuses me is that mem->pools is populated
-> > asynchronously via schedule_work(). Not sure how the barriers help
-> > since the work can be scheduled on any CPU at any point after,
-> > potentially after dma_uses_io_tlb has been updated.
-> 
-> Ah... You may have a point after all if this sequence of events is
-> possible:
-> 
-> - CPU 0 writes new value to mem->pools->next in swiotlb_dyn_alloc().
-> 
-> - CPU 1 observes the new value in swiotlb_find_slots(), even though it
->   is not guaranteed by any barrier, allocates a slot and sets the
->   dev->dma_uses_io_tlb flag.
-> 
-> - CPU 1 (driver code) writes the returned buffer address into its
->   private struct. This write is ordered after dev->dma_uses_io_tlb
->   thanks to the smp_wmb() in swiotlb_find_slots().
-> 
-> - CPU 2 (driver code) reads the buffer address, and DMA core passes it
->   to is_swiotlb_buffer(), which contains smp_rmb().
-> 
-> - IIUC CPU 2 is guaranteed to observe the new value of
->   dev->dma_uses_io_tlb, but it may still use the old value of
->   mem->pools->next, because the write on CPU 0 was not ordered
->   against anything. The fact that the new value was observed by CPU 1
->   does not mean that it is also observed by CPU 2.
-
-Yes, that's possible. On CPU 1 there is a control dependency between the
-read of mem->pools->next and the write of dev->dma_uses_io_tlb but I
-don't think this is sufficient to claim multi-copy atomicity (if CPU 1
-sees mem->pools->next write by CPU 0, CPU 2 must see it as well), at
-least not on all architectures supported by Linux. memory-barriers.txt
-says that a full barrier on CPU 1 is needed between the read and write,
-i.e. smp_mb() before WRITE_ONCE(dev->dma_uses_io_tlb). You could add it
-just before "goto found" in swiotlb_find_slots() since it's only needed
-on this path.
-
-Another thing I noticed - the write in add_mem_pool() to mem->nslabs is
-not ordered with list_add_rcu(). I assume swiotlb_find_slots() doesn't
-need to access it since it just walks the mem->pools list.
-
-> > On the transient dev->dma_io_tlb_pools updated in
-> > swiotlb_find_slots(), you'd need the barriers as I mentioned above
-> > (unless I misunderstood how this pool searching works; not entirely
-> > sure why swiotlb_find_pool() searches both).
-> 
-> The transient pool list is updated only in swiotlb_find_slots() before
-> setting dev->dma_uses_io_tlb. AFAICS this write should is already
-> ordered with the same smp_wmb().
-
-Yes, I think that's fine.
-
-> >[...]
-> > > Actually, I wonder when a newly added RCU list element is
-> > > guaranteed to be visible by all CPUs. Existing documentation deals
-> > > mainly with element removal, explaining that both the old state and
-> > > the new state of an RCU list are valid after addition. Is it
-> > > assumed that the old state of an RCU list after addition is valid
-> > > indefinitely?  
-> > 
-> > When some write becomes visible to other CPUs, I don't think the
-> > architectures define precisely (more like in vague terms as
-> > "eventually"). That's why we can't talk about barriers in relation to
-> > a single write as the barrier doesn't make a write visible but rather
-> > makes it visible _before_ a subsequent write becomes visible (whenever
-> > that may be).
-> 
-> This is understood. It's just that list_add_rcu() updates the next
-> pointer in the previous list entry using smp_store_release(), ordering
-> writes on this next pointer, but I don't see the matching loads with
-> acquire semantics anywhere. It's probably required to detect RCU grace
-> period...
-
-I don't have the history of the release semantics here but one of the
-reasons is to ensure that any structure initialisation is visible before
-the pointer is added to the list (e.g. the pool structure populated by
-swiotlb_alloc_pool() before add_mem_pool()). On the reader side, you
-have an address dependency as you can't read the content of the
-structure without first reading the pointer (rcu_dereference() provides
-an implicit address dependency).
-
--- 
-Catalin
