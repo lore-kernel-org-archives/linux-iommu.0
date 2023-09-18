@@ -1,34 +1,34 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.151])
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.126])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8EC8C1878
-	for <iommu@lists.linux.dev>; Mon, 18 Sep 2023 05:52:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5311D5384
+	for <iommu@lists.linux.dev>; Mon, 18 Sep 2023 06:14:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1695016374; x=1726552374;
+  t=1695017647; x=1726553647;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=lr2VLEqOOl6l6fFZ2myn82dovZkpVyL1rsDIF1sxlRg=;
-  b=MQMw1QZZ1ACfFxba4wZ/Qf9A5OrBUggEPsVdri2FzjoF2riN6lOCooYU
-   WFZnR/UIUQgAoVK3IUq065Q1ZC27xCc7RUrA2Umn7lKVPS46pwrMvnnFe
-   911dNsu/Xb9E+Fbqxl3mXv9ZXUU2W31flpLhE0juR4D1RdBQEATv28fDE
-   QeU+SyYuA4JwkJjdAMeyY68Bhc2+D8Lbi7eDlLmGM2E1ZXcU4/7/NySmW
-   4O9DoQOnjs8kZbSSIZ5uBnM/c6AB4LOYovycx+Oxj5cEcV+5Y4a8obtii
-   sWvZypCzf/xOSIsaqukuAgnX8Ze4yQL7UJx2jIG6Jur5hwLNtqVVQ/DRM
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10836"; a="359825863"
+  bh=kUpHOK5IBjbqfbjc9MQ81MuDWUW3Xr1pW4Y/QY8RBCE=;
+  b=QbDy/rHBS7N0L08Lb2/NsJoZqLSBaq4wHJ0Sg5zeWPl1G5uoOEbaR1VF
+   vcIPenAkmXODF04mWFaQtu93DNqAyQj+8G8EEQJF9Um3AzvL+xVoMJFp9
+   2LY+JDH/m0scehIYN1uqjU5srwZWldFeregAMdGkZX8SP05GyntVRPlLg
+   MhVeQwaydLlZrx4yDe8bAs9SOMvFZe30JwIqGKHh3FRMknS9x29SgaZdj
+   mZWaDJKUW0hQKPHMcdtSNxhLOg42RapEIdC0jftEbD49JjtOyN88qqG/z
+   0UMQdrzeglcFfV3m5npXxJmtV3klVGHpNVySwCsSW2XCqBMkHqSgHhTDZ
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10836"; a="364618653"
 X-IronPort-AV: E=Sophos;i="6.02,155,1688454000"; 
-   d="scan'208";a="359825863"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Sep 2023 22:52:51 -0700
+   d="scan'208";a="364618653"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Sep 2023 23:14:06 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10836"; a="815887772"
+X-IronPort-AV: E=McAfee;i="6600,9927,10836"; a="722351024"
 X-IronPort-AV: E=Sophos;i="6.02,155,1688454000"; 
-   d="scan'208";a="815887772"
+   d="scan'208";a="722351024"
 Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
-  by fmsmga004.fm.intel.com with ESMTP; 17 Sep 2023 22:52:48 -0700
-Message-ID: <a39dcdcb-e904-a09d-f553-66bac5257205@linux.intel.com>
-Date: Mon, 18 Sep 2023 13:49:42 +0800
+  by orsmga006.jf.intel.com with ESMTP; 17 Sep 2023 23:14:04 -0700
+Message-ID: <e0a7969a-60e3-6b3c-4f74-592654d4407f@linux.intel.com>
+Date: Mon, 18 Sep 2023 14:10:58 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -40,112 +40,105 @@ User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
 Cc: baolu.lu@linux.intel.com, iommu@lists.linux.dev,
  linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
  jgg@nvidia.com
-Subject: Re: [PATCH v3 3/7] iommu: Validate that devices match domains
+Subject: Re: [PATCH v3 4/7] iommu: Switch __iommu_domain_alloc() to device ops
 Content-Language: en-US
 To: Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org, will@kernel.org
 References: <cover.1694693889.git.robin.murphy@arm.com>
- <d29334e44c0e6489629dbe13c969c47d4285a877.1694693889.git.robin.murphy@arm.com>
+ <404d8395cf4252c6fe6d98f317f3570127451778.1694693889.git.robin.murphy@arm.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <d29334e44c0e6489629dbe13c969c47d4285a877.1694693889.git.robin.murphy@arm.com>
+In-Reply-To: <404d8395cf4252c6fe6d98f317f3570127451778.1694693889.git.robin.murphy@arm.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 9/16/23 12:58 AM, Robin Murphy wrote:
-> Before we can allow drivers to coexist, we need to make sure that one
-> driver's domain ops can't misinterpret another driver's dev_iommu_priv
-> data. To that end, add a token to the domain so we can remember how it
-> was allocated - for now this may as well be the device ops, since they
-> still correlate 1:1 with drivers. We can trust ourselves for internal
-> default domain attachment, so add the check where it covers both the
-> external attach interfaces.
-> 
-> Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
-> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-> ---
->   drivers/iommu/iommu.c | 13 +++++++++----
->   include/linux/iommu.h |  1 +
->   2 files changed, 10 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 2f29ee9dea64..f4cc91227b22 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -2000,26 +2000,28 @@ EXPORT_SYMBOL_GPL(iommu_set_fault_handler);
->   static struct iommu_domain *__iommu_domain_alloc(const struct bus_type *bus,
+> @@ -1997,16 +1995,13 @@ void iommu_set_fault_handler(struct iommu_domain *domain,
+>   }
+>   EXPORT_SYMBOL_GPL(iommu_set_fault_handler);
+>   
+> -static struct iommu_domain *__iommu_domain_alloc(const struct bus_type *bus,
+> +static struct iommu_domain *__iommu_domain_alloc(struct device *dev,
 >   						 unsigned type)
 >   {
-> +	const struct iommu_ops *ops = bus ? bus->iommu_ops : NULL;
+> -	const struct iommu_ops *ops = bus ? bus->iommu_ops : NULL;
+> +	const struct iommu_ops *ops = dev_iommu_ops(dev);
 >   	struct iommu_domain *domain;
 >   	unsigned int alloc_type = type & IOMMU_DOMAIN_ALLOC_FLAGS;
 >   
-> -	if (bus == NULL || bus->iommu_ops == NULL)
-> +	if (!ops)
->   		return NULL;
->   
-> -	domain = bus->iommu_ops->domain_alloc(alloc_type);
-> +	domain = ops->domain_alloc(alloc_type);
+> -	if (!ops)
+> -		return NULL;
+> -
+>   	domain = ops->domain_alloc(alloc_type);
 >   	if (!domain)
 >   		return NULL;
->   
->   	domain->type = type;
-> +	domain->owner = ops;
->   	/*
->   	 * If not already set, assume all sizes by default; the driver
->   	 * may override this later
->   	 */
->   	if (!domain->pgsize_bitmap)
-> -		domain->pgsize_bitmap = bus->iommu_ops->pgsize_bitmap;
-> +		domain->pgsize_bitmap = ops->pgsize_bitmap;
->   
->   	if (!domain->ops)
-> -		domain->ops = bus->iommu_ops->default_domain_ops;
-> +		domain->ops = ops->default_domain_ops;
->   
->   	if (iommu_is_dma_domain(domain) && iommu_get_dma_cookie(domain)) {
->   		iommu_domain_free(domain);
-> @@ -2176,6 +2178,9 @@ static int __iommu_attach_group(struct iommu_domain *domain,
->   	    group->domain != group->blocking_domain)
->   		return -EBUSY;
->   
-> +	if (dev_iommu_ops(iommu_group_first_dev(group)) != domain->owner)
-> +		return -EINVAL;
-
-Should we apply this check in iommu_attach_device_pasid()?
-
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 3bfc56df4f78..43acf1b8ed56 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -3414,6 +3414,9 @@ int iommu_attach_device_pasid(struct iommu_domain 
-*domain,
-         if (!group)
-                 return -ENODEV;
-
-+       if (dev_iommu_ops(dev) != domain->owner)
-+               return -EINVAL;
-+
-         mutex_lock(&group->mutex);
-         curr = xa_cmpxchg(&group->pasid_array, pasid, NULL, domain, 
-GFP_KERNEL);
-         if (curr) {
-
-> +
->   	return __iommu_group_set_domain(group, domain);
+> @@ -2030,9 +2025,28 @@ static struct iommu_domain *__iommu_domain_alloc(const struct bus_type *bus,
+>   	return domain;
 >   }
 >   
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index a249e10c8e9f..75ffcac199e3 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -95,6 +95,7 @@ struct iommu_domain_geometry {
->   struct iommu_domain {
->   	unsigned type;
->   	const struct iommu_domain_ops *ops;
-> +	const struct iommu_ops *owner; /* Whose domain_alloc we came from */
->   	unsigned long pgsize_bitmap;	/* Bitmap of page sizes in use */
->   	struct iommu_domain_geometry geometry;
->   	struct iommu_dma_cookie *iova_cookie;
+> +static int __iommu_domain_alloc_dev(struct device *dev, void *data)
+> +{
+> +	struct device **alloc_dev = data;
+> +
+> +	if (!dev_has_iommu(dev))
+> +		return 0;
+> +
+> +	WARN_ONCE(*alloc_dev && dev_iommu_ops(dev) != dev_iommu_ops(*alloc_dev),
+> +		  "Multiple IOMMU drivers present, which the public IOMMU API can't fully support yet. You may still need to disable one or more to get the expected result here, sorry!\n");
+> +
+> +	*alloc_dev = dev;
+> +	return 0;
+> +}
+> +
+>   struct iommu_domain *iommu_domain_alloc(const struct bus_type *bus)
+>   {
+> -	return __iommu_domain_alloc(bus, IOMMU_DOMAIN_UNMANAGED);
+> +	struct device *dev = NULL;
+> +
+> +	if (bus_for_each_dev(bus, NULL, &dev, __iommu_domain_alloc_dev))
+> +		return NULL;
+
+__iommu_domain_alloc_dev() always returns 0. Hence above if condition
+will never be true. Perhaps, in __iommu_domain_alloc_dev(),
+
+	if (WARN_ON(*alloc_dev && dev_iommu_ops(dev) !=
+             dev_iommu_ops(*alloc_dev))
+		return -EPERM;
+
+?
+
+> +
+> +	return __iommu_domain_alloc(dev, IOMMU_DOMAIN_UNMANAGED);
+
+Is it possible that all devices on this bus have dev_has_iommu() to be
+false? If so, we probably need something like below:
+
+	if (!dev_has_iommu(dev))
+		return -ENODEV;
+
+?
+
+>   }
+>   EXPORT_SYMBOL_GPL(iommu_domain_alloc);
+>   
+> @@ -3228,13 +3242,17 @@ static int __iommu_group_alloc_blocking_domain(struct iommu_group *group)
+>   	if (group->blocking_domain)
+>   		return 0;
+>   
+> -	group->blocking_domain = __iommu_domain_alloc(dev->bus, IOMMU_DOMAIN_BLOCKED);
+> +	/* noiommu groups should never be here */
+> +	if (WARN_ON(!dev_has_iommu(dev)))
+> +		return -ENODEV;
+> +
+> +	group->blocking_domain = __iommu_domain_alloc(dev, IOMMU_DOMAIN_BLOCKED);
+>   	if (!group->blocking_domain) {
+>   		/*
+>   		 * For drivers that do not yet understand IOMMU_DOMAIN_BLOCKED
+>   		 * create an empty domain instead.
+>   		 */
+> -		group->blocking_domain = __iommu_domain_alloc(dev->bus, IOMMU_DOMAIN_UNMANAGED);
+> +		group->blocking_domain = __iommu_domain_alloc(dev, IOMMU_DOMAIN_UNMANAGED);
+>   		if (!group->blocking_domain)
+>   			return -EINVAL;
+>   	}
 
 Best regards,
 baolu
