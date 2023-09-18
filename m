@@ -1,53 +1,36 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 880A538F8E;
-	Mon, 18 Sep 2023 11:05:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 857E7C433C7;
-	Mon, 18 Sep 2023 11:05:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A99B38F8E
+	for <iommu@lists.linux.dev>; Mon, 18 Sep 2023 11:05:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9A3CC433C9;
+	Mon, 18 Sep 2023 11:05:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1695035149;
-	bh=HqsMws0S5nYHBfNxFRC4VwWzZrM1nY/Eb3cwT5rJn5U=;
+	s=k20201202; t=1695035155;
+	bh=yLpITHOqBwaXWsLZuL6tIec5rcjO1kx3VfSTyZ+Wmug=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=CqCdEj7iTIHgp5d6BjvnkSieRxktCUrr9FV+8xBI5NBYv+AE+zFcTSKYOA+Hk7d+A
-	 /u3Xp9DmUSAbiAT77855XQ7sIP4QQKDhZ7krIEF8r1ZMCAKqUzY8P4+D7/unRxs0xF
-	 dD7naM3PuFGatTKQzpk2ZJFkZ8bhpfgLux+3KcC1C2Pa+sDWK4eB0S131tYzw+I4LD
-	 YFwOom+MS7yPM1o/4/LuT+PQOaTsZeeQBCxoTmghQyoRzRebrzS8CKig8sGGkxqTfO
-	 Z8vay8j09Q8CrmAzNF8wHRcMLFzTjJlkKg53+iVc+4l3wuBcl8hPlIxMc+jBMA2x0d
-	 Owi/2GGz7b94g==
+	b=UbqQQeUK0N3zM7tT8mb96q8JlwyOfxFaKI88Ga27R3zqfJnVTSVyiImG4/CUCHHbV
+	 8lnSkNrzDSy0E5cgyA4oeCbvgant+dedJeLYbHt/TRkqcuj+BzFrxkT4D4lD9l+Uwy
+	 xowWnIAhun/JkNPcgV6SadtHXFQyyn0qACD0FIylUoe6hmNr3CF49GmewHEMjvrLY6
+	 cFhfXoLxNYJSo9FyxLRtQyEBryze45XBZhQxng9MJOY8O9SrVkP09xwHaCjrFLNFio
+	 TwlnzXy5Q4CmOd+XGP2GlQWIi1w3rXKnwl4RL9G0aJboKgS9LDm9a3io/S15Tj5MCU
+	 2o9iFTaC+2qug==
 From: Will Deacon <will@kernel.org>
-To: Mathieu Poirier <mathieu.poirier@linaro.org>,
-	Wesley Cheng <quic_wcheng@quicinc.com>,
-	Manivannan Sadhasivam <mani@kernel.org>,
-	Joerg Roedel <joro@8bytes.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Sibi Sankar <quic_sibis@quicinc.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Konrad Dybcio <konrad.dybcio@linaro.org>,
-	Bjorn Andersson <andersson@kernel.org>,
-	Andy Gross <agross@kernel.org>
+To: joro@8bytes.org,
+	Robin Murphy <robin.murphy@arm.com>
 Cc: catalin.marinas@arm.com,
 	kernel-team@android.com,
 	Will Deacon <will@kernel.org>,
-	Alexey Minnekhanov <alexeymin@postmarketos.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-	iommu@lists.linux.dev,
-	linux-arm-msm@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-remoteproc@vger.kernel.org,
 	linux-arm-kernel@lists.infradead.org,
-	Marijn Suijten <marijn.suijten@somainline.org>,
-	linux-usb@vger.kernel.org
-Subject: Re: [PATCH v2 00/14] Clean up RPM bus clocks remnants
-Date: Mon, 18 Sep 2023 12:05:19 +0100
-Message-Id: <169502865701.264764.7151801488936699892.b4-ty@kernel.org>
+	iommu@lists.linux.dev,
+	Rui Zhu <zhurui3@huawei.com>,
+	eahariha@linux.microsoft.com
+Subject: Re: [PATCH] iommu/arm-smmu-v3: Avoid constructing invalid range commands
+Date: Mon, 18 Sep 2023 12:05:22 +0100
+Message-Id: <169502858467.264332.7820981729907746151.b4-ty@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20230721-topic-rpm_clk_cleanup-v2-0-1e506593b1bd@linaro.org>
-References: <20230721-topic-rpm_clk_cleanup-v2-0-1e506593b1bd@linaro.org>
+In-Reply-To: <b99cfe71af2bd93a8a2930f20967fb2a4f7748dd.1694432734.git.robin.murphy@arm.com>
+References: <b99cfe71af2bd93a8a2930f20967fb2a4f7748dd.1694432734.git.robin.murphy@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -57,20 +40,23 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 
-On Tue, 12 Sep 2023 15:31:38 +0200, Konrad Dybcio wrote:
-> After the recent cleanups ([1], [2]) some in-tree abusers that directly
-> accessed the RPM bus clocks, effectively circumventing and working
-> against the efforts of the interconnect framework, were found.
-> 
-> Patches 1-5 drop deprecated references and the rest attempt to stop
-> direct bus clock abuses.
+On Mon, 11 Sep 2023 12:57:04 +0100, Robin Murphy wrote:
+> Although io-pgtable's non-leaf invalidations are always for full tables,
+> I missed that SVA also uses non-leaf invalidations, while being at the
+> mercy of whatever range the MMU notifier throws at it. This means it
+> definitely wants the previous TTL fix as well, since it also doesn't
+> know exactly which leaf level(s) may need invalidating, but it can also
+> give us less-aligned ranges wherein certain corners may lead to building
+> an invalid command where TTL, Num and Scale are all 0. It should be fine
+> to handle this by over-invalidating an extra page, since falling back to
+> a non-range command opens up a whole can of errata-flavoured worms.
 > 
 > [...]
 
-Applied SMMU bindings fix to will (for-joerg/arm-smmu/fixes), thanks!
+Applied to will (for-joerg/arm-smmu/fixes), thanks!
 
-[04/14] dt-bindings: arm-smmu: Fix SDM630 clocks description
-        https://git.kernel.org/will/c/938ba2f252a5
+[1/1] iommu/arm-smmu-v3: Avoid constructing invalid range commands
+      https://git.kernel.org/will/c/eb6c97647be2
 
 Cheers,
 -- 
