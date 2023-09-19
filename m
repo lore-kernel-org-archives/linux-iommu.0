@@ -1,73 +1,119 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C6527328A1
-	for <iommu@lists.linux.dev>; Tue, 19 Sep 2023 08:28:21 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2BE031FB;
-	Tue, 19 Sep 2023 01:28:52 -0700 (PDT)
-Received: from [10.57.94.129] (unknown [10.57.94.129])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B9CDE3F59C;
-	Tue, 19 Sep 2023 01:28:13 -0700 (PDT)
-Message-ID: <1d513178-bab9-0522-87f5-1a058bb8121d@arm.com>
-Date: Tue, 19 Sep 2023 09:28:08 +0100
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.100])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 294D338DED
+	for <iommu@lists.linux.dev>; Tue, 19 Sep 2023 09:25:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1695115526; x=1726651526;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=P2SZV7XNPkJc7Awaa/pjBYWEEgfBie06vXhRPpUVPPM=;
+  b=Mox+UEkQp5NT2HzlZ6Mc8vkAN6uzEoI8rPbBt0Bznh8kc3TA6oii75UQ
+   zQ2M4wM4rQiejywPnmNNPguWI0WPsjHXRiOO11jqV5Pz9V7mzZSZuXyUL
+   /7PRISqQP6w8VsvQlcKuKnzrk2g8jT9eDOceqP5hpoBb1OswBWMpH7YbH
+   Eyn6IErU4KQTJZGbvA+2fnKWoMveKG+o4Ge7m4RMiqjgEd9GsD+viQRv2
+   fu9p51B9dndLMONLxQcuU8AmZm6wB7BT26X4yMSzmBL/bmULgrNoMTEJ+
+   YINkQZZaXo4Fww5ljwuxyxKd0d95IeGiowFm0qH1+oiMTyR/NQRzBIQve
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10837"; a="446368818"
+X-IronPort-AV: E=Sophos;i="6.02,159,1688454000"; 
+   d="scan'208";a="446368818"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Sep 2023 02:25:25 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10837"; a="722804612"
+X-IronPort-AV: E=Sophos;i="6.02,159,1688454000"; 
+   d="scan'208";a="722804612"
+Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
+  by orsmga006.jf.intel.com with ESMTP; 19 Sep 2023 02:25:24 -0700
+From: Yi Liu <yi.l.liu@intel.com>
+To: joro@8bytes.org,
+	alex.williamson@redhat.com,
+	jgg@nvidia.com,
+	kevin.tian@intel.com,
+	robin.murphy@arm.com,
+	baolu.lu@linux.intel.com
+Cc: cohuck@redhat.com,
+	eric.auger@redhat.com,
+	nicolinc@nvidia.com,
+	kvm@vger.kernel.org,
+	mjrosato@linux.ibm.com,
+	chao.p.peng@linux.intel.com,
+	yi.l.liu@intel.com,
+	yi.y.sun@linux.intel.com,
+	peterx@redhat.com,
+	jasowang@redhat.com,
+	shameerali.kolothum.thodi@huawei.com,
+	lulu@redhat.com,
+	suravee.suthikulpanit@amd.com,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	linux-kselftest@vger.kernel.org,
+	zhenzhong.duan@intel.com,
+	joao.m.martins@oracle.com
+Subject: [PATCH 0/6] iommufd support allocating nested parent domain
+Date: Tue, 19 Sep 2023 02:25:17 -0700
+Message-Id: <20230919092523.39286-1-yi.l.liu@intel.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.15.1
-Subject: Re: [PATCH v2 1/2] iommu/virtio: Make use of ops->iotlb_sync_map
-Content-Language: en-GB
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Cc: Niklas Schnelle <schnelle@linux.ibm.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, virtualization@lists.linux-foundation.org,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <20230918-viommu-sync-map-v2-0-f33767f6cf7a@linux.ibm.com>
- <20230918-viommu-sync-map-v2-1-f33767f6cf7a@linux.ibm.com>
- <ae7e513b-eb86-97e2-bed0-3cca91b8c959@arm.com>
- <20230919081519.GA3860249@myrica>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20230919081519.GA3860249@myrica>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 2023-09-19 09:15, Jean-Philippe Brucker wrote:
-> On Mon, Sep 18, 2023 at 05:37:47PM +0100, Robin Murphy wrote:
->>> diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
->>> index 17dcd826f5c2..3649586f0e5c 100644
->>> --- a/drivers/iommu/virtio-iommu.c
->>> +++ b/drivers/iommu/virtio-iommu.c
->>> @@ -189,6 +189,12 @@ static int viommu_sync_req(struct viommu_dev *viommu)
->>>    	int ret;
->>>    	unsigned long flags;
->>> +	/*
->>> +	 * .iotlb_sync_map and .flush_iotlb_all may be called before the viommu
->>> +	 * is initialized e.g. via iommu_create_device_direct_mappings()
->>> +	 */
->>> +	if (!viommu)
->>> +		return 0;
->>
->> Minor nit: I'd be inclined to make that check explicitly in the places where
->> it definitely is expected, rather than allowing *any* sync to silently do
->> nothing if called incorrectly. Plus then they could use
->> vdomain->nr_endpoints for consistency with the equivalent checks elsewhere
->> (it did take me a moment to figure out how we could get to .iotlb_sync_map
->> with a NULL viommu without viommu_map_pages() blowing up first...)
-> 
-> They're not strictly equivalent: this check works around a temporary issue
-> with the IOMMU core, which calls map/unmap before the domain is finalized.
-> Once we merge domain_alloc() and finalize(), then this check disappears,
-> but we still need to test nr_endpoints in map/unmap to handle detached
-> domains (and we still need to fix the synchronization of nr_endpoints
-> against attach/detach). That's why I preferred doing this on viommu and
-> keeping it in one place.
+IOMMU hardwares that support nested translation would have two stages
+address translation (normally mentioned as stage-1 and stage-2). The page
+table formats of the stage-1 and stage-2 can be different. e.g., VT-d has
+different page table formats for stage-1 and stage-2.
 
-Fair enough - it just seems to me that in both cases it's a detached 
-domain, so its previous history of whether it's ever been otherwise or 
-not shouldn't matter. Even once viommu is initialised, does it really 
-make sense to send sync commands for a mapping on a detached domain 
-where we haven't actually sent any map/unmap commands?
+Nested parent domain is the iommu domain used to represent the stage-2
+translation. In IOMMUFD, both stage-1 and stage-2 translation are tracked
+as HWPT (a.k.a. iommu domain). Stage-2 HWPT is parent of stage-1 HWPT as
+stage-1 cannot work alone in nested translation. In the cases of stage-1 and
+stage-2 page table format are different, the parent HWPT should use exactly
+the stage-2 page table format. However, the existing kernel hides the format
+selection in iommu drivers, so the domain allocated via IOMMU_HWPT_ALLOC can
+use either stage-1 page table format or stage-2 page table format, there is
+no guarantees for it.
 
-Thanks,
-Robin.
+To enforce the page table format of the nested parent domain, this series
+introduces a new iommu op (domain_alloc_user) which can accept user flags
+to allocate domain as userspace requires. It also converts IOMMUFD to use
+the new domain_alloc_user op for domain allocation if supported, then extends
+the IOMMU_HWPT_ALLOC ioctl to pass down a NEST_PARENT flag to allocate a HWPT
+which can be used as parent. This series implements the new op in Intel iommu
+driver to have a complete picture. It is a preparation for adding nesting
+support in IOMMUFD/IOMMU.
+
+Complete code can be found:
+https://github.com/yiliu1765/iommufd/tree/iommufd_alloc_user_v1
+
+Regards,
+	Yi Liu
+
+Yi Liu (6):
+  iommu: Add new iommu op to create domains owned by userspace
+  iommufd/hw_pagetable: Use domain_alloc_user op for domain allocation
+  iommufd/hw_pagetable: Accepts user flags for domain allocation
+  iommufd/hw_pagetable: Support allocating nested parent domain
+  iommufd/selftest: Add domain_alloc_user() support in iommu mock
+  iommu/vt-d: Add domain_alloc_user op
+
+ drivers/iommu/intel/iommu.c                   | 20 ++++++++++++
+ drivers/iommu/iommufd/device.c                |  2 +-
+ drivers/iommu/iommufd/hw_pagetable.c          | 31 ++++++++++++++-----
+ drivers/iommu/iommufd/iommufd_private.h       |  3 +-
+ drivers/iommu/iommufd/selftest.c              | 16 ++++++++++
+ include/linux/iommu.h                         |  8 +++++
+ include/uapi/linux/iommufd.h                  | 12 ++++++-
+ tools/testing/selftests/iommu/iommufd.c       | 24 +++++++++++---
+ .../selftests/iommu/iommufd_fail_nth.c        |  2 +-
+ tools/testing/selftests/iommu/iommufd_utils.h | 11 +++++--
+ 10 files changed, 111 insertions(+), 18 deletions(-)
+
+-- 
+2.34.1
+
