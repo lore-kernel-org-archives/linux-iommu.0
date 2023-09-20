@@ -1,212 +1,102 @@
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.65])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 08FCC36AF2
-	for <iommu@lists.linux.dev>; Wed, 20 Sep 2023 13:10:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1695215411; x=1726751411;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=gV2lhE+GiZfNryrTwUKwIpH4u0ZFHtuV2hx3YfIicOM=;
-  b=dRoPv/pCgfjW4qSU7jfMGTtt+Ay8ETgoi4oUdwHq112HIhzjF7OzA21t
-   u2Jwv1fbzRXuqPuQQXm21xt5UtPFkXGv0o6K2arozLWYwuinBH3SF0wMJ
-   AsM3DA9aAi11awo2LWI3CFY+/sxvgyzsn+6BYFcMA+ATkjs8BXFfWZrmb
-   sHED1P4zFxjPFDn+gkOvA8UaL0HarAz+RDdyjd0cQDZ0wNUBNxXUj4dCd
-   Y+tzzxVONa1TZx6+fRopniiszycDMHQphxr6Pccp80mM9YstdLwgN4KeF
-   Guw0rCpX3wKetCTQlP+m0U8sFA8TJGCseCgwg/b4sfA9Bsw5+orZuRM+y
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10839"; a="384061304"
-X-IronPort-AV: E=Sophos;i="6.03,162,1694761200"; 
-   d="scan'208";a="384061304"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Sep 2023 06:10:10 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10839"; a="870377331"
-X-IronPort-AV: E=Sophos;i="6.03,162,1694761200"; 
-   d="scan'208";a="870377331"
-Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
-  by orsmga004.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 20 Sep 2023 06:10:09 -0700
-Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.32; Wed, 20 Sep 2023 06:10:08 -0700
-Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
- fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.32; Wed, 20 Sep 2023 06:10:08 -0700
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.32 via Frontend Transport; Wed, 20 Sep 2023 06:10:08 -0700
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.172)
- by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.32; Wed, 20 Sep 2023 06:10:07 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=D1T3W0pIIEf3OMzqENb+I8usat1GM41DaDy5VuJ/wJbAgDbNsmhwonB3ykbvtG4FkByeGe/Wbha7C/0prmx1Uw/Q796xkgwmdFjr1mt0tE1xOFOWESqc4fo9X/PFyRymJY7wn7pRRvxoQF9h6DMIng8mjTcgjn+upOjqptepUdvchmSCwby30LKKCAmUHm+YQtEVzdcLciUNJN2sV2lP9RM+D5JPIvYbGYmbE5WQWNStXsQy87zWX75/O75BB5RAd3l6ZA3iDfywnkE9lkEnE4VK18MCHk4iZc0sZc89n5slxYFs6SPKCg0ZvJN0gZAjD49aslC8P4glQ0r+n7Xouw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=i9L4Sl64Nq8FKC8BmObJgV3Su+IuycRdXV4Kf9C5OB0=;
- b=fMWFzrDWNrVYEd+USrYORaoP2XGD7W4ZX4ClVh27KzCzQsb/HsUy2ZI2pDbpRSjxAjmPptazKvBBZ2z+Yv9MSpgOYOCyNz6JH5VvctLD6hl80K3lyZMk2YjMCb1bBw/qk47bCDY+b1Dw8rhyQ84CF9S20o0va8VZnjFODVjP1GflbNETOyzim0MGRwRD0sfGJlOKR2XKMzmKh02HSKXSETeJQXz0m/RD1E0EN24ejZYQk1D0TUOjkr/uT4ExKFks1t9SvXPabipGiFr2Uk0FzG/x3IyRescJ+XPQxttv5jWBZKzg0eI014iuzPa5ndEuCFstFzA84oIpQW1IHu5wCA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from DS0PR11MB7529.namprd11.prod.outlook.com (2603:10b6:8:141::20)
- by PH0PR11MB4806.namprd11.prod.outlook.com (2603:10b6:510:31::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6792.27; Wed, 20 Sep
- 2023 13:10:04 +0000
-Received: from DS0PR11MB7529.namprd11.prod.outlook.com
- ([fe80::f8f4:bed2:b2f8:cb6b]) by DS0PR11MB7529.namprd11.prod.outlook.com
- ([fe80::f8f4:bed2:b2f8:cb6b%3]) with mapi id 15.20.6792.026; Wed, 20 Sep 2023
- 13:10:04 +0000
-From: "Liu, Yi L" <yi.l.liu@intel.com>
-To: Jason Gunthorpe <jgg@nvidia.com>, Baolu Lu <baolu.lu@linux.intel.com>
-CC: "joro@8bytes.org" <joro@8bytes.org>, "alex.williamson@redhat.com"
-	<alex.williamson@redhat.com>, "Tian, Kevin" <kevin.tian@intel.com>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>, "cohuck@redhat.com"
-	<cohuck@redhat.com>, "eric.auger@redhat.com" <eric.auger@redhat.com>,
-	"nicolinc@nvidia.com" <nicolinc@nvidia.com>, "kvm@vger.kernel.org"
-	<kvm@vger.kernel.org>, "mjrosato@linux.ibm.com" <mjrosato@linux.ibm.com>,
-	"chao.p.peng@linux.intel.com" <chao.p.peng@linux.intel.com>,
-	"yi.y.sun@linux.intel.com" <yi.y.sun@linux.intel.com>, "peterx@redhat.com"
-	<peterx@redhat.com>, "jasowang@redhat.com" <jasowang@redhat.com>,
-	"shameerali.kolothum.thodi@huawei.com"
-	<shameerali.kolothum.thodi@huawei.com>, "lulu@redhat.com" <lulu@redhat.com>,
-	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>, "Duan,
- Zhenzhong" <zhenzhong.duan@intel.com>, "Martins, Joao"
-	<joao.m.martins@oracle.com>
-Subject: RE: [PATCH 6/6] iommu/vt-d: Add domain_alloc_user op
-Thread-Topic: [PATCH 6/6] iommu/vt-d: Add domain_alloc_user op
-Thread-Index: AQHZ6ttUqZRrjysqnUa2j9no88GC0rAjMOqAgAB/mQCAAABTMA==
-Date: Wed, 20 Sep 2023 13:10:04 +0000
-Message-ID: <DS0PR11MB7529609BC4574A17ECE469A2C3F9A@DS0PR11MB7529.namprd11.prod.outlook.com>
-References: <20230919092523.39286-1-yi.l.liu@intel.com>
- <20230919092523.39286-7-yi.l.liu@intel.com>
- <7aa8fd9e-e43d-db68-bdb6-fe4f891255ca@linux.intel.com>
- <20230920130522.GV13733@nvidia.com>
-In-Reply-To: <20230920130522.GV13733@nvidia.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: DS0PR11MB7529:EE_|PH0PR11MB4806:EE_
-x-ms-office365-filtering-correlation-id: feadcf91-0d59-4ace-8bd5-08dbb9dae7a5
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: j/Mntt30wgBifBbo+Wi6TaDbOUrKNOxXEJPjksrjaoBdVB7RcJ0XVadZ1TlOz8p4lApCtwQDdSfgYypJ/+w9fCcVsApXvOvpm77FW/SUwEfK+JpWQyJCwTYCdgQpPDlIltoXqpXy+2hsQe4i18th2jDcgzhsrTnu0bbLrpOmGKn2N8M0zp6egtkRF3xB7FHVY6swGRoHg9xkHeljIG6qfvBRW72PshJWaFuG5MMvsu6UdoT73F6S2bnUpPIeAMEZMDBCRcUfNPe0BLwawyNrRdWhF9/7sAurYvunC+SnmRBRM8yy1yEqkBxheff4iaQMjoa9RmNMHPImAcKPgwwsCc8kGQ3NE5+qxOV5W6zkUgnTzq7QVGD9NYi+6S+5G9F8aJ/TqqYr2uuU1KEl4FF08bjBce3jtuAa3GGK4Dltm9XxEZajv+A0z/eK5xYFRMaItWZziOxazAuz1xgyIxoMDERf3k5sBH9/QbTGJMuy5Zhq6hevpRsSyg3+R3SYqzIU4LnD0TGRgLGKCPpQo/6ltmQwwfhUpP+UKV5VPlCnHBFK1OPFzAAI0XObZvQynqvWbQowNxw15X5wDs+iNyHRhqe8lbCBuPwJ5ZJgNg7XSwPFy3xXCmaH7yLbJVrEvgoS
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS0PR11MB7529.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(39860400002)(376002)(366004)(346002)(396003)(136003)(186009)(1800799009)(451199024)(4326008)(5660300002)(7696005)(8676002)(6506007)(8936002)(7416002)(41300700001)(52536014)(110136005)(64756008)(54906003)(66556008)(66476007)(478600001)(66446008)(76116006)(71200400001)(66946007)(9686003)(316002)(2906002)(26005)(83380400001)(38070700005)(55016003)(122000001)(38100700002)(82960400001)(33656002)(86362001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?6NtGT8FLt16tv81hUNUEPY6Rk0BNxfbsvWhMPbof2wtGwymybfSS342wJZDE?=
- =?us-ascii?Q?xYUkWhLOxC6/PbXAhpkl432jjnoLc4sfvm/v9TgxwyC6oqHRdAmhSpY9Ijci?=
- =?us-ascii?Q?tinqJQkxmbwtp7wF/QwG0Ij8O+1+9eiNm+bwM6snosXByW3c4vy9q0EdAYfL?=
- =?us-ascii?Q?k4I+RfHOZhts7eNIA5awy5J+cROjzHrgFtu3YGJnZaZA6JK7OHH5O49aWgOs?=
- =?us-ascii?Q?e+VOgoJPLc1YPBrG6PJhAaM8CieuOYe14feegDtuGVxUoYwY469ND7aEdqmk?=
- =?us-ascii?Q?rhcw7BWK17JINQjLRkU7xvmNWAdOUdsmIDKP2TA9YcemFIoJ3ZqC6moMSToh?=
- =?us-ascii?Q?txWvOstM3LgMmENS+PvgLjCfFXX+FJS6GCfQ12TFU7EmMKW5MDq1SbSvIvJc?=
- =?us-ascii?Q?nzmcTIkLZ6FdqK8JRa0TsVBv/hHWiC8zzno7mqTHeCu259pKwa5K8KbLeqSy?=
- =?us-ascii?Q?i2kyP4EZS9LHAzVg4NVEVb+OBdhXNoTx5RH4kpzoqCzEQGaWSPfwEh+AL42g?=
- =?us-ascii?Q?B49CmzglbtrjYEmf5saIaAOxiYLX9iUTVCr0IvCL0jtvPLXDP8hN5SxdDEVc?=
- =?us-ascii?Q?Cr1/0EZ4rys827aQoUMmKG5XTeRCtRfglbqcWyudpV+UHXEXOueTXIDkn4tM?=
- =?us-ascii?Q?4N3Nc/dOSrQANS51rOcy1kA+0Hnp9Y0RGzm089NtLtH95HSgC0eO/LsP/vM/?=
- =?us-ascii?Q?ZS2QE2uU1KN2GoqxQS3cgp8xxA/4P55RRu2LohedsJrLOJCF0LuMR6a0Sv7r?=
- =?us-ascii?Q?KpBh+a0EPxcbstrRgw2IqSZ6CJAE/Af+kmR/NRepHIDMSS0DmJSEbvdfzUs5?=
- =?us-ascii?Q?lHSeqSfgABY3pyNCOkD6Rt4Ok2cmAXkCsn0E5sWyg2Y/dvSWOfZ1Ah9njS3M?=
- =?us-ascii?Q?Ph9TohkBvI2dUmFcfCE3IVXwwnYkrDoTjmwUrXxZi/zqtOXbfvPA0dWXR0OY?=
- =?us-ascii?Q?iv+n8pyplaeQ43I5xd5Ltug1640M6LdJcqKKpNvTuFCaUCqk/shDLaLN2vaU?=
- =?us-ascii?Q?QOF/LQn9xevp7kOgcByIpxVTOutbQuXxg2Cq49K7+Wc7Jg5Qqf6KMRPf6SDN?=
- =?us-ascii?Q?lyvmJ79SyIAjEO9BmGYGxXPCnfhX8csrIxfXrTI/hwAXx7Gz39bTRTF2Jbk1?=
- =?us-ascii?Q?EdYR3ZPm/7W2QK8DUZllpp9T+74/eLuh22dXMO3AdJY1ndLFg70P2w2L25tC?=
- =?us-ascii?Q?GG4YHZ/SsvYjom2S891IwwNauQPbwCFzB0In7+KNIpAqxyJU69Pzm+vOBtbN?=
- =?us-ascii?Q?SQ3z546XIlzAERMSO8R4EqqlaEfuBpRuEmUivYVoArxX+vug8J6OAwVH50Hi?=
- =?us-ascii?Q?W2h5egQ6fuqyvHZSbboyve8dEqE1U4q4oX2W5Y6gwXHcSU/Y3yAzfwMYb7DN?=
- =?us-ascii?Q?FKJi1bnv0UoLHWXckyoZwbXnP5Thfqs8qaOpgdS1tDFYpBsD70LdgqfwxGCS?=
- =?us-ascii?Q?TTDycxQkf/7kfKnaQWMP3WiHvZ5djTva0miWe0jl74qIEz62kK03SVVYNGg/?=
- =?us-ascii?Q?I20HGEgyOLudL2aIwv7LbbSrWfwqF7fLOLXhiUw0Q7HWvjHHtW13n7SP6SfJ?=
- =?us-ascii?Q?yPnbtSup9lsCWweJeFY=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 88F4736AEE
+	for <iommu@lists.linux.dev>; Wed, 20 Sep 2023 13:12:09 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9FF0B1FB;
+	Wed, 20 Sep 2023 06:12:45 -0700 (PDT)
+Received: from [10.57.67.90] (unknown [10.57.67.90])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 2D3363F67D;
+	Wed, 20 Sep 2023 06:12:07 -0700 (PDT)
+Message-ID: <f72e5ab1-c6f2-ec03-68d6-1686145f3a4d@arm.com>
+Date: Wed, 20 Sep 2023 14:12:09 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DS0PR11MB7529.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: feadcf91-0d59-4ace-8bd5-08dbb9dae7a5
-X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Sep 2023 13:10:04.3268
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 8QuvPV1ML5f//QfRDECuXYAJIl/VSFZkL0pXx4v6CLaEX57gMbQb1PEFzBDwoi8GoXcdsGrYTFqAN8TJlxeWaA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR11MB4806
-X-OriginatorOrg: intel.com
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.15.0
+Subject: Re: [PATCH 0/2] iommu: Allow passing custom allocators to pgtable
+ drivers
+To: Boris Brezillon <boris.brezillon@collabora.com>,
+ Joerg Roedel <joro@8bytes.org>, iommu@lists.linux.dev,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ linux-arm-kernel@lists.infradead.org
+Cc: Rob Clark <robdclark@gmail.com>
+References: <20230809121744.2341454-1-boris.brezillon@collabora.com>
+Content-Language: en-GB
+From: Steven Price <steven.price@arm.com>
+In-Reply-To: <20230809121744.2341454-1-boris.brezillon@collabora.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-> From: Jason Gunthorpe <jgg@nvidia.com>
-> Sent: Wednesday, September 20, 2023 9:05 PM
->=20
-> On Wed, Sep 20, 2023 at 01:28:41PM +0800, Baolu Lu wrote:
-> > >
-> > > diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.=
-c
-> > > index 5db283c17e0d..491bcde1ff96 100644
-> > > --- a/drivers/iommu/intel/iommu.c
-> > > +++ b/drivers/iommu/intel/iommu.c
-> > > @@ -4074,6 +4074,25 @@ static struct iommu_domain
-> *intel_iommu_domain_alloc(unsigned type)
-> > >   	return NULL;
-> > >   }
-> > > +static struct iommu_domain *
-> > > +intel_iommu_domain_alloc_user(struct device *dev, u32 flags)
-> > > +{
-> > > +	struct iommu_domain *domain;
-> > > +	struct intel_iommu *iommu;
-> > > +
-> > > +	iommu =3D device_to_iommu(dev, NULL, NULL);
-> > > +	if (!iommu)
-> > > +		return ERR_PTR(-ENODEV);
-> > > +
-> > > +	if ((flags & IOMMU_HWPT_ALLOC_NEST_PARENT) && !ecap_nest(iommu-
-> >ecap))
-> > > +		return ERR_PTR(-EOPNOTSUPP);
->=20
-> There is a check missing for supported flags
->=20
->  if (flags & (~IOMMU_HWPT_ALLOC_NEST_PARENT))
-> 	return ERR_PTR(-EOPNOTSUPP);
+On 09/08/2023 13:17, Boris Brezillon wrote:
+> Hello,
+> 
+> This patchset is an attempt at making page table allocation
+> customizable. This is useful to some GPU drivers for various reasons:
+> 
+> - speed-up upcoming page table allocations by managing a pool of free
+>   pages
+> - batch page table allocation instead of allocating one page at a time
+> - pre-reserve pages for page tables needed for map/unmap operations and
+>   return the unused page tables to some pool
+> 
+> The first and last reasons are particularly important for GPU drivers
+> wanting to implement asynchronous VM_BIND. Asynchronous VM_BIND requires
+> that any page table needed for a map/unmap operation to succeed be
+> allocated at VM_BIND job creation time. At the time of the job creation,
+> we don't know what the VM will look like when we get to execute the
+> map/unmap, and can't guess how many page tables we will need. Because
+> of that, we have to over-provision page tables for the worst case
+> scenario (page table tree is empty), which means we will allocate/free
+> a lot. Having pool a pool of free pages is crucial if we want to
+> speed-up VM_BIND requests.
+> 
+> A real example of how such custom allocators can be used is available
+> here[1]. v2 of the Panthor driver is approaching submission, and I
+> figured I'd try to upstream the dependencies separately, which is
+> why I submit this series now, even though the user of this new API
+> will come afterwards. If you'd prefer to have those patches submitted
+> along with the Panthor driver, let me know.
+> 
+> This approach has been discussed with Robin, and is hopefully not too
+> far from what he had in mind.
 
-Well, the iommufd has such check. But I also noticed your another
-reply to Weijiang. So your preference is to do the flags validation
-in iommu driver instead of iommufd. Isn't it?
+The alternative would be to embed a cache of pages into the IOMMU
+framework, however kmem_cache sadly doesn't seem to support the
+'reserve' of pages concept that we need. mempools could be a solution
+but the mempool would need to be created by the IOMMU framework as the
+alloc/free functions are specified when creating the pool. So it would
+be a much bigger change (to drivers/iommu).
 
-> > > +
-> > > +	domain =3D iommu_domain_alloc(dev->bus);
-> >
-> > No need to bounce between core and driver. Just,
-> >
-> > 	intel_iommu_domain_alloc(IOMMU_DOMAIN_UNMANAGED);
-> >
-> > and fully initialize it before return.
->=20
-> If you are going to do that then intel_iommu_domain_alloc() should
-> fully initialize the domain, not here.
+So, given that so far it's just Panthor this seems like the right
+approach for now - when/if other drivers want the same functionality
+then it might make sense to revisit the idea of doing the caching within
+the IOMMU framework.
 
-I've also considered what Baolu described, but it requires to do some
-extra initialization which is duplicated with iommu_domain_alloc().
-So I chose this simple way.
+Robin: Does this approach sound sensible?
 
-Regards,
-Yi Liu
+FWIW:
+
+Reviewed-by: Steven Price <steven.price@arm.com>
+
+Steve
+
+> Regards,
+> 
+> Boris
+> 
+> [1]https://gitlab.freedesktop.org/panfrost/linux/-/blob/panthor/drivers/gpu/drm/panthor/panthor_mmu.c#L441
+> 
+> Boris Brezillon (2):
+>   iommu: Allow passing custom allocators to pgtable drivers
+>   iommu: Extend LPAE page table format to support custom allocators
+> 
+>  drivers/iommu/io-pgtable-arm.c | 50 +++++++++++++++++++++++-----------
+>  drivers/iommu/io-pgtable.c     | 31 +++++++++++++++++++++
+>  include/linux/io-pgtable.h     | 21 ++++++++++++++
+>  3 files changed, 86 insertions(+), 16 deletions(-)
+> 
 
