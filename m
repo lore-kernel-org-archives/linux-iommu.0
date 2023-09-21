@@ -1,34 +1,34 @@
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.31])
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.151])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 10E09BE50
-	for <iommu@lists.linux.dev>; Thu, 21 Sep 2023 12:12:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 33017B641
+	for <iommu@lists.linux.dev>; Thu, 21 Sep 2023 13:33:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1695298333; x=1726834333;
+  t=1695303236; x=1726839236;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=C2g69B99mcxWi9Q2D69yxsBnzZaEHHrRxUrs3EY2EDM=;
-  b=ATZrxS9NukUqQ0Mo9iqMiKgOSXEFA5cXsTAPfUX4qfGWHtHxGF+Bz8wM
-   HXZ0AcmqYRlk0zLrevTU9HnHegX8H0TQtBaLMdyg/hjtWQFs0WjnXiJ7Q
-   0Xt02Ey3jDj7NU1pE6+AdqAYglpVfIM1E9oCkvl7VLVmbfMrQta8wxxza
-   89Y50Uamfj9hDEzQRf9j5A+MBqYYHVoWXXDXod/p8TcfIQjStWjnyPLFm
-   Eruf1/cYOP6Lx8sYXMhaNsfwDFyQswvXXynNNriQJN0yAUuvNBmrE5GOd
-   GNrRNiYjGHSbnBvnreV6LZlYSu+Qjn+qVO0rOiVDDeAjKA3BWf7Y/TWT9
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10839"; a="444606277"
+  bh=di5mpgdL3ZYPjG1RlMEW/pRlAICty+pOXRnLRRLTIco=;
+  b=OVc0X8SmIHqXRIFZ319UlQI7nE3oMIzESIFkD3d7+KkAmo5nj+l3PGcl
+   fTLsSY3CpsGzf1dYJuW6CGZTGFwvIbwoOlDQzmCkoGBlVv5TJm0xYMBnp
+   7nTTWshli91pi4J4ZnXlmaM5fTt+Re4hPoR9SgQIrBcxfR7xOtqQzkPyy
+   TB4CAU3mnypp+4+utoyW2BPjT2V7nT7DPIYe2Lzz0HiITPckJfmsk86Dh
+   sOIjVa2hwKZ4UOOwuPVaBfS77W0NHOrtAZe4QdsvEolnHa3drAwSBqI8C
+   PWA6sIqkb881EIKMg3cFujpLXqvBGsUC5OlEUpYqPHpxWavRX3aG4Jnue
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10840"; a="360769963"
 X-IronPort-AV: E=Sophos;i="6.03,165,1694761200"; 
-   d="scan'208";a="444606277"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Sep 2023 05:12:12 -0700
+   d="scan'208";a="360769963"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Sep 2023 06:33:46 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10839"; a="920706101"
+X-IronPort-AV: E=McAfee;i="6600,9927,10840"; a="750386212"
 X-IronPort-AV: E=Sophos;i="6.03,165,1694761200"; 
-   d="scan'208";a="920706101"
+   d="scan'208";a="750386212"
 Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.254.213.213]) ([10.254.213.213])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Sep 2023 05:12:06 -0700
-Message-ID: <0d37a1b1-e7ef-fa73-d17c-629cd254ae75@linux.intel.com>
-Date: Thu, 21 Sep 2023 20:12:03 +0800
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Sep 2023 06:33:41 -0700
+Message-ID: <e493c62d-8f10-17c8-f660-dbae19c481a4@linux.intel.com>
+Date: Thu, 21 Sep 2023 21:33:38 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -44,41 +44,81 @@ Cc: baolu.lu@linux.intel.com, cohuck@redhat.com, eric.auger@redhat.com,
  suravee.suthikulpanit@amd.com, iommu@lists.linux.dev,
  linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
  zhenzhong.duan@intel.com, joao.m.martins@oracle.com
-Subject: Re: [PATCH v4 01/17] iommu: Add hwpt_type with user_data for
- domain_alloc_user op
+Subject: Re: [PATCH v5 07/11] iommufd: Add data structure for Intel VT-d
+ stage-1 cache invalidation
 Content-Language: en-US
 To: Yi Liu <yi.l.liu@intel.com>, joro@8bytes.org, alex.williamson@redhat.com,
  jgg@nvidia.com, kevin.tian@intel.com, robin.murphy@arm.com
-References: <20230921075138.124099-1-yi.l.liu@intel.com>
- <20230921075138.124099-2-yi.l.liu@intel.com>
+References: <20230921075431.125239-1-yi.l.liu@intel.com>
+ <20230921075431.125239-8-yi.l.liu@intel.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20230921075138.124099-2-yi.l.liu@intel.com>
+In-Reply-To: <20230921075431.125239-8-yi.l.liu@intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2023/9/21 15:51, Yi Liu wrote:
+On 2023/9/21 15:54, Yi Liu wrote:
+> This adds the data structure for flushing iotlb for the nested domain
+> allocated with IOMMU_HWPT_TYPE_VTD_S1 type.
+> 
+> This only supports invalidating IOTLB, but no for device-TLB as device-TLB
+> invalidation will be covered automatically in the IOTLB invalidation if the
+> underlying IOMMU driver has enabled ATS for the affected device.
+> 
+> Signed-off-by: Yi Liu <yi.l.liu@intel.com>
+> ---
+>   include/uapi/linux/iommufd.h | 34 ++++++++++++++++++++++++++++++++++
+>   1 file changed, 34 insertions(+)
+> 
 > diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
-> index 4a7c5c8fdbb4..3c8660fe9bb1 100644
+> index 18a502e206c3..3050efbceb57 100644
 > --- a/include/uapi/linux/iommufd.h
 > +++ b/include/uapi/linux/iommufd.h
-> @@ -357,6 +357,14 @@ enum iommufd_hwpt_alloc_flags {
->   	IOMMU_HWPT_ALLOC_NEST_PARENT = 1 << 0,
+> @@ -510,6 +510,40 @@ struct iommu_hw_info {
 >   };
+>   #define IOMMU_GET_HW_INFO _IO(IOMMUFD_TYPE, IOMMUFD_CMD_GET_HW_INFO)
 >   
 > +/**
-> + * enum iommu_hwpt_type - IOMMU HWPT Type
-> + * @IOMMU_HWPT_TYPE_DEFAULT: default
-
-How about s/default/vendor agnostic/ ?
-
+> + * enum iommu_hwpt_vtd_s1_invalidate_flags - Flags for Intel VT-d
+> + *                                           stage-1 cache invalidation
+> + * @IOMMU_VTD_QI_FLAGS_LEAF: The LEAF flag indicates whether only the
+> + *                           leaf PTE caching needs to be invalidated
+> + *                           and other paging structure caches can be
+> + *                           preserved.
 > + */
-> +enum iommu_hwpt_type {
-> +	IOMMU_HWPT_TYPE_DEFAULT,
+> +enum iommu_hwpt_vtd_s1_invalidate_flags {
+> +	IOMMU_VTD_QI_FLAGS_LEAF = 1 << 0,
+> +};
+> +
+> +/**
+> + * struct iommu_hwpt_vtd_s1_invalidate - Intel VT-d cache invalidation
+> + *                                       (IOMMU_HWPT_TYPE_VTD_S1)
+> + * @addr: The start address of the addresses to be invalidated.
+
+Is there an alignment requirement for @addr? If so, is 4K alignment
+sufficient? Perhaps we need to document it here so that user space can
+calculate the @addr correctly.
+
+> + * @npages: Number of contiguous 4K pages to be invalidated.
+> + * @flags: Combination of enum iommu_hwpt_vtd_s1_invalidate_flags
+> + * @__reserved: Must be 0
+> + *
+> + * The Intel VT-d specific invalidation data for user-managed stage-1 cache
+> + * invalidation under nested translation. Userspace uses this structure to
+> + * tell host about the impacted caches after modifying the stage-1 page table.
+> + *
+> + * Invalidating all the caches related to the page table by setting @addr
+> + * to be 0 and @npages to be __aligned_u64(-1).
+> + */
+> +struct iommu_hwpt_vtd_s1_invalidate {
+> +	__aligned_u64 addr;
+> +	__aligned_u64 npages;
+> +	__u32 flags;
+> +	__u32 __reserved;
 > +};
 > +
 >   /**
->    * struct iommu_hwpt_alloc - ioctl(IOMMU_HWPT_ALLOC)
->    * @size: sizeof(struct iommu_hwpt_alloc)
+>    * struct iommu_hwpt_invalidate - ioctl(IOMMU_HWPT_INVALIDATE)
+>    * @size: sizeof(struct iommu_hwpt_invalidate)
 
 Best regards,
 baolu
