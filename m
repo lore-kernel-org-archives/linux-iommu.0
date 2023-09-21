@@ -1,32 +1,32 @@
 Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A08C663A4
-	for <iommu@lists.linux.dev>; Thu, 21 Sep 2023 07:54:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 209BA5CBD
+	for <iommu@lists.linux.dev>; Thu, 21 Sep 2023 07:54:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1695282892; x=1726818892;
+  t=1695282893; x=1726818893;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=TKXjR4j9x1jDQI3p6zjb5Rlhbhk6itQVPUNBhJA2+j8=;
-  b=cAyjbUna2H7VMNnjV++xfRGFifZSIH+J4yd/eDQog9lwxm8Kh+GhtIvQ
-   ByDH8M7JsvbRwQOIuhO1Kn049lEl3fRvAj4i9bbx0oD7Wi/pEXa9hNgj0
-   ngNGgJDO0IDxLzsho96RncZQpQSjFwhknMuyHvvxxtWa0KQBUu0h3PElE
-   mSXYx9yjzQ4d6t9EvLFJp+I0Ne71mliR6X8S0nfhsOVtGVLlFU/7gCtCf
-   9Pf2kXCWRtklrVgaNZkJ2vIToVIv0vxQEzjksDnHIY3H9PyIG8Pl704XP
-   i+Vae9v9nxo7QdjoJSmeIptDfmKBsPJPF9/XsybzEncIS/Zwz5td6ALaI
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10839"; a="370764441"
+  bh=S7OPx85gN2G+8RHarCfjHgmntx38eLMzDBOfexGdmYM=;
+  b=eFfntvT1BxZn8EqPX3afIXnM2cqzaktK5Avdop+H9l4iQIet+FHjdP4F
+   mVR1CVQnaKdhVSt+rBRdzXCQLvqlcaP10/3cY+Bh82C8Qaw+ELRWfdFCN
+   AvagRTXLhAosoMTFMHYkYCi1JKPOKBxg4R0hA6BM/RACVh7va9Mk4jhzr
+   aNvIOhieeU/TW148pWp3nnFyE+iERtW2P3k8h0UAt5OiLnWuipjBCliDs
+   JrLHYa/rBPpFAfUDPOYvXF/Tc3vJ/Y3y09eWcioQUJt5mZlStz0QtiTCb
+   /nzsvb2r6iLFnV3SXOk55vrcIRaPrZuTPUt43VdH6V8RX/9JMFIlZRS9G
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10839"; a="370764452"
 X-IronPort-AV: E=Sophos;i="6.03,164,1694761200"; 
-   d="scan'208";a="370764441"
+   d="scan'208";a="370764452"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Sep 2023 00:54:51 -0700
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Sep 2023 00:54:52 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10839"; a="812523157"
+X-IronPort-AV: E=McAfee;i="6600,9927,10839"; a="812523164"
 X-IronPort-AV: E=Sophos;i="6.03,164,1694761200"; 
-   d="scan'208";a="812523157"
+   d="scan'208";a="812523164"
 Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
-  by fmsmga008.fm.intel.com with ESMTP; 21 Sep 2023 00:54:49 -0700
+  by fmsmga008.fm.intel.com with ESMTP; 21 Sep 2023 00:54:51 -0700
 From: Yi Liu <yi.l.liu@intel.com>
 To: joro@8bytes.org,
 	alex.williamson@redhat.com,
@@ -51,11 +51,10 @@ Cc: cohuck@redhat.com,
 	linux-kernel@vger.kernel.org,
 	linux-kselftest@vger.kernel.org,
 	zhenzhong.duan@intel.com,
-	joao.m.martins@oracle.com,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: [PATCH v5 06/11] iommu/vt-d: Set the nested domain to a device
-Date: Thu, 21 Sep 2023 00:54:26 -0700
-Message-Id: <20230921075431.125239-7-yi.l.liu@intel.com>
+	joao.m.martins@oracle.com
+Subject: [PATCH v5 07/11] iommufd: Add data structure for Intel VT-d stage-1 cache invalidation
+Date: Thu, 21 Sep 2023 00:54:27 -0700
+Message-Id: <20230921075431.125239-8-yi.l.liu@intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230921075431.125239-1-yi.l.liu@intel.com>
 References: <20230921075431.125239-1-yi.l.liu@intel.com>
@@ -67,86 +66,63 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-This adds the helper for setting the nested domain to a device hence
-enable nested domain usage on Intel VT-d.
+This adds the data structure for flushing iotlb for the nested domain
+allocated with IOMMU_HWPT_TYPE_VTD_S1 type.
 
-Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+This only supports invalidating IOTLB, but no for device-TLB as device-TLB
+invalidation will be covered automatically in the IOTLB invalidation if the
+underlying IOMMU driver has enabled ATS for the affected device.
+
 Signed-off-by: Yi Liu <yi.l.liu@intel.com>
 ---
- drivers/iommu/intel/nested.c | 50 ++++++++++++++++++++++++++++++++++++
- 1 file changed, 50 insertions(+)
+ include/uapi/linux/iommufd.h | 34 ++++++++++++++++++++++++++++++++++
+ 1 file changed, 34 insertions(+)
 
-diff --git a/drivers/iommu/intel/nested.c b/drivers/iommu/intel/nested.c
-index 012d5ff60265..f9c6ade72416 100644
---- a/drivers/iommu/intel/nested.c
-+++ b/drivers/iommu/intel/nested.c
-@@ -11,8 +11,57 @@
- #define pr_fmt(fmt)	"DMAR: " fmt
- 
- #include <linux/iommu.h>
-+#include <linux/pci.h>
-+#include <linux/pci-ats.h>
- 
- #include "iommu.h"
-+#include "pasid.h"
-+
-+static int intel_nested_attach_dev(struct iommu_domain *domain,
-+				   struct device *dev)
-+{
-+	struct device_domain_info *info = dev_iommu_priv_get(dev);
-+	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
-+	struct intel_iommu *iommu = info->iommu;
-+	unsigned long flags;
-+	int ret = 0;
-+
-+	if (info->domain)
-+		device_block_translation(dev);
-+
-+	if (iommu->agaw < dmar_domain->s2_domain->agaw) {
-+		dev_err_ratelimited(dev, "Adjusted guest address width not compatible\n");
-+		return -ENODEV;
-+	}
-+
-+	/* Is s2_domain compatible with this IOMMU? */
-+	ret = prepare_domain_attach_device(&dmar_domain->s2_domain->domain, dev);
-+	if (ret) {
-+		dev_err_ratelimited(dev, "s2 domain is not compatible\n");
-+		return ret;
-+	}
-+
-+	ret = domain_attach_iommu(dmar_domain, iommu);
-+	if (ret) {
-+		dev_err_ratelimited(dev, "Failed to attach domain to iommu\n");
-+		return ret;
-+	}
-+
-+	ret = intel_pasid_setup_nested(iommu, dev,
-+				       IOMMU_NO_PASID, dmar_domain);
-+	if (ret) {
-+		domain_detach_iommu(dmar_domain, iommu);
-+		dev_err_ratelimited(dev, "Failed to setup pasid entry\n");
-+		return ret;
-+	}
-+
-+	info->domain = dmar_domain;
-+	spin_lock_irqsave(&dmar_domain->lock, flags);
-+	list_add(&info->link, &dmar_domain->devices);
-+	spin_unlock_irqrestore(&dmar_domain->lock, flags);
-+
-+	return 0;
-+}
- 
- static void intel_nested_domain_free(struct iommu_domain *domain)
- {
-@@ -20,6 +69,7 @@ static void intel_nested_domain_free(struct iommu_domain *domain)
- }
- 
- static const struct iommu_domain_ops intel_nested_domain_ops = {
-+	.attach_dev		= intel_nested_attach_dev,
- 	.free			= intel_nested_domain_free,
+diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
+index 18a502e206c3..3050efbceb57 100644
+--- a/include/uapi/linux/iommufd.h
++++ b/include/uapi/linux/iommufd.h
+@@ -510,6 +510,40 @@ struct iommu_hw_info {
  };
+ #define IOMMU_GET_HW_INFO _IO(IOMMUFD_TYPE, IOMMUFD_CMD_GET_HW_INFO)
  
++/**
++ * enum iommu_hwpt_vtd_s1_invalidate_flags - Flags for Intel VT-d
++ *                                           stage-1 cache invalidation
++ * @IOMMU_VTD_QI_FLAGS_LEAF: The LEAF flag indicates whether only the
++ *                           leaf PTE caching needs to be invalidated
++ *                           and other paging structure caches can be
++ *                           preserved.
++ */
++enum iommu_hwpt_vtd_s1_invalidate_flags {
++	IOMMU_VTD_QI_FLAGS_LEAF = 1 << 0,
++};
++
++/**
++ * struct iommu_hwpt_vtd_s1_invalidate - Intel VT-d cache invalidation
++ *                                       (IOMMU_HWPT_TYPE_VTD_S1)
++ * @addr: The start address of the addresses to be invalidated.
++ * @npages: Number of contiguous 4K pages to be invalidated.
++ * @flags: Combination of enum iommu_hwpt_vtd_s1_invalidate_flags
++ * @__reserved: Must be 0
++ *
++ * The Intel VT-d specific invalidation data for user-managed stage-1 cache
++ * invalidation under nested translation. Userspace uses this structure to
++ * tell host about the impacted caches after modifying the stage-1 page table.
++ *
++ * Invalidating all the caches related to the page table by setting @addr
++ * to be 0 and @npages to be __aligned_u64(-1).
++ */
++struct iommu_hwpt_vtd_s1_invalidate {
++	__aligned_u64 addr;
++	__aligned_u64 npages;
++	__u32 flags;
++	__u32 __reserved;
++};
++
+ /**
+  * struct iommu_hwpt_invalidate - ioctl(IOMMU_HWPT_INVALIDATE)
+  * @size: sizeof(struct iommu_hwpt_invalidate)
 -- 
 2.34.1
 
