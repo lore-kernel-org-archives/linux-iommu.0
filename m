@@ -1,124 +1,1392 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.151])
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2049.outbound.protection.outlook.com [40.107.94.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 33017B641
-	for <iommu@lists.linux.dev>; Thu, 21 Sep 2023 13:33:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1695303236; x=1726839236;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=di5mpgdL3ZYPjG1RlMEW/pRlAICty+pOXRnLRRLTIco=;
-  b=OVc0X8SmIHqXRIFZ319UlQI7nE3oMIzESIFkD3d7+KkAmo5nj+l3PGcl
-   fTLsSY3CpsGzf1dYJuW6CGZTGFwvIbwoOlDQzmCkoGBlVv5TJm0xYMBnp
-   7nTTWshli91pi4J4ZnXlmaM5fTt+Re4hPoR9SgQIrBcxfR7xOtqQzkPyy
-   TB4CAU3mnypp+4+utoyW2BPjT2V7nT7DPIYe2Lzz0HiITPckJfmsk86Dh
-   sOIjVa2hwKZ4UOOwuPVaBfS77W0NHOrtAZe4QdsvEolnHa3drAwSBqI8C
-   PWA6sIqkb881EIKMg3cFujpLXqvBGsUC5OlEUpYqPHpxWavRX3aG4Jnue
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10840"; a="360769963"
-X-IronPort-AV: E=Sophos;i="6.03,165,1694761200"; 
-   d="scan'208";a="360769963"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Sep 2023 06:33:46 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10840"; a="750386212"
-X-IronPort-AV: E=Sophos;i="6.03,165,1694761200"; 
-   d="scan'208";a="750386212"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.254.213.213]) ([10.254.213.213])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Sep 2023 06:33:41 -0700
-Message-ID: <e493c62d-8f10-17c8-f660-dbae19c481a4@linux.intel.com>
-Date: Thu, 21 Sep 2023 21:33:38 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB743B641
+	for <iommu@lists.linux.dev>; Thu, 21 Sep 2023 14:05:43 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=LICdlhftSGXlrso9ArB7dLUYC0l9Dx7qJumf+TSGOJG28srTEJh6SOPndWZu5NypHlp9ffQpPhBIFGZvu/rxAGhqXRZXZNh9X9pbTjX2jzpAjOKoG0c3ELGNUOzC2EuGG5QWW5abueGux71gxpqUywgLtntvXpbC4i0aL2pLGWwvzdR+kfEWrLQcqiLLeqzWmFcKoCFbUKuXitlDoupuyiS+6kOP7PjtYdGKQi/yIn48tBwehV2axBf7dtka+QED9417eTG9oXvmXuRIIclbEeML1MBPewEpJlHOhW8YUs/bYfeCubCljvRXLfn0jQTniDqwIojLCC9HnTyxjeK/xQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=xHNmvsNFJozYyUz5wdFQ4KskpyseJFLRs6p79N94xwM=;
+ b=VnnnHMCzJV5bmIcKNQyJxuSRIuBfU3E3NblqwS1oHbeo+nZa/VRORPfQU0iBBGxDxfsnsI1i68oV/8HmIAaYsXFYjPOdJZAPRQxjukz8jrqdvlJW3iigYzil7YdD8CPISOyp4noMUw6kxQkwqzMs51Xfw2ezjapB5lir9w8u5dzYswi+fnPffBJooVcxVkBqrNVCcZLuskpiNlTZQFtMZq+gNGy68vHTECkBUs8cJtbkXw05Sj0JPIcRH0Lzk8oy0HwiPFKdm3NlMl0LlvY92bJKhaEd8K6wOyweDMvDqBoYV7h6lISnBTx69b5L4AShYWxbOIt7kBaMq4kdtTDPqg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=xHNmvsNFJozYyUz5wdFQ4KskpyseJFLRs6p79N94xwM=;
+ b=eP7N4/EznRXypWxT2/sOqozI0qXI4jmuMPZmr3M4BCF6ZHB/qmajD27iYJPnyyLmsKyzConzJcrj3LdSWsIymeeko2O+pV+TGVbprfmeMpwnHWpF9romTLPJrCcOWaZJ2B+eQPK34OIuYXtEXfzePxTe3z1X8UCcHun30lAs9Nk=
+Received: from BL1PR12MB5144.namprd12.prod.outlook.com (2603:10b6:208:316::6)
+ by PH7PR12MB9223.namprd12.prod.outlook.com (2603:10b6:510:2f2::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6813.20; Thu, 21 Sep
+ 2023 14:05:38 +0000
+Received: from BL1PR12MB5144.namprd12.prod.outlook.com
+ ([fe80::629e:e981:228d:3822]) by BL1PR12MB5144.namprd12.prod.outlook.com
+ ([fe80::629e:e981:228d:3822%5]) with mapi id 15.20.6792.026; Thu, 21 Sep 2023
+ 14:05:37 +0000
+From: "Deucher, Alexander" <Alexander.Deucher@amd.com>
+To: "Hegde, Vasant" <Vasant.Hegde@amd.com>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>, "joro@8bytes.org" <joro@8bytes.org>
+CC: "Suthikulpanit, Suravee" <Suravee.Suthikulpanit@amd.com>, "Huang2, Wei"
+	<Wei.Huang2@amd.com>, "jsnitsel@redhat.com" <jsnitsel@redhat.com>,
+	"jgg@ziepe.ca" <jgg@ziepe.ca>, "Kuehling, Felix" <Felix.Kuehling@amd.com>,
+	Jason Gunthorpe <jgg@nvidia.com>
+Subject: RE: [PATCH v3 1/5] iommu/amd: Remove iommu_v2 module
+Thread-Topic: [PATCH v3 1/5] iommu/amd: Remove iommu_v2 module
+Thread-Index: AQHZ7G6D8C15gDSmGUyI0hSW7LwfLrAlT/Ow
+Date: Thu, 21 Sep 2023 14:05:37 +0000
+Message-ID:
+ <BL1PR12MB5144C5ADC106D450EA73C511F7F8A@BL1PR12MB5144.namprd12.prod.outlook.com>
+References: <20230921093140.6162-1-vasant.hegde@amd.com>
+ <20230921093140.6162-2-vasant.hegde@amd.com>
+In-Reply-To: <20230921093140.6162-2-vasant.hegde@amd.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+msip_labels:
+ MSIP_Label_4342314e-0df4-4b58-84bf-38bed6170a0f_ActionId=b2349d18-dba2-43be-99cf-ad5116f25d2b;MSIP_Label_4342314e-0df4-4b58-84bf-38bed6170a0f_ContentBits=0;MSIP_Label_4342314e-0df4-4b58-84bf-38bed6170a0f_Enabled=true;MSIP_Label_4342314e-0df4-4b58-84bf-38bed6170a0f_Method=Standard;MSIP_Label_4342314e-0df4-4b58-84bf-38bed6170a0f_Name=General;MSIP_Label_4342314e-0df4-4b58-84bf-38bed6170a0f_SetDate=2023-09-21T14:03:33Z;MSIP_Label_4342314e-0df4-4b58-84bf-38bed6170a0f_SiteId=3dd8961f-e488-4e60-8e11-a82d994e183d;
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BL1PR12MB5144:EE_|PH7PR12MB9223:EE_
+x-ms-office365-filtering-correlation-id: f374e621-ebe0-455f-59f9-08dbbaabd505
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info:
+ rYRo5IyBVGHyq98RgEz/qBbI9T+kw1Ap/DqfF4ZXaDoJSxjpb8VVUB0IErHB8r7YPyZqaeRwdeaWgtJHbodA+TFCpnLIM4nYuxcLyhjnFEJVQ46HcROWwiDq8ZvdKt/F3KRywZkXrTvzOQIwJD4hhKGXxKABcH20LCe7zJsiKyo5pNoPJYmQ1x4mI6CeaugO1m7IrgSZ1jKmcmOBhCNwmw1dAO5e6j80eR22Z4dPiMccHSqB5mA9VYP6zRCNUofVNoiskqmncZywNdS5ooKZPNRtl4v3EicCPeKJxNFfQ9gmYPY+r2DPwxxVwj/N1+Ntt4DNAxdva6ctzaLDozuoup74TJsCiCsO+46KEjGDCOfJodfrnvP55y9z6WERQb1qvwb8wS113v2oSWAA+fq+0RzPtobx55oVxe/lqabSAJzRbHqgJhSSFwJIC/qZkIzXEWr+E3k3of9EIsoy9744pTg+D8+Vfy63LwMyJQKQYikV5Glab/f+BDDthtoByFe7phaQwYFvulXFpVV+Il7xHENfdSdPfAlrrGPBfpVLW9IVN/vL4TEH2YcmQQET4gRVjb3yt6wd0Wix8ILAhfO7SxKH+EfLP8sC4Ci6ZortPeNNzuX+/C1nMGwwtBg28LP7
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL1PR12MB5144.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(346002)(366004)(376002)(39860400002)(136003)(396003)(186009)(451199024)(1800799009)(6506007)(7696005)(53546011)(122000001)(38070700005)(33656002)(38100700002)(55016003)(86362001)(30864003)(26005)(9686003)(83380400001)(478600001)(52536014)(8936002)(4326008)(5660300002)(8676002)(2906002)(110136005)(41300700001)(66476007)(66556008)(71200400001)(66446008)(64756008)(66946007)(54906003)(76116006)(316002)(579004)(559001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?us-ascii?Q?ug7xEFCKIfj8BA+682RGXmbGqkX16/tpXzvp503StWHEDkFnuboLNV3tp1sE?=
+ =?us-ascii?Q?hw22yEYVwE5pnFe6Fh8BYurJJhxrjPHt2FMtNQ3Or3Y4E+wK6NqIo5ghYY1q?=
+ =?us-ascii?Q?x3ulPkxQSK7Q/Mu+krzvJ8e7aWoD4mPZKiGtJhMOrBvcZ7AZDFDerbfaQekB?=
+ =?us-ascii?Q?9Cb6hjgQ+F4zKTYwcCuV+xUNdgH6okQZpTlTgt/L7uF7zmE2QdBP5+wskEKP?=
+ =?us-ascii?Q?jsJcjGwx37a3JC/eF6qmSNid6IHSGNIUOI32T1Q17FUx9fRh5hMYdRcydXBn?=
+ =?us-ascii?Q?MEC4wKvIB7vCenzE4NDFcLzJEYDJMIGxGaz12fBgJfs68Apv3ARYHs4PFpb2?=
+ =?us-ascii?Q?vUx/v/8VQNQg235zmVG/Xb+GaJA9uUn51XxDzImLcgru88dHl6x4iQaQbFqb?=
+ =?us-ascii?Q?DQ+GAHquyzboEOH2yxUfK2Vo7vLgy38E7AxPLOf3/w/3JQTSVvbQceU2jVOy?=
+ =?us-ascii?Q?ZYfX1Fjo0ctxpRRk7FJRMOqy1FHJhm1By4SdV5c13jKoxa5gX6pjFsvj2VUt?=
+ =?us-ascii?Q?4KSYAeQ/5oxcdP89ZEg1ILhekJdmE58hQR087YQvUCm0KsPeM0IxXfkzX7Fv?=
+ =?us-ascii?Q?e25ymMLocXlWkpZppQIrxMN8eJSYVPhtCBjdSqif0iu8rXtz+wmc/nVkqX1J?=
+ =?us-ascii?Q?4lPoEt1wgVP9YqHHGvV1Y5+91r5OFnD6Kche9pbFNPKOZxWoNyNc5LBz0Qbx?=
+ =?us-ascii?Q?gkr+X5LGCYeGakbhpl9+ak5ZiY+QMBK98TQIP1RrnClzulnBEv40Z6lyVfCE?=
+ =?us-ascii?Q?lexYZblVbH6C/AbpALlQCs7QiuEh9cbDII8xUFA5ny1sLU09KX6cecW4uV3J?=
+ =?us-ascii?Q?FzmDTUM8/+X7QG0hpbvFwl43ytGd3GnPo8rTYOH5SMpsVuP3+JWm0x2PiysQ?=
+ =?us-ascii?Q?ox0mdf00xoKLWee73rsuqgduyZjK6qArEt2rkB20JeNlHRTlK+jo4/lgTi4k?=
+ =?us-ascii?Q?AgRaA1ZyjCSadeyLv4PPmE6+9kYeo9sFj4gbfg8q8ZZegY00URQ/r67mKISx?=
+ =?us-ascii?Q?jn/1QMwNTEY1G3e3gokAA8w6P0VjvbasLUY6uAulTs9YnuenGlbZOwgB7nxY?=
+ =?us-ascii?Q?zv4pVh8CQUgeK7ufgBjQDG4RBPsMpsAyuixmoJ6NlskGmz03ACn2RUXiCZ0v?=
+ =?us-ascii?Q?lnAxcSbxNPRgorMEiMTkVck8I+tj1Y8m5LaUEhggFSCi5/8t/PLjiyTVPSSv?=
+ =?us-ascii?Q?zlQ2Y+Z5lKVnxZEpK+SFxFheH+zyJxt1NzOHz8C2YJc6zXC8A4IsuasT6wly?=
+ =?us-ascii?Q?uzT1Mo+rmPi70t595EbpNMeZt9XQrAsy4oSpBOJj+uHc6WsUsDS72a5fMyOE?=
+ =?us-ascii?Q?c6548YzTvzjYpxThanYYGRwSVJmqS9pgujMESyjCYcm6hM4aaUL8kqlt5YYx?=
+ =?us-ascii?Q?qjk+lRVW3Eb2RUnKIRMJXMwBLt0reE+x8eLUyYZddShU2nufmLzvnUQKoi74?=
+ =?us-ascii?Q?QNux6nxGdFDLpmRMiy1RbHwwCeUXB8+QCHdkOgQPXgWUUU7EkQ+wiEoGlB1B?=
+ =?us-ascii?Q?Q/h1OuKo+zLSzVNv/QXmiuOjlibL/cehNl6EwAry2VW1+p0OeHgbCmwPTQCy?=
+ =?us-ascii?Q?tM+XyJAyigf1ghc11cY=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.15.1
-Cc: baolu.lu@linux.intel.com, cohuck@redhat.com, eric.auger@redhat.com,
- nicolinc@nvidia.com, kvm@vger.kernel.org, mjrosato@linux.ibm.com,
- chao.p.peng@linux.intel.com, yi.y.sun@linux.intel.com, peterx@redhat.com,
- jasowang@redhat.com, shameerali.kolothum.thodi@huawei.com, lulu@redhat.com,
- suravee.suthikulpanit@amd.com, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
- zhenzhong.duan@intel.com, joao.m.martins@oracle.com
-Subject: Re: [PATCH v5 07/11] iommufd: Add data structure for Intel VT-d
- stage-1 cache invalidation
-Content-Language: en-US
-To: Yi Liu <yi.l.liu@intel.com>, joro@8bytes.org, alex.williamson@redhat.com,
- jgg@nvidia.com, kevin.tian@intel.com, robin.murphy@arm.com
-References: <20230921075431.125239-1-yi.l.liu@intel.com>
- <20230921075431.125239-8-yi.l.liu@intel.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20230921075431.125239-8-yi.l.liu@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BL1PR12MB5144.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f374e621-ebe0-455f-59f9-08dbbaabd505
+X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Sep 2023 14:05:37.8751
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: UZArDLDCr3eAj26m1+8mw69ATEYLuhGIidT/FEXee//8r3TMW3gmIaDoSvCoUXxG7CHqdm9dh1NOahQ+9BOCMw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB9223
 
-On 2023/9/21 15:54, Yi Liu wrote:
-> This adds the data structure for flushing iotlb for the nested domain
-> allocated with IOMMU_HWPT_TYPE_VTD_S1 type.
-> 
-> This only supports invalidating IOTLB, but no for device-TLB as device-TLB
-> invalidation will be covered automatically in the IOTLB invalidation if the
-> underlying IOMMU driver has enabled ATS for the affected device.
-> 
-> Signed-off-by: Yi Liu <yi.l.liu@intel.com>
+[AMD Official Use Only - General]
+
+> -----Original Message-----
+> From: Hegde, Vasant <Vasant.Hegde@amd.com>
+> Sent: Thursday, September 21, 2023 5:32 AM
+> To: iommu@lists.linux.dev; joro@8bytes.org
+> Cc: Suthikulpanit, Suravee <Suravee.Suthikulpanit@amd.com>; Huang2, Wei
+> <Wei.Huang2@amd.com>; jsnitsel@redhat.com; jgg@ziepe.ca; Hegde, Vasant
+> <Vasant.Hegde@amd.com>; Deucher, Alexander
+> <Alexander.Deucher@amd.com>; Kuehling, Felix <Felix.Kuehling@amd.com>;
+> Jason Gunthorpe <jgg@nvidia.com>
+> Subject: [PATCH v3 1/5] iommu/amd: Remove iommu_v2 module
+>
+> AMD GPU driver which was the only in-kernel user of iommu_v2 module
+> removed dependency on iommu_v2 module.
+>
+> Also we are working on adding SVA support in AMD IOMMU driver. Device
+> drivers are expected to use common SVA framework to enable device
+> PASID/PRI features.
+>
+> Removing iommu_v2 module and then adding SVA simplifies the
+> development.
+> Hence remove iommu_v2 module.
+
+Does this patch or the following patches make any functional changes for de=
+vices?  E.g., devices which supported ATS would have been put into an ident=
+ity mapping mode previously  Is that still retained?
+
+Thanks,
+
+Alex
+
+>
+> Cc: Alex Deucher <alexander.deucher@amd.com>
+> Cc: Joerg Roedel <joro@8bytes.org>
+> Cc: Felix Kuehling <Felix.Kuehling@amd.com>
+> Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
+> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+> Reviewed-by: Jerry Snitselaar <jsnitsel@redhat.com>
 > ---
->   include/uapi/linux/iommufd.h | 34 ++++++++++++++++++++++++++++++++++
->   1 file changed, 34 insertions(+)
-> 
-> diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
-> index 18a502e206c3..3050efbceb57 100644
-> --- a/include/uapi/linux/iommufd.h
-> +++ b/include/uapi/linux/iommufd.h
-> @@ -510,6 +510,40 @@ struct iommu_hw_info {
->   };
->   #define IOMMU_GET_HW_INFO _IO(IOMMUFD_TYPE, IOMMUFD_CMD_GET_HW_INFO)
->   
-> +/**
-> + * enum iommu_hwpt_vtd_s1_invalidate_flags - Flags for Intel VT-d
-> + *                                           stage-1 cache invalidation
-> + * @IOMMU_VTD_QI_FLAGS_LEAF: The LEAF flag indicates whether only the
-> + *                           leaf PTE caching needs to be invalidated
-> + *                           and other paging structure caches can be
-> + *                           preserved.
-> + */
-> +enum iommu_hwpt_vtd_s1_invalidate_flags {
-> +	IOMMU_VTD_QI_FLAGS_LEAF = 1 << 0,
-> +};
-> +
-> +/**
-> + * struct iommu_hwpt_vtd_s1_invalidate - Intel VT-d cache invalidation
-> + *                                       (IOMMU_HWPT_TYPE_VTD_S1)
-> + * @addr: The start address of the addresses to be invalidated.
+>  drivers/iommu/amd/Kconfig     |   9 -
+>  drivers/iommu/amd/Makefile    |   1 -
+>  drivers/iommu/amd/amd_iommu.h |   5 -
+>  drivers/iommu/amd/iommu.c     |  40 --
+>  drivers/iommu/amd/iommu_v2.c  | 996 ----------------------------------
+>  include/linux/amd-iommu.h     |  94 ----
+>  6 files changed, 1145 deletions(-)
+>  delete mode 100644 drivers/iommu/amd/iommu_v2.c
+>
+> diff --git a/drivers/iommu/amd/Kconfig b/drivers/iommu/amd/Kconfig index
+> 9b5fc3356bf2..75132ae861a2 100644
+> --- a/drivers/iommu/amd/Kconfig
+> +++ b/drivers/iommu/amd/Kconfig
+> @@ -22,15 +22,6 @@ config AMD_IOMMU
+>         your BIOS for an option to enable it or if you have an IVRS ACPI
+>         table.
+>
+> -config AMD_IOMMU_V2
+> -     tristate "AMD IOMMU Version 2 driver"
+> -     depends on AMD_IOMMU
+> -     select MMU_NOTIFIER
+> -     help
+> -       This option enables support for the AMD IOMMUv2 features of the
+> IOMMU
+> -       hardware. Select this option if you want to use devices that supp=
+ort
+> -       the PCI PRI and PASID interface.
+> -
+>  config AMD_IOMMU_DEBUGFS
+>       bool "Enable AMD IOMMU internals in DebugFS"
+>       depends on AMD_IOMMU && IOMMU_DEBUGFS
+> diff --git a/drivers/iommu/amd/Makefile b/drivers/iommu/amd/Makefile
+> index 773d8aa00283..f454fbb1569e 100644
+> --- a/drivers/iommu/amd/Makefile
+> +++ b/drivers/iommu/amd/Makefile
+> @@ -1,4 +1,3 @@
+>  # SPDX-License-Identifier: GPL-2.0-only
+>  obj-$(CONFIG_AMD_IOMMU) +=3D iommu.o init.o quirks.o io_pgtable.o
+> io_pgtable_v2.o
+>  obj-$(CONFIG_AMD_IOMMU_DEBUGFS) +=3D debugfs.o
+> -obj-$(CONFIG_AMD_IOMMU_V2) +=3D iommu_v2.o diff --git
+> a/drivers/iommu/amd/amd_iommu.h b/drivers/iommu/amd/amd_iommu.h
+> index 9df53961d5ef..5b8a1e2dd3d0 100644
+> --- a/drivers/iommu/amd/amd_iommu.h
+> +++ b/drivers/iommu/amd/amd_iommu.h
+> @@ -38,9 +38,6 @@ extern int amd_iommu_guest_ir;  extern enum
+> io_pgtable_fmt amd_iommu_pgtable;  extern int amd_iommu_gpt_level;
+>
+> -/* IOMMUv2 specific functions */
+> -struct iommu_domain;
+> -
+>  bool amd_iommu_v2_supported(void);
+>  struct amd_iommu *get_amd_iommu(unsigned int idx);
+>  u8 amd_iommu_pc_get_max_banks(unsigned int idx); @@ -57,8 +54,6 @@
+> void amd_iommu_pdev_disable_cap_pri(struct pci_dev *pdev);
+>
+>  int amd_iommu_register_ppr_notifier(struct notifier_block *nb);  int
+> amd_iommu_unregister_ppr_notifier(struct notifier_block *nb); -void
+> amd_iommu_domain_direct_map(struct iommu_domain *dom); -int
+> amd_iommu_domain_enable_v2(struct iommu_domain *dom, int pasids);
+> int amd_iommu_flush_page(struct iommu_domain *dom, u32 pasid, u64
+> address);  void amd_iommu_update_and_flush_device_table(struct
+> protection_domain *domain);  void amd_iommu_domain_update(struct
+> protection_domain *domain); diff --git a/drivers/iommu/amd/iommu.c
+> b/drivers/iommu/amd/iommu.c index f3448a2b6c0e..fd0d7b2f30dc 100644
+> --- a/drivers/iommu/amd/iommu.c
+> +++ b/drivers/iommu/amd/iommu.c
+> @@ -2568,46 +2568,6 @@ int amd_iommu_unregister_ppr_notifier(struct
+> notifier_block *nb)  }
+> EXPORT_SYMBOL(amd_iommu_unregister_ppr_notifier);
+>
+> -void amd_iommu_domain_direct_map(struct iommu_domain *dom) -{
+> -     struct protection_domain *domain =3D to_pdomain(dom);
+> -     unsigned long flags;
+> -
+> -     spin_lock_irqsave(&domain->lock, flags);
+> -
+> -     if (domain->iop.pgtbl_cfg.tlb)
+> -             free_io_pgtable_ops(&domain->iop.iop.ops);
+> -
+> -     spin_unlock_irqrestore(&domain->lock, flags);
+> -}
+> -EXPORT_SYMBOL(amd_iommu_domain_direct_map);
+> -
+> -int amd_iommu_domain_enable_v2(struct iommu_domain *dom, int pasids)
+> -{
+> -     struct protection_domain *pdom =3D to_pdomain(dom);
+> -     unsigned long flags;
+> -     int ret;
+> -
+> -     spin_lock_irqsave(&pdom->lock, flags);
+> -
+> -     /*
+> -      * Save us all sanity checks whether devices already in the
+> -      * domain support IOMMUv2. Just force that the domain has no
+> -      * devices attached when it is switched into IOMMUv2 mode.
+> -      */
+> -     ret =3D -EBUSY;
+> -     if (pdom->dev_cnt > 0 || pdom->flags & PD_IOMMUV2_MASK)
+> -             goto out;
+> -
+> -     if (!pdom->gcr3_tbl)
+> -             ret =3D setup_gcr3_table(pdom, pasids);
+> -
+> -out:
+> -     spin_unlock_irqrestore(&pdom->lock, flags);
+> -     return ret;
+> -}
+> -EXPORT_SYMBOL(amd_iommu_domain_enable_v2);
+> -
+>  static int __flush_pasid(struct protection_domain *domain, u32 pasid,
+>                        u64 address, bool size)
+>  {
+> diff --git a/drivers/iommu/amd/iommu_v2.c
+> b/drivers/iommu/amd/iommu_v2.c deleted file mode 100644 index
+> 57c2fb1146e2..000000000000
+> --- a/drivers/iommu/amd/iommu_v2.c
+> +++ /dev/null
+> @@ -1,996 +0,0 @@
+> -// SPDX-License-Identifier: GPL-2.0-only
+> -/*
+> - * Copyright (C) 2010-2012 Advanced Micro Devices, Inc.
+> - * Author: Joerg Roedel <jroedel@suse.de>
+> - */
+> -
+> -#define pr_fmt(fmt)     "AMD-Vi: " fmt
+> -
+> -#include <linux/refcount.h>
+> -#include <linux/mmu_notifier.h>
+> -#include <linux/amd-iommu.h>
+> -#include <linux/mm_types.h>
+> -#include <linux/profile.h>
+> -#include <linux/module.h>
+> -#include <linux/sched.h>
+> -#include <linux/sched/mm.h>
+> -#include <linux/wait.h>
+> -#include <linux/pci.h>
+> -#include <linux/gfp.h>
+> -#include <linux/cc_platform.h>
+> -
+> -#include "amd_iommu.h"
+> -
+> -MODULE_LICENSE("GPL v2");
+> -MODULE_AUTHOR("Joerg Roedel <jroedel@suse.de>");
+> -
+> -#define PRI_QUEUE_SIZE               512
+> -
+> -struct pri_queue {
+> -     atomic_t inflight;
+> -     bool finish;
+> -     int status;
+> -};
+> -
+> -struct pasid_state {
+> -     struct list_head list;                  /* For global state-list */
+> -     refcount_t count;                               /* Reference count =
+*/
+> -     unsigned mmu_notifier_count;            /* Counting nested
+> mmu_notifier
+> -                                                calls */
+> -     struct mm_struct *mm;                   /* mm_struct for the faults=
+ */
+> -     struct mmu_notifier mn;                 /* mmu_notifier handle */
+> -     struct pri_queue pri[PRI_QUEUE_SIZE];   /* PRI tag states */
+> -     struct device_state *device_state;      /* Link to our device_state=
+ */
+> -     u32 pasid;                              /* PASID index */
+> -     bool invalid;                           /* Used during setup and
+> -                                                teardown of the pasid */
+> -     spinlock_t lock;                        /* Protect pri_queues and
+> -                                                mmu_notifer_count */
+> -     wait_queue_head_t wq;                   /* To wait for count =3D=3D
+> 0 */
+> -};
+> -
+> -struct device_state {
+> -     struct list_head list;
+> -     u32 sbdf;
+> -     atomic_t count;
+> -     struct pci_dev *pdev;
+> -     struct pasid_state **states;
+> -     struct iommu_domain *domain;
+> -     int pasid_levels;
+> -     int max_pasids;
+> -     amd_iommu_invalid_ppr_cb inv_ppr_cb;
+> -     amd_iommu_invalidate_ctx inv_ctx_cb;
+> -     spinlock_t lock;
+> -     wait_queue_head_t wq;
+> -};
+> -
+> -struct fault {
+> -     struct work_struct work;
+> -     struct device_state *dev_state;
+> -     struct pasid_state *state;
+> -     struct mm_struct *mm;
+> -     u64 address;
+> -     u32 pasid;
+> -     u16 tag;
+> -     u16 finish;
+> -     u16 flags;
+> -};
+> -
+> -static LIST_HEAD(state_list);
+> -static DEFINE_SPINLOCK(state_lock);
+> -
+> -static struct workqueue_struct *iommu_wq;
+> -
+> -static void free_pasid_states(struct device_state *dev_state);
+> -
+> -static struct device_state *__get_device_state(u32 sbdf) -{
+> -     struct device_state *dev_state;
+> -
+> -     list_for_each_entry(dev_state, &state_list, list) {
+> -             if (dev_state->sbdf =3D=3D sbdf)
+> -                     return dev_state;
+> -     }
+> -
+> -     return NULL;
+> -}
+> -
+> -static struct device_state *get_device_state(u32 sbdf) -{
+> -     struct device_state *dev_state;
+> -     unsigned long flags;
+> -
+> -     spin_lock_irqsave(&state_lock, flags);
+> -     dev_state =3D __get_device_state(sbdf);
+> -     if (dev_state !=3D NULL)
+> -             atomic_inc(&dev_state->count);
+> -     spin_unlock_irqrestore(&state_lock, flags);
+> -
+> -     return dev_state;
+> -}
+> -
+> -static void free_device_state(struct device_state *dev_state) -{
+> -     struct iommu_group *group;
+> -
+> -     /* Get rid of any remaining pasid states */
+> -     free_pasid_states(dev_state);
+> -
+> -     /*
+> -      * Wait until the last reference is dropped before freeing
+> -      * the device state.
+> -      */
+> -     wait_event(dev_state->wq, !atomic_read(&dev_state->count));
+> -
+> -     /*
+> -      * First detach device from domain - No more PRI requests will arri=
+ve
+> -      * from that device after it is unbound from the IOMMUv2 domain.
+> -      */
+> -     group =3D iommu_group_get(&dev_state->pdev->dev);
+> -     if (WARN_ON(!group))
+> -             return;
+> -
+> -     iommu_detach_group(dev_state->domain, group);
+> -
+> -     iommu_group_put(group);
+> -
+> -     /* Everything is down now, free the IOMMUv2 domain */
+> -     iommu_domain_free(dev_state->domain);
+> -
+> -     /* Finally get rid of the device-state */
+> -     kfree(dev_state);
+> -}
+> -
+> -static void put_device_state(struct device_state *dev_state) -{
+> -     if (atomic_dec_and_test(&dev_state->count))
+> -             wake_up(&dev_state->wq);
+> -}
+> -
+> -/* Must be called under dev_state->lock */ -static struct pasid_state
+> **__get_pasid_state_ptr(struct device_state *dev_state,
+> -                                               u32 pasid, bool alloc)
+> -{
+> -     struct pasid_state **root, **ptr;
+> -     int level, index;
+> -
+> -     level =3D dev_state->pasid_levels;
+> -     root  =3D dev_state->states;
+> -
+> -     while (true) {
+> -
+> -             index =3D (pasid >> (9 * level)) & 0x1ff;
+> -             ptr   =3D &root[index];
+> -
+> -             if (level =3D=3D 0)
+> -                     break;
+> -
+> -             if (*ptr =3D=3D NULL) {
+> -                     if (!alloc)
+> -                             return NULL;
+> -
+> -                     *ptr =3D (void *)get_zeroed_page(GFP_ATOMIC);
+> -                     if (*ptr =3D=3D NULL)
+> -                             return NULL;
+> -             }
+> -
+> -             root   =3D (struct pasid_state **)*ptr;
+> -             level -=3D 1;
+> -     }
+> -
+> -     return ptr;
+> -}
+> -
+> -static int set_pasid_state(struct device_state *dev_state,
+> -                        struct pasid_state *pasid_state,
+> -                        u32 pasid)
+> -{
+> -     struct pasid_state **ptr;
+> -     unsigned long flags;
+> -     int ret;
+> -
+> -     spin_lock_irqsave(&dev_state->lock, flags);
+> -     ptr =3D __get_pasid_state_ptr(dev_state, pasid, true);
+> -
+> -     ret =3D -ENOMEM;
+> -     if (ptr =3D=3D NULL)
+> -             goto out_unlock;
+> -
+> -     ret =3D -ENOMEM;
+> -     if (*ptr !=3D NULL)
+> -             goto out_unlock;
+> -
+> -     *ptr =3D pasid_state;
+> -
+> -     ret =3D 0;
+> -
+> -out_unlock:
+> -     spin_unlock_irqrestore(&dev_state->lock, flags);
+> -
+> -     return ret;
+> -}
+> -
+> -static void clear_pasid_state(struct device_state *dev_state, u32 pasid)=
+ -{
+> -     struct pasid_state **ptr;
+> -     unsigned long flags;
+> -
+> -     spin_lock_irqsave(&dev_state->lock, flags);
+> -     ptr =3D __get_pasid_state_ptr(dev_state, pasid, true);
+> -
+> -     if (ptr =3D=3D NULL)
+> -             goto out_unlock;
+> -
+> -     *ptr =3D NULL;
+> -
+> -out_unlock:
+> -     spin_unlock_irqrestore(&dev_state->lock, flags);
+> -}
+> -
+> -static struct pasid_state *get_pasid_state(struct device_state *dev_stat=
+e,
+> -                                        u32 pasid)
+> -{
+> -     struct pasid_state **ptr, *ret =3D NULL;
+> -     unsigned long flags;
+> -
+> -     spin_lock_irqsave(&dev_state->lock, flags);
+> -     ptr =3D __get_pasid_state_ptr(dev_state, pasid, false);
+> -
+> -     if (ptr =3D=3D NULL)
+> -             goto out_unlock;
+> -
+> -     ret =3D *ptr;
+> -     if (ret)
+> -             refcount_inc(&ret->count);
+> -
+> -out_unlock:
+> -     spin_unlock_irqrestore(&dev_state->lock, flags);
+> -
+> -     return ret;
+> -}
+> -
+> -static void free_pasid_state(struct pasid_state *pasid_state) -{
+> -     kfree(pasid_state);
+> -}
+> -
+> -static void put_pasid_state(struct pasid_state *pasid_state) -{
+> -     if (refcount_dec_and_test(&pasid_state->count))
+> -             wake_up(&pasid_state->wq);
+> -}
+> -
+> -static void put_pasid_state_wait(struct pasid_state *pasid_state) -{
+> -     if (!refcount_dec_and_test(&pasid_state->count))
+> -             wait_event(pasid_state->wq, !refcount_read(&pasid_state-
+> >count));
+> -     free_pasid_state(pasid_state);
+> -}
+> -
+> -static void unbind_pasid(struct pasid_state *pasid_state) -{
+> -     struct iommu_domain *domain;
+> -
+> -     domain =3D pasid_state->device_state->domain;
+> -
+> -     /*
+> -      * Mark pasid_state as invalid, no more faults will we added to the
+> -      * work queue after this is visible everywhere.
+> -      */
+> -     pasid_state->invalid =3D true;
+> -
+> -     /* Make sure this is visible */
+> -     smp_wmb();
+> -
+> -     /* After this the device/pasid can't access the mm anymore */
+> -     amd_iommu_domain_clear_gcr3(domain, pasid_state->pasid);
+> -
+> -     /* Make sure no more pending faults are in the queue */
+> -     flush_workqueue(iommu_wq);
+> -}
+> -
+> -static void free_pasid_states_level1(struct pasid_state **tbl) -{
+> -     int i;
+> -
+> -     for (i =3D 0; i < 512; ++i) {
+> -             if (tbl[i] =3D=3D NULL)
+> -                     continue;
+> -
+> -             free_page((unsigned long)tbl[i]);
+> -     }
+> -}
+> -
+> -static void free_pasid_states_level2(struct pasid_state **tbl) -{
+> -     struct pasid_state **ptr;
+> -     int i;
+> -
+> -     for (i =3D 0; i < 512; ++i) {
+> -             if (tbl[i] =3D=3D NULL)
+> -                     continue;
+> -
+> -             ptr =3D (struct pasid_state **)tbl[i];
+> -             free_pasid_states_level1(ptr);
+> -     }
+> -}
+> -
+> -static void free_pasid_states(struct device_state *dev_state) -{
+> -     struct pasid_state *pasid_state;
+> -     int i;
+> -
+> -     for (i =3D 0; i < dev_state->max_pasids; ++i) {
+> -             pasid_state =3D get_pasid_state(dev_state, i);
+> -             if (pasid_state =3D=3D NULL)
+> -                     continue;
+> -
+> -             put_pasid_state(pasid_state);
+> -
+> -             /* Clear the pasid state so that the pasid can be re-used *=
+/
+> -             clear_pasid_state(dev_state, pasid_state->pasid);
+> -
+> -             /*
+> -              * This will call the mn_release function and
+> -              * unbind the PASID
+> -              */
+> -             mmu_notifier_unregister(&pasid_state->mn, pasid_state-
+> >mm);
+> -
+> -             put_pasid_state_wait(pasid_state); /* Reference taken in
+> -                                                   amd_iommu_bind_pasid
+> */
+> -
+> -             /* Drop reference taken in amd_iommu_bind_pasid */
+> -             put_device_state(dev_state);
+> -     }
+> -
+> -     if (dev_state->pasid_levels =3D=3D 2)
+> -             free_pasid_states_level2(dev_state->states);
+> -     else if (dev_state->pasid_levels =3D=3D 1)
+> -             free_pasid_states_level1(dev_state->states);
+> -     else
+> -             BUG_ON(dev_state->pasid_levels !=3D 0);
+> -
+> -     free_page((unsigned long)dev_state->states);
+> -}
+> -
+> -static struct pasid_state *mn_to_state(struct mmu_notifier *mn) -{
+> -     return container_of(mn, struct pasid_state, mn);
+> -}
+> -
+> -static void mn_arch_invalidate_secondary_tlbs(struct mmu_notifier *mn,
+> -                                     struct mm_struct *mm,
+> -                                     unsigned long start, unsigned long
+> end)
+> -{
+> -     struct pasid_state *pasid_state;
+> -     struct device_state *dev_state;
+> -
+> -     pasid_state =3D mn_to_state(mn);
+> -     dev_state   =3D pasid_state->device_state;
+> -
+> -     if ((start ^ (end - 1)) < PAGE_SIZE)
+> -             amd_iommu_flush_page(dev_state->domain, pasid_state-
+> >pasid,
+> -                                  start);
+> -     else
+> -             amd_iommu_flush_tlb(dev_state->domain, pasid_state-
+> >pasid);
+> -}
+> -
+> -static void mn_release(struct mmu_notifier *mn, struct mm_struct *mm) -{
+> -     struct pasid_state *pasid_state;
+> -     struct device_state *dev_state;
+> -     bool run_inv_ctx_cb;
+> -
+> -     might_sleep();
+> -
+> -     pasid_state    =3D mn_to_state(mn);
+> -     dev_state      =3D pasid_state->device_state;
+> -     run_inv_ctx_cb =3D !pasid_state->invalid;
+> -
+> -     if (run_inv_ctx_cb && dev_state->inv_ctx_cb)
+> -             dev_state->inv_ctx_cb(dev_state->pdev, pasid_state->pasid);
+> -
+> -     unbind_pasid(pasid_state);
+> -}
+> -
+> -static const struct mmu_notifier_ops iommu_mn =3D {
+> -     .release                        =3D mn_release,
+> -     .arch_invalidate_secondary_tlbs =3D
+> mn_arch_invalidate_secondary_tlbs,
+> -};
+> -
+> -static void set_pri_tag_status(struct pasid_state *pasid_state,
+> -                            u16 tag, int status)
+> -{
+> -     unsigned long flags;
+> -
+> -     spin_lock_irqsave(&pasid_state->lock, flags);
+> -     pasid_state->pri[tag].status =3D status;
+> -     spin_unlock_irqrestore(&pasid_state->lock, flags);
+> -}
+> -
+> -static void finish_pri_tag(struct device_state *dev_state,
+> -                        struct pasid_state *pasid_state,
+> -                        u16 tag)
+> -{
+> -     unsigned long flags;
+> -
+> -     spin_lock_irqsave(&pasid_state->lock, flags);
+> -     if (atomic_dec_and_test(&pasid_state->pri[tag].inflight) &&
+> -         pasid_state->pri[tag].finish) {
+> -             amd_iommu_complete_ppr(dev_state->pdev, pasid_state-
+> >pasid,
+> -                                    pasid_state->pri[tag].status, tag);
+> -             pasid_state->pri[tag].finish =3D false;
+> -             pasid_state->pri[tag].status =3D PPR_SUCCESS;
+> -     }
+> -     spin_unlock_irqrestore(&pasid_state->lock, flags);
+> -}
+> -
+> -static void handle_fault_error(struct fault *fault) -{
+> -     int status;
+> -
+> -     if (!fault->dev_state->inv_ppr_cb) {
+> -             set_pri_tag_status(fault->state, fault->tag, PPR_INVALID);
+> -             return;
+> -     }
+> -
+> -     status =3D fault->dev_state->inv_ppr_cb(fault->dev_state->pdev,
+> -                                           fault->pasid,
+> -                                           fault->address,
+> -                                           fault->flags);
+> -     switch (status) {
+> -     case AMD_IOMMU_INV_PRI_RSP_SUCCESS:
+> -             set_pri_tag_status(fault->state, fault->tag, PPR_SUCCESS);
+> -             break;
+> -     case AMD_IOMMU_INV_PRI_RSP_INVALID:
+> -             set_pri_tag_status(fault->state, fault->tag, PPR_INVALID);
+> -             break;
+> -     case AMD_IOMMU_INV_PRI_RSP_FAIL:
+> -             set_pri_tag_status(fault->state, fault->tag, PPR_FAILURE);
+> -             break;
+> -     default:
+> -             BUG();
+> -     }
+> -}
+> -
+> -static bool access_error(struct vm_area_struct *vma, struct fault *fault=
+) -{
+> -     unsigned long requested =3D 0;
+> -
+> -     if (fault->flags & PPR_FAULT_EXEC)
+> -             requested |=3D VM_EXEC;
+> -
+> -     if (fault->flags & PPR_FAULT_READ)
+> -             requested |=3D VM_READ;
+> -
+> -     if (fault->flags & PPR_FAULT_WRITE)
+> -             requested |=3D VM_WRITE;
+> -
+> -     return (requested & ~vma->vm_flags) !=3D 0;
+> -}
+> -
+> -static void do_fault(struct work_struct *work) -{
+> -     struct fault *fault =3D container_of(work, struct fault, work);
+> -     struct vm_area_struct *vma;
+> -     vm_fault_t ret =3D VM_FAULT_ERROR;
+> -     unsigned int flags =3D 0;
+> -     struct mm_struct *mm;
+> -     u64 address;
+> -
+> -     mm =3D fault->state->mm;
+> -     address =3D fault->address;
+> -
+> -     if (fault->flags & PPR_FAULT_USER)
+> -             flags |=3D FAULT_FLAG_USER;
+> -     if (fault->flags & PPR_FAULT_WRITE)
+> -             flags |=3D FAULT_FLAG_WRITE;
+> -     flags |=3D FAULT_FLAG_REMOTE;
+> -
+> -     mmap_read_lock(mm);
+> -     vma =3D vma_lookup(mm, address);
+> -     if (!vma)
+> -             /* failed to get a vma in the right range */
+> -             goto out;
+> -
+> -     /* Check if we have the right permissions on the vma */
+> -     if (access_error(vma, fault))
+> -             goto out;
+> -
+> -     ret =3D handle_mm_fault(vma, address, flags, NULL);
+> -out:
+> -     mmap_read_unlock(mm);
+> -
+> -     if (ret & VM_FAULT_ERROR)
+> -             /* failed to service fault */
+> -             handle_fault_error(fault);
+> -
+> -     finish_pri_tag(fault->dev_state, fault->state, fault->tag);
+> -
+> -     put_pasid_state(fault->state);
+> -
+> -     kfree(fault);
+> -}
+> -
+> -static int ppr_notifier(struct notifier_block *nb, unsigned long e, void=
+ *data) -
+> {
+> -     struct amd_iommu_fault *iommu_fault;
+> -     struct pasid_state *pasid_state;
+> -     struct device_state *dev_state;
+> -     struct pci_dev *pdev =3D NULL;
+> -     unsigned long flags;
+> -     struct fault *fault;
+> -     bool finish;
+> -     u16 tag, devid, seg_id;
+> -     int ret;
+> -
+> -     iommu_fault =3D data;
+> -     tag         =3D iommu_fault->tag & 0x1ff;
+> -     finish      =3D (iommu_fault->tag >> 9) & 1;
+> -
+> -     seg_id =3D PCI_SBDF_TO_SEGID(iommu_fault->sbdf);
+> -     devid =3D PCI_SBDF_TO_DEVID(iommu_fault->sbdf);
+> -     pdev =3D pci_get_domain_bus_and_slot(seg_id, PCI_BUS_NUM(devid),
+> -                                        devid & 0xff);
+> -     if (!pdev)
+> -             return -ENODEV;
+> -
+> -     ret =3D NOTIFY_DONE;
+> -
+> -     /* In kdump kernel pci dev is not initialized yet -> send INVALID *=
+/
+> -     if (amd_iommu_is_attach_deferred(&pdev->dev)) {
+> -             amd_iommu_complete_ppr(pdev, iommu_fault->pasid,
+> -                                    PPR_INVALID, tag);
+> -             goto out;
+> -     }
+> -
+> -     dev_state =3D get_device_state(iommu_fault->sbdf);
+> -     if (dev_state =3D=3D NULL)
+> -             goto out;
+> -
+> -     pasid_state =3D get_pasid_state(dev_state, iommu_fault->pasid);
+> -     if (pasid_state =3D=3D NULL || pasid_state->invalid) {
+> -             /* We know the device but not the PASID -> send INVALID */
+> -             amd_iommu_complete_ppr(dev_state->pdev, iommu_fault-
+> >pasid,
+> -                                    PPR_INVALID, tag);
+> -             goto out_drop_state;
+> -     }
+> -
+> -     spin_lock_irqsave(&pasid_state->lock, flags);
+> -     atomic_inc(&pasid_state->pri[tag].inflight);
+> -     if (finish)
+> -             pasid_state->pri[tag].finish =3D true;
+> -     spin_unlock_irqrestore(&pasid_state->lock, flags);
+> -
+> -     fault =3D kzalloc(sizeof(*fault), GFP_ATOMIC);
+> -     if (fault =3D=3D NULL) {
+> -             /* We are OOM - send success and let the device re-fault */
+> -             finish_pri_tag(dev_state, pasid_state, tag);
+> -             goto out_drop_state;
+> -     }
+> -
+> -     fault->dev_state =3D dev_state;
+> -     fault->address   =3D iommu_fault->address;
+> -     fault->state     =3D pasid_state;
+> -     fault->tag       =3D tag;
+> -     fault->finish    =3D finish;
+> -     fault->pasid     =3D iommu_fault->pasid;
+> -     fault->flags     =3D iommu_fault->flags;
+> -     INIT_WORK(&fault->work, do_fault);
+> -
+> -     queue_work(iommu_wq, &fault->work);
+> -
+> -     ret =3D NOTIFY_OK;
+> -
+> -out_drop_state:
+> -
+> -     if (ret !=3D NOTIFY_OK && pasid_state)
+> -             put_pasid_state(pasid_state);
+> -
+> -     put_device_state(dev_state);
+> -
+> -out:
+> -     pci_dev_put(pdev);
+> -     return ret;
+> -}
+> -
+> -static struct notifier_block ppr_nb =3D {
+> -     .notifier_call =3D ppr_notifier,
+> -};
+> -
+> -int amd_iommu_bind_pasid(struct pci_dev *pdev, u32 pasid,
+> -                      struct task_struct *task)
+> -{
+> -     struct pasid_state *pasid_state;
+> -     struct device_state *dev_state;
+> -     struct mm_struct *mm;
+> -     u32 sbdf;
+> -     int ret;
+> -
+> -     might_sleep();
+> -
+> -     if (!amd_iommu_v2_supported())
+> -             return -ENODEV;
+> -
+> -     sbdf      =3D get_pci_sbdf_id(pdev);
+> -     dev_state =3D get_device_state(sbdf);
+> -
+> -     if (dev_state =3D=3D NULL)
+> -             return -EINVAL;
+> -
+> -     ret =3D -EINVAL;
+> -     if (pasid >=3D dev_state->max_pasids)
+> -             goto out;
+> -
+> -     ret =3D -ENOMEM;
+> -     pasid_state =3D kzalloc(sizeof(*pasid_state), GFP_KERNEL);
+> -     if (pasid_state =3D=3D NULL)
+> -             goto out;
+> -
+> -
+> -     refcount_set(&pasid_state->count, 1);
+> -     init_waitqueue_head(&pasid_state->wq);
+> -     spin_lock_init(&pasid_state->lock);
+> -
+> -     mm                        =3D get_task_mm(task);
+> -     pasid_state->mm           =3D mm;
+> -     pasid_state->device_state =3D dev_state;
+> -     pasid_state->pasid        =3D pasid;
+> -     pasid_state->invalid      =3D true; /* Mark as valid only if we are
+> -                                          done with setting up the pasid=
+ */
+> -     pasid_state->mn.ops       =3D &iommu_mn;
+> -
+> -     if (pasid_state->mm =3D=3D NULL)
+> -             goto out_free;
+> -
+> -     ret =3D mmu_notifier_register(&pasid_state->mn, mm);
+> -     if (ret)
+> -             goto out_free;
+> -
+> -     ret =3D set_pasid_state(dev_state, pasid_state, pasid);
+> -     if (ret)
+> -             goto out_unregister;
+> -
+> -     ret =3D amd_iommu_domain_set_gcr3(dev_state->domain, pasid,
+> -                                     __pa(pasid_state->mm->pgd));
+> -     if (ret)
+> -             goto out_clear_state;
+> -
+> -     /* Now we are ready to handle faults */
+> -     pasid_state->invalid =3D false;
+> -
+> -     /*
+> -      * Drop the reference to the mm_struct here. We rely on the
+> -      * mmu_notifier release call-back to inform us when the mm
+> -      * is going away.
+> -      */
+> -     mmput(mm);
+> -
+> -     return 0;
+> -
+> -out_clear_state:
+> -     clear_pasid_state(dev_state, pasid);
+> -
+> -out_unregister:
+> -     mmu_notifier_unregister(&pasid_state->mn, mm);
+> -     mmput(mm);
+> -
+> -out_free:
+> -     free_pasid_state(pasid_state);
+> -
+> -out:
+> -     put_device_state(dev_state);
+> -
+> -     return ret;
+> -}
+> -EXPORT_SYMBOL(amd_iommu_bind_pasid);
+> -
+> -void amd_iommu_unbind_pasid(struct pci_dev *pdev, u32 pasid) -{
+> -     struct pasid_state *pasid_state;
+> -     struct device_state *dev_state;
+> -     u32 sbdf;
+> -
+> -     might_sleep();
+> -
+> -     if (!amd_iommu_v2_supported())
+> -             return;
+> -
+> -     sbdf =3D get_pci_sbdf_id(pdev);
+> -     dev_state =3D get_device_state(sbdf);
+> -     if (dev_state =3D=3D NULL)
+> -             return;
+> -
+> -     if (pasid >=3D dev_state->max_pasids)
+> -             goto out;
+> -
+> -     pasid_state =3D get_pasid_state(dev_state, pasid);
+> -     if (pasid_state =3D=3D NULL)
+> -             goto out;
+> -     /*
+> -      * Drop reference taken here. We are safe because we still hold
+> -      * the reference taken in the amd_iommu_bind_pasid function.
+> -      */
+> -     put_pasid_state(pasid_state);
+> -
+> -     /* Clear the pasid state so that the pasid can be re-used */
+> -     clear_pasid_state(dev_state, pasid_state->pasid);
+> -
+> -     /*
+> -      * Call mmu_notifier_unregister to drop our reference
+> -      * to pasid_state->mm
+> -      */
+> -     mmu_notifier_unregister(&pasid_state->mn, pasid_state->mm);
+> -
+> -     put_pasid_state_wait(pasid_state); /* Reference taken in
+> -                                           amd_iommu_bind_pasid */
+> -out:
+> -     /* Drop reference taken in this function */
+> -     put_device_state(dev_state);
+> -
+> -     /* Drop reference taken in amd_iommu_bind_pasid */
+> -     put_device_state(dev_state);
+> -}
+> -EXPORT_SYMBOL(amd_iommu_unbind_pasid);
+> -
+> -int amd_iommu_init_device(struct pci_dev *pdev, int pasids) -{
+> -     struct device_state *dev_state;
+> -     struct iommu_group *group;
+> -     unsigned long flags;
+> -     int ret, tmp;
+> -     u32 sbdf;
+> -
+> -     might_sleep();
+> -
+> -     /*
+> -      * When memory encryption is active the device is likely not in a
+> -      * direct-mapped domain. Forbid using IOMMUv2 functionality for
+> now.
+> -      */
+> -     if (cc_platform_has(CC_ATTR_MEM_ENCRYPT))
+> -             return -ENODEV;
+> -
+> -     if (!amd_iommu_v2_supported())
+> -             return -ENODEV;
+> -
+> -     if (pasids <=3D 0 || pasids > (PASID_MASK + 1))
+> -             return -EINVAL;
+> -
+> -     sbdf =3D get_pci_sbdf_id(pdev);
+> -
+> -     dev_state =3D kzalloc(sizeof(*dev_state), GFP_KERNEL);
+> -     if (dev_state =3D=3D NULL)
+> -             return -ENOMEM;
+> -
+> -     spin_lock_init(&dev_state->lock);
+> -     init_waitqueue_head(&dev_state->wq);
+> -     dev_state->pdev  =3D pdev;
+> -     dev_state->sbdf =3D sbdf;
+> -
+> -     tmp =3D pasids;
+> -     for (dev_state->pasid_levels =3D 0; (tmp - 1) & ~0x1ff; tmp >>=3D 9=
+)
+> -             dev_state->pasid_levels +=3D 1;
+> -
+> -     atomic_set(&dev_state->count, 1);
+> -     dev_state->max_pasids =3D pasids;
+> -
+> -     ret =3D -ENOMEM;
+> -     dev_state->states =3D (void *)get_zeroed_page(GFP_KERNEL);
+> -     if (dev_state->states =3D=3D NULL)
+> -             goto out_free_dev_state;
+> -
+> -     dev_state->domain =3D iommu_domain_alloc(&pci_bus_type);
+> -     if (dev_state->domain =3D=3D NULL)
+> -             goto out_free_states;
+> -
+> -     /* See iommu_is_default_domain() */
+> -     dev_state->domain->type =3D IOMMU_DOMAIN_IDENTITY;
+> -     amd_iommu_domain_direct_map(dev_state->domain);
+> -
+> -     ret =3D amd_iommu_domain_enable_v2(dev_state->domain, pasids);
+> -     if (ret)
+> -             goto out_free_domain;
+> -
+> -     group =3D iommu_group_get(&pdev->dev);
+> -     if (!group) {
+> -             ret =3D -EINVAL;
+> -             goto out_free_domain;
+> -     }
+> -
+> -     ret =3D iommu_attach_group(dev_state->domain, group);
+> -     if (ret !=3D 0)
+> -             goto out_drop_group;
+> -
+> -     iommu_group_put(group);
+> -
+> -     spin_lock_irqsave(&state_lock, flags);
+> -
+> -     if (__get_device_state(sbdf) !=3D NULL) {
+> -             spin_unlock_irqrestore(&state_lock, flags);
+> -             ret =3D -EBUSY;
+> -             goto out_free_domain;
+> -     }
+> -
+> -     list_add_tail(&dev_state->list, &state_list);
+> -
+> -     spin_unlock_irqrestore(&state_lock, flags);
+> -
+> -     return 0;
+> -
+> -out_drop_group:
+> -     iommu_group_put(group);
+> -
+> -out_free_domain:
+> -     iommu_domain_free(dev_state->domain);
+> -
+> -out_free_states:
+> -     free_page((unsigned long)dev_state->states);
+> -
+> -out_free_dev_state:
+> -     kfree(dev_state);
+> -
+> -     return ret;
+> -}
+> -EXPORT_SYMBOL(amd_iommu_init_device);
+> -
+> -void amd_iommu_free_device(struct pci_dev *pdev) -{
+> -     struct device_state *dev_state;
+> -     unsigned long flags;
+> -     u32 sbdf;
+> -
+> -     if (!amd_iommu_v2_supported())
+> -             return;
+> -
+> -     sbdf =3D get_pci_sbdf_id(pdev);
+> -
+> -     spin_lock_irqsave(&state_lock, flags);
+> -
+> -     dev_state =3D __get_device_state(sbdf);
+> -     if (dev_state =3D=3D NULL) {
+> -             spin_unlock_irqrestore(&state_lock, flags);
+> -             return;
+> -     }
+> -
+> -     list_del(&dev_state->list);
+> -
+> -     spin_unlock_irqrestore(&state_lock, flags);
+> -
+> -     put_device_state(dev_state);
+> -     free_device_state(dev_state);
+> -}
+> -EXPORT_SYMBOL(amd_iommu_free_device);
+> -
+> -int amd_iommu_set_invalid_ppr_cb(struct pci_dev *pdev,
+> -                              amd_iommu_invalid_ppr_cb cb)
+> -{
+> -     struct device_state *dev_state;
+> -     unsigned long flags;
+> -     u32 sbdf;
+> -     int ret;
+> -
+> -     if (!amd_iommu_v2_supported())
+> -             return -ENODEV;
+> -
+> -     sbdf =3D get_pci_sbdf_id(pdev);
+> -
+> -     spin_lock_irqsave(&state_lock, flags);
+> -
+> -     ret =3D -EINVAL;
+> -     dev_state =3D __get_device_state(sbdf);
+> -     if (dev_state =3D=3D NULL)
+> -             goto out_unlock;
+> -
+> -     dev_state->inv_ppr_cb =3D cb;
+> -
+> -     ret =3D 0;
+> -
+> -out_unlock:
+> -     spin_unlock_irqrestore(&state_lock, flags);
+> -
+> -     return ret;
+> -}
+> -EXPORT_SYMBOL(amd_iommu_set_invalid_ppr_cb);
+> -
+> -int amd_iommu_set_invalidate_ctx_cb(struct pci_dev *pdev,
+> -                                 amd_iommu_invalidate_ctx cb)
+> -{
+> -     struct device_state *dev_state;
+> -     unsigned long flags;
+> -     u32 sbdf;
+> -     int ret;
+> -
+> -     if (!amd_iommu_v2_supported())
+> -             return -ENODEV;
+> -
+> -     sbdf =3D get_pci_sbdf_id(pdev);
+> -
+> -     spin_lock_irqsave(&state_lock, flags);
+> -
+> -     ret =3D -EINVAL;
+> -     dev_state =3D __get_device_state(sbdf);
+> -     if (dev_state =3D=3D NULL)
+> -             goto out_unlock;
+> -
+> -     dev_state->inv_ctx_cb =3D cb;
+> -
+> -     ret =3D 0;
+> -
+> -out_unlock:
+> -     spin_unlock_irqrestore(&state_lock, flags);
+> -
+> -     return ret;
+> -}
+> -EXPORT_SYMBOL(amd_iommu_set_invalidate_ctx_cb);
+> -
+> -static int __init amd_iommu_v2_init(void) -{
+> -     int ret;
+> -
+> -     if (!amd_iommu_v2_supported()) {
+> -             pr_info("AMD IOMMUv2 functionality not available on this
+> system - This is not a bug.\n");
+> -             /*
+> -              * Load anyway to provide the symbols to other modules
+> -              * which may use AMD IOMMUv2 optionally.
+> -              */
+> -             return 0;
+> -     }
+> -
+> -     ret =3D -ENOMEM;
+> -     iommu_wq =3D alloc_workqueue("amd_iommu_v2",
+> WQ_MEM_RECLAIM, 0);
+> -     if (iommu_wq =3D=3D NULL)
+> -             goto out;
+> -
+> -     amd_iommu_register_ppr_notifier(&ppr_nb);
+> -
+> -     pr_info("AMD IOMMUv2 loaded and initialized\n");
+> -
+> -     return 0;
+> -
+> -out:
+> -     return ret;
+> -}
+> -
+> -static void __exit amd_iommu_v2_exit(void) -{
+> -     struct device_state *dev_state, *next;
+> -     unsigned long flags;
+> -     LIST_HEAD(freelist);
+> -
+> -     if (!amd_iommu_v2_supported())
+> -             return;
+> -
+> -     amd_iommu_unregister_ppr_notifier(&ppr_nb);
+> -
+> -     flush_workqueue(iommu_wq);
+> -
+> -     /*
+> -      * The loop below might call flush_workqueue(), so call
+> -      * destroy_workqueue() after it
+> -      */
+> -     spin_lock_irqsave(&state_lock, flags);
+> -
+> -     list_for_each_entry_safe(dev_state, next, &state_list, list) {
+> -             WARN_ON_ONCE(1);
+> -
+> -             put_device_state(dev_state);
+> -             list_del(&dev_state->list);
+> -             list_add_tail(&dev_state->list, &freelist);
+> -     }
+> -
+> -     spin_unlock_irqrestore(&state_lock, flags);
+> -
+> -     /*
+> -      * Since free_device_state waits on the count to be zero,
+> -      * we need to free dev_state outside the spinlock.
+> -      */
+> -     list_for_each_entry_safe(dev_state, next, &freelist, list) {
+> -             list_del(&dev_state->list);
+> -             free_device_state(dev_state);
+> -     }
+> -
+> -     destroy_workqueue(iommu_wq);
+> -}
+> -
+> -module_init(amd_iommu_v2_init);
+> -module_exit(amd_iommu_v2_exit);
+> diff --git a/include/linux/amd-iommu.h b/include/linux/amd-iommu.h index
+> 99a5201d9e62..35ca00b09384 100644
+> --- a/include/linux/amd-iommu.h
+> +++ b/include/linux/amd-iommu.h
+> @@ -33,84 +33,6 @@ struct pci_dev;
+>
+>  extern int amd_iommu_detect(void);
+>
+> -/**
+> - * amd_iommu_init_device() - Init device for use with IOMMUv2 driver
+> - * @pdev: The PCI device to initialize
+> - * @pasids: Number of PASIDs to support for this device
+> - *
+> - * This function does all setup for the device pdev so that it can be
+> - * used with IOMMUv2.
+> - * Returns 0 on success or negative value on error.
+> - */
+> -extern int amd_iommu_init_device(struct pci_dev *pdev, int pasids);
+> -
+> -/**
+> - * amd_iommu_free_device() - Free all IOMMUv2 related device resources
+> - *                        and disable IOMMUv2 usage for this device
+> - * @pdev: The PCI device to disable IOMMUv2 usage for'
+> - */
+> -extern void amd_iommu_free_device(struct pci_dev *pdev);
+> -
+> -/**
+> - * amd_iommu_bind_pasid() - Bind a given task to a PASID on a device
+> - * @pdev: The PCI device to bind the task to
+> - * @pasid: The PASID on the device the task should be bound to
+> - * @task: the task to bind
+> - *
+> - * The function returns 0 on success or a negative value on error.
+> - */
+> -extern int amd_iommu_bind_pasid(struct pci_dev *pdev, u32 pasid,
+> -                             struct task_struct *task);
+> -
+> -/**
+> - * amd_iommu_unbind_pasid() - Unbind a PASID from its task on
+> - *                         a device
+> - * @pdev: The device of the PASID
+> - * @pasid: The PASID to unbind
+> - *
+> - * When this function returns the device is no longer using the PASID
+> - * and the PASID is no longer bound to its task.
+> - */
+> -extern void amd_iommu_unbind_pasid(struct pci_dev *pdev, u32 pasid);
+> -
+> -/**
+> - * amd_iommu_set_invalid_ppr_cb() - Register a call-back for failed
+> - *                               PRI requests
+> - * @pdev: The PCI device the call-back should be registered for
+> - * @cb: The call-back function
+> - *
+> - * The IOMMUv2 driver invokes this call-back when it is unable to
+> - * successfully handle a PRI request. The device driver can then decide
+> - * which PRI response the device should see. Possible return values for
+> - * the call-back are:
+> - *
+> - * - AMD_IOMMU_INV_PRI_RSP_SUCCESS - Send SUCCESS back to the
+> device
+> - * - AMD_IOMMU_INV_PRI_RSP_INVALID - Send INVALID back to the device
+> - * - AMD_IOMMU_INV_PRI_RSP_FAIL    - Send Failure back to the device,
+> - *                                the device is required to disable
+> - *                                PRI when it receives this response
+> - *
+> - * The function returns 0 on success or negative value on error.
+> - */
+> -#define AMD_IOMMU_INV_PRI_RSP_SUCCESS        0
+> -#define AMD_IOMMU_INV_PRI_RSP_INVALID        1
+> -#define AMD_IOMMU_INV_PRI_RSP_FAIL   2
+> -
+> -typedef int (*amd_iommu_invalid_ppr_cb)(struct pci_dev *pdev,
+> -                                     u32 pasid,
+> -                                     unsigned long address,
+> -                                     u16);
+> -
+> -extern int amd_iommu_set_invalid_ppr_cb(struct pci_dev *pdev,
+> -                                     amd_iommu_invalid_ppr_cb cb);
+> -
+> -#define PPR_FAULT_EXEC       (1 << 1)
+> -#define PPR_FAULT_READ  (1 << 2)
+> -#define PPR_FAULT_WRITE (1 << 5)
+> -#define PPR_FAULT_USER  (1 << 6)
+> -#define PPR_FAULT_RSVD  (1 << 7)
+> -#define PPR_FAULT_GN    (1 << 8)
+> -
+>  /**
+>   * amd_iommu_device_info() - Get information about IOMMUv2 support of a
+>   *                        PCI device
+> @@ -137,22 +59,6 @@ struct amd_iommu_device_info {  extern int
+> amd_iommu_device_info(struct pci_dev *pdev,
+>                                struct amd_iommu_device_info *info);
+>
+> -/**
+> - * amd_iommu_set_invalidate_ctx_cb() - Register a call-back for invalida=
+ting
+> - *                                  a pasid context. This call-back is
+> - *                                  invoked when the IOMMUv2 driver need=
+s
+> to
+> - *                                  invalidate a PASID context, for exam=
+ple
+> - *                                  because the task that is bound to th=
+at
+> - *                                  context is about to exit.
+> - *
+> - * @pdev: The PCI device the call-back should be registered for
+> - * @cb: The call-back function
+> - */
+> -
+> -typedef void (*amd_iommu_invalidate_ctx)(struct pci_dev *pdev, u32 pasid=
+);
+> -
+> -extern int amd_iommu_set_invalidate_ctx_cb(struct pci_dev *pdev,
+> -                                        amd_iommu_invalidate_ctx cb);
+>  #else /* CONFIG_AMD_IOMMU */
+>
+>  static inline int amd_iommu_detect(void) { return -ENODEV; }
+> --
+> 2.31.1
 
-Is there an alignment requirement for @addr? If so, is 4K alignment
-sufficient? Perhaps we need to document it here so that user space can
-calculate the @addr correctly.
-
-> + * @npages: Number of contiguous 4K pages to be invalidated.
-> + * @flags: Combination of enum iommu_hwpt_vtd_s1_invalidate_flags
-> + * @__reserved: Must be 0
-> + *
-> + * The Intel VT-d specific invalidation data for user-managed stage-1 cache
-> + * invalidation under nested translation. Userspace uses this structure to
-> + * tell host about the impacted caches after modifying the stage-1 page table.
-> + *
-> + * Invalidating all the caches related to the page table by setting @addr
-> + * to be 0 and @npages to be __aligned_u64(-1).
-> + */
-> +struct iommu_hwpt_vtd_s1_invalidate {
-> +	__aligned_u64 addr;
-> +	__aligned_u64 npages;
-> +	__u32 flags;
-> +	__u32 __reserved;
-> +};
-> +
->   /**
->    * struct iommu_hwpt_invalidate - ioctl(IOMMU_HWPT_INVALIDATE)
->    * @size: sizeof(struct iommu_hwpt_invalidate)
-
-Best regards,
-baolu
