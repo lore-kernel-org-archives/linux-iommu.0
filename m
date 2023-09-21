@@ -1,96 +1,215 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B38F800
-	for <iommu@lists.linux.dev>; Thu, 21 Sep 2023 01:34:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2FB185229
+	for <iommu@lists.linux.dev>; Thu, 21 Sep 2023 07:52:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1695260085; x=1726796085;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=+bidcrUQSX3/sahN7fs73gHIxO3mCixzrWi3NOAA3ag=;
-  b=egw7qUb3YvUj5D3Y95HXJNdEfBMsy2Db09Yus/AHqBenXbnN0x/B+N2+
-   qL9YvSpdIbfo7K/1uRnqdeET6DeL0ujgEtDaBkovJNpv/9/wAb9fegBVu
-   tu8XgSLO+sE/P9PKGvGs+ZASCIpXymq6k9FJBHNn9gIsZCBkponbRGBs8
-   V4GnELuKpfyGibhlZeUyop1yZ98UccN4G68VmG8a4CguakxAoHnDqL6eq
-   SR9W8pqev8clKlOfMczWXMNL2zaKNBHnuldBVCbeRSemmiOOumvIKbAxR
-   vnQwHQtZtC/KpRrhXdrBMjAYcugwefCWZNDseAMPjq6ca7hEZrAgigvXY
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10839"; a="359773161"
-X-IronPort-AV: E=Sophos;i="6.03,162,1694761200"; 
-   d="scan'208";a="359773161"
+  t=1695282728; x=1726818728;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=H+jaTZB/vzjOivp0Kos2FJEautJ0EWBq4jUgudwxXBQ=;
+  b=hJgWtsUWkU6Hug0sU1ht5GXdZCMOeTjZ4qChnO1fb1pYP6cSjbrFwacf
+   RO2isx3iU0Fur+t47J+ASF+Vzhz5tKiBCsiLrMD9fug4TT8/Mfd4pOCMy
+   FLwzLnCLPu94Yy6Ves+NRnFTVEM3SLoyfnwnqTF5FeDhXU4R35xee30PA
+   mD/OCgtDQpnYfgMAI0Nzy2LBOAFc/NSF3tamFqLlnRfwiXigt4Bcpnls2
+   31pKBW1csCxd3slqz5tiHUiLWCRhbj4R6R1qSiqyEC6BJwSmQhZ8PMPRp
+   Z2pOwq/91JxuM3QxcMuczuf3LMGNCAdKtziRx5oVxuFbeRhzdUSgdDo3L
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10839"; a="359832792"
+X-IronPort-AV: E=Sophos;i="6.03,164,1694761200"; 
+   d="scan'208";a="359832792"
 Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Sep 2023 18:34:41 -0700
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Sep 2023 00:52:07 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10839"; a="723540733"
-X-IronPort-AV: E=Sophos;i="6.03,162,1694761200"; 
-   d="scan'208";a="723540733"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
-  by orsmga006.jf.intel.com with ESMTP; 20 Sep 2023 18:34:35 -0700
-Message-ID: <ea19494d-8de6-e907-a735-7f2e5f98f9fb@linux.intel.com>
-Date: Thu, 21 Sep 2023 09:31:27 +0800
+X-IronPort-AV: E=McAfee;i="6600,9927,10839"; a="723649481"
+X-IronPort-AV: E=Sophos;i="6.03,164,1694761200"; 
+   d="scan'208";a="723649481"
+Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
+  by orsmga006.jf.intel.com with ESMTP; 21 Sep 2023 00:52:06 -0700
+From: Yi Liu <yi.l.liu@intel.com>
+To: joro@8bytes.org,
+	alex.williamson@redhat.com,
+	jgg@nvidia.com,
+	kevin.tian@intel.com,
+	robin.murphy@arm.com,
+	baolu.lu@linux.intel.com
+Cc: cohuck@redhat.com,
+	eric.auger@redhat.com,
+	nicolinc@nvidia.com,
+	kvm@vger.kernel.org,
+	mjrosato@linux.ibm.com,
+	chao.p.peng@linux.intel.com,
+	yi.l.liu@intel.com,
+	yi.y.sun@linux.intel.com,
+	peterx@redhat.com,
+	jasowang@redhat.com,
+	shameerali.kolothum.thodi@huawei.com,
+	lulu@redhat.com,
+	suravee.suthikulpanit@amd.com,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	linux-kselftest@vger.kernel.org,
+	zhenzhong.duan@intel.com,
+	joao.m.martins@oracle.com
+Subject: [PATCH v4 00/17] iommufd: Add nesting infrastructure
+Date: Thu, 21 Sep 2023 00:51:21 -0700
+Message-Id: <20230921075138.124099-1-yi.l.liu@intel.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.15.1
-Cc: baolu.lu@linux.intel.com, "joro@8bytes.org" <joro@8bytes.org>,
- "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
- "Tian, Kevin" <kevin.tian@intel.com>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>,
- "cohuck@redhat.com" <cohuck@redhat.com>,
- "eric.auger@redhat.com" <eric.auger@redhat.com>,
- "nicolinc@nvidia.com" <nicolinc@nvidia.com>,
- "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "mjrosato@linux.ibm.com" <mjrosato@linux.ibm.com>,
- "chao.p.peng@linux.intel.com" <chao.p.peng@linux.intel.com>,
- "yi.y.sun@linux.intel.com" <yi.y.sun@linux.intel.com>,
- "peterx@redhat.com" <peterx@redhat.com>,
- "jasowang@redhat.com" <jasowang@redhat.com>,
- "shameerali.kolothum.thodi@huawei.com"
- <shameerali.kolothum.thodi@huawei.com>, "lulu@redhat.com" <lulu@redhat.com>,
- "suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
- "Duan, Zhenzhong" <zhenzhong.duan@intel.com>,
- "Martins, Joao" <joao.m.martins@oracle.com>
-Subject: Re: [PATCH 6/6] iommu/vt-d: Add domain_alloc_user op
-Content-Language: en-US
-To: "Liu, Yi L" <yi.l.liu@intel.com>, Jason Gunthorpe <jgg@nvidia.com>
-References: <20230919092523.39286-1-yi.l.liu@intel.com>
- <20230919092523.39286-7-yi.l.liu@intel.com>
- <7aa8fd9e-e43d-db68-bdb6-fe4f891255ca@linux.intel.com>
- <20230920130522.GV13733@nvidia.com>
- <DS0PR11MB7529609BC4574A17ECE469A2C3F9A@DS0PR11MB7529.namprd11.prod.outlook.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <DS0PR11MB7529609BC4574A17ECE469A2C3F9A@DS0PR11MB7529.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 9/20/23 9:10 PM, Liu, Yi L wrote:
->>>> +
->>>> +	domain = iommu_domain_alloc(dev->bus);
->>> No need to bounce between core and driver. Just,
->>>
->>> 	intel_iommu_domain_alloc(IOMMU_DOMAIN_UNMANAGED);
->>>
->>> and fully initialize it before return.
->> If you are going to do that then intel_iommu_domain_alloc() should
->> fully initialize the domain, not here.
-> I've also considered what Baolu described, but it requires to do some
-> extra initialization which is duplicated with iommu_domain_alloc().
-> So I chose this simple way.
+Nested translation is a hardware feature that is supported by many modern
+IOMMU hardwares. It has two stages (stage-1, stage-2) address translation
+to get access to the physical address. stage-1 translation table is owned
+by userspace (e.g. by a guest OS), while stage-2 is owned by kernel. Changes
+to stage-1 translation table should be followed by an IOTLB invalidation.
 
-Okay, got you.
+Take Intel VT-d as an example, the stage-1 translation table is I/O page
+table. As the below diagram shows, guest I/O page table pointer in GPA
+(guest physical address) is passed to host and be used to perform the stage-1
+address translation. Along with it, modifications to present mappings in the
+guest I/O page table should be followed with an IOTLB invalidation.
 
-Once Jason's paging domain and Robin's bus->iommu_ops retirement series
-have landed, the VT-d driver will need some refactoring. Therefore, I'm
-fine with you using a simpler approach here. I'll refactor everything
-later.
+    .-------------.  .---------------------------.
+    |   vIOMMU    |  | Guest I/O page table      |
+    |             |  '---------------------------'
+    .----------------/
+    | PASID Entry |--- PASID cache flush --+
+    '-------------'                        |
+    |             |                        V
+    |             |           I/O page table pointer in GPA
+    '-------------'
+Guest
+------| Shadow |---------------------------|--------
+      v        v                           v
+Host
+    .-------------.  .------------------------.
+    |   pIOMMU    |  |  FS for GIOVA->GPA     |
+    |             |  '------------------------'
+    .----------------/  |
+    | PASID Entry |     V (Nested xlate)
+    '----------------\.----------------------------------.
+    |             |   | SS for GPA->HPA, unmanaged domain|
+    |             |   '----------------------------------'
+    '-------------'
+Where:
+ - FS = First stage page tables
+ - SS = Second stage page tables
+<Intel VT-d Nested translation>
 
-Best regards,
-baolu
+In IOMMUFD, all the translation tables are tracked by hw_pagetable (hwpt)
+and each has an iommu_domain allocated from iommu driver. So in this series
+hw_pagetable and iommu_domain means the same thing if no special note.
+IOMMUFD has already supported allocating hw_pagetable that is linked with
+an IOAS. However, nesting requires IOMMUFD to allow allocating hw_pagetable
+with driver specific parameters and interface to sync stage-1 IOTLB as user
+owns the stage-1 translation table.
+
+This series is based on the iommu hw info reporting series [1]. It first
+extends domain_alloc_user to allocate domains with user data and adds new
+op for invalidate stage-1 IOTLB for user-managed domains, then extends the
+IOMMUFD internal infrastructure to accept user_data and parent hwpt, relay
+the user_data/parent to iommu core to allocate user-managed iommu_domain.
+After it, extends the ioctl IOMMU_HWPT_ALLOC to accept user data and stage-2
+hwpt ID. Along with it, ioctl IOMMU_HWPT_INVALIDATE is added to invalidate
+stage-1 IOTLB. This is needed for user-managed hwpts. Selftest is added as
+well to cover the new ioctls.
+
+Complete code can be found in [2], QEMU could can be found in [3].
+
+At last, this is a team work together with Nicolin Chen, Lu Baolu. Thanks
+them for the help. ^_^. Look forward to your feedbacks.
+
+[1] https://lore.kernel.org/linux-iommu/20230818101033.4100-1-yi.l.liu@intel.com/#r - merged
+[2] https://github.com/yiliu1765/iommufd/tree/iommufd_nesting
+[3] https://github.com/yiliu1765/qemu/tree/zhenzhong/wip/iommufd_nesting_rfcv1
+
+Change log:
+
+v4:
+ - Separate HWPT alloc/destroy/abort functions between user-managed HWPTs
+   and kernel-managed HWPTs
+ - Rework invalidate uAPI to be a multi-request array-based design
+ - Add a struct iommu_user_data_array and a helper for driver to sanitize
+   and copy the entry data from user space invalidation array
+ - Add a patch fixing TEST_LENGTH() in selftest program
+ - Drop IOMMU_RESV_IOVA_RANGES patches
+ - Update kdoc and inline comments
+ - Drop the code to add IOMMU_RESV_SW_MSI to kernel-managed HWPT in nested translation,
+   this does not change the rule that resv regions should only be added to the
+   kernel-managed HWPT. The IOMMU_RESV_SW_MSI stuff will be added in later series
+   as it is needed only by SMMU so far.
+
+v3: https://lore.kernel.org/linux-iommu/20230724110406.107212-1-yi.l.liu@intel.com/
+ - Add new uAPI things in alphabetical order
+ - Pass in "enum iommu_hwpt_type hwpt_type" to op->domain_alloc_user for
+   sanity, replacing the previous op->domain_alloc_user_data_len solution
+ - Return ERR_PTR from domain_alloc_user instead of NULL
+ - Only add IOMMU_RESV_SW_MSI to kernel-managed HWPT in nested translation (Kevin)
+ - Add IOMMU_RESV_IOVA_RANGES to report resv iova ranges to userspace hence
+   userspace is able to exclude the ranges in the stage-1 HWPT (e.g. guest I/O
+   page table). (Kevin)
+ - Add selftest coverage for the new IOMMU_RESV_IOVA_RANGES ioctl
+ - Minor changes per Kevin's inputs
+
+v2: https://lore.kernel.org/linux-iommu/20230511143844.22693-1-yi.l.liu@intel.com/
+ - Add union iommu_domain_user_data to include all user data structures to avoid
+   passing void * in kernel APIs.
+ - Add iommu op to return user data length for user domain allocation
+ - Rename struct iommu_hwpt_alloc::data_type to be hwpt_type
+ - Store the invalidation data length in iommu_domain_ops::cache_invalidate_user_data_len
+ - Convert cache_invalidate_user op to be int instead of void
+ - Remove @data_type in struct iommu_hwpt_invalidate
+ - Remove out_hwpt_type_bitmap in struct iommu_hw_info hence drop patch 08 of v1
+
+v1: https://lore.kernel.org/linux-iommu/20230309080910.607396-1-yi.l.liu@intel.com/
+
+Thanks,
+	Yi Liu
+
+Lu Baolu (1):
+  iommu: Add nested domain support
+
+Nicolin Chen (12):
+  iommufd: Unite all kernel-managed members into a struct
+  iommufd: Separate kernel-managed HWPT alloc/destroy/abort functions
+  iommufd: Add shared alloc_fn function pointer and mutex pointer
+  iommufd: Add user-managed hw_pagetable support
+  iommufd: Always setup MSI and anforce cc on kernel-managed domains
+  iommufd/device: Add helpers to enforce/remove device reserved regions
+  iommufd/selftest: Rework TEST_LENGTH to test min_size explicitly
+  iommufd/selftest: Add nested domain allocation for mock domain
+  iommufd/selftest: Add coverage for IOMMU_HWPT_ALLOC with nested HWPTs
+  iommufd/selftest: Add mock_domain_cache_invalidate_user support
+  iommufd/selftest: Add IOMMU_TEST_OP_MD_CHECK_IOTLB test op
+  iommufd/selftest: Add coverage for IOMMU_HWPT_INVALIDATE ioctl
+
+Yi Liu (4):
+  iommu: Add hwpt_type with user_data for domain_alloc_user op
+  iommufd: Pass in hwpt_type/user_data to iommufd_hw_pagetable_alloc()
+  iommufd: Support IOMMU_HWPT_ALLOC allocation with user data
+  iommufd: Add IOMMU_HWPT_INVALIDATE
+
+ drivers/iommu/intel/iommu.c                   |   5 +-
+ drivers/iommu/iommufd/device.c                |  51 +++-
+ drivers/iommu/iommufd/hw_pagetable.c          | 257 ++++++++++++++++--
+ drivers/iommu/iommufd/iommufd_private.h       |  59 +++-
+ drivers/iommu/iommufd/iommufd_test.h          |  40 +++
+ drivers/iommu/iommufd/main.c                  |   3 +
+ drivers/iommu/iommufd/selftest.c              | 184 ++++++++++++-
+ include/linux/iommu.h                         | 110 +++++++-
+ include/uapi/linux/iommufd.h                  |  60 +++-
+ tools/testing/selftests/iommu/iommufd.c       | 209 +++++++++++++-
+ .../selftests/iommu/iommufd_fail_nth.c        |   3 +-
+ tools/testing/selftests/iommu/iommufd_utils.h |  91 ++++++-
+ 12 files changed, 998 insertions(+), 74 deletions(-)
+
+-- 
+2.34.1
+
