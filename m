@@ -1,32 +1,32 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.136])
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 16D398C10
-	for <iommu@lists.linux.dev>; Thu, 21 Sep 2023 07:52:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8274B539A
+	for <iommu@lists.linux.dev>; Thu, 21 Sep 2023 07:54:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1695282756; x=1726818756;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=HLs/ywkVSkJpE/INyHkcYbZLt51jl1NpNcocQh3S+kQ=;
-  b=T42hpjiQwic4c9BgOkkeIeQTZw0B4gzYHtSCgVsv6WgbPIC0rMSa9xt+
-   edJpbPdP/Lw0W03076Te07dfknK1nMasDXcuPwIG0cXh1Qm9/JbWBldPe
-   NeWPzas6yyPVRyjHUCBfyB5k9Rg2mIqU1kNfH7D+BFq9Kp0mzC309Y4kx
-   Mtm7YaClEIlc+bpgWDmGY1FnyLnr4dh4sQk9zkjdVNlrFB6FCDB6liPmX
-   /EonOtiJhQwTFrIG9Ob5g6LBRosi5CC8m3szHOMIRbkXEpRl8scPpWxVs
-   oLu+nr5zbvs0t5dHz23+DybAFFhOlq9/Y6BdzUrgPo0Y66uHpHbByA3mB
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10839"; a="359833001"
+  t=1695282887; x=1726818887;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=X9BBfgk8l9qrBPqgGMYev0KIhH/OZFgWEJbj0DqM7ps=;
+  b=nUj4uCfnjlP5CMkMuj/pVULujk4bKT1kU0e9y0W+b3T2eTLBMV92PY/f
+   f77/cLkhxcGYht8lpvyqhv2mlsO6BMpCpcD0uaQc9tjuGM1ikRD9Fdp9t
+   5u8MgWfY5x9XsGmnRK1GtHKCpWMHUDXlk1yfYdMWz4MK5YdvLKhll8oJj
+   8rZBkz2rJBpm5r5+KY0yaaleEpuJmo1U3kuGoGsyO4Zr11njJkNsdYaKt
+   /b9Vsk+/lVIdsMOxLJw/titW86bHJfQJzdj1ynpCxfnSEBxtUhukIEoBh
+   m600cvn9RPzu1WY45Pio2FZeUMkqBbshYLr4QQbS18yngxO1E96ciAlRj
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10839"; a="370764355"
 X-IronPort-AV: E=Sophos;i="6.03,164,1694761200"; 
-   d="scan'208";a="359833001"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Sep 2023 00:52:20 -0700
+   d="scan'208";a="370764355"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Sep 2023 00:54:43 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10839"; a="723649593"
+X-IronPort-AV: E=McAfee;i="6600,9927,10839"; a="812522971"
 X-IronPort-AV: E=Sophos;i="6.03,164,1694761200"; 
-   d="scan'208";a="723649593"
+   d="scan'208";a="812522971"
 Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
-  by orsmga006.jf.intel.com with ESMTP; 21 Sep 2023 00:52:20 -0700
+  by fmsmga008.fm.intel.com with ESMTP; 21 Sep 2023 00:54:42 -0700
 From: Yi Liu <yi.l.liu@intel.com>
 To: joro@8bytes.org,
 	alex.williamson@redhat.com,
@@ -52,12 +52,10 @@ Cc: cohuck@redhat.com,
 	linux-kselftest@vger.kernel.org,
 	zhenzhong.duan@intel.com,
 	joao.m.martins@oracle.com
-Subject: [PATCH v4 17/17] iommufd/selftest: Add coverage for IOMMU_HWPT_INVALIDATE ioctl
-Date: Thu, 21 Sep 2023 00:51:38 -0700
-Message-Id: <20230921075138.124099-18-yi.l.liu@intel.com>
+Subject: [PATCH v5 00/11] Add Intel VT-d nested translation
+Date: Thu, 21 Sep 2023 00:54:20 -0700
+Message-Id: <20230921075431.125239-1-yi.l.liu@intel.com>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230921075138.124099-1-yi.l.liu@intel.com>
-References: <20230921075138.124099-1-yi.l.liu@intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -66,152 +64,127 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-From: Nicolin Chen <nicolinc@nvidia.com>
+This is to add Intel VT-d nested translation based on IOMMUFD nesting
+infrastructure. As the iommufd nesting infrastructure series[1], iommu
+core supports new ops to report iommu hardware information, allocate
+domains with user data and invalidate stage-1 IOTLB when there is mapping
+changed in stage-1 page table. The data required in the three paths are
+vendor-specific, so
 
-Add test cases for the IOMMU_HWPT_INVALIDATE ioctl and verify it by using
-the new IOMMU_TEST_OP_MD_CHECK_IOTLB.
+1) IOMMU_HWPT_TYPE_VTD_S1 is defined for the Intel VT-d stage-1 page
+   table, it will be used in the stage-1 domain allocation and IOTLB
+   syncing path. struct iommu_hwpt_vtd_s1 is defined to pass user_data
+   for the Intel VT-d stage-1 domain allocation.
+   struct iommu_hwpt_vtd_s1_invalidate is defined to pass the data for
+   the Intel VT-d stage-1 IOTLB invalidation.
+2) IOMMU_HW_INFO_TYPE_INTEL_VTD and struct iommu_hw_info_vtd are defined
+   to report iommu hardware information for Intel VT-d.
 
-Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-Signed-off-by: Yi Liu <yi.l.liu@intel.com>
----
- tools/testing/selftests/iommu/iommufd.c       | 61 +++++++++++++++++++
- tools/testing/selftests/iommu/iommufd_utils.h | 36 +++++++++++
- 2 files changed, 97 insertions(+)
+With above IOMMUFD extensions, the intel iommu driver implements the three
+paths to support nested translation.
 
-diff --git a/tools/testing/selftests/iommu/iommufd.c b/tools/testing/selftests/iommu/iommufd.c
-index c59299248a98..617e11153761 100644
---- a/tools/testing/selftests/iommu/iommufd.c
-+++ b/tools/testing/selftests/iommu/iommufd.c
-@@ -116,6 +116,7 @@ TEST_F(iommufd, cmd_length)
- 	TEST_LENGTH(iommu_destroy, IOMMU_DESTROY, id);
- 	TEST_LENGTH(iommu_hw_info, IOMMU_GET_HW_INFO, __reserved);
- 	TEST_LENGTH(iommu_hwpt_alloc, IOMMU_HWPT_ALLOC, __reserved);
-+	TEST_LENGTH(iommu_hwpt_invalidate, IOMMU_HWPT_INVALIDATE, out_driver_error_code);
- 	TEST_LENGTH(iommu_ioas_alloc, IOMMU_IOAS_ALLOC, out_ioas_id);
- 	TEST_LENGTH(iommu_ioas_iova_ranges, IOMMU_IOAS_IOVA_RANGES,
- 		    out_iova_alignment);
-@@ -271,7 +272,9 @@ TEST_F(iommufd_ioas, alloc_hwpt_nested)
- 	struct iommu_hwpt_selftest data = {
- 		.iotlb =  IOMMU_TEST_IOTLB_DEFAULT,
- 	};
-+	struct iommu_hwpt_invalidate_selftest inv_reqs[2] = {0};
- 	uint32_t nested_hwpt_id[2] = {};
-+	uint32_t num_inv, driver_error;
- 	uint32_t parent_hwpt_id = 0;
- 	uint32_t parent_hwpt_id_not_work = 0;
- 	uint32_t test_hwpt_id = 0;
-@@ -342,6 +345,64 @@ TEST_F(iommufd_ioas, alloc_hwpt_nested)
- 		EXPECT_ERRNO(EBUSY,
- 			     _test_ioctl_destroy(self->fd, parent_hwpt_id));
- 
-+		/* hwpt_invalidate only supports a user-managed hwpt (nested) */
-+		num_inv = 1;
-+		test_err_hwpt_invalidate(EINVAL, parent_hwpt_id, inv_reqs,
-+					 sizeof(*inv_reqs), &num_inv, NULL);
-+		/* Negative test: structure size sanity */
-+		num_inv = 1;
-+		test_err_hwpt_invalidate(EINVAL, nested_hwpt_id[0], inv_reqs,
-+					 sizeof(*inv_reqs) + 1, &num_inv,
-+					 &driver_error);
-+		assert(driver_error == IOMMU_TEST_INVALIDATE_ERR_FETCH);
-+
-+		num_inv = 1;
-+		test_err_hwpt_invalidate(EINVAL, nested_hwpt_id[0], inv_reqs,
-+					 1, &num_inv, &driver_error);
-+		assert(driver_error == IOMMU_TEST_INVALIDATE_ERR_FETCH);
-+
-+		/* Invalidate the 1st iotlb entry but fail the 2nd request */
-+		num_inv = 2;
-+		inv_reqs[0].iotlb_id = 0;
-+		inv_reqs[1].iotlb_id = MOCK_NESTED_DOMAIN_IOTLB_ID_MAX + 1;
-+		test_err_hwpt_invalidate(EINVAL, nested_hwpt_id[0], inv_reqs,
-+					 sizeof(*inv_reqs), &num_inv,
-+					 &driver_error);
-+		assert(num_inv == 1);
-+		assert(driver_error == IOMMU_TEST_INVALIDATE_ERR_REQ);
-+		test_cmd_hwpt_check_iotlb(nested_hwpt_id[0], 0, 0);
-+		test_cmd_hwpt_check_iotlb(nested_hwpt_id[0], 1,
-+					  IOMMU_TEST_IOTLB_DEFAULT);
-+		test_cmd_hwpt_check_iotlb(nested_hwpt_id[0], 2,
-+					  IOMMU_TEST_IOTLB_DEFAULT);
-+		test_cmd_hwpt_check_iotlb(nested_hwpt_id[0], 3,
-+					  IOMMU_TEST_IOTLB_DEFAULT);
-+
-+		/* Invalidate the 2nd iotlb entry and verify */
-+		num_inv = 1;
-+		inv_reqs[0].iotlb_id = 1;
-+		test_cmd_hwpt_invalidate(nested_hwpt_id[0], inv_reqs,
-+					 sizeof(*inv_reqs), &num_inv);
-+		test_cmd_hwpt_check_iotlb(nested_hwpt_id[0], 0, 0);
-+		test_cmd_hwpt_check_iotlb(nested_hwpt_id[0], 1, 0);
-+		test_cmd_hwpt_check_iotlb(nested_hwpt_id[0], 2,
-+					  IOMMU_TEST_IOTLB_DEFAULT);
-+		test_cmd_hwpt_check_iotlb(nested_hwpt_id[0], 3,
-+					  IOMMU_TEST_IOTLB_DEFAULT);
-+		/* Invalidate the 3rd and 4th iotlb entries and verify */
-+		num_inv = 2;
-+		inv_reqs[0].iotlb_id = 2;
-+		inv_reqs[1].iotlb_id = 3;
-+		test_cmd_hwpt_invalidate(nested_hwpt_id[0], inv_reqs,
-+					 sizeof(*inv_reqs), &num_inv);
-+		test_cmd_hwpt_check_iotlb_all(nested_hwpt_id[0], 0);
-+		/* Invalidate all iotlb entries for nested_hwpt_id[1] and verify */
-+		num_inv = 1;
-+		inv_reqs[0].flags = IOMMU_TEST_INVALIDATE_ALL;
-+		test_cmd_hwpt_invalidate(nested_hwpt_id[1], inv_reqs,
-+					 sizeof(*inv_reqs), &num_inv);
-+		test_cmd_hwpt_check_iotlb_all(nested_hwpt_id[1], 0);
-+
- 		/* Attach device to nested_hwpt_id[0] that then will be busy */
- 		test_cmd_mock_domain_replace(self->stdev_id,
- 					     nested_hwpt_id[0]);
-diff --git a/tools/testing/selftests/iommu/iommufd_utils.h b/tools/testing/selftests/iommu/iommufd_utils.h
-index 2bc41e9a69e8..55906c5da1a9 100644
---- a/tools/testing/selftests/iommu/iommufd_utils.h
-+++ b/tools/testing/selftests/iommu/iommufd_utils.h
-@@ -169,6 +169,42 @@ static int _test_cmd_hwpt_alloc(int fd, __u32 device_id, __u32 pt_id,
- 			test_cmd_hwpt_check_iotlb(hwpt_id, i, expected);       \
- 	})
- 
-+static int _test_cmd_hwpt_invalidate(int fd, __u32 hwpt_id, void *reqs,
-+				     uint32_t lreq, uint32_t *nreqs,
-+				     uint32_t *driver_error)
-+{
-+	struct iommu_hwpt_invalidate cmd = {
-+		.size = sizeof(cmd),
-+		.hwpt_id = hwpt_id,
-+		.reqs_uptr = (uint64_t)reqs,
-+		.req_len = lreq,
-+		.req_num = *nreqs,
-+	};
-+	int rc = ioctl(fd, IOMMU_HWPT_INVALIDATE, &cmd);
-+	*nreqs = cmd.req_num;
-+	if (driver_error)
-+		*driver_error = cmd.out_driver_error_code;
-+	return rc;
-+}
-+
-+#define test_cmd_hwpt_invalidate(hwpt_id, reqs, lreq, nreqs)                 \
-+	({                                                                   \
-+		uint32_t error, num = *nreqs;                                \
-+		ASSERT_EQ(0,                                                 \
-+			  _test_cmd_hwpt_invalidate(self->fd, hwpt_id, reqs, \
-+						    lreq, nreqs, &error));   \
-+		assert(num == *nreqs);                                       \
-+		assert(error == 0);                                          \
-+	})
-+#define test_err_hwpt_invalidate(_errno, hwpt_id, reqs, lreq, nreqs,      \
-+				 driver_error)                            \
-+	({                                                                \
-+		EXPECT_ERRNO(_errno,                                      \
-+			     _test_cmd_hwpt_invalidate(self->fd, hwpt_id, \
-+						       reqs, lreq, nreqs, \
-+						       driver_error));    \
-+	})
-+
- static int _test_cmd_access_replace_ioas(int fd, __u32 access_id,
- 					 unsigned int ioas_id)
- {
+The first Intel platform supporting nested translation is Sapphire
+Rapids which, unfortunately, has a hardware errata [2] requiring special
+treatment. This errata happens when a stage-1 page table page (either
+level) is located in a stage-2 read-only region. In that case the IOMMU
+hardware may ignore the stage-2 RO permission and still set the A/D bit
+in stage-1 page table entries during page table walking.
+
+A flag IOMMU_HW_INFO_VTD_ERRATA_772415_SPR17 is introduced to report
+this errata to userspace. With that restriction the user should either
+disable nested translation to favor RO stage-2 mappings or ensure no
+RO stage-2 mapping to enable nested translation.
+
+Intel-iommu driver is armed with necessary checks to prevent such mix
+in patch12 of this series.
+
+Qemu currently does add RO mappings though. The vfio agent in Qemu
+simply maps all valid regions in the GPA address space which certainly
+includes RO regions e.g. vbios.
+
+In reality we don't know a usage relying on DMA reads from the BIOS
+region. Hence finding a way to skip RO regions (e.g. via a discard manager)
+in Qemu might be an acceptable tradeoff. The actual change needs more
+discussion in Qemu community. For now we just hacked Qemu to test.
+
+Complete code can be found in [3], corresponding QEMU could can be found
+in [4].
+
+[1] https://lore.kernel.org/linux-iommu/20230921075138.124099-1-yi.l.liu@intel.com/
+[2] https://www.intel.com/content/www/us/en/content-details/772415/content-details.html
+[3] https://github.com/yiliu1765/iommufd/tree/iommufd_nesting
+[4] https://github.com/yiliu1765/qemu/tree/zhenzhong/wip/iommufd_nesting_rfcv1
+
+Change log:
+
+v5:
+ - Add Kevin's r-b for patch 2, 3 ,5 8, 10
+ - Drop enforce_cache_coherency callback from the nested type domain ops (Kevin)
+ - Remove duplicate agaw check in patch 04 (Kevin)
+ - Remove duplicate domain_update_iommu_cap() in patch 06 (Kevin)
+ - Check parent's force_snooping to set pgsnp in the pasid entry (Kevin)
+ - uapi data structure check (Kevin)
+ - Simplify the errata handling as user can allocate nested parent domain
+
+v4: https://lore.kernel.org/linux-iommu/20230724111335.107427-1-yi.l.liu@intel.com/
+ - Remove ascii art tables (Jason)
+ - Drop EMT (Tina, Jason)
+ - Drop MTS and related definitions (Kevin)
+ - Rename macro IOMMU_VTD_PGTBL_ to IOMMU_VTD_S1_ (Kevin)
+ - Rename struct iommu_hwpt_intel_vtd_ to iommu_hwpt_vtd_ (Kevin)
+ - Rename struct iommu_hwpt_intel_vtd to iommu_hwpt_vtd_s1 (Kevin)
+ - Put the vendor specific hwpt alloc data structure before enuma iommu_hwpt_type (Kevin)
+ - Do not trim the higher page levels of S2 domain in nested domain attachment as the
+   S2 domain may have been used independently. (Kevin)
+ - Remove the first-stage pgd check against the maximum address of s2_domain as hw
+   can check it anyhow. It makes sense to check every pfns used in the stage-1 page
+   table. But it cannot make it. So just leave it to hw. (Kevin)
+ - Split the iotlb flush part into an order of uapi, helper and callback implementation (Kevin)
+ - Change the policy of VT-d nesting errata, disallow RO mapping once a domain is used
+   as parent domain of a nested domain. This removes the nested_users counting. (Kevin)
+ - Minor fix for "make htmldocs"
+
+v3: https://lore.kernel.org/linux-iommu/20230511145110.27707-1-yi.l.liu@intel.com/
+ - Further split the patches into an order of adding helpers for nested
+   domain, iotlb flush, nested domain attachment and nested domain allocation
+   callback, then report the hw_info to userspace.
+ - Add batch support in cache invalidation from userspace
+ - Disallow nested translation usage if RO mappings exists in stage-2 domain
+   due to errata on readonly mappings on Sapphire Rapids platform.
+
+v2: https://lore.kernel.org/linux-iommu/20230309082207.612346-1-yi.l.liu@intel.com/
+ - The iommufd infrastructure is split to be separate series.
+
+v1: https://lore.kernel.org/linux-iommu/20230209043153.14964-1-yi.l.liu@intel.com/
+
+Regards,
+	Yi Liu
+
+Lu Baolu (5):
+  iommu/vt-d: Extend dmar_domain to support nested domain
+  iommu/vt-d: Add helper for nested domain allocation
+  iommu/vt-d: Add helper to setup pasid nested translation
+  iommu/vt-d: Add nested domain allocation
+  iommu/vt-d: Disallow read-only mappings to nest parent domain
+
+Yi Liu (6):
+  iommufd: Add data structure for Intel VT-d stage-1 domain allocation
+  iommu/vt-d: Make domain attach helpers to be extern
+  iommu/vt-d: Set the nested domain to a device
+  iommufd: Add data structure for Intel VT-d stage-1 cache invalidation
+  iommu/vt-d: Make iotlb flush helpers to be extern
+  iommu/vt-d: Add iotlb flush for nested domain
+
+ drivers/iommu/intel/Makefile |   2 +-
+ drivers/iommu/intel/iommu.c  |  60 +++++++++----
+ drivers/iommu/intel/iommu.h  |  51 +++++++++--
+ drivers/iommu/intel/nested.c | 162 +++++++++++++++++++++++++++++++++++
+ drivers/iommu/intel/pasid.c  | 125 +++++++++++++++++++++++++++
+ drivers/iommu/intel/pasid.h  |   2 +
+ include/uapi/linux/iommufd.h |  76 +++++++++++++++-
+ 7 files changed, 452 insertions(+), 26 deletions(-)
+ create mode 100644 drivers/iommu/intel/nested.c
+
 -- 
 2.34.1
 
