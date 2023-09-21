@@ -1,32 +1,32 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CC9B7495
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F59C567D
 	for <iommu@lists.linux.dev>; Thu, 21 Sep 2023 07:52:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1695282754; x=1726818754;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=8IS/ASlzbqKpd5WSnRHltdzVLjrxm5nAvbgy9B03xM8=;
-  b=lf1WabATOiRZEGrvexkfD6Vo5lTmTiVCvqwQZiG9FIloKW/98Uk0DPQq
-   SSU1yfi/J/DMyrIIlvRBqAS5Ak4gKMIUO0pV24pWI8/84zNEJy1P1Wbdv
-   0H5AlgrqJ25UN8HcGUmIQwhMl2tOyBhKt4vY8Xdtp8bDd3k8bNg46IN89
-   qh6WaVBqOfCVZ1sIy1bnYJ2JAVx/wXlJgT3uwnB6gBdirUzXu0FSFNxFn
-   DLLzKcTKZlM36Tq3q+Fd/x9Rt8Cn/drAC7vXAVC1MYX7ozGti4whSE0Vy
-   lTRbcvtnu/cmKVZARlGPrzxLzCPSY43Yj4hhQoRmSAyWAoYG4/P8Ke56f
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10839"; a="359832962"
+  bh=1YqrkwhCam53zwwuki+BzVJ5pD4pOMGdr/+tuWqbeU8=;
+  b=TtQRdFz9gd1ys9lgA8pVQSfZD77kCMNqAApMmIB2Cu5AN1WIjst/jPox
+   1fu6qiBhtlnX0mbzJ3Gtgsp12fTjD8CLvQq1K8P+kX26SVizB4R+aNurC
+   ssUnyGb5d+Vpub8dWawXZHbi84m+Aio7Hx8w88N0oRWsuCPUbRXRg1xIk
+   4TNfgnUCIu5/e4ypmlCl3uEIasA+NcVjqbyLd3qEvYMPBdX7+XWcvUYGv
+   XMf/CuHFiyErAzOttm9WLL5PSdN9zE9EZPulOG4cqZ9KLwqf/SSkmA8UG
+   6VFdArBqQEAriRIxlSQELSp6WE4Im3SfjnOaB6pZT7LpaD1/HNrPtSrM7
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10839"; a="359832951"
 X-IronPort-AV: E=Sophos;i="6.03,164,1694761200"; 
-   d="scan'208";a="359832962"
+   d="scan'208";a="359832951"
 Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Sep 2023 00:52:18 -0700
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Sep 2023 00:52:17 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10839"; a="723649582"
+X-IronPort-AV: E=McAfee;i="6600,9927,10839"; a="723649578"
 X-IronPort-AV: E=Sophos;i="6.03,164,1694761200"; 
-   d="scan'208";a="723649582"
+   d="scan'208";a="723649578"
 Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
-  by orsmga006.jf.intel.com with ESMTP; 21 Sep 2023 00:52:18 -0700
+  by orsmga006.jf.intel.com with ESMTP; 21 Sep 2023 00:52:17 -0700
 From: Yi Liu <yi.l.liu@intel.com>
 To: joro@8bytes.org,
 	alex.williamson@redhat.com,
@@ -52,9 +52,9 @@ Cc: cohuck@redhat.com,
 	linux-kselftest@vger.kernel.org,
 	zhenzhong.duan@intel.com,
 	joao.m.martins@oracle.com
-Subject: [PATCH v4 14/17] iommufd/selftest: Add coverage for IOMMU_HWPT_ALLOC with nested HWPTs
-Date: Thu, 21 Sep 2023 00:51:35 -0700
-Message-Id: <20230921075138.124099-15-yi.l.liu@intel.com>
+Subject: [PATCH v4 13/17] iommufd/selftest: Add nested domain allocation for mock domain
+Date: Thu, 21 Sep 2023 00:51:34 -0700
+Message-Id: <20230921075138.124099-14-yi.l.liu@intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230921075138.124099-1-yi.l.liu@intel.com>
 References: <20230921075138.124099-1-yi.l.liu@intel.com>
@@ -68,213 +68,225 @@ Content-Transfer-Encoding: 8bit
 
 From: Nicolin Chen <nicolinc@nvidia.com>
 
-The IOMMU_HWPT_ALLOC ioctl now supports passing user_data to allocate a
-user-managed domain for nested HWPTs. Add its coverage for that. Also,
-update _test_cmd_hwpt_alloc() and add test_cmd/err_hwpt_alloc_nested().
+Add nested domain support in the ->domain_alloc_user op with some proper
+sanity checks. Then, add a domain_nested_ops for all nested domains.
+
+Also, add an iotlb as a testing property of a nested domain. A following
+patch will verify its value for the success of a nested domain allocation
+and a cache invalidation request.
 
 Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
 Signed-off-by: Yi Liu <yi.l.liu@intel.com>
 ---
- tools/testing/selftests/iommu/iommufd.c       | 115 ++++++++++++++++++
- .../selftests/iommu/iommufd_fail_nth.c        |   3 +-
- tools/testing/selftests/iommu/iommufd_utils.h |  31 +++--
- 3 files changed, 141 insertions(+), 8 deletions(-)
+ drivers/iommu/iommufd/iommufd_test.h |  18 +++++
+ drivers/iommu/iommufd/selftest.c     | 114 ++++++++++++++++++++++++---
+ 2 files changed, 123 insertions(+), 9 deletions(-)
 
-diff --git a/tools/testing/selftests/iommu/iommufd.c b/tools/testing/selftests/iommu/iommufd.c
-index 7a29d68bd1d2..db5e59e4abab 100644
---- a/tools/testing/selftests/iommu/iommufd.c
-+++ b/tools/testing/selftests/iommu/iommufd.c
-@@ -264,6 +264,121 @@ TEST_F(iommufd_ioas, ioas_destroy)
- 	}
+diff --git a/drivers/iommu/iommufd/iommufd_test.h b/drivers/iommu/iommufd/iommufd_test.h
+index 3f3644375bf1..7f997234a1a8 100644
+--- a/drivers/iommu/iommufd/iommufd_test.h
++++ b/drivers/iommu/iommufd/iommufd_test.h
+@@ -40,6 +40,11 @@ enum {
+ 	MOCK_FLAGS_ACCESS_CREATE_NEEDS_PIN_PAGES = 1 << 0,
+ };
+ 
++enum {
++	MOCK_NESTED_DOMAIN_IOTLB_ID_MAX = 3,
++	MOCK_NESTED_DOMAIN_IOTLB_NUM = 4,
++};
++
+ struct iommu_test_cmd {
+ 	__u32 size;
+ 	__u32 op;
+@@ -109,4 +114,17 @@ struct iommu_test_hw_info {
+ 	__u32 test_reg;
+ };
+ 
++/* Should not be equal to any defined value in enum iommu_hwpt_type */
++#define IOMMU_HWPT_TYPE_SELFTEST		0xdead
++
++/**
++ * struct iommu_hwpt_selftest
++ *
++ * @iotlb: default mock iotlb value, IOMMU_TEST_IOTLB_DEFAULT
++ */
++struct iommu_hwpt_selftest {
++#define IOMMU_TEST_IOTLB_DEFAULT	0xbadbeef
++	__u32 iotlb;
++};
++
+ #endif
+diff --git a/drivers/iommu/iommufd/selftest.c b/drivers/iommu/iommufd/selftest.c
+index 2205a552e570..bd967317927f 100644
+--- a/drivers/iommu/iommufd/selftest.c
++++ b/drivers/iommu/iommufd/selftest.c
+@@ -88,6 +88,17 @@ void iommufd_test_syz_conv_iova_id(struct iommufd_ucmd *ucmd,
+ struct mock_iommu_domain {
+ 	struct iommu_domain domain;
+ 	struct xarray pfns;
++	bool nested : 1;
++	/* mock domain test data */
++	union {
++		struct { /* nested */
++			struct mock_iommu_domain *parent;
++			u32 iotlb[MOCK_NESTED_DOMAIN_IOTLB_NUM];
++		};
++		struct { /* parent */
++			enum iommu_hwpt_type hwpt_type;
++		};
++	};
+ };
+ 
+ enum selftest_obj_type {
+@@ -147,8 +158,12 @@ static void *mock_domain_hw_info(struct device *dev, u32 *length, u32 *type)
  }
  
-+TEST_F(iommufd_ioas, alloc_hwpt_nested)
+ static const struct iommu_ops mock_ops;
++static struct iommu_domain_ops domain_nested_ops;
+ 
+-static struct iommu_domain *mock_domain_alloc(unsigned int iommu_domain_type)
++static struct iommu_domain *
++__mock_domain_alloc_kernel(unsigned int iommu_domain_type,
++			   struct mock_iommu_domain *dummy,
++			   const struct iommu_hwpt_selftest *user_cfg)
+ {
+ 	struct mock_iommu_domain *mock;
+ 
+@@ -156,11 +171,11 @@ static struct iommu_domain *mock_domain_alloc(unsigned int iommu_domain_type)
+ 		return &mock_blocking_domain;
+ 
+ 	if (iommu_domain_type != IOMMU_DOMAIN_UNMANAGED)
+-		return NULL;
++		return ERR_PTR(-EINVAL);
+ 
+ 	mock = kzalloc(sizeof(*mock), GFP_KERNEL);
+ 	if (!mock)
+-		return NULL;
++		return ERR_PTR(-ENOMEM);
+ 	mock->domain.geometry.aperture_start = MOCK_APERTURE_START;
+ 	mock->domain.geometry.aperture_end = MOCK_APERTURE_LAST;
+ 	mock->domain.pgsize_bitmap = MOCK_IO_PAGE_SIZE;
+@@ -170,18 +185,91 @@ static struct iommu_domain *mock_domain_alloc(unsigned int iommu_domain_type)
+ 	return &mock->domain;
+ }
+ 
++static struct iommu_domain *
++__mock_domain_alloc_nested(unsigned int iommu_domain_type,
++			   struct mock_iommu_domain *mock_parent,
++			   const struct iommu_hwpt_selftest *user_cfg)
 +{
-+	const uint32_t min_data_len =
-+		offsetofend(struct iommu_hwpt_selftest, iotlb);
-+	struct iommu_hwpt_selftest data = {
-+		.iotlb =  IOMMU_TEST_IOTLB_DEFAULT,
-+	};
-+	uint32_t nested_hwpt_id[2] = {};
-+	uint32_t parent_hwpt_id = 0;
-+	uint32_t parent_hwpt_id_not_work = 0;
-+	uint32_t test_hwpt_id = 0;
++	struct mock_iommu_domain *mock;
++	int i;
 +
-+	if (self->device_id) {
-+		/* Negative tests */
-+		test_err_hwpt_alloc(ENOENT, self->ioas_id, self->device_id,
-+				    0, &test_hwpt_id);
-+		test_err_hwpt_alloc(EINVAL, self->device_id,
-+				    self->device_id, 0, &test_hwpt_id);
++	if (iommu_domain_type != IOMMU_DOMAIN_NESTED)
++		return ERR_PTR(-EINVAL);
 +
-+		test_cmd_hwpt_alloc(self->device_id, self->ioas_id,
-+				    IOMMU_HWPT_ALLOC_NEST_PARENT,
-+				    &parent_hwpt_id);
++	if (!user_cfg)
++		return ERR_PTR(-EINVAL);
 +
-+		test_cmd_hwpt_alloc(self->device_id, self->ioas_id,
-+				    0, &parent_hwpt_id_not_work);
-+
-+		/* Negative nested tests */
-+		test_err_hwpt_alloc_nested(EINVAL,
-+					   self->device_id, parent_hwpt_id,
-+					   0, &nested_hwpt_id[0],
-+					   IOMMU_HWPT_TYPE_DEFAULT,
-+					   &data, sizeof(data));
-+		test_err_hwpt_alloc_nested(EINVAL,
-+					   self->device_id, parent_hwpt_id,
-+					   0, &nested_hwpt_id[0],
-+					   IOMMU_HWPT_TYPE_SELFTEST,
-+					   &data, min_data_len - 1);
-+		test_err_hwpt_alloc_nested(EFAULT,
-+					   self->device_id, parent_hwpt_id,
-+					   0, &nested_hwpt_id[0],
-+					   IOMMU_HWPT_TYPE_SELFTEST,
-+					   NULL, sizeof(data));
-+		test_err_hwpt_alloc_nested(EINVAL,
-+					   self->device_id, parent_hwpt_id,
-+					   IOMMU_HWPT_ALLOC_NEST_PARENT,
-+					   &nested_hwpt_id[0],
-+					   IOMMU_HWPT_TYPE_SELFTEST,
-+					   &data, sizeof(data));
-+		test_err_hwpt_alloc_nested(EINVAL, self->device_id,
-+					   parent_hwpt_id_not_work,
-+					   0, &nested_hwpt_id[0],
-+					   IOMMU_HWPT_TYPE_SELFTEST,
-+					   &data, sizeof(data));
-+
-+		/* Allocate two nested hwpts sharing one common parent hwpt */
-+		test_cmd_hwpt_alloc_nested(self->device_id, parent_hwpt_id,
-+					   0, &nested_hwpt_id[0],
-+					   IOMMU_HWPT_TYPE_SELFTEST,
-+					   &data, sizeof(data));
-+		test_cmd_hwpt_alloc_nested(self->device_id, parent_hwpt_id,
-+					   0, &nested_hwpt_id[1],
-+					   IOMMU_HWPT_TYPE_SELFTEST,
-+					   &data, sizeof(data));
-+
-+		/* Negative test: a nested hwpt on top of a nested hwpt */
-+		test_err_hwpt_alloc_nested(EINVAL,
-+					   self->device_id, nested_hwpt_id[0],
-+					   0, &test_hwpt_id,
-+					   IOMMU_HWPT_TYPE_SELFTEST,
-+					   &data, sizeof(data));
-+		/* Negative test: parent hwpt now cannot be freed */
-+		EXPECT_ERRNO(EBUSY,
-+			     _test_ioctl_destroy(self->fd, parent_hwpt_id));
-+
-+		/* Attach device to nested_hwpt_id[0] that then will be busy */
-+		test_cmd_mock_domain_replace(self->stdev_id,
-+					     nested_hwpt_id[0]);
-+		EXPECT_ERRNO(EBUSY,
-+			     _test_ioctl_destroy(self->fd, nested_hwpt_id[0]));
-+
-+		/* Switch from nested_hwpt_id[0] to nested_hwpt_id[1] */
-+		test_cmd_mock_domain_replace(self->stdev_id,
-+					     nested_hwpt_id[1]);
-+		EXPECT_ERRNO(EBUSY,
-+			     _test_ioctl_destroy(self->fd, nested_hwpt_id[1]));
-+		test_ioctl_destroy(nested_hwpt_id[0]);
-+
-+		/* Detach from nested_hwpt_id[1] and destroy it */
-+		test_cmd_mock_domain_replace(self->stdev_id, parent_hwpt_id);
-+		test_ioctl_destroy(nested_hwpt_id[1]);
-+
-+		/* Detach from the parent hw_pagetable and destroy it */
-+		test_cmd_mock_domain_replace(self->stdev_id, self->ioas_id);
-+		test_ioctl_destroy(parent_hwpt_id);
-+		test_ioctl_destroy(parent_hwpt_id_not_work);
-+	} else {
-+		test_err_hwpt_alloc(ENOENT, self->device_id, self->ioas_id,
-+				    0, &parent_hwpt_id);
-+		test_err_hwpt_alloc_nested(ENOENT,
-+					   self->device_id, parent_hwpt_id,
-+					   0, &nested_hwpt_id[0],
-+					   IOMMU_HWPT_TYPE_SELFTEST,
-+					   &data, sizeof(data));
-+		test_err_hwpt_alloc_nested(ENOENT,
-+					   self->device_id, parent_hwpt_id,
-+					   0, &nested_hwpt_id[1],
-+					   IOMMU_HWPT_TYPE_SELFTEST,
-+					   &data, sizeof(data));
-+		test_err_mock_domain_replace(ENOENT,
-+					     self->stdev_id, nested_hwpt_id[0]);
-+		test_err_mock_domain_replace(ENOENT,
-+					     self->stdev_id, nested_hwpt_id[1]);
-+	}
++	mock = kzalloc(sizeof(*mock), GFP_KERNEL);
++	if (!mock)
++		return ERR_PTR(-ENOMEM);
++	mock->nested = true;
++	mock->parent = mock_parent;
++	mock->domain.type = iommu_domain_type;
++	mock->domain.ops = &domain_nested_ops;
++	for (i = 0; i < MOCK_NESTED_DOMAIN_IOTLB_NUM; i++)
++		mock->iotlb[i] = user_cfg->iotlb;
++	return &mock->domain;
 +}
 +
- TEST_F(iommufd_ioas, hwpt_attach)
++static struct iommu_domain *mock_domain_alloc(unsigned int iommu_domain_type)
++{
++	struct iommu_domain *domain;
++
++	if (iommu_domain_type != IOMMU_DOMAIN_BLOCKED &&
++	    iommu_domain_type != IOMMU_DOMAIN_UNMANAGED)
++		return NULL;
++	domain = __mock_domain_alloc_kernel(iommu_domain_type, NULL, NULL);
++	if (IS_ERR(domain))
++		domain = NULL;
++	return domain;
++}
++
+ static struct iommu_domain *
+ mock_domain_alloc_user(struct device *dev, u32 flags,
+ 		       enum iommu_hwpt_type hwpt_type,
+ 		       struct iommu_domain *parent,
+ 		       const struct iommu_user_data *user_data)
  {
- 	/* Create a device attached directly to a hwpt */
-diff --git a/tools/testing/selftests/iommu/iommufd_fail_nth.c b/tools/testing/selftests/iommu/iommufd_fail_nth.c
-index 3d7838506bfe..d3f47f262c04 100644
---- a/tools/testing/selftests/iommu/iommufd_fail_nth.c
-+++ b/tools/testing/selftests/iommu/iommufd_fail_nth.c
-@@ -615,7 +615,8 @@ TEST_FAIL_NTH(basic_fail_nth, device)
- 	if (_test_cmd_get_hw_info(self->fd, idev_id, &info, sizeof(info)))
- 		return -1;
+-	struct iommu_domain *domain;
++	struct iommu_domain *(*alloc_fn)(unsigned int iommu_domain_type,
++					 struct mock_iommu_domain *mock_parent,
++					 const struct iommu_hwpt_selftest *user_cfg);
++	unsigned int iommu_domain_type = IOMMU_DOMAIN_UNMANAGED;
++	struct iommu_hwpt_selftest data, *user_cfg = NULL;
++	struct mock_iommu_domain *mock_parent = NULL;
++	size_t min_len, data_len;
++
++	switch (hwpt_type) {
++	case IOMMU_HWPT_TYPE_DEFAULT:
++		if (user_data || parent)
++			return ERR_PTR(-EINVAL);
++		min_len = data_len = 0;
++		alloc_fn = __mock_domain_alloc_kernel;
++		break;
++	default:
++		/* IOMMU_HWPT_TYPE_SELFTEST cannot be a case for a big value */
++		if (hwpt_type != IOMMU_HWPT_TYPE_SELFTEST)
++			return ERR_PTR(-EINVAL);
++		if (!user_data || !parent ||
++		    parent->ops != mock_ops.default_domain_ops)
++			return ERR_PTR(-EINVAL);
++		iommu_domain_type = IOMMU_DOMAIN_NESTED;
++		mock_parent = container_of(parent,
++					   struct mock_iommu_domain, domain);
++		min_len = offsetofend(struct iommu_hwpt_selftest, iotlb);
++		data_len = sizeof(struct iommu_hwpt_selftest);
++		alloc_fn = __mock_domain_alloc_nested;
++		break;
++	}
  
--	if (_test_cmd_hwpt_alloc(self->fd, idev_id, ioas_id, 0, &hwpt_id))
-+	if (_test_cmd_hwpt_alloc(self->fd, idev_id, ioas_id, 0, &hwpt_id,
-+				 IOMMU_HWPT_TYPE_DEFAULT, 0, 0))
- 		return -1;
- 
- 	if (_test_cmd_mock_domain_replace(self->fd, stdev_id, ioas_id2, NULL))
-diff --git a/tools/testing/selftests/iommu/iommufd_utils.h b/tools/testing/selftests/iommu/iommufd_utils.h
-index be4970a84977..21d7c7e53bd4 100644
---- a/tools/testing/selftests/iommu/iommufd_utils.h
-+++ b/tools/testing/selftests/iommu/iommufd_utils.h
-@@ -103,13 +103,17 @@ static int _test_cmd_mock_domain_replace(int fd, __u32 stdev_id, __u32 pt_id,
- 							   pt_id, NULL))
- 
- static int _test_cmd_hwpt_alloc(int fd, __u32 device_id, __u32 pt_id,
--				__u32 flags, __u32 *hwpt_id)
-+				__u32 flags, __u32 *hwpt_id, __u32 hwpt_type,
-+				void *data, size_t data_len)
- {
- 	struct iommu_hwpt_alloc cmd = {
- 		.size = sizeof(cmd),
- 		.flags = flags,
- 		.dev_id = device_id,
- 		.pt_id = pt_id,
-+		.hwpt_type = hwpt_type,
-+		.data_len = data_len,
-+		.data_uptr = (uint64_t)data,
- 	};
- 	int ret;
- 
-@@ -121,12 +125,25 @@ static int _test_cmd_hwpt_alloc(int fd, __u32 device_id, __u32 pt_id,
- 	return 0;
+-	domain = mock_domain_alloc(IOMMU_DOMAIN_UNMANAGED);
+-	if (!domain)
+-		domain = ERR_PTR(-ENOMEM);
+-	return domain;
++	if (user_data) {
++		int rc = iommu_copy_user_data(&data, user_data,
++					      data_len, min_len);
++		if (rc)
++			return ERR_PTR(rc);
++		user_cfg = &data;
++	}
++
++	return alloc_fn(iommu_domain_type, mock_parent, user_cfg);
  }
  
--#define test_cmd_hwpt_alloc(device_id, pt_id, flags, hwpt_id) \
--	ASSERT_EQ(0, _test_cmd_hwpt_alloc(self->fd, device_id, \
--					  pt_id, flags, hwpt_id))
--#define test_err_hwpt_alloc(_errno, device_id, pt_id, flags, hwpt_id) \
--	EXPECT_ERRNO(_errno, _test_cmd_hwpt_alloc(self->fd, device_id, \
--						  pt_id, flags, hwpt_id))
-+#define test_cmd_hwpt_alloc(device_id, pt_id, flags, hwpt_id)                \
-+	ASSERT_EQ(0, _test_cmd_hwpt_alloc(self->fd, device_id, pt_id, flags, \
-+					  hwpt_id, IOMMU_HWPT_TYPE_DEFAULT,  \
-+					  NULL, 0))
-+#define test_err_hwpt_alloc(_errno, device_id, pt_id, flags, hwpt_id)         \
-+	EXPECT_ERRNO(_errno, _test_cmd_hwpt_alloc(self->fd, device_id, pt_id, \
-+						  flags, hwpt_id,             \
-+						  IOMMU_HWPT_TYPE_DEFAULT,    \
-+						  NULL, 0))
-+
-+#define test_cmd_hwpt_alloc_nested(device_id, pt_id, flags, hwpt_id,          \
-+				   hwpt_type, data, data_len)                 \
-+	ASSERT_EQ(0, _test_cmd_hwpt_alloc(self->fd, device_id, pt_id, flags,  \
-+					  hwpt_id, hwpt_type, data, data_len))
-+#define test_err_hwpt_alloc_nested(_errno, device_id, pt_id, flags, hwpt_id,  \
-+				   hwpt_type, data, data_len)                 \
-+	EXPECT_ERRNO(_errno,                                                  \
-+		     _test_cmd_hwpt_alloc(self->fd, device_id, pt_id, flags,  \
-+					  hwpt_id, hwpt_type, data, data_len))
+ static void mock_domain_free(struct iommu_domain *domain)
+@@ -340,6 +428,11 @@ static const struct iommu_ops mock_ops = {
+ 		},
+ };
  
- static int _test_cmd_access_replace_ioas(int fd, __u32 access_id,
- 					 unsigned int ioas_id)
++static struct iommu_domain_ops domain_nested_ops = {
++	.free = mock_domain_free,
++	.attach_dev = mock_domain_nop_attach,
++};
++
+ static inline struct iommufd_hw_pagetable *
+ get_md_pagetable(struct iommufd_ucmd *ucmd, u32 mockpt_id,
+ 		 struct mock_iommu_domain **mock)
+@@ -352,7 +445,10 @@ get_md_pagetable(struct iommufd_ucmd *ucmd, u32 mockpt_id,
+ 	if (IS_ERR(obj))
+ 		return ERR_CAST(obj);
+ 	hwpt = container_of(obj, struct iommufd_hw_pagetable, obj);
+-	if (hwpt->domain->ops != mock_ops.default_domain_ops) {
++	if ((hwpt->domain->type == IOMMU_DOMAIN_UNMANAGED &&
++	     hwpt->domain->ops != mock_ops.default_domain_ops) ||
++	    (hwpt->domain->type == IOMMU_DOMAIN_NESTED &&
++	     hwpt->domain->ops != &domain_nested_ops)) {
+ 		iommufd_put_object(&hwpt->obj);
+ 		return ERR_PTR(-EINVAL);
+ 	}
 -- 
 2.34.1
 
