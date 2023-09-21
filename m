@@ -1,57 +1,58 @@
-Received: from mail-pf1-f170.google.com (mail-pf1-f170.google.com [209.85.210.170])
+Received: from mail-il1-f182.google.com (mail-il1-f182.google.com [209.85.166.182])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 074C1199D1
-	for <iommu@lists.linux.dev>; Thu, 21 Sep 2023 17:21:50 +0000 (UTC)
-Received: by mail-pf1-f170.google.com with SMTP id d2e1a72fcca58-690d9cda925so1069094b3a.3
-        for <iommu@lists.linux.dev>; Thu, 21 Sep 2023 10:21:50 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EAE471798B
+	for <iommu@lists.linux.dev>; Thu, 21 Sep 2023 18:56:53 +0000 (UTC)
+Received: by mail-il1-f182.google.com with SMTP id e9e14a558f8ab-34fcd1b9892so4164645ab.3
+        for <iommu@lists.linux.dev>; Thu, 21 Sep 2023 11:56:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1695316910; x=1695921710; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1695322613; x=1695927413; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=DDlx5u08Y4vCd1/nVmbrXXCewhf3kn19HA1I/+IIlzU=;
-        b=eiOGbfyn91tUB2WEZsxFSdmicyBV3/UJp+uGBCfqIhx7gkOIjXlbBjG5F5KZpYvlWi
-         7+wT9uovxPybK0vJGwuiKBd3luZMTFEd32dc6ZfWRyt7DPfTyYlx/sY4gXPPUAJbAup7
-         i1iFhDJXo6y6W4bzQ5CLEVF7io6Ygzk20FCDU/X8BhM2E3401I+CwVlFHdu6PgH5v9jb
-         7HUGtQYYfDXXXoTmVCzORmruHtKeYZuDUZ7lTBXYBbKwJbJi0O5tl567S7W8XGb8KO1f
-         E+lXhL5BGKthW5MWE9qAYcw6Wtnsepn9c0MW8l1KstgDHPJsy4zYoINllYHXmX7izHCB
-         g18A==
+        bh=nNT2/tTxlFmIxWwqgo/0XCM90wCyMD1PzlNkeutky8A=;
+        b=UNNTLVpOz8JvfFkoUB+Ippewu8fgeiQN6s6lZjjCVYzh6tqYEsFTTWbpO2z0bKWpF3
+         BLYYZ7jXtwVNRM8xdtQoy3Tq8dpsHUeAuAoJQN3g2yjNI2JNF7gBmXZUn411uddRri61
+         1tOU/QcRvBJLqcJrhqCC/OIRlafJ5tNIvNMvbQT4RZEzEVyn8npQYPEammcdJfsizoWN
+         1zWUSGNKFRiFFGjWlHgP1NaGXc+DkqHVKsZusmqZzBH44sNZ+9UA39gAWbv0JxyzGiGD
+         4GaUxneavOpQ6fWZo4U5jGIvne0vpD1OdefMVLaxIz8z0/u+Y9XBmtYeKMvtnc3ebTp6
+         6XcA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1695316910; x=1695921710;
+        d=1e100.net; s=20230601; t=1695322613; x=1695927413;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=DDlx5u08Y4vCd1/nVmbrXXCewhf3kn19HA1I/+IIlzU=;
-        b=u/7Ydyo7kVG5rAJsRT4Fm1cNHS1AC+eFJHIZhWe2b34QIds53mevz5CTkYD9yizqdg
-         7rjleFkpmAD8WeJJeF1S2n1sx1Gd8o+sGJxG73PeX1GvywnSD1ZjRcd4eL/C98C9Bg2V
-         2P0aJWmATpYOwzKCgh92BDrHA+NtQf75W7fXulNzwVFZ8TuidHXyCKS0l4rw5OrBa9QW
-         QEVnYBpsnzNHalii8SqceXyG4Ggrarsr5Bab1+fhS/v8wweYBo5So93mV4xcm0uAlT2m
-         4h0/oVFos430HYCaLQCCz5ZR2SE2y9ODYPgZ1xsO1QfsVGB8bSEj/HhaSwWJTO4VKCVt
-         Sn3A==
-X-Gm-Message-State: AOJu0YxoiOVOztNfg/JNY7s7lmotwMTbijZShEVx8z9wK15wXXLIKPGt
-	lEAbJQbnQq0veQBpStbqTEfygw==
-X-Google-Smtp-Source: AGHT+IF+iT5bUyjUish2FFfSOSqXCZvJKK7nG1hU3ihueQyPk8QOt2OQb3+vSPmx/noLidk1FI+CeQ==
-X-Received: by 2002:a05:6a20:5648:b0:12c:b10d:693d with SMTP id is8-20020a056a20564800b0012cb10d693dmr5634143pzc.6.1695316909978;
-        Thu, 21 Sep 2023 10:21:49 -0700 (PDT)
+        bh=nNT2/tTxlFmIxWwqgo/0XCM90wCyMD1PzlNkeutky8A=;
+        b=dQtec1ghHiKmo/Llb80adgzRswoV2F1bHn8g4G1h+EYE41fUlJMhbmfZTd2WBAtbu6
+         I3sVckfU+vJ8E+2cFG5Xt1zL817D7vX+otf7aSxY8aHXvXXXlfmLi+HZgDYGTGMQi8R0
+         ow4lbOZosrOAu+G7Llry2Spp4FTlnoC5v0elaEeH/xFbzakv5yAfVWPh/A5FJ4HlDNM2
+         TKBlLWuoc52jNj8eNWAWQnKg8HPp++gPjef9jy+KgH18g0WKI7VOdUpSZdMu8Cse9gh1
+         hltKQ0Zo9PfFCY7SdWW2LDT78zN98qKfl3rXmbTMCqVtJd7ekpGeVN9OUrD1DHYDcLVg
+         scPA==
+X-Gm-Message-State: AOJu0YwQYnw/HCrnzFhaSJg4WQ+NYS7y8xxBvX3cNJmMUX8+hV5T2YpH
+	AgqBy4vy7Jxp96udYtnX0H29DE6ypPjlGjSqyig=
+X-Google-Smtp-Source: AGHT+IEpXdSCS2/x8+X3w0VeAWP4DHLj6wedh+rIY6iO2wK8du2iUVOGQatU5YmHQ+hAKcF5W2XBpQ==
+X-Received: by 2002:a05:6e02:1302:b0:34f:c9b4:5f9c with SMTP id g2-20020a056e02130200b0034fc9b45f9cmr6008080ilr.31.1695322611693;
+        Thu, 21 Sep 2023 11:56:51 -0700 (PDT)
 Received: from ziepe.ca ([206.223.160.26])
-        by smtp.gmail.com with ESMTPSA id f20-20020a63f114000000b005703a63836esm1555894pgi.57.2023.09.21.10.21.49
+        by smtp.gmail.com with ESMTPSA id y10-20020a63b50a000000b0057412d84d25sm1649420pge.4.2023.09.21.11.56.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Sep 2023 10:21:49 -0700 (PDT)
+        Thu, 21 Sep 2023 11:56:50 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.95)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1qjNN5-000SUu-NP;
-	Thu, 21 Sep 2023 14:21:47 -0300
-Date: Thu, 21 Sep 2023 14:21:47 -0300
+	id 1qjOr2-000TTV-F8;
+	Thu, 21 Sep 2023 15:56:48 -0300
+Date: Thu, 21 Sep 2023 15:56:48 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Vasant Hegde <vasant.hegde@amd.com>
-Cc: joro@8bytes.org, suravee.suthikulpanit@amd.com, wei.huang2@amd.com,
-	jsnitsel@redhat.com,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>
-Subject: Re: [PATCH v6 00/14] iommu/amd: SVA Support (Part 1) -
- cleanup/refactoring
-Message-ID: <20230921172147.GX13795@ziepe.ca>
-References: <20230921092147.5930-1-vasant.hegde@amd.com>
- <04e44120-61fb-3aa1-50b7-8a9ac01cea7f@amd.com>
+To: Tina Zhang <tina.zhang@intel.com>
+Cc: Kevin Tian <kevin.tian@intel.com>, Lu Baolu <baolu.lu@linux.intel.com>,
+	Michael Shavit <mshavit@google.com>,
+	Vasant Hegde <vasant.hegde@amd.com>, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 2/6] iommu/vt-d: Remove mm->pasid in
+ intel_sva_bind_mm()
+Message-ID: <20230921185648.GY13795@ziepe.ca>
+References: <20230912125936.722348-1-tina.zhang@intel.com>
+ <20230912125936.722348-3-tina.zhang@intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -60,36 +61,21 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <04e44120-61fb-3aa1-50b7-8a9ac01cea7f@amd.com>
+In-Reply-To: <20230912125936.722348-3-tina.zhang@intel.com>
 
-On Thu, Sep 21, 2023 at 03:19:37PM +0530, Vasant Hegde wrote:
-> On 9/21/2023 2:51 PM, Vasant Hegde wrote:
-> > This is part 1 of the 4-part series to introduce Share Virtual Address
-> > (SVA) support, which focuses on cleaning up and refactoring the existing
-> > code in preparation for subsequent series.
-> > 
-> > It contains the following enhancements:
-> > 
-> > * Patch 1 - 7:
-> >   Clean up, refactoring and miscellaneous improvements.
-> > 
-> > * Patch 8 - 9:
-> >   Use global functions to check iommu features
-> > 
-> > * Patch 10 - 14:
-> >   Modify logic to independently enable PCI capabilities (ATS/PASID/PRI)
-> >   for devices. This allows more flexibility in preparation for SVA and
-> >   IOPF supports.
+On Tue, Sep 12, 2023 at 08:59:32PM +0800, Tina Zhang wrote:
+> The pasid is passed in as a parameter through .set_dev_pasid() callback.
+> Thus, intel_sva_bind_mm() can directly use it instead of retrieving the
+> pasid value from mm->pasid.
 > 
-> 
-> This is an independent part of bigger SVA series. This particular series is
-> tested independently and it works fine. Can you consider picking this series
-> while we work on sorting out Part3/4?
+> Suggested-by: Lu Baolu <baolu.lu@linux.intel.com>
+> Signed-off-by: Tina Zhang <tina.zhang@intel.com>
+> ---
+>  drivers/iommu/intel/svm.c | 14 +++++++-------
+>  1 file changed, 7 insertions(+), 7 deletions(-)
 
-+1 
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
-Also the v2 API removal:
-
-https://lore.kernel.org/linux-iommu/20230921093140.6162-1-vasant.hegde@amd.com/
+I would order this patch first in the series
 
 Jason
