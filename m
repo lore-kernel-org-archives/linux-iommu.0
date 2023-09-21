@@ -1,63 +1,54 @@
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.20])
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 94A108F49
-	for <iommu@lists.linux.dev>; Thu, 21 Sep 2023 07:54:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1695282895; x=1726818895;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=FMm83P7beXWMiji6R1eFj/4s+rv6p3/F5Z6Swx5xKU0=;
-  b=mtp8ElGfaPU2kKfHvJSSVpQm5yD2uvoDfSQsn+My+ZcmaWPwDsmLDzJo
-   qFSYMS0t9eaW+O4ZeV4b5HMEWuPolUHVvZXr3zlisfTwMffule49G4yeD
-   5gjOSdZa76+5GvVnIRLgmw2MoW9erap6K+VGjBtShrg4dtr+mLHOmCxJJ
-   LB4cxGE5wFfejkAKq9BCuBF5U0UXFqikr7oRogR6sjf25OFhuQjFae45k
-   qnXDwZdSW/q18+Zl/OALEoZctXZsJIm2mW1FuReDe14JY4+TTGUSeL7T2
-   9tLaxWqlmoTLw//UWMqDyYl4OmHlo19/LdhE4+jdpJprYnZ3jZA03l6a2
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10839"; a="370764508"
-X-IronPort-AV: E=Sophos;i="6.03,164,1694761200"; 
-   d="scan'208";a="370764508"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Sep 2023 00:54:54 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10839"; a="812523193"
-X-IronPort-AV: E=Sophos;i="6.03,164,1694761200"; 
-   d="scan'208";a="812523193"
-Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
-  by fmsmga008.fm.intel.com with ESMTP; 21 Sep 2023 00:54:54 -0700
-From: Yi Liu <yi.l.liu@intel.com>
-To: joro@8bytes.org,
-	alex.williamson@redhat.com,
-	jgg@nvidia.com,
-	kevin.tian@intel.com,
-	robin.murphy@arm.com,
-	baolu.lu@linux.intel.com
-Cc: cohuck@redhat.com,
-	eric.auger@redhat.com,
-	nicolinc@nvidia.com,
-	kvm@vger.kernel.org,
-	mjrosato@linux.ibm.com,
-	chao.p.peng@linux.intel.com,
-	yi.l.liu@intel.com,
-	yi.y.sun@linux.intel.com,
-	peterx@redhat.com,
-	jasowang@redhat.com,
-	shameerali.kolothum.thodi@huawei.com,
-	lulu@redhat.com,
-	suravee.suthikulpanit@amd.com,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	linux-kselftest@vger.kernel.org,
-	zhenzhong.duan@intel.com,
-	joao.m.martins@oracle.com
-Subject: [PATCH v5 11/11] iommu/vt-d: Disallow read-only mappings to nest parent domain
-Date: Thu, 21 Sep 2023 00:54:31 -0700
-Message-Id: <20230921075431.125239-12-yi.l.liu@intel.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4F9208F55
+	for <iommu@lists.linux.dev>; Thu, 21 Sep 2023 09:22:21 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=JabyDKbD1CiXdlbqLqK+dfFsUyGIfkFeKFUPFvA8ZzR4fF0/BR4i53W+o3wDusoIKt9igcIeXbwcPDU+LGZP66WH/5QDfjehJ95lNdIROaRtfREXS9PPupLt3WbF/IIjjRW5Mgy0c791RWuajMP83cBfleT+54HWdnmIGxrgdICw0g6DntIpOJlj36AyYY1bkxCwdr3tHdQnQdYH36RwuoxewV3kMv82GCZQDoe9m+d5wi2uAB5ptbsDPaEowrsFbSKwYniaj85uUbhJsV1rbvFJWiU4oF/TUzzxMW1o68A4y7U2q8A2ZhDMQK/xCJNEl7l+LWggVYdHFtmEf4Ea4Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=8+4VCX9qa4KFlI/lOO08+geAdbzu/EZzDDTTGDIz4tM=;
+ b=dLHpKqvUlEeMyShJNcmnSVwcpW5P4b2cos5PJfl7ZOCc9daWCYdkpiHuCxw4pjPxdwRuqI6Qsls2yyWqrfAJSCIsaitFthBykisoM5JSHFMkAytUHa1FkZRz/Ab8lDmE3YS/TYZNEHwEJTiK+enH1w3D8SP4TNbtimcEry9on+mGHviHg9ErHSvdMMHptKTH6o10cnHuJJBxbs07GLdb11txTeGemfulDa8GrZBt7Cmjqqaa0TP//GtkdIxcNqOdVOM5sKNeNtOMq8MgWcg5NmceHCGbNVqlh5ZnTAkOnErYcbY4lznApBcUGNx7QOg6DSzB+I/DGtsFb9o83CirsQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=8+4VCX9qa4KFlI/lOO08+geAdbzu/EZzDDTTGDIz4tM=;
+ b=eLQJxlPW0eqamWIXbUMgQw965hxh9cljj1MalOfTACFGm5sWKUHKEmg0U5HQTqTtwOLmcZYC3p8Aj5juLcT/YOMJd4f2NZz5cs27U6OXx1scjz1HsCowiT6UufdePaNO5GXvPjxqU/MtuGCSHs3ny3BE0bhaSwOJ0cuvZeL7iuA=
+Received: from CY5PR13CA0011.namprd13.prod.outlook.com (2603:10b6:930::16) by
+ DS0PR12MB9038.namprd12.prod.outlook.com (2603:10b6:8:f2::20) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6813.19; Thu, 21 Sep 2023 09:22:19 +0000
+Received: from CY4PEPF0000E9D5.namprd05.prod.outlook.com
+ (2603:10b6:930:0:cafe::e5) by CY5PR13CA0011.outlook.office365.com
+ (2603:10b6:930::16) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6838.9 via Frontend
+ Transport; Thu, 21 Sep 2023 09:22:19 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ CY4PEPF0000E9D5.mail.protection.outlook.com (10.167.241.76) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.6792.20 via Frontend Transport; Thu, 21 Sep 2023 09:22:19 +0000
+Received: from kali.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.27; Thu, 21 Sep
+ 2023 04:22:11 -0500
+From: Vasant Hegde <vasant.hegde@amd.com>
+To: <iommu@lists.linux.dev>, <joro@8bytes.org>
+CC: <suravee.suthikulpanit@amd.com>, <wei.huang2@amd.com>,
+	<jsnitsel@redhat.com>, <jgg@ziepe.ca>, Vasant Hegde <vasant.hegde@amd.com>
+Subject: [PATCH v6 00/14] iommu/amd: SVA Support (Part 1) - cleanup/refactoring
+Date: Thu, 21 Sep 2023 09:21:33 +0000
+Message-ID: <20230921092147.5930-1-vasant.hegde@amd.com>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230921075431.125239-1-yi.l.liu@intel.com>
-References: <20230921075431.125239-1-yi.l.liu@intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -65,109 +56,131 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CY4PEPF0000E9D5:EE_|DS0PR12MB9038:EE_
+X-MS-Office365-Filtering-Correlation-Id: 77a56bab-5608-4bd3-0f9d-08dbba84412e
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	cBA+A8RmekfAbff30BsepNZq2QWCe+Xk7aJIweeJAkX/mW8MskRRsEpG2n1Nlu3Bai3UUCYsknzUNnKGmVkvFY4SonhYXkMZlYp0F5ENm87BJ2ZdivgYdeM9i9H728krKbgUCrTDUmIAYOcHDe6bQ/Fy9m+88IONfeME/c0Woec6qvuan2kkUhvlyIbaKLlcUbSUmKWJmRoDSXlaD8AnwAG+KgmKDth6hTHgEu7cmbJY7JdESKk/RRiTzvA/ed7qlpbjid/GW5r05CC0kU9maFMGDNbmb+aHR1454YG5GnY+Pz58Dx40aZcHGRVodj59siIQFDEgcC/XRfEQB5qcC5GB7b6lLzEEBSVrM27fTPx8QZW1+0YLW2ZLLTdobaOCXXM2Mjyz8xRqpMp1xpBj0aLwi5ixApxQ7oE3famjNoDm+gZzoDOhOL7qhEQmqn1EctaKH4wKWiaPPWzxdJs8kYO9E5gwg9JLzJnp9zDDC9kd25o8+ECCqA9LzKioruCQbFcCFUwTIvc30N5p/IAVoGdRkglYhuhErHf9ZQVikNAMQ/UYSXMXfV1YbmmAqxUsiYacXyp4dwBsNlez9i2knw3/HkkCKslYpt1HK+tV89eH7Muks5NSAklfgPElWG/EXECEfMqn66rckLIc1j2kEIN+VOC73LIFy9GSQUsKFtLkDDx8h/mMtRxBH7VVhPQ7he5ISBr/OGFxhZqJXg7hNqQpoT8Rudy5qFHWV/RK+NP7g3YWn2/l45UV0aZBlMJE0KoN21ks0cbCbnBWu6zVfLmuSC+VQXvlTATEMcTq2HY=
+X-Forefront-Antispam-Report:
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230031)(4636009)(136003)(396003)(346002)(39860400002)(376002)(82310400011)(1800799009)(451199024)(186009)(40470700004)(36840700001)(46966006)(6666004)(7696005)(966005)(336012)(478600001)(47076005)(2616005)(426003)(16526019)(26005)(2906002)(70206006)(70586007)(44832011)(316002)(54906003)(110136005)(5660300002)(4326008)(8936002)(41300700001)(8676002)(40460700003)(81166007)(1076003)(86362001)(36860700001)(36756003)(40480700001)(356005)(82740400003)(83380400001)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Sep 2023 09:22:19.3950
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 77a56bab-5608-4bd3-0f9d-08dbba84412e
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	CY4PEPF0000E9D5.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB9038
 
-From: Lu Baolu <baolu.lu@linux.intel.com>
+This is part 1 of the 4-part series to introduce Share Virtual Address
+(SVA) support, which focuses on cleaning up and refactoring the existing
+code in preparation for subsequent series.
 
-When remapping hardware is configured by system software in scalable mode
-as Nested (PGTT=011b) and with PWSNP field Set in the PASID-table-entry,
-it may Set Accessed bit and Dirty bit (and Extended Access bit if enabled)
-in first-stage page-table entries even when second-stage mappings indicate
-that corresponding first-stage page-table is Read-Only.
+It contains the following enhancements:
 
-As the result, contents of pages designated by VMM as Read-Only can be
-modified by IOMMU via PML5E (PML4E for 4-level tables) access as part of
-address translation process due to DMAs issued by Guest.
+* Patch 1 - 7:
+  Clean up, refactoring and miscellaneous improvements.
 
-This disallows read-only mappings in the domain that is supposed to be used
-as nested parent. Reference from Sapphire Rapids Specification Update [1],
-errata details, SPR17. Userspace should know this limitation by checking
-the IOMMU_HW_INFO_VTD_ERRATA_772415_SPR17 flag reported in the IOMMU_GET_HW_INFO
-ioctl.
+* Patch 8 - 9:
+  Use global functions to check iommu features
 
-[1] https://www.intel.com/content/www/us/en/content-details/772415/content-details.html
+* Patch 10 - 14:
+  Modify logic to independently enable PCI capabilities (ATS/PASID/PRI)
+  for devices. This allows more flexibility in preparation for SVA and
+  IOPF supports.
 
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Signed-off-by: Yi Liu <yi.l.liu@intel.com>
----
- drivers/iommu/intel/iommu.c  | 11 +++++++++++
- drivers/iommu/intel/iommu.h  |  1 +
- include/uapi/linux/iommufd.h | 12 +++++++++++-
- 3 files changed, 23 insertions(+), 1 deletion(-)
+This patch series is based on top of linux v6.6-rc1.
+Base commit : 0bb80ecc33a (Linux 6.6-rc1)
 
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 9b10e4b1d400..dbcdf7b95b9f 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -2193,6 +2193,11 @@ __domain_mapping(struct dmar_domain *domain, unsigned long iov_pfn,
- 	if ((prot & (DMA_PTE_READ|DMA_PTE_WRITE)) == 0)
- 		return -EINVAL;
- 
-+	if (!(prot & DMA_PTE_WRITE) && domain->is_nested_parent) {
-+		pr_err_ratelimited("Read-only mapping is disallowed on the domain which serves as the parent in a nested configuration, due to HW errata (ERRATA_772415_SPR17)\n");
-+		return -EINVAL;
-+	}
-+
- 	attr = prot & (DMA_PTE_READ | DMA_PTE_WRITE | DMA_PTE_SNP);
- 	attr |= DMA_FL_PTE_PRESENT;
- 	if (domain->use_first_level) {
-@@ -4106,6 +4111,11 @@ intel_iommu_domain_alloc_user(struct device *dev, u32 flags,
- 			domain = ERR_PTR(-ENOMEM);
- 	}
- 
-+	if (!IS_ERR(domain)) {
-+		struct dmar_domain *dmar_domain = container_of(domain,
-+						struct dmar_domain, domain);
-+		dmar_domain->is_nested_parent = request_nest_parent;
-+	}
- 	return domain;
- }
- 
-@@ -4831,6 +4841,7 @@ static void *intel_iommu_hw_info(struct device *dev, u32 *length, u32 *type)
- 	if (!vtd)
- 		return ERR_PTR(-ENOMEM);
- 
-+	vtd->flags = IOMMU_HW_INFO_VTD_ERRATA_772415_SPR17;
- 	vtd->cap_reg = iommu->cap;
- 	vtd->ecap_reg = iommu->ecap;
- 	*length = sizeof(*vtd);
-diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
-index ac23b9d22d20..8d0aac71c135 100644
---- a/drivers/iommu/intel/iommu.h
-+++ b/drivers/iommu/intel/iommu.h
-@@ -592,6 +592,7 @@ struct dmar_domain {
- 					 * otherwise, goes through the second
- 					 * level.
- 					 */
-+	u8 is_nested_parent:1;		/* has other domains nested on it */
- 
- 	spinlock_t lock;		/* Protect device tracking lists */
- 	struct list_head devices;	/* all devices' list */
-diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
-index 3050efbceb57..99401d7d70b2 100644
---- a/include/uapi/linux/iommufd.h
-+++ b/include/uapi/linux/iommufd.h
-@@ -440,10 +440,20 @@ struct iommu_hwpt_alloc {
- };
- #define IOMMU_HWPT_ALLOC _IO(IOMMUFD_TYPE, IOMMUFD_CMD_HWPT_ALLOC)
- 
-+/**
-+ * enum iommu_hw_info_vtd_flags - Flags for VT-d hw_info
-+ * @IOMMU_HW_INFO_VTD_ERRATA_772415_SPR17: If set, disallow nesting on domains
-+ *                                   with read-only mapping.
-+ *                                   https://www.intel.com/content/www/us/en/content-details/772415/content-details.html
-+ */
-+enum iommu_hw_info_vtd_flags {
-+	IOMMU_HW_INFO_VTD_ERRATA_772415_SPR17 = 1 << 0,
-+};
-+
- /**
-  * struct iommu_hw_info_vtd - Intel VT-d hardware information
-  *
-- * @flags: Must be 0
-+ * @flags: Combination of enum iommu_hw_info_vtd_flags
-  * @__reserved: Must be 0
-  *
-  * @cap_reg: Value of Intel VT-d capability register defined in VT-d spec
+This is also available at github :
+  https://github.com/AMDESE/linux/tree/iommu_sva_part1_v6_v6.6_rc1
+
+Thanks Jason, Jerry, Robin for reviewing previous versions and providing valuable
+feedbacks.
+
+
+Changes from v5 -> v6:
+  - Rebased on top v6.6-rc1
+  - Added Review-by tags
+
+v5: https://lore.kernel.org/linux-iommu/20230821104227.706997-1-vasant.hegde@amd.com/T/#t
+
+Changes from v4 -> v5:
+  - Changed dev_data.ppr from bool to bit field
+  - Reverted sysfs_emit that was changing existing behaviour
+
+v4 : https://lore.kernel.org/linux-iommu/20230815102202.565012-1-vasant.hegde@amd.com/T/#t
+
+Changes from v3 -> v4:
+  - Dropped patches that were touching iommu_v2.c as we will be deprecating
+    iommu_v2 module.
+  - Dropped Review-by tags for the patches which got modified (mostly the
+    patches that were touching iommu_v2.c code).
+  - Introduced new patch to use global EFR/EFR2 to check the iommu features
+  - Pass enum to set_dte_entry() instead of bool
+  - Used DIV_ROUND_UP instead of loop to calculate gcr3 levels
+
+v3 : https://lore.kernel.org/linux-iommu/20230804064216.835544-1-vasant.hegde@amd.com/T/#t
+
+Changes from v2 -> v3:
+  - Removed fallthrough from switch-case
+  - Added lockdep_assert_held() instead of comment on top of the function
+  - Moved macro defination (PPR_HANDLER_IOPF) to the patch where its
+    actually used
+  - Use helper function to allocate memory instead of get_zeroed_page()
+  - Converted boolean to bit fields
+
+v2 : https://lore.kernel.org/linux-iommu/20230728053609.165183-1-vasant.hegde@amd.com/T/#t
+
+Changes from v1 -> v2:
+  - Dropped GCR3 related changes from Part1. We are reworking
+    GCR3 management based on Jason's comment. We will post them
+    as separate part.
+  - Addressed review comment from Jason
+  - Added iommu_dev_data.ppr to track PPR status
+
+v1 : https://lore.kernel.org/linux-iommu/20230712141516.154144-1-vasant.hegde@amd.com/
+
+
+Thank you,
+Vasant / Suravee
+
+
+Suravee Suthikulpanit (8):
+  iommu/amd: Remove unused amd_io_pgtable.pt_root variable
+  iommu/amd: Consolidate timeout pre-define to amd_iommu_type.h
+  iommu/amd: Consolidate logic to allocate protection domain
+  iommu/amd: Introduce helper functions for managing GCR3 table
+  iommu/amd: Miscellaneous clean up when free domain
+  iommu/amd: Consolidate feature detection and reporting logic
+  iommu/amd: Modify logic for checking GT and PPR features
+  iommu/amd: Introduce iommu_dev_data.ppr
+
+Vasant Hegde (6):
+  iommu/amd: Refactor protection domain allocation code
+  iommu/amd: Do not set amd_iommu_pgtable in pass-through mode
+  iommu/amd: Rename ats related variables
+  iommu/amd: Introduce iommu_dev_data.flags to track device capabilities
+  iommu/amd: Enable device ATS/PASID/PRI capabilities independently
+  iommu/amd: Initialize iommu_device->max_pasids
+
+ drivers/iommu/amd/amd_iommu.h       |  28 +-
+ drivers/iommu/amd/amd_iommu_types.h |  31 +-
+ drivers/iommu/amd/init.c            | 116 +++-----
+ drivers/iommu/amd/io_pgtable_v2.c   |   8 +-
+ drivers/iommu/amd/iommu.c           | 442 +++++++++++++++-------------
+ 5 files changed, 322 insertions(+), 303 deletions(-)
+
 -- 
-2.34.1
-
+2.31.1
