@@ -1,32 +1,32 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F59C567D
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA6268C01
 	for <iommu@lists.linux.dev>; Thu, 21 Sep 2023 07:52:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1695282754; x=1726818754;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=1YqrkwhCam53zwwuki+BzVJ5pD4pOMGdr/+tuWqbeU8=;
-  b=TtQRdFz9gd1ys9lgA8pVQSfZD77kCMNqAApMmIB2Cu5AN1WIjst/jPox
-   1fu6qiBhtlnX0mbzJ3Gtgsp12fTjD8CLvQq1K8P+kX26SVizB4R+aNurC
-   ssUnyGb5d+Vpub8dWawXZHbi84m+Aio7Hx8w88N0oRWsuCPUbRXRg1xIk
-   4TNfgnUCIu5/e4ypmlCl3uEIasA+NcVjqbyLd3qEvYMPBdX7+XWcvUYGv
-   XMf/CuHFiyErAzOttm9WLL5PSdN9zE9EZPulOG4cqZ9KLwqf/SSkmA8UG
-   6VFdArBqQEAriRIxlSQELSp6WE4Im3SfjnOaB6pZT7LpaD1/HNrPtSrM7
+  bh=qnoyrdNaukKvkcgP5+o7fz8ah/R0pg8Imwn58lDhpQA=;
+  b=L8meungJ9O9gK79zqdMpS3EKYOtOi89fnAY+F05CjfsE4ENBua7MuXG5
+   LAsBPFgOGNPY06lIRIeG1lTfDTQlzdA782I7Gd07PcXL478XD7gcCpVf1
+   TcQKEID1YZ6rnaa7ME7j+Mu0Gsoe7DEYH5K6igY6/a3n2sEUVT7EzOP5g
+   ROSRhr5q12KNf8AAFraN5fLe50S7x0PsUNSJHHuSlTOJIAGlyLiQyyaus
+   Iv8bK3omkUoUyh0L4qi63P+x+Sj9qy3cZ38CvbFbZbaMQVojocmSWEjTW
+   Af/gxy6+nlG/dtNyU5CaceC4uQzcS68r7IkF3yYxGD+fnV18FdrnNM5rv
    w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10839"; a="359832951"
+X-IronPort-AV: E=McAfee;i="6600,9927,10839"; a="359832973"
 X-IronPort-AV: E=Sophos;i="6.03,164,1694761200"; 
-   d="scan'208";a="359832951"
+   d="scan'208";a="359832973"
 Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Sep 2023 00:52:17 -0700
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Sep 2023 00:52:19 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10839"; a="723649578"
+X-IronPort-AV: E=McAfee;i="6600,9927,10839"; a="723649586"
 X-IronPort-AV: E=Sophos;i="6.03,164,1694761200"; 
-   d="scan'208";a="723649578"
+   d="scan'208";a="723649586"
 Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
-  by orsmga006.jf.intel.com with ESMTP; 21 Sep 2023 00:52:17 -0700
+  by orsmga006.jf.intel.com with ESMTP; 21 Sep 2023 00:52:18 -0700
 From: Yi Liu <yi.l.liu@intel.com>
 To: joro@8bytes.org,
 	alex.williamson@redhat.com,
@@ -52,9 +52,9 @@ Cc: cohuck@redhat.com,
 	linux-kselftest@vger.kernel.org,
 	zhenzhong.duan@intel.com,
 	joao.m.martins@oracle.com
-Subject: [PATCH v4 13/17] iommufd/selftest: Add nested domain allocation for mock domain
-Date: Thu, 21 Sep 2023 00:51:34 -0700
-Message-Id: <20230921075138.124099-14-yi.l.liu@intel.com>
+Subject: [PATCH v4 15/17] iommufd/selftest: Add mock_domain_cache_invalidate_user support
+Date: Thu, 21 Sep 2023 00:51:36 -0700
+Message-Id: <20230921075138.124099-16-yi.l.liu@intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230921075138.124099-1-yi.l.liu@intel.com>
 References: <20230921075138.124099-1-yi.l.liu@intel.com>
@@ -68,225 +68,100 @@ Content-Transfer-Encoding: 8bit
 
 From: Nicolin Chen <nicolinc@nvidia.com>
 
-Add nested domain support in the ->domain_alloc_user op with some proper
-sanity checks. Then, add a domain_nested_ops for all nested domains.
-
-Also, add an iotlb as a testing property of a nested domain. A following
-patch will verify its value for the success of a nested domain allocation
-and a cache invalidation request.
+Add mock_domain_cache_invalidate_user() data structure to support user
+space selftest program to cover user cache invalidation pathway.
 
 Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
 Signed-off-by: Yi Liu <yi.l.liu@intel.com>
 ---
- drivers/iommu/iommufd/iommufd_test.h |  18 +++++
- drivers/iommu/iommufd/selftest.c     | 114 ++++++++++++++++++++++++---
- 2 files changed, 123 insertions(+), 9 deletions(-)
+ drivers/iommu/iommufd/iommufd_test.h | 17 +++++++++++
+ drivers/iommu/iommufd/selftest.c     | 44 ++++++++++++++++++++++++++++
+ 2 files changed, 61 insertions(+)
 
 diff --git a/drivers/iommu/iommufd/iommufd_test.h b/drivers/iommu/iommufd/iommufd_test.h
-index 3f3644375bf1..7f997234a1a8 100644
+index 7f997234a1a8..748349dd5bf4 100644
 --- a/drivers/iommu/iommufd/iommufd_test.h
 +++ b/drivers/iommu/iommufd/iommufd_test.h
-@@ -40,6 +40,11 @@ enum {
- 	MOCK_FLAGS_ACCESS_CREATE_NEEDS_PIN_PAGES = 1 << 0,
+@@ -127,4 +127,21 @@ struct iommu_hwpt_selftest {
+ 	__u32 iotlb;
  };
  
-+enum {
-+	MOCK_NESTED_DOMAIN_IOTLB_ID_MAX = 3,
-+	MOCK_NESTED_DOMAIN_IOTLB_NUM = 4,
-+};
-+
- struct iommu_test_cmd {
- 	__u32 size;
- 	__u32 op;
-@@ -109,4 +114,17 @@ struct iommu_test_hw_info {
- 	__u32 test_reg;
- };
- 
-+/* Should not be equal to any defined value in enum iommu_hwpt_type */
-+#define IOMMU_HWPT_TYPE_SELFTEST		0xdead
-+
 +/**
-+ * struct iommu_hwpt_selftest
++ * struct iommu_hwpt_invalidate_selftest
 + *
-+ * @iotlb: default mock iotlb value, IOMMU_TEST_IOTLB_DEFAULT
++ * @flags: invalidate flags
++ * @iotlb_id: invalidate iotlb entry index
++ *
++ * If IOMMU_TEST_INVALIDATE_ALL is set in @flags, @iotlb_id will be ignored
 + */
-+struct iommu_hwpt_selftest {
-+#define IOMMU_TEST_IOTLB_DEFAULT	0xbadbeef
-+	__u32 iotlb;
++struct iommu_hwpt_invalidate_selftest {
++#define IOMMU_TEST_INVALIDATE_ALL	(1ULL << 0)
++	__u32 flags;
++	__u32 iotlb_id;
 +};
++
++#define IOMMU_TEST_INVALIDATE_ERR_FETCH	0xdeadbeee
++#define IOMMU_TEST_INVALIDATE_ERR_REQ	0xdeadbeef
 +
  #endif
 diff --git a/drivers/iommu/iommufd/selftest.c b/drivers/iommu/iommufd/selftest.c
-index 2205a552e570..bd967317927f 100644
+index bd967317927f..ebb2abc40c4a 100644
 --- a/drivers/iommu/iommufd/selftest.c
 +++ b/drivers/iommu/iommufd/selftest.c
-@@ -88,6 +88,17 @@ void iommufd_test_syz_conv_iova_id(struct iommufd_ucmd *ucmd,
- struct mock_iommu_domain {
- 	struct iommu_domain domain;
- 	struct xarray pfns;
-+	bool nested : 1;
-+	/* mock domain test data */
-+	union {
-+		struct { /* nested */
-+			struct mock_iommu_domain *parent;
-+			u32 iotlb[MOCK_NESTED_DOMAIN_IOTLB_NUM];
-+		};
-+		struct { /* parent */
-+			enum iommu_hwpt_type hwpt_type;
-+		};
-+	};
- };
- 
- enum selftest_obj_type {
-@@ -147,8 +158,12 @@ static void *mock_domain_hw_info(struct device *dev, u32 *length, u32 *type)
- }
- 
- static const struct iommu_ops mock_ops;
-+static struct iommu_domain_ops domain_nested_ops;
- 
--static struct iommu_domain *mock_domain_alloc(unsigned int iommu_domain_type)
-+static struct iommu_domain *
-+__mock_domain_alloc_kernel(unsigned int iommu_domain_type,
-+			   struct mock_iommu_domain *dummy,
-+			   const struct iommu_hwpt_selftest *user_cfg)
- {
- 	struct mock_iommu_domain *mock;
- 
-@@ -156,11 +171,11 @@ static struct iommu_domain *mock_domain_alloc(unsigned int iommu_domain_type)
- 		return &mock_blocking_domain;
- 
- 	if (iommu_domain_type != IOMMU_DOMAIN_UNMANAGED)
--		return NULL;
-+		return ERR_PTR(-EINVAL);
- 
- 	mock = kzalloc(sizeof(*mock), GFP_KERNEL);
- 	if (!mock)
--		return NULL;
-+		return ERR_PTR(-ENOMEM);
- 	mock->domain.geometry.aperture_start = MOCK_APERTURE_START;
- 	mock->domain.geometry.aperture_end = MOCK_APERTURE_LAST;
- 	mock->domain.pgsize_bitmap = MOCK_IO_PAGE_SIZE;
-@@ -170,18 +185,91 @@ static struct iommu_domain *mock_domain_alloc(unsigned int iommu_domain_type)
- 	return &mock->domain;
- }
- 
-+static struct iommu_domain *
-+__mock_domain_alloc_nested(unsigned int iommu_domain_type,
-+			   struct mock_iommu_domain *mock_parent,
-+			   const struct iommu_hwpt_selftest *user_cfg)
-+{
-+	struct mock_iommu_domain *mock;
-+	int i;
-+
-+	if (iommu_domain_type != IOMMU_DOMAIN_NESTED)
-+		return ERR_PTR(-EINVAL);
-+
-+	if (!user_cfg)
-+		return ERR_PTR(-EINVAL);
-+
-+	mock = kzalloc(sizeof(*mock), GFP_KERNEL);
-+	if (!mock)
-+		return ERR_PTR(-ENOMEM);
-+	mock->nested = true;
-+	mock->parent = mock_parent;
-+	mock->domain.type = iommu_domain_type;
-+	mock->domain.ops = &domain_nested_ops;
-+	for (i = 0; i < MOCK_NESTED_DOMAIN_IOTLB_NUM; i++)
-+		mock->iotlb[i] = user_cfg->iotlb;
-+	return &mock->domain;
-+}
-+
-+static struct iommu_domain *mock_domain_alloc(unsigned int iommu_domain_type)
-+{
-+	struct iommu_domain *domain;
-+
-+	if (iommu_domain_type != IOMMU_DOMAIN_BLOCKED &&
-+	    iommu_domain_type != IOMMU_DOMAIN_UNMANAGED)
-+		return NULL;
-+	domain = __mock_domain_alloc_kernel(iommu_domain_type, NULL, NULL);
-+	if (IS_ERR(domain))
-+		domain = NULL;
-+	return domain;
-+}
-+
- static struct iommu_domain *
- mock_domain_alloc_user(struct device *dev, u32 flags,
- 		       enum iommu_hwpt_type hwpt_type,
- 		       struct iommu_domain *parent,
- 		       const struct iommu_user_data *user_data)
- {
--	struct iommu_domain *domain;
-+	struct iommu_domain *(*alloc_fn)(unsigned int iommu_domain_type,
-+					 struct mock_iommu_domain *mock_parent,
-+					 const struct iommu_hwpt_selftest *user_cfg);
-+	unsigned int iommu_domain_type = IOMMU_DOMAIN_UNMANAGED;
-+	struct iommu_hwpt_selftest data, *user_cfg = NULL;
-+	struct mock_iommu_domain *mock_parent = NULL;
-+	size_t min_len, data_len;
-+
-+	switch (hwpt_type) {
-+	case IOMMU_HWPT_TYPE_DEFAULT:
-+		if (user_data || parent)
-+			return ERR_PTR(-EINVAL);
-+		min_len = data_len = 0;
-+		alloc_fn = __mock_domain_alloc_kernel;
-+		break;
-+	default:
-+		/* IOMMU_HWPT_TYPE_SELFTEST cannot be a case for a big value */
-+		if (hwpt_type != IOMMU_HWPT_TYPE_SELFTEST)
-+			return ERR_PTR(-EINVAL);
-+		if (!user_data || !parent ||
-+		    parent->ops != mock_ops.default_domain_ops)
-+			return ERR_PTR(-EINVAL);
-+		iommu_domain_type = IOMMU_DOMAIN_NESTED;
-+		mock_parent = container_of(parent,
-+					   struct mock_iommu_domain, domain);
-+		min_len = offsetofend(struct iommu_hwpt_selftest, iotlb);
-+		data_len = sizeof(struct iommu_hwpt_selftest);
-+		alloc_fn = __mock_domain_alloc_nested;
-+		break;
-+	}
- 
--	domain = mock_domain_alloc(IOMMU_DOMAIN_UNMANAGED);
--	if (!domain)
--		domain = ERR_PTR(-ENOMEM);
--	return domain;
-+	if (user_data) {
-+		int rc = iommu_copy_user_data(&data, user_data,
-+					      data_len, min_len);
-+		if (rc)
-+			return ERR_PTR(rc);
-+		user_cfg = &data;
-+	}
-+
-+	return alloc_fn(iommu_domain_type, mock_parent, user_cfg);
- }
- 
- static void mock_domain_free(struct iommu_domain *domain)
-@@ -340,6 +428,11 @@ static const struct iommu_ops mock_ops = {
+@@ -428,9 +428,53 @@ static const struct iommu_ops mock_ops = {
  		},
  };
  
-+static struct iommu_domain_ops domain_nested_ops = {
-+	.free = mock_domain_free,
-+	.attach_dev = mock_domain_nop_attach,
-+};
++static int
++mock_domain_cache_invalidate_user(struct iommu_domain *domain,
++				  struct iommu_user_data_array *array,
++				  u32 *error_code)
++{
++	const size_t min_len =
++		offsetofend(struct iommu_hwpt_invalidate_selftest, iotlb_id);
++	struct mock_iommu_domain *mock =
++		container_of(domain, struct mock_iommu_domain, domain);
++	struct iommu_hwpt_invalidate_selftest inv;
++	int rc = 0;
++	int i, j;
 +
++	if (domain->type != IOMMU_DOMAIN_NESTED || !mock->nested)
++		return -EINVAL;
++
++	for (i = 0; i < array->entry_num; i++) {
++		rc = iommu_copy_user_data_from_array(&inv, array,
++						     i, sizeof(inv), min_len);
++		if (rc) {
++			*error_code = IOMMU_TEST_INVALIDATE_ERR_FETCH;
++			goto err;
++		}
++		/* Invalidate all mock iotlb entries and ignore iotlb_id */
++		if (inv.flags & IOMMU_TEST_INVALIDATE_ALL) {
++			for (j = 0; j < MOCK_NESTED_DOMAIN_IOTLB_NUM; j++)
++				mock->iotlb[j] = 0;
++			continue;
++		}
++		/* Treat out-of-boundry iotlb_id as a request error */
++		if (inv.iotlb_id > MOCK_NESTED_DOMAIN_IOTLB_ID_MAX) {
++			*error_code = IOMMU_TEST_INVALIDATE_ERR_REQ;
++			rc = -EINVAL;
++			goto err;
++		}
++		mock->iotlb[inv.iotlb_id] = 0;
++	}
++
++err:
++	array->entry_num = i;
++	return rc;
++}
++
+ static struct iommu_domain_ops domain_nested_ops = {
+ 	.free = mock_domain_free,
+ 	.attach_dev = mock_domain_nop_attach,
++	.cache_invalidate_user = mock_domain_cache_invalidate_user,
+ };
+ 
  static inline struct iommufd_hw_pagetable *
- get_md_pagetable(struct iommufd_ucmd *ucmd, u32 mockpt_id,
- 		 struct mock_iommu_domain **mock)
-@@ -352,7 +445,10 @@ get_md_pagetable(struct iommufd_ucmd *ucmd, u32 mockpt_id,
- 	if (IS_ERR(obj))
- 		return ERR_CAST(obj);
- 	hwpt = container_of(obj, struct iommufd_hw_pagetable, obj);
--	if (hwpt->domain->ops != mock_ops.default_domain_ops) {
-+	if ((hwpt->domain->type == IOMMU_DOMAIN_UNMANAGED &&
-+	     hwpt->domain->ops != mock_ops.default_domain_ops) ||
-+	    (hwpt->domain->type == IOMMU_DOMAIN_NESTED &&
-+	     hwpt->domain->ops != &domain_nested_ops)) {
- 		iommufd_put_object(&hwpt->obj);
- 		return ERR_PTR(-EINVAL);
- 	}
 -- 
 2.34.1
 
