@@ -1,32 +1,32 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 73B51567D
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D96155676
 	for <iommu@lists.linux.dev>; Thu, 21 Sep 2023 07:52:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1695282750; x=1726818750;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=QCYSdfSXFxQ7WaALFaYm4jsUT2kSUGMBFqo7HP5RmjU=;
-  b=Q041FPT45I2g/oGBBfzOJ6Ky3+Jun+lZXjXUK8LwBswn2WlaZIzP+07o
-   W7TYgFetTofjehKdVLG1wMh1h02YsUOVWoueAz4G1VKB9Q0lIuGq36Kku
-   WIvfa9tu+BEay4mFNML1mJP9UbjX6dLWr6aaVg8xzqoKWUavdSQY0FGCJ
-   88YwTfzcIMy3jeNJtbWd4khX/Xef5ED/iUzRxvr5vCjzDI1fMG0Ii3P7n
-   MVYb+WUidLyaXkyDPOY+rWoDDqtESKyGxDc3wgAp5/WuVNILQ9nYYlY0c
-   MNJclNP9YKpGmWhdWePIyBNzeyWN+J/NyuJt2Rn8jJA6DBZr9DDMauPEt
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10839"; a="359832887"
+  bh=2mkPrmRE/ueRx331NAPcdWIqS7NvtaigtkFuUoq9+mU=;
+  b=KsBhE/NQzRaqpcKbXzsjS0/JUrm+U44553TvvuhncxuB1mOO337XobwS
+   RuE3fPmeY1LlJbT2eZcW3fwWSs5vekM6HYMdbMeLqc9sswDSJDswmafVP
+   /jv2/0/qVwbHBeCVLUx4T1Fp14vvRdjlhn5OdLa2zkaHBdebuhcC2VyFH
+   8XJ6ZtZJM1jUpEwxE/9zAXvIMbhcmihvSHVkX7BoywrIMLGp061nE+slK
+   MgwTKRp7uiiItQdWSr79D4L6h0FbajCiZK25i3xwE+/6J67IvekmS40bL
+   T+R+H4zp1RL+Ig/y0AcdBopyS6Xc3W3x8SAwXJFGA1xFHFuQmijVLGmDl
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10839"; a="359832899"
 X-IronPort-AV: E=Sophos;i="6.03,164,1694761200"; 
-   d="scan'208";a="359832887"
+   d="scan'208";a="359832899"
 Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Sep 2023 00:52:13 -0700
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Sep 2023 00:52:14 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10839"; a="723649546"
+X-IronPort-AV: E=McAfee;i="6600,9927,10839"; a="723649553"
 X-IronPort-AV: E=Sophos;i="6.03,164,1694761200"; 
-   d="scan'208";a="723649546"
+   d="scan'208";a="723649553"
 Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
-  by orsmga006.jf.intel.com with ESMTP; 21 Sep 2023 00:52:13 -0700
+  by orsmga006.jf.intel.com with ESMTP; 21 Sep 2023 00:52:14 -0700
 From: Yi Liu <yi.l.liu@intel.com>
 To: joro@8bytes.org,
 	alex.williamson@redhat.com,
@@ -52,9 +52,9 @@ Cc: cohuck@redhat.com,
 	linux-kselftest@vger.kernel.org,
 	zhenzhong.duan@intel.com,
 	joao.m.martins@oracle.com
-Subject: [PATCH v4 08/17] iommufd: Always setup MSI and anforce cc on kernel-managed domains
-Date: Thu, 21 Sep 2023 00:51:29 -0700
-Message-Id: <20230921075138.124099-9-yi.l.liu@intel.com>
+Subject: [PATCH v4 09/17] iommufd/device: Add helpers to enforce/remove device reserved regions
+Date: Thu, 21 Sep 2023 00:51:30 -0700
+Message-Id: <20230921075138.124099-10-yi.l.liu@intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230921075138.124099-1-yi.l.liu@intel.com>
 References: <20230921075138.124099-1-yi.l.liu@intel.com>
@@ -68,55 +68,156 @@ Content-Transfer-Encoding: 8bit
 
 From: Nicolin Chen <nicolinc@nvidia.com>
 
-Now enforce_cache_coherency and msi_cookie are kernel-managed hwpt things.
-So, they should be only setup on kernel-managed domains. If the attaching
-domain is a user-managed domain, redirect the hwpt to hwpt->parent to do
-it correctly.
+The iopt_table_enforce_dev_resv_regions() and iopt_remove_reserved_iova()
+require callers to pass in an ioas->iopt pointer. It simply works with a
+kernel-managed hw_pagetable by passing in its hwpt->ioas->iopt pointer.
+However, now there could be a user-managed hw_pagetable that doesn't have
+an ioas pointer. And typically most of device reserved regions should be
+enforced to a kernel-managed domain only, although the IOMMU_RESV_SW_MSI
+used by SMMU will introduce some complication.
+
+Add a pair of iommufd_device_enforce_rr/iommufd_device_remove_rr helpers
+that calls iopt_table_enforce_dev_resv_regions/iopt_remove_reserved_iova
+functions after some additional checks. This would also ease any further
+extension to support the IOMMU_RESV_SW_MSI complication mentioned above.
+
+For the replace() routine, add another helper to compare ioas pointers,
+with the support of user-managed hw_pagetables.
 
 Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-Co-developed-by: Yi Liu <yi.l.liu@intel.com>
 Signed-off-by: Yi Liu <yi.l.liu@intel.com>
 ---
- drivers/iommu/iommufd/device.c       | 4 ++++
- drivers/iommu/iommufd/hw_pagetable.c | 4 ++++
- 2 files changed, 8 insertions(+)
+ drivers/iommu/iommufd/device.c          | 42 ++++++++++++++++++-------
+ drivers/iommu/iommufd/iommufd_private.h | 18 +++++++++++
+ 2 files changed, 48 insertions(+), 12 deletions(-)
 
 diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
-index eb120f70a3e3..104dd061a2a3 100644
+index 104dd061a2a3..10e6ec590ede 100644
 --- a/drivers/iommu/iommufd/device.c
 +++ b/drivers/iommu/iommufd/device.c
-@@ -305,12 +305,16 @@ static int iommufd_group_setup_msi(struct iommufd_group *igroup,
- 	 * domain after request_irq(). If it is not done interrupts will not
- 	 * work on this domain.
- 	 *
-+	 * Note: always set up a msi_cookie on a kernel-manage hw_pagetable.
-+	 *
- 	 * FIXME: This is conceptually broken for iommufd since we want to allow
- 	 * userspace to change the domains, eg switch from an identity IOAS to a
- 	 * DMA IOAS. There is currently no way to create a MSI window that
- 	 * matches what the IRQ layer actually expects in a newly created
- 	 * domain.
- 	 */
-+	if (hwpt->user_managed)
-+		hwpt = hwpt->parent;
- 	if (sw_msi_start != PHYS_ADDR_MAX && !hwpt->msi_cookie) {
- 		rc = iommu_get_msi_cookie(hwpt->domain, sw_msi_start);
- 		if (rc)
-diff --git a/drivers/iommu/iommufd/hw_pagetable.c b/drivers/iommu/iommufd/hw_pagetable.c
-index dc3e11a23acf..90fd65859e28 100644
---- a/drivers/iommu/iommufd/hw_pagetable.c
-+++ b/drivers/iommu/iommufd/hw_pagetable.c
-@@ -152,6 +152,10 @@ iommufd_user_managed_hwpt_alloc(struct iommufd_ctx *ictx,
+@@ -329,6 +329,28 @@ static int iommufd_group_setup_msi(struct iommufd_group *igroup,
+ 	return 0;
+ }
  
- int iommufd_hw_pagetable_enforce_cc(struct iommufd_hw_pagetable *hwpt)
- {
-+	/* Always enforce cache coherency on a kernel-managed hw_pagetable */
++static void iommufd_device_remove_rr(struct iommufd_device *idev,
++				     struct iommufd_hw_pagetable *hwpt)
++{
++	if (WARN_ON(!hwpt))
++		return;
 +	if (hwpt->user_managed)
-+		hwpt = hwpt->parent;
++		return;
++	iopt_remove_reserved_iova(&hwpt->ioas->iopt, idev->dev);
++}
 +
- 	if (hwpt->enforce_cache_coherency)
- 		return 0;
++static int iommufd_device_enforce_rr(struct iommufd_device *idev,
++				     struct iommufd_hw_pagetable *hwpt,
++				     phys_addr_t *sw_msi_start)
++{
++	if (WARN_ON(!hwpt))
++		return -EINVAL;
++	if (hwpt->user_managed)
++		return 0;
++	return iopt_table_enforce_dev_resv_regions(&hwpt->ioas->iopt, idev->dev,
++						   sw_msi_start);
++}
++
+ int iommufd_hw_pagetable_attach(struct iommufd_hw_pagetable *hwpt,
+ 				struct iommufd_device *idev)
+ {
+@@ -348,8 +370,7 @@ int iommufd_hw_pagetable_attach(struct iommufd_hw_pagetable *hwpt,
+ 			goto err_unlock;
+ 	}
  
+-	rc = iopt_table_enforce_dev_resv_regions(&hwpt->ioas->iopt, idev->dev,
+-						 &idev->igroup->sw_msi_start);
++	rc = iommufd_device_enforce_rr(idev, hwpt, &idev->igroup->sw_msi_start);
+ 	if (rc)
+ 		goto err_unlock;
+ 
+@@ -375,7 +396,7 @@ int iommufd_hw_pagetable_attach(struct iommufd_hw_pagetable *hwpt,
+ 	mutex_unlock(&idev->igroup->lock);
+ 	return 0;
+ err_unresv:
+-	iopt_remove_reserved_iova(&hwpt->ioas->iopt, idev->dev);
++	iommufd_device_remove_rr(idev, hwpt);
+ err_unlock:
+ 	mutex_unlock(&idev->igroup->lock);
+ 	return rc;
+@@ -392,7 +413,7 @@ iommufd_hw_pagetable_detach(struct iommufd_device *idev)
+ 		iommu_detach_group(hwpt->domain, idev->igroup->group);
+ 		idev->igroup->hwpt = NULL;
+ 	}
+-	iopt_remove_reserved_iova(&hwpt->ioas->iopt, idev->dev);
++	iommufd_device_remove_rr(idev, hwpt);
+ 	mutex_unlock(&idev->igroup->lock);
+ 
+ 	/* Caller must destroy hwpt */
+@@ -444,10 +465,9 @@ iommufd_device_do_replace(struct iommufd_device *idev,
+ 	}
+ 
+ 	old_hwpt = igroup->hwpt;
+-	if (hwpt->ioas != old_hwpt->ioas) {
++	if (iommufd_hw_pagetable_compare_ioas(old_hwpt, hwpt)) {
+ 		list_for_each_entry(cur, &igroup->device_list, group_item) {
+-			rc = iopt_table_enforce_dev_resv_regions(
+-				&hwpt->ioas->iopt, cur->dev, NULL);
++			rc = iommufd_device_enforce_rr(cur, hwpt, NULL);
+ 			if (rc)
+ 				goto err_unresv;
+ 		}
+@@ -461,12 +481,10 @@ iommufd_device_do_replace(struct iommufd_device *idev,
+ 	if (rc)
+ 		goto err_unresv;
+ 
+-	if (hwpt->ioas != old_hwpt->ioas) {
++	if (iommufd_hw_pagetable_compare_ioas(old_hwpt, hwpt)) {
+ 		list_for_each_entry(cur, &igroup->device_list, group_item)
+-			iopt_remove_reserved_iova(&old_hwpt->ioas->iopt,
+-						  cur->dev);
++			iommufd_device_remove_rr(cur, hwpt);
+ 	}
+-
+ 	igroup->hwpt = hwpt;
+ 
+ 	/*
+@@ -483,7 +501,7 @@ iommufd_device_do_replace(struct iommufd_device *idev,
+ 	return old_hwpt;
+ err_unresv:
+ 	list_for_each_entry(cur, &igroup->device_list, group_item)
+-		iopt_remove_reserved_iova(&hwpt->ioas->iopt, cur->dev);
++		iommufd_device_remove_rr(cur, hwpt);
+ err_unlock:
+ 	mutex_unlock(&idev->igroup->lock);
+ 	return ERR_PTR(rc);
+diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
+index 34940596c2c2..b14f23d3f42e 100644
+--- a/drivers/iommu/iommufd/iommufd_private.h
++++ b/drivers/iommu/iommufd/iommufd_private.h
+@@ -281,6 +281,24 @@ static inline void iommufd_hw_pagetable_put(struct iommufd_ctx *ictx,
+ 		refcount_dec(&hwpt->obj.users);
+ }
+ 
++static inline bool
++iommufd_hw_pagetable_compare_ioas(struct iommufd_hw_pagetable *old_hwpt,
++				  struct iommufd_hw_pagetable *new_hwpt)
++{
++	struct iommufd_ioas *old_ioas, *new_ioas;
++
++	WARN_ON(!old_hwpt || !new_hwpt);
++	if (old_hwpt->user_managed)
++		old_ioas = old_hwpt->parent->ioas;
++	else
++		old_ioas = old_hwpt->ioas;
++	if (new_hwpt->user_managed)
++		new_ioas = new_hwpt->parent->ioas;
++	else
++		new_ioas = new_hwpt->ioas;
++	return old_ioas != new_ioas;
++}
++
+ struct iommufd_group {
+ 	struct kref ref;
+ 	struct mutex lock;
 -- 
 2.34.1
 
