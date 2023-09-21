@@ -1,33 +1,33 @@
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1nam02on2040.outbound.protection.outlook.com [40.107.96.40])
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2070.outbound.protection.outlook.com [40.107.243.70])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1FA938F55
-	for <iommu@lists.linux.dev>; Thu, 21 Sep 2023 09:25:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2AD098F55
+	for <iommu@lists.linux.dev>; Thu, 21 Sep 2023 09:25:54 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ON8V7kUXcsk5ciIaMObaG/Hx5QGHK1hZ9LXxTvpyXIRjs7ZQcgVkVHONOA7XLRq98woE8CjAB8bB17OjWW8qli4b+Dqcnfs/BMCZKoayHkkbleoC2y7GGQ7tENvxO0DKrSc8oKKoK+AGrlQnilCvtV+Lq9TU2WlbszC42ltJrZgAaP9ngqqx5f8BSxp5ACr4MwTvsQlPrMbDlEwIYiynAt96I+7Nnwi35yBZYIf8V9/WNF9RgnpmLIBrL1FDTaLAAJ8bpBV9XcM8nUEEVomflwBOcCDb0cQSBVxGW2OM0XY1vNl0WmG1MGzdcmjMyJbzXATzKBYxBa1Mh1dcaJUl0w==
+ b=gsJESmLEYv/K0xQjx/2ThRrfB9Vxaxx7RnWECC1L8MCJVnvQLzr6ckcfO2asrbPsh1tmMEqyrxj70Wez9NgWoLo6AITa0G8Tg5n71Gi16EtdOlwBtBBbPJ27neANTmIChq2HShdyOtx8Z3gKIsVgDd0C7B5p3rDbJNFHVsCgUqoelCC6DKL/5+6KhlLfvATZiwAMh/650d5GpAlt+d0JTsxBfnH7dfr6AEyzNaWOH5/8CflT8hUraCLq+hLugNydGHv2+Mx1igPNPaNwE2ZG4p6iPiVt4krWErB9v5/yDLZz/ju9wKQY2pwDMFKB7Kt4a08seCMgHOhUq39JXZ9e4Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=h+obP8VNOIXrVQ3KTgqj0RWA0NhA+AYcH9Wx3TpKu14=;
- b=R3HBIytAT4LEeonn2XYmtZDMeKKM8IMroVsj1/qMx3017dCX56jbXaq7GxyBrsOvb9qT4o9zFczffyaIc6TlfwW2ODlDa0QqVhwam3jcyIEMx5zP8etk9LHBqUnfR5B3s7J/eg/QRmqBhPboothI/0jNEGT8A/KWwxFGkdHdDsp6WKiPz6K+Klh4EwjL897zlyc9nkWSGY6C7aLpM/+7+N+EazQXPPyRQjBxCU1EGj7hqUYDUgCGJRVvjtZ+FAlWtUJSyMuNAs80oMchsWDTjsmTWqWK8nXRgvmG/ALz/QnA1sBxtj7LVQJtVtSaB3hjbM91+dOW1fKtycxenIV1SA==
+ bh=wLpGdUGLJ/rrneuBbKQeOtzZiWuuWe7cwW2mhxRCjCo=;
+ b=ZjQFAsTipPZo2qpXYDdmM/VY23ves/lk37z1nnsSG11fAZR0ZgPBRf+lhR/yGueemV5+eua79aD90uEpudGNSf2xVsXuFWTB7z+zpEIGSHm59SrDnC3e76UBNlsiOnH3n5CHFAvmuUzj3C7OtbUyXFv5KZ5fZhMX0Xvv23oOgaCxfgW5NjgJKzOVC14h+CBjPQafHSdv+MO1hVCEm9dGi9uc+YWHS/z3dX0biPKgapv8GsnS4NfX7wONby0KbpX8ita4ZiqVGuWRxM4pCbtI2LtFo3R/8bq2hofvGbY1cxWtLo/V2cCnuoVlX0LLB907/r7wR+jCVNvIns3D7F5C1g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=amd.com;
  dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
  header.from=amd.com; dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=h+obP8VNOIXrVQ3KTgqj0RWA0NhA+AYcH9Wx3TpKu14=;
- b=CC5TM2Wws4o3k9hzVIt/+yMYWctei04KDxVxtvcbcmmX7FO5nT9c+IXU36Fp7c87nxfL5WqejfNSag0+xBaKhK4I6vnyPZRZ69eV7DSVzMMhbmfByIVc3U75SG/Uflig0cRA1aaGivqXK8/hhZGXzbgKcrr2npqjujBe6B9ngqY=
-Received: from DM6PR08CA0048.namprd08.prod.outlook.com (2603:10b6:5:1e0::22)
- by CY8PR12MB7097.namprd12.prod.outlook.com (2603:10b6:930:51::17) with
+ bh=wLpGdUGLJ/rrneuBbKQeOtzZiWuuWe7cwW2mhxRCjCo=;
+ b=mWAggZ0kxV+I9/d5HvZk8K3j1bvY+6xb0CabeK1hHOVkIWeuiSzkZCeZ73WLpGWEx6LfXyJ6K2MMvwKBtpE96yMiyNHJ13jj3EXngfU3WkknXaQqIyinmXE7IUiM/NpFLakVAXxCqq/vwXHKT1mc0QFlwl4EyYA8IDPHIdVFYU0=
+Received: from BLAPR05CA0045.namprd05.prod.outlook.com (2603:10b6:208:335::25)
+ by DS0PR12MB6535.namprd12.prod.outlook.com (2603:10b6:8:c0::16) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6813.19; Thu, 21 Sep
- 2023 09:25:29 +0000
-Received: from DS2PEPF0000343B.namprd02.prod.outlook.com
- (2603:10b6:5:1e0:cafe::ad) by DM6PR08CA0048.outlook.office365.com
- (2603:10b6:5:1e0::22) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6792.30 via Frontend
- Transport; Thu, 21 Sep 2023 09:25:28 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6792.27; Thu, 21 Sep
+ 2023 09:25:49 +0000
+Received: from BL02EPF0001A0FB.namprd03.prod.outlook.com
+ (2603:10b6:208:335:cafe::19) by BLAPR05CA0045.outlook.office365.com
+ (2603:10b6:208:335::25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6838.9 via Frontend
+ Transport; Thu, 21 Sep 2023 09:25:49 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -35,21 +35,21 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
  client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
 Received: from SATLEXMB04.amd.com (165.204.84.17) by
- DS2PEPF0000343B.mail.protection.outlook.com (10.167.18.38) with Microsoft
+ BL02EPF0001A0FB.mail.protection.outlook.com (10.167.242.102) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.6792.20 via Frontend Transport; Thu, 21 Sep 2023 09:25:28 +0000
+ 15.20.6792.20 via Frontend Transport; Thu, 21 Sep 2023 09:25:49 +0000
 Received: from kali.amd.com (10.180.168.240) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.27; Thu, 21 Sep
- 2023 04:25:22 -0500
+ 2023 04:25:46 -0500
 From: Vasant Hegde <vasant.hegde@amd.com>
 To: <iommu@lists.linux.dev>, <joro@8bytes.org>
 CC: <suravee.suthikulpanit@amd.com>, <wei.huang2@amd.com>,
 	<jsnitsel@redhat.com>, <jgg@ziepe.ca>, Vasant Hegde <vasant.hegde@amd.com>,
 	Jason Gunthorpe <jgg@nvidia.com>
-Subject: [PATCH v6 07/14] iommu/amd: Miscellaneous clean up when free domain
-Date: Thu, 21 Sep 2023 09:21:40 +0000
-Message-ID: <20230921092147.5930-8-vasant.hegde@amd.com>
+Subject: [PATCH v6 08/14] iommu/amd: Consolidate feature detection and reporting logic
+Date: Thu, 21 Sep 2023 09:21:41 +0000
+Message-ID: <20230921092147.5930-9-vasant.hegde@amd.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230921092147.5930-1-vasant.hegde@amd.com>
 References: <20230921092147.5930-1-vasant.hegde@amd.com>
@@ -66,176 +66,350 @@ X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
  (10.181.40.145)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS2PEPF0000343B:EE_|CY8PR12MB7097:EE_
-X-MS-Office365-Filtering-Correlation-Id: 85c1bcf7-8448-45d8-d234-08dbba84b20d
+X-MS-TrafficTypeDiagnostic: BL02EPF0001A0FB:EE_|DS0PR12MB6535:EE_
+X-MS-Office365-Filtering-Correlation-Id: df29137c-de72-4654-7853-08dbba84be7f
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	vpZwLrJ2hONDfykqNKsUVd6bNJ8EH2+1zYQ7+LPK2vGRKojtLsAm/egt2Zmgtg7AzuZ/zGwEWzn+S24GizfZg8Vm2khxdcb3NSHDTBykpSs93aGgPVQ9tmHnuB79SUs+1J5AhWKHeiSvl5aJfiBeDI1gdVhn9KBvb/OmWSzEZi6IA2GZ7kpUzDkgAeOyt6yyTRwri+OTSg6SCu1/9V34eje+5gLjKFo3ktltbEimFMYlNQUHYBPA1ucOsXHCqOivCqQbA0dCetJdgPqw26380TbmnzYMjX4EJXAQR3KYmBhnpC7Rs3PKw9BER8cLZ2N1pprpsqmrP7xRBBSiMY2kaEBA3UJyh0LsKtwu4iXbRegqpc3Jmp/EafJp2k6rzjY/O1ysaR5JjZZtnub1CHpo+CaEQ+xDnB9V674tNywKqzbtmrt2WW/FWFSWtP5Gl4jDndgreQ/7zQDImlCEPLgLOAsgHvdZzO4G54Ze8a7eD3us5FSPl0hQePMpr2y9KCZgdjll2FNZCX4G151UBR+2L3TCKVu9xZaMXedm7dg24ZVIjSCnPDtC1l7MkyE8DHsJc2RW0ha0uxfEYV6XPmhkNRb2MPqTbVrq+aTV9h5lWbjKvW1jGCGGGUd8Mc4g08bePCVhH67REpn76V3gG9IpJMs+pwslztoQC0FCydmSObSp/bGEenlTyeyS65xLzU96bKmydzm01m6u9Jk65rPSxH0ZZ3GtlITL0q4wEB1s57ooVMr2u2LtFqNCfKZRCiNTz2L+cB4xvDqfjd38+5K2hQ==
+	qtwlzWTeoXfkhJZ50l41W7CyMdx7hLqlbXkZNIyCRVEo8CS4THHh2jc5KuQDyyWmJxtHKEAUxd2QlyqoUFD/maBFuemcCbtiZB/IfRh/qZ1Ida8O6q2wJMs40W2TNAGbv8Q3yQ5DSLk3EQGSEvYgkIkGKnfwrsMQGLibLcXQerlMkq+o83TXckqDRhXTpACgBhQlJngtIesKwlODV1b50HlZpwbTySKPX+/4r/CuzjrH2VdtT+U9lu9pOsOxw4cEiYILESl6KKJ/bKcungTsABF/74XfgTi8xRgKjIFcLMVfBKH6ae6eTARqKe6cBv9pgTxWQHwBH2k6dyBbmxM4k0ufc/zt7SGYzuqRT8MjbtWVLdFihQcI+dybS56aLTqxU25109rGcP2LSyTlmG561zvI6awSYy1KQsrrJTao6KpHmsGlhjh0ugWMzAZUJtQjJuMmvVt748WIbPF/sgDokLf7O4szxpfG4aDJmPxrCRzt7euUCZrTBfY9rzAAmKJTLPZtZS3bns1A+Nmj88+Cn/jN2qjvZqzsyL1/ZEKIm2roxNJFSk319Ha/tmMB2BILBs93QKDyCYjExT0wwcET8fC+AhNQd8umggMq4KZXhCVa0qk63R/VXZxtrDgYS+NhkwsWaKXLY3WiuSleVF8VWjjZe6jmAuKoxNjz4Q4y2x14FVUxdhtbXv6qc59SOfwKjI5KCsTnUt31awewsqEfDsedGgTXZA0iCsN6WAvMAAC0EHNnyLmjgAnc61R8iCUiYsbZejSP2I4cGpsfgJBdeQ==
 X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230031)(4636009)(376002)(346002)(396003)(39860400002)(136003)(186009)(451199024)(82310400011)(1800799009)(46966006)(36840700001)(40470700004)(2616005)(5660300002)(16526019)(40460700003)(26005)(1076003)(426003)(41300700001)(2906002)(47076005)(336012)(81166007)(356005)(86362001)(82740400003)(36860700001)(40480700001)(36756003)(4326008)(8936002)(8676002)(44832011)(83380400001)(478600001)(6666004)(7696005)(316002)(110136005)(70586007)(70206006)(54906003)(36900700001);DIR:OUT;SFP:1101;
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230031)(4636009)(346002)(136003)(396003)(39860400002)(376002)(82310400011)(186009)(1800799009)(451199024)(40470700004)(36840700001)(46966006)(316002)(70586007)(54906003)(44832011)(86362001)(30864003)(81166007)(82740400003)(36860700001)(2906002)(356005)(36756003)(41300700001)(110136005)(5660300002)(47076005)(478600001)(6666004)(70206006)(7696005)(4326008)(8676002)(40460700003)(8936002)(1076003)(83380400001)(2616005)(426003)(16526019)(26005)(336012)(40480700001)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Sep 2023 09:25:28.7975
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Sep 2023 09:25:49.7062
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 85c1bcf7-8448-45d8-d234-08dbba84b20d
+X-MS-Exchange-CrossTenant-Network-Message-Id: df29137c-de72-4654-7853-08dbba84be7f
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	DS2PEPF0000343B.namprd02.prod.outlook.com
+	BL02EPF0001A0FB.namprd03.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR12MB7097
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB6535
 
 From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 
-* Use the protection_domain_free() helper function to free domain.
-  The function has been modified to also free memory used for the v1 and v2
-  page tables. Also clear gcr3 table in v2 page table free path.
+Currently, IOMMU driver assumes capabilities on all IOMMU instances to be
+homogeneous. During early_amd_iommu_init(), the driver probes all IVHD
+blocks and do sanity check to make sure that only features common among all
+IOMMU instances are supported. This is tracked in the global amd_iommu_efr
+and amd_iommu_efr2, which should be used whenever the driver need to check
+hardware capabilities.
 
-* Refactor code into cleanup_domain() for reusability. Change BUG_ON to
-  WARN_ON in cleanup path.
+Therefore, introduce check_feature() and check_feature2(), and modify
+the driver to adopt the new helper functions.
 
-* Protection domain dev_cnt should be read when the domain is locked.
+In addition, clean up the print_iommu_info() to avoid reporting redundant
+EFR/EFR2 for each IOMMU instance.
 
 Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Co-developed-by: Vasant Hegde <vasant.hegde@amd.com>
 Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
 Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 Reviewed-by: Jerry Snitselaar <jsnitsel@redhat.com>
 ---
- drivers/iommu/amd/io_pgtable_v2.c |  8 +++---
- drivers/iommu/amd/iommu.c         | 44 +++++++++++++++----------------
- 2 files changed, 26 insertions(+), 26 deletions(-)
+ drivers/iommu/amd/amd_iommu.h       | 17 ++++--
+ drivers/iommu/amd/amd_iommu_types.h |  4 ++
+ drivers/iommu/amd/init.c            | 89 ++++++++++++-----------------
+ drivers/iommu/amd/iommu.c           |  4 +-
+ 4 files changed, 54 insertions(+), 60 deletions(-)
 
-diff --git a/drivers/iommu/amd/io_pgtable_v2.c b/drivers/iommu/amd/io_pgtable_v2.c
-index e9ef2e0a62f6..f818a7e254d4 100644
---- a/drivers/iommu/amd/io_pgtable_v2.c
-+++ b/drivers/iommu/amd/io_pgtable_v2.c
-@@ -363,10 +363,10 @@ static void v2_free_pgtable(struct io_pgtable *iop)
- 	if (!(pdom->flags & PD_IOMMUV2_MASK))
+diff --git a/drivers/iommu/amd/amd_iommu.h b/drivers/iommu/amd/amd_iommu.h
+index c5090e00b3aa..e1b0eeead074 100644
+--- a/drivers/iommu/amd/amd_iommu.h
++++ b/drivers/iommu/amd/amd_iommu.h
+@@ -87,9 +87,19 @@ static inline bool is_rd890_iommu(struct pci_dev *pdev)
+ 	       (pdev->device == PCI_DEVICE_ID_RD890_IOMMU);
+ }
+ 
+-static inline bool iommu_feature(struct amd_iommu *iommu, u64 mask)
++static inline bool check_feature(u64 mask)
+ {
+-	return !!(iommu->features & mask);
++	return (amd_iommu_efr & mask);
++}
++
++static inline bool check_feature2(u64 mask)
++{
++	return (amd_iommu_efr2 & mask);
++}
++
++static inline int check_feature_gpt_level(void)
++{
++	return ((amd_iommu_efr >> FEATURE_GATS_SHIFT) & FEATURE_GATS_MASK);
+ }
+ 
+ static inline u64 iommu_virt_to_phys(void *vaddr)
+@@ -145,8 +155,5 @@ void amd_iommu_domain_set_pgtable(struct protection_domain *domain,
+ 				  u64 *root, int mode);
+ struct dev_table_entry *get_dev_table(struct amd_iommu *iommu);
+ 
+-extern u64 amd_iommu_efr;
+-extern u64 amd_iommu_efr2;
+-
+ extern bool amd_iommu_snp_en;
+ #endif
+diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
+index a8d264026f7f..22bdfb0ddfb7 100644
+--- a/drivers/iommu/amd/amd_iommu_types.h
++++ b/drivers/iommu/amd/amd_iommu_types.h
+@@ -897,6 +897,10 @@ extern bool amd_iommu_force_isolation;
+ /* Max levels of glxval supported */
+ extern int amd_iommu_max_glx_val;
+ 
++/* Global EFR and EFR2 registers */
++extern u64 amd_iommu_efr;
++extern u64 amd_iommu_efr2;
++
+ /*
+  * This function flushes all internal caches of
+  * the IOMMU used by this driver.
+diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+index 2b01dfde6cab..d0d506ad9cc9 100644
+--- a/drivers/iommu/amd/init.c
++++ b/drivers/iommu/amd/init.c
+@@ -270,7 +270,7 @@ int amd_iommu_get_num_iommus(void)
+  * Iterate through all the IOMMUs to get common EFR
+  * masks among all IOMMUs and warn if found inconsistency.
+  */
+-static void get_global_efr(void)
++static __init void get_global_efr(void)
+ {
+ 	struct amd_iommu *iommu;
+ 
+@@ -302,16 +302,6 @@ static void get_global_efr(void)
+ 	pr_info("Using global IVHD EFR:%#llx, EFR2:%#llx\n", amd_iommu_efr, amd_iommu_efr2);
+ }
+ 
+-static bool check_feature_on_all_iommus(u64 mask)
+-{
+-	return !!(amd_iommu_efr & mask);
+-}
+-
+-static inline int check_feature_gpt_level(void)
+-{
+-	return ((amd_iommu_efr >> FEATURE_GATS_SHIFT) & FEATURE_GATS_MASK);
+-}
+-
+ /*
+  * For IVHD type 0x11/0x40, EFR is also available via IVHD.
+  * Default to IVHD EFR since it is available sooner
+@@ -397,7 +387,7 @@ static void iommu_set_cwwb_range(struct amd_iommu *iommu)
+ 	u64 start = iommu_virt_to_phys((void *)iommu->cmd_sem);
+ 	u64 entry = start & PM_ADDR_MASK;
+ 
+-	if (!check_feature_on_all_iommus(FEATURE_SNP))
++	if (!check_feature(FEATURE_SNP))
  		return;
  
--	/*
--	 * Make changes visible to IOMMUs. No need to clear gcr3 entry
--	 * as gcr3 table is already freed.
--	 */
-+	/* Clear gcr3 entry */
-+	amd_iommu_domain_clear_gcr3(&pdom->domain, 0);
-+
-+	/* Make changes visible to IOMMUs */
- 	amd_iommu_domain_update(pdom);
+ 	/* Note:
+@@ -867,7 +857,7 @@ static void *__init iommu_alloc_4k_pages(struct amd_iommu *iommu,
+ 	void *buf = (void *)__get_free_pages(gfp, order);
  
- 	/* Free page table */
+ 	if (buf &&
+-	    check_feature_on_all_iommus(FEATURE_SNP) &&
++	    check_feature(FEATURE_SNP) &&
+ 	    set_memory_4k((unsigned long)buf, (1 << order))) {
+ 		free_pages((unsigned long)buf, order);
+ 		buf = NULL;
+@@ -1046,7 +1036,7 @@ static void iommu_enable_xt(struct amd_iommu *iommu)
+ 
+ static void iommu_enable_gt(struct amd_iommu *iommu)
+ {
+-	if (!iommu_feature(iommu, FEATURE_GT))
++	if (!check_feature(FEATURE_GT))
+ 		return;
+ 
+ 	iommu_feature_enable(iommu, CONTROL_GT_EN);
+@@ -1985,7 +1975,7 @@ static void init_iommu_perf_ctr(struct amd_iommu *iommu)
+ 	u64 val;
+ 	struct pci_dev *pdev = iommu->dev;
+ 
+-	if (!iommu_feature(iommu, FEATURE_PC))
++	if (!check_feature(FEATURE_PC))
+ 		return;
+ 
+ 	amd_iommu_pc_present = true;
+@@ -2012,8 +2002,7 @@ static ssize_t amd_iommu_show_features(struct device *dev,
+ 				       struct device_attribute *attr,
+ 				       char *buf)
+ {
+-	struct amd_iommu *iommu = dev_to_amd_iommu(dev);
+-	return sysfs_emit(buf, "%llx:%llx\n", iommu->features2, iommu->features);
++	return sysfs_emit(buf, "%llx:%llx\n", amd_iommu_efr, amd_iommu_efr2);
+ }
+ static DEVICE_ATTR(features, S_IRUGO, amd_iommu_show_features, NULL);
+ 
+@@ -2049,9 +2038,9 @@ static void __init late_iommu_features_init(struct amd_iommu *iommu)
+ 	features = readq(iommu->mmio_base + MMIO_EXT_FEATURES);
+ 	features2 = readq(iommu->mmio_base + MMIO_EXT_FEATURES2);
+ 
+-	if (!iommu->features) {
+-		iommu->features = features;
+-		iommu->features2 = features2;
++	if (!amd_iommu_efr) {
++		amd_iommu_efr = features;
++		amd_iommu_efr2 = features2;
+ 		return;
+ 	}
+ 
+@@ -2059,12 +2048,12 @@ static void __init late_iommu_features_init(struct amd_iommu *iommu)
+ 	 * Sanity check and warn if EFR values from
+ 	 * IVHD and MMIO conflict.
+ 	 */
+-	if (features != iommu->features ||
+-	    features2 != iommu->features2) {
++	if (features != amd_iommu_efr ||
++	    features2 != amd_iommu_efr2) {
+ 		pr_warn(FW_WARN
+ 			"EFR mismatch. Use IVHD EFR (%#llx : %#llx), EFR2 (%#llx : %#llx).\n",
+-			features, iommu->features,
+-			features2, iommu->features2);
++			features, amd_iommu_efr,
++			features2, amd_iommu_efr2);
+ 	}
+ }
+ 
+@@ -2090,12 +2079,12 @@ static int __init iommu_init_pci(struct amd_iommu *iommu)
+ 
+ 	late_iommu_features_init(iommu);
+ 
+-	if (iommu_feature(iommu, FEATURE_GT)) {
++	if (check_feature(FEATURE_GT)) {
+ 		int glxval;
+ 		u32 max_pasid;
+ 		u64 pasmax;
+ 
+-		pasmax = iommu->features & FEATURE_PASID_MASK;
++		pasmax = amd_iommu_efr & FEATURE_PASID_MASK;
+ 		pasmax >>= FEATURE_PASID_SHIFT;
+ 		max_pasid  = (1 << (pasmax + 1)) - 1;
+ 
+@@ -2103,7 +2092,7 @@ static int __init iommu_init_pci(struct amd_iommu *iommu)
+ 
+ 		BUG_ON(amd_iommu_max_pasid & ~PASID_MASK);
+ 
+-		glxval   = iommu->features & FEATURE_GLXVAL_MASK;
++		glxval   = amd_iommu_efr & FEATURE_GLXVAL_MASK;
+ 		glxval >>= FEATURE_GLXVAL_SHIFT;
+ 
+ 		if (amd_iommu_max_glx_val == -1)
+@@ -2112,13 +2101,13 @@ static int __init iommu_init_pci(struct amd_iommu *iommu)
+ 			amd_iommu_max_glx_val = min(amd_iommu_max_glx_val, glxval);
+ 	}
+ 
+-	if (iommu_feature(iommu, FEATURE_GT) &&
+-	    iommu_feature(iommu, FEATURE_PPR)) {
++	if (check_feature(FEATURE_GT) &&
++	    check_feature(FEATURE_PPR)) {
+ 		iommu->is_iommu_v2   = true;
+ 		amd_iommu_v2_present = true;
+ 	}
+ 
+-	if (iommu_feature(iommu, FEATURE_PPR) && alloc_ppr_log(iommu))
++	if (check_feature(FEATURE_PPR) && alloc_ppr_log(iommu))
+ 		return -ENOMEM;
+ 
+ 	if (iommu->cap & (1UL << IOMMU_CAP_NPCACHE)) {
+@@ -2130,8 +2119,8 @@ static int __init iommu_init_pci(struct amd_iommu *iommu)
+ 	init_iommu_perf_ctr(iommu);
+ 
+ 	if (amd_iommu_pgtable == AMD_IOMMU_V2) {
+-		if (!iommu_feature(iommu, FEATURE_GIOSUP) ||
+-		    !iommu_feature(iommu, FEATURE_GT)) {
++		if (!check_feature(FEATURE_GIOSUP) ||
++		    !check_feature(FEATURE_GT)) {
+ 			pr_warn("Cannot enable v2 page table for DMA-API. Fallback to v1.\n");
+ 			amd_iommu_pgtable = AMD_IOMMU_V1;
+ 		}
+@@ -2181,35 +2170,29 @@ static int __init iommu_init_pci(struct amd_iommu *iommu)
+ 
+ static void print_iommu_info(void)
+ {
++	int i;
+ 	static const char * const feat_str[] = {
+ 		"PreF", "PPR", "X2APIC", "NX", "GT", "[5]",
+ 		"IA", "GA", "HE", "PC"
+ 	};
+-	struct amd_iommu *iommu;
+-
+-	for_each_iommu(iommu) {
+-		struct pci_dev *pdev = iommu->dev;
+-		int i;
+-
+-		pci_info(pdev, "Found IOMMU cap 0x%x\n", iommu->cap_ptr);
+ 
+-		if (iommu->cap & (1 << IOMMU_CAP_EFR)) {
+-			pr_info("Extended features (%#llx, %#llx):", iommu->features, iommu->features2);
++	if (amd_iommu_efr) {
++		pr_info("Extended features (%#llx, %#llx):", amd_iommu_efr, amd_iommu_efr2);
+ 
+-			for (i = 0; i < ARRAY_SIZE(feat_str); ++i) {
+-				if (iommu_feature(iommu, (1ULL << i)))
+-					pr_cont(" %s", feat_str[i]);
+-			}
++		for (i = 0; i < ARRAY_SIZE(feat_str); ++i) {
++			if (check_feature(1ULL << i))
++				pr_cont(" %s", feat_str[i]);
++		}
+ 
+-			if (iommu->features & FEATURE_GAM_VAPIC)
+-				pr_cont(" GA_vAPIC");
++		if (check_feature(FEATURE_GAM_VAPIC))
++			pr_cont(" GA_vAPIC");
+ 
+-			if (iommu->features & FEATURE_SNP)
+-				pr_cont(" SNP");
++		if (check_feature(FEATURE_SNP))
++			pr_cont(" SNP");
+ 
+-			pr_cont("\n");
+-		}
++		pr_cont("\n");
+ 	}
++
+ 	if (irq_remapping_enabled) {
+ 		pr_info("Interrupt remapping enabled\n");
+ 		if (amd_iommu_xt_mode == IRQ_REMAP_X2APIC_MODE)
+@@ -2907,7 +2890,7 @@ static void enable_iommus_vapic(void)
+ 	}
+ 
+ 	if (AMD_IOMMU_GUEST_IR_VAPIC(amd_iommu_guest_ir) &&
+-	    !check_feature_on_all_iommus(FEATURE_GAM_VAPIC)) {
++	    !check_feature(FEATURE_GAM_VAPIC)) {
+ 		amd_iommu_guest_ir = AMD_IOMMU_GUEST_IR_LEGACY_GA;
+ 		return;
+ 	}
+@@ -3819,7 +3802,7 @@ int amd_iommu_snp_enable(void)
+ 		return -EINVAL;
+ 	}
+ 
+-	amd_iommu_snp_en = check_feature_on_all_iommus(FEATURE_SNP);
++	amd_iommu_snp_en = check_feature(FEATURE_SNP);
+ 	if (!amd_iommu_snp_en)
+ 		return -EINVAL;
+ 
 diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index 46a10b489cf5..0dd8390113af 100644
+index 0dd8390113af..6b9c4a9ef150 100644
 --- a/drivers/iommu/amd/iommu.c
 +++ b/drivers/iommu/amd/iommu.c
-@@ -2047,9 +2047,11 @@ void amd_iommu_domain_update(struct protection_domain *domain)
- static void cleanup_domain(struct protection_domain *domain)
+@@ -1295,7 +1295,7 @@ static void amd_iommu_flush_irt_all(struct amd_iommu *iommu)
+ 
+ void iommu_flush_all_caches(struct amd_iommu *iommu)
  {
- 	struct iommu_dev_data *entry;
--	unsigned long flags;
+-	if (iommu_feature(iommu, FEATURE_IA)) {
++	if (check_feature(FEATURE_IA)) {
+ 		amd_iommu_flush_all(iommu);
+ 	} else {
+ 		amd_iommu_flush_dte_all(iommu);
+@@ -1639,7 +1639,7 @@ static void set_dte_entry(struct amd_iommu *iommu, u16 devid,
+ 		flags |= DTE_FLAG_IOTLB;
  
--	spin_lock_irqsave(&domain->lock, flags);
-+	lockdep_assert_held(&domain->lock);
-+
-+	if (!domain->dev_cnt)
-+		return;
- 
- 	while (!list_empty(&domain->dev_list)) {
- 		entry = list_first_entry(&domain->dev_list,
-@@ -2057,8 +2059,7 @@ static void cleanup_domain(struct protection_domain *domain)
- 		BUG_ON(!entry->domain);
- 		do_detach(entry);
- 	}
--
--	spin_unlock_irqrestore(&domain->lock, flags);
-+	WARN_ON(domain->dev_cnt != 0);
- }
- 
- static void protection_domain_free(struct protection_domain *domain)
-@@ -2069,6 +2070,12 @@ static void protection_domain_free(struct protection_domain *domain)
- 	if (domain->iop.pgtbl_cfg.tlb)
- 		free_io_pgtable_ops(&domain->iop.iop.ops);
- 
-+	if (domain->flags & PD_IOMMUV2_MASK)
-+		free_gcr3_table(domain);
-+
-+	if (domain->iop.root)
-+		free_page((unsigned long)domain->iop.root);
-+
- 	if (domain->id)
- 		domain_id_free(domain->id);
- 
-@@ -2083,10 +2090,8 @@ static int protection_domain_init_v1(struct protection_domain *domain, int mode)
- 
- 	if (mode != PAGE_MODE_NONE) {
- 		pt_root = (void *)get_zeroed_page(GFP_KERNEL);
--		if (!pt_root) {
--			domain_id_free(domain->id);
-+		if (!pt_root)
- 			return -ENOMEM;
--		}
+ 	if (ppr) {
+-		if (iommu_feature(iommu, FEATURE_EPHSUP))
++		if (check_feature(FEATURE_EPHSUP))
+ 			pte_root |= 1ULL << DEV_ENTRY_PPR;
  	}
  
- 	amd_iommu_domain_set_pgtable(domain, pt_root, mode);
-@@ -2100,10 +2105,8 @@ static int protection_domain_init_v2(struct protection_domain *domain)
- 
- 	domain->domain.pgsize_bitmap = AMD_IOMMU_PGSIZES_V2;
- 
--	if (setup_gcr3_table(domain, 1)) {
--		domain_id_free(domain->id);
-+	if (setup_gcr3_table(domain, 1))
- 		return -ENOMEM;
--	}
- 
- 	return 0;
- }
-@@ -2162,14 +2165,12 @@ static struct protection_domain *protection_domain_alloc(unsigned int type)
- 		goto out_err;
- 
- 	pgtbl_ops = alloc_io_pgtable_ops(pgtable, &domain->iop.pgtbl_cfg, domain);
--	if (!pgtbl_ops) {
--		domain_id_free(domain->id);
-+	if (!pgtbl_ops)
- 		goto out_err;
--	}
- 
- 	return domain;
- out_err:
--	kfree(domain);
-+	protection_domain_free(domain);
- 	return NULL;
- }
- 
-@@ -2207,19 +2208,18 @@ static struct iommu_domain *amd_iommu_domain_alloc(unsigned type)
- static void amd_iommu_domain_free(struct iommu_domain *dom)
- {
- 	struct protection_domain *domain;
-+	unsigned long flags;
- 
--	domain = to_pdomain(dom);
-+	if (!dom)
-+		return;
- 
--	if (domain->dev_cnt > 0)
--		cleanup_domain(domain);
-+	domain = to_pdomain(dom);
- 
--	BUG_ON(domain->dev_cnt != 0);
-+	spin_lock_irqsave(&domain->lock, flags);
- 
--	if (!dom)
--		return;
-+	cleanup_domain(domain);
- 
--	if (domain->flags & PD_IOMMUV2_MASK)
--		free_gcr3_table(domain);
-+	spin_unlock_irqrestore(&domain->lock, flags);
- 
- 	protection_domain_free(domain);
- }
 -- 
 2.31.1
 
