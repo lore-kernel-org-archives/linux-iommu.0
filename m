@@ -1,92 +1,98 @@
-Received: from mail-qk1-f175.google.com (mail-qk1-f175.google.com [209.85.222.175])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.136])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E3928168AA
-	for <iommu@lists.linux.dev>; Fri, 22 Sep 2023 12:41:32 +0000 (UTC)
-Received: by mail-qk1-f175.google.com with SMTP id af79cd13be357-770ef334b4fso116325185a.1
-        for <iommu@lists.linux.dev>; Fri, 22 Sep 2023 05:41:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1695386491; x=1695991291; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=N9+4wg+HvQjn8Tza5j/+95ICGHkpfpV9B3BnmaDCax4=;
-        b=IdFbvYqRSgeypGR4se8UPwQnB0JdmBvZxQGY5mozFn6aes+9G7owUkY4yohYsxB47Y
-         IfTkL89b3+MV8RqEflTS/77p6lfyp3hF9NwhXaJ98WRsY1VgreQdz2Gar8hr5CwnmjYc
-         Kf2dATfrBL87YbFJpSQYTVgnAk6gS+jj4lU+G3ib3usgv4kD+8dvp/6y0X4iaaPTpHGX
-         MZKn4rYziWnIoUZ1zXdIL0n8GOCCDhUMWTF/2kMcz0xuLKn2uHYnI8pHbC6MVshDoI1G
-         lsfvp19OjaAY2TJtq3xXW9SpOjWEr79ty8DMNNqpcYMATRWIBsRc0qRjwFy0dgcdATNC
-         2Zhw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1695386491; x=1695991291;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=N9+4wg+HvQjn8Tza5j/+95ICGHkpfpV9B3BnmaDCax4=;
-        b=mEjF1zkeAixHa0k+j20BYi6NsUV0uKp9IU4iRG+jvau4Qw56MaUx/x417kSM05JNjn
-         810NgnFjpWHbwlYd54zv19che2QgrgNjGaHGTo97BdVOqMML5BsbsIbV+PfcrhIwrG1T
-         0EIlkZh4JuYMP2s3BQJIvRYuOtbHfEqroVoZLt3hUOIx/IhwZexblx8ujf8BcsCsXwU9
-         jkPGySP14DTm8PrZVZ/usUwOJRo2Y5UiPZ6tEEoD6SuiXy/XHdc4QzL/1lqYZ2tCVPz2
-         7CyePK05UG4IHf2d9nfuTgH6o9SkpObXHbgfdnjlXKoJM/JJ7BZsrxNhT9L6l8kdygY0
-         oI7w==
-X-Gm-Message-State: AOJu0YzRSno5M8pKU/vwZPNje1Xh47cnfdEyBiwt5syFq18EEtvRQSr/
-	6Y9kf7L9EYbxbl6qydOjw4CIFA==
-X-Google-Smtp-Source: AGHT+IHZUGi7eIWQUvwurrjhwZAXvsjOtNC1C38Z7pyQadDkGDO1CCUf1Jp9zTCAUl/T8vTtva0wOQ==
-X-Received: by 2002:a05:620a:371e:b0:767:e994:ff03 with SMTP id de30-20020a05620a371e00b00767e994ff03mr2794453qkb.15.1695386491706;
-        Fri, 22 Sep 2023 05:41:31 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-26-201.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.26.201])
-        by smtp.gmail.com with ESMTPSA id p13-20020a05620a056d00b007740c0e52edsm1209968qkp.89.2023.09.22.05.41.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Sep 2023 05:41:30 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1qjfTO-000Y4I-9h;
-	Fri, 22 Sep 2023 09:41:30 -0300
-Date: Fri, 22 Sep 2023 09:41:30 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Cc: Robin Murphy <robin.murphy@arm.com>,
-	Niklas Schnelle <schnelle@linux.ibm.com>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	virtualization@lists.linux-foundation.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/2] iommu/virtio: Make use of ops->iotlb_sync_map
-Message-ID: <20230922124130.GD13795@ziepe.ca>
-References: <20230918-viommu-sync-map-v2-0-f33767f6cf7a@linux.ibm.com>
- <20230918-viommu-sync-map-v2-1-f33767f6cf7a@linux.ibm.com>
- <ae7e513b-eb86-97e2-bed0-3cca91b8c959@arm.com>
- <20230919081519.GA3860249@myrica>
- <20230919144649.GT13795@ziepe.ca>
- <20230922075719.GB1361815@myrica>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 21DCC168AA
+	for <iommu@lists.linux.dev>; Fri, 22 Sep 2023 12:42:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1695386530; x=1726922530;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=n6T69lEv9YGl1TLKPGD4sMuHfJtZkZMg60zc5RvhJJE=;
+  b=OOphVith2NIVIVQEiO75M3ff72tu731UI+mRuBukxmgCiKzaEEY+jPsQ
+   sb02oHoJ7Cbfgi33ZCmZlZ73en4BlIcbN4Vy6Z6FGl25jCQqosLdu5F7Q
+   jHCVq4/z1iQ6ZARVIl6RGRRDOBeaFVGErWhujy1c4W3l/ip/lRWTCZ1G6
+   Mk0K3VGXmBskJro1n1a95EZFAtm60nlIrqtul3GF53H2SxvQ4pOJT9OCD
+   cVXHB8AEbmL+bxc44rBeEiSqaw9R9U1+Adz949Yjt/ryzU9vvew79J/LU
+   DjaZ430MXAjoByvJ7E2D7Z8KlyNhmeKKfp1ac/JpRJxy03AYaXQbFAAJa
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10841"; a="360198440"
+X-IronPort-AV: E=Sophos;i="6.03,167,1694761200"; 
+   d="scan'208";a="360198440"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Sep 2023 05:42:09 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10841"; a="994534054"
+X-IronPort-AV: E=Sophos;i="6.03,167,1694761200"; 
+   d="scan'208";a="994534054"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.255.30.83]) ([10.255.30.83])
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Sep 2023 05:42:06 -0700
+Message-ID: <3a52aaa9-8fa3-6d99-363e-0620e538f2fe@linux.intel.com>
+Date: Fri, 22 Sep 2023 20:42:04 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230922075719.GB1361815@myrica>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.15.1
+Cc: baolu.lu@linux.intel.com, "Deucher, Alexander"
+ <Alexander.Deucher@amd.com>, "Hegde, Vasant" <Vasant.Hegde@amd.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "joro@8bytes.org" <joro@8bytes.org>,
+ "Suthikulpanit, Suravee" <Suravee.Suthikulpanit@amd.com>,
+ "Huang2, Wei" <Wei.Huang2@amd.com>, "jsnitsel@redhat.com"
+ <jsnitsel@redhat.com>, "Kuehling, Felix" <Felix.Kuehling@amd.com>
+Subject: Re: [PATCH v3 1/5] iommu/amd: Remove iommu_v2 module
+Content-Language: en-US
+To: Jason Gunthorpe <jgg@nvidia.com>
+References: <20230921093140.6162-1-vasant.hegde@amd.com>
+ <20230921093140.6162-2-vasant.hegde@amd.com>
+ <BL1PR12MB5144C5ADC106D450EA73C511F7F8A@BL1PR12MB5144.namprd12.prod.outlook.com>
+ <20230921141415.GN13733@nvidia.com>
+ <BL1PR12MB51449627A11B2BDA55B97C8CF7F8A@BL1PR12MB5144.namprd12.prod.outlook.com>
+ <20230921163154.GO13733@nvidia.com>
+ <19c7c139-b002-384f-5766-b87a8013029e@linux.intel.com>
+ <20230922115927.GI13733@nvidia.com>
+ <a4770035-9f1a-3bff-2ff2-d6b9c81e2c0b@linux.intel.com>
+ <20230922121812.GM13733@nvidia.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20230922121812.GM13733@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Fri, Sep 22, 2023 at 08:57:19AM +0100, Jean-Philippe Brucker wrote:
-> > > They're not strictly equivalent: this check works around a temporary issue
-> > > with the IOMMU core, which calls map/unmap before the domain is
-> > > finalized.
-> > 
-> > Where? The above points to iommu_create_device_direct_mappings() but
-> > it doesn't because the pgsize_bitmap == 0:
+On 2023/9/22 20:18, Jason Gunthorpe wrote:
+> On Fri, Sep 22, 2023 at 08:13:02PM +0800, Baolu Lu wrote:
 > 
-> __iommu_domain_alloc() sets pgsize_bitmap in this case:
+>>> You might make this argument if ACS is also non-isolating though..
+>>>
+>>> Regardless I think we need to get into a position where the iommu core
+>>> is deciding if PRI or ATS is enabled for a device, not the iommu
+>>> driver.
+>>
+>> Agreed. I ever had a series to achieve this and it may be time to
+>> revisit them.
+>>
+>> One additional concern is how the core knows whether ATS should be
+>> enabled. In my previous design, the IOMMU core turns on ATS by default
+>> if the device is capable of it, but the driver could enable/disable it
+>> from its driver probe() callback.
 > 
->         /*
->          * If not already set, assume all sizes by default; the driver
->          * may override this later
->          */
->         if (!domain->pgsize_bitmap)
->                 domain->pgsize_bitmap = bus->iommu_ops->pgsize_bitmap;
+> I think that is a good place to start, maybe we have some command line
+> and/or sysfs like we have for the default domain policy.
 
-Dirver's shouldn't do that.
+Yes. It sounds reasonable.
 
-The core code was fixed to try again with mapping reserved regions to
-support these kinds of drivers.
+> 
+> IMHO iommu drivers should not override this.
+> 
+> I think it was a mistake that iommu drivers could override to identity
+> domains. If we need quirks then the core code should have the quirk
+> list, similar to how PCI works.
 
-Jason
+If I remember it correctly, you have posted a series to address this. Or
+I might misunderstood it.
+
+Best regards,
+baolu
