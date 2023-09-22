@@ -1,120 +1,70 @@
-Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com [209.85.221.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9EB5414F81
-	for <iommu@lists.linux.dev>; Fri, 22 Sep 2023 07:57:15 +0000 (UTC)
-Received: by mail-wr1-f42.google.com with SMTP id ffacd0b85a97d-31dcf18f9e2so1750097f8f.0
-        for <iommu@lists.linux.dev>; Fri, 22 Sep 2023 00:57:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1695369434; x=1695974234; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=ZnFqnWCwcyqa0uxptZjUfiZurm7gKfTYACFMprkcSZc=;
-        b=JF31mgvJQf6I7KxZwtJY5wfl77Mn4anN81jEbhtrkq2wRBBFgeKkLc83y7a+nnsdRQ
-         R9nsqdvGX1h4mNPNN+NcM0/t6yKWNI6IKUeESZ0Fk6/z5nLxgub4iyyFh6VnRpvNf+Tq
-         7bQlzMHDBUGDuvXLehuXqEj2J7i4mAG5u8ob8F9RUeJ8X0WET90KOs3KFEXi16wGG6ue
-         ivxiygEUfWVmHwhw89YkwyTB2bSw2A7AvB9WV76ITmurqP3jyozU4/S4oQwLTReITJdU
-         +poLD2iXslb0iQxD6mn/lEM/DfsPU7fWQHhQP5x8EAlJfoRSb3l+u3ypZsRMiGBmaYa6
-         bKww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1695369434; x=1695974234;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ZnFqnWCwcyqa0uxptZjUfiZurm7gKfTYACFMprkcSZc=;
-        b=I9HbkIHppvlKIHK5WgvpZ41ZLdWgr1jICM70FRKIvyGZa0YCQ+y2MqwgYW8Clwj9DA
-         z55lNrxfRlPdNliNuSmIKn6w49mf3Kd+Adc/QeHx32Pqp7KepjukYxNN39BRxeS+27Ta
-         cguB1+pUmMWX4YQQHC6iECNt9bl2RLG/jHTQmvi09ocwCkaBGIJ6fwz7qhWecRg1glNp
-         weRrbWHG08TSg3Pibk/7fGMpyqS9vo8cfjMEJaw1h03o7N0hkZI5NOSrTVhozOW7w6f6
-         UtffDLZgUYNE2ExC2qcWWoxDMjp3aNjf1dyXUfhfVac9oufveu4itdOD4IktORnvQtWB
-         SbWg==
-X-Gm-Message-State: AOJu0YxOhxa2hG+YhNG4VeZ/X1240r8jh48PWQ+ebI83CETWd7fziqbq
-	aKvmqA7q5MRRdr7VxHsKu++kJA==
-X-Google-Smtp-Source: AGHT+IHWcZglriBzW9X2jK5nxXTgqPGq0Rp8QA7W/Rk3EcPZ5Jyf8nkyUbyRRLcvr0oqOvJfnIoUVw==
-X-Received: by 2002:adf:f008:0:b0:31f:fab1:c3c3 with SMTP id j8-20020adff008000000b0031ffab1c3c3mr7029007wro.35.1695369433661;
-        Fri, 22 Sep 2023 00:57:13 -0700 (PDT)
-Received: from myrica ([2a02:c7c:7290:b00:fd32:2b31:6755:400c])
-        by smtp.gmail.com with ESMTPSA id y12-20020adffa4c000000b0031f5f0d0be0sm3746610wrr.31.2023.09.22.00.57.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Sep 2023 00:57:13 -0700 (PDT)
-Date: Fri, 22 Sep 2023 08:57:19 +0100
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Robin Murphy <robin.murphy@arm.com>,
-	Niklas Schnelle <schnelle@linux.ibm.com>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	virtualization@lists.linux-foundation.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/2] iommu/virtio: Make use of ops->iotlb_sync_map
-Message-ID: <20230922075719.GB1361815@myrica>
-References: <20230918-viommu-sync-map-v2-0-f33767f6cf7a@linux.ibm.com>
- <20230918-viommu-sync-map-v2-1-f33767f6cf7a@linux.ibm.com>
- <ae7e513b-eb86-97e2-bed0-3cca91b8c959@arm.com>
- <20230919081519.GA3860249@myrica>
- <20230919144649.GT13795@ziepe.ca>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8E0D1DA49
+	for <iommu@lists.linux.dev>; Fri, 22 Sep 2023 08:11:43 +0000 (UTC)
+Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	(Authenticated sender: kholk11)
+	by madras.collabora.co.uk (Postfix) with ESMTPSA id 280926607258;
+	Fri, 22 Sep 2023 09:11:41 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+	s=mail; t=1695370301;
+	bh=my87UWSGR/4HhyI7T8dI3SDO9uJQh+kcmiCcSmRd+Ow=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=Rs4+uNsbKylFPbp1FCA63uzed7ePM8c/oKjNmjWOod/INxHWRQi+aFJfHlq87iutA
+	 gpVX1SaxgPcwYlD0nOeZ/AzrbrG2T7RgkWyuBBZCw7M2s8BIS1kxixJy3s0awFiMxn
+	 JV0Wv6F8C21RAjWI2c/MDv4w0+XaD2Hyoky/QZN/94zPehmXEa1gS4KUGvwn6/2cjW
+	 VWYGiiX0i7fQLwwoZwkUAm8HMSlZDwR7EPHvknM2qtnAvIHXxmJ0VuXAp+a21nVM6d
+	 o2ybOrxO68mjPFcaj2pooWuz3zdOaCtfw6C/ENx/mxBdBmHV9Tk1z+4B03NU8QE9u1
+	 MIM8VObinboxQ==
+Message-ID: <46987054-d763-15b1-7dc8-ae178fed6235@collabora.com>
+Date: Fri, 22 Sep 2023 10:11:38 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230919144649.GT13795@ziepe.ca>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.15.0
+Subject: Re: [PATCH] iommu/mediatek: Fix share pgtable for iova over 4GB
+Content-Language: en-US
+To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>
+Cc: Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
+ linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, Laura Nao <laura.nao@collabora.com>
+References: <20230819081443.8333-1-yong.wu@mediatek.com>
+From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20230819081443.8333-1-yong.wu@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Tue, Sep 19, 2023 at 11:46:49AM -0300, Jason Gunthorpe wrote:
-> On Tue, Sep 19, 2023 at 09:15:19AM +0100, Jean-Philippe Brucker wrote:
-> > On Mon, Sep 18, 2023 at 05:37:47PM +0100, Robin Murphy wrote:
-> > > > diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
-> > > > index 17dcd826f5c2..3649586f0e5c 100644
-> > > > --- a/drivers/iommu/virtio-iommu.c
-> > > > +++ b/drivers/iommu/virtio-iommu.c
-> > > > @@ -189,6 +189,12 @@ static int viommu_sync_req(struct viommu_dev *viommu)
-> > > >   	int ret;
-> > > >   	unsigned long flags;
-> > > > +	/*
-> > > > +	 * .iotlb_sync_map and .flush_iotlb_all may be called before the viommu
-> > > > +	 * is initialized e.g. via iommu_create_device_direct_mappings()
-> > > > +	 */
-> > > > +	if (!viommu)
-> > > > +		return 0;
-> > > 
-> > > Minor nit: I'd be inclined to make that check explicitly in the places where
-> > > it definitely is expected, rather than allowing *any* sync to silently do
-> > > nothing if called incorrectly. Plus then they could use
-> > > vdomain->nr_endpoints for consistency with the equivalent checks elsewhere
-> > > (it did take me a moment to figure out how we could get to .iotlb_sync_map
-> > > with a NULL viommu without viommu_map_pages() blowing up first...)
+Il 19/08/23 10:14, Yong Wu ha scritto:
+> In mt8192/mt8186, there is only one MM IOMMU that supports 16GB iova
+> space, which is shared by display, vcodec and camera. These two SoC use
+> one pgtable and have not the flag SHARE_PGTABLE, we should also keep
+> share pgtable for this case.
 > 
-> This makes more sense to me
+> In mtk_iommu_domain_finalise, MM IOMMU always share pgtable, thus remove
+> the flag SHARE_PGTABLE checking. Infra IOMMU always uses independent
+> pgtable.
 > 
-> Ultimately this driver should reach a point where every iommu_domain
-> always has a non-null domain->viommu because it will be set during
-> alloc.
-> 
-> But it can still have nr_endpoints == 0, doesn't it make sense to
-> avoid sync in this case?
-> 
-> (btw this driver is missing locking around vdomain->nr_endpoints)
+> Fixes: cf69ef46dbd9 ("iommu/mediatek: Fix two IOMMU share pagetable issue")
+> Reported-by: Laura Nao <laura.nao@collabora.com>
+> Closes: https://lore.kernel.org/linux-iommu/20230818154156.314742-1-laura.nao@collabora.com/
+> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+> ---
+> Base on next-20230818.
+> ---
+>   drivers/iommu/mtk_iommu.c | 9 ++++-----
+>   1 file changed, 4 insertions(+), 5 deletions(-)
 
-Yes, that's on my list
-
-> 
-> > They're not strictly equivalent: this check works around a temporary issue
-> > with the IOMMU core, which calls map/unmap before the domain is
-> > finalized.
-> 
-> Where? The above points to iommu_create_device_direct_mappings() but
-> it doesn't because the pgsize_bitmap == 0:
-
-__iommu_domain_alloc() sets pgsize_bitmap in this case:
-
-        /*
-         * If not already set, assume all sizes by default; the driver
-         * may override this later
-         */
-        if (!domain->pgsize_bitmap)
-                domain->pgsize_bitmap = bus->iommu_ops->pgsize_bitmap;
+Gentle ping for an important fix.
 
 Thanks,
-Jean
+Angelo
+
