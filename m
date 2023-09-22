@@ -1,187 +1,119 @@
-Received: from mail-qt1-f171.google.com (mail-qt1-f171.google.com [209.85.160.171])
+Received: from mail-ej1-f45.google.com (mail-ej1-f45.google.com [209.85.218.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 74EE941774
-	for <iommu@lists.linux.dev>; Fri, 22 Sep 2023 16:27:17 +0000 (UTC)
-Received: by mail-qt1-f171.google.com with SMTP id d75a77b69052e-41205469f4eso13891061cf.0
-        for <iommu@lists.linux.dev>; Fri, 22 Sep 2023 09:27:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1695400036; x=1696004836; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=KIMfIRUyRo38QcWwN/NLrw49quL7mRXAZqALVytIzPA=;
-        b=JMv+eRTyVw3Rclk8zbBqKvWMyZGZuSbuDuo5s5+VQBcjppv9QmrHk8wSE5x2+5Vqsx
-         cgrG5U5krG2eVwjvpSl/CIavREU+rjywxwE0e/8KrMW6abnUUPV5JWqGndUTk9/+9CsL
-         Ht+FxGz/4hUNpTJrHgUh2v4IeEogrgFRcC8t2EFPBEsxw8ynQEY9wjtBWsYFpdauRomO
-         kLNOOI4cZ4ErIw5obTsWwSNEdwx5syAhwB6axEZx75gDn3Ey4oTn92oR1UQxJvlr9mCV
-         pbB3XkUZ0KP1TcrTDvmrYqiF3cgYieONo8Ke7CphdDDnXVkvqPKoK0LUHj9r/hWx++yf
-         6Osw==
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E5AF3CD0D;
+	Fri, 22 Sep 2023 16:40:52 +0000 (UTC)
+Received: by mail-ej1-f45.google.com with SMTP id a640c23a62f3a-9adb9fa7200so615284566b.0;
+        Fri, 22 Sep 2023 09:40:52 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1695400036; x=1696004836;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=KIMfIRUyRo38QcWwN/NLrw49quL7mRXAZqALVytIzPA=;
-        b=bGAVo7MSa33C5q47rYEaZW6PzFwy0ptdSk01YEvlrWcJlq4uQ7grYW8P5OPWTNpq5K
-         3HEwpIO1o6y5sX4MVTDbpLGRQHMeITfnnTUxHMJOim3w2S3Z4M7JRyuzAl48dbM0t7OW
-         kmSdkZuOxzXthveyLeQ8C9KeqoiU1JTgN02pCJvwFFG40+bEuoUlj69ul/K4qlEw4GBB
-         G3UTiOdHqaBUkwOQaeDxkQIvogHER44KBjBcxdW2I79D37G5SZn6iOlHsJUJg1ygcQrL
-         vpFHlW+e3ZmWwfnlaVS2nAdCRkq+i+uhH0IHEDsBpq0icm6u7vR8yDmt3IUCIlIOPlrF
-         XBzA==
-X-Gm-Message-State: AOJu0Yybne9bGJCO5rndS/eG7b+9lo2JFxq/FnJNI9ej+mSeysIbsFTW
-	7RG+L47I7JlE1TdB6M6+AID6YQ==
-X-Google-Smtp-Source: AGHT+IHrRpYZK6H4zhpjDINCwImDGLSpKzbih7um8bbAruvRPEQN9Wtq+nGMybIYZj0RAXnHk3iVYg==
-X-Received: by 2002:ac8:7c56:0:b0:403:a662:a3c1 with SMTP id o22-20020ac87c56000000b00403a662a3c1mr3995742qtv.29.1695400036252;
-        Fri, 22 Sep 2023 09:27:16 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-26-201.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.26.201])
-        by smtp.gmail.com with ESMTPSA id gb6-20020a05622a598600b004108bebd1fcsm1560682qtb.24.2023.09.22.09.27.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Sep 2023 09:27:15 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1qjizq-000aGI-UW;
-	Fri, 22 Sep 2023 13:27:14 -0300
-Date: Fri, 22 Sep 2023 13:27:14 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Niklas Schnelle <schnelle@linux.ibm.com>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	virtualization@lists.linux-foundation.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/2] iommu/virtio: Make use of ops->iotlb_sync_map
-Message-ID: <20230922162714.GH13795@ziepe.ca>
-References: <20230918-viommu-sync-map-v2-0-f33767f6cf7a@linux.ibm.com>
- <20230918-viommu-sync-map-v2-1-f33767f6cf7a@linux.ibm.com>
- <ae7e513b-eb86-97e2-bed0-3cca91b8c959@arm.com>
- <20230919081519.GA3860249@myrica>
- <20230919144649.GT13795@ziepe.ca>
- <20230922075719.GB1361815@myrica>
- <20230922124130.GD13795@ziepe.ca>
- <900b644e-6e21-1038-2252-3dc86cbf0a32@arm.com>
+        d=1e100.net; s=20230601; t=1695400850; x=1696005650;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=oLMEZvzr2hDeQFoHwg/p7D4qUJztpTY+iNBV1OWqyi4=;
+        b=uueiCGULXR25DTMVnxHQz/KrUt+waBcqMuxzyLghi4pqYFlnACJWfm6q3c3vjGNoLI
+         08SAsHQhwGlJCyvo50afpwElcilljOQ7OIJKYLfwbsvirajHdlsBoJiGeJOrG5Uzm1JQ
+         Xl/xk9ZDp4Go9wzGUKbpLbp6eJ+klFc045rJlYYTS69uvc3YyJV4EAPBsbTtAOFjDBSa
+         OVWLPqHlmFNS5k6mHv3X4xi0FxtxfDAEsnss2IQaLQe2P1T653WEDai2z3mPvmQ75l0k
+         +DAluUiX9ywquVEyO0qp+nn8YQkQIoMJlzbM9TScpgZgqDYo6UwfnW07u/U8Wpvtb4e4
+         iC6A==
+X-Gm-Message-State: AOJu0Yw3v9hZWY7jXJ4yxAshh/LMMMTYucqb6RXUPHwQc+ZU1gpy+nNI
+	ZuYT1vhsAulFbYoCyMVR6uX+P2EMzsese8Ip
+X-Google-Smtp-Source: AGHT+IF+uA/lvlIQ8HKaL+Q5zwugz/95vPcBBSZwkjDZiBIj332DZvt1MLzRZ0U1NEh46WhufivKVQ==
+X-Received: by 2002:a17:907:75c4:b0:9a2:143e:a070 with SMTP id jl4-20020a17090775c400b009a2143ea070mr347123ejc.20.1695400850283;
+        Fri, 22 Sep 2023 09:40:50 -0700 (PDT)
+Received: from mail-ed1-f42.google.com (mail-ed1-f42.google.com. [209.85.208.42])
+        by smtp.gmail.com with ESMTPSA id v12-20020a170906564c00b0099ddc81903asm2939889ejr.221.2023.09.22.09.40.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 22 Sep 2023 09:40:49 -0700 (PDT)
+Received: by mail-ed1-f42.google.com with SMTP id 4fb4d7f45d1cf-51e28cac164so8611313a12.1;
+        Fri, 22 Sep 2023 09:40:49 -0700 (PDT)
+X-Received: by 2002:a05:6402:5c4:b0:530:8fdb:39c8 with SMTP id
+ n4-20020a05640205c400b005308fdb39c8mr4374304edx.15.1695400848925; Fri, 22 Sep
+ 2023 09:40:48 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <900b644e-6e21-1038-2252-3dc86cbf0a32@arm.com>
+References: <20230922-iommu-type-regression-v2-1-689b2ba9b673@marcan.st>
+In-Reply-To: <20230922-iommu-type-regression-v2-1-689b2ba9b673@marcan.st>
+From: Neal Gompa <neal@gompa.dev>
+Date: Fri, 22 Sep 2023 12:40:12 -0400
+X-Gmail-Original-Message-ID: <CAEg-Je8b-gJZDs5Q6n=XgU5xyPWiJ3utX9yf0DPN5bfLqUx4PA@mail.gmail.com>
+Message-ID: <CAEg-Je8b-gJZDs5Q6n=XgU5xyPWiJ3utX9yf0DPN5bfLqUx4PA@mail.gmail.com>
+Subject: Re: [PATCH REGRESSION v2] iommu/apple-dart: Handle DMA_FQ domains in attach_dev()
+To: Hector Martin <marcan@marcan.st>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>, 
+	Jerry Snitselaar <jsnitsel@redhat.com>, Joerg Roedel <jroedel@suse.de>, 
+	"Justin M. Forbes" <jforbes@fedoraproject.org>, iommu@lists.linux.dev, 
+	linux-kernel@vger.kernel.org, asahi@lists.linux.dev, stable@vger.kernel.org, 
+	regressions@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Fri, Sep 22, 2023 at 02:13:18PM +0100, Robin Murphy wrote:
-> On 22/09/2023 1:41 pm, Jason Gunthorpe wrote:
-> > On Fri, Sep 22, 2023 at 08:57:19AM +0100, Jean-Philippe Brucker wrote:
-> > > > > They're not strictly equivalent: this check works around a temporary issue
-> > > > > with the IOMMU core, which calls map/unmap before the domain is
-> > > > > finalized.
-> > > > 
-> > > > Where? The above points to iommu_create_device_direct_mappings() but
-> > > > it doesn't because the pgsize_bitmap == 0:
-> > > 
-> > > __iommu_domain_alloc() sets pgsize_bitmap in this case:
-> > > 
-> > >          /*
-> > >           * If not already set, assume all sizes by default; the driver
-> > >           * may override this later
-> > >           */
-> > >          if (!domain->pgsize_bitmap)
-> > >                  domain->pgsize_bitmap = bus->iommu_ops->pgsize_bitmap;
-> > 
-> > Dirver's shouldn't do that.
-> > 
-> > The core code was fixed to try again with mapping reserved regions to
-> > support these kinds of drivers.
-> 
-> This is still the "normal" code path, really; I think it's only AMD that
-> started initialising the domain bitmap "early" and warranted making it
-> conditional.
+On Fri, Sep 22, 2023 at 10:55=E2=80=AFAM Hector Martin <marcan@marcan.st> w=
+rote:
+>
+> Commit a4fdd9762272 ("iommu: Use flush queue capability") hid the
+> IOMMU_DOMAIN_DMA_FQ domain type from domain allocation. A check was
+> introduced in iommu_dma_init_domain() to fall back if not supported, but
+> this check runs too late: by that point, devices have been attached to
+> the IOMMU, and apple-dart's attach_dev() callback does not expect
+> IOMMU_DOMAIN_DMA_FQ domains.
+>
+> Change the logic so the IOMMU_DOMAIN_DMA codepath is the default,
+> instead of explicitly enumerating all types.
+>
+> Fixes an apple-dart regression in v6.5.
+>
+> Cc: regressions@lists.linux.dev
+> Cc: stable@vger.kernel.org
+> Suggested-by: Robin Murphy <robin.murphy@arm.com>
+> Fixes: a4fdd9762272 ("iommu: Use flush queue capability")
+> Signed-off-by: Hector Martin <marcan@marcan.st>
+> ---
+> Changes in v2:
+> - Fixed the issue in apple-dart instead of the iommu core, per Robin's
+>   suggestion.
+> - Link to v1: https://lore.kernel.org/r/20230922-iommu-type-regression-v1=
+-1-1ed3825b2c38@marcan.st
+> ---
+>  drivers/iommu/apple-dart.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
+>
+> diff --git a/drivers/iommu/apple-dart.c b/drivers/iommu/apple-dart.c
+> index 2082081402d3..0b8927508427 100644
+> --- a/drivers/iommu/apple-dart.c
+> +++ b/drivers/iommu/apple-dart.c
+> @@ -671,8 +671,7 @@ static int apple_dart_attach_dev(struct iommu_domain =
+*domain,
+>                 return ret;
+>
+>         switch (domain->type) {
+> -       case IOMMU_DOMAIN_DMA:
+> -       case IOMMU_DOMAIN_UNMANAGED:
+> +       default:
+>                 ret =3D apple_dart_domain_add_streams(dart_domain, cfg);
+>                 if (ret)
+>                         return ret;
+>
+> ---
+> base-commit: ce9ecca0238b140b88f43859b211c9fdfd8e5b70
+> change-id: 20230922-iommu-type-regression-25b4f43df770
+>
+> Best regards,
+> --
+> Hector Martin <marcan@marcan.st>
+>
 
-My main point was that iommu_create_device_direct_mappings() should
-fail for unfinalized domains, setting pgsize_bitmap to allow it to
-succeed is not a nice hack, and not necessary now.
+Looks good to me.
 
-What do you think about something like this to replace
-iommu_create_device_direct_mappings(), that does enforce things
-properly?
+Reviewed-by: Neal Gompa <neal@gompa.dev>
 
 
-static int resv_cmp(void *priv, const struct list_head *llhs,
-		    const struct list_head *lrhs)
-{
-	struct iommu_resv_region *lhs = list_entry(llhs, struct iommu_resv_region, list);
-	struct iommu_resv_region *rhs = list_entry(lrhs, struct iommu_resv_region, list);
-
-	if (lhs->start == rhs->start)
-		return 0;
-	if (lhs->start < rhs->start)
-		return -1;
-	return 1;
-}
-
-static int iommu_create_device_direct_mappings(struct iommu_domain *domain,
-					       struct device *dev)
-{
-	struct iommu_resv_region *entry;
-	struct iommu_resv_region *tmp;
-	struct list_head mappings;
-	struct list_head direct;
-	phys_addr_t cur = 0;
-	int ret = 0;
-
-	INIT_LIST_HEAD(&mappings);
-	INIT_LIST_HEAD(&direct);
-
-	iommu_get_resv_regions(dev, &mappings);
-
-	list_for_each_entry_safe(entry, tmp, &mappings, list) {
-		if (entry->type == IOMMU_RESV_DIRECT)
-			dev->iommu->require_direct = 1;
-
-		if ((domain->type & __IOMMU_DOMAIN_PAGING) &&
-		    (entry->type == IOMMU_RESV_DIRECT ||
-		     entry->type == IOMMU_RESV_DIRECT_RELAXABLE)) {
-			if (domain->geometry.aperture_start > entry->start ||
-			    domain->geometry.aperture_end == 0 ||
-			    (domain->geometry.aperture_end - 1) <
-				    (entry->start + entry->length - 1)) {
-				ret = -EINVAL;
-				goto out;
-			}
-			list_move(&entry->list, &direct);
-		}
-	}
-
-	if (list_empty(&direct))
-		goto out;
-
-	/*
-	 * FW can have overlapping ranges, sort the list by start address
-	 * and map any duplicated IOVA only once.
-	 */
-	list_sort(NULL, &direct, resv_cmp);
-	list_for_each_entry(entry, &direct, list) {
-		phys_addr_t start_pfn = entry->start / PAGE_SIZE;
-		phys_addr_t last_pfn =
-			(entry->length - 1 + entry->start) / PAGE_SIZE;
-
-		if (start_pfn < cur)
-			start_pfn = cur;
-
-		if (start_pfn <= last_pfn) {
-			ret = iommu_map(domain, start_pfn * PAGE_SIZE,
-					start_pfn * PAGE_SIZE,
-					(last_pfn - start_pfn + 1) * PAGE_SIZE,
-					entry->prot, GFP_KERNEL);
-			if (ret)
-				goto out;
-			cur = last_pfn + 1;
-		}
-	}
-
-out:
-	list_splice(&direct, &mappings);
-	iommu_put_resv_regions(dev, &mappings);
-
-	return ret;
-}
+--=20
+=E7=9C=9F=E5=AE=9F=E3=81=AF=E3=81=84=E3=81=A4=E3=82=82=E4=B8=80=E3=81=A4=EF=
+=BC=81/ Always, there's only one truth!
