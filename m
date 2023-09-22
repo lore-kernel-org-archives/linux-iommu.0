@@ -1,305 +1,170 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.136])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 831E4377
-	for <iommu@lists.linux.dev>; Fri, 22 Sep 2023 01:07:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1695344859; x=1726880859;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=KYRxsPZkdPGN4MD0B75y6lI6c7LYLscZmHIZ6RWU3l0=;
-  b=EmJPViKfcNSFqnau6WMmFMaqbsmfytVxSGH9EorbqCUTHcn7mzMXw01H
-   AeRCYbaGzV15PN+nnOkJs7GuXqvcTgTQHNcPdSMiYoiWscLUyq6M3++1R
-   YzbJF8OURG3PHPczGG2UxBiVuVgYkJg35/YNkwOzAi1lk3XL5rCb6CPmM
-   OWvK+l59kBMDGnkd+FnctoT7BTLGLi9xbf81o0e4tw+tPhPBKGuuSRppB
-   o9tQpS1OJia80Dp3k8J/RBSoZIA2o4MocrVgGMdP3N20slj0ffq81LCr/
-   d872rvm/3Hp/hQnNci2X4K3pIy0P4Ses5SOCyZqgNZLAUTfnvrlhIjMvf
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10840"; a="360095488"
-X-IronPort-AV: E=Sophos;i="6.03,167,1694761200"; 
-   d="scan'208";a="360095488"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Sep 2023 18:07:38 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10840"; a="776652715"
-X-IronPort-AV: E=Sophos;i="6.03,167,1694761200"; 
-   d="scan'208";a="776652715"
-Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
-  by orsmga008.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 21 Sep 2023 18:07:38 -0700
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.32; Thu, 21 Sep 2023 18:07:37 -0700
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.32 via Frontend Transport; Thu, 21 Sep 2023 18:07:37 -0700
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (104.47.57.173)
- by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.32; Thu, 21 Sep 2023 18:07:37 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=EQWAivzMDa//dgsdst0sSiRe1Uzzyk5/nCJIcWbdHLq5+OQ3Dgg/tNkRL3vU1G9XZmBFpobyd16vBNCvBeKLV0mzuLRm9cmh1h+H9HjgKeP03OHIVuuOTNkjeqTO7jR0il3+hIVjerH0RMu0YkMz6UvbjaLZ3rc50vRDALBxjiugdpJIeLi8NKmV8Z4WxpLWwxuzq1ADFQh6J6y4RgQCCBUOUedEwOvPqNL2uPfEhs3/TX1A8D8YQjf44ec9Uebj67GLgyTvuYClkA4+BNpUG/9W8me87LJPhLrwBN0fJJPEYjJEXBmwdqPqFOfV5MqNh5aCCjT5U06ou3+kuSo4sw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=t/Gy4h9lCi7km9TBWac0uofHc6Xwa14hyLZ1pZiNE5E=;
- b=F+WfQI0ciPkmJzgGNfbGWk0rw0mYcAnLPTOP8XaJUkYAekJ/nFAFtcDiXnUJtaM6yxlyPirTDXGD6nhbpyZh9XT7QRTb8XTNug3BJpk7iN7Eg1hH//i+eeIsP2N5G9wCwiBTjECv0Bg/PVWJYO4PcvQZDWAO7A0ccW8z11Qp/EsvzY61l3QlhrN84AQuCREQX6m+cMA9izmA+uNiieo7GGiBsFKyafSsZ6QfyYLxrAATKsI84kBcCcqxJW9Fn5lBayWIB5o5DX4byaSIlNQlZB6BadMO2AgF7F8xRrdNkQCrzFWfgZ6KDkDFq1O5Y7yCHzd8RAr+xW31vM3NrV04/A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from MW5PR11MB5881.namprd11.prod.outlook.com (2603:10b6:303:19d::14)
- by BL3PR11MB6433.namprd11.prod.outlook.com (2603:10b6:208:3b9::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6792.28; Fri, 22 Sep
- 2023 01:07:35 +0000
-Received: from MW5PR11MB5881.namprd11.prod.outlook.com
- ([fe80::6c46:eead:bf23:5d5c]) by MW5PR11MB5881.namprd11.prod.outlook.com
- ([fe80::6c46:eead:bf23:5d5c%4]) with mapi id 15.20.6792.026; Fri, 22 Sep 2023
- 01:07:35 +0000
-Message-ID: <40c82e24-cff3-1f96-b469-fbfd18238d5d@intel.com>
-Date: Fri, 22 Sep 2023 09:07:28 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Firefox/102.0 Thunderbird/102.15.1
-Subject: Re: [PATCH v4 5/6] iommu: Support mm PASID 1:n with sva domains
-To: Jason Gunthorpe <jgg@ziepe.ca>
-CC: Kevin Tian <kevin.tian@intel.com>, Lu Baolu <baolu.lu@linux.intel.com>,
-	Michael Shavit <mshavit@google.com>, Vasant Hegde <vasant.hegde@amd.com>,
-	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>
-References: <20230912125936.722348-1-tina.zhang@intel.com>
- <20230912125936.722348-6-tina.zhang@intel.com>
- <20230921233133.GB13795@ziepe.ca>
-Content-Language: en-US
-From: Tina Zhang <tina.zhang@intel.com>
-In-Reply-To: <20230921233133.GB13795@ziepe.ca>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SI2PR02CA0043.apcprd02.prod.outlook.com
- (2603:1096:4:196::12) To MW5PR11MB5881.namprd11.prod.outlook.com
- (2603:10b6:303:19d::14)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1153A377
+	for <iommu@lists.linux.dev>; Fri, 22 Sep 2023 01:16:44 +0000 (UTC)
+Received: from pps.filterd (m0279869.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 38M1EWNL007144;
+	Fri, 22 Sep 2023 01:16:17 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=qcppdkim1;
+ bh=9w/IvZDIHWszFH1Ek0ypivr8vKkPAhorWbAZ9pveNCw=;
+ b=Zl+gPP1bJrmAyIy4/jZ/Jw4HYqHOylLpyDbdOObaRRInCisgH40Jhp+R62JtW7Vwj23n
+ Ww0K2m/iXCHiaVzfHeNSK15IiMOBQWzh2IUElkjVp5xqu1wTsu7sVaiXsk6/YnBibziZ
+ Y/SKwVarI991Jvo1iqiaCVq3qPzv82ILTWlJ7I6M9wFHsYHNy1TiaEvtesW364JXLAnM
+ TC8PVU3LOGiHnOxfRHV46Axx1nWuKoiWqolFLbvMvxj+iuVygd9FEvhmKis6odMrHBFu
+ lLWlSsHmiqfaeKAWtC1T50lvbMJlRwuj5kRxkI6quyFlVtx44z5EpY9crErEiAynglnx NQ== 
+Received: from nalasppmta05.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3t8txpgnk8-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 22 Sep 2023 01:16:17 +0000
+Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
+	by NALASPPMTA05.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 38M1GFiF013645
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 22 Sep 2023 01:16:16 GMT
+Received: from [10.239.132.204] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.36; Thu, 21 Sep
+ 2023 18:16:07 -0700
+Message-ID: <e3391f32-0684-473e-8602-13293bd0f36d@quicinc.com>
+Date: Fri, 22 Sep 2023 09:16:05 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: MW5PR11MB5881:EE_|BL3PR11MB6433:EE_
-X-MS-Office365-Filtering-Correlation-Id: e54caf9c-23c1-4751-1052-08dbbb084e3e
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: lU8pZO2jQ4zRb5ir9HMGLeoff5N3noCQ1dWlba2ACyUQqMtx158bH+H2MaosrB9ycZq4OPeV4FbPMlLsqCy9Kwj+sP2eM7lU89RkDurZ+NCg11eFiMZtK3NrvPH+8Z2F2TcO37AO918ZzNIQ6ob3TP7IDSz0smhFsQliF0o6MFH5pME3rGfcnlpZjEaY1lG1dV9zvqtPhwHlnuIXJh7eqSwQinYJ/cE0Tcrfp4UDz+Y9y8MpPIMklmJcR4tiIFKS53RSsuH4HcED74KYzOj9GHBndFeNz8utEXRw+KrrVFpClANuCQrb4uXOBwoynoym0ZCWoQOOLT4+nN3w4vRrTAULd0vIpqVj01uNZcRhU6t2JktvZ0xqkYTI51XpWTiuPfklZEDaKIEKrlcoSJ4mlX3PJn0uQA7ur8PRY5NEQybFUrKfVt39s3fI6ZNNU7L7D9mGMq/Q7eXCj4+xKG+FFogdHnpP10NGLPDrm9OExQGNtiS0ddap479Jpf9GOayd1zb0Ku+xXML2iQ9sWpZ3rbyshNaR+2SImrzEOxD1jred+8RDECjT99HeJ+QlAG+PbJfkwxyaZLL80sabJpXb+8slhVVUNVa/r6FpFjoC3h7kFnrh3LgCBOHUyWlmgIE7vYMuAk0qu6B0vUnBdRnPFA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW5PR11MB5881.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(39860400002)(366004)(376002)(136003)(396003)(346002)(451199024)(186009)(1800799009)(6666004)(6512007)(53546011)(6486002)(36756003)(6506007)(82960400001)(31696002)(83380400001)(86362001)(38100700002)(2616005)(66946007)(54906003)(66476007)(6916009)(66556008)(41300700001)(26005)(316002)(8676002)(4326008)(2906002)(5660300002)(44832011)(8936002)(31686004)(478600001)(45980500001)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?Tm5mMzREZncxVVgxdHFzVk5pb1A1L0hLRGxDaWZlNkpnbjQyc0ZrQmphSGZv?=
- =?utf-8?B?UHp4OC9jMXZHaXFEdmlOU3o1dWt6QnEvWnZuU3o1V3FyMTNab1ZNUHIxUGk2?=
- =?utf-8?B?TW05aElENWRFaGpRQ0VIVGFMWitLQ0hHZDg3Mm9jQjRtK2pOcmdVbmw2Z0dK?=
- =?utf-8?B?YWpMbzB4TEdpQWhnLzBxM0wyamRmMytwTDFFTFBmVDdYbnNQM2JWbDBvUHJE?=
- =?utf-8?B?YXI2TTFZamZFSys3ZEVNSS9KRmlQaVlpa1FVQW5YR0JHTko0d3V2M28wOFlL?=
- =?utf-8?B?d3AvZm1BVWhrdWlmeHdMOFFoeURvMEpocXA0UTNvVXNuZWlVYlI2QXVJSkRa?=
- =?utf-8?B?VWNldWtON2xSUk5lWGRXeDYrMEpzV3B6U3Bob1JFbzgvRm5jSXBBTUhYMjZC?=
- =?utf-8?B?aGRrRVRqZ2doY29WREQ3RVZQa2Jmai9xSStjNFJIRVV6dHF6YWJuTEY0TExJ?=
- =?utf-8?B?WGQrTjk3Y24rMVduTUM4UllPaUJlamJHaG95bmxIUjdhcWVyZzhNTitiYVRp?=
- =?utf-8?B?VHkzT0NYWDBUOERzMkgramN0eEd6c3R3bUhhL3NmUHVrTE9tZHV1b2w3dWRF?=
- =?utf-8?B?djNNWFFzSUJiRUk3YmZhK3lqYVBoQWVZTVd4UUQ5K1g1YWxJN3hSS3ZzNFVQ?=
- =?utf-8?B?Z2s2cVkrNFNNRW9ZblZUV3RLZkhLdGtrSUlDSE1kRzJlaXdvS21hR1A5dE1v?=
- =?utf-8?B?SVZxQS9XZmV3Szc3RmlGbXN2bjdaVVhEbUhwQ1hXTGN3R1l1YXRzSDF6OXly?=
- =?utf-8?B?My9EaVNVU2tSeXFZUXdRSUNlcWpiYVBCTjBYM0l5c2ZLc2hYV1UwOVRQK3Ra?=
- =?utf-8?B?UWVLS0hKWWJJeHNlUGZscTdwQ09mMS9HNCsreTFIcFQ3Ym5pd3ZEaXZKUTh5?=
- =?utf-8?B?QnlrTi91bWxER0JpYllObkFvQ3pRdlBBbHBHYWtHL0JCKyswWVZzVFAzcjJt?=
- =?utf-8?B?RHp6bmxsU2VXQ0U2eStzcjdabjQ5eEpTZFIzODBtSW9HWFJ0YmhyQzhpMHhH?=
- =?utf-8?B?UnRSa0ppTlpRTmtKK2hUQ2RsS3g0TWNzT1htaVovT2g0RHowa0xIRlhOdmF3?=
- =?utf-8?B?dDRzTVovQ3J0R1NPVlUvRHRvcWQzQkxQQ2E2NkpzOG9OcnVkWFk4OXd3WGVP?=
- =?utf-8?B?TGxVL3pLZGlhSm1sZzB0eXgwckJ2VWdueVppeG1Randpc09kb2xxbE11RDFs?=
- =?utf-8?B?QjdpQXJydWliL0d2aG1NR1FOM3gxL2VLdkl6OExmMmRlejZGZXFHbUovMTVO?=
- =?utf-8?B?YUlpYWJKdWc3WnpRYWRSaSszTndsQmJ4eHJiaVlaL0NiS1NMa0h4eHcram51?=
- =?utf-8?B?NGZnQ281WnpsM3EzTXdOdEI3RmFjNjBpNnVMcnY2YTRHUWJrRVlob2VlZmhk?=
- =?utf-8?B?NU5QM0N4UDdSWDNzRXhjek5VbDAyMXk4NjVKaXJmMW9vbmJCS3lWMTRyVnYv?=
- =?utf-8?B?bzNvNXUxdEVSZFlUdUZxS0liLzN4NXV5d2RsZTBkOGswM1JYN3l0WTZScXUx?=
- =?utf-8?B?Nk45MDRadS84R3lWRXJRNms1djNVK3ZSa2RybkNBQUp2My9abjRDVm8zeVB0?=
- =?utf-8?B?V3VWcVJrWUJkN3duVjJ1OW1IVGp0VHptRG5SZEZlOUJzT1dubTNCZW56MkN4?=
- =?utf-8?B?QmFOS2lFczVLSW1oUUwzYjdNbWp0RlB2N0ZEellpZ3lITFpuL1lsOXhvT1hD?=
- =?utf-8?B?RGo5b21tN1FFNnBNQlV6ZFV4SXowWk42a1Y0akp5VlJPa1lzUThiaUZvcFBv?=
- =?utf-8?B?dkp1M2Z4N2ZKZlNxODJkdXZtRE5ZZ2wrNWJieEx2dUx5c3h4Tjh2d2NaZmt2?=
- =?utf-8?B?TlFzSFZkZEpKb2RXNGJ1V1RNcERHaW5SUVNPWkdXdXg4dVZTZjNmeFVaaDVI?=
- =?utf-8?B?Q0cvS2hSbEFTNmNkQWJoWVVVZk00L0cvRzFyeEp4L2FPSEc1NDFacXFaUjBn?=
- =?utf-8?B?ZDdwVDV1bExuQXNtbS9SVFlDRW1GaVNWa0h0S0pBWi9sSkxTY3l3Q1ZnTEdw?=
- =?utf-8?B?RWZ2a0xoaGdpQWhYeE9sUmhZS2tYRWQrT0FqQTdyTnV2TGtId0tOdEJkQjVs?=
- =?utf-8?B?dEUrd3N3Z0ZvVTkwZTMrekNHS3NzQlVCZHhvTHRRM2FxSlAvMHQrUS84Q3li?=
- =?utf-8?Q?8+bJjSPgsPxe/+TUeuwbaMNX9?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: e54caf9c-23c1-4751-1052-08dbbb084e3e
-X-MS-Exchange-CrossTenant-AuthSource: MW5PR11MB5881.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Sep 2023 01:07:35.2545
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: QljY4W6NJMiy3p8L4HzyV2Touha8vGWE93NxlwuQfr/Ahbd++hX4sAHnfzLsWFGAOsOQmcVH1E8Y+0rtqrL3bQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL3PR11MB6433
-X-OriginatorOrg: intel.com
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 5/8] arm64: dts: qcom: sm4450: Add apps_rsc and cmd_db
+ node
+To: Bjorn Andersson <andersson@kernel.org>
+CC: <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
+        <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
+        <conor+dt@kernel.org>, <agross@kernel.org>, <konrad.dybcio@linaro.org>,
+        <catalin.marinas@arm.com>, <geert+renesas@glider.be>, <arnd@arndb.de>,
+        <neil.armstrong@linaro.org>, <nfraprado@collabora.com>,
+        <rafal@milecki.pl>, <peng.fan@nxp.com>,
+        <linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-msm@vger.kernel.org>, <quic_tsoni@quicinc.com>,
+        <quic_shashim@quicinc.com>, <quic_kaushalk@quicinc.com>,
+        <quic_tdas@quicinc.com>, <quic_tingweiz@quicinc.com>,
+        <quic_aiquny@quicinc.com>, <kernel@quicinc.com>,
+        Ajit Pandey <quic_ajipan@quicinc.com>
+References: <20230915021509.25773-1-quic_tengfan@quicinc.com>
+ <20230915021509.25773-7-quic_tengfan@quicinc.com>
+ <kk3xwrq6d7jpkoti2b4lg4hwqfoyqilvf7cp3tuccfmhdj57rf@hicfde4whvzm>
+From: Tengfei Fan <quic_tengfan@quicinc.com>
+In-Reply-To: <kk3xwrq6d7jpkoti2b4lg4hwqfoyqilvf7cp3tuccfmhdj57rf@hicfde4whvzm>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: pkGtoYlBqaxvEB2KOcQGLRxJAq0e2MYx
+X-Proofpoint-GUID: pkGtoYlBqaxvEB2KOcQGLRxJAq0e2MYx
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.267,Aquarius:18.0.980,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2023-09-22_01,2023-09-21_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 spamscore=0
+ phishscore=0 impostorscore=0 malwarescore=0 adultscore=0 bulkscore=0
+ clxscore=1015 suspectscore=0 lowpriorityscore=0 priorityscore=1501
+ mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2309180000 definitions=main-2309220010
 
-Hi Jason,
 
-On 9/22/23 07:31, Jason Gunthorpe wrote:
-> On Tue, Sep 12, 2023 at 08:59:35PM +0800, Tina Zhang wrote:
->> diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
->> index 0f956ecd0c9b..79779bbef653 100644
->> --- a/drivers/iommu/iommu-sva.c
->> +++ b/drivers/iommu/iommu-sva.c
->> @@ -15,6 +15,7 @@ static DEFINE_MUTEX(iommu_sva_lock);
->>   static int iommu_sva_alloc_pasid(struct mm_struct *mm, struct device *dev)
->>   {
->>   	ioasid_t pasid;
->> +	struct iommu_mm_data *iommu_mm;
->>   	int ret = 0;
+
+在 9/20/2023 11:49 AM, Bjorn Andersson 写道:
+> On Fri, Sep 15, 2023 at 10:15:06AM +0800, Tengfei Fan wrote:
+>> From: Ajit Pandey <quic_ajipan@quicinc.com>
+>>
+>> Add apps_rsc node and cmd_db memory region for sm4450.
+>>
+>> Signed-off-by: Ajit Pandey <quic_ajipan@quicinc.com>
+>> Signed-off-by: Tengfei Fan <quic_tengfan@quicinc.com>
+>> ---
+>>   arch/arm64/boot/dts/qcom/sm4450.dtsi | 34 ++++++++++++++++++++++++++++
+>>   1 file changed, 34 insertions(+)
+>>
+>> diff --git a/arch/arm64/boot/dts/qcom/sm4450.dtsi b/arch/arm64/boot/dts/qcom/sm4450.dtsi
+>> index c4e5b33f5169..0d1d39197d77 100644
+>> --- a/arch/arm64/boot/dts/qcom/sm4450.dtsi
+>> +++ b/arch/arm64/boot/dts/qcom/sm4450.dtsi
+>> @@ -5,6 +5,7 @@
 >>   
->>   	if (!arch_pgtable_dma_compat(mm))
->> @@ -28,12 +29,22 @@ static int iommu_sva_alloc_pasid(struct mm_struct *mm, struct device *dev)
->>   		goto out;
->>   	}
+>>   #include <dt-bindings/gpio/gpio.h>
+>>   #include <dt-bindings/interrupt-controller/arm-gic.h>
+>> +#include <dt-bindings/soc/qcom,rpmh-rsc.h>
 >>   
->> +	iommu_mm = kzalloc(sizeof(struct iommu_mm_data), GFP_KERNEL);
->> +	if (!iommu_mm) {
->> +		ret = -ENOMEM;
->> +		goto out;
->> +	}
->> +
->>   	pasid = iommu_alloc_global_pasid(dev);
->>   	if (pasid == IOMMU_PASID_INVALID) {
->> +		kfree(iommu_mm);
->>   		ret = -ENOSPC;
->>   		goto out;
->>   	}
->> -	mm->pasid = pasid;
->> +	iommu_mm->pasid = pasid;
->> +	INIT_LIST_HEAD(&iommu_mm->sva_domains);
->> +	mm->iommu_mm = iommu_mm;
->> +
->>   	ret = 0;
->>   out:
->>   	mutex_unlock(&iommu_sva_lock);
->> @@ -73,16 +84,12 @@ struct iommu_sva *iommu_sva_bind_device(struct device *dev, struct mm_struct *mm
->>   
->>   	mutex_lock(&iommu_sva_lock);
->>   	/* Search for an existing domain. */
->> -	domain = iommu_get_domain_for_dev_pasid(dev, mm_get_pasid(mm),
->> -						IOMMU_DOMAIN_SVA);
->> -	if (IS_ERR(domain)) {
->> -		ret = PTR_ERR(domain);
->> -		goto out_unlock;
->> -	}
->> -
->> -	if (domain) {
->> -		domain->users++;
->> -		goto out;
->> +	list_for_each_entry(domain, &mm->iommu_mm->sva_domains, next) {
->> +		ret = iommu_attach_device_pasid(domain, dev, mm_get_pasid(mm));
->> +		if (!ret) {
->> +			domain->users++;
->> +			goto out;
->> +		}
->>   	}
->>   
->>   	/* Allocate a new domain and set it on device pasid. */
->> @@ -96,6 +103,8 @@ struct iommu_sva *iommu_sva_bind_device(struct device *dev, struct mm_struct *mm
->>   	if (ret)
->>   		goto out_free_domain;
->>   	domain->users = 1;
->> +	list_add(&domain->next, &mm->iommu_mm->sva_domains);
->> +
->>   out:
->>   	mutex_unlock(&iommu_sva_lock);
->>   	handle->dev = dev;
->> @@ -128,8 +137,9 @@ void iommu_sva_unbind_device(struct iommu_sva *handle)
->>   	struct device *dev = handle->dev;
->>   
->>   	mutex_lock(&iommu_sva_lock);
->> +	iommu_detach_device_pasid(domain, dev, pasid);
->>   	if (--domain->users == 0) {
->> -		iommu_detach_device_pasid(domain, dev, pasid);
->> +		list_del(&domain->next);
->>   		iommu_domain_free(domain);
->>   	}
->>   	mutex_unlock(&iommu_sva_lock);
->> @@ -209,4 +219,5 @@ void mm_pasid_drop(struct mm_struct *mm)
->>   		return;
->>   
->>   	iommu_free_global_pasid(mm_get_pasid(mm));
->> +	kfree(mm->iommu_mm);
->>   }
->> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
->> index b9c9f14a95cc..c61bc45d5a82 100644
->> --- a/include/linux/iommu.h
->> +++ b/include/linux/iommu.h
->> @@ -109,6 +109,11 @@ struct iommu_domain {
->>   		struct {	/* IOMMU_DOMAIN_SVA */
->>   			struct mm_struct *mm;
->>   			int users;
->> +			/*
->> +			 * Next iommu_domain in mm->iommu_mm->sva-domains list
->> +			 * protected by iommu_sva_lock.
->> +			 */
->> +			struct list_head next;
+>>   / {
+>>   	interrupt-parent = <&intc>;
+>> @@ -328,6 +329,18 @@
 >>   		};
 >>   	};
->>   };
->> @@ -1186,17 +1191,13 @@ static inline bool tegra_dev_iommu_get_stream_id(struct device *dev, u32 *stream
->>   }
 >>   
->>   #ifdef CONFIG_IOMMU_SVA
->> -static inline void mm_pasid_init(struct mm_struct *mm)
->> -{
->> -	mm->pasid = IOMMU_PASID_INVALID;
->> -}
->>   static inline bool mm_valid_pasid(struct mm_struct *mm)
->>   {
->> -	return mm->pasid != IOMMU_PASID_INVALID;
->> +	return mm->iommu_mm ? true : false;
->>   }
+>> +	reserved_memory: reserved-memory {
+>> +		#address-cells = <2>;
+>> +		#size-cells = <2>;
+>> +		ranges;
+>> +
+>> +		aop_cmd_db_mem: cmd-db@80860000 {
+>> +			compatible = "qcom,cmd-db";
+>> +			reg = <0x0 0x80860000 0x0 0x20000>;
+>> +			no-map;
+>> +		};
+>> +	};
+>> +
+>>   	soc: soc@0 {
+>>   		#address-cells = <2>;
+>>   		#size-cells = <2>;
+>> @@ -335,6 +348,27 @@
+>>   		dma-ranges = <0 0 0 0 0x10 0>;
+>>   		compatible = "simple-bus";
+>>   
+>> +		apps_rsc: rsc@17a00000 {
+>> +			compatible = "qcom,rpmh-rsc";
+>> +			reg = <0 0x17a00000 0 0x10000>,
 > 
-> HUm this isn't locked very nicely.
+> As your later patch shows, and Krzysztof pointed out, the sort order is
+> wrong here (sort nodes under /soc by address).
+I will ajdust this sort order.
 > 
-> Above do
+>> +			      <0 0x17a10000 0 0x10000>,
+>> +			      <0 0x17a20000 0 0x10000>;
+>> +			reg-names = "drv-0", "drv-1", "drv-2";
+>> +			interrupts = <GIC_SPI 3 IRQ_TYPE_LEVEL_HIGH>,
+>> +				     <GIC_SPI 4 IRQ_TYPE_LEVEL_HIGH>,
+>> +				     <GIC_SPI 5 IRQ_TYPE_LEVEL_HIGH>;
+>> +			label = "apps_rsc";
+>> +			qcom,tcs-offset = <0xd00>;
+>> +			qcom,drv-id = <2>;
+>> +			qcom,tcs-config = <ACTIVE_TCS    2>, <SLEEP_TCS     3>,
+>> +					  <WAKE_TCS      3>, <CONTROL_TCS   0>;
 > 
-> smp_store_release(&mm->iommu_mm, iommu_mm);
+> Please confirm that you indeed want 0 CONTROL_TCSs.
 > 
-> And then do
+> Thanks,
+> Bjorn
+Hi Bjorn,
+yes, I confirmed this from internal power team, CONTROL_TCS with 0 is ok.
 > 
->    return READ_ONCE(mm->iommu_mm)
-Good suggestion. Thanks.
+>> +			power-domains = <&CLUSTER_PD>;
+>> +
+>> +			apps_bcm_voter: bcm-voter {
+>> +				compatible = "qcom,bcm-voter";
+>> +			};
+>> +		};
+>> +
+>>   		tcsr_mutex: hwlock@1f40000 {
+>>   			compatible = "qcom,tcsr-mutex";
+>>   			reg = <0x0 0x01f40000 0x0 0x40000>;
+>> -- 
+>> 2.17.1
+>>
 
-> 
-> (no need for ternaries with bools, compiler generates it automatically)
-> 
-> 
->>   static inline u32 mm_get_pasid(struct mm_struct *mm)
->>   {
->> -	return mm->pasid;
->> +	return mm->iommu_mm ? mm->iommu_mm->pasid : IOMMU_PASID_INVALID;
->>   }
-> 
-> Then this should be
-> 
-> struct iommu_mm_data *iommu_mm = READ_ONCE(mm->iommu_mm);
-> 
-> if (!iommu_mm)
->     return IOMMU_PASID_INVALID;
-> return iommu_mm->pasid;
-> 
-> Keeping in mind that the kfree(mm->iommu_mm) being placed in the
-> mm_drop is critical to this working safely.
-Right. Thanks.
-
-
-Regards,
--Tina
-> 
-> Otherwise the logic looks OK.
-> 
-> Jason
-> 
+-- 
+Thx and BRs,
+Tengfei Fan
