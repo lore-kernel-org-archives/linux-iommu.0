@@ -1,119 +1,147 @@
-Received: from mail-ej1-f45.google.com (mail-ej1-f45.google.com [209.85.218.45])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2072.outbound.protection.outlook.com [40.107.244.72])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E5AF3CD0D;
-	Fri, 22 Sep 2023 16:40:52 +0000 (UTC)
-Received: by mail-ej1-f45.google.com with SMTP id a640c23a62f3a-9adb9fa7200so615284566b.0;
-        Fri, 22 Sep 2023 09:40:52 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1695400850; x=1696005650;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=oLMEZvzr2hDeQFoHwg/p7D4qUJztpTY+iNBV1OWqyi4=;
-        b=uueiCGULXR25DTMVnxHQz/KrUt+waBcqMuxzyLghi4pqYFlnACJWfm6q3c3vjGNoLI
-         08SAsHQhwGlJCyvo50afpwElcilljOQ7OIJKYLfwbsvirajHdlsBoJiGeJOrG5Uzm1JQ
-         Xl/xk9ZDp4Go9wzGUKbpLbp6eJ+klFc045rJlYYTS69uvc3YyJV4EAPBsbTtAOFjDBSa
-         OVWLPqHlmFNS5k6mHv3X4xi0FxtxfDAEsnss2IQaLQe2P1T653WEDai2z3mPvmQ75l0k
-         +DAluUiX9ywquVEyO0qp+nn8YQkQIoMJlzbM9TScpgZgqDYo6UwfnW07u/U8Wpvtb4e4
-         iC6A==
-X-Gm-Message-State: AOJu0Yw3v9hZWY7jXJ4yxAshh/LMMMTYucqb6RXUPHwQc+ZU1gpy+nNI
-	ZuYT1vhsAulFbYoCyMVR6uX+P2EMzsese8Ip
-X-Google-Smtp-Source: AGHT+IF+uA/lvlIQ8HKaL+Q5zwugz/95vPcBBSZwkjDZiBIj332DZvt1MLzRZ0U1NEh46WhufivKVQ==
-X-Received: by 2002:a17:907:75c4:b0:9a2:143e:a070 with SMTP id jl4-20020a17090775c400b009a2143ea070mr347123ejc.20.1695400850283;
-        Fri, 22 Sep 2023 09:40:50 -0700 (PDT)
-Received: from mail-ed1-f42.google.com (mail-ed1-f42.google.com. [209.85.208.42])
-        by smtp.gmail.com with ESMTPSA id v12-20020a170906564c00b0099ddc81903asm2939889ejr.221.2023.09.22.09.40.49
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 22 Sep 2023 09:40:49 -0700 (PDT)
-Received: by mail-ed1-f42.google.com with SMTP id 4fb4d7f45d1cf-51e28cac164so8611313a12.1;
-        Fri, 22 Sep 2023 09:40:49 -0700 (PDT)
-X-Received: by 2002:a05:6402:5c4:b0:530:8fdb:39c8 with SMTP id
- n4-20020a05640205c400b005308fdb39c8mr4374304edx.15.1695400848925; Fri, 22 Sep
- 2023 09:40:48 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4A84CA48;
+	Fri, 22 Sep 2023 17:08:03 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=hXG7vGImCBJ0Wen5LyeYG45kRPnYtVf3N3usXd4WPJ5+Zw4l9sNIj+XIL2clas3fKzdHBpb5bDrIifppB70puFxYjxHeuKAZBIOVKUeHbjawNN4gNeLykcTeVm/4/o3DPNfw+8nmcHEP8ljd0svZq/52N9egHzrBBqEndzQ9d+5FgKO/ajCu8kPBkr61c+Ppc1GqUyq1A6qGnMx2t5MlorYQpbQff9C8SblcTcTCp/gRF+zBAQxLxW2GofFngDhCJS0WUgboAqiFlEuqucZB/unzMu74/i7C/YisDfGvazQcwp7gkiubkUuM/rjehXckupl2MkFIkSU8ibJXWJbqjg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=FMGSMhE4LPGfp9KmYnExkWeWRJfmg8ZX2jadHiHo/x4=;
+ b=Yq9vy5ZZrlH3B53O+8qsQrkf1RZenzSHvdEzxKbh8lZoXP3MDRvoJcqOy86gc+IheBYSUS6U8i1bCbBE2ibYKYLJi8KW1H0cfR19+sznemcHVxCERyWvH4yQ+QP3i9gko+q3NZAl7XEZ7oPEHJgED0J6OjHcjpGDRRDOz46jCrV3hAdgg6ILM/OqZfP17UoG7BGxX9GZ5u/QlqIZ15Ra9fWvC8fun8BghJYH7mYHo91ZckDdryfQz0FwfWtJTAPIoBkl1FnbicwFLlou8o1pYY3uCNNsseKEdMttS49QLomlHI1jpQqSPsOCEe84li1kxzh3VQp2wvCy7HTS//rOsA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=FMGSMhE4LPGfp9KmYnExkWeWRJfmg8ZX2jadHiHo/x4=;
+ b=b3mDGcHgG1w3mOxLa3K156Ge3kPjrV2+WOUmDFT6RJOuLurVnviTjWvCRhhZssVrVd7SWMO+6pmz63Q2kLRxAZYLCO0psCuR9FJAjmnmswiFlwXciUv8z9nbsWieFHQNqRsIfbRCrdQuvrQ3L/Rt8nLO+TDSGBQc8VO53ONq3E9KcT/h3H1bUYTCn+ZKRhM0hQxWQmCWXcQ/6HPxPHyAkLV5ZzUTVBJQfq8tmwJVTTtmuBnf0gIjAVpYV5Lyfz/4WV8L5UYyL9Z/hYSLpZf6q/dpZNigWT4yL66pe1Gwb47HWsxY1wqduzwmvWh/VdolGmRzWn8M4hIdK6ZpSB11iw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by LV3PR12MB9188.namprd12.prod.outlook.com (2603:10b6:408:19b::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6792.23; Fri, 22 Sep
+ 2023 17:08:01 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::faf:4cd0:ae27:1073]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::faf:4cd0:ae27:1073%6]) with mapi id 15.20.6792.026; Fri, 22 Sep 2023
+ 17:08:01 +0000
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+	asahi@lists.linux.dev,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Christophe Leroy <christophe.leroy@csgroup.eu>,
+	David Woodhouse <dwmw2@infradead.org>,
+	iommu@lists.linux.dev,
+	Joerg Roedel <joro@8bytes.org>,
+	Kevin Tian <kevin.tian@intel.com>,
+	linux-arm-kernel@lists.infradead.org,
+	linuxppc-dev@lists.ozlabs.org,
+	Hector Martin <marcan@marcan.st>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Sven Peter <sven@svenpeter.dev>,
+	Will Deacon <will@kernel.org>
+Subject: [PATCH 3/8] iommu/vt-d: Use ops->blocked_domain
+Date: Fri, 22 Sep 2023 14:07:54 -0300
+Message-ID: <3-v1-8060f06462cc+c0a39-dart_paging_jgg@nvidia.com>
+In-Reply-To: <0-v1-8060f06462cc+c0a39-dart_paging_jgg@nvidia.com>
+References:
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: YQBP288CA0011.CANP288.PROD.OUTLOOK.COM
+ (2603:10b6:c01:6a::22) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20230922-iommu-type-regression-v2-1-689b2ba9b673@marcan.st>
-In-Reply-To: <20230922-iommu-type-regression-v2-1-689b2ba9b673@marcan.st>
-From: Neal Gompa <neal@gompa.dev>
-Date: Fri, 22 Sep 2023 12:40:12 -0400
-X-Gmail-Original-Message-ID: <CAEg-Je8b-gJZDs5Q6n=XgU5xyPWiJ3utX9yf0DPN5bfLqUx4PA@mail.gmail.com>
-Message-ID: <CAEg-Je8b-gJZDs5Q6n=XgU5xyPWiJ3utX9yf0DPN5bfLqUx4PA@mail.gmail.com>
-Subject: Re: [PATCH REGRESSION v2] iommu/apple-dart: Handle DMA_FQ domains in attach_dev()
-To: Hector Martin <marcan@marcan.st>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>, 
-	Jerry Snitselaar <jsnitsel@redhat.com>, Joerg Roedel <jroedel@suse.de>, 
-	"Justin M. Forbes" <jforbes@fedoraproject.org>, iommu@lists.linux.dev, 
-	linux-kernel@vger.kernel.org, asahi@lists.linux.dev, stable@vger.kernel.org, 
-	regressions@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|LV3PR12MB9188:EE_
+X-MS-Office365-Filtering-Correlation-Id: a45cc70c-28ff-4074-0d59-08dbbb8e7a13
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	e9pd9KQ9wvHM0zvGvfapYNpQalWB01EgXQvt5alen8Vgw5M3av4opuGh/6kME0dpXgTo1TJEAEct9gdJh+SeRCjIDrNNBpveFvcINkqrtrxCLaYFTNX9OHJRd+SdB9nfBgtaJoMdCU4ROp/LpiuOkhgF0W/qSJXv1zdeNFfEuM/q+oBLb+BCP3x7Fc/08oI8uKp21341YuL2v3JIf3fRykfo58ZAUZZ2VY7W9a5WAWgV73EYM3NEQT0jVwJ9y/d808+1tump/gnDB1N4c1RmrrGZivdujYMH0yewVo7bKK6o6yF0l4C7m6oW1gSkg1j8YN3l6QYgAuURnIertcdBu7eEBpmZebu3DkErtbug4bw0c+P60v1SxCIOFXfZMuGm/mAbYR8ixsQGAbIzHPM7QfdN25PBghnByXyrjvviL+LsGG48HNkc0djRKyuyaacFzjfhl6KoCyxGcze51DMkGtANRVXdWva2TfcmYeLGcuRtE9Wl1a1ywhIVdwFGZQ0/SSWyR8alxkYGowTk1B3R9+EwPxMCpkys+t0tIIy7F6OSgOpApybJWQ2DbfPi2fd4T2Wn1yruynjW13rwdZKMZo+JZzqwqZcguM+1erO2zecEUkSYj7uD1RMr8YEUqbGw
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(136003)(366004)(396003)(376002)(39860400002)(346002)(186009)(1800799009)(451199024)(921005)(26005)(8936002)(2616005)(8676002)(15650500001)(7416002)(83380400001)(2906002)(36756003)(4744005)(86362001)(6486002)(6506007)(478600001)(6666004)(5660300002)(38100700002)(6512007)(66946007)(110136005)(41300700001)(66556008)(316002)(66476007)(4216001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?sZ4ST7THrgkBvQniSEIL2y5QCnSNTDpb3sgZHK5IHLWtd0g2T/m0ZukZO3zO?=
+ =?us-ascii?Q?onKTXaJQqd/SZ2VLvtnwepyR1CekNLGEcXsbFZ3tmrrFO1YpWPsJH47bwv26?=
+ =?us-ascii?Q?eDPAhCm71H/u99tWKGtNtJRvcHorBPCJCmjmeylWB+MgCumHseoG7MXtHAoQ?=
+ =?us-ascii?Q?9hQ4XDjZmfa3TGJMRSEQeD0TREQjyv30iG4qgvNISioW8TBYIlW9bXV01cOE?=
+ =?us-ascii?Q?apuhka2U+EXUUIj9SvxqC/8s5aM8Nj71QLbSYhfr9f0+idxU+HAM2EsHRNMr?=
+ =?us-ascii?Q?YbE8fcglKgRfk+LvfNt5KrVxN8TqtdiGItpCAiQ7Ni02+mBX76G+OkanqKVZ?=
+ =?us-ascii?Q?7sEiXO+J6PqR66iNp5WtYtH/TtqTQnL75VAaillyjYLtQiAzoHADencwRy7a?=
+ =?us-ascii?Q?ggsXGWpGN1WMeDWgfFHEc7e9b/eviiOpZfpjxSLMM4x+9cunmQg64w2Wr7mZ?=
+ =?us-ascii?Q?IhhDTAcJ13439xF91ifU2rkN1YDbBra0FQ1EEhg6fsXnIdsohyyTQ482n/Us?=
+ =?us-ascii?Q?ist7aeOeyYJp8VzgrxoYUD//njA09+527XmBr85N786lc/zF/VW5qe06tQQY?=
+ =?us-ascii?Q?boXVoFgKwLI8f0U3mICFnhNoukBkHeAHUcqt/Cvwior5/jzMg3VSXneED4xb?=
+ =?us-ascii?Q?8Fb7bWvs/KIxGP1Uzlk+AgbAT3HCMBUZa4W3VCxw6n/QxIX5DBG/BIOS4Y1x?=
+ =?us-ascii?Q?7lrevPYvbcfhQ0byraGSrtHYGU9eP1sv3Wot6F/njVpI6I6CSZi6ZCcSN3Da?=
+ =?us-ascii?Q?l81Z/5FfZsm1ELL9NGMbPufpMvMiDxcqSLiTX7zBBWdxfNv37O34Xq5URX45?=
+ =?us-ascii?Q?lLg9007xVcLwBZrFqt7Q/n3/70YppzOWB/GvcyfBLSPL93TlfWY2AsjH8kTP?=
+ =?us-ascii?Q?iRGFhnUQFubieUmaFD0YJlHOSM/G92IJYxzob8PSoniGZ9M8mWDIDD2UTyxc?=
+ =?us-ascii?Q?xs+gKGwMAzQsE/Ahaue2p6goEcMuQILpqV6sezaRm6SgWf8SDsAMND41LzZC?=
+ =?us-ascii?Q?KhNFOypb/rs5cEsWH1/e0MFgznx2CIpua4BUyzFsOgCbUQzgrxhIZMOFDSnB?=
+ =?us-ascii?Q?YnpKYlhApmJp14pGDl7KQ2oDqFFQT3CfaRLiETKqmaseSZpjlliO3Sx67XrZ?=
+ =?us-ascii?Q?Aoyoh2NCtX9Rt8zHnO63z7S611tKbjSKHjFnZ2YX5znUpgaFLgFFPAaB4/C0?=
+ =?us-ascii?Q?yXwSg1duFHGdow4CuG4Gfhkh7TXQrLnxPJ/RxoY/JxtbzVQcDKcWeuL7fTuO?=
+ =?us-ascii?Q?14c6LKlDdrg7FkehNW1ys12ASSN4y0qqmZw6jkn5d8NRPQu01+P1W7aHMojv?=
+ =?us-ascii?Q?mSAl6gBmQZ10z0/zY1SNeZSvHBLSdY08iGNkNGNTAvfON1SvzW6a1/eLsmXS?=
+ =?us-ascii?Q?46Nn8JQuK6gvZys6IcWR/us1oZj8m54VWsmGtKjoLQ5QuscQrSTKRKp3kCRM?=
+ =?us-ascii?Q?P5FZb3jzyyUohokfuI8sCUXAQF022I/SlK1rR+wMZ80IgFS+sNMKPxdXrbSq?=
+ =?us-ascii?Q?EZ0jvAgJVFkwM8ay4b/qfrGr2aZ+FA2+S1v66tXNv+7ZJzE+fe8ZpITMJUD8?=
+ =?us-ascii?Q?P4IeWsIYXi2sztIrAYnzLZclYD6sc9ZrbEX2SlEl?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a45cc70c-28ff-4074-0d59-08dbbb8e7a13
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Sep 2023 17:08:01.2789
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Dc02S0UAeHgMyXujw7H4nXHL6fZ7t3C5WvImyj8Xjy3hXOleDJ7IK6lBw5q/taXN
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV3PR12MB9188
 
-On Fri, Sep 22, 2023 at 10:55=E2=80=AFAM Hector Martin <marcan@marcan.st> w=
-rote:
->
-> Commit a4fdd9762272 ("iommu: Use flush queue capability") hid the
-> IOMMU_DOMAIN_DMA_FQ domain type from domain allocation. A check was
-> introduced in iommu_dma_init_domain() to fall back if not supported, but
-> this check runs too late: by that point, devices have been attached to
-> the IOMMU, and apple-dart's attach_dev() callback does not expect
-> IOMMU_DOMAIN_DMA_FQ domains.
->
-> Change the logic so the IOMMU_DOMAIN_DMA codepath is the default,
-> instead of explicitly enumerating all types.
->
-> Fixes an apple-dart regression in v6.5.
->
-> Cc: regressions@lists.linux.dev
-> Cc: stable@vger.kernel.org
-> Suggested-by: Robin Murphy <robin.murphy@arm.com>
-> Fixes: a4fdd9762272 ("iommu: Use flush queue capability")
-> Signed-off-by: Hector Martin <marcan@marcan.st>
-> ---
-> Changes in v2:
-> - Fixed the issue in apple-dart instead of the iommu core, per Robin's
->   suggestion.
-> - Link to v1: https://lore.kernel.org/r/20230922-iommu-type-regression-v1=
--1-1ed3825b2c38@marcan.st
-> ---
->  drivers/iommu/apple-dart.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
->
-> diff --git a/drivers/iommu/apple-dart.c b/drivers/iommu/apple-dart.c
-> index 2082081402d3..0b8927508427 100644
-> --- a/drivers/iommu/apple-dart.c
-> +++ b/drivers/iommu/apple-dart.c
-> @@ -671,8 +671,7 @@ static int apple_dart_attach_dev(struct iommu_domain =
-*domain,
->                 return ret;
->
->         switch (domain->type) {
-> -       case IOMMU_DOMAIN_DMA:
-> -       case IOMMU_DOMAIN_UNMANAGED:
-> +       default:
->                 ret =3D apple_dart_domain_add_streams(dart_domain, cfg);
->                 if (ret)
->                         return ret;
->
-> ---
-> base-commit: ce9ecca0238b140b88f43859b211c9fdfd8e5b70
-> change-id: 20230922-iommu-type-regression-25b4f43df770
->
-> Best regards,
-> --
-> Hector Martin <marcan@marcan.st>
->
+Trivially migrate to the ops->blocked_domain for the existing global
+static.
 
-Looks good to me.
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+---
+ drivers/iommu/intel/iommu.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-Reviewed-by: Neal Gompa <neal@gompa.dev>
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 0d0cb2534972a2..b79188d0c67e95 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -4041,8 +4041,6 @@ static struct iommu_domain *intel_iommu_domain_alloc(unsigned type)
+ 	struct iommu_domain *domain;
+ 
+ 	switch (type) {
+-	case IOMMU_DOMAIN_BLOCKED:
+-		return &blocking_domain;
+ 	case IOMMU_DOMAIN_DMA:
+ 	case IOMMU_DOMAIN_UNMANAGED:
+ 		dmar_domain = alloc_domain(type);
+@@ -4803,6 +4801,7 @@ static void *intel_iommu_hw_info(struct device *dev, u32 *length, u32 *type)
+ }
+ 
+ const struct iommu_ops intel_iommu_ops = {
++	.blocked_domain		= &blocking_domain,
+ 	.capable		= intel_iommu_capable,
+ 	.hw_info		= intel_iommu_hw_info,
+ 	.domain_alloc		= intel_iommu_domain_alloc,
+-- 
+2.42.0
 
-
---=20
-=E7=9C=9F=E5=AE=9F=E3=81=AF=E3=81=84=E3=81=A4=E3=82=82=E4=B8=80=E3=81=A4=EF=
-=BC=81/ Always, there's only one truth!
