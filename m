@@ -1,170 +1,192 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1153A377
-	for <iommu@lists.linux.dev>; Fri, 22 Sep 2023 01:16:44 +0000 (UTC)
-Received: from pps.filterd (m0279869.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 38M1EWNL007144;
-	Fri, 22 Sep 2023 01:16:17 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=qcppdkim1;
- bh=9w/IvZDIHWszFH1Ek0ypivr8vKkPAhorWbAZ9pveNCw=;
- b=Zl+gPP1bJrmAyIy4/jZ/Jw4HYqHOylLpyDbdOObaRRInCisgH40Jhp+R62JtW7Vwj23n
- Ww0K2m/iXCHiaVzfHeNSK15IiMOBQWzh2IUElkjVp5xqu1wTsu7sVaiXsk6/YnBibziZ
- Y/SKwVarI991Jvo1iqiaCVq3qPzv82ILTWlJ7I6M9wFHsYHNy1TiaEvtesW364JXLAnM
- TC8PVU3LOGiHnOxfRHV46Axx1nWuKoiWqolFLbvMvxj+iuVygd9FEvhmKis6odMrHBFu
- lLWlSsHmiqfaeKAWtC1T50lvbMJlRwuj5kRxkI6quyFlVtx44z5EpY9crErEiAynglnx NQ== 
-Received: from nalasppmta05.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3t8txpgnk8-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 22 Sep 2023 01:16:17 +0000
-Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-	by NALASPPMTA05.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 38M1GFiF013645
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 22 Sep 2023 01:16:16 GMT
-Received: from [10.239.132.204] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.36; Thu, 21 Sep
- 2023 18:16:07 -0700
-Message-ID: <e3391f32-0684-473e-8602-13293bd0f36d@quicinc.com>
-Date: Fri, 22 Sep 2023 09:16:05 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AEAD2377
+	for <iommu@lists.linux.dev>; Fri, 22 Sep 2023 01:52:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1695347561; x=1726883561;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=yn0FMvKubb4VmqkNbjfO4NA05YixUYE0JaaP82xBlas=;
+  b=K5hVhXlhEM/SMJmviW5APg7qtVljtbKeykKfV3ms6uNaXOAZonYQQVND
+   mGRxRHkjRILEjAjkEcmMwuDcgYkRlKtDOdVm7TDTpFRAwmVEJx0ag96fK
+   pUTT8JtlFrMai5g50uu/hjmenYyFYHCUgpoEUJ1FpPKy/4dYd3Ul10rAX
+   xUO9o1xBV5TOGp/4BYglnmuKVY0bcC+P77ZpG1SAAbn8ib3ziTjFL7pZl
+   sbzWudRe9uJ1TPRTkAMP6U/YuU9UNgOpR7stNDwdw/xH96T3v8BYt32MN
+   QHL9dPOymkyVNBjZ8xdBFml39mTf/aSOIEjkpKW3pACDPd37YKVxhzQGU
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10840"; a="467021683"
+X-IronPort-AV: E=Sophos;i="6.03,167,1694761200"; 
+   d="scan'208";a="467021683"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Sep 2023 18:51:57 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10840"; a="817608033"
+X-IronPort-AV: E=Sophos;i="6.03,167,1694761200"; 
+   d="scan'208";a="817608033"
+Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
+  by fmsmga004.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 21 Sep 2023 18:51:57 -0700
+Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.32; Thu, 21 Sep 2023 18:51:57 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.32; Thu, 21 Sep 2023 18:51:56 -0700
+Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.32 via Frontend Transport; Thu, 21 Sep 2023 18:51:56 -0700
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.108)
+ by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.32; Thu, 21 Sep 2023 18:51:56 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ktl/kIfURaLi0oSqpb4szzHYv4MYogZ4BT891BZUJ+PQ9Kq4BBMCSqxkSbora4rqrlSQtG0zyVp0UxpABc9Ociy7fd1C635DPBwCPZ9P0i6A1tVjbSvgo47YnB6SZDCXfILCdJ9yzcwjmoJtLbTZiDLGSFAR3lL5dtULZ7/O1vsVwGl5gm6OseZHgqfHB2rCba+TbFUMiM+ESr2mEF6Ka+9OWBDGuujekVici0sN5utjNEA16SWVq/KLAPnkjjfcgK++7h0enAjOmtxqlWId/J0rifiTwqBdigUEZvUDC8mSg3kFqJ7SnSUGiEGyY7sl+tc8w0HiHPUKLvhDp8vPKA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=o1JpSHpOgyEQrfougPG7fu7colYiO8biEVWnDIApTdI=;
+ b=ARZZXfqsyV+oE+NIKa1/NeADCRoBLeke5ZExBJIF81qtdSUU2k11ndZ8YCsb3cJ/vNMkAs+NgVz7A8WG2IndWpOl9Ij94TINL6EkfQ4uqXLlvCE01BQqiqJmYXgYrRQ6qvtRJhg4e7xwFT89q0ImZI9zKU1F79qJSm5dnCuX8Gx8q7Ygnw7iRDWtONR4wC5SxtHbji09NSc469UY1czaBJ2vpAGNznRJS2I0s/UQHnWBmNza/gy1VCALT3hjP5NWSxXsYH3lGJMTaem7WweIzsCeZSm8m4zqxbVSPo8Fw78gsd8Cm+696f8VZEkx3ZIrfIhg+wBGNuECAweI6OeMag==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from MW5PR11MB5881.namprd11.prod.outlook.com (2603:10b6:303:19d::14)
+ by CO1PR11MB4833.namprd11.prod.outlook.com (2603:10b6:303:99::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6813.19; Fri, 22 Sep
+ 2023 01:51:55 +0000
+Received: from MW5PR11MB5881.namprd11.prod.outlook.com
+ ([fe80::6c46:eead:bf23:5d5c]) by MW5PR11MB5881.namprd11.prod.outlook.com
+ ([fe80::6c46:eead:bf23:5d5c%4]) with mapi id 15.20.6792.026; Fri, 22 Sep 2023
+ 01:51:55 +0000
+Message-ID: <cc71e279-8f43-0e84-f4b3-7040c31adac3@intel.com>
+Date: Fri, 22 Sep 2023 09:51:33 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Firefox/102.0 Thunderbird/102.15.1
+Subject: Re: [PATCH v4 4/6] mm: Add structure to keep sva information
+Content-Language: en-US
+To: Jason Gunthorpe <jgg@ziepe.ca>
+CC: Kevin Tian <kevin.tian@intel.com>, Lu Baolu <baolu.lu@linux.intel.com>,
+	Michael Shavit <mshavit@google.com>, Vasant Hegde <vasant.hegde@amd.com>,
+	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>
+References: <20230912125936.722348-1-tina.zhang@intel.com>
+ <20230912125936.722348-5-tina.zhang@intel.com>
+ <20230921190427.GA13795@ziepe.ca>
+From: Tina Zhang <tina.zhang@intel.com>
+In-Reply-To: <20230921190427.GA13795@ziepe.ca>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SG3P274CA0002.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:be::14)
+ To MW5PR11MB5881.namprd11.prod.outlook.com (2603:10b6:303:19d::14)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 5/8] arm64: dts: qcom: sm4450: Add apps_rsc and cmd_db
- node
-To: Bjorn Andersson <andersson@kernel.org>
-CC: <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
-        <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
-        <conor+dt@kernel.org>, <agross@kernel.org>, <konrad.dybcio@linaro.org>,
-        <catalin.marinas@arm.com>, <geert+renesas@glider.be>, <arnd@arndb.de>,
-        <neil.armstrong@linaro.org>, <nfraprado@collabora.com>,
-        <rafal@milecki.pl>, <peng.fan@nxp.com>,
-        <linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-msm@vger.kernel.org>, <quic_tsoni@quicinc.com>,
-        <quic_shashim@quicinc.com>, <quic_kaushalk@quicinc.com>,
-        <quic_tdas@quicinc.com>, <quic_tingweiz@quicinc.com>,
-        <quic_aiquny@quicinc.com>, <kernel@quicinc.com>,
-        Ajit Pandey <quic_ajipan@quicinc.com>
-References: <20230915021509.25773-1-quic_tengfan@quicinc.com>
- <20230915021509.25773-7-quic_tengfan@quicinc.com>
- <kk3xwrq6d7jpkoti2b4lg4hwqfoyqilvf7cp3tuccfmhdj57rf@hicfde4whvzm>
-From: Tengfei Fan <quic_tengfan@quicinc.com>
-In-Reply-To: <kk3xwrq6d7jpkoti2b4lg4hwqfoyqilvf7cp3tuccfmhdj57rf@hicfde4whvzm>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: pkGtoYlBqaxvEB2KOcQGLRxJAq0e2MYx
-X-Proofpoint-GUID: pkGtoYlBqaxvEB2KOcQGLRxJAq0e2MYx
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.267,Aquarius:18.0.980,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2023-09-22_01,2023-09-21_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 spamscore=0
- phishscore=0 impostorscore=0 malwarescore=0 adultscore=0 bulkscore=0
- clxscore=1015 suspectscore=0 lowpriorityscore=0 priorityscore=1501
- mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2309180000 definitions=main-2309220010
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: MW5PR11MB5881:EE_|CO1PR11MB4833:EE_
+X-MS-Office365-Filtering-Correlation-Id: 5ebc8535-5e00-4881-dba6-08dbbb0e7f97
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: o88+JP6UXzybeMpQVnP5tHKZJDBCDS93Itiv6zP7CdYpw9yMuM3ywbRsyEujc286kcw2FcOShnJofw4smD+aw7EKo9vBqb5Ziwj6cKZA7cYnCwIOyVtjYoyIi2sHGVBKjbqxB/YsLqcafmp1lhTwZV72APAt6n8myNRBidcJq5mkWk+urR/UyEJ59ou2XwiH4daIlgYt9ICZxPDN1n3X2oDu5x2Qm5gnsX6Hc8Nld7moYwwoqFl2zAT9WH3H8R99ajJOgvLpFmJERzX/v9JSgI2IQM/fe6gB/xcEF4oVH6xOsxruE3eG0b0TOqF54KdzqjNmFiLvEs3xQdwZbmBws9hzPl9XmC9gmrS2soQD1Q924C3NVwiEyxwE3YCXslixL6Mb1vrIRJteZ8ZaXg3t2YVi+mjCAx7ySCCuOXeUo+X6h1jtKden49JyH3PjsmKVvY/LxakXhbifG9/nOuqBAEXCJldFVqKvlO/ZpcAECtUgK3QsageW/8zshO06X7aQ6K0dY/9z/b4WyjA/jVQFA7VJqGxjAD2m1rkLQ0nnN5MyDS6szrwGHz0IlaCI78ewC1ddhzZ8W1pC/YxNQ3BjaR/IZkitv8532FS2PJbSN0YBnt6Z9fe/AOLhjisg5NLmxX+GxI69zx7ztK75qmVQcQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW5PR11MB5881.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(39860400002)(136003)(376002)(366004)(396003)(346002)(1800799009)(186009)(451199024)(6512007)(6666004)(6486002)(6506007)(53546011)(478600001)(2616005)(44832011)(66476007)(26005)(66946007)(316002)(54906003)(66556008)(41300700001)(5660300002)(8676002)(8936002)(4326008)(6916009)(82960400001)(36756003)(86362001)(38100700002)(31696002)(2906002)(31686004)(45980500001)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?blBxVHVPQ2VZN0gyU3l0RXgySnJOd1dTNERzU3k2M0UvNGlueEZMM3RWQmwv?=
+ =?utf-8?B?WHYrSXJxMll6elNoTC80dWdkQThrMUM3ZkdaTjRxbEVUNC9ja3FFMzJiM3FK?=
+ =?utf-8?B?ZUtOYlo3b0tZVkcyaHlOeGQ5RnZaZ3JONFlFTGxJQTNNak5TaC8raUFra21p?=
+ =?utf-8?B?WHcxakpYVm1sc3hCanNJMFVYeC93dkZUQVpiYmZKbmNpL25WNmlRaXpNbS91?=
+ =?utf-8?B?Q2grUUo1UCtiNFltS0F4MzU2TGdwUmtJSjllNEdPaHI0VldORlZuOS8yVDRE?=
+ =?utf-8?B?allZSkVPUUIxVU15dmpGQjhGQkI1MmNLdTg5NlBDSFRSQ3h6dWtkd3BtU1Zq?=
+ =?utf-8?B?cGpDZUhZM2VWdVhiSVlnVnd0cVZUTDhNbjVwaXFBK2NtNVdmNFlienJJZ2pm?=
+ =?utf-8?B?cWRxRGpnU0syRk5VUGhoamlSUm5halA1bnZZL2RRMElUVldDVkFnMUc1bnNk?=
+ =?utf-8?B?bVRhVnFnei9TNVNLRElGMWdlaUl6b0xIUkd5U2psdFBlUzRGaTlTbXMybkNS?=
+ =?utf-8?B?aE9uMi9KTmNGSnVrNkdjWWRuTUpKa3ZrSnhXVHF6Sno0dmlZV0xvT09INENE?=
+ =?utf-8?B?NG5jUEZDY0FCOGxSZEFwL2crNld0eWxZT3JxRmlQei9WZ0RIRHZ5aWt0QzJx?=
+ =?utf-8?B?Mm1Cb1BFSzd3bG1LcVhKQ0pmYjF5QVMvcHhqbDFOWlpWZHpWSHRDeEc1aSsr?=
+ =?utf-8?B?Y0M0TGprd25hVVpQSVdIWTZqQ00xVGpvZGo4Umt5QWIwRitsVlhoYUNuTCtL?=
+ =?utf-8?B?QXJaaDk5ZUNRRDhRc2RPUWdLRjRMdHNDcHZpN0RlZXpPbk5tMWs4SlA0a2l2?=
+ =?utf-8?B?QnJ4K25lNHo0Q2h4NFdmZ1ovTmFuZUhkV002MUk2SmdmbERhMzBqMFVITXVt?=
+ =?utf-8?B?RkxrQ1JsRXlZV01GdlBiUW1pNHJ0NnRsYnNpT3FtdjBiaytpcHJGNzFmMXRp?=
+ =?utf-8?B?bkZMWTN6aVpVSU1kcGhlU3NidW0vTEEweVZKaFArVjVtTWh6ME5BNjJSUXNj?=
+ =?utf-8?B?b3JqYkZuM2EwS3UraU9HaU5aU2FhMjE4eFZ6SDNmdmVISzZCQjN3c1UyUS9D?=
+ =?utf-8?B?cVRoK08yVXkxQ3dsZURURGhMVlVnV0F6eENseFQ2VFpwKzR1UmlqSG1jcVdp?=
+ =?utf-8?B?YlZpWlBHT1JpWGJlWjVhL3FOeHppVXV1dDZJQU9XRkorZHhtWEUyRlk0cjhS?=
+ =?utf-8?B?NkJ6bDFqREIzS2hBVGk1c2s3R2hQSzJTZTJkV3h1cnBRY0x2MVMvSk8xbVN2?=
+ =?utf-8?B?anBiV25XZTVlWnN2RUNkdGE4VTZDNGNxcWNma1d4YXBUVzZ3cUs0cTlHZS9O?=
+ =?utf-8?B?Vmdwa2p6VndXWnpTbElvdzBqeFVvL2V0cnQ3MldiM1V6dStncXUxTmxzZFE4?=
+ =?utf-8?B?cUlnSHFEc0xpSllvTVJFMnllSHVRSnFYY2R3ODk1UmlWdk1ab25qdGIrMEln?=
+ =?utf-8?B?aDNTb2pSWVhtZitOaHZhQ25qNm1HMDBrRDBOVnI5bEFBaTY5WFNteGswcFY0?=
+ =?utf-8?B?cGVCM1BqV0ozVUVtbXVMUkp2ZmNsSXM4Z2QxcGw3TytIcWhBZENkSXpkS29v?=
+ =?utf-8?B?b0RtQ2N0ekZuQWk5WnpqNVF1bllabkZpVitQR3dqQVY0SmZaS2J4cW5ieC9L?=
+ =?utf-8?B?U3h6MVFFUUN1RWVjOG5pbHZRTnhOMzdaQ3JnK3BNSGx1RlpQMm5jRW83eXBF?=
+ =?utf-8?B?aHU1bFJXdWNNWHBFQzFFL2pUNkZMdlV2cTVhSjlzNzZVUE80VXNhcmlCNUV0?=
+ =?utf-8?B?KzR0T2VtbkE5VlRiTjIrRUozWmp2SERWbVBIdld5RjIwMUVPTlhEUGRmdEpY?=
+ =?utf-8?B?YUFxN0FndHYyRm9GdCs1VWNEVkNpN2ZPeVpBNkxCUHFyRTJHb3Rqa0E3UTly?=
+ =?utf-8?B?clA0Z3FDVW5oQ3FmWER4blF5d1dlNVhhMC81OU5qUDNwRzkxaDNveWtMRGJJ?=
+ =?utf-8?B?Ry9YNXRXeWNDaWVSL0dEbHY1RXhLZDRxSjRvUkxOSjNzN0RiNWpWYVdGUXdj?=
+ =?utf-8?B?dDdvSUg4U0M2Q3FYNmdVbk1XNURCS1JPdHRKbDJ0N2Q1U0YzQkVIaDA1U0lw?=
+ =?utf-8?B?TEFOY0d6blIrSU9MRUtwYWhmYUJZTUVtemhlWm8rRzlLOUd5ZjhUaGQ3YVFF?=
+ =?utf-8?Q?+5bhSDxupEza6yMmnTtzdD6qO?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5ebc8535-5e00-4881-dba6-08dbbb0e7f97
+X-MS-Exchange-CrossTenant-AuthSource: MW5PR11MB5881.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Sep 2023 01:51:55.0461
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 3C5Dg3oM1ka5WXvW64fIotbaMxKWWyAH0fTZLnlMdDsNE4QyaXgfOGPAPkjOBw1Zg5/qUbRMndu3pHvm9AL4lQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR11MB4833
+X-OriginatorOrg: intel.com
 
 
 
-在 9/20/2023 11:49 AM, Bjorn Andersson 写道:
-> On Fri, Sep 15, 2023 at 10:15:06AM +0800, Tengfei Fan wrote:
->> From: Ajit Pandey <quic_ajipan@quicinc.com>
+On 9/22/23 03:04, Jason Gunthorpe wrote:
+> On Tue, Sep 12, 2023 at 08:59:34PM +0800, Tina Zhang wrote:
+>> Introduce iommu_mm_data structure to keep sva information (pasid and the
+>> related sva domains). Add iommu_mm pointer, pointing to an instance of
+>> iommu_mm_data structure, to mm.
 >>
->> Add apps_rsc node and cmd_db memory region for sm4450.
->>
->> Signed-off-by: Ajit Pandey <quic_ajipan@quicinc.com>
->> Signed-off-by: Tengfei Fan <quic_tengfan@quicinc.com>
+>> Reviewed-by: Vasant Hegde <vasant.hegde@amd.com>
+>> Signed-off-by: Tina Zhang <tina.zhang@intel.com>
 >> ---
->>   arch/arm64/boot/dts/qcom/sm4450.dtsi | 34 ++++++++++++++++++++++++++++
->>   1 file changed, 34 insertions(+)
->>
->> diff --git a/arch/arm64/boot/dts/qcom/sm4450.dtsi b/arch/arm64/boot/dts/qcom/sm4450.dtsi
->> index c4e5b33f5169..0d1d39197d77 100644
->> --- a/arch/arm64/boot/dts/qcom/sm4450.dtsi
->> +++ b/arch/arm64/boot/dts/qcom/sm4450.dtsi
->> @@ -5,6 +5,7 @@
->>   
->>   #include <dt-bindings/gpio/gpio.h>
->>   #include <dt-bindings/interrupt-controller/arm-gic.h>
->> +#include <dt-bindings/soc/qcom,rpmh-rsc.h>
->>   
->>   / {
->>   	interrupt-parent = <&intc>;
->> @@ -328,6 +329,18 @@
->>   		};
->>   	};
->>   
->> +	reserved_memory: reserved-memory {
->> +		#address-cells = <2>;
->> +		#size-cells = <2>;
->> +		ranges;
->> +
->> +		aop_cmd_db_mem: cmd-db@80860000 {
->> +			compatible = "qcom,cmd-db";
->> +			reg = <0x0 0x80860000 0x0 0x20000>;
->> +			no-map;
->> +		};
->> +	};
->> +
->>   	soc: soc@0 {
->>   		#address-cells = <2>;
->>   		#size-cells = <2>;
->> @@ -335,6 +348,27 @@
->>   		dma-ranges = <0 0 0 0 0x10 0>;
->>   		compatible = "simple-bus";
->>   
->> +		apps_rsc: rsc@17a00000 {
->> +			compatible = "qcom,rpmh-rsc";
->> +			reg = <0 0x17a00000 0 0x10000>,
+>>   include/linux/iommu.h    | 5 +++++
+>>   include/linux/mm_types.h | 2 ++
+>>   2 files changed, 7 insertions(+)
 > 
-> As your later patch shows, and Krzysztof pointed out, the sort order is
-> wrong here (sort nodes under /soc by address).
-I will ajdust this sort order.
+> This is not a great way to structure the patches
 > 
->> +			      <0 0x17a10000 0 0x10000>,
->> +			      <0 0x17a20000 0 0x10000>;
->> +			reg-names = "drv-0", "drv-1", "drv-2";
->> +			interrupts = <GIC_SPI 3 IRQ_TYPE_LEVEL_HIGH>,
->> +				     <GIC_SPI 4 IRQ_TYPE_LEVEL_HIGH>,
->> +				     <GIC_SPI 5 IRQ_TYPE_LEVEL_HIGH>;
->> +			label = "apps_rsc";
->> +			qcom,tcs-offset = <0xd00>;
->> +			qcom,drv-id = <2>;
->> +			qcom,tcs-config = <ACTIVE_TCS    2>, <SLEEP_TCS     3>,
->> +					  <WAKE_TCS      3>, <CONTROL_TCS   0>;
+> This patch should move the pasid into the struct and do all the
+> infrastructure to allocate/free the struct.
 > 
-> Please confirm that you indeed want 0 CONTROL_TCSs.
-> 
-> Thanks,
-> Bjorn
-Hi Bjorn,
-yes, I confirmed this from internal power team, CONTROL_TCS with 0 is ok.
-> 
->> +			power-domains = <&CLUSTER_PD>;
->> +
->> +			apps_bcm_voter: bcm-voter {
->> +				compatible = "qcom,bcm-voter";
->> +			};
->> +		};
->> +
->>   		tcsr_mutex: hwlock@1f40000 {
->>   			compatible = "qcom,tcsr-mutex";
->>   			reg = <0x0 0x01f40000 0x0 0x40000>;
->> -- 
->> 2.17.1
->>
+> The next patch should just add the list head to the now existing struct:
+Agree. It would be great if we can put a new filed adding and its 
+related handing logic into one patch. It will be convenient not only for 
+the author but also for the reviewers, as it can convey the intention of 
+the code change more easily.
 
--- 
-Thx and BRs,
-Tengfei Fan
+In this case, the reason we put new members' introduction into one patch 
+and their handling logic into another patch, is that it seems an easy 
+way to replace the old pasid field w/o involving extra temporary logic 
+to keep everything work between patches. Fortunately, we only have two 
+new fields, which might make this option not so ugly :)
+
+Regards,
+-Tina
+
+> 
+>> +struct iommu_mm_data {
+>> +	u32			pasid;
+>> +	struct list_head	sva_domains;
+>> +};
+> 
+> The code looks fine though
+> 
+> Jason
