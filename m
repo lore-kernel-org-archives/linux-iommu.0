@@ -1,164 +1,103 @@
-Received: from bee.tesarici.cz (bee.tesarici.cz [77.93.223.253])
+Received: from mail.marcansoft.com (marcansoft.com [212.63.210.85])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CEB02E653
-	for <iommu@lists.linux.dev>; Fri, 22 Sep 2023 13:31:38 +0000 (UTC)
-Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 388763D3A9;
+	Fri, 22 Sep 2023 13:48:05 +0000 (UTC)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(No client certificate requested)
-	by bee.tesarici.cz (Postfix) with ESMTPSA id 280A917C98B;
-	Fri, 22 Sep 2023 15:31:31 +0200 (CEST)
-Authentication-Results: mail.tesarici.cz; dmarc=fail (p=none dis=none) header.from=tesarici.cz
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tesarici.cz; s=mail;
-	t=1695389491; bh=d4bZp4FCpu0ifwd91koBvu3QjGysMx8UU3tJ5jeZ3SA=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=aa71HdOGTwJroT3Yclfk1uEv9izIB7VUF7FvILVh8HZaQy536PORMm2eT+C5q+Txx
-	 dr90hVFbgnggQx80aHwSHlcENCEAlZc516VanEmLef5s5Vyydx8Gxe4ebHoRahvbBq
-	 1V7APBB5Lp87wqP861Vvevl3Xq00m/lusntHl+43mu/bFFUV2rSwt7fhmVhCyJtZGY
-	 OiFY6JucSSGo7GR4i5jyjv0+LL/62JY4AovnWzMPb2z6uJdujoAEMCmyVtngUvIfoy
-	 7lSCc+dZTfK7ZO4Wc6P3QjUnn08ZVyqhPZoWnzYqSwcuxNi1CDvdxGpJyPODpK+cb0
-	 ElUQLxNPToIPg==
-Date: Fri, 22 Sep 2023 15:31:29 +0200
-From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
-To: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Christoph Hellwig <hch@lst.de>, Marek Szyprowski
- <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, "open
- list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>, open list
- <linux-kernel@vger.kernel.org>, Roberto Sassu
- <roberto.sassu@huaweicloud.com>, Jonathan Corbet <corbet@lwn.net>
-Subject: Re: [PATCH] swiotlb: fix the check whether a device has used
- software IO TLB
-Message-ID: <20230922153129.69b26975@meshulam.tesarici.cz>
-In-Reply-To: <ZQhwnhOQbDp3j8y7@arm.com>
-References: <20230913114016.17752-1-petr@tesarici.cz>
-	<20230913121403.GB4544@lst.de>
-	<20230913142656.29e135d6@meshulam.tesarici.cz>
-	<ZQNQscYr0rQWdw66@arm.com>
-	<20230915111343.01496320@meshulam.tesarici.cz>
-	<ZQSPyBRjnSISNFmD@arm.com>
-	<20230917114741.01a23364@meshulam.tesarici.cz>
-	<ZQhwnhOQbDp3j8y7@arm.com>
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; x86_64-suse-linux-gnu)
+	(Authenticated sender: sendonly@marcansoft.com)
+	by mail.marcansoft.com (Postfix) with ESMTPSA id E9BE24203C;
+	Fri, 22 Sep 2023 13:40:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=marcan.st; s=default;
+	t=1695390035; bh=wnRMaJBOS2DBNUxEtrGxJj6grzGED1qsQnxvwl3853Q=;
+	h=From:Date:Subject:To:Cc;
+	b=EL+kQP6z2D1r/FcD1TXdu49qUlyYgYgj0amx/V7WZ9ABEa/REXdo+1rVGrP5gIKpu
+	 geBzkpMjccNNO5cAGwX2nbtGyBjoKy0G5FwgpoB5xobEZXQdtOe4vKBrZLUavK08HW
+	 cxRQAeVZdV2m+EYqL0bjS3NA7Gx6HxP6jFJuxVMLBGyCsm8TtvhygKKpF+bi49b166
+	 4uC99oKwrAvYnU20loGtw829HDNtfL3B/s8vNfiSEgQLcGJsg+7mTo/gTrDZpa+Gaq
+	 y4U7QZohJ04few8TmHtIC1vkcmc1HvG3dD6Hs2nOw42BMUobiKs9v5wkoPn7dhvDlS
+	 gG8UbmaElcWNw==
+From: Hector Martin <marcan@marcan.st>
+Date: Fri, 22 Sep 2023 22:40:20 +0900
+Subject: [PATCH REGRESSION] iommu: Only allocate FQ domains for IOMMUs that
+ support them
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20230922-iommu-type-regression-v1-1-1ed3825b2c38@marcan.st>
+X-B4-Tracking: v=1; b=H4sIAEOZDWUC/x3Myw5AQAxA0V+RrjUZRYRfEQuPDl14pIOQiX83L
+ O/iXA+OVdhBFXlQPsXJuoRI4gj6qV1GRhlCAxlKTUmEss7zgfu9MSqPyu4TSHmX2SwdbFEYCHZ
+ TtnL937p5nhd8EatbZwAAAA==
+To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+ Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>, 
+ Jerry Snitselaar <jsnitsel@redhat.com>
+Cc: Joerg Roedel <jroedel@suse.de>, Neal Gompa <neal@gompa.dev>, 
+ "Justin M. Forbes" <jforbes@fedoraproject.org>, iommu@lists.linux.dev, 
+ linux-kernel@vger.kernel.org, asahi@lists.linux.dev, stable@vger.kernel.org, 
+ regressions@lists.linux.dev, Hector Martin <marcan@marcan.st>
+X-Mailer: b4 0.12.3
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1654; i=marcan@marcan.st;
+ h=from:subject:message-id; bh=wnRMaJBOS2DBNUxEtrGxJj6grzGED1qsQnxvwl3853Q=;
+ b=owGbwMvMwCUm+yP4NEe/cRLjabUkhlTemf6MGpdr17EecAmcefbUi4gtXz2fGH8+UWdeZCSzT
+ uqnx3arjlIWBjEuBlkxRZbGE72nuj2nn1NXTZkOM4eVCWQIAxenAEyk4gvDT8bEBMkPJ67IfVtn
+ yV+s31PwoTNX+83atU/P8m3g375coYeRoX/Oi7b2+oKDy0Sr3eZP3Hw85t/sV/OsFJfeuW7EPyn
+ HgRkA
+X-Developer-Key: i=marcan@marcan.st; a=openpgp;
+ fpr=FC18F00317968B7BE86201CBE22A629A4C515DD5
 
-Hi Catalin,
+Commit a4fdd9762272 ("iommu: Use flush queue capability") hid the
+IOMMU_DOMAIN_DMA_FQ domain type from domain allocation. A check was
+introduced in iommu_dma_init_domain() to fall back if not supported, but
+this check runs too late: by that point, devices have been attached to
+the IOMMU, and the IOMMU driver might not expect FQ domains at
+ops->attach_dev() time.
 
-thanks again for your reply. I'm sorry for being slow. This world of
-weakly ordered memory models is complex, and I was too distracted most
-of this week, but I hope I have finally wrapped my head around it.
+Ensure that we immediately clamp FQ domains to plain DMA if not
+supported by the driver at device attach time, not later.
 
-On Mon, 18 Sep 2023 16:45:34 +0100
-Catalin Marinas <catalin.marinas@arm.com> wrote:
+This regressed apple-dart in v6.5.
 
-> On Sun, Sep 17, 2023 at 11:47:41AM +0200, Petr Tesa=C5=99=C3=ADk wrote:
-> > On Fri, 15 Sep 2023 18:09:28 +0100
-> > Catalin Marinas <catalin.marinas@arm.com> wrote: =20
-> > > On Fri, Sep 15, 2023 at 11:13:43AM +0200, Petr Tesa=C5=99=C3=ADk wrot=
-e: =20
-> > > > On Thu, 14 Sep 2023 19:28:01 +0100
-> > > > Catalin Marinas <catalin.marinas@arm.com> wrote:   =20
-> > > > > What do the smp_wmb() barriers in swiotlb_find_slots() and
-> > > > > swiotlb_dyn_alloc() order? The latter is even more unclear as it'=
-s at
-> > > > > the end of the function and the "pairing" comment doesn't help.  =
- =20
-> > > >=20
-> > > > By the time swiotlb_find_slots() returns a valid slot index, the new
-> > > > value of dev->dma_uses_io_tlb must be visible by all CPUs in
-> > > > is_swiotlb_buffer(). The index is used to calculate the bounce buff=
-er
-> > > > address returned to device drivers. This address may be passed to
-> > > > another CPU and used as an argument to is_swiotlb_buffer().   =20
-> > >=20
-> > > Ah, I remember now. So the smp_wmb() ensures that dma_uses_io_tlb is
-> > > seen by other CPUs before the slot address (presumably passed via oth=
-er
-> > > memory write). It may be worth updating the comment in the code (I'm
-> > > sure I'll forget it in a month time). The smp_rmb() before READ_ONCE()
-> > > in this patch is also needed for the same reasons (ordering after the
-> > > read of the address passed to is_swiotlb_buffer()). =20
->[...]
-> > > BTW, you may want to use WRITE_ONCE() when setting dma_uses_io_tlb (it
-> > > also matches the READ_ONCE() in is_swiotlb_buffer()). Or you can use
-> > > smp_store_mb() (but check its semantics first). =20
-> >=20
-> > I can use WRITE_ONCE(), although I believe it does not make much
-> > difference thanks to the barrier provided by smp_wmb(). =20
->=20
-> WRITE_ONCE() is about atomicity rather than ordering (and avoiding
-> compiler optimisations messing things). While I don't see the compiler
-> generating multiple accesses for a boolean write, using these accessors
-> also helps tools like kcsan.
+Cc: regressions@lists.linux.dev
+Cc: stable@vger.kernel.org
+Fixes: a4fdd9762272 ("iommu: Use flush queue capability")
+Signed-off-by: Hector Martin <marcan@marcan.st>
+---
+ drivers/iommu/iommu.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-While I still believe a simple assignment works just fine here, I agree
-that WRITE_ONCE() is better. It can prevent potential bugs if someone
-ever turns the boolean into something else.
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 3bfc56df4f78..12464eaa8d91 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -2039,6 +2039,15 @@ static int __iommu_attach_device(struct iommu_domain *domain,
+ 	if (unlikely(domain->ops->attach_dev == NULL))
+ 		return -ENODEV;
+ 
++	/*
++	 * Ensure we do not try to attach devices to FQ domains if the
++	 * IOMMU does not support them. We can safely fall back to
++	 * non-FQ.
++	 */
++	if (domain->type == IOMMU_DOMAIN_DMA_FQ &&
++	    !device_iommu_capable(dev, IOMMU_CAP_DEFERRED_FLUSH))
++		domain->type = IOMMU_DOMAIN_DMA;
++
+ 	ret = domain->ops->attach_dev(domain, dev);
+ 	if (ret)
+ 		return ret;
 
->[...]
-> > Ah... You may have a point after all if this sequence of events is
-> > possible:
-> >=20
-> > - CPU 0 writes new value to mem->pools->next in swiotlb_dyn_alloc().
-> >=20
-> > - CPU 1 observes the new value in swiotlb_find_slots(), even though it
-> >   is not guaranteed by any barrier, allocates a slot and sets the
-> >   dev->dma_uses_io_tlb flag.
-> >=20
-> > - CPU 1 (driver code) writes the returned buffer address into its
-> >   private struct. This write is ordered after dev->dma_uses_io_tlb
-> >   thanks to the smp_wmb() in swiotlb_find_slots().
-> >=20
-> > - CPU 2 (driver code) reads the buffer address, and DMA core passes it
-> >   to is_swiotlb_buffer(), which contains smp_rmb().
-> >=20
-> > - IIUC CPU 2 is guaranteed to observe the new value of
-> >   dev->dma_uses_io_tlb, but it may still use the old value of
-> >   mem->pools->next, because the write on CPU 0 was not ordered
-> >   against anything. The fact that the new value was observed by CPU 1
-> >   does not mean that it is also observed by CPU 2. =20
->=20
-> Yes, that's possible. On CPU 1 there is a control dependency between the
-> read of mem->pools->next and the write of dev->dma_uses_io_tlb but I
-> don't think this is sufficient to claim multi-copy atomicity (if CPU 1
-> sees mem->pools->next write by CPU 0, CPU 2 must see it as well), at
-> least not on all architectures supported by Linux. memory-barriers.txt
-> says that a full barrier on CPU 1 is needed between the read and write,
-> i.e. smp_mb() before WRITE_ONCE(dev->dma_uses_io_tlb). You could add it
-> just before "goto found" in swiotlb_find_slots() since it's only needed
-> on this path.
+---
+base-commit: ce9ecca0238b140b88f43859b211c9fdfd8e5b70
+change-id: 20230922-iommu-type-regression-25b4f43df770
 
-Let me check my understanding. This smp_mb() is not needed to make sure
-that the write to dev->dma_uses_io_tlb cannot be visible before the
-read of mem->pools->next. Since stores are not speculated, that
-ordering is provided by the control dependency alone.
+Best regards,
+-- 
+Hector Martin <marcan@marcan.st>
 
-But a general barrier ensures that a third CPU will observe the write to
-mem->pools->next after the read of mem->pools->next. Makes sense.
-
-I think I can send a v2 of my patch now, with abundant comments on the
-memory barriers.
-
-> Another thing I noticed - the write in add_mem_pool() to mem->nslabs is
-> not ordered with list_add_rcu(). I assume swiotlb_find_slots() doesn't
-> need to access it since it just walks the mem->pools list.
-
-That's correct. Writes to mem->nslabs are known to be racy, but it
-doesn't matter. This is explained in commit 1aaa736815eb ("swiotlb:
-allocate a new memory pool when existing pools are full"):
-
-- swiotlb_tbl_map_single() and is_swiotlb_active() only check for non-zero
-  value. This is ensured by the existence of the default memory pool,
-  allocated at boot.
-   =20
-- The exact value is used only for non-critical purposes (debugfs, kernel
-  messages).
-
-Petr T
