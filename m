@@ -1,189 +1,105 @@
-Received: from bee.tesarici.cz (bee.tesarici.cz [77.93.223.253])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yb1-f178.google.com (mail-yb1-f178.google.com [209.85.219.178])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E16CB42C11
-	for <iommu@lists.linux.dev>; Fri, 22 Sep 2023 18:21:01 +0000 (UTC)
-Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by bee.tesarici.cz (Postfix) with ESMTPSA id D0D6717BBE3;
-	Fri, 22 Sep 2023 20:20:58 +0200 (CEST)
-Authentication-Results: mail.tesarici.cz; dmarc=fail (p=none dis=none) header.from=tesarici.cz
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tesarici.cz; s=mail;
-	t=1695406859; bh=kchINCs5XHSGvnhdhcYtOXZ+mthaYm3E/rWdWDexvoY=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=BpTQCwzCNYe7uPTKdpiPtLY0IrKetZ/BM2F1t5qTcPS7r2x30F98kMN6nUKov+smO
-	 1xhCxFjrwtSwqAiYmlBYYmk4kaw9XwORgLK/rwAe8gsb8I4NcRLRDrNP0++mBUTBDB
-	 Adtp00dDQHBOy4SFKGr1MfaBsg0PZ3XJANGyZbIful/0utZ24yiDmGzBd9Ki0YofF0
-	 I0gygymqx8C29a977m51Mo3VTMuCcplFx2YZxIMB7Cxamwuw8ZONWhHrpsR27cFicf
-	 Ul32/w5SZ4hbPahXlxKJgTzzuLiGtoCxnPKC/xEFQKLCq1D75v0c+Wk/MI8KsZS6HI
-	 7832oXeFvlF8A==
-Date: Fri, 22 Sep 2023 20:20:57 +0200
-From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
-To: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Christoph Hellwig <hch@lst.de>, Marek Szyprowski
- <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, "open
- list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>, open list
- <linux-kernel@vger.kernel.org>, Roberto Sassu
- <roberto.sassu@huaweicloud.com>, Jonathan Corbet <corbet@lwn.net>
-Subject: Re: [PATCH] swiotlb: fix the check whether a device has used
- software IO TLB
-Message-ID: <20230922202057.47d93603@meshulam.tesarici.cz>
-In-Reply-To: <20230922191213.379d440a@meshulam.tesarici.cz>
-References: <20230913114016.17752-1-petr@tesarici.cz>
-	<20230913121403.GB4544@lst.de>
-	<20230913142656.29e135d6@meshulam.tesarici.cz>
-	<ZQNQscYr0rQWdw66@arm.com>
-	<20230915111343.01496320@meshulam.tesarici.cz>
-	<ZQSPyBRjnSISNFmD@arm.com>
-	<20230917114741.01a23364@meshulam.tesarici.cz>
-	<ZQhwnhOQbDp3j8y7@arm.com>
-	<20230922153129.69b26975@meshulam.tesarici.cz>
-	<20230922191213.379d440a@meshulam.tesarici.cz>
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; x86_64-suse-linux-gnu)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99CCB171D2
+	for <iommu@lists.linux.dev>; Fri, 22 Sep 2023 23:33:12 +0000 (UTC)
+Received: by mail-yb1-f178.google.com with SMTP id 3f1490d57ef6-d776e1f181bso3531560276.3
+        for <iommu@lists.linux.dev>; Fri, 22 Sep 2023 16:33:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1695425591; x=1696030391; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=+8rKKRCqUyQLWkNEBe6s/yUPdVExxmOivIwMSOHwl/8=;
+        b=H/9jxsivqgxAIuBT+gSL7SvqimTPAX8qQpvVHmOz3XwryOWA7JtMMrbKgU7PASMnwS
+         7DpDNI0LG9AkaVhNeNR7S4a91N3915U9vcf7K7AkNCvk5w4kELzNdH7R8L+4h2Q3ftb5
+         dShjmEMgmH8lMxrlOjHyYxDTwSvWBzvC4gRIkypeBu3flg/znyIOHPiqiDQg3HM2RRuZ
+         IayYBDGgdNDC8ByrRRcDCyFqlHAPZPJDK2beE6cQiv6VTWcsX02NSxoCoCrIhqdtj4R0
+         7PhuTk/2k2/UPFC2xrWUr5Ta7iwkzKv+T6NwNQjD9jq7Cf1gPZh/vTAj3Wgn2mpXxRl2
+         DKrA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1695425591; x=1696030391;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=+8rKKRCqUyQLWkNEBe6s/yUPdVExxmOivIwMSOHwl/8=;
+        b=Sq/fkLzyXlxXkgdOdewCqM6CglMlbYkBOo3OcmlOdm/3Z//qjw+daQ4PqSNLXluLUV
+         y1TaEfiS4Pbd/UU9ZdcijNfXBOBAS8gGcJ2RJNS64dMcktF1bqFWXCbxyZOROv8ttWl+
+         Fjn6s21XSkyu4dVHg+jE/AlOYVcCWZbldzgwgPImyWSyuATcdWSJRGmTRU7/zB/qkuYW
+         Z7eZpW3dQ60niEY/WeUGgWTTCFs6wk6k96U31Gbj/6J8xwnZ7VvA0k3KvRWu2SgE7lkN
+         qIgDauhywKXfCeySWuKMiJsC+T+XVyGFdTqRlT9JVqplx2jX5aaco5SrjiPsMiAH8ivK
+         /8Og==
+X-Gm-Message-State: AOJu0YwHxwQWI01QvInO7/BKNnI02TFg2yXncKIovAnrPVq2mNHLeqBm
+	8GeKwVHf4i3BZ7unrd7Dm0ziRQ==
+X-Google-Smtp-Source: AGHT+IHXIm3CPio25fJfcUEZEUoMW195I/INyvWWRxd2/4S04spIkfTN65/K48HdwB4EwzmNKU/gPg==
+X-Received: by 2002:a25:dbcc:0:b0:d81:4168:3a83 with SMTP id g195-20020a25dbcc000000b00d8141683a83mr680844ybf.25.1695425591345;
+        Fri, 22 Sep 2023 16:33:11 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-68-26-201.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.26.201])
+        by smtp.gmail.com with ESMTPSA id i15-20020a0cf10f000000b0064f523836fdsm1838074qvl.123.2023.09.22.16.33.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 22 Sep 2023 16:33:10 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1qjpe1-000eFO-UF;
+	Fri, 22 Sep 2023 20:33:09 -0300
+Date: Fri, 22 Sep 2023 20:33:09 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Niklas Schnelle <schnelle@linux.ibm.com>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	virtualization@lists.linux-foundation.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/2] iommu/virtio: Make use of ops->iotlb_sync_map
+Message-ID: <20230922233309.GI13795@ziepe.ca>
+References: <20230918-viommu-sync-map-v2-0-f33767f6cf7a@linux.ibm.com>
+ <20230918-viommu-sync-map-v2-1-f33767f6cf7a@linux.ibm.com>
+ <ae7e513b-eb86-97e2-bed0-3cca91b8c959@arm.com>
+ <20230919081519.GA3860249@myrica>
+ <20230919144649.GT13795@ziepe.ca>
+ <20230922075719.GB1361815@myrica>
+ <20230922124130.GD13795@ziepe.ca>
+ <900b644e-6e21-1038-2252-3dc86cbf0a32@arm.com>
+ <20230922162714.GH13795@ziepe.ca>
+ <123c53c3-d259-9c20-9aa6-0c216d7eb3c0@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <123c53c3-d259-9c20-9aa6-0c216d7eb3c0@arm.com>
 
-On Fri, 22 Sep 2023 19:12:13 +0200
-Petr Tesa=C5=99=C3=ADk <petr@tesarici.cz> wrote:
+On Fri, Sep 22, 2023 at 07:07:40PM +0100, Robin Murphy wrote:
 
-> Hi Catalin,
->=20
-> On Fri, 22 Sep 2023 15:31:29 +0200
-> Petr Tesa=C5=99=C3=ADk <petr@tesarici.cz> wrote:
->=20
-> >[...]=20
-> > On Mon, 18 Sep 2023 16:45:34 +0100
-> > Catalin Marinas <catalin.marinas@arm.com> wrote:
-> >  =20
-> > > On Sun, Sep 17, 2023 at 11:47:41AM +0200, Petr Tesa=C5=99=C3=ADk wrot=
-e:   =20
-> >[...] =20
-> > > > Ah... You may have a point after all if this sequence of events is
-> > > > possible:
-> > > >=20
-> > > > - CPU 0 writes new value to mem->pools->next in swiotlb_dyn_alloc().
-> > > >=20
-> > > > - CPU 1 observes the new value in swiotlb_find_slots(), even though=
- it
-> > > >   is not guaranteed by any barrier, allocates a slot and sets the
-> > > >   dev->dma_uses_io_tlb flag.
-> > > >=20
-> > > > - CPU 1 (driver code) writes the returned buffer address into its
-> > > >   private struct. This write is ordered after dev->dma_uses_io_tlb
-> > > >   thanks to the smp_wmb() in swiotlb_find_slots().
-> > > >=20
-> > > > - CPU 2 (driver code) reads the buffer address, and DMA core passes=
- it
-> > > >   to is_swiotlb_buffer(), which contains smp_rmb().
-> > > >=20
-> > > > - IIUC CPU 2 is guaranteed to observe the new value of
-> > > >   dev->dma_uses_io_tlb, but it may still use the old value of
-> > > >   mem->pools->next, because the write on CPU 0 was not ordered
-> > > >   against anything. The fact that the new value was observed by CPU=
- 1
-> > > >   does not mean that it is also observed by CPU 2.     =20
-> > >=20
-> > > Yes, that's possible. On CPU 1 there is a control dependency between =
-the
-> > > read of mem->pools->next and the write of dev->dma_uses_io_tlb but I
-> > > don't think this is sufficient to claim multi-copy atomicity (if CPU 1
-> > > sees mem->pools->next write by CPU 0, CPU 2 must see it as well), at
-> > > least not on all architectures supported by Linux. memory-barriers.txt
-> > > says that a full barrier on CPU 1 is needed between the read and writ=
-e,
-> > > i.e. smp_mb() before WRITE_ONCE(dev->dma_uses_io_tlb). You could add =
-it
-> > > just before "goto found" in swiotlb_find_slots() since it's only need=
-ed
-> > > on this path.   =20
-> >=20
-> > Let me check my understanding. This smp_mb() is not needed to make sure
-> > that the write to dev->dma_uses_io_tlb cannot be visible before the
-> > read of mem->pools->next. Since stores are not speculated, that
-> > ordering is provided by the control dependency alone.
-> >=20
-> > But a general barrier ensures that a third CPU will observe the write to
-> > mem->pools->next after the read of mem->pools->next. Makes sense. =20
->=20
-> Now that I'm writing the patch, I get your idea to replace WRITE_ONCE()
-> with smp_store_release(). Since a full memory barrier is required for
-> multicopy atomicity, it is not "more than I need". Instead, the
-> ordering contraints may be possibly restricted to "CPUs participating
-> in a release-acquire chain" if I also replace READ_ONCE() in
-> is_swiotlb_buffer() with smp_read_acquire().
->=20
-> I believe it does not matter that the CPU which writes a new value to
-> mem->pools->next in swiotlb_dyn_alloc() does not participate in the
-> chain, because the value must have been visible to the CPU which
-> executes swiotlb_find_slots() and which does participate in the chain.
->=20
-> Let me double-check this thinking with a litmus test.
+> virtio isn't setting ops->pgsize_bitmap for the sake of direct mappings
+> either; it sets it once it's discovered any instance, since apparently it's
+> assuming that all instances must support identical page sizes, and thus once
+> it's seen one it can work "normally" per the core code's assumptions. It's
+> also I think the only driver which has a "finalise" bodge but *can* still
+> properly support map-before-attach, by virtue of having to replay mappings
+> to every new endpoint anyway.
 
-Hm. I didn't have much luck with smp_store_release(), because I need
-to ensure ordering of the SUBSEQUENT store (by a device driver).
+Well it can't quite do that since it doesn't know the geometry - it
+all is sort of guessing and hoping it doesn't explode on replay. If it
+knows the geometry it wouldn't need finalize...
 
-However, inserting smp_mb() _after_ WRITE_ONCE(dev->dma_uses_io_tlb)
-seems to be enough to ensure proper ordering. I could even remove the
-write memory barrier in swiotlb_dyn_alloc().
+> > What do you think about something like this to replace
+> > iommu_create_device_direct_mappings(), that does enforce things
+> > properly?
+> 
+> I fail to see how that would make any practical difference. Either the
+> mappings can be correctly set up in a pagetable *before* the relevant device
+> is attached to that pagetable, or they can't (if the driver doesn't have
+> enough information to be able to do so) and we just have to really hope
+> nothing blows up in the race window between attaching the device to an empty
+> pagetable and having a second try at iommu_create_device_direct_mappings().
+> That's a driver-level issue and has nothing to do with pgsize_bitmap either
+> way.
 
-This is my first time using herd7, so I can only hope I got everything
-right. FWIW this is my litmus test:
+Except we don't detect this in the core code correctly, that is my
+point. We should detect the aperture conflict, not pgsize_bitmap to
+check if it is the first or second try.
 
-C swiotlb-new-pool
-
-(*
- * Result: Never
- *
- * Check that a newly allocated pool is always visible when the correspondi=
-ng
- * swiotlb buffer is visible.
- *)
-
-{}
-
-P0(int *pool)
-{
-	/* swiotlb_dyn_alloc() */
-	WRITE_ONCE(*pool, 999);
-}
-
-P1(int *pool, int *flag, int *buf)
-{
-	/* swiotlb_find_slots() */
-	int r0 =3D READ_ONCE(*pool);
-	if (r0) {
-		WRITE_ONCE(*flag, 1);
-		smp_mb();
-	}
-
-	/* device driver (presumed) */
-	WRITE_ONCE(*buf, r0);
-}
-
-P2(int *pool, int *flag, int *buf)
-{
-	/* device driver (presumed) */
-	int r1 =3D READ_ONCE(*buf);
-
-	/* is_swiotlb_buffer() */
-	int r2;
-	int r3;
-
-	smp_rmb();
-	r2 =3D READ_ONCE(*flag);
-	if (r2) {
-		r3 =3D READ_ONCE(*pool);
-	}
-}
-
-exists (2:r1<>0 /\ 2:r3=3D0) (* Not flagged or pool not found. *)
-
-Petr T
+Jason
