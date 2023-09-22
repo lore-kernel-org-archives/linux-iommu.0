@@ -1,120 +1,305 @@
-Received: from mail-qv1-f42.google.com (mail-qv1-f42.google.com [209.85.219.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.136])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0EC3C16429
-	for <iommu@lists.linux.dev>; Thu, 21 Sep 2023 23:34:04 +0000 (UTC)
-Received: by mail-qv1-f42.google.com with SMTP id 6a1803df08f44-65641c171cbso8035416d6.3
-        for <iommu@lists.linux.dev>; Thu, 21 Sep 2023 16:34:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1695339243; x=1695944043; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=GedEWxpKSzrGPRM6lMkTBIu3LFHKqvL1k9LSqu1VR6k=;
-        b=CKOU0Dq9AskLlNS59zbs7JUNIiXXIAzS/kY1b4pSrTixPWUXAbA49HaV8ULNyFbmb8
-         qch5bpoMoaNR/c/uhuaFA62x4RP/eh5h3xUCBJ8+H0mLy94akarnvjR7TBfD8298C/cR
-         ZFuoH0YZbRFeS+z3FOr4lKE/XpSpw9YHRs3w0J4w+3sU8qlnJ4x+2HK1aSvy5DYrjysk
-         ZNUhA1MxDBkd07IcQXX/CfGlNxL9YUDzvNlg7PA0Ga5zwXVAdAH2GP5wHKjVmUd26oTw
-         IbeeY6K0C4i6+N8mKkcunoc8K4qYm7Bqu22ZQs1vtAQA4TRrHb1eaPIS1QgnZzuBURyJ
-         T95g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1695339243; x=1695944043;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=GedEWxpKSzrGPRM6lMkTBIu3LFHKqvL1k9LSqu1VR6k=;
-        b=QIVQ+19y4Xmm0eEesYscQAX8hn9Mb89g96BbmqvU9+Ci/LxcsyYqffjuvuK6ulaVv9
-         QVJ2smqZdPzxykfofRGZb9Y9KVUoX3BkcaKAbQKyU4sy2TJOuMM6JU8YFmjUCWninAWI
-         Pca85S71ylVI+P1wBaItmEKsQdul/Oho6VaCVg4uFc3AwcBXbUdBntDmRoZbcu0mFe8m
-         jo2sKSOuDYOoh1l6oLgZXjCWVlMM+nFBxJoNz27mkk3mJO1ACdLx56/Ge5PAelqK44CG
-         QPdLRFiuQP+A7O+VdMB07ns25Hbxt7DTOOUgMP2mYXSiU9oH2SsYsarGvfkwHcCMk8fl
-         7tLA==
-X-Gm-Message-State: AOJu0YyVDE/ZdBWsboqq9rwyib0SIwTVoXVGz9eVEfh7U2LH+tMp/xks
-	4ZksgccBw89QgTCt0/D7Rb+AyA==
-X-Google-Smtp-Source: AGHT+IGyPvvaH53YFg/+nfLkgh+wJ6GTD1U2RciFZyYgWxuFiG/EgPxEd0ck5941lJVaQIWktR+A+g==
-X-Received: by 2002:a05:6214:4602:b0:658:310c:f6ca with SMTP id oq2-20020a056214460200b00658310cf6camr7598389qvb.42.1695339243709;
-        Thu, 21 Sep 2023 16:34:03 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-26-201.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.26.201])
-        by smtp.gmail.com with ESMTPSA id o3-20020a0ce403000000b006263a9e7c63sm947595qvl.104.2023.09.21.16.34.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Sep 2023 16:34:03 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1qjTBK-000Uup-Kq;
-	Thu, 21 Sep 2023 20:34:02 -0300
-Date: Thu, 21 Sep 2023 20:34:02 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: "Liu, Jingqi" <jingqi.liu@intel.com>
-Cc: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>, iommu@lists.linux.dev,
-	kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 09/12] iommu: Make iommu_queue_iopf() more generic
-Message-ID: <20230921233402.GC13795@ziepe.ca>
-References: <20230914085638.17307-1-baolu.lu@linux.intel.com>
- <20230914085638.17307-10-baolu.lu@linux.intel.com>
- <f20b9e78-3a63-ca3e-6c04-1d80ec857898@intel.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 831E4377
+	for <iommu@lists.linux.dev>; Fri, 22 Sep 2023 01:07:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1695344859; x=1726880859;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=KYRxsPZkdPGN4MD0B75y6lI6c7LYLscZmHIZ6RWU3l0=;
+  b=EmJPViKfcNSFqnau6WMmFMaqbsmfytVxSGH9EorbqCUTHcn7mzMXw01H
+   AeRCYbaGzV15PN+nnOkJs7GuXqvcTgTQHNcPdSMiYoiWscLUyq6M3++1R
+   YzbJF8OURG3PHPczGG2UxBiVuVgYkJg35/YNkwOzAi1lk3XL5rCb6CPmM
+   OWvK+l59kBMDGnkd+FnctoT7BTLGLi9xbf81o0e4tw+tPhPBKGuuSRppB
+   o9tQpS1OJia80Dp3k8J/RBSoZIA2o4MocrVgGMdP3N20slj0ffq81LCr/
+   d872rvm/3Hp/hQnNci2X4K3pIy0P4Ses5SOCyZqgNZLAUTfnvrlhIjMvf
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10840"; a="360095488"
+X-IronPort-AV: E=Sophos;i="6.03,167,1694761200"; 
+   d="scan'208";a="360095488"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Sep 2023 18:07:38 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10840"; a="776652715"
+X-IronPort-AV: E=Sophos;i="6.03,167,1694761200"; 
+   d="scan'208";a="776652715"
+Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
+  by orsmga008.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 21 Sep 2023 18:07:38 -0700
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.32; Thu, 21 Sep 2023 18:07:37 -0700
+Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
+ orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.32 via Frontend Transport; Thu, 21 Sep 2023 18:07:37 -0700
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (104.47.57.173)
+ by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.32; Thu, 21 Sep 2023 18:07:37 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=EQWAivzMDa//dgsdst0sSiRe1Uzzyk5/nCJIcWbdHLq5+OQ3Dgg/tNkRL3vU1G9XZmBFpobyd16vBNCvBeKLV0mzuLRm9cmh1h+H9HjgKeP03OHIVuuOTNkjeqTO7jR0il3+hIVjerH0RMu0YkMz6UvbjaLZ3rc50vRDALBxjiugdpJIeLi8NKmV8Z4WxpLWwxuzq1ADFQh6J6y4RgQCCBUOUedEwOvPqNL2uPfEhs3/TX1A8D8YQjf44ec9Uebj67GLgyTvuYClkA4+BNpUG/9W8me87LJPhLrwBN0fJJPEYjJEXBmwdqPqFOfV5MqNh5aCCjT5U06ou3+kuSo4sw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=t/Gy4h9lCi7km9TBWac0uofHc6Xwa14hyLZ1pZiNE5E=;
+ b=F+WfQI0ciPkmJzgGNfbGWk0rw0mYcAnLPTOP8XaJUkYAekJ/nFAFtcDiXnUJtaM6yxlyPirTDXGD6nhbpyZh9XT7QRTb8XTNug3BJpk7iN7Eg1hH//i+eeIsP2N5G9wCwiBTjECv0Bg/PVWJYO4PcvQZDWAO7A0ccW8z11Qp/EsvzY61l3QlhrN84AQuCREQX6m+cMA9izmA+uNiieo7GGiBsFKyafSsZ6QfyYLxrAATKsI84kBcCcqxJW9Fn5lBayWIB5o5DX4byaSIlNQlZB6BadMO2AgF7F8xRrdNkQCrzFWfgZ6KDkDFq1O5Y7yCHzd8RAr+xW31vM3NrV04/A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from MW5PR11MB5881.namprd11.prod.outlook.com (2603:10b6:303:19d::14)
+ by BL3PR11MB6433.namprd11.prod.outlook.com (2603:10b6:208:3b9::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6792.28; Fri, 22 Sep
+ 2023 01:07:35 +0000
+Received: from MW5PR11MB5881.namprd11.prod.outlook.com
+ ([fe80::6c46:eead:bf23:5d5c]) by MW5PR11MB5881.namprd11.prod.outlook.com
+ ([fe80::6c46:eead:bf23:5d5c%4]) with mapi id 15.20.6792.026; Fri, 22 Sep 2023
+ 01:07:35 +0000
+Message-ID: <40c82e24-cff3-1f96-b469-fbfd18238d5d@intel.com>
+Date: Fri, 22 Sep 2023 09:07:28 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Firefox/102.0 Thunderbird/102.15.1
+Subject: Re: [PATCH v4 5/6] iommu: Support mm PASID 1:n with sva domains
+To: Jason Gunthorpe <jgg@ziepe.ca>
+CC: Kevin Tian <kevin.tian@intel.com>, Lu Baolu <baolu.lu@linux.intel.com>,
+	Michael Shavit <mshavit@google.com>, Vasant Hegde <vasant.hegde@amd.com>,
+	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>
+References: <20230912125936.722348-1-tina.zhang@intel.com>
+ <20230912125936.722348-6-tina.zhang@intel.com>
+ <20230921233133.GB13795@ziepe.ca>
+Content-Language: en-US
+From: Tina Zhang <tina.zhang@intel.com>
+In-Reply-To: <20230921233133.GB13795@ziepe.ca>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SI2PR02CA0043.apcprd02.prod.outlook.com
+ (2603:1096:4:196::12) To MW5PR11MB5881.namprd11.prod.outlook.com
+ (2603:10b6:303:19d::14)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <f20b9e78-3a63-ca3e-6c04-1d80ec857898@intel.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: MW5PR11MB5881:EE_|BL3PR11MB6433:EE_
+X-MS-Office365-Filtering-Correlation-Id: e54caf9c-23c1-4751-1052-08dbbb084e3e
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: lU8pZO2jQ4zRb5ir9HMGLeoff5N3noCQ1dWlba2ACyUQqMtx158bH+H2MaosrB9ycZq4OPeV4FbPMlLsqCy9Kwj+sP2eM7lU89RkDurZ+NCg11eFiMZtK3NrvPH+8Z2F2TcO37AO918ZzNIQ6ob3TP7IDSz0smhFsQliF0o6MFH5pME3rGfcnlpZjEaY1lG1dV9zvqtPhwHlnuIXJh7eqSwQinYJ/cE0Tcrfp4UDz+Y9y8MpPIMklmJcR4tiIFKS53RSsuH4HcED74KYzOj9GHBndFeNz8utEXRw+KrrVFpClANuCQrb4uXOBwoynoym0ZCWoQOOLT4+nN3w4vRrTAULd0vIpqVj01uNZcRhU6t2JktvZ0xqkYTI51XpWTiuPfklZEDaKIEKrlcoSJ4mlX3PJn0uQA7ur8PRY5NEQybFUrKfVt39s3fI6ZNNU7L7D9mGMq/Q7eXCj4+xKG+FFogdHnpP10NGLPDrm9OExQGNtiS0ddap479Jpf9GOayd1zb0Ku+xXML2iQ9sWpZ3rbyshNaR+2SImrzEOxD1jred+8RDECjT99HeJ+QlAG+PbJfkwxyaZLL80sabJpXb+8slhVVUNVa/r6FpFjoC3h7kFnrh3LgCBOHUyWlmgIE7vYMuAk0qu6B0vUnBdRnPFA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW5PR11MB5881.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(39860400002)(366004)(376002)(136003)(396003)(346002)(451199024)(186009)(1800799009)(6666004)(6512007)(53546011)(6486002)(36756003)(6506007)(82960400001)(31696002)(83380400001)(86362001)(38100700002)(2616005)(66946007)(54906003)(66476007)(6916009)(66556008)(41300700001)(26005)(316002)(8676002)(4326008)(2906002)(5660300002)(44832011)(8936002)(31686004)(478600001)(45980500001)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?Tm5mMzREZncxVVgxdHFzVk5pb1A1L0hLRGxDaWZlNkpnbjQyc0ZrQmphSGZv?=
+ =?utf-8?B?UHp4OC9jMXZHaXFEdmlOU3o1dWt6QnEvWnZuU3o1V3FyMTNab1ZNUHIxUGk2?=
+ =?utf-8?B?TW05aElENWRFaGpRQ0VIVGFMWitLQ0hHZDg3Mm9jQjRtK2pOcmdVbmw2Z0dK?=
+ =?utf-8?B?YWpMbzB4TEdpQWhnLzBxM0wyamRmMytwTDFFTFBmVDdYbnNQM2JWbDBvUHJE?=
+ =?utf-8?B?YXI2TTFZamZFSys3ZEVNSS9KRmlQaVlpa1FVQW5YR0JHTko0d3V2M28wOFlL?=
+ =?utf-8?B?d3AvZm1BVWhrdWlmeHdMOFFoeURvMEpocXA0UTNvVXNuZWlVYlI2QXVJSkRa?=
+ =?utf-8?B?VWNldWtON2xSUk5lWGRXeDYrMEpzV3B6U3Bob1JFbzgvRm5jSXBBTUhYMjZC?=
+ =?utf-8?B?aGRrRVRqZ2doY29WREQ3RVZQa2Jmai9xSStjNFJIRVV6dHF6YWJuTEY0TExJ?=
+ =?utf-8?B?WGQrTjk3Y24rMVduTUM4UllPaUJlamJHaG95bmxIUjdhcWVyZzhNTitiYVRp?=
+ =?utf-8?B?VHkzT0NYWDBUOERzMkgramN0eEd6c3R3bUhhL3NmUHVrTE9tZHV1b2w3dWRF?=
+ =?utf-8?B?djNNWFFzSUJiRUk3YmZhK3lqYVBoQWVZTVd4UUQ5K1g1YWxJN3hSS3ZzNFVQ?=
+ =?utf-8?B?Z2s2cVkrNFNNRW9ZblZUV3RLZkhLdGtrSUlDSE1kRzJlaXdvS21hR1A5dE1v?=
+ =?utf-8?B?SVZxQS9XZmV3Szc3RmlGbXN2bjdaVVhEbUhwQ1hXTGN3R1l1YXRzSDF6OXly?=
+ =?utf-8?B?My9EaVNVU2tSeXFZUXdRSUNlcWpiYVBCTjBYM0l5c2ZLc2hYV1UwOVRQK3Ra?=
+ =?utf-8?B?UWVLS0hKWWJJeHNlUGZscTdwQ09mMS9HNCsreTFIcFQ3Ym5pd3ZEaXZKUTh5?=
+ =?utf-8?B?QnlrTi91bWxER0JpYllObkFvQ3pRdlBBbHBHYWtHL0JCKyswWVZzVFAzcjJt?=
+ =?utf-8?B?RHp6bmxsU2VXQ0U2eStzcjdabjQ5eEpTZFIzODBtSW9HWFJ0YmhyQzhpMHhH?=
+ =?utf-8?B?UnRSa0ppTlpRTmtKK2hUQ2RsS3g0TWNzT1htaVovT2g0RHowa0xIRlhOdmF3?=
+ =?utf-8?B?dDRzTVovQ3J0R1NPVlUvRHRvcWQzQkxQQ2E2NkpzOG9OcnVkWFk4OXd3WGVP?=
+ =?utf-8?B?TGxVL3pLZGlhSm1sZzB0eXgwckJ2VWdueVppeG1Randpc09kb2xxbE11RDFs?=
+ =?utf-8?B?QjdpQXJydWliL0d2aG1NR1FOM3gxL2VLdkl6OExmMmRlejZGZXFHbUovMTVO?=
+ =?utf-8?B?YUlpYWJKdWc3WnpRYWRSaSszTndsQmJ4eHJiaVlaL0NiS1NMa0h4eHcram51?=
+ =?utf-8?B?NGZnQ281WnpsM3EzTXdOdEI3RmFjNjBpNnVMcnY2YTRHUWJrRVlob2VlZmhk?=
+ =?utf-8?B?NU5QM0N4UDdSWDNzRXhjek5VbDAyMXk4NjVKaXJmMW9vbmJCS3lWMTRyVnYv?=
+ =?utf-8?B?bzNvNXUxdEVSZFlUdUZxS0liLzN4NXV5d2RsZTBkOGswM1JYN3l0WTZScXUx?=
+ =?utf-8?B?Nk45MDRadS84R3lWRXJRNms1djNVK3ZSa2RybkNBQUp2My9abjRDVm8zeVB0?=
+ =?utf-8?B?V3VWcVJrWUJkN3duVjJ1OW1IVGp0VHptRG5SZEZlOUJzT1dubTNCZW56MkN4?=
+ =?utf-8?B?QmFOS2lFczVLSW1oUUwzYjdNbWp0RlB2N0ZEellpZ3lITFpuL1lsOXhvT1hD?=
+ =?utf-8?B?RGo5b21tN1FFNnBNQlV6ZFV4SXowWk42a1Y0akp5VlJPa1lzUThiaUZvcFBv?=
+ =?utf-8?B?dkp1M2Z4N2ZKZlNxODJkdXZtRE5ZZ2wrNWJieEx2dUx5c3h4Tjh2d2NaZmt2?=
+ =?utf-8?B?TlFzSFZkZEpKb2RXNGJ1V1RNcERHaW5SUVNPWkdXdXg4dVZTZjNmeFVaaDVI?=
+ =?utf-8?B?Q0cvS2hSbEFTNmNkQWJoWVVVZk00L0cvRzFyeEp4L2FPSEc1NDFacXFaUjBn?=
+ =?utf-8?B?ZDdwVDV1bExuQXNtbS9SVFlDRW1GaVNWa0h0S0pBWi9sSkxTY3l3Q1ZnTEdw?=
+ =?utf-8?B?RWZ2a0xoaGdpQWhYeE9sUmhZS2tYRWQrT0FqQTdyTnV2TGtId0tOdEJkQjVs?=
+ =?utf-8?B?dEUrd3N3Z0ZvVTkwZTMrekNHS3NzQlVCZHhvTHRRM2FxSlAvMHQrUS84Q3li?=
+ =?utf-8?Q?8+bJjSPgsPxe/+TUeuwbaMNX9?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: e54caf9c-23c1-4751-1052-08dbbb084e3e
+X-MS-Exchange-CrossTenant-AuthSource: MW5PR11MB5881.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Sep 2023 01:07:35.2545
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: QljY4W6NJMiy3p8L4HzyV2Touha8vGWE93NxlwuQfr/Ahbd++hX4sAHnfzLsWFGAOsOQmcVH1E8Y+0rtqrL3bQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL3PR11MB6433
+X-OriginatorOrg: intel.com
 
-On Thu, Sep 21, 2023 at 11:25:56PM +0800, Liu, Jingqi wrote:
-> 
-> On 9/14/2023 4:56 PM, Lu Baolu wrote:
-> > Make iommu_queue_iopf() more generic by making the iopf_group a minimal
-> > set of iopf's that an iopf handler of domain should handle and respond
-> > to. Add domain parameter to struct iopf_group so that the handler can
-> > retrieve and use it directly.
-> > 
-> > Change iommu_queue_iopf() to forward groups of iopf's to the domain's
-> > iopf handler. This is also a necessary step to decouple the sva iopf
-> > handling code from this interface.
-> > 
-> > Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> > ---
-> >   include/linux/iommu.h      |  4 ++--
-> >   drivers/iommu/iommu-sva.h  |  6 ++---
-> >   drivers/iommu/io-pgfault.c | 49 ++++++++++++++++++++++++++++----------
-> >   drivers/iommu/iommu-sva.c  |  3 +--
-> >   4 files changed, 42 insertions(+), 20 deletions(-)
-> > 
-> ......
-> 
-> > @@ -112,6 +110,7 @@ int iommu_queue_iopf(struct iommu_fault *fault, struct device *dev)
-> >   {
-> >   	int ret;
-> >   	struct iopf_group *group;
-> > +	struct iommu_domain *domain;
-> >   	struct iopf_fault *iopf, *next;
-> >   	struct iommu_fault_param *iopf_param;
-> >   	struct dev_iommu *param = dev->iommu;
-> > @@ -143,6 +142,19 @@ int iommu_queue_iopf(struct iommu_fault *fault, struct device *dev)
-> >   		return 0;
-> >   	}
-> > +	if (fault->prm.flags & IOMMU_FAULT_PAGE_REQUEST_PASID_VALID)
-> > +		domain = iommu_get_domain_for_dev_pasid(dev, fault->prm.pasid, 0);
-> > +	else
-> > +		domain = iommu_get_domain_for_dev(dev);
-> > +
-> > +	if (!domain || !domain->iopf_handler) {
-> 
-> Does it need to check if 'domain' is error ?  Like below:
-> 
->          if (!domain || IS_ERR(domain) || !domain->iopf_handler)
+Hi Jason,
 
-Urk, yes, but not like that
+On 9/22/23 07:31, Jason Gunthorpe wrote:
+> On Tue, Sep 12, 2023 at 08:59:35PM +0800, Tina Zhang wrote:
+>> diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
+>> index 0f956ecd0c9b..79779bbef653 100644
+>> --- a/drivers/iommu/iommu-sva.c
+>> +++ b/drivers/iommu/iommu-sva.c
+>> @@ -15,6 +15,7 @@ static DEFINE_MUTEX(iommu_sva_lock);
+>>   static int iommu_sva_alloc_pasid(struct mm_struct *mm, struct device *dev)
+>>   {
+>>   	ioasid_t pasid;
+>> +	struct iommu_mm_data *iommu_mm;
+>>   	int ret = 0;
+>>   
+>>   	if (!arch_pgtable_dma_compat(mm))
+>> @@ -28,12 +29,22 @@ static int iommu_sva_alloc_pasid(struct mm_struct *mm, struct device *dev)
+>>   		goto out;
+>>   	}
+>>   
+>> +	iommu_mm = kzalloc(sizeof(struct iommu_mm_data), GFP_KERNEL);
+>> +	if (!iommu_mm) {
+>> +		ret = -ENOMEM;
+>> +		goto out;
+>> +	}
+>> +
+>>   	pasid = iommu_alloc_global_pasid(dev);
+>>   	if (pasid == IOMMU_PASID_INVALID) {
+>> +		kfree(iommu_mm);
+>>   		ret = -ENOSPC;
+>>   		goto out;
+>>   	}
+>> -	mm->pasid = pasid;
+>> +	iommu_mm->pasid = pasid;
+>> +	INIT_LIST_HEAD(&iommu_mm->sva_domains);
+>> +	mm->iommu_mm = iommu_mm;
+>> +
+>>   	ret = 0;
+>>   out:
+>>   	mutex_unlock(&iommu_sva_lock);
+>> @@ -73,16 +84,12 @@ struct iommu_sva *iommu_sva_bind_device(struct device *dev, struct mm_struct *mm
+>>   
+>>   	mutex_lock(&iommu_sva_lock);
+>>   	/* Search for an existing domain. */
+>> -	domain = iommu_get_domain_for_dev_pasid(dev, mm_get_pasid(mm),
+>> -						IOMMU_DOMAIN_SVA);
+>> -	if (IS_ERR(domain)) {
+>> -		ret = PTR_ERR(domain);
+>> -		goto out_unlock;
+>> -	}
+>> -
+>> -	if (domain) {
+>> -		domain->users++;
+>> -		goto out;
+>> +	list_for_each_entry(domain, &mm->iommu_mm->sva_domains, next) {
+>> +		ret = iommu_attach_device_pasid(domain, dev, mm_get_pasid(mm));
+>> +		if (!ret) {
+>> +			domain->users++;
+>> +			goto out;
+>> +		}
+>>   	}
+>>   
+>>   	/* Allocate a new domain and set it on device pasid. */
+>> @@ -96,6 +103,8 @@ struct iommu_sva *iommu_sva_bind_device(struct device *dev, struct mm_struct *mm
+>>   	if (ret)
+>>   		goto out_free_domain;
+>>   	domain->users = 1;
+>> +	list_add(&domain->next, &mm->iommu_mm->sva_domains);
+>> +
+>>   out:
+>>   	mutex_unlock(&iommu_sva_lock);
+>>   	handle->dev = dev;
+>> @@ -128,8 +137,9 @@ void iommu_sva_unbind_device(struct iommu_sva *handle)
+>>   	struct device *dev = handle->dev;
+>>   
+>>   	mutex_lock(&iommu_sva_lock);
+>> +	iommu_detach_device_pasid(domain, dev, pasid);
+>>   	if (--domain->users == 0) {
+>> -		iommu_detach_device_pasid(domain, dev, pasid);
+>> +		list_del(&domain->next);
+>>   		iommu_domain_free(domain);
+>>   	}
+>>   	mutex_unlock(&iommu_sva_lock);
+>> @@ -209,4 +219,5 @@ void mm_pasid_drop(struct mm_struct *mm)
+>>   		return;
+>>   
+>>   	iommu_free_global_pasid(mm_get_pasid(mm));
+>> +	kfree(mm->iommu_mm);
+>>   }
+>> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+>> index b9c9f14a95cc..c61bc45d5a82 100644
+>> --- a/include/linux/iommu.h
+>> +++ b/include/linux/iommu.h
+>> @@ -109,6 +109,11 @@ struct iommu_domain {
+>>   		struct {	/* IOMMU_DOMAIN_SVA */
+>>   			struct mm_struct *mm;
+>>   			int users;
+>> +			/*
+>> +			 * Next iommu_domain in mm->iommu_mm->sva-domains list
+>> +			 * protected by iommu_sva_lock.
+>> +			 */
+>> +			struct list_head next;
+>>   		};
+>>   	};
+>>   };
+>> @@ -1186,17 +1191,13 @@ static inline bool tegra_dev_iommu_get_stream_id(struct device *dev, u32 *stream
+>>   }
+>>   
+>>   #ifdef CONFIG_IOMMU_SVA
+>> -static inline void mm_pasid_init(struct mm_struct *mm)
+>> -{
+>> -	mm->pasid = IOMMU_PASID_INVALID;
+>> -}
+>>   static inline bool mm_valid_pasid(struct mm_struct *mm)
+>>   {
+>> -	return mm->pasid != IOMMU_PASID_INVALID;
+>> +	return mm->iommu_mm ? true : false;
+>>   }
+> 
+> HUm this isn't locked very nicely.
+> 
+> Above do
+> 
+> smp_store_release(&mm->iommu_mm, iommu_mm);
+> 
+> And then do
+> 
+>    return READ_ONCE(mm->iommu_mm)
+Good suggestion. Thanks.
 
-The IF needs to be moved into the else block as each individual
-function has its own return convention.
+> 
+> (no need for ternaries with bools, compiler generates it automatically)
+> 
+> 
+>>   static inline u32 mm_get_pasid(struct mm_struct *mm)
+>>   {
+>> -	return mm->pasid;
+>> +	return mm->iommu_mm ? mm->iommu_mm->pasid : IOMMU_PASID_INVALID;
+>>   }
+> 
+> Then this should be
+> 
+> struct iommu_mm_data *iommu_mm = READ_ONCE(mm->iommu_mm);
+> 
+> if (!iommu_mm)
+>     return IOMMU_PASID_INVALID;
+> return iommu_mm->pasid;
+> 
+> Keeping in mind that the kfree(mm->iommu_mm) being placed in the
+> mm_drop is critical to this working safely.
+Right. Thanks.
 
-Jason
+
+Regards,
+-Tina
+> 
+> Otherwise the logic looks OK.
+> 
+> Jason
+> 
