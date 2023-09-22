@@ -1,259 +1,97 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 38B8A171B9
-	for <iommu@lists.linux.dev>; Fri, 22 Sep 2023 10:22:46 +0000 (UTC)
-Received: from pps.filterd (m0279873.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 38M9AJ80029275;
-	Fri, 22 Sep 2023 10:22:18 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
- mime-version : subject : to : references : cc : from : in-reply-to :
- content-type : content-transfer-encoding; s=qcppdkim1;
- bh=SM+FJHOAvc9X1k5lXSldfO6KxCV+8nOx/9yDPCvrn/s=;
- b=GOImxqVGrUzKdVKNSDIMyLkrDtmiRA68/JGvkmb7RwPS59GTzHbSo1hTg7Q8/Pv2muR6
- 3Mj91i1q9aqPWfPMi9N7WsHo98oCx48TF7/kCfP3hFL1sMKva8G93cBnOoQyrZB4QhLJ
- SFySzeZCpdNQNVJBlA10BnMkFyQM0oQTIlnXYC1DQqnXkAMQMwS6yGyvc5IjRgg++SbZ
- l+HWBgpm1ctm/i8CN5lAbIyhZUVpovu0JpWhdYhB7p4ZcCDt62M84iY9+ruGW/6T6zFK
- K7vKEe5IvTYUy7ogyvNZ9HoS99U2YF+ykfNEkiR98B8A39GAoIGt4FT3lYmFp1hzwwb0 FQ== 
-Received: from nalasppmta02.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3t8u6rsj0s-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 22 Sep 2023 10:22:18 +0000
-Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-	by NALASPPMTA02.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 38MAMHVv004095
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 22 Sep 2023 10:22:17 GMT
-Received: from [10.214.227.50] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.36; Fri, 22 Sep
- 2023 03:20:09 -0700
-Message-ID: <a01e7e60-6ead-4a9e-ba90-22a8a6bbd03f@quicinc.com>
-Date: Fri, 22 Sep 2023 15:50:05 +0530
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 502D99CA4C
+	for <iommu@lists.linux.dev>; Fri, 22 Sep 2023 10:39:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87E26C433C8;
+	Fri, 22 Sep 2023 10:39:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1695379168;
+	bh=AM9mXyWNom/7C0Z2nwwzwPj8EXnzn7AMdkX3ObUV7Ls=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=VOIbbxeTMTzG0Jr5xF2VjSZkUWgrYY0n8we5/V/MHM6oaWLHMFHvxPjd5wvc4GDDB
+	 6VfffhJcgLcMq45eqb7LhpdqwKvM3A03ii7Kq6VN6Umm3kbZHWxA2SLz2k7uqEuRCF
+	 NfzEmy8d/7P/gA4yGM7qA/sTiI4vHlJ3XW4yoGWdoqdLXufAXV5ST0b5BWIxZoTLxN
+	 /CdvUQ0mWtGXxEsbN4Qcnc1HqOqyYp8ieHddsAOoKSezCrfWBtHXCIl4qBp+jW1gnW
+	 wBbtrioU6hCekat5XsuC9gYRVlvTw8cKvTiDi61VxGXiUiWoujwK6uJEzXjylTYYyh
+	 9hTkghKty4F8w==
+From: Will Deacon <will@kernel.org>
+To: Nicolin Chen <nicolinc@nvidia.com>,
+	robin.murphy@arm.com
+Cc: catalin.marinas@arm.com,
+	kernel-team@android.com,
+	Will Deacon <will@kernel.org>,
+	joro@8bytes.org,
+	jean-philippe@linaro.org,
+	iommu@lists.linux.dev,
+	apopple@nvidia.com,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	jgg@nvidia.com
+Subject: Re: [PATCH v2] iommu/arm-smmu-v3: Fix soft lockup triggered by arm_smmu_mm_invalidate_range
+Date: Fri, 22 Sep 2023 11:39:23 +0100
+Message-Id: <169537774299.3625412.855050231563231169.b4-ty@kernel.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20230920052257.8615-1-nicolinc@nvidia.com>
+References: <20230920052257.8615-1-nicolinc@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [RFC PATCH] iommu/arm-smmu: Introduction of ACTLR for custom
- prefetch setting
-Content-Language: en-US
-To: Robin Murphy <robin.murphy@arm.com>, <will@kernel.org>, <joro@8bytes.org>,
-        <jgg@ziepe.ca>, <baolu.lu@linux.intel.com>, <jsnitsel@redhat.com>,
-        <u.kleine-koenig@pengutronix.de>, <vladimir.oltean@nxp.com>,
-        <robh@kernel.org>
-References: <20230915195221.25735-1-quic_bibekkum@quicinc.com>
- <a682b20a-c87b-65c9-dcf0-abd40fbc4cdd@arm.com>
-CC: <linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
-        <linux-kernel@vger.kernel.org>,
-        Charan Teja Kalla
-	<quic_charante@quicinc.com>,
-        <quic_guptap@quicinc.com>, Pavan Kondeti
-	<quic_pkondeti@quicinc.com>,
-        <quic_vjitta@quicinc.com>, <quic_pbrahma@quicinc.com>
-From: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
-In-Reply-To: <a682b20a-c87b-65c9-dcf0-abd40fbc4cdd@arm.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: XOIio_pfaiR1yTi_e8_3WyurMqV7ED27
-X-Proofpoint-ORIG-GUID: XOIio_pfaiR1yTi_e8_3WyurMqV7ED27
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.267,Aquarius:18.0.980,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2023-09-22_07,2023-09-21_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- lowpriorityscore=0 adultscore=0 mlxlogscore=986 impostorscore=0
- malwarescore=0 mlxscore=0 spamscore=0 bulkscore=0 phishscore=0
- suspectscore=0 clxscore=1011 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2309180000 definitions=main-2309220087
 
-
-
-On 9/18/2023 4:49 PM, Robin Murphy wrote:
-> On 2023-09-15 20:52, Bibek Kumar Patro wrote:
->> Hi community,
->>
->> I have a requirement which I'm looking for inputs from the community.
->> Currently in QCOM SOCs ACTLR register is used to store the custom
->> prefetcher setting by each client opting to use this feature.
->> This helps to store the next set of instructions to be prefetched
->> as per the value stored.This could help in a significant performance 
->> bump.
->> Requirement is to create an universal and flexible interface to store
->> and set this prefetch value which is unique for each SID.
->>
->> Currently this ACTLR property is stored for each client as
->> DT property of smmu has following fields as mentioned:
->>
->>     actlr-cells = <no of fields>
->>     actlrs = <SID MASK ACTLR_value>
->>
->> These entries are parsed in arm-smmu layer and is stored in a table
->> containing actrl values corresponding to each SID and MASK. This ACTLR
->> value is then used during contextbank initialisation. Hence this entire
->> DT entry process is being carried out by arm-smmu layer.
->>
->> I'm trying to envise a design where client can set this property in
->> their own DT entry as per their required value in case they have this
->> use-case. Here ACTLR value can be populated as 3rd optional field
->> in iommu-cells property which is already being used by clients to store
->> SID and MASK(optional) as mentioned:
->>
->>     iommu-cells = <SID MASK(optional) ACTLR value(optional)>
->>
->> This would help to avoid additional property in client DT as
->> exisiting DT property can be extrapolated to store the same. And this
->> prefetcher value can be set into the ARM_SMMU_CB_ACTLR register
->> during context bank inititalisation.
->> This patch is still WIP, so would like to get inputs and advise
->> from community on this design implementation or any alternate approach
->> to this requirement.
+On Tue, 19 Sep 2023 22:22:57 -0700, Nicolin Chen wrote:
+> When running an SVA case, the following soft lockup is triggered:
+> --------------------------------------------------------------------
+> watchdog: BUG: soft lockup - CPU#244 stuck for 26s!
+> pstate: 83400009 (Nzcv daif +PAN -UAO +TCO +DIT -SSBS BTYPE=--)
+> pc : arm_smmu_cmdq_issue_cmdlist+0x178/0xa50
+> lr : arm_smmu_cmdq_issue_cmdlist+0x150/0xa50
+> sp : ffff8000d83ef290
+> x29: ffff8000d83ef290 x28: 000000003b9aca00 x27: 0000000000000000
+> x26: ffff8000d83ef3c0 x25: da86c0812194a0e8 x24: 0000000000000000
+> x23: 0000000000000040 x22: ffff8000d83ef340 x21: ffff0000c63980c0
+> x20: 0000000000000001 x19: ffff0000c6398080 x18: 0000000000000000
+> x17: 0000000000000000 x16: 0000000000000000 x15: ffff3000b4a3bbb0
+> x14: ffff3000b4a30888 x13: ffff3000b4a3cf60 x12: 0000000000000000
+> x11: 0000000000000000 x10: 0000000000000000 x9 : ffffc08120e4d6bc
+> x8 : 0000000000000000 x7 : 0000000000000000 x6 : 0000000000048cfa
+> x5 : 0000000000000000 x4 : 0000000000000001 x3 : 000000000000000a
+> x2 : 0000000080000000 x1 : 0000000000000000 x0 : 0000000000000001
+> Call trace:
+>  arm_smmu_cmdq_issue_cmdlist+0x178/0xa50
+>  __arm_smmu_tlb_inv_range+0x118/0x254
+>  arm_smmu_tlb_inv_range_asid+0x6c/0x130
+>  arm_smmu_mm_invalidate_range+0xa0/0xa4
+>  __mmu_notifier_invalidate_range_end+0x88/0x120
+>  unmap_vmas+0x194/0x1e0
+>  unmap_region+0xb4/0x144
+>  do_mas_align_munmap+0x290/0x490
+>  do_mas_munmap+0xbc/0x124
+>  __vm_munmap+0xa8/0x19c
+>  __arm64_sys_munmap+0x28/0x50
+>  invoke_syscall+0x78/0x11c
+>  el0_svc_common.constprop.0+0x58/0x1c0
+>  do_el0_svc+0x34/0x60
+>  el0_svc+0x2c/0xd4
+>  el0t_64_sync_handler+0x114/0x140
+>  el0t_64_sync+0x1a4/0x1a8
+> --------------------------------------------------------------------
 > 
-> At the very least this would need to be in a implementation-specific 
-> backend, since everything about ACTLR is implementation-defined; there 
-> could be bits in there that the driver needs to manage itself and 
-> clients have absolutely no business overriding (e.g. the MMU-500 errata 
-> workarounds). The generic driver can't know what's valid, nor what the 
-> consequences are of not being able to satisfy a particular setting. Then 
-> there's still the question of what if two clients ask for different 
-> settings but want to attach to the same context?
-> 
+> [...]
 
-Thanks Robin for you inputs. We had some rounds of discussions
-internally after going through your concerns mentioned above.
+Applied to will (for-joerg/arm-smmu/fixes), thanks!
 
-> It's also questionable whether this would belong in DT at all, since it 
-> has a bit of a smell of software policv about it.
+[1/1] iommu/arm-smmu-v3: Fix soft lockup triggered by arm_smmu_mm_invalidate_range
+      https://git.kernel.org/will/c/d5afb4b47e13
 
-ACTLR data which we feed into this register is client specific but at
-the same time client won't have the provision to set a value as per
-their choice.Similar to what SID and MASK value currently is which
-is specific for each client but at the same time client don't have
-the liberty to choose these values as per their choice.Hence this
-was the initial motivation to move it to client specific DT property.
-Also this would have helped us to match and set each ACTLR value with
-corresponding SID and MASK for each client during the device attachment
-to SMMU.
+Cheers,
+-- 
+Will
 
-For many years we have been supporting ACTLR settings on all of our
-SoCs with a device tree table. Iur downstream implementation is at [1].
-This has worked us very well and did not see any need for client
-specific customization as such. Since passing register content via
-device tree is highly discouraged and also since ACTLR is
-implementation-defined as rightly mentioned for which client doesn't
-have the liberty to choose the value to be set here, we are moving the
-configuration data to driver and apply these settings as per SoC needs.
-
-We will host these data now in implementation specific backend driver
-as suggested in Lookup table kind of format. Table will contain the SID
-MASK and ACTLR value which can be used to populate the prefetch value
-for each context bank during SMMU configuration probe.
-This implementation should also prevent clients having liberty to go
-and modify the actlr entry.
-
-I'll send in the next RFC patch for review of the driver based design.
-
-[1]
-https://git.codelinaro.org/clo/la/kernel/msm-5.10/-/blob/kernel.lnx.5.10.r3-rel/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c#L2198
-
-
-> If it could be 
-> sufficiently justified then it would need a proper binding proposal, and 
-> "write this opaque value into this register" type properties are 
-> generally not approved of.
-> 
-> Thanks,
-> Robin.
-> 
-
-Thanks,
-Bibek
-
->> Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
->> ---
->>   drivers/iommu/arm/arm-smmu/arm-smmu.c | 14 ++++++++++++++
->>   drivers/iommu/arm/arm-smmu/arm-smmu.h |  6 ++++++
->>   2 files changed, 20 insertions(+)
->>
->> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c 
->> b/drivers/iommu/arm/arm-smmu/arm-smmu.c
->> index a86acd76c1df..2dd3796e30ea 100644
->> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
->> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
->> @@ -917,11 +917,20 @@ static void arm_smmu_write_s2cr(struct 
->> arm_smmu_device *smmu, int idx)
->>       arm_smmu_gr0_write(smmu, ARM_SMMU_GR0_S2CR(idx), reg);
->>   }
->>
->> +static void arm_smmu_write_actlr(struct arm_smmu_device *smmu, int idx)
->> +{
->> +    struct arm_smmu_actlr *actlr = smmu->actlrs + idx;
->> +
->> +    u32 reg = FIELD_PREP(ARM_SMMU_CB_ACTLR, actlrs->actlr);
->> +}
->> +
->>   static void arm_smmu_write_sme(struct arm_smmu_device *smmu, int idx)
->>   {
->>       arm_smmu_write_s2cr(smmu, idx);
->>       if (smmu->smrs)
->>           arm_smmu_write_smr(smmu, idx);
->> +    if (smmu->actlrs)
->> +        arm_smmu_write_actlr(smmu, idx);
->>   }
->>
->>   /*
->> @@ -1031,6 +1040,7 @@ static int arm_smmu_master_alloc_smes(struct 
->> device *dev)
->>       for_each_cfg_sme(cfg, fwspec, i, idx) {
->>           u16 sid = FIELD_GET(ARM_SMMU_SMR_ID, fwspec->ids[i]);
->>           u16 mask = FIELD_GET(ARM_SMMU_SMR_MASK, fwspec->ids[i]);
->> +        u32 actlr = FIELD_GET(ARM_SMMU_CB_ACTLR, fwspec->ids[i]);
->>
->>           if (idx != INVALID_SMENDX) {
->>               ret = -EEXIST;
->> @@ -1524,6 +1534,10 @@ static int arm_smmu_of_xlate(struct device 
->> *dev, struct of_phandle_args *args)
->>
->>       if (args->args_count > 1)
->>           fwid |= FIELD_PREP(ARM_SMMU_SMR_MASK, args->args[1]);
->> +
->> +    if (args->args_count > 2)
->> +        fwid |= FIELD_PREP(ARM_SMMU_CB_ACTLR, args->args[2]);
->> +
->>       else if (!of_property_read_u32(args->np, "stream-match-mask", 
->> &mask))
->>           fwid |= FIELD_PREP(ARM_SMMU_SMR_MASK, mask);
->>
->> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.h 
->> b/drivers/iommu/arm/arm-smmu/arm-smmu.h
->> index 703fd5817ec1..7d402ab58dc8 100644
->> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.h
->> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.h
->> @@ -274,6 +274,11 @@ struct arm_smmu_smr {
->>       bool                pinned;
->>   };
->>
->> +struct arm_smmu_actlr {
->> +    struct arm_smmu_smr smr;
->> +    u32 actlr;
->> +};
->> +
->>   struct arm_smmu_device {
->>       struct device            *dev;
->>
->> @@ -312,6 +317,7 @@ struct arm_smmu_device {
->>       u16                smr_mask_mask;
->>       struct arm_smmu_smr        *smrs;
->>       struct arm_smmu_s2cr        *s2crs;
->> +    struct arm_smmu_actlr        *actlrs;
->>       struct mutex            stream_map_mutex;
->>
->>       unsigned long            va_size;
->> -- 
->> 2.17.1
->>
+https://fixes.arm64.dev
+https://next.arm64.dev
+https://will.arm64.dev
