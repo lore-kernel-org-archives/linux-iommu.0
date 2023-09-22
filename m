@@ -1,100 +1,68 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.88])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE856168AA
-	for <iommu@lists.linux.dev>; Fri, 22 Sep 2023 12:48:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1695386880; x=1726922880;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=SJXKFbW5yysENzxXAszyP4/ZxPxPNmpz+BMzxHg+9d4=;
-  b=D8G6NUsqFves0I1Ra9o77ZuE4f9Lfx8plJKrfSSWsGuCQjUdsIe1aDmX
-   c0WPCeWCxnOYiFUfb3U8FVLt4s4qYqq7F6qDJLKLshKmcJA/9/dDD2R3c
-   BfWFES6j9Xs+5qjiXkaACfXzQ6bW8ZPCyn4PgsARHvys8kw2Q0slPI5dL
-   6DjAPPhLSNu7FeW/F710Su/CGnGoH8ds7eE1vI4FLR4NN0DdsFrUgiicb
-   0RmIkEp5XQzOFRkHaRWHLv7vK0rnlHnSd1ly8RLXw42zMTyQNoGQCPErd
-   8jyP61oV36KlqXlu3bdoP+xOMfCun7dB9kIlBxcIDAlcxyi9KOivvsRFu
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10841"; a="411755282"
-X-IronPort-AV: E=Sophos;i="6.03,167,1694761200"; 
-   d="scan'208";a="411755282"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Sep 2023 05:47:40 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10841"; a="862936012"
-X-IronPort-AV: E=Sophos;i="6.03,167,1694761200"; 
-   d="scan'208";a="862936012"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.255.30.83]) ([10.255.30.83])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Sep 2023 05:47:37 -0700
-Message-ID: <d6f6dbad-c341-fe6b-a430-7bbf4bcfba31@linux.intel.com>
-Date: Fri, 22 Sep 2023 20:47:35 +0800
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 29E351772B
+	for <iommu@lists.linux.dev>; Fri, 22 Sep 2023 13:13:25 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1BF12DA7;
+	Fri, 22 Sep 2023 06:14:01 -0700 (PDT)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id EDA5F3F5A1;
+	Fri, 22 Sep 2023 06:13:22 -0700 (PDT)
+Message-ID: <900b644e-6e21-1038-2252-3dc86cbf0a32@arm.com>
+Date: Fri, 22 Sep 2023 14:13:18 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.15.1
-Cc: baolu.lu@linux.intel.com, "Liu, Jingqi" <jingqi.liu@intel.com>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>,
- Jacob Pan <jacob.jun.pan@linux.intel.com>, iommu@lists.linux.dev,
- kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 09/12] iommu: Make iommu_queue_iopf() more generic
-Content-Language: en-US
-To: Jason Gunthorpe <jgg@ziepe.ca>
-References: <20230914085638.17307-1-baolu.lu@linux.intel.com>
- <20230914085638.17307-10-baolu.lu@linux.intel.com>
- <f20b9e78-3a63-ca3e-6c04-1d80ec857898@intel.com>
- <20230921233402.GC13795@ziepe.ca>
- <e7c773f6-969c-0097-1bca-24d276e8a8f6@linux.intel.com>
- <20230922124303.GE13795@ziepe.ca>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20230922124303.GE13795@ziepe.ca>
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:102.0) Gecko/20100101
+ Thunderbird/102.15.0
+Subject: Re: [PATCH v2 1/2] iommu/virtio: Make use of ops->iotlb_sync_map
+Content-Language: en-GB
+To: Jason Gunthorpe <jgg@ziepe.ca>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>
+Cc: Niklas Schnelle <schnelle@linux.ibm.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, virtualization@lists.linux-foundation.org,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <20230918-viommu-sync-map-v2-0-f33767f6cf7a@linux.ibm.com>
+ <20230918-viommu-sync-map-v2-1-f33767f6cf7a@linux.ibm.com>
+ <ae7e513b-eb86-97e2-bed0-3cca91b8c959@arm.com>
+ <20230919081519.GA3860249@myrica> <20230919144649.GT13795@ziepe.ca>
+ <20230922075719.GB1361815@myrica> <20230922124130.GD13795@ziepe.ca>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20230922124130.GD13795@ziepe.ca>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 
-On 2023/9/22 20:43, Jason Gunthorpe wrote:
-> On Fri, Sep 22, 2023 at 10:44:45AM +0800, Baolu Lu wrote:
-> 
->>>>> @@ -112,6 +110,7 @@ int iommu_queue_iopf(struct iommu_fault *fault, struct device *dev)
->>>>>     {
->>>>>     	int ret;
->>>>>     	struct iopf_group *group;
->>>>> +	struct iommu_domain *domain;
->>>>>     	struct iopf_fault *iopf, *next;
->>>>>     	struct iommu_fault_param *iopf_param;
->>>>>     	struct dev_iommu *param = dev->iommu;
->>>>> @@ -143,6 +142,19 @@ int iommu_queue_iopf(struct iommu_fault *fault, struct device *dev)
->>>>>     		return 0;
->>>>>     	}
->>>>> +	if (fault->prm.flags & IOMMU_FAULT_PAGE_REQUEST_PASID_VALID)
->>>>> +		domain = iommu_get_domain_for_dev_pasid(dev, fault->prm.pasid, 0);
->>>>> +	else
->>>>> +		domain = iommu_get_domain_for_dev(dev);
->>>>> +
->>>>> +	if (!domain || !domain->iopf_handler) {
->>>> Does it need to check if 'domain' is error ?  Like below:
->>>>
->>>>            if (!domain || IS_ERR(domain) || !domain->iopf_handler)
->>> Urk, yes, but not like that
+On 22/09/2023 1:41 pm, Jason Gunthorpe wrote:
+> On Fri, Sep 22, 2023 at 08:57:19AM +0100, Jean-Philippe Brucker wrote:
+>>>> They're not strictly equivalent: this check works around a temporary issue
+>>>> with the IOMMU core, which calls map/unmap before the domain is
+>>>> finalized.
 >>>
->>> The IF needs to be moved into the else block as each individual
->>> function has its own return convention.
->> iommu_get_domain_for_dev_pasid() returns an ERR_PTR only if the matching
->> domain type is specified (non-zero).
+>>> Where? The above points to iommu_create_device_direct_mappings() but
+>>> it doesn't because the pgsize_bitmap == 0:
 >>
->> Adding IS_ERR(domain) in the else block will make the code more
->> readable. Alternatively we can put a comment around above code to
->> explain that ERR_PTR is not a case here.
-> You should check it because you'll probably get a static tool
-> complaint otherwise
+>> __iommu_domain_alloc() sets pgsize_bitmap in this case:
+>>
+>>          /*
+>>           * If not already set, assume all sizes by default; the driver
+>>           * may override this later
+>>           */
+>>          if (!domain->pgsize_bitmap)
+>>                  domain->pgsize_bitmap = bus->iommu_ops->pgsize_bitmap;
+> 
+> Dirver's shouldn't do that.
+> 
+> The core code was fixed to try again with mapping reserved regions to
+> support these kinds of drivers.
 
-Okay, got you.
+This is still the "normal" code path, really; I think it's only AMD that 
+started initialising the domain bitmap "early" and warranted making it 
+conditional. However we *do* ultimately want all the drivers to do the 
+same, so we can get rid of ops->pgsize_bitmap, because it's already 
+pretty redundant and meaningless in the face of per-domain pagetable 
+formats.
 
-Best regards,
-baolu
+Thanks,
+Robin.
