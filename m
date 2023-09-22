@@ -1,136 +1,105 @@
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3AC6D171D5
-	for <iommu@lists.linux.dev>; Fri, 22 Sep 2023 17:28:36 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=oDqDE/pfORjoJO8V+lWpbdMswDlsll5iwHztRlJe3wv2sIOC6rNWo/CgnLbZYZiDbkEJkENTYOCWVZHcKOKo8rEb6xPs4Mz/cC7ZRlHRGqRS8YRoxNA6HjDM/P1YKfgAZKEW/WlNKdJ3sUqcZxUl5ZTMsVPx0hH6pVSDt0Nn8UGl4iMkwFosFjoEFMEMG/ViE+KHKD+MF++IwGZIFTec7OqeQLAq7aeSnF0v/1fKtJI7d25bFNJ8NKVzvx8wtv1f//DeSuzJpEz6cdf++jjBzFYCfHlrRTCWFjsbRiWAuX8carGcWYDAXD+PLTb6ES9EDT2YZvCe9tQnJ2ID36cx5Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=42ateOxURQubuYjek7Y7vCy+PzyB6zmFbxxOhHo/6Ag=;
- b=hoo4FZa8Jog+Lt8kRvBaB1MCIwA2OeHcbPqlHVwa3c+uWFG7oVEl+rqa0aU45zDHNdEu04y3p8mMXhfZERggSjbRQNDoOvGIJId3ovg1jpD7KiuqBSarBnWwRY74xNsiEZlQdRgbgJopalovz5ks0PZahzzuLwI73vD23P4s9GSR76xfArkWY4hK/A1x4qtJqtYxtOgEmpSXZ5Db45ar4WOZ/YLI1KQPDQe7u2Tf/sgFQy5MMOZXR9rufLBamyd1ufd8wOgx9vrOSzQL66X2WIQZRGrmxbz5CSF56uxvelRp4KqI16U+cfpKz8avhROQ/mWtuIK9hpRDRGoX1k2YHA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=42ateOxURQubuYjek7Y7vCy+PzyB6zmFbxxOhHo/6Ag=;
- b=ED52uw1go2dEJmekkDM6S5uKpxJO7vwKf28Wa2U0NfI0qKjUkERibGi/BJCtWOnlmE9gUsd8AG5PmLONvgZaDjt2aPJg+Jf+0Mcjige8XT7h9szR+0aYyh2fXEIVoVMBBciNIoC+KO8u239x6Q6t+c7X7nVPCjTqhXrFuQPLZNskusBgJPPHlF/4porKKlSsJ5x6XOiyUS+E5xBmA7+i5ILJesWr7mSIDdzXlStue4cnLjyud84AdQfWdX3LfV7+ozWiooB3SdbVT8wfStSJPqi0EeXtLJy5KroTPXjEpfzTOZKNert/xSMVBeREURvw3eD+MXVEHFc8echectWy2A==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by CH3PR12MB9344.namprd12.prod.outlook.com (2603:10b6:610:1c8::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6813.21; Fri, 22 Sep
- 2023 17:28:34 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::faf:4cd0:ae27:1073]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::faf:4cd0:ae27:1073%6]) with mapi id 15.20.6792.026; Fri, 22 Sep 2023
- 17:28:34 +0000
-Date: Fri, 22 Sep 2023 14:28:31 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: joro@8bytes.org, will@kernel.org, iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, m.szyprowski@samsung.com,
-	heiko@sntech.de, jernej.skrabec@gmail.com, thierry.reding@gmail.com,
-	vdumpa@nvidia.com
-Subject: Re: [PATCH 8/8] iommu: Improve map/unmap sanity checks
-Message-ID: <20230922172831.GA145934@nvidia.com>
-References: <cover.1694525662.git.robin.murphy@arm.com>
- <524db1ec0139c964d26928a6a264945aa66d010c.1694525662.git.robin.murphy@arm.com>
- <ZQHJoK0Er/nekjL6@ziepe.ca>
- <8c8451aa-d0d7-058e-cfc2-7402f9002234@arm.com>
- <ZQMBLFB20ke4hv9t@ziepe.ca>
- <e37085dc-cac4-b7f4-8c2e-e51e56a66887@arm.com>
- <ZQM5WRzyQkk7sq+t@ziepe.ca>
- <fef0b304-5a19-b2a3-c399-7f21c05623bf@arm.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <fef0b304-5a19-b2a3-c399-7f21c05623bf@arm.com>
-X-ClientProxiedBy: YQZPR01CA0079.CANPRD01.PROD.OUTLOOK.COM
- (2603:10b6:c01:84::25) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3DF5744483
+	for <iommu@lists.linux.dev>; Fri, 22 Sep 2023 18:07:46 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 876C7C15;
+	Fri, 22 Sep 2023 11:08:23 -0700 (PDT)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 50FC03F59C;
+	Fri, 22 Sep 2023 11:07:45 -0700 (PDT)
+Message-ID: <123c53c3-d259-9c20-9aa6-0c216d7eb3c0@arm.com>
+Date: Fri, 22 Sep 2023 19:07:40 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|CH3PR12MB9344:EE_
-X-MS-Office365-Filtering-Correlation-Id: 655abc14-2569-4fb1-01dd-08dbbb9158c9
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	EZWogItAuQTadvpxMpbCUDngyVOUaVRQOMjJBGasPhrejQ+mKmG0BRr5JdO0mpdOuvTWnonfBK9CpwvDLjzaHGaTwsbyUEkGphJ6BzFrHPukAQ9t1lwrSQqD8QthlhoWe1u8q0XL2d9WUX1IbtcywiaFRVi9H/wfrkuEGAUbgnbVNSxVfnd4YGD7l/o6JDGBNMM6dFRKxAFM5BiVrD6Kin/76LorQAkCOSRn8gGPo8sBZFN6jwn0iwuzXfv3lEVDY6xAVsupIj+OYlAXGfVsP7c3bqIevzNkVP94xZ7vvH8IljUX+SQEDbJJAPuvcDPCFcvJvnQncRzA2L6bCjKo7qJxHq3nbnSisfUkdAE7a54AsO7rrhPsSCvkcW+Uj2sGZj2Fi9AkEjselRAeqBNPwRxDBO3eWgbI9bDJw/VyBN54bkBOQpwfpe+65i/NQe0cRpSYtK8F/ObCx38r2u7SbAaDCgYPPx5NUJQPrk08UV10nee5/KazkmhFnFHRVhfnIBIEs/6nvgH9LNRWX6++a98xlYjGQaYRNwG9IAEyIGpQOKcUsuiZXxoAsXOPKGzDySKqMA2QKRFx+9Y+/2772kYZdSBoYo21r/a6ixLrGxyTtwFVHyAvfC/mZONy4ULm
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(136003)(376002)(346002)(366004)(396003)(39860400002)(1800799009)(451199024)(186009)(83380400001)(6506007)(6512007)(5660300002)(2906002)(4326008)(316002)(6916009)(8936002)(36756003)(8676002)(6486002)(41300700001)(33656002)(26005)(66946007)(2616005)(38100700002)(86362001)(107886003)(6666004)(66556008)(478600001)(66476007)(1076003)(27376004);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?PkMfkq/MCvVJCvRF5v5bUw570KhE2ckpZcr7/lIGFCPt3o0hn9fyEUYSZ14u?=
- =?us-ascii?Q?rXFXCL6w8lGraMK4B2pv/G/olAR2d/1Puv1LfljgiTai+x79cVYdyn/joPzl?=
- =?us-ascii?Q?m1WeX7/PPQ9vhtZfEQ8AbaxGA6s1dcRxxb0bwjQUMhz3rVbF679Mw32O69bk?=
- =?us-ascii?Q?hEig8G3Wr4PvJjGutUvTf0Pq4BcHJvS11lLbRMAZw9OyHztsfbx06g1AEPjx?=
- =?us-ascii?Q?hDwc5kXJfzw6eG4a/D0lS1G6soreGWUHxbmIliWikQsZ1fkzblRjEKyXQJzc?=
- =?us-ascii?Q?FfD4Nof2ncx2+/RluMU1yq8dhFysbgWhqC+rQ+O9VJ+87kM+K7PfbvhtaRbq?=
- =?us-ascii?Q?p5JkvV5qPNdiUUOXHnvIh93C1BcvCxdP30SoBM+UZfwmSy4c7tlL6w4Fd2G8?=
- =?us-ascii?Q?pLR2IjT53k400XF2OA9YUzN9l8DLqyayLkO8hI4ssYTfrnikTBavdPlA6d3r?=
- =?us-ascii?Q?iF4vHWdODsRBHzr27TznebpBS/IwnrAGlsqHO9EnqlogLU54dX1t3ExkGqbJ?=
- =?us-ascii?Q?8WIyo3yQ2oZu03cCPdosYfZp7p3PFbLafqUMQTmfzAS9VC1f8Lt5PeHXgsl4?=
- =?us-ascii?Q?VbsPY29p3A22qEuLlyg1RaF++riPW4g9Mgnm/lljswgNp6ThToQz58i07m6/?=
- =?us-ascii?Q?0g4VUijtkmCHbed6SeRPX+HPO8plmHQXCt3GTWX2NDwRFjb3ORpWpSuA3zJq?=
- =?us-ascii?Q?zAD9+34TJIQcPcnkC8ewJpNoHL+g94tb03CR5dwjMlz+oXLhW+gF/hwm/moC?=
- =?us-ascii?Q?n2+y21ymGTguCLptXCtjLeD2XFwKVouAFCR/z+eqrTuHW3afB+tTziUlOQQx?=
- =?us-ascii?Q?Rz/JasvvY6CqJ/y6UiR2dh16xq33M0mdqgyox1n2I9A25qvkMKKUy5oIz9jJ?=
- =?us-ascii?Q?iZokanU453jD9oa9djaKWcZL9NM57Oyq4A7JtWDAq6svPqWO188Kt737+SPO?=
- =?us-ascii?Q?wBesQvY0TMEhfKDAjpv70H29+Xp8SDMvQYKDxhA0rHhbdk9qzYEYtZbfCt/R?=
- =?us-ascii?Q?yKZzXcsNdm0UZBAD0VrsSU17jngg4+ZVZvaWOsD/RlPssoEOXQUjkWwpJtsC?=
- =?us-ascii?Q?0/zT1DXnvNEdG2myQcrOZ6hHIIfQmyYJxnrQtOm0CfAF9W6GP1YXRX+sPR/n?=
- =?us-ascii?Q?tELW+vbyKr1I4dwS4RYtbV6xhWrBmtprnii9YsqwnIfNq89Yokui3N36XYqG?=
- =?us-ascii?Q?FOCznUwr+jODvah8L+uKE8vd5TUhS6Kmz7HM+A/vi2i8slB77q+MqMol2Lgk?=
- =?us-ascii?Q?0O6Y1No4xrlqtYR0Vq5PFAOKK71ryUHpLAxqIxzYMynx0Ri8eSShGlQECmS5?=
- =?us-ascii?Q?NIvQ2JHaT2frg9wqXv3r+T5sEbtC1V9iW1WVzz374iOw25TW3+QC1gSX683r?=
- =?us-ascii?Q?1kpIok2s/3bDAABHv09zPyQAOCQhFyThOgTtgfGOKrPwesnW2CFpdvLNAuIc?=
- =?us-ascii?Q?2NOV44/0EjltjNgOrLtjAj6VXOSp8dB3gegh0iGTgPfBMrVnS9r8mfo0v3uT?=
- =?us-ascii?Q?fNsxxFDngvfnrYVcQSDCMHKRr8CMu+7jqFWw7t+nxfMXxZ/OP9yJw+uZMn78?=
- =?us-ascii?Q?kR47/ZeSSmW1NZBwaeGO5qc2K0N/FMtaqkw7rb3o?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 655abc14-2569-4fb1-01dd-08dbbb9158c9
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Sep 2023 17:28:34.2403
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: hIlRvXoUD0iKx66WnHZW30rQQ08xtVY1kc9vx2Fh7zc4rVBwCvocjRz4ViuR1l6I
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR12MB9344
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:102.0) Gecko/20100101
+ Thunderbird/102.15.0
+Subject: Re: [PATCH v2 1/2] iommu/virtio: Make use of ops->iotlb_sync_map
+Content-Language: en-GB
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Niklas Schnelle <schnelle@linux.ibm.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, virtualization@lists.linux-foundation.org,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <20230918-viommu-sync-map-v2-0-f33767f6cf7a@linux.ibm.com>
+ <20230918-viommu-sync-map-v2-1-f33767f6cf7a@linux.ibm.com>
+ <ae7e513b-eb86-97e2-bed0-3cca91b8c959@arm.com>
+ <20230919081519.GA3860249@myrica> <20230919144649.GT13795@ziepe.ca>
+ <20230922075719.GB1361815@myrica> <20230922124130.GD13795@ziepe.ca>
+ <900b644e-6e21-1038-2252-3dc86cbf0a32@arm.com>
+ <20230922162714.GH13795@ziepe.ca>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20230922162714.GH13795@ziepe.ca>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Tue, Sep 19, 2023 at 01:18:31PM +0100, Robin Murphy wrote:
-
-> > This is not a theoretical question - does any in-kernel code actually
-> > do that and expect it to work? I didn't notice any..
+On 22/09/2023 5:27 pm, Jason Gunthorpe wrote:
+> On Fri, Sep 22, 2023 at 02:13:18PM +0100, Robin Murphy wrote:
+>> On 22/09/2023 1:41 pm, Jason Gunthorpe wrote:
+>>> On Fri, Sep 22, 2023 at 08:57:19AM +0100, Jean-Philippe Brucker wrote:
+>>>>>> They're not strictly equivalent: this check works around a temporary issue
+>>>>>> with the IOMMU core, which calls map/unmap before the domain is
+>>>>>> finalized.
+>>>>>
+>>>>> Where? The above points to iommu_create_device_direct_mappings() but
+>>>>> it doesn't because the pgsize_bitmap == 0:
+>>>>
+>>>> __iommu_domain_alloc() sets pgsize_bitmap in this case:
+>>>>
+>>>>           /*
+>>>>            * If not already set, assume all sizes by default; the driver
+>>>>            * may override this later
+>>>>            */
+>>>>           if (!domain->pgsize_bitmap)
+>>>>                   domain->pgsize_bitmap = bus->iommu_ops->pgsize_bitmap;
+>>>
+>>> Dirver's shouldn't do that.
+>>>
+>>> The core code was fixed to try again with mapping reserved regions to
+>>> support these kinds of drivers.
+>>
+>> This is still the "normal" code path, really; I think it's only AMD that
+>> started initialising the domain bitmap "early" and warranted making it
+>> conditional.
 > 
-> I was hoping to have to say I'd only seen it in unmerged (e.g. [1]) and
-> downstream code, but then I found drivers/net/ipa/ :(
+> My main point was that iommu_create_device_direct_mappings() should
+> fail for unfinalized domains, setting pgsize_bitmap to allow it to
+> succeed is not a nice hack, and not necessary now.
 
-Aiiie, what is that doing? Mapping something into the dma-api owned
-domain!?!
+Sure, but it's the whole "unfinalised domains" and rewriting 
+domain->pgsize_bitmap after attach thing that is itself the massive 
+hack. AMD doesn't do that, and doesn't need to; it knows the appropriate 
+format at allocation time and can quite happily return a fully working 
+domain which allows map before attach, but the old ops->pgsize_bitmap 
+mechanism fundamentally doesn't work for multiple formats with different 
+page sizes. The only thing I'd accuse it of doing wrong is the weird 
+half-and-half thing of having one format as a default via one mechanism, 
+and the other as an override through the other, rather than setting both 
+explicitly.
 
-See this is why I think stronger invarients are a good idea, we can't
-police the entire kernel but we can make the entry points explode if
-someone is doing something WRONG.
+virtio isn't setting ops->pgsize_bitmap for the sake of direct mappings 
+either; it sets it once it's discovered any instance, since apparently 
+it's assuming that all instances must support identical page sizes, and 
+thus once it's seen one it can work "normally" per the core code's 
+assumptions. It's also I think the only driver which has a "finalise" 
+bodge but *can* still properly support map-before-attach, by virtue of 
+having to replay mappings to every new endpoint anyway.
 
-> All that said, I don't mind if you want to propose a separate patch to turn
-> certain external caller conditions into noisy warnings, but I wouldn't want
-> to tie it up with any other changes which would risk getting caught in the
-> crossfire if someone does then hit a newly-introduced warning and start
-> arguing to revert it. And I'm not going to do so in any of my patches since
-> as above I don't personally believe it's a valuable thing to do.
+> What do you think about something like this to replace
+> iommu_create_device_direct_mappings(), that does enforce things
+> properly?
 
-Ok, that make sense
+I fail to see how that would make any practical difference. Either the 
+mappings can be correctly set up in a pagetable *before* the relevant 
+device is attached to that pagetable, or they can't (if the driver 
+doesn't have enough information to be able to do so) and we just have to 
+really hope nothing blows up in the race window between attaching the 
+device to an empty pagetable and having a second try at 
+iommu_create_device_direct_mappings(). That's a driver-level issue and 
+has nothing to do with pgsize_bitmap either way.
 
-Jason
+Thanks,
+Robin.
