@@ -1,37 +1,37 @@
 Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 017EC39E
-	for <iommu@lists.linux.dev>; Sat, 23 Sep 2023 01:27:54 +0000 (UTC)
-Received: from pps.filterd (m0333520.ppops.net [127.0.0.1])
-	by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 38MLXvpi004323;
-	Sat, 23 Sep 2023 01:27:39 GMT
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D87E1638
+	for <iommu@lists.linux.dev>; Sat, 23 Sep 2023 01:27:55 +0000 (UTC)
+Received: from pps.filterd (m0246630.ppops.net [127.0.0.1])
+	by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 38N0u541031656;
+	Sat, 23 Sep 2023 01:27:29 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding; s=corp-2023-03-30;
- bh=8i/3M2S061YwgEH8Lh9q7iEzTlF7Z9RtgbUswkZp09s=;
- b=M4ntg8udDhiFdz8zdWPK54/Ibhme1IAurtHmMrUTVE4z7YkRm6XNhvKuzpx9RI1KI3fX
- Z80E5OhRgtIftVXIai/bHK3jANy7ZXZouocKC+B4ultBPaF16JE1aor8fFvuR7apUcDt
- zNzmIGBPeKZbFqrXCsxJQbJ+n32zb+Q7lMCYMJbqWEGU5lTLFaLE2aiw+/jzA8CSICXn
- ipv80HsqiJtGCnIpx7SN5hqwNFRZ4t7uZgMpv5wvuAnnp7xAAvjub8KTg7oQo49gk8rL
- tkjNFNiMRBWn0B++ctCFkAs5oIknTxSz7aCY34cVEjBT80Y+56ZO13WQvcSRntiodEsD 7g== 
+ bh=nFm9DoPUG2qbt13Ud0teYiIqTj9xm1q9T5RC6fAYHao=;
+ b=2Pwkul/7jC7Xiwy+PSwfHZJSxwfAJuzwHEMFgjrlQgSLp4mbgxYrF8a/ppreYeiPFKnP
+ vlZ7+sUGl+0QP314vpZXhve/5pvMPb0D2n+W5bk30ps4V4t53bbN+8NtIe98vpFmWOms
+ k0cBLb1fj/ehykVp+pM/TQ5NuJg95icNIKSl6Yue149lKkUOASrp8wvAuYKfo4TVd04a
+ RVq0MsBtQjq5R1+bJg9nFerF8RFvSCSWqjaCJVqbWvEym8B6M+UR5ogG8ZIYTFgjsK6c
+ v7TAq3CDLNSkx0uqDcy3E0ps413OYFiEoxEYx3RjPWAfrcbof1Dz0ti/XIKosFD+x6S1 EQ== 
 Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
-	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3t8tswk4f8-1
+	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3t8tsv32u8-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Sat, 23 Sep 2023 01:27:39 +0000
+	Sat, 23 Sep 2023 01:27:29 +0000
 Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.19/8.17.1.19) with ESMTP id 38N092kH007661;
-	Sat, 23 Sep 2023 01:27:38 GMT
+	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.19/8.17.1.19) with ESMTP id 38N0Zu2K007691;
+	Sat, 23 Sep 2023 01:27:28 GMT
 Received: from pps.reinject (localhost [127.0.0.1])
-	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3t8uhdhqfa-1
+	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3t8uhdhqdt-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Sat, 23 Sep 2023 01:27:38 +0000
+	Sat, 23 Sep 2023 01:27:28 +0000
 Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 38N1R3hG040930;
-	Sat, 23 Sep 2023 01:27:37 GMT
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 38N1R3hA040930;
+	Sat, 23 Sep 2023 01:27:27 GMT
 Received: from joaomart-mac.uk.oracle.com (dhcp-10-175-187-199.vpn.oracle.com [10.175.187.199])
-	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTP id 3t8uhdhq78-11;
-	Sat, 23 Sep 2023 01:27:37 +0000
+	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTP id 3t8uhdhq78-8;
+	Sat, 23 Sep 2023 01:27:27 +0000
 From: Joao Martins <joao.m.martins@oracle.com>
 To: iommu@lists.linux.dev
 Cc: Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
@@ -43,9 +43,9 @@ Cc: Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
         Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
         Alex Williamson <alex.williamson@redhat.com>, kvm@vger.kernel.org,
         Joao Martins <joao.m.martins@oracle.com>
-Subject: [PATCH v3 10/19] iommufd: Add IOMMU_HWPT_GET_DIRTY_IOVA
-Date: Sat, 23 Sep 2023 02:25:02 +0100
-Message-Id: <20230923012511.10379-11-joao.m.martins@oracle.com>
+Subject: [PATCH v3 07/19] iommufd: Dirty tracking data support
+Date: Sat, 23 Sep 2023 02:24:59 +0100
+Message-Id: <20230923012511.10379-8-joao.m.martins@oracle.com>
 In-Reply-To: <20230923012511.10379-1-joao.m.martins@oracle.com>
 References: <20230923012511.10379-1-joao.m.martins@oracle.com>
 Precedence: bulk
@@ -59,207 +59,150 @@ X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.267,Aquarius:18.0.980,Hydra:6.0.619,FMLib:17.11.176.26
  definitions=2023-09-22_21,2023-09-21_01,2023-05-22_02
 X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 malwarescore=0 mlxscore=0
- bulkscore=0 mlxlogscore=999 phishscore=0 suspectscore=0 adultscore=0
+ bulkscore=0 mlxlogscore=814 phishscore=0 suspectscore=0 adultscore=0
  classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2309180000
  definitions=main-2309230011
-X-Proofpoint-GUID: FQGH35zZI1F3KWOBZJksnSF5Q4xKL-5z
-X-Proofpoint-ORIG-GUID: FQGH35zZI1F3KWOBZJksnSF5Q4xKL-5z
+X-Proofpoint-ORIG-GUID: 0MwVENd_Gqhob9vnqF69uWJX0-nhCxMC
+X-Proofpoint-GUID: 0MwVENd_Gqhob9vnqF69uWJX0-nhCxMC
 
-Connect a hw_pagetable to the IOMMU core dirty tracking
-read_and_clear_dirty iommu domain op. It exposes all of the functionality
-for the UAPI that read the dirtied IOVAs while clearing the Dirty bits from
-the PTEs
+Add an IO pagetable API iopt_read_and_clear_dirty_data() that performs the
+reading of dirty IOPTEs for a given IOVA range and then copying back to
+userspace bitmap.
 
-In doing so the previously internal iommufd_dirty_data structure is moved
-over as the UAPI intermediate structure for representing iommufd dirty
-bitmaps.
+Underneath it uses the IOMMU domain kernel API which will read the dirty
+bits, as well as atomically clearing the IOPTE dirty bit and flushing the
+IOTLB at the end. The IOVA bitmaps usage takes care of the iteration of the
+bitmaps user pages efficiently and without copies.
 
-Contrary to past incantation of a similar interface in VFIO the IOVA range
-to be scanned is tied in to the bitmap size, thus the application needs to
-pass a appropriately sized bitmap address taking into account the iova
-range being passed *and* page size ... as opposed to allowing
-bitmap-iova != iova.
+This is in preparation for a set dirty tracking ioctl which will clear
+the dirty bits before enabling it.
 
 Signed-off-by: Joao Martins <joao.m.martins@oracle.com>
 ---
- drivers/iommu/iommufd/hw_pagetable.c    | 55 +++++++++++++++++++++++++
- drivers/iommu/iommufd/iommufd_private.h | 11 ++---
- drivers/iommu/iommufd/main.c            |  3 ++
- include/uapi/linux/iommufd.h            | 36 ++++++++++++++++
- 4 files changed, 98 insertions(+), 7 deletions(-)
+ drivers/iommu/iommufd/io_pagetable.c    | 70 +++++++++++++++++++++++++
+ drivers/iommu/iommufd/iommufd_private.h | 14 +++++
+ 2 files changed, 84 insertions(+)
 
-diff --git a/drivers/iommu/iommufd/hw_pagetable.c b/drivers/iommu/iommufd/hw_pagetable.c
-index 22354b0ba554..a5712992bb4b 100644
---- a/drivers/iommu/iommufd/hw_pagetable.c
-+++ b/drivers/iommu/iommufd/hw_pagetable.c
-@@ -219,3 +219,58 @@ int iommufd_hwpt_set_dirty(struct iommufd_ucmd *ucmd)
- 	iommufd_put_object(&hwpt->obj);
- 	return rc;
+diff --git a/drivers/iommu/iommufd/io_pagetable.c b/drivers/iommu/iommufd/io_pagetable.c
+index 3a598182b761..d70617447392 100644
+--- a/drivers/iommu/iommufd/io_pagetable.c
++++ b/drivers/iommu/iommufd/io_pagetable.c
+@@ -15,6 +15,7 @@
+ #include <linux/err.h>
+ #include <linux/slab.h>
+ #include <linux/errno.h>
++#include <uapi/linux/iommufd.h>
+ 
+ #include "io_pagetable.h"
+ #include "double_span.h"
+@@ -412,6 +413,75 @@ int iopt_map_user_pages(struct iommufd_ctx *ictx, struct io_pagetable *iopt,
+ 	return 0;
  }
+ 
++struct iova_bitmap_fn_arg {
++	struct iommu_domain *domain;
++	struct iommu_dirty_bitmap *dirty;
++};
 +
-+int iommufd_check_iova_range(struct iommufd_ioas *ioas,
-+			     struct iommufd_dirty_data *bitmap)
++static int __iommu_read_and_clear_dirty(struct iova_bitmap *bitmap,
++					unsigned long iova, size_t length,
++					void *opaque)
 +{
-+	unsigned long pgshift, npages;
-+	size_t iommu_pgsize;
-+	int rc = -EINVAL;
++	struct iova_bitmap_fn_arg *arg = opaque;
++	struct iommu_domain *domain = arg->domain;
++	struct iommu_dirty_bitmap *dirty = arg->dirty;
++	const struct iommu_dirty_ops *ops = domain->dirty_ops;
 +
-+	pgshift = __ffs(bitmap->page_size);
-+	npages = bitmap->length >> pgshift;
-+
-+	if (!npages || (npages > ULONG_MAX))
-+		return rc;
-+
-+	iommu_pgsize = 1 << __ffs(ioas->iopt.iova_alignment);
-+
-+	/* allow only smallest supported pgsize */
-+	if (bitmap->page_size != iommu_pgsize)
-+		return rc;
-+
-+	if (bitmap->iova & (iommu_pgsize - 1))
-+		return rc;
-+
-+	if (!bitmap->length || bitmap->length & (iommu_pgsize - 1))
-+		return rc;
-+
-+	return 0;
++	return ops->read_and_clear_dirty(domain, iova, length, 0, dirty);
 +}
 +
-+int iommufd_hwpt_get_dirty_iova(struct iommufd_ucmd *ucmd)
++static int iommu_read_and_clear_dirty(struct iommu_domain *domain,
++				      unsigned long flags,
++				      struct iommufd_dirty_data *bitmap)
 +{
-+	struct iommu_hwpt_get_dirty_iova *cmd = ucmd->cmd;
-+	struct iommufd_hw_pagetable *hwpt;
-+	struct iommufd_ioas *ioas;
-+	int rc = -EOPNOTSUPP;
++	const struct iommu_dirty_ops *ops = domain->dirty_ops;
++	struct iommu_iotlb_gather gather;
++	struct iommu_dirty_bitmap dirty;
++	struct iova_bitmap_fn_arg arg;
++	struct iova_bitmap *iter;
++	int ret = 0;
 +
-+	if ((cmd->flags || cmd->__reserved))
++	if (!ops || !ops->read_and_clear_dirty)
 +		return -EOPNOTSUPP;
 +
-+	hwpt = iommufd_get_hwpt(ucmd, cmd->hwpt_id);
-+	if (IS_ERR(hwpt))
-+		return PTR_ERR(hwpt);
++	iter = iova_bitmap_alloc(bitmap->iova, bitmap->length,
++			     bitmap->page_size, bitmap->data);
++	if (IS_ERR(iter))
++		return -ENOMEM;
 +
-+	ioas = hwpt->ioas;
-+	rc = iommufd_check_iova_range(ioas, &cmd->bitmap);
-+	if (rc)
-+		goto out_put;
++	iommu_dirty_bitmap_init(&dirty, iter, &gather);
 +
-+	rc = iopt_read_and_clear_dirty_data(&ioas->iopt, hwpt->domain,
-+					    cmd->flags, &cmd->bitmap);
++	arg.domain = domain;
++	arg.dirty = &dirty;
++	iova_bitmap_for_each(iter, &arg, __iommu_read_and_clear_dirty);
 +
-+out_put:
-+	iommufd_put_object(&hwpt->obj);
-+	return rc;
++	iommu_iotlb_sync(domain, &gather);
++	iova_bitmap_free(iter);
++
++	return ret;
 +}
++
++int iopt_read_and_clear_dirty_data(struct io_pagetable *iopt,
++				   struct iommu_domain *domain,
++				   unsigned long flags,
++				   struct iommufd_dirty_data *bitmap)
++{
++	unsigned long last_iova, iova = bitmap->iova;
++	unsigned long length = bitmap->length;
++	int ret = -EOPNOTSUPP;
++
++	if ((iova & (iopt->iova_alignment - 1)))
++		return -EINVAL;
++
++	if (check_add_overflow(iova, length - 1, &last_iova))
++		return -EOVERFLOW;
++
++	down_read(&iopt->iova_rwsem);
++	ret = iommu_read_and_clear_dirty(domain, flags, bitmap);
++	up_read(&iopt->iova_rwsem);
++	return ret;
++}
++
+ int iopt_get_pages(struct io_pagetable *iopt, unsigned long iova,
+ 		   unsigned long length, struct list_head *pages_list)
+ {
 diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
-index 1101a1914513..608bb6eae64b 100644
+index 3064997a0181..84ec1df29074 100644
 --- a/drivers/iommu/iommufd/iommufd_private.h
 +++ b/drivers/iommu/iommufd/iommufd_private.h
-@@ -73,13 +73,6 @@ int iopt_unmap_iova(struct io_pagetable *iopt, unsigned long iova,
+@@ -8,6 +8,8 @@
+ #include <linux/xarray.h>
+ #include <linux/refcount.h>
+ #include <linux/uaccess.h>
++#include <linux/iommu.h>
++#include <linux/iova_bitmap.h>
+ 
+ struct iommu_domain;
+ struct iommu_group;
+@@ -70,6 +72,18 @@ int iopt_unmap_iova(struct io_pagetable *iopt, unsigned long iova,
  		    unsigned long length, unsigned long *unmapped);
  int iopt_unmap_all(struct io_pagetable *iopt, unsigned long *unmapped);
  
--struct iommufd_dirty_data {
--	unsigned long iova;
--	unsigned long length;
--	unsigned long page_size;
--	unsigned long long *data;
--};
--
- int iopt_read_and_clear_dirty_data(struct io_pagetable *iopt,
- 				   struct iommu_domain *domain,
- 				   unsigned long flags,
-@@ -239,6 +232,8 @@ int iommufd_option_rlimit_mode(struct iommu_option *cmd,
- 			       struct iommufd_ctx *ictx);
- 
- int iommufd_vfio_ioas(struct iommufd_ucmd *ucmd);
-+int iommufd_check_iova_range(struct iommufd_ioas *ioas,
-+			     struct iommufd_dirty_data *bitmap);
- 
- /*
-  * A HW pagetable is called an iommu_domain inside the kernel. This user object
-@@ -265,6 +260,8 @@ static inline struct iommufd_hw_pagetable *iommufd_get_hwpt(
- 			    struct iommufd_hw_pagetable, obj);
- }
- int iommufd_hwpt_set_dirty(struct iommufd_ucmd *ucmd);
-+int iommufd_hwpt_get_dirty_iova(struct iommufd_ucmd *ucmd);
-+
- struct iommufd_hw_pagetable *
- iommufd_hw_pagetable_alloc(struct iommufd_ctx *ictx, struct iommufd_ioas *ioas,
- 			   struct iommufd_device *idev, u32 flags,
-diff --git a/drivers/iommu/iommufd/main.c b/drivers/iommu/iommufd/main.c
-index ec0c34086af3..17e356ffdf31 100644
---- a/drivers/iommu/iommufd/main.c
-+++ b/drivers/iommu/iommufd/main.c
-@@ -316,6 +316,7 @@ union ucmd_buffer {
- 	struct iommu_option option;
- 	struct iommu_vfio_ioas vfio_ioas;
- 	struct iommu_hwpt_set_dirty set_dirty;
-+	struct iommu_hwpt_get_dirty_iova get_dirty_iova;
- #ifdef CONFIG_IOMMUFD_TEST
- 	struct iommu_test_cmd test;
- #endif
-@@ -361,6 +362,8 @@ static const struct iommufd_ioctl_op iommufd_ioctl_ops[] = {
- 		 __reserved),
- 	IOCTL_OP(IOMMU_HWPT_SET_DIRTY, iommufd_hwpt_set_dirty,
- 		 struct iommu_hwpt_set_dirty, __reserved),
-+	IOCTL_OP(IOMMU_HWPT_GET_DIRTY_IOVA, iommufd_hwpt_get_dirty_iova,
-+		 struct iommu_hwpt_get_dirty_iova, bitmap.data),
- #ifdef CONFIG_IOMMUFD_TEST
- 	IOCTL_OP(IOMMU_TEST_CMD, iommufd_test, struct iommu_test_cmd, last),
- #endif
-diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
-index 37079e72d243..b35b7d0c4be0 100644
---- a/include/uapi/linux/iommufd.h
-+++ b/include/uapi/linux/iommufd.h
-@@ -48,6 +48,7 @@ enum {
- 	IOMMUFD_CMD_HWPT_ALLOC,
- 	IOMMUFD_CMD_GET_HW_INFO,
- 	IOMMUFD_CMD_HWPT_SET_DIRTY,
-+	IOMMUFD_CMD_HWPT_GET_DIRTY_IOVA,
- };
- 
- /**
-@@ -481,4 +482,39 @@ struct iommu_hwpt_set_dirty {
- 	__u32 __reserved;
- };
- #define IOMMU_HWPT_SET_DIRTY _IO(IOMMUFD_TYPE, IOMMUFD_CMD_HWPT_SET_DIRTY)
-+
-+/**
-+ * struct iommufd_dirty_bitmap - Dirty IOVA tracking bitmap
-+ * @iova: base IOVA of the bitmap
-+ * @length: IOVA size
-+ * @page_size: page size granularity of each bit in the bitmap
-+ * @data: bitmap where to set the dirty bits. The bitmap bits each
-+ * represent a page_size which you deviate from an arbitrary iova.
-+ * Checking a given IOVA is dirty:
-+ *
-+ *  data[(iova / page_size) / 64] & (1ULL << (iova % 64))
-+ */
 +struct iommufd_dirty_data {
-+	__aligned_u64 iova;
-+	__aligned_u64 length;
-+	__aligned_u64 page_size;
-+	__aligned_u64 *data;
++	unsigned long iova;
++	unsigned long length;
++	unsigned long page_size;
++	unsigned long long *data;
 +};
 +
-+/**
-+ * struct iommu_hwpt_get_dirty_iova - ioctl(IOMMU_HWPT_GET_DIRTY_IOVA)
-+ * @size: sizeof(struct iommu_hwpt_get_dirty_iova)
-+ * @hwpt_id: HW pagetable ID that represents the IOMMU domain.
-+ * @flags: Flags to control dirty tracking status.
-+ * @bitmap: Bitmap of the range of IOVA to read out
-+ */
-+struct iommu_hwpt_get_dirty_iova {
-+	__u32 size;
-+	__u32 hwpt_id;
-+	__u32 flags;
-+	__u32 __reserved;
-+	struct iommufd_dirty_data bitmap;
-+};
-+#define IOMMU_HWPT_GET_DIRTY_IOVA _IO(IOMMUFD_TYPE, IOMMUFD_CMD_HWPT_GET_DIRTY_IOVA)
++int iopt_read_and_clear_dirty_data(struct io_pagetable *iopt,
++				   struct iommu_domain *domain,
++				   unsigned long flags,
++				   struct iommufd_dirty_data *bitmap);
 +
- #endif
+ void iommufd_access_notify_unmap(struct io_pagetable *iopt, unsigned long iova,
+ 				 unsigned long length);
+ int iopt_table_add_domain(struct io_pagetable *iopt,
 -- 
 2.17.2
 
