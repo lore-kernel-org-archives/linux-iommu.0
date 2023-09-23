@@ -1,37 +1,37 @@
 Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF38C37A
-	for <iommu@lists.linux.dev>; Sat, 23 Sep 2023 01:27:43 +0000 (UTC)
-Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
-	by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 38N11NOM008398;
-	Sat, 23 Sep 2023 01:27:10 GMT
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 91EC937A
+	for <iommu@lists.linux.dev>; Sat, 23 Sep 2023 01:27:45 +0000 (UTC)
+Received: from pps.filterd (m0246627.ppops.net [127.0.0.1])
+	by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 38MLY96D002051;
+	Sat, 23 Sep 2023 01:27:20 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding; s=corp-2023-03-30;
- bh=tKwmRXX0zjeQAE+FayNaDOQoJjyZd+6k7hRqWC3E8AY=;
- b=hBQjezhXexi/s14y0iFuXP3UoRXMb/Y9WyORHu33ky1i9mWmr+8HKKlWhGKjOfnY81Jp
- /rZ4EiUtUxEV0FFEeUz3sc4k8bMUQhrOKYGWXvkS3Fh0/M13F4T4AfqUNgf5e6gRM+hO
- 9onY62+VG6sEKCtns9zQ5n7QcE1qXDxgniqwaA6Zw5M4jsPBz1sg/VwIKzDl9G3V+/U0
- ohGpHxZRNHoNJmCpFkpaSXnD/u08OiF2Cb0BH4k4QT7hkiE3B/eEntqR7+mp8wXg4L4l
- +EPeIqMKSAx4s8YqIHhLE9lQKQdbVCW6PmQtaroXrV3dvKQqvX/RJ8zlISsgZcff0GKB 8g== 
+ bh=bqjjAhkXtgDwGd8zr20csj0Uai5l2qkpqBXoDA8Gddc=;
+ b=L1WfoK2NC/Xnd0MqHeTjngks1dJm4f4iUCu4NO/SNjACmRBxlpnPGMRlfENRNVrkJQ/J
+ JeL8XeYu/g/edQsMf/sH4lA6jgmMOqL5GYyjEKbFqbGa5j+5Bcfabpv4+eC/OrTrRwZq
+ 5NDxeAAiLy0VhHDSOlLgyb/Pnra63wh3m3NQvY8YPH0/8z++msA4SYJLTdwCPKTlWlkl
+ S1H+pxEDc/1+LGjwOuYJUuXo2rNXccLrvB6kZPBXz6n6Fg6K5NRGE0Zq21yGeVY6bc16
+ wj86A7K876VVvf1UMFP4Sz7DBE+L297fd53A5blEgopMABAk4EO7AO4zrG0idNZXyO0Q Bw== 
 Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
-	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3t8tt1k2nw-1
+	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3t8tt0b2qd-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Sat, 23 Sep 2023 01:27:09 +0000
+	Sat, 23 Sep 2023 01:27:19 +0000
 Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.19/8.17.1.19) with ESMTP id 38N0YBhH007610;
-	Sat, 23 Sep 2023 01:27:08 GMT
+	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.19/8.17.1.19) with ESMTP id 38N0Zu2G007691;
+	Sat, 23 Sep 2023 01:27:18 GMT
 Received: from pps.reinject (localhost [127.0.0.1])
-	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3t8uhdhq9f-1
+	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3t8uhdhqc7-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Sat, 23 Sep 2023 01:27:08 +0000
+	Sat, 23 Sep 2023 01:27:18 +0000
 Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 38N1R3gw040930;
-	Sat, 23 Sep 2023 01:27:07 GMT
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 38N1R3h4040930;
+	Sat, 23 Sep 2023 01:27:17 GMT
 Received: from joaomart-mac.uk.oracle.com (dhcp-10-175-187-199.vpn.oracle.com [10.175.187.199])
-	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTP id 3t8uhdhq78-2;
-	Sat, 23 Sep 2023 01:27:07 +0000
+	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTP id 3t8uhdhq78-5;
+	Sat, 23 Sep 2023 01:27:17 +0000
 From: Joao Martins <joao.m.martins@oracle.com>
 To: iommu@lists.linux.dev
 Cc: Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
@@ -43,9 +43,9 @@ Cc: Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
         Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
         Alex Williamson <alex.williamson@redhat.com>, kvm@vger.kernel.org,
         Joao Martins <joao.m.martins@oracle.com>
-Subject: [PATCH v3 01/19] vfio/iova_bitmap: Export more API symbols
-Date: Sat, 23 Sep 2023 02:24:53 +0100
-Message-Id: <20230923012511.10379-2-joao.m.martins@oracle.com>
+Subject: [PATCH v3 04/19] iommufd: Add a flag to enforce dirty tracking on attach
+Date: Sat, 23 Sep 2023 02:24:56 +0100
+Message-Id: <20230923012511.10379-5-joao.m.martins@oracle.com>
 In-Reply-To: <20230923012511.10379-1-joao.m.martins@oracle.com>
 References: <20230923012511.10379-1-joao.m.martins@oracle.com>
 Precedence: bulk
@@ -62,50 +62,76 @@ X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 malwa
  bulkscore=0 mlxlogscore=999 phishscore=0 suspectscore=0 adultscore=0
  classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2309180000
  definitions=main-2309230011
-X-Proofpoint-GUID: IqlmCGd1z9nqCMVTS99BgStlL8r8RWrX
-X-Proofpoint-ORIG-GUID: IqlmCGd1z9nqCMVTS99BgStlL8r8RWrX
+X-Proofpoint-GUID: rrQBZ8nWCriPM6nYwyzS26qF5qiHXItv
+X-Proofpoint-ORIG-GUID: rrQBZ8nWCriPM6nYwyzS26qF5qiHXItv
 
-In preparation to move iova_bitmap into iommufd, export the rest of API
-symbols that will be used in what could be used by modules, namely:
+Throughout IOMMU domain lifetime that wants to use dirty tracking, some
+guarantees are needed such that any device attached to the iommu_domain
+supports dirty tracking.
 
-	iova_bitmap_alloc
-	iova_bitmap_free
-	iova_bitmap_for_each
+The idea is to handle a case where IOMMU in the system are assymetric
+feature-wise and thus the capability may not be supported for all devices.
+The enforcement is done by adding a flag into HWPT_ALLOC namely:
 
-Suggested-by: Alex Williamson <alex.williamson@redhat.com>
+	IOMMUFD_HWPT_ALLOC_ENFORCE_DIRTY
+
+.. Passed in HWPT_ALLOC ioctl() flags. The enforcement is done by creating
+a iommu_domain via domain_alloc_user() and validating the requested flags
+with what the device IOMMU supports (and failing accordingly) advertised).
+Advertising the new IOMMU domain feature flag requires that the individual
+iommu driver capability is supported when a future device attachment
+happens.
+
+Link: https://lore.kernel.org/kvm/20220721142421.GB4609@nvidia.com/
 Signed-off-by: Joao Martins <joao.m.martins@oracle.com>
 ---
- drivers/vfio/iova_bitmap.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/iommu/iommufd/hw_pagetable.c | 8 ++++++--
+ include/uapi/linux/iommufd.h         | 3 +++
+ 2 files changed, 9 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/vfio/iova_bitmap.c b/drivers/vfio/iova_bitmap.c
-index 0848f920efb7..f54b56388e00 100644
---- a/drivers/vfio/iova_bitmap.c
-+++ b/drivers/vfio/iova_bitmap.c
-@@ -268,6 +268,7 @@ struct iova_bitmap *iova_bitmap_alloc(unsigned long iova, size_t length,
- 	iova_bitmap_free(bitmap);
- 	return ERR_PTR(rc);
- }
-+EXPORT_SYMBOL_GPL(iova_bitmap_alloc);
+diff --git a/drivers/iommu/iommufd/hw_pagetable.c b/drivers/iommu/iommufd/hw_pagetable.c
+index 26a8a818ffa3..32e259245314 100644
+--- a/drivers/iommu/iommufd/hw_pagetable.c
++++ b/drivers/iommu/iommufd/hw_pagetable.c
+@@ -83,7 +83,9 @@ iommufd_hw_pagetable_alloc(struct iommufd_ctx *ictx, struct iommufd_ioas *ioas,
+ 
+ 	lockdep_assert_held(&ioas->mutex);
+ 
+-	if ((flags & IOMMU_HWPT_ALLOC_NEST_PARENT) && !ops->domain_alloc_user)
++	if ((flags & (IOMMU_HWPT_ALLOC_NEST_PARENT|
++		      IOMMU_HWPT_ALLOC_ENFORCE_DIRTY)) &&
++	    !ops->domain_alloc_user)
+ 		return ERR_PTR(-EOPNOTSUPP);
+ 
+ 	hwpt = iommufd_object_alloc(ictx, hwpt, IOMMUFD_OBJ_HW_PAGETABLE);
+@@ -157,7 +159,9 @@ int iommufd_hwpt_alloc(struct iommufd_ucmd *ucmd)
+ 	struct iommufd_ioas *ioas;
+ 	int rc;
+ 
+-	if (cmd->flags & ~IOMMU_HWPT_ALLOC_NEST_PARENT || cmd->__reserved)
++	if ((cmd->flags &
++	    ~(IOMMU_HWPT_ALLOC_NEST_PARENT|IOMMU_HWPT_ALLOC_ENFORCE_DIRTY)) ||
++	    cmd->__reserved)
+ 		return -EOPNOTSUPP;
+ 
+ 	idev = iommufd_get_device(ucmd, cmd->dev_id);
+diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
+index 4a7c5c8fdbb4..cd94a9d8ce66 100644
+--- a/include/uapi/linux/iommufd.h
++++ b/include/uapi/linux/iommufd.h
+@@ -352,9 +352,12 @@ struct iommu_vfio_ioas {
+  * @IOMMU_HWPT_ALLOC_NEST_PARENT: If set, allocate a domain which can serve
+  *                                as the parent domain in the nesting
+  *                                configuration.
++ * @IOMMU_HWPT_ALLOC_ENFORCE_DIRTY: Dirty tracking support for device IOMMU is
++ *                                enforced on device attachment
+  */
+ enum iommufd_hwpt_alloc_flags {
+ 	IOMMU_HWPT_ALLOC_NEST_PARENT = 1 << 0,
++	IOMMU_HWPT_ALLOC_ENFORCE_DIRTY = 1 << 1,
+ };
  
  /**
-  * iova_bitmap_free() - Frees an IOVA bitmap object
-@@ -289,6 +290,7 @@ void iova_bitmap_free(struct iova_bitmap *bitmap)
- 
- 	kfree(bitmap);
- }
-+EXPORT_SYMBOL_GPL(iova_bitmap_free);
- 
- /*
-  * Returns the remaining bitmap indexes from mapped_total_index to process for
-@@ -387,6 +389,7 @@ int iova_bitmap_for_each(struct iova_bitmap *bitmap, void *opaque,
- 
- 	return ret;
- }
-+EXPORT_SYMBOL_GPL(iova_bitmap_for_each);
- 
- /**
-  * iova_bitmap_set() - Records an IOVA range in bitmap
 -- 
 2.17.2
 
