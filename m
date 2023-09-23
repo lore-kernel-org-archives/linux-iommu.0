@@ -1,105 +1,111 @@
-Received: from mail-yb1-f178.google.com (mail-yb1-f178.google.com [209.85.219.178])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99CCB171D2
-	for <iommu@lists.linux.dev>; Fri, 22 Sep 2023 23:33:12 +0000 (UTC)
-Received: by mail-yb1-f178.google.com with SMTP id 3f1490d57ef6-d776e1f181bso3531560276.3
-        for <iommu@lists.linux.dev>; Fri, 22 Sep 2023 16:33:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1695425591; x=1696030391; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=+8rKKRCqUyQLWkNEBe6s/yUPdVExxmOivIwMSOHwl/8=;
-        b=H/9jxsivqgxAIuBT+gSL7SvqimTPAX8qQpvVHmOz3XwryOWA7JtMMrbKgU7PASMnwS
-         7DpDNI0LG9AkaVhNeNR7S4a91N3915U9vcf7K7AkNCvk5w4kELzNdH7R8L+4h2Q3ftb5
-         dShjmEMgmH8lMxrlOjHyYxDTwSvWBzvC4gRIkypeBu3flg/znyIOHPiqiDQg3HM2RRuZ
-         IayYBDGgdNDC8ByrRRcDCyFqlHAPZPJDK2beE6cQiv6VTWcsX02NSxoCoCrIhqdtj4R0
-         7PhuTk/2k2/UPFC2xrWUr5Ta7iwkzKv+T6NwNQjD9jq7Cf1gPZh/vTAj3Wgn2mpXxRl2
-         DKrA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1695425591; x=1696030391;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=+8rKKRCqUyQLWkNEBe6s/yUPdVExxmOivIwMSOHwl/8=;
-        b=Sq/fkLzyXlxXkgdOdewCqM6CglMlbYkBOo3OcmlOdm/3Z//qjw+daQ4PqSNLXluLUV
-         y1TaEfiS4Pbd/UU9ZdcijNfXBOBAS8gGcJ2RJNS64dMcktF1bqFWXCbxyZOROv8ttWl+
-         Fjn6s21XSkyu4dVHg+jE/AlOYVcCWZbldzgwgPImyWSyuATcdWSJRGmTRU7/zB/qkuYW
-         Z7eZpW3dQ60niEY/WeUGgWTTCFs6wk6k96U31Gbj/6J8xwnZ7VvA0k3KvRWu2SgE7lkN
-         qIgDauhywKXfCeySWuKMiJsC+T+XVyGFdTqRlT9JVqplx2jX5aaco5SrjiPsMiAH8ivK
-         /8Og==
-X-Gm-Message-State: AOJu0YwHxwQWI01QvInO7/BKNnI02TFg2yXncKIovAnrPVq2mNHLeqBm
-	8GeKwVHf4i3BZ7unrd7Dm0ziRQ==
-X-Google-Smtp-Source: AGHT+IHXIm3CPio25fJfcUEZEUoMW195I/INyvWWRxd2/4S04spIkfTN65/K48HdwB4EwzmNKU/gPg==
-X-Received: by 2002:a25:dbcc:0:b0:d81:4168:3a83 with SMTP id g195-20020a25dbcc000000b00d8141683a83mr680844ybf.25.1695425591345;
-        Fri, 22 Sep 2023 16:33:11 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-26-201.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.26.201])
-        by smtp.gmail.com with ESMTPSA id i15-20020a0cf10f000000b0064f523836fdsm1838074qvl.123.2023.09.22.16.33.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Sep 2023 16:33:10 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1qjpe1-000eFO-UF;
-	Fri, 22 Sep 2023 20:33:09 -0300
-Date: Fri, 22 Sep 2023 20:33:09 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Niklas Schnelle <schnelle@linux.ibm.com>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	virtualization@lists.linux-foundation.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/2] iommu/virtio: Make use of ops->iotlb_sync_map
-Message-ID: <20230922233309.GI13795@ziepe.ca>
-References: <20230918-viommu-sync-map-v2-0-f33767f6cf7a@linux.ibm.com>
- <20230918-viommu-sync-map-v2-1-f33767f6cf7a@linux.ibm.com>
- <ae7e513b-eb86-97e2-bed0-3cca91b8c959@arm.com>
- <20230919081519.GA3860249@myrica>
- <20230919144649.GT13795@ziepe.ca>
- <20230922075719.GB1361815@myrica>
- <20230922124130.GD13795@ziepe.ca>
- <900b644e-6e21-1038-2252-3dc86cbf0a32@arm.com>
- <20230922162714.GH13795@ziepe.ca>
- <123c53c3-d259-9c20-9aa6-0c216d7eb3c0@arm.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF38C37A
+	for <iommu@lists.linux.dev>; Sat, 23 Sep 2023 01:27:43 +0000 (UTC)
+Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
+	by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 38N11NOM008398;
+	Sat, 23 Sep 2023 01:27:10 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=corp-2023-03-30;
+ bh=tKwmRXX0zjeQAE+FayNaDOQoJjyZd+6k7hRqWC3E8AY=;
+ b=hBQjezhXexi/s14y0iFuXP3UoRXMb/Y9WyORHu33ky1i9mWmr+8HKKlWhGKjOfnY81Jp
+ /rZ4EiUtUxEV0FFEeUz3sc4k8bMUQhrOKYGWXvkS3Fh0/M13F4T4AfqUNgf5e6gRM+hO
+ 9onY62+VG6sEKCtns9zQ5n7QcE1qXDxgniqwaA6Zw5M4jsPBz1sg/VwIKzDl9G3V+/U0
+ ohGpHxZRNHoNJmCpFkpaSXnD/u08OiF2Cb0BH4k4QT7hkiE3B/eEntqR7+mp8wXg4L4l
+ +EPeIqMKSAx4s8YqIHhLE9lQKQdbVCW6PmQtaroXrV3dvKQqvX/RJ8zlISsgZcff0GKB 8g== 
+Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
+	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3t8tt1k2nw-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Sat, 23 Sep 2023 01:27:09 +0000
+Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.19/8.17.1.19) with ESMTP id 38N0YBhH007610;
+	Sat, 23 Sep 2023 01:27:08 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3t8uhdhq9f-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Sat, 23 Sep 2023 01:27:08 +0000
+Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 38N1R3gw040930;
+	Sat, 23 Sep 2023 01:27:07 GMT
+Received: from joaomart-mac.uk.oracle.com (dhcp-10-175-187-199.vpn.oracle.com [10.175.187.199])
+	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTP id 3t8uhdhq78-2;
+	Sat, 23 Sep 2023 01:27:07 +0000
+From: Joao Martins <joao.m.martins@oracle.com>
+To: iommu@lists.linux.dev
+Cc: Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
+        Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
+        Lu Baolu <baolu.lu@linux.intel.com>, Yi Liu <yi.l.liu@intel.com>,
+        Yi Y Sun <yi.y.sun@intel.com>, Nicolin Chen <nicolinc@nvidia.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+        Alex Williamson <alex.williamson@redhat.com>, kvm@vger.kernel.org,
+        Joao Martins <joao.m.martins@oracle.com>
+Subject: [PATCH v3 01/19] vfio/iova_bitmap: Export more API symbols
+Date: Sat, 23 Sep 2023 02:24:53 +0100
+Message-Id: <20230923012511.10379-2-joao.m.martins@oracle.com>
+In-Reply-To: <20230923012511.10379-1-joao.m.martins@oracle.com>
+References: <20230923012511.10379-1-joao.m.martins@oracle.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <123c53c3-d259-9c20-9aa6-0c216d7eb3c0@arm.com>
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.267,Aquarius:18.0.980,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2023-09-22_21,2023-09-21_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 malwarescore=0 mlxscore=0
+ bulkscore=0 mlxlogscore=999 phishscore=0 suspectscore=0 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2309180000
+ definitions=main-2309230011
+X-Proofpoint-GUID: IqlmCGd1z9nqCMVTS99BgStlL8r8RWrX
+X-Proofpoint-ORIG-GUID: IqlmCGd1z9nqCMVTS99BgStlL8r8RWrX
 
-On Fri, Sep 22, 2023 at 07:07:40PM +0100, Robin Murphy wrote:
+In preparation to move iova_bitmap into iommufd, export the rest of API
+symbols that will be used in what could be used by modules, namely:
 
-> virtio isn't setting ops->pgsize_bitmap for the sake of direct mappings
-> either; it sets it once it's discovered any instance, since apparently it's
-> assuming that all instances must support identical page sizes, and thus once
-> it's seen one it can work "normally" per the core code's assumptions. It's
-> also I think the only driver which has a "finalise" bodge but *can* still
-> properly support map-before-attach, by virtue of having to replay mappings
-> to every new endpoint anyway.
+	iova_bitmap_alloc
+	iova_bitmap_free
+	iova_bitmap_for_each
 
-Well it can't quite do that since it doesn't know the geometry - it
-all is sort of guessing and hoping it doesn't explode on replay. If it
-knows the geometry it wouldn't need finalize...
+Suggested-by: Alex Williamson <alex.williamson@redhat.com>
+Signed-off-by: Joao Martins <joao.m.martins@oracle.com>
+---
+ drivers/vfio/iova_bitmap.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-> > What do you think about something like this to replace
-> > iommu_create_device_direct_mappings(), that does enforce things
-> > properly?
-> 
-> I fail to see how that would make any practical difference. Either the
-> mappings can be correctly set up in a pagetable *before* the relevant device
-> is attached to that pagetable, or they can't (if the driver doesn't have
-> enough information to be able to do so) and we just have to really hope
-> nothing blows up in the race window between attaching the device to an empty
-> pagetable and having a second try at iommu_create_device_direct_mappings().
-> That's a driver-level issue and has nothing to do with pgsize_bitmap either
-> way.
+diff --git a/drivers/vfio/iova_bitmap.c b/drivers/vfio/iova_bitmap.c
+index 0848f920efb7..f54b56388e00 100644
+--- a/drivers/vfio/iova_bitmap.c
++++ b/drivers/vfio/iova_bitmap.c
+@@ -268,6 +268,7 @@ struct iova_bitmap *iova_bitmap_alloc(unsigned long iova, size_t length,
+ 	iova_bitmap_free(bitmap);
+ 	return ERR_PTR(rc);
+ }
++EXPORT_SYMBOL_GPL(iova_bitmap_alloc);
+ 
+ /**
+  * iova_bitmap_free() - Frees an IOVA bitmap object
+@@ -289,6 +290,7 @@ void iova_bitmap_free(struct iova_bitmap *bitmap)
+ 
+ 	kfree(bitmap);
+ }
++EXPORT_SYMBOL_GPL(iova_bitmap_free);
+ 
+ /*
+  * Returns the remaining bitmap indexes from mapped_total_index to process for
+@@ -387,6 +389,7 @@ int iova_bitmap_for_each(struct iova_bitmap *bitmap, void *opaque,
+ 
+ 	return ret;
+ }
++EXPORT_SYMBOL_GPL(iova_bitmap_for_each);
+ 
+ /**
+  * iova_bitmap_set() - Records an IOVA range in bitmap
+-- 
+2.17.2
 
-Except we don't detect this in the core code correctly, that is my
-point. We should detect the aperture conflict, not pgsize_bitmap to
-check if it is the first or second try.
-
-Jason
