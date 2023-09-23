@@ -1,37 +1,37 @@
 Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C49F398
-	for <iommu@lists.linux.dev>; Sat, 23 Sep 2023 01:27:53 +0000 (UTC)
-Received: from pps.filterd (m0246630.ppops.net [127.0.0.1])
-	by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 38MLYOHK020507;
-	Sat, 23 Sep 2023 01:27:22 GMT
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8B2239A
+	for <iommu@lists.linux.dev>; Sat, 23 Sep 2023 01:27:54 +0000 (UTC)
+Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
+	by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 38MLXvkR031826;
+	Sat, 23 Sep 2023 01:27:15 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding; s=corp-2023-03-30;
- bh=czv0uQYYU5ew3k51Uk13Xbfir/Htz+qjC4IKBkvjsBs=;
- b=UdBpa2/iSXTg7GcxJO292JsGuf8ZVfaNvGo75wt9CP3S14HS0PpqtP0whHFnolEEBB4a
- 91q+MoNExkq19Ov4LoLn67YDAImerm8xCZx7QLj3aMc4DnZmK843PsMXijbMhvhqhlqV
- /RG7CSm3AGQ0sarstUz9aorRlu1yl2tZh6xMuTaESvUHL+s74V2sZ4scDcy0lUVUSqdE
- AdVLRRPixVS19xegVKkxEeRrCsonH1GvY7ec1cG/AZZVCKrGwARSGOpPhRLqWEdsmtOL
- Sq5ylBpHZMaikI63yflhC+J1hiEIOOy3f1HSbf8ZRvkNfb5GQl4p3DFKX+IzSBindt1X Wg== 
+ bh=awm2nXz02nUImtP780qwRzOEHqDEh8VpmtxuJ/4LQwI=;
+ b=AWrHJ1pOv4ZDhuZMdIZoIsxJNC0/j5+gTAyr1jgjGuA/1+gOi3Ps2ZNBC7C+HBWKiXzn
+ ARe8KGajoiDTB3q98tvOPia2Xsdv4umjQKA/u7ITA093EiuCpQvkK6JBwQKs+Z0foq+F
+ gdoyrOCos9+FCci5vu9aWiAczFiDXb/p1A8JtzLIMqKwZEzyQwwmKAPDZIDbxIbiP47Y
+ 6W7Fnr3E4QX3Ls2NX1ywdAqkDjLO4AAMovhI4g/lMN9xiwOyd07lEhoGm1pCDhqJMkLX
+ WJFmjAZ5WmeNbOn022jTqSMcP+T/pb59kLijlIhfqmP1tAATNDydkU9CwA1Yj+ijnfK4 eA== 
 Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
-	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3t8tsv32u6-1
+	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3t8tsvu445-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Sat, 23 Sep 2023 01:27:22 +0000
+	Sat, 23 Sep 2023 01:27:15 +0000
 Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.19/8.17.1.19) with ESMTP id 38N0q08R007773;
-	Sat, 23 Sep 2023 01:27:21 GMT
+	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.19/8.17.1.19) with ESMTP id 38N0j96o007602;
+	Sat, 23 Sep 2023 01:27:14 GMT
 Received: from pps.reinject (localhost [127.0.0.1])
-	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3t8uhdhqcv-1
+	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3t8uhdhqbd-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Sat, 23 Sep 2023 01:27:21 +0000
+	Sat, 23 Sep 2023 01:27:14 +0000
 Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 38N1R3h6040930;
-	Sat, 23 Sep 2023 01:27:21 GMT
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 38N1R3h2040930;
+	Sat, 23 Sep 2023 01:27:14 GMT
 Received: from joaomart-mac.uk.oracle.com (dhcp-10-175-187-199.vpn.oracle.com [10.175.187.199])
-	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTP id 3t8uhdhq78-6;
-	Sat, 23 Sep 2023 01:27:20 +0000
+	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTP id 3t8uhdhq78-4;
+	Sat, 23 Sep 2023 01:27:14 +0000
 From: Joao Martins <joao.m.martins@oracle.com>
 To: iommu@lists.linux.dev
 Cc: Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
@@ -43,9 +43,9 @@ Cc: Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
         Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
         Alex Williamson <alex.williamson@redhat.com>, kvm@vger.kernel.org,
         Joao Martins <joao.m.martins@oracle.com>
-Subject: [PATCH v3 05/19] iommufd/selftest: Expand mock_domain with dev_flags
-Date: Sat, 23 Sep 2023 02:24:57 +0100
-Message-Id: <20230923012511.10379-6-joao.m.martins@oracle.com>
+Subject: [PATCH v3 03/19] iommu: Add iommu_domain ops for dirty tracking
+Date: Sat, 23 Sep 2023 02:24:55 +0100
+Message-Id: <20230923012511.10379-4-joao.m.martins@oracle.com>
 In-Reply-To: <20230923012511.10379-1-joao.m.martins@oracle.com>
 References: <20230923012511.10379-1-joao.m.martins@oracle.com>
 Precedence: bulk
@@ -62,159 +62,173 @@ X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 malwa
  bulkscore=0 mlxlogscore=999 phishscore=0 suspectscore=0 adultscore=0
  classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2309180000
  definitions=main-2309230011
-X-Proofpoint-ORIG-GUID: wPFJtjVcESgYchfPpH3fpxCOGornYMI8
-X-Proofpoint-GUID: wPFJtjVcESgYchfPpH3fpxCOGornYMI8
+X-Proofpoint-GUID: Gk0I_LbyJFHa-nFJzF_n8b4Br5Y1e-CL
+X-Proofpoint-ORIG-GUID: Gk0I_LbyJFHa-nFJzF_n8b4Br5Y1e-CL
 
-Expand mock_domain test to be able to manipulate the device
-capabilities. This allows testing with mockdev without dirty
-tracking support advertised and thus make sure enforce_dirty
-test does the expected.
+Add to iommu domain operations a set of callbacks to perform dirty
+tracking, particulary to start and stop tracking and to read and clear the
+dirty data.
 
-To avoid breaking IOMMUFD_TEST UABI replicate the mock_domain
-struct and thus add an input dev_flags at the end.
+Drivers are generally expected to dynamically change its translation
+structures to toggle the tracking and flush some form of control state
+structure that stands in the IOVA translation path. Though it's not
+mandatory, as drivers can also enable dirty tracking at boot, and just
+clear the dirty bits before setting dirty tracking. For each of the newly
+added IOMMU core APIs:
+
+iommu_cap::IOMMU_CAP_DIRTY: new device iommu_capable value when probing for
+capabilities of the device.
+
+.set_dirty_tracking(): an iommu driver is expected to change its
+translation structures and enable dirty tracking for the devices in the
+iommu_domain. For drivers making dirty tracking always-enabled, it should
+just return 0.
+
+.read_and_clear_dirty(): an iommu driver is expected to walk the pagetables
+for the iova range passed in and use iommu_dirty_bitmap_record() to record
+dirty info per IOVA. When detecting that a given IOVA is dirty it should
+also clear its dirty state from the PTE, *unless* the flag
+IOMMU_DIRTY_NO_CLEAR is passed in -- flushing is steered from the caller of
+the domain_op via iotlb_gather. The iommu core APIs use the same data
+structure in use for dirty tracking for VFIO device dirty (struct
+iova_bitmap) abstracted by iommu_dirty_bitmap_record() helper function.
+
+domain::dirty_ops: IOMMU domains will store the dirty ops depending on
+whether the iommu device supports dirty tracking or not. iommu drivers can
+then use this field to figure if the dirty tracking is supported+enforced
+on attach. The enforcement is enable via domain_alloc_user() which is done
+via IOMMUFD hwpt flag introduced later.
 
 Signed-off-by: Joao Martins <joao.m.martins@oracle.com>
 ---
- drivers/iommu/iommufd/iommufd_test.h          | 12 ++++++++
- drivers/iommu/iommufd/selftest.c              | 11 +++++--
- tools/testing/selftests/iommu/iommufd_utils.h | 30 +++++++++++++++++++
- 3 files changed, 51 insertions(+), 2 deletions(-)
+ include/linux/io-pgtable.h |  4 +++
+ include/linux/iommu.h      | 56 ++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 60 insertions(+)
 
-diff --git a/drivers/iommu/iommufd/iommufd_test.h b/drivers/iommu/iommufd/iommufd_test.h
-index 3f3644375bf1..9817edcd8968 100644
---- a/drivers/iommu/iommufd/iommufd_test.h
-+++ b/drivers/iommu/iommufd/iommufd_test.h
-@@ -19,6 +19,7 @@ enum {
- 	IOMMU_TEST_OP_SET_TEMP_MEMORY_LIMIT,
- 	IOMMU_TEST_OP_MOCK_DOMAIN_REPLACE,
- 	IOMMU_TEST_OP_ACCESS_REPLACE_IOAS,
-+	IOMMU_TEST_OP_MOCK_DOMAIN_FLAGS,
+diff --git a/include/linux/io-pgtable.h b/include/linux/io-pgtable.h
+index 1b7a44b35616..25142a0e2fc2 100644
+--- a/include/linux/io-pgtable.h
++++ b/include/linux/io-pgtable.h
+@@ -166,6 +166,10 @@ struct io_pgtable_ops {
+ 			      struct iommu_iotlb_gather *gather);
+ 	phys_addr_t (*iova_to_phys)(struct io_pgtable_ops *ops,
+ 				    unsigned long iova);
++	int (*read_and_clear_dirty)(struct io_pgtable_ops *ops,
++				    unsigned long iova, size_t size,
++				    unsigned long flags,
++				    struct iommu_dirty_bitmap *dirty);
  };
  
- enum {
-@@ -40,6 +41,10 @@ enum {
- 	MOCK_FLAGS_ACCESS_CREATE_NEEDS_PIN_PAGES = 1 << 0,
+ /**
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 660dc1931dc9..f3c27b1f2510 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -13,6 +13,7 @@
+ #include <linux/errno.h>
+ #include <linux/err.h>
+ #include <linux/of.h>
++#include <linux/iova_bitmap.h>
+ #include <uapi/linux/iommu.h>
+ 
+ #define IOMMU_READ	(1 << 0)
+@@ -37,6 +38,7 @@ struct bus_type;
+ struct device;
+ struct iommu_domain;
+ struct iommu_domain_ops;
++struct iommu_dirty_ops;
+ struct notifier_block;
+ struct iommu_sva;
+ struct iommu_fault_event;
+@@ -95,6 +97,8 @@ struct iommu_domain_geometry {
+ struct iommu_domain {
+ 	unsigned type;
+ 	const struct iommu_domain_ops *ops;
++	const struct iommu_dirty_ops *dirty_ops;
++
+ 	unsigned long pgsize_bitmap;	/* Bitmap of page sizes in use */
+ 	struct iommu_domain_geometry geometry;
+ 	struct iommu_dma_cookie *iova_cookie;
+@@ -133,6 +137,7 @@ enum iommu_cap {
+ 	 * usefully support the non-strict DMA flush queue.
+ 	 */
+ 	IOMMU_CAP_DEFERRED_FLUSH,
++	IOMMU_CAP_DIRTY,		/* IOMMU supports dirty tracking */
  };
  
-+enum {
-+	MOCK_FLAGS_DEVICE_NO_DIRTY = 1 << 0,
+ /* These are the possible reserved region types */
+@@ -227,6 +232,32 @@ struct iommu_iotlb_gather {
+ 	bool			queued;
+ };
+ 
++/**
++ * struct iommu_dirty_bitmap - Dirty IOVA bitmap state
++ * @bitmap: IOVA bitmap
++ * @gather: Range information for a pending IOTLB flush
++ */
++struct iommu_dirty_bitmap {
++	struct iova_bitmap *bitmap;
++	struct iommu_iotlb_gather *gather;
 +};
 +
- struct iommu_test_cmd {
- 	__u32 size;
- 	__u32 op;
-@@ -56,6 +61,13 @@ struct iommu_test_cmd {
- 			/* out_idev_id is the standard iommufd_bind object */
- 			__u32 out_idev_id;
- 		} mock_domain;
-+		struct {
-+			__u32 out_stdev_id;
-+			__u32 out_hwpt_id;
-+			__u32 out_idev_id;
-+			/* Expand mock_domain to set mock device flags */
-+			__u32 dev_flags;
-+		} mock_domain_flags;
- 		struct {
- 			__u32 pt_id;
- 		} mock_domain_replace;
-diff --git a/drivers/iommu/iommufd/selftest.c b/drivers/iommu/iommufd/selftest.c
-index b54cbfb1862b..966a98c0935e 100644
---- a/drivers/iommu/iommufd/selftest.c
-+++ b/drivers/iommu/iommufd/selftest.c
-@@ -96,6 +96,7 @@ enum selftest_obj_type {
- 
- struct mock_dev {
- 	struct device dev;
-+	unsigned long flags;
- };
- 
- struct selftest_obj {
-@@ -378,7 +379,7 @@ static void mock_dev_release(struct device *dev)
- 	kfree(mdev);
++/**
++ * struct iommu_dirty_ops - domain specific dirty tracking operations
++ * @set_dirty_tracking: Enable or Disable dirty tracking on the iommu domain
++ * @read_and_clear_dirty: Walk IOMMU page tables for dirtied PTEs marshalled
++ *                        into a bitmap, with a bit represented as a page.
++ *                        Reads the dirty PTE bits and clears it from IO
++ *                        pagetables.
++ */
++struct iommu_dirty_ops {
++	int (*set_dirty_tracking)(struct iommu_domain *domain, bool enabled);
++	int (*read_and_clear_dirty)(struct iommu_domain *domain,
++				    unsigned long iova, size_t size,
++				    unsigned long flags,
++				    struct iommu_dirty_bitmap *dirty);
++};
++
+ /**
+  * struct iommu_ops - iommu ops and capabilities
+  * @capable: check capability
+@@ -640,6 +671,28 @@ static inline bool iommu_iotlb_gather_queued(struct iommu_iotlb_gather *gather)
+ 	return gather && gather->queued;
  }
  
--static struct mock_dev *mock_dev_create(void)
-+static struct mock_dev *mock_dev_create(unsigned long dev_flags)
- {
- 	struct mock_dev *mdev;
- 	int rc;
-@@ -388,6 +389,7 @@ static struct mock_dev *mock_dev_create(void)
- 		return ERR_PTR(-ENOMEM);
- 
- 	device_initialize(&mdev->dev);
-+	mdev->flags = dev_flags;
- 	mdev->dev.release = mock_dev_release;
- 	mdev->dev.bus = &iommufd_mock_bus_type.bus;
- 
-@@ -423,6 +425,7 @@ static int iommufd_test_mock_domain(struct iommufd_ucmd *ucmd,
- 	struct iommufd_device *idev;
- 	struct selftest_obj *sobj;
- 	u32 pt_id = cmd->id;
-+	u32 dev_flags = 0;
- 	u32 idev_id;
- 	int rc;
- 
-@@ -433,7 +436,10 @@ static int iommufd_test_mock_domain(struct iommufd_ucmd *ucmd,
- 	sobj->idev.ictx = ucmd->ictx;
- 	sobj->type = TYPE_IDEV;
- 
--	sobj->idev.mock_dev = mock_dev_create();
-+	if (cmd->op == IOMMU_TEST_OP_MOCK_DOMAIN_FLAGS)
-+		dev_flags = cmd->mock_domain_flags.dev_flags;
-+
-+	sobj->idev.mock_dev = mock_dev_create(dev_flags);
- 	if (IS_ERR(sobj->idev.mock_dev)) {
- 		rc = PTR_ERR(sobj->idev.mock_dev);
- 		goto out_sobj;
-@@ -1016,6 +1022,7 @@ int iommufd_test(struct iommufd_ucmd *ucmd)
- 						 cmd->add_reserved.start,
- 						 cmd->add_reserved.length);
- 	case IOMMU_TEST_OP_MOCK_DOMAIN:
-+	case IOMMU_TEST_OP_MOCK_DOMAIN_FLAGS:
- 		return iommufd_test_mock_domain(ucmd, cmd);
- 	case IOMMU_TEST_OP_MOCK_DOMAIN_REPLACE:
- 		return iommufd_test_mock_domain_replace(
-diff --git a/tools/testing/selftests/iommu/iommufd_utils.h b/tools/testing/selftests/iommu/iommufd_utils.h
-index be4970a84977..8e84d2592f2d 100644
---- a/tools/testing/selftests/iommu/iommufd_utils.h
-+++ b/tools/testing/selftests/iommu/iommufd_utils.h
-@@ -74,6 +74,36 @@ static int _test_cmd_mock_domain(int fd, unsigned int ioas_id, __u32 *stdev_id,
- 	EXPECT_ERRNO(_errno, _test_cmd_mock_domain(self->fd, ioas_id, \
- 						   stdev_id, hwpt_id, NULL))
- 
-+static int _test_cmd_mock_domain_flags(int fd, unsigned int ioas_id,
-+				       __u32 stdev_flags,
-+				       __u32 *stdev_id, __u32 *hwpt_id,
-+				       __u32 *idev_id)
++static inline void iommu_dirty_bitmap_init(struct iommu_dirty_bitmap *dirty,
++					   struct iova_bitmap *bitmap,
++					   struct iommu_iotlb_gather *gather)
 +{
-+	struct iommu_test_cmd cmd = {
-+		.size = sizeof(cmd),
-+		.op = IOMMU_TEST_OP_MOCK_DOMAIN_FLAGS,
-+		.id = ioas_id,
-+		.mock_domain_flags = { .dev_flags = stdev_flags },
-+	};
-+	int ret;
++	if (gather)
++		iommu_iotlb_gather_init(gather);
 +
-+	ret = ioctl(fd, IOMMU_TEST_CMD, &cmd);
-+	if (ret)
-+		return ret;
-+	if (stdev_id)
-+		*stdev_id = cmd.mock_domain_flags.out_stdev_id;
-+	assert(cmd.id != 0);
-+	if (hwpt_id)
-+		*hwpt_id = cmd.mock_domain_flags.out_hwpt_id;
-+	if (idev_id)
-+		*idev_id = cmd.mock_domain_flags.out_idev_id;
-+	return 0;
++	dirty->bitmap = bitmap;
++	dirty->gather = gather;
 +}
-+#define test_err_mock_domain_flags(_errno, ioas_id, flags, stdev_id, hwpt_id) \
-+	EXPECT_ERRNO(_errno, _test_cmd_mock_domain_flags(self->fd, ioas_id, \
-+							 flags, stdev_id, \
-+							 hwpt_id, NULL))
 +
- static int _test_cmd_mock_domain_replace(int fd, __u32 stdev_id, __u32 pt_id,
- 					 __u32 *hwpt_id)
- {
++static inline void
++iommu_dirty_bitmap_record(struct iommu_dirty_bitmap *dirty, unsigned long iova,
++			  unsigned long length)
++{
++	if (dirty->bitmap)
++		iova_bitmap_set(dirty->bitmap, iova, length);
++
++	if (dirty->gather)
++		iommu_iotlb_gather_add_range(dirty->gather, iova, length);
++}
++
+ /* PCI device grouping function */
+ extern struct iommu_group *pci_device_group(struct device *dev);
+ /* Generic device grouping function */
+@@ -670,6 +723,9 @@ struct iommu_fwspec {
+ /* ATS is supported */
+ #define IOMMU_FWSPEC_PCI_RC_ATS			(1 << 0)
+ 
++/* Read but do not clear any dirty bits */
++#define IOMMU_DIRTY_NO_CLEAR			(1 << 0)
++
+ /**
+  * struct iommu_sva - handle to a device-mm bond
+  */
 -- 
 2.17.2
 
