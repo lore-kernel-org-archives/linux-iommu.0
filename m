@@ -1,37 +1,37 @@
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC7B563B
-	for <iommu@lists.linux.dev>; Sat, 23 Sep 2023 01:27:55 +0000 (UTC)
-Received: from pps.filterd (m0246630.ppops.net [127.0.0.1])
-	by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 38N0u540031656;
-	Sat, 23 Sep 2023 01:27:12 GMT
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8EAB62C
+	for <iommu@lists.linux.dev>; Sat, 23 Sep 2023 01:28:00 +0000 (UTC)
+Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
+	by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 38MLYkNx010127;
+	Sat, 23 Sep 2023 01:27:47 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding; s=corp-2023-03-30;
- bh=7o4TYSJizOwaC2hTJRhxY20Y3XPMFkFDhzFDbPhBo44=;
- b=vn4YKVc7kWe8JKVTMNzUerTGL1vx8yPjpaHkiOhYPEkIb0/yatf3JkHBRBS9rJSg3QXB
- mSTIIePm8ygmBfbIe6zTUN3pF0lG0cK1RJjvuFXrRVB1YZP3VVNP74PIasQEjbmY5JKX
- qzG62/ePxh03udN0oH8mBjt3w3fsaa/VUKzwMAN76LXGROkpRItDaHJTH6H7GApMMj3X
- bJtwcZlGLB+ral23ZF9kyn9qx5MPTH7BoyWCwlLa41h8EXBgwKtrbPZ+tmqBpEI9pSIu
- mBwQO26AN4+nU8f8N00Mw91047J4J659eAXQcsZ+7hufW9COGHJ3Un4o1oMpHyUBgmn2 GA== 
+ bh=6IB9dl0KkU7ns1baLsRIGk/jhhMJ8XBlcAo3u3d9ttU=;
+ b=DGoytt2Gp14DTD3tZCL8Kow8l7VNIWXpYKG/gJv0vfRF/yU/WmfB4gmA2y1pzAB5QhR7
+ jv6r2Ek1YfWaxDcgchEIp6Nczp2sRw4uUQCzW2O3IYfn9wzRFshKc0M964cAslupQXEc
+ ddK+C2N8FrARTKusb2XnyQwdlixAqRS75k/McJjk6D3yJgyTyuIlbvHuzvxZJ1Z4yat5
+ 5wOkPpvvuqz2Kr/Bzsv+KDPuM9MhlHqSuu5w4FBcGUydPQc0tmjqMvALTWAUUPcPGojX
+ 0nV2ZZ4tj1CnwbF+9hyI2C0QDlkqLANiE1eRFLFn1uAcwxTTllGnKYRxp/Z7xDOUQMIk bg== 
 Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
-	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3t8tsv32u3-1
+	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3t8tsvu314-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Sat, 23 Sep 2023 01:27:12 +0000
+	Sat, 23 Sep 2023 01:27:46 +0000
 Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.19/8.17.1.19) with ESMTP id 38N0da99007740;
-	Sat, 23 Sep 2023 01:27:11 GMT
+	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.19/8.17.1.19) with ESMTP id 38N0dTxX007693;
+	Sat, 23 Sep 2023 01:27:45 GMT
 Received: from pps.reinject (localhost [127.0.0.1])
-	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3t8uhdhqak-1
+	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3t8uhdhqgf-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Sat, 23 Sep 2023 01:27:11 +0000
+	Sat, 23 Sep 2023 01:27:45 +0000
 Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 38N1R3h0040930;
-	Sat, 23 Sep 2023 01:27:10 GMT
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 38N1R3hK040930;
+	Sat, 23 Sep 2023 01:27:44 GMT
 Received: from joaomart-mac.uk.oracle.com (dhcp-10-175-187-199.vpn.oracle.com [10.175.187.199])
-	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTP id 3t8uhdhq78-3;
-	Sat, 23 Sep 2023 01:27:10 +0000
+	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTP id 3t8uhdhq78-13;
+	Sat, 23 Sep 2023 01:27:44 +0000
 From: Joao Martins <joao.m.martins@oracle.com>
 To: iommu@lists.linux.dev
 Cc: Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
@@ -43,9 +43,9 @@ Cc: Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
         Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
         Alex Williamson <alex.williamson@redhat.com>, kvm@vger.kernel.org,
         Joao Martins <joao.m.martins@oracle.com>
-Subject: [PATCH v3 02/19] vfio: Move iova_bitmap into iommu core
-Date: Sat, 23 Sep 2023 02:24:54 +0100
-Message-Id: <20230923012511.10379-3-joao.m.martins@oracle.com>
+Subject: [PATCH v3 12/19] iommufd: Add capabilities to IOMMU_GET_HW_INFO
+Date: Sat, 23 Sep 2023 02:25:04 +0100
+Message-Id: <20230923012511.10379-13-joao.m.martins@oracle.com>
 In-Reply-To: <20230923012511.10379-1-joao.m.martins@oracle.com>
 References: <20230923012511.10379-1-joao.m.martins@oracle.com>
 Precedence: bulk
@@ -59,55 +59,76 @@ X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.267,Aquarius:18.0.980,Hydra:6.0.619,FMLib:17.11.176.26
  definitions=2023-09-22_21,2023-09-21_01,2023-05-22_02
 X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 malwarescore=0 mlxscore=0
- bulkscore=0 mlxlogscore=776 phishscore=0 suspectscore=0 adultscore=0
+ bulkscore=0 mlxlogscore=999 phishscore=0 suspectscore=0 adultscore=0
  classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2309180000
  definitions=main-2309230011
-X-Proofpoint-ORIG-GUID: muKvpEEFSPOvrNKgwbZYBZizqs7LKqhB
-X-Proofpoint-GUID: muKvpEEFSPOvrNKgwbZYBZizqs7LKqhB
+X-Proofpoint-ORIG-GUID: yIJ_uIIK2tPHl-Jel4Z-DE1X-EeWjTz8
+X-Proofpoint-GUID: yIJ_uIIK2tPHl-Jel4Z-DE1X-EeWjTz8
 
-Both VFIO and IOMMUFD will need iova bitmap for storing dirties and walking
-the user bitmaps, so move to the common dependency into IOMMU core. IOMMUFD
-can't exactly host it given that VFIO dirty tracking can be used without
-IOMMUFD.
+Extend IOMMUFD_CMD_GET_HW_INFO op to query generic iommu capabilities
+for a given device.
+
+Capabilities are IOMMU agnostic and use device_iommu_capable() API passing
+one of the IOMMU_CAP_*. Enumerate IOMMU_CAP_DIRTY for now in the
+out_capabilities field returned back to userspace.
 
 Signed-off-by: Joao Martins <joao.m.martins@oracle.com>
 ---
- drivers/iommu/Makefile                | 1 +
- drivers/{vfio => iommu}/iova_bitmap.c | 0
- drivers/vfio/Makefile                 | 3 +--
- 3 files changed, 2 insertions(+), 2 deletions(-)
- rename drivers/{vfio => iommu}/iova_bitmap.c (100%)
+ drivers/iommu/iommufd/device.c |  4 ++++
+ include/uapi/linux/iommufd.h   | 11 +++++++++++
+ 2 files changed, 15 insertions(+)
 
-diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
-index 769e43d780ce..9d9dfbd2dfc2 100644
---- a/drivers/iommu/Makefile
-+++ b/drivers/iommu/Makefile
-@@ -10,6 +10,7 @@ obj-$(CONFIG_IOMMU_IO_PGTABLE_ARMV7S) += io-pgtable-arm-v7s.o
- obj-$(CONFIG_IOMMU_IO_PGTABLE_LPAE) += io-pgtable-arm.o
- obj-$(CONFIG_IOMMU_IO_PGTABLE_DART) += io-pgtable-dart.o
- obj-$(CONFIG_IOMMU_IOVA) += iova.o
-+obj-$(CONFIG_IOMMU_IOVA) += iova_bitmap.o
- obj-$(CONFIG_OF_IOMMU)	+= of_iommu.o
- obj-$(CONFIG_MSM_IOMMU) += msm_iommu.o
- obj-$(CONFIG_IPMMU_VMSA) += ipmmu-vmsa.o
-diff --git a/drivers/vfio/iova_bitmap.c b/drivers/iommu/iova_bitmap.c
-similarity index 100%
-rename from drivers/vfio/iova_bitmap.c
-rename to drivers/iommu/iova_bitmap.c
-diff --git a/drivers/vfio/Makefile b/drivers/vfio/Makefile
-index c82ea032d352..68c05705200f 100644
---- a/drivers/vfio/Makefile
-+++ b/drivers/vfio/Makefile
-@@ -1,8 +1,7 @@
- # SPDX-License-Identifier: GPL-2.0
- obj-$(CONFIG_VFIO) += vfio.o
+diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
+index e88fa73a45e6..71ee22dc1a85 100644
+--- a/drivers/iommu/iommufd/device.c
++++ b/drivers/iommu/iommufd/device.c
+@@ -1185,6 +1185,10 @@ int iommufd_get_hw_info(struct iommufd_ucmd *ucmd)
+ 	 */
+ 	cmd->data_len = data_len;
  
--vfio-y += vfio_main.o \
--	  iova_bitmap.o
-+vfio-y += vfio_main.o
- vfio-$(CONFIG_VFIO_DEVICE_CDEV) += device_cdev.o
- vfio-$(CONFIG_VFIO_GROUP) += group.o
- vfio-$(CONFIG_IOMMUFD) += iommufd.o
++	cmd->out_capabilities = 0;
++	if (device_iommu_capable(idev->dev, IOMMU_CAP_DIRTY))
++		cmd->out_capabilities |= IOMMU_HW_CAP_DIRTY_TRACKING;
++
+ 	rc = iommufd_ucmd_respond(ucmd, sizeof(*cmd));
+ out_free:
+ 	kfree(data);
+diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
+index b35b7d0c4be0..34703683eb8e 100644
+--- a/include/uapi/linux/iommufd.h
++++ b/include/uapi/linux/iommufd.h
+@@ -419,6 +419,14 @@ enum iommu_hw_info_type {
+ 	IOMMU_HW_INFO_TYPE_INTEL_VTD,
+ };
+ 
++/**
++ * enum iommufd_hw_info_capabilities
++ * @IOMMU_CAP_DIRTY_TRACKING: IOMMU hardware support for dirty tracking
++ */
++enum iommufd_hw_capabilities {
++	IOMMU_HW_CAP_DIRTY_TRACKING = 1 << 0,
++};
++
+ /**
+  * struct iommu_hw_info - ioctl(IOMMU_GET_HW_INFO)
+  * @size: sizeof(struct iommu_hw_info)
+@@ -430,6 +438,8 @@ enum iommu_hw_info_type {
+  *             the iommu type specific hardware information data
+  * @out_data_type: Output the iommu hardware info type as defined in the enum
+  *                 iommu_hw_info_type.
++ * @out_capabilities: Output the iommu capability info type as defined in the
++ *                    enum iommu_hw_capabilities.
+  * @__reserved: Must be 0
+  *
+  * Query an iommu type specific hardware information data from an iommu behind
+@@ -454,6 +464,7 @@ struct iommu_hw_info {
+ 	__aligned_u64 data_uptr;
+ 	__u32 out_data_type;
+ 	__u32 __reserved;
++	__aligned_u64 out_capabilities;
+ };
+ #define IOMMU_GET_HW_INFO _IO(IOMMUFD_TYPE, IOMMUFD_CMD_GET_HW_INFO)
+ 
 -- 
 2.17.2
 
