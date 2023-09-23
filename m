@@ -1,37 +1,37 @@
 Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA50137A
-	for <iommu@lists.linux.dev>; Sat, 23 Sep 2023 01:28:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 41E3F37A
+	for <iommu@lists.linux.dev>; Sat, 23 Sep 2023 01:28:14 +0000 (UTC)
 Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
-	by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 38MLYkO0010127;
-	Sat, 23 Sep 2023 01:27:53 GMT
+	by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 38MLYV49008435;
+	Sat, 23 Sep 2023 01:28:00 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding; s=corp-2023-03-30;
- bh=3u0RSMF1r05iTGVhgSGMRyxKCj1ZVYujVX+aUdcO+fI=;
- b=Ax9dJ7oGORI4fIBfkntShMzk9/VcfzS9JLsgfQ9jGtufZdKAFpihm3qiftDLYVYG7uek
- ODZxcKjYPucP2mcfYAckzBilS6COoPkVzfxu8XtGtYB0A6eMlQWPC0E/e7iUF3hdLb0M
- KnuE7TyMTamNi1PMyTlGu3F2NUn9RyKTr56CMlylFB7i4gJqTvHr4ZodugLM4uqFo/Eo
- 76g0aJiq8NEVNnG283Hqc+YoAi8xJnBVHb0M6IVYwjgqrxUgsZKayFR/eN6wbL/Vh8kG
- gLinbvuYS+CxZXz/VaY1eF0277w4ErepOMZikJxOL8fJFfXqRKp51LFBKPKkHE18EhHV WA== 
+ bh=pcCBNWVtNoufNEQIzycws+hZ5WXj+fEMgBEdjt4Pn3o=;
+ b=j52Rir4QhLkCclRiVHBXEUJUNAWPNsQmOkEUTwiDvc1eRSV4j7RtsbWB+bXkBMY4wNeG
+ a+Wp6RkUyZOGkb9x8vUT89CQJ4Mu2J8p+clIVJpAsgbJ9b9MxszmmRvzXJ6zftTIxAug
+ 7liEHp4V6drnxK1UgPdOkNKew5j+sqfbnRDkCe/lH3j15toWRFokWWkC0qPERoVbVqAe
+ Ofw5mBROiWFIUKWw1EnBLK9VS1vrPbF5mC9EtrWg4YwXmSYxTDROfDgAxCI1XZQpiWFG
+ qk0EO8yLX5t5HIxCooSbZ4GaQHowh51hVwRGCWZrwbD7iEhrLfQxAnMdM4joUophMOLF fA== 
 Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
-	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3t8tsvu317-1
+	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3t8tsvu31a-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Sat, 23 Sep 2023 01:27:53 +0000
+	Sat, 23 Sep 2023 01:28:00 +0000
 Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.19/8.17.1.19) with ESMTP id 38MNLcPF007665;
-	Sat, 23 Sep 2023 01:27:52 GMT
+	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.19/8.17.1.19) with ESMTP id 38MNLcPH007665;
+	Sat, 23 Sep 2023 01:27:59 GMT
 Received: from pps.reinject (localhost [127.0.0.1])
-	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3t8uhdhqhy-1
+	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3t8uhdhqkj-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Sat, 23 Sep 2023 01:27:52 +0000
+	Sat, 23 Sep 2023 01:27:58 +0000
 Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 38N1R3hO040930;
-	Sat, 23 Sep 2023 01:27:51 GMT
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 38N1R3hS040930;
+	Sat, 23 Sep 2023 01:27:58 GMT
 Received: from joaomart-mac.uk.oracle.com (dhcp-10-175-187-199.vpn.oracle.com [10.175.187.199])
-	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTP id 3t8uhdhq78-15;
-	Sat, 23 Sep 2023 01:27:51 +0000
+	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTP id 3t8uhdhq78-17;
+	Sat, 23 Sep 2023 01:27:58 +0000
 From: Joao Martins <joao.m.martins@oracle.com>
 To: iommu@lists.linux.dev
 Cc: Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
@@ -43,9 +43,9 @@ Cc: Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
         Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
         Alex Williamson <alex.williamson@redhat.com>, kvm@vger.kernel.org,
         Joao Martins <joao.m.martins@oracle.com>
-Subject: [PATCH v3 14/19] iommufd: Add a flag to skip clearing of IOPTE dirty
-Date: Sat, 23 Sep 2023 02:25:06 +0100
-Message-Id: <20230923012511.10379-15-joao.m.martins@oracle.com>
+Subject: [PATCH v3 16/19] iommu/amd: Add domain_alloc_user based domain allocation
+Date: Sat, 23 Sep 2023 02:25:08 +0100
+Message-Id: <20230923012511.10379-17-joao.m.martins@oracle.com>
 In-Reply-To: <20230923012511.10379-1-joao.m.martins@oracle.com>
 References: <20230923012511.10379-1-joao.m.martins@oracle.com>
 Precedence: bulk
@@ -59,122 +59,117 @@ X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.267,Aquarius:18.0.980,Hydra:6.0.619,FMLib:17.11.176.26
  definitions=2023-09-22_21,2023-09-21_01,2023-05-22_02
 X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 malwarescore=0 mlxscore=0
- bulkscore=0 mlxlogscore=975 phishscore=0 suspectscore=0 adultscore=0
+ bulkscore=0 mlxlogscore=999 phishscore=0 suspectscore=0 adultscore=0
  classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2309180000
  definitions=main-2309230011
-X-Proofpoint-ORIG-GUID: QLL3uy1T2rC03CcqAbXWnMMXNe-XMqTB
-X-Proofpoint-GUID: QLL3uy1T2rC03CcqAbXWnMMXNe-XMqTB
+X-Proofpoint-ORIG-GUID: QqWZpKQvsSq8K8IsWikFbGci4_jTNRu1
+X-Proofpoint-GUID: QqWZpKQvsSq8K8IsWikFbGci4_jTNRu1
 
-VFIO has an operation where it unmaps an IOVA while returning a bitmap
-with the dirty data. In reality the operation doesn't quite query the IO
-pagetables that the PTE was dirty or not. Instead it marks as dirty on
-anything that was mapped, and doing so in one syscall.
+Add the domain_alloc_user op implementation. To that end, refactor
+amd_iommu_domain_alloc() to receive a dev pointer and flags, while
+renaming it to .. such that it becomes a common function shared with
+domain_alloc_user() implementation. The sole difference with
+domain_alloc_user() is that we initialize also other fields that
+iommu_domain_alloc() does. It lets it return the iommu domain
+correctly initialized in one function.
 
-In IOMMUFD the equivalent is done in two operations by querying with
-GET_DIRTY_IOVA followed by UNMAP_IOVA. However, this would incur two TLB
-flushes given that after clearing dirty bits IOMMU implementations require
-invalidating their IOTLB, plus another invalidation needed for the UNMAP.
-To allow dirty bits to be queried faster, add a flag
-(IOMMU_GET_DIRTY_IOVA_NO_CLEAR) that requests to not clear the dirty bits
-from the PTE (but just reading them), under the expectation that the next
-operation is the unmap. An alternative is to unmap and just perpectually
-mark as dirty as that's the same behaviour as today. So here equivalent
-functionally can be provided with unmap alone, and if real dirty info is
-required it will amortize the cost while querying.
-
-There's still a race against DMA where in theory the unmap of the IOVA
-(when the guest invalidates the IOTLB via emulated iommu) would race
-against the VF performing DMA on the same IOVA. As discussed in [0],
-we are accepting to resolve this race as throwing away the DMA and it
-doesn't matter if it hit physical DRAM or not, the VM can't tell if we
-threw it away because the DMA was blocked or because we failed to copy
-the DRAM.
-
-[0] https://lore.kernel.org/linux-iommu/20220502185239.GR8364@nvidia.com/
+This is in preparation to add dirty enforcement on AMD implementation
+of domain_alloc_user.
 
 Signed-off-by: Joao Martins <joao.m.martins@oracle.com>
 ---
- drivers/iommu/iommufd/hw_pagetable.c |  3 ++-
- drivers/iommu/iommufd/io_pagetable.c |  9 +++++++--
- include/uapi/linux/iommufd.h         | 12 ++++++++++++
- 3 files changed, 21 insertions(+), 3 deletions(-)
+ drivers/iommu/amd/iommu.c | 46 ++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 43 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iommu/iommufd/hw_pagetable.c b/drivers/iommu/iommufd/hw_pagetable.c
-index a5712992bb4b..386cf0e61b4e 100644
---- a/drivers/iommu/iommufd/hw_pagetable.c
-+++ b/drivers/iommu/iommufd/hw_pagetable.c
-@@ -255,7 +255,8 @@ int iommufd_hwpt_get_dirty_iova(struct iommufd_ucmd *ucmd)
- 	struct iommufd_ioas *ioas;
- 	int rc = -EOPNOTSUPP;
+diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+index 95bd7c25ba6f..af36c627022f 100644
+--- a/drivers/iommu/amd/iommu.c
++++ b/drivers/iommu/amd/iommu.c
+@@ -37,6 +37,7 @@
+ #include <asm/iommu.h>
+ #include <asm/gart.h>
+ #include <asm/dma.h>
++#include <uapi/linux/iommufd.h>
  
--	if ((cmd->flags || cmd->__reserved))
-+	if ((cmd->flags & ~(IOMMU_GET_DIRTY_IOVA_NO_CLEAR)) ||
-+	    cmd->__reserved)
- 		return -EOPNOTSUPP;
- 
- 	hwpt = iommufd_get_hwpt(ucmd, cmd->hwpt_id);
-diff --git a/drivers/iommu/iommufd/io_pagetable.c b/drivers/iommu/iommufd/io_pagetable.c
-index b9e58601d1d4..e22c17da877c 100644
---- a/drivers/iommu/iommufd/io_pagetable.c
-+++ b/drivers/iommu/iommufd/io_pagetable.c
-@@ -414,6 +414,7 @@ int iopt_map_user_pages(struct iommufd_ctx *ictx, struct io_pagetable *iopt,
+ #include "amd_iommu.h"
+ #include "../dma-iommu.h"
+@@ -2155,7 +2156,10 @@ static inline u64 dma_max_address(void)
+ 	return ((1ULL << PM_LEVEL_SHIFT(amd_iommu_gpt_level)) - 1);
  }
  
- struct iova_bitmap_fn_arg {
-+	unsigned long flags;
- 	struct iommu_domain *domain;
- 	struct iommu_dirty_bitmap *dirty;
- };
-@@ -426,8 +427,9 @@ static int __iommu_read_and_clear_dirty(struct iova_bitmap *bitmap,
- 	struct iommu_domain *domain = arg->domain;
- 	struct iommu_dirty_bitmap *dirty = arg->dirty;
- 	const struct iommu_dirty_ops *ops = domain->dirty_ops;
-+	unsigned long flags = arg->flags;
+-static struct iommu_domain *amd_iommu_domain_alloc(unsigned type)
++static struct iommu_domain *do_iommu_domain_alloc(unsigned int type,
++						  struct amd_iommu *iommu,
++						  struct device *dev,
++						  u32 flags)
+ {
+ 	struct protection_domain *domain;
  
--	return ops->read_and_clear_dirty(domain, iova, length, 0, dirty);
-+	return ops->read_and_clear_dirty(domain, iova, length, flags, dirty);
+@@ -2164,19 +2168,54 @@ static struct iommu_domain *amd_iommu_domain_alloc(unsigned type)
+ 	 * default to use IOMMU_DOMAIN_DMA[_FQ].
+ 	 */
+ 	if (amd_iommu_snp_en && (type == IOMMU_DOMAIN_IDENTITY))
+-		return NULL;
++		return ERR_PTR(-EINVAL);
+ 
+ 	domain = protection_domain_alloc(type);
+ 	if (!domain)
+-		return NULL;
++		return ERR_PTR(-ENOMEM);
+ 
+ 	domain->domain.geometry.aperture_start = 0;
+ 	domain->domain.geometry.aperture_end   = dma_max_address();
+ 	domain->domain.geometry.force_aperture = true;
+ 
++	if (dev) {
++		domain->domain.type = type;
++		domain->domain.pgsize_bitmap =
++			iommu->iommu.ops->pgsize_bitmap;
++		domain->domain.ops =
++			iommu->iommu.ops->default_domain_ops;
++	}
++
+ 	return &domain->domain;
  }
  
- static int iommu_read_and_clear_dirty(struct iommu_domain *domain,
-@@ -451,11 +453,14 @@ static int iommu_read_and_clear_dirty(struct iommu_domain *domain,
- 
- 	iommu_dirty_bitmap_init(&dirty, iter, &gather);
- 
-+	arg.flags = flags;
- 	arg.domain = domain;
- 	arg.dirty = &dirty;
- 	iova_bitmap_for_each(iter, &arg, __iommu_read_and_clear_dirty);
- 
--	iommu_iotlb_sync(domain, &gather);
-+	if (!(flags & IOMMU_DIRTY_NO_CLEAR))
-+		iommu_iotlb_sync(domain, &gather);
++static struct iommu_domain *amd_iommu_domain_alloc(unsigned type)
++{
++	struct iommu_domain *domain;
 +
- 	iova_bitmap_free(iter);
- 
- 	return ret;
-diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
-index 34703683eb8e..796ebc7b60ac 100644
---- a/include/uapi/linux/iommufd.h
-+++ b/include/uapi/linux/iommufd.h
-@@ -512,6 +512,18 @@ struct iommufd_dirty_data {
- 	__aligned_u64 *data;
- };
- 
-+/**
-+ * enum iommufd_get_dirty_iova_flags - Flags for getting dirty bits
-+ * @IOMMU_GET_DIRTY_IOVA_NO_CLEAR: Just read the PTEs without clearing any dirty
-+ *                                 bits metadata. This flag can be passed in the
-+ *                                 expectation where the next operation is
-+ *                                 an unmap of the same IOVA range.
-+ *
-+ */
-+enum iommufd_hwpt_get_dirty_iova_flags {
-+	IOMMU_GET_DIRTY_IOVA_NO_CLEAR = 1,
-+};
++	domain = do_iommu_domain_alloc(type, NULL, NULL, 0);
++	if (IS_ERR(domain))
++		return NULL;
 +
- /**
-  * struct iommu_hwpt_get_dirty_iova - ioctl(IOMMU_HWPT_GET_DIRTY_IOVA)
-  * @size: sizeof(struct iommu_hwpt_get_dirty_iova)
++	return domain;
++}
++
++static struct iommu_domain *amd_iommu_domain_alloc_user(struct device *dev,
++							u32 flags)
++{
++	unsigned int type = IOMMU_DOMAIN_UNMANAGED;
++	struct amd_iommu *iommu;
++
++	iommu = rlookup_amd_iommu(dev);
++	if (!iommu)
++		return ERR_PTR(-ENODEV);
++
++	if (flags & IOMMU_HWPT_ALLOC_NEST_PARENT)
++		return ERR_PTR(-EOPNOTSUPP);
++
++	return do_iommu_domain_alloc(type, iommu, dev, flags);
++}
++
+ static void amd_iommu_domain_free(struct iommu_domain *dom)
+ {
+ 	struct protection_domain *domain;
+@@ -2464,6 +2503,7 @@ static bool amd_iommu_enforce_cache_coherency(struct iommu_domain *domain)
+ const struct iommu_ops amd_iommu_ops = {
+ 	.capable = amd_iommu_capable,
+ 	.domain_alloc = amd_iommu_domain_alloc,
++	.domain_alloc_user = amd_iommu_domain_alloc_user,
+ 	.probe_device = amd_iommu_probe_device,
+ 	.release_device = amd_iommu_release_device,
+ 	.probe_finalize = amd_iommu_probe_finalize,
 -- 
 2.17.2
 
