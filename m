@@ -1,131 +1,186 @@
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2057.outbound.protection.outlook.com [40.107.94.57])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1934C107A7;
-	Mon, 25 Sep 2023 11:42:26 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=R8I8d3Rh09yHqFp3wsAovoP4x1FaC9XJzdTNv8swsWnyt5UOfiKNUGFtbrRa9o95QIFy9X+Mu48+fIYXt3CGGOSx0KPv845eWvsq0OJm51geMIsO5TVHQAOkzGmQXPUHdP0Z/IUnlfKaosEMLjK+zxGBKK6Awvawe75R56RGRgUadyP/7XNBitTv43eCTJ0Xgt8jxz7+p2n7TSgJd5bIcNg+xbCqtx+U14kF/rPVly24IgFg3zbxCGh7CjPmh0d/IMyiwZvLWrGFgvtdejbT4D4BBDfEwrQadQ8aUdyV0ezUIJOZUdZDDuwWwKpvzw7PWqAcSbqWpqujLkqh/j2Cjg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=xm3TGBUZbWBFHOMVs7nGTsKwsA8wOlLmCMQGveh5LZA=;
- b=QJYsrfTPXJ3h4SLtv+ff06msKFxVtHzzRI+9ZAkFHKPhAK4XnLJK/N19UqTXeTnsYDMFMv5lWeS8Owit+Px8w9CbiYsWRnO+LAGKSCyA19vnhk1nHj/RjEI1LxAGT5pFTmitIswxSXczxyI2CC9JE1XiTqFH11jjrJVckCfHq6OYWeVYNjl9GgwkJnufr+x1ZudKU3OG97lE8CdoLVcZsVG8j/+iIlk9oBb3wUbaEfmyo98g6jxOiWn06WUIpC/B/051CqbZ7Pu7XFZAQX/Es7MHIVTtKPAZ0mvGaltM5L/TKZ5WT1wtpdSvFEdB0fl6O95+UkTpNpJSA0vjatQByw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=xm3TGBUZbWBFHOMVs7nGTsKwsA8wOlLmCMQGveh5LZA=;
- b=T1NK//CzhpRvdruQAYGcO2U0H7KfqS16LB3ETB4VM6vno3ucRQCnW13IGQzrJJVzF0NzYmOKFLaPbIX4To885yim7I6cffoHqwYZRYkuj6jUL5Wknd3ugpqOY0OzeKhBoX6QtjvUjNzOrfkNnyqndNU/A9qsnM4DgFqPesZKf52OglE3/lQPvfjWJDdBQh4oEPZhiqEqhtPBXxslGa28R5wq8u+mV6YriF3pS1HJMCsxNfaYOxkCJwqWSHdlTWCG7u6QmqI8Ich5gDF8q3VMyNqu+bfHXxdJ8xOhjRlpf853C3Z+F3e8ldkLx//AeqJcu+3lbJqO2M0SjdQW6t2eqw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by BN9PR12MB5354.namprd12.prod.outlook.com (2603:10b6:408:103::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6813.21; Mon, 25 Sep
- 2023 11:42:25 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::faf:4cd0:ae27:1073]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::faf:4cd0:ae27:1073%6]) with mapi id 15.20.6792.026; Mon, 25 Sep 2023
- 11:42:25 +0000
-Date: Mon, 25 Sep 2023 08:42:24 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Baolin Wang <baolin.wang@linux.alibaba.com>,
-	Heiko Stuebner <heiko@sntech.de>, iommu@lists.linux.dev,
-	Jernej Skrabec <jernej.skrabec@gmail.com>,
-	linux-arm-kernel@lists.infradead.org,
-	linux-rockchip@lists.infradead.org, linux-sunxi@lists.linux.dev,
-	Orson Zhai <orsonzhai@gmail.com>,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 354AA107A7
+	for <iommu@lists.linux.dev>; Mon, 25 Sep 2023 11:43:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB333C433C9;
+	Mon, 25 Sep 2023 11:43:25 +0000 (UTC)
+Date: Mon, 25 Sep 2023 12:43:23 +0100
+From: Catalin Marinas <catalin.marinas@arm.com>
+To: Petr =?utf-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
+Cc: Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
 	Robin Murphy <robin.murphy@arm.com>,
-	Samuel Holland <samuel@sholland.org>, Chen-Yu Tsai <wens@csie.org>,
-	Will Deacon <will@kernel.org>, Chunyan Zhang <zhang.lyra@gmail.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: Re: [PATCH 0/7] Introduce generic_single_device_group()
-Message-ID: <20230925114224.GV13733@nvidia.com>
-References: <0-v1-c869a95191f2+5e8-iommu_single_grp_jgg@nvidia.com>
- <ZRFYkYXUXFOpvk_T@8bytes.org>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZRFYkYXUXFOpvk_T@8bytes.org>
-X-ClientProxiedBy: BL0PR02CA0112.namprd02.prod.outlook.com
- (2603:10b6:208:35::17) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>,
+	open list <linux-kernel@vger.kernel.org>,
+	Roberto Sassu <roberto.sassu@huaweicloud.com>,
+	Jonathan Corbet <corbet@lwn.net>
+Subject: Re: [PATCH] swiotlb: fix the check whether a device has used
+ software IO TLB
+Message-ID: <ZRFyW/pFpnL+bDbg@arm.com>
+References: <20230913121403.GB4544@lst.de>
+ <20230913142656.29e135d6@meshulam.tesarici.cz>
+ <ZQNQscYr0rQWdw66@arm.com>
+ <20230915111343.01496320@meshulam.tesarici.cz>
+ <ZQSPyBRjnSISNFmD@arm.com>
+ <20230917114741.01a23364@meshulam.tesarici.cz>
+ <ZQhwnhOQbDp3j8y7@arm.com>
+ <20230922153129.69b26975@meshulam.tesarici.cz>
+ <20230922191213.379d440a@meshulam.tesarici.cz>
+ <20230922202057.47d93603@meshulam.tesarici.cz>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|BN9PR12MB5354:EE_
-X-MS-Office365-Filtering-Correlation-Id: 3422f985-9371-44dd-9f6a-08dbbdbc7cfd
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	tTWNuh/YbRgBSumVaWQynelh42N2TtY0GAf/o+YU+Cloa+2RSpzWcl8gjGF65elmk2QX5Q8CsK0FJ0e+LRFtoYcpKqssNDL/QgJydYdqKwZptnlVUtcuHGufVMdukj5JUJttqJwFzv46rh4LJ1ouxgCI5cwcBuaJ8jHpysTRcC0fyCrJdynSW17uq7SqLzX/aNZ2gwzeDS/S8YK4VY/C1Xjs6eqFRFehA7Sl6ioIPdPmxNmYfACihKKvzxfCFsJ2ld7GC44dVrAhZGzM64AC/hQVxM/wPHUW7Ze63NwykFO+VKsC+b7sMaO5JGxGzBB0tPClRMXwzooaQLn18+jdtcmQbrgZ+GAh7FnU1YDdUePbAsyUkU0LwceJm9r6x7at/rugl6y9Et8yl8VzsTUEHBbRlDpQz8AmozfMIoGYlfwjELTNaO9OqADV6eZPBN5lDmrnAPZU4Ipx2MYAnC5GTvE13ig0rpba46e6mB7GAMOEF/fBAPUuKZdpqYk7E6s0jyS5jIcpILGr6wyi9AYrWd4oITKpXB2t6IzUtbNNXZ5BvnP861nHpY3IBojqKOJSjdG2IeiRKHAwb+nmf7RyWkLSv15yGpjTS4PUo6jsWWs=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(346002)(136003)(376002)(366004)(396003)(39860400002)(230922051799003)(186009)(1800799009)(451199024)(38100700002)(33656002)(86362001)(36756003)(8936002)(6486002)(8676002)(2906002)(5660300002)(4326008)(6506007)(66946007)(4744005)(66476007)(2616005)(6512007)(478600001)(54906003)(66556008)(1076003)(26005)(316002)(6916009)(41300700001)(7416002)(41533002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?8TFkJFLBM3u7C0hltqVbH9g1zj3TGzdodxdT8totaBhrc1czhe1lVDGXAyE3?=
- =?us-ascii?Q?jzkxxG39eRoSxBH2hhlt0rXniFeMOP9psaXt6N7bEpKKmWCRUP1/fpXrvKa2?=
- =?us-ascii?Q?mFWez0aFF9U5KBDQWiWfEBt7ZkrFcLPDpFxJRjHVwgTnYFA7D3EOxggv0m58?=
- =?us-ascii?Q?rIA3bU19+r1H0fRI4ngb6SzRUZR4dGX3EmA2mHKutLTrZnyY1+3QaytiKcMx?=
- =?us-ascii?Q?TKmN3zvVEKh+TZJnF2OGmHjQjR5M05wxBkhve2VqvWeGwX7xU/LMikHpP7xR?=
- =?us-ascii?Q?QmJ90FZOi2GeMXvNxtzIiprMb6fN5EHfoFv9dWkgDN4oEPa6P9h1pl8wtHHg?=
- =?us-ascii?Q?WXDwhfzVwPUQVbK5vQhkVqBJAWfBvPKs9jXC2yX/ySYAmI/cN6VyH8MKZahc?=
- =?us-ascii?Q?l+jweWhE4Vh7pkYTqOKFp5L81hyFwvvqCvefh6Yc+d/wKKVLU4qvAqcnEiv4?=
- =?us-ascii?Q?6caoOqCf4G7Fjia9CQRN7H1WlWNLNy6O6NlZeAVwa/UV6BFqTHyX1WdmiHZX?=
- =?us-ascii?Q?qzusyJSJhIqTbCJcygop3v2ra9CErgn5vqI5xYEMVv/PJyixwLMqUFV8sf5D?=
- =?us-ascii?Q?tXjn6WMuZjWOoLPYXVEp7/uEP+Q0Mdi8Vf+CW8NbmbfYPRU7TGhvdAs3BBiD?=
- =?us-ascii?Q?2XtxiCSz4mRmgVw6vwE5+ObvlzbEH32vZI86ppMkVi4rVcYd058r3cVoqFXl?=
- =?us-ascii?Q?HMFubB2wHM3Vtj4alwJtFPu7voKtFrtoDbGPIrkxPca565sqVh5he7jTDVbm?=
- =?us-ascii?Q?s1Y1cUA9ScTmuyMY+XDeYSCmfbZ81fgUKy/7qlRIt+K2nT7ekakoiUiCf4r+?=
- =?us-ascii?Q?x62tN2vGE43u8fuuCJOd6EBVMMlKvSBSb6ip4nA/kX7oLoBLBeP4PmbyFQRO?=
- =?us-ascii?Q?k2TZVb98uec6E5nG4CFOD4XE2ZMtpdj3L//vRksHh4r/UJAoRYdw0y+nsCco?=
- =?us-ascii?Q?cbkFXG96KCO+fLZkN+GF1zE2NPNc9+Y2Z+Z/JICqNmD+73DUaCL2sID6twUH?=
- =?us-ascii?Q?3LSJbsqYlPzMCYDgTEYdrbd1KNEqpZ58h442KvQUCb7GW8bWDrRxy+nzmB1g?=
- =?us-ascii?Q?mP5vw1MfcbprfDpY1Fg4BJUSVFvJ2MWtnXTLDz3nb7qfIhNEYCtk4nvktSYs?=
- =?us-ascii?Q?95Q3IE7FNOUAGnEc4AkeBIlx7dMdS3hPzmYCIoinpTXDefEcnl5JfUZxY7hs?=
- =?us-ascii?Q?Pq2FwrX9apnngCKw80VcUVHSC/JripvWEvA5jj2oK5Dv5zPhyAwVvf8+/Cb9?=
- =?us-ascii?Q?NtNLEsfnv9XSnfCclNe90WnQp2FmYXc7fb1iAavgD0vAqxTgNtY08cmLmdld?=
- =?us-ascii?Q?6/M8i/a6E6Elp/xC0iu0kO1VXdNuPySyjIlrwy/FqWjnIDgkgX8wsCxaDTYL?=
- =?us-ascii?Q?M5ou6cXgmAeUmza0YiRsFMKGXdZozTegM+0VJMQtaAM194CEtcWfsrweJe/9?=
- =?us-ascii?Q?oAejPaWAopdhUYnruZOiPpBEogs6Nd7+JnFCFzGagR74zUBxvhx5asE/K/t4?=
- =?us-ascii?Q?MqUcZne/ISKHps0tzaKo0RW5IwpiYLBHN3M+s/nAeF/2GB+92iJ3E7VRyauE?=
- =?us-ascii?Q?MIdumEIKmVQtZTvyRf4=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3422f985-9371-44dd-9f6a-08dbbdbc7cfd
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Sep 2023 11:42:25.2771
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: eepmQeT2WWUlvuHulYsa2serPiSxUXwy5+jrjWCa0Kn8btWn7Z9S66mwTjfGNF3w
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN9PR12MB5354
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20230922202057.47d93603@meshulam.tesarici.cz>
 
-On Mon, Sep 25, 2023 at 11:53:21AM +0200, Joerg Roedel wrote:
-> On Tue, Aug 22, 2023 at 01:15:55PM -0300, Jason Gunthorpe wrote:
-> > Jason Gunthorpe (7):
-> >   iommu: Remove useless group refcounting
-> >   iommu: Add generic_single_device_group()
-> >   iommu/sun50i: Convert to generic_single_device_group()
-> >   iommu/sprd: Convert to generic_single_device_group()
-> >   iommu/rockchip: Convert to generic_single_device_group()
-> >   iommu/ipmmu-vmsa: Convert to generic_single_device_group()
-> >   iommu/omap: Convert to generic_single_device_group()
+On Fri, Sep 22, 2023 at 08:20:57PM +0200, Petr Tesařík wrote:
+> On Fri, 22 Sep 2023 19:12:13 +0200
+> Petr Tesařík <petr@tesarici.cz> wrote:
+> > On Fri, 22 Sep 2023 15:31:29 +0200
+> > Petr Tesařík <petr@tesarici.cz> wrote:
+> > > On Mon, 18 Sep 2023 16:45:34 +0100
+> > > Catalin Marinas <catalin.marinas@arm.com> wrote:
+> > > > On Sun, Sep 17, 2023 at 11:47:41AM +0200, Petr Tesařík wrote:    
+> > > > > Ah... You may have a point after all if this sequence of events is
+> > > > > possible:
+> > > > > 
+> > > > > - CPU 0 writes new value to mem->pools->next in swiotlb_dyn_alloc().
+> > > > > 
+> > > > > - CPU 1 observes the new value in swiotlb_find_slots(), even though it
+> > > > >   is not guaranteed by any barrier, allocates a slot and sets the
+> > > > >   dev->dma_uses_io_tlb flag.
+> > > > > 
+> > > > > - CPU 1 (driver code) writes the returned buffer address into its
+> > > > >   private struct. This write is ordered after dev->dma_uses_io_tlb
+> > > > >   thanks to the smp_wmb() in swiotlb_find_slots().
+> > > > > 
+> > > > > - CPU 2 (driver code) reads the buffer address, and DMA core passes it
+> > > > >   to is_swiotlb_buffer(), which contains smp_rmb().
+> > > > > 
+> > > > > - IIUC CPU 2 is guaranteed to observe the new value of
+> > > > >   dev->dma_uses_io_tlb, but it may still use the old value of
+> > > > >   mem->pools->next, because the write on CPU 0 was not ordered
+> > > > >   against anything. The fact that the new value was observed by CPU 1
+> > > > >   does not mean that it is also observed by CPU 2.      
+> > > > 
+> > > > Yes, that's possible. On CPU 1 there is a control dependency between the
+> > > > read of mem->pools->next and the write of dev->dma_uses_io_tlb but I
+> > > > don't think this is sufficient to claim multi-copy atomicity (if CPU 1
+> > > > sees mem->pools->next write by CPU 0, CPU 2 must see it as well), at
+> > > > least not on all architectures supported by Linux. memory-barriers.txt
+> > > > says that a full barrier on CPU 1 is needed between the read and write,
+> > > > i.e. smp_mb() before WRITE_ONCE(dev->dma_uses_io_tlb). You could add it
+> > > > just before "goto found" in swiotlb_find_slots() since it's only needed
+> > > > on this path.    
+> > > 
+> > > Let me check my understanding. This smp_mb() is not needed to make sure
+> > > that the write to dev->dma_uses_io_tlb cannot be visible before the
+> > > read of mem->pools->next. Since stores are not speculated, that
+> > > ordering is provided by the control dependency alone.
+> > > 
+> > > But a general barrier ensures that a third CPU will observe the write to
+> > > mem->pools->next after the read of mem->pools->next. Makes sense.  
+> > 
+> > Now that I'm writing the patch, I get your idea to replace WRITE_ONCE()
+> > with smp_store_release(). Since a full memory barrier is required for
+> > multicopy atomicity, it is not "more than I need". Instead, the
+> > ordering contraints may be possibly restricted to "CPUs participating
+> > in a release-acquire chain" if I also replace READ_ONCE() in
+> > is_swiotlb_buffer() with smp_read_acquire().
+> > 
+> > I believe it does not matter that the CPU which writes a new value to
+> > mem->pools->next in swiotlb_dyn_alloc() does not participate in the
+> > chain, because the value must have been visible to the CPU which
+> > executes swiotlb_find_slots() and which does participate in the chain.
+> > 
+> > Let me double-check this thinking with a litmus test.
 > 
-> Applied on-top of the default-domain patch-set, thanks.
+> Hm. I didn't have much luck with smp_store_release(), because I need
+> to ensure ordering of the SUBSEQUENT store (by a device driver).
 > 
-> It caused some conflicts, but those were easy to resolve.
+> However, inserting smp_mb() _after_ WRITE_ONCE(dev->dma_uses_io_tlb)
+> seems to be enough to ensure proper ordering. I could even remove the
+> write memory barrier in swiotlb_dyn_alloc().
 
-Thanks! I'll double check it
+The smp_wmb() in swiotlb_dyn_alloc() should be removed, it doesn't help
+anything.
 
-Jason
+> This is my first time using herd7, so I can only hope I got everything
+> right. FWIW this is my litmus test:
+
+Nice, easier to reason on a smaller test.
+
+> C swiotlb-new-pool
+> 
+> (*
+>  * Result: Never
+>  *
+>  * Check that a newly allocated pool is always visible when the corresponding
+>  * swiotlb buffer is visible.
+>  *)
+> 
+> {}
+> 
+> P0(int *pool)
+> {
+> 	/* swiotlb_dyn_alloc() */
+> 	WRITE_ONCE(*pool, 999);
+> }
+> 
+> P1(int *pool, int *flag, int *buf)
+> {
+> 	/* swiotlb_find_slots() */
+> 	int r0 = READ_ONCE(*pool);
+> 	if (r0) {
+> 		WRITE_ONCE(*flag, 1);
+> 		smp_mb();
+
+I think in the current code, that's the smp_wmb() just before the
+presumed driver write. IIUC, smp_wmb() is not sufficient to ensure that
+WRITE_ONCE() on P0 is also observed, it would need to be smp_mb(). Nor
+would the smp_store_release() instead of WRITE_ONCE(*flag, 1).
+
+My initial thought was to place an smp_mb() just before WRITE_ONCE()
+above as it matches the multicopy atomicity description in
+memory-barriers.txt. But since we have the presumed driver write anyway,
+we can use that as the write on P1, read-from by P2, to ensure the
+global visibility of the write on P0.
+
+> 	}
+> 
+> 	/* device driver (presumed) */
+> 	WRITE_ONCE(*buf, r0);
+> }
+> 
+> P2(int *pool, int *flag, int *buf)
+> {
+> 	/* device driver (presumed) */
+> 	int r1 = READ_ONCE(*buf);
+> 
+> 	/* is_swiotlb_buffer() */
+> 	int r2;
+> 	int r3;
+> 
+> 	smp_rmb();
+> 	r2 = READ_ONCE(*flag);
+> 	if (r2) {
+> 		r3 = READ_ONCE(*pool);
+> 	}
+> }
+> 
+> exists (2:r1<>0 /\ 2:r3=0) (* Not flagged or pool not found. *)
+> 
+> Petr T
+
+I guess a v2 of this patch would only need to change the smp_wmb() in
+swiotlb_find_slots() (and the original fix). But write some comments,
+I'll forget everything in a week.
+
+-- 
+Catalin
