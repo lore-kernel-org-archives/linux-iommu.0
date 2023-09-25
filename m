@@ -1,186 +1,325 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.100])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 354AA107A7
-	for <iommu@lists.linux.dev>; Mon, 25 Sep 2023 11:43:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB333C433C9;
-	Mon, 25 Sep 2023 11:43:25 +0000 (UTC)
-Date: Mon, 25 Sep 2023 12:43:23 +0100
-From: Catalin Marinas <catalin.marinas@arm.com>
-To: Petr =?utf-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
-Cc: Christoph Hellwig <hch@lst.de>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>,
-	open list <linux-kernel@vger.kernel.org>,
-	Roberto Sassu <roberto.sassu@huaweicloud.com>,
-	Jonathan Corbet <corbet@lwn.net>
-Subject: Re: [PATCH] swiotlb: fix the check whether a device has used
- software IO TLB
-Message-ID: <ZRFyW/pFpnL+bDbg@arm.com>
-References: <20230913121403.GB4544@lst.de>
- <20230913142656.29e135d6@meshulam.tesarici.cz>
- <ZQNQscYr0rQWdw66@arm.com>
- <20230915111343.01496320@meshulam.tesarici.cz>
- <ZQSPyBRjnSISNFmD@arm.com>
- <20230917114741.01a23364@meshulam.tesarici.cz>
- <ZQhwnhOQbDp3j8y7@arm.com>
- <20230922153129.69b26975@meshulam.tesarici.cz>
- <20230922191213.379d440a@meshulam.tesarici.cz>
- <20230922202057.47d93603@meshulam.tesarici.cz>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C59E1B265
+	for <iommu@lists.linux.dev>; Mon, 25 Sep 2023 12:03:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1695643409; x=1727179409;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=zErDlVvL9qqnIU8F33Ah/15Q7C2Tf89RWcRmWqqxTdY=;
+  b=Zq1VDSMVktzLxeG4YQU3zHVOXivs6GS8ZqLFAHijce4kqSBgSM3puzMz
+   ZvoxF2nCssuMKww4P3KNnmWG4N15lSMMsjWKnbStSzjmekHBYRwNimw3f
+   mCBSzZgYmX/nOhgAnFaR3jodRjEYR8kvBvRUHsz6HM3kjVxXI6yGKsT7N
+   Qmo44M3C5wWi6qRGUiDx5WIHSZ8SAi8dWdSyv/WWS9RUWlBAucmiN4jS4
+   LE1+fI5kIJscLxMi4gVVXKHdiqj5fUl/l4qfu1JeHTEj8OizHtZ+qe2p5
+   KBnl9FkqoSFWeJmY3AJI8cv+jbm4+ANKkMcmQ5rXbtp2XGjwxOkvNq4SA
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10843"; a="447722774"
+X-IronPort-AV: E=Sophos;i="6.03,174,1694761200"; 
+   d="scan'208";a="447722774"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Sep 2023 05:03:28 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10843"; a="838545293"
+X-IronPort-AV: E=Sophos;i="6.03,174,1694761200"; 
+   d="scan'208";a="838545293"
+Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
+  by FMSMGA003.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 25 Sep 2023 05:03:27 -0700
+Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
+ fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.32; Mon, 25 Sep 2023 05:03:27 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.32; Mon, 25 Sep 2023 05:03:27 -0700
+Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.32 via Frontend Transport; Mon, 25 Sep 2023 05:03:27 -0700
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.173)
+ by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.32; Mon, 25 Sep 2023 05:03:26 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=NgGYvXq3fAY5/gEi+5JcDKulTA3YNYCWRfHWS7OA1u4+HjuK9h9yEIntcUVBS142Y2CWcJp4weCfpAGgu1JaTUc0h/WdnEzbLk89oSnNHGfm6+T0QYsVVCA9eM+81uvbgKNDmoeKVMKkN8rYGt+2f9Z8GbM7JorK0NPuywyoCoPSRENQFOzNgvDYccYuut9Wh4j2x/30F+AH3MNct9422D7XT8nGctJSLaKAU+2eOmkI99ekCYHQCWhvWhvy8pAOtiz7tMGwYqQUyfb10QdEREr5el/564nsZ5XT3avbzb2jTNpMGgmxUt2ZepmmFEPeHAEVggYJfzBRbzI1opyteg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=KlE/wnw8pUnID5UsU6vPzvsjBnKvgE93CTRA3N7fzpg=;
+ b=USUkVCPEOr8oIw5gZY/bkyBvDbezr7gnHOBB3s4/j4RCHMP95F2MvvQRVz7fBsc0a2EuWTGthaExeb3iT2XYarm4auay3V0HnYibz41Y4zCoUu7wOQhC4td2j9W41wX1fMfM03UAmYqZHIHgzcLk/lV7RNpDIUwc5bvimXcM+g3q+lQJr/lWvCU6N767ohfI8YcO+UyPYZfkU1CpbFSvNC44LlTY/VkJkg8spi17v8iuEC3Z+lTVrEsyXnm0iF8i8p2+AYF/8WsVvkTNRmGJwEEHqj8Sl2WF/kZijPfa422uQjufzeRQHDlLVkdtpB3Jaz6yUlL4+LYb1v2ieU8bxw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from BL1PR11MB5462.namprd11.prod.outlook.com (2603:10b6:208:31e::5)
+ by MN2PR11MB4661.namprd11.prod.outlook.com (2603:10b6:208:26b::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6813.28; Mon, 25 Sep
+ 2023 12:03:23 +0000
+Received: from BL1PR11MB5462.namprd11.prod.outlook.com
+ ([fe80::5d9b:b3d1:7125:f777]) by BL1PR11MB5462.namprd11.prod.outlook.com
+ ([fe80::5d9b:b3d1:7125:f777%3]) with mapi id 15.20.6813.017; Mon, 25 Sep 2023
+ 12:03:22 +0000
+Message-ID: <3931328b-2470-9cb7-ef87-5d0fdeb58142@intel.com>
+Date: Mon, 25 Sep 2023 20:03:13 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.15.1
+Subject: Re: [PATCH v2 2/3] iommu/vt-d: debugfs: Create/remove debugfs file
+ per {device, pasid}
+Content-Language: en-US
+To: Baolu Lu <baolu.lu@linux.intel.com>, <iommu@lists.linux.dev>, Tian Kevin
+	<kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon
+	<will@kernel.org>, Robin Murphy <robin.murphy@arm.com>
+CC: <linux-kernel@vger.kernel.org>
+References: <20230922151636.77139-1-Jingqi.liu@intel.com>
+ <20230922151636.77139-3-Jingqi.liu@intel.com>
+ <6a0abdd4-3c81-c7dd-1cbf-a3c04762dd41@linux.intel.com>
+From: "Liu, Jingqi" <jingqi.liu@intel.com>
+In-Reply-To: <6a0abdd4-3c81-c7dd-1cbf-a3c04762dd41@linux.intel.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: SG2PR06CA0197.apcprd06.prod.outlook.com (2603:1096:4:1::29)
+ To BL1PR11MB5462.namprd11.prod.outlook.com (2603:10b6:208:31e::5)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230922202057.47d93603@meshulam.tesarici.cz>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BL1PR11MB5462:EE_|MN2PR11MB4661:EE_
+X-MS-Office365-Filtering-Correlation-Id: afadf806-798e-449c-6652-08dbbdbf6a63
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: tpKeJ6AzN3AVpF2N5j+NlmKpzRWjxx4HyrbBwcGS7ONDBeSZFkEoK6oy/e71ssdcQJtt+MSK3CnJ75AJW+WkBxJn/bdt0IVGuo4+CvrLs/nx9PhwXzZe6idD7clpCVnwZH+CggY6RdyZezTv9Xd4IYEcDk1angrKzGjXHd8PN1yKLS0j0VDrtWzbFLxNRWUMOgcoYj59yF0CX4KKwj6yCZLjrT5xeIitKn18T/b1y8HJ82u/DZRsv/6NkjtysUUpTdypYG/RAdCUfQO680k7Bty8mVi7s8fhB/3NKLrYGsek8gJWopRTT+VlnSPRNzQMxJdArOup5FwQXHtEVFxjvGqdmGl/r8TUJXEpQgIpdgPql9jDDI112HjVHJAtMYbGbQzLsTiyPVC1h8lWCbHvI0gYN0vpVf9DOlEfKlz+dcWO9XAhH6LRgjCVC5hCZxHtKvD8lW61g6DKh6/lfBOC7SC3VXI2Q4bEpOCFnKd0r33FtKMzdOHAUdzA4vocQLReFAW5nioVr204drV8x/LZft63lN86Np55kwQryNTNXnnyCA+FXJVpyfGHY9xmpfXclkB7SPSlhE2eeoW/gF8IoOGpdZZdyoGUx8Lpq8BHiwfi2XGizUAvlF1YqutSlDD/fWgjIz1B4M4O8+4DiXNPCQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL1PR11MB5462.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(396003)(346002)(136003)(39860400002)(376002)(366004)(230922051799003)(1800799009)(186009)(451199024)(31686004)(6512007)(66476007)(316002)(66946007)(2906002)(110136005)(66556008)(41300700001)(8936002)(4326008)(8676002)(478600001)(6666004)(5660300002)(38100700002)(53546011)(6506007)(83380400001)(36756003)(2616005)(26005)(6486002)(86362001)(31696002)(82960400001)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?OVhTTWhhK0lMdVUzdU9ZejNXekRRUXBoMHZ3VGYwc1g3M0hrZ1hCZGE2ZnVr?=
+ =?utf-8?B?alZ3NjNBQVZRMjZZTjU0TkFKd2NVN3EyU1VMc2MxbzVjekcrblNPWVVHejNm?=
+ =?utf-8?B?NmFuTEt1ekM3N0NYM1ZhcmdmMjBpYUwyZG9Mbk5SanY2eGw5SVo1bVE1MFYv?=
+ =?utf-8?B?M3RNVTFoOVpSTW5DUWVaZ0U3dExHaFNtOWUyLzlBNXg1Ry9qVGVodVVSWjU5?=
+ =?utf-8?B?bCtybGhXaVNDRDJLNEZCN0RsaEcyVUlTNzUrODhZNGh4VkxTWFZOVDBhdHd3?=
+ =?utf-8?B?aC9odTh6UEJ2MUF6VVMwOW45dW5wSlBuU1VkeGhsUlpHbjdpVnQ5bDArL0JY?=
+ =?utf-8?B?blloaTBRa1JML3R5Rzhmd09oM0o0YWFROU1pZko4R1hVaThNaExHeG1JNUtr?=
+ =?utf-8?B?WW9ra29tNHkvRmZPYzRhUnQraDA4cHRWeHFmUW9md2Rpa1puby8zT3QxSnJH?=
+ =?utf-8?B?RUgxTHVWQXhuWUtFQmtidUdHUWQ3Nkx0cktEYVR5TVMrT3dpQmw3Z2llM2Nm?=
+ =?utf-8?B?dXkxaHZZa3JtdWIzajlqaVBaMWlLY3c3Y2lVYzNNd1dmWXRWRUlFVVBlZ0FS?=
+ =?utf-8?B?SUtYbHkwdXZSY0tHV2YveWZLdGxSRGhYYWV6cHpCVGI2VlZUWXU0NkJXM2lr?=
+ =?utf-8?B?eGNGMnl5VnFtTC9yTi9HU3paZ1FhRWdWLzBuMVI0bG5HVUpxVk5qcTNraXU3?=
+ =?utf-8?B?alNIZy81M2xrL3h5SVpUd1NPZ2Zxb2RkMUE3YjQ0NDBUbGo2VWs4bnpMWGpS?=
+ =?utf-8?B?b0N0SWljN3o2dFdXSWVRSG9WNmViSzBGdjN3ekxaeXZCWmlFMFpqOEY0WUVj?=
+ =?utf-8?B?YWNzTlJvUm4zY1JKbkxrdnYreGVKNHdsWUFFWmU2S2xsV1MrVDQ4MW83YXVq?=
+ =?utf-8?B?eW80S1FQUFRma0J0dkd2VXFYTHdUSnEvRm84bk1mTDU1UDJDUDhOemwrR1Jt?=
+ =?utf-8?B?L1RVd0hOVWZRS0QvRWlJc1l3YWdJRUVLaUo0RHFISFhWbXVUK3ZyNlliSlVN?=
+ =?utf-8?B?VHo4UExUUTY2MEMxejhJZkpYNVE2MzAwSXU4bXRQRmNJOFhvMmFMdE56bjA2?=
+ =?utf-8?B?ZnZhczdXZ1lUVWxtV0VaVisvREdYRm83T1JhSHVUNXZYcXVobnNMcFk2bHAr?=
+ =?utf-8?B?YVR3bUxVL3krcTR5OU02UGU4MU8zcVNVQkxneW1yT0QxQURyd05pQ0hxQzFV?=
+ =?utf-8?B?TDFPN0JkREFNNFZJcVNWOUlGaHRFaVB5bG5RcUxUeVNDVWk3MnJYNUwwVi9i?=
+ =?utf-8?B?UkRrdHJxL2F3ckQzRFd1WU1UQmpIMCtHRkhTNmFEc3BlSXBEUmt3QVI4R096?=
+ =?utf-8?B?TldBbFdlQ2dtS0JPOGx2RFZJVnd1MzY3NWNVamdzYlBRUFRKSXAzdk5XSnc1?=
+ =?utf-8?B?TUU0SHNQdE5rZTVob2g3NEtHVGwrT3lqTnlhV0xKNVpxb3VjQ29RRkxGdTFj?=
+ =?utf-8?B?WmpxblJHRHVGaksrWWZjUFJqYjJBWjFxOFVGUExIL0xQVG54bGJIU3h0L2xr?=
+ =?utf-8?B?Sm9QczdMTTM2YWlHaFZyNVVqeUoyeDlOeU03MXBkVitRbTV5ZzhrRDJZK1Nx?=
+ =?utf-8?B?WDFtdWNhTGxWZDV4aFNsWkpyRHFXWHB5QnJoQVg0emdiZWdDaU1wTFpkNS9r?=
+ =?utf-8?B?N2xKWFBwZWFIcjY4c0pwR1N6U0JIK3gxbGtPb2RzZGNld3F0WllhYXo1UGh0?=
+ =?utf-8?B?QlFXL2NHdlRNZUhiazc3SVJwWlJXNnQ5VGRjMXRVOFlkMk0vMHhIYTRSOXRU?=
+ =?utf-8?B?Q25tUUNVekZNTER1YTJjV3Z4Vkp2aWJPc0V6SzF5WEtTVE1ETXU4ZWtHVUFO?=
+ =?utf-8?B?Ym9wUzRpcHJ5QThQWURqVlhLcG90emZQWjdqSXVzNENsaXBPcGRJNkczdWVL?=
+ =?utf-8?B?YTBJcC9mVmVvVC8vYklLVDhybUM4cVIxU3ZuakYyUHp5QlpMaHZxU2d3T3pU?=
+ =?utf-8?B?bXN5YUtVUDhwWkNmNDZvODQwQkdPY1FvMG5TMmtVR1Q1MlA1S2dkVGp1NFI5?=
+ =?utf-8?B?dEI0bWhKeGpNM0hjb3hPQVVSOVBZdzZSMVZJSkNNOWVDaUNORjQ4bm5mUkZE?=
+ =?utf-8?B?WXEwSTJnOTZjeXB5NHVrajdwVUJTK3N4dlVIVEh4eTZTaEtuU2plQzRrQzJn?=
+ =?utf-8?Q?fVz8Djo28T855hM49zp+jdh0U?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: afadf806-798e-449c-6652-08dbbdbf6a63
+X-MS-Exchange-CrossTenant-AuthSource: BL1PR11MB5462.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Sep 2023 12:03:22.7798
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: i4FjNzV006KtiVCK3pZUaa8V2JZXUOxFvKHhAGQfjFVkzsRZo4QCOUb+tovFdWMPz0l2zXF1VF9MuOWsqUE+KQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR11MB4661
+X-OriginatorOrg: intel.com
 
-On Fri, Sep 22, 2023 at 08:20:57PM +0200, Petr Tesařík wrote:
-> On Fri, 22 Sep 2023 19:12:13 +0200
-> Petr Tesařík <petr@tesarici.cz> wrote:
-> > On Fri, 22 Sep 2023 15:31:29 +0200
-> > Petr Tesařík <petr@tesarici.cz> wrote:
-> > > On Mon, 18 Sep 2023 16:45:34 +0100
-> > > Catalin Marinas <catalin.marinas@arm.com> wrote:
-> > > > On Sun, Sep 17, 2023 at 11:47:41AM +0200, Petr Tesařík wrote:    
-> > > > > Ah... You may have a point after all if this sequence of events is
-> > > > > possible:
-> > > > > 
-> > > > > - CPU 0 writes new value to mem->pools->next in swiotlb_dyn_alloc().
-> > > > > 
-> > > > > - CPU 1 observes the new value in swiotlb_find_slots(), even though it
-> > > > >   is not guaranteed by any barrier, allocates a slot and sets the
-> > > > >   dev->dma_uses_io_tlb flag.
-> > > > > 
-> > > > > - CPU 1 (driver code) writes the returned buffer address into its
-> > > > >   private struct. This write is ordered after dev->dma_uses_io_tlb
-> > > > >   thanks to the smp_wmb() in swiotlb_find_slots().
-> > > > > 
-> > > > > - CPU 2 (driver code) reads the buffer address, and DMA core passes it
-> > > > >   to is_swiotlb_buffer(), which contains smp_rmb().
-> > > > > 
-> > > > > - IIUC CPU 2 is guaranteed to observe the new value of
-> > > > >   dev->dma_uses_io_tlb, but it may still use the old value of
-> > > > >   mem->pools->next, because the write on CPU 0 was not ordered
-> > > > >   against anything. The fact that the new value was observed by CPU 1
-> > > > >   does not mean that it is also observed by CPU 2.      
-> > > > 
-> > > > Yes, that's possible. On CPU 1 there is a control dependency between the
-> > > > read of mem->pools->next and the write of dev->dma_uses_io_tlb but I
-> > > > don't think this is sufficient to claim multi-copy atomicity (if CPU 1
-> > > > sees mem->pools->next write by CPU 0, CPU 2 must see it as well), at
-> > > > least not on all architectures supported by Linux. memory-barriers.txt
-> > > > says that a full barrier on CPU 1 is needed between the read and write,
-> > > > i.e. smp_mb() before WRITE_ONCE(dev->dma_uses_io_tlb). You could add it
-> > > > just before "goto found" in swiotlb_find_slots() since it's only needed
-> > > > on this path.    
-> > > 
-> > > Let me check my understanding. This smp_mb() is not needed to make sure
-> > > that the write to dev->dma_uses_io_tlb cannot be visible before the
-> > > read of mem->pools->next. Since stores are not speculated, that
-> > > ordering is provided by the control dependency alone.
-> > > 
-> > > But a general barrier ensures that a third CPU will observe the write to
-> > > mem->pools->next after the read of mem->pools->next. Makes sense.  
-> > 
-> > Now that I'm writing the patch, I get your idea to replace WRITE_ONCE()
-> > with smp_store_release(). Since a full memory barrier is required for
-> > multicopy atomicity, it is not "more than I need". Instead, the
-> > ordering contraints may be possibly restricted to "CPUs participating
-> > in a release-acquire chain" if I also replace READ_ONCE() in
-> > is_swiotlb_buffer() with smp_read_acquire().
-> > 
-> > I believe it does not matter that the CPU which writes a new value to
-> > mem->pools->next in swiotlb_dyn_alloc() does not participate in the
-> > chain, because the value must have been visible to the CPU which
-> > executes swiotlb_find_slots() and which does participate in the chain.
-> > 
-> > Let me double-check this thinking with a litmus test.
-> 
-> Hm. I didn't have much luck with smp_store_release(), because I need
-> to ensure ordering of the SUBSEQUENT store (by a device driver).
-> 
-> However, inserting smp_mb() _after_ WRITE_ONCE(dev->dma_uses_io_tlb)
-> seems to be enough to ensure proper ordering. I could even remove the
-> write memory barrier in swiotlb_dyn_alloc().
 
-The smp_wmb() in swiotlb_dyn_alloc() should be removed, it doesn't help
-anything.
+On 9/25/2023 9:47 AM, Baolu Lu wrote:
+> On 9/22/23 11:16 PM, Jingqi Liu wrote:
+>> Add a debugfs directory per pair of {device, pasid} if the mappings of
+>> its page table are created and destroyed by the iommu_map/unmap()
+>> interfaces. i.e. /sys/kernel/debug/iommu/intel/<device source 
+>> id>/<pasid>.
+>> Create a debugfs file in the directory for users to dump the page
+>> table corresponding to {device, pasid}. e.g.
+>> /sys/kernel/debug/iommu/intel/0000:00:02.0/0/domain_translation_struct.
+>>
+>> When attaching device without pasid, create a debugfs file with
+>> PASID#0, i.e. RID_PASID. When attaching a domain to a pasid of device,
+>> create a debugfs file with the specified pasid.
+>>
+>> When detaching without pasid, remove the directory and file for
+>> PASID#0. When detaching with pasid, remove the debugfs directory and
+>> file of the specified pasid. Remove the entire debugfs directory of
+>> the specified device for releasing device.
+>> e.g. /sys/kernel/debug/iommu/intel/0000:00:01.0
+>>
+>> Signed-off-by: Jingqi Liu <Jingqi.liu@intel.com>
+>> ---
+>>   drivers/iommu/intel/debugfs.c | 117 ++++++++++++++++++++++++++++++++--
+>>   drivers/iommu/intel/iommu.c   |  16 +++++
+>>   drivers/iommu/intel/iommu.h   |   4 ++
+>>   3 files changed, 132 insertions(+), 5 deletions(-)
+>>
+>>
+......
+>> +
+>> +/*
+>> + * Create a debugfs directory per pair of {device, pasid},
+>> + * then create the corresponding debugfs file in this directory
+>> + * for user to dump its page table. e.g.
+>> + * 
+>> /sys/kernel/debug/iommu/intel/0000:00:01.0/0/domain_translation_struct
+>> + */
+>> +void intel_iommu_debugfs_create_dev_pasid(struct device *dev, u32 
+>> pasid)
+>> +{
+>> +    struct dentry *pasid_dir = NULL, *dev_dir = NULL;
+>> +    struct iommu_domain *domain = NULL;
+>> +    struct show_domain_info *sinfo;
+>> +    char pname[10];
+>> +
+>> +    if (pasid == IOMMU_NO_PASID) {
+>> +        struct device_domain_info *info = dev_iommu_priv_get(dev);
+>> +        if (!info)
+>> +            return;
+>> +        domain = &info->domain->domain;
+>> +    } else
+>> +        domain = iommu_get_domain_for_dev_pasid(dev, pasid, 0);
+>
+> Can you just add domain as a parameter to this helper? This helper is
+> probably called in the process of attaching. so the domain pointers may
+> not be initialized yet.
+>
+Thanks.
+Yes. This helper may be called before domain is initialized.
+I'll add 'domain' as a parameter, and remove the check code above.
+Check if the 'domain' is valid as the following code.
+>> +
+>> +    /*
+>> +     * The debugfs only dumps the page tables whose mappings are 
+>> created
+>> +     * and destroyed by the iommu_map/unmap() interfaces. Check the
+>> +     * mapping type of the domain before creating debugfs directory.
+>> +     */
+>> +    if (!domain || !(domain->type & __IOMMU_DOMAIN_PAGING))
+>> +        return;
+>> +
+>> +    dev_dir = debugfs_lookup(dev_name(dev), intel_iommu_debug);
+>
+> The comments of debugfs_lookup says:
+>
+> /**
+>  * debugfs_lookup() - look up an existing debugfs file
+>  * @name: a pointer to a string containing the name of the file to 
+> look up.
+>  * @parent: a pointer to the parent dentry of the file.
+>  *
+>  * This function will return a pointer to a dentry if it succeeds.  If 
+> the file
+>  * doesn't exist or an error occurs, %NULL will be returned.  The 
+> returned
+>  * dentry must be passed to dput() when it is no longer needed.
+>  *
+>  * If debugfs is not enabled in the kernel, the value -%ENODEV will be
+>  * returned.
+>  */
+>
+> where is the paired dput()?
+>
+> Ditto to all debugfs_lookup() calls in this file.
+>
+Good catch.
+Need to 'dput()' the entry before returning from the helper.
+I'll revise it.
 
-> This is my first time using herd7, so I can only hope I got everything
-> right. FWIW this is my litmus test:
+......
+>> +
+>> +/*
+>> + * Remove the debugfs directory and file corresponding to each pair of
+>> + * {device, pasid}. There're two scenarios that will call this helper:
+>> + * 1) Detach the specified device with pasid.
+>> + * 2) IOMMU release a device.
+>> + */
+>> +void intel_iommu_debugfs_remove_dev_pasid(struct device *dev, u32 
+>> pasid)
+>> +{
+>> +    struct dentry *pasid_dir = NULL, *dev_dir = NULL;
+>> +    struct dentry *dentry = NULL;
+>> +    char pname[10];
+>> +
+>> +    dev_dir = debugfs_lookup(dev_name(dev), intel_iommu_debug);
+>> +    if (!dev_dir)
+>> +        return;
+>> +
+>> +    /* Check if the entire debugfs directory needs to be removed. */
+>> +    if (pasid == IOMMU_PASID_INVALID) {
+>> +        struct list_head *plist;
+>> +        struct dentry *sub_dentry;
+>> +
+>> +        list_for_each(plist, &(dev_dir->d_subdirs)) {
+>> +            sub_dentry = list_entry(plist, struct dentry, d_child);
+>> +            if(sub_dentry) {
+>> +                dentry = debugfs_lookup("domain_translation_struct", 
+>> sub_dentry);
+>> +                if (!dentry)
+>> +                    continue;
+>> +
+>> +                if (dentry->d_inode->i_private)
+>> +                    kfree(dentry->d_inode->i_private);
+>> +            }
+>> +        }
+>> +
+>> +        debugfs_remove_recursive(dev_dir);
+>> +    } else { /* Remove the directory with specified pasid. */
+>> +        sprintf(pname, "%x", pasid);
+>> +        pasid_dir = debugfs_lookup(pname, dev_dir);
+>> +        if (!pasid_dir)
+>> +            return;
+>> +
+>> +        dentry = debugfs_lookup("domain_translation_struct", 
+>> pasid_dir);
+>> +        if (!dentry)
+>> +            return;
+>> +
+>> +        if (dentry->d_inode->i_private)
+>> +            kfree(dentry->d_inode->i_private);
+>> +
+>> +        debugfs_remove_recursive(pasid_dir);
+>> +    }
+>> +}
+>
+> The above is too complex to review and maintain.
+>
+> If I were to make the change, I would move the device directory
+> management to the IOMMU probe/release devices path, and keep the PASID
+> directory management in the domain attaching/detaching paths.
+>
+> Or I overlooked anything?
+Good point.
+In this way, the debugfs device directory and pasid directory can be 
+managed separately.
 
-Nice, easier to reason on a smaller test.
+intel_iommu_probe_device()/intel_iommu_release_device()
+is responsible for adding/removing the device directory.
+In the domain attaching/detaching paths,
+add/remove the PASID directory and the corresponding debugfs file.
 
-> C swiotlb-new-pool
-> 
-> (*
->  * Result: Never
->  *
->  * Check that a newly allocated pool is always visible when the corresponding
->  * swiotlb buffer is visible.
->  *)
-> 
-> {}
-> 
-> P0(int *pool)
-> {
-> 	/* swiotlb_dyn_alloc() */
-> 	WRITE_ONCE(*pool, 999);
-> }
-> 
-> P1(int *pool, int *flag, int *buf)
-> {
-> 	/* swiotlb_find_slots() */
-> 	int r0 = READ_ONCE(*pool);
-> 	if (r0) {
-> 		WRITE_ONCE(*flag, 1);
-> 		smp_mb();
+I'll implement like this.
 
-I think in the current code, that's the smp_wmb() just before the
-presumed driver write. IIUC, smp_wmb() is not sufficient to ensure that
-WRITE_ONCE() on P0 is also observed, it would need to be smp_mb(). Nor
-would the smp_store_release() instead of WRITE_ONCE(*flag, 1).
-
-My initial thought was to place an smp_mb() just before WRITE_ONCE()
-above as it matches the multicopy atomicity description in
-memory-barriers.txt. But since we have the presumed driver write anyway,
-we can use that as the write on P1, read-from by P2, to ensure the
-global visibility of the write on P0.
-
-> 	}
-> 
-> 	/* device driver (presumed) */
-> 	WRITE_ONCE(*buf, r0);
-> }
-> 
-> P2(int *pool, int *flag, int *buf)
-> {
-> 	/* device driver (presumed) */
-> 	int r1 = READ_ONCE(*buf);
-> 
-> 	/* is_swiotlb_buffer() */
-> 	int r2;
-> 	int r3;
-> 
-> 	smp_rmb();
-> 	r2 = READ_ONCE(*flag);
-> 	if (r2) {
-> 		r3 = READ_ONCE(*pool);
-> 	}
-> }
-> 
-> exists (2:r1<>0 /\ 2:r3=0) (* Not flagged or pool not found. *)
-> 
-> Petr T
-
-I guess a v2 of this patch would only need to change the smp_wmb() in
-swiotlb_find_slots() (and the original fix). But write some comments,
-I'll forget everything in a week.
-
--- 
-Catalin
+Thanks,
+Jingqi
