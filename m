@@ -1,33 +1,45 @@
 Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9484B11C8D
-	for <iommu@lists.linux.dev>; Mon, 25 Sep 2023 08:18:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9A71F13AD5
+	for <iommu@lists.linux.dev>; Mon, 25 Sep 2023 09:04:37 +0000 (UTC)
 Received: from 8bytes.org (pd9fe9df8.dip0.t-ipconnect.de [217.254.157.248])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 669CF1A2200;
-	Mon, 25 Sep 2023 10:12:15 +0200 (CEST)
+	by mail.8bytes.org (Postfix) with ESMTPSA id 129E31A1D87;
+	Mon, 25 Sep 2023 11:04:36 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1695629535;
-	bh=rvI403sXHjIFnb/aVy8uQZA0DiZlvQIsvyech7TF9z8=;
+	s=default; t=1695632676;
+	bh=mVN2siWq/+A4oehimH4/zFfXc1ZPW7A+Lys1w4Ln8aw=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=tZLsAxkobYW4nXTZPQyTTI0CxJ1RLZBFxCnfvN4NEPAm86DIM+5jExytbxov5okMw
-	 dzsjzSrCYlu5KOGlO4ynkW2vVywUEEYlCgVyaA0z9mGgynrXuNq/LcsDZO26r3fQT7
-	 NV3yr15KdexSUtzI3pKvfERl+JWYijQxTp+i0WkPudGEfEto/ePIYkNIyDfcc/30D7
-	 Rww5T8BdEnrp7T0usBJYfZO7nrJZ91kaMKhSzStj5naP7t4DVksnq4l4pKXs7XHAzN
-	 W/LcRH51uY+IJD0iZrsZoBjt+iuYMv2XExCIOzPx6rzgtB3cugXOIXO200URKWmsr1
-	 icn2IFHaTNEvw==
-Date: Mon, 25 Sep 2023 10:12:14 +0200
-From: Joerg Roedel <joro@8bytes.org>
-To: Huang Jiaqing <jiaqing.huang@intel.com>
-Cc: kvm@vger.kernel.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, will@kernel.org, robin.murphy@arm.com,
-	kevin.tian@intel.com, baolu.lu@linux.intel.com,
-	jacob.jun.pan@linux.intel.com, yi.l.liu@intel.com,
-	yi.y.sun@intel.com
-Subject: Re: [PATCH] iommu/vt-d: Introduce a rb_tree for looking up device
-Message-ID: <ZRFA3uj1-QjlXpGx@8bytes.org>
-References: <20230821071659.123981-1-jiaqing.huang@intel.com>
+	b=BGGkX447j2SD4e1l60zsxOL4PWn0J17VBsnPjM3Mas2j6RDYKNY+yq7MnonnyC8Kd
+	 IAOqw95z0hzJH3hjTKhLR7eGDwCNJcqRSOLkop/LRd2LI9QCx0JmwsR44chiaKN69R
+	 O+HOWWVpjLFxtUXbhoWQrF6+8kbhK1E4rnCvUGns+G+LJ9jH/MZEpREjO32b/b/6xe
+	 Vpr72C+kGuGd004apbQtavDV6bFTr2ZhCRjQJc/bEvO9dad26ugXQm83YLJ4sySNmW
+	 tdm0lcpjCzpSQ0G1B2s+ahEv/paSgY6xjlUqgG8HzLHVnb07B8U+9mx0vCe9VNx5Gx
+	 WPsUsUZnUgpyw==
+Date: Mon, 25 Sep 2023 11:04:34 +0200
+From: "joro@8bytes.org" <joro@8bytes.org>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Baolu Lu <baolu.lu@linux.intel.com>,
+	"Deucher, Alexander" <Alexander.Deucher@amd.com>,
+	"Hegde, Vasant" <Vasant.Hegde@amd.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"Suthikulpanit, Suravee" <Suravee.Suthikulpanit@amd.com>,
+	"Huang2, Wei" <Wei.Huang2@amd.com>,
+	"jsnitsel@redhat.com" <jsnitsel@redhat.com>,
+	"Kuehling, Felix" <Felix.Kuehling@amd.com>
+Subject: Re: [PATCH v3 1/5] iommu/amd: Remove iommu_v2 module
+Message-ID: <ZRFNIsHmKpNmmOc7@8bytes.org>
+References: <20230921093140.6162-1-vasant.hegde@amd.com>
+ <20230921093140.6162-2-vasant.hegde@amd.com>
+ <BL1PR12MB5144C5ADC106D450EA73C511F7F8A@BL1PR12MB5144.namprd12.prod.outlook.com>
+ <20230921141415.GN13733@nvidia.com>
+ <BL1PR12MB51449627A11B2BDA55B97C8CF7F8A@BL1PR12MB5144.namprd12.prod.outlook.com>
+ <20230921163154.GO13733@nvidia.com>
+ <19c7c139-b002-384f-5766-b87a8013029e@linux.intel.com>
+ <20230922115927.GI13733@nvidia.com>
+ <a4770035-9f1a-3bff-2ff2-d6b9c81e2c0b@linux.intel.com>
+ <20230922121812.GM13733@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -36,18 +48,21 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230821071659.123981-1-jiaqing.huang@intel.com>
+In-Reply-To: <20230922121812.GM13733@nvidia.com>
 
-On Mon, Aug 21, 2023 at 12:16:59AM -0700, Huang Jiaqing wrote:
-> The existing IO page fault handler locates the PCI device by calling
-> pci_get_domain_bus_and_slot(), which searches the list of all PCI
-> devices until the desired PCI device is found. This is inefficient
-> because the algorithm efficiency of searching a list is O(n). In the
-> critical path of handling an IO page fault, this can cause a significant
-> performance bottleneck.
+On Fri, Sep 22, 2023 at 09:18:12AM -0300, Jason Gunthorpe wrote:
+> IMHO iommu drivers should not override this.
+> 
+> I think it was a mistake that iommu drivers could override to identity
+> domains. If we need quirks then the core code should have the quirk
+> list, similar to how PCI works.
 
-Can you elaborate a little more on the 'significant performance
-bottleneck' part? Where do you see this as a problem?
+Sounds reasonable, but if we transition over to an iommu core facility
+for quirks, we must do it in a way that does not cause temporary
+regressions for existing hardware.
+
+That being said, Alexander, can you please test this series for
+regressions on the older hardware to make sure nothing regresses there?
 
 Regards,
 
