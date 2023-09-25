@@ -1,132 +1,88 @@
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2053.outbound.protection.outlook.com [40.107.244.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CCDE679E3
-	for <iommu@lists.linux.dev>; Mon, 25 Sep 2023 13:05:10 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=bH+2D06xBul5tDqbjxx1Y1FzuyxJAkEvASDUbtIPg7GWIFiBiK6dQ2w1pX5vwId1apmJ+hcXrI/TCR1skcrT6Gn0y6dpLEk2XRLEoxcfi8zMrQhDglmpfx9wAwqPKdttoTa3OFrRLP1R+7xPNfDbIqVyb3gRLw8lqFKXx6Cl0z341P/E7L+MEpxNdq07oqnc00HLF7xSQLMW4guKNMpcVKdRwn6GzU+qRNgc+q4Y0nvuqpizCaxhXYqVd/ZpzyGKY1sSrDtGzPwor3JAnaLPYz7ZeH12z9yPOQ5S2tTEvVHgTXZfqPS42XF40xFkSIs8EfXgqXPiaFkny7H+eLbkjg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=cnYIfayjB+lIlu/De5hxdAvf9gaji+1Ra8C3sRvSRUk=;
- b=LcwzD+OVSvilrx83cdQmw4z4+KVyosNS8/JD1LbaSGI7iNjQZYWhH0kUk8jeOsWMRv30pAQYVb0Rq36R4qjIalYJQaLXgkIuIyUeb0rZcLMsUFv25S45vJgwQnZefNWWxybdTYGEFs1XPnJMHjLaqBvA7h547mTJ+Zhw9finLh6HVYhr125LBnFVSzSUMxmTDaJknr4iZS1LVlb1pQ998YNGrUJ4+d/aXjypzuoWMWRN62M7Nm21FTljyDvBHBf7CHmCIA7epgYjyZIaToeCXSiK1JrjWp6KQUnAUbNTp1Z47akv98zVuGQWz8sV5ucY7X1BpbsW4yLb/lzojzSbRw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=cnYIfayjB+lIlu/De5hxdAvf9gaji+1Ra8C3sRvSRUk=;
- b=I5QmKwBSx3KR3lVSXBc3U8REq/XCQusx3CZplVP2qYwIHYlcgysWiFV8ZrMrcACJ7/NVAzPEyD9GKcv/NSAHAns3S6Q2jUYV916KSR1CXss/C5L9njHgaRfh61SY1jisT8fS9QaHw1Mxn0Ob9owHBeW/gAvl7QSSfN/Feru5wXZ7gZsXGCaxucb70tjOUqmu+92u8k1wsoKX3ChGVrO6r17e1CQuVLaaGv5XRCZ8t5rJpez6IVHHHwDOgna0Ma8rR9esVDmcha37570qx5V9kKEa+fSdnYY+4QWtPTrtk6Fj/uyb3QTXU0xYO+r5wRPUnBfH0n7Ju59U7rII/XZCIg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by SJ2PR12MB8061.namprd12.prod.outlook.com (2603:10b6:a03:4cb::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6813.28; Mon, 25 Sep
- 2023 13:05:08 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::faf:4cd0:ae27:1073]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::faf:4cd0:ae27:1073%6]) with mapi id 15.20.6792.026; Mon, 25 Sep 2023
- 13:05:08 +0000
-Date: Mon, 25 Sep 2023 10:05:06 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: Baolu Lu <baolu.lu@linux.intel.com>, Yi Liu <yi.l.liu@intel.com>,
-	joro@8bytes.org, alex.williamson@redhat.com, kevin.tian@intel.com,
-	robin.murphy@arm.com, cohuck@redhat.com, eric.auger@redhat.com,
-	kvm@vger.kernel.org, mjrosato@linux.ibm.com,
-	chao.p.peng@linux.intel.com, yi.y.sun@linux.intel.com,
-	peterx@redhat.com, jasowang@redhat.com,
-	shameerali.kolothum.thodi@huawei.com, lulu@redhat.com,
-	suravee.suthikulpanit@amd.com, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-	zhenzhong.duan@intel.com, joao.m.martins@oracle.com
-Subject: Re: [PATCH v4 01/17] iommu: Add hwpt_type with user_data for
- domain_alloc_user op
-Message-ID: <20230925130506.GA13733@nvidia.com>
-References: <20230921075138.124099-1-yi.l.liu@intel.com>
- <20230921075138.124099-2-yi.l.liu@intel.com>
- <4b17d331-957b-44d3-8a19-0b2ccc59150b@linux.intel.com>
- <ZQyuIQbyVk9p8C8o@Asurada-Nvidia>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZQyuIQbyVk9p8C8o@Asurada-Nvidia>
-X-ClientProxiedBy: BLAPR05CA0018.namprd05.prod.outlook.com
- (2603:10b6:208:36e::13) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9F1E813ACF
+	for <iommu@lists.linux.dev>; Mon, 25 Sep 2023 13:07:55 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DEE8CDA7;
+	Mon, 25 Sep 2023 06:08:32 -0700 (PDT)
+Received: from [10.57.0.188] (unknown [10.57.0.188])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 832CE3F5A1;
+	Mon, 25 Sep 2023 06:07:53 -0700 (PDT)
+Message-ID: <ade90cd5-bbf1-f4f9-0511-75e0e18d1a83@arm.com>
+Date: Mon, 25 Sep 2023 14:07:50 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|SJ2PR12MB8061:EE_
-X-MS-Office365-Filtering-Correlation-Id: cb77e0c8-4d1f-4a83-6cbf-08dbbdc80af6
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	vSG5aL8t+sKTQZAHJo9qWsZmjKxpBmR8aXNqP/qX7sIHzSEZjk8Oxs19a8pOWYaJ15Mear8zqwLeRqzvmZ12WwzsxB1WCpUfF+iSSNeisPvRxmi5i7wjo3iEvRAFGyNLnd1w8v8+eT5HB9PhGR6/g89ptk98rdNQGmaOFWsSFS9aMV1/Q/6uNfbWNkl1NX6b+w6Wn21oKf+cUJcy2gzap0Bw+s8IPJ8DIHEPK81SwbAn32GrnegqcOw8BXjDQgp8uaMhl8QzDcwaCuwsPx5bSRtRhgbCr4BiVcuKRwE2esiKVz5uDpJj6swyz3uOwM6UVyZ0m1yxrRES+6VsIw7IocaByUYM91QIoeiWSfhw6fdiwhnlJMk4WCMSO8wg7STyNXe75d/4RkUlqFnx1gZMPWstZBr3jnZT7yW0bTNGO3kCC1+3P66YtS7Kqsd6nMkjOJjEK6WnbG+6veOlKrCBZvPGuQdIhBxH32Wl+eXhXNCVw+NIH9mMNXQgA2SNKVmAMmFtfcDKzxbBRgiUaNoq+iK/qlYC3a3eaC0YXAr/7EYvvw59HJsOjh4x3CXYYVuq
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(346002)(376002)(136003)(396003)(39860400002)(366004)(230922051799003)(1800799009)(186009)(451199024)(66899024)(83380400001)(26005)(1076003)(8936002)(8676002)(6862004)(4326008)(316002)(478600001)(66476007)(41300700001)(66556008)(37006003)(54906003)(6636002)(66946007)(6512007)(5660300002)(2616005)(2906002)(4744005)(7416002)(6486002)(6506007)(86362001)(33656002)(36756003)(38100700002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?fymyqsuoWdYFuh0fNUe1bdW46uRxWHmtbAiIpgMz0KSzMjOgi4NzKoJBXDuW?=
- =?us-ascii?Q?tg0czKpCMGVSMudKbILfxiNHh1K5svK5glVAQup4gXFPFTqw4x12d88CHpXJ?=
- =?us-ascii?Q?PtXkFfMu51Oiv3N75am+bpxjsyWIgFk7JDJ++x8/8jUB0OksIh8fWK3SJ+JU?=
- =?us-ascii?Q?EZwlsXkzZGJAaVeEwp+DggkWWnRAzxcRmDr323eU5nTU3EriFzJ+Meu7lG/B?=
- =?us-ascii?Q?sYmVhB2dj4J3JOg1ZZCxMB3S2SvUdZnt+ZHX2ElGrzPKP5KjvRAgb1eMAFcQ?=
- =?us-ascii?Q?P4ze/okKr7t2gsq6vmrpLOwUb9sro8gjLyxSdX+n8eHO/iNaW22xMk7G4hWA?=
- =?us-ascii?Q?PdAPXS+9ZDjJW/fc5KdA1La++ea3kTJDfiFiDLNo5jXMFx6eIm5haLylG8BN?=
- =?us-ascii?Q?uqphgyvfjMa15wp8Oys6UEWqecwAPovY1sVUP2TLSSMc1l0OvmxHHpGSq6IQ?=
- =?us-ascii?Q?sQCmSjXbmGAdUSuIDit5Blqh3in6iqb0EQbV2gl6L10rnTKhCFKueSPBcW8V?=
- =?us-ascii?Q?2ocSYN+doBn4MTlp0JUlpweyQrVtOUWRDRHHENFbDc+OvrNnna+4WYMbYpQ/?=
- =?us-ascii?Q?xNFoEFWCaZ2DvECaOMl02pnnuOSffXguOfwCdPDca5eFJW9E7q/WUFkv7lef?=
- =?us-ascii?Q?KNLcFeqYJ/1nfGIjfmF1l7kiyiNUqdDlcxZ2hnEW8YsU6c7pbmSWQ0GMrnxv?=
- =?us-ascii?Q?sUwukxkS98oDX24/fjjIVCVwk0zs2IYjxNeAOtRGzmhFFqnuVa5RwveDpjZc?=
- =?us-ascii?Q?iS0pZBqWJnDo7a6cJ4wcJhQ16UWtNdamr3MRG2pECNbL9clD1ullnreRz7UX?=
- =?us-ascii?Q?xwBHw0dF32kwtEI+q3HB+Qx8rcU1s3AJvK4esTspnd7wKI3ime9JRruInJTS?=
- =?us-ascii?Q?TIBQ9oGYKABVk5DfA3vVDeBO8Gic6NY9EkSHoYB0F2uzvyPNOSbrbBj0U+vk?=
- =?us-ascii?Q?Ll+MjZPDt0awHdQH6XlO1ny8qtiV5DJ4XnpzonnRVrx61AlattQfcwWaDVQR?=
- =?us-ascii?Q?S91DHeIup6MRkd5iKU6RADYYh17WF7mulVIoPgtaupbKvijBk0bTZHhy4oIQ?=
- =?us-ascii?Q?k2aXZ3TfC271HgTnxYKswMKwY3ApBMGfACMhvWaNeehz+4ZZRKuSDJfhFkNt?=
- =?us-ascii?Q?ONq2Llk3iPKNrAFJBZ5Bo2niqS6Zi6gNMR9W4Mo/bHit3TBjFaRhJHpgi7Mw?=
- =?us-ascii?Q?eN1ktLJCcaFVmfMSXr151DxRmnFEc+O07758umPmF0W/7FuTyMCzQae0HDUT?=
- =?us-ascii?Q?Q5RM01srkHnpcBpBTK+tw3ngs8eNOFQ63VTn6q8XKYUUO0uKPbvye73KsgAW?=
- =?us-ascii?Q?C3SQjVS1oVquWrimyflLr+kj53Io48TN1lGCqn6AFAAZ3m2ZtdWciBt6T4mt?=
- =?us-ascii?Q?xa5EG5C2clCr2GQ4K3qSnhTH99R0GfTk+1ha9c1U/uuGqp57ahJIadaXqSjZ?=
- =?us-ascii?Q?NsZgY0IVXJ23Er+dZXoTy+KPksct8fOcWdIf2Vkf71cfpjEwrf4EjJO6bZ1u?=
- =?us-ascii?Q?3vLhnZufh5Gt1muHWx0BSUBAkoEmwvQ0t9Exz0cnTSVPPXcRmavTTHf0La8v?=
- =?us-ascii?Q?EF1lZkSYogIudPY1rFFdhZow18GIdzap6Qvz1kb1?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: cb77e0c8-4d1f-4a83-6cbf-08dbbdc80af6
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Sep 2023 13:05:07.9500
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: jJjaA5r2jAy7QghxiY7lad/XlYC5hT1FB4hhkfdXML8PqUUSOghqJJ3zBP9repIl
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ2PR12MB8061
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.15.1
+Subject: Re: [PATCH v2 1/2] iommu/virtio: Make use of ops->iotlb_sync_map
+Content-Language: en-GB
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Niklas Schnelle <schnelle@linux.ibm.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, virtualization@lists.linux-foundation.org,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <20230918-viommu-sync-map-v2-0-f33767f6cf7a@linux.ibm.com>
+ <20230918-viommu-sync-map-v2-1-f33767f6cf7a@linux.ibm.com>
+ <ae7e513b-eb86-97e2-bed0-3cca91b8c959@arm.com>
+ <20230919081519.GA3860249@myrica> <20230919144649.GT13795@ziepe.ca>
+ <20230922075719.GB1361815@myrica> <20230922124130.GD13795@ziepe.ca>
+ <900b644e-6e21-1038-2252-3dc86cbf0a32@arm.com>
+ <20230922162714.GH13795@ziepe.ca>
+ <123c53c3-d259-9c20-9aa6-0c216d7eb3c0@arm.com>
+ <20230922233309.GI13795@ziepe.ca>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20230922233309.GI13795@ziepe.ca>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Thu, Sep 21, 2023 at 01:58:19PM -0700, Nicolin Chen wrote:
+On 2023-09-23 00:33, Jason Gunthorpe wrote:
+> On Fri, Sep 22, 2023 at 07:07:40PM +0100, Robin Murphy wrote:
+> 
+>> virtio isn't setting ops->pgsize_bitmap for the sake of direct mappings
+>> either; it sets it once it's discovered any instance, since apparently it's
+>> assuming that all instances must support identical page sizes, and thus once
+>> it's seen one it can work "normally" per the core code's assumptions. It's
+>> also I think the only driver which has a "finalise" bodge but *can* still
+>> properly support map-before-attach, by virtue of having to replay mappings
+>> to every new endpoint anyway.
+> 
+> Well it can't quite do that since it doesn't know the geometry - it
+> all is sort of guessing and hoping it doesn't explode on replay. If it
+> knows the geometry it wouldn't need finalize...
 
-> Perhaps we could put all min_len defines in uAPI header, like:
-> include/uapi/linux/gfs2_ondisk.h:442:#define LH_V1_SIZE (offsetofend(struct gfs2_log_header, lh_hash))
-> In this way, drivers won't need to deal with that nor have risks
-> of breaking ABI by changing a min_len.
+I think it's entirely reasonable to assume that any direct mappings 
+specified for a device are valid for that device and its IOMMU. However, 
+in the particular case of virtio, it really shouldn't ever have direct 
+mappings anyway, since even if the underlying hardware did have any, the 
+host can enforce the actual direct-mapping aspect itself, and just 
+present them as unusable regions to the guest.
 
-I don't think we need constants, just be sure that every call to 
-iommu_copy_user_data() has an offsetof() as the last parameter.
+>>> What do you think about something like this to replace
+>>> iommu_create_device_direct_mappings(), that does enforce things
+>>> properly?
+>>
+>> I fail to see how that would make any practical difference. Either the
+>> mappings can be correctly set up in a pagetable *before* the relevant device
+>> is attached to that pagetable, or they can't (if the driver doesn't have
+>> enough information to be able to do so) and we just have to really hope
+>> nothing blows up in the race window between attaching the device to an empty
+>> pagetable and having a second try at iommu_create_device_direct_mappings().
+>> That's a driver-level issue and has nothing to do with pgsize_bitmap either
+>> way.
+> 
+> Except we don't detect this in the core code correctly, that is my
+> point. We should detect the aperture conflict, not pgsize_bitmap to
+> check if it is the first or second try.
 
-Indeed perhaps you should put it in a macro and force this to happen eg:
+Again, that's irrelevant. It can only be about whether the actual 
+->map_pages call succeeds or not. A driver could well know up-front that 
+all instances support the same pgsize_bitmap and aperture, and set both 
+at ->domain_alloc time, yet still be unable to handle an actual mapping 
+without knowing which instance(s) that needs to interact with (e.g. 
+omap-iommu).
 
- #define iommu_copy_user_data(user_data, from, min_size_member) \
-  __iommu_copy_user_data(user_data, from, offsetofend(typeof(*from), min_size_member))
-
- iommu_copy_user_data(user_data, &data, iotlb);
-
-Jason
+Thanks,
+Robin.
