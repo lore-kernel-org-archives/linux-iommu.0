@@ -1,292 +1,105 @@
-Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 48B74200B8
-	for <iommu@lists.linux.dev>; Mon, 25 Sep 2023 17:21:34 +0000 (UTC)
-Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-4053d53a1bfso57654305e9.1
-        for <iommu@lists.linux.dev>; Mon, 25 Sep 2023 10:21:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1695662492; x=1696267292; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=CKueK8Rm02o3KZhTn4T7sMZXIEn2MW9NVRpQDGNfYBc=;
-        b=qC6OgkSo5yeqcyo4w7c68DCDM8Je3wtVIFesjYFcWFtzQ0CxNWEcR5/wVVwdbmZsam
-         Gj2tBvvUQtX+UQME2x/Ut8PzF6CcvmCo+2m0ewMfxYHWnjr9vHi5NiBNA8pBevfO0IEt
-         KcR6fKsIshld+Kf7vooUuw6QZxI+2A0/52RikCciZHlO/a5PAlqFPJ/hq14C7B6jDHGC
-         5mE1iPGE4wXsrppmhEI8wp/Ewbtbw1yzxSkKlVeAEpBhcGHjWQdNFyi8l75CGZA0SFEl
-         upUtC3b3Q05uK4Vee7esghWzyw1zRYfkg/aLpDvbfygjCbEJT0XS3LqUDfVLkSrtZksa
-         UGsA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1695662492; x=1696267292;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=CKueK8Rm02o3KZhTn4T7sMZXIEn2MW9NVRpQDGNfYBc=;
-        b=wSfWBWRmUfMry6r+Taxx2Yc97gwf2Nx7wb436APBkfGPta+N5Gzay1iCzelTBWiomH
-         CtvBNt9TbYymG/a3p91eOYDUBbQHAHSclTHxnQs1zfuV9AjO88y+xyK3xxBK05OGLMti
-         NnvTqwnv5BXF48JwOQFOYSoqv6YFiDBADCScd6bpjCQPf+E1rpQwUvcR7sBZEI4EarOo
-         /hfiUBMTUhdWU7zZ5AKyPgI+gnm6TOy0Uen+f12OGlo8MEHI2OhWoU7b5w7f5KCXv6y9
-         pcf1GbufZMWqoNKPBbE9HoXXApy3OgVVUIftVhwIcIaSTQLt+C+/1BJX0aZvlBCfMjhO
-         JO/Q==
-X-Gm-Message-State: AOJu0YzcQL/sqLAMmdT35nDfla1C4WMcYSNEJXuK9IShCH87bWdHlHoF
-	E1V4xrlcW0NJEVk8UyOMnfbzMQ==
-X-Google-Smtp-Source: AGHT+IF71fNqjZ/SbVW3qOa+NaQOb5omx832ExULUgjBi4a1LcPq+SWJ2MIOsdDJ33uR8yb5vsfEfQ==
-X-Received: by 2002:adf:f004:0:b0:31a:e376:6bd6 with SMTP id j4-20020adff004000000b0031ae3766bd6mr6023321wro.45.1695662492393;
-        Mon, 25 Sep 2023 10:21:32 -0700 (PDT)
-Received: from myrica ([2a02:c7c:7290:b00:fd32:2b31:6755:400c])
-        by smtp.gmail.com with ESMTPSA id n3-20020adff083000000b003143867d2ebsm12420171wro.63.2023.09.25.10.21.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Sep 2023 10:21:32 -0700 (PDT)
-Date: Mon, 25 Sep 2023 18:21:38 +0100
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: Mostafa Saleh <smostafa@google.com>
-Cc: maz@kernel.org, catalin.marinas@arm.com, will@kernel.org,
-	joro@8bytes.org, robin.murphy@arm.com, james.morse@arm.com,
-	suzuki.poulose@arm.com, oliver.upton@linux.dev,
-	yuzenghui@huawei.com, dbrazdil@google.com, ryan.roberts@arm.com,
-	linux-arm-kernel@lists.infradead.org, kvmarm@lists.linux.dev,
-	iommu@lists.linux.dev
-Subject: Re: [RFC PATCH 20/45] KVM: arm64: iommu: Add map() and unmap()
- operations
-Message-ID: <20230925172138.GB2068481@myrica>
-References: <20230201125328.2186498-1-jean-philippe@linaro.org>
- <20230201125328.2186498-21-jean-philippe@linaro.org>
- <ZCXRbF0dP7oHT+hl@google.com>
- <20230404160046.GA305012@myrica>
- <ZQscldu3ZjHSutdz@google.com>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B1F3A1CF86
+	for <iommu@lists.linux.dev>; Mon, 25 Sep 2023 17:24:00 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id ED2B9DA7;
+	Mon, 25 Sep 2023 10:24:37 -0700 (PDT)
+Received: from [10.57.0.188] (unknown [10.57.0.188])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 80B4B3F59C;
+	Mon, 25 Sep 2023 10:23:58 -0700 (PDT)
+Message-ID: <f044a3cf-b9af-cc4e-80d5-fc40806bda98@arm.com>
+Date: Mon, 25 Sep 2023 18:23:36 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZQscldu3ZjHSutdz@google.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.15.1
+Subject: Re: [PATCH v2 1/2] iommu/virtio: Make use of ops->iotlb_sync_map
+Content-Language: en-GB
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Niklas Schnelle <schnelle@linux.ibm.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, virtualization@lists.linux-foundation.org,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <ae7e513b-eb86-97e2-bed0-3cca91b8c959@arm.com>
+ <20230919081519.GA3860249@myrica> <20230919144649.GT13795@ziepe.ca>
+ <20230922075719.GB1361815@myrica> <20230922124130.GD13795@ziepe.ca>
+ <900b644e-6e21-1038-2252-3dc86cbf0a32@arm.com>
+ <20230922162714.GH13795@ziepe.ca>
+ <123c53c3-d259-9c20-9aa6-0c216d7eb3c0@arm.com>
+ <20230922233309.GI13795@ziepe.ca>
+ <ade90cd5-bbf1-f4f9-0511-75e0e18d1a83@arm.com>
+ <20230925132941.GK13795@ziepe.ca>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20230925132941.GK13795@ziepe.ca>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Wed, Sep 20, 2023 at 04:23:49PM +0000, Mostafa Saleh wrote:
-> I have been doing some testing based on the latest updates in
-> https://jpbrucker.net/git/linux/log/?h=pkvm/smmu
+On 2023-09-25 14:29, Jason Gunthorpe wrote:
+> On Mon, Sep 25, 2023 at 02:07:50PM +0100, Robin Murphy wrote:
+>> On 2023-09-23 00:33, Jason Gunthorpe wrote:
+>>> On Fri, Sep 22, 2023 at 07:07:40PM +0100, Robin Murphy wrote:
+>>>
+>>>> virtio isn't setting ops->pgsize_bitmap for the sake of direct mappings
+>>>> either; it sets it once it's discovered any instance, since apparently it's
+>>>> assuming that all instances must support identical page sizes, and thus once
+>>>> it's seen one it can work "normally" per the core code's assumptions. It's
+>>>> also I think the only driver which has a "finalise" bodge but *can* still
+>>>> properly support map-before-attach, by virtue of having to replay mappings
+>>>> to every new endpoint anyway.
+>>>
+>>> Well it can't quite do that since it doesn't know the geometry - it
+>>> all is sort of guessing and hoping it doesn't explode on replay. If it
+>>> knows the geometry it wouldn't need finalize...
+>>
+>> I think it's entirely reasonable to assume that any direct mappings
+>> specified for a device are valid for that device and its IOMMU. However, in
+>> the particular case of virtio, it really shouldn't ever have direct mappings
+>> anyway, since even if the underlying hardware did have any, the host can
+>> enforce the actual direct-mapping aspect itself, and just present them as
+>> unusable regions to the guest.
 > 
-> I think the unmap here is not enough as it assumes the whole range
-> can be unmapped in one call, so we would need something like this
-> instead (patch might no directly apply though):
+> I assume this machinery is for the ARM GIC ITS page....
+> 
+>> Again, that's irrelevant. It can only be about whether the actual
+>> ->map_pages call succeeds or not. A driver could well know up-front that all
+>> instances support the same pgsize_bitmap and aperture, and set both at
+>> ->domain_alloc time, yet still be unable to handle an actual mapping without
+>> knowing which instance(s) that needs to interact with (e.g. omap-iommu).
+> 
+> I think this is a different issue. The domain is supposed to represent
+> the actual io pte storage, and the storage is supposed to exist even
+> when the domain is not attached to anything.
+> 
+> As we said with tegra-gart, it is a bug in the driver if all the
+> mappings disappear when the last device is detached from the domain.
+> Driver bugs like this turn into significant issues with vfio/iommufd
+> as this will result in warn_on's and memory leaking.
+> 
+> So, I disagree that this is something we should be allowing in the API
+> design. map_pages should succeed (memory allocation failures aside) if
+> a IOVA within the aperture and valid flags are presented. Regardless
+> of the attachment status. Calling map_pages with an IOVA outside the
+> aperture should be a caller bug.
+> 
+> It looks omap is just mis-designed to store the pgd in the omap_iommu,
+> not the omap_iommu_domain :( pgd is clearly a per-domain object in our
+> API. And why does every instance need its own copy of the identical
+> pgd?
 
-Thanks for testing, the unmap is indeed wrong because io-pgtable doesn't
-like clearing empty ptes. Another problem with very large mappings is that
-we'll return to host several times to allocate more page tables, removing
-and recreating everything from scratch every time. So I changed the
-map_pages() call to keep track of what's been mapped so far, see below.
-
-I pushed these fixes to the pkvm/smmu branch
+The point wasn't that it was necessarily a good and justifiable example, 
+just that it is one that exists, to demonstrate that in general we have 
+no reasonable heuristic for guessing whether ->map_pages is going to 
+succeed or not other than by calling it and seeing if it succeeds or 
+not. And IMO it's a complete waste of time thinking about ways to make 
+such a heuristic possible instead of just getting on with fixing 
+iommu_domain_alloc() to make the problem disappear altogether. Once 
+Joerg pushes out the current queue I'll rebase and resend v4 of the bus 
+ops removal, then hopefully get back to despairing at the hideous pile 
+of WIP iommu_domain_alloc() patches I currently have on top of it...
 
 Thanks,
-Jean
-
----
-diff --git a/arch/arm64/kvm/hyp/include/nvhe/iommu.h b/arch/arm64/kvm/hyp/include/nvhe/iommu.h
-index f522ec0002f10..254df53e04783 100644
---- a/arch/arm64/kvm/hyp/include/nvhe/iommu.h
-+++ b/arch/arm64/kvm/hyp/include/nvhe/iommu.h
-@@ -37,9 +37,9 @@ int kvm_iommu_attach_dev(pkvm_handle_t iommu_id, pkvm_handle_t domain_id,
- 			 u32 endpoint_id);
- int kvm_iommu_detach_dev(pkvm_handle_t iommu_id, pkvm_handle_t domain_id,
- 			 u32 endpoint_id);
--int kvm_iommu_map_pages(pkvm_handle_t iommu_id, pkvm_handle_t domain_id,
--			unsigned long iova, phys_addr_t paddr, size_t pgsize,
--			size_t pgcount, int prot);
-+size_t kvm_iommu_map_pages(pkvm_handle_t iommu_id, pkvm_handle_t domain_id,
-+			   unsigned long iova, phys_addr_t paddr, size_t pgsize,
-+			   size_t pgcount, int prot);
- size_t kvm_iommu_unmap_pages(pkvm_handle_t iommu_id, pkvm_handle_t domain_id,
- 			     unsigned long iova, size_t pgsize, size_t pgcount);
- phys_addr_t kvm_iommu_iova_to_phys(pkvm_handle_t iommu_id,
-@@ -72,12 +72,12 @@ static inline int kvm_iommu_detach_dev(pkvm_handle_t iommu_id,
- 	return -ENODEV;
- }
-
--static inline int kvm_iommu_map_pages(pkvm_handle_t iommu_id,
--				      pkvm_handle_t domain_id,
--				      unsigned long iova, phys_addr_t paddr,
--				      size_t pgsize, size_t pgcount, int prot)
-+static inline size_t kvm_iommu_map_pages(pkvm_handle_t iommu_id,
-+					 pkvm_handle_t domain_id,
-+					 unsigned long iova, phys_addr_t paddr,
-+					 size_t pgsize, size_t pgcount, int prot)
- {
--	return -ENODEV;
-+	return 0;
- }
-
- static inline size_t kvm_iommu_unmap_pages(pkvm_handle_t iommu_id,
-diff --git a/arch/arm64/kvm/hyp/nvhe/iommu/iommu.c b/arch/arm64/kvm/hyp/nvhe/iommu/iommu.c
-index ad8c7b073de46..a69247c861d51 100644
---- a/arch/arm64/kvm/hyp/nvhe/iommu/iommu.c
-+++ b/arch/arm64/kvm/hyp/nvhe/iommu/iommu.c
-@@ -190,31 +190,29 @@ int kvm_iommu_detach_dev(pkvm_handle_t iommu_id, pkvm_handle_t domain_id,
- #define IOMMU_PROT_MASK (IOMMU_READ | IOMMU_WRITE | IOMMU_CACHE |\
- 			 IOMMU_NOEXEC | IOMMU_MMIO)
-
--int kvm_iommu_map_pages(pkvm_handle_t iommu_id, pkvm_handle_t domain_id,
--			unsigned long iova, phys_addr_t paddr, size_t pgsize,
--			size_t pgcount, int prot)
-+size_t kvm_iommu_map_pages(pkvm_handle_t iommu_id, pkvm_handle_t domain_id,
-+			   unsigned long iova, phys_addr_t paddr, size_t pgsize,
-+			   size_t pgcount, int prot)
- {
- 	size_t size;
- 	size_t mapped;
- 	size_t granule;
- 	int ret = -EINVAL;
- 	struct io_pgtable iopt;
-+	size_t total_mapped = 0;
- 	struct kvm_hyp_iommu *iommu;
--	size_t pgcount_orig = pgcount;
--	phys_addr_t paddr_orig = paddr;
--	unsigned long iova_orig = iova;
- 	struct kvm_hyp_iommu_domain *domain;
-
- 	if (prot & ~IOMMU_PROT_MASK)
--		return -EINVAL;
-+		return 0;
-
- 	if (__builtin_mul_overflow(pgsize, pgcount, &size) ||
- 	    iova + size < iova || paddr + size < paddr)
--		return -EOVERFLOW;
-+		return 0;
-
- 	iommu = kvm_iommu_ops.get_iommu_by_id(iommu_id);
- 	if (!iommu)
--		return -EINVAL;
-+		return 0;
-
- 	hyp_spin_lock(&iommu->lock);
- 	domain = handle_to_domain(iommu, domain_id);
-@@ -230,29 +228,29 @@ int kvm_iommu_map_pages(pkvm_handle_t iommu_id, pkvm_handle_t domain_id,
- 		goto err_unlock;
-
- 	iopt = domain_to_iopt(iommu, domain, domain_id);
--	while (pgcount) {
-+	while (pgcount && !ret) {
- 		mapped = 0;
- 		ret = iopt_map_pages(&iopt, iova, paddr, pgsize, pgcount, prot,
- 				     0, &mapped);
- 		WARN_ON(!IS_ALIGNED(mapped, pgsize));
-+		WARN_ON(mapped > pgcount * pgsize);
-+
- 		pgcount -= mapped / pgsize;
--		if (ret)
--			goto err_unmap;
-+		total_mapped += mapped;
- 		iova += mapped;
- 		paddr += mapped;
- 	}
-
--	hyp_spin_unlock(&iommu->lock);
--	return 0;
--
--err_unmap:
--	pgcount = pgcount_orig - pgcount;
-+	/*
-+	 * Unshare the bits that haven't been mapped yet. The host calls back
-+	 * either to continue mapping, or to unmap and unshare what's been done
-+	 * so far.
-+	 */
- 	if (pgcount)
--		iopt_unmap_pages(&iopt, iova_orig, pgsize, pgcount, NULL);
--	__pkvm_host_unshare_dma(paddr_orig, size);
-+		__pkvm_host_unshare_dma(paddr, pgcount * pgsize);
- err_unlock:
- 	hyp_spin_unlock(&iommu->lock);
--	return ret;
-+	return total_mapped;
- }
-
- size_t kvm_iommu_unmap_pages(pkvm_handle_t iommu_id, pkvm_handle_t domain_id,
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-kvm.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-kvm.c
-index e67cd7485dfd4..0ffe3e32cf419 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-kvm.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-kvm.c
-@@ -369,23 +369,32 @@ static int kvm_arm_smmu_attach_dev(struct iommu_domain *domain,
- static int kvm_arm_smmu_map_pages(struct iommu_domain *domain,
- 				  unsigned long iova, phys_addr_t paddr,
- 				  size_t pgsize, size_t pgcount, int prot,
--				  gfp_t gfp, size_t *mapped)
-+				  gfp_t gfp, size_t *total_mapped)
- {
--	int ret;
-+	size_t mapped;
- 	unsigned long irqflags;
-+	size_t size = pgsize * pgcount;
- 	struct kvm_arm_smmu_domain *kvm_smmu_domain = to_kvm_smmu_domain(domain);
- 	struct arm_smmu_device *smmu = kvm_smmu_domain->smmu;
- 	struct host_arm_smmu_device *host_smmu = smmu_to_host(smmu);
-
- 	local_lock_irqsave(&memcache_lock, irqflags);
--	ret = kvm_call_hyp_nvhe_mc(smmu, __pkvm_host_iommu_map_pages,
--				   host_smmu->id, kvm_smmu_domain->id, iova,
--				   paddr, pgsize, pgcount, prot);
-+	do {
-+		mapped = kvm_call_hyp_nvhe(__pkvm_host_iommu_map_pages,
-+					   host_smmu->id, kvm_smmu_domain->id,
-+					   iova, paddr, pgsize, pgcount, prot);
-+		iova += mapped;
-+		paddr += mapped;
-+		WARN_ON(mapped % pgsize);
-+		WARN_ON(mapped > pgcount * pgsize);
-+		pgcount -= mapped / pgsize;
-+		*total_mapped += mapped;
-+	} while (*total_mapped < size && !kvm_arm_smmu_topup_memcache(smmu));
-+	kvm_arm_smmu_reclaim_memcache();
- 	local_unlock_irqrestore(&memcache_lock, irqflags);
--	if (ret)
--		return ret;
-+	if (*total_mapped < size)
-+		return -EINVAL;
-
--	*mapped = pgsize * pgcount;
- 	return 0;
- }
-
-----
-
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-kvm.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-kvm.c
-index 0ffe3e32cf419..0055ecd75990e 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-kvm.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-kvm.c
-@@ -405,6 +405,8 @@ static size_t kvm_arm_smmu_unmap_pages(struct iommu_domain *domain,
- {
- 	size_t unmapped;
- 	unsigned long irqflags;
-+	size_t total_unmapped = 0;
-+	size_t size = pgsize * pgcount;
- 	struct kvm_arm_smmu_domain *kvm_smmu_domain = to_kvm_smmu_domain(domain);
- 	struct arm_smmu_device *smmu = kvm_smmu_domain->smmu;
- 	struct host_arm_smmu_device *host_smmu = smmu_to_host(smmu);
-@@ -414,11 +416,23 @@ static size_t kvm_arm_smmu_unmap_pages(struct iommu_domain *domain,
- 		unmapped = kvm_call_hyp_nvhe(__pkvm_host_iommu_unmap_pages,
- 					     host_smmu->id, kvm_smmu_domain->id,
- 					     iova, pgsize, pgcount);
--	} while (!unmapped && !kvm_arm_smmu_topup_memcache(smmu));
-+		total_unmapped += unmapped;
-+		iova += unmapped;
-+		WARN_ON(unmapped % pgsize);
-+		pgcount -= unmapped / pgsize;
-+
-+		/*
-+		 * The page table driver can unmap less than we asked for. If it
-+		 * didn't unmap anything at all, then it either reached the end
-+		 * of the range, or it needs a page in the memcache to break a
-+		 * block mapping.
-+		 */
-+	} while (total_unmapped < size &&
-+		 (unmapped || !kvm_arm_smmu_topup_memcache(smmu)));
- 	kvm_arm_smmu_reclaim_memcache();
- 	local_unlock_irqrestore(&memcache_lock, irqflags);
- 
--	return unmapped;
-+	return total_unmapped;
- }
- 
- static phys_addr_t kvm_arm_smmu_iova_to_phys(struct iommu_domain *domain,
-
+Robin.
