@@ -1,211 +1,221 @@
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f45.google.com (mail-ej1-f45.google.com [209.85.218.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A4FB219EA
-	for <iommu@lists.linux.dev>; Mon, 25 Sep 2023 17:58:38 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=eEEN+UkWlcZb6R/sA2MZ9mF2AZHWlSj+dWTekHlQvBn5gLIxJZrDcCF0tZurGF2fpBHKLUmY7JVjOB1cpJo1O0943vyrYP2v9dN2K2UjKJYXODE3appbJwb24we5ZY+KkOTjpKSwYv9gyHO798OOcwDJA9XB0wJVRHw3UTmq1Bl4E/p42vdht38+WLVQmxtYXKXxnsshLDyNF/6a8ygaFI2Nxz3i36RtjfMrH0OfiZYqHZyZjAZfcJ+jTKzLE1SmM39JgTkmWHMQCAY2MZJNm4+AvyBld4FJeSiWgaCcWGbnaMBg2nGy6/cJerkZysXrgD2wMoX0vRNBRNN5vmttUg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=GPDlI7KANjJAAHmpIwmqTn2V43Uh83REtLN6tKddHqA=;
- b=IZJ53Or7tJRZA2OR0f/TFQbUG4PgjPR+gRSDkX1N8oVt7V7DPWJX6/Fo5/Vo4DKZaYwTNGUZzBBT9FyUB28rwelaVUIz7/g2tOkCw34M3MezHVrmkUb4NhvD7h5h0iajyuRy7jzvIF3udXg4mtc7sWIXNs2Bbx4IkDuAG/RQXBHMIHjxN6/00Z6mtrpIbxnyGrP3J3H80xyEKwkPAEa+1mpnTxE4FZ+oYpm1hv3/2SH24wLoC9Vn/zLI7KT+WUn3LlM9WyM55qA0k1YhQVXWtQKY7ncPCrS5zrCQOMUeC2Xls9CClIELItizDtZP8/4C33ykI873AXoThaYy9IYwXg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=GPDlI7KANjJAAHmpIwmqTn2V43Uh83REtLN6tKddHqA=;
- b=eBLqatUi7Go6JmV+sRHAJZewklmSUxWOv4j3hKfbTt2zLo9M0+tBaDtfMDu9eVF//rGkpWJFJ5AM2V+b2CT3DHznoFRZah6ioc1NJPMzz9RlCkWANEY0c6auRvWmiIMP7PLTbfcRuQlokLXuB+wWgjAssxjtZ431hxczZFQZTac=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from BN8PR12MB3587.namprd12.prod.outlook.com (2603:10b6:408:43::13)
- by MW6PR12MB8661.namprd12.prod.outlook.com (2603:10b6:303:23f::5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6813.23; Mon, 25 Sep
- 2023 17:58:36 +0000
-Received: from BN8PR12MB3587.namprd12.prod.outlook.com
- ([fe80::a7fa:4411:67a3:131d]) by BN8PR12MB3587.namprd12.prod.outlook.com
- ([fe80::a7fa:4411:67a3:131d%4]) with mapi id 15.20.6813.027; Mon, 25 Sep 2023
- 17:58:35 +0000
-Message-ID: <39dff6ed-2fc1-0462-0317-9d1e4c1c718e@amd.com>
-Date: Mon, 25 Sep 2023 19:58:29 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.15.1
-Subject: Re: dma_map_resource() has a bad performance in pcie peer to peer
- transactions when iommu enabled in Linux
-Content-Language: en-US
-To: Kelly Devilliv <kelly.devilliv@outlook.com>,
- Robin Murphy <robin.murphy@arm.com>, "joro@8bytes.org" <joro@8bytes.org>,
- "will@kernel.org" <will@kernel.org>
-Cc: "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <TY2PR0101MB31361E2EE3391EBFAB78014B84FCA@TY2PR0101MB3136.apcprd01.prod.exchangelabs.com>
-From: =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>
-In-Reply-To: <TY2PR0101MB31361E2EE3391EBFAB78014B84FCA@TY2PR0101MB3136.apcprd01.prod.exchangelabs.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: FR3P281CA0174.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:a0::17) To BN8PR12MB3587.namprd12.prod.outlook.com
- (2603:10b6:408:43::13)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E5EF21A15
+	for <iommu@lists.linux.dev>; Mon, 25 Sep 2023 18:01:16 +0000 (UTC)
+Received: by mail-ej1-f45.google.com with SMTP id a640c23a62f3a-99c93638322so1589480266b.1
+        for <iommu@lists.linux.dev>; Mon, 25 Sep 2023 11:01:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1695664874; x=1696269674; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=njQ1BdogkQcbdblidvKFwQ0CFQs7HyHgjLf5rxsvEe4=;
+        b=khUPv+4zd5SZyGMG9r9zGn0qfz4yNcKIIxqpbF2MdprJsBwJRLWdOrLTfNQewDyb4U
+         DcX1QiboDD3WeOOVaqMVNlt+G7GEAZhldE+iUunIhn5Hz4FEJrGukJeFx+gq5VFBqlVv
+         EJ4vl15zrUFshXSxKNpMlT5NtMrbCx1xmQa9verlaJw15nM5ESM1k/6e9HS36wGIBbv0
+         WR43qzgZMJQpjXOF88c+H+swNFI6IDInNWWieln9ifVHqcItxbMlEpSt4Pntfb8pc4Kh
+         pzhVHmTIfXnDYCuEq/2/VKIxcS9yKvyuaWBh11hDC6/w2L8ySDwQK6oUdYZVEli0JPKt
+         m1sQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1695664874; x=1696269674;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=njQ1BdogkQcbdblidvKFwQ0CFQs7HyHgjLf5rxsvEe4=;
+        b=E2AKxi0Abfq0JLXLioJkGzZtcLHxCpFE8evYQNNv1yXI14FqF9LhwF9zS4DkrS8oUZ
+         SMqDfEech3o9IH/A1HiFB0y629J3hF+AYEMEPvmDqcwjaHCjv0Lh1ko+TW6Z6YYXaenL
+         HUyKqLUZFPbGf9xcgnlqzQyqpHKQE8z6R3M8eQ9Vj6OZHWrUi/2uoHFH96Fe4b5Fjz3a
+         JXQa7Nov5tb6QNbKaztEeQZQ2IBO0T3rNFI7nOjpobUJj7GJanizHYMxQlF/kcy7lbSc
+         E+B6gvG5spNhq828dQ6GDSL9gs6PPLCZlrMJvUqfII4pV5151aE6ELJ6Zl/as2S6rgDV
+         xuaQ==
+X-Gm-Message-State: AOJu0YxOHmUsZKfdz51GMwlWvT4tDYposNqDIksSwoYkOogKa6U0IsHo
+	Ab++nk7FluO4jI7L7b4AHum3zg==
+X-Google-Smtp-Source: AGHT+IG9/u2SB3ZRpgbXHjLztULk+AuoniEiZnId5QcCxv56UfQinLW43rYvtYkHF/0n4pyv0GC6PA==
+X-Received: by 2002:a17:907:9490:b0:9a5:aa43:1c7c with SMTP id dm16-20020a170907949000b009a5aa431c7cmr451126ejc.26.1695664874463;
+        Mon, 25 Sep 2023 11:01:14 -0700 (PDT)
+Received: from [192.168.1.172] ([93.5.22.158])
+        by smtp.gmail.com with ESMTPSA id y4-20020a17090614c400b00992b510089asm6619941ejc.84.2023.09.25.11.01.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 25 Sep 2023 11:01:13 -0700 (PDT)
+Message-ID: <869d9122-6187-47a0-0589-9feeafaf984c@baylibre.com>
+Date: Mon, 25 Sep 2023 20:01:12 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN8PR12MB3587:EE_|MW6PR12MB8661:EE_
-X-MS-Office365-Filtering-Correlation-Id: 632d27fc-81ac-46bd-1ebf-08dbbdf10a1e
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	9uMEk8e++7ik9E/WxDHZJO3HtHJ9qdqGJ0/cjVn7rbErnR7uM3d+nnn91rY4PTotFdnwbkwBBhJZyCbC+45rsCJpUEZr0XQkAFU9C7Kl0MGzAa80wxLOGM5kHQ1fxQgW9za+icZSA9JMQ1WByPB6sJRLlsJV97OuOHQZLwBZQ8haa9zHQ1/z6iqzAIrZlSvh2q/3O6JMHQO8KmDsPE0BmhyWoBLq0WdCABqBGa2c6hHp/xEe64tmvZXFL7Ta4fHYQwWvnfBkJFlYNr14f/2XjyCRGI3FmHA0lu4MJqB6KRgfyodSmaXPUxhslBleOJzFcFeGVyTixsFGSAcmA6ITFKH/iji5aWTkUTQ0Fi2MOMoedoWhAFKkpFD759RwZ+cXz40DywaJpkMUka54Bh6IHF7WAq83RB5fKeRsn1YVuMoE70tHXxT75ozz6g8ITF6PFJ+ozF8EUfzOBQ0jsH64+mvfjSGFr1b8qgtagmVHqffzDIOx4/hCYUSb7YL6A+Q4R9RcI56D3irMmKZq0VXHRF1ozH6GoAtxIs1Gm2QJe9HB8GLTKETbZIn18esmyjyJzRVW1AvkLH6a8a9mTKFpvyvR6yP6GYv7o/CzdZO8QETt3YaR4mun+YRbeq7qKvWwMz7cMnt6FquM0v3GbRZZxQ==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN8PR12MB3587.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(136003)(366004)(376002)(396003)(39860400002)(346002)(230922051799003)(186009)(1800799009)(451199024)(38100700002)(110136005)(53546011)(66476007)(66556008)(6666004)(2616005)(66946007)(26005)(6486002)(54906003)(83380400001)(41300700001)(6512007)(316002)(6506007)(8676002)(4326008)(8936002)(478600001)(86362001)(2906002)(31696002)(5660300002)(36756003)(31686004)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?clZ4OTBhSjNXeldkall4c1R6Qk9LSXd0R2tQZmluZTk1dmREdUlIZTl2elEr?=
- =?utf-8?B?NXBlRjY0eWZFYjJsb3hJczZXL1RmWFY3M29JUVhHK0NEQlF2c0NzUFE1MTZx?=
- =?utf-8?B?Y3dlS29xZXpwWG9PcE95SFN6WHcwYmJtbnF5cnJiT2ppVXVlR1VPWFQxeHpq?=
- =?utf-8?B?V1hHdWFxQWk1cDlOcFNtczRyR0dtMVA5UHlIQ1kvcXg3aGhpRkRRT2cyU2pF?=
- =?utf-8?B?b0FaVjdpZmJIZFpQaDVENXMvOWYyMG1PeStLTHZpZ1E4WjJKYytneVl2TnN5?=
- =?utf-8?B?VjdpMVVITEVMVEtJTkNmUUlnaitYTlpXR1d2NS81VDgvUUpzQW9pVE9qejh4?=
- =?utf-8?B?NWhmNloxT3BuTEtNa3d0OFNaZHBvdTY5ZU11cEczbTNiOW5nQWpwVzV5eStK?=
- =?utf-8?B?Zjd2NXYzNW1wS2ZsOTluRlJ3Ymh4S283UzJzVG53cDBpd3lOZXQ1WWhRa3Zx?=
- =?utf-8?B?cjRlenJsaU9zZzBMdnJZQzhXZ25aa3lkN3FJMHVIWkdNSXpUTHdtUUxEOWg1?=
- =?utf-8?B?WGdXU2Ftc3lkZTF0bTZjWTRJOHFlUEpzQm1JVnl0Z0FiMFIrUXVmMWlBQjlO?=
- =?utf-8?B?LzRxR00wdjhaOGlHR2pValdJSDFNRnpFWjZ1cGU5eTFOdWNnUEN3eU1FRmpP?=
- =?utf-8?B?aElhUmZKMGNpcXdqbURkMTJNMXhsK2N4c2lVV1QwYU0rU3BFY0xSM1poSXdt?=
- =?utf-8?B?cFpKZy9jTXFtamI3WG1lM0RXMDlIVnIxbmJGV0RQU1lscmwzUUZPdlQrWkp3?=
- =?utf-8?B?T3hEcGJhZUx1cUFOdy9IQXNGYU0xSDdjbkJBQ3ZoaGhad0pJSW9LbUYxRFdn?=
- =?utf-8?B?Yk5xRU5zSGR1bWx4aklRN1dZb3RUYVBjTjlaMDRSZmRnS3dVQlArK0pWV0pn?=
- =?utf-8?B?Rmk4TG4wZVh3T2xPOU5sMm1NMjkrVitJaUlDaEZSSTVWZ0tjWWZXMFZYUnlE?=
- =?utf-8?B?bVMzZWZJMzZVZWpiai9sNERZZWdQTkxGWjJvekFoR3dZSlpSb0R0ZU40VU1L?=
- =?utf-8?B?MTdlWVhaVXduZzJKbmsrTnpMZWd0V3R5STlJRC9PbGV0MzRtQlJjQnZ5UlZk?=
- =?utf-8?B?OHVFa0RaRjBUN0k1VnJsZ3RkODNXcnN0NmJmcTZiNEZKeG9uK3FKMXRyWGtQ?=
- =?utf-8?B?N0JDWVpiYzA5NkxJMmhLNHpBenhxQk5XNDFudmFsREN3aVpWb29IbE0rS0RP?=
- =?utf-8?B?SUl4SzY0N2ZnMVJnZmZvelVrazdpK29EaGNYUExyYitvRTVXUzRuSHlBaUVF?=
- =?utf-8?B?bnY5b2VVMEIybUlBM2pJcFNCZWdRaEFvclk4M3hTMkxnNkE1b1FabStiZS9w?=
- =?utf-8?B?b2RlaTJWQVJ4cDNXcFg5dWVnK3l3ZXpxbVorRVJvVWtIUEdVOWJIR1BWNDdK?=
- =?utf-8?B?RDAwaVJudHBCbEkzWnBjanZyQ050TWVOWVhDM0FwT2hQVTNDeENXQ2RCN25I?=
- =?utf-8?B?a1JTZVdUaS9iL2hlWkFid3hXb05TekZUSHd4Lzk1SERUbS84NUlRWStDMnlr?=
- =?utf-8?B?aHQ1czh3UWRtem1wVmRsUXh5aG40eWVIbGJuYnBIRlg5TjJMWGh5UERDRVZP?=
- =?utf-8?B?YUFXS0ptK1NiOFJKcnYzYVhudzJBTlArUDB3Rm5mdDFiTlRJK1U5QlhLOERL?=
- =?utf-8?B?dVkwaGQyU2wzQXg3NWtDOGFoWGFodWxBUEYxbHZodWxxRmxBc3VGbTVCMWlI?=
- =?utf-8?B?MjdCVzVXNlhLTmhTd1IvVHRsQkhZRDZDSUIyaURSQWxPZ3JFWkFGeml0Q3Zh?=
- =?utf-8?B?bTBZVlVIelJ5RTZLeXVMWGdtZ3lZOEMyYWRGU0FxWFM5SXpraGZJRXl3bFJt?=
- =?utf-8?B?djlnRkNrM0FjK0lyNkN2YktTK3h6THUvOURjN2ppc2FOTUpOcWY0SjRFU2Z1?=
- =?utf-8?B?clkxSC9DNFZFQkh6Q3VTd2hJTGwxYm1mOEtNdXJiWG4rSzBoWGszVDVaZi94?=
- =?utf-8?B?d1gwSlRJeGdtdXpXanlUZmZDdHp0OEpzQjRDWm42emxOUVZ4Z2szZFlHODhy?=
- =?utf-8?B?YTlvTVhQUUdlNk00V2JyTXdrZTc0SGpCM1BSOElPeTBPeW5wem5McktyTCt5?=
- =?utf-8?B?TjByVjJFbGkxMktGUDBsMmIySzlETEhTdDJVNEhLaENmeTJlYnhLSCs3Ty9o?=
- =?utf-8?Q?Ou+vaX/fcYsUQQLumOwBZnkFh?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 632d27fc-81ac-46bd-1ebf-08dbbdf10a1e
-X-MS-Exchange-CrossTenant-AuthSource: BN8PR12MB3587.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Sep 2023 17:58:35.8745
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: IBmXYdOEm0CF33Vf4qXl1cuQ5cSICOacl9tz5EohM6UcItBKwYVTPoFkoiI6VUxa
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW6PR12MB8661
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.15.1
+Subject: Re: [PATCH 1/4] iommu/mediatek: Initialise the secure bank
+Content-Language: en-US
+To: =?UTF-8?B?WW9uZyBXdSAo5ZC05YuHKQ==?= <Yong.Wu@mediatek.com>,
+ "joro@8bytes.org" <joro@8bytes.org>, "will@kernel.org" <will@kernel.org>,
+ "angelogioacchino.delregno@collabora.com"
+ <angelogioacchino.delregno@collabora.com>,
+ "matthias.bgg@gmail.com" <matthias.bgg@gmail.com>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "linux-mediatek@lists.infradead.org" <linux-mediatek@lists.infradead.org>,
+ =?UTF-8?B?QW5hbiBTdW4gKOWtmeWuieWuiSk=?= <Anan.Sun@mediatek.com>,
+ "robin.murphy@arm.com" <robin.murphy@arm.com>,
+ =?UTF-8?B?WUYgV2FuZyAo546L5LqR6aOeKQ==?= <YF.Wang@mediatek.com>,
+ "linux-arm-kernel@lists.infradead.org"
+ <linux-arm-kernel@lists.infradead.org>,
+ "krzysztof.kozlowski+dt@linaro.org" <krzysztof.kozlowski+dt@linaro.org>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "tjmercier@google.com" <tjmercier@google.com>,
+ =?UTF-8?B?TWluZ3l1YW4gTWEgKOmprOm4o+i/nCk=?= <Mingyuan.Ma@mediatek.com>
+References: <20230911011751.29906-1-yong.wu@mediatek.com>
+ <20230911011751.29906-2-yong.wu@mediatek.com>
+ <28b81a20-5cfa-b474-41c3-c01b7b846e21@collabora.com>
+ <409168b540948d312a91022f375fa71a470e9d60.camel@mediatek.com>
+From: Alexandre Mergnat <amergnat@baylibre.com>
+In-Reply-To: <409168b540948d312a91022f375fa71a470e9d60.camel@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-Am 25.09.23 um 16:17 schrieb Kelly Devilliv:
->> On 2023-09-25 04:59, Kelly Devilliv wrote:
->>> Dear all,
+
+
+On 25/09/2023 14:50, Yong Wu (吴勇) wrote:
+> On Mon, 2023-09-11 at 11:22 +0200, AngeloGioacchino Del Regno wrote:
+>> Il 11/09/23 03:17, Yong Wu ha scritto:
+>>> The lastest IOMMU always have 5 banks, and we always use the last
+>>> bank
+>>> (id:4) for the secure memory address translation. This patch add a
+>>> new
+>>> flag (SECURE_BANK_ENABLE) for this feature.
 >>>
->>> I am working on an ARM-V8 server with two gpu cards on it. Recently, I need
->> to test pcie peer to peer communication between the two gpu cards, but the
->> throughput is only 4GB/s.
->>> After I explored the gpu's kernel mode driver, I found it was using the
->> dma_map_resource() API to map the peer device's MMIO space. The arm
->> iommu driver then will hardcode a 'IOMMU_MMIO' prot in the later dma map:
->>>          static dma_addr_t iommu_dma_map_resource(struct device *dev,
->> phys_addr_t phys,
->>>                                   size_t size, enum dma_data_direction
->> dir, unsigned long attrs)
->>>           {
->>>                   return __iommu_dma_map(dev, phys, size,
->>>                                           dma_info_to_prot(dir, false,
->> attrs) | IOMMU_MMIO,
->>>                                           dma_get_mask(dev));
->>>           }
+>>> For the secure bank, its kernel va "base" is not helpful since the
+>>> secure bank registers has already been protected and can only be
+>>> accessed
+>>> in the secure world. But we still record its register base, because
+>>> we need
+>>> use it to determine which IOMMU HW the translation fault happen in
+>>> the
+>>> secure world.
 >>>
->>> And that will finally set the 'ARM_LPAE_PTE_MEMATTR_DEV' attribute in PTE,
->> which may have a negative impact on the performance of the pcie peer to peer
->> transactions.
->>>           /*
->>>            * Note that this logic is structured to accommodate Mali LPAE
->>>            * having stage-1-like attributes but stage-2-like permissions.
->>>            */
->>>           if (data->iop.fmt == ARM_64_LPAE_S2 ||
->>>               data->iop.fmt == ARM_32_LPAE_S2) {
->>>                   if (prot & IOMMU_MMIO)
->>>                           pte |= ARM_LPAE_PTE_MEMATTR_DEV;
->>>                   else if (prot & IOMMU_CACHE)
->>>                           pte |= ARM_LPAE_PTE_MEMATTR_OIWB;
->>>                   else
->>>                           pte |= ARM_LPAE_PTE_MEMATTR_NC;
->>>           } else {
->>>                   if (prot & IOMMU_MMIO)
->>>                           pte |= (ARM_LPAE_MAIR_ATTR_IDX_DEV
->>>                                   << ARM_LPAE_PTE_ATTRINDX_SHIFT);
->>>                   else if (prot & IOMMU_CACHE)
->>>                           pte |= (ARM_LPAE_MAIR_ATTR_IDX_CACHE
->>>                                   << ARM_LPAE_PTE_ATTRINDX_SHIFT);
->>>           }
+>>> Signed-off-by: Anan Sun <anan.sun@mediatek.com>
+>>> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+>>> ---
+>>>    drivers/iommu/mtk_iommu.c | 19 +++++++++++++++++--
+>>>    1 file changed, 17 insertions(+), 2 deletions(-)
 >>>
->>> I tried to remove the 'IOMMU_MMIO' prot in the dma_map_resource() API
->> and re-compile the linux kernel, the throughput then can be up to 28GB/s.
->>> Is there an elegant way to solve this issue without modifying the linux kernel?
->> e.g., a substitution of dma_map_resource() API?
+>>> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+>>> index 640275873a27..4a2cffb28c61 100644
+>>> --- a/drivers/iommu/mtk_iommu.c
+>>> +++ b/drivers/iommu/mtk_iommu.c
+>>> @@ -146,6 +146,7 @@
+>>>    #define TF_PORT_TO_ADDR_MT8173		BIT(18)
+>>>    #define INT_ID_PORT_WIDTH_6		BIT(19)
+>>>    #define CFG_IFA_MASTER_IN_ATF		BIT(20)
+>>> +#define SECURE_BANK_ENABLE		BIT(21)
+>>>    
+>>>    #define MTK_IOMMU_HAS_FLAG_MASK(pdata, _x, mask)	\
+>>>    				((((pdata)->flags) & (mask)) == (_x))
+>>> @@ -162,6 +163,8 @@
+>>>    #define MTK_IOMMU_GROUP_MAX	8
+>>>    #define MTK_IOMMU_BANK_MAX	5
+>>>    
+>>> +#define MTK_IOMMU_SEC_BANKID	4
+>>> +
 >>
->> Not really. Other use-cases for dma_map_resource() include DMA offload
->> engines accessing FIFO registers, where allowing reordering, write-gathering,
->> etc. would be a terrible idea. Thus it needs to assume a "safe" MMIO memory
->> type, which on Arm means Device-nGnRE.
+>> Is there any SoC (previous, current or future) that may have more
+>> than one
+>> secure context bank?
+> 
+> Thanks very much for the below detail suggestion. But No, for MM IOMMU,
+> The bank4 is mandatory the secure bank, and there is only this one
+> secure bank, and this is the case for all the current projects, we have
+> no plan to modify this at the moment. Therefore I think a macro is ok
+> for it.
+> 
+
+Between 2 solutions which have the equivalent complexity (logical & 
+readability), I prefer the most generic one (at least for generic 
+drivers like this). Nobody is aware about future SoC, even if you know 
+what will have the next SoC generation, I'm not sure you can certified 
+it will be the same in the next 2, 3, 4,... generations.
+
+I'm convinced it will be easier in the future to maintain the IOMMU code 
+if it's flexible.
+
+> Thanks.
+> 
 >>
->> However, the "proper" PCI peer-to-peer support under CONFIG_PCI_P2PDMA
->> ended up moving away from the dma_map_resource() approach anyway, and
->> allows this kind of device memory to be treated more like regular memory (via
->> ZONE_DEVICE) rather than arbitrary MMIO resources, so your best bet would
->> be to get the GPU driver converted over to using that.
-> Thanks Robin.
-> So your suggestion is we'd better work out a new implementation just as what it
-> does under CONFIG_PCI_P2PDMA instead of just using the dma_map_resource()
-> API?
->
-> I have explored the GPU drivers from AMD, Nvidia and habanalabs, e.g., and found
-> they all using the dma_map_resource() API to map the peer device's bar address.
-> If so, is it possible to be a common performance issue in PCI peer-to-peer scenario?
+>> I'm thinking about implementing this differently...
+>>
+>> static const struct mtk_iommu_plat_data mt8188_data_vdo = {
+>> 	....
+>> 	.flags = ..flags.. | ATF_SECURE_BANKS_ENABLE
+>> 	.banks_num = 5,
+>> 	.banks_enable = {true, false, false, false, true},
+>> 	.banks_secure = {false, false, false, false, true},
+>> 	....
+>> }
+>>
+>> ...this would means that you won't need to specify a static
+>> SEC_BANKID, as
+>> you'd get that from banks_secure... so that....
+>>
+>>>    enum mtk_iommu_plat {
+>>>    	M4U_MT2712,
+>>>    	M4U_MT6779,
+>>> @@ -240,9 +243,13 @@ struct mtk_iommu_plat_data {
+>>>    };
+>>>    
+>>>    struct mtk_iommu_bank_data {
+>>> -	void __iomem			*base;
+>>> +	union {
+>>> +		void __iomem		*base;
+>>> +		phys_addr_t		sec_bank_base;
+>>> +	};
+>>>    	int				irq;
+>>>    	u8				id;
+>>> +	bool				is_secure;
+>>>    	struct device			*parent_dev;
+>>>    	struct mtk_iommu_data		*parent_data;
+>>>    	spinlock_t			tlb_lock; /* lock for tlb range
+>>> flush */
+>>> @@ -1309,7 +1316,15 @@ static int mtk_iommu_probe(struct
+>>> platform_device *pdev)
+>>>    			continue;
+>>>    		bank = &data->bank[i];
+>>>    		bank->id = i;
+>>> -		bank->base = base + i * MTK_IOMMU_BANK_SZ;
+>>
+>> ....this would become:
+>>
+>> bank->is_secure = MTK_IOMMU_HAS_FLAG(data->plat_data,
+>> ATF_SECURE_BANKS_ENABLE) &&
+>> 		  data->plat_data->banks_secure[i];
+>>
+>> if (bank->is_secure)
+>> 	bank->sec_bank_base = res->start + i * MTK_IOMMU_BANK_SZ;
+>> else
+>> 	bank->base = base + i * MTK_IOMMU_BANK_SZ;
+>>
+>>> +		if (MTK_IOMMU_HAS_FLAG(data->plat_data,
+>>> SECURE_BANK_ENABLE) &&
+>>> +		    bank->id == MTK_IOMMU_SEC_BANKID) {
+>>> +			/* Record the secure bank base to indicate
+>>> which iommu TF in sec world */
+>>> +			bank->sec_bank_base = res->start + i *
+>>> MTK_IOMMU_BANK_SZ;
+>>> +			bank->is_secure = true;
+>>> +		} else {
+>>> +			bank->base = base + i * MTK_IOMMU_BANK_SZ;
+>>> +			bank->is_secure = false;
+>>> +		}
+>>>    		bank->m4u_dom = NULL;
+>>>    
+>>>    		bank->irq = platform_get_irq(pdev, i);
+>>
+>> What do you think?
+>>
+>> Cheers,
+>> Angelo
 
-That's not an issue, but expected behavior.
-
-When you enable IOMMU every transaction needs to go through the root 
-complex for address translation and you completely lose the performance 
-benefit of PCIe P2P.
-
-This is a hardware limitation and not really related to 
-dma_map_resource() in any way.
-
+-- 
 Regards,
-Christian.
-
->
->> Thanks,
->> Robin.
->>
->>> Thank you!
->>>
->>> Platform info:
->>> Linux kernel version: 5.10
->>> PCIE GEN4 x16
->>>
->>> Sincerely,
->>> Kelly
->>>
-
+Alexandre
