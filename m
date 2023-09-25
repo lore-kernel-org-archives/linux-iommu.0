@@ -1,149 +1,164 @@
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1nam02on2052.outbound.protection.outlook.com [40.107.96.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 01B481B299
-	for <iommu@lists.linux.dev>; Mon, 25 Sep 2023 15:57:14 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Ar2Uk6ixVd0S2UUByovF36yRHSNgXdp8iPeRMVIMM3hK6+AZCKr+HDY/BfOAcD4aZNrLElbsdcaceVN/Bro8X96qpreF+jbczyaHvmsG0ikzsog/dS/rU3+C04q23P8FthzS6na4t1Cj9OeT3j8HGJU5mbeA53kh+AwKJj9evse9L0vQRJCphonGpk3OnukM3+GNfx4l7CHYyHHWXMwkifwdKDudf5MV+V9bt43ICtRJbonl45Lv0ailvlz0z33A3TEBx9gjDiZAh6F6jeb8YhuJXjiZSn4+nN7734+I4f2SJAuYLoA5lqT8Fa7FrZFA/qnpzq8lPAeWOjDykVVKjQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=D5UwjJO9AaviWf7vKa5ho0jS5TuMT+tvQyq+8GDfE4E=;
- b=FLPTxLkkSavLJXBruDgJlLqrLxHAuC5EaDvw7LyUSvhuOwzj6LWG158WhJJDcYrZcJNOD8VkThqRN2JoaTE/0ht3izPwGEZ6KVw7n1Kezs9dcwbxbDOOjsN2DVDcf9LRs9buQeC/J9Bf14P0X9Ib/DG5x/N764yq/uikQUwe+fcGcUGRTy1JkLbe+EBj8bifOP1T4tyAYQBZtLGbdAw3E1KNqb/Pu+UwFTtusUnZQdlFVyEVvOxer0fTBYhSNaf547+OYUN89x43X0Tp5j6bpwkAULqsbbiBqK7+gXHiXjH6x1M9NqYBgbSQ6F+iRDShuYcpEZW0JkG4e+uNMnIh8w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=D5UwjJO9AaviWf7vKa5ho0jS5TuMT+tvQyq+8GDfE4E=;
- b=Pna837r/QbKGfXwLPc8ThRIXz+H30DocT18yER6Nr5n/8QQrZFaH9d34auvLlYJg0NH2aWx8uJlC0THHw1SDCRUort88nOevGvPu28Nt4DIAVLN4i06mOosi0SYtITseV4uo9U/NgcTLHVBdUbtBXTYzEo4+UGTZhYt6t1Xu7pcZaOmfn47asb5LE3ngvLJJf+mU5E+CppwL/SuPgNL8CdhUOsfD9Bip09SyqLlepU+3wxrDuqsKCJ90K32PFkGOur7vA9k7kHpCbtT+XwSwhPMl6duQTInzz4N2o/uoKGApD8EGllGgkySfYSvQq5aDR0HVQ8594uRaHHyJWQpPFA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by IA0PR12MB8893.namprd12.prod.outlook.com (2603:10b6:208:484::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6813.28; Mon, 25 Sep
- 2023 15:57:11 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::faf:4cd0:ae27:1073]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::faf:4cd0:ae27:1073%6]) with mapi id 15.20.6792.026; Mon, 25 Sep 2023
- 15:57:11 +0000
-Date: Mon, 25 Sep 2023 12:57:09 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Vasant Hegde <vasant.hegde@amd.com>
-Cc: Baolu Lu <baolu.lu@linux.intel.com>,
-	"Deucher, Alexander" <Alexander.Deucher@amd.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"joro@8bytes.org" <joro@8bytes.org>,
-	"Suthikulpanit, Suravee" <Suravee.Suthikulpanit@amd.com>,
-	"Huang2, Wei" <Wei.Huang2@amd.com>,
-	"jsnitsel@redhat.com" <jsnitsel@redhat.com>,
-	"Kuehling, Felix" <Felix.Kuehling@amd.com>
-Subject: Re: [PATCH v3 1/5] iommu/amd: Remove iommu_v2 module
-Message-ID: <20230925155709.GG13733@nvidia.com>
-References: <20230921093140.6162-1-vasant.hegde@amd.com>
- <20230921093140.6162-2-vasant.hegde@amd.com>
- <BL1PR12MB5144C5ADC106D450EA73C511F7F8A@BL1PR12MB5144.namprd12.prod.outlook.com>
- <20230921141415.GN13733@nvidia.com>
- <BL1PR12MB51449627A11B2BDA55B97C8CF7F8A@BL1PR12MB5144.namprd12.prod.outlook.com>
- <20230921163154.GO13733@nvidia.com>
- <19c7c139-b002-384f-5766-b87a8013029e@linux.intel.com>
- <f738e94d-1c1f-94e1-c4e3-752671af3c90@amd.com>
- <20230922120002.GJ13733@nvidia.com>
- <c7014abb-2c8e-fc3f-5cae-75060c8dcaf5@amd.com>
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <c7014abb-2c8e-fc3f-5cae-75060c8dcaf5@amd.com>
-X-ClientProxiedBy: MN2PR20CA0033.namprd20.prod.outlook.com
- (2603:10b6:208:e8::46) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C15241BDEA;
+	Mon, 25 Sep 2023 16:19:10 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9199DDA7;
+	Mon, 25 Sep 2023 09:19:45 -0700 (PDT)
+Received: from [10.57.0.188] (unknown [10.57.0.188])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 0EB443F59C;
+	Mon, 25 Sep 2023 09:19:05 -0700 (PDT)
+Message-ID: <3b116df9-cdaa-a6f8-6e5d-8865eefc31ce@arm.com>
+Date: Mon, 25 Sep 2023 17:19:01 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|IA0PR12MB8893:EE_
-X-MS-Office365-Filtering-Correlation-Id: ddf1979a-a8e3-4d97-7be4-08dbbde01437
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	V8k+PqxcsOXWOx1pGUroztifkRwmAVsoqeeHwV3hEfedgkYV8aj0ojoLI4DYecIiHS1q4T8zUGj/MuzH+G6eMVi5e7o6ZmLFP0OZkfuuaRWAQy0s57IM8TxJPuOSLbdov8vXAymsHgdzVlw8jgyY3fX4VsTUFCPN9ynTyVXz/zaeg1az/4VKj6nz4uZ948pPRzFBQeQ3gGH48ryhW4LicwjoUOlW/ZdfqUWZgOsCqzOKqJ2jhPgmTH4B2CVuk1Y/+Ih+ZGxBnwzmpiv1YdxkXifSn5f1HZY6ias3S6bIbLYAUYg0TWdZ1EgNTHIXtDRuLYGHAfSNx7xpuEaetOBG19Eb0e5EXqZSIZkC+/7fKcAYdkNXdC68D603RyW9XCloDKJESm7JlMZS8oCcjKwhAu/Qvz2X1Ci0I5p71FMz/00/NPTdjNhwT/S046V9mMTgQ1SKfjY+R2J0YqSePlq5TcLYuWFLUDm0ukFMNBjgKz/7QHdu9F/27a0eg6Yx69kvwKTuEdKoCO9xiZBzod5Ft6aKWDVJyEY18l711XVLJSDq9aFV117ET3BoilyDtO8b
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(136003)(366004)(396003)(39860400002)(376002)(346002)(230922051799003)(186009)(1800799009)(451199024)(6486002)(2906002)(83380400001)(4744005)(38100700002)(6506007)(6512007)(66946007)(66556008)(66476007)(54906003)(5660300002)(26005)(53546011)(1076003)(41300700001)(316002)(6916009)(8676002)(8936002)(4326008)(478600001)(2616005)(86362001)(36756003)(33656002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?MFJsVHFOSUhPNzh3T0NBY1dvZUphU29xcVRtcm5LV0xuVkxhbXRQKytHSW5a?=
- =?utf-8?B?Q0VqcGYxbWxmSkdpOFVxT0U4UVhYYktBNTRQbldSQVBlTi9kc0FUa3NMdWI4?=
- =?utf-8?B?UENTM1craDh5amY0ckxYVFdUakhrcko2MGhOd0x0N1FJdllGNzBsUW9QZ0hr?=
- =?utf-8?B?OHpwZzJnLzZ0NUszV3dLdFhRQmlRNUs5U2p0MUhyNnRuOU1rYkZFZEttL2tj?=
- =?utf-8?B?SEJKWUdqakhpa3M2RTNZSmVzUlVYcFhTc0Q4THptZDNvUWZUYVIxYTNFSTF3?=
- =?utf-8?B?RTJTZyt5NWdjZUtIMFlQZnJFUng4eWpSZDVBZVdnaUxiUTBJaS9VOEh4dVRR?=
- =?utf-8?B?azdNb2lWWU1SWDdVZ2tSSVNSTzJnZC91SHlOOUt1cVFUb25FejdodTZuM2pl?=
- =?utf-8?B?Y08vdmY3SFMweTlIbkhmYmFnUE1UcXh5OEZpWndLZUJGaWxWS0tpUXFXYzhu?=
- =?utf-8?B?L3RlT3Q3TDFLb2wvRmxFaHdpYnpVTkxrWHI3YWhTb2o1SDJReU1WNUtvVlQ3?=
- =?utf-8?B?RUU5OUU4Nk55M0VFZ2Q0WEhKbzN5REZKdVFVcncyQklTL0tyVzY1QzlKTXJi?=
- =?utf-8?B?QVd2ajZpMUxubU90bXV3cnFwdWxSMlhPSDREUDROM20rNTQrM29uekJkQmJt?=
- =?utf-8?B?dWRFaUJOV09DdGFWYWdGSmlnbmpmTmk2UzhtSzc3dFJXUFNQa1FKNW1hbFQ3?=
- =?utf-8?B?cnQ1QVh5ejhTNjdxMFdPRTBteTZtNmYzN3N2Ky9FUFlPaWlhMmx5K3l2QmJi?=
- =?utf-8?B?dEdXd09XMDVxcHE2Zk5QRWJuT215SWhMYS9sN09obTJkZ0xyL3kxdTJrNWlR?=
- =?utf-8?B?ZEExY2NKalVFMDJreDhONFRrYWI5OUN3T3RSSXlDTEZkbWJ5N0pEb0hhV1Jt?=
- =?utf-8?B?bkhzZm1zYUljUFpBNnZVaTJVaDRHYkNTNU9Dd2k4ZHVhalNaMHYwcHNsZ0VV?=
- =?utf-8?B?T3FUb2MzQXJRRmw2NEZUVC9yTjFtcUhrd1RNYWZuYTlYS0xuVXVnVG5UVGVT?=
- =?utf-8?B?MDBFeHB0UVJMSDMzWDlsVmFiSWk4RW40ZktyQnZ3MlRXejRkOXdMZ0E0SVZQ?=
- =?utf-8?B?VWRvcHR6L3N4UlMzeEZlVWpQZUNXbGpkUllaajUxeGwxd0k4bVUxeGFSbSs1?=
- =?utf-8?B?RkJuMm5pTHNhMU1yRjZHanNFNlBxVC9raGN3WTVvNDFxZTNxZm9jZ2Uxd1pq?=
- =?utf-8?B?cHJGWFJYMC9aRzh3VnM2NWpKY0k1N1dMeUgxYlRrRU05TlN4Y1ZZYVoxUE5k?=
- =?utf-8?B?N2RVM1RGT3ZRL1lXUHVrMVRXL1ZVMTl3eEZKT1hUa2I3QkMxcTBSWU4va3Zo?=
- =?utf-8?B?UjVZRy9oamxZTHByK1hiN2xHQk00TGRoVUEycSt1aTZ6WFNoR3VNUUF0dVNk?=
- =?utf-8?B?Rm4waFVjS3dHNFFFZmVFNWpTM1E2SG9QRVpGSmRrQXFoOHF6SnNjZU9kWlVo?=
- =?utf-8?B?bnRRSnBRM2hHMzA3ajN0RzAwRGExS0NhN2NPNW1XMnVCVVA3OWtlSjN0REdT?=
- =?utf-8?B?SnhxOUIwcDB1U0E4cHJ3NlVHKzlnUkFxbUNIeFA0bERxOGllL1JiV3p5bzdL?=
- =?utf-8?B?K3FTU09QcUJBcmsxNUg4T3ptT1cyV3ZoMmE5UXBrSjk4NVRPUERKeU5iMnNn?=
- =?utf-8?B?dithMkxnb1ppSk1pczJXLzJRZ1VHM0txNUsyQXN6Nml5YkFrN1NJSUNyODh6?=
- =?utf-8?B?TTNUZTdtZkRsNzBUQlk1TVh2UUxVTG12OTNibkdFeTM0SElWTFJPOHZtMEJs?=
- =?utf-8?B?U3pXQ3dSOVBHYkQ5SDFpMWduZHZ5NGJmMlRNdzZQOGpGbm91dFBzSTFJS3Ni?=
- =?utf-8?B?T0xWVUxMN2FFclBDb3BRVFdjWDkyd3JEK2YrQ3Rzai9qVzU5VWFWOW56TFRJ?=
- =?utf-8?B?UjJhQ3lJa3JtajBPUlQweEV2Q3k1cEM5VjJFQWxoR3kxUlZHeUx6S2VReDlH?=
- =?utf-8?B?Vlk4cVliVGl3SzB6VXVBOTR6V00weG5EbmRRVCs0SWY2azlRVk1qVzhwQXIz?=
- =?utf-8?B?RTYzNGpmcVZISkNOL1VpbEtKVXhkdnVJYTdBVitRdEhzQUxqdFE3VDVyQk51?=
- =?utf-8?B?NWpYaWlMa0dYc0d2WGROcXROQ045RjFNTEcvLzJXV1cybXQ4MkNzSUlNc1FS?=
- =?utf-8?Q?uiH2Gltza7njTlIwciLvYpn4Z?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ddf1979a-a8e3-4d97-7be4-08dbbde01437
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Sep 2023 15:57:11.4108
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: qKecZliI8w/41iFjxcLyXL57WOP4UUrdP2tOrQQXZehOTaxJzXkJlZtvqhOc7CUt
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB8893
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.15.1
+Subject: Re: [PATCH] iommu/sun50i: Convert to map_pages/unmap_pages
+Content-Language: en-GB
+To: Jernej Skrabec <jernej.skrabec@gmail.com>, joro@8bytes.org,
+ will@kernel.org
+Cc: wens@csie.org, samuel@sholland.org, iommu@lists.linux.dev,
+ linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+References: <20230912181941.2971036-1-jernej.skrabec@gmail.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20230912181941.2971036-1-jernej.skrabec@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Mon, Sep 25, 2023 at 08:41:41PM +0530, Vasant Hegde wrote:
-> Jason,
+On 2023-09-12 19:19, Jernej Skrabec wrote:
+> Convert driver to use map_pages and unmap_pages. Since functions operate
+> on page table, extend them to be able to operate on whole table, not
+> just one entry.
 > 
-> On 9/22/2023 5:30 PM, Jason Gunthorpe wrote:
-> > On Fri, Sep 22, 2023 at 02:22:11PM +0530, Vasant Hegde wrote:
-> >>> 2) PCI device supports ATS and PASID
-> >>>    In this case, ATS is required for PRI, so we should enable it even if
-> >>>    the default domain has been configured to PASSTHROUGH mode.
-> >>
-> >> IMO we should enable ATS along with enable_feature(PRI).
-> > 
-> > Definately not. ATS is valuable and importnat without PRI.
+> Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+> ---
+> Hi!
 > 
-> I get that. But I am not sure whether I understood the usecase when domain is in
-> passthrough mode. Do you have any usecase to enable ATS when device is in pass
-> through mode?
+> I'm not sure if it makes sense to check validity of page table entry when
+> unmaping pages makes sense. What do you think?
+> 
+> Best regards,
+> Jernej
+> 
+>   drivers/iommu/sun50i-iommu.c | 55 +++++++++++++++++++++---------------
+>   1 file changed, 33 insertions(+), 22 deletions(-)
+> 
+> diff --git a/drivers/iommu/sun50i-iommu.c b/drivers/iommu/sun50i-iommu.c
+> index 74c5cb93e900..be6102730a56 100644
+> --- a/drivers/iommu/sun50i-iommu.c
+> +++ b/drivers/iommu/sun50i-iommu.c
+> @@ -589,11 +589,12 @@ static u32 *sun50i_dte_get_page_table(struct sun50i_iommu_domain *sun50i_domain,
+>   }
+>   
+>   static int sun50i_iommu_map(struct iommu_domain *domain, unsigned long iova,
+> -			    phys_addr_t paddr, size_t size, int prot, gfp_t gfp)
+> +			    phys_addr_t paddr, size_t pgsize, size_t pgcount,
+> +			    int prot, gfp_t gfp, size_t *mapped)
+>   {
+>   	struct sun50i_iommu_domain *sun50i_domain = to_sun50i_domain(domain);
+>   	struct sun50i_iommu *iommu = sun50i_domain->iommu;
+> -	u32 pte_index;
+> +	u32 pte_index, count, i;
+>   	u32 *page_table, *pte_addr;
+>   	int ret = 0;
+>   
+> @@ -604,45 +605,55 @@ static int sun50i_iommu_map(struct iommu_domain *domain, unsigned long iova,
+>   	}
+>   
+>   	pte_index = sun50i_iova_get_pte_index(iova);
+> -	pte_addr = &page_table[pte_index];
+> -	if (unlikely(sun50i_pte_is_page_valid(*pte_addr))) {
+> -		phys_addr_t page_phys = sun50i_pte_get_page_address(*pte_addr);
+> -		dev_err(iommu->dev,
+> -			"iova %pad already mapped to %pa cannot remap to %pa prot: %#x\n",
+> -			&iova, &page_phys, &paddr, prot);
+> -		ret = -EBUSY;
+> -		goto out;
+> +	count = min(pgcount, (size_t)NUM_PT_ENTRIES - pte_index);
+> +	for (i = 0; i < count; i++) {
+> +		pte_addr = &page_table[pte_index + i];
+> +		if (unlikely(sun50i_pte_is_page_valid(*pte_addr))) {
+> +			phys_addr_t page_phys = sun50i_pte_get_page_address(*pte_addr);
+> +
+> +			dev_err(iommu->dev,
+> +				"iova %pad already mapped to %pa cannot remap to %pa prot: %#x\n",
+> +				&iova, &page_phys, &paddr, prot);
+> +			ret = -EBUSY;
+> +			goto out;
+> +		}
+> +		*pte_addr = sun50i_mk_pte(paddr, prot);
+> +		paddr += SPAGE_SIZE;
+>   	}
+>   
+> -	*pte_addr = sun50i_mk_pte(paddr, prot);
+> -	sun50i_table_flush(sun50i_domain, pte_addr, 1);
+> +	sun50i_table_flush(sun50i_domain, &page_table[pte_index], i);
 
-Yes, we can have the main device functionality running in passthrough
-and still support SVA on a PASID. This requires ATS to be globally on
-for the function.
+I think you want the "out" label here, so that "mapped" is still updated 
+and the core knows how much to undo on failure. I guess one could argue 
+that the pagetables are already messed up if that happens, but it still 
+doesn't seem like a good reason to deliberately compound the problem by 
+leaving behind even more "unexpected" entries.
 
-Jason
+Thanks,
+Robin.
+
+> +	*mapped = i * SPAGE_SIZE;
+>   
+>   out:
+>   	return ret;
+>   }
+>   
+>   static size_t sun50i_iommu_unmap(struct iommu_domain *domain, unsigned long iova,
+> -				 size_t size, struct iommu_iotlb_gather *gather)
+> +				 size_t pgsize, size_t pgcount,
+> +				 struct iommu_iotlb_gather *gather)
+>   {
+>   	struct sun50i_iommu_domain *sun50i_domain = to_sun50i_domain(domain);
+> +	u32 dte, count, i, pte_index;
+>   	phys_addr_t pt_phys;
+>   	u32 *pte_addr;
+> -	u32 dte;
+>   
+>   	dte = sun50i_domain->dt[sun50i_iova_get_dte_index(iova)];
+>   	if (!sun50i_dte_is_pt_valid(dte))
+>   		return 0;
+>   
+>   	pt_phys = sun50i_dte_get_pt_address(dte);
+> -	pte_addr = (u32 *)phys_to_virt(pt_phys) + sun50i_iova_get_pte_index(iova);
+> +	pte_index = sun50i_iova_get_pte_index(iova);
+> +	pte_addr = (u32 *)phys_to_virt(pt_phys) + pte_index;
+>   
+> -	if (!sun50i_pte_is_page_valid(*pte_addr))
+> -		return 0;
+> +	count = min(pgcount, (size_t)NUM_PT_ENTRIES - pte_index);
+> +	for (i = 0; i < count; i++)
+> +		if (!sun50i_pte_is_page_valid(pte_addr[i]))
+> +			break;
+>   
+> -	memset(pte_addr, 0, sizeof(*pte_addr));
+> -	sun50i_table_flush(sun50i_domain, pte_addr, 1);
+> +	memset(pte_addr, 0, sizeof(*pte_addr) * i);
+> +	sun50i_table_flush(sun50i_domain, pte_addr, i);
+>   
+> -	return SZ_4K;
+> +	return i * SPAGE_SIZE;
+>   }
+>   
+>   static phys_addr_t sun50i_iommu_iova_to_phys(struct iommu_domain *domain,
+> @@ -838,8 +849,8 @@ static const struct iommu_ops sun50i_iommu_ops = {
+>   		.iotlb_sync_map = sun50i_iommu_iotlb_sync_map,
+>   		.iotlb_sync	= sun50i_iommu_iotlb_sync,
+>   		.iova_to_phys	= sun50i_iommu_iova_to_phys,
+> -		.map		= sun50i_iommu_map,
+> -		.unmap		= sun50i_iommu_unmap,
+> +		.map_pages	= sun50i_iommu_map,
+> +		.unmap_pages	= sun50i_iommu_unmap,
+>   		.free		= sun50i_iommu_domain_free,
+>   	}
+>   };
