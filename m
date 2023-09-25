@@ -1,88 +1,125 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9F1E813ACF
-	for <iommu@lists.linux.dev>; Mon, 25 Sep 2023 13:07:55 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DEE8CDA7;
-	Mon, 25 Sep 2023 06:08:32 -0700 (PDT)
-Received: from [10.57.0.188] (unknown [10.57.0.188])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 832CE3F5A1;
-	Mon, 25 Sep 2023 06:07:53 -0700 (PDT)
-Message-ID: <ade90cd5-bbf1-f4f9-0511-75e0e18d1a83@arm.com>
-Date: Mon, 25 Sep 2023 14:07:50 +0100
+Received: from mail-qk1-f181.google.com (mail-qk1-f181.google.com [209.85.222.181])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8609711C8B
+	for <iommu@lists.linux.dev>; Mon, 25 Sep 2023 13:29:44 +0000 (UTC)
+Received: by mail-qk1-f181.google.com with SMTP id af79cd13be357-77421a47db6so225100485a.0
+        for <iommu@lists.linux.dev>; Mon, 25 Sep 2023 06:29:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1695648583; x=1696253383; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=oga/n0wXfl4psvEJuTUVdx2OlpRGQg6ZYgAQVtMIKuE=;
+        b=nKzyWxYK4tfy+ocD99XtH8C1EzU169PwJzEyUuTh/+8EZMGQVQ4HxDZzHFmHnEIXbF
+         slWhK2EfGd/8pUQ5FythWmS3dMN0KHeEiYtRDMP2hk6FLG1Yon4XXo7soiDlA8kIOcbS
+         nWA5Kq5jNgoUGmAO6gaoFiYzErgYLRxZJPZlHlwiTG2jzrzNfe7Ezg1L6HGdWaUQ0Pnk
+         W7996VlKW1vFwMT9KQ9KR5fZOLeHdJLK4cSGkyD5nKq34cfJN5ICvgN/2KRJv7uiZ4L/
+         u5zHO+GyVwWCCY/+76KKhz9frtQIE33vv30J/db0yCEKGnOpBRM+cI08lniPYNCddsH4
+         qg6Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1695648583; x=1696253383;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=oga/n0wXfl4psvEJuTUVdx2OlpRGQg6ZYgAQVtMIKuE=;
+        b=Z6RRjFcfVjY+EXChdPRR+hEvAJcDNXphDS4ulIZ53E6Qg07Z0w8IcTwjXuOoaliF8Y
+         i9IYWy6qWTwPsrPCEwQSvwhNqU8VTAzYDq3XKh0wTHOAccOKw6iLKOZqHRSznbgjl14m
+         Ba+1aVzvNQAk7BmwT8Yg/zyr9pFbT4sZro8Iz4Pu4O8c96mUvLws0niIBTpDUBO8VmrI
+         ehXZPslq4bRbIlPTJ5Kzcu43pmUFY0aXz87GvmNg1psnJaEIcOP5ZIsliu8683/57g45
+         xpNcnsLlA9rZxUfRYBuGlOk5v7HkuwPfri+Q2PPEv5lia9tNjjAsGzKS0WYNTO4KxpT6
+         myDw==
+X-Gm-Message-State: AOJu0Yyspeuq0fD1SK9ciMTPFn6kku6mYMc/I4DpHjuCC41lvwBsJivB
+	+BgLsbMh0sbn23x/MXPZxUZWLQ==
+X-Google-Smtp-Source: AGHT+IEKfw0t5lrzqptyLs66b/Idloen/u4q+DsYXXRRj02Iy22p185Epb13OQZKjHg6eVfFlxN1qg==
+X-Received: by 2002:a0c:f14a:0:b0:65a:fd46:c464 with SMTP id y10-20020a0cf14a000000b0065afd46c464mr3996185qvl.33.1695648583234;
+        Mon, 25 Sep 2023 06:29:43 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-68-26-201.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.26.201])
+        by smtp.gmail.com with ESMTPSA id u17-20020a0cf1d1000000b0065b1f90ff8csm155250qvl.40.2023.09.25.06.29.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 Sep 2023 06:29:42 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1qklef-000rby-UV;
+	Mon, 25 Sep 2023 10:29:41 -0300
+Date: Mon, 25 Sep 2023 10:29:41 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Niklas Schnelle <schnelle@linux.ibm.com>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	virtualization@lists.linux-foundation.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/2] iommu/virtio: Make use of ops->iotlb_sync_map
+Message-ID: <20230925132941.GK13795@ziepe.ca>
+References: <ae7e513b-eb86-97e2-bed0-3cca91b8c959@arm.com>
+ <20230919081519.GA3860249@myrica>
+ <20230919144649.GT13795@ziepe.ca>
+ <20230922075719.GB1361815@myrica>
+ <20230922124130.GD13795@ziepe.ca>
+ <900b644e-6e21-1038-2252-3dc86cbf0a32@arm.com>
+ <20230922162714.GH13795@ziepe.ca>
+ <123c53c3-d259-9c20-9aa6-0c216d7eb3c0@arm.com>
+ <20230922233309.GI13795@ziepe.ca>
+ <ade90cd5-bbf1-f4f9-0511-75e0e18d1a83@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.15.1
-Subject: Re: [PATCH v2 1/2] iommu/virtio: Make use of ops->iotlb_sync_map
-Content-Language: en-GB
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Niklas Schnelle <schnelle@linux.ibm.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, virtualization@lists.linux-foundation.org,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <20230918-viommu-sync-map-v2-0-f33767f6cf7a@linux.ibm.com>
- <20230918-viommu-sync-map-v2-1-f33767f6cf7a@linux.ibm.com>
- <ae7e513b-eb86-97e2-bed0-3cca91b8c959@arm.com>
- <20230919081519.GA3860249@myrica> <20230919144649.GT13795@ziepe.ca>
- <20230922075719.GB1361815@myrica> <20230922124130.GD13795@ziepe.ca>
- <900b644e-6e21-1038-2252-3dc86cbf0a32@arm.com>
- <20230922162714.GH13795@ziepe.ca>
- <123c53c3-d259-9c20-9aa6-0c216d7eb3c0@arm.com>
- <20230922233309.GI13795@ziepe.ca>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20230922233309.GI13795@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ade90cd5-bbf1-f4f9-0511-75e0e18d1a83@arm.com>
 
-On 2023-09-23 00:33, Jason Gunthorpe wrote:
-> On Fri, Sep 22, 2023 at 07:07:40PM +0100, Robin Murphy wrote:
+On Mon, Sep 25, 2023 at 02:07:50PM +0100, Robin Murphy wrote:
+> On 2023-09-23 00:33, Jason Gunthorpe wrote:
+> > On Fri, Sep 22, 2023 at 07:07:40PM +0100, Robin Murphy wrote:
+> > 
+> > > virtio isn't setting ops->pgsize_bitmap for the sake of direct mappings
+> > > either; it sets it once it's discovered any instance, since apparently it's
+> > > assuming that all instances must support identical page sizes, and thus once
+> > > it's seen one it can work "normally" per the core code's assumptions. It's
+> > > also I think the only driver which has a "finalise" bodge but *can* still
+> > > properly support map-before-attach, by virtue of having to replay mappings
+> > > to every new endpoint anyway.
+> > 
+> > Well it can't quite do that since it doesn't know the geometry - it
+> > all is sort of guessing and hoping it doesn't explode on replay. If it
+> > knows the geometry it wouldn't need finalize...
 > 
->> virtio isn't setting ops->pgsize_bitmap for the sake of direct mappings
->> either; it sets it once it's discovered any instance, since apparently it's
->> assuming that all instances must support identical page sizes, and thus once
->> it's seen one it can work "normally" per the core code's assumptions. It's
->> also I think the only driver which has a "finalise" bodge but *can* still
->> properly support map-before-attach, by virtue of having to replay mappings
->> to every new endpoint anyway.
-> 
-> Well it can't quite do that since it doesn't know the geometry - it
-> all is sort of guessing and hoping it doesn't explode on replay. If it
-> knows the geometry it wouldn't need finalize...
+> I think it's entirely reasonable to assume that any direct mappings
+> specified for a device are valid for that device and its IOMMU. However, in
+> the particular case of virtio, it really shouldn't ever have direct mappings
+> anyway, since even if the underlying hardware did have any, the host can
+> enforce the actual direct-mapping aspect itself, and just present them as
+> unusable regions to the guest.
 
-I think it's entirely reasonable to assume that any direct mappings 
-specified for a device are valid for that device and its IOMMU. However, 
-in the particular case of virtio, it really shouldn't ever have direct 
-mappings anyway, since even if the underlying hardware did have any, the 
-host can enforce the actual direct-mapping aspect itself, and just 
-present them as unusable regions to the guest.
+I assume this machinery is for the ARM GIC ITS page....
 
->>> What do you think about something like this to replace
->>> iommu_create_device_direct_mappings(), that does enforce things
->>> properly?
->>
->> I fail to see how that would make any practical difference. Either the
->> mappings can be correctly set up in a pagetable *before* the relevant device
->> is attached to that pagetable, or they can't (if the driver doesn't have
->> enough information to be able to do so) and we just have to really hope
->> nothing blows up in the race window between attaching the device to an empty
->> pagetable and having a second try at iommu_create_device_direct_mappings().
->> That's a driver-level issue and has nothing to do with pgsize_bitmap either
->> way.
-> 
-> Except we don't detect this in the core code correctly, that is my
-> point. We should detect the aperture conflict, not pgsize_bitmap to
-> check if it is the first or second try.
+> Again, that's irrelevant. It can only be about whether the actual
+> ->map_pages call succeeds or not. A driver could well know up-front that all
+> instances support the same pgsize_bitmap and aperture, and set both at
+> ->domain_alloc time, yet still be unable to handle an actual mapping without
+> knowing which instance(s) that needs to interact with (e.g. omap-iommu).
 
-Again, that's irrelevant. It can only be about whether the actual 
-->map_pages call succeeds or not. A driver could well know up-front that 
-all instances support the same pgsize_bitmap and aperture, and set both 
-at ->domain_alloc time, yet still be unable to handle an actual mapping 
-without knowing which instance(s) that needs to interact with (e.g. 
-omap-iommu).
+I think this is a different issue. The domain is supposed to represent
+the actual io pte storage, and the storage is supposed to exist even
+when the domain is not attached to anything.
 
-Thanks,
-Robin.
+As we said with tegra-gart, it is a bug in the driver if all the
+mappings disappear when the last device is detached from the domain.
+Driver bugs like this turn into significant issues with vfio/iommufd
+as this will result in warn_on's and memory leaking.
+
+So, I disagree that this is something we should be allowing in the API
+design. map_pages should succeed (memory allocation failures aside) if
+a IOVA within the aperture and valid flags are presented. Regardless
+of the attachment status. Calling map_pages with an IOVA outside the
+aperture should be a caller bug.
+
+It looks omap is just mis-designed to store the pgd in the omap_iommu,
+not the omap_iommu_domain :( pgd is clearly a per-domain object in our
+API. And why does every instance need its own copy of the identical
+pgd?
+
+Jason
