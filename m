@@ -1,73 +1,142 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.88])
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CDF227F;
-	Mon, 25 Sep 2023 02:33:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 37BB57F
+	for <iommu@lists.linux.dev>; Mon, 25 Sep 2023 02:38:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1695609192; x=1727145192;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=5PH/SBoMG2TOgi6paDh0yzV6D71btfiOoid4YY/5wXw=;
-  b=LVusOkoSJs71gCW3k30B1aIx2stgIVFdoB9mdkB5A9sl19QPa7Dhypj8
-   h6IfIK47xLe7YQ5A7P4UtPaygahyll9qJKBa+TPveRAjQKTR7Cka4X08A
-   M4XFxPPKgkj7vdFnXUDNmNxVCI7cFFrvGQBrKpgi/sneqgwgF1SBveT/z
-   yajOWoL84vMAiPRx17v0WfnjldiRy/6GCJHDjR2P99MczHzNBbckKqiFr
-   TrpVCCP3Vj8D0EeO1Cn5I1c4+mWN+6JH14eRu9cQVyQlNF6Fzxo9Ffrei
-   FQ5ad4vr4/Y7KmEfCz1bJeKmT3V8xCbFY5zRv2nwjTmIZnhN/DVadH8w2
+  t=1695609508; x=1727145508;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=x5U1vWa3UeoSrmulhaPIVKHCG6tOuJUpexK0hg7K4EA=;
+  b=IV7isOfHdZHyl+jrGe/3KaIfFn4xG04QHN9YNx3w14lnzdEmoNz3gRux
+   EcMk5ebgKl53FQB46is6vDGeVM+OuQg2iCxXdivb+YO3HyJVtURr7+lcA
+   fy9SygYy2cIS52aEojQxQwLpb6HlxQfgFmNc3hkkL71kqnQoBQ7PO3lXX
+   JNjLZG1W11e0OFr9k9FYahCddUK4QEQut9Tfg3+KfIKBxPyvqrv2Pr6ju
+   9NQK8Hqn1eVkA1IMrMCAx5/45xq5ks6dqnSFbIY1/SQVEpkTi6NeJ2phh
+   EpHPzi1rAEnBCW0H1MtQaxBp4PEeMszMZCzIT2D2YEeDxoTVVNwYnmCQ3
    A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10843"; a="412083610"
+X-IronPort-AV: E=McAfee;i="6600,9927,10843"; a="360534565"
 X-IronPort-AV: E=Sophos;i="6.03,174,1694761200"; 
-   d="scan'208";a="412083610"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Sep 2023 19:33:11 -0700
+   d="scan'208";a="360534565"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Sep 2023 19:38:27 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10843"; a="783300102"
+X-IronPort-AV: E=McAfee;i="6600,9927,10843"; a="777505050"
 X-IronPort-AV: E=Sophos;i="6.03,174,1694761200"; 
-   d="scan'208";a="783300102"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
-  by orsmga001.jf.intel.com with ESMTP; 24 Sep 2023 19:33:07 -0700
-Message-ID: <ad9644a2-e8a6-d0fa-ad55-f4e0564c39a0@linux.intel.com>
-Date: Mon, 25 Sep 2023 10:29:52 +0800
+   d="scan'208";a="777505050"
+Received: from jingxues-mobl1.ccr.corp.intel.com (HELO tinazhan-desk1.intel.com) ([10.254.214.78])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Sep 2023 19:38:24 -0700
+From: Tina Zhang <tina.zhang@intel.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Lu Baolu <baolu.lu@linux.intel.com>
+Cc: Michael Shavit <mshavit@google.com>,
+	Vasant Hegde <vasant.hegde@amd.com>,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Tina Zhang <tina.zhang@intel.com>
+Subject: [PATCH v5 0/6] Share sva domains with all devices bound to a mm
+Date: Mon, 25 Sep 2023 10:38:07 +0800
+Message-Id: <20230925023813.575016-1-tina.zhang@intel.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.15.1
-Cc: baolu.lu@linux.intel.com
-Subject: Re: [PATCH 3/8] iommu/vt-d: Use ops->blocked_domain
-Content-Language: en-US
-To: Jason Gunthorpe <jgg@nvidia.com>, Alyssa Rosenzweig
- <alyssa@rosenzweig.io>, asahi@lists.linux.dev,
- Christophe Leroy <christophe.leroy@csgroup.eu>,
- David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux.dev,
- Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
- linux-arm-kernel@lists.infradead.org, linuxppc-dev@lists.ozlabs.org,
- Hector Martin <marcan@marcan.st>, Michael Ellerman <mpe@ellerman.id.au>,
- Nicholas Piggin <npiggin@gmail.com>, Robin Murphy <robin.murphy@arm.com>,
- Sven Peter <sven@svenpeter.dev>, Will Deacon <will@kernel.org>
-References: <3-v1-8060f06462cc+c0a39-dart_paging_jgg@nvidia.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <3-v1-8060f06462cc+c0a39-dart_paging_jgg@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 9/23/23 1:07 AM, Jason Gunthorpe wrote:
-> Trivially migrate to the ops->blocked_domain for the existing global
-> static.
-> 
-> Signed-off-by: Jason Gunthorpe<jgg@nvidia.com>
-> ---
->   drivers/iommu/intel/iommu.c | 3 +--
->   1 file changed, 1 insertion(+), 2 deletions(-)
+This series is to share sva(shared virtual addressing) domains with all
+devices bound to one mm.
 
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+Problem
+-------
+In the current iommu core code, sva domain is allocated per IOMMU group,
+when device driver is binding a process address space to a device (which is
+handled in iommu_sva_bind_device()). If one than more device is bound to
+the same process address space, there must be more than one sva domain
+instance, with each device having one. In other words, the sva domain
+doesn't share between those devices bound to the same process address
+space, and that leads to two problems:
+1) device driver has to duplicate sva domains with enqcmd, as those sva
+domains have the same PASID and are relevant to one virtual address space.
+This makes the sva domain handling complex in device drivers.
+2) IOMMU driver cannot get sufficient info of the IOMMUs that have
+devices behind them bound to the same virtual address space, when handling
+mmu_notifier_ops callbacks. As a result, IOMMU IOTLB invalidation is
+performed per device instead of per IOMMU, and that may lead to
+superfluous IOTLB invalidation issue, especially in a virtualization
+environment where all devices may be behind one virtual IOMMU.
 
-P.S. We can further do the same thing to the identity domain. I will
-clean it up after all patches are landed.
+Solution
+--------
+This patch-set tries to fix those two problems by allowing sharing sva
+domains with all devices bound to a mm. To achieve this, a new structure
+pointer is introduced to mm to replace the old PASID field, which can keep
+the info of PASID as well as the corresponding shared sva domains.
+Besides, function iommu_sva_bind_device() is updated to ensure a new sva
+domain can only be allocated when the old ones cannot work for the IOMMU.
+With these changes, a device driver can expect one sva domain could work
+for per PASID instance(e.g., enqcmd PASID instance), and therefore may get
+rid of handling sva domain duplication. Besides, IOMMU driver (e.g., intel
+vt-d driver) can get sufficient info (e.g., the info of the IOMMUs having
+their devices bound to one virtual address space) when handling
+mmu_notifier_ops callbacks, to remove the redundant IOTLB invalidations.
 
-Best regards,
-baolu
+Arguably there shouldn't be more than one sva_domain with the same PASID,
+and in any sane configuration there should be only 1 type of IOMMU driver
+that needs only 1 SVA domain. However, in reality, IOMMUs on one platform
+may not be identical to each other. Thus, attaching a sva domain that has
+been successfully bound to device A behind a IOMMU A, to device B behind
+IOMMU B may get failed due to the difference between IOMMU A and IOMMU
+B. In this case, a new sva domain with the same PASID needs to be
+allocated to work with IOMMU B. That's why we need a list to keep sva
+domains of one PASID. For the platform where IOMMUs are compatible to each
+other, there should be one sva domain in the list.
+
+v5:
+ - Order patch "iommu/vt-d: Remove mm->pasid in intel_sva_bind_mm()"
+   first in this series.
+ - Update commit message of patch "iommu: Introduce mm_get_pasid()
+   helper function"
+ - Use smp_store_release() & READ_ONCE() in storing and loading mm's
+   pasid value.
+
+v4:
+ - Rebase to v6.6-rc1.
+
+v3:
+ - Add a comment describing domain->next.
+ - Expand explanation of why PASID isn't released in
+   iommu_sva_unbind_device().
+ - Add a patch to remove mm->pasid in intel_sva_bind_mm()
+
+v2:
+ - Add mm_get_enqcmd_pasid().
+ - Update commit message.
+
+v1: https://lore.kernel.org/linux-iommu/20230808074944.7825-1-tina.zhang@intel.com/
+
+Tina Zhang (6):
+  iommu/vt-d: Remove mm->pasid in intel_sva_bind_mm()
+  iommu: Add mm_get_enqcmd_pasid() helper function
+  iommu: Introduce mm_get_pasid() helper function
+  mm: Add structure to keep sva information
+  iommu: Support mm PASID 1:n with sva domains
+  mm: Deprecate pasid field
+
+ arch/x86/kernel/traps.c                       |  2 +-
+ .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   | 12 ++---
+ drivers/iommu/intel/svm.c                     | 14 +++---
+ drivers/iommu/iommu-sva.c                     | 50 ++++++++++++-------
+ include/linux/iommu.h                         | 35 +++++++++++--
+ include/linux/mm_types.h                      |  3 +-
+ kernel/fork.c                                 |  1 -
+ mm/init-mm.c                                  |  3 --
+ 8 files changed, 79 insertions(+), 41 deletions(-)
+
+-- 
+2.34.1
+
