@@ -1,331 +1,210 @@
 Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2052.outbound.protection.outlook.com [40.107.243.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8396563A8
-	for <iommu@lists.linux.dev>; Mon, 25 Sep 2023 18:35:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B1DF1D6BB
+	for <iommu@lists.linux.dev>; Mon, 25 Sep 2023 18:39:22 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=RwvOXMm5vjMSX7X+ZUJV4zpOS7Ja1I/WfZWI6V2gEew9kmDfTq7nTuj/ae1/O6HhrtaVxQAJO21YgCB/Yxua8IYXikOzp8DYKTfh7D784NkSiQxtE0Uxrpeuk3RulvWn/RncPfT49DW8H/7dA4eCDDQiAdhkTt2luAZUJXzy+RS48PiOpbrwk5hru927DSFzhWihzW4YVikmb35fyjrEcsLNdvyHvtUnifkr2R58noM51mE32BZYBDCO8v6qLsduuqzbNBedOrUubsHN3kLz+C5skX9hLVK0S1cZZVb6dGHnjdPyt5l5zujvDJ72ai45tUDDelRdjy3sl1k3JJhILQ==
+ b=oRmpzHX9q/w1wNLStRFf2pytwKAcrqw3/McIC3HIIpAocv2aCfp/4f46fX96/s4LZTVIgP6h9yyT4dhlGGs8uLAe1NcG6QtN8J5HnOQN+CnyOOKg+GulSr/+eunmX4vctLJppTN2pddtEjN+aDv4LMZvdkYndmnE8UB5aaa9MM1Nqm+xJQF616arE43J52ALgJgVv1PbP+E5hFaqjZwFldF7gNfPAP1+XFogDrV9e77UV1znH9xW+/YZpemafbVxkSZsGA2Lmk+Od0Gn5SdRZzyAznxRvl/2catLOIst+i9XHgw9kn92vp70mT4M8sAQEq+j2dwMkaT2x/hUz9h51Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=fEOxq62bgI2lhrHjM4fnL5vIJAEBYGkH1TMeqqY/DfI=;
- b=dVrbRY6Z2AmhwblJofiyuR77WEt3rQ2vL5ScTx6nNvDrif7LWSG5EwhA0MObjZOqXjX8g01u4H6gcbfqoU4Ga98oJrm8YATbXK22BqzdVV4YLQl3E7kCUWyUPWnJlwTB4pWm/pvfU/KSbfHiDBgSENm2P4Qg9Wo/Nyycsk6zjL4z+m12KhfEUVQaLfdXWClwMTvE8HIB+VAZLwcrVooJjVQZdPHeCFM7wQMwFoMvOZgIfQJ0uID/KHV6feK8dxAaBYO+E4y9oDbf5bTo/v7pXXhE/SFNYQyeZD3To/XlPTp/B2H0cDZjozj/iiA6GscrBpxliKu65YA63NX4r97f5g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
+ bh=Ad5qwVE6cXddCiLm2dNc1jo9xic5n7Qv2wty6xtz6Rw=;
+ b=iaZzkzdua3wGX7yCzGzwaXDGlok71o5sF6TdEF3TJ8UcRpzgrhEdmbpiCkjHgVErtnzhumBpuW0Qam70mv7mznrayTdGai2KURi5935jOjnb1WBLiVVo8ZYM6gofxwM+0H8aYOS/4zo+Y3+xLXATZGwjeceMQrbCZXpbawWIQAwBPWzVYyoSxCbYlkCDrr4sLNqb3bEir8OfOfkqIRM48bNLM3we47m6GL/3SSgRM+4WWDQFAqRWH4K2Ttk/3Z/bI7lsLsOztvpjfyOOc936MRO0YtNqdYoOLR3hb0akS4RNINbKcMxki4nsZ73AGdSNIwbmH8C2IunZw/gGsdyi1g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.118.232) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=fEOxq62bgI2lhrHjM4fnL5vIJAEBYGkH1TMeqqY/DfI=;
- b=VmogJ0vrU65LoM11F41CrZ5H71yRw7t/nuCxlY8RhyTzi5o9OSl1HZIUbjHZx2M6Gws8i4feNvtBJ+Jtrc+LPuzjH4Ns5PdQ0bBJ0HRk/tU31x9PFO+6xX9bnuZAW586cIyPEdndgMvuzijUQjJ9t47JE19GLOpCMymD+i3KHxzwnb40ImHYvXyVRbr/5l9/G1zimFWIkLrFD3ucF0DrHj+Fdrx0GztdqMhi68GqEdkF7JbeU2LDxmqRMjYXaFuuHR04Oz7nREHfNNk4lrq9a1nW0AnkQlZehcfiJgHWhnUVLErnJMg8+cTH4FVR2r7i3M2Q6oJvBmzxfo06dUMPGQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by CY5PR12MB6599.namprd12.prod.outlook.com (2603:10b6:930:41::11) with
+ bh=Ad5qwVE6cXddCiLm2dNc1jo9xic5n7Qv2wty6xtz6Rw=;
+ b=BI8Gtnfw87MCdpAzYGHbI2xziP4voVu/zC9r64VxnPpBFLwczkKtxKDZ41s35pWpG3BYHZS8k33e+Z/OX338gGTg4W4gi7P/oOFSZWgjOUtvnIIrTTpDHDom301KN5JwyGdK4aQuc+EbvLqLRveTAv1WdbxU2wpHcA99/NAFQrwqtnE3OYf0HCdyRHpv6SBHZTwua5lj/TzZRblzAU0IC9sEr0RtidZp4KZRJ1Pq9tuWyyNsIJCM3K1PcYpdbW+78RQ3SdhlAT87ek7k51VETRootL1zqWswQ2Xjai88tswnqMUBFNgYRsD/jaAAa9ctUButCmsZSDHmJXOXMV7LXQ==
+Received: from BL1PR13CA0253.namprd13.prod.outlook.com (2603:10b6:208:2ba::18)
+ by DS0PR12MB8815.namprd12.prod.outlook.com (2603:10b6:8:14f::16) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6813.21; Mon, 25 Sep
- 2023 18:35:25 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::faf:4cd0:ae27:1073]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::faf:4cd0:ae27:1073%6]) with mapi id 15.20.6792.026; Mon, 25 Sep 2023
- 18:35:24 +0000
-Date: Mon, 25 Sep 2023 15:35:23 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: will@kernel.org, robin.murphy@arm.com, joro@8bytes.org,
-	jean-philippe@linaro.org, mshavit@google.com,
-	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev
-Subject: Re: [PATCH v4 2/2] iommu/arm-smmu-v3: Refactor
- arm_smmu_write_strtab_ent()
-Message-ID: <20230925183523.GJ13733@nvidia.com>
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6813.28; Mon, 25 Sep
+ 2023 18:39:21 +0000
+Received: from BL6PEPF0001AB4B.namprd04.prod.outlook.com
+ (2603:10b6:208:2ba:cafe::30) by BL1PR13CA0253.outlook.office365.com
+ (2603:10b6:208:2ba::18) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6838.19 via Frontend
+ Transport; Mon, 25 Sep 2023 18:39:21 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.232) by
+ BL6PEPF0001AB4B.mail.protection.outlook.com (10.167.242.69) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6838.14 via Frontend Transport; Mon, 25 Sep 2023 18:39:20 +0000
+Received: from drhqmail201.nvidia.com (10.126.190.180) by mail.nvidia.com
+ (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Mon, 25 Sep
+ 2023 11:39:01 -0700
+Received: from drhqmail203.nvidia.com (10.126.190.182) by
+ drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.41; Mon, 25 Sep 2023 11:39:00 -0700
+Received: from Asurada-Nvidia (10.127.8.13) by mail.nvidia.com
+ (10.126.190.182) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41 via Frontend
+ Transport; Mon, 25 Sep 2023 11:39:00 -0700
+Date: Mon, 25 Sep 2023 11:38:59 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
+	<jean-philippe@linaro.org>, <mshavit@google.com>,
+	<linux-kernel@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+	<iommu@lists.linux.dev>
+Subject: Re: [PATCH v4 1/2] iommu/arm-smmu-v3: Add boolean bypass_ste and
+ skip_cdtab flags
+Message-ID: <ZRHTw0+DCYGjFX0P@Asurada-Nvidia>
 References: <cover.1695242337.git.nicolinc@nvidia.com>
- <6e1fdea8ab43ea28e7e3c79eb6605dea71548c53.1695242337.git.nicolinc@nvidia.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <6e1fdea8ab43ea28e7e3c79eb6605dea71548c53.1695242337.git.nicolinc@nvidia.com>
-X-ClientProxiedBy: BL1PR13CA0371.namprd13.prod.outlook.com
- (2603:10b6:208:2c0::16) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+ <45b65b0a774068be805b7e1b45063fe10ec51d3a.1695242337.git.nicolinc@nvidia.com>
+ <20230925175708.GA251639@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20230925175708.GA251639@nvidia.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|CY5PR12MB6599:EE_
-X-MS-Office365-Filtering-Correlation-Id: 45782ecf-a96a-4a3e-0182-08dbbdf62ebf
+X-MS-TrafficTypeDiagnostic: BL6PEPF0001AB4B:EE_|DS0PR12MB8815:EE_
+X-MS-Office365-Filtering-Correlation-Id: 75b8bfc2-777f-4e71-b606-08dbbdf6bb99
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	xo6x4x81XQuIN3KCCxACotY7OzXpzpGlzarfEFPwf75IMIjngyYkCwtKKKuk7BpNSj6IoLMqoVetaPCHc7SpzIsi8enKC40IBh4A9BmyzHQAon6ApyijGkmkXl0RiHhIo4r3Xgy3haY/1Gf+RN12FMPzBvGu2nsVx5pFkwLUGmFsuafsDgmfR4+8JXmmf3FT1UxKd15M1+KKYpIekciGkMuyRONlGKAbDTGC2YCAIoDVPBOsl/tPIfJLWxHYKTgDtjY2/EpX7tl1su0v28OiGZJJLWx1kFSQ/p0lu9TMmtUmitnm2vZp0yByzJ2LWx95zH+YoVpbuf6gTEhxp/twvtP9JRLysMaJvYaK9H9vc4qSibRob0tN5fV1IKzqOE5kEx7vtPiYARmF4wAkll9T0iwKFJLHRFDy3RbtkUMG+3fsg3dP6EctpOP7nM0UhG+3pPpD2VD7wgp8jEAnpGqExw0la6aOxXcuCkUEBkKK1skKhNqrltr84myDA765NDdgUw+a1w4WIh3LCd592eJWPVEEVa0eBimiiTKbJKf23dovkQllbyStJiBfnqkT+lLVj/uI5ae2A8KAaAUkxFs0UZvv+9z8gM4DI9ktbr3/WLXdudjc+rcQDVGiTkwC2enf
+	QRUOBthb7BBYZhnvZE26MlaDVZ/LUXyiM9OLff53JmVI+0Dc/CczIWQ71sHwl/gMApWjUs4ZfiSVY4pI1gIj97+fl/eGLCWkxCZsFTgztkgE+kpidgQ4p8mZLUnHS7Suv6yGIafcrhNUPMxuk5wIa2R+0lrTnGHEZMWvi1RwdN7no6F9wQsw6hDyE4wQj5yp/tt/g7KPFy+rcoiI0K7Rbr/5jeCOMPuB6ECeXhFwJZsH1h5dDHSQw4zBOwxWmMsPFM5PBIcYSQiQvJwOX5RAaWy4VqrUAtzreEAtepgakwCuY1+aYJKnCC/HhHZBW2NsQe52ETb+ItWhkiXcwdt9a0oT6R5Tz2ModQWsAmBnhZdcfKhGCMp3NMCylHcPCfmJt0xp2wDRpE6QMIWkde3P1HPtNOAuOSG5QS9UShhqw+b0VBdbExlp3gBX803X8R8HrT7N58y2Z3p952bUeCQVhoqLp2t+xbRoroYxTp79NrCCfBA+IMPohfCLEfR5nmJGxIVZqNYcu1SvM3n4SRku+MrGRH79d9qCZC1kphlSkbtLCeVFJayW8qa66Jh2R/2wz/gD5/NfNCwTmdUegvqOZgbE1dIJQKsOfV6tHuu10ZkCQ4/eTD5RBTrnKN+8OpiH56ww4v4eID7gkkXlD4coi+ETivn7r8cUGhm0klPFr6AfSj5M4yV5LpArJ6B1MyGPz0Z1O9I9QmV95VXljtmcjwy+ajsgwgZuyGA2GMIqTpcwL8Z52p8Q1hPQHY3EfMDpP1BYM3nuoZAOBechBGEaPQ==
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(346002)(366004)(376002)(136003)(39860400002)(396003)(230922051799003)(451199024)(1800799009)(186009)(316002)(86362001)(8676002)(8936002)(6636002)(4326008)(66556008)(41300700001)(66476007)(66946007)(5660300002)(6862004)(37006003)(83380400001)(38100700002)(478600001)(6506007)(2906002)(2616005)(6512007)(26005)(1076003)(6486002)(36756003)(33656002)(473944003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?o+ZiIwn2260ncGFdKmgEXP1cJ8pWBsER616CJFitkQ+Ry/bu+iVePg2CT0Mc?=
- =?us-ascii?Q?bChk0Qs0EpedfH0bUzltHy1VhPIVRXf9Uf+V2obva7Z0Q2m3cEAiapIsGwtJ?=
- =?us-ascii?Q?p4bv04nbHBrce0sueLW0kAZhhJ9kI3tnpV6phEBsImCiGIIBk2C7lSm0Wf2+?=
- =?us-ascii?Q?pXG1TAB0Gw7mqJti+GEqFBl08w6ng1lCLDhEuMf7tObbN6ZhmP6Wq4d1ZwTK?=
- =?us-ascii?Q?iVygkuH7RWe95WYYpg1Qdxsf+8YyxYVz6tNBvLye4fdU1lRkZz598PXV2K/P?=
- =?us-ascii?Q?HosxTZ+U6dVZKgNlLa4Li0T+3wLFOvSdCutcNwGMe38fJAMk0bNyt5egH28l?=
- =?us-ascii?Q?fnrfBQ5lvVqDDtrI3v7NzFwBsSa3ZpMSQBqax/FtoDwiqgxAib0tp56krmXV?=
- =?us-ascii?Q?t9ELxlxZsfVrP9hR0q7j6UfQdSfSodssOFHXEcsWGuI5F2WqeFM6hGawZz1V?=
- =?us-ascii?Q?uqzII9hKy2fEfiy13GcElxaEsCeaYMAI02DJE7prwYM5dZBzMfFbzRe9Xkac?=
- =?us-ascii?Q?w7DIOjP1T4km89aYZTxQm5BIbEl4NHyjK5VBTs92oSWTq0Bf1Hd0A30vxvzX?=
- =?us-ascii?Q?rsRizLmGU755w+oVWP4qhffjMrIHlbJvCTneTdgoF8xdbv8sMAWEM1rQTa2u?=
- =?us-ascii?Q?IbGKQGNuH8LrjsvXM9wBZ/vEuTUsQkmkTYMb1EPX5gOWZu0VkFQWHPQGXJ4d?=
- =?us-ascii?Q?ydV6tdKlJ7KUoqicJhkYkFdK1PwuIW/6lekbx1x+ZkmTEQ9RF5MAi0bl9bXl?=
- =?us-ascii?Q?nNkDLlu5CeROJ8sMPI+1VnNX1GnCLcQrUBACwzYymiKc34YMsGx7rwsb7Obd?=
- =?us-ascii?Q?Zg470r6RTP2OnikoqnsWdvOBvLmMUGGzGlJIgFfl9czLsqfWcRWTqHV0vEeM?=
- =?us-ascii?Q?zkbI4SfFqdfpVbHXAO9jZf3D9N3rOEfQiQ/IRqveAoqna4A2WbwMt8A55F+3?=
- =?us-ascii?Q?jEPUnkcwuCEV/LInKBl4tBYjM1W2vAswSwHCt8vJGlyc0svnem5nGZmWPqOo?=
- =?us-ascii?Q?mcLQrdYHNpwJ8u43bFy4EWYAhBZyIyO75xWqH9A5N+56DmwysyRAQ59Q0LgP?=
- =?us-ascii?Q?9GUx8MiqM3kjnxt9DvWO0uL85/+ytzoG8JTgHw6aWJViSh0xEo141d4g3icj?=
- =?us-ascii?Q?ohQKRS3UxH79uue+S8PUgCIxDIUp4lD0ah4LEzG/h5Xkaf2KLP651dK9CTAS?=
- =?us-ascii?Q?47BZjqrAZMdfSxSxE/+MRGv8gHgvH74cYpXIKDixhv+m/W7N2hXNKUGudrnA?=
- =?us-ascii?Q?Awiu0jUP3TTt+Ur7LI3XTa0mZQc58m4I7bFE7g4SZgwYWW2S/DBJkioIghVG?=
- =?us-ascii?Q?ComeRc8OV1i0gaazRh+cdHir+5ZvbccXPBKAhLDiUe06+zbD+DarMMO0V+ns?=
- =?us-ascii?Q?mSwb159VXMdEHLL6OYirjWHW5AoRlSNGM27Wx6P/bqPSRN68uNIJEzV4Gsa8?=
- =?us-ascii?Q?yImSawOa8J+wyrWCb8gJQkM51s2R912yzGwelfgq1HgJFAp+DXKAZZb3UvjT?=
- =?us-ascii?Q?fF4JVfxgVDTEmZhZzTTmpv5VztK4D46GHr+ipMVlMzW78PgX/4vO+7TP6jvT?=
- =?us-ascii?Q?x6E+LDXf9nB78P1+7UnofWFKsB9lLsnpb47GSj5I?=
+	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230031)(4636009)(136003)(396003)(346002)(376002)(39860400002)(230922051799003)(1800799009)(186009)(82310400011)(451199024)(36840700001)(46966006)(40470700004)(26005)(40460700003)(478600001)(83380400001)(66899024)(426003)(336012)(86362001)(82740400003)(7636003)(33716001)(356005)(47076005)(36860700001)(55016003)(5660300002)(9686003)(40480700001)(2906002)(4326008)(8676002)(6862004)(41300700001)(54906003)(6636002)(316002)(70206006)(70586007)(8936002)(67856001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 45782ecf-a96a-4a3e-0182-08dbbdf62ebf
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Sep 2023 18:35:24.8344
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Sep 2023 18:39:20.7730
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Network-Message-Id: 75b8bfc2-777f-4e71-b606-08dbbdf6bb99
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 1kvSaIau8tMJoiCLf8a342sN1/wBJFz68k9VKuoEEvH7Sk8PWVu0Jn84zYNIseA5
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY5PR12MB6599
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BL6PEPF0001AB4B.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB8815
 
-On Wed, Sep 20, 2023 at 01:52:04PM -0700, Nicolin Chen wrote:
->  
-> +static void arm_smmu_ste_stage2_translate(struct arm_smmu_master *master,
-> +					  u64 *ste)
-> +{
-> +	struct arm_smmu_domain *smmu_domain = master->domain;
-> +	struct arm_smmu_device *smmu = master->smmu;
-> +	struct arm_smmu_s2_cfg *s2_cfg;
-> +
-> +	switch (smmu_domain->stage) {
-> +	case ARM_SMMU_DOMAIN_NESTED:
-> +	case ARM_SMMU_DOMAIN_S2:
-> +		s2_cfg = &smmu_domain->s2_cfg;
-> +		break;
-> +	default:
-> +		WARN_ON(1);
-> +		return;
-> +	}
-> +
-> +	ste[0] |= FIELD_PREP(STRTAB_STE_0_CFG, STRTAB_STE_0_CFG_S2_TRANS);
-> +
-> +	if (smmu->features & ARM_SMMU_FEAT_STALLS && !master->stall_enabled)
-> +		ste[1] |= STRTAB_STE_1_S1STALLD;
-> +
-> +	if (master->ats_enabled)
-> +		ste[1] |= FIELD_PREP(STRTAB_STE_1_EATS, STRTAB_STE_1_EATS_TRANS);
+On Mon, Sep 25, 2023 at 02:57:08PM -0300, Jason Gunthorpe wrote:
+> On Wed, Sep 20, 2023 at 01:52:03PM -0700, Nicolin Chen wrote:
+> > If a master has only a default substream, it can skip CD/translation table
+> > allocations when being attached to an IDENTITY domain, by simply setting
+> > STE to the "bypass" mode (STE.Config[2:0] == 0b100).
+> > 
+> > If a master has multiple substreams, it will still need a CD table for the
+> > non-default substreams when being attached to an IDENTITY domain, in which
+> > case the STE.Config is set to the "stage-1 translate" mode while STE.S1DSS
+> > field instead is set to the "bypass" mode (STE.S1DSS[1:0] == 0b01).
+> > 
+> > If a master is attached to a stage-2 domain, it does not need a CD table,
+> > while the STE.Config is set to the "stage-2 translate" mode.
+> > 
+> > Add boolean bypass_ste and skip_cdtab flags in arm_smmu_attach_dev(), to
+> > handle clearly the cases above, which also corrects the conditions at the
+> > ats_enabled setting and arm_smmu_alloc_cd_tables() callback to cover the
+> > second use case.
+> > 
+> > Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+> > ---
+> >  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 35 ++++++++++++++++-----
+> >  1 file changed, 27 insertions(+), 8 deletions(-)
+> > 
+> > diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> > index df6409017127..dbe11997b4b9 100644
+> > --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> > +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> > @@ -2381,6 +2381,7 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+> >  	struct arm_smmu_device *smmu;
+> >  	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+> >  	struct arm_smmu_master *master;
+> > +	bool byapss_ste, skip_cdtab;
+> >  
+> >  	if (!fwspec)
+> >  		return -ENOENT;
+> > @@ -2416,6 +2417,24 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+> >  
+> >  	master->domain = smmu_domain;
+> >  
+> > +	/*
+> > +	 * When master attaches ARM_SMMU_DOMAIN_BYPASS to its single substream,
+> > +	 * set STE.Config to "bypass" and skip a CD table allocation. Otherwise,
+> > +	 * set STE.Config to "stage-1 translate" and allocate a CD table for its
+> > +	 * multiple stage-1 substream support, unless with a stage-2 domain in
+> > +	 * which case set STE.config to "stage-2 translate" and skip a CD table.
+> > +	 */
+> 
+> It might be clearer like this:
+> 
+> static bool arm_smmu_domain_needs_cdtab(struct arm_smmu_domain *smmu_domain,
+> 					struct arm_smmu_master *master)
+> {
+> 	switch (smmu_domain->stage) {
+> 	/*
+>          * The SMMU can support IOMMU_DOMAIN_IDENTITY either by programming
+>          * STE.Config to 0b100 (bypass) or by configuring STE.Config to 0b101
+>          * (S1 translate) and setting STE.S1DSS[1:0] to 0b01 "bypass". The
+>          * latter requires allocating a CD table.
+> 	 *
+> 	 * The 0b100 config has the drawback that ATS and PASID cannot be used,
+>          * however it could be higher performance. Select the "S1 translation"
+>          * option if we might need those features.
+> 	 */
+> 	case ARM_SMMU_DOMAIN_BYPASS:
+> 		return master->ssid_bits || arm_smmu_ats_supported(master);
+> 	case ARM_SMMU_DOMAIN_S1:
+> 	case ARM_SMMU_DOMAIN_NESTED:
+> 		return true;
+> 	case ARM_SMMU_DOMAIN_S2:
+> 		return false;
+> 	}
+> 	return false;
+> }
+>
+> Then the below is
+> 
+>        if (needs_cdtab || smm_domain->stage != ARM_SMMU_DOMAIN_BYPASS)
+> 		master->ats_enabled = arm_smmu_ats_supported(master);
+> 
+> And the CD table should be sync'd to the result of arm_smmu_domain_needs_cdtab()..
 
-These master bits probably belong in their own function 'setup ste for master'
+Ack.
 
-The s1 and s2 cases are duplicating these things.
+> It looks like there is still some kind of logic missing as we need to
+> know if there are any PASIDs using the cd table here:
+> 
+> if (!master->cd_table_empty && !needs_cdtab)
+>    return -EBUSY;
+> 
+> if (needs_ctab && !master->cd_table.cdtab)
+>      ret = arm_smmu_alloc_cd_tables(master);
+> 
+> if (!needs_ctab && master->cd_table.cdtab)
+>     arm_smmu_dealloc_cd_tables(master);
+> 
+> And add master->cd_table_emty to the arm_smmu_domain_needs_cdtab bypass logic.
 
-> +
-> +	ste[2] |= FIELD_PREP(STRTAB_STE_2_S2VMID, s2_cfg->vmid) |
-> +		  FIELD_PREP(STRTAB_STE_2_VTCR, s2_cfg->vtcr) |
-> +#ifdef __BIG_ENDIAN
-> +		  STRTAB_STE_2_S2ENDI |
-> +#endif
-> +		  STRTAB_STE_2_S2PTW | STRTAB_STE_2_S2AA64 | STRTAB_STE_2_S2R;
-> +
-> +	ste[3] |= s2_cfg->vttbr & STRTAB_STE_3_S2TTB_MASK;
-> +}
-> +
-> +static void arm_smmu_ste_stage1_translate(struct arm_smmu_master *master,
-> +					  u64 *ste)
-> +{
+OK. I will give it a try.
 
-Lets stop calling the cdtable 'stage 1' please, it is confusing.
+> Also, are these patches are out of order, this should come last since
+> the arm_smmu_write_strtab_ent hasn't learned yet how to do
+> STRTAB_STE_1_S1DSS_BYPASS?
 
-arm_smmu_ste_cdtable()
+Hmm. It could although it's a status quo IMHO -- in practical
+only ARM_SMMU_DOMAIN_BYPASS would be changed by the 1st patch
+to allocating a CD table that still doesn't work since this
+STRTAB_STE_1_S1DSS_BYPASS is unset.
 
-> +	struct arm_smmu_ctx_desc_cfg *cd_table = &master->cd_table;
-> +	struct arm_smmu_device *smmu = master->smmu;
-> +	__le64 *cdptr = arm_smmu_get_cd_ptr(master, 0);
-> +
-> +	WARN_ON_ONCE(!cdptr);
-> +
-> +	ste[0] |= (cd_table->cdtab_dma & STRTAB_STE_0_S1CTXPTR_MASK) |
-> +		  FIELD_PREP(STRTAB_STE_0_CFG, STRTAB_STE_0_CFG_S1_TRANS) |
-> +		  FIELD_PREP(STRTAB_STE_0_S1CDMAX, cd_table->s1cdmax) |
-> +		  FIELD_PREP(STRTAB_STE_0_S1FMT, cd_table->s1fmt);
-> +
-> +	if (FIELD_GET(CTXDESC_CD_0_ASID, le64_to_cpu(cdptr[0])))
-
-Reading the CD like that seems like a hacky way to detect that the RID
-domain is bypass, just do it directly:
-
-if (master->domain->stage == ARM_SMMU_DOMAIN_BYPASS)
-		ste[1] |= FIELD_PREP(STRTAB_STE_1_S1DSS, STRTAB_STE_1_S1DSS_BYPASS);
-else
-		ste[1] |= FIELD_PREP(STRTAB_STE_1_S1DSS, STRTAB_STE_1_S1DSS_SSID0);
-
-> +	ste[1] |= FIELD_PREP(STRTAB_STE_1_SHCFG, STRTAB_STE_1_SHCFG_INCOMING) |
-> +		  FIELD_PREP(STRTAB_STE_1_S1CIR, STRTAB_STE_1_S1C_CACHE_WBRA) |
-> +		  FIELD_PREP(STRTAB_STE_1_S1COR, STRTAB_STE_1_S1C_CACHE_WBRA) |
-> +		  FIELD_PREP(STRTAB_STE_1_S1CSH, ARM_SMMU_SH_ISH);
-> +
-> +	if (smmu->features & ARM_SMMU_FEAT_E2H)
-> +		ste[1] |= FIELD_PREP(STRTAB_STE_1_STRW, STRTAB_STE_1_STRW_EL2);
-> +	else
-> +		ste[1] |= FIELD_PREP(STRTAB_STE_1_STRW, STRTAB_STE_1_STRW_NSEL1);
-> +
-> +	if (smmu->features & ARM_SMMU_FEAT_STALLS && !master->stall_enabled)
-> +		ste[1] |= STRTAB_STE_1_S1STALLD;
-> +
-> +	if (master->ats_enabled)
-> +		ste[1] |= FIELD_PREP(STRTAB_STE_1_EATS, STRTAB_STE_1_EATS_TRANS);
-> +
-> +	if (master->domain->stage == ARM_SMMU_DOMAIN_NESTED)
-> +		arm_smmu_ste_stage2_translate(master, ste);
-
-I think this needs a comment
-
-/*
- * SMMUv3 does not support using a S2 domain and a CD table for anything 
- * other than nesting where the S2 is the translation for the CD
- * table, and all associated S1s.
- */
-
-> +	if (le64_to_cpu(dst[0]) & STRTAB_STE_0_V) {
-> +		switch (FIELD_GET(STRTAB_STE_0_CFG, le64_to_cpu(dst[0]))) {
->  		case STRTAB_STE_0_CFG_BYPASS:
->  			break;
->  		case STRTAB_STE_0_CFG_S1_TRANS:
-
-This thing could go into a function 'ste_is_live' too
-
-> +	ste[0] = STRTAB_STE_0_V;
->  
-> +	if (master->cd_table.cdtab && master->domain) {
-
-I think the weirdness in arm_smmu_detach_dev() causes trouble here?
-Despite the name the function is some sort of preperation to
-attach_dev.
-
-So if we change attachments while a cdtab is active we should not
-remove the cdtab.
-
-Basically, no master->domain check..
-
-IMHO, I still don't like how this is structured. We have
-arm_smmu_detach_dev() which really just wants to invalidate the STE.
-Now that you shifted some of the logic to functions this might be
-better overall:
-
-static void arm_smmu_store_ste(struct arm_smmu_master *master,
-				      __le64 *dst, u64 *src)
-{
-	bool ste_sync_all = false;
-
-	for (i = 1; i < 4; i++) {
-		if (dst[i] == cpu_to_le64(ste[i]))
-			continue;
-		dst[i] = cpu_to_le64(ste[i]);
-		ste_sync_all = true;
-	}
-
-	if (ste_sync_all)
-		arm_smmu_sync_ste_for_sid(smmu, sid);
-	/* See comment in arm_smmu_write_ctx_desc() */
-	WRITE_ONCE(dst[0], cpu_to_le64(ste[0]));
-	arm_smmu_sync_ste_for_sid(smmu, sid);
-}
-
-static void arm_smmu_clear_strtab_ent(struct arm_smmu_master *master,
-				      __le64 *dst)
-{
-	u64 ste[4] = {};
-
-	ste[0] = STRTAB_STE_0_V;
-	if (disable_bypass)
-		arm_smmu_ste_abort(ste);
-	else
-		arm_smmu_ste_bypass(ste);
-	arm_smmu_store_ste(master, dst, &ste);
-}
-
-And use clear_strtab_ent from detach ??
-
-(but then I wonder why not set V=0 instead of STE.Config = abort?)
-
-> +		arm_smmu_ste_stage1_translate(master, ste);
-> +	} else if (master->domain &&
-> +		   master->domain->stage == ARM_SMMU_DOMAIN_S2) {
->  		BUG_ON(ste_live);
-> +		arm_smmu_ste_stage2_translate(master, ste);
-
-This whole bit looks nicer as one if
-
-} else if (master->domain) {
-       	   if (master->domain->stage == ARM_SMMU_DOMAIN_S2)
-		arm_smmu_ste_stage2_translate(master, ste);
-	   else if (master->domain->domain.type == IOMMU_DOMAIN_IDENTITY)
-		arm_smmu_ste_bypass(ste);
-	   else
-		BUG_ON()
-} else {
-    // Ugh, removing this case requires more work
-}
-
-(Linus will not like the bug_on's btw, the function really should
-fail)
-
-> +	for (i = 1; i < 4; i++) {
-> +		if (dst[i] == cpu_to_le64(ste[i]))
-> +			continue;
-> +		dst[i] = cpu_to_le64(ste[i]);
-> +		ste_sync_all = true;
-> +	}
-
-This isn't going to work if the transition is from a fully valid STE
-to an invalid one, it will corrupt the still in-use bytes.
-
-Though current code does this:
-
-		dst[0] = cpu_to_le64(val);
-		dst[1] = cpu_to_le64(FIELD_PREP(STRTAB_STE_1_SHCFG,
-						STRTAB_STE_1_SHCFG_INCOMING));
-		dst[2] = 0; /* Nuke the VMID */
-
-Which I don't really understand either? Why is it OK to wipe the VMID
-out of order with the STE.Config change?
-
-Be sure to read the part of the SMMU spec talking about how to update
-these things, 3.21.3.1 Configuration structure update procedure and
-nearby.
-
-Regardless there are clearly two orders in the existing code
-
-Write 0,1,2,flush (translation -> bypass/fault)
-
-Write 3,2,1,flush,0,flush (bypass/fault -> translation)
-
-You still have to preserve both behaviors.
-
-(interestingly neither seem to follow the guidance of the ARM manual,
-so huh)
-
-Still, I think this should be able to become more robust in general..
-You have a current and target STE and you just need to figure out what
-order to write the bits and if a V=0 transition is needed.
-
-The bigger question is does this have to be more generic to handle
-S1DSS which is it's original design goal?
-
-Jason
+Thanks
+Nic
