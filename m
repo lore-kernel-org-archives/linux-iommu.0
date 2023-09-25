@@ -1,221 +1,130 @@
-Received: from mail-ej1-f45.google.com (mail-ej1-f45.google.com [209.85.218.45])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2083.outbound.protection.outlook.com [40.107.244.83])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E5EF21A15
-	for <iommu@lists.linux.dev>; Mon, 25 Sep 2023 18:01:16 +0000 (UTC)
-Received: by mail-ej1-f45.google.com with SMTP id a640c23a62f3a-99c93638322so1589480266b.1
-        for <iommu@lists.linux.dev>; Mon, 25 Sep 2023 11:01:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1695664874; x=1696269674; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=njQ1BdogkQcbdblidvKFwQ0CFQs7HyHgjLf5rxsvEe4=;
-        b=khUPv+4zd5SZyGMG9r9zGn0qfz4yNcKIIxqpbF2MdprJsBwJRLWdOrLTfNQewDyb4U
-         DcX1QiboDD3WeOOVaqMVNlt+G7GEAZhldE+iUunIhn5Hz4FEJrGukJeFx+gq5VFBqlVv
-         EJ4vl15zrUFshXSxKNpMlT5NtMrbCx1xmQa9verlaJw15nM5ESM1k/6e9HS36wGIBbv0
-         WR43qzgZMJQpjXOF88c+H+swNFI6IDInNWWieln9ifVHqcItxbMlEpSt4Pntfb8pc4Kh
-         pzhVHmTIfXnDYCuEq/2/VKIxcS9yKvyuaWBh11hDC6/w2L8ySDwQK6oUdYZVEli0JPKt
-         m1sQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1695664874; x=1696269674;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=njQ1BdogkQcbdblidvKFwQ0CFQs7HyHgjLf5rxsvEe4=;
-        b=E2AKxi0Abfq0JLXLioJkGzZtcLHxCpFE8evYQNNv1yXI14FqF9LhwF9zS4DkrS8oUZ
-         SMqDfEech3o9IH/A1HiFB0y629J3hF+AYEMEPvmDqcwjaHCjv0Lh1ko+TW6Z6YYXaenL
-         HUyKqLUZFPbGf9xcgnlqzQyqpHKQE8z6R3M8eQ9Vj6OZHWrUi/2uoHFH96Fe4b5Fjz3a
-         JXQa7Nov5tb6QNbKaztEeQZQ2IBO0T3rNFI7nOjpobUJj7GJanizHYMxQlF/kcy7lbSc
-         E+B6gvG5spNhq828dQ6GDSL9gs6PPLCZlrMJvUqfII4pV5151aE6ELJ6Zl/as2S6rgDV
-         xuaQ==
-X-Gm-Message-State: AOJu0YxOHmUsZKfdz51GMwlWvT4tDYposNqDIksSwoYkOogKa6U0IsHo
-	Ab++nk7FluO4jI7L7b4AHum3zg==
-X-Google-Smtp-Source: AGHT+IG9/u2SB3ZRpgbXHjLztULk+AuoniEiZnId5QcCxv56UfQinLW43rYvtYkHF/0n4pyv0GC6PA==
-X-Received: by 2002:a17:907:9490:b0:9a5:aa43:1c7c with SMTP id dm16-20020a170907949000b009a5aa431c7cmr451126ejc.26.1695664874463;
-        Mon, 25 Sep 2023 11:01:14 -0700 (PDT)
-Received: from [192.168.1.172] ([93.5.22.158])
-        by smtp.gmail.com with ESMTPSA id y4-20020a17090614c400b00992b510089asm6619941ejc.84.2023.09.25.11.01.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 25 Sep 2023 11:01:13 -0700 (PDT)
-Message-ID: <869d9122-6187-47a0-0589-9feeafaf984c@baylibre.com>
-Date: Mon, 25 Sep 2023 20:01:12 +0200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A417224CE
+	for <iommu@lists.linux.dev>; Mon, 25 Sep 2023 18:18:09 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=oJTD/OlVsTF3+RJxAu31mjT5KsZ0yyTGWzwhfAYvuFxk+0Z9rnRZZBcBjATcvK5eEiBxTQ9Z5HRr9NEn3MJFlVJBkYZ5sIMQp7y+/liV5fp10czA0elG5EUc0N878xkvGEmOyxm9aj0nc8cQKcJH3BkAPAXJ9Eb8leZjuRV1KHJvi6x/YEqqrZiQC5u5RyhnmjGnMJ3mBeiG3gFg9CySoatRwXPwbbYQld0DEd1/+QajwTYZuBhqTsYpCPlwWl3BObPoeLu+6M5LuaVh6Dqi0y5wSF+rUfyzvSAZxLdOKerDiXKjc57Mq2avYNNQo0sNnFN16Xae8IESmxmT2IOE5w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=/NchV+bYWyhxLSi9oE1VoshpekonTOldxtuUD6Wbpvo=;
+ b=MpDcJgfBr6DOsK6MR4qreyIqcIFP7n9eTiJZ2Vxq08pddnH4pSZO7UVSZw1L9UM1R4P9yL0tsUc5GETG4Z/5/rZkrz3yRKwE+eQ+8H00FD54xoTp+zP/ip5CKH6hCZjlnGLvebt5qy0Z++sB8VvpaSXaxjTjd2pGCkgZ+kQKQm11oLQKlD8QwaScdFPF7uf4k7ovCQWzJtlY77U3ay+k4ktC0dMQTR/8BVVCT42QUHVtdgnHbMwQtmwYwqCwU/QGrkK7tHbLUuY7rCNqgYF1Fh8nq9jMQpp6o+49UR7EVqn5sdzfI+Bmsldq4UsT/EbQhUKtNikc0Q4c2O5hDZo2zQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.118.233) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=/NchV+bYWyhxLSi9oE1VoshpekonTOldxtuUD6Wbpvo=;
+ b=PJW+bc1sKvf7RFS3tTQQCY/fOHYI1IiSCTqIe/tlVi/A2k6LI3PP4xqTyg1aeMLIPEUX799jXPydpWMSaeBc/LBaFfcf3cidVP6qF2ManCELBLf75zqvhz1E43PffbTA4bTJ70WvpBW79xVi9s68bLtpnBS44DCKR1tU6e46IMdZPL2rPxU85/WHr4up5lySQxEGTndTD/fpKW+Gzp7mxPnTf8evcWrrDmdw2nUBGuX4vtB09iSnix74rssN55ET/kRcTaRqkahqpdgPWxNNcnBUPgUxpyxxEigaLZ88tvitYaQ6Bl/ZxbrAwNFy6ESdi2ZcbmA+a2xBGMGHHBcEog==
+Received: from DS7PR03CA0049.namprd03.prod.outlook.com (2603:10b6:5:3b5::24)
+ by BL1PR12MB5876.namprd12.prod.outlook.com (2603:10b6:208:398::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6792.27; Mon, 25 Sep
+ 2023 18:18:06 +0000
+Received: from DS1PEPF00017099.namprd05.prod.outlook.com
+ (2603:10b6:5:3b5:cafe::81) by DS7PR03CA0049.outlook.office365.com
+ (2603:10b6:5:3b5::24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6792.35 via Frontend
+ Transport; Mon, 25 Sep 2023 18:18:06 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.233) by
+ DS1PEPF00017099.mail.protection.outlook.com (10.167.18.103) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6838.14 via Frontend Transport; Mon, 25 Sep 2023 18:18:06 +0000
+Received: from drhqmail201.nvidia.com (10.126.190.180) by mail.nvidia.com
+ (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Mon, 25 Sep
+ 2023 11:17:54 -0700
+Received: from drhqmail202.nvidia.com (10.126.190.181) by
+ drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.41; Mon, 25 Sep 2023 11:17:53 -0700
+Received: from Asurada-Nvidia (10.127.8.13) by mail.nvidia.com
+ (10.126.190.181) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41 via Frontend
+ Transport; Mon, 25 Sep 2023 11:17:52 -0700
+Date: Mon, 25 Sep 2023 11:17:51 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: Baolu Lu <baolu.lu@linux.intel.com>, Yi Liu <yi.l.liu@intel.com>,
+	<joro@8bytes.org>, <alex.williamson@redhat.com>, <kevin.tian@intel.com>,
+	<robin.murphy@arm.com>, <cohuck@redhat.com>, <eric.auger@redhat.com>,
+	<kvm@vger.kernel.org>, <mjrosato@linux.ibm.com>,
+	<chao.p.peng@linux.intel.com>, <yi.y.sun@linux.intel.com>,
+	<peterx@redhat.com>, <jasowang@redhat.com>,
+	<shameerali.kolothum.thodi@huawei.com>, <lulu@redhat.com>,
+	<suravee.suthikulpanit@amd.com>, <iommu@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
+	<zhenzhong.duan@intel.com>, <joao.m.martins@oracle.com>
+Subject: Re: [PATCH v4 01/17] iommu: Add hwpt_type with user_data for
+ domain_alloc_user op
+Message-ID: <ZRHOz+uuJ9gGE2ZF@Asurada-Nvidia>
+References: <20230921075138.124099-1-yi.l.liu@intel.com>
+ <20230921075138.124099-2-yi.l.liu@intel.com>
+ <4b17d331-957b-44d3-8a19-0b2ccc59150b@linux.intel.com>
+ <ZQyuIQbyVk9p8C8o@Asurada-Nvidia>
+ <20230925130506.GA13733@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.15.1
-Subject: Re: [PATCH 1/4] iommu/mediatek: Initialise the secure bank
-Content-Language: en-US
-To: =?UTF-8?B?WW9uZyBXdSAo5ZC05YuHKQ==?= <Yong.Wu@mediatek.com>,
- "joro@8bytes.org" <joro@8bytes.org>, "will@kernel.org" <will@kernel.org>,
- "angelogioacchino.delregno@collabora.com"
- <angelogioacchino.delregno@collabora.com>,
- "matthias.bgg@gmail.com" <matthias.bgg@gmail.com>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "linux-mediatek@lists.infradead.org" <linux-mediatek@lists.infradead.org>,
- =?UTF-8?B?QW5hbiBTdW4gKOWtmeWuieWuiSk=?= <Anan.Sun@mediatek.com>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>,
- =?UTF-8?B?WUYgV2FuZyAo546L5LqR6aOeKQ==?= <YF.Wang@mediatek.com>,
- "linux-arm-kernel@lists.infradead.org"
- <linux-arm-kernel@lists.infradead.org>,
- "krzysztof.kozlowski+dt@linaro.org" <krzysztof.kozlowski+dt@linaro.org>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "tjmercier@google.com" <tjmercier@google.com>,
- =?UTF-8?B?TWluZ3l1YW4gTWEgKOmprOm4o+i/nCk=?= <Mingyuan.Ma@mediatek.com>
-References: <20230911011751.29906-1-yong.wu@mediatek.com>
- <20230911011751.29906-2-yong.wu@mediatek.com>
- <28b81a20-5cfa-b474-41c3-c01b7b846e21@collabora.com>
- <409168b540948d312a91022f375fa71a470e9d60.camel@mediatek.com>
-From: Alexandre Mergnat <amergnat@baylibre.com>
-In-Reply-To: <409168b540948d312a91022f375fa71a470e9d60.camel@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20230925130506.GA13733@nvidia.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS1PEPF00017099:EE_|BL1PR12MB5876:EE_
+X-MS-Office365-Filtering-Correlation-Id: 98ffef03-393d-4dc6-62d1-08dbbdf3c3db
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	z0IpDxQWYHYWSeCjvhzAZzNZ6ztRjORw2ObdhBPK60Pq9tBxFSexAVRBKA1oWuxVFaRTPYyfaLiyzw0aUUEGD3gJQvGfz6q7EQT4ijuKSq9HZiM1ptegCCEgsDtOWdi3vViwOebtRwGcrOteUI+iLL3UOdLsJzvEgnhzDb21NYbQ1z0e3dSguxsZElvz+hlK925kmndTvw9nfdAC0lLHbVhKaiXjO/S4ywemeC5VPjcYSdtNW/BJ+fn4R5kPoTox5IFJyw0+6n0X94efbSn0+JHhWuVpLhi3KaaYTsNsH+i8z5pU/cueGYq8wWntyoEBEBp+j/Qbj3vdxAiqtFkLsG9bVqeS3UHRFZ6HjZMVbAj+hQmCmfX/ruPOJBS4tNi4no6fX3UWcjsVU/84u7jTvsrqfdO1SCJIJLW/Wy249dlHexwGci9TKLmcAINxkJO/RHzWWF8JXIt6KS2H9rFf6h+xac09EimHTk8oqQVGXvf3S+9Kw+PaSdKsMjONDTFHt/MkXcpXNcfW4LLTq06NNSKYCinsbYkyhqeuwn9UBTEwslo6rY+vt2w28X+b/agLXL7VfWvJv5ta41P5hv131ximplP8YmZANmlTkf+hzVRFrFgjbnXubpqXlbOleSHqZUNkeGw/8GL8oXXrPcgTRUPm8k2Kqg9SStiLG1kLO3PViJmqh3ik9QXo3fonX9LSwqpKFemQTMUhM9R8WSNFvjutPFhoni7q0x7SBhyw2i8ZodvCpVRvpTSJ/ypAk2+BlJk4YS5eghbxRnAMa9/cyA==
+X-Forefront-Antispam-Report:
+	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230031)(4636009)(136003)(396003)(376002)(39860400002)(346002)(230922051799003)(82310400011)(1800799009)(451199024)(186009)(36840700001)(40470700004)(46966006)(70586007)(54906003)(4744005)(316002)(86362001)(70206006)(2906002)(82740400003)(33716001)(7636003)(41300700001)(6636002)(356005)(36860700001)(5660300002)(7416002)(47076005)(478600001)(55016003)(8936002)(6862004)(66899024)(4326008)(83380400001)(9686003)(26005)(40480700001)(40460700003)(8676002)(426003)(336012)(67856001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Sep 2023 18:18:06.2288
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 98ffef03-393d-4dc6-62d1-08dbbdf3c3db
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	DS1PEPF00017099.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5876
 
-
-
-On 25/09/2023 14:50, Yong Wu (吴勇) wrote:
-> On Mon, 2023-09-11 at 11:22 +0200, AngeloGioacchino Del Regno wrote:
->> Il 11/09/23 03:17, Yong Wu ha scritto:
->>> The lastest IOMMU always have 5 banks, and we always use the last
->>> bank
->>> (id:4) for the secure memory address translation. This patch add a
->>> new
->>> flag (SECURE_BANK_ENABLE) for this feature.
->>>
->>> For the secure bank, its kernel va "base" is not helpful since the
->>> secure bank registers has already been protected and can only be
->>> accessed
->>> in the secure world. But we still record its register base, because
->>> we need
->>> use it to determine which IOMMU HW the translation fault happen in
->>> the
->>> secure world.
->>>
->>> Signed-off-by: Anan Sun <anan.sun@mediatek.com>
->>> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
->>> ---
->>>    drivers/iommu/mtk_iommu.c | 19 +++++++++++++++++--
->>>    1 file changed, 17 insertions(+), 2 deletions(-)
->>>
->>> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
->>> index 640275873a27..4a2cffb28c61 100644
->>> --- a/drivers/iommu/mtk_iommu.c
->>> +++ b/drivers/iommu/mtk_iommu.c
->>> @@ -146,6 +146,7 @@
->>>    #define TF_PORT_TO_ADDR_MT8173		BIT(18)
->>>    #define INT_ID_PORT_WIDTH_6		BIT(19)
->>>    #define CFG_IFA_MASTER_IN_ATF		BIT(20)
->>> +#define SECURE_BANK_ENABLE		BIT(21)
->>>    
->>>    #define MTK_IOMMU_HAS_FLAG_MASK(pdata, _x, mask)	\
->>>    				((((pdata)->flags) & (mask)) == (_x))
->>> @@ -162,6 +163,8 @@
->>>    #define MTK_IOMMU_GROUP_MAX	8
->>>    #define MTK_IOMMU_BANK_MAX	5
->>>    
->>> +#define MTK_IOMMU_SEC_BANKID	4
->>> +
->>
->> Is there any SoC (previous, current or future) that may have more
->> than one
->> secure context bank?
+On Mon, Sep 25, 2023 at 10:05:06AM -0300, Jason Gunthorpe wrote:
+> On Thu, Sep 21, 2023 at 01:58:19PM -0700, Nicolin Chen wrote:
 > 
-> Thanks very much for the below detail suggestion. But No, for MM IOMMU,
-> The bank4 is mandatory the secure bank, and there is only this one
-> secure bank, and this is the case for all the current projects, we have
-> no plan to modify this at the moment. Therefore I think a macro is ok
-> for it.
+> > Perhaps we could put all min_len defines in uAPI header, like:
+> > include/uapi/linux/gfs2_ondisk.h:442:#define LH_V1_SIZE (offsetofend(struct gfs2_log_header, lh_hash))
+> > In this way, drivers won't need to deal with that nor have risks
+> > of breaking ABI by changing a min_len.
 > 
-
-Between 2 solutions which have the equivalent complexity (logical & 
-readability), I prefer the most generic one (at least for generic 
-drivers like this). Nobody is aware about future SoC, even if you know 
-what will have the next SoC generation, I'm not sure you can certified 
-it will be the same in the next 2, 3, 4,... generations.
-
-I'm convinced it will be easier in the future to maintain the IOMMU code 
-if it's flexible.
-
-> Thanks.
+> I don't think we need constants, just be sure that every call to 
+> iommu_copy_user_data() has an offsetof() as the last parameter.
 > 
->>
->> I'm thinking about implementing this differently...
->>
->> static const struct mtk_iommu_plat_data mt8188_data_vdo = {
->> 	....
->> 	.flags = ..flags.. | ATF_SECURE_BANKS_ENABLE
->> 	.banks_num = 5,
->> 	.banks_enable = {true, false, false, false, true},
->> 	.banks_secure = {false, false, false, false, true},
->> 	....
->> }
->>
->> ...this would means that you won't need to specify a static
->> SEC_BANKID, as
->> you'd get that from banks_secure... so that....
->>
->>>    enum mtk_iommu_plat {
->>>    	M4U_MT2712,
->>>    	M4U_MT6779,
->>> @@ -240,9 +243,13 @@ struct mtk_iommu_plat_data {
->>>    };
->>>    
->>>    struct mtk_iommu_bank_data {
->>> -	void __iomem			*base;
->>> +	union {
->>> +		void __iomem		*base;
->>> +		phys_addr_t		sec_bank_base;
->>> +	};
->>>    	int				irq;
->>>    	u8				id;
->>> +	bool				is_secure;
->>>    	struct device			*parent_dev;
->>>    	struct mtk_iommu_data		*parent_data;
->>>    	spinlock_t			tlb_lock; /* lock for tlb range
->>> flush */
->>> @@ -1309,7 +1316,15 @@ static int mtk_iommu_probe(struct
->>> platform_device *pdev)
->>>    			continue;
->>>    		bank = &data->bank[i];
->>>    		bank->id = i;
->>> -		bank->base = base + i * MTK_IOMMU_BANK_SZ;
->>
->> ....this would become:
->>
->> bank->is_secure = MTK_IOMMU_HAS_FLAG(data->plat_data,
->> ATF_SECURE_BANKS_ENABLE) &&
->> 		  data->plat_data->banks_secure[i];
->>
->> if (bank->is_secure)
->> 	bank->sec_bank_base = res->start + i * MTK_IOMMU_BANK_SZ;
->> else
->> 	bank->base = base + i * MTK_IOMMU_BANK_SZ;
->>
->>> +		if (MTK_IOMMU_HAS_FLAG(data->plat_data,
->>> SECURE_BANK_ENABLE) &&
->>> +		    bank->id == MTK_IOMMU_SEC_BANKID) {
->>> +			/* Record the secure bank base to indicate
->>> which iommu TF in sec world */
->>> +			bank->sec_bank_base = res->start + i *
->>> MTK_IOMMU_BANK_SZ;
->>> +			bank->is_secure = true;
->>> +		} else {
->>> +			bank->base = base + i * MTK_IOMMU_BANK_SZ;
->>> +			bank->is_secure = false;
->>> +		}
->>>    		bank->m4u_dom = NULL;
->>>    
->>>    		bank->irq = platform_get_irq(pdev, i);
->>
->> What do you think?
->>
->> Cheers,
->> Angelo
+> Indeed perhaps you should put it in a macro and force this to happen eg:
+> 
+>  #define iommu_copy_user_data(user_data, from, min_size_member) \
+>   __iommu_copy_user_data(user_data, from, offsetofend(typeof(*from), min_size_member))
+> 
+>  iommu_copy_user_data(user_data, &data, iotlb);
 
--- 
-Regards,
-Alexandre
+OK. And always use sizeof(typeof(*from)) in the mcaro for the
+current data_len, I assume?
+
+Thanks
+Nic
