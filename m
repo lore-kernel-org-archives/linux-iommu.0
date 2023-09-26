@@ -1,93 +1,141 @@
-Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3C7C22AB41;
-	Tue, 26 Sep 2023 15:04:31 +0000 (UTC)
-Received: from 8bytes.org (pd9fe9df8.dip0.t-ipconnect.de [217.254.157.248])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+Received: from EUR03-AM7-obe.outbound.protection.outlook.com (mail-am7eur03on2081.outbound.protection.outlook.com [40.107.105.81])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id CA82A1A21CC;
-	Tue, 26 Sep 2023 17:04:29 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1695740670;
-	bh=o8oWUCyKGLr6aRpJEcyERxcIW3a0GD0rf9gmZgpvK2A=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=6TpFhndRPNvIgt7yzA2/aJMoYkdnS16cebzf4UtP23CQlpQ+Gak1eYrm6l6OjKYEx
-	 6ov9MN4xTFyWr54bLnOpm430Hupplf8W0SxvaQlB6FgmJn2Bupf3Brid8BS/nZqAQO
-	 hvu4Svos9D+f462V9LsyrLj63TJ5HQrEH7+hL9EoBYr83zCI6QFPn3sNZtjggMsFkX
-	 51VP71UAzDGONwXr20Y36QdQJVa+iP+T27lz3G41fM7pXzHksLzD0rpLSvyCctLemD
-	 t/LuaiNXAWO/0BIuVB8b3mYUK3IzpvwsvgMpvM9qZ4RAN8ZffK3kqVvFnLVTK8C6cL
-	 klQPepXng8EOg==
-Date: Tue, 26 Sep 2023 17:04:28 +0200
-From: Joerg Roedel <joro@8bytes.org>
-To: Niklas Schnelle <schnelle@linux.ibm.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Matthew Rosato <mjrosato@linux.ibm.com>, Will Deacon <will@kernel.org>,
-	Wenjia Zhang <wenjia@linux.ibm.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Gerd Bayer <gbayer@linux.ibm.com>,
-	Julian Ruess <julianr@linux.ibm.com>,
-	Pierre Morel <pmorel@linux.ibm.com>,
-	Alexandra Winter <wintera@linux.ibm.com>,
-	Heiko Carstens <hca@linux.ibm.com>,
-	Vasily Gorbik <gor@linux.ibm.com>,
-	Alexander Gordeev <agordeev@linux.ibm.com>,
-	Christian Borntraeger <borntraeger@linux.ibm.com>,
-	Sven Schnelle <svens@linux.ibm.com>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Hector Martin <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
-	Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>, Andy Gross <agross@kernel.org>,
-	Bjorn Andersson <andersson@kernel.org>,
-	Konrad Dybcio <konrad.dybcio@linaro.org>,
-	Yong Wu <yong.wu@mediatek.com>,
-	Matthias Brugger <matthias.bgg@gmail.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-	Orson Zhai <orsonzhai@gmail.com>,
-	Baolin Wang <baolin.wang@linux.alibaba.com>,
-	Chunyan Zhang <zhang.lyra@gmail.com>, Chen-Yu Tsai <wens@csie.org>,
-	Jernej Skrabec <jernej.skrabec@gmail.com>,
-	Samuel Holland <samuel@sholland.org>,
-	Thierry Reding <thierry.reding@gmail.com>,
-	Krishna Reddy <vdumpa@nvidia.com>,
-	Jonathan Hunter <jonathanh@nvidia.com>,
-	Jonathan Corbet <corbet@lwn.net>, linux-s390@vger.kernel.org,
-	netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev, asahi@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
-	linux-mediatek@lists.infradead.org, linux-sunxi@lists.linux.dev,
-	linux-tegra@vger.kernel.org, linux-doc@vger.kernel.org
-Subject: Re: [PATCH v12 0/6] iommu/dma: s390 DMA API conversion and optimized
- IOTLB flushing
-Message-ID: <ZRLy_AaJiXxZ2AfK@8bytes.org>
-References: <20230825-dma_iommu-v12-0-4134455994a7@linux.ibm.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B38F7479
+	for <iommu@lists.linux.dev>; Tue, 26 Sep 2023 15:26:14 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=DsQY5lvKwNE1l7HaZb+yhT7IJDVp+UIvHzUvTZMZW1KSrCKAO9qsSgsa63F31GoQYmKEBgBfhe8KBl0Wcf7Kd6cAsM4eB1mpGomhEYosZoBF0DexbZDPTBUX9zX+k71iLWDjsQd0dUWofvrbeMwp+F6l0N59INc/7z2HB6LdzeOFwxQ1vRt7LW+t0yHJ00D6tEHSTJDJpgmIKuokOZdK2C5Bl/9/vahE4ram+MXFmZeC0gnjC37fYHchOREq5Z+0XLvLcYptXo9XTJkQsP92Y7Opaz1Mikm3DLU2ECyYOWP7w6gr7Cs7xyhD/gtUfx6bZWwVhWzzYH8JMnI8rb6f4A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=LjS2oc1G2xKWiWE4J4bNLWk15KU6ekD8lNB1EVGxXPM=;
+ b=ZS9sPSP7hbjwlVrp1I9ro/BgJlU4QValXsTm9dDK6NuhwqWY8HEU/MD0v6XaqXCwm6PQ/ytWPTmHOCxVvyZ2oSVdcGlO7JCnsS0AUEYH0N6D/x/nvRqSBIL/5aE9AfYBUXMq+A0TGnJRDqb/7FOPa/603aYjaB6+zAwOV9tbOjN63HeAwW79RQZK7Nocp1tCoZ+RQiCBTtgALoFIy6CMH7Mebq4REenkh9ny7zkE6cvYdjU2zGeWH2gfoygjuzXmveUYHksCWpfyvDFthYrSB6oCS1+cE0s/1xazgNFU3dVa2tQcb5MSONVqvNRH2sNNMdKEqOdtTVwOmw3lDkPyQg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=LjS2oc1G2xKWiWE4J4bNLWk15KU6ekD8lNB1EVGxXPM=;
+ b=mo2G6uweotZ+1U7kWSuYN0XWDCIz5bP3RbhnGqnS5OR+vajivnbFu90NurVAesj5jzL9LEJAjk9CIKBzoJOapBN1cvHYYMlXiZhNMR1RlJUwljENayTpzUnhPgmSreJkNYajW+WHcXhOL4/Uklz5NJmEr91vfMwaqX1qgq68J5o=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from DB9PR04MB9380.eurprd04.prod.outlook.com (2603:10a6:10:368::16)
+ by AS8PR04MB7493.eurprd04.prod.outlook.com (2603:10a6:20b:293::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6813.28; Tue, 26 Sep
+ 2023 15:26:11 +0000
+Received: from DB9PR04MB9380.eurprd04.prod.outlook.com
+ ([fe80::425a:a4a9:17b3:cfe4]) by DB9PR04MB9380.eurprd04.prod.outlook.com
+ ([fe80::425a:a4a9:17b3:cfe4%4]) with mapi id 15.20.6813.027; Tue, 26 Sep 2023
+ 15:26:11 +0000
+From: Laurentiu Tudor <laurentiu.tudor@nxp.com>
+To: joro@8bytes.org,
+	will@kernel.org,
+	robin.murphy@arm.com,
+	treding@nvidia.com,
+	jgg@nvidia.com,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Cc: Laurentiu Tudor <laurentiu.tudor@nxp.com>
+Subject: [PATCH v3] iommu: map reserved memory as cacheable if device is coherent
+Date: Tue, 26 Sep 2023 18:26:00 +0300
+Message-Id: <20230926152600.8749-1-laurentiu.tudor@nxp.com>
+X-Mailer: git-send-email 2.17.1
+Content-Type: text/plain
+X-ClientProxiedBy: AM0PR02CA0225.eurprd02.prod.outlook.com
+ (2603:10a6:20b:28f::32) To DB9PR04MB9380.eurprd04.prod.outlook.com
+ (2603:10a6:10:368::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230825-dma_iommu-v12-0-4134455994a7@linux.ibm.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DB9PR04MB9380:EE_|AS8PR04MB7493:EE_
+X-MS-Office365-Filtering-Correlation-Id: 372469d3-a7a4-45b2-a3f1-08dbbea4e9ba
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	bk2SioSbhFoNIdCXj9QHnNHk1mffNr5povuf6jCTo/1YwShFaTEc3VMTzE7ff/V26R2qpFy8/CPnidU3bJXtRFZLixjhnsymp6Vrc0J8rex9tC2s8Yc+SzEsvdcaye1xVkwJbGGgjJkfiAGkXeQaGbKRqDubPDO19PozsxbmTKgrWDB2caOk5J6OFN+pjFX7U5vk7NC6UX+HD3FV3YyVRvwHh7FA4e9wSLg6hEDnbf9kZ++dX4Fzuh67uzrVqBmYp3gMYzPZ2kZ4uGWUIa5ufsvhLSBiTqN5zm77XpRkRC/ZMh3ekSmilLT22Z08T0nQUrwDFm64V9tJRiDtH920zAY8v7CeWGSKzeRKI8O7+Ncdg792o3dBgZ4smEc+m31l8yuc5sVm687GMU9TlPU6DBz0ZtB/mXOIJ4XP1Y+y1fci+EEYYaF54Aivdy59xZkFVZnPofiw2sTQ4X+iAEmlkN8X8+zzs9Uwj0TeO67h7O8cc8lXQ2VDQXGJD1iaceTQdN/mGHJKKk9NwRfXAxRcYmJxYn+cwj+r0x6d4VwJYZYz+EKWetxXnQ8YeBB5+ZGNRs5wUBuGVQGKVuxPJgVixQURqeVxf+auxSW/3YPCgMhDqL/yiAqLwMpvN30Md3S2
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR04MB9380.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366004)(39860400002)(396003)(376002)(136003)(346002)(230922051799003)(451199024)(186009)(1800799009)(5660300002)(316002)(83380400001)(44832011)(41300700001)(8676002)(8936002)(36756003)(2616005)(4326008)(66476007)(66946007)(66556008)(1076003)(6486002)(52116002)(6666004)(6512007)(6506007)(86362001)(26005)(38100700002)(2906002)(38350700002)(478600001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?6pY9MerhWsPfiAUGRhTAnPfgpZ2oSk5T1wXJlQHOXW+00AMvVke8HIK0c4OF?=
+ =?us-ascii?Q?SrfKWn7vKPRVzk+X6OdVOL4WZcEB4gopCXTkLDg9uHM/5DpGk7FthOgYqvMB?=
+ =?us-ascii?Q?L6vPYRhHPN/mUersq/UYAYt4XN5KroTqheO+K/touUlCqClKK2Dh3R4ZYxUq?=
+ =?us-ascii?Q?mEGRMWWSzvDWkPYsLIy3XO8IMMUBuD5RIE4vIp0lvTNaImyjvp71RU9ysvW3?=
+ =?us-ascii?Q?PyCZtBw0jZ1whOTyQJ1RmUpLXw5DNkAcZ2YA7LledzBRY5hP+KgrsM3RIFPa?=
+ =?us-ascii?Q?dGlkSz7675deFChYcyhk3ed4n+1lC17ziO8T5Z3KXXU6hSjmjK6yqVICuyD1?=
+ =?us-ascii?Q?lqGSqK5ipStMsL65CT2WQ+AxYDyDSDml5J+ubr76zGdvnUGhPA8dHZScPkZ8?=
+ =?us-ascii?Q?wln2trtW0BmIwG+Tw9+qDJjHIkcVxSlLT+dAQuK5ihs92oHJk67nxJ20CZLx?=
+ =?us-ascii?Q?8JTFHMfAwy7KJ+NP2cggenY8x70YuV9+Ray4pGh+yMTsjFy/A7UFjEtn5UNT?=
+ =?us-ascii?Q?yA/f32Hus0Q2vCE8Arx18wDvhAo14BgqiHlksKA70s+fBIpGDtCMMB+IAoL1?=
+ =?us-ascii?Q?pgDZ47OmwUF8r0sq+FkWU21IOcwr6+dxkAxz6hT0X3/Z14dKLe0t+o15cljE?=
+ =?us-ascii?Q?zHoJOm0QKWF1jGFWbzXazPCopIF6Qb2qdO+i8OaZqVl+Poe/Nc1xwFdeCMrv?=
+ =?us-ascii?Q?ut088fdDfNPQhjftjxYJWizrkOjmiaO2vnCHviWTyijFgvCpW962FhNLVBGA?=
+ =?us-ascii?Q?ZKbgj65rwQ/3r379pD/acWkMgvupaqPyfVbcdtt/LAgFmmLY8x7ePJTSaZEV?=
+ =?us-ascii?Q?XjNkFI4nGpdNQYYiQJsTohK2Xz4cZpyPrHmwwdgYS1rkJObD0LlArdKhCQRZ?=
+ =?us-ascii?Q?tHLpiJchZ4vMg8jfXlOYEwEpVVUJX5oZ0vIGU15olKcZfSD0P/3fy+izsfoT?=
+ =?us-ascii?Q?uTDFjQlP+cLRkoORKdFGEMR0C7kxIaIMfrKBMcngq+9Pm8HnCiEpZOmM4yqW?=
+ =?us-ascii?Q?3HhrfQZRNzlZzi1oIEPMYjwecWvyRpHux4GkLZh4i8vmggccAx8fDGk46jPr?=
+ =?us-ascii?Q?gXpRdO8VFv2HqOcpD/TbBcTgx/I83Ohq1dhL9K4/1vP/nn+fy248QX2xgr9z?=
+ =?us-ascii?Q?qUP2yrjN7LLwdZ7x0ERseMbgYAANheIDH7VbcYzK62zfDduOHwYn1S4d2xuV?=
+ =?us-ascii?Q?i1rcUzb6K1IN8WRt684MSqhFNgROUff0uofy9FREF4PKIQWor7eJanJJgtI0?=
+ =?us-ascii?Q?J1LLD8dV7E4eW/HRKr/Qscl4tqKirjhMZzGZPFE2Otl+AlyO3xy1NjAIfew9?=
+ =?us-ascii?Q?UFXHoOy48Pcu/XDp5kVRcI3/mTyq5bEMh5ystMIbSk4Nd4YZctELwHGXmSzB?=
+ =?us-ascii?Q?UZV1cDA4Oxh8Bm38QDFmcVhA106iDiG+ZcmQw0OtjiP55in+BzLTISKrLP+z?=
+ =?us-ascii?Q?9oIjA/pMfPvhCBs/jiv8jk68cUHcJE6OfpGTFUZtMZJCiySxJOzplY8NyZwa?=
+ =?us-ascii?Q?f5Wl2/qrACSKcG/XZPabQ6feFQaMTQuzMNwfyhFdQQSVtShtPme02YWGL73V?=
+ =?us-ascii?Q?gg4rSE+3Km/xdUxugd9YfKtCB3XXKD+Hp01wVdGn?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 372469d3-a7a4-45b2-a3f1-08dbbea4e9ba
+X-MS-Exchange-CrossTenant-AuthSource: DB9PR04MB9380.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Sep 2023 15:26:11.2055
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: hKOP1zIQzMySyOrWlfOnAc01301Elw8NqJEKEY50oa/XQiNIjktT8gXH/DWO5R2gpmS0N0k9kOlEecHb9DXsTQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR04MB7493
 
-Hi Niklas,
+Check if the device is marked as DMA coherent in the DT and if so,
+map its reserved memory as cacheable in the IOMMU.
+This fixes the recently added IOMMU reserved memory support which
+uses IOMMU_RESV_DIRECT without properly building the PROT for the
+mapping.
 
-On Fri, Aug 25, 2023 at 12:11:15PM +0200, Niklas Schnelle wrote:
-> Niklas Schnelle (6):
->       iommu: Allow .iotlb_sync_map to fail and handle s390's -ENOMEM return
->       s390/pci: prepare is_passed_through() for dma-iommu
->       s390/pci: Use dma-iommu layer
->       iommu/s390: Disable deferred flush for ISM devices
->       iommu/dma: Allow a single FQ in addition to per-CPU FQs
->       iommu/dma: Use a large flush queue and timeout for shadow_on_flush
+Fixes: a5bf3cfce8cb ("iommu: Implement of_iommu_get_resv_regions()")
+Signed-off-by: Laurentiu Tudor <laurentiu.tudor@nxp.com>
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Acked-by: Thierry Reding <treding@nvidia.com>
+---
+Changes in v3:
+ - added Acked-by tag (Thierry)
 
-Turned out this series has non-trivial conflicts with Jasons
-default-domain work so I had to remove it from the IOMMU tree for now.
-Can you please rebase it to the latest iommu/core branch and re-send? I
-will take it into the tree again then.
+Changes in v2:
+ - added Reviewed-by tag (Jason)
 
-Thanks,
+ drivers/iommu/of_iommu.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-	Joerg
+diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+index 157b286e36bf..5b3631ba5a45 100644
+--- a/drivers/iommu/of_iommu.c
++++ b/drivers/iommu/of_iommu.c
+@@ -254,6 +254,9 @@ void of_iommu_get_resv_regions(struct device *dev, struct list_head *list)
+ 				phys_addr_t iova;
+ 				size_t length;
+ 
++				if (of_dma_is_coherent(dev->of_node))
++					prot |= IOMMU_CACHE;
++
+ 				maps = of_translate_dma_region(np, maps, &iova, &length);
+ 				type = iommu_resv_region_get_type(dev, &phys, iova, length);
+ 
+-- 
+2.17.1
+
