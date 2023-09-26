@@ -1,168 +1,124 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id BB5D329432;
-	Tue, 26 Sep 2023 19:41:35 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1A51DDA7;
-	Tue, 26 Sep 2023 12:42:13 -0700 (PDT)
-Received: from [10.57.1.70] (unknown [10.57.1.70])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6C9243F59C;
-	Tue, 26 Sep 2023 12:41:32 -0700 (PDT)
-Message-ID: <61aea9de-6bb1-5859-fcc6-b631bc829e3b@arm.com>
-Date: Tue, 26 Sep 2023 20:41:27 +0100
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2534736B1E
+	for <iommu@lists.linux.dev>; Tue, 26 Sep 2023 20:23:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC976C433CA;
+	Tue, 26 Sep 2023 20:23:45 +0000 (UTC)
+Date: Tue, 26 Sep 2023 21:23:43 +0100
+From: Catalin Marinas <catalin.marinas@arm.com>
+To: Petr Tesarik <petr@tesarici.cz>
+Cc: Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>,
+	open list <linux-kernel@vger.kernel.org>,
+	Roberto Sassu <roberto.sassu@huaweicloud.com>,
+	Jonathan Corbet <corbet@lwn.net>
+Subject: Re: [PATCH v3] swiotlb: fix the check whether a device has used
+ software IO TLB
+Message-ID: <ZRM9z6JQKTtqTMQa@arm.com>
+References: <20230926185556.16433-1-petr@tesarici.cz>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.15.1
-Subject: Re: [PATCH 6/8] iommu/dart: Move the blocked domain support to a
- global static
-Content-Language: en-GB
-From: Robin Murphy <robin.murphy@arm.com>
-To: Janne Grunau <j@jannau.net>, Jason Gunthorpe <jgg@nvidia.com>
-Cc: Alyssa Rosenzweig <alyssa@rosenzweig.io>, asahi@lists.linux.dev,
- Lu Baolu <baolu.lu@linux.intel.com>,
- Christophe Leroy <christophe.leroy@csgroup.eu>,
- David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux.dev,
- Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
- linux-arm-kernel@lists.infradead.org, linuxppc-dev@lists.ozlabs.org,
- Hector Martin <marcan@marcan.st>, Michael Ellerman <mpe@ellerman.id.au>,
- Nicholas Piggin <npiggin@gmail.com>, Sven Peter <sven@svenpeter.dev>,
- Will Deacon <will@kernel.org>
-References: <0-v1-8060f06462cc+c0a39-dart_paging_jgg@nvidia.com>
- <6-v1-8060f06462cc+c0a39-dart_paging_jgg@nvidia.com> <ZRMrZJ1HgpULWeyv@robin>
- <a9e937e8-4cc9-631a-af31-407d974ed3ec@arm.com>
-In-Reply-To: <a9e937e8-4cc9-631a-af31-407d974ed3ec@arm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230926185556.16433-1-petr@tesarici.cz>
 
-On 2023-09-26 20:34, Robin Murphy wrote:
-> On 2023-09-26 20:05, Janne Grunau wrote:
->> Hej,
->>
->> On Fri, Sep 22, 2023 at 02:07:57PM -0300, Jason Gunthorpe wrote:
->>> Move to the new static global for blocked domains. Move the blocked
->>> specific code to apple_dart_attach_dev_blocked().
->>>
->>> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
->>> ---
->>>   drivers/iommu/apple-dart.c | 36 ++++++++++++++++++++++++++----------
->>>   1 file changed, 26 insertions(+), 10 deletions(-)
->>>
->>> diff --git a/drivers/iommu/apple-dart.c b/drivers/iommu/apple-dart.c
->>> index 424f779ccc34df..376f4c5461e8f7 100644
->>> --- a/drivers/iommu/apple-dart.c
->>> +++ b/drivers/iommu/apple-dart.c
->>> @@ -675,10 +675,6 @@ static int apple_dart_attach_dev(struct 
->>> iommu_domain *domain,
->>>           for_each_stream_map(i, cfg, stream_map)
->>>               apple_dart_setup_translation(dart_domain, stream_map);
->>>           break;
->>> -    case IOMMU_DOMAIN_BLOCKED:
->>> -        for_each_stream_map(i, cfg, stream_map)
->>> -            apple_dart_hw_disable_dma(stream_map);
->>> -        break;
->>>       default:
->>>           return -EINVAL;
->>>       }
->>> @@ -710,6 +706,30 @@ static struct iommu_domain 
->>> apple_dart_identity_domain = {
->>>       .ops = &apple_dart_identity_ops,
->>>   };
->>> +static int apple_dart_attach_dev_blocked(struct iommu_domain *domain,
->>> +                     struct device *dev)
->>> +{
->>> +    struct apple_dart_master_cfg *cfg = dev_iommu_priv_get(dev);
->>> +    struct apple_dart_stream_map *stream_map;
->>> +    int i;
->>> +
->>> +    if (cfg->stream_maps[0].dart->force_bypass)
->>> +        return -EINVAL;
->>
->> unrelated to this change as this keeps the current behavior but I think
->> force_bypass should not override IOMMU_DOMAIN_BLOCKED. It is set if the
->> CPU page size is smaller than dart's page size. Obviously dart can't
->> translate in that situation but it should be still possible to block it
->> completely.
->>
->> How do we manage this? I can write a patch either to the current state
->> or based on this series.
+On Tue, Sep 26, 2023 at 08:55:56PM +0200, Petr Tesarik wrote:
+> When CONFIG_SWIOTLB_DYNAMIC=y, devices which do not use the software IO TLB
+> can avoid swiotlb lookup. A flag is added by commit 1395706a1490 ("swiotlb:
+> search the software IO TLB only if the device makes use of it"), the flag
+> is correctly set, but it is then never checked. Add the actual check here.
 > 
-> The series is queued already, so best to send a patch based on 
-> iommu/core (I guess just removing these lines?).
+> Note that this code is an alternative to the default pool check, not an
+> additional check, because:
+> 
+> 1. swiotlb_find_pool() also searches the default pool;
+> 2. if dma_uses_io_tlb is false, the default swiotlb pool is not used.
+> 
+> Tested in a KVM guest against a QEMU RAM-backed SATA disk over virtio and
+> *not* using software IO TLB, this patch increases IOPS by approx 2% for
+> 4-way parallel I/O.
+> 
+> The write memory barrier in swiotlb_dyn_alloc() is not needed, because a
+> newly allocated pool must always be observed by swiotlb_find_slots() before
+> an address from that pool is passed to is_swiotlb_buffer().
+> 
+> Correctness was verified using the following litmus test:
+> 
+> C swiotlb-new-pool
+> 
+> (*
+>  * Result: Never
+>  *
+>  * Check that a newly allocated pool is always visible when the
+>  *  corresponding swiotlb buffer is visible.
+>  *)
+> 
+> {
+> 	mem_pools = default;
+> }
+> 
+> P0(int **mem_pools, int *pool)
+> {
+> 	/* add_mem_pool() */
+> 	WRITE_ONCE(*pool, 999);
+> 	rcu_assign_pointer(*mem_pools, pool);
+> }
+> 
+> P1(int **mem_pools, int *flag, int *buf)
+> {
+> 	/* swiotlb_find_slots() */
+> 	int *r0;
+> 	int r1;
+> 
+> 	rcu_read_lock();
+> 	r0 = READ_ONCE(*mem_pools);
+> 	r1 = READ_ONCE(*r0);
+> 	rcu_read_unlock();
+> 
+> 	if (r1) {
+> 		WRITE_ONCE(*flag, 1);
+> 		smp_mb();
+> 	}
+> 
+> 	/* device driver (presumed) */
+> 	WRITE_ONCE(*buf, r1);
+> }
+> 
+> P2(int **mem_pools, int *flag, int *buf)
+> {
+> 	/* device driver (presumed) */
+> 	int r0 = READ_ONCE(*buf);
+> 
+> 	/* is_swiotlb_buffer() */
+> 	int r1;
+> 	int *r2;
+> 	int r3;
+> 
+> 	smp_rmb();
+> 	r1 = READ_ONCE(*flag);
+> 	if (r1) {
+> 		/* swiotlb_find_pool() */
+> 		rcu_read_lock();
+> 		r2 = READ_ONCE(*mem_pools);
+> 		r3 = READ_ONCE(*r2);
+> 		rcu_read_unlock();
+> 	}
+> }
+> 
+> exists (2:r0<>0 /\ 2:r3=0) (* Not found. *)
+> 
+> Fixes: 1395706a1490 ("swiotlb: search the software IO TLB only if the device makes use of it")
+> Reported-by: Jonathan Corbet <corbet@lwn.net>
+> Closes: https://lore.kernel.org/linux-iommu/87a5uz3ob8.fsf@meer.lwn.net/
+> Signed-off-by: Petr Tesarik <petr@tesarici.cz>
 
-Um, what? This isn't the domain_alloc_paging series itself, Robin you 
-fool. Clearly it's time to close the computer and try again tomorrow...
+I added this for v2, here it is again:
 
-Cheers,
-Robin.
-
-> It won't be 
-> super-useful in practice since the blocking domain is normally only used 
-> to transition to an unmanaged domain which in the force_bypass situation 
-> can't be used anyway, but it's still nice on principle not to have 
-> unnecessary reasons for attach to fail.
-> 
-> Thanks,
-> Robin.
-> 
->>
->>> +
->>> +    for_each_stream_map(i, cfg, stream_map)
->>> +        apple_dart_hw_disable_dma(stream_map);
->>> +    return 0;
->>> +}
->>> +
->>> +static const struct iommu_domain_ops apple_dart_blocked_ops = {
->>> +    .attach_dev = apple_dart_attach_dev_blocked,
->>> +};
->>> +
->>> +static struct iommu_domain apple_dart_blocked_domain = {
->>> +    .type = IOMMU_DOMAIN_BLOCKED,
->>> +    .ops = &apple_dart_blocked_ops,
->>> +};
->>> +
->>>   static struct iommu_device *apple_dart_probe_device(struct device 
->>> *dev)
->>>   {
->>>       struct apple_dart_master_cfg *cfg = dev_iommu_priv_get(dev);
->>> @@ -739,8 +759,7 @@ static struct iommu_domain 
->>> *apple_dart_domain_alloc(unsigned int type)
->>>   {
->>>       struct apple_dart_domain *dart_domain;
->>> -    if (type != IOMMU_DOMAIN_DMA && type != IOMMU_DOMAIN_UNMANAGED &&
->>> -        type != IOMMU_DOMAIN_BLOCKED)
->>> +    if (type != IOMMU_DOMAIN_DMA && type != IOMMU_DOMAIN_UNMANAGED)
->>>           return NULL;
->>>       dart_domain = kzalloc(sizeof(*dart_domain), GFP_KERNEL);
->>> @@ -749,10 +768,6 @@ static struct iommu_domain 
->>> *apple_dart_domain_alloc(unsigned int type)
->>>       mutex_init(&dart_domain->init_lock);
->>> -    /* no need to allocate pgtbl_ops or do any other finalization 
->>> steps */
->>> -    if (type == IOMMU_DOMAIN_BLOCKED)
->>> -        dart_domain->finalized = true;
->>> -
->>>       return &dart_domain->domain;
->>>   }
->>> @@ -966,6 +981,7 @@ static void apple_dart_get_resv_regions(struct 
->>> device *dev,
->>>   static const struct iommu_ops apple_dart_iommu_ops = {
->>>       .identity_domain = &apple_dart_identity_domain,
->>> +    .blocked_domain = &apple_dart_blocked_domain,
->>>       .domain_alloc = apple_dart_domain_alloc,
->>>       .probe_device = apple_dart_probe_device,
->>>       .release_device = apple_dart_release_device,
->>> -- 
->>> 2.42.0
->>
->> Reviewed-by: Janne Grunau <j@jannau.net>
->>
->> best regards
->> Janne
->>
->> ps: I sent the reply to [Patch 4/8] accidentally with an incorrect from
->> address but the correct Reviewed-by:. I can resend if necessary.
-> 
+Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
