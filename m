@@ -1,165 +1,248 @@
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.24])
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2043.outbound.protection.outlook.com [40.107.244.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD4FD1C37
-	for <iommu@lists.linux.dev>; Tue, 26 Sep 2023 05:29:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1695706193; x=1727242193;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=ZSTT0t17kWd/Bru70shOeQ+326sxidP0/R/xW0llV14=;
-  b=m9PWAx8GcNCJW4NYFQuN29arT+RtGDdTgqPhybtw2K/BEDawT+gXdZBO
-   R+dq+U0BprcDseqH2EH7SyfM4peakkSFV6+au/VY4dUmLoZZOVcR1kpSg
-   glDi2R5/PuJQQ3Jok2RTN/2rCRK9xjq2KSGDW//tpxTje14a09nWxiTLp
-   FXDvNLeeUAhQ+XKHQG/fjxlbebjLW0MTb5fO96sB2Q0U9Fz0ZPVGD91GO
-   SzlU5p9PKDjhy6ds6Mc/nlnVkpUOPVwqE+SV0CaxIY9EdXXOAaZu11Ntv
-   NMuM9OdDYvXrgvyX9L3lu4ruTGqYn3168tSmUmgvrRO4dcCqTKF4KhimO
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10843"; a="384266935"
-X-IronPort-AV: E=Sophos;i="6.03,177,1694761200"; 
-   d="scan'208";a="384266935"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Sep 2023 22:29:52 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10843"; a="864279583"
-X-IronPort-AV: E=Sophos;i="6.03,177,1694761200"; 
-   d="scan'208";a="864279583"
-Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
-  by fmsmga002.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 25 Sep 2023 22:29:51 -0700
-Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
- ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.32; Mon, 25 Sep 2023 22:29:50 -0700
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.32; Mon, 25 Sep 2023 22:29:50 -0700
-Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
- orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.32 via Frontend Transport; Mon, 25 Sep 2023 22:29:50 -0700
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.175)
- by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.32; Mon, 25 Sep 2023 22:29:49 -0700
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 893AF1877
+	for <iommu@lists.linux.dev>; Tue, 26 Sep 2023 05:32:20 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gJb1yoisbHKSt+owmFZ8qlROEIun3qQoqFwql5DleiOw6kqeW5y9nz2Sryzj74+uhAwij0vrxBR3CLur2R/FJkKAoQUTGX79jaUH1Iok+XxvzyOYhkpEi1rwWa9abJWmlCQCnmRSlwHnoIjJNkJ1u28eFr0ELMKHtnNeGOxnaN6Y31213R93SVyCEFgRBXnpp8ipDC3kuqUQBHhHZSHWeqAI3XOk+Y1JCRiQWm1T0ThBLpNjRVUmUYrHtq3WgX1fFHw+OCkqzS/Ku8V68Ht8m6aDb5C417fuf0ynd1DiVrSnQvYCBTVSoxecAANcQV5rSGkROHsWdpJXMjJ9R6B6Xg==
+ b=Ot5C92cdpydhRyIs1hYgg+kM+X/X10dfgsVfKMu3oXOZD+U8fCiRxTGJUOGtR5A019iDJHZJXr3UPTK3Iimd/YG6o0eAtC2w1Jm/1pw0+r0PG+I7orHHkGtIe3cCV/ZQTS169SjGusLpZqtq4riTrQWppxG5jQKUWXB0/1aZQDKGJK8xqMSDS5JO7hy0IuMJjYFvyOf5P2b/0U9ebX1OGFZDe8JWHU4XZoAGtLRYPaqkmngVpi4+BAmSixhw5MxeiDcb7qapusG7+qaxd9TSv4QZjU37v7wLOlNFUl7unDLmMLwbe21R7ZGEaPffvwzNsWF+uutSVX5xQuXjR/LbHA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ZSTT0t17kWd/Bru70shOeQ+326sxidP0/R/xW0llV14=;
- b=BmHZtef61UHSP14k4qrWZGJjENLhQLAnpxZwlHuxvaL9eGktX/JW6QZVVxwhhDHBfxuqwWTcTYW8x3dd9SGsI94BCpMo0hZs3DS/7AwXheS1DNX9UQdlex/jzffSMjevsn6t6uORZeGru1dbiIaOiw00H78PXGIsBgpO45uM7k+3K1BBu0CScQ/twrXcAfUKgsYYhd4f0kTiQjLVxI7OLdFOy3rYFPwIgXrT1unplNUEJvsgc7WeU6ODFiu8oPxnlPhsnlwzxpKAfiG5TeF1PWniIwskGkzaWNxRAC7JLHq3Wnlq7IiY2j1PscXYu4b/GThS0ay+nJxxAcp/8NIvuw==
+ bh=0WLhqPGiPNhSEnXJ+mALRiw0/m+EjVtjSorc2Ylip2w=;
+ b=hZ/IUiz2eM3FfYMwHja9IN9xoHbgv1A6GJWwhwEDNXB37HZtV5J1BXn9puWTWMo24oWigLCtgsBpaAq50oANPiSUgPshbOqvAndplAzrEGf2Pwgor0hrKODU1C9MCtEIFqg7QhjvZIJ2lpI/ChxkDhWjk7qXSfjXoU0K5rzAI1h/+b3r8vi19WVagKoSbeGBjip+ebHE9QRQZItuEYPCpboUH9XLdPoVZu22dW52W7cAlmEcpCixnXgMfMfCy14MFQhkyxKt/P6VcUl8hvO6Jh2yhAna5N6Xp2w+wEdL+BUg7VmzmhrxAXgaqCeOB9XzyAmvWcV8FUZPE2UC/Z672Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by PH8PR11MB7966.namprd11.prod.outlook.com (2603:10b6:510:25d::8) with
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=0WLhqPGiPNhSEnXJ+mALRiw0/m+EjVtjSorc2Ylip2w=;
+ b=AsQqG4Ahty6OS4zzsaMA3fKMBhhb3QaoDpxa0TaHDp6ailfpK8HcrWQLvZMmNzbPYef22sdFNO7pM8XzZ0bPA3jJq8ZnmfKNIHmOBO4g67XQkwAO5YYBaVJpewVxHCzVt2CBo5+N1wLUdyix+PMkaMoAYH2aX/mxBIgxypyuH2g=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from BN8PR12MB3587.namprd12.prod.outlook.com (2603:10b6:408:43::13)
+ by MN2PR12MB4344.namprd12.prod.outlook.com (2603:10b6:208:26e::11) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6813.28; Tue, 26 Sep
- 2023 05:29:47 +0000
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::1bfc:7af0:dc68:839d]) by BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::1bfc:7af0:dc68:839d%4]) with mapi id 15.20.6813.017; Tue, 26 Sep 2023
- 05:29:47 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: "Liu, Yi L" <yi.l.liu@intel.com>, "joro@8bytes.org" <joro@8bytes.org>,
-	"alex.williamson@redhat.com" <alex.williamson@redhat.com>, "jgg@nvidia.com"
-	<jgg@nvidia.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>
-CC: "cohuck@redhat.com" <cohuck@redhat.com>, "eric.auger@redhat.com"
-	<eric.auger@redhat.com>, "nicolinc@nvidia.com" <nicolinc@nvidia.com>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>, "mjrosato@linux.ibm.com"
-	<mjrosato@linux.ibm.com>, "chao.p.peng@linux.intel.com"
-	<chao.p.peng@linux.intel.com>, "yi.y.sun@linux.intel.com"
-	<yi.y.sun@linux.intel.com>, "peterx@redhat.com" <peterx@redhat.com>,
-	"jasowang@redhat.com" <jasowang@redhat.com>,
-	"shameerali.kolothum.thodi@huawei.com"
-	<shameerali.kolothum.thodi@huawei.com>, "lulu@redhat.com" <lulu@redhat.com>,
-	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>, "Duan,
- Zhenzhong" <zhenzhong.duan@intel.com>, "Martins, Joao"
-	<joao.m.martins@oracle.com>
-Subject: RE: [PATCH 3/6] iommufd/hw_pagetable: Accepts user flags for domain
- allocation
-Thread-Topic: [PATCH 3/6] iommufd/hw_pagetable: Accepts user flags for domain
- allocation
-Thread-Index: AQHZ6ttWtNesTJY3okmprzzmJVfOZbAsnx6w
-Date: Tue, 26 Sep 2023 05:29:47 +0000
-Message-ID: <BN9PR11MB52765FDF58AA3A4F07DE42E98CC3A@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <20230919092523.39286-1-yi.l.liu@intel.com>
- <20230919092523.39286-4-yi.l.liu@intel.com>
-In-Reply-To: <20230919092523.39286-4-yi.l.liu@intel.com>
-Accept-Language: en-US
+ 2023 05:32:17 +0000
+Received: from BN8PR12MB3587.namprd12.prod.outlook.com
+ ([fe80::a7fa:4411:67a3:131d]) by BN8PR12MB3587.namprd12.prod.outlook.com
+ ([fe80::a7fa:4411:67a3:131d%4]) with mapi id 15.20.6813.027; Tue, 26 Sep 2023
+ 05:32:17 +0000
+Message-ID: <c083c51d-f9d4-8e3d-8a90-2257949ad774@amd.com>
+Date: Tue, 26 Sep 2023 07:32:11 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.15.1
+Subject: =?UTF-8?B?UmU6IOetlOWkjTogZG1hX21hcF9yZXNvdXJjZSgpIGhhcyBhIGJhZCBw?=
+ =?UTF-8?Q?erformance_in_pcie_peer_to_peer_transactions_when_iommu_enabled_i?=
+ =?UTF-8?Q?n_Linux?=
 Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|PH8PR11MB7966:EE_
-x-ms-office365-filtering-correlation-id: 3493110b-3894-4ad9-70ce-08dbbe51991f
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: VLUejcpd+RlNHGO24CL30hz7H3wk4zp+3iNOwe0JfYjav1lGMCISIDU8DdLEdoHqrY4Z98ENZLnA6Bzt9JQcoK539Pi7KJVbuECQaIQ+OaY/d9Smm/s5ueodIUb39ZE0sxkXsnHVHEOlUIcP/mQhmmZzMj7ARL9nNlii44vbiOWMO+vROyQr1mIwD49ECMf0gz27fw2kKhvqXNxFUK2U0KaPwtrg4U+QLk7CXw6/Bjao3hQQDzgHW2QuOaYYT3Kmpscfb1orqlp5OcHldIyb5A5zn1P2N/+dmPSMsh/z9MAPlRjgdym4aekI+gmkttbRve76RlyROQOvganXQLGxP/eDmTPb7N2oNr0BhuCMbrmOEOW3nN65UC9F6Wgl8RpbxZYzx52EycT+BF1INC8ZwW2BzsxKmH/8+8kntVj4t0WIiDpVLCKx2x9sHgTRcXYSZEbjjdZRJC41cM6QiB714ZfxtsXMBhYyua25GdU7D0HNToq+GZWMEat2tRohxnhxd35MlWLKAYrGZ09+iuCI37NuVZaXJ47pLPi+kIpS49mPMvt4e66v59l/OH9scTQqOk1oSlAAnImaBFiMjTLb9wFgs5fNYCQaju0AdnPUE4tPEjiNJPCgADgUlWKVfSO9
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(396003)(39860400002)(376002)(346002)(136003)(366004)(230922051799003)(186009)(1800799009)(451199024)(558084003)(38070700005)(33656002)(38100700002)(82960400001)(86362001)(55016003)(66476007)(2906002)(52536014)(66556008)(316002)(41300700001)(5660300002)(478600001)(76116006)(54906003)(64756008)(66446008)(110136005)(66946007)(6506007)(7696005)(7416002)(71200400001)(122000001)(9686003)(4326008)(8936002)(8676002)(26005);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?8WA21p65RjXwNjY9fBn9A2heIR8br0Klgze4MrStd7b8dgMKPPEFbYDnOxK2?=
- =?us-ascii?Q?0y3pW66VY2VNEPwb7TwmaR/0o0MAIDgYMzJ+08QGSE6H8QvVfuX2MzH1bgp7?=
- =?us-ascii?Q?3HY8s+wF+Hy1FoMSBfu47cO049Wp0Am245iCHwoGqUrHjFWSlYpOwYEbw5Js?=
- =?us-ascii?Q?+fkhbtlaRcrYIgQ8t8h7f4qRl+lauR008K72Uj0jzw5ce68jKGUN3wQve06K?=
- =?us-ascii?Q?Gq+bldzFYSn4ies2+DkKN7YlBe4kboYUCoNSWi/C1cr+6mLD6zVUFp9M8SVg?=
- =?us-ascii?Q?ZLhR0TfHjdxIFYGzbfAQaSTIs57oWrVjT3kga2sHifxMLn231k4nGLWKCJAi?=
- =?us-ascii?Q?KzxUR6RAhdP7GnqxfQIYY0699JceACGxMT+EhhbWjUJxU7NVUWWvxDZ7xTBh?=
- =?us-ascii?Q?JP8faNRPKj6gvBUlILK7YUmhRC5ukQAIwlJeQ3PPnxWlvmnB3ncA3zDxs9Tz?=
- =?us-ascii?Q?Bw0N2mZ+iA74mbBleoSsmiWYAWFqu8yx/ywofw03ioVvq+Iyjjd+wskHW7/2?=
- =?us-ascii?Q?t8qAjFAALZ+8DnKBx4fXSOM3vdIhYDq4d+lutu8NlM1VAw2xkGyW/YjtSb61?=
- =?us-ascii?Q?qD6unjHmJo5+kgFTcL3nAL8Zd5rQQwn5TxWvkQJnJ7eRIVYcQfGcPNiTSs9w?=
- =?us-ascii?Q?zE8osHgBfB3kU7gurhHusvXnRHkEh92KKOVdHVJDc3LYWKbA+nsrwlx3ydvC?=
- =?us-ascii?Q?pclSfaYW9EmtG2wZi4SWw2stpbzNBj3d4vLaxvNMNrFzOxP3Qv+3vLF6+zRp?=
- =?us-ascii?Q?KWNrXT8x/QgbDSmD2RSC+ySB2R0BwcEaOzN8rYEp9cOK4WjcMbPftX/qCsAr?=
- =?us-ascii?Q?oy8oJ75qVsUU4oqlxpkOrkmC2iz/GeXLgWqGnwfCt1aArKNCH5BI4ndBFoOH?=
- =?us-ascii?Q?s1I+4d8ZXxr+u4wS/NQ1cHgW0cZ7a9AiXEp1KLOAfRCaW/WYYcpUTVebaHrR?=
- =?us-ascii?Q?xr0qNJXGc9JScPEt7faI9SSQLaGqbUzcxuzxedXNozJglE4vd5EgfE1hVbMs?=
- =?us-ascii?Q?wOz5io2QTibyIEHBUUfDnKVVvGfnBFP3wPDQjR6y2zBl9f/lu2NHHNCyQJ9p?=
- =?us-ascii?Q?XPodVlAx2jQrMYB1Nus7gXME/0wZ33Vzrb/WWH0Y1fT5OM8OQVvtWLNmBClz?=
- =?us-ascii?Q?+dhMfrV24zF2gBrKE2kv0QuXQo8Eq1xWNKmb8RzlHVHxktYgUJHL9fImHTuB?=
- =?us-ascii?Q?Zcbau0IPoWm0y3IH+S24jwZ3gZNS2R1yhH1ctwPqyQ3uUre2KzUjZL5SpRVf?=
- =?us-ascii?Q?m2oKeRZstVRVDm9iKzQuP7ULxlekRMo9w0DnHBwl5zsVQUsv8zuS2J8fouwa?=
- =?us-ascii?Q?zgFfziy522Wy5IfF22hp3MfGBk0yL0WzMqSzUti2PqqRzPBhMdMGuDyelU94?=
- =?us-ascii?Q?NRW9+biaMD/7zRefCm9L6/yM2NY2yINo9cV1ohD+F/42amNHrmKNlmKmXdCk?=
- =?us-ascii?Q?+OR09pMacSCM0D5MOgZduwq2EOalnVJtaUuY+o3Iv0T0gegHG3IGJ38p872i?=
- =?us-ascii?Q?Brhqbhu0drUwP7fiZj2KRlZvNoJg8KeaigDjW+udj9BzRq5pfNsEZydtldff?=
- =?us-ascii?Q?LoQPoTTJqRUA7T19qD1KuujW77q27VubaB4AzHf+?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+To: Kelly Devilliv <kelly.devilliv@outlook.com>,
+ Robin Murphy <robin.murphy@arm.com>, "joro@8bytes.org" <joro@8bytes.org>,
+ "will@kernel.org" <will@kernel.org>
+Cc: "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <TY2PR0101MB31361E2EE3391EBFAB78014B84FCA@TY2PR0101MB3136.apcprd01.prod.exchangelabs.com>
+ <39dff6ed-2fc1-0462-0317-9d1e4c1c718e@amd.com>
+ <TY2PR0101MB313667D70F284FC28BE4039B84C3A@TY2PR0101MB3136.apcprd01.prod.exchangelabs.com>
+From: =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>
+In-Reply-To: <TY2PR0101MB313667D70F284FC28BE4039B84C3A@TY2PR0101MB3136.apcprd01.prod.exchangelabs.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: FR0P281CA0119.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:a8::17) To BN8PR12MB3587.namprd12.prod.outlook.com
+ (2603:10b6:408:43::13)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BN8PR12MB3587:EE_|MN2PR12MB4344:EE_
+X-MS-Office365-Filtering-Correlation-Id: b9270351-6617-4af0-b570-08dbbe51f1ef
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	fNNGnZzkK/zIq/ZVA0bi3b+rOaFDFi50WOSbuKL++P3dMgmxYrgRfyLIHXwoLmy7wOQZIDSSSUqxibG6rxeJDYkFhYEU7ZGHS6kPffMtzZnDa7+A9WTFB/Zo06laVdz3MqIZzYEi8hCj/HLogVAFsrOs8sLSKLJMC0p07Q/gMfQiJokAXDp4g7Iv0wTi2peb6iTzMS5OVQPXdpml58DQBkVGEv6wW8xowCR5cThnXRRNqfJrAyx9q/aToBzSm14MBeUnBVFfncSDq6Yug5BmrCGj/WmepsGQwGsUqR6qGfDEnAnQz7cY8LNfl2yKwrgMZetGifRby6c6ZszqMIY8eWdVCY1Yl0MurrIXEaMRl4eN+1fVaaOXt6c4/Osv5iin2iVFB6ibUrEzq5cmjJTLBGR5MvWGNpc+b05Q5qP3TRSsSqFuKU2EFt1lxepnMF7zO91I7Asmk4dTcm5KgFamM7YFAXLiNbvQPcqhzsddXknMa55grsRqKJNRy7oYg/obGiF/qY3ffmr9xlBPuwTeCFxVnvRgDG24FSzkMGgmDTxakMiij9CRPKZ61tj3dXSQLtcfxaKu0r5oAdYwdYjPpPphd7KW6wuYb/4Mohvg6uxPzcAd/KCpOR6hdEotIyAHHkm99qcdOnfuHRomESOMoQ==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN8PR12MB3587.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(346002)(39860400002)(366004)(376002)(396003)(136003)(230922051799003)(1800799009)(186009)(451199024)(6512007)(224303003)(53546011)(6486002)(6666004)(6506007)(83380400001)(86362001)(31696002)(38100700002)(36756003)(2616005)(66574015)(26005)(2906002)(41300700001)(110136005)(31686004)(8936002)(4326008)(54906003)(66556008)(66946007)(316002)(66476007)(5660300002)(478600001)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?VEFDODhjMnlvZ3lJNHNCZkJGazUxMHlqMWlQV1JXRnJDazlNbjcxeXRwYWNY?=
+ =?utf-8?B?VmlHOGNNWVo4MnI2RHI1aG11RksrV1hqcTBlUG9GNmVZRFZ5dWJrQVB3MTVm?=
+ =?utf-8?B?bEx6dWoyNDRaem9PZWZZa2hkMS9FcHRHemRpN0hnU3RlRnU5SldmaXhkQUxl?=
+ =?utf-8?B?WDBWQUdlWFgrbkwyZ3EwQXdrUkZQdjZ3K1ZjL2xBS0xZbVNVYU9qMkFEdU5S?=
+ =?utf-8?B?L25qRHNWR3lPZ0FjbHpZUTMxa2tBUzI1QnhxZlRSU01wSklRWHR0NjZsQ1FR?=
+ =?utf-8?B?UlRQSzFQeE5Lell1cWZ6WEtzamR5VEQ3NmR0cWJ5MThBMnFDais2M1UwSEtF?=
+ =?utf-8?B?YUp2alpiUmtZMUhjQmZRWGVGQmVYWHhyOVlUSjZzQitSQThXUm9pTVBqYjVT?=
+ =?utf-8?B?anNYakcraE9vSEpLckd0S3h4bTF4VFgySWNEUU9ZRjh1QlluR0tFc0c1L29v?=
+ =?utf-8?B?clhBaFlDVDdGUnJuNFRqaTFUVkN4OFhsZHEvU3JYS1BQbHNtWk42aXZjVXhM?=
+ =?utf-8?B?ODdWbWcvSEJCa1R0QmFHOXpRazVrM2JIb24rc2IyVU9ZNDZveFJ2ejJ1eHQx?=
+ =?utf-8?B?dmFNZE9sTmJ0dDI4SThRZE5JVDgvS29GdUZKL1BxbWlsSk12cXpoZWFyY0Yv?=
+ =?utf-8?B?TDNGTnNIbDVVY2JLaTI0NU9CVDJTWUp3Y2VXQzV4SGg1UUxQcEpDOEJSR2hO?=
+ =?utf-8?B?RTh0Q3Vqcmlid0Z6d014YzI0WitIaU1GdDVuTml0VzVjZGF5ZDMzMDBJL0F2?=
+ =?utf-8?B?SmdpbzA4VkZ1QWpRMmlkSi9CeHFtU2hjMkZMajFTOENjd3MwdXk5VEFYVWp1?=
+ =?utf-8?B?SG03cHI5bERkeTlTUHJwZ0lYekF3ekdhR1Yyb3lSTGRGVW82cmJMbUVvK3hy?=
+ =?utf-8?B?RzNkMHp5T01UR3RPdElzb0ZUN1BNN1lwQzA1SlZiNmpvRGg0K2EyN2lJVDZE?=
+ =?utf-8?B?TkIwMUFRTnVVZ0ZLaWE0bEM2Zzk4VzNSMEs0Rkxic05uajRJaFhhcGxleUVT?=
+ =?utf-8?B?VTVqMUJZNGtVT3poQUJldzVpd3piaTNkRmk1ci9FS0J1anRvLzBHUVRSUCtF?=
+ =?utf-8?B?dytCcU4rRndqL0gva3RTZUhkYXphY2kzZlZkZHh6Z2VrMEJyZXFOUVZnejFl?=
+ =?utf-8?B?ZGtOUUNvMElwQ1J5dFIzS2RybkY0dDFzNVJ2UW90Zm9tdzhRdjlTWTNPTjE2?=
+ =?utf-8?B?Z1lYb1YxS0FXaU9Bb2VVdU1GcHJ4UzNhZUtJTEdvQ1krVm9zV0ZBVUtWYlV5?=
+ =?utf-8?B?KzF5NEVxMmg3TEVaSkJFbDh5RTlNeWMrb2pKYkxvWXlEV2hNc09JdzA4aWJ1?=
+ =?utf-8?B?cFBDa1FZOXlOQjh6aXJJbVRHWENvamh4SE52TEJSeWJ2bmU3S0xOY2dwbEpF?=
+ =?utf-8?B?RzRFZFlMYVZnMytheGxLR0pGejlIcFNYSVgwNzJlU3NGZTBsMTBCMmw1bFVa?=
+ =?utf-8?B?ZEczUys4cTdodjByOE5JOXFNTWZOWG9LQktIYmVyYytjZDhkcGx4MFc0ZlJr?=
+ =?utf-8?B?N0l3MEwyZUNXL1g4K0NVZzhiU3NtcEVLaDJ2bVVxOVpRZGJOV2JJblZ0RlNq?=
+ =?utf-8?B?WERSczNYbnB1OFBPbTlpQ2R5UEsvK3MrZmp1b2ZxOENEMzdWeVlnWkdoOGNh?=
+ =?utf-8?B?b2JjS0RVL1FsMzNQZng3SnFEbjJTTzA1bDk3OUtxcTljL1VucS9JenhxbEZi?=
+ =?utf-8?B?TDBIYkNUL3V2N3UzVjlmRERNVWNjNmhMSEdGYkt4WkRDVXpXU2tRQ0FhZjkv?=
+ =?utf-8?B?ZDhVdTltRm1wK3ZoQkszUFRSdWExKy9EelV2QlNGY1VjK0JvZnhjak9DaHBE?=
+ =?utf-8?B?OEN1bHdFeW5iY2JLckxIY2dQUWtrRXJSUk5BWmFWbmpoMStvSThQYlJ6aWFs?=
+ =?utf-8?B?SUFtbG5WWUZPRERJSGZyTmdIZzA4aUFpRUZ1cDRQMlZyNURJRjhNZEZxRDJa?=
+ =?utf-8?B?QW5Demkyc0RPR0JUeHFZazZZdlo5bTRVeWNneUJxWnlOUUluTUdpUzVrRDI4?=
+ =?utf-8?B?TnRUUExSUDhYL0hWV3BDdUQrdGs3Qjd2YWNidnBoT1czdFh4ZlUrWjdpQVh5?=
+ =?utf-8?B?YjZrYnJVWTk3SUJmVi9RL0VDa2EyVTFHREdjUWp4enllTjVuSi9ITnFHSUlR?=
+ =?utf-8?Q?PLhg=3D?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b9270351-6617-4af0-b570-08dbbe51f1ef
+X-MS-Exchange-CrossTenant-AuthSource: BN8PR12MB3587.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3493110b-3894-4ad9-70ce-08dbbe51991f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Sep 2023 05:29:47.3252
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Sep 2023 05:32:16.9126
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: HULk/A55dpxC+8SpcZvyqIoHKoYKG823gS20U+NyvjvnncfqncFcLdcSndN9nhKTH1+NWMADNYqGbadaLA892Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR11MB7966
-X-OriginatorOrg: intel.com
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 6KdVboMSRhxVmqk9+JVR29FcvQrDApPs4tPzmC4p0EX8tKqsOCeQMWjwdO99+/hr
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4344
 
-> From: Liu, Yi L <yi.l.liu@intel.com>
-> Sent: Tuesday, September 19, 2023 5:25 PM
->=20
-> This extends iommufd_hw_pagetable_alloc() to accepts user flags.
->=20
-> Signed-off-by: Yi Liu <yi.l.liu@intel.com>
+Am 26.09.23 um 06:33 schrieb Kelly Devilliv:
+> On 2023-09-26 01:58, Christian König wrote:
+>> Am 25.09.23 um 16:17 schrieb Kelly Devilliv:
+>>> On 2023-09-25 19:16, Robin Murphy wrote:
+>>>> On 2023-09-25 04:59, Kelly Devilliv wrote:
+>>>>> Dear all,
+>>>>>
+>>>>> I am working on an ARM-V8 server with two gpu cards on it. Recently,
+>>>>> I need
+>>>>> to test pcie peer to peer communication between the two gpu cards,
+>>>>> but the throughput is only 4GB/s.
+>>>>> After I explored the gpu's kernel mode driver, I found it was using
+>>>>> the dma_map_resource() API to map the peer device's MMIO space. The arm
+>>>>> iommu driver then will hardcode a 'IOMMU_MMIO' prot in the later dma map:
+>>>>>           static dma_addr_t iommu_dma_map_resource(struct device
+>>>>> *dev,
+>>>>> phys_addr_t phys,
+>>>>>                                    size_t size, enum
+>>>>> dma_data_direction
+>>>>> dir, unsigned long attrs)
+>>>>>            {
+>>>>>                    return __iommu_dma_map(dev, phys, size,
+>>>>>                                            dma_info_to_prot(dir,
+>>>>> false,
+>>>>> attrs) | IOMMU_MMIO,
+>>>>>                                            dma_get_mask(dev));
+>>>>>            }
+>>>>>
+>>>>> And that will finally set the 'ARM_LPAE_PTE_MEMATTR_DEV' attribute
+>>>>> in PTE,
+>>>>> which may have a negative impact on the performance of the pcie peer
+>>>>> to peer transactions.
+>>>>>            /*
+>>>>>             * Note that this logic is structured to accommodate Mali LPAE
+>>>>>             * having stage-1-like attributes but stage-2-like permissions.
+>>>>>             */
+>>>>>            if (data->iop.fmt == ARM_64_LPAE_S2 ||
+>>>>>                data->iop.fmt == ARM_32_LPAE_S2) {
+>>>>>                    if (prot & IOMMU_MMIO)
+>>>>>                            pte |= ARM_LPAE_PTE_MEMATTR_DEV;
+>>>>>                    else if (prot & IOMMU_CACHE)
+>>>>>                            pte |= ARM_LPAE_PTE_MEMATTR_OIWB;
+>>>>>                    else
+>>>>>                            pte |= ARM_LPAE_PTE_MEMATTR_NC;
+>>>>>            } else {
+>>>>>                    if (prot & IOMMU_MMIO)
+>>>>>                            pte |= (ARM_LPAE_MAIR_ATTR_IDX_DEV
+>>>>>                                    <<
+>> ARM_LPAE_PTE_ATTRINDX_SHIFT);
+>>>>>                    else if (prot & IOMMU_CACHE)
+>>>>>                            pte |= (ARM_LPAE_MAIR_ATTR_IDX_CACHE
+>>>>>                                    <<
+>> ARM_LPAE_PTE_ATTRINDX_SHIFT);
+>>>>>            }
+>>>>>
+>>>>> I tried to remove the 'IOMMU_MMIO' prot in the dma_map_resource()
+>>>>> API
+>>>>> and re-compile the linux kernel, the throughput then can be up to 28GB/s.
+>>>>> Is there an elegant way to solve this issue without modifying the linux kernel?
+>>>>> e.g., a substitution of dma_map_resource() API?
+>>>> Not really. Other use-cases for dma_map_resource() include DMA
+>>>> offload engines accessing FIFO registers, where allowing reordering,
+>>>> write-gathering, etc. would be a terrible idea. Thus it needs to
+>>>> assume a "safe" MMIO memory type, which on Arm means Device-nGnRE.
+>>>>
+>>>> However, the "proper" PCI peer-to-peer support under
+>>>> CONFIG_PCI_P2PDMA ended up moving away from the
+>> dma_map_resource()
+>>>> approach anyway, and allows this kind of device memory to be treated
+>>>> more like regular memory (via
+>>>> ZONE_DEVICE) rather than arbitrary MMIO resources, so your best bet
+>>>> would be to get the GPU driver converted over to using that.
+>>> Thanks Robin.
+>>> So your suggestion is we'd better work out a new implementation just
+>>> as what it does under CONFIG_PCI_P2PDMA instead of just using the
+>>> dma_map_resource() API?
+>>>
+>>> I have explored the GPU drivers from AMD, Nvidia and habanalabs, e.g.,
+>>> and found they all using the dma_map_resource() API to map the peer
+>>> device's bar address.
+>>> If so, is it possible to be a common performance issue in PCI peer-to-peer
+>>> scenario?
+>> That's not an issue, but expected behavior.
+>>
+>> When you enable IOMMU every transaction needs to go through the root
+>> complex for address translation and you completely lose the performance
+>> benefit of PCIe P2P.
+> Thanks Christian. That's true.
+>
+>> This is a hardware limitation and not really related to
+>> dma_map_resource() in any way.
+>>
+> But when I removed the 'IOMMU_MMIO' prot in dma_map_resource(), the performace was significantly improved (from 4GB/s to 28GB/s), which was almost the same as what it can be when IOMMU disabled. So I guess in my common pci topology, what really matters may not be whether IOMMU is enabled or not, but in fact the attributes in dma mapping or ARM PTE does.
 
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+The key point is that nobody really supports that configuration, so you 
+probably will find nobody looking into it.
+
+BTW: ARM isn't really supported as a platform for amdgpu either. E.g. we 
+have seen tons of boards which implement the PCIe standard incorrectly, 
+if you run into any trouble with that you are pretty much on your own.
+
+> I don't know if there is a way to make the memory attributes more configurable in order to be distinguished from the "safe" MMIO memory type, which on Arm means Device-nGnRE as Robin said.
+
+Well we would need to extend dma_map_resource() to include some use case 
+so that the mapping attributes don't need to be guessed.
+
+Regards,
+Christian.
+
+>
+> Sincerely,
+> Kelly
+>
+>> Regards,
+>> Christian.
+>>
+>>>> Thanks,
+>>>> Robin.
+>>>>
+>>>>> Thank you!
+>>>>>
+>>>>> Platform info:
+>>>>> Linux kernel version: 5.10
+>>>>> PCIE GEN4 x16
+>>>>>
+>>>>> Sincerely,
+>>>>> Kelly
+>>>>>
+
