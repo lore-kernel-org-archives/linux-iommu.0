@@ -1,40 +1,40 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.136])
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.88])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 876B1134A4
-	for <iommu@lists.linux.dev>; Tue, 26 Sep 2023 09:27:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 43D9E134BC
+	for <iommu@lists.linux.dev>; Tue, 26 Sep 2023 09:35:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1695720423; x=1727256423;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=W+uOy9Ige3oZ7x7YvATxosVpM3ybZgqwu1X08uq0/aA=;
-  b=NDA/NdD3Vq3FbsCuEyazLzy++mJXCJlaSYy21x9nuWXSLBxzl8h5sDPM
-   HPsvliRH3FVdLUglPlLnQQpt3ZT41pQbN7yEusC/CkdQndgr5cPlVVdUo
-   TQC1bIsocJf+LkY0Xdaknjfsf0Em1BNPFCdG2/Z9Dz+bmjCpRnUq9iBnS
-   ypidLi5MxqrbzwerniN2dgtaU/lK6JgfzgwKpVva3C8gRgCPKsW1oHeoA
-   2JS+R9x/A6bQzWFN6RUzrEYbD7zZQlapFhnUUkeFCA/MCtXI3S8ODX/wS
-   bybFOYWBHMSMEIJgxP3EdSE1+CZt80iaSID1o3zGs9xLYPgrzTVVOcoe7
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10843"; a="360905442"
+  t=1695720911; x=1727256911;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=TNdNMjdyY903iNYTtJMXeD069ihbZWkt8cAbuDlkz7w=;
+  b=l600VaGs0bYG7uRwCOeS+5SZXxSIvH5dSnsQsnVeQIAryMmxgh+TI+vG
+   42ojxsrPAP2tc0KD30Rt6IPmdC13bzEMPJEu/9dK/u7u65dDTtN7Xu829
+   a5TbQV6PdnVub3hkgwQC6rJNFi82SBon8pyMNH4c7EvJZ6fPm1AX0etN1
+   4GqcE75qyFy0n6WSrAB1/a2PJsblQKQAyQA10rO7pEbKvn7L0ZNvSyDCr
+   ITH4kUJH1ajfnK8pFRD9xTyve8WXNP8gFJHCGTWamR2qeSvuH/LPLLnk+
+   zKbM5svZH/ae3RlxvSLIWZ93IC7OJN/Ul8ZNeH9lQhz5ntF3S88fzSdB7
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10843"; a="412442878"
 X-IronPort-AV: E=Sophos;i="6.03,177,1694761200"; 
-   d="scan'208";a="360905442"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Sep 2023 02:27:02 -0700
+   d="scan'208";a="412442878"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Sep 2023 02:31:27 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10843"; a="1079642580"
+X-IronPort-AV: E=McAfee;i="6600,9927,10843"; a="725372986"
 X-IronPort-AV: E=Sophos;i="6.03,177,1694761200"; 
-   d="scan'208";a="1079642580"
+   d="scan'208";a="725372986"
 Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
-  by fmsmga005.fm.intel.com with ESMTP; 26 Sep 2023 02:27:02 -0700
+  by orsmga006.jf.intel.com with ESMTP; 26 Sep 2023 02:31:22 -0700
 From: Yi Liu <yi.l.liu@intel.com>
-To: joro@8bytes.org,
-	alex.williamson@redhat.com,
+To: alex.williamson@redhat.com,
 	jgg@nvidia.com,
 	kevin.tian@intel.com,
 	robin.murphy@arm.com,
 	baolu.lu@linux.intel.com
-Cc: cohuck@redhat.com,
+Cc: joro@8bytes.org,
+	cohuck@redhat.com,
 	eric.auger@redhat.com,
 	nicolinc@nvidia.com,
 	kvm@vger.kernel.org,
@@ -52,12 +52,10 @@ Cc: cohuck@redhat.com,
 	linux-kselftest@vger.kernel.org,
 	zhenzhong.duan@intel.com,
 	joao.m.martins@oracle.com
-Subject: [RFC 8/8] iommu/vt-d: Add set_dev_pasid callback for nested domain
-Date: Tue, 26 Sep 2023 02:26:51 -0700
-Message-Id: <20230926092651.17041-9-yi.l.liu@intel.com>
+Subject: [RFC 0/3] vfio-pci support pasid attach/detach
+Date: Tue, 26 Sep 2023 02:31:18 -0700
+Message-Id: <20230926093121.18676-1-yi.l.liu@intel.com>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230926092651.17041-1-yi.l.liu@intel.com>
-References: <20230926092651.17041-1-yi.l.liu@intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -66,82 +64,42 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-From: Lu Baolu <baolu.lu@linux.intel.com>
+This adds the pasid attach/detach uAPIs for userspace to attach/detach
+a PASID of a device to/from a given ioas/hwpt. Only vfio-pci driver is
+enabled in this series. After this series, PASID-capable devices bound
+with vfio-pci can report PASID capability to userspace and VM to enable
+PASID usages like Shared Virtual Addressing (SVA).
 
-This allows the upper layers to set a nested type domain to a PASID of a
-device if the PASID feature is supported by the IOMMU hardware.
+This series first adds the helpers for pasid attach in vfio core and then
+add the device cdev ioctls for pasid attach/detach, finally exposes the
+device PASID capability to user. It depends on iommufd pasid attach/detach
+series [1].
 
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Signed-off-by: Yi Liu <yi.l.liu@intel.com>
----
- drivers/iommu/intel/nested.c | 47 ++++++++++++++++++++++++++++++++++++
- 1 file changed, 47 insertions(+)
+Complete code can be found at [2]
 
-diff --git a/drivers/iommu/intel/nested.c b/drivers/iommu/intel/nested.c
-index 4853fee216d9..dc99ea1abf68 100644
---- a/drivers/iommu/intel/nested.c
-+++ b/drivers/iommu/intel/nested.c
-@@ -63,6 +63,52 @@ static int intel_nested_attach_dev(struct iommu_domain *domain,
- 	return 0;
- }
- 
-+static int intel_nested_set_dev_pasid(struct iommu_domain *domain,
-+				      struct device *dev, ioasid_t pasid)
-+{
-+	struct device_domain_info *info = dev_iommu_priv_get(dev);
-+	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
-+	struct intel_iommu *iommu = info->iommu;
-+	struct dev_pasid_info *dev_pasid;
-+	unsigned long flags;
-+	int ret = 0;
-+
-+	if (!pasid_supported(iommu))
-+		return -EOPNOTSUPP;
-+
-+	if (iommu->agaw < dmar_domain->s2_domain->agaw)
-+		return -EINVAL;
-+
-+	ret = prepare_domain_attach_device(&dmar_domain->s2_domain->domain, dev);
-+	if (ret)
-+		return ret;
-+
-+	dev_pasid = kzalloc(sizeof(*dev_pasid), GFP_KERNEL);
-+	if (!dev_pasid)
-+		return -ENOMEM;
-+
-+	ret = domain_attach_iommu(dmar_domain, iommu);
-+	if (ret)
-+		goto err_free;
-+
-+	ret = intel_pasid_setup_nested(iommu, dev, pasid, dmar_domain);
-+	if (ret)
-+		goto err_detach_iommu;
-+
-+	dev_pasid->dev = dev;
-+	dev_pasid->pasid = pasid;
-+	spin_lock_irqsave(&dmar_domain->lock, flags);
-+	list_add(&dev_pasid->link_domain, &dmar_domain->dev_pasids);
-+	spin_unlock_irqrestore(&dmar_domain->lock, flags);
-+
-+	return 0;
-+err_detach_iommu:
-+	domain_detach_iommu(dmar_domain, iommu);
-+err_free:
-+	kfree(dev_pasid);
-+	return ret;
-+}
-+
- static void intel_nested_domain_free(struct iommu_domain *domain)
- {
- 	kfree(to_dmar_domain(domain));
-@@ -127,6 +173,7 @@ static int intel_nested_cache_invalidate_user(struct iommu_domain *domain,
- 
- static const struct iommu_domain_ops intel_nested_domain_ops = {
- 	.attach_dev		= intel_nested_attach_dev,
-+	.set_dev_pasid		= intel_nested_set_dev_pasid,
- 	.free			= intel_nested_domain_free,
- 	.cache_invalidate_user	= intel_nested_cache_invalidate_user,
- };
+[1] https://lore.kernel.org/linux-iommu/20230926092651.17041-1-yi.l.liu@intel.com/
+[2] https://github.com/yiliu1765/iommufd/tree/iommufd_pasid
+
+Regards,
+	Yi Liu
+
+Kevin Tian (1):
+  vfio-iommufd: Support pasid [at|de]tach for physical VFIO devices
+
+Yi Liu (2):
+  vfio: Add VFIO_DEVICE_PASID_[AT|DE]TACH_IOMMUFD_PT
+  vfio/pci: Expose PCIe PASID capability to userspace
+
+ drivers/vfio/device_cdev.c         | 45 ++++++++++++++++++++++++
+ drivers/vfio/iommufd.c             | 48 ++++++++++++++++++++++++++
+ drivers/vfio/pci/vfio_pci.c        |  2 ++
+ drivers/vfio/pci/vfio_pci_config.c |  2 +-
+ drivers/vfio/vfio.h                |  4 +++
+ drivers/vfio/vfio_main.c           |  8 +++++
+ include/linux/vfio.h               | 11 ++++++
+ include/uapi/linux/vfio.h          | 55 ++++++++++++++++++++++++++++++
+ 8 files changed, 174 insertions(+), 1 deletion(-)
+
 -- 
 2.34.1
 
