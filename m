@@ -1,101 +1,103 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.88])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f42.google.com (mail-ed1-f42.google.com [209.85.208.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2DFE0134C6
-	for <iommu@lists.linux.dev>; Tue, 26 Sep 2023 09:35:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1695720914; x=1727256914;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=bZj72hwk6aGVHqUfVsQNiXvoc1GB8ZJ+RY64a2dEVnk=;
-  b=mB9OJd9ZFfpX5ScPzvFKggrm6dPkiT3M3nx+5GvDwv5ch6HJlFIJP/kq
-   YINNoXknVRH8Q0HxP14vWjN6qxhpco0vQHruBm/zMbRI1KoH2Ogc19tbK
-   FZGG2kYtWbSsfsJ8Y5GnBAyN87oAdek3OjAaYs9hQgZYm+3B3em89yhLh
-   zdfMmn+YWIhcpiD4TMISNGf202Qx46idU9xoaM+fXIfbtG9r+aaPpIPW8
-   58ec9l8tEWgCGcIMuXOqaQSyTdd1+fSVtwHPDQJp/HTz+5VfN8Kgx35/l
-   1GRLs+3M5FNITUqGKmxQxQPV+nKGpkU021wz6iNk/Q+qXEUQ3NYUf2WuG
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10843"; a="412442912"
-X-IronPort-AV: E=Sophos;i="6.03,177,1694761200"; 
-   d="scan'208";a="412442912"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Sep 2023 02:31:27 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10843"; a="725373049"
-X-IronPort-AV: E=Sophos;i="6.03,177,1694761200"; 
-   d="scan'208";a="725373049"
-Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
-  by orsmga006.jf.intel.com with ESMTP; 26 Sep 2023 02:31:26 -0700
-From: Yi Liu <yi.l.liu@intel.com>
-To: alex.williamson@redhat.com,
-	jgg@nvidia.com,
-	kevin.tian@intel.com,
-	robin.murphy@arm.com,
-	baolu.lu@linux.intel.com
-Cc: joro@8bytes.org,
-	cohuck@redhat.com,
-	eric.auger@redhat.com,
-	nicolinc@nvidia.com,
-	kvm@vger.kernel.org,
-	mjrosato@linux.ibm.com,
-	chao.p.peng@linux.intel.com,
-	yi.l.liu@intel.com,
-	yi.y.sun@linux.intel.com,
-	peterx@redhat.com,
-	jasowang@redhat.com,
-	shameerali.kolothum.thodi@huawei.com,
-	lulu@redhat.com,
-	suravee.suthikulpanit@amd.com,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	linux-kselftest@vger.kernel.org,
-	zhenzhong.duan@intel.com,
-	joao.m.martins@oracle.com
-Subject: [RFC 3/3] vfio/pci: Expose PCIe PASID capability to userspace
-Date: Tue, 26 Sep 2023 02:31:21 -0700
-Message-Id: <20230926093121.18676-4-yi.l.liu@intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230926093121.18676-1-yi.l.liu@intel.com>
-References: <20230926093121.18676-1-yi.l.liu@intel.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C9CB13AE4
+	for <iommu@lists.linux.dev>; Tue, 26 Sep 2023 09:54:38 +0000 (UTC)
+Received: by mail-ed1-f42.google.com with SMTP id 4fb4d7f45d1cf-53317e29b00so15454a12.0
+        for <iommu@lists.linux.dev>; Tue, 26 Sep 2023 02:54:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1695722076; x=1696326876; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=6RX+RxNThxWlZjWaBBvh6220YGe9sto71QyN0kHdm+4=;
+        b=JGeUKqnetfc6CbyTvGU+d40MLHfylOFILyqvUFi3fhJPtR8T17Y+4683gsg+ohDHNK
+         j4f3zEFwFoeLpfjAHKowndjBmtOrgWjZOmRwjUmF0Lus9PlMXAzO5+yv/xRFe43UpYW1
+         xjHEOCvGLbzcIjU90DzSQVr0SXQQEK0HEOp7qwQNyIM8Hw4rdqesngmqWynhMmYbdL0f
+         LuO0fXF495BKicKb/u4XhEKHeqYCDdzKoNZzc4SbFvQ5jSwqnfgsOi80ZV3+SZoWhcWx
+         hHUKIGTNdRrmH0bGZPtc7UER4GBWkvgqiNr8ELD7j1PlPjtvbIhlYgwnX2bFbK/LLmn3
+         UtPA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1695722076; x=1696326876;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=6RX+RxNThxWlZjWaBBvh6220YGe9sto71QyN0kHdm+4=;
+        b=QUSD9FXp7sNTX9q61quRHvmc+d0HZCFOG0537VKxYAEO7WYmjLJDEhgjv4TVzFC5Sp
+         Cu6JZuLA1DQa9icUP59YYYzW2c7zI6RB/VuJvEWEF2bV0jcpZicuoPTQaXapbGTNGq3B
+         Iz96ZIg3UlLgXOiK1TL3gbf2nry/aHc+7ATXvHaakAkOT8hY2vO6OQ1INz4eYF3fdEsF
+         zRgLomtmMgG+TXf93Q4UH/ZFJE/sNjCXtWhFmxi96dip6ZB6bnkrGP0weSe28nELhhxX
+         uiN+7mLisFRw+Ebdo/9oYy7xCQVNBbVnvRIE1hu92jvDR89vAvGu3+hzjwS2JhrLz//g
+         GlyA==
+X-Gm-Message-State: AOJu0YxGEixturwxAZXE8qt76tjhdR3o31r6WLe1ONz8Ef8FRUBnHTs1
+	bulmfbiE6Phi+BnwULp3BKMv/g==
+X-Google-Smtp-Source: AGHT+IH0oPXZ48Gz2F+rYGnYegliWL0EvgOHsb6Ik8iDn17MeOfSc7/8iYbXOPOHUtU7T66FPETntw==
+X-Received: by 2002:a50:9fef:0:b0:523:b133:57fe with SMTP id c102-20020a509fef000000b00523b13357femr77612edf.1.1695722076407;
+        Tue, 26 Sep 2023 02:54:36 -0700 (PDT)
+Received: from google.com (203.75.199.104.bc.googleusercontent.com. [104.199.75.203])
+        by smtp.gmail.com with ESMTPSA id q18-20020adfb192000000b0031f8a59dbeasm1842861wra.62.2023.09.26.02.54.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Sep 2023 02:54:35 -0700 (PDT)
+Date: Tue, 26 Sep 2023 09:54:31 +0000
+From: Mostafa Saleh <smostafa@google.com>
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Cc: maz@kernel.org, catalin.marinas@arm.com, will@kernel.org,
+	joro@8bytes.org, robin.murphy@arm.com, james.morse@arm.com,
+	suzuki.poulose@arm.com, oliver.upton@linux.dev,
+	yuzenghui@huawei.com, dbrazdil@google.com, ryan.roberts@arm.com,
+	linux-arm-kernel@lists.infradead.org, kvmarm@lists.linux.dev,
+	iommu@lists.linux.dev
+Subject: Re: [RFC PATCH 40/45] iommu/arm-smmu-v3-kvm: Add IOMMU ops
+Message-ID: <ZRKqV88hfmz+mfB3@google.com>
+References: <20230201125328.2186498-1-jean-philippe@linaro.org>
+ <20230201125328.2186498-41-jean-philippe@linaro.org>
+ <ZQsdfcCaeQSn2pzQ@google.com>
+ <20230925171853.GA2068481@myrica>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230925171853.GA2068481@myrica>
 
-This exposes PCIe PASID capability to userspace and where to emulate this
-capability if wants to further expose it to VM.
+Hi Jean,
 
-And this only exposes PASID capability for devices which has PCIe PASID
-extended struture in its configuration space. While for VFs, userspace
-is still unable to see this capability as SR-IOV spec forbides VF to
-implement PASID capability extended structure. It is a TODO in future.
-Related discussion can be found in below links:
+On Mon, Sep 25, 2023 at 06:18:53PM +0100, Jean-Philippe Brucker wrote:
+> On Wed, Sep 20, 2023 at 04:27:41PM +0000, Mostafa Saleh wrote:
+> > > +static void kvm_arm_smmu_domain_free(struct iommu_domain *domain)
+> > > +{
+> > > +	int ret;
+> > > +	struct kvm_arm_smmu_domain *kvm_smmu_domain = to_kvm_smmu_domain(domain);
+> > > +	struct arm_smmu_device *smmu = kvm_smmu_domain->smmu;
+> > > +
+> > > +	if (smmu) {
+> > > +		struct host_arm_smmu_device *host_smmu = smmu_to_host(smmu);
+> > > +
+> > > +		ret = kvm_call_hyp_nvhe(__pkvm_host_iommu_free_domain,
+> > > +					host_smmu->id, kvm_smmu_domain->id);
+> > > +		/*
+> > > +		 * On failure, leak the pgd because it probably hasn't been
+> > > +		 * reclaimed by the host.
+> > > +		 */
+> > > +		if (!WARN_ON(ret))
+> > > +			free_pages(kvm_smmu_domain->pgd, host_smmu->pgd_order);
+> > I believe this doube-free the pgd in case of attatch_dev fails, as it
+> > would try to free it their also (in kvm_arm_smmu_domain_finalize).
+> > 
+> > I think this is right place to free the pgd.
+> 
+> Since this depends on kvm_smmu_domain->smmu being non-NULL, which is only
+> true if finalize() succeeded, then we shouldn't get a double-free.
 
-https://lore.kernel.org/kvm/20200407095801.648b1371@w520.home/
-https://lore.kernel.org/kvm/BL1PR11MB5271A60035EF591A5BE8AC878C01A@BL1PR11MB5271.namprd11.prod.outlook.com/
+Yes, the other free was comming from an experiment I was making to use
+the IOMMU layer with guest VMs, so this is correct. Sorry about that.
 
-Signed-off-by: Yi Liu <yi.l.liu@intel.com>
----
- drivers/vfio/pci/vfio_pci_config.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> But finalize() does leak kvm_smmu_domain->id if the pgd allocation fails,
+> I fixed that.
 
-diff --git a/drivers/vfio/pci/vfio_pci_config.c b/drivers/vfio/pci/vfio_pci_config.c
-index 7e2e62ab0869..dfae5ad5ebc0 100644
---- a/drivers/vfio/pci/vfio_pci_config.c
-+++ b/drivers/vfio/pci/vfio_pci_config.c
-@@ -95,7 +95,7 @@ static const u16 pci_ext_cap_length[PCI_EXT_CAP_ID_MAX + 1] = {
- 	[PCI_EXT_CAP_ID_LTR]	=	PCI_EXT_CAP_LTR_SIZEOF,
- 	[PCI_EXT_CAP_ID_SECPCI]	=	0,	/* not yet */
- 	[PCI_EXT_CAP_ID_PMUX]	=	0,	/* not yet */
--	[PCI_EXT_CAP_ID_PASID]	=	0,	/* not yet */
-+	[PCI_EXT_CAP_ID_PASID]	=	PCI_EXT_CAP_PASID_SIZEOF,
- 	[PCI_EXT_CAP_ID_DVSEC]	=	0xFF,
- };
- 
--- 
-2.34.1
+Thanks!
 
+> Thanks,
+> Jean
