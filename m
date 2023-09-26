@@ -1,32 +1,32 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.88])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 43D9E134BC
-	for <iommu@lists.linux.dev>; Tue, 26 Sep 2023 09:35:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79650134C5
+	for <iommu@lists.linux.dev>; Tue, 26 Sep 2023 09:35:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1695720911; x=1727256911;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=TNdNMjdyY903iNYTtJMXeD069ihbZWkt8cAbuDlkz7w=;
-  b=l600VaGs0bYG7uRwCOeS+5SZXxSIvH5dSnsQsnVeQIAryMmxgh+TI+vG
-   42ojxsrPAP2tc0KD30Rt6IPmdC13bzEMPJEu/9dK/u7u65dDTtN7Xu829
-   a5TbQV6PdnVub3hkgwQC6rJNFi82SBon8pyMNH4c7EvJZ6fPm1AX0etN1
-   4GqcE75qyFy0n6WSrAB1/a2PJsblQKQAyQA10rO7pEbKvn7L0ZNvSyDCr
-   ITH4kUJH1ajfnK8pFRD9xTyve8WXNP8gFJHCGTWamR2qeSvuH/LPLLnk+
-   zKbM5svZH/ae3RlxvSLIWZ93IC7OJN/Ul8ZNeH9lQhz5ntF3S88fzSdB7
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10843"; a="412442878"
+  t=1695720913; x=1727256913;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=pDVskkLMVGFFDFeU0VLYi3kSiq/U4WCUpxivzmmSlTI=;
+  b=cHMzNiRhK8gxAB8840GzUa8TSLUf/Ek7IfYmZzivYu9y0U8/pbohv0AG
+   +xrqNPg9bVgw3bUcWiJR4LJFByrlIkRX0wChpcF1u9sBS3JyHEHKcW4Tu
+   4lSOTOnZyqZ+pbT6kgUzPAAxps/3nIrMOWdIaYdMAte4UmGZZxcqEv+0X
+   /Dz+nZkdUBbkcE9WEyOolrgtL/ttfxYlwn7BgoVKck4zin+l/W6S1hYtK
+   MX9WydWU+1UoJDzkjlvlu7UwqVah5EYFSrruvQfODDUVR/Xs9waZ6Pw/6
+   H2GnnTk8Sjg0tLaHPghoF6y8Q7qVxscUGPyboDcnNmuRlSyTLPfoL3jYK
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10843"; a="412442899"
 X-IronPort-AV: E=Sophos;i="6.03,177,1694761200"; 
-   d="scan'208";a="412442878"
+   d="scan'208";a="412442899"
 Received: from orsmga006.jf.intel.com ([10.7.209.51])
   by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Sep 2023 02:31:27 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10843"; a="725372986"
+X-IronPort-AV: E=McAfee;i="6600,9927,10843"; a="725373027"
 X-IronPort-AV: E=Sophos;i="6.03,177,1694761200"; 
-   d="scan'208";a="725372986"
+   d="scan'208";a="725373027"
 Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
-  by orsmga006.jf.intel.com with ESMTP; 26 Sep 2023 02:31:22 -0700
+  by orsmga006.jf.intel.com with ESMTP; 26 Sep 2023 02:31:24 -0700
 From: Yi Liu <yi.l.liu@intel.com>
 To: alex.williamson@redhat.com,
 	jgg@nvidia.com,
@@ -52,10 +52,12 @@ Cc: joro@8bytes.org,
 	linux-kselftest@vger.kernel.org,
 	zhenzhong.duan@intel.com,
 	joao.m.martins@oracle.com
-Subject: [RFC 0/3] vfio-pci support pasid attach/detach
-Date: Tue, 26 Sep 2023 02:31:18 -0700
-Message-Id: <20230926093121.18676-1-yi.l.liu@intel.com>
+Subject: [RFC 1/3] vfio-iommufd: Support pasid [at|de]tach for physical VFIO devices
+Date: Tue, 26 Sep 2023 02:31:19 -0700
+Message-Id: <20230926093121.18676-2-yi.l.liu@intel.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20230926093121.18676-1-yi.l.liu@intel.com>
+References: <20230926093121.18676-1-yi.l.liu@intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -64,42 +66,156 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-This adds the pasid attach/detach uAPIs for userspace to attach/detach
-a PASID of a device to/from a given ioas/hwpt. Only vfio-pci driver is
-enabled in this series. After this series, PASID-capable devices bound
-with vfio-pci can report PASID capability to userspace and VM to enable
-PASID usages like Shared Virtual Addressing (SVA).
+From: Kevin Tian <kevin.tian@intel.com>
 
-This series first adds the helpers for pasid attach in vfio core and then
-add the device cdev ioctls for pasid attach/detach, finally exposes the
-device PASID capability to user. It depends on iommufd pasid attach/detach
-series [1].
+This adds pasid_at|de]tach_ioas ops for attaching hwpt to pasid of a
+device and the helpers for it. For now, only vfio-pci supports pasid
+attach/detach.
 
-Complete code can be found at [2]
+Signed-off-by: Kevin Tian <kevin.tian@intel.com>
+Signed-off-by: Yi Liu <yi.l.liu@intel.com>
+---
+ drivers/vfio/iommufd.c      | 48 +++++++++++++++++++++++++++++++++++++
+ drivers/vfio/pci/vfio_pci.c |  2 ++
+ include/linux/vfio.h        | 11 +++++++++
+ 3 files changed, 61 insertions(+)
 
-[1] https://lore.kernel.org/linux-iommu/20230926092651.17041-1-yi.l.liu@intel.com/
-[2] https://github.com/yiliu1765/iommufd/tree/iommufd_pasid
-
-Regards,
-	Yi Liu
-
-Kevin Tian (1):
-  vfio-iommufd: Support pasid [at|de]tach for physical VFIO devices
-
-Yi Liu (2):
-  vfio: Add VFIO_DEVICE_PASID_[AT|DE]TACH_IOMMUFD_PT
-  vfio/pci: Expose PCIe PASID capability to userspace
-
- drivers/vfio/device_cdev.c         | 45 ++++++++++++++++++++++++
- drivers/vfio/iommufd.c             | 48 ++++++++++++++++++++++++++
- drivers/vfio/pci/vfio_pci.c        |  2 ++
- drivers/vfio/pci/vfio_pci_config.c |  2 +-
- drivers/vfio/vfio.h                |  4 +++
- drivers/vfio/vfio_main.c           |  8 +++++
- include/linux/vfio.h               | 11 ++++++
- include/uapi/linux/vfio.h          | 55 ++++++++++++++++++++++++++++++
- 8 files changed, 174 insertions(+), 1 deletion(-)
-
+diff --git a/drivers/vfio/iommufd.c b/drivers/vfio/iommufd.c
+index 82eba6966fa5..43a702b9b4d3 100644
+--- a/drivers/vfio/iommufd.c
++++ b/drivers/vfio/iommufd.c
+@@ -119,6 +119,7 @@ int vfio_iommufd_physical_bind(struct vfio_device *vdev,
+ 	if (IS_ERR(idev))
+ 		return PTR_ERR(idev);
+ 	vdev->iommufd_device = idev;
++	xa_init(&vdev->pasid_pts);
+ 	return 0;
+ }
+ EXPORT_SYMBOL_GPL(vfio_iommufd_physical_bind);
+@@ -127,6 +128,17 @@ void vfio_iommufd_physical_unbind(struct vfio_device *vdev)
+ {
+ 	lockdep_assert_held(&vdev->dev_set->lock);
+ 
++	if (!xa_empty(&vdev->pasid_pts)) {
++		void *entry;
++		unsigned long index;
++
++		xa_for_each(&vdev->pasid_pts, index, entry) {
++			xa_erase(&vdev->pasid_pts, index);
++			iommufd_device_pasid_detach(vdev->iommufd_device, index);
++		}
++		xa_destroy(&vdev->pasid_pts);
++	}
++
+ 	if (vdev->iommufd_attached) {
+ 		iommufd_device_detach(vdev->iommufd_device);
+ 		vdev->iommufd_attached = false;
+@@ -168,6 +180,42 @@ void vfio_iommufd_physical_detach_ioas(struct vfio_device *vdev)
+ }
+ EXPORT_SYMBOL_GPL(vfio_iommufd_physical_detach_ioas);
+ 
++int vfio_iommufd_physical_pasid_attach_ioas(struct vfio_device *vdev,
++					    u32 pasid, u32 *pt_id)
++{
++	void *entry;
++	int rc;
++
++	lockdep_assert_held(&vdev->dev_set->lock);
++
++	if (WARN_ON(!vdev->iommufd_device))
++		return -EINVAL;
++
++	entry = xa_load(&vdev->pasid_pts, pasid);
++	if (xa_is_value(entry))
++		rc = iommufd_device_pasid_replace(vdev->iommufd_device, pasid, pt_id);
++	else
++		rc = iommufd_device_pasid_attach(vdev->iommufd_device, pasid, pt_id);
++	if (rc)
++		return rc;
++	xa_store(&vdev->pasid_pts, pasid, xa_mk_value(*pt_id), GFP_KERNEL);
++	return 0;
++}
++EXPORT_SYMBOL_GPL(vfio_iommufd_physical_pasid_attach_ioas);
++
++void vfio_iommufd_physical_pasid_detach_ioas(struct vfio_device *vdev, u32 pasid)
++{
++	lockdep_assert_held(&vdev->dev_set->lock);
++
++	if (WARN_ON(!vdev->iommufd_device) ||
++	    !xa_is_value(xa_load(&vdev->pasid_pts, pasid)))
++		return;
++
++	iommufd_device_pasid_detach(vdev->iommufd_device, pasid);
++	xa_erase(&vdev->pasid_pts, pasid);
++}
++EXPORT_SYMBOL_GPL(vfio_iommufd_physical_pasid_detach_ioas);
++
+ /*
+  * The emulated standard ops mean that vfio_device is going to use the
+  * "mdev path" and will call vfio_pin_pages()/vfio_dma_rw(). Drivers using this
+diff --git a/drivers/vfio/pci/vfio_pci.c b/drivers/vfio/pci/vfio_pci.c
+index cb5b7f865d58..e0198851ffd2 100644
+--- a/drivers/vfio/pci/vfio_pci.c
++++ b/drivers/vfio/pci/vfio_pci.c
+@@ -142,6 +142,8 @@ static const struct vfio_device_ops vfio_pci_ops = {
+ 	.unbind_iommufd	= vfio_iommufd_physical_unbind,
+ 	.attach_ioas	= vfio_iommufd_physical_attach_ioas,
+ 	.detach_ioas	= vfio_iommufd_physical_detach_ioas,
++	.pasid_attach_ioas	= vfio_iommufd_physical_pasid_attach_ioas,
++	.pasid_detach_ioas	= vfio_iommufd_physical_pasid_detach_ioas,
+ };
+ 
+ static int vfio_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+diff --git a/include/linux/vfio.h b/include/linux/vfio.h
+index 454e9295970c..7b06d1bc7cb3 100644
+--- a/include/linux/vfio.h
++++ b/include/linux/vfio.h
+@@ -66,6 +66,7 @@ struct vfio_device {
+ 	void (*put_kvm)(struct kvm *kvm);
+ #if IS_ENABLED(CONFIG_IOMMUFD)
+ 	struct iommufd_device *iommufd_device;
++	struct xarray pasid_pts;
+ 	u8 iommufd_attached:1;
+ #endif
+ 	u8 cdev_opened:1;
+@@ -83,6 +84,8 @@ struct vfio_device {
+  *		 bound iommufd. Undo in unbind_iommufd if @detach_ioas is not
+  *		 called.
+  * @detach_ioas: Opposite of attach_ioas
++ * @pasid_attach_ioas: The pasid variation of attach_ioas
++ * @pasid_detach_ioas: Opposite of pasid_attach_ioas
+  * @open_device: Called when the first file descriptor is opened for this device
+  * @close_device: Opposite of open_device
+  * @read: Perform read(2) on device file descriptor
+@@ -107,6 +110,8 @@ struct vfio_device_ops {
+ 	void	(*unbind_iommufd)(struct vfio_device *vdev);
+ 	int	(*attach_ioas)(struct vfio_device *vdev, u32 *pt_id);
+ 	void	(*detach_ioas)(struct vfio_device *vdev);
++	int	(*pasid_attach_ioas)(struct vfio_device *vdev, u32 pasid, u32 *pt_id);
++	void	(*pasid_detach_ioas)(struct vfio_device *vdev, u32 pasid);
+ 	int	(*open_device)(struct vfio_device *vdev);
+ 	void	(*close_device)(struct vfio_device *vdev);
+ 	ssize_t	(*read)(struct vfio_device *vdev, char __user *buf,
+@@ -131,6 +136,8 @@ int vfio_iommufd_physical_bind(struct vfio_device *vdev,
+ void vfio_iommufd_physical_unbind(struct vfio_device *vdev);
+ int vfio_iommufd_physical_attach_ioas(struct vfio_device *vdev, u32 *pt_id);
+ void vfio_iommufd_physical_detach_ioas(struct vfio_device *vdev);
++int vfio_iommufd_physical_pasid_attach_ioas(struct vfio_device *vdev, u32 pasid, u32 *pt_id);
++void vfio_iommufd_physical_pasid_detach_ioas(struct vfio_device *vdev, u32 pasid);
+ int vfio_iommufd_emulated_bind(struct vfio_device *vdev,
+ 			       struct iommufd_ctx *ictx, u32 *out_device_id);
+ void vfio_iommufd_emulated_unbind(struct vfio_device *vdev);
+@@ -158,6 +165,10 @@ vfio_iommufd_get_dev_id(struct vfio_device *vdev, struct iommufd_ctx *ictx)
+ 	((int (*)(struct vfio_device *vdev, u32 *pt_id)) NULL)
+ #define vfio_iommufd_physical_detach_ioas \
+ 	((void (*)(struct vfio_device *vdev)) NULL)
++#define vfio_iommufd_physical_pasid_attach_ioas \
++	((int (*)(struct vfio_device *vdev, u32 pasid, u32 *pt_id)) NULL)
++#define vfio_iommufd_physical_pasid_detach_ioas \
++	((void (*)(struct vfio_device *vdev, u32 pasid)) NULL)
+ #define vfio_iommufd_emulated_bind                                      \
+ 	((int (*)(struct vfio_device *vdev, struct iommufd_ctx *ictx,   \
+ 		  u32 *out_device_id)) NULL)
 -- 
 2.34.1
 
