@@ -1,32 +1,32 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3DD6A12B9F
-	for <iommu@lists.linux.dev>; Tue, 26 Sep 2023 09:26:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1FD39134A4
+	for <iommu@lists.linux.dev>; Tue, 26 Sep 2023 09:26:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1695720417; x=1727256417;
+  t=1695720419; x=1727256419;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=QCsRGQDqeqnft3ND0MqwCNuelDppwZbyFgsmSGIdNm0=;
-  b=cc5ZjQ6DDtF1dDBwzOokMP6mUj08d0FojD/UCVx/BmyzAnI/EyePraQ5
-   B2QwR0FLTFGgmdud3UEB7BChVvSxT7HNISdUoQ5Q7djd2zwrDLwdHTVXD
-   4ppobryVX5A8NW+ZbAe3jLDFsUJ8R6HsxCcYS/swB2AQlIBjQSIQrfnXk
-   q1AocuMCXIyx2xcb3WR8DdfYDff3zLDRU3B0uVPrG/afZJDsac86AMRad
-   fqqg2VY8rsGTmLETkkuGlXpl3t+1hgLIeU1UNanCiAOMxiihR/uhXlteM
-   29eDj0h1aASTEAPXsDqMtxFrTrIxA476U68YDUNBrdjYVOsuQGtMNqdHa
+  bh=Hu5+DAlc/LxtKTBDHUP2n+rfmHyfTgHBNfP8o8wGcU8=;
+  b=OCtWr6NtIwf1ZP1J8fxgu+OBPnCYbcDlrfCz721VMsVSb8prONCANify
+   Pe9ysvR9UZpKLWiH/0OB7VeNsqwR7M0wjtuMQI8va+X85zjL4VXfJQRif
+   QBBIWEeI0po0Nt9fMkdbrDW6Yrl4ndhOBJobRNLsI+P/udAOdJyezLPUs
+   ZygsqI6p54m8/SbeDCWUtmaLSqk6uKeHizf2O3YDidMRFgJUB0wq0e9ji
+   7CBMeF+Eu7Mi0vawZykqVsJXHQpQScWNO/cbe7Si+tyP6PdeEp98SE1Zc
+   N6eGde9rkl0+YFvWvT5gv2RDmZraaGT7eJnJmXfpLFuJu3rL42WzDjB8h
    A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10843"; a="360905353"
+X-IronPort-AV: E=McAfee;i="6600,9927,10843"; a="360905379"
 X-IronPort-AV: E=Sophos;i="6.03,177,1694761200"; 
-   d="scan'208";a="360905353"
+   d="scan'208";a="360905379"
 Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Sep 2023 02:26:56 -0700
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Sep 2023 02:26:58 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10843"; a="1079642532"
+X-IronPort-AV: E=McAfee;i="6600,9927,10843"; a="1079642553"
 X-IronPort-AV: E=Sophos;i="6.03,177,1694761200"; 
-   d="scan'208";a="1079642532"
+   d="scan'208";a="1079642553"
 Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
-  by fmsmga005.fm.intel.com with ESMTP; 26 Sep 2023 02:26:55 -0700
+  by fmsmga005.fm.intel.com with ESMTP; 26 Sep 2023 02:26:57 -0700
 From: Yi Liu <yi.l.liu@intel.com>
 To: joro@8bytes.org,
 	alex.williamson@redhat.com,
@@ -52,9 +52,9 @@ Cc: cohuck@redhat.com,
 	linux-kselftest@vger.kernel.org,
 	zhenzhong.duan@intel.com,
 	joao.m.martins@oracle.com
-Subject: [RFC 2/8] iommufd: replace attach_fn with a structure
-Date: Tue, 26 Sep 2023 02:26:45 -0700
-Message-Id: <20230926092651.17041-3-yi.l.liu@intel.com>
+Subject: [RFC 4/8] iommufd/selftest: Add set_dev_pasid and remove_dev_pasid in mock iommu
+Date: Tue, 26 Sep 2023 02:26:47 -0700
+Message-Id: <20230926092651.17041-5-yi.l.liu@intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230926092651.17041-1-yi.l.liu@intel.com>
 References: <20230926092651.17041-1-yi.l.liu@intel.com>
@@ -66,147 +66,75 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Most of the core logic before conducting the actual device attach/
-replace operation can be shared with pasid attach/replace. Create
-a new structure so more information (e.g. pasid) can be later added
-along with the attach_fn.
+The two callbacks are needed to make pasid_attach/detach path complete for
+mock device. A nop is enough for set_dev_pasid, a domain type check in the
+remove_dev_pasid is also helpful.
 
-Signed-off-by: Kevin Tian <kevin.tian@intel.com>
 Signed-off-by: Yi Liu <yi.l.liu@intel.com>
 ---
- drivers/iommu/iommufd/device.c          | 35 ++++++++++++++++---------
- drivers/iommu/iommufd/iommufd_private.h |  8 ++++++
- 2 files changed, 30 insertions(+), 13 deletions(-)
+ drivers/iommu/iommufd/selftest.c | 28 ++++++++++++++++++++++++++++
+ 1 file changed, 28 insertions(+)
 
-diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
-index 645ab5d290fe..4fa4153c5df7 100644
---- a/drivers/iommu/iommufd/device.c
-+++ b/drivers/iommu/iommufd/device.c
-@@ -597,8 +597,11 @@ iommufd_device_do_replace(struct iommufd_device *idev,
- 	return ERR_PTR(rc);
+diff --git a/drivers/iommu/iommufd/selftest.c b/drivers/iommu/iommufd/selftest.c
+index 117776d236dc..200c88387cd1 100644
+--- a/drivers/iommu/iommufd/selftest.c
++++ b/drivers/iommu/iommufd/selftest.c
+@@ -431,6 +431,31 @@ static void mock_domain_unset_dev_user_data(struct device *dev)
+ 	mdev->dev_data = 0;
  }
  
--typedef struct iommufd_hw_pagetable *(*attach_fn)(
--	struct iommufd_device *idev, struct iommufd_hw_pagetable *hwpt);
-+static struct iommufd_hw_pagetable *do_attach(struct iommufd_device *idev,
-+		struct iommufd_hw_pagetable *hwpt, struct attach_data *data)
++static void mock_iommu_remove_dev_pasid(struct device *dev, ioasid_t pasid)
 +{
-+	return data->attach_fn(idev, hwpt);
++	struct iommu_domain *domain;
++
++	/* Domain type specific cleanup: */
++	domain = iommu_get_domain_for_dev_pasid(dev, pasid, 0);
++	if (domain) {
++		switch (domain->type) {
++		case IOMMU_DOMAIN_NESTED:
++		case IOMMU_DOMAIN_UNMANAGED:
++			break;
++		default:
++			/* should never reach here */
++			WARN_ON(1);
++			break;
++		}
++	}
 +}
- 
- /*
-  * When automatically managing the domains we search for a compatible domain in
-@@ -608,7 +611,7 @@ typedef struct iommufd_hw_pagetable *(*attach_fn)(
- static struct iommufd_hw_pagetable *
- iommufd_device_auto_get_domain(struct iommufd_device *idev,
- 			       struct iommufd_ioas *ioas, u32 *pt_id,
--			       attach_fn do_attach)
-+			       struct attach_data *data)
- {
- 	/*
- 	 * iommufd_hw_pagetable_attach() is called by
-@@ -617,7 +620,7 @@ iommufd_device_auto_get_domain(struct iommufd_device *idev,
- 	 * to use the immediate_attach path as it supports drivers that can't
- 	 * directly allocate a domain.
- 	 */
--	bool immediate_attach = do_attach == iommufd_device_do_attach;
-+	bool immediate_attach = data->attach_fn == iommufd_device_do_attach;
- 	struct iommufd_hw_pagetable *destroy_hwpt;
- 	struct iommufd_hw_pagetable *hwpt;
- 
-@@ -633,7 +636,7 @@ iommufd_device_auto_get_domain(struct iommufd_device *idev,
- 
- 		if (!iommufd_lock_obj(&hwpt->obj))
- 			continue;
--		destroy_hwpt = (*do_attach)(idev, hwpt);
-+		destroy_hwpt = do_attach(idev, hwpt, data);
- 		if (IS_ERR(destroy_hwpt)) {
- 			iommufd_put_object(&hwpt->obj);
- 			/*
-@@ -660,7 +663,7 @@ iommufd_device_auto_get_domain(struct iommufd_device *idev,
- 	}
- 
- 	if (!immediate_attach) {
--		destroy_hwpt = (*do_attach)(idev, hwpt);
-+		destroy_hwpt = do_attach(idev, hwpt, data);
- 		if (IS_ERR(destroy_hwpt))
- 			goto out_abort;
- 	} else {
-@@ -681,8 +684,8 @@ iommufd_device_auto_get_domain(struct iommufd_device *idev,
- 	return destroy_hwpt;
- }
- 
--static int iommufd_device_change_pt(struct iommufd_device *idev, u32 *pt_id,
--				    attach_fn do_attach)
-+int iommufd_device_change_pt(struct iommufd_device *idev, u32 *pt_id,
-+			     struct attach_data *data)
- {
- 	struct iommufd_hw_pagetable *destroy_hwpt;
- 	struct iommufd_object *pt_obj;
-@@ -696,7 +699,7 @@ static int iommufd_device_change_pt(struct iommufd_device *idev, u32 *pt_id,
- 		struct iommufd_hw_pagetable *hwpt =
- 			container_of(pt_obj, struct iommufd_hw_pagetable, obj);
- 
--		destroy_hwpt = (*do_attach)(idev, hwpt);
-+		destroy_hwpt = do_attach(idev, hwpt, data);
- 		if (IS_ERR(destroy_hwpt))
- 			goto out_put_pt_obj;
- 		break;
-@@ -706,7 +709,7 @@ static int iommufd_device_change_pt(struct iommufd_device *idev, u32 *pt_id,
- 			container_of(pt_obj, struct iommufd_ioas, obj);
- 
- 		destroy_hwpt = iommufd_device_auto_get_domain(idev, ioas, pt_id,
--							      do_attach);
-+							      data);
- 		if (IS_ERR(destroy_hwpt))
- 			goto out_put_pt_obj;
- 		break;
-@@ -742,8 +745,11 @@ static int iommufd_device_change_pt(struct iommufd_device *idev, u32 *pt_id,
- int iommufd_device_attach(struct iommufd_device *idev, u32 *pt_id)
- {
- 	int rc;
-+	struct attach_data data = {
-+		.attach_fn = &iommufd_device_do_attach,
-+	};
- 
--	rc = iommufd_device_change_pt(idev, pt_id, &iommufd_device_do_attach);
-+	rc = iommufd_device_change_pt(idev, pt_id, &data);
- 	if (rc)
- 		return rc;
- 
-@@ -773,8 +779,11 @@ EXPORT_SYMBOL_NS_GPL(iommufd_device_attach, IOMMUFD);
-  */
- int iommufd_device_replace(struct iommufd_device *idev, u32 *pt_id)
- {
--	return iommufd_device_change_pt(idev, pt_id,
--					&iommufd_device_do_replace);
-+	struct attach_data data = {
-+		.attach_fn = &iommufd_device_do_replace,
-+	};
 +
-+	return iommufd_device_change_pt(idev, pt_id, &data);
- }
- EXPORT_SYMBOL_NS_GPL(iommufd_device_replace, IOMMUFD);
- 
-diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
-index 1bd412cff2d6..f1fe4120c3b1 100644
---- a/drivers/iommu/iommufd/iommufd_private.h
-+++ b/drivers/iommu/iommufd/iommufd_private.h
-@@ -353,6 +353,14 @@ int iommufd_get_hw_info(struct iommufd_ucmd *ucmd);
- int iommufd_set_dev_data(struct iommufd_ucmd *ucmd);
- int iommufd_unset_dev_data(struct iommufd_ucmd *ucmd);
- 
-+struct attach_data {
-+	union {
-+		struct iommufd_hw_pagetable *(*attach_fn)(
-+				struct iommufd_device *idev,
-+				struct iommufd_hw_pagetable *hwpt);
-+	};
-+};
++static int mock_domain_set_dev_pasid_nop(struct iommu_domain *domain,
++					 struct device *dev, ioasid_t pasid)
++{
++	return 0;
++}
 +
- struct iommufd_access {
- 	struct iommufd_object obj;
- 	struct iommufd_ctx *ictx;
+ static const struct iommu_ops mock_ops = {
+ 	.owner = THIS_MODULE,
+ 	.pgsize_bitmap = MOCK_IO_PAGE_SIZE,
+@@ -443,6 +468,7 @@ static const struct iommu_ops mock_ops = {
+ 	.probe_device = mock_probe_device,
+ 	.set_dev_user_data = mock_domain_set_dev_user_data,
+ 	.unset_dev_user_data = mock_domain_unset_dev_user_data,
++	.remove_dev_pasid = mock_iommu_remove_dev_pasid,
+ 	.default_domain_ops =
+ 		&(struct iommu_domain_ops){
+ 			.free = mock_domain_free,
+@@ -450,6 +476,7 @@ static const struct iommu_ops mock_ops = {
+ 			.map_pages = mock_domain_map_pages,
+ 			.unmap_pages = mock_domain_unmap_pages,
+ 			.iova_to_phys = mock_domain_iova_to_phys,
++			.set_dev_pasid = mock_domain_set_dev_pasid_nop,
+ 		},
+ };
+ 
+@@ -500,6 +527,7 @@ static struct iommu_domain_ops domain_nested_ops = {
+ 	.free = mock_domain_free,
+ 	.attach_dev = mock_domain_nop_attach,
+ 	.cache_invalidate_user = mock_domain_cache_invalidate_user,
++	.set_dev_pasid = mock_domain_set_dev_pasid_nop,
+ };
+ 
+ static inline struct iommufd_hw_pagetable *
 -- 
 2.34.1
 
