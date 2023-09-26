@@ -1,81 +1,75 @@
-Received: from mgamail.intel.com (unknown [198.175.65.15])
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA5766FAB
-	for <iommu@lists.linux.dev>; Tue, 26 Sep 2023 08:25:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1695716733; x=1727252733;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=RzaK2ndr7+vnVbIQ7VkWAWjQc7Kpbl44AZ82PRlStIo=;
-  b=U8H+lHyNlIn0dyKblc0ZSImYPRNIq8hXRpIyNYN7Ayfe6ZcpLXSQEfL5
-   4bFPSv0qdz99pgx14mODBGQkBvNtZvF0X304Q+v+Vnykf1jBjTczXwMNt
-   vSXpTRj3iegQBfZe126JZsQ+UOW7ebypYIa6qo5FjSrv3xKNW7uU0Rb9W
-   5ppqEpuNrdvgiN44PPL8e1bEDlvOxcWc62YgWQa84yzQua1yzwHQxK7d+
-   F05Pwmui3f/LbjmEsYaH1CJk06EpPcBkT3tjSYoBZ6DxgGQLIug2UavL/
-   hwEq8ZFoa+yo2ulsWBUEOo6XWuHe9fppibh3mahGKokN5Tr2dxPAk4hLu
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10843"; a="160421"
-X-IronPort-AV: E=Sophos;i="6.03,177,1694761200"; 
-   d="scan'208";a="160421"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Sep 2023 01:25:32 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10843"; a="995744380"
-X-IronPort-AV: E=Sophos;i="6.03,177,1694761200"; 
-   d="scan'208";a="995744380"
-Received: from jiaqingh-mobl.ccr.corp.intel.com (HELO [10.93.22.70]) ([10.93.22.70])
-  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Sep 2023 01:25:28 -0700
-Message-ID: <56cc2e4e-81dd-f2d2-f690-6d82217b9e7d@intel.com>
-Date: Tue, 26 Sep 2023 16:25:26 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 20311125C7
+	for <iommu@lists.linux.dev>; Tue, 26 Sep 2023 08:58:41 +0000 (UTC)
+Received: from lhrpeml500006.china.huawei.com (unknown [172.18.147.201])
+	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4RvtrW4htvz6HJyh;
+	Tue, 26 Sep 2023 16:56:11 +0800 (CST)
+Received: from lhrpeml500005.china.huawei.com (7.191.163.240) by
+ lhrpeml500006.china.huawei.com (7.191.161.198) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.31; Tue, 26 Sep 2023 09:58:30 +0100
+Received: from lhrpeml500005.china.huawei.com ([7.191.163.240]) by
+ lhrpeml500005.china.huawei.com ([7.191.163.240]) with mapi id 15.01.2507.031;
+ Tue, 26 Sep 2023 09:58:30 +0100
+From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+To: Joao Martins <joao.m.martins@oracle.com>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>
+CC: Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>, "Lu
+ Baolu" <baolu.lu@linux.intel.com>, Yi Liu <yi.l.liu@intel.com>, Yi Y Sun
+	<yi.y.sun@intel.com>, Nicolin Chen <nicolinc@nvidia.com>, Joerg Roedel
+	<joro@8bytes.org>, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, "Alex
+ Williamson" <alex.williamson@redhat.com>, "kvm@vger.kernel.org"
+	<kvm@vger.kernel.org>
+Subject: RE: [PATCH v3 00/19] IOMMUFD Dirty Tracking
+Thread-Topic: [PATCH v3 00/19] IOMMUFD Dirty Tracking
+Thread-Index: AQHZ7b0Z7E1eWk1ZkEmpIRM/TUKnFbAs0xpw
+Date: Tue, 26 Sep 2023 08:58:30 +0000
+Message-ID: <d65b4e0872134c00b2504556f69bcb6e@huawei.com>
+References: <20230923012511.10379-1-joao.m.martins@oracle.com>
+In-Reply-To: <20230923012511.10379-1-joao.m.martins@oracle.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+x-originating-ip: [10.126.171.10]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.15.1
-Subject: Re: [PATCH] iommu/vt-d: Introduce a rb_tree for looking up device
-Content-Language: en-US
-To: Joerg Roedel <joro@8bytes.org>
-Cc: kvm@vger.kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- will@kernel.org, robin.murphy@arm.com, kevin.tian@intel.com,
- baolu.lu@linux.intel.com, jacob.jun.pan@linux.intel.com, yi.l.liu@intel.com,
- yi.y.sun@intel.com
-References: <20230821071659.123981-1-jiaqing.huang@intel.com>
- <ZRFA3uj1-QjlXpGx@8bytes.org>
-From: "Huang, Jiaqing" <jiaqing.huang@intel.com>
-In-Reply-To: <ZRFA3uj1-QjlXpGx@8bytes.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-CFilter-Loop: Reflected
 
-On 9/25/2023 4:12 PM, Joerg Roedel wrote:
 
-> On Mon, Aug 21, 2023 at 12:16:59AM -0700, Huang Jiaqing wrote:
->> The existing IO page fault handler locates the PCI device by calling
->> pci_get_domain_bus_and_slot(), which searches the list of all PCI
->> devices until the desired PCI device is found. This is inefficient
->> because the algorithm efficiency of searching a list is O(n). In the
->> critical path of handling an IO page fault, this can cause a significant
->> performance bottleneck.
-> Can you elaborate a little more on the 'significant performance
-> bottleneck' part? Where do you see this as a problem?
->
-> Regards,
->
-> 	Joerg
-While lots of dsa devices were enabled, parallel dsa_test with large 
-transfer size
-would be executed ineffciently and cause cpu stuck in 
-pci_get_domain_bus_and_slot
-by lock competition. The introduced patch could significantly improve 
-the speed and
-prevent the CPU from getting sutck. It maybe confusing for "significant 
-performance
-bottleneck" since it didn't benefit all the cases, would rephase it in 
-the new patch. Thanks!
 
-BRs,
-Jiaqing
+> -----Original Message-----
+> From: Joao Martins [mailto:joao.m.martins@oracle.com]
+> Sent: 23 September 2023 02:25
+> To: iommu@lists.linux.dev
+> Cc: Jason Gunthorpe <jgg@nvidia.com>; Kevin Tian <kevin.tian@intel.com>;
+> Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>; Lu
+> Baolu <baolu.lu@linux.intel.com>; Yi Liu <yi.l.liu@intel.com>; Yi Y Sun
+> <yi.y.sun@intel.com>; Nicolin Chen <nicolinc@nvidia.com>; Joerg Roedel
+> <joro@8bytes.org>; Suravee Suthikulpanit
+> <suravee.suthikulpanit@amd.com>; Will Deacon <will@kernel.org>; Robin
+> Murphy <robin.murphy@arm.com>; Alex Williamson
+> <alex.williamson@redhat.com>; kvm@vger.kernel.org; Joao Martins
+> <joao.m.martins@oracle.com>
+> Subject: [PATCH v3 00/19] IOMMUFD Dirty Tracking
+>=20
+[...]=20
+> For ARM-SMMU-v3 I've made adjustments from the RFCv2 but staged this
+> into a branch[6] with all the changes but didn't include here as I can't
+> test this besides compilation. Shameer, if you can pick up as chatted
+> sometime ago it would be great as you have the hardware. Note that
+> it depends on some patches from Nicolin for hw_info() and
+> domain_alloc_user() base support coming from his nesting work.
+
+Thanks Joao. Sure will do.=20
+
+Shameer
