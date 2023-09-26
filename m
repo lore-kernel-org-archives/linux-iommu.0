@@ -1,113 +1,182 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from wnew4-smtp.messagingengine.com (wnew4-smtp.messagingengine.com [64.147.123.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49F3C38DD6
-	for <iommu@lists.linux.dev>; Tue, 26 Sep 2023 18:17:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1BE77C433C9;
-	Tue, 26 Sep 2023 18:17:31 +0000 (UTC)
-Date: Tue, 26 Sep 2023 19:17:29 +0100
-From: Catalin Marinas <catalin.marinas@arm.com>
-To: Petr Tesarik <petr@tesarici.cz>
-Cc: Christoph Hellwig <hch@lst.de>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9391338BC8;
+	Tue, 26 Sep 2023 18:49:49 +0000 (UTC)
+Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
+	by mailnew.west.internal (Postfix) with ESMTP id CC8572B001CA;
+	Tue, 26 Sep 2023 14:49:46 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute1.internal (MEProxy); Tue, 26 Sep 2023 14:49:48 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=jannau.net; h=cc
+	:cc:content-type:content-type:date:date:from:from:in-reply-to
+	:in-reply-to:message-id:mime-version:references:reply-to:sender
+	:subject:subject:to:to; s=fm1; t=1695754186; x=1695757786; bh=0L
+	1PD+J2hFF8IKoDu/MxIMXd7klBa9ifKTbkZPpjaR0=; b=uKO9ejLNJ7Zmi8z7Dg
+	SOqdFdZRPTeaskHX/lo6oOGnDLyHKoDR5D+BQ1F1diF74CmSwwLI1OIyII36Ar37
+	ZbbJ+DR+0UBN3u8cJpDq1zpSt7FeYDg6Gq8Y3Epz1Xj1wga+hwx6aP0n7TrPQpdm
+	YYvSvjr62MqVtocgvhLNcuOimmgwhwQkFEjbvo5BSkzcbDc4JF0UkCuTFUNfChda
+	6/vcAREJ/ju+OQyiZ+U6fSz7DtEq0aASSO8gTJNaWN7Bw25a/iAkSodqHF1kt+0t
+	y7aAhLMKgkaotrw/5YBhB34K0NUcLcZbnuwyknXoE8DoNQGa0A4sD/r2gvAwOf3y
+	c+0Q==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-type:content-type:date:date
+	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
+	:message-id:mime-version:references:reply-to:sender:subject
+	:subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+	:x-sasl-enc; s=i449149f6.fm2; t=1695754186; x=1695757786; bh=0L1
+	PD+J2hFF8IKoDu/MxIMXd7klBa9ifKTbkZPpjaR0=; b=C7gC5alTUJ0K6c73X+E
+	96mUJAjtwBzBQMMjA0NUEEk4TGRQujJmO8SId3+VLUxTuoXzSlVsl9+A5zzcD7FF
+	ws2CMwJns2nrL0s4hvE95tCVw9YgaWg/QNFPLDwhRodQiGl0II8woXPsCLJILThJ
+	AlX1Dzdq47CQa8nlXsSHdB68f/rE0yuQDJHRW1HPHS7yRYi/WcI2VKBCkq/Jh69E
+	t+DA27tDqb+q3EybpyWc4rbpu5+AuukB3OVknAopMbDuK3f2I8heXk7nASPKLhIa
+	7H3GOs8ZG/vZeGI+JBDj2tioh07lvTRAjQMkgc5377KjLKNfBHF8dy6SUsa7dl8x
+	2OQ==
+X-ME-Sender: <xms:xycTZUzwfNLOLgbjNoD9mgIFhXCCzF32VGpVMyAoa8Om11gk-g4yrA>
+    <xme:xycTZYS0HJVwmlKXTUmW4-WacaP52EQxKlNIkBokdMSsACMBdQuwKMtGTRQ-DG1tz
+    qchmoIi6IJfvNHkeWc>
+X-ME-Received: <xmr:xycTZWXMdyBPL2N0ZWflVdJrk4GSuuZVyC_xnZ5OIxXOgDj4KXXUZdhyiuqd7b6dwAMt0r3rVRLO4RWi0rUdvjhgMpla480TtA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvjedrtddtgddutdduucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvfevuffkfhggtggujgesthdtredttddtjeenucfhrhhomheplfgrnhhn
+    vgcuifhruhhnrghuuceojhgrnhhnvgesjhgrnhhnrghurdhnvghtqeenucggtffrrghtth
+    gvrhhnpeegueegvddtgfehuedutdevieehgeefteejteetvdegueelhfdtieeujeeugeeh
+    udenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehjrg
+    hnnhgvsehjrghnnhgruhdrnhgvth
+X-ME-Proxy: <xmx:xycTZSgxpLyMQ5FoHEAsxvJRJgLLR6A4nxo0OoflqRmd3imSwIb71Q>
+    <xmx:xycTZWCiNhOXGeyHNENvh6BYx5O3d5e1q5uyhZ9mKpMX4RQHMPdnuA>
+    <xmx:xycTZTL_i7U69W6caDFFPlmhVNf0Vz76_NpixOMLXp-jYv4WGHY7Vw>
+    <xmx:yScTZcSrh-wY715vb6CW-PI06FXBHXnuqDKdaIakZ7sYr0p_2B7znZa7IHQ>
+Feedback-ID: i449149f6:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
+ 26 Sep 2023 14:49:43 -0400 (EDT)
+Date: Tue, 26 Sep 2023 20:49:41 +0200
+From: Janne Grunau <janne@jannau.net>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Alyssa Rosenzweig <alyssa@rosenzweig.io>, asahi@lists.linux.dev,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Christophe Leroy <christophe.leroy@csgroup.eu>,
+	David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux.dev,
+	Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
+	linux-arm-kernel@lists.infradead.org, linuxppc-dev@lists.ozlabs.org,
+	Hector Martin <marcan@marcan.st>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
 	Robin Murphy <robin.murphy@arm.com>,
-	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>,
-	open list <linux-kernel@vger.kernel.org>,
-	Roberto Sassu <roberto.sassu@huaweicloud.com>,
-	Jonathan Corbet <corbet@lwn.net>
-Subject: Re: [PATCH v2] swiotlb: fix the check whether a device has used
- software IO TLB
-Message-ID: <ZRMgObTMkfq8Bjbe@arm.com>
-References: <20230926162339.12940-1-petr@tesarici.cz>
+	Sven Peter <sven@svenpeter.dev>, Will Deacon <will@kernel.org>
+Subject: Re: [PATCH 5/8] iommu/dart: Use static global identity domains
+Message-ID: <ZRMnxQvYErphUs1M@robin>
+References: <0-v1-8060f06462cc+c0a39-dart_paging_jgg@nvidia.com>
+ <5-v1-8060f06462cc+c0a39-dart_paging_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20230926162339.12940-1-petr@tesarici.cz>
+In-Reply-To: <5-v1-8060f06462cc+c0a39-dart_paging_jgg@nvidia.com>
 
-On Tue, Sep 26, 2023 at 06:23:39PM +0200, Petr Tesarik wrote:
-> When CONFIG_SWIOTLB_DYNAMIC=y, devices which do not use the software IO TLB
-> can avoid swiotlb lookup. A flag is added by commit 1395706a1490 ("swiotlb:
-> search the software IO TLB only if the device makes use of it"), the flag
-> is correctly set, but it is then never checked. Add the actual check here.
-> 
-> Note that this code is an alternative to the default pool check, not an
-> additional check, because:
-> 
-> 1. swiotlb_find_pool() also searches the default pool;
-> 2. if dma_uses_io_tlb is false, the default swiotlb pool is not used.
-> 
-> Tested in a KVM guest against a QEMU RAM-backed SATA disk over virtio and
-> *not* using software IO TLB, this patch increases IOPS by approx 2% for
-> 4-way parallel I/O.
-> 
-> The write memory barrier in swiotlb_dyn_alloc() is not needed, because a
-> newly allocated pool must always be observed by swiotlb_find_slots() before
-> an address from that pool is passed to is_swiotlb_buffer().
-> 
-> Correctness was verified using the following litmus test:
-[...]
-> Fixes: 1395706a1490 ("swiotlb: search the software IO TLB only if the device makes use of it")
-> Reported-by: Jonathan Corbet <corbet@lwn.net>
-> Closes: https://lore.kernel.org/linux-iommu/87a5uz3ob8.fsf@meer.lwn.net/
-> Signed-off-by: Petr Tesarik <petr@tesarici.cz>
+Hej,
 
-Thanks for the update.
-
-Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
-
-> diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
-> index b4536626f8ff..93b400d9be91 100644
-> --- a/include/linux/swiotlb.h
-> +++ b/include/linux/swiotlb.h
-> @@ -172,14 +172,22 @@ static inline bool is_swiotlb_buffer(struct device *dev, phys_addr_t paddr)
->  	if (!mem)
->  		return false;
+On Fri, Sep 22, 2023 at 02:07:56PM -0300, Jason Gunthorpe wrote:
+> Move to the new static global for identity domains. Move the identity
+> specific code to apple_dart_attach_dev_identity().
+> 
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> ---
+>  drivers/iommu/apple-dart.c | 41 ++++++++++++++++++++++++++++----------
+>  1 file changed, 30 insertions(+), 11 deletions(-)
+> 
+> diff --git a/drivers/iommu/apple-dart.c b/drivers/iommu/apple-dart.c
+> index 6bc2ad2207c3da..424f779ccc34df 100644
+> --- a/drivers/iommu/apple-dart.c
+> +++ b/drivers/iommu/apple-dart.c
+> @@ -658,11 +658,7 @@ static int apple_dart_attach_dev(struct iommu_domain *domain,
+>  	struct apple_dart_master_cfg *cfg = dev_iommu_priv_get(dev);
+>  	struct apple_dart_domain *dart_domain = to_dart_domain(domain);
 >  
-> -	if (IS_ENABLED(CONFIG_SWIOTLB_DYNAMIC)) {
-> -		/* Pairs with smp_wmb() in swiotlb_find_slots() and
-> -		 * swiotlb_dyn_alloc(), which modify the RCU lists.
-> -		 */
-> -		smp_rmb();
-> -		return swiotlb_find_pool(dev, paddr);
-> -	}
-> +#ifdef CONFIG_SWIOTLB_DYNAMIC
-> +	/* All SWIOTLB buffer addresses must have been returned by
-> +	 * swiotlb_tbl_map_single() and passed to a device driver.
-> +	 * If a SWIOTLB address is checked on another CPU, then it was
-> +	 * presumably loaded by the device driver from an unspecified private
-> +	 * data structure. Make sure that this load is ordered before reading
-> +	 * dev->dma_uses_io_tlb here and mem->pools in swiotlb_find_pool().
-> +	 *
-> +	 * This barrier pairs with smp_mb() in swiotlb_find_slots().
-> +	 */
-
-Nitpick. The official multi-line comment style is:
-
-	/*
-	 * Text.
-	 */
-
-i.e. it starts with an empty /* line.
-
-> @@ -1152,9 +1149,25 @@ static int swiotlb_find_slots(struct device *dev, phys_addr_t orig_addr,
->  	spin_unlock_irqrestore(&dev->dma_io_tlb_lock, flags);
+> -	if (cfg->stream_maps[0].dart->force_bypass &&
+> -	    domain->type != IOMMU_DOMAIN_IDENTITY)
+> -		return -EINVAL;
+> -	if (!cfg->stream_maps[0].dart->supports_bypass &&
+> -	    domain->type == IOMMU_DOMAIN_IDENTITY)
+> +	if (cfg->stream_maps[0].dart->force_bypass)
+>  		return -EINVAL;
 >  
->  found:
-> -	dev->dma_uses_io_tlb = true;
-> -	/* Pairs with smp_rmb() in is_swiotlb_buffer() */
-> -	smp_wmb();
-> +	WRITE_ONCE(dev->dma_uses_io_tlb, true);
+>  	ret = apple_dart_finalize_domain(domain, cfg);
+> @@ -683,15 +679,37 @@ static int apple_dart_attach_dev(struct iommu_domain *domain,
+>  		for_each_stream_map(i, cfg, stream_map)
+>  			apple_dart_hw_disable_dma(stream_map);
+>  		break;
+> -	case IOMMU_DOMAIN_IDENTITY:
+> -		for_each_stream_map(i, cfg, stream_map)
+> -			apple_dart_hw_enable_bypass(stream_map);
+> -		break;
+> +	default:
+> +		return -EINVAL;
+>  	}
+>  
+>  	return ret;
+>  }
+>  
+> +static int apple_dart_attach_dev_identity(struct iommu_domain *domain,
+> +					  struct device *dev)
+> +{
+> +	struct apple_dart_master_cfg *cfg = dev_iommu_priv_get(dev);
+> +	struct apple_dart_stream_map *stream_map;
+> +	int i;
 > +
-> +	/* The general barrier orders reads and writes against a presumed store
-> +	 * of the SWIOTLB buffer address by a device driver (to a driver private
-> +	 * data structure). It serves two purposes.
+> +	if (!cfg->stream_maps[0].dart->supports_bypass)
+> +		return -EINVAL;
+> +
+> +	for_each_stream_map(i, cfg, stream_map)
+> +		apple_dart_hw_enable_bypass(stream_map);
+> +	return 0;
+> +}
+> +
+> +static const struct iommu_domain_ops apple_dart_identity_ops = {
+> +	.attach_dev = apple_dart_attach_dev_identity,
+> +};
+> +
+> +static struct iommu_domain apple_dart_identity_domain = {
+> +	.type = IOMMU_DOMAIN_IDENTITY,
+> +	.ops = &apple_dart_identity_ops,
+> +};
+> +
+>  static struct iommu_device *apple_dart_probe_device(struct device *dev)
+>  {
+>  	struct apple_dart_master_cfg *cfg = dev_iommu_priv_get(dev);
+> @@ -722,7 +740,7 @@ static struct iommu_domain *apple_dart_domain_alloc(unsigned int type)
+>  	struct apple_dart_domain *dart_domain;
+>  
+>  	if (type != IOMMU_DOMAIN_DMA && type != IOMMU_DOMAIN_UNMANAGED &&
+> -	    type != IOMMU_DOMAIN_IDENTITY && type != IOMMU_DOMAIN_BLOCKED)
+> +	    type != IOMMU_DOMAIN_BLOCKED)
+>  		return NULL;
+>  
+>  	dart_domain = kzalloc(sizeof(*dart_domain), GFP_KERNEL);
+> @@ -732,7 +750,7 @@ static struct iommu_domain *apple_dart_domain_alloc(unsigned int type)
+>  	mutex_init(&dart_domain->init_lock);
+>  
+>  	/* no need to allocate pgtbl_ops or do any other finalization steps */
+> -	if (type == IOMMU_DOMAIN_IDENTITY || type == IOMMU_DOMAIN_BLOCKED)
+> +	if (type == IOMMU_DOMAIN_BLOCKED)
+>  		dart_domain->finalized = true;
+>  
+>  	return &dart_domain->domain;
+> @@ -947,6 +965,7 @@ static void apple_dart_get_resv_regions(struct device *dev,
+>  }
+>  
+>  static const struct iommu_ops apple_dart_iommu_ops = {
+> +	.identity_domain = &apple_dart_identity_domain,
+>  	.domain_alloc = apple_dart_domain_alloc,
+>  	.probe_device = apple_dart_probe_device,
+>  	.release_device = apple_dart_release_device,
 
-Same here.
+Reviewed-by: Janne Grunau <j@jannau.net>
 
--- 
-Catalin
+best reagrds,
+Janne
