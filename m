@@ -1,218 +1,188 @@
-Received: from bee.tesarici.cz (bee.tesarici.cz [77.93.223.253])
+Received: from wnew4-smtp.messagingengine.com (wnew4-smtp.messagingengine.com [64.147.123.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C05FD107BE
-	for <iommu@lists.linux.dev>; Tue, 26 Sep 2023 18:56:10 +0000 (UTC)
-Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by bee.tesarici.cz (Postfix) with ESMTPSA id D0637181833;
-	Tue, 26 Sep 2023 20:56:07 +0200 (CEST)
-Authentication-Results: mail.tesarici.cz; dmarc=fail (p=none dis=none) header.from=tesarici.cz
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tesarici.cz; s=mail;
-	t=1695754568; bh=ElOm4TIidxzIwgnRrVRhsXkA51H4ycV0TyFBLPCb5qU=;
-	h=From:To:Cc:Subject:Date:From;
-	b=4anjJeL/S3irWFD0xuAQtSGj9T2sAIRXmOWds0qxodvZfr+W/ZBeaRMrAqV50C9/w
-	 0FmzJJLvvbdSoxn2XPdAEEeJHBglmXlQOnvhDVc4RuvZYYPLJ7NhNUaOFH5PTwrvQI
-	 CxgQBLCkxIc9+yWMzurM55CAyFV0byd4nB5yDPDxmpYfxcJdzpE8V7gd0p0/vEtMIe
-	 nbuChrp+gWRaaB/XPUGshQCqW5f5rkRgUh7wo1lsYYokfC1l0mVdgTYYy9iowO5KJT
-	 tMZlUaGGBA4zHejUQ398/symjWpMRnWhaLVXH3dapIVreB/dgSuM5SIwMDgpTMLZoc
-	 MM0tYgliTFNhg==
-From: Petr Tesarik <petr@tesarici.cz>
-To: Christoph Hellwig <hch@lst.de>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 220F6405ED;
+	Tue, 26 Sep 2023 19:05:14 +0000 (UTC)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+	by mailnew.west.internal (Postfix) with ESMTP id C5FB42B00139;
+	Tue, 26 Sep 2023 15:05:12 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute5.internal (MEProxy); Tue, 26 Sep 2023 15:05:14 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=jannau.net; h=cc
+	:cc:content-type:content-type:date:date:from:from:in-reply-to
+	:in-reply-to:message-id:mime-version:references:reply-to:sender
+	:subject:subject:to:to; s=fm1; t=1695755112; x=1695758712; bh=J7
+	exHnsQYRJBdZItKfcOQx1NZselfQyXQouqmOrn0xs=; b=p7lUbVcIVde+aCTFxF
+	MXrRvMzhb72YSlrsH0UEZmx96IucjYqoiUcTDgVEIm7HrdQnDCqsPxaGg5BXaAxA
+	AbfvXlJLsm8jjR3OF8eowUHLUvehu3cMGh9YrHsoNcDFLjjrtlbF0BIBo3ZDVZv0
+	vRNZxAmwP+6BbbiXyWlt6NzsIlEcxfB2vymqEJjW+bk1JQi1Rk3x4aK+1rAZXTRt
+	yd3vJzXU5EMBUta43wstc4SbHfLb3/zqsLVcfQH1WtnM4f7BGF9s0vkbz+82lSwL
+	rar3skmax3L50u5b2OOKj9mh8s/nmzmOPu2x8J4bM8n21VG2ibcPga7ug1hEtNEa
+	53oA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-type:content-type:date:date
+	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
+	:message-id:mime-version:references:reply-to:sender:subject
+	:subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+	:x-sasl-enc; s=i47b949f6.fm2; t=1695755112; x=1695758712; bh=J7e
+	xHnsQYRJBdZItKfcOQx1NZselfQyXQouqmOrn0xs=; b=n6zMX99nghX3F9xryXH
+	Yle+J77pYkaPpUQ9LWyXGG7ttU4OteqUOrOTsR58wKHeqBK6MaF0MXka82mq2KRm
+	NoH80lD7MTFHzqtoXnuGaRYe+U0a10N6UAONP3EesFZipqy4pmpic7YRioUVjEWY
+	xLSd3aJaQoh6ZVX03n5u2mbRPLVu6GifXo9JT+/ODBX2HInnRHF9u3i+gBptCptb
+	juFETw7TanVCqhOkC787gKnY6X8XC6fJ3ZqHDknX32LLJSoctFF8wqiRRkGMc3pf
+	gb8CJ05LVFxLjIK4clV107IDCZK7dTPKdO4CxVCcpdEWM4fYF99QPe+a5HYJ9UA1
+	vhQ==
+X-ME-Sender: <xms:ZisTZdWSKiiYwmYS5jGIvTM7NDShNLJT3FlyEQzEolrCqKRiVX3dKQ>
+    <xme:ZisTZdn-XbR5VN1HUqBsQx448S0RkO7Jbz7X05JBwHe1CJ8hv2m2XDgZuZ8A2ju-o
+    BMh2nuw0E3Qhf7M4ew>
+X-ME-Received: <xmr:ZisTZZbQaFROuammzp06jq-2ed30DlG_G0r1Iqx8ThH_XqKC4eSNbb_rJ5pDUWTxr2QaVBHOZUHj1oCz9TrU8rlKdBpOsqhliQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvjedrtddtgddutdefucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvfevuffkfhggtggujgesthdtredttddtjeenucfhrhhomheplfgrnhhn
+    vgcuifhruhhnrghuuceojhesjhgrnhhnrghurdhnvghtqeenucggtffrrghtthgvrhhnpe
+    fgvdffveelgedujeeffeehheekheelheefgfejffeftedugeethfeuudefheefteenucev
+    lhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehjrghnnhgvse
+    hjrghnnhgruhdrnhgvth
+X-ME-Proxy: <xmx:ZisTZQUAM7-KVpz2w1AXceueDy79IL6f3QzhNl6W0C17gJ9cfWqGEw>
+    <xmx:ZisTZXlEm9F514jffVQExC9xlHDQ4HWHE_HUFDxp9eOYwzmqy7bTOA>
+    <xmx:ZisTZdd5E01EC5PqddByG_RlvoV0no5jPmsZyxCJtuOvCPMbRsClEQ>
+    <xmx:ZysTZfnywZnQWuN2JkCRYtVbjIhjTDXX1Uu4uijFZyndgHdnwisRazF76lk>
+Feedback-ID: i47b949f6:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
+ 26 Sep 2023 15:05:09 -0400 (EDT)
+Date: Tue, 26 Sep 2023 21:05:08 +0200
+From: Janne Grunau <j@jannau.net>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Alyssa Rosenzweig <alyssa@rosenzweig.io>, asahi@lists.linux.dev,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Christophe Leroy <christophe.leroy@csgroup.eu>,
+	David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux.dev,
+	Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
+	linux-arm-kernel@lists.infradead.org, linuxppc-dev@lists.ozlabs.org,
+	Hector Martin <marcan@marcan.st>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
 	Robin Murphy <robin.murphy@arm.com>,
-	iommu@lists.linux.dev (open list:DMA MAPPING HELPERS),
-	linux-kernel@vger.kernel.org (open list)
-Cc: Roberto Sassu <roberto.sassu@huaweicloud.com>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Petr Tesarik <petr@tesarici.cz>,
-	Jonathan Corbet <corbet@lwn.net>
-Subject: [PATCH v3] swiotlb: fix the check whether a device has used software IO TLB
-Date: Tue, 26 Sep 2023 20:55:56 +0200
-Message-ID: <20230926185556.16433-1-petr@tesarici.cz>
-X-Mailer: git-send-email 2.42.0
+	Sven Peter <sven@svenpeter.dev>, Will Deacon <will@kernel.org>
+Subject: Re: [PATCH 6/8] iommu/dart: Move the blocked domain support to a
+ global static
+Message-ID: <ZRMrZJ1HgpULWeyv@robin>
+References: <0-v1-8060f06462cc+c0a39-dart_paging_jgg@nvidia.com>
+ <6-v1-8060f06462cc+c0a39-dart_paging_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <6-v1-8060f06462cc+c0a39-dart_paging_jgg@nvidia.com>
 
-When CONFIG_SWIOTLB_DYNAMIC=y, devices which do not use the software IO TLB
-can avoid swiotlb lookup. A flag is added by commit 1395706a1490 ("swiotlb:
-search the software IO TLB only if the device makes use of it"), the flag
-is correctly set, but it is then never checked. Add the actual check here.
+Hej,
 
-Note that this code is an alternative to the default pool check, not an
-additional check, because:
+On Fri, Sep 22, 2023 at 02:07:57PM -0300, Jason Gunthorpe wrote:
+> Move to the new static global for blocked domains. Move the blocked
+> specific code to apple_dart_attach_dev_blocked().
+> 
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> ---
+>  drivers/iommu/apple-dart.c | 36 ++++++++++++++++++++++++++----------
+>  1 file changed, 26 insertions(+), 10 deletions(-)
+> 
+> diff --git a/drivers/iommu/apple-dart.c b/drivers/iommu/apple-dart.c
+> index 424f779ccc34df..376f4c5461e8f7 100644
+> --- a/drivers/iommu/apple-dart.c
+> +++ b/drivers/iommu/apple-dart.c
+> @@ -675,10 +675,6 @@ static int apple_dart_attach_dev(struct iommu_domain *domain,
+>  		for_each_stream_map(i, cfg, stream_map)
+>  			apple_dart_setup_translation(dart_domain, stream_map);
+>  		break;
+> -	case IOMMU_DOMAIN_BLOCKED:
+> -		for_each_stream_map(i, cfg, stream_map)
+> -			apple_dart_hw_disable_dma(stream_map);
+> -		break;
+>  	default:
+>  		return -EINVAL;
+>  	}
+> @@ -710,6 +706,30 @@ static struct iommu_domain apple_dart_identity_domain = {
+>  	.ops = &apple_dart_identity_ops,
+>  };
+>  
+> +static int apple_dart_attach_dev_blocked(struct iommu_domain *domain,
+> +					 struct device *dev)
+> +{
+> +	struct apple_dart_master_cfg *cfg = dev_iommu_priv_get(dev);
+> +	struct apple_dart_stream_map *stream_map;
+> +	int i;
+> +
+> +	if (cfg->stream_maps[0].dart->force_bypass)
+> +		return -EINVAL;
 
-1. swiotlb_find_pool() also searches the default pool;
-2. if dma_uses_io_tlb is false, the default swiotlb pool is not used.
+unrelated to this change as this keeps the current behavior but I think
+force_bypass should not override IOMMU_DOMAIN_BLOCKED. It is set if the
+CPU page size is smaller than dart's page size. Obviously dart can't
+translate in that situation but it should be still possible to block it
+completely.
 
-Tested in a KVM guest against a QEMU RAM-backed SATA disk over virtio and
-*not* using software IO TLB, this patch increases IOPS by approx 2% for
-4-way parallel I/O.
+How do we manage this? I can write a patch either to the current state
+or based on this series.
 
-The write memory barrier in swiotlb_dyn_alloc() is not needed, because a
-newly allocated pool must always be observed by swiotlb_find_slots() before
-an address from that pool is passed to is_swiotlb_buffer().
+> +
+> +	for_each_stream_map(i, cfg, stream_map)
+> +		apple_dart_hw_disable_dma(stream_map);
+> +	return 0;
+> +}
+> +
+> +static const struct iommu_domain_ops apple_dart_blocked_ops = {
+> +	.attach_dev = apple_dart_attach_dev_blocked,
+> +};
+> +
+> +static struct iommu_domain apple_dart_blocked_domain = {
+> +	.type = IOMMU_DOMAIN_BLOCKED,
+> +	.ops = &apple_dart_blocked_ops,
+> +};
+> +
+>  static struct iommu_device *apple_dart_probe_device(struct device *dev)
+>  {
+>  	struct apple_dart_master_cfg *cfg = dev_iommu_priv_get(dev);
+> @@ -739,8 +759,7 @@ static struct iommu_domain *apple_dart_domain_alloc(unsigned int type)
+>  {
+>  	struct apple_dart_domain *dart_domain;
+>  
+> -	if (type != IOMMU_DOMAIN_DMA && type != IOMMU_DOMAIN_UNMANAGED &&
+> -	    type != IOMMU_DOMAIN_BLOCKED)
+> +	if (type != IOMMU_DOMAIN_DMA && type != IOMMU_DOMAIN_UNMANAGED)
+>  		return NULL;
+>  
+>  	dart_domain = kzalloc(sizeof(*dart_domain), GFP_KERNEL);
+> @@ -749,10 +768,6 @@ static struct iommu_domain *apple_dart_domain_alloc(unsigned int type)
+>  
+>  	mutex_init(&dart_domain->init_lock);
+>  
+> -	/* no need to allocate pgtbl_ops or do any other finalization steps */
+> -	if (type == IOMMU_DOMAIN_BLOCKED)
+> -		dart_domain->finalized = true;
+> -
+>  	return &dart_domain->domain;
+>  }
+>  
+> @@ -966,6 +981,7 @@ static void apple_dart_get_resv_regions(struct device *dev,
+>  
+>  static const struct iommu_ops apple_dart_iommu_ops = {
+>  	.identity_domain = &apple_dart_identity_domain,
+> +	.blocked_domain = &apple_dart_blocked_domain,
+>  	.domain_alloc = apple_dart_domain_alloc,
+>  	.probe_device = apple_dart_probe_device,
+>  	.release_device = apple_dart_release_device,
+> -- 
+> 2.42.0
 
-Correctness was verified using the following litmus test:
+Reviewed-by: Janne Grunau <j@jannau.net>
 
-C swiotlb-new-pool
+best regards
+Janne
 
-(*
- * Result: Never
- *
- * Check that a newly allocated pool is always visible when the
- *  corresponding swiotlb buffer is visible.
- *)
-
-{
-	mem_pools = default;
-}
-
-P0(int **mem_pools, int *pool)
-{
-	/* add_mem_pool() */
-	WRITE_ONCE(*pool, 999);
-	rcu_assign_pointer(*mem_pools, pool);
-}
-
-P1(int **mem_pools, int *flag, int *buf)
-{
-	/* swiotlb_find_slots() */
-	int *r0;
-	int r1;
-
-	rcu_read_lock();
-	r0 = READ_ONCE(*mem_pools);
-	r1 = READ_ONCE(*r0);
-	rcu_read_unlock();
-
-	if (r1) {
-		WRITE_ONCE(*flag, 1);
-		smp_mb();
-	}
-
-	/* device driver (presumed) */
-	WRITE_ONCE(*buf, r1);
-}
-
-P2(int **mem_pools, int *flag, int *buf)
-{
-	/* device driver (presumed) */
-	int r0 = READ_ONCE(*buf);
-
-	/* is_swiotlb_buffer() */
-	int r1;
-	int *r2;
-	int r3;
-
-	smp_rmb();
-	r1 = READ_ONCE(*flag);
-	if (r1) {
-		/* swiotlb_find_pool() */
-		rcu_read_lock();
-		r2 = READ_ONCE(*mem_pools);
-		r3 = READ_ONCE(*r2);
-		rcu_read_unlock();
-	}
-}
-
-exists (2:r0<>0 /\ 2:r3=0) (* Not found. *)
-
-Fixes: 1395706a1490 ("swiotlb: search the software IO TLB only if the device makes use of it")
-Reported-by: Jonathan Corbet <corbet@lwn.net>
-Closes: https://lore.kernel.org/linux-iommu/87a5uz3ob8.fsf@meer.lwn.net/
-Signed-off-by: Petr Tesarik <petr@tesarici.cz>
----
- include/linux/swiotlb.h | 23 ++++++++++++++++-------
- kernel/dma/swiotlb.c    | 26 ++++++++++++++++++++------
- 2 files changed, 36 insertions(+), 13 deletions(-)
-
-diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
-index b4536626f8ff..ecde0312dd52 100644
---- a/include/linux/swiotlb.h
-+++ b/include/linux/swiotlb.h
-@@ -172,14 +172,23 @@ static inline bool is_swiotlb_buffer(struct device *dev, phys_addr_t paddr)
- 	if (!mem)
- 		return false;
- 
--	if (IS_ENABLED(CONFIG_SWIOTLB_DYNAMIC)) {
--		/* Pairs with smp_wmb() in swiotlb_find_slots() and
--		 * swiotlb_dyn_alloc(), which modify the RCU lists.
--		 */
--		smp_rmb();
--		return swiotlb_find_pool(dev, paddr);
--	}
-+#ifdef CONFIG_SWIOTLB_DYNAMIC
-+	/*
-+	 * All SWIOTLB buffer addresses must have been returned by
-+	 * swiotlb_tbl_map_single() and passed to a device driver.
-+	 * If a SWIOTLB address is checked on another CPU, then it was
-+	 * presumably loaded by the device driver from an unspecified private
-+	 * data structure. Make sure that this load is ordered before reading
-+	 * dev->dma_uses_io_tlb here and mem->pools in swiotlb_find_pool().
-+	 *
-+	 * This barrier pairs with smp_mb() in swiotlb_find_slots().
-+	 */
-+	smp_rmb();
-+	return READ_ONCE(dev->dma_uses_io_tlb) &&
-+		swiotlb_find_pool(dev, paddr);
-+#else
- 	return paddr >= mem->defpool.start && paddr < mem->defpool.end;
-+#endif
- }
- 
- static inline bool is_swiotlb_force_bounce(struct device *dev)
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index 394494a6b1f3..f8d2b79b5f21 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -729,9 +729,6 @@ static void swiotlb_dyn_alloc(struct work_struct *work)
- 	}
- 
- 	add_mem_pool(mem, pool);
--
--	/* Pairs with smp_rmb() in is_swiotlb_buffer(). */
--	smp_wmb();
- }
- 
- /**
-@@ -1152,9 +1149,26 @@ static int swiotlb_find_slots(struct device *dev, phys_addr_t orig_addr,
- 	spin_unlock_irqrestore(&dev->dma_io_tlb_lock, flags);
- 
- found:
--	dev->dma_uses_io_tlb = true;
--	/* Pairs with smp_rmb() in is_swiotlb_buffer() */
--	smp_wmb();
-+	WRITE_ONCE(dev->dma_uses_io_tlb, true);
-+
-+	/*
-+	 * The general barrier orders reads and writes against a presumed store
-+	 * of the SWIOTLB buffer address by a device driver (to a driver private
-+	 * data structure). It serves two purposes.
-+	 *
-+	 * First, the store to dev->dma_uses_io_tlb must be ordered before the
-+	 * presumed store. This guarantees that the returned buffer address
-+	 * cannot be passed to another CPU before updating dev->dma_uses_io_tlb.
-+	 *
-+	 * Second, the load from mem->pools must be ordered before the same
-+	 * presumed store. This guarantees that the returned buffer address
-+	 * cannot be observed by another CPU before an update of the RCU list
-+	 * that was made by swiotlb_dyn_alloc() on a third CPU (cf. multicopy
-+	 * atomicity).
-+	 *
-+	 * See also the comment in is_swiotlb_buffer().
-+	 */
-+	smp_mb();
- 
- 	*retpool = pool;
- 	return index;
--- 
-2.42.0
-
+ps: I sent the reply to [Patch 4/8] accidentally with an incorrect from
+address but the correct Reviewed-by:. I can resend if necessary.
