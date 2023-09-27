@@ -1,107 +1,138 @@
-Received: from mail-qk1-f179.google.com (mail-qk1-f179.google.com [209.85.222.179])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F726F9E7
-	for <iommu@lists.linux.dev>; Wed, 27 Sep 2023 16:45:25 +0000 (UTC)
-Received: by mail-qk1-f179.google.com with SMTP id af79cd13be357-77412b91c41so622571285a.1
-        for <iommu@lists.linux.dev>; Wed, 27 Sep 2023 09:45:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1695833125; x=1696437925; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=mIokYTIkbGPHkN7+WVz2OOAQF+u/yc1WIWPiQgy85s0=;
-        b=bEGzwdWrmN/qhMgEptpboiwNex3PJZhzf4rnEY74OuY6BSR/R+rsDTAopan21ob6e0
-         9anE+7eFT/pCPPiEKiaRVDkkAb8Eq2pxaut+QAcnKyMaHEDc89a1IyNGq13cl8rZwZV5
-         jJP+GUEo1dL8f8eJ28VqSxNjxnER1oOPdXSgWwh5qw1lgpWTAc5BBRU3Jk9dDOvIn3sy
-         r/M5YJE03fTNWPxuDGEYYcZJmJH0N1f3QlFnIeQxVVase7wpWDFFVudKAWwyRbdKgOdL
-         fYJJuRTiN5b3O8Sovq8KOaEZzkAEE+oEh96njAQDOH9Ral3FAEASjdb+XzzqTkJ+f9Ib
-         Vbcw==
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A94E5EACC
+	for <iommu@lists.linux.dev>; Wed, 27 Sep 2023 18:52:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1695840757;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=Kq5Qg2bQQlEqkI6mgl+PBDF3TD7HEyYrhhIx1gLZrcg=;
+	b=eDWnEDa08UjIOp072Z8kURuihNsmqYZ8UqlfdWSQ29/LgaLhrWmOcC1me+u8LjgM3iSqbo
+	uuutoHa32iKKhuRHTf5Ack4SZiFk4Uv27WNJZoAoGKKj5+L8PO0NZQnrxQPUhp4m3s0RbM
+	2SKJfthpPr0WNoowvK3N8HAXug4ym/w=
+Received: from mail-oo1-f72.google.com (mail-oo1-f72.google.com
+ [209.85.161.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-349-wqGM4a7wOoqSx19cx_wFIw-1; Wed, 27 Sep 2023 14:52:35 -0400
+X-MC-Unique: wqGM4a7wOoqSx19cx_wFIw-1
+Received: by mail-oo1-f72.google.com with SMTP id 006d021491bc7-57b8079db51so21196682eaf.3
+        for <iommu@lists.linux.dev>; Wed, 27 Sep 2023 11:52:35 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1695833125; x=1696437925;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=mIokYTIkbGPHkN7+WVz2OOAQF+u/yc1WIWPiQgy85s0=;
-        b=Y5jKH6TdDcr9T337B81tUpud4qEhFo7qWJAwakNehk6TUhRuYIVpztfQtRvw04DZUX
-         ENM8AqWJxAaepi0gaB0LO9EW8Vub7baw2hyoFxP8zvGk8Jrr7LVQUhvL5/m6V45RmHxD
-         B8REHXFoNJnRvo5WEuvWjXbkL3T0iLFm2ykyeXLBo5jKeqw51yazRGD9JMNRQrLrD58T
-         Xe37hPB7iTBLH51TikIBopSX2QHcjpOZmFlE3VUYZfeHFZzk/VJj0nw9Tm2+CtMnaw3D
-         GPExEPkNwtzGqzeL48MY2XmWIMYWwM1rFurpJ6J4iu99ntPBW3SuVX488+ynr1nQaFF6
-         b4tw==
-X-Gm-Message-State: AOJu0YwdbRjW42FKAp9EpUk7dYDBoyv/kbHFtP8X0tp2U3SNInDvGE1u
-	rMEXOXNs2rL012X9/Cxuh2530Q==
-X-Google-Smtp-Source: AGHT+IFfMS5nnVvVX8Z7HjPI0GcUUmFMQoDkdV5+XfkFQAuhSdHDE+NeeA/DBFTZ1XvIL9sQ1pawJQ==
-X-Received: by 2002:a05:620a:269a:b0:773:a229:5a4a with SMTP id c26-20020a05620a269a00b00773a2295a4amr2551798qkp.25.1695833124885;
-        Wed, 27 Sep 2023 09:45:24 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-26-201.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.26.201])
-        by smtp.gmail.com with ESMTPSA id w15-20020ae9e50f000000b0077423f849c3sm3777303qkf.24.2023.09.27.09.45.24
+        d=1e100.net; s=20230601; t=1695840755; x=1696445555;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Kq5Qg2bQQlEqkI6mgl+PBDF3TD7HEyYrhhIx1gLZrcg=;
+        b=lnoUc7sjv5rLJJ94Krz2mV+GzSE6Xckd4Lk+olk5NtV3ZB16fFvTvaCbGMf7Dv+qDg
+         QWCe4vG0XNOHdroiddQYwYg0sPkJ5YHa9WC29mOKG3KsicxnSWYjhPcYd3lI1jn7PJYq
+         KKmkBMfzMOOTkWRvOkad2J/IKPcaJu9v8s74m2mEHxJhDZv6CnjbrPb6opcA1J41QfJp
+         zLops5nOTEvttQppejSrm9nOG2/dhM1pLZm0H742jX2K2hPt351v3Ceq2Gej0eFRYteb
+         26r2PMxpJAFk4uuniAlqVntEoKN4srmS+HOMD0S0R8uZAK+YJH7DBdFNn8zNO/T8qawE
+         hRiQ==
+X-Gm-Message-State: AOJu0YxVP7ErVUrlSKeSby5/+n1LTGtJo+SDJ1CDm9W4AttNoKQcib2Z
+	SBv7F+cXe934e9tDLWPXZjR4662DfTvTq7O1+cKEurXuqXzN/1Wc51eX/a0dLXVWoys8XOPFsKg
+	NdgGFh0HyA8swDv8=
+X-Received: by 2002:a4a:6246:0:b0:57b:6a40:8a9e with SMTP id y6-20020a4a6246000000b0057b6a408a9emr3241158oog.7.1695840755197;
+        Wed, 27 Sep 2023 11:52:35 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IE3cPePjgR+735wrJbNOWlgYYeVheIM5ALo2dqBObMKFrQpCrxuu4qqIaRtOinyevyLL0/Zfw==
+X-Received: by 2002:a4a:6246:0:b0:57b:6a40:8a9e with SMTP id y6-20020a4a6246000000b0057b6a408a9emr3241122oog.7.1695840754919;
+        Wed, 27 Sep 2023 11:52:34 -0700 (PDT)
+Received: from redhat.com ([38.15.60.12])
+        by smtp.gmail.com with ESMTPSA id p187-20020a4a48c4000000b0054f85f67f31sm2878334ooa.46.2023.09.27.11.52.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Sep 2023 09:45:24 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1qlXf9-001RP5-GK;
-	Wed, 27 Sep 2023 13:45:23 -0300
-Date: Wed, 27 Sep 2023 13:45:23 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Vasant Hegde <vasant.hegde@amd.com>
-Cc: iommu@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com,
-	wei.huang2@amd.com, jsnitsel@redhat.com
-Subject: Re: [PATCH v2 06/10] iommu/amd: Refactor helper function for setting
- / clearing GCR3
-Message-ID: <20230927164523.GO13795@ziepe.ca>
-References: <20230816174031.634453-1-vasant.hegde@amd.com>
- <20230816174031.634453-7-vasant.hegde@amd.com>
- <ZQHRTwYN4doUte5E@ziepe.ca>
- <0d47919e-cc2c-d151-f020-e2090fd1c287@amd.com>
+        Wed, 27 Sep 2023 11:52:34 -0700 (PDT)
+Date: Wed, 27 Sep 2023 12:52:31 -0600
+From: Alex Williamson <alex.williamson@redhat.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Cc: "Liu, Yi L" <yi.l.liu@intel.com>, "jgg@nvidia.com" <jgg@nvidia.com>,
+ "robin.murphy@arm.com" <robin.murphy@arm.com>, "baolu.lu@linux.intel.com"
+ <baolu.lu@linux.intel.com>, "joro@8bytes.org" <joro@8bytes.org>,
+ "cohuck@redhat.com" <cohuck@redhat.com>, "eric.auger@redhat.com"
+ <eric.auger@redhat.com>, "nicolinc@nvidia.com" <nicolinc@nvidia.com>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "mjrosato@linux.ibm.com"
+ <mjrosato@linux.ibm.com>, "chao.p.peng@linux.intel.com"
+ <chao.p.peng@linux.intel.com>, "yi.y.sun@linux.intel.com"
+ <yi.y.sun@linux.intel.com>, "peterx@redhat.com" <peterx@redhat.com>,
+ "jasowang@redhat.com" <jasowang@redhat.com>,
+ "shameerali.kolothum.thodi@huawei.com"
+ <shameerali.kolothum.thodi@huawei.com>, "lulu@redhat.com"
+ <lulu@redhat.com>, "suravee.suthikulpanit@amd.com"
+ <suravee.suthikulpanit@amd.com>, "iommu@lists.linux.dev"
+ <iommu@lists.linux.dev>, "linux-kernel@vger.kernel.org"
+ <linux-kernel@vger.kernel.org>, "linux-kselftest@vger.kernel.org"
+ <linux-kselftest@vger.kernel.org>, "Duan, Zhenzhong"
+ <zhenzhong.duan@intel.com>, "Martins, Joao" <joao.m.martins@oracle.com>
+Subject: Re: [RFC 3/3] vfio/pci: Expose PCIe PASID capability to userspace
+Message-ID: <20230927125231.3aacde62.alex.williamson@redhat.com>
+In-Reply-To: <BN9PR11MB5276375C4BE33AC0632321A68CC2A@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <20230926093121.18676-1-yi.l.liu@intel.com>
+	<20230926093121.18676-4-yi.l.liu@intel.com>
+	<BN9PR11MB5276375C4BE33AC0632321A68CC2A@BN9PR11MB5276.namprd11.prod.outlook.com>
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.35; x86_64-redhat-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0d47919e-cc2c-d151-f020-e2090fd1c287@amd.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Wed, Sep 27, 2023 at 11:51:20AM +0530, Vasant Hegde wrote:
-> >>  	if (pte == NULL)
-> >>  		return -ENOMEM;
-> >>  
-> >> -	*pte = (cr3 & PAGE_MASK) | GCR3_VALID;
-> >> +	*pte = (gcr3 & PAGE_MASK) | GCR3_VALID;
-> >> +	__amd_iommu_flush_tlb(dev_data->domain, pasid);
+On Wed, 27 Sep 2023 08:07:54 +0000
+"Tian, Kevin" <kevin.tian@intel.com> wrote:
+
+> > From: Liu, Yi L <yi.l.liu@intel.com>
+> > Sent: Tuesday, September 26, 2023 5:31 PM
 > > 
-> > This flushing doesn't seem to make sense to me, it shouldn't take in a
-> > domain parameter.
-> >
-> > I'm reading the spec here so I may get this wrong but.. It looks like
-> > the IOTLB cache is tagged by (DTE.domain_id, PASID)?
+> > This exposes PCIe PASID capability to userspace and where to emulate this
+> > capability if wants to further expose it to VM.
 > > 
+> > And this only exposes PASID capability for devices which has PCIe PASID
+> > extended struture in its configuration space. While for VFs, userspace
+> > is still unable to see this capability as SR-IOV spec forbides VF to
+> > implement PASID capability extended structure. It is a TODO in future.
+> > Related discussion can be found in below links:
+> > 
+> > https://lore.kernel.org/kvm/20200407095801.648b1371@w520.home/
+> > https://lore.kernel.org/kvm/BL1PR11MB5271A60035EF591A5BE8AC878C01A
+> > @BL1PR11MB5271.namprd11.prod.outlook.com/
+> >   
 > 
-> Yeah. It works, but name is confusing.
+> Yes, we need a decision for VF case.
+> 
+> If the consensus is to continue exposing the PASID capability in vfio-pci
+> config space by developing a kernel quirk mechanism to find offset for
+> VF, then this patch for PF is orthogonal to that VF work and can go as it is.
+> 
+> But if the decision is to have a device feature for the user to enumerate
+> the vPASID capability and let the VMM take care of finding the vPASID
+> cap offset, then better we start doing that for PF too since it's not good
+> to have two enumeration interfaces for PF/VF respectively.
 
-How does it work? You haven't explained anything about why does it
-work.
+Note also that QEMU implements a lazy algorithm for exposing
+capabilities, the default is to expose them, so we need to consider
+existing VMs seeing a new read-only PASID capability on an assigned PF.
 
-Nothing guarantees that domain->id is per-device. It is emphatically
-not, it is per-domain. It happens to act like it is per-device when
-using the DMA API, as DMA API does not share domains across
-groups. However iommufd does share domains and so this is not a
-correct assumption.
+That might support an alternate means to expose the capability.
 
-You said below that you think the DTE.domain_id is per-device. I agree
-that would fix this bug, if true. If it is to be per-device it should
-come from the struct iommu_dev_data, not from the domain->id. This
-should happen any time a GCR3 table is in-use. v1 mode is fine to use
-a per-domain 'domain_id'.
+> My preference is via device feature given Qemu already includes lots of
+> quirks for vfio-pci devices. Another reason is that when supporting vPASID
+> with SIOV there are some arch constraints which the driver needs to
+> report to the user to follow (e.g.  don't assign ENQCMD-capable sibling
+> vdev's to a same guest, etc.).
 
-> amd_iommu_device_flush_pasid_all(dev_data, pasid)
-> {
->         // Flush domain
->        // Flush single device ATS
-> }
+?!
 
-That would make more logical sense, but it does not resolve the issue
-of correctly choosing DTE.domain_id so the cache tags don't alias.
+> A device feature interface can better
+> encapsulate everything related to vPASID in one place.
 
-Jason
+Sorry if I don't remember, have you posted a proposal for the device
+feature interface?  Thanks,
+
+Alex
+
