@@ -1,185 +1,195 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.115])
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 91A95210A
-	for <iommu@lists.linux.dev>; Wed, 27 Sep 2023 08:09:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1695802158; x=1727338158;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=3OofP9Latg6e9l2QfhKy4+NKbNk/c/8x84hXbBsxY0I=;
-  b=MEq1lgJRYLDaE9pVkmN7+69QezfooM4eoAjqeEAELbW3avJjn1R7KyIr
-   9Ki91VpfTz4rqedwNhF6a3LeOnfiOw5yen0lwXKSqyhuI0GbBFZnwKf59
-   rxIAFuMNgExnyA08v7q6MVvI1GbYLMahH4Lb0PMDwgnXY+d+GRAIxm+mY
-   OIE5L7ojvxVEqtv6QtLLup9Zz+S6PbX/K/+Aex+DY1LnQs8XsOTDIumwb
-   +llayeULFJh/6L3hhd9N0KfFpFs+zOuMr6EzLgihyuU+148ZqRnQgCUZa
-   8Lg97IKEzFOIQQu1gbrUdWJIBpDWRPVNH/qBJrzGrTpq0oV13EBQtr3NT
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10845"; a="381663982"
-X-IronPort-AV: E=Sophos;i="6.03,179,1694761200"; 
-   d="scan'208";a="381663982"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Sep 2023 01:09:17 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.03,179,1694761200"; 
-   d="scan'208";a="458164"
-Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
-  by orviesa001.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 27 Sep 2023 01:08:45 -0700
-Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.32; Wed, 27 Sep 2023 01:09:15 -0700
-Received: from fmsmsx602.amr.corp.intel.com (10.18.126.82) by
- fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.32; Wed, 27 Sep 2023 01:09:15 -0700
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.32 via Frontend Transport; Wed, 27 Sep 2023 01:09:15 -0700
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.177)
- by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.32; Wed, 27 Sep 2023 01:09:14 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hbjFuE1jPkh91sQptm5ZKkV+E/tuAHvBXwOW4zBhIipYAc2uoqWcY2YgdKnyKj/9L3xYvmlASsCe0Jt1Prc1ZyKtFqX7XcLMpQOGsWkmLouoWiftSoOQZGHzR2NgdEPl0J3QCTCn0P5H8yCtSq249Egw5y6J9xK10so0YCh0k4iGvqhEi/A2n40NZ6KMBXbdUHtt/0jNI5AYT5D0VYYnoHlUVn/2r2ZnAzBH9vWvsxXwbTa2WFGS5AiL6CKFdOQLbv0b6hWR+WzFQkEucnSGGf7+MZ/fuECCJth1aXy5oI+5u4AzztX5IA4eeOstBoogx9HLL0SHyAtf2U3bAJdIzg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=3OofP9Latg6e9l2QfhKy4+NKbNk/c/8x84hXbBsxY0I=;
- b=eFnfLVcwynxLSyzl97m9zcPGPwFqr9gvOcvnkeTaNqy4PblDqXadqNNdyDbSdrkn9diKGDbFYXzJFlh8MkMCH61ATRn33GGT4+nTKiF1NZPj/zcq1fxUsh9m3J7mus9/MHNqPIk04Y2n/Sj8CdeR5JtHPArAjEzlmHIIsDe5lh//Y4zH4eqpeLO0NMGyhwoXt/WJcb8jOlvyV0eNL9JITfQvW/cz/5KXCpPS6Md4wjTosb9+kXd4IxgAXKyLEagpTo5EYNJsekOvcznZP6TXSuuP5bNnJ1QCoEkndsoID12rdNI1JKuuRB7ULD/c9VqOw6qm5IKH1jQGOpVAJyG9ag==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by MN2PR11MB4518.namprd11.prod.outlook.com (2603:10b6:208:24f::24) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6813.28; Wed, 27 Sep
- 2023 08:09:12 +0000
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::1bfc:7af0:dc68:839d]) by BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::1bfc:7af0:dc68:839d%4]) with mapi id 15.20.6813.017; Wed, 27 Sep 2023
- 08:09:12 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Baolu Lu <baolu.lu@linux.intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
-	"joro@8bytes.org" <joro@8bytes.org>, "alex.williamson@redhat.com"
-	<alex.williamson@redhat.com>, "jgg@nvidia.com" <jgg@nvidia.com>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>
-CC: "cohuck@redhat.com" <cohuck@redhat.com>, "eric.auger@redhat.com"
-	<eric.auger@redhat.com>, "nicolinc@nvidia.com" <nicolinc@nvidia.com>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>, "mjrosato@linux.ibm.com"
-	<mjrosato@linux.ibm.com>, "chao.p.peng@linux.intel.com"
-	<chao.p.peng@linux.intel.com>, "yi.y.sun@linux.intel.com"
-	<yi.y.sun@linux.intel.com>, "peterx@redhat.com" <peterx@redhat.com>,
-	"jasowang@redhat.com" <jasowang@redhat.com>,
-	"shameerali.kolothum.thodi@huawei.com"
-	<shameerali.kolothum.thodi@huawei.com>, "lulu@redhat.com" <lulu@redhat.com>,
-	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>, "Duan,
- Zhenzhong" <zhenzhong.duan@intel.com>, "Martins, Joao"
-	<joao.m.martins@oracle.com>
-Subject: RE: [RFC 8/8] iommu/vt-d: Add set_dev_pasid callback for nested
- domain
-Thread-Topic: [RFC 8/8] iommu/vt-d: Add set_dev_pasid callback for nested
- domain
-Thread-Index: AQHZ8FugfyIGJa74hEWHVr2uRxtb/LAuTgKggAAB24CAAAL8sA==
-Date: Wed, 27 Sep 2023 08:09:12 +0000
-Message-ID: <BN9PR11MB5276CD4C47B3833BAC8B30588CC2A@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <20230926092651.17041-1-yi.l.liu@intel.com>
- <20230926092651.17041-9-yi.l.liu@intel.com>
- <BN9PR11MB52766E649727842C98B7396B8CC2A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <04af40a3-1675-4b1c-27de-39d261dcb1cf@linux.intel.com>
-In-Reply-To: <04af40a3-1675-4b1c-27de-39d261dcb1cf@linux.intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|MN2PR11MB4518:EE_
-x-ms-office365-filtering-correlation-id: 2531fcd8-529d-40fa-4d21-08dbbf3108e3
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: WUYx454N8MoldXSD8MeZSWOZBYLEw+b8uQ/ArakzbnAVz6AW9VmUK/a+ElhpiDRrk1ytp4TLxZpqjm8ctf3ykEc3XBu97OOrYsQXHLlwD2bY4kZV2Y/2DWPzeftlBWHJ0eL2BIaStnvKfcu+Uu88y9yLCrioGMd96JuPVzymly54Y12I58yOpIh2zG7rZhVe2DH7Q+uRfcHGS/8Q0y9pWPkWKUuh7qGNNYFwbodRcGyz0efSokOLSbL6lhH9GuwjoTrCRw0/KOXYrH0PEQxPwGiizPlsYz1d5NVtGSWFTtc2X9do26YsaVaEeDw+bVT96ir7I4AytI7vrkMqsBa9Ep1GuEkel0oL655HJQrbYHXK66qgju/ohNoS1cFRBjtNpDdlkW96k+rwKUdkIrk204ViRHFQme5slGbQOPJLb8fnPnKDtFN5XIvevl3+3Z2MQb4PbjAAGTMNdMi2GoW+a0ZkyaEVibpJhzA1581C/5DVQEyEk/CakxQevOP5Bx40/LyS0J/78Knr9APDKFVBTQtYAMcT5tJKp4IZBm+0wQ2wqgqXXKZKjC6RYN0/kwnJsvCKZiC0FtAm4XnCQzCDe2vuyZDKLGPvgCN0jgt+l1yWKTiu+0+mw0Sm3aChTHp5
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(136003)(376002)(39860400002)(396003)(366004)(346002)(230922051799003)(1800799009)(186009)(451199024)(66946007)(7696005)(26005)(6506007)(53546011)(9686003)(82960400001)(38100700002)(86362001)(38070700005)(55016003)(33656002)(122000001)(41300700001)(83380400001)(316002)(8676002)(8936002)(4326008)(66556008)(66446008)(66476007)(54906003)(5660300002)(110136005)(52536014)(76116006)(7416002)(2906002)(4744005)(64756008)(71200400001)(478600001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?RnNFby81WEhzaWd1aHlIN3U3dVBWNk0yVktyc2lkUWJlUXJuL3B4a214QjJ5?=
- =?utf-8?B?dXV3eU9WM3ZGb1I2WFZZTlFDOXdQaFVaeGZBTTNtT1FHelVWUDZhanY1SUJo?=
- =?utf-8?B?M1ljVGJNc2xVYk1VNHU2aFkzYktUSDlRR3phODVjVzc0ZlBRRmJZbTBrRU1r?=
- =?utf-8?B?Y2lPcjF4MlBjZ3IzeHFlYUlRandKMkRCOElxRWhqUkYvUVYyeVRBRGpZWDBo?=
- =?utf-8?B?ZHQway9XWk1ZZnBxaWpzYTFLOGpNak40ZGwzaVdjZW5DZU9aZjBSZ0RTWjh2?=
- =?utf-8?B?YzNYTWR2SHVsNmhpUkZadHB5ZWxJTWhaUjhpRXhVVFNqdGt0a01la2MyTGdS?=
- =?utf-8?B?cXBDQVRDcHEyazBLVFp4S1E4UStXdWMrTWUvd3lzdVVpa0NMd2UwQzVtOW16?=
- =?utf-8?B?dk1nZ0d1ZnVkMWhXeE4xWEk1L1liVlBrQXdZQThxYnllalF3enZCUmtVTnJS?=
- =?utf-8?B?eWNYb1IxRVYwUWEwcXZhWUFCOEgxcTlIYzJyMWxOZk4rdHFpcTFXVFl1TkdL?=
- =?utf-8?B?Nll2N0t3M204dG03eXRpREJ6cHBjdkN4bit0U1pyaHhjckFIV3g5Qk5mbGU2?=
- =?utf-8?B?SFdsYlozeXNObmc4M3lVVmhiazhKaXcwWUNncGc4d0ZPdWVsMFhqcDF0Y2cw?=
- =?utf-8?B?T3RtakFuditBYjdQeWNwVUVObEp4aFFqMTVpL0NmZll4SVhMdldPdmZrZHdY?=
- =?utf-8?B?c01kL0I1bTB0VUhqR1VjQ21yNzN3V3o2SXUwMGhFQzAybUV6Ym85eENYRHZt?=
- =?utf-8?B?MHhuY3lUTGxmd1F4cDN0Nlpudis1S25RWWM5TnJubi9NSGh6YjZyNDFWQmcr?=
- =?utf-8?B?R1ArN2dFRVJEdCtvSUhrejhHT1F1MTQrWllCOHhQS3N5NDFtaXhlL205Q1Mr?=
- =?utf-8?B?bjEzWm12MDEwUTZhdDFtL2tKM2hzYVM5aGZjdGxUQVpkaHJoaG5CeUNwS09D?=
- =?utf-8?B?Nk9GbmtwbDJaM1FNbU51MnR5bG12VkFvdERCWVU3S0JJN2l1NUVDWk1CMzBY?=
- =?utf-8?B?ak9ORlN5cCt1c1FhSjFxeStqZFgzSGRlblNzNnZPc0pUU3FlSnphRkdzYlNk?=
- =?utf-8?B?RDNxalRINDBuYjhMMjhRUjZJZ3kvdjA4L0tPcmRIek9EOENOVnBPZEpyOWZL?=
- =?utf-8?B?YnhvcUJHRlkyTkVqSHRIR0FuR2VIVUk0VjNjS2xwQnJiY2Q5SEVrS1pINWdv?=
- =?utf-8?B?N0oyODdJWmoyVFM1cnZvcDNKSFJNRUxCc1VxNlo5cmtETVR3SjFtekZOd2xa?=
- =?utf-8?B?TXVZOUJ5M2s5Ky8xWmFkcmFQc1pINFdrR25xZDVmVk9ONHB6azFmR09sK0Zh?=
- =?utf-8?B?eDNLc0E2RWNkSzRjSlJDZndXeUFZS2hZc1ZucURvV2crOGhVQXE2QS9rTXlp?=
- =?utf-8?B?Y0VHTUQ3djNwVFNac2NEc1lTSHhsbDJvZHMxNis4eEM1QmFJa2g0NTNSRDlM?=
- =?utf-8?B?TWVmWHR3TTVNck1jcW14VjNjeW1YTUs5QSs2ZnJwbDN5Rk40UUpqd1V5WW1p?=
- =?utf-8?B?U2hPR0lUdTJIenN2d1AvdzlUck5xeTBoL1pjVU5XT0REWkRwNkJaNVY2dXpF?=
- =?utf-8?B?MHc0ZHJ2UzYySW9LWW91VmVhSkZaeVk3Y3FuMmdjN1VaV25MRVNEWmFEVWZK?=
- =?utf-8?B?c2VGQkFJV1JpajBlY0JBeUQwMTRIMFdkQ050TWYralZlZ3cvRHNzeVFUM2dB?=
- =?utf-8?B?bmF0TCtJNUJjaXFYREdqdEVNeXZZbkZYUVNBbEJycHFnZXRseFRRTUFtTG1a?=
- =?utf-8?B?ZVhVVlBGWlZ4UnNxb1EwdkhtZFdrTjZ0V3FveGI5aFFQY2t5WWpjVUY1eUV4?=
- =?utf-8?B?ZElVZGlndm1lR0licmRLWXdOTUUyOG1kSzNlcHNQbEJoV2RQenM2YjM3alc3?=
- =?utf-8?B?OUFzdlIxTnNGL0R6dmtROGpHVlNGc1ljeWVXU2lPSmdHdEpjSnV3LzNRWHQv?=
- =?utf-8?B?ZGM3SWl0MTBQckJVbHdIYTlNVWM0b2YzK1JaYTY0ekNFK2MvOHdScXd5ZWJi?=
- =?utf-8?B?bHpBdzB2UWFBR2pMTFVBN2NtSW16d1JvZ2J5YUxibGdDQ3dqdWE2NDRxWFl4?=
- =?utf-8?B?NmVwTFNwdThGSmpxbHJWQ3pSdTJUVURKTXFtRzdWVkJWYzYzSGpxT1Vqa2JL?=
- =?utf-8?Q?blZkwQ3JXOhrHNhdtzbrX4c3J?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0DFCD1C691;
+	Wed, 27 Sep 2023 08:55:56 +0000 (UTC)
+Received: from pps.filterd (m0353726.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 38R8fwt9003378;
+	Wed, 27 Sep 2023 08:55:30 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=lIdgU+j4pcq6jgSk/q19qdaxkwH1rtCWHqvoVCfZIT4=;
+ b=gMLHMIgbd0OHt2L39u5X2z9jCc+8hmAe0RgqF5igvrD7NALxCV6PuuTIRFmhWj5AWad1
+ Zo//FrrS24Bs/hyNmnq5uJSgOU9iltfJWRO2RlQjdkx/j6qlxx/5vQd4KREhF1VNV/Bo
+ gEDvHIC0e3MS88IR6+zXbNXCX1pMn1rWxdby0r6gPyOwJz0SZf1nyKdGlKo4J4HfTd/g
+ TI5OvYCrbxA/wdukKkUG1vkUJ9MZFHL2SzL7qbyIlWtz98kRREkCpWile4E4o1OXJJzN
+ CenqSvytDspSEtB7BzEaDF7M85TKLR8Sf4seckFi5VCfOOBZvSnA/fZuwKo/G1Ua0KgY fQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3tch40r8sd-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 27 Sep 2023 08:55:30 +0000
+Received: from m0353726.ppops.net (m0353726.ppops.net [127.0.0.1])
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 38R8hiew007669;
+	Wed, 27 Sep 2023 08:55:29 GMT
+Received: from ppma23.wdc07v.mail.ibm.com (5d.69.3da9.ip4.static.sl-reverse.com [169.61.105.93])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3tch40r8s0-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 27 Sep 2023 08:55:29 +0000
+Received: from pps.filterd (ppma23.wdc07v.mail.ibm.com [127.0.0.1])
+	by ppma23.wdc07v.mail.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 38R6btJ6011003;
+	Wed, 27 Sep 2023 08:55:28 GMT
+Received: from smtprelay05.fra02v.mail.ibm.com ([9.218.2.225])
+	by ppma23.wdc07v.mail.ibm.com (PPS) with ESMTPS id 3tabukhy17-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 27 Sep 2023 08:55:27 +0000
+Received: from smtpav06.fra02v.mail.ibm.com (smtpav06.fra02v.mail.ibm.com [10.20.54.105])
+	by smtprelay05.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 38R8tOsm22086172
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Wed, 27 Sep 2023 08:55:24 GMT
+Received: from smtpav06.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 9702D20049;
+	Wed, 27 Sep 2023 08:55:24 +0000 (GMT)
+Received: from smtpav06.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id E425B2004F;
+	Wed, 27 Sep 2023 08:55:23 +0000 (GMT)
+Received: from [9.152.212.236] (unknown [9.152.212.236])
+	by smtpav06.fra02v.mail.ibm.com (Postfix) with ESMTP;
+	Wed, 27 Sep 2023 08:55:23 +0000 (GMT)
+Message-ID: <cfc9e9128ed5571d2e36421e347301057662a09e.camel@linux.ibm.com>
+Subject: Re: [PATCH v12 0/6] iommu/dma: s390 DMA API conversion and
+ optimized IOTLB flushing
+From: Niklas Schnelle <schnelle@linux.ibm.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>, Joerg Roedel <joro@8bytes.org>
+Cc: Matthew Rosato <mjrosato@linux.ibm.com>, Will Deacon <will@kernel.org>,
+        Wenjia Zhang <wenjia@linux.ibm.com>,
+        Robin Murphy <robin.murphy@arm.com>, Gerd Bayer <gbayer@linux.ibm.com>,
+        Julian Ruess <julianr@linux.ibm.com>,
+        Pierre Morel <pmorel@linux.ibm.com>,
+        Alexandra Winter
+ <wintera@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik
+ <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian
+ Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle
+ <svens@linux.ibm.com>,
+        Suravee Suthikulpanit
+ <suravee.suthikulpanit@amd.com>,
+        Hector Martin <marcan@marcan.st>, Sven
+ Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        David
+ Woodhouse <dwmw2@infradead.org>,
+        Lu Baolu <baolu.lu@linux.intel.com>, Andy
+ Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad
+ Dybcio <konrad.dybcio@linaro.org>,
+        Yong Wu <yong.wu@mediatek.com>,
+        Matthias
+ Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno
+ <angelogioacchino.delregno@collabora.com>,
+        Gerald Schaefer
+ <gerald.schaefer@linux.ibm.com>,
+        Orson Zhai <orsonzhai@gmail.com>,
+        Baolin
+ Wang <baolin.wang@linux.alibaba.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>, Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Thierry Reding
+ <thierry.reding@gmail.com>,
+        Krishna Reddy <vdumpa@nvidia.com>,
+        Jonathan
+ Hunter <jonathanh@nvidia.com>,
+        Jonathan Corbet <corbet@lwn.net>, linux-s390@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        iommu@lists.linux.dev, asahi@lists.linux.dev,
+        linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        linux-tegra@vger.kernel.org, linux-doc@vger.kernel.org
+Date: Wed, 27 Sep 2023 10:55:23 +0200
+In-Reply-To: <20230926160832.GM13795@ziepe.ca>
+References: <20230825-dma_iommu-v12-0-4134455994a7@linux.ibm.com>
+	 <ZRLy_AaJiXxZ2AfK@8bytes.org> <20230926160832.GM13795@ziepe.ca>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.48.4 (3.48.4-1.fc38) 
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: fk640NFOtXDH3DMsOHfVdr5_SUPSgU-Z
+X-Proofpoint-GUID: XCoTgBapi9PTwWMlIJs26pFRy3h2v45s
+Content-Transfer-Encoding: quoted-printable
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2531fcd8-529d-40fa-4d21-08dbbf3108e3
-X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Sep 2023 08:09:12.6464
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: fe8293agyQMqMeODF8auN0wHxxKWgR9YNbjA/RW/e3bg8xidnzhCrBo5uBPXVUqVo1+1kHEw8EZNX7W6thZRxg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR11MB4518
-X-OriginatorOrg: intel.com
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.267,Aquarius:18.0.980,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2023-09-27_03,2023-09-26_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ priorityscore=1501 impostorscore=0 mlxscore=0 malwarescore=0 clxscore=1011
+ adultscore=0 spamscore=0 phishscore=0 mlxlogscore=664 bulkscore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2309180000 definitions=main-2309270069
 
-PiBGcm9tOiBCYW9sdSBMdSA8YmFvbHUubHVAbGludXguaW50ZWwuY29tPg0KPiBTZW50OiBXZWRu
-ZXNkYXksIFNlcHRlbWJlciAyNywgMjAyMyAzOjU4IFBNDQo+IA0KPiBPbiAyMDIzLzkvMjcgMTU6
-NTIsIFRpYW4sIEtldmluIHdyb3RlOg0KPiA+PiBGcm9tOiBMaXUsIFlpIEw8eWkubC5saXVAaW50
-ZWwuY29tPg0KPiA+PiBTZW50OiBUdWVzZGF5LCBTZXB0ZW1iZXIgMjYsIDIwMjMgNToyNyBQTQ0K
-PiA+Pg0KPiA+PiBGcm9tOiBMdSBCYW9sdTxiYW9sdS5sdUBsaW51eC5pbnRlbC5jb20+DQo+ID4+
-DQo+ID4+IFRoaXMgYWxsb3dzIHRoZSB1cHBlciBsYXllcnMgdG8gc2V0IGEgbmVzdGVkIHR5cGUg
-ZG9tYWluIHRvIGEgUEFTSUQgb2YgYQ0KPiA+PiBkZXZpY2UgaWYgdGhlIFBBU0lEIGZlYXR1cmUg
-aXMgc3VwcG9ydGVkIGJ5IHRoZSBJT01NVSBoYXJkd2FyZS4NCj4gPj4NCj4gPj4gU2lnbmVkLW9m
-Zi1ieTogTHUgQmFvbHU8YmFvbHUubHVAbGludXguaW50ZWwuY29tPg0KPiA+PiBTaWduZWQtb2Zm
-LWJ5OiBZaSBMaXU8eWkubC5saXVAaW50ZWwuY29tPg0KPiA+PiAtLS0NCj4gPj4gICBkcml2ZXJz
-L2lvbW11L2ludGVsL25lc3RlZC5jIHwgNDcNCj4gPj4gKysrKysrKysrKysrKysrKysrKysrKysr
-KysrKysrKysrKysrDQo+ID4+ICAgMSBmaWxlIGNoYW5nZWQsIDQ3IGluc2VydGlvbnMoKykNCj4g
-PiBwYXNpZCBjYW4gYmUgYXR0YWNoZWQgdG8gZWl0aGVyIHVzZXIgaHdwdCBvciBrZXJuZWwgaHdw
-dC4NCj4gPg0KPiA+IFdlIHNob3VsZCBhbHNvIGludHJvZHVjZSBhIHNldF9kZXZfcGFzaWQgY2Fs
-bGJhY2sgZm9yIG5vbi1uZXN0IGRvbWFpbg0KPiBvcHMuDQo+IA0KPiBXZSBhbHJlYWR5IGhhdmUg
-dGhlIGNvZGUgaW4gTGludXMnIHRyZWUuIFRoZSBpZHhkIGRyaXZlciB1c2VzIGl0IGZvcg0KPiBr
-ZXJuZWwgRE1BIHdpdGggcGFzaWQuDQo+IA0KDQphaCwgSSBmb3Jnb3QuIPCfmIogcHJvYmFibHkg
-Y2FuIG1lbnRpb24gaXQgaW4gdGhlIGNvbW1pdCBtZXNzYWdlLg0K
+On Tue, 2023-09-26 at 13:08 -0300, Jason Gunthorpe wrote:
+> On Tue, Sep 26, 2023 at 05:04:28PM +0200, Joerg Roedel wrote:
+> > Hi Niklas,
+> >=20
+> > On Fri, Aug 25, 2023 at 12:11:15PM +0200, Niklas Schnelle wrote:
+> > > Niklas Schnelle (6):
+> > >       iommu: Allow .iotlb_sync_map to fail and handle s390's -ENOMEM =
+return
+> > >       s390/pci: prepare is_passed_through() for dma-iommu
+> > >       s390/pci: Use dma-iommu layer
+> > >       iommu/s390: Disable deferred flush for ISM devices
+> > >       iommu/dma: Allow a single FQ in addition to per-CPU FQs
+> > >       iommu/dma: Use a large flush queue and timeout for shadow_on_fl=
+ush
+> >=20
+> > Turned out this series has non-trivial conflicts with Jasons
+> > default-domain work so I had to remove it from the IOMMU tree for now.
+> > Can you please rebase it to the latest iommu/core branch and re-send? I
+> > will take it into the tree again then.
+>=20
+> Niklas, I think you just 'take yours' to resolve this. All the
+> IOMMU_DOMAIN_PLATFORM related and .default_domain =3D parts should be
+> removed. Let me know if you need anything
+>=20
+> Thanks,
+> Jason
+
+Hi Joerg, Hi Jason,
+
+I've run into an unfortunate problem, not with the rebase itself but
+with the iommu/core branch.=C2=A0
+
+Jason is right, I basically need to just remove the platform ops and
+.default_domain ops. This seems to work fine for an NVMe both in the
+host and also when using the IOMMU with vfio-pci + KVM.=C2=A0I've already
+pushed the result of that to my git.kernel.org:
+https://git.kernel.org/pub/scm/linux/kernel/git/niks/linux.git/log/?h=3Db4/=
+dma_iommu
+
+The problem is that something seems to  be broken in the iommu/core
+branch. Regardless of whether I have my DMA API conversion on top or
+with the base iommu/core branch I can not use ConnectX-4 VFs.
+
+# lspci
+111a:00:00.0 Ethernet controller: Mellanox Technologies MT27710 Family [Con=
+nectX-4 Lx Virtual Function]
+# dmesg | grep mlx
+[    3.189749] mlx5_core 111a:00:00.0: mlx5_mdev_init:1802:(pid 464): Faile=
+d initializing cmdif SW structs, aborting
+[    3.189783] mlx5_core: probe of 111a:00:00.0 failed with error -12
+
+This same card works on v6.6-rc3 both with and without my DMA API
+conversion patch series applied. Looking at mlx5_mdev_init() ->=20
+mlx5_cmd_init(). The -ENOMEM seems to come from the following
+dma_pool_create():
+
+cmd->pool =3D dma_pool_create("mlx5_cmd", mlx5_core_dma_dev(dev), size, ali=
+gn, 0);
+
+I'll try to debug this further but wanted to let you know already in
+case you have some ideas. Either way as it doesn't seem to be related
+to the DMA API conversion I can sent that out again regardless if you
+want, really don't want to miss another cycle.
+
+Thanks,
+Niklas
