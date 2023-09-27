@@ -1,34 +1,34 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.115])
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.126])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 60A7D2579
-	for <iommu@lists.linux.dev>; Wed, 27 Sep 2023 02:20:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D041117EE
+	for <iommu@lists.linux.dev>; Wed, 27 Sep 2023 02:52:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1695781252; x=1727317252;
+  t=1695783169; x=1727319169;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=AydsJicsTjhS4lwN66GX3GcPaMOacXh1JO4dOr+xExI=;
-  b=CNWAkozFOnZK0TQx+TWekb1EpftQPpZMcxVFPZKVET051WRO4rlW6Y4t
-   NqWgq4IkNfsnCODP03c/7jZriwI1dQhlbvFMYVVjHhCKeXuB8uPDnwz1U
-   EYYyxT5VT+m0cxg5RPIzoAchgUNxbs+oWmPBb0dvYQMxv146NljUK+s/2
-   DuiwH9otWd4JGJhT0a7312yrp42qRpL0XhJkcrETVQ7CegUa4omLRkMXF
-   pem8RNwK04VY6uYpmrEUHiQS3t5wZcA7YwKHnhDPWfv+p3xi+5NQM9PwR
-   7JF+zv+/HDJc3Pagbr+izcmMvjDpgQq1B4K+hAC1PEd8tlwCEHHnNYLvs
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10845"; a="381611483"
+  bh=QK5sue7sVnpxLM6QQCdPLLJ+pS+Be6ivtxWAV2EGffI=;
+  b=hL+tNoDsgV6wVCGRGOfakjAEbSf53oF0fPcLAfQPgMRB9PM1cKhMVmsc
+   AeWAqZwRtsKRJ0OI3XHVLCz9j4gfiPOZacsCqfj03zt0N3shCh19ZTirg
+   W9WORABQT+safWeEPs7L5K41aG3+Nxhoz0f8yId1u9iWBuFZbdJomtO43
+   DZR2OWu5nOXDUsTaLtyndh+gYhbf0S7THXTeErU2NtbMrGElCqL9bk3Q7
+   d+mSGGYLupKygAsKIlE9WjpPr4hw3quEAjsV6bHdf5haLadU8/GPOHYsQ
+   TsbI1XGHwVpPCrDuIfmupFpz61v6x2/wyfpkvH3kWf3SFSPqGfeVqaM7V
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10845"; a="366776764"
 X-IronPort-AV: E=Sophos;i="6.03,179,1694761200"; 
-   d="scan'208";a="381611483"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Sep 2023 19:20:51 -0700
+   d="scan'208";a="366776764"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Sep 2023 19:52:49 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10845"; a="864616370"
+X-IronPort-AV: E=McAfee;i="6600,9927,10845"; a="1079958724"
 X-IronPort-AV: E=Sophos;i="6.03,179,1694761200"; 
-   d="scan'208";a="864616370"
+   d="scan'208";a="1079958724"
 Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
-  by fmsmga002.fm.intel.com with ESMTP; 26 Sep 2023 19:20:45 -0700
-Message-ID: <e73f3a0e-5c1b-674e-7ef1-53d963a540d3@linux.intel.com>
-Date: Wed, 27 Sep 2023 10:17:31 +0800
+  by fmsmga005.fm.intel.com with ESMTP; 26 Sep 2023 19:52:43 -0700
+Message-ID: <cd258ee3-52ca-f944-7553-6a1cd01c5f7a@linux.intel.com>
+Date: Wed, 27 Sep 2023 10:49:29 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -44,57 +44,35 @@ Cc: baolu.lu@linux.intel.com, cohuck@redhat.com, eric.auger@redhat.com,
  suravee.suthikulpanit@amd.com, iommu@lists.linux.dev,
  linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
  zhenzhong.duan@intel.com, joao.m.martins@oracle.com
-Subject: Re: [RFC 2/8] iommufd: replace attach_fn with a structure
+Subject: Re: [RFC 3/8] iommufd: Support attach/replace hwpt per pasid
 Content-Language: en-US
 To: Yi Liu <yi.l.liu@intel.com>, joro@8bytes.org, alex.williamson@redhat.com,
  jgg@nvidia.com, kevin.tian@intel.com, robin.murphy@arm.com
 References: <20230926092651.17041-1-yi.l.liu@intel.com>
- <20230926092651.17041-3-yi.l.liu@intel.com>
+ <20230926092651.17041-4-yi.l.liu@intel.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20230926092651.17041-3-yi.l.liu@intel.com>
+In-Reply-To: <20230926092651.17041-4-yi.l.liu@intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 9/26/23 5:26 PM, Yi Liu wrote:
-> Most of the core logic before conducting the actual device attach/
-> replace operation can be shared with pasid attach/replace. Create
-> a new structure so more information (e.g. pasid) can be later added
-> along with the attach_fn.
+> From: Kevin Tian<kevin.tian@intel.com>
 > 
-> Signed-off-by: Kevin Tian<kevin.tian@intel.com>
-> Signed-off-by: Yi Liu<yi.l.liu@intel.com>
-> ---
->   drivers/iommu/iommufd/device.c          | 35 ++++++++++++++++---------
->   drivers/iommu/iommufd/iommufd_private.h |  8 ++++++
->   2 files changed, 30 insertions(+), 13 deletions(-)
+> This introduces three APIs for device drivers to manage pasid attach/
+> replace/detach.
 > 
-> diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
-> index 645ab5d290fe..4fa4153c5df7 100644
-> --- a/drivers/iommu/iommufd/device.c
-> +++ b/drivers/iommu/iommufd/device.c
-> @@ -597,8 +597,11 @@ iommufd_device_do_replace(struct iommufd_device *idev,
->   	return ERR_PTR(rc);
->   }
->   
-> -typedef struct iommufd_hw_pagetable *(*attach_fn)(
-> -	struct iommufd_device *idev, struct iommufd_hw_pagetable *hwpt);
-> +static struct iommufd_hw_pagetable *do_attach(struct iommufd_device *idev,
-> +		struct iommufd_hw_pagetable *hwpt, struct attach_data *data)
-> +{
-> +	return data->attach_fn(idev, hwpt);
-> +}
+>      int iommufd_device_pasid_attach(struct iommufd_device *idev,
+> 				    u32 pasid, u32 *pt_id);
+>      int iommufd_device_pasid_replace(struct iommufd_device *idev,
+> 				     u32 pasid, u32 *pt_id);
+>      void iommufd_device_pasid_detach(struct iommufd_device *idev,
+> 				     u32 pasid);
 
-I assume that this change was made because we need to pass the pasid
-value to the attach_fn() callback.
-
-If so, how about passing it directly to attach_fn() function?
-
-typedef struct iommufd_hw_pagetable *(*attach_fn)(
-		struct iommufd_device *idev,
-		struct iommufd_hw_pagetable *hwpt,
-		ioasid_t pasid);
-
-In no pasid case, use IOMMU_NO_PASID.
+I am a bit puzzled. Do we really need both attach and replace interfaces
+to install a hwpt onto a pasid on device? The IOMMUFD already tracks the
+connections between hwpt and {device, pasid}, so it could easily call
+the right iommu interfaces (attach vs. replace). Perhaps I overlooked
+previous discussion on this.
 
 Best regards,
 baolu
