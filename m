@@ -1,159 +1,149 @@
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2040.outbound.protection.outlook.com [40.107.236.40])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0AB974B231;
-	Wed, 27 Sep 2023 20:26:10 +0000 (UTC)
-Received: from pps.filterd (m0353726.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 38RK7P9a011293;
-	Wed, 27 Sep 2023 20:25:37 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=h1PUEk2RydOs9qTeLOD9LBjXv0RxbTCx5if1FEQd2bE=;
- b=RfXXU1JWrIeRv8ozX9Nmw67Z1W7jRB9mJo1eN0ftEUuAHQuojUYqRBuXzIY3lVQuGKyg
- /W5JqgRgMZ8r/M8AdJMPYPtSMRm2XVCBGhZdt7Y5As/swP5rvJRyqJgiDsjJsI7PzEsO
- GGodzzlbkV3IVibkOnlCWthSwaELR+cp7ta2UwtpYigPe6aIcHkGKKYfy+Bwdp5G7Odx
- EqgCD6hIdpv4+FJL32LayNsv51lMWBF4FAuqlmFDxyTH4Ve3NFkt6iqegtSBFfFlCIvA
- yshwaYtjbxuT4k0L33Rbwyjh2QESzZEFcfcDTEFot1JhRFICVL0bzfBFqWUaj/X5nQYp BQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3tcu0pggq8-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 27 Sep 2023 20:25:37 +0000
-Received: from m0353726.ppops.net (m0353726.ppops.net [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 38RKPa4x007459;
-	Wed, 27 Sep 2023 20:25:36 GMT
-Received: from ppma11.dal12v.mail.ibm.com (db.9e.1632.ip4.static.sl-reverse.com [50.22.158.219])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3tcu0pggpp-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 27 Sep 2023 20:25:36 +0000
-Received: from pps.filterd (ppma11.dal12v.mail.ibm.com [127.0.0.1])
-	by ppma11.dal12v.mail.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 38RJvBAB030466;
-	Wed, 27 Sep 2023 20:25:35 GMT
-Received: from smtprelay07.wdc07v.mail.ibm.com ([172.16.1.74])
-	by ppma11.dal12v.mail.ibm.com (PPS) with ESMTPS id 3tad21wtv5-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 27 Sep 2023 20:25:34 +0000
-Received: from smtpav01.wdc07v.mail.ibm.com (smtpav01.wdc07v.mail.ibm.com [10.39.53.228])
-	by smtprelay07.wdc07v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 38RKPX1B66781646
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Wed, 27 Sep 2023 20:25:33 GMT
-Received: from smtpav01.wdc07v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id AEE2058055;
-	Wed, 27 Sep 2023 20:25:33 +0000 (GMT)
-Received: from smtpav01.wdc07v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 284835804B;
-	Wed, 27 Sep 2023 20:25:29 +0000 (GMT)
-Received: from [9.61.175.8] (unknown [9.61.175.8])
-	by smtpav01.wdc07v.mail.ibm.com (Postfix) with ESMTP;
-	Wed, 27 Sep 2023 20:25:29 +0000 (GMT)
-Message-ID: <a3d8cd82-91ac-0d46-d7d2-c444062a199c@linux.ibm.com>
-Date: Wed, 27 Sep 2023 16:25:28 -0400
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C7211079A;
+	Wed, 27 Sep 2023 23:47:43 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=J7v7E1gnePvdUxE7a0xpBCXtlY5aMNDi2PVSCH1UmfKxkfa6mwDnrWuiHkoOXxl/vYlxKuZ3KBDQ/rEP7YpkQtyTl6o9tiSCv5e6rLSfklz94RGEzZiwGbgdRbX4XYAL36rWZKDLZ4t1IsjyhUC67DlZl3C/KwNh2BUMttYFCd2cpM6N6cxUViRK34pkbXXT9JuB10wwC7wVnoJgPXt7BDiavfS19mCZjXuflwWr/86nElGjSQyG3qxsyJGNj4D2QDUQEqfTU6UU2j9IprxSsGDqjKgWA0KzjV5VQVj74EIbyxHSSTxR/ROsC4VrkUDZn0NVYS1qG2dO62KqJZpc/w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=oVkdZdID4HiLY9Ep3+V9q+IXyUqoLUJfxukiDQpXj+g=;
+ b=XGXzTT8PpLTQNKuOFTfHfwrkrd2Vb5Iecqezccs0hmf4hdkI3sIJERKpr6WInmZMI1YBjtpUrCB/yG8wElL0BY+jPnDikXdL19YSnPIxf9uo89ypUDhNrBlqBddf0vDSNSQ8v0FSKHm4sRCkJhcD9Otm+SxqqQTI3p1qzCUINod9exufs/AIyGcQ8827PZeVKspLHlnYO3vElAS8ivHh753O5ebu7FK73aa8+xblL8hxA4FdIu0rDe9Zks9LXRCl9fUCz2xOt06me39qn2oyUi4SRrOoHqGIOLzWctexEZg4y6Cu6M/P/CBSkyg/c1qd2CFFsIT/KF4no21fea0hJw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=oVkdZdID4HiLY9Ep3+V9q+IXyUqoLUJfxukiDQpXj+g=;
+ b=SpworzBDId9UQP2DBZHU/hVjQJZzT2Re6zG5w6ToREXfHBomCRbcli9zjnJzFUlxZJhYAgPDiLk/hfg7RGvrEwW3Ol/u8YFXEkaWJHoG2w8Ka7rOc8K/SLN2M0zlAn7axbmHo40JQjMiG1PPuZ0J1kAcsSdZ8zduktw7LbqZwYSuJgH8/XWtab9+xCbOlIKDR3JVsTDJ19FgXunxANgyXxQXvZLPOpahExl8Fnd9qRK2HBwwkxg5MpriMsEH98PcdWMrFdRli61D8LNULMgfBJ6lzfrzij0Sr2bcvRVWo5LQDCzB5tN1E3JhzABuZbN2Wta8pycD3pYdxdYsjFjJXA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by MW4PR12MB6921.namprd12.prod.outlook.com (2603:10b6:303:208::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6813.19; Wed, 27 Sep
+ 2023 23:47:41 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::3f66:c2b6:59eb:78c2]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::3f66:c2b6:59eb:78c2%5]) with mapi id 15.20.6838.016; Wed, 27 Sep 2023
+ 23:47:40 +0000
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+	asahi@lists.linux.dev,
+	Christophe Leroy <christophe.leroy@csgroup.eu>,
+	David Woodhouse <dwmw2@infradead.org>,
+	iommu@lists.linux.dev,
+	Joerg Roedel <joro@8bytes.org>,
+	Kevin Tian <kevin.tian@intel.com>,
+	linux-arm-kernel@lists.infradead.org,
+	linuxppc-dev@lists.ozlabs.org,
+	Hector Martin <marcan@marcan.st>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Sven Peter <sven@svenpeter.dev>,
+	Will Deacon <will@kernel.org>
+Cc: Lu Baolu <baolu.lu@linux.intel.com>,
+	Janne Grunau <j@jannau.net>
+Subject: [PATCH v2 3/9] iommu/vt-d: Use ops->blocked_domain
+Date: Wed, 27 Sep 2023 20:47:33 -0300
+Message-ID: <3-v2-bff223cf6409+282-dart_paging_jgg@nvidia.com>
+In-Reply-To: <0-v2-bff223cf6409+282-dart_paging_jgg@nvidia.com>
+References:
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: BL1PR13CA0354.namprd13.prod.outlook.com
+ (2603:10b6:208:2c6::29) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.13.0
-Subject: Re: [PATCH v12 0/6] iommu/dma: s390 DMA API conversion and optimized
- IOTLB flushing
-Content-Language: en-US
-To: Jason Gunthorpe <jgg@ziepe.ca>, Niklas Schnelle <schnelle@linux.ibm.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Wenjia Zhang <wenjia@linux.ibm.com>,
-        Robin Murphy <robin.murphy@arm.com>, Gerd Bayer <gbayer@linux.ibm.com>,
-        Julian Ruess <julianr@linux.ibm.com>,
-        Pierre Morel <pmorel@linux.ibm.com>,
-        Alexandra Winter
- <wintera@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev
- <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-        Hector Martin <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        David Woodhouse <dwmw2@infradead.org>,
-        Lu Baolu <baolu.lu@linux.intel.com>, Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>,
-        Yong Wu <yong.wu@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-        Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Baolin Wang
- <baolin.wang@linux.alibaba.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>, Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Krishna Reddy
- <vdumpa@nvidia.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Jonathan Corbet <corbet@lwn.net>, linux-s390@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        iommu@lists.linux.dev, asahi@lists.linux.dev,
-        linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
-        linux-mediatek@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        linux-tegra@vger.kernel.org, linux-doc@vger.kernel.org
-References: <20230825-dma_iommu-v12-0-4134455994a7@linux.ibm.com>
- <ZRLy_AaJiXxZ2AfK@8bytes.org> <20230926160832.GM13795@ziepe.ca>
- <cfc9e9128ed5571d2e36421e347301057662a09e.camel@linux.ibm.com>
- <ZRP8CiBui7suB5D6@8bytes.org>
- <b06a14de270a63050b0d027c24b333dba25001a4.camel@linux.ibm.com>
- <e1efbbd827e34800bd7fb0ea687645cc6c65e1ab.camel@linux.ibm.com>
- <6dab29f58ac1ccd58caaee031f98f4d0d382cbcd.camel@linux.ibm.com>
- <a672b6b122c7a5f708614346885c190a6960aaea.camel@linux.ibm.com>
- <20230927154009.GN13795@ziepe.ca>
-From: Matthew Rosato <mjrosato@linux.ibm.com>
-In-Reply-To: <20230927154009.GN13795@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: MZTnsmsGUITwt1HRAwGX6vmSx-ob7yF1
-X-Proofpoint-ORIG-GUID: Wu1NKWtULkpe9Fba-31Ww5rbudahWoCV
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.267,Aquarius:18.0.980,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2023-09-27_12,2023-09-27_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 clxscore=1011
- spamscore=0 suspectscore=0 bulkscore=0 lowpriorityscore=0 impostorscore=0
- priorityscore=1501 mlxscore=0 phishscore=0 mlxlogscore=999 malwarescore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2309180000
- definitions=main-2309270171
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|MW4PR12MB6921:EE_
+X-MS-Office365-Filtering-Correlation-Id: 1ed06a80-49e0-4a2b-282a-08dbbfb42313
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	CqhMA8KrlkUCLh7Q8qBfG555SVtc89zH+zFE51eBP6Hu/EMQbDToR85h6tTg6UbK3BxrGcbWL3aSRTZ12egbkE+Zovxkl1V2wbNEh7ArtNeMYgT/fHaJZIm90Tj1oEVDSf4Qox7SkQnnrZ1OOdbeN5nPo1nTcg16QE+KCRB9KdRs64EFQxJcuIuC/hbFtyfzT3Usvv1fhus40V98Slt76e0TqKmLbvKVwZzb4tl5RxPhgqF4pi4ZdfWZysxCc3+fqz1pruOJ0Is++ZSw2gd7rUo50AjAPk++e3RFruVW38A/MupxV62+YoInn217k86CWq4iPlWGkBL7K7hMg2NoZ7MFRaYeojbW4BawcDT1rpLYUs+ndCuxo7/wFfWtsgwXBnqr4loPd6ck1h0V61SSl366Q7GkPyQsZEVA+3riiCRcl7oQiwN6FdTjZnvRGrvMifja5oOxRjNH84n+/+ywrcWzw4uah3ZWO6oD4IrVEfiW9oPD0eIahs81NqNMSUSmdKj1MkQC5IA8XdZTGeigwQU68QoJkKs75AiGEBwoZ87bKeOc4c+QwgTF2ptsnlGmTkgdl3wOTL4rsXR4l3eHBiMQtA53gXDP3LatixadaDCWMOyKuJE8iGZ4mLwRSZ7w
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(136003)(376002)(39860400002)(366004)(396003)(346002)(230922051799003)(451199024)(1800799009)(186009)(64100799003)(6506007)(6486002)(6666004)(478600001)(921005)(38100700002)(86362001)(2906002)(7416002)(41300700001)(83380400001)(6512007)(26005)(2616005)(36756003)(15650500001)(54906003)(5660300002)(66556008)(66946007)(316002)(110136005)(66476007)(4326008)(8676002)(8936002)(4216001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?yQijy0nY3yWJBkIBp/wBa7mY14yPIzBla+07XhB82uNj3LvFH5PTkY1EwNfv?=
+ =?us-ascii?Q?Ls+87CqtcNDNTm7QR1w/CEpTE+MqIBxlbwZdCHJw9hgF5vdcdGNHMV2PrlSS?=
+ =?us-ascii?Q?l2vXDF3kjjX/b8d3x7lkJ2zo0hPs7BRo2viqXAPfS3ryOLAP2ZkaM8GxAaZT?=
+ =?us-ascii?Q?NK2uEFl2iMOpde0ZocmlKCohuXgI8e3R7NV4/OKFuS3/hu2oXjVtfX1+5pr1?=
+ =?us-ascii?Q?ZGbxYtt0XDz+hiLIi4YOx7oxR2aQBFpKZvH8SEU4ukkPE0Cs44TKk5kbP638?=
+ =?us-ascii?Q?iHG1iM53PcvoiHKEsUbXqe/4vLURDePoQqPjCMMK08pRHsQf/weCRxGakADw?=
+ =?us-ascii?Q?AD0ZBCSv4fLYA0NUAOdVj9KH6Gi1lrDJ+hPLD5T4ehAdbWobJ9aHgyRNQEll?=
+ =?us-ascii?Q?r0BWqfWuZ998tJCcQjYj64J2YakICTLluiq2BqNDBkyIyjBFqd34eJyEMQPc?=
+ =?us-ascii?Q?aD5naH7SQwJFttH7yJR84Sb0JCZpilJ2A6QzE3D0RXPtvKWKApp32aRWy8ai?=
+ =?us-ascii?Q?CxpB6tXhwOt1sKrDxVipKGU5QeP7rTueaY7m0pBMRZN/uMLblh8zciB/SA44?=
+ =?us-ascii?Q?z9dv3MJFyN+6Ifrqje73n+BTQwP1lprxSEIEM18qmtNlXlCx52DgK5JgHLwC?=
+ =?us-ascii?Q?D0v8Ud49Y5T6vcCY/FEvDrZMItZF7Hgy9x6tJx0uq7hNWGeD5elPv6+VQL7r?=
+ =?us-ascii?Q?XDfVXr6RRQ1lkjXiYPm7GZvflCbzywFnOTsDEgmKrG3S8vw8PqKn+FzBHCkj?=
+ =?us-ascii?Q?zKN+D/KxncHFoc5WuF257l8skNhVLhmJrSVZlpG3a8g+UnNCuWyowY9hJ2gR?=
+ =?us-ascii?Q?GGQCGj5KMBjx+2m7K7VCANx78RAePby15nPiqvVRP5/2J3lz2d0h3TSJ8AOP?=
+ =?us-ascii?Q?H3MShKuh6m0JtAN1KxmMZgPmpVOhFnGdnE0buAkNzr9UG8gsIhi2/oA9n+Wh?=
+ =?us-ascii?Q?vJlWqc74QCBqdhzkG5TlCmPiRW9yzD7M/ySWv7f62CEMds68pzNIrx14mO03?=
+ =?us-ascii?Q?m58KSBbX6MouTb4dyeG1jj8sWIRh9trSJ0A0LyuXEue5kgNMuEbr9O4QlR+O?=
+ =?us-ascii?Q?FkIqsu046dRtU2cgYWrj9UHsjs354KkZAfsRl9cvbP++h3E3Ql4o10oRumQI?=
+ =?us-ascii?Q?8izrvidV4os9z8WEln/CBIS4UASEB9ExDaAyEyEeI803JRieF2F2vJMQcHTq?=
+ =?us-ascii?Q?5De0ev12WF4t/FVZbN2pEt5whyfimkK0HoDhcNqxEQbfjGokOFf5GaV3l8hT?=
+ =?us-ascii?Q?8AhEwqFdZ5JUi/9YX+QKrJ3v7AdoOmUnTHRWI/FsFKe9udMRRrkFBl/vTv6S?=
+ =?us-ascii?Q?bl07f2LMSnBxhn8Fah8ptsVyLTPECAAMmr4LA7+pbsAe8J/UWPF0UHPVpvyQ?=
+ =?us-ascii?Q?fKxXKWM+2d+2t/qUROKmrjOZqwMANbnxpHQ+oKDCkAd3sivF1S6LsdRZTT0H?=
+ =?us-ascii?Q?tZbK2bgEUJnHRpJJID+CISRyOpZku+2etMlWUbBgugpFhKwIoBzeL1UdwVif?=
+ =?us-ascii?Q?rA1Kwz9V1LbyRBIg1/Olv6M5Ie9qqUP0WZE3F0HWo6ot2S6gWdY5NePGGtWv?=
+ =?us-ascii?Q?SWx0V+6xAIju9FR9cIkyHNVrM5tZ/sXe5/q1bqs+?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1ed06a80-49e0-4a2b-282a-08dbbfb42313
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Sep 2023 23:47:40.7874
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: B/Gm+q2Bm7Pi3cVP55dXApS7mC9juDyr/wVoZnlDiCPRFzqgDLGg6+8vGxXYIQnC
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR12MB6921
 
-On 9/27/23 11:40 AM, Jason Gunthorpe wrote:
-> On Wed, Sep 27, 2023 at 05:24:20PM +0200, Niklas Schnelle wrote:
-> 
->> Ok, another update. On trying it out again this problem actually also
->> occurs when applying this v12 on top of v6.6-rc3 too. Also I guess
->> unlike my prior thinking it probably doesn't occur with
->> iommu.forcedac=1 since that still allows IOVAs below 4 GiB and we might
->> be the only ones who don't support those. From my point of view this
->> sounds like a mlx5_core issue they really should call
->> dma_set_mask_and_coherent() before their first call to
->> dma_alloc_coherent() not after. So I guess I'll send a v13 of this
->> series rebased on iommu/core and with an additional mlx5 patch and then
->> let's hope we can get that merged in a way that doesn't leave us with
->> broken ConnectX VFs for too long.
-> 
-> Yes, OK. It definitely sounds wrong that mlx5 is doing dma allocations before
-> setting it's dma_set_mask_and_coherent(). Please link to this thread
-> and we can get Leon or Saeed to ack it for Joerg.
-> 
+Trivially migrate to the ops->blocked_domain for the existing global
+static.
 
-Hi Niklas,
+Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+---
+ drivers/iommu/intel/iommu.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-I bisected the start of this issue to the following commit (only noticeable on s390 when you apply this subject series on top):
-
-06cd555f73caec515a14d42ef052221fa2587ff9 ("net/mlx5: split mlx5_cmd_init() to probe and reload routines")
-
-Which went in during the merge window.  Please include with your fix and/or report to the mlx5 maintainers.  Looks like the changes in this patch match what you and Jason describe; it splits up mlx5_cmd_init() and moves part of the call earlier.  The net result is we first call mlx5_mdev_init>mlx5_cmd_init->alloc_cmd_page->dma_alloc_coherent and then sometime later call mlx5_pci_init->set_dma_caps->dma_set_mask_and_coherent. 
-
-Prior to this patch, we would not drive mlx5_cmd_init (and thus that first dma_alloc_coherent) until mlx5_init_one which happens _after_ mlx5_pci_init->set_dma_caps->dma_set_mask_and_coherent.
-
-Thanks,
-Matt
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index ba9db95d2f1c5e..71c12e15ecd7b3 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -4025,8 +4025,6 @@ static struct iommu_domain *intel_iommu_domain_alloc(unsigned type)
+ 	struct iommu_domain *domain;
+ 
+ 	switch (type) {
+-	case IOMMU_DOMAIN_BLOCKED:
+-		return &blocking_domain;
+ 	case IOMMU_DOMAIN_DMA:
+ 	case IOMMU_DOMAIN_UNMANAGED:
+ 		dmar_domain = alloc_domain(type);
+@@ -4788,6 +4786,7 @@ static void *intel_iommu_hw_info(struct device *dev, u32 *length, u32 *type)
+ }
+ 
+ const struct iommu_ops intel_iommu_ops = {
++	.blocked_domain		= &blocking_domain,
+ 	.capable		= intel_iommu_capable,
+ 	.hw_info		= intel_iommu_hw_info,
+ 	.domain_alloc		= intel_iommu_domain_alloc,
+-- 
+2.42.0
 
