@@ -1,144 +1,183 @@
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2041.outbound.protection.outlook.com [40.107.223.41])
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B32328E1F;
-	Wed, 27 Sep 2023 12:59:30 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=k+0dlD50TL/ZMKJ8VU+RK+Yiue5qnkr4YJdeib+61ssZmX/+6XO52IDZF62VqGKNC84Wh8fWOg3GFluAfrMqi13f1U3XysZEKRwATOetiWgB61po95cnYVq7tqCJel1RI0ayUz4roeIOx4wYv+kCVWlQRDcUuHIqBrdgwq6eVjT6w5lIng4GvMkR+k+uWqINyPB9cC5oyrHoslFjYP/V1VBxYwxGapg2cVbcnnYdXIzYuOv1NTU7PEtydV38v8EZBkIRFdgHGySodec6wzSCqqSRm0d8Bqd72TuX4uv8vWkucq2FL/VQWAGYPnB1PvDlapUlPmcDI8htcBgtPCxxTQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ITfwk1MmcjuHQKGlcYPiiTrPDyk19y8gQhAnRH7FHlU=;
- b=loZWg1SxvDXCarhWQnkqU9nBfA3bzbJeenLAKzmbZvfsTzZCTRJvBiryLmvRq1tirCQVPAz5naEPTuhijEBOfsb2XngS/FUtsgrz/kta+e1ChBzIyUFVihkzTAW2XfVDNfIx8J81VYeGej3L3pQu9dVHWyNCYGwIH/GHHh+iQomQU2hApHplXVNbz6j8RUUkI5hpdDzVwoRSyoexifIs6+DeNnKFG8fTApG7LB6i3D7T1/H17hsE1pdKDuyNK5hZ6hAcRIYyyq3rS/Ud/TIOVatz2bNln2HfuLY9CyXNXH/yicX4U+NP4HeFJVqiIg9F2jLfrou2PsMgHqcKI2HFDQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ITfwk1MmcjuHQKGlcYPiiTrPDyk19y8gQhAnRH7FHlU=;
- b=dXOiR9kVsYBC27xCuHwlsckubX/KWWUn8QCkuaKO6OczwBhQfZ8SLwk885IlIJW2TN7DO99W7wMfvJeHyq5LnRATN2oaUBwK0841c11piGwpmDNcte8yHs8fYycg8nU8ZHJqxM/22i9nn8m1j0aeym2mX+0b/TTvII65w+K5xrn3YkJj+8x+T2sWaW6t8Vc4zLDeGWgahOto0js6KWonnMFkwZF4RJ2/yZh6bOfLbK4/6y9Lu0rRZlvphft6Kj6XUFhFnlrE1qOdbCwuqTqOXjOdjbLw0EkIex/VJ62BvhPiusWpotbZaf0zxwL1K0mPfyYXerW8V5gKngljvQqzZA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by BL0PR12MB4899.namprd12.prod.outlook.com (2603:10b6:208:1cf::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6838.21; Wed, 27 Sep
- 2023 12:59:27 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::3f66:c2b6:59eb:78c2]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::3f66:c2b6:59eb:78c2%5]) with mapi id 15.20.6838.016; Wed, 27 Sep 2023
- 12:59:27 +0000
-Date: Wed, 27 Sep 2023 09:59:25 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Janne Grunau <j@jannau.net>
-Cc: Alyssa Rosenzweig <alyssa@rosenzweig.io>, asahi@lists.linux.dev,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Christophe Leroy <christophe.leroy@csgroup.eu>,
-	David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux.dev,
-	Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
-	linux-arm-kernel@lists.infradead.org, linuxppc-dev@lists.ozlabs.org,
-	Hector Martin <marcan@marcan.st>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Sven Peter <sven@svenpeter.dev>, Will Deacon <will@kernel.org>
-Subject: Re: [PATCH 6/8] iommu/dart: Move the blocked domain support to a
- global static
-Message-ID: <20230927125925.GT13733@nvidia.com>
-References: <0-v1-8060f06462cc+c0a39-dart_paging_jgg@nvidia.com>
- <6-v1-8060f06462cc+c0a39-dart_paging_jgg@nvidia.com>
- <ZRMrZJ1HgpULWeyv@robin>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZRMrZJ1HgpULWeyv@robin>
-X-ClientProxiedBy: MN2PR01CA0064.prod.exchangelabs.com (2603:10b6:208:23f::33)
- To LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DADC31CAB6;
+	Wed, 27 Sep 2023 13:20:43 +0000 (UTC)
+Received: from pps.filterd (m0353728.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 38RCOdCv005069;
+	Wed, 27 Sep 2023 13:20:14 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=jv2J3s2T7OsfdnfP7xO+3G5kReH0lMyKgLkynJikBfI=;
+ b=tJIYGGNUI7x+MeeJeVOcBbjIZ9cgqX/dZ9HPkBeNoUFHx0zzCrPigTsA7KPeSNVc2TlV
+ aSZZAFNRXvLMnc9cKkp4H+TksK4oudv79qebAVsJSiesoktymHl8Qq4tGl1ObhMy105j
+ LUPVKX8r0gSe7KenI/NO6by0jBuTUr9CLpGc0CK/y2rGBtILhqBEPlwmn8hN8GE2v64I
+ VQ9BJzTe/t5LvFvuHmAdiXAHDXTPGfFyMtrMYYR+FDM33QxfGdFwNQqizZziKEZFNIZk
+ TrKWWuLLepClvqBEL3FNdMYrhZfE3mX2at15iULH9drm5/lGV3qIhionZ4DbSC9hC5DT 7Q== 
+Received: from pps.reinject (localhost [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3tcmcgsw85-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 27 Sep 2023 13:20:14 +0000
+Received: from m0353728.ppops.net (m0353728.ppops.net [127.0.0.1])
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 38RD5BuN028501;
+	Wed, 27 Sep 2023 13:20:13 GMT
+Received: from ppma23.wdc07v.mail.ibm.com (5d.69.3da9.ip4.static.sl-reverse.com [169.61.105.93])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3tcmcgsw6v-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 27 Sep 2023 13:20:13 +0000
+Received: from pps.filterd (ppma23.wdc07v.mail.ibm.com [127.0.0.1])
+	by ppma23.wdc07v.mail.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 38RB85s1011019;
+	Wed, 27 Sep 2023 13:20:11 GMT
+Received: from smtprelay06.fra02v.mail.ibm.com ([9.218.2.230])
+	by ppma23.wdc07v.mail.ibm.com (PPS) with ESMTPS id 3tabukkhhn-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 27 Sep 2023 13:20:11 +0000
+Received: from smtpav07.fra02v.mail.ibm.com (smtpav07.fra02v.mail.ibm.com [10.20.54.106])
+	by smtprelay06.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 38RDK8uR42861118
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Wed, 27 Sep 2023 13:20:08 GMT
+Received: from smtpav07.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 3124720067;
+	Wed, 27 Sep 2023 13:20:08 +0000 (GMT)
+Received: from smtpav07.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 30B3420040;
+	Wed, 27 Sep 2023 13:20:07 +0000 (GMT)
+Received: from [9.152.212.236] (unknown [9.152.212.236])
+	by smtpav07.fra02v.mail.ibm.com (Postfix) with ESMTP;
+	Wed, 27 Sep 2023 13:20:07 +0000 (GMT)
+Message-ID: <e1efbbd827e34800bd7fb0ea687645cc6c65e1ab.camel@linux.ibm.com>
+Subject: Re: [PATCH v12 0/6] iommu/dma: s390 DMA API conversion and
+ optimized IOTLB flushing
+From: Niklas Schnelle <schnelle@linux.ibm.com>
+To: Joerg Roedel <joro@8bytes.org>
+Cc: Jason Gunthorpe <jgg@ziepe.ca>, Matthew Rosato <mjrosato@linux.ibm.com>,
+        Will Deacon <will@kernel.org>, Wenjia Zhang <wenjia@linux.ibm.com>,
+        Robin
+ Murphy <robin.murphy@arm.com>,
+        Gerd Bayer <gbayer@linux.ibm.com>,
+        Julian
+ Ruess <julianr@linux.ibm.com>,
+        Pierre Morel <pmorel@linux.ibm.com>,
+        Alexandra Winter <wintera@linux.ibm.com>,
+        Heiko Carstens
+ <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev
+ <agordeev@linux.ibm.com>,
+        Christian Borntraeger
+ <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Suravee
+ Suthikulpanit <suravee.suthikulpanit@amd.com>,
+        Hector Martin
+ <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig
+ <alyssa@rosenzweig.io>,
+        David Woodhouse <dwmw2@infradead.org>,
+        Lu Baolu
+ <baolu.lu@linux.intel.com>, Andy Gross <agross@kernel.org>,
+        Bjorn Andersson
+ <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>,
+        Yong Wu
+ <yong.wu@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+        Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+        Orson Zhai
+ <orsonzhai@gmail.com>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        Chunyan
+ Zhang <zhang.lyra@gmail.com>, Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec
+ <jernej.skrabec@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Thierry
+ Reding <thierry.reding@gmail.com>,
+        Krishna Reddy <vdumpa@nvidia.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Jonathan Corbet <corbet@lwn.net>, linux-s390@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        iommu@lists.linux.dev, asahi@lists.linux.dev,
+        linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        linux-tegra@vger.kernel.org, linux-doc@vger.kernel.org
+Date: Wed, 27 Sep 2023 15:20:07 +0200
+In-Reply-To: <b06a14de270a63050b0d027c24b333dba25001a4.camel@linux.ibm.com>
+References: <20230825-dma_iommu-v12-0-4134455994a7@linux.ibm.com>
+	 <ZRLy_AaJiXxZ2AfK@8bytes.org> <20230926160832.GM13795@ziepe.ca>
+	 <cfc9e9128ed5571d2e36421e347301057662a09e.camel@linux.ibm.com>
+	 <ZRP8CiBui7suB5D6@8bytes.org>
+	 <b06a14de270a63050b0d027c24b333dba25001a4.camel@linux.ibm.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.48.4 (3.48.4-1.fc38) 
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|BL0PR12MB4899:EE_
-X-MS-Office365-Filtering-Correlation-Id: 3aea5661-c71c-414f-6578-08dbbf599491
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	Xw6OwZHtGKK15B6l0wFGMsc3MprE9mdYp/6+DxNFTFiBKEzbL4XizmRY5WCQujn+CeRqWZt6vfMsQE+A0KQKXj9RY8GGbJ7mpZ+rqr7MACNXVH2ElhuULaDUholNGP3LiT/oRdRO0zCH26sYhnHYbQMh2PbpLnZFs0E704j5bTpBKqH3ydPnQTjY60R4C9V0MT84PBDGK3n5Tn/REwhVHibhRzAW3dbiUt6A7Z+WTTRbdIzisRWdZ1dFiKJ+O2kqyYbNWnvmd2O+RJsRr1K1BTrJf4qAPDy9oXlqjEXmGLWacKxQCGWAq4Gg+sNRRfbBdVn5iQFQbr8Nj0sCw+WKgyds6gBr4uMfEEo1gBK7qvJmAJhZIrVHyTqcjcf2DAByDx2+HC1vKmViaE612yR2RojXJC5OHRV9TreUdIwjxlX+dtK4lWYTVunSpWr4tYrm+nnjVZ35f5thLSxNDfdiLmDiXqGxUC9+qXd7I0sJIxOVZKz53jrNQWK1A+t+04StdzI191ZHDPztbCDq7Svx+vgqRs1L3bz62LYJyzdCYZV8anMjnJA2ckLRu8VZfnCWNdL1HDAlSoUmISHE5nxye9MSJYpxqAGwd5wU6Jr+q4k=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(346002)(396003)(366004)(136003)(39860400002)(376002)(230922051799003)(186009)(451199024)(1800799009)(6916009)(4326008)(7416002)(66476007)(66556008)(26005)(66946007)(1076003)(15650500001)(8676002)(8936002)(5660300002)(41300700001)(2906002)(33656002)(478600001)(38100700002)(6512007)(316002)(54906003)(36756003)(6506007)(6486002)(83380400001)(2616005)(86362001)(781001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?6Y3jfop/etktEUUSSypZvphTriYkqINAG/lK9OKySAM6u+34RbGS3DxVsKU5?=
- =?us-ascii?Q?67GvmSYpLQ4iapW25sEusJk21oD4HvL5kpHIyaFUAIddDrypryfPZgnG1Bs0?=
- =?us-ascii?Q?yqm7iSju/Zu5RLrFNj7HTCtNGjk4Mc3rmJjm3Us3ntyAjUCO0lWSX03AVlcw?=
- =?us-ascii?Q?YFpRmeOXsHg5uP6kOymogapWYJKMesejWMWajIpRWdyJnm1GbKh8IUGgxfl/?=
- =?us-ascii?Q?1MHZ/O90vhdw1i4XUBQ10skVTuCm+UPK6VZOFGhNWsvRbds5i1wG04RKtzsY?=
- =?us-ascii?Q?oVfM7qL7fT1iZQFmD6ZYFvXZzJEqzKzbnIgG3uOEvRjOn2JiP4JP9d0LIvbZ?=
- =?us-ascii?Q?n/uMGTAR1Kd565mtlM7k6yKwe8IJl/JaEiXgCkrwd5Icol8ZwxlE6b9rIQSV?=
- =?us-ascii?Q?QoIjh+41DQ1yccIrY5ir1PXg9yZqCUgD4ojyDJIseJBG++inGnZ49EDDy3GB?=
- =?us-ascii?Q?/Ey3N87VwzrYkAOrwLU30QRm1feYc5ILiL7tsD60Yw0/MyQDjXvFLkimZblA?=
- =?us-ascii?Q?vNqUytaI9CYn6/+2JMp73J0PHgeoeNXMFwWHbjoeyxtbQXDAMJ3t9/n9DVZY?=
- =?us-ascii?Q?IXx6Lm5qeqkwb11tc3WLR0EB2p/KVYCQVVfK4imY6Z+e3dMP+njYRz1S/YE8?=
- =?us-ascii?Q?7GTQbAyZyPPFUD6yyQOgt84eHd7eXZEpTFjwi4cKN2BM8cRMXE4soQRiVbrd?=
- =?us-ascii?Q?+M+IujujNm+UTeyPvb2+ILp4NQoNeqD6eh+7hKosnzU8KoIw5XSglqsXV9BK?=
- =?us-ascii?Q?uc72R3sZeNaFZkPXX/d3ldtD2nViMfrerlvLSLoiElBaA7X0Nq0iBqDMPTyO?=
- =?us-ascii?Q?Bwr7gjmn3C/+Qk1W017qeVHb1qdTVt5dMs/Tkfb9bL/ZEpPr/3oVWJOtJMZc?=
- =?us-ascii?Q?IhHf5sxPQEOJBmANU7jV/F9aKHhjUoFhhapJ/V8Dk4czYxcru9A13hcCwMLN?=
- =?us-ascii?Q?2iRujh3jgaaewWvdomBNiu6SlaO4CUeVxDqbNIzPoHiVZDzy91GCSH5BADTS?=
- =?us-ascii?Q?8XpifQxd/sPkZvxPb3vNGerXSCzbqfUILb43otHQcEfpwgPvn9nf0DncrHyi?=
- =?us-ascii?Q?OpIaxImTGQ34J1lVxX/sEyJq97uTraOtawoQFMtwITdBbIDJHxqMGwE3rHoB?=
- =?us-ascii?Q?L+yJza1qHGC4mkfxajK5HJmyj0TsNqvtpmdo8wKGNbl2DhMy3/VuH4U2cOww?=
- =?us-ascii?Q?bLU2pXznRioXdODDAPiauDDx6JjUYzdsv6LQiL+VSQu9aRRTNtH4EaWCd7fe?=
- =?us-ascii?Q?IW/0GktW9+whBRS+dKkJlXeyLe/vy3Gu998D7Jjuy5qHW6XzGpoXgyFBUupI?=
- =?us-ascii?Q?ymx2A3YbGtXowCJnmiCojtwcX8Tk5VnSQ/FMTqIdjulSM1h5ZQAw6yQO8/5a?=
- =?us-ascii?Q?xF+H96qDpKLBs0/rUkYSebSjpbx5XmcAnH5nguiDsSWnkVb23rndXnRUK64F?=
- =?us-ascii?Q?IstA/ww6nZi3dj7R/wvhX8Ultw0Cm5VLA70u9TaibHzF9ikgVYk5RNbM6CPV?=
- =?us-ascii?Q?QP7d9NTBK0dIEBQiL7eUzEQGm5o6UgxkrhSCql61rdXzC/3Ap23ZtmeWG4GI?=
- =?us-ascii?Q?Xdz7kqLeR5r30Y2MvKqOFQf3r9ylcZWrUQLMEn6a?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3aea5661-c71c-414f-6578-08dbbf599491
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Sep 2023 12:59:26.9748
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Q7KemYPRYBtNPBLNAQE0Wng4PssYT7Njhd8WwgijPbA0Y3nNyHaD/91VdxWphIXW
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR12MB4899
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: VXZxHUsIjNmP_Qb7Pwq1202Mna4hsBUK
+X-Proofpoint-ORIG-GUID: LYDctZpbLtyEpOclC1b66ehHlfvfc4KR
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.267,Aquarius:18.0.980,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2023-09-27_07,2023-09-27_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ mlxlogscore=999 lowpriorityscore=0 malwarescore=0 spamscore=0
+ suspectscore=0 clxscore=1015 impostorscore=0 mlxscore=0 adultscore=0
+ phishscore=0 bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2309180000 definitions=main-2309270110
 
-On Tue, Sep 26, 2023 at 09:05:08PM +0200, Janne Grunau wrote:
-> > +static int apple_dart_attach_dev_blocked(struct iommu_domain *domain,
-> > +					 struct device *dev)
-> > +{
-> > +	struct apple_dart_master_cfg *cfg = dev_iommu_priv_get(dev);
-> > +	struct apple_dart_stream_map *stream_map;
-> > +	int i;
-> > +
-> > +	if (cfg->stream_maps[0].dart->force_bypass)
-> > +		return -EINVAL;
-> 
-> unrelated to this change as this keeps the current behavior but I think
-> force_bypass should not override IOMMU_DOMAIN_BLOCKED.
+On Wed, 2023-09-27 at 13:24 +0200, Niklas Schnelle wrote:
+> On Wed, 2023-09-27 at 11:55 +0200, Joerg Roedel wrote:
+> > Hi Niklas,
+> >=20
+> > On Wed, Sep 27, 2023 at 10:55:23AM +0200, Niklas Schnelle wrote:
+> > > The problem is that something seems to  be broken in the iommu/core
+> > > branch. Regardless of whether I have my DMA API conversion on top or
+> > > with the base iommu/core branch I can not use ConnectX-4 VFs.
+> >=20
+> > Have you already tried to bisect the issue in the iommu/core branch?
+> > The result might sched some light on the issue.
+> >=20
+> > Regards,
+> >=20
+> > 	Joerg
+>=20
+> Hi Joerg,
+>=20
+> Working on it, somehow I must have messed up earlier. It now looks like
+> it might in fact be caused by my DMA API conversion rebase and the
+> "s390/pci: Use dma-iommu layer" commit. Maybe there is some interaction
+> with Jason's patches that I haven't thought about. So sorry for any
+> wrong blame.
+>=20
+> Thanks,
+> Niklas
 
-That would be great, dart is the only driver that can fail blocked..
+Hi,
 
-> It is set if the CPU page size is smaller than dart's page
-> size. Obviously dart can't translate in that situation but it should
-> be still possible to block it completely.
+I tracked the problem=C2=A0down from mlx5_core's alloc_cmd_page() via
+dma_alloc_coherent(), ops->alloc, iommu_dma_alloc_remap(), and
+__iommu_dma_alloc_noncontiguous() to a failed iommu_dma_alloc_iova().
+The allocation here is for 4K so nothing crazy.
 
-Wonderful, actually it probably shouldn't even support allocating a
-paging domain if it can't support PAGE_SIZE mappings?
+On second look I also noticed:
 
-> How do we manage this? I can write a patch either to the current state
-> or based on this series.
+nvme 2007:00:00.0: Using 42-bit DMA addresses
 
-Let me just add a patch to this series to remove that test with your
-explanation, that will avoid patch ordering troubles.
+for the NVMe that is working. The problem here seems to be that we set
+iommu_dma_forcedac =3D true in s390_iommu_probe_finalize() because we
+have currently have a reserved region over the first 4 GiB anyway so
+will always use IOVAs larger than that. That however is too late since
+iommu_dma_set_pci_32bit_workaround() is already checked in
+__iommu_probe_device() which is called just before ops-
+>probe_finalize(). So I moved setting iommu_dma_forcedac =3D true to
+zpci_init_iommu() and that gets rid of the notice for the NVMe but I
+still get a failure of iommu_dma_alloc_iova() in
+__iommu_dma_alloc_noncontiguous(). So I'll keep digging.
 
 Thanks,
-Jason
+Niklas
