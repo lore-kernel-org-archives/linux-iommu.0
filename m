@@ -1,138 +1,159 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A94E5EACC
-	for <iommu@lists.linux.dev>; Wed, 27 Sep 2023 18:52:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1695840757;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=Kq5Qg2bQQlEqkI6mgl+PBDF3TD7HEyYrhhIx1gLZrcg=;
-	b=eDWnEDa08UjIOp072Z8kURuihNsmqYZ8UqlfdWSQ29/LgaLhrWmOcC1me+u8LjgM3iSqbo
-	uuutoHa32iKKhuRHTf5Ack4SZiFk4Uv27WNJZoAoGKKj5+L8PO0NZQnrxQPUhp4m3s0RbM
-	2SKJfthpPr0WNoowvK3N8HAXug4ym/w=
-Received: from mail-oo1-f72.google.com (mail-oo1-f72.google.com
- [209.85.161.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-349-wqGM4a7wOoqSx19cx_wFIw-1; Wed, 27 Sep 2023 14:52:35 -0400
-X-MC-Unique: wqGM4a7wOoqSx19cx_wFIw-1
-Received: by mail-oo1-f72.google.com with SMTP id 006d021491bc7-57b8079db51so21196682eaf.3
-        for <iommu@lists.linux.dev>; Wed, 27 Sep 2023 11:52:35 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1695840755; x=1696445555;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=Kq5Qg2bQQlEqkI6mgl+PBDF3TD7HEyYrhhIx1gLZrcg=;
-        b=lnoUc7sjv5rLJJ94Krz2mV+GzSE6Xckd4Lk+olk5NtV3ZB16fFvTvaCbGMf7Dv+qDg
-         QWCe4vG0XNOHdroiddQYwYg0sPkJ5YHa9WC29mOKG3KsicxnSWYjhPcYd3lI1jn7PJYq
-         KKmkBMfzMOOTkWRvOkad2J/IKPcaJu9v8s74m2mEHxJhDZv6CnjbrPb6opcA1J41QfJp
-         zLops5nOTEvttQppejSrm9nOG2/dhM1pLZm0H742jX2K2hPt351v3Ceq2Gej0eFRYteb
-         26r2PMxpJAFk4uuniAlqVntEoKN4srmS+HOMD0S0R8uZAK+YJH7DBdFNn8zNO/T8qawE
-         hRiQ==
-X-Gm-Message-State: AOJu0YxVP7ErVUrlSKeSby5/+n1LTGtJo+SDJ1CDm9W4AttNoKQcib2Z
-	SBv7F+cXe934e9tDLWPXZjR4662DfTvTq7O1+cKEurXuqXzN/1Wc51eX/a0dLXVWoys8XOPFsKg
-	NdgGFh0HyA8swDv8=
-X-Received: by 2002:a4a:6246:0:b0:57b:6a40:8a9e with SMTP id y6-20020a4a6246000000b0057b6a408a9emr3241158oog.7.1695840755197;
-        Wed, 27 Sep 2023 11:52:35 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IE3cPePjgR+735wrJbNOWlgYYeVheIM5ALo2dqBObMKFrQpCrxuu4qqIaRtOinyevyLL0/Zfw==
-X-Received: by 2002:a4a:6246:0:b0:57b:6a40:8a9e with SMTP id y6-20020a4a6246000000b0057b6a408a9emr3241122oog.7.1695840754919;
-        Wed, 27 Sep 2023 11:52:34 -0700 (PDT)
-Received: from redhat.com ([38.15.60.12])
-        by smtp.gmail.com with ESMTPSA id p187-20020a4a48c4000000b0054f85f67f31sm2878334ooa.46.2023.09.27.11.52.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Sep 2023 11:52:34 -0700 (PDT)
-Date: Wed, 27 Sep 2023 12:52:31 -0600
-From: Alex Williamson <alex.williamson@redhat.com>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Cc: "Liu, Yi L" <yi.l.liu@intel.com>, "jgg@nvidia.com" <jgg@nvidia.com>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>, "baolu.lu@linux.intel.com"
- <baolu.lu@linux.intel.com>, "joro@8bytes.org" <joro@8bytes.org>,
- "cohuck@redhat.com" <cohuck@redhat.com>, "eric.auger@redhat.com"
- <eric.auger@redhat.com>, "nicolinc@nvidia.com" <nicolinc@nvidia.com>,
- "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "mjrosato@linux.ibm.com"
- <mjrosato@linux.ibm.com>, "chao.p.peng@linux.intel.com"
- <chao.p.peng@linux.intel.com>, "yi.y.sun@linux.intel.com"
- <yi.y.sun@linux.intel.com>, "peterx@redhat.com" <peterx@redhat.com>,
- "jasowang@redhat.com" <jasowang@redhat.com>,
- "shameerali.kolothum.thodi@huawei.com"
- <shameerali.kolothum.thodi@huawei.com>, "lulu@redhat.com"
- <lulu@redhat.com>, "suravee.suthikulpanit@amd.com"
- <suravee.suthikulpanit@amd.com>, "iommu@lists.linux.dev"
- <iommu@lists.linux.dev>, "linux-kernel@vger.kernel.org"
- <linux-kernel@vger.kernel.org>, "linux-kselftest@vger.kernel.org"
- <linux-kselftest@vger.kernel.org>, "Duan, Zhenzhong"
- <zhenzhong.duan@intel.com>, "Martins, Joao" <joao.m.martins@oracle.com>
-Subject: Re: [RFC 3/3] vfio/pci: Expose PCIe PASID capability to userspace
-Message-ID: <20230927125231.3aacde62.alex.williamson@redhat.com>
-In-Reply-To: <BN9PR11MB5276375C4BE33AC0632321A68CC2A@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <20230926093121.18676-1-yi.l.liu@intel.com>
-	<20230926093121.18676-4-yi.l.liu@intel.com>
-	<BN9PR11MB5276375C4BE33AC0632321A68CC2A@BN9PR11MB5276.namprd11.prod.outlook.com>
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.35; x86_64-redhat-linux-gnu)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0AB974B231;
+	Wed, 27 Sep 2023 20:26:10 +0000 (UTC)
+Received: from pps.filterd (m0353726.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 38RK7P9a011293;
+	Wed, 27 Sep 2023 20:25:37 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=h1PUEk2RydOs9qTeLOD9LBjXv0RxbTCx5if1FEQd2bE=;
+ b=RfXXU1JWrIeRv8ozX9Nmw67Z1W7jRB9mJo1eN0ftEUuAHQuojUYqRBuXzIY3lVQuGKyg
+ /W5JqgRgMZ8r/M8AdJMPYPtSMRm2XVCBGhZdt7Y5As/swP5rvJRyqJgiDsjJsI7PzEsO
+ GGodzzlbkV3IVibkOnlCWthSwaELR+cp7ta2UwtpYigPe6aIcHkGKKYfy+Bwdp5G7Odx
+ EqgCD6hIdpv4+FJL32LayNsv51lMWBF4FAuqlmFDxyTH4Ve3NFkt6iqegtSBFfFlCIvA
+ yshwaYtjbxuT4k0L33Rbwyjh2QESzZEFcfcDTEFot1JhRFICVL0bzfBFqWUaj/X5nQYp BQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3tcu0pggq8-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 27 Sep 2023 20:25:37 +0000
+Received: from m0353726.ppops.net (m0353726.ppops.net [127.0.0.1])
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 38RKPa4x007459;
+	Wed, 27 Sep 2023 20:25:36 GMT
+Received: from ppma11.dal12v.mail.ibm.com (db.9e.1632.ip4.static.sl-reverse.com [50.22.158.219])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3tcu0pggpp-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 27 Sep 2023 20:25:36 +0000
+Received: from pps.filterd (ppma11.dal12v.mail.ibm.com [127.0.0.1])
+	by ppma11.dal12v.mail.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 38RJvBAB030466;
+	Wed, 27 Sep 2023 20:25:35 GMT
+Received: from smtprelay07.wdc07v.mail.ibm.com ([172.16.1.74])
+	by ppma11.dal12v.mail.ibm.com (PPS) with ESMTPS id 3tad21wtv5-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 27 Sep 2023 20:25:34 +0000
+Received: from smtpav01.wdc07v.mail.ibm.com (smtpav01.wdc07v.mail.ibm.com [10.39.53.228])
+	by smtprelay07.wdc07v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 38RKPX1B66781646
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Wed, 27 Sep 2023 20:25:33 GMT
+Received: from smtpav01.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id AEE2058055;
+	Wed, 27 Sep 2023 20:25:33 +0000 (GMT)
+Received: from smtpav01.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 284835804B;
+	Wed, 27 Sep 2023 20:25:29 +0000 (GMT)
+Received: from [9.61.175.8] (unknown [9.61.175.8])
+	by smtpav01.wdc07v.mail.ibm.com (Postfix) with ESMTP;
+	Wed, 27 Sep 2023 20:25:29 +0000 (GMT)
+Message-ID: <a3d8cd82-91ac-0d46-d7d2-c444062a199c@linux.ibm.com>
+Date: Wed, 27 Sep 2023 16:25:28 -0400
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.13.0
+Subject: Re: [PATCH v12 0/6] iommu/dma: s390 DMA API conversion and optimized
+ IOTLB flushing
+Content-Language: en-US
+To: Jason Gunthorpe <jgg@ziepe.ca>, Niklas Schnelle <schnelle@linux.ibm.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Wenjia Zhang <wenjia@linux.ibm.com>,
+        Robin Murphy <robin.murphy@arm.com>, Gerd Bayer <gbayer@linux.ibm.com>,
+        Julian Ruess <julianr@linux.ibm.com>,
+        Pierre Morel <pmorel@linux.ibm.com>,
+        Alexandra Winter
+ <wintera@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev
+ <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+        Hector Martin <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        David Woodhouse <dwmw2@infradead.org>,
+        Lu Baolu <baolu.lu@linux.intel.com>, Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>,
+        Yong Wu <yong.wu@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+        Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+        Orson Zhai <orsonzhai@gmail.com>,
+        Baolin Wang
+ <baolin.wang@linux.alibaba.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>, Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Krishna Reddy
+ <vdumpa@nvidia.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Jonathan Corbet <corbet@lwn.net>, linux-s390@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        iommu@lists.linux.dev, asahi@lists.linux.dev,
+        linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        linux-tegra@vger.kernel.org, linux-doc@vger.kernel.org
+References: <20230825-dma_iommu-v12-0-4134455994a7@linux.ibm.com>
+ <ZRLy_AaJiXxZ2AfK@8bytes.org> <20230926160832.GM13795@ziepe.ca>
+ <cfc9e9128ed5571d2e36421e347301057662a09e.camel@linux.ibm.com>
+ <ZRP8CiBui7suB5D6@8bytes.org>
+ <b06a14de270a63050b0d027c24b333dba25001a4.camel@linux.ibm.com>
+ <e1efbbd827e34800bd7fb0ea687645cc6c65e1ab.camel@linux.ibm.com>
+ <6dab29f58ac1ccd58caaee031f98f4d0d382cbcd.camel@linux.ibm.com>
+ <a672b6b122c7a5f708614346885c190a6960aaea.camel@linux.ibm.com>
+ <20230927154009.GN13795@ziepe.ca>
+From: Matthew Rosato <mjrosato@linux.ibm.com>
+In-Reply-To: <20230927154009.GN13795@ziepe.ca>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: MZTnsmsGUITwt1HRAwGX6vmSx-ob7yF1
+X-Proofpoint-ORIG-GUID: Wu1NKWtULkpe9Fba-31Ww5rbudahWoCV
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.267,Aquarius:18.0.980,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2023-09-27_12,2023-09-27_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 clxscore=1011
+ spamscore=0 suspectscore=0 bulkscore=0 lowpriorityscore=0 impostorscore=0
+ priorityscore=1501 mlxscore=0 phishscore=0 mlxlogscore=999 malwarescore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2309180000
+ definitions=main-2309270171
 
-On Wed, 27 Sep 2023 08:07:54 +0000
-"Tian, Kevin" <kevin.tian@intel.com> wrote:
-
-> > From: Liu, Yi L <yi.l.liu@intel.com>
-> > Sent: Tuesday, September 26, 2023 5:31 PM
-> > 
-> > This exposes PCIe PASID capability to userspace and where to emulate this
-> > capability if wants to further expose it to VM.
-> > 
-> > And this only exposes PASID capability for devices which has PCIe PASID
-> > extended struture in its configuration space. While for VFs, userspace
-> > is still unable to see this capability as SR-IOV spec forbides VF to
-> > implement PASID capability extended structure. It is a TODO in future.
-> > Related discussion can be found in below links:
-> > 
-> > https://lore.kernel.org/kvm/20200407095801.648b1371@w520.home/
-> > https://lore.kernel.org/kvm/BL1PR11MB5271A60035EF591A5BE8AC878C01A
-> > @BL1PR11MB5271.namprd11.prod.outlook.com/
-> >   
+On 9/27/23 11:40 AM, Jason Gunthorpe wrote:
+> On Wed, Sep 27, 2023 at 05:24:20PM +0200, Niklas Schnelle wrote:
 > 
-> Yes, we need a decision for VF case.
+>> Ok, another update. On trying it out again this problem actually also
+>> occurs when applying this v12 on top of v6.6-rc3 too. Also I guess
+>> unlike my prior thinking it probably doesn't occur with
+>> iommu.forcedac=1 since that still allows IOVAs below 4 GiB and we might
+>> be the only ones who don't support those. From my point of view this
+>> sounds like a mlx5_core issue they really should call
+>> dma_set_mask_and_coherent() before their first call to
+>> dma_alloc_coherent() not after. So I guess I'll send a v13 of this
+>> series rebased on iommu/core and with an additional mlx5 patch and then
+>> let's hope we can get that merged in a way that doesn't leave us with
+>> broken ConnectX VFs for too long.
 > 
-> If the consensus is to continue exposing the PASID capability in vfio-pci
-> config space by developing a kernel quirk mechanism to find offset for
-> VF, then this patch for PF is orthogonal to that VF work and can go as it is.
+> Yes, OK. It definitely sounds wrong that mlx5 is doing dma allocations before
+> setting it's dma_set_mask_and_coherent(). Please link to this thread
+> and we can get Leon or Saeed to ack it for Joerg.
 > 
-> But if the decision is to have a device feature for the user to enumerate
-> the vPASID capability and let the VMM take care of finding the vPASID
-> cap offset, then better we start doing that for PF too since it's not good
-> to have two enumeration interfaces for PF/VF respectively.
 
-Note also that QEMU implements a lazy algorithm for exposing
-capabilities, the default is to expose them, so we need to consider
-existing VMs seeing a new read-only PASID capability on an assigned PF.
+Hi Niklas,
 
-That might support an alternate means to expose the capability.
+I bisected the start of this issue to the following commit (only noticeable on s390 when you apply this subject series on top):
 
-> My preference is via device feature given Qemu already includes lots of
-> quirks for vfio-pci devices. Another reason is that when supporting vPASID
-> with SIOV there are some arch constraints which the driver needs to
-> report to the user to follow (e.g.  don't assign ENQCMD-capable sibling
-> vdev's to a same guest, etc.).
+06cd555f73caec515a14d42ef052221fa2587ff9 ("net/mlx5: split mlx5_cmd_init() to probe and reload routines")
 
-?!
+Which went in during the merge window.  Please include with your fix and/or report to the mlx5 maintainers.  Looks like the changes in this patch match what you and Jason describe; it splits up mlx5_cmd_init() and moves part of the call earlier.  The net result is we first call mlx5_mdev_init>mlx5_cmd_init->alloc_cmd_page->dma_alloc_coherent and then sometime later call mlx5_pci_init->set_dma_caps->dma_set_mask_and_coherent. 
 
-> A device feature interface can better
-> encapsulate everything related to vPASID in one place.
+Prior to this patch, we would not drive mlx5_cmd_init (and thus that first dma_alloc_coherent) until mlx5_init_one which happens _after_ mlx5_pci_init->set_dma_caps->dma_set_mask_and_coherent.
 
-Sorry if I don't remember, have you posted a proposal for the device
-feature interface?  Thanks,
-
-Alex
+Thanks,
+Matt
 
