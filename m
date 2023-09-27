@@ -1,33 +1,34 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.151])
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.115])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AEBAC4C86
-	for <iommu@lists.linux.dev>; Wed, 27 Sep 2023 02:08:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 60A7D2579
+	for <iommu@lists.linux.dev>; Wed, 27 Sep 2023 02:20:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1695780493; x=1727316493;
+  t=1695781252; x=1727317252;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=jiTLn3Vg5DjW5KMS+3IRSYx4PUzUN/fR9h6uUPmnC/8=;
-  b=GEHgB80JDhn5TeJE/wff5fenkPFPKF+6Y1B11tRgkGnkdSq0xrO28mW6
-   gB0ZXPME7mxHIs9bgCSlzWmCe/ZzviAm/bnYMx0kVT9kLeuFT0nxKh6lS
-   VhPuLNghdMekH7V54onL/Vy/fJU46ccrnhoG4QAbEX65Xc/c3P+N/haTu
-   XsXJ6z9X/mdLX/pLzCIQdA7kKN+ad6m3ETTeElSqZJ/IxX7O07kiK9XRY
-   mhzHxunKY0zdOeIt14MmbBGQMRawe+9Tl0nM2ExGWAPNWUNZz7U4uFLdg
-   pSpR+X3nLHFz59CyG5XQ4nCrX7FfK9GJFWxy6ZuY/es2cy00P0KaZiOUc
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10845"; a="361963138"
+  bh=AydsJicsTjhS4lwN66GX3GcPaMOacXh1JO4dOr+xExI=;
+  b=CNWAkozFOnZK0TQx+TWekb1EpftQPpZMcxVFPZKVET051WRO4rlW6Y4t
+   NqWgq4IkNfsnCODP03c/7jZriwI1dQhlbvFMYVVjHhCKeXuB8uPDnwz1U
+   EYYyxT5VT+m0cxg5RPIzoAchgUNxbs+oWmPBb0dvYQMxv146NljUK+s/2
+   DuiwH9otWd4JGJhT0a7312yrp42qRpL0XhJkcrETVQ7CegUa4omLRkMXF
+   pem8RNwK04VY6uYpmrEUHiQS3t5wZcA7YwKHnhDPWfv+p3xi+5NQM9PwR
+   7JF+zv+/HDJc3Pagbr+izcmMvjDpgQq1B4K+hAC1PEd8tlwCEHHnNYLvs
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10845"; a="381611483"
 X-IronPort-AV: E=Sophos;i="6.03,179,1694761200"; 
-   d="scan'208";a="361963138"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Sep 2023 19:08:11 -0700
+   d="scan'208";a="381611483"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Sep 2023 19:20:51 -0700
 X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10845"; a="864616370"
 X-IronPort-AV: E=Sophos;i="6.03,179,1694761200"; 
-   d="scan'208";a="373163"
+   d="scan'208";a="864616370"
 Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
-  by orviesa001.jf.intel.com with ESMTP; 26 Sep 2023 19:07:35 -0700
-Message-ID: <a5e18b46-cccc-a2f7-91ae-aa5c942cd887@linux.intel.com>
-Date: Wed, 27 Sep 2023 10:04:51 +0800
+  by fmsmga002.fm.intel.com with ESMTP; 26 Sep 2023 19:20:45 -0700
+Message-ID: <e73f3a0e-5c1b-674e-7ef1-53d963a540d3@linux.intel.com>
+Date: Wed, 27 Sep 2023 10:17:31 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -43,94 +44,57 @@ Cc: baolu.lu@linux.intel.com, cohuck@redhat.com, eric.auger@redhat.com,
  suravee.suthikulpanit@amd.com, iommu@lists.linux.dev,
  linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
  zhenzhong.duan@intel.com, joao.m.martins@oracle.com
-Subject: Re: [RFC 1/8] iommu: Introduce a replace API for device pasid
+Subject: Re: [RFC 2/8] iommufd: replace attach_fn with a structure
+Content-Language: en-US
 To: Yi Liu <yi.l.liu@intel.com>, joro@8bytes.org, alex.williamson@redhat.com,
  jgg@nvidia.com, kevin.tian@intel.com, robin.murphy@arm.com
 References: <20230926092651.17041-1-yi.l.liu@intel.com>
- <20230926092651.17041-2-yi.l.liu@intel.com>
-Content-Language: en-US
+ <20230926092651.17041-3-yi.l.liu@intel.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20230926092651.17041-2-yi.l.liu@intel.com>
+In-Reply-To: <20230926092651.17041-3-yi.l.liu@intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 9/26/23 5:26 PM, Yi Liu wrote:
-> From: Lu Baolu <baolu.lu@linux.intel.com>
+> Most of the core logic before conducting the actual device attach/
+> replace operation can be shared with pasid attach/replace. Create
+> a new structure so more information (e.g. pasid) can be later added
+> along with the attach_fn.
 > 
-> Provide a high-level API to allow replacements of one domain with
-> another for specific pasid of a device. This is similar to
-> iommu_group_replace_domain() and it is also expected to be used
-> only by IOMMUFD.
-> 
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> Signed-off-by: Yi Liu <yi.l.liu@intel.com>
+> Signed-off-by: Kevin Tian<kevin.tian@intel.com>
+> Signed-off-by: Yi Liu<yi.l.liu@intel.com>
 > ---
->   drivers/iommu/iommu-priv.h |  2 ++
->   drivers/iommu/iommu.c      | 73 ++++++++++++++++++++++++++++++--------
->   2 files changed, 60 insertions(+), 15 deletions(-)
+>   drivers/iommu/iommufd/device.c          | 35 ++++++++++++++++---------
+>   drivers/iommu/iommufd/iommufd_private.h |  8 ++++++
+>   2 files changed, 30 insertions(+), 13 deletions(-)
 > 
-
-[...]
-
-> @@ -3433,8 +3443,8 @@ EXPORT_SYMBOL_GPL(iommu_attach_device_pasid);
->    * The @domain must have been attached to @pasid of the @dev with
->    * iommu_attach_device_pasid().
->    */
-> -void iommu_detach_device_pasid(struct iommu_domain *domain, struct device *dev,
-> -			       ioasid_t pasid)
-> +void iommu_detach_device_pasid(struct iommu_domain *domain,
-> +			       struct device *dev, ioasid_t pasid)
-
-Above change is irrelevant.
-
->   {
->   	struct iommu_group *group = iommu_group_get(dev);
->   
-> @@ -3447,6 +3457,39 @@ void iommu_detach_device_pasid(struct iommu_domain *domain, struct device *dev,
+> diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
+> index 645ab5d290fe..4fa4153c5df7 100644
+> --- a/drivers/iommu/iommufd/device.c
+> +++ b/drivers/iommu/iommufd/device.c
+> @@ -597,8 +597,11 @@ iommufd_device_do_replace(struct iommufd_device *idev,
+>   	return ERR_PTR(rc);
 >   }
->   EXPORT_SYMBOL_GPL(iommu_detach_device_pasid);
 >   
-> +/**
-> + * iommu_replace_device_pasid - replace the domain that a pasid is attached to
-> + * @domain: new IOMMU domain to replace with
-> + * @dev: the physical device
-> + * @pasid: pasid that will be attached to the new domain
-> + *
-> + * This API allows the pasid to switch domains. Return 0 on success, or an
-> + * error. The pasid will roll back to use the old domain if failure. The
-> + * caller could call iommu_detach_device_pasid() before free the old domain
-> + * in order to avoid use-after-free case.
-
-The comment does not match the actual behavior of the code. We need to
-discuss and agree on which state the PASID should park in if replacing
-the domain fails.
-
-> + */
-> +int iommu_replace_device_pasid(struct iommu_domain *domain,
-> +			       struct device *dev, ioasid_t pasid)
+> -typedef struct iommufd_hw_pagetable *(*attach_fn)(
+> -	struct iommufd_device *idev, struct iommufd_hw_pagetable *hwpt);
+> +static struct iommufd_hw_pagetable *do_attach(struct iommufd_device *idev,
+> +		struct iommufd_hw_pagetable *hwpt, struct attach_data *data)
 > +{
-> +	struct iommu_group *group = dev->iommu_group;
-> +	int ret;
-> +
-> +	if (!domain)
-> +		return -EINVAL;
-> +
-> +	if (!group)
-> +		return -ENODEV;
-> +
-> +	mutex_lock(&group->mutex);
-> +	__iommu_remove_group_pasid(group, pasid);
-> +	xa_erase(&group->pasid_array, pasid);
-> +	ret = __iommu_group_attach_pasid(domain, group, pasid);
-> +	mutex_unlock(&group->mutex);
-> +
-> +	return ret;
+> +	return data->attach_fn(idev, hwpt);
 > +}
-> +EXPORT_SYMBOL_NS_GPL(iommu_replace_device_pasid, IOMMUFD_INTERNAL);
-> +
->   /*
->    * iommu_get_domain_for_dev_pasid() - Retrieve domain for @pasid of @dev
->    * @dev: the queried device
+
+I assume that this change was made because we need to pass the pasid
+value to the attach_fn() callback.
+
+If so, how about passing it directly to attach_fn() function?
+
+typedef struct iommufd_hw_pagetable *(*attach_fn)(
+		struct iommufd_device *idev,
+		struct iommufd_hw_pagetable *hwpt,
+		ioasid_t pasid);
+
+In no pasid case, use IOMMU_NO_PASID.
 
 Best regards,
 baolu
