@@ -1,183 +1,155 @@
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+Received: from JPN01-TYC-obe.outbound.protection.outlook.com (mail-tycjpn01olkn2069.outbound.protection.outlook.com [40.92.99.69])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DADC31CAB6;
-	Wed, 27 Sep 2023 13:20:43 +0000 (UTC)
-Received: from pps.filterd (m0353728.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 38RCOdCv005069;
-	Wed, 27 Sep 2023 13:20:14 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=jv2J3s2T7OsfdnfP7xO+3G5kReH0lMyKgLkynJikBfI=;
- b=tJIYGGNUI7x+MeeJeVOcBbjIZ9cgqX/dZ9HPkBeNoUFHx0zzCrPigTsA7KPeSNVc2TlV
- aSZZAFNRXvLMnc9cKkp4H+TksK4oudv79qebAVsJSiesoktymHl8Qq4tGl1ObhMy105j
- LUPVKX8r0gSe7KenI/NO6by0jBuTUr9CLpGc0CK/y2rGBtILhqBEPlwmn8hN8GE2v64I
- VQ9BJzTe/t5LvFvuHmAdiXAHDXTPGfFyMtrMYYR+FDM33QxfGdFwNQqizZziKEZFNIZk
- TrKWWuLLepClvqBEL3FNdMYrhZfE3mX2at15iULH9drm5/lGV3qIhionZ4DbSC9hC5DT 7Q== 
-Received: from pps.reinject (localhost [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3tcmcgsw85-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 27 Sep 2023 13:20:14 +0000
-Received: from m0353728.ppops.net (m0353728.ppops.net [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 38RD5BuN028501;
-	Wed, 27 Sep 2023 13:20:13 GMT
-Received: from ppma23.wdc07v.mail.ibm.com (5d.69.3da9.ip4.static.sl-reverse.com [169.61.105.93])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3tcmcgsw6v-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 27 Sep 2023 13:20:13 +0000
-Received: from pps.filterd (ppma23.wdc07v.mail.ibm.com [127.0.0.1])
-	by ppma23.wdc07v.mail.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 38RB85s1011019;
-	Wed, 27 Sep 2023 13:20:11 GMT
-Received: from smtprelay06.fra02v.mail.ibm.com ([9.218.2.230])
-	by ppma23.wdc07v.mail.ibm.com (PPS) with ESMTPS id 3tabukkhhn-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 27 Sep 2023 13:20:11 +0000
-Received: from smtpav07.fra02v.mail.ibm.com (smtpav07.fra02v.mail.ibm.com [10.20.54.106])
-	by smtprelay06.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 38RDK8uR42861118
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Wed, 27 Sep 2023 13:20:08 GMT
-Received: from smtpav07.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 3124720067;
-	Wed, 27 Sep 2023 13:20:08 +0000 (GMT)
-Received: from smtpav07.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 30B3420040;
-	Wed, 27 Sep 2023 13:20:07 +0000 (GMT)
-Received: from [9.152.212.236] (unknown [9.152.212.236])
-	by smtpav07.fra02v.mail.ibm.com (Postfix) with ESMTP;
-	Wed, 27 Sep 2023 13:20:07 +0000 (GMT)
-Message-ID: <e1efbbd827e34800bd7fb0ea687645cc6c65e1ab.camel@linux.ibm.com>
-Subject: Re: [PATCH v12 0/6] iommu/dma: s390 DMA API conversion and
- optimized IOTLB flushing
-From: Niklas Schnelle <schnelle@linux.ibm.com>
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Jason Gunthorpe <jgg@ziepe.ca>, Matthew Rosato <mjrosato@linux.ibm.com>,
-        Will Deacon <will@kernel.org>, Wenjia Zhang <wenjia@linux.ibm.com>,
-        Robin
- Murphy <robin.murphy@arm.com>,
-        Gerd Bayer <gbayer@linux.ibm.com>,
-        Julian
- Ruess <julianr@linux.ibm.com>,
-        Pierre Morel <pmorel@linux.ibm.com>,
-        Alexandra Winter <wintera@linux.ibm.com>,
-        Heiko Carstens
- <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev
- <agordeev@linux.ibm.com>,
-        Christian Borntraeger
- <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Suravee
- Suthikulpanit <suravee.suthikulpanit@amd.com>,
-        Hector Martin
- <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig
- <alyssa@rosenzweig.io>,
-        David Woodhouse <dwmw2@infradead.org>,
-        Lu Baolu
- <baolu.lu@linux.intel.com>, Andy Gross <agross@kernel.org>,
-        Bjorn Andersson
- <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>,
-        Yong Wu
- <yong.wu@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-        Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-        Orson Zhai
- <orsonzhai@gmail.com>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        Chunyan
- Zhang <zhang.lyra@gmail.com>, Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec
- <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Thierry
- Reding <thierry.reding@gmail.com>,
-        Krishna Reddy <vdumpa@nvidia.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Jonathan Corbet <corbet@lwn.net>, linux-s390@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        iommu@lists.linux.dev, asahi@lists.linux.dev,
-        linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
-        linux-mediatek@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        linux-tegra@vger.kernel.org, linux-doc@vger.kernel.org
-Date: Wed, 27 Sep 2023 15:20:07 +0200
-In-Reply-To: <b06a14de270a63050b0d027c24b333dba25001a4.camel@linux.ibm.com>
-References: <20230825-dma_iommu-v12-0-4134455994a7@linux.ibm.com>
-	 <ZRLy_AaJiXxZ2AfK@8bytes.org> <20230926160832.GM13795@ziepe.ca>
-	 <cfc9e9128ed5571d2e36421e347301057662a09e.camel@linux.ibm.com>
-	 <ZRP8CiBui7suB5D6@8bytes.org>
-	 <b06a14de270a63050b0d027c24b333dba25001a4.camel@linux.ibm.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.48.4 (3.48.4-1.fc38) 
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D5BE6C8D2
+	for <iommu@lists.linux.dev>; Wed, 27 Sep 2023 14:25:38 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=VZrwJ+NH1z3OwszniPybXUFD1f7zlpg53NeAwxq5WeA6nVcXRi9yn9Rp5HDHvTKpbK4hrj0oP+vWOnDGj8yDh/3pJLyXm5OmeV1nbcTqYKulLGOimBOlMYZeusIqa+zE8/A9zZosDnXqH7ZKadwC6NwqX9j9r9VCyJyZ1hCwFu5/bIRpd4UJ89BzANCIsX9dWVsenoTpferVwNIlQqZUkEuZBb5euJbX4+AS8xMmkWv6QXlKnNdTqv81S5Qapb15yHUni4qzDg5pRcWuomKDgeRGJzCpQbweg3TUO5m+f8I57vYbDV7F0bdP7+9eG9DlAEDAsTaoCOkQmEAj011/9A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=xLubrLAF8F8iFpdG1xw+fKj7eghrW9TtzkA2ictIvrg=;
+ b=k9DnqpmO5P0R7z9WQaso7PRLMdR+O4RmgRV+Nxyt88Etbxz/TvNYAG9PP5HBai2m4eDWwA4+Vek3BVY+JtflY8DFqn5TQeGSkQy4uCrMDAlDu71cFybNyyGxH50ADIPQlW7m7BhmYC741E0FmcsTFOai4A9a/ZXJXM5/m/b6de1Bbov1ksiA+OuObFaHg8YycTyezoyJws4TqcnreRmyq6mu65yWg4nUkaaOqT6ZntrCG+HRO9Vh1Gkfhy6vG0i3qv/tUuCZ0M+avBnwxEM/cmmB9Nz4eExs849/YAHvndjzNLgJW8d8+LZbfu8cy/zBCGYXrK31EyPCZYnuBzvSmw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=xLubrLAF8F8iFpdG1xw+fKj7eghrW9TtzkA2ictIvrg=;
+ b=L2RoHXfsus5CGgxIbQHSVd7jB6PHdPj6DWmNA+MCjnaPGgvKaIQAxQvyR83l9nRXitl6sgcjjcI4nGIHyXqrFfS2A8nObgshu5wuc2/z+8Ufy53p/44eGKlNcy4pXzyZI31cughGsLaUsL4uvVnq50zbYrALjuz2lSZ2at36Hf7k2u5qzn1BIwhrKp77RWqMqIrOMDZ1KcoSPfWw1GSZ1+15F7LRnHVegYF3tf0DLNloeFW9F/ZfAjjnQPMEDlOXnrqJtn4jNgiiz+3jAA+ob01bYC136Sr8fKjQPwnDSadszTmlMVv9BaPtZ5bcteM8xeEiMhnTAUQvuVXk90x2fQ==
+Received: from TYTP286MB3564.JPNP286.PROD.OUTLOOK.COM (2603:1096:400:39d::8)
+ by TY3P286MB2771.JPNP286.PROD.OUTLOOK.COM (2603:1096:400:257::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6838.19; Wed, 27 Sep
+ 2023 14:25:35 +0000
+Received: from TYTP286MB3564.JPNP286.PROD.OUTLOOK.COM
+ ([fe80::ee22:5eba:da74:7c25]) by TYTP286MB3564.JPNP286.PROD.OUTLOOK.COM
+ ([fe80::ee22:5eba:da74:7c25%7]) with mapi id 15.20.6838.016; Wed, 27 Sep 2023
+ 14:25:35 +0000
+From: Dawei Li <set_pte_at@outlook.com>
+To: joro@8bytes.org,
+	will@kernel.org
+Cc: robin.murphy@arm.com,
+	jgg@nvidia.com,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Dawei Li <set_pte_at@outlook.com>
+Subject: [PATCH] iommu: Sanity check on param list for iommu_get_resv_regions
+Date: Wed, 27 Sep 2023 22:25:01 +0800
+Message-ID:
+ <TYTP286MB35645FDEF45FDFC91D35CE1ECAC2A@TYTP286MB3564.JPNP286.PROD.OUTLOOK.COM>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-TMN: [f9PMvWYya170/TBFzH72aac6/QRDkiGe]
+X-ClientProxiedBy: SG3P274CA0019.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:be::31)
+ To TYTP286MB3564.JPNP286.PROD.OUTLOOK.COM (2603:1096:400:39d::8)
+X-Microsoft-Original-Message-ID:
+ <20230927142501.33287-1-set_pte_at@outlook.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: VXZxHUsIjNmP_Qb7Pwq1202Mna4hsBUK
-X-Proofpoint-ORIG-GUID: LYDctZpbLtyEpOclC1b66ehHlfvfc4KR
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.267,Aquarius:18.0.980,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2023-09-27_07,2023-09-27_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- mlxlogscore=999 lowpriorityscore=0 malwarescore=0 spamscore=0
- suspectscore=0 clxscore=1015 impostorscore=0 mlxscore=0 adultscore=0
- phishscore=0 bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2309180000 definitions=main-2309270110
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: TYTP286MB3564:EE_|TY3P286MB2771:EE_
+X-MS-Office365-Filtering-Correlation-Id: a0293fee-7527-4a02-d881-08dbbf659d21
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	jRutR2T7uaR1RJNSp5v2Uyf0BTb2vRD5zWv8giUdnBJto6Iy95C0pdByy5pilxsJTguWclfjWp/EAeVGqwZWMdxBKjpyFtF4Z4eAcrXnvEEzYg7Dc/JzeYcMKKJyhgwFYFMssDC8onWw9ZIV+xZ8Ge1nDj0fjww0sGMO8jmr0cTvlrDszikAy+5YDw2RrHAPqKQ5cFrgsXPlvzRnFmUdSMnYJb+MU0rdfionnkZ0BrNKgoFc18teqRvoKFTKXy5G5963rpUgDZOVy6zzYeEs4NjMwMtctNRVgrW3vgXGMo2Ivm7Uv5FiiiXN9dBBV9vC8Iu1Jq0Wfnn43Pt+Xx1YRBqwPMWxSymJ3J4RKkcnc3AQShebPjwP5eZccQ+bN/yg2yGXhVyOZTXZQI20CI7m3pv7urrhJ98UqWI1fzgbMLXsiPfxPWoN+j+/ioLjPyVqnjXq0jzO7pMnDM4BXtuIPWJzOIE9BKBwxqmPjoO6zzXzd5oxDSm9HQpHrlp+6CEW3gK2FwtwexEwyPVBaAyTjhZ5bdWdh27wbaJcBbxytLo2S3fTh3ZmT5I9ayGGX2+Th4wG370ZlzYWMl/SpWuGJbuSLKSibhPECjoI1HR008xuYTA2LPdDUgDRVlDg+JX9
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?bikK3bzAU4uyAcI0J4DotFwbUdio2GWKen5TwPYrtU/nmrGTTUqtmoLAVdMT?=
+ =?us-ascii?Q?qc2BqgSfzelkcZvEI1NNbt4FOPvaxGPTxQBnXNQKhnFLaXa81+VQynVqRRO9?=
+ =?us-ascii?Q?vjqb+LpZTW/JjKQFH982C1AjlB57ajZ7MEqmc1gFZaMwF8L/kX/541ZfM2VY?=
+ =?us-ascii?Q?67czWSksKlak/TnVRHjNU9XFvrWfzGCdeVN1TC1/NdjhCPyvI8LOgYwNjRBD?=
+ =?us-ascii?Q?ogwqSBajeHFhernItTsQLM58O5hseQf4haaOZQ9c6qewuy2oIISzQCWRwQU2?=
+ =?us-ascii?Q?h4TFkJBSDhseQQ++RLHrUZIml59ar5lwYK5/UKlz0CKGJlPZAr1YGVJdv245?=
+ =?us-ascii?Q?yG0QZw0vX6hUFTWcpf85kdalxxVlWDIBXz5B5zfg//uUEpPPcZZy8L/1xxCa?=
+ =?us-ascii?Q?Iz52SEd8jr6fc3MYxNQtSS7QUp+vdDaUaxC1wW1Vh0p2IMDkYPkohhZFW82a?=
+ =?us-ascii?Q?REB9heM7M0HkkC1wquUA8B8rOQErysIb2rbQoNivk5RcUjTeEuyTmzJ+uj4g?=
+ =?us-ascii?Q?vgqtj+DjyXSnzj50+gjkBBI6llTyhHdTGf15bAE5Jlop8Y8dTE3mJIHR/grI?=
+ =?us-ascii?Q?JXsvG5c5BPml8yo4D5TylHMB5avFjNjMDqpkzN2Ywhz8Spn6xpPAXYmYvvDe?=
+ =?us-ascii?Q?4kyaUIvCf902a3nYg1N5wNgMEqwN3sYZDuTNfyA9cr+yHUO9/rh4N8IIhJaF?=
+ =?us-ascii?Q?/zNj8Z6tqxX/4gcul4uuLiJ68qWQZ5dEWOHy1JjNb0PzGaA0Gvgm6qsJkbf4?=
+ =?us-ascii?Q?Bb2dSGQW4QGS1IKSDEAeSQSgxnUwOW8m7+gy4pCdNQmyhhDlit96T0BNWVvD?=
+ =?us-ascii?Q?O2HbxGWdw9oo4zYyO6ELMHd1y3Gh/d2Tm8H3SSVxjv9JjCDeCQNDB38b4KDq?=
+ =?us-ascii?Q?1FzZ4x3CyELb1uDmgvw6wDuHLNNIh55YOuUI/8muJlEs//h4y77DJ6PNUF8O?=
+ =?us-ascii?Q?wlfeJGBBP/MHBhzun0SIkQXq3njNgFvBBLAUbmhHKitjYpq64mMpM0mHx4g9?=
+ =?us-ascii?Q?zTbxN3Ymynmbxr8oqpOxtScLVjicS61q9Nvj9upl7e4MWe96aO6LixjuMxki?=
+ =?us-ascii?Q?E0Hb/PMsvHTCHovXPOyfkg/Cx54JPAzt2b/CCyHECDFYU3MtCrNhGUmZuTQ1?=
+ =?us-ascii?Q?us+O+7A2zK9GCKlRydZ3iJm6zFPRGP9B3B/ZfEzMdOBygIRSHbwQQ9xtql4h?=
+ =?us-ascii?Q?KLMvLBLC8yocumDTChkJe/Ztg+8siippkMkuiA=3D=3D?=
+X-OriginatorOrg: outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a0293fee-7527-4a02-d881-08dbbf659d21
+X-MS-Exchange-CrossTenant-AuthSource: TYTP286MB3564.JPNP286.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Sep 2023 14:25:35.5952
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg:
+	00000000-0000-0000-0000-000000000000
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TY3P286MB2771
 
-On Wed, 2023-09-27 at 13:24 +0200, Niklas Schnelle wrote:
-> On Wed, 2023-09-27 at 11:55 +0200, Joerg Roedel wrote:
-> > Hi Niklas,
-> >=20
-> > On Wed, Sep 27, 2023 at 10:55:23AM +0200, Niklas Schnelle wrote:
-> > > The problem is that something seems to  be broken in the iommu/core
-> > > branch. Regardless of whether I have my DMA API conversion on top or
-> > > with the base iommu/core branch I can not use ConnectX-4 VFs.
-> >=20
-> > Have you already tried to bisect the issue in the iommu/core branch?
-> > The result might sched some light on the issue.
-> >=20
-> > Regards,
-> >=20
-> > 	Joerg
->=20
-> Hi Joerg,
->=20
-> Working on it, somehow I must have messed up earlier. It now looks like
-> it might in fact be caused by my DMA API conversion rebase and the
-> "s390/pci: Use dma-iommu layer" commit. Maybe there is some interaction
-> with Jason's patches that I haven't thought about. So sorry for any
-> wrong blame.
->=20
-> Thanks,
-> Niklas
+In iommu_get_resv_regions(), param list is an argument supplied by caller,
+into which callee is supposed to insert resv regions.
 
-Hi,
+In other words, this 'list' argument is expected to be an empty list,
+so make an explicit annotation on it.
 
-I tracked the problem=C2=A0down from mlx5_core's alloc_cmd_page() via
-dma_alloc_coherent(), ops->alloc, iommu_dma_alloc_remap(), and
-__iommu_dma_alloc_noncontiguous() to a failed iommu_dma_alloc_iova().
-The allocation here is for 4K so nothing crazy.
+Signed-off-by: Dawei Li <set_pte_at@outlook.com>
+---
+ drivers/iommu/iommu.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-On second look I also noticed:
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 1ecac2b5c54f..a01c4a7a9d19 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -813,7 +813,7 @@ int iommu_get_group_resv_regions(struct iommu_group *group,
+ 
+ 	mutex_lock(&group->mutex);
+ 	for_each_group_device(group, device) {
+-		struct list_head dev_resv_regions;
++		LIST_HEAD(dev_resv_regions);
+ 
+ 		/*
+ 		 * Non-API groups still expose reserved_regions in sysfs,
+@@ -822,7 +822,6 @@ int iommu_get_group_resv_regions(struct iommu_group *group,
+ 		if (!device->dev->iommu)
+ 			break;
+ 
+-		INIT_LIST_HEAD(&dev_resv_regions);
+ 		iommu_get_resv_regions(device->dev, &dev_resv_regions);
+ 		ret = iommu_insert_device_resv_regions(&dev_resv_regions, head);
+ 		iommu_put_resv_regions(device->dev, &dev_resv_regions);
+@@ -1061,12 +1060,11 @@ static int iommu_create_device_direct_mappings(struct iommu_domain *domain,
+ 					       struct device *dev)
+ {
+ 	struct iommu_resv_region *entry;
+-	struct list_head mappings;
+ 	unsigned long pg_size;
++	LIST_HEAD(mappings);
+ 	int ret = 0;
+ 
+ 	pg_size = domain->pgsize_bitmap ? 1UL << __ffs(domain->pgsize_bitmap) : 0;
+-	INIT_LIST_HEAD(&mappings);
+ 
+ 	if (WARN_ON_ONCE(iommu_is_dma_domain(domain) && !pg_size))
+ 		return -EINVAL;
+@@ -2813,6 +2811,9 @@ void iommu_get_resv_regions(struct device *dev, struct list_head *list)
+ {
+ 	const struct iommu_ops *ops = dev_iommu_ops(dev);
+ 
++	if (WARN_ON(!list_empty(list)))
++		return;
++
+ 	if (ops->get_resv_regions)
+ 		ops->get_resv_regions(dev, list);
+ }
+-- 
+2.25.1
 
-nvme 2007:00:00.0: Using 42-bit DMA addresses
-
-for the NVMe that is working. The problem here seems to be that we set
-iommu_dma_forcedac =3D true in s390_iommu_probe_finalize() because we
-have currently have a reserved region over the first 4 GiB anyway so
-will always use IOVAs larger than that. That however is too late since
-iommu_dma_set_pci_32bit_workaround() is already checked in
-__iommu_probe_device() which is called just before ops-
->probe_finalize(). So I moved setting iommu_dma_forcedac =3D true to
-zpci_init_iommu() and that gets rid of the notice for the NVMe but I
-still get a failure of iommu_dma_alloc_iova() in
-__iommu_dma_alloc_noncontiguous(). So I'll keep digging.
-
-Thanks,
-Niklas
