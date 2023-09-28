@@ -1,34 +1,34 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.136])
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.24])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B4E50339B0
-	for <iommu@lists.linux.dev>; Thu, 28 Sep 2023 09:17:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 50B2E125A8
+	for <iommu@lists.linux.dev>; Thu, 28 Sep 2023 09:25:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1695892633; x=1727428633;
+  t=1695893107; x=1727429107;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=DR4v89UPJGMbbQ1s24/8ST+JrVlkJe9mt1G5bqAee48=;
-  b=GMsXa3+Zf+7xzgI5jirioVIKX03ZoaGfLHDl4pcH/zcMujEBeNLLJHRw
-   EUDiTGhvPNjUD2UhXjxijhYxLDun8ZPkXcmFmQLkxh1AXK8TLsrIZHoV5
-   BYdA1Z+r8aLFAdhwITGTxBdYBphReBsATvxJ6XQV421vY+z6WHcbr1XyA
-   WxH7NTbW/ShhawdaNzSh30FHEnnwGVAsSmL7mD8kWKS52LGuxR3gfQKJq
-   AGozaFv7/5RFtLvSrgPvt+rGrVse5xtziTVsPvo3NdvEIi5NUh1znH4we
-   bMaR6QU71f4m7rSVxHc5IDxgqU8sV0VR4Iae22Bg8g5RtTXqbgOfjpvfA
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10846"; a="361392397"
+  bh=R2aE8j4JYfqblhnvS1c2OlVELJZE0JvEb7YhQhBXfYs=;
+  b=cMa9fL5fVQnIn6ZdHB3maWHjAXm0mv7+5R1W6w4SGDfv10W1uToB8RH+
+   GxLGOOgpvVGjfNZv70tq4cqqkJ/ALTQ0iSDjK6p8ugaSINu3H+xf9BOvT
+   yZHta4BjTdlg4OjIE4bxgXuxDLYYSqyGXnqN/+9PM94UcP31A3M0G2b3h
+   oMUyT8FylfGsb2vw1eKtNZsBhvBwbVq4xkEt68ceSSydxY+Q2RqvETcb4
+   a4VMfs396CM+HspyQx7Eme/Bms5mJ0eBbCNet1eSv5Bu7pNt8TDJF+mt9
+   w8CEFaU795hl26H88rC+lKlzC35ouyiHoGz18+6+YCbdvdh3dSRO7Ol2H
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10846"; a="384818208"
 X-IronPort-AV: E=Sophos;i="6.03,183,1694761200"; 
-   d="scan'208";a="361392397"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Sep 2023 02:17:12 -0700
+   d="scan'208";a="384818208"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Sep 2023 02:25:06 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10846"; a="815166531"
+X-IronPort-AV: E=McAfee;i="6600,9927,10846"; a="726169101"
 X-IronPort-AV: E=Sophos;i="6.03,183,1694761200"; 
-   d="scan'208";a="815166531"
+   d="scan'208";a="726169101"
 Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.254.215.143]) ([10.254.215.143])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Sep 2023 02:17:08 -0700
-Message-ID: <f250db59-03aa-3a64-3bb7-08fbcbf41839@linux.intel.com>
-Date: Thu, 28 Sep 2023 17:17:08 +0800
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Sep 2023 02:25:04 -0700
+Message-ID: <d009b69d-fd70-97dc-eb32-b61e1e5c606c@linux.intel.com>
+Date: Thu, 28 Sep 2023 17:25:02 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -37,51 +37,88 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.15.1
-Cc: baolu.lu@linux.intel.com, linux-kernel@vger.kernel.org
-Subject: Re: [PATH v3 2/3] iommu/vt-d: debugfs: Create/remove debugfs file per
- {device, pasid}
-To: "Liu, Jingqi" <jingqi.liu@intel.com>, iommu@lists.linux.dev,
- Tian Kevin <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>
-References: <20230927151536.67319-1-Jingqi.liu@intel.com>
- <20230927151536.67319-3-Jingqi.liu@intel.com>
- <8d931037-500f-1dff-5fb6-fe60d2e8af7d@linux.intel.com>
- <196f7651-31d8-349d-9db9-dfeaa272542e@intel.com>
+Cc: baolu.lu@linux.intel.com, joro@8bytes.org, will@kernel.org,
+ robin.murphy@arm.com, jgg@nvidia.com, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iommu: Sanity check on param list for
+ iommu_get_resv_regions
 Content-Language: en-US
+To: Dawei Li <set_pte_at@outlook.com>
+References: <TYTP286MB35645FDEF45FDFC91D35CE1ECAC2A@TYTP286MB3564.JPNP286.PROD.OUTLOOK.COM>
+ <7c7b8981-022c-2fa8-7ee5-9c97d8e17862@linux.intel.com>
+ <TYTP286MB3564BA78F5ED7E8FE4DEEE93CAC1A@TYTP286MB3564.JPNP286.PROD.OUTLOOK.COM>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <196f7651-31d8-349d-9db9-dfeaa272542e@intel.com>
+In-Reply-To: <TYTP286MB3564BA78F5ED7E8FE4DEEE93CAC1A@TYTP286MB3564.JPNP286.PROD.OUTLOOK.COM>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 
-On 2023/9/28 17:02, Liu, Jingqi wrote:
->> And here,
->>
->> void intel_iommu_debugfs_create_dev_pasid(struct iommu_domain *domain,
->>                       struct device *dev, u32 pasid)
->> {
->>     sprintf(dir_name, "%x", pasid);
->>     dev_pasid->debugfs_entry = debugfs_create_dir(dir_name,
->>             info->debugfs_entry);
->>
->>     debugfs_create_file("domain_translation_struct", 0444,
->>                 dev_pasid->debugfs_entry, dev_pasid,
->>                 &domain_translation_struct_fops);
->> }
->>
-> Thanks.
-> You mean to add 'debugfs_entry' in below structure.
->      struct dev_pasid_info *dev_pasid;
-> This structure is also allocated per pair of {dev, pasid}.
-> The debugfs dentry of  {dev, pasid} can be simply obtained from 
-> 'dev_pasid_info'.
+On 2023/9/28 16:57, Dawei Li wrote:
+> On Thu, Sep 28, 2023 at 09:33:29AM +0800, Baolu Lu wrote:
+>> On 9/27/23 10:25 PM, Dawei Li wrote:
+>>> In iommu_get_resv_regions(), param list is an argument supplied by caller,
+>>> into which callee is supposed to insert resv regions.
+>>>
+>>> In other words, this 'list' argument is expected to be an empty list,
+>>> so make an explicit annotation on it.
+>>>
+>>> Signed-off-by: Dawei Li<set_pte_at@outlook.com>
+>>> ---
+>>>    drivers/iommu/iommu.c | 9 +++++----
+>>>    1 file changed, 5 insertions(+), 4 deletions(-)
+>>>
+>>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+>>> index 1ecac2b5c54f..a01c4a7a9d19 100644
+>>> --- a/drivers/iommu/iommu.c
+>>> +++ b/drivers/iommu/iommu.c
+>>> @@ -813,7 +813,7 @@ int iommu_get_group_resv_regions(struct iommu_group *group,
+>>>    	mutex_lock(&group->mutex);
+>>>    	for_each_group_device(group, device) {
+>>> -		struct list_head dev_resv_regions;
+>>> +		LIST_HEAD(dev_resv_regions);
+>>>    		/*
+>>>    		 * Non-API groups still expose reserved_regions in sysfs,
+>>> @@ -822,7 +822,6 @@ int iommu_get_group_resv_regions(struct iommu_group *group,
+>>>    		if (!device->dev->iommu)
+>>>    			break;
+>>> -		INIT_LIST_HEAD(&dev_resv_regions);
+>>>    		iommu_get_resv_regions(device->dev, &dev_resv_regions);
+>>>    		ret = iommu_insert_device_resv_regions(&dev_resv_regions, head);
+>>>    		iommu_put_resv_regions(device->dev, &dev_resv_regions);
+>>> @@ -1061,12 +1060,11 @@ static int iommu_create_device_direct_mappings(struct iommu_domain *domain,
+>>>    					       struct device *dev)
+>>>    {
+>>>    	struct iommu_resv_region *entry;
+>>> -	struct list_head mappings;
+>>>    	unsigned long pg_size;
+>>> +	LIST_HEAD(mappings);
+>>>    	int ret = 0;
+>>>    	pg_size = domain->pgsize_bitmap ? 1UL << __ffs(domain->pgsize_bitmap) : 0;
+>>> -	INIT_LIST_HEAD(&mappings);
+>>>    	if (WARN_ON_ONCE(iommu_is_dma_domain(domain) && !pg_size))
+>>>    		return -EINVAL;
+>>> @@ -2813,6 +2811,9 @@ void iommu_get_resv_regions(struct device *dev, struct list_head *list)
+>>>    {
+>>>    	const struct iommu_ops *ops = dev_iommu_ops(dev);
+>>> +	if (WARN_ON(!list_empty(list)))
+>>> +		return;
+>> I don't understand why the input list*must*  be empty. This interface
+> Because @list is an output-only argument, which is supposed to be filled
+> by caller(inserting elements into it). If it's not empty, it's an inputing
+> argument, in which case caller will take existing node (in @list) into account,
+> and insert new nodes before/after them.
+> Please lemme put it another way, if list argment is not empty:
 > 
-> So the 'dev_pasid_info' can be passed as a parameter of this helper, 
-> right ?
-> Like this:
-> void intel_iommu_debugfs_create_dev_pasid(struct iommu_domain *domain,
->                        struct dev_pasid_info *dev_pasid) ;
+> Before calling:
+> list: head->A
+> 
+> After calling
+> list: head->A->B->C
+> 
+> It will confuse caller cuz it can't tell whether A is a valid returned
+> by callee.
 
-Yes.
+I see. Thank you for the explanation.
 
 Best regards,
 baolu
+
