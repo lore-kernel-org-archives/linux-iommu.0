@@ -1,58 +1,40 @@
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.24])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 50B2E125A8
-	for <iommu@lists.linux.dev>; Thu, 28 Sep 2023 09:25:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1695893107; x=1727429107;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=R2aE8j4JYfqblhnvS1c2OlVELJZE0JvEb7YhQhBXfYs=;
-  b=cMa9fL5fVQnIn6ZdHB3maWHjAXm0mv7+5R1W6w4SGDfv10W1uToB8RH+
-   GxLGOOgpvVGjfNZv70tq4cqqkJ/ALTQ0iSDjK6p8ugaSINu3H+xf9BOvT
-   yZHta4BjTdlg4OjIE4bxgXuxDLYYSqyGXnqN/+9PM94UcP31A3M0G2b3h
-   oMUyT8FylfGsb2vw1eKtNZsBhvBwbVq4xkEt68ceSSydxY+Q2RqvETcb4
-   a4VMfs396CM+HspyQx7Eme/Bms5mJ0eBbCNet1eSv5Bu7pNt8TDJF+mt9
-   w8CEFaU795hl26H88rC+lKlzC35ouyiHoGz18+6+YCbdvdh3dSRO7Ol2H
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10846"; a="384818208"
-X-IronPort-AV: E=Sophos;i="6.03,183,1694761200"; 
-   d="scan'208";a="384818208"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Sep 2023 02:25:06 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10846"; a="726169101"
-X-IronPort-AV: E=Sophos;i="6.03,183,1694761200"; 
-   d="scan'208";a="726169101"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.254.215.143]) ([10.254.215.143])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Sep 2023 02:25:04 -0700
-Message-ID: <d009b69d-fd70-97dc-eb32-b61e1e5c606c@linux.intel.com>
-Date: Thu, 28 Sep 2023 17:25:02 +0800
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 46E0631A8B
+	for <iommu@lists.linux.dev>; Thu, 28 Sep 2023 09:27:36 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id F32F51FB;
+	Thu, 28 Sep 2023 02:28:13 -0700 (PDT)
+Received: from [10.57.0.224] (unknown [10.57.0.224])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 5AFD13F59C;
+	Thu, 28 Sep 2023 02:27:34 -0700 (PDT)
+Message-ID: <abdc07fb-f558-ae44-0226-a4c03909a3f4@arm.com>
+Date: Thu, 28 Sep 2023 10:27:23 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
  Thunderbird/102.15.1
-Cc: baolu.lu@linux.intel.com, joro@8bytes.org, will@kernel.org,
- robin.murphy@arm.com, jgg@nvidia.com, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org
 Subject: Re: [PATCH] iommu: Sanity check on param list for
  iommu_get_resv_regions
-Content-Language: en-US
-To: Dawei Li <set_pte_at@outlook.com>
+Content-Language: en-GB
+To: Dawei Li <set_pte_at@outlook.com>, Baolu Lu <baolu.lu@linux.intel.com>
+Cc: joro@8bytes.org, will@kernel.org, jgg@nvidia.com, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
 References: <TYTP286MB35645FDEF45FDFC91D35CE1ECAC2A@TYTP286MB3564.JPNP286.PROD.OUTLOOK.COM>
  <7c7b8981-022c-2fa8-7ee5-9c97d8e17862@linux.intel.com>
  <TYTP286MB3564BA78F5ED7E8FE4DEEE93CAC1A@TYTP286MB3564.JPNP286.PROD.OUTLOOK.COM>
-From: Baolu Lu <baolu.lu@linux.intel.com>
+From: Robin Murphy <robin.murphy@arm.com>
 In-Reply-To: <TYTP286MB3564BA78F5ED7E8FE4DEEE93CAC1A@TYTP286MB3564.JPNP286.PROD.OUTLOOK.COM>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2023/9/28 16:57, Dawei Li wrote:
+On 2023-09-28 09:57, Dawei Li wrote:
+> Hi,
+> Thanks for reviewing,
+> 
 > On Thu, Sep 28, 2023 at 09:33:29AM +0800, Baolu Lu wrote:
 >> On 9/27/23 10:25 PM, Dawei Li wrote:
 >>> In iommu_get_resv_regions(), param list is an argument supplied by caller,
@@ -61,7 +43,7 @@ On 2023/9/28 16:57, Dawei Li wrote:
 >>> In other words, this 'list' argument is expected to be an empty list,
 >>> so make an explicit annotation on it.
 >>>
->>> Signed-off-by: Dawei Li<set_pte_at@outlook.com>
+>>> Signed-off-by: Dawei Li <set_pte_at@outlook.com>
 >>> ---
 >>>    drivers/iommu/iommu.c | 9 +++++----
 >>>    1 file changed, 5 insertions(+), 4 deletions(-)
@@ -101,7 +83,11 @@ On 2023/9/28 16:57, Dawei Li wrote:
 >>>    	const struct iommu_ops *ops = dev_iommu_ops(dev);
 >>> +	if (WARN_ON(!list_empty(list)))
 >>> +		return;
->> I don't understand why the input list*must*  be empty. This interface
+>>
+>> I don't understand why the input list *must* be empty. This interface
+
+Yeah, the commit message really doesn't make much sense :(
+
 > Because @list is an output-only argument, which is supposed to be filled
 > by caller(inserting elements into it). If it's not empty, it's an inputing
 > argument, in which case caller will take existing node (in @list) into account,
@@ -117,8 +103,31 @@ On 2023/9/28 16:57, Dawei Li wrote:
 > It will confuse caller cuz it can't tell whether A is a valid returned
 > by callee.
 
-I see. Thank you for the explanation.
+If a caller would be confused by appending to a non-empty list then that 
+caller should avoid passing a non-empty list. But that's not the API's 
+problem; in general, appending to non-empty lists is absolutely a valid 
+thing to do, it's kind of the point of using a list rather than, say, 
+returning an array. It seems entirely reasonable that a caller might 
+want to collect the reserved regions for multiple groups into a single 
+list for its own convenience, and we have absolutely no reason to 
+disallow that.
 
-Best regards,
-baolu
+Note also that your arbitrary input vs. output argument rule 
+fundamentally couldn't work for this API, since actual implementations 
+of ops->get_resv_regions already *do* build up the list by passing it 
+around multiple different helper APIs internally (look at the call path 
+through arm_smmu_get_resv_regions(), for instance).
 
+Thanks,
+Robin.
+
+>> has already been exported, so please update the comment to explain this
+>> new requirement.
+>>
+>>> +
+>>>    	if (ops->get_resv_regions)
+>>>    		ops->get_resv_regions(dev, list);
+>>>    }
+>>
+>> Best regards,
+>> baolu
