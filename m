@@ -1,133 +1,472 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 46E0631A8B
-	for <iommu@lists.linux.dev>; Thu, 28 Sep 2023 09:27:36 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id F32F51FB;
-	Thu, 28 Sep 2023 02:28:13 -0700 (PDT)
-Received: from [10.57.0.224] (unknown [10.57.0.224])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 5AFD13F59C;
-	Thu, 28 Sep 2023 02:27:34 -0700 (PDT)
-Message-ID: <abdc07fb-f558-ae44-0226-a4c03909a3f4@arm.com>
-Date: Thu, 28 Sep 2023 10:27:23 +0100
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA6ED3FB01;
+	Thu, 28 Sep 2023 14:33:24 +0000 (UTC)
+Received: from pps.filterd (m0353727.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 38SDfbje015901;
+	Thu, 28 Sep 2023 14:32:48 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : date : subject :
+ content-type : message-id : references : in-reply-to : to : cc :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=l98pKPDPJsipZaI3jB4oKs2Qv6JYimg/THeyfpQAzh0=;
+ b=jc5stmJiZj7DHT/rCttoflJXzyqcZtcfr9nw4nvxXxoTqIYlqMfIs9pq86ynLzFzn0Ss
+ aQQrRGHsIGqQzNu9wQvIcyiflrWN5JUr6vPS683jTh2d86xo0XN2pAudbFlw4mOT5K04
+ NzkpzRI+fg2RAo2vC+jX9LOB4LBSfGiNyD9zT25kJsr3+nhaXqVwDglhpoWqEgzB8sS4
+ 31Bi5dZ21uMWAaSyKhkbZO0om87s51tgbvKg5cQ2+kkerH025sQMbmfu5bgHKAaYIxVx
+ s9t8FDm/SmhXpudQAIOHuYnJbVRAOWz9Wg97WjvmlsT6QWcd3gG/yG/SYbwA+N8XHBom 3A== 
+Received: from pps.reinject (localhost [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3td905dggy-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 28 Sep 2023 14:32:48 +0000
+Received: from m0353727.ppops.net (m0353727.ppops.net [127.0.0.1])
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 38SDqwIE015489;
+	Thu, 28 Sep 2023 14:32:47 GMT
+Received: from ppma21.wdc07v.mail.ibm.com (5b.69.3da9.ip4.static.sl-reverse.com [169.61.105.91])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3td905dg7c-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 28 Sep 2023 14:32:46 +0000
+Received: from pps.filterd (ppma21.wdc07v.mail.ibm.com [127.0.0.1])
+	by ppma21.wdc07v.mail.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 38SDTsHQ008228;
+	Thu, 28 Sep 2023 14:32:40 GMT
+Received: from smtprelay06.fra02v.mail.ibm.com ([9.218.2.230])
+	by ppma21.wdc07v.mail.ibm.com (PPS) with ESMTPS id 3tabbnn36q-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 28 Sep 2023 14:32:40 +0000
+Received: from smtpav04.fra02v.mail.ibm.com (smtpav04.fra02v.mail.ibm.com [10.20.54.103])
+	by smtprelay06.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 38SEWaRO44827006
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Thu, 28 Sep 2023 14:32:37 GMT
+Received: from smtpav04.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id DDC4E20040;
+	Thu, 28 Sep 2023 14:32:36 +0000 (GMT)
+Received: from smtpav04.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 0893720043;
+	Thu, 28 Sep 2023 14:32:36 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+	by smtpav04.fra02v.mail.ibm.com (Postfix) with ESMTP;
+	Thu, 28 Sep 2023 14:32:35 +0000 (GMT)
+From: Niklas Schnelle <schnelle@linux.ibm.com>
+Date: Thu, 28 Sep 2023 16:31:39 +0200
+Subject: [PATCH v13 5/6] iommu/dma: Allow a single FQ in addition to
+ per-CPU FQs
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <20230928-dma_iommu-v13-5-9e5fc4dacc36@linux.ibm.com>
+References: <20230928-dma_iommu-v13-0-9e5fc4dacc36@linux.ibm.com>
+In-Reply-To: <20230928-dma_iommu-v13-0-9e5fc4dacc36@linux.ibm.com>
+To: Joerg Roedel <joro@8bytes.org>, Matthew Rosato <mjrosato@linux.ibm.com>,
+        Will Deacon <will@kernel.org>, Wenjia Zhang <wenjia@linux.ibm.com>,
+        Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Gerd Bayer <gbayer@linux.ibm.com>, Julian Ruess <julianr@linux.ibm.com>,
+        Pierre Morel <pmorel@linux.ibm.com>,
+        Alexandra Winter <wintera@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+        Hector Martin <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        David Woodhouse <dwmw2@infradead.org>,
+        Lu Baolu <baolu.lu@linux.intel.com>, Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>,
+        Yong Wu <yong.wu@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+        Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+        Orson Zhai <orsonzhai@gmail.com>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>, Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Krishna Reddy <vdumpa@nvidia.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Niklas Schnelle <schnelle@linux.ibm.com>,
+        Jonathan Corbet <corbet@lwn.net>, linux-s390@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        iommu@lists.linux.dev, asahi@lists.linux.dev,
+        linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        linux-tegra@vger.kernel.org, linux-doc@vger.kernel.org
+X-Mailer: b4 0.12.3
+X-Developer-Signature: v=1; a=openpgp-sha256; l=10968;
+ i=schnelle@linux.ibm.com; h=from:subject:message-id;
+ bh=msdv6jfRCEqf546sEBp/RaLXZe6hjfY6m1AoAshGteM=;
+ b=owGbwMvMwCH2Wz534YHOJ2GMp9WSGFJF+4qNynNf7ti86tXR2caR6u7NjiKTnwYvs3n1eNPMQ
+ 0p3X6hN7ChlYRDjYJAVU2RZ1OXst65giumeoP4OmDmsTCBDGLg4BWAicacY/pdofCt6ln24iYt1
+ gswdE7nPgVtD3Z2/1YR2e3cvnZjgKcfI0DW1aMnFeI+dR6p6m3wCp1Uabt4mpH/8ycL7X06sLrb
+ +wwsA
+X-Developer-Key: i=schnelle@linux.ibm.com; a=openpgp;
+ fpr=9DB000B2D2752030A5F72DDCAFE43F15E8C26090
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: Hkj4Np18ovXg6cHEd_uaw_6nA1dXd4Hr
+X-Proofpoint-GUID: ruKUv53g7YJxp7dHV9Tr2m9B-M94mFdI
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.15.1
-Subject: Re: [PATCH] iommu: Sanity check on param list for
- iommu_get_resv_regions
-Content-Language: en-GB
-To: Dawei Li <set_pte_at@outlook.com>, Baolu Lu <baolu.lu@linux.intel.com>
-Cc: joro@8bytes.org, will@kernel.org, jgg@nvidia.com, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org
-References: <TYTP286MB35645FDEF45FDFC91D35CE1ECAC2A@TYTP286MB3564.JPNP286.PROD.OUTLOOK.COM>
- <7c7b8981-022c-2fa8-7ee5-9c97d8e17862@linux.intel.com>
- <TYTP286MB3564BA78F5ED7E8FE4DEEE93CAC1A@TYTP286MB3564.JPNP286.PROD.OUTLOOK.COM>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <TYTP286MB3564BA78F5ED7E8FE4DEEE93CAC1A@TYTP286MB3564.JPNP286.PROD.OUTLOOK.COM>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.267,Aquarius:18.0.980,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2023-09-28_13,2023-09-28_02,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 spamscore=0
+ phishscore=0 mlxlogscore=833 priorityscore=1501 bulkscore=0 malwarescore=0
+ impostorscore=0 suspectscore=0 lowpriorityscore=0 adultscore=0
+ clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2309180000 definitions=main-2309280126
 
-On 2023-09-28 09:57, Dawei Li wrote:
-> Hi,
-> Thanks for reviewing,
-> 
-> On Thu, Sep 28, 2023 at 09:33:29AM +0800, Baolu Lu wrote:
->> On 9/27/23 10:25 PM, Dawei Li wrote:
->>> In iommu_get_resv_regions(), param list is an argument supplied by caller,
->>> into which callee is supposed to insert resv regions.
->>>
->>> In other words, this 'list' argument is expected to be an empty list,
->>> so make an explicit annotation on it.
->>>
->>> Signed-off-by: Dawei Li <set_pte_at@outlook.com>
->>> ---
->>>    drivers/iommu/iommu.c | 9 +++++----
->>>    1 file changed, 5 insertions(+), 4 deletions(-)
->>>
->>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->>> index 1ecac2b5c54f..a01c4a7a9d19 100644
->>> --- a/drivers/iommu/iommu.c
->>> +++ b/drivers/iommu/iommu.c
->>> @@ -813,7 +813,7 @@ int iommu_get_group_resv_regions(struct iommu_group *group,
->>>    	mutex_lock(&group->mutex);
->>>    	for_each_group_device(group, device) {
->>> -		struct list_head dev_resv_regions;
->>> +		LIST_HEAD(dev_resv_regions);
->>>    		/*
->>>    		 * Non-API groups still expose reserved_regions in sysfs,
->>> @@ -822,7 +822,6 @@ int iommu_get_group_resv_regions(struct iommu_group *group,
->>>    		if (!device->dev->iommu)
->>>    			break;
->>> -		INIT_LIST_HEAD(&dev_resv_regions);
->>>    		iommu_get_resv_regions(device->dev, &dev_resv_regions);
->>>    		ret = iommu_insert_device_resv_regions(&dev_resv_regions, head);
->>>    		iommu_put_resv_regions(device->dev, &dev_resv_regions);
->>> @@ -1061,12 +1060,11 @@ static int iommu_create_device_direct_mappings(struct iommu_domain *domain,
->>>    					       struct device *dev)
->>>    {
->>>    	struct iommu_resv_region *entry;
->>> -	struct list_head mappings;
->>>    	unsigned long pg_size;
->>> +	LIST_HEAD(mappings);
->>>    	int ret = 0;
->>>    	pg_size = domain->pgsize_bitmap ? 1UL << __ffs(domain->pgsize_bitmap) : 0;
->>> -	INIT_LIST_HEAD(&mappings);
->>>    	if (WARN_ON_ONCE(iommu_is_dma_domain(domain) && !pg_size))
->>>    		return -EINVAL;
->>> @@ -2813,6 +2811,9 @@ void iommu_get_resv_regions(struct device *dev, struct list_head *list)
->>>    {
->>>    	const struct iommu_ops *ops = dev_iommu_ops(dev);
->>> +	if (WARN_ON(!list_empty(list)))
->>> +		return;
->>
->> I don't understand why the input list *must* be empty. This interface
+In some virtualized environments, including s390 paged memory guests,
+IOTLB flushes are used to update IOMMU shadow tables. Due to this, they
+are much more expensive than in typical bare metal environments or
+non-paged s390 guests. In addition they may parallelize poorly in
+virtualized environments. This changes the trade off for flushing IOVAs
+such that minimizing the number of IOTLB flushes trumps any benefit of
+cheaper queuing operations or increased paralellism.
 
-Yeah, the commit message really doesn't make much sense :(
+In this scenario per-CPU flush queues pose several problems. Firstly
+per-CPU memory is often quite limited prohibiting larger queues.
+Secondly collecting IOVAs per-CPU but flushing via a global timeout
+reduces the number of IOVAs flushed for each timeout especially on s390
+where PCI interrupts may not be bound to a specific CPU.
 
-> Because @list is an output-only argument, which is supposed to be filled
-> by caller(inserting elements into it). If it's not empty, it's an inputing
-> argument, in which case caller will take existing node (in @list) into account,
-> and insert new nodes before/after them.
-> Please lemme put it another way, if list argment is not empty:
-> 
-> Before calling:
-> list: head->A
-> 
-> After calling
-> list: head->A->B->C
-> 
-> It will confuse caller cuz it can't tell whether A is a valid returned
-> by callee.
+Let's introduce a single flush queue mode that reuses the same queue
+logic but only allocates a single global queue. This mode is selected by
+dma-iommu if a newly introduced .shadow_on_flush flag is set in struct
+dev_iommu. As a first user the s390 IOMMU driver sets this flag during
+probe_device. With the unchanged small FQ size and timeouts this setting
+is worse than per-CPU queues but a follow up patch will make the FQ size
+and timeout variable. Together this allows the common IOVA flushing code
+to more closely resemble the global flush behavior used on s390's
+previous internal DMA API implementation.
 
-If a caller would be confused by appending to a non-empty list then that 
-caller should avoid passing a non-empty list. But that's not the API's 
-problem; in general, appending to non-empty lists is absolutely a valid 
-thing to do, it's kind of the point of using a list rather than, say, 
-returning an array. It seems entirely reasonable that a caller might 
-want to collect the reserved regions for multiple groups into a single 
-list for its own convenience, and we have absolutely no reason to 
-disallow that.
+Link: https://lore.kernel.org/all/9a466109-01c5-96b0-bf03-304123f435ee@arm.com/
+Acked-by: Robin Murphy <robin.murphy@arm.com>
+Reviewed-by: Matthew Rosato <mjrosato@linux.ibm.com> #s390
+Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
+---
+ drivers/iommu/dma-iommu.c  | 168 ++++++++++++++++++++++++++++++++++-----------
+ drivers/iommu/s390-iommu.c |   3 +
+ include/linux/iommu.h      |   2 +
+ 3 files changed, 134 insertions(+), 39 deletions(-)
 
-Note also that your arbitrary input vs. output argument rule 
-fundamentally couldn't work for this API, since actual implementations 
-of ops->get_resv_regions already *do* build up the list by passing it 
-around multiple different helper APIs internally (look at the call path 
-through arm_smmu_get_resv_regions(), for instance).
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index 4b1a88f514c9..a85ff75ad531 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -43,14 +43,26 @@ enum iommu_dma_cookie_type {
+ 	IOMMU_DMA_MSI_COOKIE,
+ };
+ 
++enum iommu_dma_queue_type {
++	IOMMU_DMA_OPTS_PER_CPU_QUEUE,
++	IOMMU_DMA_OPTS_SINGLE_QUEUE,
++};
++
++struct iommu_dma_options {
++	enum iommu_dma_queue_type qt;
++};
++
+ struct iommu_dma_cookie {
+ 	enum iommu_dma_cookie_type	type;
+ 	union {
+ 		/* Full allocator for IOMMU_DMA_IOVA_COOKIE */
+ 		struct {
+ 			struct iova_domain	iovad;
+-
+-			struct iova_fq __percpu *fq;	/* Flush queue */
++			/* Flush queue */
++			union {
++				struct iova_fq	*single_fq;
++				struct iova_fq	__percpu *percpu_fq;
++			};
+ 			/* Number of TLB flushes that have been started */
+ 			atomic64_t		fq_flush_start_cnt;
+ 			/* Number of TLB flushes that have been finished */
+@@ -67,6 +79,8 @@ struct iommu_dma_cookie {
+ 
+ 	/* Domain for flush queue callback; NULL if flush queue not in use */
+ 	struct iommu_domain		*fq_domain;
++	/* Options for dma-iommu use */
++	struct iommu_dma_options	options;
+ 	struct mutex			mutex;
+ };
+ 
+@@ -124,7 +138,7 @@ static inline unsigned int fq_ring_add(struct iova_fq *fq)
+ 	return idx;
+ }
+ 
+-static void fq_ring_free(struct iommu_dma_cookie *cookie, struct iova_fq *fq)
++static void fq_ring_free_locked(struct iommu_dma_cookie *cookie, struct iova_fq *fq)
+ {
+ 	u64 counter = atomic64_read(&cookie->fq_flush_finish_cnt);
+ 	unsigned int idx;
+@@ -145,6 +159,15 @@ static void fq_ring_free(struct iommu_dma_cookie *cookie, struct iova_fq *fq)
+ 	}
+ }
+ 
++static void fq_ring_free(struct iommu_dma_cookie *cookie, struct iova_fq *fq)
++{
++	unsigned long flags;
++
++	spin_lock_irqsave(&fq->lock, flags);
++	fq_ring_free_locked(cookie, fq);
++	spin_unlock_irqrestore(&fq->lock, flags);
++}
++
+ static void fq_flush_iotlb(struct iommu_dma_cookie *cookie)
+ {
+ 	atomic64_inc(&cookie->fq_flush_start_cnt);
+@@ -160,14 +183,11 @@ static void fq_flush_timeout(struct timer_list *t)
+ 	atomic_set(&cookie->fq_timer_on, 0);
+ 	fq_flush_iotlb(cookie);
+ 
+-	for_each_possible_cpu(cpu) {
+-		unsigned long flags;
+-		struct iova_fq *fq;
+-
+-		fq = per_cpu_ptr(cookie->fq, cpu);
+-		spin_lock_irqsave(&fq->lock, flags);
+-		fq_ring_free(cookie, fq);
+-		spin_unlock_irqrestore(&fq->lock, flags);
++	if (cookie->options.qt == IOMMU_DMA_OPTS_SINGLE_QUEUE) {
++		fq_ring_free(cookie, cookie->single_fq);
++	} else {
++		for_each_possible_cpu(cpu)
++			fq_ring_free(cookie, per_cpu_ptr(cookie->percpu_fq, cpu));
+ 	}
+ }
+ 
+@@ -188,7 +208,11 @@ static void queue_iova(struct iommu_dma_cookie *cookie,
+ 	 */
+ 	smp_mb();
+ 
+-	fq = raw_cpu_ptr(cookie->fq);
++	if (cookie->options.qt == IOMMU_DMA_OPTS_SINGLE_QUEUE)
++		fq = cookie->single_fq;
++	else
++		fq = raw_cpu_ptr(cookie->percpu_fq);
++
+ 	spin_lock_irqsave(&fq->lock, flags);
+ 
+ 	/*
+@@ -196,11 +220,11 @@ static void queue_iova(struct iommu_dma_cookie *cookie,
+ 	 * flushed out on another CPU. This makes the fq_full() check below less
+ 	 * likely to be true.
+ 	 */
+-	fq_ring_free(cookie, fq);
++	fq_ring_free_locked(cookie, fq);
+ 
+ 	if (fq_full(fq)) {
+ 		fq_flush_iotlb(cookie);
+-		fq_ring_free(cookie, fq);
++		fq_ring_free_locked(cookie, fq);
+ 	}
+ 
+ 	idx = fq_ring_add(fq);
+@@ -219,31 +243,88 @@ static void queue_iova(struct iommu_dma_cookie *cookie,
+ 			  jiffies + msecs_to_jiffies(IOVA_FQ_TIMEOUT));
+ }
+ 
+-static void iommu_dma_free_fq(struct iommu_dma_cookie *cookie)
++static void iommu_dma_free_fq_single(struct iova_fq *fq)
++{
++	int idx;
++
++	fq_ring_for_each(idx, fq)
++		put_pages_list(&fq->entries[idx].freelist);
++	vfree(fq);
++}
++
++static void iommu_dma_free_fq_percpu(struct iova_fq __percpu *percpu_fq)
+ {
+ 	int cpu, idx;
+ 
+-	if (!cookie->fq)
+-		return;
+-
+-	del_timer_sync(&cookie->fq_timer);
+ 	/* The IOVAs will be torn down separately, so just free our queued pages */
+ 	for_each_possible_cpu(cpu) {
+-		struct iova_fq *fq = per_cpu_ptr(cookie->fq, cpu);
++		struct iova_fq *fq = per_cpu_ptr(percpu_fq, cpu);
+ 
+ 		fq_ring_for_each(idx, fq)
+ 			put_pages_list(&fq->entries[idx].freelist);
+ 	}
+ 
+-	free_percpu(cookie->fq);
++	free_percpu(percpu_fq);
++}
++
++static void iommu_dma_free_fq(struct iommu_dma_cookie *cookie)
++{
++	if (!cookie->fq_domain)
++		return;
++
++	del_timer_sync(&cookie->fq_timer);
++	if (cookie->options.qt == IOMMU_DMA_OPTS_SINGLE_QUEUE)
++		iommu_dma_free_fq_single(cookie->single_fq);
++	else
++		iommu_dma_free_fq_percpu(cookie->percpu_fq);
++}
++
++static void iommu_dma_init_one_fq(struct iova_fq *fq)
++{
++	int i;
++
++	fq->head = 0;
++	fq->tail = 0;
++
++	spin_lock_init(&fq->lock);
++
++	for (i = 0; i < IOVA_FQ_SIZE; i++)
++		INIT_LIST_HEAD(&fq->entries[i].freelist);
++}
++
++static int iommu_dma_init_fq_single(struct iommu_dma_cookie *cookie)
++{
++	struct iova_fq *queue;
++
++	queue = vmalloc(sizeof(*queue));
++	if (!queue)
++		return -ENOMEM;
++	iommu_dma_init_one_fq(queue);
++	cookie->single_fq = queue;
++
++	return 0;
++}
++
++static int iommu_dma_init_fq_percpu(struct iommu_dma_cookie *cookie)
++{
++	struct iova_fq __percpu *queue;
++	int cpu;
++
++	queue = alloc_percpu(struct iova_fq);
++	if (!queue)
++		return -ENOMEM;
++
++	for_each_possible_cpu(cpu)
++		iommu_dma_init_one_fq(per_cpu_ptr(queue, cpu));
++	cookie->percpu_fq = queue;
++	return 0;
+ }
+ 
+ /* sysfs updates are serialised by the mutex of the group owning @domain */
+ int iommu_dma_init_fq(struct iommu_domain *domain)
+ {
+ 	struct iommu_dma_cookie *cookie = domain->iova_cookie;
+-	struct iova_fq __percpu *queue;
+-	int i, cpu;
++	int rc;
+ 
+ 	if (cookie->fq_domain)
+ 		return 0;
+@@ -251,26 +332,16 @@ int iommu_dma_init_fq(struct iommu_domain *domain)
+ 	atomic64_set(&cookie->fq_flush_start_cnt,  0);
+ 	atomic64_set(&cookie->fq_flush_finish_cnt, 0);
+ 
+-	queue = alloc_percpu(struct iova_fq);
+-	if (!queue) {
++	if (cookie->options.qt == IOMMU_DMA_OPTS_SINGLE_QUEUE)
++		rc = iommu_dma_init_fq_single(cookie);
++	else
++		rc = iommu_dma_init_fq_percpu(cookie);
++
++	if (rc) {
+ 		pr_warn("iova flush queue initialization failed\n");
+ 		return -ENOMEM;
+ 	}
+ 
+-	for_each_possible_cpu(cpu) {
+-		struct iova_fq *fq = per_cpu_ptr(queue, cpu);
+-
+-		fq->head = 0;
+-		fq->tail = 0;
+-
+-		spin_lock_init(&fq->lock);
+-
+-		for (i = 0; i < IOVA_FQ_SIZE; i++)
+-			INIT_LIST_HEAD(&fq->entries[i].freelist);
+-	}
+-
+-	cookie->fq = queue;
+-
+ 	timer_setup(&cookie->fq_timer, fq_flush_timeout, 0);
+ 	atomic_set(&cookie->fq_timer_on, 0);
+ 	/*
+@@ -554,6 +625,23 @@ static bool dev_use_sg_swiotlb(struct device *dev, struct scatterlist *sg,
+ 	return false;
+ }
+ 
++/**
++ * iommu_dma_init_options - Initialize dma-iommu options
++ * @options: The options to be initialized
++ * @dev: Device the options are set for
++ *
++ * This allows tuning dma-iommu specific to device properties
++ */
++static void iommu_dma_init_options(struct iommu_dma_options *options,
++				   struct device *dev)
++{
++	/* Shadowing IOTLB flushes do better with a single queue */
++	if (dev->iommu->shadow_on_flush)
++		options->qt = IOMMU_DMA_OPTS_SINGLE_QUEUE;
++	else
++		options->qt = IOMMU_DMA_OPTS_PER_CPU_QUEUE;
++}
++
+ /**
+  * iommu_dma_init_domain - Initialise a DMA mapping domain
+  * @domain: IOMMU domain previously prepared by iommu_get_dma_cookie()
+@@ -614,6 +702,8 @@ static int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
+ 	if (ret)
+ 		goto done_unlock;
+ 
++	iommu_dma_init_options(&cookie->options, dev);
++
+ 	/* If the FQ fails we can simply fall back to strict mode */
+ 	if (domain->type == IOMMU_DOMAIN_DMA_FQ &&
+ 	    (!device_iommu_capable(dev, IOMMU_CAP_DEFERRED_FLUSH) || iommu_dma_init_fq(domain)))
+diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
+index 5b5ba1cd5f00..9a5196f523de 100644
+--- a/drivers/iommu/s390-iommu.c
++++ b/drivers/iommu/s390-iommu.c
+@@ -463,6 +463,9 @@ static struct iommu_device *s390_iommu_probe_device(struct device *dev)
+ 	if (zdev->end_dma > ZPCI_TABLE_SIZE_RT - 1)
+ 		zdev->end_dma = ZPCI_TABLE_SIZE_RT - 1;
+ 
++	if (zdev->tlb_refresh)
++		dev->iommu->shadow_on_flush = 1;
++
+ 	return &zdev->iommu_dev;
+ }
+ 
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 1eb638752781..0c4d8ae985ac 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -424,6 +424,7 @@ struct iommu_fault_param {
+  * @attach_deferred: the dma domain attachment is deferred
+  * @pci_32bit_workaround: Limit DMA allocations to 32-bit IOVAs
+  * @require_direct: device requires IOMMU_RESV_DIRECT regions
++ * @shadow_on_flush: IOTLB flushes are used to sync shadow tables
+  *
+  * TODO: migrate other per device data pointers under iommu_dev_data, e.g.
+  *	struct iommu_group	*iommu_group;
+@@ -439,6 +440,7 @@ struct dev_iommu {
+ 	u32				attach_deferred:1;
+ 	u32				pci_32bit_workaround:1;
+ 	u32				require_direct:1;
++	u32				shadow_on_flush:1;
+ };
+ 
+ int iommu_device_register(struct iommu_device *iommu,
 
-Thanks,
-Robin.
+-- 
+2.39.2
 
->> has already been exported, so please update the comment to explain this
->> new requirement.
->>
->>> +
->>>    	if (ops->get_resv_regions)
->>>    		ops->get_resv_regions(dev, list);
->>>    }
->>
->> Best regards,
->> baolu
