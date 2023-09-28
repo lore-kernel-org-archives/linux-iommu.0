@@ -1,50 +1,50 @@
-Received: from mail-yb1-f201.google.com (mail-yb1-f201.google.com [209.85.219.201])
+Received: from mail-yw1-f201.google.com (mail-yw1-f201.google.com [209.85.128.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C058374D9
-	for <iommu@lists.linux.dev>; Thu, 28 Sep 2023 15:46:31 +0000 (UTC)
-Received: by mail-yb1-f201.google.com with SMTP id 3f1490d57ef6-d866d13c637so16669991276.3
-        for <iommu@lists.linux.dev>; Thu, 28 Sep 2023 08:46:31 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E3DDB347A3
+	for <iommu@lists.linux.dev>; Thu, 28 Sep 2023 15:53:43 +0000 (UTC)
+Received: by mail-yw1-f201.google.com with SMTP id 00721157ae682-59f4f2a9ef0so224730717b3.2
+        for <iommu@lists.linux.dev>; Thu, 28 Sep 2023 08:53:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1695915991; x=1696520791; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1695916423; x=1696521223; darn=lists.linux.dev;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=UkV6DJLEp14NQoEGpYmTcHsFBbLNhclSblSFOKPN4t4=;
-        b=yO5aMP9+wBQRky3LIPAxVd6SsnTk+Rt1sDntF0jcnw35TiNwVeL+L3R1Uvy29fZXWw
-         RFRGa1v6cXdAkr0iGl2gBmX37/y5onGoHk+beBRk5aZTSMo59TfSFucIlkS5W9Y2M3xM
-         MKmX7F2uvdi4bEGCLnYWN1eTtJB5DtBA2vXYujcuqoqRgSE0ALYpD9nNPE/sNzKOWBJa
-         PuNsjxgdmbTSM4AUm5qlKGj/09HOCTmVf5XTBbA2OLYTI6uLfw6SDrTA+U7EDCRDI+W+
-         9cRyEOdy3tJiMtM7qstUmz+xPV4SW9bGqpUKNSz+sAymqd7YkTDqKgTcNGUCBjZZEpt0
-         1+EA==
+        bh=9+KF8Dx6gkORPNY9sE+tILxrgD0oMG3WrnAvRuzUSWM=;
+        b=mq3B0tPr91UFgh0H0fRW6Ear4Yu9p5WlxrdXWynxJoPf6+z30fhYoxEXvBdv53W34G
+         QHqojQ6C65aMyaUr6YfF9imkodXkhNcwh1xcBT3ocxwmURUg7IpK70z/xYYEu84jaUd/
+         adCGtO5f0eYAPztxNyc4hwszRrhVxFm8sa3JqWLWJRw+u2LVNMrd+7VHKAV4Ibfc92C9
+         u3nv47qIvSQTUOu8X3YnJkmPzPYxZ1rN5eNsnfbO2FTQQ9HZU2bLoF2p4mJNtrs6NTz2
+         5x6I6dFnaCib10CqNYwgoJtqDp7A5fC6yeoAJ6SKiBQVfA1F9FCR1XXrvWVGNLGzKgjS
+         P08Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1695915991; x=1696520791;
+        d=1e100.net; s=20230601; t=1695916423; x=1696521223;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=UkV6DJLEp14NQoEGpYmTcHsFBbLNhclSblSFOKPN4t4=;
-        b=nVucsi3WOQisxOYWr4AIpX6qsGil+zStchUs/3E4DCTaa/Nna5j1Zi/atf3Whhz7sR
-         GA+MvWepWe8slJe5NaQevZIKcCZ1GcDH8QkZms9c/1R+8p+6BXE0B/6Swoe1MH0e3BXd
-         e0FV0aYeg3GcSgu5T7bL5wVygeOIodXua4q2HAww4pxTkXGdP0z63+/QEJ5SflRYTxVj
-         ZEQIGjCe7iuGPC3RFrTPbmj/W+fogSVXgP3z2Q3nFkbN/wwNq7lVXWocHS9Dsxgpgyjk
-         ynhAeXaaasY1WlsvR+rHcIZqseIfq9vRjVKtj2Qu4RlUV551AnorlXUZTKuuOSoyOsOq
-         b2xg==
-X-Gm-Message-State: AOJu0YzqrXcB1eIwsnFJBs/9SjHBd9TR/0ww5eK1a716iV0+j/BgFLBA
-	vE4fPDTDtVFKiSyzz7c/pUWXXshq8NY=
-X-Google-Smtp-Source: AGHT+IEWX4T56HPfxAmtAicLu3EcKVpChcE7iMMF3BlcUKBkp8bJf66fPphCxJhGyetbdNcj2NdIprAzUe8=
+        bh=9+KF8Dx6gkORPNY9sE+tILxrgD0oMG3WrnAvRuzUSWM=;
+        b=GF/GGfuMhCP0oY4PXDQ9yxS8HhXeuTMn3zcF0dF1q+G+5I6AJ+lR8c8gH3HE2wpSXb
+         wk7am66uaGSPKq9qCplU4xvyt6iKrBHjMBJzoV6B9OexN6a0NhpPkHk6Mby9NGmzr4+Z
+         iAXy1DiOF1XJVShTYYr7VAsRiL/CU/+oUjdNQV8iCB4EvCU7k94Qr7GofVNpGVyyGRK8
+         A2jrgGKDyMoizXvs76jsWDZTf9JI5v/4CIj35lji5LXtKNXCX686tNUtyl7MNfP7TzXd
+         ZQj0DUP8VUhNNW+TiYAHMb9O3mINTaa4aMu+J0NCRiS1eLtpQGo+76DiCYM4MPoW0Mp6
+         OAdQ==
+X-Gm-Message-State: AOJu0YzX6Lxh9ZTRhViS/YRMO6s6q/DjzxY32KBGZwPrwx30oRtBcUM+
+	sL2wZW8D20aeAVanc+bygjPP1VObl+A=
+X-Google-Smtp-Source: AGHT+IH4A7qKg2XydOJbmIvwuoLA9BPXAXOV4ldgBhSu0+Vajy3UmXpajmDHZC2VBSfPhVz068mClgDbRP0=
 X-Received: from zagreus.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5c37])
- (user=seanjc job=sendgmr) by 2002:a25:5f4d:0:b0:d7b:8acc:beb8 with SMTP id
- h13-20020a255f4d000000b00d7b8accbeb8mr24990ybm.2.1695915990966; Thu, 28 Sep
- 2023 08:46:30 -0700 (PDT)
-Date: Thu, 28 Sep 2023 08:46:29 -0700
-In-Reply-To: <20230928150428.199929-3-mlevitsk@redhat.com>
+ (user=seanjc job=sendgmr) by 2002:a81:bc05:0:b0:59b:f138:c843 with SMTP id
+ a5-20020a81bc05000000b0059bf138c843mr31557ywi.3.1695916422752; Thu, 28 Sep
+ 2023 08:53:42 -0700 (PDT)
+Date: Thu, 28 Sep 2023 08:53:41 -0700
+In-Reply-To: <20230928150428.199929-2-mlevitsk@redhat.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
-References: <20230928150428.199929-1-mlevitsk@redhat.com> <20230928150428.199929-3-mlevitsk@redhat.com>
-Message-ID: <ZRWf1Z7JCMUT92zt@google.com>
-Subject: Re: [PATCH 2/5] x86: KVM: SVM: add support for Invalid IPI Vector interception
+References: <20230928150428.199929-1-mlevitsk@redhat.com> <20230928150428.199929-2-mlevitsk@redhat.com>
+Message-ID: <ZRWhhTvQuE2MN9KB@google.com>
+Subject: Re: [PATCH 1/5] x86: KVM: SVM: fix for x2avic CVE-2023-5090
 From: Sean Christopherson <seanjc@google.com>
 To: Maxim Levitsky <mlevitsk@redhat.com>
 Cc: kvm@vger.kernel.org, Will Deacon <will@kernel.org>, Borislav Petkov <bp@alien8.de>, 
@@ -55,61 +55,69 @@ Cc: kvm@vger.kernel.org, Will Deacon <will@kernel.org>, Borislav Petkov <bp@alie
 	"H. Peter Anvin" <hpa@zytor.com>, linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Content-Type: text/plain; charset="us-ascii"
 
+KVM: SVM: for the shortlog scope
+
+And my preference is to have the shortlog explain the code change and leave the
+CVE reference to a line in the changelog.  CVE numbers are meaningless without
+context, e.g. listing the CVE isn't going to be at all helpful for future readers
+that look at shortlogs.
+
+E.g.
+
+  KVM: SVM: Always refresh x2APIC MSR intercepts when x2AVIC is enabled
+
+or 
+
+  KVM: SVM: Update MSR intercepts for x2AVIC when guest disables x2APIC
+
 On Thu, Sep 28, 2023, Maxim Levitsky wrote:
-> In later revisions of AMD's APM, there is a new 'incomplete IPI' exit code:
+> The following problem exists since the x2avic was enabled in the KVM:
+
+Just "x2avic"
+
+> svm_set_x2apic_msr_interception is called to enable the interception of
+
+() after functions
+
+> the x2apic msrs.
 > 
-> "Invalid IPI Vector - The vector for the specified IPI was set to an
-> illegal value (VEC < 16)"
+> In particular it is called at the moment the guest resets its apic.
 > 
-> Note that tests on Zen2 machine show that this VM exit doesn't happen and
-> instead AVIC just does nothing.
+> Assuming that the guest's apic was in x2apic mode, the reset will bring
+> it back to the xapic mode.
 > 
-> Add support for this exit code by doing nothing, instead of filling
-> the kernel log with errors.
+> The svm_set_x2apic_msr_interception however has an erroneous check for
+> '!apic_x2apic_mode()' which prevents it from doing anything in this case.
 > 
-> Also replace an unthrottled 'pr_err()' if another unknown incomplete
-> IPI exit happens with WARN_ON_ONCE()
+> As a result of this, all x2apic msrs are left unintercepted, and that
+> exposes the bare metal x2apic (if enabled) to the guest.
+> Oops.
 > 
-> (e.g in case AMD adds yet another 'Invalid IPI' exit reason)
+> Remove the erroneous '!apic_x2apic_mode()' check to fix that.
 > 
-> Cc: <stable@vger.kernel.org>
-> 
+> Cc: stable@vger.kernel.org
+
+Fixes: 4d1d7942e36a ("KVM: SVM: Introduce logic to (de)activate x2AVIC mode")
+
 > Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
 > ---
->  arch/x86/include/asm/svm.h | 1 +
->  arch/x86/kvm/svm/avic.c    | 5 ++++-
->  2 files changed, 5 insertions(+), 1 deletion(-)
+>  arch/x86/kvm/svm/svm.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
 > 
-> diff --git a/arch/x86/include/asm/svm.h b/arch/x86/include/asm/svm.h
-> index 19bf955b67e0da0..3ac0ffc4f3e202b 100644
-> --- a/arch/x86/include/asm/svm.h
-> +++ b/arch/x86/include/asm/svm.h
-> @@ -268,6 +268,7 @@ enum avic_ipi_failure_cause {
->  	AVIC_IPI_FAILURE_TARGET_NOT_RUNNING,
->  	AVIC_IPI_FAILURE_INVALID_TARGET,
->  	AVIC_IPI_FAILURE_INVALID_BACKING_PAGE,
-> +	AVIC_IPI_FAILURE_INVALID_IPI_VECTOR,
->  };
+> diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
+> index 9507df93f410a63..acdd0b89e4715a3 100644
+> --- a/arch/x86/kvm/svm/svm.c
+> +++ b/arch/x86/kvm/svm/svm.c
+> @@ -913,8 +913,7 @@ void svm_set_x2apic_msr_interception(struct vcpu_svm *svm, bool intercept)
+>  	if (intercept == svm->x2avic_msrs_intercepted)
+>  		return;
 >  
->  #define AVIC_PHYSICAL_MAX_INDEX_MASK	GENMASK_ULL(8, 0)
-> diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
-> index 2092db892d7d052..c44b65af494e3ff 100644
-> --- a/arch/x86/kvm/svm/avic.c
-> +++ b/arch/x86/kvm/svm/avic.c
-> @@ -529,8 +529,11 @@ int avic_incomplete_ipi_interception(struct kvm_vcpu *vcpu)
->  	case AVIC_IPI_FAILURE_INVALID_BACKING_PAGE:
->  		WARN_ONCE(1, "Invalid backing page\n");
->  		break;
-> +	case AVIC_IPI_FAILURE_INVALID_IPI_VECTOR:
-> +		/* Invalid IPI with vector < 16 */
-> +		break;
->  	default:
-> -		pr_err("Unknown IPI interception\n");
-> +		WARN_ONCE(1, "Unknown avic incomplete IPI interception\n");
-
-Hrm, I'm not sure KVM should WARN here.  E.g. if someone runs with panic_on_warn=1,
-running on new hardware might crash the host.  I hope that AMD is smart enough to
-make any future failure types "optional" in the sense that they're either opt-in,
-or are largely informational-only (like AVIC_IPI_FAILURE_INVALID_IPI_VECTOR).
-
-I think switching to vcpu_unimpl(), or maybe even pr_err_once(), is more appropriate.
+> -	if (!x2avic_enabled ||
+> -	    !apic_x2apic_mode(svm->vcpu.arch.apic))
+> +	if (!x2avic_enabled)
+>  		return;
+>  
+>  	for (i = 0; i < MAX_DIRECT_ACCESS_MSRS; i++) {
+> -- 
+> 2.26.3
+> 
