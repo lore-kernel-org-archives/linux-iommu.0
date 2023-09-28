@@ -1,50 +1,50 @@
-Received: from mail-yw1-f201.google.com (mail-yw1-f201.google.com [209.85.128.201])
+Received: from mail-pl1-f202.google.com (mail-pl1-f202.google.com [209.85.214.202])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E3DDB347A3
-	for <iommu@lists.linux.dev>; Thu, 28 Sep 2023 15:53:43 +0000 (UTC)
-Received: by mail-yw1-f201.google.com with SMTP id 00721157ae682-59f4f2a9ef0so224730717b3.2
-        for <iommu@lists.linux.dev>; Thu, 28 Sep 2023 08:53:43 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C4C913AFB
+	for <iommu@lists.linux.dev>; Thu, 28 Sep 2023 16:03:32 +0000 (UTC)
+Received: by mail-pl1-f202.google.com with SMTP id d9443c01a7336-1c73fb50da6so2726695ad.0
+        for <iommu@lists.linux.dev>; Thu, 28 Sep 2023 09:03:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1695916423; x=1696521223; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1695917012; x=1696521812; darn=lists.linux.dev;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=9+KF8Dx6gkORPNY9sE+tILxrgD0oMG3WrnAvRuzUSWM=;
-        b=mq3B0tPr91UFgh0H0fRW6Ear4Yu9p5WlxrdXWynxJoPf6+z30fhYoxEXvBdv53W34G
-         QHqojQ6C65aMyaUr6YfF9imkodXkhNcwh1xcBT3ocxwmURUg7IpK70z/xYYEu84jaUd/
-         adCGtO5f0eYAPztxNyc4hwszRrhVxFm8sa3JqWLWJRw+u2LVNMrd+7VHKAV4Ibfc92C9
-         u3nv47qIvSQTUOu8X3YnJkmPzPYxZ1rN5eNsnfbO2FTQQ9HZU2bLoF2p4mJNtrs6NTz2
-         5x6I6dFnaCib10CqNYwgoJtqDp7A5fC6yeoAJ6SKiBQVfA1F9FCR1XXrvWVGNLGzKgjS
-         P08Q==
+        bh=MFUmYNpX6rTwdApxep2QFE0XCc25ZJa3cg6mPE92sAo=;
+        b=annwDoNexAKHEjtE6ToO/ncY3ra4Ll36dbgFLVk24GMCvUTHumvCU7ILdJDvsMm2c7
+         PM5abWvLO9Ru7JUgRyWlRm1fA3JkROJsn+imKv+iYh3iq4q2ZTqSS+GCZ15sAt5yvfMD
+         82fS5kx7o5aCKpGv8O01KivIlf8b/8ukUNy1hlDFLLAALAfjNG0hAOgVEhN+ckU6S3yB
+         aT9q5qVuUEkVnyLG202SJDjwtERN4aVqy+hHEvQdj1x25t0uuGs1PsFRV/6JZTNlk2/9
+         P/hA+qHOayq/RjV7bFR6iJedHxFQg3wqpa5zyr2CnnON/b/muTwHf5gG3AEFYm2wqZL3
+         SIew==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1695916423; x=1696521223;
+        d=1e100.net; s=20230601; t=1695917012; x=1696521812;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=9+KF8Dx6gkORPNY9sE+tILxrgD0oMG3WrnAvRuzUSWM=;
-        b=GF/GGfuMhCP0oY4PXDQ9yxS8HhXeuTMn3zcF0dF1q+G+5I6AJ+lR8c8gH3HE2wpSXb
-         wk7am66uaGSPKq9qCplU4xvyt6iKrBHjMBJzoV6B9OexN6a0NhpPkHk6Mby9NGmzr4+Z
-         iAXy1DiOF1XJVShTYYr7VAsRiL/CU/+oUjdNQV8iCB4EvCU7k94Qr7GofVNpGVyyGRK8
-         A2jrgGKDyMoizXvs76jsWDZTf9JI5v/4CIj35lji5LXtKNXCX686tNUtyl7MNfP7TzXd
-         ZQj0DUP8VUhNNW+TiYAHMb9O3mINTaa4aMu+J0NCRiS1eLtpQGo+76DiCYM4MPoW0Mp6
-         OAdQ==
-X-Gm-Message-State: AOJu0YzX6Lxh9ZTRhViS/YRMO6s6q/DjzxY32KBGZwPrwx30oRtBcUM+
-	sL2wZW8D20aeAVanc+bygjPP1VObl+A=
-X-Google-Smtp-Source: AGHT+IH4A7qKg2XydOJbmIvwuoLA9BPXAXOV4ldgBhSu0+Vajy3UmXpajmDHZC2VBSfPhVz068mClgDbRP0=
+        bh=MFUmYNpX6rTwdApxep2QFE0XCc25ZJa3cg6mPE92sAo=;
+        b=ReXtjb1ZKh+X/jJFWrzPt6Q+HFTTq11qdTxBu0o1vKfZdmR85w1RLKLY7r0FqaD31V
+         q3WBYtiF5UJgAnHrPMwTBO8M4ODRKoiRMdn0gHOorq3LvRiIbogxv67bxmnEhWCWAZaG
+         IR1jeo9+YzY3JTdxNbqoFhWnzlC3ce3DLmi8yDk5sAHKCJkJXoC/NtkEbLCJL8PJbnW0
+         W5JRnRs1VWy6PmZMdcAFNPymVmf4MiZvW6tv7jf5+p04bKSm+6xZRgi2SZFwpK7UDL22
+         yHMabQeeSgHmmIpDxAxiOAumbMGIz7di+t544UVFKWN7hRLVuBl4ha+8kD955h2UX6v1
+         bNmw==
+X-Gm-Message-State: AOJu0YycIq/OUbeSMXZZOarMjm4KCFrGzOZYyLCqe+HuPuaX96VpL+qw
+	Bc79Fqb7dxpC7LCZFNAcz7q9hKkk+78=
+X-Google-Smtp-Source: AGHT+IFNYZN6ptDJkMmwLSNuZPQjEWOAcWQREE8N0qlp/jqzMy/uAdJQYt5rwc8mhcDZlWu1erWrGHWMPok=
 X-Received: from zagreus.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5c37])
- (user=seanjc job=sendgmr) by 2002:a81:bc05:0:b0:59b:f138:c843 with SMTP id
- a5-20020a81bc05000000b0059bf138c843mr31557ywi.3.1695916422752; Thu, 28 Sep
- 2023 08:53:42 -0700 (PDT)
-Date: Thu, 28 Sep 2023 08:53:41 -0700
-In-Reply-To: <20230928150428.199929-2-mlevitsk@redhat.com>
+ (user=seanjc job=sendgmr) by 2002:a17:902:e5c7:b0:1bb:c7c6:3462 with SMTP id
+ u7-20020a170902e5c700b001bbc7c63462mr21438plf.8.1695917012352; Thu, 28 Sep
+ 2023 09:03:32 -0700 (PDT)
+Date: Thu, 28 Sep 2023 09:03:31 -0700
+In-Reply-To: <20230928150428.199929-4-mlevitsk@redhat.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
-References: <20230928150428.199929-1-mlevitsk@redhat.com> <20230928150428.199929-2-mlevitsk@redhat.com>
-Message-ID: <ZRWhhTvQuE2MN9KB@google.com>
-Subject: Re: [PATCH 1/5] x86: KVM: SVM: fix for x2avic CVE-2023-5090
+References: <20230928150428.199929-1-mlevitsk@redhat.com> <20230928150428.199929-4-mlevitsk@redhat.com>
+Message-ID: <ZRWj0_VGvrg148He@google.com>
+Subject: Re: [PATCH 3/5] x86: KVM: SVM: refresh AVIC inhibition in svm_leave_nested()
 From: Sean Christopherson <seanjc@google.com>
 To: Maxim Levitsky <mlevitsk@redhat.com>
 Cc: kvm@vger.kernel.org, Will Deacon <will@kernel.org>, Borislav Petkov <bp@alien8.de>, 
@@ -55,69 +55,40 @@ Cc: kvm@vger.kernel.org, Will Deacon <will@kernel.org>, Borislav Petkov <bp@alie
 	"H. Peter Anvin" <hpa@zytor.com>, linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Content-Type: text/plain; charset="us-ascii"
 
-KVM: SVM: for the shortlog scope
-
-And my preference is to have the shortlog explain the code change and leave the
-CVE reference to a line in the changelog.  CVE numbers are meaningless without
-context, e.g. listing the CVE isn't going to be at all helpful for future readers
-that look at shortlogs.
-
-E.g.
-
-  KVM: SVM: Always refresh x2APIC MSR intercepts when x2AVIC is enabled
-
-or 
-
-  KVM: SVM: Update MSR intercepts for x2AVIC when guest disables x2APIC
-
 On Thu, Sep 28, 2023, Maxim Levitsky wrote:
-> The following problem exists since the x2avic was enabled in the KVM:
-
-Just "x2avic"
-
-> svm_set_x2apic_msr_interception is called to enable the interception of
-
-() after functions
-
-> the x2apic msrs.
+> svm_leave_nested() similar to a nested VM exit, get the vCPU out of nested
+> mode and thus should end the local inhibition of AVIC on this vCPU.
 > 
-> In particular it is called at the moment the guest resets its apic.
+> Failure to do so, can lead to hangs on guest reboot.
 > 
-> Assuming that the guest's apic was in x2apic mode, the reset will bring
-> it back to the xapic mode.
-> 
-> The svm_set_x2apic_msr_interception however has an erroneous check for
-> '!apic_x2apic_mode()' which prevents it from doing anything in this case.
-> 
-> As a result of this, all x2apic msrs are left unintercepted, and that
-> exposes the bare metal x2apic (if enabled) to the guest.
-> Oops.
-> 
-> Remove the erroneous '!apic_x2apic_mode()' check to fix that.
+> Raise the KVM_REQ_APICV_UPDATE request to refresh the AVIC state of the
+> current vCPU in this case.
 > 
 > Cc: stable@vger.kernel.org
 
-Fixes: 4d1d7942e36a ("KVM: SVM: Introduce logic to (de)activate x2AVIC mode")
+Unnecessary newline.
+
+Fixes: f44509f849fe ("KVM: x86: SVM: allow AVIC to co-exist with a nested guest running")
 
 > Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
 > ---
->  arch/x86/kvm/svm/svm.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
+>  arch/x86/kvm/svm/nested.c | 3 +++
+>  1 file changed, 3 insertions(+)
 > 
-> diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-> index 9507df93f410a63..acdd0b89e4715a3 100644
-> --- a/arch/x86/kvm/svm/svm.c
-> +++ b/arch/x86/kvm/svm/svm.c
-> @@ -913,8 +913,7 @@ void svm_set_x2apic_msr_interception(struct vcpu_svm *svm, bool intercept)
->  	if (intercept == svm->x2avic_msrs_intercepted)
->  		return;
+> diff --git a/arch/x86/kvm/svm/nested.c b/arch/x86/kvm/svm/nested.c
+> index dd496c9e5f91f28..3fea8c47679e689 100644
+> --- a/arch/x86/kvm/svm/nested.c
+> +++ b/arch/x86/kvm/svm/nested.c
+> @@ -1253,6 +1253,9 @@ void svm_leave_nested(struct kvm_vcpu *vcpu)
 >  
-> -	if (!x2avic_enabled ||
-> -	    !apic_x2apic_mode(svm->vcpu.arch.apic))
-> +	if (!x2avic_enabled)
->  		return;
+>  		nested_svm_uninit_mmu_context(vcpu);
+>  		vmcb_mark_all_dirty(svm->vmcb);
+> +
+> +		if (kvm_apicv_activated(vcpu->kvm))
+> +			kvm_make_request(KVM_REQ_APICV_UPDATE, vcpu);
+>  	}
 >  
->  	for (i = 0; i < MAX_DIRECT_ACCESS_MSRS; i++) {
+>  	kvm_clear_request(KVM_REQ_GET_NESTED_STATE_PAGES, vcpu);
 > -- 
 > 2.26.3
 > 
