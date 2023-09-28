@@ -1,425 +1,155 @@
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2044.outbound.protection.outlook.com [40.107.244.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E742B38BDF;
-	Thu, 28 Sep 2023 14:35:04 +0000 (UTC)
-Received: from pps.filterd (m0353724.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 38SEQvj4026394;
-	Thu, 28 Sep 2023 14:34:43 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : date : subject :
- mime-version : content-type : content-transfer-encoding : message-id :
- references : in-reply-to : to : cc; s=pp1;
- bh=2I111I2XpXkxCUT37V2rlUQw05m83jbwTSNuVd6sgAI=;
- b=spa6ARS31wCm3iHgvQmN4mZyOfa2lxd9ngL4+pdyLt2Sq077WZPSyk5PtN9aRa18v7SL
- lzUhbMEsVy7Jv/HmawBCzeoJqxVPU3Z6Xt0NYBK9yGoVg4T/szkgaLhmDPKQqxcoGxW0
- dBVb6slLqbzhF4/8/fwtnxxbgPF4Hi+bXOSl6kNvIu+kbMHpi07myHJ30ene+bHxBjK7
- L4sUybbkoAl5CF1SY8gMT9krkEAuTj3J6J0PjnlFuPy2BptWw4TwFc1JDAXyWPPDbQ7d
- spMN9mNKlY4JoSmLSnpBqGWLmnBUHb4+60Mrmgt6/QeYCPH08BU4j4jP0AgKPXeMptUH nA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3td9we2u1g-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 28 Sep 2023 14:34:42 +0000
-Received: from m0353724.ppops.net (m0353724.ppops.net [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 38SEH3gP023658;
-	Thu, 28 Sep 2023 14:32:54 GMT
-Received: from ppma11.dal12v.mail.ibm.com (db.9e.1632.ip4.static.sl-reverse.com [50.22.158.219])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3td9we2tgr-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 28 Sep 2023 14:32:54 +0000
-Received: from pps.filterd (ppma11.dal12v.mail.ibm.com [127.0.0.1])
-	by ppma11.dal12v.mail.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 38SEV6Ze030404;
-	Thu, 28 Sep 2023 14:32:36 GMT
-Received: from smtprelay01.fra02v.mail.ibm.com ([9.218.2.227])
-	by ppma11.dal12v.mail.ibm.com (PPS) with ESMTPS id 3tad224jx2-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 28 Sep 2023 14:32:36 +0000
-Received: from smtpav04.fra02v.mail.ibm.com (smtpav04.fra02v.mail.ibm.com [10.20.54.103])
-	by smtprelay01.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 38SEWXFP4457196
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Thu, 28 Sep 2023 14:32:33 GMT
-Received: from smtpav04.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 37EFC2005A;
-	Thu, 28 Sep 2023 14:32:33 +0000 (GMT)
-Received: from smtpav04.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 4BF9F2004B;
-	Thu, 28 Sep 2023 14:32:32 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-	by smtpav04.fra02v.mail.ibm.com (Postfix) with ESMTP;
-	Thu, 28 Sep 2023 14:32:32 +0000 (GMT)
-From: Niklas Schnelle <schnelle@linux.ibm.com>
-Date: Thu, 28 Sep 2023 16:31:35 +0200
-Subject: [PATCH v13 1/6] iommu: Allow .iotlb_sync_map to fail and handle
- s390's -ENOMEM return
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B72441AB8
+	for <iommu@lists.linux.dev>; Thu, 28 Sep 2023 14:52:45 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=har2g/cM4shOe2unwBA0K59nXiP74vDsOPOVFrNZrt2E3J3o7GsnRb8kE7yRLy3Wf+3XWGQ2Zv2v3M+f40jY+ZB4LTSxBxN6u2+3nBE+sygY6FIi2eu9v7YGG5W4wvs8eyyOTYzzQNzf8OvUU3VARZ/GTLZLoeP+kh9DxuTEbxVmuU4nVnZCs5E3/YtIHZ/Vbqv98zM6ZqRts/5z1EDtscvkCCzlCnR3Rvv6eBDQMmHgLuTqHjqkheHw99bZhnJwvwGdIXqSzU4iQSFeT/W/CljZMjriC2fJqUMct3JkvGAvZ+q4kb8DvWYo2zNLTEsy1G17YE9YUNitQl3CxfMuKQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=FdIhoD0CoVFaztpRk9Z6tA4KipsGaPkgCqXlUliMhkc=;
+ b=O43ZFAbSLXI6E1FKOODOqxgqlncVxQF6WCronkLXqLSNzLL68Lz6NY6XuerWP+wu5WS91NpYi4PFOuPXCi9A7oBEpFMLb3CXeyuKtByI7LTxgO2OXpkpnkflTXRO4FOWdqYV3tph8N/DZz4WBJi1TB/+0Plle6iCQLAMuupoLgeC7mgTvI3uISRhoVawgo25KE1ELYZyISKTUglNF1BtPxgJjaTYzVyPZG6W/kzDiGOlWg0lojRR59gHNlKBk07XpKSJ2rIqlLRwYPBV7nxRb92F4WuXKvljaEqMkhpe0VxwaGnjI3WJ9jIMu0FcxFpY3Y5R3h/Pu/VSPCz7ks1mJQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=FdIhoD0CoVFaztpRk9Z6tA4KipsGaPkgCqXlUliMhkc=;
+ b=SjqtYD9QYfklUxxHtbVeUgLGGwhwzvhMPqMiHcM/a4btnV0bV0fd9snyB9nJsj3ckgDS1+DrvCh7O2F26F9R8FcIo0+HNNExhaRnstLYVl6YnBOyf0Op4R/UE56TtlCqWYHyKYRdH/+Q5FjCLZBy3ppfIc659gpqlSDFlXmpCyw=
+Received: from BL1PR12MB5144.namprd12.prod.outlook.com (2603:10b6:208:316::6)
+ by SA1PR12MB8095.namprd12.prod.outlook.com (2603:10b6:806:33f::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6813.35; Thu, 28 Sep
+ 2023 14:52:42 +0000
+Received: from BL1PR12MB5144.namprd12.prod.outlook.com
+ ([fe80::a2bb:870f:8aaa:1ba2]) by BL1PR12MB5144.namprd12.prod.outlook.com
+ ([fe80::a2bb:870f:8aaa:1ba2%7]) with mapi id 15.20.6838.024; Thu, 28 Sep 2023
+ 14:52:42 +0000
+From: "Deucher, Alexander" <Alexander.Deucher@amd.com>
+To: "joro@8bytes.org" <joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>
+CC: Baolu Lu <baolu.lu@linux.intel.com>, "Hegde, Vasant"
+	<Vasant.Hegde@amd.com>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"Suthikulpanit, Suravee" <Suravee.Suthikulpanit@amd.com>, "Huang2, Wei"
+	<Wei.Huang2@amd.com>, "jsnitsel@redhat.com" <jsnitsel@redhat.com>, "Kuehling,
+ Felix" <Felix.Kuehling@amd.com>
+Subject: RE: [PATCH v3 1/5] iommu/amd: Remove iommu_v2 module
+Thread-Topic: [PATCH v3 1/5] iommu/amd: Remove iommu_v2 module
+Thread-Index:
+ AQHZ7G6D8C15gDSmGUyI0hSW7LwfLrAlT/OwgAAC/YCAAA660IAAF7sAgAClRgCAAKDwgIAAA8wAgAABcQCABIDlAIAFGBAA
+Date: Thu, 28 Sep 2023 14:52:42 +0000
+Message-ID:
+ <BL1PR12MB514488501F04049C08CB71DAF7C1A@BL1PR12MB5144.namprd12.prod.outlook.com>
+References: <20230921093140.6162-1-vasant.hegde@amd.com>
+ <20230921093140.6162-2-vasant.hegde@amd.com>
+ <BL1PR12MB5144C5ADC106D450EA73C511F7F8A@BL1PR12MB5144.namprd12.prod.outlook.com>
+ <20230921141415.GN13733@nvidia.com>
+ <BL1PR12MB51449627A11B2BDA55B97C8CF7F8A@BL1PR12MB5144.namprd12.prod.outlook.com>
+ <20230921163154.GO13733@nvidia.com>
+ <19c7c139-b002-384f-5766-b87a8013029e@linux.intel.com>
+ <20230922115927.GI13733@nvidia.com>
+ <a4770035-9f1a-3bff-2ff2-d6b9c81e2c0b@linux.intel.com>
+ <20230922121812.GM13733@nvidia.com> <ZRFNIsHmKpNmmOc7@8bytes.org>
+In-Reply-To: <ZRFNIsHmKpNmmOc7@8bytes.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+msip_labels:
+ MSIP_Label_4342314e-0df4-4b58-84bf-38bed6170a0f_ActionId=3d8d7f9e-af73-42f9-8dc9-b15e39093ca0;MSIP_Label_4342314e-0df4-4b58-84bf-38bed6170a0f_ContentBits=0;MSIP_Label_4342314e-0df4-4b58-84bf-38bed6170a0f_Enabled=true;MSIP_Label_4342314e-0df4-4b58-84bf-38bed6170a0f_Method=Standard;MSIP_Label_4342314e-0df4-4b58-84bf-38bed6170a0f_Name=General;MSIP_Label_4342314e-0df4-4b58-84bf-38bed6170a0f_SetDate=2023-09-28T14:51:59Z;MSIP_Label_4342314e-0df4-4b58-84bf-38bed6170a0f_SiteId=3dd8961f-e488-4e60-8e11-a82d994e183d;
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BL1PR12MB5144:EE_|SA1PR12MB8095:EE_
+x-ms-office365-filtering-correlation-id: 7d05700b-686f-4d8f-be26-08dbc0329179
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info:
+ S3CCzvY8rCJBZQILJ+GakEPfP8htKN+onxx8wfdS7YRE6aWSjn/3GTpDQbRRNEGdrD2clN+4ZAEzJqeKoTwyPFqURcow1bWe7CSmfPKu92td8BhVfX7l+sfrrm4G0J0FAATZpz3oaaoUvKUHr2WZFCo9Yp2M+nThZldTsWUHK4b9gE5c+vaN918V4dteAtGr2WSHU7G0k5kc7twAXaBXcYaR7qdtQ85/2CUYnQ50bw8MHbBidQhHAIjy1lL7DbNdDUtrC3J/ShpZq2ZE9fTqPfUg+Ckd65vg1KCu3YC9gZedyq4wVYHwsnSUBKYy5frgLJR0nFjtWUYYhc+sjKvhv9qFzvrN4H+2y5/QA1lE6tIifSf1oR/I+2b+FlYZPe2J+JpdtWaulGS5Pi/bA8G9XJOLunkFmFYujBftOE4bA88n4AFAojAnFn4uP/EfE+fBOPi9uyjkRNWJz2s4DvV9mQn6wJ9SFtxEgv+GUBzaPaQivpAPkaYRAVeLKv5eaOpC/6W9lnc0F65miwhzxxXWt4AEye38gmuN3I6k8LFCd0zzrCVXafx4bCExrosdSyBrVnlGVfb5lI00of4H7K245zL52rmSZnFidORPpYR+314=
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL1PR12MB5144.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(396003)(39860400002)(346002)(136003)(376002)(366004)(230922051799003)(186009)(451199024)(1800799009)(64100799003)(9686003)(55016003)(6506007)(7696005)(122000001)(53546011)(26005)(5660300002)(4326008)(8676002)(8936002)(52536014)(86362001)(33656002)(2906002)(316002)(38100700002)(41300700001)(110136005)(76116006)(54906003)(64756008)(66446008)(66476007)(66556008)(66946007)(71200400001)(478600001)(38070700005)(83380400001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?us-ascii?Q?BEz4vzKXi+uk51PcSDpqXKmIY5fS8Vi2tvInIHG06myjvuKiaILZrn9bOMmy?=
+ =?us-ascii?Q?OQz54vpavs5/MxDx40SAeDkAUF08H60WCVc/of/8+F/ql9dAOc7kNdJuZnQz?=
+ =?us-ascii?Q?8J8FQV+KGVeA62nSfMXJCkxZryaEU2KcEuAY3wXQ1Z+HIvgChBkU/wJrZ8V7?=
+ =?us-ascii?Q?F3aYx/2oAY/LG776UVpa02M+H2J6W6rhjiEfxdJTrkeX10DUQg96SB4OqN5v?=
+ =?us-ascii?Q?BUw344vv5EsUR+eS1L/g5p0uyEhzZRQyrFdJqH+mjUtWM5OjUQTBDuKFgjo0?=
+ =?us-ascii?Q?sT0hLAl6sc36xahvuai8ffPYqnpjmehYE7x+s03EZissrLlNDwPpsOPvrDRk?=
+ =?us-ascii?Q?bHoHkiLq8cr8kKt1E7CR4S1WIgSApzd3YbpQ5ytwz5lNufE8NYKISKJqtG64?=
+ =?us-ascii?Q?TlBRtcgVihNvo1M5FeTqI8Wf/flu1HUf7E8+nYlO3nS62I2/2pzOuej4NgfR?=
+ =?us-ascii?Q?zP2VPpTvzVTVeJpJ3YAjjNSBRNhdRnI1w05wpKoEz+SP2Wo1lKWHSaiERoPp?=
+ =?us-ascii?Q?gxrBWfVahU6VFt3A2bunajrdMZzSHllbvrRt/a98dqqNp/Ke+Mc1A18bSg1y?=
+ =?us-ascii?Q?bD+3bGYDkAn2ofNAJdFWkSZ52DyrOxiIArYxZBtJ0ORBitl4U5EYyfLurwts?=
+ =?us-ascii?Q?cMdO1sti7FO22aavLbORRjdbw3frmUuw4O1zT1fMRVS2mEUi890hmVBPuXV9?=
+ =?us-ascii?Q?Pv9ni3Ax/RQRb2UN8JbUDqoMYEpmfo2C1Z9L52TxU132+WajLBpckwsTKQe+?=
+ =?us-ascii?Q?sVXQQJ1rLc+ONXtq6ebwJWg5+L2q6rA6MSD894eRw5EfH3TJppCX84G8TP35?=
+ =?us-ascii?Q?UQxQ5tlrC5cPn1Hm9m374Cuf2XT7U6hnvgOMy6pBHZ6AW7OyKLErvxlM7YXd?=
+ =?us-ascii?Q?CBypQNGEpTEK0EBuR0YsvYf5aGLuCT1d9CFXeIw0f1f4tY5N1jya1JFcq7NK?=
+ =?us-ascii?Q?bEmd17ZqMqGsoYRnIZvsBzWoclMuHOm/8jE35ExWGk8sk6VDH/ZXEK0XeXaJ?=
+ =?us-ascii?Q?5VIJr1n1083y7GK9CJoHtSatgI5mmI32LsQ9zcratlYXMN/vrlftQlcoISes?=
+ =?us-ascii?Q?IPCOf0Fy2nKXhSn/5dL77Pd75IdOi+NQcssJCS/+nKN+gXZF3Cy/zDlCXFON?=
+ =?us-ascii?Q?2bDJuXu9QV6LP4/iBJYINA3UN3F76ZbEAXHPfVV0Jh7g30gAKP9v8/fPqm/3?=
+ =?us-ascii?Q?QkkMH2Qia9dzkepIg8n5NsIjCvsOUDqwTBaUav4pEFGNyQ7jzcpxDERSEauO?=
+ =?us-ascii?Q?r9ChDsgy3oGKriZUX7jPRKGzAEFZoshpWbI9tciTM9cXsE20JI9TL12JMp8H?=
+ =?us-ascii?Q?5H4X7k/ZEQk7Mrb+FPltKlwglOw3SwTZyuz/07c9rqiGvro4sy/3vlhC+NUb?=
+ =?us-ascii?Q?8Ex0VfHxGMnb1guboVdwVmZS89mPFpex2I431243M72boXSuhRbgg8u5wsF5?=
+ =?us-ascii?Q?r0LfPDBEYy/h/I7PJQFc9XqqHgMGnauLzPqsAW+45YufzAWfkGCx+YsSpBwW?=
+ =?us-ascii?Q?66AaSdV07nepwgBAfbz4UraSzJGKDh1YLzpwojkGflVoDzJflCAos9sgmQqg?=
+ =?us-ascii?Q?/nHafKmozxgopISPhF8=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20230928-dma_iommu-v13-1-9e5fc4dacc36@linux.ibm.com>
-References: <20230928-dma_iommu-v13-0-9e5fc4dacc36@linux.ibm.com>
-In-Reply-To: <20230928-dma_iommu-v13-0-9e5fc4dacc36@linux.ibm.com>
-To: Joerg Roedel <joro@8bytes.org>, Matthew Rosato <mjrosato@linux.ibm.com>,
-        Will Deacon <will@kernel.org>, Wenjia Zhang <wenjia@linux.ibm.com>,
-        Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Gerd Bayer <gbayer@linux.ibm.com>, Julian Ruess <julianr@linux.ibm.com>,
-        Pierre Morel <pmorel@linux.ibm.com>,
-        Alexandra Winter <wintera@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-        Hector Martin <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        David Woodhouse <dwmw2@infradead.org>,
-        Lu Baolu <baolu.lu@linux.intel.com>, Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>,
-        Yong Wu <yong.wu@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-        Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>, Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Krishna Reddy <vdumpa@nvidia.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Niklas Schnelle <schnelle@linux.ibm.com>,
-        Jonathan Corbet <corbet@lwn.net>, linux-s390@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        iommu@lists.linux.dev, asahi@lists.linux.dev,
-        linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
-        linux-mediatek@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        linux-tegra@vger.kernel.org, linux-doc@vger.kernel.org
-X-Mailer: b4 0.12.3
-X-Developer-Signature: v=1; a=openpgp-sha256; l=11193;
- i=schnelle@linux.ibm.com; h=from:subject:message-id;
- bh=ZuyX0iNPU3mOlrBcND3JmvHzZjf4YChi+thm6mQX10I=;
- b=owGbwMvMwCH2Wz534YHOJ2GMp9WSGFJF+wKkn2sys3nUJsd8j2jOuHn6d8LtZNkvitvKGkw5f
- Ut+Rf/vKGVhEONgkBVTZFnU5ey3rmCK6Z6g/g6YOaxMIEMYuDgFYCIsVxkZrs+VS39g9HK7r+gb
- uctfChKda7MXm8gU9caE6f/79KDhLlCF17elMcp85T/3GT94INn178GyyAOyt2Vu/9BeGCPY/48
- fAA==
-X-Developer-Key: i=schnelle@linux.ibm.com; a=openpgp;
- fpr=9DB000B2D2752030A5F72DDCAFE43F15E8C26090
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: cIGy2F3pWKwiUIJbZ3aYQpcuAJHvrUVZ
-X-Proofpoint-ORIG-GUID: RXUM_eK9TR1tnSI0TLVos8v9-3JoJKQO
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.267,Aquarius:18.0.980,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2023-09-28_13,2023-09-28_02,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 mlxscore=0
- lowpriorityscore=0 spamscore=0 malwarescore=0 suspectscore=0
- priorityscore=1501 mlxlogscore=999 clxscore=1015 adultscore=0 phishscore=0
- bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2309180000 definitions=main-2309280126
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BL1PR12MB5144.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7d05700b-686f-4d8f-be26-08dbc0329179
+X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Sep 2023 14:52:42.4177
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: +UPMj11KPr2t6XoJFSgtfTj8M1IS4woitdHEkR6jkJG78PMzUYaiajZl1Gc4o8zz+g6nCUa7dS1nfTHvfI42CA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB8095
 
-On s390 when using a paging hypervisor, .iotlb_sync_map is used to sync
-mappings by letting the hypervisor inspect the synced IOVA range and
-updating a shadow table. This however means that .iotlb_sync_map can
-fail as the hypervisor may run out of resources while doing the sync.
-This can be due to the hypervisor being unable to pin guest pages, due
-to a limit on mapped addresses such as vfio_iommu_type1.dma_entry_limit
-or lack of other resources. Either way such a failure to sync a mapping
-should result in a DMA_MAPPING_ERROR.
+[AMD Official Use Only - General]
 
-Now especially when running with batched IOTLB flushes for unmap it may
-be that some IOVAs have already been invalidated but not yet synced via
-.iotlb_sync_map. Thus if the hypervisor indicates running out of
-resources, first do a global flush allowing the hypervisor to free
-resources associated with these mappings as well a retry creating the
-new mappings and only if that also fails report this error to callers.
+> -----Original Message-----
+> From: joro@8bytes.org <joro@8bytes.org>
+> Sent: Monday, September 25, 2023 5:05 AM
+> To: Jason Gunthorpe <jgg@nvidia.com>
+> Cc: Baolu Lu <baolu.lu@linux.intel.com>; Deucher, Alexander
+> <Alexander.Deucher@amd.com>; Hegde, Vasant <Vasant.Hegde@amd.com>;
+> iommu@lists.linux.dev; Suthikulpanit, Suravee
+> <Suravee.Suthikulpanit@amd.com>; Huang2, Wei <Wei.Huang2@amd.com>;
+> jsnitsel@redhat.com; Kuehling, Felix <Felix.Kuehling@amd.com>
+> Subject: Re: [PATCH v3 1/5] iommu/amd: Remove iommu_v2 module
+>
+> On Fri, Sep 22, 2023 at 09:18:12AM -0300, Jason Gunthorpe wrote:
+> > IMHO iommu drivers should not override this.
+> >
+> > I think it was a mistake that iommu drivers could override to identity
+> > domains. If we need quirks then the core code should have the quirk
+> > list, similar to how PCI works.
+>
+> Sounds reasonable, but if we transition over to an iommu core facility fo=
+r
+> quirks, we must do it in a way that does not cause temporary regressions =
+for
+> existing hardware.
+>
+> That being said, Alexander, can you please test this series for regressio=
+ns on
+> the older hardware to make sure nothing regresses there?
+>
 
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
-Reviewed-by: Matthew Rosato <mjrosato@linux.ibm.com>
-Acked-by: Jernej Skrabec <jernej.skrabec@gmail.com> # sun50i
-Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
----
- drivers/iommu/amd/iommu.c    |  5 +++--
- drivers/iommu/apple-dart.c   |  5 +++--
- drivers/iommu/intel/iommu.c  |  5 +++--
- drivers/iommu/iommu.c        | 20 ++++++++++++++++----
- drivers/iommu/msm_iommu.c    |  5 +++--
- drivers/iommu/mtk_iommu.c    |  5 +++--
- drivers/iommu/s390-iommu.c   | 29 +++++++++++++++++++++++------
- drivers/iommu/sprd-iommu.c   |  5 +++--
- drivers/iommu/sun50i-iommu.c |  6 ++++--
- include/linux/iommu.h        |  4 ++--
- 10 files changed, 63 insertions(+), 26 deletions(-)
+We've tested this and can confirm no regressions.
 
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index 95bd7c25ba6f..74229b1607a1 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -2233,14 +2233,15 @@ static int amd_iommu_attach_device(struct iommu_domain *dom,
- 	return ret;
- }
- 
--static void amd_iommu_iotlb_sync_map(struct iommu_domain *dom,
--				     unsigned long iova, size_t size)
-+static int amd_iommu_iotlb_sync_map(struct iommu_domain *dom,
-+				    unsigned long iova, size_t size)
- {
- 	struct protection_domain *domain = to_pdomain(dom);
- 	struct io_pgtable_ops *ops = &domain->iop.iop.ops;
- 
- 	if (ops->map_pages)
- 		domain_flush_np_cache(domain, iova, size);
-+	return 0;
- }
- 
- static int amd_iommu_map_pages(struct iommu_domain *dom, unsigned long iova,
-diff --git a/drivers/iommu/apple-dart.c b/drivers/iommu/apple-dart.c
-index 2082081402d3..22880a42ccaa 100644
---- a/drivers/iommu/apple-dart.c
-+++ b/drivers/iommu/apple-dart.c
-@@ -506,10 +506,11 @@ static void apple_dart_iotlb_sync(struct iommu_domain *domain,
- 	apple_dart_domain_flush_tlb(to_dart_domain(domain));
- }
- 
--static void apple_dart_iotlb_sync_map(struct iommu_domain *domain,
--				      unsigned long iova, size_t size)
-+static int apple_dart_iotlb_sync_map(struct iommu_domain *domain,
-+				     unsigned long iova, size_t size)
- {
- 	apple_dart_domain_flush_tlb(to_dart_domain(domain));
-+	return 0;
- }
- 
- static phys_addr_t apple_dart_iova_to_phys(struct iommu_domain *domain,
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 5db283c17e0d..477937513502 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -4678,8 +4678,8 @@ static bool risky_device(struct pci_dev *pdev)
- 	return false;
- }
- 
--static void intel_iommu_iotlb_sync_map(struct iommu_domain *domain,
--				       unsigned long iova, size_t size)
-+static int intel_iommu_iotlb_sync_map(struct iommu_domain *domain,
-+				      unsigned long iova, size_t size)
- {
- 	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
- 	unsigned long pages = aligned_nrpages(iova, size);
-@@ -4689,6 +4689,7 @@ static void intel_iommu_iotlb_sync_map(struct iommu_domain *domain,
- 
- 	xa_for_each(&dmar_domain->iommu_array, i, info)
- 		__mapping_notify_one(info->iommu, dmar_domain, pfn, pages);
-+	return 0;
- }
- 
- static void intel_iommu_remove_dev_pasid(struct device *dev, ioasid_t pasid)
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 1ecac2b5c54f..1cc9d139c860 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -2585,8 +2585,17 @@ int iommu_map(struct iommu_domain *domain, unsigned long iova,
- 		return -EINVAL;
- 
- 	ret = __iommu_map(domain, iova, paddr, size, prot, gfp);
--	if (ret == 0 && ops->iotlb_sync_map)
--		ops->iotlb_sync_map(domain, iova, size);
-+	if (ret == 0 && ops->iotlb_sync_map) {
-+		ret = ops->iotlb_sync_map(domain, iova, size);
-+		if (ret)
-+			goto out_err;
-+	}
-+
-+	return ret;
-+
-+out_err:
-+	/* undo mappings already done */
-+	iommu_unmap(domain, iova, size);
- 
- 	return ret;
- }
-@@ -2714,8 +2723,11 @@ ssize_t iommu_map_sg(struct iommu_domain *domain, unsigned long iova,
- 			sg = sg_next(sg);
- 	}
- 
--	if (ops->iotlb_sync_map)
--		ops->iotlb_sync_map(domain, iova, mapped);
-+	if (ops->iotlb_sync_map) {
-+		ret = ops->iotlb_sync_map(domain, iova, mapped);
-+		if (ret)
-+			goto out_err;
-+	}
- 	return mapped;
- 
- out_err:
-diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
-index a163cee0b724..f86af9815d6f 100644
---- a/drivers/iommu/msm_iommu.c
-+++ b/drivers/iommu/msm_iommu.c
-@@ -498,12 +498,13 @@ static int msm_iommu_map(struct iommu_domain *domain, unsigned long iova,
- 	return ret;
- }
- 
--static void msm_iommu_sync_map(struct iommu_domain *domain, unsigned long iova,
--			       size_t size)
-+static int msm_iommu_sync_map(struct iommu_domain *domain, unsigned long iova,
-+			      size_t size)
- {
- 	struct msm_priv *priv = to_msm_priv(domain);
- 
- 	__flush_iotlb_range(iova, size, SZ_4K, false, priv);
-+	return 0;
- }
- 
- static size_t msm_iommu_unmap(struct iommu_domain *domain, unsigned long iova,
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 19ef50221c93..2d8e95246781 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -837,12 +837,13 @@ static void mtk_iommu_iotlb_sync(struct iommu_domain *domain,
- 	mtk_iommu_tlb_flush_range_sync(gather->start, length, dom->bank);
- }
- 
--static void mtk_iommu_sync_map(struct iommu_domain *domain, unsigned long iova,
--			       size_t size)
-+static int mtk_iommu_sync_map(struct iommu_domain *domain, unsigned long iova,
-+			      size_t size)
- {
- 	struct mtk_iommu_domain *dom = to_mtk_domain(domain);
- 
- 	mtk_iommu_tlb_flush_range_sync(iova, size, dom->bank);
-+	return 0;
- }
- 
- static phys_addr_t mtk_iommu_iova_to_phys(struct iommu_domain *domain,
-diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
-index 5695ad71d60e..560d0957f9be 100644
---- a/drivers/iommu/s390-iommu.c
-+++ b/drivers/iommu/s390-iommu.c
-@@ -219,6 +219,12 @@ static void s390_iommu_release_device(struct device *dev)
- 		__s390_iommu_detach_device(zdev);
- }
- 
-+static int zpci_refresh_all(struct zpci_dev *zdev)
-+{
-+	return zpci_refresh_trans((u64)zdev->fh << 32, zdev->start_dma,
-+				  zdev->end_dma - zdev->start_dma + 1);
-+}
-+
- static void s390_iommu_flush_iotlb_all(struct iommu_domain *domain)
- {
- 	struct s390_domain *s390_domain = to_s390_domain(domain);
-@@ -226,8 +232,7 @@ static void s390_iommu_flush_iotlb_all(struct iommu_domain *domain)
- 
- 	rcu_read_lock();
- 	list_for_each_entry_rcu(zdev, &s390_domain->devices, iommu_list) {
--		zpci_refresh_trans((u64)zdev->fh << 32, zdev->start_dma,
--				   zdev->end_dma - zdev->start_dma + 1);
-+		zpci_refresh_all(zdev);
- 	}
- 	rcu_read_unlock();
- }
-@@ -251,20 +256,32 @@ static void s390_iommu_iotlb_sync(struct iommu_domain *domain,
- 	rcu_read_unlock();
- }
- 
--static void s390_iommu_iotlb_sync_map(struct iommu_domain *domain,
--				      unsigned long iova, size_t size)
-+static int s390_iommu_iotlb_sync_map(struct iommu_domain *domain,
-+				     unsigned long iova, size_t size)
- {
- 	struct s390_domain *s390_domain = to_s390_domain(domain);
- 	struct zpci_dev *zdev;
-+	int ret = 0;
- 
- 	rcu_read_lock();
- 	list_for_each_entry_rcu(zdev, &s390_domain->devices, iommu_list) {
- 		if (!zdev->tlb_refresh)
- 			continue;
--		zpci_refresh_trans((u64)zdev->fh << 32,
--				   iova, size);
-+		ret = zpci_refresh_trans((u64)zdev->fh << 32,
-+					 iova, size);
-+		/*
-+		 * let the hypervisor discover invalidated entries
-+		 * allowing it to free IOVAs and unpin pages
-+		 */
-+		if (ret == -ENOMEM) {
-+			ret = zpci_refresh_all(zdev);
-+			if (ret)
-+				break;
-+		}
- 	}
- 	rcu_read_unlock();
-+
-+	return ret;
- }
- 
- static int s390_iommu_validate_trans(struct s390_domain *s390_domain,
-diff --git a/drivers/iommu/sprd-iommu.c b/drivers/iommu/sprd-iommu.c
-index 9c33ea6903f6..2eb9fb46703b 100644
---- a/drivers/iommu/sprd-iommu.c
-+++ b/drivers/iommu/sprd-iommu.c
-@@ -341,8 +341,8 @@ static size_t sprd_iommu_unmap(struct iommu_domain *domain, unsigned long iova,
- 	return size;
- }
- 
--static void sprd_iommu_sync_map(struct iommu_domain *domain,
--				unsigned long iova, size_t size)
-+static int sprd_iommu_sync_map(struct iommu_domain *domain,
-+			       unsigned long iova, size_t size)
- {
- 	struct sprd_iommu_domain *dom = to_sprd_domain(domain);
- 	unsigned int reg;
-@@ -354,6 +354,7 @@ static void sprd_iommu_sync_map(struct iommu_domain *domain,
- 
- 	/* clear IOMMU TLB buffer after page table updated */
- 	sprd_iommu_write(dom->sdev, reg, 0xffffffff);
-+	return 0;
- }
- 
- static void sprd_iommu_sync(struct iommu_domain *domain,
-diff --git a/drivers/iommu/sun50i-iommu.c b/drivers/iommu/sun50i-iommu.c
-index 3c834854eda1..41484a5a399b 100644
---- a/drivers/iommu/sun50i-iommu.c
-+++ b/drivers/iommu/sun50i-iommu.c
-@@ -401,8 +401,8 @@ static void sun50i_iommu_flush_iotlb_all(struct iommu_domain *domain)
- 	spin_unlock_irqrestore(&iommu->iommu_lock, flags);
- }
- 
--static void sun50i_iommu_iotlb_sync_map(struct iommu_domain *domain,
--					unsigned long iova, size_t size)
-+static int sun50i_iommu_iotlb_sync_map(struct iommu_domain *domain,
-+				       unsigned long iova, size_t size)
- {
- 	struct sun50i_iommu_domain *sun50i_domain = to_sun50i_domain(domain);
- 	struct sun50i_iommu *iommu = sun50i_domain->iommu;
-@@ -411,6 +411,8 @@ static void sun50i_iommu_iotlb_sync_map(struct iommu_domain *domain,
- 	spin_lock_irqsave(&iommu->iommu_lock, flags);
- 	sun50i_iommu_zap_range(iommu, iova, size);
- 	spin_unlock_irqrestore(&iommu->iommu_lock, flags);
-+
-+	return 0;
- }
- 
- static void sun50i_iommu_iotlb_sync(struct iommu_domain *domain,
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 64bd20142cbe..1eb638752781 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -350,8 +350,8 @@ struct iommu_domain_ops {
- 			      struct iommu_iotlb_gather *iotlb_gather);
- 
- 	void (*flush_iotlb_all)(struct iommu_domain *domain);
--	void (*iotlb_sync_map)(struct iommu_domain *domain, unsigned long iova,
--			       size_t size);
-+	int (*iotlb_sync_map)(struct iommu_domain *domain, unsigned long iova,
-+			      size_t size);
- 	void (*iotlb_sync)(struct iommu_domain *domain,
- 			   struct iommu_iotlb_gather *iotlb_gather);
- 
-
--- 
-2.39.2
+Alex
 
