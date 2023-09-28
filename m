@@ -1,50 +1,50 @@
-Received: from mail-yw1-f202.google.com (mail-yw1-f202.google.com [209.85.128.202])
+Received: from mail-yb1-f201.google.com (mail-yb1-f201.google.com [209.85.219.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B3578836
-	for <iommu@lists.linux.dev>; Thu, 28 Sep 2023 15:37:20 +0000 (UTC)
-Received: by mail-yw1-f202.google.com with SMTP id 00721157ae682-59f4f2a9ef0so224439207b3.2
-        for <iommu@lists.linux.dev>; Thu, 28 Sep 2023 08:37:20 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C058374D9
+	for <iommu@lists.linux.dev>; Thu, 28 Sep 2023 15:46:31 +0000 (UTC)
+Received: by mail-yb1-f201.google.com with SMTP id 3f1490d57ef6-d866d13c637so16669991276.3
+        for <iommu@lists.linux.dev>; Thu, 28 Sep 2023 08:46:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1695915439; x=1696520239; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1695915991; x=1696520791; darn=lists.linux.dev;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=ESjv6/OZiwDAaibxySOEd24QWBP6h1ze9OpmoOfalec=;
-        b=vRWk/+abzA31TTJq+SoWguUr15n2e1mCvz8gTCpcIJFXjB98x1YTVhpGQu3iD3cUQf
-         i/smeZoZG7DI14ApuNP/rq8hxs89AwdD+PJOVxUEb2Ww+aFkEFNOecChK3vC57FCJVm1
-         /HAi4wIPb4WTJZ0THOKe2hEMWK5OjRz8xF+bFar8QgtgtMFg6wxyuN6TJ785Gpq+eMgl
-         h0gIv9L3jy4lNV8pxW2je8+s7bVMrVrHwjHW8SlkJK6SKc5oeDDF1gETMU598LhpyOyP
-         8Ak7UV6z57RrbAZYXrRXg02enz2laz8VLXmCQKNvmk+sK/kSg2BjIHz68ZkgmlKPQPI8
-         DVyg==
+        bh=UkV6DJLEp14NQoEGpYmTcHsFBbLNhclSblSFOKPN4t4=;
+        b=yO5aMP9+wBQRky3LIPAxVd6SsnTk+Rt1sDntF0jcnw35TiNwVeL+L3R1Uvy29fZXWw
+         RFRGa1v6cXdAkr0iGl2gBmX37/y5onGoHk+beBRk5aZTSMo59TfSFucIlkS5W9Y2M3xM
+         MKmX7F2uvdi4bEGCLnYWN1eTtJB5DtBA2vXYujcuqoqRgSE0ALYpD9nNPE/sNzKOWBJa
+         PuNsjxgdmbTSM4AUm5qlKGj/09HOCTmVf5XTBbA2OLYTI6uLfw6SDrTA+U7EDCRDI+W+
+         9cRyEOdy3tJiMtM7qstUmz+xPV4SW9bGqpUKNSz+sAymqd7YkTDqKgTcNGUCBjZZEpt0
+         1+EA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1695915439; x=1696520239;
+        d=1e100.net; s=20230601; t=1695915991; x=1696520791;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=ESjv6/OZiwDAaibxySOEd24QWBP6h1ze9OpmoOfalec=;
-        b=IGKWN3Lqzx1PuXq/dI29dNuaiBUqfRkY4sKbWXi4TCSv5N27mulbO0oosGqUgcu/mu
-         23B21KeitJArmC7Lf7eIgG3VpFHDnkjPt3nPy4f4SgBKE1bS+gABVZL35O9IEHjS8j2w
-         GL2xftRpjINYKefj43sjl+1/FGISCobRnuXUfE/dpZtHeo9WI1BaUgovbPbq8B97mL98
-         +f84gD/4mC61/RjvAzJYkn6FGFIxg8YOpDZ6KXuh5oMFum4uoCVWo97LgCqG86GtMQj+
-         f1ljNhPA8yVGNfEw4f2Tn732v9KCeuw99M5pxKYPIL8eYxJrZpXYLovqRfSsMCDCLitU
-         9xUQ==
-X-Gm-Message-State: AOJu0YwB5CP/DG14hj2n4sPVSDvI6msZPuRgsudytaT4RFKh0/ptPWbX
-	kVYv8SsA7dlfG2mYKfnpTaF2hKdm+uc=
-X-Google-Smtp-Source: AGHT+IEGP17fNTPrQ4AyY729ngrGoUL/gl5UpyjrVFFDHHoJHMKzXnWTPF8kdaQC3pFKL2kLKxYzCqKL1hQ=
+        bh=UkV6DJLEp14NQoEGpYmTcHsFBbLNhclSblSFOKPN4t4=;
+        b=nVucsi3WOQisxOYWr4AIpX6qsGil+zStchUs/3E4DCTaa/Nna5j1Zi/atf3Whhz7sR
+         GA+MvWepWe8slJe5NaQevZIKcCZ1GcDH8QkZms9c/1R+8p+6BXE0B/6Swoe1MH0e3BXd
+         e0FV0aYeg3GcSgu5T7bL5wVygeOIodXua4q2HAww4pxTkXGdP0z63+/QEJ5SflRYTxVj
+         ZEQIGjCe7iuGPC3RFrTPbmj/W+fogSVXgP3z2Q3nFkbN/wwNq7lVXWocHS9Dsxgpgyjk
+         ynhAeXaaasY1WlsvR+rHcIZqseIfq9vRjVKtj2Qu4RlUV551AnorlXUZTKuuOSoyOsOq
+         b2xg==
+X-Gm-Message-State: AOJu0YzqrXcB1eIwsnFJBs/9SjHBd9TR/0ww5eK1a716iV0+j/BgFLBA
+	vE4fPDTDtVFKiSyzz7c/pUWXXshq8NY=
+X-Google-Smtp-Source: AGHT+IEWX4T56HPfxAmtAicLu3EcKVpChcE7iMMF3BlcUKBkp8bJf66fPphCxJhGyetbdNcj2NdIprAzUe8=
 X-Received: from zagreus.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5c37])
- (user=seanjc job=sendgmr) by 2002:a81:b709:0:b0:5a1:d329:829c with SMTP id
- v9-20020a81b709000000b005a1d329829cmr24447ywh.0.1695915439513; Thu, 28 Sep
- 2023 08:37:19 -0700 (PDT)
-Date: Thu, 28 Sep 2023 08:37:18 -0700
-In-Reply-To: <20230928150428.199929-6-mlevitsk@redhat.com>
+ (user=seanjc job=sendgmr) by 2002:a25:5f4d:0:b0:d7b:8acc:beb8 with SMTP id
+ h13-20020a255f4d000000b00d7b8accbeb8mr24990ybm.2.1695915990966; Thu, 28 Sep
+ 2023 08:46:30 -0700 (PDT)
+Date: Thu, 28 Sep 2023 08:46:29 -0700
+In-Reply-To: <20230928150428.199929-3-mlevitsk@redhat.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
-References: <20230928150428.199929-1-mlevitsk@redhat.com> <20230928150428.199929-6-mlevitsk@redhat.com>
-Message-ID: <ZRWdrtHynEbtQnpZ@google.com>
-Subject: Re: [PATCH 5/5] x86: KVM: SVM: workaround for AVIC's errata #1235
+References: <20230928150428.199929-1-mlevitsk@redhat.com> <20230928150428.199929-3-mlevitsk@redhat.com>
+Message-ID: <ZRWf1Z7JCMUT92zt@google.com>
+Subject: Re: [PATCH 2/5] x86: KVM: SVM: add support for Invalid IPI Vector interception
 From: Sean Christopherson <seanjc@google.com>
 To: Maxim Levitsky <mlevitsk@redhat.com>
 Cc: kvm@vger.kernel.org, Will Deacon <will@kernel.org>, Borislav Petkov <bp@alien8.de>, 
@@ -52,53 +52,64 @@ Cc: kvm@vger.kernel.org, Will Deacon <will@kernel.org>, Borislav Petkov <bp@alie
 	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, Thomas Gleixner <tglx@linutronix.de>, 
 	Paolo Bonzini <pbonzini@redhat.com>, x86@kernel.org, Robin Murphy <robin.murphy@arm.com>, 
 	iommu@lists.linux.dev, Ingo Molnar <mingo@redhat.com>, Joerg Roedel <joro@8bytes.org>, 
-	"H. Peter Anvin" <hpa@zytor.com>, linux-kernel@vger.kernel.org
+	"H. Peter Anvin" <hpa@zytor.com>, linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Content-Type: text/plain; charset="us-ascii"
 
-KVM: SVM: for the shortlog scope (applies to all relevant patches in this series)
-
 On Thu, Sep 28, 2023, Maxim Levitsky wrote:
-> On Zen2 (and likely on Zen1 as well), AVIC doesn't reliably detect a change
-> in the 'is_running' bit during ICR write emulation and might skip a
-> VM exit, if that bit was recently cleared.
+> In later revisions of AMD's APM, there is a new 'incomplete IPI' exit code:
 > 
-> The absence of the VM exit, leads to the KVM not waking up / triggering
-> nested vm exit on the target(s) of the IPI which can, in some cases,
-> lead to an unbounded delays in the guest execution.
+> "Invalid IPI Vector - The vector for the specified IPI was set to an
+> illegal value (VEC < 16)"
 > 
-> As I recently discovered, a reasonable workaround exists: make the KVM
-
-Nit, please just write "KVM", not "the KVM".  KVM is a proper noun when used in
-this way, e.g. saying "the KVM" is like saying "the Sean" or "the Maxim".
-
-> never set the is_running bit.
+> Note that tests on Zen2 machine show that this VM exit doesn't happen and
+> instead AVIC just does nothing.
 > 
-> This workaround ensures that (*) all ICR writes always cause a VM exit
-> and therefore correctly emulated, in expense of never enjoying VM exit-less
-> ICR emulation.
+> Add support for this exit code by doing nothing, instead of filling
+> the kernel log with errors.
+> 
+> Also replace an unthrottled 'pr_err()' if another unknown incomplete
+> IPI exit happens with WARN_ON_ONCE()
+> 
+> (e.g in case AMD adds yet another 'Invalid IPI' exit reason)
+> 
+> Cc: <stable@vger.kernel.org>
+> 
+> Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
+> ---
+>  arch/x86/include/asm/svm.h | 1 +
+>  arch/x86/kvm/svm/avic.c    | 5 ++++-
+>  2 files changed, 5 insertions(+), 1 deletion(-)
+> 
+> diff --git a/arch/x86/include/asm/svm.h b/arch/x86/include/asm/svm.h
+> index 19bf955b67e0da0..3ac0ffc4f3e202b 100644
+> --- a/arch/x86/include/asm/svm.h
+> +++ b/arch/x86/include/asm/svm.h
+> @@ -268,6 +268,7 @@ enum avic_ipi_failure_cause {
+>  	AVIC_IPI_FAILURE_TARGET_NOT_RUNNING,
+>  	AVIC_IPI_FAILURE_INVALID_TARGET,
+>  	AVIC_IPI_FAILURE_INVALID_BACKING_PAGE,
+> +	AVIC_IPI_FAILURE_INVALID_IPI_VECTOR,
+>  };
+>  
+>  #define AVIC_PHYSICAL_MAX_INDEX_MASK	GENMASK_ULL(8, 0)
+> diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
+> index 2092db892d7d052..c44b65af494e3ff 100644
+> --- a/arch/x86/kvm/svm/avic.c
+> +++ b/arch/x86/kvm/svm/avic.c
+> @@ -529,8 +529,11 @@ int avic_incomplete_ipi_interception(struct kvm_vcpu *vcpu)
+>  	case AVIC_IPI_FAILURE_INVALID_BACKING_PAGE:
+>  		WARN_ONCE(1, "Invalid backing page\n");
+>  		break;
+> +	case AVIC_IPI_FAILURE_INVALID_IPI_VECTOR:
+> +		/* Invalid IPI with vector < 16 */
+> +		break;
+>  	default:
+> -		pr_err("Unknown IPI interception\n");
+> +		WARN_ONCE(1, "Unknown avic incomplete IPI interception\n");
 
-This breaks svm_ir_list_add(), which relies on the vCPU's entry being up-to-date
-and marked running to detect that IOMMU needs to be immediately pointed at the
-current pCPU.
+Hrm, I'm not sure KVM should WARN here.  E.g. if someone runs with panic_on_warn=1,
+running on new hardware might crash the host.  I hope that AMD is smart enough to
+make any future failure types "optional" in the sense that they're either opt-in,
+or are largely informational-only (like AVIC_IPI_FAILURE_INVALID_IPI_VECTOR).
 
-	/*
-	 * Update the target pCPU for IOMMU doorbells if the vCPU is running.
-	 * If the vCPU is NOT running, i.e. is blocking or scheduled out, KVM
-	 * will update the pCPU info when the vCPU awkened and/or scheduled in.
-	 * See also avic_vcpu_load().
-	 */
-	entry = READ_ONCE(*(svm->avic_physical_id_cache));
-	if (entry & AVIC_PHYSICAL_ID_ENTRY_IS_RUNNING_MASK)
-		amd_iommu_update_ga(entry & AVIC_PHYSICAL_ID_ENTRY_HOST_PHYSICAL_ID_MASK,
-				    true, pi->ir_data);
-
-> This workaround does carry a performance penalty but according to my
-> benchmarks is still much better than not using AVIC at all,
-> because AVIC is still used for the receiving end of the IPIs, and for the
-> posted interrupts.
-
-I really, really don't like the idea of carrying a workaround like this in
-perpetuity.  If there is a customer that is determined to enable AVIC on Zen1/Zen2,
-then *maybe* it's something to consider, but I don't think we should carry this
-if the only anticipated beneficiary is one-off users and KVM developers.  IMO, the
-AVIC code is complex enough as it is.
+I think switching to vcpu_unimpl(), or maybe even pr_err_once(), is more appropriate.
