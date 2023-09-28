@@ -1,125 +1,174 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.88])
+Received: from JPN01-OS0-obe.outbound.protection.outlook.com (mail-os0jpn01olkn2060.outbound.protection.outlook.com [40.92.98.60])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B2EB330F8A
-	for <iommu@lists.linux.dev>; Thu, 28 Sep 2023 07:15:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1695885344; x=1727421344;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=WOT6Nvcwlk/4tcNAsxhrAgOjJcTJ1AZiQvr9aESlkuA=;
-  b=EumBOWjnhj/n85iJjlu31FjvqWTJr27hW/GyaTo96/GerkxeFbNh/GLg
-   278RpxxTfAnum78u4ahi80TW4IUgWMyyQ1kHlS6YECrXZScSY7wiJR0+k
-   NW9Wh2fopl3fyfdeBfmZMywaqgiIqLCmq6i1raNuerGz6aCxBaN9H75t4
-   trEbjN1/MmO/aEYSeKiVZabpEZNL/PU8WycmUrWt50pOrCs3Po8BPTT+F
-   LhjcBsGRJgjNFXiXJ6gYEGtDWrGX5Isnx49/ur2o1uwZxzaD0S+dAxVKH
-   NQxZXa59ZRfCdzCEQhQ0iIxtoxHAGKIo/gRU7FtDqPkrrME7pxIBryzra
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10846"; a="412914897"
-X-IronPort-AV: E=Sophos;i="6.03,183,1694761200"; 
-   d="scan'208";a="412914897"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Sep 2023 00:15:41 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10846"; a="784602111"
-X-IronPort-AV: E=Sophos;i="6.03,183,1694761200"; 
-   d="scan'208";a="784602111"
-Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
-  by orsmga001.jf.intel.com with ESMTP; 28 Sep 2023 00:15:41 -0700
-From: Yi Liu <yi.l.liu@intel.com>
-To: joro@8bytes.org,
-	alex.williamson@redhat.com,
-	jgg@nvidia.com,
-	kevin.tian@intel.com,
-	robin.murphy@arm.com,
-	baolu.lu@linux.intel.com
-Cc: cohuck@redhat.com,
-	eric.auger@redhat.com,
-	nicolinc@nvidia.com,
-	kvm@vger.kernel.org,
-	mjrosato@linux.ibm.com,
-	chao.p.peng@linux.intel.com,
-	yi.l.liu@intel.com,
-	yi.y.sun@linux.intel.com,
-	peterx@redhat.com,
-	jasowang@redhat.com,
-	shameerali.kolothum.thodi@huawei.com,
-	lulu@redhat.com,
-	suravee.suthikulpanit@amd.com,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	linux-kselftest@vger.kernel.org,
-	zhenzhong.duan@intel.com,
-	joao.m.martins@oracle.com
-Subject: [PATCH v2 6/6] iommu/vt-d: Add domain_alloc_user op
-Date: Thu, 28 Sep 2023 00:15:28 -0700
-Message-Id: <20230928071528.26258-7-yi.l.liu@intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230928071528.26258-1-yi.l.liu@intel.com>
-References: <20230928071528.26258-1-yi.l.liu@intel.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D159E3399A
+	for <iommu@lists.linux.dev>; Thu, 28 Sep 2023 08:57:43 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=TzRJiyPr2/6RxInOQWvH+MPr1Ku5nxBLyQZIJK9G5tusW3qvdcflRTr7zTIiLodRpC0ralYN8fBmA2Kwb1UBfx3B8KdQUfD4g1PdEq8e85PgwRSyqkwha1Gqqt5QfnM8XKMY7KRsbdy0IAWXcDf9+sih46L59vRctfQlBNcOpzU9REF2C8RLfNLAlbbwv+9UkWT1JbxP8C60ihpFZvtOy1EOT1FNMs3TN97NXg9q3exQz2VDh8IjT7YOwT6Fd/tfMJAvlnYssI/IQgr30GyNB8uR0m3J7IuEBoXDbm9yK8KUe/BsjYEpuhHvUJe0nSWpn0wYm2oiRVcT3QCWq2FGlA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=yRrzZtzDlpyt8syrS8a5cC50D4ragwSFhBiAG44r1N8=;
+ b=aAXqlo2C6N0KsQOV2Fl7GeBBIpoz/4pdihEitbKJmH/nCNkREGGpC3lYulbz6Ef/sv6W5lDR9uC3err1zvY7r/mrR+JdOaqNcStXvIA7FbQK0g3n3Fn9p8CItltOB3Rdea0tXJLUkv7FwAm1CJtObNOXP4CI37cCRAickD1j7mPwsiT6hZTiX/vW2EQrVGPsJ/ze37TLLpOSKjMaXTE9ig2jV91zZRYVjGPDyiKspUP9ShVztFkkGK/XNwpdAL1tIaNg3sM0PEOZHnk4Pjzx/1+NO3fWmiNUiUVY5tQixAh30EU1OvBDErKSXt4D2R4QQ11ftUL/ai+PH584M7aXQw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=yRrzZtzDlpyt8syrS8a5cC50D4ragwSFhBiAG44r1N8=;
+ b=I9Jqnqphjgybw6f2Jv7CMqjAVtxevg35YqULveIY8rw0cWpVxrB7FJ1pIW5P0eBXSQ//EuF6Vkag8SZSsl71PFxCXjahEYPvi2l96MVhVZN4YfFcFGixc71dkieiJI4OpCrzNO1MeRv+LRa+6P6BnnEblURyg4IlqCIcaRs1ohD9wT+EprGbrq9CitnAyZTDDxUEElFxKTkUF+YIr7d2cnYTghBheRbKLqwJkWDz1vLazmm+0LolUuz7ETvalbpRt/fpiPg5/DXTooROCZ/1V8ywDS4imt4oiduMbplhd02EHmNk+YpmYy7ybrDSOA6O5EGoY/iyRxE6OraMjKoufw==
+Received: from TYTP286MB3564.JPNP286.PROD.OUTLOOK.COM (2603:1096:400:39d::8)
+ by TYCP286MB2336.JPNP286.PROD.OUTLOOK.COM (2603:1096:400:18c::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6838.19; Thu, 28 Sep
+ 2023 08:57:40 +0000
+Received: from TYTP286MB3564.JPNP286.PROD.OUTLOOK.COM
+ ([fe80::ee22:5eba:da74:7c25]) by TYTP286MB3564.JPNP286.PROD.OUTLOOK.COM
+ ([fe80::ee22:5eba:da74:7c25%7]) with mapi id 15.20.6838.016; Thu, 28 Sep 2023
+ 08:57:39 +0000
+Date: Thu, 28 Sep 2023 16:57:37 +0800
+From: Dawei Li <set_pte_at@outlook.com>
+To: Baolu Lu <baolu.lu@linux.intel.com>
+Cc: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com, jgg@nvidia.com,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iommu: Sanity check on param list for
+ iommu_get_resv_regions
+Message-ID:
+ <TYTP286MB3564BA78F5ED7E8FE4DEEE93CAC1A@TYTP286MB3564.JPNP286.PROD.OUTLOOK.COM>
+References: <TYTP286MB35645FDEF45FDFC91D35CE1ECAC2A@TYTP286MB3564.JPNP286.PROD.OUTLOOK.COM>
+ <7c7b8981-022c-2fa8-7ee5-9c97d8e17862@linux.intel.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7c7b8981-022c-2fa8-7ee5-9c97d8e17862@linux.intel.com>
+X-TMN: [05TS865N56rjqv0pOy1IOsKqe36mAQI8]
+X-ClientProxiedBy: SI2PR01CA0046.apcprd01.prod.exchangelabs.com
+ (2603:1096:4:193::18) To TYTP286MB3564.JPNP286.PROD.OUTLOOK.COM
+ (2603:1096:400:39d::8)
+X-Microsoft-Original-Message-ID: <20230928085737.GA28301@wendao-VirtualBox>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: TYTP286MB3564:EE_|TYCP286MB2336:EE_
+X-MS-Office365-Filtering-Correlation-Id: 48eff0ce-16eb-4755-de5f-08dbc000f7d9
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	uWMDtepiKjZV8JcZ8KkEkhfU6rLRiFkbShnSJzMVgRXjkd6FGK52itr/NDCHSw9uF3QS0DRpR8biJLZmvBVlJ1Ao3O7XTALPYxO7b7OqtdASCbhjt7MaFZFxXGaCMIelXbrolePfPZMg86cUavakyOwBLfBuXKLRWttqdZoIF0OjT2dHqm6QBvSAwaU4iRBJTB3waq7vkGci6eMhoBYZwzAMGEavfj8vpVhhmXNKrd2g8QG3S5W0ZWlBRuPYTNAevWoTGu+tXe+A8UV/caDCvUSql1CDtpfNOqDXBfiODLYxQxIu+3y1JQSUUSAsxTkbrK/YsPoPuM2hAf6uKwAbhcSEmIcQ5CPcn9IBD9DGItgr8ECjS9Ayra/4VWi3CAdax7MCqTl2gHoPwwj8qWI6c6qIH0aBdfGhAUyigMs1auJD5iNgja/rWSYaQZw1Jo7uyEr1N6bAjrzh2K8itYcxjuKkVIiIdWOhL1KFYcU+28LZcm3e8WlBLN+VfndZf5mR43cXw2nZ2iRBY3QoXtzibkIuuEbTlFA3/3DVJGFQG4pHCSehev+tIWDpAes8Vv6C
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?WQgsJIBU+oJXXGJDEbKjLzN71CtnO1WK7bVc6gXToBYo4obsmT+xreZM9JHf?=
+ =?us-ascii?Q?zo1VYodvH6hGAQ3XYitRwB0aifj1gKzdkPU0WTQk/y0abm6u5+QOZ1t5w8EV?=
+ =?us-ascii?Q?LkWJPDDJBMPSpFQX9mnUw2lkG+kHoBaGC+LAbr4zIvXBPPcYoHo/pul++EXY?=
+ =?us-ascii?Q?Rko2V580Thya37fDpc36F/CnP5aRSCXmX2RFKXLzP5+/z4hK+DmhEfdKgUJ6?=
+ =?us-ascii?Q?ecnqwS+N6DkpH4SpdmKHm6ZgjiTo2Fny+w8aR1fg+NDkxjuecLiMB2AU5j5S?=
+ =?us-ascii?Q?7luO+TIlWSHyOYI3OT6M88BEW7VQEf/tAaU0m81qCIqh0YEhhtsh3yBhiFQN?=
+ =?us-ascii?Q?/oG6SRC8RQMMoYMG4LphIgFpYUPffvodjP6cBquuGQLHFt2RHfixxzEVu4Pb?=
+ =?us-ascii?Q?+FjBdKbtpX4h+CGgVdinR5nEUZcN+4nBmYZSbmV5lPF7NEyDHRgINlfG3Pp4?=
+ =?us-ascii?Q?h4PSsieoWvoky8tieMf4372rDNRTx/MJKmoGvpa3kS5u6HzfJH3DtwKZCTy2?=
+ =?us-ascii?Q?FMC8RSuKMC/qvVdVBLLsG7dcbGTW055pHY6oPNx7yvsVOeKeTusSW0nrVYd3?=
+ =?us-ascii?Q?m8CPhn2PWgNzJ9f/bYihwR1coyclLcyEI43fpWwyXKWewdb0+qbYpEZgp3dO?=
+ =?us-ascii?Q?oeQ11k9X8UhjEvWqOZ7J1T4K1TmOFcaJqTAT40hOKeyY4bo0tskcup2iz+xN?=
+ =?us-ascii?Q?Q5GbW21AKK5z84EIVRKEbzOF/JLIZdY24Zaq8PJazQo5sQEu6AyZ9ahPoUoq?=
+ =?us-ascii?Q?t1rZUJzx8jrmmwxuKfjYpwM7VeTz6EMx6Z0laPd/ahjCciTTYc0BldKXdzC9?=
+ =?us-ascii?Q?yUACYCHBZSeCj+F/qe7CsUr4qcYXjy7+WVO5l6OX58pfaUYMji+l41ldcZ2G?=
+ =?us-ascii?Q?AqBo1f97/ggdDaATGw12jqeFKdWbE+GqUVV+1L5xDzm1WacNfm7cbFXlxGs5?=
+ =?us-ascii?Q?IjciDKAAh8KDj6WXrP4pTXZlc4Ec269sHK/3BpXWhS2fjyD0bPHVmBWUbHuO?=
+ =?us-ascii?Q?Y+HGKDiqcuZ6Sr2AnUqYSimC75torHpr7SSRmIr+iZITAfe80YW75eHXVmAM?=
+ =?us-ascii?Q?uvDyisOGGlYlegTX8ZQ1VQrkt2BTIxJBqH11Vt3xj022+jQ7UhCIIjh9wdef?=
+ =?us-ascii?Q?UEWXw5WW/LYbSg9TEn143h5UIt1TWVp4CxeYvRNgwXHsBL1rXRR2S/N/lMKO?=
+ =?us-ascii?Q?jUSjze5wU0e7QoeKaHhtSrqHFRz9EmyNnDjI6Q=3D=3D?=
+X-OriginatorOrg: outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 48eff0ce-16eb-4755-de5f-08dbc000f7d9
+X-MS-Exchange-CrossTenant-AuthSource: TYTP286MB3564.JPNP286.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Sep 2023 08:57:39.9293
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg:
+	00000000-0000-0000-0000-000000000000
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYCP286MB2336
 
-This adds the domain_alloc_user op implementation. It supports allocating
-domains to be used as parent under nested translation.
+Hi,
+Thanks for reviewing,
 
-Signed-off-by: Yi Liu <yi.l.liu@intel.com>
----
- drivers/iommu/intel/iommu.c | 28 ++++++++++++++++++++++++++++
- 1 file changed, 28 insertions(+)
+On Thu, Sep 28, 2023 at 09:33:29AM +0800, Baolu Lu wrote:
+> On 9/27/23 10:25 PM, Dawei Li wrote:
+> > In iommu_get_resv_regions(), param list is an argument supplied by caller,
+> > into which callee is supposed to insert resv regions.
+> > 
+> > In other words, this 'list' argument is expected to be an empty list,
+> > so make an explicit annotation on it.
+> > 
+> > Signed-off-by: Dawei Li <set_pte_at@outlook.com>
+> > ---
+> >   drivers/iommu/iommu.c | 9 +++++----
+> >   1 file changed, 5 insertions(+), 4 deletions(-)
+> > 
+> > diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> > index 1ecac2b5c54f..a01c4a7a9d19 100644
+> > --- a/drivers/iommu/iommu.c
+> > +++ b/drivers/iommu/iommu.c
+> > @@ -813,7 +813,7 @@ int iommu_get_group_resv_regions(struct iommu_group *group,
+> >   	mutex_lock(&group->mutex);
+> >   	for_each_group_device(group, device) {
+> > -		struct list_head dev_resv_regions;
+> > +		LIST_HEAD(dev_resv_regions);
+> >   		/*
+> >   		 * Non-API groups still expose reserved_regions in sysfs,
+> > @@ -822,7 +822,6 @@ int iommu_get_group_resv_regions(struct iommu_group *group,
+> >   		if (!device->dev->iommu)
+> >   			break;
+> > -		INIT_LIST_HEAD(&dev_resv_regions);
+> >   		iommu_get_resv_regions(device->dev, &dev_resv_regions);
+> >   		ret = iommu_insert_device_resv_regions(&dev_resv_regions, head);
+> >   		iommu_put_resv_regions(device->dev, &dev_resv_regions);
+> > @@ -1061,12 +1060,11 @@ static int iommu_create_device_direct_mappings(struct iommu_domain *domain,
+> >   					       struct device *dev)
+> >   {
+> >   	struct iommu_resv_region *entry;
+> > -	struct list_head mappings;
+> >   	unsigned long pg_size;
+> > +	LIST_HEAD(mappings);
+> >   	int ret = 0;
+> >   	pg_size = domain->pgsize_bitmap ? 1UL << __ffs(domain->pgsize_bitmap) : 0;
+> > -	INIT_LIST_HEAD(&mappings);
+> >   	if (WARN_ON_ONCE(iommu_is_dma_domain(domain) && !pg_size))
+> >   		return -EINVAL;
+> > @@ -2813,6 +2811,9 @@ void iommu_get_resv_regions(struct device *dev, struct list_head *list)
+> >   {
+> >   	const struct iommu_ops *ops = dev_iommu_ops(dev);
+> > +	if (WARN_ON(!list_empty(list)))
+> > +		return;
+> 
+> I don't understand why the input list *must* be empty. This interface
 
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 5db283c17e0d..017aed5813d8 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -4074,6 +4074,33 @@ static struct iommu_domain *intel_iommu_domain_alloc(unsigned type)
- 	return NULL;
- }
- 
-+static struct iommu_domain *
-+intel_iommu_domain_alloc_user(struct device *dev, u32 flags)
-+{
-+	struct iommu_domain *domain;
-+	struct intel_iommu *iommu;
-+
-+	if (flags & (~IOMMU_HWPT_ALLOC_NEST_PARENT))
-+		return ERR_PTR(-EOPNOTSUPP);
-+
-+	iommu = device_to_iommu(dev, NULL, NULL);
-+	if (!iommu)
-+		return ERR_PTR(-ENODEV);
-+
-+	if ((flags & IOMMU_HWPT_ALLOC_NEST_PARENT) && !ecap_nest(iommu->ecap))
-+		return ERR_PTR(-EOPNOTSUPP);
-+
-+	/*
-+	 * domain_alloc_user op needs to fully initialize a domain
-+	 * before return, so uses iommu_domain_alloc() here for
-+	 * simple.
-+	 */
-+	domain = iommu_domain_alloc(dev->bus);
-+	if (!domain)
-+		domain = ERR_PTR(-ENOMEM);
-+	return domain;
-+}
-+
- static void intel_iommu_domain_free(struct iommu_domain *domain)
- {
- 	if (domain != &si_domain->domain && domain != &blocking_domain)
-@@ -4807,6 +4834,7 @@ const struct iommu_ops intel_iommu_ops = {
- 	.capable		= intel_iommu_capable,
- 	.hw_info		= intel_iommu_hw_info,
- 	.domain_alloc		= intel_iommu_domain_alloc,
-+	.domain_alloc_user	= intel_iommu_domain_alloc_user,
- 	.probe_device		= intel_iommu_probe_device,
- 	.probe_finalize		= intel_iommu_probe_finalize,
- 	.release_device		= intel_iommu_release_device,
--- 
-2.34.1
+Because @list is an output-only argument, which is supposed to be filled                                                                                                       
+by caller(inserting elements into it). If it's not empty, it's an inputing                                                                                                     
+argument, in which case caller will take existing node (in @list) into account,
+and insert new nodes before/after them.                                                                                                                                            
+Please lemme put it another way, if list argment is not empty:                                                                                                                 
 
+Before calling:                                                                                                                                                                
+list: head->A                                                                                                                                                                  
+
+After calling                                                                                                                                                                  
+list: head->A->B->C                                                                                                                                                            
+
+It will confuse caller cuz it can't tell whether A is a valid returned
+by callee.
+
+> has already been exported, so please update the comment to explain this
+> new requirement.
+> 
+> > +
+> >   	if (ops->get_resv_regions)
+> >   		ops->get_resv_regions(dev, list);
+> >   }
+> 
+> Best regards,
+> baolu
