@@ -1,34 +1,53 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.115])
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E6B7185D
-	for <iommu@lists.linux.dev>; Fri, 29 Sep 2023 03:41:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1695958885; x=1727494885;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=zsCU52fX3PPt8P6v3VMwtZ6PQQEa+bGuLeJMS+b7hmI=;
-  b=lDiE8XGzKpoaBs0I5hlrRqUXVazsY37ksUsR2zvmh/sXxC3WPVPuaMri
-   kURJ1gqqSkVg74nbe3nGU1LAQbBYDXL1RZ8tvKy+JaBhbSVLdwEOeKmVE
-   BrwH5FrfNY8HZF+ly0IhF0z9dGipSfAp4K8jNzOeDoJP+UCelezb5HS85
-   J5ICj1LgGcla3BOI1oBw7AeGwPkXjIzyxrIV2m6t31+BA8nabrS5Djez3
-   xNWQbTGrqNziGBiqKgqN7v07v+PyITX4jDNzv0NnnRHT8hDwmqYZaToth
-   rsZ5bwPc1euRDlOZlOlHy9AkKC16gSvz9BgZLl+r8Dbkoez6Ai/pS6adp
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10847"; a="382128856"
-X-IronPort-AV: E=Sophos;i="6.03,186,1694761200"; 
-   d="scan'208";a="382128856"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Sep 2023 20:41:24 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10847"; a="923490902"
-X-IronPort-AV: E=Sophos;i="6.03,186,1694761200"; 
-   d="scan'208";a="923490902"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
-  by orsmga005.jf.intel.com with ESMTP; 28 Sep 2023 20:41:18 -0700
-Message-ID: <4eb2cbf4-e7de-421a-5d27-1d287632ef1e@linux.intel.com>
-Date: Fri, 29 Sep 2023 11:38:01 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C25071864F;
+	Fri, 29 Sep 2023 12:57:21 +0000 (UTC)
+Received: from pps.filterd (m0353726.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 38TCoxb4013374;
+	Fri, 29 Sep 2023 12:56:39 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=QqTTLT9aZkvqLOeMtXOrEvkTt7kMlZSB0+m85iN5u54=;
+ b=Och/FWQTgIJwiibkwBGlGRsTVsD/QPfi3WiMg33KXn9WnrnZXGt5r+QaO1ZlNYrQVdaT
+ SZTg6yVNXrNvYQDLdurQLzmMP2ZUuqXfqunhs3fQc1zO+9g4+1R27YxA2v0kwNuWERkD
+ WTd2iHpODkJjr93yC2xadbFRuQzK/52kK31ggGBQBMR4pGsSaR8NRPQAcvKXrLRVR73N
+ r6hVD9QLzsnJyCku33qAZGQMTzQ2kSOVN3XZ+IOLK4P5kZQ+4weW/cW+CJRkWAg4CiiG
+ UuuoRmBc+zdjtC7mjHIFQT2LI/KnUWrFjsVqlAwjF+6hltohqQ7NC/+8hYNGgOawKtgY 7w== 
+Received: from pps.reinject (localhost [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3tdxxnr3pm-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 29 Sep 2023 12:56:38 +0000
+Received: from m0353726.ppops.net (m0353726.ppops.net [127.0.0.1])
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 38TCpPrI014220;
+	Fri, 29 Sep 2023 12:56:37 GMT
+Received: from ppma21.wdc07v.mail.ibm.com (5b.69.3da9.ip4.static.sl-reverse.com [169.61.105.91])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3tdxxnr3p0-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 29 Sep 2023 12:56:37 +0000
+Received: from pps.filterd (ppma21.wdc07v.mail.ibm.com [127.0.0.1])
+	by ppma21.wdc07v.mail.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 38TCZGqp008250;
+	Fri, 29 Sep 2023 12:56:36 GMT
+Received: from smtprelay05.wdc07v.mail.ibm.com ([172.16.1.72])
+	by ppma21.wdc07v.mail.ibm.com (PPS) with ESMTPS id 3tabbnvpnx-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 29 Sep 2023 12:56:36 +0000
+Received: from smtpav01.wdc07v.mail.ibm.com (smtpav01.wdc07v.mail.ibm.com [10.39.53.228])
+	by smtprelay05.wdc07v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 38TCuZgC5243498
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Fri, 29 Sep 2023 12:56:35 GMT
+Received: from smtpav01.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 4648A5804B;
+	Fri, 29 Sep 2023 12:56:35 +0000 (GMT)
+Received: from smtpav01.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id E78BB58063;
+	Fri, 29 Sep 2023 12:56:30 +0000 (GMT)
+Received: from [9.61.175.8] (unknown [9.61.175.8])
+	by smtpav01.wdc07v.mail.ibm.com (Postfix) with ESMTP;
+	Fri, 29 Sep 2023 12:56:30 +0000 (GMT)
+Message-ID: <2513a9d4-ac92-2e50-4861-bb65465cf1ae@linux.ibm.com>
+Date: Fri, 29 Sep 2023 08:56:30 -0400
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -36,35 +55,91 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.15.1
-Cc: baolu.lu@linux.intel.com, cohuck@redhat.com, eric.auger@redhat.com,
- nicolinc@nvidia.com, kvm@vger.kernel.org, mjrosato@linux.ibm.com,
- chao.p.peng@linux.intel.com, yi.y.sun@linux.intel.com, peterx@redhat.com,
- jasowang@redhat.com, shameerali.kolothum.thodi@huawei.com, lulu@redhat.com,
- suravee.suthikulpanit@amd.com, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
- zhenzhong.duan@intel.com, joao.m.martins@oracle.com
-Subject: Re: [PATCH v2 6/6] iommu/vt-d: Add domain_alloc_user op
+ Thunderbird/102.13.0
+Subject: Re: [PATCH v13 4/6] iommu/s390: Disable deferred flush for ISM
+ devices
 Content-Language: en-US
-To: Yi Liu <yi.l.liu@intel.com>, joro@8bytes.org, alex.williamson@redhat.com,
- jgg@nvidia.com, kevin.tian@intel.com, robin.murphy@arm.com
-References: <20230928071528.26258-1-yi.l.liu@intel.com>
- <20230928071528.26258-7-yi.l.liu@intel.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20230928071528.26258-7-yi.l.liu@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To: Niklas Schnelle <schnelle@linux.ibm.com>, Joerg Roedel <joro@8bytes.org>,
+        Will Deacon <will@kernel.org>, Wenjia Zhang <wenjia@linux.ibm.com>,
+        Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Gerd Bayer <gbayer@linux.ibm.com>, Julian Ruess <julianr@linux.ibm.com>,
+        Pierre Morel <pmorel@linux.ibm.com>,
+        Alexandra Winter
+ <wintera@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev
+ <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+        Hector Martin <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        David Woodhouse <dwmw2@infradead.org>,
+        Lu Baolu <baolu.lu@linux.intel.com>, Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>,
+        Yong Wu <yong.wu@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+        Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+        Orson Zhai <orsonzhai@gmail.com>,
+        Baolin Wang
+ <baolin.wang@linux.alibaba.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>, Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Krishna Reddy
+ <vdumpa@nvidia.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Jonathan Corbet <corbet@lwn.net>, linux-s390@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        iommu@lists.linux.dev, asahi@lists.linux.dev,
+        linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        linux-tegra@vger.kernel.org, linux-doc@vger.kernel.org
+References: <20230928-dma_iommu-v13-0-9e5fc4dacc36@linux.ibm.com>
+ <20230928-dma_iommu-v13-4-9e5fc4dacc36@linux.ibm.com>
+From: Matthew Rosato <mjrosato@linux.ibm.com>
+In-Reply-To: <20230928-dma_iommu-v13-4-9e5fc4dacc36@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: uTzj7zKg3b0sQ930cOsKCPRxfgqwTFsD
+X-Proofpoint-GUID: XNXEAeo9ExEttPSRC78HhL_bg28OSuTv
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.267,Aquarius:18.0.980,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2023-09-29_10,2023-09-28_03,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ adultscore=0 mlxlogscore=999 clxscore=1015 suspectscore=0 mlxscore=0
+ bulkscore=0 priorityscore=1501 spamscore=0 malwarescore=0 phishscore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2309180000 definitions=main-2309290107
 
-On 9/28/23 3:15 PM, Yi Liu wrote:
-> This adds the domain_alloc_user op implementation. It supports allocating
-> domains to be used as parent under nested translation.
+On 9/28/23 10:31 AM, Niklas Schnelle wrote:
+> ISM devices are virtual PCI devices used for cross-LPAR communication.
+> Unlike real PCI devices ISM devices do not use the hardware IOMMU but
+> inspects IOMMU translation tables directly on IOTLB flush (s390 RPCIT
+> instruction).
 > 
-> Signed-off-by: Yi Liu<yi.l.liu@intel.com>
-> ---
->   drivers/iommu/intel/iommu.c | 28 ++++++++++++++++++++++++++++
->   1 file changed, 28 insertions(+)
+> ISM devices keep their DMA allocations static and only very rarely DMA
+> unmap at all. For each IOTLB flush that occurs after unmap the ISM
+> devices will however inspect the area of the IOVA space indicated by the
+> flush. This means that for the global IOTLB flushes used by the flush
+> queue mechanism the entire IOVA space would be inspected. In principle
+> this would be fine, albeit potentially unnecessarily slow, it turns out
+> however that ISM devices are sensitive to seeing IOVA addresses that are
+> currently in use in the IOVA range being flushed. Seeing such in-use
+> IOVA addresses will cause the ISM device to enter an error state and
+> become unusable.
+> 
+> Fix this by claiming IOMMU_CAP_DEFERRED_FLUSH only for non-ISM devices.
+> This makes sure IOTLB flushes only cover IOVAs that have been unmapped
+> and also restricts the range of the IOTLB flush potentially reducing
+> latency spikes.
+> 
+> Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
 
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+Looks like my review tag from v12 got dropped on accident -- no changes since prior version and still looks good to me so
 
-Best regards,
-baolu
+Reviewed-by: Matthew Rosato <mjrosato@linux.ibm.com>
