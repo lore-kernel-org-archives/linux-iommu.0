@@ -1,249 +1,90 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yw1-f202.google.com (mail-yw1-f202.google.com [209.85.128.202])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A03A4F14E
-	for <iommu@lists.linux.dev>; Thu, 28 Sep 2023 17:34:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1695922457;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=bXvR8P30J13RoiFY6oQnabnLblTIM5XWqXhOKK4pnys=;
-	b=hqcOM2drRO3l+UV+sxXzx6lMyUFPaDthh7zWGoq6IRlty6lPQk2ENUYX/uKNat6/06J6Dp
-	oF9XZeQEfN0XPy1WDKPGHuXEMXM0LCySlQft+u32Wra3l5tjHKvkP42l8x52z55eR72wCO
-	T0GpNvJNLu88YxetAcHWBXKJ0J/aA7U=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-527-dV2krgcqMdaXISgjC_sr8Q-1; Thu, 28 Sep 2023 13:34:15 -0400
-X-MC-Unique: dV2krgcqMdaXISgjC_sr8Q-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id B8A308015AB;
-	Thu, 28 Sep 2023 17:34:14 +0000 (UTC)
-Received: from localhost.localdomain (unknown [10.45.226.141])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id 710B814171B6;
-	Thu, 28 Sep 2023 17:34:11 +0000 (UTC)
-From: Maxim Levitsky <mlevitsk@redhat.com>
-To: kvm@vger.kernel.org
-Cc: iommu@lists.linux.dev,
-	"H. Peter Anvin" <hpa@zytor.com>,
-	Sean Christopherson <seanjc@google.com>,
-	Maxim Levitsky <mlevitsk@redhat.com>,
-	Paolo Bonzini <pbonzini@redhat.com>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Borislav Petkov <bp@alien8.de>,
-	Joerg Roedel <joro@8bytes.org>,
-	x86@kernel.org,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	linux-kernel@vger.kernel.org,
-	Dave Hansen <dave.hansen@linux.intel.com>,
-	Will Deacon <will@kernel.org>,
-	Ingo Molnar <mingo@redhat.com>,
-	Robin Murphy <robin.murphy@arm.com>
-Subject: [PATCH v2 4/4] x86: KVM: SVM: workaround for AVIC's errata #1235
-Date: Thu, 28 Sep 2023 20:33:54 +0300
-Message-Id: <20230928173354.217464-5-mlevitsk@redhat.com>
-In-Reply-To: <20230928173354.217464-1-mlevitsk@redhat.com>
-References: <20230928173354.217464-1-mlevitsk@redhat.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7636915A0
+	for <iommu@lists.linux.dev>; Fri, 29 Sep 2023 00:24:21 +0000 (UTC)
+Received: by mail-yw1-f202.google.com with SMTP id 00721157ae682-5a2318df875so13371637b3.2
+        for <iommu@lists.linux.dev>; Thu, 28 Sep 2023 17:24:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1695947060; x=1696551860; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=VK3yYTqUyZzwJjWPYCCiURL3L8OGDHEDjPYeZ/hC2E0=;
+        b=LURjmy2fNFHxW2Lor17capi6cbXmLpnEJL5Srb0hk7jeYepW8IuFvU3vyNW3cLWlws
+         gmcK/8nIqHEm/r0Kw5MNZ6VYer/W3Hxg9P+Az2/BIE7mVmb73hQu+ETpZC5XzL2b32kk
+         UrjefnodTZKUOmr6w9xJYLjQNyhOfWkrspfYlcNGq/HhNcESpF0az9TptwMa+RtdCuHR
+         jAIwfjqO27zbyWHYDuA26T1nhMf2tjjGDUIYR7UvxhpQVA02OSkcQB6yZ5kwNrcUiG7O
+         QdB8lzoKThwmzPiJOemK4cym5Bkp++MQFPQ/nLHt/fTpMDpT77rJfVXcTec2yuh+vG6s
+         Kkrg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1695947060; x=1696551860;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=VK3yYTqUyZzwJjWPYCCiURL3L8OGDHEDjPYeZ/hC2E0=;
+        b=K5gL8o0qOSE3VK2e7JoWVTzCFfMMmK3qPIObiIoFpUD5v1VDa5WMGyZAAve8x4brhl
+         qa67IuNWnqlQOr5Q68X1JmoAKsmQA0xsJKJfyT9DNwJqIYcf3tvcY34agZtHPAmDrnN2
+         G77zFjEdroUri7vHZaHA+vN8oAUqZUp44sv6dTXaAxRUPeNJZTlzvITz4PFKx2MsUzUV
+         BfawbvA5k59pO/gKWDKBllhxS4Tom3EmC0koempv3Or60AWWF5M/bMt8eqo0llNzSQvQ
+         7v6mcyo5v3Au+COgH3rS1AxvW2M0V1BxzT6kxi3TKsCoLUTsmOA0q0WSrAHCA3iB7iPp
+         4/MA==
+X-Gm-Message-State: AOJu0Yyq6pCo1yUl0KjoA0NwAlwEoR020XqFYD59BLgkRQxNLKDjmHkB
+	eaf8QtD6Q0037f+SL6i2h3Kub0y6LiU=
+X-Google-Smtp-Source: AGHT+IEOayytUoGF6yiau9EKJIk7fPZSTKse/XCvu4K9plygAETxpWB9IOofC6SPGiHL7SAKxLP/YXrGXcc=
+X-Received: from zagreus.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5c37])
+ (user=seanjc job=sendgmr) by 2002:a81:aa48:0:b0:59b:f493:813c with SMTP id
+ z8-20020a81aa48000000b0059bf493813cmr44356ywk.9.1695947060234; Thu, 28 Sep
+ 2023 17:24:20 -0700 (PDT)
+Date: Thu, 28 Sep 2023 17:24:18 -0700
+In-Reply-To: <20230928173354.217464-2-mlevitsk@redhat.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.7
+Mime-Version: 1.0
+References: <20230928173354.217464-1-mlevitsk@redhat.com> <20230928173354.217464-2-mlevitsk@redhat.com>
+Message-ID: <ZRYZMr4fuaywW7fP@google.com>
+Subject: Re: [PATCH v2 1/4] x86: KVM: SVM: always update the x2avic msr interception
+From: Sean Christopherson <seanjc@google.com>
+To: Maxim Levitsky <mlevitsk@redhat.com>
+Cc: kvm@vger.kernel.org, iommu@lists.linux.dev, 
+	"H. Peter Anvin" <hpa@zytor.com>, Paolo Bonzini <pbonzini@redhat.com>, 
+	Thomas Gleixner <tglx@linutronix.de>, Borislav Petkov <bp@alien8.de>, Joerg Roedel <joro@8bytes.org>, x86@kernel.org, 
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, linux-kernel@vger.kernel.org, 
+	Dave Hansen <dave.hansen@linux.intel.com>, Will Deacon <will@kernel.org>, 
+	Ingo Molnar <mingo@redhat.com>, Robin Murphy <robin.murphy@arm.com>, stable@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
 
-On Zen2 (and likely on Zen1 as well), AVIC doesn't reliably detect a change
-in the 'is_running' bit during ICR write emulation and might skip a
-VM exit, if that bit was recently cleared.
+On Thu, Sep 28, 2023, Maxim Levitsky wrote:
+> The following problem exists since x2avic was enabled in the KVM:
+> 
+> svm_set_x2apic_msr_interception is called to enable the interception of
 
-The absence of the VM exit, leads to the KVM not waking up / triggering
-nested vm exit on the target(s) of the IPI which can, in some cases,
-lead to an unbounded delays in the guest execution.
+Nit, svm_set_x2apic_msr_interception().
 
-As I recently discovered, a reasonable workaround exists: make the KVM
-never set the is_running bit.
+Definitely not worth another version though.
 
-This workaround ensures that (*) all ICR writes always cause a VM exit
-and therefore correctly emulated, in expense of never enjoying VM exit-less
-ICR emulation.
+> the x2apic msrs.
+> 
+> In particular it is called at the moment the guest resets its apic.
+> 
+> Assuming that the guest's apic was in x2apic mode, the reset will bring
+> it back to the xapic mode.
+> 
+> The svm_set_x2apic_msr_interception however has an erroneous check for
+> '!apic_x2apic_mode()' which prevents it from doing anything in this case.
+> 
+> As a result of this, all x2apic msrs are left unintercepted, and that
+> exposes the bare metal x2apic (if enabled) to the guest.
+> Oops.
+> 
+> Remove the erroneous '!apic_x2apic_mode()' check to fix that.
+> 
+> This fixes CVE-2023-5090
+> 
+> Fixes: 4d1d7942e36a ("KVM: SVM: Introduce logic to (de)activate x2AVIC mode")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
+> ---
 
-This workaround does carry a performance penalty but according to my
-benchmarks is still much better than not using AVIC at all,
-because AVIC is still used for the receiving end of the IPIs, and for the
-posted interrupts.
-
-If the user is aware of the errata and it doesn't affect his workload,
-the user can disable the workaround with 'avic_zen2_errata_workaround=0'
-
-(*) More correctly all ICR writes except when 'Self' shorthand is used:
-
-In this case AVIC skips reading physid table and just sets bits in IRR
-of local APIC. Thankfully in this case, the errata is not possible,
-therefore an extra workaround for this case is not needed.
-
-Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
----
- arch/x86/kvm/svm/avic.c | 63 +++++++++++++++++++++++++++++------------
- arch/x86/kvm/svm/svm.h  |  1 +
- 2 files changed, 46 insertions(+), 18 deletions(-)
-
-diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
-index 4b74ea91f4e6bb6..28bb0e6b321660d 100644
---- a/arch/x86/kvm/svm/avic.c
-+++ b/arch/x86/kvm/svm/avic.c
-@@ -62,6 +62,9 @@ static_assert(__AVIC_GATAG(AVIC_VM_ID_MASK, AVIC_VCPU_ID_MASK) == -1u);
- static bool force_avic;
- module_param_unsafe(force_avic, bool, 0444);
- 
-+static int avic_zen2_errata_workaround = -1;
-+module_param(avic_zen2_errata_workaround, int, 0444);
-+
- /* Note:
-  * This hash table is used to map VM_ID to a struct kvm_svm,
-  * when handling AMD IOMMU GALOG notification to schedule in
-@@ -276,7 +279,7 @@ static u64 *avic_get_physical_id_entry(struct kvm_vcpu *vcpu,
- 
- static int avic_init_backing_page(struct kvm_vcpu *vcpu)
- {
--	u64 *entry, new_entry;
-+	u64 *entry;
- 	int id = vcpu->vcpu_id;
- 	struct vcpu_svm *svm = to_svm(vcpu);
- 
-@@ -308,10 +311,10 @@ static int avic_init_backing_page(struct kvm_vcpu *vcpu)
- 	if (!entry)
- 		return -EINVAL;
- 
--	new_entry = __sme_set((page_to_phys(svm->avic_backing_page) &
--			      AVIC_PHYSICAL_ID_ENTRY_BACKING_PAGE_MASK) |
--			      AVIC_PHYSICAL_ID_ENTRY_VALID_MASK);
--	WRITE_ONCE(*entry, new_entry);
-+	svm->avic_physical_id_entry = __sme_set((page_to_phys(svm->avic_backing_page) &
-+						 AVIC_PHYSICAL_ID_ENTRY_BACKING_PAGE_MASK) |
-+						 AVIC_PHYSICAL_ID_ENTRY_VALID_MASK);
-+	WRITE_ONCE(*entry, svm->avic_physical_id_entry);
- 
- 	svm->avic_physical_id_cache = entry;
- 
-@@ -835,7 +838,7 @@ static int svm_ir_list_add(struct vcpu_svm *svm, struct amd_iommu_pi_data *pi)
- 	 * will update the pCPU info when the vCPU awkened and/or scheduled in.
- 	 * See also avic_vcpu_load().
- 	 */
--	entry = READ_ONCE(*(svm->avic_physical_id_cache));
-+	entry = READ_ONCE(svm->avic_physical_id_entry);
- 	if (entry & AVIC_PHYSICAL_ID_ENTRY_IS_RUNNING_MASK)
- 		amd_iommu_update_ga(entry & AVIC_PHYSICAL_ID_ENTRY_HOST_PHYSICAL_ID_MASK,
- 				    true, pi->ir_data);
-@@ -1027,7 +1030,6 @@ avic_update_iommu_vcpu_affinity(struct kvm_vcpu *vcpu, int cpu, bool r)
- 
- void avic_vcpu_load(struct kvm_vcpu *vcpu, int cpu)
- {
--	u64 entry;
- 	int h_physical_id = kvm_cpu_get_apicid(cpu);
- 	struct vcpu_svm *svm = to_svm(vcpu);
- 	unsigned long flags;
-@@ -1056,14 +1058,23 @@ void avic_vcpu_load(struct kvm_vcpu *vcpu, int cpu)
- 	 */
- 	spin_lock_irqsave(&svm->ir_list_lock, flags);
- 
--	entry = READ_ONCE(*(svm->avic_physical_id_cache));
--	WARN_ON_ONCE(entry & AVIC_PHYSICAL_ID_ENTRY_IS_RUNNING_MASK);
- 
--	entry &= ~AVIC_PHYSICAL_ID_ENTRY_HOST_PHYSICAL_ID_MASK;
--	entry |= (h_physical_id & AVIC_PHYSICAL_ID_ENTRY_HOST_PHYSICAL_ID_MASK);
--	entry |= AVIC_PHYSICAL_ID_ENTRY_IS_RUNNING_MASK;
-+	WARN_ON_ONCE(svm->avic_physical_id_entry & AVIC_PHYSICAL_ID_ENTRY_IS_RUNNING_MASK);
-+
-+	svm->avic_physical_id_entry &= ~AVIC_PHYSICAL_ID_ENTRY_HOST_PHYSICAL_ID_MASK;
-+	svm->avic_physical_id_entry |=
-+		(h_physical_id & AVIC_PHYSICAL_ID_ENTRY_HOST_PHYSICAL_ID_MASK);
-+
-+	svm->avic_physical_id_entry |= AVIC_PHYSICAL_ID_ENTRY_IS_RUNNING_MASK;
-+
-+	/*
-+	 * Do not update the actual physical id table entry if workaround
-+	 * for #1235 - the physical ID entry is_running is never set when
-+	 * the workaround is activated
-+	 */
-+	if (!avic_zen2_errata_workaround)
-+		WRITE_ONCE(*(svm->avic_physical_id_cache), svm->avic_physical_id_entry);
- 
--	WRITE_ONCE(*(svm->avic_physical_id_cache), entry);
- 	avic_update_iommu_vcpu_affinity(vcpu, h_physical_id, true);
- 
- 	spin_unlock_irqrestore(&svm->ir_list_lock, flags);
-@@ -1071,7 +1082,6 @@ void avic_vcpu_load(struct kvm_vcpu *vcpu, int cpu)
- 
- void avic_vcpu_put(struct kvm_vcpu *vcpu)
- {
--	u64 entry;
- 	struct vcpu_svm *svm = to_svm(vcpu);
- 	unsigned long flags;
- 
-@@ -1084,10 +1094,9 @@ void avic_vcpu_put(struct kvm_vcpu *vcpu)
- 	 * can't be scheduled out and thus avic_vcpu_{put,load}() can't run
- 	 * recursively.
- 	 */
--	entry = READ_ONCE(*(svm->avic_physical_id_cache));
- 
- 	/* Nothing to do if IsRunning == '0' due to vCPU blocking. */
--	if (!(entry & AVIC_PHYSICAL_ID_ENTRY_IS_RUNNING_MASK))
-+	if (!(svm->avic_physical_id_entry & AVIC_PHYSICAL_ID_ENTRY_IS_RUNNING_MASK))
- 		return;
- 
- 	/*
-@@ -1102,8 +1111,14 @@ void avic_vcpu_put(struct kvm_vcpu *vcpu)
- 
- 	avic_update_iommu_vcpu_affinity(vcpu, -1, 0);
- 
--	entry &= ~AVIC_PHYSICAL_ID_ENTRY_IS_RUNNING_MASK;
--	WRITE_ONCE(*(svm->avic_physical_id_cache), entry);
-+	svm->avic_physical_id_entry &= ~AVIC_PHYSICAL_ID_ENTRY_IS_RUNNING_MASK;
-+
-+	/*
-+	 * Do not update the actual physical id table entry
-+	 * See explanation in avic_vcpu_load
-+	 */
-+	if (!avic_zen2_errata_workaround)
-+		WRITE_ONCE(*(svm->avic_physical_id_cache), svm->avic_physical_id_entry);
- 
- 	spin_unlock_irqrestore(&svm->ir_list_lock, flags);
- 
-@@ -1217,5 +1232,17 @@ bool avic_hardware_setup(void)
- 
- 	amd_iommu_register_ga_log_notifier(&avic_ga_log_notifier);
- 
-+	if (avic_zen2_errata_workaround == -1) {
-+
-+		/* Assume that Zen1 and Zen2 have errata #1235 */
-+		if (boot_cpu_data.x86 == 0x17)
-+			avic_zen2_errata_workaround = 1;
-+		else
-+			avic_zen2_errata_workaround = 0;
-+	}
-+
-+	if (avic_zen2_errata_workaround)
-+		pr_info("Workaround for AVIC errata #1235 is enabled\n");
-+
- 	return true;
- }
-diff --git a/arch/x86/kvm/svm/svm.h b/arch/x86/kvm/svm/svm.h
-index be67ab7fdd104e3..98dc45b9c194d2e 100644
---- a/arch/x86/kvm/svm/svm.h
-+++ b/arch/x86/kvm/svm/svm.h
-@@ -265,6 +265,7 @@ struct vcpu_svm {
- 	u32 ldr_reg;
- 	u32 dfr_reg;
- 	struct page *avic_backing_page;
-+	u64 avic_physical_id_entry;
- 	u64 *avic_physical_id_cache;
- 
- 	/*
--- 
-2.26.3
-
+Reviewed-by: Sean Christopherson <seanjc@google.com>
