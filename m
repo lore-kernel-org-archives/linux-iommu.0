@@ -1,145 +1,85 @@
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C25071864F;
-	Fri, 29 Sep 2023 12:57:21 +0000 (UTC)
-Received: from pps.filterd (m0353726.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 38TCoxb4013374;
-	Fri, 29 Sep 2023 12:56:39 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=QqTTLT9aZkvqLOeMtXOrEvkTt7kMlZSB0+m85iN5u54=;
- b=Och/FWQTgIJwiibkwBGlGRsTVsD/QPfi3WiMg33KXn9WnrnZXGt5r+QaO1ZlNYrQVdaT
- SZTg6yVNXrNvYQDLdurQLzmMP2ZUuqXfqunhs3fQc1zO+9g4+1R27YxA2v0kwNuWERkD
- WTd2iHpODkJjr93yC2xadbFRuQzK/52kK31ggGBQBMR4pGsSaR8NRPQAcvKXrLRVR73N
- r6hVD9QLzsnJyCku33qAZGQMTzQ2kSOVN3XZ+IOLK4P5kZQ+4weW/cW+CJRkWAg4CiiG
- UuuoRmBc+zdjtC7mjHIFQT2LI/KnUWrFjsVqlAwjF+6hltohqQ7NC/+8hYNGgOawKtgY 7w== 
-Received: from pps.reinject (localhost [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3tdxxnr3pm-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 29 Sep 2023 12:56:38 +0000
-Received: from m0353726.ppops.net (m0353726.ppops.net [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 38TCpPrI014220;
-	Fri, 29 Sep 2023 12:56:37 GMT
-Received: from ppma21.wdc07v.mail.ibm.com (5b.69.3da9.ip4.static.sl-reverse.com [169.61.105.91])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3tdxxnr3p0-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 29 Sep 2023 12:56:37 +0000
-Received: from pps.filterd (ppma21.wdc07v.mail.ibm.com [127.0.0.1])
-	by ppma21.wdc07v.mail.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 38TCZGqp008250;
-	Fri, 29 Sep 2023 12:56:36 GMT
-Received: from smtprelay05.wdc07v.mail.ibm.com ([172.16.1.72])
-	by ppma21.wdc07v.mail.ibm.com (PPS) with ESMTPS id 3tabbnvpnx-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 29 Sep 2023 12:56:36 +0000
-Received: from smtpav01.wdc07v.mail.ibm.com (smtpav01.wdc07v.mail.ibm.com [10.39.53.228])
-	by smtprelay05.wdc07v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 38TCuZgC5243498
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Fri, 29 Sep 2023 12:56:35 GMT
-Received: from smtpav01.wdc07v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 4648A5804B;
-	Fri, 29 Sep 2023 12:56:35 +0000 (GMT)
-Received: from smtpav01.wdc07v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id E78BB58063;
-	Fri, 29 Sep 2023 12:56:30 +0000 (GMT)
-Received: from [9.61.175.8] (unknown [9.61.175.8])
-	by smtpav01.wdc07v.mail.ibm.com (Postfix) with ESMTP;
-	Fri, 29 Sep 2023 12:56:30 +0000 (GMT)
-Message-ID: <2513a9d4-ac92-2e50-4861-bb65465cf1ae@linux.ibm.com>
-Date: Fri, 29 Sep 2023 08:56:30 -0400
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 73BBF51B88
+	for <iommu@lists.linux.dev>; Fri, 29 Sep 2023 17:42:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1696009340;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=mNuw9E3jfISKMJANhElE3yZ8P7q99O6Yz29XsBOWCUM=;
+	b=caAofMvlr1cthonJcSGkYY7mGlUL37xVTeuviQwmbi6tmgs+55F+PzZ0qKbqtw1XvX1wSG
+	fNdVUNK6yk57nJP7ZWzhdQOaOrD7QotULtZ/ixp4GtS+PkdvX6O6ODk7FNr1pU+Jx9ptYx
+	34N5lLy2WYVwnWaD4Pny26po9H5wvrs=
+Received: from mail-ua1-f70.google.com (mail-ua1-f70.google.com
+ [209.85.222.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-510-6b_N5RDeNeC16eg3bViIhg-1; Fri, 29 Sep 2023 13:42:18 -0400
+X-MC-Unique: 6b_N5RDeNeC16eg3bViIhg-1
+Received: by mail-ua1-f70.google.com with SMTP id a1e0cc1a2514c-7abc5f4a087so5852484241.1
+        for <iommu@lists.linux.dev>; Fri, 29 Sep 2023 10:42:18 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1696009338; x=1696614138;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=mNuw9E3jfISKMJANhElE3yZ8P7q99O6Yz29XsBOWCUM=;
+        b=momyRaCdIeYzdHFFWMXgksw3JOC22cUCs4ffHz0xLQ22xASAQ7rbI/PCH7/Kofpddm
+         ZVkZhCeom7sTL1hgwK4QFKhP0GWA/AN2N5+JiTqooNUA0mmn9n6ESIT5A0W5Dl7/kuiG
+         jMRtLpDF1NgHyUtkkRrWm7kIurtYL9Hzav461zBF8qEZ0pdMQ69W1uxFpvsW9lqlz79m
+         VhpjSECEPBKOtsnXYwRU2ZC9fWAIUCe7Z+K64Z1tptSMQP/G2gO7Qoge/SAjomzEJ/he
+         kflZuxHyHEmuIfELJT//nu2yIs3glVSg1Rpghvm87DyZQ/mfDCZEPdql9zoWc7YpxPSu
+         UQVg==
+X-Gm-Message-State: AOJu0Yzdn1mExdrbBqM/Fbt9IPkO1ciD1518IdE1SNqHzykKvKU9Lakg
+	jtez39P5mSEznVm4Eh2P7Rvcf0hriPjX0wVjpUTJj0yjRTnfBMPuUJ4GLt5vmYAJj1kiMdjXYkn
+	gqzgDn1E6mDhjy+8WK6ER/SxIb2ki2I4=
+X-Received: by 2002:a67:e210:0:b0:44d:5a92:ec43 with SMTP id g16-20020a67e210000000b0044d5a92ec43mr5037061vsa.24.1696009337905;
+        Fri, 29 Sep 2023 10:42:17 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IHCp/AIdWPqEWbtC/9JPny903uCy02I1/BqXTOfQT6TzjBnF4NJ5GNkVAKN/E+OvugdC1agXXOcQyVdpUbSE60=
+X-Received: by 2002:a67:e210:0:b0:44d:5a92:ec43 with SMTP id
+ g16-20020a67e210000000b0044d5a92ec43mr5037044vsa.24.1696009337587; Fri, 29
+ Sep 2023 10:42:17 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.13.0
-Subject: Re: [PATCH v13 4/6] iommu/s390: Disable deferred flush for ISM
- devices
-Content-Language: en-US
-To: Niklas Schnelle <schnelle@linux.ibm.com>, Joerg Roedel <joro@8bytes.org>,
-        Will Deacon <will@kernel.org>, Wenjia Zhang <wenjia@linux.ibm.com>,
-        Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Gerd Bayer <gbayer@linux.ibm.com>, Julian Ruess <julianr@linux.ibm.com>,
-        Pierre Morel <pmorel@linux.ibm.com>,
-        Alexandra Winter
- <wintera@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev
- <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-        Hector Martin <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        David Woodhouse <dwmw2@infradead.org>,
-        Lu Baolu <baolu.lu@linux.intel.com>, Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>,
-        Yong Wu <yong.wu@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-        Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Baolin Wang
- <baolin.wang@linux.alibaba.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>, Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Krishna Reddy
- <vdumpa@nvidia.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Jonathan Corbet <corbet@lwn.net>, linux-s390@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        iommu@lists.linux.dev, asahi@lists.linux.dev,
-        linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
-        linux-mediatek@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        linux-tegra@vger.kernel.org, linux-doc@vger.kernel.org
-References: <20230928-dma_iommu-v13-0-9e5fc4dacc36@linux.ibm.com>
- <20230928-dma_iommu-v13-4-9e5fc4dacc36@linux.ibm.com>
-From: Matthew Rosato <mjrosato@linux.ibm.com>
-In-Reply-To: <20230928-dma_iommu-v13-4-9e5fc4dacc36@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: uTzj7zKg3b0sQ930cOsKCPRxfgqwTFsD
-X-Proofpoint-GUID: XNXEAeo9ExEttPSRC78HhL_bg28OSuTv
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.267,Aquarius:18.0.980,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2023-09-29_10,2023-09-28_03,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- adultscore=0 mlxlogscore=999 clxscore=1015 suspectscore=0 mlxscore=0
- bulkscore=0 priorityscore=1501 spamscore=0 malwarescore=0 phishscore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2309180000 definitions=main-2309290107
+References: <20230928173354.217464-1-mlevitsk@redhat.com> <ZRYxvdmHpjxr3QKp@google.com>
+In-Reply-To: <ZRYxvdmHpjxr3QKp@google.com>
+From: Paolo Bonzini <pbonzini@redhat.com>
+Date: Fri, 29 Sep 2023 19:42:05 +0200
+Message-ID: <CABgObfYhtHS3d4m07+qAxPzdR_jZ4Q9OC9K=Tf4sviH1Nn5cyw@mail.gmail.com>
+Subject: Re: [PATCH v2 0/4] AVIC bugfixes and workarounds
+To: Sean Christopherson <seanjc@google.com>
+Cc: Maxim Levitsky <mlevitsk@redhat.com>, kvm@vger.kernel.org, iommu@lists.linux.dev, 
+	"H. Peter Anvin" <hpa@zytor.com>, Thomas Gleixner <tglx@linutronix.de>, Borislav Petkov <bp@alien8.de>, 
+	Joerg Roedel <joro@8bytes.org>, x86@kernel.org, 
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, linux-kernel@vger.kernel.org, 
+	Dave Hansen <dave.hansen@linux.intel.com>, Will Deacon <will@kernel.org>, 
+	Ingo Molnar <mingo@redhat.com>, Robin Murphy <robin.murphy@arm.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 9/28/23 10:31 AM, Niklas Schnelle wrote:
-> ISM devices are virtual PCI devices used for cross-LPAR communication.
-> Unlike real PCI devices ISM devices do not use the hardware IOMMU but
-> inspects IOMMU translation tables directly on IOTLB flush (s390 RPCIT
-> instruction).
-> 
-> ISM devices keep their DMA allocations static and only very rarely DMA
-> unmap at all. For each IOTLB flush that occurs after unmap the ISM
-> devices will however inspect the area of the IOVA space indicated by the
-> flush. This means that for the global IOTLB flushes used by the flush
-> queue mechanism the entire IOVA space would be inspected. In principle
-> this would be fine, albeit potentially unnecessarily slow, it turns out
-> however that ISM devices are sensitive to seeing IOVA addresses that are
-> currently in use in the IOVA range being flushed. Seeing such in-use
-> IOVA addresses will cause the ISM device to enter an error state and
-> become unusable.
-> 
-> Fix this by claiming IOMMU_CAP_DEFERRED_FLUSH only for non-ISM devices.
-> This makes sure IOTLB flushes only cover IOVAs that have been unmapped
-> and also restricts the range of the IOTLB flush potentially reducing
-> latency spikes.
-> 
-> Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
+On Fri, Sep 29, 2023 at 4:09=E2=80=AFAM Sean Christopherson <seanjc@google.=
+com> wrote:
+>
+> On Thu, Sep 28, 2023, Maxim Levitsky wrote:
+> > Maxim Levitsky (4):
+> >   x86: KVM: SVM: always update the x2avic msr interception
+> >   x86: KVM: SVM: add support for Invalid IPI Vector interception
+> >   x86: KVM: SVM: refresh AVIC inhibition in svm_leave_nested()
+>
+> Paolo, I assume you'll take the first three directly for 6.6?
 
-Looks like my review tag from v12 got dropped on accident -- no changes since prior version and still looks good to me so
+Yes.
 
-Reviewed-by: Matthew Rosato <mjrosato@linux.ibm.com>
+Paolo
+
+> >   x86: KVM: SVM: workaround for AVIC's errata #1235
+>
+
