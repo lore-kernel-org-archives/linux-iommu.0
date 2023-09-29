@@ -1,50 +1,50 @@
-Received: from mail-pl1-f201.google.com (mail-pl1-f201.google.com [209.85.214.201])
+Received: from mail-yb1-f202.google.com (mail-yb1-f202.google.com [209.85.219.202])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8CBEF15A3
-	for <iommu@lists.linux.dev>; Fri, 29 Sep 2023 00:42:23 +0000 (UTC)
-Received: by mail-pl1-f201.google.com with SMTP id d9443c01a7336-1c577fea3dcso140066555ad.2
-        for <iommu@lists.linux.dev>; Thu, 28 Sep 2023 17:42:23 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC3C610E6
+	for <iommu@lists.linux.dev>; Fri, 29 Sep 2023 00:42:37 +0000 (UTC)
+Received: by mail-yb1-f202.google.com with SMTP id 3f1490d57ef6-d81646fcf3eso20939353276.0
+        for <iommu@lists.linux.dev>; Thu, 28 Sep 2023 17:42:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1695948143; x=1696552943; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1695948156; x=1696552956; darn=lists.linux.dev;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=LHnl2CsLxrfQz4bzbwJAj223y7XyxSn5JpaUfYsfSDE=;
-        b=QxRbLfX/+PVqLVBF4PYeS4SURQEtbOrG70tf7hM31ltJbrCVSL40bVTJuXNl8AF/oA
-         PwG98J1gaofo4NiMEpFHly0GcPFL/d6F6S7eLcLBvk3nQc6XSHupsB75VU6AS93l2iR8
-         /ridGq6n6hgFY9Zd1kFuJ9koSW/IfTS6mhF/ytv93fPCJqD2fyACk8T3JjJxQ14V9ARG
-         WcNGshHRzrC5axzccPlGagJsnLlObSdSAThU+LZsQLwYiX6ElD2yrbdYFUlXANhNnGO4
-         YzS2Egu8M+l1ACdUq8dwcfVGFYyRcUuUtBqKakw55ImbNt3FuC2zXdi6F14OOcBs/Yti
-         uK6w==
+        bh=oXtA4CIJkNUO5AsjiezElUAdl6m7M7+pcvajILFIvUQ=;
+        b=USeeDVQ1iFqAaMnDOFEeQD1hu1V238OxSGs8RESCcKENWQnZlhjYdFX1v13vXGyAFu
+         rEsNZJpMkBySEdGhN4aLREEJLvBsI8HC8pT8zQ5XL+FLMEtrw52X0bIoWWYE6A4msaE5
+         6MoFDpqYXvTKdjNHHrnW4/1V1IR/mNR8Ijah0yj1xz4yLdNzmPVedoCZkDPQevR9PxUp
+         2Ro1toJcHAV0HC0wFXTvWDUESPsIm1YaWQgqFUvrI3aaUBDNzYoqmkQW14y57LYCl19v
+         93t1522r7K4zulz89P32mA6FtoddhpocG6O95m+6N3dNkngH229ClLFCEFAB7uuJI+Ds
+         EjEg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1695948143; x=1696552943;
+        d=1e100.net; s=20230601; t=1695948156; x=1696552956;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=LHnl2CsLxrfQz4bzbwJAj223y7XyxSn5JpaUfYsfSDE=;
-        b=BXQb3OrMNr5p0eSK0kwCq1Mvm/AkH7mQLZGrrySQUM7oKfDg7JCsLEW5XQ/DsafN4K
-         i6MgqQvv3akGeFExu99S8ijB1Dh85hFigwm4mthhYUcLnA043JM2yfIzsZ4lBvkLQIc1
-         lJ9LbqSwRHyVEDpRHLzcQ+/w6Nua3iouHda4lkyWHMd7+g/FTu6UEuHRAFAZbxEb3wSt
-         VBir53TT6oPheDj0nz7E5QFs8vhFlBf0w8ZujaNNjY/dpBW4wbTmQisQkpuOuFdNk5wT
-         eFMeHEbSxv7yu77ZCkPGU0DzwP2oiJdZPYWtCQhb9+ktiDm5RwIJz+jnDWqpz/0sh7Pq
-         apIQ==
-X-Gm-Message-State: AOJu0Yx4OBrxRYTRJgSnCQ08Iqkq9cg9rP6yHfw+eKOuiMVCbDWQpgzE
-	xZ/RacnP/qBdOjSNrRxS3zp8GyH5etc=
-X-Google-Smtp-Source: AGHT+IHUEPW3H4eE8hL9x01DrF8EV6/qXIdYZHJV+3Ch6SWg/Ia5upLk5S9Kq+TjsAHT50edQJbCK+giAKY=
+        bh=oXtA4CIJkNUO5AsjiezElUAdl6m7M7+pcvajILFIvUQ=;
+        b=u7G2WK+Ax8slY1ThJULOPngJ/WH3mXCADxgcfJdECiOB79C587LTvAJJLxsNOqutv1
+         U0HxYA3y5frAqZP66gSN24+Hg0lye9G8dTFi93x4UjG1bz3IPQ8s9yVl5gTVCu5AveJF
+         IT3e+cKKwP/EihiJaf4Pfm2HYlKLI6DSdDoUs7wRUHfZwUrBHg/LEqNj1voyMnFi36vm
+         jI0UdxVQfqWESVe//RhYagN0JhvccJFPRgtuNqBPIzqvI3HlTrUv2GfU1Vq9Y+dUmIjE
+         3sPur51kF/WEkWIYj3HC//sZOA2pXtK6uXwhEpsThiRXvJjSxq69kd2g5VuKCnuZiWer
+         gaHg==
+X-Gm-Message-State: AOJu0YyPz0v8w1F8wrGr/3LRnkGCF3gEaNjDr1f578gKDfcfzKS1EaEt
+	dEJLx5XwynxH+4PFJaEt+qYrmYLYAVM=
+X-Google-Smtp-Source: AGHT+IHQKL11sXvSD1OxXeiwjG9Teo/hx0bwxPfT/7G9T+4Ho10xF8UFwRp+Kp/lYdliugSW1vqRYpcVA/Y=
 X-Received: from zagreus.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5c37])
- (user=seanjc job=sendgmr) by 2002:a17:902:e851:b0:1c6:2b9d:570b with SMTP id
- t17-20020a170902e85100b001c62b9d570bmr34467plg.7.1695948142799; Thu, 28 Sep
- 2023 17:42:22 -0700 (PDT)
-Date: Thu, 28 Sep 2023 17:42:20 -0700
-In-Reply-To: <20230928173354.217464-3-mlevitsk@redhat.com>
+ (user=seanjc job=sendgmr) by 2002:a05:6902:181c:b0:d82:9342:8627 with SMTP id
+ cf28-20020a056902181c00b00d8293428627mr42880ybb.6.1695948156573; Thu, 28 Sep
+ 2023 17:42:36 -0700 (PDT)
+Date: Thu, 28 Sep 2023 17:42:35 -0700
+In-Reply-To: <20230928173354.217464-4-mlevitsk@redhat.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
-References: <20230928173354.217464-1-mlevitsk@redhat.com> <20230928173354.217464-3-mlevitsk@redhat.com>
-Message-ID: <ZRYdbJNY3ldYKgEk@google.com>
-Subject: Re: [PATCH v2 2/4] x86: KVM: SVM: add support for Invalid IPI Vector interception
+References: <20230928173354.217464-1-mlevitsk@redhat.com> <20230928173354.217464-4-mlevitsk@redhat.com>
+Message-ID: <ZRYde2P413vWOYDq@google.com>
+Subject: Re: [PATCH v2 3/4] x86: KVM: SVM: refresh AVIC inhibition in svm_leave_nested()
 From: Sean Christopherson <seanjc@google.com>
 To: Maxim Levitsky <mlevitsk@redhat.com>
 Cc: kvm@vger.kernel.org, iommu@lists.linux.dev, 
@@ -56,23 +56,16 @@ Cc: kvm@vger.kernel.org, iommu@lists.linux.dev,
 Content-Type: text/plain; charset="us-ascii"
 
 On Thu, Sep 28, 2023, Maxim Levitsky wrote:
-> In later revisions of AMD's APM, there is a new 'incomplete IPI' exit code:
+> svm_leave_nested() similar to a nested VM exit, get the vCPU out of nested
+> mode and thus should end the local inhibition of AVIC on this vCPU.
 > 
-> "Invalid IPI Vector - The vector for the specified IPI was set to an
-> illegal value (VEC < 16)"
+> Failure to do so, can lead to hangs on guest reboot.
 > 
-> Note that tests on Zen2 machine show that this VM exit doesn't happen and
-> instead AVIC just does nothing.
+> Raise the KVM_REQ_APICV_UPDATE request to refresh the AVIC state of the
+> current vCPU in this case.
 > 
-> Add support for this exit code by doing nothing, instead of filling
-> the kernel log with errors.
-> 
-> Also replace an unthrottled 'pr_err()' if another unknown incomplete
-> IPI exit happens with vcpu_unimpl()
-> 
-> (e.g in case AMD adds yet another 'Invalid IPI' exit reason)
-> 
-> Cc: <stable@vger.kernel.org>
+> Fixes: f44509f849fe ("KVM: x86: SVM: allow AVIC to co-exist with a nested guest running")
+> Cc: stable@vger.kernel.org
 > Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
 > ---
 
