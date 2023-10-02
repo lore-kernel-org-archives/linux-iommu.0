@@ -1,198 +1,73 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id BF1AD1DA29
-	for <iommu@lists.linux.dev>; Mon,  2 Oct 2023 19:02:32 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2F5B0C15;
-	Mon,  2 Oct 2023 12:03:10 -0700 (PDT)
-Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id CEF363F59C;
-	Mon,  2 Oct 2023 12:02:29 -0700 (PDT)
-Message-ID: <a4078085-4061-2b52-daba-1cd642f0cf9d@arm.com>
-Date: Mon, 2 Oct 2023 20:02:23 +0100
+Received: from mail-yb1-f202.google.com (mail-yb1-f202.google.com [209.85.219.202])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 054451F19E
+	for <iommu@lists.linux.dev>; Mon,  2 Oct 2023 19:21:28 +0000 (UTC)
+Received: by mail-yb1-f202.google.com with SMTP id 3f1490d57ef6-d814634fe4bso125397276.1
+        for <iommu@lists.linux.dev>; Mon, 02 Oct 2023 12:21:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1696274488; x=1696879288; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=t6T5u8n63H32m/YuZ6al8a5T5YBKCODxao+/slOadeI=;
+        b=WTUE+yT8o6EskfEBsxHMhiylkRJMnFVGmDXCOoNZ2zJasvlc09H9vQORSS4jxUCehZ
+         bnyvlO1gCSqakBiI9e+bd1ZMQZCnJ/xMFwKyrUuuOKIcKLi8XRT700BZZ0g81ksrJGpx
+         TB6Xzt2z5iBbDo9jDE50JBMe0IRaamF4FH6xixejrlCFb3b4iaJvzEE3QmZgTyjRQykO
+         7Jor5cPvA81A3THAyOwJW/tobD/HVQyqtHcVIiNM4ajEL4LR0PIQ1Byi2rk2l9dyGtdN
+         KWLY37k9b5k4QJWtDLOq1YuJbhPpN36YG6bfsGj0Cc5Tt7+HEDetek93w9RZvyf8ho7c
+         W0lw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1696274488; x=1696879288;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=t6T5u8n63H32m/YuZ6al8a5T5YBKCODxao+/slOadeI=;
+        b=LW4p2tI4L9xKEMLDnYrhuKs1MS9OJAmZOLWTNnIrFCBs7Vd+2nPYxsM4ZOYjZrhuWX
+         xtFrSO+n34DXKWzbFRTxo3pU9LeW/F9YfwKF5zi0FrRLhy/1XdIfivgSq02Ppuj8UpTg
+         jsONd45oSRELdvVFbfQD+wRlmNw8jvCYRfiIlCX6zSugTJb83dGCaIne5T9wNVascHhz
+         8uPrYTJMrNLW/eF1KP6Ii/U9v2wmVCIu1olr48nPDXpNCpR4OWmiqXPeTpCbSj6Hs3Dv
+         uKK5Dv8bYvtDvmRgrvvqnDIBuXDJrBuWpjV5ZPTtbaAxdh1yqBqVfE2/bZkXh9z72GQ4
+         Ze4A==
+X-Gm-Message-State: AOJu0YztBnZAM7pwtRY1UsEcEa4CTOAGphpFsjcUziwF1aOXgc7+O8Rs
+	xAdDXsVVNKZL0V/dl5is0OcYxqNPNTA=
+X-Google-Smtp-Source: AGHT+IHtmSpMO46KvblpohsWz6O2OSsiMptb0VeaGAhA3nbdHgcxj9vvtm/o9rpvvprle6yfo7JS3Vq54xM=
+X-Received: from zagreus.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5c37])
+ (user=seanjc job=sendgmr) by 2002:a25:2d12:0:b0:d7e:8dee:7813 with SMTP id
+ t18-20020a252d12000000b00d7e8dee7813mr200701ybt.8.1696274487816; Mon, 02 Oct
+ 2023 12:21:27 -0700 (PDT)
+Date: Mon, 2 Oct 2023 12:21:26 -0700
+In-Reply-To: <20231002115723.175344-1-mlevitsk@redhat.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:102.0) Gecko/20100101
- Thunderbird/102.15.1
-Subject: Re: [PATCH v4 4/7] iommu: Switch __iommu_domain_alloc() to device ops
-Content-Language: en-GB
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: joro@8bytes.org, will@kernel.org, iommu@lists.linux.dev,
- baolu.lu@linux.intel.com, linux-kernel@vger.kernel.org
-References: <cover.1696253096.git.robin.murphy@arm.com>
- <458dd0ed839541693a49da33239b33cf4c48b8ec.1696253096.git.robin.murphy@arm.com>
- <20231002141615.GA650249@nvidia.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20231002141615.GA650249@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Mime-Version: 1.0
+References: <20231002115723.175344-1-mlevitsk@redhat.com>
+Message-ID: <ZRsYNnYEEaY1gMo5@google.com>
+Subject: Re: [PATCH v3 0/4] Allow AVIC's IPI virtualization to be optional
+From: Sean Christopherson <seanjc@google.com>
+To: Maxim Levitsky <mlevitsk@redhat.com>
+Cc: kvm@vger.kernel.org, Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org, 
+	Borislav Petkov <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org, 
+	Ingo Molnar <mingo@redhat.com>, "H. Peter Anvin" <hpa@zytor.com>, Thomas Gleixner <tglx@linutronix.de>, 
+	Joerg Roedel <joro@8bytes.org>, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, 
+	Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev, 
+	Paolo Bonzini <pbonzini@redhat.com>
+Content-Type: text/plain; charset="us-ascii"
 
-On 02/10/2023 3:16 pm, Jason Gunthorpe wrote:
-> On Mon, Oct 02, 2023 at 02:49:12PM +0100, Robin Murphy wrote:
->> @@ -2120,20 +2120,30 @@ static struct iommu_domain *__iommu_domain_alloc(const struct iommu_ops *ops,
->>   	return domain;
->>   }
->>   
->> -static struct iommu_domain *
->> -__iommu_group_domain_alloc(struct iommu_group *group, unsigned int type)
->> +static int __iommu_domain_alloc_dev(struct device *dev, void *data)
->>   {
+On Mon, Oct 02, 2023, Maxim Levitsky wrote:
+> Hi!
 > 
-> Why?
-
-Because out of 3 callsites, two were in a context which now needed to
-make the iommu_group_first_dev() call itself anyway, thus recalculating
-it twice more with the mutex still held would clearly be silly, and so
-rather than bother refactoring the __iommu_group_domain_alloc() helper I
-squashed it into its one remaining user. I don't know a good way to tell
-git-format-patch to show a particular range of lines as a complete
-removal of one function plus the addition of an entirely unrelated new
-one which just happens to be in the same place.
-
-> The point of this design is that drivers are not allowed to
-> allocate different things for devices in the same group. So we always
-> force the driver to see only the first device in the group even if we
-> have a more specific device available in the call chain.
-
-OK, but I can't read your mind. All I have visibility of is some
-code which factored out a helper function for a sequence common to
-several users, as is typical; neither the commit message of 8359cf39acba
-nor the cover letter from that series provide any obvious explanation of
-this "design".
-
-> This patch has undone this design and passed in more specific devs :(
-
-Um... Good? I mean in 3/4 cases it's literally the exact same code just
-factored out again, while the one I've added picks some arbitrary device
-in a different way. But the first device in the group list is still just
-that - some arbitrary device - it's by no means guaranteed to be the
-*same* device each time the group is re-locked, so pretending it's some
-kind of useful invariant is misleading and wrong. Frankly now that you
-*have* explained the design intent here, it's only made me more set on
-removing it for being unclear, overcomplicated, and yet fundamentally
-useless.
-
-Yes, we absolutely expect that if dev_iommu_ops(dev)->device_group for
-two devices returns the same group, the driver should bloody well give
-the same result for either dev_iommu_ops(dev)->domain_alloc, but there's
-no practical way to enforce that at this level of code. If a driver ever
-did have inconsistent behaviour across devices within a group, trying to
-always use the "one true device" would only help *hide* that and make it
-harder to debug, not at all prevent it.
-
-> The new code here:
+> This patch allows AVIC's ICR emulation to be optional and thus allows
+> to workaround AVIC's errata #1235 by disabling this portion of the feature.
 > 
->>   struct iommu_domain *iommu_domain_alloc(const struct bus_type *bus)
->>   {
->> -	if (bus == NULL || bus->iommu_ops == NULL)
->> +	struct device *dev = NULL;
->> +
->> +	/* We always check the whole bus, so the return value isn't useful */
->> +	bus_for_each_dev(bus, NULL, &dev, __iommu_domain_alloc_dev);
->> +	if (!dev)
->>   		return NULL;
->> -	return __iommu_domain_alloc(bus->iommu_ops, NULL,
->> -				    IOMMU_DOMAIN_UNMANAGED);
->> +
->> +	return __iommu_domain_alloc(dev, IOMMU_DOMAIN_UNMANAGED);
->>   }
->>   EXPORT_SYMBOL_GPL(iommu_domain_alloc);
-> 
-> Should just obtain any group for the bus and pass that to
-> __iommu_group_domain_alloc().
-> 
-> Also, how does the locking work here? Definately can't pass dev
-> outside the bus_for_each_dev() like this.
+> This is v3 of my patch series 'AVIC bugfixes and workarounds' including
+> review feedback.
 
-It works like in most of the rest of the API right now... this is still
-the process of cleaning up the old ugly stuff in order to be able to
-evolve the API foundations to the point where we *can* have a reasonable
-locking scheme. It's a multi-step process, and I'd really like to get
-the internal bus-ops-to-instance-ops transition completed in order to
-then clean up the "of_iommu_configure() at driver probe time"
-catastrophe, get iommu_domain_alloc() callers to pass a valid device
-themselves, teach the ARM DMA ops about default domains (for which it's
-a great help that you've now got the driver-side groundwork done,
-thanks!), and then maybe we can finally have nice things.
+Please respond to my idea[*] instead of sending more patches.  I'm not opposed to
+a different approach, but we need to have an actual discussion around the pros and
+cons, and hopefully come to an agreement.  This cover letter doesn't even acknowledge
+that there is an alternative proposal, let alone justify why the vcpu->loaded
+approach was taken.
 
-> If this needs to sweep over arbitary devices that are not the caller's
-> probe'd device it needs to hold at least the device_lock to prevent
-> racing with release.
-> 
-> So I'd structure this to find the matching device, lock the
-> device_lock, get the group refcount, unlock the device_lock then
-> get the group_mutex, check for non-empty and then call
-> __iommu_group_domain_alloc()
-
-...and as your reward you'd get much the same deadlocks as with the last
-attempt to bring device_lock into it, thanks to
-arm_iommu_create_mapping(), and drivers calling iommu_domain_alloc()
-from their own probe routines :(
-
-FYI the diff below is what I've hacked out so far, but I'll test it with
-a fresh head tomorrow (just pasting it in here I've noticed at least one
-bug...)
-
-> (there is a missing lockdep annotation in
-> __iommu_group_domain_alloc(), the group mutex is needed)
-
-(fear not, iommu_group_first_dev() brings that to those places!)
-
-Thanks,
-Robin.
-
------>8-----
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 3d29434d57c6..78366e988e31 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -2128,27 +2128,41 @@ static struct iommu_domain *__iommu_domain_alloc(struct device *dev,
-  static int __iommu_domain_alloc_dev(struct device *dev, void *data)
-  {
-  	struct device **alloc_dev = data;
-+	struct iommu_group *group = iommu_group_get(dev);
-  
--	if (!dev_has_iommu(dev))
-+	if (!group)
-  		return 0;
-  
--	WARN_ONCE(*alloc_dev && dev_iommu_ops(dev) != dev_iommu_ops(*alloc_dev),
--		  "Multiple IOMMU drivers present, which the public IOMMU API can't fully support yet. You may still need to disable one or more to get the expected result here, sorry!\n");
-+	mutex_lock(&group->mutex);
-+	/* Theoretically we could have raced against release */
-+	if (list_empty(&group->devices)) {
-+		mutex_unlock(&group->mutex);
-+		iommu_group_put(group);
-+		return 0;
-+	}
-  
--	*alloc_dev = dev;
-+	if (!*alloc_dev)
-+		*alloc_dev = dev;
-+
-+	WARN_ONCE(dev_iommu_ops(dev) != dev_iommu_ops(*alloc_dev),
-+		  "Multiple IOMMU drivers present, which the public IOMMU API can't fully support yet. You may still need to disable one or more to get the expected result here, sorry!\n");
-  	return 0;
-  }
-  
-  struct iommu_domain *iommu_domain_alloc(const struct bus_type *bus)
-  {
-  	struct device *dev = NULL;
-+	struct iommu_domain *dom;
-  
-  	/* We always check the whole bus, so the return value isn't useful */
-  	bus_for_each_dev(bus, NULL, &dev, __iommu_domain_alloc_dev);
-  	if (!dev)
-  		return NULL;
-  
--	return __iommu_domain_alloc(dev, IOMMU_DOMAIN_UNMANAGED);
-+	dom = __iommu_domain_alloc(dev, IOMMU_DOMAIN_UNMANAGED);
-+	mutex_unlock(&dev->iommu_group->mutex);
-+	iommu_group_put(dev->iommu_group);
-+	return dom;
-  }
-  EXPORT_SYMBOL_GPL(iommu_domain_alloc);
-  
+[*] https://lore.kernel.org/all/ZRYxPNeq1rnp-M0f@google.com
