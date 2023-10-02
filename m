@@ -1,83 +1,84 @@
-Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E278117C3;
-	Mon,  2 Oct 2023 06:59:55 +0000 (UTC)
-Received: from 8bytes.org (pd9fe9df8.dip0.t-ipconnect.de [217.254.157.248])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id ECDA51A2626;
-	Mon,  2 Oct 2023 08:59:53 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1696229994;
-	bh=AIFVwF7V2yCwhyWe75DvT7fYSBhwm/fBmqB8nOMomrQ=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=qpnLCwzk2x1keRMkLPeYurvT7r9OO8YOJ6/7Vx/qRYBDxYBtaFczM0bl0X3CwM+Z8
-	 JjZ2S2KL1yCjIcyOYKVBFX3TnYJH3DgXndhq33RdOr06+/f4P6g8ed5YusHJpPxKBf
-	 /cC8uVfAa/rk6Wr3PPtDNHTnxEpzpMy8C+fcOb8G29mwxCh4jTTbUwvHTKVDKKREHN
-	 XKS42S0qW6PWzXZYxLGalC73IDOoglQpj2vweIfb/B9jDLMPy04LKeueQ7Vtaof2m0
-	 /U/pjbpVoAN9ULRqOfwjMT62szxrFLqy3anLaW4GIZc388p9f5N34fWI0GM1KG2Gfs
-	 vlKBpUHgqfWmA==
-Date: Mon, 2 Oct 2023 08:59:52 +0200
-From: Joerg Roedel <joro@8bytes.org>
-To: Niklas Schnelle <schnelle@linux.ibm.com>
-Cc: Matthew Rosato <mjrosato@linux.ibm.com>, Will Deacon <will@kernel.org>,
-	Wenjia Zhang <wenjia@linux.ibm.com>,
-	Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-	Gerd Bayer <gbayer@linux.ibm.com>,
-	Julian Ruess <julianr@linux.ibm.com>,
-	Pierre Morel <pmorel@linux.ibm.com>,
-	Alexandra Winter <wintera@linux.ibm.com>,
-	Heiko Carstens <hca@linux.ibm.com>,
-	Vasily Gorbik <gor@linux.ibm.com>,
-	Alexander Gordeev <agordeev@linux.ibm.com>,
-	Christian Borntraeger <borntraeger@linux.ibm.com>,
-	Sven Schnelle <svens@linux.ibm.com>,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 02B0D10A39
+	for <iommu@lists.linux.dev>; Mon,  2 Oct 2023 11:57:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1696247852;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=xdEi4vgKgEG2jRiO+4XFkFqhlYVyHnR0EylKCN1L2xM=;
+	b=W6km0XumYe2srix6tXm7OhkwOKFFd2P1Q8M/4VAAn6GJGbytAxMMEnvCmt8A8SK0cOL1Le
+	3V6cnCrVoRvoo2h+92aGTknITa2L1paVj1UjhWBQQARxzJwOvYh3Wg+E77VWDglYyXV617
+	qzycGXd4S1cacfrYYU2xiOJxc2WmsfE=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-134-PTuM0XbWONejxasCbmtAbA-1; Mon, 02 Oct 2023 07:57:29 -0400
+X-MC-Unique: PTuM0XbWONejxasCbmtAbA-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id B339197E40A;
+	Mon,  2 Oct 2023 11:57:28 +0000 (UTC)
+Received: from localhost.localdomain (unknown [10.45.224.55])
+	by smtp.corp.redhat.com (Postfix) with ESMTP id 056A3140E950;
+	Mon,  2 Oct 2023 11:57:24 +0000 (UTC)
+From: Maxim Levitsky <mlevitsk@redhat.com>
+To: kvm@vger.kernel.org
+Cc: Will Deacon <will@kernel.org>,
+	linux-kernel@vger.kernel.org,
+	Borislav Petkov <bp@alien8.de>,
+	Dave Hansen <dave.hansen@linux.intel.com>,
+	x86@kernel.org,
+	Ingo Molnar <mingo@redhat.com>,
+	"H. Peter Anvin" <hpa@zytor.com>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Joerg Roedel <joro@8bytes.org>,
 	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Hector Martin <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
-	Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>, Andy Gross <agross@kernel.org>,
-	Bjorn Andersson <andersson@kernel.org>,
-	Konrad Dybcio <konrad.dybcio@linaro.org>,
-	Yong Wu <yong.wu@mediatek.com>,
-	Matthias Brugger <matthias.bgg@gmail.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-	Orson Zhai <orsonzhai@gmail.com>,
-	Baolin Wang <baolin.wang@linux.alibaba.com>,
-	Chunyan Zhang <zhang.lyra@gmail.com>, Chen-Yu Tsai <wens@csie.org>,
-	Jernej Skrabec <jernej.skrabec@gmail.com>,
-	Samuel Holland <samuel@sholland.org>,
-	Thierry Reding <thierry.reding@gmail.com>,
-	Krishna Reddy <vdumpa@nvidia.com>,
-	Jonathan Hunter <jonathanh@nvidia.com>,
-	Jonathan Corbet <corbet@lwn.net>, linux-s390@vger.kernel.org,
-	netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev, asahi@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
-	linux-mediatek@lists.infradead.org, linux-sunxi@lists.linux.dev,
-	linux-tegra@vger.kernel.org, linux-doc@vger.kernel.org
-Subject: Re: [PATCH v13 0/6] iommu/dma: s390 DMA API conversion and optimized
- IOTLB flushing
-Message-ID: <ZRpqaJEQLRDp5b1L@8bytes.org>
-References: <20230928-dma_iommu-v13-0-9e5fc4dacc36@linux.ibm.com>
+	Sean Christopherson <seanjc@google.com>,
+	Maxim Levitsky <mlevitsk@redhat.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	iommu@lists.linux.dev,
+	Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH v3 0/4] Allow AVIC's IPI virtualization to be optional
+Date: Mon,  2 Oct 2023 14:57:19 +0300
+Message-Id: <20231002115723.175344-1-mlevitsk@redhat.com>
+Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230928-dma_iommu-v13-0-9e5fc4dacc36@linux.ibm.com>
+Content-Transfer-Encoding: quoted-printable
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.7
 
-On Thu, Sep 28, 2023 at 04:31:34PM +0200, Niklas Schnelle wrote:
-> Niklas Schnelle (6):
->       iommu: Allow .iotlb_sync_map to fail and handle s390's -ENOMEM return
->       s390/pci: prepare is_passed_through() for dma-iommu
->       s390/pci: Use dma-iommu layer
->       iommu/s390: Disable deferred flush for ISM devices
->       iommu/dma: Allow a single FQ in addition to per-CPU FQs
->       iommu/dma: Use a large flush queue and timeout for shadow_on_flush
+Hi!=0D
+=0D
+This patch allows AVIC's ICR emulation to be optional and thus allows=0D
+to workaround AVIC's errata #1235 by disabling this portion of the feature.=
+=0D
+=0D
+This is v3 of my patch series 'AVIC bugfixes and workarounds' including=0D
+review feedback.=0D
+=0D
+Best regards,=0D
+    Maxim Levitsky=0D
+=0D
+Maxim Levitsky (4):=0D
+  KVM: Add per vCPU flag specifying that a vCPU is loaded=0D
+  x86: KVM: AVIC: stop using 'is_running' bit in avic_vcpu_put()=0D
+  x86: KVM: don't read physical ID table entry in avic_pi_update_irte()=0D
+  x86: KVM: SVM: allow optionally to disable AVIC's IPI virtualization=0D
+=0D
+ arch/x86/kvm/svm/avic.c  | 72 ++++++++++++++++++++++++++--------------=0D
+ include/linux/kvm_host.h |  1 +=0D
+ virt/kvm/kvm_main.c      | 10 ++++++=0D
+ 3 files changed, 59 insertions(+), 24 deletions(-)=0D
+=0D
+-- =0D
+2.26.3=0D
+=0D
 
-Applied, thanks Niklas.
