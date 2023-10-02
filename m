@@ -1,163 +1,215 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DCAEE1F19A
-	for <iommu@lists.linux.dev>; Mon,  2 Oct 2023 20:08:48 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 32FCFC15;
-	Mon,  2 Oct 2023 13:09:26 -0700 (PDT)
-Received: from [10.57.2.38] (unknown [10.57.2.38])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A9B313F762;
-	Mon,  2 Oct 2023 13:08:46 -0700 (PDT)
-Message-ID: <13d73200-2d53-7f95-fb93-5b5f422251cd@arm.com>
-Date: Mon, 2 Oct 2023 21:08:36 +0100
+Received: from mail-yw1-f176.google.com (mail-yw1-f176.google.com [209.85.128.176])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 014981DDC3
+	for <iommu@lists.linux.dev>; Mon,  2 Oct 2023 21:22:11 +0000 (UTC)
+Received: by mail-yw1-f176.google.com with SMTP id 00721157ae682-579de633419so3164267b3.3
+        for <iommu@lists.linux.dev>; Mon, 02 Oct 2023 14:22:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1696281731; x=1696886531; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=KY1yTwg5kkSQ1PPrVUqg1E2GU9pyZpek6FOp/omImxs=;
+        b=RD5y9qqComlmT9nEw27fk3ErJ1dBDOxYLDHXtAChtwpyn2AgPwDzq5OAhcDxu8F8r/
+         ciYhPzuXeYbtqEPPg4j0JcLsgl5aH4tmlF4Wwgobqtg5wbgfsO2em+jamshBZPz24DsQ
+         8eWwbKHTjQckZq5KhznGlBhlxP5RRHdwLvDEv+EV7wrOMmZaloqzKneZnUyyANXFSFFI
+         RWY9azkLF2/IayHuF6sAYwd8ZavVdxD7cj33HkUX1LpxZ69qC/GT0nQRiV8Rs/inVKh0
+         74AGS9LYJ1tlfNvRxdxEMzB8sN8eZ0i0SCTP4VB348rrDbsu1o+35AaoG2QWOrSozO1U
+         1csw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1696281731; x=1696886531;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=KY1yTwg5kkSQ1PPrVUqg1E2GU9pyZpek6FOp/omImxs=;
+        b=MkS4HBZu52lk8BC7MWDzM45xTXeziiXwLOQNMF3yar2hSnUxLfTglx+fFmQ2YKKYb2
+         9kkW3bz7hAiyrNv5uNOrVgxYJuWBeOnhb0gcP0MAHQ3Nx5FErCV7Yp7R2yobj5HgilOa
+         ZSCcKSZ40Rhk2ZjTHU6pnCRnSWA3lQzTxEKULYkVeUTHhmczXVu0QqYjoXXX4IKIqn2/
+         II9cHjR2+r4mcalbIgp03gkU51lyDiI01pMlQcAr568ecQdswzAFpA1wretzi1pdEKEG
+         6lYtbVIiswvUaQJpAuxYD/Ck+E/eR6M8Ps0oWxFt2TLz3BcyHxFbT+GMYQ/1Zui3VVj8
+         UAlw==
+X-Gm-Message-State: AOJu0Yyz0eOv/G4/q6vOtx4MZGRi43+plsTBZZ386+vDWGgJgMbXIdnv
+	7yFH86m0WA+CPz4a3CZf5SD92v3+qZC4kNgoPtI8Iw==
+X-Google-Smtp-Source: AGHT+IFaRCfqm0SlfcT/sMeXMK7dbF3zxTUUIPxu3awMhgeV/37hJ6olOIew2lBKO7L65qL9ql+xhT0CDDmED9Aaft4=
+X-Received: by 2002:a0d:c906:0:b0:595:9135:83c7 with SMTP id
+ l6-20020a0dc906000000b00595913583c7mr11373199ywd.47.1696281730897; Mon, 02
+ Oct 2023 14:22:10 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.15.1
-Subject: Re: dma_map_resource() has a bad performance in pcie peer to peer
- transactions when iommu enabled in Linux
-Content-Language: en-GB
-To: Kelly Devilliv <kelly.devilliv@outlook.com>,
- =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
- "joro@8bytes.org" <joro@8bytes.org>, "will@kernel.org" <will@kernel.org>
-Cc: "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <TY2PR0101MB3136A7480B842E009BCBDA8384C3A@TY2PR0101MB3136.apcprd01.prod.exchangelabs.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <TY2PR0101MB3136A7480B842E009BCBDA8384C3A@TY2PR0101MB3136.apcprd01.prod.exchangelabs.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+References: <0-v8-81230027b2fa+9d-iommu_all_defdom_jgg@nvidia.com> <20-v8-81230027b2fa+9d-iommu_all_defdom_jgg@nvidia.com>
+In-Reply-To: <20-v8-81230027b2fa+9d-iommu_all_defdom_jgg@nvidia.com>
+From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Date: Tue, 3 Oct 2023 00:21:59 +0300
+Message-ID: <CAA8EJprz7VVmBG68U9zLuqPd0UdSRHYoLDJSP6tCj6H6qanuTQ@mail.gmail.com>
+Subject: Re: [PATCH v8 20/24] iommu: Require a default_domain for all iommu drivers
+To: Jason Gunthorpe <jgg@nvidia.com>, Rob Clark <robdclark@gmail.com>
+Cc: Andy Gross <agross@kernel.org>, Alim Akhtar <alim.akhtar@samsung.com>, 
+	Bjorn Andersson <andersson@kernel.org>, 
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, 
+	Baolin Wang <baolin.wang@linux.alibaba.com>, 
+	Christophe Leroy <christophe.leroy@csgroup.eu>, 
+	Gerald Schaefer <gerald.schaefer@linux.ibm.com>, Heiko Stuebner <heiko@sntech.de>, iommu@lists.linux.dev, 
+	Jernej Skrabec <jernej.skrabec@gmail.com>, Jonathan Hunter <jonathanh@nvidia.com>, 
+	Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>, 
+	Konrad Dybcio <konrad.dybcio@linaro.org>, 
+	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, linux-arm-kernel@lists.infradead.org, 
+	linux-arm-msm@vger.kernel.org, linux-mediatek@lists.infradead.org, 
+	linux-rockchip@lists.infradead.org, linux-s390@vger.kernel.org, 
+	linux-samsung-soc@vger.kernel.org, linux-sunxi@lists.linux.dev, 
+	linux-tegra@vger.kernel.org, Russell King <linux@armlinux.org.uk>, 
+	linuxppc-dev@lists.ozlabs.org, Matthias Brugger <matthias.bgg@gmail.com>, 
+	Matthew Rosato <mjrosato@linux.ibm.com>, Michael Ellerman <mpe@ellerman.id.au>, 
+	Nicholas Piggin <npiggin@gmail.com>, Orson Zhai <orsonzhai@gmail.com>, 
+	Robin Murphy <robin.murphy@arm.com>, Samuel Holland <samuel@sholland.org>, 
+	Thierry Reding <thierry.reding@gmail.com>, Krishna Reddy <vdumpa@nvidia.com>, 
+	Chen-Yu Tsai <wens@csie.org>, Will Deacon <will@kernel.org>, Yong Wu <yong.wu@mediatek.com>, 
+	Chunyan Zhang <zhang.lyra@gmail.com>, Lu Baolu <baolu.lu@linux.intel.com>, 
+	Dmitry Osipenko <digetx@gmail.com>, Jerry Snitselaar <jsnitsel@redhat.com>, 
+	Marek Szyprowski <m.szyprowski@samsung.com>, Nicolin Chen <nicolinc@nvidia.com>, 
+	Niklas Schnelle <schnelle@linux.ibm.com>, Steven Price <steven.price@arm.com>, 
+	Thierry Reding <treding@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"
 
-On 2023-09-26 16:30, Kelly Devilliv wrote:
-> On 2023-09-26 13:32, Christian König wrote:
->> Am 26.09.23 um 06:33 schrieb Kelly Devilliv:
->>> On 2023-09-26 01:58, Christian König wrote:
->>>> Am 25.09.23 um 16:17 schrieb Kelly Devilliv:
->>>>> On 2023-09-25 19:16, Robin Murphy wrote:
->>>>>> On 2023-09-25 04:59, Kelly Devilliv wrote:
->>>>>>> Dear all,
->>>>>>>
->>>>>>> I am working on an ARM-V8 server with two gpu cards on it.
->>>>>>> Recently, I need to test pcie peer to peer communication between
->>>>>>> the two gpu cards, but the throughput is only 4GB/s.
->>>>>>> After I explored the gpu's kernel mode driver, I found it was
->>>>>>> using the dma_map_resource() API to map the peer device's MMIO
->>>>>>> space. The arm iommu driver then will hardcode a 'IOMMU_MMIO' prot in the later dma map:
->>>>>>>            static dma_addr_t iommu_dma_map_resource(struct device
->>>>>>> *dev, phys_addr_t phys,
->>>>>>>                                     size_t size, enum
->>>>>>> dma_data_direction dir, unsigned long attrs)
->>>>>>>             {
->>>>>>>                     return __iommu_dma_map(dev, phys, size,
->>>>>>>                                             dma_info_to_prot(dir,
->>>>>>> false,
->>>>>>> attrs) | IOMMU_MMIO,
->>>>>>>                                             dma_get_mask(dev));
->>>>>>>             }
->>>>>>>
->>>>>>> And that will finally set the 'ARM_LPAE_PTE_MEMATTR_DEV' attribute
->>>>>>> in PTE, which may have a negative impact on the performance of the
->>>>>>> pcie peer to peer transactions.
->>>>>>>             /*
->>>>>>>              * Note that this logic is structured to accommodate Mali LPAE
->>>>>>>              * having stage-1-like attributes but stage-2-like permissions.
->>>>>>>              */
->>>>>>>             if (data->iop.fmt == ARM_64_LPAE_S2 ||
->>>>>>>                 data->iop.fmt == ARM_32_LPAE_S2) {
->>>>>>>                     if (prot & IOMMU_MMIO)
->>>>>>>                             pte |= ARM_LPAE_PTE_MEMATTR_DEV;
->>>>>>>                     else if (prot & IOMMU_CACHE)
->>>>>>>                             pte |= ARM_LPAE_PTE_MEMATTR_OIWB;
->>>>>>>                     else
->>>>>>>                             pte |= ARM_LPAE_PTE_MEMATTR_NC;
->>>>>>>             } else {
->>>>>>>                     if (prot & IOMMU_MMIO)
->>>>>>>                             pte |= (ARM_LPAE_MAIR_ATTR_IDX_DEV
->>>>>>>                                     << ARM_LPAE_PTE_ATTRINDX_SHIFT);
->>>>>>>                     else if (prot & IOMMU_CACHE)
->>>>>>>                             pte |= (ARM_LPAE_MAIR_ATTR_IDX_CACHE
->>>>>>>                                     << ARM_LPAE_PTE_ATTRINDX_SHIFT);
->>>>>>>             }
->>>>>>>
->>>>>>> I tried to remove the 'IOMMU_MMIO' prot in the dma_map_resource()
->>>>>>> API and re-compile the linux kernel, the throughput then can be up
->>>>>>> to 28GB/s.
->>>>>>> Is there an elegant way to solve this issue without modifying the linux kernel?
->>>>>>> e.g., a substitution of dma_map_resource() API?
->>>>>> Not really. Other use-cases for dma_map_resource() include DMA
->>>>>> offload engines accessing FIFO registers, where allowing
->>>>>> reordering, write-gathering, etc. would be a terrible idea. Thus it
->>>>>> needs to assume a "safe" MMIO memory type, which on Arm means Device-nGnRE.
->>>>>>
->>>>>> However, the "proper" PCI peer-to-peer support under
->>>>>> CONFIG_PCI_P2PDMA ended up moving away from the dma_map_resource()
->>>>>> approach anyway, and allows this kind of device memory to be
->>>>>> treated more like regular memory (via
->>>>>> ZONE_DEVICE) rather than arbitrary MMIO resources, so your best bet
->>>>>> would be to get the GPU driver converted over to using that.
->>>>> Thanks Robin.
->>>>> So your suggestion is we'd better work out a new implementation just
->>>>> as what it does under CONFIG_PCI_P2PDMA instead of just using the
->>>>> dma_map_resource() API?
->>>>>
->>>>> I have explored the GPU drivers from AMD, Nvidia and habanalabs,
->>>>> e.g., and found they all using the dma_map_resource() API to map the
->>>>> peer device's bar address.
->>>>> If so, is it possible to be a common performance issue in PCI
->>>>> peer-to-peer scenario?
->>>> That's not an issue, but expected behavior.
->>>>
->>>> When you enable IOMMU every transaction needs to go through the root
->>>> complex for address translation and you completely lose the
->>>> performance benefit of PCIe P2P.
->>> Thanks Christian. That's true.
->>>
->>>> This is a hardware limitation and not really related to
->>>> dma_map_resource() in any way.
->>>>
->>> But when I removed the 'IOMMU_MMIO' prot in dma_map_resource(), the
->>> performace was significantly improved (from 4GB/s to 28GB/s), which was
->>> almost the same as what it can be when IOMMU disabled. So I guess in my common pci topology,
->>> what really matters may not be whether IOMMU is enabled or not, but in fact the attributes in dma mapping or ARM PTE does.
->>
->> The key point is that nobody really supports that configuration, so you probably
->> will find nobody looking into it.
->>
->> BTW: ARM isn't really supported as a platform for amdgpu either. E.g. we have
->> seen tons of boards which implement the PCIe standard incorrectly, if you run
->> into any trouble with that you are pretty much on your own.
->>
-> 
-> Thanks Christian. I am going to disable IOMMU or do some tricks in PCI peer-to-peer scenario.
-> 
->>> I don't know if there is a way to make the memory attributes more configurable in order to be distinguished
->>> from the "safe" MMIO memory type, which on Arm means Device-nGnRE as Robin said.
->>
->> Well we would need to extend dma_map_resource() to include some use case
->> so that the mapping attributes don't need to be guessed.
->>
-> 
-> Hi Robin,
-> 
-> Is there any chance to extend the dma_map_resource() API as discussed above?
+On Wed, 13 Sept 2023 at 16:45, Jason Gunthorpe <jgg@nvidia.com> wrote:
+>
+> At this point every iommu driver will cause a default_domain to be
+> selected, so we can finally remove this gap from the core code.
+>
+> The following table explains what each driver supports and what the
+> resulting default_domain will be:
+>
+>                                         ops->defaut_domain
+>                     IDENTITY   DMA  PLATFORM    v      ARM32          dma-iommu  ARCH
+> amd/iommu.c             Y       Y                       N/A             either
+> apple-dart.c            Y       Y                       N/A             either
+> arm-smmu.c              Y       Y                       IDENTITY        either
+> qcom_iommu.c            G       Y                       IDENTITY        either
+> arm-smmu-v3.c           Y       Y                       N/A             either
+> exynos-iommu.c          G       Y                       IDENTITY        either
+> fsl_pamu_domain.c                       Y       Y       N/A             N/A     PLATFORM
+> intel/iommu.c           Y       Y                       N/A             either
+> ipmmu-vmsa.c            G       Y                       IDENTITY        either
+> msm_iommu.c             G                               IDENTITY        N/A
 
-As Christoph says, no. There are things one could do to make a 
-minimal-effort bodge in a downstream kernel, but upstream we already 
-have a dedicated PCI peer-to-peer API, so we have no reason and no 
-desire to also attempt to crowbar P2P support into a different API which 
-isn't designed for it. Sure there exist some drivers that went ahead of 
-the game and did their own thing before we realised that 
-dma_map_resource() just fundamentally wouldn't be a good fit for P2P as 
-initially suggested, but all that means is that if they're still doing 
-that today, they're now lagging behind and it's on them to update to the 
-newer solution if they want to benefit from all its goodness. Note that 
-this isn't just maintainer semantics or relatively straightforward 
-things like memory attributes; I believe the proper API can also handle 
-stuff like direct P2P when you do have an IOMMU but don't have ACS 
-upstream redirect, which dma_map_resource() could never do.
+Unfortunately this patch breaks msm_iommu platforms. This driver
+doesn't select ARM_DMA_USE_IOMMU, so iommu_get_default_domain_type()
+returns 0, bus_iommu_probe() fails with -ENODEV.
+If I make MSM_IOMMU select ARM_DMA_USE_IOMMU, then GPU probing fails
+with -EBUSY.
 
-Thanks,
-Robin.
+> mtk_iommu.c             G       Y                       IDENTITY        either
+> mtk_iommu_v1.c          G                               IDENTITY        N/A
+> omap-iommu.c            G                               IDENTITY        N/A
+> rockchip-iommu.c        G       Y                       IDENTITY        either
+> s390-iommu.c                            Y       Y       N/A             N/A     PLATFORM
+> sprd-iommu.c                    Y                       N/A             DMA
+> sun50i-iommu.c          G       Y                       IDENTITY        either
+> tegra-smmu.c            G       Y                       IDENTITY        IDENTITY
+> virtio-iommu.c          Y       Y                       N/A             either
+> spapr                                   Y       Y       N/A             N/A     PLATFORM
+>  * G means ops->identity_domain is used
+>  * N/A means the driver will not compile in this configuration
+>
+> ARM32 drivers select an IDENTITY default domain through either the
+> ops->identity_domain or directly requesting an IDENTIY domain through
+> alloc_domain().
+>
+> In ARM64 mode tegra-smmu will still block the use of dma-iommu.c and
+> forces an IDENTITY domain.
+>
+> S390 uses a PLATFORM domain to represent when the dma_ops are set to the
+> s390 iommu code.
+>
+> fsl_pamu uses an PLATFORM domain.
+>
+> POWER SPAPR uses PLATFORM and blocking to enable its weird VFIO mode.
+>
+> The x86 drivers continue unchanged.
+>
+> After this patch group->default_domain is only NULL for a short period
+> during bus iommu probing while all the groups are constituted. Otherwise
+> it is always !NULL.
+>
+> This completes changing the iommu subsystem driver contract to a system
+> where the current iommu_domain always represents some form of translation
+> and the driver is continuously asserting a definable translation mode.
+>
+> It resolves the confusion that the original ops->detach_dev() caused
+> around what translation, exactly, is the IOMMU performing after
+> detach. There were at least three different answers to that question in
+> the tree, they are all now clearly named with domain types.
+>
+> Tested-by: Heiko Stuebner <heiko@sntech.de>
+> Tested-by: Niklas Schnelle <schnelle@linux.ibm.com>
+> Tested-by: Steven Price <steven.price@arm.com>
+> Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
+> Tested-by: Nicolin Chen <nicolinc@nvidia.com>
+> Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+> Reviewed-by: Jerry Snitselaar <jsnitsel@redhat.com>
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> ---
+>  drivers/iommu/iommu.c | 22 +++++++---------------
+>  1 file changed, 7 insertions(+), 15 deletions(-)
+>
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 42a4585dd76da6..cfb597751f5bad 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -1865,7 +1865,6 @@ static int iommu_get_def_domain_type(struct iommu_group *group,
+>  static int iommu_get_default_domain_type(struct iommu_group *group,
+>                                          int target_type)
+>  {
+> -       const struct iommu_ops *ops = group_iommu_ops(group);
+>         struct device *untrusted = NULL;
+>         struct group_device *gdev;
+>         int driver_type = 0;
+> @@ -1876,11 +1875,13 @@ static int iommu_get_default_domain_type(struct iommu_group *group,
+>          * ARM32 drivers supporting CONFIG_ARM_DMA_USE_IOMMU can declare an
+>          * identity_domain and it will automatically become their default
+>          * domain. Later on ARM_DMA_USE_IOMMU will install its UNMANAGED domain.
+> -        * Override the selection to IDENTITY if we are sure the driver supports
+> -        * it.
+> +        * Override the selection to IDENTITY.
+>          */
+> -       if (IS_ENABLED(CONFIG_ARM_DMA_USE_IOMMU) && ops->identity_domain)
+> +       if (IS_ENABLED(CONFIG_ARM_DMA_USE_IOMMU)) {
+> +               static_assert(!(IS_ENABLED(CONFIG_ARM_DMA_USE_IOMMU) &&
+> +                               IS_ENABLED(CONFIG_IOMMU_DMA)));
+>                 driver_type = IOMMU_DOMAIN_IDENTITY;
+> +       }
+>
+>         for_each_group_device(group, gdev) {
+>                 driver_type = iommu_get_def_domain_type(group, gdev->dev,
+> @@ -3016,18 +3017,9 @@ static int iommu_setup_default_domain(struct iommu_group *group,
+>         if (req_type < 0)
+>                 return -EINVAL;
+>
+> -       /*
+> -        * There are still some drivers which don't support default domains, so
+> -        * we ignore the failure and leave group->default_domain NULL.
+> -        */
+>         dom = iommu_group_alloc_default_domain(group, req_type);
+> -       if (!dom) {
+> -               /* Once in default_domain mode we never leave */
+> -               if (group->default_domain)
+> -                       return -ENODEV;
+> -               group->default_domain = NULL;
+> -               return 0;
+> -       }
+> +       if (!dom)
+> +               return -ENODEV;
+>
+>         if (group->default_domain == dom)
+>                 return 0;
+> --
+> 2.42.0
+>
+
+
+-- 
+With best wishes
+Dmitry
