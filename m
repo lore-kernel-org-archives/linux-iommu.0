@@ -1,7 +1,7 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 692DD156C4
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 096CE156FD
 	for <iommu@lists.linux.dev>; Mon,  2 Oct 2023 11:57:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
 	s=mimecast20190719; t=1696247864;
@@ -9,23 +9,23 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
 	 to:to:cc:cc:mime-version:mime-version:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=KOVqc9nE1wzSloZSIZglCt8Fd/e7Bb/HSk7V8DxF+zY=;
-	b=bOEW6JfZdei/LKAX3IS/1pee7cau2gevW2m5NZe/s1c2d/G/YD4HxHyC2Ro/xE0RoXoONg
-	KE7evp+KcnRlE1pyN3m0/sKE8HQDE6KCT9jvuuXuLVU4pc1b3AmiSbjahGgaZISyAQ5z17
-	1BNiE1ykqG8A+ZFIyVSvyAkyjwgkNUY=
+	bh=ar0urwZ0bmfOZ0eV2FeowpE2tYaVs6PwEG08j6g7CC4=;
+	b=IAqksnEuqhCCDzicSBL85eTmKGy0t4OyavIrtCE+LpYgUtBJag4hkrQkw7HhyjayBR3Oi5
+	ZR2wEycPJSLqOCWejj5vDzv4Qoyo8qhs6F46E7agZcc4xv2wNYFlhV1GyakgRv2DjuhifQ
+	e0k//HXnpuNKcrE+XP7j/hospQPfJu8=
 Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
  [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-217-AAsvoonTPgymJCVqpBS66A-1; Mon, 02 Oct 2023 07:57:33 -0400
-X-MC-Unique: AAsvoonTPgymJCVqpBS66A-1
+ us-mta-652-eA8zi65nNnCoX1cK0Oq2uA-1; Mon, 02 Oct 2023 07:57:40 -0400
+X-MC-Unique: eA8zi65nNnCoX1cK0Oq2uA-1
 Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 5225F101B042;
-	Mon,  2 Oct 2023 11:57:32 +0000 (UTC)
+	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id F3B4285A5BA;
+	Mon,  2 Oct 2023 11:57:39 +0000 (UTC)
 Received: from localhost.localdomain (unknown [10.45.224.55])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id 12BAE140E953;
-	Mon,  2 Oct 2023 11:57:28 +0000 (UTC)
+	by smtp.corp.redhat.com (Postfix) with ESMTP id 4471C140E950;
+	Mon,  2 Oct 2023 11:57:36 +0000 (UTC)
 From: Maxim Levitsky <mlevitsk@redhat.com>
 To: kvm@vger.kernel.org
 Cc: Will Deacon <will@kernel.org>,
@@ -43,9 +43,9 @@ Cc: Will Deacon <will@kernel.org>,
 	Robin Murphy <robin.murphy@arm.com>,
 	iommu@lists.linux.dev,
 	Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH v3 1/4] KVM: Add per vCPU flag specifying that a vCPU is loaded
-Date: Mon,  2 Oct 2023 14:57:20 +0300
-Message-Id: <20231002115723.175344-2-mlevitsk@redhat.com>
+Subject: [PATCH v3 3/4] x86: KVM: don't read physical ID table entry in avic_pi_update_irte()
+Date: Mon,  2 Oct 2023 14:57:22 +0300
+Message-Id: <20231002115723.175344-4-mlevitsk@redhat.com>
 In-Reply-To: <20231002115723.175344-1-mlevitsk@redhat.com>
 References: <20231002115723.175344-1-mlevitsk@redhat.com>
 Precedence: bulk
@@ -57,57 +57,45 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Scanned-By: MIMEDefang 3.1 on 10.11.54.7
 
-Add vcpu->loaded boolean flag specifying that a vCPU is loaded.
+Change AVIC's code to use vcpu->loaded and vcpu->cpu instead of reading
+back the cpu and 'is_running' bit from the avic's physical id entry.
 
-Such flag can be useful in a vendor code (e.g AVIC) to make
-decisions based on it.
+Once AVIC's IPI virtualization is made optional, the 'is_running'
+bit might always be false regardless if a vCPU is running or not.
 
 Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
 ---
- include/linux/kvm_host.h |  1 +
- virt/kvm/kvm_main.c      | 10 ++++++++++
- 2 files changed, 11 insertions(+)
+ arch/x86/kvm/svm/avic.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
-index fb6c6109fdcad69..331432d86e44d51 100644
---- a/include/linux/kvm_host.h
-+++ b/include/linux/kvm_host.h
-@@ -379,6 +379,7 @@ struct kvm_vcpu {
- #endif
- 	bool preempted;
- 	bool ready;
-+	bool loaded;
- 	struct kvm_vcpu_arch arch;
- 	struct kvm_vcpu_stat stat;
- 	char stats_id[KVM_STATS_NAME_SIZE];
-diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
-index 486800a7024b373..615f2a02b7cb97f 100644
---- a/virt/kvm/kvm_main.c
-+++ b/virt/kvm/kvm_main.c
-@@ -214,6 +214,10 @@ void vcpu_load(struct kvm_vcpu *vcpu)
- 	__this_cpu_write(kvm_running_vcpu, vcpu);
- 	preempt_notifier_register(&vcpu->preempt_notifier);
- 	kvm_arch_vcpu_load(vcpu, cpu);
-+
-+	/* Ensure that vcpu->cpu is visible before vcpu->loaded is set to true */
-+	smp_wmb();
-+	WRITE_ONCE(vcpu->loaded, true);
- 	put_cpu();
- }
- EXPORT_SYMBOL_GPL(vcpu_load);
-@@ -221,6 +225,12 @@ EXPORT_SYMBOL_GPL(vcpu_load);
- void vcpu_put(struct kvm_vcpu *vcpu)
- {
- 	preempt_disable();
-+	WRITE_ONCE(vcpu->loaded, false);
-+	/*
-+	 * Ensure that vcpu->loaded is set and visible,
-+	 * before KVM actually unloads the vCPU.
-+	 */
-+	smp_wmb();
- 	kvm_arch_vcpu_put(vcpu);
- 	preempt_notifier_unregister(&vcpu->preempt_notifier);
- 	__this_cpu_write(kvm_running_vcpu, NULL);
+diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
+index 4c75ca15999fcd4..bdab28005ad3405 100644
+--- a/arch/x86/kvm/svm/avic.c
++++ b/arch/x86/kvm/svm/avic.c
+@@ -791,7 +791,6 @@ static int svm_ir_list_add(struct vcpu_svm *svm, struct amd_iommu_pi_data *pi)
+ 	int ret = 0;
+ 	unsigned long flags;
+ 	struct amd_svm_iommu_ir *ir;
+-	u64 entry;
+ 
+ 	/**
+ 	 * In some cases, the existing irte is updated and re-set,
+@@ -832,10 +831,11 @@ static int svm_ir_list_add(struct vcpu_svm *svm, struct amd_iommu_pi_data *pi)
+ 	 * will update the pCPU info when the vCPU awkened and/or scheduled in.
+ 	 * See also avic_vcpu_load().
+ 	 */
+-	entry = READ_ONCE(*(svm->avic_physical_id_cache));
+-	if (entry & AVIC_PHYSICAL_ID_ENTRY_IS_RUNNING_MASK)
+-		amd_iommu_update_ga(entry & AVIC_PHYSICAL_ID_ENTRY_HOST_PHYSICAL_ID_MASK,
+-				    true, pi->ir_data);
++	if (READ_ONCE(svm->vcpu.loaded)) {
++		/* Ensure that the vcpu->loaded is read before the vcpu->cpu */
++		smp_rmb();
++		amd_iommu_update_ga(READ_ONCE(svm->vcpu.cpu), true, pi->ir_data);
++	}
+ 
+ 	list_add(&ir->node, &svm->ir_list);
+ 	spin_unlock_irqrestore(&svm->ir_list_lock, flags);
 -- 
 2.26.3
 
