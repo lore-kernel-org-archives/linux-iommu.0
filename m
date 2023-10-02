@@ -1,131 +1,83 @@
 Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7B788383
-	for <iommu@lists.linux.dev>; Mon,  2 Oct 2023 06:41:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E278117C3;
+	Mon,  2 Oct 2023 06:59:55 +0000 (UTC)
 Received: from 8bytes.org (pd9fe9df8.dip0.t-ipconnect.de [217.254.157.248])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id EA6E11A25DB;
-	Mon,  2 Oct 2023 08:41:10 +0200 (CEST)
+	by mail.8bytes.org (Postfix) with ESMTPSA id ECDA51A2626;
+	Mon,  2 Oct 2023 08:59:53 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1696228871;
-	bh=W4Tp5WnCJ54D2BoW9qbc/kq5SmRYARJLysU6XU7xl+s=;
-	h=Date:From:To:Cc:Subject:From;
-	b=ypTQIu+moWXyectBcNgrPPIu1c/q6jjyAtaAcmB2OQ27Ii91wMMq0dLagmlUlknqy
-	 NE1y3Axabb8KpaULYy7+RMhHvII9P0i5I7PYrR+abt2s3+9C9S9ke8G024R8TOmnvL
-	 rmk5DvEFLmr2KzUb6hSkGHrxpMLdta0voInaMdtBaAwEv5FrqZLdLdbHFbwqyVXUiz
-	 qF9r/QCMJ6QjYXUy/BmeoMHPAy4gijfqUkxbt6hCiFWrd18sH0UIoRLhg8i1JQjP5W
-	 LNt3jUXsYUz324ImUV9ZMjcsAT8v2Sl/nB89FiWOvd6jM6L/OAMFvIn+/uL7NgqO1w
-	 1kWZuFKxBHSGw==
-Date: Mon, 2 Oct 2023 08:41:09 +0200
+	s=default; t=1696229994;
+	bh=AIFVwF7V2yCwhyWe75DvT7fYSBhwm/fBmqB8nOMomrQ=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=qpnLCwzk2x1keRMkLPeYurvT7r9OO8YOJ6/7Vx/qRYBDxYBtaFczM0bl0X3CwM+Z8
+	 JjZ2S2KL1yCjIcyOYKVBFX3TnYJH3DgXndhq33RdOr06+/f4P6g8ed5YusHJpPxKBf
+	 /cC8uVfAa/rk6Wr3PPtDNHTnxEpzpMy8C+fcOb8G29mwxCh4jTTbUwvHTKVDKKREHN
+	 XKS42S0qW6PWzXZYxLGalC73IDOoglQpj2vweIfb/B9jDLMPy04LKeueQ7Vtaof2m0
+	 /U/pjbpVoAN9ULRqOfwjMT62szxrFLqy3anLaW4GIZc388p9f5N34fWI0GM1KG2Gfs
+	 vlKBpUHgqfWmA==
+Date: Mon, 2 Oct 2023 08:59:52 +0200
 From: Joerg Roedel <joro@8bytes.org>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev
-Subject: [git pull] IOMMU Fixes for Linux v6.6-rc4
-Message-ID: <ZRpmBaTbF3xPNJHz@8bytes.org>
+To: Niklas Schnelle <schnelle@linux.ibm.com>
+Cc: Matthew Rosato <mjrosato@linux.ibm.com>, Will Deacon <will@kernel.org>,
+	Wenjia Zhang <wenjia@linux.ibm.com>,
+	Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+	Gerd Bayer <gbayer@linux.ibm.com>,
+	Julian Ruess <julianr@linux.ibm.com>,
+	Pierre Morel <pmorel@linux.ibm.com>,
+	Alexandra Winter <wintera@linux.ibm.com>,
+	Heiko Carstens <hca@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	Sven Schnelle <svens@linux.ibm.com>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Hector Martin <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
+	Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Lu Baolu <baolu.lu@linux.intel.com>, Andy Gross <agross@kernel.org>,
+	Bjorn Andersson <andersson@kernel.org>,
+	Konrad Dybcio <konrad.dybcio@linaro.org>,
+	Yong Wu <yong.wu@mediatek.com>,
+	Matthias Brugger <matthias.bgg@gmail.com>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+	Orson Zhai <orsonzhai@gmail.com>,
+	Baolin Wang <baolin.wang@linux.alibaba.com>,
+	Chunyan Zhang <zhang.lyra@gmail.com>, Chen-Yu Tsai <wens@csie.org>,
+	Jernej Skrabec <jernej.skrabec@gmail.com>,
+	Samuel Holland <samuel@sholland.org>,
+	Thierry Reding <thierry.reding@gmail.com>,
+	Krishna Reddy <vdumpa@nvidia.com>,
+	Jonathan Hunter <jonathanh@nvidia.com>,
+	Jonathan Corbet <corbet@lwn.net>, linux-s390@vger.kernel.org,
+	netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev, asahi@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+	linux-mediatek@lists.infradead.org, linux-sunxi@lists.linux.dev,
+	linux-tegra@vger.kernel.org, linux-doc@vger.kernel.org
+Subject: Re: [PATCH v13 0/6] iommu/dma: s390 DMA API conversion and optimized
+ IOTLB flushing
+Message-ID: <ZRpqaJEQLRDp5b1L@8bytes.org>
+References: <20230928-dma_iommu-v13-0-9e5fc4dacc36@linux.ibm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="TGFrNeBVgX5uFluk"
-Content-Disposition: inline
-
-
---TGFrNeBVgX5uFluk
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20230928-dma_iommu-v13-0-9e5fc4dacc36@linux.ibm.com>
 
-Hi Linus,
+On Thu, Sep 28, 2023 at 04:31:34PM +0200, Niklas Schnelle wrote:
+> Niklas Schnelle (6):
+>       iommu: Allow .iotlb_sync_map to fail and handle s390's -ENOMEM return
+>       s390/pci: prepare is_passed_through() for dma-iommu
+>       s390/pci: Use dma-iommu layer
+>       iommu/s390: Disable deferred flush for ISM devices
+>       iommu/dma: Allow a single FQ in addition to per-CPU FQs
+>       iommu/dma: Use a large flush queue and timeout for shadow_on_flush
 
-The following changes since commit 6465e260f48790807eef06b583b38ca9789b6072:
-
-  Linux 6.6-rc3 (2023-09-24 14:31:13 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v6.6-rc4
-
-for you to fetch changes up to 59df44bfb0ca4c3ee1f1c3c5d0ee8e314844799e:
-
-  iommu/vt-d: Avoid memory allocation in iommu_suspend() (2023-09-25 16:10:36 +0200)
-
-----------------------------------------------------------------
-IOMMU Fixes for Linux v6.6-rc4
-
-Including:
-
-	- Arm SMMU fixes from Will Deacon:
-	  - Fix TLB range command encoding when TTL, Num and Scale are all zero
-	  - Fix soft lockup by limiting TLB invalidation ops issued by SVA
-	  - Fix clocks description for SDM630 platform in arm-smmu DT binding
-
-	- Intel VT-d fix from Lu Baolu:
-	  - Fix a suspend/hibernation problem in iommu_suspend()
-
-	- Mediatek driver: Fix page table sharing for addresses over 4GiB
-
-	- Apple/Dart: DMA_FQ handling fix in attach_dev()
-
-----------------------------------------------------------------
-Hector Martin (1):
-      iommu/apple-dart: Handle DMA_FQ domains in attach_dev()
-
-Joerg Roedel (1):
-      Merge tag 'arm-smmu-fixes' of git://git.kernel.org/pub/scm/linux/kernel/git/will/linux into iommu/fixes
-
-Konrad Dybcio (1):
-      dt-bindings: arm-smmu: Fix SDM630 clocks description
-
-Nicolin Chen (1):
-      iommu/arm-smmu-v3: Fix soft lockup triggered by arm_smmu_mm_invalidate_range
-
-Robin Murphy (1):
-      iommu/arm-smmu-v3: Avoid constructing invalid range commands
-
-Yong Wu (1):
-      iommu/mediatek: Fix share pgtable for iova over 4GB
-
-Zhang Rui (1):
-      iommu/vt-d: Avoid memory allocation in iommu_suspend()
-
- Documentation/devicetree/bindings/iommu/arm,smmu.yaml |  2 +-
- drivers/iommu/apple-dart.c                            |  3 +--
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c       | 18 ++++++++++++++++--
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c           | 15 ++++++++++-----
- drivers/iommu/intel/iommu.c                           | 16 ----------------
- drivers/iommu/intel/iommu.h                           |  2 +-
- drivers/iommu/mtk_iommu.c                             |  9 ++++-----
- 7 files changed, 33 insertions(+), 32 deletions(-)
-
-Please pull.
-
-Thanks,
-
-	Joerg
-
---TGFrNeBVgX5uFluk
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEEr9jSbILcajRFYWYyK/BELZcBGuMFAmUaZgUACgkQK/BELZcB
-GuM9yRAAkqY5NPFkF3VVS0ZN2EfXa35LE+ngwJa43Y/HQDEE6NriOyNTlQHLHdlp
-ia7b8qrqVO0vFhQ6XXX1LVqrBA9kep9Nf3G40Gt068Uo6KUiYaSrw7exPszDsSQz
-L0A7WDS5MAHr/5JgzpI5Lmd/shpPxoRo9YMiP7ehKfQY8/WVtfOt5jIU1A30nsf+
-oSegb64EroHrc7aKTXTJwBTQn7pqLusdj0B4DeQB6ohEmx08S6JLHvHuDvhMUJ+0
-nbefpUNLZgPORtXQPiw6CZ5M2vZVKpNBWIEhqAofcUwEYpgizxmt07C4mih22daB
-m+kWwvVDLFKAqvZIbVYQaHVbCmBWvYC8w7DMgmtKAV1QQLpxBibMC/VXGz1Gy5Uh
-F/hTh2d1KCtVGJDpE/uK24O7RaIRyVwlACRbU8jGOamuWYCyiRP39RbioqnBjF5I
-4AJFeop21xBYcoTtQrKdw2+axZOn1OwQlcdEeMoo/5WLfeelCef0EgsmW5jwNcTc
-LrH1FWNiFaEd07pD865DmgDJF/+epZRRGPBq+slIO8lLM69jg47PHsgCFa/eckhI
-q1H8IxUFpe5KoVata0srQc8OC8QjQmULYts4yeiNJB0T7H1JrvNpWiNEiCycRhCk
-uHuTL/T7CBiky4QAgR+DUXaBpa2qivHMTGZQ3tHw2B+mlngI5WY=
-=Gnk2
------END PGP SIGNATURE-----
-
---TGFrNeBVgX5uFluk--
+Applied, thanks Niklas.
