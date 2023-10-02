@@ -1,53 +1,49 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39BBC182DE
-	for <iommu@lists.linux.dev>; Sat, 30 Sep 2023 18:12:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id A83B4C433C9;
-	Sat, 30 Sep 2023 18:12:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1696097534;
-	bh=rODG9meJvQQKVZQq3SEU3TKXsowFJwEyJ6gP61XYwFs=;
-	h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-	b=cheQi4FWKv6Gvd7ZNLn7/ad7lyo/FJ2C6BX9mgw/gf4CosD7aKbRGtPKqliWBvHNk
-	 QGJTSgB/zDdIxeaSAmmiMGZaJKzuQFQ797U64TYDjx5ev1YAcg4mM8zqXpyrbt9tyN
-	 GLjfUd3NvWTYYHYwUx3TkDEf0NGg6C2oNJRQmb4D7/MUy8kjZadogwP2U1thAOAdOY
-	 1tbvHHYW6W560kRpFVvU3OhIgUD+PtK/OzRXloU4YnN4ihI4QyZPt6zui409qAhruX
-	 pPhWB6jDjL5dkCwJrbYsrvbWJ0XoGWJ+IrYUP1c8N1BQac7oswIPFaBJ3rgmwPxO2q
-	 mTcHoveuSPRNQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 94837C395E0;
-	Sat, 30 Sep 2023 18:12:14 +0000 (UTC)
-Subject: Re: [GIT PULL] dma-mapping fixes for Linux 6.6
-From: pr-tracker-bot@kernel.org
-In-Reply-To: <ZRhZrvxhAf78PgAt@infradead.org>
-References: <ZRhZrvxhAf78PgAt@infradead.org>
-X-PR-Tracked-List-Id: <iommu.lists.linux.dev>
-X-PR-Tracked-Message-Id: <ZRhZrvxhAf78PgAt@infradead.org>
-X-PR-Tracked-Remote: git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-6.6-2023-09-30
-X-PR-Tracked-Commit-Id: 2d5780bbef8dbe6375d481cbea212606a80e4453
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 3b517966c5616ac011081153482a5ba0e91b17ff
-Message-Id: <169609753459.20440.4990827339784432932.pr-tracker-bot@kernel.org>
-Date: Sat, 30 Sep 2023 18:12:14 +0000
-To: Christoph Hellwig <hch@infradead.org>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, linux-kernel@vger.kernel.org, iommu@lists.linux.dev
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 50C6520F5
+	for <iommu@lists.linux.dev>; Mon,  2 Oct 2023 06:30:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+	:References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=XKqktRgZJ9kzBiEPkUUVphTY5hbUfnFM86CuOM3EvbY=; b=bGmIi2RbBBQ68IW4awuPgghjA0
+	bg8A7VVnJrSg+QryNVBhMjSFHVLEDLilkMlWK/XOxYwpItZgilPWVvlc8/A5gwXDcGGLRuGZaZW8v
+	vNqCWakUQfMlVR6v0vtK/VZ1Lt7drz38jnH3hRShMwLP3Eaz9P8HL53bvtZGz5MOvpbdmo2nfvapB
+	HQrxlpJ7N+Nqxj3JdDVoFKPLPQXghoy4nPUXAxwW9FtGK63+NcsdxgxJvrLGV73NoQCG4JtrgAsp5
+	1/xAqbbDF7wmI/iUVdzrEmNZSwYSqAH7AsrWtw0Pt0lNRZimVP3E4mJokzPrqtcvXgZelfiESPQsw
+	JY7D3eQw==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.96 #2 (Red Hat Linux))
+	id 1qnCRY-00C1mG-0L;
+	Mon, 02 Oct 2023 06:30:12 +0000
+Date: Sun, 1 Oct 2023 23:30:12 -0700
+From: Christoph Hellwig <hch@infradead.org>
+To: Kelly Devilliv <kelly.devilliv@outlook.com>
+Cc: Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	"joro@8bytes.org" <joro@8bytes.org>,
+	"will@kernel.org" <will@kernel.org>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: dma_map_resource() has a bad performance in pcie peer to peer
+ transactions when iommu enabled in Linux
+Message-ID: <ZRpjdPC4eSCA/jOk@infradead.org>
+References: <TY2PR0101MB3136A7480B842E009BCBDA8384C3A@TY2PR0101MB3136.apcprd01.prod.exchangelabs.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <TY2PR0101MB3136A7480B842E009BCBDA8384C3A@TY2PR0101MB3136.apcprd01.prod.exchangelabs.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 
-The pull request you sent on Sat, 30 Sep 2023 19:23:58 +0200:
+FYI, dma_map_resources must never be used for PCIe P2P mappings, you
+absolutely must use dma_map_sg as only that handles all the corner cases
+correctly.
 
-> git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-6.6-2023-09-30
+And we need to figure out a way to put a check into dma_map_resources
+so that people stop abusing it.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/3b517966c5616ac011081153482a5ba0e91b17ff
-
-Thank you!
-
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
