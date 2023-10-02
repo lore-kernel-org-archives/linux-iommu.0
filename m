@@ -1,73 +1,178 @@
-Received: from mail-yb1-f202.google.com (mail-yb1-f202.google.com [209.85.219.202])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2078.outbound.protection.outlook.com [40.107.237.78])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 054451F19E
-	for <iommu@lists.linux.dev>; Mon,  2 Oct 2023 19:21:28 +0000 (UTC)
-Received: by mail-yb1-f202.google.com with SMTP id 3f1490d57ef6-d814634fe4bso125397276.1
-        for <iommu@lists.linux.dev>; Mon, 02 Oct 2023 12:21:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1696274488; x=1696879288; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=t6T5u8n63H32m/YuZ6al8a5T5YBKCODxao+/slOadeI=;
-        b=WTUE+yT8o6EskfEBsxHMhiylkRJMnFVGmDXCOoNZ2zJasvlc09H9vQORSS4jxUCehZ
-         bnyvlO1gCSqakBiI9e+bd1ZMQZCnJ/xMFwKyrUuuOKIcKLi8XRT700BZZ0g81ksrJGpx
-         TB6Xzt2z5iBbDo9jDE50JBMe0IRaamF4FH6xixejrlCFb3b4iaJvzEE3QmZgTyjRQykO
-         7Jor5cPvA81A3THAyOwJW/tobD/HVQyqtHcVIiNM4ajEL4LR0PIQ1Byi2rk2l9dyGtdN
-         KWLY37k9b5k4QJWtDLOq1YuJbhPpN36YG6bfsGj0Cc5Tt7+HEDetek93w9RZvyf8ho7c
-         W0lw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1696274488; x=1696879288;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=t6T5u8n63H32m/YuZ6al8a5T5YBKCODxao+/slOadeI=;
-        b=LW4p2tI4L9xKEMLDnYrhuKs1MS9OJAmZOLWTNnIrFCBs7Vd+2nPYxsM4ZOYjZrhuWX
-         xtFrSO+n34DXKWzbFRTxo3pU9LeW/F9YfwKF5zi0FrRLhy/1XdIfivgSq02Ppuj8UpTg
-         jsONd45oSRELdvVFbfQD+wRlmNw8jvCYRfiIlCX6zSugTJb83dGCaIne5T9wNVascHhz
-         8uPrYTJMrNLW/eF1KP6Ii/U9v2wmVCIu1olr48nPDXpNCpR4OWmiqXPeTpCbSj6Hs3Dv
-         uKK5Dv8bYvtDvmRgrvvqnDIBuXDJrBuWpjV5ZPTtbaAxdh1yqBqVfE2/bZkXh9z72GQ4
-         Ze4A==
-X-Gm-Message-State: AOJu0YztBnZAM7pwtRY1UsEcEa4CTOAGphpFsjcUziwF1aOXgc7+O8Rs
-	xAdDXsVVNKZL0V/dl5is0OcYxqNPNTA=
-X-Google-Smtp-Source: AGHT+IHtmSpMO46KvblpohsWz6O2OSsiMptb0VeaGAhA3nbdHgcxj9vvtm/o9rpvvprle6yfo7JS3Vq54xM=
-X-Received: from zagreus.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5c37])
- (user=seanjc job=sendgmr) by 2002:a25:2d12:0:b0:d7e:8dee:7813 with SMTP id
- t18-20020a252d12000000b00d7e8dee7813mr200701ybt.8.1696274487816; Mon, 02 Oct
- 2023 12:21:27 -0700 (PDT)
-Date: Mon, 2 Oct 2023 12:21:26 -0700
-In-Reply-To: <20231002115723.175344-1-mlevitsk@redhat.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A89A1F93D
+	for <iommu@lists.linux.dev>; Mon,  2 Oct 2023 19:36:16 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=fRqRF+br3S4nQE48hv/JO6p3EM+SHr09ojY5D1JosuWDAWKNJ1bHrLA1XnIVmQT/uVSddGVTLY1wPS0q4L4jVQfvyZu8HYfMlA/SqHnPLUUk3celEUd5xq+mMFlSTI6x5i2uESDMb/8dk8XEDFHbZ9D0H81hnwMXSXzfDcjtowzuxlN7IyUhOTEU3gwd8NzENroJUKhbVWxtoQzNZdwKn8H0gussyTeKJgC6qMz/esXM3YlUYjSJyjWG0484b9kUVBYycMBKhIxFJ+rEpWpH0Ybag3bp9mD/MYxnxHcyocGKZofmzQFdg/RSibJROxtRecSw/qLeDW4pLxK4URfx/w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=c4mr54O4TnA1H0/uR+xUO2Hs8GCumrOGRb4t2eO7qvg=;
+ b=hO4ipsTKBxyEWRf1cddwJv7XUFBuPMKyJP8nmisX5GnkExiXkz+bQBNaRQ+UorD8DPBMg5ajMxPLYEzwGU6v5PLsK8STrO4itjNl8WbFeBIRGeDRjPYQbp0J/O9jn2e5+vdPjFZfuZIZMMf5bHqtPTqlg+22o1nyLUuEBNYz59E7WBxnv8vHncX7Gm1tcu45tjGPhXCTyaoo9a6GgrcJCRCNjHGI9awtX+WS4yv+/LE9UvpZhxGivDJmt2lp4WQt6S1DMfS1eculfU072afSti2gmZrphUlCxVmk15NQC+8a9N7SO4J+/TuQS6eucVDWXfC1POq0FCXxy7ZS47ahTg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=c4mr54O4TnA1H0/uR+xUO2Hs8GCumrOGRb4t2eO7qvg=;
+ b=bADBT6D43sCzLrDlTHswoqcmoibIiHHv736csPqPwUejYNuOzGjSQbkj3SwWmR9r/wc9NyEZWGgbXaU7vakSpT8kmfAoILwWlHen+1S91rfvyS75921lPPYh3/XE5KW4AVMvpvV3P6l6dwRxynnzAwWYMbu0+sZyAVU10bRCG4zFoJ3pM6jlg1Z6p6EJoJtKg+Bov6qgwYMDk6yHjjuyF0yf0HXTtwzssvShI/B+ESmYfuYNMDjd/8U9+Pl7+Yn1XlSqnepJcMTBrC+SpH0Ddk/H57BeGPWRscF+IxfzAavXcUvf3wh3dcGqEwSYVjsuoLSAvC0FziNXYNrY+pKx6w==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by LV2PR12MB5845.namprd12.prod.outlook.com (2603:10b6:408:176::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6813.23; Mon, 2 Oct
+ 2023 19:36:14 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::3f66:c2b6:59eb:78c2]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::3f66:c2b6:59eb:78c2%6]) with mapi id 15.20.6838.030; Mon, 2 Oct 2023
+ 19:36:14 +0000
+Date: Mon, 2 Oct 2023 16:36:09 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: joro@8bytes.org, will@kernel.org, iommu@lists.linux.dev,
+	baolu.lu@linux.intel.com, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 4/7] iommu: Switch __iommu_domain_alloc() to device ops
+Message-ID: <20231002193609.GB650762@nvidia.com>
+References: <cover.1696253096.git.robin.murphy@arm.com>
+ <458dd0ed839541693a49da33239b33cf4c48b8ec.1696253096.git.robin.murphy@arm.com>
+ <20231002141615.GA650249@nvidia.com>
+ <a4078085-4061-2b52-daba-1cd642f0cf9d@arm.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a4078085-4061-2b52-daba-1cd642f0cf9d@arm.com>
+X-ClientProxiedBy: SJ2PR07CA0023.namprd07.prod.outlook.com
+ (2603:10b6:a03:505::9) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <20231002115723.175344-1-mlevitsk@redhat.com>
-Message-ID: <ZRsYNnYEEaY1gMo5@google.com>
-Subject: Re: [PATCH v3 0/4] Allow AVIC's IPI virtualization to be optional
-From: Sean Christopherson <seanjc@google.com>
-To: Maxim Levitsky <mlevitsk@redhat.com>
-Cc: kvm@vger.kernel.org, Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org, 
-	Borislav Petkov <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org, 
-	Ingo Molnar <mingo@redhat.com>, "H. Peter Anvin" <hpa@zytor.com>, Thomas Gleixner <tglx@linutronix.de>, 
-	Joerg Roedel <joro@8bytes.org>, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, 
-	Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev, 
-	Paolo Bonzini <pbonzini@redhat.com>
-Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|LV2PR12MB5845:EE_
+X-MS-Office365-Filtering-Correlation-Id: b1d7bf02-f2c9-4741-ef33-08dbc37ed6f0
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	7TrOEmKiv6JsUszInJv8zIyoqOhpvqIX+yDkToPc+j5hM6SMgAwtWzgr4SJQBtuFH7YylX/CXmSAQkro3Gd2SFZf793lW+C2QvfCU0z0Gri6BCAqO4tUbTAjfM5W+t5ak6K2ak1iXX0pK6pcHloSDmGyecpASaCnvKHIBPm2c6aaK9UIr668rNfisevIj3B6g0fjdu/g+EvfXxrMCqtklIm7AyheH2rdGzTUZRCs0x9rgMSHETLNsA7S/nmVi1HVQvjyL0vVmQ/VU3NXrusuvZfgfLWQgo6iJPyk/vV8kXJ5n/9uTDeMsBXkZXGy8YsRkQyrSlcbFJTvaxH5Pvwh3abgklAS+U2Dnx7/lNCAtjsnQfwHMH868kO3BaRwimQ59A+Jre6MyQep4ZKmGHJe30RAZoQuJiTnJiCmw67DGm7ApBR4TULRKTTVKrrtd7BXv0tcu0PVCTFw5/Jy2FxvCjcPAxFkHQkXAHmGPe70bEjM6C4nA1YCTHfZLo4frmwS38732XvJ02szO+O6GGPnw4K/zVYhbP43qSxgZ95KLN7u8i6HOWyCXg5LAHo5V/TR+/dp7d5DEgz7phKm/K5vfd4/A0tCGBJgUoi0B1/5Ma4cgQ4UMibzscnJtpM0Ej+f
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(346002)(366004)(376002)(396003)(39860400002)(136003)(230922051799003)(64100799003)(451199024)(1800799009)(186009)(38100700002)(41300700001)(4326008)(316002)(8936002)(478600001)(6916009)(33656002)(2616005)(26005)(2906002)(86362001)(8676002)(36756003)(5660300002)(1076003)(66946007)(53546011)(83380400001)(6506007)(6512007)(66476007)(66556008)(6486002)(6666004)(27376004);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?MqCvCscCkf35hOTEMg20AWbBwz48AoopM4aATq3dH+RtkQhtNj6Ak3y1VA/D?=
+ =?us-ascii?Q?heXGj063aXD5e7u3NyqpmTcLywHq4LNvzELIZnD0m1cDdVirkm9SrA18latd?=
+ =?us-ascii?Q?sXZZTK9ADQtm4vCCrVE4YvH85KJ18s8ycxDgY39mxdsf08ZVh49Sj58qTt7M?=
+ =?us-ascii?Q?39ElfVtOYq8nC8NbsuNetqpKw0O95QhpXFc8fHBTjMT5RkE6exX1mdE6ICwB?=
+ =?us-ascii?Q?wwDUYP3HLRbNORU4PR93aznfvMU4vE86JU8ta2AYjQ4cZMaX55fdz0Ih62tq?=
+ =?us-ascii?Q?u/qhr0EKKknzp7NiQZlpnEclaXHwMGj8FSwpfrZd92VjoJ8BwwPgEiZbXeRB?=
+ =?us-ascii?Q?PcXasEW2aPdp3hqBmtFP9p2sX8ifRzlAIZKjErUnEUxhS2JvJEZ4BealHi45?=
+ =?us-ascii?Q?gR6titAatoc7e0fWazodZ2dxQqp0SVwunBdkDSZgSVXTN40pxfEWBdstP9qN?=
+ =?us-ascii?Q?gE+6/T56qMg06EZAPaZQ2Wrr4kYpOPedBxTR2IH0J4Z4p4wNyOeOHOgL34Yy?=
+ =?us-ascii?Q?Q6w8DsRbT7AFusoFQ7U4jal6fG9ljKxln42cb/y/p/8jNPJlSOCh1wYVUo/f?=
+ =?us-ascii?Q?yezGAuOJhZQirO7ANMY6TgZ2Np2otnfywugPqTUCQ+X2UWDz0rZHz/TXzXA0?=
+ =?us-ascii?Q?h8FufPin1paWGM1vQrFLh3InmomUPt8Zx5DcifRyeR9czfrxjigC3624+/v3?=
+ =?us-ascii?Q?MNTzTFJWqT0+W28Qqoa8A2VR+OE/bGhnFf5c+CPfueweKN5ijb5b+PiswpAB?=
+ =?us-ascii?Q?35gR2q/FuhL4QAr9BD2kAgl4jUhwMnkN0CNhE2IsqRMgWhXEzfMgvJDjfSZf?=
+ =?us-ascii?Q?F28rzzag9XVxbnPP17Ta3DdIWrxnDOQc/VsRWNhYWid4GqfC1k/YtvTIYB9Q?=
+ =?us-ascii?Q?7vCKRAiYixYvX7DX151RIj1vA9Oy1pxraBGdqfzEu0v64MZwp5u5Z/PxouTe?=
+ =?us-ascii?Q?ksB9oGVZWmjCvRaWies87dSoNTAl8Kt26KfndpiyPYtfehIlzAD9XaxpUTN4?=
+ =?us-ascii?Q?LU/9rKQQGKifI7GVFUGuHYy0WFvZWIvwKpV57OdVsKIz1Rio8cEUTujOrKDr?=
+ =?us-ascii?Q?GDwDzSwSAFx1pyDpANg8d/MR01PyoRiALVTYk0kzhRks6omlSk4itlytfPip?=
+ =?us-ascii?Q?SQPemGbJYndSBk1b/C4Gb6GaXFVs1SqLmB5prpPk0TOZQoJ+UEnAtwrYhiIs?=
+ =?us-ascii?Q?Z4vXSAdOkoyhEVH9bPeP4SqhhOwIjZhZ1XKmoYmbXRxQyIrix2s8Cn54k8BR?=
+ =?us-ascii?Q?HXFMYd7JuPbxWbMNrnTXPD4YB3MKIgUwXtaALSk1jE5Ho1+5e6v5qCRe9VlP?=
+ =?us-ascii?Q?17AY0e7fpjEzGxUH9FCY2PsodotNLAsy4/Nw2yStVUofhm2lwJRms2UeBKEl?=
+ =?us-ascii?Q?OWRQ5s3diSVukAeEJkZ7CuoWqAxpGuUID1/Clvy1ZeL5Ni3NlN+AXNuhMdxy?=
+ =?us-ascii?Q?20HtHJcCs2UjQkslJXqdFZN2vSLyyZa5BBa4HM4UeZ4ovbjX8tOO5pZwq/M7?=
+ =?us-ascii?Q?/Lc5ZVOPPbxPfeo1MGQy3yZuCJID26nNhwGd9hWr/PoVpK8vvPu/HXcKRdSM?=
+ =?us-ascii?Q?GJZBYaqIejGG9SS6J0p46wKay6knqewe0vRX/8WV?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b1d7bf02-f2c9-4741-ef33-08dbc37ed6f0
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Oct 2023 19:36:14.4693
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: taDoxQbX5iooRjChItFpkH7kr9mWwk8LK06bv00cHe3U1MfrhiN+o61OOQsgAjim
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV2PR12MB5845
 
-On Mon, Oct 02, 2023, Maxim Levitsky wrote:
-> Hi!
+On Mon, Oct 02, 2023 at 08:02:23PM +0100, Robin Murphy wrote:
+> On 02/10/2023 3:16 pm, Jason Gunthorpe wrote:
+> > On Mon, Oct 02, 2023 at 02:49:12PM +0100, Robin Murphy wrote:
+> > > @@ -2120,20 +2120,30 @@ static struct iommu_domain *__iommu_domain_alloc(const struct iommu_ops *ops,
+> > >   	return domain;
+> > >   }
+> > > -static struct iommu_domain *
+> > > -__iommu_group_domain_alloc(struct iommu_group *group, unsigned int type)
+> > > +static int __iommu_domain_alloc_dev(struct device *dev, void *data)
+> > >   {
+> > 
+> > Why?
 > 
-> This patch allows AVIC's ICR emulation to be optional and thus allows
-> to workaround AVIC's errata #1235 by disabling this portion of the feature.
-> 
-> This is v3 of my patch series 'AVIC bugfixes and workarounds' including
-> review feedback.
+> Because out of 3 callsites, two were in a context which now needed to
+> make the iommu_group_first_dev() call itself anyway,
 
-Please respond to my idea[*] instead of sending more patches.  I'm not opposed to
-a different approach, but we need to have an actual discussion around the pros and
-cons, and hopefully come to an agreement.  This cover letter doesn't even acknowledge
-that there is an alternative proposal, let alone justify why the vcpu->loaded
-approach was taken.
+I don't see it. Why not just do this?
 
-[*] https://lore.kernel.org/all/ZRYxPNeq1rnp-M0f@google.com
+static int __iommu_domain_alloc_dev(struct device *dev, void *data)
+{
+	/* FIXME: This is not correctly locked */
+	struct iommu_group *group = iommu_group_get(dev);
+	struct group **alloc_group = data;
+
+	if (!group)
+		return 0;
+
+	mutex_lock(&group->mutex);
+	/* Theoretically we could have raced against release */
+	if (list_empty(&group->devices)) {
+		mutex_unlock(&group->mutex);
+		iommu_group_put(group);
+		return 0;
+	}
+
+	*alloc_group = group;
+	return 1;
+}
+
+struct iommu_domain *iommu_domain_alloc(const struct bus_type *bus)
+{
+	struct iommu_group *alloc_group;
+	struct iommu_domain *dom;
+
+	/* Only one driver is supported with this interface */
+	if (WARN_ON(iommu_num_drivers > 1))
+		return NULL;
+
+	bus_for_each_dev(bus, NULL, &alloc_group, __iommu_domain_alloc_dev);
+	if (!alloc_group)
+		return NULL;
+	dom = __iommu_group_domain_alloc(alloc_group, IOMMU_DOMAIN_UNMANAGED);
+	mutex_unlock(&alloc_group->mutex);
+	iommu_group_put(alloc_group);
+	return dom;
+}
+EXPORT_SYMBOL_GPL(iommu_domain_alloc);
+
+(and ++/-- iommu_num_drivers in iommu_device_register)
+
+One patch, it's pretty easy???
+
+> Um... Good? I mean in 3/4 cases it's literally the exact same code just
+> factored out again, while the one I've added picks some arbitrary device
+> in a different way.
+
+Sure, but the whole point was to make it obvious that there was no
+direct linkage from the various dev parameters we have in places and
+what dev will be passed by the driver. Everything passes through
+__iommu_group_domain_alloc() and at the end of the day that should be
+the only allocation API.
+
+Jason
