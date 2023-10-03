@@ -1,160 +1,140 @@
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2087.outbound.protection.outlook.com [40.107.243.87])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yw1-f171.google.com (mail-yw1-f171.google.com [209.85.128.171])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D5B6B7F4
-	for <iommu@lists.linux.dev>; Tue,  3 Oct 2023 03:18:09 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=c0Hshf+vj34dIa9W1oM1k7iVoSHV4uR2UPncCZtx68JnosQxiW+QtcCU4fBRCmASADugA7GQhiR6PniAQbl4oiK2fef6IKlhGrqKQln/ZAsf9INYeoL88r5laCy1RMoWfhcsVEfpY/17B40xxT0LzzDgkyuLLwxN2aulJTYJcRqFUlbRuUmNn67y23rlhHZQnpRxA6SF/He0mjKySnq0+ve5U+x7fnchiDqB36oBXXL8FMAR2CdFEGD3VmRKNOV88PJmGhKdjgEoGXo6XK5geQ/UQiHLo3380koweb2A5aVtTlwkFDqUiIDxt/gYMuWr4jRXmI1wkMg2F6RuMOALkw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=v7XChy435b5eAEiQ7fld7t3GS8EFlHEWUkhTnEg0nNk=;
- b=K+tzxkcxOlUcP+/tAY2PqKQ8PK6vgrI6wTkrfdjfMa69b5rL5BvxNtR0WeKaEzCTox8NEPvadYQgogwV2dtAd3Nw/MywEzahgHOwXE6U3z3AGcTWtlVXdO141N7MUGPdRhsASwaqaIJuNkKjNNSACcSQmdXG5VOU+TtWCPiw/oVpmSXZFuSL4rkNJXIpPuZ8M07ynnMWoP1dsXnA3dZ9pXmXDN0lODJw3VjpUqPMxiLceVu5ewRgiqDbHzR6VgqhEbyLeF9rSGD2KvySB8nm2tigpSKz7ZZ/XEQab8MPMlEnb1Z8MjXI+Y26rgQFmrhZTS/afbNCVb9Xh3p2THD8Mw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=v7XChy435b5eAEiQ7fld7t3GS8EFlHEWUkhTnEg0nNk=;
- b=C1R2mjbzx0NZ3uM7ThmW0Y6/zHoKYxIL1lwgVKDeXZoPLmtPOHCmA+iPiqOaZlw6VVfc70HuaHUAsPN509SE3bqSWJB1Kmm6o138ZP2Tj25KvZlHTBN/jSMaaUsnlNNo3eLxbPke/NCzoeN7Gt5a3WiPsrfW9Jfv8za+XheR80w=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DM8PR12MB5445.namprd12.prod.outlook.com (2603:10b6:8:24::7) by
- IA1PR12MB6115.namprd12.prod.outlook.com (2603:10b6:208:3e9::9) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6813.21; Tue, 3 Oct 2023 03:18:05 +0000
-Received: from DM8PR12MB5445.namprd12.prod.outlook.com
- ([fe80::90d5:d841:f95d:d414]) by DM8PR12MB5445.namprd12.prod.outlook.com
- ([fe80::90d5:d841:f95d:d414%5]) with mapi id 15.20.6813.017; Tue, 3 Oct 2023
- 03:18:05 +0000
-Message-ID: <23912b0c-832a-fb68-adb9-f82779659d22@amd.com>
-Date: Tue, 3 Oct 2023 10:17:53 +0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.1
-Subject: Re: [PATCH v2 1/4] x86: KVM: SVM: always update the x2avic msr
- interception
-Content-Language: en-US
-To: Sean Christopherson <seanjc@google.com>,
- Maxim Levitsky <mlevitsk@redhat.com>
-Cc: kvm@vger.kernel.org, iommu@lists.linux.dev, "H. Peter Anvin"
- <hpa@zytor.com>, Paolo Bonzini <pbonzini@redhat.com>,
- Thomas Gleixner <tglx@linutronix.de>, Borislav Petkov <bp@alien8.de>,
- Joerg Roedel <joro@8bytes.org>, x86@kernel.org,
- linux-kernel@vger.kernel.org, Dave Hansen <dave.hansen@linux.intel.com>,
- Will Deacon <will@kernel.org>, Ingo Molnar <mingo@redhat.com>,
- Robin Murphy <robin.murphy@arm.com>, stable@vger.kernel.org
-References: <20230928173354.217464-1-mlevitsk@redhat.com>
- <20230928173354.217464-2-mlevitsk@redhat.com> <ZRYZMr4fuaywW7fP@google.com>
-From: "Suthikulpanit, Suravee" <suravee.suthikulpanit@amd.com>
-In-Reply-To: <ZRYZMr4fuaywW7fP@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SG2PR06CA0239.apcprd06.prod.outlook.com
- (2603:1096:4:ac::23) To DM8PR12MB5445.namprd12.prod.outlook.com
- (2603:10b6:8:24::7)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0CE0463B3
+	for <iommu@lists.linux.dev>; Tue,  3 Oct 2023 08:34:21 +0000 (UTC)
+Received: by mail-yw1-f171.google.com with SMTP id 00721157ae682-5a229ac185aso8076407b3.1
+        for <iommu@lists.linux.dev>; Tue, 03 Oct 2023 01:34:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1696322061; x=1696926861; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=bitTTBesOlX5jNs0WrntjlIVBf0r6k8vUqdJl07s2a4=;
+        b=HBfhD2hZxRrfu0LBgm1qnZyzNBS1mLwMImwRhRnIljQs8fBfCCtghgjPKlMl+j8e2H
+         wMTd4bQa+M3+DcCNjYrNA8oQJeKsJsWrFkspxxjGimgX9CJOM2Mu/RIJmeYyBJzw6xjM
+         RBTje4gcke0p5BB3woKQQEgyAzNDOdWFzk9dvUmIWTO+51SWnqaPwqfv5jmyLHkV+UPS
+         +gQFGORhVrSaruWZiR/ZgHJEtqLNLh8Mq0myWfphEmgDF3Pdd20+Y120qozv6hKMs4sf
+         9ebh0jPngyfCZ39jlrylqb1ct+YgieIlvtNENJ9EYkKMwc4W7/zktG+MQplJGGsysxgV
+         Vspw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1696322061; x=1696926861;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=bitTTBesOlX5jNs0WrntjlIVBf0r6k8vUqdJl07s2a4=;
+        b=FszOkVpYPUYlNnok/zwspr7ZrYQiLgQ0mm3mKKXhZJ6gxZN9hMMAT5OyFTr0EOIh5I
+         e6/1oO3+jDONhoicxIcJyDnCmI1HUlwaEJWeBvXa2VG5il7l/OsNs8G2KrJiW6Rm1dEa
+         VBupT0x9fJAtk+qvjK79cR7LGUWNgaw3X1j5l0jU20gJnmx98suCxxz+A4ymnEfDi6ag
+         nN+2JytSr77Jnn9LMJm3i1/V1GxcVnzASZbOUFvwCZEf+ipRQiwMQWi9sftqtQkkIw5Y
+         gCFo37irbOyCiXJS9H1Xb7zs0t7N9coWxyS/x0egDmaQwrwgmmLt6pjwH8LgBFSP6+hF
+         3lTQ==
+X-Gm-Message-State: AOJu0YzEsTy3+LsE5uOTyceFnEX8RQngjjvxSxo+LrhdG1Yp+BBadJrX
+	D5fVE4ryClbEsQ5N8ZI3qYcQ74UHHVqjaZ3U6Eq32g==
+X-Google-Smtp-Source: AGHT+IFDzIQLW0laXGE7JKd6lbdhFAMnDeThlxxmtoO8UChMspJgCI8sx/aRikQspuJgbcSRJHW6nrx+DUBW3F7ngjs=
+X-Received: by 2002:a0d:f685:0:b0:59e:8f6d:92e with SMTP id
+ g127-20020a0df685000000b0059e8f6d092emr14665847ywf.49.1696322060718; Tue, 03
+ Oct 2023 01:34:20 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM8PR12MB5445:EE_|IA1PR12MB6115:EE_
-X-MS-Office365-Filtering-Correlation-Id: b6f9c93d-09b5-4980-8672-08dbc3bf5bf9
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	niMCApqidC318Zip1poGP5FXpud6ESfQRIYSj9nQSEyjzmrRAKjGz4fmfkqSdC66bMIn9SbN4Pu9zQEzTfpK7tb3BruQ2MhKLM03PC8xq62nGvQLlQoYbCEbukvFOxOL5TjiadojaL5HKl5iujffa4/S63d4G30mo1dzQKv03W8hWHsOUL3Cbwa++04IbVd5zIY2DfH2BOPeA6/Ukg1EXZcbKmlPAKd5G8y6Cm9HAd62DTPiBZCma+Gq/mxnp97OWGShkIMydEPkh6hlvNJWe6AsLT8ZtKJ0EfaCuOtV81CByDnH8Rj9omw5tbBmZAarU1IVvYkxkbytIIvPv6QLAOYq+ruhtGSXUjGqml2X1egkxqUP5byNTE2QgPSxXDAO6mZoRiEDR2n1Rzxqed8fl95aJNkS4csdgb43xsPKQ7mm03Zj+lrphTQtxosLaVr5+LtPn8DWfOG+igLUbev0LIxkqEwGSuchPA9tlmznfktOA577O9D4sKWjuTF2eB1ymq7IuZzfVToRP10Vki+tbW05/yXiF1Pr6HgKWX9N2NRQsb8xuTRXpwArWHd7X03edxq4R4hlZUHS8MKmMJROBMaki0XEat19ERZiHLMOxUCfGGFvn5zAIhhbCxSflZmvdJbsHLz93CAb87wYnrFjGw==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM8PR12MB5445.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(396003)(376002)(366004)(136003)(39860400002)(346002)(230922051799003)(64100799003)(451199024)(1800799009)(186009)(478600001)(66556008)(38100700002)(6486002)(53546011)(6506007)(316002)(41300700001)(6666004)(66476007)(110136005)(26005)(2616005)(66946007)(8936002)(8676002)(5660300002)(4326008)(2906002)(54906003)(7416002)(31696002)(83380400001)(31686004)(86362001)(36756003)(6512007)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?R2k3bFYyeVFkQm9oaHJ2VjNjR3dmQjZVcDVNbmF0L2c0WjBBR0phRDMyWTZZ?=
- =?utf-8?B?R2h4L1VjL2hRNXROeE5ISC8wSHlvZXp6OENiUWdrNXNpckpKUUtDeGdJS2Zm?=
- =?utf-8?B?QTZ3NHJtbmo0VmxwVXNseG1Vd09WMk05WmVISGZ1Nm1CVGc0NkcrTWFKK25H?=
- =?utf-8?B?cXFPRVhiK3Jrd3BZU3hKUHRqdEZjckszeUNiSXltUG8yZDhoaWRxSEhUQXdi?=
- =?utf-8?B?cjQrcDhZUXFrMlZiQ3NjY1dHN0JQL3RjUnFWby83YWZZTVp3REU5WFRJUzdU?=
- =?utf-8?B?SW1tN1lsK1orekNxNGFXNkpkaGRUVG9hSGxrK2VIR1ZySlFSTEsrRiswL21G?=
- =?utf-8?B?RWxLQ2N4b25PVU9uZ3dLaEtXYXhqd21Sb1lEOUYzK2dNQzNnQ2JVWlpmVTNO?=
- =?utf-8?B?QnYxbXkvOGZoYmZzRVVXa3Z5aTliRWx3U1FVSFdxQ0ZKQUJrcWY4WGRRZmFD?=
- =?utf-8?B?NkpwS1pMOVdvbmUxQXdCS2oxcDhXZjI1QlZmUHAxaFJEK3hDaWppdVRZRFhK?=
- =?utf-8?B?WE51d2lmOWVLWFdoRDNzanU5WlQxV1FOOHNvWWFiMUVuUWphRXhqZjA3Wkxp?=
- =?utf-8?B?RjZRaFhncFdkMko2WklPQ09FZC9pdDFlcElNY2JteXUvTXBTUnVCTFkwOW05?=
- =?utf-8?B?ZGpncUxGcHJ2SithczNLWVpobUtHNEc5SzR3Q0FyL2tuSm9HejVwaktxcHNL?=
- =?utf-8?B?U01Sb0dtZ01kM2UreS96T2J6NmU1bVZhem5LYW1CcWh3UTdlbE4weEZkOHkw?=
- =?utf-8?B?Y3h0aklYOEpxcjFtTG9RRCswUnN3VzE3SEZYalhXamtUUHhKOWh4RjFSN1lJ?=
- =?utf-8?B?ampWeUNOQXVjek0waDdaTkN3eERYc1R3c3B4OElmMEdEcXlLK0hIeEtRWDNX?=
- =?utf-8?B?dFh1MzhGaE5YZTR1MlhpWnl3VFpzbEtCRDV3bUVnUVhENk1Pa0R4aHBwVlR0?=
- =?utf-8?B?R1E2T1p2UEZPVVdlZ1hLQmd4c2ZaOEhHeThSUVd4MW43TXBxTW1ISk15ZGlE?=
- =?utf-8?B?T3RndDFPV0pJZ3FNTC9TSlBsOVAzb0pXRE9ReFJuY3dLbFllNHVGeWZqT09G?=
- =?utf-8?B?ZG9lVTgwdEQrTHpBZnZRR3c2VGNEWmhLWUcxVWluOHE4OGVWWHJlL2I1RzIz?=
- =?utf-8?B?T1gwUExmV2ZIUzUwRHZpZFFrMEU1b082NEUwQU5nRENNMnJCSHBYcElrN1JI?=
- =?utf-8?B?eG5ubmdhbjBkRWFuV3hrOWpkZG53L3NFcktNYjE4bEVwQ3hZbUhvV2prMkJC?=
- =?utf-8?B?amg0WUpqQXRsdVVDOTQ4bGRseUg0TVI5aysxRUQrWHlrUFZneFdhMTRYNGhH?=
- =?utf-8?B?NE9POXEvT0tvV1FidHp1OEpEcXJIZi8zdS96cjUwNlVGVHBMcHZjWllmakN5?=
- =?utf-8?B?a2sxMVRrRnBnL0Y2QXZPS2w2WXBHNGJqMEtHbHpMQ0l2N3hyVGk5dm9LUGdK?=
- =?utf-8?B?bXVXdEdwRmVyREhYYm00aWh0aEVWT243blZjOVBLem9IWnVYZkhHaktmOEw2?=
- =?utf-8?B?T1ZDMmlXK09sQ1pjenVkK3hGUzVuUWxYTFFFaHN6WXZ3ZDZOcVc5bkgyM1Uv?=
- =?utf-8?B?NTZucnc3N2VmNldFOC9uNzZCUXpVa29mVk9LTDdXYytMSDNhL1VIV21OVElo?=
- =?utf-8?B?RWdhM3NJNXZoVDUwMEZRSHFCOHl6S09qRVBoMTVvb3dTUjIzOGhFeTZRdWZJ?=
- =?utf-8?B?Y29aTlBQbzRjeVp6cmpjWENWZllIMENXc2dFc2oycDl3c0RCcEcvUnQ1UUdt?=
- =?utf-8?B?ZmkvRkswekQ4eUJoclZIbUJsa3d0bWR5WVcwZGJkSmZITFloQkhOOG5Ibysy?=
- =?utf-8?B?MEM1aTFhRHBuUlIvOXVaZm1Ub0pOVnduMkpoVkxDRG5NbEhJT1YyM0J1M0Jo?=
- =?utf-8?B?RlhFbWdsNDQ4cHoyOTV0cDl2T2t1bGJEbituMHdhQ0IxeWxnRzh1em1UQ0t6?=
- =?utf-8?B?ejZCVTY5dG9vWVhRRDN1dC9Qd3VidXM0L2tHbEZCUVQxU1k5c3ZMdW9EUkps?=
- =?utf-8?B?OVBlazM2VGtNdEtrZVNsQTE0ZXIvWE1od1BDMWpsRERMa28vWWJ4ZmRLZU1K?=
- =?utf-8?B?Z1k5Um4rdC9mVXYzbWVsVXRVY1Q2dmFrSFAvWVAwekxjeHJjQnk4eCtoOUxY?=
- =?utf-8?Q?pEmcQBrhb9bnRjK7uEGYoitAj?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b6f9c93d-09b5-4980-8672-08dbc3bf5bf9
-X-MS-Exchange-CrossTenant-AuthSource: DM8PR12MB5445.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Oct 2023 03:18:05.6138
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: TS94Hk1ZFw4bNqBbgg9xO1M1S5o77r/Gu7Hzc34xrBbP99D5L5p6KjcTXxIN106F3NbLjLnc8j+NoEDZAs+7CQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB6115
+References: <0-v8-81230027b2fa+9d-iommu_all_defdom_jgg@nvidia.com>
+ <20-v8-81230027b2fa+9d-iommu_all_defdom_jgg@nvidia.com> <CAA8EJprz7VVmBG68U9zLuqPd0UdSRHYoLDJSP6tCj6H6qanuTQ@mail.gmail.com>
+ <20231002230000.GA682044@nvidia.com>
+In-Reply-To: <20231002230000.GA682044@nvidia.com>
+From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Date: Tue, 3 Oct 2023 11:34:08 +0300
+Message-ID: <CAA8EJpr-CpgTVipd_t1uj7iHHq6__pj3mrm4Mn-pdZwhpS8aDA@mail.gmail.com>
+Subject: Re: [PATCH v8 20/24] iommu: Require a default_domain for all iommu drivers
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Rob Clark <robdclark@gmail.com>, Andy Gross <agross@kernel.org>, 
+	Alim Akhtar <alim.akhtar@samsung.com>, Bjorn Andersson <andersson@kernel.org>, 
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, 
+	Baolin Wang <baolin.wang@linux.alibaba.com>, 
+	Christophe Leroy <christophe.leroy@csgroup.eu>, 
+	Gerald Schaefer <gerald.schaefer@linux.ibm.com>, Heiko Stuebner <heiko@sntech.de>, iommu@lists.linux.dev, 
+	Jernej Skrabec <jernej.skrabec@gmail.com>, Jonathan Hunter <jonathanh@nvidia.com>, 
+	Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>, 
+	Konrad Dybcio <konrad.dybcio@linaro.org>, 
+	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, linux-arm-kernel@lists.infradead.org, 
+	linux-arm-msm@vger.kernel.org, linux-mediatek@lists.infradead.org, 
+	linux-rockchip@lists.infradead.org, linux-s390@vger.kernel.org, 
+	linux-samsung-soc@vger.kernel.org, linux-sunxi@lists.linux.dev, 
+	linux-tegra@vger.kernel.org, Russell King <linux@armlinux.org.uk>, 
+	linuxppc-dev@lists.ozlabs.org, Matthias Brugger <matthias.bgg@gmail.com>, 
+	Matthew Rosato <mjrosato@linux.ibm.com>, Michael Ellerman <mpe@ellerman.id.au>, 
+	Nicholas Piggin <npiggin@gmail.com>, Orson Zhai <orsonzhai@gmail.com>, 
+	Robin Murphy <robin.murphy@arm.com>, Samuel Holland <samuel@sholland.org>, 
+	Thierry Reding <thierry.reding@gmail.com>, Krishna Reddy <vdumpa@nvidia.com>, 
+	Chen-Yu Tsai <wens@csie.org>, Will Deacon <will@kernel.org>, Yong Wu <yong.wu@mediatek.com>, 
+	Chunyan Zhang <zhang.lyra@gmail.com>, Lu Baolu <baolu.lu@linux.intel.com>, 
+	Dmitry Osipenko <digetx@gmail.com>, Jerry Snitselaar <jsnitsel@redhat.com>, 
+	Marek Szyprowski <m.szyprowski@samsung.com>, Nicolin Chen <nicolinc@nvidia.com>, 
+	Niklas Schnelle <schnelle@linux.ibm.com>, Steven Price <steven.price@arm.com>, 
+	Thierry Reding <treding@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"
 
-Maxim,
+On Tue, 3 Oct 2023 at 02:00, Jason Gunthorpe <jgg@nvidia.com> wrote:
+>
+> On Tue, Oct 03, 2023 at 12:21:59AM +0300, Dmitry Baryshkov wrote:
+> > On Wed, 13 Sept 2023 at 16:45, Jason Gunthorpe <jgg@nvidia.com> wrote:
+> > >
+> > > At this point every iommu driver will cause a default_domain to be
+> > > selected, so we can finally remove this gap from the core code.
+> > >
+> > > The following table explains what each driver supports and what the
+> > > resulting default_domain will be:
+> > >
+> > >                                         ops->defaut_domain
+> > >                     IDENTITY   DMA  PLATFORM    v      ARM32          dma-iommu  ARCH
+> > > amd/iommu.c             Y       Y                       N/A             either
+> > > apple-dart.c            Y       Y                       N/A             either
+> > > arm-smmu.c              Y       Y                       IDENTITY        either
+> > > qcom_iommu.c            G       Y                       IDENTITY        either
+> > > arm-smmu-v3.c           Y       Y                       N/A             either
+> > > exynos-iommu.c          G       Y                       IDENTITY        either
+> > > fsl_pamu_domain.c                       Y       Y       N/A             N/A     PLATFORM
+> > > intel/iommu.c           Y       Y                       N/A             either
+> > > ipmmu-vmsa.c            G       Y                       IDENTITY        either
+> > > msm_iommu.c             G                               IDENTITY        N/A
+> >
+> > Unfortunately this patch breaks msm_iommu platforms. This driver
+> > doesn't select ARM_DMA_USE_IOMMU, so iommu_get_default_domain_type()
+> > returns 0, bus_iommu_probe() fails with -ENODEV.
+> > If I make MSM_IOMMU select ARM_DMA_USE_IOMMU, then GPU probing fails
+> > with -EBUSY.
+>
+> Oh, OK.
+>
+> Does this fix it?
 
-Thanks for finding and fixing this.
+It indeed fixes the issue, so could you please post it, adding:
+Tested-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 
-On 9/29/2023 7:24 AM, Sean Christopherson wrote:
-> On Thu, Sep 28, 2023, Maxim Levitsky wrote:
->> The following problem exists since x2avic was enabled in the KVM:
->>
->> svm_set_x2apic_msr_interception is called to enable the interception of
-> 
-> Nit, svm_set_x2apic_msr_interception().
-> 
-> Definitely not worth another version though.
-> 
->> the x2apic msrs.
->>
->> In particular it is called at the moment the guest resets its apic.
->>
->> Assuming that the guest's apic was in x2apic mode, the reset will bring
->> it back to the xapic mode.
->>
->> The svm_set_x2apic_msr_interception however has an erroneous check for
->> '!apic_x2apic_mode()' which prevents it from doing anything in this case.
->>
->> As a result of this, all x2apic msrs are left unintercepted, and that
->> exposes the bare metal x2apic (if enabled) to the guest.
->> Oops.
->>
->> Remove the erroneous '!apic_x2apic_mode()' check to fix that.
->>
->> This fixes CVE-2023-5090
->>
->> Fixes: 4d1d7942e36a ("KVM: SVM: Introduce logic to (de)activate x2AVIC mode")
->> Cc: stable@vger.kernel.org
->> Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
->> ---
-> 
-> Reviewed-by: Sean Christopherson <seanjc@google.com>
-Reviewed-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Tested-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+> diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
+> index cdc7b730192a35..f7ef081c33dcb2 100644
+> --- a/drivers/iommu/msm_iommu.c
+> +++ b/drivers/iommu/msm_iommu.c
+> @@ -685,10 +685,16 @@ irqreturn_t msm_iommu_fault_handler(int irq, void *dev_id)
+>         return 0;
+>  }
+>
+> +static int msm_iommu_def_domain_type(struct device *dev)
+> +{
+> +       return IOMMU_DOMAIN_IDENTITY;
+> +}
+> +
+>  static struct iommu_ops msm_iommu_ops = {
+>         .identity_domain = &msm_iommu_identity_domain,
+>         .domain_alloc_paging = msm_iommu_domain_alloc_paging,
+>         .probe_device = msm_iommu_probe_device,
+> +       .def_domain_type = msm_iommu_def_domain_type,
+>         .device_group = generic_device_group,
+>         .pgsize_bitmap = MSM_IOMMU_PGSIZES,
+>         .of_xlate = qcom_iommu_of_xlate,
+
+-- 
+With best wishes
+Dmitry
