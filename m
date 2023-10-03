@@ -1,15 +1,15 @@
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2048.outbound.protection.outlook.com [40.107.93.48])
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2079.outbound.protection.outlook.com [40.107.95.79])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0661C405CF
-	for <iommu@lists.linux.dev>; Tue,  3 Oct 2023 23:36:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E28B3FB09
+	for <iommu@lists.linux.dev>; Tue,  3 Oct 2023 23:41:51 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=S9spElrf9CqoMErQkn80DW5Se7qlmgDeQUeg4pLCP7pevac5DHn08Sg5SNOPBIEUvuR03zYe1WlgJ4uvvNtlEDlbB9VUE+T8JweQ8SYreRARi+OICXob0EXikV9kp6V0FsUCkomVMYjCo/PoHtHM72B0UN3M+hVimKwN03eEHmrx3oJmU/3CaNbillUrEjNyS472RgdZRbI4+p4r2nlqzyuCGEBEmoFgnfcu8GP2unw8lwQOuy5YBebiJszaa2WWYieW+Z/7F9FgNSvb6tH0Q+yPBuItwiiWRS+AvVSF7fEJme/urLCXg9S8s6GQPj46Oo5ABuTb5xn2I6ibLhGfhA==
+ b=Iojm56ShpfIM2XxhXWYFqbOAkvbiX/UcjnINzqoVXNB5+pm5X9yEcD2d3OwDXzYkS48xpOTT9KABGK1cLVUxcAw3OptXlMcPNifidqM6ptJZWZYItuwjJxJUnuKvUJnuZukoIaTxjrelq3DDw1q7Nhmq6JJ1j3iKdgmoIh80Q6kLZa0ZjeTILqfZ7Usrbyc82qqhPAeGvjEr4raoSybQBx8jNcrHQGRvKXmYXUCok/e1cnlGig06wJPAYR96qjwD13hvdTPkwg+JTbAspwNpkON9e2zpZYg1boeGrvjshuZHTDTNpoPfxjbnpyrc27s0lar2OjseUHQvDp3bQ0lJ6g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=pF4GT/GGiNuh3mlr6YxGLeQnXkd25qV+xM2xwcp13ro=;
- b=QY11mZkdeb9Msr/Eur6fFBX/iScCb5oL7dUsYkseKPeN8SWs2+ZftMOdMiyFOllk6EmNli/cRI9r/iEn4ec0qvb4d3ukJF1WmLLHEizR+Gd1ezNy4UgPW0Yhx4zd0WTAtj96ZlYLn1jRUp/ABsuAbwdSMIxoEbjsmsdKPbX4tdu4K5HUQ+7dRgV7EyMWAScWZC62hHRBHu7pcUuDswUjpxMUPyu+Zd3mTEsPopeWF4WTeFaycGKMKdJZ9/TEw0fX8gCSCBhmvAE/mkTgahHOS0iz382HuoCFfAEBobjN8NVRoFtsZwXH0hmi1hCKd9YCjMdcJ0fex0VEkQWZV82hUQ==
+ bh=shVzl7tqadxdNbGieSFBFumDkM+1ZWtMX0H611mx9jI=;
+ b=Afjetq8zrd+hoZf8JEUIf4fh4xkTdXTKzYmlIR+whjEPNzpKQbhh/vOh36fk57Q8JHorNHaXlXinLnN/ri/832Aa+RliNLk2brITs/1k5h9u6QKCRm/7hIrfjfOC5Mz5GmRb59lByVaaEtKQbK82d1jkI31t9TCLHkjXqOpf2afJ4VCmLeXnf6W+vB3nn06hGVi6c6udDM1GKmqZD9Rk7gD2sy08Q7PS4xaTbo9oaSOS8xMZ6ZrPUGv987m+EoAdzCjAmiNaTHf6/nWSWBiS3Zbs8D99Y5J5VqyGH1oWNb3XzsjhuJTU+XQHGAg2mdz4TnyXRk/xaCR46Rc2rWE3QA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  216.228.118.233) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
@@ -17,18 +17,18 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=pF4GT/GGiNuh3mlr6YxGLeQnXkd25qV+xM2xwcp13ro=;
- b=ijN8tj82dQt9RHdnsqOE7jcU/CZglrQRC1TbalGYVzJY4ruPZuxEio5xPv9+1NM3xWsmUQH2Km2vDu9qzkzKQkbDcPfSQJRHOJADuJG0tGzcXTIoG7db9m0ds49oMaSQLm9kIl8GJ6CcSYlnMhEW4Kd/tvy72MESoC1k7sd5ZW+X68H/klM3G1RSjhlpWZ+gLGhVpEsYvmROmlcUx5xDLddkhEFN2cxYcvPBIFLwfbwR8sMLrDWR0McG+a/pWkmnojmvBw9FdSATpVAg8oc2NBaiKvyoLGsUmA+FLbHGA8ls+6PChrcoLxE1hx5EuN0UNYb8z32tHjLGNJVwVKGOiQ==
-Received: from CY8PR12CA0042.namprd12.prod.outlook.com (2603:10b6:930:49::21)
- by CH3PR12MB9220.namprd12.prod.outlook.com (2603:10b6:610:198::13) with
+ bh=shVzl7tqadxdNbGieSFBFumDkM+1ZWtMX0H611mx9jI=;
+ b=ttLkgER4e8p/YhP2mnDR1Qsm8WV6QaIV1XkZqSVeCRiDZFiDyuzbRZNWLGxqwGYJ4e03ypXUC1xOuVsjYaAzaTAjKTsYKGN8JBCQ7txdCdwBRM4HIpYzfvQjqYMQv+gPuJdcO91LmLrwtrMQTOnLaZnhp7mgl1sgzRPwtCACqQA5TCogg9ecOgh6GsK2/v/3hVL2d/6qNmwA3EbcOajdq4Ql8z8V45yVd0CBqYNQrJun8GEKCf9F/dAQkGjMxsoOkkdhnAlVm+qBUF5D5ybKxB8z4X0cOEaHUatmui+3Xq1oSsMedcBssUx4+grYsbn37i5x9W3eIwzFIO5wDAAIqA==
+Received: from DS7PR05CA0022.namprd05.prod.outlook.com (2603:10b6:5:3b9::27)
+ by MW6PR12MB8866.namprd12.prod.outlook.com (2603:10b6:303:24c::16) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6838.25; Tue, 3 Oct
- 2023 23:36:03 +0000
-Received: from CY4PEPF0000EDD4.namprd03.prod.outlook.com
- (2603:10b6:930:49:cafe::36) by CY8PR12CA0042.outlook.office365.com
- (2603:10b6:930:49::21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6813.25; Tue, 3 Oct
+ 2023 23:41:48 +0000
+Received: from DS3PEPF000099DD.namprd04.prod.outlook.com
+ (2603:10b6:5:3b9:cafe::1a) by DS7PR05CA0022.outlook.office365.com
+ (2603:10b6:5:3b9::27) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6863.25 via Frontend
- Transport; Tue, 3 Oct 2023 23:36:03 +0000
+ Transport; Tue, 3 Oct 2023 23:41:48 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
@@ -36,29 +36,29 @@ Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
  216.228.118.233 as permitted sender) receiver=protection.outlook.com;
  client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
 Received: from mail.nvidia.com (216.228.118.233) by
- CY4PEPF0000EDD4.mail.protection.outlook.com (10.167.241.208) with Microsoft
+ DS3PEPF000099DD.mail.protection.outlook.com (10.167.17.199) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6838.14 via Frontend Transport; Tue, 3 Oct 2023 23:36:03 +0000
+ 15.20.6838.14 via Frontend Transport; Tue, 3 Oct 2023 23:41:47 +0000
 Received: from drhqmail201.nvidia.com (10.126.190.180) by mail.nvidia.com
  (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Tue, 3 Oct 2023
- 16:35:53 -0700
+ 16:41:47 -0700
 Received: from drhqmail202.nvidia.com (10.126.190.181) by
  drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.41; Tue, 3 Oct 2023 16:35:53 -0700
+ 15.2.986.41; Tue, 3 Oct 2023 16:41:46 -0700
 Received: from Asurada-Nvidia.nvidia.com (10.127.8.10) by mail.nvidia.com
  (10.126.190.181) with Microsoft SMTP Server id 15.2.986.41 via Frontend
- Transport; Tue, 3 Oct 2023 16:35:52 -0700
+ Transport; Tue, 3 Oct 2023 16:41:46 -0700
 From: Nicolin Chen <nicolinc@nvidia.com>
 To: <sashal@kernel.org>, <stable@vger.kernel.org>
 CC: <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
 	<jgg@nvidia.com>, <jean-philippe@linaro.org>, <baolu.lu@linux.intel.com>,
 	<apopple@nvidia.com>, <linux-kernel@vger.kernel.org>,
 	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>
-Subject: [PATCH][6.5, 6.1, 5.15] iommu/arm-smmu-v3: Fix soft lockup triggered by arm_smmu_mm_invalidate_range
-Date: Tue, 3 Oct 2023 16:35:49 -0700
-Message-ID: <20231003233549.33678-1-nicolinc@nvidia.com>
+Subject: [PATCH v2][6.5, 6.1, 5.15] iommu/arm-smmu-v3: Fix soft lockup triggered by arm_smmu_mm_invalidate_range
+Date: Tue, 3 Oct 2023 16:41:44 -0700
+Message-ID: <20231003234144.34383-1-nicolinc@nvidia.com>
 X-Mailer: git-send-email 2.42.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -71,26 +71,26 @@ Content-Type: text/plain
 X-NV-OnPremToCloud: ExternallySecured
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY4PEPF0000EDD4:EE_|CH3PR12MB9220:EE_
-X-MS-Office365-Filtering-Correlation-Id: c101bbbd-df54-4ed2-276d-08dbc46981ce
+X-MS-TrafficTypeDiagnostic: DS3PEPF000099DD:EE_|MW6PR12MB8866:EE_
+X-MS-Office365-Filtering-Correlation-Id: 7e735bb5-e6e8-4221-f437-08dbc46a4f59
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	J6CyWrrHDllUcEXOFpTF01E3mt2K/7joeWDfg18qTnEiyZFQQyQgM5PcjYCweamK2YVQCrq3sfEIYuTykNlXRD5i0LeHEJqo1whUq0bROwuIdEoMUIyB9W0lcnEf/JUqTlfSGrU6ylNYhtLoEYI0jmuiadMntWK+LAsLyMB+6Cxsx6J/grKKBYsmXOaG3L7KW739gMxR35izZRquB4GwQOOa3U27aBwHL3svKqmiYXC2mmurTAbEh9u+fp9w2QARroC/o063tleXnNqGTFY8dIdmh46xdOPTrrzZj1ZK+tRxZrZKUM9H1/N3r1C15Fzhf8YaFcFVT9IOUMAzRf98myhMUPWmt9NYk6cDVEk5AFT1bWGoFPg614EcBWmCnaHyHIPajaSGUsrlpqDQZ+TFkUWxRQ4EI7UCsxJ5u5TYZFBjEAVbA7lgbd5REjo46tEhUa+3Hf3lUXPYGajJAHlCh2bW5x275N6iHi36vZLALfZVXBDgR7bcFI4Q4A4X2c/K7KQcFIJ92nGH/26jNz5oRljOZt4Jddr2iuq3PUHfIz5jkaSuKIsQi3lILj4Pa+2ZHa/0JDImF5yS235wJ+ZFC/7UXPZ+YDblNPQQXWhhlAYdNPTMysN0eljSAVPzlUmkt1tA4hWkkRKHO1lbD2UG8P6L2KIdwzqf+Z7RHGeHFVtdhoLM6YVc8eVQDoUFDpP5gDq9lhTL9Hq+mi3DaHpjpcsFX8h7kVfy6STA0g8tcJlWMN3B8jy6chJKVJ3pf3Z+jZU6pDpDfF9vACCtO7iOZlQ/BvgWKX4fe3NflCnL+Iu+g+j8bS30XiZy2b0uWhm3
+	FpioRC+QrQDpAnrbLSbqK3D5lYrT51xxn7Yu0YmvpIbHg9W4ObJq2uoTGm2KpUShZ5cXGRlDfeA++IDXxlj3P2Z2fvn7ohxgd2nqbv1YVWvi5lmXq3ZcmfHN+Ssxf6grCovhibkQkf93YMcqmitbd+mquzM74gbXlzAD0eoTS1JD6Ou1ha5/sqPd7FFaXZM39ns2QIy9lCfaivbkDt6WohkECBhZZws/7AK3XjIJuzY02NOUnkMzJELjZu+hJwCnY2HUQIMJ0q2J6ydwr+mcYjTHueZQdmq1S7KyUAGUKd6EKLxyg2TpXZcHuSFidMn7TELtMGPDUwzZ8LjY4GZenPG+7yujAtXRE3wQbqwuox8f1O4AiEWD6XvJ5ojfhjtfk8PF+yqm16mOLbhTJ7TWRD+T7rM62w8M5MEc6PKi3SElR4kSZMKh3Qxz6STkFXCPw2Gvduon4uWBzexovUIhW74pzn9PxTAmhn/owm2e2XCgx+YInyemH2yB3UqxTWvx2WlUbBzKADoBv5bqFm/5GbMFF1zMk01XOBKpsELWlg7h3ktLqpitypbKwJwkHz0LzcF4WUcfaUko6JWeFAYaRyU6wMNFDONgokVThraNHCpRCANPwFEDCwPwAONq7CKldXKosPifK2vINmrngJUjyl9tmV/NC/x6c+BFQp2AcTNtLyjxwYKW5LFoKKYBtD/4M5O04YtDKNmxMkAZXQ1kc2T+awk0k2c5Eqh8+mITrRi+1fTI03EETAlsjPS00JqPHVBXwfNdGbiXnLNEt9oXVZynKXHRF9LyYTrRPLrZ06vizP6qPR5ytCE3GvW0q4xCrgotRBmE4B2e+FUPQ6A3zQ==
 X-Forefront-Antispam-Report:
-	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230031)(4636009)(346002)(136003)(396003)(376002)(39860400002)(230922051799003)(82310400011)(451199024)(1800799009)(186009)(64100799003)(36840700001)(40470700004)(46966006)(2906002)(40460700003)(86362001)(356005)(2616005)(426003)(6666004)(82740400003)(478600001)(1076003)(966005)(336012)(26005)(7636003)(83380400001)(36860700001)(47076005)(54906003)(110136005)(4326008)(316002)(7416002)(70206006)(40480700001)(36756003)(8676002)(41300700001)(8936002)(5660300002)(70586007)(7696005)(2101003);DIR:OUT;SFP:1101;
+	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230031)(4636009)(39860400002)(346002)(376002)(136003)(396003)(230922051799003)(1800799009)(82310400011)(64100799003)(451199024)(186009)(46966006)(36840700001)(40470700004)(7696005)(2616005)(40460700003)(36756003)(7636003)(356005)(86362001)(40480700001)(82740400003)(36860700001)(426003)(336012)(26005)(47076005)(7416002)(2906002)(966005)(1076003)(478600001)(83380400001)(8936002)(8676002)(316002)(4326008)(41300700001)(54906003)(5660300002)(70586007)(70206006)(110136005)(2101003);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Oct 2023 23:36:03.0188
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Oct 2023 23:41:47.8523
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: c101bbbd-df54-4ed2-276d-08dbc46981ce
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7e735bb5-e6e8-4221-f437-08dbc46a4f59
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	CY4PEPF0000EDD4.namprd03.prod.outlook.com
+	DS3PEPF000099DD.namprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR12MB9220
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW6PR12MB8866
 
 commit d5afb4b47e13161b3f33904d45110f9e6463bad6 upstream.
 
@@ -156,7 +156,14 @@ TLBI command, if the request size hits this threshold.
 Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
 Link: https://lore.kernel.org/r/20230920052257.8615-1-nicolinc@nvidia.com
 Signed-off-by: Will Deacon <will@kernel.org>
+Cc: stable@vger.kernel.org
 ---
+
+Changelog
+v2
+ * Added missing "Cc: stable@vger.kernel.org" line
+v1 https://lore.kernel.org/stable/20231003233549.33678-1-nicolinc@nvidia.com
+
  .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   | 27 ++++++++++++++++---
  1 file changed, 24 insertions(+), 3 deletions(-)
 
