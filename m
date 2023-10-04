@@ -1,135 +1,122 @@
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2056.outbound.protection.outlook.com [40.107.220.56])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B3E1134A2
-	for <iommu@lists.linux.dev>; Wed,  4 Oct 2023 12:08:38 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VvC7EzPgJ9ZyDrH1T7xMqC+DRXzq5xZo3s2Wa3XIcKVQZZwmgXk9g7KrV49PfW6CWUCaPcd1AQ8oBS5m2W9/gIzJnX0LmZORS6amW6/nrUmvq6gfT3qp5eVyoSnQIgPnWT2swgcDOda0BvUskvJw+pzEyUsESV3KDFI1+rROlwYUCAlbK9YVXwPC6WeFekiQ3TJG6Y7SSMFPyT2SCQ9lNREh8DhwE00HUPJWBzUc/nRujA1dmk9nSd5XiSJ2C1cuPUUx4juDK6xVL7XIDPHO50m7gjMpF8vd8sfwHd5bBR1SBcjWdwKjKkHFG6ElfD/E33bINpa2kq3VwR0GPUe0KQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Q2DKphZm0up0FzZnGPxLJD8d9mN8F790WZLC0Z+xNrM=;
- b=fTHW1wP2ihTQi9XCar0XWrBQ6Gb+yXeyMsxAzDpdzToeB93n52l2ZHbXqoJXLxdyIDUDzWZ5EX/GvOgOVHgYbq8k3HGd52G7bXAjUJfEk+gkUbfltlLSo5YONkuUPPyJmQsRXbZ/zgWf4Kx28nOPaaOK3odCjOFPsjAEBLhoFE5bFZ9bP8p7hMinP0fecfkKxrrhdjgv6v3TWRoSqyM63By1jIEXyBTuY6X1D15int/R9CHlW2as/IYnqSi8qFdb++U24Fa7Z4/efpgyqwwxriY2zzJESAb61ZaslnckSoo8t645vT3fc8L8OQYaXNNIJg6kJpyUQmFL6dh8YUEecg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Q2DKphZm0up0FzZnGPxLJD8d9mN8F790WZLC0Z+xNrM=;
- b=tBO2XQdqhofzQ55t4cEEKVk7Q1DOxVonDHlu9m59FWLZQs9PdxujaLGy185Q73TeT5D/OsukAW2HuxbsPN5uyZ9Nmbix6N2nck2F9zc5BsKk0d53eZPe6BDaIgCzgIfXZdwJYA4fOAguJsapqzHK/ud5uxSVFpnaBKbQYgmN3zc4a+wSEZIzKFpeM4tet6M41eXRPNazLowytnIqDxe9DBBooeP2LXdCFW3BE5e0PT/yfiCTyKy+oEfuD98Lx4V/4Q2HqbvSCryAsnrXIhZZYA+Pq1XrqdHJlFz8BgDItIrTL8EmDL0hGS4dOJZO6QeGZHxgOH6wsYDodwEAuG6oVw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by MN2PR12MB4581.namprd12.prod.outlook.com (2603:10b6:208:260::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6838.34; Wed, 4 Oct
- 2023 12:08:35 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::3f66:c2b6:59eb:78c2]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::3f66:c2b6:59eb:78c2%6]) with mapi id 15.20.6838.030; Wed, 4 Oct 2023
- 12:08:35 +0000
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: iommu@lists.linux.dev,
-	Joerg Roedel <joro@8bytes.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Will Deacon <will@kernel.org>
-Cc: Lu Baolu <baolu.lu@linux.intel.com>,
-	Dan Carpenter <dan.carpenter@linaro.org>,
-	Joerg Roedel <jroedel@suse.de>,
-	Jerry Snitselaar <jsnitsel@redhat.com>
-Subject: [PATCH v2] iommu: Fix return code in iommu_group_alloc_default_domain()
-Date: Wed,  4 Oct 2023 09:08:32 -0300
-Message-ID: <0-v2-ee2bae9af0f2+96-iommu_ga_err_ptr_jgg@nvidia.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: BY5PR16CA0033.namprd16.prod.outlook.com
- (2603:10b6:a03:1a0::46) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0677A1427C
+	for <iommu@lists.linux.dev>; Wed,  4 Oct 2023 13:16:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1696425407;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=CKB87bTajQH/5HfXBd7T/7DKZGQoywxxIms8WQ1l3Bc=;
+	b=M1102iB4eOlk3eFSScUaCprpq7wlgI3PrTUECKyabkZzIPC45irovhMghQHWJbQJgeD/mg
+	k1rZ7CRlH5ZujS1LST+ME7njaOkyyj3CIVNh+tGi7togQHyuIUzuRXq2HUoMkeegIoOUtg
+	SIYaTDYhaNJckoBoaNNR1w8NMaWuFNQ=
+Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
+ [209.85.218.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-62-tUgKkT4sPKu3AJY9aCLnfw-1; Wed, 04 Oct 2023 09:14:24 -0400
+X-MC-Unique: tUgKkT4sPKu3AJY9aCLnfw-1
+Received: by mail-ej1-f72.google.com with SMTP id a640c23a62f3a-9b65d7079faso166719166b.1
+        for <iommu@lists.linux.dev>; Wed, 04 Oct 2023 06:14:18 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1696425245; x=1697030045;
+        h=content-transfer-encoding:mime-version:user-agent:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=CKB87bTajQH/5HfXBd7T/7DKZGQoywxxIms8WQ1l3Bc=;
+        b=A8lfww2GXw7QKtXBV004pPsemKU8gBZgNSYQ2lL0eAz/8SMK5aO88hJ8moLBgFgYrO
+         NWEkWF3fw4jab6jGeA38DrflHZz9A0fzssKe74E8FCwbXkR9gT54JjvY+RWdN2iUoTxP
+         Nz4QbYP4MP/xKwlYRy+v67AhuwL0BI48zfJgTxH/pGk1nDx9lPuT4roRJq06HSsr9Nxk
+         Rj25frZOhdA1g1J2YhoG2zssIleWvx+M7E3px/ioJ9dh1Z1EnEd0KJaW6lGLBLCZQIlY
+         jdaO65QOxa1pBJ3GY8Hev/5obN5u0tToBJF0p+AyKgOop9tXUD7xd4vK7+46X278e0IJ
+         qh0g==
+X-Gm-Message-State: AOJu0YwR2kf+ji0MHsuq/yJnwgx65EZkCgOmxZSIn/iya0qOQFxoRsWN
+	xXEmIsx3fRBrI6fqlxARAn+wAfK9l3/4cvgd0pqtSkUF/LQ+Y4m8dy38fvdqUsLbd+hkuMon8nt
+	YV+2Vi4EqN5L4UFE=
+X-Received: by 2002:a17:907:2cf1:b0:9ae:513d:de22 with SMTP id hz17-20020a1709072cf100b009ae513dde22mr1648384ejc.56.1696425245064;
+        Wed, 04 Oct 2023 06:14:05 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IEC30AVKWCM9IrhyyL18ynsqE9iCne0MTdbHhx8Q+RGfk5sKrumzX45E7UuQGRJoR3t6l1Fjw==
+X-Received: by 2002:a17:907:2cf1:b0:9ae:513d:de22 with SMTP id hz17-20020a1709072cf100b009ae513dde22mr1648367ejc.56.1696425244676;
+        Wed, 04 Oct 2023 06:14:04 -0700 (PDT)
+Received: from starship ([89.237.100.246])
+        by smtp.gmail.com with ESMTPSA id f3-20020a170906048300b009b2ca104988sm2824343eja.98.2023.10.04.06.14.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 04 Oct 2023 06:14:04 -0700 (PDT)
+Message-ID: <1d6044e0d71cd95c477e319d7e47819eee61a8fc.camel@redhat.com>
+Subject: Re: [PATCH v3 0/4] Allow AVIC's IPI virtualization to be optional
+From: Maxim Levitsky <mlevitsk@redhat.com>
+To: Sean Christopherson <seanjc@google.com>
+Cc: kvm@vger.kernel.org, Will Deacon <will@kernel.org>, 
+ linux-kernel@vger.kernel.org, Borislav Petkov <bp@alien8.de>, Dave Hansen
+ <dave.hansen@linux.intel.com>, x86@kernel.org, Ingo Molnar
+ <mingo@redhat.com>,  "H. Peter Anvin" <hpa@zytor.com>, Thomas Gleixner
+ <tglx@linutronix.de>, Joerg Roedel <joro@8bytes.org>, Suravee Suthikulpanit
+ <suravee.suthikulpanit@amd.com>,  Robin Murphy <robin.murphy@arm.com>,
+ iommu@lists.linux.dev, Paolo Bonzini <pbonzini@redhat.com>
+Date: Wed, 04 Oct 2023 16:14:01 +0300
+In-Reply-To: <ZRsYNnYEEaY1gMo5@google.com>
+References: <20231002115723.175344-1-mlevitsk@redhat.com>
+	 <ZRsYNnYEEaY1gMo5@google.com>
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|MN2PR12MB4581:EE_
-X-MS-Office365-Filtering-Correlation-Id: a3c4cc5e-a4da-44ac-96f1-08dbc4d2a2d2
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	aBBQaVcGCkYKwkzbPA3HfSCoD44aW8eRSc4Oc6kscHBRDkj8AFvnPi6NoP1tg4tN8hfc3OqjIn6mRXAJD+/3PdXW+lVZV8nVbhdYEFfQiiFK4+EXLtRzUpwdUaTOYC8cPXBw48hy9nyU0wAB6jzLrCSKqV2a73VD0otv0bdSitT/1ICWToZZ7XERufB5ygndpei4WiVxO9+iphN4gX8q8ZTnyK+xA3GDtQNy+hjWkhIxBjzC2pTjL5aYbdmpjg/aMK606o+Mu6F2OCrH9UHRvErondRj6R/E12CsaFAPchpy5TlJJ7vUOfeSIVebG6QY90hRYz2QWaJ3zT+g3ju0Ua50Gok4nryDCUapRCboPkq/85tLcwx7Sehbh4LOh5Ei47E9Da5SU4RPBcQoOmIv+RQFtiCSrFi9F461qgVqf9VlQzm0GNgcpbY1CcT2SlqauaJwZ43oJrrghzhFrtr2ZZdlYj3vbXaAH+wc9btxxRasK5+HCWpn0vIA+BzufFyqWu2ijYxQFD7vSAF2XNK6EguJwsrqVouMCkU5wcOD3NJcudmOm/9+VWgXKTfL2VtnMzL1JIgzx0623U3OkpOj2g==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(39860400002)(346002)(136003)(366004)(376002)(396003)(230922051799003)(451199024)(186009)(1800799009)(64100799003)(966005)(6486002)(36756003)(6512007)(6666004)(38100700002)(6506007)(86362001)(110136005)(478600001)(66946007)(66476007)(54906003)(316002)(66556008)(41300700001)(2616005)(26005)(8936002)(4326008)(8676002)(5660300002)(83380400001)(4744005)(2906002)(4216001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?OsiQZSfqzCRqoont4Vh0euhXZal1bqJl3WidQSVzj4xaQFk+8sQhykIo8I9U?=
- =?us-ascii?Q?eXW7ehGLa90l9dBHd4SfM9dTpcKXhpM/l8BPPHligE7kh8sjMWtTvrIuTdZY?=
- =?us-ascii?Q?7HY3lZGp+76v9LakQPr0WoGhNLSL6uE2hHA7vlVYtRx6E3g7b5NFNBmwqVHw?=
- =?us-ascii?Q?tXt7crIytp+1qkb1cfzmq11NDGlNYgZtMrKdDtGG3oyIQOByQIXjCHZewRo+?=
- =?us-ascii?Q?RbyTaqVEfmo8fPbJJkX4WnOPqsQCgNk8NiZf5PapI0UwztLy/D9o3pyjDoI6?=
- =?us-ascii?Q?LhkSHnwrUYmJZrYtwnglheO0wqz6AvXZ0gFLMbPQWD1jG9qPNmHdvY1h7CSV?=
- =?us-ascii?Q?mrMyeV3loZqldVGClUwB9cFjhyyY7gQ6zX6mBo628WTGBu+aQuyr/AZd/6/0?=
- =?us-ascii?Q?pMaypncyVlSdbEhCiyDdQSlSVT/58d/Q0n5x/XtgkE4MPJMMzGNALCvl9abh?=
- =?us-ascii?Q?AtSiev9yjfzIYrgPRymz/8mA1ac7nLSPtHuuXd42rg6yJCIfTaZPzeGVDUwn?=
- =?us-ascii?Q?DsKACdUHMswQ74wfM3BSMR4vYdiHvfh1jXZ0tsonn3gKpR+3QA1Jk5yf1kLt?=
- =?us-ascii?Q?k9yawl/2xmkuxyhVVW9ORgbHDjW7JhjtW/NDgSSiTIfbrtKxVETDQORSubhN?=
- =?us-ascii?Q?D5UskVkr3RlQIoTC3cB2FG92sojb3+MkNVe5eQj23l5eIogCtjd0GRRO9GRO?=
- =?us-ascii?Q?f2ZTt+7QuTBi2yVgBrHmSlCRfqQfArE8P4O0ycNbYD4pzHSHFBqgnt0z4e7A?=
- =?us-ascii?Q?DbKDRc7/xKz3/nzrEH3MNPCHcdYUEmRdoEtZR0FhiTdmz39l5R3oElt3Gwu3?=
- =?us-ascii?Q?Nxjsoo92Nk77YW4YcUo6dpv60OKW0tsnOZESwMwBr142ZD0xLON+tZhKfOO+?=
- =?us-ascii?Q?1377wAAQc1mE3WMnLn8xcpgAAwMcbdQF9W8pbFcuY3fy5OqiigtDiUmD6HZT?=
- =?us-ascii?Q?O2rRrl+HuLQoA3bwI3mkeqHmxZrDkdtF998yH51x1gg+wbgbcNHQdXNqFC03?=
- =?us-ascii?Q?3Dod4VpgPdSMGvGu08mqCW05PZy6QjmIKoPUf5eJ1MI1gn7Dyh0iIdVJhLG1?=
- =?us-ascii?Q?1ghrButkzwM0KHD9tKgnRQtoNP+chLDXNuypob7WyzLkdcR6e0HpC3/+Do4/?=
- =?us-ascii?Q?zszs2NPAusAS/sgJTqFku3Q7hCw2iKUyKwlh9o2Y2HKPaRnHJSJjSF8uU1Vr?=
- =?us-ascii?Q?3fqh7vdxMFFMLzvixVcem3ukmuKojKBkojXaMFvODmRb87U3RX0suBAUX/Wy?=
- =?us-ascii?Q?Tw6eWeGHSy4CYz/qBBIXw6rmKT1gIhv/p4MXEfIYaEy+7V6iXysE+BpiDlAO?=
- =?us-ascii?Q?l3hcXq7QOZCGQYORx2JcgvSVqg7CdY+2Y675Qq8JYKiFFOMjNYQN74661Cwz?=
- =?us-ascii?Q?90IjPqu9FG+7EfV+kVt3FEnXtgyy1Fk7uDMOLNqyp6WBTobaFcyJrN4rbtMf?=
- =?us-ascii?Q?+UsfugvumUW9xnhxtjp0hAVi4zVcPsx+oo2ugrvJgYEF25/PpNT+t/Uyp6PM?=
- =?us-ascii?Q?KWHtbQllxkE9+VMOjdHiNgzSJknhwliHg8pC8tz29ku+ZZehkBJnmlgZ/cD2?=
- =?us-ascii?Q?T227KRgAiglAdMGkrTU=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a3c4cc5e-a4da-44ac-96f1-08dbc4d2a2d2
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Oct 2023 12:08:35.8021
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: wekMlZ5aI+eyqBSU+ytWEdBfdbOatTQVjLOw78m2gWb0jeFcNsd3Nzhyql/XdIm6
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4581
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 
-This function returns NULL on errors, not ERR_PTR.
+У пн, 2023-10-02 у 12:21 -0700, Sean Christopherson пише:
+> On Mon, Oct 02, 2023, Maxim Levitsky wrote:
+> > Hi!
+> > 
+> > This patch allows AVIC's ICR emulation to be optional and thus allows
+> > to workaround AVIC's errata #1235 by disabling this portion of the feature.
+> > 
+> > This is v3 of my patch series 'AVIC bugfixes and workarounds' including
+> > review feedback.
+> 
+> Please respond to my idea[*] instead of sending more patches. 
 
-Fixes: 1c68cbc64fe6 ("iommu: Add IOMMU_DOMAIN_PLATFORM")
-Reported-by: Dan Carpenter <dan.carpenter@linaro.org>
-Link: https://lore.kernel.org/r/8fb75157-6c81-4a9c-9992-d73d49902fa8@moroto.mountain
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
----
- drivers/iommu/iommu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Hi,
 
-v2 use correct base
+For the v2 of the patch I was already on the fence if to do it this way or to refactor
+the code, and back when I posted it, I decided still to avoid the refactoring.
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 21d45e6a5931a1..f9f315d58a3a14 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -1787,7 +1787,7 @@ iommu_group_alloc_default_domain(struct iommu_group *group, int req_type)
- 	 */
- 	if (ops->default_domain) {
- 		if (req_type)
--			return ERR_PTR(-EINVAL);
-+			return NULL;
- 		return ops->default_domain;
- 	}
- 
+However, your idea of rewriting this patch, while it does change less lines of code,
+is even less obvious and consequently required you to write even longer comment to 
+justify it which is not a good sign.
 
-base-commit: 2fa2db14482619122d67d2cdc8633d4a86101d92
--- 
-2.42.0
+In particular I don't want someone to find out later, and in the hard way that sometimes
+real physid table is accessed, and sometimes a fake copy of it is.
+
+So I decided to fix the root cause by not reading the physid table back,
+which made the code cleaner, and even with the workaround the code 
+IMHO is still simpler than it was before.
+
+About the added 'vcpu->loaded' variable, I added it also because it is something that is 
+long overdue to be added, I remember that in IPIv code there was also a need for this, 
+and probalby more places in KVM can be refactored to take advantage of it,
+instead of various hacks.
+
+I did adopt your idea of using 'enable_ipiv', although I am still not 100% sure that this
+is more readable than 'avic_zen2_workaround'.
+
+Best regards,
+	Maxim Levitsky
+
+>  I'm not opposed to
+> a different approach, but we need to have an actual discussion around the pros and
+> cons, and hopefully come to an agreement.  This cover letter doesn't even acknowledge
+> that there is an alternative proposal, let alone justify why the vcpu->loaded
+> approach was taken.
+> 
+> [*] https://lore.kernel.org/all/ZRYxPNeq1rnp-M0f@google.com
+> 
+
 
