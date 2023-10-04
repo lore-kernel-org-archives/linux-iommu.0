@@ -1,169 +1,50 @@
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F24A107A2
-	for <iommu@lists.linux.dev>; Wed,  4 Oct 2023 08:56:29 +0000 (UTC)
-Received: from pps.filterd (m0356516.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 3948k4Mj013396;
-	Wed, 4 Oct 2023 08:56:27 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : date : subject :
- content-type : message-id : to : cc : content-transfer-encoding :
- mime-version; s=pp1; bh=Obkl1GMWxBS6IO9KRTWJRxho2HtrWuWdgU6R2ARUbfU=;
- b=oqdOCAmRPtiKIe+KvRpnAD51ZhvDemhBQ9X26sGgR37XaGFAj3gnFGwoC5YvEMaBlHg0
- Ok7fRog73EmhTx7E2+IG5gqY8aClbdVXKgIS/PcUMRERSMGOkYQf2/7zWog5b1mNa7eG
- CfdaOFa1JBiFsQ4I0nYpO6mvRvT/1VzXl84ndnDxDMJXZTRF034roIqqWZ2PHPeKORF8
- r8/K+KH1kZdYQXcRvD3USptOM+eEWMw0A86ffaKI90Dgk2epWU4FmYFv/NxR4MwkVO38
- 4H4vyK0YOYxfEqJt81+n3gMfg/bR1m1S34Hnd4d8pG7CLm1oBC4rCpbUvMCsZk+vd/bS Wg== 
-Received: from ppma12.dal12v.mail.ibm.com (dc.9e.1632.ip4.static.sl-reverse.com [50.22.158.220])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3th4a0924d-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 04 Oct 2023 08:56:26 +0000
-Received: from pps.filterd (ppma12.dal12v.mail.ibm.com [127.0.0.1])
-	by ppma12.dal12v.mail.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 3948NGAG005869;
-	Wed, 4 Oct 2023 08:56:26 GMT
-Received: from smtprelay04.fra02v.mail.ibm.com ([9.218.2.228])
-	by ppma12.dal12v.mail.ibm.com (PPS) with ESMTPS id 3tex0stg3r-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 04 Oct 2023 08:56:25 +0000
-Received: from smtpav05.fra02v.mail.ibm.com (smtpav05.fra02v.mail.ibm.com [10.20.54.104])
-	by smtprelay04.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 3948uNZG40173984
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Wed, 4 Oct 2023 08:56:23 GMT
-Received: from smtpav05.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 267932004D;
-	Wed,  4 Oct 2023 08:56:23 +0000 (GMT)
-Received: from smtpav05.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id C8C2E20043;
-	Wed,  4 Oct 2023 08:56:22 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-	by smtpav05.fra02v.mail.ibm.com (Postfix) with ESMTP;
-	Wed,  4 Oct 2023 08:56:22 +0000 (GMT)
-From: Niklas Schnelle <schnelle@linux.ibm.com>
-Date: Wed, 04 Oct 2023 10:56:12 +0200
-Subject: [PATCH] s390/pci: Fix reset of IOMMU software counters
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <20231004-dma_iommu_fix-v1-1-129777cd8232@linux.ibm.com>
-X-B4-Tracking: v=1; b=H4sIAKsoHWUC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyDHUUlJIzE
- vPSU3UzU4B8JSMDI2NDAwMj3ZTcxPjM/Nzc0vi0zApdg0RTY0tzS0ujNENTJaCegqJUoDDYvOj
- Y2loA9OLeo18AAAA=
-To: Robin Murphy <robin.murphy@arm.com>,
-        Matthew Rosato <mjrosato@linux.ibm.com>,
-        Gerd Bayer <gbayer@linux.ibm.com>, Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-        Joerg Roedel <jroedel@suse.de>
-Cc: linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org,
-        iommu@lists.linux.dev, Niklas Schnelle <schnelle@linux.ibm.com>
-X-Mailer: b4 0.12.3
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2844;
- i=schnelle@linux.ibm.com; h=from:subject:message-id;
- bh=H90IBelQNG7rhfTWySXD+NU46UuE+9PSGFOR8fcgG4U=;
- b=owGbwMvMwCH2Wz534YHOJ2GMp9WSGFJlNTasnrGecZ+I1t/be2uWcmlInPjbetvrYf6ENf8nf
- qjc++QYS0cpC4MYB4OsmCLLoi5nv3UFU0z3BPV3wMxhZQIZwsDFKQATebac4Z/qln2OF1ft925s
- cX0otWzXlkxR0ejqW/3lM2bXvYv5HPGCkaFLM6F+KkfS+fvPGjdfniX6bodmrkOihtnOrjiLtQn
- 2qmwA
-X-Developer-Key: i=schnelle@linux.ibm.com; a=openpgp;
- fpr=9DB000B2D2752030A5F72DDCAFE43F15E8C26090
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: 9-TEznx7mp5zg37bZc5FgD7uyTqWdBNH
-X-Proofpoint-GUID: 9-TEznx7mp5zg37bZc5FgD7uyTqWdBNH
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B55F1097E
+	for <iommu@lists.linux.dev>; Wed,  4 Oct 2023 10:08:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61011C433C8;
+	Wed,  4 Oct 2023 10:08:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1696414130;
+	bh=ziJwjYvWmDrx/OZW30jWykdrY4rTHf3r4/nycmHupnY=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=AA1PigxVcMFjdOwjlC/ZxO4N9pjUxDEi22309Fg2ONAiEFRubviYO9ijs4WFQID+o
+	 C8b74s55iQYzUvFimJL0OCSOkb+SI6HLOHjj0OA3tyuvheiciNbFjKQydZXojNViW6
+	 0QhQh95Taok7G9ZXVCsUdpzOsswki5TxGJ25zCGvAFhZ03+EkOpNbk3v4zLfMfKzRZ
+	 N7+CS3vId1EXUuImzOUtN2e79D4b09vutpnpYjcEUnb/OiYhT4Ly0ivDd5HKzm2W2E
+	 5r+LkuQnz9dVy5v+w37S+x8eg19CcopCvKqs/LOcRwnoPVjjN2cwETRyONpbw4MjHr
+	 O8zweqAxnmGGQ==
+Date: Wed, 4 Oct 2023 06:08:49 -0400
+From: Sasha Levin <sashal@kernel.org>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: stable@vger.kernel.org, will@kernel.org, robin.murphy@arm.com,
+	joro@8bytes.org, jgg@nvidia.com, jean-philippe@linaro.org,
+	baolu.lu@linux.intel.com, apopple@nvidia.com,
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev
+Subject: Re: [PATCH][6.5, 6.1, 5.15] iommu/arm-smmu-v3: Fix soft lockup
+ triggered by arm_smmu_mm_invalidate_range
+Message-ID: <ZR05sWtiMmM0w2sb@sashalap>
+References: <20231003233549.33678-1-nicolinc@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.267,Aquarius:18.0.980,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2023-10-04_01,2023-10-02_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=718
- priorityscore=1501 suspectscore=0 malwarescore=0 impostorscore=0
- bulkscore=0 adultscore=0 clxscore=1011 lowpriorityscore=0 mlxscore=0
- spamscore=0 phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2309180000 definitions=main-2310040049
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20231003233549.33678-1-nicolinc@nvidia.com>
 
-Together with enabling the Function Measurement Block
-zpci_fmb_enable_device() also resets the software counters. This allows
-to use "echo 0 > /sys/kernel/debug/pci/<dev>/statistics" followed by
-echo "1 > /../statistics" to reset all counters. In commit c76c067e488c
-("s390/pci: Use dma-iommu layer") this use of the now obsolete counters
-in struct zpci_device was missed as was their removal. Fix this by
-resetting the new counters and removing the old ones.
+On Tue, Oct 03, 2023 at 04:35:49PM -0700, Nicolin Chen wrote:
+>commit d5afb4b47e13161b3f33904d45110f9e6463bad6 upstream.
 
-Fixes: c76c067e488c ("s390/pci: Use dma-iommu layer")
-Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
----
-Note: This is based on and references commit IDs from Joerg Roedel's
-iommu/next branch and should go in via the iommu tree.
----
- arch/s390/include/asm/pci.h |  4 ----
- arch/s390/pci/pci.c         | 13 ++++++++++---
- 2 files changed, 10 insertions(+), 7 deletions(-)
+Queued up, thanks!
 
-diff --git a/arch/s390/include/asm/pci.h b/arch/s390/include/asm/pci.h
-index 3f74f1cf37df..e91cd6bbc330 100644
---- a/arch/s390/include/asm/pci.h
-+++ b/arch/s390/include/asm/pci.h
-@@ -173,10 +173,6 @@ struct zpci_dev {
- 	struct zpci_fmb *fmb;
- 	u16		fmb_update;	/* update interval */
- 	u16		fmb_length;
--	/* software counters */
--	atomic64_t allocated_pages;
--	atomic64_t mapped_pages;
--	atomic64_t unmapped_pages;
- 
- 	u8		version;
- 	enum pci_bus_speed max_bus_speed;
-diff --git a/arch/s390/pci/pci.c b/arch/s390/pci/pci.c
-index 563cb72d9ed0..63fd9e1d9f22 100644
---- a/arch/s390/pci/pci.c
-+++ b/arch/s390/pci/pci.c
-@@ -157,6 +157,7 @@ int zpci_unregister_ioat(struct zpci_dev *zdev, u8 dmaas)
- int zpci_fmb_enable_device(struct zpci_dev *zdev)
- {
- 	u64 req = ZPCI_CREATE_REQ(zdev->fh, 0, ZPCI_MOD_FC_SET_MEASURE);
-+	struct zpci_iommu_ctrs *ctrs;
- 	struct zpci_fib fib = {0};
- 	u8 cc, status;
- 
-@@ -169,9 +170,15 @@ int zpci_fmb_enable_device(struct zpci_dev *zdev)
- 	WARN_ON((u64) zdev->fmb & 0xf);
- 
- 	/* reset software counters */
--	atomic64_set(&zdev->allocated_pages, 0);
--	atomic64_set(&zdev->mapped_pages, 0);
--	atomic64_set(&zdev->unmapped_pages, 0);
-+	ctrs = zpci_get_iommu_ctrs(zdev);
-+	if (ctrs) {
-+		atomic64_set(&ctrs->mapped_pages, 0);
-+		atomic64_set(&ctrs->unmapped_pages, 0);
-+		atomic64_set(&ctrs->global_rpcits, 0);
-+		atomic64_set(&ctrs->sync_map_rpcits, 0);
-+		atomic64_set(&ctrs->sync_rpcits, 0);
-+	}
-+
- 
- 	fib.fmb_addr = virt_to_phys(zdev->fmb);
- 	fib.gd = zdev->gisa;
+We don't need the addition of a stable tag here as the bot suggests,
+it's just being silly...
 
----
-base-commit: 8e5ab3f54a1061c2be3e1fbcda01fbe604c3450e
-change-id: 20231002-dma_iommu_fix-0a5397992f15
-
-Best regards,
 -- 
-Niklas Schnelle
-Linux on Z Development
-
-IBM Deutschland Research & Development GmbH
-Vorsitzender des Aufsichtsrats: Gregor Pillen
-Geschäftsführung: David Faller
-Sitz der Gesellschaft: Böblingen / Registergericht: Amtsgericht Stuttgart, HRB 243294
-IBM Data Privacy Statement - https://www.ibm.com/privacy 
-
+Thanks,
+Sasha
