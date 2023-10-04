@@ -1,218 +1,154 @@
-Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2079.outbound.protection.outlook.com [40.107.95.79])
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2057.outbound.protection.outlook.com [40.107.220.57])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E28B3FB09
-	for <iommu@lists.linux.dev>; Tue,  3 Oct 2023 23:41:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0ECE23C8
+	for <iommu@lists.linux.dev>; Wed,  4 Oct 2023 06:26:32 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Iojm56ShpfIM2XxhXWYFqbOAkvbiX/UcjnINzqoVXNB5+pm5X9yEcD2d3OwDXzYkS48xpOTT9KABGK1cLVUxcAw3OptXlMcPNifidqM6ptJZWZYItuwjJxJUnuKvUJnuZukoIaTxjrelq3DDw1q7Nhmq6JJ1j3iKdgmoIh80Q6kLZa0ZjeTILqfZ7Usrbyc82qqhPAeGvjEr4raoSybQBx8jNcrHQGRvKXmYXUCok/e1cnlGig06wJPAYR96qjwD13hvdTPkwg+JTbAspwNpkON9e2zpZYg1boeGrvjshuZHTDTNpoPfxjbnpyrc27s0lar2OjseUHQvDp3bQ0lJ6g==
+ b=G9jqWu5lKZYUnxypNdB/BJINEkZGUjjWWHweVqnVUovQqEuYdlX/vVm/wE4iYUfOoT2TD9bzJIRVNPTvOpqIcdQgcO7xFa8okw/bgCzEnKaRtiFmTYg/vRF9KBsFki0YVEewsRgIhNOyNPyuJS0MJq1BdysgSUiHSsX7TpJl9ueimbvjfqSKstD/hduP3UzEmpWYxGwrh3vRb589k64zx8J7PR71TSMEyjk7VsLsBOrCuDwMQrnSi7dJUr7l84DY2cq17aTLZRxO6Ts1e6Qp4nV2AAzmxDyEGSaVgPFWcKZFB2Xr1JlzlF0lX4iuIg5/TJgpi0lQ9y+oxlwDFtj85g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=shVzl7tqadxdNbGieSFBFumDkM+1ZWtMX0H611mx9jI=;
- b=Afjetq8zrd+hoZf8JEUIf4fh4xkTdXTKzYmlIR+whjEPNzpKQbhh/vOh36fk57Q8JHorNHaXlXinLnN/ri/832Aa+RliNLk2brITs/1k5h9u6QKCRm/7hIrfjfOC5Mz5GmRb59lByVaaEtKQbK82d1jkI31t9TCLHkjXqOpf2afJ4VCmLeXnf6W+vB3nn06hGVi6c6udDM1GKmqZD9Rk7gD2sy08Q7PS4xaTbo9oaSOS8xMZ6ZrPUGv987m+EoAdzCjAmiNaTHf6/nWSWBiS3Zbs8D99Y5J5VqyGH1oWNb3XzsjhuJTU+XQHGAg2mdz4TnyXRk/xaCR46Rc2rWE3QA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.233) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
+ bh=oyNcEQFk9s11nRzIFaJp0XhsAi8cCRh08F+qa/fUztk=;
+ b=DFScXOjd/83iMQJhggu6LITMq8ILlaGT1XA4Fur7z/7p2ZUAtp0knYTN78OVhg+9rqWCy1TI+5Q69LoxMf+YCWoO61oO4Z6u0wciFSAWDVc2rO/rKgO6AXAP1I2lhqvg4HkmKv0blxl892prmJlc20lROkbwcNiKf5dXvOEdZFK1yRT9GLq74fUrBNr2NMmY2LcWQyQZYN3IFwOJZrXSjCoSbPy07Kp1ujGacnJGXuZ9RxMRnfZ66jbVgxq/QK1b1L+QG8cHOWg8+HGlAo/WX6R97CGKcT+/xGgdTlbJoHGyrNS/agTvVIPodQnktIkAWfjDuU6JdeaXLo/7BB73dQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=shVzl7tqadxdNbGieSFBFumDkM+1ZWtMX0H611mx9jI=;
- b=ttLkgER4e8p/YhP2mnDR1Qsm8WV6QaIV1XkZqSVeCRiDZFiDyuzbRZNWLGxqwGYJ4e03ypXUC1xOuVsjYaAzaTAjKTsYKGN8JBCQ7txdCdwBRM4HIpYzfvQjqYMQv+gPuJdcO91LmLrwtrMQTOnLaZnhp7mgl1sgzRPwtCACqQA5TCogg9ecOgh6GsK2/v/3hVL2d/6qNmwA3EbcOajdq4Ql8z8V45yVd0CBqYNQrJun8GEKCf9F/dAQkGjMxsoOkkdhnAlVm+qBUF5D5ybKxB8z4X0cOEaHUatmui+3Xq1oSsMedcBssUx4+grYsbn37i5x9W3eIwzFIO5wDAAIqA==
-Received: from DS7PR05CA0022.namprd05.prod.outlook.com (2603:10b6:5:3b9::27)
- by MW6PR12MB8866.namprd12.prod.outlook.com (2603:10b6:303:24c::16) with
+ bh=oyNcEQFk9s11nRzIFaJp0XhsAi8cCRh08F+qa/fUztk=;
+ b=D5VPpcaRn6EgUpcUhgQ7+ohiDMFfPYXOd3WWXkuvuTmJrjK+DEiWxVmAp9hgiMnB6Zikc7Z4uWOdh4snb91/XcuLEWn7CnOa7j3I5ox6HLO2sHU6le7s4SXkVklNNeTLF6qH5XNNtKxrxxP93TsXXFlh9SmhoKgrMJjatcx2+UU=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from BN8PR12MB3587.namprd12.prod.outlook.com (2603:10b6:408:43::13)
+ by IA1PR12MB6331.namprd12.prod.outlook.com (2603:10b6:208:3e3::6) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6813.25; Tue, 3 Oct
- 2023 23:41:48 +0000
-Received: from DS3PEPF000099DD.namprd04.prod.outlook.com
- (2603:10b6:5:3b9:cafe::1a) by DS7PR05CA0022.outlook.office365.com
- (2603:10b6:5:3b9::27) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6863.25 via Frontend
- Transport; Tue, 3 Oct 2023 23:41:48 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.233) by
- DS3PEPF000099DD.mail.protection.outlook.com (10.167.17.199) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6838.14 via Frontend Transport; Tue, 3 Oct 2023 23:41:47 +0000
-Received: from drhqmail201.nvidia.com (10.126.190.180) by mail.nvidia.com
- (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Tue, 3 Oct 2023
- 16:41:47 -0700
-Received: from drhqmail202.nvidia.com (10.126.190.181) by
- drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.41; Tue, 3 Oct 2023 16:41:46 -0700
-Received: from Asurada-Nvidia.nvidia.com (10.127.8.10) by mail.nvidia.com
- (10.126.190.181) with Microsoft SMTP Server id 15.2.986.41 via Frontend
- Transport; Tue, 3 Oct 2023 16:41:46 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: <sashal@kernel.org>, <stable@vger.kernel.org>
-CC: <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
-	<jgg@nvidia.com>, <jean-philippe@linaro.org>, <baolu.lu@linux.intel.com>,
-	<apopple@nvidia.com>, <linux-kernel@vger.kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>
-Subject: [PATCH v2][6.5, 6.1, 5.15] iommu/arm-smmu-v3: Fix soft lockup triggered by arm_smmu_mm_invalidate_range
-Date: Tue, 3 Oct 2023 16:41:44 -0700
-Message-ID: <20231003234144.34383-1-nicolinc@nvidia.com>
-X-Mailer: git-send-email 2.42.0
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6813.20; Wed, 4 Oct
+ 2023 06:26:30 +0000
+Received: from BN8PR12MB3587.namprd12.prod.outlook.com
+ ([fe80::a7fa:4411:67a3:131d]) by BN8PR12MB3587.namprd12.prod.outlook.com
+ ([fe80::a7fa:4411:67a3:131d%4]) with mapi id 15.20.6838.027; Wed, 4 Oct 2023
+ 06:26:30 +0000
+Message-ID: <f7ee378e-6fd4-620f-abf9-2a8aa3643f94@amd.com>
+Date: Wed, 4 Oct 2023 08:26:26 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.15.1
+Subject: Re: dma_map_resource() has a bad performance in pcie peer to peer
+ transactions when iommu enabled in Linux
+Content-Language: en-US
+To: Robin Murphy <robin.murphy@arm.com>,
+ Kelly Devilliv <kelly.devilliv@outlook.com>,
+ "joro@8bytes.org" <joro@8bytes.org>, "will@kernel.org" <will@kernel.org>
+Cc: "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <TY2PR0101MB3136A7480B842E009BCBDA8384C3A@TY2PR0101MB3136.apcprd01.prod.exchangelabs.com>
+ <13d73200-2d53-7f95-fb93-5b5f422251cd@arm.com>
+From: =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>
+In-Reply-To: <13d73200-2d53-7f95-fb93-5b5f422251cd@arm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: FR0P281CA0005.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:15::10) To BN8PR12MB3587.namprd12.prod.outlook.com
+ (2603:10b6:408:43::13)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS3PEPF000099DD:EE_|MW6PR12MB8866:EE_
-X-MS-Office365-Filtering-Correlation-Id: 7e735bb5-e6e8-4221-f437-08dbc46a4f59
+X-MS-TrafficTypeDiagnostic: BN8PR12MB3587:EE_|IA1PR12MB6331:EE_
+X-MS-Office365-Filtering-Correlation-Id: ecc8777c-778b-4292-fef1-08dbc4a2d87a
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	FpioRC+QrQDpAnrbLSbqK3D5lYrT51xxn7Yu0YmvpIbHg9W4ObJq2uoTGm2KpUShZ5cXGRlDfeA++IDXxlj3P2Z2fvn7ohxgd2nqbv1YVWvi5lmXq3ZcmfHN+Ssxf6grCovhibkQkf93YMcqmitbd+mquzM74gbXlzAD0eoTS1JD6Ou1ha5/sqPd7FFaXZM39ns2QIy9lCfaivbkDt6WohkECBhZZws/7AK3XjIJuzY02NOUnkMzJELjZu+hJwCnY2HUQIMJ0q2J6ydwr+mcYjTHueZQdmq1S7KyUAGUKd6EKLxyg2TpXZcHuSFidMn7TELtMGPDUwzZ8LjY4GZenPG+7yujAtXRE3wQbqwuox8f1O4AiEWD6XvJ5ojfhjtfk8PF+yqm16mOLbhTJ7TWRD+T7rM62w8M5MEc6PKi3SElR4kSZMKh3Qxz6STkFXCPw2Gvduon4uWBzexovUIhW74pzn9PxTAmhn/owm2e2XCgx+YInyemH2yB3UqxTWvx2WlUbBzKADoBv5bqFm/5GbMFF1zMk01XOBKpsELWlg7h3ktLqpitypbKwJwkHz0LzcF4WUcfaUko6JWeFAYaRyU6wMNFDONgokVThraNHCpRCANPwFEDCwPwAONq7CKldXKosPifK2vINmrngJUjyl9tmV/NC/x6c+BFQp2AcTNtLyjxwYKW5LFoKKYBtD/4M5O04YtDKNmxMkAZXQ1kc2T+awk0k2c5Eqh8+mITrRi+1fTI03EETAlsjPS00JqPHVBXwfNdGbiXnLNEt9oXVZynKXHRF9LyYTrRPLrZ06vizP6qPR5ytCE3GvW0q4xCrgotRBmE4B2e+FUPQ6A3zQ==
+	IfEwoz3Y5M8qB/aoWisH9/OdaenO1USrj10bsyEESBzpnB+uUHmF8b8bXT1P9lwwoRgP1tkPdbTYkRoA2gY7fhKQoGxxAGJTKYoYV7fT1x6crZNk0LwknZvO7ZigoeqQ1noX0xUBB42qDwugqL7kwwh0BE9365ufaazoFWXOOAcQ4zBZvtyrrusWd8UF2Tg2M/nLbcGnfIVC3MFqXMXIxowKPPFYDXVqZ0Lnh2Gz7OlVbgvqDqxcbdg8MpKGXIBd85jTFXW7eXlSem0O7SC1ZGI0df1kIDvV45deHLXzm5x6SGmQ5mckDOs+DriPSvVHKRT7BYOWXTphXbvYg3uDwbeHJsUFDGulKaFcUM09yBZAgq2tACuQ64mfIUHOgsf48HK0r37ukCd7ea5CrolRaIEaLC8I1sfk5hENR+dspZCmB+wROJAc84Va+L7l+SRdT+JVfAPmA852Fv9TJO83nBKrYu6BMLUWFc12n1+qZOm2LdGf6RrMaX8K0JY155vAASWosIh6jOHFK+yxoU2JS6L5OgEHNWDOU3I9ZmkCq/ySZEjHevMbOohOxFEazzTB8WQgMqNtzcHJQir9ccou5rdZYuz3lNJiJlKXsSmjLB3v4aPaTpQnsWpdG2X4EogdX06UBkfDyGaAEv7GVvvBDw==
 X-Forefront-Antispam-Report:
-	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230031)(4636009)(39860400002)(346002)(376002)(136003)(396003)(230922051799003)(1800799009)(82310400011)(64100799003)(451199024)(186009)(46966006)(36840700001)(40470700004)(7696005)(2616005)(40460700003)(36756003)(7636003)(356005)(86362001)(40480700001)(82740400003)(36860700001)(426003)(336012)(26005)(47076005)(7416002)(2906002)(966005)(1076003)(478600001)(83380400001)(8936002)(8676002)(316002)(4326008)(41300700001)(54906003)(5660300002)(70586007)(70206006)(110136005)(2101003);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Oct 2023 23:41:47.8523
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN8PR12MB3587.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(346002)(366004)(136003)(396003)(376002)(39860400002)(230922051799003)(451199024)(186009)(1800799009)(64100799003)(36756003)(26005)(2616005)(5660300002)(83380400001)(6506007)(41300700001)(8676002)(38100700002)(4326008)(8936002)(6486002)(6666004)(53546011)(478600001)(31686004)(66946007)(110136005)(66556008)(54906003)(316002)(66476007)(86362001)(31696002)(6512007)(2906002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?MmcxUkQ1Y0pNNmtsWnM5V2pNck03SmtlUlYvbUVHY0RQeGRxODBNd1pEU2xq?=
+ =?utf-8?B?Y24rRmZkenc5dmZGUGYzTDU2SHdRNjZEc2J3NXY3ODAzM1JDSWRINHZzcUxz?=
+ =?utf-8?B?WS83Sll2UGxvbXpVV2I3eWYrWU9yTGV6NWdZR3VNdjRhdlJ0b2dQUXpHa0JY?=
+ =?utf-8?B?ODU0YTFCaTZzTG1EUTh0ekRzSUs5V1BvWFgzT2ZyajIzcTdkOUdxUUttaURu?=
+ =?utf-8?B?eFZHMUlLTHFkWVBEN0tHQWg0R0dERysxb3doWENTMmRzaWVLNXhkNWdLcVdK?=
+ =?utf-8?B?bmpjeXRkZFJMUURGNWdjY3ZHb3drSWlPbndPOWl5RXVZTGI2UHpLdHpnV1Zw?=
+ =?utf-8?B?cWhodGRNeEd5MEVuVndFMHVtK1c5QXlFYnBGckE1REFza2JEZnBwYU1jcUF2?=
+ =?utf-8?B?RTBZU24zOFNlUUl6bHE3R0Nwcm9sQ3BoNzJINlY4OUZncUNRaUgzZmlSYnNx?=
+ =?utf-8?B?RWVScVlhSXNpUWtzL1hJc1hISzh0RmkwUWpVYWpCQTgzYXFxZG1YOElYQ1hP?=
+ =?utf-8?B?SlpKbVBDSm9TeUs3SGoydG1QYVFTWmFXeTBxb2xXL2hUcndKdWlLN1BYVS9U?=
+ =?utf-8?B?cWp0dU9mSlR4a25yTHlCRnkwQ2VhdEI4R0s1bytnQjRlMU1XTGVIYkVHMHhR?=
+ =?utf-8?B?NUsrK3gwTGxleGRKRis5ZnBzWGpValFSNHdaeURTNERxRkZVcXBVZkthaVNt?=
+ =?utf-8?B?RE43U3RYZ2locXY0OUY3OWRTblN1WmQxYXJRT3dHR3V5Wndpc1BCU0VXUWJk?=
+ =?utf-8?B?Nml2L0dSMUxEbm5ZT2JwcWhUcE5lWFNFOGgzZy9DanExQTJrWFNlYnl2aVIw?=
+ =?utf-8?B?UlQyckxrUVFlS0VsWDM1bUIwK3BhMFJWOHdqZ1ZnUUJxWW0yS2VxaW40V0hQ?=
+ =?utf-8?B?dlB5U0ozZFFjZkNHZUM2MnZlVUNqR3c1bXNzQkx0bTZkOW8vZWp6Qk5iVjlx?=
+ =?utf-8?B?dXRvVWNna0hSK1ptUVNhd1pKYTQ1THAxZ1lHZzhVNWZrNWozNTBDbVJ4bVB2?=
+ =?utf-8?B?QkVtd1ZONENUS1NMOHFRNDV6NlIxM1FMOWhaU0hFWVJtY3JTa2N6TVlLc0tB?=
+ =?utf-8?B?OUxYdGtPRHNCckpWV3dWRHc3ay9PZHp1ZG1yVThSczBDcTRhSHowZXQ2TzVy?=
+ =?utf-8?B?TGtOZXEvWnhpb3FVclZROTRtRnFEeHZvL2RHMW1IQkFYdnBBKzBQSXFlcjBS?=
+ =?utf-8?B?ZzhWYnZBZENwTkp3TjF6aGZwUWQwL0w4cmIrV1MrT09uOTlzWWVMMjNNc0l5?=
+ =?utf-8?B?a205TXlZMk1GNHJjWGhHcU9hVDFRZHArdWFBbDk3QXh2bjVXY2hZS0NlWEVi?=
+ =?utf-8?B?WjZoYkU5SVhjRHliR2JRN1hoa2YydE5URis4Z2tCRnlCdHc0Z2lHTVI3bnl1?=
+ =?utf-8?B?bEtKRDdYdlR1RVJRMHE5emMxMUJiN1BHYnA2aE95bHltMEhSb0hvcktuemhF?=
+ =?utf-8?B?eHhDQUR6VVNpTCt2UUYyZmNwS3lNYjEvTkhHaG9OSUxoczY3OWJWa0h6K284?=
+ =?utf-8?B?UkNaNU5oNEU4SThJYk1QOWZkc1UzbWVFMWgyU0xpclRtSXJheFU5SUdRZGlL?=
+ =?utf-8?B?SkZkRHNBblh3OUhhVklYVWpBc1YxOFlsbG9MVWZKTThtUURYY1N1Y0FrUWl2?=
+ =?utf-8?B?NlM1b0NTZ0tHK2hjdi95NWVhcFhGeHp5VThyMXpUZDk1SUxxYk5JVk5CU3hQ?=
+ =?utf-8?B?UTd0MHN2dno0SVB3QXhQWkRYei9wbFJwaXArQmtjZGFWOEtWT3RtQUw1amdM?=
+ =?utf-8?B?M2IzTHpTY0NHZ3hTdDhDNnBBUzU4d29TMEFhYlRXdjBLOXhadkpRbmFEQTVE?=
+ =?utf-8?B?TlI5eVRuS1JDTE5uRWdlMDRwVkpPWWFxRllDdjRpMFVoRlVXbFM3b1ZKY2sx?=
+ =?utf-8?B?QTBDRm53dlFFM1AvMkNZTzEzcTRNb0N3NG5ndlZkYnAvZW1WaHYwZEJvT2d1?=
+ =?utf-8?B?NTBPc2hiUWJlc1BpWldrTGJGbFZrOVJxcWlmLzFEQXVJM2lRbnZ2ZU1BS3Rh?=
+ =?utf-8?B?bWExQjNnelZxajd1ZnBWYklPK1E5cElERlJGZ1BMeW9paTRpT0V1MzV3T1ZB?=
+ =?utf-8?B?aGR2YVhmaGlGV1BEcm42aU80ZkVFSlU3WGg1UzdKNERSNGFtM0c1ZHFzNTZI?=
+ =?utf-8?Q?gO1c=3D?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ecc8777c-778b-4292-fef1-08dbc4a2d87a
+X-MS-Exchange-CrossTenant-AuthSource: BN8PR12MB3587.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Oct 2023 06:26:30.0922
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7e735bb5-e6e8-4221-f437-08dbc46a4f59
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	DS3PEPF000099DD.namprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW6PR12MB8866
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: VD673md6vsCpXpRcgwT24ZTGp7RU8hE7cQPzHb/dbgOSdak+fNa7Kb/CYBhmd/9k
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB6331
 
-commit d5afb4b47e13161b3f33904d45110f9e6463bad6 upstream.
+Am 02.10.23 um 22:08 schrieb Robin Murphy:
+> On 2023-09-26 16:30, Kelly Devilliv wrote:
+>> [SNIP]
+>> Hi Robin,
+>>
+>> Is there any chance to extend the dma_map_resource() API as discussed 
+>> above?
+>
+> As Christoph says, no. There are things one could do to make a 
+> minimal-effort bodge in a downstream kernel, but upstream we already 
+> have a dedicated PCI peer-to-peer API, so we have no reason and no 
+> desire to also attempt to crowbar P2P support into a different API 
+> which isn't designed for it. Sure there exist some drivers that went 
+> ahead of the game and did their own thing before we realised that 
+> dma_map_resource() just fundamentally wouldn't be a good fit for P2P 
+> as initially suggested, but all that means is that if they're still 
+> doing that today, they're now lagging behind and it's on them to 
+> update to the newer solution if they want to benefit from all its 
+> goodness. Note that this isn't just maintainer semantics or relatively 
+> straightforward things like memory attributes; I believe the proper 
+> API can also handle stuff like direct P2P when you do have an IOMMU 
+> but don't have ACS upstream redirect, which dma_map_resource() could 
+> never do.
 
-When running an SVA case, the following soft lockup is triggered:
---------------------------------------------------------------------
-watchdog: BUG: soft lockup - CPU#244 stuck for 26s!
-pstate: 83400009 (Nzcv daif +PAN -UAO +TCO +DIT -SSBS BTYPE=--)
-pc : arm_smmu_cmdq_issue_cmdlist+0x178/0xa50
-lr : arm_smmu_cmdq_issue_cmdlist+0x150/0xa50
-sp : ffff8000d83ef290
-x29: ffff8000d83ef290 x28: 000000003b9aca00 x27: 0000000000000000
-x26: ffff8000d83ef3c0 x25: da86c0812194a0e8 x24: 0000000000000000
-x23: 0000000000000040 x22: ffff8000d83ef340 x21: ffff0000c63980c0
-x20: 0000000000000001 x19: ffff0000c6398080 x18: 0000000000000000
-x17: 0000000000000000 x16: 0000000000000000 x15: ffff3000b4a3bbb0
-x14: ffff3000b4a30888 x13: ffff3000b4a3cf60 x12: 0000000000000000
-x11: 0000000000000000 x10: 0000000000000000 x9 : ffffc08120e4d6bc
-x8 : 0000000000000000 x7 : 0000000000000000 x6 : 0000000000048cfa
-x5 : 0000000000000000 x4 : 0000000000000001 x3 : 000000000000000a
-x2 : 0000000080000000 x1 : 0000000000000000 x0 : 0000000000000001
-Call trace:
- arm_smmu_cmdq_issue_cmdlist+0x178/0xa50
- __arm_smmu_tlb_inv_range+0x118/0x254
- arm_smmu_tlb_inv_range_asid+0x6c/0x130
- arm_smmu_mm_invalidate_range+0xa0/0xa4
- __mmu_notifier_invalidate_range_end+0x88/0x120
- unmap_vmas+0x194/0x1e0
- unmap_region+0xb4/0x144
- do_mas_align_munmap+0x290/0x490
- do_mas_munmap+0xbc/0x124
- __vm_munmap+0xa8/0x19c
- __arm64_sys_munmap+0x28/0x50
- invoke_syscall+0x78/0x11c
- el0_svc_common.constprop.0+0x58/0x1c0
- do_el0_svc+0x34/0x60
- el0_svc+0x2c/0xd4
- el0t_64_sync_handler+0x114/0x140
- el0t_64_sync+0x1a4/0x1a8
---------------------------------------------------------------------
+The problem is that the new API requires to have struct pages for PCIe 
+resources which the graphics drivers absolutely don't want to do.
 
-The commit 06ff87bae8d3 ("arm64: mm: remove unused functions and variable
-protoypes") fixed a similar lockup on the CPU MMU side. Yet, it can occur
-to SMMU too since arm_smmu_mm_invalidate_range() is typically called next
-to MMU tlb flush function, e.g.
-	tlb_flush_mmu_tlbonly {
-		tlb_flush {
-			__flush_tlb_range {
-				// check MAX_TLBI_OPS
-			}
-		}
-		mmu_notifier_invalidate_range {
-			arm_smmu_mm_invalidate_range {
-				// does not check MAX_TLBI_OPS
-			}
-		}
-	}
+Allocating struct pages for memory mapped I/O simply doesn't make to 
+much sense when the underlying resource is not even memory.
 
-Clone a CMDQ_MAX_TLBI_OPS from the MAX_TLBI_OPS in tlbflush.h, since in an
-SVA case SMMU uses the CPU page table, so it makes sense to align with the
-tlbflush code. Then, replace per-page TLBI commands with a single per-asid
-TLBI command, if the request size hits this threshold.
+Regards,
+Christian.
 
-Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-Link: https://lore.kernel.org/r/20230920052257.8615-1-nicolinc@nvidia.com
-Signed-off-by: Will Deacon <will@kernel.org>
-Cc: stable@vger.kernel.org
----
-
-Changelog
-v2
- * Added missing "Cc: stable@vger.kernel.org" line
-v1 https://lore.kernel.org/stable/20231003233549.33678-1-nicolinc@nvidia.com
-
- .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   | 27 ++++++++++++++++---
- 1 file changed, 24 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-index a5a63b1c947e..98d3ba7f9487 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-@@ -186,6 +186,15 @@ static void arm_smmu_free_shared_cd(struct arm_smmu_ctx_desc *cd)
- 	}
- }
- 
-+/*
-+ * Cloned from the MAX_TLBI_OPS in arch/arm64/include/asm/tlbflush.h, this
-+ * is used as a threshold to replace per-page TLBI commands to issue in the
-+ * command queue with an address-space TLBI command, when SMMU w/o a range
-+ * invalidation feature handles too many per-page TLBI commands, which will
-+ * otherwise result in a soft lockup.
-+ */
-+#define CMDQ_MAX_TLBI_OPS		(1 << (PAGE_SHIFT - 3))
-+
- static void arm_smmu_mm_invalidate_range(struct mmu_notifier *mn,
- 					 struct mm_struct *mm,
- 					 unsigned long start, unsigned long end)
-@@ -200,10 +209,22 @@ static void arm_smmu_mm_invalidate_range(struct mmu_notifier *mn,
- 	 * range. So do a simple translation here by calculating size correctly.
- 	 */
- 	size = end - start;
-+	if (!(smmu_domain->smmu->features & ARM_SMMU_FEAT_RANGE_INV)) {
-+		if (size >= CMDQ_MAX_TLBI_OPS * PAGE_SIZE)
-+			size = 0;
-+	}
-+
-+	if (!(smmu_domain->smmu->features & ARM_SMMU_FEAT_BTM)) {
-+		if (!size)
-+			arm_smmu_tlb_inv_asid(smmu_domain->smmu,
-+					      smmu_mn->cd->asid);
-+		else
-+			arm_smmu_tlb_inv_range_asid(start, size,
-+						    smmu_mn->cd->asid,
-+						    PAGE_SIZE, false,
-+						    smmu_domain);
-+	}
- 
--	if (!(smmu_domain->smmu->features & ARM_SMMU_FEAT_BTM))
--		arm_smmu_tlb_inv_range_asid(start, size, smmu_mn->cd->asid,
--					    PAGE_SIZE, false, smmu_domain);
- 	arm_smmu_atc_inv_domain(smmu_domain, mm->pasid, start, size);
- }
- 
--- 
-2.42.0
+>
+> Thanks,
+> Robin.
 
