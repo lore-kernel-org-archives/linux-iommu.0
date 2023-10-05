@@ -1,61 +1,61 @@
-Received: from mail-qt1-f176.google.com (mail-qt1-f176.google.com [209.85.160.176])
+Received: from mail-qk1-f172.google.com (mail-qk1-f172.google.com [209.85.222.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A360B38BB5
-	for <iommu@lists.linux.dev>; Thu,  5 Oct 2023 18:49:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4F30405C4
+	for <iommu@lists.linux.dev>; Thu,  5 Oct 2023 18:49:59 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="d3BxdETP"
-Received: by mail-qt1-f176.google.com with SMTP id d75a77b69052e-419c8911049so7644211cf.1
-        for <iommu@lists.linux.dev>; Thu, 05 Oct 2023 11:49:16 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="R1fL8W7B"
+Received: by mail-qk1-f172.google.com with SMTP id af79cd13be357-7740cedd4baso88413585a.2
+        for <iommu@lists.linux.dev>; Thu, 05 Oct 2023 11:49:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1696531755; x=1697136555; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1696531798; x=1697136598; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=ftxOEPJW1rckghtvt8DSd7lLtI0tEVMwZjbURy6macw=;
-        b=d3BxdETPR8GbubCCTQEkyM1kRocdMuSwPPPtLwLA1LCcXfBqIjBY1cD26qob3pjvhC
-         382FY7QSOTYKjgdTOTUqjY0CqgYYTg3A3J3IXd4YggWxQaG++pcW3NhADtnPibqjHSTN
-         35bbHQ7o6zzlThQFzc2y/4u28OAHG7nGsbgwxeheIdAgY2ur4eO89ZmPVOzbSHB3tCH6
-         lgEwBJIHIeG2Slr7LZ/O7adfQIEwTow515+tzsJaez5s6Vrn+vQRyhj+L4H7VSvyv4jv
-         66ucqo0vhRZ3CG8prCmyzlRhcjSp2MmK8chnr0KchMzpiKBjjThZfps1NMzKBWAMh3a+
-         1ExQ==
+        bh=uEUBHmO4oSTKiWUy3dq5rRvK6vcXZtKKFUQd3G4W35k=;
+        b=R1fL8W7Bfpd3O3AI7dEdXhSprlHW5SWVbqpAXKuZw8Y0fhWukPfSO2te2slmCdSyaa
+         ONm7fe/sflfaN8c7Twhx+c3IanR/vqlQRwgr3ItJT+FzxriWAWHA9ZD5xlNOstcSrYjJ
+         i+P+OrZ0qndlWMThtEQSzKkZ8cAoR0jRJqFCPaN2Hm410IGUoUDZvi2I1uwf9IFOAEJ7
+         3eRnWIlHu1pAe1cyK4uIp0ADRxWoq+99NbiaEmOC0uFiKYUL5OgIHCRwCmsp8ChA5J4k
+         wZxJUxFsDb4DeDeSD7FBOUBeWc4NVeKlNQs0Iw+nk+i1MfRmnira9gsrDhT3iycPw51D
+         yvhA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1696531755; x=1697136555;
+        d=1e100.net; s=20230601; t=1696531798; x=1697136598;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=ftxOEPJW1rckghtvt8DSd7lLtI0tEVMwZjbURy6macw=;
-        b=JL6N30elHfgx6/wb2fkglECqr27vSCmbiKTAtlgp8SS98I1WiGkCvh67ve1GrUb2IV
-         iFYXnzR57+g1sOTHhW5iO6GTS793q7MBzkt6ZOEOhYpwhfVr0TAaqvxBdX+WJy9akwzT
-         WBUATuk8+rx83f2zhCUdpfUoPjoJlsm24zcsokJldYZ2phwusbFIlSGuJh25qppqmr4o
-         uNK+1oOvpz5pCGDiZZneA3Ow2fO3jOkfEVTq8vXsEork74jOIVL/vJaqRg3uaVywsYjL
-         NJYzOnN3K7w80xZoP1SGB4+V+dtgdW8JgD6+TTon1qS+4Y9WCDNnsyeDNr1SGvYPZLsi
-         XCow==
-X-Gm-Message-State: AOJu0Ywb4qV7WKXKWiTbLALQsQT4+gyVsbrk9ECpEW9wgaSE7LzOpXeq
-	IvDNZv8+Gpae+yqiRQHitVqNbQ==
-X-Google-Smtp-Source: AGHT+IFS7T8aTHEEQCpK5XZbn9bYJAs8GTcH67a+kIKA/dbNAgv/8+/6Fb+kHkwEyNlWV7wHeziYWw==
-X-Received: by 2002:ac8:58d0:0:b0:403:ed26:4083 with SMTP id u16-20020ac858d0000000b00403ed264083mr7375927qta.61.1696531755314;
-        Thu, 05 Oct 2023 11:49:15 -0700 (PDT)
-Received: from ziepe.ca ([142.68.26.201])
-        by smtp.gmail.com with ESMTPSA id m3-20020ac84443000000b0041520676966sm674475qtn.47.2023.10.05.11.49.14
+        bh=uEUBHmO4oSTKiWUy3dq5rRvK6vcXZtKKFUQd3G4W35k=;
+        b=bDQrKoCeJsVljl/2m9uANR6TLXLUWWBhjbtcoTe0FpifcthrbizBRTG8gwJijGWss3
+         YyrWk3AufykD0HXySUW4my37MpzVjZeNHJ/ki9X+H3YAx6K8ATdACsr0baNzn/76i5+0
+         J72H/MaGgWDNYA4Av+hH9oSPEUDx0YNP/4g5zvAbitNnHnLMTzHH47BuqyQpwh/24Wa3
+         zQL6RHZh589ToXpKO37pOduL6Fipz8WAvko/MgLo3JcXudjhOODUWiBQID0bYfEGFS0p
+         mEiNrrC2VdK6oW6qUVcp3ZoWm3umBZA2dHAimo7GTqDQFBf3VWdmyGLw83j5ABWp/hMR
+         3c7A==
+X-Gm-Message-State: AOJu0YyQhVL2pBe6Hmyt5SeSc9sJKJcD4dcMHK9FRwDdmViXBPpnY0w1
+	DXhE8l56v4WKUUQaHq6xSqMCBA==
+X-Google-Smtp-Source: AGHT+IEYC20BC1N5PA3gTmAKCxQySylj6S2PPzcS+TN9Nf4nkusD/9nv9hcsp7t8uHVeZNgRY2U4TQ==
+X-Received: by 2002:a0c:b312:0:b0:65d:6665:b422 with SMTP id s18-20020a0cb312000000b0065d6665b422mr5136260qve.33.1696531798420;
+        Thu, 05 Oct 2023 11:49:58 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-68-26-201.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.26.201])
+        by smtp.gmail.com with ESMTPSA id i9-20020a0cf109000000b006263a9e7c63sm691247qvl.104.2023.10.05.11.49.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Oct 2023 11:49:14 -0700 (PDT)
+        Thu, 05 Oct 2023 11:49:58 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.95)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1qoTPM-004Z7D-Cd;
-	Thu, 05 Oct 2023 15:49:12 -0300
-Date: Thu, 5 Oct 2023 15:49:12 -0300
+	id 1qoTQ5-004Z83-Dw;
+	Thu, 05 Oct 2023 15:49:57 -0300
+Date: Thu, 5 Oct 2023 15:49:57 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
 To: Tina Zhang <tina.zhang@intel.com>
 Cc: Kevin Tian <kevin.tian@intel.com>, Lu Baolu <baolu.lu@linux.intel.com>,
 	Michael Shavit <mshavit@google.com>,
 	Vasant Hegde <vasant.hegde@amd.com>, iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 4/6] mm: Add structure to keep sva information
-Message-ID: <20231005184912.GU13795@ziepe.ca>
+Subject: Re: [PATCH v5 5/6] iommu: Support mm PASID 1:n with sva domains
+Message-ID: <20231005184957.GV13795@ziepe.ca>
 References: <20230925023813.575016-1-tina.zhang@intel.com>
- <20230925023813.575016-5-tina.zhang@intel.com>
+ <20230925023813.575016-6-tina.zhang@intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -64,22 +64,46 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230925023813.575016-5-tina.zhang@intel.com>
+In-Reply-To: <20230925023813.575016-6-tina.zhang@intel.com>
 
-On Mon, Sep 25, 2023 at 10:38:11AM +0800, Tina Zhang wrote:
-> Introduce iommu_mm_data structure to keep sva information (pasid and the
-> related sva domains). Add iommu_mm pointer, pointing to an instance of
-> iommu_mm_data structure, to mm.
+On Mon, Sep 25, 2023 at 10:38:12AM +0800, Tina Zhang wrote:
+> Each mm bound to devices gets a PASID and corresponding sva domains
+> allocated in iommu_sva_bind_device(), which are referenced by iommu_mm
+> field of the mm. The PASID is released in __mmdrop(), while a sva domain
+> is released when no one is using it (the reference count is decremented
+> in iommu_sva_unbind_device()). However, although sva domains and their
+> PASID are separate objects such that their own life cycles could be
+> handled independently, an enqcmd use case may require releasing the
+> PASID in releasing the mm (i.e., once a PASID is allocated for a mm, it
+> will be permanently used by the mm and won't be released until the end
+> of mm) and only allows to drop the PASID after the sva domains are
+> released. To this end, mmgrab() is called in iommu_sva_domain_alloc() to
+> increment the mm reference count and mmdrop() is invoked in
+> iommu_domain_free() to decrement the mm reference count.
 > 
-> Reviewed-by: Vasant Hegde <vasant.hegde@amd.com>
+> Since the required info of PASID and sva domains is kept in struct
+> iommu_mm_data of a mm, use mm->iommu_mm field instead of the old pasid
+> field in mm struct. The sva domain list is protected by iommu_sva_lock.
+> 
+> Besides, this patch removes mm_pasid_init(), as with the introduced
+> iommu_mm structure, initializing mm pasid in mm_init() is unnecessary.
+> 
 > Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+> Reviewed-by: Vasant Hegde <vasant.hegde@amd.com>
 > Signed-off-by: Tina Zhang <tina.zhang@intel.com>
 > ---
->  include/linux/iommu.h    | 5 +++++
->  include/linux/mm_types.h | 2 ++
->  2 files changed, 7 insertions(+)
-
-This is fine, but you could probably squash patches 4/5/6
+> 
+> Change in v5:
+> - Use smp_store_release() & READ_ONCE() in storing and loading mm's
+>   pasid value.
+> 
+> Change in v4:
+> - Rebase to v6.6-rc1.
+> 
+>  drivers/iommu/iommu-sva.c | 40 +++++++++++++++++++++++++++------------
+>  include/linux/iommu.h     | 18 +++++++++++-------
+>  kernel/fork.c             |  1 -
+>  3 files changed, 39 insertions(+), 20 deletions(-)
 
 Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
