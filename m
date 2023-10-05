@@ -1,38 +1,38 @@
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2053.outbound.protection.outlook.com [40.107.94.53])
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2066.outbound.protection.outlook.com [40.107.94.66])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6EA863F4D1
-	for <iommu@lists.linux.dev>; Thu,  5 Oct 2023 18:28:26 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 355753F4C3
+	for <iommu@lists.linux.dev>; Thu,  5 Oct 2023 18:28:27 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="uU09/1kB"
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="X1jSlhov"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lxU2eIYdK2YMDkQyypv92rZkb3rHFkV7LRLVVeMAUYehwCRdxThhIJW56qygwwLaydiY9CiWDKbWasrgq2Qh/pEnSnpx+HxKvjfy0jE4dE/Wd77OaGN1y6wChRubTWeNGaEj1e3I8Ez+PsYe8qf7BDb31yffpAfixe38uBy81ZVO3y/QsKr4TrTiGk0fFRqorBfIFgavXEGcwZBv0oQ3FGmRfn2SrpS+5nWmJQvIMQIWeM+bbO1svLSlJNuRPtvEHGTDqxC7LBUhzNUH0VA92iFpdVU86mMJ05GVHEDm/YcNU2XfvneMDBc81AnFtNKzVZkWVYNRS+jSPxtabiaDpA==
+ b=LGlKbicNEaVb7kg4pyVyS5tD4T0iMsEWtad2i6MbqvH3drXlBkSZx9Er/1BzG2MShzmZPZJ+S+wdmdlnooOAjznuiMHWsl4HvcCJ4ZJz5v0N1I2Z6XuJHKcxUsGb7CYeVJI0oWrWiB5ZklkWC/Ej0FSRhhvJZWIjSWOgOZRXCZQPLjm3jg80itKcD2HZt5yMYMOsAEnq8E+aGNpg6xpkiEPLDp8jKOKSKZCCFpTwrsWzrEqSrRz/lylEys3o5DOamDJSlx78isGUtC5QDNoulCoVkwY7Fiba0NsCEZhiKAYGd+g+YaO1rHglDUywHcxBZmJJ4Ub9y/dDE2LKfxzsYw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Eft+LToxyAKzuWOiA3B5QATFsC5ZpocaEpFz5NuCbWc=;
- b=Zil28aKKx2/LSK1b7u531p1ZFIjnblUu+dheuJUGbApM2Y3ss8G2bkhmAAy+PsDiG4E/ic5nELIU4LshsO9Ghj0zfrE3UIbDQqZaKUkbdKuc5Q0C0KMRSyF39b8sTfhqZsUtq2JHm/sE9thBzBRbNKLVLrvvU6d4rogAm3fjAZjKzzPto8LsUeZvbE0iu652YmpYFN3UQeSdldlNUrjVwrvJPxrhuaQTeMYbuZiE9pQhrlQOMxYPUpkzITNdwBaUPFvEkb6RCtQYfnxd3OqHYH4/x9PLSkGJ8VBWuWe22jtHbwU4wXd3q795sY7DaYFSXCIW3/v/AuTDuIbS869rsQ==
+ bh=JntWiZKH6/dfNpdcMV+K1QVQcHia3rlIoXaLKXGU9mg=;
+ b=QDHDtjC56KF9LL8SPTgG5ESlzfPXS3oTHtmN+cbn+/oxfX52fKB/mtgsgvBtDsDvdVLWyWARlg5EmsLdXjTw9dH0E3lyyVOWK3+6TR/U1XK8r6PHP1qvPy0tTjxHmqq9xaudroBRTNK5IEhRm1gdEq4rG1qF+N8U/C4COi9blP4uYwscJsvv5157o1C/h8JbB114/r0yyDwLfX71J4+AYgLIDa4BS4y6fN0ldoxM1dyBVJdkGyFO0J8+C3hqrXn0GexBrxlArj/uB/d7wq6wcCMHU8+zGelNjOoAj8Fq/s7wJvyE8+U8YyAyRVSePdMUMvBOdGcsJJy/Mi9QZzPCQw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Eft+LToxyAKzuWOiA3B5QATFsC5ZpocaEpFz5NuCbWc=;
- b=uU09/1kB5vSBjTf6SkIijZyBJs6FP2NMjQiFbGSfopijULZpOKmElI3DCIHyjS4WNB9AyD299BtIdJ8Bcv/BJfQ4jv4ved0e7qpYlnBoFY/tM7RQwGMjiGapJfe3q1KpBEHtzMBF1x7tyUR8TnFsW3YtKwqELrqLUMjFyCvuiWQLBuL3G82CVgstV5V7VcAaqejKBJ0iT6EU5ysg/+W8b5aJt2A4xxYXSoLelnPjcapfA/AJK4mxvGMvEmXV07A6EwTBUz07yP9NW6vNqleBHsY0wP8INH+hqV3iebNyjbMrid2Tu79ccFnOf0v4jwFpSaqGl6EZ1sKTGWGlB8Wz8Q==
+ bh=JntWiZKH6/dfNpdcMV+K1QVQcHia3rlIoXaLKXGU9mg=;
+ b=X1jSlhovH4avvaekQfgIYq0q3/0bZxEaqko6/N05+YIOMxs3ANJmFc80jSQdXQN7LNZj4TTNZft7EO9Y+MvhSNeOrrWJSHYldNJt8/whKyYdk+kYeei6bWRlQl0ZXEfys1hD2OI2QloZtxxCGw6zmGv9vCisGcG3q0IpiR3K36dU5rETJWdJx+uzoP+mOgr3GJRyKY0PvLWEh8B1hpTVPO//scKAYpmaF9o7VIRaPZCkpBiVBVu95axmO13rOwJUzb4V7n1feN+5EItgCtvVm/ievxrvzw3enavk3+VMCAPsl475bG/7ZTnZ4xFWyhkLmtFFQkP9c1V/hSkm8Ki7YQ==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
  by MW3PR12MB4364.namprd12.prod.outlook.com (2603:10b6:303:5c::14) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6838.35; Thu, 5 Oct
- 2023 18:28:21 +0000
+ 2023 18:28:22 +0000
 Received: from LV2PR12MB5869.namprd12.prod.outlook.com
  ([fe80::3f66:c2b6:59eb:78c2]) by LV2PR12MB5869.namprd12.prod.outlook.com
  ([fe80::3f66:c2b6:59eb:78c2%6]) with mapi id 15.20.6838.030; Thu, 5 Oct 2023
- 18:28:21 +0000
+ 18:28:22 +0000
 From: Jason Gunthorpe <jgg@nvidia.com>
 To: iommu@lists.linux.dev,
 	Joerg Roedel <joro@8bytes.org>,
@@ -47,15 +47,15 @@ Cc: Lu Baolu <baolu.lu@linux.intel.com>,
 	Nicolin Chen <nicolinc@nvidia.com>,
 	Niklas Schnelle <schnelle@linux.ibm.com>,
 	Steven Price <steven.price@arm.com>
-Subject: [PATCH 7/7] iommu: Restore SMMU "disable_bypass"
-Date: Thu,  5 Oct 2023 15:28:18 -0300
-Message-ID: <7-v1-cf5846854f51+6db3f-smmu_newapi_jgg@nvidia.com>
+Subject: [PATCH 2/7] iommu/arm-smmu: Convert to a global static identity domain
+Date: Thu,  5 Oct 2023 15:28:13 -0300
+Message-ID: <2-v1-cf5846854f51+6db3f-smmu_newapi_jgg@nvidia.com>
 In-Reply-To: <0-v1-cf5846854f51+6db3f-smmu_newapi_jgg@nvidia.com>
 References:
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: YQZPR01CA0116.CANPRD01.PROD.OUTLOOK.COM
- (2603:10b6:c01:83::9) To LV2PR12MB5869.namprd12.prod.outlook.com
+X-ClientProxiedBy: YQBPR01CA0052.CANPRD01.PROD.OUTLOOK.COM
+ (2603:10b6:c01:2::24) To LV2PR12MB5869.namprd12.prod.outlook.com
  (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -65,150 +65,178 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|MW3PR12MB4364:EE_
-X-MS-Office365-Filtering-Correlation-Id: 5f30f214-c536-4b7a-9701-08dbc5d0d9ee
+X-MS-Office365-Filtering-Correlation-Id: 4b50914d-3f9b-4682-5ba3-08dbc5d0d9f3
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	Bl7aw9LuxPbX+vUpnCY6rTb5aApHrgx+s6d0yuN9bib5Vag5Ulur966N6wjvgeHI1nZEIU67rnUewjWcdNa7pqGlkOELyXk3ZKQBKboTQ0SqCwWT4B+WYckArgpBjqOcdQ42g4Mms/b+Em2zrsxQhyO4wXC7FChknMyX4bmdu0GTRHTFDFOnE306ggXTRbwVceB0mDFta0Xxvp3RUOKKt6pZUvTDznTX+kqXn6CzfDI6I7FmQoBAsG+78zuCYpGetmC/03I9+x1ZklHAfNS/PsH+C9H/y9qjAiOPzkfRcJLfAWvfXb/GGIVyHsUM2oo+3uny/Vfr3e3aNZK/cuRxEgDPKtEWLpMFW5khwoDgSAyIlAscw5xpN2V+G2MQtCtYvdqkjzGXn1kqT5+Mwt/VRrEfUfqkWXoYwb3smqVp99iTWMTyKfiPRWNkpIQGYDV1cdnojU/UxKkZqwW+3+h2l4F6tajAWEOfrGHoOxtr/UCPCQhYpwX6nMlZV72aKuznCZyvylQlbe9wkPT7MuiCP+AA9Uby37/eZ+ZaKtqKvL1jQDTDJ0P9QhFeHttYYwHfqmEsqDEAWq2mbMmiDXORF1eICR/2DlAodd8iRvm7yQU=
+	6gb1QIHPPim4/9fucyF3VwqGlFSv+clmJJWWRE9pWa1E0ZO0zLHpqjn64xDFon6rhlcnkDwFHhzZUznoMS78gu02hYzzoYW5BHJUzUsqFkAWHE+YGA1jAgjQWgBTi7tUnj/8dFARDqcKr+bsR8RTcIBQC5m8mHIkPevHgTXg7yOSQ/s9iud7S4WWfy6TKdQMVd3CO7zOoZyzO0/RPOINPhKMtpGyzyKeyLjUPLJyIqxHm2H2Fn6wXAfaSBsujIoDjCh7es8W7ySMN61pEfoaidbNl0eplVyMdPiIFcgQEfdOQzDsiJa6ngbXFWEGXZOc0X+HFX78Q6dLL1JDgujYZCpfnT0wlAQI/bH4JUnohMliSqlhWV3AGa02R/BbMROvpMRKx8mdP0wuteBLHtOXmo28W4rBvd09Hujrk5T3IEnY7miNZtep36TQanY4VaiRJIWRxK5Kh51a0gSwq0ls1tX3BN2vM7/4XNDhY4es6nKodp1zrcVcxSSNIo2DPaXIicVOBw4Q/MR216V7lAhe28gJr+dIjWhFOSYu/8bAOYSQVbkdWjkWm7fkK+bWTwtrENqB3lQWxNYzcPAsfILKtvHOABybX8Jwzj87RuTYsY4=
 X-Forefront-Antispam-Report:
 	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366004)(346002)(39860400002)(396003)(136003)(376002)(230922051799003)(451199024)(186009)(1800799009)(64100799003)(7416002)(2906002)(36756003)(86362001)(38100700002)(2616005)(41300700001)(4326008)(8676002)(8936002)(26005)(6512007)(6486002)(6506007)(66556008)(316002)(66476007)(83380400001)(6666004)(54906003)(110136005)(66946007)(478600001)(5660300002)(4216001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?uxaN2JbptC8OWJ12Lv96P+pRPKJFFq5FFvbgumtsRFhv3x9s59qPLIIQTfQP?=
- =?us-ascii?Q?7j6bO6flnn2zviG/mH15YCsLnkaJh/SMYdy/A4cGBJYR5yiYmtKCiUv5su2M?=
- =?us-ascii?Q?dsX4hxnSraTkCpjopbCsFZVJnI9b8pF9R8wTCR9uCtZDIUmKebYtoh6PYttV?=
- =?us-ascii?Q?8JdOVEtI9ZlwoWFZv/Y4OKp15OPNfcoTJpVOXSHC3K33cidAJvUyO5KcX3ei?=
- =?us-ascii?Q?7PfPLurPolqjtQ8LNErIov3B6I3yjnCV7JUk/HbXPQBl72BLDgsDdcpTTNuk?=
- =?us-ascii?Q?GusI4E361peKaBas3tapPzhGHFI42bT2TykVLXHnK/JHezL3K+Xa/rQvxfcf?=
- =?us-ascii?Q?CXWioWDaYPDcHJhfBCZV7TT1lsd3P1izpre/MPyr5A9p/yXrFfAe0tFS3gi+?=
- =?us-ascii?Q?Btredb80XTxUVn8lY8FbZ7pjdV61kj4FCFHLjjgINqPOAy51qBKSdLCJj38s?=
- =?us-ascii?Q?4BeyW2U7z92MhD+nwhMxWrfdIT+p/F/lBxaXnLJx3aEgVXCSB+PEk1X8SDwg?=
- =?us-ascii?Q?NAXkSsnvM3zsoN1jNr8gcTkXieTGhht6C6WkIlVDmlORXc0rM6qAw0lBj00L?=
- =?us-ascii?Q?zaW3OLo2k6hIRdGWgmNTo+YdZ2orrM+hZVUy7tei8w6Osr3bMv2bhYiCeOXi?=
- =?us-ascii?Q?AXfPK8pxUFDFbJgd342raS8tZPmhd+hYCXzWyMVRIw7hyg1u5kPb6mtraYh2?=
- =?us-ascii?Q?jdLo3lNHrelF6p67Nko9AueQJ9f4Z/eaXCrlEeXewGIbbJcvZR10aJ/4ainy?=
- =?us-ascii?Q?SDBKeeG8h3J7MAYgYVndfyOzhPmQjQ7OHCOZq+E9CHSXA33rK654cVusUNY1?=
- =?us-ascii?Q?JtJeF7GZ1iyikoLUh+qLmNlnc9Vca0ARrbzctXJHvxRxbp84uE6rLoXSOrlb?=
- =?us-ascii?Q?2Bbc8JGl4OFAZE9fYQ7IKzyX+G6V0uk4uFLkM1U8IEvcx3bnUdVf/5NJq7LE?=
- =?us-ascii?Q?WNKCRG+xNGC2Phbwqa2h4nKGw2QRhnEO4CK3szomC3TnJeZWF0mqLUZJQtve?=
- =?us-ascii?Q?gcrtpb6CMhS2C+bGhViv9Rm+I+W1zib7xN+JkjPXgtw+QigQYN6xv5p6/oIZ?=
- =?us-ascii?Q?HN2/Ojw0g73Pn2zNTYk8qEinu7Xc5wv+13CBsvke1WM7X8/D/xsNeLwfdXSC?=
- =?us-ascii?Q?E2PgrMQFuintke8TdNWdSBmVEiRo8vftIt7vjXvdYvFO4kCFSiCrzlQsmO1P?=
- =?us-ascii?Q?gkIyZL/ogLOOC2AYAYh09/lMhX2OfmSndnFxw0PQ67VvaJxHozEMKvtHgzfc?=
- =?us-ascii?Q?oVXj1bV/W/kDB2ImClneoqtMQ/s75PoSLJpU7fJSYIfsVCx3QSDrzt2f2UZP?=
- =?us-ascii?Q?mlo4LJXl4Gf4aOEnOEA7fKGCtOa2yFWPSXO5DElZVD3CNw4doDmy/KPji1/0?=
- =?us-ascii?Q?444+omuLIsDNBRWJJzvAez3dBGzqe7GVT2/fiYWg3SPDSDMsZt5tcsc+rEqQ?=
- =?us-ascii?Q?mGAoXnW05S3ZQpsLgto+F7yclka3fe5UvmOshEgWbr4O8hNfOUfVNOCMPvw7?=
- =?us-ascii?Q?1lI6OtmubecT7y1Zv4cR49ni3xLXKkXzEjoxdEHdU8W4WZ7jJCdJSBS7gt9d?=
- =?us-ascii?Q?YX2hdjnF4HlHGh9r1sCkyXrsaMOcPqEDKbJpPtuz?=
+	=?us-ascii?Q?MDo9rda/TGwP5wMdyP4kqREkb3w3HGDBejlW4mM3bG016R3JIB8eFubYoar0?=
+ =?us-ascii?Q?EgfeuzbC1sSaKta0x7rUUrbxeGBitIfWacM7cZucplk7jIBXJkWKHiBty0QD?=
+ =?us-ascii?Q?/0AzEBV1y49xb1ElA2D99jnFV//Q2x93gj+f2+85OzbQ2oRNbPrG99wIEhEY?=
+ =?us-ascii?Q?TwBtrw7F2C2RT9fTDd1YLEY+ZtEbXkpgXN86Oe1h7l0o/ISAu1Db45KlytRk?=
+ =?us-ascii?Q?xMXgeGtGMlHst/s90c5bTND5y1xKJQY3OIamsUd3D3YD/PUAJC6751ZI7y4g?=
+ =?us-ascii?Q?BpRYv7L/m9rKEqgL6HFz9nhg14/XMDwvHZQx+mvj5mZ4jXGFdFm8phs9/0ly?=
+ =?us-ascii?Q?2GuStooAUK3JASXuof+QasEJ8teEDn1kzkczoB/mkDvqCkA0TPb30365fa/M?=
+ =?us-ascii?Q?bArl/mdYFFQikJiDvfVxxKOU2E+I1w9DzFZfG7QvUnlDV0AjGberJb+6/UxH?=
+ =?us-ascii?Q?8xoDxyD7kXdWmsQfMXUN2tGV5QEtVeFZHuziWnry1oqvsRPWZ7XcG2XYtMwv?=
+ =?us-ascii?Q?SboSxb2hmA9J2uhenuF657dp9242JQp2+ur5+XIZwz3RVh0F2BaTRbBxNcPc?=
+ =?us-ascii?Q?hhrFVZbIwpgoVYTvSotKDslhZ4wf5qDRgtIUUxQrCYnGu14IaHHeblz2hEsH?=
+ =?us-ascii?Q?POvNu9Ihx/iXjnS80dPf0VQ/ooS7eyh2m6wwBSPWS57Udv4UaB3186lHVNQV?=
+ =?us-ascii?Q?X8TkmllBUdEtbddaImEpih/VHUb5MNwbKNzeD5M3WPopv+w41QT0P008aLXy?=
+ =?us-ascii?Q?Iv/TERJ6+CBxx8R5p6v5Vevpm4EacsGS+Z+P+eYtrzQnmr0gPylPbIK/cWqm?=
+ =?us-ascii?Q?Xb7vCko3A97lq/JaANQsZSnRzE+ZmwIOhS5FXF2fK5vBVkY2e21T5+OvHwO0?=
+ =?us-ascii?Q?9UjtLLzQs+AlN4UOtutX+XTdYzpeY93czoLz8HAEw1AOp3TBcMuWg1/AMxkp?=
+ =?us-ascii?Q?RqbOCy3eH3q9BUYhMEnZvyOWgeZnnww2HveP2wmXf89jK7x59CZkcgV6YG90?=
+ =?us-ascii?Q?Ti2AhJWSmeBp/Dk20zNO48nqAvOlb/CgEsIhqP4eT5QPIll2LDe8et9J/+97?=
+ =?us-ascii?Q?a8IYH8PaI9+0wjrcXw56QLYQvpkQ2fNCTIf0u5QdJ4mKMYdRNqP7NZXRDBrV?=
+ =?us-ascii?Q?H75HuQ/ykCPT8ZTmQokIcaMFAOylhh+I6Ln7AEJw+wA+JFBP843vE2ks4Uk3?=
+ =?us-ascii?Q?sVPiGlCmzMlX++7i+vGKg6EgVmh0+WxAa/+XvJ+2K9OxhKNbeLf27N3kwyyr?=
+ =?us-ascii?Q?XZR1P62SBarjS7Ipxa8rMfmNUWqNontgXIhorCEkcdfU0341VSKnViQVZFwA?=
+ =?us-ascii?Q?RIU0N/s74Md7XlDM3xB6J7OM67EapO1YAa1N5zOCgNJkdof5qlw78DiY3xX8?=
+ =?us-ascii?Q?aDdfGbrvsRb9OG8i+tthZ7tz79Lg3Qkh2mfCyKBXCVKyWCHSPImNCfbLzz0M?=
+ =?us-ascii?Q?ncPejBbMzTKqGqzu5Vlom2EmaUN7pwWWWTT4SJvn7LnD843Pxl/lJpZ7mcbG?=
+ =?us-ascii?Q?k0LzdNGdcDQMbjx9lLB1tQYPDPwdPTwHX7JevubbNwR8u5oQeGYOnqTYN3pZ?=
+ =?us-ascii?Q?M2d6qqAChzBf8LdZ5+fsmSTTaOP5R8P14pOid2GO?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5f30f214-c536-4b7a-9701-08dbc5d0d9ee
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4b50914d-3f9b-4682-5ba3-08dbc5d0d9f3
 X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Oct 2023 18:28:20.4267
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Oct 2023 18:28:20.4750
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: X2aduOHCsYeS4csp4YAh+53ZO0tOexoN9QOAeRd8PcL401eP4ujilKgL/xQzAslY
+X-MS-Exchange-CrossTenant-UserPrincipalName: N674z03NN9/LFTCObipEg7QFkV7pajOYDpunufBbT4j9cnFi3neRiG7mGfzw3dWJ
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR12MB4364
 
-The module parameter "disable_bypass" changes the IOMMU configuration when
-using CONFIG_ARM_DMA_USE_IOMMU to establish a faulting/blocked domain when
-the ARM DMA ops are not being used.
+Create a global static identity domain with it's own
+arm_smmu_attach_dev_identity() that simply calls
+arm_smmu_domain_add_master() with the identity parameters.
 
-SMMU does this by defaulting the device configuration to faulting during
-probe. This keeps things faulting up until the ARM DMA ops first attach,
-then the faulting is lost.
+This is done by giving the attach path for identity its own unique
+implementation that simply calls arm_smmu_domain_add_master().
 
-Since we removed NULL domains and immediately attach an IDENTIY domain
-during probe this now doesn't work properly on either driver.
+Remove ARM_SMMU_DOMAIN_BYPASS and all checks of IOMMU_DOMAIN_IDENTITY.
 
-Reflect the SMMU module option to the core code and have it request a
-BLOCKED or IDENTITY domain directly, only for CONFIG_ARM_DMA_USE_IOMMU.
-
-Fixes: 98ac73f99bc4 ("iommu: Require a default_domain for all iommu drivers")
 Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 ---
- drivers/iommu/arm/arm-smmu/arm-smmu.c |  1 +
- drivers/iommu/iommu.c                 | 23 ++++++++++++++++++++++-
- include/linux/iommu.h                 |  2 ++
- 3 files changed, 25 insertions(+), 1 deletion(-)
+ drivers/iommu/arm/arm-smmu/arm-smmu.c | 50 ++++++++++++++++++++-------
+ drivers/iommu/arm/arm-smmu/arm-smmu.h |  1 -
+ 2 files changed, 37 insertions(+), 14 deletions(-)
 
 diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-index 4d69bb63ba1a3e..e164477a224dac 100644
+index 7f33363719f4ac..141b8d1266d808 100644
 --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
 +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-@@ -2211,6 +2211,7 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
- 		return err;
+@@ -624,12 +624,6 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+ 	if (smmu_domain->smmu)
+ 		goto out_unlock;
+ 
+-	if (domain->type == IOMMU_DOMAIN_IDENTITY) {
+-		smmu_domain->stage = ARM_SMMU_DOMAIN_BYPASS;
+-		smmu_domain->smmu = smmu;
+-		goto out_unlock;
+-	}
+-
+ 	/*
+ 	 * Mapping the requested stage onto what we support is surprisingly
+ 	 * complicated, mainly because the spec allows S1+S2 SMMUs without
+@@ -825,7 +819,7 @@ static void arm_smmu_destroy_domain_context(struct iommu_domain *domain)
+ 	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
+ 	int ret, irq;
+ 
+-	if (!smmu || domain->type == IOMMU_DOMAIN_IDENTITY)
++	if (!smmu)
+ 		return;
+ 
+ 	ret = arm_smmu_rpm_get(smmu);
+@@ -854,7 +848,7 @@ static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
+ {
+ 	struct arm_smmu_domain *smmu_domain;
+ 
+-	if (type != IOMMU_DOMAIN_UNMANAGED && type != IOMMU_DOMAIN_IDENTITY) {
++	if (type != IOMMU_DOMAIN_UNMANAGED) {
+ 		if (using_legacy_binding || type != IOMMU_DOMAIN_DMA)
+ 			return NULL;
+ 	}
+@@ -1145,11 +1139,7 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
  	}
  
-+	iommu_arm_disable_bypass |= disable_bypass;
- 	err = iommu_device_register(&smmu->iommu, &arm_smmu_ops, dev);
- 	if (err) {
- 		dev_err(dev, "Failed to register iommu\n");
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index efa65b3d1bd405..e2798d8318b7bb 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -46,6 +46,13 @@ static unsigned int iommu_def_domain_type __read_mostly;
- static bool iommu_dma_strict __read_mostly = IS_ENABLED(CONFIG_IOMMU_DEFAULT_DMA_STRICT);
- static u32 iommu_cmd_line __read_mostly;
+ 	/* Looks ok, so add the device to the domain */
+-	arm_smmu_domain_add_master(smmu, cfg,
+-				   smmu_domain->stage ==
+-						   ARM_SMMU_DOMAIN_BYPASS ?
+-					   S2CR_TYPE_BYPASS :
+-					   S2CR_TYPE_TRANS,
++	arm_smmu_domain_add_master(smmu, cfg, S2CR_TYPE_TRANS,
+ 				   smmu_domain->cfg.cbndx, fwspec);
  
-+/*
-+ * This supports the module option "disable_bypass" that ARM SMMU and SMMUv3
-+ * drivers supported. It causes the default domain to be BLOCKED when
-+ * CONFIG_ARM_DMA_USE_IOMMU.
-+ */
-+bool iommu_arm_disable_bypass = false;
+ 	/*
+@@ -1171,6 +1161,39 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+ 	return ret;
+ }
+ 
++static int arm_smmu_attach_dev_identity(struct iommu_domain *domain,
++					struct device *dev)
++{
++	struct arm_smmu_master_cfg *cfg = dev_iommu_priv_get(dev);
++	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
++	struct arm_smmu_device *smmu;
++	int ret;
 +
- struct iommu_group {
- 	struct kobject kobj;
- 	struct kobject *devices_kobj;
-@@ -1914,7 +1921,13 @@ static int iommu_get_default_domain_type(struct iommu_group *group,
- 	if (IS_ENABLED(CONFIG_ARM_DMA_USE_IOMMU)) {
- 		static_assert(!(IS_ENABLED(CONFIG_ARM_DMA_USE_IOMMU) &&
- 				IS_ENABLED(CONFIG_IOMMU_DMA)));
--		driver_type = IOMMU_DOMAIN_IDENTITY;
-+		if (!iommu_arm_disable_bypass ||
-+		    !group_iommu_ops(group)->blocked_domain)
-+			driver_type = IOMMU_DOMAIN_IDENTITY;
-+		else
-+			for_each_group_device(group, gdev)
-+				if (gdev->dev->iommu->require_direct)
-+					driver_type = IOMMU_DOMAIN_IDENTITY;
- 	}
- 
- 	for_each_group_device(group, gdev) {
-@@ -1932,6 +1945,14 @@ static int iommu_get_default_domain_type(struct iommu_group *group,
- 		}
- 	}
- 
-+	/*
-+	 * For iommu_arm_disable_bypass mode the driver is allowed to force
-+	 * IDENTITY, otherwise returning 0 from def_domain_type will mean
-+	 * BLOCKED.
-+	 */
-+	if (IS_ENABLED(CONFIG_ARM_DMA_USE_IOMMU) && driver_type == 0)
-+		driver_type = IOMMU_DOMAIN_BLOCKED;
++	if (!cfg)
++		return -ENODEV;
++	smmu = cfg->smmu;
 +
- 	if (untrusted) {
- 		if (driver_type && driver_type != IOMMU_DOMAIN_DMA) {
- 			dev_err_ratelimited(
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index e27d2e67e48ef7..c88150300bff71 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -42,6 +42,8 @@ struct iommu_sva;
- struct iommu_fault_event;
- struct iommu_dma_cookie;
- 
-+extern bool iommu_arm_disable_bypass;
++	ret = arm_smmu_rpm_get(smmu);
++	if (ret < 0)
++		return ret;
 +
- /* iommu fault flags */
- #define IOMMU_FAULT_READ	0x0
- #define IOMMU_FAULT_WRITE	0x1
++	arm_smmu_domain_add_master(smmu, cfg, S2CR_TYPE_BYPASS, 0, fwspec);
++
++	pm_runtime_set_autosuspend_delay(smmu->dev, 20);
++	pm_runtime_use_autosuspend(smmu->dev);
++	arm_smmu_rpm_put(smmu);
++	return 0;
++}
++
++static const struct iommu_domain_ops arm_smmu_identity_ops = {
++	.attach_dev = arm_smmu_attach_dev_identity,
++};
++
++static struct iommu_domain arm_smmu_identity_domain = {
++	.type = IOMMU_DOMAIN_IDENTITY,
++	.ops = &arm_smmu_identity_ops,
++};
++
+ static int arm_smmu_map_pages(struct iommu_domain *domain, unsigned long iova,
+ 			      phys_addr_t paddr, size_t pgsize, size_t pgcount,
+ 			      int prot, gfp_t gfp, size_t *mapped)
+@@ -1557,6 +1580,7 @@ static int arm_smmu_def_domain_type(struct device *dev)
+ }
+ 
+ static struct iommu_ops arm_smmu_ops = {
++	.identity_domain	= &arm_smmu_identity_domain,
+ 	.capable		= arm_smmu_capable,
+ 	.domain_alloc		= arm_smmu_domain_alloc,
+ 	.probe_device		= arm_smmu_probe_device,
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.h b/drivers/iommu/arm/arm-smmu/arm-smmu.h
+index 703fd5817ec11f..836ed6799a801f 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu.h
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu.h
+@@ -361,7 +361,6 @@ enum arm_smmu_domain_stage {
+ 	ARM_SMMU_DOMAIN_S1 = 0,
+ 	ARM_SMMU_DOMAIN_S2,
+ 	ARM_SMMU_DOMAIN_NESTED,
+-	ARM_SMMU_DOMAIN_BYPASS,
+ };
+ 
+ struct arm_smmu_domain {
 -- 
 2.42.0
 
