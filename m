@@ -1,169 +1,113 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 951D94414
-	for <iommu@lists.linux.dev>; Fri,  6 Oct 2023 13:43:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Authentication-Results: smtp.subspace.kernel.org; dkim=none
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id ABCD1C15;
-	Fri,  6 Oct 2023 06:44:34 -0700 (PDT)
-Received: from [10.57.66.230] (unknown [10.57.66.230])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 5C33D3F641;
-	Fri,  6 Oct 2023 06:43:53 -0700 (PDT)
-Message-ID: <db259336-1203-4d12-ac80-3108aaf5ec82@arm.com>
-Date: Fri, 6 Oct 2023 14:43:51 +0100
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 748741F959
+	for <iommu@lists.linux.dev>; Fri,  6 Oct 2023 13:43:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.vnet.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.vnet.ibm.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="f8L2W4xm"
+Received: from pps.filterd (m0356517.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 396DgJ55028499;
+	Fri, 6 Oct 2023 13:43:47 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=j/AG//P4Bx8htSBN1sllurmbbh6m4O61QdheH9XyQaA=;
+ b=f8L2W4xmLnh9vrnf3oJjjE6fMCcxcy6YADrkJQxhSTb4k8ZsYQkKNPhE9X7kMyg59Me5
+ V/anx27NmkmfFcuzUWp3UPqSP2GtZSZ984sC1NPxt6Pss8B0+O4viDb7EbVU7JYUTNiq
+ WS3IvVf2DndRoZb+xV7exE8ocXykH9o3EjdFe21DjpkwOwdRxbEJV1KAwDGYIN8kLqP1
+ T2K9S+SY8ROmhsSIWd4ADVW6dwmWCAm14WrQ0fuEb5GK9kZuKtvGTPuSZic8dZb8yXHw
+ RqZXih3huY3ikXl4GUS0AMmuieNyxEl7hebQT7E0BkG+8N9ThWlstHQJmuFZHfcNW3qV lg== 
+Received: from pps.reinject (localhost [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3tjkbur0ux-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 06 Oct 2023 13:43:46 +0000
+Received: from m0356517.ppops.net (m0356517.ppops.net [127.0.0.1])
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 396DhkaY031843;
+	Fri, 6 Oct 2023 13:43:46 GMT
+Received: from ppma23.wdc07v.mail.ibm.com (5d.69.3da9.ip4.static.sl-reverse.com [169.61.105.93])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3tjkbur0ue-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 06 Oct 2023 13:43:46 +0000
+Received: from pps.filterd (ppma23.wdc07v.mail.ibm.com [127.0.0.1])
+	by ppma23.wdc07v.mail.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 396DE2OL007467;
+	Fri, 6 Oct 2023 13:43:45 GMT
+Received: from smtprelay04.wdc07v.mail.ibm.com ([172.16.1.71])
+	by ppma23.wdc07v.mail.ibm.com (PPS) with ESMTPS id 3teygmvh0d-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 06 Oct 2023 13:43:43 +0000
+Received: from smtpav01.dal12v.mail.ibm.com (smtpav01.dal12v.mail.ibm.com [10.241.53.100])
+	by smtprelay04.wdc07v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 396DhgjK32309528
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Fri, 6 Oct 2023 13:43:42 GMT
+Received: from smtpav01.dal12v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 7C0B45805D;
+	Fri,  6 Oct 2023 13:43:42 +0000 (GMT)
+Received: from smtpav01.dal12v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 24F5158057;
+	Fri,  6 Oct 2023 13:43:36 +0000 (GMT)
+Received: from [9.171.83.242] (unknown [9.171.83.242])
+	by smtpav01.dal12v.mail.ibm.com (Postfix) with ESMTP;
+	Fri,  6 Oct 2023 13:43:35 +0000 (GMT)
+Message-ID: <357397b0-8e87-dd88-7c47-fb457cc7e830@linux.vnet.ibm.com>
+Date: Fri, 6 Oct 2023 19:13:34 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 4/7] iommu/arm-smmu: Pass arm_smmu_domain to
- arm_smmu_init_domain_context()
-Content-Language: en-GB
-To: Jason Gunthorpe <jgg@nvidia.com>, iommu@lists.linux.dev,
- Joerg Roedel <joro@8bytes.org>, linux-arm-kernel@lists.infradead.org,
- Will Deacon <will@kernel.org>
-Cc: Lu Baolu <baolu.lu@linux.intel.com>, Heiko Stuebner <heiko@sntech.de>,
- Joerg Roedel <jroedel@suse.de>, Jerry Snitselaar <jsnitsel@redhat.com>,
- Marek Szyprowski <m.szyprowski@samsung.com>,
- Nicolin Chen <nicolinc@nvidia.com>, Niklas Schnelle
- <schnelle@linux.ibm.com>, Steven Price <steven.price@arm.com>
-References: <4-v1-cf5846854f51+6db3f-smmu_newapi_jgg@nvidia.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <4-v1-cf5846854f51+6db3f-smmu_newapi_jgg@nvidia.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.15.1
+Subject: Re: [Bisected] [commit 2ad56efa80db] [Hotplug] WARNING while
+ performing hotplug operation on 6.6-rc3-next
+Content-Language: en-US
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: linux-kernel@vger.kernel.org, linux-next@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-block@vger.kernel.org,
+        baolu.lu@linux.intel.com, jsnitsel@redhat.com, jroedel@suse.de,
+        joro@8bytes.org, will@kernel.org, iommu@lists.linux.dev,
+        abdhalee@linux.vnet.ibm.com, mputtash@linux.vnet.com,
+        sachinp@linux.vnet.com
+References: <92db426f-4a31-9c2c-e23a-85a8d353fbae@linux.vnet.ibm.com>
+ <20231006113644.GN682044@nvidia.com>
+ <7ce42090-a768-ba3d-bd27-e86bc076ee57@linux.vnet.ibm.com>
+ <20231006133936.GQ682044@nvidia.com>
+From: Tasmiya Nalatwad <tasmiya@linux.vnet.ibm.com>
+In-Reply-To: <20231006133936.GQ682044@nvidia.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: nLE4iNGHcLJosVYVMuO3-4ONDA7DFVRp
+X-Proofpoint-ORIG-GUID: fYOvrWE8LP4wm9SFS9pp8cLPXlA9fRkv
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.267,Aquarius:18.0.980,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2023-10-06_11,2023-10-06_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 bulkscore=0
+ adultscore=0 lowpriorityscore=0 malwarescore=0 clxscore=1015
+ priorityscore=1501 mlxscore=0 phishscore=0 impostorscore=0 mlxlogscore=977
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2309180000 definitions=main-2310060101
 
-On 2023-10-05 19:28, Jason Gunthorpe wrote:
-> Instead of putting container_of() casts in the internals, use the proper
-> type in this call chain. This makes it easier to check that the two global
-> static domains are not leaking into call chains they should not.
+Thanks Jason for confirmation and the fix.
 
-Is there something inherently difficult about to_smmu_domain()? It's 
-hard to tell how the aforementioned checks might expect to work since 
-they don't appear to be added anywhere :/
+On 10/6/23 19:09, Jason Gunthorpe wrote:
+> On Fri, Oct 06, 2023 at 06:50:00PM +0530, Tasmiya Nalatwad wrote:
+>>     Greetings,
+>>
+>>     Thanks Jason.
+>>
+>>     The fix provided by you works. It is not giving WARNING's but i am
+>>     seeing below logs. Would you please confirm on the logs.
+> I don't know anything about your environment but those logs don't
+> appear to be related to this series?
+>
+> Jason
 
-That's not to say that there's anything necessarily wrong with the logic 
-of "use the internal type internally" if it doesn't hurt the code 
-structure or readability, but this isn't justifying that for its own sake...
+-- 
+Regards,
+Tasmiya Nalatwad
+IBM Linux Technology Center
 
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> ---
->   drivers/iommu/arm/arm-smmu/arm-smmu.c | 28 +++++++++++++--------------
->   1 file changed, 13 insertions(+), 15 deletions(-)
-> 
-> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> index 0fc4f2e8bf3ed5..bf5f541be2399f 100644
-> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> @@ -393,7 +393,7 @@ static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
->   	u32 fsr, fsynr, cbfrsynra;
->   	unsigned long iova;
->   	struct iommu_domain *domain = dev;
-> -	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
-> +	struct arm_smmu_domain *smmu_domain = dev;
->   	struct arm_smmu_device *smmu = smmu_domain->smmu;
->   	int idx = smmu_domain->cfg.cbndx;
->   	int ret;
-> @@ -607,7 +607,7 @@ static int arm_smmu_alloc_context_bank(struct arm_smmu_domain *smmu_domain,
->   	return __arm_smmu_alloc_bitmap(smmu->context_map, start, smmu->num_context_banks);
->   }
->   
-> -static int arm_smmu_init_domain_context(struct iommu_domain *domain,
-> +static int arm_smmu_init_domain_context(struct arm_smmu_domain *smmu_domain,
->   					struct arm_smmu_device *smmu,
->   					struct device *dev)
->   {
-> @@ -616,7 +616,6 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
->   	struct io_pgtable_ops *pgtbl_ops;
->   	struct io_pgtable_cfg pgtbl_cfg;
->   	enum io_pgtable_fmt fmt;
-> -	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
-
-If at all, I think I'd rather just flip this to a local "struct 
-iommu_domain *domain = &smmu_domain->domain;" and avoid the hunk of 
-churn below. For a non-functional change with only a readability and 
-maintenance angle (the compiler generally won't mind whether load/store 
-offsets are positive or negative within the size of the overall 
-structure), making those geometry assignments even denser isn't really 
-helping.
-
-Thanks,
-Robin.
-
->   	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
->   	irqreturn_t (*context_fault)(int irq, void *dev);
->   
-> @@ -764,16 +763,16 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
->   	}
->   
->   	/* Update the domain's page sizes to reflect the page table format */
-> -	domain->pgsize_bitmap = pgtbl_cfg.pgsize_bitmap;
-> +	smmu_domain->domain.pgsize_bitmap = pgtbl_cfg.pgsize_bitmap;
->   
->   	if (pgtbl_cfg.quirks & IO_PGTABLE_QUIRK_ARM_TTBR1) {
-> -		domain->geometry.aperture_start = ~0UL << ias;
-> -		domain->geometry.aperture_end = ~0UL;
-> +		smmu_domain->domain.geometry.aperture_start = ~0UL << ias;
-> +		smmu_domain->domain.geometry.aperture_end = ~0UL;
->   	} else {
-> -		domain->geometry.aperture_end = (1UL << ias) - 1;
-> +		smmu_domain->domain.geometry.aperture_end = (1UL << ias) - 1;
->   	}
->   
-> -	domain->geometry.force_aperture = true;
-> +	smmu_domain->domain.geometry.force_aperture = true;
->   
->   	/* Initialise the context bank with our page table cfg */
->   	arm_smmu_init_context_bank(smmu_domain, &pgtbl_cfg);
-> @@ -790,8 +789,8 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
->   	else
->   		context_fault = arm_smmu_context_fault;
->   
-> -	ret = devm_request_irq(smmu->dev, irq, context_fault,
-> -			       IRQF_SHARED, "arm-smmu-context-fault", domain);
-> +	ret = devm_request_irq(smmu->dev, irq, context_fault, IRQF_SHARED,
-> +			       "arm-smmu-context-fault", smmu_domain);
->   	if (ret < 0) {
->   		dev_err(smmu->dev, "failed to request context IRQ %d (%u)\n",
->   			cfg->irptndx, irq);
-> @@ -812,9 +811,8 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
->   	return ret;
->   }
->   
-> -static void arm_smmu_destroy_domain_context(struct iommu_domain *domain)
-> +static void arm_smmu_destroy_domain_context(struct arm_smmu_domain *smmu_domain)
->   {
-> -	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
->   	struct arm_smmu_device *smmu = smmu_domain->smmu;
->   	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
->   	int ret, irq;
-> @@ -835,7 +833,7 @@ static void arm_smmu_destroy_domain_context(struct iommu_domain *domain)
->   
->   	if (cfg->irptndx != ARM_SMMU_INVALID_IRPTNDX) {
->   		irq = smmu->irqs[cfg->irptndx];
-> -		devm_free_irq(smmu->dev, irq, domain);
-> +		devm_free_irq(smmu->dev, irq, smmu_domain);
->   	}
->   
->   	free_io_pgtable_ops(smmu_domain->pgtbl_ops);
-> @@ -875,7 +873,7 @@ static void arm_smmu_domain_free(struct iommu_domain *domain)
->   	 * Free the domain resources. We assume that all devices have
->   	 * already been detached.
->   	 */
-> -	arm_smmu_destroy_domain_context(domain);
-> +	arm_smmu_destroy_domain_context(smmu_domain);
->   	kfree(smmu_domain);
->   }
->   
-> @@ -1125,7 +1123,7 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
->   		return ret;
->   
->   	/* Ensure that the domain is finalised */
-> -	ret = arm_smmu_init_domain_context(domain, smmu, dev);
-> +	ret = arm_smmu_init_domain_context(smmu_domain, smmu, dev);
->   	if (ret < 0)
->   		goto rpm_put;
->   
