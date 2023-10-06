@@ -1,51 +1,93 @@
-Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B6FC279C3
-	for <iommu@lists.linux.dev>; Fri,  6 Oct 2023 14:02:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="nM3ymBM4"
-Received: from 8bytes.org (p4ffe149c.dip0.t-ipconnect.de [79.254.20.156])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 36AC71A2E0B;
-	Fri,  6 Oct 2023 16:02:31 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1696600951;
-	bh=ROzxSeAMBVvMsdv372r+vJML6kpnVnp2s36U7S3xv7g=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=nM3ymBM4MiLT95SdudUgk4a3CvPRlOKyAh1xG8lRNk4HNLT3qH2KkqCey2S7hR/jR
-	 knmKIGLZiRfqF0CE2EV17gSDGYmeoAEfMC8V5MSBozCpYY9r6659UQa9fA/bA/ZIes
-	 PwAcwYBBp67cZmkkLjwRNz9sPwmHHocpCUsIcO/mkLh+0LHWa1CEoDH++I+Vk9rPri
-	 nQOTqHzZavvCkU/hEsbEzV+QRJesMzZ8+hyLWh9dOebtiV7a0cs8AaKpc4tC0jQ85x
-	 0Xcch9nakWyKMeXZhH+zu///A9UfKmU6wf2ybOClnWqEUL1Jqp5tgEiDt/qZZUCJVk
-	 4NWXyXsMQsGiw==
-Date: Fri, 6 Oct 2023 16:02:30 +0200
-From: Joerg Roedel <joro@8bytes.org>
-To: Vasant Hegde <vasant.hegde@amd.com>
-Cc: iommu@lists.linux.dev, suravee.suthikulpanit@amd.com,
-	wei.huang2@amd.com, jsnitsel@redhat.com, jgg@ziepe.ca
-Subject: Re: [PATCH v4 0/5] iommu/amd: SVA Support (part 2) - deprecate
- iommu_v2 module
-Message-ID: <ZSATdt1RnvUYXIZ2@8bytes.org>
-References: <20231006095706.5694-1-vasant.hegde@amd.com>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B26301CA9A
+	for <iommu@lists.linux.dev>; Fri,  6 Oct 2023 14:56:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Authentication-Results: smtp.subspace.kernel.org; dkim=none
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 27AB3C15;
+	Fri,  6 Oct 2023 07:56:59 -0700 (PDT)
+Received: from [10.57.66.230] (unknown [10.57.66.230])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 848983F5A1;
+	Fri,  6 Oct 2023 07:56:17 -0700 (PDT)
+Message-ID: <161e4152-9213-415f-8315-4f3a73b76022@arm.com>
+Date: Fri, 6 Oct 2023 15:56:15 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20231006095706.5694-1-vasant.hegde@amd.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 4/7] iommu/arm-smmu: Pass arm_smmu_domain to
+ arm_smmu_init_domain_context()
+Content-Language: en-GB
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+ linux-arm-kernel@lists.infradead.org, Will Deacon <will@kernel.org>,
+ Lu Baolu <baolu.lu@linux.intel.com>, Heiko Stuebner <heiko@sntech.de>,
+ Joerg Roedel <jroedel@suse.de>, Jerry Snitselaar <jsnitsel@redhat.com>,
+ Marek Szyprowski <m.szyprowski@samsung.com>,
+ Nicolin Chen <nicolinc@nvidia.com>, Niklas Schnelle
+ <schnelle@linux.ibm.com>, Steven Price <steven.price@arm.com>
+References: <4-v1-cf5846854f51+6db3f-smmu_newapi_jgg@nvidia.com>
+ <db259336-1203-4d12-ac80-3108aaf5ec82@arm.com>
+ <20231006135347.GR682044@nvidia.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20231006135347.GR682044@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Fri, Oct 06, 2023 at 09:57:01AM +0000, Vasant Hegde wrote:
-> Vasant Hegde (5):
->   iommu/amd: Remove iommu_v2 module
->   iommu/amd: Remove PPR support
->   iommu/amd: Remove amd_iommu_device_info()
->   iommu/amd: Remove unused EXPORT_SYMBOLS
->   Revert "iommu: Fix false ownership failure on AMD systems with PASID activated"
+On 2023-10-06 14:53, Jason Gunthorpe wrote:
+> On Fri, Oct 06, 2023 at 02:43:51PM +0100, Robin Murphy wrote:
+>> On 2023-10-05 19:28, Jason Gunthorpe wrote:
+>>> Instead of putting container_of() casts in the internals, use the proper
+>>> type in this call chain. This makes it easier to check that the two global
+>>> static domains are not leaking into call chains they should not.
+>>
+>> Is there something inherently difficult about to_smmu_domain()? It's hard to
+>> tell how the aforementioned checks might expect to work since they don't
+>> appear to be added anywhere :/
+> 
+> ?? There are not added checks, this is talking about static checks and
+> code auditing.
+> 
+> Let's try the commit paragraph again:
+> 
+> Now that we have IDENTITY and BLOCKED domains that do not use the
+> struct arm_smmu_domain it is important that to_smmu_domain() is only
+> called on iommu_domain structs passed to the paging domain ops (aka
+> default_domain_ops). Use the more specific type in several call
+> chains and remove the few to_smmu_domain() calls that are not
+> obviously in an op call chain.
+> 
+> This makes it easier to audit the code that the two IDENTITY and
+> BLOCKED domains are not leaking someplace they should not.
 
-Applied, thanks.
+How? It should already be trivial to confirm that the driver is not 
+itself making any reference to arm_smmu_identity_domain or 
+arm_smmu_blocked_domain other than exposing them to the core API, with 
+no more than a simple grep. And if the core code does somehow screw up 
+at runtime and they get passed back into arm_smmu_attach_dev() then 
+that's still going to use to_smmu_domain() on them and propagate that to 
+its callees, with exactly the same effect as if they did so themselves. 
+I fail to understand what you think you can achieve here.
+
+The only code that deals with the static domains is 
+arm_smmu_attach_dev_identity() and arm_smmu_attach_dev_blocked(), and 
+you've already implemented those quite happily prior to this change, 
+leaving no foreseeable reason to rework them further. So AFAICS the only 
+scenario where this could make any practical difference is if someone 
+now makes an unnecessary and nonsensical change to have one of those 
+call into random other parts of the driver. But by that point, why would 
+you be confident that they wouldn't simply cargo-cult a to_smmu_domain() 
+invocation to "fix" the type mismatch at the callsite, since that's what 
+other domain callbacks do?
+
+It's never worth doing anything for the sole reason of trying to make it 
+slightly harder for someone who doesn't understand the code to break the 
+code. Either it's an entirely imagined problem to begin with, or 
+otherwise nature will always find a way...
+
+Thanks,
+Robin.
