@@ -1,128 +1,114 @@
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2086.outbound.protection.outlook.com [40.107.92.86])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 277931C68F
-	for <iommu@lists.linux.dev>; Fri,  6 Oct 2023 11:36:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="O8RYZgc5"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mD5btIUv7muxLEyIY4YNasMU0VHU5BDW4aZmBMsZYJU3oQNnboiCUN5Gxf4MZpMYAcy3jZyx1k0/Lp+gbfADeoL3ahVzG87jW5sN3bbsOij3+Tr4lcHeuC290LwNnyV3PHrA0infLWKC0c2mFV4Tfjj35IysAd1GHL9o3ztsUlwsbQngUV//76ymfTzVK5yqxNfzozI/Q5j0wi5H2QU5m4WCshDLbTSpRhhCH3nD9WTqRLClrvMMf0IuOFYfSGOTweFMKaZWQ2SgN8/OfY1sGtiKReBd9+XP0oQfhMjIXMNUNWxV+XSY9fjARsUpwSXzi5NLpxnzhRUZX4grnWU/YA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=8YS4GKvPWR+qtNIH0/VPfhhrwct9zM/hGetdmYRwC6Y=;
- b=i9drSmA6hwaV0MMbuHFtBNu7fc6h36QA+3Sfj3du1XWdz3i65ELJBPdAeLp1Ihq7RPfkm00HF+Fj1EbxazLbCeNtBn/NLhJHqfS5I/J4xSBGnzXS52XZ/YTnQgMApmiOq7zgApG9ol74/krzWTgJE5QlJSJCiQ+Q31vUjcgY2P9Qo95NVMkumtU23pLKQpeSNbeIyhPPCqkcKWDOiKr/udgbuiGsn8PbOEmzdivs+a7wLwRFE3TfEkL2dsVU5HWPxl8/t7UNimjsCu6GbTMnj4MmCafQi+vWkKcMh/63DvgwyhAH36wRDF22yeWwSaGCD+dsKqpnc7lU1WJPZ6IdZA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8YS4GKvPWR+qtNIH0/VPfhhrwct9zM/hGetdmYRwC6Y=;
- b=O8RYZgc5QVi59yDYMK9wJj3eE1maamFl3+zEXmCjdN2iffaJYSJ1wa4W9MeB4V42mQabzyvXt81iY+ckVNfJPBbHZ/r8FufiCxf6eLgrzrnuoRl9/i8huO2UOOYnqFlwNRZry3QZxAYl1UYaA7A6LweX/HzInUOFryVdyRqBw/TeguVlH/wqtF3yA+FE8zsugLHQgWYILcSyrSqQgyQ2FAUlXlylNGgRxQPyEzgoLSlip4lASSvHA/KaSe2ssJKvNnP4UWi+48ncftRyGET9941fbpF+d8toVVsrOTp264PwNKbPJJMok3MCPGiwFiB8aRMRtRn6jADJ1Z7TApo0pQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by MN0PR12MB5833.namprd12.prod.outlook.com (2603:10b6:208:378::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6838.25; Fri, 6 Oct
- 2023 11:36:45 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::3f66:c2b6:59eb:78c2]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::3f66:c2b6:59eb:78c2%6]) with mapi id 15.20.6838.030; Fri, 6 Oct 2023
- 11:36:45 +0000
-Date: Fri, 6 Oct 2023 08:36:44 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Tasmiya Nalatwad <tasmiya@linux.vnet.ibm.com>
-Cc: linux-kernel@vger.kernel.org, linux-next@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
-	linuxppc-dev@lists.ozlabs.org, linux-block@vger.kernel.org,
-	baolu.lu@linux.intel.com, jsnitsel@redhat.com, jroedel@suse.de,
-	joro@8bytes.org, will@kernel.org, iommu@lists.linux.dev,
-	abdhalee@linux.vnet.ibm.com, mputtash@linux.vnet.com,
-	sachinp@linux.vnet.com
-Subject: Re: [Bisected] [commit 2ad56efa80db] [Hotplug] WARNING while
- performing hotplug operation on 6.6-rc3-next
-Message-ID: <20231006113644.GN682044@nvidia.com>
-References: <92db426f-4a31-9c2c-e23a-85a8d353fbae@linux.vnet.ibm.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <92db426f-4a31-9c2c-e23a-85a8d353fbae@linux.vnet.ibm.com>
-X-ClientProxiedBy: MN2PR20CA0040.namprd20.prod.outlook.com
- (2603:10b6:208:235::9) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C61912F58
+	for <iommu@lists.linux.dev>; Fri,  6 Oct 2023 12:05:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Authentication-Results: smtp.subspace.kernel.org; dkim=none
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D81C8C15;
+	Fri,  6 Oct 2023 05:05:46 -0700 (PDT)
+Received: from [10.57.66.230] (unknown [10.57.66.230])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 919003F762;
+	Fri,  6 Oct 2023 05:05:05 -0700 (PDT)
+Message-ID: <a75f54d3-cd16-499d-b6d2-eed38153b0e2@arm.com>
+Date: Fri, 6 Oct 2023 13:05:03 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|MN0PR12MB5833:EE_
-X-MS-Office365-Filtering-Correlation-Id: c7fcbc66-99bc-4b2f-6ca3-08dbc66084bd
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	nf4KgmNb+mRs9Bl/BCJYCEEhIR8KAVdvUM7YIklGK5MDHUJxmUaUL7AbLfnz1xxbpYN+N0Vq3vH6VmZPHXkzwX3knlKWZNJS2Blvl3kDVdgQFYnhEMftKOpcDuneYUDCRQiZvtUR3wiR+KXwJlMEmL8w+p6qhSBEGcN4Q9ov8pSre0Yb/Q+y/sO7c0z+E45gD7hcFGj+EcnqVn3HBff4zbmmSce0eLttI6elcQve3qlRChGH8XZFnPmqEyAwmWtpU7fWTChuPUyYmBPsfIFtnQdg6AXN2sRh4ItxvrAP+g3iHEPF7/m/qlZjpVCr4WMAGfh1FNe0GmtitzqbPYVhSx3HvPuA636Zk9Ej0SAZnU2oDO+NWlGWy+0134xp1uOB6ufKfV7y4jYs4rqdkV2zXXqBMMBAZ/zQRdGfApiq3NxNdXvlLqL52Qjkm0WSM0pI6A3haHV/910M0s5dGdLebhdWBc6Pgx7SBwGHdNLet1MjwZRer9sbVyYusTkM0fKpC3cyEnpSZ5GpxtI+JCBmD9NZRpUKv49M5t+XWC0ZaERJT++P3IYEWgIJlXFc1Fay2nyo+mMKp3hZYfFlKUahDYjLyyLitKL8/VUcgDuduM1l7bH6OPJ4kfMmuCnowGcUwW9UHhZun7IPb4nRmHM/XQ==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(346002)(136003)(366004)(396003)(39860400002)(376002)(230922051799003)(451199024)(64100799003)(1800799009)(186009)(83380400001)(6506007)(6512007)(6486002)(966005)(478600001)(86362001)(38100700002)(33656002)(4744005)(7416002)(41300700001)(316002)(2616005)(1076003)(26005)(2906002)(36756003)(66946007)(66556008)(66476007)(5660300002)(6916009)(4326008)(8936002)(8676002)(27376004);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?YdLpxw1kx+SBdY3HvKQulg6ARz0d4JBX5Akpvra7hYMkVzZeNkE71dAVEQqL?=
- =?us-ascii?Q?eSO+rUpJIe3MMhez+ngEJViaIbq/LsccY/l2RjfVFoZCqw8uZ5Qair5V+lAY?=
- =?us-ascii?Q?nn5shW1vw2Ahep501euCLm8NPm6PVeWJ8PCqPveTqvmgf6dfIprUo9bW/LFs?=
- =?us-ascii?Q?PgDLD5RITvTOazxS5g9n3IFYvsoKhw/dzRndNzOMotVZisGcBkLxDEZoHZEy?=
- =?us-ascii?Q?aoNkEdDO8f4JcqUEv+7PzGGadx4w/7eRBjjARwDBFtoZvAA5ROjtliIQqbbG?=
- =?us-ascii?Q?Q1yro/pGGZWMnzWWXahvfYYjtgrMcW/d8dA+guy+1gl5M+I8rfXoFH+Rj2hs?=
- =?us-ascii?Q?oD6b63nlz+XLTxtgLPBIEcoEHRm09YEppqNztvfavMrgq6rI5xXimsApLRr0?=
- =?us-ascii?Q?G7x9qNWp9VTvpTCY/dkUPMwDklhBB6RvU6jSo17iEPWsZVqmwYZB/Vnl/dSa?=
- =?us-ascii?Q?9SLQ2WP20mVhuX+3IN+HJj2tc4Uwv6thmqEau/TCQD9FhjDquyElSz6loNTN?=
- =?us-ascii?Q?pLKs7gRN11m44BP71pQqZki4loE1xkpnhIz89fus8P3P030W6q6+e9hLNKGP?=
- =?us-ascii?Q?xfiKqJdl/VCX8jIg/JxlpixnxroyBbiCKnUTw2iojsrurb6xOIxGDIA05eZU?=
- =?us-ascii?Q?gWGSg2tJFq9TJO5p4//YMeV/F1TS5zbLLaqkcIan6yNCujRJ+72+QO0wBUld?=
- =?us-ascii?Q?2z4FwuEc3zobyRudXlC6aWEA/bbGBkZ4t7usrlMsj/Ooaw7uk9cgS4YlsPcP?=
- =?us-ascii?Q?vB8h3MQb2D4m5LkesiuGMtpkK+Lu2jwj5x0LIJ/EipyWd6eDH7BqMWaxiupV?=
- =?us-ascii?Q?4SJb6MwkcUoIvkwxInvuaWgooQY3cIYZUdDI++hHfLpXjDjxCFPebVj/fHyS?=
- =?us-ascii?Q?QjuEGcrhXVC1KcaxxHqb6gRTgi/aY9LTHr/1Z8aXMU/UnZXAHLH5xufsfuXf?=
- =?us-ascii?Q?ly2GDKHaDBVUUm45yWjAU3+6tkLud23ZLUnnqmdqha+6jYSJhn+hze5So/br?=
- =?us-ascii?Q?/eLBlYNgnMI2ncyyPwKJAt2aS2Xv26fzpgb3afl2aiHI78StZ1F8ieTqcFt8?=
- =?us-ascii?Q?uJQ2dEFDLIVtrEobW9iUaWUHev1PaTdO9HwGC15frdvp1dc1kGOVRyKXGnLI?=
- =?us-ascii?Q?DW3/+DbJINgMmyUKGs/z+T8tP3G/OIp6PvXjteKyTCICJGxrq7b8lFt6lwQG?=
- =?us-ascii?Q?AIMSIYRdReZPkxhkDKHmH99j9EJFvbn0VXiX1eLoeHQvU3VbeVuXLsuH47It?=
- =?us-ascii?Q?/WX36kJC03o6HuI/UN5JzOglaLrjP7aKWCHmivN2IbouYwrDOJURvr4A+DEu?=
- =?us-ascii?Q?WgzYSAt6UEcwET4bCLN88KgHkK1KhZuLtTyS07ZZesSF0EAEh8o90Arj7etm?=
- =?us-ascii?Q?Y/wstnclToCaos+BZ1zfa8c6chKWoaXsEkaSOS0VO9ehwcI8VGSzby3k/SvD?=
- =?us-ascii?Q?MWPa6vLb7wfxL4PhM+w/CDFbb3y0MtPBS+QKJgSqoHc3jul/rqwqzyC//zJ0?=
- =?us-ascii?Q?ekl0uO86brma9hXE+YU8cN5T4xjhIXnyC45KR+cVzP8YMKZT0xaiY4jkN61w?=
- =?us-ascii?Q?SnxB4sZ0v2nHaqYYRVxdOtqhQV+t/ljDWbD+9b2g?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c7fcbc66-99bc-4b2f-6ca3-08dbc66084bd
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Oct 2023 11:36:45.0619
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ks6EBsKGpMO5mdtOSOgPATMjKKLjoz5WNqcvSJQ8OCjntHX1s6toE9kIdPot7kEb
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR12MB5833
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/7] iommu/arm-smmu: Reorganize
+ arm_smmu_domain_add_master()
+Content-Language: en-GB
+To: Jason Gunthorpe <jgg@nvidia.com>, iommu@lists.linux.dev,
+ Joerg Roedel <joro@8bytes.org>, linux-arm-kernel@lists.infradead.org,
+ Will Deacon <will@kernel.org>
+Cc: Lu Baolu <baolu.lu@linux.intel.com>, Heiko Stuebner <heiko@sntech.de>,
+ Joerg Roedel <jroedel@suse.de>, Jerry Snitselaar <jsnitsel@redhat.com>,
+ Marek Szyprowski <m.szyprowski@samsung.com>,
+ Nicolin Chen <nicolinc@nvidia.com>, Niklas Schnelle
+ <schnelle@linux.ibm.com>, Steven Price <steven.price@arm.com>
+References: <1-v1-cf5846854f51+6db3f-smmu_newapi_jgg@nvidia.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <1-v1-cf5846854f51+6db3f-smmu_newapi_jgg@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Fri, Oct 06, 2023 at 01:20:17PM +0530, Tasmiya Nalatwad wrote:
-> Greetings,
+On 2023-10-05 19:28, Jason Gunthorpe wrote:
+> Make arm_smmu_domain_add_master() not use the smmu_domain to detect the
+> s2cr configuration, instead pass it in as a parameter. It always returns
+> zero so make it return void.
+
+It doesn't follow that a function named arm_smmu_domain_<operation>() 
+should not operate on an arm_smmu_domain... I think this is the point to 
+rename it to something like arm_smmu_master_install_s2crs() to reflect 
+that what it's actually doing by now is a lot less than it did 10 years ago.
+
+> This is done to make the next two patches able to re-use this code without
+> forcing the creation of a struct arm_smmu_domain.
 > 
-> [linux-next] [6.6.0-rc3-next-20230929] WARNING: CPU: 5 PID: 185612 at
-> drivers/iommu/iommu.c:3049 iommu_setup_default_domain+0x410/0x680
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> ---
+>   drivers/iommu/arm/arm-smmu/arm-smmu.c | 23 ++++++++++-------------
+>   1 file changed, 10 insertions(+), 13 deletions(-)
 > 
-> --- Traces ---
-> 
-> [ 6296.425934] WARNING: CPU: 5 PID: 185612 at drivers/iommu/iommu.c:3049
-> iommu_setup_default_domain+0x410/0x680
+> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+> index d6d1a2a55cc069..7f33363719f4ac 100644
+> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
+> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+> @@ -1081,21 +1081,14 @@ static void arm_smmu_master_free_smes(struct arm_smmu_master_cfg *cfg,
+>   	mutex_unlock(&smmu->stream_map_mutex);
+>   }
+>   
+> -static int arm_smmu_domain_add_master(struct arm_smmu_domain *smmu_domain,
+> -				      struct arm_smmu_master_cfg *cfg,
+> -				      struct iommu_fwspec *fwspec)
+> +static void arm_smmu_domain_add_master(struct arm_smmu_device *smmu,
 
-Does this fix it too? I think it should?
+We already have the SMMU device in cfg->smmu, no need to pass it twice.
 
-https://lore.kernel.org/r/0-v1-2b52423411b9+164fc-iommu_ppc_defdomain_jgg@nvidia.com
+Thanks,
+Robin.
 
-Jason
+> +				       struct arm_smmu_master_cfg *cfg,
+> +				       enum arm_smmu_s2cr_type type, u8 cbndx,
+> +				       struct iommu_fwspec *fwspec)
+>   {
+> -	struct arm_smmu_device *smmu = smmu_domain->smmu;
+>   	struct arm_smmu_s2cr *s2cr = smmu->s2crs;
+> -	u8 cbndx = smmu_domain->cfg.cbndx;
+> -	enum arm_smmu_s2cr_type type;
+>   	int i, idx;
+>   
+> -	if (smmu_domain->stage == ARM_SMMU_DOMAIN_BYPASS)
+> -		type = S2CR_TYPE_BYPASS;
+> -	else
+> -		type = S2CR_TYPE_TRANS;
+> -
+>   	for_each_cfg_sme(cfg, fwspec, i, idx) {
+>   		if (type == s2cr[idx].type && cbndx == s2cr[idx].cbndx)
+>   			continue;
+> @@ -1105,7 +1098,6 @@ static int arm_smmu_domain_add_master(struct arm_smmu_domain *smmu_domain,
+>   		s2cr[idx].cbndx = cbndx;
+>   		arm_smmu_write_s2cr(smmu, idx);
+>   	}
+> -	return 0;
+>   }
+>   
+>   static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+> @@ -1153,7 +1145,12 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+>   	}
+>   
+>   	/* Looks ok, so add the device to the domain */
+> -	ret = arm_smmu_domain_add_master(smmu_domain, cfg, fwspec);
+> +	arm_smmu_domain_add_master(smmu, cfg,
+> +				   smmu_domain->stage ==
+> +						   ARM_SMMU_DOMAIN_BYPASS ?
+> +					   S2CR_TYPE_BYPASS :
+> +					   S2CR_TYPE_TRANS,
+> +				   smmu_domain->cfg.cbndx, fwspec);
+>   
+>   	/*
+>   	 * Setup an autosuspend delay to avoid bouncing runpm state.
