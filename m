@@ -1,73 +1,34 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C1126BA53;
-	Mon,  9 Oct 2023 17:32:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 92F013714F;
+	Mon,  9 Oct 2023 18:24:31 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="n7htfkkY"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E99C5C433C7;
-	Mon,  9 Oct 2023 17:31:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1696872720;
-	bh=XDeMdfLHaRv+b+MlRUUeKv/nia38YeOU/WDZx5uPdgo=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=n7htfkkYUR12EIz1FfiE1jX2eFvUEHVFPryxLjmFbPuCO63JBXFgzZFBrFSr8POoM
-	 nOqBt8Ex9K985cGV6+qhK/D41SCIeSdiXbcUvI9IgH95SuKRTpkX2tFZxU1fggV/Co
-	 h4FDmqr5W2gDoU8y1iBRT+VGpOLpUw9MzF+NINbA=
-Date: Mon, 9 Oct 2023 19:31:56 +0200
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Max Kellermann <max.kellermann@ionos.com>
-Cc: Jens Axboe <axboe@kernel.dk>, "Rafael J. Wysocki" <rafael@kernel.org>,
-	Borislav Petkov <bp@alien8.de>, Tony Luck <tony.luck@intel.com>,
-	James Morse <james.morse@arm.com>,
-	Mauro Carvalho Chehab <mchehab@kernel.org>,
-	Robert Richter <rric@kernel.org>, Jean Delvare <jdelvare@suse.com>,
-	Guenter Roeck <linux@roeck-us.net>, Jason Gunthorpe <jgg@ziepe.ca>,
-	Leon Romanovsky <leon@kernel.org>,
-	Bart Van Assche <bvanassche@acm.org>,
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kfb/PFt1"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA41DC433C7;
+	Mon,  9 Oct 2023 18:24:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1696875871;
+	bh=GX827MInhdg+9mFXDOrIyDM25nqfnAIqJdLH+cnFaYc=;
+	h=Date:From:To:Cc:Subject:From;
+	b=kfb/PFt1GOw5zC7CWQpYjFj1PXHizJBGvSfYLfMzu1Fu153G6IibmU7pIiE36MWaz
+	 Wq5Mbd63mgNvyj381SHoYS/kgRDRAwW4svc1+EjTpZytGPUC6BnHmjhe/1TbQKluOd
+	 lJwEvwm99bGucNKSkxo8yjWenMOkgH1X/PTJSUNlhE85Jmh4tatu/HsNRN2tGkdr8f
+	 n//Ox8QHbqjDlpowcP8WVokEry8qPiiQFpPH/FDZZnxgZuHZUJw0iYZbRVLeH7Bc6P
+	 33Axz2LTWi6+hZU7n2PdSHI6Q19g4MdzRer4+pDnB+9NDTvZrWNKAMdz3katFpP7Xh
+	 pO6IoFkkMbihA==
+Date: Mon, 9 Oct 2023 12:24:27 -0600
+From: "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>,
 	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Dan Williams <dan.j.williams@intel.com>,
-	Vishal Verma <vishal.l.verma@intel.com>,
-	Dave Jiang <dave.jiang@intel.com>, Ira Weiny <ira.weiny@intel.com>,
-	Keith Busch <kbusch@kernel.org>, Christoph Hellwig <hch@lst.de>,
-	Sagi Grimberg <sagi@grimberg.me>,
-	Alessandro Zummo <a.zummo@towertech.it>,
-	Alexandre Belloni <alexandre.belloni@bootlin.com>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Suzuki K Poulose <suzuki.poulose@arm.com>,
-	Mike Leach <mike.leach@linaro.org>,
-	James Clark <james.clark@arm.com>, Leo Yan <leo.yan@linaro.org>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Peter Zijlstra <peterz@infradead.org>, Pavel Machek <pavel@ucw.cz>,
-	Lee Jones <lee@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-	Bjorn Helgaas <bhelgaas@google.com>, Ingo Molnar <mingo@redhat.com>,
-	Arnaldo Carvalho de Melo <acme@kernel.org>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-	Jiri Olsa <jolsa@kernel.org>, Namhyung Kim <namhyung@kernel.org>,
-	Ian Rogers <irogers@google.com>,
-	Adrian Hunter <adrian.hunter@intel.com>,
-	Sebastian Reichel <sre@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-	Wim Van Sebroeck <wim@linux-watchdog.org>,
-	"James E.J. Bottomley" <jejb@linux.ibm.com>,
-	"Martin K. Petersen" <martin.petersen@oracle.com>,
-	linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-edac@vger.kernel.org, linux-hwmon@vger.kernel.org,
-	linux-rdma@vger.kernel.org, iommu@lists.linux.dev,
-	nvdimm@lists.linux.dev, linux-nvme@lists.infradead.org,
-	linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org,
-	coresight@lists.linaro.org, linux-arm-kernel@lists.infradead.org,
-	linux-leds@vger.kernel.org, linux-pci@vger.kernel.org,
-	linux-perf-users@vger.kernel.org, linux-pm@vger.kernel.org,
-	linux-usb@vger.kernel.org, linux-watchdog@vger.kernel.org,
-	linux-scsi@vger.kernel.org
-Subject: Re: [PATCH 6/7] fs/sysfs/group: make attribute_group pointers const
-Message-ID: <2023100944-fancied-garter-f09b@gregkh>
-References: <20231009165741.746184-1-max.kellermann@ionos.com>
- <20231009165741.746184-6-max.kellermann@ionos.com>
- <2023100921-that-jasmine-2240@gregkh>
+	Robin Murphy <robin.murphy@arm.com>
+Cc: virtualization@lists.linux-foundation.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	"Gustavo A. R. Silva" <gustavoars@kernel.org>,
+	linux-hardening@vger.kernel.org
+Subject: [PATCH][next] iommu/virtio: Add __counted_by for struct
+ viommu_request and use struct_size()
+Message-ID: <ZSRFW0yDlDo8+at3@work>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -76,23 +37,47 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <2023100921-that-jasmine-2240@gregkh>
 
-On Mon, Oct 09, 2023 at 07:25:57PM +0200, Greg Kroah-Hartman wrote:
-> On Mon, Oct 09, 2023 at 06:57:39PM +0200, Max Kellermann wrote:
-> > This allows passing arrays of const pointers.  The goal is to make
-> > lots of global variables "const" to allow them to live in the
-> > ".rodata" section.
-> 
-> I'm all for doing this type of work, but this is going to be rough.  You
-> sent patch 6/7 that hit almost all subsystems at once :(
+Prepare for the coming implementation by GCC and Clang of the __counted_by
+attribute. Flexible array members annotated with __counted_by can have
+their accesses bounds-checked at run-time via CONFIG_UBSAN_BOUNDS (for
+array indexing) and CONFIG_FORTIFY_SOURCE (for strcpy/memcpy-family
+functions).
 
-The way to do this right is one-subsystem-at-a-time, right?  Why not
-start there, doing it cleanly, and then at the end, change the driver
-core and then just the subsystem pointers?  That should be much simpler,
-easier to review and verify, and many more changes (and probably take a
-kernel release or two to get through.)
+While there, use struct_size() helper, instead of the open-coded
+version, to calculate the size for the allocation of the whole
+flexible structure, including of course, the flexible-array member.
 
-thanks,
+This code was found with the help of Coccinelle, and audited and
+fixed manually.
 
-greg k-h
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+---
+ drivers/iommu/virtio-iommu.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
+index 17dcd826f5c2..379ebe03efb6 100644
+--- a/drivers/iommu/virtio-iommu.c
++++ b/drivers/iommu/virtio-iommu.c
+@@ -85,7 +85,7 @@ struct viommu_request {
+ 	void				*writeback;
+ 	unsigned int			write_offset;
+ 	unsigned int			len;
+-	char				buf[];
++	char				buf[] __counted_by(len);
+ };
+ 
+ #define VIOMMU_FAULT_RESV_MASK		0xffffff00
+@@ -230,7 +230,7 @@ static int __viommu_add_req(struct viommu_dev *viommu, void *buf, size_t len,
+ 	if (write_offset <= 0)
+ 		return -EINVAL;
+ 
+-	req = kzalloc(sizeof(*req) + len, GFP_ATOMIC);
++	req = kzalloc(struct_size(req, buf, len), GFP_ATOMIC);
+ 	if (!req)
+ 		return -ENOMEM;
+ 
+-- 
+2.34.1
+
