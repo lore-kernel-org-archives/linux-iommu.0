@@ -1,36 +1,36 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.151])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE6464412
-	for <iommu@lists.linux.dev>; Mon,  9 Oct 2023 08:51:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E20D1FAF
+	for <iommu@lists.linux.dev>; Mon,  9 Oct 2023 08:51:34 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="HVGTokeG"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hiuE+TVM"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1696841492; x=1728377492;
+  t=1696841494; x=1728377494;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=1yMPZv0+hy/FoeMbAtBKKDM1b/wty0WUySVOG2Kdxzs=;
-  b=HVGTokeGnzu02R3Zy5s7/4OwdYpsXqGjMLiKOBKo/C66e+rDffqAzoW9
-   UBwmCxebDjqELZRIM4Zns584gT8UzDGnypGJxNkNE2Gd/ouNn7+zg94cX
-   rmLeW5pEG3LCFoYJ87gLJFmJNNaUtFdtBi4UAdyTY0oGPNODffClAP7rT
-   lKXlWIowrtvavUhr4m0FwNa5cnBL/4N8H0p8oETLzJ92Ij72gRbEodGmm
-   JCblI34IQ5zwHWVQ9iWCiAGt6XY8VXu9on8BQcGx8O5Szh0nXWVkgPhUk
-   IswjHBGhOTznh6GHM5qGauj9yRYR1G1w9S1NQxLfh0ToKv9+7UM3dDG+r
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10857"; a="364390802"
+  bh=5oSl+8ABY4vMSX9OU2YlTePC4xhTypHD8FVbeS8l5Dc=;
+  b=hiuE+TVMaW6cQ5jEDIo5i3Rvld4MKyB1ZJCk4i04+YqCPHnWR/SJJPUV
+   DwRZXAcq+UJ0HS+bXAbkbKmbsIw5BEmYsKIHF6zo1K25FC8OwEOQbZFZG
+   iYNyyR/k356e4oc6pZatvPGPO6ZEXotG1lBQWO1RyYfPH6zLwkLPgVCyP
+   6KEWzt0e/kJ1Kew2wNLqg/wvIzGNu2d+NT+Rujjlk+iZs/yMoV6VK1522
+   gmluYLrOBezzbQ3KRKcvwRIESqUOK8C+GzdMlQ6DDsvss2xsu1w89icrv
+   l0pPYcC1Xd1OJLiDLikmuwO2BvOYfr2QYBBU/7PgnnAC+onD2mst82V3h
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10857"; a="364390813"
 X-IronPort-AV: E=Sophos;i="6.03,209,1694761200"; 
-   d="scan'208";a="364390802"
+   d="scan'208";a="364390813"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Oct 2023 01:51:32 -0700
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Oct 2023 01:51:34 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10857"; a="818781671"
+X-IronPort-AV: E=McAfee;i="6600,9927,10857"; a="818781686"
 X-IronPort-AV: E=Sophos;i="6.03,209,1694761200"; 
-   d="scan'208";a="818781671"
+   d="scan'208";a="818781686"
 Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
-  by fmsmga008.fm.intel.com with ESMTP; 09 Oct 2023 01:51:31 -0700
+  by fmsmga008.fm.intel.com with ESMTP; 09 Oct 2023 01:51:33 -0700
 From: Yi Liu <yi.l.liu@intel.com>
 To: joro@8bytes.org,
 	alex.williamson@redhat.com,
@@ -56,9 +56,9 @@ Cc: cohuck@redhat.com,
 	linux-kselftest@vger.kernel.org,
 	zhenzhong.duan@intel.com,
 	joao.m.martins@oracle.com
-Subject: [RFC 3/7] iommufd: Add iommufd_device_bind_pasid()
-Date: Mon,  9 Oct 2023 01:51:19 -0700
-Message-Id: <20231009085123.463179-4-yi.l.liu@intel.com>
+Subject: [RFC 4/7] iommufd: Support attach/replace for SIOV virtual device {dev, pasid}
+Date: Mon,  9 Oct 2023 01:51:20 -0700
+Message-Id: <20231009085123.463179-5-yi.l.liu@intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20231009085123.463179-1-yi.l.liu@intel.com>
 References: <20231009085123.463179-1-yi.l.liu@intel.com>
@@ -72,158 +72,69 @@ Content-Transfer-Encoding: 8bit
 
 From: Kevin Tian <kevin.tian@intel.com>
 
-Intel SIOV allows creating virtual devices of which the vRID is
-represented by a pasid of a physical device. So such device can be
-bound to an iommufd as physical device does and then later be attached
-to an IOAS/hwpt using that pasid.
+SIOV devices allows driver to tag different PASIDs for the virtual devices
+within it. Such driver should call iommufd_device_bind_pasid() to connect
+the pasid of the device to iommufd, and then driver is able to attach the
+virtual device to IOAS/HWPT with the iommufd_device_attach() API.
 
-Binding a virtual device has different security contract comparing
-to binding a physical device. There is no DMA ownership claim per
-pasid since the parent device is already claimed by the parent driver
-including the entire pasid space. With that we simply store the pasid
-in the object once it passes other checks.
+Unlike physical devices, for SIOV virtual devices, iommufd_device_attach()
+eventually uses the idev->default_pasid when the virtual device is attached
+to an IOAS/HWPT. Also, there is no need to do immediate_attach per iommu
+domain allocation in the attach/replace path if any iommu domain allocation
+happens since the attach/replace is eventually pasid attach/replace.
 
 Signed-off-by: Kevin Tian <kevin.tian@intel.com>
 Signed-off-by: Yi Liu <yi.l.liu@intel.com>
 ---
- drivers/iommu/iommufd/device.c          | 72 ++++++++++++++++++++++++-
- drivers/iommu/iommufd/iommufd_private.h |  7 +++
- include/linux/iommufd.h                 |  3 ++
- 3 files changed, 80 insertions(+), 2 deletions(-)
+ drivers/iommu/iommufd/device.c | 21 +++++++++++++++++----
+ 1 file changed, 17 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
-index 9dd76d92b7f6..35c1419ee96b 100644
+index 35c1419ee96b..4882e3106b2e 100644
 --- a/drivers/iommu/iommufd/device.c
 +++ b/drivers/iommu/iommufd/device.c
-@@ -5,6 +5,7 @@
- #include <linux/slab.h>
- #include <linux/iommu.h>
- #include <uapi/linux/iommufd.h>
-+#include <linux/msi.h>
- #include "../iommu-priv.h"
+@@ -841,7 +841,11 @@ int iommufd_device_attach(struct iommufd_device *idev, u32 *pt_id)
+ 		.pasid = IOMMU_PASID_INVALID
+ 	};
  
- #include "io_pagetable.h"
-@@ -139,8 +140,10 @@ void iommufd_device_destroy(struct iommufd_object *obj)
- 	WARN_ON(!xa_empty(&idev->pasid_hwpts));
- 	if (idev->has_user_data)
- 		dev_iommu_ops(idev->dev)->unset_dev_user_data(idev->dev);
--	iommu_device_release_dma_owner(idev->dev);
--	iommufd_put_group(idev->igroup);
+-	rc = iommufd_device_change_pt(idev, pt_id, &data);
++	if (idev->igroup)
++		rc = iommufd_device_change_pt(idev, pt_id, &data);
++	else
++		/* SIOV device follows generic pasid attach flow */
++		rc = iommufd_device_pasid_attach(idev, idev->default_pasid, pt_id);
+ 	if (rc)
+ 		return rc;
+ 
+@@ -876,7 +880,12 @@ int iommufd_device_replace(struct iommufd_device *idev, u32 *pt_id)
+ 		.pasid = IOMMU_PASID_INVALID
+ 	};
+ 
+-	return iommufd_device_change_pt(idev, pt_id, &data);
 +	if (idev->igroup) {
-+		iommu_device_release_dma_owner(idev->dev);
-+		iommufd_put_group(idev->igroup);
++		return iommufd_device_change_pt(idev, pt_id, &data);
++	} else {
++		/* SIOV device follows generic pasid replace flow */
++		return iommufd_device_pasid_replace(idev, idev->default_pasid, pt_id);
 +	}
- 	if (!iommufd_selftest_is_mock_dev(idev->dev))
- 		iommufd_ctx_put(idev->ictx);
  }
-@@ -257,6 +260,71 @@ struct iommufd_device *iommufd_device_bind(struct iommufd_ctx *ictx,
- }
- EXPORT_SYMBOL_NS_GPL(iommufd_device_bind, IOMMUFD);
+ EXPORT_SYMBOL_NS_GPL(iommufd_device_replace, IOMMUFD);
  
-+/**
-+ * iommufd_device_bind_pasid - Bind a virtual device to an iommu fd
-+ * @ictx: iommufd file descriptor
-+ * @dev: Pointer to the parent physical device struct
-+ * @pasid: the pasid value representing vRID of this virtual device
-+ * @id: Output ID number to return to userspace for this device
-+ *
-+ * The virtual device always tags its DMA with the provided pasid.
-+ * A successful bind allows the pasid to be used in other iommufd
-+ * operations e.g. attach/detach and returns struct iommufd_device
-+ * pointer, otherwise returns error pointer.
-+ *
-+ * There is no ownership check per pasid. A driver using this API
-+ * must already claim the DMA ownership over the parent device and
-+ * the pasid is allocated by the driver itself.
-+ *
-+ * PASID is a device capability so unlike iommufd_device_bind() it
-+ * has no iommu group associated.
-+ *
-+ * The caller must undo this with iommufd_device_unbind()
-+ */
-+struct iommufd_device *iommufd_device_bind_pasid(struct iommufd_ctx *ictx,
-+						 struct device *dev,
-+						 u32 pasid, u32 *id)
-+{
-+	struct iommufd_device *idev;
-+	int rc;
-+
-+	/*
-+	 * iommufd always sets IOMMU_CACHE because we offer no way for userspace
-+	 * to restore cache coherency.
-+	 */
-+	if (!device_iommu_capable(dev, IOMMU_CAP_CACHE_COHERENCY))
-+		return ERR_PTR(-EINVAL);
-+
-+	/*
-+	 * No iommu supports pasid-granular msi message today. Here we
-+	 * just check whether the parent device can do safe interrupts.
-+	 * Isolation between virtual devices within the parent device
-+	 * relies on the parent driver to enforce.
-+	 */
-+	if (!iommufd_selftest_is_mock_dev(dev) &&
-+	    !msi_device_has_isolated_msi(dev)) {
-+		rc = iommufd_allow_unsafe_interrupts(dev);
-+		if (rc)
-+			return ERR_PTR(rc);
+@@ -891,8 +900,12 @@ void iommufd_device_detach(struct iommufd_device *idev)
+ {
+ 	struct iommufd_hw_pagetable *hwpt;
+ 
+-	hwpt = iommufd_hw_pagetable_detach(idev);
+-	iommufd_hw_pagetable_put(idev->ictx, hwpt);
++	if (idev->igroup) {
++		hwpt = iommufd_hw_pagetable_detach(idev);
++		iommufd_hw_pagetable_put(idev->ictx, hwpt);
++	} else {
++		iommufd_device_pasid_detach(idev, idev->default_pasid);
 +	}
-+
-+	idev = iommufd_alloc_device(ictx, dev);
-+	if (IS_ERR(idev))
-+		return idev;
-+	idev->default_pasid = pasid;
-+
-+	/*
-+	 * If the caller fails after this success it must call
-+	 * iommufd_unbind_device() which is safe since we hold this refcount.
-+	 * This also means the device is a leaf in the graph and no other
-+	 * object can take a reference on it.
-+	 */
-+	iommufd_object_finalize(ictx, &idev->obj);
-+	*id = idev->obj.id;
-+	return idev;
-+}
-+EXPORT_SYMBOL_NS_GPL(iommufd_device_bind_pasid, IOMMUFD);
-+
- /**
-  * iommufd_ctx_has_group - True if any device within the group is bound
-  *                         to the ictx
-diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
-index 06ebee4c87c5..7b3405fd6fd3 100644
---- a/drivers/iommu/iommufd/iommufd_private.h
-+++ b/drivers/iommu/iommufd/iommufd_private.h
-@@ -332,10 +332,17 @@ struct iommufd_group {
- struct iommufd_device {
- 	struct iommufd_object obj;
- 	struct iommufd_ctx *ictx;
-+	/* valid if this is a physical device */
- 	struct iommufd_group *igroup;
- 	struct list_head group_item;
- 	/* always the physical device */
- 	struct device *dev;
-+	/*
-+	 * valid if this is a virtual device which gains pasid-granular
-+	 * DMA isolation in IOMMU. The default pasid is used when attaching
-+	 * this device to a IOAS/hwpt.
-+	 */
-+	u32 default_pasid;
- 	struct xarray pasid_hwpts;
- 	bool enforce_cache_coherency;
- 	bool has_user_data;
-diff --git a/include/linux/iommufd.h b/include/linux/iommufd.h
-index 0b007c376306..402320d6eba1 100644
---- a/include/linux/iommufd.h
-+++ b/include/linux/iommufd.h
-@@ -20,6 +20,9 @@ struct iommu_group;
- 
- struct iommufd_device *iommufd_device_bind(struct iommufd_ctx *ictx,
- 					   struct device *dev, u32 *id);
-+struct iommufd_device *iommufd_device_bind_pasid(struct iommufd_ctx *ictx,
-+						 struct device *dev,
-+						 u32 pasid, u32 *id);
- void iommufd_device_unbind(struct iommufd_device *idev);
- 
- int iommufd_device_attach(struct iommufd_device *idev, u32 *pt_id);
+ 	refcount_dec(&idev->obj.users);
+ }
+ EXPORT_SYMBOL_NS_GPL(iommufd_device_detach, IOMMUFD);
 -- 
 2.34.1
 
