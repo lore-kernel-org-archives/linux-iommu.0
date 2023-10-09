@@ -1,108 +1,144 @@
-Received: from mail-yw1-f169.google.com (mail-yw1-f169.google.com [209.85.128.169])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.151])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 00F0717D1
-	for <iommu@lists.linux.dev>; Mon,  9 Oct 2023 08:44:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; dkim=none
-Received: by mail-yw1-f169.google.com with SMTP id 00721157ae682-5a24b03e22eso51936077b3.0
-        for <iommu@lists.linux.dev>; Mon, 09 Oct 2023 01:44:10 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1696841050; x=1697445850;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=dqNLFjHn3fj/AL0iMyf/yawddLiaq23Wu30A3Gzqckk=;
-        b=Qi1oQhwXaDLuL5xRtYAKm2KwR4s+EDFWghiDmXB4odRJkLV8VGv6sboTpC/PS68obo
-         0DlMEx5SQsVYCVZds35R0ZS9nDQxHoCpqD9hFRB1KzK4muSLbrLzbqzm9+g/V80iDaCT
-         AZU+zJVTdFzhV/9aaPP8ans6jtNjh55/f3RqObVXJcavgpuk9Zq/WO4gYJJ1cg9wL5wK
-         wajZTBqg9K7UXHPFyQ8M0hNocFJoFeK4eSHeOp0CvCZTWYoYBmu5fZwO9CzGxB6RvUin
-         11iIrZQwMIvp+J3bGctR9CO5X+MsrxAC4MV4o97fZtJkW13kTjeGn8TsLDJCa45SUB87
-         Utag==
-X-Gm-Message-State: AOJu0YwClh1J0xlKWkWCWHhRRaSIE6TgzF/hiVlgkKJZ/xGrW5R4u28g
-	7Sc1OaAmWm3dXcK/nE+Vg1dvK/NXyueVfg==
-X-Google-Smtp-Source: AGHT+IF1vprTYVqI+VTruURTm49IsqYlb/m8q4I/SVfu8A8fIj1UySENm1YwEPp6HjK353bexypXLQ==
-X-Received: by 2002:a81:7309:0:b0:59b:2458:f608 with SMTP id o9-20020a817309000000b0059b2458f608mr15798458ywc.30.1696841049758;
-        Mon, 09 Oct 2023 01:44:09 -0700 (PDT)
-Received: from mail-yw1-f169.google.com (mail-yw1-f169.google.com. [209.85.128.169])
-        by smtp.gmail.com with ESMTPSA id j190-20020a0df9c7000000b00582b239674esm3526813ywf.129.2023.10.09.01.44.09
-        for <iommu@lists.linux.dev>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 09 Oct 2023 01:44:09 -0700 (PDT)
-Received: by mail-yw1-f169.google.com with SMTP id 00721157ae682-5a2379a8b69so51658887b3.2
-        for <iommu@lists.linux.dev>; Mon, 09 Oct 2023 01:44:09 -0700 (PDT)
-X-Received: by 2002:a0d:d808:0:b0:59b:d796:2a55 with SMTP id
- a8-20020a0dd808000000b0059bd7962a55mr17521321ywe.1.1696841049412; Mon, 09 Oct
- 2023 01:44:09 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6A661FAF
+	for <iommu@lists.linux.dev>; Mon,  9 Oct 2023 08:51:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="C7Pgc6iv"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1696841487; x=1728377487;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=QQiCA0/iZXkbwpDgf6IT/PWFnBNd1b0GHC0pta7p/Rk=;
+  b=C7Pgc6ivLscECJZrN7j7SpK7k+GvObdDp1dJbcOviXfru0zrzQJLv30e
+   XK7HwVJHTH/MYnV+dCA53ukAJZc3qhAuHypvdYYKYTrpnhARjXBRattlt
+   dyPwA7zWxj8QbNn/f0kbRvBJeWFVVq3XoMlhNZINAXy/T6Kb7pShlIISr
+   X46igJIIKJQkwtSS7hXzi/b8tg4hC8BR3co7ZchhrhwyfHTQnN36+3a2+
+   bSkvq8LcEAhiQpBa0PJbVLL7QHRvOHGIeSyjijHwOkBG9U+wylsfl3zCb
+   RVr615HnfRjABssiC2+oMayVGR6Kh8dbq9/hHZbSzTvOkfJ8NJwl4Sg9J
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10857"; a="364390745"
+X-IronPort-AV: E=Sophos;i="6.03,209,1694761200"; 
+   d="scan'208";a="364390745"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Oct 2023 01:51:26 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10857"; a="818781640"
+X-IronPort-AV: E=Sophos;i="6.03,209,1694761200"; 
+   d="scan'208";a="818781640"
+Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
+  by fmsmga008.fm.intel.com with ESMTP; 09 Oct 2023 01:51:25 -0700
+From: Yi Liu <yi.l.liu@intel.com>
+To: joro@8bytes.org,
+	alex.williamson@redhat.com,
+	jgg@nvidia.com,
+	kevin.tian@intel.com,
+	robin.murphy@arm.com,
+	baolu.lu@linux.intel.com
+Cc: cohuck@redhat.com,
+	eric.auger@redhat.com,
+	nicolinc@nvidia.com,
+	kvm@vger.kernel.org,
+	mjrosato@linux.ibm.com,
+	chao.p.peng@linux.intel.com,
+	yi.l.liu@intel.com,
+	yi.y.sun@linux.intel.com,
+	peterx@redhat.com,
+	jasowang@redhat.com,
+	shameerali.kolothum.thodi@huawei.com,
+	lulu@redhat.com,
+	suravee.suthikulpanit@amd.com,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	linux-kselftest@vger.kernel.org,
+	zhenzhong.duan@intel.com,
+	joao.m.martins@oracle.com
+Subject: [RFC 0/7] Add SIOV virtual device support
+Date: Mon,  9 Oct 2023 01:51:16 -0700
+Message-Id: <20231009085123.463179-1-yi.l.liu@intel.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20231009074121.219686-1-hch@lst.de> <20231009074121.219686-2-hch@lst.de>
-In-Reply-To: <20231009074121.219686-2-hch@lst.de>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Mon, 9 Oct 2023 10:43:57 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdWiYDQ5J7R7hPaVAYgXqJvpjdksoF6X-zHrJ_80Ly4XfQ@mail.gmail.com>
-Message-ID: <CAMuHMdWiYDQ5J7R7hPaVAYgXqJvpjdksoF6X-zHrJ_80Ly4XfQ@mail.gmail.com>
-Subject: Re: [PATCH 1/6] dma-direct: add depdenencies to CONFIG_DMA_GLOBAL_POOL
-To: Christoph Hellwig <hch@lst.de>
-Cc: iommu@lists.linux.dev, Robin Murphy <robin.murphy@arm.com>, 
-	Marek Szyprowski <m.szyprowski@samsung.com>, Wei Fang <wei.fang@nxp.com>, 
-	Shenwei Wang <shenwei.wang@nxp.com>, Clark Wang <xiaoning.wang@nxp.com>, 
-	NXP Linux Team <linux-imx@nxp.com>, linux-m68k@lists.linux-m68k.org, netdev@vger.kernel.org, 
-	Jim Quinlan <james.quinlan@broadcom.com>, linux-riscv <linux-riscv@lists.infradead.org>, 
-	Linux-Renesas <linux-renesas-soc@vger.kernel.org>, 
-	"Lad, Prabhakar" <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-Hi Christoph,
+Intel SIOV allows creating virtual devices of which the vRID is
+represented by a pasid of a physical device. It is called as SIOV
+virtual device in this series. Such devices can be bound to an iommufd
+as physical device does and then later be attached to an IOAS/hwpt
+using that pasid. Such PASIDs are called as default pasid.
 
-On Mon, Oct 9, 2023 at 9:41=E2=80=AFAM Christoph Hellwig <hch@lst.de> wrote=
-:
-> CONFIG_DMA_GLOBAL_POOL can't be combined with other dma-coherent
-> allocators.  Add dependencies to Kconfig to document this, and make
-> kconfig complain about unment dependencies if someone tries.
->
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
+iommufd has already supported pasid attach[1]. So a simple way to
+support SIOV virtual device attachment is to let device driver call
+the iommufd_device_pasid_attach() and pass in the default pasid for
+the virtual device. This should work for now, but it may have problem
+if iommufd core wants to differentiate the default pasids with other
+kind of pasids (e.g. pasid given by userspace). In the later forwarding
+page request to userspace, the default pasids are not supposed to send
+to userspace as default pasids are mainly used by the SIOV device driver.
 
-Thanks for your patch!
+With above reason, this series chooses to have a new API to bind the
+default pasid to iommufd, and extends the iommufd_device_attach() to
+convert the attachment to be pasid attach with the default pasid. Device
+drivers (e.g. VFIO) that support SIOV shall call the below APIs to
+interact with iommufd:
 
-> --- a/kernel/dma/Kconfig
-> +++ b/kernel/dma/Kconfig
-> @@ -135,6 +135,8 @@ config DMA_COHERENT_POOL
->
->  config DMA_GLOBAL_POOL
->         select DMA_DECLARE_COHERENT
-> +       depends on !ARCH_HAS_DMA_SET_UNCACHED
-> +       depends on !DMA_DIRECT_REMAP
->         bool
->
->  config DMA_DIRECT_REMAP
+  - iommufd_device_bind_pasid(): Bind virtual device (a pasid of a device)
+				 to iommufd;
+  - iommufd_device_attach(): Attach a SIOV virtual device to IOAS/HWPT;
+  - iommufd_device_replace(): Replace IOAS/HWPT of a SIOV virtual device;
+  - iommufd_device_detach(): Detach IOAS/HWPT of a SIOV virtual device;
+  - iommufd_device_unbind(): Unbind virtual device from iommufd;
 
-riscv defconfig + CONFIG_NONPORTABLE=3Dy + CONFIG_ARCH_R9A07G043=3Dy:
+For vfio devices, the device drivers that support SIOV should:
 
-WARNING: unmet direct dependencies detected for DMA_GLOBAL_POOL
-  Depends on [n]: !ARCH_HAS_DMA_SET_UNCACHED [=3Dn] && !DMA_DIRECT_REMAP [=
-=3Dy]
-  Selected by [y]:
-  - ARCH_R9A07G043 [=3Dy] && SOC_RENESAS [=3Dy] && RISCV [=3Dy] && NONPORTA=
-BLE [=3Dy]
+  - use below API to register vdev for SIOV virtual device
+        vfio_register_pasid_iommu_dev()
 
-Gr{oetje,eeting}s,
+  - use below API to bind vdev to iommufd in .bind_iommufd() callback
+        iommufd_device_bind_pasid()
 
-                        Geert
+  - allocate pasid by itself before calling iommufd_device_bind_pasid()
 
+Complete code can be found at[2]
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k=
-.org
+[1] https://lore.kernel.org/linux-iommu/20230926092651.17041-1-yi.l.liu@intel.com/
+[2] https://github.com/yiliu1765/iommufd/tree/iommufd_pasid_siov
 
-In personal conversations with technical people, I call myself a hacker. Bu=
-t
-when I'm talking to journalists I just say "programmer" or something like t=
-hat.
-                                -- Linus Torvalds
+Regards,
+	Yi Liu
+
+Kevin Tian (5):
+  iommufd: Handle unsafe interrupts in a separate function
+  iommufd: Introduce iommufd_alloc_device()
+  iommufd: Add iommufd_device_bind_pasid()
+  iommufd: Support attach/replace for SIOV virtual device {dev, pasid}
+  vfio: Add vfio_register_pasid_iommu_dev()
+
+Yi Liu (2):
+  iommufd/selftest: Extend IOMMU_TEST_OP_MOCK_DOMAIN to pass in pasid
+  iommufd/selftest: Add test coverage for SIOV virtual device
+
+ drivers/iommu/iommufd/device.c                | 163 ++++++++++++++----
+ drivers/iommu/iommufd/iommufd_private.h       |   7 +
+ drivers/iommu/iommufd/iommufd_test.h          |   2 +
+ drivers/iommu/iommufd/selftest.c              |  10 +-
+ drivers/vfio/group.c                          |  18 ++
+ drivers/vfio/vfio.h                           |   8 +
+ drivers/vfio/vfio_main.c                      |  10 ++
+ include/linux/iommufd.h                       |   3 +
+ include/linux/vfio.h                          |   1 +
+ tools/testing/selftests/iommu/iommufd.c       |  75 ++++++--
+ .../selftests/iommu/iommufd_fail_nth.c        |  42 ++++-
+ tools/testing/selftests/iommu/iommufd_utils.h |  21 ++-
+ 12 files changed, 296 insertions(+), 64 deletions(-)
+
+-- 
+2.34.1
+
