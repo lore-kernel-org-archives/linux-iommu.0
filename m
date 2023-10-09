@@ -1,156 +1,85 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.151])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yw1-f182.google.com (mail-yw1-f182.google.com [209.85.128.182])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 995F328E6;
-	Mon,  9 Oct 2023 07:48:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="AUA8qZTZ"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1696837702; x=1728373702;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=1Khd8tcE33VNFsPCtLMSHp2tqOLq4p2ejvez7N/2BMw=;
-  b=AUA8qZTZ9gUa47X9nFyR2p4TBUsmmCDaE76WnjmjWpx3nANBi88SJlyJ
-   3cuUXb6mEaAPftwDar7GP6uM0V7TLfJT1/cGr6Ev5+C3DDyOtFDwfDy/f
-   s3n98X99wvCDvQQ0j4VD/NKr9me+yscHC1sp3B392RKI0oz+pdFraBjnC
-   6vWXWQnSklTm4C6RHsCFVe7aISiW9JSdPC7iqJm+GeAY7SZOuR21te0U6
-   o2MJF3l+WiSfYywWyJMIjQSDMtS4oC3ugW/vjkoJVkI053crdivc6PfBl
-   8kFGqDKR4LZaSP32ANhCr62denY6L5Dg/nEMsC9H9XpYSaFiOumbmmgL1
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10857"; a="364380506"
-X-IronPort-AV: E=Sophos;i="6.03,209,1694761200"; 
-   d="scan'208";a="364380506"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Oct 2023 00:48:21 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10857"; a="756627780"
-X-IronPort-AV: E=Sophos;i="6.03,209,1694761200"; 
-   d="scan'208";a="756627780"
-Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
-  by fmsmga007.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 09 Oct 2023 00:48:21 -0700
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.32; Mon, 9 Oct 2023 00:48:21 -0700
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.32 via Frontend Transport; Mon, 9 Oct 2023 00:48:21 -0700
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.169)
- by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.32; Mon, 9 Oct 2023 00:48:20 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CUPaUOxXWe+aEQ4E7HUkPWN9VjF0Kx9hc+83rKvx6c+HcJUjJg3no85Z+vGXdJAtG1VWNPh9sTlaCNuCoXsvNVbKaSDccSfjvnoxFgr5BAFFCG3TrMQItf9IZCLczFtaYNJans231+wOlR1/22l+LtX9Tgxf5ajT47Z58NfniXoo7gPuM0dAaedFlNluwILRhsRf6w3rrI+EE+7Jmdpa8S1BmZgLxfpdhfwRf+6AJPeTuF4yzrZFM4igzE2Cfzby6RuDfos7iZOVJrV0fpqzQXouVQBQYZxZAOHihiSlBKzFJ0jEJ6fMLxAkpYh9rTwMhAR60EjmybycQRoiIC6Saw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=1Khd8tcE33VNFsPCtLMSHp2tqOLq4p2ejvez7N/2BMw=;
- b=dZe41XWPM/+4ZRUb8ybX++/rjFpPG14NzrglafJMk0bviQ1GcstLbNw0ARBbDzmMzd7I/KZHBBVGEF87Hm1JS9X+gQ7fxDyT0JDdalYMFqZe++0G4Z0n6C8SCcWFjlEXEkApQHSh/jfg1AgIX/8HESb1e1VXZSevwKxpgfFZi0czGyEqZldRVRFAa4oTnfZLGFN9YwXIrm1lLIN0H6rdr8FbtshKQ5IGj1Uk7/maIyXzssJB5JyGzPlJLAWozRq0OAnGxf7b6224ErANFe7SCG6JoC7/Q6t47tDCKkPMZgsPln2tSapNPrxjzMRBV6Yh8Ynr7xHkax2VnCtriBfvwA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by PH8PR11MB7045.namprd11.prod.outlook.com (2603:10b6:510:217::6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6838.43; Mon, 9 Oct
- 2023 07:48:13 +0000
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::7116:9866:8367:95b4]) by BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::7116:9866:8367:95b4%3]) with mapi id 15.20.6863.032; Mon, 9 Oct 2023
- 07:48:13 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Jason Gunthorpe <jgg@nvidia.com>, Alyssa Rosenzweig
-	<alyssa@rosenzweig.io>, "asahi@lists.linux.dev" <asahi@lists.linux.dev>,
-	Christophe Leroy <christophe.leroy@csgroup.eu>, David Woodhouse
-	<dwmw2@infradead.org>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>, Joerg
- Roedel <joro@8bytes.org>, "linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>, "linuxppc-dev@lists.ozlabs.org"
-	<linuxppc-dev@lists.ozlabs.org>, Hector Martin <marcan@marcan.st>, "Michael
- Ellerman" <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, "Robin
- Murphy" <robin.murphy@arm.com>, Sven Peter <sven@svenpeter.dev>, Will Deacon
-	<will@kernel.org>
-CC: Lu Baolu <baolu.lu@linux.intel.com>, Janne Grunau <j@jannau.net>
-Subject: RE: [PATCH v2 4/9] iommufd: Convert to alloc_domain_paging()
-Thread-Topic: [PATCH v2 4/9] iommufd: Convert to alloc_domain_paging()
-Thread-Index: AQHZ8Z0Nwuo6PGrErkWqPWeScL3Ir7BBJpHg
-Date: Mon, 9 Oct 2023 07:48:13 +0000
-Message-ID: <BN9PR11MB5276357F748504D2C40AACF18CCEA@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <0-v2-bff223cf6409+282-dart_paging_jgg@nvidia.com>
- <4-v2-bff223cf6409+282-dart_paging_jgg@nvidia.com>
-In-Reply-To: <4-v2-bff223cf6409+282-dart_paging_jgg@nvidia.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|PH8PR11MB7045:EE_
-x-ms-office365-filtering-correlation-id: 42da43bf-d9a4-4ad9-7d35-08dbc89c175c
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: Ml+FCnWTJ9vnwpyb+0mPsE5Fojk9+ESfF9c+oIwIRZy5wXglVBsU3lYYMkc5X46gOs/YL5TtB+doVGQIMagTr1CpUSBDrOZy5jZMOGvK0/91RoyR/68KcSTmZ8Hfq60lU5DwlOD12aRPH0cK2Xw0IAlrj2LF3kECkBIp9u3wXIGnEQI8BparmOgCTEigbvGmBbgfh43OHBj0nGKPHAW9FWYOa+9YrlVDM3acj9XprTszP0l6pqZfJCcCZX6wnpAW3EFUVXqg4OSdNWqbRlfMEiYGOFRyI2vKCV+t4id4PXHSfYS6W9M/e7LlL0liETijHQeipna0PzGA0XDGJfNXSs1kZKpGsDaodzqpMpf9HhBkoy2Y+eiBbQaq2FGMBTgBneHwjXrSAd1/F+GmrpO9v1RV8SmdJKUJkxLjQEj173v5NydWI+Wn0P/FAaW/YkGAx0VMIlw5dnO+ypvjo1fH4of6DIiuvB5UiUrKQcOukPGP6MXOYo8gZz2zia91Zllu6s/m8knOMrf7Zs/4q9aoCglO7XbP2e1rt9fsZ3yIvg48LxDuvfyL6aomUMAT7k4Fygt/6YMpEvL9kvK+e9K7oIGyKmdrTiGrP50cuS3InDo9XnD1F4K6TvP/W+DvOukGdBKuMxjRi6GcfSU3TRrb+A==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(136003)(376002)(346002)(396003)(39860400002)(366004)(230922051799003)(451199024)(1800799009)(186009)(64100799003)(55016003)(83380400001)(26005)(66476007)(66556008)(316002)(76116006)(110136005)(66446008)(54906003)(64756008)(7416002)(66946007)(8936002)(4326008)(5660300002)(8676002)(41300700001)(7696005)(52536014)(6506007)(9686003)(2906002)(478600001)(71200400001)(558084003)(33656002)(38070700005)(38100700002)(82960400001)(921005)(122000001)(86362001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?Cyd+LvkZhT8zaXzcag8fB0ta4x+TBe9leRx0hy9mNrA2ivEkZjmsY1WIHppf?=
- =?us-ascii?Q?SPQrX4pGb2idUeA/84RMtTJ4egpgDXrGMVGW8KlCQcrNd2dMfCNzgygrI5f8?=
- =?us-ascii?Q?codOJyjBxmwsfPGEEUrmz+8/DSQnDxgxcXIlunLZgZFg0b46iuHzHd4Y4Lkx?=
- =?us-ascii?Q?XjmLHVeKPWEdj4wngc/+aDQBvtBgP3IdKr78vAacLX7uyNbkTEU5Om+GjULQ?=
- =?us-ascii?Q?eGwZPOy6kBxg7zmIWoPuTQJssnhQC8qv4/pMk8YlI26H9WUF/wba7MJ3sfL7?=
- =?us-ascii?Q?mw/rhLA4eZbxmik+DolC5pg0siNO+WMtkQMjPM/s6o6Gj16jdjG7IlTy+Otv?=
- =?us-ascii?Q?diaVSlrNdpC7MsiGg+cXHIWBwguBkdWLr286yOWWospu6Vzi3zPauYP2xzdc?=
- =?us-ascii?Q?bhB2LWdjLdUbb7Iv4uA0vsJckXDRXF1drLlLhHKrObPzFZMqygVVQnnSlIHb?=
- =?us-ascii?Q?r/a6AybGQWE/xn32FsaztSJLsCE8vjRVxY+tB+HSculP3J5zLlY6X98JKZCg?=
- =?us-ascii?Q?AexRiWT06rKMP4xpvIDuqYWCvDz6s9KGnswT1aB26a0eiPDksIDvBqZV84+L?=
- =?us-ascii?Q?tMFTio3/DybUv4l1q+HGTxk5D2NIe9/Yt0EktJS9bq7gfTQa/ODMYnByf7XH?=
- =?us-ascii?Q?cianLhr20xUfHvpZtn28nCk3mGa3qAXOOdnSfMy7tA+4/BqF6Aunsb/fYir/?=
- =?us-ascii?Q?1cHLyyoNS+b1uoPpVjFtL847UZIWfus7234jzEhNVDu7omadtKVxjcaoXMgd?=
- =?us-ascii?Q?8YTnVXTtS1zPt3tkIPoxfESrwbzu3OGIEF86g/0MZYPUvWvIMhx/Mes20yUZ?=
- =?us-ascii?Q?OeO+c+abeTnuNg56ouehizf/hwP9UxrHkvM3D62peNSUYSul3x+X9teXcuKE?=
- =?us-ascii?Q?RfPfmHyXHXUPh88gUFfYtaF8gfxVhp/s2WUfVcky/SbTtopRDVbhdc4A1Cs1?=
- =?us-ascii?Q?+B0/iRLX9OHAKis86ySwW/C/sxeiRnmDqDbCBuJMKB8wYtJsHRC6wzp/qlkO?=
- =?us-ascii?Q?b9YeZFH/gybQUWazRcz1BCzQ7xD1zhQ9t616pJ6RLOL//YZGkELzUe0U4ovv?=
- =?us-ascii?Q?6n/cR9xj59CFzecd0XGiDfndECcgjYii5IdgnDKSlRfPnzORwomprmhpW71S?=
- =?us-ascii?Q?i5SrKe5XErjvh1mJgl7FVSvLWGj6u51PHTsx8otfP1lWcyEwPp06O1HTr1Xh?=
- =?us-ascii?Q?3vWpHP4YYTcXVZpdtyzbfDa+AP2LOzV2S1Laqfs7e7riRlf3WEgpN3IYfco5?=
- =?us-ascii?Q?YLFIYlxafANSohkeKV4QFv17VoHwF57290nOdtfrEO98IpF5QscKahSkZ0Wc?=
- =?us-ascii?Q?7zMED6g9B/TlVWAdCYQf7SDUblQ1RezFi9OJH8GfJ24CWz+G38UEqjRT1Sxe?=
- =?us-ascii?Q?oK7gyPkR1ylgVZJ3elF9ZdT0Gm+05omTYN/0zD4NIpC5mWexI2ASecLNl5cC?=
- =?us-ascii?Q?3oPadSqLhbIyT2tVFwgB/OkXkpura9j3YDWu9Ixo73XgX/BZI9mX8IngJwLl?=
- =?us-ascii?Q?vWOofba2OY3J44dbtTq273veWD50MGmh1a4IgrAnvrNUJIuEH90opgn5fEPm?=
- =?us-ascii?Q?0g7eB8IdOJcX7Xcwi4dTz8lDzzgk2qA828kkrkNM?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D36B800
+	for <iommu@lists.linux.dev>; Mon,  9 Oct 2023 08:39:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; dkim=none
+Received: by mail-yw1-f182.google.com with SMTP id 00721157ae682-59e77e4f707so51823437b3.0
+        for <iommu@lists.linux.dev>; Mon, 09 Oct 2023 01:39:31 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1696840770; x=1697445570;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=XCa60SJYenNTin9ORA6mgu5HPNBKWXiBobv0OFeXlBg=;
+        b=wJRjHl6jW3Xcb8Zt7O6l/2buKTf4ZMZwvdK3SLwEU2165a4kzgQ5rgott9aEoggH99
+         aPR7L680gLc+KhPO9NgygtxIhb1952N8U0zVlap8Qux9eYxNMwqqr3QuHvcSdcXu5KY3
+         75RpVqLw9Ej9k2N9P585yi5gerrLeDGkgY5Zgr7+zrLsYHuos1kJsjAXoVqjjMbnEGpx
+         wO5OmeZ5vhbdWtH1IheYxfAj+mMe6ZB7T3QqK2yPdhzjHarMEXPJwZizYwyoi5zMyrP0
+         /Ht2+LhO/v3/4eQ2UcXWJ+P+P3TmG81/GqzuTQ4aXQMFVFvhDbzjLqAh2w4qKyY2L1v5
+         OwEA==
+X-Gm-Message-State: AOJu0YwbX3y/N+eAXWN+wFeYfGlOn8XdYq4PuQro9ydR2uHMLwTSpbJ5
+	ReC2FBQJQ8qD3Y5DrGAvlEyv/BoRnLzT8g==
+X-Google-Smtp-Source: AGHT+IGQXZC49O3+ZiaW06/uCgZaKOOcPN+rPlv/Lw/NbWsX/zJ+/ciP1RxjVQGjY7EYZi2lDVQioA==
+X-Received: by 2002:a0d:dec7:0:b0:59e:9a44:9db9 with SMTP id h190-20020a0ddec7000000b0059e9a449db9mr14266868ywe.26.1696840770358;
+        Mon, 09 Oct 2023 01:39:30 -0700 (PDT)
+Received: from mail-yw1-f176.google.com (mail-yw1-f176.google.com. [209.85.128.176])
+        by smtp.gmail.com with ESMTPSA id i8-20020a819108000000b0059f802fad40sm3511800ywg.22.2023.10.09.01.39.29
+        for <iommu@lists.linux.dev>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 09 Oct 2023 01:39:30 -0700 (PDT)
+Received: by mail-yw1-f176.google.com with SMTP id 00721157ae682-59f1dff5298so51596807b3.3
+        for <iommu@lists.linux.dev>; Mon, 09 Oct 2023 01:39:29 -0700 (PDT)
+X-Received: by 2002:a0d:d443:0:b0:5a2:3734:507 with SMTP id
+ w64-20020a0dd443000000b005a237340507mr16135074ywd.21.1696840769802; Mon, 09
+ Oct 2023 01:39:29 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 42da43bf-d9a4-4ad9-7d35-08dbc89c175c
-X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Oct 2023 07:48:13.4844
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: IVYQGgsXwAZaIHTdYG4HvH1Y8zVE+k90MbvC8LpTsiVU1suqFpD6ul56UaQFKGatRgI9g2I585GUEYNuu2AOVg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR11MB7045
-X-OriginatorOrg: intel.com
+References: <20231009074121.219686-1-hch@lst.de>
+In-Reply-To: <20231009074121.219686-1-hch@lst.de>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Mon, 9 Oct 2023 10:39:18 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdU281a+=9SApaCRy5os3k73HGZhQ=Fsv58OD4C430iDDg@mail.gmail.com>
+Message-ID: <CAMuHMdU281a+=9SApaCRy5os3k73HGZhQ=Fsv58OD4C430iDDg@mail.gmail.com>
+Subject: Re: fix the non-coherent coldfire dma_alloc_coherent
+To: Christoph Hellwig <hch@lst.de>
+Cc: iommu@lists.linux.dev, Robin Murphy <robin.murphy@arm.com>, 
+	Marek Szyprowski <m.szyprowski@samsung.com>, Wei Fang <wei.fang@nxp.com>, 
+	Shenwei Wang <shenwei.wang@nxp.com>, Clark Wang <xiaoning.wang@nxp.com>, 
+	NXP Linux Team <linux-imx@nxp.com>, linux-m68k@lists.linux-m68k.org, netdev@vger.kernel.org, 
+	Jim Quinlan <james.quinlan@broadcom.com>, Greg Ungerer <gerg@linux-m68k.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-> From: Jason Gunthorpe <jgg@nvidia.com>
-> Sent: Thursday, September 28, 2023 7:48 AM
->=20
-> Move the global static blocked domain to the ops and convert the
-> unmanaged
-> domain to domain_alloc_paging.
->=20
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+CC Greg
 
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+On Mon, Oct 9, 2023 at 9:41=E2=80=AFAM Christoph Hellwig <hch@lst.de> wrote=
+:
+> this is the next attempt to not return memory that is not DMA coherent
+> on coldfire/m68knommu.  The last one needed more fixups in the fec
+> driver, which this versions includes.  On top of that I've also added
+> a few more cleanups to the core dma allocation code.
+>
+> Jim: any work to support the set_uncached and remap method for arm32
+> should probably be based on this, and patch 3 should make that
+> selection a little easier.
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--=20
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k=
+.org
+
+In personal conversations with technical people, I call myself a hacker. Bu=
+t
+when I'm talking to journalists I just say "programmer" or something like t=
+hat.
+                                -- Linus Torvalds
