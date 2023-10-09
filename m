@@ -1,26 +1,26 @@
 Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0398A8828
-	for <iommu@lists.linux.dev>; Mon,  9 Oct 2023 07:41:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A25C411733
+	for <iommu@lists.linux.dev>; Mon,  9 Oct 2023 07:41:38 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="hq60Rbaw"
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="Z2Xg8ghT"
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
 	MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
 	:Reply-To:Content-Type:Content-ID:Content-Description;
-	bh=nLXJ74DIlmTyEfUCPxCnxHOKUZ2EbH9X62hrp3In1pc=; b=hq60RbawWuWPnmJoa6koV41w5d
-	p/tEvgwr8UukI8BNvVpBHNNhRu/vYr1p2+gih4SNOvJgyerc/KWa8HPMkFWqafLstqAQ71HTebLaN
-	5fiEpv7awg8J1VVK3Gm40cG+/rAztFkrN5xrL9DOQcgUA9HV6MMsCHSAeSkzBjNObgHh4lF9sDUpe
-	eTapMH9h/3kty5AexsC6AQDKGCd2yEFUiRaUVQMs77kagGkZs6POnIg0RDRt0/A51t9RKEidmra51
-	tuvsVI5QU0tf9wjzwZ2/fPXUzH+Woynp9WL/yi4q2uVjdnqoNNIX2g+VcbOMMbsuUcSF3+pZVm3gD
-	gX6AF1xw==;
+	bh=RfzJ0rmOfGgYG4ZhoNJ82M0rcD99jku72cgM5LPVp6w=; b=Z2Xg8ghTSFAMg3I86jHLAAJKXC
+	E0d7HDALoYG8ZJWGjbvYuwdGx+RCXgdttGLPjSzLqzAmrEtudQIQNiQ40+iZ3bz6ICbwxBVveGmJ+
+	wJFupjJmKd5ThYjfkAEvAC05bI3gOU6DR11ZCjNVqydjKc3o1VzgKq7rJXLzIzLD0vl01AVoESCpA
+	VFkXP9b2wCtNE1vaOR5RE/5ZlHFKShRXTCOlxf2FQos4O6J0DcXW57ZtSLzXRx7nKXgG5IA22yvfL
+	IuWNG/peBdQ8ALcaGfw0AW3TYu+Bo24xl9KbXcMpHHP1RzC+Ez7KkC+BtYpaC0jQ8r8RM0E6kVdHA
+	rVhFQWsA==;
 Received: from [2001:4bb8:182:6657:e5a9:584c:4324:b228] (helo=localhost)
 	by bombadil.infradead.org with esmtpsa (Exim 4.96 #2 (Red Hat Linux))
-	id 1qpktS-009uhw-2z;
-	Mon, 09 Oct 2023 07:41:35 +0000
+	id 1qpktV-009ui9-2b;
+	Mon, 09 Oct 2023 07:41:38 +0000
 From: Christoph Hellwig <hch@lst.de>
 To: iommu@lists.linux.dev
 Cc: Robin Murphy <robin.murphy@arm.com>,
@@ -33,9 +33,9 @@ Cc: Robin Murphy <robin.murphy@arm.com>,
 	linux-m68k@lists.linux-m68k.org,
 	netdev@vger.kernel.org,
 	Jim Quinlan <james.quinlan@broadcom.com>
-Subject: [PATCH 3/6] dma-direct: simplify the use atomic pool logic in dma_direct_alloc
-Date: Mon,  9 Oct 2023 09:41:18 +0200
-Message-Id: <20231009074121.219686-4-hch@lst.de>
+Subject: [PATCH 4/6] dma-direct: warn when coherent allocations aren't supported
+Date: Mon,  9 Oct 2023 09:41:19 +0200
+Message-Id: <20231009074121.219686-5-hch@lst.de>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20231009074121.219686-1-hch@lst.de>
 References: <20231009074121.219686-1-hch@lst.de>
@@ -48,57 +48,30 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 
-The logic in dma_direct_alloc when to use the atomic pool vs remapping
-grew a bit unreadable.  Consolidate it into a single check, and clean
-up the set_uncached vs remap logic a bit as well.
+Log a warning once when dma_alloc_coherent fails because the platform
+does not support coherent allocations at all.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- kernel/dma/direct.c | 25 ++++++++++---------------
- 1 file changed, 10 insertions(+), 15 deletions(-)
+ kernel/dma/direct.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-index ec410af1d8a14e..1327d04fa32a25 100644
+index 1327d04fa32a25..fddfea3b2fe173 100644
 --- a/kernel/dma/direct.c
 +++ b/kernel/dma/direct.c
-@@ -234,27 +234,22 @@ void *dma_direct_alloc(struct device *dev, size_t size,
- 					dma_handle);
- 
- 		/*
--		 * Otherwise remap if the architecture is asking for it.  But
--		 * given that remapping memory is a blocking operation we'll
--		 * instead have to dip into the atomic pools.
-+		 * Otherwise we require the architecture to either be able to
-+		 * mark arbitrary parts of the kernel direct mapping uncached,
-+		 * or remapped it uncached.
+@@ -240,8 +240,10 @@ void *dma_direct_alloc(struct device *dev, size_t size,
  		 */
-+		set_uncached = IS_ENABLED(CONFIG_ARCH_HAS_DMA_SET_UNCACHED);
+ 		set_uncached = IS_ENABLED(CONFIG_ARCH_HAS_DMA_SET_UNCACHED);
  		remap = IS_ENABLED(CONFIG_DMA_DIRECT_REMAP);
--		if (remap) {
--			if (dma_direct_use_pool(dev, gfp))
--				return dma_direct_alloc_from_pool(dev, size,
--						dma_handle, gfp);
--		} else {
--			if (!IS_ENABLED(CONFIG_ARCH_HAS_DMA_SET_UNCACHED))
--				return NULL;
--			set_uncached = true;
--		}
-+		if (!set_uncached && !remap)
-+			return NULL;
+-		if (!set_uncached && !remap)
++		if (!set_uncached && !remap) {
++			pr_warn_once("coherent DMA allocations not supported on this platform.\n");
+ 			return NULL;
++		}
  	}
  
  	/*
--	 * Decrypting memory may block, so allocate the memory from the atomic
--	 * pools if we can't block.
-+	 * Remapping or decrypting memory may block, allocate the memory from
-+	 * the atomic pools instead if we aren't allowed block.
- 	 */
--	if (force_dma_unencrypted(dev) && dma_direct_use_pool(dev, gfp))
-+	if ((remap || force_dma_unencrypted(dev)) &&
-+	    dma_direct_use_pool(dev, gfp))
- 		return dma_direct_alloc_from_pool(dev, size, dma_handle, gfp);
- 
- 	/* we always manually zero the memory once we are done */
 -- 
 2.39.2
 
