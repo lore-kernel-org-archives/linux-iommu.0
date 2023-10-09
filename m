@@ -1,83 +1,109 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lj1-f182.google.com (mail-lj1-f182.google.com [209.85.208.182])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 92F013714F;
-	Mon,  9 Oct 2023 18:24:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A6F33B7B3
+	for <iommu@lists.linux.dev>; Mon,  9 Oct 2023 20:06:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ionos.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ionos.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kfb/PFt1"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA41DC433C7;
-	Mon,  9 Oct 2023 18:24:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1696875871;
-	bh=GX827MInhdg+9mFXDOrIyDM25nqfnAIqJdLH+cnFaYc=;
-	h=Date:From:To:Cc:Subject:From;
-	b=kfb/PFt1GOw5zC7CWQpYjFj1PXHizJBGvSfYLfMzu1Fu153G6IibmU7pIiE36MWaz
-	 Wq5Mbd63mgNvyj381SHoYS/kgRDRAwW4svc1+EjTpZytGPUC6BnHmjhe/1TbQKluOd
-	 lJwEvwm99bGucNKSkxo8yjWenMOkgH1X/PTJSUNlhE85Jmh4tatu/HsNRN2tGkdr8f
-	 n//Ox8QHbqjDlpowcP8WVokEry8qPiiQFpPH/FDZZnxgZuHZUJw0iYZbRVLeH7Bc6P
-	 33Axz2LTWi6+hZU7n2PdSHI6Q19g4MdzRer4+pDnB+9NDTvZrWNKAMdz3katFpP7Xh
-	 pO6IoFkkMbihA==
-Date: Mon, 9 Oct 2023 12:24:27 -0600
-From: "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>
-Cc: virtualization@lists.linux-foundation.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	"Gustavo A. R. Silva" <gustavoars@kernel.org>,
-	linux-hardening@vger.kernel.org
-Subject: [PATCH][next] iommu/virtio: Add __counted_by for struct
- viommu_request and use struct_size()
-Message-ID: <ZSRFW0yDlDo8+at3@work>
+	dkim=pass (2048-bit key) header.d=ionos.com header.i=@ionos.com header.b="UqEPJlX+"
+Received: by mail-lj1-f182.google.com with SMTP id 38308e7fff4ca-2c1807f3400so60244881fa.1
+        for <iommu@lists.linux.dev>; Mon, 09 Oct 2023 13:06:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ionos.com; s=google; t=1696881966; x=1697486766; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=vntWR/EJpWFamZ/9NMXVbCLlV4xDhJbERcnlqbMN6Xk=;
+        b=UqEPJlX+pU6KADywWjKCY9XerusXNLUuEt0QqQpIhulHJZwIPjrQeKl5zwN6dYtat1
+         opK0PnBMeur14X7NAFandg/qLnhSTwpnH3Z0QR1ZghHV1Bfdd06dDCJigNQ9gbd089Mu
+         plnhbafV8lO+I7v66bXmDPRPgjFY0dddvuKhdnmw8NBDvqJ992OWFH1KTD6Ub3ODaf79
+         k5hiwTUqrjk3MoMSZJkxZR/kZbF8bzgvBrZg5E7Z311XqYZ6Dh5tSimWo2hPDQjirjGn
+         CBleLfSTN6jJOuMwYqkeRLh4Oa21jehRUDQyYTo1UHwI6jZjfcwKFjqM6hnnzbTmZZgp
+         6PaA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1696881966; x=1697486766;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=vntWR/EJpWFamZ/9NMXVbCLlV4xDhJbERcnlqbMN6Xk=;
+        b=eX53Bg6i3Lq/W0/XBilFt2/6D9cEvgne+Fh+XlGgH4XnvJOeD7TkQM+fepAL3c6AH+
+         xqtJYzbkaj/QkWJFWrFbr+aqsee1zMTtnnnWLfSKL+iLMoo+u5UNTY8Jl9Gx9fcgcl4a
+         rXd+m8eoklQjnhgz4jmZs4pb4YsQRwkD4tO/Ir5uLh4C2KYGKbFry+kOZYyTADCLAzcv
+         X0VkkN6LQRvsy38KGRjY0gtG4tBpfceg3D+dmVwVbvt+eXRp3SGMtWk6YN6njBU3Zwdy
+         xj3fYtBDzoQGRcdbtkVENcr6rjHCIU+B6qFFtOaGPCrvQ6kjzxpcyaPzemtMY0U8Cldp
+         LUkw==
+X-Gm-Message-State: AOJu0YzbyhW2/4O4delC/lw0mPWuqCWgBgEL8YK9/RF0Fjb++6g/CqIG
+	IwdzufC/BfXo6n2B8fuDVWezhqwsLMw9zwuBwQTyXA==
+X-Google-Smtp-Source: AGHT+IFghqg7b3VfDVvZ+soPEwEaIfxhrwarlOcz2b03PC3KagC0O9BH1UGRNCP79pJ8yT5JMzxC/VoYSKvtKG/y1ws=
+X-Received: by 2002:a2e:870c:0:b0:2b6:cbdb:790c with SMTP id
+ m12-20020a2e870c000000b002b6cbdb790cmr11535962lji.1.1696881966432; Mon, 09
+ Oct 2023 13:06:06 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20231009165741.746184-1-max.kellermann@ionos.com>
+ <20231009165741.746184-6-max.kellermann@ionos.com> <264fa39d-aed6-4a54-a085-107997078f8d@roeck-us.net>
+In-Reply-To: <264fa39d-aed6-4a54-a085-107997078f8d@roeck-us.net>
+From: Max Kellermann <max.kellermann@ionos.com>
+Date: Mon, 9 Oct 2023 22:05:55 +0200
+Message-ID: <CAKPOu+8k2x1CucWSzoouts0AfMJk+srJXWWf3iWVOeY+fWkOpQ@mail.gmail.com>
+Subject: Re: [PATCH 6/7] fs/sysfs/group: make attribute_group pointers const
+To: Guenter Roeck <linux@roeck-us.net>
+Cc: Jens Axboe <axboe@kernel.dk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	"Rafael J. Wysocki" <rafael@kernel.org>, Borislav Petkov <bp@alien8.de>, Tony Luck <tony.luck@intel.com>, 
+	James Morse <james.morse@arm.com>, Mauro Carvalho Chehab <mchehab@kernel.org>, 
+	Robert Richter <rric@kernel.org>, Jean Delvare <jdelvare@suse.com>, Jason Gunthorpe <jgg@ziepe.ca>, 
+	Leon Romanovsky <leon@kernel.org>, Bart Van Assche <bvanassche@acm.org>, Joerg Roedel <joro@8bytes.org>, 
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+	Dan Williams <dan.j.williams@intel.com>, Vishal Verma <vishal.l.verma@intel.com>, 
+	Dave Jiang <dave.jiang@intel.com>, Ira Weiny <ira.weiny@intel.com>, 
+	Keith Busch <kbusch@kernel.org>, Christoph Hellwig <hch@lst.de>, Sagi Grimberg <sagi@grimberg.me>, 
+	Alessandro Zummo <a.zummo@towertech.it>, Alexandre Belloni <alexandre.belloni@bootlin.com>, 
+	Jiri Slaby <jirislaby@kernel.org>, Suzuki K Poulose <suzuki.poulose@arm.com>, 
+	Mike Leach <mike.leach@linaro.org>, James Clark <james.clark@arm.com>, 
+	Leo Yan <leo.yan@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, 
+	Peter Zijlstra <peterz@infradead.org>, Pavel Machek <pavel@ucw.cz>, Lee Jones <lee@kernel.org>, 
+	Arnd Bergmann <arnd@arndb.de>, Bjorn Helgaas <bhelgaas@google.com>, Ingo Molnar <mingo@redhat.com>, 
+	Arnaldo Carvalho de Melo <acme@kernel.org>, Mark Rutland <mark.rutland@arm.com>, 
+	Alexander Shishkin <alexander.shishkin@linux.intel.com>, Jiri Olsa <jolsa@kernel.org>, 
+	Namhyung Kim <namhyung@kernel.org>, Ian Rogers <irogers@google.com>, 
+	Adrian Hunter <adrian.hunter@intel.com>, Sebastian Reichel <sre@kernel.org>, 
+	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, Wim Van Sebroeck <wim@linux-watchdog.org>, 
+	"James E.J. Bottomley" <jejb@linux.ibm.com>, "Martin K. Petersen" <martin.petersen@oracle.com>, 
+	linux-block@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-edac@vger.kernel.org, linux-hwmon@vger.kernel.org, 
+	linux-rdma@vger.kernel.org, iommu@lists.linux.dev, nvdimm@lists.linux.dev, 
+	linux-nvme@lists.infradead.org, linux-rtc@vger.kernel.org, 
+	linux-serial@vger.kernel.org, coresight@lists.linaro.org, 
+	linux-arm-kernel@lists.infradead.org, linux-leds@vger.kernel.org, 
+	linux-pci@vger.kernel.org, linux-perf-users@vger.kernel.org, 
+	linux-pm@vger.kernel.org, linux-usb@vger.kernel.org, 
+	linux-watchdog@vger.kernel.org, linux-scsi@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Prepare for the coming implementation by GCC and Clang of the __counted_by
-attribute. Flexible array members annotated with __counted_by can have
-their accesses bounds-checked at run-time via CONFIG_UBSAN_BOUNDS (for
-array indexing) and CONFIG_FORTIFY_SOURCE (for strcpy/memcpy-family
-functions).
+On Mon, Oct 9, 2023 at 7:24=E2=80=AFPM Guenter Roeck <linux@roeck-us.net> w=
+rote:
+> Also, I don't know why checkpatch is happy with all the
+>
+>         const struct attribute_group *const*groups;
+>
+> instead of
+>
+>         const struct attribute_group *const *groups;
 
-While there, use struct_size() helper, instead of the open-coded
-version, to calculate the size for the allocation of the whole
-flexible structure, including of course, the flexible-array member.
+I found out that checkpatch has no check for this at all; it does
+complain about such lines, but only for local variables. But that
+warning is actually a bug, because this is a check for unary
+operators: it thinks the asterisk is a dereference operator, not a
+pointer declaration, and complains that the unary operator must be
+preceded by a space. Thus warnings on local variable are only correct
+by coincidence, not by design.
 
-This code was found with the help of Coccinelle, and audited and
-fixed manually.
-
-Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
----
- drivers/iommu/virtio-iommu.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
-index 17dcd826f5c2..379ebe03efb6 100644
---- a/drivers/iommu/virtio-iommu.c
-+++ b/drivers/iommu/virtio-iommu.c
-@@ -85,7 +85,7 @@ struct viommu_request {
- 	void				*writeback;
- 	unsigned int			write_offset;
- 	unsigned int			len;
--	char				buf[];
-+	char				buf[] __counted_by(len);
- };
- 
- #define VIOMMU_FAULT_RESV_MASK		0xffffff00
-@@ -230,7 +230,7 @@ static int __viommu_add_req(struct viommu_dev *viommu, void *buf, size_t len,
- 	if (write_offset <= 0)
- 		return -EINVAL;
- 
--	req = kzalloc(sizeof(*req) + len, GFP_ATOMIC);
-+	req = kzalloc(struct_size(req, buf, len), GFP_ATOMIC);
- 	if (!req)
- 		return -ENOMEM;
- 
--- 
-2.34.1
-
+Inside structs or parameters (where my coding style violations can be
+found), it's a different context and thus checkpatch doesn't apply the
+rules for unary operators.
