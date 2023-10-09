@@ -1,36 +1,36 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.151])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC91A3D92
-	for <iommu@lists.linux.dev>; Mon,  9 Oct 2023 08:51:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9CD721FAF
+	for <iommu@lists.linux.dev>; Mon,  9 Oct 2023 08:51:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="DrquFYH3"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="TwDfRf4Y"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1696841488; x=1728377488;
+  t=1696841490; x=1728377490;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=oW307Sz3JLhBJDdKvXdymtYFyyVye4wCg0yXRx4S4UE=;
-  b=DrquFYH3kHqbyy/zHQxiY7t75YyhKn/89vJnDpro4QThddoKWYUHmd7a
-   xyx3Sa2sjjJADFgXE+6gAcsTloCcRK9eJAp/mH7Qgx+ZIr4x+eWRc6MM9
-   YY3vC5+F/407ap6m57FvSZy5eB4rHORytK8r4dRpcsbwHPJqivK/KCBwM
-   3OgMIfEL5eHQS8jXwu1MXVYGvPh0Mm/xI0gHw+R+loId781qTcsmmUqTW
-   W0oGXa+uAnh9GhZY9G1NMQR67NkbGauTosLM9E3Amk93+kOBhQF/f4+y8
-   h26OZex0JN7NssA2GiNNNoXsTNoHborUvqblhiTqP7TZVUNjBnHyhK5FM
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10857"; a="364390757"
+  bh=ZrNdz5dSYF7ymp/w9UQeOTkhWG7Zhjt6N1Zo2oVnAYQ=;
+  b=TwDfRf4YaMU0IFGjwo7TK8AAhvaEtsbMmJwBWNvYXQypgwq8RzWPewIn
+   zEx2B77jlwIKezJzq0c7ThE6DaCNcJWKnAa9tleWb6+DB+43WnoGn16iA
+   95T7YKQ1f7n+RDOyjeSgR2LBpiSbcCSsOHQ4rqBGVot8qKg0fNJKI+Zsc
+   ZDRkXRprZkI6mW/F9+fNNxom6IvWKZfkVkXiD7DlvzlwE/P31UOvcmJKo
+   SLcIL6OBovvci26TXwAtxod5edHqV5vrYWSRFAKgdF9MgzUwEpIvZwxOT
+   d7j2YpLkSSbuqE1aYSrzKXAxdzJ8lC2+nsRpbVo/aCgIfN0i+avb7oNeq
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10857"; a="364390783"
 X-IronPort-AV: E=Sophos;i="6.03,209,1694761200"; 
-   d="scan'208";a="364390757"
+   d="scan'208";a="364390783"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Oct 2023 01:51:27 -0700
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Oct 2023 01:51:30 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10857"; a="818781645"
+X-IronPort-AV: E=McAfee;i="6600,9927,10857"; a="818781660"
 X-IronPort-AV: E=Sophos;i="6.03,209,1694761200"; 
-   d="scan'208";a="818781645"
+   d="scan'208";a="818781660"
 Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
-  by fmsmga008.fm.intel.com with ESMTP; 09 Oct 2023 01:51:27 -0700
+  by fmsmga008.fm.intel.com with ESMTP; 09 Oct 2023 01:51:29 -0700
 From: Yi Liu <yi.l.liu@intel.com>
 To: joro@8bytes.org,
 	alex.williamson@redhat.com,
@@ -56,9 +56,9 @@ Cc: cohuck@redhat.com,
 	linux-kselftest@vger.kernel.org,
 	zhenzhong.duan@intel.com,
 	joao.m.martins@oracle.com
-Subject: [RFC 1/7] iommufd: Handle unsafe interrupts in a separate function
-Date: Mon,  9 Oct 2023 01:51:17 -0700
-Message-Id: <20231009085123.463179-2-yi.l.liu@intel.com>
+Subject: [RFC 2/7] iommufd: Introduce iommufd_alloc_device()
+Date: Mon,  9 Oct 2023 01:51:18 -0700
+Message-Id: <20231009085123.463179-3-yi.l.liu@intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20231009085123.463179-1-yi.l.liu@intel.com>
 References: <20231009085123.463179-1-yi.l.liu@intel.com>
@@ -72,72 +72,74 @@ Content-Transfer-Encoding: 8bit
 
 From: Kevin Tian <kevin.tian@intel.com>
 
-This wraps the unsafe interrupts handling into helper as same check is also
-required when supporting iommufd_device_bind_pasid() later.
+This abstracts the common logic used in the iommufd_device_bind() and the
+later iommufd_device_bind_pasid() to be helper.
 
 Signed-off-by: Kevin Tian <kevin.tian@intel.com>
 Signed-off-by: Yi Liu <yi.l.liu@intel.com>
 ---
- drivers/iommu/iommufd/device.c | 36 ++++++++++++++++++++--------------
- 1 file changed, 21 insertions(+), 15 deletions(-)
+ drivers/iommu/iommufd/device.c | 34 +++++++++++++++++++++++-----------
+ 1 file changed, 23 insertions(+), 11 deletions(-)
 
 diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
-index 6a6145b4a25e..ca3919fecc89 100644
+index ca3919fecc89..9dd76d92b7f6 100644
 --- a/drivers/iommu/iommufd/device.c
 +++ b/drivers/iommu/iommufd/device.c
-@@ -145,6 +145,25 @@ void iommufd_device_destroy(struct iommufd_object *obj)
- 		iommufd_ctx_put(idev->ictx);
+@@ -164,6 +164,27 @@ static int iommufd_allow_unsafe_interrupts(struct device *dev)
+ 	return 0;
  }
  
-+/*
-+ * For historical compat with VFIO the insecure interrupt path is
-+ * allowed if the module parameter is set. Insecure means that a MemWr
-+ * operation from the device (eg a simple DMA) cannot trigger an
-+ * interrupt outside this iommufd context.
-+ */
-+static int iommufd_allow_unsafe_interrupts(struct device *dev)
++static struct iommufd_device *iommufd_alloc_device(struct iommufd_ctx *ictx,
++						   struct device *dev)
 +{
-+	if (!allow_unsafe_interrupts)
-+		return -EPERM;
++	struct iommufd_device *idev;
 +
-+	dev_warn(
-+		dev,
-+		"MSI interrupts are not secure, they cannot be isolated by the platform. "
-+		"Check that platform features like interrupt remapping are enabled. "
-+		"Use the \"allow_unsafe_interrupts\" module parameter to override\n");
-+	return 0;
++	idev = iommufd_object_alloc(ictx, idev, IOMMUFD_OBJ_DEVICE);
++	if (IS_ERR(idev))
++		return idev;
++	idev->ictx = ictx;
++	if (!iommufd_selftest_is_mock_dev(dev))
++		iommufd_ctx_get(ictx);
++	idev->dev = dev;
++	idev->enforce_cache_coherency =
++		device_iommu_capable(dev, IOMMU_CAP_ENFORCE_CACHE_COHERENCY);
++	xa_init(&idev->pasid_hwpts);
++
++	/* The calling driver is a user until iommufd_device_unbind() */
++	refcount_inc(&idev->obj.users);
++	return idev;
 +}
 +
  /**
   * iommufd_device_bind - Bind a physical device to an iommu fd
   * @ictx: iommufd file descriptor
-@@ -179,24 +198,11 @@ struct iommufd_device *iommufd_device_bind(struct iommufd_ctx *ictx,
- 	if (IS_ERR(igroup))
- 		return ERR_CAST(igroup);
+@@ -209,24 +230,15 @@ struct iommufd_device *iommufd_device_bind(struct iommufd_ctx *ictx,
+ 	if (rc)
+ 		goto out_group_put;
  
--	/*
--	 * For historical compat with VFIO the insecure interrupt path is
--	 * allowed if the module parameter is set. Secure/Isolated means that a
--	 * MemWr operation from the device (eg a simple DMA) cannot trigger an
--	 * interrupt outside this iommufd context.
--	 */
- 	if (!iommufd_selftest_is_mock_dev(dev) &&
- 	    !iommu_group_has_isolated_msi(igroup->group)) {
--		if (!allow_unsafe_interrupts) {
--			rc = -EPERM;
-+		rc = iommufd_allow_unsafe_interrupts(dev);
-+		if (rc)
- 			goto out_group_put;
--		}
--
--		dev_warn(
--			dev,
--			"MSI interrupts are not secure, they cannot be isolated by the platform. "
--			"Check that platform features like interrupt remapping are enabled. "
--			"Use the \"allow_unsafe_interrupts\" module parameter to override\n");
+-	idev = iommufd_object_alloc(ictx, idev, IOMMUFD_OBJ_DEVICE);
++	idev = iommufd_alloc_device(ictx, dev);
+ 	if (IS_ERR(idev)) {
+ 		rc = PTR_ERR(idev);
+ 		goto out_release_owner;
  	}
+-	idev->ictx = ictx;
+-	if (!iommufd_selftest_is_mock_dev(dev))
+-		iommufd_ctx_get(ictx);
+-	idev->dev = dev;
+-	idev->enforce_cache_coherency =
+-		device_iommu_capable(dev, IOMMU_CAP_ENFORCE_CACHE_COHERENCY);
+-	/* The calling driver is a user until iommufd_device_unbind() */
+-	refcount_inc(&idev->obj.users);
++
+ 	/* igroup refcount moves into iommufd_device */
+ 	idev->igroup = igroup;
  
- 	rc = iommu_device_claim_dma_owner(dev, ictx);
+-	xa_init(&idev->pasid_hwpts);
+-
+ 	/*
+ 	 * If the caller fails after this success it must call
+ 	 * iommufd_unbind_device() which is safe since we hold this refcount.
 -- 
 2.34.1
 
