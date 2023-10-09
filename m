@@ -1,112 +1,162 @@
-Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 28C6014AB2
-	for <iommu@lists.linux.dev>; Mon,  9 Oct 2023 07:41:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7103F28E6;
+	Mon,  9 Oct 2023 07:47:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="bi4nkMlX"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-	MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
-	:Reply-To:Content-Type:Content-ID:Content-Description;
-	bh=J0N33buiHeappg+m+Dq08xJB46xuxlX8SMtn/y29oQQ=; b=bi4nkMlX1sEIWe8AWc45AGSIF7
-	AEkSsS6pt1TsxqOXMseRQdPnQTmbR6v5Jeuaiguhx0knPIU/tn9nMdZz94UP5eWWpTRtnhKp9tQN7
-	HfsoaPEGnMzG53bko4vPHw4LZhJx9w2yYO4wCZf80KQbi856wX6nNLpBwhbFbSbkf8Qzw4imJVor3
-	oer5ztdx1IAocg6Fxtbqo7paappgzw/bn6Fob9gWln2LHLBRsXXP++7vChe1s+hBnbbHOKENzv6k+
-	19wEs3F6gK3o546x5/W9FiuIwagCn3d6bcSBs85elqPGduZ9KFXhBGked64J8b/ZErWzoGLBZ0dYt
-	ndWgQZww==;
-Received: from [2001:4bb8:182:6657:e5a9:584c:4324:b228] (helo=localhost)
-	by bombadil.infradead.org with esmtpsa (Exim 4.96 #2 (Red Hat Linux))
-	id 1qpktb-009ukC-17;
-	Mon, 09 Oct 2023 07:41:43 +0000
-From: Christoph Hellwig <hch@lst.de>
-To: iommu@lists.linux.dev
-Cc: Robin Murphy <robin.murphy@arm.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Geert Uytterhoeven <geert@linux-m68k.org>,
-	Wei Fang <wei.fang@nxp.com>,
-	Shenwei Wang <shenwei.wang@nxp.com>,
-	Clark Wang <xiaoning.wang@nxp.com>,
-	NXP Linux Team <linux-imx@nxp.com>,
-	linux-m68k@lists.linux-m68k.org,
-	netdev@vger.kernel.org,
-	Jim Quinlan <james.quinlan@broadcom.com>
-Subject: [PATCH 6/6] m68k: don't provide arch_dma_alloc for nommu/coldfire
-Date: Mon,  9 Oct 2023 09:41:21 +0200
-Message-Id: <20231009074121.219686-7-hch@lst.de>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20231009074121.219686-1-hch@lst.de>
-References: <20231009074121.219686-1-hch@lst.de>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="VFE788HE"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1696837648; x=1728373648;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=D0quBJLR5UnhCAorRyYxQdnd1R9G716c2yJ8kLAtiI4=;
+  b=VFE788HEv3L3wsLb8sVGseMnQKX2B50GkynlsopIcOHGixZ7286ieoVI
+   hpLWWpm4ANqeugu11nAqv0pcziCqZXoqF119SR+kg+CTszhQBmZzniAx/
+   Nw0qDDRj1dyxeWgkOMorQtV1W5Yvdzq6d3UQpcWfNiP4GUWpiXXBgizMo
+   zI+S5v1aso22l3ScL5nxhfu7Ynm2YDynhNLchs7opmvOUM5QEAT2z2h0w
+   8e7ljoO2IK9ueV7DH0+inTnpHg8MOcn8je7fL72DyeMkBCcjtR4SwYA/Y
+   76pPG/Guu6ZkNIde5Vlaaw+2fAPHVZ2ktl+YO0HInMltuTzBuoiK35iU8
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10857"; a="5636533"
+X-IronPort-AV: E=Sophos;i="6.03,209,1694761200"; 
+   d="scan'208";a="5636533"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Oct 2023 00:47:25 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10857"; a="746578581"
+X-IronPort-AV: E=Sophos;i="6.03,209,1694761200"; 
+   d="scan'208";a="746578581"
+Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
+  by orsmga007.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 09 Oct 2023 00:47:23 -0700
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.32; Mon, 9 Oct 2023 00:47:23 -0700
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.32 via Frontend Transport; Mon, 9 Oct 2023 00:47:23 -0700
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.168)
+ by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.32; Mon, 9 Oct 2023 00:47:22 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=XulPgBqWKUd+ItzszAymYEPfpLsVRJEL3U6LHS8tNtfY47byJwbXppS188xSESQFYFYF8osG0ivfK75u2Sfo18VJPbWqVySKIGfj8taSgobpvbpilFfD9yW/B42V6RUXgmAYQgY+/lJgs1GvcnUbY129oDoH65Fc9AOm7BIOWfkoKuoJlcv4J0UaHn4A5yNWmZDogwSxoCVVx6qs31+usPlky/mtQSIkqiBLiJihFFdPgnBJMcTz1xNFxOiE0EazJs2Sdq79gvZIIrb7kLTceWgJoqamO2eqEiF+/wQ1TcTKaqOPTbnK7RZquZK2u7tnhM4ZwxHtbQMc03b/fces2g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=D0quBJLR5UnhCAorRyYxQdnd1R9G716c2yJ8kLAtiI4=;
+ b=gLuAJKBhIWfFdalhA0CSTyv7MGsXjapusBBzyM3hcgXu1m9ELa+oDYqTJlEZIvvx9Gp6sCIUadp6jkUcJ4F4S7EutDKY68l9Fg4PBY/CCOkzcBg+oLF3ln6tnoQ6mLlKTk1QA1jKHnw60Uf7c6htpHoawwzseGwGqDDS01ZcTAiAZ2VghqZG+KJwmVaZw291knUJOvzRB3KxI3UMaHgCU0RbrBSQ2b8BZW251/XiUtkh4kWk7DXDDvKpcG2VvZ1NdsJYOSUgUYYzxlJyAtxswRGgCazJknnIC05UcL5kijm9jVPapfEi9CNYgmPClKI+PEM4VkSQbFwpvr5/6BkxlQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
+ by PH8PR11MB7045.namprd11.prod.outlook.com (2603:10b6:510:217::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6838.43; Mon, 9 Oct
+ 2023 07:47:20 +0000
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::7116:9866:8367:95b4]) by BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::7116:9866:8367:95b4%3]) with mapi id 15.20.6863.032; Mon, 9 Oct 2023
+ 07:47:20 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: Jason Gunthorpe <jgg@nvidia.com>, Alyssa Rosenzweig
+	<alyssa@rosenzweig.io>, "asahi@lists.linux.dev" <asahi@lists.linux.dev>,
+	Christophe Leroy <christophe.leroy@csgroup.eu>, David Woodhouse
+	<dwmw2@infradead.org>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>, Joerg
+ Roedel <joro@8bytes.org>, "linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>, "linuxppc-dev@lists.ozlabs.org"
+	<linuxppc-dev@lists.ozlabs.org>, Hector Martin <marcan@marcan.st>, "Michael
+ Ellerman" <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, "Robin
+ Murphy" <robin.murphy@arm.com>, Sven Peter <sven@svenpeter.dev>, Will Deacon
+	<will@kernel.org>
+CC: Lu Baolu <baolu.lu@linux.intel.com>, Janne Grunau <j@jannau.net>
+Subject: RE: [PATCH v2 1/9] iommu: Move IOMMU_DOMAIN_BLOCKED global statics to
+ ops->blocked_domain
+Thread-Topic: [PATCH v2 1/9] iommu: Move IOMMU_DOMAIN_BLOCKED global statics
+ to ops->blocked_domain
+Thread-Index: AQHZ8Z0NP7zmL+2Ulkm3bE2RQvI9d7BBJilQ
+Date: Mon, 9 Oct 2023 07:47:18 +0000
+Message-ID: <BN9PR11MB5276F468177C01050CD200978CCEA@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <0-v2-bff223cf6409+282-dart_paging_jgg@nvidia.com>
+ <1-v2-bff223cf6409+282-dart_paging_jgg@nvidia.com>
+In-Reply-To: <1-v2-bff223cf6409+282-dart_paging_jgg@nvidia.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|PH8PR11MB7045:EE_
+x-ms-office365-filtering-correlation-id: 46e11cb9-0a5e-48ae-f9ab-08dbc89bf6ce
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 5qZn+YsEX/iCTOvAdE3/X0wFXVGX4/P0+nh/xBmd8xoGzmThr5u+lB18W0ligmNfjFo3/PNefh0OBSqtnhfqc38uOtW0PiUUvF6Xn+TCtk78awYuB077oDYH7yokTl9v4WVGZqFtpM/TWzlhL2nKr2m31qZM3UMfFcUPz9w6FnqR49CQwqLNbIVsZ0Uq5REhkNNJzCLiqOjs7bZyEVRj6kdwsFxagKtW9fT1VmmAWJ3EqdWPKsiF5QobMekZn646BgE3dDQ+gLuHd6m9pU6Gdh6SVD0H5NJQJwEoRg/G67jLj79dZw8lcVB8ZUdZ9BhuDwxS5zhE3AkpNs1dS7C1mqCr2zvjX8wZLWLBzsgtb2YgupqXJnDpKpbyZoRQldS589eq1kY0nZUwFqsJ8J2BanS9dd2EZseQwI7ch725CXbsOdqHUWsxylp/ZNp5vo3zGwXjJmzU+EWhqg8z9GT+EYsW3yCLfvPSLvyBQtFoVzIDlaNxocqmIjH0MHARgnR/K765UHfM/EcoT4aUyACHJdiTwkW1OqQWAtYzOlQraH49cepxlTxokcN+QrP5wYKKdtTVFhTT4hRrdTDx5rYZacD26U6wgkENdQBdVCLVun7sAyytAW2NOUuh0i1i8WI6W+VsV+tzA2hxM8jxufPbjg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(136003)(376002)(346002)(396003)(39860400002)(366004)(230922051799003)(451199024)(1800799009)(186009)(64100799003)(55016003)(83380400001)(26005)(66476007)(66556008)(316002)(76116006)(110136005)(66446008)(54906003)(64756008)(7416002)(66946007)(8936002)(4326008)(5660300002)(8676002)(41300700001)(7696005)(52536014)(6506007)(15650500001)(9686003)(2906002)(4744005)(478600001)(71200400001)(33656002)(38070700005)(38100700002)(82960400001)(921005)(122000001)(86362001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?kN7/dPJOc5xyzlpCVCy2g3hPV6QJGr/wU2xQzjfdkaksa+bEHFAsRoJa9QE7?=
+ =?us-ascii?Q?CtCapsJFFLEnvg3t3B7iG/1SRdvNaA4pLso7IBveXhzNO0/pUAAyJcASSchU?=
+ =?us-ascii?Q?5pIl7bqpHVycq9ZGR/ZNK7uwe2IILGlawuvarYPXY716xtiepxEqd/eNm5Gi?=
+ =?us-ascii?Q?oQBRND0zcKx8JjratOnrUzLa6TbzC6PF2HfZlajNzJNLNlCwm2Of58ndoGL3?=
+ =?us-ascii?Q?pXby1tQ4NirfZ/MZ90Ms/1V61ljPVm2oKPen91F5sHsl+kK6uLTGOCi4Gxid?=
+ =?us-ascii?Q?KbqYqFJXe+MJ2DfXEohD6KOpxGbgtmH6Vc5X+oWrjy14aaYa7S7C1NL4sWvG?=
+ =?us-ascii?Q?BUBEdhrnrH1v6ai2sxIuAQVjPJ0Wyj2UJkiaijLnDAWOrQItKqVBLnbD20KF?=
+ =?us-ascii?Q?zHCcqqOnwmFgUO/bW9A6AiZ1oiE0vjVMDTgdyl4PIaDUS0Mlbta7va41/RRs?=
+ =?us-ascii?Q?TQqY0LHMH9Z/pjdxvL0WSO0IVhwgz3CVb1iDLjRv/zh2kOFfHvbx7GarTvgp?=
+ =?us-ascii?Q?aNoJ9Ff+FHnVQsr/ABUS+NEl0c4wvkhzRmOxV2gFy/u539LiSa5HlsMcGZrg?=
+ =?us-ascii?Q?zBFvnx53JzBK1pNa8GLu36qssw2oe6szx1EIhYQxpixPMacDHlqckCNDH941?=
+ =?us-ascii?Q?KdlSegoudG541xIyGoaEcMKckAnylILnnHLzN/d5IpIm+1osY3pxClVxLws/?=
+ =?us-ascii?Q?VlF16vxcqRAguht2nOxHV02oq8Q22QX3vcVyy8uaRJcNlryPcQqGFeZcu9Jv?=
+ =?us-ascii?Q?CH19nroUAQ89dQhFO4HP8pt1NKoLfPMoxqv8g0XBQuu3QGP3G/CCzOaw+sY7?=
+ =?us-ascii?Q?uQd1ojBwMGQZzrjjWIgaFe8oZEQp0a8nGwpXC43AkMb+aNAKuyhFPMHUFTwW?=
+ =?us-ascii?Q?M3HzKh6uLGpdUh6XlAOrIqQ/S9CFBQoulGPzG6YFcdcAgzR3jZ7k30t7E2ru?=
+ =?us-ascii?Q?ze23lXFZbB/1UWAdQw7Dc4W9nXobaL8matX1r+KHzuhe8QirCf6+T2yKQmbP?=
+ =?us-ascii?Q?PmYVm5rbyu/mLglu6Jp6Ssau1uu6kscY1cgYyQoL84XVm+0ryXyQnQSxe2uh?=
+ =?us-ascii?Q?NEFEuHYMIr5ERf3my59cxZtfY6ovoQRv/nlb0YH394yfMykQrMiQu3USbHug?=
+ =?us-ascii?Q?OKrLMda5+4KqHwob8l1+2cv3pQPTtZ4IInVm1lBXhDX26eA2i//qNRLGfdBb?=
+ =?us-ascii?Q?sNjyMM0rGR3/mJHX4fsceFtB7UPrnBfRXiDsywDSFbUcXgu9wLKGLyO1B1GX?=
+ =?us-ascii?Q?ew+Wz/tF5waTobT9IIgtQGPQdY59aw9islMVO/5icvEEfJ2c/p8xF79onXnB?=
+ =?us-ascii?Q?qKmfLae/8BuS/oyNvUrpfWycjvkNOHqPXzy6KCNkMuLFoz/NG21Ahn0ZRQSW?=
+ =?us-ascii?Q?AY/8S5K9RyMnpJNVNLFPHXIygBlZ3FAE0cqHzCyow7kfr12nW7GT0lto0gYW?=
+ =?us-ascii?Q?nypobcvejVg7PP6HWyDmBHEGKiUqeZVBNmaCO5XWct7Tn7/nKJAAiwMDF2LV?=
+ =?us-ascii?Q?rBDiQ+o4envOeIn2lsYkRSxPP0XuMV9jVZ+1AOVvyQ1roZEgmIuzDiPKr2mn?=
+ =?us-ascii?Q?O4HZDFxJi7RVIXq4GW30jxIvXTQ0zu+yJBmskguu?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 46e11cb9-0a5e-48ae-f9ab-08dbc89bf6ce
+X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Oct 2023 07:47:18.8844
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: SfLfKXAfi0O+oaJWXpRX1B2Y+NO8aEl2jjGQS6egow5V/UI1a37W7RV1gSemoNks1OuU5AXsquFWpHrdAYF0gA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR11MB7045
+X-OriginatorOrg: intel.com
 
-m68knommu and coldfire can't provide coherent DMA allocations at all.
-Currently they simply return normal kernel memory from
-dma_alloc_coherent, which is broken and breaks the API contract.  Now
-that the only DMA capable driver on these systems has been switched
-to use explicitly non-coherent allocations we can drop this hack and
-return NULL from dma_alloc_coherent.
+> From: Jason Gunthorpe <jgg@nvidia.com>
+> Sent: Thursday, September 28, 2023 7:48 AM
+>=20
+> Following the pattern of identity domains, just assign the BLOCKED domain
+> global statics to a value in ops. Update the core code to use the global
+> static directly.
+>=20
+> Update powerpc to use the new scheme and remove its empty domain_alloc
+> callback.
+>=20
+> Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
----
- arch/m68k/Kconfig      |  1 -
- arch/m68k/kernel/dma.c | 23 -----------------------
- 2 files changed, 24 deletions(-)
-
-diff --git a/arch/m68k/Kconfig b/arch/m68k/Kconfig
-index 0430b8ba6b5cc6..3e318bf9504c5b 100644
---- a/arch/m68k/Kconfig
-+++ b/arch/m68k/Kconfig
-@@ -3,7 +3,6 @@ config M68K
- 	bool
- 	default y
- 	select ARCH_32BIT_OFF_T
--	select ARCH_DMA_ALLOC if !MMU || COLDFIRE
- 	select ARCH_HAS_BINFMT_FLAT
- 	select ARCH_HAS_CPU_FINALIZE_INIT if MMU
- 	select ARCH_HAS_CURRENT_STACK_POINTER
-diff --git a/arch/m68k/kernel/dma.c b/arch/m68k/kernel/dma.c
-index 2e192a5df949bb..eb164ef1a45ebd 100644
---- a/arch/m68k/kernel/dma.c
-+++ b/arch/m68k/kernel/dma.c
-@@ -33,29 +33,6 @@ pgprot_t pgprot_dmacoherent(pgprot_t prot)
- 	}
- 	return prot;
- }
--#else
--void *arch_dma_alloc(struct device *dev, size_t size, dma_addr_t *dma_handle,
--		gfp_t gfp, unsigned long attrs)
--{
--	void *ret;
--
--	if (dev == NULL || (*dev->dma_mask < 0xffffffff))
--		gfp |= GFP_DMA;
--	ret = (void *)__get_free_pages(gfp, get_order(size));
--
--	if (ret != NULL) {
--		memset(ret, 0, size);
--		*dma_handle = virt_to_phys(ret);
--	}
--	return ret;
--}
--
--void arch_dma_free(struct device *dev, size_t size, void *vaddr,
--		dma_addr_t dma_handle, unsigned long attrs)
--{
--	free_pages((unsigned long)vaddr, get_order(size));
--}
--
- #endif /* CONFIG_MMU && !CONFIG_COLDFIRE */
- 
- void arch_sync_dma_for_device(phys_addr_t handle, size_t size,
--- 
-2.39.2
-
+Reviewed-by: Kevin Tian <kevin.tian@intel.com>
