@@ -1,199 +1,297 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2E2B17F0
-	for <iommu@lists.linux.dev>; Tue, 10 Oct 2023 02:08:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Authentication-Results: smtp.subspace.kernel.org; dkim=none
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9653D1FB;
-	Mon,  9 Oct 2023 19:09:30 -0700 (PDT)
-Received: from entos-ampere02.shanghai.arm.com (entos-ampere02.shanghai.arm.com [10.169.212.212])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id B37183F7A6;
-	Mon,  9 Oct 2023 19:08:47 -0700 (PDT)
-From: Jia He <justin.he@arm.com>
-To: Christoph Hellwig <hch@lst.de>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	iommu@lists.linux.dev
-Cc: linux-kernel@vger.kernel.org,
-	Jia He <justin.he@arm.com>
-Subject: [PATCH v2] dma-mapping: fix dma_addressing_limited if dma_range_map can't cover all system RAM
-Date: Tue, 10 Oct 2023 02:08:35 +0000
-Message-Id: <20231010020835.3678-1-justin.he@arm.com>
-X-Mailer: git-send-email 2.25.1
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6B111367
+	for <iommu@lists.linux.dev>; Tue, 10 Oct 2023 03:24:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="XJmveh71"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1696908263; x=1728444263;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=/ZyTRtEBcZL9Y+8+G6h3FpsBxdhtGk9ASAEH1AMNBOU=;
+  b=XJmveh71EHR+N9Db/YdlqXESfGdj2ObqQ1RAc+lYC92i6RCFLy6QDQJ7
+   zycYWYBchOaLqMqFqnN1xxgSg+DiLKcjYia2WBMVprQQDQkZR+Ifs/NgJ
+   oCWO54yBN5VifZ/f+uqyVLrgTEtiCLxJSPh6XL53hMYM7Rfq5U+KDcjbV
+   NQioADvr3Ytm7jNVR5DBpNjBshxgLH75YF3KJjEFxpz6kVfCH+ydJCiMV
+   0umlKIUXmEwm+ASUeIKiZ2swhKQuurIo/6bPdM4u7K0LnWbmLHj6QX6u7
+   cguHIv/fmz/H2nFox1jUsVyqagW9DH9ZS/pc5CbKD37Hjj8SnXZyKZekC
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10858"; a="5856962"
+X-IronPort-AV: E=Sophos;i="6.03,211,1694761200"; 
+   d="scan'208";a="5856962"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Oct 2023 20:24:21 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10858"; a="877060380"
+X-IronPort-AV: E=Sophos;i="6.03,211,1694761200"; 
+   d="scan'208";a="877060380"
+Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
+  by orsmga004.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 09 Oct 2023 20:24:21 -0700
+Received: from orsmsx612.amr.corp.intel.com (10.22.229.25) by
+ ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.32; Mon, 9 Oct 2023 20:24:20 -0700
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx612.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.32 via Frontend Transport; Mon, 9 Oct 2023 20:24:20 -0700
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (104.47.57.168)
+ by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.32; Mon, 9 Oct 2023 20:24:20 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=bSaglG9AO/dVzUAOJkWaXkQV1aw3k5hx0OW0Uq2LOzb1XlCyam2jZh4+NlxvLHwgLVnbiM63/n/CE5Pp08xnG3ixiXAYsJk/k9a+MIjZJzlY1DPzr3nJgNTICDSh444SZr9OfGfW16patnFvT/F4hyLSaKOGwrJwTbhxMNSrLamFbcjyhYF0cDaUZrPRO6yq4bUAWAQqDYgQX/p5Znv7VY8EL1ll1yr4il7kq7VzNImg5behzOQfZpvXXrsdgVHqmFxOURZ7GOLmL1dR95FiQtBiJ39YBHnbh5lCRF+/IGMwQZFAH93OKuWkbLOh58Cu2niCKmLFys7dLNSB4QqOew==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=0/dUtY7Y6mbppVawRZE362CC3xz3pq5J8VoUG2iYOns=;
+ b=XCE+nt7lmf4Tu02bgo+/zSWlPVLQQnUOIj3ekPQOvMsDoLuk2CTG1ucYJ6T26cz33fhu4wu7/CxPgjcnPerB42en9G4CarRVmg4Urr4SdNjn+ywHsEjcbYqw4+b58vp42Peck4tUePzhe8D/1ieNz6wtM/7bs7VRHc0UqFiAr1YgUFxuVqZHN5khhose9VBiEXaoK3hV2rDOCrWxsgzVUVajUofQ8vVjJdLnaLlpXIElbE4j6J5oUp1DJvMfxpd4s9XuvM5ZBtTuwmRMtIWkI6Tk5vFRJolcYPFwc2UseAVJrgK6mtGO1r5BZEtVIHAcEgLEbw+l57RsTxprWDgjKw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from DS0PR11MB7529.namprd11.prod.outlook.com (2603:10b6:8:141::20)
+ by CY5PR11MB6236.namprd11.prod.outlook.com (2603:10b6:930:23::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6863.36; Tue, 10 Oct
+ 2023 03:24:18 +0000
+Received: from DS0PR11MB7529.namprd11.prod.outlook.com
+ ([fe80::f8f4:bed2:b2f8:cb6b]) by DS0PR11MB7529.namprd11.prod.outlook.com
+ ([fe80::f8f4:bed2:b2f8:cb6b%3]) with mapi id 15.20.6863.032; Tue, 10 Oct 2023
+ 03:24:18 +0000
+Message-ID: <1b27b31a-3eaa-0acc-b9ae-756605170220@intel.com>
+Date: Tue, 10 Oct 2023 11:26:37 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Firefox/102.0 Thunderbird/102.13.0
+Subject: Re: [PATCH v4 03/17] iommufd: Unite all kernel-managed members into a
+ struct
+Content-Language: en-US
+To: Yan Zhao <yan.y.zhao@intel.com>
+CC: <joro@8bytes.org>, <alex.williamson@redhat.com>, <jgg@nvidia.com>,
+	<kevin.tian@intel.com>, <robin.murphy@arm.com>, <baolu.lu@linux.intel.com>,
+	<cohuck@redhat.com>, <eric.auger@redhat.com>, <nicolinc@nvidia.com>,
+	<kvm@vger.kernel.org>, <mjrosato@linux.ibm.com>,
+	<chao.p.peng@linux.intel.com>, <yi.y.sun@linux.intel.com>,
+	<peterx@redhat.com>, <jasowang@redhat.com>,
+	<shameerali.kolothum.thodi@huawei.com>, <lulu@redhat.com>,
+	<suravee.suthikulpanit@amd.com>, <iommu@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
+	<zhenzhong.duan@intel.com>, <joao.m.martins@oracle.com>
+References: <20230921075138.124099-1-yi.l.liu@intel.com>
+ <20230921075138.124099-4-yi.l.liu@intel.com>
+ <ZSEuBcLaSq4NjoC8@yzhao56-desk.sh.intel.com>
+ <c299567a-5be8-f65f-d8ec-ffd3fa183b03@intel.com>
+ <ZSOMCXBzUMRujp89@yzhao56-desk.sh.intel.com>
+From: Yi Liu <yi.l.liu@intel.com>
+In-Reply-To: <ZSOMCXBzUMRujp89@yzhao56-desk.sh.intel.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: KL1PR01CA0115.apcprd01.prod.exchangelabs.com
+ (2603:1096:820:3::31) To DS0PR11MB7529.namprd11.prod.outlook.com
+ (2603:10b6:8:141::20)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS0PR11MB7529:EE_|CY5PR11MB6236:EE_
+X-MS-Office365-Filtering-Correlation-Id: 7695727c-eb2b-4158-1f14-08dbc940634c
+X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 5ZYEM5s1ZGhy2bMVYofB3oHGbjPyfs2cz74wcDFKNUJRXidLGQ4ePDLeBUFq59IL/NjxUadBLhBjc6VVQDPB+PRJ1/yPyNMhlVvsgdtEkkj/oHoEpLyiU6AzyEXZONGsNV3cGO0Z9SHrVOR0je706NZBhR1esDoS/ekj1/DAj+5arFfhdZHc2aVrsJ9lUcpYW5ttmTwnJ/bIiRCfiEXuWcaqogF25PMFKY5ABIcaz+0hUnA1oAXX1OH7gk/xXYYYd96hbCnT6oPCLYDDwUlO/dz2vmsYDEZNfcN4UnI09NwGhB/KbYU17ErULN6QIidbSRVRrTiNt5wnHPOVTDSMq06jcoJxFa1pPqcOUNVUfahlIqCIB32RaadL/pQ3NvRGRSguDLNAruoUD5ELJz3HJNmOFg0BOl2t728nmNQC0oF6paHRhRcv6Decfu4L0zT/5hkVlk1IFo5kGAQy2T5aKB+JyLVQCZFzoDGVK/EWlG3cEUMx2QxuQE8MYqxzcuYj2UF/kpL8IehCrYOEllegQBCNB0IUGYZBr37jgADNDkQzcS7hm07WW8zvhdHBStU/2zPVOVWlEfkGshYmwG4Trb52zHqLD4m5z3P3kV314pDvZY645a96rkTOL/MDwpqcUcJSDU7R2TbNB3A3xJ2VnQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS0PR11MB7529.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(346002)(366004)(396003)(376002)(39860400002)(136003)(230922051799003)(64100799003)(186009)(1800799009)(451199024)(26005)(2616005)(53546011)(6666004)(8676002)(6512007)(83380400001)(6862004)(7416002)(2906002)(6506007)(478600001)(4326008)(66946007)(66556008)(66476007)(6486002)(5660300002)(8936002)(316002)(37006003)(41300700001)(6636002)(38100700002)(82960400001)(31696002)(86362001)(36756003)(31686004)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?NVZJUXNQOS8vVnRDMG1WTkp3OS9oYml2a3dCSDdXeG1rM2dNaU8wcFZJTWYz?=
+ =?utf-8?B?QUx4VXNWYk43Nk13QmRaei93ekpSSVFwZzdYeGZpTURqQmJvc24xRmdZV0lU?=
+ =?utf-8?B?NmdBUnRHSmVUaGJoaTZRSzZzVHNqaE96OFdyZlBPOCtreC9QWEF6K3RzZmha?=
+ =?utf-8?B?cmVjdjNxaHdEVVVMUXpLK0lOcHRuL0RWdThwZHNLMjE1SFBweWFOdGQ5UnRp?=
+ =?utf-8?B?QVVlVm9kcHJ3UzRxV2MzMDlKKy9zOGFYRUxYOHBRbTNLR1ZMOURqVnU2dDZy?=
+ =?utf-8?B?NVczeEo3TXViUjN3UWQxL3lIWitzcTFvVEVkZkZ4SUk1V1pXNWQrWmVIRUxz?=
+ =?utf-8?B?aHBzbm04L0dFQ1F6bnlrZk9WK29iTkcwR1Y4d1pKbHVUb3lVR3VuS1Azekc1?=
+ =?utf-8?B?TnZrenc2V0xwVHNjNllhOGtsRlpuekRnQnZ3aEFNOGlRNDJUVFBkWGRyV09h?=
+ =?utf-8?B?d3pPSnFsK3RCOHprVmhRVWNWenZocjhVL1pZdnE4eEdheVFVNnZoSGw2MTla?=
+ =?utf-8?B?MTBUWVVxTTJObm1YeDZCcnhVbFRCejd5cW9FN0ZKYnRZWDBVNVAzOHl1UnIx?=
+ =?utf-8?B?TEVjV0EwUTRYUGczZUdwTzRkeVp0bWF2SmxNWGp4Z09xMHQyTzc0TWdZR0VH?=
+ =?utf-8?B?dEVHbmxrK1FYL3Vzdnc3TWdvL0QvK2FvMitSUHJVWGdIa1VOSmg3MHhPbW9J?=
+ =?utf-8?B?QXZaMDZOYU9XNDllcWtqclRFaUp3RG44U3l2NzloOExTNDBnNlJYOWFOZjhj?=
+ =?utf-8?B?ZGdJTHR1d3V2cEVLekxqR0lhYllrbCtXeXhLMEdRSmF5aEgxeDhiaDZFRmVZ?=
+ =?utf-8?B?WnJ3TzlJaWtWWS9DbmN4WWRpdlRRd0NnWHhuSUh2YStPYW9BbjlVaHFZZHNY?=
+ =?utf-8?B?emlJL1UyQm1EaUtGQThHeW5zUVhrL0U0bXNsUm9Qa2FFVHN6aVpmTTBaMWtR?=
+ =?utf-8?B?MDROVXNtUmU3czQwbDRnRGo2eHl2WVlQMTdHWHFJSFlWRkdLMkhNNVQ5cjQv?=
+ =?utf-8?B?M1hkdmpwUktVODJBQVZ6alBlZUh0NitJMllsSHltanJZeWJ1K3l5SGJvMlUz?=
+ =?utf-8?B?TDI0VEN4WEFLTStVRnViNnR3dm0wYjdHUlI0UWFWRlVPZ3Fxc0U2OStWdWh3?=
+ =?utf-8?B?a3hINDdQRGlYS0tBY3p4YnYycWU0OTJOZFZOYXJWcVZjTFA4bXozNngweHJU?=
+ =?utf-8?B?WmYrUjN1RGI2bS80c3U2RDFLVXFlbUZPYmxGaitoOWFxNXlUeTdSbGdvU3Fp?=
+ =?utf-8?B?YXJ1ZVp0bWdUMmdWamluOVFWQmxlVGpxeGdDMFVGWUVzWTUxaTVsRlNMOE1p?=
+ =?utf-8?B?cFhBSlJrdXNHV0ZKeVY4VHhoUHVMZGVWbDYyZ3JWOGVuS0YvcEQ0ODlYeHVQ?=
+ =?utf-8?B?WWs0R0pnUlROb2ZvQWJPL0JtdFd4UndwRmUzYTYyWVdVd0VHQWg4dDh6VzRr?=
+ =?utf-8?B?R3hFbUVLVG5FWTliMnF1NkwwZlNRZzBlSmJoNlcwTHVSN1dRUGM4ME05ckU4?=
+ =?utf-8?B?eG1pcFBTdGRselFDN2c0UWJiNVlwTUpPQzFqOFNXbVBQVW82VVJKSUtCZmpy?=
+ =?utf-8?B?NGxlb3hqNVNFSk9URFNEVitiL0V0WFNjRXI3UkszRWdKbCswWlE3ZGM0UWRL?=
+ =?utf-8?B?SUx1TjNsaE1qazBTU0gyemlVVjJkVkk5WXlTU1RZRVFqbTU4cUJ3TEVlUUtP?=
+ =?utf-8?B?cStUY2pzai9TdlZmak1pelp3MnFpVmNuWlBDUFVsRnl1eFQyTkpUUGlRRlhT?=
+ =?utf-8?B?U2RsMDZNTGMyTTRnNE9tQnJNOTl1enQ1MjArZml4enlTR3Q5UGcrbktmTGxi?=
+ =?utf-8?B?dyttM1JTSUtMdjdVUk0rZHdGck5DT0tyQUM4TldxTmlrUjc0eVZyQmJpSTE4?=
+ =?utf-8?B?OXRMTHFHT2x2NHRKU1VUVnN5SmNGbHhycGhsK2tNVVhiTmVaUzVXNHgzRlg1?=
+ =?utf-8?B?dFQ5YVl6NzVyQTd4Y2ZCMDlKcWtmTmpVTVUvZ05Bc0p0S0ZUd1VIQ2dBb0pa?=
+ =?utf-8?B?SWlBcGsxbllobU9tUEhPRUErSndIVFpIeU80SVVNSldkU1FkbGdCVDBPdmVa?=
+ =?utf-8?B?UFFUU2NITnY2M0tOZGRUTkdUM0pDR2k0SFBJallBdmVKeEpLNi9rRnBQMHpM?=
+ =?utf-8?Q?NSnDEYJhAzIsLJRHMxaS+S4XZ?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7695727c-eb2b-4158-1f14-08dbc940634c
+X-MS-Exchange-CrossTenant-AuthSource: DS0PR11MB7529.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Oct 2023 03:24:18.7637
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: uq50BBWCLhpS/PsIAASEOY+8fcYxfdBBo+lFYOPINjYXwYGS2AOTbzNYvZk4xQwelt+RZAHdV4V1nKWAF3kGaQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY5PR11MB6236
+X-OriginatorOrg: intel.com
 
-There is an unusual case that the range map covers right up to the top of
-system RAM, but leaves a hole somewhere lower down. Then it prevents the
-nvme device dma mapping in the checking path of phys_to_dma() and causes
-the hangs at boot.
+On 2023/10/9 13:13, Yan Zhao wrote:
+> On Mon, Oct 09, 2023 at 12:13:52PM +0800, Yi Liu wrote:
+>> On 2023/10/7 18:08, Yan Zhao wrote:
+>>> On Thu, Sep 21, 2023 at 12:51:24AM -0700, Yi Liu wrote:
+>>>> From: Nicolin Chen <nicolinc@nvidia.com>
+>>>>
+>>>> The struct iommufd_hw_pagetable has been representing a kernel-managed
+>>>> HWPT, yet soon will be reused to represent a user-managed HWPT. These
+>>>> two types of HWPTs has the same IOMMUFD object type and an iommu_domain
+>>>> object, but have quite different attributes/members.
+>>>>
+>>>> Add a union in struct iommufd_hw_pagetable and group all the existing
+>>>> kernel-managed members. One of the following patches will add another
+>>>> struct for user-managed members.
+>>>>
+>>>> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+>>>> Signed-off-by: Yi Liu <yi.l.liu@intel.com>
+>>>> ---
+>>>>    drivers/iommu/iommufd/iommufd_private.h | 17 +++++++++++------
+>>>>    1 file changed, 11 insertions(+), 6 deletions(-)
+>>>>
+>>>> diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
+>>>> index 3064997a0181..947a797536e3 100644
+>>>> --- a/drivers/iommu/iommufd/iommufd_private.h
+>>>> +++ b/drivers/iommu/iommufd/iommufd_private.h
+>>>> @@ -231,13 +231,18 @@ int iommufd_vfio_ioas(struct iommufd_ucmd *ucmd);
+>>>>     */
+>>>>    struct iommufd_hw_pagetable {
+>>>>    	struct iommufd_object obj;
+>>>> -	struct iommufd_ioas *ioas;
+>>>>    	struct iommu_domain *domain;
+>>>> -	bool auto_domain : 1;
+>>>> -	bool enforce_cache_coherency : 1;
+>>>> -	bool msi_cookie : 1;
+>>>> -	/* Head at iommufd_ioas::hwpt_list */
+>>>> -	struct list_head hwpt_item;
+>>>> +
+>>>> +	union {
+>>>> +		struct { /* kernel-managed */
+>>>> +			struct iommufd_ioas *ioas;
+>>>> +			bool auto_domain : 1;
+>>> Will iommufd_hw_pagetable_put() also be called on non-kernel-managed domain?
+>>
+>> yes.
+>>
+>>> If yes, hwpt->user_managed needs to be checked in iommufd_hw_pagetable_put(),
+>>> (e.g. as below).
+>>> Otherwise, this union will lead to hwpt->ioas and hwpt->auto_domain still being
+>>> accessible though invalid.
+>>
+>> not quite get this sentence.
+> I mean with this union, hwpt->auto_domain or hwpt->ioas should only be accessed if and
+> only if hwpt type is kernel-managed.
 
-E.g. On an Armv8 Ampere server, the dsdt ACPI table is:
- Method (_DMA, 0, Serialized)  // _DMA: Direct Memory Access
-            {
-                Name (RBUF, ResourceTemplate ()
-                {
-                    QWordMemory (ResourceConsumer, PosDecode, MinFixed,
-MaxFixed, Cacheable, ReadWrite,
-                        0x0000000000000000, // Granularity
-                        0x0000000000000000, // Range Minimum
-                        0x00000000FFFFFFFF, // Range Maximum
-                        0x0000000000000000, // Translation Offset
-                        0x0000000100000000, // Length
-                        ,, , AddressRangeMemory, TypeStatic)
-                    QWordMemory (ResourceConsumer, PosDecode, MinFixed,
-MaxFixed, Cacheable, ReadWrite,
-                        0x0000000000000000, // Granularity
-                        0x0000006010200000, // Range Minimum
-                        0x000000602FFFFFFF, // Range Maximum
-                        0x0000000000000000, // Translation Offset
-                        0x000000001FE00000, // Length
-                        ,, , AddressRangeMemory, TypeStatic)
-                    QWordMemory (ResourceConsumer, PosDecode, MinFixed,
-MaxFixed, Cacheable, ReadWrite,
-                        0x0000000000000000, // Granularity
-                        0x00000060F0000000, // Range Minimum
-                        0x00000060FFFFFFFF, // Range Maximum
-                        0x0000000000000000, // Translation Offset
-                        0x0000000010000000, // Length
-                        ,, , AddressRangeMemory, TypeStatic)
-                    QWordMemory (ResourceConsumer, PosDecode, MinFixed,
-MaxFixed, Cacheable, ReadWrite,
-                        0x0000000000000000, // Granularity
-                        0x0000007000000000, // Range Minimum
-                        0x000003FFFFFFFFFF, // Range Maximum
-                        0x0000000000000000, // Translation Offset
-                        0x0000039000000000, // Length
-                        ,, , AddressRangeMemory, TypeStatic)
-                })
+ok, I get this part. just not sure about the missing words in your prior 
+comment.
 
-But the System RAM ranges are:
-cat /proc/iomem |grep -i ram
-90000000-91ffffff : System RAM
-92900000-fffbffff : System RAM
-880000000-fffffffff : System RAM
-8800000000-bff5990fff : System RAM
-bff59d0000-bff5a4ffff : System RAM
-bff8000000-bfffffffff : System RAM
-So some RAM ranges are out of dma_range_map.
+> So, any unconditional access, as in iommufd_hw_pagetable_put() pasted below, is buggy.
+> 
+> Therefore, do you think it's better to add a filed like "bool kernel_managed : 1",
+> and access the union fields under  /* kernel-managed */ only when hwpt->kernel_managed
+> is true.
+> 
+> 
+>>
+>>>
+>>>    static inline void iommufd_hw_pagetable_put(struct iommufd_ctx *ictx,
+>>>                                               struct iommufd_hw_pagetable *hwpt)
+>>>    {
+>>> -       lockdep_assert_not_held(&hwpt->ioas->mutex);
+>>> -       if (hwpt->auto_domain)
+>>> +       if (!hwpt->user_managed)
+>>> +               lockdep_assert_not_held(&hwpt->ioas->mutex);
+>>
+>> this is true. this assert is not needed when hwpt is not kernel managed domain.
+>>
+>>> +
+>>> +       if (!hwpt->user_managed && hwpt->auto_domain)
+>>
+>> actually, checking auto_domain is more precise. There is hwpt which is
+>> neither user managed nor auto.
+> 
+> auto_domain is under union fields marked with kernel-managed only.
+> Access it without type checking is invalid.
 
-Fixes it by checking whether each of the system RAM resources can be
-properly encompassed within the dma_range_map.
+I see. yes, should check user_managed as well. :)
 
-Signed-off-by: Jia He <justin.he@arm.com>
----
-v2:
-  - refine the subject and commit msg (By Robin Murphy)
-  - refactor the checking loop in check_ram_in_range_map() in the pages
-    unit to avoid wrap to 0 on 32bits platforms (Robin)
+> struct iommufd_hw_pagetable {
+>          struct iommufd_object obj;
+>          struct iommu_domain *domain;
+> 
+>          void (*abort)(struct iommufd_object *obj);
+>          void (*destroy)(struct iommufd_object *obj);
+> 
+>          bool user_managed : 1;
+>          union {
+>                  struct { /* user-managed */
+>                          struct iommufd_hw_pagetable *parent;
+>                  };
+>                  struct { /* kernel-managed */
+>                          struct iommufd_ioas *ioas;
+>                          struct mutex mutex;
+>                          bool auto_domain : 1;
+>                          bool enforce_cache_coherency : 1;
+>                          bool msi_cookie : 1;
+>                          bool nest_parent : 1;
+>                          /* Head at iommufd_ioas::hwpt_list */
+>                          struct list_head hwpt_item;
+>                  };
+>          };
+> };
+> 
+>>
+>>>                   iommufd_object_deref_user(ictx, &hwpt->obj);
+>>>           else
+>>>                   refcount_dec(&hwpt->obj.users);
+>>> }
+>>>
+>>>> +			bool enforce_cache_coherency : 1;
+>>>> +			bool msi_cookie : 1;
+>>>> +			/* Head at iommufd_ioas::hwpt_list */
+>>>> +			struct list_head hwpt_item;
+>>>> +		};
+>>>> +	};
+>>>>    };
+>>>>    struct iommufd_hw_pagetable *
+>>>> -- 
+>>>> 2.34.1
+>>>>
+>>
+>> -- 
+>> Regards,
+>> Yi Liu
 
- include/linux/dma-mapping.h | 12 +++++++++--
- kernel/dma/mapping.c        | 42 +++++++++++++++++++++++++++++++++++++
- 2 files changed, 52 insertions(+), 2 deletions(-)
-
-diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-index f0ccca16a0ac..b8abbb2619a2 100644
---- a/include/linux/dma-mapping.h
-+++ b/include/linux/dma-mapping.h
-@@ -144,6 +144,7 @@ bool dma_pci_p2pdma_supported(struct device *dev);
- int dma_set_mask(struct device *dev, u64 mask);
- int dma_set_coherent_mask(struct device *dev, u64 mask);
- u64 dma_get_required_mask(struct device *dev);
-+bool all_ram_in_dma_range_map(struct device *dev);
- size_t dma_max_mapping_size(struct device *dev);
- size_t dma_opt_mapping_size(struct device *dev);
- bool dma_need_sync(struct device *dev, dma_addr_t dma_addr);
-@@ -264,6 +265,10 @@ static inline u64 dma_get_required_mask(struct device *dev)
- {
- 	return 0;
- }
-+static inline bool all_ram_in_dma_range_map(struct device *dev)
-+{
-+	return 1;
-+}
- static inline size_t dma_max_mapping_size(struct device *dev)
- {
- 	return 0;
-@@ -475,8 +480,11 @@ static inline int dma_coerce_mask_and_coherent(struct device *dev, u64 mask)
-  */
- static inline bool dma_addressing_limited(struct device *dev)
- {
--	return min_not_zero(dma_get_mask(dev), dev->bus_dma_limit) <
--			    dma_get_required_mask(dev);
-+	if (min_not_zero(dma_get_mask(dev), dev->bus_dma_limit) <
-+			    dma_get_required_mask(dev))
-+		return true;
-+
-+	return !all_ram_in_dma_range_map(dev);
- }
- 
- static inline unsigned int dma_get_max_seg_size(struct device *dev)
-diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
-index e323ca48f7f2..5f454949a428 100644
---- a/kernel/dma/mapping.c
-+++ b/kernel/dma/mapping.c
-@@ -7,6 +7,7 @@
-  */
- #include <linux/memblock.h> /* for max_pfn */
- #include <linux/acpi.h>
-+#include <linux/dma-direct.h> /* for bus_dma_region */
- #include <linux/dma-map-ops.h>
- #include <linux/export.h>
- #include <linux/gfp.h>
-@@ -819,6 +820,47 @@ size_t dma_opt_mapping_size(struct device *dev)
- }
- EXPORT_SYMBOL_GPL(dma_opt_mapping_size);
- 
-+/*
-+ * To check whether all ram resource ranges are mapped in dma range map
-+ * Returns 0 when continuous check is needed
-+ * Returns 1 if there is some ram range can't be mapped to dma_range_map
-+ */
-+static int check_ram_in_range_map(unsigned long start_pfn,
-+				  unsigned long nr_pages, void *data)
-+{
-+	unsigned long end_pfn = start_pfn + nr_pages;
-+	struct device *dev = (struct device *)data;
-+	struct bus_dma_region *region = NULL;
-+	const struct bus_dma_region *m;
-+
-+	while (start_pfn < end_pfn) {
-+		for (m = dev->dma_range_map; PFN_DOWN(m->size); m++) {
-+			unsigned long cpu_start_pfn = PFN_DOWN(m->cpu_start);
-+
-+			if (start_pfn >= cpu_start_pfn
-+			    && start_pfn - cpu_start_pfn < PFN_DOWN(m->size)) {
-+				region = (struct bus_dma_region *)m;
-+				break;
-+			}
-+		}
-+		if (!region)
-+			return 1;
-+
-+		start_pfn = PFN_DOWN(region->cpu_start) + PFN_DOWN(region->size);
-+	}
-+
-+	return 0;
-+}
-+
-+bool all_ram_in_dma_range_map(struct device *dev)
-+{
-+	if (!dev->dma_range_map)
-+		return 1;
-+
-+	return !walk_system_ram_range(0, ULONG_MAX, dev, check_ram_in_range_map);
-+}
-+EXPORT_SYMBOL_GPL(all_ram_in_dma_range_map);
-+
- bool dma_need_sync(struct device *dev, dma_addr_t dma_addr)
- {
- 	const struct dma_map_ops *ops = get_dma_ops(dev);
 -- 
-2.25.1
-
+Regards,
+Yi Liu
