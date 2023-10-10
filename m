@@ -1,113 +1,101 @@
-Received: from mail-qv1-f44.google.com (mail-qv1-f44.google.com [209.85.219.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AEE9C28F4
-	for <iommu@lists.linux.dev>; Tue, 10 Oct 2023 14:38:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="A9tHcoFg"
-Received: by mail-qv1-f44.google.com with SMTP id 6a1803df08f44-66cfd35f595so2183686d6.2
-        for <iommu@lists.linux.dev>; Tue, 10 Oct 2023 07:38:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1696948711; x=1697553511; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=H8iOZjw5e08IcplVas5Qh80MTnCsr38lB0b8mKCyKBo=;
-        b=A9tHcoFgPT8jgYRFjwjuztVb8OkYOcOoESu8lDkakou+2wvRSVXofYTbNl3vMownfl
-         gL5pJEgYQZFQrF9hIEuNVtaI2E5hk9BSJauaHxbZy0eNCVV920JT4ndjTuYHaIH2YrQ+
-         oq+yvtljJsfWcQ6xcS2vClmh9WKweFZqayZF5opz2Z0sOLyVP0QZkRoNjZtdqi0J5Jg7
-         J4YqqaxXoTtj4AsOf9UGAvdnWsC0rykUSW4BfmqXCQookWzHn8hzM3OlPNr3aqNqxXy0
-         uqf6dqZgh+vobxhiz7lfza/wuWT8Gaje7SqindA6+HH87UV9r85TUbVJ7k9/WH2mdBkP
-         Dr9A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1696948711; x=1697553511;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=H8iOZjw5e08IcplVas5Qh80MTnCsr38lB0b8mKCyKBo=;
-        b=b/1en3FMAA7rRTczYwtrUuXWeB+JDRdfz/gyfeTcYSJ2rAsz7WEbsCSlvx8UmwCGic
-         nbv7dNHakNAleKNNGpsZw2xs5TbTrfLr9atpdY2kfDADUBLkpUP7sl7uM2/B9VXfyWBL
-         IRyP7tYanekTPjDHw0p6w/b9Ob/G7AST05exqSRVLaP1XYLKxhnNeLrigBAvQJ8uk3iq
-         cdO/WB+nJfagMx/sp0IqzeW2rM4ueYgDFE1inLk8AF9N7He/yJEe6xr1COOW8CZob0mP
-         BORLuB3ivy9+prHOjlOBZqcJbtetiukS9A3tHdr541ulH7k1MEINsidyus1VBxJBxajn
-         TeDg==
-X-Gm-Message-State: AOJu0YwlVGHmNTzdXtfDOcduowVVNklip26ocsz/Z5GNYMM/Y3vLfnoa
-	xkx4MlcxMTDET5OldU+OPCDyQw==
-X-Google-Smtp-Source: AGHT+IH18dVfztdH94C2qaM2vXW79ly4yS2Zvc4rRCTKgo5AwjVoN/u5uL9d+xExNDBEVC05Dia1YQ==
-X-Received: by 2002:a0c:b45e:0:b0:656:3c00:dc92 with SMTP id e30-20020a0cb45e000000b006563c00dc92mr15842097qvf.31.1696948711390;
-        Tue, 10 Oct 2023 07:38:31 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-26-201.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.26.201])
-        by smtp.gmail.com with ESMTPSA id s17-20020a05620a031100b00767177a5bebsm4341748qkm.56.2023.10.10.07.38.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Oct 2023 07:38:30 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1qqDsT-000Ebm-CO;
-	Tue, 10 Oct 2023 11:38:29 -0300
-Date: Tue, 10 Oct 2023 11:38:29 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Vasant Hegde <vasant.hegde@amd.com>
-Cc: iommu@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com,
-	wei.huang2@amd.com, jsnitsel@redhat.com
-Subject: Re: [PATCH v2 06/10] iommu/amd: Refactor helper function for setting
- / clearing GCR3
-Message-ID: <20231010143829.GA55194@ziepe.ca>
-References: <20230816174031.634453-1-vasant.hegde@amd.com>
- <20230816174031.634453-7-vasant.hegde@amd.com>
- <ZQHRTwYN4doUte5E@ziepe.ca>
- <0d47919e-cc2c-d151-f020-e2090fd1c287@amd.com>
- <20230927164523.GO13795@ziepe.ca>
- <497df4d9-2203-ad36-a5d1-97570b327a49@amd.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7967F1DFED;
+	Tue, 10 Oct 2023 14:45:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dkim=none
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74AE0C433C8;
+	Tue, 10 Oct 2023 14:45:01 +0000 (UTC)
+Message-ID: <eedf951d-901c-40d8-91f2-0f13d33b7d4e@linux-m68k.org>
+Date: Wed, 11 Oct 2023 00:44:58 +1000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <497df4d9-2203-ad36-a5d1-97570b327a49@amd.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 5/6] net: fec: use dma_alloc_noncoherent for m532x
+Content-Language: en-US
+To: Christoph Hellwig <hch@lst.de>, Robin Murphy <robin.murphy@arm.com>
+Cc: iommu@lists.linux.dev, Marek Szyprowski <m.szyprowski@samsung.com>,
+ Geert Uytterhoeven <geert@linux-m68k.org>, Wei Fang <wei.fang@nxp.com>,
+ Shenwei Wang <shenwei.wang@nxp.com>, Clark Wang <xiaoning.wang@nxp.com>,
+ NXP Linux Team <linux-imx@nxp.com>, linux-m68k@lists.linux-m68k.org,
+ netdev@vger.kernel.org, Jim Quinlan <james.quinlan@broadcom.com>
+References: <20231009074121.219686-1-hch@lst.de>
+ <20231009074121.219686-6-hch@lst.de>
+ <ea608718-8a50-4f87-aecf-fc100d283fe8@arm.com> <20231009125843.GA7272@lst.de>
+From: Greg Ungerer <gerg@linux-m68k.org>
+In-Reply-To: <20231009125843.GA7272@lst.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Tue, Oct 10, 2023 at 11:32:53AM +0530, Vasant Hegde wrote:
+Hi Christoph,
 
-> __amd_iommu_flush_tlb() flushes both domain ID and all devices within the domain
-> for the given PASID. So it works fine. All these functions are reworked as part
-> of invalidation series. Hence this function is not relevant anymore.
-
-But the replacement has the same issue:
-
-static int domain_flush_tlb_range(struct protection_domain *pdom,
-                                  ioasid_t pasid, u64 address, size_t size)
-{
-        struct iommu_cmd cmd;
-        int i, ret = 0;
-        bool gn = is_pasid_valid(pasid);
-
-        build_inv_iommu_pages(&cmd, address, size, pdom->id, pasid, gn);
-                                              ^^^^^^^^^^^^^^^
-
-(btw I have no issue/comments with the invalidate series, it just
-doesn't go far enough to correctly support the iommu core's PASID ops)
-
-> > Nothing guarantees that domain->id is per-device. It is emphatically
-> > not, it is per-domain. It happens to act like it is per-device when
-> > using the DMA API, as DMA API does not share domains across
-> > groups. However iommufd does share domains and so this is not a
-> > correct assumption.
+On 9/10/23 22:58, Christoph Hellwig wrote:
+> On Mon, Oct 09, 2023 at 11:29:12AM +0100, Robin Murphy wrote:
+>> It looks a bit odd that this ends up applying to all of Coldfire, while the
+>> associated cache flush only applies to the M532x platform, which implies
+>> that we'd now be relying on the non-coherent allocation actually being
+>> coherent on other Coldfire platforms.
+>>
+>> Would it work to do something like this to make sure dma-direct does the
+>> right thing on such platforms (which presumably don't have caches?), and
+>> then reduce the scope of this FEC hack accordingly, to clean things up even
+>> better?
 > 
-> That's exactly why I have been saying for SVA I don't need
-> per-device-domain ID.  Current code works fine. Anyway, I will add
-> this support in v3.
+> Probably.  Actually Greg comment something along the lines last
+> time, and mentioned something about just instruction vs instruction
+> and data cache.
 
-The threshold for upstream is more than "works fine" in some limited
-testing.
+I just elaborated on that point a little in response to Robin's email.
 
-It needs to correctly implement the driver op APIs we have defined in
-the core code. In this regard it does not "work fine", you can see it
-by code inspection that it is not producing a correct cache tag in the
-IOTLB for domains attached via op->set_dev_pasid()
+>>
+>> diff --git a/arch/m68k/Kconfig.cpu b/arch/m68k/Kconfig.cpu
+>> index b826e9c677b2..1851fa3fe077 100644
+>> --- a/arch/m68k/Kconfig.cpu
+>> +++ b/arch/m68k/Kconfig.cpu
+>> @@ -27,6 +27,7 @@ config COLDFIRE
+>>   	select CPU_HAS_NO_BITFIELDS
+>>   	select CPU_HAS_NO_CAS
+>>   	select CPU_HAS_NO_MULDIV64
+>> +	select DMA_DEFAULT_COHERENT if !MMU && !M523x
+> 
+> Although it would probably make more sense to simply not select
+> CONFIG_ARCH_HAS_SYNC_DMA_FOR_DEVICE and
+> CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU for these platforms and not
+> build the non-coherent code at all.  This should also include
+> all coldfire platforms with mmu (M54xx/M548x/M5441x).  Then
+> again for many of the coldfire platforms the Kconfig allows
+> to select CACHE_WRITETHRU/CACHE_COPYBACK which looks related.
+> 
+> Greg, any chance you could help out with the caching modes on
+> coldfire and legacy m68knommu?
 
-So, lets see v3.
+Sure, yep. I am not aware that the legacy 68000 or 68328 had any caches
+at all.
 
-Jason
+The cache modes change a bit through out the various ColdFire family series, but
+can be broken down roughly into 2 groups.
+
+1.  Version 2 cores (so everything named 52xx). Early members (5206, 5206e, 5272)
+     had instruction cache only. Later members (5208, 5271/5275, 523x, etc) had
+     a selectable instruction or data or both cache arrangement. Kconfig lets you
+     select which you want - the default is instruction cache only.
+
+2.  Version 3 and 4 cores (so everything named 53xx and 54xx). They have a unified
+     instruction and data cache. Data caching can be selected to be write-through
+     (the default) or write-back.
+
+Some of the version 4 cores also have an MMU.
+
+The M532x hack in the fec driver is to deal with its unified cache, and it is the
+only ColdFire version 3 or 4 SoC that has the fec hardware module (thus no others
+listed out there). I suspect if you select data cache on the version 2 cores that have
+it would break in the fec driver too.
+
+Regards
+Greg
+
+
