@@ -1,102 +1,182 @@
-Received: from mail-pj1-f41.google.com (mail-pj1-f41.google.com [209.85.216.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2047.outbound.protection.outlook.com [40.107.237.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C3B9C2231A
-	for <iommu@lists.linux.dev>; Wed, 11 Oct 2023 18:22:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0DC113A29D
+	for <iommu@lists.linux.dev>; Wed, 11 Oct 2023 19:34:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="mUMjEJvE"
-Received: by mail-pj1-f41.google.com with SMTP id 98e67ed59e1d1-27d1aee5aa1so66907a91.0
-        for <iommu@lists.linux.dev>; Wed, 11 Oct 2023 11:22:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1697048525; x=1697653325; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=6hN3Y1Gx/7diunP62IVxUnXD4EF9Jlv9k/rCp+joDrQ=;
-        b=mUMjEJvEYY5aKXpONX4Rg6GNkQ9JPI1A4WD1xUjVK8ADVqn0//np/xKqaswVhduWvQ
-         UNT/0/2ajBVQtUl5RK5SsUOoWSjAMzQkwbLAFAijDy/rcjfQ+vnqW1Bw0GO6UfVYpVfm
-         2UOHfl3+wW1A4IOug31by41HDzqGqtksDp8jJvU6fV42Sqri+snaFBp8d/VugILl48OI
-         6UfrB8zDm5pcr6ZVtEYZRGvuhopFEiuw7buJ8iWRFXm9jNWNRGuGvgbWR/+ZuwjMbQky
-         TaYta0id27WDUVq9h7JXSwcX4votkl27Nq9RdQL3KNZhFt3PI5rkVzBzBbPjww6EYfCL
-         IYrA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1697048525; x=1697653325;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=6hN3Y1Gx/7diunP62IVxUnXD4EF9Jlv9k/rCp+joDrQ=;
-        b=I3w7sbqYuqL+XEHLv480iSQt9SSovblGGmv9Syt6Id4+Ur/rP38bOJHFiqg4mZv2Oy
-         g6JOmBc/VpY9Mdj+2RC3oXguwjDYlSrFCXLgomME6WCOwFOozp6W/Y6wWa/MitSWs+Xw
-         a4a2hao+l2LmEA5AGNaESabZ4dr2RL+Q1sHMVC9q3fYMaSk9xRfhgPTE43COAMExsUW8
-         vliEj5CsRxEiNTuEP8N//eklfPmiL264167xW8S0NCKQJnINaFF5sVn7EeT00PngN8ZC
-         gUIYFoyDR/GdDgwqxNep0rU/L5F+typ+KCcnx/2h070f3SFjBm14rOMZ4ay3hJNzQwsh
-         c/Ag==
-X-Gm-Message-State: AOJu0YzJBuUB1SpMW6L/KH8QTrkId96lRYR6cG172hq+40P+uMwqDlqm
-	UE2nKyms5u4Vy6JuYwE0Tmw=
-X-Google-Smtp-Source: AGHT+IE5i9kcTlfZR2H5tYKcfbjlJT+Ckal6PZYpU1eGohJyt0+C8lji4HPCyFEuAw/5DTaKt+dj2g==
-X-Received: by 2002:a17:90a:348b:b0:27d:c5b:747c with SMTP id p11-20020a17090a348b00b0027d0c5b747cmr2765992pjb.2.1697048525371;
-        Wed, 11 Oct 2023 11:22:05 -0700 (PDT)
-Received: from ?IPV6:2001:df0:0:200c:298e:308c:8339:ebb8? ([2001:df0:0:200c:298e:308c:8339:ebb8])
-        by smtp.gmail.com with ESMTPSA id e5-20020aa78c45000000b00692acfc4b3csm10246601pfd.136.2023.10.11.11.22.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 11 Oct 2023 11:22:04 -0700 (PDT)
-Message-ID: <12c7b0db-938c-9ca4-7861-dd703a83389a@gmail.com>
-Date: Thu, 12 Oct 2023 07:21:52 +1300
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="WMXZjq5P"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=AmGLZ1FRqC4GpkfR2fYITFLMBQss02FNXipJtXSOvm3BWlL/4Jv2+nc0UNbOB4p2EXz5sxgwQNZG8uI2ASNBeBStwlQPOWAIu1u02TShXCqj/nlpzCyWLyeqZIv5S7JGAdjN92p9pWZPgzhBLVTdVuHQhO4RbZcAqN3j71Y+z5Zi+ivHEwDwQsm1LqI+aqtTmOj6D2QJ31/71EN1qakL5PepH3Ad3ZerYGMJ8z7jgkah9NQQNGwTbxEEdXc3qi7bE65oymGTq4WMSKaQKdp7dOT8uSy/3GLT7etHlqqsAx/meL6zt34Ue0cyD348lBToAwsUO+DZOdOt1fQNwlMF5w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=iCuLorx78KVrEjTb04MuaM0aK+svKG9hJ2gE4LlMkHI=;
+ b=AqN2AZ3NQbUaegyRMqDH0xlxjap8aNflCy8GKJwyBkfOfyyXrBpiukD4qdKbMrJop7x8hyHOMJ3Om3mzCsFtc9b52FzzX61Y+6tpzr6PaUeniIpwqpHxCCt2sPakGLDST8fTcEnqvyQqajtgbkoB8gsNIxu0Ps5IMn9fIYwyf9PdUnbOH7dfGSbfMNOVIbDG0Z89v1riJ7ujjJTTaFvOgX/43jPpyLq/BDAoE8OZyrGCq6wX82o+cLRzKtTYEEpe9/yHIE41WELbObDnSN/iUCYafY4w9h6uePsCdVLUjTb3QLNi9Uh5ak4xVhHoaZEiOG9SyQlCkWNH5aIs6McjlQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.160) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=iCuLorx78KVrEjTb04MuaM0aK+svKG9hJ2gE4LlMkHI=;
+ b=WMXZjq5P13i1ytQUyznr1jfPAPzrajUriC+qs7qFJd/MwW+YEq+JVQc8FnFNpkIVHJhZhqbYT3bGUMi37NOvGw3GhIhkprHw7qlgrfsvBkdRZISNRFX0I+TS/M5HtW2pM8jhVTQQDrCdhgdxePpiwRWjxDi2yauG7Iy1CDa520ZyH1awdPSc9UkrC/1Hmp2YtVrCAVWIcYukDryNOXTL0JkuyhXkt5P7d9V+v/J3EpxLkmN1qOMd8hffR2HlTsLaH5WoFUc9VGtF5sBCgg5l2iZ5t3qpgxdsEWYPzvQ6hOmB98P2GH1Sj5BCGRk6n1CG8k5ewWHwde6I4vQBQi0FUg==
+Received: from BLAPR03CA0096.namprd03.prod.outlook.com (2603:10b6:208:32a::11)
+ by CYXPR12MB9425.namprd12.prod.outlook.com (2603:10b6:930:dc::5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6863.38; Wed, 11 Oct
+ 2023 19:34:09 +0000
+Received: from MN1PEPF0000ECD8.namprd02.prod.outlook.com
+ (2603:10b6:208:32a:cafe::62) by BLAPR03CA0096.outlook.office365.com
+ (2603:10b6:208:32a::11) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6886.27 via Frontend
+ Transport; Wed, 11 Oct 2023 19:34:09 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ MN1PEPF0000ECD8.mail.protection.outlook.com (10.167.242.137) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6838.22 via Frontend Transport; Wed, 11 Oct 2023 19:34:09 +0000
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by mail.nvidia.com
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Wed, 11 Oct
+ 2023 12:33:30 -0700
+Received: from rnnvmail205.nvidia.com (10.129.68.10) by rnnvmail202.nvidia.com
+ (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Wed, 11 Oct
+ 2023 12:33:29 -0700
+Received: from Asurada-Nvidia (10.127.8.10) by mail.nvidia.com (10.129.68.10)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41 via Frontend
+ Transport; Wed, 11 Oct 2023 12:33:29 -0700
+Date: Wed, 11 Oct 2023 12:33:27 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Jason Gunthorpe <jgg@nvidia.com>, Tina Zhang <tina.zhang@intel.com>
+CC: Kevin Tian <kevin.tian@intel.com>, Lu Baolu <baolu.lu@linux.intel.com>,
+	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>, Vasant Hegde
+	<vasant.hegde@amd.com>
+Subject: Re: [v6 PATCH 4/5] iommu: Support mm PASID 1:n with sva domains
+Message-ID: <ZSb4h+I/IKHjVKLK@Asurada-Nvidia>
+References: <20231011065132.102676-1-tina.zhang@intel.com>
+ <20231011065132.102676-5-tina.zhang@intel.com>
+ <20231011123910.GD55194@ziepe.ca>
+ <ba9ed927-0672-4252-9cfd-c43febf68d49@intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.11.0
-Subject: Re: [PATCH 5/6] net: fec: use dma_alloc_noncoherent for m532x
-Content-Language: en-US
-To: Greg Ungerer <gerg@linux-m68k.org>, Christoph Hellwig <hch@lst.de>
-Cc: Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
- Marek Szyprowski <m.szyprowski@samsung.com>,
- Geert Uytterhoeven <geert@linux-m68k.org>, Wei Fang <wei.fang@nxp.com>,
- Shenwei Wang <shenwei.wang@nxp.com>, Clark Wang <xiaoning.wang@nxp.com>,
- NXP Linux Team <linux-imx@nxp.com>, linux-m68k@lists.linux-m68k.org,
- netdev@vger.kernel.org, Jim Quinlan <james.quinlan@broadcom.com>
-References: <20231009074121.219686-1-hch@lst.de>
- <20231009074121.219686-6-hch@lst.de>
- <ea608718-8a50-4f87-aecf-fc100d283fe8@arm.com>
- <0299895c-24a5-4bd4-b7a4-dc50cc21e3d8@linux-m68k.org>
- <20231011055213.GA1131@lst.de>
- <cff2d9f0-4719-4b88-8ed5-68c8093bcebf@linux-m68k.org>
-From: Michael Schmitz <schmitzmic@gmail.com>
-In-Reply-To: <cff2d9f0-4719-4b88-8ed5-68c8093bcebf@linux-m68k.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <ba9ed927-0672-4252-9cfd-c43febf68d49@intel.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: MN1PEPF0000ECD8:EE_|CYXPR12MB9425:EE_
+X-MS-Office365-Filtering-Correlation-Id: e09db2d0-24a0-4c5d-3aed-08dbca910a56
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	fFoowfda2izRTt7FUf8S1HGfT1csQHP72JcWyUBmNoj5YN2IGbfoKDaqabHHG0mlVw+dMBpcSfeYQX5eSX0aSaTu6N2fQUF2cTmQrMvdV4YruKJmjuD6r94TJH64TEd0MvZxiJAoqeTcxjTGFf7EQLJkMkIBxQ52ShsoufhSSuwCAX+SoNKUyHPWEY+phPIDy0tJBN92QofbCEnVj1VMh9gcrQxGm5FoikEKBW+9eS7MMJ3N42yMqajPS18AgmdljlY6QjDsvfkHbvpMRlCuQBzUdDZm7KpkX6vSsDDhMlUr9GHhwnqY7JMkmRFg5BtmNKkpbyRrNM/I+ylCGlV2+ohk0uljnSdltECQ0B9s8nlTNaH9uX27vFMzo5bj5XxuvUm8YxPZfFBU88obuK8+T8fDnTQC5nXRbMIHNKyeIUZQkZ4eVQ60V4bNXKW9KOrgx/nh5htEtUBEa1QNcyq6Ul5AYNb7BcJoXeHG5mhlK04mVnpx3SJnIDsASVVyhUiMAOh7QlmLORDwwI6x2/8WsG1oNYGGM2Ihi/Dtu91xhu78v0myQ6BJ1NP/OSTokV+E9LTHtq9CBBVa4ZRg1fex10r2UFa1ysOyfL9oxIr2drcV7YxUDTew85eDjLXHHv8lLucLgNJvW+sz4/9sEbhYaau7/Tul8QsKZh00AiAQoeoIyj6eflmSsIcxeT4Fu1cV2nwdxCiqpxZKc6etgOusBqn2JL5H3133gcpsoywLYrVQgPYdGUNa3wP5p9QwQynA
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230031)(4636009)(346002)(396003)(39860400002)(376002)(136003)(230922051799003)(451199024)(186009)(1800799009)(82310400011)(64100799003)(36840700001)(46966006)(40470700004)(40460700003)(70586007)(82740400003)(316002)(83380400001)(54906003)(40480700001)(356005)(9686003)(70206006)(336012)(7636003)(26005)(426003)(53546011)(47076005)(478600001)(110136005)(2906002)(5660300002)(41300700001)(8676002)(8936002)(4326008)(55016003)(86362001)(36860700001)(33716001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Oct 2023 19:34:09.3517
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: e09db2d0-24a0-4c5d-3aed-08dbca910a56
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	MN1PEPF0000ECD8.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CYXPR12MB9425
 
-Hi Greg,
+On Wed, Oct 11, 2023 at 09:26:12PM +0800, Tina Zhang wrote:
+> On 10/11/23 20:39, Jason Gunthorpe wrote:
+> > On Wed, Oct 11, 2023 at 02:51:31PM +0800, Tina Zhang wrote:
+> > 
+> > > diff --git a/kernel/fork.c b/kernel/fork.c
+> > > index 3b6d20dfb9a8..985403a7a747 100644
+> > > --- a/kernel/fork.c
+> > > +++ b/kernel/fork.c
+> > > @@ -1277,7 +1277,6 @@ static struct mm_struct *mm_init(struct mm_struct *mm, struct task_struct *p,
+> > >      mm_init_cpumask(mm);
+> > >      mm_init_aio(mm);
+> > >      mm_init_owner(mm, p);
+> > > -    mm_pasid_init(mm);
+> > >      RCU_INIT_POINTER(mm->exe_file, NULL);
+> > >      mmu_notifier_subscriptions_init(mm);
+> > >      init_tlb_flush_pending(mm);
+> > 
+> > Nicolin debugged his crash report last night and sent me the details.
+> > 
+> > This hunk is the cause of the bug that Nicolin reported.
+> > 
+> > The dup_mm() flow does:
+> > 
+> > static struct mm_struct *dup_mm(struct task_struct *tsk,
+> >                               struct mm_struct *oldmm)
+> > {
+> >       struct mm_struct *mm;
+> >       int err;
+> > 
+> >       mm = allocate_mm();
+> >       if (!mm)
+> >               goto fail_nomem;
+> > 
+> >       memcpy(mm, oldmm, sizeof(*mm));
+> > 
+> >       if (!mm_init(mm, tsk, mm->user_ns))
+> >               goto fail_nomem;
+> > 
+> > It is essential that mm_pasid_init() zero the new pointer otherwise,
+> > due to the memcpy, after a fork two mm structs will point to the same
+> > thing and one will UAF/doube free.
+> Good catch.
+> 
+> Thanks,
+> -Tina
+> > 
+> > Keep mm_pasid_init() and add zeroing the new pointer to it.
 
-On 12/10/23 02:09, Greg Ungerer wrote:
->
-> I think this needs to be CONFIG_COLDFIRE is set and none of 
-> CONFIG_HAVE_CACHE_CB or
-> CONFIG_CACHE_D or CONFIG_CACHE_BOTH are set.
->
->
->
->> in the fec driver do the alloc_noncoherent and global cache flush
->> hack if:
->>
->> COMFIG_COLDFIRE && (CONFIG_CACHE_D || CONFIG_CACHE_BOTH)
->
-> And then this becomes:
->
-> CONFIG_COLDFIRE && (CONFIG_HAVE_CACHE_CB || CONFIG_CACHE_D || 
-> CONFIG_CACHE_BOTH)
+Yea, testing with this sees no more WARN_ON:
 
-You appear to have dropped a '!' there ...
+---------------------------------------------------------
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 3d782fd0f485..4bc3c49cdaf9 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -1208,2 +1208,6 @@ static inline bool tegra_dev_iommu_get_stream_id(struct device *dev, u32 *stream
+ #ifdef CONFIG_IOMMU_SVA
++static inline void mm_pasid_init(struct mm_struct *mm)
++{
++	mm->iommu_mm = NULL;
++}
+ static inline bool mm_valid_pasid(struct mm_struct *mm)
+@@ -1240,2 +1244,3 @@ static inline u32 iommu_sva_get_pasid(struct iommu_sva *handle)
+ }
++static inline void mm_pasid_init(struct mm_struct *mm) {}
+ static inline bool mm_valid_pasid(struct mm_struct *mm) { return false; }
+diff --git a/kernel/fork.c b/kernel/fork.c
+index f06392dd1ca8..d2e12b6d2b18 100644
+--- a/kernel/fork.c
++++ b/kernel/fork.c
+@@ -1276,2 +1276,3 @@ static struct mm_struct *mm_init(struct mm_struct *mm, struct task_struct *p,
+ 	mm_init_owner(mm, p);
++	mm_pasid_init(mm);
+ 	RCU_INIT_POINTER(mm->exe_file, NULL);
+---------------------------------------------------------
 
-Cheers,
+I'll confirm with v7 too.
 
-     Michael
-
-
-
+Thanks
+Nicolin
