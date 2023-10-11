@@ -1,15 +1,15 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A8ED639925
-	for <iommu@lists.linux.dev>; Wed, 11 Oct 2023 18:15:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 95C9F3993C
+	for <iommu@lists.linux.dev>; Wed, 11 Oct 2023 18:15:05 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org; dkim=none
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A58CD14BF;
-	Wed, 11 Oct 2023 11:15:44 -0700 (PDT)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 43AB01516;
+	Wed, 11 Oct 2023 11:15:46 -0700 (PDT)
 Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 129F93F5A1;
-	Wed, 11 Oct 2023 11:15:02 -0700 (PDT)
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id A50F23F5A1;
+	Wed, 11 Oct 2023 11:15:04 -0700 (PDT)
 From: Robin Murphy <robin.murphy@arm.com>
 To: joro@8bytes.org,
 	will@kernel.org
@@ -17,9 +17,9 @@ Cc: iommu@lists.linux.dev,
 	jgg@nvidia.com,
 	baolu.lu@linux.intel.com,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH v5 2/7] iommu: Decouple iommu_present() from bus ops
-Date: Wed, 11 Oct 2023 19:14:49 +0100
-Message-Id: <6711338e24dd1edfd02187f25cf40d8622cefdb2.1697047261.git.robin.murphy@arm.com>
+Subject: [PATCH v5 3/7] iommu: Validate that devices match domains
+Date: Wed, 11 Oct 2023 19:14:50 +0100
+Message-Id: <4e8bda33aac4021b444e40389648deccf61c1f37.1697047261.git.robin.murphy@arm.com>
 X-Mailer: git-send-email 2.39.2.101.g768bb238c484.dirty
 In-Reply-To: <cover.1697047261.git.robin.murphy@arm.com>
 References: <cover.1697047261.git.robin.murphy@arm.com>
@@ -31,60 +31,78 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Much as I'd like to remove iommu_present(), the final remaining users
-are proving stubbornly difficult to clean up, so kick that can down the
-road and just rework it to preserve the current behaviour without
-depending on bus ops. Since commit 57365a04c921 ("iommu: Move bus setup
-to IOMMU device registration"), any registered IOMMU instance is already
-considered "present" for every entry in iommu_buses, so it's simply a
-case of validating the bus and checking we have at least once IOMMU.
+Before we can allow drivers to coexist, we need to make sure that one
+driver's domain ops can't misinterpret another driver's dev_iommu_priv
+data. To that end, add a token to the domain so we can remember how it
+was allocated - for now this may as well be the device ops, since they
+still correlate 1:1 with drivers. We can trust ourselves for internal
+default domain attachment, so add checks to cover all the public attach
+interfaces.
 
+Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
 Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 
 ---
 
-v3: Tweak to use the ops-based check rather than group-based, to
-    properly match the existing behaviour
-v4: Just look for IOMMU instances instead of managed devices
+v4: Cover iommu_attach_device_pasid() as well, and improve robustness
+    against theoretical attempts to attach a noiommu group.
 ---
- drivers/iommu/iommu.c | 21 ++++++++++++++++++++-
- 1 file changed, 20 insertions(+), 1 deletion(-)
+ drivers/iommu/iommu.c | 10 ++++++++++
+ include/linux/iommu.h |  1 +
+ 2 files changed, 11 insertions(+)
 
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 5a3ce293a5de..7bb92e8b7a49 100644
+index 7bb92e8b7a49..578292d3b152 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
-@@ -2000,9 +2000,28 @@ int bus_iommu_probe(const struct bus_type *bus)
- 	return 0;
- }
+@@ -2114,6 +2114,7 @@ static struct iommu_domain *__iommu_domain_alloc(const struct iommu_ops *ops,
+ 		return NULL;
  
-+/**
-+ * iommu_present() - make platform-specific assumptions about an IOMMU
-+ * @bus: bus to check
-+ *
-+ * Do not use this function. You want device_iommu_mapped() instead.
-+ *
-+ * Return: true if some IOMMU is present and aware of devices on the given bus;
-+ * in general it may not be the only IOMMU, and it may not have anything to do
-+ * with whatever device you are ultimately interested in.
-+ */
- bool iommu_present(const struct bus_type *bus)
+ 	domain->type = type;
++	domain->owner = ops;
+ 	/*
+ 	 * If not already set, assume all sizes by default; the driver
+ 	 * may override this later
+@@ -2279,10 +2280,16 @@ struct iommu_domain *iommu_get_dma_domain(struct device *dev)
+ static int __iommu_attach_group(struct iommu_domain *domain,
+ 				struct iommu_group *group)
  {
--	return bus->iommu_ops != NULL;
-+	bool ret = false;
++	struct device *dev;
 +
-+	for (int i = 0; i < ARRAY_SIZE(iommu_buses); i++) {
-+		if (iommu_buses[i] == bus) {
-+			spin_lock(&iommu_device_lock);
-+			ret = !list_empty(&iommu_device_list);
-+			spin_unlock(&iommu_device_lock);
-+		}
-+	}
-+	return ret;
- }
- EXPORT_SYMBOL_GPL(iommu_present);
+ 	if (group->domain && group->domain != group->default_domain &&
+ 	    group->domain != group->blocking_domain)
+ 		return -EBUSY;
  
++	dev = iommu_group_first_dev(group);
++	if (!dev_has_iommu(dev) || dev_iommu_ops(dev) != domain->owner)
++		return -EINVAL;
++
+ 	return __iommu_group_set_domain(group, domain);
+ }
+ 
+@@ -3480,6 +3487,9 @@ int iommu_attach_device_pasid(struct iommu_domain *domain,
+ 	if (!group)
+ 		return -ENODEV;
+ 
++	if (!dev_has_iommu(dev) || dev_iommu_ops(dev) != domain->owner)
++		return -EINVAL;
++
+ 	mutex_lock(&group->mutex);
+ 	curr = xa_cmpxchg(&group->pasid_array, pasid, NULL, domain, GFP_KERNEL);
+ 	if (curr) {
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 2d2802fb2c74..5c9560813d05 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -99,6 +99,7 @@ struct iommu_domain_geometry {
+ struct iommu_domain {
+ 	unsigned type;
+ 	const struct iommu_domain_ops *ops;
++	const struct iommu_ops *owner; /* Whose domain_alloc we came from */
+ 	unsigned long pgsize_bitmap;	/* Bitmap of page sizes in use */
+ 	struct iommu_domain_geometry geometry;
+ 	struct iommu_dma_cookie *iova_cookie;
 -- 
 2.39.2.101.g768bb238c484.dirty
 
