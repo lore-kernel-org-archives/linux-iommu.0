@@ -1,90 +1,112 @@
-Received: from mail-yb1-f173.google.com (mail-yb1-f173.google.com [209.85.219.173])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mail.z3ntu.xyz (mail.z3ntu.xyz [128.199.32.197])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 50B311EA8B
-	for <iommu@lists.linux.dev>; Wed, 11 Oct 2023 15:44:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED1073994A
+	for <iommu@lists.linux.dev>; Wed, 11 Oct 2023 18:08:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=z3ntu.xyz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=z3ntu.xyz
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="Bgt4lueu"
-Received: by mail-yb1-f173.google.com with SMTP id 3f1490d57ef6-d8195078f69so7544735276.3
-        for <iommu@lists.linux.dev>; Wed, 11 Oct 2023 08:44:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1697039077; x=1697643877; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=WoB38qVrfy0Z5NrFm6D5FEtkeSsKsFCNUumBknFNT7k=;
-        b=Bgt4lueuatD/0u4OxfATztjBv4oBcrFLskHTyzZJoMIaaSgvGpJJHxu6q5Ss8o2002
-         w3ZDXs74w85b07Azcb48OijG/DBxhT6dPCG7jgl+m6pcLzbImyQQk9Irfc+8Y2961r0O
-         lRddyX9ZWd8QN9+UYCsvjl1cm5ykbV+9VXRi3GVYNOIgwX7xDx6IMVLXQkyI5c7VYvST
-         rTcJZypaZeFPIqH86E/+lmBCTY2AfiWfzRjRYHubjQYXAEvU385goM+6Tc/IdfmgE/OB
-         CzacNiIvXYkRgZU2bb4bC/hpCJL4bp+zK0vBYW8S50/Nez94GQahrE5MCk+tH85D12Vv
-         Bniw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1697039077; x=1697643877;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=WoB38qVrfy0Z5NrFm6D5FEtkeSsKsFCNUumBknFNT7k=;
-        b=lNh9OYEBQztEDutwxmMi9per+Np50ynK46Hgu1xJFBOHGTDW8xYzaBRmflRv1HZbSV
-         zFHN5TS1kHg+0NeooxPPvaiH65vTsMz7O/ITnj3W5DgDFlg2ItFQb2JERmWwATnbthY1
-         5PlHmZdHN8fpZ0PAiZftXDUciPnLjCa01wGMwk/6/qXEMmVIERUkHJCJLiCfuMPUGV5h
-         RGXTk/UVDzwiQS9EIYSauhrnWXkVW/QeQIJ05P4jjgBAWJdYEQKscMHrhbTcJumlMtGK
-         b9qf+/s75iXhHK2kQ1gplyP3q/QJn2TPeQMWdXRDCPnCYXyym/RlOf0bDQElc6gg+8co
-         f+pA==
-X-Gm-Message-State: AOJu0Yz1PpAdlLh9Sat5vM7H2zk40I+OfNfh6sWnwJJENUwfnyvKfK4n
-	xB8XpNhcj30OaagUR+RU1LOoXg==
-X-Google-Smtp-Source: AGHT+IGPRIevfR60iyGshI42VdKzgNUrCL0njQ43RhfaylkSDbzn1Q4Db90GZVIb3bqd0dkp+tUWcQ==
-X-Received: by 2002:a05:6902:202:b0:d91:fdb:afd4 with SMTP id j2-20020a056902020200b00d910fdbafd4mr18990169ybs.16.1697039077048;
-        Wed, 11 Oct 2023 08:44:37 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-26-201.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.26.201])
-        by smtp.gmail.com with ESMTPSA id x8-20020a0ce0c8000000b00658266be23fsm5775096qvk.41.2023.10.11.08.44.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Oct 2023 08:44:36 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1qqbNz-000hH9-N4;
-	Wed, 11 Oct 2023 12:44:35 -0300
-Date: Wed, 11 Oct 2023 12:44:35 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Tina Zhang <tina.zhang@intel.com>
-Cc: Kevin Tian <kevin.tian@intel.com>, Lu Baolu <baolu.lu@linux.intel.com>,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [v6 PATCH 2/5] iommu: Add mm_get_enqcmd_pasid() helper function
-Message-ID: <20231011154435.GE55194@ziepe.ca>
-References: <20231011065132.102676-1-tina.zhang@intel.com>
- <20231011065132.102676-3-tina.zhang@intel.com>
+	dkim=pass (1024-bit key) header.d=z3ntu.xyz header.i=@z3ntu.xyz header.b="kLRSZ4cv"
+Received: from [192.168.178.23] (k10064.upc-k.chello.nl [62.108.10.64])
+	by mail.z3ntu.xyz (Postfix) with ESMTPSA id 80CDBC639E;
+	Wed, 11 Oct 2023 17:57:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=z3ntu.xyz; s=z3ntu;
+	t=1697047053; bh=fz91rxvql77qr9tMmn1NOBTiPcKPztIjFo5x3BgCYa0=;
+	h=From:Date:Subject:To:Cc;
+	b=kLRSZ4cvQ+/OfOwa9s6WqbjXcAx1pYKF5pYS0O/hb0MV7YGMz+rlqExYqw6JIuWTN
+	 UUy8DLgQI5pDlNAj9bTHZEjcvjcJykhFE821q3paKqR58k3sSvqaWRGEWKlT8lNEhj
+	 DmJLJsP7OurtMLMrZSH2092cBwQL49F3gxu7lfu0=
+From: Luca Weiss <luca@z3ntu.xyz>
+Date: Wed, 11 Oct 2023 19:57:26 +0200
+Subject: [PATCH] iommu/qcom: restore IOMMU state if needed
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20231011065132.102676-3-tina.zhang@intel.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20231011-msm8953-iommu-restore-v1-1-48a0c93809a2@z3ntu.xyz>
+X-B4-Tracking: v=1; b=H4sIAAXiJmUC/x3MQQ6CQAxG4auQrm1CZ0IAr2JcIPyjXQxjWjEmh
+ Ls7Yfkt3tvJYQqna7OT4auuZa2QS0Pza1qfYF2qKbQhSivC2fMwdpG15LyxwT/FwGl6zAFREtB
+ Tbd+GpL/ze7sfxx8DsOMqZwAAAA==
+To: ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org, 
+ Rob Clark <robdclark@gmail.com>, Will Deacon <will@kernel.org>, 
+ Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>
+Cc: iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org, 
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
+ Vladimir Lypak <vladimir.lypak@gmail.com>, Luca Weiss <luca@z3ntu.xyz>
+X-Mailer: b4 0.12.3
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1945; i=luca@z3ntu.xyz;
+ h=from:subject:message-id; bh=7t+7cwQLSRo2oYCkBswJGXelQGziACs1O48hSiYmsM4=;
+ b=owEBbQKS/ZANAwAIAXLYQ7idTddWAcsmYgBlJuIMkTrnEcWE4KqdSmG3hMW26WWFXTvQfrfvu
+ gizQyswB0CJAjMEAAEIAB0WIQQ5utIvCCzakboVj/py2EO4nU3XVgUCZSbiDAAKCRBy2EO4nU3X
+ Vp2jD/oCIiYMI9Gil0+BaHzQDQWzcmZEdryBvCxe7aC8GDfuoj5QkCU2sluK7/LkrEVa0MV+nMA
+ bmixiWu/ZKR7ZtvUk/8WSMGiqLAUNSNz1Ds5SsOwbrWuXhI///gNtZvJgv9WxZyVUt7Q2Jh4qiy
+ ddlKvO3T+9KwGZMNYj5/vopBweXe7ezmB07/JQMj4vbgpPzsDbxzTNl9WHHs5c1wlTmAK/w9laE
+ xMybXFkTZhMzH4IRJoRIrq09WDWf6c5CzSR0fuCftbsyagRDImLlDhzjDUMz96mxOx0qizBiVlS
+ tUMjnWqm7TgOIXFdug3zAo1+SLHlRnhGE+Y/zG2ObdltYKVhQ86RUcNlRh/HId3pdsr+4yjQ37n
+ jRAKIeD0IYkJZihKDsiPqwHhf6IaARmpfVeafrcFFpmnfNNh2qXIkJZF8A6qc/oIg3t3Fg54ZY5
+ sSohEVTxoK9vlVmkuaHGahcMEIQHvg76KyLhIIdjn9cZSGEtuo/ooy4UwduZ++vQfyl6wJEhtKa
+ CvFthJUvfN5MBavz7My4wY/faioQAbSS5PQfdbqc7PiT6cHp12p5F18ugc+zxgP0sEaQfQ16tUn
+ 5MTKxHAISqkCLQEpb8gyxf0tzRBV6H6X+HGCpg9Dn/zCs1jN7Ylh6QBsaz61wTIhT4QDTekuvG0
+ 1eCGezSsfC5QyRg==
+X-Developer-Key: i=luca@z3ntu.xyz; a=openpgp;
+ fpr=BD04DA24C971B8D587B2B8D7FAF69CF6CD2D02CD
 
-On Wed, Oct 11, 2023 at 02:51:29PM +0800, Tina Zhang wrote:
-> mm_get_enqcmd_pasid() is for getting enqcmd pasid value.
-> 
-> The motivation is to replace mm->pasid with an iommu private data
-> structure that is introduced in a later patch.
+From: Vladimir Lypak <vladimir.lypak@gmail.com>
 
-When you do v7 how about:
+If the IOMMU has a power domain then some state will be lost in
+qcom_iommu_suspend and TZ will reset device if we don't call
+qcom_scm_restore_sec_cfg before accessing it again.
 
-===
+Signed-off-by: Vladimir Lypak <vladimir.lypak@gmail.com>
+[luca@z3ntu.xyz: reword commit message a bit]
+Signed-off-by: Luca Weiss <luca@z3ntu.xyz>
+---
+This patch is required for MSM8953 GPU IOMMU.
 
-mm_get_enqcmd_pasid() should be used by architecture code and closely
-related to learn the PASID value that the x86 ENQCMD operation should
-use for the mm.
+See also downstream sources:
+https://git.codelinaro.org/clo/la/kernel/msm-4.9/-/commit/f8464885dafc5b780b85de29d92a08c692d3a4d0
+https://git.codelinaro.org/clo/la/kernel/msm-4.9/-/blob/LA.UM.10.6.2.r1-02500-89xx.0/drivers/iommu/arm-smmu.c#L4221-4225
 
-For the moment SMMUv3 uses this without any connection to ENQCMD, it
-will be cleaned up similar to how the prior patch made VT-d use the
-PASID argument of set_dev_pasid().
+Since the compatibles provided by this driver (qcom,msm-iommu-v*) is
+only used on msm8916, msm8939 and msm8953, and both 8916 and 8939 don't
+have a power domain on the IOMMU, I also don't expect anything to break
+there.
+---
+ drivers/iommu/arm/arm-smmu/qcom_iommu.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
-The motivation is to replace mm->pasid with an iommu private data
-structure that is introduced in a later patch.
+diff --git a/drivers/iommu/arm/arm-smmu/qcom_iommu.c b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
+index 97b2122032b2..67abeb02cf53 100644
+--- a/drivers/iommu/arm/arm-smmu/qcom_iommu.c
++++ b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
+@@ -900,8 +900,16 @@ static void qcom_iommu_device_remove(struct platform_device *pdev)
+ static int __maybe_unused qcom_iommu_resume(struct device *dev)
+ {
+ 	struct qcom_iommu_dev *qcom_iommu = dev_get_drvdata(dev);
++	int ret;
++
++	ret = clk_bulk_prepare_enable(CLK_NUM, qcom_iommu->clks);
++	if (ret < 0)
++		return ret;
++
++	if (dev->pm_domain)
++		return qcom_scm_restore_sec_cfg(qcom_iommu->sec_id, 0);
+ 
+-	return clk_bulk_prepare_enable(CLK_NUM, qcom_iommu->clks);
++	return ret;
+ }
+ 
+ static int __maybe_unused qcom_iommu_suspend(struct device *dev)
 
-===
+---
+base-commit: 2933a1156742d8c47550493a77af8e2d81cf3c84
+change-id: 20231011-msm8953-iommu-restore-fabc2e31fee7
 
-Jason
+Best regards,
+-- 
+Luca Weiss <luca@z3ntu.xyz>
+
