@@ -1,112 +1,70 @@
-Received: from mail.z3ntu.xyz (mail.z3ntu.xyz [128.199.32.197])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED1073994A
-	for <iommu@lists.linux.dev>; Wed, 11 Oct 2023 18:08:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=z3ntu.xyz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=z3ntu.xyz
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=z3ntu.xyz header.i=@z3ntu.xyz header.b="kLRSZ4cv"
-Received: from [192.168.178.23] (k10064.upc-k.chello.nl [62.108.10.64])
-	by mail.z3ntu.xyz (Postfix) with ESMTPSA id 80CDBC639E;
-	Wed, 11 Oct 2023 17:57:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=z3ntu.xyz; s=z3ntu;
-	t=1697047053; bh=fz91rxvql77qr9tMmn1NOBTiPcKPztIjFo5x3BgCYa0=;
-	h=From:Date:Subject:To:Cc;
-	b=kLRSZ4cvQ+/OfOwa9s6WqbjXcAx1pYKF5pYS0O/hb0MV7YGMz+rlqExYqw6JIuWTN
-	 UUy8DLgQI5pDlNAj9bTHZEjcvjcJykhFE821q3paKqR58k3sSvqaWRGEWKlT8lNEhj
-	 DmJLJsP7OurtMLMrZSH2092cBwQL49F3gxu7lfu0=
-From: Luca Weiss <luca@z3ntu.xyz>
-Date: Wed, 11 Oct 2023 19:57:26 +0200
-Subject: [PATCH] iommu/qcom: restore IOMMU state if needed
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6FA7F39925
+	for <iommu@lists.linux.dev>; Wed, 11 Oct 2023 18:15:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Authentication-Results: smtp.subspace.kernel.org; dkim=none
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 48EBF14BF;
+	Wed, 11 Oct 2023 11:15:39 -0700 (PDT)
+Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id A87B23F5A1;
+	Wed, 11 Oct 2023 11:14:57 -0700 (PDT)
+From: Robin Murphy <robin.murphy@arm.com>
+To: joro@8bytes.org,
+	will@kernel.org
+Cc: iommu@lists.linux.dev,
+	jgg@nvidia.com,
+	baolu.lu@linux.intel.com,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH v5 0/7] iommu: Retire bus ops
+Date: Wed, 11 Oct 2023 19:14:47 +0100
+Message-Id: <cover.1697047261.git.robin.murphy@arm.com>
+X-Mailer: git-send-email 2.39.2.101.g768bb238c484.dirty
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20231011-msm8953-iommu-restore-v1-1-48a0c93809a2@z3ntu.xyz>
-X-B4-Tracking: v=1; b=H4sIAAXiJmUC/x3MQQ6CQAxG4auQrm1CZ0IAr2JcIPyjXQxjWjEmh
- Ls7Yfkt3tvJYQqna7OT4auuZa2QS0Pza1qfYF2qKbQhSivC2fMwdpG15LyxwT/FwGl6zAFREtB
- Tbd+GpL/ze7sfxx8DsOMqZwAAAA==
-To: ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org, 
- Rob Clark <robdclark@gmail.com>, Will Deacon <will@kernel.org>, 
- Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>
-Cc: iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org, 
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
- Vladimir Lypak <vladimir.lypak@gmail.com>, Luca Weiss <luca@z3ntu.xyz>
-X-Mailer: b4 0.12.3
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1945; i=luca@z3ntu.xyz;
- h=from:subject:message-id; bh=7t+7cwQLSRo2oYCkBswJGXelQGziACs1O48hSiYmsM4=;
- b=owEBbQKS/ZANAwAIAXLYQ7idTddWAcsmYgBlJuIMkTrnEcWE4KqdSmG3hMW26WWFXTvQfrfvu
- gizQyswB0CJAjMEAAEIAB0WIQQ5utIvCCzakboVj/py2EO4nU3XVgUCZSbiDAAKCRBy2EO4nU3X
- Vp2jD/oCIiYMI9Gil0+BaHzQDQWzcmZEdryBvCxe7aC8GDfuoj5QkCU2sluK7/LkrEVa0MV+nMA
- bmixiWu/ZKR7ZtvUk/8WSMGiqLAUNSNz1Ds5SsOwbrWuXhI///gNtZvJgv9WxZyVUt7Q2Jh4qiy
- ddlKvO3T+9KwGZMNYj5/vopBweXe7ezmB07/JQMj4vbgpPzsDbxzTNl9WHHs5c1wlTmAK/w9laE
- xMybXFkTZhMzH4IRJoRIrq09WDWf6c5CzSR0fuCftbsyagRDImLlDhzjDUMz96mxOx0qizBiVlS
- tUMjnWqm7TgOIXFdug3zAo1+SLHlRnhGE+Y/zG2ObdltYKVhQ86RUcNlRh/HId3pdsr+4yjQ37n
- jRAKIeD0IYkJZihKDsiPqwHhf6IaARmpfVeafrcFFpmnfNNh2qXIkJZF8A6qc/oIg3t3Fg54ZY5
- sSohEVTxoK9vlVmkuaHGahcMEIQHvg76KyLhIIdjn9cZSGEtuo/ooy4UwduZ++vQfyl6wJEhtKa
- CvFthJUvfN5MBavz7My4wY/faioQAbSS5PQfdbqc7PiT6cHp12p5F18ugc+zxgP0sEaQfQ16tUn
- 5MTKxHAISqkCLQEpb8gyxf0tzRBV6H6X+HGCpg9Dn/zCs1jN7Ylh6QBsaz61wTIhT4QDTekuvG0
- 1eCGezSsfC5QyRg==
-X-Developer-Key: i=luca@z3ntu.xyz; a=openpgp;
- fpr=BD04DA24C971B8D587B2B8D7FAF69CF6CD2D02CD
+Content-Transfer-Encoding: 8bit
 
-From: Vladimir Lypak <vladimir.lypak@gmail.com>
+v4: https://lore.kernel.org/linux-iommu/cover.1696253096.git.robin.murphy@arm.com/
 
-If the IOMMU has a power domain then some state will be lost in
-qcom_iommu_suspend and TZ will reset device if we don't call
-qcom_scm_restore_sec_cfg before accessing it again.
+Hi all,
 
-Signed-off-by: Vladimir Lypak <vladimir.lypak@gmail.com>
-[luca@z3ntu.xyz: reword commit message a bit]
-Signed-off-by: Luca Weiss <luca@z3ntu.xyz>
----
-This patch is required for MSM8953 GPU IOMMU.
+Really really hoping this is done now... same as v4 except I've
+rewritten patch #4 to be a lot less ambitious and not require any
+troublesome new reasoning.
 
-See also downstream sources:
-https://git.codelinaro.org/clo/la/kernel/msm-4.9/-/commit/f8464885dafc5b780b85de29d92a08c692d3a4d0
-https://git.codelinaro.org/clo/la/kernel/msm-4.9/-/blob/LA.UM.10.6.2.r1-02500-89xx.0/drivers/iommu/arm-smmu.c#L4221-4225
+Cheers,
+Robin.
 
-Since the compatibles provided by this driver (qcom,msm-iommu-v*) is
-only used on msm8916, msm8939 and msm8953, and both 8916 and 8939 don't
-have a power domain on the IOMMU, I also don't expect anything to break
-there.
----
- drivers/iommu/arm/arm-smmu/qcom_iommu.c | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/arm/arm-smmu/qcom_iommu.c b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-index 97b2122032b2..67abeb02cf53 100644
---- a/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-+++ b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-@@ -900,8 +900,16 @@ static void qcom_iommu_device_remove(struct platform_device *pdev)
- static int __maybe_unused qcom_iommu_resume(struct device *dev)
- {
- 	struct qcom_iommu_dev *qcom_iommu = dev_get_drvdata(dev);
-+	int ret;
-+
-+	ret = clk_bulk_prepare_enable(CLK_NUM, qcom_iommu->clks);
-+	if (ret < 0)
-+		return ret;
-+
-+	if (dev->pm_domain)
-+		return qcom_scm_restore_sec_cfg(qcom_iommu->sec_id, 0);
- 
--	return clk_bulk_prepare_enable(CLK_NUM, qcom_iommu->clks);
-+	return ret;
- }
- 
- static int __maybe_unused qcom_iommu_suspend(struct device *dev)
+Robin Murphy (7):
+  iommu: Factor out some helpers
+  iommu: Decouple iommu_present() from bus ops
+  iommu: Validate that devices match domains
+  iommu: Decouple iommu_domain_alloc() from bus ops
+  iommu/arm-smmu: Don't register fwnode for legacy binding
+  iommu: Retire bus ops
+  iommu: Clean up open-coded ownership checks
 
----
-base-commit: 2933a1156742d8c47550493a77af8e2d81cf3c84
-change-id: 20231011-msm8953-iommu-restore-fabc2e31fee7
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c |   3 -
+ drivers/iommu/arm/arm-smmu/arm-smmu.c       |  12 +-
+ drivers/iommu/arm/arm-smmu/qcom_iommu.c     |  16 +--
+ drivers/iommu/iommu.c                       | 143 +++++++++++++-------
+ drivers/iommu/mtk_iommu.c                   |   7 +-
+ drivers/iommu/mtk_iommu_v1.c                |   3 -
+ drivers/iommu/sprd-iommu.c                  |   8 +-
+ drivers/iommu/virtio-iommu.c                |   3 -
+ include/acpi/acpi_bus.h                     |   2 +
+ include/linux/device.h                      |   1 -
+ include/linux/device/bus.h                  |   5 -
+ include/linux/dma-map-ops.h                 |   1 +
+ include/linux/iommu.h                       |   1 +
+ 13 files changed, 108 insertions(+), 97 deletions(-)
 
-Best regards,
 -- 
-Luca Weiss <luca@z3ntu.xyz>
+2.39.2.101.g768bb238c484.dirty
 
