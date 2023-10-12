@@ -1,86 +1,87 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f180.google.com (mail-pl1-f180.google.com [209.85.214.180])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7869B17F5
-	for <iommu@lists.linux.dev>; Thu, 12 Oct 2023 14:50:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D81530FA8
+	for <iommu@lists.linux.dev>; Thu, 12 Oct 2023 16:10:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="AxzadzaU"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F0BAC433C8;
-	Thu, 12 Oct 2023 14:50:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1697122232;
-	bh=jTeKmCZozGobpMYGFZ7ihH4Bj3kZQ7OWdrTKoXPpUXk=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=AxzadzaU1JzcuT6x7gFq1FurH5mRJuOcU2qmQHxQBfW74V6/V8siyUHSjr1DBKIF9
-	 Fs9tOASWmW5NY58rcwavj4MCuMeDCCGNpAqtAKRVVBNHs2u3J0o9cMbekmDbi5vVTY
-	 +buqK6kVkQQSO1h/t1xoS6ksnN0E1OYXKOPKDjhpf8nvca8ucNeZwOnhhO6fCR1309
-	 FQ+MsqZ/fEEZ2pyhREESuyfCOqvtWl9OZi0QClJPWoY9juCuP0VVhNk3NJUOWl8PRd
-	 pin6131NgPK0cL5rtCYFQVxacSW7Gg19DGOU6M6EcBdY9nymA7IpSkOoJq3Ty6mpsX
-	 Pq1awmLX/SSvg==
-Date: Thu, 12 Oct 2023 15:50:26 +0100
-From: Will Deacon <will@kernel.org>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Michael Shavit <mshavit@google.com>, Joerg Roedel <joro@8bytes.org>,
-	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, nicolinc@nvidia.com,
-	jean-philippe@linaro.org, robin.murphy@arm.com,
-	Alistair Popple <apopple@nvidia.com>,
-	Dawei Li <set_pte_at@outlook.com>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	"Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Tomas Krcka <krckatom@amazon.de>
-Subject: Re: [PATCH v8 0/9] Refactor the SMMU's CD table ownership
-Message-ID: <20231012145025.GB12374@willie-the-truck>
-References: <20230915132051.2646055-1-mshavit@google.com>
- <20231011234848.GA257246@nvidia.com>
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="fcj5dpY5"
+Received: by mail-pl1-f180.google.com with SMTP id d9443c01a7336-1c894e4573bso9168225ad.0
+        for <iommu@lists.linux.dev>; Thu, 12 Oct 2023 09:10:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google; t=1697127013; x=1697731813; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=uywQQTLnXLWpXOPun4QKJKuWvTo48kWYaCdd1C3bRtY=;
+        b=fcj5dpY5m2yflkswXdigMOF1d5vznj4iIiX6wBQWPo0Ad1CZwHbVvxnSJorrFrJfD3
+         I3uYEriZYcF8GfzjPR1c7fLU5FppWtngAgiiVhwVFh/MaaVNmC97Gzueco7r1n4yrF82
+         DVVK+/dNyvOM8ZCDN5eFttdgO+94KMpvvtSzE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1697127013; x=1697731813;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=uywQQTLnXLWpXOPun4QKJKuWvTo48kWYaCdd1C3bRtY=;
+        b=K2LAFc+eD/X2BljGfpKlwuEvqMUqXN8HCR0ad380yy1cSI94rROre9F/hA1xhRglEY
+         5vz7MQKkFUopTYiNdzvIvAlNiYKNA0wU823bbRJHhXzTtRqJMakWpuT/I5h9Ec0gz+2K
+         PdNMkW4zdiAwe9LNECuI1dvHgrqAP3r9B3vJmn5eYNnuITFeKsD9RjkkxnbElkLATGAS
+         5nezMH2MpphuepHP9p/1kELucqxcsSYpcQTmY1dGfGt4BHNkDBINcGSJB7szW3fTKZZt
+         V+ZhN+BFLE/Dyi5vr757AOQBNK4jJiBHbCrMxaIl0MnmMXstDCkg9NlMIfKLxJRMhZjQ
+         b5bw==
+X-Gm-Message-State: AOJu0YzQtivVym6JA6/DdrMizzRbxcWtyUr4MRCIlpKm9HlcrpwQav7H
+	haAKDbWkKkQTEsyQIsQfUWFxcA==
+X-Google-Smtp-Source: AGHT+IE70nC8DSZzov+QUlaT8psAeyZAo6cLbH9AArJEY5B9saYS5UPiiNtcut6ioYKyhJakE+UGSQ==
+X-Received: by 2002:a17:903:120e:b0:1bb:c64f:9a5e with SMTP id l14-20020a170903120e00b001bbc64f9a5emr26657038plh.5.1697127012911;
+        Thu, 12 Oct 2023 09:10:12 -0700 (PDT)
+Received: from www.outflux.net (198-0-35-241-static.hfc.comcastbusiness.net. [198.0.35.241])
+        by smtp.gmail.com with ESMTPSA id f7-20020a17090274c700b001c72f51b84asm2177860plt.52.2023.10.12.09.10.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 12 Oct 2023 09:10:12 -0700 (PDT)
+From: Kees Cook <keescook@chromium.org>
+To: iommu@lists.linux.dev,
+	Joerg Roedel <jroedel@suse.de>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Vasant Hegde <vasant.hegde@amd.com>,
+	Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Cc: Kees Cook <keescook@chromium.org>,
+	"Gustavo A . R . Silva" <gustavoars@kernel.org>,
+	linux-hardening@vger.kernel.org,
+	kernel-janitors@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] hardening: x86: drop reference to removed config AMD_IOMMU_V2
+Date: Thu, 12 Oct 2023 09:10:07 -0700
+Message-Id: <169712700540.4491.11130004795723202092.b4-ty@chromium.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20231012045040.22088-1-lukas.bulwahn@gmail.com>
+References: <20231012045040.22088-1-lukas.bulwahn@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20231011234848.GA257246@nvidia.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 
-On Wed, Oct 11, 2023 at 08:48:48PM -0300, Jason Gunthorpe wrote:
-> On Fri, Sep 15, 2023 at 09:17:31PM +0800, Michael Shavit wrote:
-> > 
-> > Hi all,
-> > 
-> > This series refactors stage 1 domains so that they describe a single CD
-> > entry. These entries are now inserted into a CD table that is owned by
-> > the arm_smmu_master instead of the domain.
-> > This is conceptually cleaner and unblocks other features, such as
-> > attaching domains with PASID (for unmanaged/dma domains).
-> > 
-> > This patch series was originally part of a larger patch series that
-> > implemented the set_dev_pasid callback for non-SVA domains but is now
-> > split into a distinct series.
-> > 
-> > This patch series is also available on gerrit with Jean's SMMU test
-> > engine patches cherry-picked on top for testing:
-> > https://linux-review.googlesource.com/c/linux/kernel/git/torvalds/linux/+/24742/16
-> > 
-> > Thanks,
-> > Michael Shavit
-> > 
-> > Michael Shavit (9):
-> >   iommu/arm-smmu-v3: Move ctx_desc out of s1_cfg
-> >   iommu/arm-smmu-v3: Replace s1_cfg with cdtab_cfg
-> >   iommu/arm-smmu-v3: Encapsulate ctx_desc_cfg init in alloc_cd_tables
-> >   iommu/arm-smmu-v3: move stall_enabled to the cd table
-> >   iommu/arm-smmu-v3: Refactor write_ctx_desc
-> >   iommu/arm-smmu-v3: Move CD table to arm_smmu_master
-> >   iommu/arm-smmu-v3: Cleanup arm_smmu_domain_finalise
-> >   iommu/arm-smmu-v3: Update comment about STE liveness
-> >   iommu/arm-smmu-v3: Rename cdcfg to cd_table
+On Thu, 12 Oct 2023 06:50:40 +0200, Lukas Bulwahn wrote:
+> Commit 5a0b11a180a9 ("iommu/amd: Remove iommu_v2 module") removes the
+> config AMD_IOMMU_V2.
 > 
-> Will, can you take this please?
+> Remove the reference to this config in the x86 architecture-specific
+> hardening config fragment as well.
+> 
+> 
+> [...]
 
-On my list to look at today!
+Applied to for-next/hardening, thanks!
 
-Will
+[1/1] hardening: x86: drop reference to removed config AMD_IOMMU_V2
+      https://git.kernel.org/kees/c/faed498d0db7
+
+Take care,
+
+-- 
+Kees Cook
+
