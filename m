@@ -1,184 +1,154 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.115])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f174.google.com (mail-qt1-f174.google.com [209.85.160.174])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C58BDF54
-	for <iommu@lists.linux.dev>; Thu, 12 Oct 2023 07:31:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4A7C168AA
+	for <iommu@lists.linux.dev>; Thu, 12 Oct 2023 08:11:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="LJqD1N9G"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1697095906; x=1728631906;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=rvo+65jiaR3BU2yOCPV4XrHrwOlY1U516o/r9SAh9as=;
-  b=LJqD1N9Gn/lwahEulPU8dGz2tuMbzhZ/Lqa2pC+MsqYGmDZsFdu7Pxvu
-   TTTMOkwNbzAljHTlB3wpuG/rCIdzfWRmrGqJUo8oK7fnZ4U2Xq7iVlHCn
-   a39sWtijBA8a1T5L9RAAQNuqITka4ZvNOPozyl4wd+nvnvOnh2Mtxn93R
-   EFUAKci0ARzFZ13KD3WwR+2vYWvRB0MV9C62ghLcUdUuT9VdMe73hEyvt
-   h9ML/rKo04A85wW1I+1iTPEGGgpdcN5YbK93XJzV8aEXYxOvs2eOXiaLj
-   lWCAHTgxz9lK/smTIOP8ImqsqGv1QIdZAeebdyEdagfF3seAFYhWDHUk1
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10860"; a="384708707"
-X-IronPort-AV: E=Sophos;i="6.03,218,1694761200"; 
-   d="scan'208";a="384708707"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Oct 2023 00:31:44 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10860"; a="1085559471"
-X-IronPort-AV: E=Sophos;i="6.03,218,1694761200"; 
-   d="scan'208";a="1085559471"
-Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
-  by fmsmga005.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 12 Oct 2023 00:31:44 -0700
-Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
- ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.32; Thu, 12 Oct 2023 00:31:43 -0700
-Received: from orsmsx603.amr.corp.intel.com (10.22.229.16) by
- ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.32; Thu, 12 Oct 2023 00:31:43 -0700
-Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
- orsmsx603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.32 via Frontend Transport; Thu, 12 Oct 2023 00:31:43 -0700
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.168)
- by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.32; Thu, 12 Oct 2023 00:31:42 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=IIcCtfGsYXuSwECpCU/4zA3eG0R6ivEdWma1U3KyrZks/Y/pLzWglNpmh+5VruF3Q47sP+goZtYPm1/hr+0jWOefGVCUmQtbo6V/YGKpy2+5S8eNocU1G41UtxrYmY40tTsiscRCTzGrCilz5yEYczrZifVoTo5F12QdGQS4lla/b9NYH+GZs19FkF18gaY3qw3MATtFNi5d3Qj/tdeiLvs5naRfZeFy7h0QA+zB02luZoByXRyUAQ+ebFVPSn3SL4Hk+mLSPCyBK5lssY9WdyYW0f4RisZJUHE6uJ2z5E4DXjLPyojKwFjxPV3RiqXs2pGF1T7N9SbYt3cAUG+KSw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=HW2PRUegq3VGPAkd2889Ac8+lQRICrv4KSmUTRtXkx4=;
- b=mN5ZYKe7q1f6UVLSLgD4RlPBYIm7rA1fIV+9aCL4Uuu+YcJUwbHFB3p0o5Z20vO5QcH6Fe+UJW7n18Um7qHkkDUK7Guu2akE3wMZb3HY7/hte+vL9G2E3LLdQCD8D5fktbf7+cvYyDYaaRLbG2rjNZa4IegLgiVevtNscsTxju1/5EXZ1uSIyc77TmR5tEbPNXHBQtKWKW0Vz/y3/cKNB1ZKmy5xOV/ev5sOFYj43vpsguw10Zngg8IYHw+VxL6Q4ggFrDkD3XKTde8TheHQADS82LAkl+UGapWYRIiCmtMUhwYkt9MhPQc63R7CaJib9T/0LMzJtGrQqEQsMdDy2A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from DS0PR11MB7529.namprd11.prod.outlook.com (2603:10b6:8:141::20)
- by MW3PR11MB4649.namprd11.prod.outlook.com (2603:10b6:303:5b::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6863.44; Thu, 12 Oct
- 2023 07:31:40 +0000
-Received: from DS0PR11MB7529.namprd11.prod.outlook.com
- ([fe80::f8f4:bed2:b2f8:cb6b]) by DS0PR11MB7529.namprd11.prod.outlook.com
- ([fe80::f8f4:bed2:b2f8:cb6b%3]) with mapi id 15.20.6863.043; Thu, 12 Oct 2023
- 07:31:40 +0000
-Message-ID: <7c4ce355-c602-7ffa-40cb-5d5a27c1a866@intel.com>
-Date: Thu, 12 Oct 2023 15:33:57 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Firefox/102.0 Thunderbird/102.13.0
-Subject: Re: [PATCH v2 0/6] iommufd support allocating nested parent domain
-Content-Language: en-US
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: <joro@8bytes.org>, <alex.williamson@redhat.com>, <kevin.tian@intel.com>,
-	<robin.murphy@arm.com>, <baolu.lu@linux.intel.com>, <cohuck@redhat.com>,
-	<eric.auger@redhat.com>, <nicolinc@nvidia.com>, <kvm@vger.kernel.org>,
-	<mjrosato@linux.ibm.com>, <chao.p.peng@linux.intel.com>,
-	<yi.y.sun@linux.intel.com>, <peterx@redhat.com>, <jasowang@redhat.com>,
-	<shameerali.kolothum.thodi@huawei.com>, <lulu@redhat.com>,
-	<suravee.suthikulpanit@amd.com>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
-	<zhenzhong.duan@intel.com>, <joao.m.martins@oracle.com>
-References: <20230928071528.26258-1-yi.l.liu@intel.com>
- <20231010164742.GA75531@nvidia.com>
-From: Yi Liu <yi.l.liu@intel.com>
-In-Reply-To: <20231010164742.GA75531@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SG2PR02CA0001.apcprd02.prod.outlook.com
- (2603:1096:3:17::13) To DS0PR11MB7529.namprd11.prod.outlook.com
- (2603:10b6:8:141::20)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="RPUYUlPz"
+Received: by mail-qt1-f174.google.com with SMTP id d75a77b69052e-419b53acc11so222841cf.0
+        for <iommu@lists.linux.dev>; Thu, 12 Oct 2023 01:11:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1697098286; x=1697703086; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=hlIYLcLwLECGIAnaXaWKIQbKBw6E1nzMX1dRyzza4gc=;
+        b=RPUYUlPzXcOtcCoHqhT9vuMQI7dPEDUcIPPb1Ocds/XBx8s0z7aVWAe3Vy054U18dz
+         /1hzsEHpDq99DT27GmlXhTs4g1em5s7ALsir0B/NfnMscpxSN3r0uEp8xWlMdSWLqjzK
+         yDRN4on3GDfq53dnNma3FEiq4ptZHtka1GupGed4jsbiB56j3NdAPe+kiyHxNVNeij4j
+         mHWlqExgvfiaM2dJgKHGcm2rXBxefq/ZDG8QNitSvSWkevzWBQKgAsbkjLLccnU/wSrY
+         O/KwLLrKscmWamBHoJSirYpWEYx6BBIf8P4ONpGkOmdU6eeScmddwQ2njX2vG/KqnkTW
+         do2A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1697098286; x=1697703086;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=hlIYLcLwLECGIAnaXaWKIQbKBw6E1nzMX1dRyzza4gc=;
+        b=Xgc5+MBIcokwbmQktNBqCYBUzQG/Q3vgvmeuOVdr6wvn7NOr1BY6BggxOl08VBsXdH
+         /6YtIJ1LH2KCN4zBgA0UTzNilYAhQF/0qQLq1o9FhyREqe3yltEYcRoOIBJcZ8VNYteI
+         c7CwpNk5WiEEXF2Vr9goaYFA4SXDgYmP+OsgIhNt5WGTkMWk01bX/k/aSc6MDdTdbrpF
+         F1vlJkBXxgKhWxy6VOV4XtzvLSzUFKYoGakJUaSHiWEipQY9Yey5CiABpUlZElVEeUhY
+         Q8qRL3Uz22I310YF7hCfeefECaVos7rEbA/9ZPjTjNJbQMEyunydakaN5paMwsPQkrwS
+         Dktw==
+X-Gm-Message-State: AOJu0Yx3aFrnMqKtbzDCx45CWuHWk7HdZc6W30/Z2sNFZUvkDKEYVfU5
+	TipaekmwkdBT02H8owr7sTDz16BvpJBauflim+OKRg==
+X-Google-Smtp-Source: AGHT+IF4JB6iUbpc+bHMk55Z6HkdE60MY1PLmF6rCBvKLaqDe8TyBmZ7tqMjVF10t1FCNqNR7zcnmtFAcFP4g5H933U=
+X-Received: by 2002:a05:622a:1ba9:b0:419:6a24:efb6 with SMTP id
+ bp41-20020a05622a1ba900b004196a24efb6mr473651qtb.21.1697098286479; Thu, 12
+ Oct 2023 01:11:26 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS0PR11MB7529:EE_|MW3PR11MB4649:EE_
-X-MS-Office365-Filtering-Correlation-Id: f6c95305-e158-4b10-34df-08dbcaf5464e
-X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: RxuKG0SzkvgJl+M81kwZ7weiKN/khfaCrd25RpKtHZ2l7/Y6kS2HtruY1In4s5az7YeZKQn5pBE7+GAclrvqnHEvrd4MFs/srIHbREguxe1vZB3NVGiYmEpo8QvFXkOpe25UZVogt6ujL1KYCMNBA+3HljQRK+3LDVBnitPIjInPeajA0gZ57/AyuGJ8DuNE/xxMJ/HaWIJTiWQZ4q/p4rB8egK3djnL5naPuuUGz+Odh/bE2MYwr4Voj6Z+jnbCf/jvBOuhzfFGgMPik5FUoWwXrTKLoEOF0IwTf3VItNlpE59fdtBBtYZCFAtxe2GqXsBOICYgrHJaCrVfqwoI+Jx6Wmyl9CUKSiMDfP96EABT+8b5+pGNRhLpY8Rn8ot2qbIqshdnBi1lR20996CHpEYKAZuzR/Bxfe/jIlhSEK/AVLrhoJSBDfsO/cKdwd4pcUor//S/srxmLK50vcT0PjAyESOcI7Kly80jtzUF0ewaDkv+ey8OMfOihSoNUvFo7ixcC7SO10ZKlE7C7sw/O1fzzaIRPd7KijsjjWccp+sGF0LhIl7NYjeejwXqe4KLQiUrSWyh0uRr1ZaQTcl1PmLQv6U4mRs3DjIIs0oYjRN6A9gEp8DvCrCwGFnz37LH6c9uEp4rg1Gg5jrfYivd5A==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS0PR11MB7529.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(346002)(396003)(39860400002)(136003)(366004)(376002)(230922051799003)(451199024)(186009)(64100799003)(1800799009)(4326008)(478600001)(8936002)(8676002)(38100700002)(5660300002)(6666004)(66946007)(66556008)(66476007)(6916009)(36756003)(41300700001)(6486002)(316002)(2906002)(2616005)(4744005)(83380400001)(7416002)(26005)(31686004)(86362001)(6506007)(53546011)(6512007)(31696002)(82960400001)(43740500002)(45980500001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?SWNjS05pSmMrZzQ5aGdRWXFKUTh6U0ZVUmp5N3lpcFQxZWU1TFBOanQ1dmtM?=
- =?utf-8?B?N2wyL2NkN2dKVEozWHJKdlM1QW41aitWd3dLdWRLSE1Ja2VVWU9xaWtBNlll?=
- =?utf-8?B?R0hsN2IxOVk2cVZ5VkFPYlhUVkc0dG8weUY4TUYxRlVDZC9qMG9scGdaUUxz?=
- =?utf-8?B?cHRhY05yQ1ZNcEEyby9EK0pCZGFHK3VZQXB5bTZESTZxckJ1SncrRzUrUFlu?=
- =?utf-8?B?RnJacjkzSFhYNUl3bFhsNC8xa1NnaWpvTlM1ODJmc01qaHEzOUo2RHp6RWhL?=
- =?utf-8?B?RTUzUjRIWTVXSWhZbXkyZVhpRjlTRjMweU1oVlhuYSsyOE5kSENYQ3NCWXpi?=
- =?utf-8?B?aHYrbERXTk5zaXJRUFVLZXgrOTQ2YUV4Tm9hZEt1YVlPVjVndk9WWWc5allq?=
- =?utf-8?B?WkVFbWlPcVloNUdYK3JBOEMrbVJwRHFERXdOTm9kUWdEWWZXc2xiMWxGV1Rw?=
- =?utf-8?B?UlZ4aUxvTmdnTWNCNDlFcGxmdjdQTVNieGc1SUhTK09QVEp1bWQvMzhnMFM3?=
- =?utf-8?B?dFJWTFJ1UkRpV2JxaDhwaHQraC9MTFh1NnBJWjJOQlRES21zcTRoYmI4M1Bw?=
- =?utf-8?B?U1YzdTAwU3ZPaFNpV0ZsZ0ZoVTYyMUhnelRpUWxMVzAzMG5SYVJkUkk4WEZN?=
- =?utf-8?B?WDc3WG95b0IzQTN3SkJ0SklIVkFweHIvdHJLcXIwa0ZHZUpZMlRLbit4QzZi?=
- =?utf-8?B?SE9XTDVYS1doZlhUcE5TRDV4ZjhsZnNhUDR0YzZFU05UVjJLZElpd0l4TVl6?=
- =?utf-8?B?emlneU0rdllnNFB6QWhqVXlSZ2ZJMjczZTRESzRQTUVMTG96QmFrMXlCMklX?=
- =?utf-8?B?dTFDUlkrR05tZE9QNXFtaWFmNTNLYUJyOFNJS2tLRHJYYW82TTduclpXb0wv?=
- =?utf-8?B?WUx3OFZodkpsL3dzWVJWUjhmdDV4dVdyZ0Fwc0QxSEVyNTIvZnNTU2hEVWsx?=
- =?utf-8?B?UlVKVW1YQmZlcUZSRlhwTWM4MzBjazlOSTEvMEVSOXNuVnVrdEJ1MjhIc2hi?=
- =?utf-8?B?ZjAzaGtSZ0QxVGJUUDNKK2piUlZMZjBDV0NsOVhKelNNdEc4OThWd2Y2WVFK?=
- =?utf-8?B?QVY0UkRFQi9wbmRDWDdUNHdsSUNuMFMwY2FXRlJRYzhnYStLaFg4dmhvZitz?=
- =?utf-8?B?L2NEU0h4SGV2UURKVUVtaUQxMW1sQm1ubVJnU1pJdEJuZ25UQ3lnQk5LLzQ0?=
- =?utf-8?B?VWFPSjNtSEhQcEdtOGM1TGpTcjk0eVdxaXJQL3pvNjFTTGJsUXpuRWt2dWYx?=
- =?utf-8?B?NUY0TGJJZ2NETW1WTE9NaXBUOW1JR0xSYWJUYUdBR0dobGlTR3BsbHFiK1Y2?=
- =?utf-8?B?ZzA5Mi9yaXR1bkFRbW1MTUY2TUZaT0xOYjVJeGhmS2xjaWNBU1hrbGdON2Rz?=
- =?utf-8?B?ZVhxcndrOVFrUDhoVXQ4SVVaa2lNejdFdDhhWEM1U1lUWUd3b3BFMFV0aDJZ?=
- =?utf-8?B?NzZFaW9DaXhCSFIxakdqUDE0Uk50NVRoZDh1NE12Y013VVpLcHFLRHFQTnhq?=
- =?utf-8?B?V0lMSU8xV0VxWCtNWVp0TUxtVDNLSzJFMTRKcVBDMm12MCt1QlcwWmZOeFNy?=
- =?utf-8?B?MlliRXBLUUNIV25BSkk1cXRaYTE1VlNUYzkvNVorcEZjY0tTMVZwcFltUzdH?=
- =?utf-8?B?aCswaVE0RkpZcjlYVTN3cHJRdW95QXdvWEVQaUIycUVsUTBvc0VFdFpnaEdM?=
- =?utf-8?B?YjIweTlyVGdCbTgxTWY3WkRlRGNBbWFDdzJocG4yalNWOTdhK0lId09oZ09B?=
- =?utf-8?B?aXAxMVMveE9qYmZ1MTl4NzJQNVRGUzlJL2VCa0U4NmppWjJyYVFQdDRtbWo0?=
- =?utf-8?B?NXJNbDdGMWt5WnFnR0x5dzIrdUNVSVEwaGpUYlFVS0tpTVBNdHVMck13SVJX?=
- =?utf-8?B?UUxTaVJKc2R4MUlHaXJ2MjZCeVRwUFdBcFZ5UUlEOEUvQmREMEhnREhMUFMv?=
- =?utf-8?B?N0x1SmhEcEM5RWIyNU5QWkcxdzZSU0dwc3Q0WTUzWDhVQ0x2bzZOak1LU3Iv?=
- =?utf-8?B?dVNOTmxyc21Xa2lLMkF1ZWllWkRkYnMrdUdKaEowbUI4RnV5Rzl3dXNNSUg1?=
- =?utf-8?B?V3Z2cDJHWVZNaFJnOWFDYnJ1ckVVTWJQZkhIRkYzWEFNSlNldXp5TGlCVUtw?=
- =?utf-8?Q?ekfLsxvZzrOwlbL9QmISy07lJ?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: f6c95305-e158-4b10-34df-08dbcaf5464e
-X-MS-Exchange-CrossTenant-AuthSource: DS0PR11MB7529.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Oct 2023 07:31:40.2238
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: xg+e+VzMjmCKwFN4HyVzmQeHFs0puiVGKq0h4R8dYb0H4AButbelGnB8NyuOePPmLWiwubrfffi84wNSiUw4yw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR11MB4649
-X-OriginatorOrg: intel.com
+References: <0-v1-e289ca9121be+2be-smmuv3_newapi_p1_jgg@nvidia.com> <4-v1-e289ca9121be+2be-smmuv3_newapi_p1_jgg@nvidia.com>
+In-Reply-To: <4-v1-e289ca9121be+2be-smmuv3_newapi_p1_jgg@nvidia.com>
+From: Michael Shavit <mshavit@google.com>
+Date: Thu, 12 Oct 2023 16:10:50 +0800
+Message-ID: <CAKHBV24UGZuG6+J4cybadJCTyf9hN+e_VgAC0NVOPotmEur7SQ@mail.gmail.com>
+Subject: Re: [PATCH 04/19] iommu/arm-smmu-v3: Make STE programming independent
+ of the callers
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>, 
+	linux-arm-kernel@lists.infradead.org, Robin Murphy <robin.murphy@arm.com>, 
+	Will Deacon <will@kernel.org>, Nicolin Chen <nicolinc@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 2023/10/11 00:47, Jason Gunthorpe wrote:
-> On Thu, Sep 28, 2023 at 12:15:22AM -0700, Yi Liu wrote:
-> 
->> Yi Liu (6):
->>    iommu: Add new iommu op to create domains owned by userspace
->>    iommufd/hw_pagetable: Use domain_alloc_user op for domain allocation
->>    iommufd/hw_pagetable: Accepts user flags for domain allocation
->>    iommufd/hw_pagetable: Support allocating nested parent domain
->>    iommufd/selftest: Add domain_alloc_user() support in iommu mock
->>    iommu/vt-d: Add domain_alloc_user op
-> 
-> I copy edited the commit messages, and moved the hunk adding
-> IOMMU_HWPT_ALLOC_NEST_PARENT from 'iommu: Add new iommu op to create
-> domains owned by userspace' into 'iommufd: Support allocating nested
-> parent domain'
+On Wed, Oct 11, 2023 at 8:33=E2=80=AFAM Jason Gunthorpe <jgg@nvidia.com> wr=
+ote:
+>
+> As the comment in arm_smmu_write_strtab_ent() explains, this routine has
+> been limited to only work correctly in certain scenarios that the caller
+> must ensure. Generally the caller must put the STE into ABORT or BYPASS
+> before attempting to program it to something else.
+>
+> The next patches/series are going to start removing some of this logic
+> from the callers, and add more complex state combinations than currently.
+>
+> Thus, consolidate all the complexity here. Callers do not have to care
+> about what STE transition they are doing, this function will handle
+> everything optimally.
+>
+> Revise arm_smmu_write_strtab_ent() so it algorithmically computes the
+> required programming sequence to avoid creating an incoherent 'torn' STE
+> in the HW caches. The update algorithm follows the same design that the
+> driver already uses: it is safe to change bits that HW doesn't currently
+> use and then do a single 64 bit update, with sync's in between.
+>
+> The basic idea is to express in a bitmask what bits the HW is actually
+> using based on the V and CFG bits. Based on that mask we know what STE
+> changes are safe and which are disruptive. We can count how many 64 bit
+> QWORDS need a disruptive update and know if a step with V=3D0 is required=
+.
+>
+> This gives two basic flows through the algorithm.
+>
+> If only a single 64 bit quantity needs disruptive replacement:
+>  - Write the target value into all currently unused bits
+>  - Write the single 64 bit quantity
+>  - Zero the remaining different bits
+>
+> If multiple 64 bit quantities need disruptive replacement then do:
+>  - Write V=3D0 to QWORD 0
+>  - Write the entire STE except QWORD 0
+>  - Write QWORD 0
+>
+> With HW flushes at each step, that can be skipped if the STE didn't chang=
+e
+> in that step.
 
-sure. this movement makes sense to me.
+This sounds pretty complicated....Is this complexity really required here?
+Specifically, can we start with a naive version that always first
+nukes `V=3D0` before writing the STE? This still allows you to remove
+requirements that callers must have first set the STE to abort
+(supposedly to get rid of the arm_smmu_detach_dev call currently made
+from arm_smmu_attach_dev) while being easier to digest.
+The more sophisticated version can then be closer in the series to the
+patch that requires it (supposedly this is to support replacing a
+fully blocking/bypass STE with one that uses
+STRTAB_STE_1_S1DSS_TERMINATE/STRTAB_STE_1_S1DSS_BYPASS when a pasid
+domain is first attached?) at which point it's easier to reason about
+its benefits and alternatives.
 
-> Otherwise applied to iommufd for-next
+> @@ -1365,23 +1490,17 @@ static void arm_smmu_write_strtab_ent(struct arm_=
+smmu_master *master, u32 sid,
+>                          STRTAB_STE_2_S2PTW | STRTAB_STE_2_S2AA64 |
+>                          STRTAB_STE_2_S2R);
+>
+> -               dst->data[3] =3D cpu_to_le64(s2_cfg->vttbr & STRTAB_STE_3=
+_S2TTB_MASK);
+> +               target.data[3] =3D cpu_to_le64(s2_cfg->vttbr & STRTAB_STE=
+_3_S2TTB_MASK);
+>
+>                 val |=3D FIELD_PREP(STRTAB_STE_0_CFG, STRTAB_STE_0_CFG_S2=
+_TRANS);
+>         }
+>
+>         if (master->ats_enabled)
+> -               dst->data[1] |=3D cpu_to_le64(FIELD_PREP(STRTAB_STE_1_EAT=
+S,
+> +               target.data[1] |=3D cpu_to_le64(FIELD_PREP(STRTAB_STE_1_E=
+ATS,
+>                                                  STRTAB_STE_1_EATS_TRANS)=
+);
+>
+> -       arm_smmu_sync_ste_for_sid(smmu, sid);
+> -       /* See comment in arm_smmu_write_ctx_desc() */
+> -       WRITE_ONCE(dst->data[0], cpu_to_le64(val));
+> -       arm_smmu_sync_ste_for_sid(smmu, sid);
+> -
+> -       /* It's likely that we'll want to use the new STE soon */
+> -       if (!(smmu->options & ARM_SMMU_OPT_SKIP_PREFETCH))
+> -               arm_smmu_cmdq_issue_cmd(smmu, &prefetch_cmd);
+> +       target.data[0] =3D cpu_to_le64(val);
 
-thanks. feel free to let me know if an updated version is needed.
-
--- 
-Regards,
-Yi Liu
+Can we get rid of this line and use target.data[0] everywhere above?
+'val' isn't exactly a great name to describe the first word of the STE
+and there's no need to defer writing data[0] anymore since this isn't
+directly writing to the register.
+(Feel free to ignore this if it's already addressed by subsequent patches)
