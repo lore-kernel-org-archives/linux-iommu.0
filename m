@@ -1,69 +1,164 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam04on2086.outbound.protection.outlook.com [40.107.100.86])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 74C7128DC1;
-	Thu, 12 Oct 2023 13:25:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dkim=none
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39833C433C8;
-	Thu, 12 Oct 2023 13:25:03 +0000 (UTC)
-Message-ID: <e16ac0a4-3e4a-4e8c-98ba-7b600a8c6768@linux-m68k.org>
-Date: Thu, 12 Oct 2023 23:25:00 +1000
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6FA8727705
+	for <iommu@lists.linux.dev>; Thu, 12 Oct 2023 13:39:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="YPpkNhQr"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=BJGNG0Z2C/dROPnl+/1XsvpILs/wqrPJxg11VZNRJ/rQFC2+FX8dCLuktfih6ZkkbTa5vGQw37/IrDaD59/VOsQ5uAff3PDATjIhgO228XOT6GfPnjfsOzNhuTmFocK/P1c5QlVy0adlETcn9hrAfYEnQr8THvgxO4bwFJSm9Bl8SPjpPvkLJ77utsw/ToPPxnoJ2zTM7OtTwzc8ljYO+HVRd/67/a9NxUEjk5+dcXz2WKPc1lUhzvmRtZFR1Jt/+fhB6dSiEmwsc5oyVGUND0e0oql4p9jjmBdV+Z56lx6grXsMJqVX3nw0wM06eqFNIln7iLU5kkL+jENwrklTAQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=zy5YOf8lJUN0IEJ51ierl49vR4Gn1KeZ2JAVAZwU53E=;
+ b=gk7rODOXfDMtExpwnlenyJO+EaB/YTBhgzotk+DxJziTC9V4dp+p2EjWalpRzeGcpHUq3rv8H0bWWxNjswwxP+6INoIK0nclfdwpJuIWUeKeCUM+je/I6AEuTJPDqa4OSssSMfsU5MYWlL2arLpeeD70bZdZVcgFHPtPMpDt9XPCcbqQRta6SQt7ZK3AQAQjSTmZBwm4+SWc6qw+pXKbUOlqSsMf7qE0Tlh0YtYGWnKpu0wdZk8EXckrTMssDKcb3lECqIPtxUHRLvmIR5KRh323RD5b9fBaUG5sWo+YPciF5w3kvaB2c0phGzka+RlY68jwNmH2OIVhukgL33c6sw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=zy5YOf8lJUN0IEJ51ierl49vR4Gn1KeZ2JAVAZwU53E=;
+ b=YPpkNhQrD52KbdbaUMaN+nwYA9pSTlhPSqjL7TeyUsrmbgGasyEtf8imw/ieALbtp2eRes6nRYOh5maaoMao+WJ/wr0EbDZsqm6R0Hdwo/ovGxydmdfWckoncM0deAp1n+k2Zq82ZqYyLCQrk38+yyKBEQLfPmQARzGAdE8YZtt1fUj7jF1jLQJFRG1Xc9W7ctIDKYspsda78kemiGtN61xgA1XjxLBBHsUV20Og+Z+/n/e1PKt9FG7OYunUQthO0c3VeUuAlQm64g/Q/aWJaEN8CtTcWhJMbBrkydl6UzkiUHBIGW+KMfy5owv27Vd2MfyduZg547ijVs7scfjMrw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by CY8PR12MB8266.namprd12.prod.outlook.com (2603:10b6:930:79::5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6863.45; Thu, 12 Oct
+ 2023 13:39:19 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::3f66:c2b6:59eb:78c2]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::3f66:c2b6:59eb:78c2%6]) with mapi id 15.20.6863.032; Thu, 12 Oct 2023
+ 13:39:18 +0000
+Date: Thu, 12 Oct 2023 10:39:17 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Yi Liu <yi.l.liu@intel.com>
+Cc: joro@8bytes.org, alex.williamson@redhat.com, kevin.tian@intel.com,
+	robin.murphy@arm.com, baolu.lu@linux.intel.com, cohuck@redhat.com,
+	eric.auger@redhat.com, nicolinc@nvidia.com, kvm@vger.kernel.org,
+	mjrosato@linux.ibm.com, chao.p.peng@linux.intel.com,
+	yi.y.sun@linux.intel.com, peterx@redhat.com, jasowang@redhat.com,
+	shameerali.kolothum.thodi@huawei.com, lulu@redhat.com,
+	suravee.suthikulpanit@amd.com, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+	zhenzhong.duan@intel.com, joao.m.martins@oracle.com
+Subject: Re: [PATCH v4 01/17] iommu: Add hwpt_type with user_data for
+ domain_alloc_user op
+Message-ID: <20231012133917.GL3952@nvidia.com>
+References: <20230921075138.124099-1-yi.l.liu@intel.com>
+ <20230921075138.124099-2-yi.l.liu@intel.com>
+ <20231010165844.GQ3952@nvidia.com>
+ <03ba68e9-33ef-35c1-5720-8f559f94f8a1@intel.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <03ba68e9-33ef-35c1-5720-8f559f94f8a1@intel.com>
+X-ClientProxiedBy: MN2PR13CA0029.namprd13.prod.outlook.com
+ (2603:10b6:208:160::42) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 5/6] net: fec: use dma_alloc_noncoherent for m532x
-Content-Language: en-US
-To: Michael Schmitz <schmitzmic@gmail.com>, Christoph Hellwig <hch@lst.de>
-Cc: Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
- Marek Szyprowski <m.szyprowski@samsung.com>,
- Geert Uytterhoeven <geert@linux-m68k.org>, Wei Fang <wei.fang@nxp.com>,
- Shenwei Wang <shenwei.wang@nxp.com>, Clark Wang <xiaoning.wang@nxp.com>,
- NXP Linux Team <linux-imx@nxp.com>, linux-m68k@lists.linux-m68k.org,
- netdev@vger.kernel.org, Jim Quinlan <james.quinlan@broadcom.com>
-References: <20231009074121.219686-1-hch@lst.de>
- <20231009074121.219686-6-hch@lst.de>
- <ea608718-8a50-4f87-aecf-fc100d283fe8@arm.com>
- <0299895c-24a5-4bd4-b7a4-dc50cc21e3d8@linux-m68k.org>
- <20231011055213.GA1131@lst.de>
- <cff2d9f0-4719-4b88-8ed5-68c8093bcebf@linux-m68k.org>
- <12c7b0db-938c-9ca4-7861-dd703a83389a@gmail.com>
-From: Greg Ungerer <gerg@linux-m68k.org>
-In-Reply-To: <12c7b0db-938c-9ca4-7861-dd703a83389a@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|CY8PR12MB8266:EE_
+X-MS-Office365-Filtering-Correlation-Id: 043936a1-5a07-49e0-7bc0-08dbcb28a272
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	GbHhKe4IP0MDNYJ5a36IP+dnhgt9GciytGyAMn/KHFOESNw/BJIq8Q8Dr8WXQXyrWKDEIaRnvkk5D7FN41sq11NPkPILxDmcV6XwFNdtbktsq8uFIBBIQOrCnluL9AwEz50qQ04+iCljSveTpjny4UjTNhkfZc2wZlh9oysOktzYMIQwsiIwd/ed1CT2d/3UySdciz0BUF2xmT9mkGfu4/L4NG1Vspou1R0flTGQ61RJXtlrHXOxkwGRcSIaCkUjT5Kvy6sJNcQq9Jwia4J9qiy2a1jCkOFqFkYGXU34iKJFgbW3zBjzSXi4f53lWYwAwP8h9CGr6Ot6i2HM3ZBuHx/NOd/nb6MHVoBdVyepOD8JqRk3VqtZYCWkrQuk7aTAjmiqMxQWPxwGcY58GfKGiYF/KKbm1ZeSaYshwFFqF87Q/HzzMuU85sVzyQUqwBv7EdgS98O/3VDLJ8FwZEyGl7nVLaI3CCI3Y/zm3IDWIJrXKwhB967A4emrIHo+Nku0536/XLRVFgSPBE5N8yfG0K0TRaWyizfOfayodZSxCkRC1DYvJEQVbO3qEzPwb6Yf
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(39860400002)(396003)(136003)(376002)(346002)(366004)(230922051799003)(451199024)(64100799003)(186009)(1800799009)(4326008)(1076003)(107886003)(26005)(8676002)(8936002)(7416002)(38100700002)(33656002)(2906002)(86362001)(36756003)(5660300002)(83380400001)(41300700001)(6512007)(53546011)(6506007)(6486002)(478600001)(316002)(6916009)(66946007)(66476007)(66556008)(2616005);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?3vyv/h9sNHIQyS2S3NK/ISgKwW3m1QdOfnyMZCknf2pccvUAQxz2nzNbzF30?=
+ =?us-ascii?Q?ke/pSacoEIMkp3FcCCQcUSEnWEtRLW4jNhqUPdj/VhmhQo51gECBhGwo1EvC?=
+ =?us-ascii?Q?GXSpT3FkSq5+64RNnMrNQefkULcrFgU9TtJEvUgr9vbXwEy/MZ/MaVWOy+4i?=
+ =?us-ascii?Q?YFBNdpvX/7A+bVLA1hr7ne4Snx0GWuDUM5pDupzTdR+MzEOhCAJ43iYjDIQn?=
+ =?us-ascii?Q?MBMry5NyEmTReD0RzNBR18fsVwnlDzDwQsOAy7jUYQKesVWPjm8mdvGVeNvB?=
+ =?us-ascii?Q?o7Vns95sm7ePr+oX7ApxBk2T/Oq/Dal52lmadU8J7n/vuxAJhQVX4j8bzZ17?=
+ =?us-ascii?Q?aULi41KvCSW7fNaehajpdnkZoyIC6yY4wLr3f7X1LQ+qNcAkmC0W8/thxF0W?=
+ =?us-ascii?Q?aPf38v9amyi2kaPqZ69EfbplZLSkyAJrTz1gKX9D2fgzPQQDJ6tGsTBAVPUl?=
+ =?us-ascii?Q?QbeOWwdAx/ri8E2i3k7BEY54xu4ZSvypRCDWCi4sMsEYWSsk5JRoKwQxM0xS?=
+ =?us-ascii?Q?9m8484PVECHPKyeK7uRQxR8aRIoM+PWOYl4w6YfQHKXFR6idxlIxqyIOnJt0?=
+ =?us-ascii?Q?h6s/qKezj4pruDWuTGcEXkXQdWAvO865/zpNCX/dNDoe3h/R2o1JMr7a4h0z?=
+ =?us-ascii?Q?X4jSxQAPnX3bpCjjfufFXPqSQXtE3LTrgufmew3lIgMCDUYd+SLc6OaDdy89?=
+ =?us-ascii?Q?qMscu3XRwudE8VAszsiyZaLRQTZlj/zKgg3JTuvPnxyvkyE6AweuaaZ0+7Ly?=
+ =?us-ascii?Q?PWlHLQAX/8t2WLAPc1xjYWxvNTi+D2tgiFAIgwtEmqpz1u9Bzk0Zdm152w1l?=
+ =?us-ascii?Q?c94byaKlnjUhP+fTMwF3i7AwDYfBaowg4cQxa7dIjXqS3LwS88B/YUeVlARs?=
+ =?us-ascii?Q?RxrxXL5cY7RYOKGyjcHbqXcwQUgvL+jMcb//AE/LpkBWFCrok0qFcnEoZUUr?=
+ =?us-ascii?Q?pqURYtx6ZlJz+5vwIpQCbmauUIbZt4Za3PA7A4tlMcbMiAejLOeqbYad3Qdl?=
+ =?us-ascii?Q?nGtwrpAl7LjJYM38jez9c+Rm/hXNfg0c67ZAyWEjb18z/jFiCQIjwaMErqF2?=
+ =?us-ascii?Q?9r63MLhxdqcbvYOJM3lZvmYJGFyT6noz9pxRCqrN+bMB27i2d5NdVZipLKjR?=
+ =?us-ascii?Q?+niFeGQ1MRy+XMi6f50uXWKPOX2OAKG1remAAPCPkN5zXCaqC1tP4KHcS7HL?=
+ =?us-ascii?Q?sEkVYrUc9zpRLCZPilKQPFy8rFuSjRyUdIsbGfKEwyxc0DJDUh2RYXoAgE0E?=
+ =?us-ascii?Q?RypBjDTC/4mWoBjYKVTHQokaeXXQIZ/x/fEhCgLT7kSBOqFXngS7XN6lsvNZ?=
+ =?us-ascii?Q?+dnY9I7ZhgeN1dqY2oWcN3FSKHuM+48kF67Q90zOMBebAGnZd4zscoQo90g4?=
+ =?us-ascii?Q?c3DLWk6/PpiRgIEGkg5zGET4Bc+f2pWDx8t3OmUXs+ZT52+vbmaume1o18mz?=
+ =?us-ascii?Q?OK/RlZh0sj2kpVWMdwe9jc4zzPcX1q7cCaFWfGOlI42BkSkaGSq5nvc5ilPe?=
+ =?us-ascii?Q?0gEG+DAfJ4J5A6lGNInBFiU68bsTF79g46aT3LBOyHsCZ4T1xQZPIKP/6Xct?=
+ =?us-ascii?Q?mjraTzXNDo6D7+YoZP94lkK2nhm13noBTI5T3Js5?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 043936a1-5a07-49e0-7bc0-08dbcb28a272
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Oct 2023 13:39:18.8672
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 76gHhmHY0MSqu+pGj8uk02Nx+PFrGBXzAiWUNFyFFdQCin+79IOBmCjF0HkG7/SR
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR12MB8266
 
-Hi Michael,
-
-On 12/10/23 04:21, Michael Schmitz wrote:
-> Hi Greg,
+On Thu, Oct 12, 2023 at 05:11:09PM +0800, Yi Liu wrote:
+> On 2023/10/11 00:58, Jason Gunthorpe wrote:
+> > On Thu, Sep 21, 2023 at 12:51:22AM -0700, Yi Liu wrote:
+> > > diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> > > index 660dc1931dc9..12e12e5563e6 100644
+> > > --- a/include/linux/iommu.h
+> > > +++ b/include/linux/iommu.h
+> > > @@ -14,6 +14,7 @@
+> > >   #include <linux/err.h>
+> > >   #include <linux/of.h>
+> > >   #include <uapi/linux/iommu.h>
+> > > +#include <uapi/linux/iommufd.h>
+> > 
+> > Oh we should definately avoid doing that!
+> > Maybe this is a good moment to start a new header file exclusively for
+> > iommu drivers and core subsystem to include?
+> > 
+> >   include/linux/iommu-driver.h
+> > 
+> > ?
+> > 
+> > Put iommu_copy_user_data() and  struct iommu_user_data in there
+> > 
+> > Avoid this include in this file.
 > 
-> On 12/10/23 02:09, Greg Ungerer wrote:
->>
->> I think this needs to be CONFIG_COLDFIRE is set and none of CONFIG_HAVE_CACHE_CB or
->> CONFIG_CACHE_D or CONFIG_CACHE_BOTH are set.
->>
->>
->>
->>> in the fec driver do the alloc_noncoherent and global cache flush
->>> hack if:
->>>
->>> COMFIG_COLDFIRE && (CONFIG_CACHE_D || CONFIG_CACHE_BOTH)
->>
->> And then this becomes:
->>
->> CONFIG_COLDFIRE && (CONFIG_HAVE_CACHE_CB || CONFIG_CACHE_D || CONFIG_CACHE_BOTH)
-> 
-> You appear to have dropped a '!' there ...
+> sure. btw. seems all the user of this API and structure are in the
+> drivers/iommu directory. can we just putting them in
+> drivers/iommu/iommu-priv.h?
 
-Not sure I follow. This is the opposite of the case above. The noncoherent alloc
-and cache flush should be performed if ColdFire and any of CONFIG_HAVE_CACHE_CB,
-CONFIG_CACHE_D or CONFIG_CACHE_BOTH are set - since that means there is data
-caching involved.
+iommu-priv.h should be private to the core iommu code, and we sort of
+extended it to iommufd as well.
 
-Regards
-Greg
+iommu-driver.h would be "private" to the core and all the drivers
+only.
 
+As include ../.. is often frown on at large scale it is probably
+better to be in include/linux
+
+> Just one concern. There are other paths (like cache_invalidate of
+> this series and Nic's set_dev_data) uses this struct as well. I'm
+> a bit worrying if it is good to put type here as type is meaningful
+> for the domain_alloc_user path.
+
+There is always a type though? I haven't got that far in the series
+yet to see..
+
+Jason
