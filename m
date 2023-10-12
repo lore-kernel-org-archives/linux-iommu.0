@@ -1,60 +1,71 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.65])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A5D3426E33
-	for <iommu@lists.linux.dev>; Thu, 12 Oct 2023 12:57:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4AE6026E33
+	for <iommu@lists.linux.dev>; Thu, 12 Oct 2023 12:58:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nwzo08fu"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF889C433C8;
-	Thu, 12 Oct 2023 12:57:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1697115471;
-	bh=Ok28SdhAWW1nvMtIM0V7FGuq4sgQwHbgRzFRQZos3eo=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=nwzo08fucF91DIEhvRvfXhMNnJ9L1KcNM2Ht+7wU+42fegJWJqnkRU9lBWCSRTUtJ
-	 iqHRhGvLvlzvJraz/+HnhcM6RSJ7mLvjtuWzt9BmSfLQMmEJeZrh2EGs+h7sP4FZgL
-	 mlaRa4DNCZucToVO1rNeGdGNMfahw/pE6xcXyGl3QvAG/Medx+PISc1PD1RAAewdiN
-	 CDTBYLArI7ySh6l4y0BNZelwyuFmAs8y72Jmf9hdBzaNN3+nnxc+m+6uWkgd5ieed9
-	 eVT08lDYcmKz67eeiSx36fYOAXfO4sfKQKkqccXaHxqC20M+O8Y/Go3Mo3lpYGtJUU
-	 UaO7HQpqymbRw==
-Date: Thu, 12 Oct 2023 13:57:46 +0100
-From: Will Deacon <will@kernel.org>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: joro@8bytes.org, iommu@lists.linux.dev, jgg@nvidia.com,
-	baolu.lu@linux.intel.com, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 7/7] iommu: Clean up open-coded ownership checks
-Message-ID: <20231012125746.GB12142@willie-the-truck>
-References: <cover.1697047261.git.robin.murphy@arm.com>
- <0d68867cec0fb90578d50cc145f7f9a180407f20.1697047261.git.robin.murphy@arm.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="aHIwKwQo"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1697115522; x=1728651522;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=FezBOs4z5b5BdyWfX/5QiwvC0F3/xtHU+YBQMpqAKP8=;
+  b=aHIwKwQodoLpMqxrEALAwu1wOU/Hnsk/58IfEe3RJhxQvrExKmsMYnJA
+   O8fcUori/spUXENeXxEgq3dNndK0YTSljRfvC3td3TBNi0xBA0Qm6kMSg
+   DiulVuHiSExKpD+fMIts/XlqxZPfOgkGr0Z0oYcQzj0IEK6An0GqaKfv0
+   s7LvdDMeYjNkSf80pqV61qnQhtd8RWLDsWmuj25HL0ZF7NL067b2uBFb2
+   Yd6jhc1Fy6u11vgLWt+Pdft63Hjzqf1Px1iuEMKJ42oBi9xJxyurwmkeU
+   st3V5r7RYS0BLdPUVWYSlUfp4eQ9c/wHfDI4AEwAEzlbD99wvKAMMzNpA
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10861"; a="388769153"
+X-IronPort-AV: E=Sophos;i="6.03,219,1694761200"; 
+   d="scan'208";a="388769153"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Oct 2023 05:58:41 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10861"; a="758008315"
+X-IronPort-AV: E=Sophos;i="6.03,219,1694761200"; 
+   d="scan'208";a="758008315"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.254.213.230]) ([10.254.213.230])
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Oct 2023 05:58:32 -0700
+Message-ID: <d446571b-d267-fa4b-8b3a-b65a41f2048d@linux.intel.com>
+Date: Thu, 12 Oct 2023 20:58:31 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0d68867cec0fb90578d50cc145f7f9a180407f20.1697047261.git.robin.murphy@arm.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.15.1
+Cc: baolu.lu@linux.intel.com, iommu@lists.linux.dev, jgg@nvidia.com,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v5 2/7] iommu: Decouple iommu_present() from bus ops
+Content-Language: en-US
+To: Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org, will@kernel.org
+References: <cover.1697047261.git.robin.murphy@arm.com>
+ <6711338e24dd1edfd02187f25cf40d8622cefdb2.1697047261.git.robin.murphy@arm.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <6711338e24dd1edfd02187f25cf40d8622cefdb2.1697047261.git.robin.murphy@arm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Wed, Oct 11, 2023 at 07:14:54PM +0100, Robin Murphy wrote:
-> Some drivers already implement their own defence against the possibility
-> of being given someone else's device. Since this is now taken care of by
-> the core code (and via a slightly different path from the original
-> fwspec-based idea), let's clean them up.
+On 2023/10/12 2:14, Robin Murphy wrote:
+> Much as I'd like to remove iommu_present(), the final remaining users
+> are proving stubbornly difficult to clean up, so kick that can down the
+> road and just rework it to preserve the current behaviour without
+> depending on bus ops. Since commit 57365a04c921 ("iommu: Move bus setup
+> to IOMMU device registration"), any registered IOMMU instance is already
+> considered "present" for every entry in iommu_buses, so it's simply a
+> case of validating the bus and checking we have at least once IOMMU.
 > 
-> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-> ---
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c |  3 ---
->  drivers/iommu/arm/arm-smmu/arm-smmu.c       |  9 +--------
->  drivers/iommu/arm/arm-smmu/qcom_iommu.c     | 16 +++-------------
->  drivers/iommu/mtk_iommu.c                   |  7 +------
->  drivers/iommu/mtk_iommu_v1.c                |  3 ---
->  drivers/iommu/sprd-iommu.c                  |  8 +-------
->  drivers/iommu/virtio-iommu.c                |  3 ---
->  7 files changed, 6 insertions(+), 43 deletions(-)
+> Reviewed-by: Jason Gunthorpe<jgg@nvidia.com>
+> Signed-off-by: Robin Murphy<robin.murphy@arm.com>
 
-Acked-by: Will Deacon <will@kernel.org>
+Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
 
-Will
+Best regards,
+baolu
