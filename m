@@ -1,67 +1,86 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D74E617F5
-	for <iommu@lists.linux.dev>; Thu, 12 Oct 2023 14:47:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7869B17F5
+	for <iommu@lists.linux.dev>; Thu, 12 Oct 2023 14:50:33 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="ie0+d04T"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1697122022;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=bXGRPt6ZIkBsn4GXcOAW4CPcCkYLP5pOVPWADq3b9M4=;
-	b=ie0+d04Tf03ca08Dn55Fc/sLusKX8IcM/b+UfA3v4GdC4D6WsDj0OyeImmOwCSMSNdzUiw
-	ezQrCmLzcS7RuZCCuXnmwfWWWPNQxa5O4Ah+JlPFexvE+Ej0HQYdLbz8xDQjN6ihtYdvNh
-	U1dePjJ4g+QFLSEne+uUapaI2617pQ4=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-378-ltUzLKs0O26ZcyOSchQSAQ-1; Thu, 12 Oct 2023 10:46:49 -0400
-X-MC-Unique: ltUzLKs0O26ZcyOSchQSAQ-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 73AEC101AA72;
-	Thu, 12 Oct 2023 14:46:48 +0000 (UTC)
-Received: from virtlab511.virt.lab.eng.bos.redhat.com (virtlab511.virt.lab.eng.bos.redhat.com [10.19.152.198])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id E508640611D;
-	Thu, 12 Oct 2023 14:46:47 +0000 (UTC)
-From: Paolo Bonzini <pbonzini@redhat.com>
-To: Maxim Levitsky <mlevitsk@redhat.com>
-Cc: kvm@vger.kernel.org,
-	iommu@lists.linux.dev,
-	"H . Peter Anvin" <hpa@zytor.com>,
-	Sean Christopherson <seanjc@google.com>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Borislav Petkov <bp@alien8.de>,
-	Joerg Roedel <joro@8bytes.org>,
-	x86@kernel.org,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	linux-kernel@vger.kernel.org,
-	Dave Hansen <dave.hansen@linux.intel.com>,
-	Will Deacon <will@kernel.org>,
-	Ingo Molnar <mingo@redhat.com>,
-	Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH v2 0/4] AVIC bugfixes and workarounds
-Date: Thu, 12 Oct 2023 10:46:40 -0400
-Message-Id: <20231012144639.1354427-1-pbonzini@redhat.com>
-In-Reply-To: <20230928173354.217464-1-mlevitsk@redhat.com>
-References: 
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="AxzadzaU"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F0BAC433C8;
+	Thu, 12 Oct 2023 14:50:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1697122232;
+	bh=jTeKmCZozGobpMYGFZ7ihH4Bj3kZQ7OWdrTKoXPpUXk=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=AxzadzaU1JzcuT6x7gFq1FurH5mRJuOcU2qmQHxQBfW74V6/V8siyUHSjr1DBKIF9
+	 Fs9tOASWmW5NY58rcwavj4MCuMeDCCGNpAqtAKRVVBNHs2u3J0o9cMbekmDbi5vVTY
+	 +buqK6kVkQQSO1h/t1xoS6ksnN0E1OYXKOPKDjhpf8nvca8ucNeZwOnhhO6fCR1309
+	 FQ+MsqZ/fEEZ2pyhREESuyfCOqvtWl9OZi0QClJPWoY9juCuP0VVhNk3NJUOWl8PRd
+	 pin6131NgPK0cL5rtCYFQVxacSW7Gg19DGOU6M6EcBdY9nymA7IpSkOoJq3Ty6mpsX
+	 Pq1awmLX/SSvg==
+Date: Thu, 12 Oct 2023 15:50:26 +0100
+From: Will Deacon <will@kernel.org>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Michael Shavit <mshavit@google.com>, Joerg Roedel <joro@8bytes.org>,
+	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org, nicolinc@nvidia.com,
+	jean-philippe@linaro.org, robin.murphy@arm.com,
+	Alistair Popple <apopple@nvidia.com>,
+	Dawei Li <set_pte_at@outlook.com>,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	"Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Tomas Krcka <krckatom@amazon.de>
+Subject: Re: [PATCH v8 0/9] Refactor the SMMU's CD table ownership
+Message-ID: <20231012145025.GB12374@willie-the-truck>
+References: <20230915132051.2646055-1-mshavit@google.com>
+ <20231011234848.GA257246@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.10
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20231011234848.GA257246@nvidia.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 
-Queued patches 1-3, thanks.
+On Wed, Oct 11, 2023 at 08:48:48PM -0300, Jason Gunthorpe wrote:
+> On Fri, Sep 15, 2023 at 09:17:31PM +0800, Michael Shavit wrote:
+> > 
+> > Hi all,
+> > 
+> > This series refactors stage 1 domains so that they describe a single CD
+> > entry. These entries are now inserted into a CD table that is owned by
+> > the arm_smmu_master instead of the domain.
+> > This is conceptually cleaner and unblocks other features, such as
+> > attaching domains with PASID (for unmanaged/dma domains).
+> > 
+> > This patch series was originally part of a larger patch series that
+> > implemented the set_dev_pasid callback for non-SVA domains but is now
+> > split into a distinct series.
+> > 
+> > This patch series is also available on gerrit with Jean's SMMU test
+> > engine patches cherry-picked on top for testing:
+> > https://linux-review.googlesource.com/c/linux/kernel/git/torvalds/linux/+/24742/16
+> > 
+> > Thanks,
+> > Michael Shavit
+> > 
+> > Michael Shavit (9):
+> >   iommu/arm-smmu-v3: Move ctx_desc out of s1_cfg
+> >   iommu/arm-smmu-v3: Replace s1_cfg with cdtab_cfg
+> >   iommu/arm-smmu-v3: Encapsulate ctx_desc_cfg init in alloc_cd_tables
+> >   iommu/arm-smmu-v3: move stall_enabled to the cd table
+> >   iommu/arm-smmu-v3: Refactor write_ctx_desc
+> >   iommu/arm-smmu-v3: Move CD table to arm_smmu_master
+> >   iommu/arm-smmu-v3: Cleanup arm_smmu_domain_finalise
+> >   iommu/arm-smmu-v3: Update comment about STE liveness
+> >   iommu/arm-smmu-v3: Rename cdcfg to cd_table
+> 
+> Will, can you take this please?
 
-Paolo
+On my list to look at today!
 
-
+Will
