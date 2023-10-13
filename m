@@ -1,289 +1,131 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.120])
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7FC54EC6
-	for <iommu@lists.linux.dev>; Fri, 13 Oct 2023 14:04:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1FA45EAEB
+	for <iommu@lists.linux.dev>; Fri, 13 Oct 2023 14:05:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="YqzzF/oH"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1697205847; x=1728741847;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=GdoVLgn6xyujFvF9/jEaVemFQ4kZTnFMaRtkIlR8N7U=;
-  b=YqzzF/oH2m3N/wyeWAX1lfoi34CVN/LnPukMSZpOYggZqY9aB/vli8G6
-   gZHUsej0WX5y9XOU/Km4qMUcujHPPrGhZVdOOMgFgIvs96FjJYjLVxENu
-   sO96Lj/FteCD94N3jppBRvNJPbQgl0phAUmSRfUnLtiVeUtVZzJTUCYJ1
-   exKOmH4o1Yj4xdWzY8aCRjBk+hZVqs01+t0my/l6vJOXKAhnOwtYAyWTt
-   SuWdCUG71uhMnIhYEaHIy98WWWOLUTSAW1xpSAhKrp841tuFweeCezCCr
-   IWD85q2EgmnBNswSqQWAcC18hBwZk+mCQQ5TOASW/DwOIYTOTbmSAD1jl
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10862"; a="384049381"
-X-IronPort-AV: E=Sophos;i="6.03,222,1694761200"; 
-   d="scan'208";a="384049381"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Oct 2023 07:04:07 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10862"; a="1086156479"
-X-IronPort-AV: E=Sophos;i="6.03,222,1694761200"; 
-   d="scan'208";a="1086156479"
-Received: from cascade.sh.intel.com ([10.239.48.35])
-  by fmsmga005.fm.intel.com with ESMTP; 13 Oct 2023 07:04:04 -0700
-From: Jingqi Liu <Jingqi.liu@intel.com>
-To: iommu@lists.linux.dev,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Tian Kevin <kevin.tian@intel.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>
-Cc: linux-kernel@vger.kernel.org,
-	Jingqi Liu <Jingqi.liu@intel.com>
-Subject: [PATH v5 3/3] iommu/vt-d: debugfs: Support dumping a specified page table
-Date: Fri, 13 Oct 2023 21:58:11 +0800
-Message-Id: <20231013135811.73953-4-Jingqi.liu@intel.com>
-X-Mailer: git-send-email 2.21.3
-In-Reply-To: <20231013135811.73953-1-Jingqi.liu@intel.com>
-References: <20231013135811.73953-1-Jingqi.liu@intel.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="sXvlFVto"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ZYUB2rIBkMKHztucV3SC56/3x0LrxIr6kBZYA4W1GC7IKaqFgk9/t21Z2TD5SZtTnqj0AAXIP8jkBxIJdU0CdxATAtyc8JgzPtnC4THAdN/jbV/ACnrLpvjezlcEgpj0bDGR53jZ4t6nJ9we+XGT2263yL6fvABi5iqaS3JyPC9XsMO+U2Twn4DJMv5srWE8s7zRgJKPyK4JKFQpKFnClfq0jVxULepuJEQENzEyk7lh7Xl7Y7NlDEQA6tSjArhpyrabltHz/N4TsYTNj7Ak2Oz+P/Y+Ec4sdPEF5dzZgsdhNhC52kmPol/6k23urX757Q092spg0OOb2A3ICdj8dg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Ed7tn+ROQRK25AbeZJCB3N/jF8bRNi88/xZTk7b77K0=;
+ b=MjEEnAKyAHAMs6IPxZspgMpfZGcfMobdpXGVQCjrEgIo6UPJVQSkhWu73fneQLFk89tSM8g8STq1buV6Ar8qJiL5Mva3uYWIz3iZlKKg08cvcO8pzpiS4FHo8MMoxF6C6gNPJMfglhK/CEX1J9bdvSOCjAcJ0vITfnD2u3swvIRvjDrZbk9F8soRMPFb4nO6OdoS0t5xQEm3gdYi2qR6YyFqXuJ2yuApuBA/ld4UouWuBC2Q791TmthNLtLCglRO4OHfH/JFzMFRlE3E1ownFCOXhg6xoz4FARDeiKSa1ExIYKIbpDZhq1Pl596d95EigjSIS8S+4B8h5ulBrclamQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Ed7tn+ROQRK25AbeZJCB3N/jF8bRNi88/xZTk7b77K0=;
+ b=sXvlFVtojvMReBtfjOjbL6ZWLlD/QzlUXhE4vH0GSOduA0xlCbpcUgf5dDfi9AhPJpFsBp8e+8TaPizVKBlodNa6bUImb63RJLvYMMFr1l+LOGBxBr/axYA3Pmw/n0dCSNHlNvh/1NykC3mCdQ4f2I7+/1J4fuGol6DsP8OR6pm2j8CCP7whjW3d9AGPjBXP0fs6Wpf7w8OZoSDvONXqb5NSfn6Kt+x20Memkukj8/hkiWda0wkabmMcwmfe7iOY8isx7qMzb4+ATe9MvWrX92FtTGsuCtVGR/SLgl4/Bim74AnkE1k4ZVYMNm/MNRtYXl6jrkcmmk4CL46h5wbJaQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by MW3PR12MB4538.namprd12.prod.outlook.com (2603:10b6:303:55::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6863.45; Fri, 13 Oct
+ 2023 14:04:57 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::3f66:c2b6:59eb:78c2]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::3f66:c2b6:59eb:78c2%6]) with mapi id 15.20.6863.046; Fri, 13 Oct 2023
+ 14:04:57 +0000
+Date: Fri, 13 Oct 2023 11:04:56 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Yi Liu <yi.l.liu@intel.com>
+Cc: joro@8bytes.org, alex.williamson@redhat.com, kevin.tian@intel.com,
+	robin.murphy@arm.com, baolu.lu@linux.intel.com, cohuck@redhat.com,
+	eric.auger@redhat.com, nicolinc@nvidia.com, kvm@vger.kernel.org,
+	mjrosato@linux.ibm.com, chao.p.peng@linux.intel.com,
+	yi.y.sun@linux.intel.com, peterx@redhat.com, jasowang@redhat.com,
+	shameerali.kolothum.thodi@huawei.com, lulu@redhat.com,
+	suravee.suthikulpanit@amd.com, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+	zhenzhong.duan@intel.com, joao.m.martins@oracle.com
+Subject: Re: [PATCH v4 01/17] iommu: Add hwpt_type with user_data for
+ domain_alloc_user op
+Message-ID: <20231013140456.GR3952@nvidia.com>
+References: <20230921075138.124099-1-yi.l.liu@intel.com>
+ <20230921075138.124099-2-yi.l.liu@intel.com>
+ <20231010165844.GQ3952@nvidia.com>
+ <03ba68e9-33ef-35c1-5720-8f559f94f8a1@intel.com>
+ <20231012133917.GL3952@nvidia.com>
+ <3659d9a7-d9e9-bb73-daf5-41c765e99c8c@intel.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <3659d9a7-d9e9-bb73-daf5-41c765e99c8c@intel.com>
+X-ClientProxiedBy: BL0PR02CA0128.namprd02.prod.outlook.com
+ (2603:10b6:208:35::33) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|MW3PR12MB4538:EE_
+X-MS-Office365-Filtering-Correlation-Id: 13bdd1cb-f6aa-4121-f1d1-08dbcbf561e0
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	NjTlDl6zISsRmwM2zszd1KRX9fGqw5zt1VgperyroXOjFV49n8NgdT0jwmxeJFgOvKe301ipe9wGl6wyEZ64H7CxDg522EM4Q360f1ID9ZJTeYdFa51E/cF1iKNl8xbweJ7+Q6Y2Y1bChBcT7zLxJFrErM96OI84v7btn5ws8PtGlXrbAaOBPLHrK1O8MHNLyEIgDysNhgMZpDl/pfiePd3bOyoOk+/EPk84nNHMH+bvcK683FV5rQCJ5TYoB0IV9krgcR9YVB7ep9A+7Zi2S8RcHFAP/5z7cdcGGKKIjPO9EO/sREa6QNAgC/z745EYqzMbFywNKdDvVgaOIu3vXV1lUMW+rByMo1Ovg++ZR2ehG2pIcYce/cGGp4g+MqpOOCZC2DIBLDT26QQvPiy92lf3O441um/PHyt3hhNsLnLFrmF/tfKXCfNdMw5Z5TgjTuZhZeV0W+v9NGY+Tj4qsspYM+cWJ9qEILcLQr3A6qTdZmPzfYq+F4oLqP5ay6TFyJzReAlIX+91aHfx6tU9CBPGy0JROcOBq1W9tdrfGpCpTP1vgO0v5h4paDdlrm3I
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(376002)(39860400002)(346002)(366004)(136003)(396003)(230922051799003)(1800799009)(186009)(451199024)(64100799003)(7416002)(2906002)(478600001)(6486002)(4744005)(41300700001)(4326008)(8676002)(8936002)(5660300002)(6916009)(36756003)(66946007)(66556008)(66476007)(316002)(33656002)(6506007)(26005)(6512007)(2616005)(86362001)(38100700002)(1076003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?3LMJjyplS90qCfS9AOSd/RXHZUKRJfOG9ST0P4ZogozCBKFJq2p9UvE5UMqI?=
+ =?us-ascii?Q?aSbuWK0t5eDYKw2Cvz5qHCF7fdBuaMfZ5nk8jp16ii+X0seU8Cqs8V1GOgmG?=
+ =?us-ascii?Q?zNxI/Mrtl0BjkFR/JhEwidbNnnGfvfIRUXh6YKfY/NyLWapRVCMis7w5RCBi?=
+ =?us-ascii?Q?D2SAyHM+pE5PT5/VwFzNJ656FqPz03XzQqKSFJ+sO6NYUsCti1hixKuCSRT3?=
+ =?us-ascii?Q?WicpksfNna36get0xcS0ulYwGIbYD5b1eB5zTB5BoFqOGklMZi0Vl1G1xZR+?=
+ =?us-ascii?Q?ZTwytPwXZVckEig1uJaLMUIsyP8907X3pX0YZilxcMsxrIqKoPw8EHqRQUt+?=
+ =?us-ascii?Q?qusygaDp3lqy02CIdfpF0oV/pUkk2v3zIpDxx4zm7GmWhEIPPonEwROUu5N4?=
+ =?us-ascii?Q?thVzqoBJwZz/xUGLyXwJ9nKh5XhZuSHtSSBXbu/NZlw2Lt+cy6r+m+FXbvlX?=
+ =?us-ascii?Q?GNTqz3eJNB/TIaELDgWKJFq1FIljJc7H9NmNlw8/8kJyL8g9IEkFMz7LQ5Yx?=
+ =?us-ascii?Q?X5Qzsy5cZ9mg8x83FCsIFtFLFrkt9c0OEG+tpcTD++isWegXZmk0aRI5WzQt?=
+ =?us-ascii?Q?bwwGPLpRQ+ccBUvl9Z0zm701CZ9SJzmnUZZNcqM/iF8s/3hZ05WfFvH2joAd?=
+ =?us-ascii?Q?5/U0vyH2jF5q9woKGY97NUsmz17vC2XFlbmv28Lcr9/AdIh5jwwILGrWAKKA?=
+ =?us-ascii?Q?Ltrf/I8u9jtQlhKLckA3kqY8/gdAvC9eEP7gggZWq7T5NKe/oQ8FJUByqEO0?=
+ =?us-ascii?Q?PJBFIKdqKtB8tskFVA2YTVEgYVKkEM2EnFg8Qz+nGDihMBBHHX5Fi1OaFgEX?=
+ =?us-ascii?Q?4e1jKR4q2w7st9qN6OGqY8q9BO36+Awv6lZZEXl3Hqo4use2eFsyN5BhGMkD?=
+ =?us-ascii?Q?gTem/cHflZEh0a3qIjh8RY9AQDLeNVbAyAFpfJk3hYPNfuovsbJko4Gkqlya?=
+ =?us-ascii?Q?GqQ+tSiY/aGX3+tO4Tw/6PdHL4OPF7qY3RiZILsI21nB5PqHjOWaV5WWfTUc?=
+ =?us-ascii?Q?3dVfLEO+7/F9v7Jnr9MKGmPGAAwF3/XdJyGRgsCe5dhb5loDtdEu6zLWP6O0?=
+ =?us-ascii?Q?bcDROSFz2dW4K68V/cxqk0QXpWftsewm0nVdY26reOv5Am7o2msaL70rQwQl?=
+ =?us-ascii?Q?CLG3P53TBM+fV9jki+b5T091ZqwobqwAL7WCFaV3VfZ9Swn0h6Z3nyivy0SM?=
+ =?us-ascii?Q?zla+9e+pUr/VaUyBUUSO7lYRlFfCeENKTNteTTiRMndh4PuVFxP4CVEl4u7D?=
+ =?us-ascii?Q?h4O7eTMxQfDzM0hxYDOeQow6zwvS5BaHEifv+10xqE9k4p+dnMFniIbNQDpE?=
+ =?us-ascii?Q?Gd5A+eiccQqWi21ypQiPWk8ST8RJOKMoNbw9S8EGiCGxTBiCwqG54g5WBs1u?=
+ =?us-ascii?Q?Zzp+m9jmcgnq/cNqEdpLja/43kAUaThLVeij2xziC0Umym2k6z5WAJNj/WBk?=
+ =?us-ascii?Q?gOD9M7AVMAlm/24R3AwFIJiETw9PbObEczpud1pMQhpcvnFt3ED62NWlmAG0?=
+ =?us-ascii?Q?xX8p4FwwX2NRfxm403KHvfGoKW3EZ5Nvl6KzsbLbXv/6IRhra9D5Ll4RGtA5?=
+ =?us-ascii?Q?63JNKAhneI2ItQwQ/yg=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 13bdd1cb-f6aa-4121-f1d1-08dbcbf561e0
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Oct 2023 14:04:57.3738
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: ex9R1VbdO/S2o5H15OcXa7ClM2pnR5Hc7bV7ACFAo2KuUFjNExhQbIDBW5BhPVma
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR12MB4538
 
-The original debugfs only dumps all page tables without pasid. With
-pasid supported, the page table with pasid also needs to be dumped.
+On Fri, Oct 13, 2023 at 12:33:13PM +0800, Yi Liu wrote:
 
-This patch supports dumping a specified page table in legacy mode or
-scalable mode with or without a specified pasid.
+> not really. Below the users of the struct iommu_user_data in my current
+> iommufd_nesting branch. Only the domain_alloc_user op has type as there
+> can be multiple vendor specific alloc data types. Basically, I'm ok to
+> make the change you suggested, just not sure if it is good to add type
+> as it is only needed by one path.
 
-For legacy mode, according to bus number and DEVFN, traverse the root
-table and context table to get the pointer of page table in the
-context table entry, then dump the specified page table.
+I don't think we should ever have an opaque data blob without a type
+tag..
 
-For scalable mode, according to bus number, DEVFN and pasid, traverse
-the root table, context table, pasid directory and pasid table to get
-the pointer of page table in the pasid table entry, then dump the
-specified page table..
-
-Examples are as follows:
-1) Dump the page table of device "0000:00:1f.0" that only supports
-   legacy mode.
-   $ sudo cat
-   /sys/kernel/debug/iommu/intel/0000:00:1f.0/domain_translation_struct
-
-2) Dump the page table of device "0000:00:0a.0" with PASID "1" that
-   supports scalable mode.
-   $ sudo cat
-   /sys/kernel/debug/iommu/intel/0000:00:0a.0/1/domain_translation_struct
-
-Suggested-by: Kevin Tian <kevin.tian@intel.com>
-Signed-off-by: Jingqi Liu <Jingqi.liu@intel.com>
----
- drivers/iommu/intel/debugfs.c | 154 ++++++++++++++++++++++++++--------
- 1 file changed, 120 insertions(+), 34 deletions(-)
-
-diff --git a/drivers/iommu/intel/debugfs.c b/drivers/iommu/intel/debugfs.c
-index 8a18a7be5215..239136727ac4 100644
---- a/drivers/iommu/intel/debugfs.c
-+++ b/drivers/iommu/intel/debugfs.c
-@@ -347,58 +347,141 @@ static void pgtable_walk_level(struct seq_file *m, struct dma_pte *pde,
- 	}
- }
- 
--static int __show_device_domain_translation(struct device *dev, void *data)
-+static int domain_translation_struct_show(struct seq_file *m,
-+					  struct device_domain_info *info,
-+					  ioasid_t pasid)
- {
--	struct dmar_domain *domain;
--	struct seq_file *m = data;
--	u64 path[6] = { 0 };
--
--	domain = to_dmar_domain(iommu_get_domain_for_dev(dev));
--	if (!domain)
--		return 0;
-+	bool scalable, found = false;
-+	struct dmar_drhd_unit *drhd;
-+	struct intel_iommu *iommu;
-+	u16 devfn, bus, seg;
- 
--	seq_printf(m, "Device %s @0x%llx\n", dev_name(dev),
--		   (u64)virt_to_phys(domain->pgd));
--	seq_puts(m, "IOVA_PFN\t\tPML5E\t\t\tPML4E\t\t\tPDPE\t\t\tPDE\t\t\tPTE\n");
-+	bus = info->bus;
-+	devfn = info->devfn;
-+	seg = info->segment;
- 
--	pgtable_walk_level(m, domain->pgd, domain->agaw + 2, 0, path);
--	seq_putc(m, '\n');
-+	rcu_read_lock();
-+	for_each_active_iommu(iommu, drhd) {
-+		struct context_entry *context;
-+		u64 pgd, path[6] = { 0 };
-+		u32 sts, agaw;
- 
--	/* Don't iterate */
--	return 1;
--}
-+		if (seg != iommu->segment)
-+			continue;
- 
--static int show_device_domain_translation(struct device *dev, void *data)
--{
--	struct iommu_group *group;
-+		sts = dmar_readl(iommu->reg + DMAR_GSTS_REG);
-+		if (!(sts & DMA_GSTS_TES)) {
-+			seq_printf(m, "DMA Remapping is not enabled on %s\n",
-+				   iommu->name);
-+			continue;
-+		}
-+		if (dmar_readq(iommu->reg + DMAR_RTADDR_REG) & DMA_RTADDR_SMT)
-+			scalable = true;
-+		else
-+			scalable = false;
- 
--	group = iommu_group_get(dev);
--	if (group) {
- 		/*
--		 * The group->mutex is held across the callback, which will
--		 * block calls to iommu_attach/detach_group/device. Hence,
-+		 * The iommu->lock is held across the callback, which will
-+		 * block calls to domain_attach/domain_detach. Hence,
- 		 * the domain of the device will not change during traversal.
- 		 *
--		 * All devices in an iommu group share a single domain, hence
--		 * we only dump the domain of the first device. Even though,
--		 * this code still possibly races with the iommu_unmap()
-+		 * Traversing page table possibly races with the iommu_unmap()
- 		 * interface. This could be solved by RCU-freeing the page
- 		 * table pages in the iommu_unmap() path.
- 		 */
--		iommu_group_for_each_dev(group, data,
--					 __show_device_domain_translation);
--		iommu_group_put(group);
-+		spin_lock(&iommu->lock);
-+
-+		context = iommu_context_addr(iommu, bus, devfn, 0);
-+		if (!context || !context_present(context))
-+			goto iommu_unlock;
-+
-+		if (scalable) {	/* scalable mode */
-+			struct pasid_dir_entry *dir_tbl, *dir_entry;
-+			struct pasid_entry *pasid_tbl, *pasid_tbl_entry;
-+			u16 pasid_dir_size, dir_idx, tbl_idx, pgtt;
-+			u64 pasid_dir_ptr;
-+
-+			pasid_dir_ptr = context->lo & VTD_PAGE_MASK;
-+			pasid_dir_size = get_pasid_dir_size(context);
-+
-+			/* Dump specified device domain mappings with PASID. */
-+			dir_idx = pasid >> PASID_PDE_SHIFT;
-+			tbl_idx = pasid & PASID_PTE_MASK;
-+
-+			dir_tbl = phys_to_virt(pasid_dir_ptr);
-+			dir_entry = &dir_tbl[dir_idx];
-+
-+			pasid_tbl = get_pasid_table_from_pde(dir_entry);
-+			if (!pasid_tbl)
-+				goto iommu_unlock;
-+
-+			pasid_tbl_entry = &pasid_tbl[tbl_idx];
-+			if (!pasid_pte_is_present(pasid_tbl_entry))
-+				goto iommu_unlock;
-+
-+			/*
-+			 * According to PASID Granular Translation Type(PGTT),
-+			 * get the page table pointer.
-+			 */
-+			pgtt = (u16)(pasid_tbl_entry->val[0] & GENMASK_ULL(8, 6)) >> 6;
-+			agaw = (u8)(pasid_tbl_entry->val[0] & GENMASK_ULL(4, 2)) >> 2;
-+
-+			switch (pgtt) {
-+			case PASID_ENTRY_PGTT_FL_ONLY:
-+				pgd = pasid_tbl_entry->val[2];
-+				break;
-+			case PASID_ENTRY_PGTT_SL_ONLY:
-+			case PASID_ENTRY_PGTT_NESTED:
-+				pgd = pasid_tbl_entry->val[0];
-+				break;
-+			default:
-+				goto iommu_unlock;
-+			}
-+			pgd &= VTD_PAGE_MASK;
-+		} else { /* legacy mode */
-+			pgd = context->lo & VTD_PAGE_MASK;
-+			agaw = context->hi & 7;
-+		}
-+
-+		seq_printf(m, "Device %04x:%02x:%02x.%x ",
-+			   iommu->segment, bus, PCI_SLOT(devfn), PCI_FUNC(devfn));
-+
-+		if (scalable)
-+			seq_printf(m, "with pasid %x @0x%llx\n", pasid, pgd);
-+		else
-+			seq_printf(m, "@0x%llx\n", pgd);
-+
-+		seq_printf(m, "%-17s\t%-18s\t%-18s\t%-18s\t%-18s\t%-s\n",
-+			   "IOVA_PFN", "PML5E", "PML4E", "PDPE", "PDE", "PTE");
-+		pgtable_walk_level(m, phys_to_virt(pgd), agaw + 2, 0, path);
-+
-+		found = true;
-+iommu_unlock:
-+		spin_unlock(&iommu->lock);
-+		if (found)
-+			break;
- 	}
-+	rcu_read_unlock();
- 
- 	return 0;
- }
- 
--static int domain_translation_struct_show(struct seq_file *m, void *unused)
-+static int dev_domain_translation_struct_show(struct seq_file *m, void *unused)
- {
--	return bus_for_each_dev(&pci_bus_type, NULL, m,
--				show_device_domain_translation);
-+	struct device_domain_info *info = (struct device_domain_info *)m->private;
-+
-+	return domain_translation_struct_show(m, info, IOMMU_NO_PASID);
- }
--DEFINE_SHOW_ATTRIBUTE(domain_translation_struct);
-+DEFINE_SHOW_ATTRIBUTE(dev_domain_translation_struct);
-+
-+static int pasid_domain_translation_struct_show(struct seq_file *m, void *unused)
-+{
-+	struct dev_pasid_info *dev_pasid = (struct dev_pasid_info *)m->private;
-+	struct device_domain_info *info = dev_iommu_priv_get(dev_pasid->dev);
-+
-+	return domain_translation_struct_show(m, info, dev_pasid->pasid);
-+}
-+DEFINE_SHOW_ATTRIBUTE(pasid_domain_translation_struct);
- 
- static void invalidation_queue_entry_show(struct seq_file *m,
- 					  struct intel_iommu *iommu)
-@@ -700,7 +783,7 @@ void intel_iommu_debugfs_create_dev(struct device_domain_info *info)
- 	info->debugfs_dentry = debugfs_create_dir(dev_name(info->dev), intel_iommu_debug);
- 
- 	debugfs_create_file("domain_translation_struct", 0444, info->debugfs_dentry,
--			    NULL, &domain_translation_struct_fops);
-+			    info, &dev_domain_translation_struct_fops);
- }
- 
- /* Remove the device debugfs directory. */
-@@ -726,6 +809,9 @@ void intel_iommu_debugfs_create_dev_pasid(struct dev_pasid_info *dev_pasid)
- 
- 	sprintf(dir_name, "%x", dev_pasid->pasid);
- 	dev_pasid->debugfs_dentry = debugfs_create_dir(dir_name, info->debugfs_dentry);
-+
-+	debugfs_create_file("domain_translation_struct", 0444, dev_pasid->debugfs_dentry,
-+			    dev_pasid, &pasid_domain_translation_struct_fops);
- }
- 
- /* Remove the device pasid debugfs directory. */
--- 
-2.21.3
-
+Jason
