@@ -1,119 +1,80 @@
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2048.outbound.protection.outlook.com [40.107.244.48])
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CBBF37E
-	for <iommu@lists.linux.dev>; Sat, 14 Oct 2023 01:02:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 91D7D63AA
+	for <iommu@lists.linux.dev>; Sat, 14 Oct 2023 07:53:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="Ifj/EnYQ"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DgSRkDeNAXzaGZ8m4jTbiNgzMDme0LHMP2G+kccpZO+KLXAr9gKbfLd04kaFeEfV2s9tK9tzui9P4AAELZIOEokda3oEguRGjmRKgEuhgMtCMlRxJe7qZrVbmZ9EUg+3J88d6drvOiByoM/btEfd1NtjUETt4p1SErh/KgKUp8ZXslkDjoLclBCVT31CedZbzQd5LLsWaHrYvlxKxYR2aj12VKeE8G8yn/2R43HfVKnYSgRcF217NlPknsR7WFhLuP5dkZO1Ur4KCbXuDhnAhD3BKGCTXMzZop0ZpJQsbbJSVJ54PWYigkPgLDAcVG0U2qg7WiC2KrS1sVyQNftAlA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=iWElid/sVX27Vke5EpEKw9XGh4o3Tyu2gIgo4ppOvD8=;
- b=LbWTX+/320JK1CPZAcLJQi6TkVZGyDs6NVtu/eqkTmAVaFKQwPNWLAGqHJO4HUT/6Qa8lnHRs75wQK/bRF/zW2w1zaQWg7a0ZZGZhwgxdwihK5esHIsju3sDnCaftSrG5bqPRKQyT8IxooK4ftaj6Um4b67pjwFiBGBPWBwZn5eYQhtNqWcVtKGckjlmrYh03j14i0MHUd6vrESbRtnKPbwIN2ItRRkg2aDe4YZk4GAguRGx2Af/2eHFRZoAnngO1X5QglaJFDvcuq2nMnsjD93FKafdIM1HwZKisski2JWghhjMyPoxvtokZ1PMBCX2rYZ7O/YOZgbjesq9p9thfA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.232) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=iWElid/sVX27Vke5EpEKw9XGh4o3Tyu2gIgo4ppOvD8=;
- b=Ifj/EnYQJFHX+kDCkILfHmS5XtqMviPSkAjdK2TMHOPfOXRt1hzYyLVKeLkJHmNjUq6/RlJB5MSchVdI0Um+QwQpdFe8MtAaeShtmmd0IgU5UWWCbl04XHsVELOms0fGZYNpsXVqDAOhexNMXOSnTI4hcgQfSELGoJSjwYWAE+u+AzTRQ/8cZOxfdHPGkM5GhvhdhvNw6Tx6vxVfKFm0n6SSnYcM5TJoE4/+Rxrepk078/Ylzhdl6YYZ2GNHrjXFWvhl4uMEOmuDH9RZpyvB4yNo9dHgPpmI+DoEcRzV4HP1TYrfrEKzO8hn/xmXVA84bbasvi4RnJV3gSZVTSqBBQ==
-Received: from CYXPR02CA0012.namprd02.prod.outlook.com (2603:10b6:930:cf::27)
- by DM6PR12MB4974.namprd12.prod.outlook.com (2603:10b6:5:1bb::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6863.47; Sat, 14 Oct
- 2023 01:02:09 +0000
-Received: from CY4PEPF0000EDD1.namprd03.prod.outlook.com
- (2603:10b6:930:cf:cafe::d5) by CYXPR02CA0012.outlook.office365.com
- (2603:10b6:930:cf::27) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6886.28 via Frontend
- Transport; Sat, 14 Oct 2023 01:02:09 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.232) by
- CY4PEPF0000EDD1.mail.protection.outlook.com (10.167.241.205) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6838.22 via Frontend Transport; Sat, 14 Oct 2023 01:02:09 +0000
-Received: from drhqmail203.nvidia.com (10.126.190.182) by mail.nvidia.com
- (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Fri, 13 Oct
- 2023 18:02:03 -0700
-Received: from drhqmail202.nvidia.com (10.126.190.181) by
- drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.41; Fri, 13 Oct 2023 18:02:03 -0700
-Received: from Asurada-Nvidia (10.127.8.11) by mail.nvidia.com
- (10.126.190.181) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41 via Frontend
- Transport; Fri, 13 Oct 2023 18:02:02 -0700
-Date: Fri, 13 Oct 2023 18:02:00 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: "Zhang, Tina" <tina.zhang@intel.com>, Jason Gunthorpe <jgg@ziepe.ca>
-CC: "Tian, Kevin" <kevin.tian@intel.com>, Lu Baolu <baolu.lu@linux.intel.com>,
-	Michael Shavit <mshavit@google.com>, Vasant Hegde <vasant.hegde@amd.com>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>
-Subject: Re: [PATCH v7 4/5] iommu: Support mm PASID 1:n with sva domains
-Message-ID: <ZSnoiPBLFATdtlpk@Asurada-Nvidia>
-References: <20231012030112.82270-1-tina.zhang@intel.com>
- <20231012030112.82270-5-tina.zhang@intel.com>
- <20231012134310.GI55194@ziepe.ca>
- <MW5PR11MB5881ECF6757B0211A18B208C89D2A@MW5PR11MB5881.namprd11.prod.outlook.com>
- <20231014000320.GC282036@ziepe.ca>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="bM7hT6SB"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1697270029; x=1728806029;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=8FUCVkEXo2dDBEoDY3Ok5aqS4qxJmKgJGIKKpwEolwk=;
+  b=bM7hT6SBW89Lc+iJPxYvxakKSry8XKEJPnp77ubNuCjtTkb6GLxG0zDl
+   RVXrzX+voBXsBjpI/vvALQWxt1TU31UKZ3DwHjPg7hSOjbiuSs3iDRBn5
+   e6+XEUAu+4P0gGZ9Fev9PmGBSIMedL873Yw0iNgwmz/kjBjG4k0OLVrLv
+   B+fkFwvThZeCuBlfkj76JjevvjMZKMdrhk/1XQ7QfjUrh2obg4er3ItRl
+   YLsDFEAzYeKPDO6BPnrgYdsjT/aDBSq6UZNgJ6NtySQtxqSSegVqoSBl4
+   geEvUvUWpnKjNLvjG6ItsMPrmgMOii7kvaJGyHWnwflUHRltv2SvLyah6
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10862"; a="364674187"
+X-IronPort-AV: E=Sophos;i="6.03,224,1694761200"; 
+   d="scan'208";a="364674187"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Oct 2023 00:53:48 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10862"; a="754977578"
+X-IronPort-AV: E=Sophos;i="6.03,224,1694761200"; 
+   d="scan'208";a="754977578"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.238.2.200]) ([10.238.2.200])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Oct 2023 00:53:44 -0700
+Message-ID: <78e43ae6-99bf-c326-b0a2-930ced04911f@linux.intel.com>
+Date: Sat, 14 Oct 2023 15:53:42 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20231014000320.GC282036@ziepe.ca>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY4PEPF0000EDD1:EE_|DM6PR12MB4974:EE_
-X-MS-Office365-Filtering-Correlation-Id: 5b0183b3-dab0-4436-1179-08dbcc513134
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	/Z4TgFahWVr3n6fy4VQCU3HHNUU+RZukeiFSkYeo7QsDXgtuOJ1wdSY2sG7ZLgPxRIkOe6WAKJOScL+0WuxnOhOiCqzX9Qxtt8h5aPvbPxSEZk02fRPdtewF53vdnP78EUHfksdgtDzsg3gj1UKNlwoUsHrp1cSjehWhIoLBFHRvi8Rbe0Cl/ZteAKz/sJgLAxJF3o5PVPO/AUY+PpnBQY/ZKnhwXQvZ0I3Bpio37tIU/EBGfzI5GwvFsXX4uzTqI/7wO3vdnbOCjlqApW3kSi9OjCcBOp5yqtbT1y5szVfoO+jMgEvRxgkLMGnEaAPbyIL+EDS/Avhh8O9vO5r1/Fg63UO5isQON0/5YqGwI4f/fGMg+l0Uk7EohuHX9esXfecxHbCb9+S0dEN7Z7Ks0e/xH7vgFXoJp6AUBGyEaIoFvGr4JahMGjyMSpoLX4OMd60beFekmqPUGugulp5mDN8Dw5wpA5zwsna5ZDJ23z/OrNea4vrU7f1dsiPQvhBqq2/u8+qnOC/8tb97NHSCiwDZPNGuQ1dXdb8n3Zb1SxyIDHV1+zPJpqx7TMtEeAQNYTfOzo0hcE3xFuAEmAkaOEUjuWnTjuaEY42ASzTK2X9Oh1LUoJw9UXydJW6cqTeeTq/BIc58k3ojdhvIy8agm0XtWxcRcqlTYC3T+3PWcmM/dKedkGUElqz7MA9O2C2Lp0epmkqSGZ975bVyhTNdR2w4rlk13IE/RnjHwin1OxXSXEMAiAKHZUfz1OCri5uh
-X-Forefront-Antispam-Report:
-	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230031)(4636009)(39860400002)(376002)(346002)(136003)(396003)(230922051799003)(186009)(64100799003)(82310400011)(451199024)(1800799009)(36840700001)(46966006)(40470700004)(9686003)(478600001)(83380400001)(336012)(426003)(316002)(26005)(2906002)(4744005)(33716001)(41300700001)(4326008)(70206006)(5660300002)(70586007)(110136005)(8676002)(8936002)(36860700001)(47076005)(86362001)(82740400003)(7636003)(356005)(54906003)(55016003)(40480700001)(40460700003);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Oct 2023 01:02:09.1876
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5b0183b3-dab0-4436-1179-08dbcc513134
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CY4PEPF0000EDD1.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4974
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.15.1
+Cc: baolu.lu@linux.intel.com, iommu@lists.linux.dev,
+ Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
+ Yi Liu <yi.l.liu@intel.com>, Yi Y Sun <yi.y.sun@intel.com>,
+ Nicolin Chen <nicolinc@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Alex Williamson <alex.williamson@redhat.com>, kvm@vger.kernel.org
+Subject: Re: [PATCH v3 00/19] IOMMUFD Dirty Tracking
+To: Joao Martins <joao.m.martins@oracle.com>, Jason Gunthorpe
+ <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ Vasant Hegde <vasant.hegde@amd.com>
+References: <20230923012511.10379-1-joao.m.martins@oracle.com>
+ <20231013162949.GG3952@nvidia.com>
+ <9df305a4-1176-4187-9dae-37dc954289f1@oracle.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <9df305a4-1176-4187-9dae-37dc954289f1@oracle.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Fri, Oct 13, 2023 at 09:03:20PM -0300, Jason Gunthorpe wrote:
-> On Fri, Oct 13, 2023 at 09:57:30AM +0000, Zhang, Tina wrote:
-> > I think I met some problem about my mailbox when I was sending this
-> > new version. It didn't cc iommu@lists.linux.dev. Should I resend
-> > this version again or reply to the patches with
-> > iommu@lists.linux.dev cc'd?
+On 2023/10/14 2:11, Joao Martins wrote:
+>> If either AMD or Intel ack the driver part next week I would take it
+>> this cycle. Otherwise at -rc1.
+>>
+> FWIW, I feel more confident on the AMD parts as they have been exercised on real
+> hardware.
 > 
-> Tidy the nits and resend a v8 if addresses got missed
+> Suravee, Vasant, if you could take a look at the AMD driver patches -- you
+> looked at a past revision (RFCv1) and provided comments but while I took the
+> comments I didn't get Suravee's ACK as things were in flux on the UAPI side. But
+> it looks that v4 won't change much of the drivers
+> 
 
-I was actually wondering why it missed iommu list. And it likely
-missed those maintainers too? Perhaps should run get_maintainer
-script and add the person who's going to take the series.
+I will also take a look at the Intel driver part.
 
-Thanks
-Nic
+Best regards,
+baolu
