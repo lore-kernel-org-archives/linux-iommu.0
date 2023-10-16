@@ -1,26 +1,26 @@
 Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 94C22F9EB
-	for <iommu@lists.linux.dev>; Mon, 16 Oct 2023 05:48:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B3217D522
+	for <iommu@lists.linux.dev>; Mon, 16 Oct 2023 05:48:07 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="QVxDSiE7"
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="YKyyhZdf"
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
 	MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
 	:Reply-To:Content-Type:Content-ID:Content-Description;
-	bh=09OXcjV5LjWtZgzHphgSEOzGoq+sVyJJ1rTh412jyyc=; b=QVxDSiE7PtzcAx7kdTFFhVH1A+
-	L+vIzroq4ifhL++4BR+7byFq3XULMiKqN5PKahJdNRmuPu1Pyj7hCfo5NDTaQeokmSktZoHBXWSoe
-	YRTw7HBbQPdYgxdcQiDRsQF8STUjdIhbVxhfwckO7PbwvH8Jzax6Tm9U+Rq6IowbFMrSIA/k74Jyg
-	i+N+nuUAC608YRtjWI6rmf8gs7KJVjCkJ2raNCUEDaIHLLvhjHkQV2622tpqOfPaC1c7JDuRUYlix
-	ettTWh6+82c7wQ167i+NhQ5rf6lBudSL8AX0gVpSAn/4s/KEL8ZZ4VBK9lWdWFLzQWCjK2ZlsT3ad
-	06HD7czg==;
+	bh=z6mlPBQ4mdlVnTNTeM4g6TWg8QEfdqiB3mI+2DaIjVk=; b=YKyyhZdf5dNjANUOyI2HrJCIV0
+	U1b00I+wKUKo117XL/o4YqG/7CSwo82Nt84ERwS2j6D/6oqFSVy2m0PPuid4ijwkV2mZHWK3cl9qP
+	D+Jxn4qLo5ExWSk9zjUYofh7qHwWin0AJJlg2YFfcQcutwo1YiHX4SlWrbPGG+YrefwgIwRdU4y4H
+	WosBEtbP5BtoiIiEJptDJes47mHRPUXh0Jd+7viXZLEugUD9/zb3usGG16gGmPvxxIpiKUP5bKraI
+	IVLlzXBHJoSGwFbBP2iCWYxryZ5ysqqi8iqmbnnU0d2aeNwazNkhToLQ9umEVkTBCfU1JfSL919FN
+	MfOILygA==;
 Received: from 2a02-8389-2341-5b80-39d3-4735-9a3c-88d8.cable.dynamic.v6.surfer.at ([2a02:8389:2341:5b80:39d3:4735:9a3c:88d8] helo=localhost)
 	by bombadil.infradead.org with esmtpsa (Exim 4.96 #2 (Red Hat Linux))
-	id 1qsGSR-008QgM-30;
-	Mon, 16 Oct 2023 05:48:04 +0000
+	id 1qsGSU-008QhF-0t;
+	Mon, 16 Oct 2023 05:48:06 +0000
 From: Christoph Hellwig <hch@lst.de>
 To: Greg Ungerer <gerg@linux-m68k.org>,
 	iommu@lists.linux.dev
@@ -41,9 +41,9 @@ Cc: Paul Walmsley <paul.walmsley@sifive.com>,
 	linux-riscv@lists.infradead.org,
 	linux-renesas-soc@vger.kernel.org,
 	Jim Quinlan <james.quinlan@broadcom.com>
-Subject: [PATCH 02/12] riscv: only select DMA_DIRECT_REMAP from RISCV_ISA_ZICBOM
-Date: Mon, 16 Oct 2023 07:47:44 +0200
-Message-Id: <20231016054755.915155-3-hch@lst.de>
+Subject: [PATCH 03/12] soc: renesas: ARCH_R9A07G043 depends on !RISCV_ISA_ZICBOM
+Date: Mon, 16 Oct 2023 07:47:45 +0200
+Message-Id: <20231016054755.915155-4-hch@lst.de>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20231016054755.915155-1-hch@lst.de>
 References: <20231016054755.915155-1-hch@lst.de>
@@ -56,34 +56,27 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 
-RISCV_DMA_NONCOHERENT is also used for whacky non-standard
-non-coherent ops that use different hooks in dma-direct.
+ARCH_R9A07G043 has it's own non-standard global pool based DMA coherent
+allocator, which conflicts with the remap based RISCV_ISA_ZICBOM version.
+Add a proper dependency.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- arch/riscv/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/soc/renesas/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/riscv/Kconfig b/arch/riscv/Kconfig
-index 0ac0b538379718..9c48fecc671918 100644
---- a/arch/riscv/Kconfig
-+++ b/arch/riscv/Kconfig
-@@ -273,7 +273,6 @@ config RISCV_DMA_NONCOHERENT
- 	select ARCH_HAS_SYNC_DMA_FOR_CPU
- 	select ARCH_HAS_SYNC_DMA_FOR_DEVICE
- 	select DMA_BOUNCE_UNALIGNED_KMALLOC if SWIOTLB
--	select DMA_DIRECT_REMAP if MMU
- 
- config RISCV_NONSTANDARD_CACHE_OPS
- 	bool
-@@ -549,6 +548,7 @@ config RISCV_ISA_ZICBOM
- 	depends on RISCV_ALTERNATIVE
- 	default y
- 	select RISCV_DMA_NONCOHERENT
-+	select DMA_DIRECT_REMAP
- 	help
- 	   Adds support to dynamically detect the presence of the ZICBOM
- 	   extension (Cache Block Management Operations) and enable its
+diff --git a/drivers/soc/renesas/Kconfig b/drivers/soc/renesas/Kconfig
+index 880c544bb2dfda..f1696d3b5018d0 100644
+--- a/drivers/soc/renesas/Kconfig
++++ b/drivers/soc/renesas/Kconfig
+@@ -334,6 +334,7 @@ if RISCV
+ config ARCH_R9A07G043
+ 	bool "RISC-V Platform support for RZ/Five"
+ 	depends on NONPORTABLE
++	depends on !RISCV_ISA_ZICBOM
+ 	select ARCH_RZG2L
+ 	select AX45MP_L2_CACHE
+ 	select DMA_GLOBAL_POOL
 -- 
 2.39.2
 
