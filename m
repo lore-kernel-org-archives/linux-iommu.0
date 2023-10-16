@@ -1,38 +1,38 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.120])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CFD221369
-	for <iommu@lists.linux.dev>; Mon, 16 Oct 2023 01:41:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA45C17EA
+	for <iommu@lists.linux.dev>; Mon, 16 Oct 2023 02:11:02 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Rp5Gc5XV"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="LQ62yAxw"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1697420463; x=1728956463;
+  t=1697422262; x=1728958262;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=1YVfeTOx9T9EeSUglsuZPWcB/6BF29AkQYNt6bzVrQM=;
-  b=Rp5Gc5XVYuHKk3FtKga11WrNrUValsftE87ePt66ese0JDaTlG9vBQ05
-   PXKinFFMdnVLJvT3RQGr9DAAmhLxWnjjYPMNDHSNWaEOjIGC0zNwSpepU
-   4g3HFGyMB3Ko9cBl58gQOBY/o/RgMWVFh05HDss9iXAEoquDzgNFO9lQN
-   X+6oqoMKNYRT+a/rXS4vel+tYSwpPOJ371RlMnl6df9WcUlro6UGThRR+
-   5O9sTsAy7TamVhlj8d689kpSQjUdwMivDnxjbEmDYMIeQ034DGoQFnHbb
-   3uN3821R8O1Ss8VfnYMKaU3+NJnTsGdVray+TmYADoo4pkry6rDeeW109
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10863"; a="4040268"
+  bh=wPsnnrZpLtCpjRrtyf6lW/jTyCZ+BEZgbzpRy35IyMc=;
+  b=LQ62yAxwWi2FIlG2QRqENhtW9YKZAudjkASsB6X4AbfEba5uuV08frK9
+   Tfgty6UzzJS3ScSfphaQ6Y3G7hA5B44ZiVgy6Ij5S0UCU1fGK2IgHX0fP
+   dcgy6r+gWd6wiVZ4rwIJtdiAik7P9inK6VNB7HUOHWhLR49XHEZ3sFHyz
+   GJaycpjy7Rl8VaJfrQ+6+9qLbrLRCLRV3smTmYKZ+VIk3vX6MU9gnSB7Y
+   BHxp8a/fI5FrSMa9z0FM20rcRURDxsjXagkBpgl6z0xVF9+XAK8rB5Wb5
+   iFaTfps8L6mVY62JBEgXAje9L2N6bPyRCd/aqkycfrVHcWOUolwPqyqBN
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10863"; a="384306977"
 X-IronPort-AV: E=Sophos;i="6.03,228,1694761200"; 
-   d="scan'208";a="4040268"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Oct 2023 18:41:02 -0700
+   d="scan'208";a="384306977"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Oct 2023 19:11:01 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10863"; a="732120668"
+X-IronPort-AV: E=McAfee;i="6600,9927,10863"; a="790651418"
 X-IronPort-AV: E=Sophos;i="6.03,228,1694761200"; 
-   d="scan'208";a="732120668"
+   d="scan'208";a="790651418"
 Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
-  by orsmga006.jf.intel.com with ESMTP; 15 Oct 2023 18:40:57 -0700
-Message-ID: <c4816f4b-3fde-4adb-901f-4d568a4fd95a@linux.intel.com>
-Date: Mon, 16 Oct 2023 09:37:20 +0800
+  by orsmga001.jf.intel.com with ESMTP; 15 Oct 2023 19:10:57 -0700
+Message-ID: <d8553024-b880-42db-9f1f-8d2d3591469c@linux.intel.com>
+Date: Mon, 16 Oct 2023 10:07:20 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -61,128 +61,65 @@ Content-Transfer-Encoding: 7bit
 
 On 9/23/23 9:25 AM, Joao Martins wrote:
 [...]
->   
-> +static int intel_iommu_set_dirty_tracking(struct iommu_domain *domain,
-> +					  bool enable)
+> +static int intel_iommu_read_and_clear_dirty(struct iommu_domain *domain,
+> +					    unsigned long iova, size_t size,
+> +					    unsigned long flags,
+> +					    struct iommu_dirty_bitmap *dirty)
 > +{
 > +	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
-> +	struct device_domain_info *info;
-> +	int ret = -EINVAL;
+> +	unsigned long end = iova + size - 1;
+> +	unsigned long pgsize;
+> +	bool ad_enabled;
 > +
 > +	spin_lock(&dmar_domain->lock);
-> +	if (!(dmar_domain->dirty_tracking ^ enable) ||
+> +	ad_enabled = dmar_domain->dirty_tracking;
+> +	spin_unlock(&dmar_domain->lock);
 
-Just out of curiosity, can we simply write
+The spin lock is to protect the RID and PASID device tracking list. No
+need to use it here.
 
-dmar_domain->dirty_tracking == enable
-
-instead? I am not sure whether the compiler will be happy with this.
-
-> +	    list_empty(&dmar_domain->devices)) {
-
-list_for_each_entry is no op if list is empty, so no need to check it.
-
-> +		spin_unlock(&dmar_domain->lock);
-> +		return 0;
-> +	}
 > +
-> +	list_for_each_entry(info, &dmar_domain->devices, link) {
-> +		/* First-level page table always enables dirty bit*/
-> +		if (dmar_domain->use_first_level) {
+> +	if (!ad_enabled && dirty->bitmap)
+> +		return -EINVAL;
 
-Since we leave out domain->use_first_level in the user_domain_alloc
-function, we no longer need to check it here.
+I don't understand above check of "dirty->bitmap". Isn't it always
+invalid to call this if dirty tracking is not enabled on the domain?
 
-> +			ret = 0;
-> +			break;
+The iommu_dirty_bitmap is defined in iommu core. The iommu driver has no
+need to understand it and check its member anyway.
+
+Or, I overlooked anything?
+
+> +
+> +	rcu_read_lock();
+
+Do we really need a rcu lock here? This operation is protected by
+iopt->iova_rwsem. Is it reasonable to remove it? If not, how about put
+some comments around it?
+
+> +	do {
+> +		struct dma_pte *pte;
+> +		int lvl = 0;
+> +
+> +		pte = pfn_to_dma_pte(dmar_domain, iova >> VTD_PAGE_SHIFT, &lvl,
+> +				     GFP_ATOMIC);
+> +		pgsize = level_size(lvl) << VTD_PAGE_SHIFT;
+> +		if (!pte || !dma_pte_present(pte)) {
+> +			iova += pgsize;
+> +			continue;
 > +		}
 > +
-> +		ret = intel_pasid_setup_dirty_tracking(info->iommu, info->domain,
-> +						     info->dev, IOMMU_NO_PASID,
-> +						     enable);
-> +		if (ret)
-> +			break;
-
-We need to unwind to the previous status here. We cannot leave some
-devices with status @enable while others do not.
-
+> +		/* It is writable, set the bitmap */
+> +		if (((flags & IOMMU_DIRTY_NO_CLEAR) &&
+> +				dma_sl_pte_dirty(pte)) ||
+> +		    dma_sl_pte_test_and_clear_dirty(pte))
+> +			iommu_dirty_bitmap_record(dirty, iova, pgsize);
+> +		iova += pgsize;
+> +	} while (iova < end);
+> +	rcu_read_unlock();
 > +
-> +	}
-
-The VT-d driver also support attaching domain to a pasid of a device. We
-also need to enable dirty tracking on those devices.
-
-> +
-> +	if (!ret)
-> +		dmar_domain->dirty_tracking = enable;
-> +	spin_unlock(&dmar_domain->lock);
-> +
-> +	return ret;
+> +	return 0;
 > +}
-
-I have made some changes to the code based on my above comments. Please
-let me know what you think.
-
-static int intel_iommu_set_dirty_tracking(struct iommu_domain *domain,
-                                           bool enable)
-{
-         struct dmar_domain *dmar_domain = to_dmar_domain(domain);
-         struct dev_pasid_info *dev_pasid;
-         struct device_domain_info *info;
-         int ret;
-
-         spin_lock(&dmar_domain->lock);
-         if (!(dmar_domain->dirty_tracking ^ enable))
-                 goto out_unlock;
-
-         list_for_each_entry(info, &dmar_domain->devices, link) {
-                 ret = intel_pasid_setup_dirty_tracking(info->iommu, 
-dmar_domain,
-                                                        info->dev, 
-IOMMU_NO_PASID,
-                                                        enable);
-                 if (ret)
-                         goto err_unwind;
-         }
-
-         list_for_each_entry(dev_pasid, &dmar_domain->dev_pasids, 
-link_domain) {
-                 info = dev_iommu_priv_get(dev_pasid->dev);
-                 ret = intel_pasid_setup_dirty_tracking(info->iommu, 
-dmar_domain,
-                                                        info->dev, 
-dev_pasid->pasid,
-                                                        enable);
-                 if (ret)
-                         goto err_unwind;
-         }
-
-         dmar_domain->dirty_tracking = enable;
-out_unlock:
-         spin_unlock(&dmar_domain->lock);
-
-         return 0;
-
-err_unwind:
-         list_for_each_entry(info, &dmar_domain->devices, link)
-                 intel_pasid_setup_dirty_tracking(info->iommu, 
-dmar_domain, info->dev,
-                                                  IOMMU_NO_PASID,
- 
-dmar_domain->dirty_tracking);
-         list_for_each_entry(dev_pasid, &dmar_domain->dev_pasids, 
-link_domain) {
-                 info = dev_iommu_priv_get(dev_pasid->dev);
-                 intel_pasid_setup_dirty_tracking(info->iommu, dmar_domain,
-                                                  info->dev, 
-dev_pasid->pasid,
- 
-dmar_domain->dirty_tracking);
-         }
-         spin_unlock(&dmar_domain->lock);
-
-         return ret;
-}
 
 Best regards,
 baolu
