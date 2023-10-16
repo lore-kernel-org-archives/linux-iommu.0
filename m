@@ -1,141 +1,106 @@
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2088.outbound.protection.outlook.com [40.107.223.88])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-vk1-f175.google.com (mail-vk1-f175.google.com [209.85.221.175])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8ED3928692
-	for <iommu@lists.linux.dev>; Mon, 16 Oct 2023 14:09:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 62E1A2943E
+	for <iommu@lists.linux.dev>; Mon, 16 Oct 2023 15:40:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="ek+ZHIl5"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=h8av4e9fVTWu0GDGxQKZDi+HQea99d/a/y7u1d/TPUAAl/Jl/CqqEn8VN5TmfQzbeSWVFhu0zWknh6Jm1go90HuJjCW0B6atcjg+2UTwLXqb5eRvcA+1KbdMDTSqF9f0Cnj0u3dGduA0Zf/SLUAtRLA2lSeMV57SQh3yDe2yMv5Hthg144MND+ciexM0YAvda1c5N1O2f9roZkfUMpD1tbWMT3rmUqHaGro7Oy9bD2YBA6uqL2hioTaWjH1wjg3jp2SuK+vzo5AKLyHhb9IpA22MC0LgyoHwdzQ+TWkG7mCeAdEVv3U3aDWMVvsA8KDiWFzE3xBQKOUOcVbCEXjtUQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=II/lVz5/1IiN0/LRYxzSU6oVkOfytZj2uKMoGnLOuqY=;
- b=OWJi1RG/21y1u+2zJdspuFs8CvFQwFwy6rQq1KkOf/SYMsIuS17fKqtunUaMBY13j+VeYXtnflv2IAtpkolP1IUm+uXFh6dCSjRVqdhvnA5XICQq7woHTllR41spYzx54+CWzNVS6aX0pbxMkNx8gGnR97kjkYOKgoUaky08GhnoIubXBOcDFPqaOV8QHANPe0uY9odyU4VJA3TnlMJ9gB0R4XF0niq/sq1Acq4+IVqAdRTGBmT8cGFr6WIUN1KhEHg0QDeKFxQ7tW07n1dVrkvVToLdJPNVu8we+MwzcFpl83NFdOrl/XiqrG0WDtbF9uwz/OhaPOxVeQ90Gwxm1Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=II/lVz5/1IiN0/LRYxzSU6oVkOfytZj2uKMoGnLOuqY=;
- b=ek+ZHIl5Qdz7iAy2afx1eXG9+ttjgLFJ+lcdTMPFgGUALFryAO1k00BpqLX0/JuIf7yUCoQW7DzM2jGZh+aBCa1rlfDf8xK1BJozCg9NkzWV3bWcnFVFLIhC5kxPu6TsZbpkHJESaur2zbCn7SuKMZ4NiLNgnzUgo1+lEKqo93tagFzXbUskU7jICO1Nvh4hOSJ0J0k9s8E/5HWSyZ0HHj2nrYStlJcT7evBFfx/537RjnS7QeR3IHgQNIEaTkfBqdhssXZZZDGAoOWsQzZ9W/Tecia8Zk/OylCncq5XWJbHFLnvTQXLPr5rlqRLKMuDzaAWCqgked2ZzOPrWkDsdw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by DS0PR12MB8816.namprd12.prod.outlook.com (2603:10b6:8:14f::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6886.35; Mon, 16 Oct
- 2023 14:09:24 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::3f66:c2b6:59eb:78c2]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::3f66:c2b6:59eb:78c2%6]) with mapi id 15.20.6863.046; Mon, 16 Oct 2023
- 14:09:24 +0000
-Date: Mon, 16 Oct 2023 11:09:21 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: kevin.tian@intel.com, yi.l.liu@intel.com, shuah@kernel.org,
-	iommu@lists.linux.dev, linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH] iommufd/selftest: Rework TEST_LENGTH to test min_size
- explicitly
-Message-ID: <20231016140921.GU3952@nvidia.com>
-References: <20231015074648.24185-1-nicolinc@nvidia.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20231015074648.24185-1-nicolinc@nvidia.com>
-X-ClientProxiedBy: SJ0PR03CA0218.namprd03.prod.outlook.com
- (2603:10b6:a03:39f::13) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hVyxwDXV"
+Received: by mail-vk1-f175.google.com with SMTP id 71dfb90a1353d-4a19dac27c4so1956786e0c.1
+        for <iommu@lists.linux.dev>; Mon, 16 Oct 2023 08:40:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1697470858; x=1698075658; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=6JyrPV6/isChg/aWoV8Vdox7jNb/LeSH8h9ZE9RQZ4k=;
+        b=hVyxwDXVVeX9BtJ0Ns5lCujaIEM1eFDFD2UmjSrTBqjYeBSco9jjZibvElCTgF9FLo
+         xErqwsjfollGM1OeH60TG7EatjolZZt6agxdn5czH9G9YhSW5vh6+0v55yj9IjuzCqIq
+         K2nGT4Ct6biZv0EOFbH0BJfi98lXlqKXAwOdPFLiZkx40kpDB56+oNo2tmBDbq0fvlDZ
+         6gFKoiyjiSxUc+td7C1ViWTduPFtqMYYMWd+V/IqwHcG+0vJiEOs9IOjQlaZ/bvIY7nb
+         THa7BtaN7vdrN2Z9TXU9bNKLy6SmIGO3k+kXSVUNafdOdQ4GHaYBxoBXlARsZHfnexY2
+         XlQw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1697470858; x=1698075658;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=6JyrPV6/isChg/aWoV8Vdox7jNb/LeSH8h9ZE9RQZ4k=;
+        b=cuXz9k+WZnW5cja4r/7DPr95E6mZZ56q4T0OvG1vh99mfHNzVDjwO0QGuAkF/Xue8T
+         +ZIMjsAkcvSLtxQRvrK4EqpliIEW3rictIiCcvHSm1DSu/sbGSD1QqewUC2i5dBmDO1c
+         LUU2WNFFtkTmtGVPd3VJinrYY83+ZUhUkV9avcHj9S8DXVs+EqUZw7M7q+OdBMy8+T5w
+         uuOaPMsACBN+MxpRLKzhYOV1aomTvUBAL/Ft5rorWhSWMSGCFYW42Ti+TZ2VCDeSrDK4
+         mJGjIjTdMUHAN36640yOZAiXnQJILI5C01tkXpgpfMCoMi694RDJUF+XyhG94AoXLLs/
+         Wbag==
+X-Gm-Message-State: AOJu0YzDoMeRkZbqQMC6zRqqoWZTu1ZHBxilRBUH1UAKgyz81NUDRbyI
+	XZMkxsQJireV0M6vw7FE4ai/XGzKZb8sadcHFhE=
+X-Google-Smtp-Source: AGHT+IEUS6diCI0qP0NzRCHHthfHGe1z+pXjLCt2SKZVkH+NQW/kPzzEZY2133jtIGuI9wooUY358mw8Vy0zXSvuQs4=
+X-Received: by 2002:a1f:4ec4:0:b0:4a4:887:514c with SMTP id
+ c187-20020a1f4ec4000000b004a40887514cmr8133579vkb.6.1697470858089; Mon, 16
+ Oct 2023 08:40:58 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|DS0PR12MB8816:EE_
-X-MS-Office365-Filtering-Correlation-Id: c6ba6b9e-9288-42d1-7dc8-08dbce518036
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	dBzSqJhgMjQESj6XvWoIZQ2kr80sedp1QB+Vgsk2PXptLe0TS45bontRuoJ34AJy2nMiOYmkpiwPeuMK+bxP4faeAxnnV8Op5S6waonjY5yTlU9+tOCZ4wc7e80qlQpHoQw8t1kw9MAJ1ZsmkFNpZ3wr959AVOoUqUjXc+tEpdGLyPWw4Ap9eScC7t4vqF5m/A9J1hl3NjX/VEZBszBnQxlKShbpLg7PRxiGOVfLs8Ki8LXqZQc/TvSXGS9Q5tOsIePSNAawNZ68dqUcbCfrEE1Ig+fnL/PkTzef/62YfQEyQYMDw16Vdhr11cg/RAYyivYs3WjThJDoerQGDKA0NsN0ZKxRT31+cJUMwiirV0ni0tNCxd5TqiU66ePgHkqrx/zo1tFxfxpWpb35vhs5MvwQH/EiUjiDDIy73u31qv5wjAPz1PURtd5mD0e6B+SOPjmTVFOEN3sDZzxoV3dYWc9JbNISTA1hI4OpivT63Cc8fL8BTc5Q9Ssum2R8NTZXKQKp7nAny6Xr0w9ZNnPQa5/oI70OTe5IxpMm7/M3MYs7e9WYJ9OFSH4jxFXo0ZQW0oZY6fLkmf0RFpvdp+JVvVettm/9+SoiaXIPx2zdk2A=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(39860400002)(376002)(366004)(136003)(346002)(396003)(230922051799003)(1800799009)(186009)(64100799003)(451199024)(966005)(6486002)(37006003)(6636002)(2616005)(66476007)(66556008)(66946007)(478600001)(316002)(1076003)(26005)(6512007)(6506007)(5660300002)(6862004)(8676002)(8936002)(4326008)(2906002)(41300700001)(86362001)(33656002)(6666004)(36756003)(38100700002)(83380400001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?dxikN5OVeuivqs++DlVlq2MSI0qL8+UUm+PIRQeeJ7yORmXd0ow78nUMQ135?=
- =?us-ascii?Q?hY6s4OBs7Gt3/1id+gKK75u/aAqsA50ULqDRlg3TS2hMQlS30PfkPTiOa+k+?=
- =?us-ascii?Q?QsNhK2UvA28ZGdkyrONBHPwXmNXVBa0AhEx633CsI3QMUFEfg7tJeHrePphO?=
- =?us-ascii?Q?iEfVBn+KKGHbjD73ZrTCl7j8o6doJvcbTQE728PURT70UlBg+XZ3JkQX61uz?=
- =?us-ascii?Q?ZGQ/bf8qeK2RfJ5X+5aAgdvnXky0HrdOsq+Z0MRXz7gFmMJ/TCRyGnD61yHV?=
- =?us-ascii?Q?t2sVdiGhgEDBT8YVD87tEO+RJR7q7a+bB0NjAKyjMzBgeHLZ0MvB6IcznNv5?=
- =?us-ascii?Q?JmTUa45CMcSJrXmo2WC8H5hqvsUSHT7xLLQTKyaYbFUJUr8/mOKWVy5Jzpgy?=
- =?us-ascii?Q?CrN8+r3oWHvZSOs1nBo9tTmbTQHHQSu6qMy5Aw2O7DlaOtNdtPOiNnCv1qOb?=
- =?us-ascii?Q?1H7d0QoGIs8ldHitVTQtHsNQ8a34hUuj3wu59nCsTRTOWC0aFNRYKTayVKQZ?=
- =?us-ascii?Q?rGdDALHrLM0VA4dRsS5Eflzr6uDnz1VHyXeOguOeSUf2iyaqtwPsK69kZD20?=
- =?us-ascii?Q?FEoh8fD5ixSu3FrYmyZsIBFLU+dPw8T/AdtKvGKc/NuP9MQ3re9tECX/tVl3?=
- =?us-ascii?Q?ySAQBIFPVuL4Ja4UEvAPMtdCShxAstHY9U4yze1iqkjstzIt2BdxIioxRLQF?=
- =?us-ascii?Q?TUDRz3N8nQQ9BHve6PTOj/txUHWwK8k1TAYPXPOVS1BiaksUKjoKEoIN4E2T?=
- =?us-ascii?Q?FABbq1NoqpVPoydAf6esYySrpEQvdXFvNMBEwz1zgSuNDlKug1YaYrZsd/eT?=
- =?us-ascii?Q?ZZ5OJRqK9HzWie+MWsx0If6BcpGh1g1mFyyWsrjOVP7yfAdB++gWu56qRDqO?=
- =?us-ascii?Q?DSaEzH+TmeYSDhE+8NHQXicz2Q0/hoOkCJ537IAlWkCynKv1ppNYQUjDHuX7?=
- =?us-ascii?Q?/cZPy7yX2UBC2uGPVF84TVK+u/ooNBgVgeuqdJWA3b6L3u0vL13tfAjGqMfB?=
- =?us-ascii?Q?/AXF3YJL2v79wFWccV9UDqegXRzkGLL3FxtLVPvGFNiBhKlIaM5IRftGnyCv?=
- =?us-ascii?Q?30Aa2IZTT6qlZjvi3CzXMPD2fNBznFs6WzZJsPOtfG1/rxPEDnDml6zf2Cd2?=
- =?us-ascii?Q?M+WqZkJqgwvPkXJVwOSkjnPGNQJjCufknJc6VcihV2cPilhRzwD/iTkZc/jW?=
- =?us-ascii?Q?8D+U44O7GF99EqoZCWextBVPHyll57CGXScohJBh/QP3TdkAOA4eL39G/Rxq?=
- =?us-ascii?Q?ha6tLyrbeZBhVIhaVPC7+pBD+uBB4M9u+op0GEj5kJZT7tr6buHLbFoWOrKP?=
- =?us-ascii?Q?tfKgm9gTLUwxDUXPR52vV4sVDXm7xOjBvsJmQN7l6J+cAiDvrxh6lllLKfz6?=
- =?us-ascii?Q?su+xBSmAq8jo/UC6TzK/AhG5/HSz4DEmOozoLhq/LdXjorlwaeIlUq3lEMA0?=
- =?us-ascii?Q?LBgk8zITz8di+zPIyiXnmpIAQPdcdARQY+V6+EKhVEPeqYX5ccauM2UXBwPm?=
- =?us-ascii?Q?gkT0BDplcZHrYxesg4AjEk2rRlvFNiruwy98nQrros3Y98nYvYg2r4RHCHKr?=
- =?us-ascii?Q?3fkrvBGtqkpsHeBCLOmnpqhHuIEyLk+owAZ7bfuy?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c6ba6b9e-9288-42d1-7dc8-08dbce518036
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Oct 2023 14:09:24.3360
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: uPfRprF+NjzvPlkx7Idu8KhUTn1PhKg6uHhhq42z/UVm+OB/gjwxOxE9h7jWBAXv
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB8816
+References: <20231016054755.915155-1-hch@lst.de> <20231016054755.915155-3-hch@lst.de>
+In-Reply-To: <20231016054755.915155-3-hch@lst.de>
+From: "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
+Date: Mon, 16 Oct 2023 16:39:40 +0100
+Message-ID: <CA+V-a8va9W7Gpgr22RcPHL=fJvbViMjrpUfqKekcQ+rSZeYebw@mail.gmail.com>
+Subject: Re: [PATCH 02/12] riscv: only select DMA_DIRECT_REMAP from RISCV_ISA_ZICBOM
+To: Christoph Hellwig <hch@lst.de>
+Cc: Greg Ungerer <gerg@linux-m68k.org>, iommu@lists.linux.dev, 
+	Paul Walmsley <paul.walmsley@sifive.com>, Palmer Dabbelt <palmer@dabbelt.com>, 
+	Conor Dooley <conor@kernel.org>, Geert Uytterhoeven <geert+renesas@glider.be>, 
+	Magnus Damm <magnus.damm@gmail.com>, Robin Murphy <robin.murphy@arm.com>, 
+	Marek Szyprowski <m.szyprowski@samsung.com>, Geert Uytterhoeven <geert@linux-m68k.org>, 
+	Wei Fang <wei.fang@nxp.com>, Shenwei Wang <shenwei.wang@nxp.com>, 
+	Clark Wang <xiaoning.wang@nxp.com>, NXP Linux Team <linux-imx@nxp.com>, 
+	linux-m68k@lists.linux-m68k.org, netdev@vger.kernel.org, 
+	linux-riscv@lists.infradead.org, linux-renesas-soc@vger.kernel.org, 
+	Jim Quinlan <james.quinlan@broadcom.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Sun, Oct 15, 2023 at 12:46:48AM -0700, Nicolin Chen wrote:
-> TEST_LENGTH passing ".size = sizeof(struct _struct) - 1" expects -EINVAL
-> from "if (ucmd.user_size < op->min_size)" check in iommufd_fops_ioctl().
-> This has been working when min_size is exactly the size of the structure.
-> 
-> However, if the size of the structure becomes larger than min_size, i.e.
-> the passing size above is larger than min_size, that min_size sanity no
-> longer works.
-> 
-> Since the first test in TEST_LENGTH() was to test that min_size sanity
-> routine, rework it to support a min_size calculation, rather than using
-> the full size of the structure.
-> 
-> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+On Mon, Oct 16, 2023 at 6:48=E2=80=AFAM Christoph Hellwig <hch@lst.de> wrot=
+e:
+>
+> RISCV_DMA_NONCOHERENT is also used for whacky non-standard
+> non-coherent ops that use different hooks in dma-direct.
+>
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
 > ---
-> Hi Jason/Kevin,
-> 
-> This was a part of the nesting series. Its link in v4:
-> https://lore.kernel.org/linux-iommu/20230921075138.124099-13-yi.l.liu@intel.com/
-> 
-> I just realized that this should go in prior to the nesting series.
-> One of the nesting patches changes the IOMMU_HWPT_ALLOC structure,
-> which would break the cmd_length test without this patch.
-> 
-> Thanks!
-> Nicolin
-> 
->  tools/testing/selftests/iommu/iommufd.c | 29 ++++++++++++++-----------
->  1 file changed, 16 insertions(+), 13 deletions(-)
+>  arch/riscv/Kconfig | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+Reviewed-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 
-Applied to iommufd for-next
+Cheers,
+Prabhakar
 
-Thanks,
-Jason
+> diff --git a/arch/riscv/Kconfig b/arch/riscv/Kconfig
+> index 0ac0b538379718..9c48fecc671918 100644
+> --- a/arch/riscv/Kconfig
+> +++ b/arch/riscv/Kconfig
+> @@ -273,7 +273,6 @@ config RISCV_DMA_NONCOHERENT
+>         select ARCH_HAS_SYNC_DMA_FOR_CPU
+>         select ARCH_HAS_SYNC_DMA_FOR_DEVICE
+>         select DMA_BOUNCE_UNALIGNED_KMALLOC if SWIOTLB
+> -       select DMA_DIRECT_REMAP if MMU
+>
+>  config RISCV_NONSTANDARD_CACHE_OPS
+>         bool
+> @@ -549,6 +548,7 @@ config RISCV_ISA_ZICBOM
+>         depends on RISCV_ALTERNATIVE
+>         default y
+>         select RISCV_DMA_NONCOHERENT
+> +       select DMA_DIRECT_REMAP
+>         help
+>            Adds support to dynamically detect the presence of the ZICBOM
+>            extension (Cache Block Management Operations) and enable its
+> --
+> 2.39.2
+>
