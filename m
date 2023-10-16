@@ -1,88 +1,163 @@
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.65])
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 301611CF87
-	for <iommu@lists.linux.dev>; Mon, 16 Oct 2023 12:42:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 10E07273E9
+	for <iommu@lists.linux.dev>; Mon, 16 Oct 2023 12:50:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=microchip.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=microchip.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="adiSmPXv"
+	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="LTvQfRJB"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1697460156; x=1728996156;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=kJa9LCleZSuKMx8+bUfIFtH/NjUO548v8N9SSN7TIR0=;
-  b=adiSmPXvAlgsFH169tIk9yycIFNk1MQws7fEQWV25NeQ/1YyLOM3bmZW
-   2thAd9ROi0PWKqKGqvecIp+yTGD58cIN4slXJ35oWZ65b30AtPQcfNddl
-   yJpVnVJRm+FQWFTngzyD+jFFSr9Ec01TvV2qxtFDIoaYpueUBcE/PP3+l
-   cdJZ2yj5dZ5xvZ328BssFu4bFEkWb2PO6w5K413LFV0GQMKUFUhjwP9Ri
-   sLnxbyOyP2gcRFkJlFOeHDV04eIm803WWMBHrLXaLRPCJQ7T3Yk6rDIeG
-   2TjviTvBoxDwzBIlzSTBE9SMs9odYtMzX1vW8gHpgqIELDaejRkZ0+nQl
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10863"; a="389374766"
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1697460631; x=1728996631;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=QegDkNMZMRhVlJdi4RGF/B2gb0RjIiBMZVBOlKntRnE=;
+  b=LTvQfRJBlC1aufGsxSuoMIx2Ndtmlfantk1iAUcpO+HxaeqV+8G71SuJ
+   mJejVgVBfDNydrQzqCZroyZWKjISXMBfxCPhQqsx3uVZn3iuCpTGqdzUd
+   9OYbW1WUEJPTXiqD103p7knTV2n5NxjxC32h3K/tfFmuJMjiDjqXEQ02a
+   uHNrDOAHMfpLqlux2CnnmCtd2LHEwr5lPolJOMjVJ2uvLJuLHJ5G+SQrx
+   exGM5LaBZcglV/ikpNQHbGO1CvQQj+V1Ry92pZ53Jcj/3Y4NiLLwRd1SK
+   kT8R9BMvRTRIE0mYFn1tdSvAP/OcOnwy1SZfdLvhnc95m7k8NrAaxltxT
+   g==;
+X-CSE-ConnectionGUID: ITNzLPtcTWajHI2MYV7Rww==
+X-CSE-MsgGUID: +uJSPN5bQBOp65OEvyXvMQ==
+X-ThreatScanner-Verdict: Negative
 X-IronPort-AV: E=Sophos;i="6.03,229,1694761200"; 
-   d="scan'208";a="389374766"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Oct 2023 05:41:46 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10863"; a="879413581"
-X-IronPort-AV: E=Sophos;i="6.03,229,1694761200"; 
-   d="scan'208";a="879413581"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.249.171.91]) ([10.249.171.91])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Oct 2023 05:41:40 -0700
-Message-ID: <ab9f9259-6ba5-7cdf-10d9-f0b9502ca51d@linux.intel.com>
-Date: Mon, 16 Oct 2023 20:41:38 +0800
+   d="asc'?scan'208";a="240802253"
+X-Amp-Result: UNKNOWN
+X-Amp-Original-Verdict: FILE UNKNOWN
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 16 Oct 2023 05:50:24 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21; Mon, 16 Oct 2023 05:50:06 -0700
+Received: from wendy (10.10.85.11) by chn-vm-ex03.mchp-main.com (10.10.85.151)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.21 via Frontend
+ Transport; Mon, 16 Oct 2023 05:50:02 -0700
+Date: Mon, 16 Oct 2023 13:49:41 +0100
+From: Conor Dooley <conor.dooley@microchip.com>
+To: Christoph Hellwig <hch@lst.de>
+CC: Greg Ungerer <gerg@linux-m68k.org>, <iommu@lists.linux.dev>, Paul Walmsley
+	<paul.walmsley@sifive.com>, Palmer Dabbelt <palmer@dabbelt.com>, Conor Dooley
+	<conor@kernel.org>, Geert Uytterhoeven <geert+renesas@glider.be>, Magnus Damm
+	<magnus.damm@gmail.com>, Robin Murphy <robin.murphy@arm.com>, Marek
+ Szyprowski <m.szyprowski@samsung.com>, Geert Uytterhoeven
+	<geert@linux-m68k.org>, Wei Fang <wei.fang@nxp.com>, Shenwei Wang
+	<shenwei.wang@nxp.com>, Clark Wang <xiaoning.wang@nxp.com>, NXP Linux Team
+	<linux-imx@nxp.com>, <linux-m68k@lists.linux-m68k.org>,
+	<netdev@vger.kernel.org>, <linux-riscv@lists.infradead.org>,
+	<linux-renesas-soc@vger.kernel.org>, Jim Quinlan <james.quinlan@broadcom.com>
+Subject: Re: [PATCH 01/12] riscv: RISCV_NONSTANDARD_CACHE_OPS shouldn't
+ depend on RISCV_DMA_NONCOHERENT
+Message-ID: <20231016-walmart-egomaniac-dc4c63ea70a6@wendy>
+References: <20231016054755.915155-1-hch@lst.de>
+ <20231016054755.915155-2-hch@lst.de>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.15.1
-Cc: baolu.lu@linux.intel.com, Jason Gunthorpe <jgg@nvidia.com>,
- Kevin Tian <kevin.tian@intel.com>,
- Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
- Yi Liu <yi.l.liu@intel.com>, Yi Y Sun <yi.y.sun@intel.com>,
- Nicolin Chen <nicolinc@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Alex Williamson <alex.williamson@redhat.com>, kvm@vger.kernel.org
-Subject: Re: [PATCH v3 19/19] iommu/intel: Access/Dirty bit support for SL
- domains
-To: Joao Martins <joao.m.martins@oracle.com>, iommu@lists.linux.dev
-References: <20230923012511.10379-1-joao.m.martins@oracle.com>
- <20230923012511.10379-20-joao.m.martins@oracle.com>
- <046e8881-2fe4-45db-846e-99122d4dce86@linux.intel.com>
- <5adefd4e-d388-4c89-851b-a37f92d68e06@oracle.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <5adefd4e-d388-4c89-851b-a37f92d68e06@oracle.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="H4bRYPb5tXhOAmff"
+Content-Disposition: inline
+In-Reply-To: <20231016054755.915155-2-hch@lst.de>
 
-On 2023/10/16 18:42, Joao Martins wrote:
->>> +        domain->dirty_ops = &intel_dirty_ops;
->>>        return domain;
->>>    }
->> The VT-d driver always uses second level for a user domain translation.
->> In order to avoid checks of "domain->use_first_level" in the callbacks,
->> how about check it here and return failure if first level is used for
->> user domain?
->>
-> I was told by Yi Y Sun offlist to have the first_level checked, because dirty
-> bit in first stage page table is always enabled (and cannot be toggled on/off).
-> I can remove it again; initially RFC didn't have it as it was failing in similar
-> way to how you suggest here. Not sure how to proceed?
+--H4bRYPb5tXhOAmff
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Yi was right. But we currently have no use case for dirty tracking in
-the first-level page table. So let's start from only supporting it in
-the second level page table.
+Hey,
 
-If we later identify a use case for dirty tracking in the first level
-page table, we can then add the code with appropriate testing efforts.
+On Mon, Oct 16, 2023 at 07:47:43AM +0200, Christoph Hellwig wrote:
+> RISCV_NONSTANDARD_CACHE_OPS is also used for the pmem cache maintenance
+> helpers, which are built into the kernel unconditionally.
 
-Best regards,
-baolu
+You surely have better insight than I do here, but is this actually
+required?
+This patch seems to allow creation of a kernel where the cache
+maintenance operations could be used for pmem, but would be otherwise
+unavailable, which seems counter intuitive to me.
+Why would someone want to provide the pmem helpers with cache
+maintenance operations, but not provide them generally?
 
+I also don't really understand what the unconditional nature of the pmem
+helpers has to do with anything, as this patch does not unconditionally
+provide any cache management operations, only relax the conditions under
+which the non-standard cache management operations can be provided.
+
+What am I missing?
+
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> ---
+>  arch/riscv/Kconfig          | 1 -
+>  drivers/cache/Kconfig       | 2 +-
+>  drivers/soc/renesas/Kconfig | 2 +-
+>  3 files changed, 2 insertions(+), 3 deletions(-)
+>=20
+> diff --git a/arch/riscv/Kconfig b/arch/riscv/Kconfig
+> index d607ab0f7c6daf..0ac0b538379718 100644
+> --- a/arch/riscv/Kconfig
+> +++ b/arch/riscv/Kconfig
+> @@ -277,7 +277,6 @@ config RISCV_DMA_NONCOHERENT
+> =20
+>  config RISCV_NONSTANDARD_CACHE_OPS
+>  	bool
+> -	depends on RISCV_DMA_NONCOHERENT
+>  	help
+>  	  This enables function pointer support for non-standard noncoherent
+>  	  systems to handle cache management.
+> diff --git a/drivers/cache/Kconfig b/drivers/cache/Kconfig
+> index a57677f908f3ba..d6e5e3abaad8af 100644
+> --- a/drivers/cache/Kconfig
+> +++ b/drivers/cache/Kconfig
+> @@ -3,7 +3,7 @@ menu "Cache Drivers"
+> =20
+>  config AX45MP_L2_CACHE
+>  	bool "Andes Technology AX45MP L2 Cache controller"
+> -	depends on RISCV_DMA_NONCOHERENT
+> +	depends on RISCV
+>  	select RISCV_NONSTANDARD_CACHE_OPS
+>  	help
+>  	  Support for the L2 cache controller on Andes Technology AX45MP platfo=
+rms.
+> diff --git a/drivers/soc/renesas/Kconfig b/drivers/soc/renesas/Kconfig
+> index 12040ce116a551..880c544bb2dfda 100644
+> --- a/drivers/soc/renesas/Kconfig
+> +++ b/drivers/soc/renesas/Kconfig
+> @@ -335,7 +335,7 @@ config ARCH_R9A07G043
+>  	bool "RISC-V Platform support for RZ/Five"
+>  	depends on NONPORTABLE
+>  	select ARCH_RZG2L
+> -	select AX45MP_L2_CACHE if RISCV_DMA_NONCOHERENT
+
+FWIW, this one is already gone in linux-next, as part of fixing some
+randconfig issues.
+
+Cheers,
+Conor.
+
+> +	select AX45MP_L2_CACHE
+>  	select DMA_GLOBAL_POOL
+>  	select ERRATA_ANDES if RISCV_SBI
+>  	select ERRATA_ANDES_CMO if ERRATA_ANDES
+> --=20
+> 2.39.2
+>=20
+
+--H4bRYPb5tXhOAmff
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZS0xZAAKCRB4tDGHoIJi
+0r8WAP0V7KR64e4ZUtsXTDWdQEWkorwWePw0OFIpRuGhinkaEwD/c3YYEZm7U2pY
+4IztZY7Ga6qv2gPgi28lN/xhzpKvZgg=
+=rZtF
+-----END PGP SIGNATURE-----
+
+--H4bRYPb5tXhOAmff--
