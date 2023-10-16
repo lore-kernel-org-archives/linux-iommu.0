@@ -1,26 +1,26 @@
 Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B9F815AEE
-	for <iommu@lists.linux.dev>; Mon, 16 Oct 2023 05:48:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 56FBC16415
+	for <iommu@lists.linux.dev>; Mon, 16 Oct 2023 05:48:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="RE1OhfRU"
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="IkODTfco"
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
 	MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
 	:Reply-To:Content-Type:Content-ID:Content-Description;
-	bh=Y9DUw/dY172Zls+LRmOYmL30GnIrMabtQP9ggTJL0d8=; b=RE1OhfRU8CYhr7JH6VVDgiplTC
-	gjX3zJyGEe0eyRXQO2v84UfNP9kxd+gvBYj5cYvHZT5Hb+C2bWuiL0Eq5T/MRz9Z1X20ZWW/Rj0GD
-	ffAoypglXTNsoXYikcZIoJIoBCqHijes44y3x10ny1i8ygX5UJPTC/XbxlsGIHa+AQ1fZlD73wnj4
-	fB7uqpCtygxiNMPuHVhF0NHZwH5r9ICNexDt6VFaWcV0KKrhy/Or1+JbMw3ms9w8qvyUOKCKicOc8
-	gHFF2aJrnlt1sG87jjJdVY2r7Y4x2GdxUDJ70y/AMRNQWEmzwWa7kZpPe3qLM9E60mv5FbBsQF1vv
-	5gp46UxA==;
+	bh=lk2hjH1J0z+vDraZqP1FiMVLedAUOQE0Xu6QSSkdeMA=; b=IkODTfco0inGQHF15O+RlwwVUO
+	uyzV4qCSEoVwBecQK2ZtYgWfG55JGXH4i4m0yYkdWNozPWmlrpmGxjo3844SQlwA1agw0Qud1EH3g
+	wPcOkezghCHw/1fMp1HrZiMKLQyNBJENnYgGrg+qjnTFpNpr6oqEGLfB6c6UEqVLIA0BU0nZ1XI6L
+	O3Mcsr5dvr9V5U/JeSZ6eVdISZ5eokTIVUc5KoPdAGaDZpaoSof5Op3RgnSq6+uv5sBY7PFyXchn7
+	ZcfqYW9ivyW/BLXe4HSi0ynWkJoZLdYX5UHlOzRuvJzes54o/zmL13LaW7d8PxPBNeeu3wFXkxGq+
+	OMDVkeww==;
 Received: from 2a02-8389-2341-5b80-39d3-4735-9a3c-88d8.cable.dynamic.v6.surfer.at ([2a02:8389:2341:5b80:39d3:4735:9a3c:88d8] helo=localhost)
 	by bombadil.infradead.org with esmtpsa (Exim 4.96 #2 (Red Hat Linux))
-	id 1qsGSo-008Qyh-10;
-	Mon, 16 Oct 2023 05:48:26 +0000
+	id 1qsGSq-008R1r-2l;
+	Mon, 16 Oct 2023 05:48:29 +0000
 From: Christoph Hellwig <hch@lst.de>
 To: Greg Ungerer <gerg@linux-m68k.org>,
 	iommu@lists.linux.dev
@@ -41,9 +41,9 @@ Cc: Paul Walmsley <paul.walmsley@sifive.com>,
 	linux-riscv@lists.infradead.org,
 	linux-renesas-soc@vger.kernel.org,
 	Jim Quinlan <james.quinlan@broadcom.com>
-Subject: [PATCH 11/12] m68k: don't provide arch_dma_alloc for nommu/coldfire
-Date: Mon, 16 Oct 2023 07:47:53 +0200
-Message-Id: <20231016054755.915155-12-hch@lst.de>
+Subject: [PATCH 12/12] m68k: remove unused includes from dma.c
+Date: Mon, 16 Oct 2023 07:47:54 +0200
+Message-Id: <20231016054755.915155-13-hch@lst.de>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20231016054755.915155-1-hch@lst.de>
 References: <20231016054755.915155-1-hch@lst.de>
@@ -56,67 +56,37 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 
-Coldfire cores configured with a data cache can't provide coherent
-DMA allocations at all.
-
-Instead of returning non-coherent kernel memory in this case,
-return NULL and fail the allocation.
-
-The only driver that used to rely on the previous behavior (fec) has
-been switched to use non-coherent allocations for this case recently.
+dma.c doesn't need most of the headers it includes.  Also there is
+no point in undefining the DEBUG symbol given that it isn't used
+anywhere in this small file.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- arch/m68k/Kconfig      |  1 -
- arch/m68k/kernel/dma.c | 23 -----------------------
- 2 files changed, 24 deletions(-)
+ arch/m68k/kernel/dma.c | 9 ---------
+ 1 file changed, 9 deletions(-)
 
-diff --git a/arch/m68k/Kconfig b/arch/m68k/Kconfig
-index 6c585eae89f4dc..c1c0faffb0d413 100644
---- a/arch/m68k/Kconfig
-+++ b/arch/m68k/Kconfig
-@@ -3,7 +3,6 @@ config M68K
- 	bool
- 	default y
- 	select ARCH_32BIT_OFF_T
--	select ARCH_DMA_ALLOC if M68K_NONCOHERENT_DMA && COLDFIRE
- 	select ARCH_HAS_BINFMT_FLAT
- 	select ARCH_HAS_CPU_FINALIZE_INIT if MMU
- 	select ARCH_HAS_CURRENT_STACK_POINTER
 diff --git a/arch/m68k/kernel/dma.c b/arch/m68k/kernel/dma.c
-index f83870cfa79b37..eef63d032abb53 100644
+index eef63d032abb53..16063783aa80c6 100644
 --- a/arch/m68k/kernel/dma.c
 +++ b/arch/m68k/kernel/dma.c
-@@ -33,29 +33,6 @@ pgprot_t pgprot_dmacoherent(pgprot_t prot)
- 	}
- 	return prot;
- }
--#else
--void *arch_dma_alloc(struct device *dev, size_t size, dma_addr_t *dma_handle,
--		gfp_t gfp, unsigned long attrs)
--{
--	void *ret;
--
--	if (dev == NULL || (*dev->dma_mask < 0xffffffff))
--		gfp |= GFP_DMA;
--	ret = (void *)__get_free_pages(gfp, get_order(size));
--
--	if (ret != NULL) {
--		memset(ret, 0, size);
--		*dma_handle = virt_to_phys(ret);
--	}
--	return ret;
--}
--
--void arch_dma_free(struct device *dev, size_t size, void *vaddr,
--		dma_addr_t dma_handle, unsigned long attrs)
--{
--	free_pages((unsigned long)vaddr, get_order(size));
--}
--
- #endif /* CONFIG_MMU && !CONFIG_COLDFIRE */
+@@ -4,17 +4,8 @@
+  * for more details.
+  */
  
- void arch_sync_dma_for_device(phys_addr_t handle, size_t size,
+-#undef DEBUG
+-
+ #include <linux/dma-map-ops.h>
+-#include <linux/device.h>
+ #include <linux/kernel.h>
+-#include <linux/platform_device.h>
+-#include <linux/scatterlist.h>
+-#include <linux/slab.h>
+-#include <linux/vmalloc.h>
+-#include <linux/export.h>
+-
+ #include <asm/cacheflush.h>
+ 
+ #ifndef CONFIG_COLDFIRE
 -- 
 2.39.2
 
