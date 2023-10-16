@@ -1,173 +1,116 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 750DC26E10
-	for <iommu@lists.linux.dev>; Mon, 16 Oct 2023 12:53:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Authentication-Results: smtp.subspace.kernel.org; dkim=none
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 476632F4;
-	Mon, 16 Oct 2023 05:53:52 -0700 (PDT)
-Received: from entos-ampere02.shanghai.arm.com (unknown [10.169.212.212])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 5040C3F5A1;
-	Mon, 16 Oct 2023 05:53:09 -0700 (PDT)
-From: Jia He <justin.he@arm.com>
-To: Christoph Hellwig <hch@lst.de>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	iommu@lists.linux.dev
-Cc: linux-kernel@vger.kernel.org,
-	nd@arm.com,
-	Jia He <justin.he@arm.com>
-Subject: [PATCH v3 2/2] dma-mapping: fix dma_addressing_limited() if dma_range_map can't cover all system RAM
-Date: Mon, 16 Oct 2023 12:52:54 +0000
-Message-Id: <20231016125254.1875-3-justin.he@arm.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20231016125254.1875-1-justin.he@arm.com>
-References: <20231016125254.1875-1-justin.he@arm.com>
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 718B826E10
+	for <iommu@lists.linux.dev>; Mon, 16 Oct 2023 12:53:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=microchip.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=microchip.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="ESVuWkkc"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1697460818; x=1728996818;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=X/Kybg4Z50Wvq30RILKgpO3v0qlhowsz9dfetjRKyrI=;
+  b=ESVuWkkcIng2QzqlSkAF0o4wEm83QPNSdPleOvJhJoEgzU7I9eUEPqYp
+   P69/JeSo/+cI4F0l9zvxNB+Nhe3HVfCmvpOkGeJzrUM0L/vL20kxAVjuW
+   qCpq4zBzNGdwQhgJV4pcy5PuXfQ/7l6rj33i3IHyn3+hi1oXp9ijy6HR8
+   QMGP6NHsygRb2EV+1Riw+uP6MRkHfBDlOhR8lhYwww8/DZ7eSyjhxif4C
+   mdjxWxhp8t7a8umLdYWNHAc0WX8C1zPkDZBJio/DSsk5mkvtRZO5UzMrL
+   lAxWeufKHzw5ChybNIl6YQ39jyxweQq2dgXgiQILrqwIdyEqpUE1wd3AB
+   A==;
+X-CSE-ConnectionGUID: Leh/mquETYqrSTT64nJ6KQ==
+X-CSE-MsgGUID: /im/eG7oQQ2L63+JysKsNA==
+X-ThreatScanner-Verdict: Negative
+X-IronPort-AV: E=Sophos;i="6.03,229,1694761200"; 
+   d="asc'?scan'208";a="240802430"
+X-Amp-Result: UNKNOWN
+X-Amp-Original-Verdict: FILE UNKNOWN
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 16 Oct 2023 05:53:37 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21; Mon, 16 Oct 2023 05:53:22 -0700
+Received: from wendy (10.10.85.11) by chn-vm-ex03.mchp-main.com (10.10.85.151)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.21 via Frontend
+ Transport; Mon, 16 Oct 2023 05:53:18 -0700
+Date: Mon, 16 Oct 2023 13:52:57 +0100
+From: Conor Dooley <conor.dooley@microchip.com>
+To: Christoph Hellwig <hch@lst.de>
+CC: Greg Ungerer <gerg@linux-m68k.org>, <iommu@lists.linux.dev>, Paul Walmsley
+	<paul.walmsley@sifive.com>, Palmer Dabbelt <palmer@dabbelt.com>, Conor Dooley
+	<conor@kernel.org>, Geert Uytterhoeven <geert+renesas@glider.be>, Magnus Damm
+	<magnus.damm@gmail.com>, Robin Murphy <robin.murphy@arm.com>, Marek
+ Szyprowski <m.szyprowski@samsung.com>, Geert Uytterhoeven
+	<geert@linux-m68k.org>, Wei Fang <wei.fang@nxp.com>, Shenwei Wang
+	<shenwei.wang@nxp.com>, Clark Wang <xiaoning.wang@nxp.com>, NXP Linux Team
+	<linux-imx@nxp.com>, <linux-m68k@lists.linux-m68k.org>,
+	<netdev@vger.kernel.org>, <linux-riscv@lists.infradead.org>,
+	<linux-renesas-soc@vger.kernel.org>, Jim Quinlan <james.quinlan@broadcom.com>
+Subject: Re: [PATCH 04/12] soc: renesas: select RISCV_DMA_NONCOHERENT from
+ ARCH_R9A07G043
+Message-ID: <20231016-pantyhose-tall-7565b6b20fb9@wendy>
+References: <20231016054755.915155-1-hch@lst.de>
+ <20231016054755.915155-5-hch@lst.de>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="xxo3lByE7rW+vKH8"
+Content-Disposition: inline
+In-Reply-To: <20231016054755.915155-5-hch@lst.de>
 
-There is an unusual case that the range map covers right up to the top
-of system RAM, but leaves a hole somewhere lower down. Then it prevents
-the nvme device dma mapping in the checking path of phys_to_dma() and
-causes the hangs at boot.
+--xxo3lByE7rW+vKH8
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-E.g. On an Armv8 Ampere server, the dsdt ACPI table is:
- Method (_DMA, 0, Serialized)  // _DMA: Direct Memory Access
-            {
-                Name (RBUF, ResourceTemplate ()
-                {
-                    QWordMemory (ResourceConsumer, PosDecode, MinFixed,
-MaxFixed, Cacheable, ReadWrite,
-                        0x0000000000000000, // Granularity
-                        0x0000000000000000, // Range Minimum
-                        0x00000000FFFFFFFF, // Range Maximum
-                        0x0000000000000000, // Translation Offset
-                        0x0000000100000000, // Length
-                        ,, , AddressRangeMemory, TypeStatic)
-                    QWordMemory (ResourceConsumer, PosDecode, MinFixed,
-MaxFixed, Cacheable, ReadWrite,
-                        0x0000000000000000, // Granularity
-                        0x0000006010200000, // Range Minimum
-                        0x000000602FFFFFFF, // Range Maximum
-                        0x0000000000000000, // Translation Offset
-                        0x000000001FE00000, // Length
-                        ,, , AddressRangeMemory, TypeStatic)
-                    QWordMemory (ResourceConsumer, PosDecode, MinFixed,
-MaxFixed, Cacheable, ReadWrite,
-                        0x0000000000000000, // Granularity
-                        0x00000060F0000000, // Range Minimum
-                        0x00000060FFFFFFFF, // Range Maximum
-                        0x0000000000000000, // Translation Offset
-                        0x0000000010000000, // Length
-                        ,, , AddressRangeMemory, TypeStatic)
-                    QWordMemory (ResourceConsumer, PosDecode, MinFixed,
-MaxFixed, Cacheable, ReadWrite,
-                        0x0000000000000000, // Granularity
-                        0x0000007000000000, // Range Minimum
-                        0x000003FFFFFFFFFF, // Range Maximum
-                        0x0000000000000000, // Translation Offset
-                        0x0000039000000000, // Length
-                        ,, , AddressRangeMemory, TypeStatic)
-                })
+On Mon, Oct 16, 2023 at 07:47:46AM +0200, Christoph Hellwig wrote:
+> Selecting DMA_GLOBAL_POOL without the rest of the non-coherent DMA
+> infrastructure does not make sense.
+>=20
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> ---
+>  drivers/soc/renesas/Kconfig | 1 +
+>  1 file changed, 1 insertion(+)
+>=20
+> diff --git a/drivers/soc/renesas/Kconfig b/drivers/soc/renesas/Kconfig
+> index f1696d3b5018d0..ea473b4150dfa8 100644
+> --- a/drivers/soc/renesas/Kconfig
+> +++ b/drivers/soc/renesas/Kconfig
+> @@ -338,6 +338,7 @@ config ARCH_R9A07G043
+>  	select ARCH_RZG2L
+>  	select AX45MP_L2_CACHE
+>  	select DMA_GLOBAL_POOL
+> +	select RISCV_DMA_NONCOHERENT
+>  	select ERRATA_ANDES if RISCV_SBI
+>  	select ERRATA_ANDES_CMO if ERRATA_ANDES
 
-But the System RAM ranges are:
-cat /proc/iomem |grep -i ram
-90000000-91ffffff : System RAM
-92900000-fffbffff : System RAM
-880000000-fffffffff : System RAM
-8800000000-bff5990fff : System RAM
-bff59d0000-bff5a4ffff : System RAM
-bff8000000-bfffffffff : System RAM
-So some RAM ranges are out of dma_range_map.
+Since this Kconfig menu has changed a bit in linux-next, the selects
+are unconditional here, and ERRATA_ANDES_CMO will in turn select
+RISCV_DMA_NONCOHERENT.
 
-Fix it by checking whether each of the system RAM resources can be
-properly encompassed within the dma_range_map.
+I don't think being more explicit hurts anyone though, so
+Acked-by: Conor Dooley <conor.dooley@microchip.com>
 
-Signed-off-by: Jia He <justin.he@arm.com>
----
- kernel/dma/mapping.c | 49 ++++++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 47 insertions(+), 2 deletions(-)
+Thanks,
+Conor.
 
-diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
-index 5bfe782f9a7f..9889d1d25a7f 100644
---- a/kernel/dma/mapping.c
-+++ b/kernel/dma/mapping.c
-@@ -7,6 +7,7 @@
-  */
- #include <linux/memblock.h> /* for max_pfn */
- #include <linux/acpi.h>
-+#include <linux/dma-direct.h> /* for bus_dma_region */
- #include <linux/dma-map-ops.h>
- #include <linux/export.h>
- #include <linux/gfp.h>
-@@ -793,6 +794,47 @@ int dma_set_coherent_mask(struct device *dev, u64 mask)
- }
- EXPORT_SYMBOL(dma_set_coherent_mask);
- 
-+/*
-+ * To check whether all ram resource ranges are covered by dma range map
-+ * Returns 0 when continuous check is needed
-+ * Returns 1 if there is some RAM range can't be covered by dma_range_map
-+ */
-+static int check_ram_in_range_map(unsigned long start_pfn,
-+				  unsigned long nr_pages, void *data)
-+{
-+	unsigned long end_pfn = start_pfn + nr_pages;
-+	struct device *dev = (struct device *)data;
-+	struct bus_dma_region *bdr = NULL;
-+	const struct bus_dma_region *m;
-+
-+	while (start_pfn < end_pfn) {
-+		for (m = dev->dma_range_map; PFN_DOWN(m->size); m++) {
-+			unsigned long cpu_start_pfn = PFN_DOWN(m->cpu_start);
-+
-+			if (start_pfn >= cpu_start_pfn
-+			    && start_pfn - cpu_start_pfn < PFN_DOWN(m->size)) {
-+				bdr = (struct bus_dma_region *)m;
-+				break;
-+			}
-+		}
-+		if (!bdr)
-+			return 1;
-+
-+		start_pfn = PFN_DOWN(bdr->cpu_start) + PFN_DOWN(bdr->size);
-+	}
-+
-+	return 0;
-+}
-+
-+static bool all_ram_in_dma_range_map(struct device *dev)
-+{
-+	if (!dev->dma_range_map)
-+		return 1;
-+
-+	return !walk_system_ram_range(0, PFN_DOWN(ULONG_MAX) + 1, dev,
-+				      check_ram_in_range_map);
-+}
-+
- /**
-  * dma_addressing_limited - return if the device is addressing limited
-  * @dev:	device to check
-@@ -803,8 +845,11 @@ EXPORT_SYMBOL(dma_set_coherent_mask);
-  */
- bool dma_addressing_limited(struct device *dev)
- {
--	return min_not_zero(dma_get_mask(dev), dev->bus_dma_limit) <
--			    dma_get_required_mask(dev);
-+	if (min_not_zero(dma_get_mask(dev), dev->bus_dma_limit) <
-+			 dma_get_required_mask(dev))
-+		return true;
-+
-+	return !all_ram_in_dma_range_map(dev);
- }
- EXPORT_SYMBOL(dma_addressing_limited);
- 
--- 
-2.25.1
+--xxo3lByE7rW+vKH8
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZS0yKQAKCRB4tDGHoIJi
+0j/bAQDgJ0nwXmtzgHU2Jl2AAhl0wDZ4qQpYml3lufvr+cf2nwD/ZKm1C9hG3Wly
+LIQ9sbba3auXK4oJhcEr/7Eot4eqkAI=
+=XPiq
+-----END PGP SIGNATURE-----
+
+--xxo3lByE7rW+vKH8--
