@@ -1,179 +1,150 @@
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2065.outbound.protection.outlook.com [40.107.237.65])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0CAE5185F
-	for <iommu@lists.linux.dev>; Sun, 15 Oct 2023 07:47:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 44BE47FF
+	for <iommu@lists.linux.dev>; Mon, 16 Oct 2023 00:54:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="Qs5zb6eO"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=n6UWBpihHDJG18CMSV+R8oi9hl2mS95MvxmFbY6uWwF+To0hTUkPgebQyIt8fXz+s+guEm5Vsz0Jmh5rfRsx6aVxABW8zfMk0A7zsATDUG5Q295amKZNE8OrizYPKxrT/Mj3+FrBvtuNf5GnrQmqsE00xSTYrCnUjkhb7BHSatCpI3ta/7t72qCkg+GbOzOEYRSF93f8hv7nxf7CyVBlaZ/mauSaewtB0jKCwhgLDx2uMbE2cmNqs8S5jsAZveca2yQn/tO+ym/0HGhEUGeSz2JRogIK+awBT1xEE/TL4rWUqFYyMLT/7VQSbA0bvbpE/IRC0fR4AfJPEz2J4asKRw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Ymr9XiXjpNtyAAXuQHJmtBC3sJ3048u3Iu/Rb4Ikmx4=;
- b=lZoHByFPGpPBNPwCqF0H8VSoY9ZYxw83NBqfHu68iulRfCZowgHyDa2Y/LIXGSTmb/LdkjJsJSM/p+MipG1jVsdzBlMPxXQaLLQvOe1yg7YGG1F2uY1ZIZPhtQZdwvW3kOI6DPH/4ZX7Gm6ANAnYENGNmDpnOR7Csz6Nsq5KfvuQnrQ3HVWFCqE9DzVJaX5feLSHTClIOIhRf5sU3xvV6njuQ24ujo6NIWz5z3VjkNegWRx5JqXfmQWKAU9Y7xXxT43GC830DgDVlZCbLL0Urduq7M2gs15jqC/xJKJiOS2lvBrkjiyM+qitWndfhHZi3YVMd1vuNj4Vdv0dweHoDQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.232) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Ymr9XiXjpNtyAAXuQHJmtBC3sJ3048u3Iu/Rb4Ikmx4=;
- b=Qs5zb6eOSWoScZm3Kp7sAtQO3aF6f9J2NoQcAtXYvlc838VLsh+Lyx9tIRYnVNowprFFwG21j8jaB67sZurOlGV8vpBScHaJjOfO7EJynI2jnV7xaZMfvGJp8rknRgymtb1LQtas1y0kZ1SezKtSfDpJIn5lOi/UyqAfoM5MGOaDJBMDNveQTgq/nZGePnZbTN1KO1kjHO/+lUXS0ySz617HM2SO1AV9emlTDdO8JqxarFPv4KvuYcAn9q/onYrrV813n1gE+I+OSM1VBPMy/V1AwPF7LPLmQ33XXH4NFI8gOQCAywlNGDJnImJf9Zi5fG/WGrTql38lBMltgiErgA==
-Received: from CH2PR03CA0018.namprd03.prod.outlook.com (2603:10b6:610:59::28)
- by IA1PR12MB9029.namprd12.prod.outlook.com (2603:10b6:208:3f0::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6863.45; Sun, 15 Oct
- 2023 07:47:00 +0000
-Received: from DS2PEPF00003440.namprd02.prod.outlook.com
- (2603:10b6:610:59:cafe::f4) by CH2PR03CA0018.outlook.office365.com
- (2603:10b6:610:59::28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6886.34 via Frontend
- Transport; Sun, 15 Oct 2023 07:47:00 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.232) by
- DS2PEPF00003440.mail.protection.outlook.com (10.167.18.43) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6838.22 via Frontend Transport; Sun, 15 Oct 2023 07:47:00 +0000
-Received: from drhqmail201.nvidia.com (10.126.190.180) by mail.nvidia.com
- (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Sun, 15 Oct
- 2023 00:46:58 -0700
-Received: from drhqmail201.nvidia.com (10.126.190.180) by
- drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.41; Sun, 15 Oct 2023 00:46:58 -0700
-Received: from Asurada-Nvidia.nvidia.com (10.127.8.14) by mail.nvidia.com
- (10.126.190.180) with Microsoft SMTP Server id 15.2.986.41 via Frontend
- Transport; Sun, 15 Oct 2023 00:46:58 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: <jgg@nvidia.com>, <kevin.tian@intel.com>
-CC: <yi.l.liu@intel.com>, <shuah@kernel.org>, <iommu@lists.linux.dev>,
-	<linux-kselftest@vger.kernel.org>
-Subject: [PATCH] iommufd/selftest: Rework TEST_LENGTH to test min_size explicitly
-Date: Sun, 15 Oct 2023 00:46:48 -0700
-Message-ID: <20231015074648.24185-1-nicolinc@nvidia.com>
-X-Mailer: git-send-email 2.42.0
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="nwrHUf8E"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1697417692; x=1728953692;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=eVVOKNaoV1GqhQSSBWrVREy2npI2C53gYQVRc8E/coM=;
+  b=nwrHUf8EALFXz/RrbxqF3f+btWd3wzsKWGBqOAEb8y8PZ8s/gNbYkTHJ
+   kSdS4R1w3bkpog/l4FZhDHiXnqk9mTmiELAbr7Pf/TUpDd55jTuYLYc+j
+   jQ09MOO3JHglFBqk2KWIPpZdZ657TaI1ja4nB5r9aDVruA4RJpFgx7e69
+   jEsUYE4+DiIL62ynC54+FP0vQb2ZIsn241Ez+q4FAcMY+CEiefSWbWjQE
+   RkSDO6F7+L8ExfknSlBPKyBAzTV5zmRoYo3Fos9u3KSz2O8IfhHnIWX1R
+   oC6F5wPmdzQGItjNqG3az6AzReWrAaN73fw04slhvlPIMcyht9vU6V+lF
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10863"; a="4036721"
+X-IronPort-AV: E=Sophos;i="6.03,228,1694761200"; 
+   d="scan'208";a="4036721"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Oct 2023 17:54:52 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10863"; a="1002731447"
+X-IronPort-AV: E=Sophos;i="6.03,228,1694761200"; 
+   d="scan'208";a="1002731447"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
+  by fmsmga006.fm.intel.com with ESMTP; 15 Oct 2023 17:54:47 -0700
+Message-ID: <046e8881-2fe4-45db-846e-99122d4dce86@linux.intel.com>
+Date: Mon, 16 Oct 2023 08:51:09 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS2PEPF00003440:EE_|IA1PR12MB9029:EE_
-X-MS-Office365-Filtering-Correlation-Id: 591bd4fe-8712-4cc4-094d-08dbcd52ea30
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	D/GQiuu1o/TYZ+mXGB+uh3K0RuDw+wLr39XGbU9R/11PZ+oXDexmRHGvPkGFlaxknOn/ATyldjC7n/IMXzRTunZn7XelDXJmEuWc3zCX8t+45Me1DP3GB8XonGj+cYVSeP/WPYd+uuedtYmH+hKSw38ZolVZyXoIiupc5Rh77EGysqqEU+IoeI4GPuZeaZaMI1I3hdcVBWHsRdDT0ffL0IEVQkDcE5wC0naU5sJvhwv+hTa2s5ziWZEn/nN74+Rn65HBUaqsE3jov5QNiESqYSfzAh9s4cPQNfus2iLqXMAoFGOAhly47Ysp1rGUYWPCGUe+bjHZYdVnDPnQz0662hA7aazsi8ERFLO8i0NxVxTH+I+qemoPK94ygZr/f2QdqugYvgrGXoCr1eT7pULxQ9nZIjeT45LVnVjA6YKlcGLIRneNYqxAq6KLh/JF8OCsO1glWKSqxUbHUJD0xEz/o6+DwQyuZqI/saDiJPRITagXxIP+P+FRIfwxXbxuFl+xMK1PaY18nqJNcwV5jJA2n4HVXl9eD/0614Btz1qVUL46+iX05LtdEF7/aSbL+Zw+uG6Mz4kxJcqiFxR7etyXwXw3PVp94l54K5cWmMXXFFzgxcsmn47d79bjdPeHixhZd0ndtm+lLUZBO4PT9w/1KFmlEltS4waWty8Ngucz87Y03M/tJG423Yg/wOOkWMvKnPhobJXEUjaxxPkTVzyeX0eqB+NoIaULDfnBxmWeOWa2JcJFyUNV2utENzxBg3XyXZpe3U8jz7qDRT8vzeeF9A==
-X-Forefront-Antispam-Report:
-	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230031)(4636009)(39860400002)(376002)(136003)(346002)(396003)(230922051799003)(186009)(1800799009)(82310400011)(451199024)(64100799003)(46966006)(40470700004)(36840700001)(7696005)(966005)(316002)(54906003)(70206006)(110136005)(70586007)(2616005)(478600001)(6666004)(1076003)(8676002)(8936002)(4326008)(336012)(426003)(36756003)(86362001)(2906002)(26005)(36860700001)(83380400001)(7636003)(41300700001)(5660300002)(356005)(40460700003)(40480700001)(47076005)(82740400003);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Oct 2023 07:47:00.1054
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 591bd4fe-8712-4cc4-094d-08dbcd52ea30
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	DS2PEPF00003440.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB9029
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, Jason Gunthorpe <jgg@nvidia.com>,
+ Kevin Tian <kevin.tian@intel.com>,
+ Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
+ Yi Liu <yi.l.liu@intel.com>, Yi Y Sun <yi.y.sun@intel.com>,
+ Nicolin Chen <nicolinc@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Alex Williamson <alex.williamson@redhat.com>, kvm@vger.kernel.org
+Subject: Re: [PATCH v3 19/19] iommu/intel: Access/Dirty bit support for SL
+ domains
+Content-Language: en-US
+To: Joao Martins <joao.m.martins@oracle.com>, iommu@lists.linux.dev
+References: <20230923012511.10379-1-joao.m.martins@oracle.com>
+ <20230923012511.10379-20-joao.m.martins@oracle.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20230923012511.10379-20-joao.m.martins@oracle.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-TEST_LENGTH passing ".size = sizeof(struct _struct) - 1" expects -EINVAL
-from "if (ucmd.user_size < op->min_size)" check in iommufd_fops_ioctl().
-This has been working when min_size is exactly the size of the structure.
+On 9/23/23 9:25 AM, Joao Martins wrote:
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -300,6 +300,7 @@ static int iommu_skip_te_disable;
+>   #define IDENTMAP_AZALIA		4
+>   
+>   const struct iommu_ops intel_iommu_ops;
+> +const struct iommu_dirty_ops intel_dirty_ops;
+>   
+>   static bool translation_pre_enabled(struct intel_iommu *iommu)
+>   {
+> @@ -4077,6 +4078,7 @@ static struct iommu_domain *intel_iommu_domain_alloc(unsigned type)
+>   static struct iommu_domain *
+>   intel_iommu_domain_alloc_user(struct device *dev, u32 flags)
+>   {
+> +	bool enforce_dirty = (flags & IOMMU_HWPT_ALLOC_ENFORCE_DIRTY);
+>   	struct iommu_domain *domain;
+>   	struct intel_iommu *iommu;
+>   
+> @@ -4087,9 +4089,15 @@ intel_iommu_domain_alloc_user(struct device *dev, u32 flags)
+>   	if ((flags & IOMMU_HWPT_ALLOC_NEST_PARENT) && !ecap_nest(iommu->ecap))
+>   		return ERR_PTR(-EOPNOTSUPP);
+>   
+> +	if (enforce_dirty &&
+> +	    !device_iommu_capable(dev, IOMMU_CAP_DIRTY))
+> +		return ERR_PTR(-EOPNOTSUPP);
+> +
+>   	domain = iommu_domain_alloc(dev->bus);
+>   	if (!domain)
+>   		domain = ERR_PTR(-ENOMEM);
+> +	if (domain && enforce_dirty)
 
-However, if the size of the structure becomes larger than min_size, i.e.
-the passing size above is larger than min_size, that min_size sanity no
-longer works.
+@domain can not be NULL here.
 
-Since the first test in TEST_LENGTH() was to test that min_size sanity
-routine, rework it to support a min_size calculation, rather than using
-the full size of the structure.
+> +		domain->dirty_ops = &intel_dirty_ops;
+>   	return domain;
+>   }
 
-Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
----
-Hi Jason/Kevin,
+The VT-d driver always uses second level for a user domain translation.
+In order to avoid checks of "domain->use_first_level" in the callbacks,
+how about check it here and return failure if first level is used for
+user domain?
 
-This was a part of the nesting series. Its link in v4:
-https://lore.kernel.org/linux-iommu/20230921075138.124099-13-yi.l.liu@intel.com/
 
-I just realized that this should go in prior to the nesting series.
-One of the nesting patches changes the IOMMU_HWPT_ALLOC structure,
-which would break the cmd_length test without this patch.
+[...]
+         domain = iommu_domain_alloc(dev->bus);
+         if (!domain)
+                 return ERR_PTR(-ENOMEM);
 
-Thanks!
-Nicolin
+         if (enforce_dirty) {
+                 if (to_dmar_domain(domain)->use_first_level) {
+                         iommu_domain_free(domain);
+                         return ERR_PTR(-EOPNOTSUPP);
+                 }
+                 domain->dirty_ops = &intel_dirty_ops;
+         }
 
- tools/testing/selftests/iommu/iommufd.c | 29 ++++++++++++++-----------
- 1 file changed, 16 insertions(+), 13 deletions(-)
+         return domain;
 
-diff --git a/tools/testing/selftests/iommu/iommufd.c b/tools/testing/selftests/iommu/iommufd.c
-index c5eca2fee42c..6323153d277b 100644
---- a/tools/testing/selftests/iommu/iommufd.c
-+++ b/tools/testing/selftests/iommu/iommufd.c
-@@ -86,12 +86,13 @@ TEST_F(iommufd, cmd_fail)
- 
- TEST_F(iommufd, cmd_length)
- {
--#define TEST_LENGTH(_struct, _ioctl)                                     \
-+#define TEST_LENGTH(_struct, _ioctl, _last)                              \
- 	{                                                                \
-+		size_t min_size = offsetofend(struct _struct, _last);    \
- 		struct {                                                 \
- 			struct _struct cmd;                              \
- 			uint8_t extra;                                   \
--		} cmd = { .cmd = { .size = sizeof(struct _struct) - 1 }, \
-+		} cmd = { .cmd = { .size = min_size - 1 },               \
- 			  .extra = UINT8_MAX };                          \
- 		int old_errno;                                           \
- 		int rc;                                                  \
-@@ -112,17 +113,19 @@ TEST_F(iommufd, cmd_length)
- 		}                                                        \
- 	}
- 
--	TEST_LENGTH(iommu_destroy, IOMMU_DESTROY);
--	TEST_LENGTH(iommu_hw_info, IOMMU_GET_HW_INFO);
--	TEST_LENGTH(iommu_hwpt_alloc, IOMMU_HWPT_ALLOC);
--	TEST_LENGTH(iommu_ioas_alloc, IOMMU_IOAS_ALLOC);
--	TEST_LENGTH(iommu_ioas_iova_ranges, IOMMU_IOAS_IOVA_RANGES);
--	TEST_LENGTH(iommu_ioas_allow_iovas, IOMMU_IOAS_ALLOW_IOVAS);
--	TEST_LENGTH(iommu_ioas_map, IOMMU_IOAS_MAP);
--	TEST_LENGTH(iommu_ioas_copy, IOMMU_IOAS_COPY);
--	TEST_LENGTH(iommu_ioas_unmap, IOMMU_IOAS_UNMAP);
--	TEST_LENGTH(iommu_option, IOMMU_OPTION);
--	TEST_LENGTH(iommu_vfio_ioas, IOMMU_VFIO_IOAS);
-+	TEST_LENGTH(iommu_destroy, IOMMU_DESTROY, id);
-+	TEST_LENGTH(iommu_hw_info, IOMMU_GET_HW_INFO, __reserved);
-+	TEST_LENGTH(iommu_hwpt_alloc, IOMMU_HWPT_ALLOC, __reserved);
-+	TEST_LENGTH(iommu_ioas_alloc, IOMMU_IOAS_ALLOC, out_ioas_id);
-+	TEST_LENGTH(iommu_ioas_iova_ranges, IOMMU_IOAS_IOVA_RANGES,
-+		    out_iova_alignment);
-+	TEST_LENGTH(iommu_ioas_allow_iovas, IOMMU_IOAS_ALLOW_IOVAS,
-+		    allowed_iovas);
-+	TEST_LENGTH(iommu_ioas_map, IOMMU_IOAS_MAP, iova);
-+	TEST_LENGTH(iommu_ioas_copy, IOMMU_IOAS_COPY, src_iova);
-+	TEST_LENGTH(iommu_ioas_unmap, IOMMU_IOAS_UNMAP, length);
-+	TEST_LENGTH(iommu_option, IOMMU_OPTION, val64);
-+	TEST_LENGTH(iommu_vfio_ioas, IOMMU_VFIO_IOAS, __reserved);
- #undef TEST_LENGTH
- }
- 
--- 
-2.42.0
+>   
+> @@ -4367,6 +4375,9 @@ static bool intel_iommu_capable(struct device *dev, enum iommu_cap cap)
+>   		return dmar_platform_optin();
+>   	case IOMMU_CAP_ENFORCE_CACHE_COHERENCY:
+>   		return ecap_sc_support(info->iommu->ecap);
+> +	case IOMMU_CAP_DIRTY:
+> +		return sm_supported(info->iommu) &&
+> +			ecap_slads(info->iommu->ecap);
 
+Above appears several times in this patch. Is it possible to define it
+as a macro?
+
+diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
+index bccd44db3316..379e141bbb28 100644
+--- a/drivers/iommu/intel/iommu.h
++++ b/drivers/iommu/intel/iommu.h
+@@ -542,6 +542,8 @@ enum {
+  #define sm_supported(iommu)    (intel_iommu_sm && 
+ecap_smts((iommu)->ecap))
+  #define pasid_supported(iommu) (sm_supported(iommu) &&                 \
+                                  ecap_pasid((iommu)->ecap))
++#define slads_supported(iommu) (sm_supported(iommu) &&                 \
++                                ecap_slads((iommu)->ecap))
+
+>   	default:
+>   		return false;
+>   	}
+
+Best regards,
+baolu
