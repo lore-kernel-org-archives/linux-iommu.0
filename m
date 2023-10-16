@@ -1,124 +1,85 @@
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 78F47273FE
-	for <iommu@lists.linux.dev>; Mon, 16 Oct 2023 12:56:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=microchip.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=microchip.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B312273F5
+	for <iommu@lists.linux.dev>; Mon, 16 Oct 2023 12:58:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="YIkx0kwI"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="LAtlXnlz"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1697460987; x=1728996987;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=owu+iKqUzWkQLtSBTtxj1zT2rwGvuD6S/GZDMO70pg0=;
-  b=YIkx0kwIhS7Mdh+oFbrpkzBiUEyDIFYS2Iq10WMA98xB+GA4BTELNQRr
-   pwOqWqLW6lFUZ273ZCAUeUisUtjkMk0ZaBX7VHuAPGzWHh3AzBz/oy6X8
-   NczPpudc0jWjvcyQVW1xvUiLstVeklmmx532IH6ZdhDuuDG3Dh3hHY9t5
-   3U4Y4TaInT6uC+2TsWncjpSVZLgg4qQT2DJY2bi9jgRsHh8zwLsyOsM7t
-   IC8ze9MyB1qvprOkHMvtmOZj3RjmPUuAh/4N659YVbG/22U0a/ZpHeero
-   rOGokSHSn7R5FOyVaxiPjSqmbsVaGJA9CY/wWw151UYp8UKqKOpB3pECo
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1697461137; x=1728997137;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=ffpcALQCoH9BkRWnnYzvM4d/AZg18jhAvaOid/rI4DM=;
+  b=LAtlXnlzT8RRlLMIDHeswDUstn1KStzAuCQacPbHHtc4n6kb7MHqDjAq
+   ZbldnXgclA3VoIYnQt4K/OnIAZOzBsX0Hc4RBjuFfyMhG2f5YmFRDGoeO
+   ZE347iqtWQiYG3+W8r+5pUhve6KhWh1R5dzyCU1JDLTf1WJSTrT18lyJK
+   OtnT7NJg6I3w/FLpD/KZlfDDhyaad9t39pHePkoBnQSh34NZ5J9uTTlLK
+   EnCTYkJFezRrq9cl4OIBlPQkEhKx5kkf0LVZjgwbvf7aajK8fYeXIpHx8
+   YU8bABDVdG6v8iPyxkEuZIDG+ziTeFeBPZpqistz6NriZuNe5XOiMGJ/E
    w==;
-X-CSE-ConnectionGUID: MUYjPoOnQe+6O7A6bgCR6A==
-X-CSE-MsgGUID: HFcEOj/NRFqcOiHhwh4vUQ==
-X-ThreatScanner-Verdict: Negative
+X-IronPort-AV: E=McAfee;i="6600,9927,10863"; a="471742925"
 X-IronPort-AV: E=Sophos;i="6.03,229,1694761200"; 
-   d="asc'?scan'208";a="177204000"
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 16 Oct 2023 05:56:23 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Mon, 16 Oct 2023 05:56:06 -0700
-Received: from wendy (10.10.85.11) by chn-vm-ex01.mchp-main.com (10.10.85.143)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.21 via Frontend
- Transport; Mon, 16 Oct 2023 05:56:02 -0700
-Date: Mon, 16 Oct 2023 13:55:40 +0100
-From: Conor Dooley <conor.dooley@microchip.com>
-To: Christoph Hellwig <hch@lst.de>
-CC: Greg Ungerer <gerg@linux-m68k.org>, <iommu@lists.linux.dev>, Paul Walmsley
-	<paul.walmsley@sifive.com>, Palmer Dabbelt <palmer@dabbelt.com>, Conor Dooley
-	<conor@kernel.org>, Geert Uytterhoeven <geert+renesas@glider.be>, Magnus Damm
-	<magnus.damm@gmail.com>, Robin Murphy <robin.murphy@arm.com>, Marek
- Szyprowski <m.szyprowski@samsung.com>, Geert Uytterhoeven
-	<geert@linux-m68k.org>, Wei Fang <wei.fang@nxp.com>, Shenwei Wang
-	<shenwei.wang@nxp.com>, Clark Wang <xiaoning.wang@nxp.com>, NXP Linux Team
-	<linux-imx@nxp.com>, <linux-m68k@lists.linux-m68k.org>,
-	<netdev@vger.kernel.org>, <linux-riscv@lists.infradead.org>,
-	<linux-renesas-soc@vger.kernel.org>, Jim Quinlan <james.quinlan@broadcom.com>
-Subject: Re: [PATCH 02/12] riscv: only select DMA_DIRECT_REMAP from
- RISCV_ISA_ZICBOM
-Message-ID: <20231016-chomp-vitally-b6c004be7809@wendy>
-References: <20231016054755.915155-1-hch@lst.de>
- <20231016054755.915155-3-hch@lst.de>
+   d="scan'208";a="471742925"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Oct 2023 05:58:48 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10863"; a="749276873"
+X-IronPort-AV: E=Sophos;i="6.03,229,1694761200"; 
+   d="scan'208";a="749276873"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.249.171.91]) ([10.249.171.91])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Oct 2023 05:58:44 -0700
+Message-ID: <037d2917-51a2-acae-dc06-65940a054880@linux.intel.com>
+Date: Mon, 16 Oct 2023 20:58:42 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="Ihs0Gu2JVloYpIJM"
-Content-Disposition: inline
-In-Reply-To: <20231016054755.915155-3-hch@lst.de>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.15.1
+Cc: baolu.lu@linux.intel.com, iommu@lists.linux.dev,
+ Kevin Tian <kevin.tian@intel.com>,
+ Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
+ Yi Liu <yi.l.liu@intel.com>, Yi Y Sun <yi.y.sun@intel.com>,
+ Nicolin Chen <nicolinc@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Alex Williamson <alex.williamson@redhat.com>, kvm@vger.kernel.org
+Subject: Re: [PATCH v3 19/19] iommu/intel: Access/Dirty bit support for SL
+ domains
+Content-Language: en-US
+To: Jason Gunthorpe <jgg@nvidia.com>, Joao Martins <joao.m.martins@oracle.com>
+References: <20230923012511.10379-1-joao.m.martins@oracle.com>
+ <20230923012511.10379-20-joao.m.martins@oracle.com>
+ <c4816f4b-3fde-4adb-901f-4d568a4fd95a@linux.intel.com>
+ <764f159d-a19c-4a1d-86a6-a2791ff21e10@oracle.com>
+ <20231016114210.GM3952@nvidia.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20231016114210.GM3952@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
---Ihs0Gu2JVloYpIJM
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On 2023/10/16 19:42, Jason Gunthorpe wrote:
+> On Mon, Oct 16, 2023 at 11:57:34AM +0100, Joao Martins wrote:
+> 
+>> True. But to be honest, I thought we weren't quite there yet in PASID support
+>> from IOMMUFD perspective; hence why I didn't aim at it. Or do I have the wrong
+>> impression? From the code below, it clearly looks the driver does.
+> I think we should plan that this series will go before the PASID
+> series
 
-On Mon, Oct 16, 2023 at 07:47:44AM +0200, Christoph Hellwig wrote:
-> RISCV_DMA_NONCOHERENT is also used for whacky non-standard
-> non-coherent ops that use different hooks in dma-direct.
->=20
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
+I know that PASID support in IOMMUFD is not yet available, but the VT-d
+driver already supports attaching a domain to a PASID, as required by
+the idxd driver for kernel DMA with PASID. Therefore, from the driver's
+perspective, dirty tracking should also be enabled for PASIDs.
 
-Reviewed-by: Conor Dooley <conor.dooley@microchip.com>
+However, I am also fine with deferring this code until PASID support is
+added to IOMMUFD. In that case, it's better to add a comment to remind
+people to revisit this issue later.
 
-Thanks,
-Conor.
-
-> ---
->  arch/riscv/Kconfig | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->=20
-> diff --git a/arch/riscv/Kconfig b/arch/riscv/Kconfig
-> index 0ac0b538379718..9c48fecc671918 100644
-> --- a/arch/riscv/Kconfig
-> +++ b/arch/riscv/Kconfig
-> @@ -273,7 +273,6 @@ config RISCV_DMA_NONCOHERENT
->  	select ARCH_HAS_SYNC_DMA_FOR_CPU
->  	select ARCH_HAS_SYNC_DMA_FOR_DEVICE
->  	select DMA_BOUNCE_UNALIGNED_KMALLOC if SWIOTLB
-> -	select DMA_DIRECT_REMAP if MMU
-> =20
->  config RISCV_NONSTANDARD_CACHE_OPS
->  	bool
-> @@ -549,6 +548,7 @@ config RISCV_ISA_ZICBOM
->  	depends on RISCV_ALTERNATIVE
->  	default y
->  	select RISCV_DMA_NONCOHERENT
-> +	select DMA_DIRECT_REMAP
->  	help
->  	   Adds support to dynamically detect the presence of the ZICBOM
->  	   extension (Cache Block Management Operations) and enable its
-> --=20
-> 2.39.2
->=20
-
---Ihs0Gu2JVloYpIJM
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZS0yzAAKCRB4tDGHoIJi
-0hjvAQCuU+lkdZEJGHqzkwUX3I/m5Rjm/NNqvKylHzOsHPnU9wD+O+V5jY/UGcxC
-5Y5HrOaAn3eYO5OnNXk29wyRBjksoAU=
-=pzeO
------END PGP SIGNATURE-----
-
---Ihs0Gu2JVloYpIJM--
+Best regards,
+baolu
