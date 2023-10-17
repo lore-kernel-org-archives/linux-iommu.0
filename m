@@ -1,36 +1,36 @@
 Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.65])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7485F8BFD
-	for <iommu@lists.linux.dev>; Tue, 17 Oct 2023 03:21:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE7BC8BF9
+	for <iommu@lists.linux.dev>; Tue, 17 Oct 2023 03:21:40 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="I65T43sy"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="KyZ7DXs/"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1697512898; x=1729048898;
+  t=1697512900; x=1729048900;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=rIP4lGeh4l++76KLDIftiMSwqqH2jZrP09tAxFYTrFc=;
-  b=I65T43syurmcsLakDhY4g6ps/DeMlT7yFXahP07abMR4pWzEEjrtiubm
-   ENTn3xVOtZAgalAo0YlpiTd3PLgpmo0SQs53PY0tl7SjRsIL97Wf2Al9S
-   vaU+rCiGrXFCDttmc+0KemCAYsLN8275Ew3cmzPcu41K+djphmxHsGimV
-   HnrX61VhcrLQ2/THeU1Xk0XQYSdfUtBgfVC0KSwiCjpzb65s5cdgQ7y9O
-   obtwtlRXxmkyCretmE39rTi5Xs8VW8ze+7HbYWf1d+qVkrVY1l3jANPC8
-   UTOa+2Oh1TvfB5iVEy7NNVQ6Y3j9cuaY5OZD+hKiOEwgrbcM7rhuNqdUM
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10865"; a="389560896"
+  bh=4nxTmLQvKKPzHqteeuuuNrIO9LndgZ0wCZAz7jCVpac=;
+  b=KyZ7DXs/3xpqM9xf0AyqUF4aamNMQNPQLANDdY8v+qcT3wJTyZ8kvlys
+   mEOMWA9ATz2GAhsHdrd21ezg8oaefYgcafs6pKysVcbANB5yHPm60IT9t
+   gdxq+s7wA0YkgJWNQGYai0AlseIIMDRiMoe8Mxoxgyo5BmJjbiFgTmOFp
+   LRlHn4xoOCWXVPo05pITVN0RlJ8OLJtJSAaUa7BLTU4e0oIQPWN7Uwi+6
+   Z89+Hc3h161hgjCQ3c6RkNP4yaPdqXQiebM7L0i/ggyPxeEgkjsaun2qb
+   gYHUsFxR6wUOBx0RA1/JEMl/Yi8aWJ5HDGbi9cGs57g0JPGa9u0s2xYZE
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10865"; a="389560908"
 X-IronPort-AV: E=Sophos;i="6.03,231,1694761200"; 
-   d="scan'208";a="389560896"
+   d="scan'208";a="389560908"
 Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Oct 2023 20:21:38 -0700
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Oct 2023 20:21:40 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10865"; a="826270102"
+X-IronPort-AV: E=McAfee;i="6600,9927,10865"; a="826270114"
 X-IronPort-AV: E=Sophos;i="6.03,231,1694761200"; 
-   d="scan'208";a="826270102"
+   d="scan'208";a="826270114"
 Received: from sqa-gate.sh.intel.com (HELO spr-2s5.tsp.org) ([10.239.48.212])
-  by fmsmga004.fm.intel.com with ESMTP; 16 Oct 2023 20:21:35 -0700
+  by fmsmga004.fm.intel.com with ESMTP; 16 Oct 2023 20:21:38 -0700
 From: Tina Zhang <tina.zhang@intel.com>
 To: iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org,
@@ -41,9 +41,9 @@ Cc: David Woodhouse <dwmw2@infradead.org>,
 	Jason Gunthorpe <jgg@ziepe.ca>,
 	Kevin Tian <kevin.tian@intel.com>,
 	Tina Zhang <tina.zhang@intel.com>
-Subject: [RFC PATCH 11/12] iommu/vt-d: Use intel_iommu_set_dev_pasid() for sva domain
-Date: Tue, 17 Oct 2023 11:20:44 +0800
-Message-Id: <20231017032045.114868-13-tina.zhang@intel.com>
+Subject: [RFC PATCH 12/12] iommu/vt-d: Remove superfluous IOMMU IOTLB invalidations
+Date: Tue, 17 Oct 2023 11:20:45 +0800
+Message-Id: <20231017032045.114868-14-tina.zhang@intel.com>
 X-Mailer: git-send-email 2.39.3
 In-Reply-To: <20231017032045.114868-1-tina.zhang@intel.com>
 References: <20231017032045.114868-1-tina.zhang@intel.com>
@@ -55,85 +55,123 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Let intel_svm_set_dev_pasid() use intel_iommu_set_dev_pasid() for
-set_dev_pasid operation.
+Devices behind different IOMMUs can be bound to one sva domain. When a
+range of a sva domain address is being invalidated, vt-d driver needs to
+issue IOMMU IOTLB and Dev-IOTLB invalidation commands to ask IOMMU
+hardware and related devices to invalidate their caches.
+
+The current logic issues both IOTLB invalidation command and device-TLB
+command per device, which leads to superfluous IOTLB invalidation (e.g.,
+if there are four devices behind a IOMMU are attached to one sva domain.
+In the current logic, during handing intel_invalidate_range(), four IOTLB
+invalidation commands and four Dev-IOTLB invalidation commands will be
+issued. However, only one IOTLB invalidation command and four Dev-IOTLB
+invalidation command are necessary.), and therefore impacts run-time
+performance.
+
+The patch removes the redundant IOMMU IOTLB invalidations by allowing
+issuing IOMMU IOTLB invalidation command per iommu instead of per device.
 
 Signed-off-by: Tina Zhang <tina.zhang@intel.com>
 ---
- drivers/iommu/intel/svm.c | 44 +++++++--------------------------------
- 1 file changed, 8 insertions(+), 36 deletions(-)
+ drivers/iommu/intel/svm.c | 56 +++++++++++++++++++--------------------
+ 1 file changed, 27 insertions(+), 29 deletions(-)
 
 diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
-index 7f98c8acd04f..c9a703935908 100644
+index c9a703935908..f684b92a1241 100644
 --- a/drivers/iommu/intel/svm.c
 +++ b/drivers/iommu/intel/svm.c
-@@ -231,13 +231,9 @@ static const struct mmu_notifier_ops intel_mmuops = {
- static int intel_svm_set_dev_pasid(struct iommu_domain *domain,
- 				   struct device *dev, ioasid_t pasid)
+@@ -135,32 +135,41 @@ void intel_svm_check(struct intel_iommu *iommu)
+ 	iommu->flags |= VTD_FLAG_SVM_CAPABLE;
+ }
+ 
+-static void __flush_svm_range_dev(struct dmar_domain *domain,
+-				  struct dev_pasid_info *dev_pasid,
++static void __flush_svm_range(struct iommu_domain *domain,
+ 				  unsigned long address,
+ 				  unsigned long pages, int ih)
  {
--	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
--	struct device_domain_info *info = dev_iommu_priv_get(dev);
--	struct intel_iommu *iommu = info->iommu;
- 	struct mm_struct *mm = domain->mm;
--	struct dev_pasid_info *dev_pasid;
--	unsigned long sflags;
--	int ret = 0;
-+	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
-+	int ret;
+-	struct device_domain_info *info = dev_iommu_priv_get(dev_pasid->dev);
+-	struct intel_iommu *iommu = dev_to_intel_iommu(dev_pasid->dev);
+-	u32 pasid = mm_get_enqcmd_pasid(domain->domain.mm);
++	u32 pasid = mm_get_enqcmd_pasid(domain->mm);
++	struct device_domain_info *dev_info;
++	struct iommu_domain_info *iommu_info;
++	struct dev_pasid_info *dev_pasid;
++	struct intel_iommu *iommu;
++	unsigned long idx;
  
- 	/*
- 	 * The sva domain can be shared among multiple devices. Make sure
-@@ -250,37 +246,11 @@ static int intel_svm_set_dev_pasid(struct iommu_domain *domain,
- 			return ret;
- 	}
+ 	if (WARN_ON(!pages))
+ 		return;
  
--	dev_pasid = kzalloc(sizeof(*dev_pasid), GFP_KERNEL);
--	if (!dev_pasid) {
--		ret = -ENOMEM;
--		goto out_unregister;
--	}
--
--	dev_pasid->dev = dev;
--	dev_pasid->sid = PCI_DEVID(info->bus, info->devfn);
+-	qi_flush_piotlb(iommu, FLPT_DEFAULT_DID, pasid, address, pages, ih);
 -	if (info->ats_enabled) {
--		dev_pasid->qdep = info->ats_qdep;
--		if (dev_pasid->qdep >= QI_DEV_EIOTLB_MAX_INVS)
--			dev_pasid->qdep = 0;
-+	ret = intel_iommu_set_dev_pasid(domain, dev, pasid);
-+	if (ret) {
-+		if (list_empty(&dmar_domain->dev_pasids))
-+			mmu_notifier_unregister(&domain->notifier, mm);
+-		qi_flush_dev_iotlb_pasid(iommu, dev_pasid->sid, info->pfsid,
+-					 pasid, dev_pasid->qdep, address,
+-					 order_base_2(pages));
+-		quirk_extra_dev_tlb_flush(info, address, order_base_2(pages),
+-					  pasid, dev_pasid->qdep);
++	rcu_read_lock();
++	xa_for_each(&to_dmar_domain(domain)->iommu_array, idx, iommu_info)
++		qi_flush_piotlb(iommu_info->iommu, FLPT_DEFAULT_DID,
++				pasid, address, pages, ih);
++
++	list_for_each_entry_rcu(dev_pasid, &to_dmar_domain(domain)->dev_pasids, link_domain) {
++		dev_info = dev_iommu_priv_get(dev_pasid->dev);
++		iommu = dev_to_intel_iommu(dev_pasid->dev);
++		if (dev_info->ats_enabled) {
++			qi_flush_dev_iotlb_pasid(iommu, dev_pasid->sid, dev_info->pfsid,
++						 pasid, dev_pasid->qdep, address,
++						 order_base_2(pages));
++			quirk_extra_dev_tlb_flush(dev_info, address, order_base_2(pages),
++						  pasid, dev_pasid->qdep);
++		}
  	}
--
--	/* Setup the pasid table: */
--	sflags = cpu_feature_enabled(X86_FEATURE_LA57) ? PASID_FLAG_FL5LP : 0;
--	ret = intel_pasid_setup_first_level(iommu, dev, mm->pgd, pasid,
--					    FLPT_DEFAULT_DID, sflags);
--	if (ret)
--		goto out_free_dev_pasid;
--
--	list_add_rcu(&dev_pasid->link_domain, &dmar_domain->dev_pasids);
--
--	return 0;
--
--out_free_dev_pasid:
--	kfree(dev_pasid);
--out_unregister:
--	if (list_empty(&dmar_domain->dev_pasids))
--		mmu_notifier_unregister(&domain->notifier, mm);
--
- 	return ret;
++	rcu_read_unlock();
  }
  
-@@ -696,6 +666,8 @@ struct iommu_domain *intel_svm_domain_alloc(void)
- 		return NULL;
- 	domain->domain.ops = &intel_svm_domain_ops;
- 	INIT_LIST_HEAD(&domain->dev_pasids);
-+	spin_lock_init(&domain->lock);
-+	xa_init(&domain->iommu_array);
+-static void intel_flush_svm_range_dev(struct dmar_domain *domain,
+-				      struct dev_pasid_info *dev_pasid,
+-				      unsigned long address,
+-				      unsigned long pages, int ih)
++static void intel_flush_svm_range(struct iommu_domain *domain, unsigned long address,
++				unsigned long pages, int ih)
+ {
+ 	unsigned long shift = ilog2(__roundup_pow_of_two(pages));
+ 	unsigned long align = (1ULL << (VTD_PAGE_SHIFT + shift));
+@@ -168,22 +177,11 @@ static void intel_flush_svm_range_dev(struct dmar_domain *domain,
+ 	unsigned long end = ALIGN(address + (pages << VTD_PAGE_SHIFT), align);
  
- 	return &domain->domain;
+ 	while (start < end) {
+-		__flush_svm_range_dev(domain, dev_pasid, start, align >> VTD_PAGE_SHIFT, ih);
++		__flush_svm_range(domain, start, align >> VTD_PAGE_SHIFT, ih);
+ 		start += align;
+ 	}
  }
+ 
+-static void intel_flush_svm_range(struct dmar_domain *domain, unsigned long address,
+-				unsigned long pages, int ih)
+-{
+-	struct dev_pasid_info *dev_pasid;
+-
+-	rcu_read_lock();
+-	list_for_each_entry_rcu(dev_pasid, &domain->dev_pasids, link_domain)
+-		intel_flush_svm_range_dev(domain, dev_pasid, address, pages, ih);
+-	rcu_read_unlock();
+-}
+-
+ /* Pages have been freed at this point */
+ static void intel_arch_invalidate_secondary_tlbs(struct mmu_notifier *mn,
+ 					struct mm_struct *mm,
+@@ -191,7 +189,7 @@ static void intel_arch_invalidate_secondary_tlbs(struct mmu_notifier *mn,
+ {
+ 	struct iommu_domain *domain = container_of(mn, struct iommu_domain, notifier);
+ 
+-	intel_flush_svm_range(to_dmar_domain(domain), start,
++	intel_flush_svm_range(domain, start,
+ 			      (end - start + PAGE_SIZE - 1) >> VTD_PAGE_SHIFT, 0);
+ }
+ 
 -- 
 2.39.3
 
