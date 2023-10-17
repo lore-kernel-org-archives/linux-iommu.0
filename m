@@ -1,59 +1,64 @@
-Received: from mail-qt1-f172.google.com (mail-qt1-f172.google.com [209.85.160.172])
+Received: from mail-qt1-f181.google.com (mail-qt1-f181.google.com [209.85.160.181])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 242422D02E
-	for <iommu@lists.linux.dev>; Tue, 17 Oct 2023 16:33:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C20462D024
+	for <iommu@lists.linux.dev>; Tue, 17 Oct 2023 16:41:52 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="SVcYoJH7"
-Received: by mail-qt1-f172.google.com with SMTP id d75a77b69052e-41cb9419975so928811cf.2
-        for <iommu@lists.linux.dev>; Tue, 17 Oct 2023 09:33:39 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="YRf1/qCw"
+Received: by mail-qt1-f181.google.com with SMTP id d75a77b69052e-41b7ec4cceeso6929391cf.1
+        for <iommu@lists.linux.dev>; Tue, 17 Oct 2023 09:41:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1697560419; x=1698165219; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1697560911; x=1698165711; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=dclroukzLGxz5umscUIIo3X53adAsvRXETE+DNsgCts=;
-        b=SVcYoJH7UCjlJeNDZI+L/VX7J4f04rnukYhNDjqo2LrZXnRvGIL4QLj8dcKX7cHJkg
-         OWCLhL6Yn6iXwLqZsaW+HBF5GWw9B3cDbRwxlvjiOnH/n2kBrgh4fLScbM9Pj7X3O+GR
-         LBQZG7b2PHGpxf+VC7+OA1XhMIHNFPefutJdBHaeKtaYCZXx/deLbQdKOhdI/Le3ANzj
-         vw3lJNJaOkx8/nilkI5TZtKoY6PpLsywRsjNvMGh08l0I9OVeAYe1RMAoTnM0B4ycUic
-         GLrHkTK4D56eLO3wJiKZvhq87wf/HzKNKgggtjC1sKLDg2TK+auKHEhMkfiR4Cpe62zY
-         gMjQ==
+        bh=5MsW2Hvp6im1571f/e59oteDAoDCIGSXlLc583DfDLg=;
+        b=YRf1/qCw5KfDomr/PcCLVKonzUIaebgvQ1zUgA42sCuBqdkpKQAaSNQzPZOLBptlj6
+         d+gakIHVDOvS6q/frM8h1rLtRs7pBPOwQ/J5vej1Job3NTpuO/cLLvs8oJQbxQoYdzdF
+         ylREeAEu58y95xKU20nEeeQZE7hUftYDrcYfz1RJ9D52LOO/bBtaDCx3NAbFc9LP5pJA
+         tEPy+hjbKYFXRh8GdGOR4coT0Xh6nkc0qps3jMu6orQyRDlH5AsV1jtw7N2i9FkyD/UC
+         8uRA7kMF9rwvmWbsuE5ejoWwBtUGkcz6/7cZkg0rZUclM4Sp+ZBs0g861QEvh8H2r9aW
+         hGxw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1697560419; x=1698165219;
+        d=1e100.net; s=20230601; t=1697560911; x=1698165711;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=dclroukzLGxz5umscUIIo3X53adAsvRXETE+DNsgCts=;
-        b=kuEJGOWFzeWdTrhnVIW7wN3ph0wjmrotR8ipNzVgBnhCsem0kf044WLMU2OWYEUM7K
-         NqV9PpP3O4NA0iikjnMcq5Vct739jHYkTS+4cpx3j4jH0rtTSFfmaIAF0xzEAjz0Ctr3
-         etgZL3FVhgsHqcXKb1lvnjtoq4+ZNndBdPKpMX5aHzYERG1r9xy47L59QssCMb0YDVfs
-         W/F1s1y+wBc4KzAunYmX5YfKKgUUCu8PENRN4lJF+bcPjyGKZ9ze9LSmBlLaUI87RLGD
-         Hqe8tSFcRrPvfdznH0+p9ay0XcYGeJ7SQbvtNgUM6G9ewL8D5NMBsk3IY3tOTRMej1PY
-         q1Fw==
-X-Gm-Message-State: AOJu0Yzmu4d26hIhJBtxLz+HEShLzZJggHEtEFh17ZsMVcQk6DACP6fi
-	zHcSmGEY7aAEFSkFpjg1GoxGVw==
-X-Google-Smtp-Source: AGHT+IFp6pQb+R36gjUSVSmxooe7mUCxfDZoMHSMV/Fkl6eZO2lM7P03aL913SU6pq4+zRe3xQGgnQ==
-X-Received: by 2002:ac8:7c4e:0:b0:418:a14:9c30 with SMTP id o14-20020ac87c4e000000b004180a149c30mr2665362qtv.9.1697560418744;
-        Tue, 17 Oct 2023 09:33:38 -0700 (PDT)
+        bh=5MsW2Hvp6im1571f/e59oteDAoDCIGSXlLc583DfDLg=;
+        b=uywzqpgRKYL9xgbEgPAzyrc744heFEXpxfO/UqBQmV4TCZFs5gEUZam6Tax7xkJPtP
+         f5A9VO6PKUU2X0FVUtR5jzC2w6Y1iTqzt/SAJPMknt89egXSPTXC3m7s1LWfoaTAGwtv
+         6WtsrGPjFxiq01ZVkOM7ZnbbDWtZhJ7GXhFMdrcXKgd6OhV762vt9R6sxA+420K9aG10
+         ns7nFuqZlGujG8D0F4dys43wx6NHcBDkQ4PJCecsv7vMk+k7IfBQskZmj4qWrur029O1
+         GSTaw2J4LJpunafuU5e7KJDxTKpNbSXHrXbTBkHIkEpP7wfcw8j0MBSkcnUF3kcs88v2
+         h9Ig==
+X-Gm-Message-State: AOJu0YzyskSyJleJ/OV3x6B4ybGZhULUPB58RSxHStVsITUlKrUp6HVf
+	JSn0KCl/RoO+xoJfRNXDJ13h8A==
+X-Google-Smtp-Source: AGHT+IE1dQmP4ebFkaXpsk8hiVNKIl6iWdx3W7/Lrk/p4bB7BLs964FA8Bic7g2UaJhXeTkXeavVfw==
+X-Received: by 2002:a05:622a:506:b0:410:9111:4a0b with SMTP id l6-20020a05622a050600b0041091114a0bmr3294519qtx.13.1697560911646;
+        Tue, 17 Oct 2023 09:41:51 -0700 (PDT)
 Received: from ziepe.ca (hlfxns017vw-142-68-26-201.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.26.201])
-        by smtp.gmail.com with ESMTPSA id k2-20020ac81402000000b004199c98f87dsm740615qtj.74.2023.10.17.09.33.37
+        by smtp.gmail.com with ESMTPSA id y12-20020a05622a120c00b004196a813639sm756907qtx.17.2023.10.17.09.41.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Oct 2023 09:33:37 -0700 (PDT)
+        Tue, 17 Oct 2023 09:41:51 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.95)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1qsn0j-002sD0-2s;
-	Tue, 17 Oct 2023 13:33:37 -0300
-Date: Tue, 17 Oct 2023 13:33:37 -0300
+	id 1qsn8g-002sLi-HJ;
+	Tue, 17 Oct 2023 13:41:50 -0300
+Date: Tue, 17 Oct 2023 13:41:50 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Zhenhua Huang <quic_zhenhuah@quicinc.com>
-Cc: will@kernel.org, robin.murphy@arm.com, joro@8bytes.org,
-	baolu.lu@linux.intel.com, iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, quic_tingweiz@quicinc.com
-Subject: Re: [ARM IOMMU] IOMMU framework concurrency issue
-Message-ID: <20231017163337.GE282036@ziepe.ca>
-References: <e2e20e1c-6450-4ac5-9804-b0000acdf7de@quicinc.com>
+To: Tina Zhang <tina.zhang@intel.com>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	David Woodhouse <dwmw2@infradead.org>,
+	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Michael Shavit <mshavit@google.com>,
+	Vasant Hegde <vasant.hegde@amd.com>
+Subject: Re: [PATCH v8 0/5] Share sva domains with all devices bound to a mm
+Message-ID: <20231017164150.GF282036@ziepe.ca>
+References: <20231017004802.109618-1-tina.zhang@intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -62,46 +67,71 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <e2e20e1c-6450-4ac5-9804-b0000acdf7de@quicinc.com>
+In-Reply-To: <20231017004802.109618-1-tina.zhang@intel.com>
 
-On Tue, Oct 17, 2023 at 07:10:23PM +0800, Zhenhua Huang wrote:
-> Dear experts,
+On Tue, Oct 17, 2023 at 08:47:57AM +0800, Tina Zhang wrote:
+> This series is to share sva(shared virtual addressing) domains with all
+> devices bound to one mm.
 > 
-> Saw a few crashes in our projects because of concurrency between (1) and
-> (2).
+> Problem
+> -------
+> In the current iommu core code, sva domain is allocated per IOMMU group,
+> when device driver is binding a process address space to a device (which is
+> handled in iommu_sva_bind_device()). If one than more device is bound to
+> the same process address space, there must be more than one sva domain
+> instance, with each device having one. In other words, the sva domain
+> doesn't share between those devices bound to the same process address
+> space, and that leads to two problems:
+> 1) device driver has to duplicate sva domains with enqcmd, as those sva
+> domains have the same PASID and are relevant to one virtual address space.
+> This makes the sva domain handling complex in device drivers.
+> 2) IOMMU driver cannot get sufficient info of the IOMMUs that have
+> devices behind them bound to the same virtual address space, when handling
+> mmu_notifier_ops callbacks. As a result, IOMMU IOTLB invalidation is
+> performed per device instead of per IOMMU, and that may lead to
+> superfluous IOTLB invalidation issue, especially in a virtualization
+> environment where all devices may be behind one virtual IOMMU.
 > 
-> bus notifier or bus_iommu_probe:
-> 	__iommu_probe_device
-> 		acquire iommu_probe_device_lock only
-> 		iommu_init_device()
-> 			//touch dev->iommu (1)
-> 			dev_iommu_get()
-> 			->probe_device()
+> Solution
+> --------
+> This patch-set tries to fix those two problems by allowing sharing sva
+> domains with all devices bound to a mm. To achieve this, a new structure
+> pointer is introduced to mm to replace the old PASID field, which can keep
+> the info of PASID as well as the corresponding shared sva domains.
+> Besides, function iommu_sva_bind_device() is updated to ensure a new sva
+> domain can only be allocated when the old ones cannot work for the IOMMU.
+> With these changes, a device driver can expect one sva domain could work
+> for per PASID instance(e.g., enqcmd PASID instance), and therefore may get
+> rid of handling sva domain duplication. Besides, IOMMU driver (e.g., intel
+> vt-d driver) can get sufficient info (e.g., the info of the IOMMUs having
+> their devices bound to one virtual address space) when handling
+> mmu_notifier_ops callbacks, to remove the redundant IOTLB invalidations.
 > 
-> Client device probing path:
-> of_dma_configure			
-> 	of_iommu_configure
-> 		//touch dev->iommu  (2)
-> 		...
+> Arguably there shouldn't be more than one sva_domain with the same PASID,
+> and in any sane configuration there should be only 1 type of IOMMU driver
+> that needs only 1 SVA domain. However, in reality, IOMMUs on one platform
+> may not be identical to each other. Thus, attaching a sva domain that has
+> been successfully bound to device A behind a IOMMU A, to device B behind
+> IOMMU B may get failed due to the difference between IOMMU A and IOMMU
+> B. In this case, a new sva domain with the same PASID needs to be
+> allocated to work with IOMMU B. That's why we need a list to keep sva
+> domains of one PASID. For the platform where IOMMUs are compatible to each
+> other, there should be one sva domain in the list.
 > 
-> 
-> We already have 01657bc14a39 ("iommu: Avoid races around device probe") and
-> the big comment in __iommu_probe_device() refers to adopt device_lock()
-> further. Notice your big effort to utilize it, and IMO it can address above
-> issue(which protects dev->iommu):
+> v8:
+>  - CC more people
+>  - CC iommu@lists.linux.dev mailing list.
+>    When sending version 7, some issue happened in my CC list and that caused
+>    version 7 wasn't sent to iommu@lists.linux.dev.
+>  - Rebase to v6.6-rc6 and make a few format changes.
 
-I think something else has gone wrong here, you should not be able to
-get to any really_probe() before the iommu side has done its part.
+You should based it on Joerg's tree so he can take it without
+conflcits.
 
-Even with proper device locking the poor device that is racing isn't
-going to work properly as the IOMMU won't be guarenteed to be
-consistently configured.
+The conflicts are trivial though (Take Michael's version and switch
+mm->pasid with mm_get_enqcmd_pasid(mm))
 
-This seems like you need to resolve boot time ordering in your
-platform? (I don't know exactly how ARM works here though)
-
-eg make sure the iommu driver is fully registered before allowing any
-concurrent probes. Once the iommu driver is registered it will be able
-to catch the bus notifiers and serialize things properly.
+It looks fine, please lets get it in this cycle, the ARM and AMD SVA
+series depend on it.
 
 Jason
