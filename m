@@ -1,187 +1,122 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.151])
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.65])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 752D363D1
-	for <iommu@lists.linux.dev>; Tue, 17 Oct 2023 03:02:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF0858825
+	for <iommu@lists.linux.dev>; Tue, 17 Oct 2023 03:21:09 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="e6ePNHNH"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="LsokCLPH"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1697511751; x=1729047751;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=PvegMtH+xm1jvp5vRi2DBhtyBIgpaqlswHQ5qWNtdFY=;
-  b=e6ePNHNH734YY1WfRTv14qe+sRZ3x17+6kPjDefDHwB0OIKKSObsg6K4
-   oAUX9xmOuSyfFJyUIwlho7Nzfw139Tw2wDraWi8D9+XzthMmXXpfMd22K
-   QlUu///YrgdgfRYdyfccT3aRht3+T4sL5bSRWihb/Ras7h5/dvN/vpQpd
-   PeKkVG2wFeFr5RoQXgsyWFyB4UiP6i8V4DuefmOT857vezUb2WQMUp6eF
-   sCdmEpeZqrjAZvj64jZdro976YxFUCVrwIncqDfZEL4GBisQ9euNTsn+i
-   uIW39EScG9uP4cvREh4X+NXtuy936gMDU6M+YwOtGLHX/dFdVNalwpH3M
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10865"; a="365949029"
-X-IronPort-AV: E=Sophos;i="6.03,230,1694761200"; 
-   d="scan'208";a="365949029"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Oct 2023 20:02:22 -0700
+  t=1697512869; x=1729048869;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=laaAssHt8V3R6F9hNgPsAVESR40dtu6/j3R2Nhzmd3s=;
+  b=LsokCLPHq56br8Inw/AMe2M2Iai6F4VcIPTn4HF4LmamTAIqQlMvgqGV
+   s3P9uSv+CiPiLAdaWU2EQVlx99zd+ieiDrNuXPHmjLFvB2tVIsCQ+L2r1
+   C3WbEZBNNaS6mnZ/qnbo9d+DURinfYx0vb/sVlJoxLfP526nx0+gQFEX1
+   h7STgWUuJb7rYRXLTznyolpf95ZwqIq388mlWGtE9F3jCI/ojAucE1ekm
+   599lbKCiMiHrl6lLJ2Pif/EuiM45GF4lKlSWwFNFiTR2L+V9+K1gpkOl8
+   CcTpMf7aDpv7WCWPnCR/1Ip9TIPrSedH8OD2LIyBK4fkZ1c+wdRproCYp
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10865"; a="389560770"
+X-IronPort-AV: E=Sophos;i="6.03,231,1694761200"; 
+   d="scan'208";a="389560770"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Oct 2023 20:21:08 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10865"; a="879657083"
-X-IronPort-AV: E=Sophos;i="6.03,230,1694761200"; 
-   d="scan'208";a="879657083"
-Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
-  by orsmga004.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 16 Oct 2023 20:02:20 -0700
-Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.32; Mon, 16 Oct 2023 20:02:20 -0700
-Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
- fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.32; Mon, 16 Oct 2023 20:02:20 -0700
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.32 via Frontend Transport; Mon, 16 Oct 2023 20:02:20 -0700
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.168)
- by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.32; Mon, 16 Oct 2023 20:02:19 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=IQSWKYszDz8j8O93VhAaJTAFwMtwPIHliqI8BoT8amwiLZ0Gekxl+BdSKXDxicYduH1LRGfdoTNAfe6Uer4Gw5LpkdQgQQvp+/rQ14VvX3yzcUl1Diebowia+91ET+38nwbhybHh1x+bOoGtsl57kQkcr3gahKO7AGXYzFjMKYucCJ+S97Qd7TF4Vqjb8+ftSXy5oAw2WCtqGd2UfBWuePw3WzjTTUW5JSt6asqG74V3kXCyyJmVV4bpPZD2LldlE7GT3ln/zG0sDHJ1QnsH2vzKAw+8EvmEjKHHBxVtb3OvEBhtj9vAx6Kd9Wp26PLWovJDGKjp3al+0dl7Zk8wXg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=GZyYbWrBSvxKpua5xIdhK0hqX/2LFlg6QH8RrMDEpmA=;
- b=UzLJtTOPjJI6IaeNyZk8fGqzo7eYofZD3ldGpwwjdE9IfE+HfB3RGB8sBvJZWcM8rRDKkWajZNY6ZHU0hgE6CY9xwZEQ+6lFbmDeE3862237g+FLxuIMP6CUwr7S1fKyWJO/Z9ypPb5hRb16GHxMjEfBnJf8LZK8JPGJtLjalNPWIQXL2rxoj+CYC4qER6cM9ha4eH4aj7zQP0fOPaC1s1fK+vH9eOOdNxgguDAbeUVM+esdTdCJHrJUETAUKEuUBdA1ppEtsxERTGmM9Q3VDbF7lFW58L6evWQDTUujXuAWm/Ud98dO3ASGHzappoMVstFOyQBdbL6wpU9Me7Ow8A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from DM4PR11MB5469.namprd11.prod.outlook.com (2603:10b6:5:399::13)
- by CY8PR11MB7876.namprd11.prod.outlook.com (2603:10b6:930:7d::5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6886.34; Tue, 17 Oct
- 2023 03:02:18 +0000
-Received: from DM4PR11MB5469.namprd11.prod.outlook.com
- ([fe80::8df:98a8:95d7:5bf4]) by DM4PR11MB5469.namprd11.prod.outlook.com
- ([fe80::8df:98a8:95d7:5bf4%6]) with mapi id 15.20.6886.034; Tue, 17 Oct 2023
- 03:02:18 +0000
-Message-ID: <74e3348c-e02a-7b78-beef-9bcf16b8c7f7@intel.com>
-Date: Tue, 17 Oct 2023 11:02:08 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.15.1
-Subject: Re: [PATH v5 3/3] iommu/vt-d: debugfs: Support dumping a specified
- page table
-Content-Language: en-US
-To: Baolu Lu <baolu.lu@linux.intel.com>, <iommu@lists.linux.dev>, Tian Kevin
-	<kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon
-	<will@kernel.org>, Robin Murphy <robin.murphy@arm.com>
-CC: <linux-kernel@vger.kernel.org>
-References: <20231013135811.73953-1-Jingqi.liu@intel.com>
- <20231013135811.73953-4-Jingqi.liu@intel.com>
- <fd56b69d-d9ea-411c-9eaa-454b3d64f51e@linux.intel.com>
-From: "Liu, Jingqi" <jingqi.liu@intel.com>
-In-Reply-To: <fd56b69d-d9ea-411c-9eaa-454b3d64f51e@linux.intel.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: KL1PR02CA0008.apcprd02.prod.outlook.com
- (2603:1096:820:c::13) To DM4PR11MB5469.namprd11.prod.outlook.com
- (2603:10b6:5:399::13)
+X-IronPort-AV: E=McAfee;i="6600,9927,10865"; a="826269892"
+X-IronPort-AV: E=Sophos;i="6.03,231,1694761200"; 
+   d="scan'208";a="826269892"
+Received: from sqa-gate.sh.intel.com (HELO spr-2s5.tsp.org) ([10.239.48.212])
+  by fmsmga004.fm.intel.com with ESMTP; 16 Oct 2023 20:21:05 -0700
+From: Tina Zhang <tina.zhang@intel.com>
+To: iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	kvm@vger.kernel.org
+Cc: David Woodhouse <dwmw2@infradead.org>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Tina Zhang <tina.zhang@intel.com>
+Subject: [RFC PATCH 00/12] iommu/vt-d: Remove superfluous IOMMU IOTLB invalidations
+Date: Tue, 17 Oct 2023 11:20:32 +0800
+Message-Id: <20231017032045.114868-1-tina.zhang@intel.com>
+X-Mailer: git-send-email 2.39.3
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM4PR11MB5469:EE_|CY8PR11MB7876:EE_
-X-MS-Office365-Filtering-Correlation-Id: 069ad351-92ce-48c1-9a53-08dbcebd792e
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: cpqR1XhD8WD75WwB/hZ2Wy3tlA/9dm6cerjndYbiQ2RQIlMTA9SvIZUi3/FRk3IF8Hlgi9xO75+9tXcdrxPFUCEcgF+0ZjSzT7/gM07VINjFV9slsDFGPxxJELsYv2lnhPCmz09f4Rqozf/WDD56D5QOW9qbVpPXl7cdo5KnNOxY57bSxOINlqPjJx+Ouh1NTSnJ6QRmDxz6pXskC5P2TbCLyKGYeZtgiQXmF45UWdclNcJm/onnlk4sCrerGsajC0K5DyACCZSwxdok3y1B9KNAnQXeD85nU7djI4NFv0NhGyhgki8jjOUcFOceAPj2GWyO8tRO00V6P2TeRMW6bTudFg0RUsyEAeK3soaPBMNOfBg+nHUZM2eu/Sz7Ed0qfB+90yWcTMWDYYsEQhUhSYnfoE7HY8LVhWoCBImDGtTZl/Rfuffz/nhZJYWCNA5gZQblJK4ZF7U5kQrpeBX8Fex00eQX4T2og6AUNRfbpVSDG3zNP6FgV7FpXfD0mAjVAmuoiSlbUd+u7/o+tx5jJOhewuBZ58GicijKGJTfp5U25S5umVQF5ysZrzz89wxNqOMZFHwLRdl2B3wjM90bKx4hxXjp69BRdopTjf2SMb5X+L9/Uzx7qXe/5N0bHfdH6BEGzJB4+cSXT8XOp1wL6A==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR11MB5469.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366004)(136003)(39860400002)(346002)(396003)(376002)(230922051799003)(186009)(1800799009)(64100799003)(451199024)(478600001)(53546011)(26005)(2616005)(6506007)(31686004)(6512007)(6666004)(4326008)(66556008)(8936002)(8676002)(83380400001)(5660300002)(41300700001)(66476007)(316002)(66946007)(4744005)(2906002)(38100700002)(110136005)(6486002)(31696002)(86362001)(36756003)(82960400001)(45980500001)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?L01VNkQvcGlPak1naExSbllhT2E0SlBCYXhCNzdySUJPakM3THlRbjQrN1Y1?=
- =?utf-8?B?R2Vld0pwc1lpNFpXZmUxT0RrUGNRVnRSTm9oSFBTWEowbWhERXp4NlVJaVdj?=
- =?utf-8?B?aWJTU1JGL3VVZ3UzcVphQnJ3eTBIbSsrNGVkRjdHamdIWnJzUCs3MTl3VG1r?=
- =?utf-8?B?N2UvbWZYYWZlcXNjS2VLZmJmakhOSUI5Zjc0cElna29LZEp6dVNIQWdXNlhS?=
- =?utf-8?B?bThWbEpweGdaT2t4YjRWV3pmeU5GaVNKK21DWGdlUGNwNFlXYnhtUmRqamxE?=
- =?utf-8?B?Qms0Q0hLWGkxMnFad2pwZzlrYlhNeXhTeTZzeS9aS0VOL0g2Y2krZzhmYlNw?=
- =?utf-8?B?TC9MMlRVWEF0MHo4RWFyTzI1RmRJS3hYTVg3NVBjeHRxbis2NFU5QlBiQkJ6?=
- =?utf-8?B?UlAwbzE0dnYyWXlldnlwc0RKa2lsZWdRVnRvWTZQdmRIQWgxWEpmbDlmd29q?=
- =?utf-8?B?SFpDUmFMV0luUDkwZ3kyRFEzc1J1YjJsSFFlWU96d2Qxbko4c1ZpQm9FT1ZC?=
- =?utf-8?B?bHdaV2o2YXlxc2VGWTFkRy9RckFsZHNuTGZvWHh3Q25nclVRejQwY21OTmNk?=
- =?utf-8?B?TnpYVnlsMmZzS2c1Nkp2NW9laFpJTHFCbTJET2R4SVpudXhYLzV6M2d6NjlS?=
- =?utf-8?B?N2N0aGZqODNzY25kL3hjSmRGOVZ5YTZBTTJXVjlFS2hvazk3WTBwQlI3TXRY?=
- =?utf-8?B?dDZycWdKZHdRaUFPOEpNVEdjSnlVSTltRnljOGJyU1VhWDZCTkkrdjNyYmFQ?=
- =?utf-8?B?NVNvZmVHWjJ6YUJHcERKSGk3dDZsRTJlRW92S0hFS1ZtSEFqT0pJbUlYeG8x?=
- =?utf-8?B?L3YrdXFRZVp3ZU5uWFdLT1RtbDkvNFl2dGw2aGdCdC9pbFpRVmdmTmd1SEZD?=
- =?utf-8?B?dFBrcWhnNEs5dTljS29VMi9ZTjZlRnFCZFhvRURJeWhRYlV3QzhOcktocXFn?=
- =?utf-8?B?dlVMNUF1WUMxbnd5dmxpQnJFOWNNS2RuWGlRbHNaOVZ5OVdQT01BckE5dkts?=
- =?utf-8?B?RWlkK3dNQmJDZmkxNWZQRklMVGlpa2Q4ZmVjeVU0alNWLzFWQ1cyc2c0KzV5?=
- =?utf-8?B?WjVpQ3E4R3VLSE9WMkZKUU0rS0F4SXRMcUx1QmNIMFl6Q3Y4RTNRQmhxYTJU?=
- =?utf-8?B?QUNONEI3WXFvWGlsT3c4RW0yZmkxaGZTTTJ1bWMzSEFEVEZuVkVtSm5iTG83?=
- =?utf-8?B?U08yai9kUzFCeHEzanFVd2xPbjVRN3Q3N3gzdUQ0UkdVZk9QSHdyRzFYb1Fi?=
- =?utf-8?B?dVBxZmFRdzhaeFArYVpMa1A0V3Y5cGpiVlBKUmdJVkNua0xOblJvSUZFTGh5?=
- =?utf-8?B?Q0NYZm4yaFBjbTNrRXRmUVZwMGlhQmhvb0ZJTHZybmtKNjIzMnhEK1NvY3NS?=
- =?utf-8?B?bldPODViSFQ4VWJWMjBPM1BXMEFDbnlZc0txdHh4R3p6blJHMWFHZUJaTGdq?=
- =?utf-8?B?SUsrbU1oMzlMK0RuVzI1YTlOa0M5cEhTM09pRVRZUythK3g2OTh1eUhWcXZB?=
- =?utf-8?B?Q1M0MjRISVc2UUVpRC9DZGVEWTJIV3M5MGRIbXhzMW80aHoyNExtV1Mra3cr?=
- =?utf-8?B?eURTK2pwRjFNWXpCK2tQZUN4a011cEhNN0FGWlc4N3laajk4LzFzUjkrbFdx?=
- =?utf-8?B?SSt0ekNPQ0x3TUdTNlVpV2N4c0VOMVFLYi92YUR6U2Z1VEZKQ2l4NXp6VlY1?=
- =?utf-8?B?bHJVRVZHU3dtTndRS3RVWk1EY2dyZldzd3EwRmkrNFBLVkRuK0VaS1h4a25r?=
- =?utf-8?B?djNRVDlyOURoc0Fva1JnMTRhdEl0SnBMMzZEUFNHUGRzMzFvMGYvTkhkNEo2?=
- =?utf-8?B?bkxMczdvVWQrQ2dpOHB6TVdYU096SnVRT3JVaGVKTVJWMzdySjRzTHZqeElj?=
- =?utf-8?B?bTNoUUo5WitSL2JOWnpLMXRubTMvWXlzSXVZTW53TnV1VkpNNkYyQjNkVWNl?=
- =?utf-8?B?RWdwRVFMdHJBNWowWDZzTmJ5N1E5c1NDSmtjSGNCVEt4d1B0ajZ4VEhJUFdN?=
- =?utf-8?B?dldaUFhKQUlwaGVpQy9ieUpTajBOWHJRUmNEbE5qNUdqYW1Qck83VGtQM2cy?=
- =?utf-8?B?SG9hVGZXMTFQY0xJaGcxSW85UnZ6SGJtYS80cGdENWkzTjFiVStIdk5wZUpP?=
- =?utf-8?Q?ixgJsK5MPkXTMLtOabepdruxI?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 069ad351-92ce-48c1-9a53-08dbcebd792e
-X-MS-Exchange-CrossTenant-AuthSource: DM4PR11MB5469.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Oct 2023 03:02:18.3716
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 6Ynbz2XDTPFIWaL8pKzn716tPArANMpZiYsIo5eNEn6i7pk29tDPqXFT90q0LDNISbzqOZu+f+3xNzrzacLtdA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR11MB7876
-X-OriginatorOrg: intel.com
+Content-Transfer-Encoding: 8bit
 
+This series based on "Share sva" patch-set[1], aims to remove superfluous
+IOMMU IOTLB invalidations in VT-d driver.
 
-On 10/16/2023 11:04 AM, Baolu Lu wrote:
-> On 10/13/23 9:58 PM, Jingqi Liu wrote:
->>
-......
->> +        if (scalable) {    /* scalable mode */
->> +            struct pasid_dir_entry *dir_tbl, *dir_entry;
->> +            struct pasid_entry *pasid_tbl, *pasid_tbl_entry;
->> +            u16 pasid_dir_size, dir_idx, tbl_idx, pgtt;
->> +            u64 pasid_dir_ptr;
->
-> 0day robot complained:
->
->    drivers/iommu/intel/debugfs.c: In function 
-> 'domain_translation_struct_show':
-> >> drivers/iommu/intel/debugfs.c:401:29: warning: variable 
-> 'pasid_dir_size' set but not used [-Wunused-but-set-variable]
->      401 |                         u16 pasid_dir_size, dir_idx, 
-> tbl_idx, pgtt;
->          |                             ^~~~~~~~~~~~~~
->
-> I have removed pasid_dir_size and queue the whole series for v6.7.
->
-Thanks Baolu.
-Indeed. It's an unused variable.
+In the current VT-d driver, IOMMU IOTLB invalidation commands and
+device-TLB commands are performed per device, which leads to superfluous
+IOTLB invalidations. For example, if there are four devices behind a IOMMU
+are attached to one sva domain (which could be a common case in
+virtualization scenarios where one virtual IOMMU working for all the
+virtual devices), four IOTLB invalidation commands and four device-IOTLB
+invalidation commands will be issued. However, only one IOTLB invalidation
+command and four device-IOTLB invalidation commands are necessary.
+Superfluous IOMMU IOTLB invalidations impact run-time performance.
 
-BR,
-Jingqi
-> Thank you!
->
-> Best regards,
-> baolu
+Although the goal could be built straight-forwardly in the current VT-d
+driver, some refactoring works are considered necessary before landing the
+one solving the problem of redundant IOTLB invalidations:
+
+1) VT-d driver uses different structures to keep attached device info.
+For default domain, it uses struct dev_pasids_info and some related fields
+of struct dmar_domain. For sva domain, it uses struct intel_svm and
+struct intel_svm_dev. The reason of it is because previously the sva
+domain is not shared among devices behind different IOMMUs and
+therefore dmar_domain and its fields cannot be used globally to keep
+all attached device info. After the patch-set[1] gets acceptance, sva
+domain is global to the attached devices. Thus, retiring struct
+intel_svm/intel_svm_dev is the main refactoring work of this patch-set.
+
+2) Most logic of intel_svm_set_dev_pasid() can be covered by
+intel_iommu_set_dev_pasid(). Refactoring both intel_svm_set_dev_pasid()
+and intel_iommu_set_dev_pasid() and let the former call the latter for
+set_dev_pasid operation to avoid duplicating code.
+
+3) Last but not least, struct mmu_notifier is proposed to iommu_domain.
+This is a change to IOMMU core, which helps to centralize info required by
+sva to sva domain and therefore can help cleanup the code in IOMMU drivers.
+
+This patchset is on github per-iommu_IOTLB_invalidation branch[2].
+
+[1]: https://lore.kernel.org/linux-iommu/20231017004802.109618-1-tina.zhang@intel.com/
+[2]: https://github.com/TinaZhangZW/linux/tree/per-iommu_IOTLB_invalidation
+
+Tina Zhang (12):
+  iommu/vt-d: Retire the treatment for revoking PASIDs with pending
+    pgfaults
+  iommu/vt-d: Remove initialization for dynamically heap-allocated
+    rcu_head
+  iommu/vt-d: Retire intel_svm_bind_mm()
+  iommu/vt-d: Make dev_to_intel_iommu() helper global
+  iommu/vt-d: Retire struct intel_svm_dev
+  iommu: Add mmu_notifier to sva domain
+  iommu/vt-d: Retire struct intel_svm
+  iommu/vt-d: Use RCU for dev_pasids list updates in
+    set/remove_dev_pasid()
+  iommu/vt-d: Refactor intel_iommu_set_dev_pasid()
+  iommu/vt-d: Refactor intel_iommu_remove_dev_pasid()
+  iommu/vt-d: Use intel_iommu_set_dev_pasid() for sva domain
+  iommu/vt-d: Remove superfluous IOMMU IOTLB invalidations
+
+ drivers/iommu/intel/iommu.c |  91 +++++++++----
+ drivers/iommu/intel/iommu.h |  30 ++---
+ drivers/iommu/intel/svm.c   | 261 ++++++++----------------------------
+ include/linux/iommu.h       |   2 +
+ 4 files changed, 128 insertions(+), 256 deletions(-)
+
+-- 
+2.39.3
 
