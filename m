@@ -1,54 +1,53 @@
-Received: from mail-yw1-f177.google.com (mail-yw1-f177.google.com [209.85.128.177])
+Received: from mail-yw1-f172.google.com (mail-yw1-f172.google.com [209.85.128.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 92D31328AE
-	for <iommu@lists.linux.dev>; Tue, 17 Oct 2023 08:43:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB6AC1CFB8
+	for <iommu@lists.linux.dev>; Tue, 17 Oct 2023 08:48:34 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; dkim=none
-Received: by mail-yw1-f177.google.com with SMTP id 00721157ae682-5a7af20c488so66915437b3.1
-        for <iommu@lists.linux.dev>; Tue, 17 Oct 2023 01:43:33 -0700 (PDT)
+Received: by mail-yw1-f172.google.com with SMTP id 00721157ae682-5a7ac4c3666so66655207b3.3
+        for <iommu@lists.linux.dev>; Tue, 17 Oct 2023 01:48:34 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1697532212; x=1698137012;
+        d=1e100.net; s=20230601; t=1697532514; x=1698137314;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=iF8pGgwx9ER+JexQPULvEbdhCYC/MDFSezGeWG3jTqw=;
-        b=chf95nGHrGit6iKWk+gn81yrlM444t5jwLknbKuCcIp7ghmaOgSCMM9GrIFQQqr30X
-         NS0Xg5Lx5rYiF4plZ45fYKoE2J36jmQN9TK3nfbLiy8Cbg6Qdi/iN8+7BF2YnTjOUiJx
-         kQlcmfdqBiH0jhWcteWOvTYRnQI7mFfJktlyTyAPGfdfIgVHynuvRMjL9cZxzS0RzgFQ
-         tWpwdegOdmmD8veyE8+SDy2mMKZYUaaHHjZf9NKypvvRL496PWgPPmVvNVB2LJA0b3NN
-         TjWIW+qVYrnY8pRGdM0YviSa9WCS9Hhz1cP1tI8VfIq7OWYsOOwCEk1F7SeOZZbd+boy
-         jcNw==
-X-Gm-Message-State: AOJu0YyScoOfYxMcliBiLsFio5Y+ZmJmSAAYS04Ea7TUDj3GeOSy2y3e
-	AOw68SZlAYjsiTnoxC5tbeBplSMMB1jmOQ==
-X-Google-Smtp-Source: AGHT+IEdKF0bh7hnLAxhmAEB2yhX/+KfKlu8lJ4sj8P9CaNj/efUc8dyge44VtW5VRzfw/guHqFtMg==
-X-Received: by 2002:a81:77d5:0:b0:5a7:c646:b3ed with SMTP id s204-20020a8177d5000000b005a7c646b3edmr1623455ywc.34.1697532212298;
-        Tue, 17 Oct 2023 01:43:32 -0700 (PDT)
-Received: from mail-yw1-f180.google.com (mail-yw1-f180.google.com. [209.85.128.180])
-        by smtp.gmail.com with ESMTPSA id u140-20020a0deb92000000b0059bc980b1eesm440593ywe.6.2023.10.17.01.43.31
+        bh=5wdO2B9/QvvZjPAQkmDCzsWoJIs0Ay3wdYhcrR1VVXg=;
+        b=QPu/IapJcuqJBQ49QUg8C+8g4Ub/z6OyT/hpgCJQw/Xvws2fNzW1lCx6kSmfH5mCRT
+         iV7ySQ5NaVsPwehJSpQPKGqZi9TQ345EpEMOMKxDRK/L9Wpbs13RxWji/rG+OkzG15qx
+         i2oLtoUEq5OfitnImyEJg8MwSTxA3O8iu3nNFGjCTGZBi7flwxsx5y2RT6Akhkxbnizf
+         JwqbZ3POlh9WBwY87xsioYRS6aoD9Cct+w1A405arv/X0h2pFrmHxrO/u04iQLrlXVVu
+         Wcg1OSgkH2FCto5RAvO47jDHKY/uLk+c5QWtM8B/XaiFLOTOk2HHo3QK7pttq/J4xKTv
+         QgIQ==
+X-Gm-Message-State: AOJu0YyiP5gs2AevwVSB8f6iVXSTtcoAiJ4JvSdcY5boRPv68ZE+Nf5J
+	YDSKjNR+zjYr6M688invDYRb5dbGu5YLIA==
+X-Google-Smtp-Source: AGHT+IFV4bLVE4aailWyJuzT0IwWJLAaTcaF/lzKvDlB7VQPMxAbvIBzJNCWg9PZfxbniPZPBfi1AQ==
+X-Received: by 2002:a0d:f482:0:b0:5a8:960d:e538 with SMTP id d124-20020a0df482000000b005a8960de538mr1765125ywf.47.1697532513702;
+        Tue, 17 Oct 2023 01:48:33 -0700 (PDT)
+Received: from mail-yw1-f170.google.com (mail-yw1-f170.google.com. [209.85.128.170])
+        by smtp.gmail.com with ESMTPSA id e63-20020a816942000000b0059c8387f673sm451974ywc.51.2023.10.17.01.48.33
         for <iommu@lists.linux.dev>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 17 Oct 2023 01:43:31 -0700 (PDT)
-Received: by mail-yw1-f180.google.com with SMTP id 00721157ae682-579de633419so66667387b3.3
-        for <iommu@lists.linux.dev>; Tue, 17 Oct 2023 01:43:31 -0700 (PDT)
-X-Received: by 2002:a0d:f786:0:b0:583:a3ab:b950 with SMTP id
- h128-20020a0df786000000b00583a3abb950mr1213954ywf.50.1697532211155; Tue, 17
- Oct 2023 01:43:31 -0700 (PDT)
+        Tue, 17 Oct 2023 01:48:33 -0700 (PDT)
+Received: by mail-yw1-f170.google.com with SMTP id 00721157ae682-5a7ac4c3666so66655147b3.3
+        for <iommu@lists.linux.dev>; Tue, 17 Oct 2023 01:48:33 -0700 (PDT)
+X-Received: by 2002:a05:690c:dc8:b0:5a8:5079:422 with SMTP id
+ db8-20020a05690c0dc800b005a850790422mr2326403ywb.26.1697532513384; Tue, 17
+ Oct 2023 01:48:33 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20231016054755.915155-1-hch@lst.de> <20231016054755.915155-11-hch@lst.de>
-In-Reply-To: <20231016054755.915155-11-hch@lst.de>
+References: <20231016054755.915155-1-hch@lst.de> <20231016054755.915155-13-hch@lst.de>
+In-Reply-To: <20231016054755.915155-13-hch@lst.de>
 From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Tue, 17 Oct 2023 10:43:19 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdXonOxTT7OuTtmyYR346F569aQE0ErhAx8qfsGxWUp+Sg@mail.gmail.com>
-Message-ID: <CAMuHMdXonOxTT7OuTtmyYR346F569aQE0ErhAx8qfsGxWUp+Sg@mail.gmail.com>
-Subject: Re: [PATCH 10/12] net: fec: use dma_alloc_noncoherent for data cache
- enabled coldfire
+Date: Tue, 17 Oct 2023 10:48:20 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdUgM1FMKSJcq4QD9Gc=B8XF7_jWxhm634bTYQ9a6voVhA@mail.gmail.com>
+Message-ID: <CAMuHMdUgM1FMKSJcq4QD9Gc=B8XF7_jWxhm634bTYQ9a6voVhA@mail.gmail.com>
+Subject: Re: [PATCH 12/12] m68k: remove unused includes from dma.c
 To: Christoph Hellwig <hch@lst.de>
 Cc: Greg Ungerer <gerg@linux-m68k.org>, iommu@lists.linux.dev, 
 	Paul Walmsley <paul.walmsley@sifive.com>, Palmer Dabbelt <palmer@dabbelt.com>, 
@@ -62,75 +61,16 @@ Cc: Greg Ungerer <gerg@linux-m68k.org>, iommu@lists.linux.dev,
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Hi Christoph,
-
 On Mon, Oct 16, 2023 at 7:48=E2=80=AFAM Christoph Hellwig <hch@lst.de> wrot=
 e:
-> Coldfire platforms with data caches can't properly implement
-> dma_alloc_coherent and currently just return noncoherent memory from
-> dma_alloc_coherent.
->
-> The fec driver than works around this with a flush of all caches in the
-> receive path. Make this hack a little less bad by using the explicit
-> dma_alloc_noncoherent API and documenting the hacky cache flushes so
-> that the DMA API level hack can be removed.
->
-> Also replace the check for CONFIG_M532x for said hack with a check
-> for COLDFIRE && !COLDFIRE_COHERENT_DMA.  While m532x is the only such
-> platform with a fec module, this makes the code more consistent and
-> easier to follow.
+> dma.c doesn't need most of the headers it includes.  Also there is
+> no point in undefining the DEBUG symbol given that it isn't used
+> anywhere in this small file.
 >
 > Signed-off-by: Christoph Hellwig <hch@lst.de>
 
-Thanks for your patch!
-
-> --- a/drivers/net/ethernet/freescale/fec_main.c
-> +++ b/drivers/net/ethernet/freescale/fec_main.c
-> @@ -406,6 +406,70 @@ static void fec_dump(struct net_device *ndev)
->         } while (bdp !=3D txq->bd.base);
->  }
->
-> +/*
-> + * Coldfire does not support DMA coherent allocations, and has historica=
-lly used
-> + * a band-aid with a manual flush in fec_enet_rx_queue.
-> + */
-> +#if defined(CONFIG_COLDFIRE) && !defined(CONFIG_COLDFIRE_COHERENT_DMA)
-> +static void *fec_dma_alloc(struct device *dev, size_t size, dma_addr_t *=
-handle,
-> +               gfp_t gfp)
-> +{
-> +       return dma_alloc_noncoherent(dev, size, handle, DMA_BIDIRECTIONAL=
-, gfp);
-> +}
-> +
-> +static void fec_dma_free(struct device *dev, size_t size, void *cpu_addr=
-,
-> +               dma_addr_t handle)
-> +{
-> +       dma_free_noncoherent(dev, size, cpu_addr, handle, DMA_BIDIRECTION=
-AL);
-> +}
-> +#else /* CONFIG_COLDFIRE && !CONFIG_COLDFIRE_COHERENT_DMA */
-
-!CONFIG_COLDFIRE || CONFIG_COLDFIRE_COHERENT_DMA
-
-> +static void *fec_dma_alloc(struct device *dev, size_t size, dma_addr_t *=
-handle,
-> +               gfp_t gfp)
-> +{
-> +       return dma_alloc_coherent(dev, size, handle, gfp);
-> +}
-> +
-> +static void fec_dma_free(struct device *dev, size_t size, void *cpu_addr=
-,
-> +               dma_addr_t handle)
-> +{
-> +       dma_free_coherent(dev, size, cpu_addr, handle);
-> +}
-> +#endif /* !CONFIG_COLDFIRE && !CONFIG_COLDFIRE_COHERENT_DMA */
-
-!CONFIG_COLDFIRE || CONFIG_COLDFIRE_COHERENT_DMA
+Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Acked-by: Geert Uytterhoeven <geert@linux-m68k.org>
 
 Gr{oetje,eeting}s,
 
