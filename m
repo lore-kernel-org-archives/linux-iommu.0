@@ -1,82 +1,116 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.120])
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2051.outbound.protection.outlook.com [40.107.244.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD5924404
-	for <iommu@lists.linux.dev>; Tue, 17 Oct 2023 02:12:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA96E4404
+	for <iommu@lists.linux.dev>; Tue, 17 Oct 2023 02:19:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="LykXMoJv"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1697508759; x=1729044759;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=9r7TvSUocLpq3Lg382G+iJaeI1HhRtaUjULozWB9NEI=;
-  b=LykXMoJvZHGJr2y9mNI0nY33T6YwavLP/5rg9Ry4TspR1msr4vgvFNDf
-   mBpSkac8KA9opDCU5OU4RkES9hKSCfw4tTh0JwSOgJ396qe7EMjjr/5cm
-   LH1jz9rnTo2UmBax0DVIIZrS5nl2r+2rfCXVgqsqhR7XWxmwjaMkhTlk1
-   cK8pG3xYKCRweP1slusSK9j9IwZZlhfHlV4YxshWxGaj4IuiYcw8JY8KK
-   yXZUGFJ0fKVfa1mbhysXtHaeAjjseRI2lC1oFIDjaQ8xehNzGmNxnI1Jb
-   s0iZzhNjcNmHZ6CD5Si17y2K8XE/7+i2rCRhuTzIC98x0R3IzcubCfKVc
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10865"; a="384556009"
-X-IronPort-AV: E=Sophos;i="6.03,230,1694761200"; 
-   d="scan'208";a="384556009"
-Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Oct 2023 19:12:38 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.03,230,1694761200"; 
-   d="scan'208";a="3884179"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
-  by fmviesa001.fm.intel.com with ESMTP; 16 Oct 2023 19:12:40 -0700
-Message-ID: <a83cb9a7-88de-41af-8ef0-1e739eab12c2@linux.intel.com>
-Date: Tue, 17 Oct 2023 10:08:55 +0800
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="cIIR3uNU"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=a7GINgiJJfMFZKcygTeKjHiU4McrJwdKbXtWAzOm/zQSN4yTWKVHMUnf39Cr86rjERuHph0EjUcgXs8Si75G+4WxgG6YY3yZuujLlr/kr5Ttxdrx1dehOiu3p2PDvMRgyOR71lB/QdeCBjBbYik4W8mUH0yUdrdmkWOD1CX1EAYkv228MI29n3Hw3lJmxHrAaiI59akzus9VPawivadxlpqaAoWJL5TZ390URKo5ZqSroh3AmVVc2a3tCWCJCVA6KYDOoNN6xpPpKSSRBWobLoAfu2dsWJ9XGo4STwz0a5KM4cj3PwDg7q0rXd99MQ+MXhJVmLRnrxMp2JlUlxvt3g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=DkHvvLesV53Me6YV4XX4p5bImzF2kLyCCaseulxO44w=;
+ b=fmFf2ciEpHMgFdfMbjh3LC84cRBx7+7RXGeNN9DD1pXeAc52Lv7cudhwob9ugd8yL1p+5dAdaXm7p+DjxFzuyGJBVGjA63ZLWSISx7PL0AEoU8fIw+uiWDxcREKxqzJyAI7uL/OGD5usO8H35f4BXtlKD1CuidPCTsUTMcQAwPa/yTQ217djQdk1BVzqESrDLNzRXL+IdwJfl3zpZJV2mQF/g6uHVwEJ5Z7vh1qIolZTNbF1VAgfspP9K+mKHqaqgBGdkOJzK6/ybBIfBy3SirxW6ZlO4iMCIrX15RdlKMTxkKTBYiLwhMRPtRszSdU7iLQNI2Bc/mGJUqUKjm5OWw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=DkHvvLesV53Me6YV4XX4p5bImzF2kLyCCaseulxO44w=;
+ b=cIIR3uNU/8hBbavhnDce4U2VZlsJ77ia6H0PBxOxUYGCiT8rOiMIk9q4jb71A1lkPznarNXrDrUO+9N3K6Y+pw7WDZCbR9OEn9nnROoRZytxc9UMMOai1a1AgaZ/c6cGORfobm40c0M/rx+7+L3I1FwfnJ8OU62hLcJZUWWBchHYvyviAGq4vuB15vsCVmiYqOMf362cAVysKLJnuRMONCBmbNALk7mk3kwZD+N37IEfvoIFKNCnCYIig+ki6gSljC0k2eFcuW+9k5WA+6Whr4WQdZmA8Oi2tTQZxAWhJ4OaOoeZzJvrEE4a9blb7N5E2TsSW5DbsRRrBJLZgcQs1w==
+Received: from SA0PR11CA0020.namprd11.prod.outlook.com (2603:10b6:806:d3::25)
+ by DS0PR12MB7779.namprd12.prod.outlook.com (2603:10b6:8:150::5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6863.47; Tue, 17 Oct
+ 2023 02:19:46 +0000
+Received: from SA2PEPF000015CC.namprd03.prod.outlook.com
+ (2603:10b6:806:d3:cafe::be) by SA0PR11CA0020.outlook.office365.com
+ (2603:10b6:806:d3::25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6886.36 via Frontend
+ Transport; Tue, 17 Oct 2023 02:19:46 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ SA2PEPF000015CC.mail.protection.outlook.com (10.167.241.202) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6907.20 via Frontend Transport; Tue, 17 Oct 2023 02:19:46 +0000
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Mon, 16 Oct
+ 2023 19:19:29 -0700
+Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail202.nvidia.com
+ (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Mon, 16 Oct
+ 2023 19:19:29 -0700
+Received: from Asurada-Nvidia (10.127.8.9) by mail.nvidia.com (10.129.68.6)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41 via Frontend
+ Transport; Mon, 16 Oct 2023 19:19:28 -0700
+Date: Mon, 16 Oct 2023 19:19:27 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Tina Zhang <tina.zhang@intel.com>
+CC: <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>, David Woodhouse
+	<dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel
+	<joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy
+	<robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian
+	<kevin.tian@intel.com>, Michael Shavit <mshavit@google.com>, Vasant Hegde
+	<vasant.hegde@amd.com>
+Subject: Re: [PATCH v8 0/5] Share sva domains with all devices bound to a mm
+Message-ID: <ZS3vLxikjXj7gDlI@Asurada-Nvidia>
+References: <20231017004802.109618-1-tina.zhang@intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, Jason Gunthorpe <jgg@nvidia.com>,
- Kevin Tian <kevin.tian@intel.com>,
- Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
- Yi Liu <yi.l.liu@intel.com>, Yi Y Sun <yi.y.sun@intel.com>,
- Nicolin Chen <nicolinc@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Alex Williamson <alex.williamson@redhat.com>, kvm@vger.kernel.org
-Subject: Re: [PATCH v3 19/19] iommu/intel: Access/Dirty bit support for SL
- domains
-Content-Language: en-US
-To: Joao Martins <joao.m.martins@oracle.com>, iommu@lists.linux.dev
-References: <20230923012511.10379-1-joao.m.martins@oracle.com>
- <20230923012511.10379-20-joao.m.martins@oracle.com>
- <d8553024-b880-42db-9f1f-8d2d3591469c@linux.intel.com>
- <83f9e278-8249-4f10-8542-031260d43c4c@oracle.com>
- <10bb7484-baaf-4d32-b40d-790f56267489@oracle.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <10bb7484-baaf-4d32-b40d-790f56267489@oracle.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20231017004802.109618-1-tina.zhang@intel.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SA2PEPF000015CC:EE_|DS0PR12MB7779:EE_
+X-MS-Office365-Filtering-Correlation-Id: f01edf8f-c736-4f12-f99f-08dbceb7884e
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	cMNs94b09rJ7eroUyoihMRAdP8d5KMjYXZDl4I3SN4qVoQtACklEWLWBjYRZ4Y8OfpMsDqJymiQ73ct+KigQhQlbfEH7xTfaUAvhEabBwdWC/pE2qyTFULTQKLQVr4oIFI+EtNADWMSBdQ2jLdaCGn6yoq9Ydh8OgHTOyBGoxTlJujc5GLolnmwPNueS9Gd3Gk8TyZQ7AU2WrTHUT6DLh9ToC70DRJ7TkMf7wuXW5VOHejkEAVKqK8BmNmjM+QLdM+MPfhmYp6iCyR7eafro38Y6w9Jg/v0rg+4JlX6ILj6642cGOAyiKvkGZeo9A30D5ue13FDUqJNggqGJiZEsWbybZZy5L1sESyW8Fr4Fu44s7FJ+w9J21VphRQvMgsP3RgeUuTUYRB1wAnZAPCNK43GqKAXc+lC5bNT8glQ1856CenOiXOKz2fBt5wHIuDEddAzZxgRWcFp2jtiPP/uzES363F0cmJcJytneQsiAkuy17tiBbgCDcVKAVOcwdoP2WuvqN1vpS3qUleExU2/U2n5uzp5NR935/SfmpsrbSDTlki1ZVcRk4AVFAqauFyDGj2zQ5/27HxXUD1ictfW6y1EslpDO4SXbiSb9zhHrr49sSZMgw0OyUD2OGc1wE8DMgfj3AkJmK7u4o1Rs4IE2d8ebzCGjbM/GRbOZwn305mk2RTSE+UGf8Oy/wuMf9cludsoB/Hq72jIyXEk7N16EY23Q5o9ZhR0pk7p0Dtd8WmPa0LYncJDTP1FFHlg5T8rdBIA3AP0TUIxGeJE0wUYL7+koFEndjQG8ZQXRYoxcMWw=
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230031)(4636009)(39860400002)(346002)(376002)(136003)(396003)(230922051799003)(186009)(82310400011)(451199024)(1800799009)(64100799003)(46966006)(40470700004)(36840700001)(9686003)(5660300002)(8936002)(4326008)(8676002)(47076005)(966005)(478600001)(26005)(336012)(426003)(54906003)(70206006)(36860700001)(6916009)(40480700001)(41300700001)(55016003)(316002)(40460700003)(7636003)(356005)(82740400003)(7416002)(86362001)(4744005)(70586007)(33716001)(2906002);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Oct 2023 02:19:46.2708
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: f01edf8f-c736-4f12-f99f-08dbceb7884e
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	SA2PEPF000015CC.namprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB7779
 
-On 10/17/23 12:00 AM, Joao Martins wrote:
->>> The iommu_dirty_bitmap is defined in iommu core. The iommu driver has no
->>> need to understand it and check its member anyway.
->>>
->> (...) The iommu driver has no need to understand it. iommu_dirty_bitmap_record()
->> already makes those checks in case there's no iova_bitmap to set bits to.
->>
-> This is all true but the reason I am checking iommu_dirty_bitmap::bitmap is to
-> essentially not record anything in the iova bitmap and just clear the dirty bits
-> from the IOPTEs, all when dirty tracking is technically disabled. This is done
-> internally only when starting dirty tracking, and thus to ensure that we cleanup
-> all dirty bits before we enable dirty tracking to have a consistent snapshot as
-> opposed to inheriting dirties from the past.
+On Tue, Oct 17, 2023 at 08:47:57AM +0800, Tina Zhang wrote:
 
-It's okay since it serves a functional purpose. Can you please add some
-comments around the code to explain the rationale.
+> v8:
+>  - CC more people
+>  - CC iommu@lists.linux.dev mailing list.
+>    When sending version 7, some issue happened in my CC list and that caused
+>    version 7 wasn't sent to iommu@lists.linux.dev.
+>  - Rebase to v6.6-rc6 and make a few format changes.
 
-Best regards,
-baolu
+Tried Sanity with SMMUv3, though there is a merge conflict
+against Michael's SMMU series:
+https://lore.kernel.org/linux-iommu/169712689838.645382.14628592932614139960.b4-ty@kernel.org/
+
+Tested-by: Nicolin Chen <nicolinc@nvidia.com>
