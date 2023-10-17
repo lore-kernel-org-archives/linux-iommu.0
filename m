@@ -1,158 +1,140 @@
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2060.outbound.protection.outlook.com [40.107.92.60])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E5B852EAE2
-	for <iommu@lists.linux.dev>; Tue, 17 Oct 2023 19:59:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 67D92430FB
+	for <iommu@lists.linux.dev>; Tue, 17 Oct 2023 20:25:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="tAyfPyVL"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=WDeBKYdBzeMHu0jPaS/x0Lir2t001JbPsVt2OvhBKEmbVLHaw/q2xoxycJXkxPYlKn5cqHO8/B2k9a6CX+5mIaLdR3ypCsiW9PnAEFM/CkQR9wIkkAe+Co8qYuM1iHZhowTl2yztvfKr3Vb2LOTDmG9iKQRmR4vKDzzTw/njh++7ntvdpNg0fYbuOB8vDvRodPQS6eW+mMxHZNkl2UJFoIA84uh3BL64dXMZTMh3Ods1BxE1HtFMfqO1tSjBKvy649o/HC83u6Y/mAg2qPAid+fywvUjKNxT1RCnqxKR2+XaYTFan61gClwktpXLPVRCeb3HfAKjDBjlHFHKSMk9Tg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=VLhtWUNZpABRlJlSTGkRx28jNBwH89C2DwwILX5awGk=;
- b=bxEo4wSoYnyteHXbURvyvJIDgwmOhRRMM/ulcGYP84VETNYrWg/IhcE+DoCQfxWOueTqDQd0aVh/FVUpzyjLb2ClFb1C4wXDg60VT5WB8lcWikwqHVNNpOzje1ZzKE+KaVN5jknqAJiuHEIyVCmipUYNxD9pr2bOaB8m/hoOOJpBWat70GZtAz+mBGrrbwcR9ruTKt45zi3Gj9vG5Y1MeA1tKAuy0QE132Ze33ix2tiP7COH4NCUDuZ4T5mekrdg707tDrCnAEWxBTwSDxUcQfoX2dHXg09UEYTLWAP2mZ/aZwF99CmHboD0e3/DS3PtRAa7RyBOMuNNMy2EOufHHQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.232) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=VLhtWUNZpABRlJlSTGkRx28jNBwH89C2DwwILX5awGk=;
- b=tAyfPyVLEdBi0nql6VMsAvmLTkdZnzYktgX/XHbeqyZhV/LUAVzssjbfs+jcs3zJovNcNBu9Mq4ZYvIMHnjcqu70OvbnDHtDz5HMyEYISalxCtyv0tcM5RfJiIjjpwPozfWXUO4Tb18cpRVMq9EvkjVgToodX5uxV0bSIeiDkm1wQEb9p8+mQvEEwbyeun57nuuyWeQsVHIP1PWIkjmjOvVTOYuaQQwgAlNylkiS20WJeI20zANFeKzQB1Rm4FBK4ZI4+tbtfQETJCtzXDUFmG9RfRgmxnMc9NbzpRH6Yg2dh1CtEcALkwiQUD/5IjfkMODe44CPPUvmNG0He6X5oA==
-Received: from PH0P220CA0024.NAMP220.PROD.OUTLOOK.COM (2603:10b6:510:d3::29)
- by CY5PR12MB6034.namprd12.prod.outlook.com (2603:10b6:930:2e::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6886.36; Tue, 17 Oct
- 2023 19:58:59 +0000
-Received: from SN1PEPF000252A1.namprd05.prod.outlook.com
- (2603:10b6:510:d3:cafe::d3) by PH0P220CA0024.outlook.office365.com
- (2603:10b6:510:d3::29) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6907.21 via Frontend
- Transport; Tue, 17 Oct 2023 19:58:59 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.232) by
- SN1PEPF000252A1.mail.protection.outlook.com (10.167.242.8) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6907.20 via Frontend Transport; Tue, 17 Oct 2023 19:58:59 +0000
-Received: from drhqmail203.nvidia.com (10.126.190.182) by mail.nvidia.com
- (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Tue, 17 Oct
- 2023 12:58:41 -0700
-Received: from drhqmail203.nvidia.com (10.126.190.182) by
- drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.41; Tue, 17 Oct 2023 12:58:41 -0700
-Received: from Asurada-Nvidia (10.127.8.13) by mail.nvidia.com
- (10.126.190.182) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41 via Frontend
- Transport; Tue, 17 Oct 2023 12:58:40 -0700
-Date: Tue, 17 Oct 2023 12:58:39 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: "Tian, Kevin" <kevin.tian@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
-	"joro@8bytes.org" <joro@8bytes.org>, "alex.williamson@redhat.com"
-	<alex.williamson@redhat.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>, "cohuck@redhat.com"
-	<cohuck@redhat.com>, "eric.auger@redhat.com" <eric.auger@redhat.com>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>, "mjrosato@linux.ibm.com"
-	<mjrosato@linux.ibm.com>, "chao.p.peng@linux.intel.com"
-	<chao.p.peng@linux.intel.com>, "yi.y.sun@linux.intel.com"
-	<yi.y.sun@linux.intel.com>, "peterx@redhat.com" <peterx@redhat.com>,
-	"jasowang@redhat.com" <jasowang@redhat.com>,
-	"shameerali.kolothum.thodi@huawei.com"
-	<shameerali.kolothum.thodi@huawei.com>, "lulu@redhat.com" <lulu@redhat.com>,
-	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>, "Duan,
- Zhenzhong" <zhenzhong.duan@intel.com>, "Martins, Joao"
-	<joao.m.martins@oracle.com>
-Subject: Re: [PATCH v4 08/17] iommufd: Always setup MSI and anforce cc on
- kernel-managed domains
-Message-ID: <ZS7nb+mKanGFXhZY@Asurada-Nvidia>
-References: <20230921075138.124099-1-yi.l.liu@intel.com>
- <20230921075138.124099-9-yi.l.liu@intel.com>
- <BN9PR11MB527658EAF017FF3576667EEA8CC3A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <ZSnkiKoCspmG1+/j@Asurada-Nvidia>
- <BN9PR11MB52763227866603ED7795AA068CD7A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20231016115736.GP3952@nvidia.com>
- <BN9PR11MB5276FDC375685CE04A7AD93B8CD6A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20231017155301.GH3952@nvidia.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="TfJWvC4i"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1697574333; x=1729110333;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=3Ad9kgdhE7qzJyM/s24lZCoX+Aafx5OUit4Dj7g+sn8=;
+  b=TfJWvC4iQYYjFbNMIfKU/VKXObTvIG5n5AyBser9uxYsyxd+0aZLsS3k
+   ZRgM2B9t+bq6GLCHfGPDTxRvnqp945SqwNbH2UvPojLPG7sJ/0k1kyRr0
+   jBokC6Pc0EMMr3BC4Sa+tezyldQeVOclTMpK+zoILFz8+BUWLdZt2qWS4
+   bmamddXzSNOPmiXUYvoHBh6a9uHc4zu4TIQt7GuNKxhEaFvhu/x7YK39Y
+   5r08uCByUuZUTfqLW2/uSWU+wIRBhgfesrYAM2WIrSUoevCiZ71UISiyA
+   nHtNUxfNJI+uzs0Lind/zRfdb+7Y36+7HJV351AKEDbGZk6euue8o2oGs
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10866"; a="7429536"
+X-IronPort-AV: E=Sophos;i="6.03,233,1694761200"; 
+   d="scan'208";a="7429536"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Oct 2023 13:25:32 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10866"; a="900040448"
+X-IronPort-AV: E=Sophos;i="6.03,233,1694761200"; 
+   d="scan'208";a="900040448"
+Received: from rtdinh-mobl1.amr.corp.intel.com (HELO rpedgeco-desk4.intel.com) ([10.212.150.155])
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Oct 2023 13:23:29 -0700
+From: Rick Edgecombe <rick.p.edgecombe@intel.com>
+To: x86@kernel.org,
+	tglx@linutronix.de,
+	mingo@redhat.com,
+	bp@alien8.de,
+	dave.hansen@linux.intel.com,
+	hpa@zytor.com,
+	luto@kernel.org,
+	peterz@infradead.org,
+	kirill.shutemov@linux.intel.com,
+	elena.reshetova@intel.com,
+	isaku.yamahata@intel.com,
+	seanjc@google.com,
+	Michael Kelley <mikelley@microsoft.com>,
+	thomas.lendacky@amd.com,
+	decui@microsoft.com,
+	sathyanarayanan.kuppuswamy@linux.intel.com,
+	linux-mm@kvack.org,
+	linux-kernel@vger.kernel.org,
+	linux-s390@vger.kernel.org
+Cc: rick.p.edgecombe@intel.com,
+	Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	iommu@lists.linux.dev
+Subject: [PATCH 04/10] swiotlb: Use free_decrypted_pages()
+Date: Tue, 17 Oct 2023 13:24:59 -0700
+Message-Id: <20231017202505.340906-5-rick.p.edgecombe@intel.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20231017202505.340906-1-rick.p.edgecombe@intel.com>
+References: <20231017202505.340906-1-rick.p.edgecombe@intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20231017155301.GH3952@nvidia.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SN1PEPF000252A1:EE_|CY5PR12MB6034:EE_
-X-MS-Office365-Filtering-Correlation-Id: bc9418bb-8bef-4100-e812-08dbcf4b80ba
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	Nz911d+VfQQ5TxYx9eXMNXhJm+nY7UZeqS30D4BBj6MF+SxBfWZozZ4vflaAVmONxT8OxtWvqoNVznPSlmbeb8nqXMKlvWKPRuwmGJjw4SFEM6JJSwqxaFqQbbt4r5SGV2kfy10R9vKnAp6zCtPFJ8jR1T9EQETcI/7aWx9to+jPcxVE8NEDNeUS4IE6PF3OiRBUvMyEOyB4aKfxfQbXbrb5Dwg9SqAz5SFkBSPNPESgzUau7oXzmLwNoktTiughasIkdXME+4tTFj/BYskx86p8DVUblmi1m0J7oit8sRCpzIukpJiFx0vQ7SxgP9PZD51vxE+dFFp97C5AQZRvUkcKgsF4bxW8sfy5kvNLl6anE53xWyw8kx7UKjuf4quWSQ5+DzuuHI+eJQUfJUNT7W2R0xxU93tpoHA40lbYL+lQBF3Jkq4MRf1kGuXz0DQHOUTHhxXXLfx9DhL5k/s9VabTvCvxRkIX9NOCHuT1TxZ/1KHlDIFtRWp6WbJrG2rf/D881/iHx6N73CnlKfqSpztfY5oKvR5WhD164YDugR7y3fc8qYWRCGtCEQpsc+JX2leNbUfuSGbeLs1RPepVx5kYtbhy6477nYhqqtF77usuT+D9JehQGO468WT42A7T+3OxfuP5Ejt2PGMAN+tetcc6pV5i9hES6U4faxM0EoMuigY2BksUZD9LcHWXFsqb8gZo2htldWhON6lDhkA0Vzm+IoHRds/CrUTesifvuD+zX/VwncmPONlVUVulwvdWURBILqivtTBFPnr8vFW3jvpTe7UH1xIwaj/gNxN5oR8=
-X-Forefront-Antispam-Report:
-	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230031)(4636009)(136003)(346002)(376002)(39860400002)(396003)(230922051799003)(451199024)(82310400011)(186009)(1800799009)(64100799003)(46966006)(36840700001)(40470700004)(55016003)(47076005)(54906003)(40480700001)(6636002)(316002)(70586007)(2906002)(86362001)(70206006)(40460700003)(5660300002)(41300700001)(4326008)(8936002)(6862004)(8676002)(7416002)(33716001)(9686003)(83380400001)(966005)(478600001)(426003)(336012)(82740400003)(356005)(26005)(7636003)(36860700001)(67856001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Oct 2023 19:58:59.0879
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: bc9418bb-8bef-4100-e812-08dbcf4b80ba
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	SN1PEPF000252A1.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY5PR12MB6034
+Content-Transfer-Encoding: 8bit
 
-On Tue, Oct 17, 2023 at 12:53:01PM -0300, Jason Gunthorpe wrote:
-> On Tue, Oct 17, 2023 at 08:52:49AM +0000, Tian, Kevin wrote:
-> > I prefer to removing enforce_cc in attach fn completely then no parent
-> > trick in this patch. Just keep it in hwpt_alloc and leave to iommu driver to
-> > figure out the attaching compatibility:
-> 
-> You are basically saying to set the cc mode during creation because we
-> know the idev at that moment and can tell if it should be on/off?
-> 
-> It seems reasonable, but I can't remember why it is in the attach path
-> at the moment.
+On TDX it is possible for the untrusted host to cause
+set_memory_encrypted() or set_memory_decrypted() to fail such that an
+error is returned and the resulting memory is shared. Callers need to take
+care to handle these errors to avoid returning decrypted (shared) memory to
+the page allocator, which could lead to functional or security issues.
 
-This was the commit adding it in the alloc path:
-https://lore.kernel.org/linux-iommu/8e897628-61fa-b3fb-b609-44eeda11b45e@arm.com/
+Swiotlb could free decrypted/shared pages if set_memory_decrypted() fails.
+Use the recently added free_decrypted_pages() to avoid this.
 
-The older code was doing a hwpt "upgrade" from !cc to cc:
--       /*
--        * Try to upgrade the domain we have, it is an iommu driver bug to
--        * report IOMMU_CAP_ENFORCE_CACHE_COHERENCY but fail
--        * enforce_cache_coherency when there are no devices attached to the
--        * domain.
--        */
--       if (idev->enforce_cache_coherency && !hwpt->enforce_cache_coherency) {
--               if (hwpt->domain->ops->enforce_cache_coherency)
--                       hwpt->enforce_cache_coherency =
--                               hwpt->domain->ops->enforce_cache_coherency(
--                                       hwpt->domain);
+In swiotlb_exit(), check for set_memory_encrypted() errors manually,
+because the pages are not nessarily going to the page allocator.
 
-If we remove the enforce_cc call in the attach path and let the
-driver decide whether to enforce or reject in attach_dev calls,
-there seems to be no point in tracking an enforce_cache_coherency
-flag in the IOMMUFD pathway but only for the VFIO_DMA_CC_IOMMU
-extension check in the vfio-compat pathway?
+Cc: Christoph Hellwig <hch@lst.de>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Robin Murphy <robin.murphy@arm.com>
+Cc: iommu@lists.linux.dev
+Signed-off-by: Rick Edgecombe <rick.p.edgecombe@intel.com>
+---
+ kernel/dma/swiotlb.c | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
-Thanks
-Nic
+diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+index 394494a6b1f3..ad06786c4f98 100644
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -524,6 +524,7 @@ void __init swiotlb_exit(void)
+ 	unsigned long tbl_vaddr;
+ 	size_t tbl_size, slots_size;
+ 	unsigned int area_order;
++	int ret;
+ 
+ 	if (swiotlb_force_bounce)
+ 		return;
+@@ -536,17 +537,19 @@ void __init swiotlb_exit(void)
+ 	tbl_size = PAGE_ALIGN(mem->end - mem->start);
+ 	slots_size = PAGE_ALIGN(array_size(sizeof(*mem->slots), mem->nslabs));
+ 
+-	set_memory_encrypted(tbl_vaddr, tbl_size >> PAGE_SHIFT);
++	ret = set_memory_encrypted(tbl_vaddr, tbl_size >> PAGE_SHIFT);
+ 	if (mem->late_alloc) {
+ 		area_order = get_order(array_size(sizeof(*mem->areas),
+ 			mem->nareas));
+ 		free_pages((unsigned long)mem->areas, area_order);
+-		free_pages(tbl_vaddr, get_order(tbl_size));
++		if (!ret)
++			free_pages(tbl_vaddr, get_order(tbl_size));
+ 		free_pages((unsigned long)mem->slots, get_order(slots_size));
+ 	} else {
+ 		memblock_free_late(__pa(mem->areas),
+ 			array_size(sizeof(*mem->areas), mem->nareas));
+-		memblock_free_late(mem->start, tbl_size);
++		if (!ret)
++			memblock_free_late(mem->start, tbl_size);
+ 		memblock_free_late(__pa(mem->slots), slots_size);
+ 	}
+ 
+@@ -581,7 +584,7 @@ static struct page *alloc_dma_pages(gfp_t gfp, size_t bytes)
+ 	return page;
+ 
+ error:
+-	__free_pages(page, order);
++	free_decrypted_pages((unsigned long)vaddr, order);
+ 	return NULL;
+ }
+ 
+-- 
+2.34.1
+
