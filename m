@@ -1,160 +1,156 @@
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2061.outbound.protection.outlook.com [40.107.220.61])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A3EA641AAD
-	for <iommu@lists.linux.dev>; Tue, 17 Oct 2023 14:43:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 999F143AAF
+	for <iommu@lists.linux.dev>; Tue, 17 Oct 2023 14:52:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="o3bdd0y8"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=WkP54UIrXU1/Kn+3YNiWSBi2ZYT0qpKzbtQvUITGqJvI8VrkLN2HpZCiAp9zfdmltRELWcyuGcA2SRZWqr8HQtgtx/7Dmx0ATYNUrTeLuUP3UH7YH09Bti1McFFLwHRfBB8rM7cOw5rBrhrAcaqgu4PGceseGgN8y0yJq8JY9yP8tc3JGPjwfH2lxdF2ToaxFyc0NDqxVIAfzsMN+0Y9Q0bugHnbmU81VcWzi0zhuW441gCuLNCSU2LsAwfXFPCP9j22TI5eFev269LR4SHtmDFb2acKulQI2++BAmdn4BllkHNEXiSLdoWul9Xgejc6eFJqUj2eAKCf9pZf/Ttjiw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=VvqNF/Z00hPImL77gykfZBxIqcjrMKj4qye6DdddhBs=;
- b=oTlB9qv8SkbNewdlopv4wIC4Wa9hQAE9jaqbNj6EHjcLR10VnZDnxV5CXiv057ImGN8mHJS8LxKUfJkgyhYjb/EQ51aitzQYlJg/+yPxCCAkEoh7yxcuUwkKehx4JlpYzAGQuoit3T4boeWa5U4fQp4GpfKPCc9xnverXis+HDESgm5oPL0eFpP1omYW5WJIXSWtD/SUsNJmFDOmvkHCo6aQmKgitPWOVkq8wo+MjPPfu4VKh4ridVnycL/YsxL3mSShe8LApUW8XSIW31tItHh2NM4mAWnTdkMDaxDWcIjQYufz6w3ipWxdkUfkau/VJAcX3/gU5kSKsElcQRCU1w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=VvqNF/Z00hPImL77gykfZBxIqcjrMKj4qye6DdddhBs=;
- b=o3bdd0y8mXzv8P++8VasMV+tU99grOougeF5+mXHt4SeVT6+aj2hjdO/mzX/oRIxj8nTdjE9SvGb+4U+oP+/WFqKkakZmcc/H8d2RjB6Y/etuD7WMnz3/8u9wVmop6tNGLIflqpFLRqoZ1883HwzZ0FVBLgo766FGySoq2K7H4I=
-Received: from SN7PR04CA0165.namprd04.prod.outlook.com (2603:10b6:806:125::20)
- by MN2PR12MB4504.namprd12.prod.outlook.com (2603:10b6:208:24f::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6886.36; Tue, 17 Oct
- 2023 14:43:05 +0000
-Received: from SA2PEPF000015CD.namprd03.prod.outlook.com
- (2603:10b6:806:125:cafe::97) by SN7PR04CA0165.outlook.office365.com
- (2603:10b6:806:125::20) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6886.35 via Frontend
- Transport; Tue, 17 Oct 2023 14:43:05 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- SA2PEPF000015CD.mail.protection.outlook.com (10.167.241.203) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.6907.20 via Frontend Transport; Tue, 17 Oct 2023 14:43:05 +0000
-Received: from ruby-95f9host.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.27; Tue, 17 Oct
- 2023 09:43:04 -0500
-From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-To: <linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>
-CC: <joro@8bytes.org>, <mlevitsk@redhat.com>, <seanjc@google.com>,
-	<vasant.hegde@amd.com>, <jon.grimm@amd.com>, <santosh.shukla@amd.com>,
-	<joao.m.martins@oracle.com>, <alejandro.j.jimenez@oracle.com>,
-	<boris.ostrovsky@oracle.com>, Suravee Suthikulpanit
-	<suravee.suthikulpanit@amd.com>
-Subject: [PATCH] iommu/amd: Do not flush IRTE when only updating isRun and destination fields
-Date: Tue, 17 Oct 2023 09:42:36 -0500
-Message-ID: <20231017144236.8287-1-suravee.suthikulpanit@amd.com>
-X-Mailer: git-send-email 2.34.1
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="QhMWfZlp"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1697554326;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=GkcETT//EFaL9Pze2jt5mEPkfaMAWnv0Qv1/ld7Gzfk=;
+	b=QhMWfZlpWC8KdVxTynCbYA3ItognDGsdeI+rhcjTlslFczr5BQQfFjSS+P437FC8E71gQ3
+	riTkYyNG5cLSr7Isr21XsQNV8bdrasJhmNhEvpFsGhZxMlfqmK+nIPwymcBZMLvYUrX02K
+	NZWVnmmzdqe1RbX7Hxw1ggMEG4FDAqc=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-499-sN2Pd7roNZWBwjX95KEp4Q-1; Tue, 17 Oct 2023 10:52:04 -0400
+X-MC-Unique: sN2Pd7roNZWBwjX95KEp4Q-1
+Received: by mail-wm1-f71.google.com with SMTP id 5b1f17b1804b1-40554735995so44002735e9.1
+        for <iommu@lists.linux.dev>; Tue, 17 Oct 2023 07:52:03 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1697554323; x=1698159123;
+        h=content-transfer-encoding:mime-version:user-agent:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=GkcETT//EFaL9Pze2jt5mEPkfaMAWnv0Qv1/ld7Gzfk=;
+        b=aBxlhakLSKXbOBsLigu0sxjJ43GgaB92rrfGV7naY+8xSuSN0B6iV58S/e7eMKgNgg
+         vBGteV/5ePnurzSDVYdR2JJX+ePcjworXawUD82vfQR7+lHr3UnKMzsWYWnwjOE4M3Tb
+         NN6i0A0Kx3DLi4lPONKo9ekztkgZkfKIyf4WYF+8cZMogJX9uaV0Wvo05dvFlPoGCaT3
+         eKjaqR3KirtSqBs+xO5DOhWhy8sZ1psB/DVE7XPyXpUebLxPR5TOJqnnDZ0eJAcqMRqJ
+         eZcIhiEwp5pcRQDvwB4yyKolNg1Bvg+zOsd65bL8VhXUkw4e/4VEF6apYSZ7ZZH1Z0vA
+         wNSw==
+X-Gm-Message-State: AOJu0Yzda2NoXWgZpm3cs3f1Uej214EmSHa3+5kI5yBjDCz3da3eBqtx
+	Q9qRsxx8snYAtyADaNFRqHGshuwVmFoDzAQ7/Td7Z2ZP0SzXR3yqNtgDPH7QzD/X4bklo0oj0kD
+	1eNdQ375Cd4hM5Rk=
+X-Received: by 2002:a5d:4987:0:b0:32d:8f50:8553 with SMTP id r7-20020a5d4987000000b0032d8f508553mr2129612wrq.55.1697554322936;
+        Tue, 17 Oct 2023 07:52:02 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IHbtcpK9ZcLxNynF1iY2rO4bpSfkOlVHEomMguJ7XEMTPw/YCqxreMiWzQaPdLtQ4ekkjJrfQ==
+X-Received: by 2002:a5d:4987:0:b0:32d:8f50:8553 with SMTP id r7-20020a5d4987000000b0032d8f508553mr2129602wrq.55.1697554322647;
+        Tue, 17 Oct 2023 07:52:02 -0700 (PDT)
+Received: from starship ([89.237.100.246])
+        by smtp.gmail.com with ESMTPSA id h4-20020adfe984000000b003143c9beeaesm1860384wrm.44.2023.10.17.07.52.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 Oct 2023 07:52:02 -0700 (PDT)
+Message-ID: <97d106d28e4c3468912a478dba79ab2221109cbd.camel@redhat.com>
+Subject: Re: [PATCH] iommu/amd: Do not flush IRTE when only updating isRun
+ and destination fields
+From: Maxim Levitsky <mlevitsk@redhat.com>
+To: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, 
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev
+Cc: joro@8bytes.org, seanjc@google.com, vasant.hegde@amd.com,
+ jon.grimm@amd.com,  santosh.shukla@amd.com, joao.m.martins@oracle.com, 
+ alejandro.j.jimenez@oracle.com, boris.ostrovsky@oracle.com
+Date: Tue, 17 Oct 2023 17:51:59 +0300
+In-Reply-To: <20231017144236.8287-1-suravee.suthikulpanit@amd.com>
+References: <20231017144236.8287-1-suravee.suthikulpanit@amd.com>
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SA2PEPF000015CD:EE_|MN2PR12MB4504:EE_
-X-MS-Office365-Filtering-Correlation-Id: 8e3963d8-eff9-420e-7711-08dbcf1f5f69
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	0PsTMrDY3YCztXSQyCKk821fAt7/QieMbcHhMrFRf936zQOP4tDgWus8OJsZIVhXxulQznqr1VVmBAld3zqletgp/1MXYD3/h7lBN/XMiwLNB+MICC2c76hJtRmE4YKYeNVKNMOIPzS4E4OQzThDB0/VVb0ASYqHnoqdee4dG7MIZV+mNpgCneU9ZCl3Zr4VJGSS9EyAr/rZDdx6NazkyQ9hUbWhDIoW+FGWy+zMnq9+LvictuOyfRaZt7cCIBkF4rV+kU1bWThS1o2pWrA32UMVDnAzswPpNlWDlqpFA2E5Ty6OiMDWYbOK/4ZMvQnonLqVq5PNnCz7ZnxZk07BdWoFTU/wkiIjHMV2lXPnOCwPnCN+5xGogYs2toAPAiwb+LezaV/LXdExAH5DkDod6BB+v/exZGkOlPj2/8yGzRllXHMaoPSE/ZvHU9KSMM8W2k/C9RT2Vq1VhgI9HH8vB0E/sgJI8YwF/WUxcoEv6GXRcSWH5i0IQs7+HEkLR9+dqVik1pspQLssOdeqPZPD4AV8ftq9pQWpETn5/yJPX/YI3iJvt8DsW9xv697dpzC95Xn0qkSJSQ0ZSsU39c5vj83TXOtuoZgwqvsASFFR98a1P7Sy7WKJEJeZ+neB2iiF4fbPs58Fpk9brwWIKOTu0J7B2WmUWrbKht1mGmLhzjnK8E2+MCP82NQ9+RcOmxV2LDUMdzAO70GsXhP2p2lmtTWoUlgSjtWYSy8xgPlhpoAePqxAKS3aKqwZenMEglc3
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230031)(4636009)(136003)(39860400002)(396003)(346002)(376002)(230922051799003)(1800799009)(451199024)(186009)(64100799003)(82310400011)(46966006)(36840700001)(40470700004)(86362001)(41300700001)(44832011)(36860700001)(47076005)(7696005)(5660300002)(83380400001)(8936002)(4326008)(8676002)(2906002)(70586007)(70206006)(36756003)(356005)(316002)(336012)(110136005)(54906003)(426003)(1076003)(2616005)(81166007)(40480700001)(16526019)(82740400003)(26005)(40460700003)(966005)(6666004)(478600001)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Oct 2023 14:43:05.4115
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8e3963d8-eff9-420e-7711-08dbcf1f5f69
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	SA2PEPF000015CD.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4504
 
-According to the recent update in the AMD IOMMU spec [1], the IsRun and
-Destination fields of the Interrupt Remapping Table Entry (IRTE) are not
-cached by the IOMMU hardware.
+У вт, 2023-10-17 у 09:42 -0500, Suravee Suthikulpanit пише:
+> According to the recent update in the AMD IOMMU spec [1], the IsRun and
+> Destination fields of the Interrupt Remapping Table Entry (IRTE) are not
+> cached by the IOMMU hardware.
 
-Therefore, do not issue the INVALIDATE_INTERRUPT_TABLE command when
-updating IRTE[IsRun] and IRTE[Destination] when IRTE[GuestMode]=1, which
-should help improve IOMMU AVIC/x2AVIC performance.
+Is that true for all AMD hardware that supports AVIC? E.g Zen1/Zen2 hardware?
 
-References:
-[1] AMD IOMMU Spec Revision (Rev 3.08-PUB)
-(Link: https://www.amd.com/content/dam/amd/en/documents/processor-tech-docs/specifications/48882_IOMMU.pdf)
+Is there a chance that this will cause a similar errata to the is_running
+errata that Zen2 cpus have?
 
-Cc: Joao Martins <joao.m.martins@oracle.com>
-Cc: Alejandro Jimenez <alejandro.j.jimenez@oracle.com>
-Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
----
- drivers/iommu/amd/iommu.c | 20 ++++++++++++++++----
- 1 file changed, 16 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index 089886485895..d63590563d3e 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -2970,8 +2970,8 @@ static int alloc_irq_index(struct amd_iommu *iommu, u16 devid, int count,
- 	return index;
- }
- 
--static int modify_irte_ga(struct amd_iommu *iommu, u16 devid, int index,
--			  struct irte_ga *irte)
-+static int __modify_irte_ga(struct amd_iommu *iommu, u16 devid, int index,
-+			    struct irte_ga *irte)
- {
- 	struct irq_remap_table *table;
- 	struct irte_ga *entry;
-@@ -2998,6 +2998,18 @@ static int modify_irte_ga(struct amd_iommu *iommu, u16 devid, int index,
- 
- 	raw_spin_unlock_irqrestore(&table->lock, flags);
- 
-+	return 0;
-+}
-+
-+static int modify_irte_ga(struct amd_iommu *iommu, u16 devid, int index,
-+			  struct irte_ga *irte)
-+{
-+	bool ret;
-+
-+	ret = __modify_irte_ga(iommu, devid, index, irte);
-+	if (ret)
-+		return ret;
-+
- 	iommu_flush_irt_and_complete(iommu, devid);
- 
- 	return 0;
-@@ -3681,8 +3693,8 @@ int amd_iommu_update_ga(int cpu, bool is_run, void *data)
- 	}
- 	entry->lo.fields_vapic.is_run = is_run;
- 
--	return modify_irte_ga(ir_data->iommu, ir_data->irq_2_irte.devid,
--			      ir_data->irq_2_irte.index, entry);
-+	return __modify_irte_ga(ir_data->iommu, ir_data->irq_2_irte.devid,
-+				ir_data->irq_2_irte.index, entry);
- }
- EXPORT_SYMBOL(amd_iommu_update_ga);
- #endif
--- 
-2.34.1
+
+> 
+> Therefore, do not issue the INVALIDATE_INTERRUPT_TABLE command when
+> updating IRTE[IsRun] and IRTE[Destination] when IRTE[GuestMode]=1, which
+> should help improve IOMMU AVIC/x2AVIC performance.
+> 
+> References:
+> [1] AMD IOMMU Spec Revision (Rev 3.08-PUB)
+> (Link: https://www.amd.com/content/dam/amd/en/documents/processor-tech-docs/specifications/48882_IOMMU.pdf)
+
+Looks like the link is broken.
+
+
+Best regards,
+	Maxim Levitsky
+
+> 
+> Cc: Joao Martins <joao.m.martins@oracle.com>
+> Cc: Alejandro Jimenez <alejandro.j.jimenez@oracle.com>
+> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+> ---
+>  drivers/iommu/amd/iommu.c | 20 ++++++++++++++++----
+>  1 file changed, 16 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+> index 089886485895..d63590563d3e 100644
+> --- a/drivers/iommu/amd/iommu.c
+> +++ b/drivers/iommu/amd/iommu.c
+> @@ -2970,8 +2970,8 @@ static int alloc_irq_index(struct amd_iommu *iommu, u16 devid, int count,
+>  	return index;
+>  }
+>  
+> -static int modify_irte_ga(struct amd_iommu *iommu, u16 devid, int index,
+> -			  struct irte_ga *irte)
+> +static int __modify_irte_ga(struct amd_iommu *iommu, u16 devid, int index,
+> +			    struct irte_ga *irte)
+>  {
+>  	struct irq_remap_table *table;
+>  	struct irte_ga *entry;
+> @@ -2998,6 +2998,18 @@ static int modify_irte_ga(struct amd_iommu *iommu, u16 devid, int index,
+>  
+>  	raw_spin_unlock_irqrestore(&table->lock, flags);
+>  
+> +	return 0;
+> +}
+> +
+> +static int modify_irte_ga(struct amd_iommu *iommu, u16 devid, int index,
+> +			  struct irte_ga *irte)
+> +{
+> +	bool ret;
+> +
+> +	ret = __modify_irte_ga(iommu, devid, index, irte);
+> +	if (ret)
+> +		return ret;
+> +
+>  	iommu_flush_irt_and_complete(iommu, devid);
+>  
+>  	return 0;
+> @@ -3681,8 +3693,8 @@ int amd_iommu_update_ga(int cpu, bool is_run, void *data)
+>  	}
+>  	entry->lo.fields_vapic.is_run = is_run;
+>  
+> -	return modify_irte_ga(ir_data->iommu, ir_data->irq_2_irte.devid,
+> -			      ir_data->irq_2_irte.index, entry);
+> +	return __modify_irte_ga(ir_data->iommu, ir_data->irq_2_irte.devid,
+> +				ir_data->irq_2_irte.index, entry);
+>  }
+>  EXPORT_SYMBOL(amd_iommu_update_ga);
+>  #endif
+
 
