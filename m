@@ -1,112 +1,67 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.151])
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF59342BF2
-	for <iommu@lists.linux.dev>; Tue, 17 Oct 2023 12:41:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="RVSZfqbh"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1697546503; x=1729082503;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=42W1DWisqwY/voZkLD/Tsqnrh5mqzwZYW48wLNWNwLE=;
-  b=RVSZfqbhts+Uc+ynRTJl3+imqt43+iv8UJP3B8Fs3O1xiyvSzvePM0Td
-   4SZQbzgmL1YwtXcSGKU5f77IlgQKcy4UGAIaEwxudHP5QCNDQNh9Pp38c
-   8nbJblQO0WKF1hAFBBeEABtbnpAastxG7vZZmbXJb5WhiDo382nF8BC7l
-   sf7fObsdy4Hed4NJH7x9AgOeYd2EsyA6UwM9Jx5RF5aTiy8Pe5dUVO5+n
-   +Gsmgu2Lv9BC+WKRcUzPUzqftvl2yFg52l6KIXgDEupYpUGjqPGdrO0KZ
-   UjnUl+xw4wb9XASio/DbjVg3+4yqEb49wxY/0mewXrQXCaeoCcYKifzt/
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10865"; a="366031622"
-X-IronPort-AV: E=Sophos;i="6.03,232,1694761200"; 
-   d="scan'208";a="366031622"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Oct 2023 05:41:42 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10865"; a="826426253"
-X-IronPort-AV: E=Sophos;i="6.03,232,1694761200"; 
-   d="scan'208";a="826426253"
-Received: from wangxue2-mobl.ccr.corp.intel.com (HELO [10.254.212.22]) ([10.254.212.22])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Oct 2023 05:41:39 -0700
-Message-ID: <81bd3937-482c-23be-840f-6766ca0ec65d@linux.intel.com>
-Date: Tue, 17 Oct 2023 20:41:37 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE9014120B
+	for <iommu@lists.linux.dev>; Tue, 17 Oct 2023 12:46:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
+Authentication-Results: smtp.subspace.kernel.org; dkim=none
+Received: by verein.lst.de (Postfix, from userid 2407)
+	id 4AE0367373; Tue, 17 Oct 2023 14:46:09 +0200 (CEST)
+Date: Tue, 17 Oct 2023 14:46:08 +0200
+From: Christoph Hellwig <hch@lst.de>
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Christoph Hellwig <hch@lst.de>,
+	Conor Dooley <conor.dooley@microchip.com>,
+	Greg Ungerer <gerg@linux-m68k.org>, iommu@lists.linux.dev,
+	Paul Walmsley <paul.walmsley@sifive.com>,
+	Palmer Dabbelt <palmer@dabbelt.com>,
+	Conor Dooley <conor@kernel.org>,
+	Magnus Damm <magnus.damm@gmail.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Wei Fang <wei.fang@nxp.com>, Shenwei Wang <shenwei.wang@nxp.com>,
+	Clark Wang <xiaoning.wang@nxp.com>,
+	NXP Linux Team <linux-imx@nxp.com>, linux-m68k@lists.linux-m68k.org,
+	netdev@vger.kernel.org, linux-riscv@lists.infradead.org,
+	linux-renesas-soc@vger.kernel.org,
+	Jim Quinlan <james.quinlan@broadcom.com>, arm-soc <soc@kernel.org>
+Subject: Re: [PATCH 04/12] soc: renesas: select RISCV_DMA_NONCOHERENT from
+ ARCH_R9A07G043
+Message-ID: <20231017124608.GA4386@lst.de>
+References: <20231016054755.915155-1-hch@lst.de> <20231016054755.915155-5-hch@lst.de> <20231016-pantyhose-tall-7565b6b20fb9@wendy> <20231016131745.GB26484@lst.de> <CAMuHMdXVZz=YWMAgzUzme-U3qxYeLdi66xw2CGubpesGy+ZjRw@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.15.1
-Cc: baolu.lu@linux.intel.com, iommu@lists.linux.dev,
- Kevin Tian <kevin.tian@intel.com>,
- Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
- Yi Liu <yi.l.liu@intel.com>, Yi Y Sun <yi.y.sun@intel.com>,
- Nicolin Chen <nicolinc@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Alex Williamson <alex.williamson@redhat.com>, kvm@vger.kernel.org
-Subject: Re: [PATCH v3 19/19] iommu/intel: Access/Dirty bit support for SL
- domains
-To: Joao Martins <joao.m.martins@oracle.com>, Jason Gunthorpe <jgg@nvidia.com>
-References: <20230923012511.10379-1-joao.m.martins@oracle.com>
- <20230923012511.10379-20-joao.m.martins@oracle.com>
- <c4816f4b-3fde-4adb-901f-4d568a4fd95a@linux.intel.com>
- <764f159d-a19c-4a1d-86a6-a2791ff21e10@oracle.com>
- <20231016114210.GM3952@nvidia.com>
- <037d2917-51a2-acae-dc06-65940a054880@linux.intel.com>
- <20231016125941.GT3952@nvidia.com>
- <3e30e72a-c1c6-55a6-8e52-6a6250d2d8de@linux.intel.com>
- <4cc0c4a0-3c00-4b29-a43b-ddfc57f2e4c0@oracle.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <4cc0c4a0-3c00-4b29-a43b-ddfc57f2e4c0@oracle.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAMuHMdXVZz=YWMAgzUzme-U3qxYeLdi66xw2CGubpesGy+ZjRw@mail.gmail.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 
-On 2023/10/17 18:51, Joao Martins wrote:
-> On 16/10/2023 14:01, Baolu Lu wrote:
->> On 2023/10/16 20:59, Jason Gunthorpe wrote:
->>> On Mon, Oct 16, 2023 at 08:58:42PM +0800, Baolu Lu wrote:
->>>> On 2023/10/16 19:42, Jason Gunthorpe wrote:
->>>>> On Mon, Oct 16, 2023 at 11:57:34AM +0100, Joao Martins wrote:
->>>>>
->>>>>> True. But to be honest, I thought we weren't quite there yet in PASID support
->>>>>> from IOMMUFD perspective; hence why I didn't aim at it. Or do I have the wrong
->>>>>> impression? From the code below, it clearly looks the driver does.
->>>>> I think we should plan that this series will go before the PASID
->>>>> series
->>>> I know that PASID support in IOMMUFD is not yet available, but the VT-d
->>>> driver already supports attaching a domain to a PASID, as required by
->>>> the idxd driver for kernel DMA with PASID. Therefore, from the driver's
->>>> perspective, dirty tracking should also be enabled for PASIDs.
->>> As long as the driver refuses to attach a dirty track enabled domain
->>> to PASID it would be fine for now.
->> Yes. This works.
-> Baolu Lu, I am blocking PASID attachment this way; let me know if this matches
-> how would you have the driver refuse dirty tracking on PASID.
+On Tue, Oct 17, 2023 at 12:44:41PM +0200, Geert Uytterhoeven wrote:
+> Hi Christoph,
+> 
+> On Mon, Oct 16, 2023 at 3:17 PM Christoph Hellwig <hch@lst.de> wrote:
+> > On Mon, Oct 16, 2023 at 01:52:57PM +0100, Conor Dooley wrote:
+> > > > +   select RISCV_DMA_NONCOHERENT
+> > > >     select ERRATA_ANDES if RISCV_SBI
+> > > >     select ERRATA_ANDES_CMO if ERRATA_ANDES
+> > >
+> > > Since this Kconfig menu has changed a bit in linux-next, the selects
+> > > are unconditional here, and ERRATA_ANDES_CMO will in turn select
+> > > RISCV_DMA_NONCOHERENT.
+> >
+> > Oh, looks like another patch landed there in linux-next.  I had
+> > waited for the previous one go go upstream in -rc6.  Not sure
+> > how to best handle this conflict.
+> 
+> I think the easiest is to ask soc to apply this series?
 
-Joao, how about blocking pasid attachment in intel_iommu_set_dev_pasid()
-directly?
-
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index c86ba5a3e75c..392b6ca9ce90 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -4783,6 +4783,9 @@ static int intel_iommu_set_dev_pasid(struct 
-iommu_domain *domain,
-         if (context_copied(iommu, info->bus, info->devfn))
-                 return -EBUSY;
-
-+       if (domain->dirty_ops)
-+               return -EOPNOTSUPP;
-+
-         ret = prepare_domain_attach_device(domain, dev);
-         if (ret)
-                 return ret;
-
-Best regards,
-baolu
+I don't think pulling all the DMA bits into a random other tree
+would be a good idea.   I can hand off the first few bits, but I'd
+need a stable branch to pull in after that.  Which of the half a dozen
+soc trees we have in linux-next is this anyway?
