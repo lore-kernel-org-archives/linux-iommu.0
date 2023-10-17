@@ -1,67 +1,291 @@
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.151])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE9014120B
-	for <iommu@lists.linux.dev>; Tue, 17 Oct 2023 12:46:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
-Authentication-Results: smtp.subspace.kernel.org; dkim=none
-Received: by verein.lst.de (Postfix, from userid 2407)
-	id 4AE0367373; Tue, 17 Oct 2023 14:46:09 +0200 (CEST)
-Date: Tue, 17 Oct 2023 14:46:08 +0200
-From: Christoph Hellwig <hch@lst.de>
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Christoph Hellwig <hch@lst.de>,
-	Conor Dooley <conor.dooley@microchip.com>,
-	Greg Ungerer <gerg@linux-m68k.org>, iommu@lists.linux.dev,
-	Paul Walmsley <paul.walmsley@sifive.com>,
-	Palmer Dabbelt <palmer@dabbelt.com>,
-	Conor Dooley <conor@kernel.org>,
-	Magnus Damm <magnus.damm@gmail.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Wei Fang <wei.fang@nxp.com>, Shenwei Wang <shenwei.wang@nxp.com>,
-	Clark Wang <xiaoning.wang@nxp.com>,
-	NXP Linux Team <linux-imx@nxp.com>, linux-m68k@lists.linux-m68k.org,
-	netdev@vger.kernel.org, linux-riscv@lists.infradead.org,
-	linux-renesas-soc@vger.kernel.org,
-	Jim Quinlan <james.quinlan@broadcom.com>, arm-soc <soc@kernel.org>
-Subject: Re: [PATCH 04/12] soc: renesas: select RISCV_DMA_NONCOHERENT from
- ARCH_R9A07G043
-Message-ID: <20231017124608.GA4386@lst.de>
-References: <20231016054755.915155-1-hch@lst.de> <20231016054755.915155-5-hch@lst.de> <20231016-pantyhose-tall-7565b6b20fb9@wendy> <20231016131745.GB26484@lst.de> <CAMuHMdXVZz=YWMAgzUzme-U3qxYeLdi66xw2CGubpesGy+ZjRw@mail.gmail.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0791838F91
+	for <iommu@lists.linux.dev>; Tue, 17 Oct 2023 12:50:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="CNV8A5QX"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1697547007; x=1729083007;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=rCYipY6by1RxlRi5NR03UHjm72t/xN2/Z+rpPJNJHik=;
+  b=CNV8A5QXt28huTPhEIxToFaL4kQbxFriR6d+2T3f/9BTAeRflE6uhgmw
+   chX1EH/9WCYSmpddyz0x06NTZuPY1u+rSuFLv6VTTVg8SzkK8jMmFPWu9
+   R0bRd4kIBnWZ/9wCKjL8sduhRLqD9HkQc3Tbys7NMyG3QOVCvy2yr3/zm
+   NY3kJvgsHbUPnLHUnuCJ22NAYKxPWdjelic0oOCfqIrpxfo/OuU9Wxq4S
+   m797ULssc9gl6zqpmPsGJLDQWOvb+rOsyAMJieqfBvbauSmHc35AlK+12
+   NSW9fkaOJkYUosBbMCjba1LTjCJS9WqFCVz6VLNWJpKLGUBMkD8306eoy
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10866"; a="366033205"
+X-IronPort-AV: E=Sophos;i="6.03,232,1694761200"; 
+   d="scan'208";a="366033205"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Oct 2023 05:50:05 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10865"; a="826427850"
+X-IronPort-AV: E=Sophos;i="6.03,232,1694761200"; 
+   d="scan'208";a="826427850"
+Received: from wangxue2-mobl.ccr.corp.intel.com (HELO [10.254.212.22]) ([10.254.212.22])
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Oct 2023 05:50:02 -0700
+Message-ID: <4b5cd75a-c0cd-c9bd-0d08-8c889861d48f@linux.intel.com>
+Date: Tue, 17 Oct 2023 20:49:59 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAMuHMdXVZz=YWMAgzUzme-U3qxYeLdi66xw2CGubpesGy+ZjRw@mail.gmail.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.15.1
+Cc: baolu.lu@linux.intel.com, Jason Gunthorpe <jgg@nvidia.com>,
+ Kevin Tian <kevin.tian@intel.com>,
+ Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
+ Yi Liu <yi.l.liu@intel.com>, Yi Y Sun <yi.y.sun@intel.com>,
+ Nicolin Chen <nicolinc@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Alex Williamson <alex.williamson@redhat.com>, kvm@vger.kernel.org
+Subject: Re: [PATCH v3 19/19] iommu/intel: Access/Dirty bit support for SL
+ domains
+Content-Language: en-US
+To: Joao Martins <joao.m.martins@oracle.com>, iommu@lists.linux.dev
+References: <20230923012511.10379-1-joao.m.martins@oracle.com>
+ <20230923012511.10379-20-joao.m.martins@oracle.com>
+ <d8553024-b880-42db-9f1f-8d2d3591469c@linux.intel.com>
+ <83f9e278-8249-4f10-8542-031260d43c4c@oracle.com>
+ <10bb7484-baaf-4d32-b40d-790f56267489@oracle.com>
+ <a83cb9a7-88de-41af-8ef0-1e739eab12c2@linux.intel.com>
+ <e797b35b-6a17-4114-a886-95e6402ad03c@oracle.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <e797b35b-6a17-4114-a886-95e6402ad03c@oracle.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Tue, Oct 17, 2023 at 12:44:41PM +0200, Geert Uytterhoeven wrote:
-> Hi Christoph,
+On 2023/10/17 19:22, Joao Martins wrote:
+> On 17/10/2023 03:08, Baolu Lu wrote:
+>> On 10/17/23 12:00 AM, Joao Martins wrote:
+>>>>> The iommu_dirty_bitmap is defined in iommu core. The iommu driver has no
+>>>>> need to understand it and check its member anyway.
+>>>>>
+>>>> (...) The iommu driver has no need to understand it. iommu_dirty_bitmap_record()
+>>>> already makes those checks in case there's no iova_bitmap to set bits to.
+>>>>
+>>> This is all true but the reason I am checking iommu_dirty_bitmap::bitmap is to
+>>> essentially not record anything in the iova bitmap and just clear the dirty bits
+>>> from the IOPTEs, all when dirty tracking is technically disabled. This is done
+>>> internally only when starting dirty tracking, and thus to ensure that we cleanup
+>>> all dirty bits before we enable dirty tracking to have a consistent snapshot as
+>>> opposed to inheriting dirties from the past.
+>>
+>> It's okay since it serves a functional purpose. Can you please add some
+>> comments around the code to explain the rationale.
+>>
 > 
-> On Mon, Oct 16, 2023 at 3:17 PM Christoph Hellwig <hch@lst.de> wrote:
-> > On Mon, Oct 16, 2023 at 01:52:57PM +0100, Conor Dooley wrote:
-> > > > +   select RISCV_DMA_NONCOHERENT
-> > > >     select ERRATA_ANDES if RISCV_SBI
-> > > >     select ERRATA_ANDES_CMO if ERRATA_ANDES
-> > >
-> > > Since this Kconfig menu has changed a bit in linux-next, the selects
-> > > are unconditional here, and ERRATA_ANDES_CMO will in turn select
-> > > RISCV_DMA_NONCOHERENT.
-> >
-> > Oh, looks like another patch landed there in linux-next.  I had
-> > waited for the previous one go go upstream in -rc6.  Not sure
-> > how to best handle this conflict.
+> I added this comment below:
 > 
-> I think the easiest is to ask soc to apply this series?
+> +       /*
+> +        * IOMMUFD core calls into a dirty tracking disabled domain without an
+> +        * IOVA bitmap set in order to clean dirty bits in all PTEs that might
+> +        * have occured when we stopped dirty tracking. This ensures that we
+> +        * never inherit dirtied bits from a previous cycle.
+> +        */
+> 
 
-I don't think pulling all the DMA bits into a random other tree
-would be a good idea.   I can hand off the first few bits, but I'd
-need a stable branch to pull in after that.  Which of the half a dozen
-soc trees we have in linux-next is this anyway?
+Yes. It's clear. Thank you!
+
+> Also fixed an issue where I could theoretically clear the bit with
+> IOMMU_NO_CLEAR. Essentially passed the read_and_clear_dirty flags and let
+> dma_sl_pte_test_and_clear_dirty() to test and test-and-clear, similar to AMD:
+> 
+> @@ -781,6 +788,16 @@ static inline bool dma_pte_present(struct dma_pte *pte)
+>          return (pte->val & 3) != 0;
+>   }
+> 
+> +static inline bool dma_sl_pte_test_and_clear_dirty(struct dma_pte *pte,
+> +                                                  unsigned long flags)
+> +{
+> +       if (flags & IOMMU_DIRTY_NO_CLEAR)
+> +               return (pte->val & DMA_SL_PTE_DIRTY) != 0;
+> +
+> +       return test_and_clear_bit(DMA_SL_PTE_DIRTY_BIT,
+> +                                 (unsigned long *)&pte->val);
+> +}
+> +
+
+Yes. Sure.
+
+> Anyhow, see below the full diff compared to this patch. Some things are in tree
+> that is different to submitted from this patch.
+
+[...]
+
+> @@ -4113,7 +4123,7 @@ static void intel_iommu_domain_free(struct iommu_domain
+> *domain)
+>   }
+> 
+>   static int prepare_domain_attach_device(struct iommu_domain *domain,
+> -					struct device *dev)
+> +					struct device *dev, ioasid_t pasid)
+
+How about blocking pasid attaching in intel_iommu_set_dev_pasid().
+
+>   {
+>   	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
+>   	struct intel_iommu *iommu;
+> @@ -4126,7 +4136,8 @@ static int prepare_domain_attach_device(struct
+> iommu_domain *domain,
+>   	if (dmar_domain->force_snooping && !ecap_sc_support(iommu->ecap))
+>   		return -EINVAL;
+> 
+> -	if (domain->dirty_ops && !intel_iommu_slads_supported(iommu))
+> +	if (domain->dirty_ops &&
+> +	    (!slads_supported(iommu) || pasid != IOMMU_NO_PASID))
+>   		return -EINVAL;
+> 
+>   	/* check if this iommu agaw is sufficient for max mapped address */
+
+[...]
+
+> 
+> @@ -4886,14 +4897,16 @@ static int intel_iommu_read_and_clear_dirty(struct
+> iommu_domain *domain,
+>   	unsigned long pgsize;
+>   	bool ad_enabled;
+> 
+> -	spin_lock(&dmar_domain->lock);
+> +	/*
+> +	 * IOMMUFD core calls into a dirty tracking disabled domain without an
+> +	 * IOVA bitmap set in order to clean dirty bits in all PTEs that might
+> +	 * have occured when we stopped dirty tracking. This ensures that we
+> +	 * never inherit dirtied bits from a previous cycle.
+> +	 */
+>   	ad_enabled = dmar_domain->dirty_tracking;
+> -	spin_unlock(&dmar_domain->lock);
+> -
+>   	if (!ad_enabled && dirty->bitmap)
+
+How about
+	if (!dmar_domain->dirty_tracking && dirty->bitmap)
+		return -EINVAL;
+?
+
+>   		return -EINVAL;
+> 
+> -	rcu_read_lock();
+>   	do {
+>   		struct dma_pte *pte;
+>   		int lvl = 0;
+> @@ -4906,14 +4919,10 @@ static int intel_iommu_read_and_clear_dirty(struct
+> iommu_domain *domain,
+>   			continue;
+>   		}
+> 
+> -		/* It is writable, set the bitmap */
+> -		if (((flags & IOMMU_DIRTY_NO_CLEAR) &&
+> -				dma_sl_pte_dirty(pte)) ||
+> -		    dma_sl_pte_test_and_clear_dirty(pte))
+> +		if (dma_sl_pte_test_and_clear_dirty(pte, flags))
+>   			iommu_dirty_bitmap_record(dirty, iova, pgsize);
+>   		iova += pgsize;
+>   	} while (iova < end);
+> -	rcu_read_unlock();
+> 
+>   	return 0;
+>   }
+> diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
+> index bccd44db3316..0b390d9e669b 100644
+> --- a/drivers/iommu/intel/iommu.h
+> +++ b/drivers/iommu/intel/iommu.h
+> @@ -542,6 +542,9 @@ enum {
+>   #define sm_supported(iommu)	(intel_iommu_sm && ecap_smts((iommu)->ecap))
+>   #define pasid_supported(iommu)	(sm_supported(iommu) &&			\
+>   				 ecap_pasid((iommu)->ecap))
+> +#define slads_supported(iommu) (sm_supported(iommu) &&                 \
+> +                                ecap_slads((iommu)->ecap))
+> +
+> 
+>   struct pasid_entry;
+>   struct pasid_state_entry;
+> @@ -785,13 +788,12 @@ static inline bool dma_pte_present(struct dma_pte *pte)
+>   	return (pte->val & 3) != 0;
+>   }
+> 
+> -static inline bool dma_sl_pte_dirty(struct dma_pte *pte)
+> +static inline bool dma_sl_pte_test_and_clear_dirty(struct dma_pte *pte,
+> +						   unsigned long flags)
+>   {
+> -	return (pte->val & DMA_SL_PTE_DIRTY) != 0;
+> -}
+> +	if (flags & IOMMU_DIRTY_NO_CLEAR)
+> +		return (pte->val & DMA_SL_PTE_DIRTY) != 0;
+> 
+> -static inline bool dma_sl_pte_test_and_clear_dirty(struct dma_pte *pte)
+> -{
+>   	return test_and_clear_bit(DMA_SL_PTE_DIRTY_BIT,
+>   				  (unsigned long *)&pte->val);
+>   }
+> diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
+> index 03814942d59c..785384a59d55 100644
+> --- a/drivers/iommu/intel/pasid.c
+> +++ b/drivers/iommu/intel/pasid.c
+> @@ -686,15 +686,29 @@ int intel_pasid_setup_dirty_tracking(struct intel_iommu
+> *iommu,
+> 
+>   	spin_lock(&iommu->lock);
+> 
+> -	did = domain_id_iommu(domain, iommu);
+>   	pte = intel_pasid_get_entry(dev, pasid);
+>   	if (!pte) {
+>   		spin_unlock(&iommu->lock);
+> -		dev_err(dev, "Failed to get pasid entry of PASID %d\n", pasid);
+> +		dev_err_ratelimited(dev,
+> +				    "Failed to get pasid entry of PASID %d\n",
+> +				    pasid);
+>   		return -ENODEV;
+>   	}
+> 
+> +	did = domain_id_iommu(domain, iommu);
+>   	pgtt = pasid_pte_get_pgtt(pte);
+> +	if (pgtt != PASID_ENTRY_PGTT_SL_ONLY && pgtt != PASID_ENTRY_PGTT_NESTED) {
+> +		spin_unlock(&iommu->lock);
+> +		dev_err_ratelimited(dev,
+> +				    "Dirty tracking not supported on translation type %d\n",
+> +				    pgtt);
+> +		return -EOPNOTSUPP;
+> +	}
+> +
+> +	if (pasid_get_ssade(pte) == enabled) {
+> +		spin_unlock(&iommu->lock);
+> +		return 0;
+> +	}
+> 
+>   	if (enabled)
+>   		pasid_set_ssade(pte);
+> @@ -702,6 +716,9 @@ int intel_pasid_setup_dirty_tracking(struct intel_iommu *iommu,
+>   		pasid_clear_ssade(pte);
+>   	spin_unlock(&iommu->lock);
+> 
+> +	if (!ecap_coherent(iommu->ecap))
+> +		clflush_cache_range(pte, sizeof(*pte));
+> +
+>   	/*
+>   	 * From VT-d spec table 25 "Guidance to Software for Invalidations":
+>   	 *
+> @@ -720,8 +737,6 @@ int intel_pasid_setup_dirty_tracking(struct intel_iommu *iommu,
+> 
+>   	if (pgtt == PASID_ENTRY_PGTT_SL_ONLY || pgtt == PASID_ENTRY_PGTT_NESTED)
+>   		iommu->flush.flush_iotlb(iommu, did, 0, 0, DMA_TLB_DSI_FLUSH);
+> -	else
+> -		qi_flush_piotlb(iommu, did, pasid, 0, -1, 0);
+> 
+>   	/* Device IOTLB doesn't need to be flushed in caching mode. */
+>   	if (!cap_caching_mode(iommu->cap))
+
+Others look good to me. Thanks a lot.
+
+Best regards,
+baolu
