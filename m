@@ -1,164 +1,107 @@
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2040.outbound.protection.outlook.com [40.107.223.40])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f172.google.com (mail-qt1-f172.google.com [209.85.160.172])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 96F27450E7
-	for <iommu@lists.linux.dev>; Tue, 17 Oct 2023 16:05:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 242422D02E
+	for <iommu@lists.linux.dev>; Tue, 17 Oct 2023 16:33:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="fPgo7BpS"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=AHYtw9HaEVVmSt2T4Agkg527SJtg8x4NbRuXBBvFjAkvfjA8TgQtOf0r/HSsBFFk/csv462preCAi8w3oY8xAnK8kTJ4McnEjMAkAdwVUzZJomo9v02h3qg83dw3bGznYaKADw39aAK3Aulr/I7VtDMtmb/nawrem3Xx5cQcOHaW47igrO+Cq8Ou4qJdxmq99KX5O4ypF60nrsuTX03D8/p9ujlQyD55hEWBj+x7j0s15Hm91vS7Q8ofmqTmpD04nCF4nPbm7/30fHnaqwuORX5jjcB70lFZYJ4ZsRW8Jr+LbOp0pnAfmrInCRhVvKXNMzgwsr0wgSbnktoeVmLQMA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Q+MxW805I6s+rvqMchVDFnwcNZSQ3TJML2JfQ0eeaU4=;
- b=W0R44K5JiuuM1y7iyrL+xh9vFqvONZuvStNkiwkEfXWFtYEJsjgCHy4uUA7RJi5hH7M9IEBgpGErEIn+jpIdCAVsYbRFdKxOBSQTzN3hNv6+UaeAWsnxapUcwxncPfx9b4B+bI9Zszvort7rElgrAF+U5OZTWry0h5iQxAz4DBT8USq7O+9r+U8DGhcC3sVym+UxN2pf1qz9JuiYSoEQJitGSJwjKxz4cVMX8/FLWNRxtt+kz++zPfqNtP4lF2Vh8XZvS91kD5M6EqTfpVz+LkQqgdPkhqFzHHSeYKTAxdh1zkZ3LxRjFRNWpnkiQtwq9npQdwkzs+nylydRGL5HOw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Q+MxW805I6s+rvqMchVDFnwcNZSQ3TJML2JfQ0eeaU4=;
- b=fPgo7BpSlW1Rfq0pIvzMA58ysAAkljWFMh5qb4j8CfB8PdegalVFBNrtBSkZ1HOTjUXJDEHLgpMgfXd0ABbid2kutxXKuotOglSve8ymA7okElFGqxUPyvG0dAyFXVidX0QNhMcU6zsHwZPqi+w7r8dyBBsuNa4rarbnyrcvJLjINcrR5Soy6xa04ZWqK2XM+NP3sG1UJ4PptSkNAKwN4TgDNv8+nZUGsoXn8Oh6byBTQ1j6gqZR90FTNiHRPJgKXVde9VtRRuT+6JfTKI+QVmX24K5haUBX7JW5VoY2rPI5l0wDzT9qZLi6AIS3cIUpHxJZfLlDDWfkjjvMg3jDVg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by CH2PR12MB4905.namprd12.prod.outlook.com (2603:10b6:610:64::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6886.36; Tue, 17 Oct
- 2023 16:05:03 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::3f66:c2b6:59eb:78c2]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::3f66:c2b6:59eb:78c2%6]) with mapi id 15.20.6886.034; Tue, 17 Oct 2023
- 16:05:03 +0000
-Date: Tue, 17 Oct 2023 13:05:02 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: Yi Liu <yi.l.liu@intel.com>, "joro@8bytes.org" <joro@8bytes.org>,
-	"alex.williamson@redhat.com" <alex.williamson@redhat.com>,
-	"kevin.tian@intel.com" <kevin.tian@intel.com>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
-	"cohuck@redhat.com" <cohuck@redhat.com>,
-	"eric.auger@redhat.com" <eric.auger@redhat.com>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-	"mjrosato@linux.ibm.com" <mjrosato@linux.ibm.com>,
-	"chao.p.peng@linux.intel.com" <chao.p.peng@linux.intel.com>,
-	"yi.y.sun@linux.intel.com" <yi.y.sun@linux.intel.com>,
-	"peterx@redhat.com" <peterx@redhat.com>,
-	"jasowang@redhat.com" <jasowang@redhat.com>,
-	"shameerali.kolothum.thodi@huawei.com" <shameerali.kolothum.thodi@huawei.com>,
-	"lulu@redhat.com" <lulu@redhat.com>,
-	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-	"zhenzhong.duan@intel.com" <zhenzhong.duan@intel.com>,
-	"joao.m.martins@oracle.com" <joao.m.martins@oracle.com>
-Subject: Re: [PATCH v2 1/6] iommu: Add new iommu op to create domains owned
- by userspace
-Message-ID: <20231017160502.GJ3952@nvidia.com>
-References: <20230928071528.26258-1-yi.l.liu@intel.com>
- <20230928071528.26258-2-yi.l.liu@intel.com>
- <ZSuROTyaxePoVFA+@Asurada-Nvidia>
- <20231016120454.GS3952@nvidia.com>
- <ZS124n0LYj4kl/4c@Asurada-Nvidia>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZS124n0LYj4kl/4c@Asurada-Nvidia>
-X-ClientProxiedBy: BLAPR03CA0056.namprd03.prod.outlook.com
- (2603:10b6:208:32d::31) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="SVcYoJH7"
+Received: by mail-qt1-f172.google.com with SMTP id d75a77b69052e-41cb9419975so928811cf.2
+        for <iommu@lists.linux.dev>; Tue, 17 Oct 2023 09:33:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1697560419; x=1698165219; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=dclroukzLGxz5umscUIIo3X53adAsvRXETE+DNsgCts=;
+        b=SVcYoJH7UCjlJeNDZI+L/VX7J4f04rnukYhNDjqo2LrZXnRvGIL4QLj8dcKX7cHJkg
+         OWCLhL6Yn6iXwLqZsaW+HBF5GWw9B3cDbRwxlvjiOnH/n2kBrgh4fLScbM9Pj7X3O+GR
+         LBQZG7b2PHGpxf+VC7+OA1XhMIHNFPefutJdBHaeKtaYCZXx/deLbQdKOhdI/Le3ANzj
+         vw3lJNJaOkx8/nilkI5TZtKoY6PpLsywRsjNvMGh08l0I9OVeAYe1RMAoTnM0B4ycUic
+         GLrHkTK4D56eLO3wJiKZvhq87wf/HzKNKgggtjC1sKLDg2TK+auKHEhMkfiR4Cpe62zY
+         gMjQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1697560419; x=1698165219;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=dclroukzLGxz5umscUIIo3X53adAsvRXETE+DNsgCts=;
+        b=kuEJGOWFzeWdTrhnVIW7wN3ph0wjmrotR8ipNzVgBnhCsem0kf044WLMU2OWYEUM7K
+         NqV9PpP3O4NA0iikjnMcq5Vct739jHYkTS+4cpx3j4jH0rtTSFfmaIAF0xzEAjz0Ctr3
+         etgZL3FVhgsHqcXKb1lvnjtoq4+ZNndBdPKpMX5aHzYERG1r9xy47L59QssCMb0YDVfs
+         W/F1s1y+wBc4KzAunYmX5YfKKgUUCu8PENRN4lJF+bcPjyGKZ9ze9LSmBlLaUI87RLGD
+         Hqe8tSFcRrPvfdznH0+p9ay0XcYGeJ7SQbvtNgUM6G9ewL8D5NMBsk3IY3tOTRMej1PY
+         q1Fw==
+X-Gm-Message-State: AOJu0Yzmu4d26hIhJBtxLz+HEShLzZJggHEtEFh17ZsMVcQk6DACP6fi
+	zHcSmGEY7aAEFSkFpjg1GoxGVw==
+X-Google-Smtp-Source: AGHT+IFp6pQb+R36gjUSVSmxooe7mUCxfDZoMHSMV/Fkl6eZO2lM7P03aL913SU6pq4+zRe3xQGgnQ==
+X-Received: by 2002:ac8:7c4e:0:b0:418:a14:9c30 with SMTP id o14-20020ac87c4e000000b004180a149c30mr2665362qtv.9.1697560418744;
+        Tue, 17 Oct 2023 09:33:38 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-68-26-201.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.26.201])
+        by smtp.gmail.com with ESMTPSA id k2-20020ac81402000000b004199c98f87dsm740615qtj.74.2023.10.17.09.33.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 Oct 2023 09:33:37 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1qsn0j-002sD0-2s;
+	Tue, 17 Oct 2023 13:33:37 -0300
+Date: Tue, 17 Oct 2023 13:33:37 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Zhenhua Huang <quic_zhenhuah@quicinc.com>
+Cc: will@kernel.org, robin.murphy@arm.com, joro@8bytes.org,
+	baolu.lu@linux.intel.com, iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, quic_tingweiz@quicinc.com
+Subject: Re: [ARM IOMMU] IOMMU framework concurrency issue
+Message-ID: <20231017163337.GE282036@ziepe.ca>
+References: <e2e20e1c-6450-4ac5-9804-b0000acdf7de@quicinc.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|CH2PR12MB4905:EE_
-X-MS-Office365-Filtering-Correlation-Id: 260b86d6-05b3-482b-3b24-08dbcf2ad287
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	Hw9kZOpJrLcGAgOi3053mvofq91tqzRgmWbKsjXF17yh8LJPwCCkDaLFN/7iaL66ejgaOVfgecG2SxPwoRCoNwJ0TPZGAYQqlUocUyy8y9Rkc1VVbq8cX37rG52sTFAYPrS7NjF9qs7Th2MVpsd9WlWmQxK+GR9O6aBG3BNUSfRhjdr9xzh0CZjfnpP4Ev+0V8KlqAF/zHEX1uIXn31inAw3+k94gXBPdJT5pk3b6RJmQ1Ar/s3fNnwLe0GbbwCxNRFeyllwsYcOofHjuKqXQ4aDe+h1tYg0frpp3JEOg7f0W/a3nmGDXnm2NkSGxCcR2ROz4wXGetjHcpDlAPIN4efPOqDDs99MBOgExQTQV6rIj+h3vkukqt8rImcRbNPmRbV5qSWRkBYxqiTPJfL/Ts3jRjh235tS4hQWEcR3l2U8kHKQOYGI4BQm3eMxSCAElCrkHGGr5TX0jVFdUNLF7cx1XRHW1XTScLCaUgjTmfK27qWwMd5u0QeICCaN1wJGMWDyKk3mGn7Ng3plC9uaIP8CDMvdIbmi3sZ2gpM5IVx21Sy4u+3v6tM4IULtAHuC
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(39860400002)(346002)(376002)(136003)(396003)(366004)(230922051799003)(64100799003)(451199024)(1800799009)(186009)(6486002)(478600001)(6506007)(6512007)(36756003)(33656002)(86362001)(1076003)(38100700002)(26005)(83380400001)(2616005)(316002)(5660300002)(54906003)(37006003)(66476007)(6636002)(66946007)(41300700001)(66556008)(8936002)(8676002)(6862004)(4326008)(2906002)(7416002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?NJEdPFrYxr8OULgTqdzjj8iO9TZte1LCtRgeVkuzQ2aPdCB3qNkL0wUk707W?=
- =?us-ascii?Q?1xD8dG8gdng0vhbqCcglCPwnh6NtwnwJ2o7RtL3Y90i6WZjxE9b6U578erIy?=
- =?us-ascii?Q?HxKSWxyOxJ++AdcuMEJwKHlETnOjAbPqA8R3rvry7j6/lz9mWNH23YehGqOo?=
- =?us-ascii?Q?qpPO0edbNTFu8p+G6xv68yjmJFWoZSRYeyI4Jl5pswiBnMRaulZQYASEvX/T?=
- =?us-ascii?Q?AP/08qUYUjci8eceX/RY6Jl9hjcQE0/e2eKBEkU0NA6sXcDLnivc0dIsrDrt?=
- =?us-ascii?Q?Zgm3kJD4rFMHRXw8DXU3do6oNFKvDBBnOKS1Cgl+VCzfe0HyvlAIFoknwEJt?=
- =?us-ascii?Q?ZvOWXKo6jQEQ9/9wpAlFnq7yvIg3spHrV9/vV2mGRyPopsYEAez8njNjAZhM?=
- =?us-ascii?Q?F9Jn3CQ7z36Qw4K7vxb8UqVdn+hdp16NwnmxFRnk61LAA/MlzGwLhZgLjXSt?=
- =?us-ascii?Q?89ZpziX/IKeAu0yxbuupc0wEdw1FR4L5PxahbiNfCGTIHOuUZ9S6MhJa2hss?=
- =?us-ascii?Q?mIPIxC4ntrT7mqkc9E2dtHFPOAK/QTRXR7uf5gqW/o9yB7rmZtGaIrBv07Ok?=
- =?us-ascii?Q?jqnS5Eldy+SsmrkLA2hcQyzdLtZXZ53KpWJA+PlQnZY/99Z+spveZ0y1zXx9?=
- =?us-ascii?Q?1W8Oxa/6Dn8epjZX6bJHe2ke6D/MZUCdxAtiBGCUTRRGM8AFj+9xUoSbm3g4?=
- =?us-ascii?Q?VPPIMMkJSA2/RCW3OsIGU7X+Kb9DjcGzMvLsFDtMDA69W5BjJlwhyCHvrLPP?=
- =?us-ascii?Q?CkloSunhp4G4iR7kXDxvKpWhS5AlPKSO+feW5xiCZSYvaIt6yZxElU0PGdS9?=
- =?us-ascii?Q?EGacM22Y9flE+4P1V0GADS8Fz77X1Eyvr81tJTVZ52cEtuNWw2aO3+J7A4Ly?=
- =?us-ascii?Q?T/cPn5JYRqfeo1myV9Z7fhrke3c99H7f9AKxo/Xmm+1ykZCSu76Zhnbqwq5U?=
- =?us-ascii?Q?t8Nd8SQ8aOuwA45nIoUiPrvxzveNxOe3hT4L6wD9KSX6M+DGXc/W46am8sfl?=
- =?us-ascii?Q?nhNipwLlgPma7+KBumNlGrI62Z2VAoBXPQnb5TQz445B4QkghLhJbFIKEMlO?=
- =?us-ascii?Q?VSggv4NyCEsBXlrxGmRrHJjmnjnWxP+qkW1xzVpKMGKwyrqeIA5Z5Wdr7Wa5?=
- =?us-ascii?Q?ffFrAnOo8KO6VGc/zVh3Q6hBOAVTT0dBN5ZfDETqOHNPiAe/025wVbcv8C6Z?=
- =?us-ascii?Q?Sk9udU8Gc1AKm8fL7YIvOHSVTsy0G3L9Zvlr0JJflEJXM4cWUf1Fzr4j6KTk?=
- =?us-ascii?Q?qO3sHEVtK+KDID2U19hYbrNaQ+FIH75ZwrCX9zxhUx8MBodai6+Sm+6u0a2/?=
- =?us-ascii?Q?N/704kOLkghVO4rwCx2wf06a057XKuP80bRulf4ByZfCwPBwCGA9QmT3I7Fu?=
- =?us-ascii?Q?C1J4IvsvHyBEpCfeHCq9t4B6zqnvbqAr/xKQzBbkqHuxYq9QKcKj5Kl/idDB?=
- =?us-ascii?Q?hvQP8vjfVp8RnapmzCs4zLQRZOiKlZm6RFwQuibOKbSr702Yvp7i1I7nMFtg?=
- =?us-ascii?Q?oIstTAhEBUccDI8YaOJPymoyVZanDeSnu+7TfH7RXudTSxatJg2Ge+vomLSQ?=
- =?us-ascii?Q?mHUHIxsqrniwQS//kSLJNkURK+P5vxPnECIHLeSY?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 260b86d6-05b3-482b-3b24-08dbcf2ad287
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Oct 2023 16:05:03.2298
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Z2r+Cern1hlrbnHyIOz6RDWsNOng4VFZA8SsZaEwCYti/TyvHXGKB46IdWQvBgef
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB4905
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <e2e20e1c-6450-4ac5-9804-b0000acdf7de@quicinc.com>
 
-On Mon, Oct 16, 2023 at 10:46:10AM -0700, Nicolin Chen wrote:
-> On Mon, Oct 16, 2023 at 09:04:54AM -0300, Jason Gunthorpe wrote:
-> > On Sun, Oct 15, 2023 at 12:14:01AM -0700, Nicolin Chen wrote:
-> > > On Thu, Sep 28, 2023 at 12:15:23AM -0700, Yi Liu wrote:
-> > > 
-> > > > diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
-> > > > index b4ba0c0cbab6..4a7c5c8fdbb4 100644
-> > > > --- a/include/uapi/linux/iommufd.h
-> > > > +++ b/include/uapi/linux/iommufd.h
-> > > > @@ -347,10 +347,20 @@ struct iommu_vfio_ioas {
-> > > >  };
-> > > >  #define IOMMU_VFIO_IOAS _IO(IOMMUFD_TYPE, IOMMUFD_CMD_VFIO_IOAS)
-> > > > 
-> > > > +/**
-> > > > + * enum iommufd_hwpt_alloc_flags - Flags for HWPT allocation
-> > > > + * @IOMMU_HWPT_ALLOC_NEST_PARENT: If set, allocate a domain which can serve
-> > > > + *                                as the parent domain in the nesting
-> > > > + *                                configuration.
-> > > 
-> > > I just noticed a nit here: we should probably align with other
-> > > parts of this file by using "HWPT" v.s. "domain"? I.e.
-> > > 
-> > > + * @IOMMU_HWPT_ALLOC_NEST_PARENT: If set, allocate a HWPT which can serve
-> > > + *                                as the parent HWPT in the nesting
-> > > + *                                configuration.
-> > 
-> > Yes
+On Tue, Oct 17, 2023 at 07:10:23PM +0800, Zhenhua Huang wrote:
+> Dear experts,
 > 
-> Should we resend? Or would it be possible for you to update it
-> in your for-next tree?
+> Saw a few crashes in our projects because of concurrency between (1) and
+> (2).
+> 
+> bus notifier or bus_iommu_probe:
+> 	__iommu_probe_device
+> 		acquire iommu_probe_device_lock only
+> 		iommu_init_device()
+> 			//touch dev->iommu (1)
+> 			dev_iommu_get()
+> 			->probe_device()
+> 
+> Client device probing path:
+> of_dma_configure			
+> 	of_iommu_configure
+> 		//touch dev->iommu  (2)
+> 		...
+> 
+> 
+> We already have 01657bc14a39 ("iommu: Avoid races around device probe") and
+> the big comment in __iommu_probe_device() refers to adopt device_lock()
+> further. Notice your big effort to utilize it, and IMO it can address above
+> issue(which protects dev->iommu):
 
-At this point send a Fixes: patch
+I think something else has gone wrong here, you should not be able to
+get to any really_probe() before the iommu side has done its part.
+
+Even with proper device locking the poor device that is racing isn't
+going to work properly as the IOMMU won't be guarenteed to be
+consistently configured.
+
+This seems like you need to resolve boot time ordering in your
+platform? (I don't know exactly how ARM works here though)
+
+eg make sure the iommu driver is fully registered before allowing any
+concurrent probes. Once the iommu driver is registered it will be able
+to catch the bus notifiers and serialize things properly.
 
 Jason
