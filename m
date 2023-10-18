@@ -1,41 +1,41 @@
 Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C5B7D3E000
-	for <iommu@lists.linux.dev>; Wed, 18 Oct 2023 20:29:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F6373DFF2
+	for <iommu@lists.linux.dev>; Wed, 18 Oct 2023 20:29:12 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oracle.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oracle.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="xrEvKFxc"
-Received: from pps.filterd (m0333520.ppops.net [127.0.0.1])
-	by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 39IIn01u011272;
-	Wed, 18 Oct 2023 20:28:56 GMT
+	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="0Rs2IlV6"
+Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
+	by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 39IImtdP006120;
+	Wed, 18 Oct 2023 20:28:59 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding; s=corp-2023-03-30;
- bh=eZsC3O+ccDfopdg4eUSndZFh1wPtpDgbUiISeIAR7LQ=;
- b=xrEvKFxcH1uarbk/GkDqV8UBaG2hY/NEBlbA98onmSBdCENEI8d6we9J/uP1lhl3YKr9
- nt/CaJrxHYsKPIqzId2WYizZo9IIOGtbdk9Bqh0op8Vtv6wdveoPi2UTnH+sOoJdsnf9
- Tgv2zQ4O6FLPPhKI+lWMUyK/5Ous4ZBquwpE5OTjagxYL3mVXOYM7Sq6szeKkxglOdJH
- z1MUZyAVXDL5cgTe/s01W7VcULFNCbDSJwO2LiAOsPhdM8p9lGZ4sAml9ED1z0HTpkg3
- uxiVlJSgcTWdz92w+A58sXu0ELgqUkVm0NE0PrCDwpC9nng+tnR1vyaLmRt7vl33AX93 SA== 
+ bh=iaHoItBRAEysMtThzHhY/pnVURSX5SY+/Mks2GyN3Qc=;
+ b=0Rs2IlV6NcoahkkiWGz9y2daanRA/PUSvpMo4lRCmRBWibrtloFi2NjFkht7BTNHfdbJ
+ Y08v32zXjfmJM1PWvqdL894wk2kBcpg+gdOxPvh17/2MW3aWpHXc0OadUwVUzFQmsKKs
+ /VOEXkPT4tBXSDIxdP0W+lUMmyvAEVWChToVhznM0hI9BpNzqQaHwhZzY6d74nlYm6Lo
+ THy4Dv48D/0R8Rf5zvv3pzwJXgZl9l4+YKB5115heTIBzPr6FQkL8C/RB+7dIrP0bznA
+ kkgm9hfor1XJBeqvnY2ienmm19IKOJLufMW4x6ojAwZGXU/4/mXwkxOkvt4RpLAmfydK kQ== 
 Received: from iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta02.appoci.oracle.com [147.154.18.20])
-	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3tqk1cgnj8-1
+	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3tqjynghus-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Wed, 18 Oct 2023 20:28:43 +0000
+	Wed, 18 Oct 2023 20:28:58 +0000
 Received: from pps.filterd (iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.19/8.17.1.19) with ESMTP id 39IKKC5U009754;
-	Wed, 18 Oct 2023 20:28:43 GMT
+	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.19/8.17.1.19) with ESMTP id 39IK1418009042;
+	Wed, 18 Oct 2023 20:28:54 GMT
 Received: from pps.reinject (localhost [127.0.0.1])
-	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3trg0ps7u9-1
+	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3trg0ps7yw-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Wed, 18 Oct 2023 20:28:43 +0000
+	Wed, 18 Oct 2023 20:28:54 +0000
 Received: from iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 39IKRP5p040635;
-	Wed, 18 Oct 2023 20:28:42 GMT
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 39IKRP5v040635;
+	Wed, 18 Oct 2023 20:28:53 GMT
 Received: from joaomart-mac.uk.oracle.com (dhcp-10-175-176-41.vpn.oracle.com [10.175.176.41])
-	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTP id 3trg0ps6qp-15;
-	Wed, 18 Oct 2023 20:28:42 +0000
+	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTP id 3trg0ps6qp-18;
+	Wed, 18 Oct 2023 20:28:53 +0000
 From: Joao Martins <joao.m.martins@oracle.com>
 To: iommu@lists.linux.dev
 Cc: Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
@@ -48,9 +48,9 @@ Cc: Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
         Zhenzhong Duan <zhenzhong.duan@intel.com>,
         Alex Williamson <alex.williamson@redhat.com>, kvm@vger.kernel.org,
         Joao Martins <joao.m.martins@oracle.com>
-Subject: [PATCH v4 14/18] iommufd/selftest: Test IOMMU_HWPT_ALLOC_ENFORCE_DIRTY
-Date: Wed, 18 Oct 2023 21:27:11 +0100
-Message-Id: <20231018202715.69734-15-joao.m.martins@oracle.com>
+Subject: [PATCH v4 17/18] iommufd/selftest: Test out_capabilities in IOMMU_GET_HW_INFO
+Date: Wed, 18 Oct 2023 21:27:14 +0100
+Message-Id: <20231018202715.69734-18-joao.m.martins@oracle.com>
 In-Reply-To: <20231018202715.69734-1-joao.m.martins@oracle.com>
 References: <20231018202715.69734-1-joao.m.martins@oracle.com>
 Precedence: bulk
@@ -67,173 +67,131 @@ X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 spam
  adultscore=0 suspectscore=0 mlxscore=0 mlxlogscore=999 bulkscore=0
  classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2309180000
  definitions=main-2310180169
-X-Proofpoint-ORIG-GUID: YFOIK3fqe0DN2f_mc9fDnBXeo_m98CRk
-X-Proofpoint-GUID: YFOIK3fqe0DN2f_mc9fDnBXeo_m98CRk
+X-Proofpoint-GUID: zGCJS73SmK9uPsolxO8jmylfQJf_86T7
+X-Proofpoint-ORIG-GUID: zGCJS73SmK9uPsolxO8jmylfQJf_86T7
 
-In order to selftest the iommu domain dirty enforcing implement the
-mock_domain necessary support and add a new dev_flags to test that the
-hwpt_alloc/attach_device fails as expected.
-
-Expand the existing mock_domain fixture with a enforce_dirty test that
-exercises the hwpt_alloc and device attachment.
+Enumerate the capabilities from the mock device and test whether it
+advertises as expected. Include it as part of the iommufd_dirty_tracking
+fixture.
 
 Signed-off-by: Joao Martins <joao.m.martins@oracle.com>
 ---
- drivers/iommu/iommufd/selftest.c              | 39 ++++++++++++++-
- tools/testing/selftests/iommu/iommufd.c       | 49 +++++++++++++++++++
- tools/testing/selftests/iommu/iommufd_utils.h |  3 ++
- 3 files changed, 90 insertions(+), 1 deletion(-)
+ drivers/iommu/iommufd/selftest.c                | 13 ++++++++++++-
+ tools/testing/selftests/iommu/iommufd.c         | 17 +++++++++++++++++
+ .../testing/selftests/iommu/iommufd_fail_nth.c  |  2 +-
+ tools/testing/selftests/iommu/iommufd_utils.h   | 14 +++++++++++---
+ 4 files changed, 41 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/iommu/iommufd/selftest.c b/drivers/iommu/iommufd/selftest.c
-index bd3704b28bfb..e5d421b54b1a 100644
+index 4ba10dbc63d0..322254a2bbc1 100644
 --- a/drivers/iommu/iommufd/selftest.c
 +++ b/drivers/iommu/iommufd/selftest.c
-@@ -119,6 +119,12 @@ static void mock_domain_blocking_free(struct iommu_domain *domain)
- static int mock_domain_nop_attach(struct iommu_domain *domain,
- 				  struct device *dev)
+@@ -379,7 +379,18 @@ static phys_addr_t mock_domain_iova_to_phys(struct iommu_domain *domain,
+ 
+ static bool mock_domain_capable(struct device *dev, enum iommu_cap cap)
  {
+-	return cap == IOMMU_CAP_CACHE_COHERENCY;
 +	struct mock_dev *mdev = container_of(dev, struct mock_dev, dev);
 +
-+	if (domain->dirty_ops &&
-+	    (mdev->flags & MOCK_FLAGS_DEVICE_NO_DIRTY))
-+		return -EINVAL;
++	switch (cap) {
++	case IOMMU_CAP_CACHE_COHERENCY:
++		return true;
++	case IOMMU_CAP_DIRTY:
++		return !(mdev->flags & MOCK_FLAGS_DEVICE_NO_DIRTY);
++	default:
++		break;
++	}
 +
- 	return 0;
++	return false;
  }
  
-@@ -147,6 +153,26 @@ static void *mock_domain_hw_info(struct device *dev, u32 *length, u32 *type)
- 	return info;
- }
- 
-+static int mock_domain_set_dirty_tracking(struct iommu_domain *domain,
-+					  bool enable)
-+{
-+	return 0;
-+}
-+
-+static int mock_domain_read_and_clear_dirty(struct iommu_domain *domain,
-+					    unsigned long iova, size_t size,
-+					    unsigned long flags,
-+					    struct iommu_dirty_bitmap *dirty)
-+{
-+	return 0;
-+}
-+
-+const struct iommu_dirty_ops dirty_ops = {
-+	.set_dirty_tracking = mock_domain_set_dirty_tracking,
-+	.read_and_clear_dirty = mock_domain_read_and_clear_dirty,
-+};
-+
-+
- static const struct iommu_ops mock_ops;
- 
- static struct iommu_domain *mock_domain_alloc(unsigned int iommu_domain_type)
-@@ -174,12 +200,20 @@ static struct iommu_domain *mock_domain_alloc(unsigned int iommu_domain_type)
- static struct iommu_domain *
- mock_domain_alloc_user(struct device *dev, u32 flags)
- {
-+	struct mock_dev *mdev = container_of(dev, struct mock_dev, dev);
- 	struct iommu_domain *domain;
- 
--	if (flags & (~IOMMU_HWPT_ALLOC_NEST_PARENT))
-+	if (flags & (~(IOMMU_HWPT_ALLOC_NEST_PARENT|
-+		       IOMMU_HWPT_ALLOC_ENFORCE_DIRTY)))
-+		return ERR_PTR(-EOPNOTSUPP);
-+
-+	if ((flags & IOMMU_HWPT_ALLOC_ENFORCE_DIRTY) &&
-+	    (mdev->flags & MOCK_FLAGS_DEVICE_NO_DIRTY))
- 		return ERR_PTR(-EOPNOTSUPP);
- 
- 	domain = mock_domain_alloc(IOMMU_DOMAIN_UNMANAGED);
-+	if (domain && !(mdev->flags & MOCK_FLAGS_DEVICE_NO_DIRTY))
-+		domain->dirty_ops = &dirty_ops;
- 	if (!domain)
- 		domain = ERR_PTR(-ENOMEM);
- 	return domain;
-@@ -387,6 +421,9 @@ static struct mock_dev *mock_dev_create(unsigned long dev_flags)
- 	struct mock_dev *mdev;
- 	int rc;
- 
-+	if (dev_flags & ~(MOCK_FLAGS_DEVICE_NO_DIRTY))
-+		return ERR_PTR(-EINVAL);
-+
- 	mdev = kzalloc(sizeof(*mdev), GFP_KERNEL);
- 	if (!mdev)
- 		return ERR_PTR(-ENOMEM);
+ static void mock_domain_set_plaform_dma_ops(struct device *dev)
 diff --git a/tools/testing/selftests/iommu/iommufd.c b/tools/testing/selftests/iommu/iommufd.c
-index 6323153d277b..a0ed712c810d 100644
+index e12e0731e414..2865dc271a26 100644
 --- a/tools/testing/selftests/iommu/iommufd.c
 +++ b/tools/testing/selftests/iommu/iommufd.c
-@@ -1433,6 +1433,55 @@ TEST_F(iommufd_mock_domain, alloc_hwpt)
- 	}
+@@ -1564,6 +1564,23 @@ TEST_F(iommufd_dirty_tracking, set_dirty)
+ 	test_ioctl_destroy(hwpt_id);
  }
  
-+FIXTURE(iommufd_dirty_tracking)
++TEST_F(iommufd_dirty_tracking, device_dirty_capability)
 +{
-+	int fd;
-+	uint32_t ioas_id;
++	uint32_t caps = 0;
++	uint32_t stddev_id;
 +	uint32_t hwpt_id;
-+	uint32_t stdev_id;
-+	uint32_t idev_id;
-+};
 +
-+FIXTURE_SETUP(iommufd_dirty_tracking)
-+{
-+	self->fd = open("/dev/iommu", O_RDWR);
-+	ASSERT_NE(-1, self->fd);
-+
-+	test_ioctl_ioas_alloc(&self->ioas_id);
-+	test_cmd_mock_domain(self->ioas_id, &self->stdev_id,
-+			     &self->hwpt_id, &self->idev_id);
-+}
-+
-+FIXTURE_TEARDOWN(iommufd_dirty_tracking)
-+{
-+	teardown_iommufd(self->fd, _metadata);
-+}
-+
-+TEST_F(iommufd_dirty_tracking, enforce_dirty)
-+{
-+	uint32_t ioas_id, stddev_id, idev_id;
-+	uint32_t hwpt_id, _hwpt_id;
-+	uint32_t dev_flags;
-+
-+	/* Regular case */
-+	dev_flags = MOCK_FLAGS_DEVICE_NO_DIRTY;
-+	test_cmd_hwpt_alloc(self->idev_id, self->ioas_id,
-+			    IOMMU_HWPT_ALLOC_ENFORCE_DIRTY, &hwpt_id);
++	test_cmd_hwpt_alloc(self->idev_id, self->ioas_id, 0, &hwpt_id);
 +	test_cmd_mock_domain(hwpt_id, &stddev_id, NULL, NULL);
-+	test_err_mock_domain_flags(EINVAL, hwpt_id, dev_flags,
-+				   &stddev_id, NULL);
++	test_cmd_get_hw_capabilities(self->idev_id, caps,
++				     IOMMU_HW_CAP_DIRTY_TRACKING);
++	ASSERT_EQ(IOMMU_HW_CAP_DIRTY_TRACKING,
++		  caps & IOMMU_HW_CAP_DIRTY_TRACKING);
++
 +	test_ioctl_destroy(stddev_id);
 +	test_ioctl_destroy(hwpt_id);
-+
-+	/* IOMMU device does not support dirty tracking */
-+	test_ioctl_ioas_alloc(&ioas_id);
-+	test_cmd_mock_domain_flags(ioas_id, dev_flags,
-+				   &stddev_id, &_hwpt_id, &idev_id);
-+	test_err_hwpt_alloc(EOPNOTSUPP, idev_id, ioas_id,
-+			    IOMMU_HWPT_ALLOC_ENFORCE_DIRTY, &hwpt_id);
-+	test_ioctl_destroy(stddev_id);
 +}
 +
- /* VFIO compatibility IOCTLs */
+ TEST_F(iommufd_dirty_tracking, get_dirty_iova)
+ {
+ 	uint32_t stddev_id;
+diff --git a/tools/testing/selftests/iommu/iommufd_fail_nth.c b/tools/testing/selftests/iommu/iommufd_fail_nth.c
+index 31386be42439..ff735bdd833e 100644
+--- a/tools/testing/selftests/iommu/iommufd_fail_nth.c
++++ b/tools/testing/selftests/iommu/iommufd_fail_nth.c
+@@ -612,7 +612,7 @@ TEST_FAIL_NTH(basic_fail_nth, device)
+ 				  &idev_id))
+ 		return -1;
  
- TEST_F(iommufd, simple_ioctls)
+-	if (_test_cmd_get_hw_info(self->fd, idev_id, &info, sizeof(info)))
++	if (_test_cmd_get_hw_info(self->fd, idev_id, &info, sizeof(info), NULL))
+ 		return -1;
+ 
+ 	if (_test_cmd_hwpt_alloc(self->fd, idev_id, ioas_id, 0, &hwpt_id))
 diff --git a/tools/testing/selftests/iommu/iommufd_utils.h b/tools/testing/selftests/iommu/iommufd_utils.h
-index 8e84d2592f2d..930edfe693c7 100644
+index 1ff93f812a32..790b5c0769cc 100644
 --- a/tools/testing/selftests/iommu/iommufd_utils.h
 +++ b/tools/testing/selftests/iommu/iommufd_utils.h
-@@ -99,6 +99,9 @@ static int _test_cmd_mock_domain_flags(int fd, unsigned int ioas_id,
- 		*idev_id = cmd.mock_domain_flags.out_idev_id;
+@@ -522,7 +522,8 @@ static void teardown_iommufd(int fd, struct __test_metadata *_metadata)
+ 
+ /* @data can be NULL */
+ static int _test_cmd_get_hw_info(int fd, __u32 device_id,
+-				 void *data, size_t data_len)
++				 void *data, size_t data_len,
++				 uint32_t *capabilities)
+ {
+ 	struct iommu_test_hw_info *info = (struct iommu_test_hw_info *)data;
+ 	struct iommu_hw_info cmd = {
+@@ -530,6 +531,7 @@ static int _test_cmd_get_hw_info(int fd, __u32 device_id,
+ 		.dev_id = device_id,
+ 		.data_len = data_len,
+ 		.data_uptr = (uint64_t)data,
++		.out_capabilities = 0,
+ 	};
+ 	int ret;
+ 
+@@ -566,14 +568,20 @@ static int _test_cmd_get_hw_info(int fd, __u32 device_id,
+ 			assert(!info->flags);
+ 	}
+ 
++	if (capabilities)
++		*capabilities = cmd.out_capabilities;
++
  	return 0;
  }
-+#define test_cmd_mock_domain_flags(ioas_id, flags, stdev_id, hwpt_id, idev_id)       \
-+	ASSERT_EQ(0, _test_cmd_mock_domain_flags(self->fd, ioas_id, flags, \
-+						 stdev_id, hwpt_id, idev_id))
- #define test_err_mock_domain_flags(_errno, ioas_id, flags, stdev_id, hwpt_id) \
- 	EXPECT_ERRNO(_errno, _test_cmd_mock_domain_flags(self->fd, ioas_id, \
- 							 flags, stdev_id, \
+ 
+ #define test_cmd_get_hw_info(device_id, data, data_len)         \
+ 	ASSERT_EQ(0, _test_cmd_get_hw_info(self->fd, device_id, \
+-					   data, data_len))
++					   data, data_len, NULL))
+ 
+ #define test_err_get_hw_info(_errno, device_id, data, data_len) \
+ 	EXPECT_ERRNO(_errno,                                    \
+ 		     _test_cmd_get_hw_info(self->fd, device_id, \
+-					   data, data_len))
++					   data, data_len, NULL))
++
++#define test_cmd_get_hw_capabilities(device_id, caps, mask)     \
++	ASSERT_EQ(0, _test_cmd_get_hw_info(self->fd, device_id, NULL, 0, &caps))
 -- 
 2.17.2
 
