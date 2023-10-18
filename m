@@ -1,227 +1,354 @@
 Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C0CA61EB2C
-	for <iommu@lists.linux.dev>; Wed, 18 Oct 2023 20:16:50 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BDD893B7B8
+	for <iommu@lists.linux.dev>; Wed, 18 Oct 2023 20:27:43 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oracle.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oracle.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="i5hBsQUM";
-	dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com header.i=@oracle.onmicrosoft.com header.b="tRch5wAk"
-Received: from pps.filterd (m0333520.ppops.net [127.0.0.1])
-	by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 39IIn0SP011250;
-	Wed, 18 Oct 2023 20:16:45 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=corp-2023-03-30;
- bh=VJLjX/cgq9KldEr7KIx053ywp2361d86FalNYloQN/g=;
- b=i5hBsQUMDKU5pX5grmMPSsU6x1IHd+ILd9/CzOOfCN6o9shNZJkW1w8v1D0SWIUvOJku
- Y++y654zeviYElrsg/KVP2GQz4jVYCUK+acAD0Vtg9Lj4T2Yw6dZ/c4mLdxObmG8vajk
- AD5PnGVxTlJrdCaHFPBZHDKkW3bJvqMR3Z7r8tvhAyU5PdvQ/Eu/K9gCj9SSlMR0/f22
- qGMWk9j8R/80f4Lr+1b7deQ1/9Xi6Jz5g/F/Cg7F0NDMtl5AoYn6E2A1bn/P0NAVRJlG
- kMMpkgIvDvqImwXcdABfxvaSHa+JkBKNiX3Nrmw0QO7a8LeTa+FDtOruONev4SCES00s cg== 
-Received: from phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta01.appoci.oracle.com [138.1.114.2])
-	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3tqk1cgmwa-1
+	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="Cyu/1FHr"
+Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
+	by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 39IImvn4006155;
+	Wed, 18 Oct 2023 20:27:27 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding;
+ s=corp-2023-03-30; bh=vjuod6Mrz81O+ncHnrxQFRx9QTR1U+kMGkjnZj8rcRM=;
+ b=Cyu/1FHruawQcajF3ECaf1Eu5lU8YuwJJ28YrTWTLbAAVl0bEmJqGwwdC3hULdi2jUup
+ IhlW6BcfplgI9nnEvXzyefAJitGI/4xOxH5UwKUYrtEnQd0ZbEwIGFSLYXDR64dUYY1f
+ kYB8p4vLUwvABmzVEhrmOsC1/V0NlpodW4wc53WOZpjIBFUgbQ1XmQFBI/e85rm3Ie5L
+ YA1kzcn2Zo2xLEXaGsrN0jJJzJGVP+x+Jc4sqsbAW+ZW6O6qMPtC17Aho+WXlnCqzlOS
+ LOoPcSnhKEvIvhcPrj5vdFkKoVhEetz+78bhUakMEZ7NxUFTNGSZjiiiZudnJdE7ofN0 bw== 
+Received: from iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta02.appoci.oracle.com [147.154.18.20])
+	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3tqjynghrp-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Wed, 18 Oct 2023 20:16:45 +0000
-Received: from pps.filterd (phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-	by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (8.17.1.19/8.17.1.19) with ESMTP id 39IK9TpS028611;
-	Wed, 18 Oct 2023 20:16:44 GMT
-Received: from nam10-mw2-obe.outbound.protection.outlook.com (mail-mw2nam10lp2101.outbound.protection.outlook.com [104.47.55.101])
-	by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 3trfy5htkh-1
+	Wed, 18 Oct 2023 20:27:26 +0000
+Received: from pps.filterd (iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.19/8.17.1.19) with ESMTP id 39IIUaoD009854;
+	Wed, 18 Oct 2023 20:27:26 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3trg0ps6s8-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Wed, 18 Oct 2023 20:16:44 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=elPSu/wVDrVQ79u6Gtczl2KF21qhbntqTv4PsfnzAiZg086bSuo2j7EHH5oVGaLQZFuqy+gkwUXjsU+0c6QTli8rBWkF7biGXczQB/6JEcs+nT5j7AihEyHcSj79H+1ZuT5xwOgP7ix1w6FKg1Ij9zXCjVX6oJzp7Z80FQux8yo/6WA4/KmwK1XArrmE2qcrIG+Ea+O7NprUSar2SNBhKdo2kOdQQhueAwfzq+GLAL7zV2oJNLc+DXMFkJT4yd3fB4r55Ql5Y6Gx7xwJ9NWCeFAfsURZZ2lXL0aVrTi1yFpnYnRX7O9/zl353DyUfC+Vts0B2CRuwk0B/6k4+s4JHA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=VJLjX/cgq9KldEr7KIx053ywp2361d86FalNYloQN/g=;
- b=cuiXYF67Tfaj2ZWsY8kM/coQEMMsScWfYRRoRdh8TQ4yXUn+XDVFaRpZB2p4rf9NKbFnRFb2IJPBg9RHWoqTHqYgWM5IxN4/W9zFXPXr+WJRYdBKqQvH/xnmQ6SDv2ufKOzjD1rlX90LrZPpntYwhW7vs1+fXC3hmHuirsCdabqyAjjA500zGMSFgRSM+eAQ+gthCVEiCYvzGbse4jFgFVGtDKZkr5sc7N7JUVn+7lJTn1jlEA0+94Dr1Zvk/FlHgaJKdRYsIA+PMjJtuh9zVCzAidm7uqYeHtBre/5tZ9MeUZi8Z9PO6Hl1MC51cdSaryR67Y7R+l9JvtO12+pbNw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=VJLjX/cgq9KldEr7KIx053ywp2361d86FalNYloQN/g=;
- b=tRch5wAkwbEF5nDtjGPdmzcHMkUJ/9YA3NyydJyXQvRslHOWEBrCGTksBauDY7cLyeeELzKrXkQOhlKVXx0lUvaYF1YuwJOnUna0i2AYcu7HpFxwPOlEXAZxIFQXW5bVGNbJSxgj4fzD7bP3DtCL8SoJcaH9NoWcjnhUYJC4HMg=
-Received: from DS7PR10MB5280.namprd10.prod.outlook.com (2603:10b6:5:3a7::5) by
- SJ0PR10MB5836.namprd10.prod.outlook.com (2603:10b6:a03:3ed::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6886.36; Wed, 18 Oct
- 2023 20:16:41 +0000
-Received: from DS7PR10MB5280.namprd10.prod.outlook.com
- ([fe80::45df:6d4d:83b4:40d]) by DS7PR10MB5280.namprd10.prod.outlook.com
- ([fe80::45df:6d4d:83b4:40d%5]) with mapi id 15.20.6907.022; Wed, 18 Oct 2023
- 20:16:41 +0000
-Message-ID: <8ad28ad3-7f8f-4bcc-8ec2-bc5e9e998d2c@oracle.com>
-Date: Wed, 18 Oct 2023 16:16:37 -0400
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] iommu/amd: Do not flush IRTE when only updating isRun and
- destination fields
-Content-Language: en-US
-To: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-        linux-kernel@vger.kernel.org, iommu@lists.linux.dev
-Cc: joro@8bytes.org, mlevitsk@redhat.com, seanjc@google.com,
-        vasant.hegde@amd.com, jon.grimm@amd.com, santosh.shukla@amd.com,
-        joao.m.martins@oracle.com, boris.ostrovsky@oracle.com
-References: <20231017144236.8287-1-suravee.suthikulpanit@amd.com>
-From: Alejandro Jimenez <alejandro.j.jimenez@oracle.com>
-In-Reply-To: <20231017144236.8287-1-suravee.suthikulpanit@amd.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BYAPR05CA0020.namprd05.prod.outlook.com
- (2603:10b6:a03:c0::33) To DS7PR10MB5280.namprd10.prod.outlook.com
- (2603:10b6:5:3a7::5)
+	Wed, 18 Oct 2023 20:27:26 +0000
+Received: from iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 39IKRP5N040635;
+	Wed, 18 Oct 2023 20:27:25 GMT
+Received: from joaomart-mac.uk.oracle.com (dhcp-10-175-176-41.vpn.oracle.com [10.175.176.41])
+	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTP id 3trg0ps6qp-1;
+	Wed, 18 Oct 2023 20:27:25 +0000
+From: Joao Martins <joao.m.martins@oracle.com>
+To: iommu@lists.linux.dev
+Cc: Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
+        Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
+        Lu Baolu <baolu.lu@linux.intel.com>, Yi Liu <yi.l.liu@intel.com>,
+        Yi Y Sun <yi.y.sun@intel.com>, Nicolin Chen <nicolinc@nvidia.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+        Zhenzhong Duan <zhenzhong.duan@intel.com>,
+        Alex Williamson <alex.williamson@redhat.com>, kvm@vger.kernel.org,
+        Joao Martins <joao.m.martins@oracle.com>
+Subject: [PATCH v4 00/18] IOMMUFD Dirty Tracking
+Date: Wed, 18 Oct 2023 21:26:57 +0100
+Message-Id: <20231018202715.69734-1-joao.m.martins@oracle.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS7PR10MB5280:EE_|SJ0PR10MB5836:EE_
-X-MS-Office365-Filtering-Correlation-Id: 3776e9c5-cb42-4213-381a-08dbd0172439
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 
-	S20mJsznsAo9N300O6F9FDkMalyJFiUf/xVd7NbE8WO78GO2f2aeqjqs6ddGRdh90JVSQqM/b9UlH2sKvCoI1l6aog3DqFLCHSl6N0LUhCmpQF4BLZNLECjCO0hGrmyMFdgAWufSqzeBQFoP5IZcnINpYGHndUFG7OGZYJa2RRO3O/tNRA4Fk+L2wvz5DSu3HLFfHdK1sBwld2cQrF1ux5eNPSk/sKoJVhZet6jG/ZcLY+C1+bIFgxuknIG+16YEKBNdkBmQhVx7qW4KAsvIWSjx4sVHOg9NeDe6wGKSXZgZZXa2MxBc78sm9bow+z861gZbTyH4z8IpZ/nsopDgqKAnsOGOrltCkNHf+/KpJIs9BXozsB+foWKJLNk1Z98fPGdvaYl5I7pTYKGuyDkN7FiD522YTPWCUqGNmniqBKpCgAH0C1GX47GF1e0PgF0fpjFtXNXmf2lJDevsaE3o4g+HnqayHcMtcRuQ7w8ZMdWqig0OpjNtp75fFyxwTDWz+3Qz2gKTjBHVnRxx2vjQlDwFOPTfcdiw+9QymhGycCdiJS1AhlsXZsgq2C6qbRzuAE73vNSuV0EnjYUwFDV7FinkrtbiPWztv3HQM/+I1Xvtmoxb6ZGixljqH64y9ztKEv+Qjqya7BRuWLxuOlM4XQ==
-X-Forefront-Antispam-Report: 
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR10MB5280.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(376002)(396003)(346002)(366004)(39860400002)(136003)(230922051799003)(64100799003)(451199024)(1800799009)(186009)(31686004)(36756003)(38100700002)(6666004)(8676002)(83380400001)(107886003)(6506007)(6486002)(26005)(66556008)(53546011)(2616005)(6512007)(316002)(66946007)(66476007)(86362001)(5660300002)(4326008)(8936002)(31696002)(2906002)(966005)(41300700001)(478600001)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: 
-	=?utf-8?B?RFFhNUQxcGpmSmFqQnN0UHRhTUVzL2FLcjBTTjhybkg3N0p1WW9QY2NVZGhy?=
- =?utf-8?B?cjNQenZNenZsRUJseGtjVjJLYnY5Z0FDbzdRek5mbnYzWUwrbXNHLzREV0FW?=
- =?utf-8?B?LzFvWlBnaXZHdXFJRlNkZlc1VTBTSHBuMW5IUi9vakxUTlp3c1JCaGt0MTNu?=
- =?utf-8?B?dkVkSlo2blRsWFZqakx1R2Z4R1J1WGJJWENJdk5CMkNjNzE1TjJOczljNHJP?=
- =?utf-8?B?VFpNVnFZczV1UHQyR2FKR2ZuSWJOQXNETVNsY2h2dzJaTk5kYU5pdzQzLzlo?=
- =?utf-8?B?ajI3dnh0bm45UnRzV0oveWJoM0RLdzR0bGQvbENyam10M3NBRHNyQktnRUZ1?=
- =?utf-8?B?eWJlZVFqUU5IVWNiOTMvM1J3clJFY2JWbnloTnFrWWIwNlpNVkNlcUFFL3Ex?=
- =?utf-8?B?MHRBRlRHek1jSEZ2UzNFSzVId1BzaFZrM3RGRWttY04yN21qQmdVMVpYUUVz?=
- =?utf-8?B?Q21kT0ovbzV5LzNSSFltMnZRUkp4OU1Qd1lqc25TckU2YWk0V0tERzUvTmJI?=
- =?utf-8?B?ek9zcWFBdHdVaEh2TlE5N3p0NXhhc2lZTjR3Q3NrZklHUjM2OGRzUFltVmhU?=
- =?utf-8?B?RUM3eUVqMkMycllHNjhkcEIxaWc1RVFlOXRhcEFYM3M4MWdpMG5TRCtMVFVR?=
- =?utf-8?B?bGIzRWd0cmN6M29aQXNMN2dEQ3A1VjM0bFIveHpBSWNCZDA1T1E2RlFUclBG?=
- =?utf-8?B?d09INy9Pa3paeEU1VjhJMytuclZDYkVCNmIzTWRnT0dycGlOS3JNUVNGZnRJ?=
- =?utf-8?B?RVREVmFadEJsb1lLNWg1N08wQlYzQkIwNGRONFpGL0lMK0FvaXZTZ24yM1Yy?=
- =?utf-8?B?NDgxQm0zc0hNcGdxVlZ0ckVlL3Y5czNhRUM0akRkVkY5SVZuam5WT2wvNzFH?=
- =?utf-8?B?Zk1RUDNuT1dlZzIvVVhvMGdXUGdjbjlFNXdGTCt4c1JmbFo3dnZPMHBySVNq?=
- =?utf-8?B?bzNweXRZZTZqRm1tYWQ1dENNanIzS3RkRHpLYTNuRU91SmhpM2lMYnRvNjgz?=
- =?utf-8?B?WTJ5NWhQWURtczBvT1BDdFN6V0dCQTZ1NUMreFJRdXZubVc5V2huNUNaVVdM?=
- =?utf-8?B?Ulk5Z1M0N2JYTmN0MUhTTmRGbkNhcWxWcEFBVGRKTXp3U2ZpVDIyN1FLcFg0?=
- =?utf-8?B?SlljenhSSXBpTGM1Vlg5a1NoK0JsVnBydklaT3VnNDVOUHlpeHVjSm9YQzJV?=
- =?utf-8?B?UXgrVWJlZFlXRU11M3J3SUwvRUtxYk1PQnpFZVF3eGxEVHgvSitMUjlzS2Fa?=
- =?utf-8?B?SmxtcUs5VnF0UjhKTEdRN29BbllWZWdvUkpQc2x2YXdvRkJ3c2ZJeDRFNkJq?=
- =?utf-8?B?Wmk0RUxPZG4zNEFYRTRkK1Z2WFdZMTdoUGU4bDhPYnY2MVhIdFBlTm5samU4?=
- =?utf-8?B?KzBCbVNiRHBXTkhNQjNPdlF3Q3lodlRlRnlyR2hJQUNpRFg1M0lYQ21MelVM?=
- =?utf-8?B?cXJIVVVlZGlnTytLVFQxbGZaanR1Sjk2amRZYXgyT01qU2xXcnNFWXFkVXFt?=
- =?utf-8?B?SHROWmRJYk5NTFMxRWhaV01DQWNEUjRvZnlCU2FSRDNNbFhobG5EK3RpemlY?=
- =?utf-8?B?Z0ZOMkE5TVdKSXJOSmx2bThMS0crbXByVzhwcDFBMmROZWpCVFVrNFEzcGIr?=
- =?utf-8?B?T25UaUcxOHAzRVJZWUpEbjYrREZ6U3dLNE80NE94U2NJSlpkUWxKNVQyS3BS?=
- =?utf-8?B?MDBSbk9xdzg4anFJZ1FKOXhNTjIyTGhydnp6aU1DczZZaW02dFdrdW9IQlJp?=
- =?utf-8?B?TWg0T1gveTdqd0N1dFM4Z01QWWRzbG4rc2ZIZGZMMDY4aEZ5R1IrZWZWWUFQ?=
- =?utf-8?B?cC8yQm5aSlVyTFVib1VuZU5Od0QvUHJJZ1kyNklSZDJDVnZJTVd5S3JrZ21u?=
- =?utf-8?B?d2lWbzBnNFR1blRTWUZYZm0wQzlnb1Y5Y2hOK3FHYnVtZUFia2lKVGhhWXRl?=
- =?utf-8?B?VDM1bS9TYllVc1g0YzhETkJCWWNvcTNLRlR1eURPaHJmVVdtSmdKSG9nb2I5?=
- =?utf-8?B?TUlnaENFRFZSM2g1UVllWE5mRU1IYUg2OGoxU2R0V3lHbVhpM0dHZWs1QTMz?=
- =?utf-8?B?RlNVY3Qxd3c0S1FZb0NRUFZXekpvM0pNMlRYR25EYjZVbVc2a0dlYVQxbkdu?=
- =?utf-8?B?ZTFpcWFMM2J1SERMMnFQVjRCc1dqYjlVU3ErVzJDcDdwUGNtRlVFVzlQbzJO?=
- =?utf-8?B?K2c9PQ==?=
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0: 
-	6IwSTSMhHsxqyLBR31FMXHnIjQAN++AywgasgamEqlH8L5DijtfHuBXA/65li4N4ohzf7rKXKIDFpblh8O3qsWpUNykzS8e7drZdmrpkk+7O8yCSxdIBQalIShMjwhgHc/gUGsjh4h22ssg4bYU95HzL4KV5mUKvlH6AaehBmZpjXU53vVho8Hd5hJrqLnSy0fEPNN7waY0KTj9CKH5pFp0A3O1IiYMI+DNBysmpAzycKXvcZ0JFzrdgpeWzIfvFN7GWzAqtfkOcx/igF/W8K1Mc80k1ozAgDOLr5ZOxt886d5AF24CXYHGUiLaWUh3auEjRoG8mHZ8IsND3TK+mXCSJX+4PAI17CDciBJxqyVJp+oMx0G2euRrYU8qqJA1MFEx1/Rjwb3uK8qqvUdkiZSUz5oqH7KlQTHI45b7XOmgnEcBMG3MQCMLDcIg5xXiYSgb4F2pqVJsM1sBQt5itnv5JATeF9c4NNR4NSf1VIGcQGSqPlnJpG6+ra5kuaHSR6k2AE5ZyYpm8oAdPlBc66LEzmRrOdOfZkfm2C7taS49WJk5p+ieXe5rN3O52gMkjU8JQ7IJL9z96mNJYREZ5824YdNMeEGlG0AkAUdnxTJn5kZmYAqfwRZ2myJGBQu+M2ohp8zFJgaJDS7PjqbiFL9BETlhSB0f4YqKAALq/7yc/s5UUZsu/bs+ovN9xjnjbJp5hN2d2BAecKc892+Jq+c5IWbk/xzzjjQEE2IovpOCyczsWAfUiFbQuMTt0oKsunLlik/O+ngaaH+3b9k52i1gvO+QXUdJMs5DcJb01A4yKlIc3gMFiff6n9+xSQwthspUJniOUy9THiBuIbL9Qd1aYx2+CR5UWWGnUqJm7UfV5WEY+9B3xK0R6gJ3no5b5MJinteO3gSi8IKrkizuG3oDDq8xX7mEpiVY7uQpQ7ls=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3776e9c5-cb42-4213-381a-08dbd0172439
-X-MS-Exchange-CrossTenant-AuthSource: DS7PR10MB5280.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Oct 2023 20:16:41.6087
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: TwB8r5yVk0kTCONHx7SLHy2/psl3Vil48CCfi2J70HOScn3BfwH5rHRat9UiPApaqQH9kuJKFCuMYamrirW3IahjZwBdRQeIc4N8YSH0g70=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR10MB5836
+Content-Transfer-Encoding: 8bit
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.272,Aquarius:18.0.980,Hydra:6.0.619,FMLib:17.11.176.26
  definitions=2023-10-18_18,2023-10-18_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 adultscore=0 phishscore=0
- mlxlogscore=999 mlxscore=0 suspectscore=0 malwarescore=0 spamscore=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 spamscore=0 malwarescore=0
+ adultscore=0 suspectscore=0 mlxscore=0 mlxlogscore=999 bulkscore=0
  classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2309180000
- definitions=main-2310180166
-X-Proofpoint-ORIG-GUID: amzVVrVUwG2eEcGTWOzJuaOqwpVMv2Fm
-X-Proofpoint-GUID: amzVVrVUwG2eEcGTWOzJuaOqwpVMv2Fm
+ definitions=main-2310180168
+X-Proofpoint-GUID: l7Kejr4kKARJDmN673gLe7Y5aGj8sEGK
+X-Proofpoint-ORIG-GUID: l7Kejr4kKARJDmN673gLe7Y5aGj8sEGK
 
+Presented herewith is a series that extends IOMMUFD to have IOMMU
+hardware support for dirty bit in the IOPTEs.
 
+Today, AMD Milan (or more recent) supports it while ARM SMMUv3.2
+alongside VT-D rev3.x also do support.  One intended use-case (but not
+restricted!) is to support Live Migration with SR-IOV, specially useful
+for live migrateable PCI devices that can't supply its own dirty
+tracking hardware blocks amongst others.
 
-On 10/17/23 10:42, Suravee Suthikulpanit wrote:
-> According to the recent update in the AMD IOMMU spec [1], the IsRun and
-> Destination fields of the Interrupt Remapping Table Entry (IRTE) are not
-> cached by the IOMMU hardware.
-> 
-> Therefore, do not issue the INVALIDATE_INTERRUPT_TABLE command when
-> updating IRTE[IsRun] and IRTE[Destination] when IRTE[GuestMode]=1, which
-> should help improve IOMMU AVIC/x2AVIC performance.
-> 
-> References:
-> [1] AMD IOMMU Spec Revision (Rev 3.08-PUB)
-> (Link: https://www.amd.com/content/dam/amd/en/documents/processor-tech-docs/specifications/48882_IOMMU.pdf)
-> 
-> Cc: Joao Martins <joao.m.martins@oracle.com>
-> Cc: Alejandro Jimenez <alejandro.j.jimenez@oracle.com>
-> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+At a quick glance, IOMMUFD lets the userspace create the IOAS with a
+set of a IOVA ranges mapped to some physical memory composing an IO
+pagetable. This is then created via HWPT_ALLOC or attached to a
+particular device/hwpt, consequently creating the IOMMU domain and share
+a common IO page table representing the endporint DMA-addressable guest
+address space. In IOMMUFD Dirty tracking (since v2 of the series) it
+will require via the HWPT_ALLOC model only, as opposed to simpler
+autodomains model.
 
-Built on top of v6.6-rc6 tag, and booted on EPYC Genoa host. Launched 380 vCPU guest with AVIC enabled and 16 VFs, and ran rds-ping workload that uses all of the VFs to send traffic. THis workload has been used in the past to stress IOMMU AVIC code paths. No issues found.
+The result is an hw_pagetable which represents the
+iommu_domain which will be directly manipulated. The IOMMUFD UAPI,
+and the iommu/iommufd kAPI are then extended to provide:
 
-Tested-by: Alejandro Jimenez <alejandro.j.jimenez@oracle.com>
+1) Enforcement that only devices with dirty tracking support are attached
+to an IOMMU domain, to cover the case where this isn't all homogenous in
+the platform. While initially this is more aimed at possible heterogenous nature
+of ARM while x86 gets future proofed, should any such ocasion occur.
 
-> ---
->   drivers/iommu/amd/iommu.c | 20 ++++++++++++++++----
->   1 file changed, 16 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-> index 089886485895..d63590563d3e 100644
-> --- a/drivers/iommu/amd/iommu.c
-> +++ b/drivers/iommu/amd/iommu.c
-> @@ -2970,8 +2970,8 @@ static int alloc_irq_index(struct amd_iommu *iommu, u16 devid, int count,
->   	return index;
->   }
->   
-> -static int modify_irte_ga(struct amd_iommu *iommu, u16 devid, int index,
-> -			  struct irte_ga *irte)
-> +static int __modify_irte_ga(struct amd_iommu *iommu, u16 devid, int index,
-> +			    struct irte_ga *irte)
->   {
->   	struct irq_remap_table *table;
->   	struct irte_ga *entry;
-> @@ -2998,6 +2998,18 @@ static int modify_irte_ga(struct amd_iommu *iommu, u16 devid, int index,
->   
->   	raw_spin_unlock_irqrestore(&table->lock, flags);
->   
-> +	return 0;
-> +}
-> +
-> +static int modify_irte_ga(struct amd_iommu *iommu, u16 devid, int index,
-> +			  struct irte_ga *irte)
-> +{
-> +	bool ret;
-> +
-> +	ret = __modify_irte_ga(iommu, devid, index, irte);
-> +	if (ret)
-> +		return ret;
-> +
->   	iommu_flush_irt_and_complete(iommu, devid);
->   
->   	return 0;
-> @@ -3681,8 +3693,8 @@ int amd_iommu_update_ga(int cpu, bool is_run, void *data)
->   	}
->   	entry->lo.fields_vapic.is_run = is_run;
->   
-> -	return modify_irte_ga(ir_data->iommu, ir_data->irq_2_irte.devid,
-> -			      ir_data->irq_2_irte.index, entry);
-> +	return __modify_irte_ga(ir_data->iommu, ir_data->irq_2_irte.devid,
-> +				ir_data->irq_2_irte.index, entry);
->   }
->   EXPORT_SYMBOL(amd_iommu_update_ga);
->   #endif
+The device dirty tracking enforcement on attach_dev is made whether the
+dirty_ops are set or not. Given that attach always checks for dirty
+ops and IOMMU_CAP_DIRTY, while writing this it almost wanted this to
+move to upper layer but semantically iommu driver should do the
+checking.
+
+2) Toggling of Dirty Tracking on the iommu_domain. We model as the most
+common case of changing hardware translation control structures dynamically
+(x86) while making it easier to have an always-enabled mode. In the
+RFCv1, the ARM specific case is suggested to be always enabled instead of
+having to enable the per-PTE DBM control bit (what I previously called
+"range tracking"). Here, setting/clearing tracking means just clearing the
+dirty bits at start. The 'real' tracking of whether dirty
+tracking is enabled is stored in the IOMMU driver, hence no new
+fields are added to iommufd pagetable structures, except for the
+iommu_domain dirty ops part via adding a dirty_ops field to
+iommu_domain. We use that too for IOMMUFD to know if dirty tracking
+is supported and toggleable without having iommu drivers replicate said
+checks.
+
+3) Add a capability probing for dirty tracking, leveraging the
+per-device iommu_capable() and adding a IOMMU_CAP_DIRTY. It extends
+the GET_HW_INFO ioctl which takes a device ID to return some generic
+capabilities *in addition*. Possible values enumarated by `enum
+iommufd_hw_capabilities`.
+
+4) Read the I/O PTEs and marshal its dirtyiness into a bitmap. The bitmap
+indexes on a page_size basis the IOVAs that got written by the device.
+While performing the marshalling also drivers need to clear the dirty bits
+from IOPTE and allow the kAPI caller to batch the much needed IOTLB flush.
+There's no copy of bitmaps to userspace backed memory, all is zerocopy
+based to not add more cost to the iommu driver IOPT walker. This shares
+functionality with VFIO device dirty tracking via the IOVA bitmap APIs. So
+far this is a test-and-clear kind of interface given that the IOPT walk is
+going to be expensive. In addition this also adds the ability to read dirty
+bit info without clearing the PTE info. This is meant to cover the
+unmap-and-read-dirty use-case, and avoid the second IOTLB flush.
+
+The only dependency is:
+* Have domain_alloc_user() API with flags [2] already queued (iommufd/for-next).
+
+The series is organized as follows:
+
+* Patches 1-4: Takes care of the iommu domain operations to be added.
+The idea is to abstract iommu drivers from any idea of how bitmaps are
+stored or propagated back to the caller, as well as allowing
+control/batching over IOTLB flush. So there's a data structure and an
+helper that only tells the upper layer that an IOVA range got dirty.
+This logic is shared with VFIO and it's meant to walking the bitmap
+user memory, and kmap-ing plus setting bits as needed. IOMMU driver
+just has an idea of a 'dirty bitmap state' and recording an IOVA as
+dirty.
+
+* Patches 5-9, 13-18: Adds the UAPIs for IOMMUFD, and selftests. The
+selftests cover some corner cases on boundaries handling of the bitmap
+and various bitmap sizes that exercise. I haven't included huge IOVA
+ranges to avoid risking the selftests failing to execute due to OOM
+issues of mmaping big buffers.
+
+* Patches 10-11: AMD IOMMU implementation, particularly on those having
+HDSup support. Tested with a Qemu amd-iommu with HDSUp emulated[0]. And
+tested with live migration with VFs (but with IOMMU dirty tracking).
+
+* Patches 12: Intel IOMMU rev3.x+ implementation. Tested with a Qemu
+based intel-iommu vIOMMU with SSADS emulation support[0].
+
+On AMD/Intel I have tested this with emulation and then live migration in
+AMD hardware; 
+
+The qemu iommu emulation bits are to increase coverage of this code and
+hopefully make this more broadly available for fellow contributors/devs,
+old version[1]; it uses Yi's 2 commits to have hw_info() supported (still
+needs a bit of cleanup) on top of a recent Zhenzhong series of IOMMUFD
+QEMU bringup work: see here[0]. It includes IOMMUFD dirty tracking for
+Live migration and with live migration tested. I won't be exactly
+following up a v2 of QEMU patches until IOMMUFD tracking lands.
+
+Feedback or any comments are very much appreciated.
+
+Thanks!
+        Joao
+
+[0] https://github.com/jpemartins/qemu/commits/iommufd-v3
+[1] https://lore.kernel.org/qemu-devel/20220428211351.3897-1-joao.m.martins@oracle.com/
+[2] https://lore.kernel.org/linux-iommu/20230919092523.39286-1-yi.l.liu@intel.com/
+[3] https://github.com/jpemartins/linux/commits/iommufd-v3
+[4] https://lore.kernel.org/linux-iommu/20230518204650.14541-1-joao.m.martins@oracle.com/
+[5] https://lore.kernel.org/kvm/20220428210933.3583-1-joao.m.martins@oracle.com/
+[6] https://github.com/jpemartins/linux/commits/smmu-iommufd-v3
+[7] https://lore.kernel.org/linux-iommu/20230923012511.10379-1-joao.m.martins@oracle.com/
+
+Changes since v3[7]:
+* Consolidate previous patch 9 and 10 into a single patch,
+while removing iommufd_dirty_bitmap structure to instead use
+the UAPI defined structure iommu_hwpt_get_dirty_iova and
+pass around internally in iommufd.
+* Iterate over areas from within the IOVA bitmap iterator
+* Drop check for specific flags in hw_pagetable
+* Drop assignment that calculates iopt_alignment, to instead
+use iopt_alignment directly
+* Move IOVA bitmap into iommufd and introduce IOMMUFD_DRIVER
+bool kconfig which designates the usage of dirty tracking related
+bitmaps (i.e. VFIO and IOMMU drivers right now).
+* Update IOVA bitmap header files to account for IOMMUFD_DRIVER
+being disabled
+* Sort new IOMMUFD ioctls accordingly
+* Move IOVA bitmap symbols to IOMMUFD namespace and update its
+users by importing new namespace (new patch 3)
+* Remove AMD IOMMU kernel log feature printing from series
+* Remove struct amd_iommu from do_iommu_domain_alloc() function
+and derive it from within do_iommu_domain_alloc().
+* Consolidate pte_test_dirty() and pte_test_and_clear_dirty()
+by passing flags and deciding whether to test or test_and_clear.
+* Add a comment on top of the -EINVAL attach_device() failure when
+dirty tracking is enforcement but IOMMU does not support dirty tracking
+* Add Reviewed-by given by Suravee
+* Select IOMMUFD_DRIVER if IOMMUFD is enabled on supported IOMMU drivers
+* Remove spurious rcu_read_{,un}lock() from Intel/AMD iommus
+* Fix unwinding in dirty tracking set failure case in intel-iommu
+* Avoid unnecesary locking when checking dmar_domain::dirty_tracking
+* Rename intel_iommu_slads_supported() to a slads_supported() macro
+following intel-iommu style
+* Change the XOR check into a == in set_dirty_tracking iommu op
+* Consolidate PTE test or test-and-clear into single helper
+* Improve intel_pasid_setup_dirty_tracking() to: use rate limited printk;
+avoid unnecessary update if state is already the desired one;
+do a clflush on non-coherent devices; remove the qi_flush_piotlb(); and
+fail on unsupported pgtts.
+* Remove the first_level support and always fail domain_alloc_user on those
+cases with it being no use case ATM. Doing so lets us remove some code
+for such handling in set_dirty_tracking
+* Error out the pasid device attach when dirty tracking is enforced
+as we don't support that either.
+* Reorganize the series to have selftests at the end, and core/driver
+enablement first.
+
+Changes since RFCv2[4]:
+* Testing has always occured on the new code, but now it has seen
+Live Migration coverage with extra QEMU work on AMD hardware.
+* General commit message improvements
+* Remove spurious headers in selftests
+* Exported some symbols to actually allow things to build when IOMMUFD
+is built as a module. (Alex Williamson)
+* Switch the enforcing to be done on IOMMU domain allocation via
+domain_alloc_user (Jason, Robin, Lu Baolu)
+* Removed RCU series from Lu Baolu (Jason)
+* Switch set_dirty/read_dirty/clear_dirty to down_read() (Jason)
+* Make sure it check for area::pages (Jason)
+* Move clearing dirties before set dirty a helper (Jason)
+* Avoid breaking IOMMUFD selftests UAPI (Jason)
+* General improvements to testing
+* Add coverage to new out_capabilities support in HW_INFO.
+* Address Shameer/Robin comments in smmu-v3 (code is on a branch[6])
+  - Properly check for FEAT_HD together with COHERENCY
+  - Remove the pgsize_bitmap check
+  - Limit the quirk set to s1 pgtbl_cfg.
+  - Fix commit message on dubious sentence on DBM usecase
+
+Changes since RFCv1[5]:
+Too many changes but the major items were:
+* Majorirty of the changes from Jason/Kevin/Baolu/Suravee:
+- Improve structure and rework most commit messages
+- Drop all of the VFIO-compat series
+- Drop the unmap-get-dirty API
+- Tie this to HWPT only, no more autodomains handling;
+- Rework the UAPI widely by:
+  - Having a IOMMU_DEVICE_GET_CAPS which allows to fetching capabilities
+    of devices, specifically test dirty tracking support for an individual
+    device
+  - Add a enforce-dirty flag to the IOMMU domain via HWPT_ALLOC
+  - SET_DIRTY now clears dirty tracking before asking iommu driver to do so;
+  - New GET_DIRTY_IOVA flag that does not clear dirty bits
+  - Add coverage for all added APIs
+  - Expand GET_DIRTY_IOVA tests to cover IOVA bitmap corner cases tests
+  that I had in separate; I only excluded the Terabyte IOVA range
+  usecases (which test bitmaps 2M+) because those will most likely fail
+  to be run as selftests (not sure yet how I can include those). I am
+  not exactly sure how I can cover those, unless I do 'fake IOVA maps'
+  *somehow* which do not necessarily require real buffers.
+- Handle most comments in intel-iommu. Only remaining one for v3 is the
+  PTE walker which will be done better.
+- Handle all comments in amd-iommu, most of which regarding locking.
+  Only one remaining is v3 same as Intel;
+- Reflect the UAPI changes into iommu driver implementations, including
+persisting dirty tracking enabling in new attach_dev calls, as well as
+enforcing attach_dev enforces the requested domain flags;
+* Comments from Yi Sun in making sure that dirty tracking isn't
+restricted into SS only, so relax the check for FL support because it's
+always enabled. (Yi Sun)
+* Most of code that was in v1 for dirty bitmaps got rewritten and
+repurpose to also cover VFIO case; so reuse this infra here too for both.
+(Jason)
+* Take Robin's suggestion of always enabling dirty tracking and set_dirty
+just clearing bits on 'activation', and make that a generic property to
+ensure we always get accurate results between starting and stopping
+tracking. (Robin Murphy)
+* Address all comments from SMMUv3 into how we enable/test the DBM, or the
+bits in the context descriptor with io-pgtable::quirks, etc
+(Robin, Shameerali)
+
+Joao Martins (18):
+  vfio/iova_bitmap: Export more API symbols
+  vfio: Move iova_bitmap into iommufd
+  iommufd/iova_bitmap: Move symbols to IOMMUFD namespace
+  iommu: Add iommu_domain ops for dirty tracking
+  iommufd: Add a flag to enforce dirty tracking on attach
+  iommufd: Add IOMMU_HWPT_SET_DIRTY
+  iommufd: Add IOMMU_HWPT_GET_DIRTY_IOVA
+  iommufd: Add capabilities to IOMMU_GET_HW_INFO
+  iommufd: Add a flag to skip clearing of IOPTE dirty
+  iommu/amd: Add domain_alloc_user based domain allocation
+  iommu/amd: Access/Dirty bit support in IOPTEs
+  iommu/intel: Access/Dirty bit support for SL domains
+  iommufd/selftest: Expand mock_domain with dev_flags
+  iommufd/selftest: Test IOMMU_HWPT_ALLOC_ENFORCE_DIRTY
+  iommufd/selftest: Test IOMMU_HWPT_SET_DIRTY
+  iommufd/selftest: Test IOMMU_HWPT_GET_DIRTY_IOVA
+  iommufd/selftest: Test out_capabilities in IOMMU_GET_HW_INFO
+  iommufd/selftest: Test IOMMU_GET_DIRTY_IOVA_NO_CLEAR flag
+
+ drivers/iommu/amd/Kconfig                     |   1 +
+ drivers/iommu/amd/amd_iommu_types.h           |  12 +
+ drivers/iommu/amd/io_pgtable.c                |  69 ++++++
+ drivers/iommu/amd/iommu.c                     | 143 +++++++++++-
+ drivers/iommu/intel/Kconfig                   |   1 +
+ drivers/iommu/intel/iommu.c                   | 104 ++++++++-
+ drivers/iommu/intel/iommu.h                   |  17 ++
+ drivers/iommu/intel/pasid.c                   | 109 +++++++++
+ drivers/iommu/intel/pasid.h                   |   4 +
+ drivers/iommu/iommufd/Kconfig                 |   4 +
+ drivers/iommu/iommufd/Makefile                |   1 +
+ drivers/iommu/iommufd/device.c                |   4 +
+ drivers/iommu/iommufd/hw_pagetable.c          |  80 ++++++-
+ drivers/iommu/iommufd/io_pagetable.c          | 151 ++++++++++++
+ drivers/iommu/iommufd/iommufd_private.h       |  22 ++
+ drivers/iommu/iommufd/iommufd_test.h          |  21 ++
+ drivers/{vfio => iommu/iommufd}/iova_bitmap.c |   5 +-
+ drivers/iommu/iommufd/main.c                  |   7 +
+ drivers/iommu/iommufd/selftest.c              | 171 +++++++++++++-
+ drivers/vfio/Makefile                         |   3 +-
+ drivers/vfio/pci/mlx5/Kconfig                 |   1 +
+ drivers/vfio/pci/mlx5/main.c                  |   1 +
+ drivers/vfio/pci/pds/Kconfig                  |   1 +
+ drivers/vfio/pci/pds/pci_drv.c                |   1 +
+ drivers/vfio/vfio_main.c                      |   1 +
+ include/linux/io-pgtable.h                    |   4 +
+ include/linux/iommu.h                         |  56 +++++
+ include/linux/iova_bitmap.h                   |  26 +++
+ include/uapi/linux/iommufd.h                  |  79 +++++++
+ tools/testing/selftests/iommu/iommufd.c       | 216 ++++++++++++++++++
+ .../selftests/iommu/iommufd_fail_nth.c        |   2 +-
+ tools/testing/selftests/iommu/iommufd_utils.h | 184 ++++++++++++++-
+ 32 files changed, 1482 insertions(+), 19 deletions(-)
+ rename drivers/{vfio => iommu/iommufd}/iova_bitmap.c (98%)
+
+-- 
+2.17.2
+
