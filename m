@@ -1,179 +1,168 @@
-Received: from mail-yw1-f172.google.com (mail-yw1-f172.google.com [209.85.128.172])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2073.outbound.protection.outlook.com [40.107.93.73])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 71CBA31A86
-	for <iommu@lists.linux.dev>; Wed, 18 Oct 2023 16:19:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9ECF3D3A1
+	for <iommu@lists.linux.dev>; Wed, 18 Oct 2023 16:37:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="eo+X9nQk"
-Received: by mail-yw1-f172.google.com with SMTP id 00721157ae682-5a81ab75f21so69790677b3.2
-        for <iommu@lists.linux.dev>; Wed, 18 Oct 2023 09:19:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1697645961; x=1698250761; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=aEBRhObNmbrXOo55vTi5+G40xk3z5o+PBikMxvbjN7A=;
-        b=eo+X9nQk38MMeq2UXKykH37dc+c8iAAQ+DaEWfbKaBYdl2qHvGRcGwGpziCIZcbuFo
-         wAUver3yR/E7qRghITCQlZ8UnWJeTdDGb506Q1SjysKBtZW+bE5xWvph73qTqVbV1fHr
-         eRrXdFs5udUpgtkH1LhgWXzyzZ2xY770uKNcC4DAmRHKSq4kJrVM4dZCukfKjsvQNSUR
-         Vdu/2NShQ77pxv8Eb5Ab4UHOYdVn81uhrpv9h1cEk4Dc56Fw8WbUoefi4dlbRSjsiCZQ
-         r1be2ajYR/wnJCQ/pBFNTaMzVAhuRomzlMrSyc0Bg5btTPa4Ml/bRVrtFHyLg/qlREuc
-         HHjQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1697645961; x=1698250761;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=aEBRhObNmbrXOo55vTi5+G40xk3z5o+PBikMxvbjN7A=;
-        b=kjb6rvZyuwPTMq8LVeBDZ0u6XrZk5UhErqZ7TPmhYuzoGoMIUu0FN4pGmWPmm7e54Z
-         Of1yJW7jpyXhlinmHavX8/KzPbjYNXXDwM3WIhzC3Am3enN/23QkDC5j9Q6/d+8bADL3
-         xFIAl6SawVT7vV/F77NfoJYVmhZq5i17jR0LtOO0hyUMfwogBKFVEbDzsSb8VjTbVI/F
-         JbiSry5aQOaKjE7h0HLbfSyLEG1rBA8vWswc7jiOkhLW9Pe6lCLF3X/9lBJ//Zstomq0
-         bH2CUi7RMS1CZtwhrzgK9QYU3f8YDEd2nkfmjRp+MaHtvpzej50yqgBPfUTcJ/W/y+g0
-         c9YQ==
-X-Gm-Message-State: AOJu0YwWRLSqQV4/DYbutxlLUzGKJij7p8qwWExBK5IyyqoH7eBGl0r8
-	6sE63/iZhWlU6feNhQmB3SZ7/g==
-X-Google-Smtp-Source: AGHT+IHPlPAWW/cHLF6dkefYjVQHPy2wMPgOd2XGTlFeR7Bd0Sulo6mXnsUh5sgMaM3EX0gNIJTINQ==
-X-Received: by 2002:a81:c30d:0:b0:5a7:c4a7:21c3 with SMTP id r13-20020a81c30d000000b005a7c4a721c3mr6365606ywk.38.1697645961207;
-        Wed, 18 Oct 2023 09:19:21 -0700 (PDT)
-Received: from ziepe.ca ([12.22.141.131])
-        by smtp.gmail.com with ESMTPSA id u70-20020a0deb49000000b005956b451fb8sm1593919ywe.100.2023.10.18.09.19.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 Oct 2023 09:19:20 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1qt9GQ-0030Tr-Nk;
-	Wed, 18 Oct 2023 13:19:18 -0300
-Date: Wed, 18 Oct 2023 13:19:18 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Zhenhua Huang <quic_zhenhuah@quicinc.com>, will@kernel.org,
-	joro@8bytes.org, baolu.lu@linux.intel.com, iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, quic_tingweiz@quicinc.com
-Subject: Re: [ARM IOMMU] IOMMU framework concurrency issue
-Message-ID: <20231018161918.GB691768@ziepe.ca>
-References: <e2e20e1c-6450-4ac5-9804-b0000acdf7de@quicinc.com>
- <20231017163337.GE282036@ziepe.ca>
- <70cc8d3d-1ddf-4700-ac15-bcd74fae2b2a@arm.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="cjg8XTh0"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=PyOj/NO2fV+51MtfJkUnQhz30+Uz0mihlCcjtXbE7u3sLNZgh08MqDTLY4g+8mXoAb0Q/DFxvo5o/2lo+ZYDvxoNUCXqFgq98hhyw2e8hB28FdCvR0Sucw+wFXX+tKX3r29+ZQvPwpEA1hv/YmgNt8+iXYDaigHIFf4wydAyoCS29hkL3mHNaaRCszgjCK83PNp+rGHQNfcq6et4WbqqhOMZWwFnDGo1hY518To5D7Xvipp2XFQnAwtyrcbt9EYoNgAEpsjvK78b2g5uLlBiQXrtbORi4u5LD5Ma4alwBrQlAPh+gtVe46tMl5KFBNWX7cHutXah/yOT3UAjH34hww==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=X/xYz+1V02lTS5PLvxnX38wXWkbtB3NbkXRBkwf6J6o=;
+ b=cL9Pbo6Td8pcLzbzoqZGpsq7WGGqQKddTAk/wNbQFbq/+37AOq8Z2Sg5y7EtsB4QAjGBy1S+N3zlIDqCYGymhoDkf3+6PGSH9K1pU/uRPgkXcRK+WxOGH8rOkoIwFEL4CW3/QDC7OXDdj0W4PzDHg45gnzbNSM19w7Xv1zETp1vGz7MhXLkZ6d+zpEBBHiix577bBgqGY9ixygHEB4xLwAT/Vj1iREPUHC+GJYxYBOykiKgamEq/aeUO6dm+l88D7eJDlbqLITm5rAn5oYjifPMaI8etIrqHvARHdK8MQ0kdz0JE6iebR7n7GQagPwMCoghFFlZErcvU7yNhWaMqSg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=X/xYz+1V02lTS5PLvxnX38wXWkbtB3NbkXRBkwf6J6o=;
+ b=cjg8XTh0AWYM5bA17jzj66NeOT94NuipybD0nwayYXDr1vCbAjmeqLuMDxxYud6JNKqd9viTqXJiuJ1khcaH+l9bIeE3i5gq6T7iKhzDExgMATC2UCrakeww/hOZuvTacuEQ9NBzqGovLekm9KY4y/QSpZiBB2F6bd1qwfnHro6NxbTOdho9/I/uKUZY+w2QYFmvxo4r0zoXGRJxkJfPo9EYsFllPYIQQ+fRUdewtGwVb+o5hUcIFmICAAbuTa4FNZgnzB+QpW1IoycPnmK4C6KP+m2uWH5iwOY7KIp+f0OHFjJQjbaT1NGCGweBHtEfG3Dm/Dp7TmbYlzDHeef1Xw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by PH8PR12MB8430.namprd12.prod.outlook.com (2603:10b6:510:259::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6886.36; Wed, 18 Oct
+ 2023 16:37:22 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::3f66:c2b6:59eb:78c2]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::3f66:c2b6:59eb:78c2%6]) with mapi id 15.20.6886.034; Wed, 18 Oct 2023
+ 16:37:22 +0000
+Date: Wed, 18 Oct 2023 13:37:20 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: Yi Liu <yi.l.liu@intel.com>, joro@8bytes.org,
+	alex.williamson@redhat.com, kevin.tian@intel.com,
+	robin.murphy@arm.com, baolu.lu@linux.intel.com, cohuck@redhat.com,
+	eric.auger@redhat.com, kvm@vger.kernel.org, mjrosato@linux.ibm.com,
+	chao.p.peng@linux.intel.com, yi.y.sun@linux.intel.com,
+	peterx@redhat.com, jasowang@redhat.com,
+	shameerali.kolothum.thodi@huawei.com, lulu@redhat.com,
+	suravee.suthikulpanit@amd.com, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+	zhenzhong.duan@intel.com, joao.m.martins@oracle.com
+Subject: Re: [PATCH v4 01/17] iommu: Add hwpt_type with user_data for
+ domain_alloc_user op
+Message-ID: <20231018163720.GA3952@nvidia.com>
+References: <20230921075138.124099-2-yi.l.liu@intel.com>
+ <20231010165844.GQ3952@nvidia.com>
+ <03ba68e9-33ef-35c1-5720-8f559f94f8a1@intel.com>
+ <20231012133917.GL3952@nvidia.com>
+ <3659d9a7-d9e9-bb73-daf5-41c765e99c8c@intel.com>
+ <20231013140456.GR3952@nvidia.com>
+ <ZSmE6unIukqJ3GKu@Asurada-Nvidia>
+ <79f0cab5-39ad-3d98-3896-6e1ba7b8db21@intel.com>
+ <20231016115407.GO3952@nvidia.com>
+ <ZS1+VMEo+0bCecui@Asurada-Nvidia>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZS1+VMEo+0bCecui@Asurada-Nvidia>
+X-ClientProxiedBy: BL1PR13CA0111.namprd13.prod.outlook.com
+ (2603:10b6:208:2b9::26) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <70cc8d3d-1ddf-4700-ac15-bcd74fae2b2a@arm.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|PH8PR12MB8430:EE_
+X-MS-Office365-Filtering-Correlation-Id: d040bd83-0538-4267-cfec-08dbcff88092
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	7iL9KinlD+OPSaTmhHlp8/5q13yMm/GPcm9ztCLFfG2Ft3Wts5xUzh1lEnqXI8XROZy3O13VAhpiO+fj1JZm6XcAdUQMm+4yskRCGntCVZ/FjE+JPVVKD4UCKE9YLu4NgJkP8Y3mtRTCSEHtP2nZq0vyS2FgmF9Wg7v1eB+kUv5WxWNdgYRXPjhOtTrTmq9Jl7h4x7YIY94Oax+1txQ73RoUA/suKk/SFdcWh2287dICDV7dwxciYgE/FHV69sdbskdvToevR4FGD6xYJQiXulQl7ZUDwqdDssa4a8iwrIjYQ3Sxeok7ukuKz0VA+P/l9jAy4qKDTz6dQlGOQEVU2DZXRjANIxst61+sMlYs9afgE1KtXukr1xeAX9eZfDEPubHGaQmBEOqxnHnP3Lafj4/t4pqmpx75+85mQdnTD/LNWjAIHwAkF3GUfUxocSZiyf9uoBkw2RU6vXtzIDyZF/uZLPYPJd/ec91jIRFd+DPWBYBOCFBO/fgkkKMxkq/9eAgDGitChwnW6LWauEnwDGfcRkhB9uoBssG9P/CwqnmuhAIEyP4v/S6mgxfFc0oV
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(376002)(396003)(136003)(366004)(346002)(39860400002)(230922051799003)(186009)(451199024)(1800799009)(64100799003)(26005)(6512007)(5660300002)(6506007)(2616005)(1076003)(53546011)(41300700001)(83380400001)(2906002)(4326008)(6862004)(8676002)(8936002)(7416002)(66946007)(6636002)(478600001)(6486002)(66556008)(316002)(66476007)(38100700002)(37006003)(33656002)(36756003)(86362001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?Qejt985LPoErpt6SymzspCeHm0RJIrXsGhtyd/0IBHs7Y6XhsJ7vQU2Lwcs6?=
+ =?us-ascii?Q?Ndn9IhE5c1Kj3OBDgbpr02CFrrYkRa6AFDUc6ARUNyzQbIrHM/HRgF6JYZHA?=
+ =?us-ascii?Q?lZ5vqBSSy/RauBfr9uJONE38Qdvx5bnyb5YBzC7Vbj/18ybRjOtxpfEKpNZC?=
+ =?us-ascii?Q?JelGaTXKzD3l1gVuoQbXdjeakIk6w0JUHt/8Ss7gpJvcnmefVKPNVQDoBbVP?=
+ =?us-ascii?Q?deJ35ofsPqcFsNogqUgEEMmEbsfFpWP7frDNU2jYPkND3yKnXLPw/3yYo9Qi?=
+ =?us-ascii?Q?+nY3LQPhE6ltQxuqU/oyJyahYtaq64CXiHj1S19OzuEgwavcxI734S0qkN11?=
+ =?us-ascii?Q?zLugPmKdmX65pzJpRubHgikI0xDvJp4Vyk6NY9/zkpFiPcpW78GD6gbKZKGL?=
+ =?us-ascii?Q?lN9loJmFXws27c55CZV8/RUcUk0YYEve0X26XChmm0Pw71/nImGJhYsRrI/B?=
+ =?us-ascii?Q?jPCAVZgeLK4NBhBlkSesM3PtsL9nbB8TxQxrzHuwu79zpaV9ApttaGG2Hyms?=
+ =?us-ascii?Q?yGUKn2YonESkeEgD/fgNAQZYMUHPJgrO7eWUBYSzpOTlgUPOEb4+a4wl2Bep?=
+ =?us-ascii?Q?Cvb8IVrGRSV/tY8O2R+CJ8UOSjAchPJc0qxKqz2mQHOxpgOhy1HKlBxsVlJW?=
+ =?us-ascii?Q?RcSpZf62Q5uGt0l6suFpDd+p8HrWWZf16MpRUjFCa2JoGGorueRrY4p++zWH?=
+ =?us-ascii?Q?615Idic4d/BWZp0gwbsTp2MuRsN2/kohX5vXa+XWqrMy6fd9UCawc/hST81Y?=
+ =?us-ascii?Q?w7ws2ZABH7wErFlUM073VzOSW3um0dHYzyGGHJU7XBRSBzbzsXJzL/8iclVD?=
+ =?us-ascii?Q?DVJwAMUW6mQcbVu91UX48G/6W4JVBJtDgoeFq9ZE/fFfKyg+SVhVmo00djmX?=
+ =?us-ascii?Q?dtL5Oh3h9IpsWeYC+/T3c5nB3hMHyLuoIPvL3+8nGJT+5ALMVYHwSeWl+ZEz?=
+ =?us-ascii?Q?quWHcFKp2Dn83M/YNw4cglFgDjN9MCz/rPp7g9iTlv1pyuY1YY2B5pNBm1TL?=
+ =?us-ascii?Q?o3buTOdJRNDDIFYLlaEyIjBI/ama1JD7fjwSwKIUpHJndR5PGBg+xO5bdfq+?=
+ =?us-ascii?Q?qDxMxz3fN8l8PpaoRIXo0NBL+CD0s9XiiAxXPmsv50HOPIQAjlyjk4pfGpgQ?=
+ =?us-ascii?Q?6h2qLb3MBHJaeV2RI/vwC/IF4AZKeQFntTv9MkRnbBU8h/ElUs4daA5Cn4+W?=
+ =?us-ascii?Q?C7IgP4QVc7YWxwrbjRojW5ECaJSi1Nwr+MoRvSUwRxEMbZB3eBnYUm+napTn?=
+ =?us-ascii?Q?oKHnJCtYUna7vsU1cn04kWTXgpeI437UyevcDofYbZoohnSXE+smMYKJ5cY2?=
+ =?us-ascii?Q?jI8AAylM+bCu0dzeqZqV6O2XRctufX6OpwbDxLCSmyuxIkxShkp29xZucNfX?=
+ =?us-ascii?Q?/K6bbd6lxH7UTQ1wEJl3P97x99aMoP+DgVftW8p19+jK4Ju5XIFZ67UEw4ao?=
+ =?us-ascii?Q?rx8WVOxXHsb1oHU2w9YHvMMUMsaPUkHJNYbz02nzCdnXTbTmFV2nnxs42jKD?=
+ =?us-ascii?Q?+urn8v1Nh5Gz/LSQ9dGgIowxeQHlJj4uBwv2knZuaT1ob3VShjJCqEkiqHqg?=
+ =?us-ascii?Q?v72/A2/epFpMnR/seUD32C5U6iMaiOFpLnVxLNqy?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d040bd83-0538-4267-cfec-08dbcff88092
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Oct 2023 16:37:22.1111
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Zug8SguJ9tCJVoE2BujmE4+2K+fTCVJij18XppuRryDhVgT8PK/WEs6ad38QphRQ
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR12MB8430
 
-On Wed, Oct 18, 2023 at 04:34:20PM +0100, Robin Murphy wrote:
-> On 2023-10-17 17:33, Jason Gunthorpe wrote:
-> >
-> > eg make sure the iommu driver is fully registered before allowing any
-> > concurrent probes. Once the iommu driver is registered it will be able
-> > to catch the bus notifiers and serialize things properly.
+On Mon, Oct 16, 2023 at 11:17:56AM -0700, Nicolin Chen wrote:
+> On Mon, Oct 16, 2023 at 08:54:07AM -0300, Jason Gunthorpe wrote:
+> > On Mon, Oct 16, 2023 at 11:28:15AM +0800, Yi Liu wrote:
+> > > On 2023/10/14 01:56, Nicolin Chen wrote:
+> > > > On Fri, Oct 13, 2023 at 11:04:56AM -0300, Jason Gunthorpe wrote:
+> > > > > On Fri, Oct 13, 2023 at 12:33:13PM +0800, Yi Liu wrote:
+> > > > > 
+> > > > > > not really. Below the users of the struct iommu_user_data in my current
+> > > > > > iommufd_nesting branch. Only the domain_alloc_user op has type as there
+> > > > > > can be multiple vendor specific alloc data types. Basically, I'm ok to
+> > > > > > make the change you suggested, just not sure if it is good to add type
+> > > > > > as it is only needed by one path.
+> > > > > 
+> > > > > I don't think we should ever have an opaque data blob without a type
+> > > > > tag..
+> > > > 
+> > > > I can add those "missing" data types, and then a driver will be
+> > > > responsible for sanitizing the type along with the data_len.
+> > > > 
+> > > > I notice that the enum iommu_hwpt_data_type in the posted patch
+> > > > is confined to the alloc_user uAPI. Perhaps we should share it
+> > > > with invalidate too:
+> > > 
+> > > invalidation path does not need a type field today as the data
+> > > type is vendor specific, vendor driver should know the data type
+> > > when calls in.
+> > 
+> > I'm not keen on that, what if a driver needs another type in the
+> > future?  You'd want to make the invalidation data format part of the
+> > domain allocation?
 > 
-> Ugh, I think I see at least how this happens for device which *don't* have
-> an IOMMU - because iommu_init_device() has to transiently allocate
-> dev->iommu in order to call ops->probe_device in order to discover
-> that the
+> The invalidation data has hwpt_id so it's tied to a hwpt and its 
+> hwpt->domain. Would it be reasonable to have a different type of
+> invalidation data for the same type of hwpt?
 
-Hmm! Is it essential though? That ordering was C&P from before, I
-didn't study it closely when I copied it..
+Yeah, maybe? Go down the road 10 years and we might have SMMUv3
+invalidation format v1 and v2 or something?
 
-I only checked some drivers, but something like this looked like it
-could resolve the situation you described - Zhenhua is that your
-situation, a non-probed device?
+Like we don't know what the HW side will do, they might extend the
+command queue to have bigger commands and negotiate with the driver if
+the bigger/smaller format is used. We've done that in our HW a couple
+of times now.
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 47172f1084d8fd..580e74afdb0765 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -386,6 +386,16 @@ static u32 dev_iommu_get_max_pasids(struct device *dev)
- 	return min_t(u32, max_pasids, dev->iommu->iommu_dev->max_pasids);
- }
- 
-+void dev_iommu_priv_set(struct device *dev, void *priv)
-+{
-+	struct dev_iommu *dev_iommu;
-+
-+	dev_iommu = dev_iommu_get(dev);
-+	if (WARN_ON(!dev_iommu))
-+		return; // FIXME handle failure in drivers
-+	dev->iommu->priv = priv;
-+}
-+
- /*
-  * Init the dev->iommu and dev->iommu_group in the struct device and get the
-  * driver probed
-@@ -393,12 +403,10 @@ static u32 dev_iommu_get_max_pasids(struct device *dev)
- static int iommu_init_device(struct device *dev, const struct iommu_ops *ops)
- {
- 	struct iommu_device *iommu_dev;
-+	struct dev_iommu *dev_iommu;
- 	struct iommu_group *group;
- 	int ret;
- 
--	if (!dev_iommu_get(dev))
--		return -ENOMEM;
--
- 	if (!try_module_get(ops->owner)) {
- 		ret = -EINVAL;
- 		goto err_free;
-@@ -409,7 +417,14 @@ static int iommu_init_device(struct device *dev, const struct iommu_ops *ops)
- 		ret = PTR_ERR(iommu_dev);
- 		goto err_module_put;
- 	}
--	dev->iommu->iommu_dev = iommu_dev;
-+
-+	dev_iommu = dev_iommu_get(dev);
-+	if (WARN_ON(!dev_iommu)) {
-+		ret = -ENOMEM;
-+		goto err_release;
-+	}
-+
-+	dev_iommu->iommu_dev = iommu_dev;
- 
- 	ret = iommu_device_link(iommu_dev, dev);
- 	if (ret)
-@@ -424,9 +439,9 @@ static int iommu_init_device(struct device *dev, const struct iommu_ops *ops)
- 	}
- 	dev->iommu_group = group;
- 
--	dev->iommu->max_pasids = dev_iommu_get_max_pasids(dev);
-+	dev_iommu->max_pasids = dev_iommu_get_max_pasids(dev);
- 	if (ops->is_attach_deferred)
--		dev->iommu->attach_deferred = ops->is_attach_deferred(dev);
-+		dev_iommu->attach_deferred = ops->is_attach_deferred(dev);
- 	return 0;
- 
- err_unlink:
-@@ -438,7 +453,11 @@ static int iommu_init_device(struct device *dev, const struct iommu_ops *ops)
- 	module_put(ops->owner);
- err_free:
- 	dev->iommu->iommu_dev = NULL;
--	dev_iommu_free(dev);
-+	/*
-+	 * If probe_device allocated a dev->iommu and things failed later
-+	 * we just leave it. We don't yet have robust locking, there
-+	 * could be concurrent users.
-+	 */
- 	return ret;
- }
- 
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 68c9be9293e4c0..5c25c378a13ece 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -713,10 +713,7 @@ static inline void *dev_iommu_priv_get(struct device *dev)
- 		return NULL;
- }
- 
--static inline void dev_iommu_priv_set(struct device *dev, void *priv)
--{
--	dev->iommu->priv = priv;
--}
-+void dev_iommu_priv_set(struct device *dev, void *priv);
- 
- int iommu_probe_device(struct device *dev);
- 
+Jason
