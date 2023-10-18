@@ -1,38 +1,37 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.120])
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.31])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC3C61FC5
-	for <iommu@lists.linux.dev>; Wed, 18 Oct 2023 02:17:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C3DB48F41
+	for <iommu@lists.linux.dev>; Wed, 18 Oct 2023 02:36:11 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="G5kTw51t"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="MqFVRTH6"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1697595455; x=1729131455;
+  t=1697596571; x=1729132571;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=zbbwNv+ayFL5lv8H+Tmp9KLbwONaDvNHG8Bb7FwbVIA=;
-  b=G5kTw51tMNsb4xOeSsgGzNXUJSKz7RFeeYj9QiMsqyPgnwLwXIOpp0KB
-   +Odu4UW2IvGeYXI0b9jN0oR/n0MYLzk3BAtHDCHYfEzRJEaPIhjMuPNqt
-   tTDtRUwHr2xEnsH/AylhV1GuumBZiypICBqSQXRIFwSS6rltNNSMMKBUm
-   LUuD7R3VOZW3MQdHKAZW8hcenXvY6ivodbYgHNM9MRvEZwCXEX1DSOwNI
-   VsN3LZGIK1wkWpDyRfDOYgjSxr4lc+XovQchmdx9N1k3dVdnPjM6HRXDO
-   WX63laDypxZ5LUVsysy7uQIp7s1to+IPH44BwxATcv2fTD4GwBsKUx7co
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10866"; a="384799733"
+  bh=qAsqCySP1xPuDyaG6+jAnZQYD37eye7rcWsdeW4wC0k=;
+  b=MqFVRTH6uIDnL/q4bSRcHmYShdra4vsaYW3pocM4Dpp7OginhyF3K3+C
+   UuYXSY+/OASIL0a9Po+5Wu6Y0YktBE52VJ/OWe6b4T3OMOuE8wfek0lOO
+   4RM1mgVzHjwZedDHlfPErGwGlw5dnT6kc8iYr3EoiC6U0GPqnqidXeqT3
+   w6vZjGKUVk8wTqv65Vs9TQi5ujYwA1Qw3FrL+s8M6rkhECYEkrI3dOVkR
+   h/AdD9iPYj+PO87ufNqTlV59YO6DH6ldpVwuuutYfyPS8gHjMyxULcG65
+   1WhO/S8kJPZxKc3VCmZwJXOqOXjmwbj8goP73oKhwJuyDuEUa48vg5xtO
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10866"; a="450144276"
 X-IronPort-AV: E=Sophos;i="6.03,233,1694761200"; 
-   d="scan'208";a="384799733"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Oct 2023 19:17:34 -0700
+   d="scan'208";a="450144276"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Oct 2023 19:36:11 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10866"; a="1087722972"
 X-IronPort-AV: E=Sophos;i="6.03,233,1694761200"; 
-   d="scan'208";a="1087722972"
+   d="scan'208";a="4163967"
 Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
-  by fmsmga005.fm.intel.com with ESMTP; 17 Oct 2023 19:17:31 -0700
-Message-ID: <746a5243-74ad-4330-9ea9-845fac1a57e4@linux.intel.com>
-Date: Wed, 18 Oct 2023 10:13:51 +0800
+  by orviesa001.jf.intel.com with ESMTP; 17 Oct 2023 19:34:59 -0700
+Message-ID: <350f8544-8967-4f9e-bdcc-a464cdeadeea@linux.intel.com>
+Date: Wed, 18 Oct 2023 10:32:25 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -40,90 +39,50 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, David Woodhouse <dwmw2@infradead.org>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>,
- Nicolin Chen <nicolinc@nvidia.com>, Michael Shavit <mshavit@google.com>,
- Vasant Hegde <vasant.hegde@amd.com>
-Subject: Re: [PATCH v8 0/5] Share sva domains with all devices bound to a mm
+Cc: baolu.lu@linux.intel.com, Nicolin Chen <nicolinc@nvidia.com>,
+ "Liu, Yi L" <yi.l.liu@intel.com>, "joro@8bytes.org" <joro@8bytes.org>,
+ "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
+ "robin.murphy@arm.com" <robin.murphy@arm.com>,
+ "cohuck@redhat.com" <cohuck@redhat.com>,
+ "eric.auger@redhat.com" <eric.auger@redhat.com>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "mjrosato@linux.ibm.com" <mjrosato@linux.ibm.com>,
+ "chao.p.peng@linux.intel.com" <chao.p.peng@linux.intel.com>,
+ "yi.y.sun@linux.intel.com" <yi.y.sun@linux.intel.com>,
+ "peterx@redhat.com" <peterx@redhat.com>,
+ "jasowang@redhat.com" <jasowang@redhat.com>,
+ "shameerali.kolothum.thodi@huawei.com"
+ <shameerali.kolothum.thodi@huawei.com>, "lulu@redhat.com" <lulu@redhat.com>,
+ "suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+ "Duan, Zhenzhong" <zhenzhong.duan@intel.com>,
+ "Martins, Joao" <joao.m.martins@oracle.com>
+Subject: Re: [PATCH v4 08/17] iommufd: Always setup MSI and anforce cc on
+ kernel-managed domains
 Content-Language: en-US
-To: Jason Gunthorpe <jgg@ziepe.ca>, Tina Zhang <tina.zhang@intel.com>
-References: <20231017004802.109618-1-tina.zhang@intel.com>
- <20231017164150.GF282036@ziepe.ca>
+To: "Tian, Kevin" <kevin.tian@intel.com>, Jason Gunthorpe <jgg@nvidia.com>
+References: <20230921075138.124099-1-yi.l.liu@intel.com>
+ <20230921075138.124099-9-yi.l.liu@intel.com>
+ <BN9PR11MB527658EAF017FF3576667EEA8CC3A@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <ZSnkiKoCspmG1+/j@Asurada-Nvidia>
+ <BN9PR11MB52763227866603ED7795AA068CD7A@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20231016115736.GP3952@nvidia.com>
+ <BN9PR11MB5276FDC375685CE04A7AD93B8CD6A@BN9PR11MB5276.namprd11.prod.outlook.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20231017164150.GF282036@ziepe.ca>
+In-Reply-To: <BN9PR11MB5276FDC375685CE04A7AD93B8CD6A@BN9PR11MB5276.namprd11.prod.outlook.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 10/18/23 12:41 AM, Jason Gunthorpe wrote:
-> On Tue, Oct 17, 2023 at 08:47:57AM +0800, Tina Zhang wrote:
->> This series is to share sva(shared virtual addressing) domains with all
->> devices bound to one mm.
->>
->> Problem
->> -------
->> In the current iommu core code, sva domain is allocated per IOMMU group,
->> when device driver is binding a process address space to a device (which is
->> handled in iommu_sva_bind_device()). If one than more device is bound to
->> the same process address space, there must be more than one sva domain
->> instance, with each device having one. In other words, the sva domain
->> doesn't share between those devices bound to the same process address
->> space, and that leads to two problems:
->> 1) device driver has to duplicate sva domains with enqcmd, as those sva
->> domains have the same PASID and are relevant to one virtual address space.
->> This makes the sva domain handling complex in device drivers.
->> 2) IOMMU driver cannot get sufficient info of the IOMMUs that have
->> devices behind them bound to the same virtual address space, when handling
->> mmu_notifier_ops callbacks. As a result, IOMMU IOTLB invalidation is
->> performed per device instead of per IOMMU, and that may lead to
->> superfluous IOTLB invalidation issue, especially in a virtualization
->> environment where all devices may be behind one virtual IOMMU.
->>
->> Solution
->> --------
->> This patch-set tries to fix those two problems by allowing sharing sva
->> domains with all devices bound to a mm. To achieve this, a new structure
->> pointer is introduced to mm to replace the old PASID field, which can keep
->> the info of PASID as well as the corresponding shared sva domains.
->> Besides, function iommu_sva_bind_device() is updated to ensure a new sva
->> domain can only be allocated when the old ones cannot work for the IOMMU.
->> With these changes, a device driver can expect one sva domain could work
->> for per PASID instance(e.g., enqcmd PASID instance), and therefore may get
->> rid of handling sva domain duplication. Besides, IOMMU driver (e.g., intel
->> vt-d driver) can get sufficient info (e.g., the info of the IOMMUs having
->> their devices bound to one virtual address space) when handling
->> mmu_notifier_ops callbacks, to remove the redundant IOTLB invalidations.
->>
->> Arguably there shouldn't be more than one sva_domain with the same PASID,
->> and in any sane configuration there should be only 1 type of IOMMU driver
->> that needs only 1 SVA domain. However, in reality, IOMMUs on one platform
->> may not be identical to each other. Thus, attaching a sva domain that has
->> been successfully bound to device A behind a IOMMU A, to device B behind
->> IOMMU B may get failed due to the difference between IOMMU A and IOMMU
->> B. In this case, a new sva domain with the same PASID needs to be
->> allocated to work with IOMMU B. That's why we need a list to keep sva
->> domains of one PASID. For the platform where IOMMUs are compatible to each
->> other, there should be one sva domain in the list.
->>
->> v8:
->>   - CC more people
->>   - CCiommu@lists.linux.dev  mailing list.
->>     When sending version 7, some issue happened in my CC list and that caused
->>     version 7 wasn't sent toiommu@lists.linux.dev.
->>   - Rebase to v6.6-rc6 and make a few format changes.
-> You should based it on Joerg's tree so he can take it without
-> conflcits.
-> 
-> The conflicts are trivial though (Take Michael's version and switch
-> mm->pasid with mm_get_enqcmd_pasid(mm))
-> 
-> It looks fine, please lets get it in this cycle, the ARM and AMD SVA
-> series depend on it.
+On 10/17/23 4:52 PM, Tian, Kevin wrote:
+>>> another problem is that intel_iommu_enforce_cache_coherency()
+>>> doesn't update existing entries. It only sets a domain flag to affect
+>>> future mappings. so it means the 2nd idev is also broken.
+>> This is such a gap, intel driver should not permit that.
+> yes. @Baolu, can you add a fix?
 
-The vt-d driver also has series depending on it.
-
-https://lore.kernel.org/linux-iommu/20231017032045.114868-1-tina.zhang@intel.com/
+Sure thing!
 
 Best regards,
 baolu
