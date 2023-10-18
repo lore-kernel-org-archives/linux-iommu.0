@@ -1,38 +1,38 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.120])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AFD7C4412
-	for <iommu@lists.linux.dev>; Wed, 18 Oct 2023 02:09:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC3C61FC5
+	for <iommu@lists.linux.dev>; Wed, 18 Oct 2023 02:17:35 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="FGM4RPwO"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="G5kTw51t"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1697594997; x=1729130997;
+  t=1697595455; x=1729131455;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=CWfYXO9YG2yfmLl8n6WbRtsy+sID2wgUiX8Hew6Sflo=;
-  b=FGM4RPwOVewE6VDgeALm42qfLc4VB2XeWa0wvRfHa5UDaRONK0C739vL
-   CMXs999HCrXdOgSr5i7u/eo+6sQ5xtnl2s2Js62Zo7LefS7/ZcvgImAet
-   YQcYvasDmPauS1Jejozd9YvC9BqaRXJ9briNKEONYDs24dRhp66WjObQF
-   qhiawt+NswRmtM53r0mf1BbTz7Q+JQs0BVnLw5tKtkEVRIc+tHS+Bwubr
-   JFJkNh8Ke942HSP3sV2T4eqbgNOiKLzVySN89dVznyO6MhhBXyIbs7qHs
-   nMWX+w7I1+zl6332QTpdYoHKvAWiDU/2ntD+jvElWck5hW6WqKG3h+SWr
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10866"; a="384798696"
+  bh=zbbwNv+ayFL5lv8H+Tmp9KLbwONaDvNHG8Bb7FwbVIA=;
+  b=G5kTw51tMNsb4xOeSsgGzNXUJSKz7RFeeYj9QiMsqyPgnwLwXIOpp0KB
+   +Odu4UW2IvGeYXI0b9jN0oR/n0MYLzk3BAtHDCHYfEzRJEaPIhjMuPNqt
+   tTDtRUwHr2xEnsH/AylhV1GuumBZiypICBqSQXRIFwSS6rltNNSMMKBUm
+   LUuD7R3VOZW3MQdHKAZW8hcenXvY6ivodbYgHNM9MRvEZwCXEX1DSOwNI
+   VsN3LZGIK1wkWpDyRfDOYgjSxr4lc+XovQchmdx9N1k3dVdnPjM6HRXDO
+   WX63laDypxZ5LUVsysy7uQIp7s1to+IPH44BwxATcv2fTD4GwBsKUx7co
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10866"; a="384799733"
 X-IronPort-AV: E=Sophos;i="6.03,233,1694761200"; 
-   d="scan'208";a="384798696"
+   d="scan'208";a="384799733"
 Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Oct 2023 19:09:56 -0700
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Oct 2023 19:17:34 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10866"; a="1087721657"
+X-IronPort-AV: E=McAfee;i="6600,9927,10866"; a="1087722972"
 X-IronPort-AV: E=Sophos;i="6.03,233,1694761200"; 
-   d="scan'208";a="1087721657"
+   d="scan'208";a="1087722972"
 Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
-  by fmsmga005.fm.intel.com with ESMTP; 17 Oct 2023 19:09:53 -0700
-Message-ID: <22958804-ad42-4ea4-a8f7-cf1c5c3a5532@linux.intel.com>
-Date: Wed, 18 Oct 2023 10:06:13 +0800
+  by fmsmga005.fm.intel.com with ESMTP; 17 Oct 2023 19:17:31 -0700
+Message-ID: <746a5243-74ad-4330-9ea9-845fac1a57e4@linux.intel.com>
+Date: Wed, 18 Oct 2023 10:13:51 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -41,91 +41,89 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
 Cc: baolu.lu@linux.intel.com, iommu@lists.linux.dev,
- Kevin Tian <kevin.tian@intel.com>,
- Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
- Yi Liu <yi.l.liu@intel.com>, Yi Y Sun <yi.y.sun@intel.com>,
- Nicolin Chen <nicolinc@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Alex Williamson <alex.williamson@redhat.com>, kvm@vger.kernel.org,
- Jason Gunthorpe <jgg@nvidia.com>
-Subject: Re: [PATCH v3 19/19] iommu/intel: Access/Dirty bit support for SL
- domains
+ linux-kernel@vger.kernel.org, David Woodhouse <dwmw2@infradead.org>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>,
+ Nicolin Chen <nicolinc@nvidia.com>, Michael Shavit <mshavit@google.com>,
+ Vasant Hegde <vasant.hegde@amd.com>
+Subject: Re: [PATCH v8 0/5] Share sva domains with all devices bound to a mm
 Content-Language: en-US
-To: Joao Martins <joao.m.martins@oracle.com>
-References: <20230923012511.10379-1-joao.m.martins@oracle.com>
- <20230923012511.10379-20-joao.m.martins@oracle.com>
- <c4816f4b-3fde-4adb-901f-4d568a4fd95a@linux.intel.com>
- <764f159d-a19c-4a1d-86a6-a2791ff21e10@oracle.com>
- <20231016114210.GM3952@nvidia.com>
- <037d2917-51a2-acae-dc06-65940a054880@linux.intel.com>
- <20231016125941.GT3952@nvidia.com>
- <3e30e72a-c1c6-55a6-8e52-6a6250d2d8de@linux.intel.com>
- <4cc0c4a0-3c00-4b29-a43b-ddfc57f2e4c0@oracle.com>
- <81bd3937-482c-23be-840f-6766ca0ec65d@linux.intel.com>
- <8e5d944f-d89e-4618-a6c6-0eb096354e2d@oracle.com>
- <db5d7ebf-496d-47df-aa1c-3db2f12edc19@oracle.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>, Tina Zhang <tina.zhang@intel.com>
+References: <20231017004802.109618-1-tina.zhang@intel.com>
+ <20231017164150.GF282036@ziepe.ca>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <db5d7ebf-496d-47df-aa1c-3db2f12edc19@oracle.com>
+In-Reply-To: <20231017164150.GF282036@ziepe.ca>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 
-On 10/17/23 10:25 PM, Joao Martins wrote:
-> On 17/10/2023 15:16, Joao Martins wrote:
->> On 17/10/2023 13:41, Baolu Lu wrote:
->>> On 2023/10/17 18:51, Joao Martins wrote:
->>>> On 16/10/2023 14:01, Baolu Lu wrote:
->>>>> On 2023/10/16 20:59, Jason Gunthorpe wrote:
->>>>>> On Mon, Oct 16, 2023 at 08:58:42PM +0800, Baolu Lu wrote:
->>>>>>> On 2023/10/16 19:42, Jason Gunthorpe wrote:
->>>>>>>> On Mon, Oct 16, 2023 at 11:57:34AM +0100, Joao Martins wrote:
->>>>>>>>
->>>>>>>>> True. But to be honest, I thought we weren't quite there yet in PASID
->>>>>>>>> support
->>>>>>>>> from IOMMUFD perspective; hence why I didn't aim at it. Or do I have the
->>>>>>>>> wrong
->>>>>>>>> impression? From the code below, it clearly looks the driver does.
->>>>>>>> I think we should plan that this series will go before the PASID
->>>>>>>> series
->>>>>>> I know that PASID support in IOMMUFD is not yet available, but the VT-d
->>>>>>> driver already supports attaching a domain to a PASID, as required by
->>>>>>> the idxd driver for kernel DMA with PASID. Therefore, from the driver's
->>>>>>> perspective, dirty tracking should also be enabled for PASIDs.
->>>>>> As long as the driver refuses to attach a dirty track enabled domain
->>>>>> to PASID it would be fine for now.
->>>>> Yes. This works.
->>>> Baolu Lu, I am blocking PASID attachment this way; let me know if this matches
->>>> how would you have the driver refuse dirty tracking on PASID.
->>>
->>> Joao, how about blocking pasid attachment in intel_iommu_set_dev_pasid()
->>> directly?
->>>
->>> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
->>> index c86ba5a3e75c..392b6ca9ce90 100644
->>> --- a/drivers/iommu/intel/iommu.c
->>> +++ b/drivers/iommu/intel/iommu.c
->>> @@ -4783,6 +4783,9 @@ static int intel_iommu_set_dev_pasid(struct iommu_domain
->>> *domain,
->>>          if (context_copied(iommu, info->bus, info->devfn))
->>>                  return -EBUSY;
->>>
->>> +       if (domain->dirty_ops)
->>> +               return -EOPNOTSUPP;
->>> +
->>>          ret = prepare_domain_attach_device(domain, dev);
->>>          if (ret)
->>>                  return ret;
+On 10/18/23 12:41 AM, Jason Gunthorpe wrote:
+> On Tue, Oct 17, 2023 at 08:47:57AM +0800, Tina Zhang wrote:
+>> This series is to share sva(shared virtual addressing) domains with all
+>> devices bound to one mm.
 >>
->> I was trying to centralize all the checks, but I can place it here if you prefer
->> this way.
-
-We will soon remove this check when pasid is supported in iommufd. So
-less code change is better for future work.
-
+>> Problem
+>> -------
+>> In the current iommu core code, sva domain is allocated per IOMMU group,
+>> when device driver is binding a process address space to a device (which is
+>> handled in iommu_sva_bind_device()). If one than more device is bound to
+>> the same process address space, there must be more than one sva domain
+>> instance, with each device having one. In other words, the sva domain
+>> doesn't share between those devices bound to the same process address
+>> space, and that leads to two problems:
+>> 1) device driver has to duplicate sva domains with enqcmd, as those sva
+>> domains have the same PASID and are relevant to one virtual address space.
+>> This makes the sva domain handling complex in device drivers.
+>> 2) IOMMU driver cannot get sufficient info of the IOMMUs that have
+>> devices behind them bound to the same virtual address space, when handling
+>> mmu_notifier_ops callbacks. As a result, IOMMU IOTLB invalidation is
+>> performed per device instead of per IOMMU, and that may lead to
+>> superfluous IOTLB invalidation issue, especially in a virtualization
+>> environment where all devices may be behind one virtual IOMMU.
 >>
-> Minor change, I'm changing error code to -EINVAL to align with non-PASID case.
+>> Solution
+>> --------
+>> This patch-set tries to fix those two problems by allowing sharing sva
+>> domains with all devices bound to a mm. To achieve this, a new structure
+>> pointer is introduced to mm to replace the old PASID field, which can keep
+>> the info of PASID as well as the corresponding shared sva domains.
+>> Besides, function iommu_sva_bind_device() is updated to ensure a new sva
+>> domain can only be allocated when the old ones cannot work for the IOMMU.
+>> With these changes, a device driver can expect one sva domain could work
+>> for per PASID instance(e.g., enqcmd PASID instance), and therefore may get
+>> rid of handling sva domain duplication. Besides, IOMMU driver (e.g., intel
+>> vt-d driver) can get sufficient info (e.g., the info of the IOMMUs having
+>> their devices bound to one virtual address space) when handling
+>> mmu_notifier_ops callbacks, to remove the redundant IOTLB invalidations.
+>>
+>> Arguably there shouldn't be more than one sva_domain with the same PASID,
+>> and in any sane configuration there should be only 1 type of IOMMU driver
+>> that needs only 1 SVA domain. However, in reality, IOMMUs on one platform
+>> may not be identical to each other. Thus, attaching a sva domain that has
+>> been successfully bound to device A behind a IOMMU A, to device B behind
+>> IOMMU B may get failed due to the difference between IOMMU A and IOMMU
+>> B. In this case, a new sva domain with the same PASID needs to be
+>> allocated to work with IOMMU B. That's why we need a list to keep sva
+>> domains of one PASID. For the platform where IOMMUs are compatible to each
+>> other, there should be one sva domain in the list.
+>>
+>> v8:
+>>   - CC more people
+>>   - CCiommu@lists.linux.dev  mailing list.
+>>     When sending version 7, some issue happened in my CC list and that caused
+>>     version 7 wasn't sent toiommu@lists.linux.dev.
+>>   - Rebase to v6.6-rc6 and make a few format changes.
+> You should based it on Joerg's tree so he can take it without
+> conflcits.
+> 
+> The conflicts are trivial though (Take Michael's version and switch
+> mm->pasid with mm_get_enqcmd_pasid(mm))
+> 
+> It looks fine, please lets get it in this cycle, the ARM and AMD SVA
+> series depend on it.
 
-Yes. Make sense. -EINVAL means "not compatible". The caller can retry.
+The vt-d driver also has series depending on it.
+
+https://lore.kernel.org/linux-iommu/20231017032045.114868-1-tina.zhang@intel.com/
 
 Best regards,
 baolu
