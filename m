@@ -1,41 +1,41 @@
 Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EAD453DFE2
-	for <iommu@lists.linux.dev>; Wed, 18 Oct 2023 20:28:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A78E83DFE5
+	for <iommu@lists.linux.dev>; Wed, 18 Oct 2023 20:28:52 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oracle.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oracle.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="jw2rMT1+"
-Received: from pps.filterd (m0333520.ppops.net [127.0.0.1])
-	by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 39IIn0jU011264;
-	Wed, 18 Oct 2023 20:28:28 GMT
+	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="e2YEPAzP"
+Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
+	by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 39IInDZC013719;
+	Wed, 18 Oct 2023 20:28:37 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding; s=corp-2023-03-30;
- bh=PK6EWkZidMqXWeIobnNeBSOV3HaSPzZ1qC/WTS/bf2c=;
- b=jw2rMT1+BFF8XSx4Tr0Cy/YfAuiYd5FORpnuD8yf4lOvxBSu+Bos7WY5MKHW2Q0ENlC8
- lNIjRhmCxxlP6rokFxqAqRosx3TxSp26m/qcVvd1jcVnHQymWxXhblpdkv/KIQ89OWJu
- Q7xyE3aT2d1YZnPyc1quE1HV7oEWt2kKiMogH9vco1HBfMpLzDDop1k5GA6WCLwopvvx
- tOI6Ab6pWjmqvfJvxYigu9lKOw2thdlvMDChupC90gNSkGFTMf3lW9PnECXVOsh8NlHA
- rVJrA+U10FqV19DhzpXu1NTeFABUitDxlXXIrCE1LwghizJOyfho6N3YSxoS9jfZSyzt 7w== 
+ bh=6ftcOqpWO3d75TL6BIWPIhcwk++ge8W6IXuY66I0q7I=;
+ b=e2YEPAzPJQ88U++or3OiNOuytuo2gfMMv1vrcwtnD4xRYbrf9EIlvpLsrgOu3zTtA3XR
+ 2pGGLHsPQEfOeBRcxrdXsJoEv++Xkdss6qKDVridk6JVwBjvsmrp5VT6mtCSoMTQs9Gp
+ fBpEfeYDEYk8+UTsuKJHuTblNecXEsV612va2A5cNye3a7xwG2FGH7bdmd51iscDVIH6
+ AfXcZIgAJwGoQJGUCwY6dN4fSXgkoSE4c0fssTX2uD8lctTKTjqmGaN98leehagjlFkp
+ da3D8r8m2Iz9mBx5NKaI7N5rKmW4smEdJmnS0nhn1Dmil6fizWLLsxFEK65BlvuUsC+K Gg== 
 Received: from iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta02.appoci.oracle.com [147.154.18.20])
-	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3tqk1cgngy-1
+	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3tqk1d0hd5-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Wed, 18 Oct 2023 20:28:28 +0000
+	Wed, 18 Oct 2023 20:28:36 +0000
 Received: from pps.filterd (iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.19/8.17.1.19) with ESMTP id 39IJs8J4009825;
-	Wed, 18 Oct 2023 20:28:27 GMT
+	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.19/8.17.1.19) with ESMTP id 39IIUaog009854;
+	Wed, 18 Oct 2023 20:28:36 GMT
 Received: from pps.reinject (localhost [127.0.0.1])
-	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3trg0ps7av-1
+	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3trg0ps7qk-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Wed, 18 Oct 2023 20:28:03 +0000
+	Wed, 18 Oct 2023 20:28:36 +0000
 Received: from iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 39IKRP5h040635;
-	Wed, 18 Oct 2023 20:28:02 GMT
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 39IKRP5l040635;
+	Wed, 18 Oct 2023 20:28:35 GMT
 Received: from joaomart-mac.uk.oracle.com (dhcp-10-175-176-41.vpn.oracle.com [10.175.176.41])
-	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTP id 3trg0ps6qp-11;
-	Wed, 18 Oct 2023 20:28:02 +0000
+	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTP id 3trg0ps6qp-13;
+	Wed, 18 Oct 2023 20:28:35 +0000
 From: Joao Martins <joao.m.martins@oracle.com>
 To: iommu@lists.linux.dev
 Cc: Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
@@ -48,9 +48,9 @@ Cc: Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
         Zhenzhong Duan <zhenzhong.duan@intel.com>,
         Alex Williamson <alex.williamson@redhat.com>, kvm@vger.kernel.org,
         Joao Martins <joao.m.martins@oracle.com>
-Subject: [PATCH v4 10/18] iommu/amd: Add domain_alloc_user based domain allocation
-Date: Wed, 18 Oct 2023 21:27:07 +0100
-Message-Id: <20231018202715.69734-11-joao.m.martins@oracle.com>
+Subject: [PATCH v4 12/18] iommu/intel: Access/Dirty bit support for SL domains
+Date: Wed, 18 Oct 2023 21:27:09 +0100
+Message-Id: <20231018202715.69734-13-joao.m.martins@oracle.com>
 In-Reply-To: <20231018202715.69734-1-joao.m.martins@oracle.com>
 References: <20231018202715.69734-1-joao.m.martins@oracle.com>
 Precedence: bulk
@@ -67,117 +67,430 @@ X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 spam
  adultscore=0 suspectscore=0 mlxscore=0 mlxlogscore=999 bulkscore=0
  classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2309180000
  definitions=main-2310180169
-X-Proofpoint-ORIG-GUID: LVSVSKx-lUJgPdwVWaYSOQGWkcS61r0p
-X-Proofpoint-GUID: LVSVSKx-lUJgPdwVWaYSOQGWkcS61r0p
+X-Proofpoint-GUID: DnnWjWVFsXmIkj3YRQp1fo2AYeZ8syDf
+X-Proofpoint-ORIG-GUID: DnnWjWVFsXmIkj3YRQp1fo2AYeZ8syDf
 
-Add the domain_alloc_user op implementation. To that end, refactor
-amd_iommu_domain_alloc() to receive a dev pointer and flags, while renaming
-it too, such that it becomes a common function shared with
-domain_alloc_user() implementation. The sole difference with
-domain_alloc_user() is that we initialize also other fields that
-iommu_domain_alloc() does. It lets it return the iommu domain correctly
-initialized in one function.
+IOMMU advertises Access/Dirty bits for second-stage page table if the
+extended capability DMAR register reports it (ECAP, mnemonic ECAP.SSADS).
+The first stage table is compatible with CPU page table thus A/D bits are
+implicitly supported. Relevant Intel IOMMU SDM ref for first stage table
+"3.6.2 Accessed, Extended Accessed, and Dirty Flags" and second stage table
+"3.7.2 Accessed and Dirty Flags".
 
-This is in preparation to add dirty enforcement on AMD implementation of
-domain_alloc_user.
+First stage page table is enabled by default so it's allowed to set dirty
+tracking and no control bits needed, it just returns 0. To use SSADS, set
+bit 9 (SSADE) in the scalable-mode PASID table entry and flush the IOTLB
+via pasid_flush_caches() following the manual. Relevant SDM refs:
+
+"3.7.2 Accessed and Dirty Flags"
+"6.5.3.3 Guidance to Software for Invalidations,
+ Table 23. Guidance to Software for Invalidations"
+
+PTE dirty bit is located in bit 9 and it's cached in the IOTLB so flush
+IOTLB to make sure IOMMU attempts to set the dirty bit again. Note that
+iommu_dirty_bitmap_record() will add the IOVA to iotlb_gather and thus the
+caller of the iommu op will flush the IOTLB. Relevant manuals over the
+hardware translation is chapter 6 with some special mention to:
+
+"6.2.3.1 Scalable-Mode PASID-Table Entry Programming Considerations"
+"6.2.4 IOTLB"
+
+Select IOMMUFD_DRIVER only if IOMMUFD is enabled, given that IOMMU dirty
+tracking requires IOMMUFD.
 
 Signed-off-by: Joao Martins <joao.m.martins@oracle.com>
-Reviewed-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 ---
- drivers/iommu/amd/iommu.c | 47 ++++++++++++++++++++++++++++++++++++---
- 1 file changed, 44 insertions(+), 3 deletions(-)
+ drivers/iommu/intel/Kconfig |   1 +
+ drivers/iommu/intel/iommu.c | 104 +++++++++++++++++++++++++++++++++-
+ drivers/iommu/intel/iommu.h |  17 ++++++
+ drivers/iommu/intel/pasid.c | 109 ++++++++++++++++++++++++++++++++++++
+ drivers/iommu/intel/pasid.h |   4 ++
+ 5 files changed, 234 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index 95bd7c25ba6f..292a09b2fbbf 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -37,6 +37,7 @@
- #include <asm/iommu.h>
- #include <asm/gart.h>
- #include <asm/dma.h>
-+#include <uapi/linux/iommufd.h>
+diff --git a/drivers/iommu/intel/Kconfig b/drivers/iommu/intel/Kconfig
+index 2e56bd79f589..f5348b80652b 100644
+--- a/drivers/iommu/intel/Kconfig
++++ b/drivers/iommu/intel/Kconfig
+@@ -15,6 +15,7 @@ config INTEL_IOMMU
+ 	select DMA_OPS
+ 	select IOMMU_API
+ 	select IOMMU_IOVA
++	select IOMMUFD_DRIVER if IOMMUFD
+ 	select NEED_DMA_MAP_STATE
+ 	select DMAR_TABLE
+ 	select SWIOTLB
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 017aed5813d8..405b459416d5 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -300,6 +300,7 @@ static int iommu_skip_te_disable;
+ #define IDENTMAP_AZALIA		4
  
- #include "amd_iommu.h"
- #include "../dma-iommu.h"
-@@ -2155,28 +2156,67 @@ static inline u64 dma_max_address(void)
- 	return ((1ULL << PM_LEVEL_SHIFT(amd_iommu_gpt_level)) - 1);
- }
+ const struct iommu_ops intel_iommu_ops;
++const struct iommu_dirty_ops intel_dirty_ops;
  
--static struct iommu_domain *amd_iommu_domain_alloc(unsigned type)
-+static struct iommu_domain *do_iommu_domain_alloc(unsigned int type,
-+						  struct device *dev,
-+						  u32 flags)
+ static bool translation_pre_enabled(struct intel_iommu *iommu)
  {
- 	struct protection_domain *domain;
-+	struct amd_iommu *iommu = NULL;
-+
-+	if (dev) {
-+		iommu = rlookup_amd_iommu(dev);
-+		if (!iommu)
-+			return ERR_PTR(-ENODEV);
-+	}
+@@ -4077,10 +4078,12 @@ static struct iommu_domain *intel_iommu_domain_alloc(unsigned type)
+ static struct iommu_domain *
+ intel_iommu_domain_alloc_user(struct device *dev, u32 flags)
+ {
++	bool enforce_dirty = (flags & IOMMU_HWPT_ALLOC_ENFORCE_DIRTY);
+ 	struct iommu_domain *domain;
+ 	struct intel_iommu *iommu;
  
- 	/*
- 	 * Since DTE[Mode]=0 is prohibited on SNP-enabled system,
- 	 * default to use IOMMU_DOMAIN_DMA[_FQ].
- 	 */
- 	if (amd_iommu_snp_en && (type == IOMMU_DOMAIN_IDENTITY))
--		return NULL;
-+		return ERR_PTR(-EINVAL);
+-	if (flags & (~IOMMU_HWPT_ALLOC_NEST_PARENT))
++	if (flags & (~(IOMMU_HWPT_ALLOC_NEST_PARENT|
++		       IOMMU_HWPT_ALLOC_ENFORCE_DIRTY)))
+ 		return ERR_PTR(-EOPNOTSUPP);
  
- 	domain = protection_domain_alloc(type);
- 	if (!domain)
--		return NULL;
-+		return ERR_PTR(-ENOMEM);
+ 	iommu = device_to_iommu(dev, NULL, NULL);
+@@ -4090,6 +4093,9 @@ intel_iommu_domain_alloc_user(struct device *dev, u32 flags)
+ 	if ((flags & IOMMU_HWPT_ALLOC_NEST_PARENT) && !ecap_nest(iommu->ecap))
+ 		return ERR_PTR(-EOPNOTSUPP);
  
- 	domain->domain.geometry.aperture_start = 0;
- 	domain->domain.geometry.aperture_end   = dma_max_address();
- 	domain->domain.geometry.force_aperture = true;
- 
-+	if (iommu) {
-+		domain->domain.type = type;
-+		domain->domain.pgsize_bitmap =
-+			iommu->iommu.ops->pgsize_bitmap;
-+		domain->domain.ops =
-+			iommu->iommu.ops->default_domain_ops;
-+	}
-+
- 	return &domain->domain;
- }
- 
-+static struct iommu_domain *amd_iommu_domain_alloc(unsigned int type)
-+{
-+	struct iommu_domain *domain;
-+
-+	domain = do_iommu_domain_alloc(type, NULL, 0);
-+	if (IS_ERR(domain))
-+		return NULL;
-+
-+	return domain;
-+}
-+
-+static struct iommu_domain *amd_iommu_domain_alloc_user(struct device *dev,
-+							u32 flags)
-+{
-+	unsigned int type = IOMMU_DOMAIN_UNMANAGED;
-+
-+	if (flags & IOMMU_HWPT_ALLOC_NEST_PARENT)
++	if (enforce_dirty && !slads_supported(iommu))
 +		return ERR_PTR(-EOPNOTSUPP);
 +
-+	return do_iommu_domain_alloc(type, dev, flags);
+ 	/*
+ 	 * domain_alloc_user op needs to fully initialize a domain
+ 	 * before return, so uses iommu_domain_alloc() here for
+@@ -4098,6 +4104,15 @@ intel_iommu_domain_alloc_user(struct device *dev, u32 flags)
+ 	domain = iommu_domain_alloc(dev->bus);
+ 	if (!domain)
+ 		domain = ERR_PTR(-ENOMEM);
++
++	if (!IS_ERR(domain) && enforce_dirty) {
++		if (to_dmar_domain(domain)->use_first_level) {
++			iommu_domain_free(domain);
++			return ERR_PTR(-EOPNOTSUPP);
++		}
++		domain->dirty_ops = &intel_dirty_ops;
++	}
++
+ 	return domain;
+ }
+ 
+@@ -4121,6 +4136,9 @@ static int prepare_domain_attach_device(struct iommu_domain *domain,
+ 	if (dmar_domain->force_snooping && !ecap_sc_support(iommu->ecap))
+ 		return -EINVAL;
+ 
++	if (domain->dirty_ops && !slads_supported(iommu))
++		return -EINVAL;
++
+ 	/* check if this iommu agaw is sufficient for max mapped address */
+ 	addr_width = agaw_to_width(iommu->agaw);
+ 	if (addr_width > cap_mgaw(iommu->cap))
+@@ -4375,6 +4393,8 @@ static bool intel_iommu_capable(struct device *dev, enum iommu_cap cap)
+ 		return dmar_platform_optin();
+ 	case IOMMU_CAP_ENFORCE_CACHE_COHERENCY:
+ 		return ecap_sc_support(info->iommu->ecap);
++	case IOMMU_CAP_DIRTY:
++		return slads_supported(info->iommu);
+ 	default:
+ 		return false;
+ 	}
+@@ -4772,6 +4792,9 @@ static int intel_iommu_set_dev_pasid(struct iommu_domain *domain,
+ 	if (!pasid_supported(iommu) || dev_is_real_dma_subdevice(dev))
+ 		return -EOPNOTSUPP;
+ 
++	if (domain->dirty_ops)
++		return -EINVAL;
++
+ 	if (context_copied(iommu, info->bus, info->devfn))
+ 		return -EBUSY;
+ 
+@@ -4830,6 +4853,85 @@ static void *intel_iommu_hw_info(struct device *dev, u32 *length, u32 *type)
+ 	return vtd;
+ }
+ 
++static int intel_iommu_set_dirty_tracking(struct iommu_domain *domain,
++					  bool enable)
++{
++	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
++	struct device_domain_info *info;
++	int ret = -EINVAL;
++
++	spin_lock(&dmar_domain->lock);
++	if (dmar_domain->dirty_tracking == enable)
++		goto out_unlock;
++
++	list_for_each_entry(info, &dmar_domain->devices, link) {
++		ret = intel_pasid_setup_dirty_tracking(info->iommu, info->domain,
++						     info->dev, IOMMU_NO_PASID,
++						     enable);
++		if (ret)
++			goto err_unwind;
++
++	}
++
++	if (!ret)
++		dmar_domain->dirty_tracking = enable;
++out_unlock:
++	spin_unlock(&dmar_domain->lock);
++
++	return 0;
++
++err_unwind:
++	list_for_each_entry(info, &dmar_domain->devices, link)
++		intel_pasid_setup_dirty_tracking(info->iommu, dmar_domain,
++					  info->dev, IOMMU_NO_PASID,
++					  dmar_domain->dirty_tracking);
++	spin_unlock(&dmar_domain->lock);
++	return ret;
 +}
 +
- static void amd_iommu_domain_free(struct iommu_domain *dom)
++static int intel_iommu_read_and_clear_dirty(struct iommu_domain *domain,
++					    unsigned long iova, size_t size,
++					    unsigned long flags,
++					    struct iommu_dirty_bitmap *dirty)
++{
++	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
++	unsigned long end = iova + size - 1;
++	unsigned long pgsize;
++
++	/*
++	 * IOMMUFD core calls into a dirty tracking disabled domain without an
++	 * IOVA bitmap set in order to clean dirty bits in all PTEs that might
++	 * have occurred when we stopped dirty tracking. This ensures that we
++	 * never inherit dirtied bits from a previous cycle.
++	 */
++	if (!dmar_domain->dirty_tracking && dirty->bitmap)
++		return -EINVAL;
++
++	do {
++		struct dma_pte *pte;
++		int lvl = 0;
++
++		pte = pfn_to_dma_pte(dmar_domain, iova >> VTD_PAGE_SHIFT, &lvl,
++				     GFP_ATOMIC);
++		pgsize = level_size(lvl) << VTD_PAGE_SHIFT;
++		if (!pte || !dma_pte_present(pte)) {
++			iova += pgsize;
++			continue;
++		}
++
++		if (dma_sl_pte_test_and_clear_dirty(pte, flags))
++			iommu_dirty_bitmap_record(dirty, iova, pgsize);
++		iova += pgsize;
++	} while (iova < end);
++
++	return 0;
++}
++
++const struct iommu_dirty_ops intel_dirty_ops = {
++	.set_dirty_tracking	= intel_iommu_set_dirty_tracking,
++	.read_and_clear_dirty   = intel_iommu_read_and_clear_dirty,
++};
++
+ const struct iommu_ops intel_iommu_ops = {
+ 	.capable		= intel_iommu_capable,
+ 	.hw_info		= intel_iommu_hw_info,
+diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
+index c18fb699c87a..27bcfd3bacdd 100644
+--- a/drivers/iommu/intel/iommu.h
++++ b/drivers/iommu/intel/iommu.h
+@@ -48,6 +48,9 @@
+ #define DMA_FL_PTE_DIRTY	BIT_ULL(6)
+ #define DMA_FL_PTE_XD		BIT_ULL(63)
+ 
++#define DMA_SL_PTE_DIRTY_BIT	9
++#define DMA_SL_PTE_DIRTY	BIT_ULL(DMA_SL_PTE_DIRTY_BIT)
++
+ #define ADDR_WIDTH_5LEVEL	(57)
+ #define ADDR_WIDTH_4LEVEL	(48)
+ 
+@@ -539,6 +542,9 @@ enum {
+ #define sm_supported(iommu)	(intel_iommu_sm && ecap_smts((iommu)->ecap))
+ #define pasid_supported(iommu)	(sm_supported(iommu) &&			\
+ 				 ecap_pasid((iommu)->ecap))
++#define slads_supported(iommu) (sm_supported(iommu) &&                 \
++				ecap_slads((iommu)->ecap))
++
+ 
+ struct pasid_entry;
+ struct pasid_state_entry;
+@@ -592,6 +598,7 @@ struct dmar_domain {
+ 					 * otherwise, goes through the second
+ 					 * level.
+ 					 */
++	u8 dirty_tracking:1;		/* Dirty tracking is enabled */
+ 
+ 	spinlock_t lock;		/* Protect device tracking lists */
+ 	struct list_head devices;	/* all devices' list */
+@@ -781,6 +788,16 @@ static inline bool dma_pte_present(struct dma_pte *pte)
+ 	return (pte->val & 3) != 0;
+ }
+ 
++static inline bool dma_sl_pte_test_and_clear_dirty(struct dma_pte *pte,
++						   unsigned long flags)
++{
++	if (flags & IOMMU_DIRTY_NO_CLEAR)
++		return (pte->val & DMA_SL_PTE_DIRTY) != 0;
++
++	return test_and_clear_bit(DMA_SL_PTE_DIRTY_BIT,
++				  (unsigned long *)&pte->val);
++}
++
+ static inline bool dma_pte_superpage(struct dma_pte *pte)
  {
- 	struct protection_domain *domain;
-@@ -2464,6 +2504,7 @@ static bool amd_iommu_enforce_cache_coherency(struct iommu_domain *domain)
- const struct iommu_ops amd_iommu_ops = {
- 	.capable = amd_iommu_capable,
- 	.domain_alloc = amd_iommu_domain_alloc,
-+	.domain_alloc_user = amd_iommu_domain_alloc_user,
- 	.probe_device = amd_iommu_probe_device,
- 	.release_device = amd_iommu_release_device,
- 	.probe_finalize = amd_iommu_probe_finalize,
+ 	return (pte->val & DMA_PTE_LARGE_PAGE);
+diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
+index 8f92b92f3d2a..785384a59d55 100644
+--- a/drivers/iommu/intel/pasid.c
++++ b/drivers/iommu/intel/pasid.c
+@@ -277,6 +277,11 @@ static inline void pasid_set_bits(u64 *ptr, u64 mask, u64 bits)
+ 	WRITE_ONCE(*ptr, (old & ~mask) | bits);
+ }
+ 
++static inline u64 pasid_get_bits(u64 *ptr)
++{
++	return READ_ONCE(*ptr);
++}
++
+ /*
+  * Setup the DID(Domain Identifier) field (Bit 64~79) of scalable mode
+  * PASID entry.
+@@ -335,6 +340,36 @@ static inline void pasid_set_fault_enable(struct pasid_entry *pe)
+ 	pasid_set_bits(&pe->val[0], 1 << 1, 0);
+ }
+ 
++/*
++ * Enable second level A/D bits by setting the SLADE (Second Level
++ * Access Dirty Enable) field (Bit 9) of a scalable mode PASID
++ * entry.
++ */
++static inline void pasid_set_ssade(struct pasid_entry *pe)
++{
++	pasid_set_bits(&pe->val[0], 1 << 9, 1 << 9);
++}
++
++/*
++ * Enable second level A/D bits by setting the SLADE (Second Level
++ * Access Dirty Enable) field (Bit 9) of a scalable mode PASID
++ * entry.
++ */
++static inline void pasid_clear_ssade(struct pasid_entry *pe)
++{
++	pasid_set_bits(&pe->val[0], 1 << 9, 0);
++}
++
++/*
++ * Checks if second level A/D bits by setting the SLADE (Second Level
++ * Access Dirty Enable) field (Bit 9) of a scalable mode PASID
++ * entry is enabled.
++ */
++static inline bool pasid_get_ssade(struct pasid_entry *pe)
++{
++	return pasid_get_bits(&pe->val[0]) & (1 << 9);
++}
++
+ /*
+  * Setup the WPE(Write Protect Enable) field (Bit 132) of a
+  * scalable mode PASID entry.
+@@ -627,6 +662,8 @@ int intel_pasid_setup_second_level(struct intel_iommu *iommu,
+ 	pasid_set_translation_type(pte, PASID_ENTRY_PGTT_SL_ONLY);
+ 	pasid_set_fault_enable(pte);
+ 	pasid_set_page_snoop(pte, !!ecap_smpwc(iommu->ecap));
++	if (domain->dirty_tracking)
++		pasid_set_ssade(pte);
+ 
+ 	pasid_set_present(pte);
+ 	spin_unlock(&iommu->lock);
+@@ -636,6 +673,78 @@ int intel_pasid_setup_second_level(struct intel_iommu *iommu,
+ 	return 0;
+ }
+ 
++/*
++ * Set up dirty tracking on a second only translation type.
++ */
++int intel_pasid_setup_dirty_tracking(struct intel_iommu *iommu,
++				     struct dmar_domain *domain,
++				     struct device *dev, u32 pasid,
++				     bool enabled)
++{
++	struct pasid_entry *pte;
++	u16 did, pgtt;
++
++	spin_lock(&iommu->lock);
++
++	pte = intel_pasid_get_entry(dev, pasid);
++	if (!pte) {
++		spin_unlock(&iommu->lock);
++		dev_err_ratelimited(dev,
++				    "Failed to get pasid entry of PASID %d\n",
++				    pasid);
++		return -ENODEV;
++	}
++
++	did = domain_id_iommu(domain, iommu);
++	pgtt = pasid_pte_get_pgtt(pte);
++	if (pgtt != PASID_ENTRY_PGTT_SL_ONLY && pgtt != PASID_ENTRY_PGTT_NESTED) {
++		spin_unlock(&iommu->lock);
++		dev_err_ratelimited(dev,
++				    "Dirty tracking not supported on translation type %d\n",
++				    pgtt);
++		return -EOPNOTSUPP;
++	}
++
++	if (pasid_get_ssade(pte) == enabled) {
++		spin_unlock(&iommu->lock);
++		return 0;
++	}
++
++	if (enabled)
++		pasid_set_ssade(pte);
++	else
++		pasid_clear_ssade(pte);
++	spin_unlock(&iommu->lock);
++
++	if (!ecap_coherent(iommu->ecap))
++		clflush_cache_range(pte, sizeof(*pte));
++
++	/*
++	 * From VT-d spec table 25 "Guidance to Software for Invalidations":
++	 *
++	 * - PASID-selective-within-Domain PASID-cache invalidation
++	 *   If (PGTT=SS or Nested)
++	 *    - Domain-selective IOTLB invalidation
++	 *   Else
++	 *    - PASID-selective PASID-based IOTLB invalidation
++	 * - If (pasid is RID_PASID)
++	 *    - Global Device-TLB invalidation to affected functions
++	 *   Else
++	 *    - PASID-based Device-TLB invalidation (with S=1 and
++	 *      Addr[63:12]=0x7FFFFFFF_FFFFF) to affected functions
++	 */
++	pasid_cache_invalidation_with_pasid(iommu, did, pasid);
++
++	if (pgtt == PASID_ENTRY_PGTT_SL_ONLY || pgtt == PASID_ENTRY_PGTT_NESTED)
++		iommu->flush.flush_iotlb(iommu, did, 0, 0, DMA_TLB_DSI_FLUSH);
++
++	/* Device IOTLB doesn't need to be flushed in caching mode. */
++	if (!cap_caching_mode(iommu->cap))
++		devtlb_invalidation_with_pasid(iommu, dev, pasid);
++
++	return 0;
++}
++
+ /*
+  * Set up the scalable mode pasid entry for passthrough translation type.
+  */
+diff --git a/drivers/iommu/intel/pasid.h b/drivers/iommu/intel/pasid.h
+index 4e9e68c3c388..958050b093aa 100644
+--- a/drivers/iommu/intel/pasid.h
++++ b/drivers/iommu/intel/pasid.h
+@@ -106,6 +106,10 @@ int intel_pasid_setup_first_level(struct intel_iommu *iommu,
+ int intel_pasid_setup_second_level(struct intel_iommu *iommu,
+ 				   struct dmar_domain *domain,
+ 				   struct device *dev, u32 pasid);
++int intel_pasid_setup_dirty_tracking(struct intel_iommu *iommu,
++				     struct dmar_domain *domain,
++				     struct device *dev, u32 pasid,
++				     bool enabled);
+ int intel_pasid_setup_pass_through(struct intel_iommu *iommu,
+ 				   struct dmar_domain *domain,
+ 				   struct device *dev, u32 pasid);
 -- 
 2.17.2
 
