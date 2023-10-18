@@ -1,189 +1,146 @@
-Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam04on2048.outbound.protection.outlook.com [40.107.101.48])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0FDCBBE5B
-	for <iommu@lists.linux.dev>; Wed, 18 Oct 2023 14:23:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D6BA6358BD
+	for <iommu@lists.linux.dev>; Wed, 18 Oct 2023 14:28:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="HbzeU/9S"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=eKZ0lz5KPAUKMKnyoE98Adclq1pR7LHSFJKFQxRM8ObIvA6LSqDeZtEBLeRQwV7eaKIas0p/pC5swx0Cscm+eZQsF8UGbqVj4K0Z91qA6I6bhQeI/grfc7xjPl7Ki0nWDyEgDShywIz+zNyTopYCNcITp8BOYtWHxPxqb32miYgt2HBXYDTj/3SSEG4BfboPDgzXE4zAoqr8Ar1esDET/DyWjL29uP48tDyWOAITBtCeFwC71mu2/jzs0/A1gFCibuvo3gA/1G1O1HPe0m791zazJtZyFr9GpHfHJnCh8k+e1+6UTNDAIxQllRrGAbaRsoEpctBSFEB4WhaxskqC1Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=xUfAWHIToetbkfeadtl/mIzSYB17vCIobRk08mqNSW4=;
- b=W3Qyu0vwBzNFPwQQymbnGB4667MhB+Z//6bwc27nhudpSbQRSp1urAX4dAajWezjuf9o1OBt+bb6MURg5UWx2nZTVFnXDaBlInji6Gwv7ILPBttzM5TRasyhGpPakhfQGfqmQkipW8INLnERC8AB0+NIXYbt3ZSCkYvNo8RnQehp1NGE3L9TK1154PXgRyDQgzi7I/gzkP4oJzKO8c9/mnpFoHxJ7ukRPZmnyy2tTR5H7RO8KSWmU7Aki5m8T7SpoI5ffLIF9AO42mKzx52JWtg5SPFOyUZhnSvl0oO7KG8q64CEglAduIT+kBveJVdQKl6qNkSJxYz96NGqC8Y2Kg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=xUfAWHIToetbkfeadtl/mIzSYB17vCIobRk08mqNSW4=;
- b=HbzeU/9SJHouPhyPyDMoszmHcIKrR0pMSFwv18jjViJv+xV/yeXiD8mlvhXxroMjyAobao/rB6ABKiIN4e0AkMY9Xmd9SbBwUO5iwYcoekMYCsNHC+VRjIIJXXWZtMXUNidRFN+Oq/VFRNQdmvOiz4bP8skMok6s5UCWQZNFRpQIsCQ2prBsyGt9X7sj6YaZNBtzpgizi7/5LVbwIEvbQ082gICMJ9srsqNCEHOo8Fsc79IAVAEG1dibribZRxI9QuCkTJcVvQnnzlYHn96xfu7ZFjq5gTLD0ej9LL37LqZD/FHjGGMIq5tIKZOnIpmS4oURHDwqfUCrxuORGgI8QQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by PH8PR12MB7134.namprd12.prod.outlook.com (2603:10b6:510:22d::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6907.24; Wed, 18 Oct
- 2023 14:23:11 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::3f66:c2b6:59eb:78c2]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::3f66:c2b6:59eb:78c2%6]) with mapi id 15.20.6886.034; Wed, 18 Oct 2023
- 14:23:11 +0000
-Date: Wed, 18 Oct 2023 11:23:09 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Joao Martins <joao.m.martins@oracle.com>
-Cc: Alex Williamson <alex.williamson@redhat.com>, iommu@lists.linux.dev,
-	Kevin Tian <kevin.tian@intel.com>,
-	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>, Yi Liu <yi.l.liu@intel.com>,
-	Yi Y Sun <yi.y.sun@intel.com>, Nicolin Chen <nicolinc@nvidia.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	kvm@vger.kernel.org
-Subject: Re: [PATCH v3 02/19] vfio: Move iova_bitmap into iommu core
-Message-ID: <20231018142309.GV3952@nvidia.com>
-References: <57e8b3ed-4831-40ff-a938-ee266da629c2@oracle.com>
- <20231013155134.6180386e.alex.williamson@redhat.com>
- <20231014000220.GK3952@nvidia.com>
- <1d5b592e-bcb2-4553-b6d8-5043b52a37fa@oracle.com>
- <20231016163457.GV3952@nvidia.com>
- <8a13a2e5-9bc1-4aeb-ad39-657ee95d5a21@oracle.com>
- <20231016180556.GW3952@nvidia.com>
- <5ecbeadb-2b95-4832-989d-fddef9718dbb@oracle.com>
- <20231018120339.GR3952@nvidia.com>
- <c8cde19b-60e0-4750-8bdb-8a97be26468e@oracle.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <c8cde19b-60e0-4750-8bdb-8a97be26468e@oracle.com>
-X-ClientProxiedBy: BL0PR0102CA0024.prod.exchangelabs.com
- (2603:10b6:207:18::37) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="ZtnI72tO"
+Received: from pps.filterd (m0279869.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 39IBOWwD003070;
+	Wed, 18 Oct 2023 14:27:58 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=qcppdkim1;
+ bh=5IVDOuSdorAVk1aB5p4OKBe7R6U7VdHn4dWixMN6gCw=;
+ b=ZtnI72tOfsMZqlE23TLc1/P2CYdp0XyBUilN7SFHuu8KrIJ1a3NROy0BvTxvkdXikXsG
+ IHyX0cAQUq9G5fy3mPRkbgpsJgex5IeoY07IZM1wq1qlKGFW7vzN/vuKhd3Xemx+SlFG
+ Uxhn7RQHdbB9fNZExImVdetxEXsP1TCxVeRoRUIYpAXBSL958HWzy0QGEVnf4lMMbXim
+ pudIM7agGuo3vA3StCshLqDB8JBR/lwv3ZJX848kyEgBrMuIRfJLHmWUX8JRFzBMWYzo
+ XnEmFXpe04micr2LIc1xDTh7TX9DWm0vRggzobrvhWHkJ1pZRdfOasUI8LUbcrMr5rpU XA== 
+Received: from nalasppmta03.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3ttcuv0n1d-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 18 Oct 2023 14:27:58 +0000
+Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
+	by NALASPPMTA03.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 39IERvv6012820
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 18 Oct 2023 14:27:57 GMT
+Received: from [10.253.74.175] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.39; Wed, 18 Oct
+ 2023 07:27:55 -0700
+Message-ID: <fc7059e9-27e6-b3ff-f95c-801fdea1a43c@quicinc.com>
+Date: Wed, 18 Oct 2023 22:27:53 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|PH8PR12MB7134:EE_
-X-MS-Office365-Filtering-Correlation-Id: 0bcf6cf0-ab1f-46b1-a0fd-08dbcfe5c1ab
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	BQUQXmz9L7U+Ot1gpAMrBcEuDsu6u50D7y6qsNWi6chFI6cyPmx4cxscpPj/3wIUDdbrmtV7bYUQVU5uZbmcyFDkUqnwo4xJ4mgqJ5lCoc9/R/gMilsYGGHLs169iQxfrTGnVX7UNE0TtnwbPE4Uny5PgJUPL7xY0KIKKEdFCyX8XPJxaKfupiIcVNQ8NTeUINSTchOjHqgXXa9NxIUptyBibFIkwgkTlQrdYtRD6r+dgqO+qbu+rQ/2BG3ULZwwSA8nJyyUoARiEjCSBRPnq5SwOkKlKF3r0PR5yyuYCkziwaNFQoSnGSkrm6Ah3A2ZVraFPVDhAjVSVuhUZg4psyGb+idnfgG/BUPKy2A+x+G+H0lLBtWQs84TGHeHxb/kh/H+qgFc75nqoDIH/hEPlAdSdTbX5e42bpwYWmz3ERtyqSIK7VL8AhPwTUZxz0B+rrLB957dtZyHGUxTqTvWbRulkjcFVB+v1mTpuk3ST5y6NvdnkmnpeUIYgHZoLUpBQE0CJMIhFIHUoYMg3H4Bh3iGplCmFhN9meQCECqVXOzB3j/P2K7YWC6gDL/5IxAC
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(396003)(376002)(346002)(39860400002)(136003)(366004)(230922051799003)(64100799003)(1800799009)(186009)(451199024)(38100700002)(478600001)(6486002)(5660300002)(4326008)(8676002)(8936002)(86362001)(7416002)(2906002)(41300700001)(6506007)(53546011)(54906003)(66476007)(66556008)(316002)(6916009)(66946007)(6512007)(2616005)(26005)(1076003)(36756003)(33656002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?x7lRJTTnohGDFUwgN+xx1DvhQNh4xH+9kfoXmKGIsCo9OB9V4vQeNgNwWzfz?=
- =?us-ascii?Q?fJdc7Y7h5yTEjN5YCEJ5Fp42RrNZONmaQfyRUkGnr5hkUJd78U2cMUN+H6Op?=
- =?us-ascii?Q?2FdmPpJNmd3XZctbSRHALZDNXmVup+2XsRNMG4dYGQryQu4vdFxForLKRfWr?=
- =?us-ascii?Q?eLRANM9xy8u9LMIKHb/FaEao1mVJxF2qtqnKyHT2hUzcIfKZ7U6AYmV6xI4I?=
- =?us-ascii?Q?AlzzyQtpnBpcvCg+JJZzn/BROoQHZ/fqodKNgp5RObT+goAh1/WDQxkm7gGo?=
- =?us-ascii?Q?274nFimm43La+S5n39ODPcvPdGtoFqhZreIb7QHxQ8WkqfkffHNlbG22MPIC?=
- =?us-ascii?Q?tKe7GPyLTnRffAgQh1BpqhySuVgdpyyIE9uhvAx7RyW7rVjGjMl6O1VPmkYO?=
- =?us-ascii?Q?trVg08TI6TzytoBNorMTl9/JCHDTiOwXZS6boHRoe1dRKGGvD1VY7FhZ8G4K?=
- =?us-ascii?Q?gfwUNYw5GPQasNoRYVetuUcniXCezDLuDWTqslCwjlDKrUBVFWJrbcPAKoHH?=
- =?us-ascii?Q?VXuqtqSGuhJZrURBEzVJkN4b5R/xYfFJiI1Pn5ZEcjP70avvPJTFZ02SnNsv?=
- =?us-ascii?Q?ujr0hUenBHEsKtmuHFNj92kWG3JxZ28SgqeiT/GfYawPELwHPex6Vy6kNoLq?=
- =?us-ascii?Q?dfvlOg6qR58uzKzJxrb2ES8JekRBdgO15I3JhHpdn7rlMphBMJPG93HggjJ3?=
- =?us-ascii?Q?yYWoB+HIWhMmFBBQ4PQzcAC/ynPm1KUu4stk46bK+f49ss6qKwuoPgTy99o5?=
- =?us-ascii?Q?mSQptftPjWPM5CSG+K44mfNZiqSZ8Wa+tkn+BIdKe7y/eGlx+l8zCpMktIYZ?=
- =?us-ascii?Q?ThqY4Se1if5aNtyFGQaaMkshZG0PonXV+5NUVs5YYCvLx7ZOAK7Hzxp5w9u6?=
- =?us-ascii?Q?MOxL4Evm0ACRGAbz/GaC1ZEhA6KZ0qmmZKVVnG6Hz5QeycZscTGT9JyLa63k?=
- =?us-ascii?Q?bQG0lAn7T+oXMuJwkMJ3EoxO1BcJebG6kDATz5LzuIaF3USgXM8Wsj0Bo0Sn?=
- =?us-ascii?Q?tN+j6tCEs67Rwgy1ArNaD5Bqmiz63F/VDjYw0OfVqrJ4DjjJxYKcx9/L5DM4?=
- =?us-ascii?Q?fYoyt3tXqJ72ckKfPruYotyr/tjRtPSYPX4jispJTH6pZyJ5RW74kcsnW1c6?=
- =?us-ascii?Q?LA8Ihohmd60y1Sr5hH0cIMbWA7cwDXltltYelb+VmJHZ5TOX0kNfa3k7BFHE?=
- =?us-ascii?Q?x8TLpcVmNKYox9R1OJZS4qWWns3S8KExqev74WkLEzytKSmDKlr6+wl1R1EZ?=
- =?us-ascii?Q?H7H1YABrKYlxQ0yp8+4sgUCMxA/JxFUneNfAePZGGaL4hk5a8p6ADY0PZEa9?=
- =?us-ascii?Q?rxvSC1wPLX8ILfAStZ3U+uxyFlDhzb3gR65jpCk5v5LiaSAbDmhcVI6mrTqP?=
- =?us-ascii?Q?743XxoK/Q1QrX6Ri8/U7RX/qM+xaEvOuh0bLhoTwltBfr5JPBu2z5UTikWD0?=
- =?us-ascii?Q?5O3XIau4MYcxgjpeh+lVNyoZ6LgrldJk35DA8yd/JcVvwgBZ3Pa8gYVTOAPR?=
- =?us-ascii?Q?gpDog0TiOLi+G1NhXOg8i2KX93nKHsEzjxYGH1nkikefykZdi5aGNrYMTBIP?=
- =?us-ascii?Q?MDp10knq9+LzJ//hViby7Zfs82d+9ya3xIRgZooA?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0bcf6cf0-ab1f-46b1-a0fd-08dbcfe5c1ab
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Oct 2023 14:23:10.9702
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: FQqaRpho/5YlNgofnhedVZUDM1J7Symv2HlOwBj2swhIp+bZJiVIp3DBd74yo7zR
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR12MB7134
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.15.1
+Subject: Re: [ARM IOMMU] IOMMU framework concurrency issue
+Content-Language: en-US
+To: Jason Gunthorpe <jgg@ziepe.ca>
+CC: <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
+        <baolu.lu@linux.intel.com>, <iommu@lists.linux.dev>,
+        <linux-arm-kernel@lists.infradead.org>, <quic_tingweiz@quicinc.com>
+References: <e2e20e1c-6450-4ac5-9804-b0000acdf7de@quicinc.com>
+ <20231017163337.GE282036@ziepe.ca>
+From: Zhenhua Huang <quic_zhenhuah@quicinc.com>
+In-Reply-To: <20231017163337.GE282036@ziepe.ca>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: swJMlYdXX2KHL5HTLgv3NYvXX93ud87m
+X-Proofpoint-GUID: swJMlYdXX2KHL5HTLgv3NYvXX93ud87m
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.980,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2023-10-18_12,2023-10-18_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 mlxscore=0
+ malwarescore=0 phishscore=0 lowpriorityscore=0 impostorscore=0
+ suspectscore=0 mlxlogscore=999 spamscore=0 priorityscore=1501 bulkscore=0
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2309180000 definitions=main-2310180118
 
-On Wed, Oct 18, 2023 at 01:48:04PM +0100, Joao Martins wrote:
-> On 18/10/2023 13:03, Jason Gunthorpe wrote:
-> > On Wed, Oct 18, 2023 at 11:19:07AM +0100, Joao Martins wrote:
-> >> On 16/10/2023 19:05, Jason Gunthorpe wrote:
-> >>> On Mon, Oct 16, 2023 at 06:52:50PM +0100, Joao Martins wrote:
-> >>>> On 16/10/2023 17:34, Jason Gunthorpe wrote:
-> >>>>> On Mon, Oct 16, 2023 at 05:25:16PM +0100, Joao Martins wrote:
-> >>>>>> diff --git a/drivers/iommu/iommufd/Kconfig b/drivers/iommu/iommufd/Kconfig
-> >>>>>> index 99d4b075df49..96ec013d1192 100644
-> >>>>>> --- a/drivers/iommu/iommufd/Kconfig
-> >>>>>> +++ b/drivers/iommu/iommufd/Kconfig
-> >>>>>> @@ -11,6 +11,13 @@ config IOMMUFD
-> >>>>>>
-> >>>>>>           If you don't know what to do here, say N.
-> >>>>>>
-> >>>>>> +config IOMMUFD_DRIVER
-> >>>>>> +       bool "IOMMUFD provides iommu drivers supporting functions"
-> >>>>>> +       default IOMMU_API
-> >>>>>> +       help
-> >>>>>> +         IOMMUFD will provides supporting data structures and helpers to IOMMU
-> >>>>>> +         drivers.
-> >>>>>
-> >>>>> It is not a 'user selectable' kconfig, just make it
-> >>>>>
-> >>>>> config IOMMUFD_DRIVER
-> >>>>>        tristate
-> >>>>>        default n
-> >>>>>
-> >>>> tristate? More like a bool as IOMMU drivers aren't modloadable
-> >>>
-> >>> tristate, who knows what people will select. If the modular drivers
-> >>> use it then it is forced to a Y not a M. It is the right way to use kconfig..
-> >>>
-> >> Making it tristate will break build bisection in this module with errors like this:
-> >>
-> >> [I say bisection, because aftewards when we put IOMMU drivers in the mix, these
-> >> are always builtin, so it ends up selecting IOMMU_DRIVER=y.]
-> >>
-> >> ERROR: modpost: missing MODULE_LICENSE() in drivers/iommu/iommufd/iova_bitmap.o
-> >>
-> >> iova_bitmap is no module, and making it tristate allows to build it as a module
-> >> as long as one of the selectors of is a module. 'bool' is actually more accurate
-> >> to what it is builtin or not.
-> > 
-> > It is a module if you make it tristate, add the MODULE_LICENSE
+Thanks Jason for your reply.
+
+On 2023/10/18 0:33, Jason Gunthorpe wrote:
+> On Tue, Oct 17, 2023 at 07:10:23PM +0800, Zhenhua Huang wrote:
+>> Dear experts,
+>>
+>> Saw a few crashes in our projects because of concurrency between (1) and
+>> (2).
+>>
+>> bus notifier or bus_iommu_probe:
+>> 	__iommu_probe_device
+>> 		acquire iommu_probe_device_lock only
+>> 		iommu_init_device()
+>> 			//touch dev->iommu (1)
+>> 			dev_iommu_get()
+>> 			->probe_device()
+>>
+>> Client device probing path:
+>> of_dma_configure			
+>> 	of_iommu_configure
+>> 		//touch dev->iommu  (2)
+>> 		...
+>>
+>>
+>> We already have 01657bc14a39 ("iommu: Avoid races around device probe") and
+>> the big comment in __iommu_probe_device() refers to adopt device_lock()
+>> further. Notice your big effort to utilize it, and IMO it can address above
+>> issue(which protects dev->iommu):
 > 
-> It's not just that. It can't work as a module when CONFIG_VFIO=y and another
-> user is CONFIG_MLX5_VFIO_PCI=m. CONFIG_VFIO uses the API so this is that case
-> where IS_ENABLED(CONFIG_IOMMUFD_DRIVER) evaluates to true but it is only
-> technically used by a module so it doesn't link it in. 
+> I think something else has gone wrong here, you should not be able to
+> get to any really_probe() before the iommu side has done its part.
 
-Ah! There is a well known kconfig technique for this too:
-  depends on m || IOMMUFD_DRIVER != m
-or 
-  depends on IOMMUFD_DRIVER || IOMMUFD_DRIVER = n
+Regarding "iommu side" Are you talking about client dev->iommu set up or 
+arm-smmu driver probing? should be the latter? It seems not 
+guaranteed... because 1st we have an option to disable device link check 
+which creates dependency, 2nd also, for example, if we call 
+of_platform_populate() in ancestor node to add child node device.. 
+Ancestor node doesn't know if the dependency of child not is met.
 
-On the VFIO module.
+BTW, Even for non-iommu binding client device which having no iommu 
+dependency at all, the issue was also reported:
+Client device's probing:
+of_iommu_configure  ---Thread 1
+	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+	if (fwspec) {
+		 if (fwspec->ops)
+			...
 
-> I would like to reiterate that there's no actual module user, making a bool is a
-> bit more clear on its usage on what it actually is (you would need IOMMU drivers
-> to be modules, which I think is a big gamble that is happening anytime soon?)
+IOMMU probing:
+iommu_device_register ---Thread 2
+	.. bus_iommu_probe(iommu_buses[i]);
+		__iommu_probe_device
+			iommu_init_device
+				dev_iommu_get
+				... *time window of concurrency*  ------(1)
+				dev_iommu_free
 
-This is all true too, but my thinking was to allow VFIO to use it
-without having an IOMMU driver compiled in that supports dirty
-tracking. eg for embedded cases.
+In above time window (1), dev->iommu allocated but not freed, if it's 
+just accessed by client device's probing(Thread 1).. 	crash happens.
 
-Jason
+Thanks,
+Zhenhua
+
+> 
+> Even with proper device locking the poor device that is racing isn't
+> going to work properly as the IOMMU won't be guarenteed to be
+> consistently configured.
+> 
+> This seems like you need to resolve boot time ordering in your
+> platform? (I don't know exactly how ARM works here though)
+> 
+> eg make sure the iommu driver is fully registered before allowing any
+> concurrent probes. Once the iommu driver is registered it will be able
+> to catch the bus notifiers and serialize things properly. >
+> Jason
