@@ -1,122 +1,104 @@
-Received: from mail-yb1-f202.google.com (mail-yb1-f202.google.com [209.85.219.202])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B60973F4AF
-	for <iommu@lists.linux.dev>; Wed, 18 Oct 2023 17:34:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="O18ROSno"
-Received: by mail-yb1-f202.google.com with SMTP id 3f1490d57ef6-d9ab7badadeso9781166276.1
-        for <iommu@lists.linux.dev>; Wed, 18 Oct 2023 10:34:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1697650451; x=1698255251; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:mime-version:date:reply-to:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=RelinbZSLZ3//bk7xHba+uKbmxohgasnEf6j21oUpLw=;
-        b=O18ROSno+dlgGSUNKS4zBnmci3WvaKsewU2MLr6tge5aqsTCLDb++bHhvefD51Are6
-         nW5tRIC478ZucKmf4B2EmJumIr/kCZr2i3zOn6ivaJ4X32WsdKy1yOcxL/Q9MgnxT0No
-         nCF4xQVnWyRP9zXKEuZDTBCnoGxWCST6I35zg3jQcFR4M7AFt5mxabGNuOV2VJuVsndK
-         FxhQrf/QTy2AIBiqh63UOwyrirRGRUE2z/6aNwxn+EIl2uV1fIWm1DdS6+8t5sHROH60
-         pTDNiUGOm9+/hnkpUqVmA+gAeatH8hTPCQtmAGzmm3/Fxr9w7tAQltYuJ99xdD8LSpqB
-         GVYQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1697650451; x=1698255251;
-        h=cc:to:from:subject:message-id:mime-version:date:reply-to
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=RelinbZSLZ3//bk7xHba+uKbmxohgasnEf6j21oUpLw=;
-        b=nBOLANW4tG/+i2xXH+BWT22HGKoCeqROPGmX/U8Ghje7b9RWOO+RSZRY//U7+dtf3I
-         Z56cdmsyG78xYy8oPQv8La47wqPkU7Wj+RgBtujTRKElEW0kLJN/9SIBQrtmWL5sbb/e
-         /MfAQ/hjWBdtrdJG+g8FOTWAnAXH+RWJTslBD6u5j2iYWW13ieD65zq4/OdqzDz+Icic
-         YJgM2I7wbLBZtneqDdEuku5wXG0JtznGLnRq2Woj0tJyIG+kd/5MNMBVCt5USICxsdQT
-         DmPI70MxK6KMzRpcR+fxuilnWNCGdxh77/RsWJGNrC+yvH6qR8l32QoLvd0KEwIbSjE8
-         g0iA==
-X-Gm-Message-State: AOJu0YyBRKeV5GvKpN8czxAHntZ2nFa+/aPRtiobAAKOfAV13clz1P24
-	1J/Fhv8ls7yL6OXVYxWOOmVMq4upxxc=
-X-Google-Smtp-Source: AGHT+IFsiXcsp74Srqa0t0XCrzb4lqNGBNpOooFM5tTTgsZ8v+vnRddeh9lJC9B5z3FHszNA4IPr1HJdIwM=
-X-Received: from zagreus.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5c37])
- (user=seanjc job=sendgmr) by 2002:a5b:e89:0:b0:d9a:ce79:6298 with SMTP id
- z9-20020a5b0e89000000b00d9ace796298mr1114ybr.2.1697650451779; Wed, 18 Oct
- 2023 10:34:11 -0700 (PDT)
-Reply-To: Sean Christopherson <seanjc@google.com>
-Date: Wed, 18 Oct 2023 10:34:09 -0700
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A01733FB2C
+	for <iommu@lists.linux.dev>; Wed, 18 Oct 2023 17:42:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Authentication-Results: smtp.subspace.kernel.org; dkim=none
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 937EC2F4;
+	Wed, 18 Oct 2023 10:42:59 -0700 (PDT)
+Received: from [10.57.67.203] (unknown [10.57.67.203])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 10BE03F5A1;
+	Wed, 18 Oct 2023 10:42:14 -0700 (PDT)
+Message-ID: <b4dc423b-a658-449f-9c6d-1502685a2f1b@arm.com>
+Date: Wed, 18 Oct 2023 18:42:12 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.42.0.655.g421f12c284-goog
-Message-ID: <20231018173409.1871540-1-seanjc@google.com>
-Subject: [PATCH] swiotlb: Rewrite comment explaining why the source is
- preserved on DMA_FROM_DEVICE
-From: Sean Christopherson <seanjc@google.com>
-To: Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
-	Yan Zhao <yan.y.zhao@intel.com>, Robin Murphy <robin.murphy@arm.com>, 
-	Linus Torvalds <torvalds@linux-foundation.org>, Sean Christopherson <seanjc@google.com>
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 06/10] dma: Use free_decrypted_pages()
+Content-Language: en-GB
+To: Rick Edgecombe <rick.p.edgecombe@intel.com>, x86@kernel.org,
+ tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+ dave.hansen@linux.intel.com, hpa@zytor.com, luto@kernel.org,
+ peterz@infradead.org, kirill.shutemov@linux.intel.com,
+ elena.reshetova@intel.com, isaku.yamahata@intel.com, seanjc@google.com,
+ Michael Kelley <mikelley@microsoft.com>, thomas.lendacky@amd.com,
+ decui@microsoft.com, sathyanarayanan.kuppuswamy@linux.intel.com,
+ linux-mm@kvack.org, linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org
+Cc: Christoph Hellwig <hch@lst.de>,
+ Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux.dev
+References: <20231017202505.340906-1-rick.p.edgecombe@intel.com>
+ <20231017202505.340906-7-rick.p.edgecombe@intel.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20231017202505.340906-7-rick.p.edgecombe@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Rewrite the comment explaining why swiotlb copies the original buffer to
-the TLB buffer before initiating DMA *from* the device, i.e. before the
-device DMAs into the TLB buffer.  The existing comment's argument that
-preserving the original data can prevent a kernel memory leak is bogus.
+On 2023-10-17 21:25, Rick Edgecombe wrote:
+> On TDX it is possible for the untrusted host to cause
+> set_memory_encrypted() or set_memory_decrypted() to fail such that an
+> error is returned and the resulting memory is shared. Callers need to take
+> care to handle these errors to avoid returning decrypted (shared) memory to
+> the page allocator, which could lead to functional or security issues.
+> 
+> DMA could free decrypted/shared pages if set_memory_decrypted() fails.
+> Use the recently added free_decrypted_pages() to avoid this.
+> 
+> Several paths also result in proper encrypted pages being freed through
+> the same freeing function. Rely on free_decrypted_pages() to not leak the
+> memory in these cases.
 
-If the driver that triggered the mapping _knows_ that the device will
-overwrite the entire mapping, or the driver will consume only the written
-parts, then copying from the original memory is completely pointless.
+If something's needed in the fallback path here, what about the 
+cma_release() paths?
 
-If neither of the above holds true, then copying from the original adds
-value only if preserving the data is necessary for functional correctness,
-or the driver explicitly initialized the original memory.  If the driver
-didn't initialize the memory, then copying the original buffer to the TLB
-buffer simply changes what kernel data is leaked to userspace.
+Thanks,
+Robin.
 
-Writing the entire TLB buffer _does_ prevent leaking stale TLB buffer data
-from a previous bounce, but that can be achieved by simply zeroing the TLB
-buffer when grabbing a slot.
-
-The real reason swiotlb ended up initializing the TLB buffer with the
-original buffer is that it's necessary to make swiotlb operate as
-transparently as possible, i.e. to behave as closely as possible to
-hardware, and to avoid corrupting the original buffer, e.g. if the driver
-knows the device will do partial writes and is relying on the unwritten
-data to be preserved.
-
-Cc: Yan Zhao <yan.y.zhao@intel.com>
-Cc: Robin Murphy <robin.murphy@arm.com>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>
-Link: https://lore.kernel.org/all/ZN5elYQ5szQndN8n@google.com
-Signed-off-by: Sean Christopherson <seanjc@google.com>
----
- kernel/dma/swiotlb.c | 12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
-
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index 01637677736f..e071415a75dc 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -1296,11 +1296,13 @@ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
- 		pool->slots[index + i].orig_addr = slot_addr(orig_addr, i);
- 	tlb_addr = slot_addr(pool->start, index) + offset;
- 	/*
--	 * When dir == DMA_FROM_DEVICE we could omit the copy from the orig
--	 * to the tlb buffer, if we knew for sure the device will
--	 * overwrite the entire current content. But we don't. Thus
--	 * unconditional bounce may prevent leaking swiotlb content (i.e.
--	 * kernel memory) to user-space.
-+	 * When the device is writing memory, i.e. dir == DMA_FROM_DEVICE, copy
-+	 * the original buffer to the TLB buffer before initiating DMA in order
-+	 * to preserve the original's data if the device does a partial write,
-+	 * i.e. if the device doesn't overwrite the entire buffer.  Preserving
-+	 * the original data, even if it's garbage, is necessary to match
-+	 * hardware behavior (use of swiotlb is supposed to be transparent) and
-+	 * so that swiotlb doesn't corrupt bytes that the device does NOT write.
- 	 */
- 	swiotlb_bounce(dev, tlb_addr, mapping_size, DMA_TO_DEVICE);
- 	return tlb_addr;
-
-base-commit: 213f891525c222e8ed145ce1ce7ae1f47921cb9c
--- 
-2.42.0.655.g421f12c284-goog
-
+> Cc: Christoph Hellwig <hch@lst.de>
+> Cc: Marek Szyprowski <m.szyprowski@samsung.com>
+> Cc: Robin Murphy <robin.murphy@arm.com>
+> Cc: iommu@lists.linux.dev
+> Signed-off-by: Rick Edgecombe <rick.p.edgecombe@intel.com>
+> ---
+>   include/linux/dma-map-ops.h | 3 ++-
+>   kernel/dma/contiguous.c     | 2 +-
+>   2 files changed, 3 insertions(+), 2 deletions(-)
+> 
+> diff --git a/include/linux/dma-map-ops.h b/include/linux/dma-map-ops.h
+> index f2fc203fb8a1..b0800cbbc357 100644
+> --- a/include/linux/dma-map-ops.h
+> +++ b/include/linux/dma-map-ops.h
+> @@ -9,6 +9,7 @@
+>   #include <linux/dma-mapping.h>
+>   #include <linux/pgtable.h>
+>   #include <linux/slab.h>
+> +#include <linux/set_memory.h>
+>   
+>   struct cma;
+>   
+> @@ -165,7 +166,7 @@ static inline struct page *dma_alloc_contiguous(struct device *dev, size_t size,
+>   static inline void dma_free_contiguous(struct device *dev, struct page *page,
+>   		size_t size)
+>   {
+> -	__free_pages(page, get_order(size));
+> +	free_decrypted_pages((unsigned long)page_address(page), get_order(size));
+>   }
+>   #endif /* CONFIG_DMA_CMA*/
+>   
+> diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
+> index f005c66f378c..e962f1f6434e 100644
+> --- a/kernel/dma/contiguous.c
+> +++ b/kernel/dma/contiguous.c
+> @@ -429,7 +429,7 @@ void dma_free_contiguous(struct device *dev, struct page *page, size_t size)
+>   	}
+>   
+>   	/* not in any cma, free from buddy */
+> -	__free_pages(page, get_order(size));
+> +	free_decrypted_pages((unsigned long)page_address(page), get_order(size));
+>   }
+>   
+>   /*
