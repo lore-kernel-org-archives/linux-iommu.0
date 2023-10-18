@@ -1,102 +1,104 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B921818E0B
-	for <iommu@lists.linux.dev>; Wed, 18 Oct 2023 23:29:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0AB7715AFB
+	for <iommu@lists.linux.dev>; Wed, 18 Oct 2023 23:36:33 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="K0UP9bKg"
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="JaW7Rb7s"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1697671775;
+	s=mimecast20190719; t=1697672193;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=DRIEsucDzfc4+5QaKl7PpFIFrSK46xQTHzvy5XznJOQ=;
-	b=K0UP9bKgoA19rp2ZvGFaWlAUKHOgHyqHz4gCcvUq3wE1gO47C/TGRL13GF7HYtiklbECiW
-	NC1BUXjKFT7Ph32Oz/rscSxS6uI4PxiJUFMGNk/Q6HylrE6nP6/+TW3FsBFIjWdZ3exZZJ
-	uMOHEU2f9ypn3/WinoBvV8btQBMhWBE=
-Received: from mail-oi1-f198.google.com (mail-oi1-f198.google.com
- [209.85.167.198]) by relay.mimecast.com with ESMTP with STARTTLS
+	bh=wwq4pN/s/i/zMbfkzPRCH3hAZNaKCKuiLB6gGgcmPE4=;
+	b=JaW7Rb7sx7Odo9oaQ09PS6isNUilQUoueiZ0GEYmuDIBAqwSpOoB0M3Bdohm3mU44tJKoD
+	9IsXltuNMRi5EMOrLWwEEQC+2CIAXaN509TTS4l7896ZEFmUzWOHR3PO6ncSZ4RPajSeY3
+	XOmjyxuGEs2mE0QfMCyJBYO6gVka/Vg=
+Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
+ [209.85.222.197]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-231-OaEoQMfrPQmNNufXGp9n8g-1; Wed, 18 Oct 2023 19:29:31 -0400
-X-MC-Unique: OaEoQMfrPQmNNufXGp9n8g-1
-Received: by mail-oi1-f198.google.com with SMTP id 5614622812f47-3b2e44c8664so2706017b6e.3
-        for <iommu@lists.linux.dev>; Wed, 18 Oct 2023 16:29:31 -0700 (PDT)
+ us-mta-138-J8azIKHrOQ-eeIrJEHyWWw-1; Wed, 18 Oct 2023 19:36:26 -0400
+X-MC-Unique: J8azIKHrOQ-eeIrJEHyWWw-1
+Received: by mail-qk1-f197.google.com with SMTP id af79cd13be357-7789405320fso131335585a.0
+        for <iommu@lists.linux.dev>; Wed, 18 Oct 2023 16:36:26 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1697671770; x=1698276570;
+        d=1e100.net; s=20230601; t=1697672186; x=1698276986;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=DRIEsucDzfc4+5QaKl7PpFIFrSK46xQTHzvy5XznJOQ=;
-        b=fzkqSya5rJlivroYwyiYP3dac0T/yL2PLLzkRV0jUuu2DVwzcN5sJFHzWRPPJmpYvB
-         9G7pi/R9zWoKwU9Td6QEsgDPMJqofum2pUpnnREstT6xnzekEJVGD+3wOiFfV4VVO1W9
-         8DOdyaUFXjTAtBMELsFikriqNnRCj1WGnZr9+KF0ghas/6vPvhvxr65PZ0BdTTITFEFq
-         JDmuQi3N93RB3bxgCGWQGClW6bZHgnZYmeUlpm4B3xlRyy3D8UM+DukZatgOr00ciZOb
-         z+hv+JbyQlsOivTfXj3AsIsN8MBXTn7/5rEMdOeLWtGY2g6nVXVeKEzp3NWY6hQ+ClBY
-         0OWA==
-X-Gm-Message-State: AOJu0YzHxrLWdEVwkio3ULBf9is0VnSGfHVz0uCGBQjTm/rzaZfVO67m
-	Z0sldIckhpx7UAhEWsdj6q3l/T/D3XFkFwrF6LJs0V1LQ+lEiNNloUzU3cpDWXBpFOqLN+84tMu
-	X7oEGhrR0JsTSiwA=
-X-Received: by 2002:a54:440e:0:b0:3a4:298f:b2e0 with SMTP id k14-20020a54440e000000b003a4298fb2e0mr645532oiw.26.1697671770796;
-        Wed, 18 Oct 2023 16:29:30 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IHx26w5otXYju9J5g7hJH0oM90D/ndOaZWJ/zsUkrwM4XB6dkxyGvfp4EUqanYeiF63KRz1yw==
-X-Received: by 2002:a54:440e:0:b0:3a4:298f:b2e0 with SMTP id k14-20020a54440e000000b003a4298fb2e0mr645519oiw.26.1697671770567;
-        Wed, 18 Oct 2023 16:29:30 -0700 (PDT)
+        bh=wwq4pN/s/i/zMbfkzPRCH3hAZNaKCKuiLB6gGgcmPE4=;
+        b=eUU3W+NwinL4GEa2myAiWaPS1qXWERMJGZTehorVOiXhm1zxO1kJSGFfuWtoTCCM51
+         0/XpRvfZphEI8tI4OtgeByp6O/AMXRKacfEneV6s8n2Un5RhZkWxktUX7HGCnECj4JVh
+         CUvx82ORCX220Bp2uTC1kkCAepM6dgjkZ7AXMpOqCLgACoVMk9ryTpxJdf+6V8xGxrY2
+         S8UqXPBjURn9ahjH0x3vyQmsCXIXL6OhbMsHLaSVhs/gEnPXIaohxZwTSjVlrc/NKAqW
+         1zuhqY3i8IklhHKU+dU8UWuIItxz/ZEnwJFKM4Ni0fwEMgf/68upfBQgQclPc+8YNLZZ
+         BU/A==
+X-Gm-Message-State: AOJu0YwZaWaYkqi3pv3nnVa1J9DU0UIzFP03cBkiUiFGdfRyrsAwEn3o
+	Pnp2KxXwBbwGyj7Fn30zFTA/F70QOe8Sk/JhfdJkZkZ49eONBQwXiFxyKAanGnxrDApXO2yMCMU
+	UVpRyZEzgb8DADAU=
+X-Received: by 2002:a05:620a:469f:b0:776:fad0:cc3b with SMTP id bq31-20020a05620a469f00b00776fad0cc3bmr723753qkb.1.1697672186297;
+        Wed, 18 Oct 2023 16:36:26 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IGPO7Vqth8t9yy/v3L0mG5MziEBsmxEMVxzKc33ywKWfOCVkngG2TzL+rbFxuOxZ3T5/4javQ==
+X-Received: by 2002:a05:620a:469f:b0:776:fad0:cc3b with SMTP id bq31-20020a05620a469f00b00776fad0cc3bmr723743qkb.1.1697672186039;
+        Wed, 18 Oct 2023 16:36:26 -0700 (PDT)
 Received: from localhost (ip98-179-76-75.ph.ph.cox.net. [98.179.76.75])
-        by smtp.gmail.com with ESMTPSA id bt19-20020ad455d3000000b006616fbcc077sm318229qvb.129.2023.10.18.16.29.29
+        by smtp.gmail.com with ESMTPSA id bl11-20020a05620a1a8b00b00773fe8971bbsm324650qkb.90.2023.10.18.16.36.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 Oct 2023 16:29:30 -0700 (PDT)
-Date: Wed, 18 Oct 2023 16:29:28 -0700
+        Wed, 18 Oct 2023 16:36:25 -0700 (PDT)
+Date: Wed, 18 Oct 2023 16:36:24 -0700
 From: Jerry Snitselaar <jsnitsel@redhat.com>
 To: Robin Murphy <robin.murphy@arm.com>
 Cc: joro@8bytes.org, will@kernel.org, iommu@lists.linux.dev, 
-	jgg@nvidia.com, baolu.lu@linux.intel.com, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 5/7] iommu/arm-smmu: Don't register fwnode for legacy
- binding
-Message-ID: <2aigsq5n3q2qqwlctn7dqorusslpwpptgogzcrymxzxeertqvn@7aua3vzzszt7>
+	jgg@nvidia.com, baolu.lu@linux.intel.com, linux-kernel@vger.kernel.org, 
+	"Rafael J . Wysocki" <rafael.j.wysocki@intel.com>, Christoph Hellwig <hch@lst.de>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v5 6/7] iommu: Retire bus ops
+Message-ID: <63s3zurkwuq66szkc6wnvzbh75d5vxek3fzzsxbufd4ytdnkke@2gnfjb3b6ufk>
 References: <cover.1697047261.git.robin.murphy@arm.com>
- <3a5cd62dd21ed58f337bb9a389d301054e503dc3.1697047261.git.robin.murphy@arm.com>
+ <2411f20c801140b3cff37193ec2c08393a754997.1697047261.git.robin.murphy@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <3a5cd62dd21ed58f337bb9a389d301054e503dc3.1697047261.git.robin.murphy@arm.com>
+In-Reply-To: <2411f20c801140b3cff37193ec2c08393a754997.1697047261.git.robin.murphy@arm.com>
 X-Mimecast-Spam-Score: 0
 X-Mimecast-Originator: redhat.com
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 
-On Wed, Oct 11, 2023 at 07:14:52PM +0100, Robin Murphy wrote:
-> When using the legacy binding we bypass the of_xlate mechanism, so avoid
-> registering the instance fwnodes which act as keys for that. This will
-> help __iommu_probe_device() to retrieve the registered ops the same way
-> as for x86 etc. when no fwspec has previously been set up by of_xlate.
+On Wed, Oct 11, 2023 at 07:14:53PM +0100, Robin Murphy wrote:
+> With the rest of the API internals converted, it's time to finally
+> tackle probe_device and how we bootstrap the per-device ops association
+> to begin with. This ends up being disappointingly straightforward, since
+> fwspec users are already doing it in order to find their of_xlate
+> callback, and it works out that we can easily do the equivalent for
+> other drivers too. Then shuffle the remaining awareness of iommu_ops
+> into the couple of core headers that still need it, and breathe a sigh
+> of relief.
 > 
+> Ding dong the bus ops are gone!
+> 
+> CC: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+> Acked-by: Christoph Hellwig <hch@lst.de>
+> Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
 > Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 > Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-> ---
->  drivers/iommu/arm/arm-smmu/arm-smmu.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
 > 
-> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> index d6d1a2a55cc0..4b83a3adacd6 100644
-> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> @@ -2161,7 +2161,8 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
->  		return err;
->  	}
->  
-> -	err = iommu_device_register(&smmu->iommu, &arm_smmu_ops, dev);
-> +	err = iommu_device_register(&smmu->iommu, &arm_smmu_ops,
-> +				    using_legacy_binding ? NULL : dev);
->  	if (err) {
->  		dev_err(dev, "Failed to register iommu\n");
->  		iommu_device_sysfs_remove(&smmu->iommu);
-> -- 
-> 2.39.2.101.g768bb238c484.dirty
+> ---
+> 
+> v4: Don't forget new reference in iommu_device_register_bus()
+> ---
+>  drivers/iommu/iommu.c       | 31 ++++++++++++++++++-------------
+>  include/acpi/acpi_bus.h     |  2 ++
+>  include/linux/device.h      |  1 -
+>  include/linux/device/bus.h  |  5 -----
+>  include/linux/dma-map-ops.h |  1 +
+>  5 files changed, 21 insertions(+), 19 deletions(-)
 > 
 
 Reviewed-by: Jerry Snitselaar <jsnitsel@redhat.com>
