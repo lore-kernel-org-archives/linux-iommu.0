@@ -1,115 +1,94 @@
-Received: from mail-pl1-f175.google.com (mail-pl1-f175.google.com [209.85.214.175])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39FED8F49
-	for <iommu@lists.linux.dev>; Thu, 19 Oct 2023 15:15:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0FF5B2747A
+	for <iommu@lists.linux.dev>; Thu, 19 Oct 2023 15:25:33 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="GHWmJcvx"
-Received: by mail-pl1-f175.google.com with SMTP id d9443c01a7336-1c5c91bec75so57508705ad.3
-        for <iommu@lists.linux.dev>; Thu, 19 Oct 2023 08:15:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1697728512; x=1698333312; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=m/tcTfs0PflHwKMpetwk3afhilPxA8Q9Lp8a1lR/wmE=;
-        b=GHWmJcvxQHIrOOzx/kbdOmPLx6qGvjcVqfB/RcxNlr8s6ovlMcejPMVbfig8iHghKv
-         GHGFh/0YaYzXXaETfPALdS1P0/tAH9On1SyPe1tTV66TpuSNGy5mepCGEfmflWvMQLFD
-         W0rQtpHgsixMGVpd4D4fEi481A2zoxFv8MP+clFuA1JcXdhAW/N+Tn53OtzOJL0h6hyY
-         S2XLLgO8filuux/w79VuE+7vAI/SfVK0O5BaWIcuxojK9x4+us17JUDYVnXw9dNNPpIa
-         hhzkjEDfIdpu9Uoly11pFK/tKkGjwlPPJp7Acoab45LFX4OgOoSa7ISb6xvuQ3Yq0Gwk
-         vo5Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1697728512; x=1698333312;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=m/tcTfs0PflHwKMpetwk3afhilPxA8Q9Lp8a1lR/wmE=;
-        b=R6STclbZRdpFC0i4W71gmQIFz1H8d2uczOu0XcDVXumV0Tc14p4H/7OXLiZf3h0VrM
-         GcTdI8M1eDdavSqoGhKBoCTDKHf8lM2J4aXtavfM8b8WWeMM7osq3aYyxAWNny0kAIGH
-         pZvNFPdqAH+9lUByZLzOpW6wSRQAUjsRFVhN6xGFVbFvsRXdBJ1vXrNuaUe3M8x+awdd
-         kM0LCu/xdViWItxOR3aTRlZwfNFJyVe476G76VsSOYgNur5XoS50DPw+QS++CcigPiwc
-         3xtrjTIChdMPRC4G+Rhsdj4fzjU9BR6922Zpl7k9jXvNpmjH2cCvKJqzwkUYgH7QawOT
-         vkog==
-X-Gm-Message-State: AOJu0YwVUNveYRvC3j86nXVESy5IzK2ws0wQi8HqRt6KThxfADEP+y7X
-	t3mG8RUIr+3x2fE+oFz7Yz6xWEkc7OGj3eS6K+UA4g==
-X-Google-Smtp-Source: AGHT+IHC2GCYSgQBivySy6NMX0VhiBlgVlMe6JGwUC4TRk9A/00nLrDl6p8Mw5q8/7/dfkM9E4VZIw==
-X-Received: by 2002:a17:902:c7c2:b0:1c9:ca02:645c with SMTP id r2-20020a170902c7c200b001c9ca02645cmr1815570pla.36.1697728511974;
-        Thu, 19 Oct 2023 08:15:11 -0700 (PDT)
-Received: from ziepe.ca ([12.22.141.131])
-        by smtp.gmail.com with ESMTPSA id ik14-20020a170902ab0e00b001bb3beb2bc6sm2113976plb.65.2023.10.19.08.15.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 Oct 2023 08:15:11 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1qtUjt-003D8G-LY;
-	Thu, 19 Oct 2023 12:15:09 -0300
-Date: Thu, 19 Oct 2023 12:15:09 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Zhenhua Huang <quic_zhenhuah@quicinc.com>
-Cc: Robin Murphy <robin.murphy@arm.com>, will@kernel.org, joro@8bytes.org,
-	baolu.lu@linux.intel.com, iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, quic_tingweiz@quicinc.com,
-	Pavan Kondeti <quic_pkondeti@quicinc.com>,
-	"Patrick Daly (QUIC)" <quic_pdaly@quicinc.com>
-Subject: Re: [ARM IOMMU] IOMMU framework concurrency issue
-Message-ID: <20231019151509.GD691768@ziepe.ca>
-References: <e2e20e1c-6450-4ac5-9804-b0000acdf7de@quicinc.com>
- <20231017163337.GE282036@ziepe.ca>
- <70cc8d3d-1ddf-4700-ac15-bcd74fae2b2a@arm.com>
- <20231018161918.GB691768@ziepe.ca>
- <0d6b490d-83df-76fb-f5ad-e9730fc57660@quicinc.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="s/A5u5nu"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5754C433C7;
+	Thu, 19 Oct 2023 15:25:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1697729133;
+	bh=u/lMWJ+F7E/hlh7pbvNFzd6HWcLB+2i2s6p2bJhsGNM=;
+	h=Subject:From:Cc:Date:From;
+	b=s/A5u5nuYoWGo2aupBwIYcocCx0oznUJzPAn7aPczoF6P6tSHzITH5v2c6K7hAVmx
+	 GhmTRWBYv+D/AwH5OX2rDNeHaI802fKR9+OHWUh7LMofQKaIMbOeNuJKOyRmGxi3YS
+	 E031nLW9QIJpzOZmLdi8u3jVoU1Zr5pEeGkvKR1ElUgTG6d6ABKDb6Kpb5zUaxu0Gv
+	 cetfm0rfcQgArFAzt8rtEatpFxYgzUw0G+g3AByGweBtac3m4XLQWcjM5gGMVbXs41
+	 fcUJZ6sY6ouUxZUIH8+gkDEr9c3e+Un53EG1ew/0Rv0AJrUzyfmBbsRJYdqnqvjlVq
+	 VK0KEJhBcHYWQ==
+Subject: [PATCH RFC 0/9] Exploring biovec support in (R)DMA API
+From: Chuck Lever <cel@kernel.org>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>,
+ Chuck Lever <chuck.lever@oracle.com>, Robin Murphy <robin.murphy@arm.com>,
+ Alexander Potapenko <glider@google.com>, linux-mm@kvack.org,
+ linux-rdma@vger.kernel.org, Jens Axboe <axboe@kernel.dk>,
+ kasan-dev@googlegroups.com, David Howells <dhowells@redhat.com>,
+ iommu@lists.linux.dev, Christoph Hellwig <hch@lst.de>
+Date: Thu, 19 Oct 2023 11:25:31 -0400
+Message-ID: 
+ <169772852492.5232.17148564580779995849.stgit@klimt.1015granger.net>
+User-Agent: StGit/1.5
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0d6b490d-83df-76fb-f5ad-e9730fc57660@quicinc.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 
-On Thu, Oct 19, 2023 at 04:21:47PM +0800, Zhenhua Huang wrote:
-> In above time window (1), dev->iommu allocated but not freed, if it's just
-> accessed by client device's probing(Thread 1)..     crash happens.
-> 
-> I also want to mention from our side, it's *not only seen for non-iommu*
-> device.
+The SunRPC stack manages pages (and eventually, folios) via an
+array of struct biovec items within struct xdr_buf. We have not
+fully committed to replacing the struct page array in xdr_buf
+because, although the socket API supports biovec arrays, the RDMA
+stack uses struct scatterlist rather than struct biovec.
 
-I see. So there are only two locks we currently have that could
-resolve that - the device_lock or the iommu_probe_device_lock
+This (incomplete) series explores what it might look like if the
+RDMA core API could support struct biovec array arguments. The
+series compiles on x86, but I haven't tested it further. I'm posting
+early in hopes of starting further discussion.
 
-The device_lock path is what my prior series did, in your case you
-already have the device_lock on of_dma_configure_id() so you just need
-it on the bus path.
+Are there other upper layer API consumers, besides SunRPC, who might
+prefer the use of biovec over scatterlist?
 
-The iommu_probe_device_lock is what I guess Robin was thinking of with
-the of_xlate rework.. I looked a little and it seems like quite a
-thorny problem.. The ARM SMMU drivers seem to model the correct design
-using the iommu_fwspec to pass data from of_xlate to probe, while a
-whole bunch of other drivers decided to put the first half of their
-probe functions into of_xlate!
+Besides handling folios as well as single pages in bv_page, what
+other work might be needed in the DMA layer?
 
-To untangle this to use the iommu_probe_device_lock the of_xlate would
-have to stop using the struct dev (ie so it cannot touch the
-dev->iommu any more) and all the dev->iommu touches in the of/acpi
-code reorganized into function arguments to iommu_probe which would
-then store them into the dev->iommu under the lock. Ie stop using
-dev->iommu as some temporary scratch pad to shuffle data around prior
-to probing. Pass iommu_fwspec as an arg to iommu_probe and a new
-ops->probe_fwspec. Stop calling dev_iommu_priv_set from of_xlate ops.
+What RDMA core APIs should be converted? IMO a DMA mapping and
+registration API for biovecs would be needed. Maybe RDMA Read and
+Write too?
 
-> Patch seems good to me and in theory can cover the case I have met. I tested
-> below based on 6.6-rc1 for sanity with minor changes(clean up tags etc). If
-> you're OK I want to propagate into our tree and to see if it fixes issue?
+---
 
-I don't think this patch can solve the races with of_xlate vs probe,
-that is just wrongly locked.
+Chuck Lever (9):
+      dma-debug: Fix a typo in a debugging eye-catcher
+      bvec: Add bio_vec fields to manage DMA mapping
+      dma-debug: Add dma_debug_ helpers for mapping bio_vec arrays
+      mm: kmsan: Add support for DMA mapping bio_vec arrays
+      dma-direct: Support direct mapping bio_vec arrays
+      DMA-API: Add dma_sync_bvecs_for_cpu() and dma_sync_bvecs_for_device()
+      DMA: Add dma_map_bvecs_attrs()
+      iommu/dma: Support DMA-mapping a bio_vec array
+      RDMA: Add helpers for DMA-mapping an array of bio_vecs
 
-I assume my series you linked to comprehensively fixes this?
 
-FWIW I don't have the energy to try and fix all the wonky drivers
-properly so I don't plan to revisit it.
+ drivers/iommu/dma-iommu.c   | 368 ++++++++++++++++++++++++++++++++++++
+ drivers/iommu/iommu.c       |  58 ++++++
+ include/linux/bvec.h        | 143 ++++++++++++++
+ include/linux/dma-map-ops.h |   8 +
+ include/linux/dma-mapping.h |   9 +
+ include/linux/iommu.h       |   4 +
+ include/linux/kmsan.h       |  20 ++
+ include/rdma/ib_verbs.h     |  29 +++
+ kernel/dma/debug.c          | 165 +++++++++++++++-
+ kernel/dma/debug.h          |  38 ++++
+ kernel/dma/direct.c         |  92 +++++++++
+ kernel/dma/direct.h         |  17 ++
+ kernel/dma/mapping.c        |  93 +++++++++
+ mm/kmsan/hooks.c            |  13 ++
+ 14 files changed, 1056 insertions(+), 1 deletion(-)
 
-Jason
+--
+Chuck Lever
+
