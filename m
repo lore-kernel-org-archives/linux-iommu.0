@@ -1,35 +1,36 @@
 Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 515957F0
-	for <iommu@lists.linux.dev>; Thu, 19 Oct 2023 02:19:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39E81808
+	for <iommu@lists.linux.dev>; Thu, 19 Oct 2023 02:19:58 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="FJ0wDwbu"
-Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 39J1rOGF013661;
-	Thu, 19 Oct 2023 02:19:41 GMT
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="KP7PhPWy"
+Received: from pps.filterd (m0279864.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 39J0nOfD013360;
+	Thu, 19 Oct 2023 02:19:42 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type; s=qcppdkim1;
- bh=/+uaH8m+OBqW0tnjLaWiubLxqjWShsYiopeevHxEDSM=;
- b=FJ0wDwbupOPlYwWt5/faxFY/7pCm5iirhtOG34Zfyfx6ohgjFmtdfkuX3PtaOWApq5LF
- pvZwkt0f/HdELbe+AYgm8u8DptkJGgVAhhEO/jVRgEntM2n0yds7Wt+8vOO8TLIBg/sx
- Njafdu5f883MJqY1rHTMtab1p6A7tZrn14Gs20O9y2ejtlWSYXA3Usjb2L2+HVALSTo7
- 4f0hFRm09cmHVnW80/V0Sm+oXzJZITPjgpPqSzWfk8wwMVXaoxAoy7Y1HSUZ9XGGyYAn
- q2qGfTT2N5IFNLOk7zYYjItC2jJeRz4AQDndcV4R/9er36qpWjI5lAorEtR9GZDTtnn7 rw== 
-Received: from nasanppmta01.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3tt8xsam20-1
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-type; s=qcppdkim1;
+ bh=s5m9u0ft7/a6mM7+BswRBLqRxLRZWPd2we92qi/sGso=;
+ b=KP7PhPWy/jaCYiJgtYnbVw64BFprXRgsP8JTk4DkilVplRZzq1KUBoi4lRy0mqcl78cQ
+ JCsZdhK+a5hXwLFHfuwcu+x7/ta1wnK79yzjDlApw/eyYc5c75BEn0CBpuViTpnXXpnj
+ A8AQgD9cRwxy4BjYt3y9hDkX7KVTP2oF+36WtfR/sOr+HCKlO8rr142BOieY0Kg8CUbE
+ gqc67iDdqj8sWdJRvI640EuaFnCluJTtWyGlcCV09ovIa1Q4pGYmQP0qeY2CcowjECGd
+ xv0fmduNR02MxKQBV8FwySo43X4onK17slDEEc5iC2UrJpWM8r6oknQhL+7WUWMmzTZk Bw== 
+Received: from nasanppmta02.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3tth2f1dgm-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 19 Oct 2023 02:19:41 +0000
+	Thu, 19 Oct 2023 02:19:42 +0000
 Received: from nasanex01a.na.qualcomm.com (nasanex01a.na.qualcomm.com [10.52.223.231])
-	by NASANPPMTA01.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 39J2Jef0004188
+	by NASANPPMTA02.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 39J2Jfb3001109
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 19 Oct 2023 02:19:40 GMT
+	Thu, 19 Oct 2023 02:19:41 GMT
 Received: from hu-c-gdjako-lv.qualcomm.com (10.49.16.6) by
  nasanex01a.na.qualcomm.com (10.52.223.231) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.39; Wed, 18 Oct 2023 19:19:39 -0700
+ 15.2.1118.39; Wed, 18 Oct 2023 19:19:40 -0700
 From: Georgi Djakov <quic_c_gdjako@quicinc.com>
 To: <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
         <conor+dt@kernel.org>, <will@kernel.org>, <robin.murphy@arm.com>,
@@ -40,10 +41,12 @@ CC: <devicetree@vger.kernel.org>, <andersson@kernel.org>,
         <linux-arm-msm@vger.kernel.org>, <quic_cgoldswo@quicinc.com>,
         <quic_sukadev@quicinc.com>, <quic_pdaly@quicinc.com>,
         <quic_sudaraja@quicinc.com>, <djakov@kernel.org>
-Subject: [PATCH 0/6] Add support for Translation Buffer Units
-Date: Wed, 18 Oct 2023 19:19:17 -0700
-Message-ID: <20231019021923.13939-1-quic_c_gdjako@quicinc.com>
+Subject: [PATCH 2/6] iommu/arm-smmu-qcom: Add support for TBUs
+Date: Wed, 18 Oct 2023 19:19:19 -0700
+Message-ID: <20231019021923.13939-3-quic_c_gdjako@quicinc.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20231019021923.13939-1-quic_c_gdjako@quicinc.com>
+References: <20231019021923.13939-1-quic_c_gdjako@quicinc.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -56,50 +59,87 @@ X-ClientProxiedBy: nalasex01a.na.qualcomm.com (10.47.209.196) To
  nasanex01a.na.qualcomm.com (10.52.223.231)
 X-QCInternal: smtphost
 X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: 0Y91xaZkUXfe7YLR7kOtDeR8PiWH_7ZT
-X-Proofpoint-ORIG-GUID: 0Y91xaZkUXfe7YLR7kOtDeR8PiWH_7ZT
+X-Proofpoint-ORIG-GUID: DFTd_SLrM6Zc014PUCezYFWvu7bimWYa
+X-Proofpoint-GUID: DFTd_SLrM6Zc014PUCezYFWvu7bimWYa
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.272,Aquarius:18.0.980,Hydra:6.0.619,FMLib:17.11.176.26
  definitions=2023-10-19_02,2023-10-18_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0
- lowpriorityscore=0 spamscore=0 mlxscore=0 suspectscore=0 clxscore=1011
- impostorscore=0 phishscore=0 adultscore=0 priorityscore=1501
- mlxlogscore=532 malwarescore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2309180000 definitions=main-2310190018
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 mlxscore=0
+ mlxlogscore=999 spamscore=0 malwarescore=0 suspectscore=0
+ lowpriorityscore=0 impostorscore=0 priorityscore=1501 clxscore=1015
+ adultscore=0 bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2309180000 definitions=main-2310190018
 
-The TCUs (Translation Control Units) and TBUs (Translation Buffer
-Units) are key components of the ARM MMU-500. Multiple TBUs are
-connected to a single TCU over an interconnect. Each TBU contains
-a TLB that caches page tables. The MMU-500 implements a TBU for each
-connected master, and the TBU is designed, so that it is local to the
-master.
+The ARM MMU-500 implements a Translation Buffer Unit (TBU) for each
+connected master besides a single TCU which controls and manages the
+address translations.
 
-The Qualcomm sdm845 platform has an implementation of the ARM SMMU-500,
-that consists of a single TCU and multiple TBUs. Support for the TCU
-is already present and this patchset is adds support for TBUs that
-allow us to use some of the debug features to include more info when
-a context fault occurs.
+Allow the Qualcomm SMMU driver to probe for any TBU devices that can
+provide additional debug features like triggering transactions, logging
+outstanding transactions, snapshot capture etc. The most basic use-case
+would be to get information from the TBUs and print it during a context
+fault.
 
-Each TBU requires some resources like power-domains, interconnects and
-clocks to be described in DT. These resources will be being controlled
-by the TBU driver when they in use.
+Signed-off-by: Georgi Djakov <quic_c_gdjako@quicinc.com>
+---
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 12 ++++++++++++
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h |  4 +++-
+ 2 files changed, 15 insertions(+), 1 deletion(-)
 
-Georgi Djakov (6):
-  dt-bindings: iommu: Add Translation Buffer Unit bindings
-  iommu/arm-smmu-qcom: Add support for TBUs
-  iommu/arm-smmu-qcom: Add Qualcomm TBU driver
-  iommu/arm-smmu: Allow using a threaded handler for context interrupts
-  iommu/arm-smmu-qcom: Use a custom context fault handler for sdm845
-  arm64: dts: qcom: sdm845: Add DT nodes for the TBUs
-
- .../devicetree/bindings/iommu/arm,smmu.yaml   |  13 +
- .../bindings/iommu/qcom,qsmmuv500-tbu.yaml    |  67 +++
- arch/arm64/boot/dts/qcom/sdm845.dtsi          |  85 +++
- drivers/iommu/Kconfig                         |   8 +
- drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c    | 544 ++++++++++++++++++
- drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h    |   4 +-
- drivers/iommu/arm/arm-smmu/arm-smmu.c         |  12 +-
- drivers/iommu/arm/arm-smmu/arm-smmu.h         |   3 +
- 8 files changed, 733 insertions(+), 3 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/iommu/qcom,qsmmuv500-tbu.yaml
-
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+index 7f52ac67495f..655c7f50ca84 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+@@ -1,12 +1,14 @@
+ // SPDX-License-Identifier: GPL-2.0-only
+ /*
+  * Copyright (c) 2019, The Linux Foundation. All rights reserved.
++ * Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved
+  */
+ 
+ #include <linux/acpi.h>
+ #include <linux/adreno-smmu-priv.h>
+ #include <linux/delay.h>
+ #include <linux/of_device.h>
++#include <linux/of_platform.h>
+ #include <linux/firmware/qcom/qcom_scm.h>
+ 
+ #include "arm-smmu.h"
+@@ -466,6 +468,16 @@ static struct arm_smmu_device *qcom_smmu_create(struct arm_smmu_device *smmu,
+ 	qsmmu->smmu.impl = impl;
+ 	qsmmu->cfg = data->cfg;
+ 
++	/* Populate TBU devices if such are present in DT */
++	if (np && of_device_is_compatible(np, "arm,mmu-500")) {
++		int ret;
++
++		INIT_LIST_HEAD(&qsmmu->tbu_list);
++		ret = devm_of_platform_populate(smmu->dev);
++		if (ret)
++			return ERR_PTR(ret);
++	}
++
+ 	return &qsmmu->smmu;
+ }
+ 
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h
+index 593910567b88..2164a9cf3dde 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h
+@@ -1,6 +1,6 @@
+ /* SPDX-License-Identifier: GPL-2.0-only */
+ /*
+- * Copyright (c) 2022, Qualcomm Innovation Center, Inc. All rights reserved.
++ * Copyright (c) 2022-2023, Qualcomm Innovation Center, Inc. All rights reserved.
+  */
+ 
+ #ifndef _ARM_SMMU_QCOM_H
+@@ -12,6 +12,8 @@ struct qcom_smmu {
+ 	bool bypass_quirk;
+ 	u8 bypass_cbndx;
+ 	u32 stall_enabled;
++	struct mutex tbu_list_lock;  /* protects tbu_list */
++	struct list_head tbu_list;
+ };
+ 
+ enum qcom_smmu_impl_reg_offset {
