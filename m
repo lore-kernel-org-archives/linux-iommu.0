@@ -1,31 +1,30 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B997D2747A
-	for <iommu@lists.linux.dev>; Thu, 19 Oct 2023 15:25:40 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 203F52747A
+	for <iommu@lists.linux.dev>; Thu, 19 Oct 2023 15:25:47 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="phP7X2Ta"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6F13C433C7;
-	Thu, 19 Oct 2023 15:25:39 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BnlHbiv/"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74A8FC433C8;
+	Thu, 19 Oct 2023 15:25:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1697729140;
-	bh=2x/mtd1lDxKRGt7mE+ffi4TGn+7QuCZoZq/NudZ2row=;
+	s=k20201202; t=1697729146;
+	bh=rHw641BxoEniSZKS3TqYaiuJRFAhMpJhe6yrKgKV3tA=;
 	h=Subject:From:Cc:Date:In-Reply-To:References:From;
-	b=phP7X2TaXqgrzDLtHYupVm0feLgZ9PTdxCle9l0R6cdmDYryBkgPjAKeQkvKYMp/e
-	 Fev2lnAGS6PVHuoeSkDeySs1n9pXT20gpJkyuoaPUpud2SFB9Bw1WpwqP3DyXnERlQ
-	 jxjOdjtswqCqg1Mc/fOPoxOMNgfstNjsAoaJrCpzq5gaDoET6aG+SlYRs5YTigrJ+T
-	 /4w1JXRM9TIeus60IX25NVuALcwDNCrlvBLe0Z+0P36KbKqlRP7G0uJDuTsLxno21o
-	 vCUyo3M32pC40zY0LBczfwNU9HnrVzCmSYaYYxi9mxH+Q3SgxmkWyLm7RT8FA54FHl
-	 urvLL3Xen/UTQ==
-Subject: [PATCH RFC 1/9] dma-debug: Fix a typo in a debugging eye-catcher
+	b=BnlHbiv/wGrZr62VlehUMM5I7UG1UFVZkdo7FRvv4kGbpL6WpDAEzXH3ZQn0OBn9a
+	 ir40Aj9VBGeoL46O7FHBrW+tfz0NqfpfQm0lDRtoRTyF+HqDR6Wd1qBJ2/6w5zVznB
+	 RRuBsjIx5RA+wqJIo943V2DU3wwKRLOvWq6q9C5ltYgLfansfJDlTJ2/VuEyJEk6c6
+	 xIL0OcMC5QOyms4UtJvxWRzM4qMMAumwYAQFvK66m2GpN/8BzU1Ebwlno9DVs+PybA
+	 M3K1OQnVM37n7wmH3RaqFhdD3B+AzpBw99ZrRUbvCyrwN7W/VG/dGajR1e9i6auu43
+	 ZOhcgbm9tvzdg==
+Subject: [PATCH RFC 2/9] bvec: Add bio_vec fields to manage DMA mapping
 From: Chuck Lever <cel@kernel.org>
-Cc: Christoph Hellwig <hch@lst.de>,
- Marek Szyprowski <m.szyprowski@samsung.com>,
- Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
- Chuck Lever <chuck.lever@oracle.com>
-Date: Thu, 19 Oct 2023 11:25:38 -0400
+Cc: Jens Axboe <axboe@kernel.dk>, Christoph Hellwig <hch@lst.de>,
+ David Howells <dhowells@redhat.com>, iommu@lists.linux.dev,
+ linux-rdma@vger.kernel.org, Chuck Lever <chuck.lever@oracle.com>
+Date: Thu, 19 Oct 2023 11:25:45 -0400
 Message-ID: 
- <169772913879.5232.8222328841727254479.stgit@klimt.1015granger.net>
+ <169772914548.5232.12015170784207638561.stgit@klimt.1015granger.net>
 In-Reply-To: 
  <169772852492.5232.17148564580779995849.stgit@klimt.1015granger.net>
 References: 
@@ -42,27 +41,191 @@ Content-Transfer-Encoding: 7bit
 
 From: Chuck Lever <chuck.lever@oracle.com>
 
+These are roughly equivalent to the fields used for managing
+scatterlist DMA mapping.
+
+Cc: Jens Axboe <axboe@kernel.dk>
 Cc: Christoph Hellwig <hch@lst.de>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: Robin Murphy <robin.murphy@arm.com>
+Cc: David Howells <dhowells@redhat.com>
 Cc: iommu@lists.linux.dev
+Cc: linux-rdma@vger.kernel.org
 Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
 ---
- kernel/dma/debug.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/linux/bvec.h |  143 ++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 143 insertions(+)
 
-diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
-index 06366acd27b0..3de494375b7b 100644
---- a/kernel/dma/debug.c
-+++ b/kernel/dma/debug.c
-@@ -139,7 +139,7 @@ static const char *const maperr2str[] = {
+diff --git a/include/linux/bvec.h b/include/linux/bvec.h
+index 555aae5448ae..1074f34a4e8f 100644
+--- a/include/linux/bvec.h
++++ b/include/linux/bvec.h
+@@ -13,6 +13,7 @@
+ #include <linux/limits.h>
+ #include <linux/minmax.h>
+ #include <linux/types.h>
++#include <asm/io.h>
  
- static const char *type2name[] = {
- 	[dma_debug_single] = "single",
--	[dma_debug_sg] = "scather-gather",
-+	[dma_debug_sg] = "scatter-gather",
- 	[dma_debug_coherent] = "coherent",
- 	[dma_debug_resource] = "resource",
+ struct page;
+ 
+@@ -32,6 +33,13 @@ struct bio_vec {
+ 	struct page	*bv_page;
+ 	unsigned int	bv_len;
+ 	unsigned int	bv_offset;
++	dma_addr_t	bv_dma_address;
++#ifdef CONFIG_NEED_SG_DMA_LENGTH
++	unsigned int	bv_dma_length;
++#endif
++#ifdef CONFIG_NEED_SG_DMA_FLAGS
++	unsigned int	bv_dma_flags;
++#endif
  };
+ 
+ /**
+@@ -74,6 +82,24 @@ static inline void bvec_set_virt(struct bio_vec *bv, void *vaddr,
+ 	bvec_set_page(bv, virt_to_page(vaddr), len, offset_in_page(vaddr));
+ }
+ 
++/**
++ * bv_phys - return physical address of a bio_vec
++ * @bv:		bio_vec
++ */
++static inline dma_addr_t bv_phys(struct bio_vec *bv)
++{
++	return page_to_phys(bv->bv_page) + bv->bv_offset;
++}
++
++/**
++ * bv_virt - return virtual address of a bio_vec
++ * @bv:		bio_vec
++ */
++static inline void *bv_virt(struct bio_vec *bv)
++{
++	return page_address(bv->bv_page) + bv->bv_offset;
++}
++
+ struct bvec_iter {
+ 	sector_t		bi_sector;	/* device address in 512 byte
+ 						   sectors */
+@@ -280,4 +306,121 @@ static inline void *bvec_virt(struct bio_vec *bvec)
+ 	return page_address(bvec->bv_page) + bvec->bv_offset;
+ }
+ 
++/*
++ * These macros should be used after a dma_map_bvecs call has been done
++ * to get bus addresses of each of the bio_vec array entries and their
++ * lengths. You should work only with the number of bio_vec array entries
++ * dma_map_bvecs returns, or alternatively stop on the first bv_dma_len(bv)
++ * which is 0.
++ */
++#define bv_dma_address(bv)	((bv)->bv_dma_address)
++
++#ifdef CONFIG_NEED_SG_DMA_LENGTH
++#define bv_dma_len(bv)		((bv)->bv_dma_length)
++#else
++#define bv_dma_len(bv)		((bv)->bv_len)
++#endif
++
++/*
++ * On 64-bit architectures there is a 4-byte padding in struct scatterlist
++ * (assuming also CONFIG_NEED_SG_DMA_LENGTH is set). Use this padding for DMA
++ * flags bits to indicate when a specific dma address is a bus address or the
++ * buffer may have been bounced via SWIOTLB.
++ */
++#ifdef CONFIG_NEED_SG_DMA_FLAGS
++
++#define BV_DMA_BUS_ADDRESS	BIT(0)
++#define BV_DMA_SWIOTLB		BIT(1)
++
++/**
++ * bv_dma_is_bus_address - Return whether a given segment was marked
++ *			   as a bus address
++ * @bv:		 bio_vec array entry
++ *
++ * Description:
++ *   Returns true if bv_dma_mark_bus_address() has been called on
++ *   this bio_vec.
++ **/
++static inline bool bv_dma_is_bus_address(struct bio_vec *bv)
++{
++	return bv->bv_dma_flags & BV_DMA_BUS_ADDRESS;
++}
++
++/**
++ * bv_dma_mark_bus_address - Mark the bio_vec entry as a bus address
++ * @bv:		 bio_vec array entry
++ *
++ * Description:
++ *   Marks the passed-in bv entry to indicate that the dma_address is
++ *   a bus address and doesn't need to be unmapped. This should only be
++ *   used by dma_map_bvecs() implementations to mark bus addresses
++ *   so they can be properly cleaned up in dma_unmap_bvecs().
++ **/
++static inline void bv_dma_mark_bus_address(struct bio_vec *bv)
++{
++	bv->bv_dma_flags |= BV_DMA_BUS_ADDRESS;
++}
++
++/**
++ * bv_unmark_bus_address - Unmark the bio_vec entry as a bus address
++ * @bv:		 bio_vec array entry
++ *
++ * Description:
++ *   Clears the bus address mark.
++ **/
++static inline void bv_dma_unmark_bus_address(struct bio_vec *bv)
++{
++	bv->bv_dma_flags &= ~BV_DMA_BUS_ADDRESS;
++}
++
++/**
++ * bv_dma_is_swiotlb - Return whether the bio_vec was marked for SWIOTLB
++ *		       bouncing
++ * @bv:		bio_vec array entry
++ *
++ * Description:
++ *   Returns true if the bio_vec was marked for SWIOTLB bouncing. Not all
++ *   elements may have been bounced, so the caller would have to check
++ *   individual BV entries with is_swiotlb_buffer().
++ */
++static inline bool bv_dma_is_swiotlb(struct bio_vec *bv)
++{
++	return bv->bv_dma_flags & BV_DMA_SWIOTLB;
++}
++
++/**
++ * bv_dma_mark_swiotlb - Mark the bio_vec for SWIOTLB bouncing
++ * @bv:		bio_vec array entry
++ *
++ * Description:
++ *   Marks a a bio_vec for SWIOTLB bounce. Not all bio_vec entries may
++ *   be bounced.
++ */
++static inline void bv_dma_mark_swiotlb(struct bio_vec *bv)
++{
++	bv->bv_dma_flags |= BV_DMA_SWIOTLB;
++}
++
++#else
++
++static inline bool bv_dma_is_bus_address(struct bio_vec *bv)
++{
++	return false;
++}
++static inline void bv_dma_mark_bus_address(struct bio_vec *bv)
++{
++}
++static inline void bv_dma_unmark_bus_address(struct bio_vec *bv)
++{
++}
++static inline bool bv_dma_is_swiotlb(struct bio_vec *bv)
++{
++	return false;
++}
++static inline void bv_dma_mark_swiotlb(struct bio_vec *bv)
++{
++}
++
++#endif	/* CONFIG_NEED_SG_DMA_FLAGS */
++
+ #endif /* __LINUX_BVEC_H */
 
 
