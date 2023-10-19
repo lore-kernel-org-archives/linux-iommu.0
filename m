@@ -1,36 +1,36 @@
 Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39E81808
-	for <iommu@lists.linux.dev>; Thu, 19 Oct 2023 02:19:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C57DC81E
+	for <iommu@lists.linux.dev>; Thu, 19 Oct 2023 02:20:00 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="KP7PhPWy"
-Received: from pps.filterd (m0279864.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 39J0nOfD013360;
-	Thu, 19 Oct 2023 02:19:42 GMT
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="bBMCDIPb"
+Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 39J2JLLn021860;
+	Thu, 19 Oct 2023 02:19:43 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-type; s=qcppdkim1;
- bh=s5m9u0ft7/a6mM7+BswRBLqRxLRZWPd2we92qi/sGso=;
- b=KP7PhPWy/jaCYiJgtYnbVw64BFprXRgsP8JTk4DkilVplRZzq1KUBoi4lRy0mqcl78cQ
- JCsZdhK+a5hXwLFHfuwcu+x7/ta1wnK79yzjDlApw/eyYc5c75BEn0CBpuViTpnXXpnj
- A8AQgD9cRwxy4BjYt3y9hDkX7KVTP2oF+36WtfR/sOr+HCKlO8rr142BOieY0Kg8CUbE
- gqc67iDdqj8sWdJRvI640EuaFnCluJTtWyGlcCV09ovIa1Q4pGYmQP0qeY2CcowjECGd
- xv0fmduNR02MxKQBV8FwySo43X4onK17slDEEc5iC2UrJpWM8r6oknQhL+7WUWMmzTZk Bw== 
-Received: from nasanppmta02.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3tth2f1dgm-1
+ bh=rSZyjBns+k9ApsVQaas5ctcturc6JQrl8dAUcAP5WfI=;
+ b=bBMCDIPbLCPjtJi08uTga0emi1Ca6MBJ+iP5HWodEu+Pad3RXHXqfSZ3aXhMdTJkWE97
+ et5WRGwxwT7clguvrLExJhO8ayuRTsQ0DWTYR7myGoNwEuelMZJh7WHkea17nsTMQD1e
+ vkWcUBD3KCZc1+rIw/3FBYIBI+vt/lzF5yUvnGxPeA9CMZYh9wLbuNcd29+CXD/tnoOZ
+ ytVJ65wkASWy/usl8Z3uhW2H8oqpjXWuUfhALm1HmSJjzgJX+ncYDWvu/FmFroZQBC8v
+ 1iULpi5ucO9UYgePOZId4qILeJK18HUlf55CLdeB8P+jHKPQKBQmEZGLJ0OwC0HJQRTY uQ== 
+Received: from nasanppmta03.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3tt8xsam22-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 19 Oct 2023 02:19:42 +0000
+	Thu, 19 Oct 2023 02:19:43 +0000
 Received: from nasanex01a.na.qualcomm.com (nasanex01a.na.qualcomm.com [10.52.223.231])
-	by NASANPPMTA02.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 39J2Jfb3001109
+	by NASANPPMTA03.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 39J2Jg3V023043
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 19 Oct 2023 02:19:41 GMT
+	Thu, 19 Oct 2023 02:19:42 GMT
 Received: from hu-c-gdjako-lv.qualcomm.com (10.49.16.6) by
  nasanex01a.na.qualcomm.com (10.52.223.231) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.39; Wed, 18 Oct 2023 19:19:40 -0700
+ 15.2.1118.39; Wed, 18 Oct 2023 19:19:41 -0700
 From: Georgi Djakov <quic_c_gdjako@quicinc.com>
 To: <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
         <conor+dt@kernel.org>, <will@kernel.org>, <robin.murphy@arm.com>,
@@ -41,9 +41,9 @@ CC: <devicetree@vger.kernel.org>, <andersson@kernel.org>,
         <linux-arm-msm@vger.kernel.org>, <quic_cgoldswo@quicinc.com>,
         <quic_sukadev@quicinc.com>, <quic_pdaly@quicinc.com>,
         <quic_sudaraja@quicinc.com>, <djakov@kernel.org>
-Subject: [PATCH 2/6] iommu/arm-smmu-qcom: Add support for TBUs
-Date: Wed, 18 Oct 2023 19:19:19 -0700
-Message-ID: <20231019021923.13939-3-quic_c_gdjako@quicinc.com>
+Subject: [PATCH 4/6] iommu/arm-smmu: Allow using a threaded handler for context interrupts
+Date: Wed, 18 Oct 2023 19:19:21 -0700
+Message-ID: <20231019021923.13939-5-quic_c_gdjako@quicinc.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20231019021923.13939-1-quic_c_gdjako@quicinc.com>
 References: <20231019021923.13939-1-quic_c_gdjako@quicinc.com>
@@ -59,87 +59,62 @@ X-ClientProxiedBy: nalasex01a.na.qualcomm.com (10.47.209.196) To
  nasanex01a.na.qualcomm.com (10.52.223.231)
 X-QCInternal: smtphost
 X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: DFTd_SLrM6Zc014PUCezYFWvu7bimWYa
-X-Proofpoint-GUID: DFTd_SLrM6Zc014PUCezYFWvu7bimWYa
+X-Proofpoint-GUID: FGv9foiXPH_io7IIJ0_yJu0rjt2_hGh_
+X-Proofpoint-ORIG-GUID: FGv9foiXPH_io7IIJ0_yJu0rjt2_hGh_
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.272,Aquarius:18.0.980,Hydra:6.0.619,FMLib:17.11.176.26
  definitions=2023-10-19_02,2023-10-18_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 mlxscore=0
- mlxlogscore=999 spamscore=0 malwarescore=0 suspectscore=0
- lowpriorityscore=0 impostorscore=0 priorityscore=1501 clxscore=1015
- adultscore=0 bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2309180000 definitions=main-2310190018
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0
+ lowpriorityscore=0 spamscore=0 mlxscore=0 suspectscore=0 clxscore=1015
+ impostorscore=0 phishscore=0 adultscore=0 priorityscore=1501
+ mlxlogscore=957 malwarescore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2309180000 definitions=main-2310190018
 
-The ARM MMU-500 implements a Translation Buffer Unit (TBU) for each
-connected master besides a single TCU which controls and manages the
-address translations.
-
-Allow the Qualcomm SMMU driver to probe for any TBU devices that can
-provide additional debug features like triggering transactions, logging
-outstanding transactions, snapshot capture etc. The most basic use-case
-would be to get information from the TBUs and print it during a context
-fault.
+Threaded IRQ handlers run in a less critical context compared to normal IRQs,
+so they can perform more complex and time-consuming operations without causing
+significant delays in other parts of the kernel.
+During a context fault, it might be needed to do more processing and gather
+debug information from TBUs in the handler. These operations may sleep, so
+add an option to use a threaded IRQ handler in these cases.
 
 Signed-off-by: Georgi Djakov <quic_c_gdjako@quicinc.com>
 ---
- drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 12 ++++++++++++
- drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h |  4 +++-
- 2 files changed, 15 insertions(+), 1 deletion(-)
+ drivers/iommu/arm/arm-smmu/arm-smmu.c | 12 ++++++++++--
+ drivers/iommu/arm/arm-smmu/arm-smmu.h |  1 +
+ 2 files changed, 11 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-index 7f52ac67495f..655c7f50ca84 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-@@ -1,12 +1,14 @@
- // SPDX-License-Identifier: GPL-2.0-only
- /*
-  * Copyright (c) 2019, The Linux Foundation. All rights reserved.
-+ * Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved
-  */
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+index d6d1a2a55cc0..a6561bb245ad 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+@@ -796,8 +796,16 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+ 	else
+ 		context_fault = arm_smmu_context_fault;
  
- #include <linux/acpi.h>
- #include <linux/adreno-smmu-priv.h>
- #include <linux/delay.h>
- #include <linux/of_device.h>
-+#include <linux/of_platform.h>
- #include <linux/firmware/qcom/qcom_scm.h>
- 
- #include "arm-smmu.h"
-@@ -466,6 +468,16 @@ static struct arm_smmu_device *qcom_smmu_create(struct arm_smmu_device *smmu,
- 	qsmmu->smmu.impl = impl;
- 	qsmmu->cfg = data->cfg;
- 
-+	/* Populate TBU devices if such are present in DT */
-+	if (np && of_device_is_compatible(np, "arm,mmu-500")) {
-+		int ret;
+-	ret = devm_request_irq(smmu->dev, irq, context_fault,
+-			       IRQF_SHARED, "arm-smmu-context-fault", domain);
++	if (smmu->impl && smmu->impl->context_fault_needs_threaded_irq)
++		ret = devm_request_threaded_irq(smmu->dev, irq, NULL,
++						context_fault,
++						IRQF_ONESHOT | IRQF_SHARED,
++						"arm-smmu-context-fault",
++						domain);
++	else
++		ret = devm_request_irq(smmu->dev, irq, context_fault,
++				       IRQF_SHARED, "arm-smmu-context-fault", domain);
 +
-+		INIT_LIST_HEAD(&qsmmu->tbu_list);
-+		ret = devm_of_platform_populate(smmu->dev);
-+		if (ret)
-+			return ERR_PTR(ret);
-+	}
-+
- 	return &qsmmu->smmu;
- }
- 
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h
-index 593910567b88..2164a9cf3dde 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h
-@@ -1,6 +1,6 @@
- /* SPDX-License-Identifier: GPL-2.0-only */
- /*
-- * Copyright (c) 2022, Qualcomm Innovation Center, Inc. All rights reserved.
-+ * Copyright (c) 2022-2023, Qualcomm Innovation Center, Inc. All rights reserved.
-  */
- 
- #ifndef _ARM_SMMU_QCOM_H
-@@ -12,6 +12,8 @@ struct qcom_smmu {
- 	bool bypass_quirk;
- 	u8 bypass_cbndx;
- 	u32 stall_enabled;
-+	struct mutex tbu_list_lock;  /* protects tbu_list */
-+	struct list_head tbu_list;
- };
- 
- enum qcom_smmu_impl_reg_offset {
+ 	if (ret < 0) {
+ 		dev_err(smmu->dev, "failed to request context IRQ %d (%u)\n",
+ 			cfg->irptndx, irq);
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.h b/drivers/iommu/arm/arm-smmu/arm-smmu.h
+index e5df65c0f81a..09f11f942ff8 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu.h
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu.h
+@@ -439,6 +439,7 @@ struct arm_smmu_impl {
+ 	int (*def_domain_type)(struct device *dev);
+ 	irqreturn_t (*global_fault)(int irq, void *dev);
+ 	irqreturn_t (*context_fault)(int irq, void *dev);
++	bool context_fault_needs_threaded_irq;
+ 	int (*alloc_context_bank)(struct arm_smmu_domain *smmu_domain,
+ 				  struct arm_smmu_device *smmu,
+ 				  struct device *dev, int start);
