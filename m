@@ -1,263 +1,105 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.88])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 41A26656
-	for <iommu@lists.linux.dev>; Thu, 19 Oct 2023 01:56:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 515957F0
+	for <iommu@lists.linux.dev>; Thu, 19 Oct 2023 02:19:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="JoUCcC3n"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1697680567; x=1729216567;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=XPkC8yLxHPfBJh7o9tTD7d72kGPbwScLpzW1wXL5CFo=;
-  b=JoUCcC3n9yxduk54NlyvZbziRNDe+m788bQeGCnlPTqoiWumIYTa9keg
-   dRyDGjR721Pu067Jz0gp8BqErOeTkecTNSTCCOn9pi7Z1BQWV4bMMAMXJ
-   Y70NkkXjzrQr8+/N5IENPv3EdRm1bArHB4YoJJrs4OTl1nrHns1YO30jA
-   hXtPq4mOSaenlFGohAxKI31vIXIK73yWLsCzM74f9SXn924PY5L/h+DNz
-   xCKazTE+1QEsKtfRb+/04TxhRVHrtC+qFQaVq+RLVeTdFOKEFObqXPVoa
-   zcg92oy1IQVj1qyBpfJXGarBs3HXSRR8TTzZ0XuNlngoFAK492tUCx6mU
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10867"; a="417264401"
-X-IronPort-AV: E=Sophos;i="6.03,236,1694761200"; 
-   d="scan'208";a="417264401"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Oct 2023 18:56:06 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10867"; a="1088198821"
-X-IronPort-AV: E=Sophos;i="6.03,236,1694761200"; 
-   d="scan'208";a="1088198821"
-Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
-  by fmsmga005.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 18 Oct 2023 18:56:06 -0700
-Received: from fmsmsx601.amr.corp.intel.com (10.18.126.81) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.32; Wed, 18 Oct 2023 18:56:05 -0700
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.32 via Frontend Transport; Wed, 18 Oct 2023 18:56:05 -0700
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.101)
- by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="FJ0wDwbu"
+Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 39J1rOGF013661;
+	Thu, 19 Oct 2023 02:19:41 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=qcppdkim1;
+ bh=/+uaH8m+OBqW0tnjLaWiubLxqjWShsYiopeevHxEDSM=;
+ b=FJ0wDwbupOPlYwWt5/faxFY/7pCm5iirhtOG34Zfyfx6ohgjFmtdfkuX3PtaOWApq5LF
+ pvZwkt0f/HdELbe+AYgm8u8DptkJGgVAhhEO/jVRgEntM2n0yds7Wt+8vOO8TLIBg/sx
+ Njafdu5f883MJqY1rHTMtab1p6A7tZrn14Gs20O9y2ejtlWSYXA3Usjb2L2+HVALSTo7
+ 4f0hFRm09cmHVnW80/V0Sm+oXzJZITPjgpPqSzWfk8wwMVXaoxAoy7Y1HSUZ9XGGyYAn
+ q2qGfTT2N5IFNLOk7zYYjItC2jJeRz4AQDndcV4R/9er36qpWjI5lAorEtR9GZDTtnn7 rw== 
+Received: from nasanppmta01.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3tt8xsam20-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 19 Oct 2023 02:19:41 +0000
+Received: from nasanex01a.na.qualcomm.com (nasanex01a.na.qualcomm.com [10.52.223.231])
+	by NASANPPMTA01.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 39J2Jef0004188
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 19 Oct 2023 02:19:40 GMT
+Received: from hu-c-gdjako-lv.qualcomm.com (10.49.16.6) by
+ nasanex01a.na.qualcomm.com (10.52.223.231) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.32; Wed, 18 Oct 2023 18:56:05 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=P5V3HOZfAZTnbCjH4ACLTKuelnh8E9FJMlng+5J9emtQBpCNP+Cyg4J4xs78pOpkR1zIUTxPQtQbeDI7oBmp5mWqUrnNKXr/j1HFXCTnFeSzR6SUL20Ah96yFdHCkElqMmTIIXc5wOjSq/jjR2KmzA51J6g5m6CVFB7HzbKwf+7tuFmfbY8kEvfAiFmg7qQKMTe0XjsFCgVGWw1WWY4CQd2Pm6IVI+cqVgrPTXmnwIHzMoeKPRfwdrWnXi84V7kvKAEWm0a+FHSpNGnKP6Q7pLIxgfmybzWZ5RKUt7NDgDRI6IENxzYdwAff3IL4+f+ZUPlr1O2EbxZpYkY6UtVYFQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=WnigOM+W4c291/yfLIlFITCwnx5SOExnR2pD7nCspoM=;
- b=MNNUm87f+2+0gA1y2reafWCtqt9MnRKgH06DTFzgtznomKnixTf2Ih3zK/dms7xr7kY2AwCKfDIuh4wbOJlX/tmsIT4COF/DMfQNHDE0UqsSSqr57c42HBlrHVko3zagIpGSWWNH2rqcdWNiPF3im/qIBLucajnll5Wc4HZ7v/w+4NFclGE8XHXFISKg54MhmuxxTjRzL2zXP0zN6NeK77/l7mVqots4B+JzTbXz0+cLJw6FwDNAaRKiuldF+T5bj5mqbp48cXspNSa72nMknlnUqR8I3ZOzXSxLHsqL9EcGTO87z2OhgAFmEJRissmbGCEmCo/4e0WD62/ewpmDcw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by BL1PR11MB5240.namprd11.prod.outlook.com (2603:10b6:208:30a::24) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6886.40; Thu, 19 Oct
- 2023 01:56:02 +0000
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::7116:9866:8367:95b4]) by BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::7116:9866:8367:95b4%3]) with mapi id 15.20.6886.034; Thu, 19 Oct 2023
- 01:56:01 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Jason Gunthorpe <jgg@nvidia.com>, Nicolin Chen <nicolinc@nvidia.com>
-CC: "Liu, Yi L" <yi.l.liu@intel.com>, "joro@8bytes.org" <joro@8bytes.org>,
-	"alex.williamson@redhat.com" <alex.williamson@redhat.com>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>, "baolu.lu@linux.intel.com"
-	<baolu.lu@linux.intel.com>, "cohuck@redhat.com" <cohuck@redhat.com>,
-	"eric.auger@redhat.com" <eric.auger@redhat.com>, "kvm@vger.kernel.org"
-	<kvm@vger.kernel.org>, "mjrosato@linux.ibm.com" <mjrosato@linux.ibm.com>,
-	"chao.p.peng@linux.intel.com" <chao.p.peng@linux.intel.com>,
-	"yi.y.sun@linux.intel.com" <yi.y.sun@linux.intel.com>, "peterx@redhat.com"
-	<peterx@redhat.com>, "jasowang@redhat.com" <jasowang@redhat.com>,
-	"shameerali.kolothum.thodi@huawei.com"
-	<shameerali.kolothum.thodi@huawei.com>, "lulu@redhat.com" <lulu@redhat.com>,
-	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>, "Duan,
- Zhenzhong" <zhenzhong.duan@intel.com>, "Martins, Joao"
-	<joao.m.martins@oracle.com>
-Subject: RE: [PATCH v4 08/17] iommufd: Always setup MSI and anforce cc on
- kernel-managed domains
-Thread-Topic: [PATCH v4 08/17] iommufd: Always setup MSI and anforce cc on
- kernel-managed domains
-Thread-Index: AQHZ7GCNzWxyrCHnVkqPkBvqOzEqrbAsylxggBvMMACAA6lO8IAAN00AgAFSUcCAAIHKgIAARKGAgAFd9oCAAJQLIA==
-Date: Thu, 19 Oct 2023 01:56:01 +0000
-Message-ID: <BN9PR11MB5276B9994AD06E91E07B7EF08CD4A@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <20230921075138.124099-1-yi.l.liu@intel.com>
- <20230921075138.124099-9-yi.l.liu@intel.com>
- <BN9PR11MB527658EAF017FF3576667EEA8CC3A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <ZSnkiKoCspmG1+/j@Asurada-Nvidia>
- <BN9PR11MB52763227866603ED7795AA068CD7A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20231016115736.GP3952@nvidia.com>
- <BN9PR11MB5276FDC375685CE04A7AD93B8CD6A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20231017155301.GH3952@nvidia.com> <ZS7nb+mKanGFXhZY@Asurada-Nvidia>
- <20231018165113.GB3952@nvidia.com>
-In-Reply-To: <20231018165113.GB3952@nvidia.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|BL1PR11MB5240:EE_
-x-ms-office365-filtering-correlation-id: 0974a096-10b3-443f-d9f9-08dbd0468bdc
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: /fSxpvHM58fZ9ukciOx8goq8iJe6hUCeBL3Zp0/59tQ6PuKUfLoBR22XLd9Fn+nke17+TxFsLDsCXeLLqYJITkAAKrAxODnU9SFPIt/6prZ+cMn/GhUYrZli8l+xF0xsAPXM0W31+0Vcz0efLgOeWpKaRTHVh58LXmVyw17cEpLpsw/c/QA/daOsdmX/cG6iKHW1OCDF2ayzWgaBBfVFlE+htuKP/w8GqOLBX6pzumSrVU+/GzEsESeKWLflfvQkrS7ERhCnUf06n2iylYn6CoUW+/v5h1En+9BJprEEYaaV/9KREuRRjd5CwzqL7ByTW14zID7WL8C0GZx2FbkIUlt55dQB2XEE/cCMvdEmautmZ5KzE8xKuGpezxhuaq202q0iMv9x+BNV41aArMerbElzdCN/+cN17Bk6Uh0LWWNGdZ4aSEKWOKxZlPCf8o1PVWWOt+1bTCCWfzwyKNYHS6jU5mKqi0JBthEQgRI3Iu5ibjfHYNJHvjJu88KwFP/IlBXRo8YtbnvfID6ly6nY6z2QAy2RybKQR6i58c6lDbB+bmaAj73+Jvs8Wu68pUHHZ6oLaEMXVIuj3jod4SRD2FuYo7nvuaZogdVnia2MM40=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(346002)(39860400002)(376002)(396003)(136003)(366004)(230922051799003)(451199024)(64100799003)(186009)(1800799009)(2906002)(9686003)(6506007)(7696005)(76116006)(110136005)(66476007)(316002)(66556008)(41300700001)(71200400001)(966005)(478600001)(64756008)(33656002)(54906003)(66946007)(86362001)(66446008)(83380400001)(122000001)(82960400001)(26005)(38100700002)(38070700005)(7416002)(4326008)(55016003)(8936002)(5660300002)(52536014)(8676002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?WzIu+LhvVCRdzeHfaB/TgCqXtuxWwijHrOsHEH0R6DmXW8ELV7YoJiKHxLAm?=
- =?us-ascii?Q?n2TLpTftLJZguk9fxp6N65k3WUxcpzTzMwDrP8ueyrpR/6/cj4WQtbJrbfPq?=
- =?us-ascii?Q?o5kntZNDWJ+wh58Ti74Da2370p9duCNX1jFSArRtI51dIlfjZLIC0mPOHM+7?=
- =?us-ascii?Q?CtMtqGtxn8jJbhTtnsqIwTPnMyrc/PPXB/ihjSrAim6D/cpxAgrSyNeQbQLJ?=
- =?us-ascii?Q?nwYTb+u1bkaN+lxpH9TJw5FnyMne0GTkMv082cgszg5jzyRZTNbVi5p1I1aR?=
- =?us-ascii?Q?JQZ3rfEYEgEXcK7CO+3uSd5BcXMwFzAdSubf/wz/XqvIIRmG9B70BN5ORgA1?=
- =?us-ascii?Q?pqTgegzbcjPTgyjRe9PwCDE1EYWzS1mwDqeLsNxDlkdQGb3lLxWpwoKDy0NG?=
- =?us-ascii?Q?4bQRmnVSBfB/c6B8zpZs2Ud5np4RPKRFCZUZnNp2JxYS+aftbx7X6hiL/EJt?=
- =?us-ascii?Q?iN7UKFXItFiBqjelg0OmEYF+/TgTEWIeXeEKah8ZSkmJpiHg3pa4EfKhSZ0t?=
- =?us-ascii?Q?e/ZMFkYLEOZKYaUegSD7lWaCmUXw43mAcCoXkf4JTNM/jP7Q6kC6Cu1jfJpo?=
- =?us-ascii?Q?pdKHO8Q5umSu2eXHbPnpKKJcuVfDgopvRcEgRVnVbTEoMq7xqqwDzD9MpVh0?=
- =?us-ascii?Q?to4GG9vYgfwh2L5U3fqV/TDV0xOQ4ocjf+tIxznkRN7qx8ZEekIGsIF3IUIC?=
- =?us-ascii?Q?tu72nQNp2Pt8WDflabVm8zpfOcnwsX4kCgv9+D2WGfPf82/IKDc7rlm8SV3J?=
- =?us-ascii?Q?hdpGJ/5h26M15U/KNqEspqyrwYZH25SSjlXPaG88SKUm1dUEnQJEJTUIpF/+?=
- =?us-ascii?Q?5O6/RaZtJ+oY8FkOX8S5zKy5jHRBu7vshsAtYUO+tFP280XpPve0y58E575h?=
- =?us-ascii?Q?Bp4/Zu1MjK96yKO+aqYGTdX8pAzUAd8SdlXXc085+lTvvcNADC16EzOA8QiS?=
- =?us-ascii?Q?xXi7rwN7RVVF6PI5MOC1DqYDzEaADy5uKMw397W1sYRwSRJV27aU2PBobYIe?=
- =?us-ascii?Q?iRHsLkkXtx8i9wGLyHvRKENVtLkToolsTxDMGIL5prQoxTQOZKj7o/brvixH?=
- =?us-ascii?Q?KTdwUvDY8ASy0eUhaZDWWR8EVe1Gor0xfLAnWxbHYiLOGNaizrgCgQjR/pUz?=
- =?us-ascii?Q?+hlEW4mArcCXvTkqhAyyey6fPfeI0XL9XKMZlqEY8rj6FBIXqnlybJecuY2A?=
- =?us-ascii?Q?LX7z3Sau26ARRrtxzwXjTUxUF+C+xuq/y5lYQCxSra1EAMdULEPw2T3i79mw?=
- =?us-ascii?Q?PXllvyosGB7Ht4Dyg8uYCLkr3JH/9WlY6ZP1X4inYLUPEvmex5JSitJoUpQW?=
- =?us-ascii?Q?aHNOOtZbp1aUvZ8GECmhtAunYAOv8E8/YDRb8rATEnd97unMztQOARmZlqcj?=
- =?us-ascii?Q?N7DSNHH5RXFpsv4kNoZUnacDG5hPrnwQBtfLKQ48HXATRyq5Tir+Kz5ObfxZ?=
- =?us-ascii?Q?Bbln4wAvTzPMS/rZqA/mdfzriejl3c6318WrQYjLSNrvioZtik1YxCakGDVj?=
- =?us-ascii?Q?JPUkP9EHrc64dINlUU5dM4EeuFauIn5it7Ddn0uTwxhTxVP3Yx/V1Xlcx4OL?=
- =?us-ascii?Q?aiD8WebQJ9ye4sDejTZCwFAsWq7GxyBlw1RKBdlU?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+ 15.2.1118.39; Wed, 18 Oct 2023 19:19:39 -0700
+From: Georgi Djakov <quic_c_gdjako@quicinc.com>
+To: <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
+        <conor+dt@kernel.org>, <will@kernel.org>, <robin.murphy@arm.com>,
+        <joro@8bytes.org>
+CC: <devicetree@vger.kernel.org>, <andersson@kernel.org>,
+        <konrad.dybcio@linaro.org>, <linux-arm-kernel@lists.infradead.org>,
+        <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-msm@vger.kernel.org>, <quic_cgoldswo@quicinc.com>,
+        <quic_sukadev@quicinc.com>, <quic_pdaly@quicinc.com>,
+        <quic_sudaraja@quicinc.com>, <djakov@kernel.org>
+Subject: [PATCH 0/6] Add support for Translation Buffer Units
+Date: Wed, 18 Oct 2023 19:19:17 -0700
+Message-ID: <20231019021923.13939-1-quic_c_gdjako@quicinc.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0974a096-10b3-443f-d9f9-08dbd0468bdc
-X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Oct 2023 01:56:01.5493
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Mwg2nMYUjpQ1Z5FL6RNYFkXhoxIGIzyaICWpwE7j5tI7saW3VerxwAoK28IvpMw4Ce/PYBFbfq2U3VxsmGnUlQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR11MB5240
-X-OriginatorOrg: intel.com
+Content-Type: text/plain
+X-Originating-IP: [10.49.16.6]
+X-ClientProxiedBy: nalasex01a.na.qualcomm.com (10.47.209.196) To
+ nasanex01a.na.qualcomm.com (10.52.223.231)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: 0Y91xaZkUXfe7YLR7kOtDeR8PiWH_7ZT
+X-Proofpoint-ORIG-GUID: 0Y91xaZkUXfe7YLR7kOtDeR8PiWH_7ZT
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.980,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2023-10-19_02,2023-10-18_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0
+ lowpriorityscore=0 spamscore=0 mlxscore=0 suspectscore=0 clxscore=1011
+ impostorscore=0 phishscore=0 adultscore=0 priorityscore=1501
+ mlxlogscore=532 malwarescore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2309180000 definitions=main-2310190018
 
-> From: Jason Gunthorpe <jgg@nvidia.com>
-> Sent: Thursday, October 19, 2023 12:51 AM
->=20
-> On Tue, Oct 17, 2023 at 12:58:39PM -0700, Nicolin Chen wrote:
-> > On Tue, Oct 17, 2023 at 12:53:01PM -0300, Jason Gunthorpe wrote:
-> > > On Tue, Oct 17, 2023 at 08:52:49AM +0000, Tian, Kevin wrote:
-> > > > I prefer to removing enforce_cc in attach fn completely then no par=
-ent
-> > > > trick in this patch. Just keep it in hwpt_alloc and leave to iommu =
-driver
-> to
-> > > > figure out the attaching compatibility:
-> > >
-> > > You are basically saying to set the cc mode during creation because w=
-e
-> > > know the idev at that moment and can tell if it should be on/off?
-> > >
-> > > It seems reasonable, but I can't remember why it is in the attach pat=
-h
-> > > at the moment.
-> >
-> > This was the commit adding it in the alloc path:
-> > https://lore.kernel.org/linux-iommu/8e897628-61fa-b3fb-b609-
-> 44eeda11b45e@arm.com/
-> >
-> > The older code was doing a hwpt "upgrade" from !cc to cc:
-> > -       /*
-> > -        * Try to upgrade the domain we have, it is an iommu driver bug=
- to
-> > -        * report IOMMU_CAP_ENFORCE_CACHE_COHERENCY but fail
-> > -        * enforce_cache_coherency when there are no devices attached t=
-o
-> the
-> > -        * domain.
-> > -        */
-> > -       if (idev->enforce_cache_coherency && !hwpt-
-> >enforce_cache_coherency) {
-> > -               if (hwpt->domain->ops->enforce_cache_coherency)
-> > -                       hwpt->enforce_cache_coherency =3D
-> > -                               hwpt->domain->ops->enforce_cache_cohere=
-ncy(
-> > -                                       hwpt->domain);
-> >
-> > If we remove the enforce_cc call in the attach path and let the
-> > driver decide whether to enforce or reject in attach_dev calls,
-> > there seems to be no point in tracking an enforce_cache_coherency
-> > flag in the IOMMUFD pathway but only for the VFIO_DMA_CC_IOMMU
-> > extension check in the vfio-compat pathway?
->=20
-> I think the purpose of this code is to try to minimize the number of
-> domains.
->=20
-> Otherwise we have a problem where the order devices are attached to
-> the domain decides how many domains you get. ie the first device
-> attached does not want CC (but is compatible with it) so we create a
-> non-CC domain
+The TCUs (Translation Control Units) and TBUs (Translation Buffer
+Units) are key components of the ARM MMU-500. Multiple TBUs are
+connected to a single TCU over an interconnect. Each TBU contains
+a TLB that caches page tables. The MMU-500 implements a TBU for each
+connected master, and the TBU is designed, so that it is local to the
+master.
 
-in autodetect model this won't happen. If the first device is capable
-of enforce_cc then the domain will be created with enforce_cc.
+The Qualcomm sdm845 platform has an implementation of the ARM SMMU-500,
+that consists of a single TCU and multiple TBUs. Support for the TCU
+is already present and this patchset is adds support for TBUs that
+allow us to use some of the debug features to include more info when
+a context fault occurs.
 
-there is no "does not want CC" input in autodetect.
+Each TBU requires some resources like power-domains, interconnects and
+clocks to be described in DT. These resources will be being controlled
+by the TBU driver when they in use.
 
->=20
-> Then later we attach a device that does want CC and now we are forced
-> to create a second iommu domain when upgrading the first domain would
-> have been fine.
+Georgi Djakov (6):
+  dt-bindings: iommu: Add Translation Buffer Unit bindings
+  iommu/arm-smmu-qcom: Add support for TBUs
+  iommu/arm-smmu-qcom: Add Qualcomm TBU driver
+  iommu/arm-smmu: Allow using a threaded handler for context interrupts
+  iommu/arm-smmu-qcom: Use a custom context fault handler for sdm845
+  arm64: dts: qcom: sdm845: Add DT nodes for the TBUs
 
-then in this case the 2nd device will reuse the domain.
+ .../devicetree/bindings/iommu/arm,smmu.yaml   |  13 +
+ .../bindings/iommu/qcom,qsmmuv500-tbu.yaml    |  67 +++
+ arch/arm64/boot/dts/qcom/sdm845.dtsi          |  85 +++
+ drivers/iommu/Kconfig                         |   8 +
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c    | 544 ++++++++++++++++++
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h    |   4 +-
+ drivers/iommu/arm/arm-smmu/arm-smmu.c         |  12 +-
+ drivers/iommu/arm/arm-smmu/arm-smmu.h         |   3 +
+ 8 files changed, 733 insertions(+), 3 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iommu/qcom,qsmmuv500-tbu.yaml
 
->=20
-> Hotplug is another scenario (though Intel driver does not support it,
-> and it looks broken)
-
-Can you elaborate how hotplug is broken? If device is hotplugged and
-failed to attach to an existing domain, then a new one will be created
-for it.
-
-there is indeed a broken case in KVM which cannot handle dynamic
-change of coherency due to hotplug. But that one is orthogonal to
-what we discussed here about how to decide cc in iommufd.
-
->=20
-> Really, I hate this CC mechanism. It is only for Intel, can we just
-
-Intel and AMD.
-
-> punt it to userspace and have an intel 'want cc flag' for the entire
-> nesting path and forget about it?
->=20
-
-I dislike it too. But still not get your point why adding such a flag
-can really simplify things. As explained before the only difference
-between autodetect and having a user flag just affects the decision
-of cc when creating a hwpt. whether we should upgrade in the
-attach path is an orthogonal open which imho is unnecessary and
-Nicoline's patches to remove that check then also remove this
-patch makes lot of sense to me.
-
-Then the necessity of introducing such a flag (plus adding a new
-interface to report cc to user space) is not obvious.
