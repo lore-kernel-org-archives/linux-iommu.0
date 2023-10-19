@@ -1,84 +1,84 @@
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EBD77101DA
-	for <iommu@lists.linux.dev>; Thu, 19 Oct 2023 09:15:08 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1349814F90
+	for <iommu@lists.linux.dev>; Thu, 19 Oct 2023 09:56:26 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oracle.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oracle.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="3pL4l/lc";
-	dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com header.i=@oracle.onmicrosoft.com header.b="F02iT3JM"
-Received: from pps.filterd (m0333521.ppops.net [127.0.0.1])
-	by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 39J7OTZP022778;
-	Thu, 19 Oct 2023 09:14:53 GMT
+	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="s5uYCcLC";
+	dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com header.i=@oracle.onmicrosoft.com header.b="P3sxC7+M"
+Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
+	by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 39J7NqU2024237;
+	Thu, 19 Oct 2023 09:56:08 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=message-id : date :
  subject : to : cc : references : from : in-reply-to : content-type :
  content-transfer-encoding : mime-version; s=corp-2023-03-30;
- bh=2ShtwEG2Al6rdJyBBvVwkOW+3d2ifzbXToHsKctSusQ=;
- b=3pL4l/lcfgPfXeV9J7sb7yPIkUPR6317LvdBmDlifAAXg0I6FRHvXaZiuXBPwuplmwVl
- oKl3Ym5nYXjm0TsgeZWqY91hg/rfiL6OmXpcodC/kvPB65EGo182csQnjTzZ9FOXY2l4
- 3KxLpOTYrpZlwPY+qWHyUFJ0sThu2FblBw+sBMD7OMrin/rjPWFSm9ppB64DnS+iKhh+
- 9U2cU9OhwI+d3eRu/OezDAwTbvClp+/ndAT3L8umPsZwZ/SGMS2P/VJTUvg2YQdmASkF
- u9IS2Ynn2dzxE76EKbLIi/FOJNaU6U80uBNunVL6iaijTgkq2KtwoqqyInWqdOQ7p5/e yQ== 
-Received: from iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta02.appoci.oracle.com [147.154.18.20])
-	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3tqk28t7gw-1
+ bh=7NDQdC2A/5tlZs05zUHlJ+XHmRmTv3OYy03vkGW2uNY=;
+ b=s5uYCcLCL+Hj3USttjg4mUXgTqk7qNEBxfCMk6NaAfKN6JeHMM/PSa3xedNHXT5F3dTD
+ 6DPyxTUAx+iyQ4G6P7MpefjjLNk/aIOeoy/XolZ21lGV3e+m/rU1XlaVcze8KuTy6JN9
+ 70EOd3KuCWvqaCZ1jcbUNhwIKwyXHM3qEphPPKl4bblmIHb6kLSkruEWoTBUID8t75BS
+ gqOJvTzvUpXgEanSyHMvVIBK/pXW4ibyr4nk0QPfvnKnYrs6vnY44IACvIsGZemWrqV4
+ fHKKGkhZ3QAVbyzZ8QGUrQHbOssIBgeHEj7bAlJzVYUY6/msT0RBSeqajebS6HTcZmCI oA== 
+Received: from phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta03.appoci.oracle.com [138.1.37.129])
+	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3tqk1d27t4-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Thu, 19 Oct 2023 09:14:52 +0000
-Received: from pps.filterd (iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.19/8.17.1.19) with ESMTP id 39J8SxDN010293;
-	Thu, 19 Oct 2023 09:14:51 GMT
-Received: from nam11-co1-obe.outbound.protection.outlook.com (mail-co1nam11lp2168.outbound.protection.outlook.com [104.47.56.168])
-	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3trg0qf86b-1
+	Thu, 19 Oct 2023 09:56:07 +0000
+Received: from pps.filterd (phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
+	by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (8.17.1.19/8.17.1.19) with ESMTP id 39J9b3h9027152;
+	Thu, 19 Oct 2023 09:56:07 GMT
+Received: from nam10-dm6-obe.outbound.protection.outlook.com (mail-dm6nam10lp2101.outbound.protection.outlook.com [104.47.58.101])
+	by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 3trg56hjyj-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Thu, 19 Oct 2023 09:14:51 +0000
+	Thu, 19 Oct 2023 09:56:06 +0000
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=eYXur/OVRbDKhaHau4o/R0kEgl4Ayhka9MFaduc2lxtjoLw1JG/+D2wzTcXpK7bzXdZCrLcYxzJdjMskWcs3E4XRkKyu128TYOOUXc5IXZc0OeoJqfib1TmPOxNmHi7fehfRjIzt12r1JzustLBq8zTP1NGwxopG/R3QeayCqfb1Q1tpUku5Zh9whpSvqU/KrlGKUdUEdaK+wJq40tU9nOY/qe/Xq1kCCU9PruNMl4KxHQXcT8VJZX0a/8fYZw6n90Y+dMus+Crd4MgXWbTucuO1ZvPRh32Ve7+CRRERpGTBC+csGJSZjFlDnVuImU/bYVENJfAdOLQpqR6mD/OQow==
+ b=JuLWBh2rdYcir5/yxMSK/n5LD1S+hn1IJlA0y4eKr3mp13B6SysViSApvCQ/K2z7bv86iA2VWme21zGjYCpTf1sQnLU21JGCaIY2v3mHCz/ShamqSwwm0ykHhz4pFbP6031kwZc4D/Bfsprhm49glVne5Nh0FLoyOgKeAQs7sNUC3KJUmD6u532gntEKZkVqwXLKRR6F9r2NBZ9WWQVBsZDoHz2+ZoIHAsaVfVDTWt2K8jUPc+UpaWDkGXBAmvytbSrM821K/gnAS6kTdxuE9NmurywTV+0Ilwd2+TBCqmnlJgjL0ZCABmSdrRys4VP7pna0Z+75WmxGzzOn9oKygw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=2ShtwEG2Al6rdJyBBvVwkOW+3d2ifzbXToHsKctSusQ=;
- b=TuZRcjnWunHizpl4Z9WtgbVEwwWpqCiybdLLDtZGCuMoNoMlJxELcVQ6ccRjyoljnheFyHT51o3/0vkeuktlpwRtGwLjN4TfD24iytMVIvJJvkd4qXJnTI6VPHOjnu+XTxyi/BzMGl6+AEchXiq5SwyQ02PfMnF6LZJ2PZq4rsqTPmQQUxPFnlQ3e5uYG1sqW3PLwXjT0CQpHMRSvsB9PqfqbKvQMAciCKpJ3ovkdHBWTUzB64yZbDHzQy2uDMBDM8fjtdo8JU1Kl+EbWP6FXaRDtuOoSsrfD+B/jWIfwaPUMzJKEIJXYvxxzDVug2ZSx+jprhTpFMNQbBIbquIO1w==
+ bh=7NDQdC2A/5tlZs05zUHlJ+XHmRmTv3OYy03vkGW2uNY=;
+ b=O8euUOkn7VzTVwhaJpVLxtCYk07U9/ADCxRi6VDSP53EbEiWRt2Y0bpyEYRNWEIAdWM4y+oOJO0QH2bADvufYSN4D4zWz/YBTEpK80TagT1e6P7jYh2mp1KpVwfsNyQw1/tu3yFd6Q6jNCy2PQtjc9xye+zDVKG/g0SiYsxjpk1H3E+vFx2ArhadPXJVCsVwzC3r+RT0qdDUg23OX34eoF0ALhs+WRWesGoVXgm5QnG814gHbFML2nIL0pybxbfbEYK1UKgIz8wQePBlGhuHFkODdjJ5FrQUh4x9QlqXSbJuOxhkccSlv+afpQfrtTokdyvwZstg2Q682BJmrQTaHw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
  dkim=pass header.d=oracle.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2ShtwEG2Al6rdJyBBvVwkOW+3d2ifzbXToHsKctSusQ=;
- b=F02iT3JMe4vmDhGLK8HblppUBz4GWpObiHcFFyx8ph5zqet9Pj7d/MQizjgw0y9hdEJl7Q120p1/5gEW1Qlahtxxzqw5RJagc7RSPVjvcGqn5baevlWER5VgjDCOhadt4XVXZiR1UL9ijLoiUwCZMvKBFK6g0PzwtdfyyfMhCOc=
+ bh=7NDQdC2A/5tlZs05zUHlJ+XHmRmTv3OYy03vkGW2uNY=;
+ b=P3sxC7+M3Vn9eEkkYVGY4HCsX6zliOysKzd5gy3DwCSkNG8RJaz4As3wP4ZsSQ4p1+50bVhkOc7p39gdgOWq0nthbSur0vsqKDm8JQq2ZjLhiytoRV/fj9uEkL3+flstSc77GC7+ZZOfkP7PcQFqBSPfP8AgoJgytqVpA6KDwdg=
 Received: from BLAPR10MB4835.namprd10.prod.outlook.com (2603:10b6:208:331::11)
- by CO1PR10MB4563.namprd10.prod.outlook.com (2603:10b6:303:92::6) with
+ by IA1PR10MB6220.namprd10.prod.outlook.com (2603:10b6:208:3a3::6) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6886.36; Thu, 19 Oct
- 2023 09:14:48 +0000
+ 2023 09:56:04 +0000
 Received: from BLAPR10MB4835.namprd10.prod.outlook.com
  ([fe80::64b1:cd15:65a5:8e7d]) by BLAPR10MB4835.namprd10.prod.outlook.com
  ([fe80::64b1:cd15:65a5:8e7d%5]) with mapi id 15.20.6907.025; Thu, 19 Oct 2023
- 09:14:48 +0000
-Message-ID: <c94e1114-a730-478b-8af1-5fd579517c0d@oracle.com>
-Date: Thu, 19 Oct 2023 10:14:41 +0100
+ 09:56:04 +0000
+Message-ID: <2eaf1e9f-0c12-4306-9aab-2a63fb5b1079@oracle.com>
+Date: Thu, 19 Oct 2023 10:55:57 +0100
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 12/18] iommu/intel: Access/Dirty bit support for SL
- domains
+Subject: Re: [PATCH v4 08/18] iommufd: Add capabilities to IOMMU_GET_HW_INFO
 Content-Language: en-US
-To: Baolu Lu <baolu.lu@linux.intel.com>, iommu@lists.linux.dev
-Cc: Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: iommu@lists.linux.dev, Kevin Tian <kevin.tian@intel.com>,
         Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
-        Yi Liu <yi.l.liu@intel.com>, Yi Y Sun <yi.y.sun@intel.com>,
-        Nicolin Chen <nicolinc@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
+        Lu Baolu <baolu.lu@linux.intel.com>, Yi Liu <yi.l.liu@intel.com>,
+        Yi Y Sun <yi.y.sun@intel.com>, Nicolin Chen <nicolinc@nvidia.com>,
+        Joerg Roedel <joro@8bytes.org>,
         Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
         Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
         Zhenzhong Duan <zhenzhong.duan@intel.com>,
         Alex Williamson <alex.williamson@redhat.com>, kvm@vger.kernel.org
 References: <20231018202715.69734-1-joao.m.martins@oracle.com>
- <20231018202715.69734-13-joao.m.martins@oracle.com>
- <fe60a4d5-e134-43fb-bab5-d29341821784@linux.intel.com>
+ <20231018202715.69734-9-joao.m.martins@oracle.com>
+ <20231018224458.GM3952@nvidia.com>
 From: Joao Martins <joao.m.martins@oracle.com>
-In-Reply-To: <fe60a4d5-e134-43fb-bab5-d29341821784@linux.intel.com>
+In-Reply-To: <20231018224458.GM3952@nvidia.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: LO4P123CA0067.GBRP123.PROD.OUTLOOK.COM
- (2603:10a6:600:153::18) To BLAPR10MB4835.namprd10.prod.outlook.com
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: LO4P265CA0266.GBRP265.PROD.OUTLOOK.COM
+ (2603:10a6:600:37c::8) To BLAPR10MB4835.namprd10.prod.outlook.com
  (2603:10b6:208:331::11)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -87,556 +87,166 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BLAPR10MB4835:EE_|CO1PR10MB4563:EE_
-X-MS-Office365-Filtering-Correlation-Id: 7e1bb8a2-5a0a-420f-49d4-08dbd083d7a7
+X-MS-TrafficTypeDiagnostic: BLAPR10MB4835:EE_|IA1PR10MB6220:EE_
+X-MS-Office365-Filtering-Correlation-Id: acf3e009-f00d-4083-8b2d-08dbd0899b73
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info: 
-	DJRm4AOOGCWbcBYhFwXfUVGr5EAI7QsIx0RzS+y0Nn0bIiaT+YkFYBi5buGrOHtA206qh4BPwC2dPHKey+kmlID9vsJUQzeF8rJZ4ngpgXhHOfAK+PEcaxJpcJG/pG4+hPxYRjZpMJHIvYFxyjrqxA4SNnUflyPa2poQ6HVZ6axZASR+Jmx2dIuRFshEFu24cuXAeU1lIJeVlRzwKElPpa72wADJobyHHBetshNwerOAt0wFxF6m/+baJHr+twN007Gi/ZRBFXJ3d2OaHjehQ6PWwwgeGtCoIqI1j/mdiXDEb1mNfB6q3izkCGXVGi+N+WrV46YidOn5JenhTlwxTeRVl/U/iWVzR9cyOhuRkmtslEr3CJRtl62FBb0PnD1QDMHDJLUwbmMLQrmNb9PIbH/94ihdHLfu/ldy8y2rf5steX8dotgS4QtpeXp/div8pxVFZxwrQfNiqYJ4XVwzUylmdPhkgyAzejavzfg7f1+/quKyWNbVnUe8Kdp05ht0XHMB1Y/P1ZBktqDo+jN/CRaFAAi0xDHpn5tUsizE8oD2ft1+HA6FHRUe9c+6i/zaqg63k9FhCUl7PwsVpEp+plXOHIfIXmUTh0lu3i9wB8lyeq44iF8y7WYiiXBC3DiwrMIQI/7ixyezh7KzLZz+uDw5J93q+2zOGTxx+2pwfowBh/urXQ2k81jU6IZnjt0bhEoYhFF4prIq58qQ4ASX1A==
+	OikjxcgiZD3gluroCk5spdbSVQZlw5a3NkkTu/4FO4sAEQHcQI1PWrLqiU7uOyS6X+mXsQiXFdAUiNKwB4bmUhJ7OVtCV05ErA4btiR6DmCwsIgCmSqM07uY6u4B5VSXEbRkFwsNSFqfMNDs6FMSnWhQxqRRYOqebPXuGWU0GQPT4iBbQofoSS4zFel3VuArLddmhaJG9E7oBb8U+vjPGiiRDN6bMcedDrdO4fP2F9RTqgRC40D3cOlZYzpHynsO/kp5SbyTbStt+RDk3i6atedCnWXCeqzrWHr9EJQ29VnMEbnM2fZ0ySGm0Xu4ELxpNRsE7ZVcc2GpqeqjruIZTIPNYn38vZkztF4Nc0xIgecbzYC57fZQJTXj7GLXrYn44gWhFktTk8fvo2pCxIvvbUgE07M7ppUatAlNxn8L1Mav9nEOThn/qN5vz/nvxY8hH81bKSSGHArWLVY5kB4KF/1zn8qI8pRXMrler8VxfI9VdgB+fc/vdtktGxrQ8zavqtpNo7I47XOxSn6Md4F6yu8l7Aq/nfHRSl9vYnDR25lD3q9bEyWSCS2bvdObHOEzVtecCWhREIgDO/Nv9zbxTXLKBUoxZX/y4BZQ24xSZx9TVX1a0/ABDg7BBWThSbTP5DXq+2eszZxYjgdq4o69Bg==
 X-Forefront-Antispam-Report: 
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BLAPR10MB4835.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(39860400002)(366004)(396003)(136003)(376002)(346002)(230922051799003)(1800799009)(64100799003)(451199024)(186009)(54906003)(30864003)(66946007)(316002)(7416002)(2906002)(31696002)(66556008)(86362001)(5660300002)(41300700001)(8676002)(4326008)(8936002)(66476007)(36756003)(2616005)(31686004)(38100700002)(478600001)(6506007)(53546011)(6666004)(6512007)(83380400001)(6486002)(26005)(14143004)(45980500001)(43740500002)(309714004);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BLAPR10MB4835.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(39860400002)(366004)(136003)(346002)(376002)(396003)(230922051799003)(451199024)(186009)(64100799003)(1800799009)(86362001)(41300700001)(7416002)(53546011)(5660300002)(8676002)(8936002)(36756003)(38100700002)(31686004)(31696002)(2906002)(6916009)(54906003)(66556008)(66476007)(26005)(316002)(4326008)(6512007)(66946007)(2616005)(6666004)(6486002)(478600001)(6506007)(43740500002)(45980500001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0: 
-	=?utf-8?B?TlQ0YmlZYkZ6VHVXM1ZaQWFrRVNUWHVjWEdqa0xBVFZBSCtuUGx3c1BxN3R5?=
- =?utf-8?B?RHB6SEJCZnZKMGFrZm93S1A1RTZXd3p6SVczV2txUEQ2R2tZWjd6WnpkT3Fu?=
- =?utf-8?B?UHkwSjRpR0JGT28zYWFKeEZUV0VyWGpHYzAvWmJWWS9kZ0FST2R4YVlSZVcx?=
- =?utf-8?B?YVpKa1ZjY2lDSG43ZjB1dlNQRjdnWHArYUFEc3Fjb0lZL09HUFAvb2dJTG83?=
- =?utf-8?B?UktXclZUTWltSEpUWlpMRzNoTUZxdzQrYmVpSUZ3bHFVbjNQNFpTYUY3U1ZP?=
- =?utf-8?B?TnpCZnVFSllqRFNiS1dhZ21nZ2RFRzRKSEs5QlpUdjVocUNFVFNuVlJRUzNF?=
- =?utf-8?B?OThKNjFlakxHTEhRaWVmcGRtYVl5UnF5T3FzNWFZVUNnSFVaSlZzU3pqWlAy?=
- =?utf-8?B?bGZJSzR2clBxbGExRmFyR0x1TElYaE5VdU12a1FtUzBTcHZYcm1HNHc4UU13?=
- =?utf-8?B?N2p5am5DdU9Hd3FjQ1JKUkQ1N2JRMVhYUEZlMEMxSC9UV1NFN0xXNkxod2tK?=
- =?utf-8?B?Y2VBL1pIRmhoeUs2eUFrQXVTTmZxL2RYT0kzeDNHdFJNVGZ4NDFjaFIxZ2pV?=
- =?utf-8?B?aHZlN1dleDRhQ09SdmxCaEJQNk5LUW5JNG9oMkhUd2JaVmJySG1BMmN2eWNr?=
- =?utf-8?B?Lzd1YnlLSFFqK2RJZHdVQnVlcEFSN3JNRTlKMldDa0UvR011NUpQOTZGMFpu?=
- =?utf-8?B?bmdYUkhEZ05zWDFzRjhzRjlSdTR2a3p4Wi9hLzBGWE9XTEtla3JtZjBqazc5?=
- =?utf-8?B?VkVtZmloQUt2SFUvVDVXTEluaTJYQWdSWUU0ZkVOUlpWeFVGSEZqb2Izak1D?=
- =?utf-8?B?cW5hVU5kWmNRVW1FYVhuTTlWN0ZkLzBLWDgvVk1JRkE0VE8zVGxOTTB0Tm9s?=
- =?utf-8?B?Mkd0SXVLRml5b2dpUGplMG1XUFdBdXRqWEIwQmZkWi8ydldieWlUVmhhTm9Q?=
- =?utf-8?B?a3Z4UWhIWXRZaUtYQ1pCbXZ5cEY2TU9MZGsyL280ZmNCNmU5d005K1FsVGc5?=
- =?utf-8?B?LzUxbS82UmxLa0cxWGVQQTJjdzY3b1pFdzYvWEdMeUJzRHF1Q3phL2FEbVIw?=
- =?utf-8?B?L2c3QUVYMlM5WmFPeEJEQ2ZpTmNHeHNxOEFoUExUSk1pejhsQXd5ZjF1bXU1?=
- =?utf-8?B?N2EzTCtHdHZ1aDFTNUNka2xCWFFpSTF3Y2xCeFVRbFNhalRET2ZyY1d3d3BC?=
- =?utf-8?B?TzVwNFlMbUNtUy9pOHVkZ1RUMWIxZnBGYUQ0QXJkbTV1SmRKSmV4YWxUcTQ0?=
- =?utf-8?B?ajZ1c3BEK3p2TVFpbWdpbGRyMWEyV1dZdWRLMXB5QXNvSFBSWUxtQUJHdjZX?=
- =?utf-8?B?VmtKc0hxdkMvVE9Nb2o0UXROdnBuZEJqalM2VDNZTmkwN0JRbkp1cUpiNWcz?=
- =?utf-8?B?eTNtVDZ3Z0puRXpMWERkQWo1Y2lmSnNzSUQ2VXRCNHI2MGZjeEI5NWdHWUtr?=
- =?utf-8?B?T2hjTXNPUnpmSWNRRWJIMDdqa0RZaXNzNXZoRktFVU56Y1hDa0tRMEYrODl1?=
- =?utf-8?B?ZVJoNm1vN2ZJQ2RRM3NBc0JwTW5nZlBsdldkQVBVNFdQNXpaT01zcWJjN3pX?=
- =?utf-8?B?VmRXSGhqQ3VKUE1Kdmg4MDlpdTFEQzFaemZnRENkWDh3cVUveDNESEpSZk9o?=
- =?utf-8?B?RFVRNVIwL2lZSjlDa2ZMUlhtYVFkUU5vV3VyMkhGWjd2eDF6Z0UrMENVc3NU?=
- =?utf-8?B?REVLd1Q4Ym9IUUowWGxLdUpQRlV1MDhDTTRVbk5IeHdaaE1oZENyUGFRL1FK?=
- =?utf-8?B?ZzNVV1d3VFYyQ1JTdHovYy9scE9GSk9uZVptekJ1UjNaelZ6a2JEcmdRWUlR?=
- =?utf-8?B?aWdydkJtNjBsdnV5UGNueGtQZk5HeTF2eUJrVnFmeWZuN1UyRi8yV1F4NVVp?=
- =?utf-8?B?SWFrWnlZYTRhWHlIcjZQcHlmUVRNSHFhajlJaFZsT2dMQys1KzBraUNaMTBp?=
- =?utf-8?B?cW42Yld4d0pXTnhGaGphRVFRY2d6Ym9GM0E4c0FydS9RMHRrSmYrdkU1NjZR?=
- =?utf-8?B?UTdMRlhub3BaMXZIUGwzZlpML2l5TEZOSkt0SkxNTG5LSTJ3S1U3L25vR3p4?=
- =?utf-8?B?cGtTbG10YzJhMkExNHZYRjg5WjlMQjVyYWNLay9QSjhxUjZJdDN0WlFMWDRx?=
- =?utf-8?B?UndZTlc4c1l2Y3R5WDgwY2pjNDhyZzhhMDNMT1RDbk9GeHdIcUFZalZEZ3N6?=
- =?utf-8?B?akE9PQ==?=
+	=?utf-8?B?SUQ2UGVFUkk0Mm1sRkVuYXlkUEFkajdFSXVTaHBOd0s3WFFNNlFrbWtRL0tJ?=
+ =?utf-8?B?MWpmYnpNd3lJR2QvT3NCT3BiMHgyWkZvNGk2Uk1lZ2h5ZDZSNUF0bmE4MlBC?=
+ =?utf-8?B?aFRmZjk4cSt6c3A4VkViWW1EWWZZbmRGQlVPTFR0QlhITE5zYS9Ga2hHZDVJ?=
+ =?utf-8?B?VEs2K2pPZklRTmRKT2hHa0tuejhMcDdKMHdJcXV6d2oxMEtIS1A5Q1hBUTVn?=
+ =?utf-8?B?Mi90bWFuNnFTVktJUnpKd3ZLTERQYlZqTmtxSHJFSUVEenpIc2IzcFN6NlBa?=
+ =?utf-8?B?UVg3aHArTS9USjM0dWF5STY0RzhKb1FSdWZwcUxIQ21VczJIMkdaditoU0pp?=
+ =?utf-8?B?aEVBVlpybE1TWXdhUE5aMmsyaGpSMzdCazZPaFdHdGY1aWV5NDhYYzVOOWNk?=
+ =?utf-8?B?MnhpK1hJY0pkSGhQdFpGVENnb1JGMHdMUjR4a3hJYStST3hEelhKVVU0SXY2?=
+ =?utf-8?B?aEVLdGdzaUx6eDBjdE9hYTFYWXNTUkEzalRWY3d0V0FEcEJkeVAzTUxISmtW?=
+ =?utf-8?B?WlllMGp5RnNnVHAzVHluQno0VUttTnhoV0JlSEJ5Mk1na2R2YlFlM3UzT0NS?=
+ =?utf-8?B?VFcvc0N5dStRWkt0ZHR5alE4ZXYrYzVuTm5pZ3F1cTdwRlp3WDhOaE1JdVB4?=
+ =?utf-8?B?OC9EYm1BK1Q0NVVuTmkwUzd0ZXFsdDFyU293STVFTU5CWEl4ekpESjFxdG1k?=
+ =?utf-8?B?Z1RsMnlTSmZ0MFlWM3NWaVJqVytoK0w1b25DM3c1OHNkQjJpYUN1bkw0dUpn?=
+ =?utf-8?B?RlN3Z08wMFo2UzJEM3pmcWJLblZQRW82OVhwdU05bm5oRkExSzlOMzcrVlJy?=
+ =?utf-8?B?OWhMM3l3eDBUbERGSmhoYW9Lck42T001ZXpENFRidEN4cjdzemltUFNaUzV4?=
+ =?utf-8?B?Qmx0WVRYSGp5NERJbVNKYTBQeUZ5SHl2MXlKNkNHRC9DNXB4UVBwSE5wWkVC?=
+ =?utf-8?B?MkRkSHg3Z0ZlUzhXaVVpK2VGaTMxRG15b09DSTliMzg1MWtPZDEzamFZWHdR?=
+ =?utf-8?B?YW11NFdsb1lPTUpmRzVTMVVjRXZWQnczcXBKejBLd1RGc1pLOTF4NWdkc2JE?=
+ =?utf-8?B?OTRKR2s0QkpySys2aGNzdTA0bm5saEVpRTBPRUVBQ21jalBGWGRnZFQ2cUFN?=
+ =?utf-8?B?aW94ZFRHTWszQ041L0JMckRmaXFiMkUvODUzTXlOOVlGamNQZEdhRitwalpT?=
+ =?utf-8?B?REVnVTFJNm1iclpwWEJPNGx4dlR2amwzME1jcWRZcGE5OTlCVFFld1RaNGRh?=
+ =?utf-8?B?Z1FGS1prb2RCUGNOTUxieDRVRGZCTkcrU2JaYW5hMDcraGZ4TVZ1RXhFTFJ0?=
+ =?utf-8?B?SWRxUVlJcVpONVVTMHRFbkRwMkxCa3FFMHlMeDNZUUpIaTZyY1QvZkdTL090?=
+ =?utf-8?B?WE1TYVNCTGhKRjdJZFhCdmNOVEFxa3FxRS9VdHp5TGJZeDJsUGlMRnFIbC90?=
+ =?utf-8?B?eVREcmE0aU5wcUVaZVBlLzk2VlZJU08vM1lPUXFTaEh1S1ZPM3RXK2Z6ZUhM?=
+ =?utf-8?B?UDl5MDJTTTJjVFQzektvN3F6YllVaEFDdzR1bk5xdlBzVG5WR3g3TUFyOEZu?=
+ =?utf-8?B?SXAva0ZKNzdpVm9McDIzMm1kNEtXS3NHdGhVd3VrMXR6YTNTOE5kNTMyWm1K?=
+ =?utf-8?B?VDh1eEk3NkhDYkUyN1lGdGp4R0RYMkY4ei8xdFgrMFh3TEw0RmdSZS8wYlkw?=
+ =?utf-8?B?TE82RS9zQksrcEJKNjVZMDZvcGtCZDhiRlA5T2ZOOGhob01Odmk1dWdha05x?=
+ =?utf-8?B?cE4valkyZjVNMlpOKzlVU0p0VndUNk8wcUhBNFRyM2lzc05oMnBzUGtpdWw3?=
+ =?utf-8?B?UytGdHU2ZCtTN0trUTd5eFZCdHJqeUZZYTVXTEFxdzN4TDdxTmw4U0hNM0Qw?=
+ =?utf-8?B?cFdMazMwSDFVbHZ4WUdIUUY5Z1ZmRTF5NzRaaFkyckQ4MWJuS29GdzhXWWJq?=
+ =?utf-8?B?ank1WVcrZzRTTlh0TWV2aTFyNW9tTXBTc3Rydm44R2Ivdjc4cmpCY1hoc05k?=
+ =?utf-8?B?ZUpOemhSbU5BOG5YZ3JEKy9HblpoYk10azcra2RTWkpZbWZ0V0ZXcUxpUmZU?=
+ =?utf-8?B?THRybmtOSGk0WWZQMzVkL1ZKbkd3OXQrd3lGZXd1NldFck84MGZpZXhJd3Bo?=
+ =?utf-8?B?MGFPLzdOeVdkUDRrQitUYmFiN05ZRHNOWmxFbmRGb0RHZVdPOVBMQ2lXY2p4?=
+ =?utf-8?B?bkE9PQ==?=
 X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0: 
-	=?utf-8?B?MVU5TjZWK1p5K3JpVjNVS3JIbWRNdnZTQ2d5Q0QrSURUMXNLb0hNbUs0bG1x?=
- =?utf-8?B?VXhiSlFyeDZteUtWVkZEK2w0RUxlZExWQnhOb2RnR0RxOS9TSGlXWTQ1VDRY?=
- =?utf-8?B?azFtaVR0Mml4VFZFQmIwYUptV3N6VHBFOVRoZGVSQWN5LzZoNGFaN2laSXFz?=
- =?utf-8?B?RkZjMFQ0VXVIOHRtSEc4RXNmSExrUXRqZ2JBUHluZG1zWmFwa0RwNG9uWkJP?=
- =?utf-8?B?elZwRG1QeERoVEFMVXk2NFNpL252TnlSanVyQ05rb2Jzd21aOFhXaDQ3NHhF?=
- =?utf-8?B?bCtYOWc3aE51anlidGhXWGRxU0VTN2hzNGxoRXBPNVNXY25qWmZjdlhIUCtN?=
- =?utf-8?B?V3JXM2RWd1pZYjBvT29hWnJqYkJsRFVmWmRCNjc2S3FJamxvYzFDT2JJS0dU?=
- =?utf-8?B?WldLa3hKY3JncU90cnFWV1FheG1HbmVpeThtVHFBU29UdHY5dGZTUytnZnJY?=
- =?utf-8?B?aUFIaHlMNGJmTjUzUitXZS9SYUhDWFdnMWk3M1I3OEVSczJrc3BZVnpiYjNr?=
- =?utf-8?B?RHlUbEovRkVmWXh3UHBTTHVxWUxaRGtwWHpUbzVzZnR2dmxsOXYxcjgyK3hv?=
- =?utf-8?B?NFR1MEhJaVBPUmVaNWlOMG5lem9EMDJvZW0va2ROTmViRGZYMWdMZ1ZkdjE5?=
- =?utf-8?B?dnh0dXhMQzhTWnFMUStKTHp1N0M0ekZ1N1BBUXI3U2RWTmJzQzRCL1IreXZO?=
- =?utf-8?B?WjFHYXgvV1owVE1FTDl3aFZXN2s4bVhnTUc5Lyt5Tll6ZEtlRzdNNFpTT0s1?=
- =?utf-8?B?ZDJUWU9QS3YwVTkrTTdWZEJzRGFSNGMvNjFKWFN5bC93cFZ4VHdLWjY1bHRJ?=
- =?utf-8?B?TXpWaTVBcm9TNjBVU2VpVVdJbEhLa29PQVh6aXdNR0NFRFF2Y3poNEhXamRw?=
- =?utf-8?B?QVVZSmxXL0dIck8zMFJBdllFdWZkVlhKcldHa0VkZlJwbGtiMUZJRFhhUU5Y?=
- =?utf-8?B?NXd4Rk93NTFpeWRHcURtRWg2dFdIdjU3azZVR0dvWnFGYzdTbTdnZElkTmdz?=
- =?utf-8?B?VWhTOU1GenVvdEx3NDlQSG9hVGExdUV1ZkpUdEdZKzJOQzFsM0NzWDgrd01X?=
- =?utf-8?B?Y2s4NHhKZE8yT0thcFpxVkgzZ3hlRjhNYzJlT0NJRmh2NC9mV1VNUXlmQTVL?=
- =?utf-8?B?T0cvajBzVzVaQVorZ2RBQlo5T1p2QkpxREdTSUxINnVBcFlIbFRpRkpZczRr?=
- =?utf-8?B?QmpWQTVUTFp6UkVlZUtsNFhDQXQvcHhFL0gxVXh6SnN4czZCQjBxTDRJMWEz?=
- =?utf-8?B?QkVkZGZuVWdGdzF3OFdOMDNNTWt1RmI1TU1MbDdEWHBuakVKdytvTStCZFo5?=
- =?utf-8?B?ZHZFajFrYzhtb0YwTm5iRnVrWWJqWWs5VGZhdk1GZzV4TU1SWXBZL3dmakFU?=
- =?utf-8?B?RFFGamJqbkhoejhRNHROSm0rcVRuN1duOWc4QW1ZQVhPbTVteGdXMitRUkxY?=
- =?utf-8?Q?3WVriO/i?=
+	=?utf-8?B?MFlEQUwyUng5Q1ZWbW1PTkFYK05IVmlQdEVyc0ZiYjVGNWdMMWtUdGVtbFV5?=
+ =?utf-8?B?cG10TFRJazcvajg3MVE2elU3TXRPYVFEYWdlSkVxYWQ2bFBDWENVdXg2Rm40?=
+ =?utf-8?B?ck1ZR2l5ZjFQL1RSKzFXT0JoM2MyMGV5bm40YndNcVE5WEV3OEE3NVNBa1Zr?=
+ =?utf-8?B?M1VHcGllbnJsemFiWVBJRkhyajkvT3FHcGovWDRoNnFiK21XREsvMHNvellu?=
+ =?utf-8?B?WWxsMWV2YlFpSFBxekFhUGRmSGFaOGhEeUJST2lGRGM1Q05waFh3RExaRFhB?=
+ =?utf-8?B?dE5tSEd2ejhKMjdLWGM1WnZnZGFGY0JhWnpkbUF1ZmRzS2pVYUtleUNUNnZn?=
+ =?utf-8?B?MnZ3MzF1eXAzOHpwUWlqR3lNTzFWUjdIdldGMXkvS0VkNGFyTzR1TFhzVjIr?=
+ =?utf-8?B?eFlWV0pEenZxQTdCN21Ndk1jZDNkR2g3VlE1Nk5zd2F4cUUyRk04czFZcjZn?=
+ =?utf-8?B?OVpEVFdUNk5CVno0TjBOcUt3M0grWVlvR0FvZzU2cW9wem1WQlg3ZE85SlAw?=
+ =?utf-8?B?MFpFMUtNT0pIWm1aSWJKRTZyY3RFTk50UFl6Um1xeVR3MGoxT1Ira1p5TTc1?=
+ =?utf-8?B?TmZRMGR0aEtYMk11dXZSakZOZVdnc21haDVSelVPclpXdlBFejlQcjJqRmlQ?=
+ =?utf-8?B?b2dDLzJsL1B4ZWpiZGdPb1VCcnpSMWFQVkNmK1BEeDk3bUFsdHBGZUJNT0FM?=
+ =?utf-8?B?ZmhHR1d2bk51MWlXRDVJcjcvSmpjaFljWURzYWlBYzErNTZnTTdXR3o3WThF?=
+ =?utf-8?B?dnduVzQ1S2ViUWMxZEFUODVOK0lCcEZoT3grOFJaenFWS2RXajBTdWpBY2Ju?=
+ =?utf-8?B?b0JMQ2JtN2ZKcnpzY2xQZ3dMWHFkbGd3T09YbEI4a2R3ck4vcW5iN0k0SEFI?=
+ =?utf-8?B?MkdMb0RZSVZ5K1lvSzNVaGNoSGZpNEhaWG1QM1R0T1pKckRtU0VPYmxMVURM?=
+ =?utf-8?B?NUVoalNjZXVDS1pZcVNGM1lPdXpTZkZ6WEFPQUJQZG9halY4RlBmZHVRUlZS?=
+ =?utf-8?B?R0R6d1BVM1U3eFFzRm81L2xVdkxzSEpvS0IyemJWaCtPRzk0VzFtbDVxbWYv?=
+ =?utf-8?B?S0ljbTZxYkpQbDFidVNxb2d6ZC9hdzZvT2t4S2pRSFROWlJaVThsKy8zQThv?=
+ =?utf-8?B?RG9OYk5LNExabTZJamdTZ1FlbXVmZlltWFNBWHY0NnUwZTNuWTUzU0pwOVBq?=
+ =?utf-8?B?ZHJSSmZXdnJzL3NNek5tOWcrWHRhcVFRVXBGc1lnSlFta0FMNVJWczVNRmJj?=
+ =?utf-8?B?TTBLZ1dzTmNHakNkL2tqVzRBZFhVSmgvbXg0Q291L2oyWUlRd2djZVZDaVYz?=
+ =?utf-8?B?d2duc2p2M1JNd3FGN29obEg0OEd5eWdBT0tXT3JBcnlKWm1wdHFhNHlSNUZ2?=
+ =?utf-8?B?MmY0aEQwcWhQWU5tSkdjNmtBeVQ3d1NqeFY0aHBNL3VvREhtcmVkeHMvQTg3?=
+ =?utf-8?Q?7kXsIE7O?=
 X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7e1bb8a2-5a0a-420f-49d4-08dbd083d7a7
+X-MS-Exchange-CrossTenant-Network-Message-Id: acf3e009-f00d-4083-8b2d-08dbd0899b73
 X-MS-Exchange-CrossTenant-AuthSource: BLAPR10MB4835.namprd10.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Oct 2023 09:14:48.3590
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Oct 2023 09:56:04.2547
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: xzU/8vVkgylUHTqjBZ00zCOAQAY3PlzTEW+XEg0X13Xjljm+jkvpMP42hU0hvp2YLSRYoePdaqzKO9MHnDM6UGu9oySab3lYPqMqv2dYEyI=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR10MB4563
+X-MS-Exchange-CrossTenant-UserPrincipalName: DIcQyRSlIrQFEsVmcgvqMJPPLNm3dNUoX4/yhwUuAystohDvBRXHMVH+0g+cS1g6Wk708rgPQCy2LvwRWBY2ZB86x9+ZCUceDi0etUACbo8=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR10MB6220
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.272,Aquarius:18.0.980,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2023-10-19_06,2023-10-18_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 spamscore=0 malwarescore=0
- adultscore=0 suspectscore=0 mlxscore=0 mlxlogscore=999 bulkscore=0
+ definitions=2023-10-19_07,2023-10-18_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 mlxscore=0 phishscore=0
+ malwarescore=0 suspectscore=0 mlxlogscore=999 spamscore=0 adultscore=0
  classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2309180000
- definitions=main-2310190077
-X-Proofpoint-ORIG-GUID: 0qBRrswX7nUfUAbWfqZo86qMRr9a8QCA
-X-Proofpoint-GUID: 0qBRrswX7nUfUAbWfqZo86qMRr9a8QCA
+ definitions=main-2310190083
+X-Proofpoint-GUID: GR4m8ECHlD1woNyvmySL83knlSOT2GHn
+X-Proofpoint-ORIG-GUID: GR4m8ECHlD1woNyvmySL83knlSOT2GHn
 
-On 19/10/2023 04:04, Baolu Lu wrote:
-> On 10/19/23 4:27 AM, Joao Martins wrote:
->> IOMMU advertises Access/Dirty bits for second-stage page table if the
->> extended capability DMAR register reports it (ECAP, mnemonic ECAP.SSADS).
->> The first stage table is compatible with CPU page table thus A/D bits are
->> implicitly supported. Relevant Intel IOMMU SDM ref for first stage table
->> "3.6.2 Accessed, Extended Accessed, and Dirty Flags" and second stage table
->> "3.7.2 Accessed and Dirty Flags".
+On 18/10/2023 23:44, Jason Gunthorpe wrote:
+> On Wed, Oct 18, 2023 at 09:27:05PM +0100, Joao Martins wrote:
+>> Extend IOMMUFD_CMD_GET_HW_INFO op to query generic iommu capabilities for a
+>> given device.
 >>
->> First stage page table is enabled by default so it's allowed to set dirty
->> tracking and no control bits needed, it just returns 0. To use SSADS, set
->> bit 9 (SSADE) in the scalable-mode PASID table entry and flush the IOTLB
->> via pasid_flush_caches() following the manual. Relevant SDM refs:
->>
->> "3.7.2 Accessed and Dirty Flags"
->> "6.5.3.3 Guidance to Software for Invalidations,
->>   Table 23. Guidance to Software for Invalidations"
->>
->> PTE dirty bit is located in bit 9 and it's cached in the IOTLB so flush
->> IOTLB to make sure IOMMU attempts to set the dirty bit again. Note that
->> iommu_dirty_bitmap_record() will add the IOVA to iotlb_gather and thus the
->> caller of the iommu op will flush the IOTLB. Relevant manuals over the
->> hardware translation is chapter 6 with some special mention to:
->>
->> "6.2.3.1 Scalable-Mode PASID-Table Entry Programming Considerations"
->> "6.2.4 IOTLB"
->>
->> Select IOMMUFD_DRIVER only if IOMMUFD is enabled, given that IOMMU dirty
->> tracking requires IOMMUFD.
+>> Capabilities are IOMMU agnostic and use device_iommu_capable() API passing
+>> one of the IOMMU_CAP_*. Enumerate IOMMU_CAP_DIRTY for now in the
+>> out_capabilities field returned back to userspace.
 >>
 >> Signed-off-by: Joao Martins <joao.m.martins@oracle.com>
 >> ---
->>   drivers/iommu/intel/Kconfig |   1 +
->>   drivers/iommu/intel/iommu.c | 104 +++++++++++++++++++++++++++++++++-
->>   drivers/iommu/intel/iommu.h |  17 ++++++
->>   drivers/iommu/intel/pasid.c | 109 ++++++++++++++++++++++++++++++++++++
->>   drivers/iommu/intel/pasid.h |   4 ++
->>   5 files changed, 234 insertions(+), 1 deletion(-)
+>>  drivers/iommu/iommufd/device.c |  4 ++++
+>>  include/uapi/linux/iommufd.h   | 11 +++++++++++
+>>  2 files changed, 15 insertions(+)
 >>
->> diff --git a/drivers/iommu/intel/Kconfig b/drivers/iommu/intel/Kconfig
->> index 2e56bd79f589..f5348b80652b 100644
->> --- a/drivers/iommu/intel/Kconfig
->> +++ b/drivers/iommu/intel/Kconfig
->> @@ -15,6 +15,7 @@ config INTEL_IOMMU
->>       select DMA_OPS
->>       select IOMMU_API
->>       select IOMMU_IOVA
->> +    select IOMMUFD_DRIVER if IOMMUFD
->>       select NEED_DMA_MAP_STATE
->>       select DMAR_TABLE
->>       select SWIOTLB
->> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
->> index 017aed5813d8..405b459416d5 100644
->> --- a/drivers/iommu/intel/iommu.c
->> +++ b/drivers/iommu/intel/iommu.c
->> @@ -300,6 +300,7 @@ static int iommu_skip_te_disable;
->>   #define IDENTMAP_AZALIA        4
->>     const struct iommu_ops intel_iommu_ops;
->> +const struct iommu_dirty_ops intel_dirty_ops;
->>     static bool translation_pre_enabled(struct intel_iommu *iommu)
->>   {
->> @@ -4077,10 +4078,12 @@ static struct iommu_domain
->> *intel_iommu_domain_alloc(unsigned type)
->>   static struct iommu_domain *
->>   intel_iommu_domain_alloc_user(struct device *dev, u32 flags)
->>   {
->> +    bool enforce_dirty = (flags & IOMMU_HWPT_ALLOC_ENFORCE_DIRTY);
->>       struct iommu_domain *domain;
->>       struct intel_iommu *iommu;
->>   -    if (flags & (~IOMMU_HWPT_ALLOC_NEST_PARENT))
->> +    if (flags & (~(IOMMU_HWPT_ALLOC_NEST_PARENT|
->> +               IOMMU_HWPT_ALLOC_ENFORCE_DIRTY)))
->>           return ERR_PTR(-EOPNOTSUPP);
->>         iommu = device_to_iommu(dev, NULL, NULL);
->> @@ -4090,6 +4093,9 @@ intel_iommu_domain_alloc_user(struct device *dev, u32
->> flags)
->>       if ((flags & IOMMU_HWPT_ALLOC_NEST_PARENT) && !ecap_nest(iommu->ecap))
->>           return ERR_PTR(-EOPNOTSUPP);
->>   +    if (enforce_dirty && !slads_supported(iommu))
->> +        return ERR_PTR(-EOPNOTSUPP);
+>> diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
+>> index e88fa73a45e6..71ee22dc1a85 100644
+>> --- a/drivers/iommu/iommufd/device.c
+>> +++ b/drivers/iommu/iommufd/device.c
+>> @@ -1185,6 +1185,10 @@ int iommufd_get_hw_info(struct iommufd_ucmd *ucmd)
+>>  	 */
+>>  	cmd->data_len = data_len;
+>>  
+>> +	cmd->out_capabilities = 0;
+>> +	if (device_iommu_capable(idev->dev, IOMMU_CAP_DIRTY))
+>> +		cmd->out_capabilities |= IOMMU_HW_CAP_DIRTY_TRACKING;
 >> +
->>       /*
->>        * domain_alloc_user op needs to fully initialize a domain
->>        * before return, so uses iommu_domain_alloc() here for
->> @@ -4098,6 +4104,15 @@ intel_iommu_domain_alloc_user(struct device *dev, u32
->> flags)
->>       domain = iommu_domain_alloc(dev->bus);
->>       if (!domain)
->>           domain = ERR_PTR(-ENOMEM);
->> +
->> +    if (!IS_ERR(domain) && enforce_dirty) {
->> +        if (to_dmar_domain(domain)->use_first_level) {
->> +            iommu_domain_free(domain);
->> +            return ERR_PTR(-EOPNOTSUPP);
->> +        }
->> +        domain->dirty_ops = &intel_dirty_ops;
->> +    }
->> +
->>       return domain;
->>   }
->>   @@ -4121,6 +4136,9 @@ static int prepare_domain_attach_device(struct
->> iommu_domain *domain,
->>       if (dmar_domain->force_snooping && !ecap_sc_support(iommu->ecap))
->>           return -EINVAL;
->>   +    if (domain->dirty_ops && !slads_supported(iommu))
->> +        return -EINVAL;
->> +
->>       /* check if this iommu agaw is sufficient for max mapped address */
->>       addr_width = agaw_to_width(iommu->agaw);
->>       if (addr_width > cap_mgaw(iommu->cap))
->> @@ -4375,6 +4393,8 @@ static bool intel_iommu_capable(struct device *dev, enum
->> iommu_cap cap)
->>           return dmar_platform_optin();
->>       case IOMMU_CAP_ENFORCE_CACHE_COHERENCY:
->>           return ecap_sc_support(info->iommu->ecap);
->> +    case IOMMU_CAP_DIRTY:
->> +        return slads_supported(info->iommu);
->>       default:
->>           return false;
->>       }
->> @@ -4772,6 +4792,9 @@ static int intel_iommu_set_dev_pasid(struct iommu_domain
->> *domain,
->>       if (!pasid_supported(iommu) || dev_is_real_dma_subdevice(dev))
->>           return -EOPNOTSUPP;
->>   +    if (domain->dirty_ops)
->> +        return -EINVAL;
->> +
->>       if (context_copied(iommu, info->bus, info->devfn))
->>           return -EBUSY;
->>   @@ -4830,6 +4853,85 @@ static void *intel_iommu_hw_info(struct device *dev,
->> u32 *length, u32 *type)
->>       return vtd;
->>   }
->>   +static int intel_iommu_set_dirty_tracking(struct iommu_domain *domain,
->> +                      bool enable)
->> +{
->> +    struct dmar_domain *dmar_domain = to_dmar_domain(domain);
->> +    struct device_domain_info *info;
->> +    int ret = -EINVAL;
->> +
->> +    spin_lock(&dmar_domain->lock);
->> +    if (dmar_domain->dirty_tracking == enable)
->> +        goto out_unlock;
->> +
->> +    list_for_each_entry(info, &dmar_domain->devices, link) {
->> +        ret = intel_pasid_setup_dirty_tracking(info->iommu, info->domain,
->> +                             info->dev, IOMMU_NO_PASID,
->> +                             enable);
->> +        if (ret)
->> +            goto err_unwind;
->> +
->> +    }
->> +
->> +    if (!ret)
->> +        dmar_domain->dirty_tracking = enable;
-> 
-> We should also support setting dirty tracking even if the domain has not
-> been attached to any device?
-> 
-Considering this rides on hwpt-alloc which attaches a device on domain
-allocation, then this shouldn't be possible in pratice. But I take this is to
-improve 'future' resilience, as there's nothing bad coming from below change you
-suggested.
-
-> To achieve this, we can remove ret initialization and remove the above
-> check. Make the default path a successful one.
-> 
->     int ret;
-> 
->     [...]
-> 
->     dmar_domain->dirty_tracking = enable;
-> 
-OK, if above makes sense.
-
->> +out_unlock:
->> +    spin_unlock(&dmar_domain->lock);
->> +
->> +    return 0;
->> +
->> +err_unwind:
->> +    list_for_each_entry(info, &dmar_domain->devices, link)
->> +        intel_pasid_setup_dirty_tracking(info->iommu, dmar_domain,
->> +                      info->dev, IOMMU_NO_PASID,
->> +                      dmar_domain->dirty_tracking);
->> +    spin_unlock(&dmar_domain->lock);
->> +    return ret;
->> +}
->> +
->> +static int intel_iommu_read_and_clear_dirty(struct iommu_domain *domain,
->> +                        unsigned long iova, size_t size,
->> +                        unsigned long flags,
->> +                        struct iommu_dirty_bitmap *dirty)
->> +{
->> +    struct dmar_domain *dmar_domain = to_dmar_domain(domain);
->> +    unsigned long end = iova + size - 1;
->> +    unsigned long pgsize;
->> +
->> +    /*
->> +     * IOMMUFD core calls into a dirty tracking disabled domain without an
->> +     * IOVA bitmap set in order to clean dirty bits in all PTEs that might
->> +     * have occurred when we stopped dirty tracking. This ensures that we
->> +     * never inherit dirtied bits from a previous cycle.
->> +     */
->> +    if (!dmar_domain->dirty_tracking && dirty->bitmap)
->> +        return -EINVAL;
->> +
->> +    do {
->> +        struct dma_pte *pte;
->> +        int lvl = 0;
->> +
->> +        pte = pfn_to_dma_pte(dmar_domain, iova >> VTD_PAGE_SHIFT, &lvl,
->> +                     GFP_ATOMIC);
->> +        pgsize = level_size(lvl) << VTD_PAGE_SHIFT;
->> +        if (!pte || !dma_pte_present(pte)) {
->> +            iova += pgsize;
->> +            continue;
->> +        }
->> +
->> +        if (dma_sl_pte_test_and_clear_dirty(pte, flags))
->> +            iommu_dirty_bitmap_record(dirty, iova, pgsize);
->> +        iova += pgsize;
->> +    } while (iova < end);
->> +
->> +    return 0;
->> +}
->> +
->> +const struct iommu_dirty_ops intel_dirty_ops = {
->> +    .set_dirty_tracking    = intel_iommu_set_dirty_tracking,
->> +    .read_and_clear_dirty   = intel_iommu_read_and_clear_dirty,
->> +};
->> +
->>   const struct iommu_ops intel_iommu_ops = {
->>       .capable        = intel_iommu_capable,
->>       .hw_info        = intel_iommu_hw_info,
->> diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
->> index c18fb699c87a..27bcfd3bacdd 100644
->> --- a/drivers/iommu/intel/iommu.h
->> +++ b/drivers/iommu/intel/iommu.h
->> @@ -48,6 +48,9 @@
->>   #define DMA_FL_PTE_DIRTY    BIT_ULL(6)
->>   #define DMA_FL_PTE_XD        BIT_ULL(63)
->>   +#define DMA_SL_PTE_DIRTY_BIT    9
->> +#define DMA_SL_PTE_DIRTY    BIT_ULL(DMA_SL_PTE_DIRTY_BIT)
->> +
->>   #define ADDR_WIDTH_5LEVEL    (57)
->>   #define ADDR_WIDTH_4LEVEL    (48)
->>   @@ -539,6 +542,9 @@ enum {
->>   #define sm_supported(iommu)    (intel_iommu_sm && ecap_smts((iommu)->ecap))
->>   #define pasid_supported(iommu)    (sm_supported(iommu) &&            \
->>                    ecap_pasid((iommu)->ecap))
->> +#define slads_supported(iommu) (sm_supported(iommu) &&                 \
->> +                ecap_slads((iommu)->ecap))
->> +
->>     struct pasid_entry;
->>   struct pasid_state_entry;
->> @@ -592,6 +598,7 @@ struct dmar_domain {
->>                        * otherwise, goes through the second
->>                        * level.
->>                        */
->> +    u8 dirty_tracking:1;        /* Dirty tracking is enabled */
->>         spinlock_t lock;        /* Protect device tracking lists */
->>       struct list_head devices;    /* all devices' list */
->> @@ -781,6 +788,16 @@ static inline bool dma_pte_present(struct dma_pte *pte)
->>       return (pte->val & 3) != 0;
->>   }
->>   +static inline bool dma_sl_pte_test_and_clear_dirty(struct dma_pte *pte,
->> +                           unsigned long flags)
->> +{
->> +    if (flags & IOMMU_DIRTY_NO_CLEAR)
->> +        return (pte->val & DMA_SL_PTE_DIRTY) != 0;
->> +
->> +    return test_and_clear_bit(DMA_SL_PTE_DIRTY_BIT,
->> +                  (unsigned long *)&pte->val);
->> +}
->> +
->>   static inline bool dma_pte_superpage(struct dma_pte *pte)
->>   {
->>       return (pte->val & DMA_PTE_LARGE_PAGE);
->> diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
->> index 8f92b92f3d2a..785384a59d55 100644
->> --- a/drivers/iommu/intel/pasid.c
->> +++ b/drivers/iommu/intel/pasid.c
->> @@ -277,6 +277,11 @@ static inline void pasid_set_bits(u64 *ptr, u64 mask, u64
->> bits)
->>       WRITE_ONCE(*ptr, (old & ~mask) | bits);
->>   }
->>   +static inline u64 pasid_get_bits(u64 *ptr)
->> +{
->> +    return READ_ONCE(*ptr);
->> +}
->> +
->>   /*
->>    * Setup the DID(Domain Identifier) field (Bit 64~79) of scalable mode
->>    * PASID entry.
->> @@ -335,6 +340,36 @@ static inline void pasid_set_fault_enable(struct
->> pasid_entry *pe)
->>       pasid_set_bits(&pe->val[0], 1 << 1, 0);
->>   }
->>   +/*
->> + * Enable second level A/D bits by setting the SLADE (Second Level
->> + * Access Dirty Enable) field (Bit 9) of a scalable mode PASID
->> + * entry.
+>>  	rc = iommufd_ucmd_respond(ucmd, sizeof(*cmd));
+>>  out_free:
+>>  	kfree(data);
+>> diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
+>> index efeb12c1aaeb..91de0043e73f 100644
+>> --- a/include/uapi/linux/iommufd.h
+>> +++ b/include/uapi/linux/iommufd.h
+>> @@ -419,6 +419,14 @@ enum iommu_hw_info_type {
+>>  	IOMMU_HW_INFO_TYPE_INTEL_VTD,
+>>  };
+>>   
+>> +/**
+>> + * enum iommufd_hw_info_capabilities
+>> + * @IOMMU_CAP_DIRTY_TRACKING: IOMMU hardware support for dirty tracking
 >> + */
->> +static inline void pasid_set_ssade(struct pasid_entry *pe)
->> +{
->> +    pasid_set_bits(&pe->val[0], 1 << 9, 1 << 9);
->> +}
->> +
->> +/*
->> + * Enable second level A/D bits by setting the SLADE (Second Level
 > 
-> nit: Disable second level ....
+> Lets write more details here, which iommufd APIs does this flag mean
+> work.
 > 
-/me nods
 
->> + * Access Dirty Enable) field (Bit 9) of a scalable mode PASID
->> + * entry.
->> + */
->> +static inline void pasid_clear_ssade(struct pasid_entry *pe)
->> +{
->> +    pasid_set_bits(&pe->val[0], 1 << 9, 0);
->> +}
->> +
->> +/*
->> + * Checks if second level A/D bits by setting the SLADE (Second Level
->> + * Access Dirty Enable) field (Bit 9) of a scalable mode PASID
->> + * entry is enabled.
->> + */
->> +static inline bool pasid_get_ssade(struct pasid_entry *pe)
->> +{
->> +    return pasid_get_bits(&pe->val[0]) & (1 << 9);
->> +}
->> +
->>   /*
->>    * Setup the WPE(Write Protect Enable) field (Bit 132) of a
->>    * scalable mode PASID entry.
->> @@ -627,6 +662,8 @@ int intel_pasid_setup_second_level(struct intel_iommu *iommu,
->>       pasid_set_translation_type(pte, PASID_ENTRY_PGTT_SL_ONLY);
->>       pasid_set_fault_enable(pte);
->>       pasid_set_page_snoop(pte, !!ecap_smpwc(iommu->ecap));
->> +    if (domain->dirty_tracking)
->> +        pasid_set_ssade(pte);
->>         pasid_set_present(pte);
->>       spin_unlock(&iommu->lock);
->> @@ -636,6 +673,78 @@ int intel_pasid_setup_second_level(struct intel_iommu
->> *iommu,
->>       return 0;
->>   }
->>   +/*
->> + * Set up dirty tracking on a second only translation type.
-> 
-> nit: ... on a second only or nested translation type.
-> 
-OK -- had changed the check, but not the comment :/
+I added this below. It is relatively brief as I expect people to read what each
+of the API do. Unless I should be expanding in length here?
 
->> + */
->> +int intel_pasid_setup_dirty_tracking(struct intel_iommu *iommu,
->> +                     struct dmar_domain *domain,
->> +                     struct device *dev, u32 pasid,
->> +                     bool enabled)
->> +{
->> +    struct pasid_entry *pte;
->> +    u16 did, pgtt;
->> +
->> +    spin_lock(&iommu->lock);
->> +
->> +    pte = intel_pasid_get_entry(dev, pasid);
->> +    if (!pte) {
->> +        spin_unlock(&iommu->lock);
->> +        dev_err_ratelimited(dev,
->> +                    "Failed to get pasid entry of PASID %d\n",
->> +                    pasid);
->> +        return -ENODEV;
->> +    }
->> +
->> +    did = domain_id_iommu(domain, iommu);
->> +    pgtt = pasid_pte_get_pgtt(pte);
->> +    if (pgtt != PASID_ENTRY_PGTT_SL_ONLY && pgtt != PASID_ENTRY_PGTT_NESTED) {
->> +        spin_unlock(&iommu->lock);
->> +        dev_err_ratelimited(dev,
->> +                    "Dirty tracking not supported on translation type %d\n",
->> +                    pgtt);
->> +        return -EOPNOTSUPP;
->> +    }
->> +
->> +    if (pasid_get_ssade(pte) == enabled) {
->> +        spin_unlock(&iommu->lock);
->> +        return 0;
->> +    }
->> +
->> +    if (enabled)
->> +        pasid_set_ssade(pte);
->> +    else
->> +        pasid_clear_ssade(pte);
->> +    spin_unlock(&iommu->lock);
->> +
->> +    if (!ecap_coherent(iommu->ecap))
->> +        clflush_cache_range(pte, sizeof(*pte));
->> +
->> +    /*
->> +     * From VT-d spec table 25 "Guidance to Software for Invalidations":
->> +     *
->> +     * - PASID-selective-within-Domain PASID-cache invalidation
->> +     *   If (PGTT=SS or Nested)
->> +     *    - Domain-selective IOTLB invalidation
->> +     *   Else
->> +     *    - PASID-selective PASID-based IOTLB invalidation
->> +     * - If (pasid is RID_PASID)
->> +     *    - Global Device-TLB invalidation to affected functions
->> +     *   Else
->> +     *    - PASID-based Device-TLB invalidation (with S=1 and
->> +     *      Addr[63:12]=0x7FFFFFFF_FFFFF) to affected functions
->> +     */
->> +    pasid_cache_invalidation_with_pasid(iommu, did, pasid);
->> +
->> +    if (pgtt == PASID_ENTRY_PGTT_SL_ONLY || pgtt == PASID_ENTRY_PGTT_NESTED)
-> 
-> Above check is unnecessary.
-> 
-Ah yes, we're validating beforehand above.
-
->> +        iommu->flush.flush_iotlb(iommu, did, 0, 0, DMA_TLB_DSI_FLUSH);
->> +
->> +    /* Device IOTLB doesn't need to be flushed in caching mode. */
->> +    if (!cap_caching_mode(iommu->cap))
->> +        devtlb_invalidation_with_pasid(iommu, dev, pasid);
->> +
->> +    return 0;
->> +}
->> +
->>   /*
->>    * Set up the scalable mode pasid entry for passthrough translation type.
->>    */
->> diff --git a/drivers/iommu/intel/pasid.h b/drivers/iommu/intel/pasid.h
->> index 4e9e68c3c388..958050b093aa 100644
->> --- a/drivers/iommu/intel/pasid.h
->> +++ b/drivers/iommu/intel/pasid.h
->> @@ -106,6 +106,10 @@ int intel_pasid_setup_first_level(struct intel_iommu *iommu,
->>   int intel_pasid_setup_second_level(struct intel_iommu *iommu,
->>                      struct dmar_domain *domain,
->>                      struct device *dev, u32 pasid);
->> +int intel_pasid_setup_dirty_tracking(struct intel_iommu *iommu,
->> +                     struct dmar_domain *domain,
->> +                     struct device *dev, u32 pasid,
->> +                     bool enabled);
->>   int intel_pasid_setup_pass_through(struct intel_iommu *iommu,
->>                      struct dmar_domain *domain,
->>                      struct device *dev, u32 pasid);
-> 
-> Others look good to me. Thank you very much!
-> 
-> With above addressed,
-> 
-> Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
-> 
-Thanks
+diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
+index ef8a1243eb57..43ed2f208503 100644
+--- a/include/uapi/linux/iommufd.h
++++ b/include/uapi/linux/iommufd.h
+@@ -422,6 +422,12 @@ enum iommu_hw_info_type {
+ /**
+  * enum iommufd_hw_info_capabilities
+  * @IOMMU_CAP_DIRTY_TRACKING: IOMMU hardware support for dirty tracking
++ *                            If available, it means the following APIs
++ *                            are supported:
++ *
++ *                                   IOMMU_HWPT_GET_DIRTY_IOVA
++ *                                   IOMMU_HWPT_SET_DIRTY
++ *
+  */
+ enum iommufd_hw_capabilities {
+        IOMMU_HW_CAP_DIRTY_TRACKING = 1 << 0,
