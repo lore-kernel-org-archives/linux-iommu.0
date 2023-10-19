@@ -1,165 +1,115 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f175.google.com (mail-pl1-f175.google.com [209.85.214.175])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6880A2744D
-	for <iommu@lists.linux.dev>; Thu, 19 Oct 2023 13:32:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39FED8F49
+	for <iommu@lists.linux.dev>; Thu, 19 Oct 2023 15:15:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="MVysohYa"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1697722357;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=fpNttNMYuxYrg++tZJU7aHSjMPEAnzSMQI0OyzamccU=;
-	b=MVysohYauDGYOKeKweDgX0MSVSvOuxv2VlspHPthcscXCk/Kfqk4POb9wKMl1ECHtHjyrY
-	IKc5goVvOmodcQx791eLTUO6koyrCzrDRbuD3ukb+e0N2uWp4jEP/AESJhwXsatzr40isU
-	fO0ak7DJcRCVdFfa2YQTvN8MngiWUF4=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-480-7AJwBZUqOHmHbNiRs38PMA-1; Thu, 19 Oct 2023 09:32:35 -0400
-X-MC-Unique: 7AJwBZUqOHmHbNiRs38PMA-1
-Received: by mail-wm1-f71.google.com with SMTP id 5b1f17b1804b1-4083a670d25so13482635e9.0
-        for <iommu@lists.linux.dev>; Thu, 19 Oct 2023 06:32:35 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="GHWmJcvx"
+Received: by mail-pl1-f175.google.com with SMTP id d9443c01a7336-1c5c91bec75so57508705ad.3
+        for <iommu@lists.linux.dev>; Thu, 19 Oct 2023 08:15:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1697728512; x=1698333312; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=m/tcTfs0PflHwKMpetwk3afhilPxA8Q9Lp8a1lR/wmE=;
+        b=GHWmJcvxQHIrOOzx/kbdOmPLx6qGvjcVqfB/RcxNlr8s6ovlMcejPMVbfig8iHghKv
+         GHGFh/0YaYzXXaETfPALdS1P0/tAH9On1SyPe1tTV66TpuSNGy5mepCGEfmflWvMQLFD
+         W0rQtpHgsixMGVpd4D4fEi481A2zoxFv8MP+clFuA1JcXdhAW/N+Tn53OtzOJL0h6hyY
+         S2XLLgO8filuux/w79VuE+7vAI/SfVK0O5BaWIcuxojK9x4+us17JUDYVnXw9dNNPpIa
+         hhzkjEDfIdpu9Uoly11pFK/tKkGjwlPPJp7Acoab45LFX4OgOoSa7ISb6xvuQ3Yq0Gwk
+         vo5Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1697722354; x=1698327154;
-        h=content-transfer-encoding:mime-version:user-agent:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=fpNttNMYuxYrg++tZJU7aHSjMPEAnzSMQI0OyzamccU=;
-        b=Bnbuyz9EH4988tvACTrAgm9VmhQ+fNDISFFEuA4WFQlZRhiPdfAWsNzjA3SUevAzPY
-         fzvrx5hTTKEM2C3mcTmew2UAdiwCuuWY1uzcmuE5XZt/QOwsxgB8NtWjBHByWPlvubYZ
-         o/l9NXyW54UGc831tECIWECyTkw0Ak8xZVgKP8nj7GH/0er8tMeqvDSQl9dcd09SNQAq
-         q1mjJ8xkhYkMXlkcJ+6tf1yIxMJzVKSQul9N2MEzdGGfiGj5Gz+RpadlnmrnNHEtoEi8
-         BdxwGjILpM+h51VqO14pAA2lDHOAlVa/Rrt54x3ANuDgCLdfKmR1VJVylzmNvkc/vdYQ
-         U0Sg==
-X-Gm-Message-State: AOJu0YwnlqFlFed6Jo09/8kDEKVvFUe2VoAPkzz2W/1D9C/vUuNxmrrT
-	xkDdXqd3KGLninhyzW+yG1tHhqilg/MXU4RZ1bybouZ4XuRkO+nm1h3ZBYeSbJ09d99FyHmwS4N
-	tH2KdSas8vD+UeMQ=
-X-Received: by 2002:a5d:424e:0:b0:32d:a977:50b0 with SMTP id s14-20020a5d424e000000b0032da97750b0mr1532508wrr.41.1697722354441;
-        Thu, 19 Oct 2023 06:32:34 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IFslkzbUAqoUOogMxd09VoVqSQdX15OcXnRTo8QWDZTS0esTZfwchO0AaQAH0PHqc9G3zTUGA==
-X-Received: by 2002:a5d:424e:0:b0:32d:a977:50b0 with SMTP id s14-20020a5d424e000000b0032da97750b0mr1532481wrr.41.1697722354061;
-        Thu, 19 Oct 2023 06:32:34 -0700 (PDT)
-Received: from starship ([89.237.100.246])
-        by smtp.gmail.com with ESMTPSA id d3-20020adfef83000000b0032dc2110d01sm4500447wro.61.2023.10.19.06.32.32
+        d=1e100.net; s=20230601; t=1697728512; x=1698333312;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=m/tcTfs0PflHwKMpetwk3afhilPxA8Q9Lp8a1lR/wmE=;
+        b=R6STclbZRdpFC0i4W71gmQIFz1H8d2uczOu0XcDVXumV0Tc14p4H/7OXLiZf3h0VrM
+         GcTdI8M1eDdavSqoGhKBoCTDKHf8lM2J4aXtavfM8b8WWeMM7osq3aYyxAWNny0kAIGH
+         pZvNFPdqAH+9lUByZLzOpW6wSRQAUjsRFVhN6xGFVbFvsRXdBJ1vXrNuaUe3M8x+awdd
+         kM0LCu/xdViWItxOR3aTRlZwfNFJyVe476G76VsSOYgNur5XoS50DPw+QS++CcigPiwc
+         3xtrjTIChdMPRC4G+Rhsdj4fzjU9BR6922Zpl7k9jXvNpmjH2cCvKJqzwkUYgH7QawOT
+         vkog==
+X-Gm-Message-State: AOJu0YwVUNveYRvC3j86nXVESy5IzK2ws0wQi8HqRt6KThxfADEP+y7X
+	t3mG8RUIr+3x2fE+oFz7Yz6xWEkc7OGj3eS6K+UA4g==
+X-Google-Smtp-Source: AGHT+IHC2GCYSgQBivySy6NMX0VhiBlgVlMe6JGwUC4TRk9A/00nLrDl6p8Mw5q8/7/dfkM9E4VZIw==
+X-Received: by 2002:a17:902:c7c2:b0:1c9:ca02:645c with SMTP id r2-20020a170902c7c200b001c9ca02645cmr1815570pla.36.1697728511974;
+        Thu, 19 Oct 2023 08:15:11 -0700 (PDT)
+Received: from ziepe.ca ([12.22.141.131])
+        by smtp.gmail.com with ESMTPSA id ik14-20020a170902ab0e00b001bb3beb2bc6sm2113976plb.65.2023.10.19.08.15.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 Oct 2023 06:32:33 -0700 (PDT)
-Message-ID: <f5e41b0e277924c757c22c8ed6db19c6dddfe9f0.camel@redhat.com>
-Subject: Re: [PATCH] iommu/amd: Do not flush IRTE when only updating isRun
- and destination fields
-From: Maxim Levitsky <mlevitsk@redhat.com>
-To: "Suthikulpanit, Suravee" <suravee.suthikulpanit@amd.com>, 
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev
-Cc: joro@8bytes.org, seanjc@google.com, vasant.hegde@amd.com,
- jon.grimm@amd.com,  santosh.shukla@amd.com, joao.m.martins@oracle.com, 
- alejandro.j.jimenez@oracle.com, boris.ostrovsky@oracle.com
-Date: Thu, 19 Oct 2023 16:32:31 +0300
-In-Reply-To: <d0731c73-b2bb-972f-a728-f63273c4d5ab@amd.com>
-References: <20231017144236.8287-1-suravee.suthikulpanit@amd.com>
-	 <97d106d28e4c3468912a478dba79ab2221109cbd.camel@redhat.com>
-	 <44477b0b-af38-569e-95d9-e78c118c9d18@amd.com>
-	 <d0731c73-b2bb-972f-a728-f63273c4d5ab@amd.com>
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32)
+        Thu, 19 Oct 2023 08:15:11 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1qtUjt-003D8G-LY;
+	Thu, 19 Oct 2023 12:15:09 -0300
+Date: Thu, 19 Oct 2023 12:15:09 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Zhenhua Huang <quic_zhenhuah@quicinc.com>
+Cc: Robin Murphy <robin.murphy@arm.com>, will@kernel.org, joro@8bytes.org,
+	baolu.lu@linux.intel.com, iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, quic_tingweiz@quicinc.com,
+	Pavan Kondeti <quic_pkondeti@quicinc.com>,
+	"Patrick Daly (QUIC)" <quic_pdaly@quicinc.com>
+Subject: Re: [ARM IOMMU] IOMMU framework concurrency issue
+Message-ID: <20231019151509.GD691768@ziepe.ca>
+References: <e2e20e1c-6450-4ac5-9804-b0000acdf7de@quicinc.com>
+ <20231017163337.GE282036@ziepe.ca>
+ <70cc8d3d-1ddf-4700-ac15-bcd74fae2b2a@arm.com>
+ <20231018161918.GB691768@ziepe.ca>
+ <0d6b490d-83df-76fb-f5ad-e9730fc57660@quicinc.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0d6b490d-83df-76fb-f5ad-e9730fc57660@quicinc.com>
 
-On Thu, 2023-10-19 at 16:11 +0700, Suthikulpanit, Suravee wrote:
-> Maxim,
+On Thu, Oct 19, 2023 at 04:21:47PM +0800, Zhenhua Huang wrote:
+> In above time window (1), dev->iommu allocated but not freed, if it's just
+> accessed by client device's probing(Thread 1)..     crash happens.
 > 
-> On 10/17/2023 10:36 PM, Suthikulpanit, Suravee wrote:
-> > On 10/17/2023 9:51 PM, Maxim Levitsky wrote:
-> > > У вт, 2023-10-17 у 09:42 -0500, Suravee Suthikulpanit пише:
-> > > > According to the recent update in the AMD IOMMU spec [1], the IsRun and
-> > > > Destination fields of the Interrupt Remapping Table Entry (IRTE) are not
-> > > > cached by the IOMMU hardware.
-> > > Is that true for all AMD hardware that supports AVIC? E.g Zen1/Zen2 
-> > > hardware?
-> > 
-> > This is true for all AVIC/x2AVIC-capable IOMMU hardware in the past.
-> > 
-> > > Is there a chance that this will cause a similar errata to the is_running
-> > > errata that Zen2 cpus have?
-> > 
-> > Please let me check on this and get back.
-> 
-> Just to be sure, could you please tell me which errata number are you 
-> referring to here?
+> I also want to mention from our side, it's *not only seen for non-iommu*
+> device.
 
-Hi!
+I see. So there are only two locks we currently have that could
+resolve that - the device_lock or the iommu_probe_device_lock
 
-The errata is this one:
+The device_lock path is what my prior series did, in your case you
+already have the device_lock on of_dma_configure_id() so you just need
+it on the bus path.
 
-https://www.amd.com/content/dam/amd/en/documents/processor-tech-docs/revision-guides/56323-PUB_1_01.pdf
-(ERRATA #1235)
+The iommu_probe_device_lock is what I guess Robin was thinking of with
+the of_xlate rework.. I looked a little and it seems like quite a
+thorny problem.. The ARM SMMU drivers seem to model the correct design
+using the iommu_fwspec to pass data from of_xlate to probe, while a
+whole bunch of other drivers decided to put the first half of their
+probe functions into of_xlate!
 
-The errata meaning is that once the CPU sets is_running=0 in AVIC's physical ID table, 
-the hardware might still not cause #incomplete_ipi vmexit, for a few times.
+To untangle this to use the iommu_probe_device_lock the of_xlate would
+have to stop using the struct dev (ie so it cannot touch the
+dev->iommu any more) and all the dev->iommu touches in the of/acpi
+code reorganized into function arguments to iommu_probe which would
+then store them into the dev->iommu under the lock. Ie stop using
+dev->iommu as some temporary scratch pad to shuffle data around prior
+to probing. Pass iommu_fwspec as an arg to iommu_probe and a new
+ops->probe_fwspec. Stop calling dev_iommu_priv_set from of_xlate ops.
 
-This means that KVM is not notified of the pending interrupt and it lets the target vCPU block instead of being woken up.
+> Patch seems good to me and in theory can cover the case I have met. I tested
+> below based on 6.6-rc1 for sanity with minor changes(clean up tags etc). If
+> you're OK I want to propagate into our tree and to see if it fixes issue?
 
+I don't think this patch can solve the races with of_xlate vs probe,
+that is just wrongly locked.
 
-In regard to the IOMMU, the parallel errata like situation would be that CPU sets is_running=0 in the IOMMU tables, 
-exactly afterwards an interrupt arrives and the IOMMU doesn't log the interrupt in the GA log.
+I assume my series you linked to comprehensively fixes this?
 
-Note that regardless if the IOMMU works correctly or not, the KVM has to check IRR after it sets is_running=0 to avoid memory
-reordering races, but it does so and uses a memory barrier to ensure correctness. 
+FWIW I don't have the energy to try and fix all the wonky drivers
+properly so I don't plan to revisit it.
 
-
-PS: Recently I realized that a very simple workaround exists for errata #1235: At expense of the performance, the KVM can
-permanently set is_running=0 in the AVIC's physical id table.
-
-This will ensure that all ICR writes except self IPIs will cause a VM exit, thus in the expense of performance will
-ensure that AVIC works correctly.
-
-And this configuration while slower than full AVIC, it's still much better than having no AVIC, 
-because AVIC still accelerates the receiver side of IPIs, and also IOMMU can still post interrupts.
-In fact with the workaround applied, AVIC is exactly equivalent to Intel's APICv without IPI virtualization.
-
-
-This is the latest version of my patch series:
-
-[PATCH v3 0/4] Allow AVIC's IPI virtualization to be optional
-https://www.spinics.net/lists/kvm/msg328416.html
-
-A help with a review will be highly appreciated.
-
-In addition to that I would highly appreciate if AMD could respond to these questions:
-
-1. Is the errata #1235 really not present on Zen1 CPUs? It doesn't appear in the revision guide,
-but I still suspect that the guide might just not be up to date. I haven't tested a Zen1 machine
-to see if I can reproduce it yet.
-
-2. As I see AMD disabled AVIC on Zen3 machines, but it does appear to work just fine in my testing.
-Is it possible that the reason for the disabling is also related to ICR/IPI emulation and that if I apply
-the same workaround as for errata #1235, then AVIC could be safely enabled on Zen3,
-despite support for it not being present in CPUID?
-
-If I know the answer to these questions, it might be possible to enable AVIC on all current AMD hardware by default.
-
-AFAIK (my personal opinion, based on various downstream bugs opened and their urgency) that our customers do care about APICv,
-but somehow assume as a fact that AMD doesn't have such feature while in fact AMD does.
-
-So I think that if AVIC were to be enabled by default on AMD, that would be something that AMD's (and ours) 
-customers would appreciate very much.
-
-Best regards,
-	Maxim Levitsky
-
-> 
-> Thanks,
-> Suravee
-> 
-
-
+Jason
