@@ -1,328 +1,145 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2056.outbound.protection.outlook.com [40.107.220.56])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ABAA4156F6
-	for <iommu@lists.linux.dev>; Thu, 19 Oct 2023 08:22:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7FEE168A3
+	for <iommu@lists.linux.dev>; Thu, 19 Oct 2023 09:11:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="HebX7U/C"
-Received: from pps.filterd (m0279866.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 39J7smsm003172;
-	Thu, 19 Oct 2023 08:21:53 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=qcppdkim1;
- bh=2vKU8FvHtK6L+y3XFDTt5+LChoDeKHjA7i1pZUHRUMw=;
- b=HebX7U/CJipiaRz0KdjUlmRZ7HcNshhGRc6m8S6XIFn+OB+P9sgFHPa+Kk8vi2BsJjU7
- iu4gaU27D9tDtPLdWD9nFPJGlaxhpvDXnHJtdfqsiR6Br8z5c03fy9/SuFPc58m15EgX
- mSaqd+Gh7AhfUECJ1bFsp3iJFrBjcIfsHJoU8+dcqGTBza5FP53nOg09Hq3enFAbvaTf
- rIT4UsGLm621SIgUXXMKZ9AlSPnZQ8V2rs3UB/uTZ0dpXcjp7rbAkD42Y/YdqA+TWJa+
- QrFca02htJmAZkwjf27cfxQYnLG9HDXS5gVMeimypOnxuLidqvSz3Hi2YAFf/35JaOO/ ew== 
-Received: from nalasppmta04.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3tt905b80a-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 19 Oct 2023 08:21:53 +0000
-Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-	by NALASPPMTA04.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 39J8LpZ1031273
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 19 Oct 2023 08:21:52 GMT
-Received: from [10.239.132.245] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.39; Thu, 19 Oct
- 2023 01:21:49 -0700
-Message-ID: <0d6b490d-83df-76fb-f5ad-e9730fc57660@quicinc.com>
-Date: Thu, 19 Oct 2023 16:21:47 +0800
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="MsGJkm/a"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=OqOMVuVj6a91/jKmfOV+vjE8bXrUdTahQgK+X4x5ODq6EawJXqtjh+yBCRAgMu7NNrJbbrVRirA5vW07M1T35S/NxjRwgtlKrAIqDDUPYzI/kC0I2pi+tJLZYmlD7IAAkDjbq2Ss8YjG951yDMZXTGhJ5QdX50C9lQ6h8ZaJxiFRJdmJ8h/nfOIr11pjezCs6qDRlOnOOQ9qNCsrjLHlADBJ1yDY6rUsVg5H8x/q5uzRnrzc6wE9O2p7X9E34gDPBXwPU5KFJAgWCHcqn0+ueuQbRDw60TQ+bZH50iO4/W1z1dv/uam0hlWc+Tu49yMXgNYY0eDv6YdwpCfLaD+5Hg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=TOJh4YibGmSL/H8bTWRQufhvwt3viQ+lU1mOtQDEgJI=;
+ b=BSOqvYVnJUHvUIVcDhfaRaKckNPOwWI1CCjqIlmPhj4Q+NGl8U5XNGkO442AyYF2O/uXHdBnI6oiFiXXw2qcUDueBxi26XEXZS2W6Fwo3RsmppW2LdmVrYCQ8XZBcroL7Ms/BBpJOasMZsCTV9grfjFzo1jBO2a47OToj79iQXsqh4trtKdwrmiawfYWL6Yrrz5M9LlO742kJdMNimH2ylzCx8qYWhdrie0zsqLhke90LTabEz7bbsY6Ko5pvd2ttQdTq/HKVJ6UxCmZt1Q2hOgtEljX64CuUTZp14IozgMufUsbHf5UcX5tnUtSZ0GNDQdtILD8lcIQMfb2KStOLQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=TOJh4YibGmSL/H8bTWRQufhvwt3viQ+lU1mOtQDEgJI=;
+ b=MsGJkm/aIf2dOGzLP7iirFGP3YiR3E6v/a3HkDIZkox0AZh9Qm6QLSgM55LvTBfNe8uDMFXXefRCHEgcoQrQcc9e1htAcRNwUUCfyzdMsxj6BVB6tI1rEzxmx1Rx6FKyG5qbHoNL/Q4nUop7Wa9PA5L5S5MN/nGHB8XX7WdJZxY=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DM8PR12MB5445.namprd12.prod.outlook.com (2603:10b6:8:24::7) by
+ BL1PR12MB5730.namprd12.prod.outlook.com (2603:10b6:208:385::9) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6907.23; Thu, 19 Oct 2023 09:11:53 +0000
+Received: from DM8PR12MB5445.namprd12.prod.outlook.com
+ ([fe80::90d5:d841:f95d:d414]) by DM8PR12MB5445.namprd12.prod.outlook.com
+ ([fe80::90d5:d841:f95d:d414%6]) with mapi id 15.20.6886.034; Thu, 19 Oct 2023
+ 09:11:52 +0000
+Message-ID: <d0731c73-b2bb-972f-a728-f63273c4d5ab@amd.com>
+Date: Thu, 19 Oct 2023 16:11:43 +0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.1
+Subject: Re: [PATCH] iommu/amd: Do not flush IRTE when only updating isRun and
+ destination fields
+Content-Language: en-US
+From: "Suthikulpanit, Suravee" <suravee.suthikulpanit@amd.com>
+To: Maxim Levitsky <mlevitsk@redhat.com>, linux-kernel@vger.kernel.org,
+ iommu@lists.linux.dev
+Cc: joro@8bytes.org, seanjc@google.com, vasant.hegde@amd.com,
+ jon.grimm@amd.com, santosh.shukla@amd.com, joao.m.martins@oracle.com,
+ alejandro.j.jimenez@oracle.com, boris.ostrovsky@oracle.com
+References: <20231017144236.8287-1-suravee.suthikulpanit@amd.com>
+ <97d106d28e4c3468912a478dba79ab2221109cbd.camel@redhat.com>
+ <44477b0b-af38-569e-95d9-e78c118c9d18@amd.com>
+In-Reply-To: <44477b0b-af38-569e-95d9-e78c118c9d18@amd.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: SG2PR01CA0184.apcprd01.prod.exchangelabs.com
+ (2603:1096:4:189::9) To DM8PR12MB5445.namprd12.prod.outlook.com
+ (2603:10b6:8:24::7)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.15.1
-Subject: Re: [ARM IOMMU] IOMMU framework concurrency issue
-Content-Language: en-US
-To: Jason Gunthorpe <jgg@ziepe.ca>, Robin Murphy <robin.murphy@arm.com>
-CC: <will@kernel.org>, <joro@8bytes.org>, <baolu.lu@linux.intel.com>,
-        <iommu@lists.linux.dev>, <linux-arm-kernel@lists.infradead.org>,
-        <quic_tingweiz@quicinc.com>, Pavan Kondeti <quic_pkondeti@quicinc.com>,
-        "Patrick Daly (QUIC)" <quic_pdaly@quicinc.com>
-References: <e2e20e1c-6450-4ac5-9804-b0000acdf7de@quicinc.com>
- <20231017163337.GE282036@ziepe.ca>
- <70cc8d3d-1ddf-4700-ac15-bcd74fae2b2a@arm.com>
- <20231018161918.GB691768@ziepe.ca>
-From: Zhenhua Huang <quic_zhenhuah@quicinc.com>
-In-Reply-To: <20231018161918.GB691768@ziepe.ca>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: 28IrGAJMP5jVQMQci_NCUe4SuTbjD80Y
-X-Proofpoint-ORIG-GUID: 28IrGAJMP5jVQMQci_NCUe4SuTbjD80Y
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.272,Aquarius:18.0.980,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2023-10-19_05,2023-10-18_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 mlxscore=0
- phishscore=0 mlxlogscore=999 lowpriorityscore=0 suspectscore=0
- clxscore=1015 priorityscore=1501 impostorscore=0 adultscore=0
- malwarescore=0 bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2309180000 definitions=main-2310190069
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM8PR12MB5445:EE_|BL1PR12MB5730:EE_
+X-MS-Office365-Filtering-Correlation-Id: 9d719167-1485-4c57-4b51-08dbd0836ef1
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	wXjU42oo9UVevz+0Iaju9pcDM/eS3/gSrbDGyHzp91RXpwdhq1RMea9V5e5whv4QD964oYMj7RrKP+scTYPp4Z+Bq9hPDi1f8CRwMS1jWoKUlgOePusRNPteHyHtjxIKA+tsexVvDPGrNvrFKKB6gOgF7V/WCty7sgJ0D4lRkD0oG5+gtp9f4AIYQHFeHvNCtu4aQwfVWG2FmdZMcQK6r/9bHeJZVgHYd+oi0fIRUDQhsssSgkEO7RLhlmA2nYm4SvTB/UwXEXZsJqUkToViOXtlfIL/zrWaruI2Zc8FrD0BxSHqHksgwhuE9B0iSR2F9GgvnCpMkGPCItgmXhlphEweEnkPpuE9xcCcc1JvvEmLVbU1CYDjC2ftdxELYuUGmDkNPzmjR9913fRt/6QkqkXADnl7cZPPDNtssHZ84f9faKeNyhmoBlHjI2jSkVutSFakD+8Z4s+mu7FMDtHPJInUJ9h4/LUZB76s0NjaIPVTru9+idtk8+yatYng4yB6cfWBElIVXNaLLv9QGpjq9PYXcaNhd2g2+9X8+Qad7spOYVsGUmF/B17r6h5oCqY0eR16pwajQ25g666xeEWV1aAldb9CymteQyLGPzDX8BlVs1HxGRWkxgoITMww20xoUZd1PXD0k7d91l+qiVe2EQ==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM8PR12MB5445.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366004)(396003)(39860400002)(376002)(136003)(346002)(230922051799003)(451199024)(186009)(64100799003)(1800799009)(4326008)(83380400001)(478600001)(8936002)(6486002)(8676002)(2616005)(31696002)(86362001)(4744005)(4001150100001)(2906002)(6666004)(41300700001)(36756003)(26005)(6512007)(6506007)(53546011)(38100700002)(5660300002)(66946007)(66556008)(66476007)(316002)(31686004)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?L2w4Q2pmWEpkaXJ2SWFPNjhKaHcrbWhFb1VVdkRlYjA2VHdGQnhmSnBsTGNw?=
+ =?utf-8?B?elJEZksyM1N1c3p5STBtS2RMazE4MEgzQzFYZGVuODZqWW9xKzhBR01iNmRz?=
+ =?utf-8?B?OGFKM000b0pCc1AycGJiQzM5cWRDbXRXNnFHZEtGNzlTR092VTJkbC85R0NQ?=
+ =?utf-8?B?eG04WWg3YVBORXhNMmxobGx6QmpkM1RnZHFvTWJ5SFFUOWFzZksxY2FqeFBp?=
+ =?utf-8?B?WlcrNHRlNjU3elFJZDY1K3JGQ1hMVU5IQXB4dTRkSm9sRko3Q2Q0RlVkL1k5?=
+ =?utf-8?B?a2FCTW5wNVVJakNyS2NYdHNiaTBlb2tSQ3hwa09uOU0wakRMUnREQS9UTUs4?=
+ =?utf-8?B?OHh3UlV0OTdLTXdCMUhuK1Y3ZTNtYmp3N2ZzSDJXR3ljUzI1MTJuZkF4NHVB?=
+ =?utf-8?B?bFBBbFFVUk82NFFlMlIrZk1UcUtCbXBZZWwrM3hKd2tHSmhUU0VzbnJnNGtZ?=
+ =?utf-8?B?MEsxSm04cEdscFVUYWNRYlFPMEZKZ1BzYnY3Z2JVZWp0QTVUNkw5Y3AvWXFR?=
+ =?utf-8?B?aHk5bmY1WFd5WDJrZmJLbVpJQ2ZzUlozZzFxRmhzWmtCWHAzbi9wQnpJZEcz?=
+ =?utf-8?B?cFExbXNCNE9WV3hPRU9LZTFyNE41ZXdBVktHM05RYnZEVEZobm81aTVOWE9G?=
+ =?utf-8?B?M1lNTGRvMEZuNFVYNnZ2b2JpZDMzdXZXL1NhS01ZYVdVZWowQTFBbVpBd2hY?=
+ =?utf-8?B?dnhmeFhQRzdZZTVCdndzcENBTW0vcWdjZ2k0WTdlWTZlNXFxV0lwUUduOXd4?=
+ =?utf-8?B?V2Z3MEZoVTkxQ3VPMjdXSERHVFVSNkJYVTZKSi8rTDdtaDRJUlVGK2k4MUV1?=
+ =?utf-8?B?angzcFRudGVVTndrSlNyRnRLeDJRdmpjclVMakkzOSszbWkxTmRZS1ZNQmh5?=
+ =?utf-8?B?OEpXcXhsWGFqWjEybHdiMkVORlhvVVIzMU1ib3pscGlPRDhaN3lMZStWZlMv?=
+ =?utf-8?B?bERLdm0zb1ArV1IrdTl0bHdScXVCbHRrb0s3bzloSi95L2ZJQU80aHFtdG90?=
+ =?utf-8?B?NjlDQUxEUi9YL2lwVk1FL1RRc3RuRzgrYVpKeUtYOWM2L2kvRENHb1lSU1Y2?=
+ =?utf-8?B?Nk1Ra1FUd3pyYkhQVi9lWjB4SzVsc0pKRW1OK01QM3pDd0dveFRnazNENEhM?=
+ =?utf-8?B?eFgzQXU3dlU0SUYwVXNFck5ad25oY21SbnN0Q3VCYVZTU09Kayt1Y0ljbGd3?=
+ =?utf-8?B?NDFDT1cwQ3hSaTU0cWtpYWkwVmh5a0VlUHhFdkNvV21RQUpiS2czRjRWL1pm?=
+ =?utf-8?B?QXJaOVhTaEJsMW9ncjA2d2I0YVNHcS8zdk9oSUlZRFo1SmUvWWdxbjNXWm1a?=
+ =?utf-8?B?ektWQnE2bGtjM2hha2Y3eWpjdk81eWtKaGxDNWFHV2V6Sm10L1oxWlFtZXo3?=
+ =?utf-8?B?SklnQjBEKzY0aTZVUlRjL1BzWGFYaWtDNGhWOEVoV2UybjFDMm00T2dqbTk4?=
+ =?utf-8?B?OTdvcjVCNUh4TG1scllIcUlJZ1lMV1pYZHR5MEowMEFhSm1INm8rd0IwOUFB?=
+ =?utf-8?B?QzRpNXUxcUQ1OVBYYUpkaG9neWRuR3R0MFluQU1rZFF0OFhMZENJbEwraGJk?=
+ =?utf-8?B?WlQ0akdDUWZVTmpqUTVZRk1qMXFNUkNzM1pRanZxWGtLMnFKS1lPM0c0bisx?=
+ =?utf-8?B?NHV5azRleDFzckhTWm9ONFpOZ2MwNk5aTEVjekVIUldBNFhhaDFpSFlwbmFz?=
+ =?utf-8?B?SWxHWEZaV2ViVklpSWVoMnp3RWRNYjFWdmlwNjV0REVid29tMGJiaXpqL3BN?=
+ =?utf-8?B?dDZmY2pIOHNqZ3lSV1JmWjZOQWxqbHJYamMvY0x6MlR1S1hTVnZZMUxoNElG?=
+ =?utf-8?B?K01EYyt1QVIrUCtyd2trZXZreU5wMXhsV3hFc2R0UmpRL1ZScVNYamdDUjVD?=
+ =?utf-8?B?M0p2OHZ3SDRQeUhrdzlwYy9VN1h1eDNmcjF1MUxDQjhKTDdnWHBGZFd6dGFt?=
+ =?utf-8?B?RHpZUDRpa3gwWG5tMkM5bnE1dzR6SHJCWHkvNjAzUGNMQ1p2cURIakhrS2E5?=
+ =?utf-8?B?OExXMkExSVB5S2dwWGxha2dreGVIWkpXd0lkT2FQaDM1S2VEL0U1aXcxbjZB?=
+ =?utf-8?B?OVYzZ2N3VDhxNGg2dXg3RUV3ZTBoV0dEZXljZGZKcDNhL0NjeUpPakpWOCtO?=
+ =?utf-8?Q?HUThhPFd5Q4efRK6VhyQTj7ou?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9d719167-1485-4c57-4b51-08dbd0836ef1
+X-MS-Exchange-CrossTenant-AuthSource: DM8PR12MB5445.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Oct 2023 09:11:52.7297
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 1eXDH7MpDCAsjecQJpOiWJ1Cq+iw/ei085VZTF43CRC9EtEL4Is5G0eRy6ayuSDlvt2UcjNiE5UxBgnkErgLRA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5730
 
+Maxim,
 
-
-On 2023/10/19 0:19, Jason Gunthorpe wrote:
-> On Wed, Oct 18, 2023 at 04:34:20PM +0100, Robin Murphy wrote:
->> On 2023-10-17 17:33, Jason Gunthorpe wrote:
->>>
->>> eg make sure the iommu driver is fully registered before allowing any
->>> concurrent probes. Once the iommu driver is registered it will be able
->>> to catch the bus notifiers and serialize things properly.
->>
->> Ugh, I think I see at least how this happens for device which *don't* have
->> an IOMMU - because iommu_init_device() has to transiently allocate
->> dev->iommu in order to call ops->probe_device in order to discover
->> that the
+On 10/17/2023 10:36 PM, Suthikulpanit, Suravee wrote:
 > 
-> Hmm! Is it essential though? That ordering was C&P from before, I
-> didn't study it closely when I copied it..
+> On 10/17/2023 9:51 PM, Maxim Levitsky wrote:
+>> У вт, 2023-10-17 у 09:42 -0500, Suravee Suthikulpanit пише:
+>>> According to the recent update in the AMD IOMMU spec [1], the IsRun and
+>>> Destination fields of the Interrupt Remapping Table Entry (IRTE) are not
+>>> cached by the IOMMU hardware.
+>> Is that true for all AMD hardware that supports AVIC? E.g Zen1/Zen2 
+>> hardware?
 > 
-> I only checked some drivers, but something like this looked like it
-> could resolve the situation you described - Zhenhua is that your
-> situation, a non-probed device?
+> This is true for all AVIC/x2AVIC-capable IOMMU hardware in the past.
+> 
+>> Is there a chance that this will cause a similar errata to the is_running
+>> errata that Zen2 cpus have?
+> 
+> Please let me check on this and get back.
 
-Thanks Jason and Robin.
-Typo? you mean non-iommu device? Yes, it happens also for non-iommu 
-device. In separated email I listed this situation:
-
-Client device's probing:
-of_iommu_configure  ---Thread 1
-     struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
-     if (fwspec) {
-          if (fwspec->ops)
-             ...
-
-IOMMU probing:
-iommu_device_register ---Thread 2
-     .. bus_iommu_probe(iommu_buses[i]);
-         __iommu_probe_device
-             iommu_init_device
-                 dev_iommu_get
-                 ... *time window of concurrency*  ------(1)
-                 dev_iommu_free
-
-In above time window (1), dev->iommu allocated but not freed, if it's 
-just accessed by client device's probing(Thread 1)..     crash happens.
-
-I also want to mention from our side, it's *not only seen for non-iommu* 
-device.
-
-Patch seems good to me and in theory can cover the case I have met. I 
-tested below based on 6.6-rc1 for sanity with minor changes(clean up 
-tags etc). If you're OK I want to propagate into our tree and to see if 
-it fixes issue?
-
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 3bfc56d..3a207f3 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -381,6 +381,16 @@ static u32 dev_iommu_get_max_pasids(struct device *dev)
-         return min_t(u32, max_pasids, dev->iommu->iommu_dev->max_pasids);
-  }
-
-+void dev_iommu_priv_set(struct device *dev, void *priv)
-+{
-+       struct dev_iommu *dev_iommu;
-+
-+       dev_iommu = dev_iommu_get(dev);
-+       if (WARN_ON(!dev_iommu))
-+               return; // FIXME handle failure in drivers
-+       dev->iommu->priv = priv;
-+}
-+
-  /*
-   * Init the dev->iommu and dev->iommu_group in the struct device and 
-get the
-   * driver probed
-@@ -388,16 +398,12 @@ static u32 dev_iommu_get_max_pasids(struct device 
-*dev)
-  static int iommu_init_device(struct device *dev, const struct 
-iommu_ops *ops)
-  {
-         struct iommu_device *iommu_dev;
-+       struct dev_iommu *dev_iommu;
-         struct iommu_group *group;
-         int ret;
--       if (!dev_iommu_get(dev))
--               return -ENOMEM;
--
--       if (!try_module_get(ops->owner)) {
--               ret = -EINVAL;
--               goto err_free;
--       }
-+       if (!try_module_get(ops->owner))
-+               return -EINVAL;
-
-         iommu_dev = ops->probe_device(dev);
-         if (IS_ERR(iommu_dev)) {
-@@ -405,6 +411,14 @@ static int iommu_init_device(struct device *dev, 
-const struct iommu_ops *ops)
-                 goto err_module_put;
-         }
-
-+       dev_iommu = dev_iommu_get(dev);
-+       if (WARN_ON(!dev_iommu)) {
-+               ret = -ENOMEM;
-+               goto err_release;
-+       }
-+
-+       dev_iommu->iommu_dev = iommu_dev;
-+
-         ret = iommu_device_link(iommu_dev, dev);
-         if (ret)
-                 goto err_release;
-@@ -418,10 +432,9 @@ static int iommu_init_device(struct device *dev, 
-const struct iommu_ops *ops)
-         }
-         dev->iommu_group = group;
-
--       dev->iommu->iommu_dev = iommu_dev;
--       dev->iommu->max_pasids = dev_iommu_get_max_pasids(dev);
-+       dev_iommu->max_pasids = dev_iommu_get_max_pasids(dev);
-         if (ops->is_attach_deferred)
--               dev->iommu->attach_deferred = ops->is_attach_deferred(dev);
-+               dev_iommu->attach_deferred = ops->is_attach_deferred(dev);
-         return 0;
-
-  err_unlink:
-@@ -431,8 +444,11 @@ static int iommu_init_device(struct device *dev, 
-const struct iommu_ops *ops)
-                 ops->release_device(dev);
-  err_module_put:
-         module_put(ops->owner);
--err_free:
--       dev_iommu_free(dev);
-+       /*
-+        * If probe_device allocated a dev->iommu and things failed later
-+        * we just leave it. We don't yet have robust locking, there
-+        * could be concurrent users.
-+        */
-         return ret;
-  }
-
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index c50a769..21c15be 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -698,10 +698,7 @@ static inline void *dev_iommu_priv_get(struct 
-device *dev)
-                 return NULL;
-  }
-
--static inline void dev_iommu_priv_set(struct device *dev, void *priv)
--{
--       dev->iommu->priv = priv;
--}
-+void dev_iommu_priv_set(struct device *dev, void *priv);
-
-  int iommu_probe_device(struct device *dev);
+Just to be sure, could you please tell me which errata number are you 
+referring to here?
 
 Thanks,
-Zhenhua
-
-> 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 47172f1084d8fd..580e74afdb0765 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -386,6 +386,16 @@ static u32 dev_iommu_get_max_pasids(struct device *dev)
->   	return min_t(u32, max_pasids, dev->iommu->iommu_dev->max_pasids);
->   }
->   
-> +void dev_iommu_priv_set(struct device *dev, void *priv)
-> +{
-> +	struct dev_iommu *dev_iommu;
-> +
-> +	dev_iommu = dev_iommu_get(dev);
-> +	if (WARN_ON(!dev_iommu))
-> +		return; // FIXME handle failure in drivers
-> +	dev->iommu->priv = priv;
-> +}
-> +
->   /*
->    * Init the dev->iommu and dev->iommu_group in the struct device and get the
->    * driver probed
-> @@ -393,12 +403,10 @@ static u32 dev_iommu_get_max_pasids(struct device *dev)
->   static int iommu_init_device(struct device *dev, const struct iommu_ops *ops)
->   {
->   	struct iommu_device *iommu_dev;
-> +	struct dev_iommu *dev_iommu;
->   	struct iommu_group *group;
->   	int ret;
->   
-> -	if (!dev_iommu_get(dev))
-> -		return -ENOMEM;
-> -
->   	if (!try_module_get(ops->owner)) {
->   		ret = -EINVAL;
->   		goto err_free;
-> @@ -409,7 +417,14 @@ static int iommu_init_device(struct device *dev, const struct iommu_ops *ops)
->   		ret = PTR_ERR(iommu_dev);
->   		goto err_module_put;
->   	}
-> -	dev->iommu->iommu_dev = iommu_dev;
-> +
-> +	dev_iommu = dev_iommu_get(dev);
-> +	if (WARN_ON(!dev_iommu)) {
-> +		ret = -ENOMEM;
-> +		goto err_release;
-> +	}
-> +
-> +	dev_iommu->iommu_dev = iommu_dev;
->   
->   	ret = iommu_device_link(iommu_dev, dev);
->   	if (ret)
-> @@ -424,9 +439,9 @@ static int iommu_init_device(struct device *dev, const struct iommu_ops *ops)
->   	}
->   	dev->iommu_group = group;
->   
-> -	dev->iommu->max_pasids = dev_iommu_get_max_pasids(dev);
-> +	dev_iommu->max_pasids = dev_iommu_get_max_pasids(dev);
->   	if (ops->is_attach_deferred)
-> -		dev->iommu->attach_deferred = ops->is_attach_deferred(dev);
-> +		dev_iommu->attach_deferred = ops->is_attach_deferred(dev);
->   	return 0;
->   
->   err_unlink:
-> @@ -438,7 +453,11 @@ static int iommu_init_device(struct device *dev, const struct iommu_ops *ops)
->   	module_put(ops->owner);
->   err_free:
->   	dev->iommu->iommu_dev = NULL;
-> -	dev_iommu_free(dev);
-> +	/*
-> +	 * If probe_device allocated a dev->iommu and things failed later
-> +	 * we just leave it. We don't yet have robust locking, there
-> +	 * could be concurrent users.
-> +	 */
->   	return ret;
->   }
->   
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index 68c9be9293e4c0..5c25c378a13ece 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -713,10 +713,7 @@ static inline void *dev_iommu_priv_get(struct device *dev)
->   		return NULL;
->   }
->   
-> -static inline void dev_iommu_priv_set(struct device *dev, void *priv)
-> -{
-> -	dev->iommu->priv = priv;
-> -}
-> +void dev_iommu_priv_set(struct device *dev, void *priv);
->   
->   int iommu_probe_device(struct device *dev);
->   
+Suravee
