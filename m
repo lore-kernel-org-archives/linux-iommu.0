@@ -1,36 +1,36 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7133412E49
-	for <iommu@lists.linux.dev>; Fri, 20 Oct 2023 09:24:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B083AD2E3
+	for <iommu@lists.linux.dev>; Fri, 20 Oct 2023 09:24:32 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="H8idV1eF"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="fq/1VI6X"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1697793871; x=1729329871;
+  t=1697793872; x=1729329872;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=0njwcX5/NU7naKi/ROVrRqxboo7jMq2jUYAkQziXQWU=;
-  b=H8idV1eFwjpi4byXijShEVev36TYhad1+AoJbwmDmRDG/yMCBDDrgKpw
-   t1V3wjjw/0HlYwVbr+sOs2CMhkbUzWnhq+vsFoJWWeTo8gTT5FCYl7MIu
-   l+2bZffqZB6rMsphtVnjw5pASWtPSjUR8UwDf/ACKmQeFND1wOpDOX3Ci
-   efohQ38p0Wdo2Zc2Xs2rfS/LRMQmiCawA7nKt/nu7K03cG9fIjC4Y0wz1
-   F4NxUwE7oQv2Zltxg2EAlyFwr08lWAc/u66sBy6rLj55GiwFT6T4Dv66G
-   MqPqLEinOijJQS9JHmmaLN+qW+38VRxSGJJYdWZRt5AbuML1ZbZ5/J4G0
+  bh=2PM7o5xYDJmlHz5TKehP6+0yc9LVqHG0PRNTYo4xOBg=;
+  b=fq/1VI6XpsOhLLNmLf5+YnjRcUCYmRoFWDAlr5xfaHprjM3de/ybrSHp
+   2uWsqEWXHrFptgZj4xejTFq69hC7WJDrtQdl6kODYC33lonxRtg4QRCIl
+   WxjbpDavMinwmzUo1Vz2f1wzmcr1LRnhrqIuOX+EZabwqdfB3ZrHz0PnD
+   EDAzy3wdsEF8/fNMQhTguB6K8Ur1cgsAwo7BrjWhHos7ezJH486d4INrx
+   xIKDPNMFJ4voOoot3AqjW3zUFbK6OLGJlQQKjeZm7bpg5IaVmSXn7ieQp
+   lIv5BwefLL4KdaT9V3+H/BaW8UZaWzGRQWvF/gFELEfohp6T3hjaDCXPx
    A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10868"; a="472685458"
+X-IronPort-AV: E=McAfee;i="6600,9927,10868"; a="472685477"
 X-IronPort-AV: E=Sophos;i="6.03,238,1694761200"; 
-   d="scan'208";a="472685458"
+   d="scan'208";a="472685477"
 Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Oct 2023 02:24:28 -0700
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Oct 2023 02:24:29 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10868"; a="750859668"
+X-IronPort-AV: E=McAfee;i="6600,9927,10868"; a="750859673"
 X-IronPort-AV: E=Sophos;i="6.03,238,1694761200"; 
-   d="scan'208";a="750859668"
+   d="scan'208";a="750859673"
 Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
-  by orsmga007.jf.intel.com with ESMTP; 20 Oct 2023 02:24:28 -0700
+  by orsmga007.jf.intel.com with ESMTP; 20 Oct 2023 02:24:29 -0700
 From: Yi Liu <yi.l.liu@intel.com>
 To: joro@8bytes.org,
 	alex.williamson@redhat.com,
@@ -57,9 +57,9 @@ Cc: cohuck@redhat.com,
 	zhenzhong.duan@intel.com,
 	joao.m.martins@oracle.com,
 	xin.zeng@intel.com
-Subject: [PATCH v5 1/6] iommu: Add cache_invalidate_user op
-Date: Fri, 20 Oct 2023 02:24:21 -0700
-Message-Id: <20231020092426.13907-2-yi.l.liu@intel.com>
+Subject: [PATCH v5 2/6] iommufd: Add IOMMU_HWPT_INVALIDATE
+Date: Fri, 20 Oct 2023 02:24:22 -0700
+Message-Id: <20231020092426.13907-3-yi.l.liu@intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20231020092426.13907-1-yi.l.liu@intel.com>
 References: <20231020092426.13907-1-yi.l.liu@intel.com>
@@ -71,80 +71,177 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-From: Lu Baolu <baolu.lu@linux.intel.com>
+In nested translation, the stage-1 page table is user-managed but cached
+by the IOMMU hardware, so an update on present page table entries in the
+stage-1 page table should be followed with a cache invalidation.
 
-The updates of the PTEs in the nested page table will be propagated to the
-hardware caches on both IOMMU (IOTLB) and devices (DevTLB/ATC).
+Add an IOMMU_HWPT_INVALIDATE ioctl to support such a cache invalidation.
+It takes hwpt_id to specify the iommu_domain, and a multi-entry array to
+support multiple invalidation requests in one ioctl.
 
-Add a new domain op cache_invalidate_user for the userspace to flush the
-hardware caches for a nested domain through iommufd. No wrapper for it,
-as it's only supposed to be used by iommufd. Then, pass in invalidation
-requests in form of a user data array conatining a number of invalidation
-data entries.
+Check cache_invalidate_user op in the iommufd_hw_pagetable_alloc_nested,
+since all nested domains need that.
 
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+Co-developed-by: Nicolin Chen <nicolinc@nvidia.com>
 Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
 Signed-off-by: Yi Liu <yi.l.liu@intel.com>
 ---
- include/linux/iommu.h | 30 ++++++++++++++++++++++++++++++
- 1 file changed, 30 insertions(+)
+ drivers/iommu/iommufd/hw_pagetable.c    | 35 ++++++++++++++++++++++++
+ drivers/iommu/iommufd/iommufd_private.h |  9 +++++++
+ drivers/iommu/iommufd/main.c            |  3 +++
+ include/uapi/linux/iommufd.h            | 36 +++++++++++++++++++++++++
+ 4 files changed, 83 insertions(+)
 
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 48b8a9a03ae7..de52835446f4 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -246,6 +246,24 @@ struct iommu_user_data {
- 	size_t len;
+diff --git a/drivers/iommu/iommufd/hw_pagetable.c b/drivers/iommu/iommufd/hw_pagetable.c
+index 362c694aac9b..6090d59c4982 100644
+--- a/drivers/iommu/iommufd/hw_pagetable.c
++++ b/drivers/iommu/iommufd/hw_pagetable.c
+@@ -238,6 +238,11 @@ iommufd_hwpt_nested_alloc(struct iommufd_ctx *ictx,
+ 		rc = -EINVAL;
+ 		goto out_abort;
+ 	}
++	/* Driver is buggy by missing cache_invalidate_user in domain_ops */
++	if (WARN_ON_ONCE(!hwpt->domain->ops->cache_invalidate_user)) {
++		rc = -EINVAL;
++		goto out_abort;
++	}
+ 	return hwpt_nested;
+ 
+ out_abort:
+@@ -323,3 +328,33 @@ int iommufd_hwpt_alloc(struct iommufd_ucmd *ucmd)
+ 	iommufd_put_object(&idev->obj);
+ 	return rc;
+ }
++
++int iommufd_hwpt_invalidate(struct iommufd_ucmd *ucmd)
++{
++	struct iommu_hwpt_invalidate *cmd = ucmd->cmd;
++	struct iommu_user_data_array data_array = {
++		.type = cmd->req_type,
++		.uptr = u64_to_user_ptr(cmd->reqs_uptr),
++		.entry_len = cmd->req_len,
++		.entry_num = cmd->req_num,
++	};
++	struct iommufd_hw_pagetable *hwpt;
++	int rc = 0;
++
++	if (cmd->req_type == IOMMU_HWPT_DATA_NONE)
++		return -EINVAL;
++	if (!cmd->reqs_uptr || !cmd->req_len || !cmd->req_num)
++		return -EINVAL;
++
++	hwpt = iommufd_hw_pagetable_get_nested(ucmd, cmd->hwpt_id);
++	if (IS_ERR(hwpt))
++		return PTR_ERR(hwpt);
++
++	rc = hwpt->domain->ops->cache_invalidate_user(hwpt->domain, &data_array,
++						      &cmd->out_driver_error_code);
++	cmd->req_num = data_array.entry_num;
++	if (iommufd_ucmd_respond(ucmd, sizeof(*cmd)))
++		return -EFAULT;
++	iommufd_put_object(&hwpt->obj);
++	return rc;
++}
+diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
+index a829458fe762..7ec629599844 100644
+--- a/drivers/iommu/iommufd/iommufd_private.h
++++ b/drivers/iommu/iommufd/iommufd_private.h
+@@ -279,6 +279,7 @@ void iommufd_hwpt_paging_abort(struct iommufd_object *obj);
+ void iommufd_hwpt_nested_destroy(struct iommufd_object *obj);
+ void iommufd_hwpt_nested_abort(struct iommufd_object *obj);
+ int iommufd_hwpt_alloc(struct iommufd_ucmd *ucmd);
++int iommufd_hwpt_invalidate(struct iommufd_ucmd *ucmd);
+ 
+ static inline void iommufd_hw_pagetable_put(struct iommufd_ctx *ictx,
+ 					    struct iommufd_hw_pagetable *hwpt)
+@@ -300,6 +301,14 @@ static inline void iommufd_hw_pagetable_put(struct iommufd_ctx *ictx,
+ 	refcount_dec(&hwpt->obj.users);
+ }
+ 
++static inline struct iommufd_hw_pagetable *
++iommufd_hw_pagetable_get_nested(struct iommufd_ucmd *ucmd, u32 id)
++{
++	return container_of(iommufd_get_object(ucmd->ictx, id,
++					       IOMMUFD_OBJ_HWPT_NESTED),
++			    struct iommufd_hw_pagetable, obj);
++}
++
+ struct iommufd_group {
+ 	struct kref ref;
+ 	struct mutex lock;
+diff --git a/drivers/iommu/iommufd/main.c b/drivers/iommu/iommufd/main.c
+index f94c14f20918..1f2d2d262e12 100644
+--- a/drivers/iommu/iommufd/main.c
++++ b/drivers/iommu/iommufd/main.c
+@@ -307,6 +307,7 @@ union ucmd_buffer {
+ 	struct iommu_destroy destroy;
+ 	struct iommu_hw_info info;
+ 	struct iommu_hwpt_alloc hwpt;
++	struct iommu_hwpt_invalidate cache;
+ 	struct iommu_ioas_alloc alloc;
+ 	struct iommu_ioas_allow_iovas allow_iovas;
+ 	struct iommu_ioas_copy ioas_copy;
+@@ -342,6 +343,8 @@ static const struct iommufd_ioctl_op iommufd_ioctl_ops[] = {
+ 		 __reserved),
+ 	IOCTL_OP(IOMMU_HWPT_ALLOC, iommufd_hwpt_alloc, struct iommu_hwpt_alloc,
+ 		 __reserved),
++	IOCTL_OP(IOMMU_HWPT_INVALIDATE, iommufd_hwpt_invalidate,
++		 struct iommu_hwpt_invalidate, out_driver_error_code),
+ 	IOCTL_OP(IOMMU_IOAS_ALLOC, iommufd_ioas_alloc_ioctl,
+ 		 struct iommu_ioas_alloc, out_ioas_id),
+ 	IOCTL_OP(IOMMU_IOAS_ALLOW_IOVAS, iommufd_ioas_allow_iovas,
+diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
+index d82bc663c5cd..fc305a48ab81 100644
+--- a/include/uapi/linux/iommufd.h
++++ b/include/uapi/linux/iommufd.h
+@@ -47,6 +47,7 @@ enum {
+ 	IOMMUFD_CMD_VFIO_IOAS,
+ 	IOMMUFD_CMD_HWPT_ALLOC,
+ 	IOMMUFD_CMD_GET_HW_INFO,
++	IOMMUFD_CMD_HWPT_INVALIDATE,
  };
  
-+/**
-+ * struct iommu_user_data_array - iommu driver specific user space data array
-+ * @type: The data type of all the entries in the user buffer array
-+ * @uptr: Pointer to the user buffer array for copy_from_user()
-+ * @entry_len: The fixed-width length of a entry in the array, in bytes
-+ * @entry_num: The number of total entries in the array
-+ *
-+ * A array having a @entry_num number of @entry_len sized entries, each entry is
-+ * user space data, an uAPI defined in include/uapi/linux/iommufd.h where @type
-+ * is also defined as enum iommu_xyz_data_type.
-+ */
-+struct iommu_user_data_array {
-+	unsigned int type;
-+	void __user *uptr;
-+	size_t entry_len;
-+	int entry_num;
-+};
-+
  /**
-  * __iommu_copy_struct_from_user - Copy iommu driver specific user space data
-  * @dst_data: Pointer to an iommu driver specific user data that is defined in
-@@ -396,6 +414,15 @@ struct iommu_ops {
-  * @iotlb_sync_map: Sync mappings created recently using @map to the hardware
-  * @iotlb_sync: Flush all queued ranges from the hardware TLBs and empty flush
-  *            queue
-+ * @cache_invalidate_user: Flush hardware cache for user space IO page table.
-+ *                         The @domain must be IOMMU_DOMAIN_NESTED. The @array
-+ *                         passes in the cache invalidation requests, in form
-+ *                         of a driver data structure. The driver must update
-+ *                         array->entry_num to report the number of handled
-+ *                         invalidation requests. The 32-bit @error_code can
-+ *                         forward a driver specific error code to user space.
-+ *                         Both the driver data structure and the error code
-+ *                         must be defined in include/uapi/linux/iommufd.h
-  * @iova_to_phys: translate iova to physical address
-  * @enforce_cache_coherency: Prevent any kind of DMA from bypassing IOMMU_CACHE,
-  *                           including no-snoop TLPs on PCIe or other platform
-@@ -425,6 +452,9 @@ struct iommu_domain_ops {
- 			       size_t size);
- 	void (*iotlb_sync)(struct iommu_domain *domain,
- 			   struct iommu_iotlb_gather *iotlb_gather);
-+	int (*cache_invalidate_user)(struct iommu_domain *domain,
-+				     struct iommu_user_data_array *array,
-+				     u32 *error_code);
- 
- 	phys_addr_t (*iova_to_phys)(struct iommu_domain *domain,
- 				    dma_addr_t iova);
+@@ -477,4 +478,39 @@ struct iommu_hw_info {
+ 	__u32 __reserved;
+ };
+ #define IOMMU_GET_HW_INFO _IO(IOMMUFD_TYPE, IOMMUFD_CMD_GET_HW_INFO)
++
++/**
++ * struct iommu_hwpt_invalidate - ioctl(IOMMU_HWPT_INVALIDATE)
++ * @size: sizeof(struct iommu_hwpt_invalidate)
++ * @hwpt_id: HWPT ID of a nested HWPT for cache invalidation
++ * @reqs_uptr: User pointer to an array having @req_num of cache invalidation
++ *             requests. The request entries in the array are of fixed width
++ *             @req_len, and contain a user data structure for invalidation
++ *             request specific to the given hardware page table.
++ * @req_type: One of enum iommu_hwpt_data_type, defining the data type of all
++ *            the entries in the invalidation request array. It should suit
++ *            with the data_type passed per the allocation of the hwpt pointed
++ *            by @hwpt_id.
++ * @req_len: Length (in bytes) of a request entry in the request array
++ * @req_num: Input the number of cache invalidation requests in the array.
++ *           Output the number of requests successfully handled by kernel.
++ * @out_driver_error_code: Report a driver speicifc error code upon failure.
++ *                         It's optional, driver has a choice to fill it or
++ *                         not.
++ *
++ * Invalidate the iommu cache for user-managed page table. Modifications on a
++ * user-managed page table should be followed by this operation to sync cache.
++ * Each ioctl can support one or more cache invalidation requests in the array
++ * that has a total size of @req_len * @req_num.
++ */
++struct iommu_hwpt_invalidate {
++	__u32 size;
++	__u32 hwpt_id;
++	__aligned_u64 reqs_uptr;
++	__u32 req_type;
++	__u32 req_len;
++	__u32 req_num;
++	__u32 out_driver_error_code;
++};
++#define IOMMU_HWPT_INVALIDATE _IO(IOMMUFD_TYPE, IOMMUFD_CMD_HWPT_INVALIDATE)
+ #endif
 -- 
 2.34.1
 
