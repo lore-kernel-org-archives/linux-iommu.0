@@ -1,36 +1,36 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.151])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B9FE1118B
-	for <iommu@lists.linux.dev>; Fri, 20 Oct 2023 09:20:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A03E311CA3
+	for <iommu@lists.linux.dev>; Fri, 20 Oct 2023 09:20:05 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="GxJ4ebbl"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="CnmQMrim"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1697793602; x=1729329602;
+  t=1697793605; x=1729329605;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=f3ChlmDgc3Aoc0IRtb5mlD1+NYbTx+ovRakpUdpzvbk=;
-  b=GxJ4ebblgWAiWO0KdrDPVCNhNoaksVbqxF6f51qZRoiD2rJp5NqwjSBM
-   1H+lmvgH5Lo82fZ66dNmFbL/QmXSvkpF7fvRWROxaqZu3U22yyTfITd7Q
-   m99PlxygyO1eQTLLIzgKjcoQLrpxTZ0yZVC9OPAsvl4T3PDvneOk/MjAm
-   JqrjWDKv3XLsUEVSAcaiyEdccnir0rYNtqPkL0vWFSa11tWORHb3RKGeS
-   uGTVuT5WsGeaGdwUksyAAq0MhDnBDcvU1BtvHG2lLKfCGGWB/iP8W00WK
-   kxiLKfEdqkq1wua/Ldfg0rtaurZlVdEHfixbbsyyucW7Hrniouahj0Xt+
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10868"; a="366693407"
+  bh=WChOZpAlR4QOIzkCQdzabdjxgRBGTfmO8qHsRuRKFAo=;
+  b=CnmQMrim3DiayrrcDt5/fXptLIjjC5GicheTn62C0IS5QRIXtphGNmLv
+   9mq7sJ4Q86XvAqLZ7aaIF5B9h6KkPQsCfoJaNVWQ/I3FGVpIatorOB0wh
+   TlyS3sDz13C+imM4wVy/bjWwIsGdckLE3tjSVJeWM047GavolwnWi16OZ
+   i5YPifs8huXEY87Yn1jav1m0k/sV7quw8zxCjWziXbQNIbOCeIn6tN+v1
+   e4uscFZimRWuUqrsuVP/aZcT9ZxxvX5QJrLBctAVW9gOz7thnttKgqoTw
+   TDK7scgkbFOTvwR+h2UN2rIPKE49pWX9nOfY5ZSspg5YGfzPBl5jpdcpE
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10868"; a="366693430"
 X-IronPort-AV: E=Sophos;i="6.03,238,1694761200"; 
-   d="scan'208";a="366693407"
+   d="scan'208";a="366693430"
 Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Oct 2023 02:20:02 -0700
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Oct 2023 02:20:03 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10868"; a="707179463"
+X-IronPort-AV: E=McAfee;i="6600,9927,10868"; a="707179474"
 X-IronPort-AV: E=Sophos;i="6.03,238,1694761200"; 
-   d="scan'208";a="707179463"
+   d="scan'208";a="707179474"
 Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
-  by orsmga003.jf.intel.com with ESMTP; 20 Oct 2023 02:20:01 -0700
+  by orsmga003.jf.intel.com with ESMTP; 20 Oct 2023 02:20:03 -0700
 From: Yi Liu <yi.l.liu@intel.com>
 To: joro@8bytes.org,
 	alex.williamson@redhat.com,
@@ -57,9 +57,9 @@ Cc: cohuck@redhat.com,
 	zhenzhong.duan@intel.com,
 	joao.m.martins@oracle.com,
 	xin.zeng@intel.com
-Subject: [PATCH v5 06/10] iommufd: Share iommufd_hwpt_alloc with IOMMUFD_OBJ_HWPT_NESTED
-Date: Fri, 20 Oct 2023 02:19:42 -0700
-Message-Id: <20231020091946.12173-7-yi.l.liu@intel.com>
+Subject: [PATCH v5 08/10] iommu: Add iommu_copy_struct_from_user helper
+Date: Fri, 20 Oct 2023 02:19:44 -0700
+Message-Id: <20231020091946.12173-9-yi.l.liu@intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20231020091946.12173-1-yi.l.liu@intel.com>
 References: <20231020091946.12173-1-yi.l.liu@intel.com>
@@ -73,109 +73,69 @@ Content-Transfer-Encoding: 8bit
 
 From: Nicolin Chen <nicolinc@nvidia.com>
 
-Allow iommufd_hwpt_alloc() to have a common routine but jump to different
-allocators corresponding to different user input pt_obj types, either an
-IOMMUFD_OBJ_IOAS for a PAGING hwpt or an IOMMUFD_OBJ_HWPT_PAGING as the
-parent for a NESTED hwpt.
-
-Also, move the "flags" validation to the hwpt allocator (paging), so that
-later the hwpt_nested allocator can do its own separate flags validation.
+Wrap up the data type/pointer/len sanity and a copy_struct_from_user call
+for iommu drivers to copy driver specific data via struct iommu_user_data.
+And expect it to be used in the domain_alloc_user op for example.
 
 Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+Co-developed-by: Yi Liu <yi.l.liu@intel.com>
 Signed-off-by: Yi Liu <yi.l.liu@intel.com>
 ---
- drivers/iommu/iommufd/hw_pagetable.c | 43 ++++++++++++++++++----------
- 1 file changed, 28 insertions(+), 15 deletions(-)
+ include/linux/iommu.h | 41 +++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 41 insertions(+)
 
-diff --git a/drivers/iommu/iommufd/hw_pagetable.c b/drivers/iommu/iommufd/hw_pagetable.c
-index 52df5b2bb329..24cd84a5fe8f 100644
---- a/drivers/iommu/iommufd/hw_pagetable.c
-+++ b/drivers/iommu/iommufd/hw_pagetable.c
-@@ -81,6 +81,7 @@ iommufd_hwpt_paging_alloc(struct iommufd_ctx *ictx, struct iommufd_ioas *ioas,
- 			  struct iommufd_device *idev, u32 flags,
- 			  bool immediate_attach)
- {
-+	const u32 valid_flags = IOMMU_HWPT_ALLOC_NEST_PARENT;
- 	const struct iommu_ops *ops = dev_iommu_ops(idev->dev);
- 	struct iommufd_hwpt_paging *hwpt_paging;
- 	struct iommufd_hw_pagetable *hwpt;
-@@ -90,6 +91,8 @@ iommufd_hwpt_paging_alloc(struct iommufd_ctx *ictx, struct iommufd_ioas *ioas,
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index cdb989b853a5..48b8a9a03ae7 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -246,6 +246,47 @@ struct iommu_user_data {
+ 	size_t len;
+ };
  
- 	if (flags && !ops->domain_alloc_user)
- 		return ERR_PTR(-EOPNOTSUPP);
-+	if (flags & ~valid_flags)
-+		return ERR_PTR(-EOPNOTSUPP);
- 
- 	hwpt_paging = __iommufd_object_alloc(ictx, hwpt_paging,
- 					     IOMMUFD_OBJ_HWPT_PAGING,
-@@ -161,33 +164,41 @@ iommufd_hwpt_paging_alloc(struct iommufd_ctx *ictx, struct iommufd_ioas *ioas,
- int iommufd_hwpt_alloc(struct iommufd_ucmd *ucmd)
- {
- 	struct iommu_hwpt_alloc *cmd = ucmd->cmd;
--	struct iommufd_hwpt_paging *hwpt_paging;
- 	struct iommufd_hw_pagetable *hwpt;
-+	struct iommufd_ioas *ioas = NULL;
-+	struct iommufd_object *pt_obj;
- 	struct iommufd_device *idev;
--	struct iommufd_ioas *ioas;
- 	int rc;
- 
--	if ((cmd->flags & (~IOMMU_HWPT_ALLOC_NEST_PARENT)) || cmd->__reserved)
-+	if (cmd->__reserved)
- 		return -EOPNOTSUPP;
- 
- 	idev = iommufd_get_device(ucmd, cmd->dev_id);
- 	if (IS_ERR(idev))
- 		return PTR_ERR(idev);
- 
--	ioas = iommufd_get_ioas(ucmd->ictx, cmd->pt_id);
--	if (IS_ERR(ioas)) {
--		rc = PTR_ERR(ioas);
-+	pt_obj = iommufd_get_object(ucmd->ictx, cmd->pt_id, IOMMUFD_OBJ_ANY);
-+	if (IS_ERR(pt_obj)) {
-+		rc = -EINVAL;
- 		goto out_put_idev;
- 	}
- 
--	mutex_lock(&ioas->mutex);
--	hwpt_paging = iommufd_hwpt_paging_alloc(ucmd->ictx, ioas, idev,
--						cmd->flags, false);
--	if (IS_ERR(hwpt_paging)) {
--		rc = PTR_ERR(hwpt_paging);
--		goto out_unlock;
-+	if (pt_obj->type == IOMMUFD_OBJ_IOAS) {
-+		struct iommufd_hwpt_paging *hwpt_paging;
++/**
++ * __iommu_copy_struct_from_user - Copy iommu driver specific user space data
++ * @dst_data: Pointer to an iommu driver specific user data that is defined in
++ *            include/uapi/linux/iommufd.h
++ * @src_data: Pointer to a struct iommu_user_data for user space data info
++ * @data_type: The data type of the @dst_data. Must match with @src_data.type
++ * @data_len: Length of current user data structure, i.e. sizeof(struct _dst)
++ * @min_len: Initial length of user data structure for backward compatibility.
++ *           This should be offsetofend using the last member in the user data
++ *           struct that was initially added to include/uapi/linux/iommufd.h
++ */
++static inline int
++__iommu_copy_struct_from_user(void *dst_data,
++			      const struct iommu_user_data *src_data,
++			      unsigned int data_type, size_t data_len,
++			      size_t min_len)
++{
++	if (src_data->type != data_type)
++		return -EINVAL;
++	if (WARN_ON(!dst_data || !src_data))
++		return -EINVAL;
++	if (src_data->len < min_len || data_len < src_data->len)
++		return -EINVAL;
++	return copy_struct_from_user(dst_data, data_len,
++				     src_data->uptr, src_data->len);
++}
 +
-+		ioas = container_of(pt_obj, struct iommufd_ioas, obj);
-+		mutex_lock(&ioas->mutex);
-+		hwpt_paging = iommufd_hwpt_paging_alloc(ucmd->ictx, ioas, idev,
-+							cmd->flags, false);
-+		if (IS_ERR(hwpt_paging)) {
-+			rc = PTR_ERR(hwpt_paging);
-+			goto out_unlock;
-+		}
-+		hwpt = &hwpt_paging->common;
-+	} else {
-+		rc = -EINVAL;
-+		goto out_put_pt;
- 	}
--	hwpt = &hwpt_paging->common;
- 
- 	cmd->out_hwpt_id = hwpt->obj.id;
- 	rc = iommufd_ucmd_respond(ucmd, sizeof(*cmd));
-@@ -199,8 +210,10 @@ int iommufd_hwpt_alloc(struct iommufd_ucmd *ucmd)
- out_hwpt:
- 	iommufd_object_abort_and_destroy(ucmd->ictx, &hwpt->obj);
- out_unlock:
--	mutex_unlock(&ioas->mutex);
--	iommufd_put_object(&ioas->obj);
-+	if (ioas)
-+		mutex_unlock(&ioas->mutex);
-+out_put_pt:
-+	iommufd_put_object(pt_obj);
- out_put_idev:
- 	iommufd_put_object(&idev->obj);
- 	return rc;
++/**
++ * iommu_copy_struct_from_user - Copy iommu driver specific user space data
++ * @kdst: Pointer to an iommu driver specific user data that is defined in
++ *        include/uapi/linux/iommufd.h
++ * @user_data: Pointer to a struct iommu_user_data for user space data info
++ * @data_type: The data type of the @kdst. Must match with @user_data->type
++ * @min_last: The last memember of the data structure @kdst points in the
++ *            initial version.
++ * Return 0 for success, otherwise -error.
++ */
++#define iommu_copy_struct_from_user(kdst, user_data, data_type, min_last)        \
++	__iommu_copy_struct_from_user(kdst, user_data, data_type, sizeof(*kdst), \
++				      offsetofend(typeof(*kdst), min_last))
++
+ /**
+  * struct iommu_ops - iommu ops and capabilities
+  * @capable: check capability
 -- 
 2.34.1
 
