@@ -1,34 +1,34 @@
 Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.31])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD9BB12E67
-	for <iommu@lists.linux.dev>; Fri, 20 Oct 2023 09:32:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC33E12E6C
+	for <iommu@lists.linux.dev>; Fri, 20 Oct 2023 09:32:54 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="aJO5scDo"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="gce70F8D"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1697794373; x=1729330373;
+  t=1697794375; x=1729330375;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=1MJ8HhGHI+SlSgCrNpxntgU8HIg/xhXNDAYWmNsWBFI=;
-  b=aJO5scDoVJ2gEFEcaJ01l8itFiOdkujTJ6rSTA+Gx14PFnBtyuGQgCA9
-   8EuM3/PKEmWEiGJaYxqXrOxGZe1IOCj/X59RKep94C+gvKhDtkDodJaOZ
-   Wd5IQRkih8ja6zlI4FYi+1Ia2mxJ3OJEQAeIxdKi7UvH+pGnVCd+htoQ8
-   3HHRyVboo67Zd5qes+rZIVXJFCMRo9okI1nWL7/ruLQlw0fXrISNKliH1
-   u2JrE9fCCTdDxIeDs5lqyThOwwT3r2iEhDn6XTJaGfeBceWyvVJhVObAm
-   rTipKVoBBgm8aJ5ZOKU/mNTJcpUGP+I2ZoPerpw2/nqrp64ff8Pv20yIN
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10868"; a="450691717"
+  bh=Ib1IMmuWc4reT62H1wiulcc7gMI+m46FXf0FSrS+Cos=;
+  b=gce70F8DuAhNlso9piMsRH712CRwHAzZnZbJ/3PudFTWSyHwT2tLTf3F
+   tEmqa3c2PbXNTD+7memM5S2TzZQiwKMjMC2Hkxv6puxT+UZ5IAXMz+fYG
+   frWWvcg/eGkQrYw4LQEn2G5JNABalUf3sdqd3YC6weZCqTy0/wBsL27o8
+   6vmFsBb2IG697m7Jwp896O1w5xJUuDH2mZInYNz0eruzzuFEjbjAu06qG
+   aSDo/AKbIGsb2b5I0CzI6QGupJ4uJxeGHw7TxhMRmvi7dw7Jm2W1aWbLT
+   AcFSw0umpgeD+tg5Usge3+lAWjU5qjkDR+k4vNVQ8csfGY2bM2cds6eT7
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10868"; a="450691727"
 X-IronPort-AV: E=Sophos;i="6.03,238,1694761200"; 
-   d="scan'208";a="450691717"
+   d="scan'208";a="450691727"
 Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Oct 2023 02:32:53 -0700
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Oct 2023 02:32:54 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10868"; a="733906302"
+X-IronPort-AV: E=McAfee;i="6600,9927,10868"; a="733906305"
 X-IronPort-AV: E=Sophos;i="6.03,238,1694761200"; 
-   d="scan'208";a="733906302"
+   d="scan'208";a="733906305"
 Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
   by orsmga006.jf.intel.com with ESMTP; 20 Oct 2023 02:32:53 -0700
 From: Yi Liu <yi.l.liu@intel.com>
@@ -56,11 +56,10 @@ Cc: cohuck@redhat.com,
 	linux-kselftest@vger.kernel.org,
 	zhenzhong.duan@intel.com,
 	joao.m.martins@oracle.com,
-	xin.zeng@intel.com,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: [PATCH v6 4/8] iommu/vt-d: Add helper to setup pasid nested translation
-Date: Fri, 20 Oct 2023 02:32:42 -0700
-Message-Id: <20231020093246.17015-5-yi.l.liu@intel.com>
+	xin.zeng@intel.com
+Subject: [PATCH v6 5/8] iommu/vt-d: Make domain attach helpers to be extern
+Date: Fri, 20 Oct 2023 02:32:43 -0700
+Message-Id: <20231020093246.17015-6-yi.l.liu@intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20231020093246.17015-1-yi.l.liu@intel.com>
 References: <20231020093246.17015-1-yi.l.liu@intel.com>
@@ -72,171 +71,95 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-From: Lu Baolu <baolu.lu@linux.intel.com>
+This makes the helpers visible to nested.c.
 
-The configurations are passed in from the user when the user domain is
-allocated. This helper interprets these configurations according to the
-data structure defined in uapi/linux/iommufd.h. The EINVAL error will be
-returned if any of configurations are not compatible with the hardware
-capabilities. The caller can retry with another compatible user domain.
-The encoding of fields of each pasid entry is defined in section 9.6 of
-the VT-d spec.
-
-Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+Suggested-by: Lu Baolu <baolu.lu@linux.intel.com>
+Reviewed-by: Kevin Tian <kevin.tian@intel.com>
 Signed-off-by: Yi Liu <yi.l.liu@intel.com>
 ---
- drivers/iommu/intel/pasid.c | 112 ++++++++++++++++++++++++++++++++++++
- drivers/iommu/intel/pasid.h |   2 +
- 2 files changed, 114 insertions(+)
+ drivers/iommu/intel/iommu.c | 15 ++++++---------
+ drivers/iommu/intel/iommu.h |  7 +++++++
+ 2 files changed, 13 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
-index 8f92b92f3d2a..fbf71f56653d 100644
---- a/drivers/iommu/intel/pasid.c
-+++ b/drivers/iommu/intel/pasid.c
-@@ -335,6 +335,15 @@ static inline void pasid_set_fault_enable(struct pasid_entry *pe)
- 	pasid_set_bits(&pe->val[0], 1 << 1, 0);
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 8d78149e793e..b47025fbdea4 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -282,7 +282,6 @@ static LIST_HEAD(dmar_satc_units);
+ #define for_each_rmrr_units(rmrr) \
+ 	list_for_each_entry(rmrr, &dmar_rmrr_units, list)
+ 
+-static void device_block_translation(struct device *dev);
+ static void intel_iommu_domain_free(struct iommu_domain *domain);
+ 
+ int dmar_disabled = !IS_ENABLED(CONFIG_INTEL_IOMMU_DEFAULT_ON);
+@@ -560,7 +559,7 @@ static unsigned long domain_super_pgsize_bitmap(struct dmar_domain *domain)
  }
  
-+/*
-+ * Setup the SRE(Supervisor Request Enable) field (Bit 128) of a
-+ * scalable mode PASID entry.
-+ */
-+static inline void pasid_set_sre(struct pasid_entry *pe)
-+{
-+	pasid_set_bits(&pe->val[2], 1 << 0, 1);
-+}
-+
- /*
-  * Setup the WPE(Write Protect Enable) field (Bit 132) of a
-  * scalable mode PASID entry.
-@@ -402,6 +411,15 @@ pasid_set_flpm(struct pasid_entry *pe, u64 value)
- 	pasid_set_bits(&pe->val[2], GENMASK_ULL(3, 2), value << 2);
+ /* Some capabilities may be different across iommus */
+-static void domain_update_iommu_cap(struct dmar_domain *domain)
++void domain_update_iommu_cap(struct dmar_domain *domain)
+ {
+ 	domain_update_iommu_coherency(domain);
+ 	domain->iommu_superpage = domain_update_iommu_superpage(domain, NULL);
+@@ -1778,8 +1777,7 @@ static struct dmar_domain *alloc_domain(unsigned int type)
+ 	return domain;
  }
  
-+/*
-+ * Setup the Extended Access Flag Enable (EAFE) field (Bit 135)
-+ * of a scalable mode PASID entry.
-+ */
-+static inline void pasid_set_eafe(struct pasid_entry *pe)
-+{
-+	pasid_set_bits(&pe->val[2], 1 << 7, 1 << 7);
-+}
-+
- static void
- pasid_cache_invalidation_with_pasid(struct intel_iommu *iommu,
- 				    u16 did, u32 pasid)
-@@ -713,3 +731,97 @@ void intel_pasid_setup_page_snoop_control(struct intel_iommu *iommu,
- 	if (!cap_caching_mode(iommu->cap))
- 		devtlb_invalidation_with_pasid(iommu, dev, pasid);
+-static int domain_attach_iommu(struct dmar_domain *domain,
+-			       struct intel_iommu *iommu)
++int domain_attach_iommu(struct dmar_domain *domain, struct intel_iommu *iommu)
+ {
+ 	struct iommu_domain_info *info, *curr;
+ 	unsigned long ndomains;
+@@ -1828,8 +1826,7 @@ static int domain_attach_iommu(struct dmar_domain *domain,
+ 	return ret;
  }
+ 
+-static void domain_detach_iommu(struct dmar_domain *domain,
+-				struct intel_iommu *iommu)
++void domain_detach_iommu(struct dmar_domain *domain, struct intel_iommu *iommu)
+ {
+ 	struct iommu_domain_info *info;
+ 
+@@ -3974,7 +3971,7 @@ static void dmar_remove_one_dev_info(struct device *dev)
+  * all DMA requests without PASID from the device are blocked. If the page
+  * table has been set, clean up the data structures.
+  */
+-static void device_block_translation(struct device *dev)
++void device_block_translation(struct device *dev)
+ {
+ 	struct device_domain_info *info = dev_iommu_priv_get(dev);
+ 	struct intel_iommu *iommu = info->iommu;
+@@ -4109,8 +4106,8 @@ static void intel_iommu_domain_free(struct iommu_domain *domain)
+ 		domain_exit(to_dmar_domain(domain));
+ }
+ 
+-static int prepare_domain_attach_device(struct iommu_domain *domain,
+-					struct device *dev)
++int prepare_domain_attach_device(struct iommu_domain *domain,
++				 struct device *dev)
+ {
+ 	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
+ 	struct intel_iommu *iommu;
+diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
+index ff55184456dd..b4560983b8b9 100644
+--- a/drivers/iommu/intel/iommu.h
++++ b/drivers/iommu/intel/iommu.h
+@@ -860,6 +860,13 @@ int qi_submit_sync(struct intel_iommu *iommu, struct qi_desc *desc,
+  */
+ #define QI_OPT_WAIT_DRAIN		BIT(0)
+ 
++int domain_attach_iommu(struct dmar_domain *domain, struct intel_iommu *iommu);
++void domain_detach_iommu(struct dmar_domain *domain, struct intel_iommu *iommu);
++void device_block_translation(struct device *dev);
++int prepare_domain_attach_device(struct iommu_domain *domain,
++				 struct device *dev);
++void domain_update_iommu_cap(struct dmar_domain *domain);
 +
-+/**
-+ * intel_pasid_setup_nested() - Set up PASID entry for nested translation.
-+ * @iommu:      IOMMU which the device belong to
-+ * @dev:        Device to be set up for translation
-+ * @pasid:      PASID to be programmed in the device PASID table
-+ * @domain:     User stage-1 domain nested on a stage-2 domain
-+ *
-+ * This is used for nested translation. The input domain should be
-+ * nested type and nested on a parent with 'is_nested_parent' flag
-+ * set.
-+ */
-+int intel_pasid_setup_nested(struct intel_iommu *iommu, struct device *dev,
-+			     u32 pasid, struct dmar_domain *domain)
-+{
-+	struct iommu_hwpt_vtd_s1 *s1_cfg = &domain->s1_cfg;
-+	pgd_t *s1_gpgd = (pgd_t *)(uintptr_t)domain->s1_pgtbl;
-+	struct dmar_domain *s2_domain = domain->s2_domain;
-+	u16 did = domain_id_iommu(domain, iommu);
-+	struct dma_pte *pgd = s2_domain->pgd;
-+	struct pasid_entry *pte;
-+
-+	/* Address width should match the address width supported by hardware */
-+	switch (s1_cfg->addr_width) {
-+	case ADDR_WIDTH_4LEVEL:
-+		break;
-+	case ADDR_WIDTH_5LEVEL:
-+		if (!cap_fl5lp_support(iommu->cap)) {
-+			dev_err_ratelimited(dev,
-+					    "5-level paging not supported\n");
-+			return -EINVAL;
-+		}
-+		break;
-+	default:
-+		dev_err_ratelimited(dev, "Invalid stage-1 address width %d\n",
-+				    s1_cfg->addr_width);
-+		return -EINVAL;
-+	}
-+
-+	if ((s1_cfg->flags & IOMMU_VTD_S1_SRE) && !ecap_srs(iommu->ecap)) {
-+		pr_err_ratelimited("No supervisor request support on %s\n",
-+				   iommu->name);
-+		return -EINVAL;
-+	}
-+
-+	if ((s1_cfg->flags & IOMMU_VTD_S1_EAFE) && !ecap_eafs(iommu->ecap)) {
-+		pr_err_ratelimited("No extended access flag support on %s\n",
-+				   iommu->name);
-+		return -EINVAL;
-+	}
-+
-+	spin_lock(&iommu->lock);
-+	pte = intel_pasid_get_entry(dev, pasid);
-+	if (!pte) {
-+		spin_unlock(&iommu->lock);
-+		return -ENODEV;
-+	}
-+	if (pasid_pte_is_present(pte)) {
-+		spin_unlock(&iommu->lock);
-+		return -EBUSY;
-+	}
-+
-+	pasid_clear_entry(pte);
-+
-+	if (s1_cfg->addr_width == ADDR_WIDTH_5LEVEL)
-+		pasid_set_flpm(pte, 1);
-+
-+	pasid_set_flptr(pte, (uintptr_t)s1_gpgd);
-+
-+	if (s1_cfg->flags & IOMMU_VTD_S1_SRE) {
-+		pasid_set_sre(pte);
-+		if (s1_cfg->flags & IOMMU_VTD_S1_WPE)
-+			pasid_set_wpe(pte);
-+	}
-+
-+	if (s1_cfg->flags & IOMMU_VTD_S1_EAFE)
-+		pasid_set_eafe(pte);
-+
-+	if (s2_domain->force_snooping)
-+		pasid_set_pgsnp(pte);
-+
-+	pasid_set_slptr(pte, virt_to_phys(pgd));
-+	pasid_set_fault_enable(pte);
-+	pasid_set_domain_id(pte, did);
-+	pasid_set_address_width(pte, s2_domain->agaw);
-+	pasid_set_page_snoop(pte, !!ecap_smpwc(iommu->ecap));
-+	pasid_set_translation_type(pte, PASID_ENTRY_PGTT_NESTED);
-+	pasid_set_present(pte);
-+	spin_unlock(&iommu->lock);
-+
-+	pasid_flush_caches(iommu, pte, pasid, did);
-+
-+	return 0;
-+}
-diff --git a/drivers/iommu/intel/pasid.h b/drivers/iommu/intel/pasid.h
-index 4e9e68c3c388..7906d73f4ded 100644
---- a/drivers/iommu/intel/pasid.h
-+++ b/drivers/iommu/intel/pasid.h
-@@ -109,6 +109,8 @@ int intel_pasid_setup_second_level(struct intel_iommu *iommu,
- int intel_pasid_setup_pass_through(struct intel_iommu *iommu,
- 				   struct dmar_domain *domain,
- 				   struct device *dev, u32 pasid);
-+int intel_pasid_setup_nested(struct intel_iommu *iommu, struct device *dev,
-+			     u32 pasid, struct dmar_domain *domain);
- void intel_pasid_tear_down_entry(struct intel_iommu *iommu,
- 				 struct device *dev, u32 pasid,
- 				 bool fault_ignore);
+ int dmar_ir_support(void);
+ 
+ void *alloc_pgtable_page(int node, gfp_t gfp);
 -- 
 2.34.1
 
