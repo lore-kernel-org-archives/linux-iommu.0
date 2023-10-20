@@ -1,160 +1,196 @@
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.31])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f173.google.com (mail-qt1-f173.google.com [209.85.160.173])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 76ACCD52B
-	for <iommu@lists.linux.dev>; Fri, 20 Oct 2023 08:01:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7DDBA10955
+	for <iommu@lists.linux.dev>; Fri, 20 Oct 2023 08:24:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="cjn7rMWs"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1697788860; x=1729324860;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=6GIXQzcfkzlz7eslCfMns94j6FxsyGo0WayASz2BfR0=;
-  b=cjn7rMWsKZM4CLIahfq4xLwD3bAnVbJuiwwni6VsW8JG4DgwfDXjY7R3
-   +hJvwPKXA3VRHi4bQhz0zkGzFVDwHJVWElGc+2oLh4nTXrf7/RKwb2xrv
-   aCmc+YsUaaZQcUQeE/JLGo3bkAt3Wui+i9fAk+wzELSLguwtgCEs2I15I
-   hpmwUOjGZFpVy+yBn0T7BSls1aq7dYkNbDd7pj/iVRL+RSKHfaUZrab/+
-   hmpmXUo36fQCqQfkj5NgB7855UdJvQGpIfJo7+tdSkNXer0Q7xTM6WmYm
-   A9nAgVYWYcQigyMGClTU8lFQzl7mJIRWTD03OcttG6Mn/4F2u74gqCFDe
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10868"; a="450676967"
-X-IronPort-AV: E=Sophos;i="6.03,238,1694761200"; 
-   d="scan'208";a="450676967"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Oct 2023 01:00:59 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10868"; a="827651175"
-X-IronPort-AV: E=Sophos;i="6.03,238,1694761200"; 
-   d="scan'208";a="827651175"
-Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
-  by fmsmga004.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 20 Oct 2023 01:00:59 -0700
-Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.32; Fri, 20 Oct 2023 01:00:58 -0700
-Received: from fmsmsx603.amr.corp.intel.com (10.18.126.83) by
- fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.32; Fri, 20 Oct 2023 01:00:58 -0700
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.32 via Frontend Transport; Fri, 20 Oct 2023 01:00:58 -0700
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (104.47.57.168)
- by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.32; Fri, 20 Oct 2023 01:00:58 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=oGE7b7KBUQE4ORK2Xn56JtpOGuysBO6uArE+9idRpZB/QkL4FgngRBB/kJHLmiwQ80Ky+Q/HkVbokofr1+lbedNDFmqAJF8EKGqU5JEZKqy/nYJ9yeTWRSzoeoSBbiEDZyqjB2wvJQ3fHxkEWMYdHWz6EHDXfkDA1mlQ72HpPgu2loxrfmytInATxpo/ls0FtzsTx5w452jiZDb/OqN+mkUiZ1pl10cyBPbFVKylioZlIr82G190I0U64W4n7Q/WGY9tkniy2WqT/mnN2yfyzXFE8rITB/ETWpPi5cvnBBeOn+HB2X+yGG37dd/jdKLabKp/5Z74MeiryQ75oQFgKA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=6GIXQzcfkzlz7eslCfMns94j6FxsyGo0WayASz2BfR0=;
- b=OCL/qpfrvrTLQLsZoWcKSKgYsCInL9dBKefFsVH6gVCuFAHwLGUlfNcvTxgrnkiJIihwXpCmRZPvFiS8rPcA27D+Sx+qYy9GK9ppbEJSWDvzrsxMrIKO7Y70cNN0KnvC2HllWcMaSTFJ7/nz9EJrxH3sJJW+FFSqb9OLaboL9hGf/fFs3OIDwmJAkAKPPIy9F7Ll2YQGwH/CtMC6xapHrFJK6V3T/JbME0MfbTaUhktLGQDctMF3g5UBRcFd+W2GA1f6A6w1txTmStERonl2yydSESHK+HBdu/H03nBz335uyrD1exUv3utg834nyWvG1kto+A9l8aKXTcdKcUvXfw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by BL1PR11MB5285.namprd11.prod.outlook.com (2603:10b6:208:309::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6907.26; Fri, 20 Oct
- 2023 08:00:55 +0000
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::7116:9866:8367:95b4]) by BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::7116:9866:8367:95b4%3]) with mapi id 15.20.6907.025; Fri, 20 Oct 2023
- 08:00:55 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: "Martins, Joao" <joao.m.martins@oracle.com>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>
-CC: Jason Gunthorpe <jgg@nvidia.com>, Shameerali Kolothum Thodi
-	<shameerali.kolothum.thodi@huawei.com>, Lu Baolu <baolu.lu@linux.intel.com>,
-	"Liu, Yi L" <yi.l.liu@intel.com>, "Sun, Yi Y" <yi.y.sun@intel.com>, "Nicolin
- Chen" <nicolinc@nvidia.com>, Joerg Roedel <joro@8bytes.org>, "Suravee
- Suthikulpanit" <suravee.suthikulpanit@amd.com>, Will Deacon
-	<will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, "Duan, Zhenzhong"
-	<zhenzhong.duan@intel.com>, Alex Williamson <alex.williamson@redhat.com>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>, "Martins, Joao"
-	<joao.m.martins@oracle.com>
-Subject: RE: [PATCH v4 15/18] iommufd/selftest: Test IOMMU_HWPT_SET_DIRTY
-Thread-Topic: [PATCH v4 15/18] iommufd/selftest: Test IOMMU_HWPT_SET_DIRTY
-Thread-Index: AQHaAgHFc9xtA7Bbw0ab9nPbhdIk7LBSUv0A
-Date: Fri, 20 Oct 2023 08:00:55 +0000
-Message-ID: <BN9PR11MB5276C27CC96DA39AE619B5CC8CDBA@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <20231018202715.69734-1-joao.m.martins@oracle.com>
- <20231018202715.69734-16-joao.m.martins@oracle.com>
-In-Reply-To: <20231018202715.69734-16-joao.m.martins@oracle.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|BL1PR11MB5285:EE_
-x-ms-office365-filtering-correlation-id: d10457f4-3708-44f4-0491-08dbd142b005
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: vQsldbewO6GLkQ5EMIE5ZviNC/SDah/MexnAs/sqQDU0tOISo2GW/F41kqGumEr5yi2scFUym2ZAD2m5WzgzQzg9DWw6RRXOlxcQI9RQ8viFgYfw3N407BO1a+bXfsdQNSzTz+tS+1ve8MuPnHLov+pBg8ZDR+apqQ65ePctZaMPq7VyAgLm5wV42tvF/+b8+qZGMxrhiQNhmqWOMSdfMIXdVXxkC88eWZXRcTY4gLiww7b4ZmLTJ7DeRkrq23zcNgqGP5IpgR6FhTi13ILEDS7yidW1R29VqbxcHZEGXR0rRIQA0V1rqm1+eQ7IbnVma6WwiyCgum40jZQZ21/F5U+rJkETNZ1FEivGJpbdSG/ZOO5pDeKo1DaMSI/UQCIm+yU+LyZAE/BCFRgBr7zfd9cj6oghaxltL9nhtBpqQEDJO4idLrrW+zaEr7J9xwzhX4CeZ8vaZnfmxs+O2x0eErmstOK7Jx8VmfbrYspvQbDwOmJcaH1yd+ek3kDyqPhYKrpYRBFG5SVpnnrS8tFqUyLA5PyyDR3J8m60qVPxNDaf+jPBMfEoZnUCU9qKLkA+qvREvCKovb53HPIj5bITcxQeczoGAbqIQkisCQ3ard4T7cxTo+ogEvYrKR+uPGJBtQ5jYc0oOy2wCJEib/C+wg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(376002)(396003)(346002)(366004)(136003)(39860400002)(230922051799003)(451199024)(1800799009)(64100799003)(186009)(33656002)(558084003)(38070700009)(55016003)(316002)(64756008)(66946007)(110136005)(66556008)(66476007)(76116006)(54906003)(66446008)(86362001)(38100700002)(82960400001)(122000001)(26005)(9686003)(71200400001)(6506007)(7696005)(2906002)(478600001)(41300700001)(8936002)(5660300002)(7416002)(4326008)(8676002)(52536014)(14143004);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?Fmkspwh1Zf77KMs3EKIyy0retpd0M7YByxMvKK7+CaOz65eRwjPcsqUFGEKI?=
- =?us-ascii?Q?3GLcWn8o8WGCxGb/FBmmI2TM4guc/2IwJUB14O8v2ONPIbP3Un1JGPz8TecY?=
- =?us-ascii?Q?m0QgGCGKLySJQoh22LEztPZSEHZVirLDtMwTc2Vjex1dsSZ/EwonyUHHjQ15?=
- =?us-ascii?Q?fht5zWiFBBG5a/K9xfuljd6HKnI7Pnmj6Emg3Sxgr4kPXlkOpPi077PX0rAV?=
- =?us-ascii?Q?x/PbpdoU7J0Z5+nD3FZ/2QoK6WRSCBZKi1FaM/X7qaaxi/11tvnU2SWkZzz0?=
- =?us-ascii?Q?DGEFxyMTu+eXX6bWgYTw+qKrEIPqs92v7ml1KxXpLfTLL6Z0Uv3/SqtWOfKU?=
- =?us-ascii?Q?/5A36Dgb7Z6mjN5kS41H3p7ndMsGI9oPluIoWaiQ5BozOwWdaj7xaOItBn0b?=
- =?us-ascii?Q?Ywq26QtFms+tINDcMHNA4F0XG4NNszfnrVBbdg19VJVzNAHG8/bRuMWiq7cH?=
- =?us-ascii?Q?A8eCCAJD0G+wW+GD6uLSnaGtOcb9YrMSgJCfXw5jXOn33VyC3rDHh2e1NFxz?=
- =?us-ascii?Q?ekKG18kqId5iWReVdNIYribTDpee894vlH0wUCJ1WAzcU3RRJdMmmDuCm/8n?=
- =?us-ascii?Q?0B7KDUq/T1D74wYmx6masPiL47jfi/R0wmfX8sBaXWs9d5VoSGElnnhAqNRg?=
- =?us-ascii?Q?RIF1x84VoJbaUlPOiZb8AyUt4DgDiIAC+vJy6qSwm/OHmL85h8MLzm6LkH/x?=
- =?us-ascii?Q?Z8509CHg++m9FpBfJw/YrB5Z6M9co67y5PILbxVPXzBKp+Gz0FdKR0DTf4gw?=
- =?us-ascii?Q?6EizxFVdLJO4JzKrCe04NYF/I1KgZB8DyNYKI6gl3mMRGjrXOW3XxYGv4hNI?=
- =?us-ascii?Q?Xr6iUp6hs6pjB1+U1HxVIscDN7iEyE54pEhtUphRhfcOYwPeQT4X29NYcPLo?=
- =?us-ascii?Q?2AxJNDYu7wFPPrqbKHAQCF1hpjgZZXANgQgrICWPyoox0Nk+GTieXDR87xgO?=
- =?us-ascii?Q?62xIPooUaPUb6DIfgDXAQPkzndHDGCVPSWMH1qkk+5TgQpQvAF5ktPiYVCOq?=
- =?us-ascii?Q?Uy92EUx1uARHTWfiJVOlBtdLDkN6mfQUGUvquSWB/8bWZipb2irizLhadROK?=
- =?us-ascii?Q?RzQF067jwv1isXmEBv0eaN4OK610g7UYNPUQtcUE5zP79orXfNWDO+rTkw/F?=
- =?us-ascii?Q?FUPGDQ5XpTnxtN3WuhKgQ4YAEcqVG0Cp8e8aV2Fe4ZB3b27UeYG+hpLLiQcP?=
- =?us-ascii?Q?UIPXGWaEc+ZpPKMu3V7CDPrxYqSxUSmr3T0ryK4qpPnfUEQ1Mzsv70PBAJ9l?=
- =?us-ascii?Q?Hdlzk5XXk4CKbqj8LrQIF9ZQAj690KASldnnlmAbHw/0BjvtIgdjj9VKWY2h?=
- =?us-ascii?Q?M+EdVmNrWIhxj3he3+2UeZGpf+6XSp6Fql5d8Fhy6zIfOtef0u+MLuicIZgc?=
- =?us-ascii?Q?cAtMSHV11K9tg74KUw2GilOwprHHdQ4y79s6yyxthYae5Uwuy9aGB9KJ9olk?=
- =?us-ascii?Q?cGnLmAPjkZgcBUKYSoe1mDUGpnlooYWdsVK9ml7h0kGNXbBR9ynzrwbkoEKx?=
- =?us-ascii?Q?Zp3I0NGxgpyRK8JmLM7JFoB9OcoudKJRFbCgKYGlK+8XPjt1gMYLHxWP3P+V?=
- =?us-ascii?Q?rk5d+XKS2e41uKTB28uWwoYJMjMz6SG6uIuLs6g/?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="EaNmsO2r"
+Received: by mail-qt1-f173.google.com with SMTP id d75a77b69052e-41cd566d8dfso173331cf.0
+        for <iommu@lists.linux.dev>; Fri, 20 Oct 2023 01:24:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1697790261; x=1698395061; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=DrnjWJdFH9tMi6CLmNp2DtRsM8DKDAxkzU6AgZfWzck=;
+        b=EaNmsO2rCXpV1gSB3of2pE/KIc91IEUgxp/024K0mJVbkjaN2rGeRjve+632J7N4CO
+         1hX/4Yyc6xihZtas3LUwEGBA+gRNN3jTSmqH0cjWiFKzYh6BQdIiqVyTp9oWqv3kf6W3
+         VMUdfCd03wSDYCcuaVJfgtYN5PnXz+mouVTcs1NzMwRKHKtnsSFQzRvc7FJdhK42Fi2A
+         Rsoq4KEx1WYgbNlQSBh6DQJjqfO617NCfPqWg1cVYNQ6hL98LbT1sXDGYhYxJd7tN5Il
+         CAiHcQBsJNk/V9ttzET5oTp2OtMH6UNYVsAdpOpHbvWouzNK6k3EH/DHvypKz5M/BdSO
+         O79Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1697790261; x=1698395061;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=DrnjWJdFH9tMi6CLmNp2DtRsM8DKDAxkzU6AgZfWzck=;
+        b=pvK98+xVTPvqw7j//HPtfj2SpQPQdwTbG2p9CMXBTPO1diqftHs5AcORm53bGqUsya
+         tX0EMdZzOXzC76pmrCWaXMzpUf2oatFLp5UiKimc+mJMcURG7pGBA62r7brWORQlWohT
+         3YCIvLrNC4AFizlOUVhxa2JMD1Xe83kwhcNxvmFD36+BXM/G39iUR26Pofi3Jr8qnBjf
+         O+Tbdc6Q2WSO2nTCKz2J9J8hp7vAGKRx/cvyik6675gu88l/urpHZ1QtG65U/d2Qqvbj
+         V0GFQlgxnppfTNpy5Yie6AjW+GFQsLifajEIn/Nvq/nfnn3mrgRrrnL2PXk3mscaRpQg
+         1IOw==
+X-Gm-Message-State: AOJu0YzeywZNmzw51GnBJY2z1ZrB0+E9P/rpnnA+FcbKGIsls0lqHEIB
+	1chgmaZm4lXLXbLkBx6TjpGroymOqB61rk/NJaWwvg==
+X-Google-Smtp-Source: AGHT+IEEOQ0Ak6KP5WsaSFDtM/Zg1nQqA2NhfK+U6iQfKM6I3PKoSXoXdXamZGw84sfmNOXtY8qEal9Hu2QhMaFqYqw=
+X-Received: by 2002:ac8:4e0a:0:b0:41b:834e:1b24 with SMTP id
+ c10-20020ac84e0a000000b0041b834e1b24mr197139qtw.6.1697790261074; Fri, 20 Oct
+ 2023 01:24:21 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d10457f4-3708-44f4-0491-08dbd142b005
-X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Oct 2023 08:00:55.3790
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: tL8NJ0W6FJxfWgt1imrM8SCw/Fkl+GRIjEwNlOAnLBdMYAzH691MbwJk3Uu38oDlkNvg/1PTO7mAi/JZfWlgbA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR11MB5285
-X-OriginatorOrg: intel.com
+References: <0-v1-e289ca9121be+2be-smmuv3_newapi_p1_jgg@nvidia.com>
+ <4-v1-e289ca9121be+2be-smmuv3_newapi_p1_jgg@nvidia.com> <CAKHBV24UGZuG6+J4cybadJCTyf9hN+e_VgAC0NVOPotmEur7SQ@mail.gmail.com>
+ <20231012121616.GF3952@nvidia.com> <CAKHBV27G1PLZ5gkYkOOCZdD9waZOZypkWqk4_HSR4XXGFT-+LA@mail.gmail.com>
+ <20231018130455.GU3952@nvidia.com>
+In-Reply-To: <20231018130455.GU3952@nvidia.com>
+From: Michael Shavit <mshavit@google.com>
+Date: Fri, 20 Oct 2023 16:23:44 +0800
+Message-ID: <CAKHBV270uJjdj4zeK-NNt+j3TiqoGDdLUQ5uRrLw9PN0ysCDbw@mail.gmail.com>
+Subject: Re: [PATCH 04/19] iommu/arm-smmu-v3: Make STE programming independent
+ of the callers
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>, 
+	linux-arm-kernel@lists.infradead.org, Robin Murphy <robin.murphy@arm.com>, 
+	Will Deacon <will@kernel.org>, Nicolin Chen <nicolinc@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-> From: Joao Martins <joao.m.martins@oracle.com>
-> Sent: Thursday, October 19, 2023 4:27 AM
->=20
-> Change mock_domain to supporting dirty tracking and add tests to exercise
-> the new SET_DIRTY API in the iommufd_dirty_tracking selftest fixture.
->=20
-> Signed-off-by: Joao Martins <joao.m.martins@oracle.com>
+On Wed, Oct 18, 2023 at 9:05=E2=80=AFPM Jason Gunthorpe <jgg@nvidia.com> wr=
+ote:
+>
+> On Wed, Oct 18, 2023 at 07:05:49PM +0800, Michael Shavit wrote:
+>
+> > > FWIW, I found the most difficult part the used bit calculation, not
+> > > the update algorithm. Difficult because it is hard to read and find i=
+n
+> > > the spec when things are INGORED, but it is a "straightforward" job o=
+f
+> > > finding INGORED cases and making the used bits 0.
+> >
+> > The update algorithm is the part I'm finding much harder to read and
+> > review :) . arm_smmu_write_entry_step in particular is hard to read
+> > through; on top of which there's some subtle dependencies between loop
+> > iterations that weren't obvious to grok:
+>
+> Yes, you have it right, it is basically a classic greedy
+> algorithm. Let's improve the comment.
+>
+> > * Relying on the used_bits to be recomputed after the first iteration
+> > where V=3D0 was set to 0 so that more bits can now be set.
+> > * The STE having to be synced between iterations to prevent broken STE
+> > reads by the SMMU (there's a comment somewhere else in arm-smmu-v3.c
+> > that would fit nicely here instead). But the caller is responsible for
+> > calling this between iterations for some reason (supposedly to support
+> > CD entries as well in the next series)
+>
+> Yes, for CD entry support.
+>
+> How about:
+>
+> /*
+>  * This algorithm updates any STE/CD to any value without creating a situ=
+ation
+>  * where the HW can percieve a corrupted entry. HW is only required to ha=
+ve a 64
+>  * bit atomicity with stores from the CPU, while entires are many 64 bit =
+values
+>  * big.
+>  *
+>  * The algorithm works by evolving the entry toward the target in a serie=
+s of
+>  * steps. Each step synchronizes with the HW so that the HW can not see a=
+n entry
+>  * torn across two steps. Upon each call cur/cur_used reflect the current
+>  * synchronized value seen by the HW.
+>  *
+>  * During each step the HW can observe a torn entry that has any combinat=
+ion of
+>  * the step's old/new 64 bit words. The algorithm objective is for the HW
+>  * behavior to always be one of current behavior, V=3D0, or new behavior,=
+ during
+>  * each step, and across all steps.
+>  *
+>  * At each step one of three actions is choosen to evolve cur to target:
+>  *  - Update all unused bits with their target values.
+>  *    This relies on the IGNORED behavior described in the specification
+>  *  - Update a single 64-bit value
+>  *  - Update all unused bits and set V=3D0
+>  *
+>  * The last two actions will cause cur_used to change, which will then al=
+low the
+>  * first action on the next step.
+>  *
+>  * In the most general case we can make any update in three steps:
+>  *  - Disrupting the entry (V=3D0)
+>  *  - Fill now unused bits, all bits except V
+>  *  - Make valid (V=3D1), single 64 bit store
+>  *
+>  * However this disrupts the HW while it is happening. There are several
+>  * interesting cases where a STE/CD can be updated without disturbing the=
+ HW
+>  * because only a small number of bits are changing (S1DSS, CONFIG, etc) =
+or
+>  * because the used bits don't intersect. We can detect this by calculati=
+ng how
+>  * many 64 bit values need update after adjusting the unused bits and ski=
+p the
+>  * V=3D0 process.
+>  */
+> static bool arm_smmu_write_entry_step(__le64 *cur, const __le64 *cur_used=
+,
+>
+> Jason
 
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+The comment helps a lot thank you.
+
+I do still have some final reservations: wouldn't it be clearer with
+the loop un-rolled? After all it's only 3 steps in the worst case....
+Something like:
+
++       arm_smmu_get_ste_used(target, &target_used);
++       arm_smmu_get_ste_used(cur, &cur_used);
++       if (!hitless_possible(target, target_used, cur_used, cur_used)) {
++               target->data[0] =3D STRTAB_STE_0_V;
++               arm_smmu_sync_ste_for_sid(smmu, sid);
++               /*
++                * The STE is now in abort where none of the bits except
++                * STRTAB_STE_0_V and STRTAB_STE_0_CFG are accessed. This a=
+llows
++                * all other words of the STE to be written without further
++                * disruption.
++                */
++               arm_smmu_get_ste_used(cur, &cur_used);
++       }
++       /* write bits in all positions unused by the STE */
++       for (i =3D 0; i !=3D ARRAY_SIZE(cur->data); i++) {
++               /* (should probably optimize this away if no write needed) =
+*/
++               WRITE_ONCE(cur->data[i], (cur->data[i] & cur_used[i])
+| (target->data[i] & ~cur_used[i]));
++       }
++       arm_smmu_sync_ste_for_sid(smmu, sid);
++       /*
++        * It should now be possible to make a single qword write to make t=
+he
++        * the new configuration take effect.
++        */
++       for (i =3D 0; i !=3D ARRAY_SIZE(cur->data); i++) {
++               if ((cur->data[i] & target_used[i]) !=3D
+(target->data[i] & target_used[i]))
++                       /*
++                        * TODO:
++                        * WARN_ONCE if this condition hits more than once =
+in
++                        * the loop
++                        */
++                       WRITE_ONCE(cur->data[i], (cur->data[i] &
+cur_used[i]) | (target->data[i] & ~cur_used[i]));
++       }
++       arm_smmu_sync_ste_for_sid(smmu, sid);
