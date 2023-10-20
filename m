@@ -1,155 +1,139 @@
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 271E2321AA
-	for <iommu@lists.linux.dev>; Thu, 19 Oct 2023 23:59:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D69A648
+	for <iommu@lists.linux.dev>; Fri, 20 Oct 2023 02:25:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="jLnSotPz"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VEGhPcNsTrSFJEhFQ1zS2a29f71YHaJfJwGBN23m96My/c6xmzDiVPCe2IBlsQZvS91ByvcU7QZzGjmZS1988eLSfezm8skmtgU5Xjvg547mZXzOrLOeVCTxCvgOek0dBEfBba96sf3D/b2GAAD9ZGb2vVdqb3r/WJr7Nzp7m/nrBv40CL9iCoQ1YmrwesXDwg+hbl4P55UKfhUQDvan/iEjnO5yz6vbXMIPmR6fjujoOzWfEQVClN3M5tsIQLkiLRJtNBR9nWATb4PNZg7rcfjdrEBSLSrvcFU4EIEGFH9Cdd6s9csd6HFuXga1uLeP5CM7UPxPMHR1Ry3XM+687A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=/aByiIG7Oxcpdc9Xkl6JwFk49+DqV4Q+IyOiAn2DdSg=;
- b=n7vvNGgh9Dsj3OcB3zzFnHmvsC154qRc3LTpS8YXStqFN0zoHCeQN412wS4INv+hjKYb9eOnJOrJYoMOygZH3S/6pfLa/9sWW2Y0LbGtq8fy0qQ7UT4tEZ+lhVUriy6jRwcdDPRCqMoVzGAJwUr0wH0F9Nusiya02eqTPBRhc3yXAcsAlsWxmY5i/5bnrd8qf9fu9wQUP+5mvLrCRBI9gmboacf8dI0dqyXoNe+KxSMGlV13p7hdER3rn8oR14gtUQw2Mns7mFZKBt0YtllieENvIWRb3zaBvu9b3K+S19zbm5z2eopnAI9qsr1RBV33HW+KOvsntKMGLENI8Iil/Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/aByiIG7Oxcpdc9Xkl6JwFk49+DqV4Q+IyOiAn2DdSg=;
- b=jLnSotPz86RXqMyaGQpiPLZ9MJvBCuuRiCJfiMW7uf9ZXMt7ON9ao0/g5C05ZLl96lz+24AkBMfEBBjsgt31zk0D+MYzXIogwBtFd1UexbN72oc9yOodhiVhQMhusXORU3vKipvbEK9sgqcPtBvTWC+D/ExHXBIUxgK0eKsNKmsS185qU1dVSJmdDW3uwPDb90JOJ+k1AchgKo1mF6C4voyoU0y3hcYiCBpIaMkCZ/E2LfT8v8mNBEme78UeIfyt/4bE4GmxR5qKQvVbTFHwOyA/xvLb1Gprd7RTj8GS63G6u3dDo+lVr36l5wP4tHd40T+CBzrs7sggcZNuQKp+OQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by BL1PR12MB5222.namprd12.prod.outlook.com (2603:10b6:208:31e::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6907.25; Thu, 19 Oct
- 2023 23:59:35 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::3f66:c2b6:59eb:78c2]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::3f66:c2b6:59eb:78c2%6]) with mapi id 15.20.6886.034; Thu, 19 Oct 2023
- 23:59:35 +0000
-Date: Thu, 19 Oct 2023 20:59:33 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Joao Martins <joao.m.martins@oracle.com>
-Cc: iommu@lists.linux.dev, Kevin Tian <kevin.tian@intel.com>,
-	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>, Yi Liu <yi.l.liu@intel.com>,
-	Yi Y Sun <yi.y.sun@intel.com>, Nicolin Chen <nicolinc@nvidia.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Zhenzhong Duan <zhenzhong.duan@intel.com>,
-	Alex Williamson <alex.williamson@redhat.com>, kvm@vger.kernel.org
-Subject: Re: [PATCH v4 11/18] iommu/amd: Access/Dirty bit support in IOPTEs
-Message-ID: <20231019235933.GB3952@nvidia.com>
-References: <20231018202715.69734-1-joao.m.martins@oracle.com>
- <20231018202715.69734-12-joao.m.martins@oracle.com>
- <20231018231111.GP3952@nvidia.com>
- <2a8b0362-7185-4bca-ba06-e6a4f8de940b@oracle.com>
- <f2109ca9-b194-43f2-bed0-077d03242d1a@oracle.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f2109ca9-b194-43f2-bed0-077d03242d1a@oracle.com>
-X-ClientProxiedBy: BN9P220CA0022.NAMP220.PROD.OUTLOOK.COM
- (2603:10b6:408:13e::27) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="kjfu9hyR"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1697768724; x=1729304724;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=DJAPxqpO5NqYvYxw6N+vBjoq1534FJBWd4yKS9r+g00=;
+  b=kjfu9hyRUxqAAZMGIRRkSisA0CFzPJf6q0ix1/m4FP81Tg86xcIgr2qq
+   swSl5YiLLiO+Hi8ov+t8qnZTta0sMPGZDOw4SJXu9/QCJQ9/CTFDAEnoQ
+   Y1BpBXGAOiKuv4n+sLhHUA2Utg2CPzCWLH+uP4Hx5IK2/lKJAnog+q0Xr
+   TRCnq3iiFopwGjDtofx2SHedRH68uvW0xhKZJFlsYjXV6ZscDH2seI6/3
+   ZkhT/+OTNGgWzf7SYwGb3Q0lWHNkZSdMkLv0fEt+n2Ml3822vboz7jtf2
+   2kbJZVRzOJ74E4mVo2pRy83XGDB8R4WP3/tPBmhp47GekAP2oANMFFcTi
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10868"; a="7979346"
+X-IronPort-AV: E=Sophos;i="6.03,238,1694761200"; 
+   d="scan'208";a="7979346"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2023 19:25:23 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10868"; a="880925313"
+X-IronPort-AV: E=Sophos;i="6.03,238,1694761200"; 
+   d="scan'208";a="880925313"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
+  by orsmga004.jf.intel.com with ESMTP; 19 Oct 2023 19:25:18 -0700
+Message-ID: <31612252-e6e1-4bfc-8b82-620e79422cbc@linux.intel.com>
+Date: Fri, 20 Oct 2023 10:21:36 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|BL1PR12MB5222:EE_
-X-MS-Office365-Filtering-Correlation-Id: 7916fcd9-fcf3-416a-530c-08dbd0ff71f9
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	rcvKQCYz+Y1hoH42Vda7z9hbYMt0cxv4GpqqwD7a3+sLeRXD4wAYnPRjFxjmb4cIoonvJi0ewmJw2i4sHaBCcO9U6/Na+074zyEmFIlOy6j4DbOBu73E/d9v7+OvTGMq8pkGPEy4nYOMmVgjaMpqOHneWIyNglbezyCARES6qF6YcsC2EJ4gjYS44Q28gL2FqydYOSvk4rT9nZASeqDCkMzgILfJthp1SO8x7IEFY6m9O3bWp4nGDYncrDWIE7CfgzxDnChQzeVEkWeRMTylnvqtA8VZQcA8PSRPvPFqpa67Xcr0QtVilYY1/0xMrvyqcynObWxU0WcCXDgwIGkuAkIwm2c/2zglQmqHLoA3+ZvL+YonwH1Moy241ckg6W25C6wcqQkCGKrmptUjaPCZ8gKSn9IfppI3z6aQWfQamwucKn4VuxG5hhi3pccK1BEmtCVXroF7hiGHPEdkQG+uCvCc+p02ycM8TPj8VQlz1xI5Pieu7xY1c2yVBwriOCYwz9HeuU/0XNMrjAIY+Gwz0audjCaFB4HVgfSY75JsF+gMxjJoxtifL7Oipvxt3sHzBsvlMCH0x5K1zTdg+LVgKETpuzfvLpEEqWg72j6g+pY=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(39860400002)(376002)(136003)(366004)(396003)(346002)(230922051799003)(186009)(64100799003)(1800799009)(451199024)(5660300002)(41300700001)(8676002)(4326008)(8936002)(2906002)(7416002)(6506007)(6512007)(36756003)(38100700002)(26005)(2616005)(1076003)(83380400001)(6916009)(316002)(66556008)(66946007)(54906003)(478600001)(86362001)(66476007)(33656002)(6486002)(14143004);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?yyfNbhoHuM3sXYeD8gSre54OF9sh5stSCBnBDFLfK1p8jFVOKBA0c8hRyPdc?=
- =?us-ascii?Q?FrJAMm9Dl5305IyATBvbOOGIVqDPXnM6IwCd0EYVZatD21USpg8MRuN6Jkz9?=
- =?us-ascii?Q?9yF0Q5Tgdl+AGTw+EYF2j9k9fgvX09e4R1t8ibZkTw/66hwU0qP3dqvc+oEk?=
- =?us-ascii?Q?O7MR7l1nFQTogx9uu78qvAYEnRaX3BHUwm1XzFRiTw0f/jgmkCIv/gHwEvsn?=
- =?us-ascii?Q?mP6o0TKKTQzGlfAJrLro3M8VcFizzmnQv+iGPY1F9njZPE9SZqjJj78e5PT+?=
- =?us-ascii?Q?Kit/L11ACyR7qcFF7lG3/5uM+LjP6HUBU1sutE1CyoptOXOlD71FBD3LLDba?=
- =?us-ascii?Q?M0tGjNqK/TBq/g1/7MKKB/f84bZO6tKnV726kYQG47JHicIyA2RzRFQmdeTp?=
- =?us-ascii?Q?+/Uc6NcKOOvi9rJNIpeIyIIQLS0vG9lzAu5DYRsTg3pUGrG3gktF/m9g5v2J?=
- =?us-ascii?Q?61x6N6WS50zMm+xnJBDEgZEEeGFwxHk+cg2QwDDUWJk8G1ShfjsovM4Y9+vL?=
- =?us-ascii?Q?Stx1dvzKKTNAdDHA17Sw1e/tceJ5AuFvZvhSRR24Cug1kEFQk57nNiOI0+1c?=
- =?us-ascii?Q?kCDVs4NwGpECaI99DEQsbM8M8xvtOB4MiR+civ0/60cgpqjOlHeRWPmWRZFl?=
- =?us-ascii?Q?XLQvMszlirpRSraPYg3SyfDOtL2jwvmmOoHurlR43tD1uiE+oBK2wRBGW21X?=
- =?us-ascii?Q?Q0dQNjnkdiFjI2mpLubiwnd1tHc07i7mV+szTLhuQaVWp51Cb+Wy7rYvZuJk?=
- =?us-ascii?Q?t+JVqnVXygLiTOAK5ad73xF+mlw8IiBaeMQIq97iODVXd4rPCSiIxbNJuOIX?=
- =?us-ascii?Q?U4LA1kCYPTgY4tFso7mwf8rwizIPbslSgE7x1tIumQso0rhE+6efr0Tkf76s?=
- =?us-ascii?Q?5QwCwk5/fCNXOHz7Mi6Ga95xe6Mtwu5dHrR+KMJVxoGpslSsgiK8zLG2S4FJ?=
- =?us-ascii?Q?VgvLVLUYjMct+Cv4sxKkJiTmr9rkcsIf+1aUOlKGK8UXwAxK6au46EptFuhb?=
- =?us-ascii?Q?kAI1odrGZ6vJcpl6jhoiZXeQH+qa+LNYNa5qiZQnEsqk1no3mke4FPDPv6nR?=
- =?us-ascii?Q?YodFC25AcBeOXjHOykjbCxY2ob+sly1hvkjTYViyGzd2LvfxDl0bfncZCPXw?=
- =?us-ascii?Q?nvGWdedpjxawPvgsjaPxeKUFflPEjTg4yYJFbsYeI3CXD7v4+1aWfuoZEbAi?=
- =?us-ascii?Q?/9YFiH8Xg49JStuu96pnRIWu8R1dCE8nbWX864CMljoyOd+ByQQqEU4VXCrP?=
- =?us-ascii?Q?eBgk9I8npT4CXMz/jd87woxT1UfivFPhFdAb4oj7HMFt7b5MOERT0YAJU0bv?=
- =?us-ascii?Q?RS8dbc8IN7JyZOFsIBEhpQnJA2P+XJ7TtiPwWYknelf+eGXi/TehW99eYlw1?=
- =?us-ascii?Q?S+Rc1GHEVb+EWJwV6rsrB4Momqwo67+u9bRI1bcrUregm6b30x9iWG1MnPNl?=
- =?us-ascii?Q?TEE3rbMwR70mdHYYBnMUQ03penmFKXEZYU1w9ma0Z1FOzR759lk+t3cr+JFD?=
- =?us-ascii?Q?I+Ba4Bppusc3tLskHsjynVIFOAX0aDJ7NqrSAXleYpFdt8L8/F9XV06QCDsO?=
- =?us-ascii?Q?brkljjqnKR7DAwVSy5puYct9IYDXtWVxbB/tYY5D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7916fcd9-fcf3-416a-530c-08dbd0ff71f9
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Oct 2023 23:59:35.1521
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: viNhMYhQHioEOJ0wGiee13UufO/9hx9OTxWbjbEvMsWs9dO9GXGlwsIZ3GKTAgi0
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5222
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, iommu@lists.linux.dev,
+ Kevin Tian <kevin.tian@intel.com>,
+ Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
+ Yi Liu <yi.l.liu@intel.com>, Yi Y Sun <yi.y.sun@intel.com>,
+ Nicolin Chen <nicolinc@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Zhenzhong Duan <zhenzhong.duan@intel.com>,
+ Alex Williamson <alex.williamson@redhat.com>, kvm@vger.kernel.org
+Subject: Re: [PATCH v4 11/18] iommu/amd: Access/Dirty bit support in IOPTEs
+Content-Language: en-US
+To: Joao Martins <joao.m.martins@oracle.com>, Jason Gunthorpe <jgg@nvidia.com>
+References: <20231018202715.69734-1-joao.m.martins@oracle.com>
+ <20231018202715.69734-12-joao.m.martins@oracle.com>
+ <20231018231111.GP3952@nvidia.com>
+ <2a8b0362-7185-4bca-ba06-e6a4f8de940b@oracle.com>
+ <f2109ca9-b194-43f2-bed0-077d03242d1a@oracle.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <f2109ca9-b194-43f2-bed0-077d03242d1a@oracle.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Thu, Oct 19, 2023 at 12:58:29PM +0100, Joao Martins wrote:
-
+On 10/19/23 7:58 PM, Joao Martins wrote:
+> On 19/10/2023 01:17, Joao Martins wrote:
+>> On 19/10/2023 00:11, Jason Gunthorpe wrote:
+>>> On Wed, Oct 18, 2023 at 09:27:08PM +0100, Joao Martins wrote:
+>>>> +static int iommu_v1_read_and_clear_dirty(struct io_pgtable_ops *ops,
+>>>> +					 unsigned long iova, size_t size,
+>>>> +					 unsigned long flags,
+>>>> +					 struct iommu_dirty_bitmap *dirty)
+>>>> +{
+>>>> +	struct amd_io_pgtable *pgtable = io_pgtable_ops_to_data(ops);
+>>>> +	unsigned long end = iova + size - 1;
+>>>> +
+>>>> +	do {
+>>>> +		unsigned long pgsize = 0;
+>>>> +		u64 *ptep, pte;
+>>>> +
+>>>> +		ptep = fetch_pte(pgtable, iova, &pgsize);
+>>>> +		if (ptep)
+>>>> +			pte = READ_ONCE(*ptep);
+>>> It is fine for now, but this is so slow for something that is such a
+>>> fast path. We are optimizing away a TLB invalidation but leaving
+>>> this???
+>>>
+>> More obvious reason is that I'm still working towards the 'faster' page table
+>> walker. Then map/unmap code needs to do similar lookups so thought of reusing
+>> the same functions as map/unmap initially. And improve it afterwards or when
+>> introducing the splitting.
+>>
+>>> It is a radix tree, you walk trees by retaining your position at each
+>>> level as you go (eg in a function per-level call chain or something)
+>>> then ++ is cheap. Re-searching the entire tree every time is madness.
+>> I'm aware -- I have an improved page-table walker for AMD[0] (not yet for Intel;
+>> still in the works),
 > Sigh, I realized that Intel's pfn_to_dma_pte() (main lookup function for
 > map/unmap/iova_to_phys) does something a little off when it finds a non-present
 > PTE. It allocates a page table to it; which is not OK in this specific case (I
 > would argue it's neither for iova_to_phys but well maybe I misunderstand the
 > expectation of that API).
 
-Oh :(
- 
-> AMD has no such behaviour, though that driver per your earlier suggestion might
-> need to wait until -rc1 for some of the refactorings get merged. Hopefully we
-> don't need to wait for the last 3 series of AMD Driver refactoring (?) to be
-> done as that looks to be more SVA related; Unless there's something more
-> specific you are looking for prior to introducing AMD's domain_alloc_user().
+pfn_to_dma_pte() doesn't allocate page for a non-present PTE if the
+target_level parameter is set to 0. See below line 932.
 
-I don't think we need to wait, it just needs to go on the cleaning list.
- 
-> Anyhow, let me fix this, and post an update. Perhaps it's best I target this for
-> -rc1 and have improved page-table walkers all at once [the iommufd_log_perf
-> thingie below unlikely to be part of this set right away]. I have been playing
-> with the AMD driver a lot more on baremetal, so I am getting confident on the
-> snippet below (even with big IOVA ranges). I'm also retrying to see in-house if
-> there's now a rev3.0 Intel machine that I can post results for -rc1 (last time
-> in v2 I didn't; but things could have changed).
+  913 static struct dma_pte *pfn_to_dma_pte(struct dmar_domain *domain,
+  914                           unsigned long pfn, int *target_level,
+  915                           gfp_t gfp)
+  916 {
 
-I'd rather you keep it simple and send the walkers as followups to the
-driver maintainers directly.
+[...]
 
-> > for themselves; so more and more I need to work on something like
-> > iommufd_log_perf tool under tools/testing that is similar to the gup_perf to make all
-> > performance work obvious and 'standardized'
+  927         while (1) {
+  928                 void *tmp_page;
+  929
+  930                 offset = pfn_level_offset(pfn, level);
+  931                 pte = &parent[offset];
+  932                 if (!*target_level && (dma_pte_superpage(pte) || 
+!dma_pte_present(pte)))
+  933                         break;
 
-We have a mlx5 vfio driver in rdma-core and I have been thinking it
-would be a nice basis for building an iommufd tester/benchmarker as it
-has a wide set of "easilly" triggered functionality.
+So both iova_to_phys() and read_and_clear_dirty() are doing things
+right:
 
-Jason
+	struct dma_pte *pte;
+	int level = 0;
+
+	pte = pfn_to_dma_pte(dmar_domain, iova >> VTD_PAGE_SHIFT,
+                              &level, GFP_KERNEL);
+	if (pte && dma_pte_present(pte)) {
+		/* The PTE is valid, check anything you want! */
+		... ...
+	}
+
+Or, I am overlooking something else?
+
+Best regards,
+baolu
