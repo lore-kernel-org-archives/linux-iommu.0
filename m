@@ -1,36 +1,36 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.151])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2FFAA1118B
-	for <iommu@lists.linux.dev>; Fri, 20 Oct 2023 09:19:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3591711196
+	for <iommu@lists.linux.dev>; Fri, 20 Oct 2023 09:19:59 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="kYRGR6yt"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Ua6umf3D"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1697793599; x=1729329599;
+  t=1697793600; x=1729329600;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=vW/H8Z4bcelxZXf/ORWAI5Dwtig9Y1wuACFD5pTvzR4=;
-  b=kYRGR6yt+zp/0WP9AUDN0/MKI66G0WocLnXajhmGbBXlFudLAPvwlawp
-   fdZ+P4Zu/F1FIWDCKWN5wC12YtQmyGve5hNgOiqwpiRzcVYFwaOBiFqUd
-   SsLcgxzzjAWKJLlp5ifSGc2hyKMhr8zsNZJyABpdPtCDmBzz+6Dw6+ArV
-   OtTgwIsMiWvCsV3rj7mMjxcMNNXmGZLojSqFOW87liFCOx0FC7hLOnZE7
-   5q9ufWGtx+xVRsCF7j7o45MHefyrOjlmRLSVkV5HwyJTDq+oRs8A/VmWE
-   5CiMk9tEn29wZxOoYEh3R1tIfTrKa5R2C5kyfMROyCdyHFpiUajPZKYrw
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10868"; a="366693332"
+  bh=kUfgqW/lAODTF0S1kos6ZtnnekNva98TjIvhpU120+s=;
+  b=Ua6umf3D9+cw2CwQ61vJgG8dt9DZ4znQlKObuGbW//rJEEgDz1DKFd9w
+   V37VLvUjh+X659iPsqZQqxmvGNauuYoGeztmCfTHPylp/S+HnXDfoYBz5
+   4+WBkpCpYMtt7mJCUTc/fqdHayHqzBc7QS8rnQitM7bsKjq7MGVjtLta5
+   ULxuO1sC1Rlb0/CKhJ88KE20zC7O0nEVlmz6GAV+OjhlVVeuyzQgOi0hH
+   svBiifmV7Qj2g5djnGLJl3s90cs9zf6U3+cq1vofGQG8seQDHUCGtOjB5
+   6iNwx5NS8nDcgVJUbcLHNS+SynYiz6diNWLXOYzq+7iP2YenuKX0XAdpT
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10868"; a="366693363"
 X-IronPort-AV: E=Sophos;i="6.03,238,1694761200"; 
-   d="scan'208";a="366693332"
+   d="scan'208";a="366693363"
 Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Oct 2023 02:19:57 -0700
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Oct 2023 02:19:59 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10868"; a="707179417"
+X-IronPort-AV: E=McAfee;i="6600,9927,10868"; a="707179430"
 X-IronPort-AV: E=Sophos;i="6.03,238,1694761200"; 
-   d="scan'208";a="707179417"
+   d="scan'208";a="707179430"
 Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
-  by orsmga003.jf.intel.com with ESMTP; 20 Oct 2023 02:19:57 -0700
+  by orsmga003.jf.intel.com with ESMTP; 20 Oct 2023 02:19:58 -0700
 From: Yi Liu <yi.l.liu@intel.com>
 To: joro@8bytes.org,
 	alex.williamson@redhat.com,
@@ -57,9 +57,9 @@ Cc: cohuck@redhat.com,
 	zhenzhong.duan@intel.com,
 	joao.m.martins@oracle.com,
 	xin.zeng@intel.com
-Subject: [PATCH v5 02/10] iommu: Pass in parent domain with user_data to domain_alloc_user op
-Date: Fri, 20 Oct 2023 02:19:38 -0700
-Message-Id: <20231020091946.12173-3-yi.l.liu@intel.com>
+Subject: [PATCH v5 03/10] iommufd: Rename IOMMUFD_OBJ_HW_PAGETABLE to IOMMUFD_OBJ_HWPT_PAGING
+Date: Fri, 20 Oct 2023 02:19:39 -0700
+Message-Id: <20231020091946.12173-4-yi.l.liu@intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20231020091946.12173-1-yi.l.liu@intel.com>
 References: <20231020091946.12173-1-yi.l.liu@intel.com>
@@ -71,144 +71,110 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-domain_alloc_user op already accepts user flags for domain allocation, add
-a parent domain pointer and a driver specific user data support as well.
+From: Jason Gunthorpe <jgg@nvidia.com>
 
-Add a struct iommu_user_data as a bundle of data_ptr/data_len/type from an
-iommufd core uAPI structure. Make the user data opaque to the core, since
-a userspace driver must match the kernel driver. In the future, if drivers
-share some common parameter, there would be a generic parameter as well.
+To add a new IOMMUFD_OBJ_HWPT_NESTED, rename the HWPT object to confine
+it to PAGING hwpts/domains. The following patch will separate the hwpt
+structure as well.
 
-Define an enum iommu_hwpt_data_type (with IOMMU_HWPT_DATA_NONE type) for
-iommu drivers to add their own driver specific user data per hw_pagetable.
-
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Co-developed-by: Nicolin Chen <nicolinc@nvidia.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
 Signed-off-by: Yi Liu <yi.l.liu@intel.com>
 ---
- drivers/iommu/intel/iommu.c          |  4 +++-
- drivers/iommu/iommufd/hw_pagetable.c |  3 ++-
- drivers/iommu/iommufd/selftest.c     |  4 +++-
- include/linux/iommu.h                | 27 ++++++++++++++++++++++++---
- include/uapi/linux/iommufd.h         |  8 ++++++++
- 5 files changed, 40 insertions(+), 6 deletions(-)
+ drivers/iommu/iommufd/device.c          | 10 +++++-----
+ drivers/iommu/iommufd/hw_pagetable.c    |  2 +-
+ drivers/iommu/iommufd/iommufd_private.h |  2 +-
+ drivers/iommu/iommufd/main.c            |  2 +-
+ drivers/iommu/iommufd/selftest.c        |  2 +-
+ 5 files changed, 9 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 017aed5813d8..8d78149e793e 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -4075,7 +4075,9 @@ static struct iommu_domain *intel_iommu_domain_alloc(unsigned type)
- }
+diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
+index e88fa73a45e6..a5f9f20b2a9b 100644
+--- a/drivers/iommu/iommufd/device.c
++++ b/drivers/iommu/iommufd/device.c
+@@ -579,7 +579,7 @@ static int iommufd_device_change_pt(struct iommufd_device *idev, u32 *pt_id,
+ 		return PTR_ERR(pt_obj);
  
- static struct iommu_domain *
--intel_iommu_domain_alloc_user(struct device *dev, u32 flags)
-+intel_iommu_domain_alloc_user(struct device *dev, u32 flags,
-+			      struct iommu_domain *parent,
-+			      const struct iommu_user_data *user_data)
- {
- 	struct iommu_domain *domain;
- 	struct intel_iommu *iommu;
+ 	switch (pt_obj->type) {
+-	case IOMMUFD_OBJ_HW_PAGETABLE: {
++	case IOMMUFD_OBJ_HWPT_PAGING: {
+ 		struct iommufd_hw_pagetable *hwpt =
+ 			container_of(pt_obj, struct iommufd_hw_pagetable, obj);
+ 
+@@ -617,8 +617,8 @@ static int iommufd_device_change_pt(struct iommufd_device *idev, u32 *pt_id,
+ /**
+  * iommufd_device_attach - Connect a device to an iommu_domain
+  * @idev: device to attach
+- * @pt_id: Input a IOMMUFD_OBJ_IOAS, or IOMMUFD_OBJ_HW_PAGETABLE
+- *         Output the IOMMUFD_OBJ_HW_PAGETABLE ID
++ * @pt_id: Input a IOMMUFD_OBJ_IOAS, or IOMMUFD_OBJ_HWPT_PAGING
++ *         Output the IOMMUFD_OBJ_HWPT_PAGING ID
+  *
+  * This connects the device to an iommu_domain, either automatically or manually
+  * selected. Once this completes the device could do DMA.
+@@ -646,8 +646,8 @@ EXPORT_SYMBOL_NS_GPL(iommufd_device_attach, IOMMUFD);
+ /**
+  * iommufd_device_replace - Change the device's iommu_domain
+  * @idev: device to change
+- * @pt_id: Input a IOMMUFD_OBJ_IOAS, or IOMMUFD_OBJ_HW_PAGETABLE
+- *         Output the IOMMUFD_OBJ_HW_PAGETABLE ID
++ * @pt_id: Input a IOMMUFD_OBJ_IOAS, or IOMMUFD_OBJ_HWPT_PAGING
++ *         Output the IOMMUFD_OBJ_HWPT_PAGING ID
+  *
+  * This is the same as::
+  *
 diff --git a/drivers/iommu/iommufd/hw_pagetable.c b/drivers/iommu/iommufd/hw_pagetable.c
-index 8b3d2875d642..548079c8ca0a 100644
+index 548079c8ca0a..e100caa502ed 100644
 --- a/drivers/iommu/iommufd/hw_pagetable.c
 +++ b/drivers/iommu/iommufd/hw_pagetable.c
-@@ -96,7 +96,8 @@ iommufd_hw_pagetable_alloc(struct iommufd_ctx *ictx, struct iommufd_ioas *ioas,
- 	hwpt->ioas = ioas;
+@@ -86,7 +86,7 @@ iommufd_hw_pagetable_alloc(struct iommufd_ctx *ictx, struct iommufd_ioas *ioas,
+ 	if (flags && !ops->domain_alloc_user)
+ 		return ERR_PTR(-EOPNOTSUPP);
  
- 	if (ops->domain_alloc_user) {
--		hwpt->domain = ops->domain_alloc_user(idev->dev, flags);
-+		hwpt->domain = ops->domain_alloc_user(idev->dev, flags,
-+						      NULL, NULL);
- 		if (IS_ERR(hwpt->domain)) {
- 			rc = PTR_ERR(hwpt->domain);
- 			hwpt->domain = NULL;
+-	hwpt = iommufd_object_alloc(ictx, hwpt, IOMMUFD_OBJ_HW_PAGETABLE);
++	hwpt = iommufd_object_alloc(ictx, hwpt, IOMMUFD_OBJ_HWPT_PAGING);
+ 	if (IS_ERR(hwpt))
+ 		return hwpt;
+ 
+diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
+index 3064997a0181..07ce35f09599 100644
+--- a/drivers/iommu/iommufd/iommufd_private.h
++++ b/drivers/iommu/iommufd/iommufd_private.h
+@@ -113,7 +113,7 @@ enum iommufd_object_type {
+ 	IOMMUFD_OBJ_NONE,
+ 	IOMMUFD_OBJ_ANY = IOMMUFD_OBJ_NONE,
+ 	IOMMUFD_OBJ_DEVICE,
+-	IOMMUFD_OBJ_HW_PAGETABLE,
++	IOMMUFD_OBJ_HWPT_PAGING,
+ 	IOMMUFD_OBJ_IOAS,
+ 	IOMMUFD_OBJ_ACCESS,
+ #ifdef CONFIG_IOMMUFD_TEST
+diff --git a/drivers/iommu/iommufd/main.c b/drivers/iommu/iommufd/main.c
+index e71523cbd0de..ad7c8c9ea46a 100644
+--- a/drivers/iommu/iommufd/main.c
++++ b/drivers/iommu/iommufd/main.c
+@@ -482,7 +482,7 @@ static const struct iommufd_object_ops iommufd_object_ops[] = {
+ 	[IOMMUFD_OBJ_IOAS] = {
+ 		.destroy = iommufd_ioas_destroy,
+ 	},
+-	[IOMMUFD_OBJ_HW_PAGETABLE] = {
++	[IOMMUFD_OBJ_HWPT_PAGING] = {
+ 		.destroy = iommufd_hw_pagetable_destroy,
+ 		.abort = iommufd_hw_pagetable_abort,
+ 	},
 diff --git a/drivers/iommu/iommufd/selftest.c b/drivers/iommu/iommufd/selftest.c
-index fe7e3c7d933a..2bfe8dc9adc3 100644
+index 2bfe8dc9adc3..eca5b1d0919d 100644
 --- a/drivers/iommu/iommufd/selftest.c
 +++ b/drivers/iommu/iommufd/selftest.c
-@@ -171,7 +171,9 @@ static struct iommu_domain *mock_domain_alloc(unsigned int iommu_domain_type)
- }
+@@ -350,7 +350,7 @@ get_md_pagetable(struct iommufd_ucmd *ucmd, u32 mockpt_id,
+ 	struct iommufd_object *obj;
  
- static struct iommu_domain *
--mock_domain_alloc_user(struct device *dev, u32 flags)
-+mock_domain_alloc_user(struct device *dev, u32 flags,
-+		       struct iommu_domain *parent,
-+		       const struct iommu_user_data *user_data)
- {
- 	struct iommu_domain *domain;
- 
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index ce08a3c41446..cdb989b853a5 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -231,6 +231,21 @@ struct iommu_iotlb_gather {
- 	bool			queued;
- };
- 
-+/**
-+ * struct iommu_user_data - iommu driver specific user space data info
-+ * @type: The data type of the user buffer
-+ * @uptr: Pointer to the user buffer for copy_from_user()
-+ * @len: The length of the user buffer in bytes
-+ *
-+ * A user space data is an uAPI that is defined in include/uapi/linux/iommufd.h
-+ * @type, @uptr and @len should be just copied from an iommufd core uAPI struct.
-+ */
-+struct iommu_user_data {
-+	unsigned int type;
-+	void __user *uptr;
-+	size_t len;
-+};
-+
- /**
-  * struct iommu_ops - iommu ops and capabilities
-  * @capable: check capability
-@@ -245,8 +260,12 @@ struct iommu_iotlb_gather {
-  *                     parameters as defined in include/uapi/linux/iommufd.h.
-  *                     Unlike @domain_alloc, it is called only by IOMMUFD and
-  *                     must fully initialize the new domain before return.
-- *                     Upon success, a domain is returned. Upon failure,
-- *                     ERR_PTR must be returned.
-+ *                     Upon success, if the @user_data is valid and the @parent
-+ *                     points to a kernel-managed domain, the new domain must be
-+ *                     IOMMU_DOMAIN_NESTED type; otherwise, the @parent must be
-+ *                     NULL while the @user_data can be optionally provided, the
-+ *                     new domain must support __IOMMU_DOMAIN_PAGING.
-+ *                     Upon failure, ERR_PTR must be returned.
-  * @probe_device: Add device to iommu driver handling
-  * @release_device: Remove device from iommu driver handling
-  * @probe_finalize: Do final setup work after the device is added to an IOMMU
-@@ -279,7 +298,9 @@ struct iommu_ops {
- 
- 	/* Domain allocation and freeing by the iommu driver */
- 	struct iommu_domain *(*domain_alloc)(unsigned iommu_domain_type);
--	struct iommu_domain *(*domain_alloc_user)(struct device *dev, u32 flags);
-+	struct iommu_domain *(*domain_alloc_user)(struct device *dev, u32 flags,
-+						  struct iommu_domain *parent,
-+						  const struct iommu_user_data *user_data);
- 
- 	struct iommu_device *(*probe_device)(struct device *dev);
- 	void (*release_device)(struct device *dev);
-diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
-index be7a95042677..b459bb7ac579 100644
---- a/include/uapi/linux/iommufd.h
-+++ b/include/uapi/linux/iommufd.h
-@@ -356,6 +356,14 @@ enum iommufd_hwpt_alloc_flags {
- 	IOMMU_HWPT_ALLOC_NEST_PARENT = 1 << 0,
- };
- 
-+/**
-+ * enum iommu_hwpt_data_type - IOMMU HWPT Data Type
-+ * @IOMMU_HWPT_DATA_NONE: no data
-+ */
-+enum iommu_hwpt_data_type {
-+	IOMMU_HWPT_DATA_NONE,
-+};
-+
- /**
-  * struct iommu_hwpt_alloc - ioctl(IOMMU_HWPT_ALLOC)
-  * @size: sizeof(struct iommu_hwpt_alloc)
+ 	obj = iommufd_get_object(ucmd->ictx, mockpt_id,
+-				 IOMMUFD_OBJ_HW_PAGETABLE);
++				 IOMMUFD_OBJ_HWPT_PAGING);
+ 	if (IS_ERR(obj))
+ 		return ERR_CAST(obj);
+ 	hwpt = container_of(obj, struct iommufd_hw_pagetable, obj);
 -- 
 2.34.1
 
