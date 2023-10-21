@@ -1,58 +1,70 @@
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2075.outbound.protection.outlook.com [40.107.244.75])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 970891DA59
-	for <iommu@lists.linux.dev>; Fri, 20 Oct 2023 22:29:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oracle.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oracle.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0345A7EA
+	for <iommu@lists.linux.dev>; Sat, 21 Oct 2023 00:37:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="HO5pK3oM"
-Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
-	by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 39KLWBTv006466;
-	Fri, 20 Oct 2023 22:29:18 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=corp-2023-03-30;
- bh=oDONOfoOL7eeG9EmrC1/tZ8j+/FJpBmLl/Juigr7ezI=;
- b=HO5pK3oMzanwQ3h28CHBYfCbFvrR6QqhmxVI7/+xdXNDmSNRs7AnSLdOw8y6wnrdqejO
- X/61y+WpFE5/f6ZC6IKd9k6PjpMUz9zylHlpjL9N4KnkbV8udBX4ef/QyW9BhihajvRP
- RJZPeI0X/d6r1gLdSo+Hl7CLDS8kLN/Vvc2syMinzPjrUykr+wFGIfAUL5t8vLJnyHKo
- xN+36fro+8Ww+fyT3s6sIQA9KdvKZBCJLftubRLkJ4yssQD/rDNh3oYf7/lOjPdvC2pg
- Sppott8rkgkfTLLtP++N31QH+sE1kwU5iN3/z6n1jH5wahV6ZO6OhnIyiCgT7cCLDG1i 4g== 
-Received: from iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta03.appoci.oracle.com [130.35.103.27])
-	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3tubwcjtug-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Fri, 20 Oct 2023 22:29:18 +0000
-Received: from pps.filterd (iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-	by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.19/8.17.1.19) with ESMTP id 39KL7TPW025701;
-	Fri, 20 Oct 2023 22:29:16 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-	by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3tubwdud93-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Fri, 20 Oct 2023 22:29:16 +0000
-Received: from iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 39KMSAsU018735;
-	Fri, 20 Oct 2023 22:29:16 GMT
-Received: from joaomart-mac.uk.oracle.com (dhcp-10-175-179-153.vpn.oracle.com [10.175.179.153])
-	by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTP id 3tubwduch3-19;
-	Fri, 20 Oct 2023 22:29:15 +0000
-From: Joao Martins <joao.m.martins@oracle.com>
-To: iommu@lists.linux.dev
-Cc: Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
-        Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
-        Lu Baolu <baolu.lu@linux.intel.com>, Yi Liu <yi.l.liu@intel.com>,
-        Yi Y Sun <yi.y.sun@intel.com>, Nicolin Chen <nicolinc@nvidia.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-        Zhenzhong Duan <zhenzhong.duan@intel.com>,
-        Alex Williamson <alex.williamson@redhat.com>, kvm@vger.kernel.org,
-        Joao Martins <joao.m.martins@oracle.com>
-Subject: [PATCH v5 18/18] iommufd/selftest: Test IOMMU_HWPT_GET_DIRTY_BITMAP_NO_CLEAR flag
-Date: Fri, 20 Oct 2023 23:28:04 +0100
-Message-Id: <20231020222804.21850-19-joao.m.martins@oracle.com>
-In-Reply-To: <20231020222804.21850-1-joao.m.martins@oracle.com>
-References: <20231020222804.21850-1-joao.m.martins@oracle.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="tQQcUcgg"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=d1DwBGfG/DiZyTsX1rny16gR1uevbUESyHVSa45VNMA4QwdPN1j4fqPG3yHNVoj92+32SAS+20VLcIu3z+IaQneIKRJlkAlwkwqCWGeh/Kb+32S+FtUEkoL5wpUXqORKEES/tMxfL3Rv76ByXKW59bOtgZowmh7Sk1pW2QxxlStfvaFQQ3wj4MZZSps0oS2unvWPBpqeYMQecex+FZkiBbiSKloEL27uWjSE14ChggmOGRdkTfp9o2Tq+1seakHp0f+5FJZHRtcl9zfi5sN1weZ2oLu3UxfzfMigdLwNoZ8kW9x8qYvuh+1tcF+CluWmJxDK9Nc4udp3zjt1GlrkFg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=rJmaG/87YMY7FeaM0m3Ga3kSFFqzx4R2gWWnTIG/aMw=;
+ b=GEC5NV+fWLqbZqz/hDizPQlM9BvBC2h+L508k9h3vRK7+N5a10ldCE3ovvmr/7l4lwdxCNOp/DkE+3R5Ct0DLbMy+aLqO3Shnru8qPFSmTfe2oma7BkRbjOSu7Anme927S1dhRcW99NSw5sruWjfs/oPASjg6UEOTx/GnXcxlnnzuvEEvfPUtCPNuxcSDxBABAVQXqzCNLcyyKLeZaJAPsd1640UGDTuSJOC7ncWb9OBA6w+7nIznP0uXwoDJBBQysT6lXh/6+4eNR4ssXBDY8VC2z+IU6DRjhmTg9p1Rt3cyCZeqUQJ6yrZQdUUXcPcbM3rwINhLVIIuiiWcSTbWA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=rJmaG/87YMY7FeaM0m3Ga3kSFFqzx4R2gWWnTIG/aMw=;
+ b=tQQcUcgg3lPJarZtJ9xEVmV6wqxRZdc0As1/Z9Vu+kY5YzFAqNfyh/KfHMhkik0hPOgukffFNtuRSZX4or9l+bl6eY7dqMYPMv8qUW8kMk6e6TTf5aEd3rA+Fp6XIFW2TuBrUqW18PHE8SEv2wj0bTCiXpuask1Hhi5rND6THVoJS9BfUlN5gUi1WEYfAgJzPtu/9YLWmLr7GEtkQY7feBNpnJa5d6X1kEzKIK3X+wZvwyOgkm2zRNmuPh1CQbhw6CEtfHKRn8LQcB8oto6Br5OvfUbwSRVmC6Gh8GZQhHjWDP+qkP1KpQOBTMOURSFN6bg+3G6PA2wfpOgCN9Y8/w==
+Received: from CYZPR05CA0016.namprd05.prod.outlook.com (2603:10b6:930:89::28)
+ by PH7PR12MB6420.namprd12.prod.outlook.com (2603:10b6:510:1fc::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6907.26; Sat, 21 Oct
+ 2023 00:37:33 +0000
+Received: from CY4PEPF0000E9D2.namprd03.prod.outlook.com
+ (2603:10b6:930:89:cafe::c) by CYZPR05CA0016.outlook.office365.com
+ (2603:10b6:930:89::28) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6933.8 via Frontend
+ Transport; Sat, 21 Oct 2023 00:37:33 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ CY4PEPF0000E9D2.mail.protection.outlook.com (10.167.241.145) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6838.22 via Frontend Transport; Sat, 21 Oct 2023 00:37:33 +0000
+Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Fri, 20 Oct
+ 2023 17:37:25 -0700
+Received: from rnnvmail205.nvidia.com (10.129.68.10) by rnnvmail204.nvidia.com
+ (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Fri, 20 Oct
+ 2023 17:37:24 -0700
+Received: from Asurada-Nvidia.nvidia.com (10.127.8.10) by mail.nvidia.com
+ (10.129.68.10) with Microsoft SMTP Server id 15.2.986.41 via Frontend
+ Transport; Fri, 20 Oct 2023 17:37:24 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: <jgg@nvidia.com>, <kevin.tian@intel.com>
+CC: <joro@8bytes.org>, <will@kernel.org>, <robin.murphy@arm.com>,
+	<baolu.lu@linux.intel.com>, <iommu@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>, <yi.l.liu@intel.com>
+Subject: [PATCH 2/2] iommufd/device: Drop enforce_cache_coherency in iommufd_hw_pagetable_attach
+Date: Fri, 20 Oct 2023 17:37:11 -0700
+Message-ID: <d51a21eecd19966a98cb56b99a4ed1d7f89b6151.1697848510.git.nicolinc@nvidia.com>
+X-Mailer: git-send-email 2.42.0
+In-Reply-To: <cover.1697848510.git.nicolinc@nvidia.com>
+References: <cover.1697848510.git.nicolinc@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -60,189 +72,94 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.272,Aquarius:18.0.980,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2023-10-20_10,2023-10-19_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=933 bulkscore=0 spamscore=0
- malwarescore=0 phishscore=0 mlxscore=0 adultscore=0 suspectscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2310170001
- definitions=main-2310200191
-X-Proofpoint-ORIG-GUID: mdXzkU6Tuh61ZIjrkX72iystZjXdYXeU
-X-Proofpoint-GUID: mdXzkU6Tuh61ZIjrkX72iystZjXdYXeU
+Content-Type: text/plain
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CY4PEPF0000E9D2:EE_|PH7PR12MB6420:EE_
+X-MS-Office365-Filtering-Correlation-Id: a86818e0-018f-4ddd-4e15-08dbd1cdea8f
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	zW2ce2DoX+DjMhIYVgGm2i09jYhPGrl+J9kMX3RiYkx06PJCPon6Z2v0Ow5v6NHFoy/D8voBNvBG6OxxKoMJiKU2HrtGDTnoCW9WLPZ2qDEXPfiB1G8TE7Lg/ILMj8lrIxGTNgld7d3i+MsNiXNJwSv1hcF7xpwUvk+vKOehIc1SS1ntZViR07B9pusoD92rzyXrIiliiQSRQ6qNB0zUvUSRt4Hd0Qy2Pt+fRaH6hMNqtLYY/b21gf+fjNU1DuslSDRjUaVJXGAMoagi0kIIhq3QshkJwb1Bs+eBh4gQ4AOcY8BaguKz8f2qV961ZHj8B9DWAUehNrUiZ8RlcvCRpowvMrU/EXIXszIxf6tlWmt/zkX3lFwUIrjF2mL+TCdRYMucpuD8yHT5KsrUvhmnrjAqAS+4DEVffIzbUcSbVfEczrXBjZoLuFGq4eqEZ9fslurlWz121IlzyGbjsvL1ioF97+gU5cByovn0fmaOW4pm/oPxnGTJmOA0qffVdMnECLVJkxMKofyqNxLJw+MYrRLR0niAYPnXFR6AA/Wtnh8M61Fka4nmuCkaetEGXXJp8UTPEI/TwdQiaU/ahSB51gWr2j9vXvkr+tkIGG745xX5rHJ/+OeiRZ1v7mSPbe4XNSgETHXwkUmAW2bt7HOm2AinY5mU5B4U60QbjYK/uxAMrrcChsvDcTabTZdmn0Gx/Qc0EGfpW4ivgH7xRbNm7QEK9qITc8IwuxOs8Ez5tptzA7ujzKLGx33wFqBQ1i1nxZWmsbmK8aEIq/HDMRIt984pXmer8g2tZ5CylH84CdA=
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230031)(4636009)(376002)(39860400002)(346002)(396003)(136003)(230922051799003)(451199024)(1800799009)(82310400011)(64100799003)(186009)(40470700004)(36840700001)(46966006)(86362001)(40460700003)(2906002)(5660300002)(8676002)(110136005)(70206006)(316002)(54906003)(478600001)(6666004)(70586007)(8936002)(966005)(36756003)(4326008)(41300700001)(47076005)(36860700001)(7696005)(2616005)(26005)(83380400001)(356005)(7636003)(336012)(82740400003)(426003)(40480700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Oct 2023 00:37:33.5724
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: a86818e0-018f-4ddd-4e15-08dbd1cdea8f
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	CY4PEPF0000E9D2.namprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB6420
 
-Change test_mock_dirty_bitmaps() to pass a flag where it specifies the flag
-under test. The test does the same thing as the GET_DIRTY_BITMAP regular
-test. Except that it tests whether the dirtied bits are fetched all the
-same a second time, as opposed to observing them cleared.
+According to the conversion in the following link:
+https://lore.kernel.org/linux-iommu/20231020135501.GG3952@nvidia.com/
 
-Signed-off-by: Joao Martins <joao.m.martins@oracle.com>
+The enforce_cache_coherency should be set/enforced in the hwpt allocation
+routine. The iommu driver in its attach_dev() op should decide whether to
+reject or not a device that doesn't match with the configuration of cache
+coherency. Drop the enforce_cache_coherency piece in attach(), so it will
+be called only in the allocation routine. Then, drop it in the header and
+mark it as a static function.
+
+Cc: stable@vger.kernel.org
+Fixes: 17bad52708b4 ("iommufd: Add enforced_cache_coherency to iommufd_hw_pagetable_alloc()")
+Suggested-by: Tian, Kevin <kevin.tian@intel.com>
+Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
 ---
- drivers/iommu/iommufd/selftest.c              | 15 ++++---
- tools/testing/selftests/iommu/iommufd.c       | 40 ++++++++++++++++++-
- tools/testing/selftests/iommu/iommufd_utils.h | 27 ++++++++-----
- 3 files changed, 65 insertions(+), 17 deletions(-)
+ drivers/iommu/iommufd/device.c          | 7 -------
+ drivers/iommu/iommufd/hw_pagetable.c    | 2 +-
+ drivers/iommu/iommufd/iommufd_private.h | 1 -
+ 3 files changed, 1 insertion(+), 9 deletions(-)
 
-diff --git a/drivers/iommu/iommufd/selftest.c b/drivers/iommu/iommufd/selftest.c
-index c28aeb94bbdf..9f298225fc46 100644
---- a/drivers/iommu/iommufd/selftest.c
-+++ b/drivers/iommu/iommufd/selftest.c
-@@ -196,13 +196,16 @@ static int mock_domain_read_and_clear_dirty(struct iommu_domain *domain,
- 		ent = xa_load(&mock->pfns, cur / MOCK_IO_PAGE_SIZE);
- 		if (ent &&
- 		    (xa_to_value(ent) & MOCK_PFN_DIRTY_IOVA)) {
--			unsigned long val;
--
- 			/* Clear dirty */
--			val = xa_to_value(ent) & ~MOCK_PFN_DIRTY_IOVA;
--			old = xa_store(&mock->pfns, cur / MOCK_IO_PAGE_SIZE,
--				       xa_mk_value(val), GFP_KERNEL);
--			WARN_ON_ONCE(ent != old);
-+			if (!(flags & IOMMU_DIRTY_NO_CLEAR)) {
-+				unsigned long val;
-+
-+				val = xa_to_value(ent) & ~MOCK_PFN_DIRTY_IOVA;
-+				old = xa_store(&mock->pfns,
-+					       cur / MOCK_IO_PAGE_SIZE,
-+					       xa_mk_value(val), GFP_KERNEL);
-+				WARN_ON_ONCE(ent != old);
-+			}
- 			iommu_dirty_bitmap_record(dirty, cur, MOCK_IO_PAGE_SIZE);
- 		}
+diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
+index c93f3478f808..557c10fd4a7f 100644
+--- a/drivers/iommu/iommufd/device.c
++++ b/drivers/iommu/iommufd/device.c
+@@ -337,13 +337,6 @@ int iommufd_hw_pagetable_attach(struct iommufd_hw_pagetable *hwpt,
+ 		goto err_unlock;
  	}
-diff --git a/tools/testing/selftests/iommu/iommufd.c b/tools/testing/selftests/iommu/iommufd.c
-index 6fc803693e31..ed0e5fa6d494 100644
---- a/tools/testing/selftests/iommu/iommufd.c
-+++ b/tools/testing/selftests/iommu/iommufd.c
-@@ -1601,13 +1601,49 @@ TEST_F(iommufd_dirty_tracking, get_dirty_bitmap)
- 	test_mock_dirty_bitmaps(hwpt_id, variant->buffer_size,
- 				MOCK_APERTURE_START,
- 				self->page_size, self->bitmap,
--				self->bitmap_size, _metadata);
-+				self->bitmap_size, 0, _metadata);
  
- 	/* PAGE_SIZE unaligned bitmap */
- 	test_mock_dirty_bitmaps(hwpt_id, variant->buffer_size,
- 				MOCK_APERTURE_START,
- 				self->page_size, self->bitmap + MOCK_PAGE_SIZE,
--				self->bitmap_size, _metadata);
-+				self->bitmap_size, 0, _metadata);
-+
-+	test_ioctl_destroy(stddev_id);
-+	test_ioctl_destroy(hwpt_id);
-+}
-+
-+TEST_F(iommufd_dirty_tracking, get_dirty_bitmap_no_clear)
-+{
-+	uint32_t stddev_id;
-+	uint32_t hwpt_id;
-+	uint32_t ioas_id;
-+
-+	test_ioctl_ioas_alloc(&ioas_id);
-+	test_ioctl_ioas_map_fixed_id(ioas_id, self->buffer,
-+				     variant->buffer_size,
-+				     MOCK_APERTURE_START);
-+
-+	test_cmd_hwpt_alloc(self->idev_id, ioas_id,
-+			    IOMMU_HWPT_ALLOC_DIRTY_TRACKING, &hwpt_id);
-+	test_cmd_mock_domain(hwpt_id, &stddev_id, NULL, NULL);
-+
-+	test_cmd_set_dirty_tracking(hwpt_id, true);
-+
-+	test_mock_dirty_bitmaps(hwpt_id, variant->buffer_size,
-+				MOCK_APERTURE_START,
-+				self->page_size, self->bitmap,
-+				self->bitmap_size,
-+				IOMMU_HWPT_GET_DIRTY_BITMAP_NO_CLEAR,
-+				_metadata);
-+
-+	/* Unaligned bitmap */
-+	test_mock_dirty_bitmaps(hwpt_id, variant->buffer_size,
-+				MOCK_APERTURE_START,
-+				self->page_size, self->bitmap + MOCK_PAGE_SIZE,
-+				self->bitmap_size,
-+				IOMMU_HWPT_GET_DIRTY_BITMAP_NO_CLEAR,
-+				_metadata);
- 
- 	test_ioctl_destroy(stddev_id);
- 	test_ioctl_destroy(hwpt_id);
-diff --git a/tools/testing/selftests/iommu/iommufd_utils.h b/tools/testing/selftests/iommu/iommufd_utils.h
-index ad0dcae9cf22..6a4264d7a677 100644
---- a/tools/testing/selftests/iommu/iommufd_utils.h
-+++ b/tools/testing/selftests/iommu/iommufd_utils.h
-@@ -200,11 +200,13 @@ static int _test_cmd_set_dirty_tracking(int fd, __u32 hwpt_id, bool enabled)
- 	ASSERT_EQ(0, _test_cmd_set_dirty_tracking(self->fd, hwpt_id, enabled))
- 
- static int _test_cmd_get_dirty_bitmap(int fd, __u32 hwpt_id, size_t length,
--				    __u64 iova, size_t page_size, __u64 *bitmap)
-+				    __u64 iova, size_t page_size, __u64 *bitmap,
-+				    __u32 flags)
- {
- 	struct iommu_hwpt_get_dirty_bitmap cmd = {
- 		.size = sizeof(cmd),
- 		.hwpt_id = hwpt_id,
-+		.flags = flags,
- 		.iova = iova,
- 		.length = length,
- 		.page_size = page_size,
-@@ -218,9 +220,10 @@ static int _test_cmd_get_dirty_bitmap(int fd, __u32 hwpt_id, size_t length,
- 	return 0;
+-	/* Try to upgrade the domain we have */
+-	if (idev->enforce_cache_coherency) {
+-		rc = iommufd_hw_pagetable_enforce_cc(hwpt);
+-		if (rc)
+-			goto err_unlock;
+-	}
+-
+ 	rc = iopt_table_enforce_dev_resv_regions(&hwpt->ioas->iopt, idev->dev,
+ 						 &idev->igroup->sw_msi_start);
+ 	if (rc)
+diff --git a/drivers/iommu/iommufd/hw_pagetable.c b/drivers/iommu/iommufd/hw_pagetable.c
+index 8b3d2875d642..b8bad5b16b5f 100644
+--- a/drivers/iommu/iommufd/hw_pagetable.c
++++ b/drivers/iommu/iommufd/hw_pagetable.c
+@@ -42,7 +42,7 @@ void iommufd_hw_pagetable_abort(struct iommufd_object *obj)
+ 	iommufd_hw_pagetable_destroy(obj);
  }
  
--#define test_cmd_get_dirty_bitmap(fd, hwpt_id, length, iova, page_size, bitmap) \
-+#define test_cmd_get_dirty_bitmap(fd, hwpt_id, length, iova, page_size, bitmap, \
-+				  flags) \
- 	ASSERT_EQ(0, _test_cmd_get_dirty_bitmap(fd, hwpt_id, length,            \
--					      iova, page_size, bitmap))
-+					      iova, page_size, bitmap, flags))
- 
- static int _test_cmd_mock_domain_set_dirty(int fd, __u32 hwpt_id, size_t length,
- 					   __u64 iova, size_t page_size,
-@@ -256,6 +259,7 @@ static int _test_cmd_mock_domain_set_dirty(int fd, __u32 hwpt_id, size_t length,
- static int _test_mock_dirty_bitmaps(int fd, __u32 hwpt_id, size_t length,
- 				    __u64 iova, size_t page_size,
- 				    __u64 *bitmap, __u64 bitmap_size,
-+				    __u32 flags,
- 				    struct __test_metadata *_metadata)
+-int iommufd_hw_pagetable_enforce_cc(struct iommufd_hw_pagetable *hwpt)
++static int iommufd_hw_pagetable_enforce_cc(struct iommufd_hw_pagetable *hwpt)
  {
- 	unsigned long i, count, nbits = bitmap_size * BITS_PER_BYTE;
-@@ -274,26 +278,31 @@ static int _test_mock_dirty_bitmaps(int fd, __u32 hwpt_id, size_t length,
- 
- 	/* Expect all even bits as dirty in the user bitmap */
- 	memset(bitmap, 0, bitmap_size);
--	test_cmd_get_dirty_bitmap(fd, hwpt_id, length, iova, page_size, bitmap);
-+	test_cmd_get_dirty_bitmap(fd, hwpt_id, length, iova,
-+				  page_size, bitmap, flags);
- 	for (count = 0, i = 0; i < nbits; count += !(i%2), i++)
- 		ASSERT_EQ(!(i % 2), test_bit(i, (unsigned long *) bitmap));
- 	ASSERT_EQ(count, out_dirty);
- 
- 	memset(bitmap, 0, bitmap_size);
--	test_cmd_get_dirty_bitmap(fd, hwpt_id, length, iova, page_size, bitmap);
-+	test_cmd_get_dirty_bitmap(fd, hwpt_id, length, iova,
-+				  page_size, bitmap, flags);
- 
- 	/* It as read already -- expect all zeroes */
--	for (i = 0; i < nbits; i++)
--		ASSERT_EQ(0, test_bit(i, (unsigned long *) bitmap));
-+	for (i = 0; i < nbits; i++) {
-+		ASSERT_EQ(!(i % 2) &&
-+			  (flags & IOMMU_HWPT_GET_DIRTY_BITMAP_NO_CLEAR),
-+			  test_bit(i, (unsigned long *) bitmap));
-+	}
- 
- 	return 0;
- }
- #define test_mock_dirty_bitmaps(hwpt_id, length, iova, page_size, bitmap, \
--				bitmap_size, _metadata) \
-+				bitmap_size, flags, _metadata) \
- 	ASSERT_EQ(0, _test_mock_dirty_bitmaps(self->fd, hwpt_id,      \
- 					      length, iova,           \
- 					      page_size, bitmap,      \
--					      bitmap_size, _metadata))
-+					      bitmap_size, flags, _metadata))
- 
- static int _test_cmd_create_access(int fd, unsigned int ioas_id,
- 				   __u32 *access_id, unsigned int flags)
+ 	if (hwpt->enforce_cache_coherency)
+ 		return 0;
+diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
+index 3064997a0181..60221e728e80 100644
+--- a/drivers/iommu/iommufd/iommufd_private.h
++++ b/drivers/iommu/iommufd/iommufd_private.h
+@@ -244,7 +244,6 @@ struct iommufd_hw_pagetable *
+ iommufd_hw_pagetable_alloc(struct iommufd_ctx *ictx, struct iommufd_ioas *ioas,
+ 			   struct iommufd_device *idev, u32 flags,
+ 			   bool immediate_attach);
+-int iommufd_hw_pagetable_enforce_cc(struct iommufd_hw_pagetable *hwpt);
+ int iommufd_hw_pagetable_attach(struct iommufd_hw_pagetable *hwpt,
+ 				struct iommufd_device *idev);
+ struct iommufd_hw_pagetable *
 -- 
-2.17.2
+2.42.0
 
