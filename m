@@ -1,264 +1,157 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2083.outbound.protection.outlook.com [40.107.244.83])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF6B05667;
-	Sat, 21 Oct 2023 21:01:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 35457A48
+	for <iommu@lists.linux.dev>; Sun, 22 Oct 2023 07:08:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="o0Ht/7Ln"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA24EC433C7;
-	Sat, 21 Oct 2023 21:01:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1697922094;
-	bh=M+M3q5sxfvxUvyeRGABwgSGpQ53ingORdN/e2crghb0=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=o0Ht/7LnWMWbBtI4Nl6SK0U3pct/JGTwno/rTY8N9ECE7uDG/oKvZPG/MBSoUrpNQ
-	 1JYl9QkpSAcVakb4/mqRlWI14WClVe6sOaiJe0fXujVr4BLLhhqyfvcxB0bdTYT8bl
-	 rMCIkBJKkyrTpiEl6qIK7G087ud4lJybQJ/q6fsneyk5GIjvyhBaYG5PCByrm/bpGU
-	 d9eR5Lc0Hfpqp0aXZrvK3vxhByEzdXxtSa0XVhRXvEEOCTlnl20XK7KmkdIXZsJ8kN
-	 h5XOsKQDu+6CzSmRazKfUVqPYXCwzeCHqxdqoyZTOxZ3JGQNUBYlkb63NhQYRWjIqH
-	 QisVVVRyLiiIA==
-Date: Sat, 21 Oct 2023 14:05:13 -0700
-From: Bjorn Andersson <andersson@kernel.org>
-To: Georgi Djakov <quic_c_gdjako@quicinc.com>
-Cc: robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org, 
-	conor+dt@kernel.org, will@kernel.org, robin.murphy@arm.com, joro@8bytes.org, 
-	devicetree@vger.kernel.org, konrad.dybcio@linaro.org, linux-arm-kernel@lists.infradead.org, 
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org, 
-	quic_cgoldswo@quicinc.com, quic_sukadev@quicinc.com, quic_pdaly@quicinc.com, 
-	quic_sudaraja@quicinc.com, djakov@kernel.org
-Subject: Re: [PATCH 3/6] iommu/arm-smmu-qcom: Add Qualcomm TBU driver
-Message-ID: <ljbzuewnsi52qyolombjowuouiqmv5ybwbqf2z6ok34yuiacjc@7hwfysvidjqm>
-References: <20231019021923.13939-1-quic_c_gdjako@quicinc.com>
- <20231019021923.13939-4-quic_c_gdjako@quicinc.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="mbDaLkAg"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=PZrMzBjwyoDAQtkXE83AyJlqy/O90NDObv0limFP0AlivuHVhbWVueh4e3jJtvbacUbBTiW2WSqaGUaEOrlM2LyimH+jDv/QSnWcWfDgApPfnZYizTkwZGuJXzclr+WD3Yll5jZ+pz2LV+mrWHPNnAwR812oLmRFuzH6wwNnewlb44DO8BY11Gu+0gbClU8gO9Qxo0k6KBKreNuwwBTJR8HmvhnkY06eLNN1YvuPFSxUa9ZJW4g4878w7RNrLcmN+CLcb6uWjc394Ay6luXi2DcBmj6fFzUxlTjBiuY6qk4N7o9jSir2qRXbapTO5+LpLTPg+6EPq+DIZtCp2zvxQg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=eWf7m4wjWtpRK6UiHcvNofDvywttYo1I5LSoxiiBFcI=;
+ b=MOeK0deI/ZJJDbZv8K/ktFfyHGbuJPpzTyw7FvuXwYYEx0UZ+PV81yGlyWssrGD+jH1AfNR4tw1rRLoja+YqXREwjwiN2JJf9kxhp4b6Jhi3BbyY2g8h7qEAHSVZeFaYESP3M+VrCZBDkYB/u52ghE6BKtZrJ07RwiL+dWM2QOzHhQ+NQo7fjtm/UWzcdpsLT2k8s+0VK6rGJFvLq43ppi1tRWAfEjN7T/B0F8kGUiVXp9R8DIkexTvVNXMvyfW98DCXmSLMkwy5deX9T625H8LUxiPgjkHfpzk57q84CwXCu6YUN5n+c3bBaffA7qloZ/AikQCIekic0V057Mit9w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=oracle.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=eWf7m4wjWtpRK6UiHcvNofDvywttYo1I5LSoxiiBFcI=;
+ b=mbDaLkAg6H+DikZUczTMDtwqP9F/JFg2WSeRU0VSt8xnaTRc0ysmufSbMDUVEIGc8v4dS0f4GmTgCi/InGJRutxgp3xm7IqIDwh0zhpbtdSgTB7WiqONRxlCzxtZhag9pvW0gs05ElDvNopm8JN92ig3vFe8uckBwcAKls9wFNUjlzjF9aL/WUVxwdwxXsmRwonLsi1kTnHYc+OlutBHqDS0fYzHf+Gy7GpZjOjOQ0vcMrvwZHsV3LXxuy4TnE87ke10t6BZIqjeYZaIzb0HtK3WsnR53A0i0mu1alwDg6ZaazhDWc8CbhguqtfQY072Jbsncz/W+FETxb301j91Ww==
+Received: from MW4PR03CA0071.namprd03.prod.outlook.com (2603:10b6:303:b6::16)
+ by SJ1PR12MB6052.namprd12.prod.outlook.com (2603:10b6:a03:489::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6907.26; Sun, 22 Oct
+ 2023 07:08:06 +0000
+Received: from CO1PEPF000044EE.namprd05.prod.outlook.com
+ (2603:10b6:303:b6:cafe::93) by MW4PR03CA0071.outlook.office365.com
+ (2603:10b6:303:b6::16) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6907.31 via Frontend
+ Transport; Sun, 22 Oct 2023 07:08:06 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ CO1PEPF000044EE.mail.protection.outlook.com (10.167.241.68) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6933.15 via Frontend Transport; Sun, 22 Oct 2023 07:08:06 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Sun, 22 Oct
+ 2023 00:07:57 -0700
+Received: from [172.27.13.77] (10.126.230.35) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Sun, 22 Oct
+ 2023 00:07:52 -0700
+Message-ID: <b95ff308-9ce3-ede6-dadd-b90344695e8b@nvidia.com>
+Date: Sun, 22 Oct 2023 10:07:50 +0300
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20231019021923.13939-4-quic_c_gdjako@quicinc.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.15.1
+Subject: Re: [PATCH v4 11/18] iommu/amd: Access/Dirty bit support in IOPTEs
+Content-Language: en-US
+To: Jason Gunthorpe <jgg@nvidia.com>, Joao Martins <joao.m.martins@oracle.com>
+CC: <iommu@lists.linux.dev>, Kevin Tian <kevin.tian@intel.com>, "Shameerali
+ Kolothum Thodi" <shameerali.kolothum.thodi@huawei.com>, Lu Baolu
+	<baolu.lu@linux.intel.com>, Yi Liu <yi.l.liu@intel.com>, Yi Y Sun
+	<yi.y.sun@intel.com>, Nicolin Chen <nicolinc@nvidia.com>, Joerg Roedel
+	<joro@8bytes.org>, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	"Zhenzhong Duan" <zhenzhong.duan@intel.com>, Alex Williamson
+	<alex.williamson@redhat.com>, <kvm@vger.kernel.org>
+References: <20231018202715.69734-1-joao.m.martins@oracle.com>
+ <20231018202715.69734-12-joao.m.martins@oracle.com>
+ <20231018231111.GP3952@nvidia.com>
+ <2a8b0362-7185-4bca-ba06-e6a4f8de940b@oracle.com>
+ <f2109ca9-b194-43f2-bed0-077d03242d1a@oracle.com>
+ <20231019235933.GB3952@nvidia.com>
+ <a8c478f1-209e-46b0-9b91-7cd8afccd7ca@oracle.com>
+ <20231021161443.GI3952@nvidia.com>
+From: Yishai Hadas <yishaih@nvidia.com>
+In-Reply-To: <20231021161443.GI3952@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.126.230.35]
+X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CO1PEPF000044EE:EE_|SJ1PR12MB6052:EE_
+X-MS-Office365-Filtering-Correlation-Id: e15041d0-69b0-4aad-bc07-08dbd2cda40e
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	dqFG4/XM/+YQdh/PwnsBYRIBiltKm5ynRIS2y5YOnzL+/HX4j2eaI2QIXksEEEeJnbkCEaugP3MtD10kCl9CbdWlp64aA3F6mpUxnIud+cetIckiRbeS20IQX3QVcweaP91ynAY4um30IAlJ5JUMUfaIxX3dOVHujCexOjJEwd4Ghdz5gc1vxPhAzy6AH4eokINIi819vcYxM2w+1OtdQlXFL93d242JVYrrmUaX+sbW+j7/cnqfj67y/Nl0MlHAe2EyW+d6+A/6G+3iyoY+v5YQ93Lkfl7AFAxhhkGiDcWpUgwJ9pYNtwvwrN+B9lvG4wBC3ViLtioWI0N0gRA7mjrfrRMLMZMsdHG87w3vtCVVLY2Ox+LX/3hAvgOVGx3qduYrh/QLd+mbHcsYnz6VBAeHF/Ydr7+UrH/ZlN540ZBstoBdaBhNYAd2fCUtm2QOwV0jj+8WD059pz9UQ7mkRtBxLnvCE01ZV+mmfbYNPC5Z1pzqVlMVyjG/l5aKMvk2eFMaAuU+yB5yYYHU/EFcYaUMQwODa55/yXggEYs3vdreQHvxivE8UF7itwaZd0vWMXE5r/nQdXgM7tgAVl6l3KlUBvUNf/3ujsqQ4rRzmM09DRup82WLqSBqDfF3OAiBxU79WRZW83W1Nuu/eVVf58nifgnC2q9FXahKvw8zk8/VNFTXisMwyCXZKckNSx3RXaNh3z76i0SASyiujwo+UhaSSz2A0nsJjlTU6D00gLZTiZudOhLHecVLNi6G1km+TMUAzdOh/1mnkBfOc6542m48zisEH4WGKEFdpxkLdRs=
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230031)(4636009)(396003)(346002)(376002)(136003)(39860400002)(230922051799003)(1800799009)(186009)(64100799003)(82310400011)(451199024)(36840700001)(40470700004)(46966006)(336012)(31686004)(53546011)(47076005)(426003)(54906003)(82740400003)(16526019)(26005)(356005)(70586007)(110136005)(70206006)(36860700001)(478600001)(83380400001)(2616005)(316002)(16576012)(7636003)(8936002)(8676002)(5660300002)(40460700003)(2906002)(31696002)(40480700001)(41300700001)(36756003)(4326008)(7416002)(86362001)(14143004)(43740500002);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Oct 2023 07:08:06.4677
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: e15041d0-69b0-4aad-bc07-08dbd2cda40e
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	CO1PEPF000044EE.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ1PR12MB6052
 
-On Wed, Oct 18, 2023 at 07:19:20PM -0700, Georgi Djakov wrote:
-> Add driver for the Qualcomm implementation of the ARM MMU-500 TBU.
-> The driver will enable the resources needed by the TBU and will
-> configure the registers for some debug features like checking if
-> there are any pending transactions, capturing transactions and
-> running ATOS (Address Translation Operations). ATOS/eCATS are used
-> to manually trigger an address translation of IOVA to physical
-> address by the SMMU hardware.
+On 21/10/2023 19:14, Jason Gunthorpe wrote:
+> On Fri, Oct 20, 2023 at 03:43:57PM +0100, Joao Martins wrote:
+>> On 20/10/2023 00:59, Jason Gunthorpe wrote:
+>>> On Thu, Oct 19, 2023 at 12:58:29PM +0100, Joao Martins wrote:
+>>>> AMD has no such behaviour, though that driver per your earlier suggestion might
+>>>> need to wait until -rc1 for some of the refactorings get merged. Hopefully we
+>>>> don't need to wait for the last 3 series of AMD Driver refactoring (?) to be
+>>>> done as that looks to be more SVA related; Unless there's something more
+>>>> specific you are looking for prior to introducing AMD's domain_alloc_user().
+>>> I don't think we need to wait, it just needs to go on the cleaning list.
+>>>
+>> I am not sure I followed. This suggests an post-merge cleanups, which goes in
+>> different direction of your original comment? But maybe I am just not parsing it
+>> right (sorry, just confused)
+> Yes post merge for the weirdo alloc flow
+>
+>>>>> for themselves; so more and more I need to work on something like
+>>>>> iommufd_log_perf tool under tools/testing that is similar to the gup_perf to make all
+>>>>> performance work obvious and 'standardized'
+>>> We have a mlx5 vfio driver in rdma-core and I have been thinking it
+>>> would be a nice basis for building an iommufd tester/benchmarker as it
+>>> has a wide set of "easilly" triggered functionality.
+>> Oh woah, that's quite awesome; I'll take a closer look; I thought rdma-core
+>> support for mlx5-vfio was to do direct usage of the firmware interface, but it
+>> appears to be for regular RDMA apps as well. I do use some RDMA to exercise
+>> iommu dirty tracking; but it's more like a rudimentary test inside the guest,
+>> not something self-contained.
+> I can't remember anymore how much is supported, but supporting more is
+> not hard work. With a simple QP/CQ you can do all sorts of interesting
+> DMA.
+>
+> Yishai would remember if QP/CQ got fully wired up
 
-I still don't think this commit message clearly enough describe the
-problem you're trying to solve.
+For now, QP/CQ are supported only over the DEVX API (i.e. 
+mlx5dv_devx_obj_create()) of the mlx5-vfio driver in rdma-core.
 
-Not until I had read the Kconfig help text did I pay attention to the
-significance of the words "some debug features" in the middle of the
-paragraph.
+In that case, data-path for RDMA applications should be done by the 
+application itself based on the mlx5 specification.
+
+Yishai
+
+>
+> Jason
 
 
-Please describe your changes in accordance with [1], i.e. clearly
-describe the problem you're trying to solve, then discuss the technical
-solution in the patch.
-
-[1] https://docs.kernel.org/process/submitting-patches.html#describe-your-changes
-
-[..]
-> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-[..]
-> +#ifdef CONFIG_ARM_SMMU_QCOM_TBU
-> +
-> +struct qsmmuv500_tbu {
-> +	struct device *dev;
-> +	struct arm_smmu_device *smmu;
-> +	u32 sid_range[2];
-> +	struct list_head list;
-> +	struct clk *clk;
-> +	struct icc_path	*path;
-> +	void __iomem *base;
-> +	spinlock_t halt_lock; /* protects halt count */
-
-But in particular it makes sure that multiple halt or resume can't
-execute concurrently.
-
-> +	int halt_count;
-> +};
-> +
-> +static DEFINE_SPINLOCK(ecats_lock);
-> +
-> +static struct qsmmuv500_tbu *qsmmuv500_find_tbu(struct qcom_smmu *qsmmu, u32 sid)
-> +{
-> +	struct qsmmuv500_tbu *tbu = NULL;
-> +	u32 start, end;
-> +
-> +	mutex_lock(&qsmmu->tbu_list_lock);
-> +
-> +	list_for_each_entry(tbu, &qsmmu->tbu_list, list) {
-> +		start = tbu->sid_range[0];
-> +		end = start + tbu->sid_range[1];
-> +
-> +		if (start <= sid && sid < end)
-> +			break;
-> +	}
-> +
-> +	mutex_unlock(&qsmmu->tbu_list_lock);
-> +
-> +	return tbu;
-> +}
-> +
-> +static int qsmmuv500_tbu_halt(struct qsmmuv500_tbu *tbu, struct arm_smmu_domain *smmu_domain)
-> +{
-> +	struct arm_smmu_device *smmu = smmu_domain->smmu;
-> +	int ret = 0, idx = smmu_domain->cfg.cbndx;
-> +	unsigned long flags;
-> +	u32 val, fsr, status;
-> +
-> +	spin_lock_irqsave(&tbu->halt_lock, flags);
-
-Does this really need to run with interrupts disabled?
-
-> +	if (tbu->halt_count) {
-> +		tbu->halt_count++;
-> +		goto out;
-> +	}
-> +
-[..]
-> +static phys_addr_t qsmmuv500_iova_to_phys(struct arm_smmu_domain *smmu_domain,
-> +					  dma_addr_t iova, u32 sid)
-> +{
-[..]
-> +	/* Only one concurrent atos operation */
-> +	spin_lock_irqsave(&ecats_lock, flags);
-
-Does this require interrupts to be disabled?
-
-> +
-> +	/*
-> +	 * After a failed translation, the next successful translation will
-> +	 * incorrectly be reported as a failure.
-
-"So if the ECATS translation fails, attempt the lookup more time."
-
-> +	 */
-> +	do {
-> +		phys = qsmmuv500_tbu_trigger_atos(smmu_domain, tbu, iova, sid);
-> +
-> +		fsr = arm_smmu_cb_read(smmu, idx, ARM_SMMU_CB_FSR);
-> +		if (fsr & ARM_SMMU_FSR_FAULT) {
-> +			/* Clear pending interrupts */
-> +			arm_smmu_cb_write(smmu, idx, ARM_SMMU_CB_FSR, fsr);
-> +			/*
-> +			 * Barrier required to ensure that the FSR is cleared
-> +			 * before resuming SMMU operation.
-> +			 */
-
-Better be clear on what this actually does, for future readers' sake:
-
-	 /* Ensure that FSR and RESUME operations aren't reordered. */
-
-But is this really necessary, the two writes are for the same device,
-can they still be reordered?
-
-> +			wmb();
-> +
-> +			if (fsr & ARM_SMMU_FSR_SS)
-> +				arm_smmu_cb_write(smmu, idx, ARM_SMMU_CB_RESUME,
-> +						  ARM_SMMU_RESUME_TERMINATE);
-> +		}
-> +	} while (!phys && needs_redo++ < 2);
-
-"needs_redo" sounds like a boolean to me. I think "attempt" would be a
-better fit here.
-
-> +
-> +	arm_smmu_cb_write(smmu, idx, ARM_SMMU_CB_SCTLR, sctlr_orig);
-> +	spin_unlock_irqrestore(&ecats_lock, flags);
-> +	qsmmuv500_tbu_resume(tbu);
-> +
-> +	/* Read to complete prior write transcations */
-> +	readl_relaxed(tbu->base + DEBUG_SR_HALT_ACK_REG);
-> +
-> +	/* Wait for read to complete */
-
-That's not what rmb() does. You don't need to do anything here,
-readl_relaxed() returns when the read is done.
-
-> +	rmb();
-> +
-> +disable_clk:
-> +	clk_disable_unprepare(tbu->clk);
-> +disable_icc:
-> +	icc_set_bw(tbu->path, 0, 0);
-> +
-> +	return phys;
-> +}
-> +#endif
-> +
->  static void qcom_smmu_tlb_sync(struct arm_smmu_device *smmu, int page,
->  				int sync, int status)
->  {
-> @@ -588,3 +895,80 @@ struct arm_smmu_device *qcom_smmu_impl_init(struct arm_smmu_device *smmu)
->  
->  	return smmu;
->  }
-> +
-> +#ifdef CONFIG_ARM_SMMU_QCOM_TBU
-> +
-> +static const struct of_device_id qsmmuv500_tbu_of_match[] = {
-> +	{ .compatible = "qcom,qsmmuv500-tbu" },
-> +	{ }
-> +};
-
-Place this below the remove function, as most other drivers do.
-
-> +
-> +static int qsmmuv500_tbu_probe(struct platform_device *pdev)
-> +{
-[..]
-> +	mutex_lock(&qsmmu->tbu_list_lock);
-> +	list_add_tail(&tbu->list, &qsmmu->tbu_list);
-
-"tbu" is devres allocated, but you don't pull it off the list (or
-synchronize) during remove.
-
-> +	mutex_unlock(&qsmmu->tbu_list_lock);
-> +
-> +	dev_set_drvdata(dev, tbu);
-> +
-> +	return 0;
-> +}
-> +
-> +static void qsmmuv500_tbu_remove(struct platform_device *pdev)
-> +{
-> +	struct qsmmuv500_tbu *tbu = dev_get_drvdata(&pdev->dev);
-> +
-> +	clk_disable_unprepare(tbu->clk);
-
-This isn't balanced.
-
-> +	clk_put(tbu->clk);
-> +	icc_put(tbu->path);
-> +}
-> +
-> +static struct platform_driver qsmmuv500_tbu_driver = {
-> +	.driver = {
-> +		.name           = "qsmmuv500-tbu",
-> +		.of_match_table = of_match_ptr(qsmmuv500_tbu_of_match),
-
-Won't of_match_ptr() result in a build warning if built without
-CONFIG_OF?
-
-> +	},
-> +	.probe  = qsmmuv500_tbu_probe,
-> +	.remove_new = qsmmuv500_tbu_remove,
-> +};
-> +module_platform_driver(qsmmuv500_tbu_driver);
-
-This file acts as a library for the arm-smmu driver today, adding a
-platform_driver here makes it look like this is a separate driver.
-
-Which makes me wonder, why is this a separate driver? Why not just
-loop over the subnodes and build the tbu_list in qcom_smmu_impl_init()?
-
-Regards,
-Bjorn
