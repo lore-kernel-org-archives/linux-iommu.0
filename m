@@ -1,237 +1,227 @@
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2086.outbound.protection.outlook.com [40.107.92.86])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17CE91DA32
-	for <iommu@lists.linux.dev>; Mon, 23 Oct 2023 18:21:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oracle.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oracle.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 35ACB219F7
+	for <iommu@lists.linux.dev>; Mon, 23 Oct 2023 18:32:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="Is6t9XlT";
-	dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com header.i=@oracle.onmicrosoft.com header.b="nzluoqNV"
-Received: from pps.filterd (m0246630.ppops.net [127.0.0.1])
-	by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 39NHx1QY027892;
-	Mon, 23 Oct 2023 18:21:16 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=corp-2023-03-30;
- bh=+QQK+c3fthN+8jELn+YsGYK+NkwpNyrz0r1IsHNZLwQ=;
- b=Is6t9XlTI5HcNjoYCTqbkj5ByswM6LVuydKRxJr7cFKtxcw5XXM0cAYNv5RqXOatj1Yi
- jtiT/52cKEFWdFhQHX3m5tnLvb4Znd3qOfXxx4WhDAYXSdSCEfR9x08SAv+mJ3zDIZi6
- 5WtLiFZLWXSdVpmobtdXDjXFih8Xt6yvkOGYXSuM/Hre6dvzqpRCVaClrsBzY5971j66
- MDNyVitm8aMxuTi/X6NRD5H7bgNFnYiL/SUoLyK8ryG2Sl3Do713Sz4CurEUXih5s0Yx
- 99lMKY0/AokkYAZph/l2zLOwqI8PNntzxpsVSU1mmHzODsyI81G67bbudUqyoqe0hz+F hg== 
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
-	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3tv52durjd-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Mon, 23 Oct 2023 18:21:15 +0000
-Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.19/8.17.1.19) with ESMTP id 39NGl0Sv001564;
-	Mon, 23 Oct 2023 18:21:15 GMT
-Received: from nam12-mw2-obe.outbound.protection.outlook.com (mail-mw2nam12lp2040.outbound.protection.outlook.com [104.47.66.40])
-	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3tv53atagh-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Mon, 23 Oct 2023 18:21:15 +0000
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="WGYyFQIT"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Lqj4D0FRnjIrY6DL9TaXX2z/2OeXa9uqYoJHpLskSQAWJErBE7gZWxjPH3YW1qd8a7KoNDWvitKbMkKpzQ069oPzXLXwvXEfD7W+UShASy3iYi9OX6DLno3wi53vQ5M8aMIpJedhYPZdVwHqj4x5g3I9p+E5VWywGMwScTrRsBU1/zCf4qjFMWEYj/H9zgKkAcnOXSUbCXKokxERI/ZRkrAuFXz47Epr1n37sjr8E60j8GlOhMPe4B6L/p0IDSzx5k0tdAH0N0amEP0CxW1G3TyA68WUYmmtAnoaOX/kC6CFz8Xzy4DUILPwEWHH0f4YCxgZS7Any+8lZzmXGN3gig==
+ b=Po+u7oDoGCdNWLb0bBBtrYsmYlu5/r++XDfiugoV8pm5ZePEqcEbINqCb6WSDV+9f3wEi75SyHegyYprmqlh07lmd2Hb+MlGDpTZKML4Kf6aV7el0rjdjOZQOdhq5mAZVAKr+AR+GDF7sRz7ezK21U9DACIu0qc9jtwF8gfxLqMBJBI/xvPXOgsMuvAK2OHeThpeBO5ANZIgTFmAZifwywa/dmBT0Au2h8SVwBdWhJWz4QDn0eQgQjH1sTJSm4b/kKc2rI7pwWDMrUPogKK0XGYnDZtSuePD7u7IlCRmuL/7zm8jEqImJok9x0C6oFNjP48cBoGBPcm67ZleE6MXbg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=+QQK+c3fthN+8jELn+YsGYK+NkwpNyrz0r1IsHNZLwQ=;
- b=mI9efO0hU3oqLEcRrRr5KhZLg0eH0bNw0EZDBK2Av61Jfn0azwuJaNj9uIWvCPjADkgHbqZiHfpBI+OE79saVVaKp536Cy0SuVYe/gVlMSXvZLx7SWtUs3Rw/Hsay4LQP+obJMhTmjO1/VgtZB6YAiA24ubFU8+4vUOMaOIWEjH6S5Og59FHvr49hQosJ6Mu09kYGpmvTEe6HwpGp5FnCacazXLTBVjBjMlu7FCOlknUIhqWefK2d/Lg70S4cSpRhM6q+YFdZlF8G1GOvhKaEbMKd1EGrT8GD1P/OLkAovEl+sSfF1XZBDE2L4tm5y+QtOK1Z3S9dfLKjWwL8GvNTg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ bh=Ez3hcPO0K5JMoP94dFJ08QQsTKREiMSX+DMmcU/muiw=;
+ b=Dy+raO6MtSTxpPdgCngtFMzd8J+XX8/v/82ps68bhwOs4MMUhoknaCRtRyUALyjCoHwR1lnitVYeVrVZQ1iyOBZdzGDqaTHgjYwbIxH7UkEmazR02mxRdGDI8YGTs4g8SH1tGpNNjYL2pJz9Sj/JYrSZmShaTxPqcm+AWTCHWXGz6WwwqPOOsYDJBnuhyU1fmHQ0Wi4yJxJGqkt9REx1QQjqePxRqJau8osbnhRflDB4IhXSZqL5tWWRwvq2XIHmMAOe1LZ3RSAmxC0JmBVgEwtkIS9o+PCbL5Nyy+wQ9vQegDAx5Ua+iBHEA8RFSpGtf4jv+NxyxcdyBViOqGUvVw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.160) smtp.rcpttodomain=oracle.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+QQK+c3fthN+8jELn+YsGYK+NkwpNyrz0r1IsHNZLwQ=;
- b=nzluoqNV59bc2OVkYHlf/LyrGeoaOitqzXiv7tD5lLxEpsoNkQhakTsyZ8pjC+DjLT6F0XblyVMknGXuhlV6+frIx0q61JfOee9GSr25jphTphUD4XAYdAdtG9MIa+kCO3U+sLVaPeNmbCTM6iI/VaTTbMglriPQP2/sA2L9Hzs=
-Received: from BLAPR10MB4835.namprd10.prod.outlook.com (2603:10b6:208:331::11)
- by SA2PR10MB4731.namprd10.prod.outlook.com (2603:10b6:806:11e::5) with
+ bh=Ez3hcPO0K5JMoP94dFJ08QQsTKREiMSX+DMmcU/muiw=;
+ b=WGYyFQITmhgaL7/V0/0hhdSML47ArErhS7/QidAWRUvyB+F7kJP28R83LsKMDlGGlDc++/g6/+iXaNVOy7RjmblSxSdsXb6bihTe64Qm9GZuuPpYPETkePL5snhynAgiosp2JP0tPe3Qmui0ufbhg10b9M+I1meoIiqCpH7aNdU0HEdgg26Uwv+vjEzRzsMUNdwvwKh7VoLoHBe3JIVLcIzYjYXcu5SgZA6LXcB7iN9Mc4kUiWFtba+yaS68ue9DPB2EjJ/4rcKDg3ncCc5DX4wMjvf0LDHdFghw5e5TwQPb8cic6UFoXM2h6Wae1xtA7gnHavEluFmhdbaq4o72lw==
+Received: from CYXPR02CA0021.namprd02.prod.outlook.com (2603:10b6:930:cf::9)
+ by PH7PR12MB7186.namprd12.prod.outlook.com (2603:10b6:510:202::15) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6907.33; Mon, 23 Oct
- 2023 18:21:12 +0000
-Received: from BLAPR10MB4835.namprd10.prod.outlook.com
- ([fe80::c8c3:56ba:38d5:21ac]) by BLAPR10MB4835.namprd10.prod.outlook.com
- ([fe80::c8c3:56ba:38d5:21ac%3]) with mapi id 15.20.6907.032; Mon, 23 Oct 2023
- 18:21:12 +0000
-Message-ID: <f9178725-5706-4d56-b496-5f1bc1c48ef6@oracle.com>
-Date: Mon, 23 Oct 2023 19:21:09 +0100
-User-Agent: Mozilla Thunderbird
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6907.29; Mon, 23 Oct
+ 2023 18:32:35 +0000
+Received: from CY4PEPF0000FCC4.namprd03.prod.outlook.com
+ (2603:10b6:930:cf:cafe::3e) by CYXPR02CA0021.outlook.office365.com
+ (2603:10b6:930:cf::9) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6907.34 via Frontend
+ Transport; Mon, 23 Oct 2023 18:32:35 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ CY4PEPF0000FCC4.mail.protection.outlook.com (10.167.242.106) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6933.15 via Frontend Transport; Mon, 23 Oct 2023 18:32:35 +0000
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by mail.nvidia.com
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Mon, 23 Oct
+ 2023 11:32:35 -0700
+Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail202.nvidia.com
+ (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Mon, 23 Oct
+ 2023 11:32:34 -0700
+Received: from Asurada-Nvidia (10.127.8.12) by mail.nvidia.com (10.129.68.6)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41 via Frontend
+ Transport; Mon, 23 Oct 2023 11:32:33 -0700
+Date: Mon, 23 Oct 2023 11:32:32 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Joao Martins <joao.m.martins@oracle.com>
+CC: Jason Gunthorpe <jgg@nvidia.com>, <iommu@lists.linux.dev>, Kevin Tian
+	<kevin.tian@intel.com>, Shameerali Kolothum Thodi
+	<shameerali.kolothum.thodi@huawei.com>, Lu Baolu <baolu.lu@linux.intel.com>,
+	Yi Liu <yi.l.liu@intel.com>, Yi Y Sun <yi.y.sun@intel.com>, Joerg Roedel
+	<joro@8bytes.org>, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	"Zhenzhong Duan" <zhenzhong.duan@intel.com>, Alex Williamson
+	<alex.williamson@redhat.com>, <kvm@vger.kernel.org>
 Subject: Re: [PATCH v5 00/18] IOMMUFD Dirty Tracking
-Content-Language: en-US
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: Jason Gunthorpe <jgg@nvidia.com>, iommu@lists.linux.dev,
-        Kevin Tian <kevin.tian@intel.com>,
-        Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
-        Lu Baolu <baolu.lu@linux.intel.com>, Yi Liu <yi.l.liu@intel.com>,
-        Yi Y Sun <yi.y.sun@intel.com>, Joerg Roedel <joro@8bytes.org>,
-        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-        Zhenzhong Duan <zhenzhong.duan@intel.com>,
-        Alex Williamson <alex.williamson@redhat.com>, kvm@vger.kernel.org
+Message-ID: <ZTa8QO9zmdt/bfcj@Asurada-Nvidia>
 References: <20231020222804.21850-1-joao.m.martins@oracle.com>
- <20231021162321.GK3952@nvidia.com> <ZTXOJGKefAwH70M4@Asurada-Nvidia>
+ <20231021162321.GK3952@nvidia.com>
+ <ZTXOJGKefAwH70M4@Asurada-Nvidia>
  <4e7c8e8d-f22d-40e8-ad41-1e334bb78496@oracle.com>
  <f6f13ff9-ec92-4759-bd0a-9d17a87509cc@oracle.com>
  <ZTa3n+1WQWRLrhxo@Asurada-Nvidia>
-From: Joao Martins <joao.m.martins@oracle.com>
-In-Reply-To: <ZTa3n+1WQWRLrhxo@Asurada-Nvidia>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: LO2P265CA0367.GBRP265.PROD.OUTLOOK.COM
- (2603:10a6:600:a3::19) To BLAPR10MB4835.namprd10.prod.outlook.com
- (2603:10b6:208:331::11)
+ <f9178725-5706-4d56-b496-5f1bc1c48ef6@oracle.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <f9178725-5706-4d56-b496-5f1bc1c48ef6@oracle.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BLAPR10MB4835:EE_|SA2PR10MB4731:EE_
-X-MS-Office365-Filtering-Correlation-Id: cd582cb1-2cdd-4b01-709b-08dbd3f4d64d
+X-MS-TrafficTypeDiagnostic: CY4PEPF0000FCC4:EE_|PH7PR12MB7186:EE_
+X-MS-Office365-Filtering-Correlation-Id: 76e1d5ab-afcb-471c-afd3-08dbd3f66d6b
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 
-	IWCFThFQ5KNUNdUlqeE7meg5TQyEQEetJ8FqgDZVkrN+KAUIRfOYhCzvqe2xtlbDOwxCF6KZ8LrMnxE1yYhVlPtnYsH6D5uG4aJbCl/+/ZBNaylUKeg43X72kttZjd4HfCYPqdB8pLmVacpt0rDEZss77Uccazr4PGaHedVkpDuLMfHXZaXRvVcD3san1QW3VDai6GMQGvJxP3ZNX/7EundVnWt9qanECUunmkYMVJB2ZMQFt4PFz8ZTh4P6a5M+urPGXD94YbRzEkM0kZnFOEv2LfYkNR01V8vtCuzvypRxptynJ/2ozFKxz/4xWDYOWSekZ8MefaBFfb9vucWbvG9ulkaT8e9dCl4cfQb0Gm58sh0NRKZvMTo7G7sIWcbWXEeH0WVy4QY+Y3T3YeCL9ioiNrDd9/gWSSub4RXSkp2mYa59JpFcgjhT2Q7wvw/xl72iKsCY3KQlQiV27qnA/glw9Vr1iZ52VghbqyhUwfBwrRdplxH3tWHufY6r139LQ93xrgBFwIRxp3mvb3PNP8A6ggBhCWo3B7COHUW9/V6k741nWRBdhi4UPdQqxT6O/Iih0HqPf1HERgLA0li7E/QkRYvFwRBIPL0CUB1ssezsfIXy5JKYrlyeI/PHCdiRDxHD4bsz0uFCQTw1IrIJr2OJWGKo9YGFiNKHZOjjUR0=
-X-Forefront-Antispam-Report: 
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BLAPR10MB4835.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366004)(39860400002)(396003)(346002)(136003)(376002)(230922051799003)(64100799003)(451199024)(1800799009)(186009)(86362001)(2906002)(66556008)(2616005)(316002)(66476007)(54906003)(6916009)(66946007)(38100700002)(478600001)(6506007)(53546011)(6486002)(6666004)(6512007)(41300700001)(31696002)(36756003)(5660300002)(7416002)(4326008)(8676002)(8936002)(26005)(31686004)(14143004)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: 
-	=?utf-8?B?alVkK01TNjZMSTljSGc3MTlGd2Jma3VXL3BOMTV6KzluYS82clFqNzJicE5E?=
- =?utf-8?B?dG9RVG4zSWNJOEFZWGpWa1NFRmo1WXlYRndkazNEQVRpL2s5QlRiWStZOFRk?=
- =?utf-8?B?RjZPOEJYNXZLVVdObmVHMXRPUDA3QXBENDc1QUc2aXR2V1NVeTVrSEc2bzlo?=
- =?utf-8?B?bW53bnB5SHRpTm10ckxsWFZtZmhVZ3NzNzMyOVBYcTJuQ1Q4U2tpbWVqMXF3?=
- =?utf-8?B?QS9YNHFNZ2JJcFRVTWJXWEt6ZlB1UkNmK3hBTS9kejBDRWw0K2s1Qm1GKzN4?=
- =?utf-8?B?M1JOem1nYjJhMGxYczFOWGQ4aFBhRTFLZFdERE5rVzFQVWlSek5EeDhldGFN?=
- =?utf-8?B?UVVQSWFzRUM2c0srRXZvem12S05vbjF4RWlpem1SemsxVnQvZlZJTlVlcFBm?=
- =?utf-8?B?ZlFPNlFoQmRuUEEwbS95WkllVGJMQWI0Mk5UVnk1ZG9ab2RJUkVIdDVnU1NJ?=
- =?utf-8?B?Z3RpQ1NQd0U0RnpuMEE4Mk42bjNNMFZneS8vSTVNbHZxczdYVnJBR2dEN1pw?=
- =?utf-8?B?bjh3Z0VaNWkxRlU5TW1IK0JzQ2gyUGxlaFMrVFJnSmRsY3VESENiVklkOGFN?=
- =?utf-8?B?dWxQSTFuaUtUT2t0amR2Nm84YTczT2NuTU8rQjE1RkZSQXQ5WXRCQ3lIOFg0?=
- =?utf-8?B?dTlPdzRYVEl0MjRLOU9IaFYwZGRlWHFjaHZlVTczZXpsZTBnL3ZIVWI1OEpr?=
- =?utf-8?B?MlBHbnk1NlNFRVE2RUZUWHhLNkRBcldsVHFIdXhsOXdWVXUxdDhjakVtUFBU?=
- =?utf-8?B?NDIvRmRueGsrTXR3VXFuaVZRTTNVUUVaaWhETUtIUDEyVG4rOU5HWEkreWhX?=
- =?utf-8?B?RlI4WFczYlRrRmgvcFdJM2xJd1o4blNPNU9qWXY0OHpxR28xUnVTM0VsOUxN?=
- =?utf-8?B?K0ZLaWluRGN4THZHZkI1cWgxQWg2cC9kTGtSZDJ0clVVTklXeTJpbjhoY3Ba?=
- =?utf-8?B?bC9FZlo4TUo0ZzJGRy8zSzcwL3ZVS1d6b3M2WE9YZ0lOWnNPN2FsU09BZDd5?=
- =?utf-8?B?eE9mYnE1U05SSVVCcGxqUUtjVkpDQXRtSEM4VFBsbStDbkFXZ3dQZlZyWlpY?=
- =?utf-8?B?M3lIRk1nenJuWUJWWFdEL1pLYjhUeVNJZk93YVVzSWNUWitLQjhkSzV1c0dM?=
- =?utf-8?B?VjF0SzlaREFxU2I4RDZxbmlibkFkQ1VDdHpFcFNoTDRJQXEwS3JJcXBROGN6?=
- =?utf-8?B?MGlRRVRBN1FVZmZqVDNOZ2NlRm9uRDdxVi8xUGgvSWtHRmgzMFQ0c3dUVkRB?=
- =?utf-8?B?c05zYlFZSzFVRUVjWURBcEtaaFI3TWx3ZWFXZFBLdzNJUHVwd2ZNaEQ0L3JQ?=
- =?utf-8?B?VzNJUXNHVWJkN0hKN2x1ZEtqdTYySzIvVlF2MS9URHVrM1lyNUZUa3RFVVds?=
- =?utf-8?B?dk9wUGRIaGR2MFh2ckJyeGpobW1XeURqdURyYmVUWjFUT0g3OHUrejBxNnZE?=
- =?utf-8?B?THNqbXpXbFBpNWlCN3QwMDRyTkxJVUFoTVBETlFRQktISnF0RWVTSXhUUDN6?=
- =?utf-8?B?eERSQnQ0Y2xUL1dxNW9xWllEdzJrT3ZFSi9IM3hnY2gzcWM5cEtkZk40VVZV?=
- =?utf-8?B?c3U0SlRhL2dUSDJOTGx4dnNUVUV1dFdEdHFMbE9wRmlibmo4d2hrTENLc0NW?=
- =?utf-8?B?QnNzTjlCTEdKZlRzcXY2cDNiWk5JQVczWlRGUG02WWRkZ2hpbTZxK2Q4VGpT?=
- =?utf-8?B?OVJsKzI5d3EreDN5U2RMZjRkb3NQMTJJeVJqZndrM1FqVjVaNVlwY3RZUzhC?=
- =?utf-8?B?VEh5ck5tVWZFQjh1OHBSYlhWc3lZRTJQRElwTHFlMlJzUDFNMjZOSHAweFhj?=
- =?utf-8?B?YnFpNFFza1QvOUxkVWdjemJPcWZVTWhtUFcvTXY3YTZkQlgwYVQ2YjgwN1lz?=
- =?utf-8?B?eUJSKzAwNTk2b2l5TGVSaUVtZWdVN1lwNnJETGNGY1ZsWUwyc0IyQVcvWUNS?=
- =?utf-8?B?SjZ3T3JUWlBTaTRTM056L0ptaHJCYWdxci8zejBQdzB6SDBKRm9SdDV5Misr?=
- =?utf-8?B?dkdZbmlzYmE5WlI5K005cTlJWDI5ZGdyUVV1VG9aUzdSaHFHbVZ6bEhGZmty?=
- =?utf-8?B?VWF0QWZMcG1rU1BPMnE0ZFl0MGMxUHU3VGhXMU9BY2RhVG9NbFhNa2p3bHZB?=
- =?utf-8?B?R1d2UW9paVlvZlB1R0d2MGhHSDNKYjlrakFpK1VpTTM4MnhKa1M1TGF6WEpu?=
- =?utf-8?B?NHc9PQ==?=
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0: 
-	=?utf-8?B?ZVp1UVlSSGJkRFdydExVMVFHcG9hSTQ0d2Q0UDkycGI0Qmo0cGwvelZZbmUw?=
- =?utf-8?B?YVRDWW14bkFKa0gyUkh1cnZyL3BsWkszdnFXcmUzajc3S3VCYUM2eC9zTFdj?=
- =?utf-8?B?RmxaU2JBQXA3OWlNVWJVVGJxc3U4aWV5eXVieHhZSlRHT3pjVVNLdmlpSDRJ?=
- =?utf-8?B?RmNWQ3Z5VWRIWTQ2VU9sNlFIVDFIUXNWb3cvTW9CRGlwUnc2R1hiTERPdW12?=
- =?utf-8?B?WVV0eTFvODFVSm1DelhlbmNlbWN3OEY0NjF4UVpiclMzQmc4ajFpNis0RDE2?=
- =?utf-8?B?OTNWK0RWWGtIVmMxZ1crYnpXSEtRZW1VTWZoMmEzY2hRbXJFOThZR1dzQkF5?=
- =?utf-8?B?MUxycXRNQzY5WW01K0hsN3JaTEpwNWFFRWVSbG5FUnl1KzVINWNPUm1QRUE1?=
- =?utf-8?B?RFV6Nlc2T251N2toS1RKYWhIODRKL2U5SWUvRVFRamt3VzhMQzBOZ01WWGpG?=
- =?utf-8?B?YXlHNHkvdkZWNU8zZ2VwZGpZYnFhZG5PWVg5OXEvMlgwUXRoOXRyblZGMHlG?=
- =?utf-8?B?OER0Q1pWNTBTeHBVYVgrKzk5TWF6TjRRY2syZ253a1FObDNSemxjZ3pQdVVL?=
- =?utf-8?B?TnB3UWxzODd0enNRejY3RlR5b3lLTTF3TlI3Vzh6enJmY2NmVkNBYnF1Q1Aw?=
- =?utf-8?B?QWRDbmMzQ3lrYnJraTB5NkhkRHJjMHVOQmlZdjBJS3p4a01vMkdhaEJkQ21s?=
- =?utf-8?B?TVFqOE8xVVlNeUZBN05PVy9rNDF3Q3o5UDg4czh6a1k5RzJwNDA1dHppRCtM?=
- =?utf-8?B?WmprYzVwbE5lZVVpZ3gwR3FUS01hbk9jdUFWZDdOQktFTXVGWkVMUGgvSS9k?=
- =?utf-8?B?cVpVZEVPenVrNUk1WmhJREpKYWozQjRmeU1Zd0w5QklaS3FWUWU2VnViOVAx?=
- =?utf-8?B?UkJNWmFFam1BZjYwSXVldldhcURYMGlESjlMRzVtSUdlMVFISXRZZzB5T3hj?=
- =?utf-8?B?S2pNb3p4M1JvcmtiSTg0N3BLMWlKbTNRektIdG5jNERraFVmK2RhMXVxN1dI?=
- =?utf-8?B?UTNNOElpemhML1JSRElDa2FHVm1JU3hWL2dpSFRRbXRzSkVoOE1LSFUwZzhO?=
- =?utf-8?B?Q25UbUQ2R1FERmFuK2R0QnNSeEhlZnFlb05BNEprZHlLdVlrdHFWbzFaNHE3?=
- =?utf-8?B?eVdEZ0JVVHA3RDR4RWJ1bUxTWUN5czRqV041T0xqcXFyeDU1RzBpeEZmaTdJ?=
- =?utf-8?B?N0puQXhBK0hobGVYQS9iallSVHNZNXR5ZFJTSm5oczR3MmFLaGxIY0FsNVNq?=
- =?utf-8?B?QkdjYU1ZUkNKVjVqNmc5ajlDSFlkRDU0eHp3R1NNSUtPNUFGSWtRVDQ4NjNT?=
- =?utf-8?B?c0NXVWdoajUxanFMYUFudnc0YkNIZG8vS1VZeWNVQ1NWQU5oNkM2N29zVWRO?=
- =?utf-8?B?bEo4MVpsUi91M0E0d2kxejF2Z0FsbXJBVis1MGdVQkx1TnRnbndzT1J6Q0Yr?=
- =?utf-8?Q?tw8mtb9l?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: cd582cb1-2cdd-4b01-709b-08dbd3f4d64d
-X-MS-Exchange-CrossTenant-AuthSource: BLAPR10MB4835.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Oct 2023 18:21:12.6264
+X-Microsoft-Antispam-Message-Info:
+	jya/1K46sFjOSTr9rvyKDRlVPFORH4Zpka1VdNGNkjTlqKJgLgQrUxqj5vAmByB0E1FHOH+FC35gngFHZ4uR61tBJOnvfkRJzU9Cdlj3cfIX/4DVAERsu+Tcj0x2KYvtXJkfWpzlJ0RKuPkHkqwbR3PWjL00vNzrc8Tr7AcQCDbOZ/DhYcGJkDnBYHzhVBmvx1UocVpmszMk/dIXNo0kw4Ixp/g58xe/gfMpgqNCv8PnH/zwVdaNtzz7wOZfj1J84mPZHvvVmsIZIUSq50BsMOsPK5q9EclJiRN2Rpv3gj0Dh34LBKLras9zI/V7wqrQv86qDC4v123sr4cfbctfJkEaURs0hCtWaXX7G+fO1ZBIbqUcm6LyVr6/wqfTojTIg3RlX6Nuti3k9qYL7dOSQcDK2TWPeEaIPscaI8lj6tJdxiYEzFzKnxBYUKEdGexi3OzPqg9n4/HPpsX+EYBecPUmikVay7kQn8l2LCsp38QPiWWPf3uDzv1z2zLWeWveacZ6kpIl86+1RwdGLKZRA7uudKXHKiT7tmz1D/qnj1vGFN+91t1FdiKM3G6/K+duNizSKttaCwAj1DCfwqNlXVbuiaBf74J83DNwRcAeFqjI5VUFd4WmssVH+Iyo/MGt6yrZZUuDKPVVWyewbPCCstadehK1UH9fibo6sMdk+Nq26BOdtNHkKkQWueEjo8I+NQWZGl58CCFxCYv2ovNPXLyOian5gVwxeihcz5bkhVsRx8ItXgXZvLA34SIC2vySWSCdVs8+E2HO72EQWaPpww==
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230031)(4636009)(396003)(39860400002)(346002)(136003)(376002)(230922051799003)(451199024)(82310400011)(1800799009)(64100799003)(186009)(40470700004)(36840700001)(46966006)(55016003)(2906002)(70586007)(6916009)(316002)(82740400003)(356005)(70206006)(54906003)(478600001)(7636003)(426003)(336012)(40480700001)(9686003)(53546011)(47076005)(83380400001)(45080400002)(41300700001)(4326008)(40460700003)(5660300002)(7416002)(86362001)(8676002)(8936002)(36860700001)(26005)(33716001)(14143004);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Oct 2023 18:32:35.3152
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 3dAiy6gmVucQbQZa1Q2Uim4AehBlZ8pY8oc94JIcvQ5Mw260ZadTAMcpn+gYbzj/pBtmnQPuQVyda7LyfLfd+ZTORa/avq+ZjHOOq5aslAA=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA2PR10MB4731
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.272,Aquarius:18.0.980,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2023-10-23_17,2023-10-19_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 mlxlogscore=727
- adultscore=0 bulkscore=0 suspectscore=0 mlxscore=0 phishscore=0
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2310170001 definitions=main-2310230160
-X-Proofpoint-ORIG-GUID: 1ZKvOSkJWTCUpUmbVrzsaqUSmS4hGfTP
-X-Proofpoint-GUID: 1ZKvOSkJWTCUpUmbVrzsaqUSmS4hGfTP
+X-MS-Exchange-CrossTenant-Network-Message-Id: 76e1d5ab-afcb-471c-afd3-08dbd3f66d6b
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	CY4PEPF0000FCC4.namprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB7186
 
-On 23/10/2023 19:12, Nicolin Chen wrote:
-> On Mon, Oct 23, 2023 at 12:49:55PM +0100, Joao Martins wrote:
->> Here's an example down that avoids the kernel header dependency; imported from
->> the arch-independent non-atomic bitops
->> (include/asm-generic/bitops/generic-non-atomic.h)
->>
->> diff --git a/tools/testing/selftests/iommu/iommufd.c
->> b/tools/testing/selftests/iommu/iommufd.c
->> index 96837369a0aa..026ff9f5c1f3 100644
->> --- a/tools/testing/selftests/iommu/iommufd.c
->> +++ b/tools/testing/selftests/iommu/iommufd.c
->> @@ -12,7 +12,6 @@
->>  static unsigned long HUGEPAGE_SIZE;
->>
->>  #define MOCK_PAGE_SIZE (PAGE_SIZE / 2)
->> -#define BITS_PER_BYTE 8
->>
->>  static unsigned long get_huge_page_size(void)
->>  {
->> diff --git a/tools/testing/selftests/iommu/iommufd_utils.h
->> b/tools/testing/selftests/iommu/iommufd_utils.h
->> index 390563ff7935..6bbcab7fd6ab 100644
->> --- a/tools/testing/selftests/iommu/iommufd_utils.h
->> +++ b/tools/testing/selftests/iommu/iommufd_utils.h
->> @@ -9,8 +9,6 @@
->>  #include <sys/ioctl.h>
->>  #include <stdint.h>
->>  #include <assert.h>
->> -#include <linux/bitmap.h>
->> -#include <linux/bitops.h>
->>
->>  #include "../kselftest_harness.h"
->>  #include "../../../../drivers/iommu/iommufd/iommufd_test.h"
->> @@ -18,6 +16,24 @@
->>  /* Hack to make assertions more readable */
->>  #define _IOMMU_TEST_CMD(x) IOMMU_TEST_CMD
->>
->> +/* Imported from include/asm-generic/bitops/generic-non-atomic.h */
->> +#define BITS_PER_BYTE 8
->> +#define BITS_PER_LONG __BITS_PER_LONG
->> +#define BIT_MASK(nr) (1UL << ((nr) % __BITS_PER_LONG))
->> +#define BIT_WORD(nr) ((nr) / __BITS_PER_LONG)
->> +
->> +static inline void set_bit(unsigned int nr, unsigned long *addr)
+On Mon, Oct 23, 2023 at 07:21:09PM +0100, Joao Martins wrote:
+> External email: Use caution opening links or attachments
 > 
-> The whole piece could fix the break, except this one. We'd need
-> __set_bit instead of set_bit.
->
+> 
+> On 23/10/2023 19:12, Nicolin Chen wrote:
+> > On Mon, Oct 23, 2023 at 12:49:55PM +0100, Joao Martins wrote:
+> >> Here's an example down that avoids the kernel header dependency; imported from
+> >> the arch-independent non-atomic bitops
+> >> (include/asm-generic/bitops/generic-non-atomic.h)
+> >>
+> >> diff --git a/tools/testing/selftests/iommu/iommufd.c
+> >> b/tools/testing/selftests/iommu/iommufd.c
+> >> index 96837369a0aa..026ff9f5c1f3 100644
+> >> --- a/tools/testing/selftests/iommu/iommufd.c
+> >> +++ b/tools/testing/selftests/iommu/iommufd.c
+> >> @@ -12,7 +12,6 @@
+> >>  static unsigned long HUGEPAGE_SIZE;
+> >>
+> >>  #define MOCK_PAGE_SIZE (PAGE_SIZE / 2)
+> >> -#define BITS_PER_BYTE 8
+> >>
+> >>  static unsigned long get_huge_page_size(void)
+> >>  {
+> >> diff --git a/tools/testing/selftests/iommu/iommufd_utils.h
+> >> b/tools/testing/selftests/iommu/iommufd_utils.h
+> >> index 390563ff7935..6bbcab7fd6ab 100644
+> >> --- a/tools/testing/selftests/iommu/iommufd_utils.h
+> >> +++ b/tools/testing/selftests/iommu/iommufd_utils.h
+> >> @@ -9,8 +9,6 @@
+> >>  #include <sys/ioctl.h>
+> >>  #include <stdint.h>
+> >>  #include <assert.h>
+> >> -#include <linux/bitmap.h>
+> >> -#include <linux/bitops.h>
+> >>
+> >>  #include "../kselftest_harness.h"
+> >>  #include "../../../../drivers/iommu/iommufd/iommufd_test.h"
+> >> @@ -18,6 +16,24 @@
+> >>  /* Hack to make assertions more readable */
+> >>  #define _IOMMU_TEST_CMD(x) IOMMU_TEST_CMD
+> >>
+> >> +/* Imported from include/asm-generic/bitops/generic-non-atomic.h */
+> >> +#define BITS_PER_BYTE 8
+> >> +#define BITS_PER_LONG __BITS_PER_LONG
+> >> +#define BIT_MASK(nr) (1UL << ((nr) % __BITS_PER_LONG))
+> >> +#define BIT_WORD(nr) ((nr) / __BITS_PER_LONG)
+> >> +
+> >> +static inline void set_bit(unsigned int nr, unsigned long *addr)
+> >
+> > The whole piece could fix the break, except this one. We'd need
+> > __set_bit instead of set_bit.
+> >
+> 
+> I changed it set_bit in the caller of course
 
-I changed it set_bit in the caller of course
+Can you confirm the test results too? I am seeing test failing
+and BUG_ON since this commit:
+
+1d2ac3b64486 (HEAD) iommufd/selftest: Test out_capabilities in IOMMU_GET_HW_INFO
+
+-----logs-----
+# ok 133 iommufd_dirty_tracking.domain_dirty128k.set_dirty_tracking
+# #  RUN           iommufd_dirty_tracking.domain_dirty128k.device_dirty_capability ... 
+# # iommufd.c:1577:device_dirty_capability:Expected IOMMU_HW_CAP_DIRTY_TRACKING (1) == caps & IOMMU_HW_CAP_DIRTY_TRACKING (0)
+# # device_dirty_capability: Test terminated by assertion
+.....
+# # FAILED: 151 / 161 tests passed.
+
+-----bug_on-----
+[   29.209521] BUG: unable to handle page fault for address: 000056258adc0000
+[   29.209771] #PF: supervisor read access in kernel mode
+[   29.209965] #PF: error_code(0x0001) - permissions violation
+[   29.210155] PGD 112975067 P4D 112975067 PUD 112976067 PMD 10e5a8067 PTE 800000010973b067
+[   29.210446] Oops: 0001 [#1] SMP
+[   29.210594] CPU: 1 PID: 857 Comm: iommufd Not tainted 6.6.0-rc2+ #1823
+[   29.210842] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.13.0-0-gf21b5a4aeb02-prebuilt.qemu.org 04/01/2014
+[   29.211267] RIP: 0010:iommufd_test+0xb7a/0x1120 [iommufd]
+[   29.211480] Code: 82 a8 00 00 00 4c 8b 7d 90 c7 45 98 00 00 00 00 4d 89 cd 4c 89 5d 88 4c 89 75 80 48 89 45 a8 4c 89 95 78 ff ff ff 48 8b 45 b8 <48> 0f a3 18 73 5e 48 8b 4d a8 31 d2 4c 89 e8 49 f7 f4 48 89 c6 48
+[   29.212131] RSP: 0018:ffffc900029f7d70 EFLAGS: 00010206
+[   29.212348] RAX: 000056258adc0000 RBX: 0000000000000000 RCX: ffff888104296498
+[   29.212638] RDX: 0000000000000000 RSI: 0000000094904f49 RDI: ffff888103fa23c8
+[   29.212928] RBP: ffffc900029f7e00 R08: 0000000000020000 R09: 0000000001000000
+[   29.213214] R10: ffffc900029f7e10 R11: ffffc900029f7e30 R12: 0000000000000800
+[   29.213501] R13: 0000000001000000 R14: ffff888104296400 R15: 0000000000000040
+[   29.213786] FS:  00007f485e907740(0000) GS:ffff8881ba440000(0000) knlGS:0000000000000000
+[   29.214072] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[   29.214310] CR2: 000056258adc0000 CR3: 0000000112974001 CR4: 00000000003706a0
+[   29.214592] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[   29.214882] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[   29.215171] Call Trace:
+[   29.215265]  <TASK>
+[   29.215358]  ? show_regs+0x5c/0x70
+[   29.215496]  ? __die+0x1f/0x60
+[   29.215638]  ? page_fault_oops+0x15d/0x440
+[   29.215779]  ? exc_page_fault+0x4ca/0x9e0
+[   29.215923]  ? lock_acquire+0xb8/0x2a0
+[   29.216064]  ? asm_exc_page_fault+0x27/0x30
+[   29.216207]  ? iommufd_test+0xb7a/0x1120 [iommufd]
+[   29.216435]  ? should_fail_usercopy+0x15/0x20
+[   29.216577]  iommufd_fops_ioctl+0x10d/0x190 [iommufd]
+[   29.216725]  __x64_sys_ioctl+0x412/0x9b0
+[   29.216823]  do_syscall_64+0x3c/0x80
+[   29.216919]  entry_SYSCALL_64_after_hwframe+0x46/0xb0
+[   29.217050] RIP: 0033:0x7f485ea0d04f
+[   29.217147] Code: 00 48 89 44 24 18 31 c0 48 8d 44 24 60 c7 04 24 10 00 00 00 48 89 44 24 08 48 8d 44 24 20 48 89 44 24 10 b8 10 00 00 00 0f 05 <89> c2 3d 00 f0 ff ff 77 18 48 8b 44 24 18 64 48 2b 04 25 28 00 00
+[   29.217593] RSP: 002b:00007ffddef77ca0 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+[   29.217785] RAX: ffffffffffffffda RBX: 0000562588e29d60 RCX: 00007f485ea0d04f
+[   29.217982] RDX: 00007ffddef77d30 RSI: 0000000000003ba0 RDI: 0000000000000005
+[   29.218177] RBP: 0000562588e29038 R08: 4000000000000000 R09: 0000000000000008
+[   29.218372] R10: 0000000000000001 R11: 0000000000000246 R12: 000056258adc0000
+[   29.218567] R13: 0000000000000000 R14: 0000000000000040 R15: 0000562588e29d60
+[   29.218772]  </TASK>
+[   29.218835] Modules linked in: iommufd ib_umad rdma_ucm rdma_cm ib_ipoib iw_cm ib_cm mlx5_ib ib_uverbs ib_core mlx5_core
+[   29.219117] CR2: 000056258adc0000
+[   29.219216] ---[ end trace 0000000000000000 ]---
+
+
