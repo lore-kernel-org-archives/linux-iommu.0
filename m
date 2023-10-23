@@ -1,93 +1,106 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.43])
+Received: from out1-smtp.messagingengine.com (out1-smtp.messagingengine.com [66.111.4.25])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2ED0F7480
-	for <iommu@lists.linux.dev>; Mon, 23 Oct 2023 12:18:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 20324441D
+	for <iommu@lists.linux.dev>; Mon, 23 Oct 2023 12:42:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=arndb.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arndb.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="lqmZ7CqK"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1698063498; x=1729599498;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=ER/XKUMDi6yIOgyLhD9h2AQXUmEiCID1DQSal1iAvEQ=;
-  b=lqmZ7CqKtbCAYV+756KxQYCBQkN45b8CDC2Q7mVzVwCFXZ0JArJi+iyq
-   B4Ogqw/mJpKefcBO1u8yGn/yt9Dv/82TQeD0nqNGbWKTCG5ZmQ/o+tbO9
-   O7JpcrpZl5oxf1l3al9Zcp92pRwYjHLgp8aU+C2xj9oHhp5r3UXE9A8LO
-   OfogWhbq2Eh+mEAmYkDxUvcXkYZ0Q3Pn7p9Qv3kSTr7hL16cmJWcV0/Y5
-   gVt5W+DrBQYOtEMsvrj6k88ILtpOTCckYzJzgD2FLtz92Od6MoVilqy8G
-   l6d2qUwMulrUJWUqS+N5yYeA0rFN9Wv6KgwxGoUPKQeEf50LFwZkzaBTM
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10872"; a="473040365"
-X-IronPort-AV: E=Sophos;i="6.03,244,1694761200"; 
-   d="scan'208";a="473040365"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Oct 2023 05:18:17 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10872"; a="734649672"
-X-IronPort-AV: E=Sophos;i="6.03,244,1694761200"; 
-   d="scan'208";a="734649672"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.254.211.100]) ([10.254.211.100])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Oct 2023 05:18:10 -0700
-Message-ID: <f041d424-ade2-4959-a677-01e3d7dd699b@linux.intel.com>
-Date: Mon, 23 Oct 2023 20:18:08 +0800
+	dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b="dX9qslR1";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="HE4S3X2H"
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+	by mailout.nyi.internal (Postfix) with ESMTP id 096F55C02A0;
+	Mon, 23 Oct 2023 08:42:12 -0400 (EDT)
+Received: from imap51 ([10.202.2.101])
+  by compute5.internal (MEProxy); Mon, 23 Oct 2023 08:42:12 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
+	:cc:content-type:content-type:date:date:from:from:in-reply-to
+	:in-reply-to:message-id:mime-version:references:reply-to:sender
+	:subject:subject:to:to; s=fm2; t=1698064932; x=1698151332; bh=OR
+	ikYydWrWL8WqH+mJzNdmmSF0PKOctvYSDbut1fkXI=; b=dX9qslR1Y6fMq8gtxt
+	vtD16EnkKc+26tTBT/m2OxTI1dR7fupNYO1wa2zawKLsLhsjsXECmH5aqFk3aPBp
+	2aTo07idjRj0O/E+omdvwqL//dRnSC3qO1s8U9pSbC3H1Ghycg6z7V7Lb4MiuOR3
+	WK6W3e8perdLC5QhRwQn2/54gWVxELdabzDqXgkYR5wmaNT9AaC1CogyVmcdPLqX
+	ZEVY6CQDdjMBH1D0eofnpEklymGYIH5QVQWhV2EkrmRbj16YXwZ6qj1UlLkfXnVu
+	1iNyJwUL0rniQl7vMwsMQvCPDhIuX43dbQY/ssqrpS6UgJtj/p3ZiyLrrZqv3Fcs
+	xRYQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-type:content-type:date:date
+	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
+	:message-id:mime-version:references:reply-to:sender:subject
+	:subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+	:x-sasl-enc; s=fm3; t=1698064932; x=1698151332; bh=ORikYydWrWL8W
+	qH+mJzNdmmSF0PKOctvYSDbut1fkXI=; b=HE4S3X2H+JSr74QskoVt8c1iD5Fbm
+	h360Zru1b1bDK770BBTTHwK3jL1QDZUPyMIOXr/MElqyrdgpevla/Mvsx3Nrlbl+
+	a8PC06PkwIpQ6k61GSw9jXpuXv8XItu6uvgMR6t5U6qhnRUfFOu7Th0ttodwnoCc
+	2ktcRHB7kIrcol9HL4E/o/lLygzwZdtmhG/VVfpYVt3pvRh9mXpz2aV273h1rAxi
+	InufK3QK4SGKUlNtQDhT/brWcPHjqoi6qJkJN1n9b8NmkEd5onsAUDfukk41qrAe
+	vVUyudMx/vb8g1CpGHA0CukbzxvapR2dniJsKN7XqDzrrPx8BiT3CHcQg==
+X-ME-Sender: <xms:Imo2Zb9g_fcRiuYAdrJPQ-RmJI1dWR_-ciVR8YXPrf-hn7Q4jCwe0Q>
+    <xme:Imo2ZXvn11XhI-rNnbr3QJJy6t8I3u_5HvYKF663qD14UDZsuyXdJTY8CHglaIa7c
+    AMrPM3omilMSsoiY8c>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvkedrkeeigdehgecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpefofgggkfgjfhffhffvvefutgesthdtredtreertdenucfhrhhomhepfdetrhhn
+    ugcuuegvrhhgmhgrnhhnfdcuoegrrhhnugesrghrnhgusgdruggvqeenucggtffrrghtth
+    gvrhhnpeffheeugeetiefhgeethfejgfdtuefggeejleehjeeutefhfeeggefhkedtkeet
+    ffenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpegrrh
+    hnugesrghrnhgusgdruggv
+X-ME-Proxy: <xmx:Imo2ZZBpqo0cq0L-HVTsyJlR-O0jdTNyITIalF_9RKiTVKUg0NRChg>
+    <xmx:Imo2ZXe-CeIb1kcB-jOjFTjW06_N2uoYDwwa_fOx8-tEqwAJ0ZQEiw>
+    <xmx:Imo2ZQPHPANtLC8D7VsmYIZJWuUFW_BYwMkgxk3C715fFhszxc7Jzw>
+    <xmx:JGo2ZSuW7vrtIMh6vgfxDwUbPynvR0xc_DcmwXwJKSybvw6Sdz54NA>
+Feedback-ID: i56a14606:Fastmail
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+	id C6170B60089; Mon, 23 Oct 2023 08:42:10 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.9.0-alpha0-1048-g9229b632c5-fm-20231019.001-g9229b632
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, "cohuck@redhat.com" <cohuck@redhat.com>,
- "eric.auger@redhat.com" <eric.auger@redhat.com>,
- "nicolinc@nvidia.com" <nicolinc@nvidia.com>,
- "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "mjrosato@linux.ibm.com" <mjrosato@linux.ibm.com>,
- "chao.p.peng@linux.intel.com" <chao.p.peng@linux.intel.com>,
- "yi.y.sun@linux.intel.com" <yi.y.sun@linux.intel.com>,
- "peterx@redhat.com" <peterx@redhat.com>,
- "jasowang@redhat.com" <jasowang@redhat.com>,
- "shameerali.kolothum.thodi@huawei.com"
- <shameerali.kolothum.thodi@huawei.com>, "lulu@redhat.com" <lulu@redhat.com>,
- "suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
- "Duan, Zhenzhong" <zhenzhong.duan@intel.com>,
- "Martins, Joao" <joao.m.martins@oracle.com>, "Zeng, Xin" <xin.zeng@intel.com>
-Subject: Re: [PATCH v6 8/8] iommu/vt-d: Disallow read-only mappings to nest
- parent domain
-To: "Liu, Yi L" <yi.l.liu@intel.com>, "joro@8bytes.org" <joro@8bytes.org>,
- "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
- "jgg@nvidia.com" <jgg@nvidia.com>, "Tian, Kevin" <kevin.tian@intel.com>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>
-References: <20231020093246.17015-1-yi.l.liu@intel.com>
- <20231020093246.17015-9-yi.l.liu@intel.com>
- <23133231-c6d7-469e-8f55-2e7667acb097@linux.intel.com>
- <DS0PR11MB752977275A0791296C115FE6C3D8A@DS0PR11MB7529.namprd11.prod.outlook.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <DS0PR11MB752977275A0791296C115FE6C3D8A@DS0PR11MB7529.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Message-Id: <5a809f02-f102-4488-9fb2-bd4eb1c94999@app.fastmail.com>
+In-Reply-To: <20231023121013.GQ3952@nvidia.com>
+References: <20231020222804.21850-1-joao.m.martins@oracle.com>
+ <20231020222804.21850-8-joao.m.martins@oracle.com>
+ <b7834d1e-d198-45ee-b15d-12bd235bc57f@app.fastmail.com>
+ <d65cb92a-8d2c-41a3-83b1-899310db1a20@oracle.com>
+ <20231023121013.GQ3952@nvidia.com>
+Date: Mon, 23 Oct 2023 14:41:50 +0200
+From: "Arnd Bergmann" <arnd@arndb.de>
+To: "Jason Gunthorpe" <jgg@nvidia.com>,
+ "Joao Martins" <joao.m.martins@oracle.com>
+Cc: iommu@lists.linux.dev, "Kevin Tian" <kevin.tian@intel.com>,
+ "Shameerali Kolothum Thodi" <shameerali.kolothum.thodi@huawei.com>,
+ "Baolu Lu" <baolu.lu@linux.intel.com>, "Yi Liu" <yi.l.liu@intel.com>,
+ "Yi Y Sun" <yi.y.sun@intel.com>, "Nicolin Chen" <nicolinc@nvidia.com>,
+ "Joerg Roedel" <joro@8bytes.org>,
+ "Suravee Suthikulpanit" <suravee.suthikulpanit@amd.com>,
+ "Will Deacon" <will@kernel.org>, "Robin Murphy" <robin.murphy@arm.com>,
+ "Zhenzhong Duan" <zhenzhong.duan@intel.com>,
+ "Alex Williamson" <alex.williamson@redhat.com>, kvm@vger.kernel.org
+Subject: Re: [PATCH v5 07/18] iommufd: Add IOMMU_HWPT_GET_DIRTY_BITMAP
+Content-Type: text/plain
 
-On 2023/10/23 19:15, Liu, Yi L wrote:
->> I would also prefer to introduce is_nested_parent_domain to the user
->> domain allocation patch (patch 7/8). This field should be checked when
->> allocating a nested user domain.
-> A ctually, no need. This should be a common check, so iommufd core already
-> has the check. So the parent should be a nest parent domain, otherwise already
-> returned in iommufd.
-> 
-> +	if (!parent->nest_parent)
-> +		return ERR_PTR(-EINVAL);
+On Mon, Oct 23, 2023, at 14:10, Jason Gunthorpe wrote:
+> On Mon, Oct 23, 2023 at 10:28:13AM +0100, Joao Martins wrote:
+>> > so it's probably
+>> > best to add a range check plus type cast, rather than an
+>> > expensive div_u64() here.
+>> 
+>> OK
+>
+> Just keep it simple, we don't need to optimize for 32 bit. div_u64
+> will make the compiler happy.
 
-I know this will not cause errors in the code. But since you are
-introducing is_parent property in the vt-d driver. The integrity of the
-property should be ensured. In this way, it will make the code more
-readable and maintainable.
+Fair enough. FWIW, I tried adding just the range check to see
+if that would make the compiler turn it into a 32-bit division,
+but that didn't work.
 
-Best regards,
-baolu
+Some type of range check might still be good to have for
+unrelated reasons.
+
+    Arnd
