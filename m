@@ -1,97 +1,163 @@
-Received: from mail-ot1-f51.google.com (mail-ot1-f51.google.com [209.85.210.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2079.outbound.protection.outlook.com [40.107.237.79])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A2144219F1
-	for <iommu@lists.linux.dev>; Mon, 23 Oct 2023 18:35:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 90FFE219F9
+	for <iommu@lists.linux.dev>; Mon, 23 Oct 2023 18:42:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="YjipIn87"
-Received: by mail-ot1-f51.google.com with SMTP id 46e09a7af769-6ce2d4567caso2549670a34.2
-        for <iommu@lists.linux.dev>; Mon, 23 Oct 2023 11:35:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1698086128; x=1698690928; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=IIoRI2ARPSz8WtQUlc5itQT0gMoQCkpLJtTDznyytSc=;
-        b=YjipIn87Y9m7QsLYiKNFKhRXhZZIin4XEF2JvLnqRe2V/CbITcUytPWs5emFkE30MH
-         MnKmjNaBtG1QX5AQ+cxHI660FvAdDiMHGc/6ImkakDVi7BCuzl4y6UbbHsAB2CsKnmGX
-         6qwyGmaYoE6RVWpRdpyI9xE9HfYkeKp327M0+LCHD3xlDPcZ6TG64yIcKzOjAz/IBa3w
-         WOWItpdr34fyVSyo3oKQVCoHC3qpoQZ2/Zmv0sEkntPJ0bWopFiX8WHJGj+nauC6MbMH
-         5Mm43fcu9zv4pnmw92FVUD4iQaQCHUn+M+c/27j6QyxyU0gMl76J7eEqxzJO8pIcd07K
-         /6eg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1698086128; x=1698690928;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=IIoRI2ARPSz8WtQUlc5itQT0gMoQCkpLJtTDznyytSc=;
-        b=fvPShi6R2C/ziUYB6N8Qu169Myr2MyQlqgpMxRHBvE7kUs5jtGeN1hU4/FADZj0Gy8
-         t78o3Fkherk68uJvmxBRLGuxUW8Sy5Z1kC+6Z7OKVeGV/+Nf7H1wk0EE4eJr7oE2HZIR
-         sIcin7/dOqU0O1APIKB08n3LbXknyx6fr65SPJ411CS9hXAudSIs+2Ja4883CWmIUs6S
-         WvXp/SZVQ1E7cTl+DGqj6YdgtyWmh3nNDg0MTagAzjQqMC9TQMINF0xQuUtG3AARk5r2
-         3BOp/0lwQdeEmpGAk/sQLVArDYF8brqhgUKwrSUY8Hwbv0vPmGfd6dj1tX48qOFSR02q
-         41WQ==
-X-Gm-Message-State: AOJu0YwF+ut1mXty0CBKsSE19/eBI6dHeiSi483WKRMT0qcjgyCPP0iS
-	HALskkHVprSGSEvU7DDQDuVRUQ==
-X-Google-Smtp-Source: AGHT+IF87A5sAEPwDGGscH4VZHk76YpcDJFB/PbHnNeeeYrEYuSNJeTyvaSasLb7bG0Tzfme5ZXN0A==
-X-Received: by 2002:a05:6808:158c:b0:3af:9848:1590 with SMTP id t12-20020a056808158c00b003af98481590mr12228373oiw.6.1698086128598;
-        Mon, 23 Oct 2023 11:35:28 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-26-201.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.26.201])
-        by smtp.gmail.com with ESMTPSA id bj6-20020a056808198600b003adcaf28f61sm1593859oib.41.2023.10.23.11.35.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Oct 2023 11:35:28 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1quzlv-003jZ6-6w;
-	Mon, 23 Oct 2023 15:35:27 -0300
-Date: Mon, 23 Oct 2023 15:35:27 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Tina Zhang <tina.zhang@intel.com>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	kvm@vger.kernel.org, David Woodhouse <dwmw2@infradead.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
-	Kevin Tian <kevin.tian@intel.com>
-Subject: Re: [RFC PATCH 06/12] iommu: Add mmu_notifier to sva domain
-Message-ID: <20231023183527.GM691768@ziepe.ca>
-References: <20231017032045.114868-1-tina.zhang@intel.com>
- <20231017032045.114868-8-tina.zhang@intel.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="lbhULYrW"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=GGTQuSvvyUcXmWQbIABwi2+rOQCli9Wl7mch20KsN2qXuCUHaVNG16J/88Tmhbgd5r3PfhZFg3o+WauNw2+A5AA7pKVUKt550HA9hUOFJEdrwhMOrrA1YF17iRMakX9JRWuj2JjNjQ8HY0nj6/XMk1yD41A9yFPTuw2hiPKGy/LKkMUCHQrn7egUGQOjDjs9jbldRoDEWt8fKHWqNt4DSdLxtPvHhVc5UWyqfTbDRgJXoia3fzng52Eeuahly5l8z52iwcsfjnzmvwdQ6CF8Dl7nIex17XyYB7irEp/y1bXCXTnw/aYOQMzi4r67HYGRbFi/ldDNKur3j0LH0lHRCQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=fLnuRFQFCJySvXf7B0okLa7Fsc2gRkjkvEcoMl9eBzs=;
+ b=ThuhBAyzHEeXpJtrVdeQPR1jikLlyKFxLHltCPqXDeBPVtc/xBzsJYWZaFlIxs60Zdp6DVYe+4XuFQoU/XX6yVeHRNO+wNs0A33iPo4ZiuR+CmUgjSV4Wj0ZOH1wIonrd7fIbL7cytZ8u7hVcuzW5CqkhPdXq7X/G6YNYdAyes/pHwQc96+68ZyjnBH6mOJLQAfOeDNa64VuJEU4LWyAAp8KMTcNIht1ihub3k3iuOq9Xf0EZWGc/uFgy2B2v9933AKDmes7QfCjp6Hm3ZbTCddSrcfNkcZ16PoezLs7rJLkCpWTksAvWk4Dl+82OXwCRu0ZcJazXUys+k98j38ZOw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.118.232) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=fLnuRFQFCJySvXf7B0okLa7Fsc2gRkjkvEcoMl9eBzs=;
+ b=lbhULYrWYW1tkKLE2yQ3KYmuM4R3EREPd0Ay85LEiGFYnSwXaR9hVC1t7pRLksrj8qA5/zifS+Myzl1aLTK9DHPAWNrNE7/rphXDvm/O8LQK5dwIJVDdLp/uNT8WROG8cqfEqfJ1ah+/gYgVjkIhuFvIrLZ+rdvpPD8AL473KgG71p6cib2IN58YCtAU8ZKlU/af/18w8a2sW+jIUhvzUjg/t6bTHKaGYWsIm5Jk3iUZ+AZnAHIrmLwIWli+6hKfbwqNDGku/LCBnbTeAYOxrxVUQA4vmL806TYJMmxInYy11gZV2ter44wToIOT5zr3AfDyzCVPX1g3TTzFYZ2m1g==
+Received: from BL1PR13CA0367.namprd13.prod.outlook.com (2603:10b6:208:2c0::12)
+ by SA1PR12MB8644.namprd12.prod.outlook.com (2603:10b6:806:384::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6907.33; Mon, 23 Oct
+ 2023 18:42:57 +0000
+Received: from BL02EPF0001A101.namprd05.prod.outlook.com
+ (2603:10b6:208:2c0:cafe::ab) by BL1PR13CA0367.outlook.office365.com
+ (2603:10b6:208:2c0::12) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6933.14 via Frontend
+ Transport; Mon, 23 Oct 2023 18:42:57 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.232) by
+ BL02EPF0001A101.mail.protection.outlook.com (10.167.241.132) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6933.15 via Frontend Transport; Mon, 23 Oct 2023 18:42:56 +0000
+Received: from drhqmail203.nvidia.com (10.126.190.182) by mail.nvidia.com
+ (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Mon, 23 Oct
+ 2023 11:42:38 -0700
+Received: from drhqmail203.nvidia.com (10.126.190.182) by
+ drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.41; Mon, 23 Oct 2023 11:42:38 -0700
+Received: from Asurada-Nvidia (10.127.8.12) by mail.nvidia.com
+ (10.126.190.182) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41 via Frontend
+ Transport; Mon, 23 Oct 2023 11:42:37 -0700
+Date: Mon, 23 Oct 2023 11:42:36 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+CC: Jason Gunthorpe <jgg@nvidia.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
+	"joro@8bytes.org" <joro@8bytes.org>, "alex.williamson@redhat.com"
+	<alex.williamson@redhat.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>, "cohuck@redhat.com"
+	<cohuck@redhat.com>, "eric.auger@redhat.com" <eric.auger@redhat.com>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>, "mjrosato@linux.ibm.com"
+	<mjrosato@linux.ibm.com>, "chao.p.peng@linux.intel.com"
+	<chao.p.peng@linux.intel.com>, "yi.y.sun@linux.intel.com"
+	<yi.y.sun@linux.intel.com>, "peterx@redhat.com" <peterx@redhat.com>,
+	"jasowang@redhat.com" <jasowang@redhat.com>,
+	"shameerali.kolothum.thodi@huawei.com"
+	<shameerali.kolothum.thodi@huawei.com>, "lulu@redhat.com" <lulu@redhat.com>,
+	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>, "Duan,
+ Zhenzhong" <zhenzhong.duan@intel.com>, "Martins, Joao"
+	<joao.m.martins@oracle.com>
+Subject: Re: [PATCH v4 08/17] iommufd: Always setup MSI and anforce cc on
+ kernel-managed domains
+Message-ID: <ZTa+nDbHnXCmClm5@Asurada-Nvidia>
+References: <ZS7nb+mKanGFXhZY@Asurada-Nvidia>
+ <20231018165113.GB3952@nvidia.com>
+ <BN9PR11MB5276B9994AD06E91E07B7EF08CD4A@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20231019235350.GY3952@nvidia.com>
+ <BN9PR11MB5276A64DA68586AEFB6561148CDBA@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20231020135501.GG3952@nvidia.com>
+ <ZTLOAQK/KcjAJb3y@Asurada-Nvidia>
+ <20231021163804.GL3952@nvidia.com>
+ <ZTWabb6AbOTFNgaw@Asurada-Nvidia>
+ <BL1PR11MB527173DCAFA9DD1D9270A8D78CD8A@BL1PR11MB5271.namprd11.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
 Content-Disposition: inline
-In-Reply-To: <20231017032045.114868-8-tina.zhang@intel.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <BL1PR11MB527173DCAFA9DD1D9270A8D78CD8A@BL1PR11MB5271.namprd11.prod.outlook.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BL02EPF0001A101:EE_|SA1PR12MB8644:EE_
+X-MS-Office365-Filtering-Correlation-Id: 66c0ffd0-f117-4214-8ed5-08dbd3f7dfb7
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	1rfcAI/d/4ijN2x1wOnWArl2Ng17K3CexfrhoF7+HtSe1CzFdZTq86B47nnaTf8xOfSo3Jj9rZorE5FI+96+9FDCgkc5AUYlJXSsaYy5UBch1iyMV9OOSV8JuE3NFQjvzI5yeaLkZGRv/KnDEdHVuK5wqndPfQggIB2grVUn266QiCv19qsH8ZsVKNms82qeFh/KZwrJRxagK4tiy8e37qMQsKN2McSmn2rVVp43+nqyIgG/qzcqHwDJ2hYT6kLJyN632yDWqomp2yL1yd60il9gABld+Q6/AArHZ4SORqgmw+7QNam5d4ZSSOw54GwyYnl8IBSHSVM0woaDSjLjXIPaONT3VPxlecndImMf4L9PmUPN+pzNKNzbvUKZ0dLjgGXVouCVKG2sboVZzg0DQnmsMeIY1NluNCBEkbCR5Rnb95aNaNCJdflbreP8oUheVaHdYffDlJExd57ZaEF29Ea1XxaiPhoIJsVIxvp3xJuut3Q3AKFa/VwTwp/LfKtI7G3g9LFsbWR1fvAceLXtEX/cOhjzoJPb+QIzi7F9y8Iu0E/0KFFhN3MREsMxZM9iNV/7kVbIPpBmoGTbU9oZJR2d5xJLD6Aw0pTbm9N5N7iRhQHbG+Vd5rnPSwaQrQN/kqOV2YlKrYNsJU4PVOkJLPesGpFJF1K5I99Yx6+QL6EVkSf/sj9+v4mCC6ahrMSZ924qs0qmadm2I4Hc1vVenlnfCVRLheGxnso2FUhZtUn6akNU62ppSDdZ9J5CGQeS8DSbuhhp5F6LWlc5JNM/OCj4/56AQWHYqccJ5WLiO8w=
+X-Forefront-Antispam-Report:
+	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230031)(4636009)(376002)(396003)(39860400002)(346002)(136003)(230922051799003)(186009)(451199024)(82310400011)(64100799003)(1800799009)(40470700004)(46966006)(36840700001)(26005)(33716001)(55016003)(36860700001)(2906002)(41300700001)(40460700003)(7416002)(5660300002)(86362001)(8936002)(8676002)(4326008)(6916009)(7636003)(478600001)(82740400003)(70206006)(70586007)(316002)(356005)(54906003)(83380400001)(40480700001)(966005)(47076005)(9686003)(426003)(336012)(67856001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Oct 2023 18:42:56.4757
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 66c0ffd0-f117-4214-8ed5-08dbd3f7dfb7
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BL02EPF0001A101.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB8644
 
-
-On Tue, Oct 17, 2023 at 11:20:39AM +0800, Tina Zhang wrote:
-> Devices attached to shared virtual addressing (SVA) domain are allowed to
-> use the same virtual addresses with processor, and this functionality is
-> called shared virtual memory. When shared virtual memory is being used,
-> it's the sva domain's responsibility to keep device TLB cache and the CPU
-> cache in sync. Hence add mmu_notifier to sva domain.
+On Mon, Oct 23, 2023 at 02:53:20AM +0000, Tian, Kevin wrote:
+> > From: Nicolin Chen <nicolinc@nvidia.com>
+> > Sent: Monday, October 23, 2023 8:18 AM
+> >
+> > On Sat, Oct 21, 2023 at 01:38:04PM -0300, Jason Gunthorpe wrote:
+> > > On Fri, Oct 20, 2023 at 11:59:13AM -0700, Nicolin Chen wrote:
+> > > > On Fri, Oct 20, 2023 at 10:55:01AM -0300, Jason Gunthorpe wrote:
+> > > > > On Fri, Oct 20, 2023 at 02:43:58AM +0000, Tian, Kevin wrote:
+> > > > >
+> > > > > > But the user shouldn't assume such explicit consistency since it's not
+> > > > > > defined in our uAPI. All we defined is that the attaching may
+> > > > > > fail due to incompatibility for whatever reason then the user can
+> > > > > > always try creating a new hwpt for the to-be-attached device. From
+> > > > > > this regard I don't see providing consistency of result is
+> > > > > > necessary. 😊
+> > > > >
+> > > > > Anyhow, OK, lets add a comment summarizing your points and remove
+> > the
+> > > > > cc upgrade at attach time (sorry Nicolin/Yi!)
+> > > >
+> > > > Ack. I will send a small removal series. I assume it should CC
+> > > > stable tree also?
+> > >
+> > > No, it seems more like tidying that fixing a functional issue, do I
+> > > misunderstand?
+> >
+> > Hmm. Maybe the misunderstanding is mine -- Kevin was asking if
+> > it was already a bug and you answered yes:
+> > https://lore.kernel.org/linux-iommu/20231016115736.GP3952@nvidia.com/
+> >
 > 
-> Signed-off-by: Tina Zhang <tina.zhang@intel.com>
-> ---
->  include/linux/iommu.h | 2 ++
->  1 file changed, 2 insertions(+)
+> currently intel-iommu driver already rejects 1) enforcing CC on
+> a domain which is already attached to non-CC device and
+> 2) attaching a non-CC device to a domain which has enforce_cc.
+> 
+> so there is no explorable bug to fix in stable tree.
 
-You should look at how arm smmuv3 ended up after I went over it to
-make similar changes, I think you should take this patch
-
-https://lore.kernel.org/linux-iommu/20-v1-afbb86647bbd+5-smmuv3_newapi_p2_jgg@nvidia.com/
-
-into this series (maybe drop the arm part)
-
-And copy the same basic structure for how the mmu notifier works.
-
-It would also be nice if alot of the 'if_sva' tests could be avoided,
-smmu didn't end up with those..
-
-In the guts of the pasid handling sva shouldn't be special beyond a
-different source for the pgd.
-
-Jason
+I see. Thanks!
