@@ -1,117 +1,181 @@
-Received: from mail-oi1-f175.google.com (mail-oi1-f175.google.com [209.85.167.175])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from out3-smtp.messagingengine.com (out3-smtp.messagingengine.com [66.111.4.27])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 60D4F2579
-	for <iommu@lists.linux.dev>; Mon, 23 Oct 2023 08:55:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B1F74101F0
+	for <iommu@lists.linux.dev>; Mon, 23 Oct 2023 09:10:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=arndb.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arndb.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="DZRMtFL1"
-Received: by mail-oi1-f175.google.com with SMTP id 5614622812f47-3af609c5736so1732794b6e.3
-        for <iommu@lists.linux.dev>; Mon, 23 Oct 2023 01:55:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1698051358; x=1698656158; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=+X2xkuC2sNDVYH+eBpxyEkTF5MdtA/DFvlrj3oX7LY4=;
-        b=DZRMtFL1wAmkw/P7FGTbiLiKITeAS+VYA+dVlYnltm6AaE9fVOlJtu213C2sj219qF
-         GPZp660+mVg4dxjA91UOi+9Ms7ee4rQpKeZ9qEk+o3COYtrHfATTjhs/5UclnPc5HIam
-         cSt6BSTFhh27YmzeOOnybBYL74hDIfW73QFqkpv+Wlu70AJTHUoAWK+iyyueaInmRbE/
-         aHFXXk2XEuqGhuM190GU5fcN5LzOM3P/wBRRXwldd8WPVfMdP9UjxeMVnJFyZhNWKnvJ
-         omXvW5cDhlzrTcmeGvX+Fg3fS8vrNjDbY+bhi2M00QpdXbvIVE8zH02Lgzgzskej9sJv
-         XXyQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1698051358; x=1698656158;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=+X2xkuC2sNDVYH+eBpxyEkTF5MdtA/DFvlrj3oX7LY4=;
-        b=vMgVhL7sfPeCYDNh88zAwiPf4mF/Uz2xyVvuMn113DKHe2SqpYp90KYRj7Nex7oKUb
-         /s7i3f8qSGODIlT+zr47XPXpjTT4vthrtWoC1IwqpJLR1mxAGCjI9SnnzG0+7F2Qg96m
-         sEaw2fMa966lAfrg1sXtct6JpSR0TB35R07DAWvsI0vekkyqW8JruusGYny7Zpqn/Ca4
-         x5x2jbttpi85D1P+/7K3gzkvY/rE9m4r9WPXvFqgxve8e6DtX8sOWPxQ9rILNJVufDy0
-         UJOf+2WcTLax2Rr75kK9jTsZQZ7FfDsxsgm0FnK+yQUUkzhbg+Ah72firZ9ApjldF1MF
-         VrZw==
-X-Gm-Message-State: AOJu0YxOgwVAYvzHNEKjf5x+kJIhmswCVHMop2v+yFsrKu4KyI9vPBvZ
-	ocoH1uhSvpPUXRgIfjTo3dI=
-X-Google-Smtp-Source: AGHT+IGK5M3I1XBkXULHYZYJQIHmqj5zw0tR2Y5mLKSDTUXVgsjSEuijh8CEl4ZF0RXPYmXUoJoCcQ==
-X-Received: by 2002:a54:4104:0:b0:3ae:e79d:79a0 with SMTP id l4-20020a544104000000b003aee79d79a0mr6968044oic.30.1698051358304;
-        Mon, 23 Oct 2023 01:55:58 -0700 (PDT)
-Received: from brag-vm.. ([59.182.192.60])
-        by smtp.gmail.com with ESMTPSA id y1-20020a056a001c8100b006be2f4105d0sm5771083pfw.175.2023.10.23.01.55.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Oct 2023 01:55:57 -0700 (PDT)
-From: Bragatheswaran Manickavel <bragathemanick0908@gmail.com>
-To: jgg@ziepe.ca,
-	kevin.tian@intel.com
-Cc: Bragatheswaran Manickavel <bragathemanick0908@gmail.com>,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] iommufd: fixing build warnings after merging the iommufd tree
-Date: Mon, 23 Oct 2023 14:25:51 +0530
-Message-Id: <20231023085552.5139-1-bragathemanick0908@gmail.com>
-X-Mailer: git-send-email 2.34.1
+	dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b="FOnbEzh0";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="bZ2MVUbl"
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+	by mailout.nyi.internal (Postfix) with ESMTP id 9452C5C02EC;
+	Mon, 23 Oct 2023 05:10:10 -0400 (EDT)
+Received: from imap51 ([10.202.2.101])
+  by compute5.internal (MEProxy); Mon, 23 Oct 2023 05:10:10 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
+	:cc:content-type:content-type:date:date:from:from:in-reply-to
+	:in-reply-to:message-id:mime-version:references:reply-to:sender
+	:subject:subject:to:to; s=fm2; t=1698052210; x=1698138610; bh=4D
+	XIJgtILhDloRldPsW990JKZe88KprU5t1hrTo1YbE=; b=FOnbEzh0v14uKahD/+
+	JjVLLMegllVQSKTkz3oGKX8mAmQB16GF3EvmQl4ZRPUGsoYXvBX116+UiLGtjZw6
+	Ff/UoL9C/J2f+s/wrTmbtq7aer4dVU1wWdHNFbnsOx+JyCN52vILNQzFEMNmwBE+
+	KjJxM7IhsLyiQQZwXdZTHrUOf4p8gPf3DWsKzd8fJk87miDI4QfmmeVT9e8eDiyY
+	1fenaY0KpvMItb3tSO29eYbzpACkrAxdzyW5xi2sRFbR8KfY6rIEIujlDGDIc4wt
+	8Mka4GA1Gql5OO1/MHvoJ6xgcBSXjNh4/d0dPfPzy1M0UcchUF5y18mUWY3/pAYK
+	LI6g==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-type:content-type:date:date
+	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
+	:message-id:mime-version:references:reply-to:sender:subject
+	:subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+	:x-sasl-enc; s=fm3; t=1698052210; x=1698138610; bh=4DXIJgtILhDlo
+	RldPsW990JKZe88KprU5t1hrTo1YbE=; b=bZ2MVUblkGQgQraZebeZOBIm6zrV6
+	rhJ9a+C9tbf21cv0UUffOl5OfmW4a5PJjIUDocXZCtqkXLUVYh0+mMzg45ZXa3R4
+	0A+jqMrNr13AP641XJL0Gr8FHSbnSnBRPiAJuPfcAKXfVqgtLOOqywt6/gwkI9T0
+	lAxfrFrZNmtjE5YXcCPaadqi2q+PFgez987vlvRxmbhxa2kCAAgbkxElO50Zawze
+	Vq0uMeTHJQeOtwbEZR+SlOJXNLtC6cD3tpezyXMg7jb8g78SteVnu8L6gSU59+zF
+	+HWVSuFx8GEaPMEksIIBBuxIclo3UNbMhn915Tz7FH223HdK//LbST4xg==
+X-ME-Sender: <xms:cjg2ZSv3mzjA0VMpYUr6aQT0TF5L-AXc9PR0lUdThS9y0QSWHTMVqg>
+    <xme:cjg2ZXf7EqjqYzI38rBKTapvOvGdiE6sYqYZa_OhSLaDmVlfNJDnFbvBw-y4UslKk
+    Qz3q-31wz8YNUO-kYM>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvkedrkeeigdduudcutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpefofgggkfgjfhffhffvvefutgesthdtredtreertdenucfhrhhomhepfdetrhhn
+    ugcuuegvrhhgmhgrnhhnfdcuoegrrhhnugesrghrnhgusgdruggvqeenucggtffrrghtth
+    gvrhhnpeffheeugeetiefhgeethfejgfdtuefggeejleehjeeutefhfeeggefhkedtkeet
+    ffenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpegrrh
+    hnugesrghrnhgusgdruggv
+X-ME-Proxy: <xmx:cjg2ZdxTFplZ_907K4mmnA_bBWEDDUpMtuvlRYZwUSmB5SvoXvXA2A>
+    <xmx:cjg2ZdPIjJk06ZNlwjlyxAXb9-UG5N-Xev9XXrL4M8xZZILYs6AMIg>
+    <xmx:cjg2ZS_YJjbn0ITNrkl-BlDA6TeU420ARjcqQ4KE77r_OFGE3htAxg>
+    <xmx:cjg2ZUepl8LySWZS4kVIz82Rc-uOQlVXGwaEHWETDJ0fpD8YYfhxpA>
+Feedback-ID: i56a14606:Fastmail
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+	id 2FB5CB60089; Mon, 23 Oct 2023 05:10:10 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.9.0-alpha0-1048-g9229b632c5-fm-20231019.001-g9229b632
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Message-Id: <b7834d1e-d198-45ee-b15d-12bd235bc57f@app.fastmail.com>
+In-Reply-To: <20231020222804.21850-8-joao.m.martins@oracle.com>
+References: <20231020222804.21850-1-joao.m.martins@oracle.com>
+ <20231020222804.21850-8-joao.m.martins@oracle.com>
+Date: Mon, 23 Oct 2023 11:09:49 +0200
+From: "Arnd Bergmann" <arnd@arndb.de>
+To: "Joao Martins" <joao.m.martins@oracle.com>, iommu@lists.linux.dev
+Cc: "Jason Gunthorpe" <jgg@nvidia.com>, "Kevin Tian" <kevin.tian@intel.com>,
+ "Shameerali Kolothum Thodi" <shameerali.kolothum.thodi@huawei.com>,
+ "Baolu Lu" <baolu.lu@linux.intel.com>, "Yi Liu" <yi.l.liu@intel.com>,
+ "Yi Y Sun" <yi.y.sun@intel.com>, "Nicolin Chen" <nicolinc@nvidia.com>,
+ "Joerg Roedel" <joro@8bytes.org>,
+ "Suravee Suthikulpanit" <suravee.suthikulpanit@amd.com>,
+ "Will Deacon" <will@kernel.org>, "Robin Murphy" <robin.murphy@arm.com>,
+ "Zhenzhong Duan" <zhenzhong.duan@intel.com>,
+ "Alex Williamson" <alex.williamson@redhat.com>, kvm@vger.kernel.org
+Subject: Re: [PATCH v5 07/18] iommufd: Add IOMMU_HWPT_GET_DIRTY_BITMAP
+Content-Type: text/plain
 
-After merging the iommufd tree, today's linux-next build (htmldocs)
-produced these warnings:
+On Sat, Oct 21, 2023, at 00:27, Joao Martins wrote:
 
-include/uapi/linux/iommufd.h:433: warning: expecting prototype for enum iommufd_hw_info_capabilities. Prototype was for enum iommufd_hw_capabilities instead
-include/uapi/linux/iommufd.h:497: warning: Function parameter or member '__reserved' not described in 'iommu_hwpt_set_dirty_tracking'
-include/uapi/linux/iommufd.h:512: warning: expecting prototype for enum iommufd_get_dirty_bitmap_flags. Prototype was for enum iommufd_hwpt_get_dirty_bitmap_flags instead
-include/uapi/linux/iommufd.h:542: warning: Function parameter or member '__reserved' not described in 'iommu_hwpt_get_dirty_bitmap'
+> +int iommufd_check_iova_range(struct iommufd_ioas *ioas,
+> +			     struct iommu_hwpt_get_dirty_bitmap *bitmap)
+> +{
+> +	unsigned long npages;
+> +	size_t iommu_pgsize;
+> +	int rc = -EINVAL;
+> +
+> +	if (!bitmap->page_size)
+> +		return rc;
+> +
+> +	npages = bitmap->length / bitmap->page_size;
 
-Signed-off-by: Bragatheswaran Manickavel <bragathemanick0908@gmail.com>
----
- include/uapi/linux/iommufd.h | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
 
+The 64-bit division causes a link failure on 32-bit architectures:
+
+arm-linux-gnueabi-ld: drivers/iommu/iommufd/hw_pagetable.o: in function `iommufd_check_iova_range':
+hw_pagetable.c:(.text+0x77e): undefined reference to `__aeabi_uldivmod'
+arm-linux-gnueabi/bin/arm-linux-gnueabi-ld: drivers/iommu/iommufd/hw_pagetable.o: in function `iommufd_hwpt_get_dirty_bitmap':
+hw_pagetable.c:(.text+0x84c): undefined reference to `__aeabi_uldivmod'
+
+I think it is safe to assume that the length of the bitmap
+does not overflow an 'unsigned long', so it's probably
+best to add a range check plus type cast, rather than an
+expensive div_u64() here.
+
+> +/**
+> + * struct iommu_hwpt_get_dirty_bitmap - ioctl(IOMMU_HWPT_GET_DIRTY_BITMAP)
+> + * @size: sizeof(struct iommu_hwpt_get_dirty_bitmap)
+> + * @hwpt_id: HW pagetable ID that represents the IOMMU domain
+> + * @flags: Must be zero
+> + * @iova: base IOVA of the bitmap first bit
+> + * @length: IOVA range size
+> + * @page_size: page size granularity of each bit in the bitmap
+> + * @data: bitmap where to set the dirty bits. The bitmap bits each
+> + *        represent a page_size which you deviate from an arbitrary iova.
+> + *
+> + * Checking a given IOVA is dirty:
+> + *
+> + *  data[(iova / page_size) / 64] & (1ULL << ((iova / page_size) % 64))
+> + *
+> + * Walk the IOMMU pagetables for a given IOVA range to return a bitmap
+> + * with the dirty IOVAs. In doing so it will also by default clear any
+> + * dirty bit metadata set in the IOPTE.
+> + */
+> +struct iommu_hwpt_get_dirty_bitmap {
+> +	__u32 size;
+> +	__u32 hwpt_id;
+> +	__u32 flags;
+> +	__u32 __reserved;
+> +	__aligned_u64 iova;
+> +	__aligned_u64 length;
+> +	__aligned_u64 page_size;
+> +	__aligned_u64 *data;
+> +};
+> +#define IOMMU_HWPT_GET_DIRTY_BITMAP _IO(IOMMUFD_TYPE, \
+> +					IOMMUFD_CMD_HWPT_GET_DIRTY_BITMAP)
+> +
+
+This is a flawed definition for an ioctl data structure. While
+it appears that you have tried hard to follow the recommendations
+in Documentation/driver-api/ioctl.rst, you accidentally added
+a pointer here, which breaks compat mode handling because of
+the uninitialized padding after the 32-bit 'data' pointer.
+
+The correct fix here is to use a __u64 value for the pointer
+itself and convert it like:
+
+diff --git a/drivers/iommu/iommufd/io_pagetable.c b/drivers/iommu/iommufd/io_pagetable.c
+index a26f8ae1034dd..3f6db5b18c266 100644
+--- a/drivers/iommu/iommufd/io_pagetable.c
++++ b/drivers/iommu/iommufd/io_pagetable.c
+@@ -465,7 +465,7 @@ iommu_read_and_clear_dirty(struct iommu_domain *domain,
+ 		return -EOPNOTSUPP;
+ 
+ 	iter = iova_bitmap_alloc(bitmap->iova, bitmap->length,
+-				 bitmap->page_size, bitmap->data);
++				 bitmap->page_size, u64_to_user_ptr(bitmap->data));
+ 	if (IS_ERR(iter))
+ 		return -ENOMEM;
+ 
 diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
-index 50f98f01fe10..5585df5b393e 100644
+index 50f98f01fe100..7fbf2d8a3c9b8 100644
 --- a/include/uapi/linux/iommufd.h
 +++ b/include/uapi/linux/iommufd.h
-@@ -419,7 +419,7 @@ enum iommu_hw_info_type {
+@@ -538,7 +538,7 @@ struct iommu_hwpt_get_dirty_bitmap {
+ 	__aligned_u64 iova;
+ 	__aligned_u64 length;
+ 	__aligned_u64 page_size;
+-	__aligned_u64 *data;
++	__aligned_u64 data;
  };
- 
- /**
-- * enum iommufd_hw_info_capabilities
-+ * enum iommufd_hw_capabilities
-  * @IOMMU_HW_CAP_DIRTY_TRACKING: IOMMU hardware support for dirty tracking
-  *                               If available, it means the following APIs
-  *                               are supported:
-@@ -486,6 +486,7 @@ enum iommufd_hwpt_set_dirty_tracking_flags {
-  * @size: sizeof(struct iommu_hwpt_set_dirty_tracking)
-  * @flags: Combination of enum iommufd_hwpt_set_dirty_tracking_flags
-  * @hwpt_id: HW pagetable ID that represents the IOMMU domain
-+ * @__reserved: Must be 0
-  *
-  * Toggle dirty tracking on an HW pagetable.
-  */
-@@ -499,8 +500,8 @@ struct iommu_hwpt_set_dirty_tracking {
- 					  IOMMUFD_CMD_HWPT_SET_DIRTY_TRACKING)
- 
- /**
-- * enum iommufd_get_dirty_bitmap_flags - Flags for getting dirty bits
-- * @IOMMU_GET_DIRTY_BITMAP_NO_CLEAR: Just read the PTEs without clearing any
-+ * enum iommufd_hwpt_get_dirty_bitmap_flags - Flags for getting dirty bits
-+ * @IOMMU_HWPT_GET_DIRTY_BITMAP_NO_CLEAR: Just read the PTEs without clearing any
-  *                                   dirty bits metadata. This flag can be
-  *                                   passed in the expectation where the next
-  *                                   operation is an unmap of the same IOVA
-@@ -517,6 +518,7 @@ enum iommufd_hwpt_get_dirty_bitmap_flags {
-  * @hwpt_id: HW pagetable ID that represents the IOMMU domain
-  * @flags: Combination of enum iommufd_hwpt_get_dirty_bitmap_flags
-  * @iova: base IOVA of the bitmap first bit
-+ * @__reserved: Must be 0
-  * @length: IOVA range size
-  * @page_size: page size granularity of each bit in the bitmap
-  * @data: bitmap where to set the dirty bits. The bitmap bits each
--- 
-2.34.1
+ #define IOMMU_HWPT_GET_DIRTY_BITMAP _IO(IOMMUFD_TYPE, \
+ 					IOMMUFD_CMD_HWPT_GET_DIRTY_BITMAP)
 
+
+     Arnd
