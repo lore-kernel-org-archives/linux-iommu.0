@@ -1,176 +1,101 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.151])
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.24])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B581415AF
-	for <iommu@lists.linux.dev>; Mon, 23 Oct 2023 02:55:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 71D2D371
+	for <iommu@lists.linux.dev>; Mon, 23 Oct 2023 03:13:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="MgTZ/VXn"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="N8AnDAa+"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1698029750; x=1729565750;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=TVk4AXEFhtCCR8y/7vn9dl5QUZJNwNc+J50R6kNUTPs=;
-  b=MgTZ/VXn1Q/f5aSL48ynY0kFW832tMMiTGC/IJjiAtV5mdbb2rjRj0fW
-   y33UMGxY/2Fmsjq9EuJt2mLKSzQdA+9AqRrAsuVCjnaIzUNfGUt7jhV/3
-   mudjsv1S8smicqfMn2sVHAvExYD2I1SW5i/u6YI41toVCgFDjMeiMadZ/
-   KthlOsuKnyqjkDCl4QobfXyN1HtGgVQPoGao60s5N7qp3tAFHvpz3q/QO
-   5BA6xnnW3wgGgqViFSxZZMWtZ8jpboOw0vIRJdGGK2MHR6wf+n1xO4Rkn
-   s4aVVbkGNubPutH+K8c1iWs9yfTP1MdW+p9VuQiwX6Lev5vIgk0JgjvwD
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10871"; a="366981912"
+  t=1698030797; x=1729566797;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=AeWTtkCsGMX/D1evCPohfI5Y/jQTw5z4QJVr/hc1lsY=;
+  b=N8AnDAa+ugimiEowmqdXhv3if6CgwfDocfTj8R8RhRSACqAP71gPpf9o
+   VRfIs8+rgoyo5jmYTl2z1xgYHlUWT7R6H8BcIjDlUy9OH3aSYob2FwJl9
+   JLDG1KYSGa1UUN8WEFT7B/B6JXcdRKpmXhN+8jdFdWzRYFCBQb39COURB
+   aAPydZLNfxAvCux2UgGP406OftghXtpp+CRmCv4T/pN6HdC44zmSXjAWd
+   FGqmaCbS9Nb3Dwg4LptFjUPY6cSftdpvU/1Bl1q7gZeRI6wtA97jWc3Xl
+   6Y2enel7AeAFk25eslwZ+YMa0KQAnV+xF43m+wv7NLpz3nmRgU+SFlrc0
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10871"; a="389604101"
 X-IronPort-AV: E=Sophos;i="6.03,244,1694761200"; 
-   d="scan'208";a="366981912"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Oct 2023 19:55:49 -0700
+   d="scan'208";a="389604101"
+Received: from fmviesa001.fm.intel.com ([10.60.135.141])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Oct 2023 20:13:16 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10871"; a="1005165872"
 X-IronPort-AV: E=Sophos;i="6.03,244,1694761200"; 
-   d="scan'208";a="1005165872"
-Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
-  by fmsmga006.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 22 Oct 2023 19:55:48 -0700
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.32; Sun, 22 Oct 2023 19:55:48 -0700
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.32 via Frontend Transport; Sun, 22 Oct 2023 19:55:48 -0700
-Received: from NAM04-MW2-obe.outbound.protection.outlook.com (104.47.73.169)
- by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.32; Sun, 22 Oct 2023 19:55:44 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Vo8BHcPk1BedsStYsiYLxgKKtsMVQ9x8O4HiZttKFu8Zw+GZrfuCa2jfUcWPQ9muoIIKXzrmcAFhP1PX0BWu2EpR0g8xb9Q37HtUJZfrWICshPBoTDCKeBICkft85kGfDJCuYsApP3s8jQ3sj2c2DevaN1Q4bMaKaexxhgVQY7deG8o6YODf/wWIF9R9qw380EZ5txRILo8D2S2o4oDktC8fq5+CFsF3l0WIU/xPnSzSof+qdYb0+qVpF25Y/rXzcH31wV2x+v3Efv6eV+OH1gMnRSPOM6wcmZ/WOnNBvhENI0vArR2W7mlyAn3jdBesnbIqCvfylBuxwr7lzRjW5w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=TVk4AXEFhtCCR8y/7vn9dl5QUZJNwNc+J50R6kNUTPs=;
- b=grzY6IfwUU51rs9Ht19rX/zgTsiYyX+xUVzvjQUOIlC7rPn8ATLywJGztFn6qd9itJ0rjia2+0PgZC9yUG83pzVYTIQxf2GwJnYbAl+SjpqZlkRNDigbh/1Ln77dVSPBYOeeS86lVgyPH4nArkSk1ihdLbX+D876hV6hm1S6iXM86tqtr203/e7IDB1Pwcw4XqsWU1x7azodSBLdlNQRVMSI72dhiEIZDj1b0lORMC7Vp3kQ9/YChFNWWE7kZqSaproE3E5ahBDi/67aHN8hCivs3So98ryqYg1IMvzseEUAL25B6tQB/vJOPWv76mGq/1e2+0e0/bYTBw0KlgcvDg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BL1PR11MB5271.namprd11.prod.outlook.com (2603:10b6:208:31a::21)
- by MN0PR11MB6086.namprd11.prod.outlook.com (2603:10b6:208:3ce::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6907.33; Mon, 23 Oct
- 2023 02:55:42 +0000
-Received: from BL1PR11MB5271.namprd11.prod.outlook.com
- ([fe80::3bbd:f86a:80ea:eb8a]) by BL1PR11MB5271.namprd11.prod.outlook.com
- ([fe80::3bbd:f86a:80ea:eb8a%3]) with mapi id 15.20.6907.032; Mon, 23 Oct 2023
- 02:55:42 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Baolu Lu <baolu.lu@linux.intel.com>, Nicolin Chen <nicolinc@nvidia.com>,
-	"jgg@nvidia.com" <jgg@nvidia.com>
-CC: "joro@8bytes.org" <joro@8bytes.org>, "will@kernel.org" <will@kernel.org>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, "Liu, Yi L" <yi.l.liu@intel.com>
-Subject: RE: [PATCH 0/2] iommufd: Only enforce_cache_coherency when allocating
- hwpt
-Thread-Topic: [PATCH 0/2] iommufd: Only enforce_cache_coherency when
- allocating hwpt
-Thread-Index: AQHaA7bRh+WFYfRUVkm8nzq+NWyx/LBTdX4AgAM7WmA=
-Date: Mon, 23 Oct 2023 02:55:42 +0000
-Message-ID: <BL1PR11MB5271F7BEA6187ACBD6BA88568CD8A@BL1PR11MB5271.namprd11.prod.outlook.com>
-References: <cover.1697848510.git.nicolinc@nvidia.com>
- <2201ae4d-b825-49a5-ba73-c6b310e2969c@linux.intel.com>
-In-Reply-To: <2201ae4d-b825-49a5-ba73-c6b310e2969c@linux.intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BL1PR11MB5271:EE_|MN0PR11MB6086:EE_
-x-ms-office365-filtering-correlation-id: 57a201b9-4b6b-4274-620f-08dbd3738bf8
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: Wf6O9kvRylteR9R+2p0GM1RTb9uPh2YZeK/Oz4VpjtctQq3dA+hOHJJzvUh+WjCcnrzZtJH06RcG+YgJG5y4sk5ujLa+8yDyYCrGn80W0jA0MtnuQYVH+q+79u2ctNdSWiFHyy846ory1xlAkfcDankshTB6tRD757hfAYivlfcCvzGFCTpLL6ofAthccsnx9sKgjrirkYajsdFmgHE4pUT5bRR0MD2BK9i5XwEG8J+/a3KAuJPn3Dpn8pfHPs49I0GDo4UDQ0ZC3HxF0Xz0gUcEIzjGtuNxh9pbf1B5+GFBrQoYBau+1xRUqm14IYeW/x1uLCOqOuIeMwtzXKX/OWdpjoQpgE7lMDAU9bTXxeZq7QgAZYjxgJWlHceyxwkuD6vZSOGiRRUrLmyEADsltfl5krUA0MPQIciM0C94Z4dCVKQoe3QZ+r3SUVl+uOMilvnYzg99MZk7d0OyYrlvjhGDZe7efFTXcMdiPQvlmVJXwpNfhtX++DQMM+OPFPt5KnHER5CDg7T0HrrrcZfa7cGSov3yhOlMaTKXZxvpdVRYJTEeKjNX0IRGraqfU2SqQimCOAQeDwfcFNHpEBJYeNvmBeAJ1yVseQGEls/OM54=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL1PR11MB5271.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(39860400002)(376002)(346002)(366004)(136003)(396003)(230922051799003)(451199024)(64100799003)(1800799009)(186009)(53546011)(71200400001)(9686003)(6506007)(122000001)(82960400001)(7696005)(66556008)(33656002)(26005)(66476007)(66446008)(64756008)(54906003)(316002)(478600001)(55016003)(966005)(38100700002)(83380400001)(110136005)(86362001)(66946007)(76116006)(52536014)(41300700001)(8936002)(8676002)(4326008)(38070700009)(2906002)(5660300002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?aHY4QnJ0R0d6RGNoNnNkellxbVNMeVNhUHRoZTMwWElTZlZWNWNsR0dPeCtY?=
- =?utf-8?B?UENqZ20vNWJjemN6cGdubUtmWi91N2U4Nkh6WnhZU3BPUmxXNTIrNHV4V21j?=
- =?utf-8?B?MlBob3AyeUdzV3hhaVNLL2I2Zjc2MjhuMFVoVTBtajR1dUFQd01wWEdOeDBm?=
- =?utf-8?B?SWFsbU5vMi9FeGtHZkxLUDZpa29yR0hydlI4eFh6cjQ4U1I4dktaYmFHTk40?=
- =?utf-8?B?K0xvTEt1NWtCT1NHMXQwdnlVWmJYTlRUOHZRUGhDR3QzNVpialN1TWZvL0VV?=
- =?utf-8?B?WFRGVDNtZm5aazFCZEkxZnJud1ZXWjR0UFcwS1AyTFhjRytCdGQ5OHlqUzd1?=
- =?utf-8?B?eEVONWt4bldqSjZ4K0E0NEtpSSt5U0d4Yk1NdGtCcEZwdTkxTTdpZEZJeFFL?=
- =?utf-8?B?bHF0QlYyV3ByRWl6aUU4c1ZObHZZZXhBcUQzODlzK0NDQ0FwU3dDOE03RWhn?=
- =?utf-8?B?Z3FZeWFDWHM3R0pCRXdiZEF6amNtTXVJYkJ6SEJCamNTZkVOaUFBa3pZeUhN?=
- =?utf-8?B?OHUzWVNvbTZBSDBVVFhGK01FZGo3SSs2ZVpoSXgxL0taS1RpcGtIbDZCcHUv?=
- =?utf-8?B?WnN0ZmxrV1pCUkdYc2trczh0QWxqZWhYR1U1YnF4b29DenlvL0tFelRSTWk1?=
- =?utf-8?B?NG9FcjNENGRObGhQOVE2L3ZtazNhcHRoVUxianlwUVZlQ1dOZjdoL3V4WUF4?=
- =?utf-8?B?bGdtWk00L3o0UElDaEtvUWtrNlAyU3ZvYU5oZW93K2I3c0NpUDFvcnNycGVJ?=
- =?utf-8?B?M3Z4UHkwL2RETXVLamlZbkI4VW1keVFJdE9WT0wyd0hRYzgycHBGSHVoSHlB?=
- =?utf-8?B?bkx3VDhxT2VGcVc4akxhRlV4MXc5WU9vdzNBQ2tSVEcxU05ESnBXNzNIcTJT?=
- =?utf-8?B?U2tyZWRvSkpIK2FlUnA3VGdUZlUrK2svMHNPQVdnbTRmYVpmZ3phQUgwL0VI?=
- =?utf-8?B?bGtNL3luMHNCQzhrLzRPOENNeDdGOGVROE5yOFlHTVRoQ1NBWHV3Z2c3bGc1?=
- =?utf-8?B?dUJ0bk5RQ3EwcnhCYkZuRjBEMWl0ajBuQ01lWnF0M1kyTDVUZTBZVTEybm5Z?=
- =?utf-8?B?d00wU0ZlTVVnSjMvWWN1TjZZNlk2SHlqODlHdFJYZWt2elh1VGFQNDlvQjJw?=
- =?utf-8?B?NzdTNnFnN3NHMXZ3MDVXcnUvcGl3Wmw0MGRDeGVRdnJCeDE2bFdKeFhZaTlL?=
- =?utf-8?B?YmpCV05xY3ZSRlhseTlVcGdIS3JESXBUTmpHS0pZVzcxcEZiVUZFQmJQNWFM?=
- =?utf-8?B?dm84ZDhSQS9aeUdRaTUwbmEvYjArMHd3Nk94ek05WVdUa1J6TjhlaVJYWHNw?=
- =?utf-8?B?N3h1TFNZWENpWjdSQlpROHk0N290aVh1N2J6TVlpZmtJNzhhK2kvZG5wWk94?=
- =?utf-8?B?TXRPSzJtZitiZnRUNVRhTWNQOVZzR2Vha2NmK1dtQ3ExZzlaWGo2TjZKYSs1?=
- =?utf-8?B?bDVtdUxzYXlUaHNhYXhBSWREdHEzVFhTM0diM2FUZkdWUUtyY1JDbXBPN3J4?=
- =?utf-8?B?OVh5U0NSYXE0YldXMEpCZENDWU1RcjdNUE50MDRjcmFpUkt6ZHYzbUxpZEZJ?=
- =?utf-8?B?MjhDV0FBRTF2Zlc3S3dXVlpyMUdGSEx0TDJkUXJHdHY4MU5RZ1llYXFuMjhI?=
- =?utf-8?B?TEh3OHppd0VDV2haa1lMZko1ZVJjOFhYN1o0eklKK3dKVVlWMmdRNDBZS1JH?=
- =?utf-8?B?ZlM5T05pQTFwMkUvblVIRktPVXpXdE0wMGtlb2I4Z3BISHpwSjg2L3F0Qkxm?=
- =?utf-8?B?YjVacEtBY2h1VFEyazROOG12U2VTMy9KV3BsS0FLN2JXS3lzSzVTdUE3N09I?=
- =?utf-8?B?TVpOWTFRTWNYemhyTlR6dUMrZE9RUTQwTEg4UmwyaGw2YWZwTEplYVVyb1NX?=
- =?utf-8?B?SGxCVEVac3pNUjc3MFpNZ0tOZlB5V2FFd0N6eXhrMjlMT1poMmdIcWtZMW01?=
- =?utf-8?B?cEt6L0xubThRcU5YQVZnQitrYkVqeXhTeE9OL0JwK0Jyd0xNSjBydllQVkFm?=
- =?utf-8?B?WGdlTVcvbTVVVTArOS9YSDJwQ1lSWFhOcU54Qm9ldmZQY043MEZqWE9aOEpu?=
- =?utf-8?B?RW9kcm5mYW04WUVaZDdVdmdFdUZZdzdaNFk2dHMrNzZrUHAzcSs3SHJLeUVa?=
- =?utf-8?Q?4uOibXzx2jwdDRZUdkX8EImci?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+   d="scan'208";a="5932824"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
+  by fmviesa001.fm.intel.com with ESMTP; 22 Oct 2023 20:13:09 -0700
+Message-ID: <400f2708-1186-4ca4-b4db-dc46b9e636b2@linux.intel.com>
+Date: Mon, 23 Oct 2023 11:09:27 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BL1PR11MB5271.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 57a201b9-4b6b-4274-620f-08dbd3738bf8
-X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Oct 2023 02:55:42.5730
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 5mgrFWvWQZkDwR0dGFxfPKM6815IVg8vQ4N/uWiwsxJFaoipP4mN5JJreD1iHxNWkaQdemYIAmNan4etfJta3Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR11MB6086
-X-OriginatorOrg: intel.com
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, "joro@8bytes.org" <joro@8bytes.org>,
+ "will@kernel.org" <will@kernel.org>,
+ "robin.murphy@arm.com" <robin.murphy@arm.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "Liu, Yi L" <yi.l.liu@intel.com>
+Subject: Re: [PATCH 0/2] iommufd: Only enforce_cache_coherency when allocating
+ hwpt
+Content-Language: en-US
+To: "Tian, Kevin" <kevin.tian@intel.com>, Nicolin Chen <nicolinc@nvidia.com>,
+ "jgg@nvidia.com" <jgg@nvidia.com>
+References: <cover.1697848510.git.nicolinc@nvidia.com>
+ <2201ae4d-b825-49a5-ba73-c6b310e2969c@linux.intel.com>
+ <BL1PR11MB5271F7BEA6187ACBD6BA88568CD8A@BL1PR11MB5271.namprd11.prod.outlook.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <BL1PR11MB5271F7BEA6187ACBD6BA88568CD8A@BL1PR11MB5271.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-PiBGcm9tOiBCYW9sdSBMdSA8YmFvbHUubHVAbGludXguaW50ZWwuY29tPg0KPiBTZW50OiBTYXR1
-cmRheSwgT2N0b2JlciAyMSwgMjAyMyA5OjMzIEFNDQo+IA0KPiBPbiAyMDIzLzEwLzIxIDg6Mzcs
-IE5pY29saW4gQ2hlbiB3cm90ZToNCj4gPiBodHRwczovL2xvcmUua2VybmVsLm9yZy9saW51eC0N
-Cj4gaW9tbXUvMjAyMzEwMjAxMzU1MDEuR0czOTUyQG52aWRpYS5jb20vDQo+ID4gVGhlIGNvbnZl
-cnNhdGlvbiBhYm92ZSBjb25jbHVkZWQgdGhhdCBhIGh3cHQgc2hvdWxkIG9ubHkgZW5mb3JjZSBj
-YWNoZQ0KPiA+IGNvaGVyZW5jeSBwZXIgZGV2aWNlIGF0IHRoZSBzdGFnZSBvZiBpdHMgYWxsb2Nh
-dGlvbiwgYW5kIGl0IHNob3VsZCBub3QNCj4gPiBiZSBjaGFuZ2VkIG9yIHVwZGF0ZWQgaW4gdGhl
-IGF0dGFjaC9yZXBsYWNlIHJvdXRpbmVzLg0KPiA+DQo+ID4gQWRkIHR3byBwYXRjaGVzIGRyb3Bw
-aW5nIHRoZSBlbmZvcmNlX2NhY2hlX2NvaGVyZW5jeSBjYWxscyBmcm9tIGF0dGFjaA0KPiA+IGFu
-ZCByZXBsY2Ugcm91dGluZXMgcmVzcGVjdGl2ZWx5LCBzaW5jZSB0aGV5IHdlcmUgaW50cm9kdWNl
-ZCB3aXRoIHR3bw0KPiA+IGRpZmZlcmVudCBjb21taXRzLg0KPiA+DQo+ID4gTmljb2xpbiBDaGVu
-ICgyKToNCj4gPiAgICBpb21tdWZkL2RldmljZTogRHJvcCBlbmZvcmNlX2NhY2hlX2NvaGVyZW5j
-eSBpbg0KPiA+ICAgICAgaW9tbXVmZF9kZXZpY2VfZG9fcmVwbGFjZQ0KPiA+ICAgIGlvbW11ZmQv
-ZGV2aWNlOiBEcm9wIGVuZm9yY2VfY2FjaGVfY29oZXJlbmN5IGluDQo+ID4gICAgICBpb21tdWZk
-X2h3X3BhZ2V0YWJsZV9hdHRhY2gNCj4gPg0KPiA+ICAgZHJpdmVycy9pb21tdS9pb21tdWZkL2Rl
-dmljZS5jICAgICAgICAgIHwgMTkgKystLS0tLS0tLS0tLS0tLS0tLQ0KPiA+ICAgZHJpdmVycy9p
-b21tdS9pb21tdWZkL2h3X3BhZ2V0YWJsZS5jICAgIHwgIDIgKy0NCj4gPiAgIGRyaXZlcnMvaW9t
-bXUvaW9tbXVmZC9pb21tdWZkX3ByaXZhdGUuaCB8ICAxIC0NCj4gPiAgIDMgZmlsZXMgY2hhbmdl
-ZCwgMyBpbnNlcnRpb25zKCspLCAxOSBkZWxldGlvbnMoLSkNCj4gDQo+IEhpIEtldmluIGFuZCBK
-YXNvbiwNCj4gDQo+IFdpdGggdGhlc2UgdHdvIGZpeGVzLCB0aGVyZSdzIG5vIGlzc3VlIGluIHRo
-ZSBpbnRlbCBkcml2ZXIgYW55IG1vcmUuIERvDQo+IEkgdW5kZXJzdGFuZCBpdCByaWdodD8NCj4g
-DQoNCkJ1dCBjb2RlLXdpc2UgaXQncyBzdGlsbCBnb29kIHRvIGV4cGxpY2l0bHkgZGlzYWxsb3cg
-ZW5mb3JjZS1jYyBvbiBhDQpub24tZW1wdHkgZG9tYWluIGlmIHRoZXJlIGlzIG5vIHBsYW4gdG8g
-c3VwcG9ydCBpdC4gSnVzdCBubyBGaXggdG8NCnN0YWJsZS4NCg==
+On 10/23/23 10:55 AM, Tian, Kevin wrote:
+>> From: Baolu Lu <baolu.lu@linux.intel.com>
+>> Sent: Saturday, October 21, 2023 9:33 AM
+>>
+>> On 2023/10/21 8:37, Nicolin Chen wrote:
+>>> https://lore.kernel.org/linux-
+>> iommu/20231020135501.GG3952@nvidia.com/
+>>> The conversation above concluded that a hwpt should only enforce cache
+>>> coherency per device at the stage of its allocation, and it should not
+>>> be changed or updated in the attach/replace routines.
+>>>
+>>> Add two patches dropping the enforce_cache_coherency calls from attach
+>>> and replce routines respectively, since they were introduced with two
+>>> different commits.
+>>>
+>>> Nicolin Chen (2):
+>>>     iommufd/device: Drop enforce_cache_coherency in
+>>>       iommufd_device_do_replace
+>>>     iommufd/device: Drop enforce_cache_coherency in
+>>>       iommufd_hw_pagetable_attach
+>>>
+>>>    drivers/iommu/iommufd/device.c          | 19 ++-----------------
+>>>    drivers/iommu/iommufd/hw_pagetable.c    |  2 +-
+>>>    drivers/iommu/iommufd/iommufd_private.h |  1 -
+>>>    3 files changed, 3 insertions(+), 19 deletions(-)
+>>
+>> Hi Kevin and Jason,
+>>
+>> With these two fixes, there's no issue in the intel driver any more. Do
+>> I understand it right?
+>>
+> 
+> But code-wise it's still good to explicitly disallow enforce-cc on a
+> non-empty domain if there is no plan to support it. Just no Fix to
+> stable.
+
+Yes. Make sense. The device driver implementation should be self-
+contained.
+
+Best regards,
+baolu
