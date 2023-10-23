@@ -1,67 +1,132 @@
-Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
+Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam02on2070.outbound.protection.outlook.com [40.107.212.70])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 03E3E14F61
-	for <iommu@lists.linux.dev>; Mon, 23 Oct 2023 22:27:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 114CB200AE
+	for <iommu@lists.linux.dev>; Mon, 23 Oct 2023 22:43:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="B28j4+Ug"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-	Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
-	Message-ID:Sender:Reply-To:Content-ID:Content-Description;
-	bh=VVhvRIlQqXGnJRR9+75jpe4XOyrEd50DqThibj3ReZo=; b=B28j4+UgaFzw453tRvs72NdXSl
-	I2Z0dLC5hPPnj0ywIP5zD8YYstf4UXvNhnlomEnP52ijEefej+i9InagDQXrsphVZFatJWYfCYYFd
-	htEYny0GJEj0XsOENTwyCHhAyGfzldVAyhXVR0zoHH8LN+LBTQeDpedAycF8WYj5SvASyFDXrOM6K
-	SWQbXwxJqe7ZzsBlfuWLsxP1uMlkVAfjJ8oKk8vyb5j9RaFN98HYEKToRCHwySwCtxrcfjT6qqiAJ
-	+Kjn4YhiIMaYnfi0xuqjgY+YLpQ5Mvk0d8ZBju1ztybgKLcCWNOgqJtwWSac9TPeUPZdoOl8Hi7Dv
-	4N+z7nJw==;
-Received: from [50.53.46.231] (helo=[192.168.254.15])
-	by bombadil.infradead.org with esmtpsa (Exim 4.96 #2 (Red Hat Linux))
-	id 1qv3OG-008Mvt-0W;
-	Mon, 23 Oct 2023 22:27:16 +0000
-Message-ID: <9e56e94d-536e-435a-afb0-4738e6eddedc@infradead.org>
-Date: Mon, 23 Oct 2023 15:27:15 -0700
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="Nf51uFKM"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Wbx+w3R2WlWT5wxbpV4qaUuJfJHX1/cXtMObMw/gv3GRdnut9wXq1bzPC5qwL2EkWivX/tggaUPuSdeVZozPMyU9oSy2aZp43y7n9AUEcB3CpKgQ284EqlcadghvwIAb8akRtQsZvHRSi7/B+mQe6BnI30SkvCltJXUbpjfgw3LFVfzF38sq2Qecbm7j8oK48QGKMeFjuZx4uTIrSF+ddKEkfRgybbBRqdEb+68rhZWMZSxvXo3qE77dQ7ml+lenk/uGqI0uOdLHZ8wpi8NYJXWlPaC9lP3LPPgD1zy+qLnplwK1eoCYv46UACVg/JEitDvbh3+gAH+0fMqk5WetGA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=SPy6/ezeWf9IoQ2g6GIOJ4EtuUPlJM6q+7ge7KwDLKQ=;
+ b=eZIfEN64vNTRv8V9VJSBRL3AyXYKoYK8d2r+9noFQundTYFJkNQ+NoCNybNH6/ER6ctkuH+OcwrXXB1EwdunSBSTxknlgWdvqhSgduqu9eeUzH3b1im+aeXj9jDYznRZHo0ahEbK2w2f1CZ0RGl13i25Lq4ddWHaA9gxk258VgO87FjUzkUUVge6/botcqkvC3PwYWWzebfI0WbwhQEd4xoAJYgq0ud9TkQM2nbYcMtJT2l1Sapucwk/bcTFGW1UPRlydR5SQvk82Cr2/oeVCtBavtD8ZJ4p073MuslenCLS3hBxZPslSlF0A4qnwpHJyW0oRfN2skpac9kXXQz89A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=SPy6/ezeWf9IoQ2g6GIOJ4EtuUPlJM6q+7ge7KwDLKQ=;
+ b=Nf51uFKMQKkWPPrY2vOhGZCFjgHvMAnF1NMdrBi7trIKeUfEu0kobNCyBkO/2Lb6EUMW97xtSN8e34unfh5cbYcCPGpQZgRxvM4+wRSHlnCoBqoKVO32qLSlinTr3slGBUkGPteFCKvZT3/qJpd5T9XkTlXma5+zWJa2CH80ntCKhcfFsy7EQxxjK4PraSZdSUnIxRZd6AsFcApVu5MmZNXklUTC1PfWPaq+pKx5z2hfBBl/+g1yXnOaGfqf4sdjgblvrjV++8Bg9HvaN9AyZor8B5pC//jA8QRBgXeSZtHTJMX+MV+TW4Y2tjxs6u2AKvsx9EMAcDDG6kRboGlyqQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by MN2PR12MB4255.namprd12.prod.outlook.com (2603:10b6:208:198::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6907.33; Mon, 23 Oct
+ 2023 22:43:08 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::3f66:c2b6:59eb:78c2]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::3f66:c2b6:59eb:78c2%6]) with mapi id 15.20.6886.034; Mon, 23 Oct 2023
+ 22:43:08 +0000
+Date: Mon, 23 Oct 2023 19:43:06 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Randy Dunlap <rdunlap@infradead.org>
+Cc: Stephen Rothwell <sfr@canb.auug.org.au>,
+	Linux Next Mailing List <linux-next@vger.kernel.org>,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+	iommu@lists.linux.dev, Kevin Tian <kevin.tian@intel.com>
+Subject: Re: linux-next: Tree for Oct 23
+ (drivers/iommu/iommufd/hw_pagetable.c)
+Message-ID: <20231023224306.GH3952@nvidia.com>
+References: <20231023165831.30d525ad@canb.auug.org.au>
+ <9e56e94d-536e-435a-afb0-4738e6eddedc@infradead.org>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <9e56e94d-536e-435a-afb0-4738e6eddedc@infradead.org>
+X-ClientProxiedBy: DM6PR12CA0018.namprd12.prod.outlook.com
+ (2603:10b6:5:1c0::31) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: linux-next: Tree for Oct 23
- (drivers/iommu/iommufd/hw_pagetable.c)
-Content-Language: en-US
-To: Stephen Rothwell <sfr@canb.auug.org.au>,
- Linux Next Mailing List <linux-next@vger.kernel.org>
-Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- iommu@lists.linux.dev, Jason Gunthorpe <jgg@nvidia.com>,
- Kevin Tian <kevin.tian@intel.com>
-References: <20231023165831.30d525ad@canb.auug.org.au>
-From: Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <20231023165831.30d525ad@canb.auug.org.au>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|MN2PR12MB4255:EE_
+X-MS-Office365-Filtering-Correlation-Id: f201c7fe-8a2d-481e-8881-08dbd4196db2
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	nXdiYsf8kioIGsWOz1xIkBa5P3SHHfyovqT8FzbiOxxXPVlZFYobWL/4jB4y3LhJB7j0wZ+BCJuEw6k71zslfql3ZVIVtdmmOgA1318egY4qqbhu0DaWiGeXRjF+DlZaiVvHSeGOH9QnhNY6wVGhIFSdHKmoaroqG92+8es1jnxgKu3kk/72YlOFvx993keFkjJWqxH83WT5YDIDlCVUH00pJ/KWWBSPiWlDvuO42ZlmApSLaO0ZOjNWdwPqs3+RtTjgj86yWV4/RDfo6Zd8oz3lhfQswp1AaNpoX0y5x6BpNxgxojMiV8wdONLxEaQabmohcWZG5sAUBrf6SLWyL7lXMEwF42Ccz7y0ywHaZT03fU917FZgkKkEknaOHA407gDAoZkbZZBtgMD5mnWlwaBTm2NptgChA/U8dQvfgma/vvCQZtmCQGbpGDGv0JW7+kCjvdj4GnxXFK8yODoiRH/yPsWw92Akq7fKY6+IOC61ZoVj0XDuDSW31dnwj9YzIcFvYNAb+YcW8Sk0Aof56fzZ16iJApiaLX1M03DzPOeCiGOQzKqdaCFJLRQc52Z5
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366004)(376002)(396003)(136003)(39860400002)(346002)(230922051799003)(186009)(1800799009)(451199024)(64100799003)(478600001)(4744005)(2906002)(5660300002)(38100700002)(36756003)(8676002)(8936002)(4326008)(41300700001)(316002)(66476007)(66556008)(66946007)(86362001)(6486002)(6916009)(33656002)(6512007)(2616005)(6506007)(26005)(1076003)(54906003)(53546011);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?6AEsEWPuAQBVzBEn+/6VZYftHoLA0p/doxWn4y0k2932kdiD1ueRVZUijWnQ?=
+ =?us-ascii?Q?mzxQe9NAMgrmEkNwbq10jQIt9yguT9/tjAjOjIrIDFNJrxrD3lMjcic1m6rN?=
+ =?us-ascii?Q?bMNC5LBkiA3XM96de84cMAAp7rYkBzDUYMutclt1tP/o1bpZsJEBAhDknVLz?=
+ =?us-ascii?Q?vdvng0xKcZ7mCAs90ypkqZ6Hp6Bu0rxiNIrI4EH8+o2U5WrGxCo69MsjMlkm?=
+ =?us-ascii?Q?1PdP9dO9Id9LknUSB1x9IbLReDquv7JzgR0r+kFNNYjzXK/PmDnCETdfUFlR?=
+ =?us-ascii?Q?fNbg9lZRh5liMYP3JcdVIrrWp9Ve7oo9+SzwJXtOVEgeuAj3AedubqIJLQtR?=
+ =?us-ascii?Q?04b0xsrGV34z+wy7AZ0pJ9+Kwd6PQcEa4VbDN8TOvF8GlMasEmfe7qO1obgE?=
+ =?us-ascii?Q?+H2AOuKvilIRh1eIEcDI8/xAMcWChJCOqLguS8T657zz4Ny1WCOc40iUK3Ps?=
+ =?us-ascii?Q?wjB6v7VbkL0w8j0semk1y/V9sBLHdsjEE/UJztp6i8QGtqwwaO648bwFIYqF?=
+ =?us-ascii?Q?0q3a5H87uAw1tHgQBV6b1m+EzhvS/BtnWn2CUcnNwyBDzgKrEj26xcSzmPmv?=
+ =?us-ascii?Q?P6qCx6gcMyBXBo7rNmbqPgodth8Y1s7G291pyAeQog0zL6ZkuzIemSjuAdR4?=
+ =?us-ascii?Q?npLZf6Tc37tCvqnEeuVjxFlsjZ+TQ9n5kIHQnVE2XRh0Gu9dtEA3Sr/Ge42O?=
+ =?us-ascii?Q?Jgqn4jrCn9wrFTjmeesccTeFVlPFB1VE8SPT+N5xtW3PAUa/9x9GIT97IG/m?=
+ =?us-ascii?Q?KP/JYFsswANwUDG2Ztd0A4g9Z9yZdEW4CeN9eIMKb77Y/mMk/yTyQ2HgtRee?=
+ =?us-ascii?Q?J0L+1ZIxwXkBotyIz3nGeBYGy7im4iywP0dcg9eP81RUjbLfkDZLzcT78Cvv?=
+ =?us-ascii?Q?41L1yd5Ie5BTNd8tpNMHOzI8QD/s3l8Tzr2ZHDIrFxIVe/xgNK61W9bcHYrn?=
+ =?us-ascii?Q?WIHZIHYdIiPO3nss8xeiVn4hgJSvUzy1xHvtxYOAbm23XpDysN25niF3sqBi?=
+ =?us-ascii?Q?FsWgv3nnMWgWnipPwYARk4V80q7fYcIOmcW0g0SclLE8EGYkzUN2yiIM1MSo?=
+ =?us-ascii?Q?O0lWBteZRRnrgFl2N7XPNOs3U5BI3NWuD7XS5bf9+NynI+w26N3UVJscGxHk?=
+ =?us-ascii?Q?wd6J0Lv5coLB/j7NDDOr0DBN/bgQSqbB7BqVRbFbbxr9l7MMZa7jsZlpUd/t?=
+ =?us-ascii?Q?zJPAngKSgulbrAsBMC6XHfcLYeTnz1gRzpX8m8kP84seJNvHhytdCNC4rc5h?=
+ =?us-ascii?Q?JTc7QsoKR8xJgDijDZXvn5KbTUYk7dbblCs1PbJf2xeQrmcBGXX/U/dEqUuW?=
+ =?us-ascii?Q?RQ12IIUDuPvMfNuOR+IqU5BW2WG4KWgFPQAiBErPqSMJuPE1Dx7EzeeVcj5O?=
+ =?us-ascii?Q?OSw4/DarNRCappL3vKFa5TjH3Kd8NV8DKUUeNkEYeLuk3jko+XFZRdqKidyI?=
+ =?us-ascii?Q?ynX9J9bN4PHx0Fs7ix8KvutYTMiBaOR+qf73fuE6fEnrZyjAp64jar1iaHRM?=
+ =?us-ascii?Q?U1/o4pqYObj0p2MRGiE1/s9wIEulNbwShleSM8d0+EmvFxdAVucdXohg13dg?=
+ =?us-ascii?Q?TuZ6YmiqzmRrGK7k90Bbd2BsG0TfACI1svBOSjX4?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f201c7fe-8a2d-481e-8881-08dbd4196db2
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Oct 2023 22:43:08.3947
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: GEB0O+zFbq/LzJfkxsKICFO46xLyZsAymHTexDwHUb9zv2hqadyvpnFp3Ok18RY4
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4255
 
-
-
-On 10/22/23 22:58, Stephen Rothwell wrote:
-> Hi all,
+On Mon, Oct 23, 2023 at 03:27:15PM -0700, Randy Dunlap wrote:
 > 
-> Changes since 20231020:
 > 
+> On 10/22/23 22:58, Stephen Rothwell wrote:
+> > Hi all,
+> > 
+> > Changes since 20231020:
+> > 
+> 
+> on ppc32 or i386:
+> 
+> powerpc-linux-ld: drivers/iommu/iommufd/hw_pagetable.o: in function `iommufd_check_iova_range':
+> hw_pagetable.c:(.text+0x90c): undefined reference to `__udivdi3'
+> powerpc-linux-ld: drivers/iommu/iommufd/hw_pagetable.o: in function `iommufd_hwpt_get_dirty_bitmap':
+> hw_pagetable.c:(.text+0xa4c): undefined reference to `__udivdi3'
+>
+> Is there already a patch for this?
 
-on ppc32 or i386:
+Yes, I pushed something temporary, I think in time for tomorrow's
+linux-next, but I'm not sure.
 
-powerpc-linux-ld: drivers/iommu/iommufd/hw_pagetable.o: in function `iommufd_check_iova_range':
-hw_pagetable.c:(.text+0x90c): undefined reference to `__udivdi3'
-powerpc-linux-ld: drivers/iommu/iommufd/hw_pagetable.o: in function `iommufd_hwpt_get_dirty_bitmap':
-hw_pagetable.c:(.text+0xa4c): undefined reference to `__udivdi3'
-
-
-Is there already a patch for this?
-Thanks.
-
--- 
-~Randy
+Jason
