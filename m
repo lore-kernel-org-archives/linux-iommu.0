@@ -1,46 +1,44 @@
-Received: from mail-yb1-f201.google.com (mail-yb1-f201.google.com [209.85.219.201])
+Received: from mail-yb1-f202.google.com (mail-yb1-f202.google.com [209.85.219.202])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 25DE82AB3B
-	for <iommu@lists.linux.dev>; Tue, 24 Oct 2023 13:46:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5462C2B5C0
+	for <iommu@lists.linux.dev>; Tue, 24 Oct 2023 13:46:47 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--surenb.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="IoGj7t07"
-Received: by mail-yb1-f201.google.com with SMTP id 3f1490d57ef6-d9a5a3f2d4fso5146563276.3
-        for <iommu@lists.linux.dev>; Tue, 24 Oct 2023 06:46:44 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="dISgpoBC"
+Received: by mail-yb1-f202.google.com with SMTP id 3f1490d57ef6-da03390793fso1012316276.3
+        for <iommu@lists.linux.dev>; Tue, 24 Oct 2023 06:46:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1698155204; x=1698760004; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:from:subject:message-id:references
-         :mime-version:in-reply-to:date:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=C4ig+ghmPhQV+NN9gQrUnAhQK6p3EzwOX4/nD/QGc34=;
-        b=IoGj7t07kjrUa9CD2oadxDe9/DXBN91ZQoSz6upnwOOa7AB8AjR0gC0Ay+DwmGAizt
-         Odgi7Zb96ENIEbac0aWCAMigd4pDxd9R0esX+eDPsYDwfSWb4pdpIrjLvbtTGA74+RnY
-         P28KEP6hUyVF1eBsiEhScSv2LhGgsV1qTTgIP/s8kWBozDQabtpj9VwHy3ruW0FN8afG
-         i4yjcb4EYBOjO5iEfqiHXj/2efgnSNE7STFJlHbOzkr/2Zdely9Ld5SBn2qH/kkqVT3w
-         IUrSsn2uanqJ3Xceugkvu7h82/Bt4llMEPdGRYT12nuizNqF29aoCM1BLvjUPKaCsT/+
-         AZSA==
+        d=google.com; s=20230601; t=1698155206; x=1698760006; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=fObhDXE+DfK48fbfXMStFHtHAmn90M4M91A2l4CxzLM=;
+        b=dISgpoBCqZ/Y8A/MF/yZJzKqIws78gQA2htGGxpagmouk0Hl9O69sLMNEtdxV4fe29
+         6b7nEhx5Adi6In5oAWe/Aymc7Zp2qQx3ymz5eJdfpERwH4mujvixhRv5/svPrhUu4Gmp
+         8owKJojw3EYJQT0WDABA0uMIcxOrcUNIeB1UCjGRD+5TEDDffrpU8TrvMgTSbwaBRHAS
+         lbm2Sn9bBarLcADUafVNO14RoNIY0gZxn82iu9hjwjcv9eWSH/+5eU6d0W+1QkX9T+4Y
+         xIAFU1PoOwyWFhji3simAY3wmSv9IO3OiCncVBaxUtG3bLxYaGsTIAZ5xm/HF0/I2zBK
+         tcJg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1698155204; x=1698760004;
-        h=content-transfer-encoding:cc:to:from:subject:message-id:references
-         :mime-version:in-reply-to:date:x-gm-message-state:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=C4ig+ghmPhQV+NN9gQrUnAhQK6p3EzwOX4/nD/QGc34=;
-        b=JZhpKezRuZcUV2A/zG1lcP7nYpAiytkLJChbF9HeUPfEpwdoa+VSh8FRZKm9YhvCgx
-         CV2jr6NhreCGmJu/0ogtWARjQQdP9FBQoCT5B159FqRxjAQ5U5ki+w/EtWiruG6YkMSy
-         08j8BAY0pWxkEQLMpJ3A5rbgFnBgCswVeIgAPyQTG5NeS0LMRv+GUorIGCxSPu+TzU1l
-         A7I7JcYpQ1/krBfcqoX/Co8oEA/+eaLY64/OOC8HR5qWyZEz1D/jQlhJGmtQ7oX52994
-         zUu058b2noQmG8G8y0Xkks/gDjbELG59pJCQI9jlQTQ4cWKwQi8tak6FvvTB7H48CJAE
-         jyOA==
-X-Gm-Message-State: AOJu0Yw8FTvM63YCTL4KgcrVr+eZ6w9DSGhucJoGD3YgXupKbgfBBY1a
-	9PXoSIqjJTfPFY9qmrwCCv/aASgDjEM=
-X-Google-Smtp-Source: AGHT+IH/oTVJ1Mu9lou4puXON+M9/Y6l8UTmlhuGUIs6R4EkfIBTFxk7sH9NDcndoJzEgmocQcXHiryGytM=
+        d=1e100.net; s=20230601; t=1698155206; x=1698760006;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=fObhDXE+DfK48fbfXMStFHtHAmn90M4M91A2l4CxzLM=;
+        b=atdS3QYCvtysRMFHJJYfqNk45XaAIhqYihRZkQQN5Qvn6rDK15jJEkXoDiWQkarqTK
+         yHjykXKpP9BT1NME7j3myCRFubejM16gyY+zy6oSE+64xoLlMTlC5PUwwK3rxsBX0mOp
+         mnuXVNtqQgr1lvDAlaV8REDL/PmTigYP6fePYI2CXqNl9T4BQFVkylPra/0nFlWOTCWb
+         3QX6DLUR1+qOSnmiRJZPHr/mHRO/zsMlHUIYJD0GWEC3Yt8d9I4JUt9Fi1dd9Uo/wY/S
+         FDTtYw8eGNgKlAJrHklzMtQluA4zO9ayPDO4ylkrRfow4M7dAqZTvriie21K5pjGAi3/
+         IGTg==
+X-Gm-Message-State: AOJu0YwcJ+vCDtiQPpQjh40CRCgYV4FSvatM1H7k1SnDDcfqY28UepN8
+	WYO9MkZTNS1xXPj0Hsw6ZkV/e6fLsaY=
+X-Google-Smtp-Source: AGHT+IGzqDmmVKWAX0qOLCG4zSSOu2XUUgzUKaIXDvA8+3j+t9o+p5RCbsfa+aQ1r6gMSAIrcYIsUr6/0f0=
 X-Received: from surenb-desktop.mtv.corp.google.com ([2620:15c:211:201:45ba:3318:d7a5:336a])
- (user=surenb job=sendgmr) by 2002:a25:d7d8:0:b0:d9a:da03:97e8 with SMTP id
- o207-20020a25d7d8000000b00d9ada0397e8mr212597ybg.2.1698155203948; Tue, 24 Oct
- 2023 06:46:43 -0700 (PDT)
-Date: Tue, 24 Oct 2023 06:45:58 -0700
+ (user=surenb job=sendgmr) by 2002:a25:5008:0:b0:da0:2b01:7215 with SMTP id
+ e8-20020a255008000000b00da02b017215mr55818ybb.10.1698155205957; Tue, 24 Oct
+ 2023 06:46:45 -0700 (PDT)
+Date: Tue, 24 Oct 2023 06:45:59 -0700
 In-Reply-To: <20231024134637.3120277-1-surenb@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -50,8 +48,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20231024134637.3120277-1-surenb@google.com>
 X-Mailer: git-send-email 2.42.0.758.gaed0368e0e-goog
-Message-ID: <20231024134637.3120277-2-surenb@google.com>
-Subject: [PATCH v2 01/39] lib/string_helpers: Add flags param to string_get_size()
+Message-ID: <20231024134637.3120277-3-surenb@google.com>
+Subject: [PATCH v2 02/39] scripts/kallysms: Always include __start and __stop symbols
 From: Suren Baghdasaryan <surenb@google.com>
 To: akpm@linux-foundation.org
 Cc: kent.overstreet@linux.dev, mhocko@suse.com, vbabka@suse.cz, 
@@ -78,333 +76,52 @@ Cc: kent.overstreet@linux.dev, mhocko@suse.com, vbabka@suse.cz,
 	linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
 	linux-arch@vger.kernel.org, linux-fsdevel@vger.kernel.org, linux-mm@kvack.org, 
 	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com, 
-	cgroups@vger.kernel.org, Andy Shevchenko <andy@kernel.org>, 
-	Michael Ellerman <mpe@ellerman.id.au>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, 
-	Paul Mackerras <paulus@samba.org>, "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, 
-	"=?UTF-8?q?Noralf=20Tr=C3=B8nnes?=" <noralf@tronnes.org>
+	cgroups@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
 From: Kent Overstreet <kent.overstreet@linux.dev>
 
-The new flags parameter allows controlling
- - Whether or not the units suffix is separated by a space, for
-   compatibility with sort -h
- - Whether or not to append a B suffix - we're not always printing
-   bytes.
+These symbols are used to denote section boundaries: by always including
+them we can unify loading sections from modules with loading built-in
+sections, which leads to some significant cleanup.
 
 Signed-off-by: Kent Overstreet <kent.overstreet@linux.dev>
 Signed-off-by: Suren Baghdasaryan <surenb@google.com>
-Cc: Andy Shevchenko <andy@kernel.org>
-Cc: Michael Ellerman <mpe@ellerman.id.au>
-Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
-Cc: Paul Mackerras <paulus@samba.org>
-Cc: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Jason Wang <jasowang@redhat.com>
-Cc: "Noralf Tr=C3=B8nnes" <noralf@tronnes.org>
-Cc: Jens Axboe <axboe@kernel.dk>
 ---
- arch/powerpc/mm/book3s64/radix_pgtable.c      |  2 +-
- drivers/block/virtio_blk.c                    |  4 ++--
- drivers/gpu/drm/gud/gud_drv.c                 |  2 +-
- drivers/mmc/core/block.c                      |  4 ++--
- drivers/mtd/spi-nor/debugfs.c                 |  6 ++---
- .../ethernet/chelsio/cxgb4/cxgb4_debugfs.c    |  4 ++--
- drivers/scsi/sd.c                             |  8 +++----
- include/linux/string_helpers.h                | 13 +++++-----
- lib/string_helpers.c                          | 24 +++++++++++++------
- lib/test-string_helpers.c                     |  4 ++--
- mm/hugetlb.c                                  |  8 +++----
- 11 files changed, 44 insertions(+), 35 deletions(-)
+ scripts/kallsyms.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
-diff --git a/arch/powerpc/mm/book3s64/radix_pgtable.c b/arch/powerpc/mm/boo=
-k3s64/radix_pgtable.c
-index c6a4ac766b2b..27aa5a083ff0 100644
---- a/arch/powerpc/mm/book3s64/radix_pgtable.c
-+++ b/arch/powerpc/mm/book3s64/radix_pgtable.c
-@@ -260,7 +260,7 @@ print_mapping(unsigned long start, unsigned long end, u=
-nsigned long size, bool e
- 	if (end <=3D start)
- 		return;
-=20
--	string_get_size(size, 1, STRING_UNITS_2, buf, sizeof(buf));
-+	string_get_size(size, 1, STRING_SIZE_BASE2, buf, sizeof(buf));
-=20
- 	pr_info("Mapped 0x%016lx-0x%016lx with %s pages%s\n", start, end, buf,
- 		exec ? " (exec)" : "");
-diff --git a/drivers/block/virtio_blk.c b/drivers/block/virtio_blk.c
-index 1fe011676d07..59140424d755 100644
---- a/drivers/block/virtio_blk.c
-+++ b/drivers/block/virtio_blk.c
-@@ -986,9 +986,9 @@ static void virtblk_update_capacity(struct virtio_blk *=
-vblk, bool resize)
- 	nblocks =3D DIV_ROUND_UP_ULL(capacity, queue_logical_block_size(q) >> 9);
-=20
- 	string_get_size(nblocks, queue_logical_block_size(q),
--			STRING_UNITS_2, cap_str_2, sizeof(cap_str_2));
-+			STRING_SIZE_BASE2, cap_str_2, sizeof(cap_str_2));
- 	string_get_size(nblocks, queue_logical_block_size(q),
--			STRING_UNITS_10, cap_str_10, sizeof(cap_str_10));
-+			0, cap_str_10, sizeof(cap_str_10));
-=20
- 	dev_notice(&vdev->dev,
- 		   "[%s] %s%llu %d-byte logical blocks (%s/%s)\n",
-diff --git a/drivers/gpu/drm/gud/gud_drv.c b/drivers/gpu/drm/gud/gud_drv.c
-index 9d7bf8ee45f1..6b1748e1f666 100644
---- a/drivers/gpu/drm/gud/gud_drv.c
-+++ b/drivers/gpu/drm/gud/gud_drv.c
-@@ -329,7 +329,7 @@ static int gud_stats_debugfs(struct seq_file *m, void *=
-data)
- 	struct gud_device *gdrm =3D to_gud_device(entry->dev);
- 	char buf[10];
-=20
--	string_get_size(gdrm->bulk_len, 1, STRING_UNITS_2, buf, sizeof(buf));
-+	string_get_size(gdrm->bulk_len, 1, STRING_SIZE_BASE2, buf, sizeof(buf));
- 	seq_printf(m, "Max buffer size: %s\n", buf);
- 	seq_printf(m, "Number of errors:  %u\n", gdrm->stats_num_errors);
-=20
-diff --git a/drivers/mmc/core/block.c b/drivers/mmc/core/block.c
-index 3a8f27c3e310..411dc8137f7c 100644
---- a/drivers/mmc/core/block.c
-+++ b/drivers/mmc/core/block.c
-@@ -2511,7 +2511,7 @@ static struct mmc_blk_data *mmc_blk_alloc_req(struct =
-mmc_card *card,
-=20
- 	blk_queue_write_cache(md->queue.queue, cache_enabled, fua_enabled);
-=20
--	string_get_size((u64)size, 512, STRING_UNITS_2,
-+	string_get_size((u64)size, 512, STRING_SIZE_BASE2,
- 			cap_str, sizeof(cap_str));
- 	pr_info("%s: %s %s %s%s\n",
- 		md->disk->disk_name, mmc_card_id(card), mmc_card_name(card),
-@@ -2707,7 +2707,7 @@ static int mmc_blk_alloc_rpmb_part(struct mmc_card *c=
-ard,
-=20
- 	list_add(&rpmb->node, &md->rpmbs);
-=20
--	string_get_size((u64)size, 512, STRING_UNITS_2,
-+	string_get_size((u64)size, 512, STRING_SIZE_BASE2,
- 			cap_str, sizeof(cap_str));
-=20
- 	pr_info("%s: %s %s %s, chardev (%d:%d)\n",
-diff --git a/drivers/mtd/spi-nor/debugfs.c b/drivers/mtd/spi-nor/debugfs.c
-index 6e163cb5b478..a1b61938fee2 100644
---- a/drivers/mtd/spi-nor/debugfs.c
-+++ b/drivers/mtd/spi-nor/debugfs.c
-@@ -85,7 +85,7 @@ static int spi_nor_params_show(struct seq_file *s, void *=
-data)
-=20
- 	seq_printf(s, "name\t\t%s\n", info->name);
- 	seq_printf(s, "id\t\t%*ph\n", SPI_NOR_MAX_ID_LEN, nor->id);
--	string_get_size(params->size, 1, STRING_UNITS_2, buf, sizeof(buf));
-+	string_get_size(params->size, 1, STRING_SIZE_BASE2, buf, sizeof(buf));
- 	seq_printf(s, "size\t\t%s\n", buf);
- 	seq_printf(s, "write size\t%u\n", params->writesize);
- 	seq_printf(s, "page size\t%u\n", params->page_size);
-@@ -130,14 +130,14 @@ static int spi_nor_params_show(struct seq_file *s, vo=
-id *data)
- 		struct spi_nor_erase_type *et =3D &erase_map->erase_type[i];
-=20
- 		if (et->size) {
--			string_get_size(et->size, 1, STRING_UNITS_2, buf,
-+			string_get_size(et->size, 1, STRING_SIZE_BASE2, buf,
- 					sizeof(buf));
- 			seq_printf(s, " %02x (%s) [%d]\n", et->opcode, buf, i);
- 		}
- 	}
-=20
- 	if (!(nor->flags & SNOR_F_NO_OP_CHIP_ERASE)) {
--		string_get_size(params->size, 1, STRING_UNITS_2, buf, sizeof(buf));
-+		string_get_size(params->size, 1, STRING_SIZE_BASE2, buf, sizeof(buf));
- 		seq_printf(s, " %02x (%s)\n", SPINOR_OP_CHIP_ERASE, buf);
- 	}
-=20
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c b/drivers/n=
-et/ethernet/chelsio/cxgb4/cxgb4_debugfs.c
-index 14e0d989c3ba..7d5fbebd36fc 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c
-@@ -3457,8 +3457,8 @@ static void mem_region_show(struct seq_file *seq, con=
-st char *name,
- {
- 	char buf[40];
-=20
--	string_get_size((u64)to - from + 1, 1, STRING_UNITS_2, buf,
--			sizeof(buf));
-+	string_get_size((u64)to - from + 1, 1, STRING_SIZE_BASE2,
-+			buf, sizeof(buf));
- 	seq_printf(seq, "%-15s %#x-%#x [%s]\n", name, from, to, buf);
+diff --git a/scripts/kallsyms.c b/scripts/kallsyms.c
+index 653b92f6d4c8..47978efe4797 100644
+--- a/scripts/kallsyms.c
++++ b/scripts/kallsyms.c
+@@ -204,6 +204,11 @@ static int symbol_in_range(const struct sym_entry *s,
+ 	return 0;
  }
-=20
-diff --git a/drivers/scsi/sd.c b/drivers/scsi/sd.c
-index 83b6a3f3863b..c37593f76b65 100644
---- a/drivers/scsi/sd.c
-+++ b/drivers/scsi/sd.c
-@@ -2689,10 +2689,10 @@ sd_print_capacity(struct scsi_disk *sdkp,
- 	if (!sdkp->first_scan && old_capacity =3D=3D sdkp->capacity)
- 		return;
-=20
--	string_get_size(sdkp->capacity, sector_size,
--			STRING_UNITS_2, cap_str_2, sizeof(cap_str_2));
--	string_get_size(sdkp->capacity, sector_size,
--			STRING_UNITS_10, cap_str_10, sizeof(cap_str_10));
-+	string_get_size(sdkp->capacity, sector_size, STRING_SIZE_BASE2,
-+			cap_str_2, sizeof(cap_str_2));
-+	string_get_size(sdkp->capacity, sector_size, 0,
-+			cap_str_10, sizeof(cap_str_10));
-=20
- 	sd_printk(KERN_NOTICE, sdkp,
- 		  "%llu %d-byte logical blocks: (%s/%s)\n",
-diff --git a/include/linux/string_helpers.h b/include/linux/string_helpers.=
-h
-index 9d1f5bb74dd5..a54467d891db 100644
---- a/include/linux/string_helpers.h
-+++ b/include/linux/string_helpers.h
-@@ -17,15 +17,14 @@ static inline bool string_is_terminated(const char *s, =
-int len)
- 	return memchr(s, '\0', len) ? true : false;
- }
-=20
--/* Descriptions of the types of units to
-- * print in */
--enum string_size_units {
--	STRING_UNITS_10,	/* use powers of 10^3 (standard SI) */
--	STRING_UNITS_2,		/* use binary powers of 2^10 */
-+enum string_size_flags {
-+	STRING_SIZE_BASE2	=3D (1 << 0),
-+	STRING_SIZE_NOSPACE	=3D (1 << 1),
-+	STRING_SIZE_NOBYTES	=3D (1 << 2),
- };
-=20
--void string_get_size(u64 size, u64 blk_size, enum string_size_units units,
--		     char *buf, int len);
-+int string_get_size(u64 size, u64 blk_size, enum string_size_flags flags,
-+		    char *buf, int len);
-=20
- int parse_int_array_user(const char __user *from, size_t count, int **arra=
-y);
-=20
-diff --git a/lib/string_helpers.c b/lib/string_helpers.c
-index 9982344cca34..b1496499b113 100644
---- a/lib/string_helpers.c
-+++ b/lib/string_helpers.c
-@@ -19,11 +19,17 @@
- #include <linux/string.h>
- #include <linux/string_helpers.h>
-=20
-+enum string_size_units {
-+	STRING_UNITS_10,	/* use powers of 10^3 (standard SI) */
-+	STRING_UNITS_2,		/* use binary powers of 2^10 */
-+};
+ 
++static bool string_starts_with(const char *s, const char *prefix)
++{
++	return strncmp(s, prefix, strlen(prefix)) == 0;
++}
 +
- /**
-  * string_get_size - get the size in the specified units
-  * @size:	The size to be converted in blocks
-  * @blk_size:	Size of the block (use 1 for size in bytes)
-- * @units:	units to use (powers of 1000 or 1024)
-+ * @flags:	units to use (powers of 1000 or 1024), whether to include space
-+ *		separator
-  * @buf:	buffer to format to
-  * @len:	length of buffer
-  *
-@@ -32,14 +38,16 @@
-  * at least 9 bytes and will always be zero terminated.
-  *
-  */
--void string_get_size(u64 size, u64 blk_size, const enum string_size_units =
-units,
--		     char *buf, int len)
-+int string_get_size(u64 size, u64 blk_size, enum string_size_flags flags,
-+		    char *buf, int len)
+ static int symbol_valid(const struct sym_entry *s)
  {
-+	enum string_size_units units =3D flags & flags & STRING_SIZE_BASE2
-+		? STRING_UNITS_2 : STRING_UNITS_10;
- 	static const char *const units_10[] =3D {
--		"B", "kB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"
-+		"", "k", "M", "G", "T", "P", "E", "Z", "Y"
- 	};
- 	static const char *const units_2[] =3D {
--		"B", "KiB", "MiB", "GiB", "TiB", "PiB", "EiB", "ZiB", "YiB"
-+		"", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei", "Zi", "Yi"
- 	};
- 	static const char *const *const units_str[] =3D {
- 		[STRING_UNITS_10] =3D units_10,
-@@ -126,8 +134,10 @@ void string_get_size(u64 size, u64 blk_size, const enu=
-m string_size_units units,
- 	else
- 		unit =3D units_str[units][i];
-=20
--	snprintf(buf, len, "%u%s %s", (u32)size,
--		 tmp, unit);
-+	return snprintf(buf, len, "%u%s%s%s%s", (u32)size, tmp,
-+			(flags & STRING_SIZE_NOSPACE)		? "" : " ",
-+			unit,
-+			(flags & STRING_SIZE_NOBYTES)		? "" : "B");
- }
- EXPORT_SYMBOL(string_get_size);
-=20
-diff --git a/lib/test-string_helpers.c b/lib/test-string_helpers.c
-index 9a68849a5d55..0b01ffca96fb 100644
---- a/lib/test-string_helpers.c
-+++ b/lib/test-string_helpers.c
-@@ -507,8 +507,8 @@ static __init void __test_string_get_size(const u64 siz=
-e, const u64 blk_size,
- 	char buf10[string_get_size_maxbuf];
- 	char buf2[string_get_size_maxbuf];
-=20
--	string_get_size(size, blk_size, STRING_UNITS_10, buf10, sizeof(buf10));
--	string_get_size(size, blk_size, STRING_UNITS_2, buf2, sizeof(buf2));
-+	string_get_size(size, blk_size, 0, buf10, sizeof(buf10));
-+	string_get_size(size, blk_size, STRING_SIZE_BASE2, buf2, sizeof(buf2));
-=20
- 	test_string_get_size_check("STRING_UNITS_10", exp_result10, buf10,
- 				   size, blk_size);
-diff --git a/mm/hugetlb.c b/mm/hugetlb.c
-index 52d26072dfda..37f2148d3b9c 100644
---- a/mm/hugetlb.c
-+++ b/mm/hugetlb.c
-@@ -3228,7 +3228,7 @@ static void __init hugetlb_hstate_alloc_pages_onenode=
-(struct hstate *h, int nid)
- 	if (i =3D=3D h->max_huge_pages_node[nid])
- 		return;
-=20
--	string_get_size(huge_page_size(h), 1, STRING_UNITS_2, buf, 32);
-+	string_get_size(huge_page_size(h), 1, STRING_SIZE_BASE2, buf, 32);
- 	pr_warn("HugeTLB: allocating %u of page size %s failed node%d.  Only allo=
-cated %lu hugepages.\n",
- 		h->max_huge_pages_node[nid], buf, nid, i);
- 	h->max_huge_pages -=3D (h->max_huge_pages_node[nid] - i);
-@@ -3290,7 +3290,7 @@ static void __init hugetlb_hstate_alloc_pages(struct =
-hstate *h)
- 	if (i < h->max_huge_pages) {
- 		char buf[32];
-=20
--		string_get_size(huge_page_size(h), 1, STRING_UNITS_2, buf, 32);
-+		string_get_size(huge_page_size(h), 1, STRING_SIZE_BASE2, buf, 32);
- 		pr_warn("HugeTLB: allocating %lu of page size %s failed.  Only allocated=
- %lu hugepages.\n",
- 			h->max_huge_pages, buf, i);
- 		h->max_huge_pages =3D i;
-@@ -3336,7 +3336,7 @@ static void __init report_hugepages(void)
- 	for_each_hstate(h) {
- 		char buf[32];
-=20
--		string_get_size(huge_page_size(h), 1, STRING_UNITS_2, buf, 32);
-+		string_get_size(huge_page_size(h), 1, STRING_SIZE_BASE2, buf, 32);
- 		pr_info("HugeTLB: registered %s page size, pre-allocated %ld pages\n",
- 			buf, h->free_huge_pages);
- 		pr_info("HugeTLB: %d KiB vmemmap can be freed for a %s page\n",
-@@ -4227,7 +4227,7 @@ static int __init hugetlb_init(void)
- 				char buf[32];
-=20
- 				string_get_size(huge_page_size(&default_hstate),
--					1, STRING_UNITS_2, buf, 32);
-+					1, STRING_SIZE_BASE2, buf, 32);
- 				pr_warn("HugeTLB: Ignoring hugepages=3D%lu associated with %s page siz=
-e\n",
- 					default_hstate.max_huge_pages, buf);
- 				pr_warn("HugeTLB: Using hugepages=3D%lu for number of default huge pag=
-es\n",
---=20
+ 	const char *name = sym_name(s);
+@@ -211,6 +216,14 @@ static int symbol_valid(const struct sym_entry *s)
+ 	/* if --all-symbols is not specified, then symbols outside the text
+ 	 * and inittext sections are discarded */
+ 	if (!all_symbols) {
++		/*
++		 * Symbols starting with __start and __stop are used to denote
++		 * section boundaries, and should always be included:
++		 */
++		if (string_starts_with(name, "__start_") ||
++		    string_starts_with(name, "__stop_"))
++			return 1;
++
+ 		if (symbol_in_range(s, text_ranges,
+ 				    ARRAY_SIZE(text_ranges)) == 0)
+ 			return 0;
+-- 
 2.42.0.758.gaed0368e0e-goog
 
