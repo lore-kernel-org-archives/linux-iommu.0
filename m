@@ -1,41 +1,41 @@
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F41DE2B5E7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 53DEF2B5E5
 	for <iommu@lists.linux.dev>; Tue, 24 Oct 2023 13:52:07 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oracle.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oracle.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="JMWbFB9M"
-Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
-	by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 39OCJPv5032352;
-	Tue, 24 Oct 2023 13:51:51 GMT
+	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="DHsWaubm"
+Received: from pps.filterd (m0333521.ppops.net [127.0.0.1])
+	by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 39OCKHrE019973;
+	Tue, 24 Oct 2023 13:51:39 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding; s=corp-2023-03-30;
- bh=XM1P6Y1sPoR4WB88yqJ/AWq1kmG3mo7Q/s1psYxwxOk=;
- b=JMWbFB9MwPXwUpsDUM6WWLnfvbvvLArufhT7+miI49Epc3siqOy8Bdz0xFlaXyKU08oS
- /UQ24F54zFkcK7brfaYsfoSKeECOSel7XOM5FbqdZsr8W8kn8gmshV9iLbyaAFh2FS4y
- onuXbhvIabJPVInbmCQIJyt1Wg2YMlcqB3ghdWNIxuXQzro46b0N5X7i9W2rZeN4PMBr
- DTpOa6gvp+dS8gK8HczmMUwIDonWOGJ5GTAfj4Ng1oTQUbQXT7EFMmEteBXF4iyABIEZ
- xfkLB8CClbLhXPb1xufAwOqNIsOdAYkYz7iGwgQWY7yyDN+zIT+8aLSI/y2/zYY3cVa0 Eg== 
+ bh=iSnZCQpzJVvKgCwROm6u7lb816aFtOmUcNeaLYSjJxQ=;
+ b=DHsWaubmm+l/3hW43c/0PfRE1CIfsTSgaZxvrgutfhXHToBPmjL9aMOrwLyaRLEJ0w/v
+ cd86mmdYOnHwS6oCu8HQxj5pCcqx+kRI570C3M8h6htAezcsspjY5/LjLmVsQeoM764B
+ 2ZTuvoTkZyLc08gF0yNz+n9d0STREViAsiYUNWhdil2oB5ZqQjB2/fy0uT/9QZNMAYr8
+ duaD4bucFyXQPh3w3i0MHPQJnEbXUiFuDzNVlW32fIGPD6NdAY/oiyb0k2hzC86wgSoo
+ RYnvhPVyS9NqqY/jvNaVENQ5AqrW5u25Ba4sVf3q+hi+5eDl2GEaZfPeEgCzt2WbnMWw tw== 
 Received: from phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta03.appoci.oracle.com [138.1.37.129])
-	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3tv68tdg3s-1
+	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3tv5jbdhqh-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Tue, 24 Oct 2023 13:51:35 +0000
+	Tue, 24 Oct 2023 13:51:39 +0000
 Received: from pps.filterd (phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-	by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (8.17.1.19/8.17.1.19) with ESMTP id 39OCs6R8034562;
-	Tue, 24 Oct 2023 13:51:30 GMT
+	by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (8.17.1.19/8.17.1.19) with ESMTP id 39OCLolG034524;
+	Tue, 24 Oct 2023 13:51:38 GMT
 Received: from pps.reinject (localhost [127.0.0.1])
-	by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 3tv53591yw-1
+	by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 3tv535924f-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Tue, 24 Oct 2023 13:51:30 +0000
+	Tue, 24 Oct 2023 13:51:38 +0000
 Received: from phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 39ODpL8s030007;
-	Tue, 24 Oct 2023 13:51:29 GMT
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 39ODpL8w030007;
+	Tue, 24 Oct 2023 13:51:37 GMT
 Received: from joaomart-mac.uk.oracle.com (dhcp-10-175-194-36.vpn.oracle.com [10.175.194.36])
-	by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTP id 3tv53591rr-3;
-	Tue, 24 Oct 2023 13:51:29 +0000
+	by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTP id 3tv53591rr-5;
+	Tue, 24 Oct 2023 13:51:37 +0000
 From: Joao Martins <joao.m.martins@oracle.com>
 To: iommu@lists.linux.dev
 Cc: Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
@@ -47,11 +47,10 @@ Cc: Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
         Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
         Zhenzhong Duan <zhenzhong.duan@intel.com>,
         Alex Williamson <alex.williamson@redhat.com>, kvm@vger.kernel.org,
-        Joao Martins <joao.m.martins@oracle.com>,
-        Brett Creeley <brett.creeley@amd.com>
-Subject: [PATCH v6 02/18] vfio: Move iova_bitmap into iommufd
-Date: Tue, 24 Oct 2023 14:50:53 +0100
-Message-Id: <20231024135109.73787-3-joao.m.martins@oracle.com>
+        Joao Martins <joao.m.martins@oracle.com>
+Subject: [PATCH v6 04/18] iommu: Add iommu_domain ops for dirty tracking
+Date: Tue, 24 Oct 2023 14:50:55 +0100
+Message-Id: <20231024135109.73787-5-joao.m.martins@oracle.com>
 In-Reply-To: <20231024135109.73787-1-joao.m.martins@oracle.com>
 References: <20231024135109.73787-1-joao.m.martins@oracle.com>
 Precedence: bulk
@@ -68,151 +67,197 @@ X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 adult
  mlxlogscore=999 mlxscore=0 bulkscore=0 suspectscore=0 malwarescore=0
  classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2310170001
  definitions=main-2310240118
-X-Proofpoint-ORIG-GUID: XVqmOyLd7tHlFc8dkuseFk8mzagohJxy
-X-Proofpoint-GUID: XVqmOyLd7tHlFc8dkuseFk8mzagohJxy
+X-Proofpoint-GUID: rPu4tJsJU87v64bEJ8VUV9yfLypFjQTH
+X-Proofpoint-ORIG-GUID: rPu4tJsJU87v64bEJ8VUV9yfLypFjQTH
 
-Both VFIO and IOMMUFD will need iova bitmap for storing dirties and walking
-the user bitmaps, so move to the common dependency into IOMMUFD.  In doing
-so, create the symbol IOMMUFD_DRIVER which designates the builtin code that
-will be used by drivers when selected. Today this means MLX5_VFIO_PCI and
-PDS_VFIO_PCI. IOMMU drivers will do the same (in future patches) when
-supporting dirty tracking and select IOMMUFD_DRIVER accordingly.
+Add to iommu domain operations a set of callbacks to perform dirty
+tracking, particulary to start and stop tracking and to read and clear the
+dirty data.
 
-Given that the symbol maybe be disabled, add header definitions in
-iova_bitmap.h for when IOMMUFD_DRIVER=n
+Drivers are generally expected to dynamically change its translation
+structures to toggle the tracking and flush some form of control state
+structure that stands in the IOVA translation path. Though it's not
+mandatory, as drivers can also enable dirty tracking at boot, and just
+clear the dirty bits before setting dirty tracking. For each of the newly
+added IOMMU core APIs:
+
+iommu_cap::IOMMU_CAP_DIRTY_TRACKING: new device iommu_capable value when
+probing for capabilities of the device.
+
+.set_dirty_tracking(): an iommu driver is expected to change its
+translation structures and enable dirty tracking for the devices in the
+iommu_domain. For drivers making dirty tracking always-enabled, it should
+just return 0.
+
+.read_and_clear_dirty(): an iommu driver is expected to walk the pagetables
+for the iova range passed in and use iommu_dirty_bitmap_record() to record
+dirty info per IOVA. When detecting that a given IOVA is dirty it should
+also clear its dirty state from the PTE, *unless* the flag
+IOMMU_DIRTY_NO_CLEAR is passed in -- flushing is steered from the caller of
+the domain_op via iotlb_gather. The iommu core APIs use the same data
+structure in use for dirty tracking for VFIO device dirty (struct
+iova_bitmap) abstracted by iommu_dirty_bitmap_record() helper function.
+
+domain::dirty_ops: IOMMU domains will store the dirty ops depending on
+whether the iommu device supports dirty tracking or not. iommu drivers can
+then use this field to figure if the dirty tracking is supported+enforced
+on attach. The enforcement is enable via domain_alloc_user() which is done
+via IOMMUFD hwpt flag introduced later.
 
 Signed-off-by: Joao Martins <joao.m.martins@oracle.com>
 Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-Reviewed-by: Brett Creeley <brett.creeley@amd.com>
+Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
 Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-Reviewed-by: Alex Williamson <alex.williamson@redhat.com>
 ---
- drivers/iommu/Kconfig                         |  4 +++
- drivers/iommu/iommufd/Makefile                |  1 +
- drivers/{vfio => iommu/iommufd}/iova_bitmap.c |  0
- drivers/vfio/Makefile                         |  3 +--
- drivers/vfio/pci/mlx5/Kconfig                 |  1 +
- drivers/vfio/pci/pds/Kconfig                  |  1 +
- include/linux/iova_bitmap.h                   | 26 +++++++++++++++++++
- 7 files changed, 34 insertions(+), 2 deletions(-)
- rename drivers/{vfio => iommu/iommufd}/iova_bitmap.c (100%)
+ include/linux/io-pgtable.h |  4 +++
+ include/linux/iommu.h      | 70 ++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 74 insertions(+)
 
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index 2b12b583ef4b..5cc869db1b79 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -7,6 +7,10 @@ config IOMMU_IOVA
- config IOMMU_API
- 	bool
+diff --git a/include/linux/io-pgtable.h b/include/linux/io-pgtable.h
+index 1b7a44b35616..25142a0e2fc2 100644
+--- a/include/linux/io-pgtable.h
++++ b/include/linux/io-pgtable.h
+@@ -166,6 +166,10 @@ struct io_pgtable_ops {
+ 			      struct iommu_iotlb_gather *gather);
+ 	phys_addr_t (*iova_to_phys)(struct io_pgtable_ops *ops,
+ 				    unsigned long iova);
++	int (*read_and_clear_dirty)(struct io_pgtable_ops *ops,
++				    unsigned long iova, size_t size,
++				    unsigned long flags,
++				    struct iommu_dirty_bitmap *dirty);
+ };
  
-+config IOMMUFD_DRIVER
-+	bool
-+	default n
+ /**
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 3861d66b65c1..1d42bdb37cbc 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -13,6 +13,7 @@
+ #include <linux/errno.h>
+ #include <linux/err.h>
+ #include <linux/of.h>
++#include <linux/iova_bitmap.h>
+ #include <uapi/linux/iommu.h>
+ 
+ #define IOMMU_READ	(1 << 0)
+@@ -37,6 +38,7 @@ struct bus_type;
+ struct device;
+ struct iommu_domain;
+ struct iommu_domain_ops;
++struct iommu_dirty_ops;
+ struct notifier_block;
+ struct iommu_sva;
+ struct iommu_fault_event;
+@@ -95,6 +97,8 @@ struct iommu_domain_geometry {
+ struct iommu_domain {
+ 	unsigned type;
+ 	const struct iommu_domain_ops *ops;
++	const struct iommu_dirty_ops *dirty_ops;
 +
- menuconfig IOMMU_SUPPORT
- 	bool "IOMMU Hardware Support"
- 	depends on MMU
-diff --git a/drivers/iommu/iommufd/Makefile b/drivers/iommu/iommufd/Makefile
-index 8aeba81800c5..34b446146961 100644
---- a/drivers/iommu/iommufd/Makefile
-+++ b/drivers/iommu/iommufd/Makefile
-@@ -11,3 +11,4 @@ iommufd-y := \
- iommufd-$(CONFIG_IOMMUFD_TEST) += selftest.o
+ 	unsigned long pgsize_bitmap;	/* Bitmap of page sizes in use */
+ 	struct iommu_domain_geometry geometry;
+ 	struct iommu_dma_cookie *iova_cookie;
+@@ -133,6 +137,7 @@ enum iommu_cap {
+ 	 * usefully support the non-strict DMA flush queue.
+ 	 */
+ 	IOMMU_CAP_DEFERRED_FLUSH,
++	IOMMU_CAP_DIRTY_TRACKING,	/* IOMMU supports dirty tracking */
+ };
  
- obj-$(CONFIG_IOMMUFD) += iommufd.o
-+obj-$(CONFIG_IOMMUFD_DRIVER) += iova_bitmap.o
-diff --git a/drivers/vfio/iova_bitmap.c b/drivers/iommu/iommufd/iova_bitmap.c
-similarity index 100%
-rename from drivers/vfio/iova_bitmap.c
-rename to drivers/iommu/iommufd/iova_bitmap.c
-diff --git a/drivers/vfio/Makefile b/drivers/vfio/Makefile
-index c82ea032d352..68c05705200f 100644
---- a/drivers/vfio/Makefile
-+++ b/drivers/vfio/Makefile
-@@ -1,8 +1,7 @@
- # SPDX-License-Identifier: GPL-2.0
- obj-$(CONFIG_VFIO) += vfio.o
+ /* These are the possible reserved region types */
+@@ -227,6 +232,35 @@ struct iommu_iotlb_gather {
+ 	bool			queued;
+ };
  
--vfio-y += vfio_main.o \
--	  iova_bitmap.o
-+vfio-y += vfio_main.o
- vfio-$(CONFIG_VFIO_DEVICE_CDEV) += device_cdev.o
- vfio-$(CONFIG_VFIO_GROUP) += group.o
- vfio-$(CONFIG_IOMMUFD) += iommufd.o
-diff --git a/drivers/vfio/pci/mlx5/Kconfig b/drivers/vfio/pci/mlx5/Kconfig
-index 7088edc4fb28..c3ced56b7787 100644
---- a/drivers/vfio/pci/mlx5/Kconfig
-+++ b/drivers/vfio/pci/mlx5/Kconfig
-@@ -3,6 +3,7 @@ config MLX5_VFIO_PCI
- 	tristate "VFIO support for MLX5 PCI devices"
- 	depends on MLX5_CORE
- 	select VFIO_PCI_CORE
-+	select IOMMUFD_DRIVER
- 	help
- 	  This provides migration support for MLX5 devices using the VFIO
- 	  framework.
-diff --git a/drivers/vfio/pci/pds/Kconfig b/drivers/vfio/pci/pds/Kconfig
-index 407b3fd32733..fff368a8183b 100644
---- a/drivers/vfio/pci/pds/Kconfig
-+++ b/drivers/vfio/pci/pds/Kconfig
-@@ -5,6 +5,7 @@ config PDS_VFIO_PCI
- 	tristate "VFIO support for PDS PCI devices"
- 	depends on PDS_CORE
- 	select VFIO_PCI_CORE
-+	select IOMMUFD_DRIVER
- 	help
- 	  This provides generic PCI support for PDS devices using the VFIO
- 	  framework.
-diff --git a/include/linux/iova_bitmap.h b/include/linux/iova_bitmap.h
-index c006cf0a25f3..1c338f5e5b7a 100644
---- a/include/linux/iova_bitmap.h
-+++ b/include/linux/iova_bitmap.h
-@@ -7,6 +7,7 @@
- #define _IOVA_BITMAP_H_
++/**
++ * struct iommu_dirty_bitmap - Dirty IOVA bitmap state
++ * @bitmap: IOVA bitmap
++ * @gather: Range information for a pending IOTLB flush
++ */
++struct iommu_dirty_bitmap {
++	struct iova_bitmap *bitmap;
++	struct iommu_iotlb_gather *gather;
++};
++
++/* Read but do not clear any dirty bits */
++#define IOMMU_DIRTY_NO_CLEAR (1 << 0)
++
++/**
++ * struct iommu_dirty_ops - domain specific dirty tracking operations
++ * @set_dirty_tracking: Enable or Disable dirty tracking on the iommu domain
++ * @read_and_clear_dirty: Walk IOMMU page tables for dirtied PTEs marshalled
++ *                        into a bitmap, with a bit represented as a page.
++ *                        Reads the dirty PTE bits and clears it from IO
++ *                        pagetables.
++ */
++struct iommu_dirty_ops {
++	int (*set_dirty_tracking)(struct iommu_domain *domain, bool enabled);
++	int (*read_and_clear_dirty)(struct iommu_domain *domain,
++				    unsigned long iova, size_t size,
++				    unsigned long flags,
++				    struct iommu_dirty_bitmap *dirty);
++};
++
+ /**
+  * struct iommu_ops - iommu ops and capabilities
+  * @capable: check capability
+@@ -641,6 +675,28 @@ static inline bool iommu_iotlb_gather_queued(struct iommu_iotlb_gather *gather)
+ 	return gather && gather->queued;
+ }
  
- #include <linux/types.h>
-+#include <linux/errno.h>
- 
- struct iova_bitmap;
- 
-@@ -14,6 +15,7 @@ typedef int (*iova_bitmap_fn_t)(struct iova_bitmap *bitmap,
- 				unsigned long iova, size_t length,
- 				void *opaque);
- 
-+#if IS_ENABLED(CONFIG_IOMMUFD_DRIVER)
- struct iova_bitmap *iova_bitmap_alloc(unsigned long iova, size_t length,
- 				      unsigned long page_size,
- 				      u64 __user *data);
-@@ -22,5 +24,29 @@ int iova_bitmap_for_each(struct iova_bitmap *bitmap, void *opaque,
- 			 iova_bitmap_fn_t fn);
- void iova_bitmap_set(struct iova_bitmap *bitmap,
- 		     unsigned long iova, size_t length);
-+#else
-+static inline struct iova_bitmap *iova_bitmap_alloc(unsigned long iova,
-+						    size_t length,
-+						    unsigned long page_size,
-+						    u64 __user *data)
++static inline void iommu_dirty_bitmap_init(struct iommu_dirty_bitmap *dirty,
++					   struct iova_bitmap *bitmap,
++					   struct iommu_iotlb_gather *gather)
 +{
-+	return NULL;
++	if (gather)
++		iommu_iotlb_gather_init(gather);
++
++	dirty->bitmap = bitmap;
++	dirty->gather = gather;
 +}
 +
-+static inline void iova_bitmap_free(struct iova_bitmap *bitmap)
++static inline void iommu_dirty_bitmap_record(struct iommu_dirty_bitmap *dirty,
++					     unsigned long iova,
++					     unsigned long length)
 +{
++	if (dirty->bitmap)
++		iova_bitmap_set(dirty->bitmap, iova, length);
++
++	if (dirty->gather)
++		iommu_iotlb_gather_add_range(dirty->gather, iova, length);
 +}
 +
-+static inline int iova_bitmap_for_each(struct iova_bitmap *bitmap, void *opaque,
-+				       iova_bitmap_fn_t fn)
-+{
-+	return -EOPNOTSUPP;
-+}
-+
-+static inline void iova_bitmap_set(struct iova_bitmap *bitmap,
-+				   unsigned long iova, size_t length)
-+{
-+}
-+#endif
+ /* PCI device grouping function */
+ extern struct iommu_group *pci_device_group(struct device *dev);
+ /* Generic device grouping function */
+@@ -746,6 +802,8 @@ struct iommu_fwspec {};
+ struct iommu_device {};
+ struct iommu_fault_param {};
+ struct iommu_iotlb_gather {};
++struct iommu_dirty_bitmap {};
++struct iommu_dirty_ops {};
  
- #endif
+ static inline bool iommu_present(const struct bus_type *bus)
+ {
+@@ -978,6 +1036,18 @@ static inline bool iommu_iotlb_gather_queued(struct iommu_iotlb_gather *gather)
+ 	return false;
+ }
+ 
++static inline void iommu_dirty_bitmap_init(struct iommu_dirty_bitmap *dirty,
++					   struct iova_bitmap *bitmap,
++					   struct iommu_iotlb_gather *gather)
++{
++}
++
++static inline void iommu_dirty_bitmap_record(struct iommu_dirty_bitmap *dirty,
++					     unsigned long iova,
++					     unsigned long length)
++{
++}
++
+ static inline void iommu_device_unregister(struct iommu_device *iommu)
+ {
+ }
 -- 
 2.17.2
 
