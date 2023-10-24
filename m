@@ -1,205 +1,240 @@
-Received: from mail-yb1-f201.google.com (mail-yb1-f201.google.com [209.85.219.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.93])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B33639935
-	for <iommu@lists.linux.dev>; Tue, 24 Oct 2023 13:48:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--surenb.bounces.google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 89E5C25116
+	for <iommu@lists.linux.dev>; Tue, 24 Oct 2023 13:49:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="MEzIFEyR"
-Received: by mail-yb1-f201.google.com with SMTP id 3f1490d57ef6-d9a5a16fa94so4433489276.0
-        for <iommu@lists.linux.dev>; Tue, 24 Oct 2023 06:48:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1698155286; x=1698760086; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=nwLU1aU2LNAtecsch6dr14rd1yTTpsfUN6nYD0uWJEE=;
-        b=MEzIFEyR/pufgs/+9pTffuzT2U2D00UnKfh4mwjvYaLZ9M7JNuC6R/eyylc+6L9vIo
-         cwf2bn4zXnt7ADKnV4uz7HZ4kO22KI1nGmBhij+IL5HhrzVX5mVXnnC1wZW1n5VjnnbG
-         w2XKI9+2y2bNLjick1o9rhkMHoGU9Ma85vXxjOHTOBAZc5B/nsc/SOt9FliYTeKcBwTQ
-         7DI7m5r4Cvm/sKtrqiXUvZDS2emVbzKdPNsWJKu6fuM7H4yff4SMjdKHJ9rCNo6d1e1A
-         NkhYOZxqDRVm0Uj/o3TrpIh4t4yjJuedNtVo0L1dJlnbpJWFMA9fGia64W9mes5DizBF
-         LGMA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1698155286; x=1698760086;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=nwLU1aU2LNAtecsch6dr14rd1yTTpsfUN6nYD0uWJEE=;
-        b=Mu0c55/q+abFPB1uzZTa1vRKcED5vtZnf6340gUAcYMnZqBHYS2zjwfdmSTSI6Aa5p
-         3mchfS3ODBkLAPVNa+PyrvmIstWS0PY/VKgFgzGx+qGqQAiP3hLhQ+8NXax6w52a9lde
-         Q95iGWZC7XtU8Lco66EFkdNhJ2mefHNfvRa5EdZbk+4Jwikh/i3BA6J9Gqd+Fgym5+LJ
-         20V9FDMvi2F8yGP7Ci2YbIzBZTpJINihnv1wmyAFAugDit+mf/++D9ztYngvz2Ui9eFG
-         2VEfBEMLqUYPQvmqAQZwpeDyOYHxPKFFjxnyb6touWjOjtUx4ptbqbmRYzgvxpNclO+9
-         Sn+w==
-X-Gm-Message-State: AOJu0Yxl8P5nJrp0JAtmhQsvIXAU+FKtzJDpciVOz2OiLn6GEtSIGQL6
-	aEk434qRAmFQipG5bhddxP1Qao24U/w=
-X-Google-Smtp-Source: AGHT+IEQFxSAdc50qujfzmzJKJcWY3qyZfXbT1k7XuYaFuTlpAInpKqkovdUmqHR4hu8HiZ2L8Ah2MqCV0A=
-X-Received: from surenb-desktop.mtv.corp.google.com ([2620:15c:211:201:45ba:3318:d7a5:336a])
- (user=surenb job=sendgmr) by 2002:a25:d244:0:b0:d9a:4cc1:b59a with SMTP id
- j65-20020a25d244000000b00d9a4cc1b59amr317326ybg.1.1698155286109; Tue, 24 Oct
- 2023 06:48:06 -0700 (PDT)
-Date: Tue, 24 Oct 2023 06:46:35 -0700
-In-Reply-To: <20231024134637.3120277-1-surenb@google.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hF0ukPcV"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1698155353; x=1729691353;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=YMZi4eJ/TvV9CaZcwzTUhNFqFZCXCw5rrpvjnVRZIMc=;
+  b=hF0ukPcVMdvZiN8e4obkOHVcmP9Z0PjpiUPbH76cStm5v+Wv4MPMfgY2
+   XFoJr5J4UlHVtAhcMvdWilECXO2KHAteyZwx93qFCWUkc8JzmcjkjfQaz
+   dc5xEGI0X6HPlhvoBHnlzdPyKLqmkdrHkCj1zOUyw3GP0EfaXjF7zWZe9
+   +XRjvojyduwuWX0ofusbtN7CEMIpRVKDDN+rHCCGQBtOQJAFxOCexMlKU
+   I9iH/tkrswrun4hBaEeT69gi3BGFcZ8mtDk+udAAcPnsRlXuzuYYu9Hhi
+   OUz4EbDiKMsGyLcx4N4mO4Vl7ca0KgyTC8T3OKqrORdrEMm4blWJFzPkT
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10873"; a="384257294"
+X-IronPort-AV: E=Sophos;i="6.03,247,1694761200"; 
+   d="scan'208";a="384257294"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Oct 2023 06:49:12 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10873"; a="708288005"
+X-IronPort-AV: E=Sophos;i="6.03,247,1694761200"; 
+   d="scan'208";a="708288005"
+Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
+  by orsmga003.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 24 Oct 2023 06:49:11 -0700
+Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.32; Tue, 24 Oct 2023 06:49:11 -0700
+Received: from orsmsx602.amr.corp.intel.com (10.22.229.15) by
+ ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.32; Tue, 24 Oct 2023 06:49:11 -0700
+Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
+ orsmsx602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.32 via Frontend Transport; Tue, 24 Oct 2023 06:49:11 -0700
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.101)
+ by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.32; Tue, 24 Oct 2023 06:49:10 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=bF6ps6/bTqwtLDReEyVgzn7L1v2tLSpr5suE6XB0jQpapI1AyjoiGDD76JByadqAFxUTztJA9rYOdPUuBKQLlMTw2X2t6sXf3+Ohj3rz23c5ftu5qnkjSZz+IN0bJYTpvKCFm08wUmnMnAqS+9sQ0U6/oKpo576Sb065lW9hKyV52Ywt+K7exOjr68tag3hKdy1Z0R8xvAzyQe7G2P4IZ7ezv5UQ19/HOfg84qvye0rWkl3GhDUQqlA274DBLu5rXH1R45jWkmnWgqV4HgzjU4H0mkT6WNmil3SnHGqKxF/PPC+Z4qoOq//a40JbW0AZvnt631EpN3HriArZR12Y8Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=kswplIOogXyVR83ijfJzOBLIRi9R7rnfpW6tT3lG4jY=;
+ b=ZGRo4KXl/OEl1VrogeOZ/aNG8pMHcuL61sf+ZqvmoqcdWc7FwqDdTQ0ifJPoZJktJjhwl78AR9hG769SA/Ny8lSG86SGU/a2yzkxe0OU8maGUmphV7gMFRGd7jXCobP0UN5c3L4VuPj0AStUmRyoO5i4iJfFiQXKkNH2KhkxlLyh3eVtYvOAzEMYaLZspqIDYKQIq3+XvN/0O6UMwIGG0boekoh0hcaYWvHaBjm8/F67sza8yt3aeMsHSFpVauoxQc9n9J2xFnopYjinNj6TH8cq0qgwzcBXZXaVMAVPp7N3sX7tZyoBvaq99z29tn7Qbblg++EzZ3Yt0aFcTshnaA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from DS0PR11MB7529.namprd11.prod.outlook.com (2603:10b6:8:141::20)
+ by DS0PR11MB7768.namprd11.prod.outlook.com (2603:10b6:8:138::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6907.33; Tue, 24 Oct
+ 2023 13:49:07 +0000
+Received: from DS0PR11MB7529.namprd11.prod.outlook.com
+ ([fe80::f8f4:bed2:b2f8:cb6b]) by DS0PR11MB7529.namprd11.prod.outlook.com
+ ([fe80::f8f4:bed2:b2f8:cb6b%3]) with mapi id 15.20.6907.025; Tue, 24 Oct 2023
+ 13:49:07 +0000
+Message-ID: <d24d7ca6-4ff3-492f-9492-e830c4180057@intel.com>
+Date: Tue, 24 Oct 2023 21:51:35 +0800
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v5 12/18] iommu/intel: Access/Dirty bit support for SL
+ domains
+Content-Language: en-US
+To: Joao Martins <joao.m.martins@oracle.com>, <iommu@lists.linux.dev>
+CC: Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
+	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>, Lu Baolu
+	<baolu.lu@linux.intel.com>, Yi Y Sun <yi.y.sun@intel.com>, Nicolin Chen
+	<nicolinc@nvidia.com>, Joerg Roedel <joro@8bytes.org>, Suravee Suthikulpanit
+	<suravee.suthikulpanit@amd.com>, Will Deacon <will@kernel.org>, Robin Murphy
+	<robin.murphy@arm.com>, Zhenzhong Duan <zhenzhong.duan@intel.com>, "Alex
+ Williamson" <alex.williamson@redhat.com>, <kvm@vger.kernel.org>
+References: <20231020222804.21850-1-joao.m.martins@oracle.com>
+ <20231020222804.21850-13-joao.m.martins@oracle.com>
+ <ad8fcbd4-aa5c-4bff-bfc8-a2e8fa1c1cf5@intel.com>
+ <2b4beb4c-3936-4a75-9ecd-6d04e872bd90@oracle.com>
+ <61c0fbad-b441-4a8b-968e-c3c36f18e8bd@oracle.com>
+From: Yi Liu <yi.l.liu@intel.com>
+In-Reply-To: <61c0fbad-b441-4a8b-968e-c3c36f18e8bd@oracle.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: SI2PR01CA0009.apcprd01.prod.exchangelabs.com
+ (2603:1096:4:191::18) To DS0PR11MB7529.namprd11.prod.outlook.com
+ (2603:10b6:8:141::20)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <20231024134637.3120277-1-surenb@google.com>
-X-Mailer: git-send-email 2.42.0.758.gaed0368e0e-goog
-Message-ID: <20231024134637.3120277-39-surenb@google.com>
-Subject: [PATCH v2 38/39] codetag: debug: introduce OBJEXTS_ALLOC_FAIL to mark
- failed slab_ext allocations
-From: Suren Baghdasaryan <surenb@google.com>
-To: akpm@linux-foundation.org
-Cc: kent.overstreet@linux.dev, mhocko@suse.com, vbabka@suse.cz, 
-	hannes@cmpxchg.org, roman.gushchin@linux.dev, mgorman@suse.de, 
-	dave@stgolabs.net, willy@infradead.org, liam.howlett@oracle.com, 
-	corbet@lwn.net, void@manifault.com, peterz@infradead.org, 
-	juri.lelli@redhat.com, ldufour@linux.ibm.com, catalin.marinas@arm.com, 
-	will@kernel.org, arnd@arndb.de, tglx@linutronix.de, mingo@redhat.com, 
-	dave.hansen@linux.intel.com, x86@kernel.org, peterx@redhat.com, 
-	david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org, 
-	nathan@kernel.org, dennis@kernel.org, tj@kernel.org, muchun.song@linux.dev, 
-	rppt@kernel.org, paulmck@kernel.org, pasha.tatashin@soleen.com, 
-	yosryahmed@google.com, yuzhao@google.com, dhowells@redhat.com, 
-	hughd@google.com, andreyknvl@gmail.com, keescook@chromium.org, 
-	ndesaulniers@google.com, vvvvvv@google.com, gregkh@linuxfoundation.org, 
-	ebiggers@google.com, ytcoode@gmail.com, vincent.guittot@linaro.org, 
-	dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com, 
-	bristot@redhat.com, vschneid@redhat.com, cl@linux.com, penberg@kernel.org, 
-	iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com, 
-	elver@google.com, dvyukov@google.com, shakeelb@google.com, 
-	songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com, 
-	minchan@google.com, kaleshsingh@google.com, surenb@google.com, 
-	kernel-team@android.com, linux-doc@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
-	linux-arch@vger.kernel.org, linux-fsdevel@vger.kernel.org, linux-mm@kvack.org, 
-	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com, 
-	cgroups@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS0PR11MB7529:EE_|DS0PR11MB7768:EE_
+X-MS-Office365-Filtering-Correlation-Id: 9994e37e-f857-45eb-9f4d-08dbd497fe35
+X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 2VYoAZI50ZyIl96Yzr7gUHLy84SEvyeXZctTx7UKp++t3wdljfQEjDnRcQDIZP8Zpc+bR0SZkBOIC82s+iXgqZAxDPqdTYEA1vfcKi+nSClJX4j2UqAHSAxxKdrPYgl5MzMxb1d9SnA6cLBi9QrSmyi3gYXo1QulrHApqRF6gMYhJEFLEtutaukwLTrf3UacmmleQMZD8AxcXLz0JnbfdUWV+O4Z+rV5jFnyj/BUx56XV9V3lcfH+dsl3hL1W9hSomDK+AcG+KUKabYAm2r+xWyXZTgwElwUZIWm8sx73Hy+bsbDiZsBiXDzqrAFiCotNVbjxpi53NR41QKt++wxHlaN8ik5rXLp2uweFVc6EKgHfqtDfz3qdMmoldB5amiu3TdyEM//vELvEUtpSardyEL4cG/oNV+PA0mkcPnXM8Lpiyy8ztSZ4LtCXbE4lc/JmrumSSbI1OwAf33Mrx02TMKG3t4xcS7YqBuYWl8XY02FELT8g0XF5r0Pq8fohZMg2CWxsEAyfNVVsZ9QhGBJ9rjqhpfnscV5cmGGpG+xGRBcrl0lE+0mXLiB3ao/SXm5rk8UvfL9mOlbfFRrDuMge645x/UmHV+E5esbyDFWY/5jojb33ilQWebGSo0WdOAfdESPQasuCNBk2TaqRK0l6pt6N8OVXZCANrVTuPNTLZk=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS0PR11MB7529.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(39860400002)(366004)(136003)(346002)(376002)(396003)(230922051799003)(451199024)(186009)(64100799003)(1800799009)(6506007)(2906002)(38100700002)(316002)(66476007)(66946007)(6666004)(54906003)(66556008)(478600001)(82960400001)(2616005)(53546011)(6512007)(6486002)(83380400001)(86362001)(41300700001)(4326008)(5660300002)(31696002)(7416002)(36756003)(8936002)(8676002)(26005)(31686004)(14143004)(45980500001)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?cTR5d0Vhb1BwWHZXejlINVZIQ0ZRYWxqa3lzRFFPSmVQRDEydHlBZWoydVRY?=
+ =?utf-8?B?THU1VDRnelhTT01leHdWNmxaSHpwUTk2dTZueVg4THBUcWtXZXZYdmRDa0NB?=
+ =?utf-8?B?YlhhUnhXR050amxVQzQ3SzNZUGV5MmFxTm1ERVNoc0N1b3hMaGdiSkwzMzJC?=
+ =?utf-8?B?MGtrUmRCZEtKc1I2UUFGWWlQbGRzVHoxbjZGZzRqczVRWDNtZHNNcTl4NWIy?=
+ =?utf-8?B?aE5xTmtlOHc3WS9yd3JieTBlVG15Rkh4WVFBbElOVHpJWlVncVE1cDAwc2hR?=
+ =?utf-8?B?RFZjQ3JtVDVhaWcyUVNJRm1YU3VFZVlqVHYzbmJkblphL29wNWpjTHgvTXlO?=
+ =?utf-8?B?QUttOUE3OFN4NkZNK3NzTVJUZnZhNFdyZ1lTREZnNnVkUmlIalBNd0lzRjlv?=
+ =?utf-8?B?WW5lQ2lIQklHaWtDdGtLL0FXSlVubGIvcFkzUlZJVDdiQSt5ejlDM3NPaGpZ?=
+ =?utf-8?B?eFZVZnVrOC91RDdremtndTVVTUtVQy9FTy9NR1BXcVpLQnkrWkV3bnNrbnph?=
+ =?utf-8?B?b2xaY2hVSFlDUThaQjVRVUJ0eUtuQi9DdnByc1VDcjNOdzNGUFo3ZGpXWlBM?=
+ =?utf-8?B?cGtPb3ZZR3RJVDcraHpBVGVLRzF5RTJZdEtES1RnOEszSVd0U1JCa0pqZWxG?=
+ =?utf-8?B?aExqOTZDWEx0MUhDLzM0em0wWXVRTC8vRHlqdy9JdDc1YjZVWHBkazMrK1NV?=
+ =?utf-8?B?T2EvS0VBOVJEMTZZYTRWNEt4WUE0bUxhZXZLK1VhU1U4azhKSjFYMUQvTlE3?=
+ =?utf-8?B?R2FLdGZvbjlVZU1vYVlJbUdKcnc0emRiMThJWG10TEVVWVdtM1d4dkQ1aVZn?=
+ =?utf-8?B?bG0vVUtxSWc1ZVZUV1l4Y1hVUTlnbDQrakZMYkR1SUV6UEpkYm9Qam0veVhY?=
+ =?utf-8?B?cHplUDVEZE0wZFoxaW5ndGdSUEVqU3FEaldRZnJDNUhDREVQaEdaNlJUQXpF?=
+ =?utf-8?B?S2pEUVljN2Z4UVBlcHBzWUt6WEw4VVI5ME5mNWVwWGdibFVQZm5FSU1LdlpM?=
+ =?utf-8?B?dTlyUG0yc1pRZnU0OWh2NHhRQWtDdWJRSERmZWhmVWlweWpkWGJxTlBqNGRo?=
+ =?utf-8?B?SW5senNiQXRVY21kdVh5WStQcmtHRE9mQWNBa1BlemVscFN2VlVxZVdjWk53?=
+ =?utf-8?B?YnFMZjlWWGxzaUk5VHJKbU9sV3dyWlZpaE1xY2s1MWxhbWFVWGs3dHF2YWRG?=
+ =?utf-8?B?b3NFSGtyeURwWGZWS1UxMzJSVW1YMXdRdTg3cGpZdzVmQW9TVXJaVjJxNTha?=
+ =?utf-8?B?U25ibjBBb2M3cFR5b1VIUDYzNGgxdVU3bEl0cm9raXVyVEVLeVMrRmUyS1ZN?=
+ =?utf-8?B?UGdZdzhtdjNub2JWaGJZaXdmb1ZseEJBT294cXdqa2FQcGgvRmJKUERMUzFU?=
+ =?utf-8?B?Y0Vka0ZPbTBSY01saXF2ZkN0aXBYTVVDdGt3ZFAzNml6RmlBQTNPRW1NZ3Mv?=
+ =?utf-8?B?MS85eGxlVDh4cmg4cnZBcU9TbkRXZTFQUzZHd3VzaXJFUVJOOEFYNGdBa1NG?=
+ =?utf-8?B?aFl3b3dCdEFYYU4rRzNjYjdIdlI5Q1ZNci9SNzRhdXNCTkpjbnBiQ2JqaGM0?=
+ =?utf-8?B?SzhPSnZaczQ0MUtGaFQ3c1VYUEwrT3VXclFXb3hmcDhReTllSUxJdW1WbDYv?=
+ =?utf-8?B?eUtSWUNqTjZXOTFsZDhLSEhCSFR5TmZlRXFzdEthNVZwM3RSR00vSlU1Y0xk?=
+ =?utf-8?B?Rnd5S0gyTU1jdDZCWk0zN2lSSEVueGcrMmVZSCtCK2VYYXlFNmRFY2VpMUxh?=
+ =?utf-8?B?YWZ6TmNrVWgzVHg1NWNSSkpwYlZCZnpObGJMS3Q1RGZUYU1sUWpITUx1VDFr?=
+ =?utf-8?B?Vlp6NmszaktyOC9URzNDUWc3SmwvVkFRZlpET1hEL3JOdkoyQjBhWXlUSmdM?=
+ =?utf-8?B?YXdhQVk3VG5ld3JVbDdsbnR4bWtiQUpsOXJsNWVHUkdZVXRTMkptUzFCVThJ?=
+ =?utf-8?B?N01KbThPcDVGVXorNzBqaU5hK0RjN1JITHcyWFNieWlFdGttb2tTeVpteFZo?=
+ =?utf-8?B?bjg4L1NqRTZja0ZuZ1NHWTdZR2ZHZE1aRGhKdGUwU3QrUTl1c2hLek5oV0Ry?=
+ =?utf-8?B?K1RpWi9HakpZajFrektRVkZJWHN0M29tYnhOZUJyZjUrODF4MzdPOEVUR1JK?=
+ =?utf-8?Q?uwJiAbdUEngN4k/Lautq5hzS2?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9994e37e-f857-45eb-9f4d-08dbd497fe35
+X-MS-Exchange-CrossTenant-AuthSource: DS0PR11MB7529.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Oct 2023 13:49:07.6839
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: VBb9LL4yKjbwS0N+WoYc51aYV9VSRx78VT1nYCEjXN5EwgGzuuLTo4kfRukjAbxpV4E4e0HaCv6KMxStlB+zXA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR11MB7768
+X-OriginatorOrg: intel.com
 
-If slabobj_ext vector allocation for a slab object fails and later on it
-succeeds for another object in the same slab, the slabobj_ext for the
-original object will be NULL and will be flagged in case when
-CONFIG_MEM_ALLOC_PROFILING_DEBUG is enabled.
-Mark failed slabobj_ext vector allocations using a new objext_flags flag
-stored in the lower bits of slab->obj_exts. When new allocation succeeds
-it marks all tag references in the same slabobj_ext vector as empty to
-avoid warnings implemented by CONFIG_MEM_ALLOC_PROFILING_DEBUG checks.
+On 2023/10/24 20:52, Joao Martins wrote:
+> On 24/10/2023 13:42, Joao Martins wrote:
+>> On 24/10/2023 13:34, Yi Liu wrote:
+>>> On 2023/10/21 06:27, Joao Martins wrote:
+>>>> ---
+>>>>    drivers/iommu/intel/Kconfig |   1 +
+>>>>    drivers/iommu/intel/iommu.c | 104 +++++++++++++++++++++++++++++++++-
+>>>>    drivers/iommu/intel/iommu.h |  17 ++++++
+>>>>    drivers/iommu/intel/pasid.c | 108 ++++++++++++++++++++++++++++++++++++
+>>>>    drivers/iommu/intel/pasid.h |   4 ++
+>>>>    5 files changed, 233 insertions(+), 1 deletion(-)
+>>>
+>>> normally, the subject of commits to intel iommu driver is started
+>>> with 'iommu/vt-d'. So if there is a new version, please rename it.
+>>> Also, SL is a bit eld naming, please use SS (second stage)
+>>>
+>>> s/iommu/intel: Access/Dirty bit support for SL domains/iommu/vt-d: Access/Dirty
+>>> bit support for SS domains
+>>>
+>> OK
+>>
+> FYI, this is what I have staged in:
 
-Signed-off-by: Suren Baghdasaryan <surenb@google.com>
----
- include/linux/memcontrol.h |  4 +++-
- mm/slab.h                  | 25 +++++++++++++++++++++++++
- mm/slab_common.c           | 22 +++++++++++++++-------
- 3 files changed, 43 insertions(+), 8 deletions(-)
+sure.
 
-diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h
-index 853a24b5f713..6b680ca424e3 100644
---- a/include/linux/memcontrol.h
-+++ b/include/linux/memcontrol.h
-@@ -363,8 +363,10 @@ enum page_memcg_data_flags {
- #endif /* CONFIG_MEMCG */
- 
- enum objext_flags {
-+	/* slabobj_ext vector failed to allocate */
-+	OBJEXTS_ALLOC_FAIL = __FIRST_OBJEXT_FLAG,
- 	/* the next bit after the last actual flag */
--	__NR_OBJEXTS_FLAGS  = __FIRST_OBJEXT_FLAG,
-+	__NR_OBJEXTS_FLAGS  = (__FIRST_OBJEXT_FLAG << 1),
- };
- 
- #define OBJEXTS_FLAGS_MASK (__NR_OBJEXTS_FLAGS - 1)
-diff --git a/mm/slab.h b/mm/slab.h
-index 45216bad34b8..1736268892e6 100644
---- a/mm/slab.h
-+++ b/mm/slab.h
-@@ -474,9 +474,34 @@ static inline void mark_objexts_empty(struct slabobj_ext *obj_exts)
- 	}
- }
- 
-+static inline void mark_failed_objexts_alloc(struct slab *slab)
-+{
-+	slab->obj_exts = OBJEXTS_ALLOC_FAIL;
-+}
-+
-+static inline void handle_failed_objexts_alloc(unsigned long obj_exts,
-+			struct slabobj_ext *vec, unsigned int objects)
-+{
-+	/*
-+	 * If vector previously failed to allocate then we have live
-+	 * objects with no tag reference. Mark all references in this
-+	 * vector as empty to avoid warnings later on.
-+	 */
-+	if (obj_exts & OBJEXTS_ALLOC_FAIL) {
-+		unsigned int i;
-+
-+		for (i = 0; i < objects; i++)
-+			set_codetag_empty(&vec[i].ref);
-+	}
-+}
-+
-+
- #else /* CONFIG_MEM_ALLOC_PROFILING_DEBUG */
- 
- static inline void mark_objexts_empty(struct slabobj_ext *obj_exts) {}
-+static inline void mark_failed_objexts_alloc(struct slab *slab) {}
-+static inline void handle_failed_objexts_alloc(unsigned long obj_exts,
-+			struct slabobj_ext *vec, unsigned int objects) {}
- 
- #endif /* CONFIG_MEM_ALLOC_PROFILING_DEBUG */
- 
-diff --git a/mm/slab_common.c b/mm/slab_common.c
-index db2cd7afc353..cea73314f919 100644
---- a/mm/slab_common.c
-+++ b/mm/slab_common.c
-@@ -218,29 +218,37 @@ int alloc_slab_obj_exts(struct slab *slab, struct kmem_cache *s,
- 			gfp_t gfp, bool new_slab)
- {
- 	unsigned int objects = objs_per_slab(s, slab);
--	unsigned long obj_exts;
--	void *vec;
-+	unsigned long new_exts;
-+	unsigned long old_exts;
-+	struct slabobj_ext *vec;
- 
- 	gfp &= ~OBJCGS_CLEAR_MASK;
- 	/* Prevent recursive extension vector allocation */
- 	gfp |= __GFP_NO_OBJ_EXT;
- 	vec = kcalloc_node(objects, sizeof(struct slabobj_ext), gfp,
- 			   slab_nid(slab));
--	if (!vec)
-+	if (!vec) {
-+		/* Mark vectors which failed to allocate */
-+		if (new_slab)
-+			mark_failed_objexts_alloc(slab);
-+
- 		return -ENOMEM;
-+	}
- 
--	obj_exts = (unsigned long)vec;
-+	new_exts = (unsigned long)vec;
- #ifdef CONFIG_MEMCG
--	obj_exts |= MEMCG_DATA_OBJEXTS;
-+	new_exts |= MEMCG_DATA_OBJEXTS;
- #endif
-+	old_exts = slab->obj_exts;
-+	handle_failed_objexts_alloc(old_exts, vec, objects);
- 	if (new_slab) {
- 		/*
- 		 * If the slab is brand new and nobody can yet access its
- 		 * obj_exts, no synchronization is required and obj_exts can
- 		 * be simply assigned.
- 		 */
--		slab->obj_exts = obj_exts;
--	} else if (cmpxchg(&slab->obj_exts, 0, obj_exts)) {
-+		slab->obj_exts = new_exts;
-+	} else if (cmpxchg(&slab->obj_exts, old_exts, new_exts) != old_exts) {
- 		/*
- 		 * If the slab is already in use, somebody can allocate and
- 		 * assign slabobj_exts in parallel. In this case the existing
+> Subject: iommu/vt-d: Access/Dirty bit support for SS domains
+> 
+> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> index 4e25faf573de..eb92a201cc0b 100644
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -4094,7 +4094,7 @@ intel_iommu_domain_alloc_user(struct device *dev, u32 flags)
+>                  return ERR_PTR(-EOPNOTSUPP);
+> 
+>          dirty_tracking = (flags & IOMMU_HWPT_ALLOC_DIRTY_TRACKING);
+> -       if (dirty_tracking && !slads_supported(iommu))
+> +       if (dirty_tracking && !ssads_supported(iommu))
+>                  return ERR_PTR(-EOPNOTSUPP);
+> 
+>          /*
+> @@ -4137,7 +4137,7 @@ static int prepare_domain_attach_device(struct
+> iommu_domain *domain,
+>          if (dmar_domain->force_snooping && !ecap_sc_support(iommu->ecap))
+>                  return -EINVAL;
+> 
+> -       if (domain->dirty_ops && !slads_supported(iommu))
+> +       if (domain->dirty_ops && !ssads_supported(iommu))
+>                  return -EINVAL;
+> 
+>          /* check if this iommu agaw is sufficient for max mapped address */
+> @@ -4395,7 +4395,7 @@ static bool intel_iommu_capable(struct device *dev, enum
+> iommu_cap cap)
+>          case IOMMU_CAP_ENFORCE_CACHE_COHERENCY:
+>                  return ecap_sc_support(info->iommu->ecap);
+>          case IOMMU_CAP_DIRTY_TRACKING:
+> -               return slads_supported(info->iommu);
+> +               return ssads_supported(info->iommu);
+>          default:
+>                  return false;
+>          }
+> diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
+> index 27bcfd3bacdd..3bb569146229 100644
+> --- a/drivers/iommu/intel/iommu.h
+> +++ b/drivers/iommu/intel/iommu.h
+> @@ -542,10 +542,9 @@ enum {
+>   #define sm_supported(iommu)    (intel_iommu_sm && ecap_smts((iommu)->ecap))
+>   #define pasid_supported(iommu) (sm_supported(iommu) &&                 \
+>                                   ecap_pasid((iommu)->ecap))
+> -#define slads_supported(iommu) (sm_supported(iommu) &&                 \
+> +#define ssads_supported(iommu) (sm_supported(iommu) &&                 \
+>                                  ecap_slads((iommu)->ecap))
+> 
+> -
+>   struct pasid_entry;
+>   struct pasid_state_entry;
+>   struct page_req_dsc;
+
 -- 
-2.42.0.758.gaed0368e0e-goog
-
+Regards,
+Yi Liu
