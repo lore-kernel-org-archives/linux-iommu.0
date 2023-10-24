@@ -1,36 +1,36 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.88])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE0A814ABF
-	for <iommu@lists.linux.dev>; Tue, 24 Oct 2023 15:25:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E378837144
+	for <iommu@lists.linux.dev>; Tue, 24 Oct 2023 15:26:02 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="UcAWy/V4"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="D7P9KIF5"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1698161158; x=1729697158;
+  t=1698161163; x=1729697163;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=8bknCuaXgjYm3S8328FfTMjKxCUCRzktFyfoYpNNj9c=;
-  b=UcAWy/V4nDBy8S/33Z6NYs09kSiLdAECr8rptNmgfnDa1STpq8jpiZU4
-   UOsLTpJHJyAlJtygeTi/rsrcuCbwbsnuCSy8JWnlbXQMOlJoYu0y8rPFM
-   h8QJAkiCCxciaYNliqP480Y32ClOkOJmcz+lPr1gk8zzsJ1SHCIyo23LW
-   zZTYc88KvD5H0f0CqcjO0H1rMs0nJOU2k+1gkqu4GnexzhazF14pruEsI
-   DBg4G0BKoAaFt8Rm1VpXAA6OwjRqRgPJGKv/sCqbC6TxhlN2QGE1+fFRf
-   xRUP6ezI5t2M7h6maG1VB2pq4NDWZC1WeECgkWA3hhcXe2p4rheBs5Cqg
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10873"; a="418212211"
+  bh=EvYYap6jVoXeJ39dE5VX3YkM1fWw70nq/hojBtiJ2Lc=;
+  b=D7P9KIF5O6KGMR3m6RgmjkHIIASNyoEu7+FrE18KLjDO48uIKvGmHD3H
+   xfkVotK3rKsR1DCIH0wgP6OuFbMQmtVZXpt96zuiBepSQsHIUM7bIFAxO
+   2Re8euk55vRpogT8wXT9r4uLk9+Z5mxyt5RH2qBe0/douur1vTEvC2MYZ
+   IK8rRhIhE5KDYc3kJP5i17TAvWpi/Sg1BRmK+JUqRePK4/Yg0BL7EgAdL
+   xItrLBNH2OV9D30SbLXacH7paC6x1FE0Fvv9Gpjql6/89lgP+ResjB1yp
+   LZSJluaevwPvOZi64JgK+b1VjEPImXcjK7GoY+CC8N4ftnCe0xLMs+NMR
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10873"; a="418212232"
 X-IronPort-AV: E=Sophos;i="6.03,248,1694761200"; 
-   d="scan'208";a="418212211"
+   d="scan'208";a="418212232"
 Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Oct 2023 08:14:18 -0700
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Oct 2023 08:14:19 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10873"; a="1005688928"
+X-IronPort-AV: E=McAfee;i="6600,9927,10873"; a="1005688935"
 X-IronPort-AV: E=Sophos;i="6.03,248,1694761200"; 
-   d="scan'208";a="1005688928"
+   d="scan'208";a="1005688935"
 Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
-  by fmsmga006.fm.intel.com with ESMTP; 24 Oct 2023 08:14:17 -0700
+  by fmsmga006.fm.intel.com with ESMTP; 24 Oct 2023 08:14:18 -0700
 From: Yi Liu <yi.l.liu@intel.com>
 To: joro@8bytes.org,
 	alex.williamson@redhat.com,
@@ -56,9 +56,9 @@ Cc: cohuck@redhat.com,
 	linux-kselftest@vger.kernel.org,
 	zhenzhong.duan@intel.com,
 	joao.m.martins@oracle.com
-Subject: [PATCH v7 7/8] iommu/vt-d: Add nested domain allocation
-Date: Tue, 24 Oct 2023 08:14:11 -0700
-Message-Id: <20231024151412.50046-8-yi.l.liu@intel.com>
+Subject: [PATCH v7 8/8] iommu/vt-d: Disallow read-only mappings to nest parent domain
+Date: Tue, 24 Oct 2023 08:14:12 -0700
+Message-Id: <20231024151412.50046-9-yi.l.liu@intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20231024151412.50046-1-yi.l.liu@intel.com>
 References: <20231024151412.50046-1-yi.l.liu@intel.com>
@@ -72,124 +72,82 @@ Content-Transfer-Encoding: 8bit
 
 From: Lu Baolu <baolu.lu@linux.intel.com>
 
-This adds the support for IOMMU_HWPT_DATA_VTD_S1 type. And 'nested_parent'
-is added to mark the nested parent domain to sanitize the input parent domain.
+When remapping hardware is configured by system software in scalable mode
+as Nested (PGTT=011b) and with PWSNP field Set in the PASID-table-entry,
+it may Set Accessed bit and Dirty bit (and Extended Access bit if enabled)
+in first-stage page-table entries even when second-stage mappings indicate
+that corresponding first-stage page-table is Read-Only.
 
+As the result, contents of pages designated by VMM as Read-Only can be
+modified by IOMMU via PML5E (PML4E for 4-level tables) access as part of
+address translation process due to DMAs issued by Guest.
+
+This disallows read-only mappings in the domain that is supposed to be used
+as nested parent. Reference from Sapphire Rapids Specification Update [1],
+errata details, SPR17. Userspace should know this limitation by checking
+the IOMMU_HW_INFO_VTD_ERRATA_772415_SPR17 flag reported in the IOMMU_GET_HW_INFO
+ioctl.
+
+[1] https://www.intel.com/content/www/us/en/content-details/772415/content-details.html
+
+Reviewed-by: Kevin Tian <kevin.tian@intel.com>
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 Signed-off-by: Yi Liu <yi.l.liu@intel.com>
 ---
- drivers/iommu/intel/iommu.c | 67 +++++++++++++++++++++++++------------
- drivers/iommu/intel/iommu.h |  1 +
- 2 files changed, 46 insertions(+), 22 deletions(-)
+ drivers/iommu/intel/iommu.c  |  6 ++++++
+ include/uapi/linux/iommufd.h | 12 +++++++++++-
+ 2 files changed, 17 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 292baa64188b..85366862fb5e 100644
+index 85366862fb5e..1a50d3f53713 100644
 --- a/drivers/iommu/intel/iommu.c
 +++ b/drivers/iommu/intel/iommu.c
-@@ -4077,46 +4077,69 @@ intel_iommu_domain_alloc_user(struct device *dev, u32 flags,
- 			      struct iommu_domain *parent,
- 			      const struct iommu_user_data *user_data)
- {
--	struct iommu_domain *domain;
- 	struct intel_iommu *iommu;
- 	bool dirty_tracking;
-+	bool nested_parent;
+@@ -2194,6 +2194,11 @@ __domain_mapping(struct dmar_domain *domain, unsigned long iov_pfn,
+ 	if ((prot & (DMA_PTE_READ|DMA_PTE_WRITE)) == 0)
+ 		return -EINVAL;
  
- 	if (flags &
- 	    (~(IOMMU_HWPT_ALLOC_NEST_PARENT | IOMMU_HWPT_ALLOC_DIRTY_TRACKING)))
- 		return ERR_PTR(-EOPNOTSUPP);
- 
--	if (parent || user_data)
--		return ERR_PTR(-EOPNOTSUPP);
--
- 	iommu = device_to_iommu(dev, NULL, NULL);
- 	if (!iommu)
- 		return ERR_PTR(-ENODEV);
- 
--	if ((flags & IOMMU_HWPT_ALLOC_NEST_PARENT) && !nested_supported(iommu))
--		return ERR_PTR(-EOPNOTSUPP);
--
-+	nested_parent = flags & IOMMU_HWPT_ALLOC_NEST_PARENT;
- 	dirty_tracking = (flags & IOMMU_HWPT_ALLOC_DIRTY_TRACKING);
--	if (dirty_tracking && !ssads_supported(iommu))
--		return ERR_PTR(-EOPNOTSUPP);
- 
--	/*
--	 * domain_alloc_user op needs to fully initialize a domain
--	 * before return, so uses iommu_domain_alloc() here for
--	 * simple.
--	 */
--	domain = iommu_domain_alloc(dev->bus);
--	if (!domain)
--		domain = ERR_PTR(-ENOMEM);
-+	if (!user_data) { /* Must be PAGING domain */
-+		struct iommu_domain *domain;
- 
--	if (!IS_ERR(domain) && dirty_tracking) {
--		if (to_dmar_domain(domain)->use_first_level) {
--			iommu_domain_free(domain);
-+		if (nested_parent && !nested_supported(iommu))
- 			return ERR_PTR(-EOPNOTSUPP);
-+		if (dirty_tracking && !ssads_supported(iommu))
-+			return ERR_PTR(-EOPNOTSUPP);
-+		if (parent)
-+			return ERR_PTR(-EINVAL);
++	if (!(prot & DMA_PTE_WRITE) && domain->nested_parent) {
++		pr_err_ratelimited("Read-only mapping is disallowed on the domain which serves as the parent in a nested configuration, due to HW errata (ERRATA_772415_SPR17)\n");
++		return -EINVAL;
++	}
 +
-+		/*
-+		 * domain_alloc_user op needs to fully initialize a domain
-+		 * before return, so uses iommu_domain_alloc() here for
-+		 * simple.
-+		 */
-+		domain = iommu_domain_alloc(dev->bus);
-+		if (!domain)
-+			return ERR_PTR(-ENOMEM);
-+
-+		if (nested_parent)
-+			to_dmar_domain(domain)->nested_parent = true;
-+
-+		if (dirty_tracking) {
-+			if (to_dmar_domain(domain)->use_first_level) {
-+				iommu_domain_free(domain);
-+				return ERR_PTR(-EOPNOTSUPP);
-+			}
-+			domain->dirty_ops = &intel_dirty_ops;
- 		}
--		domain->dirty_ops = &intel_dirty_ops;
-+
-+		return domain;
- 	}
+ 	attr = prot & (DMA_PTE_READ | DMA_PTE_WRITE | DMA_PTE_SNP);
+ 	attr |= DMA_FL_PTE_PRESENT;
+ 	if (domain->use_first_level) {
+@@ -4872,6 +4877,7 @@ static void *intel_iommu_hw_info(struct device *dev, u32 *length, u32 *type)
+ 	if (!vtd)
+ 		return ERR_PTR(-ENOMEM);
  
--	return domain;
-+	/* Must be nested domain */
-+	if (user_data->type != IOMMU_HWPT_DATA_VTD_S1)
-+		return ERR_PTR(-EOPNOTSUPP);
-+	if (!nested_supported(iommu))
-+		return ERR_PTR(-EOPNOTSUPP);
-+	if (!parent || parent->ops != intel_iommu_ops.default_domain_ops)
-+		return ERR_PTR(-EINVAL);
-+	if (!to_dmar_domain(parent)->nested_parent)
-+		return ERR_PTR(-EINVAL);
-+	if (nested_parent)
-+		return ERR_PTR(-EINVAL);
-+	if (dirty_tracking)
-+		return ERR_PTR(-EINVAL);
++	vtd->flags = IOMMU_HW_INFO_VTD_ERRATA_772415_SPR17;
+ 	vtd->cap_reg = iommu->cap;
+ 	vtd->ecap_reg = iommu->ecap;
+ 	*length = sizeof(*vtd);
+diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
+index 3a66d3888393..cb7d17e3b4e7 100644
+--- a/include/uapi/linux/iommufd.h
++++ b/include/uapi/linux/iommufd.h
+@@ -444,10 +444,20 @@ struct iommu_hwpt_alloc {
+ };
+ #define IOMMU_HWPT_ALLOC _IO(IOMMUFD_TYPE, IOMMUFD_CMD_HWPT_ALLOC)
+ 
++/**
++ * enum iommu_hw_info_vtd_flags - Flags for VT-d hw_info
++ * @IOMMU_HW_INFO_VTD_ERRATA_772415_SPR17: If set, disallow nesting on domains
++ *                                   with read-only mapping.
++ *                                   https://www.intel.com/content/www/us/en/content-details/772415/content-details.html
++ */
++enum iommu_hw_info_vtd_flags {
++	IOMMU_HW_INFO_VTD_ERRATA_772415_SPR17 = 1 << 0,
++};
 +
-+	return intel_nested_domain_alloc(parent, user_data);
- }
- 
- static void intel_iommu_domain_free(struct iommu_domain *domain)
-diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
-index d5aaaedf2094..65e660eb1f47 100644
---- a/drivers/iommu/intel/iommu.h
-+++ b/drivers/iommu/intel/iommu.h
-@@ -601,6 +601,7 @@ struct dmar_domain {
- 					 * level.
- 					 */
- 	u8 dirty_tracking:1;		/* Dirty tracking is enabled */
-+	u8 nested_parent:1;		/* Has other domains nested on it */
- 
- 	spinlock_t lock;		/* Protect device tracking lists */
- 	struct list_head devices;	/* all devices' list */
+ /**
+  * struct iommu_hw_info_vtd - Intel VT-d hardware information
+  *
+- * @flags: Must be 0
++ * @flags: Combination of enum iommu_hw_info_vtd_flags
+  * @__reserved: Must be 0
+  *
+  * @cap_reg: Value of Intel VT-d capability register defined in VT-d spec
 -- 
 2.34.1
 
