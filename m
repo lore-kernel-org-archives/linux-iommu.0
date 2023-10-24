@@ -1,44 +1,44 @@
 Received: from mail-yb1-f202.google.com (mail-yb1-f202.google.com [209.85.219.202])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC07532C6F
-	for <iommu@lists.linux.dev>; Tue, 24 Oct 2023 13:47:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42ED72C84D
+	for <iommu@lists.linux.dev>; Tue, 24 Oct 2023 13:47:45 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--surenb.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="cdgZsGof"
-Received: by mail-yb1-f202.google.com with SMTP id 3f1490d57ef6-d9b9f56489fso5395354276.1
-        for <iommu@lists.linux.dev>; Tue, 24 Oct 2023 06:47:42 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="ELMSNIt7"
+Received: by mail-yb1-f202.google.com with SMTP id 3f1490d57ef6-da03ef6fc30so675074276.0
+        for <iommu@lists.linux.dev>; Tue, 24 Oct 2023 06:47:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1698155262; x=1698760062; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1698155264; x=1698760064; darn=lists.linux.dev;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=wChZbZdPrjdzw8yNa1DdlAJuF9I/RLt/gyhxqa0kGe0=;
-        b=cdgZsGofyuiHKv0T6tzy05qogvBz71RmaK6487jSwH9rh+ckabMcnig5ZuveCG2W/e
-         9pK06SPVb3zyYnFQOnz8V6E3d/Se5vQdm09HII35rvfLvjOoQ95bpqsqsR7h3l3kMi0W
-         DPbQlXp/oY7t0V7e0wxysWPDn+/DKesUEoKbe22ictucKUa1NRJgEcZVj5uTDfkspxbM
-         +/NGVbla3K2PGD2takICLWK/ENhd2EU7Nc5FKIjfa1LaZfvilHH9gwXaeJc72VAubnMc
-         rppYjfQnXpGcWJjBv3ERm+tQFOvmUn5Oeavlur5zC99J9YcV0xG/34QH14qn0ZXwZffV
-         n2eA==
+        bh=7C50BM7p5C+vJ0clcF+/KvirWmdIP5XWEnNLFYgTdS0=;
+        b=ELMSNIt7yHbi29pYcdpht5IDehfffXZMeWPJv67ZijufrC72vMsTcmrlVmkmTqESFW
+         U+gBHaotcPR7/Br137IurI3OBitjyhmpTkAScNSE2VYlxmCUEotAM4WolGtt1DIPkc1/
+         sumrF8reCfLjIliK8cxcks5PBRJUggETm1dI4Rq/mdfj8BtS2TK2mLokQwp9zMQWkAID
+         ghoElEcm9VFgKlC6+7+S4glz6/o2UigHfvJOSPtJffGV5wdALtt8smBZj6Y6cUxNj/Zi
+         mAoxsTGu/hdl6f7QvbZ6mgmBBFcT8VDcU4/X0YnUxHHmCjUWgJ0HeNyxg+hZa3S4rgU2
+         Atpw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1698155262; x=1698760062;
+        d=1e100.net; s=20230601; t=1698155264; x=1698760064;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=wChZbZdPrjdzw8yNa1DdlAJuF9I/RLt/gyhxqa0kGe0=;
-        b=OnGO1wBhzAMVXX/I04IuppdMgjewh4LEGbtoPMHhw9JhLSW6iaNdVtBbsaVOHvQBAN
-         NMduDPALq9fk/4V/e1WInz7lQJy5MDGYlgdyY+dQDK4tQm8qqu1ax/Cl0HsMPDc6cpxi
-         9rwIZQq7OrCOChlAz8g7leMcba7LUUyTpwJ+pKFbI4ntPBnWGmol+kklO8XZE+dRcGkv
-         Z+mwpQP7ZOfBNHVIjds2j+Wwvd1PnigEKUWE79x5JmM8TFmL9HKeeZsVnjWK4LEira0M
-         sAjnMz0/KouFagRyE9coNjEmDlSkzdboU9W1nSMI70GT9THzQAkKs4WmK+Na2yBoi82M
-         eiEw==
-X-Gm-Message-State: AOJu0YyrlxWXI0+t0poj1jHdX/ZnTorQiYhujtJv6PVn4Bw8frkFEk1c
-	87nev9f6g43ijsrZ7YlN+lGEh5hwnWs=
-X-Google-Smtp-Source: AGHT+IGcrV5EmbtfxBae51aMAnIIsiAAzPfQg3R0miJy2XM7/Ak0S71e3wg0OW88a6RB4IGUgmC4AuntPsg=
+        bh=7C50BM7p5C+vJ0clcF+/KvirWmdIP5XWEnNLFYgTdS0=;
+        b=K9K3Wl/He9ikeq8yH5r30ubd+Iv7ztBPMxlXa0m/uma+aZhbqw+Zcg5wjWyU3HVaE6
+         U3qnl7cg4sODHO6hkGLodgXN7cLaNYVoAI4EPLJYH5WB/bJHyUOR0GpnhazZTwTlkANz
+         oCX7m48T40JfodT/KpemdEYCmjrRA3b5IM5R65UUp7cQdY/ELjrThF2TUNGWn1BWV2jf
+         2vQ1EUmb0caJxcqKP7sNAWOoZP5i3fvMy0KOh5nFOrp4aaTPBAar9UogcvL65FK6Lm8B
+         zBlCzL7rMa8J++Cz5FF+bX+T1UXJlAi9D7ibccGMtk0FIgjtHZmde0I8pP4CLlCAxkTY
+         UFRA==
+X-Gm-Message-State: AOJu0Yxz0PbWCZt3I8XUmxoM18Qj3rAVbFMgKolOA30ZvCGOCqTvJSgY
+	68VdZ2h1KcbnSmy1ZtlYXnzGeEsm1G8=
+X-Google-Smtp-Source: AGHT+IFgQR1uDgRKslLBvCkBHAk0T4yEqB1Qvs6h4RCMdoan4Z+72V6WbgepeSBkK71dX/nU/j0JJWPs+jY=
 X-Received: from surenb-desktop.mtv.corp.google.com ([2620:15c:211:201:45ba:3318:d7a5:336a])
- (user=surenb job=sendgmr) by 2002:a25:7755:0:b0:d9a:519f:d0e6 with SMTP id
- s82-20020a257755000000b00d9a519fd0e6mr234250ybc.6.1698155261852; Tue, 24 Oct
- 2023 06:47:41 -0700 (PDT)
-Date: Tue, 24 Oct 2023 06:46:24 -0700
+ (user=surenb job=sendgmr) by 2002:a25:d34e:0:b0:d9a:e3d9:99bd with SMTP id
+ e75-20020a25d34e000000b00d9ae3d999bdmr212803ybf.5.1698155264079; Tue, 24 Oct
+ 2023 06:47:44 -0700 (PDT)
+Date: Tue, 24 Oct 2023 06:46:25 -0700
 In-Reply-To: <20231024134637.3120277-1-surenb@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -48,8 +48,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20231024134637.3120277-1-surenb@google.com>
 X-Mailer: git-send-email 2.42.0.758.gaed0368e0e-goog
-Message-ID: <20231024134637.3120277-28-surenb@google.com>
-Subject: [PATCH v2 27/39] xfs: Memory allocation profiling fixups
+Message-ID: <20231024134637.3120277-29-surenb@google.com>
+Subject: [PATCH v2 28/39] timekeeping: Fix a circular include dependency
 From: Suren Baghdasaryan <surenb@google.com>
 To: akpm@linux-foundation.org
 Cc: kent.overstreet@linux.dev, mhocko@suse.com, vbabka@suse.cz, 
@@ -81,72 +81,43 @@ Content-Type: text/plain; charset="UTF-8"
 
 From: Kent Overstreet <kent.overstreet@linux.dev>
 
-This adds an alloc_hooks() wrapper around kmem_alloc(), so that we can
-have allocations accounted to the proper callsite.
+This avoids a circular header dependency in an upcoming patch by only
+making hrtimer.h depend on percpu-defs.h
 
 Signed-off-by: Kent Overstreet <kent.overstreet@linux.dev>
 Signed-off-by: Suren Baghdasaryan <surenb@google.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>
 ---
- fs/xfs/kmem.c |  4 ++--
- fs/xfs/kmem.h | 10 ++++------
- 2 files changed, 6 insertions(+), 8 deletions(-)
+ include/linux/hrtimer.h        | 2 +-
+ include/linux/time_namespace.h | 2 ++
+ 2 files changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/fs/xfs/kmem.c b/fs/xfs/kmem.c
-index c557a030acfe..9aa57a4e2478 100644
---- a/fs/xfs/kmem.c
-+++ b/fs/xfs/kmem.c
-@@ -8,7 +8,7 @@
- #include "xfs_trace.h"
+diff --git a/include/linux/hrtimer.h b/include/linux/hrtimer.h
+index 0ee140176f10..e67349e84364 100644
+--- a/include/linux/hrtimer.h
++++ b/include/linux/hrtimer.h
+@@ -16,7 +16,7 @@
+ #include <linux/rbtree.h>
+ #include <linux/init.h>
+ #include <linux/list.h>
+-#include <linux/percpu.h>
++#include <linux/percpu-defs.h>
+ #include <linux/seqlock.h>
+ #include <linux/timer.h>
+ #include <linux/timerqueue.h>
+diff --git a/include/linux/time_namespace.h b/include/linux/time_namespace.h
+index 03d9c5ac01d1..a9e61120d4e3 100644
+--- a/include/linux/time_namespace.h
++++ b/include/linux/time_namespace.h
+@@ -11,6 +11,8 @@
+ struct user_namespace;
+ extern struct user_namespace init_user_ns;
  
- void *
--kmem_alloc(size_t size, xfs_km_flags_t flags)
-+kmem_alloc_noprof(size_t size, xfs_km_flags_t flags)
- {
- 	int	retries = 0;
- 	gfp_t	lflags = kmem_flags_convert(flags);
-@@ -17,7 +17,7 @@ kmem_alloc(size_t size, xfs_km_flags_t flags)
- 	trace_kmem_alloc(size, flags, _RET_IP_);
- 
- 	do {
--		ptr = kmalloc(size, lflags);
-+		ptr = kmalloc_noprof(size, lflags);
- 		if (ptr || (flags & KM_MAYFAIL))
- 			return ptr;
- 		if (!(++retries % 100))
-diff --git a/fs/xfs/kmem.h b/fs/xfs/kmem.h
-index b987dc2c6851..c4cf1dc2a7af 100644
---- a/fs/xfs/kmem.h
-+++ b/fs/xfs/kmem.h
-@@ -6,6 +6,7 @@
- #ifndef __XFS_SUPPORT_KMEM_H__
- #define __XFS_SUPPORT_KMEM_H__
- 
-+#include <linux/alloc_tag.h>
- #include <linux/slab.h>
- #include <linux/sched.h>
- #include <linux/mm.h>
-@@ -56,18 +57,15 @@ kmem_flags_convert(xfs_km_flags_t flags)
- 	return lflags;
- }
- 
--extern void *kmem_alloc(size_t, xfs_km_flags_t);
- static inline void  kmem_free(const void *ptr)
- {
- 	kvfree(ptr);
- }
- 
-+extern void *kmem_alloc_noprof(size_t, xfs_km_flags_t);
-+#define kmem_alloc(...)			alloc_hooks(kmem_alloc_noprof(__VA_ARGS__))
- 
--static inline void *
--kmem_zalloc(size_t size, xfs_km_flags_t flags)
--{
--	return kmem_alloc(size, flags | KM_ZERO);
--}
-+#define kmem_zalloc(_size, _flags)	kmem_alloc((_size), (_flags) | KM_ZERO)
- 
- /*
-  * Zone interfaces
++struct vm_area_struct;
++
+ struct timens_offsets {
+ 	struct timespec64 monotonic;
+ 	struct timespec64 boottime;
 -- 
 2.42.0.758.gaed0368e0e-goog
 
