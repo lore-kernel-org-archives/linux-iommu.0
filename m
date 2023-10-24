@@ -1,36 +1,36 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.88])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 46FEF36AF2
-	for <iommu@lists.linux.dev>; Tue, 24 Oct 2023 15:25:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AAB276FBD
+	for <iommu@lists.linux.dev>; Tue, 24 Oct 2023 15:25:51 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ADUvOSiu"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Okk1V9H0"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1698161147; x=1729697147;
+  t=1698161151; x=1729697151;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=GhzoVAbGJrM+7KU7vz4DC0AvB+1skOqf7bv981Kl1Qk=;
-  b=ADUvOSiufnTGz8XKyQUQhgd49PhWUn7LczUPjsI7D5V9vgY4d0lbPKW4
-   gJzt1FOZFls3BiWTF5BS+SHvZ2LURBOLfBSvTViVq5fODQ6buz+5XOqAF
-   mTl3zfCjOPN2FihroxOf5UjUVCfUftv5VMCtXlu8PgQs11Du9EaQM3qr+
-   lmu5CHCEg+gU4O1YezPcFgi1guDbebgNt1X+WM1LE4jLWqpN0QzVUeU5Z
-   41N6X3qjuNfsdTN1A++HdRlziEIcDe5aoAI/uKs4ISVSKeQ8i5nEgzqC7
-   8NTWSbZdgfS3vejUkITU7xoke/okDHf4FMHpDHIUUVsOVyhoH/P9acS62
+  bh=yc31Hj1XFcKLSYQzFgKTkbbG88zsmwpxwtOXR4n5QGQ=;
+  b=Okk1V9H0igldN8HC+G71bMei0jZdWS7rgE6S7ILSHrk5bilxiaQK7MqL
+   WSFN2+Pw0dcv34K+fk2H6RbRfE7l8wNiaSWPO8VCEeLQjn1nxhlxavc2x
+   38sWAsaYbPSrArewNnmQ7SEKjbpFhlgLGLol/k5ZkDde7wVc/NW6WkFXf
+   Rp/wG79Jl5HO8t1xhIgDlRXGEsIxJXmQlJoayg2UehnB/GgvX+cmMcEEH
+   aXHhFjUPNaAUJEVacKk+zQiWsi98cvm8hFzmJECKkLQnOSjSHwEF0kqdL
+   Y5aflg8TdE7P3Bb5JGBrmr8ouinDfKChpkIZACCgbK23eWAHkt1NXSs/j
    w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10873"; a="418212100"
+X-IronPort-AV: E=McAfee;i="6600,9927,10873"; a="418212131"
 X-IronPort-AV: E=Sophos;i="6.03,248,1694761200"; 
-   d="scan'208";a="418212100"
+   d="scan'208";a="418212131"
 Received: from fmsmga006.fm.intel.com ([10.253.24.20])
   by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Oct 2023 08:14:15 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10873"; a="1005688900"
+X-IronPort-AV: E=McAfee;i="6600,9927,10873"; a="1005688908"
 X-IronPort-AV: E=Sophos;i="6.03,248,1694761200"; 
-   d="scan'208";a="1005688900"
+   d="scan'208";a="1005688908"
 Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
-  by fmsmga006.fm.intel.com with ESMTP; 24 Oct 2023 08:14:14 -0700
+  by fmsmga006.fm.intel.com with ESMTP; 24 Oct 2023 08:14:15 -0700
 From: Yi Liu <yi.l.liu@intel.com>
 To: joro@8bytes.org,
 	alex.williamson@redhat.com,
@@ -55,10 +55,11 @@ Cc: cohuck@redhat.com,
 	linux-kernel@vger.kernel.org,
 	linux-kselftest@vger.kernel.org,
 	zhenzhong.duan@intel.com,
-	joao.m.martins@oracle.com
-Subject: [PATCH v7 2/8] iommu/vt-d: Extend dmar_domain to support nested domain
-Date: Tue, 24 Oct 2023 08:14:06 -0700
-Message-Id: <20231024151412.50046-3-yi.l.liu@intel.com>
+	joao.m.martins@oracle.com,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>
+Subject: [PATCH v7 3/8] iommu/vt-d: Add helper for nested domain allocation
+Date: Tue, 24 Oct 2023 08:14:07 -0700
+Message-Id: <20231024151412.50046-4-yi.l.liu@intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20231024151412.50046-1-yi.l.liu@intel.com>
 References: <20231024151412.50046-1-yi.l.liu@intel.com>
@@ -72,73 +73,106 @@ Content-Transfer-Encoding: 8bit
 
 From: Lu Baolu <baolu.lu@linux.intel.com>
 
-The nested domain fields are exclusive to those that used for a DMA
-remapping domain. Use union to avoid memory waste.
+This adds helper for accepting user parameters and allocate a nested
+domain.
 
 Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 Signed-off-by: Yi Liu <yi.l.liu@intel.com>
 ---
- drivers/iommu/intel/iommu.h | 36 ++++++++++++++++++++++++++++++------
- 1 file changed, 30 insertions(+), 6 deletions(-)
+ drivers/iommu/intel/Makefile |  2 +-
+ drivers/iommu/intel/iommu.h  |  2 ++
+ drivers/iommu/intel/nested.c | 55 ++++++++++++++++++++++++++++++++++++
+ 3 files changed, 58 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/iommu/intel/nested.c
 
+diff --git a/drivers/iommu/intel/Makefile b/drivers/iommu/intel/Makefile
+index 7af3b8a4f2a0..5dabf081a779 100644
+--- a/drivers/iommu/intel/Makefile
++++ b/drivers/iommu/intel/Makefile
+@@ -1,6 +1,6 @@
+ # SPDX-License-Identifier: GPL-2.0
+ obj-$(CONFIG_DMAR_TABLE) += dmar.o
+-obj-$(CONFIG_INTEL_IOMMU) += iommu.o pasid.o
++obj-$(CONFIG_INTEL_IOMMU) += iommu.o pasid.o nested.o
+ obj-$(CONFIG_DMAR_TABLE) += trace.o cap_audit.o
+ obj-$(CONFIG_DMAR_PERF) += perf.o
+ obj-$(CONFIG_INTEL_IOMMU_DEBUGFS) += debugfs.o
 diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
-index cc7301579773..244f111ea0bb 100644
+index 244f111ea0bb..43108424f315 100644
 --- a/drivers/iommu/intel/iommu.h
 +++ b/drivers/iommu/intel/iommu.h
-@@ -25,6 +25,7 @@
+@@ -884,6 +884,8 @@ void *alloc_pgtable_page(int node, gfp_t gfp);
+ void free_pgtable_page(void *vaddr);
+ void iommu_flush_write_buffer(struct intel_iommu *iommu);
+ struct intel_iommu *device_to_iommu(struct device *dev, u8 *bus, u8 *devfn);
++struct iommu_domain *intel_nested_domain_alloc(struct iommu_domain *s2_domain,
++					       const struct iommu_user_data *user_data);
  
- #include <asm/cacheflush.h>
- #include <asm/iommu.h>
-+#include <uapi/linux/iommufd.h>
- 
- /*
-  * VT-d hardware uses 4KiB page size regardless of host page size.
-@@ -605,15 +606,38 @@ struct dmar_domain {
- 	struct list_head devices;	/* all devices' list */
- 	struct list_head dev_pasids;	/* all attached pasids */
- 
--	struct dma_pte	*pgd;		/* virtual address */
--	int		gaw;		/* max guest address width */
--
--	/* adjusted guest address width, 0 is level 2 30-bit */
--	int		agaw;
- 	int		iommu_superpage;/* Level of superpages supported:
- 					   0 == 4KiB (no superpages), 1 == 2MiB,
- 					   2 == 1GiB, 3 == 512GiB, 4 == 1TiB */
--	u64		max_addr;	/* maximum mapped address */
-+	union {
-+		/* DMA remapping domain */
-+		struct {
-+			/* virtual address */
-+			struct dma_pte	*pgd;
-+			/* max guest address width */
-+			int		gaw;
-+			/*
-+			 * adjusted guest address width:
-+			 *   0: level 2 30-bit
-+			 *   1: level 3 39-bit
-+			 *   2: level 4 48-bit
-+			 *   3: level 5 57-bit
-+			 */
-+			int		agaw;
-+			/* maximum mapped address */
-+			u64		max_addr;
-+		};
+ #ifdef CONFIG_INTEL_IOMMU_SVM
+ void intel_svm_check(struct intel_iommu *iommu);
+diff --git a/drivers/iommu/intel/nested.c b/drivers/iommu/intel/nested.c
+new file mode 100644
+index 000000000000..859c60bead05
+--- /dev/null
++++ b/drivers/iommu/intel/nested.c
+@@ -0,0 +1,55 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * nested.c - nested mode translation support
++ *
++ * Copyright (C) 2023 Intel Corporation
++ *
++ * Author: Lu Baolu <baolu.lu@linux.intel.com>
++ *         Jacob Pan <jacob.jun.pan@linux.intel.com>
++ *         Yi Liu <yi.l.liu@intel.com>
++ */
 +
-+		/* Nested user domain */
-+		struct {
-+			/* parent page table which the user domain is nested on */
-+			struct dmar_domain *s2_domain;
-+			/* user page table pointer (in GPA) */
-+			unsigned long s1_pgtbl;
-+			/* page table attributes */
-+			struct iommu_hwpt_vtd_s1 s1_cfg;
-+		};
-+	};
- 
- 	struct iommu_domain domain;	/* generic domain data structure for
- 					   iommu core */
++#define pr_fmt(fmt)	"DMAR: " fmt
++
++#include <linux/iommu.h>
++
++#include "iommu.h"
++
++static void intel_nested_domain_free(struct iommu_domain *domain)
++{
++	kfree(to_dmar_domain(domain));
++}
++
++static const struct iommu_domain_ops intel_nested_domain_ops = {
++	.free			= intel_nested_domain_free,
++};
++
++struct iommu_domain *intel_nested_domain_alloc(struct iommu_domain *s2_domain,
++					       const struct iommu_user_data *user_data)
++{
++	struct iommu_hwpt_vtd_s1 vtd;
++	struct dmar_domain *domain;
++	int ret;
++
++	ret = iommu_copy_struct_from_user(&vtd, user_data,
++					  IOMMU_HWPT_DATA_VTD_S1, __reserved);
++	if (ret)
++		return ERR_PTR(ret);
++
++	domain = kzalloc(sizeof(*domain), GFP_KERNEL_ACCOUNT);
++	if (!domain)
++		return ERR_PTR(-ENOMEM);
++
++	domain->use_first_level = true;
++	domain->s2_domain = to_dmar_domain(s2_domain);
++	domain->s1_pgtbl = vtd.pgtbl_addr;
++	domain->s1_cfg = vtd;
++	domain->domain.ops = &intel_nested_domain_ops;
++	domain->domain.type = IOMMU_DOMAIN_NESTED;
++	INIT_LIST_HEAD(&domain->devices);
++	INIT_LIST_HEAD(&domain->dev_pasids);
++	spin_lock_init(&domain->lock);
++	xa_init(&domain->iommu_array);
++
++	return &domain->domain;
++}
 -- 
 2.34.1
 
