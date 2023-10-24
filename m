@@ -1,44 +1,44 @@
-Received: from mail-yb1-f201.google.com (mail-yb1-f201.google.com [209.85.219.201])
+Received: from mail-yw1-f201.google.com (mail-yw1-f201.google.com [209.85.128.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2D8732C72
-	for <iommu@lists.linux.dev>; Tue, 24 Oct 2023 13:47:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 519DF2B5CE
+	for <iommu@lists.linux.dev>; Tue, 24 Oct 2023 13:47:38 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--surenb.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Xjkg+e3r"
-Received: by mail-yb1-f201.google.com with SMTP id 3f1490d57ef6-d9cfec5e73dso4391818276.2
-        for <iommu@lists.linux.dev>; Tue, 24 Oct 2023 06:47:33 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="c18jb0cc"
+Received: by mail-yw1-f201.google.com with SMTP id 00721157ae682-5a7cc433782so55253357b3.3
+        for <iommu@lists.linux.dev>; Tue, 24 Oct 2023 06:47:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1698155253; x=1698760053; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1698155257; x=1698760057; darn=lists.linux.dev;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=jxcZ43bmgT/q64Ul96+yH7BdLzW8wJzWTibIuRMuFN0=;
-        b=Xjkg+e3rrWtaOMC1yQFWZNylCpddCMKHbm3vhKo+UbUUzSaGAt6Jt8jc8tdaZcaGdL
-         sXVHYE5G+uWU6m6/tXbTnZmC5BoPlL2vSCRNNlw0+hvu7dEU3eOd37XT1zC8pUK7ouzJ
-         ozlulcC4cQy/gsubb5CbhZB82OXHO9Z+bYex14gBaOmL3i7Ah5o0HZeOxDbTsrDcfWXt
-         eRKXjPyH4/KvgGxmusCkV3WGo/iKSHIadiN3rxgyr5LRHECpPHWR+qx6psq+UWHXSnAD
-         F80Ct22M3/M4jr3dmV180FWoBOnqE/OMfFi9sCC/uXC3MG5+lymLVcuzU927SwMfYDZJ
-         97Rw==
+        bh=OUWmo6RLkaXHvLlOp0/KP9HFW8MtULS71POlQ8HMTCI=;
+        b=c18jb0ccU3MIaLOiRTZ2gP2QwJ9ZRcqiNYc/n+fI6tYb+xm38uFkVQzp/P7GglYM2A
+         TvKQKgkQKax6mNmTj4ZBfNc5vNmv+hhERVav9LXUwGm+OP5vF1pIzGpUWmxZ9IRJ94Y3
+         8EckCOEgJHn70CeRZ1AqvCNTpJnaBC0IbfNHUOOGizaTkcvWbXZANkHPIF2gRmc9HSrG
+         v5p73E9OPZNlIENP2SG+YbRydQf7IqM0HRK/zQ3YAqnwTq0kNlFnTOUsXxcVsGckMsmp
+         kWcF40n8k8iDgJ3hYfgXdV5y6BPXadTSWH8W+6JjIAtJhX12LRXZTFjLtofts8fC1CzC
+         u7tg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1698155253; x=1698760053;
+        d=1e100.net; s=20230601; t=1698155257; x=1698760057;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=jxcZ43bmgT/q64Ul96+yH7BdLzW8wJzWTibIuRMuFN0=;
-        b=jYqs5Q+QnrpsTccrHL0VQhCoHa2dPu6JbhiFU1SC+wcTWVF/eLzOPG74mJUlE0OhhT
-         NjB11Jqaj+VaSif/SeE+yMU/N7HOwOHWGC3NAv3BWiIgMXz0fxAhnoGJx6We8RpXHeoB
-         NxmBxByq8G8gHyNvlJ2TE3Z43MOqpVddj8y631vu95vzHUq5eH53dOFSPL7I4Qpjnnpv
-         qFHbOtZZ+7AOYT1ckWBsreM2NhIB+KeUJVd4VG1l5oVFBNxG5Wn0/LsarsDSlptwLfYI
-         X8gLmPTjTyav0VZg1mPsw7Q8C1k1M+lD+qhVFcs3Bpu5y0MOcQvVckIlYqlMspHNLKax
-         XR6g==
-X-Gm-Message-State: AOJu0Yw+I9F9sUgC4BzB2keODoJqYijLPnWnDRAUHBsip8N8seDbQp1y
-	QzS80YxRlt597T1x8Rnq0cEqiXKHomU=
-X-Google-Smtp-Source: AGHT+IHLiWJmtuPzRqvJDSScUKUh0y8YokFyWjfHx2rxdH2c6l653IiepUePcxPp47iOlZTgh6t0s/pZmOY=
+        bh=OUWmo6RLkaXHvLlOp0/KP9HFW8MtULS71POlQ8HMTCI=;
+        b=lYBA/okjR9ULIsgc0n79GQx+QcqpgeCKWQwU6siF58JL0xdlDWYyX47jh26tFZ6rww
+         9T4hlkmYeedCRnZoW+xPVOR3vycMVBmYWwcTNjsmLUhy79M1gkYuTbspVPto+ugFXY99
+         w2H/vcJsLLE5WNuoaKwkA8fj1FOxbvV/WBZSvYG0VK+tIvO1CZzP6NFsQucB22REbimO
+         ql3cat9ntHvaj2Hb9F+Ie0W8Wec0G/olSVTvWRRwR/Fa8QdfJKS33Y1Gyfl/pLWysxfd
+         VMwGFeV+X8cOpSxEKqufcW0hodlGWbixNQpA73JwklSCLG/3WWperErKa+22JQl7yfOz
+         9tMQ==
+X-Gm-Message-State: AOJu0Yyoz1hNRu+95SNEFbZ7ocK3EyX2chJFZ9wGKsgYolCZiS1HT708
+	ntxqu0IRqMe/L2QONrV616wGm0+1pdg=
+X-Google-Smtp-Source: AGHT+IHQ3VEMdDHth6teCnTo9GNQ4j4PajdUPKRUHryC857gV5hBaW9Bct9jFesWnWbFdQlkFZvB05Yolzc=
 X-Received: from surenb-desktop.mtv.corp.google.com ([2620:15c:211:201:45ba:3318:d7a5:336a])
- (user=surenb job=sendgmr) by 2002:a25:d05:0:b0:d9a:5b63:a682 with SMTP id
- 5-20020a250d05000000b00d9a5b63a682mr216305ybn.13.1698155252840; Tue, 24 Oct
- 2023 06:47:32 -0700 (PDT)
-Date: Tue, 24 Oct 2023 06:46:20 -0700
+ (user=surenb job=sendgmr) by 2002:a81:48c9:0:b0:5a7:db29:40e3 with SMTP id
+ v192-20020a8148c9000000b005a7db2940e3mr273153ywa.7.1698155257303; Tue, 24 Oct
+ 2023 06:47:37 -0700 (PDT)
+Date: Tue, 24 Oct 2023 06:46:22 -0700
 In-Reply-To: <20231024134637.3120277-1-surenb@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -48,9 +48,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20231024134637.3120277-1-surenb@google.com>
 X-Mailer: git-send-email 2.42.0.758.gaed0368e0e-goog
-Message-ID: <20231024134637.3120277-24-surenb@google.com>
-Subject: [PATCH v2 23/39] mm/slab: add allocation accounting into slab
- allocation and free paths
+Message-ID: <20231024134637.3120277-26-surenb@google.com>
+Subject: [PATCH v2 25/39] mm/slub: Mark slab_free_freelist_hook() __always_inline
 From: Suren Baghdasaryan <surenb@google.com>
 To: akpm@linux-foundation.org
 Cc: kent.overstreet@linux.dev, mhocko@suse.com, vbabka@suse.cz, 
@@ -80,119 +79,29 @@ Cc: kent.overstreet@linux.dev, mhocko@suse.com, vbabka@suse.cz,
 	cgroups@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 
-Account slab allocations using codetag reference embedded into slabobj_ext.
+From: Kent Overstreet <kent.overstreet@linux.dev>
 
-Signed-off-by: Suren Baghdasaryan <surenb@google.com>
-Co-developed-by: Kent Overstreet <kent.overstreet@linux.dev>
+It seems we need to be more forceful with the compiler on this one.
+
 Signed-off-by: Kent Overstreet <kent.overstreet@linux.dev>
+Signed-off-by: Suren Baghdasaryan <surenb@google.com>
 ---
- include/linux/slab_def.h |  2 +-
- include/linux/slub_def.h |  4 ++--
- mm/slab.c                |  4 +++-
- mm/slab.h                | 32 ++++++++++++++++++++++++++++++++
- 4 files changed, 38 insertions(+), 4 deletions(-)
+ mm/slub.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/linux/slab_def.h b/include/linux/slab_def.h
-index a61e7d55d0d3..23f14dcb8d5b 100644
---- a/include/linux/slab_def.h
-+++ b/include/linux/slab_def.h
-@@ -107,7 +107,7 @@ static inline void *nearest_obj(struct kmem_cache *cache, const struct slab *sla
-  *   reciprocal_divide(offset, cache->reciprocal_buffer_size)
-  */
- static inline unsigned int obj_to_index(const struct kmem_cache *cache,
--					const struct slab *slab, void *obj)
-+					const struct slab *slab, const void *obj)
- {
- 	u32 offset = (obj - slab->s_mem);
- 	return reciprocal_divide(offset, cache->reciprocal_buffer_size);
-diff --git a/include/linux/slub_def.h b/include/linux/slub_def.h
-index deb90cf4bffb..43fda4a5f23a 100644
---- a/include/linux/slub_def.h
-+++ b/include/linux/slub_def.h
-@@ -182,14 +182,14 @@ static inline void *nearest_obj(struct kmem_cache *cache, const struct slab *sla
- 
- /* Determine object index from a given position */
- static inline unsigned int __obj_to_index(const struct kmem_cache *cache,
--					  void *addr, void *obj)
-+					  void *addr, const void *obj)
- {
- 	return reciprocal_divide(kasan_reset_tag(obj) - addr,
- 				 cache->reciprocal_size);
+diff --git a/mm/slub.c b/mm/slub.c
+index f5e07d8802e2..222c16cef729 100644
+--- a/mm/slub.c
++++ b/mm/slub.c
+@@ -1800,7 +1800,7 @@ static __always_inline bool slab_free_hook(struct kmem_cache *s,
+ 	return kasan_slab_free(s, x, init);
  }
  
- static inline unsigned int obj_to_index(const struct kmem_cache *cache,
--					const struct slab *slab, void *obj)
-+					const struct slab *slab, const void *obj)
+-static inline bool slab_free_freelist_hook(struct kmem_cache *s,
++static __always_inline bool slab_free_freelist_hook(struct kmem_cache *s,
+ 					   void **head, void **tail,
+ 					   int *cnt)
  {
- 	if (is_kfence_address(obj))
- 		return 0;
-diff --git a/mm/slab.c b/mm/slab.c
-index cefcb7499b6c..18923f5f05b5 100644
---- a/mm/slab.c
-+++ b/mm/slab.c
-@@ -3348,9 +3348,11 @@ static void cache_flusharray(struct kmem_cache *cachep, struct array_cache *ac)
- static __always_inline void __cache_free(struct kmem_cache *cachep, void *objp,
- 					 unsigned long caller)
- {
-+	struct slab *slab = virt_to_slab(objp);
- 	bool init;
- 
--	memcg_slab_free_hook(cachep, virt_to_slab(objp), &objp, 1);
-+	memcg_slab_free_hook(cachep, slab, &objp, 1);
-+	alloc_tagging_slab_free_hook(cachep, slab, &objp, 1);
- 
- 	if (is_kfence_address(objp)) {
- 		kmemleak_free_recursive(objp, cachep->flags);
-diff --git a/mm/slab.h b/mm/slab.h
-index 293210ed10a9..4859ce1f8808 100644
---- a/mm/slab.h
-+++ b/mm/slab.h
-@@ -533,6 +533,32 @@ prepare_slab_obj_exts_hook(struct kmem_cache *s, gfp_t flags, void *p)
- 
- #endif /* CONFIG_SLAB_OBJ_EXT */
- 
-+#ifdef CONFIG_MEM_ALLOC_PROFILING
-+
-+static inline void alloc_tagging_slab_free_hook(struct kmem_cache *s, struct slab *slab,
-+					void **p, int objects)
-+{
-+	struct slabobj_ext *obj_exts;
-+	int i;
-+
-+	obj_exts = slab_obj_exts(slab);
-+	if (!obj_exts)
-+		return;
-+
-+	for (i = 0; i < objects; i++) {
-+		unsigned int off = obj_to_index(s, slab, p[i]);
-+
-+		alloc_tag_sub(&obj_exts[off].ref, s->size);
-+	}
-+}
-+
-+#else
-+
-+static inline void alloc_tagging_slab_free_hook(struct kmem_cache *s, struct slab *slab,
-+					void **p, int objects) {}
-+
-+#endif /* CONFIG_MEM_ALLOC_PROFILING */
-+
- #ifdef CONFIG_MEMCG_KMEM
- void mod_objcg_state(struct obj_cgroup *objcg, struct pglist_data *pgdat,
- 		     enum node_stat_item idx, int nr);
-@@ -827,6 +853,12 @@ static inline void slab_post_alloc_hook(struct kmem_cache *s,
- 					 s->flags, flags);
- 		kmsan_slab_alloc(s, p[i], flags);
- 		obj_exts = prepare_slab_obj_exts_hook(s, flags, p[i]);
-+
-+#ifdef CONFIG_MEM_ALLOC_PROFILING
-+		/* obj_exts can be allocated for other reasons */
-+		if (likely(obj_exts) && mem_alloc_profiling_enabled())
-+			alloc_tag_add(&obj_exts->ref, current->alloc_tag, s->size);
-+#endif
- 	}
- 
- 	memcg_slab_post_alloc_hook(s, objcg, flags, size, p);
 -- 
 2.42.0.758.gaed0368e0e-goog
 
