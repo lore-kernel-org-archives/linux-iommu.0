@@ -1,58 +1,65 @@
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A7752B5F5
-	for <iommu@lists.linux.dev>; Tue, 24 Oct 2023 13:52:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oracle.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oracle.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 408D3210FD
+	for <iommu@lists.linux.dev>; Tue, 24 Oct 2023 15:00:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="nVso6Dak"
-Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
-	by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 39OCJPCE032365;
-	Tue, 24 Oct 2023 13:52:36 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=corp-2023-03-30;
- bh=Sr22pMVubDMEu8BNpmzEzsEOCwlQStjZCOX4qBIyrtE=;
- b=nVso6Dak1gpMAbLjKDuVgOmSeI9vsLZz/EJUBkCuWyk9pYx7bYDX2ncks4Y5JiJd8rdr
- hFQOQwonwouFHXRMCKx2tZCqOi6LC54y/w663/zv4g/1uOn2UV0pOs18VQk2TjxgQleE
- g9BCcaqW/ExU4vclLls7X4b2BDNtv7IBQDcEangTlA/FvfVsAAUwl6sWsTVBm3ttJglm
- MtYQHro26E6VKiBxc7dKrbDsK0lxwsYG4VkvXlh+bmUQsTGy1DwI/5Vy0zvmRnPkex4J
- ekBA1jdl93k5F7Tn3SNb+TBc44Zq5fq/VwbqRgl86746iJfk9ERj+3Mazaw4bb59+87E Hw== 
-Received: from phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta03.appoci.oracle.com [138.1.37.129])
-	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3tv68tdg71-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Tue, 24 Oct 2023 13:52:36 +0000
-Received: from pps.filterd (phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-	by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (8.17.1.19/8.17.1.19) with ESMTP id 39OD8EYJ034669;
-	Tue, 24 Oct 2023 13:52:35 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-	by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 3tv5359363-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Tue, 24 Oct 2023 13:52:35 +0000
-Received: from phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 39ODpL9Q030007;
-	Tue, 24 Oct 2023 13:52:34 GMT
-Received: from joaomart-mac.uk.oracle.com (dhcp-10-175-194-36.vpn.oracle.com [10.175.194.36])
-	by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTP id 3tv53591rr-19;
-	Tue, 24 Oct 2023 13:52:34 +0000
-From: Joao Martins <joao.m.martins@oracle.com>
-To: iommu@lists.linux.dev
-Cc: Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
-        Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
-        Lu Baolu <baolu.lu@linux.intel.com>, Yi Liu <yi.l.liu@intel.com>,
-        Yi Y Sun <yi.y.sun@intel.com>, Nicolin Chen <nicolinc@nvidia.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-        Zhenzhong Duan <zhenzhong.duan@intel.com>,
-        Alex Williamson <alex.williamson@redhat.com>, kvm@vger.kernel.org,
-        Joao Martins <joao.m.martins@oracle.com>
-Subject: [PATCH v6 18/18] iommufd/selftest: Test IOMMU_HWPT_GET_DIRTY_BITMAP_NO_CLEAR flag
-Date: Tue, 24 Oct 2023 14:51:09 +0100
-Message-Id: <20231024135109.73787-19-joao.m.martins@oracle.com>
-In-Reply-To: <20231024135109.73787-1-joao.m.martins@oracle.com>
-References: <20231024135109.73787-1-joao.m.martins@oracle.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="a4TmtTew"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1698159615; x=1729695615;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=lnL4CP2uD9rbT1rIxMvDwFK1eRPFnr1/Kd5xalHC4fQ=;
+  b=a4TmtTewz6BsDibsksUVO5AJC7RlodfAAUAGWTA59KljmkdY1bGklV55
+   8+iY0SzkFBl+FXdlrzJkg8QGGAWFhgk9XTJ9WNJ9HajB7KneD+YE0N8tv
+   +l6tfxjWYwGLi6DRbKOOaayYvpbr+jHM5R9+9ByofITwdtORWDsSCdF3a
+   J/MXqC/AVEbDLDQUviIyEZLIokyorhGSdkEjKzp1BjpQDdszstlYHq8AQ
+   c6IWuEUD5VbeYbztPjrgKj605x++v6udYXSbGAWWthU7TV78j21sUQCDE
+   8Z7L2rAlwJJayOZszfveMwVDKqwiP8QcWmF5EtdSMtlVkiOan6ZNYZh1A
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10873"; a="366416750"
+X-IronPort-AV: E=Sophos;i="6.03,248,1694761200"; 
+   d="scan'208";a="366416750"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Oct 2023 08:00:13 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10873"; a="932067639"
+X-IronPort-AV: E=Sophos;i="6.03,248,1694761200"; 
+   d="scan'208";a="932067639"
+Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
+  by orsmga005.jf.intel.com with ESMTP; 24 Oct 2023 08:00:12 -0700
+From: Yi Liu <yi.l.liu@intel.com>
+To: joro@8bytes.org,
+	alex.williamson@redhat.com,
+	jgg@nvidia.com,
+	kevin.tian@intel.com,
+	robin.murphy@arm.com,
+	baolu.lu@linux.intel.com
+Cc: cohuck@redhat.com,
+	eric.auger@redhat.com,
+	nicolinc@nvidia.com,
+	kvm@vger.kernel.org,
+	mjrosato@linux.ibm.com,
+	chao.p.peng@linux.intel.com,
+	yi.l.liu@intel.com,
+	yi.y.sun@linux.intel.com,
+	peterx@redhat.com,
+	jasowang@redhat.com,
+	shameerali.kolothum.thodi@huawei.com,
+	lulu@redhat.com,
+	suravee.suthikulpanit@amd.com,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	linux-kselftest@vger.kernel.org,
+	zhenzhong.duan@intel.com,
+	joao.m.martins@oracle.com
+Subject: [PATCH] iommu/vt-d: Enhance capability check for nested parent domain allocation
+Date: Tue, 24 Oct 2023 08:00:11 -0700
+Message-Id: <20231024150011.44642-1-yi.l.liu@intel.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -60,185 +67,46 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.272,Aquarius:18.0.980,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2023-10-24_14,2023-10-24_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 adultscore=0 phishscore=0
- mlxlogscore=933 mlxscore=0 bulkscore=0 suspectscore=0 malwarescore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2310170001
- definitions=main-2310240118
-X-Proofpoint-ORIG-GUID: Fpq19YIv2zv8L9G7xy_8Yy1k0Q6tt4Qf
-X-Proofpoint-GUID: Fpq19YIv2zv8L9G7xy_8Yy1k0Q6tt4Qf
 
-Change test_mock_dirty_bitmaps() to pass a flag where it specifies the flag
-under test. The test does the same thing as the GET_DIRTY_BITMAP regular
-test. Except that it tests whether the dirtied bits are fetched all the
-same a second time, as opposed to observing them cleared.
+This adds the scalable mode check before allocating the nested parent domain
+as checking nested capability is not enough. User may turn off scalable mode
+which also means no nested support even if the hardware supports it.
 
-Signed-off-by: Joao Martins <joao.m.martins@oracle.com>
+Fixes: c97d1b20d383 ("iommu/vt-d: Add domain_alloc_user op")
+Signed-off-by: Yi Liu <yi.l.liu@intel.com>
 ---
- drivers/iommu/iommufd/selftest.c              | 15 +++++---
- tools/testing/selftests/iommu/iommufd.c       | 38 ++++++++++++++++++-
- tools/testing/selftests/iommu/iommufd_utils.h | 26 ++++++++-----
- 3 files changed, 61 insertions(+), 18 deletions(-)
+v1: Based on Joao's dirty page tracking v6 https://github.com/jpemartins/linux/commits/iommufd-v6
+---
+ drivers/iommu/intel/iommu.c | 2 +-
+ drivers/iommu/intel/iommu.h | 2 ++
+ 2 files changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/iommufd/selftest.c b/drivers/iommu/iommufd/selftest.c
-index 0eb01d1f9df8..d8551c9d5b6c 100644
---- a/drivers/iommu/iommufd/selftest.c
-+++ b/drivers/iommu/iommufd/selftest.c
-@@ -193,13 +193,16 @@ static int mock_domain_read_and_clear_dirty(struct iommu_domain *domain,
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index eb92a201cc0b..65f46f1347e6 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -4090,7 +4090,7 @@ intel_iommu_domain_alloc_user(struct device *dev, u32 flags)
+ 	if (!iommu)
+ 		return ERR_PTR(-ENODEV);
  
- 		ent = xa_load(&mock->pfns, cur / MOCK_IO_PAGE_SIZE);
- 		if (ent && (xa_to_value(ent) & MOCK_PFN_DIRTY_IOVA)) {
--			unsigned long val;
--
- 			/* Clear dirty */
--			val = xa_to_value(ent) & ~MOCK_PFN_DIRTY_IOVA;
--			old = xa_store(&mock->pfns, cur / MOCK_IO_PAGE_SIZE,
--				       xa_mk_value(val), GFP_KERNEL);
--			WARN_ON_ONCE(ent != old);
-+			if (!(flags & IOMMU_DIRTY_NO_CLEAR)) {
-+				unsigned long val;
-+
-+				val = xa_to_value(ent) & ~MOCK_PFN_DIRTY_IOVA;
-+				old = xa_store(&mock->pfns,
-+					       cur / MOCK_IO_PAGE_SIZE,
-+					       xa_mk_value(val), GFP_KERNEL);
-+				WARN_ON_ONCE(ent != old);
-+			}
- 			iommu_dirty_bitmap_record(dirty, cur,
- 						  MOCK_IO_PAGE_SIZE);
- 		}
-diff --git a/tools/testing/selftests/iommu/iommufd.c b/tools/testing/selftests/iommu/iommufd.c
-index f4f8bd17ae67..76a4351e3434 100644
---- a/tools/testing/selftests/iommu/iommufd.c
-+++ b/tools/testing/selftests/iommu/iommufd.c
-@@ -1598,13 +1598,47 @@ TEST_F(iommufd_dirty_tracking, get_dirty_bitmap)
+-	if ((flags & IOMMU_HWPT_ALLOC_NEST_PARENT) && !ecap_nest(iommu->ecap))
++	if ((flags & IOMMU_HWPT_ALLOC_NEST_PARENT) && !nested_supported(iommu))
+ 		return ERR_PTR(-EOPNOTSUPP);
  
- 	test_mock_dirty_bitmaps(hwpt_id, variant->buffer_size,
- 				MOCK_APERTURE_START, self->page_size,
--				self->bitmap, self->bitmap_size, _metadata);
-+				self->bitmap, self->bitmap_size, 0, _metadata);
+ 	dirty_tracking = (flags & IOMMU_HWPT_ALLOC_DIRTY_TRACKING);
+diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
+index 3bb569146229..cc7301579773 100644
+--- a/drivers/iommu/intel/iommu.h
++++ b/drivers/iommu/intel/iommu.h
+@@ -544,6 +544,8 @@ enum {
+ 				 ecap_pasid((iommu)->ecap))
+ #define ssads_supported(iommu) (sm_supported(iommu) &&                 \
+ 				ecap_slads((iommu)->ecap))
++#define nested_supported(iommu)	(sm_supported(iommu) &&			\
++				 ecap_nest((iommu)->ecap))
  
- 	/* PAGE_SIZE unaligned bitmap */
- 	test_mock_dirty_bitmaps(hwpt_id, variant->buffer_size,
- 				MOCK_APERTURE_START, self->page_size,
- 				self->bitmap + MOCK_PAGE_SIZE,
--				self->bitmap_size, _metadata);
-+				self->bitmap_size, 0, _metadata);
-+
-+	test_ioctl_destroy(stddev_id);
-+	test_ioctl_destroy(hwpt_id);
-+}
-+
-+TEST_F(iommufd_dirty_tracking, get_dirty_bitmap_no_clear)
-+{
-+	uint32_t stddev_id;
-+	uint32_t hwpt_id;
-+	uint32_t ioas_id;
-+
-+	test_ioctl_ioas_alloc(&ioas_id);
-+	test_ioctl_ioas_map_fixed_id(ioas_id, self->buffer,
-+				     variant->buffer_size, MOCK_APERTURE_START);
-+
-+	test_cmd_hwpt_alloc(self->idev_id, ioas_id,
-+			    IOMMU_HWPT_ALLOC_DIRTY_TRACKING, &hwpt_id);
-+	test_cmd_mock_domain(hwpt_id, &stddev_id, NULL, NULL);
-+
-+	test_cmd_set_dirty_tracking(hwpt_id, true);
-+
-+	test_mock_dirty_bitmaps(hwpt_id, variant->buffer_size,
-+				MOCK_APERTURE_START, self->page_size,
-+				self->bitmap, self->bitmap_size,
-+				IOMMU_HWPT_GET_DIRTY_BITMAP_NO_CLEAR,
-+				_metadata);
-+
-+	/* Unaligned bitmap */
-+	test_mock_dirty_bitmaps(hwpt_id, variant->buffer_size,
-+				MOCK_APERTURE_START, self->page_size,
-+				self->bitmap + MOCK_PAGE_SIZE,
-+				self->bitmap_size,
-+				IOMMU_HWPT_GET_DIRTY_BITMAP_NO_CLEAR,
-+				_metadata);
- 
- 	test_ioctl_destroy(stddev_id);
- 	test_ioctl_destroy(hwpt_id);
-diff --git a/tools/testing/selftests/iommu/iommufd_utils.h b/tools/testing/selftests/iommu/iommufd_utils.h
-index 2410d06f5a34..e263bf80a977 100644
---- a/tools/testing/selftests/iommu/iommufd_utils.h
-+++ b/tools/testing/selftests/iommu/iommufd_utils.h
-@@ -217,11 +217,12 @@ static int _test_cmd_set_dirty_tracking(int fd, __u32 hwpt_id, bool enabled)
- 
- static int _test_cmd_get_dirty_bitmap(int fd, __u32 hwpt_id, size_t length,
- 				      __u64 iova, size_t page_size,
--				      __u64 *bitmap)
-+				      __u64 *bitmap, __u32 flags)
- {
- 	struct iommu_hwpt_get_dirty_bitmap cmd = {
- 		.size = sizeof(cmd),
- 		.hwpt_id = hwpt_id,
-+		.flags = flags,
- 		.iova = iova,
- 		.length = length,
- 		.page_size = page_size,
-@@ -236,9 +237,9 @@ static int _test_cmd_get_dirty_bitmap(int fd, __u32 hwpt_id, size_t length,
- }
- 
- #define test_cmd_get_dirty_bitmap(fd, hwpt_id, length, iova, page_size,    \
--				  bitmap)                                  \
-+				  bitmap, flags)                           \
- 	ASSERT_EQ(0, _test_cmd_get_dirty_bitmap(fd, hwpt_id, length, iova, \
--						page_size, bitmap))
-+						page_size, bitmap, flags))
- 
- static int _test_cmd_mock_domain_set_dirty(int fd, __u32 hwpt_id, size_t length,
- 					   __u64 iova, size_t page_size,
-@@ -273,7 +274,7 @@ static int _test_cmd_mock_domain_set_dirty(int fd, __u32 hwpt_id, size_t length,
- 
- static int _test_mock_dirty_bitmaps(int fd, __u32 hwpt_id, size_t length,
- 				    __u64 iova, size_t page_size, __u64 *bitmap,
--				    __u64 bitmap_size,
-+				    __u64 bitmap_size, __u32 flags,
- 				    struct __test_metadata *_metadata)
- {
- 	unsigned long i, count, nbits = bitmap_size * BITS_PER_BYTE;
-@@ -292,25 +293,30 @@ static int _test_mock_dirty_bitmaps(int fd, __u32 hwpt_id, size_t length,
- 
- 	/* Expect all even bits as dirty in the user bitmap */
- 	memset(bitmap, 0, bitmap_size);
--	test_cmd_get_dirty_bitmap(fd, hwpt_id, length, iova, page_size, bitmap);
-+	test_cmd_get_dirty_bitmap(fd, hwpt_id, length, iova, page_size, bitmap,
-+				  flags);
- 	for (count = 0, i = 0; i < nbits; count += !(i % 2), i++)
- 		ASSERT_EQ(!(i % 2), test_bit(i, (unsigned long *)bitmap));
- 	ASSERT_EQ(count, out_dirty);
- 
- 	memset(bitmap, 0, bitmap_size);
--	test_cmd_get_dirty_bitmap(fd, hwpt_id, length, iova, page_size, bitmap);
-+	test_cmd_get_dirty_bitmap(fd, hwpt_id, length, iova, page_size, bitmap,
-+				  flags);
- 
- 	/* It as read already -- expect all zeroes */
--	for (i = 0; i < nbits; i++)
--		ASSERT_EQ(0, test_bit(i, (unsigned long *)bitmap));
-+	for (i = 0; i < nbits; i++) {
-+		ASSERT_EQ(!(i % 2) && (flags &
-+				       IOMMU_HWPT_GET_DIRTY_BITMAP_NO_CLEAR),
-+			  test_bit(i, (unsigned long *)bitmap));
-+	}
- 
- 	return 0;
- }
- #define test_mock_dirty_bitmaps(hwpt_id, length, iova, page_size, bitmap,      \
--				bitmap_size, _metadata)                        \
-+				bitmap_size, flags, _metadata)                 \
- 	ASSERT_EQ(0, _test_mock_dirty_bitmaps(self->fd, hwpt_id, length, iova, \
- 					      page_size, bitmap, bitmap_size,  \
--					      _metadata))
-+					      flags, _metadata))
- 
- static int _test_cmd_create_access(int fd, unsigned int ioas_id,
- 				   __u32 *access_id, unsigned int flags)
+ struct pasid_entry;
+ struct pasid_state_entry;
 -- 
-2.17.2
+2.34.1
 
