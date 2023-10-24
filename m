@@ -1,36 +1,36 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.88])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EBABA14ABF
-	for <iommu@lists.linux.dev>; Tue, 24 Oct 2023 15:25:45 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 46FEF36AF2
+	for <iommu@lists.linux.dev>; Tue, 24 Oct 2023 15:25:47 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="MMexxnrb"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ADUvOSiu"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1698161145; x=1729697145;
+  t=1698161147; x=1729697147;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=HxxDxm+pmr+CG9d+qPDASdBIZigfxNwo47Fkj5u+VjE=;
-  b=MMexxnrbBeu/p/ECdYDDSL9QosRh1r3v1mBWeTd/9pzE0sYj6i0BsUmi
-   BiKklRRtCKIWmihw9Gsgwx0MxFvm5gAlEPmFpoX8c81N//DZQ3shbLGAr
-   hgZfINcReqsmU4jeX+jmGl6WVqI+EAdjwaEcVcxcKkaGlNaRGMGeArC3v
-   isXFpItbBtE64MX+SD55WMLPYW3HwnU/Eud25mgyaq/iqXZCQO5k3posq
-   KRc1ssBOMK5kJ+ztMsODgY9W82CWPJciHjSe5iScZFbsMjwLhPOYjLc9y
-   ohW3+OHR+6ATpelVqDPEDlV0ZJr4UCp+XoQQmQ+7cuABxTzPtspirvFPO
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10873"; a="418212084"
+  bh=GhzoVAbGJrM+7KU7vz4DC0AvB+1skOqf7bv981Kl1Qk=;
+  b=ADUvOSiufnTGz8XKyQUQhgd49PhWUn7LczUPjsI7D5V9vgY4d0lbPKW4
+   gJzt1FOZFls3BiWTF5BS+SHvZ2LURBOLfBSvTViVq5fODQ6buz+5XOqAF
+   mTl3zfCjOPN2FihroxOf5UjUVCfUftv5VMCtXlu8PgQs11Du9EaQM3qr+
+   lmu5CHCEg+gU4O1YezPcFgi1guDbebgNt1X+WM1LE4jLWqpN0QzVUeU5Z
+   41N6X3qjuNfsdTN1A++HdRlziEIcDe5aoAI/uKs4ISVSKeQ8i5nEgzqC7
+   8NTWSbZdgfS3vejUkITU7xoke/okDHf4FMHpDHIUUVsOVyhoH/P9acS62
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10873"; a="418212100"
 X-IronPort-AV: E=Sophos;i="6.03,248,1694761200"; 
-   d="scan'208";a="418212084"
+   d="scan'208";a="418212100"
 Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Oct 2023 08:14:14 -0700
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Oct 2023 08:14:15 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10873"; a="1005688893"
+X-IronPort-AV: E=McAfee;i="6600,9927,10873"; a="1005688900"
 X-IronPort-AV: E=Sophos;i="6.03,248,1694761200"; 
-   d="scan'208";a="1005688893"
+   d="scan'208";a="1005688900"
 Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
-  by fmsmga006.fm.intel.com with ESMTP; 24 Oct 2023 08:14:13 -0700
+  by fmsmga006.fm.intel.com with ESMTP; 24 Oct 2023 08:14:14 -0700
 From: Yi Liu <yi.l.liu@intel.com>
 To: joro@8bytes.org,
 	alex.williamson@redhat.com,
@@ -56,9 +56,9 @@ Cc: cohuck@redhat.com,
 	linux-kselftest@vger.kernel.org,
 	zhenzhong.duan@intel.com,
 	joao.m.martins@oracle.com
-Subject: [PATCH v7 1/8] iommufd: Add data structure for Intel VT-d stage-1 domain allocation
-Date: Tue, 24 Oct 2023 08:14:05 -0700
-Message-Id: <20231024151412.50046-2-yi.l.liu@intel.com>
+Subject: [PATCH v7 2/8] iommu/vt-d: Extend dmar_domain to support nested domain
+Date: Tue, 24 Oct 2023 08:14:06 -0700
+Message-Id: <20231024151412.50046-3-yi.l.liu@intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20231024151412.50046-1-yi.l.liu@intel.com>
 References: <20231024151412.50046-1-yi.l.liu@intel.com>
@@ -70,63 +70,75 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-This adds IOMMU_HWPT_DATA_VTD_S1 for stage-1 hw_pagetable of Intel
-VT-d and the corressponding data structure for userspace specified parameter
-for the domain allocation.
+From: Lu Baolu <baolu.lu@linux.intel.com>
+
+The nested domain fields are exclusive to those that used for a DMA
+remapping domain. Use union to avoid memory waste.
 
 Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 Signed-off-by: Yi Liu <yi.l.liu@intel.com>
 ---
- include/uapi/linux/iommufd.h | 30 ++++++++++++++++++++++++++++++
- 1 file changed, 30 insertions(+)
+ drivers/iommu/intel/iommu.h | 36 ++++++++++++++++++++++++++++++------
+ 1 file changed, 30 insertions(+), 6 deletions(-)
 
-diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
-index aa9282ebbc7e..3a66d3888393 100644
---- a/include/uapi/linux/iommufd.h
-+++ b/include/uapi/linux/iommufd.h
-@@ -362,12 +362,42 @@ enum iommufd_hwpt_alloc_flags {
- 	IOMMU_HWPT_ALLOC_DIRTY_TRACKING = 1 << 1,
- };
+diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
+index cc7301579773..244f111ea0bb 100644
+--- a/drivers/iommu/intel/iommu.h
++++ b/drivers/iommu/intel/iommu.h
+@@ -25,6 +25,7 @@
  
-+/**
-+ * enum iommu_hwpt_vtd_s1_flags - Intel VT-d stage-1 page table
-+ *                                entry attributes
-+ * @IOMMU_VTD_S1_SRE: Supervisor request
-+ * @IOMMU_VTD_S1_EAFE: Extended access enable
-+ * @IOMMU_VTD_S1_WPE: Write protect enable
-+ */
-+enum iommu_hwpt_vtd_s1_flags {
-+	IOMMU_VTD_S1_SRE = 1 << 0,
-+	IOMMU_VTD_S1_EAFE = 1 << 1,
-+	IOMMU_VTD_S1_WPE = 1 << 2,
-+};
-+
-+/**
-+ * struct iommu_hwpt_vtd_s1 - Intel VT-d stage-1 page table
-+ *                            info (IOMMU_HWPT_DATA_VTD_S1)
-+ * @flags: Combination of enum iommu_hwpt_vtd_s1_flags
-+ * @pgtbl_addr: The base address of the stage-1 page table.
-+ * @addr_width: The address width of the stage-1 page table
-+ * @__reserved: Must be 0
-+ */
-+struct iommu_hwpt_vtd_s1 {
-+	__aligned_u64 flags;
-+	__aligned_u64 pgtbl_addr;
-+	__u32 addr_width;
-+	__u32 __reserved;
-+};
-+
- /**
-  * enum iommu_hwpt_data_type - IOMMU HWPT Data Type
-  * @IOMMU_HWPT_DATA_NONE: no data
-+ * @IOMMU_HWPT_DATA_VTD_S1: Intel VT-d stage-1 page table
-  */
- enum iommu_hwpt_data_type {
- 	IOMMU_HWPT_DATA_NONE,
-+	IOMMU_HWPT_DATA_VTD_S1,
- };
+ #include <asm/cacheflush.h>
+ #include <asm/iommu.h>
++#include <uapi/linux/iommufd.h>
  
- /**
+ /*
+  * VT-d hardware uses 4KiB page size regardless of host page size.
+@@ -605,15 +606,38 @@ struct dmar_domain {
+ 	struct list_head devices;	/* all devices' list */
+ 	struct list_head dev_pasids;	/* all attached pasids */
+ 
+-	struct dma_pte	*pgd;		/* virtual address */
+-	int		gaw;		/* max guest address width */
+-
+-	/* adjusted guest address width, 0 is level 2 30-bit */
+-	int		agaw;
+ 	int		iommu_superpage;/* Level of superpages supported:
+ 					   0 == 4KiB (no superpages), 1 == 2MiB,
+ 					   2 == 1GiB, 3 == 512GiB, 4 == 1TiB */
+-	u64		max_addr;	/* maximum mapped address */
++	union {
++		/* DMA remapping domain */
++		struct {
++			/* virtual address */
++			struct dma_pte	*pgd;
++			/* max guest address width */
++			int		gaw;
++			/*
++			 * adjusted guest address width:
++			 *   0: level 2 30-bit
++			 *   1: level 3 39-bit
++			 *   2: level 4 48-bit
++			 *   3: level 5 57-bit
++			 */
++			int		agaw;
++			/* maximum mapped address */
++			u64		max_addr;
++		};
++
++		/* Nested user domain */
++		struct {
++			/* parent page table which the user domain is nested on */
++			struct dmar_domain *s2_domain;
++			/* user page table pointer (in GPA) */
++			unsigned long s1_pgtbl;
++			/* page table attributes */
++			struct iommu_hwpt_vtd_s1 s1_cfg;
++		};
++	};
+ 
+ 	struct iommu_domain domain;	/* generic domain data structure for
+ 					   iommu core */
 -- 
 2.34.1
 
