@@ -1,209 +1,232 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 16C083CCF2
-	for <iommu@lists.linux.dev>; Tue, 24 Oct 2023 22:26:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Authentication-Results: smtp.subspace.kernel.org; dkim=none
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0C5FB2F4;
-	Tue, 24 Oct 2023 15:27:07 -0700 (PDT)
-Received: from [10.57.5.249] (unknown [10.57.5.249])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 22CAF3F762;
-	Tue, 24 Oct 2023 15:26:23 -0700 (PDT)
-Message-ID: <56bbb2ad-5cea-46ad-83be-d6d7fd9bbfde@arm.com>
-Date: Tue, 24 Oct 2023 23:26:22 +0100
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam04on2073.outbound.protection.outlook.com [40.107.101.73])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BDC863D3B9
+	for <iommu@lists.linux.dev>; Tue, 24 Oct 2023 23:03:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="mgK7rsoO"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jIo81T3I7X+bScskpGVCR6/BOLu8+WSE7pI0DEZGToL+UIE1w6QnM8JqWp1l2ttYM5u6TxDjEsIDKY0VyHCUi2Yn4IZKhqAU8qyz8sKP4UELzAvtKpoF/tsMGZxTK7Jce0Q+/CGvrFezuSr1JMAfzEXdO+5ZwlIo0A/lxFVN5jNbwAWjL2eESsZ8lPwrW8qn7kbbO/cYi5RbxWjICq6zJ52I3ZAKNOE894/R3TBlLN6dh8lIh6czmEpxf14CDCQnAkMBx9dbipgCSNhAx03OSDO3rAoh9nf6LN2hDU8LwhkJIBNVxtaGTD1AJrO7A3+1oXMQKjUojJGZ5N99JHMoPA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=7M6tAb22pOYOnmz5n1ogKQukoi70QLknKNx83CqmgnQ=;
+ b=eIq59ktFC1NF7eUTjnw8XCQkIdteAbjmg0Aj18sxQ13WaorJWE+xJsCwcOKtOeCjTTG/AR7YafDWUmmef17AqwcNtdtQsbtPsy1R6QphMv6aRNygj+OI9p/HbW6K9ZEnxmKIB1BLQG6rmIVCpjCkXJcLFxqi/RO72qno5mpFNnP8piAgRZXY/4pIM3eL95UJ4H/BHnFyFfz9ouo7kB66+uJ+7+h6VG0fm3oZei+Rkv+d8xBmw4KdloV5h1sAgxX/mcyTLvaQqt6byvesEjNdr6PEOeotP9ayhUxkhUnT4Dumf7KGhyaBo3432ocWBPRrvnXPtcN4Q/EgRSeRUw/6AQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=7M6tAb22pOYOnmz5n1ogKQukoi70QLknKNx83CqmgnQ=;
+ b=mgK7rsoOekegxP1ScWIscGq5UeZ6jpRJH2kuCL+IofjtGEdFI/o/rtKYz4l0rozH6WncHxhgwTXkOiDMLTqcxAawHrqB4aZqjbiDPHcSjwujk4j5EAsXRqaDGfJg4s8eELbdQmG1cgp6AODddTEP5VKvwKG3nnLUdWYTrwO2rhfpB9TWgPR1TLeRZDxMmO3FZikWfVJW9nGZLMxyqxWYyoSkfILgHTAnmUXV+ewaE3kK9zzHy7QxsBZ0J30m54hFD1yE2P91UJpJeQ4kGUDMk0Oq7T8p8kN3YpJAnOAWhSMYfsXw5UJIqdwZvx2Ipo/C41aqJXyZBOARB2kU1ncXJw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by DM6PR12MB4356.namprd12.prod.outlook.com (2603:10b6:5:2aa::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6907.31; Tue, 24 Oct
+ 2023 23:03:20 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::3f66:c2b6:59eb:78c2]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::3f66:c2b6:59eb:78c2%6]) with mapi id 15.20.6886.034; Tue, 24 Oct 2023
+ 23:03:20 +0000
+Date: Tue, 24 Oct 2023 20:03:19 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Yi Liu <yi.l.liu@intel.com>
+Cc: joro@8bytes.org, alex.williamson@redhat.com, kevin.tian@intel.com,
+	robin.murphy@arm.com, baolu.lu@linux.intel.com, cohuck@redhat.com,
+	eric.auger@redhat.com, nicolinc@nvidia.com, kvm@vger.kernel.org,
+	mjrosato@linux.ibm.com, chao.p.peng@linux.intel.com,
+	yi.y.sun@linux.intel.com, peterx@redhat.com, jasowang@redhat.com,
+	shameerali.kolothum.thodi@huawei.com, lulu@redhat.com,
+	suravee.suthikulpanit@amd.com, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+	zhenzhong.duan@intel.com, joao.m.martins@oracle.com
+Subject: Re: [PATCH v7 7/8] iommu/vt-d: Add nested domain allocation
+Message-ID: <20231024230319.GW3952@nvidia.com>
+References: <20231024151412.50046-1-yi.l.liu@intel.com>
+ <20231024151412.50046-8-yi.l.liu@intel.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20231024151412.50046-8-yi.l.liu@intel.com>
+X-ClientProxiedBy: SN6PR2101CA0022.namprd21.prod.outlook.com
+ (2603:10b6:805:106::32) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/6] dt-bindings: iommu: Add Translation Buffer Unit
- bindings
-To: Rob Herring <robh@kernel.org>, Georgi Djakov <quic_c_gdjako@quicinc.com>
-Cc: krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org, will@kernel.org,
- joro@8bytes.org, devicetree@vger.kernel.org, andersson@kernel.org,
- konrad.dybcio@linaro.org, linux-arm-kernel@lists.infradead.org,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- linux-arm-msm@vger.kernel.org, quic_cgoldswo@quicinc.com,
- quic_sukadev@quicinc.com, quic_pdaly@quicinc.com, quic_sudaraja@quicinc.com,
- djakov@kernel.org
-References: <20231019021923.13939-1-quic_c_gdjako@quicinc.com>
- <20231019021923.13939-2-quic_c_gdjako@quicinc.com>
- <20231024184248.GA252155-robh@kernel.org>
-Content-Language: en-GB
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20231024184248.GA252155-robh@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|DM6PR12MB4356:EE_
+X-MS-Office365-Filtering-Correlation-Id: fb986055-814c-440c-f345-08dbd4e56a6b
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	csDz33GOQ5M/VucU80GDjWHLhkdP45ic+To18ZMiK4iQWfCQOzaq5n6rIh3Qcq/XlB9tol+SYNc+piqYA+nmI9NjnnoJpRLi98jBIORfTL+l6CCbccFKo4vsfNdmDEx4JEk5WlljQzrD+iPZI5pYs+3e37zd6QKKuxBI5G1PTL3cQmiW+ssmvR4jC/UWTyHOmLCueeAijk+Akw3CmQwX0VvAGAzK4z5F0SP9FR0H56VUGjPkpETGTIgP9HKUTb6KRYJ3R0LX69rNjBwnoHumDCS+kislm51KhvO7QlNQ+MM3l5GR+l9LuS9pssxCE7J5V1sENY2tgS4rlO9yW4D3nzk1kLBusP4e9y6uYnYmRx4tvg/7BTdDI0rX7WPO0546HcJ0LyXJh5KTUfWTcSRUHQAVpUGsrSVzf+yZCD5rD/bwXHlUCzGin94g9wljaFibK7T0jJi7bb9DfiVvwFSdIY3M5ZjUriDgw9TKFiM6uMEpF7SamM0DFYS5fmpQEr2iPqhO4DQ+saDpY2MnOOMLvBIHYXGsJvqA7JVe2E/ssVl/u4Fr2zwEelxNh6E4veJa
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(136003)(376002)(396003)(366004)(39860400002)(346002)(230922051799003)(1800799009)(451199024)(186009)(64100799003)(26005)(38100700002)(2906002)(36756003)(66946007)(86362001)(5660300002)(4326008)(7416002)(8676002)(41300700001)(66476007)(8936002)(33656002)(478600001)(6506007)(1076003)(6916009)(2616005)(66556008)(316002)(83380400001)(6486002)(6512007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?z5ZZxBoa0RYD30lFugq46jF8S31+O0lZjW3fTGa5w/wnS3ytGWw39c73hQB/?=
+ =?us-ascii?Q?0jBlzZv9oSfyp1YOj7sZI1bk+rblz0KIOOpd04/8tLxkIY5Ishol2pIKt7W+?=
+ =?us-ascii?Q?AQLlyeVqxCL9SnmAM4LiXLeg9p/IvLozASBzhpSO6KayUu7UMneqfXXSyKgg?=
+ =?us-ascii?Q?Z16g1nEaUzsFcALWKRur/INaHlTwwwC19VELTqQKfoCg/PhdZcrC65jAJeju?=
+ =?us-ascii?Q?YCEFvP5Ks1DpD6hoBbp+RiVrdyrOOO3F+vcU+kFksgFiTcHmmjuAiFXJSDcb?=
+ =?us-ascii?Q?AvgKnZxRQOXOsWbp+fqGM4lB0S/oGxkB1tkcX/1aGeHfcn10qpZaqdIpPop1?=
+ =?us-ascii?Q?GDiFapSpjcs1SZr7FrWD7iyd81rDK6BQRl9+oqGq5j6F4hE2wkly0rGuEnze?=
+ =?us-ascii?Q?jpHf2gCysSGbt4z0oodVXnL033Dn53uj35RrTOXm2p0YYm5IDUddORHPrFUL?=
+ =?us-ascii?Q?4RFXtQ5ty2txLbGzhivghgyXGSReFSQBKLRiGGx177GFPZsjfDwVRMY+1t4r?=
+ =?us-ascii?Q?ehNxOplRsPNClG4c7+qz1uYpHV3vSrKElMw9+3L6msnqUqeowNcn3fQVBt7g?=
+ =?us-ascii?Q?x9luaBJInlvKb7NjOgCGhgQjQoq8o06SrOrvfgTRC37T0ngxTR8WTQN/tGkp?=
+ =?us-ascii?Q?I88ws1v4Qoa1IFmwZWniKVd0y+aHpQOFHG9eSyn57KRDcfApO4aeeZTHU8YO?=
+ =?us-ascii?Q?fGLkGjD+uLGrl7r7Crms2BEfDTXn6hHb7nWse1WFpaOycNv03kpYHFWurAoi?=
+ =?us-ascii?Q?gVKRSXbZGo62Ak5LOwom2+7L/w5w+q8Dms1cr7wt+TUbEpSto9ddB7YF/UJ0?=
+ =?us-ascii?Q?5BiT2ATD2w+jQXHfMBQgchE2Xwsu/Dh8W60SPbzI0fDHzuaI5LhCuWX4q4Uu?=
+ =?us-ascii?Q?BFSGMB8e4sR92gmtuluzGnwXZgqbKR+/rHsjY2YM3cz7dKsmTjtS81LpU5Qq?=
+ =?us-ascii?Q?CsFBEkqSHKwylyvigRdL+sFdBWfLxFIP0rYBTFBxGiRugi0gjWGp9HH+74Rq?=
+ =?us-ascii?Q?a4Pt3ZeFgbWPkHc/cMFoqSdlfuuODux04HQpM528UhehT0ZIo2srRcDew4Pf?=
+ =?us-ascii?Q?mXnjLUgIhXBYsYBbS8pTLp2ZbPMYIyyfHekxDzMgtexAd2IWZqoiw8sEs8+E?=
+ =?us-ascii?Q?0gGMt2dYi0n1nY2yEQ3XHuHUth5eC+hVzbCFDvaxjKqU0XYMtTdav9nlJJxC?=
+ =?us-ascii?Q?jxn4faR0X9itD3lX3NTcp6QJcIXoD/rjxBFI7buZGEc5d3KCVG1CdF9ixt7R?=
+ =?us-ascii?Q?oy+jRvnjdPU1V43c5MH5/OSRqQyfd6uLYaIjoixlqmZSc/d1J2BzZWzooNYt?=
+ =?us-ascii?Q?Q6tksT/lIzB7fcyqwt7ncNeZ/ZvOfMOMn5ZZtICh8qdqeBEyNafEZusKI36o?=
+ =?us-ascii?Q?V0UwnYxWidfNBHssYvh7aoBRW74OHhOKBUetjq+WcQecx0aKB5l+ByD7Fd1l?=
+ =?us-ascii?Q?H+/z5imx2r+RiZX0r/f/r/Zj8b4aWAC8bLt0ESJJ+O+8kCrT3N4eVYIdqHUJ?=
+ =?us-ascii?Q?YQb6Y7ee4gvxb8wLLoIKk+CKhvWRUrUaxJUJkhIFbeS9ljQheGoiDkTsoxna?=
+ =?us-ascii?Q?r2zyQkWgsIAf5w4ND1cHWPPAklfAyKPjLkz9LGSd?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: fb986055-814c-440c-f345-08dbd4e56a6b
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Oct 2023 23:03:20.2821
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: n1KcIZR8W87LacLiII+tz2TYMahlhZB9zx7ittUk+XQqUtVbr4h6xSDmIW1mccBh
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4356
 
-On 2023-10-24 19:42, Rob Herring wrote:
-> On Wed, Oct 18, 2023 at 07:19:18PM -0700, Georgi Djakov wrote:
->> The "apps_smmu" on the Qualcomm sdm845 platform is an implementation
->> of the ARM SMMU-500, that consists of a single TCU (Translation Control
->> Unit) and multiple TBUs (Translation Buffer Units). The TCU is already
->> being described in the ARM SMMU DT schema. Add also bindings for the
->> TBUs so that we can describe their properties.
+On Tue, Oct 24, 2023 at 08:14:11AM -0700, Yi Liu wrote:
+> From: Lu Baolu <baolu.lu@linux.intel.com>
 > 
-> Arm SMMU-500 is an implementation, too. Is QCom's a modified
-> implementation or you are just the first to want to control TBU
-> resources?
-
-It's very very modified. The stock MMU-500 has very few 
-microarchitectural registers[1], they all live within the regular SMMU 
-address space, are all Secure-only by default, and don't do anything 
-like the shenanigans here.
-
-That said, looking at patch #3, I don't really understand why we need 
-any of this stuff upstream... AFAICS it's doing an insane amount of work 
-to use complicated imp-def debug functionality to duplicate things that 
-the main driver can already do far more efficiently. Sure, in general it 
-seems like it could potentially be useful stuff for bringing up and 
-debugging a new driver, but the Linux SMMUv2 driver is mature and 
-frankly already closer to being obsolete than to being new...
-
-[ digression since I can't be bothered to split this discussion by 
-replying separately to patch #3: ]
-
-I mean, just looking at qsmmuv500_iova_to_phys(), you do realise that 
-that's going to be called potentially multiple times by iommu-dma for 
-*every* dma_sync and dma_unmap call and really wants to be fast, right? 
-This brings to mind all the work I did a couple of years back[2] because 
-strict TLB invalidation on unmap was considered too slow for certain 
-devices on QCom platforms by ChromeOS, yet what this achieves looks like 
-it could easily be up to an order of magnitude slower again :(
-
-> You need to split this into what could be any SMMU-500 implementation
-> and what is truly QCom specific (i.e. modified). Unlike some licensed IP
-> that's a free-for-all on DT resources, Arm IP has public specs so we
-> don't have to guess.
+> This adds the support for IOMMU_HWPT_DATA_VTD_S1 type. And 'nested_parent'
+> is added to mark the nested parent domain to sanitize the input parent domain.
 > 
->> In this DT schema, the TBUs are modelled as a child devices of the TCU
->> and each of them is described with it's own resources such as clocks,
->> power domains, interconnects etc.
->>
->> Signed-off-by: Georgi Djakov <quic_c_gdjako@quicinc.com>
->> ---
->>   .../devicetree/bindings/iommu/arm,smmu.yaml   | 13 ++++
->>   .../bindings/iommu/qcom,qsmmuv500-tbu.yaml    | 67 +++++++++++++++++++
->>   2 files changed, 80 insertions(+)
->>   create mode 100644 Documentation/devicetree/bindings/iommu/qcom,qsmmuv500-tbu.yaml
->>
->> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
->> index cf29ab10501c..afc323b4bbc5 100644
->> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
->> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
->> @@ -230,6 +230,19 @@ properties:
->>         enabled for any given device.
->>       $ref: /schemas/types.yaml#/definitions/phandle
->>   
->> +  '#address-cells':
->> +    const: 2
->> +
->> +  '#size-cells':
->> +    const: 2
->> +
->> +  ranges: true
->> +
->> +patternProperties:
->> +  "^tbu@[0-9a-f]+$":
->> +    $ref: qcom,qsmmuv500-tbu.yaml
-> 
-> Generic SMMU binding includes something QCom specific. That's not right.
-> 
-> 
->> +    description: The SMMU may include Translation Buffer Units (TBU) as subnodes
->> +
->>   required:
->>     - compatible
->>     - reg
->> diff --git a/Documentation/devicetree/bindings/iommu/qcom,qsmmuv500-tbu.yaml b/Documentation/devicetree/bindings/iommu/qcom,qsmmuv500-tbu.yaml
->> new file mode 100644
->> index 000000000000..4baba7397e90
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/iommu/qcom,qsmmuv500-tbu.yaml
->> @@ -0,0 +1,67 @@
->> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
->> +%YAML 1.2
->> +---
->> +$id: http://devicetree.org/schemas/iommu/qcom,qsmmuv500-tbu.yaml#
->> +$schema: http://devicetree.org/meta-schemas/core.yaml#
->> +
->> +title: Qualcomm TBU (Translation Buffer Unit)
->> +
->> +maintainers:
->> +  - Georgi Djakov <quic_c_gdjako@quicinc.com>
->> +
->> +description:
->> +  TBU nodes represent Translation Buffer Units in an ARM SMMU. Each TBU node
->> +  should be a child node of the SMMU in the device tree.
->> +
->> +properties:
->> +  compatible:
->> +    enum:
->> +      - qcom,qsmmuv500-tbu
->> +
->> +  reg:
->> +    items:
->> +      - description: Address and size of the TBU's register space.
->> +
->> +  reg-names:
->> +    items:
->> +      - const: base
->> +
->> +  clocks:
->> +    maxItems: 1
->> +
->> +  interconnects:
->> +    maxItems: 1
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> Signed-off-by: Yi Liu <yi.l.liu@intel.com>
+> ---
+>  drivers/iommu/intel/iommu.c | 67 +++++++++++++++++++++++++------------
+>  drivers/iommu/intel/iommu.h |  1 +
+>  2 files changed, 46 insertions(+), 22 deletions(-)
 
-What does this interconnect represent? MMU-500 TBUs don't access memory 
-themselves[3], they only have an internal AXI Stream interface to the 
-TCU to request translations.
+I think it should be written like this:
 
-Thanks,
-Robin.
-
-[1] 
-https://developer.arm.com/documentation/ddi0517/f/programmers-model/memory-model
-[2] 
-https://lore.kernel.org/all/d652966348c78457c38bf18daf369272a4ebc2c9.1628682049.git.robin.murphy@arm.com/
-[3] Yeah yeah, other than the special case of TBU0 issuing pagetable 
-walks on behalf of the TCU when it's not configured with its own 
-dedicated PTW interface, I know :P
-
->> +
->> +  power-domains:
->> +    maxItems: 1
->> +
->> +  qcom,stream-id-range:
->> +    $ref: /schemas/types.yaml#/definitions/uint32-array
->> +    description: Stream ID range (address and size) that is assigned by the TBU
->> +
->> +required:
->> +  - compatible
->> +  - reg
->> +  - interconnects
->> +  - qcom,stream-id-range
->> +
->> +additionalProperties: false
->> +
->> +examples:
->> +  - |
->> +    #include <dt-bindings/clock/qcom,gcc-sdm845.h>
->> +    #include <dt-bindings/interconnect/qcom,sdm845.h>
->> +    #include <dt-bindings/power/qcom-rpmpd.h>
->> +
->> +
->> +    tbu@150e1000 {
->> +        compatible = "qcom,qsmmuv500-tbu";
->> +        reg = <0x150e1000 0x1000>;
->> +        reg-names = "base";
->> +        clocks = <&gcc GCC_AGGRE_NOC_PCIE_TBU_CLK>;
->> +        power-domains = <&gcc HLOS1_VOTE_AGGRE_NOC_MMU_PCIE_TBU_GDSC>;
->> +        interconnects = <&system_noc MASTER_GNOC_SNOC 0 &config_noc SLAVE_IMEM_CFG 0>;
->> +        qcom,stream-id-range = <0x1c00 0x400>;
->> +    };
->> +
->> +...
+@@ -4077,38 +4082,39 @@ intel_iommu_domain_alloc_user(struct device *dev, u32 flags,
+ 			      struct iommu_domain *parent,
+ 			      const struct iommu_user_data *user_data)
+ {
++	struct device_domain_info *info = dev_iommu_priv_get(dev);
++	bool dirty_tracking = flags & IOMMU_HWPT_ALLOC_DIRTY_TRACKING;
++	bool nested_parent = flags & IOMMU_HWPT_ALLOC_NEST_PARENT;
++	struct intel_iommu *iommu = info->iommu;
+ 	struct iommu_domain *domain;
+-	struct intel_iommu *iommu;
+-	bool dirty_tracking;
++
++	/* Must be NESTING domain */
++	if (parent) {
++		if (!nested_supported(iommu) || flags)
++			return ERR_PTR(-EOPNOTSUPP);
++		return intel_nested_domain_alloc(parent, user_data);
++	}
+ 
+ 	if (flags &
+ 	    (~(IOMMU_HWPT_ALLOC_NEST_PARENT | IOMMU_HWPT_ALLOC_DIRTY_TRACKING)))
+ 		return ERR_PTR(-EOPNOTSUPP);
+-
+-	if (parent || user_data)
++	if (nested_parent && !nested_supported(iommu))
+ 		return ERR_PTR(-EOPNOTSUPP);
+-
+-	iommu = device_to_iommu(dev, NULL, NULL);
+-	if (!iommu)
+-		return ERR_PTR(-ENODEV);
+-
+-	if ((flags & IOMMU_HWPT_ALLOC_NEST_PARENT) && !nested_supported(iommu))
+-		return ERR_PTR(-EOPNOTSUPP);
+-
+-	dirty_tracking = (flags & IOMMU_HWPT_ALLOC_DIRTY_TRACKING);
+-	if (dirty_tracking && !ssads_supported(iommu))
++	if (user_data || (dirty_tracking && !ssads_supported(iommu)))
+ 		return ERR_PTR(-EOPNOTSUPP);
+ 
+ 	/*
+-	 * domain_alloc_user op needs to fully initialize a domain
+-	 * before return, so uses iommu_domain_alloc() here for
+-	 * simple.
++	 * domain_alloc_user op needs to fully initialize a domain before
++	 * return, so uses iommu_domain_alloc() here for simple.
+ 	 */
+ 	domain = iommu_domain_alloc(dev->bus);
+ 	if (!domain)
+-		domain = ERR_PTR(-ENOMEM);
++		return ERR_PTR(-ENOMEM);
+ 
+-	if (!IS_ERR(domain) && dirty_tracking) {
++	if (nested_parent)
++		to_dmar_domain(domain)->nested_parent = true;
++
++	if (dirty_tracking) {
+ 		if (to_dmar_domain(domain)->use_first_level) {
+ 			iommu_domain_free(domain);
+ 			return ERR_PTR(-EOPNOTSUPP);
+@@ -4849,6 +4855,7 @@ static void *intel_iommu_hw_info(struct device *dev, u32 *length, u32 *type)
+ 	if (!vtd)
+ 		return ERR_PTR(-ENOMEM);
+ 
++	vtd->flags = IOMMU_HW_INFO_VTD_ERRATA_772415_SPR17;
+ 	vtd->cap_reg = iommu->cap;
+ 	vtd->ecap_reg = iommu->ecap;
+ 	*length = sizeof(*vtd);
+diff --git a/drivers/iommu/intel/nested.c b/drivers/iommu/intel/nested.c
+index d9197dd72748b1..b5a5563ab32c6b 100644
+--- a/drivers/iommu/intel/nested.c
++++ b/drivers/iommu/intel/nested.c
+@@ -78,13 +78,21 @@ static const struct iommu_domain_ops intel_nested_domain_ops = {
+ 	.free			= intel_nested_domain_free,
+ };
+ 
+-struct iommu_domain *intel_nested_domain_alloc(struct iommu_domain *s2_domain,
++struct iommu_domain *intel_nested_domain_alloc(struct iommu_domain *parent,
+ 					       const struct iommu_user_data *user_data)
+ {
++	struct dmar_domain *s2_domain = to_dmar_domain(parent);
+ 	struct iommu_hwpt_vtd_s1 vtd;
+ 	struct dmar_domain *domain;
+ 	int ret;
+ 
++	/* Must be nested domain */
++	if (user_data->type != IOMMU_HWPT_DATA_VTD_S1)
++		return ERR_PTR(-EOPNOTSUPP);
++	if (parent->ops != intel_iommu_ops.default_domain_ops ||
++	    !s2_domain->nested_parent)
++		return ERR_PTR(-EINVAL);
++
+ 	ret = iommu_copy_struct_from_user(&vtd, user_data,
+ 					  IOMMU_HWPT_DATA_VTD_S1, __reserved);
+ 	if (ret)
+@@ -95,7 +103,7 @@ struct iommu_domain *intel_nested_domain_alloc(struct iommu_domain *s2_domain,
+ 		return ERR_PTR(-ENOMEM);
+ 
+ 	domain->use_first_level = true;
+-	domain->s2_domain = to_dmar_domain(s2_domain);
++	domain->s2_domain = s2_domain;
+ 	domain->s1_pgtbl = vtd.pgtbl_addr;
+ 	domain->s1_cfg = vtd;
+ 	domain->domain.ops = &intel_nested_domain_ops;
