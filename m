@@ -1,44 +1,44 @@
-Received: from mail-yb1-f202.google.com (mail-yb1-f202.google.com [209.85.219.202])
+Received: from mail-yw1-f202.google.com (mail-yw1-f202.google.com [209.85.128.202])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42ED72C84D
-	for <iommu@lists.linux.dev>; Tue, 24 Oct 2023 13:47:45 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5D88336B0A
+	for <iommu@lists.linux.dev>; Tue, 24 Oct 2023 13:47:47 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--surenb.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="ELMSNIt7"
-Received: by mail-yb1-f202.google.com with SMTP id 3f1490d57ef6-da03ef6fc30so675074276.0
-        for <iommu@lists.linux.dev>; Tue, 24 Oct 2023 06:47:45 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="p4vysFl1"
+Received: by mail-yw1-f202.google.com with SMTP id 00721157ae682-5a828bdcfbaso61809597b3.2
+        for <iommu@lists.linux.dev>; Tue, 24 Oct 2023 06:47:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1698155264; x=1698760064; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1698155266; x=1698760066; darn=lists.linux.dev;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=7C50BM7p5C+vJ0clcF+/KvirWmdIP5XWEnNLFYgTdS0=;
-        b=ELMSNIt7yHbi29pYcdpht5IDehfffXZMeWPJv67ZijufrC72vMsTcmrlVmkmTqESFW
-         U+gBHaotcPR7/Br137IurI3OBitjyhmpTkAScNSE2VYlxmCUEotAM4WolGtt1DIPkc1/
-         sumrF8reCfLjIliK8cxcks5PBRJUggETm1dI4Rq/mdfj8BtS2TK2mLokQwp9zMQWkAID
-         ghoElEcm9VFgKlC6+7+S4glz6/o2UigHfvJOSPtJffGV5wdALtt8smBZj6Y6cUxNj/Zi
-         mAoxsTGu/hdl6f7QvbZ6mgmBBFcT8VDcU4/X0YnUxHHmCjUWgJ0HeNyxg+hZa3S4rgU2
-         Atpw==
+        bh=QaUscnVR3A9ivKzFSXLwhZ9WVAKd01wEmSHK760WXQ8=;
+        b=p4vysFl193f06HShs6ymos57ANGT4C25vew9YFazQfYv07JcKjs3Um4pLcF88/VYsR
+         AAywVHXuabbNId04niTHN8k0MwIirV0bQQkG+Ndbigd1sSOHEtLLAjcc15ijFJjalaOH
+         1bjH/yzAH/1O9EpLD41zP/ZofKB6g8r5JDTLLsEjBxBKjKfvtKs7yzLFUNyTykpUo76q
+         GowTdw8p5728QPFckre99CBa7xM276OpUp3VMjQOYgcg50ay6Jn03BnfjeC3KO8DTZHI
+         tYOHbrvKhqq3deXmGI/8roeHv+rqbIwL84NAEwzZhwuBZK0zH8OPDWso/f3NMUHaKMDC
+         G7Vg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1698155264; x=1698760064;
+        d=1e100.net; s=20230601; t=1698155266; x=1698760066;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=7C50BM7p5C+vJ0clcF+/KvirWmdIP5XWEnNLFYgTdS0=;
-        b=K9K3Wl/He9ikeq8yH5r30ubd+Iv7ztBPMxlXa0m/uma+aZhbqw+Zcg5wjWyU3HVaE6
-         U3qnl7cg4sODHO6hkGLodgXN7cLaNYVoAI4EPLJYH5WB/bJHyUOR0GpnhazZTwTlkANz
-         oCX7m48T40JfodT/KpemdEYCmjrRA3b5IM5R65UUp7cQdY/ELjrThF2TUNGWn1BWV2jf
-         2vQ1EUmb0caJxcqKP7sNAWOoZP5i3fvMy0KOh5nFOrp4aaTPBAar9UogcvL65FK6Lm8B
-         zBlCzL7rMa8J++Cz5FF+bX+T1UXJlAi9D7ibccGMtk0FIgjtHZmde0I8pP4CLlCAxkTY
-         UFRA==
-X-Gm-Message-State: AOJu0Yxz0PbWCZt3I8XUmxoM18Qj3rAVbFMgKolOA30ZvCGOCqTvJSgY
-	68VdZ2h1KcbnSmy1ZtlYXnzGeEsm1G8=
-X-Google-Smtp-Source: AGHT+IFgQR1uDgRKslLBvCkBHAk0T4yEqB1Qvs6h4RCMdoan4Z+72V6WbgepeSBkK71dX/nU/j0JJWPs+jY=
+        bh=QaUscnVR3A9ivKzFSXLwhZ9WVAKd01wEmSHK760WXQ8=;
+        b=jv5FoBLip8wJFqBBoEqeaiBQgzZ4RrFlhFhl55DgE4JZPrHNoshcpeViN1KMakc+b2
+         lQnOaCyKYHfKOHh2m6JsbVlXv5ILmQR71tJ6H1NDKJ32UV3aWzd7aYQUEjfE6RbxqBx5
+         6a4geedQ/bE+KJjNNvLDkZc8uibB05cHsjK77BN+xWftd2zVv74lKqJpkc+yVrNl6Hqo
+         34BcXETC5Uu5eFvcyDcQ986Q9AHrdh4fC6Ss4heX1ckdDeAdbhMb/zrTYr8rKN2c6cd8
+         Pys7WVZXG5ltzXMTgaOGY5z1f3JhLx8p5HKMPmfx95V5SDSD+Lq2jxTBAdBvHHZ4aIud
+         wG2w==
+X-Gm-Message-State: AOJu0YzrgDuzJS4t3FuVAP6abrmAlgoZXz16EWZ1RR5Rlfnd3X9wbrb4
+	tQp8XTEsiculw4FfwngRRclCIlXKdfg=
+X-Google-Smtp-Source: AGHT+IH1Lkjv7kiNBXwNvQL565BH4DAdvvh1g2aWFQE+hKVCSXY8/YuVaym3f5veoHBOTW82zGAoDjJNWeM=
 X-Received: from surenb-desktop.mtv.corp.google.com ([2620:15c:211:201:45ba:3318:d7a5:336a])
- (user=surenb job=sendgmr) by 2002:a25:d34e:0:b0:d9a:e3d9:99bd with SMTP id
- e75-20020a25d34e000000b00d9ae3d999bdmr212803ybf.5.1698155264079; Tue, 24 Oct
- 2023 06:47:44 -0700 (PDT)
-Date: Tue, 24 Oct 2023 06:46:25 -0700
+ (user=surenb job=sendgmr) by 2002:a05:6902:105:b0:da0:3da9:ce08 with SMTP id
+ o5-20020a056902010500b00da03da9ce08mr35592ybh.10.1698155266214; Tue, 24 Oct
+ 2023 06:47:46 -0700 (PDT)
+Date: Tue, 24 Oct 2023 06:46:26 -0700
 In-Reply-To: <20231024134637.3120277-1-surenb@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -48,8 +48,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20231024134637.3120277-1-surenb@google.com>
 X-Mailer: git-send-email 2.42.0.758.gaed0368e0e-goog
-Message-ID: <20231024134637.3120277-29-surenb@google.com>
-Subject: [PATCH v2 28/39] timekeeping: Fix a circular include dependency
+Message-ID: <20231024134637.3120277-30-surenb@google.com>
+Subject: [PATCH v2 29/39] mm: percpu: Introduce pcpuobj_ext
 From: Suren Baghdasaryan <surenb@google.com>
 To: akpm@linux-foundation.org
 Cc: kent.overstreet@linux.dev, mhocko@suse.com, vbabka@suse.cz, 
@@ -81,43 +81,152 @@ Content-Type: text/plain; charset="UTF-8"
 
 From: Kent Overstreet <kent.overstreet@linux.dev>
 
-This avoids a circular header dependency in an upcoming patch by only
-making hrtimer.h depend on percpu-defs.h
+Upcoming alloc tagging patches require a place to stash per-allocation
+metadata.
+
+We already do this when memcg is enabled, so this patch generalizes the
+obj_cgroup * vector in struct pcpu_chunk by creating a pcpu_obj_ext
+type, which we will be adding to in an upcoming patch - similarly to the
+previous slabobj_ext patch.
 
 Signed-off-by: Kent Overstreet <kent.overstreet@linux.dev>
 Signed-off-by: Suren Baghdasaryan <surenb@google.com>
-Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Dennis Zhou <dennis@kernel.org>
+Cc: Tejun Heo <tj@kernel.org>
+Cc: Christoph Lameter <cl@linux.com>
+Cc: linux-mm@kvack.org
 ---
- include/linux/hrtimer.h        | 2 +-
- include/linux/time_namespace.h | 2 ++
- 2 files changed, 3 insertions(+), 1 deletion(-)
+ mm/percpu-internal.h | 19 +++++++++++++++++--
+ mm/percpu.c          | 30 +++++++++++++++---------------
+ 2 files changed, 32 insertions(+), 17 deletions(-)
 
-diff --git a/include/linux/hrtimer.h b/include/linux/hrtimer.h
-index 0ee140176f10..e67349e84364 100644
---- a/include/linux/hrtimer.h
-+++ b/include/linux/hrtimer.h
-@@ -16,7 +16,7 @@
- #include <linux/rbtree.h>
- #include <linux/init.h>
- #include <linux/list.h>
--#include <linux/percpu.h>
-+#include <linux/percpu-defs.h>
- #include <linux/seqlock.h>
- #include <linux/timer.h>
- #include <linux/timerqueue.h>
-diff --git a/include/linux/time_namespace.h b/include/linux/time_namespace.h
-index 03d9c5ac01d1..a9e61120d4e3 100644
---- a/include/linux/time_namespace.h
-+++ b/include/linux/time_namespace.h
-@@ -11,6 +11,8 @@
- struct user_namespace;
- extern struct user_namespace init_user_ns;
+diff --git a/mm/percpu-internal.h b/mm/percpu-internal.h
+index cdd0aa597a81..e62d582f4bf3 100644
+--- a/mm/percpu-internal.h
++++ b/mm/percpu-internal.h
+@@ -32,6 +32,16 @@ struct pcpu_block_md {
+ 	int			nr_bits;	/* total bits responsible for */
+ };
  
-+struct vm_area_struct;
++struct pcpuobj_ext {
++#ifdef CONFIG_MEMCG_KMEM
++	struct obj_cgroup	*cgroup;
++#endif
++};
 +
- struct timens_offsets {
- 	struct timespec64 monotonic;
- 	struct timespec64 boottime;
++#ifdef CONFIG_MEMCG_KMEM
++#define NEED_PCPUOBJ_EXT
++#endif
++
+ struct pcpu_chunk {
+ #ifdef CONFIG_PERCPU_STATS
+ 	int			nr_alloc;	/* # of allocations */
+@@ -64,8 +74,8 @@ struct pcpu_chunk {
+ 	int			end_offset;	/* additional area required to
+ 						   have the region end page
+ 						   aligned */
+-#ifdef CONFIG_MEMCG_KMEM
+-	struct obj_cgroup	**obj_cgroups;	/* vector of object cgroups */
++#ifdef NEED_PCPUOBJ_EXT
++	struct pcpuobj_ext	*obj_exts;	/* vector of object cgroups */
+ #endif
+ 
+ 	int			nr_pages;	/* # of pages served by this chunk */
+@@ -74,6 +84,11 @@ struct pcpu_chunk {
+ 	unsigned long		populated[];	/* populated bitmap */
+ };
+ 
++static inline bool need_pcpuobj_ext(void)
++{
++	return !mem_cgroup_kmem_disabled();
++}
++
+ extern spinlock_t pcpu_lock;
+ 
+ extern struct list_head *pcpu_chunk_lists;
+diff --git a/mm/percpu.c b/mm/percpu.c
+index a7665de8485f..5a6202acffa3 100644
+--- a/mm/percpu.c
++++ b/mm/percpu.c
+@@ -1392,9 +1392,9 @@ static struct pcpu_chunk * __init pcpu_alloc_first_chunk(unsigned long tmp_addr,
+ 		panic("%s: Failed to allocate %zu bytes\n", __func__,
+ 		      alloc_size);
+ 
+-#ifdef CONFIG_MEMCG_KMEM
++#ifdef NEED_PCPUOBJ_EXT
+ 	/* first chunk is free to use */
+-	chunk->obj_cgroups = NULL;
++	chunk->obj_exts = NULL;
+ #endif
+ 	pcpu_init_md_blocks(chunk);
+ 
+@@ -1463,12 +1463,12 @@ static struct pcpu_chunk *pcpu_alloc_chunk(gfp_t gfp)
+ 	if (!chunk->md_blocks)
+ 		goto md_blocks_fail;
+ 
+-#ifdef CONFIG_MEMCG_KMEM
+-	if (!mem_cgroup_kmem_disabled()) {
+-		chunk->obj_cgroups =
++#ifdef NEED_PCPUOBJ_EXT
++	if (need_pcpuobj_ext()) {
++		chunk->obj_exts =
+ 			pcpu_mem_zalloc(pcpu_chunk_map_bits(chunk) *
+-					sizeof(struct obj_cgroup *), gfp);
+-		if (!chunk->obj_cgroups)
++					sizeof(struct pcpuobj_ext), gfp);
++		if (!chunk->obj_exts)
+ 			goto objcg_fail;
+ 	}
+ #endif
+@@ -1480,7 +1480,7 @@ static struct pcpu_chunk *pcpu_alloc_chunk(gfp_t gfp)
+ 
+ 	return chunk;
+ 
+-#ifdef CONFIG_MEMCG_KMEM
++#ifdef NEED_PCPUOBJ_EXT
+ objcg_fail:
+ 	pcpu_mem_free(chunk->md_blocks);
+ #endif
+@@ -1498,8 +1498,8 @@ static void pcpu_free_chunk(struct pcpu_chunk *chunk)
+ {
+ 	if (!chunk)
+ 		return;
+-#ifdef CONFIG_MEMCG_KMEM
+-	pcpu_mem_free(chunk->obj_cgroups);
++#ifdef NEED_PCPUOBJ_EXT
++	pcpu_mem_free(chunk->obj_exts);
+ #endif
+ 	pcpu_mem_free(chunk->md_blocks);
+ 	pcpu_mem_free(chunk->bound_map);
+@@ -1648,8 +1648,8 @@ static void pcpu_memcg_post_alloc_hook(struct obj_cgroup *objcg,
+ 	if (!objcg)
+ 		return;
+ 
+-	if (likely(chunk && chunk->obj_cgroups)) {
+-		chunk->obj_cgroups[off >> PCPU_MIN_ALLOC_SHIFT] = objcg;
++	if (likely(chunk && chunk->obj_exts)) {
++		chunk->obj_exts[off >> PCPU_MIN_ALLOC_SHIFT].cgroup = objcg;
+ 
+ 		rcu_read_lock();
+ 		mod_memcg_state(obj_cgroup_memcg(objcg), MEMCG_PERCPU_B,
+@@ -1665,13 +1665,13 @@ static void pcpu_memcg_free_hook(struct pcpu_chunk *chunk, int off, size_t size)
+ {
+ 	struct obj_cgroup *objcg;
+ 
+-	if (unlikely(!chunk->obj_cgroups))
++	if (unlikely(!chunk->obj_exts))
+ 		return;
+ 
+-	objcg = chunk->obj_cgroups[off >> PCPU_MIN_ALLOC_SHIFT];
++	objcg = chunk->obj_exts[off >> PCPU_MIN_ALLOC_SHIFT].cgroup;
+ 	if (!objcg)
+ 		return;
+-	chunk->obj_cgroups[off >> PCPU_MIN_ALLOC_SHIFT] = NULL;
++	chunk->obj_exts[off >> PCPU_MIN_ALLOC_SHIFT].cgroup = NULL;
+ 
+ 	obj_cgroup_uncharge(objcg, pcpu_obj_full_size(size));
+ 
 -- 
 2.42.0.758.gaed0368e0e-goog
 
