@@ -1,93 +1,104 @@
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.24])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f182.google.com (mail-qt1-f182.google.com [209.85.160.182])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 28A96F9E9
-	for <iommu@lists.linux.dev>; Tue, 24 Oct 2023 08:42:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7745E1FDF
+	for <iommu@lists.linux.dev>; Tue, 24 Oct 2023 08:59:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="WFC5YSJw"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1698136921; x=1729672921;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=CyUeeVJUyOdoCnKoCMDJ4OfDnN41FQE7poIYURZrFJw=;
-  b=WFC5YSJwto8Otm7vZrKlM56sKOwysx05aXa3uGiJxIfzRL0SxUoZoDt1
-   PhAG8Q49mGuw7+00CP3JeSnG61iMRWfVRQB8Gey1x2bP5ctrKS3gk+OpI
-   HFV1GSj01X48UKvGukayglbBvlzBQOX+lekhJU0SLwH8BYqSKPv4y9w9S
-   6tL5RBzDxPmkRbAOY04o2S7fcUwwr8VhANLrrGcC+JP/4ghmUubkHw7Xs
-   qX/xHQJa9AIcvPL/SLTOZv6WGjkQv+1UuquDVZCBqILreiXQZQLGS9gDC
-   mxkRRUPS+A9Oqb8xQrE0NwH34gpt9ULRyVhq+usXFGe4qKFA+y8fFwOhe
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10872"; a="389860365"
-X-IronPort-AV: E=Sophos;i="6.03,247,1694761200"; 
-   d="scan'208";a="389860365"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Oct 2023 01:41:57 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10872"; a="849062190"
-X-IronPort-AV: E=Sophos;i="6.03,247,1694761200"; 
-   d="scan'208";a="849062190"
-Received: from b49691a74c3c.jf.intel.com ([10.165.59.100])
-  by FMSMGA003.fm.intel.com with ESMTP; 24 Oct 2023 01:41:56 -0700
-From: Huang Jiaqing <jiaqing.huang@intel.com>
-To: joro@8bytes.org,
-	will@kernel.org,
-	robin.murphy@arm.com,
-	dwmw2@infradead.org,
-	baolu.lu@linux.intel.com,
-	linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev
-Cc: jacob.jun.pan@linux.intel.com,
-	kevin.tian@intel.com,
-	yi.y.sun@intel.com,
-	kvm@vger.kernel.org,
-	jiaqing.huang@intel.com
-Subject: [PATCH 2/2] iommu/vt-d: Adopt new helper for looking up pci device
-Date: Tue, 24 Oct 2023 01:41:24 -0700
-Message-Id: <20231024084124.11155-2-jiaqing.huang@intel.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20231024084124.11155-1-jiaqing.huang@intel.com>
-References: <20231024084124.11155-1-jiaqing.huang@intel.com>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="P6o4QdTN"
+Received: by mail-qt1-f182.google.com with SMTP id d75a77b69052e-41cdc669c5eso177291cf.1
+        for <iommu@lists.linux.dev>; Tue, 24 Oct 2023 01:59:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1698137970; x=1698742770; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=erOfrsvxjKJspJ8rWrc+NMXWKH7FRgTaKDLLB0IOVlk=;
+        b=P6o4QdTNjBA6gtnEgAXw6eD2N6TIYA4oisqDG7HmUVPslU0XA9ftksJp9pmEqVIUNT
+         oAwbe+T51bKjCgPEgFsWQooB3TVGIT+TX9GyqqOIdFqm0F/5hVjW1Gzz7GyCu0AV0XgO
+         WZAGeKrgOgHpYMxoqvv1n/8JQFBJ1jYsYI8p7wBtgGTbZ/Rx7kwKeTHeWOq1nw5B8697
+         HVqJGXlapp4GiUhk/n4GZ3cuD6ZTGsTu6W7phE7BcBHFg0OtftwtczWN6cV/TEufS/ml
+         AouaDuQSyOjfEA0r2TcvQJAyQMfsL3wT8jVYfs2S5n10Ol/4U1T7/3JAER25+WPODzKi
+         DIfQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1698137970; x=1698742770;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=erOfrsvxjKJspJ8rWrc+NMXWKH7FRgTaKDLLB0IOVlk=;
+        b=oCckMS15K/HRmxs1LFif+ZghE9MRcwegLtjrv+TZkdbK7ErrpDuf5UYDYicQ81rCAe
+         YO8HfCCFzjutaF1AsOStAnTfCDVyVQPwb9KEjrkcgKmGrEZGouGGP47mDPkQjsgB66DS
+         sUapTrdj3ggGvq+V+KhMZGMMSC20RorM1iSIXs2AvWSGRyfGwgt4tx5u0Pydmoy93C9P
+         HNq16E63pgLAsRobLh8toE+ft5Cp/9frW9o7ZAMfsvCFuRzyoezJPUHvJPM1aPSAxQ/N
+         AGJkUx+CdFEJSismCDzGmMIsIa6VoZMUNZhZvSGRjFApynhI9qbnFpLnDNiC7ra27MhT
+         pXCQ==
+X-Gm-Message-State: AOJu0YzsqvZAlb9DhSXJ0stKjFzR/zxYe8tbZ+K9xFbROs3FF6b/Ml4Q
+	278BwPDm7XVRI57hnfUup0YDgBdLHIJPtyxBH2vkPxyd5haPCxOXkXW4SA==
+X-Google-Smtp-Source: AGHT+IEM7gH4SRVR3xYDmQqhe7Lyj9XsWE5edWEdxZJ5qEeEj3NUcDN7vi9ybep13gC4cMStZfFBwjOT+eJEB63mEBA=
+X-Received: by 2002:ac8:7cae:0:b0:41e:1cfe:8966 with SMTP id
+ z14-20020ac87cae000000b0041e1cfe8966mr232505qtv.18.1698137970133; Tue, 24 Oct
+ 2023 01:59:30 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <0-v1-afbb86647bbd+5-smmuv3_newapi_p2_jgg@nvidia.com> <18-v1-afbb86647bbd+5-smmuv3_newapi_p2_jgg@nvidia.com>
+In-Reply-To: <18-v1-afbb86647bbd+5-smmuv3_newapi_p2_jgg@nvidia.com>
+From: Michael Shavit <mshavit@google.com>
+Date: Tue, 24 Oct 2023 16:58:53 +0800
+Message-ID: <CAKHBV24eDXh=P_h0515FKgcNi3L+pYaqeLK93kA3KC05G6vL+A@mail.gmail.com>
+Subject: Re: [PATCH 18/27] iommu/arm-smmu-v3: Make SVA allocate a normal arm_smmu_domain
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>, 
+	linux-arm-kernel@lists.infradead.org, Robin Murphy <robin.murphy@arm.com>, 
+	Will Deacon <will@kernel.org>, Jean-Philippe Brucker <jean-philippe@linaro.org>, 
+	Nicolin Chen <nicolinc@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Adopt the new iopf_queue_find_pdev func() to look up PCI device
-for better efficiency and avoid the CPU stuck issue with parallel
-heavy dsa_test.
+On Thu, Oct 12, 2023 at 7:26=E2=80=AFAM Jason Gunthorpe <jgg@nvidia.com> wr=
+ote:
+>
+> Currently the SVA domain is a naked struct iommu_domain, allocate a struc=
+t
+> arm_smmu_domain instead.
+>
+> This is necessary to be able to use the struct arm_master_domain
+> mechanism.
+>
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> ---
+>  .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   | 11 +++---
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 34 +++++++++++--------
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  7 ++--
+>  3 files changed, 29 insertions(+), 23 deletions(-)
+>
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/io=
+mmu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+> index 042daaef0c9703..bc3cc51dffc2e7 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+> @@ -669,14 +669,13 @@ static const struct iommu_domain_ops arm_smmu_sva_d=
+omain_ops =3D {
+>         .free                   =3D arm_smmu_sva_domain_free
+>  };
+>
+> -struct iommu_domain *arm_smmu_sva_domain_alloc(void)
+> +struct iommu_domain *arm_smmu_sva_domain_alloc(unsigned type)
+>  {
+> -       struct iommu_domain *domain;
+> +       struct arm_smmu_domain *smmu_domain;
+>
+> -       domain =3D kzalloc(sizeof(*domain), GFP_KERNEL);
+> -       if (!domain)
+> +       smmu_domain =3D arm_smmu_domain_alloc();
+> +       if (!smmu_domain)
+>                 return NULL;
+> -       domain->ops =3D &arm_smmu_sva_domain_ops;
+>
 
-Signed-off-by: Huang Jiaqing <jiaqing.huang@intel.com>
----
- drivers/iommu/intel/svm.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
-
-diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
-index 659de9c16024..0f1018b76557 100644
---- a/drivers/iommu/intel/svm.c
-+++ b/drivers/iommu/intel/svm.c
-@@ -672,7 +672,7 @@ static irqreturn_t prq_event_thread(int irq, void *d)
- 		if (unlikely(req->lpig && !req->rd_req && !req->wr_req))
- 			goto prq_advance;
- 
--		pdev = pci_get_domain_bus_and_slot(iommu->segment,
-+		pdev = iopf_queue_find_pdev(iommu->iopf_queue,
- 						   PCI_BUS_NUM(req->rid),
- 						   req->rid & 0xff);
- 		/*
-@@ -688,7 +688,6 @@ static irqreturn_t prq_event_thread(int irq, void *d)
- 			trace_prq_report(iommu, &pdev->dev, req->qw_0, req->qw_1,
- 					 req->priv_data[0], req->priv_data[1],
- 					 iommu->prq_seq_number++);
--		pci_dev_put(pdev);
- prq_advance:
- 		head = (head + sizeof(*req)) & PRQ_RING_MASK;
- 	}
--- 
-2.31.1
-
+This will break SVA if cut here. Can probably leave the domain->ops
+there until Patch 20 replaces them.
