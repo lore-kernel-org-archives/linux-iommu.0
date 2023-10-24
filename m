@@ -1,187 +1,166 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.136])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f173.google.com (mail-qt1-f173.google.com [209.85.160.173])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 964F9EBB
-	for <iommu@lists.linux.dev>; Tue, 24 Oct 2023 02:07:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 994901396
+	for <iommu@lists.linux.dev>; Tue, 24 Oct 2023 02:45:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="aXI6SVHM"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1698113226; x=1729649226;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=aDRqTLEi0N6aAPEdoD6GyYH75tEHAqH2eK8z0QhjR+E=;
-  b=aXI6SVHMSTVsXTXxZi8Aoi12o4kucLsquqUqHlumrxfn8iiFRk778QAh
-   wdMVOX8hy9EZflFspl9/8Hzaq7/RdhR9FIhpEEv7Sa20BDZAJL69gUsMN
-   ptbC0OdUztD7oI8a+viAgR8+VhtWXtAhuAT7YxeTuaGLHtG/W4kKQuFZP
-   xTE9hYBzFkOZIDIJYgWZUw0bF+Cim8y49NKV3D6TrIFa51wJ8qzmQ5qco
-   xNgWT57gYB4RFmaLYn3Mxczwowct7jBNPJ5R/71xQBlAGWFkfb3+m7Vra
-   8sUYzBInLxsP5WVLIAggZP9SkDSLCWJUrylSddn/+o72fd3BZBL4CjLHz
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10872"; a="366314087"
-X-IronPort-AV: E=Sophos;i="6.03,246,1694761200"; 
-   d="scan'208";a="366314087"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Oct 2023 19:06:50 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.03,246,1694761200"; 
-   d="scan'208";a="6012169"
-Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
-  by orviesa001.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 23 Oct 2023 19:05:32 -0700
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.32; Mon, 23 Oct 2023 19:06:49 -0700
-Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
- orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.32 via Frontend Transport; Mon, 23 Oct 2023 19:06:49 -0700
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.40) by
- edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.32; Mon, 23 Oct 2023 19:06:49 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=fXz5E+StGuFLglbZCcAHA/Glk2ZdpdG0ol+ckySxUVJWJGwRIXEjiodwpHLiNnJoaEPHag9RLjFnXOmwYdDkw2hSagw66NKjtPjsl96U5bUH3pPYr27elhSanWBaGbyNvAM+NtNBC94Sn5fOYn7YfUlQjDOqRgWwcqcHXnGHt/1itMnew84dG0Xx0IuVjVuiF4XrCJ0ujMTi7V8JPcR14GndDoYmtsBto2/3APB+O4BwFTrajiPDsz7zbXMptymE0zoDzA9xu9dHjN38f28s03WHZJEy/r66UrgYlrNfr6kvqtiTFfLvzKnTRbWNuqad6vCzTMWBPAacdU3FsEfpAg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=aDRqTLEi0N6aAPEdoD6GyYH75tEHAqH2eK8z0QhjR+E=;
- b=e36Y76kfPsdolTw65tVt0VbxQecsQBHAClPvDt+J/bbph0gimAwd04vvNTjPRTwoHNcgiCJUOCAtMh2v7x1i9Kukv98ASbmrS+9bAFNVxmbV2gp3PrZd0rCnXL10AxnhShaSphVCEBCFADKOs3nHs7wslffh10BF5zBo019NUJoXaebHkow97N69FKjgPPnrjlwSFPIp8bPKcMqN7E+RAv426M50/iWLziiWAeDsOpZ/Ve2Ia9g9KHkkkYtJBsjHJEH1r1UKPhLKAyCeKtd6n4VQtY+/0yuKSwYnJLknof1BFURi1PGtTzJv/k2esdY+OTFqnMYzDmWVD21wylLchA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from DS0PR11MB7529.namprd11.prod.outlook.com (2603:10b6:8:141::20)
- by DS7PR11MB7690.namprd11.prod.outlook.com (2603:10b6:8:e6::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6907.33; Tue, 24 Oct
- 2023 02:06:47 +0000
-Received: from DS0PR11MB7529.namprd11.prod.outlook.com
- ([fe80::f8f4:bed2:b2f8:cb6b]) by DS0PR11MB7529.namprd11.prod.outlook.com
- ([fe80::f8f4:bed2:b2f8:cb6b%3]) with mapi id 15.20.6907.025; Tue, 24 Oct 2023
- 02:06:47 +0000
-From: "Liu, Yi L" <yi.l.liu@intel.com>
-To: Baolu Lu <baolu.lu@linux.intel.com>, "joro@8bytes.org" <joro@8bytes.org>,
-	"alex.williamson@redhat.com" <alex.williamson@redhat.com>, "jgg@nvidia.com"
-	<jgg@nvidia.com>, "Tian, Kevin" <kevin.tian@intel.com>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>
-CC: "cohuck@redhat.com" <cohuck@redhat.com>, "eric.auger@redhat.com"
-	<eric.auger@redhat.com>, "nicolinc@nvidia.com" <nicolinc@nvidia.com>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>, "mjrosato@linux.ibm.com"
-	<mjrosato@linux.ibm.com>, "chao.p.peng@linux.intel.com"
-	<chao.p.peng@linux.intel.com>, "yi.y.sun@linux.intel.com"
-	<yi.y.sun@linux.intel.com>, "peterx@redhat.com" <peterx@redhat.com>,
-	"jasowang@redhat.com" <jasowang@redhat.com>,
-	"shameerali.kolothum.thodi@huawei.com"
-	<shameerali.kolothum.thodi@huawei.com>, "lulu@redhat.com" <lulu@redhat.com>,
-	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>, "Duan,
- Zhenzhong" <zhenzhong.duan@intel.com>, "Martins, Joao"
-	<joao.m.martins@oracle.com>, "Zeng, Xin" <xin.zeng@intel.com>
-Subject: RE: [PATCH v6 8/8] iommu/vt-d: Disallow read-only mappings to nest
- parent domain
-Thread-Topic: [PATCH v6 8/8] iommu/vt-d: Disallow read-only mappings to nest
- parent domain
-Thread-Index: AQHaAzhwl7VoudF1h0uHI7SB5pBrdbBTlbGAgAOntGCAABIgAIAA5REQ
-Date: Tue, 24 Oct 2023 02:06:46 +0000
-Message-ID: <DS0PR11MB75290CA351F72B3299CFB3B4C3DFA@DS0PR11MB7529.namprd11.prod.outlook.com>
-References: <20231020093246.17015-1-yi.l.liu@intel.com>
- <20231020093246.17015-9-yi.l.liu@intel.com>
- <23133231-c6d7-469e-8f55-2e7667acb097@linux.intel.com>
- <DS0PR11MB752977275A0791296C115FE6C3D8A@DS0PR11MB7529.namprd11.prod.outlook.com>
- <f041d424-ade2-4959-a677-01e3d7dd699b@linux.intel.com>
-In-Reply-To: <f041d424-ade2-4959-a677-01e3d7dd699b@linux.intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: DS0PR11MB7529:EE_|DS7PR11MB7690:EE_
-x-ms-office365-filtering-correlation-id: 8ace2372-b9e5-442f-e3ae-08dbd435e066
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: kutkANyB1/+A284y4a8ESligAuaEPHA5jOFzD3Oc6XIiVNcjwVF/S9DSF2FxHoF/t2YRh/mxtgKXaR6fb4FDUtY78LMtW6TiBio35LWuxfWM/up6AlpV8b8Wm777skJZwLuVlqfKqd1L5D5aN7qz99uUK8T7LHM6bIGSmrgh7eqn0GjEMWh5IbDUGSGCm3PSzO+xMAOgI1xDWOKey/OqztsgkBXqqQMFcIjhr0eyXsJu5O7PtC5Pxmpcw0vNzhjELegxkSDPmxfm7dhJ4BZsfX9bgERDwnRcxIxHRAKJGGewvVBDZ4fqYYgfkV8VGMUkTDhrgsYXwFbYn6nLa78T3Qc2rpOoFYi8n2+mqHnRMZMCfdXWOxDJWKRAVuFWgHUeMj7KoElM8k8k4CwAti7gqkptaRCqKKi0KdpN5O5/4qXLIT/nJVAdr0FgvVohRQaCRpgqMn5NgFUR7MHd2juOKjkqyw5r8+Xkl3TJ/c2QclRgSoENrDplDJQZXj93aCEbdPQR/PRhgkD29d/XkmmoVAHs9hwVHv29FOoHLcC2lc1kQEXuUsysUkCkOIMZ97xcVbOmUBw5bTLVdtcVVlmHiQD+4FIs3K1pcHkMWo6Pne9UPEgtrrIT7/kHN5/es8KL
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS0PR11MB7529.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(136003)(39860400002)(376002)(366004)(396003)(346002)(230922051799003)(1800799009)(451199024)(64100799003)(186009)(38070700009)(55016003)(8676002)(52536014)(7416002)(8936002)(5660300002)(33656002)(6506007)(41300700001)(4326008)(26005)(9686003)(53546011)(2906002)(38100700002)(71200400001)(7696005)(86362001)(66446008)(110136005)(66476007)(54906003)(122000001)(64756008)(82960400001)(76116006)(478600001)(66946007)(316002)(66556008);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?dXB0K0lLOUhXclgvUkhFMGNuQlVVZHJRZ2VsblN4U2dhaWI2ejVHL0RoY2d1?=
- =?utf-8?B?NzhKNXBHaWp4ZG54cVAyWG9Nd3BsNG0wU0hxNko1TGN4ZWdlME9xYXhhOG42?=
- =?utf-8?B?cnpZM2pCMWRPcmJJMEtKaHlZL1BlcFM2NGVpOUk1Ym1BVk5sbFFHVmpRNi9U?=
- =?utf-8?B?UG9zZHRqSHA1a0Fwb2pOQmZCZFh6T21oMGhpcFJpY1BQUXN4eWVCWjFJbjgz?=
- =?utf-8?B?WDRiaG5GYWZ0RHBmK1drYVZjRU1wOU84V2lpN1R3S3lRcXpGZjg0SlNmS21Y?=
- =?utf-8?B?WTJjbWg3THh1eTMwREpjV2JHOXZSYTV4WlFGOStlUXhDRTFQbU1reUNUcW1H?=
- =?utf-8?B?S3h1WjJmV1lvT2V0WEpNOXk0eVZ6RXpWL3laVVJVNHFOM21DbDFOZm5pdkFm?=
- =?utf-8?B?ajhDcktPNU0yVXFVcGd6U2M5b0NSL0c5b1RxOUh4WUFkUjBYWCsrSllFNXFl?=
- =?utf-8?B?bDRYL3prSDFQcklGM2hJZ3FIVmlVNlJnSFpqcFFieXl3TCtBOG5IeURwY0FR?=
- =?utf-8?B?dWFjMk5FYjBtODFpYmcwbGhucU03bExLcFdBQ29zenUraHZUbk1QZ2VmaDYv?=
- =?utf-8?B?cXA2a3c4M0E3bkJKVFVnaWY0Zjhoa0pLcjV4UWw1eVZMaU96OHowbVNjdFYv?=
- =?utf-8?B?bCtoWFdablNGVUpKT1JsZkpBZmU4NWpnOGhFSHJDSkFlZnlyVGpncmVPNGNU?=
- =?utf-8?B?MUZHTTFzbDlsQ3hlcUZXVHRxL2ZDYlZlaTFkWmhBbUtzQ3VLaXd3dnN6ZDJX?=
- =?utf-8?B?cjF0bE5vRkdodkR2Wjh4QUllcXAvN24yREdmWmxKamZaRFpFZ0lpTHN3MjMw?=
- =?utf-8?B?bjRzZ0NEc2s1UWU1ck0zQ1daOHJwSUdYZEY5cGExOFU3aFZLWkpjUkRFUlpB?=
- =?utf-8?B?akFuK0ljV3NTcGlsaG1jSEo1QVpJOHBHc0hsdk1hTnMwbjlZMVFLMURMMzRv?=
- =?utf-8?B?aXhsZ001NFl3ZkpxOVNweWtHZzhCeERxRld3ekRpOXpmZWhRTCtjYjBMQnpB?=
- =?utf-8?B?MXMyT1dBTFFHS0laL05mbWhUbTd0cnVWTnlTbnFkRS9mR1hZK05JQ0MvUVZi?=
- =?utf-8?B?OWtLNVkwYm0yZWd3OHlDU0RiMEh4NzVZT3BuOTI3NjloRy9QcEJmcUJhOU9h?=
- =?utf-8?B?UFVPZWQzMENwYlUxV0ZGRlFLdTV2SHV6YUVIbzc3QUpjaVI0bStxT2szbDJr?=
- =?utf-8?B?SXhJVkZuQVZUdTQzR25kOHhBRjZTc29SL1phYkxqZ2FkMU52YVpiWWlZQWpD?=
- =?utf-8?B?eVlGSUc1OFJQdVJWQjRMYWN2OUdGMnlQTnNrM0plZmhNRVF4RmVVbEdxL29x?=
- =?utf-8?B?M29iRk1hVWpiYVYvTU9IdjI5eStaSXNZZ2dKWFBHMjU0WXpBM2ZMaHJ0dEF2?=
- =?utf-8?B?SHBmOU94ZWFsQjd5emRXNkIyandNRU4rYmZIcGZRMWxqNEJNL1Q2dm1mOUE5?=
- =?utf-8?B?aWI3N0Vwb2ZBZit3RTVIUzBKSWQ3cnFGcDl6U1c2QWoySmo2UXpsT2JDUDVi?=
- =?utf-8?B?TnNhcjV2ZStNVC9CeXdxUTlUQWt6RDZIZmZYbXBxd2x6bG1YbGtqWnc0U3FW?=
- =?utf-8?B?MUIySHJHL3hydGcrcXRlc1dWU2hnaVY4RXRpWnB4d3p4S1F0cm1zZmhtNVhi?=
- =?utf-8?B?MXVSV3Z1UStEK0E1Y2VzSW1JYzdvOHQ0dWRqWi93RW16cis4ancxUjBja2xr?=
- =?utf-8?B?VkNCeXc3cFBzaGNCYkdsTWlvNjhtVE1MekM2U2ZmbUhzSkV3dW8rdFJkYWZZ?=
- =?utf-8?B?TzdyQkV0dmZ0a3M1dVJxd0JpL3BBTTcyYTZHM0YzK2hnU2E3NlFOVUoyQkJI?=
- =?utf-8?B?emRwdUNQcW5OWmJVR3oxTXpVYVdjYzJGaXJ6aVJERXN5RFA5OWpxOXVyK0VH?=
- =?utf-8?B?eVJsU3VXRlhya0tpSnZhbXRpTnIxSnJMSkFRenZ2RE1pWVl5dk4wM3hCdEJP?=
- =?utf-8?B?NDltUXB6dk15eHA1YUNQbHZma3ltOVZ4UGFzUXBndEQ5OElTSkRzVFc4WC9M?=
- =?utf-8?B?SlFrOEl1OE1tT2tFRTlva1I0S2V0TnowelhtWFYxY2ljRDc2VzgzNk5XRldp?=
- =?utf-8?B?VjZmK1lHS05ZWDQ1blB2M3VzTlU5UGwxOERlcUFpcWFZOVJ0aXk0TWVKd0VP?=
- =?utf-8?Q?fR4C9+mEI+G/SUBsTYmjImPsl?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="RQcEKXKn"
+Received: by mail-qt1-f173.google.com with SMTP id d75a77b69052e-41cdc669c5eso101611cf.1
+        for <iommu@lists.linux.dev>; Mon, 23 Oct 2023 19:45:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1698115514; x=1698720314; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=fWltvKFM1N8BZ9fL+6A1GilvAxlUbE+IbHfVO5+OJeo=;
+        b=RQcEKXKn0tPx8B4RRAUvbhBWNPVBbLPtsiHBPNPl0JnwpB0F4E9MTo3KvRE8UDRJu8
+         ASl5N1ziCvH88qYtXLspKELG6ywFhiI9hFFVQ+HzJ62VpOM1+N3FWJ+cMKoYsXxbeDIK
+         v1CXRaPBETYOEb+aRM3BmhA8ArBAc/He3BmXHsrRqrfOwstMTHpWpOdz/4Dz5WHoqFSj
+         lwDqPVdTm0eNcS77b402/SKCyWpPQ1alKd5IYx8gBAWpiSKGhSRqOVV/jcgY9cynSmRH
+         bgbglpsVYHQVGE9d6AebJ/DN2JhEdwl1M96eWqozcfytVYyNPcApYs3vlDcgziq8nsEl
+         8IGA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1698115514; x=1698720314;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=fWltvKFM1N8BZ9fL+6A1GilvAxlUbE+IbHfVO5+OJeo=;
+        b=hpR+Hpy8BbUl9aOxHNDSNHWpoP7d5JehKd4q413uQUqf8EtzunN/OgG84MPV10qgfQ
+         KlAUpGbQLbZVjHsQpbpBdGYrGFr6YBpJ92rP2iD2HEIBwz513JUAQLg3FwHjlsto0W/l
+         Lvv0gf6ZdPXvFz2a6Djm2YFMTT26POsvVNW6LBN++YWbSedPMxjLzhA3CA4hK2aAdlEA
+         +TZNV9O5c54mR7wBQXOMXQkRUiwGie7rnQ3ZKfxpgmTjvRh0QbTdosbmni/ekL9QImQC
+         hh1zmjUeu2zdBV85H0FAHeyWSDS7FWJBmx5fG53EAWLJI+czkfN17GbqlGLR8u7wmkFj
+         r1KQ==
+X-Gm-Message-State: AOJu0Yy4hxLGm+EHm9zeE030c+9w3d3byqFyD284nXlahcGiWpou7uul
+	vYLv78U66V4AUJWjyIKxwIwQlbUdr8gKJgqI1GhO1A==
+X-Google-Smtp-Source: AGHT+IEMs/yrCqv6+FKXM5fdhaQLnngnHvntp1+PL/qimL7x5FBIuIRU8ernKzbDwLSII7GZ58C7Z14JVMLd0DQdDP8=
+X-Received: by 2002:a05:622a:1b05:b0:41e:2910:b82 with SMTP id
+ bb5-20020a05622a1b0500b0041e29100b82mr128034qtb.0.1698115514207; Mon, 23 Oct
+ 2023 19:45:14 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DS0PR11MB7529.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8ace2372-b9e5-442f-e3ae-08dbd435e066
-X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Oct 2023 02:06:46.5783
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: eiQ6WP5vsZ2B8qvakq6vPqiHIsVT5IrFo++KoaImDTn91EGO+G1Fs+bR1e7W6hsWua/P23v6zJ3O4e7RivXZ3w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR11MB7690
-X-OriginatorOrg: intel.com
+References: <0-v1-e289ca9121be+2be-smmuv3_newapi_p1_jgg@nvidia.com> <9-v1-e289ca9121be+2be-smmuv3_newapi_p1_jgg@nvidia.com>
+In-Reply-To: <9-v1-e289ca9121be+2be-smmuv3_newapi_p1_jgg@nvidia.com>
+From: Michael Shavit <mshavit@google.com>
+Date: Tue, 24 Oct 2023 10:44:36 +0800
+Message-ID: <CAKHBV25tgz6AE_pB46-8WeN78q+gXnjXB-4MEE_cpqVV7xSLcA@mail.gmail.com>
+Subject: Re: [PATCH 09/19] iommu/arm-smmu-v3: Hold arm_smmu_asid_lock during
+ all of attach_dev
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>, 
+	linux-arm-kernel@lists.infradead.org, Robin Murphy <robin.murphy@arm.com>, 
+	Will Deacon <will@kernel.org>, Nicolin Chen <nicolinc@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-PiBGcm9tOiBCYW9sdSBMdSA8YmFvbHUubHVAbGludXguaW50ZWwuY29tPg0KPiBTZW50OiBNb25k
-YXksIE9jdG9iZXIgMjMsIDIwMjMgODoxOCBQTQ0KPiANCj4gT24gMjAyMy8xMC8yMyAxOToxNSwg
-TGl1LCBZaSBMIHdyb3RlOg0KPiA+PiBJIHdvdWxkIGFsc28gcHJlZmVyIHRvIGludHJvZHVjZSBp
-c19uZXN0ZWRfcGFyZW50X2RvbWFpbiB0byB0aGUgdXNlcg0KPiA+PiBkb21haW4gYWxsb2NhdGlv
-biBwYXRjaCAocGF0Y2ggNy84KS4gVGhpcyBmaWVsZCBzaG91bGQgYmUgY2hlY2tlZCB3aGVuDQo+
-ID4+IGFsbG9jYXRpbmcgYSBuZXN0ZWQgdXNlciBkb21haW4uDQo+ID4gQSBjdHVhbGx5LCBubyBu
-ZWVkLiBUaGlzIHNob3VsZCBiZSBhIGNvbW1vbiBjaGVjaywgc28gaW9tbXVmZCBjb3JlIGFscmVh
-ZHkNCj4gPiBoYXMgdGhlIGNoZWNrLiBTbyB0aGUgcGFyZW50IHNob3VsZCBiZSBhIG5lc3QgcGFy
-ZW50IGRvbWFpbiwgb3RoZXJ3aXNlIGFscmVhZHkNCj4gPiByZXR1cm5lZCBpbiBpb21tdWZkLg0K
-PiA+DQo+ID4gKwlpZiAoIXBhcmVudC0+bmVzdF9wYXJlbnQpDQo+ID4gKwkJcmV0dXJuIEVSUl9Q
-VFIoLUVJTlZBTCk7DQo+IA0KPiBJIGtub3cgdGhpcyB3aWxsIG5vdCBjYXVzZSBlcnJvcnMgaW4g
-dGhlIGNvZGUuIEJ1dCBzaW5jZSB5b3UgYXJlDQo+IGludHJvZHVjaW5nIGlzX3BhcmVudCBwcm9w
-ZXJ0eSBpbiB0aGUgdnQtZCBkcml2ZXIuIFRoZSBpbnRlZ3JpdHkgb2YgdGhlDQo+IHByb3BlcnR5
-IHNob3VsZCBiZSBlbnN1cmVkLiBJbiB0aGlzIHdheSwgaXQgd2lsbCBtYWtlIHRoZSBjb2RlIG1v
-cmUNCj4gcmVhZGFibGUgYW5kIG1haW50YWluYWJsZS4NCg0KT2ssIGlmIGNvbnNpZGVyIGl0IGFz
-IGEgcHJvcGVydHksIHRoZW4gaXQncyBmaW5lLiBBdCBmaXJzdCwgSSBqdXN0IHdhbnQgdG8NCm1h
-a2UgaXQgYXMgYSBzcGVjaWFsIGZsYWcgZm9yIHRoaXMgZXJyYXRhLiBCdXQgd2UgY2Fubm90IHBy
-ZWRpY3QgaWYgdGhlcmUNCndpbGwgYmUgbW9yZSBuZXN0ZWQgcGFyZW50IHNwZWNpYWwgc3R1ZmZz
-LCB0aGVuIHRoaXMgZmxhZyBpcyBhbHNvIG5lZWRlZC4NCg0KUmVnYXJkcywNCllpIExpdQ0K
+On Wed, Oct 11, 2023 at 8:33=E2=80=AFAM Jason Gunthorpe <jgg@nvidia.com> wr=
+ote:
+>
+> The BTM support wants to be able to change the ASID of any smmu_domain.
+> When it goes to do this it holds the arm_smmu_asid_lock and iterates over
+> the target domain's devices list.
+>
+> During attach of a S1 domain we must ensure that the devices list and
+> CD are in sync, otherwise we could miss CD updates or a parallel CD updat=
+e
+> could push an out of date CD.
+>
+> This is pretty complicated, and works today because arm_smmu_detach_dev()
+> remove the CD table from the STE before working on the CD entries.
+>
+> The next patch will allow the CD table to remain in the STE so solve this
+> racy by holding the lock for a longer period. The lock covers both of the
+> changes to the device list and the CD table entries.
+>
+> Move arm_smmu_detach_dev() till after we have initialized the domain so
+> the lock can be held for less time.
+>
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> ---
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 24 ++++++++++++---------
+>  1 file changed, 14 insertions(+), 10 deletions(-)
+>
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/=
+arm/arm-smmu-v3/arm-smmu-v3.c
+> index 2c06d3e3abe2b1..a29421f133a3c0 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -2535,8 +2535,6 @@ static int arm_smmu_attach_dev(struct iommu_domain =
+*domain, struct device *dev)
+>                 return -EBUSY;
+>         }
+>
+> -       arm_smmu_detach_dev(master);
+> -
+>         mutex_lock(&smmu_domain->init_mutex);
+>
+>         if (!smmu_domain->smmu) {
+> @@ -2549,7 +2547,17 @@ static int arm_smmu_attach_dev(struct iommu_domain=
+ *domain, struct device *dev)
+>
+>         mutex_unlock(&smmu_domain->init_mutex);
+>         if (ret)
+> -               return ret;
+> +               goto out_unlock;
+
+Oh, missed this earlier but on a second look the asid_lock isn't
+grabbed here yet so this should stay as return ret.
+
+
+> +
+> +       /*
+> +        * Prevent arm_smmu_share_asid() from trying to change the ASID
+> +        * of either the old or new domain while we are working on it.
+> +        * This allows the STE and the smmu_domain->devices list to
+> +        * be inconsistent during this routine.
+> +        */
+> +       mutex_lock(&arm_smmu_asid_lock);
+> +
+> +       arm_smmu_detach_dev(master);
+>
+>         master->domain =3D smmu_domain;
+>
+> @@ -2576,13 +2584,7 @@ static int arm_smmu_attach_dev(struct iommu_domain=
+ *domain, struct device *dev)
+>                         }
+>                 }
+>
+> -               /*
+> -                * Prevent SVA from concurrently modifying the CD or writ=
+ing to
+> -                * the CD entry
+> -                */
+> -               mutex_lock(&arm_smmu_asid_lock);
+>                 ret =3D arm_smmu_write_ctx_desc(master, IOMMU_NO_PASID, &=
+smmu_domain->cd);
+> -               mutex_unlock(&arm_smmu_asid_lock);
+>                 if (ret) {
+>                         master->domain =3D NULL;
+>                         goto out_list_del;
+> @@ -2592,13 +2594,15 @@ static int arm_smmu_attach_dev(struct iommu_domai=
+n *domain, struct device *dev)
+>         arm_smmu_install_ste_for_dev(master);
+>
+>         arm_smmu_enable_ats(master);
+> -       return 0;
+> +       goto out_unlock;
+>
+>  out_list_del:
+>         spin_lock_irqsave(&smmu_domain->devices_lock, flags);
+>         list_del(&master->domain_head);
+>         spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
+>
+> +out_unlock:
+> +       mutex_unlock(&arm_smmu_asid_lock);
+>         return ret;
+>  }
+>
+> --
+> 2.42.0
+>
