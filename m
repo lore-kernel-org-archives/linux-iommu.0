@@ -1,44 +1,44 @@
 Received: from mail-yw1-f202.google.com (mail-yw1-f202.google.com [209.85.128.202])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 698CD2B5DE
-	for <iommu@lists.linux.dev>; Tue, 24 Oct 2023 13:47:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 98CFB2B5D4
+	for <iommu@lists.linux.dev>; Tue, 24 Oct 2023 13:47:02 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--surenb.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="jruETnkR"
-Received: by mail-yw1-f202.google.com with SMTP id 00721157ae682-5a8d9dcdd2bso84670657b3.2
-        for <iommu@lists.linux.dev>; Tue, 24 Oct 2023 06:47:00 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Rr0WWp8Y"
+Received: by mail-yw1-f202.google.com with SMTP id 00721157ae682-5a7fb3f311bso59159287b3.2
+        for <iommu@lists.linux.dev>; Tue, 24 Oct 2023 06:47:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1698155219; x=1698760019; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1698155221; x=1698760021; darn=lists.linux.dev;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=re9qyJoQbXM1lB3hu8WMyX+cG50piCMxG0UfNqXuCfM=;
-        b=jruETnkRnSVV0kTi+ktdQvpf5bTl6q1QWfAhPWF+lfkEWviN0tIxw+yF2WCKb/m2pR
-         ou3nDAbBfcW3xYiFUFkBA48nCZqUV3Bh1pUgB6ET+1KAhuVXvI1GvKb2y6iz6rA0wyTC
-         JdT+wZE9JyPThORWwsJ00J4RdMeLOTq97j5rSV4q9s4Gif/3VsKm06IRUoQlqVS1bH/B
-         bkn8W9kGiXfMUvlqbohaeuvn4JxfTiU9XVd+v9VyH/eueTRleExKlCyBee9UJpy+rBsB
-         HFrRoTezmNVP5YouKFem9h5z9wMN+DDbqAyjbrANT56lut4nAkcoY2Bkd1MxLnx84umY
-         sn+Q==
+        bh=BlkdsRQXiDN3rg6CmmMqMbDupjvE+Qo4H/i7Q99VP7E=;
+        b=Rr0WWp8YQkOQ1/Qsso7ETeS8swCBdVyZ3kZqK8xOjS4gx24rKJGNYQhIt9H+ABI1Ro
+         inQJLcirTirLmxsJasU8tsjDmECX+av+I7kOVbvuvOq9PRbfynHJ3i8zqVXeFVcPi4xK
+         zWGJDtPsJEXY5rbrVORBujKemiegXDEYT8Jqzx4eBlr2UTobDYFrV+yUruaykfAcWFc/
+         hBoZwrCcaWSScUwy8h/eBmQgzG3g9n/qecV7rph0k0CoMGYqs7lO4C1XS8FpPlBsyRpi
+         myWXGrXANiXAgFvsl/2AulHARDnRgOcrtSK1fbGf3xqiNWrTV1mBL7sJCAZJjVi5llfg
+         BNGQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1698155219; x=1698760019;
+        d=1e100.net; s=20230601; t=1698155221; x=1698760021;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=re9qyJoQbXM1lB3hu8WMyX+cG50piCMxG0UfNqXuCfM=;
-        b=qFBXWZKkF3Llii6jqDyhCFhd+V0Tl2ouB6f19jWMssiryit5im6Bt/l85+vZG6MbXO
-         az/Lf515kE82gzQiN3xu7JTB2/61YtE1PhSjjWdocSwjEsOLmei9IG43ayvrN0iY8Hw/
-         EC5xd4iFW6hl7RquxzlvGkaPbNyQyb8Dm4N19AIoGXKWbU+jA/vvScguvH95YbUk6bX2
-         n2Gw7R32pU+MINLHWE78sig1IZUjWkaMGJqFGj6NDV71ceMLe7dcRSuWwtWVHfIZ1gq9
-         IG8i5/49oR/Lb32zOMeObaMtzFFSRBs1BWwvca2JcJxX9vLmF/huG3qFMsI2qA4EZkoF
-         B6cA==
-X-Gm-Message-State: AOJu0YzkG5owpzM31O9A7bQebYqveTbonpg3VrEvZdfhkeS57t1hjQ/N
-	iztz+zSar9OiavuWwfNAHcLX68eFjak=
-X-Google-Smtp-Source: AGHT+IGJ25fW4BnP1NJYhrzH0X+zrhr1/eHne8PBOna8hmvrezOwpbGVvOl7JHFMC4rGhoY/sRPJncXHlfA=
+        bh=BlkdsRQXiDN3rg6CmmMqMbDupjvE+Qo4H/i7Q99VP7E=;
+        b=Ga4HNzIYjmhxG3n9TQnc4okXD1n5S1vihzA64nCqF7qyqHwsq+F8Vexk6dVP8zQdbQ
+         BQN9kh1SlHelDV9Gk960xVs5faCT2MAE7ROhb9hEC8qJLNQXEX/YWLT+5ZBuICC+9/TQ
+         NASg5s2oBZXydSScqeXGhd7xrwHNiwZJgoGKmkzSQWu3w03BZWD4b6070wjx2AR1KwCZ
+         0A5RhegPTlqjX07WvvTw9eHq6pP1Gx29jlvID2LdxeNoWkbuzjlMSF1zWXCpl2esHRkD
+         tEhX0VZj3W3YlHHhseNLWs0kW75HiTzHZp4QTEHYgnt22nzZNot2gI5eGr8C4YIwFYjI
+         hJCg==
+X-Gm-Message-State: AOJu0Yxb5dghCWVkMRxmyP5f2eeWmEYSCUp+cp8sRIRwynj9K2mPU1Es
+	at2xMm0Dlq2eCt0+WhFdgUZ7Q8BVSR8=
+X-Google-Smtp-Source: AGHT+IH4vkQmrXlidCVXKzYYty2ay4HPBInW5lCi3Eqpl3vZeKIQVqiJUvatNMDtWsMNHeDdaowbWxA4kC0=
 X-Received: from surenb-desktop.mtv.corp.google.com ([2620:15c:211:201:45ba:3318:d7a5:336a])
- (user=surenb job=sendgmr) by 2002:a05:6902:1083:b0:d9a:c946:c18c with SMTP id
- v3-20020a056902108300b00d9ac946c18cmr311395ybu.6.1698155219188; Tue, 24 Oct
- 2023 06:46:59 -0700 (PDT)
-Date: Tue, 24 Oct 2023 06:46:05 -0700
+ (user=surenb job=sendgmr) by 2002:a0d:d50f:0:b0:5a7:be3f:159f with SMTP id
+ x15-20020a0dd50f000000b005a7be3f159fmr287305ywd.5.1698155221495; Tue, 24 Oct
+ 2023 06:47:01 -0700 (PDT)
+Date: Tue, 24 Oct 2023 06:46:06 -0700
 In-Reply-To: <20231024134637.3120277-1-surenb@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -48,9 +48,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20231024134637.3120277-1-surenb@google.com>
 X-Mailer: git-send-email 2.42.0.758.gaed0368e0e-goog
-Message-ID: <20231024134637.3120277-9-surenb@google.com>
-Subject: [PATCH v2 08/39] mm: introduce __GFP_NO_OBJ_EXT flag to selectively
- prevent slabobj_ext creation
+Message-ID: <20231024134637.3120277-10-surenb@google.com>
+Subject: [PATCH v2 09/39] mm/slab: introduce SLAB_NO_OBJ_EXT to avoid obj_ext creation
 From: Suren Baghdasaryan <surenb@google.com>
 To: akpm@linux-foundation.org
 Cc: kent.overstreet@linux.dev, mhocko@suse.com, vbabka@suse.cz, 
@@ -80,56 +79,74 @@ Cc: kent.overstreet@linux.dev, mhocko@suse.com, vbabka@suse.cz,
 	cgroups@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 
-Introduce __GFP_NO_OBJ_EXT flag in order to prevent recursive allocations
-when allocating slabobj_ext on a slab.
+Slab extension objects can't be allocated before slab infrastructure is
+initialized. Some caches, like kmem_cache and kmem_cache_node, are created
+before slab infrastructure is initialized. Objects from these caches can't
+have extension objects. Introduce SLAB_NO_OBJ_EXT slab flag to mark these
+caches and avoid creating extensions for objects allocated from these
+slabs.
 
 Signed-off-by: Suren Baghdasaryan <surenb@google.com>
 ---
- include/linux/gfp_types.h | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ include/linux/slab.h | 7 +++++++
+ mm/slab.c            | 2 +-
+ mm/slub.c            | 5 +++--
+ 3 files changed, 11 insertions(+), 3 deletions(-)
 
-diff --git a/include/linux/gfp_types.h b/include/linux/gfp_types.h
-index 3fbe624763d9..1c6573d69347 100644
---- a/include/linux/gfp_types.h
-+++ b/include/linux/gfp_types.h
-@@ -52,6 +52,9 @@ enum {
+diff --git a/include/linux/slab.h b/include/linux/slab.h
+index 8228d1276a2f..11ef3d364b2b 100644
+--- a/include/linux/slab.h
++++ b/include/linux/slab.h
+@@ -164,6 +164,13 @@
  #endif
- #ifdef CONFIG_LOCKDEP
- 	___GFP_NOLOCKDEP_BIT,
-+#endif
+ #define SLAB_TEMPORARY		SLAB_RECLAIM_ACCOUNT	/* Objects are short-lived */
+ 
 +#ifdef CONFIG_SLAB_OBJ_EXT
-+	___GFP_NO_OBJ_EXT_BIT,
- #endif
- 	___GFP_LAST_BIT
- };
-@@ -93,6 +96,11 @@ enum {
- #else
- #define ___GFP_NOLOCKDEP	0
- #endif
-+#ifdef CONFIG_SLAB_OBJ_EXT
-+#define ___GFP_NO_OBJ_EXT       BIT(___GFP_NO_OBJ_EXT_BIT)
++/* Slab created using create_boot_cache */
++#define SLAB_NO_OBJ_EXT         ((slab_flags_t __force)0x20000000U)
 +#else
-+#define ___GFP_NO_OBJ_EXT       0
++#define SLAB_NO_OBJ_EXT         0
 +#endif
- 
++
  /*
-  * Physical address zone modifiers (see linux/mmzone.h - low four bits)
-@@ -133,12 +141,15 @@ enum {
-  * node with no fallbacks or placement policy enforcements.
+  * ZERO_SIZE_PTR will be returned for zero sized kmalloc requests.
   *
-  * %__GFP_ACCOUNT causes the allocation to be accounted to kmemcg.
-+ *
-+ * %__GFP_NO_OBJ_EXT causes slab allocation to have no object extension.
-  */
- #define __GFP_RECLAIMABLE ((__force gfp_t)___GFP_RECLAIMABLE)
- #define __GFP_WRITE	((__force gfp_t)___GFP_WRITE)
- #define __GFP_HARDWALL   ((__force gfp_t)___GFP_HARDWALL)
- #define __GFP_THISNODE	((__force gfp_t)___GFP_THISNODE)
- #define __GFP_ACCOUNT	((__force gfp_t)___GFP_ACCOUNT)
-+#define __GFP_NO_OBJ_EXT   ((__force gfp_t)___GFP_NO_OBJ_EXT)
+diff --git a/mm/slab.c b/mm/slab.c
+index 9ad3d0f2d1a5..cefcb7499b6c 100644
+--- a/mm/slab.c
++++ b/mm/slab.c
+@@ -1232,7 +1232,7 @@ void __init kmem_cache_init(void)
+ 	create_boot_cache(kmem_cache, "kmem_cache",
+ 		offsetof(struct kmem_cache, node) +
+ 				  nr_node_ids * sizeof(struct kmem_cache_node *),
+-				  SLAB_HWCACHE_ALIGN, 0, 0);
++				  SLAB_HWCACHE_ALIGN | SLAB_NO_OBJ_EXT, 0, 0);
+ 	list_add(&kmem_cache->list, &slab_caches);
+ 	slab_state = PARTIAL;
  
- /**
-  * DOC: Watermark modifiers
+diff --git a/mm/slub.c b/mm/slub.c
+index f7940048138c..d16643492320 100644
+--- a/mm/slub.c
++++ b/mm/slub.c
+@@ -5043,7 +5043,8 @@ void __init kmem_cache_init(void)
+ 		node_set(node, slab_nodes);
+ 
+ 	create_boot_cache(kmem_cache_node, "kmem_cache_node",
+-		sizeof(struct kmem_cache_node), SLAB_HWCACHE_ALIGN, 0, 0);
++			sizeof(struct kmem_cache_node),
++			SLAB_HWCACHE_ALIGN | SLAB_NO_OBJ_EXT, 0, 0);
+ 
+ 	hotplug_memory_notifier(slab_memory_callback, SLAB_CALLBACK_PRI);
+ 
+@@ -5053,7 +5054,7 @@ void __init kmem_cache_init(void)
+ 	create_boot_cache(kmem_cache, "kmem_cache",
+ 			offsetof(struct kmem_cache, node) +
+ 				nr_node_ids * sizeof(struct kmem_cache_node *),
+-		       SLAB_HWCACHE_ALIGN, 0, 0);
++			SLAB_HWCACHE_ALIGN | SLAB_NO_OBJ_EXT, 0, 0);
+ 
+ 	kmem_cache = bootstrap(&boot_kmem_cache);
+ 	kmem_cache_node = bootstrap(&boot_kmem_cache_node);
 -- 
 2.42.0.758.gaed0368e0e-goog
 
