@@ -1,197 +1,227 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.136])
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2040.outbound.protection.outlook.com [40.107.236.40])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 32BBC538D
-	for <iommu@lists.linux.dev>; Tue, 24 Oct 2023 01:18:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EDB0B442F
+	for <iommu@lists.linux.dev>; Tue, 24 Oct 2023 01:30:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="HIYMYVin"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1698110325; x=1729646325;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=XIsThACAoqZ7IhpZ6LQabNZu6G4qemxhgu/w00TaUXA=;
-  b=HIYMYVinDZQugF8TmTzO8B6VEXbq7ywN4C0zshBVtf9zZW0/iRHMWxdI
-   421sAGsaNjUYK5KdXOrEC8ufWgTMqdUK4yXEoqZ0q0WJe01TLQWBiWtEV
-   mpLCdle4TDxGQn4PvnIrtr5sDT0wOFxuCIPot2Oir/DbFsvfNw1LMmwIG
-   epG1alqoplVAZcqX3i/aVugx/nghvkdnNQ4VVqog77hhXuMJwuUTP+utJ
-   SQChHnbKxadYPQi/REQwtuxnkwSKdR7+n6+CN2mF5T6XypJZ9VZvbB5vG
-   lyzKQQNG5VNggsdifbOomMPfA4KfMiNWh+ihhyoiXHQbIkTeBNTY8wbli
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10872"; a="366305859"
-X-IronPort-AV: E=Sophos;i="6.03,246,1694761200"; 
-   d="scan'208";a="366305859"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Oct 2023 18:18:44 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10872"; a="848962561"
-X-IronPort-AV: E=Sophos;i="6.03,246,1694761200"; 
-   d="scan'208";a="848962561"
-Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
-  by FMSMGA003.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 23 Oct 2023 18:18:44 -0700
-Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.32; Mon, 23 Oct 2023 18:18:43 -0700
-Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
- fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.32; Mon, 23 Oct 2023 18:18:43 -0700
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.32 via Frontend Transport; Mon, 23 Oct 2023 18:18:43 -0700
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.100)
- by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.32; Mon, 23 Oct 2023 18:18:42 -0700
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="CtkqnY6O"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=dSxXIiy7EfXyD4x4L5+51Ux//m6DiNFib5Pf47nC04NLOTc0PEtTgfEO32hV6XINSwMjzoADcn/sOedb2AnQ0pqQxFJ8A7yZ1BoEnFTZ1BtBBUBgoTDdZirOG00N1KQYU7mO1RRllIkn0nbQDj7WRBetb+dORy0h/jGcuDjQkgeNB8+g8wpKOTGwi7UsdAtC2XaAQcAiCHy6cOcb2FtM7Oa9xIMnnMnvP9rfVR0nQmpyOiHcgq7GMui9B6nrVMOFgBD/uKvoKQ2wD0Y+hMNVgAQEDZ3b4clGYie2YqUZiSgtvD2CfeZ0WCBl6A+itw0LoHp0XAbAlRMAKgedfLrbYQ==
+ b=B8iU+e0fwNvvJ/gKYWfy126VL+9av66xAuSgPIJIisgWrjSmMV1fUPnr+rS1oEYn8PyIXcnpj2PdP9vnL0h6RNI+3DsviGIJboqaxO/On/QdcNPmX50IKdm6BdtAgR3mcPizgV8RBWQlTgVGevVAnyylEewlvF8fkha54A1m9oQosH8+JxzSdF/xCgtboPEBNJXDMSvmkV5XTnzJXQsQ77TZeRQYsKhBHzLLlnOYj+STdDdXVRg+LxVS2SnPMmKoRwnVXirN9oWvlVPWjBPmjETFIVbntangNWKITAFVA7gp9QeCvp7l6Jklh9MOJbYJixjAx2R6AGbF7pBPi0z00w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=+tFqZD5oJvV5yNAfE7hdHkfObo3Vqthbafmy7DcpiBw=;
- b=dhgaOEmLTXnTllVD7e9ygvo1O4qGEC65yt9Qoi0SN517Wqwgd5SwwupIp0e9sOAwPthfdzwJBTrJO0uv0Bc7WdoTaXEl7UzFANy6I0hVT8AwWTQ5U+KyDpAbPsgnOOx28yvHc7m3hL23yu+Je1BGYCSjZaOdG4QwTpaRqeHkylacac5yXjSV7NoKdB63TxikAt6Dnc9Uq06Qq8sJQB1UGl8IS0Zgpuco3Opeksuc3jkybv+6Sum8yjGeJdHZBKpHoqSTsQMBYc8PSh0MIVWDR6JbJCFY4XDKX8T1QPLx+uuIVOR7LWeg2DlFLrMxhohqmpuQv5E7Hfk1UCHkCaB70A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by DM8PR11MB5608.namprd11.prod.outlook.com (2603:10b6:8:35::5) with Microsoft
+ bh=AVWTRdAFrAoQUfm3ho3E57DlF9pc42pbnKcxTtyJDkU=;
+ b=JbIMZY0wWHH8Xc1EtEf+aY+d7yUsvQ0s8h6NkJL+q16/khnRkpb8BRGk2Z1mOMRTksIWsSkoOGIm6ApWCRRtUK+31xbWexEYu2KFFm0MqLNsSSH70AsToP+HOu4Y83D/x7xavRM3vV0vq0S13VBe5fhMiZRFoPobEybn+oV0vZv4J1u4jWTIv4Iq0j5RKNhxzpeXV5lr0SItka6ohVTR9rcmCx4AWNMbWu6AzEr5YNtc+ZP67HG5QIZSVFx9E7lYHyGW8auO8m4N6DElslRVi9TG7mHqAlJgZOaL2V/zuByPygAXoiK/p3kA7FQb+UhOrtxFWcec0K0OQjyzCEeBxg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.160) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AVWTRdAFrAoQUfm3ho3E57DlF9pc42pbnKcxTtyJDkU=;
+ b=CtkqnY6OFe5xYfLptiwLaHGVoWL/T5HKOrAbNr44o31LbZlQ9kbbpxqTY0+XZEteEDVijPicFsAckUrhdUiY/0fScttRIC0V+FyKgYgWR+mw9HjjfBVUDZ+YL143NUNHrraIHrGNJbQfjkrmmxmUyGCRSpy71qGZjSLJ2Qi+BD1C/oQ2sFHl9zauluMJXWTgpNhBbG4tU1m3Y/rYKXuagehhEd8zv/VRG7f2fY7ZiuyaUY8jYGy8iSICMafmJko8Xndc93vqCiXUBj85W/IiNplOqdiHDVqh/28402aABCGP3Q0qNPwgDfSQRioNvd3XVKAMhHf6LS5ZtXf+r5OjuA==
+Received: from DS7PR03CA0097.namprd03.prod.outlook.com (2603:10b6:5:3b7::12)
+ by CY8PR12MB7436.namprd12.prod.outlook.com (2603:10b6:930:50::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6907.33; Tue, 24 Oct
+ 2023 01:30:08 +0000
+Received: from DS3PEPF000099E1.namprd04.prod.outlook.com
+ (2603:10b6:5:3b7:cafe::83) by DS7PR03CA0097.outlook.office365.com
+ (2603:10b6:5:3b7::12) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6907.33 via Frontend
+ Transport; Tue, 24 Oct 2023 01:30:08 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ DS3PEPF000099E1.mail.protection.outlook.com (10.167.17.196) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6907.31; Tue, 24 Oct 2023 01:18:33 +0000
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::e7a4:a757:2f2e:f96a]) by BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::e7a4:a757:2f2e:f96a%3]) with mapi id 15.20.6907.032; Tue, 24 Oct 2023
- 01:18:33 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Jason Gunthorpe <jgg@nvidia.com>, Nicolin Chen <nicolinc@nvidia.com>
-CC: "joro@8bytes.org" <joro@8bytes.org>, "will@kernel.org" <will@kernel.org>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>, "baolu.lu@linux.intel.com"
-	<baolu.lu@linux.intel.com>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Liu, Yi L"
-	<yi.l.liu@intel.com>
-Subject: RE: [PATCH v3] iommufd: Only enforce cache coherency in
- iommufd_hw_pagetable_alloc
-Thread-Topic: [PATCH v3] iommufd: Only enforce cache coherency in
- iommufd_hw_pagetable_alloc
-Thread-Index: AQHaBeLDLztCnanYVUqlQIpqtTMrCLBX/veAgAAlKrA=
-Date: Tue, 24 Oct 2023 01:18:33 +0000
-Message-ID: <BN9PR11MB5276D46F61B57553CB37AAAD8CDFA@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <20231023185700.11407-1-nicolinc@nvidia.com>
- <20231023230509.GI3952@nvidia.com>
-In-Reply-To: <20231023230509.GI3952@nvidia.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|DM8PR11MB5608:EE_
-x-ms-office365-filtering-correlation-id: e3b5a72e-4708-4db4-dc1e-08dbd42f23cd
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: oRFxZMDrdJA73gOypoISRWYcemcbmuVpEM5kjkJFVj5P4TLUFQVthyaCSWncs670CrHqg/kPVdxGcuvbfmX+vtXeE7iprieCKsl2vGsoz5NhkM0uE4ZGTbI6m61FK0lLw1fblQl/XJOiPkEYlNrWkfSob19sO5PMa6dLrlgX6umohzqnHUvOyVR7Q2rI/skWy9WGbEmGVDnpEvOFLPgpEBYNJCntHA6rOAKOMPPGbRh2QutpEZt2qeqbKpjPMDCYvXgI7d4hDd+qzz8gCV7bcLXSoQ47i9hB+KxnYznlFhFCn13lm9mC1I4e8r3491Kcb2IX728UTM+gFNx0qQAvbV9jv+9Mg1NupIix9uYVEzSlBgVePwo+0VjJ9XxQ5bgW4O/uM++oeeFARiPeeA43e6G67d47TyoeLIF8nmZgGGEE2NnxuULrsDdQaUmSo8wEXRuam4s1SrO+w5PaTeGZTRnEA+5cf6WVeMCUQPItqC2mFfV/H2XeD97gqwdJ0N5CqyqkTXqZk+u++hVRe2pa6/ysqNYc/a8VMZ1wlpmSAgeIskXwToAGbnb2C3bL92WsqMvAu7XOw9fnLJ3SNw17+Hi2peB6pJJACvFhhoHfLQX55xmrUG+Qr4Oq25R7NXJlRc6938ggzttXONzgnVONcA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(376002)(346002)(366004)(39860400002)(136003)(396003)(230922051799003)(451199024)(64100799003)(1800799009)(186009)(55016003)(110136005)(7696005)(76116006)(66446008)(66556008)(66476007)(64756008)(66946007)(86362001)(41300700001)(54906003)(316002)(478600001)(6506007)(9686003)(966005)(5660300002)(33656002)(8936002)(4326008)(82960400001)(52536014)(2906002)(8676002)(26005)(38100700002)(122000001)(71200400001)(83380400001)(38070700009);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?LYRAGFqT5/IcGfrP/gbbxH3S2Ur8rapUCx79NYzaXYyUT8SsNyUDCjITibbk?=
- =?us-ascii?Q?SIxBbI3sC2QsAoVVrvhXfmTexNAhoAP69uKtBcWtPgKtagIHh25LYc7l4Iuk?=
- =?us-ascii?Q?5gm9f4r9sQ0mmiA6xyEXfAmc7UYagjPDwyq5mzdNUdu+DJOSbETuLKSbM4XM?=
- =?us-ascii?Q?K3OB/JscWXpN+A6H6hQQkcSy8FDe67TgWExvcQJMtoZhnHpx+D7aLPlNz3mg?=
- =?us-ascii?Q?cpsr5ioDsgLONMb365lpS0f1YI8lCY1RnFAEpQhb3AdNgVsDaNqcgAE8vLx4?=
- =?us-ascii?Q?V57sE3SRj6pKNLXQNiSU/qfEskeqA9+QGMuiDROkq8esjZztaHsCt+xYfr2n?=
- =?us-ascii?Q?9ixp3IfJuuENknZQXTh6L9dGX0+MFfMKDZi1s29SOs4Uj7yJP8BWIP6CgAq4?=
- =?us-ascii?Q?BIDEqAP16zCReT1CLWFLCZ991qdAWxuSPX6H8mJd5NtMciHKV1n29vg4vOZ8?=
- =?us-ascii?Q?/R55j/2rj/Ee4rINFqcNOdVYUTJC8nI/TDkSsq+INymg4ioNIsb/sPbAdtv9?=
- =?us-ascii?Q?SJh2bmJfBW1N2bO/Wz0Aw03syuPTLXu7LSDervL+d5lMQGu7Q7MPaORUVyKZ?=
- =?us-ascii?Q?6AkFjcRWOBXa6kZsg7ApmOQIDw4W12Qgo/5FtDEPVy6+yCwuKpz9+6mdLEpT?=
- =?us-ascii?Q?0sx6dlm0K9H+ZA2T6zHWpZHUNJPVY6+OHnyF+DkaO73M9qPPZHiVF4YhXJ++?=
- =?us-ascii?Q?/U3zrXaJ3CwvZzmrcqMuQKJXLdahvrU++QHdLstPoBz8VrSiOgleFdsQ6q7I?=
- =?us-ascii?Q?PMihx7Dv0EO6NI2j5Mu+j/j95mfYyK1Gmr/qjs/GW1L5wMOO5csEAramb4D4?=
- =?us-ascii?Q?T/iIfSn9c5z2bEY4WagDWp8e0ttaZKxMy1qmSjt4RmQUFnRsyiqJl1HzmRD8?=
- =?us-ascii?Q?1dvxIWdTMbxBYVpjeuDkSAmKzrT9fxoMkue80ybVx4z414Pe69LDsQniJNCY?=
- =?us-ascii?Q?2D4K2gYkhMyvlEv6ngzLpdrmpJiNDbTBW+FKYpvYJQ051bnyLyeWFGNKkHxs?=
- =?us-ascii?Q?AFB4I4gSTE78NORud8zhOhFQ5YHzp7uWgF/3r2xqC3cFI7xpmEeSbgM3M3ka?=
- =?us-ascii?Q?CCNn8L4FzIAQlu9nRsYb0COQZOEpdJiz9XJ7du+P7TsGlH2M/Ahbrs8PJC0r?=
- =?us-ascii?Q?JR8EuL60nhHie4ESPy4v+/OGftBm3OAgDHRzsAZZ0axyLhFIqPLUpR6rMJPm?=
- =?us-ascii?Q?AmXUtBOeJX44jhRqncWqx9eopZZk8MiU7glK84GMudHYx4YhnXH3+bw5jOy4?=
- =?us-ascii?Q?xepxFlioEv3F4zFNmCgmUFHpwxm1tt9n8Ci+ksB+sknKzQWsoDMkm0BCjOkN?=
- =?us-ascii?Q?MKlcbLx5nhomaGUUws1PZA8le7kpRobQzs3dhhd4aj5hzdhIptsAl/1740dB?=
- =?us-ascii?Q?xuiR3JJkC5vmPNKf/VdBYtYLA7IYvEk4kGziWSIMQfUtasPbxzHw0vg8reQx?=
- =?us-ascii?Q?y56JbhryElBSzI5B05S8RMaBH0Pt3bZHY6qapqFeIBgyLODMHy4H+NwRFEC9?=
- =?us-ascii?Q?iw6UpFnYmgkJ0dsagw1q7ODKWgVRnM9ZI9pBuCNJIxXVZ5kob2bWbibkwevW?=
- =?us-ascii?Q?KToTE+8l2QMSRUfg0XmOpUj8fWcSp5toRlTvd2zk?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+ 15.20.6933.18 via Frontend Transport; Tue, 24 Oct 2023 01:30:08 +0000
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by mail.nvidia.com
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Mon, 23 Oct
+ 2023 18:30:01 -0700
+Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail202.nvidia.com
+ (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Mon, 23 Oct
+ 2023 18:30:00 -0700
+Received: from Asurada-Nvidia.nvidia.com (10.127.8.12) by mail.nvidia.com
+ (10.129.68.6) with Microsoft SMTP Server id 15.2.986.41 via Frontend
+ Transport; Mon, 23 Oct 2023 18:30:00 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: <jgg@nvidia.com>, <kevin.tian@intel.com>
+CC: <joro@8bytes.org>, <will@kernel.org>, <robin.murphy@arm.com>,
+	<baolu.lu@linux.intel.com>, <iommu@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>, <yi.l.liu@intel.com>
+Subject: [PATCH v4] iommufd: Only enforce cache coherency in iommufd_hw_pagetable_alloc
+Date: Mon, 23 Oct 2023 18:29:58 -0700
+Message-ID: <20231024012958.30842-1-nicolinc@nvidia.com>
+X-Mailer: git-send-email 2.42.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e3b5a72e-4708-4db4-dc1e-08dbd42f23cd
-X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Oct 2023 01:18:33.1817
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS3PEPF000099E1:EE_|CY8PR12MB7436:EE_
+X-MS-Office365-Filtering-Correlation-Id: 3226a8eb-9741-47e6-a86b-08dbd430c208
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	gRAFVgAolFff8TZCcGWW02GvaiDNqBCEykMFxlUjCyX+T58060PTGKuuIA2NnFm+NQarSMIr0Qg1laYevp6RPVeYXByklkfSd9nCvZ576dLc/F7ratr44EGa8hf99BHRrxrr/TMJr91KDKS79oUH1b0Y+GNrsmNO5FKXvX0A5FHawRCKnrX48TUdHlENKAmEbJYfsotj2jYX6ibGICwlB4y16eDL7/iQcX/a+rhfA224GViJjjKQ+cAXpvYtGDnejmR902fw6mOLwPi6fBPL7Sv7Wd0gK+V9gJHwb5rXbNwoFZ34/iaEjEl8PeGXf6cQJ5m+4aV0HtVSbingPadekSWscdJyS2N3pHLL3Qqrti0S8fpiuwYznYvbKDKh7RkuaBjmiXS3bvEfNwbv4bZ6sMujK9ykSDCmHc0KRoUcgdqdO1pWceOyVKeKPCVIDRX1vl1lWMoFmDH3XyXnMajA7AFEYnHkOlTghd5kSZ3E/amOqZQDMTuXMFE7bHUCpppX/0nIvJkb4fWz8eipmGa9zghyhXDaEpQj69I8v+/rFEBkisOJQhXaMkAuCxgRHbOws+MNflSv0n397i7Evooxb5VeLY1AYoasx7Pwa6mnSJosULSlUU7A/DsVPt9mDl6ESPSxvb0lmpGAiog59WYU5kBClFBicSS6jtLZsbSv9z7XW4dgxDln8Xez2/6eQFe/j1C5yPWd2amvQjAHp3F62gMiYQg6E88otIdxEill2Qresa6b80620VZcXWfTfPOl4WluW9l0LtDVelqtUNkuKROS3UrJEFpS+z9j7p8ndqD/zAt9j6YJQ4Sc/LfvOTHv
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230031)(4636009)(346002)(396003)(136003)(39860400002)(376002)(230922051799003)(64100799003)(1800799009)(82310400011)(451199024)(186009)(36840700001)(40470700004)(46966006)(36756003)(70206006)(4326008)(8676002)(8936002)(5660300002)(86362001)(966005)(41300700001)(316002)(70586007)(54906003)(110136005)(478600001)(2906002)(7636003)(36860700001)(356005)(82740400003)(2616005)(1076003)(7696005)(26005)(47076005)(83380400001)(426003)(336012)(40480700001)(40460700003);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Oct 2023 01:30:08.0360
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: fq+3g2nWAgACwlkjoE2IX+W7MJUJZa0f52hcgyiUmqEekHJsGjgCckNiXvx3Qf8IaFKSr2G9EgiWHxkDANEPXQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM8PR11MB5608
-X-OriginatorOrg: intel.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3226a8eb-9741-47e6-a86b-08dbd430c208
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	DS3PEPF000099E1.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR12MB7436
 
-> From: Jason Gunthorpe <jgg@nvidia.com>
-> Sent: Tuesday, October 24, 2023 7:05 AM
->=20
-> On Mon, Oct 23, 2023 at 11:57:00AM -0700, Nicolin Chen wrote:
-> > According to the conversion in the following link:
-> > https://lore.kernel.org/linux-
-> iommu/20231020135501.GG3952@nvidia.com/
-> >
-> > The enforce_cache_coherency should be set/enforced in the hwpt
-> allocation
-> > routine. The iommu driver in its attach_dev() op should decide whether =
-to
-> > reject or not a device that doesn't match with the configuration of cac=
-he
-> > coherency. Drop the enforce_cache_coherency piece in the attach/replace=
-()
-> > and move the remaining "num_devices" piece closer to the refcount that =
-is
-> > using it.
-> >
-> > Accordingly drop its function prototype in the header and mark it stati=
-c.
-> > Also add some extra comments to clarify the expected behaviors.
-> >
-> > Suggested-by: Kevin Tian <kevin.tian@intel.com>
-> > Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
-> > Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-> > ---
-> > Changelog
-> > v3:
-> >  * Reworked the first line of the added commets.
-> > v2: https://lore.kernel.org/all/20231023035733.27378-1-
-> nicolinc@nvidia.com/
-> >  * Dropped "fixes" tags and merged two patches into one (Jason)
-> >  * Added comments to the remaining enforce_cache_coherency call (Jason)
-> >    [Please feel free to rephrase, or let me know what to change.]
-> >  * Replace "num_devices++" with list_for_each_entry (Baolu)
-> > v1: https://lore.kernel.org/all/cover.1697848510.git.nicolinc@nvidia.co=
-m/
-> >
-> >  drivers/iommu/iommufd/device.c          | 20 ++------------------
-> >  drivers/iommu/iommufd/hw_pagetable.c    |  9 ++++++++-
-> >  drivers/iommu/iommufd/iommufd_private.h |  1 -
-> >  3 files changed, 10 insertions(+), 20 deletions(-)
->=20
-> This looks OK to me, Kevin is it what you think it should be now?
->=20
+According to the conversation in the following link:
+https://lore.kernel.org/linux-iommu/20231020135501.GG3952@nvidia.com/
 
-This looks good.
+The enforce_cache_coherency should be set/enforced in the hwpt allocation
+routine. The iommu driver in its attach_dev() op should decide whether to
+reject or not a device that doesn't match with the configuration of cache
+coherency. Drop the enforce_cache_coherency piece in the attach/replace()
+and move the remaining "num_devices" piece closer to the refcount that is
+using it.
 
+Accordingly drop its function prototype in the header and mark it static.
+Also add some extra comments to clarify the expected behaviors.
+
+Suggested-by: Kevin Tian <kevin.tian@intel.com>
+Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
 Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+---
+Changelog
+v4:
+ * Fixed a typo in commit log
+ * Added Reviewed-by from Kevin
+v3:
+ * Reworked the first line of the added commets.
+v2: https://lore.kernel.org/all/20231023035733.27378-1-nicolinc@nvidia.com/
+ * Dropped "fixes" tags and merged two patches into one (Jason)
+ * Added comments to the remaining enforce_cache_coherency call (Jason)
+   [Please feel free to rephrase, or let me know what to change.]
+ * Replace "num_devices++" with list_for_each_entry (Baolu)
+v1: https://lore.kernel.org/all/cover.1697848510.git.nicolinc@nvidia.com/
+ drivers/iommu/iommufd/device.c          | 20 ++------------------
+ drivers/iommu/iommufd/hw_pagetable.c    |  9 ++++++++-
+ drivers/iommu/iommufd/iommufd_private.h |  1 -
+ 3 files changed, 10 insertions(+), 20 deletions(-)
+
+diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
+index 2a41fd2b6ef8..0a8867487508 100644
+--- a/drivers/iommu/iommufd/device.c
++++ b/drivers/iommu/iommufd/device.c
+@@ -337,13 +337,6 @@ int iommufd_hw_pagetable_attach(struct iommufd_hw_pagetable *hwpt,
+ 		goto err_unlock;
+ 	}
+ 
+-	/* Try to upgrade the domain we have */
+-	if (idev->enforce_cache_coherency) {
+-		rc = iommufd_hw_pagetable_enforce_cc(hwpt);
+-		if (rc)
+-			goto err_unlock;
+-	}
+-
+ 	rc = iopt_table_enforce_dev_resv_regions(&hwpt->ioas->iopt, idev->dev,
+ 						 &idev->igroup->sw_msi_start);
+ 	if (rc)
+@@ -413,8 +406,8 @@ iommufd_device_do_replace(struct iommufd_device *idev,
+ {
+ 	struct iommufd_group *igroup = idev->igroup;
+ 	struct iommufd_hw_pagetable *old_hwpt;
+-	unsigned int num_devices = 0;
+ 	struct iommufd_device *cur;
++	unsigned int num_devices;
+ 	int rc;
+ 
+ 	mutex_lock(&idev->igroup->lock);
+@@ -429,16 +422,6 @@ iommufd_device_do_replace(struct iommufd_device *idev,
+ 		return NULL;
+ 	}
+ 
+-	/* Try to upgrade the domain we have */
+-	list_for_each_entry(cur, &igroup->device_list, group_item) {
+-		num_devices++;
+-		if (cur->enforce_cache_coherency) {
+-			rc = iommufd_hw_pagetable_enforce_cc(hwpt);
+-			if (rc)
+-				goto err_unlock;
+-		}
+-	}
+-
+ 	old_hwpt = igroup->hwpt;
+ 	if (hwpt->ioas != old_hwpt->ioas) {
+ 		list_for_each_entry(cur, &igroup->device_list, group_item) {
+@@ -465,6 +448,7 @@ iommufd_device_do_replace(struct iommufd_device *idev,
+ 
+ 	igroup->hwpt = hwpt;
+ 
++	num_devices = list_count_nodes(&igroup->device_list);
+ 	/*
+ 	 * Move the refcounts held by the device_list to the new hwpt. Retain a
+ 	 * refcount for this thread as the caller will free it.
+diff --git a/drivers/iommu/iommufd/hw_pagetable.c b/drivers/iommu/iommufd/hw_pagetable.c
+index fbfab638efea..2c55b808eed5 100644
+--- a/drivers/iommu/iommufd/hw_pagetable.c
++++ b/drivers/iommu/iommufd/hw_pagetable.c
+@@ -42,7 +42,7 @@ void iommufd_hw_pagetable_abort(struct iommufd_object *obj)
+ 	iommufd_hw_pagetable_destroy(obj);
+ }
+ 
+-int iommufd_hw_pagetable_enforce_cc(struct iommufd_hw_pagetable *hwpt)
++static int iommufd_hw_pagetable_enforce_cc(struct iommufd_hw_pagetable *hwpt)
+ {
+ 	if (hwpt->enforce_cache_coherency)
+ 		return 0;
+@@ -116,6 +116,13 @@ iommufd_hw_pagetable_alloc(struct iommufd_ctx *ictx, struct iommufd_ioas *ioas,
+ 	 * doing any maps. It is an iommu driver bug to report
+ 	 * IOMMU_CAP_ENFORCE_CACHE_COHERENCY but fail enforce_cache_coherency on
+ 	 * a new domain.
++	 *
++	 * The cache coherency mode must be configured here and unchanged later.
++	 * Note that a HWPT (non-CC) created for a device (non-CC) can be later
++	 * reused by another device (either non-CC or CC). However, A HWPT (CC)
++	 * created for a device (CC) cannot be reused by another device (non-CC)
++	 * but only devices (CC). Instead user space in this case would need to
++	 * allocate a separate HWPT (non-CC).
+ 	 */
+ 	if (idev->enforce_cache_coherency) {
+ 		rc = iommufd_hw_pagetable_enforce_cc(hwpt);
+diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
+index 1cc429a5227b..44828bba9e2c 100644
+--- a/drivers/iommu/iommufd/iommufd_private.h
++++ b/drivers/iommu/iommufd/iommufd_private.h
+@@ -266,7 +266,6 @@ struct iommufd_hw_pagetable *
+ iommufd_hw_pagetable_alloc(struct iommufd_ctx *ictx, struct iommufd_ioas *ioas,
+ 			   struct iommufd_device *idev, u32 flags,
+ 			   bool immediate_attach);
+-int iommufd_hw_pagetable_enforce_cc(struct iommufd_hw_pagetable *hwpt);
+ int iommufd_hw_pagetable_attach(struct iommufd_hw_pagetable *hwpt,
+ 				struct iommufd_device *idev);
+ struct iommufd_hw_pagetable *
+-- 
+2.42.0
+
