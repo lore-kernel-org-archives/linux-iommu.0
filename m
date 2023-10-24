@@ -1,41 +1,41 @@
 Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 236E7125DE
-	for <iommu@lists.linux.dev>; Tue, 24 Oct 2023 13:51:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 77F80125DE
+	for <iommu@lists.linux.dev>; Tue, 24 Oct 2023 13:51:53 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oracle.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oracle.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="0nIQUFfA"
-Received: from pps.filterd (m0333521.ppops.net [127.0.0.1])
-	by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 39OCKHrD019973;
-	Tue, 24 Oct 2023 13:51:27 GMT
+	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="X4mtinjf"
+Received: from pps.filterd (m0246627.ppops.net [127.0.0.1])
+	by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 39OCKWs6009283;
+	Tue, 24 Oct 2023 13:51:35 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding; s=corp-2023-03-30;
- bh=tgIdOupujCqApwE/bn6n5glmGDks5E5LHs73PQjCuyc=;
- b=0nIQUFfA227zKHSXsdXcq76dXvIqoNTPiZTngX+4O8SAd2X/pGQ3Jv23HbOgelJpyFju
- BtCHhUMmHxzBnlBKdYeGQKaJ6vtB1VQlHBMF6YyVjNBrQb5BmZEBgIPw8v2rv2TeQH8w
- 8/uQa4mhAfhiWvX57GcllbVgUBr9YQsTeBt3dBejs8sg5RWisTzyPznFdTd95fma7qMO
- zAee4O54OgMhz95723DX2I00Nnvns+CAtvcVRtRvRCRpt8/uvWAYw/x9f12g0tqsal8h
- DhGdIP/EJQoU8/RuZr4+vrmbfh2Nvc7Owzk+eWhryJ1uwAZWhboOW4pbWOu69nodE2BL Bg== 
+ bh=RB0dIId8hdOYB5yYyFGQzVnaAGB2TNgTkKTC9nM+4z0=;
+ b=X4mtinjfMTsfHbWWdl5fg3uTznf3zhbAiNV+xavzhBG2w9OX+oYjVkEFbFOmI/4mBwaX
+ tNIjBtphhQzNMzo6/wcFy8u4VHdW0ErzQiIa4H9TnbfjeTOHAPRk2zc4fOfEXriQzxHu
+ 79Ufbi7vzwr1+3Y6ZYyNhfgwCdPpqdNk6l7AwDLNQKimd2Op8Y5M+8cP3wQ5ff3Tw4oK
+ hFhsp2AcyWJa+iLxSOdSVYBqnikxZ/B/xLCn0dD4wNIhrXLY1bWVDS2/erzqkSZG8Smb
+ rQMQGolMhzQKPm2r3fDtqfLDzhTDQTu3LrOIDIwEhJuJDuyoxNmdmvp9JW8zLgYpS5tu 7w== 
 Received: from phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta03.appoci.oracle.com [138.1.37.129])
-	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3tv5jbdhq9-1
+	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3tv581nhed-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Tue, 24 Oct 2023 13:51:26 +0000
+	Tue, 24 Oct 2023 13:51:35 +0000
 Received: from pps.filterd (phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-	by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (8.17.1.19/8.17.1.19) with ESMTP id 39OCxrhF034564;
-	Tue, 24 Oct 2023 13:51:26 GMT
+	by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (8.17.1.19/8.17.1.19) with ESMTP id 39OCZv1C034590;
+	Tue, 24 Oct 2023 13:51:34 GMT
 Received: from pps.reinject (localhost [127.0.0.1])
-	by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 3tv53591w6-1
+	by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 3tv5359226-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Tue, 24 Oct 2023 13:51:26 +0000
+	Tue, 24 Oct 2023 13:51:34 +0000
 Received: from phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 39ODpL8q030007;
-	Tue, 24 Oct 2023 13:51:25 GMT
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 39ODpL8u030007;
+	Tue, 24 Oct 2023 13:51:33 GMT
 Received: from joaomart-mac.uk.oracle.com (dhcp-10-175-194-36.vpn.oracle.com [10.175.194.36])
-	by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTP id 3tv53591rr-2;
-	Tue, 24 Oct 2023 13:51:25 +0000
+	by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTP id 3tv53591rr-4;
+	Tue, 24 Oct 2023 13:51:33 +0000
 From: Joao Martins <joao.m.martins@oracle.com>
 To: iommu@lists.linux.dev
 Cc: Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
@@ -47,10 +47,11 @@ Cc: Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
         Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
         Zhenzhong Duan <zhenzhong.duan@intel.com>,
         Alex Williamson <alex.williamson@redhat.com>, kvm@vger.kernel.org,
-        Joao Martins <joao.m.martins@oracle.com>
-Subject: [PATCH v6 01/18] vfio/iova_bitmap: Export more API symbols
-Date: Tue, 24 Oct 2023 14:50:52 +0100
-Message-Id: <20231024135109.73787-2-joao.m.martins@oracle.com>
+        Joao Martins <joao.m.martins@oracle.com>,
+        Brett Creeley <brett.creeley@amd.com>
+Subject: [PATCH v6 03/18] iommufd/iova_bitmap: Move symbols to IOMMUFD namespace
+Date: Tue, 24 Oct 2023 14:50:54 +0100
+Message-Id: <20231024135109.73787-4-joao.m.martins@oracle.com>
 In-Reply-To: <20231024135109.73787-1-joao.m.martins@oracle.com>
 References: <20231024135109.73787-1-joao.m.martins@oracle.com>
 Precedence: bulk
@@ -67,53 +68,100 @@ X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 adult
  mlxlogscore=999 mlxscore=0 bulkscore=0 suspectscore=0 malwarescore=0
  classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2310170001
  definitions=main-2310240118
-X-Proofpoint-GUID: 2LzvlOdt3votCbYaFkIRhInHtLhVsIv1
-X-Proofpoint-ORIG-GUID: 2LzvlOdt3votCbYaFkIRhInHtLhVsIv1
+X-Proofpoint-GUID: N_PWMtiyymfo_L6P91vI9iUhE-ivPhID
+X-Proofpoint-ORIG-GUID: N_PWMtiyymfo_L6P91vI9iUhE-ivPhID
 
-In preparation to move iova_bitmap into iommufd, export the rest of API
-symbols that will be used in what could be used by modules, namely:
+Have the IOVA bitmap exported symbols adhere to the IOMMUFD symbol
+export convention i.e. using the IOMMUFD namespace. In doing so,
+import the namespace in the current users. This means VFIO and the
+vfio-pci drivers that use iova_bitmap_set().
 
-	iova_bitmap_alloc
-	iova_bitmap_free
-	iova_bitmap_for_each
-
-Suggested-by: Alex Williamson <alex.williamson@redhat.com>
+Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Joao Martins <joao.m.martins@oracle.com>
 Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Reviewed-by: Brett Creeley <brett.creeley@amd.com>
 Reviewed-by: Kevin Tian <kevin.tian@intel.com>
 Reviewed-by: Alex Williamson <alex.williamson@redhat.com>
 ---
- drivers/vfio/iova_bitmap.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/iommu/iommufd/iova_bitmap.c | 8 ++++----
+ drivers/vfio/pci/mlx5/main.c        | 1 +
+ drivers/vfio/pci/pds/pci_drv.c      | 1 +
+ drivers/vfio/vfio_main.c            | 1 +
+ 4 files changed, 7 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/vfio/iova_bitmap.c b/drivers/vfio/iova_bitmap.c
-index 0848f920efb7..f54b56388e00 100644
---- a/drivers/vfio/iova_bitmap.c
-+++ b/drivers/vfio/iova_bitmap.c
-@@ -268,6 +268,7 @@ struct iova_bitmap *iova_bitmap_alloc(unsigned long iova, size_t length,
+diff --git a/drivers/iommu/iommufd/iova_bitmap.c b/drivers/iommu/iommufd/iova_bitmap.c
+index f54b56388e00..0a92c9eeaf7f 100644
+--- a/drivers/iommu/iommufd/iova_bitmap.c
++++ b/drivers/iommu/iommufd/iova_bitmap.c
+@@ -268,7 +268,7 @@ struct iova_bitmap *iova_bitmap_alloc(unsigned long iova, size_t length,
  	iova_bitmap_free(bitmap);
  	return ERR_PTR(rc);
  }
-+EXPORT_SYMBOL_GPL(iova_bitmap_alloc);
+-EXPORT_SYMBOL_GPL(iova_bitmap_alloc);
++EXPORT_SYMBOL_NS_GPL(iova_bitmap_alloc, IOMMUFD);
  
  /**
   * iova_bitmap_free() - Frees an IOVA bitmap object
-@@ -289,6 +290,7 @@ void iova_bitmap_free(struct iova_bitmap *bitmap)
+@@ -290,7 +290,7 @@ void iova_bitmap_free(struct iova_bitmap *bitmap)
  
  	kfree(bitmap);
  }
-+EXPORT_SYMBOL_GPL(iova_bitmap_free);
+-EXPORT_SYMBOL_GPL(iova_bitmap_free);
++EXPORT_SYMBOL_NS_GPL(iova_bitmap_free, IOMMUFD);
  
  /*
   * Returns the remaining bitmap indexes from mapped_total_index to process for
-@@ -387,6 +389,7 @@ int iova_bitmap_for_each(struct iova_bitmap *bitmap, void *opaque,
+@@ -389,7 +389,7 @@ int iova_bitmap_for_each(struct iova_bitmap *bitmap, void *opaque,
  
  	return ret;
  }
-+EXPORT_SYMBOL_GPL(iova_bitmap_for_each);
+-EXPORT_SYMBOL_GPL(iova_bitmap_for_each);
++EXPORT_SYMBOL_NS_GPL(iova_bitmap_for_each, IOMMUFD);
  
  /**
   * iova_bitmap_set() - Records an IOVA range in bitmap
+@@ -423,4 +423,4 @@ void iova_bitmap_set(struct iova_bitmap *bitmap,
+ 		cur_bit += nbits;
+ 	} while (cur_bit <= last_bit);
+ }
+-EXPORT_SYMBOL_GPL(iova_bitmap_set);
++EXPORT_SYMBOL_NS_GPL(iova_bitmap_set, IOMMUFD);
+diff --git a/drivers/vfio/pci/mlx5/main.c b/drivers/vfio/pci/mlx5/main.c
+index 42ec574a8622..5cf2b491d15a 100644
+--- a/drivers/vfio/pci/mlx5/main.c
++++ b/drivers/vfio/pci/mlx5/main.c
+@@ -1376,6 +1376,7 @@ static struct pci_driver mlx5vf_pci_driver = {
+ 
+ module_pci_driver(mlx5vf_pci_driver);
+ 
++MODULE_IMPORT_NS(IOMMUFD);
+ MODULE_LICENSE("GPL");
+ MODULE_AUTHOR("Max Gurtovoy <mgurtovoy@nvidia.com>");
+ MODULE_AUTHOR("Yishai Hadas <yishaih@nvidia.com>");
+diff --git a/drivers/vfio/pci/pds/pci_drv.c b/drivers/vfio/pci/pds/pci_drv.c
+index ab4b5958e413..dd8c00c895a2 100644
+--- a/drivers/vfio/pci/pds/pci_drv.c
++++ b/drivers/vfio/pci/pds/pci_drv.c
+@@ -204,6 +204,7 @@ static struct pci_driver pds_vfio_pci_driver = {
+ 
+ module_pci_driver(pds_vfio_pci_driver);
+ 
++MODULE_IMPORT_NS(IOMMUFD);
+ MODULE_DESCRIPTION(PDS_VFIO_DRV_DESCRIPTION);
+ MODULE_AUTHOR("Brett Creeley <brett.creeley@amd.com>");
+ MODULE_LICENSE("GPL");
+diff --git a/drivers/vfio/vfio_main.c b/drivers/vfio/vfio_main.c
+index 40732e8ed4c6..a96d97da367d 100644
+--- a/drivers/vfio/vfio_main.c
++++ b/drivers/vfio/vfio_main.c
+@@ -1693,6 +1693,7 @@ static void __exit vfio_cleanup(void)
+ module_init(vfio_init);
+ module_exit(vfio_cleanup);
+ 
++MODULE_IMPORT_NS(IOMMUFD);
+ MODULE_VERSION(DRIVER_VERSION);
+ MODULE_LICENSE("GPL v2");
+ MODULE_AUTHOR(DRIVER_AUTHOR);
 -- 
 2.17.2
 
