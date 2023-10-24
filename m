@@ -1,44 +1,44 @@
-Received: from mail-yw1-f201.google.com (mail-yw1-f201.google.com [209.85.128.201])
+Received: from mail-yw1-f202.google.com (mail-yw1-f202.google.com [209.85.128.202])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 88B562B5E4
-	for <iommu@lists.linux.dev>; Tue, 24 Oct 2023 13:46:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AEAB52B5ED
+	for <iommu@lists.linux.dev>; Tue, 24 Oct 2023 13:46:53 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--surenb.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="r9RD5hIe"
-Received: by mail-yw1-f201.google.com with SMTP id 00721157ae682-5a839b31a0dso85001047b3.0
-        for <iommu@lists.linux.dev>; Tue, 24 Oct 2023 06:46:51 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="1whbu6fc"
+Received: by mail-yw1-f202.google.com with SMTP id 00721157ae682-5a7d261a84bso61822337b3.3
+        for <iommu@lists.linux.dev>; Tue, 24 Oct 2023 06:46:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1698155210; x=1698760010; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1698155212; x=1698760012; darn=lists.linux.dev;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=griUcA7GUXZ/C94ijw+khTWkXdhOo9/SkZ3zjzjerBg=;
-        b=r9RD5hIerlZI0zwFrHOcW9F0IuKxzZ0cI7eJL4QR13nLlHnewVQ6pjMN+QCfjehN2W
-         xwlRJXhbq8aFKC9URCuw7w1ni/wl711JGN4KpYaW9h87M+oQuk/aTSK2xwuL7a3j0ZjR
-         XBmbjQy7cUPokhsH7vmmyB5pOzTS3eWs78eqm6WaLkGzg/Xm32tiGM46Ee1wsouKqb/b
-         exUpHzkY5wfDBy9ZwDbtBNlwnGLHZO6nzmJjwbfjACgtVq85C7/SDLAK9XwkLX5BKDqo
-         lM5LbJojd9KuyzsI7waWbhFHidpY8Ovw4og4glotqRHiz1qukmtEWvPzYHdAq9fwdqyo
-         RDAg==
+        bh=r9ZaCKU38kmyhI7VEwX4KjtHXLgRMjapTHFgQ9SG6t0=;
+        b=1whbu6fcQ/CXKMQpms1/ze+jte+DVtY7HpD10s/xz4pl+mjPj80vAZBQp0WhvvMZ1m
+         528VoCd/vxdsRjKRsxosTsd6Hpf2Bw5nKjseKoJMfu9rc7AqB5S0U+5f6tn0W5OED8YM
+         MdR/jN2OweIJXbdgkWOFd5zsPPbMzFVhnSsC8Djmvsf5GqeTkjXwiv83PDaw+iUGmjZ2
+         YFfeTzfX4N/30DsiLsL8QEW59YIoSSTkp9zJkR190akQlbovPkuU0AxjqZfkIXlE8fGC
+         IhlsaC8bUFf9K0sJZbQ3WrzGa4JCa4BfOihe2jAUnvMAVmDZzHwpb2aPz67trrbE+akf
+         vmSw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1698155210; x=1698760010;
+        d=1e100.net; s=20230601; t=1698155212; x=1698760012;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=griUcA7GUXZ/C94ijw+khTWkXdhOo9/SkZ3zjzjerBg=;
-        b=p0rD3Dg4LkFqazg3YbBXevojuoUedtdFSTQXnxWbAOgdl0yUA8mYaoAbFf1A8YT0g0
-         lvTeEtKNWyxRNwNFTIj5Pqu9cBH4+B9hLHSJPCR6KvZ/V8DHiinbkrk8X/DlBfvW5dB0
-         Ch4pv/n8CfgS00sC2oYtBVY7R4XWh9Bnx8Xu+gWwdwRMjn/Dn3e5iqditC7vS3bJQxl0
-         i604fw9pio+DZxcVO0zJAuOrp5LczB4yM8EUgeDHnA3UYinZ3Z873Ukn3rgap8DlzS16
-         GfhrsdU5bM9cN1RjT6AreauNVWM6QW2UAa0CxD9cB7UdUF5RMYXaOL+h7KREYH24CmYh
-         BgpQ==
-X-Gm-Message-State: AOJu0Yz7r+kDziI+1kPmzwGOGX7vEtrZ4MaTWaIgJ5EXdYcPIZWeDgmK
-	C9otrzH4lCdmnGKuYhbI1KtO2LywfDg=
-X-Google-Smtp-Source: AGHT+IEpwWcHxe3pWwBFpCZZha+IjIrDrruma7abx61pSV1ETO4xUZC89g08mISvSSxLbel6DAK32ekX/R8=
+        bh=r9ZaCKU38kmyhI7VEwX4KjtHXLgRMjapTHFgQ9SG6t0=;
+        b=OjNPy9JY5McztIG6URbtvnmoeu7kZl7kzUG3x4t7+TcLcH5oLvJQS+gvQ5Mvpx8SM3
+         Xl5LVpyDeJW+Ddgi/fJcw483xgrq82yna6KGl5tMMkC4HXbMHKRMGJOvN13wG7SqHXFP
+         TP/nLkHf6PJVF41zQHBGE7NF05eszDZPXi6CmnH8sX/DLtnPZdyVycVCm9YtVPz3Q4TJ
+         2bv/m0GpjRzg8uQKvNsWhaccas30td++4GVT86FcsD97TeCSHQcrTnNBpLaCRY0RNQuj
+         4aCDh7W9Fwqi5+LPCiHvSRhLtfIt52b/XOFy5eugBALyxf1RD1BW/d4u8e/sSkqA/LKJ
+         KxtA==
+X-Gm-Message-State: AOJu0YzHCM2PwaA5MiykdPycWKfzyKCkkDnYlQ+ucCKdSuPnXQzV2i9h
+	D3RTPE0V3REZvxS2vuEXbYKTo2DOHKg=
+X-Google-Smtp-Source: AGHT+IFUpFLBsDMNDQVhWCjHvEp+oEK06bmA8hZB4NpLCdYe9bJ3XL90v8R51rmnjDRHAZifNxDo+IuLmGU=
 X-Received: from surenb-desktop.mtv.corp.google.com ([2620:15c:211:201:45ba:3318:d7a5:336a])
- (user=surenb job=sendgmr) by 2002:a25:7485:0:b0:d9a:cbf9:1c8d with SMTP id
- p127-20020a257485000000b00d9acbf91c8dmr216225ybc.12.1698155210387; Tue, 24
- Oct 2023 06:46:50 -0700 (PDT)
-Date: Tue, 24 Oct 2023 06:46:01 -0700
+ (user=surenb job=sendgmr) by 2002:a0d:dfd0:0:b0:5a7:ad67:b4b6 with SMTP id
+ i199-20020a0ddfd0000000b005a7ad67b4b6mr254303ywe.2.1698155212529; Tue, 24 Oct
+ 2023 06:46:52 -0700 (PDT)
+Date: Tue, 24 Oct 2023 06:46:02 -0700
 In-Reply-To: <20231024134637.3120277-1-surenb@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -48,8 +48,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20231024134637.3120277-1-surenb@google.com>
 X-Mailer: git-send-email 2.42.0.758.gaed0368e0e-goog
-Message-ID: <20231024134637.3120277-5-surenb@google.com>
-Subject: [PATCH v2 04/39] nodemask: Split out include/linux/nodemask_types.h
+Message-ID: <20231024134637.3120277-6-surenb@google.com>
+Subject: [PATCH v2 05/39] prandom: Remove unused include
 From: Suren Baghdasaryan <surenb@google.com>
 To: akpm@linux-foundation.org
 Cc: kent.overstreet@linux.dev, mhocko@suse.com, vbabka@suse.cz, 
@@ -81,69 +81,26 @@ Content-Type: text/plain; charset="UTF-8"
 
 From: Kent Overstreet <kent.overstreet@linux.dev>
 
-sched.h, which defines task_struct, needs nodemask_t - but sched.h is a
-frequently used header and ideally shouldn't be pulling in any more code
-that it needs to.
-
-This splits out nodemask_types.h which has the definition sched.h needs,
-which will avoid a circular header dependency in the alloc tagging patch
-series, and as a bonus should speed up kernel build times.
+prandom.h doesn't use percpu.h - this fixes some circular header issues.
 
 Signed-off-by: Kent Overstreet <kent.overstreet@linux.dev>
 Signed-off-by: Suren Baghdasaryan <surenb@google.com>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Peter Zijlstra <peterz@infradead.org>
 ---
- include/linux/nodemask.h       | 2 +-
- include/linux/nodemask_types.h | 9 +++++++++
- include/linux/sched.h          | 2 +-
- 3 files changed, 11 insertions(+), 2 deletions(-)
- create mode 100644 include/linux/nodemask_types.h
+ include/linux/prandom.h | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/include/linux/nodemask.h b/include/linux/nodemask.h
-index 8d07116caaf1..b61438313a73 100644
---- a/include/linux/nodemask.h
-+++ b/include/linux/nodemask.h
-@@ -93,10 +93,10 @@
- #include <linux/threads.h>
- #include <linux/bitmap.h>
- #include <linux/minmax.h>
-+#include <linux/nodemask_types.h>
- #include <linux/numa.h>
+diff --git a/include/linux/prandom.h b/include/linux/prandom.h
+index f2ed5b72b3d6..f7f1e5251c67 100644
+--- a/include/linux/prandom.h
++++ b/include/linux/prandom.h
+@@ -10,7 +10,6 @@
+ 
+ #include <linux/types.h>
+ #include <linux/once.h>
+-#include <linux/percpu.h>
  #include <linux/random.h>
  
--typedef struct { DECLARE_BITMAP(bits, MAX_NUMNODES); } nodemask_t;
- extern nodemask_t _unused_nodemask_arg_;
- 
- /**
-diff --git a/include/linux/nodemask_types.h b/include/linux/nodemask_types.h
-new file mode 100644
-index 000000000000..84c2f47c4237
---- /dev/null
-+++ b/include/linux/nodemask_types.h
-@@ -0,0 +1,9 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef __LINUX_NODEMASK_TYPES_H
-+#define __LINUX_NODEMASK_TYPES_H
-+
-+#include <linux/numa.h>
-+
-+typedef struct { DECLARE_BITMAP(bits, MAX_NUMNODES); } nodemask_t;
-+
-+#endif /* __LINUX_NODEMASK_TYPES_H */
-diff --git a/include/linux/sched.h b/include/linux/sched.h
-index 77f01ac385f7..12a2554a3164 100644
---- a/include/linux/sched.h
-+++ b/include/linux/sched.h
-@@ -20,7 +20,7 @@
- #include <linux/hrtimer.h>
- #include <linux/irqflags.h>
- #include <linux/seccomp.h>
--#include <linux/nodemask.h>
-+#include <linux/nodemask_types.h>
- #include <linux/rcupdate.h>
- #include <linux/refcount.h>
- #include <linux/resource.h>
+ struct rnd_state {
 -- 
 2.42.0.758.gaed0368e0e-goog
 
