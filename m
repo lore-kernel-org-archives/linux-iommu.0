@@ -1,185 +1,113 @@
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2077.outbound.protection.outlook.com [40.107.223.77])
+Received: from out-202.mta0.migadu.com (out-202.mta0.migadu.com [91.218.175.202])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D131034CE6
-	for <iommu@lists.linux.dev>; Tue, 24 Oct 2023 18:19:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 15ECC1CA9C
+	for <iommu@lists.linux.dev>; Tue, 24 Oct 2023 18:29:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="pZJ9XNpJ"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=cKAvC5KdVpksLMa6hgRPAtOSFHLDgN0BgQJfRF+Da14Wm79gL9wpbiVbpv7jvQsLtdYY0qYmxqCfQOu8lhblYfylGgDamjzfBT1yNz1iTXqo00I/KK/HttsEapBESGcPdaToCY0Og+kUM0SLp9MAnPpzNLkPnfsn1bjLIhnCul+bjPUF5qfrqtvrJv7djBvT6y56coUBSXeQhUTK7bTi1K7QWW4dwp1YqeOVg4niI5GJh80uJF8BjprqgBF4v5zL4Q3yilS0fHMiOeEKcgoeLMkONP5RmmSsh2aIeT4Z8xNdmlOwcGrGKlch4e1M4e8Xqyr8SDxW6m2kBYfkoLvy5Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=vHP1DuFzszR2uGAg2rLjrWtNNKmOic2Pu2oOV0T++Qo=;
- b=hikzTEM6Nfv5RJLCUqgU4w9CRel3HUvhEWTG9tnNTqlBxpuTeUCrZySelNQJWp5UHDbgdIu20mJ1n7hBmj17USdKCZi2I0iUv4OopXuiLPixWrFrB5WrEmv0ymuz9ZCYWJ8Yfh11kKAbROHzs/SXfu+ml9V2i1QNv8E3G94R6l8APmVIgo3O+9eSX5S0Rmpbvx6cObNQy6LAsWyzKJ/WbBtT0SdxFZm7te1MkVrg5p99qw4pDTRxesGpAiqpmIJh+Pcd9YuTbmFg+GzzjrTm1O4khIIxKm3FOtgQMujFVRfo1YKX5ytgH9Cjp9jD0AsdGLEnVUDQbVEvJuCi38z70Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.232) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vHP1DuFzszR2uGAg2rLjrWtNNKmOic2Pu2oOV0T++Qo=;
- b=pZJ9XNpJSTPCw5m7xAaSfAlvhUN7P36LT+vceXxvIiMojX9CaFa7vrPsoaaMvzuAYW736/bRkqdPGPyLCe4FlCy3Q+3bSBoQ1Ca+fmz+9Im1FzwwoFiK2JlCL42ezs6kqYLL8y7VK+T/J8p78KgGJl6Pbmxxkej4jLwUV71yLF/o/4GrtrW4owEj01ibUbnsXP4a7opMHzYjMxf+wdfe+xwmBUF176/cgWudJJbAj0TsoQjqmnRbnn8Vz5CUy17T+3KD0hRbsjdJjt1v/yWc8dg9wD344eB6liWsD0SUB/FYMyAmW9krnpbuZkJ/pnZdnwiT/D0zIsYkn2Q/GuO6Gg==
-Received: from DM6PR06CA0060.namprd06.prod.outlook.com (2603:10b6:5:54::37) by
- SA0PR12MB4541.namprd12.prod.outlook.com (2603:10b6:806:9e::14) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6907.31; Tue, 24 Oct 2023 18:19:34 +0000
-Received: from CY4PEPF0000EE3B.namprd03.prod.outlook.com
- (2603:10b6:5:54:cafe::e2) by DM6PR06CA0060.outlook.office365.com
- (2603:10b6:5:54::37) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6933.19 via Frontend
- Transport; Tue, 24 Oct 2023 18:19:33 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.232) by
- CY4PEPF0000EE3B.mail.protection.outlook.com (10.167.242.15) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6933.15 via Frontend Transport; Tue, 24 Oct 2023 18:19:33 +0000
-Received: from drhqmail202.nvidia.com (10.126.190.181) by mail.nvidia.com
- (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Tue, 24 Oct
- 2023 11:19:26 -0700
-Received: from drhqmail201.nvidia.com (10.126.190.180) by
- drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.41; Tue, 24 Oct 2023 11:19:25 -0700
-Received: from Asurada-Nvidia (10.127.8.12) by mail.nvidia.com
- (10.126.190.180) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41 via Frontend
- Transport; Tue, 24 Oct 2023 11:19:24 -0700
-Date: Tue, 24 Oct 2023 11:19:23 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Yi Liu <yi.l.liu@intel.com>, Jason Gunthorpe <jgg@nvidia.com>
-CC: <joro@8bytes.org>, <alex.williamson@redhat.com>, <kevin.tian@intel.com>,
-	<robin.murphy@arm.com>, <baolu.lu@linux.intel.com>, <cohuck@redhat.com>,
-	<eric.auger@redhat.com>, <kvm@vger.kernel.org>, <mjrosato@linux.ibm.com>,
-	<chao.p.peng@linux.intel.com>, <yi.y.sun@linux.intel.com>,
-	<peterx@redhat.com>, <jasowang@redhat.com>,
-	<shameerali.kolothum.thodi@huawei.com>, <lulu@redhat.com>,
-	<suravee.suthikulpanit@amd.com>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
-	<zhenzhong.duan@intel.com>, <joao.m.martins@oracle.com>
-Subject: Re: [PATCH v6 07/10] iommufd: Add a nested HW pagetable object
-Message-ID: <ZTgKqwYdH27b8MUB@Asurada-Nvidia>
-References: <20231024150609.46884-1-yi.l.liu@intel.com>
- <20231024150609.46884-8-yi.l.liu@intel.com>
- <20231024171810.GO3952@nvidia.com>
- <ZTf+zWJE2qlgkf1M@Asurada-Nvidia>
- <20231024173139.GR3952@nvidia.com>
- <ZTgEApUgriFj1dKa@Asurada-Nvidia>
- <20231024180049.GV3952@nvidia.com>
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="qxmyiqZd"
+Date: Tue, 24 Oct 2023 11:29:03 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1698172172;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=cJvtH1RU485LotJpakrbV9U/UfyKsr5ptSPtEPeho50=;
+	b=qxmyiqZdvUbSc5OX8sJ5B56VRDGRIypt0m2ZexyNmyd2CWJuUlLqxDCgQmiWZxhgLrnEJP
+	Q3PacIpe5vXTiE86jUv2kcvB2COry3b6xKIlN2wW5y2pG9dxxNOj26Rwsg8w9wjXki2GwQ
+	/5zO2TFTFVb+ghWrRC0JLTshCp62Kqo=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: Roman Gushchin <roman.gushchin@linux.dev>
+To: Suren Baghdasaryan <surenb@google.com>
+Cc: akpm@linux-foundation.org, kent.overstreet@linux.dev, mhocko@suse.com,
+	vbabka@suse.cz, hannes@cmpxchg.org, mgorman@suse.de,
+	dave@stgolabs.net, willy@infradead.org, liam.howlett@oracle.com,
+	corbet@lwn.net, void@manifault.com, peterz@infradead.org,
+	juri.lelli@redhat.com, ldufour@linux.ibm.com,
+	catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de,
+	tglx@linutronix.de, mingo@redhat.com, dave.hansen@linux.intel.com,
+	x86@kernel.org, peterx@redhat.com, david@redhat.com,
+	axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org,
+	nathan@kernel.org, dennis@kernel.org, tj@kernel.org,
+	muchun.song@linux.dev, rppt@kernel.org, paulmck@kernel.org,
+	pasha.tatashin@soleen.com, yosryahmed@google.com, yuzhao@google.com,
+	dhowells@redhat.com, hughd@google.com, andreyknvl@gmail.com,
+	keescook@chromium.org, ndesaulniers@google.com, vvvvvv@google.com,
+	gregkh@linuxfoundation.org, ebiggers@google.com, ytcoode@gmail.com,
+	vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+	rostedt@goodmis.org, bsegall@google.com, bristot@redhat.com,
+	vschneid@redhat.com, cl@linux.com, penberg@kernel.org,
+	iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com,
+	elver@google.com, dvyukov@google.com, shakeelb@google.com,
+	songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com,
+	minchan@google.com, kaleshsingh@google.com, kernel-team@android.com,
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev, linux-arch@vger.kernel.org,
+	linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
+	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com,
+	cgroups@vger.kernel.org
+Subject: Re: [PATCH v2 00/39] Memory allocation profiling
+Message-ID: <ZTgM74EapT9mea2l@P9FQF9L96D.corp.robot.car>
+References: <20231024134637.3120277-1-surenb@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20231024180049.GV3952@nvidia.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY4PEPF0000EE3B:EE_|SA0PR12MB4541:EE_
-X-MS-Office365-Filtering-Correlation-Id: 2cc04033-3b5f-4211-3ec3-08dbd4bdc5ee
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	oWOLddj/wKnB9pECsOdml2w9LF/F5HgvjnyXH6LXukEadbhOJMF2kDqloVvIQqAtDG7LFlSqs0rfkCzJAh16tJS17c+a/3fZVwgvJ+nXrjTNUGcjV9UJO52lyLxLtLwMMOdM46/wxKhCDE3mEfQPcxKI4qLFLpOWIFznzVZm+cYda5/6+p8BCbibYZzRz/7RVjcsj+RAsxRpZK0F2FVPCKn9+7Wr612cwqkL4btV3sSDL6oym/rgvlAeyg5UGdHQBs7ofh5u/astjDPJPf9QxY5vJvMdB0to+cR4f87sUpYiPUGf3tDLNssrko0ToUJiG/biU1zJnvk31k+f8qaOdgFS8eNqM0vw15klWANBcfhdHbD/f4wO53QbsZ7kRsGFmEyQ1kurvaWn3Xe1x0vYVC/nkP2mNy/DRvTb3rN665KWsiA6c0crKpn2lNYA41mSBMHD+Vremi7tMQVk0BbTAVulDmJa+tWF5+kB8mWxVrOPlXWyTBF9yhU5JZqurOE+J23vhqNeEZMdJYn/o6gvodrb2VxJGSZGXzVEn9zF/cGr5yPozO4MVI0t2Ne7ZiuFsxSQ23MzyKfFMFFWIXjsx/E3AL3Qh3YQzaRZhAV6teP5bhts5US81jPz0WlcNkcw78474ZjjaTPmq/mlt7zBdjJrjIpfhYD+m5+0/wFBYaAhqf2JBpSVj/S4Eru1JrynKle9LpqpHsOSWSX7yMVAp6cRBRgbcY+SbHqP2odKDBYg77UEqC3xdrVXooRUWAWqC1P30cVcE554cu6LWsQ3y+dvosdWjbiE31GBo8ko7C0=
-X-Forefront-Antispam-Report:
-	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230031)(4636009)(39860400002)(136003)(346002)(396003)(376002)(230922051799003)(451199024)(82310400011)(186009)(64100799003)(1800799009)(36840700001)(40470700004)(46966006)(66899024)(83380400001)(55016003)(40460700003)(8936002)(40480700001)(70586007)(70206006)(110136005)(86362001)(41300700001)(5660300002)(966005)(6636002)(9686003)(316002)(54906003)(478600001)(4326008)(8676002)(7416002)(36860700001)(2906002)(426003)(356005)(7636003)(336012)(26005)(82740400003)(47076005)(33716001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Oct 2023 18:19:33.6596
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2cc04033-3b5f-4211-3ec3-08dbd4bdc5ee
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CY4PEPF0000EE3B.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR12MB4541
+In-Reply-To: <20231024134637.3120277-1-surenb@google.com>
+X-Migadu-Flow: FLOW_OUT
 
-On Tue, Oct 24, 2023 at 03:00:49PM -0300, Jason Gunthorpe wrote:
-> On Tue, Oct 24, 2023 at 10:50:58AM -0700, Nicolin Chen wrote:
-> 
-> > > The point is for the user_data to always be available, the driver
-> > > needs to check it if it is passed.
-> > > 
-> > > This should all be plumbed to allow drivers to also customize their
-> > > paging domains too.
-> > 
-> > We don't have a use case of customizing the paging domains.
-> > And our selftest isn't covering this path. Nor the case is
-> > supported by the uAPI:
-> 
-> But this is the design, it is why everything is setup like this - we
-> didn't create a new op to allocate nesting domains, we made a flexible
-> user allocator.
-> 
-> > 458- * A kernel-managed HWPT will be created with the mappings from the given
-> > 459- * IOAS via the @pt_id. The @data_type for this allocation must be set to
-> > 460: * IOMMU_HWPT_DATA_NONE. The HWPT can be allocated as a parent HWPT for a
-> > 461- * nesting configuration by passing IOMMU_HWPT_ALLOC_NEST_PARENT via @flags.
-> > 462- *
-> 
-> Yes, that is the reality today. If someone comes to use the more
-> complete interface they need to fix that comment..
+On Tue, Oct 24, 2023 at 06:45:57AM -0700, Suren Baghdasaryan wrote:
+> Updates since the last version [1]
+> - Simplified allocation tagging macros;
+> - Runtime enable/disable sysctl switch (/proc/sys/vm/mem_profiling)
+> instead of kernel command-line option;
+> - CONFIG_MEM_ALLOC_PROFILING_BY_DEFAULT to select default enable state;
+> - Changed the user-facing API from debugfs to procfs (/proc/allocinfo);
+> - Removed context capture support to make patch incremental;
+> - Renamed uninstrumented allocation functions to use _noprof suffix;
+> - Added __GFP_LAST_BIT to make the code cleaner;
+> - Removed lazy per-cpu counters; it turned out the memory savings was
+> minimal and not worth the performance impact;
 
-Ack.
+Hello Suren,
 
-> > Also, if we do passing in the data, we'd need to...
->  
-> > 280-static struct iommu_domain *
-> > 281-mock_domain_alloc_user(struct device *dev, u32 flags,
-> > 282-		       struct iommu_domain *parent,
-> > 283:		       const struct iommu_user_data *user_data)
-> > 284-{
-> > 285-	struct mock_iommu_domain *mock_parent;
-> > 286-	struct iommu_hwpt_selftest user_cfg;
-> > 287-	int rc;
-> > 288-
-> > 289:	if (!user_data) {	/* must be mock_domain */
-> >
-> > ...change this to if (!parent)...
+> Performance overhead:
+> To evaluate performance we implemented an in-kernel test executing
+> multiple get_free_page/free_page and kmalloc/kfree calls with allocation
+> sizes growing from 8 to 240 bytes with CPU frequency set to max and CPU
+> affinity set to a specific CPU to minimize the noise. Below is performance
+> comparison between the baseline kernel, profiling when enabled, profiling
+> when disabled and (for comparison purposes) baseline with
+> CONFIG_MEMCG_KMEM enabled and allocations using __GFP_ACCOUNT:
 > 
-> Yes, this logic is not ideal. The parent is the request for nesting,
-> not user_data. user_data is the generic creation parameters, which are
-> not supported outside nesting
->  
-> Like this:
-> 
-> --- a/drivers/iommu/iommufd/selftest.c
-> +++ b/drivers/iommu/iommufd/selftest.c
-> @@ -286,14 +286,12 @@ mock_domain_alloc_user(struct device *dev, u32 flags,
->         int rc;
->  
->         /* must be mock_domain */
-> -       if (!user_data) {
-> +       if (!parent) {
->                 struct mock_dev *mdev = container_of(dev, struct mock_dev, dev);
->                 bool has_dirty_flag = flags & IOMMU_HWPT_ALLOC_DIRTY_TRACKING;
->                 bool no_dirty_ops = mdev->flags & MOCK_FLAGS_DEVICE_NO_DIRTY;
->  
-> -               if (parent)
-> -                       return ERR_PTR(-EINVAL);
-> -               if (has_dirty_flag && no_dirty_ops)
-> +               if (user_data || (has_dirty_flag && no_dirty_ops))
->                         return ERR_PTR(-EOPNOTSUPP);
->                 return __mock_domain_alloc_paging(IOMMU_DOMAIN_UNMANAGED,
->                                                   has_dirty_flag);
+>                         kmalloc                 pgalloc
+> (1 baseline)            12.041s                 49.190s
+> (2 default disabled)    14.970s (+24.33%)       49.684s (+1.00%)
+> (3 default enabled)     16.859s (+40.01%)       56.287s (+14.43%)
+> (4 runtime enabled)     16.983s (+41.04%)       55.760s (+13.36%)
+> (5 memcg)               33.831s (+180.96%)      51.433s (+4.56%)
 
-Yea.. Then the vt-d driver needs a similar change too (@Yi) as I
-found it almost doing the same:
-https://lore.kernel.org/linux-iommu/20231024151412.50046-8-yi.l.liu@intel.com/
+some recent changes [1] to the kmem accounting should have made it quite a bit
+faster. Would be great if you can provide new numbers for the comparison.
+Maybe with the next revision?
 
-Thanks
-Nic
+And btw thank you (and Kent): your numbers inspired me to do this kmemcg
+performance work. I expect it still to be ~twice more expensive than your
+stuff because on the memcg side we handle separately charge and statistics,
+but hopefully the difference will be lower.
+
+Thank you!
+
+[1]:
+  patches from next tree, so no stable hashes:
+    mm: kmem: reimplement get_obj_cgroup_from_current()
+    percpu: scoped objcg protection
+    mm: kmem: scoped objcg protection
+    mm: kmem: make memcg keep a reference to the original objcg
+    mm: kmem: add direct objcg pointer to task_struct
+    mm: kmem: optimize get_obj_cgroup_from_current()
