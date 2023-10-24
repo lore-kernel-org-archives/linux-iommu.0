@@ -1,44 +1,44 @@
-Received: from mail-yw1-f201.google.com (mail-yw1-f201.google.com [209.85.128.201])
+Received: from mail-yw1-f202.google.com (mail-yw1-f202.google.com [209.85.128.202])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 174EC3714B
-	for <iommu@lists.linux.dev>; Tue, 24 Oct 2023 13:47:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3ECE139920
+	for <iommu@lists.linux.dev>; Tue, 24 Oct 2023 13:48:05 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--surenb.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="ZLUKLuly"
-Received: by mail-yw1-f201.google.com with SMTP id 00721157ae682-5a7af53bde4so60190087b3.0
-        for <iommu@lists.linux.dev>; Tue, 24 Oct 2023 06:47:58 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="f9hrpJ0K"
+Received: by mail-yw1-f202.google.com with SMTP id 00721157ae682-59f61a639b9so61800457b3.1
+        for <iommu@lists.linux.dev>; Tue, 24 Oct 2023 06:48:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1698155277; x=1698760077; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1698155284; x=1698760084; darn=lists.linux.dev;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=YqQmkpquk/zEN/BrXUtfRL7OAs/mhY9q/VQlYA3NCSg=;
-        b=ZLUKLulyODt1BXVYlbX/Mu4DsfwqopxJLUNDwVBAX7MIw9Wwcc8vi60Ips9yc6Thq9
-         dAusyfPYtivr4ztD8KgRNjzR5CvlUk9Nyq2S0itt/FVB2cwzXBhSb0iBzPN3a//t6ZlL
-         vsK5oATbqOorO2KLqr5x1h8goaByYMh4OKENAU5MnzTOtS4EL3u0Uo1HEQlc7aGuOOoa
-         yrnep5QjbLvglN9qu0ovo6vDJC7qRFrETYH7nDA7XD0MqH4wKhltZ9p9OJtb9aGE8+Ua
-         xgsvCLfga8WHIMxP+wz7Ihb9hbnO2OVObTFT/OQz9kqwJQcK5uu2eftfolYtadVaH9no
-         QhLQ==
+        bh=nhDAtTQGKDGtY2/txJr7AfaYGvHf9XTIsotRfIG2XI4=;
+        b=f9hrpJ0KUqws3vm9P7tq/2A5vRnUx5kd95eGQS9pi/Cv3xy243GLTUGVnhTSu99+cr
+         mliCLxX0+AMTRybvpc7sVoYI74Ml0rE4APy+OQh2hII4VvzGeye6hdZlVhnqgXL+wekW
+         MVTkMLThQVny15xT7y56QC/HAK2SkCYZY7EIZ9bc5iMUX3I3/iHdggab9se16Rn8I9x4
+         ZVk5l+95v+UYABuv4SALg2Eu/gEW9OXRtWRsVF8DB3nFvdnVHd+76ima8I+J1F9ddf8g
+         pzL1OulOldbxSKhxYmloUiXkwL+CcCzUI7UByDdhP9FvYpi50aPbINGlG31F5a4MopD8
+         U7HA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1698155277; x=1698760077;
+        d=1e100.net; s=20230601; t=1698155284; x=1698760084;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=YqQmkpquk/zEN/BrXUtfRL7OAs/mhY9q/VQlYA3NCSg=;
-        b=rAKK204MnciaIERl8Ff4MPSCTAm5KbrfRCLdzrVlX+2ZAWTOWr1TtKbbWYhK1lQMxP
-         m/CUHULLRu6kK0sg3YHjypQOXfHcfDWTlSMNAcEfAmbzeiI3/1oQQeVVrNCXSAnWHVok
-         rf+Cda4KYOFmwP1IMr8QJR0K9g3Mt2IR8BnSIYa4sTiVq0vVhmqaFqD4sjG0/HWpOhNK
-         5diDHpl47MYw65I2huwUPKBERmignaKqsIisMqKgWfxPlZurD12BZJGZg1IiCB0sgR5K
-         o3M1DnP5z//Hmrf2qC4X50yJLL89+d6xuI2XVY6+Vg4jDQRMz3x5WTRWRMPJQrbT3b5U
-         2q7w==
-X-Gm-Message-State: AOJu0YxCZWYxXnFjdUP2xj4N6scJreWkcj3Z7UMRnhMQthhiNch4RWLx
-	pb8+HgN8WMMvm4avY2boaZ7MydRP3oY=
-X-Google-Smtp-Source: AGHT+IH6wvOVzrOaaGyY1/e57eYHLfTZ/5bwoybFh+Q+IMjNK5yyYqtlQtnc2beg11hZB/FoRq4QkUDgnBs=
+        bh=nhDAtTQGKDGtY2/txJr7AfaYGvHf9XTIsotRfIG2XI4=;
+        b=w8cgnBf7kWI/zVif647ONJnLurpfw6J82BqeUx0Vj+cjkPEm2jOs/ioVY1EbkREG9r
+         wwbIWK89JUdhm2ChnsyTwOCwwiiEw1YFzxfK30d5ITAxpl4UIQxo1QJkS9YyPJvVzG4C
+         V8BIIOJAB8XM9BNpuZe/QIQA8IG5M9jQ113mCv1cigM2bTILDnKbWJTADWTwKsR1FBVp
+         /mU/QdNRugzs/yLgxmOCUGjhEjt+j3qoSNGd5YRmbA1uqXIrO/wpSc1GmQytrokmdWat
+         3lvFCK5a+us5BossIWNenogTNTm7vB6EXsrA1P/Z0ijcWAxRc2TfxLRxPsPUhAL/dCBu
+         zMHA==
+X-Gm-Message-State: AOJu0YxXmq7sSL+8NrG0NxLfSDmBayjTfOXWbkoBZRLc6KrAnmua8Q2/
+	PAwDfzn/ToBaX7JfHsd4mJBLaRzmQWE=
+X-Google-Smtp-Source: AGHT+IEqWGHLJsK7BvvDJRxELns2H70hhRTn4578toCcoqAqCoHJoeJS8HRj9/dFP0FFd7ukqdr613N1OPo=
 X-Received: from surenb-desktop.mtv.corp.google.com ([2620:15c:211:201:45ba:3318:d7a5:336a])
- (user=surenb job=sendgmr) by 2002:a81:4853:0:b0:5a8:3f07:ddd6 with SMTP id
- v80-20020a814853000000b005a83f07ddd6mr266393ywa.6.1698155277184; Tue, 24 Oct
- 2023 06:47:57 -0700 (PDT)
-Date: Tue, 24 Oct 2023 06:46:31 -0700
+ (user=surenb job=sendgmr) by 2002:a25:8541:0:b0:d89:b072:d06f with SMTP id
+ f1-20020a258541000000b00d89b072d06fmr231639ybn.7.1698155283973; Tue, 24 Oct
+ 2023 06:48:03 -0700 (PDT)
+Date: Tue, 24 Oct 2023 06:46:34 -0700
 In-Reply-To: <20231024134637.3120277-1-surenb@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -48,8 +48,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20231024134637.3120277-1-surenb@google.com>
 X-Mailer: git-send-email 2.42.0.758.gaed0368e0e-goog
-Message-ID: <20231024134637.3120277-35-surenb@google.com>
-Subject: [PATCH v2 34/39] rhashtable: Plumb through alloc tag
+Message-ID: <20231024134637.3120277-38-surenb@google.com>
+Subject: [PATCH v2 37/39] codetag: debug: mark codetags for reserved pages as empty
 From: Suren Baghdasaryan <surenb@google.com>
 To: akpm@linux-foundation.org
 Cc: kent.overstreet@linux.dev, mhocko@suse.com, vbabka@suse.cz, 
@@ -79,204 +79,77 @@ Cc: kent.overstreet@linux.dev, mhocko@suse.com, vbabka@suse.cz,
 	cgroups@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 
-From: Kent Overstreet <kent.overstreet@linux.dev>
+To avoid debug warnings while freeing reserved pages which were not
+allocated with usual allocators, mark their codetags as empty before
+freeing.
+Maybe we can annotate reserved pages correctly and avoid this?
 
-This gives better memory allocation profiling results; rhashtable
-allocations will be accounted to the code that initialized the
-rhashtable.
-
-Signed-off-by: Kent Overstreet <kent.overstreet@linux.dev>
 Signed-off-by: Suren Baghdasaryan <surenb@google.com>
 ---
- include/linux/rhashtable-types.h | 11 +++++--
- lib/rhashtable.c                 | 52 +++++++++++++++++++++++++-------
- 2 files changed, 50 insertions(+), 13 deletions(-)
+ include/linux/alloc_tag.h   | 2 ++
+ include/linux/mm.h          | 8 ++++++++
+ include/linux/pgalloc_tag.h | 2 ++
+ 3 files changed, 12 insertions(+)
 
-diff --git a/include/linux/rhashtable-types.h b/include/linux/rhashtable-types.h
-index 57467cbf4c5b..aac2984c2ef0 100644
---- a/include/linux/rhashtable-types.h
-+++ b/include/linux/rhashtable-types.h
-@@ -9,6 +9,7 @@
- #ifndef _LINUX_RHASHTABLE_TYPES_H
- #define _LINUX_RHASHTABLE_TYPES_H
+diff --git a/include/linux/alloc_tag.h b/include/linux/alloc_tag.h
+index 1f3207097b03..102caf62c2a9 100644
+--- a/include/linux/alloc_tag.h
++++ b/include/linux/alloc_tag.h
+@@ -95,6 +95,7 @@ static inline void set_codetag_empty(union codetag_ref *ref)
+ #else /* CONFIG_MEM_ALLOC_PROFILING_DEBUG */
  
-+#include <linux/alloc_tag.h>
- #include <linux/atomic.h>
- #include <linux/compiler.h>
- #include <linux/mutex.h>
-@@ -88,6 +89,9 @@ struct rhashtable {
- 	struct mutex                    mutex;
- 	spinlock_t			lock;
- 	atomic_t			nelems;
-+#ifdef CONFIG_MEM_ALLOC_PROFILING
-+	struct alloc_tag		*alloc_tag;
-+#endif
- };
+ static inline bool is_codetag_empty(union codetag_ref *ref) { return false; }
++static inline void set_codetag_empty(union codetag_ref *ref) {}
  
- /**
-@@ -127,9 +131,12 @@ struct rhashtable_iter {
- 	bool end_of_table;
- };
+ #endif /* CONFIG_MEM_ALLOC_PROFILING_DEBUG */
  
--int rhashtable_init(struct rhashtable *ht,
-+int rhashtable_init_noprof(struct rhashtable *ht,
- 		    const struct rhashtable_params *params);
--int rhltable_init(struct rhltable *hlt,
-+#define rhashtable_init(...)	alloc_hooks(rhashtable_init_noprof(__VA_ARGS__))
-+
-+int rhltable_init_noprof(struct rhltable *hlt,
- 		  const struct rhashtable_params *params);
-+#define rhltable_init(...)	alloc_hooks(rhltable_init_noprof(__VA_ARGS__))
+@@ -155,6 +156,7 @@ static inline void alloc_tag_sub(union codetag_ref *ref, size_t bytes) {}
+ static inline void alloc_tag_sub_noalloc(union codetag_ref *ref, size_t bytes) {}
+ static inline void alloc_tag_add(union codetag_ref *ref, struct alloc_tag *tag,
+ 				 size_t bytes) {}
++static inline void set_codetag_empty(union codetag_ref *ref) {}
  
- #endif /* _LINUX_RHASHTABLE_TYPES_H */
-diff --git a/lib/rhashtable.c b/lib/rhashtable.c
-index 6ae2ba8e06a2..b62116f332b8 100644
---- a/lib/rhashtable.c
-+++ b/lib/rhashtable.c
-@@ -63,6 +63,27 @@ EXPORT_SYMBOL_GPL(lockdep_rht_bucket_is_held);
- #define ASSERT_RHT_MUTEX(HT)
  #endif
  
-+#ifdef CONFIG_MEM_ALLOC_PROFILING
-+static inline void rhashtable_alloc_tag_init(struct rhashtable *ht)
-+{
-+	ht->alloc_tag = current->alloc_tag;
-+}
-+
-+static inline struct alloc_tag *rhashtable_alloc_tag_save(struct rhashtable *ht)
-+{
-+	return alloc_tag_save(ht->alloc_tag);
-+}
-+
-+static inline void rhashtable_alloc_tag_restore(struct rhashtable *ht, struct alloc_tag *old)
-+{
-+	alloc_tag_restore(ht->alloc_tag, old);
-+}
-+#else
-+#define rhashtable_alloc_tag_init(ht)
-+static inline struct alloc_tag *rhashtable_alloc_tag_save(struct rhashtable *ht) { return NULL; }
-+#define rhashtable_alloc_tag_restore(ht, old)
-+#endif
-+
- static inline union nested_table *nested_table_top(
- 	const struct bucket_table *tbl)
+diff --git a/include/linux/mm.h b/include/linux/mm.h
+index bf5d0b1b16f4..310129414833 100644
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -5,6 +5,7 @@
+ #include <linux/errno.h>
+ #include <linux/mmdebug.h>
+ #include <linux/gfp.h>
++#include <linux/pgalloc_tag.h>
+ #include <linux/bug.h>
+ #include <linux/list.h>
+ #include <linux/mmzone.h>
+@@ -3077,6 +3078,13 @@ extern void reserve_bootmem_region(phys_addr_t start,
+ /* Free the reserved page into the buddy system, so it gets managed. */
+ static inline void free_reserved_page(struct page *page)
  {
-@@ -130,7 +151,7 @@ static union nested_table *nested_table_alloc(struct rhashtable *ht,
- 	if (ntbl)
- 		return ntbl;
- 
--	ntbl = kzalloc(PAGE_SIZE, GFP_ATOMIC);
-+	ntbl = kmalloc_noprof(PAGE_SIZE, GFP_ATOMIC|__GFP_ZERO);
- 
- 	if (ntbl && leaf) {
- 		for (i = 0; i < PAGE_SIZE / sizeof(ntbl[0]); i++)
-@@ -157,7 +178,7 @@ static struct bucket_table *nested_bucket_table_alloc(struct rhashtable *ht,
- 
- 	size = sizeof(*tbl) + sizeof(tbl->buckets[0]);
- 
--	tbl = kzalloc(size, gfp);
-+	tbl = kmalloc_noprof(size, gfp|__GFP_ZERO);
- 	if (!tbl)
- 		return NULL;
- 
-@@ -180,8 +201,10 @@ static struct bucket_table *bucket_table_alloc(struct rhashtable *ht,
- 	size_t size;
- 	int i;
- 	static struct lock_class_key __key;
-+	struct alloc_tag * __maybe_unused old = rhashtable_alloc_tag_save(ht);
- 
--	tbl = kvzalloc(struct_size(tbl, buckets, nbuckets), gfp);
-+	tbl = kvmalloc_node_noprof(struct_size(tbl, buckets, nbuckets),
-+				   gfp|__GFP_ZERO, NUMA_NO_NODE);
- 
- 	size = nbuckets;
- 
-@@ -190,6 +213,8 @@ static struct bucket_table *bucket_table_alloc(struct rhashtable *ht,
- 		nbuckets = 0;
- 	}
- 
-+	rhashtable_alloc_tag_restore(ht, old);
++	union codetag_ref *ref;
 +
- 	if (tbl == NULL)
- 		return NULL;
++	ref = get_page_tag_ref(page);
++	if (ref) {
++		set_codetag_empty(ref);
++		put_page_tag_ref(ref);
++	}
+ 	ClearPageReserved(page);
+ 	init_page_count(page);
+ 	__free_page(page);
+diff --git a/include/linux/pgalloc_tag.h b/include/linux/pgalloc_tag.h
+index 0174aff5e871..ae9b0f359264 100644
+--- a/include/linux/pgalloc_tag.h
++++ b/include/linux/pgalloc_tag.h
+@@ -93,6 +93,8 @@ static inline void pgalloc_tag_split(struct page *page, unsigned int nr)
  
-@@ -975,7 +1000,7 @@ static u32 rhashtable_jhash2(const void *key, u32 length, u32 seed)
- }
+ #else /* CONFIG_MEM_ALLOC_PROFILING */
  
- /**
-- * rhashtable_init - initialize a new hash table
-+ * rhashtable_init_noprof - initialize a new hash table
-  * @ht:		hash table to be initialized
-  * @params:	configuration parameters
-  *
-@@ -1016,7 +1041,7 @@ static u32 rhashtable_jhash2(const void *key, u32 length, u32 seed)
-  *	.obj_hashfn = my_hash_fn,
-  * };
-  */
--int rhashtable_init(struct rhashtable *ht,
-+int rhashtable_init_noprof(struct rhashtable *ht,
- 		    const struct rhashtable_params *params)
- {
- 	struct bucket_table *tbl;
-@@ -1031,6 +1056,8 @@ int rhashtable_init(struct rhashtable *ht,
- 	spin_lock_init(&ht->lock);
- 	memcpy(&ht->p, params, sizeof(*params));
- 
-+	rhashtable_alloc_tag_init(ht);
-+
- 	if (params->min_size)
- 		ht->p.min_size = roundup_pow_of_two(params->min_size);
- 
-@@ -1076,26 +1103,26 @@ int rhashtable_init(struct rhashtable *ht,
- 
- 	return 0;
- }
--EXPORT_SYMBOL_GPL(rhashtable_init);
-+EXPORT_SYMBOL_GPL(rhashtable_init_noprof);
- 
- /**
-- * rhltable_init - initialize a new hash list table
-+ * rhltable_init_noprof - initialize a new hash list table
-  * @hlt:	hash list table to be initialized
-  * @params:	configuration parameters
-  *
-  * Initializes a new hash list table.
-  *
-- * See documentation for rhashtable_init.
-+ * See documentation for rhashtable_init_noprof.
-  */
--int rhltable_init(struct rhltable *hlt, const struct rhashtable_params *params)
-+int rhltable_init_noprof(struct rhltable *hlt, const struct rhashtable_params *params)
- {
- 	int err;
- 
--	err = rhashtable_init(&hlt->ht, params);
-+	err = rhashtable_init_noprof(&hlt->ht, params);
- 	hlt->ht.rhlist = true;
- 	return err;
- }
--EXPORT_SYMBOL_GPL(rhltable_init);
-+EXPORT_SYMBOL_GPL(rhltable_init_noprof);
- 
- static void rhashtable_free_one(struct rhashtable *ht, struct rhash_head *obj,
- 				void (*free_fn)(void *ptr, void *arg),
-@@ -1222,6 +1249,7 @@ struct rhash_lock_head __rcu **rht_bucket_nested_insert(
- 	unsigned int index = hash & ((1 << tbl->nest) - 1);
- 	unsigned int size = tbl->size >> tbl->nest;
- 	union nested_table *ntbl;
-+	struct alloc_tag * __maybe_unused old = rhashtable_alloc_tag_save(ht);
- 
- 	ntbl = nested_table_top(tbl);
- 	hash >>= tbl->nest;
-@@ -1236,6 +1264,8 @@ struct rhash_lock_head __rcu **rht_bucket_nested_insert(
- 					  size <= (1 << shift));
- 	}
- 
-+	rhashtable_alloc_tag_restore(ht, old);
-+
- 	if (!ntbl)
- 		return NULL;
- 
++static inline union codetag_ref *get_page_tag_ref(struct page *page) { return NULL; }
++static inline void put_page_tag_ref(union codetag_ref *ref) {}
+ static inline void pgalloc_tag_add(struct page *page, struct task_struct *task,
+ 				   unsigned int order) {}
+ static inline void pgalloc_tag_sub(struct page *page, unsigned int order) {}
 -- 
 2.42.0.758.gaed0368e0e-goog
 
