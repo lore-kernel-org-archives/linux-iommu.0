@@ -1,97 +1,251 @@
-Received: from mail-ej1-f51.google.com (mail-ej1-f51.google.com [209.85.218.51])
+Received: from mail-oa1-f52.google.com (mail-oa1-f52.google.com [209.85.160.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4857E29D05
-	for <iommu@lists.linux.dev>; Wed, 25 Oct 2023 15:26:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=amarulasolutions.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=amarulasolutions.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B7F482D62F
+	for <iommu@lists.linux.dev>; Wed, 25 Oct 2023 15:28:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amarulasolutions.com header.i=@amarulasolutions.com header.b="T/Y7unuc"
-Received: by mail-ej1-f51.google.com with SMTP id a640c23a62f3a-9b6559cbd74so896016566b.1
-        for <iommu@lists.linux.dev>; Wed, 25 Oct 2023 08:26:13 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="ErMplQSh"
+Received: by mail-oa1-f52.google.com with SMTP id 586e51a60fabf-1ef36a04931so247190fac.2
+        for <iommu@lists.linux.dev>; Wed, 25 Oct 2023 08:28:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=amarulasolutions.com; s=google; t=1698247572; x=1698852372; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=N6kIXcR1VU3TM5nz+Od8WlpDMDBhPdIZjdnlTVp9UJg=;
-        b=T/Y7unuc37BAt5BLfVUnFZa2TYjWB60Qbq1nWsrAilnvjEEADJzWeR+pTqmqIefs1S
-         s3jo6hOxj0x+CSqKLfPM4WTxLPYT4sVP1BrrvMa1RatB3nAo2ynzeQCkqpqACrrHo/qE
-         1PgbcfkYur26BMPYenI73EZ8Fl7x3PgahxMsg=
+        d=google.com; s=20230601; t=1698247728; x=1698852528; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=FLJnARkfIBMUfgquTTGlj0tPN4MXFqJ8fdXtHqq+8bA=;
+        b=ErMplQShTNFX9O9gpdo5UZmqevKS2lbmKbQGcMOXYiCsPJIczqLPuAV+pIT9RsglDF
+         aZdDEdbJ1zMCJ7iOGXEzDbc6KPuspUm/eLFIalIrd7UcTcBs3hIGfQr4geTZgKkxI4gy
+         1BsoL+gjaw0/HR+M9VDXGdhFiNI3+LuNTYcX5aXOmrVr9O115VVI6rLo9W8cJn0OGKY0
+         UcwaBliJaVrsOAIHMwvkObFAvw1u9l5zqPzW+1jPoGwdaTdesq8cGsw75ZrWL6xUi3Hd
+         S4BduyOVEO8yIBieowwacS+vgycsGbqeyqJ2k9ImNlMdwpdGv4OpNpEKa02kOMy2E5Xo
+         6umQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1698247572; x=1698852372;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=N6kIXcR1VU3TM5nz+Od8WlpDMDBhPdIZjdnlTVp9UJg=;
-        b=CaqSiQQtYpvqJuqhCBcItK70pE6jBcxmHzPf2Knug9GWVduaz8x1PaJK4Ll2HExNFi
-         FxbKPPcfI4wen5Txyw9+6YHUkDZDn7Pi0tgK60GlraJ1dBV2PVXFBrbCzFtHDUTyLW+h
-         V9ow4mOfppT2uSpryYVF58FKk+JrSnO9tkYg+6JroeY/aqLLUoWqhleytpHjvpeVd0b/
-         AgJe9quSEx3N8RpoqUGV24ak4rogDkHNgJ7pyDfScltMwty9m1KoGo++oeI/NI8oCUGe
-         tHaLyHhmu4vk0A/kS4WxZObkZrJAFsNHZ8CUJRgm0yVES7CA1KY2fvGOvAPPDFrv80jE
-         p4bQ==
-X-Gm-Message-State: AOJu0YwxRvALkIehiqCnyM/zwHhqkWF2JmLXJS+qtAnGdKpf5ijuVfrR
-	DsumbuLvdRoo1KxRCvWt0kebVQ==
-X-Google-Smtp-Source: AGHT+IFZHatwpLh7F13bXFgOd8oEvInM20j/qQ1kWD4VR3k0O98n3XUgnAuYWIfT5SXzA9vF7lpujw==
-X-Received: by 2002:a17:907:c386:b0:9c7:fd91:4309 with SMTP id tm6-20020a170907c38600b009c7fd914309mr8380498ejc.0.1698247572476;
-        Wed, 25 Oct 2023 08:26:12 -0700 (PDT)
-Received: from dario-ThinkPad-T14s-Gen-2i.homenet.telecomitalia.it (host-82-50-51-252.retail.telecomitalia.it. [82.50.51.252])
-        by smtp.gmail.com with ESMTPSA id u24-20020a170906409800b009bf94de8971sm10110156ejj.70.2023.10.25.08.26.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 Oct 2023 08:26:12 -0700 (PDT)
-From: Dario Binacchi <dario.binacchi@amarulasolutions.com>
-To: linux-kernel@vger.kernel.org
-Cc: Dario Binacchi <dario.binacchi@amarulasolutions.com>,
-	Baolu Lu <baolu.lu@linux.intel.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Jonathan Hunter <jonathanh@nvidia.com>,
-	Krishna Reddy <vdumpa@nvidia.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Thierry Reding <thierry.reding@gmail.com>,
-	Will Deacon <will@kernel.org>,
-	iommu@lists.linux.dev,
-	linux-tegra@vger.kernel.org
-Subject: [PATCH v2] iommu/tegra-smmu: drop error checking for debugfs_create_dir()
-Date: Wed, 25 Oct 2023 17:25:58 +0200
-Message-ID: <20231025152609.2042815-1-dario.binacchi@amarulasolutions.com>
-X-Mailer: git-send-email 2.42.0
+        d=1e100.net; s=20230601; t=1698247728; x=1698852528;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=FLJnARkfIBMUfgquTTGlj0tPN4MXFqJ8fdXtHqq+8bA=;
+        b=rOuaRwJ0ae/iCxbZaT7MMRrqVfsYz9erlRxBAfDMRS8PosW72XqWvzGOK4F62c0WAl
+         ARIzQSTBead7wFclcczJFjGNjxcWyeFmI8IPuKhc5XPeDTQ/i0Z2fZvAvLGHlFVQyQNL
+         WKghWjT21a+vnUhNXCpKqTQjxPq4zEcGosrgQy9lxEfOUhka5729Da3GZHztfWXFbnO0
+         vCI1vHx4sZuVWMlxpha5q7TZHy7yGvCmHOBqv3TkVrzc0ZoN9gI9UloKeNVsOGpYsTwv
+         QX62gKHBX3qfUW9oVH5mSF5zMqOOa0DH31SxmqPW9HADW7yf0OYHR3M7e+pBOZ2LLbGF
+         A6Lw==
+X-Gm-Message-State: AOJu0YwuKX1Mk+BnuR0W97r5fvVi2uBmQc77coSl4aI0ruiWh035d2o4
+	g9/gD5FamxnPsYkD20X3qYZKlYj26MVSQVAAYF074g==
+X-Google-Smtp-Source: AGHT+IHL6UT5V0z1/nV7C2aKZX3u20HQgpTlx8EY9sjj8g+GZ70q4xGtJEt1W/Cng5aHzKMeb5xqOwS2911dC7wfxYg=
+X-Received: by 2002:a05:6870:1157:b0:1da:ed10:bcb with SMTP id
+ 23-20020a056870115700b001daed100bcbmr15750180oag.31.1698247727385; Wed, 25
+ Oct 2023 08:28:47 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20231024134637.3120277-1-surenb@google.com> <20231024134637.3120277-7-surenb@google.com>
+ <20231025074652.44bc0eb4@meshulam.tesarici.cz>
+In-Reply-To: <20231025074652.44bc0eb4@meshulam.tesarici.cz>
+From: Suren Baghdasaryan <surenb@google.com>
+Date: Wed, 25 Oct 2023 08:28:32 -0700
+Message-ID: <CAJuCfpHS1JTRU69zFDAJjmMYR3K5TAS9+AsA3oYLs2LCs5aTBw@mail.gmail.com>
+Subject: Re: [PATCH v2 06/39] mm: enumerate all gfp flags
+To: =?UTF-8?B?UGV0ciBUZXNhxZnDrWs=?= <petr@tesarici.cz>
+Cc: Neil Brown <neilb@suse.de>, akpm@linux-foundation.org, kent.overstreet@linux.dev, 
+	mhocko@suse.com, vbabka@suse.cz, hannes@cmpxchg.org, roman.gushchin@linux.dev, 
+	mgorman@suse.de, dave@stgolabs.net, willy@infradead.org, 
+	liam.howlett@oracle.com, corbet@lwn.net, void@manifault.com, 
+	peterz@infradead.org, juri.lelli@redhat.com, ldufour@linux.ibm.com, 
+	catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de, tglx@linutronix.de, 
+	mingo@redhat.com, dave.hansen@linux.intel.com, x86@kernel.org, 
+	peterx@redhat.com, david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org, 
+	masahiroy@kernel.org, nathan@kernel.org, dennis@kernel.org, tj@kernel.org, 
+	muchun.song@linux.dev, rppt@kernel.org, paulmck@kernel.org, 
+	pasha.tatashin@soleen.com, yosryahmed@google.com, yuzhao@google.com, 
+	dhowells@redhat.com, hughd@google.com, andreyknvl@gmail.com, 
+	keescook@chromium.org, ndesaulniers@google.com, vvvvvv@google.com, 
+	gregkh@linuxfoundation.org, ebiggers@google.com, ytcoode@gmail.com, 
+	vincent.guittot@linaro.org, dietmar.eggemann@arm.com, rostedt@goodmis.org, 
+	bsegall@google.com, bristot@redhat.com, vschneid@redhat.com, cl@linux.com, 
+	penberg@kernel.org, iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, 
+	glider@google.com, elver@google.com, dvyukov@google.com, shakeelb@google.com, 
+	songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com, 
+	minchan@google.com, kaleshsingh@google.com, kernel-team@android.com, 
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	iommu@lists.linux.dev, linux-arch@vger.kernel.org, 
+	linux-fsdevel@vger.kernel.org, linux-mm@kvack.org, 
+	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com, 
+	cgroups@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-The return value of debugfs_create_dir() should be checked using the
-IS_ERR() function. The patch, however, drops the check statement without
-fixing it because the subsequent functions (i. e. debugfs_create_file())
-can handle the case where `@parent` is an error pointer.
+On Tue, Oct 24, 2023 at 10:47=E2=80=AFPM Petr Tesa=C5=99=C3=ADk <petr@tesar=
+ici.cz> wrote:
+>
+> On Tue, 24 Oct 2023 06:46:03 -0700
+> Suren Baghdasaryan <surenb@google.com> wrote:
+>
+> > Introduce GFP bits enumeration to let compiler track the number of used
+> > bits (which depends on the config options) instead of hardcoding them.
+> > That simplifies __GFP_BITS_SHIFT calculation.
+> > Suggested-by: Petr Tesa=C5=99=C3=ADk <petr@tesarici.cz>
+> > Signed-off-by: Suren Baghdasaryan <surenb@google.com>
+> > ---
+> >  include/linux/gfp_types.h | 90 +++++++++++++++++++++++++++------------
+> >  1 file changed, 62 insertions(+), 28 deletions(-)
+> >
+> > diff --git a/include/linux/gfp_types.h b/include/linux/gfp_types.h
+> > index 6583a58670c5..3fbe624763d9 100644
+> > --- a/include/linux/gfp_types.h
+> > +++ b/include/linux/gfp_types.h
+> > @@ -21,44 +21,78 @@ typedef unsigned int __bitwise gfp_t;
+> >   * include/trace/events/mmflags.h and tools/perf/builtin-kmem.c
+> >   */
+> >
+> > +enum {
+> > +     ___GFP_DMA_BIT,
+> > +     ___GFP_HIGHMEM_BIT,
+> > +     ___GFP_DMA32_BIT,
+> > +     ___GFP_MOVABLE_BIT,
+> > +     ___GFP_RECLAIMABLE_BIT,
+> > +     ___GFP_HIGH_BIT,
+> > +     ___GFP_IO_BIT,
+> > +     ___GFP_FS_BIT,
+> > +     ___GFP_ZERO_BIT,
+> > +     ___GFP_UNUSED_BIT,      /* 0x200u unused */
+> > +     ___GFP_DIRECT_RECLAIM_BIT,
+> > +     ___GFP_KSWAPD_RECLAIM_BIT,
+> > +     ___GFP_WRITE_BIT,
+> > +     ___GFP_NOWARN_BIT,
+> > +     ___GFP_RETRY_MAYFAIL_BIT,
+> > +     ___GFP_NOFAIL_BIT,
+> > +     ___GFP_NORETRY_BIT,
+> > +     ___GFP_MEMALLOC_BIT,
+> > +     ___GFP_COMP_BIT,
+> > +     ___GFP_NOMEMALLOC_BIT,
+> > +     ___GFP_HARDWALL_BIT,
+> > +     ___GFP_THISNODE_BIT,
+> > +     ___GFP_ACCOUNT_BIT,
+> > +     ___GFP_ZEROTAGS_BIT,
+> > +#ifdef CONFIG_KASAN_HW_TAGS
+> > +     ___GFP_SKIP_ZERO_BIT,
+> > +     ___GFP_SKIP_KASAN_BIT,
+> > +#endif
+> > +#ifdef CONFIG_LOCKDEP
+> > +     ___GFP_NOLOCKDEP_BIT,
+> > +#endif
+> > +     ___GFP_LAST_BIT
+> > +};
+> > +
+> >  /* Plain integer GFP bitmasks. Do not use this directly. */
+> > -#define ___GFP_DMA           0x01u
+> > -#define ___GFP_HIGHMEM               0x02u
+> > -#define ___GFP_DMA32         0x04u
+> > -#define ___GFP_MOVABLE               0x08u
+> > -#define ___GFP_RECLAIMABLE   0x10u
+> > -#define ___GFP_HIGH          0x20u
+> > -#define ___GFP_IO            0x40u
+> > -#define ___GFP_FS            0x80u
+> > -#define ___GFP_ZERO          0x100u
+> > +#define ___GFP_DMA           BIT(___GFP_DMA_BIT)
+> > +#define ___GFP_HIGHMEM               BIT(___GFP_HIGHMEM_BIT)
+> > +#define ___GFP_DMA32         BIT(___GFP_DMA32_BIT)
+> > +#define ___GFP_MOVABLE               BIT(___GFP_MOVABLE_BIT)
+> > +#define ___GFP_RECLAIMABLE   BIT(___GFP_RECLAIMABLE_BIT)
+> > +#define ___GFP_HIGH          BIT(___GFP_HIGH_BIT)
+> > +#define ___GFP_IO            BIT(___GFP_IO_BIT)
+> > +#define ___GFP_FS            BIT(___GFP_FS_BIT)
+> > +#define ___GFP_ZERO          BIT(___GFP_ZERO_BIT)
+> >  /* 0x200u unused */
+>
+> This comment can be also removed here, because it is already stated
+> above with the definition of ___GFP_UNUSED_BIT.
 
-Suggested-by: Baolu Lu <baolu.lu@linux.intel.com>
-Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
+Ack.
 
----
+>
+> Then again, I think that the GFP bits have never been compacted after
+> Neil Brown removed __GFP_ATOMIC with commit 2973d8229b78 simply because
+> that would mean changing definitions of all subsequent GFP flags. FWIW
+> I am not aware of any code that would depend on the numeric value of
+> ___GFP_* macros, so this patch seems like a good opportunity to change
+> the numbering and get rid of this unused 0x200u altogether.
+>
+> @Neil: I have added you to the conversation in case you want to correct
+> my understanding of the unused bit.
 
-Changes in v2:
- - drop the error checking statement
+Hmm. I would prefer to do that in a separate patch even though it
+would be a one-line change. Seems safer to me in case something goes
+wrong and we have to bisect and revert it. If that sounds ok I'll post
+that in the next version.
 
- drivers/iommu/tegra-smmu.c | 3 ---
- 1 file changed, 3 deletions(-)
+>
+> Other than that LGTM.
 
-diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-index e445f80d0226..3e573148d18c 100644
---- a/drivers/iommu/tegra-smmu.c
-+++ b/drivers/iommu/tegra-smmu.c
-@@ -1056,9 +1056,6 @@ DEFINE_SHOW_ATTRIBUTE(tegra_smmu_clients);
- static void tegra_smmu_debugfs_init(struct tegra_smmu *smmu)
- {
- 	smmu->debugfs = debugfs_create_dir("smmu", NULL);
--	if (!smmu->debugfs)
--		return;
--
- 	debugfs_create_file("swgroups", S_IRUGO, smmu->debugfs, smmu,
- 			    &tegra_smmu_swgroups_fops);
- 	debugfs_create_file("clients", S_IRUGO, smmu->debugfs, smmu,
--- 
-2.42.0
+Thanks for the review!
+Suren.
 
+>
+> Petr T
+>
+> > -#define ___GFP_DIRECT_RECLAIM        0x400u
+> > -#define ___GFP_KSWAPD_RECLAIM        0x800u
+> > -#define ___GFP_WRITE         0x1000u
+> > -#define ___GFP_NOWARN                0x2000u
+> > -#define ___GFP_RETRY_MAYFAIL 0x4000u
+> > -#define ___GFP_NOFAIL                0x8000u
+> > -#define ___GFP_NORETRY               0x10000u
+> > -#define ___GFP_MEMALLOC              0x20000u
+> > -#define ___GFP_COMP          0x40000u
+> > -#define ___GFP_NOMEMALLOC    0x80000u
+> > -#define ___GFP_HARDWALL              0x100000u
+> > -#define ___GFP_THISNODE              0x200000u
+> > -#define ___GFP_ACCOUNT               0x400000u
+> > -#define ___GFP_ZEROTAGS              0x800000u
+> > +#define ___GFP_DIRECT_RECLAIM        BIT(___GFP_DIRECT_RECLAIM_BIT)
+> > +#define ___GFP_KSWAPD_RECLAIM        BIT(___GFP_KSWAPD_RECLAIM_BIT)
+> > +#define ___GFP_WRITE         BIT(___GFP_WRITE_BIT)
+> > +#define ___GFP_NOWARN                BIT(___GFP_NOWARN_BIT)
+> > +#define ___GFP_RETRY_MAYFAIL BIT(___GFP_RETRY_MAYFAIL_BIT)
+> > +#define ___GFP_NOFAIL                BIT(___GFP_NOFAIL_BIT)
+> > +#define ___GFP_NORETRY               BIT(___GFP_NORETRY_BIT)
+> > +#define ___GFP_MEMALLOC              BIT(___GFP_MEMALLOC_BIT)
+> > +#define ___GFP_COMP          BIT(___GFP_COMP_BIT)
+> > +#define ___GFP_NOMEMALLOC    BIT(___GFP_NOMEMALLOC_BIT)
+> > +#define ___GFP_HARDWALL              BIT(___GFP_HARDWALL_BIT)
+> > +#define ___GFP_THISNODE              BIT(___GFP_THISNODE_BIT)
+> > +#define ___GFP_ACCOUNT               BIT(___GFP_ACCOUNT_BIT)
+> > +#define ___GFP_ZEROTAGS              BIT(___GFP_ZEROTAGS_BIT)
+> >  #ifdef CONFIG_KASAN_HW_TAGS
+> > -#define ___GFP_SKIP_ZERO     0x1000000u
+> > -#define ___GFP_SKIP_KASAN    0x2000000u
+> > +#define ___GFP_SKIP_ZERO     BIT(___GFP_SKIP_ZERO_BIT)
+> > +#define ___GFP_SKIP_KASAN    BIT(___GFP_SKIP_KASAN_BIT)
+> >  #else
+> >  #define ___GFP_SKIP_ZERO     0
+> >  #define ___GFP_SKIP_KASAN    0
+> >  #endif
+> >  #ifdef CONFIG_LOCKDEP
+> > -#define ___GFP_NOLOCKDEP     0x4000000u
+> > +#define ___GFP_NOLOCKDEP     BIT(___GFP_NOLOCKDEP_BIT)
+> >  #else
+> >  #define ___GFP_NOLOCKDEP     0
+> >  #endif
+> > -/* If the above are modified, __GFP_BITS_SHIFT may need updating */
+> >
+> >  /*
+> >   * Physical address zone modifiers (see linux/mmzone.h - low four bits=
+)
+> > @@ -249,7 +283,7 @@ typedef unsigned int __bitwise gfp_t;
+> >  #define __GFP_NOLOCKDEP ((__force gfp_t)___GFP_NOLOCKDEP)
+> >
+> >  /* Room for N __GFP_FOO bits */
+> > -#define __GFP_BITS_SHIFT (26 + IS_ENABLED(CONFIG_LOCKDEP))
+> > +#define __GFP_BITS_SHIFT ___GFP_LAST_BIT
+> >  #define __GFP_BITS_MASK ((__force gfp_t)((1 << __GFP_BITS_SHIFT) - 1))
+> >
+> >  /**
+>
+>
