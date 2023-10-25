@@ -1,121 +1,108 @@
-Received: from mail-oo1-f41.google.com (mail-oo1-f41.google.com [209.85.161.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE5B7156E5
-	for <iommu@lists.linux.dev>; Wed, 25 Oct 2023 15:58:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="BxnfYtrD"
-Received: by mail-oo1-f41.google.com with SMTP id 006d021491bc7-57bc2c2f13dso3522365eaf.2
-        for <iommu@lists.linux.dev>; Wed, 25 Oct 2023 08:58:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1698249514; x=1698854314; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=xh9TIQAzLGtY8IKnRXxYUTC8KDsKOaw81BBkG/qg5HY=;
-        b=BxnfYtrDJt72LZuOQ+cVPe5JP1mQ844xJBN9dhFUjUAtutDVs/BOL3e5F0WzHcpn0n
-         879RicYYh8lfjRqiIS+7MfKh4FlLWMbR/khacvAtNhkPw0T5k7JZaOt2v7LWZl6yzbjx
-         4F+DkWajeXyre6InyaG71905X9ggu2lJGiICu+PoNoQwXNkcE9/RJrO4RzpKY5RoMTuh
-         uUgS4RiPQaiZ5oTeO727vzvC8RmbYaJPCX+WcuR9W4MRfe/go+m1GTeijbpljT8ZdiaW
-         9DsARHvWIWH8Hq8Sc+SETpRZZcISfPjy9bmcTCb2qDZ7f43szKtFlwkpsSBhxVV7ZNNk
-         bcPw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1698249514; x=1698854314;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=xh9TIQAzLGtY8IKnRXxYUTC8KDsKOaw81BBkG/qg5HY=;
-        b=eB5MQw3mX5z+hbpzfdTzukb8+IoZRYieEwUcq9KAgi0aqJKNq2kEpoA/5AV6GnCkEB
-         T0T1fl/JA9z3NvqOj8l0krJ4X/k7b04Rby0v/ejfkmubNgARiHYjVakDynSyimWT2xoM
-         G4jWhfZv5n0nZ1usuOhcKipxC08tbQfpw01vAH9vZlx1JiE95fJMTsemkL86ezMZKIJD
-         Xr8KGM9342Ih/O2Df7TP85CMadQwQFqEYbnvfkhevDGrXyId+uBimxtRw6r8XQysIt3F
-         DY7RlG5b/RXPosHyX0VlTp61RI5lwFvqYU3ds0nIOik+VODiDOB8wI+J05n2VoaG5EFt
-         8DLA==
-X-Gm-Message-State: AOJu0YzI5L4lCvt7x8wKXTRy6bW2curqLUnDEDBsCjFPharLi1qusBOl
-	ydzm0WgKRf/oDHQkdI9O7GRJow==
-X-Google-Smtp-Source: AGHT+IFzIsrHLnoP3SfHHNSS732Byz8xbCh6I9WGwH1qvCmSKAsaFlHdvXIydQDBYtQoTuLU7GaqVw==
-X-Received: by 2002:a4a:bd05:0:b0:581:ff09:62e4 with SMTP id n5-20020a4abd05000000b00581ff0962e4mr15571716oop.2.1698249513815;
-        Wed, 25 Oct 2023 08:58:33 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-26-201.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.26.201])
-        by smtp.gmail.com with ESMTPSA id y4-20020a4aaa44000000b0057e66fa004dsm26569oom.47.2023.10.25.08.58.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 Oct 2023 08:58:33 -0700 (PDT)
-From: jgg@ziepe.ca
-X-Google-Original-From: Jason Gunthorpe <jgg@nvidia.com>, Joerg Roedel <joro@8bytes.org>
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1qvgHA-004tcE-CG;
-	Wed, 25 Oct 2023 12:58:32 -0300
-Date: Wed, 25 Oct 2023 12:58:32 -0300
-To: Alyssa Rosenzweig <alyssa@rosenzweig.io>, asahi@lists.linux.dev,
-	Christophe Leroy <christophe.leroy@csgroup.eu>,
-	David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux.dev,
-	Kevin Tian <kevin.tian@intel.com>,
-	linux-arm-kernel@lists.infradead.org, linuxppc-dev@lists.ozlabs.org,
-	Hector Martin <marcan@marcan.st>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Sven Peter <sven@svenpeter.dev>, Will Deacon <will@kernel.org>
-Cc: Lu Baolu <baolu.lu@linux.intel.com>, Janne Grunau <j@jannau.net>
-Subject: Re: [PATCH v2 0/9] iommu: Convert dart & iommufd to the new
- domain_alloc_paging()
-Message-ID: <20231025155832.GA1167025@nvidia.com>
-References: <0-v2-bff223cf6409+282-dart_paging_jgg@nvidia.com>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C10D127EF2
+	for <iommu@lists.linux.dev>; Wed, 25 Oct 2023 16:05:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Authentication-Results: smtp.subspace.kernel.org; dkim=none
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 83AAD1FB;
+	Wed, 25 Oct 2023 09:05:53 -0700 (PDT)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 73A253F64C;
+	Wed, 25 Oct 2023 09:05:10 -0700 (PDT)
+Message-ID: <6da52dd4-b3fe-46f8-9a38-c4315b989139@arm.com>
+Date: Wed, 25 Oct 2023 17:05:08 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0-v2-bff223cf6409+282-dart_paging_jgg@nvidia.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v5 3/7] iommu: Validate that devices match domains
+Content-Language: en-GB
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: joro@8bytes.org, will@kernel.org, iommu@lists.linux.dev,
+ baolu.lu@linux.intel.com, linux-kernel@vger.kernel.org
+References: <cover.1697047261.git.robin.murphy@arm.com>
+ <4e8bda33aac4021b444e40389648deccf61c1f37.1697047261.git.robin.murphy@arm.com>
+ <20231024185213.GA1061115@nvidia.com>
+ <ec86712a-0c46-4b27-9736-e34b02168e19@arm.com>
+ <20231025125528.GG3952@nvidia.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20231025125528.GG3952@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Wed, Sep 27, 2023 at 08:47:30PM -0300, Jason Gunthorpe wrote:
-> Continue converting drivers to the new interface. Introduce
-> ops->blocked_domain to hold the global static BLOCKED domain and convert
-> all drivers supporting BLOCKED to use it.
+On 25/10/2023 1:55 pm, Jason Gunthorpe wrote:
+> On Wed, Oct 25, 2023 at 01:39:56PM +0100, Robin Murphy wrote:
+>> On 24/10/2023 7:52 pm, Jason Gunthorpe wrote:
+>>> On Wed, Oct 11, 2023 at 07:14:50PM +0100, Robin Murphy wrote:
+>>>
+>>>> @@ -2279,10 +2280,16 @@ struct iommu_domain *iommu_get_dma_domain(struct device *dev)
+>>>>    static int __iommu_attach_group(struct iommu_domain *domain,
+>>>>    				struct iommu_group *group)
+>>>>    {
+>>>> +	struct device *dev;
+>>>> +
+>>>>    	if (group->domain && group->domain != group->default_domain &&
+>>>>    	    group->domain != group->blocking_domain)
+>>>>    		return -EBUSY;
+>>>> +	dev = iommu_group_first_dev(group);
+>>>> +	if (!dev_has_iommu(dev) || dev_iommu_ops(dev) != domain->owner)
+>>>> +		return -EINVAL;
+>>>
+>>> I was thinking about this later, how does this work for the global
+>>> static domains? domain->owner will not be set?
+>>>
+>>> 	if (alloc_type == IOMMU_DOMAIN_IDENTITY && ops->identity_domain)
+>>> 		return ops->identity_domain;
+>>> 	else if (alloc_type == IOMMU_DOMAIN_BLOCKED && ops->blocked_domain)
+>>> 		return ops->blocked_domain;
+>>>
+>>> Seems like it will break everything?
+>>
+>> I don't believe it makes any significant difference - as the commit message
+>> points out, this validation is only applied at the public interface
+>> boundaries of iommu_attach_group(), iommu_attach_device(),
 > 
-> This makes it trivial for dart and iommufd to convert over to
-> domain_alloc_paging().
+> Oh, making it only work for on domain type seems kind of hacky..
 > 
-> There are six drivers remaining:
+> If that is the intention maybe the owner set should be moved into
+> iommu_domain_alloc() with a little comment noting that it is limited
+> to work in only a few cases?
 > 
-> drivers/iommu/amd/iommu.c:      .domain_alloc = amd_iommu_domain_alloc,
-> drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c:    .domain_alloc           = arm_smmu_domain_alloc,
-> drivers/iommu/arm/arm-smmu/arm-smmu.c:  .domain_alloc           = arm_smmu_domain_alloc,
-> drivers/iommu/fsl_pamu_domain.c:        .domain_alloc   = fsl_pamu_domain_alloc,
-> drivers/iommu/intel/iommu.c:    .domain_alloc           = intel_iommu_domain_alloc,
-> drivers/iommu/virtio-iommu.c:   .domain_alloc           = viommu_domain_alloc,
-> 
-> v2:
->  - Rebase to Joerg's for-next
->  - New patch to remove force_bypass, as discussed with Janne
->  - Move some hunks between patches to accommodate Robin's change to the
->    attach_dev switch
-> v1: https://lore.kernel.org/r/0-v1-8060f06462cc+c0a39-dart_paging_jgg@nvidia.com
-> 
-> Jason Gunthorpe (9):
->   iommu: Move IOMMU_DOMAIN_BLOCKED global statics to ops->blocked_domain
->   iommu/vt-d: Update the definition of the blocking domain
->   iommu/vt-d: Use ops->blocked_domain
->   iommufd: Convert to alloc_domain_paging()
+> I certainly didn't understand from the commit message to mean it was
+> only actually working for one domain type and this also blocks using
+> other types with the public interface.
 
-Joerg can you grab these for this cycle please
+It's not about one particular domain type, it's about the scope of what 
+we consider valid usage. External API users should almost always be 
+attaching to their own domain which they have allocated, however we also 
+tolerate co-attaching additional groups to the same DMA domain in rare 
+cases where it's reasonable. The fact is that those users cannot 
+allocate blocking or identity domains, and I can't see that they would 
+ever have any legitimate business trying to do anything with them 
+anyway. So although yes, we technically lose some functionality once 
+this intersects with the static domain optimisation, it's only 
+questionable functionality which was never explicitly intended anyway.
 
->   iommu/dart: Use static global identity domains
->   iommu/dart: Move the blocked domain support to a global static
->   iommu/dart: Convert to domain_alloc_paging()
->   iommu/dart: Call apple_dart_finalize_domain() as part of
->     alloc_paging()
->   iommu/dart: Remove the force_bypass variable
+I mean, what would be the valid purpose of trying to attach group A to 
+group B's identity domain, even if they *were* backed by the same 
+driver? At best it's pointless if group A also has its own identity 
+domain already, otherwise at worst it's a deliberate attempt to 
+circumvent a default domain policy imposed by the IOMMU core.
 
-I will poke more dart related people to get a tested-by, maybe next
-cycle.
+>> and iommu_attach_device_pasid(), which are only expected to be
+>> operating on explicitly-allocated unmanaged domains.
+> 
+> We have nesting now in the iommufd branch, and SVA will come soon for
+> these APIs.
+> 
+> Regardless this will clash with the iommufd branch for this reason so
+> I guess it needs to wait till rc1.
 
-The arm patches at least need this
+Sigh, back on the shelf it goes then...
 
 Thanks,
-Jason
+Robin.
