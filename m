@@ -1,87 +1,83 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.88])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oi1-f176.google.com (mail-oi1-f176.google.com [209.85.167.176])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D6DA28480
-	for <iommu@lists.linux.dev>; Wed, 25 Oct 2023 13:22:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F126F2D616
+	for <iommu@lists.linux.dev>; Wed, 25 Oct 2023 13:34:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="K6zF4434"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1698240170; x=1729776170;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=VCsAR60EOLjvkvfdhGiMeRwZV7/SoJUu/p67SJIwIzA=;
-  b=K6zF4434XbhZwHWesSWnINFp+4N2W77Jf4l60qjvfFVcDzsKWCWwS45N
-   GVSWzt89ZsmR10mtm7ts+BIL/nrdmqf7V12ffrK/e4osiG39k+i1NGO4o
-   mVGIrZOrYIowS0OPLZ4TPqamKvFWHw10xzOIpRpghtrgpti+e//ehRsZG
-   /nT6xagU2TnhePHHOv74iH4y8FUajWI4Ojxnizsw/hg+RHGlCbTuoOwRa
-   jm7odeb2v7vvhM8JJ9cgN1X95hf4ySYOR9GMrV+LiO/xLasNM5Fx3l9p9
-   hVmcBDeQbdicRQDPLsKhEdbkEbLVL+FElQuHsQ3y0FrRETHR5WRvqFQXT
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10873"; a="418427492"
-X-IronPort-AV: E=Sophos;i="6.03,250,1694761200"; 
-   d="scan'208";a="418427492"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Oct 2023 06:22:49 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10873"; a="1090220714"
-X-IronPort-AV: E=Sophos;i="6.03,250,1694761200"; 
-   d="scan'208";a="1090220714"
-Received: from allen-box.sh.intel.com ([10.239.159.127])
-  by fmsmga005.fm.intel.com with ESMTP; 25 Oct 2023 06:22:48 -0700
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>,
-	Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Stephen Rothwell <sfr@canb.auug.org.au>,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH 1/1] Revert "iommu/vt-d: Remove unused function"
-Date: Wed, 25 Oct 2023 21:18:54 +0800
-Message-Id: <20231025131854.375388-1-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="kpT7peeK"
+Received: by mail-oi1-f176.google.com with SMTP id 5614622812f47-3b512dd7d5bso1215787b6e.1
+        for <iommu@lists.linux.dev>; Wed, 25 Oct 2023 06:34:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1698240878; x=1698845678; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=yWRrV8TrzcGhn3y1mwcKlcTnHxjvKLZ2v/fGWRYHR+Y=;
+        b=kpT7peeKFKCumY3+Q+GRpKg3bO6nnu12AQiN+bSQpVI+3QfVFRzgM+gzfYu+fek/Ha
+         e3HIVkb4w3UZbd1dAV+9fjoWnfE6rI37ltHwLMg1J221GqOmmdQM2v2dKTSnx6WoaRGO
+         pceqc5xUD5oH8SFdFly1z+pO0En0FoCk+Fe4cZlRW3K0UJeNWukFZawnoMu2z5WFZ0gz
+         sqoQRICUiCII1xcTOvgr8gNPEZmkrtbP3ieS/4DEEv0nnLwOo1v78QOP82lHYjMPNYyA
+         UFpTIMWA4K0QfsS+sGTjyLtz/2qvjiWMbY7+moiDrlYWS9bv9CDpWlxD2mfLJxXp/tTT
+         LoTQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1698240878; x=1698845678;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=yWRrV8TrzcGhn3y1mwcKlcTnHxjvKLZ2v/fGWRYHR+Y=;
+        b=hpNId+KadkNYDjQ3B9bGBYyq/V3Zdm7YsqWmZCQdSYT6aZhqDOtyTeXZQJHvY+puOc
+         imOfS47Drca7qx1HvFlrm0fUVPW1m/Zw0ESGfdC+GQgBNnn2+Wv2tOVu8efnVUefcCWX
+         XERChBI6577+sbblKKJjPpiBr7ySprnZAVUBRGqFlF+5XhNcZk7k+KeI9zTAB5R65JnV
+         7ERFlcSE2Hhtls654b8JG2euTL1S3esPH1BKuMVC52ZSuJWC6FNpbt0i+Q+L71x3eKve
+         qLv69QQE0Z4lWfjSJ7xT0kYz4nPO2SPQahY8JvPVU7c9m4EdW2v/xNpnDyi1VKWDjG2B
+         KpVw==
+X-Gm-Message-State: AOJu0Ywxy2voV/ruzSp8sXBVVrfOl1DI0KwsUj9GNE85721hQklkz7vS
+	54M4GI6o+dHH9TET6DqzWTj99Q==
+X-Google-Smtp-Source: AGHT+IF2TgXBS3eDpm+PeKpS/zyKzW+Q8bERmNhr7qjghP/HnyXpWPs8Xo07ycy873fwfyVKg1IAww==
+X-Received: by 2002:a05:6808:b29:b0:3b2:f576:3f97 with SMTP id t9-20020a0568080b2900b003b2f5763f97mr15973522oij.12.1698240877826;
+        Wed, 25 Oct 2023 06:34:37 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-68-26-201.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.26.201])
+        by smtp.gmail.com with ESMTPSA id a26-20020a05680802da00b003ae0e57874fsm2370339oid.21.2023.10.25.06.34.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 25 Oct 2023 06:34:37 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1qve1s-004gmc-4f;
+	Wed, 25 Oct 2023 10:34:36 -0300
+Date: Wed, 25 Oct 2023 10:34:36 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Stephen Rothwell <sfr@canb.auug.org.au>,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/1] Revert "iommu/vt-d: Remove unused function"
+Message-ID: <20231025133436.GP691768@ziepe.ca>
+References: <20231025131854.375388-1-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20231025131854.375388-1-baolu.lu@linux.intel.com>
 
-This reverts commit c61c255e114c52682546447ed44d3470b5708134.
+On Wed, Oct 25, 2023 at 09:18:54PM +0800, Lu Baolu wrote:
+> This reverts commit c61c255e114c52682546447ed44d3470b5708134.
+> 
+> The pasid_set_wpe() helper, which was removed by the reverted commit,
+> is still used by the nesting translation support in the iommufd tree.
+> To avoid a merge conflict, revert the commit.
+> 
+> Link: https://lore.kernel.org/linux-kernel/20231025153455.283c5b12@canb.auug.org.au/
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> ---
+>  drivers/iommu/intel/pasid.c | 9 +++++++++
+>  1 file changed, 9 insertions(+)
 
-The pasid_set_wpe() helper, which was removed by the reverted commit,
-is still used by the nesting translation support in the iommufd tree.
-To avoid a merge conflict, revert the commit.
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
-Link: https://lore.kernel.org/linux-kernel/20231025153455.283c5b12@canb.auug.org.au/
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- drivers/iommu/intel/pasid.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+Needed to avoid ugly conflicts with iommufd, Joerg please take it
 
-diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
-index 06ddb3c927f5..8f92b92f3d2a 100644
---- a/drivers/iommu/intel/pasid.c
-+++ b/drivers/iommu/intel/pasid.c
-@@ -335,6 +335,15 @@ static inline void pasid_set_fault_enable(struct pasid_entry *pe)
- 	pasid_set_bits(&pe->val[0], 1 << 1, 0);
- }
- 
-+/*
-+ * Setup the WPE(Write Protect Enable) field (Bit 132) of a
-+ * scalable mode PASID entry.
-+ */
-+static inline void pasid_set_wpe(struct pasid_entry *pe)
-+{
-+	pasid_set_bits(&pe->val[2], 1 << 4, 1 << 4);
-+}
-+
- /*
-  * Setup the P(Present) field (Bit 0) of a scalable mode PASID
-  * entry.
--- 
-2.34.1
-
+Jason
