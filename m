@@ -1,219 +1,183 @@
-Received: from bee.tesarici.cz (bee.tesarici.cz [77.93.223.253])
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E00111732
-	for <iommu@lists.linux.dev>; Wed, 25 Oct 2023 05:56:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=tesarici.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tesarici.cz
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED2E92D604
+	for <iommu@lists.linux.dev>; Wed, 25 Oct 2023 06:46:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b="CtP3+TzS"
-Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by bee.tesarici.cz (Postfix) with ESMTPSA id A2366176EDE;
-	Wed, 25 Oct 2023 07:46:53 +0200 (CEST)
-Authentication-Results: mail.tesarici.cz; dmarc=fail (p=none dis=none) header.from=tesarici.cz
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tesarici.cz; s=mail;
-	t=1698212815; bh=Fzoj7znzln2FKzFSy7EkpghoFnNQo2dDFbO99KLMZ1U=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=CtP3+TzS8CkcsgomgnQyRoews1e8kSXl6tIW6PP+WD6S7jUaZvG8SXzQc1jmk8G/E
-	 JVGgfluKh0ZFUK69XkviXYUoLMWoBpqXlVoj+g6o/MkSwFYRcIsZLf2UD15izjtD5O
-	 kIGiSxnG7PwSuFgbt2n28YOlyxAV82uWECuofceWuVNOjzkxb4AaY4+WFBA+e2vMWB
-	 NHze7yHWtky0MHvjo2j/KSUzOPtgQfip6wsqvb/kxwmblgqsZUBvu3YcB7TydoTx/f
-	 od6AL+VJNBPeFBQ+Wl5U3hQwxkVjP/CL3Nje1qTpGnTV0EZy4vR8Cy+BODfM5l08H6
-	 ifCvvmhseikqA==
-Date: Wed, 25 Oct 2023 07:46:52 +0200
-From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
-To: Suren Baghdasaryan <surenb@google.com>, Neil Brown <neilb@suse.de>
-Cc: akpm@linux-foundation.org, kent.overstreet@linux.dev, mhocko@suse.com,
- vbabka@suse.cz, hannes@cmpxchg.org, roman.gushchin@linux.dev,
- mgorman@suse.de, dave@stgolabs.net, willy@infradead.org,
- liam.howlett@oracle.com, corbet@lwn.net, void@manifault.com,
- peterz@infradead.org, juri.lelli@redhat.com, ldufour@linux.ibm.com,
- catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de,
- tglx@linutronix.de, mingo@redhat.com, dave.hansen@linux.intel.com,
- x86@kernel.org, peterx@redhat.com, david@redhat.com, axboe@kernel.dk,
- mcgrof@kernel.org, masahiroy@kernel.org, nathan@kernel.org,
- dennis@kernel.org, tj@kernel.org, muchun.song@linux.dev, rppt@kernel.org,
- paulmck@kernel.org, pasha.tatashin@soleen.com, yosryahmed@google.com,
- yuzhao@google.com, dhowells@redhat.com, hughd@google.com,
- andreyknvl@gmail.com, keescook@chromium.org, ndesaulniers@google.com,
- vvvvvv@google.com, gregkh@linuxfoundation.org, ebiggers@google.com,
- ytcoode@gmail.com, vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
- rostedt@goodmis.org, bsegall@google.com, bristot@redhat.com,
- vschneid@redhat.com, cl@linux.com, penberg@kernel.org,
- iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com,
- elver@google.com, dvyukov@google.com, shakeelb@google.com,
- songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com,
- minchan@google.com, kaleshsingh@google.com, kernel-team@android.com,
- linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux.dev, linux-arch@vger.kernel.org,
- linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
- linux-modules@vger.kernel.org, kasan-dev@googlegroups.com,
- cgroups@vger.kernel.org
-Subject: Re: [PATCH v2 06/39] mm: enumerate all gfp flags
-Message-ID: <20231025074652.44bc0eb4@meshulam.tesarici.cz>
-In-Reply-To: <20231024134637.3120277-7-surenb@google.com>
-References: <20231024134637.3120277-1-surenb@google.com>
-	<20231024134637.3120277-7-surenb@google.com>
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; x86_64-suse-linux-gnu)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="G+YRIdS4"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1698216386; x=1729752386;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=t44h8COzR4ouwa7WaS1CgXoeke0/67sV64CRsZQG6sE=;
+  b=G+YRIdS4o0eXKQ1KlIc7A8q23HUfOLB/eRMCLOm6NTPMTD0b+yvy5DK9
+   rJaOBbrPqeSOXeXjz/NiHFfxGZBIgcea2DnYmVqsfKpUp36uYQU4mnG6w
+   Xg67TZ++/q9WbPOqvxKtW7H4nTUvZUGKVm4/nS5ITs6AxQtaRw/aju0Eg
+   alzA3kA1J9IEN4Je9+TNruTfKOjAuDyiUxP4dWvZdnqaSVwpz1ccH/8uN
+   zYOkPVBnoA0Ea69fmxr5QikDdmp3GyvToVNr3wfUJE1x34h31QD7RlW2D
+   qZy0XtAdOuT2G3doMmoqgkQsFctqNhg/hoXQH2ZqSVtRSYZl1n3YsA+4C
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10873"; a="377617591"
+X-IronPort-AV: E=Sophos;i="6.03,249,1694761200"; 
+   d="scan'208";a="377617591"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Oct 2023 23:46:25 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10873"; a="735290590"
+X-IronPort-AV: E=Sophos;i="6.03,249,1694761200"; 
+   d="scan'208";a="735290590"
+Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
+  by orsmga006.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 24 Oct 2023 23:46:24 -0700
+Received: from orsmsx602.amr.corp.intel.com (10.22.229.15) by
+ ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.32; Tue, 24 Oct 2023 23:46:24 -0700
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.32 via Frontend Transport; Tue, 24 Oct 2023 23:46:24 -0700
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com (104.47.73.168)
+ by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.32; Tue, 24 Oct 2023 23:46:23 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=GD0xeQ289k/VAV2yzT4nu7WdhlSo7P9w32ogjTYM10rY4dc7dadb2cSBPLZyAdDIwNXqrO18UIuSp1YtrL5oM2HSVQt2eKGhxm3rGOrbJTamUSJRYDxKG1hNiAjJLXad92hqsamsSqLaA2l4FNWK+Xa8ej8z/7fDmIdbapClTNz27DyZArGqG3DaHtikyzc58EAu0BUlv81JC2fhuoDdQt5egazQcF0dXQQA9ZyAeen8+jaU9pn2edNYkLS52HNTPPRRQMwXUX+JPVAv3aML91tTw3UC1oDNlaJokwkHWANlkoFAL5+djntgztWowVILa1s6sslJLFXJ8VdH3meeAw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=g4vaq3j3PfDhX/aLrsckHLngqesk9uXIh/INiEU0BQc=;
+ b=fNGga7UwH+VgqLSz1RBgc5LVbaijnCRX7YGZ49AcbqBNDlV3hnkae8dG7R27Al5noDMxfXxKIZmznrOEF3OMpSwcRpW6ghjAqPqwMEFW8ktQqXbkW0Ih/j7lhOWa/O84JUoZGbrkNgd+eZvDxUi0fKw9lFk9Oa41423LNqy5XWbLVMWVREThosUgfXcXMdqRUHsr7tFStvgtZb86hpYN1Cn8ww/l0B/DmDXebcQj8JAWQJ1dxI7u8GMQnqNNb6T54g41UrITueRh4SlXXdDJsN0G03DaK2lsW8zuM3zK6SB/mPIXpNq3I8kr6dGyWg2yZT0gFpNYX695LY0MznoNCQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
+ by DM4PR11MB8092.namprd11.prod.outlook.com (2603:10b6:8:184::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6907.31; Wed, 25 Oct
+ 2023 06:46:20 +0000
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::e7a4:a757:2f2e:f96a]) by BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::e7a4:a757:2f2e:f96a%3]) with mapi id 15.20.6907.032; Wed, 25 Oct 2023
+ 06:46:20 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: "Liu, Yi L" <yi.l.liu@intel.com>, "joro@8bytes.org" <joro@8bytes.org>,
+	"alex.williamson@redhat.com" <alex.williamson@redhat.com>, "jgg@nvidia.com"
+	<jgg@nvidia.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>
+CC: "cohuck@redhat.com" <cohuck@redhat.com>, "eric.auger@redhat.com"
+	<eric.auger@redhat.com>, "nicolinc@nvidia.com" <nicolinc@nvidia.com>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>, "mjrosato@linux.ibm.com"
+	<mjrosato@linux.ibm.com>, "chao.p.peng@linux.intel.com"
+	<chao.p.peng@linux.intel.com>, "yi.y.sun@linux.intel.com"
+	<yi.y.sun@linux.intel.com>, "peterx@redhat.com" <peterx@redhat.com>,
+	"jasowang@redhat.com" <jasowang@redhat.com>,
+	"shameerali.kolothum.thodi@huawei.com"
+	<shameerali.kolothum.thodi@huawei.com>, "lulu@redhat.com" <lulu@redhat.com>,
+	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>, "Duan,
+ Zhenzhong" <zhenzhong.duan@intel.com>, "Martins, Joao"
+	<joao.m.martins@oracle.com>
+Subject: RE: [PATCH v6 04/10] iommufd/device: Wrap
+ IOMMUFD_OBJ_HWPT_PAGING-only configurations
+Thread-Topic: [PATCH v6 04/10] iommufd/device: Wrap
+ IOMMUFD_OBJ_HWPT_PAGING-only configurations
+Thread-Index: AQHaBou2thRR0b1SL06rXFPsnYb7TrBaEGMQ
+Date: Wed, 25 Oct 2023 06:46:20 +0000
+Message-ID: <BN9PR11MB5276E2B6AFB5617395E9A5768CDEA@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <20231024150609.46884-1-yi.l.liu@intel.com>
+ <20231024150609.46884-5-yi.l.liu@intel.com>
+In-Reply-To: <20231024150609.46884-5-yi.l.liu@intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|DM4PR11MB8092:EE_
+x-ms-office365-filtering-correlation-id: 28dc91d9-1bad-4e45-663f-08dbd526189b
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: gEBk02t2lQdJxhZKI0sjrTwgJynnyk8vC79q4YOP7chmlfVk/bD4FNHTrxU5z6+TKj10ObMi3QGophQ6i8IyQnaFq6/oFO4THzoYiom/WK1G5/oUkbdH0su3s3DTPca+pcbFaFJ/HxEf33wDIJW5aZla47VFJnT7PZm2brj0E8CVF92v5sg5pVOPbl9HvTe/ozyClP8/BlL1PXa74yx49G+R2S+ROCkclASPl0CNQyHlg4ItOow1MuygEE3WPndZ1RFP7qrrbTmaCLstPVX3UOYHpUpLPPvY4pGdQLwE8f7F6cmlbJefMEOmSVkQ1GnITzYVB9+b3sDIU2UgNiC1AXjK3iRVv9k1lRmVi4MQxO0C3upXjREuAa7+owyZFi4NMv+GyxABTkzfTCRebQfMp/2I4F4rZx0wW1tUaEGosXZVoe1hbCHbQm/8aCsxVUVncaCZHpHqut9nGUK6FyQunYk+zSsL0yE0gE/9EJA4RCfEMKG4SS7RtxKyeBUTTOCTlqXJBn8syw3eq5AsjlnIzKYDfdJSbMkYisqBELoqR/HmDfZPE/WHNumMqAehTFbmf8w5zZkv2GbTo2uCrsW1MVQNhDTPVA5iLr+emP8/rgzsiBmK5kKOgsZfD8qGUijD
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366004)(396003)(346002)(136003)(376002)(39860400002)(230922051799003)(451199024)(1800799009)(64100799003)(186009)(4744005)(66946007)(122000001)(2906002)(55016003)(38100700002)(82960400001)(110136005)(66446008)(316002)(76116006)(66556008)(64756008)(6506007)(7696005)(478600001)(54906003)(71200400001)(9686003)(83380400001)(52536014)(5660300002)(86362001)(7416002)(4326008)(33656002)(8676002)(41300700001)(8936002)(66476007)(38070700009)(26005);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?sG1uOAm/2ruogq9WCawjsqPE9k5Og3ficPCC8Lp3pRObOodlBJhLgxoIlCQ6?=
+ =?us-ascii?Q?V+o67LIzAwjB+vUN8MPZznNEEO/lMYn4UzByYdpY0Qtn74/5iGP40i+H0reD?=
+ =?us-ascii?Q?S8glKdTERxyjmWf+rjwwdcsoHq+Gm8Iicq8dxz2eEnMWZm2S2mMPvlSZanaU?=
+ =?us-ascii?Q?ICy71G9CgaJUwYxWA1YzEz+gzQFy6bEDgl3Cj+oVp2WG+GmXm4BWu41GnKQ0?=
+ =?us-ascii?Q?BfMkE0cCYg9W0aTvtrmg7q71NM/b3mmttvDkKN/P/Ir0jvU/clVQHQYYzkLl?=
+ =?us-ascii?Q?UPx2SSwCSnDrzv+aVufO1NwZq2amxs4SqcW0S5itaNNJTuvlHOcjio347eLb?=
+ =?us-ascii?Q?ldFiRGLbIHb36qiPoWCUgORN370Uw9tDTmHAVMaskMxsTqj9rPDiD7xSFqK/?=
+ =?us-ascii?Q?sWMd+iN6h4Kw8HX4xn5/9dLH4ekeoER30L7ym6CynwAAR20Q9MdtWzTcpGS1?=
+ =?us-ascii?Q?h6wiiziI+8FLwZae2QMshU9x9M/MwvrTcuAbLMHDA9Km7efuraZIo68gfT+s?=
+ =?us-ascii?Q?dIP5XwhQkN4JX09TitriXtE7OeqKrhCufQmo9HZ8rT/MR4wMvKuoUQFslNrO?=
+ =?us-ascii?Q?9ZvgtlGBDnwpNJo7d5DEpf32ybxiqPqa633JokaZwpGVk45o3Ddr+YPvhEYX?=
+ =?us-ascii?Q?i4HGQwJrZmc/Z/PLHmuHV7RPFiZ1p+SoTNp5VdpMEzb11C8MX50q9rkNCB7u?=
+ =?us-ascii?Q?hg/bnjVJ+qFBMAvsYEMyIoxlue+lOFzUmAlzLrxx85MlVr7udIGDDKfM0mBe?=
+ =?us-ascii?Q?BbXVCHTUunfPWh1zc35A5CI/Ema4Us6bqUbzT9phfSesu4y9LwKSllrx4zGH?=
+ =?us-ascii?Q?c38BkeRDaYu55ngSxUMSfJtzgy5hU+fCqyOR9Xne1z656zKft1DZpCMVf/8L?=
+ =?us-ascii?Q?zYau3dY9C19NT7WHyHSKiFxk5BTMcc9uEzJZPi+jf7tdeFcqVnw07DhIWGBQ?=
+ =?us-ascii?Q?sEckhxI72mHlqzHSZRD3BATubncEv+gJohY28AmrQkgv88zE+VJgUnoVm9WC?=
+ =?us-ascii?Q?WUcqixIpN+RNDSst2o8NQ44498AGLGGBV/tZ1Q2Dslk9HTWcQ5MWLd5A3/xj?=
+ =?us-ascii?Q?aHJWem0p40c+a9iq8HVO/YvLPksqj/1jlhrvMd9dg1qLhP8oUHpJsnY4/g1V?=
+ =?us-ascii?Q?E29i8tYTy4Yb5Zy6iMaD4FBc8d5c1SWVf1NTyaxY+SmgTsJdWONrSISfNcDt?=
+ =?us-ascii?Q?dWT2Rur7SaxQ+ms318/fby9mL0galOYHkXDybQLsZwwkd4KVwnMCXq+sN4mx?=
+ =?us-ascii?Q?3P7fifvPgIb4P/ioPCC/0F/WcTrIEOCqyofaXF4Wbw3yQhwZdHkONx2kqMEF?=
+ =?us-ascii?Q?t5OWahuv85zI4OhdfTEhWY3YkLf36GNj46uaJt5pcirxkKJUXfe1HPmd05V3?=
+ =?us-ascii?Q?bFwmGLtzEl+xEdgAs4G00jjRrvI6kQBNYquY/VaIhYKNlpenmoVysBZKREqq?=
+ =?us-ascii?Q?kY4AprIhN2l3x0bMbdl3e5+CTkuRTUHbYTHQ7QQEAPyK9MxfcSq/kMtOFXFp?=
+ =?us-ascii?Q?d4hoYsN0NqMOgq22d1CsuW9d9JGVQuHFhS4TuCvtmUywsNMbIcGrTXTVyp+a?=
+ =?us-ascii?Q?L5Wan/Ys5lcBUT69B57drbjyLQGUd+fIG2bdLFC6?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 28dc91d9-1bad-4e45-663f-08dbd526189b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Oct 2023 06:46:20.0891
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: m2SOYRG+BhYseO3Gy9iBHNiPi8x1HDDmkXrfwbA/sP1+/dKpPNaCdZAGxwU5difKyxC2QsDmVTE/4NJCN5rtGg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR11MB8092
+X-OriginatorOrg: intel.com
 
-On Tue, 24 Oct 2023 06:46:03 -0700
-Suren Baghdasaryan <surenb@google.com> wrote:
-
-> Introduce GFP bits enumeration to let compiler track the number of used
-> bits (which depends on the config options) instead of hardcoding them.
-> That simplifies __GFP_BITS_SHIFT calculation.
-> Suggested-by: Petr Tesa=C5=99=C3=ADk <petr@tesarici.cz>
-> Signed-off-by: Suren Baghdasaryan <surenb@google.com>
-> ---
->  include/linux/gfp_types.h | 90 +++++++++++++++++++++++++++------------
->  1 file changed, 62 insertions(+), 28 deletions(-)
->=20
-> diff --git a/include/linux/gfp_types.h b/include/linux/gfp_types.h
-> index 6583a58670c5..3fbe624763d9 100644
-> --- a/include/linux/gfp_types.h
-> +++ b/include/linux/gfp_types.h
-> @@ -21,44 +21,78 @@ typedef unsigned int __bitwise gfp_t;
->   * include/trace/events/mmflags.h and tools/perf/builtin-kmem.c
->   */
-> =20
-> +enum {
-> +	___GFP_DMA_BIT,
-> +	___GFP_HIGHMEM_BIT,
-> +	___GFP_DMA32_BIT,
-> +	___GFP_MOVABLE_BIT,
-> +	___GFP_RECLAIMABLE_BIT,
-> +	___GFP_HIGH_BIT,
-> +	___GFP_IO_BIT,
-> +	___GFP_FS_BIT,
-> +	___GFP_ZERO_BIT,
-> +	___GFP_UNUSED_BIT,	/* 0x200u unused */
-> +	___GFP_DIRECT_RECLAIM_BIT,
-> +	___GFP_KSWAPD_RECLAIM_BIT,
-> +	___GFP_WRITE_BIT,
-> +	___GFP_NOWARN_BIT,
-> +	___GFP_RETRY_MAYFAIL_BIT,
-> +	___GFP_NOFAIL_BIT,
-> +	___GFP_NORETRY_BIT,
-> +	___GFP_MEMALLOC_BIT,
-> +	___GFP_COMP_BIT,
-> +	___GFP_NOMEMALLOC_BIT,
-> +	___GFP_HARDWALL_BIT,
-> +	___GFP_THISNODE_BIT,
-> +	___GFP_ACCOUNT_BIT,
-> +	___GFP_ZEROTAGS_BIT,
-> +#ifdef CONFIG_KASAN_HW_TAGS
-> +	___GFP_SKIP_ZERO_BIT,
-> +	___GFP_SKIP_KASAN_BIT,
-> +#endif
-> +#ifdef CONFIG_LOCKDEP
-> +	___GFP_NOLOCKDEP_BIT,
-> +#endif
-> +	___GFP_LAST_BIT
-> +};
+> From: Liu, Yi L <yi.l.liu@intel.com>
+> Sent: Tuesday, October 24, 2023 11:06 PM
 > +
->  /* Plain integer GFP bitmasks. Do not use this directly. */
-> -#define ___GFP_DMA		0x01u
-> -#define ___GFP_HIGHMEM		0x02u
-> -#define ___GFP_DMA32		0x04u
-> -#define ___GFP_MOVABLE		0x08u
-> -#define ___GFP_RECLAIMABLE	0x10u
-> -#define ___GFP_HIGH		0x20u
-> -#define ___GFP_IO		0x40u
-> -#define ___GFP_FS		0x80u
-> -#define ___GFP_ZERO		0x100u
-> +#define ___GFP_DMA		BIT(___GFP_DMA_BIT)
-> +#define ___GFP_HIGHMEM		BIT(___GFP_HIGHMEM_BIT)
-> +#define ___GFP_DMA32		BIT(___GFP_DMA32_BIT)
-> +#define ___GFP_MOVABLE		BIT(___GFP_MOVABLE_BIT)
-> +#define ___GFP_RECLAIMABLE	BIT(___GFP_RECLAIMABLE_BIT)
-> +#define ___GFP_HIGH		BIT(___GFP_HIGH_BIT)
-> +#define ___GFP_IO		BIT(___GFP_IO_BIT)
-> +#define ___GFP_FS		BIT(___GFP_FS_BIT)
-> +#define ___GFP_ZERO		BIT(___GFP_ZERO_BIT)
->  /* 0x200u unused */
+> +static int iommufd_group_do_replace_paging(struct iommufd_group
+> *igroup,
+> +					   struct iommufd_hw_pagetable
+> *hwpt)
+> +{
+> +	struct iommufd_hw_pagetable *old_hwpt =3D igroup->hwpt;
+> +	struct iommufd_device *cur;
+> +	int rc;
+> +
+> +	lockdep_assert_held(&igroup->lock);
+> +
+> +	if (hwpt_is_paging(old_hwpt) && hwpt->ioas !=3D old_hwpt->ioas) {
+> +		list_for_each_entry(cur, &igroup->device_list, group_item) {
+> +			rc =3D iopt_table_enforce_dev_resv_regions(
+> +				&hwpt->ioas->iopt, cur->dev, NULL);
+> +			if (rc)
+> +				goto err_unresv;
+> +		}
 
-This comment can be also removed here, because it is already stated
-above with the definition of ___GFP_UNUSED_BIT.
+should be:
 
-Then again, I think that the GFP bits have never been compacted after
-Neil Brown removed __GFP_ATOMIC with commit 2973d8229b78 simply because
-that would mean changing definitions of all subsequent GFP flags. FWIW
-I am not aware of any code that would depend on the numeric value of
-___GFP_* macros, so this patch seems like a good opportunity to change
-the numbering and get rid of this unused 0x200u altogether.
-
-@Neil: I have added you to the conversation in case you want to correct
-my understanding of the unused bit.
-
-Other than that LGTM.
-
-Petr T
-
-> -#define ___GFP_DIRECT_RECLAIM	0x400u
-> -#define ___GFP_KSWAPD_RECLAIM	0x800u
-> -#define ___GFP_WRITE		0x1000u
-> -#define ___GFP_NOWARN		0x2000u
-> -#define ___GFP_RETRY_MAYFAIL	0x4000u
-> -#define ___GFP_NOFAIL		0x8000u
-> -#define ___GFP_NORETRY		0x10000u
-> -#define ___GFP_MEMALLOC		0x20000u
-> -#define ___GFP_COMP		0x40000u
-> -#define ___GFP_NOMEMALLOC	0x80000u
-> -#define ___GFP_HARDWALL		0x100000u
-> -#define ___GFP_THISNODE		0x200000u
-> -#define ___GFP_ACCOUNT		0x400000u
-> -#define ___GFP_ZEROTAGS		0x800000u
-> +#define ___GFP_DIRECT_RECLAIM	BIT(___GFP_DIRECT_RECLAIM_BIT)
-> +#define ___GFP_KSWAPD_RECLAIM	BIT(___GFP_KSWAPD_RECLAIM_BIT)
-> +#define ___GFP_WRITE		BIT(___GFP_WRITE_BIT)
-> +#define ___GFP_NOWARN		BIT(___GFP_NOWARN_BIT)
-> +#define ___GFP_RETRY_MAYFAIL	BIT(___GFP_RETRY_MAYFAIL_BIT)
-> +#define ___GFP_NOFAIL		BIT(___GFP_NOFAIL_BIT)
-> +#define ___GFP_NORETRY		BIT(___GFP_NORETRY_BIT)
-> +#define ___GFP_MEMALLOC		BIT(___GFP_MEMALLOC_BIT)
-> +#define ___GFP_COMP		BIT(___GFP_COMP_BIT)
-> +#define ___GFP_NOMEMALLOC	BIT(___GFP_NOMEMALLOC_BIT)
-> +#define ___GFP_HARDWALL		BIT(___GFP_HARDWALL_BIT)
-> +#define ___GFP_THISNODE		BIT(___GFP_THISNODE_BIT)
-> +#define ___GFP_ACCOUNT		BIT(___GFP_ACCOUNT_BIT)
-> +#define ___GFP_ZEROTAGS		BIT(___GFP_ZEROTAGS_BIT)
->  #ifdef CONFIG_KASAN_HW_TAGS
-> -#define ___GFP_SKIP_ZERO	0x1000000u
-> -#define ___GFP_SKIP_KASAN	0x2000000u
-> +#define ___GFP_SKIP_ZERO	BIT(___GFP_SKIP_ZERO_BIT)
-> +#define ___GFP_SKIP_KASAN	BIT(___GFP_SKIP_KASAN_BIT)
->  #else
->  #define ___GFP_SKIP_ZERO	0
->  #define ___GFP_SKIP_KASAN	0
->  #endif
->  #ifdef CONFIG_LOCKDEP
-> -#define ___GFP_NOLOCKDEP	0x4000000u
-> +#define ___GFP_NOLOCKDEP	BIT(___GFP_NOLOCKDEP_BIT)
->  #else
->  #define ___GFP_NOLOCKDEP	0
->  #endif
-> -/* If the above are modified, __GFP_BITS_SHIFT may need updating */
-> =20
->  /*
->   * Physical address zone modifiers (see linux/mmzone.h - low four bits)
-> @@ -249,7 +283,7 @@ typedef unsigned int __bitwise gfp_t;
->  #define __GFP_NOLOCKDEP ((__force gfp_t)___GFP_NOLOCKDEP)
-> =20
->  /* Room for N __GFP_FOO bits */
-> -#define __GFP_BITS_SHIFT (26 + IS_ENABLED(CONFIG_LOCKDEP))
-> +#define __GFP_BITS_SHIFT ___GFP_LAST_BIT
->  #define __GFP_BITS_MASK ((__force gfp_t)((1 << __GFP_BITS_SHIFT) - 1))
-> =20
->  /**
-
+	if (!hwpt_is_paging(old_hwpt) || hwpt->ioas !=3D old_hwpt->ioas) {
+		...
