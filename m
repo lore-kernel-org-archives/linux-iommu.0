@@ -1,183 +1,124 @@
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.20])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lj1-f171.google.com (mail-lj1-f171.google.com [209.85.208.171])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED2E92D604
-	for <iommu@lists.linux.dev>; Wed, 25 Oct 2023 06:46:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B89C6168C1
+	for <iommu@lists.linux.dev>; Wed, 25 Oct 2023 07:30:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="G+YRIdS4"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1698216386; x=1729752386;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=t44h8COzR4ouwa7WaS1CgXoeke0/67sV64CRsZQG6sE=;
-  b=G+YRIdS4o0eXKQ1KlIc7A8q23HUfOLB/eRMCLOm6NTPMTD0b+yvy5DK9
-   rJaOBbrPqeSOXeXjz/NiHFfxGZBIgcea2DnYmVqsfKpUp36uYQU4mnG6w
-   Xg67TZ++/q9WbPOqvxKtW7H4nTUvZUGKVm4/nS5ITs6AxQtaRw/aju0Eg
-   alzA3kA1J9IEN4Je9+TNruTfKOjAuDyiUxP4dWvZdnqaSVwpz1ccH/8uN
-   zYOkPVBnoA0Ea69fmxr5QikDdmp3GyvToVNr3wfUJE1x34h31QD7RlW2D
-   qZy0XtAdOuT2G3doMmoqgkQsFctqNhg/hoXQH2ZqSVtRSYZl1n3YsA+4C
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10873"; a="377617591"
-X-IronPort-AV: E=Sophos;i="6.03,249,1694761200"; 
-   d="scan'208";a="377617591"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Oct 2023 23:46:25 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10873"; a="735290590"
-X-IronPort-AV: E=Sophos;i="6.03,249,1694761200"; 
-   d="scan'208";a="735290590"
-Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
-  by orsmga006.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 24 Oct 2023 23:46:24 -0700
-Received: from orsmsx602.amr.corp.intel.com (10.22.229.15) by
- ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.32; Tue, 24 Oct 2023 23:46:24 -0700
-Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
- orsmsx602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.32 via Frontend Transport; Tue, 24 Oct 2023 23:46:24 -0700
-Received: from NAM04-MW2-obe.outbound.protection.outlook.com (104.47.73.168)
- by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.32; Tue, 24 Oct 2023 23:46:23 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=GD0xeQ289k/VAV2yzT4nu7WdhlSo7P9w32ogjTYM10rY4dc7dadb2cSBPLZyAdDIwNXqrO18UIuSp1YtrL5oM2HSVQt2eKGhxm3rGOrbJTamUSJRYDxKG1hNiAjJLXad92hqsamsSqLaA2l4FNWK+Xa8ej8z/7fDmIdbapClTNz27DyZArGqG3DaHtikyzc58EAu0BUlv81JC2fhuoDdQt5egazQcF0dXQQA9ZyAeen8+jaU9pn2edNYkLS52HNTPPRRQMwXUX+JPVAv3aML91tTw3UC1oDNlaJokwkHWANlkoFAL5+djntgztWowVILa1s6sslJLFXJ8VdH3meeAw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=g4vaq3j3PfDhX/aLrsckHLngqesk9uXIh/INiEU0BQc=;
- b=fNGga7UwH+VgqLSz1RBgc5LVbaijnCRX7YGZ49AcbqBNDlV3hnkae8dG7R27Al5noDMxfXxKIZmznrOEF3OMpSwcRpW6ghjAqPqwMEFW8ktQqXbkW0Ih/j7lhOWa/O84JUoZGbrkNgd+eZvDxUi0fKw9lFk9Oa41423LNqy5XWbLVMWVREThosUgfXcXMdqRUHsr7tFStvgtZb86hpYN1Cn8ww/l0B/DmDXebcQj8JAWQJ1dxI7u8GMQnqNNb6T54g41UrITueRh4SlXXdDJsN0G03DaK2lsW8zuM3zK6SB/mPIXpNq3I8kr6dGyWg2yZT0gFpNYX695LY0MznoNCQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by DM4PR11MB8092.namprd11.prod.outlook.com (2603:10b6:8:184::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6907.31; Wed, 25 Oct
- 2023 06:46:20 +0000
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::e7a4:a757:2f2e:f96a]) by BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::e7a4:a757:2f2e:f96a%3]) with mapi id 15.20.6907.032; Wed, 25 Oct 2023
- 06:46:20 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: "Liu, Yi L" <yi.l.liu@intel.com>, "joro@8bytes.org" <joro@8bytes.org>,
-	"alex.williamson@redhat.com" <alex.williamson@redhat.com>, "jgg@nvidia.com"
-	<jgg@nvidia.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>
-CC: "cohuck@redhat.com" <cohuck@redhat.com>, "eric.auger@redhat.com"
-	<eric.auger@redhat.com>, "nicolinc@nvidia.com" <nicolinc@nvidia.com>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>, "mjrosato@linux.ibm.com"
-	<mjrosato@linux.ibm.com>, "chao.p.peng@linux.intel.com"
-	<chao.p.peng@linux.intel.com>, "yi.y.sun@linux.intel.com"
-	<yi.y.sun@linux.intel.com>, "peterx@redhat.com" <peterx@redhat.com>,
-	"jasowang@redhat.com" <jasowang@redhat.com>,
-	"shameerali.kolothum.thodi@huawei.com"
-	<shameerali.kolothum.thodi@huawei.com>, "lulu@redhat.com" <lulu@redhat.com>,
-	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>, "Duan,
- Zhenzhong" <zhenzhong.duan@intel.com>, "Martins, Joao"
-	<joao.m.martins@oracle.com>
-Subject: RE: [PATCH v6 04/10] iommufd/device: Wrap
- IOMMUFD_OBJ_HWPT_PAGING-only configurations
-Thread-Topic: [PATCH v6 04/10] iommufd/device: Wrap
- IOMMUFD_OBJ_HWPT_PAGING-only configurations
-Thread-Index: AQHaBou2thRR0b1SL06rXFPsnYb7TrBaEGMQ
-Date: Wed, 25 Oct 2023 06:46:20 +0000
-Message-ID: <BN9PR11MB5276E2B6AFB5617395E9A5768CDEA@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <20231024150609.46884-1-yi.l.liu@intel.com>
- <20231024150609.46884-5-yi.l.liu@intel.com>
-In-Reply-To: <20231024150609.46884-5-yi.l.liu@intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|DM4PR11MB8092:EE_
-x-ms-office365-filtering-correlation-id: 28dc91d9-1bad-4e45-663f-08dbd526189b
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: gEBk02t2lQdJxhZKI0sjrTwgJynnyk8vC79q4YOP7chmlfVk/bD4FNHTrxU5z6+TKj10ObMi3QGophQ6i8IyQnaFq6/oFO4THzoYiom/WK1G5/oUkbdH0su3s3DTPca+pcbFaFJ/HxEf33wDIJW5aZla47VFJnT7PZm2brj0E8CVF92v5sg5pVOPbl9HvTe/ozyClP8/BlL1PXa74yx49G+R2S+ROCkclASPl0CNQyHlg4ItOow1MuygEE3WPndZ1RFP7qrrbTmaCLstPVX3UOYHpUpLPPvY4pGdQLwE8f7F6cmlbJefMEOmSVkQ1GnITzYVB9+b3sDIU2UgNiC1AXjK3iRVv9k1lRmVi4MQxO0C3upXjREuAa7+owyZFi4NMv+GyxABTkzfTCRebQfMp/2I4F4rZx0wW1tUaEGosXZVoe1hbCHbQm/8aCsxVUVncaCZHpHqut9nGUK6FyQunYk+zSsL0yE0gE/9EJA4RCfEMKG4SS7RtxKyeBUTTOCTlqXJBn8syw3eq5AsjlnIzKYDfdJSbMkYisqBELoqR/HmDfZPE/WHNumMqAehTFbmf8w5zZkv2GbTo2uCrsW1MVQNhDTPVA5iLr+emP8/rgzsiBmK5kKOgsZfD8qGUijD
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366004)(396003)(346002)(136003)(376002)(39860400002)(230922051799003)(451199024)(1800799009)(64100799003)(186009)(4744005)(66946007)(122000001)(2906002)(55016003)(38100700002)(82960400001)(110136005)(66446008)(316002)(76116006)(66556008)(64756008)(6506007)(7696005)(478600001)(54906003)(71200400001)(9686003)(83380400001)(52536014)(5660300002)(86362001)(7416002)(4326008)(33656002)(8676002)(41300700001)(8936002)(66476007)(38070700009)(26005);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?sG1uOAm/2ruogq9WCawjsqPE9k5Og3ficPCC8Lp3pRObOodlBJhLgxoIlCQ6?=
- =?us-ascii?Q?V+o67LIzAwjB+vUN8MPZznNEEO/lMYn4UzByYdpY0Qtn74/5iGP40i+H0reD?=
- =?us-ascii?Q?S8glKdTERxyjmWf+rjwwdcsoHq+Gm8Iicq8dxz2eEnMWZm2S2mMPvlSZanaU?=
- =?us-ascii?Q?ICy71G9CgaJUwYxWA1YzEz+gzQFy6bEDgl3Cj+oVp2WG+GmXm4BWu41GnKQ0?=
- =?us-ascii?Q?BfMkE0cCYg9W0aTvtrmg7q71NM/b3mmttvDkKN/P/Ir0jvU/clVQHQYYzkLl?=
- =?us-ascii?Q?UPx2SSwCSnDrzv+aVufO1NwZq2amxs4SqcW0S5itaNNJTuvlHOcjio347eLb?=
- =?us-ascii?Q?ldFiRGLbIHb36qiPoWCUgORN370Uw9tDTmHAVMaskMxsTqj9rPDiD7xSFqK/?=
- =?us-ascii?Q?sWMd+iN6h4Kw8HX4xn5/9dLH4ekeoER30L7ym6CynwAAR20Q9MdtWzTcpGS1?=
- =?us-ascii?Q?h6wiiziI+8FLwZae2QMshU9x9M/MwvrTcuAbLMHDA9Km7efuraZIo68gfT+s?=
- =?us-ascii?Q?dIP5XwhQkN4JX09TitriXtE7OeqKrhCufQmo9HZ8rT/MR4wMvKuoUQFslNrO?=
- =?us-ascii?Q?9ZvgtlGBDnwpNJo7d5DEpf32ybxiqPqa633JokaZwpGVk45o3Ddr+YPvhEYX?=
- =?us-ascii?Q?i4HGQwJrZmc/Z/PLHmuHV7RPFiZ1p+SoTNp5VdpMEzb11C8MX50q9rkNCB7u?=
- =?us-ascii?Q?hg/bnjVJ+qFBMAvsYEMyIoxlue+lOFzUmAlzLrxx85MlVr7udIGDDKfM0mBe?=
- =?us-ascii?Q?BbXVCHTUunfPWh1zc35A5CI/Ema4Us6bqUbzT9phfSesu4y9LwKSllrx4zGH?=
- =?us-ascii?Q?c38BkeRDaYu55ngSxUMSfJtzgy5hU+fCqyOR9Xne1z656zKft1DZpCMVf/8L?=
- =?us-ascii?Q?zYau3dY9C19NT7WHyHSKiFxk5BTMcc9uEzJZPi+jf7tdeFcqVnw07DhIWGBQ?=
- =?us-ascii?Q?sEckhxI72mHlqzHSZRD3BATubncEv+gJohY28AmrQkgv88zE+VJgUnoVm9WC?=
- =?us-ascii?Q?WUcqixIpN+RNDSst2o8NQ44498AGLGGBV/tZ1Q2Dslk9HTWcQ5MWLd5A3/xj?=
- =?us-ascii?Q?aHJWem0p40c+a9iq8HVO/YvLPksqj/1jlhrvMd9dg1qLhP8oUHpJsnY4/g1V?=
- =?us-ascii?Q?E29i8tYTy4Yb5Zy6iMaD4FBc8d5c1SWVf1NTyaxY+SmgTsJdWONrSISfNcDt?=
- =?us-ascii?Q?dWT2Rur7SaxQ+ms318/fby9mL0galOYHkXDybQLsZwwkd4KVwnMCXq+sN4mx?=
- =?us-ascii?Q?3P7fifvPgIb4P/ioPCC/0F/WcTrIEOCqyofaXF4Wbw3yQhwZdHkONx2kqMEF?=
- =?us-ascii?Q?t5OWahuv85zI4OhdfTEhWY3YkLf36GNj46uaJt5pcirxkKJUXfe1HPmd05V3?=
- =?us-ascii?Q?bFwmGLtzEl+xEdgAs4G00jjRrvI6kQBNYquY/VaIhYKNlpenmoVysBZKREqq?=
- =?us-ascii?Q?kY4AprIhN2l3x0bMbdl3e5+CTkuRTUHbYTHQ7QQEAPyK9MxfcSq/kMtOFXFp?=
- =?us-ascii?Q?d4hoYsN0NqMOgq22d1CsuW9d9JGVQuHFhS4TuCvtmUywsNMbIcGrTXTVyp+a?=
- =?us-ascii?Q?L5Wan/Ys5lcBUT69B57drbjyLQGUd+fIG2bdLFC6?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="aSSRfwY9"
+Received: by mail-lj1-f171.google.com with SMTP id 38308e7fff4ca-2c504a5e1deso85229721fa.2
+        for <iommu@lists.linux.dev>; Wed, 25 Oct 2023 00:30:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1698219007; x=1698823807; darn=lists.linux.dev;
+        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
+         :date:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=crclIHZgLMbk6m6cpstTsXFLirHjxlOQ97dZu+AQEPg=;
+        b=aSSRfwY9mqKUlLRUBKuedINL1pFVQartdko58qIMjQT1jAg4UjpXQHekalg07RA9rS
+         m+PbNP3AWniYg9hioMjkmDvDOeI+nnuJkLdw+EawBaZ+AGYaiW7Sx4nJ5tjTsaKr0m15
+         7B06yNfdWXi9ujViaPd8FBw+NyZ/+4FOjOfUkfJv+RgCF1cfcgG64w94IbfNs362MTKg
+         jyQC0KhpZjBJwL0hKWkjLmxQV7IIfMfEuYlydPsxzLJUvZjYP3Ju8qpz8gIX/Wmt3Q9b
+         1ql4l7lBcudJ0WXj8MDOVRUTbyTflPyNQu6hmO2lPM1KjkwgzSsqOzUG/Jbuy905WD9q
+         8Cqg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1698219007; x=1698823807;
+        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
+         :date:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=crclIHZgLMbk6m6cpstTsXFLirHjxlOQ97dZu+AQEPg=;
+        b=jt0aoWVgWwMZ3JJZoh9E+h6oTDrsmrpNw5V1RK27hnaFEKFtl3i9yzP+to12j7xktb
+         p354RQXUAAKZ0KOG800zzJ7qsQSGDnWajl01/E42kspTfHHUcJGHqgK+R68F3wFKp5cm
+         JEg2R3gDqYgFjg8eb1a+6OERhnkJFUdRNavTTRRgMNDvpTKwOuJ3gpvuJ3BcxJYNUm5D
+         qoKMFIfFjYkf3ErEBSuMQXeg5cZ5sut2kMhMVovgPT6meADtqlyoG/ARNdg9yGyUDxpk
+         HnDyem9fB6fJA3lXA584WzUgpuwkkeSObKoX/kRsPbOjPsTgCjAp9+w+BI7mCDPb5QgP
+         s5rQ==
+X-Gm-Message-State: AOJu0Yy9shqxUiM/XbTzAKpNQi5Brj5Dmx0S4a2/IAh+zPMNWpqu9OIm
+	xsg3GKvMAwuMPs3/wQv9gtvtvg==
+X-Google-Smtp-Source: AGHT+IGNvgspM4Ac9oCCHRA72EBa88NI0wqgIUNEgBol7/cvx/DQpMR2fSHGpGbzetKlClm/6tECUw==
+X-Received: by 2002:a2e:b4a7:0:b0:2c0:2583:520e with SMTP id q7-20020a2eb4a7000000b002c02583520emr9144325ljm.41.1698219006582;
+        Wed, 25 Oct 2023 00:30:06 -0700 (PDT)
+Received: from arrakeen.starnux.net ([2a01:e0a:982:cbb0:8261:5fff:fe11:bdda])
+        by smtp.gmail.com with ESMTPSA id e16-20020adfef10000000b0032d8354fb43sm11530984wro.76.2023.10.25.00.30.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 25 Oct 2023 00:30:05 -0700 (PDT)
+From: Neil Armstrong <neil.armstrong@linaro.org>
+Date: Wed, 25 Oct 2023 09:30:04 +0200
+Subject: [PATCH] dt-bindings: iommu: arm,smmu: document the SM8650 System
+ MMU
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 28dc91d9-1bad-4e45-663f-08dbd526189b
-X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Oct 2023 06:46:20.0891
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: m2SOYRG+BhYseO3Gy9iBHNiPi8x1HDDmkXrfwbA/sP1+/dKpPNaCdZAGxwU5difKyxC2QsDmVTE/4NJCN5rtGg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR11MB8092
-X-OriginatorOrg: intel.com
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20231025-topic-sm8650-upstream-bindings-smmu-v1-1-bfa25faa061e@linaro.org>
+X-B4-Tracking: v=1; b=H4sIAPvDOGUC/x2NQQqDMBAAvyJ7diGJmIZ+pXjQZGP3kBiyKoL49
+ 4Yeh4GZG4Qqk8C7u6HSycJbbqD7Dvx3zishh8ZglBm00hb3rbBHSc6OCo8ie6U54cI5cF6liXT
+ gK4zGO7d4GyO0UqkU+fpfPtPz/AADJwKZdQAAAA==
+To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+ Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>, 
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, 
+ Conor Dooley <conor+dt@kernel.org>
+Cc: linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, 
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ Neil Armstrong <neil.armstrong@linaro.org>
+X-Mailer: b4 0.12.3
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1415;
+ i=neil.armstrong@linaro.org; h=from:subject:message-id;
+ bh=88P3e6NmMBveIZbiqKlF5tiz9ASGje5GZTyQzmMCUXo=;
+ b=owEBbQKS/ZANAwAKAXfc29rIyEnRAcsmYgBlOMP9T9lepQxDL08IGQ9JeVjmsISz045nNadYrpz9
+ sO8aoHqJAjMEAAEKAB0WIQQ9U8YmyFYF/h30LIt33NvayMhJ0QUCZTjD/QAKCRB33NvayMhJ0X0qD/
+ 9T4nZKw68VFJfE0N4ULm8ESI/e+hScGEjyYZ9iF0DUN2vYUVaig66uLGwzHDbPNnyxTt2L76ZjmvFs
+ z0eamZfWiQUwE5e2zvDwgApbGAkk4P+sl/xXgC+kOi9l8AuSzg57PUMJp6cFv0umq1liwg0lytXRpV
+ tTQO331phmTLUsDQhDs7GcEJFBVPJNzsubZO3ZQzsOd7wwvSgHRZcLPBZ8HIDloiaIflsRoMuidyiZ
+ AqRI+IZagSJcNj00QFwpC7lgipyEdmFHAR4fSW3Ckols4P4Uoqmda3L+9pxBKWSPoCRyw8JbmhkAif
+ I8rEHT7+CrWRD3O4DhK/kMQuyPxaJenIqLm+UszbIL3AVjQXFHUVovsXk0XuPTwU3wb5qmm9zdQgb3
+ +R9UEuC6rTxLoC6ECpwX/Yxg7ZobyxrzV+0+nW7pDZo490IiMKAmP6vZossoAMJdxmsPBqlmeo3fHA
+ s6roGtDnBoClpTrvTHn50fdhB+qXHwu85ktjbf2Y0TWga78zkwzG8Wc6zDQCwXktDQHqmR/vSkgegF
+ BI7iUjNQuwi4k0tfTPu/FBsuqUwo7ivqq1ipasKEGyVRpmP+TvZrZ9runFp5Qk6/iiV9Mq8oLMosUW
+ d+zxF6FcxI82LJpGo3r+9l/ognTj0RhsvHGCpSfCeKsaxtnk4BlJF6LJWA6g==
+X-Developer-Key: i=neil.armstrong@linaro.org; a=openpgp;
+ fpr=89EC3D058446217450F22848169AB7B1A4CFF8AE
 
-> From: Liu, Yi L <yi.l.liu@intel.com>
-> Sent: Tuesday, October 24, 2023 11:06 PM
-> +
-> +static int iommufd_group_do_replace_paging(struct iommufd_group
-> *igroup,
-> +					   struct iommufd_hw_pagetable
-> *hwpt)
-> +{
-> +	struct iommufd_hw_pagetable *old_hwpt =3D igroup->hwpt;
-> +	struct iommufd_device *cur;
-> +	int rc;
-> +
-> +	lockdep_assert_held(&igroup->lock);
-> +
-> +	if (hwpt_is_paging(old_hwpt) && hwpt->ioas !=3D old_hwpt->ioas) {
-> +		list_for_each_entry(cur, &igroup->device_list, group_item) {
-> +			rc =3D iopt_table_enforce_dev_resv_regions(
-> +				&hwpt->ioas->iopt, cur->dev, NULL);
-> +			if (rc)
-> +				goto err_unresv;
-> +		}
+Document the System MMU on the SM8650 Platform.
 
-should be:
+Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
+---
+For convenience, a regularly refreshed linux-next based git tree containing
+all the SM8650 related work is available at:
+https://git.codelinaro.org/neil.armstrong/linux/-/tree/topic/sm85650/upstream/integ
+---
+ Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 2 ++
+ 1 file changed, 2 insertions(+)
 
-	if (!hwpt_is_paging(old_hwpt) || hwpt->ioas !=3D old_hwpt->ioas) {
-		...
+diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+index aa9e1c0895a5..157de0d0a24d 100644
+--- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
++++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+@@ -56,6 +56,7 @@ properties:
+               - qcom,sm8350-smmu-500
+               - qcom,sm8450-smmu-500
+               - qcom,sm8550-smmu-500
++              - qcom,sm8650-smmu-500
+           - const: qcom,smmu-500
+           - const: arm,mmu-500
+ 
+@@ -475,6 +476,7 @@ allOf:
+               - qcom,sm8350-smmu-500
+               - qcom,sm8450-smmu-500
+               - qcom,sm8550-smmu-500
++              - qcom,sm8650-smmu-500
+     then:
+       properties:
+         clock-names: false
+
+---
+base-commit: fe1998aa935b44ef873193c0772c43bce74f17dc
+change-id: 20231016-topic-sm8650-upstream-bindings-smmu-7d52c88bc6ff
+
+Best regards,
+-- 
+Neil Armstrong <neil.armstrong@linaro.org>
+
