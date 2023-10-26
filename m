@@ -1,274 +1,186 @@
-Received: from mail-oi1-f178.google.com (mail-oi1-f178.google.com [209.85.167.178])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2048.outbound.protection.outlook.com [40.107.92.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CBB8D2D049
-	for <iommu@lists.linux.dev>; Thu, 26 Oct 2023 13:51:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 37EDF2E417
+	for <iommu@lists.linux.dev>; Thu, 26 Oct 2023 14:11:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="SuVwheFB"
-Received: by mail-oi1-f178.google.com with SMTP id 5614622812f47-3b5220ea82cso539779b6e.0
-        for <iommu@lists.linux.dev>; Thu, 26 Oct 2023 06:51:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1698328259; x=1698933059; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Kg6AocFO/lbRQYyoxVEeWxWhMm2rZTnhhrkwgMrP6RQ=;
-        b=SuVwheFBWP2HnO3sGm1hxQWKAlgmNFfKx9sflvPcvdrDnTtt1NtvvZLMRaY+J70YiZ
-         S+g/enp7TglX4kH39lhP+4RWItMLK9TO08NJVcM80D5DHzCeOv87ICkJZnHWaZiFNMXj
-         pUYOcdeV1cxuqRXXZdaTo6TD6W/IBIngdb+LAPG+zGyBlZC+d7FzXUsMasjtfwhVMECO
-         6gHEhyfcwLy5n497DeBnbWHoewDS0jTZ9g+ITq6uFcSIA6nPCG+1mOULFiNWykg0TUYE
-         34Rkrar6U39rboZzshNzU2CP6vK5sjXWp5VSg9NFSTqtFFDybu0/COCzTlA68cQZNGOB
-         Z9NQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1698328259; x=1698933059;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Kg6AocFO/lbRQYyoxVEeWxWhMm2rZTnhhrkwgMrP6RQ=;
-        b=qCXYgOfsp+jjQgZQWriBLbfHRi5+R5gXWZVAC0yWR6tjBGqPlPHFXweYhwI4wGjeIv
-         eBflUzK6cBvBetBBFr3y5tZJ2T7U/fq/BRreFotCsJIyq1+X4p0GF1bL9qXPZbbRvmhP
-         q8PkisJkRDu+3ajtQxv0nNMxwj/SnT4gpsoDaXWEVJZ5m9G1QZ8zY2ySbibveaX3eCtB
-         rKcuvruoQiRitRko3nLnF+DzwtgZ4qu0Btz9keOoUyYgKG1j/FkrIeuxo9Ob+vL4JCGL
-         CLL7g4EJYA9Jvum7LGgdnId84BF6cc5sx6rAkH3G9PC/iBUxPnkSTJRT11lPlaGgO5HI
-         K1Vg==
-X-Gm-Message-State: AOJu0Yxo20stk+j46RjTjZH6cae4v2WZ1tPFQXhOEF1AwzI9WfC3zgSZ
-	YyxF66MNIxj6oZy9GDfdV+Z2Zg==
-X-Google-Smtp-Source: AGHT+IHEakn4stiIuYdte2LgZf1zAkQCKOHgBaMMmrHM2HabE+dFqWIWyLFYWVoDo4Jcmuuu5H6DZg==
-X-Received: by 2002:a05:6808:4c7:b0:3af:6595:e53 with SMTP id a7-20020a05680804c700b003af65950e53mr19610827oie.13.1698328259713;
-        Thu, 26 Oct 2023 06:50:59 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-26-201.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.26.201])
-        by smtp.gmail.com with ESMTPSA id 4-20020aca1004000000b003af642cf646sm2771408oiq.37.2023.10.26.06.50.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 Oct 2023 06:50:59 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1qw0lG-0058I3-CB;
-	Thu, 26 Oct 2023 10:50:58 -0300
-Date: Thu, 26 Oct 2023 10:50:58 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Tina Zhang <tina.zhang@intel.com>, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, David Woodhouse <dwmw2@infradead.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Michael Shavit <mshavit@google.com>,
-	Vasant Hegde <vasant.hegde@amd.com>
-Subject: Re: [PATCH v9 0/5] Share sva domains with all devices bound to a mm
-Message-ID: <20231026135058.GW691768@ziepe.ca>
-References: <20231018050640.24936-1-tina.zhang@intel.com>
- <ZToUOKSqqI6Bh_03@8bytes.org>
- <20231026122016.GU691768@ziepe.ca>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="P5JFE/oz"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=NA7sX5sU/Qebr76QBYToOc9rMbgCdVh7b0O8reIajwRt+R8rrHFEszlpRzinxlPIPqb4S0ybePp+DwjyL3Kn4/y8vBOvznymZwGd5AWvMq6J2ti/B+rUYJARi6fQlGtOg/46DZWxBhfb0eNj5AqtgqL7XMnyTjkM/wduPbmHUmKJU/kci/ACdcmUgvATiCWbhb8qRz6GkLdVkuEnV+DjUr4kHxieM0kKWHDLqwsvXTeSxNHo4GkyhW7yisJNlfX31x/eCBUjBHgctPvEF+MJjPh2L7pa1mFyrA+bx2j7SN6PtRzz/6DjRd1ePgyvqVS7lG1tu3lSisXwbSr8eULgcA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ihWbLqG/tz8dOo8xB5kn0PVmFNtLG3vbNmHxB6OaZ4c=;
+ b=TJTmRW70kLbDOvISOC8Q7pkkchISuAn01O1Nj8VmkWFbXoFIiJh/tOk9reaUIUcChQf+vVtBAqKNCYQCivn4o1pqV2oKFw0XlUjOr9ZymjWr+M2lh/MvHX4N6UMozUqDIDvwL5M2qCdAqugP0qtHH4EkTTPAGFFUG88EtijRzW/WRET5ORcDDwNwku0KnPAGClJdLgx5d6Rw/vzo4KKn0jZWmXQBRKkrFdsz5Eelv+258qJyswwFTX3alABVDWEzfjEM898clYAQZhG6MB7fzNqCG8P+O8nfQU7pFLAIPpLzyp9lWLbetUkZ37vIsc9Fnkj+vftUpC6fmue/oO5hCA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ihWbLqG/tz8dOo8xB5kn0PVmFNtLG3vbNmHxB6OaZ4c=;
+ b=P5JFE/ozIXvfy3HLOQk3iJ6fxDOm9LDC0euLu5bRgd40aM0Q5AYppt1XtVuB0WcOXZ/TC20q5s9CCgbH8Sy05mMxKhzjHCgVa+DF45RiJLAejz7JU/I7qpgLCFngqwpvxn6TXj43BAuFz0/JBSHqAAaQ31gjVlfGhnY/M91b5+GLy5tNUooy9tA9lc3QWFcZUsCaXJFc8vXYmhg2QVGKk1QiO/L/gSmvdDDYg0JHWEGQF/QvNofPp8KwQ/ed6rviDCJe9P/G8Uk5XNHh2kPKAdUgLne2XrQoOpzximd87ngnLSoWX966/ZmuKVowzRZOVr+AiWIy0rlzSAk+GxmbYg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by DM4PR12MB6638.namprd12.prod.outlook.com (2603:10b6:8:b5::5) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6907.33; Thu, 26 Oct 2023 14:11:03 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::11a1:b0c7:7c88:9480]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::11a1:b0c7:7c88:9480%4]) with mapi id 15.20.6933.022; Thu, 26 Oct 2023
+ 14:11:03 +0000
+Date: Thu, 26 Oct 2023 11:11:01 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Michael Shavit <mshavit@google.com>
+Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+	linux-arm-kernel@lists.infradead.org,
+	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Nicolin Chen <nicolinc@nvidia.com>
+Subject: Re: [PATCH 11/27] iommu/arm-smmu-v3: Lift CD programming out of the
+ SVA notifier code
+Message-ID: <20231026141101.GO3952@nvidia.com>
+References: <0-v1-afbb86647bbd+5-smmuv3_newapi_p2_jgg@nvidia.com>
+ <11-v1-afbb86647bbd+5-smmuv3_newapi_p2_jgg@nvidia.com>
+ <CAKHBV24f3yh_6GsY5jLzUVOdJksRPuHx+w6ynhYrBAt1zyHO6A@mail.gmail.com>
+ <20231024234608.GD911568@nvidia.com>
+ <CAKHBV25oYCwRW_5J+PFNhJ3Qj_JKy54J+3Lc25Wyie40xaQ_Ag@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAKHBV25oYCwRW_5J+PFNhJ3Qj_JKy54J+3Lc25Wyie40xaQ_Ag@mail.gmail.com>
+X-ClientProxiedBy: SA9PR13CA0078.namprd13.prod.outlook.com
+ (2603:10b6:806:23::23) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20231026122016.GU691768@ziepe.ca>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|DM4PR12MB6638:EE_
+X-MS-Office365-Filtering-Correlation-Id: a031b77a-73b8-457a-e55d-08dbd62d6342
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	IDpS4higXByi1FS0CU7+ouIyzvyKkV5eulaD6000DPChBleYd+qutV96eJg4WVcwb8JL36xWwNwfHxAGv6EhX5i5DWILppZjZT1v6/HR3BhzlkAWijkZIcBqBsnKU1jTiI3qHxLYhEOg1l5SuCYDb9Sz8rQJp+7nYOWVOh60IDTED2t72u4bc+hHqBD/hWFSBclniS1gbtCWruzjuu6sJL23PveQ/Ti2LnQ85h8tc+w6zIyPsOhpRCOWj1+UdO/XRZRQ9JJERCBjxWfR9HLp1qk54e7wJYJ3zRRE5baErGHwJk7TCngckXEha4ABD1I19s8MQwLYNiyBn6MFQziVqdLUHcDN2vj6NUmWpJhvvKhA57SHu5PiQot6y9YNLtm6r5BhWkGLccJmM14mSr/T2krp/VmKPUOqG2SY5Z+DvliP07OGPlkFQF9vNtD62YVMAGtkEi1jHrLHPGId80jO5KjSK5VRCswmSNdH4IggLnSQ3dvMegbF1qaxQRIVKVzA7rrIlZYOpVjJH0IQlazqPj3OpRUj7fMee1x0yKdB5HssUeRpBXy+oSsA8rFRPYtW
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(396003)(376002)(136003)(346002)(39860400002)(366004)(230922051799003)(64100799003)(186009)(451199024)(1800799009)(66946007)(5660300002)(2906002)(41300700001)(316002)(6916009)(4326008)(54906003)(66476007)(66556008)(53546011)(478600001)(6486002)(8936002)(8676002)(6506007)(107886003)(66899024)(2616005)(1076003)(26005)(6512007)(83380400001)(86362001)(38100700002)(33656002)(36756003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?M2VuSmg1ejFaVm5aMmRlSVFIRVpxcUpFLzdKUTU2UnhtditCVmk4eHdWWkNt?=
+ =?utf-8?B?L0p6WXEvUy9yek5NZzlJSlk0bHA2VmRrRDNGRkV6cDcrNHRKejFDcURCTWJx?=
+ =?utf-8?B?NU1zaEJ1ZnpyNldadmQ0RjNlcEtBUWhwY2w4TC9zQWZ4czYzdWhVUWRRTUdj?=
+ =?utf-8?B?d0NZbFFmN2pmYVhKSyswdFgyVVd1SldaQ01va3B5cnA2Mko3WEIxRldPa0JD?=
+ =?utf-8?B?VlByUHFvY1hxM1I5c0dHbjRQTnk4NkgxOFNCN1JRcEJ6cStuUEZOZkxYNTJR?=
+ =?utf-8?B?emx3MTVYeFEwTkRGYnRKd0xEZTBERDAwUlhiMGJzUXpmdlBEZE5VNXJSM0Zp?=
+ =?utf-8?B?NndvdmtZWEZaSEFLQ0wvQkd1N2Q4cG9FTzZmTFk1blFqK3c1NU5oRmZ0Q1li?=
+ =?utf-8?B?WC9EcG5HR3NWS1NQNlhubm9GNmxaU3lIK2NLVWhxTmQ5QVNvTWlqU0FXTWlV?=
+ =?utf-8?B?eVd1Z3p4WkhicUtxeVNLNHZlQUNOdUpUTU94Y05rYzQvbDlMZkhFWWd5bkZL?=
+ =?utf-8?B?c29rblc2a29DcEVaQTF6YXluT2tBQ3IzU0Qya0VldndpbXlxL1Y3b09CSktL?=
+ =?utf-8?B?U0FSK2YrdU9ZM3dra1hBRmVkaVBvL2NJMTNBWmh1cDF0Z09UbHpHemZidzQy?=
+ =?utf-8?B?dGlYbzhDeEZBbWcyT2pISlM3bmUrTC9MNkNKaXU0NmlGaURXTytJU2piaXpY?=
+ =?utf-8?B?YzhvOFNxdVB3UlNyMVpPQjVLZVNEUVJWWkFEOXFxVnpZcEtyL3pEaGlwZjVz?=
+ =?utf-8?B?ZjBVNWh1RlNhMmFYQWl5TmtnTkRlNFRCNnpMQzJvYWt1OElrZzh1S0xPQW5k?=
+ =?utf-8?B?ODhPUlNtWEVuU1VCMUxqTEM5S0kwTkFPV0M4RjlZOUFxVWdSZzdocmZMVUdL?=
+ =?utf-8?B?bjl3UXVxL2UxWDFoU2NtTUwrWEFjMFZpWkJNaGcxVmE5UHBFQVQ1d3pkdzFX?=
+ =?utf-8?B?RWNjejMxUDFRN21SUmI1bHoxcjFKUUNPM3llQzU3aTc0eFYrNk9wTEFuMFlY?=
+ =?utf-8?B?UnhmYVdqVUxyWUtCc3NBMVlsU0lTZlZQVXpXZFVQMCtZRnZOblNFcWk3RmZM?=
+ =?utf-8?B?RnhjUEdOOFZ5ZU92T3dFOXdlQUk3VFV3UnJKWXg0cGdTTlNzSWNLbTJxV3d1?=
+ =?utf-8?B?YWtpdHdiVE1xbUIxZUhvQjNqSE14NWkweGhKZDhnZmR0bUtXakhka3Y2aVRh?=
+ =?utf-8?B?YVZqL1o1N2xFZmFBUEdtNUdPamd2c09OOUlQUmZxQm9VWENMaUQva0VHeGZE?=
+ =?utf-8?B?Z3l3YTZBY1FwUU54cmY3LzNWOHZMZDBxY0RDRmF4THNQWlVXK05kNDNBNk5h?=
+ =?utf-8?B?QmNhU0JsS1U4dHhuZGlxU0IvZ2s5Rm5xcC9PMkZaK2VuMGxLcWkvZHZXTm5H?=
+ =?utf-8?B?bUtSUHl3NEZwSnp0RWN1UjduckYrWVo2cGhLYWJaQ2R3RVcxRXNNRVpnQlQr?=
+ =?utf-8?B?YWdTSjdiaVllMzlJWG1LcVVMSkRrS1BZRGNLOGdTUDFVYSs3Wks1STBTb1RP?=
+ =?utf-8?B?dU8vekVKNFk0MkREK1BCalVCdVN2VTRJak0yQU9nb1lXQXlWOEhmVnJvYTJn?=
+ =?utf-8?B?K1NJRGEvUTBHRWpnZjhYNVVBTGV1Nm5PcDkxWVJTTEFrVEZBbkMxMzAwdy9N?=
+ =?utf-8?B?dEk5eER3OGtSN29wTERoYUZzaW5KNEZIYkFzNHB3dVRNSis2ZnMvWEI2RXI2?=
+ =?utf-8?B?SlBHQlB2MmxkVjZOQmJJRXY0NHpMZUJkbVdiNlkvQ3M3cTRmL3F6b3NmVlI1?=
+ =?utf-8?B?Yy85b21LNjJyNmc4OHUvUmxBMkRKMDAwREtSWU9uQkZRSXhac0VuK2lZTXlR?=
+ =?utf-8?B?b1FOMlBlakRYa1RGaVV2VTNxcUR3N0NpWWltWE1nT0UyRkpzYjFOMHFDUWxx?=
+ =?utf-8?B?YlRFUXBVTmJCQ2pZazIwbVNjL0tZVUVUQ2RlUXRlWFRJMmN1L3BnQnhkc2Ry?=
+ =?utf-8?B?YWt5M0J5NWpIcEYrNnJ5YU10VlM1K1o5bjVFS2xJTnR0WDhHZHRubVlwWWtw?=
+ =?utf-8?B?K0Nmd2V5OHlMSUNNZjZuOFdneGNhQXZXejNPOVVaVGZ5TUlSYUxxOEcrWm5K?=
+ =?utf-8?B?TjY1TFhOZmlxS0Y0VnhrN2R1emIwSjJlSVVjNGxubXZKQ1dNREdPMXdrM2ZN?=
+ =?utf-8?Q?SLhE=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a031b77a-73b8-457a-e55d-08dbd62d6342
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Oct 2023 14:11:03.1625
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: ydF8ehT3eC6RBbCwIso60wwcJFxkq22jDziCYwvSYybSFUSBSwxZHIYUUxTQTy9g
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB6638
 
-On Thu, Oct 26, 2023 at 09:20:16AM -0300, Jason Gunthorpe wrote:
-> On Thu, Oct 26, 2023 at 09:24:40AM +0200, Joerg Roedel wrote:
-> > Hi Tina,
-> > 
-> > On Wed, Oct 18, 2023 at 01:06:35PM +0800, Tina Zhang wrote:
-> > > Tina Zhang (5):
-> > >   iommu/vt-d: Remove mm->pasid in intel_sva_bind_mm()
-> > >   iommu: Add mm_get_enqcmd_pasid() helper function
-> > >   mm: Add structure to keep sva information
-> > >   iommu: Support mm PASID 1:n with sva domains
-> > >   mm: Deprecate pasid field
-> > 
-> > Thanks for doing this, it all looks reasonable to me. But there is one
-> > thing missing which needs to be done before we can move forward with
-> > this.
-> > 
-> > There was a discussion about the Kconfig symbol naming used in
-> > mm_struct. Please see the discussion here:
-> > 
-> > 	https://lore.kernel.org/all/CAHk-=wgUiAtiszwseM1p2fCJ+sC4XWQ+YN4TanFhUgvUqjr9Xw@mail.gmail.com/
+On Thu, Oct 26, 2023 at 03:31:41PM +0800, Michael Shavit wrote:
+> On Wed, Oct 25, 2023 at 7:46 AM Jason Gunthorpe <jgg@nvidia.com> wrote:
 > >
-> > Please update this patch-set to solve this and I will take the series.
+> > On Tue, Oct 24, 2023 at 02:34:28PM +0800, Michael Shavit wrote:
+> > > On Thu, Oct 12, 2023 at 7:26 AM Jason Gunthorpe <jgg@nvidia.com> wrote:
+> > > > [...]
+> > > > -static void arm_smmu_mmu_notifier_put(struct arm_smmu_mmu_notifier *smmu_mn)
+> > > > +static struct arm_smmu_ctx_desc *
+> > > > +arm_smmu_mmu_notifier_put(struct arm_smmu_mmu_notifier *smmu_mn)
+> > > >  {
+> > > >         struct mm_struct *mm = smmu_mn->mn.mm;
+> > > >         struct arm_smmu_ctx_desc *cd = smmu_mn->cd;
+> > > >         struct arm_smmu_domain *smmu_domain = smmu_mn->domain;
+> > > > -       struct arm_smmu_master *master;
+> > > > -       unsigned long flags;
+> > > >
+> > > >         if (!refcount_dec_and_test(&smmu_mn->refs))
+> > > > -               return;
+> > > > +               return cd;
+> > > >
+> > > >         list_del(&smmu_mn->list);
+> > > >
+> > > > -       spin_lock_irqsave(&smmu_domain->devices_lock, flags);
+> > > > -       list_for_each_entry(master, &smmu_domain->devices, domain_head)
+> > > > -               arm_smmu_clear_cd(master, mm->pasid);
+> > > > -       spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
+> > > > -
+> > > >         /*
+> > > >          * If we went through clear(), we've already invalidated, and no
+> > > >          * new TLB entry can have been formed.
+> > >
+> > > This re-orders the TLB invalidation before the CD entry is cleared.
+> > > Couldn't a misbehaving device form TLB entries in this time interval
+> > > that we'd want to avoid?
+> >
+> > Hum.. No for the 'inv_asid', but yes for the 'atc_inv_domain'
 > 
-> Lets call it CONFIG_IOMMU_MM_DATA then. It is still pretty nonsensical
-> but it speaks to what it does after this series
+> Just to confirm, why "No for the 'inv_asid'"? My best guess:
+> 1. Transactions don't hit the TLB entries unless there's a valid CD
+> configured with that ASID
+> 2. You're relying on those TLB entries being cleared elsewhere in the
+> code, when freeing/reclaiming the ASID from the domain.
 
-This is what I came up with:
+Ahhh I was too thoughtless to say that!
 
-From ca97b6cb94eadc4066d762aa4c54e7ba9789f3f4 Mon Sep 17 00:00:00 2001
-From: Jason Gunthorpe <jgg@nvidia.com>
-Date: Thu, 26 Oct 2023 10:43:12 -0300
-Subject: [PATCH] iommu: Change kconfig around IOMMU_SVA
+Yes, we need to have the CD removed before doing the IOTLB
+invalidation too because we are trying to clear the IOTLB of that ASID
+so the ASID is clean before going back to the allocator.
 
-Linus suggested that the kconfig here is confusing:
+I got a bit confused because later on in the series that specific
+invalidation is moved into arm_smmu_domain_free_id() and moved over to
+domain deallocation, but at this point we don't have that yet so it is
+still doing something important. Regardless it is fixed!
 
-https://lore.kernel.org/all/CAHk-=wgUiAtiszwseM1p2fCJ+sC4XWQ+YN4TanFhUgvUqjr9Xw@mail.gmail.com/
+> But this also makes me curious why we bother with an ASID invalidation
+> in the first place if it's not required for correctness.
 
-Let's break it into three kconfigs controlling distinct things:
+ASIDs put back into the xarray for allocation must be clean in the
+IOTLB as we don't do an invalidation when we allocate an unused ASID
+from the xarray. An ASID that is not clean could have stale
+translations that are not valid. See patch 22
 
- - CONFIG_IOMMU_MM_DATA controls if the mm_struct has the additional
-   fields for the IOMMU. Currently only PASID, but later patches store
-   a struct iommu_mm_data *
-
- - CONFIG_ARCH_HAS_CPU_PASID controls if the arch needs the scheduling bit
-   for keeping track of the ENQCMD instruction. x86 will select this if
-   IOMMU_SVA is enabled
-
- - IOMMU_SVA controls if the IOMMU core compiles in the SVA support code
-   for iommu driver use and the IOMMU exported API
-
-This way ARM will not enable CONFIG_ARCH_HAS_CPU_PASID
-
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
----
- arch/Kconfig             | 5 +++++
- arch/x86/Kconfig         | 1 +
- arch/x86/kernel/traps.c  | 2 +-
- drivers/iommu/Kconfig    | 1 +
- include/linux/iommu.h    | 2 +-
- include/linux/mm_types.h | 2 +-
- include/linux/sched.h    | 2 +-
- kernel/fork.c            | 2 +-
- mm/Kconfig               | 3 +++
- mm/init-mm.c             | 2 +-
- 10 files changed, 16 insertions(+), 6 deletions(-)
-
-diff --git a/arch/Kconfig b/arch/Kconfig
-index 12d51495caec18..35b9fd559bb697 100644
---- a/arch/Kconfig
-+++ b/arch/Kconfig
-@@ -301,6 +301,11 @@ config ARCH_HAS_DMA_CLEAR_UNCACHED
- config ARCH_HAS_CPU_FINALIZE_INIT
- 	bool
- 
-+# The architecture has a per-task state that includes the mm's PASID
-+config ARCH_HAS_CPU_PASID
-+	bool
-+	select IOMMU_MM_DATA
-+
- # Select if arch init_task must go in the __init_task_data section
- config ARCH_TASK_STRUCT_ON_STACK
- 	bool
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index 66bfabae881491..afd9c2dc228bdf 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -72,6 +72,7 @@ config X86
- 	select ARCH_HAS_CACHE_LINE_SIZE
- 	select ARCH_HAS_CPU_CACHE_INVALIDATE_MEMREGION
- 	select ARCH_HAS_CPU_FINALIZE_INIT
-+	select ARCH_HAS_CPU_PASID		if IOMMU_SVA
- 	select ARCH_HAS_CURRENT_STACK_POINTER
- 	select ARCH_HAS_DEBUG_VIRTUAL
- 	select ARCH_HAS_DEBUG_VM_PGTABLE	if !X86_PAE
-diff --git a/arch/x86/kernel/traps.c b/arch/x86/kernel/traps.c
-index c876f1d36a81a7..2b62dbb3396add 100644
---- a/arch/x86/kernel/traps.c
-+++ b/arch/x86/kernel/traps.c
-@@ -565,7 +565,7 @@ static bool fixup_iopl_exception(struct pt_regs *regs)
-  */
- static bool try_fixup_enqcmd_gp(void)
- {
--#ifdef CONFIG_IOMMU_SVA
-+#ifdef CONFIG_ARCH_HAS_CPU_PASID
- 	u32 pasid;
- 
- 	/*
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index 5cc869db1b79fc..0f9c3f6ae8d32d 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -160,6 +160,7 @@ config IOMMU_DMA
- 
- # Shared Virtual Addressing
- config IOMMU_SVA
-+	select IOMMU_MM_DATA
- 	bool
- 
- config FSL_PAMU
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 8fb1b41b4d1580..0d2e01404c3e50 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -1324,7 +1324,7 @@ static inline bool tegra_dev_iommu_get_stream_id(struct device *dev, u32 *stream
- 	return false;
- }
- 
--#ifdef CONFIG_IOMMU_SVA
-+#ifdef CONFIG_IOMMU_MM_DATA
- static inline void mm_pasid_init(struct mm_struct *mm)
- {
- 	mm->pasid = IOMMU_PASID_INVALID;
-diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
-index 36c5b43999e608..330f3cd8d5ad97 100644
---- a/include/linux/mm_types.h
-+++ b/include/linux/mm_types.h
-@@ -881,7 +881,7 @@ struct mm_struct {
- #endif
- 		struct work_struct async_put_work;
- 
--#ifdef CONFIG_IOMMU_SVA
-+#ifdef CONFIG_IOMMU_MM_DATA
- 		u32 pasid;
- #endif
- #ifdef CONFIG_KSM
-diff --git a/include/linux/sched.h b/include/linux/sched.h
-index 77f01ac385f7a5..3ac8e8556c3d93 100644
---- a/include/linux/sched.h
-+++ b/include/linux/sched.h
-@@ -949,7 +949,7 @@ struct task_struct {
- 	/* Recursion prevention for eventfd_signal() */
- 	unsigned			in_eventfd:1;
- #endif
--#ifdef CONFIG_IOMMU_SVA
-+#ifdef CONFIG_ARCH_HAS_CPU_PASID
- 	unsigned			pasid_activated:1;
- #endif
- #ifdef	CONFIG_CPU_SUP_INTEL
-diff --git a/kernel/fork.c b/kernel/fork.c
-index 3b6d20dfb9a85e..d28f0d4582dcc1 100644
---- a/kernel/fork.c
-+++ b/kernel/fork.c
-@@ -1179,7 +1179,7 @@ static struct task_struct *dup_task_struct(struct task_struct *orig, int node)
- 	tsk->use_memdelay = 0;
- #endif
- 
--#ifdef CONFIG_IOMMU_SVA
-+#ifdef CONFIG_ARCH_HAS_CPU_PASID
- 	tsk->pasid_activated = 0;
- #endif
- 
-diff --git a/mm/Kconfig b/mm/Kconfig
-index 264a2df5ecf5b9..fee4a15e444b74 100644
---- a/mm/Kconfig
-+++ b/mm/Kconfig
-@@ -1258,6 +1258,9 @@ config LOCK_MM_AND_FIND_VMA
- 	bool
- 	depends on !STACK_GROWSUP
- 
-+config IOMMU_MM_DATA
-+	bool
-+
- source "mm/damon/Kconfig"
- 
- endmenu
-diff --git a/mm/init-mm.c b/mm/init-mm.c
-index cfd367822cdd2e..c52dc2740a3de2 100644
---- a/mm/init-mm.c
-+++ b/mm/init-mm.c
-@@ -44,7 +44,7 @@ struct mm_struct init_mm = {
- #endif
- 	.user_ns	= &init_user_ns,
- 	.cpu_bitmap	= CPU_BITS_NONE,
--#ifdef CONFIG_IOMMU_SVA
-+#ifdef CONFIG_IOMMU_MM_DATA
- 	.pasid		= IOMMU_PASID_INVALID,
- #endif
- 	INIT_MM_CONTEXT(init_mm)
--- 
-2.42.0
-
+Jason
