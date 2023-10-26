@@ -1,133 +1,114 @@
-Received: from frasgout11.his.huawei.com (frasgout11.his.huawei.com [14.137.139.23])
+Received: from wout2-smtp.messagingengine.com (wout2-smtp.messagingengine.com [64.147.123.25])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9FAAD1CAB2
-	for <iommu@lists.linux.dev>; Thu, 26 Oct 2023 10:10:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=huaweicloud.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=huaweicloud.com
-Authentication-Results: smtp.subspace.kernel.org; dkim=none
-Received: from mail02.huawei.com (unknown [172.18.147.228])
-	by frasgout11.his.huawei.com (SkyGuard) with ESMTP id 4SGLMk34Wgz9y4TJ
-	for <iommu@lists.linux.dev>; Thu, 26 Oct 2023 17:38:42 +0800 (CST)
-Received: from huaweicloud.com (unknown [10.81.222.195])
-	by APP1 (Coremail) with SMTP id LxC2BwBnwJGjNjplmLDyAg--.24089S2;
-	Thu, 26 Oct 2023 10:51:38 +0100 (CET)
-From: Petr Tesarik <petrtesarik@huaweicloud.com>
-To: Christoph Hellwig <hch@lst.de>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Petr Tesarik <petr.tesarik1@huawei-partners.com>,
-	iommu@lists.linux.dev (open list:DMA MAPPING HELPERS),
-	linux-kernel@vger.kernel.org (open list)
-Cc: Wangkefeng <wangkefeng.wang@huawei.com>,
-	Roberto Sassu <roberto.sassu@huaweicloud.com>,
-	petr@tesarici.cz
-Subject: [PATCH] swiotlb: check dynamically allocated TLB address before decrypting
-Date: Thu, 26 Oct 2023 11:51:23 +0200
-Message-Id: <20231026095123.222-1-petrtesarik@huaweicloud.com>
-X-Mailer: git-send-email 2.34.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 146D62D059;
+	Thu, 26 Oct 2023 10:35:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=svenpeter.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=svenpeter.dev
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=svenpeter.dev header.i=@svenpeter.dev header.b="0FhfDv/K";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="Z/GpDOuJ"
+Received: from compute6.internal (compute6.nyi.internal [10.202.2.47])
+	by mailout.west.internal (Postfix) with ESMTP id A7C0032009D0;
+	Thu, 26 Oct 2023 06:35:09 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute6.internal (MEProxy); Thu, 26 Oct 2023 06:35:11 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svenpeter.dev;
+	 h=cc:cc:content-transfer-encoding:content-type:content-type
+	:date:date:from:from:in-reply-to:in-reply-to:message-id
+	:mime-version:references:reply-to:sender:subject:subject:to:to;
+	 s=fm3; t=1698316509; x=1698402909; bh=6+tEepzRhbdqOl9MvWwXAiJ7s
+	lUiFVVeF7abKCPfm54=; b=0FhfDv/KuaeIZtneUDMGrWLD1ZJiTNqf17t4XuEB2
+	kZJbinjrfZEJLXTmxZ9oQgiWiAF2Kfpks2Jvm9VwN1AlEAjcSlEKKqjaY9cxIs/J
+	rrQ0xBmmCgFUSJ0ARA8Dv9x0OwA3RD3eRLFicr/ZXPI4eWccXTl5oo+9FB9lPb9O
+	VDHvG3Uni7/CY/TXKzNHusP93vQX9FrFk2Ovpfi4oDEBnkVoLpWROOGgdXCGZHe5
+	f4sHmun5mmPDFX8t9MU4qUZk2hFscjGLsyeaLNCCLaQFtQHqoM/H7/57+3iycwVm
+	pPH/moj08A6xa/oZNvMnfKaOmUGdbwYcdrP+1zhdTJ/3Q==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-transfer-encoding
+	:content-type:content-type:date:date:feedback-id:feedback-id
+	:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:sender:subject:subject:to:to:x-me-proxy
+	:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=
+	1698316509; x=1698402909; bh=6+tEepzRhbdqOl9MvWwXAiJ7slUiFVVeF7a
+	bKCPfm54=; b=Z/GpDOuJxjpBrSe1P9TbIfdEJm4mziK6+DKBFDZx4c5jTzaTgRs
+	yagsPVCJSxz2gnnLpuHrgvSJDAKzwcGbez1H9FZAP3m37Cq08Xo/Z3M4GhpH3IfJ
+	J2NvmOQXZpxqfcAQ38ZXeRGzB4+AbdkhphRiFjg+n0g4/+Rzv81bLKO4wJptW6Sf
+	S/T3I4iqRX5BRyiT0V0cAKvEu01IFBVltMiBLV1VX5f1ziQWM7695voVc7h7kU/F
+	Yxh53DQmU9pX3ZJdjKLgJrnqk9WUntEZamRID33lJTKUBpuK+sC8eQxsVPrXjt6m
+	qUMvehFXEkrgCEBWDyV9FpVAO7DarIQANNA==
+X-ME-Sender: <xms:20A6Zf-FHDUZINSEU_EOssEXtwfNoH3iXVp_wmsvcyBwRLHemeETbQ>
+    <xme:20A6ZbtDki5Jg2R3ymkLBnMsKAfVSErf21xKvc1wxPOgyEACrobgNbaiZl8NbmpT1
+    1qLf-jeNTFxlKvIkyE>
+X-ME-Received: <xmr:20A6ZdAw5c4da6kJapVoXjcA4rE6gumZw2-SgokMN2zWuxCxr_D2Ru7w7BzW_ON1rneS8bzpQI4lMBaoVDqXf9FQuKX7QeD3y7xqMY4I2Pr2o8EelGJo47FXPVk>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvkedrledvgddvlecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpegtgffhggfufffkfhevjgfvofesthhqmhdthhdtjeenucfhrhhomhepufhvvghn
+    ucfrvghtvghruceoshhvvghnsehsvhgvnhhpvghtvghrrdguvghvqeenucggtffrrghtth
+    gvrhhnpedvhfdtudduvdeujeeufffgudekvdefvefgueeiiedvledtheegieevffdtteek
+    udenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehsvh
+    gvnhesshhvvghnphgvthgvrhdruggvvh
+X-ME-Proxy: <xmx:20A6ZbcUFKYSw09WrpR9ZGvX0qEvZZFsUkabN8756-wfQfW4GnqVvg>
+    <xmx:20A6ZUMAIcgtj2Gpkgi6PkKhCGR8EZcPcOR-x862bEmwaz2T2-nEag>
+    <xmx:20A6Zdnq87T4UyMpFpjL9OOX4M8PPL2xyeAIpPPOgZsbgrqc-xvbKQ>
+    <xmx:3UA6ZZs-p2ku1VBDSNY2vf3ANsa4KAmVOibmLjzOO1uwXs7ODj5LHg>
+Feedback-ID: i51094778:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
+ 26 Oct 2023 06:35:07 -0400 (EDT)
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+From: Sven Peter <sven@svenpeter.dev>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:LxC2BwBnwJGjNjplmLDyAg--.24089S2
-X-Coremail-Antispam: 1UD129KBjvJXoWxWFWDCry3Ar17Ww4fAr17GFg_yoW5Xr1kpF
-	4Syr1Sqr98tFy7CrWxAF4kCFy3Kws5CFW3CFW5X343ZFnxWFySkr9rCw109ayfJr4kua17
-	JrW0v3Wayr47ZwUanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDU0xBIdaVrnRJUUUBS14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-	rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-	1l84ACjcxK6xIIjxv20xvE14v26r1j6r1xM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4j
-	6F4UM28EF7xvwVC2z280aVAFwI0_Gr0_Cr1l84ACjcxK6I8E87Iv6xkF7I0E14v26r4j6r
-	4UJwAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
-	I7IYx2IY67AKxVWUGVWUXwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r
-	4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwACI402YVCY1x02628v
-	n2kIc2xKxwCY1x0262kKe7AKxVWUtVW8ZwCY1x0264kExVAvwVAq07x20xyl42xK82IYc2
-	Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s02
-	6x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r1q6r43MIIYrxkI7VAKI48JMIIF0x
-	vE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r4j6F4UMIIF0xvE
-	42xK8VAvwI8IcIk0rVWrJr0_WFyUJwCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87
-	Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjfUnLvKUUUUU
-X-CM-SenderInfo: hshw23xhvd2x3n6k3tpzhluzxrxghudrp/
-X-CFilter-Loop: Reflected
+Mime-Version: 1.0 (1.0)
+Subject: Re: [PATCH v2 0/9] iommu: Convert dart & iommufd to the new domain_alloc_paging()
+Date: Thu, 26 Oct 2023 12:34:54 +0200
+Message-Id: <20F398C2-8F87-4149-9154-44EFF2A966DE@svenpeter.dev>
+References: <ZToaD1tuNJ7tra-g@8bytes.org>
+Cc: Jason Gunthorpe <jgg@nvidia.com>,
+ Alyssa Rosenzweig <alyssa@rosenzweig.io>, asahi@lists.linux.dev,
+ Christophe Leroy <christophe.leroy@csgroup.eu>,
+ David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux.dev,
+ Kevin Tian <kevin.tian@intel.com>, linux-arm-kernel@lists.infradead.org,
+ linuxppc-dev@lists.ozlabs.org, Hector Martin <marcan@marcan.st>,
+ Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>,
+ Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
+ Lu Baolu <baolu.lu@linux.intel.com>, Janne Grunau <j@jannau.net>
+In-Reply-To: <ZToaD1tuNJ7tra-g@8bytes.org>
+To: Joerg Roedel <joro@8bytes.org>
+X-Mailer: iPhone Mail (21A360)
 
-From: Petr Tesarik <petr.tesarik1@huawei-partners.com>
 
-Do not decrypt a dynamically allocated TLB area until its physical address
-is known to be below the requested limit. Currently, pages are allocated
-and decrypted, but then they may be freed while still decrypted if
-swiotlb_alloc_tlb() determines that the physical address is too high.
+>=20
+> On 26. Oct 2023, at 09:49, Joerg Roedel <joro@8bytes.org> wrote:
+>=20
+> =EF=BB=BFOn Wed, Sep 27, 2023 at 08:47:30PM -0300, Jason Gunthorpe wrote:
+>> Jason Gunthorpe (9):
+>>  iommu: Move IOMMU_DOMAIN_BLOCKED global statics to ops->blocked_domain
+>>  iommu/vt-d: Update the definition of the blocking domain
+>>  iommu/vt-d: Use ops->blocked_domain
+>>  iommufd: Convert to alloc_domain_paging()
+>=20
+> Applied these 4, the dart patches need reviewed-by/tested-by/acked-by
+> from one of the Dart maintainers.
 
-Let the caller differentiate between unsuitable physical address (=> retry
-from a lower zone) and allocation failures (=> no point in retrying).
+Sorry, must=E2=80=99ve missed the series. I took a brief look and this all l=
+ooks good to me. Given that Janne already reviewed it in detail:
 
-Fixes: 79636caad361 ("swiotlb: if swiotlb is full, fall back to a transient memory pool")
-Signed-off-by: Petr Tesarik <petr.tesarik1@huawei-partners.com>
----
- kernel/dma/swiotlb.c | 20 +++++++++++---------
- 1 file changed, 11 insertions(+), 9 deletions(-)
+Acked-by: Sven Peter <sven@svenpeter.dev>=20
 
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index dff067bd56b1..d1118f6f61b8 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -558,30 +558,36 @@ void __init swiotlb_exit(void)
-  * alloc_dma_pages() - allocate pages to be used for DMA
-  * @gfp:	GFP flags for the allocation.
-  * @bytes:	Size of the buffer.
-+ * @phys_limit:	Maximum allowed physical address of the buffer.
-  *
-  * Allocate pages from the buddy allocator. If successful, make the allocated
-  * pages decrypted that they can be used for DMA.
-  *
-- * Return: Decrypted pages, or %NULL on failure.
-+ * Return: Decrypted pages, %NULL on allocation failure, or ERR_PTR(-EAGAIN)
-+ * if the allocated physical address was above @phys_limit.
-  */
--static struct page *alloc_dma_pages(gfp_t gfp, size_t bytes)
-+static struct page *alloc_dma_pages(gfp_t gfp, size_t bytes, u64 phys_limit)
- {
- 	unsigned int order = get_order(bytes);
- 	struct page *page;
-+	phys_addr_t paddr;
- 	void *vaddr;
- 
- 	page = alloc_pages(gfp, order);
- 	if (!page)
- 		return NULL;
- 
--	vaddr = page_address(page);
-+	paddr = page_to_phys(page);
-+	if (paddr + bytes - 1 > phys_limit)
-+		goto error;
-+	vaddr = phys_to_virt(paddr);
- 	if (set_memory_decrypted((unsigned long)vaddr, PFN_UP(bytes)))
- 		goto error;
- 	return page;
- 
- error:
- 	__free_pages(page, order);
--	return NULL;
-+	return ERR_PTR(-EAGAIN);
- }
- 
- /**
-@@ -618,11 +624,7 @@ static struct page *swiotlb_alloc_tlb(struct device *dev, size_t bytes,
- 	else if (phys_limit <= DMA_BIT_MASK(32))
- 		gfp |= __GFP_DMA32;
- 
--	while ((page = alloc_dma_pages(gfp, bytes)) &&
--	       page_to_phys(page) + bytes - 1 > phys_limit) {
--		/* allocated, but too high */
--		__free_pages(page, get_order(bytes));
--
-+	while (IS_ERR(page = alloc_dma_pages(gfp, bytes, phys_limit))) {
- 		if (IS_ENABLED(CONFIG_ZONE_DMA32) &&
- 		    phys_limit < DMA_BIT_MASK(64) &&
- 		    !(gfp & (__GFP_DMA32 | __GFP_DMA)))
--- 
-2.42.0
+
+Thanks,
+
+
+Sven
+
+
+> Regards,
+>=20
+>    Joerg
 
