@@ -1,36 +1,36 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 557422F44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1AA483D6D
 	for <iommu@lists.linux.dev>; Thu, 26 Oct 2023 04:39:48 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="F5u8SwKr"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="LmrLkeXR"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1698295188; x=1729831188;
+  t=1698295189; x=1729831189;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=VzU84oetmnLH1pN8XZzdCzD5/BUGYg5LyBn9RczZ7eQ=;
-  b=F5u8SwKrXN6DaEG9dhzsWw0NmC9biUqBxEZZ3rK8ugVUdtxXbGw0u2Pv
-   YAV0FJoP5/QkZBlDnGjrSAXOAMdBrAe/7feVEsz0d5H+w3ZJF86l0Rl3T
-   BDb3v0LqjAUASAsya+ZxL+zT3aqN1ijHW1duimdc2x4lcNIUVpnxJHTOZ
-   eEQb5IoVQ08qxBZ4F63dTgTqbYiSx+s0cCAdudHdCvXS4+3LZxloeWGos
-   RzQWZwXptMO+T0oTwFICee/eSm6L1rGQPenjksPKyv1Ef0Aq7WSNrXukn
-   XPZrl3mDErVD2C+ePS8w2lcDw0ox5h3XBGXKdnlXzvuMUw46w/0c2tvjo
+  bh=IeDxviyjqZ/WhAoucCjLp112bmR6If7O9m/jOTstSDc=;
+  b=LmrLkeXRxrVJVQmCAYCIJBzz9FFRpDuXx446JR6ZH3J5k3/kfhpWTqyD
+   RLC31YwkKaEYuioC7H4jKqBU7ufPRlaEJrVsvp17RPy1VmUQrfD1jwYpA
+   LiEItvDKoQBy8ivpAG5oJK4gocStUt+Qa+G+kvj7uRVMQLJdIqpadGeKq
+   bwHG8GKrN0WyOiLnix07DGcmDlt8GKZ+bjy2WPyPR1q+/DmK/AS54AraQ
+   rbkqEP2hIpsX6AdEF7T12twgdL0qckitpqnGH4fvqxLrRu+jKZsm4eqr8
+   vmTZeos92L/swdD5/r9AH3LPjJm9FD2N1NB+JF+a/lUv+MI2S3rovAy96
    g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10874"; a="9014457"
+X-IronPort-AV: E=McAfee;i="6600,9927,10874"; a="9014485"
 X-IronPort-AV: E=Sophos;i="6.03,252,1694761200"; 
-   d="scan'208";a="9014457"
+   d="scan'208";a="9014485"
 Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Oct 2023 21:39:45 -0700
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Oct 2023 21:39:46 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10874"; a="708931294"
+X-IronPort-AV: E=McAfee;i="6600,9927,10874"; a="708931315"
 X-IronPort-AV: E=Sophos;i="6.03,252,1694761200"; 
-   d="scan'208";a="708931294"
+   d="scan'208";a="708931315"
 Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
-  by orsmga003.jf.intel.com with ESMTP; 25 Oct 2023 21:39:43 -0700
+  by orsmga003.jf.intel.com with ESMTP; 25 Oct 2023 21:39:44 -0700
 From: Yi Liu <yi.l.liu@intel.com>
 To: joro@8bytes.org,
 	alex.williamson@redhat.com,
@@ -57,9 +57,9 @@ Cc: cohuck@redhat.com,
 	zhenzhong.duan@intel.com,
 	joao.m.martins@oracle.com,
 	xin.zeng@intel.com
-Subject: [PATCH v7 03/10] iommufd/device: Wrap IOMMUFD_OBJ_HWPT_PAGING-only configurations
-Date: Wed, 25 Oct 2023 21:39:31 -0700
-Message-Id: <20231026043938.63898-4-yi.l.liu@intel.com>
+Subject: [PATCH v7 05/10] iommufd: Share iommufd_hwpt_alloc with IOMMUFD_OBJ_HWPT_NESTED
+Date: Wed, 25 Oct 2023 21:39:33 -0700
+Message-Id: <20231026043938.63898-6-yi.l.liu@intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20231026043938.63898-1-yi.l.liu@intel.com>
 References: <20231026043938.63898-1-yi.l.liu@intel.com>
@@ -71,15 +71,15 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-From: Jason Gunthorpe <jgg@nvidia.com>
+From: Nicolin Chen <nicolinc@nvidia.com>
 
-Some of the configurations during the attach/replace() should only apply
-to IOMMUFD_OBJ_HWPT_PAGING. Once IOMMUFD_OBJ_HWPT_NESTED gets introduced
-in a following patch, keeping them unconditionally in the common routine
-will not work.
+Allow iommufd_hwpt_alloc() to have a common routine but jump to different
+allocators corresponding to different user input pt_obj types, either an
+IOMMUFD_OBJ_IOAS for a PAGING hwpt or an IOMMUFD_OBJ_HWPT_PAGING as the
+parent for a NESTED hwpt.
 
-Wrap all of those PAGING-only configurations together into helpers. Do a
-hwpt_is_paging check whenever calling them or their fallback routines.
+Also, move the "flags" validation to the hwpt allocator (paging), so that
+later the hwpt_nested allocator can do its own separate flags validation.
 
 Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
 Signed-off-by: Yi Liu <yi.l.liu@intel.com>
@@ -87,209 +87,101 @@ Reviewed-by: Kevin Tian <kevin.tian@intel.com>
 Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 ---
- drivers/iommu/iommufd/device.c          | 111 +++++++++++++++++-------
- drivers/iommu/iommufd/iommufd_private.h |   5 ++
- 2 files changed, 86 insertions(+), 30 deletions(-)
+ drivers/iommu/iommufd/hw_pagetable.c | 46 ++++++++++++++++++----------
+ 1 file changed, 29 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
-index 449b64e6ef53..0c844acb15b9 100644
---- a/drivers/iommu/iommufd/device.c
-+++ b/drivers/iommu/iommufd/device.c
-@@ -325,6 +325,28 @@ static int iommufd_group_setup_msi(struct iommufd_group *igroup,
- 	return 0;
- }
- 
-+static int iommufd_hwpt_paging_attach(struct iommufd_hw_pagetable *hwpt,
-+				      struct iommufd_device *idev)
-+{
-+	int rc;
-+
-+	lockdep_assert_held(&idev->igroup->lock);
-+
-+	rc = iopt_table_enforce_dev_resv_regions(&hwpt->ioas->iopt, idev->dev,
-+						 &idev->igroup->sw_msi_start);
-+	if (rc)
-+		return rc;
-+
-+	if (list_empty(&idev->igroup->device_list)) {
-+		rc = iommufd_group_setup_msi(idev->igroup, hwpt);
-+		if (rc) {
-+			iopt_remove_reserved_iova(&hwpt->ioas->iopt, idev->dev);
-+			return rc;
-+		}
-+	}
-+	return 0;
-+}
-+
- int iommufd_hw_pagetable_attach(struct iommufd_hw_pagetable *hwpt,
- 				struct iommufd_device *idev)
+diff --git a/drivers/iommu/iommufd/hw_pagetable.c b/drivers/iommu/iommufd/hw_pagetable.c
+index 39b8b625b48d..6bce9af0cb8d 100644
+--- a/drivers/iommu/iommufd/hw_pagetable.c
++++ b/drivers/iommu/iommufd/hw_pagetable.c
+@@ -82,6 +82,8 @@ iommufd_hwpt_paging_alloc(struct iommufd_ctx *ictx, struct iommufd_ioas *ioas,
+ 			  struct iommufd_device *idev, u32 flags,
+ 			  bool immediate_attach)
  {
-@@ -337,10 +359,11 @@ int iommufd_hw_pagetable_attach(struct iommufd_hw_pagetable *hwpt,
- 		goto err_unlock;
- 	}
++	const u32 valid_flags = IOMMU_HWPT_ALLOC_NEST_PARENT |
++				IOMMU_HWPT_ALLOC_DIRTY_TRACKING;
+ 	const struct iommu_ops *ops = dev_iommu_ops(idev->dev);
+ 	struct iommufd_hwpt_paging *hwpt_paging;
+ 	struct iommufd_hw_pagetable *hwpt;
+@@ -91,6 +93,8 @@ iommufd_hwpt_paging_alloc(struct iommufd_ctx *ictx, struct iommufd_ioas *ioas,
  
--	rc = iopt_table_enforce_dev_resv_regions(&hwpt->ioas->iopt, idev->dev,
--						 &idev->igroup->sw_msi_start);
--	if (rc)
--		goto err_unlock;
-+	if (hwpt_is_paging(hwpt)) {
-+		rc = iommufd_hwpt_paging_attach(hwpt, idev);
-+		if (rc)
-+			goto err_unlock;
-+	}
+ 	if (flags && !ops->domain_alloc_user)
+ 		return ERR_PTR(-EOPNOTSUPP);
++	if (flags & ~valid_flags)
++		return ERR_PTR(-EOPNOTSUPP);
  
- 	/*
- 	 * Only attach to the group once for the first device that is in the
-@@ -350,10 +373,6 @@ int iommufd_hw_pagetable_attach(struct iommufd_hw_pagetable *hwpt,
- 	 * attachment.
- 	 */
- 	if (list_empty(&idev->igroup->device_list)) {
--		rc = iommufd_group_setup_msi(idev->igroup, hwpt);
--		if (rc)
--			goto err_unresv;
--
- 		rc = iommu_attach_group(hwpt->domain, idev->igroup->group);
- 		if (rc)
- 			goto err_unresv;
-@@ -364,7 +383,8 @@ int iommufd_hw_pagetable_attach(struct iommufd_hw_pagetable *hwpt,
- 	mutex_unlock(&idev->igroup->lock);
- 	return 0;
- err_unresv:
--	iopt_remove_reserved_iova(&hwpt->ioas->iopt, idev->dev);
-+	if (hwpt_is_paging(hwpt))
-+		iopt_remove_reserved_iova(&hwpt->ioas->iopt, idev->dev);
- err_unlock:
- 	mutex_unlock(&idev->igroup->lock);
- 	return rc;
-@@ -381,7 +401,8 @@ iommufd_hw_pagetable_detach(struct iommufd_device *idev)
- 		iommu_detach_group(hwpt->domain, idev->igroup->group);
- 		idev->igroup->hwpt = NULL;
- 	}
--	iopt_remove_reserved_iova(&hwpt->ioas->iopt, idev->dev);
-+	if (hwpt_is_paging(hwpt))
-+		iopt_remove_reserved_iova(&hwpt->ioas->iopt, idev->dev);
- 	mutex_unlock(&idev->igroup->lock);
- 
- 	/* Caller must destroy hwpt */
-@@ -400,13 +421,52 @@ iommufd_device_do_attach(struct iommufd_device *idev,
- 	return NULL;
- }
- 
-+static void
-+iommufd_group_remove_reserved_iova(struct iommufd_group *igroup,
-+				   struct iommufd_hw_pagetable *hwpt)
-+{
-+	struct iommufd_device *cur;
-+
-+	lockdep_assert_held(&igroup->lock);
-+
-+	list_for_each_entry(cur, &igroup->device_list, group_item)
-+		iopt_remove_reserved_iova(&hwpt->ioas->iopt, cur->dev);
-+}
-+
-+static int iommufd_group_do_replace_paging(struct iommufd_group *igroup,
-+					   struct iommufd_hw_pagetable *hwpt)
-+{
-+	struct iommufd_hw_pagetable *old_hwpt = igroup->hwpt;
-+	struct iommufd_device *cur;
-+	int rc;
-+
-+	lockdep_assert_held(&igroup->lock);
-+
-+	if (!hwpt_is_paging(old_hwpt) || hwpt->ioas != old_hwpt->ioas) {
-+		list_for_each_entry(cur, &igroup->device_list, group_item) {
-+			rc = iopt_table_enforce_dev_resv_regions(
-+				&hwpt->ioas->iopt, cur->dev, NULL);
-+			if (rc)
-+				goto err_unresv;
-+		}
-+	}
-+
-+	rc = iommufd_group_setup_msi(igroup, hwpt);
-+	if (rc)
-+		goto err_unresv;
-+	return 0;
-+
-+err_unresv:
-+	iommufd_group_remove_reserved_iova(igroup, hwpt);
-+	return rc;
-+}
-+
- static struct iommufd_hw_pagetable *
- iommufd_device_do_replace(struct iommufd_device *idev,
- 			  struct iommufd_hw_pagetable *hwpt)
+ 	hwpt_paging = __iommufd_object_alloc(
+ 		ictx, hwpt_paging, IOMMUFD_OBJ_HWPT_PAGING, common.obj);
+@@ -167,35 +171,41 @@ iommufd_hwpt_paging_alloc(struct iommufd_ctx *ictx, struct iommufd_ioas *ioas,
+ int iommufd_hwpt_alloc(struct iommufd_ucmd *ucmd)
  {
- 	struct iommufd_group *igroup = idev->igroup;
- 	struct iommufd_hw_pagetable *old_hwpt;
--	struct iommufd_device *cur;
- 	unsigned int num_devices;
+ 	struct iommu_hwpt_alloc *cmd = ucmd->cmd;
+-	struct iommufd_hwpt_paging *hwpt_paging;
+ 	struct iommufd_hw_pagetable *hwpt;
++	struct iommufd_ioas *ioas = NULL;
++	struct iommufd_object *pt_obj;
+ 	struct iommufd_device *idev;
+-	struct iommufd_ioas *ioas;
  	int rc;
  
-@@ -422,29 +482,20 @@ iommufd_device_do_replace(struct iommufd_device *idev,
- 		return NULL;
+-	if ((cmd->flags & ~(IOMMU_HWPT_ALLOC_NEST_PARENT |
+-			    IOMMU_HWPT_ALLOC_DIRTY_TRACKING)) ||
+-	    cmd->__reserved)
++	if (cmd->__reserved)
+ 		return -EOPNOTSUPP;
+ 
+ 	idev = iommufd_get_device(ucmd, cmd->dev_id);
+ 	if (IS_ERR(idev))
+ 		return PTR_ERR(idev);
+ 
+-	ioas = iommufd_get_ioas(ucmd->ictx, cmd->pt_id);
+-	if (IS_ERR(ioas)) {
+-		rc = PTR_ERR(ioas);
++	pt_obj = iommufd_get_object(ucmd->ictx, cmd->pt_id, IOMMUFD_OBJ_ANY);
++	if (IS_ERR(pt_obj)) {
++		rc = -EINVAL;
+ 		goto out_put_idev;
  	}
  
--	old_hwpt = igroup->hwpt;
--	if (hwpt->ioas != old_hwpt->ioas) {
--		list_for_each_entry(cur, &igroup->device_list, group_item) {
--			rc = iopt_table_enforce_dev_resv_regions(
--				&hwpt->ioas->iopt, cur->dev, NULL);
--			if (rc)
--				goto err_unresv;
--		}
-+	if (hwpt_is_paging(hwpt)) {
-+		rc = iommufd_group_do_replace_paging(igroup, hwpt);
-+		if (rc)
-+			goto err_unlock;
- 	}
- 
--	rc = iommufd_group_setup_msi(idev->igroup, hwpt);
--	if (rc)
--		goto err_unresv;
--
- 	rc = iommu_group_replace_domain(igroup->group, hwpt->domain);
- 	if (rc)
- 		goto err_unresv;
- 
--	if (hwpt->ioas != old_hwpt->ioas) {
--		list_for_each_entry(cur, &igroup->device_list, group_item)
--			iopt_remove_reserved_iova(&old_hwpt->ioas->iopt,
--						  cur->dev);
--	}
-+	old_hwpt = igroup->hwpt;
-+	if (hwpt_is_paging(old_hwpt) &&
-+	    (!hwpt_is_paging(hwpt) || hwpt->ioas != old_hwpt->ioas))
-+		iommufd_group_remove_reserved_iova(igroup, old_hwpt);
- 
- 	igroup->hwpt = hwpt;
- 
-@@ -462,8 +513,8 @@ iommufd_device_do_replace(struct iommufd_device *idev,
- 	/* Caller must destroy old_hwpt */
- 	return old_hwpt;
- err_unresv:
--	list_for_each_entry(cur, &igroup->device_list, group_item)
--		iopt_remove_reserved_iova(&hwpt->ioas->iopt, cur->dev);
-+	if (hwpt_is_paging(hwpt))
-+		iommufd_group_remove_reserved_iova(igroup, hwpt);
- err_unlock:
- 	mutex_unlock(&idev->igroup->lock);
- 	return ERR_PTR(rc);
-diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
-index 70bebad63a74..776dd41c077f 100644
---- a/drivers/iommu/iommufd/iommufd_private.h
-+++ b/drivers/iommu/iommufd/iommufd_private.h
-@@ -252,6 +252,11 @@ struct iommufd_hw_pagetable {
- 	struct list_head hwpt_item;
- };
- 
-+static inline bool hwpt_is_paging(struct iommufd_hw_pagetable *hwpt)
-+{
-+	return hwpt->obj.type == IOMMUFD_OBJ_HWPT_PAGING;
-+}
+-	mutex_lock(&ioas->mutex);
+-	hwpt_paging = iommufd_hwpt_paging_alloc(ucmd->ictx, ioas, idev,
+-						cmd->flags, false);
+-	if (IS_ERR(hwpt_paging)) {
+-		rc = PTR_ERR(hwpt_paging);
+-		goto out_unlock;
++	if (pt_obj->type == IOMMUFD_OBJ_IOAS) {
++		struct iommufd_hwpt_paging *hwpt_paging;
 +
- static inline struct iommufd_hw_pagetable *
- iommufd_get_hwpt(struct iommufd_ucmd *ucmd, u32 id)
- {
++		ioas = container_of(pt_obj, struct iommufd_ioas, obj);
++		mutex_lock(&ioas->mutex);
++		hwpt_paging = iommufd_hwpt_paging_alloc(ucmd->ictx, ioas, idev,
++							cmd->flags, false);
++		if (IS_ERR(hwpt_paging)) {
++			rc = PTR_ERR(hwpt_paging);
++			goto out_unlock;
++		}
++		hwpt = &hwpt_paging->common;
++	} else {
++		rc = -EINVAL;
++		goto out_put_pt;
+ 	}
+-	hwpt = &hwpt_paging->common;
+ 
+ 	cmd->out_hwpt_id = hwpt->obj.id;
+ 	rc = iommufd_ucmd_respond(ucmd, sizeof(*cmd));
+@@ -207,8 +217,10 @@ int iommufd_hwpt_alloc(struct iommufd_ucmd *ucmd)
+ out_hwpt:
+ 	iommufd_object_abort_and_destroy(ucmd->ictx, &hwpt->obj);
+ out_unlock:
+-	mutex_unlock(&ioas->mutex);
+-	iommufd_put_object(&ioas->obj);
++	if (ioas)
++		mutex_unlock(&ioas->mutex);
++out_put_pt:
++	iommufd_put_object(pt_obj);
+ out_put_idev:
+ 	iommufd_put_object(&idev->obj);
+ 	return rc;
 -- 
 2.34.1
 
