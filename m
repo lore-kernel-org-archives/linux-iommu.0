@@ -1,114 +1,90 @@
-Received: from wout2-smtp.messagingengine.com (wout2-smtp.messagingengine.com [64.147.123.25])
+Received: from mail115-171.sinamail.sina.com.cn (mail115-171.sinamail.sina.com.cn [218.30.115.171])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 146D62D059;
-	Thu, 26 Oct 2023 10:35:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=svenpeter.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=svenpeter.dev
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=svenpeter.dev header.i=@svenpeter.dev header.b="0FhfDv/K";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="Z/GpDOuJ"
-Received: from compute6.internal (compute6.nyi.internal [10.202.2.47])
-	by mailout.west.internal (Postfix) with ESMTP id A7C0032009D0;
-	Thu, 26 Oct 2023 06:35:09 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute6.internal (MEProxy); Thu, 26 Oct 2023 06:35:11 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svenpeter.dev;
-	 h=cc:cc:content-transfer-encoding:content-type:content-type
-	:date:date:from:from:in-reply-to:in-reply-to:message-id
-	:mime-version:references:reply-to:sender:subject:subject:to:to;
-	 s=fm3; t=1698316509; x=1698402909; bh=6+tEepzRhbdqOl9MvWwXAiJ7s
-	lUiFVVeF7abKCPfm54=; b=0FhfDv/KuaeIZtneUDMGrWLD1ZJiTNqf17t4XuEB2
-	kZJbinjrfZEJLXTmxZ9oQgiWiAF2Kfpks2Jvm9VwN1AlEAjcSlEKKqjaY9cxIs/J
-	rrQ0xBmmCgFUSJ0ARA8Dv9x0OwA3RD3eRLFicr/ZXPI4eWccXTl5oo+9FB9lPb9O
-	VDHvG3Uni7/CY/TXKzNHusP93vQX9FrFk2Ovpfi4oDEBnkVoLpWROOGgdXCGZHe5
-	f4sHmun5mmPDFX8t9MU4qUZk2hFscjGLsyeaLNCCLaQFtQHqoM/H7/57+3iycwVm
-	pPH/moj08A6xa/oZNvMnfKaOmUGdbwYcdrP+1zhdTJ/3Q==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-transfer-encoding
-	:content-type:content-type:date:date:feedback-id:feedback-id
-	:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:sender:subject:subject:to:to:x-me-proxy
-	:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=
-	1698316509; x=1698402909; bh=6+tEepzRhbdqOl9MvWwXAiJ7slUiFVVeF7a
-	bKCPfm54=; b=Z/GpDOuJxjpBrSe1P9TbIfdEJm4mziK6+DKBFDZx4c5jTzaTgRs
-	yagsPVCJSxz2gnnLpuHrgvSJDAKzwcGbez1H9FZAP3m37Cq08Xo/Z3M4GhpH3IfJ
-	J2NvmOQXZpxqfcAQ38ZXeRGzB4+AbdkhphRiFjg+n0g4/+Rzv81bLKO4wJptW6Sf
-	S/T3I4iqRX5BRyiT0V0cAKvEu01IFBVltMiBLV1VX5f1ziQWM7695voVc7h7kU/F
-	Yxh53DQmU9pX3ZJdjKLgJrnqk9WUntEZamRID33lJTKUBpuK+sC8eQxsVPrXjt6m
-	qUMvehFXEkrgCEBWDyV9FpVAO7DarIQANNA==
-X-ME-Sender: <xms:20A6Zf-FHDUZINSEU_EOssEXtwfNoH3iXVp_wmsvcyBwRLHemeETbQ>
-    <xme:20A6ZbtDki5Jg2R3ymkLBnMsKAfVSErf21xKvc1wxPOgyEACrobgNbaiZl8NbmpT1
-    1qLf-jeNTFxlKvIkyE>
-X-ME-Received: <xmr:20A6ZdAw5c4da6kJapVoXjcA4rE6gumZw2-SgokMN2zWuxCxr_D2Ru7w7BzW_ON1rneS8bzpQI4lMBaoVDqXf9FQuKX7QeD3y7xqMY4I2Pr2o8EelGJo47FXPVk>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvkedrledvgddvlecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpegtgffhggfufffkfhevjgfvofesthhqmhdthhdtjeenucfhrhhomhepufhvvghn
-    ucfrvghtvghruceoshhvvghnsehsvhgvnhhpvghtvghrrdguvghvqeenucggtffrrghtth
-    gvrhhnpedvhfdtudduvdeujeeufffgudekvdefvefgueeiiedvledtheegieevffdtteek
-    udenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehsvh
-    gvnhesshhvvghnphgvthgvrhdruggvvh
-X-ME-Proxy: <xmx:20A6ZbcUFKYSw09WrpR9ZGvX0qEvZZFsUkabN8756-wfQfW4GnqVvg>
-    <xmx:20A6ZUMAIcgtj2Gpkgi6PkKhCGR8EZcPcOR-x862bEmwaz2T2-nEag>
-    <xmx:20A6Zdnq87T4UyMpFpjL9OOX4M8PPL2xyeAIpPPOgZsbgrqc-xvbKQ>
-    <xmx:3UA6ZZs-p2ku1VBDSNY2vf3ANsa4KAmVOibmLjzOO1uwXs7ODj5LHg>
-Feedback-ID: i51094778:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 26 Oct 2023 06:35:07 -0400 (EDT)
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-From: Sven Peter <sven@svenpeter.dev>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C4B221CAB2
+	for <iommu@lists.linux.dev>; Thu, 26 Oct 2023 11:10:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sina.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sina.com
+Authentication-Results: smtp.subspace.kernel.org; dkim=none
+X-SMAIL-HELO: localhost.localdomain
+Received: from unknown (HELO localhost.localdomain)([113.118.68.228])
+	by sina.com (172.16.235.25) with ESMTP
+	id 653A47E900002175; Thu, 26 Oct 2023 19:05:17 +0800 (CST)
+X-Sender: hdanton@sina.com
+X-Auth-ID: hdanton@sina.com
+Authentication-Results: sina.com;
+	 spf=none smtp.mailfrom=hdanton@sina.com;
+	 dkim=none header.i=none;
+	 dmarc=none action=none header.from=hdanton@sina.com
+X-SMAIL-MID: 78810734210231
+X-SMAIL-UIID: AA9490FE7EAA4F0182A2D406B1C991EF-20231026-190517
+From: Hillf Danton <hdanton@sina.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: syzbot <syzbot+45f6cae2ca8c1f71e529@syzkaller.appspotmail.com>,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	robin.murphy@arm.com,
+	syzkaller-bugs@googlegroups.com,
+	will@kernel.org
+Subject: Re: [syzbot] [iommu?] KASAN: slab-use-after-free Read in iommufd_ioas_iova_ranges
+Date: Thu, 26 Oct 2023 19:05:02 +0800
+Message-Id: <20231026110502.2046-1-hdanton@sina.com>
+In-Reply-To: <20231025183220.GQ691768@ziepe.ca>
+References: <000000000000d621b406088a2f55@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0 (1.0)
-Subject: Re: [PATCH v2 0/9] iommu: Convert dart & iommufd to the new domain_alloc_paging()
-Date: Thu, 26 Oct 2023 12:34:54 +0200
-Message-Id: <20F398C2-8F87-4149-9154-44EFF2A966DE@svenpeter.dev>
-References: <ZToaD1tuNJ7tra-g@8bytes.org>
-Cc: Jason Gunthorpe <jgg@nvidia.com>,
- Alyssa Rosenzweig <alyssa@rosenzweig.io>, asahi@lists.linux.dev,
- Christophe Leroy <christophe.leroy@csgroup.eu>,
- David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux.dev,
- Kevin Tian <kevin.tian@intel.com>, linux-arm-kernel@lists.infradead.org,
- linuxppc-dev@lists.ozlabs.org, Hector Martin <marcan@marcan.st>,
- Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>,
- Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
- Lu Baolu <baolu.lu@linux.intel.com>, Janne Grunau <j@jannau.net>
-In-Reply-To: <ZToaD1tuNJ7tra-g@8bytes.org>
-To: Joerg Roedel <joro@8bytes.org>
-X-Mailer: iPhone Mail (21A360)
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 
+On Wed, 25 Oct 2023 15:32:20 -0300 Jason Gunthorpe <jgg@ziepe.ca>
+> On Wed, Oct 25, 2023 at 06:11:01AM -0700, syzbot wrote:
+> > Hello,
+> > 
+> > syzbot found the following issue on:
+> > 
+> > HEAD commit:    c3200081020d Merge tag 'block-6.6-2023-10-20' of git://git..
+> > git tree:       upstream
+> > console output: https://syzkaller.appspot.com/x/log.txt?x=15013471680000
+> > kernel config:  https://syzkaller.appspot.com/x/.config?x=849fe52ba7c6d78a
+> > dashboard link: https://syzkaller.appspot.com/bug?extid=45f6cae2ca8c1f71e529
+> > compiler:       Debian clang version 15.0.6, GNU ld (GNU Binutils for Debian) 2.40
+> > 
+> > Unfortunately, I don't have any reproducer for this issue yet.
+> > 
+> > Downloadable assets:
+> > disk image: https://storage.googleapis.com/syzbot-assets/caa5c1eed3ec/disk-c3200081.raw.xz
+> > vmlinux: https://storage.googleapis.com/syzbot-assets/7990a3a9f71e/vmlinux-c3200081.xz
+> > kernel image: https://storage.googleapis.com/syzbot-assets/015551ac9acc/bzImage-c3200081.xz
+> > 
+> > IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> > Reported-by: syzbot+45f6cae2ca8c1f71e529@syzkaller.appspotmail.com
+> > 
+> > ==================================================================
+> > BUG: KASAN: slab-use-after-free in __up_read+0xb3/0x690 kernel/locking/rwsem.c:1342
+> > Read of size 8 at addr ffff8880283c9068 by task syz-executor.2/30372
+> 
+> Oh *ugh* I knew about this limitation once and forgot about it
+> apparently.
+> 
+>   CPU 0         CPU1
+>  down_read()
+>  up_read()
+>                 down_write()
+>                 up_write()
+> 		kfree()
+>  [..]
+>   tail portion of up_read()
+> 
+> I suppose the rwsem should be turned into a refcount and completion
 
->=20
-> On 26. Oct 2023, at 09:49, Joerg Roedel <joro@8bytes.org> wrote:
->=20
-> =EF=BB=BFOn Wed, Sep 27, 2023 at 08:47:30PM -0300, Jason Gunthorpe wrote:
->> Jason Gunthorpe (9):
->>  iommu: Move IOMMU_DOMAIN_BLOCKED global statics to ops->blocked_domain
->>  iommu/vt-d: Update the definition of the blocking domain
->>  iommu/vt-d: Use ops->blocked_domain
->>  iommufd: Convert to alloc_domain_paging()
->=20
-> Applied these 4, the dart patches need reviewed-by/tested-by/acked-by
-> from one of the Dart maintainers.
+The line [1] syzbot caught is before preempt is disabled, so no lock is
+released yet, and the report is a simple uaf with nothing to do with
+down_write().
+With this report put aside, after the atomic operation in __up_read(),
+sem is longer touched without waiter detected, so the refcount and
+completion could not be proposed without a hoofed skull.
 
-Sorry, must=E2=80=99ve missed the series. I took a brief look and this all l=
-ooks good to me. Given that Janne already reviewed it in detail:
-
-Acked-by: Sven Peter <sven@svenpeter.dev>=20
-
-
-Thanks,
-
-
-Sven
-
-
-> Regards,
->=20
->    Joerg
-
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/kernel/locking/rwsem.c?id=c3200081020d#n1342
