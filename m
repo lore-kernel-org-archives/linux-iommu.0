@@ -1,68 +1,60 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+Received: from out-172.mta1.migadu.com (out-172.mta1.migadu.com [95.215.58.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1817B3E01E
-	for <iommu@lists.linux.dev>; Thu, 26 Oct 2023 23:05:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7260918050
+	for <iommu@lists.linux.dev>; Thu, 26 Oct 2023 23:54:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="Eb1gIXVa";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="RqNiSkrn"
-From: Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1698361548;
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="wlXDU2r/"
+Date: Thu, 26 Oct 2023 19:54:33 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1698364483;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=301JXjESu5nnVpLjEelVyjL0FjP4Jn3OGJNIUK28IQU=;
-	b=Eb1gIXVaXmAnj6Vz5I5vcFWzDPXOSmvemJ25H8m6l0iIfUCVbejjE5Y7/gMXNjhx38wFSY
-	RJVefBKehaEbHZC0xz/csfH7mbPsNSfYiCauGm2dkY44hd+k+9U6KMD5ojDdWRkeQJsrx/
-	OV5SFLjgRLZOJiENHih/gRvsbWHp/OChDTcIMU2L2YOCFQ+alGJLgavDwv76UXYnm4FUqt
-	mexY2UyN7A2yUcVKqUOOjL5oBsfz83nAndyc/X3E1zmQtBIV0PTUFh30pySJK6spbDflP8
-	y3bd6T8hJ4kPQd3jB2y/dX8ppdTvZDmpjnDFyPySE+c/jTPIO1DJJA2RSkx7MQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1698361548;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=301JXjESu5nnVpLjEelVyjL0FjP4Jn3OGJNIUK28IQU=;
-	b=RqNiSkrnkwZTXyqqspVxXRlYFLHhxLB+hajtQnaflb0qL/La0rOh7/J5t3jx5IjGn+PrXi
-	2bcUxpuqUgAyUpDA==
-To: Suren Baghdasaryan <surenb@google.com>
-Cc: akpm@linux-foundation.org, kent.overstreet@linux.dev, mhocko@suse.com,
- vbabka@suse.cz, hannes@cmpxchg.org, roman.gushchin@linux.dev,
- mgorman@suse.de, dave@stgolabs.net, willy@infradead.org,
- liam.howlett@oracle.com, corbet@lwn.net, void@manifault.com,
- peterz@infradead.org, juri.lelli@redhat.com, ldufour@linux.ibm.com,
- catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de, mingo@redhat.com,
- dave.hansen@linux.intel.com, x86@kernel.org, peterx@redhat.com,
- david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org,
- masahiroy@kernel.org, nathan@kernel.org, dennis@kernel.org, tj@kernel.org,
- muchun.song@linux.dev, rppt@kernel.org, paulmck@kernel.org,
- pasha.tatashin@soleen.com, yosryahmed@google.com, yuzhao@google.com,
- dhowells@redhat.com, hughd@google.com, andreyknvl@gmail.com,
- keescook@chromium.org, ndesaulniers@google.com, vvvvvv@google.com,
- gregkh@linuxfoundation.org, ebiggers@google.com, ytcoode@gmail.com,
- vincent.guittot@linaro.org, dietmar.eggemann@arm.com, rostedt@goodmis.org,
- bsegall@google.com, bristot@redhat.com, vschneid@redhat.com, cl@linux.com,
- penberg@kernel.org, iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com,
- glider@google.com, elver@google.com, dvyukov@google.com,
- shakeelb@google.com, songmuchun@bytedance.com, jbaron@akamai.com,
- rientjes@google.com, minchan@google.com, kaleshsingh@google.com,
- kernel-team@android.com, linux-doc@vger.kernel.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
- linux-arch@vger.kernel.org, linux-fsdevel@vger.kernel.org,
- linux-mm@kvack.org, linux-modules@vger.kernel.org,
- kasan-dev@googlegroups.com, cgroups@vger.kernel.org
+	bh=fxBcC6WpG3KRFkLY2+tQDJJ4+RZgo+8n9ZWicropf8c=;
+	b=wlXDU2r/5NnsFnSK4PA0DRbeQnz5idT7VKahwUmPIGnLuoPyox6xMFxCRq1Pws1EO9s3ve
+	aIg3upr66EtS1MsZX/PbSPfqPxCaMEUcPviZb6meANiNZEhNmrQ2++x3KPz3NDd9hcGBJa
+	757p2yOOJ0ABimOFGTUk16CjWjiwuWc=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: Kent Overstreet <kent.overstreet@linux.dev>
+To: Thomas Gleixner <tglx@linutronix.de>
+Cc: Suren Baghdasaryan <surenb@google.com>, akpm@linux-foundation.org,
+	mhocko@suse.com, vbabka@suse.cz, hannes@cmpxchg.org,
+	roman.gushchin@linux.dev, mgorman@suse.de, dave@stgolabs.net,
+	willy@infradead.org, liam.howlett@oracle.com, corbet@lwn.net,
+	void@manifault.com, peterz@infradead.org, juri.lelli@redhat.com,
+	ldufour@linux.ibm.com, catalin.marinas@arm.com, will@kernel.org,
+	arnd@arndb.de, mingo@redhat.com, dave.hansen@linux.intel.com,
+	x86@kernel.org, peterx@redhat.com, david@redhat.com,
+	axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org,
+	nathan@kernel.org, dennis@kernel.org, tj@kernel.org,
+	muchun.song@linux.dev, rppt@kernel.org, paulmck@kernel.org,
+	pasha.tatashin@soleen.com, yosryahmed@google.com, yuzhao@google.com,
+	dhowells@redhat.com, hughd@google.com, andreyknvl@gmail.com,
+	keescook@chromium.org, ndesaulniers@google.com, vvvvvv@google.com,
+	gregkh@linuxfoundation.org, ebiggers@google.com, ytcoode@gmail.com,
+	vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+	rostedt@goodmis.org, bsegall@google.com, bristot@redhat.com,
+	vschneid@redhat.com, cl@linux.com, penberg@kernel.org,
+	iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com,
+	elver@google.com, dvyukov@google.com, shakeelb@google.com,
+	songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com,
+	minchan@google.com, kaleshsingh@google.com, kernel-team@android.com,
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev, linux-arch@vger.kernel.org,
+	linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
+	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com,
+	cgroups@vger.kernel.org
 Subject: Re: [PATCH v2 28/39] timekeeping: Fix a circular include dependency
-In-Reply-To: <CAJuCfpH1pG513-FUE_28MfJ7xbX=9O-auYUjkxKLmtve_6rRAw@mail.gmail.com>
+Message-ID: <20231026235433.yuvxf7opxg74ncmd@moria.home.lan>
 References: <20231024134637.3120277-1-surenb@google.com>
- <20231024134637.3120277-29-surenb@google.com> <87h6me620j.ffs@tglx>
+ <20231024134637.3120277-29-surenb@google.com>
+ <87h6me620j.ffs@tglx>
  <CAJuCfpH1pG513-FUE_28MfJ7xbX=9O-auYUjkxKLmtve_6rRAw@mail.gmail.com>
-Date: Fri, 27 Oct 2023 01:05:48 +0200
-Message-ID: <87jzr93rxv.ffs@tglx>
+ <87jzr93rxv.ffs@tglx>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -70,26 +62,32 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <87jzr93rxv.ffs@tglx>
+X-Migadu-Flow: FLOW_OUT
 
-On Thu, Oct 26 2023 at 18:33, Suren Baghdasaryan wrote:
-> On Wed, Oct 25, 2023 at 5:33=E2=80=AFPM Thomas Gleixner <tglx@linutronix.=
-de> wrote:
->> > This avoids a circular header dependency in an upcoming patch by only
->> > making hrtimer.h depend on percpu-defs.h
->>
->> What's the actual dependency problem?
->
-> Sorry for the delay.
-> When we instrument per-cpu allocations in [1] we need to include
-> sched.h in percpu.h to be able to use alloc_tag_save(). sched.h
+On Fri, Oct 27, 2023 at 01:05:48AM +0200, Thomas Gleixner wrote:
+> On Thu, Oct 26 2023 at 18:33, Suren Baghdasaryan wrote:
+> > On Wed, Oct 25, 2023 at 5:33 PM Thomas Gleixner <tglx@linutronix.de> wrote:
+> >> > This avoids a circular header dependency in an upcoming patch by only
+> >> > making hrtimer.h depend on percpu-defs.h
+> >>
+> >> What's the actual dependency problem?
+> >
+> > Sorry for the delay.
+> > When we instrument per-cpu allocations in [1] we need to include
+> > sched.h in percpu.h to be able to use alloc_tag_save(). sched.h
+> 
+> Including sched.h in percpu.h is fundamentally wrong as sched.h is the
+> initial place of all header recursions.
+> 
+> There is a reason why a lot of funtionalitiy has been split out of
+> sched.h into seperate headers over time in order to avoid that.
 
-Including sched.h in percpu.h is fundamentally wrong as sched.h is the
-initial place of all header recursions.
+Yeah, it's definitely unfortunate. The issue here is that
+alloc_tag_save() needs task_struct - we have to pull that in for
+alloc_tag_save() to be inline, which we really want.
 
-There is a reason why a lot of funtionalitiy has been split out of
-sched.h into seperate headers over time in order to avoid that.
-
-Thanks,
-
-        tglx
+What if we moved task_struct to its own dedicated header? That might be
+good to do anyways...
