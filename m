@@ -1,108 +1,140 @@
-Received: from mail-oi1-f193.google.com (mail-oi1-f193.google.com [209.85.167.193])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.65])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 763EA2AB45
-	for <iommu@lists.linux.dev>; Wed, 25 Oct 2023 18:32:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4DD3C623
+	for <iommu@lists.linux.dev>; Thu, 26 Oct 2023 02:53:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="KzjLHT5l"
-Received: by mail-oi1-f193.google.com with SMTP id 5614622812f47-3b52360cdf0so483624b6e.2
-        for <iommu@lists.linux.dev>; Wed, 25 Oct 2023 11:32:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1698258742; x=1698863542; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=8ITofy++IV5vAJ6Tm+pHoA0acLIWPFQv5Ue2A3iNM5o=;
-        b=KzjLHT5ltIXZFF7NDYcBngwy2zCyr6eO+0THvm5nXINFjOYevR7n7/Osws4X11fpPg
-         twVlZQm5UIvYqUI+Jldy3Rg+YjTIPt1CNpssXXPBvR6af4AHsr0Wo4+aCETbCM9hjyCb
-         GB8shk0JhJ7qsQFRaS6wAErDTeAwFtHllU7pQt6fhop+E5mZNQKypTNU42XkVi8r8Zxx
-         cRqTxoUTKlvaFfCbLQZyh5Cy9bXfekEAZR4R8+dmDcOCv731x2XJlTAmefagyooUZ5p5
-         8KSUhDkhndjicsFjdsdN5LjCCNavnX03JIU69srgL08smFC9FLw8znVha254hAH2huXf
-         uVwQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1698258742; x=1698863542;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=8ITofy++IV5vAJ6Tm+pHoA0acLIWPFQv5Ue2A3iNM5o=;
-        b=KE1NmFpZv6OVFPRhq/Lt1SwywAwAD4+lJdRMbYckH3h7xNfV+rfUftrq0tIrYb4kTa
-         cNDlZdPKHDjBlxb8Y6y30suyMN0xOBYxRHkdNnQFiv6D6o0xMWrfpEb1K2DsHpsKsXKE
-         NT0g7yBeZ0evE2zxa9ZoAdCNnMIJuFLtpBRhoMmsoZEgq12/e/JKyItO5imcEkvoujU5
-         Ed3Wy5FymyVOFquQOHfGAHIWtx+C21U5B7Ye2MBA+lpkdRaScpeQMnz2sK4rNIDV3SEO
-         ZbY4VIXBJGOg2VI0NKCIRb+dDWV1Iocbm3ZmgsqvS4uEHLyNinzQ3MhqKvvwEYHJwSCo
-         XnPQ==
-X-Gm-Message-State: AOJu0YyHPD8eMnbYxPLuzv3hFB7Y1lwmeYdJl2Th3o1CC+dcmK8+qADG
-	MQ4lL1tkdhtKhQ/wKvX8rusYGg==
-X-Google-Smtp-Source: AGHT+IF3zGyOio/TyOgUPNVF8bSfN9eycyQP3oHU1zL2/yr7Aw+jM1elK8/PMy/0y8tVVtoMH4HvQQ==
-X-Received: by 2002:a05:6808:b29:b0:3ab:8956:ada4 with SMTP id t9-20020a0568080b2900b003ab8956ada4mr13619518oij.10.1698258742362;
-        Wed, 25 Oct 2023 11:32:22 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-26-201.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.26.201])
-        by smtp.gmail.com with ESMTPSA id bl29-20020a056808309d00b003b2e4511f22sm2468353oib.17.2023.10.25.11.32.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 Oct 2023 11:32:21 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1qvig0-004vSE-Mf;
-	Wed, 25 Oct 2023 15:32:20 -0300
-Date: Wed, 25 Oct 2023 15:32:20 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: syzbot <syzbot+45f6cae2ca8c1f71e529@syzkaller.appspotmail.com>
-Cc: iommu@lists.linux.dev, joro@8bytes.org, kevin.tian@intel.com,
-	linux-kernel@vger.kernel.org, robin.murphy@arm.com,
-	syzkaller-bugs@googlegroups.com, will@kernel.org
-Subject: Re: [syzbot] [iommu?] KASAN: slab-use-after-free Read in
- iommufd_ioas_iova_ranges
-Message-ID: <20231025183220.GQ691768@ziepe.ca>
-References: <000000000000d621b406088a2f55@google.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="h49RwwuI"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1698288815; x=1729824815;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=jnt3qquZ9palXNYk+43Q9HkECVOlSF4Vhez9GOgrGng=;
+  b=h49RwwuIZGkDKpYEZAmVqLiDHbCqoc99qYEe3u8pqV+V6tWNGpMx0YWr
+   d06ezmJD0YEAH85mwSBHUdZ5lT+2nImZsIp8dpIlk2kdXBuBWmdLLSAP4
+   Z3OfXxD2WwgPcftMWAxv4dMLR9ScWpuKtvfqhnrG1pLQhALi04iBcCsc5
+   nyyouWUFlFiSZLJD9Eo/WQBVNtyJ0yVreAOLXl6KvYY6mB4iO9If/qI3E
+   ZmgBOWGtsOLkcIRQK2myF13eitG2JYpRq/NC6nF9RQXG/Wc6XJYPXvK0k
+   nSsEnf6XUw9VtV6AkyLyxiCAw0OKsi5Gb7bI6J3uAnaDuoljUvwSR23sO
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10874"; a="391316139"
+X-IronPort-AV: E=Sophos;i="6.03,252,1694761200"; 
+   d="scan'208";a="391316139"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Oct 2023 19:53:34 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10874"; a="735604476"
+X-IronPort-AV: E=Sophos;i="6.03,252,1694761200"; 
+   d="scan'208";a="735604476"
+Received: from allen-box.sh.intel.com ([10.239.159.127])
+  by orsmga006.jf.intel.com with ESMTP; 25 Oct 2023 19:53:30 -0700
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Yi Liu <yi.l.liu@intel.com>,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>
+Cc: iommu@lists.linux.dev,
+	linux-kselftest@vger.kernel.org,
+	virtualization@lists.linux-foundation.org,
+	linux-kernel@vger.kernel.org,
+	Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH v2 0/6] IOMMUFD: Deliver IO page faults to user space
+Date: Thu, 26 Oct 2023 10:49:24 +0800
+Message-Id: <20231026024930.382898-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <000000000000d621b406088a2f55@google.com>
+Content-Transfer-Encoding: 8bit
 
-On Wed, Oct 25, 2023 at 06:11:01AM -0700, syzbot wrote:
-> Hello,
-> 
-> syzbot found the following issue on:
-> 
-> HEAD commit:    c3200081020d Merge tag 'block-6.6-2023-10-20' of git://git..
-> git tree:       upstream
-> console output: https://syzkaller.appspot.com/x/log.txt?x=15013471680000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=849fe52ba7c6d78a
-> dashboard link: https://syzkaller.appspot.com/bug?extid=45f6cae2ca8c1f71e529
-> compiler:       Debian clang version 15.0.6, GNU ld (GNU Binutils for Debian) 2.40
-> 
-> Unfortunately, I don't have any reproducer for this issue yet.
-> 
-> Downloadable assets:
-> disk image: https://storage.googleapis.com/syzbot-assets/caa5c1eed3ec/disk-c3200081.raw.xz
-> vmlinux: https://storage.googleapis.com/syzbot-assets/7990a3a9f71e/vmlinux-c3200081.xz
-> kernel image: https://storage.googleapis.com/syzbot-assets/015551ac9acc/bzImage-c3200081.xz
-> 
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+45f6cae2ca8c1f71e529@syzkaller.appspotmail.com
-> 
-> ==================================================================
-> BUG: KASAN: slab-use-after-free in __up_read+0xb3/0x690 kernel/locking/rwsem.c:1342
-> Read of size 8 at addr ffff8880283c9068 by task syz-executor.2/30372
+Hi folks,
 
-Oh *ugh* I knew about this limitation once and forgot about it
-apparently.
+This series implements the functionality of delivering IO page faults to
+user space through the IOMMUFD framework for nested translation. Nested
+translation is a hardware feature that supports two-stage translation
+tables for IOMMU. The second-stage translation table is managed by the
+host VMM, while the first-stage translation table is owned by user
+space. This allows user space to control the IOMMU mappings for its
+devices.
 
-  CPU 0         CPU1
- down_read()
- up_read()
-                down_write()
-                up_write()
-		kfree()
- [..]
-  tail portion of up_read()
+When an IO page fault occurs on the first-stage translation table, the
+IOMMU hardware can deliver the page fault to user space through the
+IOMMUFD framework. User space can then handle the page fault and respond
+to the device top-down through the IOMMUFD. This allows user space to
+implement its own IO page fault handling policies.
 
-I suppose the rwsem should be turned into a refcount and completion
+User space indicates its capability of handling IO page faults by
+setting the IOMMU_HWPT_ALLOC_IOPF_CAPABLE flag when allocating a
+hardware page table (HWPT). IOMMUFD will then set up its infrastructure
+for page fault delivery. On a successful return of HWPT allocation, the
+user can retrieve and respond to page faults by reading and writing to
+the file descriptor (FD) returned in out_fault_fd.
 
-Jason
+The iommu selftest framework has been updated to test the IO page fault
+delivery and response functionality.
+
+This series is based on the latest implementation of nested translation
+under discussion [1] and the page fault handling framework refactoring in
+the IOMMU core [2].
+
+The series and related patches are available on GitHub: [3]
+
+[1] https://lore.kernel.org/linux-iommu/20230921075138.124099-1-yi.l.liu@intel.com/
+[2] https://lore.kernel.org/linux-iommu/20230928042734.16134-1-baolu.lu@linux.intel.com/
+[3] https://github.com/LuBaolu/intel-iommu/commits/iommufd-io-pgfault-delivery-v2
+
+Best regards,
+baolu
+
+Change log:
+v2:
+ - Move all iommu refactoring patches into a sparated series and discuss
+   it in a different thread. The latest patch series [v6] is available at
+   https://lore.kernel.org/linux-iommu/20230928042734.16134-1-baolu.lu@linux.intel.com/
+ - We discussed the timeout of the pending page fault messages. We
+   agreed that we shouldn't apply any timeout policy for the page fault
+   handling in user space.
+   https://lore.kernel.org/linux-iommu/20230616113232.GA84678@myrica/
+ - Jason suggested that we adopt a simple file descriptor interface for
+   reading and responding to I/O page requests, so that user space
+   applications can improve performance using io_uring.
+   https://lore.kernel.org/linux-iommu/ZJWjD1ajeem6pK3I@ziepe.ca/
+
+v1: https://lore.kernel.org/linux-iommu/20230530053724.232765-1-baolu.lu@linux.intel.com/
+
+Lu Baolu (6):
+  iommu: Add iommu page fault cookie helpers
+  iommufd: Add iommu page fault uapi data
+  iommufd: Initializing and releasing IO page fault data
+  iommufd: Deliver fault messages to user space
+  iommufd/selftest: Add IOMMU_TEST_OP_TRIGGER_IOPF test support
+  iommufd/selftest: Add coverage for IOMMU_TEST_OP_TRIGGER_IOPF
+
+ include/linux/iommu.h                         |   9 +
+ drivers/iommu/iommu-priv.h                    |  15 +
+ drivers/iommu/iommufd/iommufd_private.h       |  12 +
+ drivers/iommu/iommufd/iommufd_test.h          |   8 +
+ include/uapi/linux/iommufd.h                  |  65 +++++
+ tools/testing/selftests/iommu/iommufd_utils.h |  66 ++++-
+ drivers/iommu/io-pgfault.c                    |  50 ++++
+ drivers/iommu/iommufd/device.c                |  69 ++++-
+ drivers/iommu/iommufd/hw_pagetable.c          | 260 +++++++++++++++++-
+ drivers/iommu/iommufd/selftest.c              |  56 ++++
+ tools/testing/selftests/iommu/iommufd.c       |  24 +-
+ .../selftests/iommu/iommufd_fail_nth.c        |   2 +-
+ 12 files changed, 620 insertions(+), 16 deletions(-)
+
+-- 
+2.34.1
+
