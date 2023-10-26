@@ -1,62 +1,65 @@
-Received: from mail-oo1-f65.google.com (mail-oo1-f65.google.com [209.85.161.65])
+Received: from mail-ot1-f53.google.com (mail-ot1-f53.google.com [209.85.210.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 041732D785
-	for <iommu@lists.linux.dev>; Thu, 26 Oct 2023 11:41:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 007F12D7A9
+	for <iommu@lists.linux.dev>; Thu, 26 Oct 2023 12:20:19 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="R75DKRAG"
-Received: by mail-oo1-f65.google.com with SMTP id 006d021491bc7-586940ee5a5so435111eaf.0
-        for <iommu@lists.linux.dev>; Thu, 26 Oct 2023 04:41:11 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="K+N15Kdi"
+Received: by mail-ot1-f53.google.com with SMTP id 46e09a7af769-6ce37d0f1a9so489752a34.0
+        for <iommu@lists.linux.dev>; Thu, 26 Oct 2023 05:20:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1698320471; x=1698925271; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1698322819; x=1698927619; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=sLNTg7ehEKZxV7vTljjTdg5VnMvDILeA+3MbDYFCwn8=;
-        b=R75DKRAGuqMEcmh/Z/00XpjYkcjKwcKHQOSC6DfMOBTEBiWHX7RCGXsyow6NBBm1HN
-         pqFZM26GOWZqq1Q9MMzW3PVM6BpiX2eEejelfN8LtGZ+uScVALcXSaR4YFtklWJzBFes
-         5CIrKna7LlZBRNMwGr0zF52lvG241FP7rPR3k2RD4w5DvC8+wQ1LlRLreZ67tEnQANYj
-         x73dx37UYcSiFWowp0x9nLq6sS/+GXHi3Vn18Ss6OgG25IwB2+5/XQD1kEfzcU6ZBSv9
-         ExnyABiMp/Ek5SqFOre19H1VTAYfxLtUWVRrb2QI2lNAUxyFUoLQc4CSecaeUpzQj5fS
-         oF5w==
+        bh=qU0vFWhyRKz3l1/cwtPJ3LxAPBuI6AFrBw6ekYuxL/0=;
+        b=K+N15KdiPuWRQuvGhZCvMlMWH6x1wmffYvBotWif22JRIVHTvc10FAxxeAzV7up63p
+         eUNB5CTQ66axKbtFXNwU93vdO44Mn5/6Y8Dlncu4LTLg3BjkCzM14NiJpgzcLMb5HBCT
+         zjiY/rKxzHzArirzNaH9rWHrl0KppGwsebNQNuydaW1nZ3587G79uJITr/Tc7NXrcoe7
+         d6asqR/MIlb9btGhOT/KpeLl/gDhAYTs8iExT2C2i3hp1xtZV2likYLhYIbGKsygC1+4
+         uED05oi3gFTIfRw1CrzM7H+vUv12hc4J4tusZ6Cb98wp6NMN/VZErdwy20f3tZth+Ns0
+         zUKw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1698320471; x=1698925271;
+        d=1e100.net; s=20230601; t=1698322819; x=1698927619;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=sLNTg7ehEKZxV7vTljjTdg5VnMvDILeA+3MbDYFCwn8=;
-        b=Vx1MVyzIuhz7ksQ0crPYqxPFLofhBYkQlu05HI+UOT3FfbfYqWcsnPYuwdmI+F1Bna
-         +El780ZepPdOR4sizbkGmiZZKt4oIcPKuIFIx1lRH2AlobUiyze8y8Pk91t21Gk3Ca9A
-         NvZu+r1eBNnIeuqeVYEuLInzagvb5ctm0o1OabHv4pCbZ++XtOj1S24kuzIGNoB75d1u
-         DFCabevod0W2IDPpf9h5JWpR1fu0nawCxYDd2PwbJU+X1DTjWwIjjQDR8+XpVj/n/Jbi
-         mc/YHuFkAFgQBON60XqTBGgPdE9Bat1WKQdq8Grp9xA5s9n70dIyrOEqJNa3Z0iGSskK
-         BJBQ==
-X-Gm-Message-State: AOJu0Yzh29asGV67yEdTr69QFIfZvueZVKrNR9yKf/xILFmkfvy82/H8
-	XFsr97ZiYfQbYn4PQFHWDRG7Mw==
-X-Google-Smtp-Source: AGHT+IHWMB/ksANaifdTpLAGghTDYRn/7xMWVD082ShcgmYVOdJbdiat4/OU3rVqHMdqUxHA9VxDZA==
-X-Received: by 2002:a4a:8515:0:b0:583:fc94:c3f3 with SMTP id k21-20020a4a8515000000b00583fc94c3f3mr17207199ooh.9.1698320470873;
-        Thu, 26 Oct 2023 04:41:10 -0700 (PDT)
+        bh=qU0vFWhyRKz3l1/cwtPJ3LxAPBuI6AFrBw6ekYuxL/0=;
+        b=HgUTQgfNCJEe7SFAoQrxj5ngGMiGzAiY1HwthSjds5n3WwQXo1+oiPC2OvSfcwKZgy
+         40ROCvo2AHc/0Mci8Krmm+Un+TMCAXsJpBhWNAa/v9vaDJl5spH4vsX/f+9cTJQBera+
+         CV+7BJxSKULddcRS0MDz72/j8sD1dZ0wvomZOar25rZieqHXuQu5F97PPumiyfMx5ay6
+         fkgM3rs9rh+ajMKQYqqYsbRqC/kE3Yk9losV4EoHoAyzwRWg9GdhpFGxg2nfMF1XeJ8c
+         NGYUQ9/l5CLGtuv86PR3sICmxEnBFcn1U2G+4S3y0QoIUlKpzEYgc+QMTfZG9VSyZlod
+         QCQA==
+X-Gm-Message-State: AOJu0YyC2QaKrkXF7gFG9g7oZJk5vWqTWC4wXxEAIDeYxvQxDvmfPhPB
+	slbVo7rze6MW6Ua/C7Zsu5JspQ==
+X-Google-Smtp-Source: AGHT+IH3V0Wyvq3WAkx6gNZbtYj7bpXecF10nQELMvJIJVFlv9xPTITWAHw3myCxCfAO9zsI2u+Iww==
+X-Received: by 2002:a9d:73c3:0:b0:6b9:b226:d08e with SMTP id m3-20020a9d73c3000000b006b9b226d08emr20022310otk.34.1698322818799;
+        Thu, 26 Oct 2023 05:20:18 -0700 (PDT)
 Received: from ziepe.ca (hlfxns017vw-142-68-26-201.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.26.201])
-        by smtp.gmail.com with ESMTPSA id 184-20020a4a01c1000000b005813f95e695sm448856oor.41.2023.10.26.04.41.09
+        by smtp.gmail.com with ESMTPSA id t16-20020a9d7750000000b006b8c87551e8sm2616543otl.35.2023.10.26.05.20.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 Oct 2023 04:41:10 -0700 (PDT)
+        Thu, 26 Oct 2023 05:20:18 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.95)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1qvyjc-004zhX-Sz;
-	Thu, 26 Oct 2023 08:41:08 -0300
-Date: Thu, 26 Oct 2023 08:41:08 -0300
+	id 1qvzLU-005091-VY;
+	Thu, 26 Oct 2023 09:20:16 -0300
+Date: Thu, 26 Oct 2023 09:20:16 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Hillf Danton <hdanton@sina.com>
-Cc: syzbot <syzbot+45f6cae2ca8c1f71e529@syzkaller.appspotmail.com>,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	robin.murphy@arm.com, syzkaller-bugs@googlegroups.com,
-	will@kernel.org
-Subject: Re: [syzbot] [iommu?] KASAN: slab-use-after-free Read in
- iommufd_ioas_iova_ranges
-Message-ID: <20231026114108.GS691768@ziepe.ca>
-References: <000000000000d621b406088a2f55@google.com>
- <20231026110502.2046-1-hdanton@sina.com>
+To: Joerg Roedel <joro@8bytes.org>
+Cc: Tina Zhang <tina.zhang@intel.com>, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, David Woodhouse <dwmw2@infradead.org>,
+	Lu Baolu <baolu.lu@linux.intel.com>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Michael Shavit <mshavit@google.com>,
+	Vasant Hegde <vasant.hegde@amd.com>
+Subject: Re: [PATCH v9 0/5] Share sva domains with all devices bound to a mm
+Message-ID: <20231026122016.GU691768@ziepe.ca>
+References: <20231018050640.24936-1-tina.zhang@intel.com>
+ <ZToUOKSqqI6Bh_03@8bytes.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -65,81 +68,32 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20231026110502.2046-1-hdanton@sina.com>
+In-Reply-To: <ZToUOKSqqI6Bh_03@8bytes.org>
 
-On Thu, Oct 26, 2023 at 07:05:02PM +0800, Hillf Danton wrote:
-> On Wed, 25 Oct 2023 15:32:20 -0300 Jason Gunthorpe <jgg@ziepe.ca>
-> > On Wed, Oct 25, 2023 at 06:11:01AM -0700, syzbot wrote:
-> > > Hello,
-> > > 
-> > > syzbot found the following issue on:
-> > > 
-> > > HEAD commit:    c3200081020d Merge tag 'block-6.6-2023-10-20' of git://git..
-> > > git tree:       upstream
-> > > console output: https://syzkaller.appspot.com/x/log.txt?x=15013471680000
-> > > kernel config:  https://syzkaller.appspot.com/x/.config?x=849fe52ba7c6d78a
-> > > dashboard link: https://syzkaller.appspot.com/bug?extid=45f6cae2ca8c1f71e529
-> > > compiler:       Debian clang version 15.0.6, GNU ld (GNU Binutils for Debian) 2.40
-> > > 
-> > > Unfortunately, I don't have any reproducer for this issue yet.
-> > > 
-> > > Downloadable assets:
-> > > disk image: https://storage.googleapis.com/syzbot-assets/caa5c1eed3ec/disk-c3200081.raw.xz
-> > > vmlinux: https://storage.googleapis.com/syzbot-assets/7990a3a9f71e/vmlinux-c3200081.xz
-> > > kernel image: https://storage.googleapis.com/syzbot-assets/015551ac9acc/bzImage-c3200081.xz
-> > > 
-> > > IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> > > Reported-by: syzbot+45f6cae2ca8c1f71e529@syzkaller.appspotmail.com
-> > > 
-> > > ==================================================================
-> > > BUG: KASAN: slab-use-after-free in __up_read+0xb3/0x690 kernel/locking/rwsem.c:1342
-> > > Read of size 8 at addr ffff8880283c9068 by task syz-executor.2/30372
-> > 
-> > Oh *ugh* I knew about this limitation once and forgot about it
-> > apparently.
-> > 
-> >   CPU 0         CPU1
-> >  down_read()
-> >  up_read()
-> >                 down_write()
-> >                 up_write()
-> > 		kfree()
-> >  [..]
-> >   tail portion of up_read()
-> > 
-> > I suppose the rwsem should be turned into a refcount and completion
+On Thu, Oct 26, 2023 at 09:24:40AM +0200, Joerg Roedel wrote:
+> Hi Tina,
+> 
+> On Wed, Oct 18, 2023 at 01:06:35PM +0800, Tina Zhang wrote:
+> > Tina Zhang (5):
+> >   iommu/vt-d: Remove mm->pasid in intel_sva_bind_mm()
+> >   iommu: Add mm_get_enqcmd_pasid() helper function
+> >   mm: Add structure to keep sva information
+> >   iommu: Support mm PASID 1:n with sva domains
+> >   mm: Deprecate pasid field
+> 
+> Thanks for doing this, it all looks reasonable to me. But there is one
+> thing missing which needs to be done before we can move forward with
+> this.
+> 
+> There was a discussion about the Kconfig symbol naming used in
+> mm_struct. Please see the discussion here:
+> 
+> 	https://lore.kernel.org/all/CAHk-=wgUiAtiszwseM1p2fCJ+sC4XWQ+YN4TanFhUgvUqjr9Xw@mail.gmail.com/
 >
-> The line [1] syzbot caught is before preempt is disabled, 
+> Please update this patch-set to solve this and I will take the series.
 
-So? It is SMP.
+Lets call it CONFIG_IOMMU_MM_DATA then. It is still pretty nonsensical
+but it speaks to what it does after this series
 
-> so no lock is released yet, and the report is a simple uaf with
-> nothing to do with down_write().
-
-down_write() is one of the concurrent paths toward kfree.
-
-        tmp = atomic_long_add_return_release(-RWSEM_READER_BIAS, &sem->count);
-         ^^^^ This allows the down_write to proceed to kfree
-
-	DEBUG_RWSEMS_WARN_ON(tmp < 0, sem);
-	if (unlikely((tmp & (RWSEM_LOCK_MASK|RWSEM_FLAG_WAITERS)) ==
-		      RWSEM_FLAG_WAITERS)) {
-		clear_nonspinnable(sem);
-		rwsem_wake(sem);
-	}
-
-And so if we are unlucky we can UAF someplace in this latter part.
-
-Actually, this is a problem but it is not this problem since the sybot
-traces don't show it going down the down_write side
-
-I guess this is still just problems with the iommufd_object_remove,
-since put is ordered 
-
-	refcount_dec(&obj->users);
-	up_read(&obj->destroy_rwsem);
-
-And remove doesn't touch the destroy_rwsem so it simple UAFs anywhere
-in up_read and that matches the syzcaller trace of concurrent destroy
-
+Thanks,
 Jason
