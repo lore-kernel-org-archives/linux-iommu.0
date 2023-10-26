@@ -1,36 +1,36 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.151])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0AD254684
-	for <iommu@lists.linux.dev>; Thu, 26 Oct 2023 04:42:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B5E4523F
+	for <iommu@lists.linux.dev>; Thu, 26 Oct 2023 04:42:29 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="kNMHLNVP"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Mi01HYUB"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1698295348; x=1729831348;
+  t=1698295349; x=1729831349;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=eEUcP5KcutX2o5j+Ufm6y0KGFrXJgHvpAP1Vmptmk8I=;
-  b=kNMHLNVPU9XZ2zO8IFbIV4tBKwe0B2AKD5bKvS1rd/YKOKzKdaXCOBCU
-   vsSRgq5QSwKPTn8DVdV+7nDJRPHFCKhmJCDh76BJIQLpCbKQ3Q27iDfPm
-   vjAQEP63Jy1kslxOqVLMSIJBzglOwJgfdBkHUWTbveWO43NtaxinyuiRz
-   dqDy9++aAkZwby3alDYfAYs8RlXiGaLv7YzrVzEB0q8iKyZ6X3WBD7IKe
-   bDt1QPOKRMpYE0cR2x0qSHB2hg4LrQzV2jNfl+RrZpKw94+olLLwFH9dm
-   //nfTRDBpeoUX/Ssq0shUlQ5dLnuaPTzDLsAV0C1tw3rvHvaB16Ej9uRx
+  bh=6rYDQz/MWEAW+IS0pl99symy0Ie0OKVXnjfTmOy5Xes=;
+  b=Mi01HYUBAmxz5+r4OE7WH0qEY76A6MOnhGR/WPhyOqTEkvfehg+SrrRX
+   3qQciRq810pgW/25lmwMtxBTf2PkpRK+upLfB8TGl5/lnk+ZqrrhIsRer
+   709LfHIMhcXS8PseSd24ydkTTAE6gyOsB361TWJhmxFkpBFc5ji6db4oC
+   9VOsNOIVyvZKN1AR+/mrOyaIppBUE98Ew+P3A2Yq8J0m9cI5qS/+ECm0b
+   9Addcy/cdCZBuJArHek/Fs5oteYx6LzYhSrF3E6wiESizz4BxppfnqnaS
+   flo1mv1nA+fXC4u8b1RPWrs5QDIdtOWq9oW0RRBJw219z9AB06azLAzZa
    A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10874"; a="367670778"
+X-IronPort-AV: E=McAfee;i="6600,9927,10874"; a="367670792"
 X-IronPort-AV: E=Sophos;i="6.03,252,1694761200"; 
-   d="scan'208";a="367670778"
+   d="scan'208";a="367670792"
 Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Oct 2023 21:42:27 -0700
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Oct 2023 21:42:28 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10874"; a="829478580"
+X-IronPort-AV: E=McAfee;i="6600,9927,10874"; a="829478589"
 X-IronPort-AV: E=Sophos;i="6.03,252,1694761200"; 
-   d="scan'208";a="829478580"
+   d="scan'208";a="829478589"
 Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
-  by fmsmga004.fm.intel.com with ESMTP; 25 Oct 2023 21:42:26 -0700
+  by fmsmga004.fm.intel.com with ESMTP; 25 Oct 2023 21:42:27 -0700
 From: Yi Liu <yi.l.liu@intel.com>
 To: joro@8bytes.org,
 	alex.williamson@redhat.com,
@@ -56,11 +56,10 @@ Cc: cohuck@redhat.com,
 	linux-kselftest@vger.kernel.org,
 	zhenzhong.duan@intel.com,
 	joao.m.martins@oracle.com,
-	xin.zeng@intel.com,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: [PATCH v8 6/8] iommu/vt-d: Set the nested domain to a device
-Date: Wed, 25 Oct 2023 21:42:14 -0700
-Message-Id: <20231026044216.64964-7-yi.l.liu@intel.com>
+	xin.zeng@intel.com
+Subject: [PATCH v8 7/8] iommu/vt-d: Add nested domain allocation
+Date: Wed, 25 Oct 2023 21:42:15 -0700
+Message-Id: <20231026044216.64964-8-yi.l.liu@intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20231026044216.64964-1-yi.l.liu@intel.com>
 References: <20231026044216.64964-1-yi.l.liu@intel.com>
@@ -72,92 +71,109 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-This adds the helper for setting the nested domain to a device hence
-enable nested domain usage on Intel VT-d.
+From: Lu Baolu <baolu.lu@linux.intel.com>
 
-Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+This adds the support for IOMMU_HWPT_DATA_VTD_S1 type. And 'nested_parent'
+is added to mark the nested parent domain to sanitize the input parent domain.
+
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 Signed-off-by: Yi Liu <yi.l.liu@intel.com>
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
 Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 ---
- drivers/iommu/intel/nested.c | 54 ++++++++++++++++++++++++++++++++++++
- 1 file changed, 54 insertions(+)
+ drivers/iommu/intel/iommu.c  | 39 ++++++++++++++++++------------------
+ drivers/iommu/intel/iommu.h  |  1 +
+ drivers/iommu/intel/nested.c |  3 ++-
+ 3 files changed, 23 insertions(+), 20 deletions(-)
 
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 292baa64188b..4ce372d5d4f3 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -4077,38 +4077,39 @@ intel_iommu_domain_alloc_user(struct device *dev, u32 flags,
+ 			      struct iommu_domain *parent,
+ 			      const struct iommu_user_data *user_data)
+ {
++	struct device_domain_info *info = dev_iommu_priv_get(dev);
++	bool dirty_tracking = flags & IOMMU_HWPT_ALLOC_DIRTY_TRACKING;
++	bool nested_parent = flags & IOMMU_HWPT_ALLOC_NEST_PARENT;
++	struct intel_iommu *iommu = info->iommu;
+ 	struct iommu_domain *domain;
+-	struct intel_iommu *iommu;
+-	bool dirty_tracking;
++
++	/* Must be NESTING domain */
++	if (parent) {
++		if (!nested_supported(iommu) || flags)
++			return ERR_PTR(-EOPNOTSUPP);
++		return intel_nested_domain_alloc(parent, user_data);
++	}
+ 
+ 	if (flags &
+ 	    (~(IOMMU_HWPT_ALLOC_NEST_PARENT | IOMMU_HWPT_ALLOC_DIRTY_TRACKING)))
+ 		return ERR_PTR(-EOPNOTSUPP);
+-
+-	if (parent || user_data)
+-		return ERR_PTR(-EOPNOTSUPP);
+-
+-	iommu = device_to_iommu(dev, NULL, NULL);
+-	if (!iommu)
+-		return ERR_PTR(-ENODEV);
+-
+-	if ((flags & IOMMU_HWPT_ALLOC_NEST_PARENT) && !nested_supported(iommu))
++	if (nested_parent && !nested_supported(iommu))
+ 		return ERR_PTR(-EOPNOTSUPP);
+-
+-	dirty_tracking = (flags & IOMMU_HWPT_ALLOC_DIRTY_TRACKING);
+-	if (dirty_tracking && !ssads_supported(iommu))
++	if (user_data || (dirty_tracking && !ssads_supported(iommu)))
+ 		return ERR_PTR(-EOPNOTSUPP);
+ 
+ 	/*
+-	 * domain_alloc_user op needs to fully initialize a domain
+-	 * before return, so uses iommu_domain_alloc() here for
+-	 * simple.
++	 * domain_alloc_user op needs to fully initialize a domain before
++	 * return, so uses iommu_domain_alloc() here for simple.
+ 	 */
+ 	domain = iommu_domain_alloc(dev->bus);
+ 	if (!domain)
+-		domain = ERR_PTR(-ENOMEM);
++		return ERR_PTR(-ENOMEM);
++
++	if (nested_parent)
++		to_dmar_domain(domain)->nested_parent = true;
+ 
+-	if (!IS_ERR(domain) && dirty_tracking) {
++	if (dirty_tracking) {
+ 		if (to_dmar_domain(domain)->use_first_level) {
+ 			iommu_domain_free(domain);
+ 			return ERR_PTR(-EOPNOTSUPP);
+diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
+index 6a97711f947a..ba9be915eb84 100644
+--- a/drivers/iommu/intel/iommu.h
++++ b/drivers/iommu/intel/iommu.h
+@@ -601,6 +601,7 @@ struct dmar_domain {
+ 					 * level.
+ 					 */
+ 	u8 dirty_tracking:1;		/* Dirty tracking is enabled */
++	u8 nested_parent:1;		/* Has other domains nested on it */
+ 
+ 	spinlock_t lock;		/* Protect device tracking lists */
+ 	struct list_head devices;	/* all devices' list */
 diff --git a/drivers/iommu/intel/nested.c b/drivers/iommu/intel/nested.c
-index 56bb205fca06..b560ab76e126 100644
+index b560ab76e126..b5a5563ab32c 100644
 --- a/drivers/iommu/intel/nested.c
 +++ b/drivers/iommu/intel/nested.c
-@@ -12,8 +12,61 @@
- #define pr_fmt(fmt)	"DMAR: " fmt
+@@ -89,7 +89,8 @@ struct iommu_domain *intel_nested_domain_alloc(struct iommu_domain *parent,
+ 	/* Must be nested domain */
+ 	if (user_data->type != IOMMU_HWPT_DATA_VTD_S1)
+ 		return ERR_PTR(-EOPNOTSUPP);
+-	if (parent->ops != intel_iommu_ops.default_domain_ops)
++	if (parent->ops != intel_iommu_ops.default_domain_ops ||
++	    !s2_domain->nested_parent)
+ 		return ERR_PTR(-EINVAL);
  
- #include <linux/iommu.h>
-+#include <linux/pci.h>
-+#include <linux/pci-ats.h>
- 
- #include "iommu.h"
-+#include "pasid.h"
-+
-+static int intel_nested_attach_dev(struct iommu_domain *domain,
-+				   struct device *dev)
-+{
-+	struct device_domain_info *info = dev_iommu_priv_get(dev);
-+	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
-+	struct intel_iommu *iommu = info->iommu;
-+	unsigned long flags;
-+	int ret = 0;
-+
-+	if (info->domain)
-+		device_block_translation(dev);
-+
-+	if (iommu->agaw < dmar_domain->s2_domain->agaw) {
-+		dev_err_ratelimited(dev, "Adjusted guest address width not compatible\n");
-+		return -ENODEV;
-+	}
-+
-+	/*
-+	 * Stage-1 domain cannot work alone, it is nested on a s2_domain.
-+	 * The s2_domain will be used in nested translation, hence needs
-+	 * to ensure the s2_domain is compatible with this IOMMU.
-+	 */
-+	ret = prepare_domain_attach_device(&dmar_domain->s2_domain->domain, dev);
-+	if (ret) {
-+		dev_err_ratelimited(dev, "s2 domain is not compatible\n");
-+		return ret;
-+	}
-+
-+	ret = domain_attach_iommu(dmar_domain, iommu);
-+	if (ret) {
-+		dev_err_ratelimited(dev, "Failed to attach domain to iommu\n");
-+		return ret;
-+	}
-+
-+	ret = intel_pasid_setup_nested(iommu, dev,
-+				       IOMMU_NO_PASID, dmar_domain);
-+	if (ret) {
-+		domain_detach_iommu(dmar_domain, iommu);
-+		dev_err_ratelimited(dev, "Failed to setup pasid entry\n");
-+		return ret;
-+	}
-+
-+	info->domain = dmar_domain;
-+	spin_lock_irqsave(&dmar_domain->lock, flags);
-+	list_add(&info->link, &dmar_domain->devices);
-+	spin_unlock_irqrestore(&dmar_domain->lock, flags);
-+
-+	return 0;
-+}
- 
- static void intel_nested_domain_free(struct iommu_domain *domain)
- {
-@@ -21,6 +74,7 @@ static void intel_nested_domain_free(struct iommu_domain *domain)
- }
- 
- static const struct iommu_domain_ops intel_nested_domain_ops = {
-+	.attach_dev		= intel_nested_attach_dev,
- 	.free			= intel_nested_domain_free,
- };
- 
+ 	ret = iommu_copy_struct_from_user(&vtd, user_data,
 -- 
 2.34.1
 
