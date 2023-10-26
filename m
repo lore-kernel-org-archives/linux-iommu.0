@@ -1,67 +1,95 @@
-Received: from mail-oa1-f42.google.com (mail-oa1-f42.google.com [209.85.160.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 724823AC04
-	for <iommu@lists.linux.dev>; Thu, 26 Oct 2023 21:30:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; dkim=none
-Received: by mail-oa1-f42.google.com with SMTP id 586e51a60fabf-1ef36a04931so827510fac.2
-        for <iommu@lists.linux.dev>; Thu, 26 Oct 2023 14:30:55 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1698355854; x=1698960654;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=+n4F/tIjxEVGIj5feCsisIXTCZ4rtI6GeUYlCuKBavU=;
-        b=tivDDGLyJn/gtVVH5w04DwHWtUmVMzVJcXM7KcpkGlElhnEdiguL6l2X6OdN/Txzkf
-         94ly72ueZC9CDsct4k/qFJTtaYpnLF3wdzqPhxmDtfdsMEUhkeWZrkqJjetpXkT3/b3X
-         r8xjsatT0SOwGG4/ECFLVp8QCDgRG950nzDUb6kWXTPQnUUWdpuJu6L3AIlu3OmdRBTK
-         1vtwLTIODH0ShjtIaZXoUrk7wGdJPlRBCoXl16+1HQwWpx0biYVzbtPeFJbGWcO6tciV
-         QP1gB/BVdtD1leSkjgXUWJ1sFB7w5p/j19+Fum6vcJcyGUTewd1qWricdgoe+dxz7J4f
-         bXMg==
-X-Gm-Message-State: AOJu0YzRbQyGJTZuYDkiglZe7u1LRvx1o0YYg3rabPNV4UECezFfF0iB
-	by3c1+FSKcwxxSuFGceRZQ==
-X-Google-Smtp-Source: AGHT+IH/UTjSPvCsr2fgIuKSuYiroRDllOssl+ncCKZugW4bfxWuuPSnaZRxrb51ueuli2AdceEjHQ==
-X-Received: by 2002:a05:6870:d88b:b0:1db:70ee:efed with SMTP id oe11-20020a056870d88b00b001db70eeefedmr926701oac.18.1698355854334;
-        Thu, 26 Oct 2023 14:30:54 -0700 (PDT)
-Received: from herring.priv (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id xv8-20020a05687121c800b001e9dabc3224sm22171oab.50.2023.10.26.14.30.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 Oct 2023 14:30:53 -0700 (PDT)
-Received: (nullmailer pid 432395 invoked by uid 1000);
-	Thu, 26 Oct 2023 21:30:52 -0000
-Date: Thu, 26 Oct 2023 16:30:52 -0500
-From: Rob Herring <robh@kernel.org>
-To: Neil Armstrong <neil.armstrong@linaro.org>
-Cc: Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, devicetree@vger.kernel.org, Conor Dooley <conor+dt@kernel.org>, iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org, Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH] dt-bindings: iommu: arm,smmu: document the SM8650 System
- MMU
-Message-ID: <169835584978.432274.5480293102736245515.robh@kernel.org>
-References: <20231025-topic-sm8650-upstream-bindings-smmu-v1-1-bfa25faa061e@linaro.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1817B3E01E
+	for <iommu@lists.linux.dev>; Thu, 26 Oct 2023 23:05:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="Eb1gIXVa";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="RqNiSkrn"
+From: Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1698361548;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=301JXjESu5nnVpLjEelVyjL0FjP4Jn3OGJNIUK28IQU=;
+	b=Eb1gIXVaXmAnj6Vz5I5vcFWzDPXOSmvemJ25H8m6l0iIfUCVbejjE5Y7/gMXNjhx38wFSY
+	RJVefBKehaEbHZC0xz/csfH7mbPsNSfYiCauGm2dkY44hd+k+9U6KMD5ojDdWRkeQJsrx/
+	OV5SFLjgRLZOJiENHih/gRvsbWHp/OChDTcIMU2L2YOCFQ+alGJLgavDwv76UXYnm4FUqt
+	mexY2UyN7A2yUcVKqUOOjL5oBsfz83nAndyc/X3E1zmQtBIV0PTUFh30pySJK6spbDflP8
+	y3bd6T8hJ4kPQd3jB2y/dX8ppdTvZDmpjnDFyPySE+c/jTPIO1DJJA2RSkx7MQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1698361548;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=301JXjESu5nnVpLjEelVyjL0FjP4Jn3OGJNIUK28IQU=;
+	b=RqNiSkrnkwZTXyqqspVxXRlYFLHhxLB+hajtQnaflb0qL/La0rOh7/J5t3jx5IjGn+PrXi
+	2bcUxpuqUgAyUpDA==
+To: Suren Baghdasaryan <surenb@google.com>
+Cc: akpm@linux-foundation.org, kent.overstreet@linux.dev, mhocko@suse.com,
+ vbabka@suse.cz, hannes@cmpxchg.org, roman.gushchin@linux.dev,
+ mgorman@suse.de, dave@stgolabs.net, willy@infradead.org,
+ liam.howlett@oracle.com, corbet@lwn.net, void@manifault.com,
+ peterz@infradead.org, juri.lelli@redhat.com, ldufour@linux.ibm.com,
+ catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de, mingo@redhat.com,
+ dave.hansen@linux.intel.com, x86@kernel.org, peterx@redhat.com,
+ david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org,
+ masahiroy@kernel.org, nathan@kernel.org, dennis@kernel.org, tj@kernel.org,
+ muchun.song@linux.dev, rppt@kernel.org, paulmck@kernel.org,
+ pasha.tatashin@soleen.com, yosryahmed@google.com, yuzhao@google.com,
+ dhowells@redhat.com, hughd@google.com, andreyknvl@gmail.com,
+ keescook@chromium.org, ndesaulniers@google.com, vvvvvv@google.com,
+ gregkh@linuxfoundation.org, ebiggers@google.com, ytcoode@gmail.com,
+ vincent.guittot@linaro.org, dietmar.eggemann@arm.com, rostedt@goodmis.org,
+ bsegall@google.com, bristot@redhat.com, vschneid@redhat.com, cl@linux.com,
+ penberg@kernel.org, iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com,
+ glider@google.com, elver@google.com, dvyukov@google.com,
+ shakeelb@google.com, songmuchun@bytedance.com, jbaron@akamai.com,
+ rientjes@google.com, minchan@google.com, kaleshsingh@google.com,
+ kernel-team@android.com, linux-doc@vger.kernel.org,
+ linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+ linux-arch@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+ linux-mm@kvack.org, linux-modules@vger.kernel.org,
+ kasan-dev@googlegroups.com, cgroups@vger.kernel.org
+Subject: Re: [PATCH v2 28/39] timekeeping: Fix a circular include dependency
+In-Reply-To: <CAJuCfpH1pG513-FUE_28MfJ7xbX=9O-auYUjkxKLmtve_6rRAw@mail.gmail.com>
+References: <20231024134637.3120277-1-surenb@google.com>
+ <20231024134637.3120277-29-surenb@google.com> <87h6me620j.ffs@tglx>
+ <CAJuCfpH1pG513-FUE_28MfJ7xbX=9O-auYUjkxKLmtve_6rRAw@mail.gmail.com>
+Date: Fri, 27 Oct 2023 01:05:48 +0200
+Message-ID: <87jzr93rxv.ffs@tglx>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20231025-topic-sm8650-upstream-bindings-smmu-v1-1-bfa25faa061e@linaro.org>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
+On Thu, Oct 26 2023 at 18:33, Suren Baghdasaryan wrote:
+> On Wed, Oct 25, 2023 at 5:33=E2=80=AFPM Thomas Gleixner <tglx@linutronix.=
+de> wrote:
+>> > This avoids a circular header dependency in an upcoming patch by only
+>> > making hrtimer.h depend on percpu-defs.h
+>>
+>> What's the actual dependency problem?
+>
+> Sorry for the delay.
+> When we instrument per-cpu allocations in [1] we need to include
+> sched.h in percpu.h to be able to use alloc_tag_save(). sched.h
 
-On Wed, 25 Oct 2023 09:30:04 +0200, Neil Armstrong wrote:
-> Document the System MMU on the SM8650 Platform.
-> 
-> Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
-> ---
-> For convenience, a regularly refreshed linux-next based git tree containing
-> all the SM8650 related work is available at:
-> https://git.codelinaro.org/neil.armstrong/linux/-/tree/topic/sm85650/upstream/integ
-> ---
->  Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 2 ++
->  1 file changed, 2 insertions(+)
-> 
+Including sched.h in percpu.h is fundamentally wrong as sched.h is the
+initial place of all header recursions.
 
-Acked-by: Rob Herring <robh@kernel.org>
+There is a reason why a lot of funtionalitiy has been split out of
+sched.h into seperate headers over time in order to avoid that.
 
+Thanks,
+
+        tglx
