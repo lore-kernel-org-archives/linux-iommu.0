@@ -1,207 +1,99 @@
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.126])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A76CE8C0B
-	for <iommu@lists.linux.dev>; Fri, 27 Oct 2023 07:36:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 90BF811734
+	for <iommu@lists.linux.dev>; Fri, 27 Oct 2023 08:09:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="XYq5YgeS"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1698392210; x=1729928210;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=eSpoqaCREloeP7DhJwzAP5ucCygy0336Y8I9PfWg2/A=;
-  b=XYq5YgeSmsE8huZtZ7pcuRueY7xKa6PgYSMiurWq7evG18s5uNdb/FeH
-   Dr6BasWOJkfYEGTt6SOU3maLVA2C/kfahXTapeI9GgD+Tn8+w+bH7UGL3
-   WAsATLQz+RYfYfCOpDEXFJ5LskOseAwkhIlVVq82jvsPRL7DRzl6XUffV
-   eTLctYAbJOCluawHOq2J9+Niog9uwEtCJGCACQpB3VQdJC7uHkZ9aVil1
-   AluxsT0ouWVzymW4mxV0DI0CNXg6WGir+/UmrOp2JhVq9U6jCBcC8p4MM
-   hxb6jRkyAielibTMd//fljaz8N1KwrVPTkZb2046TCZAukQBTMGpoDT2y
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10875"; a="372776598"
-X-IronPort-AV: E=Sophos;i="6.03,255,1694761200"; 
-   d="scan'208";a="372776598"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2023 00:36:48 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10875"; a="763119567"
-X-IronPort-AV: E=Sophos;i="6.03,255,1694761200"; 
-   d="scan'208";a="763119567"
-Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
-  by fmsmga007.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 27 Oct 2023 00:36:48 -0700
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.34; Fri, 27 Oct 2023 00:36:48 -0700
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.34 via Frontend Transport; Fri, 27 Oct 2023 00:36:48 -0700
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.169)
- by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.34; Fri, 27 Oct 2023 00:36:48 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=EVj7rBZ75NRHuey+nsF8POm8CaUxzI5VMv/0lXqtvKvjkvWQyR+TLMB3cHMqv3CQrO/0a59qJem2SjXoKOgrcWCAD9IBsJ7KGUBpacIe1kxbYasmQBrHtpJhjyBiKqAlVIikdjX9HH24P1hrdlskHylJeuuBmCXtZHLwbJdI6OoKNnotw6/SAb4+/ic6BKUnnKi4/fj2RGjdiFOAroeRsUr8LavcXxwU7euGTR0lMOutO0bGgo9xLpXr/5kRlBGX9LEDEjaTkIfzQ5qLQYqakgulS+n4QKhfA+dfxfXLfygZufyEprZAZ1SCf07pxTl7IpuafPaKFzSSfJJzcwJO/A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=80yn8scpMCGqQLk7PtXN5jRjhrZbkkIUNoogrlmztVc=;
- b=Hh/eALTa+KXZwGA3rkotrey5llwHX7MBLtPSFGlvFIbGt1dGQ4ekDdxqW9qi9frjlwuyOQFj5u9nuniscpzEFH5DSQg6wg12h6XxuCbzpvDByxmE0elZ2NTM5YU2SJmPHD6Rz2NHmxiqtCTUCtXAZNmd271mJ1O+Iiv+nYyDuIhzaBhxopARag6Fu4rMyM/a0gEyoxQINERI7HlBYoYoZDOvnX2cutia8wCw/tyexmyX4/4UnRq961yhI4AsYKsr3MrZIE1WMNm5Ul7JQ8eSPKZ9Z1XMvRl4W8vIYc6ES2yI4Bi8G0b31qoXUpSjwmG8NuzMN2AynA3GR4H6edeRZw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from MW5PR11MB5881.namprd11.prod.outlook.com (2603:10b6:303:19d::14)
- by BY1PR11MB7983.namprd11.prod.outlook.com (2603:10b6:a03:52b::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6907.26; Fri, 27 Oct
- 2023 07:36:46 +0000
-Received: from MW5PR11MB5881.namprd11.prod.outlook.com
- ([fe80::9d29:3f63:cecc:9102]) by MW5PR11MB5881.namprd11.prod.outlook.com
- ([fe80::9d29:3f63:cecc:9102%4]) with mapi id 15.20.6933.019; Fri, 27 Oct 2023
- 07:36:46 +0000
-From: "Zhang, Tina" <tina.zhang@intel.com>
-To: Joerg Roedel <joro@8bytes.org>
-CC: "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "David
- Woodhouse" <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, "Will
- Deacon" <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, "Jason
- Gunthorpe" <jgg@ziepe.ca>, "Tian, Kevin" <kevin.tian@intel.com>, Nicolin Chen
-	<nicolinc@nvidia.com>, Michael Shavit <mshavit@google.com>, Vasant Hegde
-	<vasant.hegde@amd.com>, Jason Gunthorpe <jgg@nvidia.com>
-Subject: RE: [PATCH v10 1/6] iommu: Change kconfig around IOMMU_SVA
-Thread-Topic: [PATCH v10 1/6] iommu: Change kconfig around IOMMU_SVA
-Thread-Index: AQHaCGlk1cvAoUzubk6PoTMGEq8RvbBdOPMAgAACSlA=
-Date: Fri, 27 Oct 2023 07:36:45 +0000
-Message-ID: <MW5PR11MB5881E07803D25E3588FFABB789DCA@MW5PR11MB5881.namprd11.prod.outlook.com>
-References: <20231027000525.1278806-1-tina.zhang@intel.com>
- <20231027000525.1278806-2-tina.zhang@intel.com> <ZTtixEgSkBI-TRro@8bytes.org>
-In-Reply-To: <ZTtixEgSkBI-TRro@8bytes.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: MW5PR11MB5881:EE_|BY1PR11MB7983:EE_
-x-ms-office365-filtering-correlation-id: 7afc03b6-4608-46e1-3004-08dbd6bf7903
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 2vJcVCD5jdLimTkog2xUR7usAuRIXc25STbPAA52IA5W+XfI1+i/QxGK+jqCL7Lnfv16TzgRM5d5nJs4n9SLb8wDFnXRUnaisZG15B8iubmtRJ3re544Hy6yf7etJTXZDOzmX83Yo+RSdkedKLhYBTaO3S5jahX3kaGJu0OnzqI0xdkYPBP6ziHZcrQY3IvhuMuXDoVYakC9czGpYTBONYjW1VlYBKaNRYRn16S7+Q93RS066oy6NqjHPY3peoyBdHlQz3UBrCO/VyPAlEBbvxn0uZY1VACqAq80zMMkHGySNgj/gJm9l5aQ1P6zfSXQGlkcEiouaDextlK9KKfpZviFkllhopWmPOjkQCPCaCl0xTfkqipHyr24nvGOyCw6gyXm79spwZcgNeM8pXd3u07nIGddQ2BaZIws1IFa74qtk4iXD3ZqqtBnwdFhswWybWD4Xc7AOEmhz3Ub2/4Y8hyL6z66REMguY/GoPy3RQxvVqJKYm+3K7eL3HZQnN543+SrRUT4MBks9ShZd+UGO2CXw8u5O6lRb1ek9jBZ0z8LUQCqbd9OoYqo29NiGM/fJ2sgO6LV4bgly75XHDC224FIu6ahGFb25gA3ufQVl9M=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW5PR11MB5881.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366004)(396003)(376002)(346002)(39860400002)(136003)(230922051799003)(451199024)(186009)(1800799009)(64100799003)(6916009)(6506007)(7696005)(55016003)(71200400001)(86362001)(83380400001)(478600001)(66899024)(2906002)(33656002)(7416002)(82960400001)(122000001)(9686003)(64756008)(53546011)(26005)(76116006)(966005)(5660300002)(8676002)(8936002)(316002)(66446008)(54906003)(52536014)(41300700001)(4326008)(38100700002)(38070700009)(66946007)(66476007)(66556008);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?X5FQ4fYNuMTvL5fzdDwn3achn224EGFJxH+HVRUibPVZtlq98AKkPOrRTB12?=
- =?us-ascii?Q?9CKQOipFHxSQ3Vox+XLW7j8YSTk/cGOst2rM7rS5n0zxUa72JPSQe5M8MPOC?=
- =?us-ascii?Q?Tb3uThwfffrps9dP4PMZGIxlZkEGcQ4jrTocQmzypNFzTPDKSihc3+3pFRWk?=
- =?us-ascii?Q?1bWhvL+k4swPf0Z/9RFtzyq3YKHk6TSb65qrC1IOXpZMDeV0M+VDfsHwJTiF?=
- =?us-ascii?Q?SsSbF60jdhIY/AK8vHBdmfis5/b5PmNmCS+z2eZIW96AZZUOVy8SchXN0zw0?=
- =?us-ascii?Q?i9/2nM7VGzyxb0ZhPJvUGddq11TT89WVBcIuFgscE1nAeqQidUz0PkE7B9kx?=
- =?us-ascii?Q?cSDFWSXakKKIwtaS+tNK06AGjOosvSPMrtRxE1OAYGhxdr8xXXPPyjb4ccw9?=
- =?us-ascii?Q?5o3SvsVC1o3KQKhDRk1m6R25ugxypRifPetBxPk+j+yIsYeoE/Vsj47dwKTk?=
- =?us-ascii?Q?YvrwJoiuSKoaNcvkOUVUOzVriO5Zm0XbZebNVdkZUVBIHkHXmCTjCGlg7RMD?=
- =?us-ascii?Q?Gm6SLE82BgiAHRYlQDo412pTCmVyPYhOmBiovgbZaSzNpEtGYjSTIVShfIjt?=
- =?us-ascii?Q?EyGz9GLX+mPG9IK7YCdm6Rqo+LlryCqnNN9xBFrMEkKsgE4jvjdxCDXMRAGd?=
- =?us-ascii?Q?3/DVbxmKiRgrZAHN4APurgF+QOrDegu9py8JdAFq0e4XFB6LKl4Oepnr8mU6?=
- =?us-ascii?Q?6pxB0/S+bR+k+HleaOwqNQ+rewc/8svz3ttQ8ioXavAOmo86bPhLRJVdKN+a?=
- =?us-ascii?Q?lZ/PUICDF0Apjwevs/98vgXVq9jbrajN3HtKszicglTtzJT8DU045pGctdVs?=
- =?us-ascii?Q?v03Oj+IgU0rT0eJ7hoD1nd9A4ada9KoKr8kv3WF0fnWkt0SUk5FmJXRrXZuM?=
- =?us-ascii?Q?QwZwNLcL4BGyxe2xhYxK6NQd41iHePEn5DU6HXqCCgOoBEH7kpVrGgEPWsgY?=
- =?us-ascii?Q?GHRivpiJ9sCRblybXf2/zc+g1CjiGxh9XC6Ml55aS1m4AGBxDVaiwYPanVC0?=
- =?us-ascii?Q?p3H4odBBKdyaeKCKT0BPEIGxN5svGxOGi1waKZJCBqNylPK3Oh27etl28bu/?=
- =?us-ascii?Q?zjxn1nUhXHJ2S1z5XiSo47+MypzYz2Z2FzfiO/W8lSp+nWzUX6XcmuvpDuI+?=
- =?us-ascii?Q?z3Z6wmhI06Oq3ixhtskhbRfajyGhdV/nxuw+CqXZozey7y+tL+EK0peePJg0?=
- =?us-ascii?Q?ZMKyce3s5bVBmIFMAkYAMtKPv0VTXbRcN9rnvmD3RFh403/yUN0VpwjqGz8n?=
- =?us-ascii?Q?KMEq69zzdFpjPhHKV+9gkmXPZqy4DjkTg1Q3okWGlcjvRuROjONtrUcPUuYO?=
- =?us-ascii?Q?qfannXV195G4sTe4NmzDeirtH+9ttxeqSm8lVvvNyYBDfUB8dedz6iU/Z+0i?=
- =?us-ascii?Q?I7wLTXgU8HBq+asiG2JvHNqwdr9d3J+PEY2HcoXD2S7vKfs+wLCfoY6+1roc?=
- =?us-ascii?Q?LE3B6A294+c9T4xQBCVx0rZJ+qJcHiIgeCSNe71vNhTehIUzqSJymQNO1rWF?=
- =?us-ascii?Q?K9zJDSubVLoT8OBPrecR7UwuKXoWsv6UBCdruRki5dQCpYtFOrWTf/RQ08pS?=
- =?us-ascii?Q?zLcctLx4zjzdBehkui/gIPHeLXyJMMZ8UtXuzJYX?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="z7zS86gC"
+Received: from 8bytes.org (p4ffe149c.dip0.t-ipconnect.de [79.254.20.156])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mail.8bytes.org (Postfix) with ESMTPSA id EE0E01A6E6D;
+	Fri, 27 Oct 2023 10:09:26 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
+	s=default; t=1698394167;
+	bh=mpfFYjRK6XwO09uwATLMFuOqZdAObOn/Ob6OtK6JIKE=;
+	h=Date:From:To:Cc:Subject:From;
+	b=z7zS86gCF6Ua5NqmNM4Fp3Xa8LwlcFZLZ3HAlNxTxpZNSlt/kKVndNZ2nuB9jJU6O
+	 cuNEA6cyP2YJfFdjAj+Fd0GBXKCPqGyZruR567GSTuzxv/OJgns1jCHvFv/21nK/1O
+	 ocnd/OEJS9QIq2GG2zhHTqACq4eDUOMxtZ/+ALp+KC+6a4bpl06o/V06EYEL3eU/9j
+	 uqZRp0s4p1G8eLCbIh+GdL5Aw4TNVhh53q0YdU3WyUQok0mitg1nDm4gpRYw3ezSTz
+	 5bOJyxTwZYKvotIoWHBh9AtKrS6mIi3W5CzPfQH2sl68Z5azPp48wP42S2JahyA+Yr
+	 HaMH9V5Cq6Pxw==
+Date: Fri, 27 Oct 2023 10:09:25 +0200
+From: Joerg Roedel <joro@8bytes.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev
+Subject: [git pull] IOMMU Fix for Linux v6.6-rc7
+Message-ID: <ZTtwNUIIenr5xRPO@8bytes.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MW5PR11MB5881.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7afc03b6-4608-46e1-3004-08dbd6bf7903
-X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Oct 2023 07:36:46.0009
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 8O6zSYbBtXPGMH0YsShdX80jUPcu26iRX/9DbH+h11AFZis53x/wzWI6Iq7/PW07VL3LQIKJUv1VXsRl5LcuWw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY1PR11MB7983
-X-OriginatorOrg: intel.com
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="56LkrRDh9Ji1CIrW"
+Content-Disposition: inline
 
-Hi Joerg,
 
-> -----Original Message-----
-> From: Joerg Roedel <joro@8bytes.org>
-> Sent: Friday, October 27, 2023 3:12 PM
-> To: Zhang, Tina <tina.zhang@intel.com>
-> Cc: iommu@lists.linux.dev; linux-kernel@vger.kernel.org; David Woodhouse
-> <dwmw2@infradead.org>; Lu Baolu <baolu.lu@linux.intel.com>; Will Deacon
-> <will@kernel.org>; Robin Murphy <robin.murphy@arm.com>; Jason
-> Gunthorpe <jgg@ziepe.ca>; Tian, Kevin <kevin.tian@intel.com>; Nicolin Che=
-n
-> <nicolinc@nvidia.com>; Michael Shavit <mshavit@google.com>; Vasant
-> Hegde <vasant.hegde@amd.com>; Jason Gunthorpe <jgg@nvidia.com>
-> Subject: Re: [PATCH v10 1/6] iommu: Change kconfig around IOMMU_SVA
->=20
-> Hi Tina,
->=20
-> On Fri, Oct 27, 2023 at 08:05:20AM +0800, Tina Zhang wrote:
-> > From: Jason Gunthorpe <jgg@nvidia.com>
-> >
-> > Linus suggested that the kconfig here is confusing:
->=20
-> While this patch looks decent to me, you forgot to Cc Linus on it. In gen=
-eral,
-> given that it touches a couple of core files, I'd like to wait for some m=
-ore
-> people to have a look at it and not rushing anything in.
-Make sense. I'll CC Linus. Comments are welcome.
+--56LkrRDh9Ji1CIrW
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-> >
-> > https://lore.kernel.org/all/CAHk-
-> =3DwgUiAtiszwseM1p2fCJ+sC4XWQ+YN4TanFhU
-> > gvUqjr9Xw@mail.gmail.com/
-> >
-> > Let's break it into three kconfigs controlling distinct things:
-> >
-> >  - CONFIG_IOMMU_MM_DATA controls if the mm_struct has the additional
-> >    fields for the IOMMU. Currently only PASID, but later patches store
-> >    a struct iommu_mm_data *
-> >
-> >  - CONFIG_ARCH_HAS_CPU_PASID controls if the arch needs the scheduling
-> bit
-> >    for keeping track of the ENQCMD instruction. x86 will select this if
-> >    IOMMU_SVA is enabled
-> >
-> >  - IOMMU_SVA controls if the IOMMU core compiles in the SVA support
-> code
-> >    for iommu driver use and the IOMMU exported API
-> >
-> > This way ARM will not enable CONFIG_ARCH_HAS_CPU_PASID
-> >
-> > Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
->=20
-> If you send it, you also need to add your Signed-off-by.
-OK. I'll add my Signed-off-by.
+Hi Linus,
+
+The following changes since commit 05d3ef8bba77c1b5f98d941d8b2d4aeab8118ef1:
+
+  Linux 6.6-rc7 (2023-10-22 12:11:21 -1000)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fix-v6.6-rc7
+
+for you to fetch changes up to 6e6c6d6bc6c96c2477ddfea24a121eb5ee12b7a3:
+
+  iommu: Avoid unnecessary cache invalidations (2023-10-27 08:57:09 +0200)
+
+----------------------------------------------------------------
+IOMMU Fix for Linux v6.6-rc7
+
+	- Fix boot regression for Sapphire Rapids with Intel VT-d driver
+
+----------------------------------------------------------------
+Lu Baolu (1):
+      iommu: Avoid unnecessary cache invalidations
+
+ drivers/iommu/iommu.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+Please pull.
 
 Thanks,
--Tina
 
->=20
-> Regards,
->=20
-> 	Joerg
+	Joerg
 
+--56LkrRDh9Ji1CIrW
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEr9jSbILcajRFYWYyK/BELZcBGuMFAmU7cDIACgkQK/BELZcB
+GuMz6A/6AxXZb/w8NgyD1GNwsiWkrLIoGZ4aQWagZd5qWoLA25slYgGnNSvlhZCj
+BEjZf/5ejMUMsndDm6Ane18QbxO8a4lxunUBUc0H8nBjZ6JkXPrMO0r7wO7oSgse
+UMwoIM+OOeF/vso+lITYwbaswTJr2oS+3wMaQebZX/QRZ1qUU833lO71solqbjMT
+9nRqZiNpB52fPK/sY5JQ9HknZL9hMctbylzs7SIsJ2p8CWBbkMF+0UycQY6h5aFb
+2+Az5T7hea+h86cs/utFEwKhcY4iK07xQgFV5MtX7vBJio8zVBBdoNtWBVh27q5u
+czXAnN8HCJBOmDuNjAvlKzWoQ5goNx6yRgRyIymBzmPW+yAXKMi+/ryQgqVRm2tZ
+04RZovXOUahJJStAhQDvB/WtVPv8m4yadWvU1quPrkH8vISveGVGe449qBCOW4C8
+dq+0t3K/jtC18egZKFPIFt4lP1D2WWPMQ4NFiv7Hwh/tohriBTC/OfNDsZf9qlrf
+hAXOH3fhyTy8mkWVoJOvUs1WcE3BytPlDUoUaasq19RZVoorgE2sx06n2s4g8t6b
+WsGOJn1x4XpaoSzwX+SomkX/FKuvgCDV9LzzP4hZ3z7MzZF6DTJTiaQG5yN685cI
+OKJDB9OTfDICaVM0FbDhwYAqdJc/TfyVtZvLpLE6MmPTMof6YV8=
+=Kyox
+-----END PGP SIGNATURE-----
+
+--56LkrRDh9Ji1CIrW--
