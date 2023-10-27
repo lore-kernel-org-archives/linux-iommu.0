@@ -1,49 +1,49 @@
-Received: from mail-lf1-f49.google.com (mail-lf1-f49.google.com [209.85.167.49])
+Received: from mail-lf1-f48.google.com (mail-lf1-f48.google.com [209.85.167.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF41214AB2
-	for <iommu@lists.linux.dev>; Fri, 27 Oct 2023 08:28:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4DBA714F76
+	for <iommu@lists.linux.dev>; Fri, 27 Oct 2023 08:28:36 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="ukpvPugL"
-Received: by mail-lf1-f49.google.com with SMTP id 2adb3069b0e04-507e85ebf50so2454620e87.1
-        for <iommu@lists.linux.dev>; Fri, 27 Oct 2023 01:28:14 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="m7lCW9yN"
+Received: by mail-lf1-f48.google.com with SMTP id 2adb3069b0e04-5082a874098so436384e87.3
+        for <iommu@lists.linux.dev>; Fri, 27 Oct 2023 01:28:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1698395292; x=1699000092; darn=lists.linux.dev;
+        d=linaro.org; s=google; t=1698395314; x=1699000114; darn=lists.linux.dev;
         h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
          :to:content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=CdvFf3ams25ZNVupsH8Hd0PeWv3PdwL+ysnV+Zf6KyQ=;
-        b=ukpvPugLx287/IqAsFfwGVuw1QS5940aeoLe/3m91fhIkix4tNXSQiAh0i2clJ4Wus
-         deu/pFmD6CNokgQpxUEndLmA9PSh3rm2xqPivWJyzIJ4V94iEhGEWBfPRUPV0tbOlUnG
-         R899dWBjYFA8RcFX/Imi5S2Z/oofaHxH2TcTQ8RlUmnwZks7MasflTbsZ3wPvV+NAGRf
-         ItpNbzDkkD85bOvYdSmJw6WbFTE47ximv7vsd6i/9K4Mj1Nxb0jjhxuyEy2lmzYRCzg5
-         6Kv3xiB2LPHfh2hosG7YItGOTmFOGvCxY1F/HAH9BX0Q5Tmy5iRTlx/cLfGPsFbz6cMP
-         qFHA==
+        bh=LcMlteiqyP+3VxtwJC6BsZU2OpQMRBZIHtS76WSCVj0=;
+        b=m7lCW9yN5svfQtORxYvGrqV5rY30p1JdlLCxJWNYxrXki9VKaN904XqFkSwnJuzXSK
+         WdJnx+lAjRTgVYStMY2zz0p2Yzik77sZfi4C/MS0xyWuMa5Qq5la5EoAC2LEyXwlkinL
+         yLW40qhjAoCbBUrZApR+0ix29L+PJwssOGpdE5t4+mHuRugC4/rlw02M/TOq0TXBYeJc
+         PUBbUD6VoKChXHwpHFGAnQVNzxPHBFMgJSAB/HgvgHtl8sbX/S4wDgKHckCoRmsHwgIw
+         7IUpGd76XYxC83aYMz09tiXfjCvSQBJfui8exXfuife/Y0MNXvTIcR6rT1jdV+NOAX+y
+         ytxw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1698395292; x=1699000092;
+        d=1e100.net; s=20230601; t=1698395314; x=1699000114;
         h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
          :to:content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=CdvFf3ams25ZNVupsH8Hd0PeWv3PdwL+ysnV+Zf6KyQ=;
-        b=Jlzv6Lp+knuKHvT56sZIXfPZMFhZNNFbTPjr6fv0RbmJatHy0IByCk1YxQMGa7nsQz
-         XGeYhwe7mW5qUF4rFjthUt6RGOCet6oIFaaryiLmBQH51qCEVF0u633uUIy7w9pQsZcM
-         c3gWoRyJXbRCD/AINOP24BkO9DhLnUlt215O3BnhCcuAMYf/NZUplZahqS04oubrHQNO
-         NzdkjMeuOnVkofUVNY0+zGrkX7IuT313UIxTP5tWZgTfRtfPrTXAgvuF+f4prt1KI5xi
-         A4EMjXewq+asvBfsHxurVZQ33EQtOi9Yz76e/Zgme2HpOJsywJv3u3HAosy7gknoZIe5
-         FauA==
-X-Gm-Message-State: AOJu0YwavcAArWGJgyS9uAEi9edm2OqFXJ1jFjRUJbQzWQ11FAUzwFmk
-	3Sw2fK254SYwxccqc4qDre3N3Q==
-X-Google-Smtp-Source: AGHT+IH5IVSfiG8xM5pF33YT10hSCjbWAPyj2HyJQyCCY/fWpg4E9FgDm2pfbpMnMP6PwOwq7Ysh6w==
-X-Received: by 2002:a05:6512:3d8e:b0:507:9854:3b95 with SMTP id k14-20020a0565123d8e00b0050798543b95mr1618998lfv.14.1698395292669;
-        Fri, 27 Oct 2023 01:28:12 -0700 (PDT)
+        bh=LcMlteiqyP+3VxtwJC6BsZU2OpQMRBZIHtS76WSCVj0=;
+        b=S9Hxm2VnQkSeAIoA/DTZqKY11IkGk3tWSKAG3vmOInrV6Lsp80PfUkQQoHjszo2q+I
+         fy9wvWR3YFjfxLNgbFKkKUYNqqCLOneT4Y6i1YMrvjXFVlyj2A7kawNAPNYNM0CPRODz
+         EBUjIlZm431YUvLG8L0FXNT0iO3OEmv9l9h4aGlMnPmDhw/HCbd6gVOvYCRn08xXUXnE
+         3td5n3qCbyh027i5C3N5Dkz3hhwJIY3TbBwLVtSADOvqgmNA/p7zEWrYNyLJMU+Tq60y
+         43DmCf4pqxNU9iKIqDU1EMUuPgoTscv83qz2ksxsXa16xLByd1TRy3N17aNOUrHhRVSn
+         9FVg==
+X-Gm-Message-State: AOJu0YwTkQsWy4ybDtRfMNeUUJftDSXzF/uxrbe2QEeDEL91W/DWaztF
+	RUH3Vvy/UeJlybRHuFBYEqLitw==
+X-Google-Smtp-Source: AGHT+IEsqujoz+JZsbJ/VnqIWfFqNlaxSDTvzvfGgXggATrnLJJGTYETFKkAzu0XhzcFRu2Lss3EUg==
+X-Received: by 2002:a05:6512:1388:b0:500:b53f:fbc2 with SMTP id fc8-20020a056512138800b00500b53ffbc2mr1455503lfb.26.1698395314249;
+        Fri, 27 Oct 2023 01:28:34 -0700 (PDT)
 Received: from [192.168.0.22] ([78.10.206.168])
-        by smtp.gmail.com with ESMTPSA id i14-20020a056512340e00b00502ae64f46asm184429lfr.126.2023.10.27.01.28.11
+        by smtp.gmail.com with ESMTPSA id i14-20020a056512340e00b00502ae64f46asm184429lfr.126.2023.10.27.01.28.31
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 27 Oct 2023 01:28:12 -0700 (PDT)
-Message-ID: <9f1e39cf-ae7f-47b4-be90-fe8b1a57394c@linaro.org>
-Date: Fri, 27 Oct 2023 10:28:11 +0200
+        Fri, 27 Oct 2023 01:28:32 -0700 (PDT)
+Message-ID: <b1440bdb-664d-477d-9e24-ba9d2c1c7ca7@linaro.org>
+Date: Fri, 27 Oct 2023 10:28:31 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -51,8 +51,8 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/3] dt-bindings: arm-smmu: Add compatible for SC8380XP
- SoC
+Subject: Re: [PATCH 2/3] dt-bindings: dma: qcom: gpi: add compatible for
+ SC8380XP
 Content-Language: en-US
 To: Sibi Sankar <quic_sibis@quicinc.com>, andersson@kernel.org,
  konrad.dybcio@linaro.org, will@kernel.org, robin.murphy@arm.com,
@@ -63,7 +63,7 @@ Cc: agross@kernel.org, vkoul@kernel.org, quic_gurus@quicinc.com,
  linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org,
  iommu@lists.linux.dev, quic_tsoni@quicinc.com, neil.armstrong@linaro.org
 References: <20231025140640.22601-1-quic_sibis@quicinc.com>
- <20231025140640.22601-2-quic_sibis@quicinc.com>
+ <20231025140640.22601-3-quic_sibis@quicinc.com>
 From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
  xsFNBFVDQq4BEAC6KeLOfFsAvFMBsrCrJ2bCalhPv5+KQF2PS2+iwZI8BpRZoV+Bd5kWvN79
@@ -109,18 +109,18 @@ Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
  KQ06ztUMRrj8eVtpImjsWCd0bDWRaaR4vqhCHvAG9iWXZu4qh3ipie2Y0oSJygcZT7H3UZxq
  fyYKiqEmRuqsvv6dcbblD8ZLkz1EVZL6djImH5zc5x8qpVxlA0A0i23v5QvN00m6G9NFF0Le
  D2GYIS41Kv4Isx2dEFh+/Q==
-In-Reply-To: <20231025140640.22601-2-quic_sibis@quicinc.com>
+In-Reply-To: <20231025140640.22601-3-quic_sibis@quicinc.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
 On 25/10/2023 16:06, Sibi Sankar wrote:
-> From: Rajendra Nayak <quic_rjendra@quicinc.com>
+> The Qualcomm SC8380XP uses GPI DMA for its GENI interface. Add a compatible
+> string for it in the documentation by using the SM6350 as fallback.
 > 
-> Add the SoC specific compatible for SC8380XP implementing arm,mmu-500.
-> 
-> Signed-off-by: Rajendra Nayak <quic_rjendra@quicinc.com>
 > Signed-off-by: Sibi Sankar <quic_sibis@quicinc.com>
 > ---
+>  Documentation/devicetree/bindings/dma/qcom,gpi.yaml | 1 +
+
 
 Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
