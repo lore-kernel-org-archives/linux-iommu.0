@@ -1,93 +1,187 @@
-Received: from out-172.mta1.migadu.com (out-172.mta1.migadu.com [95.215.58.172])
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.24])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7260918050
-	for <iommu@lists.linux.dev>; Thu, 26 Oct 2023 23:54:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 36BBFEC3
+	for <iommu@lists.linux.dev>; Fri, 27 Oct 2023 00:05:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="wlXDU2r/"
-Date: Thu, 26 Oct 2023 19:54:33 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1698364483;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=fxBcC6WpG3KRFkLY2+tQDJJ4+RZgo+8n9ZWicropf8c=;
-	b=wlXDU2r/5NnsFnSK4PA0DRbeQnz5idT7VKahwUmPIGnLuoPyox6xMFxCRq1Pws1EO9s3ve
-	aIg3upr66EtS1MsZX/PbSPfqPxCaMEUcPviZb6meANiNZEhNmrQ2++x3KPz3NDd9hcGBJa
-	757p2yOOJ0ABimOFGTUk16CjWjiwuWc=
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From: Kent Overstreet <kent.overstreet@linux.dev>
-To: Thomas Gleixner <tglx@linutronix.de>
-Cc: Suren Baghdasaryan <surenb@google.com>, akpm@linux-foundation.org,
-	mhocko@suse.com, vbabka@suse.cz, hannes@cmpxchg.org,
-	roman.gushchin@linux.dev, mgorman@suse.de, dave@stgolabs.net,
-	willy@infradead.org, liam.howlett@oracle.com, corbet@lwn.net,
-	void@manifault.com, peterz@infradead.org, juri.lelli@redhat.com,
-	ldufour@linux.ibm.com, catalin.marinas@arm.com, will@kernel.org,
-	arnd@arndb.de, mingo@redhat.com, dave.hansen@linux.intel.com,
-	x86@kernel.org, peterx@redhat.com, david@redhat.com,
-	axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org,
-	nathan@kernel.org, dennis@kernel.org, tj@kernel.org,
-	muchun.song@linux.dev, rppt@kernel.org, paulmck@kernel.org,
-	pasha.tatashin@soleen.com, yosryahmed@google.com, yuzhao@google.com,
-	dhowells@redhat.com, hughd@google.com, andreyknvl@gmail.com,
-	keescook@chromium.org, ndesaulniers@google.com, vvvvvv@google.com,
-	gregkh@linuxfoundation.org, ebiggers@google.com, ytcoode@gmail.com,
-	vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-	rostedt@goodmis.org, bsegall@google.com, bristot@redhat.com,
-	vschneid@redhat.com, cl@linux.com, penberg@kernel.org,
-	iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com,
-	elver@google.com, dvyukov@google.com, shakeelb@google.com,
-	songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com,
-	minchan@google.com, kaleshsingh@google.com, kernel-team@android.com,
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev, linux-arch@vger.kernel.org,
-	linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
-	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com,
-	cgroups@vger.kernel.org
-Subject: Re: [PATCH v2 28/39] timekeeping: Fix a circular include dependency
-Message-ID: <20231026235433.yuvxf7opxg74ncmd@moria.home.lan>
-References: <20231024134637.3120277-1-surenb@google.com>
- <20231024134637.3120277-29-surenb@google.com>
- <87h6me620j.ffs@tglx>
- <CAJuCfpH1pG513-FUE_28MfJ7xbX=9O-auYUjkxKLmtve_6rRAw@mail.gmail.com>
- <87jzr93rxv.ffs@tglx>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Q2sN83xl"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1698365160; x=1729901160;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=bd26s8GrH+SFoh5GyASoAbHiJZ86YtpYJLhvqf7ft8w=;
+  b=Q2sN83xljA1n9OLyuZIbCBeM50dnTamSKqDbnn1Vw5Dnvdqa7I+jp3hw
+   c3esfnHM5yXm9l+23SbGcScxv0Y2Pa0qf6Fto3d7wMA9PGwqonBtpk0nQ
+   yHwevePg2ent/ToDwxtICi4fb0+KK/YL7kAJfDrip0+Vd6PvFxfT2FYl4
+   3kk7sj07zFU5guIVeFJtRavoMxOmIq1Ny9scef4rqzJL8iLja4aNtx1FI
+   1k0iI5FhbkQHpcL2hr0nj21PQKUECcA/ju0dzCWjLtAaT9PaPFkpW/n+N
+   wJUSjVcnWxjpPFrks5j3//t832xptxFWZAoJglHkMRBfdLwwVrxPG6UBN
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10875"; a="390535909"
+X-IronPort-AV: E=Sophos;i="6.03,255,1694761200"; 
+   d="scan'208";a="390535909"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Oct 2023 17:05:59 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10875"; a="883017458"
+X-IronPort-AV: E=Sophos;i="6.03,255,1694761200"; 
+   d="scan'208";a="883017458"
+Received: from sqa-gate.sh.intel.com (HELO spr-2s5.tsp.org) ([10.239.48.212])
+  by orsmga004.jf.intel.com with ESMTP; 26 Oct 2023 17:05:55 -0700
+From: Tina Zhang <tina.zhang@intel.com>
+To: iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Cc: David Woodhouse <dwmw2@infradead.org>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Michael Shavit <mshavit@google.com>,
+	Vasant Hegde <vasant.hegde@amd.com>,
+	Tina Zhang <tina.zhang@intel.com>
+Subject: [PATCH v10 0/6] Share sva domains with all devices bound to a mm
+Date: Fri, 27 Oct 2023 08:05:19 +0800
+Message-Id: <20231027000525.1278806-1-tina.zhang@intel.com>
+X-Mailer: git-send-email 2.39.3
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <87jzr93rxv.ffs@tglx>
-X-Migadu-Flow: FLOW_OUT
 
-On Fri, Oct 27, 2023 at 01:05:48AM +0200, Thomas Gleixner wrote:
-> On Thu, Oct 26 2023 at 18:33, Suren Baghdasaryan wrote:
-> > On Wed, Oct 25, 2023 at 5:33 PM Thomas Gleixner <tglx@linutronix.de> wrote:
-> >> > This avoids a circular header dependency in an upcoming patch by only
-> >> > making hrtimer.h depend on percpu-defs.h
-> >>
-> >> What's the actual dependency problem?
-> >
-> > Sorry for the delay.
-> > When we instrument per-cpu allocations in [1] we need to include
-> > sched.h in percpu.h to be able to use alloc_tag_save(). sched.h
-> 
-> Including sched.h in percpu.h is fundamentally wrong as sched.h is the
-> initial place of all header recursions.
-> 
-> There is a reason why a lot of funtionalitiy has been split out of
-> sched.h into seperate headers over time in order to avoid that.
+This series is to share sva(shared virtual addressing) domains with all
+devices bound to one mm.
 
-Yeah, it's definitely unfortunate. The issue here is that
-alloc_tag_save() needs task_struct - we have to pull that in for
-alloc_tag_save() to be inline, which we really want.
+Problem
+-------
+In the current iommu core code, sva domain is allocated per IOMMU group,
+when device driver is binding a process address space to a device (which is
+handled in iommu_sva_bind_device()). If one than more device is bound to
+the same process address space, there must be more than one sva domain
+instance, with each device having one. In other words, the sva domain
+doesn't share between those devices bound to the same process address
+space, and that leads to two problems:
+1) device driver has to duplicate sva domains with enqcmd, as those sva
+domains have the same PASID and are relevant to one virtual address space.
+This makes the sva domain handling complex in device drivers.
+2) IOMMU driver cannot get sufficient info of the IOMMUs that have
+devices behind them bound to the same virtual address space, when handling
+mmu_notifier_ops callbacks. As a result, IOMMU IOTLB invalidation is
+performed per device instead of per IOMMU, and that may lead to
+superfluous IOTLB invalidation issue, especially in a virtualization
+environment where all devices may be behind one virtual IOMMU.
 
-What if we moved task_struct to its own dedicated header? That might be
-good to do anyways...
+Solution
+--------
+This patch-set tries to fix those two problems by allowing sharing sva
+domains with all devices bound to a mm. To achieve this, a new structure
+pointer is introduced to mm to replace the old PASID field, which can keep
+the info of PASID as well as the corresponding shared sva domains.
+Besides, function iommu_sva_bind_device() is updated to ensure a new sva
+domain can only be allocated when the old ones cannot work for the IOMMU.
+With these changes, a device driver can expect one sva domain could work
+for per PASID instance(e.g., enqcmd PASID instance), and therefore may get
+rid of handling sva domain duplication. Besides, IOMMU driver (e.g., intel
+vt-d driver) can get sufficient info (e.g., the info of the IOMMUs having
+their devices bound to one virtual address space) when handling
+mmu_notifier_ops callbacks, to remove the redundant IOTLB invalidations.
+
+Arguably there shouldn't be more than one sva_domain with the same PASID,
+and in any sane configuration there should be only 1 type of IOMMU driver
+that needs only 1 SVA domain. However, in reality, IOMMUs on one platform
+may not be identical to each other. Thus, attaching a sva domain that has
+been successfully bound to device A behind a IOMMU A, to device B behind
+IOMMU B may get failed due to the difference between IOMMU A and IOMMU
+B. In this case, a new sva domain with the same PASID needs to be
+allocated to work with IOMMU B. That's why we need a list to keep sva
+domains of one PASID. For the platform where IOMMUs are compatible to each
+other, there should be one sva domain in the list.
+
+v9:
+ - Add Jason's patch which solves an issue of Kconfig symbol naming used in
+   mm_struct and update this patch-set on it.
+
+v8: https://lore.kernel.org/linux-iommu/20231018050640.24936-1-tina.zhang@intel.com/
+ - CC more people
+ - CC iommu@lists.linux.dev mailing list.
+   When sending version 7, some issue happened in my CC list and that caused
+   version 7 wasn't sent to iommu@lists.linux.dev.
+ - Rebase to v6.6-rc6 and make a few format changes.
+
+v7: https://lore.kernel.org/lkml/20231012030112.82270-1-tina.zhang@intel.com/
+ - Add mm_pasid_init() back and do zeroing mm->iommu_mm pointer in
+   mm_pasid_init() to avoid the use-after-free/double-free problem.
+ - Update the commit message of patch "iommu: Add mm_get_enqcmd_pasid()
+   helper function".
+
+v6: https://lore.kernel.org/linux-iommu/20231011065132.102676-1-tina.zhang@intel.com/
+ - Rename iommu_sva_alloc_pasid() to iommu_alloc_mm_data().
+ - Hold the iommu_sva_lock before invoking iommu_alloc_mm_data().
+ - Remove "iommu: Introduce mm_get_pasid() helper function" patch, because
+   SMMUv3 decides to use mm_get_enqcmd_pasid() instead and other users are
+   using iommu_sva_get_pasid() to get the pasid value. Besides, the iommu
+   core accesses iommu_mm_data in the critical section protected by
+   iommu_sva_lock. So no need to add another helper to retrieve PASID
+   atomically.
+
+v5: https://lore.kernel.org/linux-iommu/20230925023813.575016-1-tina.zhang@intel.com/
+ - Order patch "iommu/vt-d: Remove mm->pasid in intel_sva_bind_mm()"
+   first in this series.
+ - Update commit message of patch "iommu: Introduce mm_get_pasid()
+   helper function"
+ - Use smp_store_release() & READ_ONCE() in storing and loading mm's
+   pasid value.
+
+v4: https://lore.kernel.org/linux-iommu/20230912125936.722348-1-tina.zhang@intel.com/
+ - Rebase to v6.6-rc1.
+
+v3: https://lore.kernel.org/linux-iommu/20230905000930.24515-1-tina.zhang@intel.com/
+ - Add a comment describing domain->next.
+ - Expand explanation of why PASID isn't released in
+   iommu_sva_unbind_device().
+ - Add a patch to remove mm->pasid in intel_sva_bind_mm()
+
+v2: https://lore.kernel.org/linux-iommu/20230827084401.819852-1-tina.zhang@intel.com/
+ - Add mm_get_enqcmd_pasid().
+ - Update commit message.
+
+v1: https://lore.kernel.org/linux-iommu/20230808074944.7825-1-tina.zhang@intel.com/
+
+RFC: https://lore.kernel.org/linux-iommu/20230707013441.365583-1-tina.zhang@intel.com/
+
+Jason Gunthorpe (1):
+  iommu: Change kconfig around IOMMU_SVA
+
+Tina Zhang (5):
+  iommu/vt-d: Remove mm->pasid in intel_sva_bind_mm()
+  iommu: Add mm_get_enqcmd_pasid() helper function
+  mm: Add structure to keep sva information
+  iommu: Support mm PASID 1:n with sva domains
+  mm: Deprecate pasid field
+
+ arch/Kconfig                                  |  5 +
+ arch/x86/Kconfig                              |  1 +
+ arch/x86/kernel/traps.c                       |  4 +-
+ drivers/iommu/Kconfig                         |  1 +
+ .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   | 23 +++--
+ drivers/iommu/intel/svm.c                     | 14 +--
+ drivers/iommu/iommu-sva.c                     | 94 +++++++++++--------
+ include/linux/iommu.h                         | 40 +++++++-
+ include/linux/mm_types.h                      |  5 +-
+ include/linux/sched.h                         |  2 +-
+ kernel/fork.c                                 |  2 +-
+ mm/Kconfig                                    |  3 +
+ mm/init-mm.c                                  |  3 -
+ 13 files changed, 131 insertions(+), 66 deletions(-)
+
+-- 
+2.39.3
+
