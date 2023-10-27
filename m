@@ -1,66 +1,182 @@
-Received: from mail.valinux.co.jp (mail.valinux.co.jp [210.128.90.3])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oa1-f79.google.com (mail-oa1-f79.google.com [209.85.160.79])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0881139842
-	for <iommu@lists.linux.dev>; Fri, 27 Oct 2023 16:31:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=valinux.co.jp
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=valinux.co.jp
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 102E536AFA
+	for <iommu@lists.linux.dev>; Fri, 27 Oct 2023 21:11:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org; dkim=none
-Received: from localhost (localhost [127.0.0.1])
-	by mail.valinux.co.jp (Postfix) with ESMTP id D82FDA95E5;
-	Sat, 28 Oct 2023 01:30:59 +0900 (JST)
-X-Virus-Scanned: Debian amavisd-new at valinux.co.jp
-Received: from mail.valinux.co.jp ([127.0.0.1])
-	by localhost (mail.valinux.co.jp [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 9hqLDIYGL-8R; Sat, 28 Oct 2023 01:30:59 +0900 (JST)
-Received: from z790sl.. (KD111097181081.ppp-bb.dion.ne.jp [111.97.181.81])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-	(No client certificate requested)
-	by mail.valinux.co.jp (Postfix) with ESMTPSA id AAFFBA95DE;
-	Sat, 28 Oct 2023 01:30:59 +0900 (JST)
-From: Koichiro Den <den@valinux.co.jp>
-To: iommu@lists.linux.dev
-Cc: jgg@ziepe.ca,
-	kevin.tian@intel.com,
-	Koichiro Den <den@valinux.co.jp>
-Subject: [PATCH] iommufd: Fix missing update of domains_itree after splitting iopt_area
-Date: Sat, 28 Oct 2023 01:29:42 +0900
-Message-ID: <20231027162941.2864615-2-den@valinux.co.jp>
-X-Mailer: git-send-email 2.41.0
+Received: by mail-oa1-f79.google.com with SMTP id 586e51a60fabf-1d66b019a27so3389020fac.0
+        for <iommu@lists.linux.dev>; Fri, 27 Oct 2023 14:11:33 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1698441093; x=1699045893;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=oNoZbYOlIv4dyVECabePIdfIGgk1r4UtAtMGjjVpRNw=;
+        b=CaAybFGED7d9PbCDqkcud3Pq4TMCdiApLc62NdFZbiB5vHSpdZ/bayANtYMRk+xDFc
+         1K0ogbKtkItjqAWAcl57tAPr005k/v8QFhW1LDMUp109z75WfEbvMRRCgpKZlR6DWk9J
+         eJL0U6mEEJQINHui9kD/rlJ9k8KT9Xn9ENqyYVBT6BommtMq9iKpWDYTHN3SYjOxmV8p
+         jSasi0JG8kd2jf02TbQ/zORCuZbjqM0KTU+mEdina4xi+91P8S1SzlThAG/iH2Y9q0xg
+         DXHNa4lIJaLaB0Ip1NgealnMH0VJjYH7YUEc/RRt6yv7ToSh8kz/G7hKk9VmzhjG0mgw
+         /5qw==
+X-Gm-Message-State: AOJu0YwHdicTSCeGgVgstQdz6rce6/CYenY6TsonzizWdkJFv9AwDdWm
+	GAGv+5T8585mCoKwg4/F+UxbRWl4eQG9Ugch6h0Q4HAWHJ9Kwm1u6Q==
+X-Google-Smtp-Source: AGHT+IH06TV5SQyMqhA2mNC4y+hknxuwnXBpa/QpZXKpAS9AmewD3C85Wv4DRshK3H2WdohHy6Vkol6zFWtyvveMauf8dbuIzWlC
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a05:6870:304d:b0:1c0:e7d3:3b2d with SMTP id
+ u13-20020a056870304d00b001c0e7d33b2dmr1720601oau.7.1698441093050; Fri, 27 Oct
+ 2023 14:11:33 -0700 (PDT)
+Date: Fri, 27 Oct 2023 14:11:32 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000005f6aa0608b9220f@google.com>
+Subject: [syzbot] [iommu?] divide error in iommufd_test
+From: syzbot <syzbot+25dc7383c30ecdc83c38@syzkaller.appspotmail.com>
+To: iommu@lists.linux.dev, jgg@nvidia.com, jgg@ziepe.ca, 
+	joao.m.martins@oracle.com, joro@8bytes.org, kevin.tian@intel.com, 
+	linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org, 
+	robin.murphy@arm.com, shuah@kernel.org, syzkaller-bugs@googlegroups.com, 
+	will@kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-In iopt_area_split(), if the original iopt_area has filled a domain and
-is linked to domains_itree, pages_nodes have to be properly reinserted.
+Hello,
 
-Signed-off-by: Koichiro Den <den@valinux.co.jp>
+syzbot found the following issue on:
+
+HEAD commit:    e8361b005d7c Add linux-next specific files for 20231023
+git tree:       linux-next
+console+strace: https://syzkaller.appspot.com/x/log.txt?x=13e4cb83680000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=75e8fc3570ec9a74
+dashboard link: https://syzkaller.appspot.com/bug?extid=25dc7383c30ecdc83c38
+compiler:       gcc (Debian 12.2.0-14) 12.2.0, GNU ld (GNU Binutils for Debian) 2.40
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=119bad5d680000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1062e393680000
+
+Downloadable assets:
+disk image: https://storage.googleapis.com/syzbot-assets/e28a7944599e/disk-e8361b00.raw.xz
+vmlinux: https://storage.googleapis.com/syzbot-assets/7dd355dbe055/vmlinux-e8361b00.xz
+kernel image: https://storage.googleapis.com/syzbot-assets/7b2a9050635d/bzImage-e8361b00.xz
+
+The issue was bisected to:
+
+commit 5e054083ce6929b567c6aadbf8bf627b0f028353
+Author: Joao Martins <joao.m.martins@oracle.com>
+Date:   Fri Oct 20 22:28:02 2023 +0000
+
+    iommufd/selftest: Test IOMMU_HWPT_GET_DIRTY_BITMAP
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=14a49a35680000
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=16a49a35680000
+console output: https://syzkaller.appspot.com/x/log.txt?x=12a49a35680000
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+25dc7383c30ecdc83c38@syzkaller.appspotmail.com
+Fixes: 5e054083ce69 ("iommufd/selftest: Test IOMMU_HWPT_GET_DIRTY_BITMAP")
+
+divide error: 0000 [#1] PREEMPT SMP KASAN
+CPU: 1 PID: 5053 Comm: syz-executor178 Not tainted 6.6.0-rc6-next-20231023-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 09/06/2023
+RIP: 0010:iommufd_test_dirty drivers/iommu/iommufd/selftest.c:1098 [inline]
+RIP: 0010:iommufd_test+0x1fd/0x35c0 drivers/iommu/iommufd/selftest.c:1203
+Code: 04 02 48 89 4c 24 28 84 c0 74 09 3c 03 7f 05 e8 69 ac 2f fd 48 8b 04 24 31 d2 31 ff 48 8b 5c 24 20 44 8b 68 08 48 8b 44 24 28 <48> f7 f3 48 89 d5 48 89 d6 e8 85 cf d8 fc 48 85 ed 0f 85 ce 22 00
+RSP: 0018:ffffc90003937cb0 EFLAGS: 00010246
+RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
+RDX: 0000000000000000 RSI: ffffffff84affaf2 RDI: 0000000000000000
+RBP: 000000000000000d R08: 0000000000000005 R09: 000000000000000d
+R10: 000000000000000d R11: 0000000000000000 R12: 0000000000000000
+R13: 0000000000000000 R14: ffffc90003937e40 R15: ffffc90003937e00
+FS:  00005555560d7380(0000) GS:ffff8880b9900000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000020006000 CR3: 0000000075a85000 CR4: 00000000003506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ iommufd_fops_ioctl+0x35a/0x4e0 drivers/iommu/iommufd/main.c:404
+ vfs_ioctl fs/ioctl.c:51 [inline]
+ __do_sys_ioctl fs/ioctl.c:871 [inline]
+ __se_sys_ioctl fs/ioctl.c:857 [inline]
+ __x64_sys_ioctl+0x18f/0x210 fs/ioctl.c:857
+ do_syscall_x64 arch/x86/entry/common.c:51 [inline]
+ do_syscall_64+0x3f/0x110 arch/x86/entry/common.c:82
+ entry_SYSCALL_64_after_hwframe+0x62/0x6a
+RIP: 0033:0x7f5fb02172e9
+Code: 48 83 c4 28 c3 e8 37 17 00 00 0f 1f 80 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffd74d26068 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+RAX: ffffffffffffffda RBX: 00007ffd74d26238 RCX: 00007f5fb02172e9
+RDX: 0000000020000140 RSI: 0000000000003ba0 RDI: 0000000000000003
+RBP: 00007f5fb028a610 R08: 0000000000000000 R09: 00007ffd74d26238
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000001
+R13: 00007ffd74d26228 R14: 0000000000000001 R15: 0000000000000001
+ </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
+RIP: 0010:iommufd_test_dirty drivers/iommu/iommufd/selftest.c:1098 [inline]
+RIP: 0010:iommufd_test+0x1fd/0x35c0 drivers/iommu/iommufd/selftest.c:1203
+Code: 04 02 48 89 4c 24 28 84 c0 74 09 3c 03 7f 05 e8 69 ac 2f fd 48 8b 04 24 31 d2 31 ff 48 8b 5c 24 20 44 8b 68 08 48 8b 44 24 28 <48> f7 f3 48 89 d5 48 89 d6 e8 85 cf d8 fc 48 85 ed 0f 85 ce 22 00
+RSP: 0018:ffffc90003937cb0 EFLAGS: 00010246
+RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
+RDX: 0000000000000000 RSI: ffffffff84affaf2 RDI: 0000000000000000
+RBP: 000000000000000d R08: 0000000000000005 R09: 000000000000000d
+R10: 000000000000000d R11: 0000000000000000 R12: 0000000000000000
+R13: 0000000000000000 R14: ffffc90003937e40 R15: ffffc90003937e00
+FS:  00005555560d7380(0000) GS:ffff8880b9900000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000020006000 CR3: 0000000075a85000 CR4: 00000000003506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+----------------
+Code disassembly (best guess):
+   0:	04 02                	add    $0x2,%al
+   2:	48 89 4c 24 28       	mov    %rcx,0x28(%rsp)
+   7:	84 c0                	test   %al,%al
+   9:	74 09                	je     0x14
+   b:	3c 03                	cmp    $0x3,%al
+   d:	7f 05                	jg     0x14
+   f:	e8 69 ac 2f fd       	call   0xfd2fac7d
+  14:	48 8b 04 24          	mov    (%rsp),%rax
+  18:	31 d2                	xor    %edx,%edx
+  1a:	31 ff                	xor    %edi,%edi
+  1c:	48 8b 5c 24 20       	mov    0x20(%rsp),%rbx
+  21:	44 8b 68 08          	mov    0x8(%rax),%r13d
+  25:	48 8b 44 24 28       	mov    0x28(%rsp),%rax
+* 2a:	48 f7 f3             	div    %rbx <-- trapping instruction
+  2d:	48 89 d5             	mov    %rdx,%rbp
+  30:	48 89 d6             	mov    %rdx,%rsi
+  33:	e8 85 cf d8 fc       	call   0xfcd8cfbd
+  38:	48 85 ed             	test   %rbp,%rbp
+  3b:	0f                   	.byte 0xf
+  3c:	85 ce                	test   %ecx,%esi
+  3e:	22 00                	and    (%rax),%al
+
+
 ---
- drivers/iommu/iommufd/io_pagetable.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-diff --git a/drivers/iommu/iommufd/io_pagetable.c b/drivers/iommu/iommufd/io_pagetable.c
-index 9f060abe53b6..5ba83296c91a 100644
---- a/drivers/iommu/iommufd/io_pagetable.c
-+++ b/drivers/iommu/iommufd/io_pagetable.c
-@@ -1220,6 +1220,13 @@ static int iopt_area_split(struct iopt_area *area, unsigned long iova)
- 	if (WARN_ON(rc))
- 		goto err_remove_lhs;
- 
-+	/* If the original area has filled a domain, domains_itree has to be updated. */
-+	if (!RB_EMPTY_NODE(&area->pages_node.rb)) {
-+		interval_tree_remove(&area->pages_node, &pages->domains_itree);
-+		interval_tree_insert(&lhs->pages_node, &pages->domains_itree);
-+		interval_tree_insert(&rhs->pages_node, &pages->domains_itree);
-+	}
-+
- 	lhs->storage_domain = area->storage_domain;
- 	lhs->pages = area->pages;
- 	rhs->storage_domain = area->storage_domain;
--- 
-2.41.0
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
 
+If the bug is already fixed, let syzbot know by replying with:
+#syz fix: exact-commit-title
+
+If you want syzbot to run the reproducer, reply with:
+#syz test: git://repo/address.git branch-or-commit-hash
+If you attach or paste a git patch, syzbot will apply it before testing.
+
+If you want to overwrite bug's subsystems, reply with:
+#syz set subsystems: new-subsystem
+(See the list of subsystem names on the web dashboard)
+
+If the bug is a duplicate of another bug, reply with:
+#syz dup: exact-subject-of-another-report
+
+If you want to undo deduplication, reply with:
+#syz undup
