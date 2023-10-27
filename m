@@ -1,55 +1,66 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mail.valinux.co.jp (mail.valinux.co.jp [210.128.90.3])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 198F637CA0
-	for <iommu@lists.linux.dev>; Fri, 27 Oct 2023 15:46:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZDTnFlK4"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 9AB0CC433C8;
-	Fri, 27 Oct 2023 15:46:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1698421600;
-	bh=ICLLe1P77YEAbgrIOoWuE9i17o0dtIBIQ75UB5huibA=;
-	h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-	b=ZDTnFlK4AbT+APoNSgbezl3RmYPzkFiqGlT/3/mA5YLCulanGCLii6z9KKH3KxtzW
-	 8EaC3QWCO9F/glv3Nnc4rohPNTFQmheJVaBwLaEsSDlZDbrSZJl/84pYRC1QHeJWwH
-	 0hXf+radWVkbaaK25lltiBMqhrXXiqN4yY42qElbgclz1wyt8cLCm7OCjFhehP5VZU
-	 g60pzTiDUiVH8xbzJkKBpcuNaDUZcHVFuXtd+ndVM6b/NDhaC/p902tYbDNeLwA/wf
-	 LmrErmYIKUKXJgwASI7sRTGp6DH/vmhs0kJ5ucWHUnoCv5Qwd4iJx1rcZ3utGfuiHH
-	 uLiC7hHnfL1Pg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 8997EC41620;
-	Fri, 27 Oct 2023 15:46:40 +0000 (UTC)
-Subject: Re: [git pull] IOMMU Fix for Linux v6.6-rc7
-From: pr-tracker-bot@kernel.org
-In-Reply-To: <ZTtwNUIIenr5xRPO@8bytes.org>
-References: <ZTtwNUIIenr5xRPO@8bytes.org>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <ZTtwNUIIenr5xRPO@8bytes.org>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fix-v6.6-rc7
-X-PR-Tracked-Commit-Id: 6e6c6d6bc6c96c2477ddfea24a121eb5ee12b7a3
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 888cf78c29e223fd808682f477c18cf8f61ad995
-Message-Id: <169842160054.21759.12836632651981604416.pr-tracker-bot@kernel.org>
-Date: Fri, 27 Oct 2023 15:46:40 +0000
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org, iommu@lists.linux.dev
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0881139842
+	for <iommu@lists.linux.dev>; Fri, 27 Oct 2023 16:31:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=valinux.co.jp
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=valinux.co.jp
+Authentication-Results: smtp.subspace.kernel.org; dkim=none
+Received: from localhost (localhost [127.0.0.1])
+	by mail.valinux.co.jp (Postfix) with ESMTP id D82FDA95E5;
+	Sat, 28 Oct 2023 01:30:59 +0900 (JST)
+X-Virus-Scanned: Debian amavisd-new at valinux.co.jp
+Received: from mail.valinux.co.jp ([127.0.0.1])
+	by localhost (mail.valinux.co.jp [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 9hqLDIYGL-8R; Sat, 28 Oct 2023 01:30:59 +0900 (JST)
+Received: from z790sl.. (KD111097181081.ppp-bb.dion.ne.jp [111.97.181.81])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+	(No client certificate requested)
+	by mail.valinux.co.jp (Postfix) with ESMTPSA id AAFFBA95DE;
+	Sat, 28 Oct 2023 01:30:59 +0900 (JST)
+From: Koichiro Den <den@valinux.co.jp>
+To: iommu@lists.linux.dev
+Cc: jgg@ziepe.ca,
+	kevin.tian@intel.com,
+	Koichiro Den <den@valinux.co.jp>
+Subject: [PATCH] iommufd: Fix missing update of domains_itree after splitting iopt_area
+Date: Sat, 28 Oct 2023 01:29:42 +0900
+Message-ID: <20231027162941.2864615-2-den@valinux.co.jp>
+X-Mailer: git-send-email 2.41.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 
-The pull request you sent on Fri, 27 Oct 2023 10:09:25 +0200:
+In iopt_area_split(), if the original iopt_area has filled a domain and
+is linked to domains_itree, pages_nodes have to be properly reinserted.
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fix-v6.6-rc7
+Signed-off-by: Koichiro Den <den@valinux.co.jp>
+---
+ drivers/iommu/iommufd/io_pagetable.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/888cf78c29e223fd808682f477c18cf8f61ad995
-
-Thank you!
-
+diff --git a/drivers/iommu/iommufd/io_pagetable.c b/drivers/iommu/iommufd/io_pagetable.c
+index 9f060abe53b6..5ba83296c91a 100644
+--- a/drivers/iommu/iommufd/io_pagetable.c
++++ b/drivers/iommu/iommufd/io_pagetable.c
+@@ -1220,6 +1220,13 @@ static int iopt_area_split(struct iopt_area *area, unsigned long iova)
+ 	if (WARN_ON(rc))
+ 		goto err_remove_lhs;
+ 
++	/* If the original area has filled a domain, domains_itree has to be updated. */
++	if (!RB_EMPTY_NODE(&area->pages_node.rb)) {
++		interval_tree_remove(&area->pages_node, &pages->domains_itree);
++		interval_tree_insert(&lhs->pages_node, &pages->domains_itree);
++		interval_tree_insert(&rhs->pages_node, &pages->domains_itree);
++	}
++
+ 	lhs->storage_domain = area->storage_domain;
+ 	lhs->pages = area->pages;
+ 	rhs->storage_domain = area->storage_domain;
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+2.41.0
+
