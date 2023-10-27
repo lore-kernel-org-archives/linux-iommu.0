@@ -1,89 +1,161 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.88])
+Received: from wout4-smtp.messagingengine.com (wout4-smtp.messagingengine.com [64.147.123.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 608905245
-	for <iommu@lists.linux.dev>; Fri, 27 Oct 2023 06:09:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 83CE28F5C
+	for <iommu@lists.linux.dev>; Fri, 27 Oct 2023 06:35:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=arndb.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arndb.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="mKG1UFNT"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1698386956; x=1729922956;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=+DrVyO/lmmzNiD355grMg157EiJ4H0MKLPJHIYM0VSM=;
-  b=mKG1UFNT+mlANRW8ML17QeyB+uwjp1Fu6UqRQjQOTgQWrU71h0jEjDUv
-   45DllGW0JNvuX7ZysimkM/uCGWFL4Q6duTGz3F9C6VO7syfAALBOvxMtt
-   gNGkoBF8CvFUjj6qXEIgWMaNFLdTq2rTpAE4M4phTzebzDf+XeBTCALK/
-   Ez6Alu+78wyOROrV/15Ot4yYyNt223BPpO0oON670takaBk9HvHyl3Tok
-   UPe3E6S1WypvGa0rIMeIX1IwWGZnIM9HvmaDJ28Wl8WoryBCg3D84/sMq
-   yRE/rHCj8Lk3V2m6alWpNJEtFGCdmC+FhL5diYOTQ8KxhaFpOx9eJGXE0
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10875"; a="418823664"
-X-IronPort-AV: E=Sophos;i="6.03,255,1694761200"; 
-   d="scan'208";a="418823664"
-Received: from orviesa002.jf.intel.com ([10.64.159.142])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Oct 2023 23:09:14 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.03,255,1694761200"; 
-   d="scan'208";a="708126"
-Received: from jiaqingh-mobl.ccr.corp.intel.com (HELO [10.93.11.63]) ([10.93.11.63])
-  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Oct 2023 23:08:35 -0700
-Message-ID: <bf2dbc64-a6b6-4763-b497-80f0f1675366@intel.com>
-Date: Fri, 27 Oct 2023 14:09:11 +0800
+	dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b="HPKdp0vu";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="DiBX4/I2"
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+	by mailout.west.internal (Postfix) with ESMTP id 8216B3200BB7;
+	Fri, 27 Oct 2023 02:35:26 -0400 (EDT)
+Received: from imap51 ([10.202.2.101])
+  by compute5.internal (MEProxy); Fri, 27 Oct 2023 02:35:28 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
+	:cc:content-transfer-encoding:content-type:content-type:date
+	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:sender:subject:subject:to:to; s=fm2; t=
+	1698388526; x=1698474926; bh=ijn9LKOmAMUGBGwJHsN1qvv5KR6XAd5/U4/
+	K/UeLB/A=; b=HPKdp0vu6TQo9nOWnMSMnIsbdPaZo/7QxPk1qO5P7/ePiud9XNC
+	skjx9DUvtpBsAd0Ih/52W5KSD4URW9BYr+TAOXUl88vhxZubblKMBVK2mLWWfwxc
+	HpsyOeriLtbdSnNA7T8seXSUHpDI8FZny9u5QRzPWUJ8yNsoKlKD9C7uSIz3x1Vl
+	Usj7X9E+jKDiMVxrUdBoxts2Id7TrfennhJghV5WdENLEqCxk4+bAHDi1tTzbJsZ
+	0nH9AktgGqkSWK+QWJUx5vezWn3uGrniIuxSS0t9up1l8Xf+qQYG5yuwr6vdbkO6
+	qRWnD+Zi524JBvNB+FbcLjqq+kJVs3PbvOg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-transfer-encoding
+	:content-type:content-type:date:date:feedback-id:feedback-id
+	:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:sender:subject:subject:to:to:x-me-proxy
+	:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=
+	1698388526; x=1698474926; bh=ijn9LKOmAMUGBGwJHsN1qvv5KR6XAd5/U4/
+	K/UeLB/A=; b=DiBX4/I27Pvac9t3zmkmnSuXducX4QdxI55QsQfLCc0oUP94wqU
+	S4N1jNnKzpLFqwEDSflmoanuUwm8qhoteciYVEM5uCcoOl2FE8cUza2uyti3r23U
+	KRGZzdVDZ3rLhfb7FaFUi2qpSSRAdprbjhvbQ2SGGmNCWBABnwSWAskDkG4Unlr3
+	cd1Le2H8YMJtotYKOQ0brC2U8kSZbUdN6pHecluADE8TCJAhydBJL0Lq4L4WLJpl
+	Y5lDYak4Q2Gm/4+20+3UZ3WJrCcjUB3aoTpdVIRqgOFXeRBIucijI4jsgzoBKapG
+	7DeMt420YltBYeydd36vxVQN1rvCntZPodw==
+X-ME-Sender: <xms:LVo7ZQ6naWEKuEyMOQq660epet943q1h01vGW-KmyI0dg5UN3uj1GQ>
+    <xme:LVo7ZR7R8NK55WtpitWZzUtLaGVF0VNS6xVTAWaG1NqY9vzR6sq3Z1Gc1HrHWU1Jl
+    o7SY_if_xfRWlkhdDY>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvkedrleefgdduudduucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepofgfggfkjghffffhvfevufgtgfesthhqredtreerjeenucfhrhhomhepfdet
+    rhhnugcuuegvrhhgmhgrnhhnfdcuoegrrhhnugesrghrnhgusgdruggvqeenucggtffrrg
+    htthgvrhhnpeegfeejhedvledvffeijeeijeeivddvhfeliedvleevheejleetgedukedt
+    gfejveenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
+    grrhhnugesrghrnhgusgdruggv
+X-ME-Proxy: <xmx:LVo7ZfdVcu-vGdHfCefrnYG8R69mHw15q8WT0mI2gvIvU_kKxEiTrg>
+    <xmx:LVo7ZVLwgWPJ00SMrQfWzZG09vy87ahNqCajtYU7jUfBjb0ZSS3h3g>
+    <xmx:LVo7ZULDGADAQ-oxLktDijlM3YRiRIOiXnRmSjHIzQQYgnCAg6xzbQ>
+    <xmx:Llo7ZZitSH1LYdKDpuInMAFiXYyHNbaR7uHyDqe2YJEuLiCxRJKiow>
+Feedback-ID: i56a14606:Fastmail
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+	id F0DD6B60089; Fri, 27 Oct 2023 02:35:24 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.9.0-alpha0-1048-g9229b632c5-fm-20231019.001-g9229b632
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/2] iommu: Introduce a rb_tree for looking up device
-Content-Language: en-US
-To: Baolu Lu <baolu.lu@linux.intel.com>, joro@8bytes.org, will@kernel.org,
- robin.murphy@arm.com, dwmw2@infradead.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux.dev
-Cc: jacob.jun.pan@linux.intel.com, kevin.tian@intel.com, yi.y.sun@intel.com,
- kvm@vger.kernel.org
-References: <20231024084124.11155-1-jiaqing.huang@intel.com>
- <5a4c169d-8e42-4609-87db-8b68f04bb0fe@linux.intel.com>
-From: "Huang, Jiaqing" <jiaqing.huang@intel.com>
-In-Reply-To: <5a4c169d-8e42-4609-87db-8b68f04bb0fe@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Message-Id: <b20fe713-28c6-4ca8-b64a-df017f161524@app.fastmail.com>
+In-Reply-To: <20231026235433.yuvxf7opxg74ncmd@moria.home.lan>
+References: <20231024134637.3120277-1-surenb@google.com>
+ <20231024134637.3120277-29-surenb@google.com> <87h6me620j.ffs@tglx>
+ <CAJuCfpH1pG513-FUE_28MfJ7xbX=9O-auYUjkxKLmtve_6rRAw@mail.gmail.com>
+ <87jzr93rxv.ffs@tglx> <20231026235433.yuvxf7opxg74ncmd@moria.home.lan>
+Date: Fri, 27 Oct 2023 08:35:03 +0200
+From: "Arnd Bergmann" <arnd@arndb.de>
+To: "Kent Overstreet" <kent.overstreet@linux.dev>,
+ "Thomas Gleixner" <tglx@linutronix.de>
+Cc: "Suren Baghdasaryan" <surenb@google.com>,
+ "Andrew Morton" <akpm@linux-foundation.org>,
+ "Michal Hocko" <mhocko@suse.com>, "Vlastimil Babka" <vbabka@suse.cz>,
+ "Johannes Weiner" <hannes@cmpxchg.org>,
+ "Roman Gushchin" <roman.gushchin@linux.dev>,
+ "Mel Gorman" <mgorman@suse.de>, "Davidlohr Bueso" <dave@stgolabs.net>,
+ "Matthew Wilcox" <willy@infradead.org>,
+ "Liam R. Howlett" <liam.howlett@oracle.com>,
+ "Jonathan Corbet" <corbet@lwn.net>, void@manifault.com,
+ "Peter Zijlstra" <peterz@infradead.org>, juri.lelli@redhat.com,
+ ldufour@linux.ibm.com, "Catalin Marinas" <catalin.marinas@arm.com>,
+ "Will Deacon" <will@kernel.org>, "Ingo Molnar" <mingo@redhat.com>,
+ "Dave Hansen" <dave.hansen@linux.intel.com>, x86@kernel.org,
+ peterx@redhat.com, "David Hildenbrand" <david@redhat.com>,
+ "Jens Axboe" <axboe@kernel.dk>, "Luis Chamberlain" <mcgrof@kernel.org>,
+ "Masahiro Yamada" <masahiroy@kernel.org>,
+ "Nathan Chancellor" <nathan@kernel.org>, dennis@kernel.org,
+ "Tejun Heo" <tj@kernel.org>, "Muchun Song" <muchun.song@linux.dev>,
+ "Mike Rapoport" <rppt@kernel.org>,
+ "Paul E. McKenney" <paulmck@kernel.org>, pasha.tatashin@soleen.com,
+ yosryahmed@google.com, "Yu Zhao" <yuzhao@google.com>,
+ "David Howells" <dhowells@redhat.com>, "Hugh Dickins" <hughd@google.com>,
+ "Andrey Konovalov" <andreyknvl@gmail.com>,
+ "Kees Cook" <keescook@chromium.org>,
+ "Nick Desaulniers" <ndesaulniers@google.com>, vvvvvv@google.com,
+ "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+ "Eric Biggers" <ebiggers@google.com>, ytcoode@gmail.com,
+ "Vincent Guittot" <vincent.guittot@linaro.org>, dietmar.eggemann@arm.com,
+ "Steven Rostedt" <rostedt@goodmis.org>, bsegall@google.com,
+ bristot@redhat.com, vschneid@redhat.com,
+ "Christoph Lameter" <cl@linux.com>, "Pekka Enberg" <penberg@kernel.org>,
+ "Joonsoo Kim" <iamjoonsoo.kim@lge.com>,
+ "Hyeonggon Yoo" <42.hyeyoo@gmail.com>,
+ "Alexander Potapenko" <glider@google.com>,
+ "Marco Elver" <elver@google.com>, "Dmitry Vyukov" <dvyukov@google.com>,
+ "Shakeel Butt" <shakeelb@google.com>,
+ "Muchun Song" <songmuchun@bytedance.com>,
+ "Jason Baron" <jbaron@akamai.com>,
+ "David Rientjes" <rientjes@google.com>, minchan@google.com,
+ kaleshsingh@google.com, kernel-team@android.com,
+ linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux.dev, Linux-Arch <linux-arch@vger.kernel.org>,
+ linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
+ linux-modules@vger.kernel.org, kasan-dev@googlegroups.com,
+ cgroups@vger.kernel.org
+Subject: Re: [PATCH v2 28/39] timekeeping: Fix a circular include dependency
+Content-Type: text/plain;charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-On 10/24/2023 7:58 PM, Baolu Lu wrote:
-
-> On 2023/10/24 16:41, Huang Jiaqing wrote:
->> The existing IO page fault handler locates the PCI device by calling
->> pci_get_domain_bus_and_slot(), which searches the list of all PCI
->> devices until the desired PCI device is found. This is inefficient
->> because the algorithm efficiency of searching a list is O(n). In the
->> critical path of handling an IO page fault, this is not performance
->> friendly given that I/O page fault handling patch is performance
->> critical, and parallel heavy dsa_test may cause cpu stuck due to
->> the low efficiency and lock competition in current path.
->>
->> To improve the performance of the IO page fault handler, replace
->> pci_get_domain_bus_and_slot() with a local red-black tree. A red-black
->> tree is a self-balancing binary search tree, which means that the
->> average time complexity of searching a red-black tree is O(log(n)). This
->> is significantly faster than O(n), so it can significantly improve the
->> performance of the IO page fault handler.
->>
->> In addition, we can only insert the affected devices (those that have IO
->> page fault enabled) into the red-black tree. This can further improve
->> the performance of the IO page fault handler.
->>
->> This series depends on "deliver page faults to user space" patch-set:
->> https://lore.kernel.org/linux-iommu/20230928042734.16134-1-baolu.lu@linux.intel.com/
->>
+On Fri, Oct 27, 2023, at 01:54, Kent Overstreet wrote:
+> On Fri, Oct 27, 2023 at 01:05:48AM +0200, Thomas Gleixner wrote:
+>> On Thu, Oct 26 2023 at 18:33, Suren Baghdasaryan wrote:
+>> > On Wed, Oct 25, 2023 at 5:33=E2=80=AFPM Thomas Gleixner <tglx@linut=
+ronix.de> wrote:
+>> >> > This avoids a circular header dependency in an upcoming patch by=
+ only
+>> >> > making hrtimer.h depend on percpu-defs.h
+>> >>
+>> >> What's the actual dependency problem?
+>> >
+>> > Sorry for the delay.
+>> > When we instrument per-cpu allocations in [1] we need to include
+>> > sched.h in percpu.h to be able to use alloc_tag_save(). sched.h
+>>=20
+>> Including sched.h in percpu.h is fundamentally wrong as sched.h is the
+>> initial place of all header recursions.
+>>=20
+>> There is a reason why a lot of funtionalitiy has been split out of
+>> sched.h into seperate headers over time in order to avoid that.
 >
-> The note above is not part of the commit message, and should be placed
-> below the tear line or in the cover letter, if there is one.
+> Yeah, it's definitely unfortunate. The issue here is that
+> alloc_tag_save() needs task_struct - we have to pull that in for
+> alloc_tag_save() to be inline, which we really want.
+>
+> What if we moved task_struct to its own dedicated header? That might be
+> good to do anyways...
 
-Will fix, thanks for catching!
+Yes, I agree that is the best way to handle it. I've prototyped
+a more thorough header cleanup with good results (much improved
+build speed) in the past, and most of the work to get there is
+to seperate out structures like task_struct, mm_struct, net_device,
+etc into headers that only depend on the embedded structure
+definitions without needing all the inline functions associated
+with them.
 
-BRs,
-Jiaqing
+      Arnd
