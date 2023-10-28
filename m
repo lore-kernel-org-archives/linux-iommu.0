@@ -1,138 +1,55 @@
-Received: from bee.tesarici.cz (bee.tesarici.cz [77.93.223.253])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E60F12595
-	for <iommu@lists.linux.dev>; Sat, 28 Oct 2023 17:24:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=tesarici.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tesarici.cz
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D13C116413
+	for <iommu@lists.linux.dev>; Sat, 28 Oct 2023 18:07:47 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b="i1I47jI4"
-Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by bee.tesarici.cz (Postfix) with ESMTPSA id 90B82183965;
-	Sat, 28 Oct 2023 19:24:15 +0200 (CEST)
-Authentication-Results: mail.tesarici.cz; dmarc=fail (p=none dis=none) header.from=tesarici.cz
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tesarici.cz; s=mail;
-	t=1698513855; bh=63piwosiHAopoeCkW5PJAry2Pc8VSvApdr9vB2aS6wo=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=i1I47jI4h+WzrG11i7vQx3T1qvsyl7dc6LewNWIe+xOizzWuw/BO+eeZiPoYeKt0S
-	 FG/lYSwcN3SCcaXnzzpe36QVC20/vJI8SSSTxFEkBJ0sjXM2lzyAzWRRSVasFCOiFk
-	 RuXb4n5xMMjoLcW+7S0iwGj5+iqiOfJ/Nx5nMFt2GIf3Lbd2TWvOGYQSDAx3BQ+PW9
-	 mrNNKkA0R4Vz1Z7OgOik0/RDVdnwCrK/p21fflDADjBM/xzFjGkqtdCCKRFymGxVSO
-	 mPfC6HcaPdB6b8fynA25wGDm6V+AWmXCsbxVognzzowkkVYR61f+5HHXXKqPz9VrBI
-	 m/p0t9XFrCKxw==
-Date: Sat, 28 Oct 2023 19:24:14 +0200
-From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
-To: Christoph Hellwig <hch@lst.de>
-Cc: Petr Tesarik <petrtesarik@huaweicloud.com>, Marek Szyprowski
- <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Greg
- Kroah-Hartman <gregkh@linuxfoundation.org>, Petr Tesarik
- <petr.tesarik1@huawei-partners.com>, iommu@lists.linux.dev (open list:DMA
- MAPPING HELPERS), linux-kernel@vger.kernel.org (open list), Wangkefeng
- <wangkefeng.wang@huawei.com>, Roberto Sassu <roberto.sassu@huaweicloud.com>
-Subject: Re: [PATCH] swiotlb: check dynamically allocated TLB address before
- decrypting
-Message-ID: <20231028192414.637bf4fd@meshulam.tesarici.cz>
-In-Reply-To: <20231026095123.222-1-petrtesarik@huaweicloud.com>
-References: <20231026095123.222-1-petrtesarik@huaweicloud.com>
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; x86_64-suse-linux-gnu)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dWpRb8XZ"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 47886C433C8;
+	Sat, 28 Oct 2023 18:07:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1698516467;
+	bh=u029BSArg6DTWpBFupXIZPaIEj10s/9bf7C+dzH1ATo=;
+	h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+	b=dWpRb8XZiKYafic1XI/y5+2GsJT6wjtHGJhHEsl9aHSKDUdNT/MIBYR6zAJfZDsvW
+	 wppqk722MD7axUNh7fnQqkFL/bSdaQxFTOROK1NBItOz/6cOaisCNZrJM+FMSMkbvw
+	 S0I4bBvJ0Wdn5PgsF0dfatlbnJBSoZCBa4667Tz1NwBJ1OIFU/BGzlfcyfZ8mZ8Kzb
+	 pc9fRkzi3WLPv2QiACg00GMXxzBMX3Pyto7/lZIbrnMscYGSFISHIBRjC1ZoPT2f2P
+	 frt/YVfxHJOoTWR+lpc27qwnTIPSfka0owfXwMnpZvvX25mHfHlsQPNNxP6aQJKWFT
+	 7z6M+c/sw6+gA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 31D7AC4316B;
+	Sat, 28 Oct 2023 18:07:47 +0000 (UTC)
+Subject: Re: [GIT PULL] dma-mapping fix for Linux 6.6
+From: pr-tracker-bot@kernel.org
+In-Reply-To: <ZT0vORvO7dAaHPvj@infradead.org>
+References: <ZT0vORvO7dAaHPvj@infradead.org>
+X-PR-Tracked-List-Id: <iommu.lists.linux.dev>
+X-PR-Tracked-Message-Id: <ZT0vORvO7dAaHPvj@infradead.org>
+X-PR-Tracked-Remote: git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-6.6-2023-10-28
+X-PR-Tracked-Commit-Id: d5090484b021794271280ab64d20253883b7f6fd
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: bd80d2ef59bb6436effa6b7f77746b1418cf0a15
+Message-Id: <169851646719.24400.15210486419229657165.pr-tracker-bot@kernel.org>
+Date: Sat, 28 Oct 2023 18:07:47 +0000
+To: Christoph Hellwig <hch@infradead.org>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, linux-kernel@vger.kernel.org, iommu@lists.linux.dev
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
 
-Hi Christoph,
+The pull request you sent on Sat, 28 Oct 2023 17:56:41 +0200:
 
-On Thu, 26 Oct 2023 11:51:23 +0200
-Petr Tesarik <petrtesarik@huaweicloud.com> wrote:
+> git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-6.6-2023-10-28
 
-> From: Petr Tesarik <petr.tesarik1@huawei-partners.com>
-> 
-> Do not decrypt a dynamically allocated TLB area until its physical address
-> is known to be below the requested limit. Currently, pages are allocated
-> and decrypted, but then they may be freed while still decrypted if
-> swiotlb_alloc_tlb() determines that the physical address is too high.
-> 
-> Let the caller differentiate between unsuitable physical address (=> retry
-> from a lower zone) and allocation failures (=> no point in retrying).
-> 
-> Fixes: 79636caad361 ("swiotlb: if swiotlb is full, fall back to a transient memory pool")
-> Signed-off-by: Petr Tesarik <petr.tesarik1@huawei-partners.com>
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/bd80d2ef59bb6436effa6b7f77746b1418cf0a15
 
-This patch fixes a potential information leak from a CoCo VM, so I
-would like to see it reviewed. Is this on your radar, or did it fall
-through the cracks?
+Thank you!
 
-Petr T
-
-> ---
->  kernel/dma/swiotlb.c | 20 +++++++++++---------
->  1 file changed, 11 insertions(+), 9 deletions(-)
-> 
-> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-> index dff067bd56b1..d1118f6f61b8 100644
-> --- a/kernel/dma/swiotlb.c
-> +++ b/kernel/dma/swiotlb.c
-> @@ -558,30 +558,36 @@ void __init swiotlb_exit(void)
->   * alloc_dma_pages() - allocate pages to be used for DMA
->   * @gfp:	GFP flags for the allocation.
->   * @bytes:	Size of the buffer.
-> + * @phys_limit:	Maximum allowed physical address of the
-> buffer. *
->   * Allocate pages from the buddy allocator. If successful, make the
-> allocated
->   * pages decrypted that they can be used for DMA.
->   *
-> - * Return: Decrypted pages, or %NULL on failure.
-> + * Return: Decrypted pages, %NULL on allocation failure, or
-> ERR_PTR(-EAGAIN)
-> + * if the allocated physical address was above @phys_limit.
->   */
-> -static struct page *alloc_dma_pages(gfp_t gfp, size_t bytes)
-> +static struct page *alloc_dma_pages(gfp_t gfp, size_t bytes, u64
-> phys_limit) {
->  	unsigned int order = get_order(bytes);
->  	struct page *page;
-> +	phys_addr_t paddr;
->  	void *vaddr;
->  
->  	page = alloc_pages(gfp, order);
->  	if (!page)
->  		return NULL;
->  
-> -	vaddr = page_address(page);
-> +	paddr = page_to_phys(page);
-> +	if (paddr + bytes - 1 > phys_limit)
-> +		goto error;
-> +	vaddr = phys_to_virt(paddr);
->  	if (set_memory_decrypted((unsigned long)vaddr,
-> PFN_UP(bytes))) goto error;
->  	return page;
->  
->  error:
->  	__free_pages(page, order);
-> -	return NULL;
-> +	return ERR_PTR(-EAGAIN);
->  }
->  
->  /**
-> @@ -618,11 +624,7 @@ static struct page *swiotlb_alloc_tlb(struct
-> device *dev, size_t bytes, else if (phys_limit <= DMA_BIT_MASK(32))
->  		gfp |= __GFP_DMA32;
->  
-> -	while ((page = alloc_dma_pages(gfp, bytes)) &&
-> -	       page_to_phys(page) + bytes - 1 > phys_limit) {
-> -		/* allocated, but too high */
-> -		__free_pages(page, get_order(bytes));
-> -
-> +	while (IS_ERR(page = alloc_dma_pages(gfp, bytes,
-> phys_limit))) { if (IS_ENABLED(CONFIG_ZONE_DMA32) &&
->  		    phys_limit < DMA_BIT_MASK(64) &&
->  		    !(gfp & (__GFP_DMA32 | __GFP_DMA)))
-
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
