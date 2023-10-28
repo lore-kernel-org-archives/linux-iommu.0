@@ -1,15 +1,15 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C4E95B669
-	for <iommu@lists.linux.dev>; Sat, 28 Oct 2023 10:21:15 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7BD32291D
+	for <iommu@lists.linux.dev>; Sat, 28 Oct 2023 10:21:18 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org; dkim=none
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5F558143D;
-	Sat, 28 Oct 2023 03:21:56 -0700 (PDT)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6A7AC1424;
+	Sat, 28 Oct 2023 03:21:59 -0700 (PDT)
 Received: from entos-ampere02.shanghai.arm.com (unknown [10.169.212.228])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 4B7DE3F64C;
-	Sat, 28 Oct 2023 03:21:12 -0700 (PDT)
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 56FC53F64C;
+	Sat, 28 Oct 2023 03:21:15 -0700 (PDT)
 From: Jia He <justin.he@arm.com>
 To: Christoph Hellwig <hch@lst.de>,
 	Marek Szyprowski <m.szyprowski@samsung.com>,
@@ -18,9 +18,9 @@ To: Christoph Hellwig <hch@lst.de>,
 Cc: linux-kernel@vger.kernel.org,
 	nd@arm.com,
 	Jia He <justin.he@arm.com>
-Subject: [PATCH v4 1/2] dma-mapping: move dma_addressing_limited() out of line
-Date: Sat, 28 Oct 2023 10:20:58 +0000
-Message-Id: <20231028102059.66891-2-justin.he@arm.com>
+Subject: [PATCH v4 2/2] dma-mapping: fix dma_addressing_limited() if dma_range_map can't cover all system RAM
+Date: Sat, 28 Oct 2023 10:20:59 +0000
+Message-Id: <20231028102059.66891-3-justin.he@arm.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20231028102059.66891-1-justin.he@arm.com>
 References: <20231028102059.66891-1-justin.he@arm.com>
@@ -32,88 +32,157 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-This patch moves dma_addressing_limited() out of line, serving as a
-preliminary step to prevent the introduction of a new publicly accessible
-low-level helper when validating whether all system RAM is mapped within
-the DMA mapping range.
+There is an unusual case that the range map covers right up to the top
+of system RAM, but leaves a hole somewhere lower down. Then it prevents
+the nvme device dma mapping in the checking path of phys_to_dma() and
+causes the hangs at boot.
 
-Suggested-by: Christoph Hellwig <hch@lst.de>
+E.g. On an Armv8 Ampere server, the dsdt ACPI table is:
+ Method (_DMA, 0, Serialized)  // _DMA: Direct Memory Access
+            {
+                Name (RBUF, ResourceTemplate ()
+                {
+                    QWordMemory (ResourceConsumer, PosDecode, MinFixed,
+MaxFixed, Cacheable, ReadWrite,
+                        0x0000000000000000, // Granularity
+                        0x0000000000000000, // Range Minimum
+                        0x00000000FFFFFFFF, // Range Maximum
+                        0x0000000000000000, // Translation Offset
+                        0x0000000100000000, // Length
+                        ,, , AddressRangeMemory, TypeStatic)
+                    QWordMemory (ResourceConsumer, PosDecode, MinFixed,
+MaxFixed, Cacheable, ReadWrite,
+                        0x0000000000000000, // Granularity
+                        0x0000006010200000, // Range Minimum
+                        0x000000602FFFFFFF, // Range Maximum
+                        0x0000000000000000, // Translation Offset
+                        0x000000001FE00000, // Length
+                        ,, , AddressRangeMemory, TypeStatic)
+                    QWordMemory (ResourceConsumer, PosDecode, MinFixed,
+MaxFixed, Cacheable, ReadWrite,
+                        0x0000000000000000, // Granularity
+                        0x00000060F0000000, // Range Minimum
+                        0x00000060FFFFFFFF, // Range Maximum
+                        0x0000000000000000, // Translation Offset
+                        0x0000000010000000, // Length
+                        ,, , AddressRangeMemory, TypeStatic)
+                    QWordMemory (ResourceConsumer, PosDecode, MinFixed,
+MaxFixed, Cacheable, ReadWrite,
+                        0x0000000000000000, // Granularity
+                        0x0000007000000000, // Range Minimum
+                        0x000003FFFFFFFFFF, // Range Maximum
+                        0x0000000000000000, // Translation Offset
+                        0x0000039000000000, // Length
+                        ,, , AddressRangeMemory, TypeStatic)
+                })
+
+But the System RAM ranges are:
+cat /proc/iomem |grep -i ram
+90000000-91ffffff : System RAM
+92900000-fffbffff : System RAM
+880000000-fffffffff : System RAM
+8800000000-bff5990fff : System RAM
+bff59d0000-bff5a4ffff : System RAM
+bff8000000-bfffffffff : System RAM
+So some RAM ranges are out of dma_range_map.
+
+Fix it by checking whether each of the system RAM resources can be
+properly encompassed within the dma_range_map.
+
 Signed-off-by: Jia He <justin.he@arm.com>
 ---
- include/linux/dma-mapping.h | 19 +++++--------------
- kernel/dma/mapping.c        | 15 +++++++++++++++
- 2 files changed, 20 insertions(+), 14 deletions(-)
+ kernel/dma/direct.c  | 41 +++++++++++++++++++++++++++++++++++++++++
+ kernel/dma/direct.h  |  1 +
+ kernel/dma/mapping.c | 12 ++++++++++--
+ 3 files changed, 52 insertions(+), 2 deletions(-)
 
-diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-index f0ccca16a0ac..4a658de44ee9 100644
---- a/include/linux/dma-mapping.h
-+++ b/include/linux/dma-mapping.h
-@@ -144,6 +144,7 @@ bool dma_pci_p2pdma_supported(struct device *dev);
- int dma_set_mask(struct device *dev, u64 mask);
- int dma_set_coherent_mask(struct device *dev, u64 mask);
- u64 dma_get_required_mask(struct device *dev);
-+bool dma_addressing_limited(struct device *dev);
- size_t dma_max_mapping_size(struct device *dev);
- size_t dma_opt_mapping_size(struct device *dev);
- bool dma_need_sync(struct device *dev, dma_addr_t dma_addr);
-@@ -264,6 +265,10 @@ static inline u64 dma_get_required_mask(struct device *dev)
- {
- 	return 0;
- }
-+static inline bool dma_addressing_limited(struct device *dev)
-+{
-+	return false;
-+}
- static inline size_t dma_max_mapping_size(struct device *dev)
- {
- 	return 0;
-@@ -465,20 +470,6 @@ static inline int dma_coerce_mask_and_coherent(struct device *dev, u64 mask)
- 	return dma_set_mask_and_coherent(dev, mask);
+diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+index 9596ae1aa0da..76cc6daa3ffd 100644
+--- a/kernel/dma/direct.c
++++ b/kernel/dma/direct.c
+@@ -598,6 +598,47 @@ int dma_direct_supported(struct device *dev, u64 mask)
+ 	return mask >= phys_to_dma_unencrypted(dev, min_mask);
  }
  
--/**
-- * dma_addressing_limited - return if the device is addressing limited
-- * @dev:	device to check
-- *
-- * Return %true if the devices DMA mask is too small to address all memory in
-- * the system, else %false.  Lack of addressing bits is the prime reason for
-- * bounce buffering, but might not be the only one.
-- */
--static inline bool dma_addressing_limited(struct device *dev)
--{
--	return min_not_zero(dma_get_mask(dev), dev->bus_dma_limit) <
--			    dma_get_required_mask(dev);
--}
--
- static inline unsigned int dma_get_max_seg_size(struct device *dev)
++/*
++ * To check whether all ram resource ranges are covered by dma range map
++ * Returns 0 when further check is needed
++ * Returns 1 if there is some RAM range can't be covered by dma_range_map
++ */
++static int check_ram_in_range_map(unsigned long start_pfn,
++				  unsigned long nr_pages, void *data)
++{
++	unsigned long end_pfn = start_pfn + nr_pages;
++	const struct bus_dma_region *bdr = NULL;
++	const struct bus_dma_region *m;
++	struct device *dev = data;
++
++	while (start_pfn < end_pfn) {
++		for (m = dev->dma_range_map; PFN_DOWN(m->size); m++) {
++			unsigned long cpu_start_pfn = PFN_DOWN(m->cpu_start);
++
++			if (start_pfn >= cpu_start_pfn &&
++			    start_pfn - cpu_start_pfn < PFN_DOWN(m->size)) {
++				bdr = m;
++				break;
++			}
++		}
++		if (!bdr)
++			return 1;
++
++		start_pfn = PFN_DOWN(bdr->cpu_start) + PFN_DOWN(bdr->size);
++	}
++
++	return 0;
++}
++
++bool dma_direct_all_ram_mapped(struct device *dev)
++{
++	if (!dev->dma_range_map)
++		return true;
++
++	return !walk_system_ram_range(0, PFN_DOWN(ULONG_MAX) + 1, dev,
++				      check_ram_in_range_map);
++}
++
+ size_t dma_direct_max_mapping_size(struct device *dev)
  {
- 	if (dev->dma_parms && dev->dma_parms->max_segment_size)
+ 	/* If SWIOTLB is active, use its maximum mapping size */
+diff --git a/kernel/dma/direct.h b/kernel/dma/direct.h
+index 97ec892ea0b5..18d346118fe8 100644
+--- a/kernel/dma/direct.h
++++ b/kernel/dma/direct.h
+@@ -20,6 +20,7 @@ int dma_direct_mmap(struct device *dev, struct vm_area_struct *vma,
+ bool dma_direct_need_sync(struct device *dev, dma_addr_t dma_addr);
+ int dma_direct_map_sg(struct device *dev, struct scatterlist *sgl, int nents,
+ 		enum dma_data_direction dir, unsigned long attrs);
++bool dma_direct_all_ram_mapped(struct device *dev);
+ size_t dma_direct_max_mapping_size(struct device *dev);
+ 
+ #if defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_DEVICE) || \
 diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
-index e323ca48f7f2..5bfe782f9a7f 100644
+index 5bfe782f9a7f..26eaaf4ac996 100644
 --- a/kernel/dma/mapping.c
 +++ b/kernel/dma/mapping.c
-@@ -793,6 +793,21 @@ int dma_set_coherent_mask(struct device *dev, u64 mask)
- }
- EXPORT_SYMBOL(dma_set_coherent_mask);
- 
-+/**
-+ * dma_addressing_limited - return if the device is addressing limited
-+ * @dev:	device to check
-+ *
-+ * Return %true if the devices DMA mask is too small to address all memory in
-+ * the system, else %false.  Lack of addressing bits is the prime reason for
-+ * bounce buffering, but might not be the only one.
-+ */
-+bool dma_addressing_limited(struct device *dev)
-+{
-+	return min_not_zero(dma_get_mask(dev), dev->bus_dma_limit) <
-+			    dma_get_required_mask(dev);
-+}
-+EXPORT_SYMBOL(dma_addressing_limited);
-+
- size_t dma_max_mapping_size(struct device *dev)
+@@ -803,8 +803,16 @@ EXPORT_SYMBOL(dma_set_coherent_mask);
+  */
+ bool dma_addressing_limited(struct device *dev)
  {
- 	const struct dma_map_ops *ops = get_dma_ops(dev);
+-	return min_not_zero(dma_get_mask(dev), dev->bus_dma_limit) <
+-			    dma_get_required_mask(dev);
++	const struct dma_map_ops *ops = get_dma_ops(dev);
++
++	if (min_not_zero(dma_get_mask(dev), dev->bus_dma_limit) <
++			 dma_get_required_mask(dev))
++		return true;
++
++	if (likely(!ops))
++		return !dma_direct_all_ram_mapped(dev);
++
++	return false;
+ }
+ EXPORT_SYMBOL(dma_addressing_limited);
+ 
 -- 
 2.25.1
 
