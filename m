@@ -1,120 +1,87 @@
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qk1-f173.google.com (mail-qk1-f173.google.com [209.85.222.173])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 54BF333F9
-	for <iommu@lists.linux.dev>; Mon, 30 Oct 2023 11:35:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oracle.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oracle.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E726EEDB
+	for <iommu@lists.linux.dev>; Mon, 30 Oct 2023 11:56:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="lla6WtQS"
-Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
-	by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 39U3enXs021209;
-	Mon, 30 Oct 2023 11:35:32 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding;
- s=corp-2023-03-30; bh=rttKBWqpX7zu7N0f+6G/qvbhXxWhLCkzpLo7fUoZ84A=;
- b=lla6WtQSamSnP5/rnxd3hLItlCTAX/t6KBdOFBn0mRLB0o05fR1RE+WbJsWHUVdTdiA4
- r6gzU32mTZeK91aG+U1dTZMiEKoqw0ihw1M7u++MtvwFgi0HWCBcNXE3E9JhTHIntz7I
- Cc5C+IqE+p9mxzwsgSFJjSLtjPY1qFLzNkPSgWuKMf3SWuBYY30FHPISiamnQWLIh1Jq
- spNYhQfsWrXV476H6C7IpZ1UHybjHpEtIMyWfyPWN1jNh9Gc4kl5vo+2oTkOq+NqptLl
- yKFAY8zvG/HKsooL79lC+/tX5YglhwlaT6V/XMUxW4nvIQaSpPWfiXv1O7KIKhZ0yceK Ug== 
-Received: from phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta02.appoci.oracle.com [147.154.114.232])
-	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3u0t6b2fe9-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Mon, 30 Oct 2023 11:35:32 +0000
-Received: from pps.filterd (phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-	by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (8.17.1.19/8.17.1.19) with ESMTP id 39UBY4Vu034812;
-	Mon, 30 Oct 2023 11:35:31 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-	by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 3u0rr47203-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Mon, 30 Oct 2023 11:35:31 +0000
-Received: from phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 39UBZURt015840;
-	Mon, 30 Oct 2023 11:35:30 GMT
-Received: from joaomart-mac.uk.oracle.com (dhcp-10-175-164-93.vpn.oracle.com [10.175.164.93])
-	by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTP id 3u0rr471xs-1;
-	Mon, 30 Oct 2023 11:35:30 +0000
-From: Joao Martins <joao.m.martins@oracle.com>
-To: iommu@lists.linux.dev
-Cc: Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Joao Martins <joao.m.martins@oracle.com>,
-        syzbot+25dc7383c30ecdc83c38@syzkaller.appspotmail.com
-Subject: [PATCH] iommufd/selftest: Fix page-size check in iommufd_test_dirty()
-Date: Mon, 30 Oct 2023 11:34:46 +0000
-Message-Id: <20231030113446.7056-1-joao.m.martins@oracle.com>
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="XSHOzEjD"
+Received: by mail-qk1-f173.google.com with SMTP id af79cd13be357-77896da2118so306825685a.1
+        for <iommu@lists.linux.dev>; Mon, 30 Oct 2023 04:56:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1698667013; x=1699271813; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=gQKrKJYeQqI408ZiaZJRkmFH/H0/KalWqC8BKV3SRh4=;
+        b=XSHOzEjDdRXT7qlVdWyBtFdwG0fLKCdo5FKV4T/cjix9R7CxUhYABmdL6j0jlRYy6Z
+         +8OPU3AnAG58uESlOtckurlXvoJrNM5sxKu5LRRB+SJZBJ0lZLzX3cZebM5bA40XB1wq
+         2JSkbzmtiQSBiryHmNVnJWhdJ4/r4d//QpeiZg9o2M1b1SajMUnHG8GmsDwtSPcIwbW6
+         85C9s+x77k4eUV0D0BMZC8DktrEp7plAmq88MM9GF/WL5W7y2gWJmhBLSvIOj6TuSlj6
+         Z3n2PegSGT05vcq9S+5GqHc5gKKritZ7xw1GEvv2cT0oCGZ7UHZSPQtan8bPASU+mnEw
+         pnaQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1698667013; x=1699271813;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=gQKrKJYeQqI408ZiaZJRkmFH/H0/KalWqC8BKV3SRh4=;
+        b=eToeRE3wt0CC93r5pzXbb/Cl1wwJ8xF8VLLewl0fIVXYj2/nDXbDYbS+7wnem86pZE
+         pB+zLPbEP27LacWQbyTPuiHSqMSbACBaxPwkPc273M4dmWTYeAWKr8BY2LsimXSp55BH
+         cCcm9Q4Vk8wcWOoGQM6oP87Grrymvzrhnj9TwRrP35owtRgMrykc55ts8vQEk0cevq8M
+         vfItZK2eLOVY/qIHGEvC29N8Pi/52EMJireK7vwbJ6yjgT5rjJsNi4GOIlhDgQgz06WA
+         8s2Csd79Vx3QUPbSPNtqy3zwY3QhbXFFykBOJ1bGvRCGUR4DMY0PHbAN57yYCbTc5SU0
+         hdGg==
+X-Gm-Message-State: AOJu0Yw1c9I//tRY/ebL4IPv9WKzGwWTpXtlWVwK2SsIMF5a8TWk7E/C
+	nBc6bi4ZDhh3dHCFXJl4iwKaEw==
+X-Google-Smtp-Source: AGHT+IGlo1N1nWgqEHCTfKHD4x4QvCUlpDbIj3E4lfEj8khCJx1F+5pIBfZ7gBWPby1i734LKGkdUg==
+X-Received: by 2002:a05:620a:4395:b0:778:909b:58c8 with SMTP id a21-20020a05620a439500b00778909b58c8mr8857446qkp.78.1698667012846;
+        Mon, 30 Oct 2023 04:56:52 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-68-26-201.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.26.201])
+        by smtp.gmail.com with ESMTPSA id r29-20020a05620a03dd00b00767da9b6ae9sm3242228qkm.11.2023.10.30.04.56.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 30 Oct 2023 04:56:51 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1qxQt0-006eIL-QP;
+	Mon, 30 Oct 2023 08:56:50 -0300
+Date: Mon, 30 Oct 2023 08:56:50 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Dan Carpenter <dan.carpenter@linaro.org>
+Cc: Hector Martin <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
+	Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>, Janne Grunau <j@jannau.net>,
+	asahi@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev, kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH] iommu/dart: Fix return code in
+ apple_dart_domain_alloc_paging()
+Message-ID: <20231030115650.GC691768@ziepe.ca>
+References: <b85e0715-3224-4f45-ad6b-ebb9f08c015d@moroto.mountain>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.272,Aquarius:18.0.987,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2023-10-30_10,2023-10-27_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 suspectscore=0 mlxscore=0
- spamscore=0 phishscore=0 adultscore=0 mlxlogscore=999 malwarescore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2310240000
- definitions=main-2310300088
-X-Proofpoint-GUID: Ro0GdybZh1VQeAcuaYE-so3l_T0fjEZc
-X-Proofpoint-ORIG-GUID: Ro0GdybZh1VQeAcuaYE-so3l_T0fjEZc
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b85e0715-3224-4f45-ad6b-ebb9f08c015d@moroto.mountain>
 
-iommufd_test_dirty()/IOMMU_TEST_OP_DIRTY sets the dirty bits in the mock
-domain implementation that the userspace side validates against what it
-obtains via the UAPI.
+On Mon, Oct 30, 2023 at 12:03:12PM +0300, Dan Carpenter wrote:
+> The apple_dart_domain_alloc_paging() function is supposed to return NULL
+> on error.  Returning an error pointer will lead to an Oops in
+> __iommu_domain_alloc().
+> 
+> Fixes: 482feb5c6492 ("iommu/dart: Call apple_dart_finalize_domain() as part of alloc_paging()")
+> Signed-off-by: Dan Carpenter <dan.carpenter@linaro.org>
+> ---
+>  drivers/iommu/apple-dart.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
-However in introducing iommufd_test_dirty() it forgot to validate page_size
-being 0 leading to two possible divide-by-zero problems: one at the
-beginning when calculating @max and while calculating the IOVA in the
-XArray PFN tracking list.
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
-While at it, validate the length to require non-zero value as well, as we
-can't be allocating a 0-sized bitmap.
+Really need to fix this so the function does return ERR_PTR..
 
-Reported-by: syzbot+25dc7383c30ecdc83c38@syzkaller.appspotmail.com
-Closes: https://lore.kernel.org/linux-iommu/00000000000005f6aa0608b9220f@google.com/
-Fixes: a9af47e382a4 ("iommufd/selftest: Test IOMMU_HWPT_GET_DIRTY_BITMAP")
-Signed-off-by: Joao Martins <joao.m.martins@oracle.com>
----
-This applies against iommufd for-next, but on the other hand it could also be
-squashed in the commit in the Fixes: tag. Both should apply cleanly.
----
- drivers/iommu/iommufd/selftest.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/iommu/iommufd/selftest.c b/drivers/iommu/iommufd/selftest.c
-index 6684ab4cdc7a..a11d29f368ff 100644
---- a/drivers/iommu/iommufd/selftest.c
-+++ b/drivers/iommu/iommufd/selftest.c
-@@ -1195,14 +1195,15 @@ static int iommufd_test_dirty(struct iommufd_ucmd *ucmd, unsigned int mockpt_id,
- 			      unsigned long page_size, void __user *uptr,
- 			      u32 flags)
- {
--	unsigned long bitmap_size, i, max = length / page_size;
-+	unsigned long bitmap_size, i, max;
- 	struct iommu_test_cmd *cmd = ucmd->cmd;
- 	struct iommufd_hw_pagetable *hwpt;
- 	struct mock_iommu_domain *mock;
- 	int rc, count = 0;
- 	void *tmp;
- 
--	if (iova % page_size || length % page_size || !uptr)
-+	if (!page_size || !length || iova % page_size || length % page_size ||
-+	    !uptr)
- 		return -EINVAL;
- 
- 	hwpt = get_md_pagetable(ucmd, mockpt_id, &mock);
-@@ -1214,6 +1215,7 @@ static int iommufd_test_dirty(struct iommufd_ucmd *ucmd, unsigned int mockpt_id,
- 		goto out_put;
- 	}
- 
-+	max = length / page_size;
- 	bitmap_size = max / BITS_PER_BYTE;
- 
- 	tmp = kvzalloc(bitmap_size, GFP_KERNEL_ACCOUNT);
--- 
-2.17.2
-
+Thanks,
+Jason
