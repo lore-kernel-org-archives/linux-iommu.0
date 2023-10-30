@@ -1,186 +1,248 @@
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.31])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f47.google.com (mail-ej1-f47.google.com [209.85.218.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF61F1D540
-	for <iommu@lists.linux.dev>; Mon, 30 Oct 2023 21:55:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A3EB1CFBB
+	for <iommu@lists.linux.dev>; Mon, 30 Oct 2023 22:08:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ecdL8/n7"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1698702944; x=1730238944;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=NQSTFhgZZFZyzqfFEAKnMharRWl+GtcEkqmo9kA/g2g=;
-  b=ecdL8/n7BRoEYfPJA6mOH9BEAOiRYE+fPWy/4pb7nGrWTCOOjXgK8gif
-   OTeN5Jx6w8aNKF0oDduB+s+X4TQKtS0njyJfvjOmq3qXDptmq6+CjfqPx
-   QwZJYrHtqYzkSXwr3PnIcC4r9EkNHsvEg92Oh3L0SFrSxCUTgBCU/bO3g
-   SOu3u/ETF3mjtiscJ1Xw87HMXdWXQ8G3nf4ccmzoJtGRodl9QqF/LH+8F
-   yXM1voRxv7FcBtfL78sIW2MHoWldOj/aIUI8weGIbIlGVsvT8mpLyV1LH
-   9YAOwj/RrYA0LfOg9HZY5b3P8ane1uBRSeZatG9GJxIlHDFjAPbL2RiBv
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10879"; a="452442866"
-X-IronPort-AV: E=Sophos;i="6.03,264,1694761200"; 
-   d="scan'208";a="452442866"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Oct 2023 14:55:02 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10879"; a="884014377"
-X-IronPort-AV: E=Sophos;i="6.03,264,1694761200"; 
-   d="scan'208";a="884014377"
-Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
-  by orsmga004.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 30 Oct 2023 14:55:00 -0700
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.34; Mon, 30 Oct 2023 14:55:00 -0700
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.34; Mon, 30 Oct 2023 14:54:59 -0700
-Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.34 via Frontend Transport; Mon, 30 Oct 2023 14:54:59 -0700
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.101)
- by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.34; Mon, 30 Oct 2023 14:54:59 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mcLjdmroLaSc6zSPlFqVc4bS+/3lUGPulMM8w/e7NajYgHYT0SZRfoSVQihjGR6Lhqekm6MSAnHnQUXyeVZ6wC3YrPm0nxgPEaRAIfV2Jec3vHmA7RCtT52IdTZsZa8fmgCyyA7r36yT+e6SQjEUwKXZXWSkc2Q+2ib7ryJx5wlCwgV40AiI6ewFCueoJPms0pFiZQIgQTANUzGwRowD4tk72RfqUz5uaON2NQ1WPaEWUl01Ke2V5UyfiC6PvrACMPnrdWIjnJwaTsFfy2J0cDhtHykF0SJ6CezVceNPFv7/weai+qv8ux0pRJ684laUQqyzDh4F3dgwSCB20AC/eQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=s3k4G8KudhWx6CFxVtLzY1qLfffgB5sCeTirp2tIBSM=;
- b=diEYr/2CatFosvzQYWfeNU5szwrD19IaPnzcyxGJsqNcR7sH8Xieke/Qv2THeUuFBitO0OaS9pwEe2KgbNuTubLvz3i3MCRn52puOid1Sk4Cxh5NJ9qNTCqOeNn7t9Xs6pM85X+lDE34oSrI8E4s4s/oe98NamYx5p/PVZYqGnCVu0ADvA3Rawekxundx04DFqbpY141iggrJEx7d6d76aPjM4/YHpJihkw3YqpKYMugsjcf/2Vf8duNFZj/q4ulJ+lFxsLbea0UpbKqDq8r8LIjYebdLFSS4Ka+dmUFAxr3bPfbIToBAogGwCJxIT3AQA7wItB/O2C21rj8V5PpAA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from PH0PR11MB5095.namprd11.prod.outlook.com (2603:10b6:510:3b::14)
- by DM4PR11MB5549.namprd11.prod.outlook.com (2603:10b6:5:388::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6933.28; Mon, 30 Oct
- 2023 21:54:56 +0000
-Received: from PH0PR11MB5095.namprd11.prod.outlook.com
- ([fe80::f815:7804:d9a8:fdce]) by PH0PR11MB5095.namprd11.prod.outlook.com
- ([fe80::f815:7804:d9a8:fdce%6]) with mapi id 15.20.6933.028; Mon, 30 Oct 2023
- 21:54:56 +0000
-Message-ID: <80d913c6-2579-4373-a00b-a6910cbb0b6c@intel.com>
-Date: Mon, 30 Oct 2023 14:54:54 -0700
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 5/5] r8169: Coalesce mac ocp commands for
- rtl_hw_init_8125 to reduce spinlocks
-Content-Language: en-US
-To: Mirsad Goran Todorovac <mirsad.todorovac@alu.unizg.hr>, Jason Gunthorpe
-	<jgg@ziepe.ca>, Joerg Roedel <jroedel@suse.de>, Lu Baolu
-	<baolu.lu@linux.intel.com>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-CC: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, "Robin
- Murphy" <robin.murphy@arm.com>, Heiner Kallweit <hkallweit1@gmail.com>,
-	<nic_swsd@realtek.com>, "David S. Miller" <davem@davemloft.net>, Eric Dumazet
-	<edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni
-	<pabeni@redhat.com>, Marco Elver <elver@google.com>
-References: <20231029110442.347448-1-mirsad.todorovac@alu.unizg.hr>
- <20231029110442.347448-5-mirsad.todorovac@alu.unizg.hr>
-From: Jacob Keller <jacob.e.keller@intel.com>
-In-Reply-To: <20231029110442.347448-5-mirsad.todorovac@alu.unizg.hr>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: MW4PR03CA0071.namprd03.prod.outlook.com
- (2603:10b6:303:b6::16) To PH0PR11MB5095.namprd11.prod.outlook.com
- (2603:10b6:510:3b::14)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="UQ1POkdy"
+Received: by mail-ej1-f47.google.com with SMTP id a640c23a62f3a-9d2d8343dc4so299818166b.0
+        for <iommu@lists.linux.dev>; Mon, 30 Oct 2023 15:08:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1698703707; x=1699308507; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=hWuPiqTJqHkTJlF6phEeNX2pe6KXXNhyV8XGE3jIF7c=;
+        b=UQ1POkdygx+dn9PIQ7FhtfVquSaALzxRy5g+WF4XiuemOEhW6vSs4OrJtyMjYNs2ya
+         sFgfO7gx+Anq2sXSSVxzJljvB0DKLL3UnbLxzJmE7DbcOFywmVX7zC5lVIEd9F4ehXqi
+         DinACuBOvS8yi8hQ6jk8Wq+KBKHsLv7AXxyCBQx3ildc5ORU02xqT+zv7ypyO8zOpwQJ
+         mZci/3WzCP4H1QvmhgF36FpR9vlqem/4nFUM9ljBRkgC+EmTQU7wM5hh34USMI9RbYW2
+         iCaQeDXkhVZJ4y8vrxYrvLw4HESJuT1Jn/3hdQRrJDBtHx+J3ysIMB8dZuDba+nDKDJx
+         mGEg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1698703707; x=1699308507;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=hWuPiqTJqHkTJlF6phEeNX2pe6KXXNhyV8XGE3jIF7c=;
+        b=M9YG7kFJKO7PC64Bat3ygirnBf8JzpF2vJYkvrubT92lFRzsWzNxRqOa82J+H8d/B5
+         NGe6FGre8Dbnv985n41lJD9X0n9lwT1pp7aPLyrqK/WSv+Pjma2K2tfZqQokwUitx6gt
+         xjMsAxoKFGR2yZfkHTuLeT7R5F7/U+XyDTwSPB5woGPg2UfO75mRy8Tx2Nhog75N6nVn
+         q7I4qfPL9SVquDDrL/kBTImA6TcGUlNZtJsxgw9Cq7ShJ24CxOVmen+v9tMz5GwN7Mpj
+         1CQBRtugxy9rFUkqeQvOBK/WWkX4TEVSudbSAEloxLHr6fuIbi+PGTUQZ2XqBhdw2g8i
+         7LcQ==
+X-Gm-Message-State: AOJu0YzD0McLysRhFBb4j1FOApsu/EI4nHCFtfgOWsUXkwkQTuq4jJqF
+	xKJn8RNFeIpeZCGwfJclLq4=
+X-Google-Smtp-Source: AGHT+IHDF8Zf9vzW2m7YgPUJl1jmAJRWWoTrLaidhWRX/s5R6w0Jrvcd/cfQ1UvGo0NGlOaRiBhrkQ==
+X-Received: by 2002:a17:907:9815:b0:9bd:f031:37b6 with SMTP id ji21-20020a170907981500b009bdf03137b6mr9252458ejc.49.1698703707000;
+        Mon, 30 Oct 2023 15:08:27 -0700 (PDT)
+Received: from ?IPV6:2a01:c23:bc31:8900:c490:292e:2164:5dcb? (dynamic-2a01-0c23-bc31-8900-c490-292e-2164-5dcb.c23.pool.telefonica.de. [2a01:c23:bc31:8900:c490:292e:2164:5dcb])
+        by smtp.googlemail.com with ESMTPSA id va13-20020a17090711cd00b009b2c5363ebasm6523162ejb.26.2023.10.30.15.08.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 30 Oct 2023 15:08:26 -0700 (PDT)
+Message-ID: <a85e41ab-7cfa-413a-a446-f1b65c09c9ab@gmail.com>
+Date: Mon, 30 Oct 2023 23:08:26 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR11MB5095:EE_|DM4PR11MB5549:EE_
-X-MS-Office365-Filtering-Correlation-Id: fc406295-84ac-48ab-4950-08dbd992dae9
-X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: rvTkWGvi9HNj4TqZahHVru0No8dmXaamya+WWmNAQ8z3Hg3iXqaANUhHugd1zni59BXVhXwvyRnJp9KceXdGse+0zTLRinstpZ1LJkhbi/yGxoM9GxWuburK+qD4cM1uWotiLUrcg55w6tYMz6Kl55VqLfpc3TeVKPeF5nhPbvPnRg0+9VMzf6AQcLB7n+Dx+CXJy4NQ+ePDZATgiEkmbCcohPQC5SgwiIgLeOnhwV/H3yIzWgTXc1uzYcdN6bBAWUBVjfduld/Az6ZeM59rHKluoJUupNDzR3fBR3DmBFbU96eoEDC1dbnvI5pbD5tOrm8FPZUe4r5e+AvHTdoLJMaNiqyLZr/ZYfAdhI01LCi9zANRcrlJaIge1Frfe31gvexgVdKPjdc9uBOu3wYCSoiwivc/4iEDhNVxViGOunf57D4FXwnww0TgeXlm0jVM2XWAUNtXGyggQ/SaZ3k1Xr+leu/bDfpMqwVy/CKyd3l7RsAlG2jv8hHkee+B2SpwR4vnNUyUZXrnAxmB8+RHma3MkWPaatLnbM0TDqu/eC5FerJ/3ZqRQSDPw4xFW7qraBSSaxlH9PtR0p6jqxt0rUZvhOyb3BWZ+WD8aYPMa3JVViivZrURn9oTBc3HyJpo8TlchAvT699+Ii9OJl6k/mWZlNhhCLUZI0dnbdl+HttMl+bZlYLE5bXquitYFhrS
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB5095.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366004)(396003)(136003)(39860400002)(376002)(346002)(230922051799003)(451199024)(186009)(64100799003)(1800799009)(31686004)(478600001)(66946007)(6506007)(966005)(110136005)(6486002)(82960400001)(83380400001)(36756003)(38100700002)(66556008)(66476007)(2906002)(41300700001)(2616005)(6512007)(26005)(53546011)(4326008)(86362001)(31696002)(54906003)(8676002)(5660300002)(7416002)(8936002)(316002)(43740500002)(45980500001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?SjNLTTNuaTFsa2YrTnRvR0NGcXhHc2FpYmVmVGZtNGZiWENrUUpxWlpyMU5M?=
- =?utf-8?B?V0x5cENqY1VvNEFwUGc1Zk5VUWlIMHZibkIyTnpSMk9UbzB0UHpmMkQwYyto?=
- =?utf-8?B?WWZYdnh5T2EwUlpZLzZ0QjFFMGYvYjdFWHBZUEhtWVFSTWx3bks2NWVoNVBs?=
- =?utf-8?B?Rld3cS9xQzlGMGNwKy9YdVRsak8wcGFrNTRNN3I4NE01WlZhS0NPNkVZU1FW?=
- =?utf-8?B?UWg2aW9TdjJPc1ZCSEYrL21ZRVJVcE9mZXAxNHJFMlI1ZU1mZXF6TW9qamll?=
- =?utf-8?B?bEdIVkh3K0JMeTFjUVJqSWgxMjVqeXdxV1JPZkhzY1hqSHRLQWVYSlF0VEps?=
- =?utf-8?B?STA4bGExVXVpYUVqenBKYzFpS2l0VUdYWWoxRXpzL3ViaElVcGxyZmd2M2Jq?=
- =?utf-8?B?aTFXMXE2NVUrZmZTQXFDaGJWMTNUR2dyMFQxMmRacFVEM2RmeGFLSTljWVlu?=
- =?utf-8?B?NC9kYWkxTjhXMGU4ZGhTUk0zK3dNcG0xZmV3ZmUwaVRCT0JERW1vekYyQ3Q0?=
- =?utf-8?B?NDRwdFAwOGxad2cwMDZJYUEwOTRBZkRVMmdHUHh6VlE2eGU4MWhTT01acFJk?=
- =?utf-8?B?NVNRVnIrSE5UMlFLeDFZeDIyOUpFSnFCSW5zZmlpRmgzOWd3VGhtZFFwQ05T?=
- =?utf-8?B?ZGYza2pydDFLU0xVcWRtdkR3UFdvVFRoMzNIVWdiZ21CNjJIRkoxYTYyUDNi?=
- =?utf-8?B?cDl3L2s4VURPVkNjRjU3d1ZxM1lkYUlUT3JZK0xVSk1ZKzJ1NlovR21rOFMx?=
- =?utf-8?B?cmVpUmp6dkJBUlpOZGZiZytKNWN5RWtCblRvSlM3NHZwWkhNQ2lFRmVKTnJU?=
- =?utf-8?B?NTZNVXNFRmpISjFSNUdPYTI2a0JwV2VBZGlSYzBsV3d1U2gzcTZ3Yk53UEdF?=
- =?utf-8?B?K3huZDZzNkcyOHBZNGREQVJVNUU0eEthY2NWMHUrSklyUkhiOWU0TEVTTGxJ?=
- =?utf-8?B?eG1iZUliZytSUlBRaUg2K1BFSTQvRi9HYWpOa3B5TnM1ZGs5RkhKcTlUclhS?=
- =?utf-8?B?RWxOQnE3ajFHcERtU09GVmdwUjhBM3Q5M0ZqdEwxK1VOdzluWW1IZytQbUM0?=
- =?utf-8?B?cXlPNjFLTXVOZVpaYTdBSDZEWkxpR0h6UzFXamJLeURncmFBTkxKc0xHYk84?=
- =?utf-8?B?MWw2NXdzSlRmVXl1RDRaSEhBWkM3Qk9Ld3BUQm5NclJZanNkdm1YTDNiWmNY?=
- =?utf-8?B?TzF6WXlQR29wcERuTFpMb3N1WEpDckF3WUU2aW5wMnExMldYL09Zak1SS0lK?=
- =?utf-8?B?Um5ZVTRMNitSWmlrWDdGNEFjSXhZUlRBNkZNN1YxU3VTY21iRTRqMFZsT2Jp?=
- =?utf-8?B?b3VMM2pUS01iVTFiRzVqdUk2KzdCSHVLZi9URFBMQjFsYXU1WXJNSHp5b0ds?=
- =?utf-8?B?V2N4dXhOSnNnSFFaUUlhdmVMaDFDUGJtVFdvT0owUlV0eXBlRzhnUGFJajFm?=
- =?utf-8?B?M3QxbERJL1ovaUVUazR4bmI1M0lCQ0FaSllTa2RpWjdKMjFNTm1HSFNBbjQy?=
- =?utf-8?B?SFZmZnRaRkVPSDZ3NXdyTUloWXRWditPdVJPVk5Zd0U5Z2RCd1JqcnJ5c2Rm?=
- =?utf-8?B?YmJISmJDbWdlYy9mVDl3Q0ZCT1VZVElQVlM4enBPYVhIZG9MOG82dkhCbTFD?=
- =?utf-8?B?dlpmTGhkK2xIMjFkN2ZtSHdoUFNDUStnTGlPQkYrT1Fqdzl0MXRZNFp3dUVn?=
- =?utf-8?B?WHRKdk1FbDJybEJVYkpMSVB4RW1tdDNsSjRVSVhYZFZMV25wMnQzS051Ylp6?=
- =?utf-8?B?T3ZxT0FmNlRRSVF2RTJKWjJXNjBRRFlXcDVVZU9VMEl1OG5KSXlNa2I5elZn?=
- =?utf-8?B?QzZJMEpOdFRoT2FtcW9ORDdHb2dEN3IyNEFSUkJMQUpkQTVSM0krbG9DMnUv?=
- =?utf-8?B?M3lIeVBXdjd4NENXR0lRRURjQnNpWDRiOVNQR1JMZ2hES1d6NVNoSWNkYzdD?=
- =?utf-8?B?K2ZJQmVxbmZ6Mm9RTjhDc1M1c09tdmJuODB0NFZibzdtRVpTb1UxNXJOdDYv?=
- =?utf-8?B?V0JVNVhkR0t1TzcrcEJVMFppaVhSb2ZvYURxNzhNeDNhQUQ0a2Jyazc5aFQ1?=
- =?utf-8?B?R3dYWXcvTjlBeE0yd3JrRksycW5vek9WbnB1TW9jYnBuZ2ZOS3V4TDRBeUhz?=
- =?utf-8?B?QXNQQ0FJSDI0QzVTUEgxRkNTOFowTFg0aVlHcVM1UHJIWlZSUlNVK2hZZk9y?=
- =?utf-8?B?bmc9PQ==?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: fc406295-84ac-48ab-4950-08dbd992dae9
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB5095.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Oct 2023 21:54:56.5478
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: IzngBYxpmoIZLKwbcb3/XTQzxwfmNwVs9VgvlBcVKWi2QP1Wj6+HWt3PuF5AoubLIgbUk2fjTLt48kEXv+bY83OnzLSvYsqDq4bUbC9rlBE=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR11MB5549
-X-OriginatorOrg: intel.com
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v4 1/5] r8169: Coalesce r8169_mac_ocp_write/modify calls
+ to reduce spinlock stalls
+Content-Language: en-US
+To: Jacob Keller <jacob.e.keller@intel.com>,
+ Mirsad Goran Todorovac <mirsad.todorovac@alu.unizg.hr>,
+ Jason Gunthorpe <jgg@ziepe.ca>, Joerg Roedel <jroedel@suse.de>,
+ Lu Baolu <baolu.lu@linux.intel.com>, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, nic_swsd@realtek.com,
+ "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
+ Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+ Marco Elver <elver@google.com>
+References: <20231029110442.347448-1-mirsad.todorovac@alu.unizg.hr>
+ <e7a6b0c1-9fc6-480c-a135-7e142514d0e7@intel.com>
+From: Heiner Kallweit <hkallweit1@gmail.com>
+Autocrypt: addr=hkallweit1@gmail.com; keydata=
+ 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
+In-Reply-To: <e7a6b0c1-9fc6-480c-a135-7e142514d0e7@intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-
-
-On 10/29/2023 4:04 AM, Mirsad Goran Todorovac wrote:
-> Repeated calls to r8168_mac_ocp_write() and r8168_mac_ocp_modify() in
-> the init sequence of the 8125 involve implicit spin_lock_irqsave() and
-> spin_unlock_irqrestore() on each invocation.
+On 30.10.2023 22:50, Jacob Keller wrote:
 > 
-> Coalesced with the corresponding helpers r8168_mac_ocp_write_seq() and
-> r8168_mac_ocp_modify_seq() into sequential write or modidy with a sinqle lock/unlock,
-> these calls reduce overall lock contention.
 > 
-> Fixes: f1bce4ad2f1ce ("r8169: add support for RTL8125")
-> Cc: Heiner Kallweit <hkallweit1@gmail.com>
-> Cc: Marco Elver <elver@google.com>
-> Cc: nic_swsd@realtek.com
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Eric Dumazet <edumazet@google.com>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Paolo Abeni <pabeni@redhat.com>
-> Cc: netdev@vger.kernel.org
-> Cc: linux-kernel@vger.kernel.org
-> Link: https://lore.kernel.org/lkml/20231028005153.2180411-1-mirsad.todorovac@alu.unizg.hr/
-> Link: https://lore.kernel.org/lkml/20231028110459.2644926-1-mirsad.todorovac@alu.unizg.hr/
-> Signed-off-by: Mirsad Goran Todorovac <mirsad.todorovac@alu.unizg.hr>
-> ---
+> On 10/29/2023 4:04 AM, Mirsad Goran Todorovac wrote:> A pair of new
+> helpers r8168_mac_ocp_write_seq() and r8168_mac_ocp_modify_seq()
+>> are introduced.
+>>
+>> The motivation for these helpers was the locking overhead of 130 consecutive
+>> r8168_mac_ocp_write() calls in the RTL8411b reset after the NIC gets confused
+>> if the PHY is powered-down.
+>>
+>> To quote Heiner:
+>>
+>>     On RTL8411b the RX unit gets confused if the PHY is powered-down.
+>>     This was reported in [0] and confirmed by Realtek. Realtek provided
+>>     a sequence to fix the RX unit after PHY wakeup.
+>>
+>> A series of about 130 r8168_mac_ocp_write() calls is performed to program the
+>> RTL registers for recovery, each doing an expensive spin_lock_irqsave() and
+>> spin_unlock_irqrestore().
+>>
+>> Each mac ocp write is made of:
+>>
+>>     static void __r8168_mac_ocp_write(struct rtl8169_private *tp, u32 reg,
+>>                       u32 data)
+>>     {
+>>         if (rtl_ocp_reg_failure(reg))
+>>             return;
+>>
+>>         RTL_W32(tp, OCPDR, OCPAR_FLAG | (reg << 15) | data);
+>>     }
+>>
+>>     static void r8168_mac_ocp_write(struct rtl8169_private *tp, u32 reg,
+>>                     u32 data)
+>>     {
+>>         unsigned long flags;
+>>
+>>         raw_spin_lock_irqsave(&tp->mac_ocp_lock, flags);
+>>         __r8168_mac_ocp_write(tp, reg, data);
+>>         raw_spin_unlock_irqrestore(&tp->mac_ocp_lock, flags);
+>>     }
+>>
+>> Register programming is done through RTL_W32() macro which expands into
+>>
+>>     #define RTL_W32(tp, reg, val32) writel((val32), tp->mmio_addr + (reg))
+>>
+>> which is further (on Alpha):
+>>
+>>     extern inline void writel(u32 b, volatile void __iomem *addr)
+>>     {
+>>         mb();
+>>         __raw_writel(b, addr);
+>>     }
+>>
+>> or on i386/x86_64:
+>>
+>>     #define build_mmio_write(name, size, type, reg, barrier) \
+>>     static inline void name(type val, volatile void __iomem *addr) \
+>>     { asm volatile("mov" size " %0,%1": :reg (val), \
+>>     "m" (*(volatile type __force *)addr) barrier); }
+>>
+>>     build_mmio_write(writel, "l", unsigned int, "r", :"memory")
+>>
+>> This obviously involves iat least a compiler barrier.
+>>
+>> mb() expands into something like this i.e. on x86_64:
+>>
+>>     #define mb()    asm volatile("lock; addl $0,0(%%esp)" ::: "memory")
+>>
+>> This means a whole lot of memory bus stalls: for spin_lock_irqsave(),
+>> memory barrier, writel(), and spin_unlock_irqrestore().
+>>
+>> With about 130 of these sequential calls to r8168_mac_ocp_write() this looks like
+>> a lock storm that will stall all of the cores and CPUs on the same memory controller
+>> for certain time I/O takes to finish.
+>>
+>> In a sequential case of RTL register programming, the writes to RTL registers
+>> can be coalesced under a same raw spinlock. This can dramatically decrease the
+>> number of bus stalls in a multicore or multi-CPU system.
+>>
+>> Macro helpers r8168_mac_ocp_write_seq() and r8168_mac_ocp_modify_seq() are
+>> provided to reduce lock contention:
+>>
+>>     static void rtl_hw_start_8411_2(struct rtl8169_private *tp)
+>>     {
+>>
+>>         ...
+>>
+>>         /* The following Realtek-provided magic fixes an issue with the RX unit
+>>          * getting confused after the PHY having been powered-down.
+>>          */
+>>
+>>         static const struct recover_8411b_info init_zero_seq[] = {
+>>             { 0xFC28, 0x0000 }, { 0xFC2A, 0x0000 }, { 0xFC2C, 0x0000 },
+>>             ...
+>>         };
+>>
+>>         ...
+>>
+>>         r8168_mac_ocp_write_seq(tp, init_zero_seq);
+>>
+>>         ...
+>>
+>>     }
+>>
+>> The hex data is preserved intact through s/r8168_mac_ocp_write[(]tp,/{ / and s/[)];/ },/
+>> functions that only changed the function names and the ending of the line, so the actual
+>> hex data is unchanged.
+>>
+>> To repeat, the reason for the introduction of the original commit
+>> was to enable recovery of the RX unit on the RTL8411b which was confused by the
+>> powered-down PHY. This sequence of r8168_mac_ocp_write() calls amplifies the problem
+>> into a series of about 500+ memory bus locks, most waiting for the main memory read,
+>> modify and write under a LOCK. The memory barrier in RTL_W32 should suffice for
+>> the programming sequence to reach RTL NIC registers.
+>>
+>> [0] https://bugzilla.redhat.com/show_bug.cgi?id=1692075
+>>
+> 
+> 
+> I might have chosen to send some of this information as the cover letter
+> for the series instead of just as part of the commit message for [1/5],
+> but either way:
+> 
+> Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
 
-Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
+Cover letter is still missing, and there's a v5 already.
+Good example why we have the "max one version per day" rule.
+
+There's still some issues with the series, see my review comments
+for v5. As-is I'd NAK the series.
+
