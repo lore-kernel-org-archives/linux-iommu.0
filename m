@@ -1,49 +1,49 @@
-Received: from mail-ed1-f44.google.com (mail-ed1-f44.google.com [209.85.208.44])
+Received: from mail-ej1-f41.google.com (mail-ej1-f41.google.com [209.85.218.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD73317997
-	for <iommu@lists.linux.dev>; Mon, 30 Oct 2023 14:04:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D405F179A2
+	for <iommu@lists.linux.dev>; Mon, 30 Oct 2023 14:04:10 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lv1hk11i"
-Received: by mail-ed1-f44.google.com with SMTP id 4fb4d7f45d1cf-53fc7c67a41so11541161a12.0
-        for <iommu@lists.linux.dev>; Mon, 30 Oct 2023 07:04:11 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="TQ/nRsii"
+Received: by mail-ej1-f41.google.com with SMTP id a640c23a62f3a-9d216597f64so275677666b.3
+        for <iommu@lists.linux.dev>; Mon, 30 Oct 2023 07:04:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1698674650; x=1699279450; darn=lists.linux.dev;
+        d=gmail.com; s=20230601; t=1698674649; x=1699279449; darn=lists.linux.dev;
         h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
          :to:content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=GRw/qLvoHTQLQkf31XU0hZZMIVkN96dT7szXoR3678s=;
-        b=lv1hk11i+xzHBzNBB10RWcfG4rav7CLUPnwYcaad6qAEUTC0hilYDBCHN9lDoSMGuD
-         O33wNImdqyVUHehBiVUkMqRsp6cP242R4qDBVdQe4gUaBo1N1ntbrY+Wgp43SOMx0d3+
-         3H81B5v74sYVMUjNPB9L/Il7/x/o5tj1WdlT2ukh3fltw7bH7oLLee2c51onLXXx/4V1
-         SMkZx/NwIa3ajrhFdxeDTwgUGQa+JJLjmBT97fc6SgSNM6ZaAmqcDyBbUaEW5tIs+kR0
-         /QNVns4azSCb0n8x6fifAesyHzyKyq1gK/YD9GkITvHibrISy+InVamNqaXHZ/Wz7o53
-         sCoQ==
+        bh=Kpz3axY2sBG44itm0mBwus/ZNI3xvuDSojJwOujH58k=;
+        b=TQ/nRsiiLDgnNBYo59TyrwcL5u0Mb6oyvF7n8rCTKtcQnG3t3gCZMhrrcTMy/HUb8q
+         79CwU1THbZ7JXVsIs31PidAiT0Tz31xMNcSrqZHch+mOKTweaZCkGVn9Gkw7SPqdp9zK
+         nO41rRkAMmDWqeRpzcMRQMgvsH0E3ApYvmxORrvWsTLATalq5yj2wK8bQgSP6w1H8qdG
+         hkuhoRCtGwsOfLcSl5ZdPwkaHSNxtceVXjkYShTPQLuQyqZGp1pl+ryXcxnqyw55nDQi
+         kdojZDDkMAUfLjJgYPSHwNkXDv3Zc0Vv/RFVzmT4rx53zl8FDWWICs04IRussvFEIcho
+         xh2A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1698674650; x=1699279450;
+        d=1e100.net; s=20230601; t=1698674649; x=1699279449;
         h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
          :to:content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=GRw/qLvoHTQLQkf31XU0hZZMIVkN96dT7szXoR3678s=;
-        b=DYSQ7XI4gchOR4q7conJswA2VHzhakgF3olB/7VUNFSXJ8YODICOCSgEdN9YDMEtV3
-         SyqRYFi3/V0UM7FSRZfJWZq3SIypk3yN2SMwwWRpbwwLE1dHPMpQ/CjtUmr+XIrFqwsm
-         lBCl2/WrmSbGy8TrkWVpkY9ACUSObJVDxxpthJafYFSdgdtklFM3RNDahQeU2ZXxc0ss
-         id5ZJyg+rjRLPeLZ/wLAtdlVDVfZcMWMXxGQFPcbtCf4lzNQG1x+ToBOZ946523QsBSf
-         AtNHd0V3hKxOB9zBw5P/LRrZlbUTfkScH0Hz8pqWTPkSZbMxa5WqNkqgEGjanVKq4uQp
-         XmUA==
-X-Gm-Message-State: AOJu0Yzp+Z6mMfBVySod9bPnYbu2n8kFLE4GHdmT8RfsIuTklbRxx5+H
-	CtEnBpxCRcX6SIfcd+T39GQ=
-X-Google-Smtp-Source: AGHT+IHenKqbHFOcoMbgF4b6YYkkA7mHYq46KAlOoI/64a9rbWGEF/tAWqLvSaYZDut68pUeFTWk+Q==
-X-Received: by 2002:a05:6402:1f90:b0:540:2a8f:806f with SMTP id c16-20020a0564021f9000b005402a8f806fmr12863296edc.3.1698674649969;
-        Mon, 30 Oct 2023 07:04:09 -0700 (PDT)
+        bh=Kpz3axY2sBG44itm0mBwus/ZNI3xvuDSojJwOujH58k=;
+        b=wOXCThIkRh9GP7u+Pq7SWatVoaMN3f9ehPjbk4LBLH+SGqSbTVHhaREIApJJxpVJUm
+         z3xmUqBNKsK7HfTkstZjGJerBR2YuvMHxulSMAb2AW8DydMgogN9U4Ly45K7EVtDVl+D
+         WO2jiBlxbaLChizWlBhMw5fz/Nu2JTC51lo2RhxFTisZjbkRRclMssPU95X10bx4cnvU
+         489oBIV2YmyPaYrONC5+4WeeCO8TZE1Aj9Jh1jZ//BeqfEQeyg2aUxIQGcRIwBNCJ7Dt
+         Y+nxKjMEGjWHR4MX468wBY3upoDy5SQSif7m0wuc/AWwxOZsTmD44pQFqRYIY+7sgbQc
+         dp8g==
+X-Gm-Message-State: AOJu0YzXeYHvyLK1fop/wKsq1N6d5Y7g/VXWsQE1XlUc1BxAIOGbbP9a
+	23VWGQ5CD7SK/d+In9h/ETI=
+X-Google-Smtp-Source: AGHT+IEBZYcqsjN0VGWVWe38e12ipDrKCwLpIN8ijcn1JMB0Ahg4STvtoS46CDbdfPw3TWsH73QkgQ==
+X-Received: by 2002:a17:907:36c5:b0:9c7:5200:e4f4 with SMTP id bj5-20020a17090736c500b009c75200e4f4mr9444827ejc.41.1698674648559;
+        Mon, 30 Oct 2023 07:04:08 -0700 (PDT)
 Received: from ?IPV6:2a01:c23:bc31:8900:5db7:a938:1060:35a3? (dynamic-2a01-0c23-bc31-8900-5db7-a938-1060-35a3.c23.pool.telefonica.de. [2a01:c23:bc31:8900:5db7:a938:1060:35a3])
-        by smtp.googlemail.com with ESMTPSA id n27-20020a5099db000000b0053116e45317sm6278564edb.44.2023.10.30.07.04.08
+        by smtp.googlemail.com with ESMTPSA id n27-20020a5099db000000b0053116e45317sm6278564edb.44.2023.10.30.07.04.07
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 30 Oct 2023 07:04:09 -0700 (PDT)
-Message-ID: <6ac48178-d3cc-4d4a-a0bc-aaa02ff7ec3c@gmail.com>
-Date: Mon, 30 Oct 2023 15:03:59 +0100
+        Mon, 30 Oct 2023 07:04:08 -0700 (PDT)
+Message-ID: <7fd8c40d-5209-4f7c-8c69-5138d0eb0bc5@gmail.com>
+Date: Mon, 30 Oct 2023 15:02:17 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -51,8 +51,8 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 7/7] r8169: Coalesce mac ocp write and modify for
- rtl_hw_init_8125 to reduce spinlock contention
+Subject: Re: [PATCH v5 6/7] r8169: Coalesce mac ocp write and modify for 8125
+ and 8125B start to reduce spinlocks
 Content-Language: en-US
 To: Mirsad Goran Todorovac <mirsad.todorovac@alu.unizg.hr>,
  Jason Gunthorpe <jgg@ziepe.ca>, Joerg Roedel <jroedel@suse.de>,
@@ -64,7 +64,7 @@ Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
  Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
  Marco Elver <elver@google.com>
 References: <20231029183600.451694-1-mirsad.todorovac@alu.unizg.hr>
- <20231029183600.451694-7-mirsad.todorovac@alu.unizg.hr>
+ <20231029183600.451694-6-mirsad.todorovac@alu.unizg.hr>
 From: Heiner Kallweit <hkallweit1@gmail.com>
 Autocrypt: addr=hkallweit1@gmail.com; keydata=
  xsFNBF/0ZFUBEAC0eZyktSE7ZNO1SFXL6cQ4i4g6Ah3mOUIXSB4pCY5kQ6OLKHh0FlOD5/5/
@@ -109,13 +109,13 @@ Autocrypt: addr=hkallweit1@gmail.com; keydata=
  H/0Z53okMykVs3a8tECPHIxnre2UxKdTbCEkjkR4V6JyplTS47oWMw3zyI7zkaadfzVFBxk2
  lo/Tny+FX1Azea3Ce7oOnRUEZtWSsUidtIjmL8YUQFZYm+JUIgfRmSpMFq8JP4VH43GXpB/S
  OCrl+/xujzvoUBFV/cHKjEQYBxo+MaiQa1U54ykM2W4DnHb1UiEf5xDkFd4=
-In-Reply-To: <20231029183600.451694-7-mirsad.todorovac@alu.unizg.hr>
+In-Reply-To: <20231029183600.451694-6-mirsad.todorovac@alu.unizg.hr>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
 On 29.10.2023 19:36, Mirsad Goran Todorovac wrote:
 > Repeated calls to r8168_mac_ocp_write() and r8168_mac_ocp_modify() in
-> the init sequence of the 8125 involve implicit spin_lock_irqsave() and
+> the startup of 8125 and 8125B involve implicit spin_lock_irqsave() and
 > spin_unlock_irqrestore() on each invocation.
 > 
 > Coalesced with the corresponding helpers r8168_mac_ocp_write_seq() and
@@ -124,6 +124,7 @@ On 29.10.2023 19:36, Mirsad Goran Todorovac wrote:
 > reduce overall lock contention.
 > 
 > Fixes: f1bce4ad2f1ce ("r8169: add support for RTL8125")
+> Fixes: 0439297be9511 ("r8169: add support for RTL8125B")
 > Cc: Heiner Kallweit <hkallweit1@gmail.com>
 > Cc: Marco Elver <elver@google.com>
 > Cc: nic_swsd@realtek.com
@@ -152,35 +153,116 @@ On 29.10.2023 19:36, Mirsad Goran Todorovac wrote:
 >  removed register/mask pair array sentinels, so using ARRAY_SIZE().
 >  avoided duplication of RTL_W32() call code as advised by Heiner.
 > 
->  drivers/net/ethernet/realtek/r8169_main.c | 10 +++++++---
->  1 file changed, 7 insertions(+), 3 deletions(-)
+>  drivers/net/ethernet/realtek/r8169_main.c | 75 +++++++++++++----------
+>  1 file changed, 44 insertions(+), 31 deletions(-)
 > 
 > diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-> index 0778cd0ba2e0..76f0f1e13909 100644
+> index 50fbacb05953..0778cd0ba2e0 100644
 > --- a/drivers/net/ethernet/realtek/r8169_main.c
 > +++ b/drivers/net/ethernet/realtek/r8169_main.c
-> @@ -5089,6 +5089,12 @@ static void rtl_hw_init_8168g(struct rtl8169_private *tp)
+> @@ -3553,6 +3553,28 @@ DECLARE_RTL_COND(rtl_mac_ocp_e00e_cond)
 >  
->  static void rtl_hw_init_8125(struct rtl8169_private *tp)
+>  static void rtl_hw_start_8125_common(struct rtl8169_private *tp)
 >  {
-> +	static const struct e_info_regdata hw_init_8125_1[] = {
-> +		{ 0xc0aa, 0x07d0 },
-> +		{ 0xc0a6, 0x0150 },
-> +		{ 0xc01e, 0x5555 },
+> +	static const struct e_info_regmaskset e_info_8125_common_1[] = {
+> +		{ 0xd3e2, 0x0fff, 0x03a9 },
+> +		{ 0xd3e4, 0x00ff, 0x0000 },
+> +		{ 0xe860, 0x0000, 0x0080 },
 > +	};
 > +
->  	rtl_enable_rxdvgate(tp);
+> +	static const struct e_info_regmaskset e_info_8125_common_2[] = {
+> +		{ 0xc0b4, 0x0000, 0x000c },
+> +		{ 0xeb6a, 0x00ff, 0x0033 },
+> +		{ 0xeb50, 0x03e0, 0x0040 },
+> +		{ 0xe056, 0x00f0, 0x0030 },
+> +		{ 0xe040, 0x1000, 0x0000 },
+> +		{ 0xea1c, 0x0003, 0x0001 },
+> +		{ 0xe0c0, 0x4f0f, 0x4403 },
+> +		{ 0xe052, 0x0080, 0x0068 },
+> +		{ 0xd430, 0x0fff, 0x047f },
+> +		{ 0xea1c, 0x0004, 0x0000 },
+> +		{ 0xeb54, 0x0000, 0x0001 },
+> +	};
+> +
+> +	unsigned long flags;
+> +
+>  	rtl_pcie_state_l2l3_disable(tp);
 >  
->  	RTL_W8(tp, ChipCmd, RTL_R8(tp, ChipCmd) & ~(CmdTxEnb | CmdRxEnb));
-> @@ -5098,9 +5104,7 @@ static void rtl_hw_init_8125(struct rtl8169_private *tp)
->  	r8168_mac_ocp_modify(tp, 0xe8de, BIT(14), 0);
->  	r8168g_wait_ll_share_fifo_ready(tp);
+>  	RTL_W16(tp, 0x382, 0x221b);
+> @@ -3560,47 +3582,38 @@ static void rtl_hw_start_8125_common(struct rtl8169_private *tp)
+>  	RTL_W16(tp, 0x4800, 0);
 >  
-> -	r8168_mac_ocp_write(tp, 0xc0aa, 0x07d0);
-> -	r8168_mac_ocp_write(tp, 0xc0a6, 0x0150);
-> -	r8168_mac_ocp_write(tp, 0xc01e, 0x5555);
-> +	r8168_mac_ocp_write_seq(tp, hw_init_8125_1);
->  	r8168g_wait_ll_share_fifo_ready(tp);
->  }
+>  	/* disable UPS */
+> -	r8168_mac_ocp_modify(tp, 0xd40a, 0x0010, 0x0000);
+> +
+> +	raw_spin_lock_irqsave(&tp->mac_ocp_lock, flags);
+> +	__r8168_mac_ocp_modify(tp, 0xd40a, 0x0010, 0x0000);
 >  
-As for few other patches in the series, not really worth it.
+>  	RTL_W8(tp, Config1, RTL_R8(tp, Config1) & ~0x10);
+>  
+> -	r8168_mac_ocp_write(tp, 0xc140, 0xffff);
+> -	r8168_mac_ocp_write(tp, 0xc142, 0xffff);
+> +	__r8168_mac_ocp_write(tp, 0xc140, 0xffff);
+> +	__r8168_mac_ocp_write(tp, 0xc142, 0xffff);
+>  
+> -	r8168_mac_ocp_modify(tp, 0xd3e2, 0x0fff, 0x03a9);
+> -	r8168_mac_ocp_modify(tp, 0xd3e4, 0x00ff, 0x0000);
+> -	r8168_mac_ocp_modify(tp, 0xe860, 0x0000, 0x0080);
+> +	__r8168_mac_ocp_modify_seq(tp, e_info_8125_common_1);
+>  
+>  	/* disable new tx descriptor format */
+> -	r8168_mac_ocp_modify(tp, 0xeb58, 0x0001, 0x0000);
+> +	__r8168_mac_ocp_modify(tp, 0xeb58, 0x0001, 0x0000);
+>  
+> -	if (tp->mac_version == RTL_GIGA_MAC_VER_63)
+> -		r8168_mac_ocp_modify(tp, 0xe614, 0x0700, 0x0200);
+> -	else
+> -		r8168_mac_ocp_modify(tp, 0xe614, 0x0700, 0x0400);
+> +	if (tp->mac_version == RTL_GIGA_MAC_VER_63) {
+> +		__r8168_mac_ocp_modify(tp, 0xe614, 0x0700, 0x0200);
+> +		__r8168_mac_ocp_modify(tp, 0xe63e, 0x0c30, 0x0000);
+> +	} else {
+> +		__r8168_mac_ocp_modify(tp, 0xe614, 0x0700, 0x0400);
+> +		__r8168_mac_ocp_modify(tp, 0xe63e, 0x0c30, 0x0020);
+> +	}
+> +
+> +	__r8168_mac_ocp_modify_seq(tp, e_info_8125_common_2);
+> +	raw_spin_unlock_irqrestore(&tp->mac_ocp_lock, flags);
+>  
+> -	if (tp->mac_version == RTL_GIGA_MAC_VER_63)
+> -		r8168_mac_ocp_modify(tp, 0xe63e, 0x0c30, 0x0000);
+> -	else
+> -		r8168_mac_ocp_modify(tp, 0xe63e, 0x0c30, 0x0020);
+> -
+> -	r8168_mac_ocp_modify(tp, 0xc0b4, 0x0000, 0x000c);
+> -	r8168_mac_ocp_modify(tp, 0xeb6a, 0x00ff, 0x0033);
+> -	r8168_mac_ocp_modify(tp, 0xeb50, 0x03e0, 0x0040);
+> -	r8168_mac_ocp_modify(tp, 0xe056, 0x00f0, 0x0030);
+> -	r8168_mac_ocp_modify(tp, 0xe040, 0x1000, 0x0000);
+> -	r8168_mac_ocp_modify(tp, 0xea1c, 0x0003, 0x0001);
+> -	r8168_mac_ocp_modify(tp, 0xe0c0, 0x4f0f, 0x4403);
+> -	r8168_mac_ocp_modify(tp, 0xe052, 0x0080, 0x0068);
+> -	r8168_mac_ocp_modify(tp, 0xd430, 0x0fff, 0x047f);
+> -
+> -	r8168_mac_ocp_modify(tp, 0xea1c, 0x0004, 0x0000);
+> -	r8168_mac_ocp_modify(tp, 0xeb54, 0x0000, 0x0001);
+>  	udelay(1);
+> -	r8168_mac_ocp_modify(tp, 0xeb54, 0x0001, 0x0000);
+> -	RTL_W16(tp, 0x1880, RTL_R16(tp, 0x1880) & ~0x0030);
+>  
+> -	r8168_mac_ocp_write(tp, 0xe098, 0xc302);
+> +	raw_spin_lock_irqsave(&tp->mac_ocp_lock, flags);
+> +	__r8168_mac_ocp_modify(tp, 0xeb54, 0x0001, 0x0000);
+> +	RTL_W16(tp, 0x1880, RTL_R16(tp, 0x1880) & ~0x0030);
+> +	__r8168_mac_ocp_write(tp, 0xe098, 0xc302);
+> +	raw_spin_unlock_irqrestore(&tp->mac_ocp_lock, flags);
+>  
+>  	rtl_loop_wait_low(tp, &rtl_mac_ocp_e00e_cond, 1000, 10);
+>  
+
+All this manual locking and unlocking makes the code harder
+to read and more error-prone. Maybe, as a rule of thumb:
+If you can replace a block with more than 10 mac ocp ops,
+then fine with me.
+
+
