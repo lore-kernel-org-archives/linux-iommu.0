@@ -1,183 +1,255 @@
-Received: from mail-qt1-f180.google.com (mail-qt1-f180.google.com [209.85.160.180])
+Received: from domac.alu.hr (domac.alu.unizg.hr [161.53.235.3])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 86DD033E0
-	for <iommu@lists.linux.dev>; Mon, 30 Oct 2023 14:50:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 85DB215E96
+	for <iommu@lists.linux.dev>; Mon, 30 Oct 2023 15:02:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=alu.unizg.hr
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=alu.unizg.hr
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="JfILW5qZ"
-Received: by mail-qt1-f180.google.com with SMTP id d75a77b69052e-41cd6e1d4fbso29154461cf.1
-        for <iommu@lists.linux.dev>; Mon, 30 Oct 2023 07:50:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1698677437; x=1699282237; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=XAVJg7KJEfcs7fsB5R/ELaG9gHihYCdsFZSthwigaas=;
-        b=JfILW5qZbcUGJStmbnF0dvJejhH752jclOx3BSKbr9QRicoh0lR4nwuryN5T7plHJ5
-         /XgMLNPNdbZlEvrUwILGy9TB5mV0L9awpqqvcpfCeAephYFd4xHSPo+uTsZilZ/i9HkA
-         IoYTiiAoosuXxS7KP/LF7D4KU9VO9aQyFtS7L2MDXxE3yPtkKCvnvTzVt4z7H1ZInC5F
-         olZlzUa5rsZd5YXKi1NQREoFOWI1AxKgD8WO8XVI/HNflAGJAwGoSDHeMbUa9UfGKtGs
-         c+shNku3mdkmt7ckdVjLTTHGkgqaWKLvBtR2n9l17+k2NVi/8g84+QAHklcZio6R0iMq
-         GXxQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1698677437; x=1699282237;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=XAVJg7KJEfcs7fsB5R/ELaG9gHihYCdsFZSthwigaas=;
-        b=XFEQnbgWN/aTJT9K/mB81YlSPE2kLxYf4j+ED+JKXFVoM9G6eY4Eb9Qari7F7DNGOK
-         iOifKzBXtlvt1ObyNvAwennikfyPwHFDjhbwVXXePT9dKmilb55SBAaMWuvxsnqUgonx
-         pGTqvLvjRFEsuAV8TLluCLLRa91D/qp+dthGeCecINAmM7L8PPqE1u+h8IRbOYUgmrpZ
-         GndZiQ5WoimONMwjIQoj85i2ms2p1HhA9VotLh/TvuBWPbIdFGdGV5NMrP2Snd4ZPo8j
-         FbFQR+dFSbFm/FO4xofBaDlSMWkDf+Y1mYuwvPzNl3Jm1Rje2IMpjzpfFBZyNHseQhy1
-         u8sw==
-X-Gm-Message-State: AOJu0YzgKS/HcAXDTZLTsJ+cmYv7ODifl82Jt9YyJNPnCn7Uex0hW5i/
-	iJifkqMYcKBoWKNSTV2gM9LATg==
-X-Google-Smtp-Source: AGHT+IHIdAtzpDuOIzCWJ/BgrfKX8YAlCzUQ0du/QbPPSwBjZiTujSj+CqZEYi8uFUYxw4asFxqWkw==
-X-Received: by 2002:a05:622a:648:b0:41c:da4f:fa26 with SMTP id a8-20020a05622a064800b0041cda4ffa26mr9856475qtb.66.1698677437263;
-        Mon, 30 Oct 2023 07:50:37 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-26-201.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.26.201])
-        by smtp.gmail.com with ESMTPSA id g13-20020ac84dcd000000b00403cce833eesm3427727qtw.27.2023.10.30.07.50.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 Oct 2023 07:50:36 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1qxTb9-0074xP-UH;
-	Mon, 30 Oct 2023 11:50:35 -0300
-Date: Mon, 30 Oct 2023 11:50:35 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Koichiro Den <den@valinux.co.jp>
-Cc: iommu@lists.linux.dev, kevin.tian@intel.com
-Subject: Re: [PATCH] iommufd: Fix missing update of domains_itree after
- splitting iopt_area
-Message-ID: <20231030145035.GG691768@ziepe.ca>
-References: <20231027162941.2864615-2-den@valinux.co.jp>
+	dkim=pass (2048-bit key) header.d=alu.unizg.hr header.i=@alu.unizg.hr header.b="P0eIBBWf";
+	dkim=pass (2048-bit key) header.d=alu.unizg.hr header.i=@alu.unizg.hr header.b="vidJ07S1"
+Received: from localhost (localhost [127.0.0.1])
+	by domac.alu.hr (Postfix) with ESMTP id B6BEE60173;
+	Mon, 30 Oct 2023 16:02:33 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=alu.unizg.hr; s=mail;
+	t=1698678153; bh=22eTnrSXo0qveDQ6OiPbF7NrLKb+fZPtAQAqeW8kU8E=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=P0eIBBWfra5yh6tZgQYYqc9+NhKc/aRpoMq3fIrsejz34Su96imEMjemIMFDjSEAF
+	 JFM/7ZSJ5z7438LpnJIF05Wbs8SmxKfiQwpvcA+29eBYqrC1p11RlrksTWVkq3zwMI
+	 5tKG1PIaE5nPQxggM6AUy7ffmuz4VC+COmdugJXxeSzpux1mnzj19YJRedj2+e953j
+	 CgFn5+TTjGtJq/lhEGbAvcZFR41nLZIOKC0K/YUtmICCzwm8KP5pQAky7mbNgcdUhl
+	 23RNUajnfDAlkudCg9rJ+7/++zmNOs1F/9myDkwuMNVm7JjP1FtOy4UtZ26wQsvLXq
+	 DBVjx8qPASg8w==
+X-Virus-Scanned: Debian amavisd-new at domac.alu.hr
+Received: from domac.alu.hr ([127.0.0.1])
+	by localhost (domac.alu.hr [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id aqxIGnWhPxeg; Mon, 30 Oct 2023 16:02:30 +0100 (CET)
+Received: from [192.168.1.6] (78-3-40-166.adsl.net.t-com.hr [78.3.40.166])
+	by domac.alu.hr (Postfix) with ESMTPSA id E10A560171;
+	Mon, 30 Oct 2023 16:02:28 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=alu.unizg.hr; s=mail;
+	t=1698678150; bh=22eTnrSXo0qveDQ6OiPbF7NrLKb+fZPtAQAqeW8kU8E=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=vidJ07S1laWKU2C4d5BsRAwOT8IZhx4veNylAVJ+xUsYrlPtbEZpV4+BwcB6nJ6TT
+	 wiygdvlcG6KYpPyClEhgkRAOn4LkA+QCKotPvLhLg3D9ftDR+zQwXP13eAyuxB6BJM
+	 hN5dmTlvsp5V6vaErw3+8TofMkvKRM7RIiI+AvCy/TfHbs1V9Q5zodYnDKgQWVc464
+	 SU2s2vckll0/joZXmmmzHitYCkCHRH1HNeGhqwYFuWSjvHUHFzRUiVDwk3RRvZokg2
+	 n7UazbOwaYQb8VKeD+djuYvc2s8uOq2HQ1HnB5y8o1o2KxiJYlHcicEDecMn0joXTc
+	 a/MBqnYuSeoIw==
+Message-ID: <e9cb3842-3492-4b85-b7ad-77605a5836c3@alu.unizg.hr>
+Date: Mon, 30 Oct 2023 16:02:28 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20231027162941.2864615-2-den@valinux.co.jp>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v5 6/7] r8169: Coalesce mac ocp write and modify for 8125
+ and 8125B start to reduce spinlocks
+Content-Language: en-US
+To: Heiner Kallweit <hkallweit1@gmail.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+ Joerg Roedel <jroedel@suse.de>, Lu Baolu <baolu.lu@linux.intel.com>,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, nic_swsd@realtek.com,
+ "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
+ Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+ Marco Elver <elver@google.com>
+References: <20231029183600.451694-1-mirsad.todorovac@alu.unizg.hr>
+ <20231029183600.451694-6-mirsad.todorovac@alu.unizg.hr>
+ <7fd8c40d-5209-4f7c-8c69-5138d0eb0bc5@gmail.com>
+From: Mirsad Todorovac <mirsad.todorovac@alu.unizg.hr>
+In-Reply-To: <7fd8c40d-5209-4f7c-8c69-5138d0eb0bc5@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Sat, Oct 28, 2023 at 01:29:42AM +0900, Koichiro Den wrote:
-> In iopt_area_split(), if the original iopt_area has filled a domain and
-> is linked to domains_itree, pages_nodes have to be properly reinserted.
 
-Fixes: 51fe6141f0f6 ("iommufd: Data structure to provide IOVA to PFN mapping")
 
-> Signed-off-by: Koichiro Den <den@valinux.co.jp>
-> ---
->  drivers/iommu/iommufd/io_pagetable.c | 7 +++++++
->  1 file changed, 7 insertions(+)
+On 10/30/23 15:02, Heiner Kallweit wrote:
+> On 29.10.2023 19:36, Mirsad Goran Todorovac wrote:
+>> Repeated calls to r8168_mac_ocp_write() and r8168_mac_ocp_modify() in
+>> the startup of 8125 and 8125B involve implicit spin_lock_irqsave() and
+>> spin_unlock_irqrestore() on each invocation.
+>>
+>> Coalesced with the corresponding helpers r8168_mac_ocp_write_seq() and
+>> r8168_mac_ocp_modify_seq() into sequential write or modidy with a sinqle
+>> pair of spin_lock_irqsave() and spin_unlock_irqrestore(), these calls
+>> reduce overall lock contention.
+>>
+>> Fixes: f1bce4ad2f1ce ("r8169: add support for RTL8125")
+>> Fixes: 0439297be9511 ("r8169: add support for RTL8125B")
+>> Cc: Heiner Kallweit <hkallweit1@gmail.com>
+>> Cc: Marco Elver <elver@google.com>
+>> Cc: nic_swsd@realtek.com
+>> Cc: "David S. Miller" <davem@davemloft.net>
+>> Cc: Eric Dumazet <edumazet@google.com>
+>> Cc: Jakub Kicinski <kuba@kernel.org>
+>> Cc: Paolo Abeni <pabeni@redhat.com>
+>> Cc: netdev@vger.kernel.org
+>> Cc: linux-kernel@vger.kernel.org
+>> Link: https://lore.kernel.org/lkml/20231028005153.2180411-1-mirsad.todorovac@alu.unizg.hr/
+>> Link: https://lore.kernel.org/lkml/20231028110459.2644926-1-mirsad.todorovac@alu.unizg.hr/
+>> Signed-off-by: Mirsad Goran Todorovac <mirsad.todorovac@alu.unizg.hr>
+>> ---
+>> v5:
+>>   added unlocked primitives to allow mac ocs modify grouping
+>>   applied coalescing of mac ocp writes/modifies for 8168ep and 8117
+>>   some formatting fixes to please checkpatch.pl
+>>
+>> v4:
+>>   fixed complaints as advised by Heiner and checkpatch.pl
+>>   split the patch into five sections to be more easily manipulated and reviewed
+>>   introduced r8168_mac_ocp_write_seq()
+>>   applied coalescing of mac ocp writes/modifies for 8168H, 8125 and 8125B
+>>
+>> v3:
+>>   removed register/mask pair array sentinels, so using ARRAY_SIZE().
+>>   avoided duplication of RTL_W32() call code as advised by Heiner.
+>>
+>>   drivers/net/ethernet/realtek/r8169_main.c | 75 +++++++++++++----------
+>>   1 file changed, 44 insertions(+), 31 deletions(-)
+>>
+>> diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+>> index 50fbacb05953..0778cd0ba2e0 100644
+>> --- a/drivers/net/ethernet/realtek/r8169_main.c
+>> +++ b/drivers/net/ethernet/realtek/r8169_main.c
+>> @@ -3553,6 +3553,28 @@ DECLARE_RTL_COND(rtl_mac_ocp_e00e_cond)
+>>   
+>>   static void rtl_hw_start_8125_common(struct rtl8169_private *tp)
+>>   {
+>> +	static const struct e_info_regmaskset e_info_8125_common_1[] = {
+>> +		{ 0xd3e2, 0x0fff, 0x03a9 },
+>> +		{ 0xd3e4, 0x00ff, 0x0000 },
+>> +		{ 0xe860, 0x0000, 0x0080 },
+>> +	};
+>> +
+>> +	static const struct e_info_regmaskset e_info_8125_common_2[] = {
+>> +		{ 0xc0b4, 0x0000, 0x000c },
+>> +		{ 0xeb6a, 0x00ff, 0x0033 },
+>> +		{ 0xeb50, 0x03e0, 0x0040 },
+>> +		{ 0xe056, 0x00f0, 0x0030 },
+>> +		{ 0xe040, 0x1000, 0x0000 },
+>> +		{ 0xea1c, 0x0003, 0x0001 },
+>> +		{ 0xe0c0, 0x4f0f, 0x4403 },
+>> +		{ 0xe052, 0x0080, 0x0068 },
+>> +		{ 0xd430, 0x0fff, 0x047f },
+>> +		{ 0xea1c, 0x0004, 0x0000 },
+>> +		{ 0xeb54, 0x0000, 0x0001 },
+>> +	};
+>> +
+>> +	unsigned long flags;
+>> +
+>>   	rtl_pcie_state_l2l3_disable(tp);
+>>   
+>>   	RTL_W16(tp, 0x382, 0x221b);
+>> @@ -3560,47 +3582,38 @@ static void rtl_hw_start_8125_common(struct rtl8169_private *tp)
+>>   	RTL_W16(tp, 0x4800, 0);
+>>   
+>>   	/* disable UPS */
+>> -	r8168_mac_ocp_modify(tp, 0xd40a, 0x0010, 0x0000);
+>> +
+>> +	raw_spin_lock_irqsave(&tp->mac_ocp_lock, flags);
+>> +	__r8168_mac_ocp_modify(tp, 0xd40a, 0x0010, 0x0000);
+>>   
+>>   	RTL_W8(tp, Config1, RTL_R8(tp, Config1) & ~0x10);
+>>   
+>> -	r8168_mac_ocp_write(tp, 0xc140, 0xffff);
+>> -	r8168_mac_ocp_write(tp, 0xc142, 0xffff);
+>> +	__r8168_mac_ocp_write(tp, 0xc140, 0xffff);
+>> +	__r8168_mac_ocp_write(tp, 0xc142, 0xffff);
+>>   
+>> -	r8168_mac_ocp_modify(tp, 0xd3e2, 0x0fff, 0x03a9);
+>> -	r8168_mac_ocp_modify(tp, 0xd3e4, 0x00ff, 0x0000);
+>> -	r8168_mac_ocp_modify(tp, 0xe860, 0x0000, 0x0080);
+>> +	__r8168_mac_ocp_modify_seq(tp, e_info_8125_common_1);
+>>   
+>>   	/* disable new tx descriptor format */
+>> -	r8168_mac_ocp_modify(tp, 0xeb58, 0x0001, 0x0000);
+>> +	__r8168_mac_ocp_modify(tp, 0xeb58, 0x0001, 0x0000);
+>>   
+>> -	if (tp->mac_version == RTL_GIGA_MAC_VER_63)
+>> -		r8168_mac_ocp_modify(tp, 0xe614, 0x0700, 0x0200);
+>> -	else
+>> -		r8168_mac_ocp_modify(tp, 0xe614, 0x0700, 0x0400);
+>> +	if (tp->mac_version == RTL_GIGA_MAC_VER_63) {
+>> +		__r8168_mac_ocp_modify(tp, 0xe614, 0x0700, 0x0200);
+>> +		__r8168_mac_ocp_modify(tp, 0xe63e, 0x0c30, 0x0000);
+>> +	} else {
+>> +		__r8168_mac_ocp_modify(tp, 0xe614, 0x0700, 0x0400);
+>> +		__r8168_mac_ocp_modify(tp, 0xe63e, 0x0c30, 0x0020);
+>> +	}
+>> +
+>> +	__r8168_mac_ocp_modify_seq(tp, e_info_8125_common_2);
+>> +	raw_spin_unlock_irqrestore(&tp->mac_ocp_lock, flags);
+>>   
+>> -	if (tp->mac_version == RTL_GIGA_MAC_VER_63)
+>> -		r8168_mac_ocp_modify(tp, 0xe63e, 0x0c30, 0x0000);
+>> -	else
+>> -		r8168_mac_ocp_modify(tp, 0xe63e, 0x0c30, 0x0020);
+>> -
+>> -	r8168_mac_ocp_modify(tp, 0xc0b4, 0x0000, 0x000c);
+>> -	r8168_mac_ocp_modify(tp, 0xeb6a, 0x00ff, 0x0033);
+>> -	r8168_mac_ocp_modify(tp, 0xeb50, 0x03e0, 0x0040);
+>> -	r8168_mac_ocp_modify(tp, 0xe056, 0x00f0, 0x0030);
+>> -	r8168_mac_ocp_modify(tp, 0xe040, 0x1000, 0x0000);
+>> -	r8168_mac_ocp_modify(tp, 0xea1c, 0x0003, 0x0001);
+>> -	r8168_mac_ocp_modify(tp, 0xe0c0, 0x4f0f, 0x4403);
+>> -	r8168_mac_ocp_modify(tp, 0xe052, 0x0080, 0x0068);
+>> -	r8168_mac_ocp_modify(tp, 0xd430, 0x0fff, 0x047f);
+>> -
+>> -	r8168_mac_ocp_modify(tp, 0xea1c, 0x0004, 0x0000);
+>> -	r8168_mac_ocp_modify(tp, 0xeb54, 0x0000, 0x0001);
+
+[1] I think we have a candidate for a squeeze here in this driver.
+
+>>   	udelay(1);
+>> -	r8168_mac_ocp_modify(tp, 0xeb54, 0x0001, 0x0000);
+>> -	RTL_W16(tp, 0x1880, RTL_R16(tp, 0x1880) & ~0x0030);
+>>   
+>> -	r8168_mac_ocp_write(tp, 0xe098, 0xc302);
+>> +	raw_spin_lock_irqsave(&tp->mac_ocp_lock, flags);
+>> +	__r8168_mac_ocp_modify(tp, 0xeb54, 0x0001, 0x0000);
+>> +	RTL_W16(tp, 0x1880, RTL_R16(tp, 0x1880) & ~0x0030);
+>> +	__r8168_mac_ocp_write(tp, 0xe098, 0xc302);
+>> +	raw_spin_unlock_irqrestore(&tp->mac_ocp_lock, flags);
+>>   
+>>   	rtl_loop_wait_low(tp, &rtl_mac_ocp_e00e_cond, 1000, 10);
+>>   
 > 
-> diff --git a/drivers/iommu/iommufd/io_pagetable.c b/drivers/iommu/iommufd/io_pagetable.c
-> index 9f060abe53b6..5ba83296c91a 100644
-> --- a/drivers/iommu/iommufd/io_pagetable.c
-> +++ b/drivers/iommu/iommufd/io_pagetable.c
-> @@ -1220,6 +1220,13 @@ static int iopt_area_split(struct iopt_area *area, unsigned long iova)
->  	if (WARN_ON(rc))
->  		goto err_remove_lhs;
->  
-> +	/* If the original area has filled a domain, domains_itree has to be updated. */
-> +	if (!RB_EMPTY_NODE(&area->pages_node.rb)) {
+> All this manual locking and unlocking makes the code harder
+> to read and more error-prone. Maybe, as a rule of thumb:
+> If you can replace a block with more than 10 mac ocp ops,
+> then fine with me
+As I worked with another German developer, Mr. Frank Heckenbach from the GNU Pascal project,
+I know that Germans are pedantic and reliable :-)
 
-This isn't going to work entirely right because we never call
-RB_CLEAR_NODE.. Checking area->storage_domain would be appropriate
+If this rtl_hw_start_8125_common() is called only once, then maybe every memory bus cycle
+isn't worth saving, and then maybe the additional complexity isn't worth adding (but it
+was fun doing, and it works with my NIC).
 
-> +		interval_tree_remove(&area->pages_node, &pages->domains_itree);
-> +		interval_tree_insert(&lhs->pages_node, &pages->domains_itree);
-> +		interval_tree_insert(&rhs->pages_node, &pages->domains_itree);
+AFAIK, a spin_lock_irqsave()/spin_unlock_irqrestore() isn't a free lunch as you know, and I read
+from the manuals that on modern CPUs a locked ADD $0, -128(%esp) or something takes about 50
+clock cycles, in which all cores have to wait.
 
-But yes, this is needed!!
+Doing that in storm of 10 lock/unlock pairs amounts to 500 cycles or 125 ns in the best case
+on a 4 GHz CPU.
 
-I investigated for a while how come this doesn't crash already, and it
-seems to be a bit because of how rb tree works, that the test never
-does an access, and a bit because we never call RB_CLEAR_NODE.
+But I trust that you as the maintainer have the big picture and greater insight in the actual hw.
 
-Below improves things, and does make it crash without this change
+Elon Musk said that the greatest error in engineering is optimising stuff that never should
+have been written.
 
-Anyhow I picked this with the change and below as well, thanks!
+As I like my RTL 8125b NIC to be fast (TM), I am not giving up on it.
 
-From d906a485451dcce445f91aa207f5e724d1bf1e4e Mon Sep 17 00:00:00 2001
-From: Jason Gunthorpe <jgg@nvidia.com>
-Date: Mon, 30 Oct 2023 11:26:33 -0300
-Subject: [PATCH] iommufd: Add iopt_area_alloc()
+Just recalled that you mentioned that it supports RSS. Is it feasible to add it to the r8169
+driver?
 
-We never initialize the two interval tree nodes, and zero fill is not the
-same as RB_CLEAR_NODE. This can hide issues where we missed adding
-the area to the trees. Factor out the allocation and clear the two nodes.
+It is OK for me that we have a formal and less formal mode of communication and switch between
+them.
 
-Fixes: 51fe6141f0f6 ("iommufd: Data structure to provide IOVA to PFN mapping")
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
----
- drivers/iommu/iommufd/io_pagetable.c | 18 +++++++++++++++---
- drivers/iommu/iommufd/pages.c        |  2 ++
- 2 files changed, 17 insertions(+), 3 deletions(-)
+Thank you for all your quick reviews, much obliged, thank you for partially accepting the patches,
+but I think I need to sleep over it before submitting a new version.
 
-diff --git a/drivers/iommu/iommufd/io_pagetable.c b/drivers/iommu/iommufd/io_pagetable.c
-index 9f060abe53b6c9..87075cbc2c630b 100644
---- a/drivers/iommu/iommufd/io_pagetable.c
-+++ b/drivers/iommu/iommufd/io_pagetable.c
-@@ -222,6 +222,18 @@ static int iopt_insert_area(struct io_pagetable *iopt, struct iopt_area *area,
- 	return 0;
- }
- 
-+static struct iopt_area *iopt_area_alloc(void)
-+{
-+	struct iopt_area *area;
-+
-+	area = kzalloc(sizeof(*area), GFP_KERNEL_ACCOUNT);
-+	if (!area)
-+		return NULL;
-+	RB_CLEAR_NODE(&area->node.rb);
-+	RB_CLEAR_NODE(&area->pages_node.rb);
-+	return area;
-+}
-+
- static int iopt_alloc_area_pages(struct io_pagetable *iopt,
- 				 struct list_head *pages_list,
- 				 unsigned long length, unsigned long *dst_iova,
-@@ -232,7 +244,7 @@ static int iopt_alloc_area_pages(struct io_pagetable *iopt,
- 	int rc = 0;
- 
- 	list_for_each_entry(elm, pages_list, next) {
--		elm->area = kzalloc(sizeof(*elm->area), GFP_KERNEL_ACCOUNT);
-+		elm->area = iopt_area_alloc();
- 		if (!elm->area)
- 			return -ENOMEM;
- 	}
-@@ -1177,11 +1189,11 @@ static int iopt_area_split(struct iopt_area *area, unsigned long iova)
- 	    iopt_area_start_byte(area, new_start) & (alignment - 1))
- 		return -EINVAL;
- 
--	lhs = kzalloc(sizeof(*area), GFP_KERNEL_ACCOUNT);
-+	lhs = iopt_area_alloc();
- 	if (!lhs)
- 		return -ENOMEM;
- 
--	rhs = kzalloc(sizeof(*area), GFP_KERNEL_ACCOUNT);
-+	rhs = iopt_area_alloc();
- 	if (!rhs) {
- 		rc = -ENOMEM;
- 		goto err_free_lhs;
-diff --git a/drivers/iommu/iommufd/pages.c b/drivers/iommu/iommufd/pages.c
-index 8d9aa297c117e4..528f356238b343 100644
---- a/drivers/iommu/iommufd/pages.c
-+++ b/drivers/iommu/iommufd/pages.c
-@@ -1507,6 +1507,8 @@ void iopt_area_unfill_domains(struct iopt_area *area, struct iopt_pages *pages)
- 				area, domain, iopt_area_index(area),
- 				iopt_area_last_index(area));
- 
-+	if (IS_ENABLED(CONFIG_IOMMUFD_TEST))
-+		WARN_ON(RB_EMPTY_NODE(&area->pages_node.rb));
- 	interval_tree_remove(&area->pages_node, &pages->domains_itree);
- 	iopt_area_unfill_domain(area, pages, area->storage_domain);
- 	area->storage_domain = NULL;
--- 
-2.42.0
-
-
+Regards,
+Mirsad Todorovac
