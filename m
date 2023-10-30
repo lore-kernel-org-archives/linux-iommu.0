@@ -1,51 +1,99 @@
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2081.outbound.protection.outlook.com [40.107.94.81])
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.115])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6BA6533E0
-	for <iommu@lists.linux.dev>; Mon, 30 Oct 2023 22:53:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C2AE156C1
+	for <iommu@lists.linux.dev>; Mon, 30 Oct 2023 23:15:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="mZgDY+0N"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="c2ev5lzU"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1698707703; x=1730243703;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=IDV1z8i/YpiqHdIJypgatpTymRYzO3qNIKWwwxhU0xQ=;
+  b=c2ev5lzUOGevMnrhEKqKy8d8VReGiJoWKE04mhz3Ouj9BWGVBgrSu+A8
+   mT8dENrsnNEl8QxuhE/fYLtHJ9Ceihx/pefwrVnrQVCF4wLqwjD2g2qyZ
+   C31huosHzPiYR3MqEgNaUndsEaucYaG95l+o29X4G+XpdqBLuapi/Iw7M
+   ezFxJhQaUbYHNJGDJJtfetVyWgq9jxFsdbLVKG8kWLWF0hK2AAq0922Eh
+   1cv3/O+9RTvcPlik1yKuEJd86KYSC+IBQjm6XGjzG6gLb2OZuKqgzS4mW
+   fgGBkXF63BXvo+/A1CSRw9ufZCKCLAex4xiXhKSRvCrTa7swy4c3Jz4nB
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10879"; a="387998199"
+X-IronPort-AV: E=Sophos;i="6.03,264,1694761200"; 
+   d="scan'208";a="387998199"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Oct 2023 16:15:02 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10879"; a="736891872"
+X-IronPort-AV: E=Sophos;i="6.03,264,1694761200"; 
+   d="scan'208";a="736891872"
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
+  by orsmga006.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 30 Oct 2023 16:15:01 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.34; Mon, 30 Oct 2023 16:15:00 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.34; Mon, 30 Oct 2023 16:15:00 -0700
+Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.34 via Frontend Transport; Mon, 30 Oct 2023 16:15:00 -0700
+Received: from NAM02-BN1-obe.outbound.protection.outlook.com (104.47.51.41) by
+ edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.34; Mon, 30 Oct 2023 16:14:59 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=J0ASEf/9hU4Wv1A8ZL8ml226SRSC8BTfQx4YT07BTmZIyJWA8MaPEp17Q9qAsxcfpZo4lhpmMVTjQ6PlmFQhA6SmLqlcwpLuSvmxEoUnKYMu84QUEqs+Nt+TMqPodeq1vPOBNJptsFEWrmYGKbzdo61FuzaqD8E06M65vxlfwnNnRQ6Fk8gha38vvDs7bPP7u3li/l7yOy6wcvJSlZk6ajWol1RjlKYBy6xYgfIRkJJcm8UEolyY5E97r8VtKFWuv/cGbiC0Mo4I8NXtIgf0BRbNt8mH20Whmed4xz08RidXUvkeUJRfPVE0f7Ba9fLcMIZ1iADSYAQNjbWtE+kGOw==
+ b=edDI+uCwqKC/sLOtHiIdDOJzh+E3lWDVXTCDQ5c5KDHBKeYxkgov4vfLp/jPLn+PaW8bOgqdXJ3dlJEMUo/UQg0jY95iShwe/fQpE19zpukfQjEyUD0QyLNE3Rg2soSMmuVpDtgA4fXsNR4anl9piYQ/WULb697tiK6AkoEGc4YDdImKZfUoC67zXf4YRkIIZZMcPTnZxn/7UL+KhWsV+wak8STGzzCahv2POodsgY5CyRXNViQPVRVUO2gOJGefbDZHKcTuWoiSVQk+s/7BfXhCdY0BQ9LLW5hAdU34Kvh7z6ZJXT2SdWMIEJx6Lk5nX9JANDJCC2EEYDr3FsgqEw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=dHFjckkCa0gqKmLcDi11BnnbfxHYNI+mMSrdhNDuDvI=;
- b=bQ+l7zUhEqlC64IIw2wjnTZQt+MlNfTTv9Pv+AnzqWRBcFH6mTIqNgVagVEILFVdEQCEhZtlPptj2qzn8sy+XteB3JBAXA/i/zkYUcXSXQazA69Da9Oq04gQ5WC1sAZrn7XGJ5n/4oF3PrSlMOfUYExhDpJL28BsWV78SOYaRK9qjof3WY+YuBts74ouZYFI5sZP+mt6zz7i3rz0bTcQMHsEgH3/azP+fF+1gOQvRcGtPJQ96egXaFqNDG674NwmDfuaLe9AbXTJT90em9ABx6eH23NhjYy1I8m9qbt9zS0vDbhfLR7/RfKKEbs7XeWfTH1GVJSrGoaNpLlsmiQVug==
+ bh=0QuVXuEZw8s4HCd+7fbgXZgH3AyWtuEtV19N37Qn+ak=;
+ b=SW4jdG2PQiysCxuoccBmrZ9cJ9CwAR7V4n29eeoSqrPGnJOZEXDJIoZSaQOiNqebxuoP+61AOSXCB9IIgD8O+PxvksQFi3ngwkmIWK42AQhmL0Q8zjFVU9/qt0n13JZVPfp9fuRmlyWyWHP/MAHbejs4A27V32k2fEOtc8p2ZPY3cuX6lhgGJWRiIOfOPNksLPqF8uMlg01KvxLJkXxRwB2opRiFF/2Mgq2h4hb6qJ4JDm/dUyZWlXYD35PhdoUbQI3zpzLDFOVTtHBG6P2Wu7S1DKP5kbPI6VuIusuuFkZnfEJ1n9e/X7jVHVtQl+IPAUbm6XUZJK/LmtXj/bYV4A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=dHFjckkCa0gqKmLcDi11BnnbfxHYNI+mMSrdhNDuDvI=;
- b=mZgDY+0NDZDR79gZd4EiRq1RlOK+7Tngbe9x5hnkSKhKlXryw5wyiN4ntwemfre7D8loHZ7MI/5hgU9WJsfm9JsF/fLU1+353U9dphHCJLcOFm3LaPN0/R0sQWjeiQHv7QtWVdlPDwiMU5d3nBchyd3fRfft5uNXeDMvI3fToMexXBJ9wS0OncqL+3Q9DV9rK8V28eqJ0D0C0cJco21VxST/L8H1L2QFr34kvH0u3PhQUjth46ufAK1M5ugBnksbQAyldhNrYZ88QZlmnIMAe6Q75gvWUFMRHwtxqbDI6eWcwgnTRoAZn6V9tDirVE4j3df0sa/nyqO2UhqZ+Ssadw==
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by DS0PR12MB7769.namprd12.prod.outlook.com (2603:10b6:8:138::14) with
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from CO1PR11MB5089.namprd11.prod.outlook.com (2603:10b6:303:9b::16)
+ by PH7PR11MB6955.namprd11.prod.outlook.com (2603:10b6:510:206::16) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6933.28; Mon, 30 Oct
- 2023 22:53:27 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::b53a:1092:9be2:cfb9]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::b53a:1092:9be2:cfb9%4]) with mapi id 15.20.6933.027; Mon, 30 Oct 2023
- 22:53:27 +0000
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: iommu@lists.linux.dev,
-	Kevin Tian <kevin.tian@intel.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Yi Liu <yi.l.liu@intel.com>
-Subject: [PATCH] iommufd: Organize the mock domain alloc functions closer to Joerg's tree
-Date: Mon, 30 Oct 2023 19:53:26 -0300
-Message-ID: <0-v1-90a855762c96+19de-mock_merge_jgg@nvidia.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: BLAPR05CA0034.namprd05.prod.outlook.com
- (2603:10b6:208:335::15) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+ 2023 23:14:56 +0000
+Received: from CO1PR11MB5089.namprd11.prod.outlook.com
+ ([fe80::5e89:2476:6382:34b1]) by CO1PR11MB5089.namprd11.prod.outlook.com
+ ([fe80::5e89:2476:6382:34b1%4]) with mapi id 15.20.6933.029; Mon, 30 Oct 2023
+ 23:14:56 +0000
+Message-ID: <e1c666d8-c7f0-440e-b362-3dbb7a67b242@intel.com>
+Date: Mon, 30 Oct 2023 16:14:53 -0700
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v4 1/5] r8169: Coalesce r8169_mac_ocp_write/modify calls
+ to reduce spinlock stalls
+Content-Language: en-US
+To: Heiner Kallweit <hkallweit1@gmail.com>, Mirsad Goran Todorovac
+	<mirsad.todorovac@alu.unizg.hr>, Jason Gunthorpe <jgg@ziepe.ca>, Joerg Roedel
+	<jroedel@suse.de>, Lu Baolu <baolu.lu@linux.intel.com>,
+	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
+	<netdev@vger.kernel.org>
+CC: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, "Robin
+ Murphy" <robin.murphy@arm.com>, <nic_swsd@realtek.com>, "David S. Miller"
+	<davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, Jakub Kicinski
+	<kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, Marco Elver
+	<elver@google.com>
+References: <20231029110442.347448-1-mirsad.todorovac@alu.unizg.hr>
+ <e7a6b0c1-9fc6-480c-a135-7e142514d0e7@intel.com>
+ <a85e41ab-7cfa-413a-a446-f1b65c09c9ab@gmail.com>
+From: Jacob Keller <jacob.e.keller@intel.com>
+In-Reply-To: <a85e41ab-7cfa-413a-a446-f1b65c09c9ab@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: MW4PR04CA0361.namprd04.prod.outlook.com
+ (2603:10b6:303:81::6) To CO1PR11MB5089.namprd11.prod.outlook.com
+ (2603:10b6:303:9b::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -53,159 +101,204 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|DS0PR12MB7769:EE_
-X-MS-Office365-Filtering-Correlation-Id: 210a76a5-f553-45fe-8785-08dbd99b0758
+X-MS-TrafficTypeDiagnostic: CO1PR11MB5089:EE_|PH7PR11MB6955:EE_
+X-MS-Office365-Filtering-Correlation-Id: 23ba470f-a5be-4182-3764-08dbd99e07e4
+X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	yNPN/9y6O4R2MHx/cHz2chi6GUPH9fHYapY4CVGxbrxNCEXHOCs6Vwnr4i5+jHRMvalR7mcKxuMxl0b9Gh3OIQtFFhieWGccqqv7xo5urt/OOKcF5Wq32+Iaqlu+m/acZxKaxI25kppB43+PbtcMr1XCUUfHtxmpu836fq0jdrZlphP2ANhXbUg5JntAQW/FrLRgaNbqhNc+w9QeVADeOB/uE1+iOYhhtyL+KwFPAdLVXoyR4tBJ//y0ebRHsl8iAhUnitNcYbjd6UqTYDBBGGnLQz2sEHu4bJQlCoZmndnLI6aH4HjAiSB9RnxCcvx4jieDFrCbZ0OigL2+HvvVgQUyZiBdO4vZta7KRstO3lWnJLMW1HZI7j5vAkjGhT1mT/LAzcZfKSc5CbMUbCPvr0BxJ+1b9w5LtBos+sKeXQByxDmCfdOyQ2L0IBvjfyWEiJZlew2t5u7yci3yJsc8H9GVPloQ443eO5LflUD1bjpmAkqsqRFzl/yPwS/Ylp3KAkCOxFWqD8sQqmcNeyp80ITeejpZrXXDqRdWPXg29deuQUqmhxTtdbdRq8hYyiue7wN10oVer6tzg8w3/3I3h3HVkbYiiG7Fui5bZ348xCs=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(346002)(136003)(396003)(376002)(39860400002)(366004)(230922051799003)(1800799009)(186009)(64100799003)(451199024)(2906002)(316002)(5660300002)(66556008)(66476007)(110136005)(38100700002)(478600001)(6486002)(6506007)(83380400001)(66946007)(26005)(6512007)(2616005)(41300700001)(8676002)(86362001)(8936002)(36756003)(4216001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: I4aUt457Z5znwR6G9D6ToqL4O7sHH9yCTUYyvgZMHHbmhTemGCVNVHo8enA/7NyFwNsUk61k5fxzPbBHX6T0zsBqsdcTrXk8hhQzQ0hX1lh7UEBqi4OiHblheVnG+bK585MXNMZ7z2O25gCkEI0/4UZzkC2WGTjryzOs8PCRtU7YJfTecacCeuli6M8C4atWHMtGSu+z048ol0YDmpPLM57g7zHujdmxgRrga9MHfnNv5GjEckOYpOPjSOJwzWtBOcK5KfhgqKOjlukFaRuVn95TUeiUepYBflSrFvLIdNtCKZXBJn9Te/W+3FLSU3umyjf07/yP+jo4pt7HSgEcNUCkmEMjtcMd78ZZiHQKF9ru90vQ9JW25eDkJfmGYMKLM642mnO66xm47G4jzxQRahaHeqWvl10OFVXflKlcFnwb3o9pWDZ42cmhzfkXQNuQAGbDAGKVnVUVa25a8xqAs+D3cnumMWFkBqDbR5nghh1jPYgk26AKNm6BxTNvor4oku8nm+LOuMqT7a4R3fNwFT7/LAfuVlRTlRZsGPl3vd9moUQMiowBpbEdS8kFHm59B0YZmoHRV7LScVpNu73APzwlY21y61hJg1jrHl1wtB1dZ2FfZbQ1hHB8QUkJsnowoyZbczkNGCBE9mRaNUcv4g==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB5089.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366004)(396003)(346002)(136003)(39860400002)(376002)(230922051799003)(451199024)(186009)(64100799003)(1800799009)(6512007)(26005)(53546011)(6506007)(478600001)(6666004)(41300700001)(83380400001)(7416002)(2906002)(5660300002)(110136005)(66556008)(66946007)(6486002)(8936002)(66476007)(966005)(8676002)(2616005)(316002)(54906003)(4326008)(38100700002)(82960400001)(31696002)(86362001)(36756003)(31686004)(45980500001)(43740500002);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?Vg8QffTAHCDO9dZpg9VEhgnncF82t85eQ2oScchk8thqtds2YQLzcD0G9Wz2?=
- =?us-ascii?Q?nsYtU7tWxLzRO00tPU+eN6U1GnV7lxiWNmcY0PH6ECyYhjQ7kBNiqT0KEkWw?=
- =?us-ascii?Q?KyZOOSrVm091Ci5Q7koc6wZjlXaofGxD9G8VL6XBlBJsI3/W1iPhxxIt1rCY?=
- =?us-ascii?Q?Z0Rf/pjhhxpy0Q6uaSWiD3vytaZczDOKAQmLmPKX3nfyf6V7Ra4YjteGL+sp?=
- =?us-ascii?Q?DEbcCJGi0L3sxIU27ynHCrbx22X2ceROPr7Pi1/ExE39bfOOK19wFhEP+ThE?=
- =?us-ascii?Q?38WBomKeLHS3gMy3Eq1u7LjAwXxf/mX+vjokz0J/4O2ZIC4MZ85uFbjr7NLr?=
- =?us-ascii?Q?6oE3nB26aEWDu3rD7qsg6vsMeF6boYSOfm/m9pdMvBZuoV9EY3nXJnWPNxvT?=
- =?us-ascii?Q?cpO6kSvxaqPBwnQqqyEbQkkH3MR0UbqGhYpAssws40MKiRzAWid0ipv0fRo0?=
- =?us-ascii?Q?y89pgkA1rGZ2IFKERIulUc/TiLXq2d/2jqsiTkwjC0MqmtUm/WxRdxSIksyS?=
- =?us-ascii?Q?PKx1NTzfl5hmPvTdLMtL8qV2QvrkZORLg0ciNflBC1nQlGMFN7RszuWotqyv?=
- =?us-ascii?Q?mZSFm6/IMutfm4Vn6Z9BZ/EWrrqVWdiF1nN4KVTeJgGxoIvE54CSg9pBRwLD?=
- =?us-ascii?Q?amVr+ZsgtTbf06MS00ngqgRdO8hEBr91T5W+3fAuZLPZ4X0zqQBQPg7GFStO?=
- =?us-ascii?Q?OnKWNFMRDQ1P8gGuviTJ7OvRLS2UONPjQmiDG1L9Zr7smfY6s6hp1uxMlw0k?=
- =?us-ascii?Q?APplGv/rW2cQChB3WhKk/qhh0pCieFJvsZDg3KIwSd5IkdRTl5qE/+5nS5/f?=
- =?us-ascii?Q?7rH8UZHecfJqDiWzhwjy4NlFpaFcSsKtTfRDBRAWEwOoWxk+BHz7zd4YFtS0?=
- =?us-ascii?Q?zq+WkTgO4hYJOD53RDaCkI9xcM5Amd9Myj6Rc0MNUfGXx8cJthIoh/gbcdbr?=
- =?us-ascii?Q?vTSCT9L3GjBus3egkfUDshT6b+tITSfEZh2Xn8vrqYMuIXJS4wG6cCd/X07d?=
- =?us-ascii?Q?xmaWHhCmsQJSz7rskvOS+NDtZrNBAYeCuRAwTQxEpuh2AW8UXCCtv+1bepJ4?=
- =?us-ascii?Q?sMgPhlB25DzqdRi2IyVuz0q5X5JeRY6zW24CWUix4n19JrnYncFr3ZuAjw2C?=
- =?us-ascii?Q?//2Pn3nMjK0cwrXqU7BlhjUIGYb/edVFZoN3oDyc/qQfAhanRF+bNehF8e4s?=
- =?us-ascii?Q?0gBRjVr9ed1MZ1T5cffOYNF5wjMQuoX48lK8BOi3C6CoKsNOXMfOL/O/qdG5?=
- =?us-ascii?Q?TO8sXpWv0n3E2ejwj68mxmAqYTq4x0ihMJVNq+OK/pUIprKWpDwbjEkNsFbi?=
- =?us-ascii?Q?61xOsYd9ardvOK63BbrVxBDARZtZOFW2FlKzzl6ryUS9kggewyMGepYjSPUL?=
- =?us-ascii?Q?U/0MmtBc80s/P2qIZ/c1C+D6S5w53qilAglygBBetd/X0KAb9lrs6x24xyGq?=
- =?us-ascii?Q?IihJk4au45IWApEHzgX2HvF+gdsp394/ndxaLzas8QmPo+kV/wEDBxe5wonb?=
- =?us-ascii?Q?ThtpUCPYND6WT5gekxqwlWR6x3neK0eQnITtwDHYvCmvK6ZPmpR5ZIv8O156?=
- =?us-ascii?Q?Dd7cAUNE9zHt02tohDy8kjioQ31zU3qEHqfYEROG?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 210a76a5-f553-45fe-8785-08dbd99b0758
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?djYwV3JqUnN1dUQzYWpHcHd2OTNsS0k1UW9ub1RvT3FxdG5zelN1WG9rb2E3?=
+ =?utf-8?B?R3IyN3dFQ2hobXFFam5pam5vL1RQMnJaT0loZVpXT05sY21NbjdieVBESDR5?=
+ =?utf-8?B?Qk9pNzIvanhaeFZXNFpPcUlmYjJUbnVxVk1RbUNGT2oxOUdlR3J6ZXk1MXZJ?=
+ =?utf-8?B?eThjSkhaeURwR1JnNjI2N2RSMWdrRHU2ckVrNzJlcWdHMjhMc250N3N6RE9L?=
+ =?utf-8?B?ODJmSVF0bEdKQklnK1RGSGI5eUJiemlhN05uQVNscHZFS3haSW0xaG1aSlND?=
+ =?utf-8?B?bnBDUzdCcGgwSE42NU1TUFFlejhDQkNmQUFwM1BvaGkxMXh0dnlTT01GdG1T?=
+ =?utf-8?B?b3FwQVpNZ3RtUDlXczRHalJHRnhoWkJOdlJib0FPcSt0aVZlbnZ3NGhHV2Nv?=
+ =?utf-8?B?RFlheWdIY0JHNmgwL1BaeWplZFJvbS9rZ3pQWHhZMnU0Rlc2QnFkVkswa1Z4?=
+ =?utf-8?B?YmgwQnBYYklRMEtvYUZMQ0JTMmlsTFhZODBUbkZZazhwMzRCS0JNdmx5aDBp?=
+ =?utf-8?B?RGczS211TEZKOG9sNmIxanduRG5XT3NWZ1I0aWdPTStLM0p4bFoxZUJIRHN3?=
+ =?utf-8?B?RkVVNmJESXZ0TmtsdjFrVlg4NXNwcHkzYXp6c2o4bmp0MG52VUcrRmV3Ymdi?=
+ =?utf-8?B?L2xQV0VQUVkwdG5jZUpaYnU0a2pOL1FqZERZT1NwZjVGZE1hZ3JxWkZDcGFq?=
+ =?utf-8?B?VWsrOUVIaEE4WXp5Wk13VS91cHQ3N0dyU1J0WjRxY1E4K0NjK1J0ZGNsZkhG?=
+ =?utf-8?B?blFwQ3hnYVd2eW5WMWQzL1d2blpqaXdiV3RHREpGaUJ4TDhYK3ZGdUlLUFly?=
+ =?utf-8?B?eFR3L1NDVlpab0c0K3BpbzJuZi9CdkpyVnFydnBRWms0VE50bWJ1eWlQckVN?=
+ =?utf-8?B?VGNqMlpseUMwUldpQkFIWWo1cWNubmg3QW02K0ZPNVR1MlFQRWJmN1R1TkU3?=
+ =?utf-8?B?a01SR2NMa3JyTGFvRGIwUEdqVWdEb2NNQXZ0REU2VGJnZU9sakcvS1JTT0pH?=
+ =?utf-8?B?MERtTU9ibzNRWjVnUjJ5SnIyWFc0NFI2R21RUHlZbmE1Y0ZtWXY3a0htblJL?=
+ =?utf-8?B?Yy9sM3JsdmJqQjhWZE85Ky9WT0dmNnZRZjdJT0taQ2N0SzhOMmFzbkR2QUtC?=
+ =?utf-8?B?bHN4Yks3eXZ4S3g0TEJsTVhuckZjcEJtREltdXE3MXdXL0wzRk1LQWtyRURa?=
+ =?utf-8?B?bE9rOTh6OCtQRjJxZ3NyWCtpZzl2ZUNTNHU1dGVWOStuQ1htMkt2MVhqZ3Jw?=
+ =?utf-8?B?VjhmT1A5WUVSRFZlUFQ0NXpuYzV5YXdKblkvSHVqeGRWOGxqMnpDQ1llRzc3?=
+ =?utf-8?B?dGxIN3JkUEJRMi80V0pQck5mdU5pYnpTMVVhekNNaUNXdlF0RkJtckw1cHIw?=
+ =?utf-8?B?Ui9zV2JtWVVLa1p5V0VYWHd6MDFibWVsVVN2RG85TnplckNhZUJsTFN0c3A3?=
+ =?utf-8?B?azY3eEFLTEJTaDRNbVppQko2aWJ3NnF6NDUwUkJKa0ZMbmxweXgwMjlWckc4?=
+ =?utf-8?B?RjJmYWhUdFJnUk9hQ3hxcWZzejdzVVVSbmJZQWI4NHhmYWNyc3hCdnZML2M5?=
+ =?utf-8?B?NDZRNzBYUS9oOTlINXkrN0o5SUdiSDFGVVByd0JrOFd6cExqczB5VUZsMVMz?=
+ =?utf-8?B?dHU1SEJQdkF3dSt3Zkd1ZVRZTXZOL1pRQzRRQlQvV1dLbGJtcVgzQm5icStl?=
+ =?utf-8?B?M2NMUWhiOFk3NGd3MDFHNnpyd21oWmk3a1ZQKzE2Y3hmSEJvamVRdktzR3pV?=
+ =?utf-8?B?OWFYM0k2bnF5MTVST0w3by9meXpSNCsway96VWYxb2syV1lMTmlNazBaVUdE?=
+ =?utf-8?B?UFVvRUFNTGoxNURDR2NscS9iUVdwOVJ2ZzcyN21BT0hjNU1XaE1BcXZUVi9J?=
+ =?utf-8?B?UWRkY25aY2cvdm9UUDJrakR5ZFJNZFcwRHozTUt2UmFlcVJnRE55MkJBSjds?=
+ =?utf-8?B?WGZFVXlOVTZKN3QzMEhOa2VQRlQ1akpMWVNpc05jbzlNTGx5ZWNnNmVjTkEv?=
+ =?utf-8?B?UGtXUExlZFlLVXYxTkxIcWE0RFhVcktUcVFNdFFYTUVXT0thTTB4MTdLKzlp?=
+ =?utf-8?B?R2x0c25iZE5iZ2VHTmcrem1jdzlxNGp3VC90WllCZGtMNHhYN1NES2s1akRa?=
+ =?utf-8?B?MndaZmRjcTdWNlVSMm1lZ3NzcWwrTnRKR01CQmZGN0dYK2pwUFF6enQybkIw?=
+ =?utf-8?B?VWc9PQ==?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 23ba470f-a5be-4182-3764-08dbd99e07e4
+X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB5089.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Oct 2023 22:53:27.1098
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Oct 2023 23:14:56.7856
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: QndYAAsx8TjkBkoEesSrnv/QtKMDGhW7EAXzjOf/X1D1IQJoAOr+GZC+PEFqgGw0
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB7769
+X-MS-Exchange-CrossTenant-UserPrincipalName: SZiHArpw7lDeZufIEJAEb5K5DSJmsy9WuEYUs27MMysKoxtg9ALQE6XYjDCDNSz7kxcruzQoh8X81QxCdB06ceUxNNZNo7jMyvwqjukqawI=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR11MB6955
+X-OriginatorOrg: intel.com
 
-Patches in Joerg's iommu tree to convert the mock driver to use
-domain_alloc_paging() that clash badly with the way the selftest changes
-for nesting were structured.
 
-Massage the selftest so that it looks closer the code after the
-domain_alloc_paging() conversion to ease the merge. Change
-__mock_domain_alloc_paging() into mock_domain_alloc_paging() in the same
-way as the iommu tree. The merge resolution then trivially takes both and
-deletes mock_domain_alloc().
 
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
----
- drivers/iommu/iommufd/selftest.c | 35 +++++++++++++++-----------------
- 1 file changed, 16 insertions(+), 19 deletions(-)
+On 10/30/2023 3:08 PM, Heiner Kallweit wrote:
+> On 30.10.2023 22:50, Jacob Keller wrote:
+>>
+>>
+>> On 10/29/2023 4:04 AM, Mirsad Goran Todorovac wrote:> A pair of new
+>> helpers r8168_mac_ocp_write_seq() and r8168_mac_ocp_modify_seq()
+>>> are introduced.
+>>>
+>>> The motivation for these helpers was the locking overhead of 130 consecutive
+>>> r8168_mac_ocp_write() calls in the RTL8411b reset after the NIC gets confused
+>>> if the PHY is powered-down.
+>>>
+>>> To quote Heiner:
+>>>
+>>>     On RTL8411b the RX unit gets confused if the PHY is powered-down.
+>>>     This was reported in [0] and confirmed by Realtek. Realtek provided
+>>>     a sequence to fix the RX unit after PHY wakeup.
+>>>
+>>> A series of about 130 r8168_mac_ocp_write() calls is performed to program the
+>>> RTL registers for recovery, each doing an expensive spin_lock_irqsave() and
+>>> spin_unlock_irqrestore().
+>>>
+>>> Each mac ocp write is made of:
+>>>
+>>>     static void __r8168_mac_ocp_write(struct rtl8169_private *tp, u32 reg,
+>>>                       u32 data)
+>>>     {
+>>>         if (rtl_ocp_reg_failure(reg))
+>>>             return;
+>>>
+>>>         RTL_W32(tp, OCPDR, OCPAR_FLAG | (reg << 15) | data);
+>>>     }
+>>>
+>>>     static void r8168_mac_ocp_write(struct rtl8169_private *tp, u32 reg,
+>>>                     u32 data)
+>>>     {
+>>>         unsigned long flags;
+>>>
+>>>         raw_spin_lock_irqsave(&tp->mac_ocp_lock, flags);
+>>>         __r8168_mac_ocp_write(tp, reg, data);
+>>>         raw_spin_unlock_irqrestore(&tp->mac_ocp_lock, flags);
+>>>     }
+>>>
+>>> Register programming is done through RTL_W32() macro which expands into
+>>>
+>>>     #define RTL_W32(tp, reg, val32) writel((val32), tp->mmio_addr + (reg))
+>>>
+>>> which is further (on Alpha):
+>>>
+>>>     extern inline void writel(u32 b, volatile void __iomem *addr)
+>>>     {
+>>>         mb();
+>>>         __raw_writel(b, addr);
+>>>     }
+>>>
+>>> or on i386/x86_64:
+>>>
+>>>     #define build_mmio_write(name, size, type, reg, barrier) \
+>>>     static inline void name(type val, volatile void __iomem *addr) \
+>>>     { asm volatile("mov" size " %0,%1": :reg (val), \
+>>>     "m" (*(volatile type __force *)addr) barrier); }
+>>>
+>>>     build_mmio_write(writel, "l", unsigned int, "r", :"memory")
+>>>
+>>> This obviously involves iat least a compiler barrier.
+>>>
+>>> mb() expands into something like this i.e. on x86_64:
+>>>
+>>>     #define mb()    asm volatile("lock; addl $0,0(%%esp)" ::: "memory")
+>>>
+>>> This means a whole lot of memory bus stalls: for spin_lock_irqsave(),
+>>> memory barrier, writel(), and spin_unlock_irqrestore().
+>>>
+>>> With about 130 of these sequential calls to r8168_mac_ocp_write() this looks like
+>>> a lock storm that will stall all of the cores and CPUs on the same memory controller
+>>> for certain time I/O takes to finish.
+>>>
+>>> In a sequential case of RTL register programming, the writes to RTL registers
+>>> can be coalesced under a same raw spinlock. This can dramatically decrease the
+>>> number of bus stalls in a multicore or multi-CPU system.
+>>>
+>>> Macro helpers r8168_mac_ocp_write_seq() and r8168_mac_ocp_modify_seq() are
+>>> provided to reduce lock contention:
+>>>
+>>>     static void rtl_hw_start_8411_2(struct rtl8169_private *tp)
+>>>     {
+>>>
+>>>         ...
+>>>
+>>>         /* The following Realtek-provided magic fixes an issue with the RX unit
+>>>          * getting confused after the PHY having been powered-down.
+>>>          */
+>>>
+>>>         static const struct recover_8411b_info init_zero_seq[] = {
+>>>             { 0xFC28, 0x0000 }, { 0xFC2A, 0x0000 }, { 0xFC2C, 0x0000 },
+>>>             ...
+>>>         };
+>>>
+>>>         ...
+>>>
+>>>         r8168_mac_ocp_write_seq(tp, init_zero_seq);
+>>>
+>>>         ...
+>>>
+>>>     }
+>>>
+>>> The hex data is preserved intact through s/r8168_mac_ocp_write[(]tp,/{ / and s/[)];/ },/
+>>> functions that only changed the function names and the ending of the line, so the actual
+>>> hex data is unchanged.
+>>>
+>>> To repeat, the reason for the introduction of the original commit
+>>> was to enable recovery of the RX unit on the RTL8411b which was confused by the
+>>> powered-down PHY. This sequence of r8168_mac_ocp_write() calls amplifies the problem
+>>> into a series of about 500+ memory bus locks, most waiting for the main memory read,
+>>> modify and write under a LOCK. The memory barrier in RTL_W32 should suffice for
+>>> the programming sequence to reach RTL NIC registers.
+>>>
+>>> [0] https://bugzilla.redhat.com/show_bug.cgi?id=1692075
+>>>
+>>
+>>
+>> I might have chosen to send some of this information as the cover letter
+>> for the series instead of just as part of the commit message for [1/5],
+>> but either way:
+>>
+>> Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
+> 
+> Cover letter is still missing, and there's a v5 already.
+> Good example why we have the "max one version per day" rule.
+> 
+> There's still some issues with the series, see my review comments
+> for v5. As-is I'd NAK the series.
+> 
 
-The merge conflict is a mess, this helps alot.
+Heh, ya. A v5 was sent without there being a single (public) comment on
+the list prior to my reviewing. I didn't notice the v5, and my mail
+scripts pointed out this series didn't have anyone who'd looked at it
+yet.. I guess I could have searched for and noticed a newer version.
 
-diff --git a/drivers/iommu/iommufd/selftest.c b/drivers/iommu/iommufd/selftest.c
-index a11d29f368ff82..d43a87737c1e88 100644
---- a/drivers/iommu/iommufd/selftest.c
-+++ b/drivers/iommu/iommufd/selftest.c
-@@ -20,6 +20,8 @@
- static DECLARE_FAULT_ATTR(fail_iommufd);
- static struct dentry *dbgfs_root;
- static struct platform_device *selftest_iommu_dev;
-+static const struct iommu_ops mock_ops;
-+static struct iommu_domain_ops domain_nested_ops;
- 
- size_t iommufd_test_memory_limit = 65536;
- 
-@@ -222,24 +224,18 @@ const struct iommu_dirty_ops dirty_ops = {
- 	.read_and_clear_dirty = mock_domain_read_and_clear_dirty,
- };
- 
--static const struct iommu_ops mock_ops;
--static struct iommu_domain_ops domain_nested_ops;
--
--static struct iommu_domain *
--__mock_domain_alloc_paging(unsigned int iommu_domain_type, bool needs_dirty_ops)
-+static struct iommu_domain *mock_domain_alloc_paging(struct device *dev)
- {
- 	struct mock_iommu_domain *mock;
- 
- 	mock = kzalloc(sizeof(*mock), GFP_KERNEL);
- 	if (!mock)
--		return ERR_PTR(-ENOMEM);
-+		return NULL;
- 	mock->domain.geometry.aperture_start = MOCK_APERTURE_START;
- 	mock->domain.geometry.aperture_end = MOCK_APERTURE_LAST;
- 	mock->domain.pgsize_bitmap = MOCK_IO_PAGE_SIZE;
- 	mock->domain.ops = mock_ops.default_domain_ops;
--	if (needs_dirty_ops)
--		mock->domain.dirty_ops = &dirty_ops;
--	mock->domain.type = iommu_domain_type;
-+	mock->domain.type = IOMMU_DOMAIN_UNMANAGED;
- 	xa_init(&mock->pfns);
- 	return &mock->domain;
- }
-@@ -264,16 +260,11 @@ __mock_domain_alloc_nested(struct mock_iommu_domain *mock_parent,
- 
- static struct iommu_domain *mock_domain_alloc(unsigned int iommu_domain_type)
- {
--	struct iommu_domain *domain;
--
- 	if (iommu_domain_type == IOMMU_DOMAIN_BLOCKED)
- 		return &mock_blocking_domain;
--	if (iommu_domain_type != IOMMU_DOMAIN_UNMANAGED)
--		return NULL;
--	domain = __mock_domain_alloc_paging(iommu_domain_type, false);
--	if (IS_ERR(domain))
--		domain = NULL;
--	return domain;
-+	if (iommu_domain_type == IOMMU_DOMAIN_UNMANAGED)
-+		return mock_domain_alloc_paging(NULL);
-+	return NULL;
- }
- 
- static struct iommu_domain *
-@@ -290,14 +281,20 @@ mock_domain_alloc_user(struct device *dev, u32 flags,
- 		struct mock_dev *mdev = container_of(dev, struct mock_dev, dev);
- 		bool has_dirty_flag = flags & IOMMU_HWPT_ALLOC_DIRTY_TRACKING;
- 		bool no_dirty_ops = mdev->flags & MOCK_FLAGS_DEVICE_NO_DIRTY;
-+		struct iommu_domain *domain;
- 
- 		if (flags & (~(IOMMU_HWPT_ALLOC_NEST_PARENT |
- 			       IOMMU_HWPT_ALLOC_DIRTY_TRACKING)))
- 			return ERR_PTR(-EOPNOTSUPP);
- 		if (user_data || (has_dirty_flag && no_dirty_ops))
- 			return ERR_PTR(-EOPNOTSUPP);
--		return __mock_domain_alloc_paging(IOMMU_DOMAIN_UNMANAGED,
--						  has_dirty_flag);
-+		domain = mock_domain_alloc_paging(NULL);
-+		if (!domain)
-+			return ERR_PTR(-ENOMEM);
-+		if (has_dirty_flag)
-+			container_of(domain, struct mock_iommu_domain, domain)
-+				->domain.dirty_ops = &dirty_ops;
-+		return domain;
- 	}
- 
- 	/* must be mock_domain_nested */
-
-base-commit: 2e22aac3ea9cfc0ec3209c96644f60c1806a8117
--- 
-2.42.0
-
+Thanks,
+Jake
