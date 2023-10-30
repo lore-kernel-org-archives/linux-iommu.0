@@ -1,98 +1,288 @@
-Received: from mail-qt1-f173.google.com (mail-qt1-f173.google.com [209.85.160.173])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mail78-36.sinamail.sina.com.cn (mail78-36.sinamail.sina.com.cn [219.142.78.36])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D82E3D51D
-	for <iommu@lists.linux.dev>; Mon, 30 Oct 2023 12:38:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="jj1OGfU6"
-Received: by mail-qt1-f173.google.com with SMTP id d75a77b69052e-41cbd1d7e04so30004331cf.1
-        for <iommu@lists.linux.dev>; Mon, 30 Oct 2023 05:38:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1698669504; x=1699274304; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=PnuIYwmSwa+S4XlLT3QvUcDtJ9g3YgN2fZ+LLWa8C7o=;
-        b=jj1OGfU6Z4AD9sKLpFBcUbOXU4N9O810yxoOceSWggMZ4vCy8hySI9xQXfxFnPYWdh
-         eYjHW8nqwV45qEwmLi9mfJZaDdIX5irUzl8SHq1skI6t232AQX4M48E4dmcUlMv64nq0
-         qRG5kE3Q31B338Kjc3afvYCiuyBtkeqTXQ8Ej65TlDTBkVGxhOO711jc+DUwrKUUshgf
-         +KySTWxQwuBWZYXl/CKRxMirz622F1hiWJPcPzK3lRbTqceqe72/1biMoijC5BLnacD/
-         CYXFwWP649eFOJvUvNKKHlhR5fWg9jGVwcfoRAB7Db1HCUBx2CNLHtiRoY8nmDmknbWl
-         99kQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1698669504; x=1699274304;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=PnuIYwmSwa+S4XlLT3QvUcDtJ9g3YgN2fZ+LLWa8C7o=;
-        b=P3vEw67NbtAX3vV+2NgLfxeETj6V6XwlxQxkB8fNESCnpQtb06r8jhe2OiglX1oLIT
-         +9VN4Shj2div4GIyV7FGQaVoNyWbQ9F99jaHw8OewHdpE+kQ1vdWXrMv5ykpIFdYVTaI
-         kbEXxxLBHmPV5YqGRn/UcBiccRTAfnhiCBfJZwSz2biTGar+V25meZcD0mN8yxkCocZE
-         chrDUgATB6JuA4lv5jdSGiopquvGwFlFn5kVDfB2AYV99Y8pLvkceC11uzUsS0wj0u3S
-         niqqDK1JHKvk0Z2/7qowWNxLIipQWo0qznSKgXq/i+CARfifZwEUZj88LA5yya2Ap/nI
-         4ayw==
-X-Gm-Message-State: AOJu0YzfmRSVccdZf4rZ+U/tX0HrbOrpHm5E7+Vqw+ANaiVE7sqhEbWl
-	94X/yUEVQlR+ZHBCLctntGG6lZfR67CfLlDLmAU=
-X-Google-Smtp-Source: AGHT+IFzZsEpO/RvvLS1iMDezad+WvzdwmrIgbedQy9A5of3lpQHjn7moFPfQR8WitI3jcfQDCqOxQ==
-X-Received: by 2002:a05:6214:2a87:b0:66d:138f:95df with SMTP id jr7-20020a0562142a8700b0066d138f95dfmr12128949qvb.56.1698669504669;
-        Mon, 30 Oct 2023 05:38:24 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-26-201.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.26.201])
-        by smtp.gmail.com with ESMTPSA id es16-20020a056214193000b0065b0554ae78sm3321400qvb.100.2023.10.30.05.38.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 Oct 2023 05:38:24 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1qxRXD-006etA-C1;
-	Mon, 30 Oct 2023 09:38:23 -0300
-Date: Mon, 30 Oct 2023 09:38:23 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Dan Carpenter <dan.carpenter@linaro.org>
-Cc: Hector Martin <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
-	Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>, Janne Grunau <j@jannau.net>,
-	asahi@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev, kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH] iommu/dart: Fix return code in
- apple_dart_domain_alloc_paging()
-Message-ID: <20231030123823.GD691768@ziepe.ca>
-References: <b85e0715-3224-4f45-ad6b-ebb9f08c015d@moroto.mountain>
- <20231030115650.GC691768@ziepe.ca>
- <d42a8cb4-dd0d-407e-8659-915ca821e1f6@kadam.mountain>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 330D515E81
+	for <iommu@lists.linux.dev>; Mon, 30 Oct 2023 12:44:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sina.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sina.com
+Authentication-Results: smtp.subspace.kernel.org; dkim=none
+X-SMAIL-HELO: localhost.localdomain
+Received: from unknown (HELO localhost.localdomain)([116.24.11.148])
+	by sina.com (172.16.235.25) with ESMTP
+	id 653FA53100003330; Mon, 30 Oct 2023 20:44:36 +0800 (CST)
+X-Sender: hdanton@sina.com
+X-Auth-ID: hdanton@sina.com
+Authentication-Results: sina.com;
+	 spf=none smtp.mailfrom=hdanton@sina.com;
+	 dkim=none header.i=none;
+	 dmarc=none action=none header.from=hdanton@sina.com
+X-SMAIL-MID: 7781334210394
+X-SMAIL-UIID: D7303450D688423782E1840F836557A7-20231030-204436
+From: Hillf Danton <hdanton@sina.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: syzbot <syzbot+45f6cae2ca8c1f71e529@syzkaller.appspotmail.com>,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	robin.murphy@arm.com,
+	syzkaller-bugs@googlegroups.com,
+	Waiman Long <longman@redhat.com>,
+	will@kernel.org
+Subject: Re: [syzbot] [iommu?] KASAN: slab-use-after-free Read in iommufd_ioas_iova_ranges
+Date: Mon, 30 Oct 2023 20:44:24 +0800
+Message-Id: <20231030124424.1166-1-hdanton@sina.com>
+In-Reply-To: <20231027125413.2151-1-hdanton@sina.com>
+References: <000000000000d621b406088a2f55@google.com> <20231026110502.2046-1-hdanton@sina.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <d42a8cb4-dd0d-407e-8659-915ca821e1f6@kadam.mountain>
+Content-Transfer-Encoding: 8bit
 
-On Mon, Oct 30, 2023 at 03:00:56PM +0300, Dan Carpenter wrote:
-> On Mon, Oct 30, 2023 at 08:56:50AM -0300, Jason Gunthorpe wrote:
-> > On Mon, Oct 30, 2023 at 12:03:12PM +0300, Dan Carpenter wrote:
-> > > The apple_dart_domain_alloc_paging() function is supposed to return NULL
-> > > on error.  Returning an error pointer will lead to an Oops in
-> > > __iommu_domain_alloc().
-> > > 
-> > > Fixes: 482feb5c6492 ("iommu/dart: Call apple_dart_finalize_domain() as part of alloc_paging()")
-> > > Signed-off-by: Dan Carpenter <dan.carpenter@linaro.org>
-> > > ---
-> > >  drivers/iommu/apple-dart.c | 2 +-
-> > >  1 file changed, 1 insertion(+), 1 deletion(-)
+On Fri, 27 Oct 2023 20:54:13 +0800 Hillf Danton <hdanton@sina.com>
+> On Thu, 26 Oct 2023 08:41:08 -0300 Jason Gunthorpe <jgg@ziepe.ca>
+> > On Thu, Oct 26, 2023 at 07:05:02PM +0800, Hillf Danton wrote:
+> > > On Wed, 25 Oct 2023 15:32:20 -0300 Jason Gunthorpe <jgg@ziepe.ca>
+> > > > On Wed, Oct 25, 2023 at 06:11:01AM -0700, syzbot wrote:
+> > > > > Hello,
+> > > > > 
+> > > > > syzbot found the following issue on:
+> > > > > 
+> > > > > HEAD commit:    c3200081020d Merge tag 'block-6.6-2023-10-20' of git://git..
+> > > > > git tree:       upstream
+> > > > > console output: https://syzkaller.appspot.com/x/log.txt?x=15013471680000
+> > > > > kernel config:  https://syzkaller.appspot.com/x/.config?x=849fe52ba7c6d78a
+> > > > > dashboard link: https://syzkaller.appspot.com/bug?extid=45f6cae2ca8c1f71e529
+> > > > > compiler:       Debian clang version 15.0.6, GNU ld (GNU Binutils for Debian) 2.40
+> > > > > 
+> > > > > Unfortunately, I don't have any reproducer for this issue yet.
+> > > > > 
+> > > > > Downloadable assets:
+> > > > > disk image: https://storage.googleapis.com/syzbot-assets/caa5c1eed3ec/disk-c3200081.raw.xz
+> > > > > vmlinux: https://storage.googleapis.com/syzbot-assets/7990a3a9f71e/vmlinux-c3200081.xz
+> > > > > kernel image: https://storage.googleapis.com/syzbot-assets/015551ac9acc/bzImage-c3200081.xz
+> > > > > 
+> > > > > IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> > > > > Reported-by: syzbot+45f6cae2ca8c1f71e529@syzkaller.appspotmail.com
+> > > > > 
+> > > > > ==================================================================
+> > > > > BUG: KASAN: slab-use-after-free in __up_read+0xb3/0x690 kernel/locking/rwsem.c:1342
+> > > > > Read of size 8 at addr ffff8880283c9068 by task syz-executor.2/30372
+> > > > 
+> > > > Oh *ugh* I knew about this limitation once and forgot about it
+> > > > apparently.
+> > > > 
+> > > >   CPU 0         CPU1
+> > > >  down_read()
+> > > >  up_read()
+> > > >                 down_write()
+> > > >                 up_write()
+> > > > 		kfree()
+> > > >  [..]
+> > > >   tail portion of up_read()
+> > > > 
+> > > > I suppose the rwsem should be turned into a refcount and completion
+> > >
+> > > The line [1] syzbot caught is before preempt is disabled, 
 > > 
-> > Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+> > So? It is SMP.
 > > 
-> > Really need to fix this so the function does return ERR_PTR..
+> > > so no lock is released yet, and the report is a simple uaf with
+> > > nothing to do with down_write().
+> > 
+> > down_write() is one of the concurrent paths toward kfree.
+> > 
+> >         tmp = atomic_long_add_return_release(-RWSEM_READER_BIAS, &sem->count);
+> >          ^^^^ This allows the down_write to proceed to kfree
+> > 
+> > 	DEBUG_RWSEMS_WARN_ON(tmp < 0, sem);
+> > 	if (unlikely((tmp & (RWSEM_LOCK_MASK|RWSEM_FLAG_WAITERS)) ==
+> > 		      RWSEM_FLAG_WAITERS)) {
+> > 		clear_nonspinnable(sem);
+> > 		rwsem_wake(sem);
+> > 	}
+> > 
+> > And so if we are unlucky we can UAF someplace in this latter part.
 > 
-> It's called as a function pointer.  Changing that will create a
-> backporting hazard unless we rename the pointer or something.
+> Hm ... let me work it out.
+> 
+> 	__up_read(&foo->sem)		rwsem_down_write_slowpath(&foo->sem)
+> 	===				===
+> 					rwsem_add_waiter(sem, &waiter);
+> 					atomic_long_or(RWSEM_FLAG_WAITERS, &sem->count);
+> 
+> 	tmp = atomic_long_add_return_release(-RWSEM_READER_BIAS, &sem->count);
+> 	if (unlikely((tmp & (RWSEM_LOCK_MASK|RWSEM_FLAG_WAITERS)) ==
+> 		      RWSEM_FLAG_WAITERS)) {
+> 
+> 					if (rwsem_try_write_lock(sem, &waiter)) {
+> 						/* ACQUIRE on success */
+> 						...
+> 						up_write(&foo->sem);
+> 						kfree(foo);
+> 					}
+> 
+> 		clear_nonspinnable(sem); <-- UAF
+> 		rwsem_wake(sem);
+> 	}
+> 
+> Sigh ... the race between up_read() and down_write() exists.
+> 
+> Fix it by moving setting RWSEM_FLAG_WAITERS to rwsem_try_write_lock().
+> Only for thoughts.
+> 
+> --- x/kernel/locking/rwsem.c
+> +++ y/kernel/locking/rwsem.c
+> @@ -606,6 +606,8 @@ static inline bool rwsem_try_write_lock(
+>  {
+>  	struct rwsem_waiter *first = rwsem_first_waiter(sem);
+>  	long count, new;
+> +	bool single = list_is_singular(&sem->wait_list);
+> +	bool set_hoff;
+>  
+>  	lockdep_assert_held(&sem->wait_lock);
+>  
+> @@ -613,6 +615,7 @@ static inline bool rwsem_try_write_lock(
+>  	do {
+>  		bool has_handoff = !!(count & RWSEM_FLAG_HANDOFF);
+>  
+> +		set_hoff = true;
+>  		if (has_handoff) {
+>  			/*
+>  			 * Honor handoff bit and yield only when the first
+> @@ -631,20 +634,29 @@ static inline bool rwsem_try_write_lock(
+>  			 * if it is an RT task or wait in the wait queue
+>  			 * for too long.
+>  			 */
+> -			if (has_handoff || (!rt_task(waiter->task) &&
+> -					    !time_after(jiffies, waiter->timeout)))
+> +			if (has_handoff)
+>  				return false;
+> -
+> -			new |= RWSEM_FLAG_HANDOFF;
+> +			if (!rt_task(waiter->task) &&
+> +			    !time_after(jiffies, waiter->timeout)) {
+> +				if (!single)
+> +					return false;
+> +				if (new & RWSEM_FLAG_WAITERS)
+> +					return false;
+> +				new |= RWSEM_FLAG_WAITERS;
+> +				set_hoff = false;
+> +			} else {
+> +				new |= RWSEM_FLAG_HANDOFF;
+> +				if (single)
+> +					new |= RWSEM_FLAG_WAITERS;
+> +			}
+>  		} else {
+>  			new |= RWSEM_WRITER_LOCKED;
+>  			new &= ~RWSEM_FLAG_HANDOFF;
+> -
+> -			if (list_is_singular(&sem->wait_list))
+> -				new &= ~RWSEM_FLAG_WAITERS;
+>  		}
+>  	} while (!atomic_long_try_cmpxchg_acquire(&sem->count, &count, new));
+>  
+> +	if (!set_hoff)
+> +		return false;
+>  	/*
+>  	 * We have either acquired the lock with handoff bit cleared or set
+>  	 * the handoff bit. Only the first waiter can have its handoff_set
+> @@ -1141,7 +1153,7 @@ rwsem_down_write_slowpath(struct rw_sema
+>  			raw_spin_lock_irq(&sem->wait_lock);
+>  		}
+>  	} else {
+> -		atomic_long_or(RWSEM_FLAG_WAITERS, &sem->count);
+> +		/* see RWSEM_FLAG_WAITERS in rwsem_try_write_lock() */
+>  	}
+>  
+>  	/* wait until we successfully acquire the lock */
+> --
 
-You can make that argument about almost any change in the kernel..
+The fix above does not cover the case that signaled waiter tries to acquire
+rwsem with RWSEM_FLAG_WAITERS set ending up with uaf, and again fix it by
+bailing out if killed.
 
-IMHO we needed an annotation like __user/__iomem/etc to indicate
-ERR_PTR so at least there is some hope of trivially finding it.
+--- x/kernel/locking/rwsem.c
++++ y/kernel/locking/rwsem.c
+@@ -1190,6 +1190,8 @@ rwsem_down_write_slowpath(struct rw_sema
+ 		schedule_preempt_disabled();
+ 		lockevent_inc(rwsem_sleep_writer);
+ 		set_current_state(state);
++		if (signal_pending_state(state, current))
++			goto out_nolock;
+ trylock_again:
+ 		raw_spin_lock_irq(&sem->wait_lock);
+ 	}
 
-Jason
+And the updated fix looks like the diff below.
+
+--- x/kernel/locking/rwsem.c
++++ y/kernel/locking/rwsem.c
+@@ -606,6 +606,7 @@ static inline bool rwsem_try_write_lock(
+ {
+ 	struct rwsem_waiter *first = rwsem_first_waiter(sem);
+ 	long count, new;
++	int set_waiter;
+ 
+ 	lockdep_assert_held(&sem->wait_lock);
+ 
+@@ -623,6 +624,7 @@ static inline bool rwsem_try_write_lock(
+ 				return false;
+ 		}
+ 
++		set_waiter = 0;
+ 		new = count;
+ 
+ 		if (count & RWSEM_LOCK_MASK) {
+@@ -631,11 +633,18 @@ static inline bool rwsem_try_write_lock(
+ 			 * if it is an RT task or wait in the wait queue
+ 			 * for too long.
+ 			 */
+-			if (has_handoff || (!rt_task(waiter->task) &&
+-					    !time_after(jiffies, waiter->timeout)))
++			if (has_handoff)
+ 				return false;
+-
+-			new |= RWSEM_FLAG_HANDOFF;
++			if (!rt_task(waiter->task) &&
++			    !time_after(jiffies, waiter->timeout)) {
++				if (new & RWSEM_FLAG_WAITERS)
++					return false;
++				new |= RWSEM_FLAG_WAITERS;
++				set_waiter = 1;
++			} else {
++				new |= RWSEM_FLAG_HANDOFF;
++				new |= RWSEM_FLAG_WAITERS;
++			}
+ 		} else {
+ 			new |= RWSEM_WRITER_LOCKED;
+ 			new &= ~RWSEM_FLAG_HANDOFF;
+@@ -656,6 +665,8 @@ static inline bool rwsem_try_write_lock(
+ 		return false;
+ 	}
+ 
++	if (set_waiter)
++		return false;
+ 	/*
+ 	 * Have rwsem_try_write_lock() fully imply rwsem_del_waiter() on
+ 	 * success.
+@@ -1141,7 +1152,7 @@ rwsem_down_write_slowpath(struct rw_sema
+ 			raw_spin_lock_irq(&sem->wait_lock);
+ 		}
+ 	} else {
+-		atomic_long_or(RWSEM_FLAG_WAITERS, &sem->count);
++		/* see RWSEM_FLAG_WAITERS in rwsem_try_write_lock() */
+ 	}
+ 
+ 	/* wait until we successfully acquire the lock */
+@@ -1178,6 +1189,8 @@ rwsem_down_write_slowpath(struct rw_sema
+ 		schedule_preempt_disabled();
+ 		lockevent_inc(rwsem_sleep_writer);
+ 		set_current_state(state);
++		if (signal_pending_state(state, current))
++			goto out_nolock;
+ trylock_again:
+ 		raw_spin_lock_irq(&sem->wait_lock);
+ 	}
+--
