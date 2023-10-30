@@ -1,142 +1,90 @@
-Received: from domac.alu.hr (domac.alu.unizg.hr [161.53.235.3])
+Received: from mail-lf1-f50.google.com (mail-lf1-f50.google.com [209.85.167.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8BA9BFC09
-	for <iommu@lists.linux.dev>; Sun, 29 Oct 2023 18:44:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=alu.unizg.hr
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=alu.unizg.hr
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E5756D2F8
+	for <iommu@lists.linux.dev>; Mon, 30 Oct 2023 09:03:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=alu.unizg.hr header.i=@alu.unizg.hr header.b="ItLZKwEh";
-	dkim=pass (2048-bit key) header.d=alu.unizg.hr header.i=@alu.unizg.hr header.b="HxnHPYwq"
-Received: from localhost (localhost [127.0.0.1])
-	by domac.alu.hr (Postfix) with ESMTP id A332560186;
-	Sun, 29 Oct 2023 19:44:10 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=alu.unizg.hr; s=mail;
-	t=1698605050; bh=lWCoCvbUwweuJllhVc2Ec84nBLwDbguF5xGDvVkqiA4=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=ItLZKwEh5QuJQNa21MHspcbicxZ1+MvUztWkwbqtHypzFHAhdJUTfhCfcUPTCtDch
-	 OtDEP/cymvaZd4mkI57TSrDr7TNamyi+YFE56FafqhKlD0207S2gkPQYHhAuTuvDrO
-	 gYnLeDCIefuDYO2dfW/wWz8wX8hwvEHX4h7wTn8b2SI4kx5135P0Z6td5OQ+v34m7q
-	 WAmKvTacH6SmawU2Q+AaO0TyO3MaxxSR8bYc3SGFBywZr4//RiRgKmTe6JGz5fysQr
-	 0c6/yb5Ior4xkCzCf8brBibhSsP8uH4wEZa/WC7PaLb9PBTdM2PpVObK16lFC/7EHC
-	 XVDjOuGHs45WA==
-X-Virus-Scanned: Debian amavisd-new at domac.alu.hr
-Received: from domac.alu.hr ([127.0.0.1])
-	by localhost (domac.alu.hr [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id qBPRaj9kwNHs; Sun, 29 Oct 2023 19:44:08 +0100 (CET)
-Received: from defiant.home (78-3-40-247.adsl.net.t-com.hr [78.3.40.247])
-	by domac.alu.hr (Postfix) with ESMTPSA id 2427160182;
-	Sun, 29 Oct 2023 19:44:08 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=alu.unizg.hr; s=mail;
-	t=1698605048; bh=lWCoCvbUwweuJllhVc2Ec84nBLwDbguF5xGDvVkqiA4=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=HxnHPYwqS+I/I2+wn2jv1AIZiOgO2Z9+UthCCwYm3ryH1ttBb61EGGCA1e3alUJEa
-	 pPNSWPVWp+Rf/Au6alR6nfkdaLhiaOwOffpV6N8Mon9zwT8EGoXIHxaVeQGEv2KJNW
-	 Y34F+RGpyxneER1gkJeg9i40fRRWX915Jgz9Y2SQSVnrh5Rn0L9nsSqI5DtrsEYYT1
-	 ZRSdIN+q2iXOcn3kXGW7qqLJssrtT5gYajtnIF5JKrv1DmQPgEmj8uPaaJx6KvVR2I
-	 t3RHhyUcVWxQBExcY5t4/dl9xl+/nZaiaT6y4i/jkJfLV/t8ZhKmxXYaaSy4jfyCO6
-	 TcLKyZavVu0lw==
-From: Mirsad Goran Todorovac <mirsad.todorovac@alu.unizg.hr>
-To: Jason Gunthorpe <jgg@ziepe.ca>,
-	Joerg Roedel <jroedel@suse.de>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	netdev@vger.kernel.org
-Cc: Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Heiner Kallweit <hkallweit1@gmail.com>,
-	nic_swsd@realtek.com,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Paolo Abeni <pabeni@redhat.com>,
-	Mirsad Goran Todorovac <mirsad.todorovac@alu.unizg.hr>,
-	Marco Elver <elver@google.com>
-Subject: [PATCH v5 7/7] r8169: Coalesce mac ocp write and modify for rtl_hw_init_8125 to reduce spinlock contention
-Date: Sun, 29 Oct 2023 19:36:07 +0100
-Message-Id: <20231029183600.451694-7-mirsad.todorovac@alu.unizg.hr>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20231029183600.451694-1-mirsad.todorovac@alu.unizg.hr>
-References: <20231029183600.451694-1-mirsad.todorovac@alu.unizg.hr>
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="rn5kRE6u"
+Received: by mail-lf1-f50.google.com with SMTP id 2adb3069b0e04-507a62d4788so6366196e87.0
+        for <iommu@lists.linux.dev>; Mon, 30 Oct 2023 02:03:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1698656598; x=1699261398; darn=lists.linux.dev;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=cYFH7qp0u3X29NywKpoP1IyU1hw7BcleLqoH2m7DO8E=;
+        b=rn5kRE6uAduQTT+6KdsMccKVD5W8UKfYDX76apl4XJqOkn7EA79laeMJTPLwU9OYnZ
+         O4xdn+56ShJJHx4dvk+sziOdcRUExw3xZCYz3RlrgqPYZvwbjs853m0Mmkh29mTgs9TO
+         gkH2qJqcj8Jpz+7ujOiZ9+gg8Hdy2w51Kxsopv8gqwqWZd8gSmDC45QCXQcMuTaSo0qt
+         oTChqSDwF5roGcD5//rchBhErmHGN7+B8kSyseIU4Ci/f41OMKoxZv8ZmiAkdBxafURz
+         P60wfevLUOhEwBfPOkgntaVlsfYG/rc+kD/t7RffwBYLtj4KQFHPCpp7M7RRNG72Ievn
+         tiww==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1698656598; x=1699261398;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=cYFH7qp0u3X29NywKpoP1IyU1hw7BcleLqoH2m7DO8E=;
+        b=DvYxve+rfuKj62jYj1a352kTI0aEaKSJ4jJJA0JcoEycTAYpHTfCUROgqdbZ7wstzQ
+         EdI0MMRDVTp+38RGrMrnyP2/H+saUcxuLrIzYxu9GQw0XfAqDF44EWEF5GjDQGnGFvTC
+         FMBlcm9yMeA/4y0vOk2ARTxtx4Xp9vngolfeAcbCcOtzQCrQJUX+kwqjXZGnRmclKeBL
+         J+M2VKB+iv5Lb6jLk5Z2RU7uvmYO4g6ZbboeddOgMEXrGfr1RPxCseTigT05799JwVg7
+         OGt58rfjyM4y71M1GIXIpfY+fK7nUq/3JTGEL+9SbmAqaQfKUQ444RUrfyUw4z1AJYPT
+         71nw==
+X-Gm-Message-State: AOJu0YyOEu97MgR9juyzfKnm4SCvrBsAMV9zKVDZt+Bj1AiBV3LTnM8k
+	EO5ieGzGL2ovaMHH26uBcu1JGA==
+X-Google-Smtp-Source: AGHT+IEhqt5JyMuDyehB8tfDt0aSGJIzli2DgC7Bp6/VFUQmD21VwzJ1TqPJN1de7TiMAV9dumwFyA==
+X-Received: by 2002:a05:6512:6d1:b0:507:c7ae:32cc with SMTP id u17-20020a05651206d100b00507c7ae32ccmr8087977lff.41.1698656597789;
+        Mon, 30 Oct 2023 02:03:17 -0700 (PDT)
+Received: from localhost ([102.36.222.112])
+        by smtp.gmail.com with ESMTPSA id s10-20020a05600c45ca00b0040772138bb7sm12176139wmo.2.2023.10.30.02.03.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 30 Oct 2023 02:03:17 -0700 (PDT)
+Date: Mon, 30 Oct 2023 12:03:12 +0300
+From: Dan Carpenter <dan.carpenter@linaro.org>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Hector Martin <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
+	Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>, Janne Grunau <j@jannau.net>,
+	asahi@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev, kernel-janitors@vger.kernel.org
+Subject: [PATCH] iommu/dart: Fix return code in
+ apple_dart_domain_alloc_paging()
+Message-ID: <b85e0715-3224-4f45-ad6b-ebb9f08c015d@moroto.mountain>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Mailer: git-send-email haha only kidding
 
-Repeated calls to r8168_mac_ocp_write() and r8168_mac_ocp_modify() in
-the init sequence of the 8125 involve implicit spin_lock_irqsave() and
-spin_unlock_irqrestore() on each invocation.
+The apple_dart_domain_alloc_paging() function is supposed to return NULL
+on error.  Returning an error pointer will lead to an Oops in
+__iommu_domain_alloc().
 
-Coalesced with the corresponding helpers r8168_mac_ocp_write_seq() and
-r8168_mac_ocp_modify_seq() into sequential write or modidy with a sinqle
-pair of spin_lock_irqsave() and spin_unlock_irqrestore(), these calls
-reduce overall lock contention.
-
-Fixes: f1bce4ad2f1ce ("r8169: add support for RTL8125")
-Cc: Heiner Kallweit <hkallweit1@gmail.com>
-Cc: Marco Elver <elver@google.com>
-Cc: nic_swsd@realtek.com
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: netdev@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Link: https://lore.kernel.org/lkml/20231028005153.2180411-1-mirsad.todorovac@alu.unizg.hr/
-Link: https://lore.kernel.org/lkml/20231028110459.2644926-1-mirsad.todorovac@alu.unizg.hr/
-Signed-off-by: Mirsad Goran Todorovac <mirsad.todorovac@alu.unizg.hr>
+Fixes: 482feb5c6492 ("iommu/dart: Call apple_dart_finalize_domain() as part of alloc_paging()")
+Signed-off-by: Dan Carpenter <dan.carpenter@linaro.org>
 ---
-v5:
- added unlocked primitives to allow mac ocs modify grouping
- applied coalescing of mac ocp writes/modifies for 8168ep and 8117
- some formatting fixes to please checkpatch.pl
+ drivers/iommu/apple-dart.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-v4:
- fixed complaints as advised by Heiner and checkpatch.pl
- split the patch into five sections to be more easily manipulated and reviewed
- introduced r8168_mac_ocp_write_seq()
- applied coalescing of mac ocp writes/modifies for 8168H, 8125 and 8125B
-
-v3:
- removed register/mask pair array sentinels, so using ARRAY_SIZE().
- avoided duplication of RTL_W32() call code as advised by Heiner.
-
- drivers/net/ethernet/realtek/r8169_main.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index 0778cd0ba2e0..76f0f1e13909 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -5089,6 +5089,12 @@ static void rtl_hw_init_8168g(struct rtl8169_private *tp)
- 
- static void rtl_hw_init_8125(struct rtl8169_private *tp)
- {
-+	static const struct e_info_regdata hw_init_8125_1[] = {
-+		{ 0xc0aa, 0x07d0 },
-+		{ 0xc0a6, 0x0150 },
-+		{ 0xc01e, 0x5555 },
-+	};
-+
- 	rtl_enable_rxdvgate(tp);
- 
- 	RTL_W8(tp, ChipCmd, RTL_R8(tp, ChipCmd) & ~(CmdTxEnb | CmdRxEnb));
-@@ -5098,9 +5104,7 @@ static void rtl_hw_init_8125(struct rtl8169_private *tp)
- 	r8168_mac_ocp_modify(tp, 0xe8de, BIT(14), 0);
- 	r8168g_wait_ll_share_fifo_ready(tp);
- 
--	r8168_mac_ocp_write(tp, 0xc0aa, 0x07d0);
--	r8168_mac_ocp_write(tp, 0xc0a6, 0x0150);
--	r8168_mac_ocp_write(tp, 0xc01e, 0x5555);
-+	r8168_mac_ocp_write_seq(tp, hw_init_8125_1);
- 	r8168g_wait_ll_share_fifo_ready(tp);
- }
- 
+diff --git a/drivers/iommu/apple-dart.c b/drivers/iommu/apple-dart.c
+index ee05f4824bfa..cb38a7a826dc 100644
+--- a/drivers/iommu/apple-dart.c
++++ b/drivers/iommu/apple-dart.c
+@@ -761,7 +761,7 @@ static struct iommu_domain *apple_dart_domain_alloc_paging(struct device *dev)
+ 		ret = apple_dart_finalize_domain(dart_domain, cfg);
+ 		if (ret) {
+ 			kfree(dart_domain);
+-			return ERR_PTR(ret);
++			return NULL;
+ 		}
+ 	}
+ 	return &dart_domain->domain;
 -- 
-2.34.1
+2.42.0
 
