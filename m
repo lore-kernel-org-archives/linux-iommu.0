@@ -1,80 +1,136 @@
-Received: from mail-yw1-f170.google.com (mail-yw1-f170.google.com [209.85.128.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from bee.tesarici.cz (bee.tesarici.cz [77.93.223.253])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A1228360
-	for <iommu@lists.linux.dev>; Tue, 31 Oct 2023 08:07:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; dkim=none
-Received: by mail-yw1-f170.google.com with SMTP id 00721157ae682-5af5b532d8fso46763757b3.2
-        for <iommu@lists.linux.dev>; Tue, 31 Oct 2023 01:07:33 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1698739652; x=1699344452;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=8dW9T/oJs2BJS5b3p+JbS+2l957dizjV3YoatArAOMI=;
-        b=rcY/CuyKgqqliL8zQN+WfYRHociNkUmR90tap9e2pQkbgMbeXjx1noxy6Lw+CN7nOM
-         DASDB0BLf8GrOv9an2uuQzHPrSWMaO+sYc93FkiZUPni1Uk1klJVQxwtVrS7dhbnCKw8
-         bzRHp7rzehLEPBeWRMnuSQu8OkX4OWn3Jc7hkdVDj1HLLSPfHwyXQg7dyLe/LIg2dfa9
-         eNwXTTSDMoc/fbehEB6tufdE6uZtAtq2ADlyKn11VVbinJG476LgtL17gJ1FRnwTngqI
-         lzlWONe+mVWtWCZ6fNeUzIVfNwgZTkOi1k8P53CXXJgCYMb/iUK7YBLh+GR4ZcsjN2L4
-         bABg==
-X-Gm-Message-State: AOJu0YwODRgInObYMpKdreSM02CFn/5AxyClrX7sggr8m2ugD06IdBPU
-	x8B8WHfAlZCHTrs2aIjJ/ROAuVpuWwN59Q==
-X-Google-Smtp-Source: AGHT+IFS6HX/WoXSD7SiS35UD/xgsjzXUmVAPd0CE/qS+/hd5Br5peEQIQ4SRODYEhyNF/epWExZjg==
-X-Received: by 2002:a81:d007:0:b0:59b:5696:c33 with SMTP id v7-20020a81d007000000b0059b56960c33mr11388739ywi.46.1698739652210;
-        Tue, 31 Oct 2023 01:07:32 -0700 (PDT)
-Received: from mail-yw1-f181.google.com (mail-yw1-f181.google.com. [209.85.128.181])
-        by smtp.gmail.com with ESMTPSA id s18-20020a819b12000000b005af9da2225bsm495837ywg.20.2023.10.31.01.07.32
-        for <iommu@lists.linux.dev>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 31 Oct 2023 01:07:32 -0700 (PDT)
-Received: by mail-yw1-f181.google.com with SMTP id 00721157ae682-5a8ada42c2aso52226427b3.3
-        for <iommu@lists.linux.dev>; Tue, 31 Oct 2023 01:07:32 -0700 (PDT)
-X-Received: by 2002:a81:e608:0:b0:5a7:bc66:949f with SMTP id
- u8-20020a81e608000000b005a7bc66949fmr11098090ywl.26.1698739651833; Tue, 31
- Oct 2023 01:07:31 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2B143199AF
+	for <iommu@lists.linux.dev>; Tue, 31 Oct 2023 10:43:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=tesarici.cz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tesarici.cz
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b="oa8JtXsd"
+Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by bee.tesarici.cz (Postfix) with ESMTPSA id B244D190C97;
+	Tue, 31 Oct 2023 11:43:22 +0100 (CET)
+Authentication-Results: mail.tesarici.cz; dmarc=fail (p=none dis=none) header.from=tesarici.cz
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tesarici.cz; s=mail;
+	t=1698749003; bh=jdCPy8MRdQgBRdIuWsT+HvlNGVFk2v04c88rT8qjyqw=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=oa8JtXsdnPE4gwCftToiBbqkSMSYruxk7HFOzsgPFJUXN1KiQHmEZIDe7FYcTPyyi
+	 iPd2ruOehuiA3Az6MM9lOXB1GWJkpnQ+j9aKMyJwzCGi5Lp1RWh6FzOOvgz5LUYgoI
+	 SiZRztBziVKU/KKg1uSgtLTWa0nQPknt/a1qt9VqbPjT20dPJ1M+mnCdfHzPPLkhEk
+	 vekx+ktehleXu753zt6LKNMwyN88zJCOmjW9Gol2ANZToAEdT9pPeyHRynkr1CZ5Aa
+	 9z7+uDLcktI5MFk85meR7Bjtx+7FZuq3Qu5ZRHLaC9DnjR8+ckQVEw/jMWRqaq6oDV
+	 TCBIzrCEp6BLA==
+Date: Tue, 31 Oct 2023 11:43:16 +0100
+From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
+To: Rick Edgecombe <rick.p.edgecombe@intel.com>
+Cc: x86@kernel.org, tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+ dave.hansen@linux.intel.com, hpa@zytor.com, luto@kernel.org,
+ peterz@infradead.org, kirill.shutemov@linux.intel.com,
+ elena.reshetova@intel.com, isaku.yamahata@intel.com, seanjc@google.com,
+ Michael Kelley <mikelley@microsoft.com>, thomas.lendacky@amd.com,
+ decui@microsoft.com, sathyanarayanan.kuppuswamy@linux.intel.com,
+ linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+ linux-s390@vger.kernel.org, Christoph Hellwig <hch@lst.de>, Marek
+ Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>,
+ iommu@lists.linux.dev
+Subject: Re: [PATCH 04/10] swiotlb: Use free_decrypted_pages()
+Message-ID: <20231031114316.0bfa8d91@meshulam.tesarici.cz>
+In-Reply-To: <20231017202505.340906-5-rick.p.edgecombe@intel.com>
+References: <20231017202505.340906-1-rick.p.edgecombe@intel.com>
+	<20231017202505.340906-5-rick.p.edgecombe@intel.com>
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; x86_64-suse-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <ZT-46QZiN8b37Swy@infradead.org>
-In-Reply-To: <ZT-46QZiN8b37Swy@infradead.org>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Tue, 31 Oct 2023 09:07:18 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdXQrJcFh1rfd0HAOEb-KYKQVBBJ8RWpvU_W6kxc3EQi2g@mail.gmail.com>
-Message-ID: <CAMuHMdXQrJcFh1rfd0HAOEb-KYKQVBBJ8RWpvU_W6kxc3EQi2g@mail.gmail.com>
-Subject: Re: [GIT PULL] dma-mapping updates for Linux 6.7
-To: Christoph Hellwig <hch@infradead.org>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, linux-kernel@vger.kernel.org, 
-	iommu@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-Hi Christoph,
+On Tue, 17 Oct 2023 13:24:59 -0700
+Rick Edgecombe <rick.p.edgecombe@intel.com> wrote:
 
-On Mon, Oct 30, 2023 at 3:08=E2=80=AFPM Christoph Hellwig <hch@infradead.or=
-g> wrote:
-> the Kconfig dependencies added in this branch caught configuration issues
-> in a riscv platform.  The fixes for that went into th soc tree, so it
-> if you want to avoid them it might make sense to pull this branch after
-> the soc tree.
+> On TDX it is possible for the untrusted host to cause
+> set_memory_encrypted() or set_memory_decrypted() to fail such that an
+> error is returned and the resulting memory is shared. Callers need to take
+> care to handle these errors to avoid returning decrypted (shared) memory to
+> the page allocator, which could lead to functional or security issues.
+> 
+> Swiotlb could free decrypted/shared pages if set_memory_decrypted() fails.
+> Use the recently added free_decrypted_pages() to avoid this.
+> 
+> In swiotlb_exit(), check for set_memory_encrypted() errors manually,
+> because the pages are not nessarily going to the page allocator.
+> 
+> Cc: Christoph Hellwig <hch@lst.de>
+> Cc: Marek Szyprowski <m.szyprowski@samsung.com>
+> Cc: Robin Murphy <robin.murphy@arm.com>
+> Cc: iommu@lists.linux.dev
+> Signed-off-by: Rick Edgecombe <rick.p.edgecombe@intel.com>
+> ---
+>  kernel/dma/swiotlb.c | 11 +++++++----
+>  1 file changed, 7 insertions(+), 4 deletions(-)
+> 
+> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+> index 394494a6b1f3..ad06786c4f98 100644
+> --- a/kernel/dma/swiotlb.c
+> +++ b/kernel/dma/swiotlb.c
+> @@ -524,6 +524,7 @@ void __init swiotlb_exit(void)
+>  	unsigned long tbl_vaddr;
+>  	size_t tbl_size, slots_size;
+>  	unsigned int area_order;
+> +	int ret;
+>  
+>  	if (swiotlb_force_bounce)
+>  		return;
+> @@ -536,17 +537,19 @@ void __init swiotlb_exit(void)
+>  	tbl_size = PAGE_ALIGN(mem->end - mem->start);
+>  	slots_size = PAGE_ALIGN(array_size(sizeof(*mem->slots), mem->nslabs));
+>  
+> -	set_memory_encrypted(tbl_vaddr, tbl_size >> PAGE_SHIFT);
+> +	ret = set_memory_encrypted(tbl_vaddr, tbl_size >> PAGE_SHIFT);
+>  	if (mem->late_alloc) {
+>  		area_order = get_order(array_size(sizeof(*mem->areas),
+>  			mem->nareas));
+>  		free_pages((unsigned long)mem->areas, area_order);
+> -		free_pages(tbl_vaddr, get_order(tbl_size));
+> +		if (!ret)
+> +			free_pages(tbl_vaddr, get_order(tbl_size));
+>  		free_pages((unsigned long)mem->slots, get_order(slots_size));
+>  	} else {
+>  		memblock_free_late(__pa(mem->areas),
+>  			array_size(sizeof(*mem->areas), mem->nareas));
+> -		memblock_free_late(mem->start, tbl_size);
+> +		if (!ret)
+> +			memblock_free_late(mem->start, tbl_size);
+>  		memblock_free_late(__pa(mem->slots), slots_size);
+>  	}
+>  
+> @@ -581,7 +584,7 @@ static struct page *alloc_dma_pages(gfp_t gfp, size_t bytes)
+>  	return page;
+>  
+>  error:
+> -	__free_pages(page, order);
+> +	free_decrypted_pages((unsigned long)vaddr, order);
+>  	return NULL;
+>  }
 
-FTR, these fixes were merged in v6.6.
+I admit I'm not familiar with the encryption/decryption API, but if a
+__free_pages() is not sufficient here, then it is quite confusing.
+The error label is reached only if set_memory_decrypted() returns
+non-zero. My naive expectation is that the memory is *not* decrypted in
+that case and does not require special treatment. Is this assumption
+wrong?
 
-Gr{oetje,eeting}s,
+OTOH I believe there is a bug in the logic. The subsequent
+__free_pages() in swiotlb_alloc_tlb() would have to be changed to a
+free_decrypted_pages(). However, I'm proposing a different approach to
+address the latter issue here:
 
-                        Geert
+https://lore.kernel.org/linux-iommu/20231026095123.222-1-petrtesarik@huaweicloud.com/T/
 
---=20
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k=
-.org
-
-In personal conversations with technical people, I call myself a hacker. Bu=
-t
-when I'm talking to journalists I just say "programmer" or something like t=
-hat.
-                                -- Linus Torvalds
+Petr T
