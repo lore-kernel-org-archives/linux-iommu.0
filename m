@@ -1,149 +1,80 @@
-Received: from mail-yb1-f170.google.com (mail-yb1-f170.google.com [209.85.219.170])
+Received: from mail-yw1-f170.google.com (mail-yw1-f170.google.com [209.85.128.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 965A210A28
-	for <iommu@lists.linux.dev>; Tue, 31 Oct 2023 07:54:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=amarulasolutions.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=amarulasolutions.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amarulasolutions.com header.i=@amarulasolutions.com header.b="VvcGfdS8"
-Received: by mail-yb1-f170.google.com with SMTP id 3f1490d57ef6-d9caf5cc948so4783644276.0
-        for <iommu@lists.linux.dev>; Tue, 31 Oct 2023 00:54:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=amarulasolutions.com; s=google; t=1698738883; x=1699343683; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=imGUTfdIv1UEQvIw5qZ3sOkWlbHODvlpW7n7ZTnXfW4=;
-        b=VvcGfdS8Mp/Imqsa4g7butxwepjx81yod4xANXc0kIa7mmnGUoKRRfxddEs0Jf6XF/
-         mRoXkWQ7JTPVDOeFhslTABsoPQKxsvBo9kHSiidB3oxFaD5s4Kp2THXALKcGy3akQ0UR
-         Hq+nxjtSsFxQSoO6Ar8di7OeR5D4Kq/Wk6rY8=
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A1228360
+	for <iommu@lists.linux.dev>; Tue, 31 Oct 2023 08:07:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; dkim=none
+Received: by mail-yw1-f170.google.com with SMTP id 00721157ae682-5af5b532d8fso46763757b3.2
+        for <iommu@lists.linux.dev>; Tue, 31 Oct 2023 01:07:33 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1698738883; x=1699343683;
+        d=1e100.net; s=20230601; t=1698739652; x=1699344452;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=imGUTfdIv1UEQvIw5qZ3sOkWlbHODvlpW7n7ZTnXfW4=;
-        b=tOqzFPXNSxcTNi6m3etQUlkc8B4FPvD8NoHB20E4prob53O2pHtSHZiTgKZiDxqiVw
-         V4GuvAzsEA0L3Pd92UhF3tEQ8zuqMNSYglTqkKyZ70e8ETq7O/PBxqJkkn7r7cG1oFPx
-         k4WCQg39KJ9muO+0ZHGQM6k0l3x3WMwYp7mDsSgwf29U7xzMRiVSYfA++yBWZAMhsWiY
-         ca5WYX5LVQp9/KSqZtP10lr5PBzOf/T+b6ShuVcx0RhRNHUbgEdWqRx8gwzqlJdRxaln
-         vh3FSPSOgqM1gAth+FCiJnTZMbaVh3fq1prZnPqb+R0uS8cWk0UQEylvroWTc3rbeZvt
-         gq/Q==
-X-Gm-Message-State: AOJu0YwSwiY7rGXXDzr2WqU6PLeZWSIN8/7pnO5FBkpoPahvzvGQkVit
-	1MdWT1yIUEvTLOtMLFWhFvQZQ2QGPRH6IpyHO38hUg==
-X-Google-Smtp-Source: AGHT+IGuq0HOWs5OUTkDduu4V89OJcaIxGppI4qyD54zITZougK0zbZNP1p83UdXtqz7X/Iv55M353/8oTA/1gDd+B8=
-X-Received: by 2002:a25:aa27:0:b0:da0:3c22:8374 with SMTP id
- s36-20020a25aa27000000b00da03c228374mr12109008ybi.5.1698738883370; Tue, 31
- Oct 2023 00:54:43 -0700 (PDT)
+        bh=8dW9T/oJs2BJS5b3p+JbS+2l957dizjV3YoatArAOMI=;
+        b=rcY/CuyKgqqliL8zQN+WfYRHociNkUmR90tap9e2pQkbgMbeXjx1noxy6Lw+CN7nOM
+         DASDB0BLf8GrOv9an2uuQzHPrSWMaO+sYc93FkiZUPni1Uk1klJVQxwtVrS7dhbnCKw8
+         bzRHp7rzehLEPBeWRMnuSQu8OkX4OWn3Jc7hkdVDj1HLLSPfHwyXQg7dyLe/LIg2dfa9
+         eNwXTTSDMoc/fbehEB6tufdE6uZtAtq2ADlyKn11VVbinJG476LgtL17gJ1FRnwTngqI
+         lzlWONe+mVWtWCZ6fNeUzIVfNwgZTkOi1k8P53CXXJgCYMb/iUK7YBLh+GR4ZcsjN2L4
+         bABg==
+X-Gm-Message-State: AOJu0YwODRgInObYMpKdreSM02CFn/5AxyClrX7sggr8m2ugD06IdBPU
+	x8B8WHfAlZCHTrs2aIjJ/ROAuVpuWwN59Q==
+X-Google-Smtp-Source: AGHT+IFS6HX/WoXSD7SiS35UD/xgsjzXUmVAPd0CE/qS+/hd5Br5peEQIQ4SRODYEhyNF/epWExZjg==
+X-Received: by 2002:a81:d007:0:b0:59b:5696:c33 with SMTP id v7-20020a81d007000000b0059b56960c33mr11388739ywi.46.1698739652210;
+        Tue, 31 Oct 2023 01:07:32 -0700 (PDT)
+Received: from mail-yw1-f181.google.com (mail-yw1-f181.google.com. [209.85.128.181])
+        by smtp.gmail.com with ESMTPSA id s18-20020a819b12000000b005af9da2225bsm495837ywg.20.2023.10.31.01.07.32
+        for <iommu@lists.linux.dev>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 31 Oct 2023 01:07:32 -0700 (PDT)
+Received: by mail-yw1-f181.google.com with SMTP id 00721157ae682-5a8ada42c2aso52226427b3.3
+        for <iommu@lists.linux.dev>; Tue, 31 Oct 2023 01:07:32 -0700 (PDT)
+X-Received: by 2002:a81:e608:0:b0:5a7:bc66:949f with SMTP id
+ u8-20020a81e608000000b005a7bc66949fmr11098090ywl.26.1698739651833; Tue, 31
+ Oct 2023 01:07:31 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20231025110140.2034650-1-dario.binacchi@amarulasolutions.com>
- <1acd75d0-67a7-4a17-99c7-707cca305f37@linux.intel.com> <ZT_MKDVkqMECiv4I@orome.fritz.box>
-In-Reply-To: <ZT_MKDVkqMECiv4I@orome.fritz.box>
-From: Dario Binacchi <dario.binacchi@amarulasolutions.com>
-Date: Tue, 31 Oct 2023 08:54:31 +0100
-Message-ID: <CABGWkvrG8OWKpkY3g46XEje196zSXZ5rfekMRRDWMtp-uMrw-g@mail.gmail.com>
-Subject: Re: [PATCH] iommu/tegra-smmu: fix error checking for debugfs_create_dir()
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Baolu Lu <baolu.lu@linux.intel.com>, linux-kernel@vger.kernel.org, 
-	Joerg Roedel <joro@8bytes.org>, Jonathan Hunter <jonathanh@nvidia.com>, 
-	Krishna Reddy <vdumpa@nvidia.com>, Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>, 
-	iommu@lists.linux.dev, linux-tegra@vger.kernel.org
+References: <ZT-46QZiN8b37Swy@infradead.org>
+In-Reply-To: <ZT-46QZiN8b37Swy@infradead.org>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Tue, 31 Oct 2023 09:07:18 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdXQrJcFh1rfd0HAOEb-KYKQVBBJ8RWpvU_W6kxc3EQi2g@mail.gmail.com>
+Message-ID: <CAMuHMdXQrJcFh1rfd0HAOEb-KYKQVBBJ8RWpvU_W6kxc3EQi2g@mail.gmail.com>
+Subject: Re: [GIT PULL] dma-mapping updates for Linux 6.7
+To: Christoph Hellwig <hch@infradead.org>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, linux-kernel@vger.kernel.org, 
+	iommu@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Hello Thierry,
+Hi Christoph,
 
-On Mon, Oct 30, 2023 at 4:30=E2=80=AFPM Thierry Reding <thierry.reding@gmai=
-l.com> wrote:
->
-> On Wed, Oct 25, 2023 at 07:25:50PM +0800, Baolu Lu wrote:
-> > On 2023/10/25 19:01, Dario Binacchi wrote:
-> > > The return value of debugfs_create_dir() should be checked using the
-> > > IS_ERR() function.
-> > >
-> > > Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
-> > > ---
-> > >
-> > >   drivers/iommu/tegra-smmu.c | 2 +-
-> > >   1 file changed, 1 insertion(+), 1 deletion(-)
-> > >
-> > > diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-> > > index e445f80d0226..cd1d80c4c673 100644
-> > > --- a/drivers/iommu/tegra-smmu.c
-> > > +++ b/drivers/iommu/tegra-smmu.c
-> > > @@ -1056,7 +1056,7 @@ DEFINE_SHOW_ATTRIBUTE(tegra_smmu_clients);
-> > >   static void tegra_smmu_debugfs_init(struct tegra_smmu *smmu)
-> > >   {
-> > >     smmu->debugfs =3D debugfs_create_dir("smmu", NULL);
-> > > -   if (!smmu->debugfs)
-> > > +   if (IS_ERR(smmu->debugfs))
-> > >             return;
-> >
-> > This check can be removed, as debugfs_create_file() can handle the case
-> > where @parent is an error pointer.
->
-> A patch for this has been in linux-next for a few weeks, see:
->
-> commit f7da9c081517daba70f9f9342e09d7a6322ba323
-> Author: Jinjie Ruan <ruanjinjie@huawei.com>
-> Date:   Fri Sep 1 15:30:56 2023 +0800
->
->     iommu/tegra-smmu: Drop unnecessary error check for for debugfs_create=
-_dir()
->
->     The debugfs_create_dir() function returns error pointers.
->     It never returns NULL.
->
->     As Baolu suggested, this patch removes the error checking for
->     debugfs_create_dir in tegra-smmu.c. This is because the DebugFS kerne=
-l API
->     is developed in a way that the caller can safely ignore the errors th=
-at
->     occur during the creation of DebugFS nodes. The debugfs APIs have
->     a IS_ERR() judge in start_creating() which can handle it gracefully. =
-So
->     these checks are unnecessary.
->
->     Fixes: d1313e7896e9 ("iommu/tegra-smmu: Add debugfs support")
->     Signed-off-by: Jinjie Ruan <ruanjinjie@huawei.com>
->     Suggested-by: Baolu Lu <baolu.lu@linux.intel.com>
->     Acked-by: Thierry Reding <treding@nvidia.com>
->     Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
->     Link: https://lore.kernel.org/r/20230901073056.1364755-1-ruanjinjie@h=
-uawei.com
->     Signed-off-by: Joerg Roedel <jroedel@suse.de>
->
+On Mon, Oct 30, 2023 at 3:08=E2=80=AFPM Christoph Hellwig <hch@infradead.or=
+g> wrote:
+> the Kconfig dependencies added in this branch caught configuration issues
+> in a riscv platform.  The fixes for that went into th soc tree, so it
+> if you want to avoid them it might make sense to pull this branch after
+> the soc tree.
 
-Thanks for the explanation,
-regards
-Dario
+FTR, these fixes were merged in v6.6.
 
-> Thierry
+Gr{oetje,eeting}s,
 
-
+                        Geert
 
 --=20
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k=
+.org
 
-Dario Binacchi
-
-Senior Embedded Linux Developer
-
-dario.binacchi@amarulasolutions.com
-
-__________________________________
-
-
-Amarula Solutions SRL
-
-Via Le Canevare 30, 31100 Treviso, Veneto, IT
-
-T. +39 042 243 5310
-info@amarulasolutions.com
-
-www.amarulasolutions.com
+In personal conversations with technical people, I call myself a hacker. Bu=
+t
+when I'm talking to journalists I just say "programmer" or something like t=
+hat.
+                                -- Linus Torvalds
