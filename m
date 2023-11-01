@@ -1,83 +1,204 @@
-Received: from mail-ot1-f49.google.com (mail-ot1-f49.google.com [209.85.210.49])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.115])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9CD4E10A0F
-	for <iommu@lists.linux.dev>; Wed,  1 Nov 2023 11:41:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0ACE911CA1
+	for <iommu@lists.linux.dev>; Wed,  1 Nov 2023 11:58:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="dU+vLXzf"
-Received: by mail-ot1-f49.google.com with SMTP id 46e09a7af769-6cd0a8bc6dcso4404550a34.2
-        for <iommu@lists.linux.dev>; Wed, 01 Nov 2023 04:41:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1698838862; x=1699443662; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=2FHDdTo0xw0CeTOfybYuakNtKEAEzS/7tS2HLJVX5Rc=;
-        b=dU+vLXzfV0PbBKHdWnrGP69HGVl//k2FLzuydvAroZm0OGJYNGoCtoK0/ISfflZhCn
-         YXqf25bx50Z4IuEVID30cEgsIn3W28uSgOOlQddmP9kFyC41sgfSHyKtSA7O7dH5kQzs
-         2jbBLFw8fVBLfG+RgFjjSOLe284AKSb/ItnXl26kbJYf77A2O8KlvASKmGQBoygbB0sT
-         FJ+b2EETqSGHnJS1Bgns90owc/Rwa61/IY0uF9T3H/LrnyNfKVUl56VFqV3+TkLLIllw
-         8ZnhEBinmEZvDizutW8GsboDf/HAbM2nqRBIwDW5ciTfioIsemK8YRjjC1Mkaj0rsrVJ
-         tOEA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1698838862; x=1699443662;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=2FHDdTo0xw0CeTOfybYuakNtKEAEzS/7tS2HLJVX5Rc=;
-        b=KXDt8Z3OZeXEAlhaIQpttIEGpIcKe9aiOY4KsD8ECggc9WLd7guBcAzATYPo1SnP8r
-         gdwoB/+iAI3BW9JGzD3IciwEcSZp6t4UPj759DBkh6N+sy7DWBFUSyQGVqSkCwRv/wO/
-         yIlxzJyjRzm8lZDOhvXy1QML4O0z11OQS+KjIY+swkCH5CUxaAETDbfGWcldRtYeFPt3
-         EvObPERI4rgfygK9EW08oacSUdqkC55EWdblWtujAJhi5o7EUzR04oj9VXt9HlZoHUn4
-         qgpdAWEnsbtrk3nHD3dF3yot8BZWE1n0JLAZ7PRe/yPZ/5O0lnMLHKsVvofs6CMkw+Uj
-         CdWw==
-X-Gm-Message-State: AOJu0YxlQ9nIgnxiYl7aq8wgkmeIIhx2QmQXhrw0aYhtZ0h0/61jRQ/H
-	5HaBNPFZYNOnFW4oXepHqLY2Pw==
-X-Google-Smtp-Source: AGHT+IHqSQb4XYlupFI/7jvcRxPMQ1qS7FUqz7C/cqobb0l3gR2NbYXd6BI6//mH/WNE3AcDQJ1NFA==
-X-Received: by 2002:a05:6830:2054:b0:6af:95f9:7adc with SMTP id f20-20020a056830205400b006af95f97adcmr16123618otp.14.1698838862545;
-        Wed, 01 Nov 2023 04:41:02 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-26-201.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.26.201])
-        by smtp.gmail.com with ESMTPSA id m10-20020ac8444a000000b0041803dfb240sm1321271qtn.45.2023.11.01.04.41.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Nov 2023 04:41:01 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1qy9an-0083p0-83;
-	Wed, 01 Nov 2023 08:41:01 -0300
-Date: Wed, 1 Nov 2023 08:41:01 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
-	Yi Liu <yi.l.liu@intel.com>
-Cc: kevin.tian@intel.com, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, Abaci Robot <abaci@linux.alibaba.com>
-Subject: Re: [PATCH] iommufd/selftest: Remove unused function
-Message-ID: <20231101114101.GL691768@ziepe.ca>
-References: <20231101012323.33154-1-jiapeng.chong@linux.alibaba.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="gBeN5COC"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1698839934; x=1730375934;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=+uZsrpGUhnqZToB5/k3c+fWPcL/OyKOYqpSA/rdf1pg=;
+  b=gBeN5COCweL5J2euQvElJ5qUuZgjBu21jUTqNWBlqFneSLNhdu/lOB/a
+   rRq5FZzcRtrXlpDsV3YVjIqug9kcf05icUmn+0jDhKYWKoa7+IH9j23/t
+   kaCogi4/KWs80IsVhdO+EAe2VSFQnr3uJ+gYKqebh9jVi4oA09GvqsxMl
+   52Vn0uqWL28b7VXtzwr0UKYlywRumLz5J2ot4E/rrmYikqH04U/SwNCk9
+   89wykTeYBlFeGvNtKxIDaC+8hZtNM4mLWK1pB8taPkOkyuiyxZ8+WDeHj
+   20VU3/oM20+6wKm//23pyFkWE/rYT72SshfKyr2ZMR66ffZl5l+NtCiEL
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10880"; a="388299302"
+X-IronPort-AV: E=Sophos;i="6.03,268,1694761200"; 
+   d="scan'208";a="388299302"
+Received: from fmviesa001.fm.intel.com ([10.60.135.141])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Nov 2023 04:58:53 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.03,268,1694761200"; 
+   d="scan'208";a="9028287"
+Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
+  by fmviesa001.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 01 Nov 2023 04:58:53 -0700
+Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.34; Wed, 1 Nov 2023 04:58:52 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.34; Wed, 1 Nov 2023 04:58:52 -0700
+Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.34 via Frontend Transport; Wed, 1 Nov 2023 04:58:52 -0700
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com (104.47.73.169)
+ by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.34; Wed, 1 Nov 2023 04:58:48 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=iDf1qAd3YM8z+qHPabKVvSHB2Xllq6jyMSf+QCgUKVNxx7oud6BXWDELixjZdlknyeqx3fmELFkGpK7hq2GLjCwo5o47qYi5UPf49X/KzPbTufVsmqC4MBOOEeuQxipvQpz8hv3cwEwxg7Mgidtgm555tPD8jIRJB/c2oDk1I5tLG5DG/P7K2w3QKiyEDmr1ixPnuMDeaK7z34mqjluW0c26mWKqzVEh0KOz0LVO2YRRVj1me5LkUQuf02aC0oMJ28TfoILCUl5z10B5tQ7YTlh+ROkmQQaPv/VI2XBciR+m1uU8tIc7uWVOaG/4KBciVsKnrvurWtS3AxNDuwXckA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=eWpSKShaRSAGHuuvTAYOdSPIQxDwKqOwssBUFSJZmyQ=;
+ b=HrGVqozFbX1jOnAuFPKT7GZyAEGjC7zSCNlAY9ijwfg2aiAh5L9eTdMa8mLOTbRJTElWHr0X8DHhtwFGZl2PPBu0Mgkm45oFRZsCDcVUZ7Tj37JTHBhK0/k7SSXl1NAxay3nIClPIiO87/F3vWTawUnwDmAe0RKNU+8g8Of9wtiSg7nEKGn8AXkUpT7PXNrbuoHvITm0bJ/esVW5H/Zi5O2WZe+vGI042Z6FPgZk35Y+psS0vipmgWeFIJNKqPa/uvDmGNsapH3RiawpiLp7dFA4RoY+ZdBZaZcC4Kfep9FP3HFhmDRE0VzH2i5eJsSOwrE2cA1fu1JKi5jCwyJT3w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from MW5PR11MB5881.namprd11.prod.outlook.com (2603:10b6:303:19d::14)
+ by PH0PR11MB5190.namprd11.prod.outlook.com (2603:10b6:510:3c::24) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6954.19; Wed, 1 Nov
+ 2023 11:58:46 +0000
+Received: from MW5PR11MB5881.namprd11.prod.outlook.com
+ ([fe80::eab4:33c1:2b7f:39fe]) by MW5PR11MB5881.namprd11.prod.outlook.com
+ ([fe80::eab4:33c1:2b7f:39fe%4]) with mapi id 15.20.6954.019; Wed, 1 Nov 2023
+ 11:58:46 +0000
+From: "Zhang, Tina" <tina.zhang@intel.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+CC: "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>, David Woodhouse
+	<dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel
+	<joro@8bytes.org>, "Tian, Kevin" <kevin.tian@intel.com>
+Subject: RE: [RFC PATCH 06/12] iommu: Add mmu_notifier to sva domain
+Thread-Topic: [RFC PATCH 06/12] iommu: Add mmu_notifier to sva domain
+Thread-Index: AQHaAKkIdQu/O0P8jUGMFumNffjTC7BXvhCAgA2wTNA=
+Date: Wed, 1 Nov 2023 11:58:46 +0000
+Message-ID: <MW5PR11MB5881B1E856300751358F407F89A7A@MW5PR11MB5881.namprd11.prod.outlook.com>
+References: <20231017032045.114868-1-tina.zhang@intel.com>
+ <20231017032045.114868-8-tina.zhang@intel.com>
+ <20231023183527.GM691768@ziepe.ca>
+In-Reply-To: <20231023183527.GM691768@ziepe.ca>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: MW5PR11MB5881:EE_|PH0PR11MB5190:EE_
+x-ms-office365-filtering-correlation-id: abb9a7db-c98e-4ab3-7429-08dbdad1e74a
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: Y9HoCp0JzbGNev3P8Qjiv69zLsdWqoBZ3u2zhnG481Fsm7jJYeJWIRakOwXISEDMUxEPTHNMu99jy5gjaELGt/UGW2v81OM0TCYndV7AJIRppS7v5u0rS3lbaO4jnpqWN46RQ4p+j+Poty4oWtjD4N5EPbLEapcjBBI0bPSmHgllQuWoiQuQ0F/InAYur/LxWMi6Z96YUEMrZTiHAhQGu0iLEAu7NEuSbeEUZCLyOquXU/iSdoWEyPC5e2zo79Zw1fz0pmc1amnsqKpq6Y77iFDqaHMSuBpMsyBJKBXYxlYxfzOvtGf20HDJLf3C8hYi+jK8thIEsxhdq19aZGsvAFXn1yDm4j3fpt/LoXkBjjHdCI2l7SLxJ7dk+J1Q1CX2v0UqyelyL1dI8l1+lHgGvbpGkqn1SsYrRX03vsgBDEZRsOS0FP1WAQMjUy8FUQlqL7q9W/h77yMWwZssx1pR4IB60phiOifcNTlTUxWLFz5zCZ1FPU9yDPeaXhB/TEpG95uNNit2GnMTk+HBGhS/QqWkapkG252fqaEWStlydNJSJ9512uxg0aSJIZc9KM06q/eLxpQm6Cnmjf7ExvIP+pkPLJTJ8JI1tfgnztJtX9c=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW5PR11MB5881.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(396003)(376002)(39860400002)(346002)(136003)(366004)(230922051799003)(451199024)(64100799003)(1800799009)(186009)(2906002)(8936002)(8676002)(4326008)(52536014)(71200400001)(41300700001)(478600001)(966005)(6916009)(66476007)(66446008)(54906003)(5660300002)(64756008)(316002)(55016003)(66556008)(66946007)(76116006)(6506007)(7696005)(53546011)(9686003)(26005)(83380400001)(82960400001)(38070700009)(122000001)(33656002)(86362001)(38100700002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?Vvq+1X2k3gba683I4F1K/VbtJKOqwtFWo7kZ0y6QW6iL+AOD0q2Va8w0nW84?=
+ =?us-ascii?Q?Q63jNuzRXxfBDHAjJTlyjgF7cC2S9+H0/tITalff3mJjqA0mpM89qkwRo39e?=
+ =?us-ascii?Q?jYiS5N0hGedGRRIgZ8cZfJmGxFPe7Bk/jDKhqfDsQ6+0YvIdaukYXZWXB/oz?=
+ =?us-ascii?Q?5UcObgt6wERuqwK5ME58W/SrkSYIzeuX0/Chx3mShxXsD9HCr7VKLbG+d/CY?=
+ =?us-ascii?Q?pp/FCj78jDQAMLFtBBgHWUAfk1naOBRb5W34tKJ5Iz1yhpnDHkk/l6o+Rb8l?=
+ =?us-ascii?Q?FQYEdFsWypm/FZyBFAoL9q5UOU9ulOEMGDQmzSs+dHfoo7oJbXM7aT9n8COJ?=
+ =?us-ascii?Q?QsOkKLZ4hnlYY7EezK7F7s7R/N1bjS+Ytd9X5v1x0A7DEQ3TtQ2WYCfPPST3?=
+ =?us-ascii?Q?K6ZleEuRwk0I19w2PjpTgcWsnit1DipYmFhAU62rd13GD/mqWZ5rLCYqJCbC?=
+ =?us-ascii?Q?FKzCrFPGtn9L8/B4QbfVpo2GXI0Cp3i7GJDJl1RjidrJM3zBxwym0J2XZd6R?=
+ =?us-ascii?Q?3qQASKcGjFFdOlYApTxtRuxxgio4TKq2Oh9vRErzUDxMygifUqkfhgaJk/an?=
+ =?us-ascii?Q?CNTG8LA5KCsM4tu1F1RHIuouaaEWgS9+Vi77qmkdbKPIa3sQAVxsSJtxEWbs?=
+ =?us-ascii?Q?xIeTmfko3z4wlfymhvEzB3QHLom8MemrsurJUXs88vq1MdOQEzWfWdnOmdz1?=
+ =?us-ascii?Q?50L9OHK5LycK2rNx4OnhUY0CAWU8bQKQiKdMBfBY5r/VVAcUL3uyWdbEjHSS?=
+ =?us-ascii?Q?SOCXTU85gvGNjubrMN+Jx9kxsyMF04nI3cwKwAXpYo6O5XIxwbNRwmZfx0+E?=
+ =?us-ascii?Q?GbvLvBORbBniie5rNsFX4EpExceusXySREfiyWPDS7xOEMJRQN02byXP8ZGu?=
+ =?us-ascii?Q?wvIdGM0Bjsm9bCCfHuRX5mHhV7RT+WyT405/fJ4cvCrknS1R3g2gti9y9JiY?=
+ =?us-ascii?Q?50vI/Xl5HJLeYNo6Mj0ARhGTyfUh5qolXx5Hw8/xlt4y4fRU9WddGbQAj7m/?=
+ =?us-ascii?Q?V2dD/dhaJqviCC53/MjTlvmn5tPKVzJvFuWY/dQtey8DlOF4NQqiCX+19EGI?=
+ =?us-ascii?Q?+aHJ9EwntAMPruSe8sSRxMxJX1fAYZKOAFT0ocohvp4yib56D6OcMGvKMLvW?=
+ =?us-ascii?Q?T68ebvJCtINTSUbOlO2waLqGoNEGRYc+dcKk5dmv4WXmvBvn4fxE4Pmhq8gX?=
+ =?us-ascii?Q?eMIvK6ZEyR936vDV1XugIc3LRkyChE/dAz0ISJDro9+9ZSC2NIHCihEqIQwe?=
+ =?us-ascii?Q?dKiZqbDYqyyGmxPub28nYDMIJwghQwQtWDIc1+qgdz0rC27DyJcMublAKTs9?=
+ =?us-ascii?Q?aUHsLtgFDP2LQToAeEyUb8ZQYXVteh8cXNNe3Mk73F5E3KV2ziYZSBLRQEIM?=
+ =?us-ascii?Q?TeweY5rkNleI2DRgQ/LKs0gVHbwxbmuBunq1II7ldUEaYQbdc/X7J1B/LSaK?=
+ =?us-ascii?Q?6QmEVovTtjv9aR+vmUExtmVLaz/t6+GbLStqqk16bX3eyrJYPF9QI8X7vHDt?=
+ =?us-ascii?Q?JaKkAPmU2RuDOvp6Huxx1thvQonmUsJcx0wNiAtAKVZirakSIg1amzEgg1UW?=
+ =?us-ascii?Q?/ztb1vKSsFZYhBZHmR+D80NGEOB4Dkdlrkne4/1C?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20231101012323.33154-1-jiapeng.chong@linux.alibaba.com>
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MW5PR11MB5881.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: abb9a7db-c98e-4ab3-7429-08dbdad1e74a
+X-MS-Exchange-CrossTenant-originalarrivaltime: 01 Nov 2023 11:58:46.6005
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: fhurY1nPBJ2W/tpQ4ve2seDN1fDuuU60pNO8qoqDW6I1wpRNPMfjnUi/Hfz+Csrer52+/72YXJxE/B/ob7xs8w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR11MB5190
+X-OriginatorOrg: intel.com
 
-On Wed, Nov 01, 2023 at 09:23:23AM +0800, Jiapeng Chong wrote:
-> The function are defined in the selftest.c file, but not called
-> elsewhere, so delete the unused function.
-> 
-> drivers/iommu/iommufd/selftest.c:511:1: warning: unused function 'get_md_pagetable_nested'.
-> 
-> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> Closes: https://bugzilla.openanolis.cn/show_bug.cgi?id=7104
-> Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-> ---
->  drivers/iommu/iommufd/selftest.c | 19 -------------------
->  1 file changed, 19 deletions(-)
+Hi Jason,
 
-I think this is a miss placed hunk it is used by a later series that
-hasn't been merged yet.  Yi?
+> -----Original Message-----
+> From: Jason Gunthorpe <jgg@ziepe.ca>
+> Sent: Tuesday, October 24, 2023 2:35 AM
+> To: Zhang, Tina <tina.zhang@intel.com>
+> Cc: iommu@lists.linux.dev; linux-kernel@vger.kernel.org; kvm@vger.kernel.=
+org;
+> David Woodhouse <dwmw2@infradead.org>; Lu Baolu
+> <baolu.lu@linux.intel.com>; Joerg Roedel <joro@8bytes.org>; Tian, Kevin
+> <kevin.tian@intel.com>
+> Subject: Re: [RFC PATCH 06/12] iommu: Add mmu_notifier to sva domain
+>=20
+>=20
+> On Tue, Oct 17, 2023 at 11:20:39AM +0800, Tina Zhang wrote:
+> > Devices attached to shared virtual addressing (SVA) domain are allowed
+> > to use the same virtual addresses with processor, and this
+> > functionality is called shared virtual memory. When shared virtual
+> > memory is being used, it's the sva domain's responsibility to keep
+> > device TLB cache and the CPU cache in sync. Hence add mmu_notifier to s=
+va
+> domain.
+> >
+> > Signed-off-by: Tina Zhang <tina.zhang@intel.com>
+> > ---
+> >  include/linux/iommu.h | 2 ++
+> >  1 file changed, 2 insertions(+)
+>=20
+> You should look at how arm smmuv3 ended up after I went over it to make
+> similar changes, I think you should take this patch
+>=20
+> https://lore.kernel.org/linux-iommu/20-v1-afbb86647bbd+5-
+> smmuv3_newapi_p2_jgg@nvidia.com/
+>=20
+> into this series (maybe drop the arm part)
+Good suggestion. The new domain_alloc_sva() callback allows drivers to full=
+y initialize sva domain that is what we need. I'll take the domain_alloc_sv=
+a() part as a patch and include it in this patch-set. Thanks.
 
-Jason
+>=20
+> And copy the same basic structure for how the mmu notifier works.
+>=20
+> It would also be nice if alot of the 'if_sva' tests could be avoided, smm=
+u didn't
+> end up with those..
+Agree. With the help of domain_alloc_sva() callback, I think most of the if=
+_sva brought by this RFC version can be reduced, as we can reuse fields fro=
+m dmar_domain (or add new ones if necessary) and initialize them in domain_=
+alloc_sva().
+
+Regards,
+-Tina
+>=20
+> In the guts of the pasid handling sva shouldn't be special beyond a diffe=
+rent
+> source for the pgd.
+>=20
+> Jason
+
