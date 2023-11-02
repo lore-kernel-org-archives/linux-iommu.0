@@ -1,272 +1,164 @@
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+Received: from frasgout13.his.huawei.com (frasgout13.his.huawei.com [14.137.139.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC054748E
-	for <iommu@lists.linux.dev>; Thu,  2 Nov 2023 09:47:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei-partners.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei-partners.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B1FFF6FA5
+	for <iommu@lists.linux.dev>; Thu,  2 Nov 2023 09:53:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=huaweicloud.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=huaweicloud.com
 Authentication-Results: smtp.subspace.kernel.org; dkim=none
-Received: from frapeml500002.china.huawei.com (unknown [172.18.147.206])
-	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4SLf8c3MFYz6K6Zw;
-	Thu,  2 Nov 2023 17:44:00 +0800 (CST)
-Received: from [10.48.131.78] (10.48.131.78) by frapeml500002.china.huawei.com
- (7.182.85.205) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.31; Thu, 2 Nov
- 2023 10:47:09 +0100
-Message-ID: <e0afa218-4eb0-4dde-b9d4-5beafc0c9fe7@huawei-partners.com>
-Date: Thu, 2 Nov 2023 10:47:08 +0100
+Received: from mail02.huawei.com (unknown [172.18.147.228])
+	by frasgout13.his.huawei.com (SkyGuard) with ESMTP id 4SLdkD3yhcz9y8MT
+	for <iommu@lists.linux.dev>; Thu,  2 Nov 2023 17:24:36 +0800 (CST)
+Received: from huaweicloud.com (unknown [10.48.131.78])
+	by APP2 (Coremail) with SMTP id GxC2BwDnibXJbUNl0QNYAw--.58857S3;
+	Thu, 02 Nov 2023 10:37:38 +0100 (CET)
+From: Petr Tesarik <petrtesarik@huaweicloud.com>
+To: Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Petr Tesarik <petr.tesarik1@huawei-partners.com>,
+	iommu@lists.linux.dev (open list:DMA MAPPING HELPERS),
+	linux-kernel@vger.kernel.org (open list),
+	patchwork@huawei.com
+Cc: Wangkefeng <wangkefeng.wang@huawei.com>,
+	Roberto Sassu <roberto.sassu@huaweicloud.com>,
+	petr@tesarici.cz,
+	Petr Tesarik <petrtesarik@huaweicloud.com>,
+	miaoxie@huawei.com,
+	weiyongjun1@huawei.com,
+	guohanjun@huawei.com,
+	huawei.libin@huawei.com,
+	yuehaibing@huawei.com,
+	johnny.chenyi@huawei.com,
+	leijitang@huawei.com,
+	ming.fu@huawei.com,
+	zhujianwei7@huawei.com,
+	linuxarm@huawei.com,
+	stable@vger.kernel.org,
+	Rick Edgecombe <rick.p.edgecombe@intel.com>
+Subject: [PATCH v2 1/1] swiotlb: do not free decrypted pages if dynamic
+Date: Thu,  2 Nov 2023 10:36:49 +0100
+Message-Id: <20231102071821.431-2-petrtesarik@huaweicloud.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20231102071821.431-1-petrtesarik@huaweicloud.com>
+References: <20231102071821.431-1-petrtesarik@huaweicloud.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] swiotlb: reduce area lock contention for non-primary IO
- TLB pools
-To: Petr Tesarik <petrtesarik@huaweicloud.com>, Christoph Hellwig
-	<hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy
-	<robin.murphy@arm.com>, "open list:DMA MAPPING HELPERS"
-	<iommu@lists.linux.dev>, open list <linux-kernel@vger.kernel.org>
-CC: Wangkefeng <wangkefeng.wang@huawei.com>, Roberto Sassu
-	<roberto.sassu@huaweicloud.com>, <petr@tesarici.cz>
-References: <20231102094445.1738-1-petrtesarik@huaweicloud.com>
-Content-Language: en-US
-From: Petr Tesarik <petr.tesarik1@huawei-partners.com>
-In-Reply-To: <20231102094445.1738-1-petrtesarik@huaweicloud.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.48.131.78]
-X-ClientProxiedBy: frapeml100001.china.huawei.com (7.182.85.63) To
- frapeml500002.china.huawei.com (7.182.85.205)
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID:GxC2BwDnibXJbUNl0QNYAw--.58857S3
+X-Coremail-Antispam: 1UD129KBjvJXoWxCF1xAw1Uury3ur47tw15CFg_yoW5CF1xpF
+	4fCr1Sgr98tFy7CrWfAF4kCF9xGws5urWUCFW3Xw1rZwn8WryIkr9rCw18uayfJF4kua17
+	JrW0v3WayrsrZaUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+	9KBjDU0xBIdaVrnRJUUUm014x267AKxVWrJVCq3wAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+	rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2048vs2IY020E87I2jVAFwI0_Jr4l82xGYIkIc2
+	x26xkF7I0E14v26ryj6s0DM28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8wA2z4x0
+	Y4vE2Ix0cI8IcVAFwI0_Jr0_JF4l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1l84
+	ACjcxK6I8E87Iv67AKxVW8JVWxJwA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UM2AI
+	xVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20x
+	vE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xv
+	r2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7M4IIrI8v6xkF7I0E8cxan2IY04
+	v7MxkF7I0Ew4C26cxK6c8Ij28IcwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWU
+	JVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67
+	kF1VAFwI0_GFv_WrylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY
+	6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0x
+	vEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVj
+	vjDU0xZFpf9x0JU7pnQUUUUU=
+X-CM-SenderInfo: hshw23xhvd2x3n6k3tpzhluzxrxghudrp/
 X-CFilter-Loop: Reflected
 
-Hi,
+Fix these two error paths:
 
-just to make it clear, this patch is orthogonal to and independent from
-the handling of decrypted pages, sent a few minutes earlier.
+1. When set_memory_decrypted() fails, pages may be left fully or partially
+   decrypted.
 
-Petr T
+2. Decrypted pages may be freed if swiotlb_alloc_tlb() determines that the
+   physical address is too high.
 
-On 11/2/2023 10:44 AM, Petr Tesarik wrote:
-> From: Petr Tesarik <petr.tesarik1@huawei-partners.com>Hi
-> 
-> If multiple areas and multiple IO TLB pools exist, first iterate the
-> current CPU specific area in all pools. Then move to the next area index.
-> 
-> This is best illustrated by a diagram:
-> 
->         area 0 |  area 1 | ... | area M |
-> pool 0    A         B              C
-> pool 1    D         E
-> ...
-> pool N    F         G              H
-> 
-> Currently, each pool is searched before moving on to the next pool,
-> i.e. the search order is A, B ... C, D, E ... F, G ... H. With this patch,
-> each area is searched in all pools before moving on to the next area,
-> i.e. the search order is A, D ... F, B, E ... G ... C ... H.
-> 
-> Note that preemption is not disabled, and raw_smp_processor_id() may not
-> return a stable result, but it is called only once to determine the initial
-> area index. The search will iterate over all areas eventually, even if the
-> current task is preempted.
-> 
-> Next, some pools may have less (but not more) areas than default_nareas.
-> Skip such pools if the distance from the initial area index is greater than
-> pool->nareas. This logic ensures that for every pool the search starts in
-> the initial CPU's own area and never tries any area twice.
-> 
-> To verify performance impact, I booted the kernel with a minimum pool
-> size ("swiotlb=512,4,force"), so multiple pools get allocated, and I ran
-> these benchmarks:
-> 
-> - small: single-threaded I/O of 4 KiB blocks,
-> - big: single-threaded I/O of 64 KiB blocks,
-> - 4way: 4-way parallel I/O of 4 KiB blocks.
-> 
-> The "var" column in the tables below is the coefficient of variance over 5
-> runs of the test, the "diff" column is the relative difference against base
-> in read-write I/O bandwidth (MiB/s).
-> 
-> Tested on an x86 VM against a QEMU virtio SATA driver backed by a RAM-based
-> block device on the host:
-> 
-> 	base	   patched
-> 	var	var	diff
-> small	0.69%	0.62%	+25.4%
-> big	2.14%	2.27%	+25.7%
-> 4way	2.65%	1.70%	+23.6%
-> 
-> Tested on a Raspberry Pi against a class-10 A1 microSD card:
-> 
-> 	base	   patched
-> 	var	var	diff
-> small	0.53%	1.96%	-0.3%
-> big	0.02%	0.57%	+0.8%
-> 4way	6.17%	0.40%	+0.3%
-> 
-> These results confirm that there is significant performance boost in the
-> software IO TLB slot allocation itself. Where performance is dominated by
-> actual hardware, there is no measurable change.
-> 
-> Signed-off-by: Petr Tesarik <petr.tesarik1@huawei-partners.com>
-> ---
->  kernel/dma/swiotlb.c | 90 +++++++++++++++++++++++++++-----------------
->  1 file changed, 55 insertions(+), 35 deletions(-)
-> 
-> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-> index a1c3dabed19f..35d603ec0329 100644
-> --- a/kernel/dma/swiotlb.c
-> +++ b/kernel/dma/swiotlb.c
-> @@ -954,7 +954,7 @@ static void dec_used(struct io_tlb_mem *mem, unsigned int nslots)
->  #endif /* CONFIG_DEBUG_FS */
->  
->  /**
-> - * swiotlb_area_find_slots() - search for slots in one IO TLB memory area
-> + * swiotlb_search_pool_area() - search one memory area in one pool
->   * @dev:	Device which maps the buffer.
->   * @pool:	Memory pool to be searched.
->   * @area_index:	Index of the IO TLB memory area to be searched.
-> @@ -969,7 +969,7 @@ static void dec_used(struct io_tlb_mem *mem, unsigned int nslots)
->   *
->   * Return: Index of the first allocated slot, or -1 on error.
->   */
-> -static int swiotlb_area_find_slots(struct device *dev, struct io_tlb_pool *pool,
-> +static int swiotlb_search_pool_area(struct device *dev, struct io_tlb_pool *pool,
->  		int area_index, phys_addr_t orig_addr, size_t alloc_size,
->  		unsigned int alloc_align_mask)
->  {
-> @@ -1063,41 +1063,50 @@ static int swiotlb_area_find_slots(struct device *dev, struct io_tlb_pool *pool,
->  	return slot_index;
->  }
->  
-> +#ifdef CONFIG_SWIOTLB_DYNAMIC
-> +
->  /**
-> - * swiotlb_pool_find_slots() - search for slots in one memory pool
-> + * swiotlb_search_area() - search one memory area in all pools
->   * @dev:	Device which maps the buffer.
-> - * @pool:	Memory pool to be searched.
-> + * @start_cpu:	Start CPU number.
-> + * @cpu_offset:	Offset from @start_cpu.
->   * @orig_addr:	Original (non-bounced) IO buffer address.
->   * @alloc_size: Total requested size of the bounce buffer,
->   *		including initial alignment padding.
->   * @alloc_align_mask:	Required alignment of the allocated buffer.
-> + * @retpool:	Used memory pool, updated on return.
->   *
-> - * Search through one memory pool to find a sequence of slots that match the
-> + * Search one memory area in all pools for a sequence of slots that match the
->   * allocation constraints.
->   *
->   * Return: Index of the first allocated slot, or -1 on error.
->   */
-> -static int swiotlb_pool_find_slots(struct device *dev, struct io_tlb_pool *pool,
-> -		phys_addr_t orig_addr, size_t alloc_size,
-> -		unsigned int alloc_align_mask)
-> +static int swiotlb_search_area(struct device *dev, int start_cpu,
-> +		int cpu_offset, phys_addr_t orig_addr, size_t alloc_size,
-> +		unsigned int alloc_align_mask, struct io_tlb_pool **retpool)
->  {
-> -	int start = raw_smp_processor_id() & (pool->nareas - 1);
-> -	int i = start, index;
-> -
-> -	do {
-> -		index = swiotlb_area_find_slots(dev, pool, i, orig_addr,
-> -						alloc_size, alloc_align_mask);
-> -		if (index >= 0)
-> -			return index;
-> -		if (++i >= pool->nareas)
-> -			i = 0;
-> -	} while (i != start);
-> +	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
-> +	struct io_tlb_pool *pool;
-> +	int area_index;
-> +	int index = -1;
->  
-> -	return -1;
-> +	rcu_read_lock();
-> +	list_for_each_entry_rcu(pool, &mem->pools, node) {
-> +		if (cpu_offset >= pool->nareas)
-> +			continue;
-> +		area_index = (start_cpu + cpu_offset) & (pool->nareas - 1);
-> +		index = swiotlb_search_pool_area(dev, pool, area_index,
-> +						 orig_addr, alloc_size,
-> +						 alloc_align_mask);
-> +		if (index >= 0) {
-> +			*retpool = pool;
-> +			break;
-> +		}
-> +	}
-> +	rcu_read_unlock();
-> +	return index;
->  }
->  
-> -#ifdef CONFIG_SWIOTLB_DYNAMIC
-> -
->  /**
->   * swiotlb_find_slots() - search for slots in the whole swiotlb
->   * @dev:	Device which maps the buffer.
-> @@ -1121,18 +1130,17 @@ static int swiotlb_find_slots(struct device *dev, phys_addr_t orig_addr,
->  	unsigned long nslabs;
->  	unsigned long flags;
->  	u64 phys_limit;
-> +	int cpu, i;
->  	int index;
->  
-> -	rcu_read_lock();
-> -	list_for_each_entry_rcu(pool, &mem->pools, node) {
-> -		index = swiotlb_pool_find_slots(dev, pool, orig_addr,
-> -						alloc_size, alloc_align_mask);
-> -		if (index >= 0) {
-> -			rcu_read_unlock();
-> +	cpu = raw_smp_processor_id();
-> +	for (i = 0; i < default_nareas; ++i) {
-> +		index = swiotlb_search_area(dev, cpu, i, orig_addr, alloc_size,
-> +					    alloc_align_mask, &pool);
-> +		if (index >= 0)
->  			goto found;
-> -		}
->  	}
-> -	rcu_read_unlock();
-> +
->  	if (!mem->can_grow)
->  		return -1;
->  
-> @@ -1145,8 +1153,8 @@ static int swiotlb_find_slots(struct device *dev, phys_addr_t orig_addr,
->  	if (!pool)
->  		return -1;
->  
-> -	index = swiotlb_pool_find_slots(dev, pool, orig_addr,
-> -					alloc_size, alloc_align_mask);
-> +	index = swiotlb_search_pool_area(dev, pool, 0, orig_addr,
-> +					 alloc_size, alloc_align_mask);
->  	if (index < 0) {
->  		swiotlb_dyn_free(&pool->rcu);
->  		return -1;
-> @@ -1189,9 +1197,21 @@ static int swiotlb_find_slots(struct device *dev, phys_addr_t orig_addr,
->  		size_t alloc_size, unsigned int alloc_align_mask,
->  		struct io_tlb_pool **retpool)
->  {
-> -	*retpool = &dev->dma_io_tlb_mem->defpool;
-> -	return swiotlb_pool_find_slots(dev, *retpool,
-> -				       orig_addr, alloc_size, alloc_align_mask);
-> +	struct io_tlb_pool *pool;
-> +	int start, i;
-> +	int index;
-> +
-> +	*retpool = pool = &dev->dma_io_tlb_mem->defpool;
-> +	i = start = raw_smp_processor_id() & (pool->nareas - 1);
-> +	do {
-> +		index = swiotlb_search_pool_area(dev, pool, i, orig_addr,
-> +						 alloc_size, alloc_align_mask);
-> +		if (index >= 0)
-> +			return index;
-> +		if (++i >= pool->nareas)
-> +			i = 0;
-> +	} while (i != start);
-> +	return -1;
->  }
->  
->  #endif /* CONFIG_SWIOTLB_DYNAMIC */
+To fix the first issue, call set_memory_encrypted() on the allocated region
+after a failed decryption attempt. If that also fails, leak the pages.
+
+To fix the second issue, check that the TLB physical address is below the
+requested limit before decrypting.
+
+Let the caller differentiate between unsuitable physical address (=> retry
+from a lower zone) and allocation failures (=> no point in retrying).
+
+Cc: stable@vger.kernel.org
+Cc: Rick Edgecombe <rick.p.edgecombe@intel.com>
+Fixes: 79636caad361 ("swiotlb: if swiotlb is full, fall back to a transient memory pool")
+Signed-off-by: Petr Tesarik <petr.tesarik1@huawei-partners.com>
+---
+ kernel/dma/swiotlb.c | 25 ++++++++++++++++---------
+ 1 file changed, 16 insertions(+), 9 deletions(-)
+
+diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+index dff067bd56b1..0e1632f75421 100644
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -558,29 +558,40 @@ void __init swiotlb_exit(void)
+  * alloc_dma_pages() - allocate pages to be used for DMA
+  * @gfp:	GFP flags for the allocation.
+  * @bytes:	Size of the buffer.
++ * @phys_limit:	Maximum allowed physical address of the buffer.
+  *
+  * Allocate pages from the buddy allocator. If successful, make the allocated
+  * pages decrypted that they can be used for DMA.
+  *
+- * Return: Decrypted pages, or %NULL on failure.
++ * Return: Decrypted pages, %NULL on allocation failure, or ERR_PTR(-EAGAIN)
++ * if the allocated physical address was above @phys_limit.
+  */
+-static struct page *alloc_dma_pages(gfp_t gfp, size_t bytes)
++static struct page *alloc_dma_pages(gfp_t gfp, size_t bytes, u64 phys_limit)
+ {
+ 	unsigned int order = get_order(bytes);
+ 	struct page *page;
++	phys_addr_t paddr;
+ 	void *vaddr;
+ 
+ 	page = alloc_pages(gfp, order);
+ 	if (!page)
+ 		return NULL;
+ 
+-	vaddr = page_address(page);
++	paddr = page_to_phys(page);
++	if (paddr + bytes - 1 > phys_limit) {
++		__free_pages(page, order);
++		return ERR_PTR(-EAGAIN);
++	}
++
++	vaddr = phys_to_virt(paddr);
+ 	if (set_memory_decrypted((unsigned long)vaddr, PFN_UP(bytes)))
+ 		goto error;
+ 	return page;
+ 
+ error:
+-	__free_pages(page, order);
++	/* Intentional leak if pages cannot be encrypted again. */
++	if (!set_memory_encrypted((unsigned long)vaddr, PFN_UP(bytes)))
++		__free_pages(page, order);
+ 	return NULL;
+ }
+ 
+@@ -618,11 +629,7 @@ static struct page *swiotlb_alloc_tlb(struct device *dev, size_t bytes,
+ 	else if (phys_limit <= DMA_BIT_MASK(32))
+ 		gfp |= __GFP_DMA32;
+ 
+-	while ((page = alloc_dma_pages(gfp, bytes)) &&
+-	       page_to_phys(page) + bytes - 1 > phys_limit) {
+-		/* allocated, but too high */
+-		__free_pages(page, get_order(bytes));
+-
++	while (IS_ERR(page = alloc_dma_pages(gfp, bytes, phys_limit))) {
+ 		if (IS_ENABLED(CONFIG_ZONE_DMA32) &&
+ 		    phys_limit < DMA_BIT_MASK(64) &&
+ 		    !(gfp & (__GFP_DMA32 | __GFP_DMA)))
+-- 
+2.34.1
+
