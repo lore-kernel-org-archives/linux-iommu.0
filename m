@@ -1,182 +1,144 @@
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.24])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CD8B91D531
-	for <iommu@lists.linux.dev>; Thu,  2 Nov 2023 15:58:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 533B01D559
+	for <iommu@lists.linux.dev>; Thu,  2 Nov 2023 17:35:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="GBmHa1pG"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1698940680; x=1730476680;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-id:content-transfer-encoding:
-   mime-version;
-  bh=BW/l8AGO+MA72rHeWemu2P6vKfVJ0dCkBj2Wf/boGJc=;
-  b=GBmHa1pGJn9i2EPk7lexptl6QPDcwd7V9JqtDPNdVz130m5FV9caaPar
-   txJUN8GzXk+32LaulKbNGv2ovzXfDLdsnUpdL6LcKKWXaTzTa2en/FjVv
-   iC07j3Mz5SlK6Zq1u01kuMg3mmG6ccLO03ElKT68/KJ5bdqaErHyBhTHh
-   vqvcfRGn5j9EcnDiWMkmcDWZMEN9dNYSrZ44J7MuBSbhW4eWRh/2mhgWy
-   sbwtc+I7q7l5WvzyFg1uM1n61Nrws4KOrp1oBOPJjasNHjo15LwLXA+rl
-   WcyammUlNuydJ+0LGCq06kQsjy3YKD35EEAoFRIsl65xK+/KKoOlDmg3i
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10882"; a="391609531"
-X-IronPort-AV: E=Sophos;i="6.03,272,1694761200"; 
-   d="scan'208";a="391609531"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Nov 2023 08:57:59 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10882"; a="1008507416"
-X-IronPort-AV: E=Sophos;i="6.03,272,1694761200"; 
-   d="scan'208";a="1008507416"
-Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
-  by fmsmga006.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 02 Nov 2023 08:57:58 -0700
-Received: from orsmsx612.amr.corp.intel.com (10.22.229.25) by
- ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.34; Thu, 2 Nov 2023 08:57:57 -0700
-Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
- orsmsx612.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.34 via Frontend Transport; Thu, 2 Nov 2023 08:57:57 -0700
-Received: from NAM04-MW2-obe.outbound.protection.outlook.com (104.47.73.169)
- by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.34; Thu, 2 Nov 2023 08:57:57 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SX6fH7fWJ7IoPcQxVJKfWZ5hr8+6FwUj7FWeUrJIxRJ/z8yJHpTa/DiNNUtkHCmoIfdDR0nLOJ2GCqsXQAIlrb8TVwi2awlP0UuRVMqR0ENwLMjohMax7tro0dTAH+cFcHRfKXJOFM/ZP9LMG0zbpFGfC5VQv2McFr740rAQs1TTweKg8TpAThQEu7jKgTX50F8okwAD+iHkmgpTJvPQbGUige6tkZWGWn3TTKzeenAupC6YGOasyxiiAdjdRjNMBidHMsoetcVGuIvX7nPPCmpbANvq1Zx28MfEKVb9qXUUeNCbTLRj1PawkMMhZVsV27rGqeAk5lHB5yksGuiwqA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=BW/l8AGO+MA72rHeWemu2P6vKfVJ0dCkBj2Wf/boGJc=;
- b=dHQS7kU7QsplLehcNEAef+Op8peQVakxnBrfPDLsqTJb/WHDvgaNfiYi0xUFaDcyP5PjvgpmaUTEZjatVdW8LIqM1XKttiFmQJJa1F2FB7F9bS4w/SB+nyFRqeWP7v1+LNGwtYmxqWVvypzAz7Rtg6ZS812fCGTOa9A6CJQApAKJm1phg2PucP6XfURvvJF9ln3Mz36VBVfDU4dWvfveGJpD2poSVpzeK8Jqt4fTGuwz/kt2Npgw8t016THYXmfzRJw37TqDf8En9PA/EkT2DsPR5Ifq+HygokFldDiHyrUM6D7WNAyunlMa9dNMw/Kv3ZE2PJbl5qB+GaxclWi1rw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from MN0PR11MB5963.namprd11.prod.outlook.com (2603:10b6:208:372::10)
- by CH0PR11MB5561.namprd11.prod.outlook.com (2603:10b6:610:d4::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6954.21; Thu, 2 Nov
- 2023 15:57:55 +0000
-Received: from MN0PR11MB5963.namprd11.prod.outlook.com
- ([fe80::4d44:dbfa:a7b4:b7c1]) by MN0PR11MB5963.namprd11.prod.outlook.com
- ([fe80::4d44:dbfa:a7b4:b7c1%5]) with mapi id 15.20.6954.019; Thu, 2 Nov 2023
- 15:57:55 +0000
-From: "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>
-To: "robin.murphy@arm.com" <robin.murphy@arm.com>, "hch@lst.de" <hch@lst.de>,
-	"gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-	"patchwork@huawei.com" <patchwork@huawei.com>, "petrtesarik@huaweicloud.com"
-	<petrtesarik@huaweicloud.com>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>, "m.szyprowski@samsung.com"
-	<m.szyprowski@samsung.com>, "petr.tesarik1@huawei-partners.com"
-	<petr.tesarik1@huawei-partners.com>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>
-CC: "miaoxie@huawei.com" <miaoxie@huawei.com>, "stable@vger.kernel.org"
-	<stable@vger.kernel.org>, "guohanjun@huawei.com" <guohanjun@huawei.com>,
-	"leijitang@huawei.com" <leijitang@huawei.com>, "weiyongjun1@huawei.com"
-	<weiyongjun1@huawei.com>, "huawei.libin@huawei.com"
-	<huawei.libin@huawei.com>, "wangkefeng.wang@huawei.com"
-	<wangkefeng.wang@huawei.com>, "linuxarm@huawei.com" <linuxarm@huawei.com>,
-	"johnny.chenyi@huawei.com" <johnny.chenyi@huawei.com>,
-	"yuehaibing@huawei.com" <yuehaibing@huawei.com>, "petr@tesarici.cz"
-	<petr@tesarici.cz>, "roberto.sassu@huaweicloud.com"
-	<roberto.sassu@huaweicloud.com>, "ming.fu@huawei.com" <ming.fu@huawei.com>,
-	"zhujianwei7@huawei.com" <zhujianwei7@huawei.com>
-Subject: Re: [PATCH v2 1/1] swiotlb: do not free decrypted pages if dynamic
-Thread-Topic: [PATCH v2 1/1] swiotlb: do not free decrypted pages if dynamic
-Thread-Index: AQHaDXBIahseLAG2M0+GbWknWZfxe7BnL80A
-Date: Thu, 2 Nov 2023 15:57:55 +0000
-Message-ID: <e0129428bc80f9deaf7a6852007d48103e133e27.camel@intel.com>
-References: <20231102071821.431-1-petrtesarik@huaweicloud.com>
-	 <20231102071821.431-2-petrtesarik@huaweicloud.com>
-In-Reply-To: <20231102071821.431-2-petrtesarik@huaweicloud.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-user-agent: Evolution 3.44.4-0ubuntu2 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: MN0PR11MB5963:EE_|CH0PR11MB5561:EE_
-x-ms-office365-filtering-correlation-id: 0d1f2863-225a-406c-edfc-08dbdbbc7a3f
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: +DczEF/tidM2aUf7MpwjHNZg+Dk6kFibOYx+BIPWJejY9zTA+4u8+C8Nzfjem4mWI+k1+S77VwPC7iKrvHFtJ+D6WW7uE5Om0yCsBywKNcOdrvmdga/pyyxy3vtDAPGfc78KpfvOyTAh6W8J6QQR+THgzORIFVq6ah9aheKXgaDN7x/HyYkfZYYyOsGzt+Y5bru2S1gw80yrNEUlrx5ZaOt4da/8JE2v97KEYgQC55J6rUJ0YUadDpbuY5ktRhcNeLy5UsbKjx/DMLn/oqmZ2jzul2POLl3fRt1mfLGtSgjfDvCQv88ZnqBC52yfDkUFNZP+D7wwEy/Zo4XV6OF5QSY5chSW327N6ywW4k69x2RkgPiMrmGMLbP4IiJpO21tSFnTRaweaDEIa8rDvUwSRYatjd8NQVLoRi9q8TI2al/fkf31UMoVKUcLTHiC3rMmYbq+MDQQL+kNd0rcszXPer7tEueFrcuNkDkdKmr3K7gsaM7FXlxKCPcFhyNoVhfJUOMW2AvPhH1iEhwm9KfuZqSj0hT+rx2o0da02t5pStA2nwbfGxu6/Cs68KQcrwiE0l0vLjW5a89tgjCiZjol8+Qz+2vefk8QR5GhldJHYjF8SS9dxrCpwU63omk40Y2W
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN0PR11MB5963.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(136003)(346002)(39860400002)(366004)(376002)(396003)(230922051799003)(1800799009)(186009)(64100799003)(451199024)(26005)(38100700002)(91956017)(110136005)(76116006)(316002)(54906003)(64756008)(66446008)(66476007)(66556008)(7416002)(66946007)(5660300002)(8936002)(4326008)(8676002)(6512007)(2616005)(2906002)(6486002)(71200400001)(4744005)(478600001)(41300700001)(6506007)(86362001)(122000001)(82960400001)(36756003)(38070700009)(83380400001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?bktIdEMrOHRDUmVKVWkyZXZZZ2RhY3ArRXNtRk8zY0R3R1dzdExpOFZpL0VU?=
- =?utf-8?B?RkN2Z1N4d1hXMXRjQzlzQzdRQmUxVi9zdU1QVWxxZ21CTWNEa2QyR2lBQXd6?=
- =?utf-8?B?aUk5VWNVOEwyOWUvUUE4Z0s5SUh3K05OWVlOVG0ySVA2THR5YVA3anNlOGxE?=
- =?utf-8?B?aDh4Zzl1WkN6ZlZYTmtXaFhFejhaemEzTEZDOEdXTTIraFJDOEF5M1E4Nmt0?=
- =?utf-8?B?ZkR3ai9QazM0dTZKbUlqUDhYYmhwVGFvTVJvRW0wZzg2ZHlLTVNTalRPanJI?=
- =?utf-8?B?ZUJwbXFZZTJKYmtwTURFeU5IZjBmSXlaalZNVHBxOU41d0lkTm9XUlFkWlFH?=
- =?utf-8?B?MUJJbDBwMzJva0xwRkQ1NjNVbks3QjcvMGNpbUZ4bDlRTk14b3U0TE1DWkFp?=
- =?utf-8?B?UUpOZWVMQUJrMEM2MjFsa2F2QVlyZWNSTDMyVWw2MzRKdmR2ZHBROTNOYkls?=
- =?utf-8?B?SGQ2MUR1dXo2RUdQaXFCcmplWlJVNEZKRUZaRXZ3UnNqbHA3MG9acTlOSzY1?=
- =?utf-8?B?ZFZtMExHaHkzQmlNNTRxdGRrTTJ4ZFFVUUVNc1F3SWMxU01EaHYvTmlqUWxk?=
- =?utf-8?B?b1J6a05UK0ZZd2ZtQThLbUV2UFJEQXU1QVd0dy80VU50N1I4cUdMeHVOVGhO?=
- =?utf-8?B?MmdEMXJrQk1OR0I4QTdDWXd0eEpGbVZtMzdCWW5PSzByUi95dUVhZHJQdDkr?=
- =?utf-8?B?WDZnc0wrZzZOQ2h2Z0hBZk9xSTl2eXhBb1c5bGJHNDVrdmo1Z25LMU9yL096?=
- =?utf-8?B?aE5YUWZxait4aXo2WnBXYWRVdnpVYm1NUi9VbW5CSWREUm5xWExpLzB5Rldk?=
- =?utf-8?B?QmYyL3VkaE9yR0tnUTZjNkdzUlN5alFpWGxNRWIrMmxHS3NpSEVUTVVuVm5O?=
- =?utf-8?B?K2dkdUdaYTBXQ3dxWERRc0NpeUg1T05kbERacG9PYktGQlM3MDltdlgwazRl?=
- =?utf-8?B?NVNxc1Zxby9GdVFJUFFoS2NwaDhUNmU1TUJSZm9NK3d4SGdmZ2NiVkZ4Tkdn?=
- =?utf-8?B?L3Fta25UVmc5VTVlREpkdmpmUlNueHdnOXVVdENJUHdadnAzYWIxWDl5OThD?=
- =?utf-8?B?ZWUwRlVxZGtPR01nRzJCYUt6NmFsMUVSSVUyRWx6WVNpVG1iWlhabEJlYXVv?=
- =?utf-8?B?UUF5YWl0SXZqYkh0RTRtOFpGWFV2VE9GNnNuMTBPT3M1QXdVY3UyeVk1bity?=
- =?utf-8?B?bjBnVmczYXFKUjJ3dWFrSG9pNFdPdVFKenB3UUw3aEZ6UlhpYS9OWXkvK0p2?=
- =?utf-8?B?UHhDS1M5YWRlWHE2SEhWcG0xRzN5LzJndVprSWZRY2FPUnlwbWNFMER5YTFH?=
- =?utf-8?B?TGpzcDlDRUhxQUpPMXlaMWtyVk53UnZGRjFydE1xeXpoU1VSQVcxeGZQaU1h?=
- =?utf-8?B?VzlzMUl1K01TbWVLenJqSzNCRmFiYnZTaGlBY2daY2VPckV0VitNSkhnNXMz?=
- =?utf-8?B?c2VxY0FXMmhKQmxmUldPQjhpUDlRQ2FaY2tDQjltcDFtYkkrUWVkWTNVN0kz?=
- =?utf-8?B?S2ZKb1FDT1Vxd2hwNGhvV2V0dUIwcjhlb21iK25qVGI5YWxwSVlHZmk4Zlg2?=
- =?utf-8?B?OGlJejZmaDlhU0RDL3V3a0Q5WW1uaHJpSTY2RUlxME9aR1UxQ0tBZkxIdmo2?=
- =?utf-8?B?b0Yra0VseGt3c1crUExSdzQzUjVnZGVwR3lLS1VrODV5NjZ3MnlmNzlCTjR0?=
- =?utf-8?B?YkNCWGhoNENJbzM4dWhieXYxd0p1dW0za3JBOWZpUlJzYnNDTFQ2dU9KdWxm?=
- =?utf-8?B?dTlyOS96bmppQzc1T0hVcTdnRzZlcHZNRUJKdU1aVnZvNFhqT3cwVlNjQU16?=
- =?utf-8?B?OU1rTk03Tk1vVitpWElsRENZajJEbngxdnFLWDF3eE84T0M3RkZRUXk3SXY5?=
- =?utf-8?B?QVJ6QXQrNUo3UzU4TXJPSjBJRkRlRGtVMzJJRWZDU1JCTHZsdXFjNHhCc2d3?=
- =?utf-8?B?MkozbWFPMW84M0ZoSStUNVJJNmY4bi9NMG13bTVFWUFYb3BkeDhYVFZnUzZZ?=
- =?utf-8?B?aVpQZzc5SC8xRkgzZjFjbmhFYmNicStwcUQ4RGRHcU5yc1FMam15YjYramxt?=
- =?utf-8?B?Q3BSdStwRWFTbzYrUVRTV21pYm5RY1dGOE4xTFRnbnNEeHhrMnpJbTVBTFY0?=
- =?utf-8?B?czdDNVU5RnJKSzZuaTUvT2E4V1Fjb21naTIveTFGeHI2Y043K25icXE1ZEhm?=
- =?utf-8?B?ZVE9PQ==?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <BB2938800E777141A189A994B018CECD@namprd11.prod.outlook.com>
-Content-Transfer-Encoding: base64
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="M6Ds73cm"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1698946531;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=tMLk0yasYOMVEo/9IWsVVLaUX7HGzE9lFoE4mYsOa2g=;
+	b=M6Ds73cmVqV5BGDIrskIs56H2NJSYPA7pKJiinbx4EitsLCKAFbuDjW4oanQje/n8z+y3R
+	A7JdMVXcGzueocEXnDh2TG5P18VOpnN01BTjUptIv6rWnGoMf8FyR8FSSlSHCutfZ79U8X
+	TntpDbAoi4940BJZn4wvQARdOnSXm9Y=
+Received: from mail-oa1-f70.google.com (mail-oa1-f70.google.com
+ [209.85.160.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-102-W0tzEGB3Mu261_I-QA--_A-1; Thu, 02 Nov 2023 13:35:29 -0400
+X-MC-Unique: W0tzEGB3Mu261_I-QA--_A-1
+Received: by mail-oa1-f70.google.com with SMTP id 586e51a60fabf-1e9bc53c828so1583198fac.1
+        for <iommu@lists.linux.dev>; Thu, 02 Nov 2023 10:35:29 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1698946529; x=1699551329;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=tMLk0yasYOMVEo/9IWsVVLaUX7HGzE9lFoE4mYsOa2g=;
+        b=pRI3cnRDnRCSiFrTwvSF0yEqJFyE+Y1fTAq49kiXpkA41xOdRIinnYOwyFbgWKKR8E
+         0iVDn4yEOj2RflYf3YKmIQvbrpW1NEanIMseTx5i37AvjjjdUObLTDp7Et5yu73vporl
+         TF1LqJwmrZIUJFx+VbmM8z6Ni6bWt+FVzdCUGwPrngLp2ru2N1thu8LlOnEaNDv+zcgs
+         eDXaAdUSaj/Iv8DC9StnDm7mp84EIHnv1EcbKc5laegMio8J1cFH98ALPDTJ/cdUWKkx
+         b7V6aYvRgPHOTkvoOs946kgUnWK+Q8jHAFJflpLQGS6ICl/v0tCHaq7zbTqGmSyHCqv8
+         0OMg==
+X-Gm-Message-State: AOJu0Yz0DA4uaH4kjgPqbuj/ioyM3TpDsPT+xUAqZIejmQ56SLP/REjA
+	Z1WSdfodna+t8xWnm/7mT9aeCEvizwyB4aBjGdBBfaERIF3Rxpr3fNJNjd33NFsstX2k64VvoBN
+	gXJPt8z9qSKkOc+Y=
+X-Received: by 2002:a05:6870:c90c:b0:1ef:c42a:df0c with SMTP id hj12-20020a056870c90c00b001efc42adf0cmr16805343oab.43.1698946529108;
+        Thu, 02 Nov 2023 10:35:29 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IF7FnCzdCAVEdOO4DFal9LQAmRo95HXaW2CAmlfk1299XHRYgTysZGA2KrWPLVWLSgNfV5shA==
+X-Received: by 2002:a05:6870:c90c:b0:1ef:c42a:df0c with SMTP id hj12-20020a056870c90c00b001efc42adf0cmr16805323oab.43.1698946528846;
+        Thu, 02 Nov 2023 10:35:28 -0700 (PDT)
+Received: from localhost (ip98-179-76-75.ph.ph.cox.net. [98.179.76.75])
+        by smtp.gmail.com with ESMTPSA id lg15-20020a056214548f00b006562b70805bsm127739qvb.84.2023.11.02.10.35.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 02 Nov 2023 10:35:28 -0700 (PDT)
+Date: Thu, 2 Nov 2023 10:35:26 -0700
+From: Jerry Snitselaar <jsnitsel@redhat.com>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Jason Gunthorpe <jgg@nvidia.com>, 
+	Dan Carpenter <dan.carpenter@linaro.org>, iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>, 
+	Will Deacon <will@kernel.org>, Lu Baolu <baolu.lu@linux.intel.com>, Janne Grunau <j@jannau.net>, 
+	Joerg Roedel <jroedel@suse.de>, Sven Peter <sven@svenpeter.dev>
+Subject: Re: [PATCH] iommu: Flow ERR_PTR out from __iommu_domain_alloc()
+Message-ID: <ceoaqgffxlkj2imiggjxvctbsv6yq6e3ju5fvjzl3e3ax4zzft@4sm6fdwpksyo>
+References: <0-v1-ee4b137bfe3f+57-domain_alloc_err_ptr_jgg@nvidia.com>
+ <65qhudcviofmcl2g64wca4yy2a772uqvoky6xp62ij2svj67vg@cr2pu6anogqh>
+ <20231101231727.GA5675@nvidia.com>
+ <98af21ae-f0f0-458a-8a21-7d2002b18ea4@kadam.mountain>
+ <3gvk4gzznjsrqouilcqzq7f3lyhmumrm5l25xqk24uuf7426fr@qivhtqql7d2k>
+ <9895fa9b-29f6-493f-b4c3-7e227144bd0b@kadam.mountain>
+ <20231102121247.GA4488@nvidia.com>
+ <2ae85ba5-5aa5-459a-ace8-b49d12f1ca07@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MN0PR11MB5963.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0d1f2863-225a-406c-edfc-08dbdbbc7a3f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Nov 2023 15:57:55.4070
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: djDccF/tGCz+I5vzkp6aLKkBq4LEWucBF/m8R188El7Gck5IaRD26t1LzkUwlE5g3CAH6e9IcFtX9KwQhGAC0wJV6R9yr7Cq+zFlwRgs/BI=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR11MB5561
-X-OriginatorOrg: intel.com
+In-Reply-To: <2ae85ba5-5aa5-459a-ace8-b49d12f1ca07@arm.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-T24gVGh1LCAyMDIzLTExLTAyIGF0IDEwOjM2ICswMTAwLCBQZXRyIFRlc2FyaWsgd3JvdGU6Cj4g
-K8KgwqDCoMKgwqDCoMKgdmFkZHIgPSBwaHlzX3RvX3ZpcnQocGFkZHIpOwo+IMKgwqDCoMKgwqDC
-oMKgwqBpZiAoc2V0X21lbW9yeV9kZWNyeXB0ZWQoKHVuc2lnbmVkIGxvbmcpdmFkZHIsCj4gUEZO
-X1VQKGJ5dGVzKSkpCj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBnb3RvIGVycm9y
-Owo+IMKgwqDCoMKgwqDCoMKgwqByZXR1cm4gcGFnZTsKPiDCoAo+IMKgZXJyb3I6Cj4gLcKgwqDC
-oMKgwqDCoMKgX19mcmVlX3BhZ2VzKHBhZ2UsIG9yZGVyKTsKPiArwqDCoMKgwqDCoMKgwqAvKiBJ
-bnRlbnRpb25hbCBsZWFrIGlmIHBhZ2VzIGNhbm5vdCBiZSBlbmNyeXB0ZWQgYWdhaW4uICovCj4g
-K8KgwqDCoMKgwqDCoMKgaWYgKCFzZXRfbWVtb3J5X2VuY3J5cHRlZCgodW5zaWduZWQgbG9uZyl2
-YWRkciwKPiBQRk5fVVAoYnl0ZXMpKSkKPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-X19mcmVlX3BhZ2VzKHBhZ2UsIG9yZGVyKTsKPiDCoMKgwqDCoMKgwqDCoMKgcmV0dXJuIE5VTEw7
-Cj4gwqB9CgpNeSBwYXRjaCB3YXMgZ29pbmcgdG8ganVzdCBsZWFrIHRoZSBwYWdlcyBpZiBzZXRf
-bWVtb3J5X2RlY3J5cHRlZCgpCmZhaWxzLCBhbmQgbm90IHRyeSB0byByZS1lbmNyeXB0LiBJdCBk
-aWRuJ3Qgc2VlbSB3b3J0aCB0aGUgZXh0cmEgbG9naWMKZm9yIHRoZSByYXJlIGNhc2UuIEJ1dCB0
-aGlzIHdvcmtzIHRvby4KClJldmlld2VkLWJ5OiBSaWNrIEVkZ2Vjb21iZSA8cmljay5wLmVkZ2Vj
-b21iZUBpbnRlbC5jb20+Cg==
+On Thu, Nov 02, 2023 at 01:09:50PM +0000, Robin Murphy wrote:
+> On 2023-11-02 12:12 pm, Jason Gunthorpe wrote:
+> > On Thu, Nov 02, 2023 at 08:22:13AM +0300, Dan Carpenter wrote:
+> > > On Wed, Nov 01, 2023 at 10:09:18PM -0700, Jerry Snitselaar wrote:
+> > > > On Thu, Nov 02, 2023 at 07:10:57AM +0300, Dan Carpenter wrote:
+> > > > > On Wed, Nov 01, 2023 at 08:17:27PM -0300, Jason Gunthorpe wrote:
+> > > > > >          /* The driver gave no guidance on what type to use, try the default */
+> > > > > >          dom = __iommu_group_alloc_default_domain(group, iommu_def_domain_type);
+> > > > > > -       if (dom)
+> > > > > > +       if (!IS_ERR(dom))
+> > > > > >                  return dom;
+> > > > > >          /* Otherwise IDENTITY and DMA_FQ defaults will try DMA */
+> > > > > >          if (iommu_def_domain_type == IOMMU_DOMAIN_DMA)
+> > > > > > -               return ERR_PTR(-ENODEV);
+> > > > > > +               return ERR_PTR(-EINVAL);
+> > > > > >          dom = __iommu_group_alloc_default_domain(group, IOMMU_DOMAIN_DMA);
+> > > > > > -       if (!dom)
+> > > > > > +       if (IS_ERR(dom))
+> > > > > >                  return dom;
+> > > > > >          pr_warn("Failed to allocate default IOMMU domain of type %u for group %s - Falling back to IOMMU_DOMAIN_DMA",
+> > > > > 
+> > > > > Not related to your patch, but we should delete/move this warning as
+> > > > > well.  It's on a success path.
+> > > > > 
+> > > > > regards,
+> > > > > dan carpenter
+> > > > > 
+> > > > 
+> > > > It seems worthwhile to note due to the performance implications, if
+> > > > nothing else, of having to fall back to the dma domain type from the
+> > > > two types mentioned in the comment. I'm not sure where would be a
+> > > > better place since this is first spot where it knows that is going to
+> > > > be the case.
+> > > 
+> > > Maybe it should be a pr_info() instead of a pr_warn()?  Maybe I'm just
+> > > wrong.
+> > 
+> > TBH, I'm not entirely sure what it is for, it has been there a long
+> > time.. I think it means that kernel config and command line options
+> > are incompatible with this iommu driver
+> 
+> Yes, it's a failure path in the sense that the user has requested something
+> (via config or command line) that the IOMMU driver cannot provide. Falling
+> back to allocating something different is more "damage limitation" than
+> "success".
+> 
+> > But at this moment there are very few drivers that don't support
+> > IDENTITY (s390 notably, I suppose) and the DMA_FQ stuff is no longer
+> > driver visible, so it probably never triggers..
+> 
+> Indeed if we get to the point where any platform/driver combination that
+> would support IOMMU_DOMAIN_DMA also supports IOMMU_DOMAIN_IDENTITY anyway,
+> then this fallback is no longer useful (and we could consequently also
+> simplify some stuff further out), however as things stand I see at least
+> apple-dart remaining a thorn in the side of that plan.
+> 
+> Thanks,
+> Robin.
+
+Btw Robin, I was able to verify the PCI SAC change works well in a
+case recently.  Went from a drop off of 40Gbps to 1Gbps, to no
+noticeable drop off.
+
+Regards,
+Jerry
+
