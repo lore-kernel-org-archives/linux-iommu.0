@@ -1,144 +1,256 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oi1-f207.google.com (mail-oi1-f207.google.com [209.85.167.207])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 533B01D559
-	for <iommu@lists.linux.dev>; Thu,  2 Nov 2023 17:35:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="M6Ds73cm"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1698946531;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=tMLk0yasYOMVEo/9IWsVVLaUX7HGzE9lFoE4mYsOa2g=;
-	b=M6Ds73cmVqV5BGDIrskIs56H2NJSYPA7pKJiinbx4EitsLCKAFbuDjW4oanQje/n8z+y3R
-	A7JdMVXcGzueocEXnDh2TG5P18VOpnN01BTjUptIv6rWnGoMf8FyR8FSSlSHCutfZ79U8X
-	TntpDbAoi4940BJZn4wvQARdOnSXm9Y=
-Received: from mail-oa1-f70.google.com (mail-oa1-f70.google.com
- [209.85.160.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-102-W0tzEGB3Mu261_I-QA--_A-1; Thu, 02 Nov 2023 13:35:29 -0400
-X-MC-Unique: W0tzEGB3Mu261_I-QA--_A-1
-Received: by mail-oa1-f70.google.com with SMTP id 586e51a60fabf-1e9bc53c828so1583198fac.1
-        for <iommu@lists.linux.dev>; Thu, 02 Nov 2023 10:35:29 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E09A1CF8C
+	for <iommu@lists.linux.dev>; Thu,  2 Nov 2023 23:03:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Authentication-Results: smtp.subspace.kernel.org; dkim=none
+Received: by mail-oi1-f207.google.com with SMTP id 5614622812f47-3b3ebbbdb1aso2263728b6e.2
+        for <iommu@lists.linux.dev>; Thu, 02 Nov 2023 16:03:29 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1698946529; x=1699551329;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=tMLk0yasYOMVEo/9IWsVVLaUX7HGzE9lFoE4mYsOa2g=;
-        b=pRI3cnRDnRCSiFrTwvSF0yEqJFyE+Y1fTAq49kiXpkA41xOdRIinnYOwyFbgWKKR8E
-         0iVDn4yEOj2RflYf3YKmIQvbrpW1NEanIMseTx5i37AvjjjdUObLTDp7Et5yu73vporl
-         TF1LqJwmrZIUJFx+VbmM8z6Ni6bWt+FVzdCUGwPrngLp2ru2N1thu8LlOnEaNDv+zcgs
-         eDXaAdUSaj/Iv8DC9StnDm7mp84EIHnv1EcbKc5laegMio8J1cFH98ALPDTJ/cdUWKkx
-         b7V6aYvRgPHOTkvoOs946kgUnWK+Q8jHAFJflpLQGS6ICl/v0tCHaq7zbTqGmSyHCqv8
-         0OMg==
-X-Gm-Message-State: AOJu0Yz0DA4uaH4kjgPqbuj/ioyM3TpDsPT+xUAqZIejmQ56SLP/REjA
-	Z1WSdfodna+t8xWnm/7mT9aeCEvizwyB4aBjGdBBfaERIF3Rxpr3fNJNjd33NFsstX2k64VvoBN
-	gXJPt8z9qSKkOc+Y=
-X-Received: by 2002:a05:6870:c90c:b0:1ef:c42a:df0c with SMTP id hj12-20020a056870c90c00b001efc42adf0cmr16805343oab.43.1698946529108;
-        Thu, 02 Nov 2023 10:35:29 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IF7FnCzdCAVEdOO4DFal9LQAmRo95HXaW2CAmlfk1299XHRYgTysZGA2KrWPLVWLSgNfV5shA==
-X-Received: by 2002:a05:6870:c90c:b0:1ef:c42a:df0c with SMTP id hj12-20020a056870c90c00b001efc42adf0cmr16805323oab.43.1698946528846;
-        Thu, 02 Nov 2023 10:35:28 -0700 (PDT)
-Received: from localhost (ip98-179-76-75.ph.ph.cox.net. [98.179.76.75])
-        by smtp.gmail.com with ESMTPSA id lg15-20020a056214548f00b006562b70805bsm127739qvb.84.2023.11.02.10.35.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Nov 2023 10:35:28 -0700 (PDT)
-Date: Thu, 2 Nov 2023 10:35:26 -0700
-From: Jerry Snitselaar <jsnitsel@redhat.com>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Jason Gunthorpe <jgg@nvidia.com>, 
-	Dan Carpenter <dan.carpenter@linaro.org>, iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>, 
-	Will Deacon <will@kernel.org>, Lu Baolu <baolu.lu@linux.intel.com>, Janne Grunau <j@jannau.net>, 
-	Joerg Roedel <jroedel@suse.de>, Sven Peter <sven@svenpeter.dev>
-Subject: Re: [PATCH] iommu: Flow ERR_PTR out from __iommu_domain_alloc()
-Message-ID: <ceoaqgffxlkj2imiggjxvctbsv6yq6e3ju5fvjzl3e3ax4zzft@4sm6fdwpksyo>
-References: <0-v1-ee4b137bfe3f+57-domain_alloc_err_ptr_jgg@nvidia.com>
- <65qhudcviofmcl2g64wca4yy2a772uqvoky6xp62ij2svj67vg@cr2pu6anogqh>
- <20231101231727.GA5675@nvidia.com>
- <98af21ae-f0f0-458a-8a21-7d2002b18ea4@kadam.mountain>
- <3gvk4gzznjsrqouilcqzq7f3lyhmumrm5l25xqk24uuf7426fr@qivhtqql7d2k>
- <9895fa9b-29f6-493f-b4c3-7e227144bd0b@kadam.mountain>
- <20231102121247.GA4488@nvidia.com>
- <2ae85ba5-5aa5-459a-ace8-b49d12f1ca07@arm.com>
+        d=1e100.net; s=20230601; t=1698966208; x=1699571008;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=0hp00lgwf/F76NsEWIxA/kWLcn0cy6Nk29JiYM9cV+8=;
+        b=hy59dWCDgmSdzl0eUgQk/7sIYQlHwMcKVUcBLxdD2bBqazbdIVtI5uPf8z/Pv6t9//
+         1szV20wuMgd2dcbIZbrPhkMEc2fp40DwOnHUuR99Q+BqSyd5ejHrmDd1q2/01DVZ3krt
+         Qxw8RCNv6rTrmP4RaVmpUOhF0HsWEr6FT3/K8HkGSy1fF5AoBT90deHm69FtLkdzvUBw
+         adTV0zoizdHZoi/kVkDf+3LVBJhMTFy5SwzVa8qZ34X210q/OJbpNlXoHecVeh5TBQih
+         TQUEU5vAdD8JeteQWDge3Hr3R0cfENaLlhkKr+h60s1gafS/KbLVrbwo6evZoTh/7MWh
+         DzIg==
+X-Gm-Message-State: AOJu0Ywk6rMjKfn8kw7k2z8ICMKx7yPiDi3nd2zGkuHYP7ArUPjJ3MBk
+	7lMFdlxdb7LUyquzC6Pl0JH8fGSO2fPfSYYaR/bQ0fqjfqFhqjLa1A==
+X-Google-Smtp-Source: AGHT+IE8jk1VHumpO1mm/VthuEIo/+SB5YSn/IVcdVMwbHkyIAvfViEAs0+zA1SckCaVhumo+JX7QhKKvwLjKqPAYtscVxM1cFiA
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <2ae85ba5-5aa5-459a-ace8-b49d12f1ca07@arm.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+X-Received: by 2002:a05:6808:1cc:b0:3a4:1e93:8988 with SMTP id
+ x12-20020a05680801cc00b003a41e938988mr6144672oic.10.1698966208374; Thu, 02
+ Nov 2023 16:03:28 -0700 (PDT)
+Date: Thu, 02 Nov 2023 16:03:28 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000055ef9a0609336580@google.com>
+Subject: [syzbot] [iommu?] KASAN: slab-use-after-free Read in iommufd_vfio_ioas
+From: syzbot <syzbot+d31adfb277377ef8fcba@syzkaller.appspotmail.com>
+To: iommu@lists.linux.dev, jgg@nvidia.com, jgg@ziepe.ca, joro@8bytes.org, 
+	kevin.tian@intel.com, linux-kernel@vger.kernel.org, robin.murphy@arm.com, 
+	syzkaller-bugs@googlegroups.com, will@kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-On Thu, Nov 02, 2023 at 01:09:50PM +0000, Robin Murphy wrote:
-> On 2023-11-02 12:12 pm, Jason Gunthorpe wrote:
-> > On Thu, Nov 02, 2023 at 08:22:13AM +0300, Dan Carpenter wrote:
-> > > On Wed, Nov 01, 2023 at 10:09:18PM -0700, Jerry Snitselaar wrote:
-> > > > On Thu, Nov 02, 2023 at 07:10:57AM +0300, Dan Carpenter wrote:
-> > > > > On Wed, Nov 01, 2023 at 08:17:27PM -0300, Jason Gunthorpe wrote:
-> > > > > >          /* The driver gave no guidance on what type to use, try the default */
-> > > > > >          dom = __iommu_group_alloc_default_domain(group, iommu_def_domain_type);
-> > > > > > -       if (dom)
-> > > > > > +       if (!IS_ERR(dom))
-> > > > > >                  return dom;
-> > > > > >          /* Otherwise IDENTITY and DMA_FQ defaults will try DMA */
-> > > > > >          if (iommu_def_domain_type == IOMMU_DOMAIN_DMA)
-> > > > > > -               return ERR_PTR(-ENODEV);
-> > > > > > +               return ERR_PTR(-EINVAL);
-> > > > > >          dom = __iommu_group_alloc_default_domain(group, IOMMU_DOMAIN_DMA);
-> > > > > > -       if (!dom)
-> > > > > > +       if (IS_ERR(dom))
-> > > > > >                  return dom;
-> > > > > >          pr_warn("Failed to allocate default IOMMU domain of type %u for group %s - Falling back to IOMMU_DOMAIN_DMA",
-> > > > > 
-> > > > > Not related to your patch, but we should delete/move this warning as
-> > > > > well.  It's on a success path.
-> > > > > 
-> > > > > regards,
-> > > > > dan carpenter
-> > > > > 
-> > > > 
-> > > > It seems worthwhile to note due to the performance implications, if
-> > > > nothing else, of having to fall back to the dma domain type from the
-> > > > two types mentioned in the comment. I'm not sure where would be a
-> > > > better place since this is first spot where it knows that is going to
-> > > > be the case.
-> > > 
-> > > Maybe it should be a pr_info() instead of a pr_warn()?  Maybe I'm just
-> > > wrong.
-> > 
-> > TBH, I'm not entirely sure what it is for, it has been there a long
-> > time.. I think it means that kernel config and command line options
-> > are incompatible with this iommu driver
-> 
-> Yes, it's a failure path in the sense that the user has requested something
-> (via config or command line) that the IOMMU driver cannot provide. Falling
-> back to allocating something different is more "damage limitation" than
-> "success".
-> 
-> > But at this moment there are very few drivers that don't support
-> > IDENTITY (s390 notably, I suppose) and the DMA_FQ stuff is no longer
-> > driver visible, so it probably never triggers..
-> 
-> Indeed if we get to the point where any platform/driver combination that
-> would support IOMMU_DOMAIN_DMA also supports IOMMU_DOMAIN_IDENTITY anyway,
-> then this fallback is no longer useful (and we could consequently also
-> simplify some stuff further out), however as things stand I see at least
-> apple-dart remaining a thorn in the side of that plan.
-> 
-> Thanks,
-> Robin.
+Hello,
 
-Btw Robin, I was able to verify the PCI SAC change works well in a
-case recently.  Went from a drop off of 40Gbps to 1Gbps, to no
-noticeable drop off.
+syzbot found the following issue on:
 
-Regards,
-Jerry
+HEAD commit:    2af9b20dbb39 Merge tag 'x86-urgent-2023-10-28' of git://gi..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=114a6a73680000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=cb98fe061049a6e4
+dashboard link: https://syzkaller.appspot.com/bug?extid=d31adfb277377ef8fcba
+compiler:       gcc (Debian 12.2.0-14) 12.2.0, GNU ld (GNU Binutils for Debian) 2.40
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=122fb4d1680000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1330c151680000
 
+Downloadable assets:
+disk image: https://storage.googleapis.com/syzbot-assets/073dcbc6250b/disk-2af9b20d.raw.xz
+vmlinux: https://storage.googleapis.com/syzbot-assets/842a91197227/vmlinux-2af9b20d.xz
+kernel image: https://storage.googleapis.com/syzbot-assets/760ca08d7937/bzImage-2af9b20d.xz
+
+The issue was bisected to:
+
+commit 99f98a7c0d6985d5507c8130a981972e4b7b3bdc
+Author: Jason Gunthorpe <jgg@nvidia.com>
+Date:   Tue Jul 25 19:05:49 2023 +0000
+
+    iommufd: IOMMUFD_DESTROY should not increase the refcount
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=125266e7680000
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=115266e7680000
+console output: https://syzkaller.appspot.com/x/log.txt?x=165266e7680000
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+d31adfb277377ef8fcba@syzkaller.appspotmail.com
+Fixes: 99f98a7c0d69 ("iommufd: IOMMUFD_DESTROY should not increase the refcount")
+
+==================================================================
+BUG: KASAN: slab-use-after-free in __up_read+0x627/0x750 kernel/locking/rwsem.c:1342
+Read of size 8 at addr ffff888073cde868 by task syz-executor934/6535
+
+CPU: 1 PID: 6535 Comm: syz-executor934 Not tainted 6.6.0-rc7-syzkaller-00195-g2af9b20dbb39 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 10/09/2023
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xd9/0x1b0 lib/dump_stack.c:106
+ print_address_description mm/kasan/report.c:364 [inline]
+ print_report+0xc4/0x620 mm/kasan/report.c:475
+ kasan_report+0xda/0x110 mm/kasan/report.c:588
+ __up_read+0x627/0x750 kernel/locking/rwsem.c:1342
+ iommufd_put_object drivers/iommu/iommufd/iommufd_private.h:149 [inline]
+ iommufd_vfio_ioas+0x46c/0x580 drivers/iommu/iommufd/vfio_compat.c:146
+ iommufd_fops_ioctl+0x347/0x4d0 drivers/iommu/iommufd/main.c:398
+ vfs_ioctl fs/ioctl.c:51 [inline]
+ __do_sys_ioctl fs/ioctl.c:871 [inline]
+ __se_sys_ioctl fs/ioctl.c:857 [inline]
+ __x64_sys_ioctl+0x18f/0x210 fs/ioctl.c:857
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x38/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+RIP: 0033:0x7f7d7a6505d9
+Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 51 18 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b0 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f7d7a5f0218 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+RAX: ffffffffffffffda RBX: 0000000000000037 RCX: 00007f7d7a6505d9
+RDX: 0000000020000080 RSI: 0000000000003b88 RDI: 0000000000000003
+RBP: 00007f7d7a6da358 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 00007f7d7a6d8100
+R13: 00007f7d7a6da350 R14: 00007f7d7a6da35c R15: 00007f7d7a6a7074
+ </TASK>
+
+Allocated by task 6529:
+ kasan_save_stack+0x33/0x50 mm/kasan/common.c:45
+ kasan_set_track+0x25/0x30 mm/kasan/common.c:52
+ ____kasan_kmalloc mm/kasan/common.c:374 [inline]
+ __kasan_kmalloc+0xa3/0xb0 mm/kasan/common.c:383
+ kasan_kmalloc include/linux/kasan.h:198 [inline]
+ __do_kmalloc_node mm/slab_common.c:1026 [inline]
+ __kmalloc+0x60/0x100 mm/slab_common.c:1039
+ kmalloc include/linux/slab.h:603 [inline]
+ kzalloc include/linux/slab.h:720 [inline]
+ _iommufd_object_alloc+0x26/0x1b0 drivers/iommu/iommufd/main.c:40
+ iommufd_ioas_alloc drivers/iommu/iommufd/ioas.c:27 [inline]
+ iommufd_ioas_alloc_ioctl+0xaf/0x370 drivers/iommu/iommufd/ioas.c:46
+ iommufd_fops_ioctl+0x347/0x4d0 drivers/iommu/iommufd/main.c:398
+ vfs_ioctl fs/ioctl.c:51 [inline]
+ __do_sys_ioctl fs/ioctl.c:871 [inline]
+ __se_sys_ioctl fs/ioctl.c:857 [inline]
+ __x64_sys_ioctl+0x18f/0x210 fs/ioctl.c:857
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x38/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+
+Freed by task 6536:
+ kasan_save_stack+0x33/0x50 mm/kasan/common.c:45
+ kasan_set_track+0x25/0x30 mm/kasan/common.c:52
+ kasan_save_free_info+0x28/0x40 mm/kasan/generic.c:522
+ ____kasan_slab_free mm/kasan/common.c:236 [inline]
+ ____kasan_slab_free+0x138/0x190 mm/kasan/common.c:200
+ kasan_slab_free include/linux/kasan.h:164 [inline]
+ __cache_free mm/slab.c:3370 [inline]
+ __do_kmem_cache_free mm/slab.c:3557 [inline]
+ __kmem_cache_free+0xcc/0x2d0 mm/slab.c:3564
+ iommufd_destroy+0x11e/0x180 drivers/iommu/iommufd/main.c:216
+ iommufd_fops_ioctl+0x347/0x4d0 drivers/iommu/iommufd/main.c:398
+ vfs_ioctl fs/ioctl.c:51 [inline]
+ __do_sys_ioctl fs/ioctl.c:871 [inline]
+ __se_sys_ioctl fs/ioctl.c:857 [inline]
+ __x64_sys_ioctl+0x18f/0x210 fs/ioctl.c:857
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x38/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+
+The buggy address belongs to the object at ffff888073cde800
+ which belongs to the cache kmalloc-cg-1k of size 1024
+The buggy address is located 104 bytes inside of
+ freed 1024-byte region [ffff888073cde800, ffff888073cdec00)
+
+The buggy address belongs to the physical page:
+page:ffffea0001cf3780 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x73cde
+flags: 0xfff00000000800(slab|node=0|zone=1|lastcpupid=0x7ff)
+page_type: 0x2()
+raw: 00fff00000000800 ffff888012c4d800 ffffea000082b690 ffffea0000712a10
+raw: 0000000000000000 ffff888073cde000 0000000100000002 0000000000000000
+page dumped because: kasan: bad access detected
+page_owner tracks the page as allocated
+page last allocated via order 0, migratetype Unmovable, gfp_mask 0x2420c0(__GFP_IO|__GFP_FS|__GFP_NOWARN|__GFP_COMP|__GFP_THISNODE), pid 4488, tgid 4488 (udevd), ts 55677988515, free_ts 55675597837
+ set_page_owner include/linux/page_owner.h:31 [inline]
+ post_alloc_hook+0x2cf/0x340 mm/page_alloc.c:1536
+ prep_new_page mm/page_alloc.c:1543 [inline]
+ get_page_from_freelist+0xee0/0x2f20 mm/page_alloc.c:3170
+ __alloc_pages+0x1d0/0x4a0 mm/page_alloc.c:4426
+ __alloc_pages_node include/linux/gfp.h:237 [inline]
+ kmem_getpages mm/slab.c:1356 [inline]
+ cache_grow_begin+0x99/0x3a0 mm/slab.c:2550
+ cache_alloc_refill+0x294/0x3a0 mm/slab.c:2923
+ ____cache_alloc mm/slab.c:2999 [inline]
+ ____cache_alloc mm/slab.c:2982 [inline]
+ __do_cache_alloc mm/slab.c:3182 [inline]
+ slab_alloc_node mm/slab.c:3230 [inline]
+ __kmem_cache_alloc_node+0x3c5/0x470 mm/slab.c:3521
+ __do_kmalloc_node mm/slab_common.c:1025 [inline]
+ __kmalloc+0x4f/0x100 mm/slab_common.c:1039
+ kmalloc_array include/linux/slab.h:636 [inline]
+ kcalloc include/linux/slab.h:667 [inline]
+ alloc_pipe_info+0x1ed/0x580 fs/pipe.c:808
+ get_pipe_inode fs/pipe.c:882 [inline]
+ create_pipe_files+0x8f/0x870 fs/pipe.c:914
+ __do_pipe_flags fs/pipe.c:963 [inline]
+ do_pipe2+0xb0/0x1c0 fs/pipe.c:1014
+ __do_sys_pipe2 fs/pipe.c:1032 [inline]
+ __se_sys_pipe2 fs/pipe.c:1030 [inline]
+ __x64_sys_pipe2+0x54/0x80 fs/pipe.c:1030
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x38/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+page last free stack trace:
+ reset_page_owner include/linux/page_owner.h:24 [inline]
+ free_pages_prepare mm/page_alloc.c:1136 [inline]
+ free_unref_page_prepare+0x476/0xa40 mm/page_alloc.c:2312
+ free_unref_page+0x33/0x3b0 mm/page_alloc.c:2405
+ selinux_genfs_get_sid security/selinux/hooks.c:1341 [inline]
+ inode_doinit_with_dentry+0xac0/0x12c0 security/selinux/hooks.c:1539
+ selinux_d_instantiate+0x26/0x30 security/selinux/hooks.c:6284
+ security_d_instantiate+0x54/0xe0 security/security.c:3799
+ d_splice_alias+0x94/0xdf0 fs/dcache.c:3145
+ kernfs_iop_lookup+0x283/0x330 fs/kernfs/dir.c:1208
+ __lookup_slow+0x24d/0x450 fs/namei.c:1694
+ lookup_slow fs/namei.c:1711 [inline]
+ walk_component+0x349/0x5a0 fs/namei.c:2002
+ lookup_last fs/namei.c:2459 [inline]
+ path_lookupat+0x17f/0x770 fs/namei.c:2483
+ filename_lookup+0x1e7/0x5b0 fs/namei.c:2512
+ vfs_statx+0x160/0x430 fs/stat.c:240
+ vfs_fstatat+0xb3/0x140 fs/stat.c:295
+ __do_sys_newfstatat+0x98/0x110 fs/stat.c:459
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x38/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+
+Memory state around the buggy address:
+ ffff888073cde700: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+ ffff888073cde780: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+>ffff888073cde800: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+                                                          ^
+ ffff888073cde880: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+ ffff888073cde900: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+==================================================================
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+
+If the report is already addressed, let syzbot know by replying with:
+#syz fix: exact-commit-title
+
+If you want syzbot to run the reproducer, reply with:
+#syz test: git://repo/address.git branch-or-commit-hash
+If you attach or paste a git patch, syzbot will apply it before testing.
+
+If you want to overwrite report's subsystems, reply with:
+#syz set subsystems: new-subsystem
+(See the list of subsystem names on the web dashboard)
+
+If the report is a duplicate of another one, reply with:
+#syz dup: exact-subject-of-another-report
+
+If you want to undo deduplication, reply with:
+#syz undup
