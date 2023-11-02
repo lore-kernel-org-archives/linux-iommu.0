@@ -1,101 +1,99 @@
-Received: from mail-qk1-f169.google.com (mail-qk1-f169.google.com [209.85.222.169])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1982E7486
-	for <iommu@lists.linux.dev>; Thu,  2 Nov 2023 12:47:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="em6uRppE"
-Received: by mail-qk1-f169.google.com with SMTP id af79cd13be357-7789cb322deso48571085a.3
-        for <iommu@lists.linux.dev>; Thu, 02 Nov 2023 05:47:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1698929264; x=1699534064; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=WQ+GdWawOo3FT7vEf5mwevTBQUu7eDKWKnvNYW/PsMc=;
-        b=em6uRppERksUOJ+5l7mbnnRc890xiYPvjIg+U2IKORL/Lnl+3aDGMoRBUuCHLPXCLz
-         zdRgtBYCpZ01szaOmPd5HvRFEQk2jlw1Gz5QyPwYFV9/WDls6iRvXJ/+DlasZiPHo1+6
-         wB2QLCGsy82r/Kogu2OfilzdP1uOSW8ZKQFwqkNtImXjSgNV/UwmVZU0bAoDCnalIRBd
-         iTUygwIALoNjRM+qC5oSez0iFAKvG2cXHBK1XDRwg8RzwBCkqOjtrfQndNEB0kVx+hfe
-         M2/y+MeOOPiqDtY+7ac6KPPAJNAYwXNaMNyyBOX5uwX9QwX3dyBiysZV16XLXOcNP7Ql
-         GHJA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1698929264; x=1699534064;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=WQ+GdWawOo3FT7vEf5mwevTBQUu7eDKWKnvNYW/PsMc=;
-        b=hkj3bYll286mB8Rc4XAn5wUtS5Rk9wv9zrGBr+KRFlSPJO1YySxFCuiGb0N9RQ7Tio
-         nXp6qS7pMyLnsAm38LLO45Hipkl8wOgQI4GMEgBPxa5+OKZgdUNpg/WNKXy7qbQhBM3l
-         FeuUbPsvpHn1NsGTfP6gicy2FvWudvlbQLti+fXeSGssRD4CYIObBv45qGpFNHjS8ZlI
-         7SGVF2wOV7aTlvqd4g9QcIu/pNVRlqYPDKXioBvb1CtjDeB+Kz+ncCH8scdqeYQBjKFW
-         N7PHFD/zry9eOF+esDbYD0Is4NqIzG/LnZMT8bZ05JlUmvuWau73M6Q2xW8KQBzejMfB
-         5eow==
-X-Gm-Message-State: AOJu0YyrW04rBviikpScTVzd1BKamkKYbLWB7MjMUfciYtZUqMrT9S8M
-	lEgTWyecsjiUD47pTnTKGGfvRQ==
-X-Google-Smtp-Source: AGHT+IFxFiOR7UXzaPpwFSzkWqw0zJo0m72p87r7wZ2km12vbMwY4rfJeHI3ydNPhYo9BA85V7lP4Q==
-X-Received: by 2002:a05:620a:35e:b0:775:9bb1:9ac4 with SMTP id t30-20020a05620a035e00b007759bb19ac4mr18012659qkm.61.1698929263726;
-        Thu, 02 Nov 2023 05:47:43 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-26-201.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.26.201])
-        by smtp.gmail.com with ESMTPSA id r18-20020a05620a299200b007770673e757sm2291720qkp.94.2023.11.02.05.47.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Nov 2023 05:47:43 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1qyX6s-0004kn-JW;
-	Thu, 02 Nov 2023 09:47:42 -0300
-Date: Thu, 2 Nov 2023 09:47:42 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>, iommu@lists.linux.dev,
-	linux-kselftest@vger.kernel.org,
-	virtualization@lists.linux-foundation.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 0/6] IOMMUFD: Deliver IO page faults to user space
-Message-ID: <20231102124742.GA4634@ziepe.ca>
-References: <20231026024930.382898-1-baolu.lu@linux.intel.com>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8678B1945D
+	for <iommu@lists.linux.dev>; Thu,  2 Nov 2023 13:09:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Authentication-Results: smtp.subspace.kernel.org; dkim=none
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C65F02F4;
+	Thu,  2 Nov 2023 06:10:35 -0700 (PDT)
+Received: from [10.57.83.230] (unknown [10.57.83.230])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 0C8233F738;
+	Thu,  2 Nov 2023 06:09:51 -0700 (PDT)
+Message-ID: <2ae85ba5-5aa5-459a-ace8-b49d12f1ca07@arm.com>
+Date: Thu, 2 Nov 2023 13:09:50 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20231026024930.382898-1-baolu.lu@linux.intel.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] iommu: Flow ERR_PTR out from __iommu_domain_alloc()
+Content-Language: en-GB
+To: Jason Gunthorpe <jgg@nvidia.com>, Dan Carpenter <dan.carpenter@linaro.org>
+Cc: Jerry Snitselaar <jsnitsel@redhat.com>, iommu@lists.linux.dev,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Lu Baolu <baolu.lu@linux.intel.com>, Janne Grunau <j@jannau.net>,
+ Joerg Roedel <jroedel@suse.de>, Sven Peter <sven@svenpeter.dev>
+References: <0-v1-ee4b137bfe3f+57-domain_alloc_err_ptr_jgg@nvidia.com>
+ <65qhudcviofmcl2g64wca4yy2a772uqvoky6xp62ij2svj67vg@cr2pu6anogqh>
+ <20231101231727.GA5675@nvidia.com>
+ <98af21ae-f0f0-458a-8a21-7d2002b18ea4@kadam.mountain>
+ <3gvk4gzznjsrqouilcqzq7f3lyhmumrm5l25xqk24uuf7426fr@qivhtqql7d2k>
+ <9895fa9b-29f6-493f-b4c3-7e227144bd0b@kadam.mountain>
+ <20231102121247.GA4488@nvidia.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20231102121247.GA4488@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Thu, Oct 26, 2023 at 10:49:24AM +0800, Lu Baolu wrote:
-> Hi folks,
+On 2023-11-02 12:12 pm, Jason Gunthorpe wrote:
+> On Thu, Nov 02, 2023 at 08:22:13AM +0300, Dan Carpenter wrote:
+>> On Wed, Nov 01, 2023 at 10:09:18PM -0700, Jerry Snitselaar wrote:
+>>> On Thu, Nov 02, 2023 at 07:10:57AM +0300, Dan Carpenter wrote:
+>>>> On Wed, Nov 01, 2023 at 08:17:27PM -0300, Jason Gunthorpe wrote:
+>>>>>          /* The driver gave no guidance on what type to use, try the default */
+>>>>>          dom = __iommu_group_alloc_default_domain(group, iommu_def_domain_type);
+>>>>> -       if (dom)
+>>>>> +       if (!IS_ERR(dom))
+>>>>>                  return dom;
+>>>>>   
+>>>>>          /* Otherwise IDENTITY and DMA_FQ defaults will try DMA */
+>>>>>          if (iommu_def_domain_type == IOMMU_DOMAIN_DMA)
+>>>>> -               return ERR_PTR(-ENODEV);
+>>>>> +               return ERR_PTR(-EINVAL);
+>>>>>          dom = __iommu_group_alloc_default_domain(group, IOMMU_DOMAIN_DMA);
+>>>>> -       if (!dom)
+>>>>> +       if (IS_ERR(dom))
+>>>>>                  return dom;
+>>>>>   
+>>>>>          pr_warn("Failed to allocate default IOMMU domain of type %u for group %s - Falling back to IOMMU_DOMAIN_DMA",
+>>>>
+>>>> Not related to your patch, but we should delete/move this warning as
+>>>> well.  It's on a success path.
+>>>>
+>>>> regards,
+>>>> dan carpenter
+>>>>
+>>>
+>>> It seems worthwhile to note due to the performance implications, if
+>>> nothing else, of having to fall back to the dma domain type from the
+>>> two types mentioned in the comment. I'm not sure where would be a
+>>> better place since this is first spot where it knows that is going to
+>>> be the case.
+>>
+>> Maybe it should be a pr_info() instead of a pr_warn()?  Maybe I'm just
+>> wrong.
 > 
-> This series implements the functionality of delivering IO page faults to
-> user space through the IOMMUFD framework for nested translation. Nested
-> translation is a hardware feature that supports two-stage translation
-> tables for IOMMU. The second-stage translation table is managed by the
-> host VMM, while the first-stage translation table is owned by user
-> space. This allows user space to control the IOMMU mappings for its
-> devices.
+> TBH, I'm not entirely sure what it is for, it has been there a long
+> time.. I think it means that kernel config and command line options
+> are incompatible with this iommu driver
 
-Having now looked more closely at the ARM requirements it seems we
-will need generic events, not just page fault events to have a
-complete emulation.
+Yes, it's a failure path in the sense that the user has requested 
+something (via config or command line) that the IOMMU driver cannot 
+provide. Falling back to allocating something different is more "damage 
+limitation" than "success".
 
-So I'd like to see this generalized into a channel to carry any
-events..
+> But at this moment there are very few drivers that don't support
+> IDENTITY (s390 notably, I suppose) and the DMA_FQ stuff is no longer
+> driver visible, so it probably never triggers..
 
-> User space indicates its capability of handling IO page faults by
-> setting the IOMMU_HWPT_ALLOC_IOPF_CAPABLE flag when allocating a
-> hardware page table (HWPT). IOMMUFD will then set up its infrastructure
-> for page fault delivery. On a successful return of HWPT allocation, the
-> user can retrieve and respond to page faults by reading and writing to
-> the file descriptor (FD) returned in out_fault_fd.
+Indeed if we get to the point where any platform/driver combination that 
+would support IOMMU_DOMAIN_DMA also supports IOMMU_DOMAIN_IDENTITY 
+anyway, then this fallback is no longer useful (and we could 
+consequently also simplify some stuff further out), however as things 
+stand I see at least apple-dart remaining a thorn in the side of that plan.
 
-This is the right way to approach it, and more broadly this shouldn't
-be an iommufd specific thing. Kernel drivers will also need to create
-fault capable PAGING iommu domains.
-
-Jason
+Thanks,
+Robin.
