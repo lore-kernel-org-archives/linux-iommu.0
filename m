@@ -1,167 +1,247 @@
-Received: from mail-yw1-f170.google.com (mail-yw1-f170.google.com [209.85.128.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 351E12376B
-	for <iommu@lists.linux.dev>; Fri,  3 Nov 2023 22:23:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CCAE522338
+	for <iommu@lists.linux.dev>; Fri,  3 Nov 2023 22:38:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="y1paNENW"
-Received: by mail-yw1-f170.google.com with SMTP id 00721157ae682-5a7af52ee31so30357067b3.2
-        for <iommu@lists.linux.dev>; Fri, 03 Nov 2023 15:23:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1699050198; x=1699654998; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=HcUuruGNVY3TMumh0gyBypYNry0wGNm/0WZhCQih1rY=;
-        b=y1paNENWN01gwkRv/GeDpJiMUJ3JgbXfKEL6sgIbMYDjFG5MD0GLlOLD8xNEdZ2/s0
-         QSxjIv5vKIWqs3/euAvn2f8twMTKn+oEffwmz4TfPvGe/cRFMf1aHVy5gq2NvyPTihtv
-         14FBe3k2tYmy8MuWKCxupxzJzRVG/Qbby2HBdTyhNGsr7qLDdcFnEbY2TGyEo/yBATCQ
-         G9KaT/n3ryhSbVQA/eXCgc9Owv6bYKfMHIOK9/qQ/GXufyyXYgosfhaaFjKOLvHCHJpL
-         D5rlDpIb8qDvIcW6Szv2C5UE29JawkOjKaa3vgkqQ1+UFqUhwi3xTh5lXNoQcOsBxwfX
-         fzMg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1699050198; x=1699654998;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=HcUuruGNVY3TMumh0gyBypYNry0wGNm/0WZhCQih1rY=;
-        b=w0CK1kGz1ex73RcZ8FsHERyYi0lfrgYBGNqBHI1f5AI19/i5Q5h92f5v5Qu6mDxlHn
-         /A2iZ8f/ss37a5y7Xtug1tSC9LiOInreO5HxOJMQk41X0MVB6Sw9rNaPmYeFllahbrDy
-         ydZAZDVwidrJmKhSxULLtKyXOhdvvbPbOppGK7XQgn4cxMYC2KAryjf0jxr4jCOCYHWX
-         FmWsOl7NpvIyJtguS1NeFw2uPSIyno08vHOtBqotjCWFAbo6LcMOJdQCkrP6lrY/42oh
-         PPMaFAFjJJGSZg5SdzGC2zNyz431fHazU/prKwvCg06a0DM6rdvMqK39dS7i/L6EQ6dZ
-         zqjw==
-X-Gm-Message-State: AOJu0YwLAMzig/4hoX/NHOleudxVF5IjL9J5IYd9IKuWNLeQ2fhrBouR
-	OgAHCw1rIxgRSHajM+ztqdrlHeOQ9hn7SV4OBxScAg==
-X-Google-Smtp-Source: AGHT+IEAfObYIKaAE2Ni9quS5PIsAcwlJsD8mRWs4gcac4hASb1dlb4aKBTt5fgpwDbs9FOdYjjCo020CJJz5c+gxGw=
-X-Received: by 2002:a25:504d:0:b0:d9b:dfea:bc94 with SMTP id
- e74-20020a25504d000000b00d9bdfeabc94mr20062761ybb.31.1699050198097; Fri, 03
- Nov 2023 15:23:18 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="ha4ZNuWF"
+Received: from pps.filterd (m0279865.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 3A3LrugR026091;
+	Fri, 3 Nov 2023 22:38:18 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=qcppdkim1;
+ bh=aqiAiSiZc2cIzFlgNs5OJbo+4fVtFgFXmChwz5UKL/w=;
+ b=ha4ZNuWFxwagc25o0RdvW5KdTv9GeGcRTMme0ldej5g7ylC6SgIoZd8ivnHNxJQ5R1g9
+ i92WFQdLJMMoDibecQ2aMms4/5uOWa7rRGEvdTCa+xpJf/KiJ+XTTaDDjN4OqiGDxMc3
+ 0X8sJjxPZ8uhBnDDevREUc5c1j6MfKrhqAolYI1SouAhO7aBpTf7GejV6zXDR6dJnVSt
+ fxGzVsQI53VPMYtXl84wXzZsYFQFEmEu1MVmxnxBWvPdLgSQfCleAJgd7vIKkthMaScP
+ LlkFH7oUvbvNtd5Z0v2M8Q+T/tmoMo29tH0vt5bId2NGeFF18ZAr1dSGBl6cCLw4HVIS BQ== 
+Received: from nasanppmta04.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3u4yk0sdx1-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 03 Nov 2023 22:38:17 +0000
+Received: from nasanex01c.na.qualcomm.com (nasanex01c.na.qualcomm.com [10.45.79.139])
+	by NASANPPMTA04.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 3A3McH5M008029
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 3 Nov 2023 22:38:17 GMT
+Received: from [10.216.13.74] (10.80.80.8) by nasanex01c.na.qualcomm.com
+ (10.45.79.139) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.39; Fri, 3 Nov
+ 2023 15:38:12 -0700
+Message-ID: <fff5184b-3bf6-4f40-b99f-e77c01342fcc@quicinc.com>
+Date: Sat, 4 Nov 2023 04:08:08 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 2/3] iommu/arm-smmu: add ACTLR data and support for SM8550
+Content-Language: en-US
+To: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+CC: <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
+        <a39.skl@gmail.com>, <konrad.dybcio@linaro.org>,
+        <quic_saipraka@quicinc.com>, <quic_pkondeti@quicinc.com>,
+        <quic_molvera@quicinc.com>, <linux-arm-kernel@lists.infradead.org>,
+        <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
+        <qipl.kernel.upstream@quicinc.com>
 References: <20231103215124.1095-1-quic_bibekkum@quicinc.com>
- <20231103215124.1095-4-quic_bibekkum@quicinc.com> <CAA8EJpob0DoXd_UTEiJf8z3JncaWk_1rgit6c4dqQ0gB6JDFxQ@mail.gmail.com>
- <981deaf3-c7e2-4bbc-86b8-2151bf0b6e00@quicinc.com>
-In-Reply-To: <981deaf3-c7e2-4bbc-86b8-2151bf0b6e00@quicinc.com>
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Date: Sat, 4 Nov 2023 00:23:07 +0200
-Message-ID: <CAA8EJprG_=p=F7BCUG6gBwHAP3VHQxYnx91fYSOKwBV_nJ3HAw@mail.gmail.com>
-Subject: Re: [PATCH 3/3] iommu/arm-smmu: re-enable context caching in smmu
- reset operation
-To: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
-Cc: will@kernel.org, robin.murphy@arm.com, joro@8bytes.org, a39.skl@gmail.com, 
-	konrad.dybcio@linaro.org, quic_saipraka@quicinc.com, 
-	quic_pkondeti@quicinc.com, quic_molvera@quicinc.com, 
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, 
-	linux-kernel@vger.kernel.org, qipl.kernel.upstream@quicinc.com
-Content-Type: text/plain; charset="UTF-8"
-
-On Sat, 4 Nov 2023 at 00:07, Bibek Kumar Patro
-<quic_bibekkum@quicinc.com> wrote:
->
->
->
-> On 11/4/2023 3:28 AM, Dmitry Baryshkov wrote:
-> > On Fri, 3 Nov 2023 at 23:53, Bibek Kumar Patro
-> > <quic_bibekkum@quicinc.com> wrote:
-> >>
-> >> Context caching is re-enabled in the prefetch buffer for Qualcomm SoCs
-> >> through SoC specific reset ops, which is disabled in the default MMU-500
-> >> reset ops, but is expected for context banks using ACTLR register to
-> >> retain the prefetch value during reset and runtime suspend.
-> >>
-> >> Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
-> >> ---
-> >>   drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 26 ++++++++++++++++++----
-> >>   1 file changed, 22 insertions(+), 4 deletions(-)
-> >>
-> >> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> >> index 590b7c285299..f342b4778cf1 100644
-> >> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> >> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> >> @@ -457,11 +457,29 @@ static int qcom_smmu_def_domain_type(struct device *dev)
-> >>          return match ? IOMMU_DOMAIN_IDENTITY : 0;
-> >>   }
-> >>
-> >> +#define ARM_MMU500_ACTLR_CPRE          BIT(1)
-> >> +
-> >> +static int qcom_smmu500_reset(struct arm_smmu_device *smmu)
-> >> +{
-> >> +       int i;
-> >> +       u32 reg;
-> >> +
-> >> +       arm_mmu500_reset(smmu);
-> >> +
-> >> +               for (i = 0; i < smmu->num_context_banks; ++i) {
-> >> +                       reg = arm_smmu_cb_read(smmu, i, ARM_SMMU_CB_ACTLR);
-> >> +                       reg |= ARM_MMU500_ACTLR_CPRE;
-> >> +                       arm_smmu_cb_write(smmu, i, ARM_SMMU_CB_ACTLR, reg);
-> >> +               }
-> >
-> > Wrong indentation. Did you run your patches through checkpatch.pl?
-> >
->
-> Yes Dmitry, I did run checkpatch.pl script on this patch as well as
-> others, got 0 errors and 0 warnings. With -f option as well. Did not
-> get any related errors and warnings.
-
-Ack, I beg your pardon. checkpatch indeed doesn't warn about this
-indentation. Though it is still incorrect.
-
->
-> >> +
-> >> +       return 0;
-> >> +}
-> >> +
-> >>   static int qcom_sdm845_smmu500_reset(struct arm_smmu_device *smmu)
-> >>   {
-> >>          int ret;
-> >>
-> >> -       arm_mmu500_reset(smmu);
-> >> +       qcom_smmu500_reset(smmu);
-> >>
-> >>          /*
-> >>           * To address performance degradation in non-real time clients,
-> >> @@ -488,7 +506,7 @@ static const struct arm_smmu_impl qcom_smmu_500_impl = {
-> >>          .init_context = qcom_smmu_init_context,
-> >>          .cfg_probe = qcom_smmu_cfg_probe,
-> >>          .def_domain_type = qcom_smmu_def_domain_type,
-> >> -       .reset = arm_mmu500_reset,
-> >> +       .reset = qcom_smmu500_reset,
-> >>          .write_s2cr = qcom_smmu_write_s2cr,
-> >>          .tlb_sync = qcom_smmu_tlb_sync,
-> >>   };
-> >> @@ -507,7 +525,7 @@ static const struct arm_smmu_impl sm8550_smmu_500_impl = {
-> >>          .init_context = qcom_smmu_init_context,
-> >>          .cfg_probe = qcom_smmu_cfg_probe,
-> >>          .def_domain_type = qcom_smmu_def_domain_type,
-> >> -       .reset = arm_mmu500_reset,
-> >> +       .reset = qcom_smmu500_reset,
-> >>          .write_s2cr = qcom_smmu_write_s2cr,
-> >>          .tlb_sync = qcom_smmu_tlb_sync,
-> >>   };
-> >> @@ -523,7 +541,7 @@ static const struct arm_smmu_impl qcom_adreno_smmu_v2_impl = {
-> >>   static const struct arm_smmu_impl qcom_adreno_smmu_500_impl = {
-> >>          .init_context = qcom_adreno_smmu_init_context,
-> >>          .def_domain_type = qcom_smmu_def_domain_type,
-> >> -       .reset = arm_mmu500_reset,
-> >> +       .reset = qcom_smmu500_reset,
-> >>          .alloc_context_bank = qcom_adreno_smmu_alloc_context_bank,
-> >>          .write_sctlr = qcom_adreno_smmu_write_sctlr,
-> >>          .tlb_sync = qcom_smmu_tlb_sync,
-> >> --
-> >> 2.17.1
-> >>
-> >
-> >
+ <20231103215124.1095-3-quic_bibekkum@quicinc.com>
+ <CAA8EJpqWdHwF_mZoXt8wpYeKLWQEFs3H83c-OsLVYVGYmi5mkQ@mail.gmail.com>
+From: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+In-Reply-To: <CAA8EJpqWdHwF_mZoXt8wpYeKLWQEFs3H83c-OsLVYVGYmi5mkQ@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nasanex01c.na.qualcomm.com (10.45.79.139)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: 1HFkuZkfmFf7LvMr4VPk758zhEQIyQbn
+X-Proofpoint-GUID: 1HFkuZkfmFf7LvMr4VPk758zhEQIyQbn
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.987,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2023-11-03_21,2023-11-02_03,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015
+ priorityscore=1501 mlxscore=0 spamscore=0 malwarescore=0 suspectscore=0
+ impostorscore=0 mlxlogscore=999 bulkscore=0 lowpriorityscore=0
+ adultscore=0 phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2310240000 definitions=main-2311030192
 
 
 
--- 
-With best wishes
-Dmitry
+On 11/4/2023 3:31 AM, Dmitry Baryshkov wrote:
+> On Fri, 3 Nov 2023 at 23:53, Bibek Kumar Patro
+> <quic_bibekkum@quicinc.com> wrote:
+>>
+>> Add ACTLR data table for SM8550 along with support for
+>> same including SM8550 specific implementation operations.
+>>
+>> Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+>> ---
+>>   drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 85 +++++++++++++++++++++-
+>>   1 file changed, 81 insertions(+), 4 deletions(-)
+>>
+>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>> index 68c1f4908473..590b7c285299 100644
+>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>> @@ -25,6 +25,64 @@ struct actlr_data {
+>>          u32 actlr;
+>>   };
+>>
+>> +static const struct actlr_data sm8550_apps_actlr_data[] = {
+>> +       { 0x18a0, 0x0000, 0x00000103 },
+>> +       { 0x18e0, 0x0000, 0x00000103 },
+>> +       { 0x0800, 0x0020, 0x00000001 },
+>> +       { 0x1800, 0x00c0, 0x00000001 },
+>> +       { 0x1820, 0x0000, 0x00000001 },
+>> +       { 0x1860, 0x0000, 0x00000001 },
+>> +       { 0x0c01, 0x0020, 0x00000303 },
+>> +       { 0x0c02, 0x0020, 0x00000303 },
+>> +       { 0x0c03, 0x0020, 0x00000303 },
+>> +       { 0x0c04, 0x0020, 0x00000303 },
+>> +       { 0x0c05, 0x0020, 0x00000303 },
+>> +       { 0x0c06, 0x0020, 0x00000303 },
+>> +       { 0x0c07, 0x0020, 0x00000303 },
+>> +       { 0x0c08, 0x0020, 0x00000303 },
+>> +       { 0x0c09, 0x0020, 0x00000303 },
+>> +       { 0x0c0c, 0x0020, 0x00000303 },
+>> +       { 0x0c0d, 0x0020, 0x00000303 },
+>> +       { 0x0c0e, 0x0020, 0x00000303 },
+>> +       { 0x0c0f, 0x0020, 0x00000303 },
+>> +       { 0x1961, 0x0000, 0x00000303 },
+>> +       { 0x1962, 0x0000, 0x00000303 },
+>> +       { 0x1963, 0x0000, 0x00000303 },
+>> +       { 0x1964, 0x0000, 0x00000303 },
+>> +       { 0x1965, 0x0000, 0x00000303 },
+>> +       { 0x1966, 0x0000, 0x00000303 },
+>> +       { 0x1967, 0x0000, 0x00000303 },
+>> +       { 0x1968, 0x0000, 0x00000303 },
+>> +       { 0x1969, 0x0000, 0x00000303 },
+>> +       { 0x196c, 0x0000, 0x00000303 },
+>> +       { 0x196d, 0x0000, 0x00000303 },
+>> +       { 0x196e, 0x0000, 0x00000303 },
+>> +       { 0x196f, 0x0000, 0x00000303 },
+>> +       { 0x19c1, 0x0010, 0x00000303 },
+>> +       { 0x19c2, 0x0010, 0x00000303 },
+>> +       { 0x19c3, 0x0010, 0x00000303 },
+>> +       { 0x19c4, 0x0010, 0x00000303 },
+>> +       { 0x19c5, 0x0010, 0x00000303 },
+>> +       { 0x19c6, 0x0010, 0x00000303 },
+>> +       { 0x19c7, 0x0010, 0x00000303 },
+>> +       { 0x19c8, 0x0010, 0x00000303 },
+>> +       { 0x19c9, 0x0010, 0x00000303 },
+>> +       { 0x19cc, 0x0010, 0x00000303 },
+>> +       { 0x19cd, 0x0010, 0x00000303 },
+>> +       { 0x19ce, 0x0010, 0x00000303 },
+>> +       { 0x19cf, 0x0010, 0x00000303 },
+>> +       { 0x1c00, 0x0002, 0x00000103 },
+>> +       { 0x1c01, 0x0000, 0x00000001 },
+>> +       { 0x1920, 0x0000, 0x00000103 },
+>> +       { 0x1923, 0x0000, 0x00000103 },
+>> +       { 0x1924, 0x0000, 0x00000103 },
+>> +       { 0x1940, 0x0000, 0x00000103 },
+>> +       { 0x1941, 0x0004, 0x00000103 },
+>> +       { 0x1943, 0x0000, 0x00000103 },
+>> +       { 0x1944, 0x0000, 0x00000103 },
+>> +       { 0x1947, 0x0000, 0x00000103 },
+>> +};
+> 
+> This is nearly impossible to handle.
+> Please add defines for 0x1, 0x103 and 0x303. Also please consider
+> adding comments for the devices.
+> 
+
+Ack, Initially added the comments for devices, but since only driver is
+handling this data, and clients won't refer this so removed it. Will
+consider adding it back. This actlr field value might different (other
+than 0x1,0x103,0x303) in other platforms as per my anticipation, 
+depending on the bit settings, so won't the defines change with 
+different platforms? Hence this register setting value might be apt?
+
+>> +
+>>   static struct qcom_smmu *to_qcom_smmu(struct arm_smmu_device *smmu)
+>>   {
+>>          return container_of(smmu, struct qcom_smmu, smmu);
+>> @@ -444,6 +502,16 @@ static const struct arm_smmu_impl sdm845_smmu_500_impl = {
+>>          .tlb_sync = qcom_smmu_tlb_sync,
+>>   };
+>>
+>> +
+>> +static const struct arm_smmu_impl sm8550_smmu_500_impl = {
+>> +       .init_context = qcom_smmu_init_context,
+>> +       .cfg_probe = qcom_smmu_cfg_probe,
+>> +       .def_domain_type = qcom_smmu_def_domain_type,
+>> +       .reset = arm_mmu500_reset,
+>> +       .write_s2cr = qcom_smmu_write_s2cr,
+>> +       .tlb_sync = qcom_smmu_tlb_sync,
+>> +};
+>> +
+>>   static const struct arm_smmu_impl qcom_adreno_smmu_v2_impl = {
+>>          .init_context = qcom_adreno_smmu_init_context,
+>>          .def_domain_type = qcom_smmu_def_domain_type,
+>> @@ -507,6 +575,11 @@ static const struct qcom_smmu_config qcom_smmu_impl0_cfg = {
+>>          .reg_offset = qcom_smmu_impl0_reg_offset,
+>>   };
+>>
+>> +static const struct actlr_config sm8550_actlrcfg = {
+>> +       .adata = sm8550_apps_actlr_data,
+>> +       .size = ARRAY_SIZE(sm8550_apps_actlr_data),
+>> +};
+>> +
+>>   /*
+>>    * It is not yet possible to use MDP SMMU with the bypass quirk on the msm8996,
+>>    * there are not enough context banks.
+>> @@ -530,16 +603,20 @@ static const struct qcom_smmu_match_data sdm845_smmu_500_data = {
+>>          /* Also no debug configuration. */
+>>   };
+>>
+>> +
+>> +static const struct qcom_smmu_match_data sm8550_smmu_500_impl0_data = {
+>> +       .impl = &sm8550_smmu_500_impl,
+>> +       .adreno_impl = &qcom_adreno_smmu_500_impl,
+>> +       .cfg = &qcom_smmu_impl0_cfg,
+>> +       .actlrcfg = &sm8550_actlrcfg,
+>> +};
+> 
+> This structure doesn't seem to be linked. Did you test your patches?
+> 
+
+Apologies Dmitry, just checked back my patches, I tested it but while 
+refining the patches I somehow missed this link
+{ .compatible = "qcom,sm8550-smmu-500", .data = 
+&sm8550_smmu_500_impl0_data };
+in below qcom_smmu_500_impl0_data structure.
+I will take care of this in next version.
+
+>> +
+>>   static const struct qcom_smmu_match_data qcom_smmu_500_impl0_data = {
+>>          .impl = &qcom_smmu_500_impl,
+>>          .adreno_impl = &qcom_adreno_smmu_500_impl,
+>>          .cfg = &qcom_smmu_impl0_cfg,
+>>   };
+>>
+>> -/*
+>> - * Do not add any more qcom,SOC-smmu-500 entries to this list, unless they need
+>> - * special handling and can not be covered by the qcom,smmu-500 entry.
+>> - */
+> 
+> Leave the comment in place.
+> 
+
+Thanks for this comment which helped me to note the above mentioned
+mistake.
+
+>>   static const struct of_device_id __maybe_unused qcom_smmu_impl_of_match[] = {
+>>          { .compatible = "qcom,msm8996-smmu-v2", .data = &msm8996_smmu_data },
+>>          { .compatible = "qcom,msm8998-smmu-v2", .data = &qcom_smmu_v2_data },
+>> --
+>> 2.17.1
+>>
+> 
+> 
