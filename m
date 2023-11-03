@@ -1,53 +1,53 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5EF7D2376E
-	for <iommu@lists.linux.dev>; Fri,  3 Nov 2023 21:42:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 275F92377A
+	for <iommu@lists.linux.dev>; Fri,  3 Nov 2023 21:47:39 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="cJU1NPby"
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="HCBtycbF"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1699047725;
+	s=mimecast20190719; t=1699048058;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=3kZEfbVDRZWYaeV8fUpM6RCBCDL9qHVSAnBx2A/2LQY=;
-	b=cJU1NPbyrcjpw/lKER9bK1/ySnPVLRtLQIUYEzi4f3UXJ+HhIAdWTpVBzRgq8d7WBKy7fw
-	iaqI/9H32JJ8MS0khOyLV+H9QqUIKTpB5taaGNsfBktos7YPqYysopzpH1xoVBD8fUtNW7
-	d3U1yRr1QNNF39DUmtcgC0u5bFaYTRU=
-Received: from mail-oi1-f197.google.com (mail-oi1-f197.google.com
- [209.85.167.197]) by relay.mimecast.com with ESMTP with STARTTLS
+	bh=F+aB8ULpCtjf+Gcfe540UtUd+NJKrSGjq+RpmL2JNA8=;
+	b=HCBtycbFaL1++lG56qUhQzpRtK38/bhWeDn7cTO/Xw6qanNsxPdwdSvGMJM2KgM59i9hio
+	MT81Q/oWYRxjx97u4UUGmpt4SLbWDLK93NnzT4EWGtfysFZfhSA26KCmxjifRc03e07sHf
+	AiFTbho7TI743n/7wNMOhTBwF6u51tM=
+Received: from mail-pl1-f197.google.com (mail-pl1-f197.google.com
+ [209.85.214.197]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-530-DqgogfXTPOSBiIgjUGythg-1; Fri, 03 Nov 2023 17:42:03 -0400
-X-MC-Unique: DqgogfXTPOSBiIgjUGythg-1
-Received: by mail-oi1-f197.google.com with SMTP id 5614622812f47-3b3447c72c4so3648428b6e.1
-        for <iommu@lists.linux.dev>; Fri, 03 Nov 2023 14:42:03 -0700 (PDT)
+ us-mta-179-lUrX-rYLNTGvfOx6pKEkgQ-1; Fri, 03 Nov 2023 17:47:37 -0400
+X-MC-Unique: lUrX-rYLNTGvfOx6pKEkgQ-1
+Received: by mail-pl1-f197.google.com with SMTP id d9443c01a7336-1cc3ad55c75so20177615ad.0
+        for <iommu@lists.linux.dev>; Fri, 03 Nov 2023 14:47:37 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1699047723; x=1699652523;
+        d=1e100.net; s=20230601; t=1699048057; x=1699652857;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=3kZEfbVDRZWYaeV8fUpM6RCBCDL9qHVSAnBx2A/2LQY=;
-        b=Bo8AxeqdhySBoueyNvz6KkIRvdFecTq80douQrWGix1Pyc+kHMAKSORK4sLBCNvKLq
-         I5FV7+RzNNQh9HYGQ5PrVTIpHd1eX1p/vvxBlwEpftc/zPHNvJpLTPh4xY6PgG73vDfc
-         0N+K9FLL9PaCLjg+0jL2ea3Z2NugaZCheZ7L8E/NVQ1UlU0QPFEI6kb2wfDBLllkw+E2
-         NN2PTRI66F0XjjjgI9xOCUU4yHj0pqHsuXWrPg4NoDJT+8ac6XEeccR7w0h0ViSVPxj1
-         Uq6IlfZyS1Sn4v+a1gyh+ci4R5ZMM6Te+b1/pN1crYIWklNT5qhApZKOcO7uh2Jgfuf0
-         cQLw==
-X-Gm-Message-State: AOJu0YzsNU7DsnIQaOcc29I0GqXx/JVgWwxtSytiywEcBoDcELnpLpLN
-	iOw0xaJLkf8gVXUKFXeDJN9i6Kl/aIgD1CJzFnmlbY7hTdjpawPO9SPR9OAifFkqvwJUDbYEI/F
-	3COAeKtbPp9ryh0c=
-X-Received: by 2002:a05:6808:19:b0:3ae:501e:a645 with SMTP id u25-20020a056808001900b003ae501ea645mr23275050oic.50.1699047722992;
-        Fri, 03 Nov 2023 14:42:02 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IHI8CbIeTp1KbCoYxz0JbEv5CEOEPYpkRMvorwNXwSkDHUSj0XHfQL9HeaymHNNOyFjtaX5TA==
-X-Received: by 2002:a05:6808:19:b0:3ae:501e:a645 with SMTP id u25-20020a056808001900b003ae501ea645mr23275015oic.50.1699047722718;
-        Fri, 03 Nov 2023 14:42:02 -0700 (PDT)
+        bh=F+aB8ULpCtjf+Gcfe540UtUd+NJKrSGjq+RpmL2JNA8=;
+        b=KWT3dKJ9vTyytwcnIhrczwoaYu9WUdJD4sH/AFPdZNTBHCGXkN9ad7FqrGtUiAG44z
+         zP48IBrgdutGl1F7sRtDJJjEfkaFL8BPIduMcbl+qBeGuqfnV+D5uhZCv2Sabg1xz2fq
+         GqC/ot+bx1JxeARfkKqmMQ9eT1Fac+NyUG907Mw+8PhP6BEQEwSEZP8fNdizCI1dL+Xh
+         dxr/pUECzDwmWUBfK3k2zkcX3+w/91Ei519aJNpubZhX6PWS6ssHYHtcMlT7P3zw0NrY
+         KFqtw49HclozwPyPdV6TFnZJhGQDH3LGCYFKOkS9wL7nJ8Q6XZzsDP5exKIze/Qx4wLK
+         XoLg==
+X-Gm-Message-State: AOJu0Yzz8FS63TP4i7ULKuymJFq6wL59xnrzIHipQ1azJQCsBIEbB6ET
+	5WHXyZwneotqe/mZFksu47OnX6HjJKOgDR7wBEXVjV+dC+4bSwKzcRGy6p5lf6e2YnURL4AYSEC
+	e2JrtIFByH3/EGNE=
+X-Received: by 2002:a17:902:d28b:b0:1c7:755d:ccc8 with SMTP id t11-20020a170902d28b00b001c7755dccc8mr17083750plc.29.1699048056768;
+        Fri, 03 Nov 2023 14:47:36 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IFdAXninLAKiU84+Ewx4UvETdEvykTsgu1OMaAqceXcjYCMbCq9Ef0fn5aeDPHxQVvb9/cevQ==
+X-Received: by 2002:a17:902:d28b:b0:1c7:755d:ccc8 with SMTP id t11-20020a170902d28b00b001c7755dccc8mr17083727plc.29.1699048056432;
+        Fri, 03 Nov 2023 14:47:36 -0700 (PDT)
 Received: from localhost (ip98-179-76-75.ph.ph.cox.net. [98.179.76.75])
-        by smtp.gmail.com with ESMTPSA id w19-20020aa78593000000b006b4ac8885b4sm1917578pfn.14.2023.11.03.14.42.01
+        by smtp.gmail.com with ESMTPSA id x14-20020a170902ec8e00b001cc2c7a30f2sm1807591plg.155.2023.11.03.14.47.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 03 Nov 2023 14:42:02 -0700 (PDT)
-Date: Fri, 3 Nov 2023 14:42:01 -0700
+        Fri, 03 Nov 2023 14:47:35 -0700 (PDT)
+Date: Fri, 3 Nov 2023 14:47:35 -0700
 From: Jerry Snitselaar <jsnitsel@redhat.com>
 To: Jason Gunthorpe <jgg@nvidia.com>
 Cc: acpica-devel@lists.linuxfoundation.org, 
@@ -75,184 +75,59 @@ Cc: acpica-devel@lists.linuxfoundation.org,
 	Zhenhua Huang <quic_zhenhuah@quicinc.com>
 Subject: Re: [PATCH RFC 02/17] of: Do not return struct iommu_ops from
  of_iommu_configure()
-Message-ID: <ld3rrnpix5x5kirfjlk6oafhoikkge4fgvcljhmiljuqge5266@asdcw5cfp53e>
+Message-ID: <2qhocnpfy4lbmfm4erccztrwoec5sjphvktcyvxdb75qbjyozu@aht6gj2zzuhj>
 References: <0-v1-5f734af130a3+34f-iommu_fwspec_jgg@nvidia.com>
  <2-v1-5f734af130a3+34f-iommu_fwspec_jgg@nvidia.com>
+ <ld3rrnpix5x5kirfjlk6oafhoikkge4fgvcljhmiljuqge5266@asdcw5cfp53e>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <2-v1-5f734af130a3+34f-iommu_fwspec_jgg@nvidia.com>
+In-Reply-To: <ld3rrnpix5x5kirfjlk6oafhoikkge4fgvcljhmiljuqge5266@asdcw5cfp53e>
 X-Mimecast-Spam-Score: 0
 X-Mimecast-Originator: redhat.com
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 
-On Fri, Nov 03, 2023 at 01:44:47PM -0300, Jason Gunthorpe wrote:
-> Nothing needs this pointer. Return a normal error code with the usual
-> IOMMU semantic that ENODEV means 'there is no IOMMU driver'.
+On Fri, Nov 03, 2023 at 02:42:01PM -0700, Jerry Snitselaar wrote:
+> On Fri, Nov 03, 2023 at 01:44:47PM -0300, Jason Gunthorpe wrote:
+> > Nothing needs this pointer. Return a normal error code with the usual
+> > IOMMU semantic that ENODEV means 'there is no IOMMU driver'.
+> > 
+> > Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> > ---
+> >  drivers/iommu/of_iommu.c | 29 ++++++++++++++++++-----------
+> >  drivers/of/device.c      | 22 +++++++++++++++-------
+> >  include/linux/of_iommu.h | 13 ++++++-------
+> >  3 files changed, 39 insertions(+), 25 deletions(-)
+> > 
+> > diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+> > index 157b286e36bf3a..e2fa29c16dd758 100644
+> > --- a/drivers/iommu/of_iommu.c
+> > +++ b/drivers/iommu/of_iommu.c
+> > @@ -107,20 +107,26 @@ static int of_iommu_configure_device(struct device_node *master_np,
+> >  		      of_iommu_configure_dev(master_np, dev);
+> >  }
+> >  
+> > -const struct iommu_ops *of_iommu_configure(struct device *dev,
+> > -					   struct device_node *master_np,
+> > -					   const u32 *id)
+> > +/*
+> > + * Returns:
+> > + *  0 on success, an iommu was configured
+> > + *  -ENODEV if the device does not have any IOMMU
+> > + *  -EPROBEDEFER if probing should be tried again
+> > + *  -errno fatal errors
 > 
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> ---
->  drivers/iommu/of_iommu.c | 29 ++++++++++++++++++-----------
->  drivers/of/device.c      | 22 +++++++++++++++-------
->  include/linux/of_iommu.h | 13 ++++++-------
->  3 files changed, 39 insertions(+), 25 deletions(-)
+> It looks to me like it will only return 0, -ENODEV, or -EPROBEDEFER
+> with other -errno getting boiled down to -ENODEV.
 > 
-> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-> index 157b286e36bf3a..e2fa29c16dd758 100644
-> --- a/drivers/iommu/of_iommu.c
-> +++ b/drivers/iommu/of_iommu.c
-> @@ -107,20 +107,26 @@ static int of_iommu_configure_device(struct device_node *master_np,
->  		      of_iommu_configure_dev(master_np, dev);
->  }
->  
-> -const struct iommu_ops *of_iommu_configure(struct device *dev,
-> -					   struct device_node *master_np,
-> -					   const u32 *id)
-> +/*
-> + * Returns:
-> + *  0 on success, an iommu was configured
-> + *  -ENODEV if the device does not have any IOMMU
-> + *  -EPROBEDEFER if probing should be tried again
-> + *  -errno fatal errors
 
-It looks to me like it will only return 0, -ENODEV, or -EPROBEDEFER
-with other -errno getting boiled down to -ENODEV.
+Ah, I should've looked at the next patch first. So, never mind on this
+and the question about the dev_dbg.
 
-> + */
-> +int of_iommu_configure(struct device *dev, struct device_node *master_np,
-> +		       const u32 *id)
->  {
->  	const struct iommu_ops *ops = NULL;
->  	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
->  	int err = NO_IOMMU;
->  
->  	if (!master_np)
-> -		return NULL;
-> +		return -ENODEV;
->  
->  	if (fwspec) {
->  		if (fwspec->ops)
-> -			return fwspec->ops;
-> +			return 0;
->  
->  		/* In the deferred case, start again from scratch */
->  		iommu_fwspec_free(dev);
-> @@ -163,14 +169,15 @@ const struct iommu_ops *of_iommu_configure(struct device *dev,
->  		err = iommu_probe_device(dev);
->  
->  	/* Ignore all other errors apart from EPROBE_DEFER */
-> -	if (err == -EPROBE_DEFER) {
-> -		ops = ERR_PTR(err);
-> -	} else if (err < 0) {
-> +	if (err < 0) {
-> +		if (err == -EPROBE_DEFER)
-> +			return err;
->  		dev_dbg(dev, "Adding to IOMMU failed: %d\n", err);
 
-minor thing, but should this use %pe and ERR_PTR(err) like is done
-in of_dma_configure_id?
-
-> -		ops = NULL;
-> +		return -ENODEV;
->  	}
-> -
-> -	return ops;
-> +	if (!ops)
-> +		return -ENODEV;
-> +	return 0;
->  }
->  
->  static enum iommu_resv_type __maybe_unused
-> diff --git a/drivers/of/device.c b/drivers/of/device.c
-> index 65c71be71a8d45..873d933e8e6d1d 100644
-> --- a/drivers/of/device.c
-> +++ b/drivers/of/device.c
-> @@ -93,12 +93,12 @@ of_dma_set_restricted_buffer(struct device *dev, struct device_node *np)
->  int of_dma_configure_id(struct device *dev, struct device_node *np,
->  			bool force_dma, const u32 *id)
->  {
-> -	const struct iommu_ops *iommu;
->  	const struct bus_dma_region *map = NULL;
->  	struct device_node *bus_np;
->  	u64 dma_start = 0;
->  	u64 mask, end, size = 0;
->  	bool coherent;
-> +	int iommu_ret;
->  	int ret;
->  
->  	if (np == dev->of_node)
-> @@ -181,21 +181,29 @@ int of_dma_configure_id(struct device *dev, struct device_node *np,
->  	dev_dbg(dev, "device is%sdma coherent\n",
->  		coherent ? " " : " not ");
->  
-> -	iommu = of_iommu_configure(dev, np, id);
-> -	if (PTR_ERR(iommu) == -EPROBE_DEFER) {
-> +	iommu_ret = of_iommu_configure(dev, np, id);
-> +	if (iommu_ret == -EPROBE_DEFER) {
->  		/* Don't touch range map if it wasn't set from a valid dma-ranges */
->  		if (!ret)
->  			dev->dma_range_map = NULL;
->  		kfree(map);
->  		return -EPROBE_DEFER;
-> -	}
-> +	} else if (iommu_ret == -ENODEV) {
-> +		dev_dbg(dev, "device is not behind an iommu\n");
-> +	} else if (iommu_ret) {
-> +		dev_err(dev, "iommu configuration for device failed with %pe\n",
-> +			ERR_PTR(iommu_ret));
->  
-> -	dev_dbg(dev, "device is%sbehind an iommu\n",
-> -		iommu ? " " : " not ");
-> +		/*
-> +		 * Historically this routine doesn't fail driver probing
-> +		 * due to errors in of_iommu_configure()
-> +		 */
-> +	} else
-> +		dev_dbg(dev, "device is behind an iommu\n");
->  
->  	arch_setup_dma_ops(dev, dma_start, size, coherent);
->  
-> -	if (!iommu)
-> +	if (iommu_ret)
->  		of_dma_set_restricted_buffer(dev, np);
->  
->  	return 0;
-> diff --git a/include/linux/of_iommu.h b/include/linux/of_iommu.h
-> index 9a5e6b410dd2fb..e61cbbe12dac6f 100644
-> --- a/include/linux/of_iommu.h
-> +++ b/include/linux/of_iommu.h
-> @@ -8,20 +8,19 @@ struct iommu_ops;
->  
->  #ifdef CONFIG_OF_IOMMU
->  
-> -extern const struct iommu_ops *of_iommu_configure(struct device *dev,
-> -					struct device_node *master_np,
-> -					const u32 *id);
-> +extern int of_iommu_configure(struct device *dev, struct device_node *master_np,
-> +			      const u32 *id);
->  
->  extern void of_iommu_get_resv_regions(struct device *dev,
->  				      struct list_head *list);
->  
->  #else
->  
-> -static inline const struct iommu_ops *of_iommu_configure(struct device *dev,
-> -					 struct device_node *master_np,
-> -					 const u32 *id)
-> +static inline int of_iommu_configure(struct device *dev,
-> +				     struct device_node *master_np,
-> +				     const u32 *id)
->  {
-> -	return NULL;
-> +	return -ENODEV;
->  }
->  
->  static inline void of_iommu_get_resv_regions(struct device *dev,
-> -- 
-> 2.42.0
-> 
+Reviewed-by: Jerry Snitselaar <jsnitsel@redhat.com>
 
