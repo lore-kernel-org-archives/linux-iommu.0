@@ -1,212 +1,135 @@
-Received: from mail-yw1-f171.google.com (mail-yw1-f171.google.com [209.85.128.171])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 19325241F8
-	for <iommu@lists.linux.dev>; Fri,  3 Nov 2023 22:01:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F2B522033A
+	for <iommu@lists.linux.dev>; Fri,  3 Nov 2023 22:03:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="Hqq2T4UB"
-Received: by mail-yw1-f171.google.com with SMTP id 00721157ae682-59b5484fbe6so30375517b3.1
-        for <iommu@lists.linux.dev>; Fri, 03 Nov 2023 15:01:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1699048881; x=1699653681; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=BYqhTmNXb9G7gJbSyD6id2o7LS6FWzJ6rtOkac47hAw=;
-        b=Hqq2T4UBdbOoAgA28HBD5omDKfqsNA2gKvpIa6/lCoyAz+MBvhcpfGOGyH3ocyu0UK
-         EY+5PfP4WRP3WGLXMwv04kvNOg5hWEUJ9MecCk/PWygMjbmRc51N+4u6DDCWrO5T7YBR
-         1S7qIiq6EVrZ0ev0uV8Gb1wCoJ8Xv9SLSmq+Ks3Ie5B9JZySvc0mSrIcIoabphnMsNeQ
-         9bf2bIOc3kGY2D6VlUA9mjaAnwXQusvRrgoMOUU3VucBPvp8C21XTnfSZ1XbuNC+3NR2
-         o8JFUtquB7sXbvDG/nVwro5SWx7fdzMa6+6OioUoUwdUmcP2kmLBEae/rzOmspo35+Ft
-         zZkw==
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="IdMprQ0x"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1699049037;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=rXpne+78UGenenxYxx9+jLWMRynS8s68tp81l2tHoL4=;
+	b=IdMprQ0xA6T2hFeeeHJ/9kuegBHcZEq9WQghye+QUoGISj7MhFS2ac3iN0QPXa4Qr1AvQ5
+	nqnn47VW8E0VFHpQZrOT7QuC7MHQTIyBt21Y3CRYuTNko1Y25x2R1f6EdgBaW4K9Ai937D
+	YJu5CGC0iJYdSPBRJ9cFbBwSTmELh4c=
+Received: from mail-pj1-f71.google.com (mail-pj1-f71.google.com
+ [209.85.216.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-235-XAzySnx0PIiV4H6M-ySIrw-1; Fri, 03 Nov 2023 18:03:56 -0400
+X-MC-Unique: XAzySnx0PIiV4H6M-ySIrw-1
+Received: by mail-pj1-f71.google.com with SMTP id 98e67ed59e1d1-2803ea89cefso2093045a91.2
+        for <iommu@lists.linux.dev>; Fri, 03 Nov 2023 15:03:56 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1699048881; x=1699653681;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=BYqhTmNXb9G7gJbSyD6id2o7LS6FWzJ6rtOkac47hAw=;
-        b=uQffitGtcW9IR/IZqF/bPr4McVpOQn50wKNnODLa9J/sxnUkgZgxpYtn+W3XnsDR7m
-         EAmno25/h0nKSuPChvYnsH462eiKBUvCyoUtKNx63TM82r9RM6GadQnsCjldZoSZjmFI
-         +7CkSdTUkxIkV22ldXnexGgdPfOb2bY9EhnMAFNu16zVAJlltq5ygTDuB0JLAEWQI+rc
-         wKkQFRVZth6mFvqfWL+6F7CqFAxafzLcD6m2l08bv6uQIduXxqsbXwTGFU2KizN5PkFw
-         gFKzOItTQVBH7g8pi5tpUvFMB0CqDvhO8e10jQYCx7TwgjAgiXun9HtaEt/X/v3wyDK5
-         cNyA==
-X-Gm-Message-State: AOJu0Ywymgn1CgqXaNYqarXjrKgPxJHs7JSZNMaZAUMZqhL1X94O8D9w
-	3NPwMsdTPi27wQnkeVWsNYzfgdUD/7tx73b35GeDbQ==
-X-Google-Smtp-Source: AGHT+IHBmpng10V/3ZppWAw0mb3tfwjNCUoY2XY/FhvN123GIZ3qKWwR9YYBDbSST6Fc1QMmALfW0xflp+636V3zadc=
-X-Received: by 2002:a5b:e8c:0:b0:da0:cc14:b66 with SMTP id z12-20020a5b0e8c000000b00da0cc140b66mr20480553ybr.9.1699048880909;
- Fri, 03 Nov 2023 15:01:20 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1699049035; x=1699653835;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=rXpne+78UGenenxYxx9+jLWMRynS8s68tp81l2tHoL4=;
+        b=d4ZSNaMxZ6ABgOQhIX5NgWQzOonAM1TUyNRK0JX4Zi2SMESltFNJmvgq2fvNxyQXKU
+         SzSgFFni7dOkB4FDp1pnnhjofAkJhMxkqBZgj1M2/776Jmt719MxgnMO3Z8G/kIItsGg
+         Bxt7SHHklbh4QDIUba28zvBnOSrIQfifHrGMwzwDFpiWGL5JadzS7wpgsls6LjzSdqdH
+         hKeP3WhtfWQl2dkq1pLs0whQeLHkOVX6USjvFie5cjDgsnHiTb3NeOiBRuVU0abiYAqq
+         r7hab6aU1ipAgdXvvGM7Wno6ASN3IqZCwDqR2X1hxZ3zQJ6VzZ4SdxKTAXdJKzZrHrbX
+         cCGg==
+X-Gm-Message-State: AOJu0YyKFOToGGWjMRVB5q6in/WbKI7RxppOCerknNRhAmEDCqvM/y0z
+	b1GVjvtCLXylr5EQ2AI8e6EarlBtipDv1LcrnuZhiZsp3YwNo+YoX+R10zWqhYIit3yfJFIDgka
+	Re+64GQJJloAc7nw=
+X-Received: by 2002:a17:90a:7547:b0:280:2609:6d47 with SMTP id q65-20020a17090a754700b0028026096d47mr15580985pjk.19.1699049035280;
+        Fri, 03 Nov 2023 15:03:55 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IFS5Dh794kn050Jmor3G/4m9PpE2w1GtTAul8MncDw85TpgTEhPbh0ocZRGWoVXSassV2SO7A==
+X-Received: by 2002:a17:90a:7547:b0:280:2609:6d47 with SMTP id q65-20020a17090a754700b0028026096d47mr15580944pjk.19.1699049034936;
+        Fri, 03 Nov 2023 15:03:54 -0700 (PDT)
+Received: from localhost (ip98-179-76-75.ph.ph.cox.net. [98.179.76.75])
+        by smtp.gmail.com with ESMTPSA id v3-20020a17090ad58300b00280976d4ce3sm1815162pju.37.2023.11.03.15.03.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 03 Nov 2023 15:03:54 -0700 (PDT)
+Date: Fri, 3 Nov 2023 15:03:53 -0700
+From: Jerry Snitselaar <jsnitsel@redhat.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: acpica-devel@lists.linuxfoundation.org, 
+	Alyssa Rosenzweig <alyssa@rosenzweig.io>, Albert Ou <aou@eecs.berkeley.edu>, asahi@lists.linux.dev, 
+	Lu Baolu <baolu.lu@linux.intel.com>, Catalin Marinas <catalin.marinas@arm.com>, 
+	Dexuan Cui <decui@microsoft.com>, devicetree@vger.kernel.org, 
+	David Woodhouse <dwmw2@infradead.org>, Frank Rowand <frowand.list@gmail.com>, 
+	Hanjun Guo <guohanjun@huawei.com>, Haiyang Zhang <haiyangz@microsoft.com>, 
+	Christoph Hellwig <hch@lst.de>, iommu@lists.linux.dev, 
+	Jean-Philippe Brucker <jean-philippe@linaro.org>, Jonathan Hunter <jonathanh@nvidia.com>, 
+	Joerg Roedel <joro@8bytes.org>, "K. Y. Srinivasan" <kys@microsoft.com>, 
+	Len Brown <lenb@kernel.org>, linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+	linux-hyperv@vger.kernel.org, linux-mips@vger.kernel.org, linux-riscv@lists.infradead.org, 
+	linux-snps-arc@lists.infradead.org, linux-tegra@vger.kernel.org, 
+	Russell King <linux@armlinux.org.uk>, Lorenzo Pieralisi <lpieralisi@kernel.org>, 
+	Marek Szyprowski <m.szyprowski@samsung.com>, Hector Martin <marcan@marcan.st>, 
+	Palmer Dabbelt <palmer@dabbelt.com>, Paul Walmsley <paul.walmsley@sifive.com>, 
+	"Rafael J. Wysocki" <rafael@kernel.org>, Robert Moore <robert.moore@intel.com>, 
+	Rob Herring <robh+dt@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+	Sudeep Holla <sudeep.holla@arm.com>, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, 
+	Sven Peter <sven@svenpeter.dev>, Thierry Reding <thierry.reding@gmail.com>, 
+	Thomas Bogendoerfer <tsbogend@alpha.franken.de>, Krishna Reddy <vdumpa@nvidia.com>, 
+	Vineet Gupta <vgupta@kernel.org>, virtualization@lists.linux-foundation.org, 
+	Wei Liu <wei.liu@kernel.org>, Will Deacon <will@kernel.org>, 
+	Zhenhua Huang <quic_zhenhuah@quicinc.com>
+Subject: Re: [PATCH RFC 03/17] of: Use -ENODEV consistently in
+ of_iommu_configure()
+Message-ID: <4iktbjhxkddukf7vywxquz5ffgik73wdw7p7rdqhsbsumhzhsl@y6u7tjbczafc>
+References: <0-v1-5f734af130a3+34f-iommu_fwspec_jgg@nvidia.com>
+ <3-v1-5f734af130a3+34f-iommu_fwspec_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20231103215124.1095-1-quic_bibekkum@quicinc.com> <20231103215124.1095-3-quic_bibekkum@quicinc.com>
-In-Reply-To: <20231103215124.1095-3-quic_bibekkum@quicinc.com>
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Date: Sat, 4 Nov 2023 00:01:09 +0200
-Message-ID: <CAA8EJpqWdHwF_mZoXt8wpYeKLWQEFs3H83c-OsLVYVGYmi5mkQ@mail.gmail.com>
-Subject: Re: [PATCH 2/3] iommu/arm-smmu: add ACTLR data and support for SM8550
-To: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
-Cc: will@kernel.org, robin.murphy@arm.com, joro@8bytes.org, a39.skl@gmail.com, 
-	konrad.dybcio@linaro.org, quic_saipraka@quicinc.com, 
-	quic_pkondeti@quicinc.com, quic_molvera@quicinc.com, 
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, 
-	linux-kernel@vger.kernel.org, qipl.kernel.upstream@quicinc.com
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <3-v1-5f734af130a3+34f-iommu_fwspec_jgg@nvidia.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-On Fri, 3 Nov 2023 at 23:53, Bibek Kumar Patro
-<quic_bibekkum@quicinc.com> wrote:
->
-> Add ACTLR data table for SM8550 along with support for
-> same including SM8550 specific implementation operations.
->
-> Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+On Fri, Nov 03, 2023 at 01:44:48PM -0300, Jason Gunthorpe wrote:
+> Instead of returning 1 and trying to handle positive error codes just
+> stick to the convention of returning -ENODEV. Remove references to ops
+> from of_iommu_configure(), a NULL ops will already generate an error code.
+> 
+> There is no reason to check dev->bus, if err=0 at this point then the
+> called configure functions thought there was an iommu and we should try to
+> probe it. Remove it.
+> 
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 > ---
->  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 85 +++++++++++++++++++++-
->  1 file changed, 81 insertions(+), 4 deletions(-)
->
-> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> index 68c1f4908473..590b7c285299 100644
-> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> @@ -25,6 +25,64 @@ struct actlr_data {
->         u32 actlr;
->  };
->
-> +static const struct actlr_data sm8550_apps_actlr_data[] = {
-> +       { 0x18a0, 0x0000, 0x00000103 },
-> +       { 0x18e0, 0x0000, 0x00000103 },
-> +       { 0x0800, 0x0020, 0x00000001 },
-> +       { 0x1800, 0x00c0, 0x00000001 },
-> +       { 0x1820, 0x0000, 0x00000001 },
-> +       { 0x1860, 0x0000, 0x00000001 },
-> +       { 0x0c01, 0x0020, 0x00000303 },
-> +       { 0x0c02, 0x0020, 0x00000303 },
-> +       { 0x0c03, 0x0020, 0x00000303 },
-> +       { 0x0c04, 0x0020, 0x00000303 },
-> +       { 0x0c05, 0x0020, 0x00000303 },
-> +       { 0x0c06, 0x0020, 0x00000303 },
-> +       { 0x0c07, 0x0020, 0x00000303 },
-> +       { 0x0c08, 0x0020, 0x00000303 },
-> +       { 0x0c09, 0x0020, 0x00000303 },
-> +       { 0x0c0c, 0x0020, 0x00000303 },
-> +       { 0x0c0d, 0x0020, 0x00000303 },
-> +       { 0x0c0e, 0x0020, 0x00000303 },
-> +       { 0x0c0f, 0x0020, 0x00000303 },
-> +       { 0x1961, 0x0000, 0x00000303 },
-> +       { 0x1962, 0x0000, 0x00000303 },
-> +       { 0x1963, 0x0000, 0x00000303 },
-> +       { 0x1964, 0x0000, 0x00000303 },
-> +       { 0x1965, 0x0000, 0x00000303 },
-> +       { 0x1966, 0x0000, 0x00000303 },
-> +       { 0x1967, 0x0000, 0x00000303 },
-> +       { 0x1968, 0x0000, 0x00000303 },
-> +       { 0x1969, 0x0000, 0x00000303 },
-> +       { 0x196c, 0x0000, 0x00000303 },
-> +       { 0x196d, 0x0000, 0x00000303 },
-> +       { 0x196e, 0x0000, 0x00000303 },
-> +       { 0x196f, 0x0000, 0x00000303 },
-> +       { 0x19c1, 0x0010, 0x00000303 },
-> +       { 0x19c2, 0x0010, 0x00000303 },
-> +       { 0x19c3, 0x0010, 0x00000303 },
-> +       { 0x19c4, 0x0010, 0x00000303 },
-> +       { 0x19c5, 0x0010, 0x00000303 },
-> +       { 0x19c6, 0x0010, 0x00000303 },
-> +       { 0x19c7, 0x0010, 0x00000303 },
-> +       { 0x19c8, 0x0010, 0x00000303 },
-> +       { 0x19c9, 0x0010, 0x00000303 },
-> +       { 0x19cc, 0x0010, 0x00000303 },
-> +       { 0x19cd, 0x0010, 0x00000303 },
-> +       { 0x19ce, 0x0010, 0x00000303 },
-> +       { 0x19cf, 0x0010, 0x00000303 },
-> +       { 0x1c00, 0x0002, 0x00000103 },
-> +       { 0x1c01, 0x0000, 0x00000001 },
-> +       { 0x1920, 0x0000, 0x00000103 },
-> +       { 0x1923, 0x0000, 0x00000103 },
-> +       { 0x1924, 0x0000, 0x00000103 },
-> +       { 0x1940, 0x0000, 0x00000103 },
-> +       { 0x1941, 0x0004, 0x00000103 },
-> +       { 0x1943, 0x0000, 0x00000103 },
-> +       { 0x1944, 0x0000, 0x00000103 },
-> +       { 0x1947, 0x0000, 0x00000103 },
-> +};
+>  drivers/iommu/of_iommu.c | 42 +++++++++++++---------------------------
+>  1 file changed, 13 insertions(+), 29 deletions(-)
+> 
+> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+> index e2fa29c16dd758..4f77495a2543ea 100644
+> --- a/drivers/iommu/of_iommu.c
+> +++ b/drivers/iommu/of_iommu.c
+> @@ -17,7 +17,7 @@
+>  #include <linux/slab.h>
+>  #include <linux/fsl/mc.h>
+>  
+> -#define NO_IOMMU	1
+> +#define NO_IOMMU	-ENODEV
+>  
 
-This is nearly impossible to handle.
-Please add defines for 0x1, 0x103 and 0x303. Also please consider
-adding comments for the devices.
+With this the following can be simplified in of_iommu_configure_dev_id:
 
-> +
->  static struct qcom_smmu *to_qcom_smmu(struct arm_smmu_device *smmu)
->  {
->         return container_of(smmu, struct qcom_smmu, smmu);
-> @@ -444,6 +502,16 @@ static const struct arm_smmu_impl sdm845_smmu_500_impl = {
->         .tlb_sync = qcom_smmu_tlb_sync,
->  };
->
-> +
-> +static const struct arm_smmu_impl sm8550_smmu_500_impl = {
-> +       .init_context = qcom_smmu_init_context,
-> +       .cfg_probe = qcom_smmu_cfg_probe,
-> +       .def_domain_type = qcom_smmu_def_domain_type,
-> +       .reset = arm_mmu500_reset,
-> +       .write_s2cr = qcom_smmu_write_s2cr,
-> +       .tlb_sync = qcom_smmu_tlb_sync,
-> +};
-> +
->  static const struct arm_smmu_impl qcom_adreno_smmu_v2_impl = {
->         .init_context = qcom_adreno_smmu_init_context,
->         .def_domain_type = qcom_smmu_def_domain_type,
-> @@ -507,6 +575,11 @@ static const struct qcom_smmu_config qcom_smmu_impl0_cfg = {
->         .reg_offset = qcom_smmu_impl0_reg_offset,
->  };
->
-> +static const struct actlr_config sm8550_actlrcfg = {
-> +       .adata = sm8550_apps_actlr_data,
-> +       .size = ARRAY_SIZE(sm8550_apps_actlr_data),
-> +};
-> +
->  /*
->   * It is not yet possible to use MDP SMMU with the bypass quirk on the msm8996,
->   * there are not enough context banks.
-> @@ -530,16 +603,20 @@ static const struct qcom_smmu_match_data sdm845_smmu_500_data = {
->         /* Also no debug configuration. */
->  };
->
-> +
-> +static const struct qcom_smmu_match_data sm8550_smmu_500_impl0_data = {
-> +       .impl = &sm8550_smmu_500_impl,
-> +       .adreno_impl = &qcom_adreno_smmu_500_impl,
-> +       .cfg = &qcom_smmu_impl0_cfg,
-> +       .actlrcfg = &sm8550_actlrcfg,
-> +};
-
-This structure doesn't seem to be linked. Did you test your patches?
-
-> +
->  static const struct qcom_smmu_match_data qcom_smmu_500_impl0_data = {
->         .impl = &qcom_smmu_500_impl,
->         .adreno_impl = &qcom_adreno_smmu_500_impl,
->         .cfg = &qcom_smmu_impl0_cfg,
->  };
->
-> -/*
-> - * Do not add any more qcom,SOC-smmu-500 entries to this list, unless they need
-> - * special handling and can not be covered by the qcom,smmu-500 entry.
-> - */
-
-Leave the comment in place.
-
->  static const struct of_device_id __maybe_unused qcom_smmu_impl_of_match[] = {
->         { .compatible = "qcom,msm8996-smmu-v2", .data = &msm8996_smmu_data },
->         { .compatible = "qcom,msm8998-smmu-v2", .data = &qcom_smmu_v2_data },
-> --
-> 2.17.1
->
+diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+index 4f77495a2543..b9b995712029 100644
+--- a/drivers/iommu/of_iommu.c
++++ b/drivers/iommu/of_iommu.c
+@@ -61,7 +61,7 @@ static int of_iommu_configure_dev_id(struct device_node *master_np,
+ 			 "iommu-map-mask", &iommu_spec.np,
+ 			 iommu_spec.args);
+ 	if (err)
+-		return err == -ENODEV ? NO_IOMMU : err;
++		return err;
+ 
+ 	err = of_iommu_xlate(dev, &iommu_spec);
+ 	of_node_put(iommu_spec.np);
 
 
--- 
-With best wishes
-Dmitry
