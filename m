@@ -1,150 +1,96 @@
-Received: from bee.tesarici.cz (bee.tesarici.cz [77.93.223.253])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C3D6115AFA
-	for <iommu@lists.linux.dev>; Fri,  3 Nov 2023 18:59:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=tesarici.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tesarici.cz
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5DE10171CD
+	for <iommu@lists.linux.dev>; Fri,  3 Nov 2023 20:04:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b="abNuYzya"
-Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by bee.tesarici.cz (Postfix) with ESMTPSA id F2F4F19457D;
-	Fri,  3 Nov 2023 19:59:50 +0100 (CET)
-Authentication-Results: mail.tesarici.cz; dmarc=fail (p=none dis=none) header.from=tesarici.cz
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tesarici.cz; s=mail;
-	t=1699037991; bh=2X3978fiyf86cEJ5+RXIPYOu8hRy4Jy4zMNc86QDZf4=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=abNuYzyaS5QxEYL9NMfH+Nmbuy4G7HoKPsgJX0rOT5Ejarh1eA5C9drjyau8l2XpD
-	 5C2ZAtsFDYM48EzJYDhYmK+Oo5JsOmBfTKqZ8d7eSTYAYAmVJ7/sLZxZVg22hmNUvS
-	 +jF9ti6yBEx2SgluKXxZHI/7KxY5ofI4Gmy6VYQlVp1FaqI+wqK0lKvLE54rnFNhDu
-	 ucY5cvfAeEl3BJmuuCxCyJcy5pJqp0ozI6usiF6VvUyneMRmuhhMIYoaGZuV4FyUdG
-	 4LXqhDHgdv2YLkEsadXaNne9aN2qJp7TmUayd4xXXIzqnVl2ME0RK1wENoECTfdrL/
-	 t6eEmmD2sbffw==
-Date: Fri, 3 Nov 2023 19:59:49 +0100
-From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
-To: Niklas Schnelle <schnelle@linux.ibm.com>
-Cc: Christoph Hellwig <hch@lst.de>, Bjorn Helgaas <bhelgaas@google.com>,
- Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy
- <robin.murphy@arm.com>, Petr Tesarik <petr.tesarik1@huawei-partners.com>,
- Ross Lagerwall <ross.lagerwall@citrix.com>, linux-pci
- <linux-pci@vger.kernel.org>, linux-kernel@vger.kernel.org,
- iommu@lists.linux.dev, Matthew Rosato <mjrosato@linux.ibm.com>, Halil Pasic
-  <pasic@linux.ibm.com>
-Subject: Re: Memory corruption with CONFIG_SWIOTLB_DYNAMIC=y
-Message-ID: <20231103195949.0af884d0@meshulam.tesarici.cz>
-In-Reply-To: <104a8c8fedffd1ff8a2890983e2ec1c26bff6810.camel@linux.ibm.com>
-References: <104a8c8fedffd1ff8a2890983e2ec1c26bff6810.camel@linux.ibm.com>
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; x86_64-suse-linux-gnu)
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="iqSCszqP"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1699041892;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=1OzQ+mysgekhlmn5TVv8N1n5lIKYQ3IFVh9mWG/eO8g=;
+	b=iqSCszqPoQB0juf19DT8cMe50/4XaPn3jDamgAENtgc0X1QlkX+I5DQ/nke+xF8bI8gs6d
+	UME7FZESw7sBUw14CDzuS3M7JyRBIIQ0XZsiOfBW4fEHhQu0tCIOzkZyDstPO7rnfVj3an
+	7IACxuo4ROShgZVEiR9YFYPrAcBC8Zk=
+Received: from mail-oa1-f72.google.com (mail-oa1-f72.google.com
+ [209.85.160.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-74-HbONJbvUMLuUmE3QZLsinw-1; Fri, 03 Nov 2023 16:04:50 -0400
+X-MC-Unique: HbONJbvUMLuUmE3QZLsinw-1
+Received: by mail-oa1-f72.google.com with SMTP id 586e51a60fabf-1e987fa0d87so3167815fac.1
+        for <iommu@lists.linux.dev>; Fri, 03 Nov 2023 13:04:50 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1699041890; x=1699646690;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=1OzQ+mysgekhlmn5TVv8N1n5lIKYQ3IFVh9mWG/eO8g=;
+        b=VkEnG3dQcVfxVfQtQMnZCDqk3u9wcRxLgtb4gl5NbYmb72/NbjkXO2lOuOHx6tcoLn
+         gS9UEjrsahkA5DOQqju/7QBU8/OYhaPjdKNT5NKyFHiuaDfcOssferVL6xveDOO5aLh2
+         RYhKLQlND+7SJYaRjQpOddsPfPKRlzUTGz+HsribRH63fpLKO0pR7Kzzoebl0pcoPTyo
+         BVyaidhTIBWoD2T/xi3miVz171cogy3EkzK+zB6CGQyZeLv/GyoonNSIEgdpMwxYeaTI
+         rqlDqsdg+PQbnsEf8lKBmoy/7Vyo3o9Po7jveSsamC8oQnZOcFE/5/H+SSWameFxUxib
+         C1iw==
+X-Gm-Message-State: AOJu0Yz3JymD9ePHe16FqCsvaiTEG1TqUZyDnB9ETsW3yQGbZ/f1semf
+	9q4cRG5LYBnGw2WVXaOgBCxwA94Rl32ocHxLM1B6mkwJzXzWK7l2GXbovSe1zeAObN5DzFeTc+u
+	h/jKkFLaC+IdYlyc=
+X-Received: by 2002:a05:6870:1183:b0:1e9:f220:ac3b with SMTP id 3-20020a056870118300b001e9f220ac3bmr22237360oau.32.1699041890112;
+        Fri, 03 Nov 2023 13:04:50 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IFLi5AqLxsbuEYljInRn+NA31jis0Cd1kvF705FHYMuK6MitH6grMLWp9GtAPMIyyR4rFG8jA==
+X-Received: by 2002:a05:6870:1183:b0:1e9:f220:ac3b with SMTP id 3-20020a056870118300b001e9f220ac3bmr22237291oau.32.1699041889682;
+        Fri, 03 Nov 2023 13:04:49 -0700 (PDT)
+Received: from localhost (ip98-179-76-75.ph.ph.cox.net. [98.179.76.75])
+        by smtp.gmail.com with ESMTPSA id q14-20020a632a0e000000b005bd3f34b10dsm1704766pgq.24.2023.11.03.13.04.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 03 Nov 2023 13:04:49 -0700 (PDT)
+Date: Fri, 3 Nov 2023 13:04:47 -0700
+From: Jerry Snitselaar <jsnitsel@redhat.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: acpica-devel@lists.linuxfoundation.org, 
+	Alyssa Rosenzweig <alyssa@rosenzweig.io>, Albert Ou <aou@eecs.berkeley.edu>, asahi@lists.linux.dev, 
+	Lu Baolu <baolu.lu@linux.intel.com>, Catalin Marinas <catalin.marinas@arm.com>, 
+	Dexuan Cui <decui@microsoft.com>, devicetree@vger.kernel.org, 
+	David Woodhouse <dwmw2@infradead.org>, Frank Rowand <frowand.list@gmail.com>, 
+	Hanjun Guo <guohanjun@huawei.com>, Haiyang Zhang <haiyangz@microsoft.com>, 
+	Christoph Hellwig <hch@lst.de>, iommu@lists.linux.dev, 
+	Jean-Philippe Brucker <jean-philippe@linaro.org>, Jonathan Hunter <jonathanh@nvidia.com>, 
+	Joerg Roedel <joro@8bytes.org>, "K. Y. Srinivasan" <kys@microsoft.com>, 
+	Len Brown <lenb@kernel.org>, linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+	linux-hyperv@vger.kernel.org, linux-mips@vger.kernel.org, linux-riscv@lists.infradead.org, 
+	linux-snps-arc@lists.infradead.org, linux-tegra@vger.kernel.org, 
+	Russell King <linux@armlinux.org.uk>, Lorenzo Pieralisi <lpieralisi@kernel.org>, 
+	Marek Szyprowski <m.szyprowski@samsung.com>, Hector Martin <marcan@marcan.st>, 
+	Palmer Dabbelt <palmer@dabbelt.com>, Paul Walmsley <paul.walmsley@sifive.com>, 
+	"Rafael J. Wysocki" <rafael@kernel.org>, Robert Moore <robert.moore@intel.com>, 
+	Rob Herring <robh+dt@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+	Sudeep Holla <sudeep.holla@arm.com>, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, 
+	Sven Peter <sven@svenpeter.dev>, Thierry Reding <thierry.reding@gmail.com>, 
+	Thomas Bogendoerfer <tsbogend@alpha.franken.de>, Krishna Reddy <vdumpa@nvidia.com>, 
+	Vineet Gupta <vgupta@kernel.org>, virtualization@lists.linux-foundation.org, 
+	Wei Liu <wei.liu@kernel.org>, Will Deacon <will@kernel.org>, 
+	Zhenhua Huang <quic_zhenhuah@quicinc.com>
+Subject: Re: [PATCH RFC 01/17] iommu: Remove struct iommu_ops *iommu from
+ arch_setup_dma_ops()
+Message-ID: <zrelyki44xy2jfqse2op5jjddnejbg4zpysvdkfx6ty2ylcjzw@ynuastkbx4kp>
+References: <0-v1-5f734af130a3+34f-iommu_fwspec_jgg@nvidia.com>
+ <1-v1-5f734af130a3+34f-iommu_fwspec_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <1-v1-5f734af130a3+34f-iommu_fwspec_jgg@nvidia.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Hello Niklas,
 
-thank you for your report. This is some great analysis!
 
-On Fri, 03 Nov 2023 16:13:03 +0100
-Niklas Schnelle <schnelle@linux.ibm.com> wrote:
+Reviewed-by: Jerry Snitselaar <jsnitsel@redhat.com>
 
-> Hi Swiotlb Maintainers,
-> 
-> With s390 slated to use dma-iommu.c I was experimenting with
-> CONFIG_SWIOTLB_DYNAMIC but was getting errors all over the place.
-> Debugging this I've managed to narrow things down to what I believe is
-> a memory corruption issue caused by overrunning the entire transient
-> memory pool allocated by swiotlb. In my test this happens on the
-> iommu_dma_map_page(), swiotlb_tbl_map_single() path when handling
-> untrusted PCI devices.
-> 
-> I've seen this happen only for transient pools when:
-> *  allocation size >=PAGE_SIZE and,
-> *  the original address of the mapping is not page aligned. 
-> 
-> The overrun can be seen clearly by adding a simple "tlb_addr +
-> alloc_size > pool->end' overrun check to swiotlb_tbl_map_single() and
-> forcing PCI test devices to be untrusted. With that in place while an
-> NVMe fio work load runs fine TCP/IP tests on a Mellanox ConnectX-4 VF
-> reliably trigger the overrun check and with a debug print produce
-> output like the following:
-> 
-> software IO TLB:
-> 	transient:1
-> 	index:1
-> 	dma_get_min_align_mask(dev):0
-> 	orig_addr:ac0caebe
-> 	tlb_addr=a4d0f800
-> 	start:a4d0f000
-> 	end:a4d10000
-> 	pool_size:4096
-> 	alloc_size:4096
-> 	offset:0
-> 
-> The complete code used for this test is available on my
-> git.kernel.org[0] repository but it's bascially v6.6 + iommu/next (for
-> s390 DMA API) + 2 trivial debug commits.
-> 
-> For further analysis I've worked closely with Halil Pasic.
-> 
-> The reason why we think this is happening seems twofold. Under a
-> certain set of circumstances in the function swiotlb_find_slots():
-> 1) the allocated transient pool can not fit the required bounce buffer,
-
-I am aware that this can happen. It's in fact why the index returned by
-swiotlb_search_pool_area() is checked in swiotlb_find_slots().
-
-> and
-> 2) the invocation of swiotlb_pool_find_slots() finds "a suitable
-> slot" even though it should fail.
-
-This needs fixing.
-
-> The reason for 2), i.e. swiotlb_pool_find_slots() thinking there is a
-> suitable bounce buffer in the pool is that for transient pools pool-
-> >slots[i].list end up nonsensical, because swiotlb_init_io_tlb_pool(),  
-> among other places in swiotlb, assumes that the nslabs of the pool is a
-> multiple of IO_TLB_SEGSIZE
-
-Ah... Yes, the transient pool size must also be a multiple of segment
-size, but it is not enforced.
-
-This reminds me of my debugging session that resulted in commit
-aabd12609f91 ("swiotlb: always set the number of areas before
-allocating the pool") and this conversation:
-
-https://lore.kernel.org/linux-iommu/20230629074403.7f8ed9d6@meshulam.tesarici.cz/
-
-> The reason for 1) is a bit more convoluted and not entirely understood
-> by us. We are certain though that the function swiotlb_find_slots()
-> allocates a pool with nr_slots(alloc_size), where this alloc_size is
-> the alloc_size from swiotlb_tbl_map_single() + swiotlb_align_offset(),
-> but for alignment reasons some slots may get "skipped over" in
-> swiotlb_area_find_slots() causing the picked slots to overrun the
-> allocation.
-
-Yes, this can happen.
-
-> Not sure how to properly fix this as the different alignment
-> requirements get pretty complex quickly. So would appreciate your
-> input.
-
-I don't think it's possible to improve the allocation logic without
-modifying the page allocator and/or the DMA atomic pool allocator to
-take additional constraints into account.
-
-I had a wild idea back in March, but it would require some intrusive
-changes in the mm subsystem. Among other things, it would make memory
-zones obsolete. I mean, people may actually like to get rid of DMA,
-DMA32 and NORMAL, but you see how many nasty bugs were introduced even
-by a relatively small change in SWIOTLB. Replacing memory zones with a
-system based on generic physical allocation constraints would probably
-blow up the universe. ;-)
-
-Petr T
