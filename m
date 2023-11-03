@@ -1,107 +1,258 @@
-Received: from bee.tesarici.cz (bee.tesarici.cz [77.93.223.253])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D4FB1CF91
-	for <iommu@lists.linux.dev>; Fri,  3 Nov 2023 20:50:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=tesarici.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tesarici.cz
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5EF7D2376E
+	for <iommu@lists.linux.dev>; Fri,  3 Nov 2023 21:42:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b="OKDh8aDX"
-Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by bee.tesarici.cz (Postfix) with ESMTPSA id 89C841953CF;
-	Fri,  3 Nov 2023 21:50:54 +0100 (CET)
-Authentication-Results: mail.tesarici.cz; dmarc=fail (p=none dis=none) header.from=tesarici.cz
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tesarici.cz; s=mail;
-	t=1699044654; bh=ovF2UxeFKGVoKgOj3oQMqaLMJ/vL6MISuASAGJ+7cOo=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=OKDh8aDXW5UlBWkhlrSF+eWWUCy4nesCqv1sSWA8SKz3LtzRyonOKo29z948jxFn8
-	 IP0OAsvNwuKaro8+qHqn3sTG3glqpExjeHguIxFqapE/hWSGLaPHOThV5ofhLMM0N4
-	 ZD4zVycNv0+4kwjtBNZmagUDOJJHW23CCP+axUGAz5o8UxXHXTcCyuukm0Fz51SMtI
-	 pvyIjLrJn+VAqScqSvK6YCeZIkP0+YStxsNx/lanF4fG2gGB7t+0IAFt3pXSJU86+v
-	 db4SKPxpo1B9rsrQpHgQMeMk08n9RVtjGPdgHGlERFIC+X5JS4KT1fq0w0xs1so5K3
-	 mFANpzOhAXKtw==
-Date: Fri, 3 Nov 2023 21:50:53 +0100
-From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
-To: Halil Pasic <pasic@linux.ibm.com>
-Cc: Niklas Schnelle <schnelle@linux.ibm.com>, Christoph Hellwig
- <hch@lst.de>, Bjorn Helgaas <bhelgaas@google.com>, Marek Szyprowski
- <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Petr
- Tesarik <petr.tesarik1@huawei-partners.com>, Ross Lagerwall
- <ross.lagerwall@citrix.com>, linux-pci <linux-pci@vger.kernel.org>,
- linux-kernel@vger.kernel.org, iommu@lists.linux.dev, Matthew Rosato
- <mjrosato@linux.ibm.com>
-Subject: Re: Memory corruption with CONFIG_SWIOTLB_DYNAMIC=y
-Message-ID: <20231103214831.26d29f4d@meshulam.tesarici.cz>
-In-Reply-To: <20231103171447.02759771.pasic@linux.ibm.com>
-References: <104a8c8fedffd1ff8a2890983e2ec1c26bff6810.camel@linux.ibm.com>
-	<20231103171447.02759771.pasic@linux.ibm.com>
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; x86_64-suse-linux-gnu)
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="cJU1NPby"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1699047725;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=3kZEfbVDRZWYaeV8fUpM6RCBCDL9qHVSAnBx2A/2LQY=;
+	b=cJU1NPbyrcjpw/lKER9bK1/ySnPVLRtLQIUYEzi4f3UXJ+HhIAdWTpVBzRgq8d7WBKy7fw
+	iaqI/9H32JJ8MS0khOyLV+H9QqUIKTpB5taaGNsfBktos7YPqYysopzpH1xoVBD8fUtNW7
+	d3U1yRr1QNNF39DUmtcgC0u5bFaYTRU=
+Received: from mail-oi1-f197.google.com (mail-oi1-f197.google.com
+ [209.85.167.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-530-DqgogfXTPOSBiIgjUGythg-1; Fri, 03 Nov 2023 17:42:03 -0400
+X-MC-Unique: DqgogfXTPOSBiIgjUGythg-1
+Received: by mail-oi1-f197.google.com with SMTP id 5614622812f47-3b3447c72c4so3648428b6e.1
+        for <iommu@lists.linux.dev>; Fri, 03 Nov 2023 14:42:03 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1699047723; x=1699652523;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=3kZEfbVDRZWYaeV8fUpM6RCBCDL9qHVSAnBx2A/2LQY=;
+        b=Bo8AxeqdhySBoueyNvz6KkIRvdFecTq80douQrWGix1Pyc+kHMAKSORK4sLBCNvKLq
+         I5FV7+RzNNQh9HYGQ5PrVTIpHd1eX1p/vvxBlwEpftc/zPHNvJpLTPh4xY6PgG73vDfc
+         0N+K9FLL9PaCLjg+0jL2ea3Z2NugaZCheZ7L8E/NVQ1UlU0QPFEI6kb2wfDBLllkw+E2
+         NN2PTRI66F0XjjjgI9xOCUU4yHj0pqHsuXWrPg4NoDJT+8ac6XEeccR7w0h0ViSVPxj1
+         Uq6IlfZyS1Sn4v+a1gyh+ci4R5ZMM6Te+b1/pN1crYIWklNT5qhApZKOcO7uh2Jgfuf0
+         cQLw==
+X-Gm-Message-State: AOJu0YzsNU7DsnIQaOcc29I0GqXx/JVgWwxtSytiywEcBoDcELnpLpLN
+	iOw0xaJLkf8gVXUKFXeDJN9i6Kl/aIgD1CJzFnmlbY7hTdjpawPO9SPR9OAifFkqvwJUDbYEI/F
+	3COAeKtbPp9ryh0c=
+X-Received: by 2002:a05:6808:19:b0:3ae:501e:a645 with SMTP id u25-20020a056808001900b003ae501ea645mr23275050oic.50.1699047722992;
+        Fri, 03 Nov 2023 14:42:02 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IHI8CbIeTp1KbCoYxz0JbEv5CEOEPYpkRMvorwNXwSkDHUSj0XHfQL9HeaymHNNOyFjtaX5TA==
+X-Received: by 2002:a05:6808:19:b0:3ae:501e:a645 with SMTP id u25-20020a056808001900b003ae501ea645mr23275015oic.50.1699047722718;
+        Fri, 03 Nov 2023 14:42:02 -0700 (PDT)
+Received: from localhost (ip98-179-76-75.ph.ph.cox.net. [98.179.76.75])
+        by smtp.gmail.com with ESMTPSA id w19-20020aa78593000000b006b4ac8885b4sm1917578pfn.14.2023.11.03.14.42.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 03 Nov 2023 14:42:02 -0700 (PDT)
+Date: Fri, 3 Nov 2023 14:42:01 -0700
+From: Jerry Snitselaar <jsnitsel@redhat.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: acpica-devel@lists.linuxfoundation.org, 
+	Alyssa Rosenzweig <alyssa@rosenzweig.io>, Albert Ou <aou@eecs.berkeley.edu>, asahi@lists.linux.dev, 
+	Lu Baolu <baolu.lu@linux.intel.com>, Catalin Marinas <catalin.marinas@arm.com>, 
+	Dexuan Cui <decui@microsoft.com>, devicetree@vger.kernel.org, 
+	David Woodhouse <dwmw2@infradead.org>, Frank Rowand <frowand.list@gmail.com>, 
+	Hanjun Guo <guohanjun@huawei.com>, Haiyang Zhang <haiyangz@microsoft.com>, 
+	Christoph Hellwig <hch@lst.de>, iommu@lists.linux.dev, 
+	Jean-Philippe Brucker <jean-philippe@linaro.org>, Jonathan Hunter <jonathanh@nvidia.com>, 
+	Joerg Roedel <joro@8bytes.org>, "K. Y. Srinivasan" <kys@microsoft.com>, 
+	Len Brown <lenb@kernel.org>, linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+	linux-hyperv@vger.kernel.org, linux-mips@vger.kernel.org, linux-riscv@lists.infradead.org, 
+	linux-snps-arc@lists.infradead.org, linux-tegra@vger.kernel.org, 
+	Russell King <linux@armlinux.org.uk>, Lorenzo Pieralisi <lpieralisi@kernel.org>, 
+	Marek Szyprowski <m.szyprowski@samsung.com>, Hector Martin <marcan@marcan.st>, 
+	Palmer Dabbelt <palmer@dabbelt.com>, Paul Walmsley <paul.walmsley@sifive.com>, 
+	"Rafael J. Wysocki" <rafael@kernel.org>, Robert Moore <robert.moore@intel.com>, 
+	Rob Herring <robh+dt@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+	Sudeep Holla <sudeep.holla@arm.com>, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, 
+	Sven Peter <sven@svenpeter.dev>, Thierry Reding <thierry.reding@gmail.com>, 
+	Thomas Bogendoerfer <tsbogend@alpha.franken.de>, Krishna Reddy <vdumpa@nvidia.com>, 
+	Vineet Gupta <vgupta@kernel.org>, virtualization@lists.linux-foundation.org, 
+	Wei Liu <wei.liu@kernel.org>, Will Deacon <will@kernel.org>, 
+	Zhenhua Huang <quic_zhenhuah@quicinc.com>
+Subject: Re: [PATCH RFC 02/17] of: Do not return struct iommu_ops from
+ of_iommu_configure()
+Message-ID: <ld3rrnpix5x5kirfjlk6oafhoikkge4fgvcljhmiljuqge5266@asdcw5cfp53e>
+References: <0-v1-5f734af130a3+34f-iommu_fwspec_jgg@nvidia.com>
+ <2-v1-5f734af130a3+34f-iommu_fwspec_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <2-v1-5f734af130a3+34f-iommu_fwspec_jgg@nvidia.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-On Fri, 3 Nov 2023 17:14:47 +0100
-Halil Pasic <pasic@linux.ibm.com> wrote:
+On Fri, Nov 03, 2023 at 01:44:47PM -0300, Jason Gunthorpe wrote:
+> Nothing needs this pointer. Return a normal error code with the usual
+> IOMMU semantic that ENODEV means 'there is no IOMMU driver'.
+> 
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> ---
+>  drivers/iommu/of_iommu.c | 29 ++++++++++++++++++-----------
+>  drivers/of/device.c      | 22 +++++++++++++++-------
+>  include/linux/of_iommu.h | 13 ++++++-------
+>  3 files changed, 39 insertions(+), 25 deletions(-)
+> 
+> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+> index 157b286e36bf3a..e2fa29c16dd758 100644
+> --- a/drivers/iommu/of_iommu.c
+> +++ b/drivers/iommu/of_iommu.c
+> @@ -107,20 +107,26 @@ static int of_iommu_configure_device(struct device_node *master_np,
+>  		      of_iommu_configure_dev(master_np, dev);
+>  }
+>  
+> -const struct iommu_ops *of_iommu_configure(struct device *dev,
+> -					   struct device_node *master_np,
+> -					   const u32 *id)
+> +/*
+> + * Returns:
+> + *  0 on success, an iommu was configured
+> + *  -ENODEV if the device does not have any IOMMU
+> + *  -EPROBEDEFER if probing should be tried again
+> + *  -errno fatal errors
 
->[...]
-> In our case min_align_mask == 0 and a) is thus not applicable, because b) and
-> c) we end up with iotlb_align_mask = 0x800. And because orig_add & 0x800 ==
-> 0x800 but pool->start & 0x800 == 0 and the slot at index i is skipped over. The
-> slot 0 is skipped over because it is page aligned, when !!((1UL << PAGE_SHIFT)
-> & orig_addr) 
+It looks to me like it will only return 0, -ENODEV, or -EPROBEDEFER
+with other -errno getting boiled down to -ENODEV.
 
-Wait. These mask values can quickly become confusing. Do you mean
-iotlb_align_mask == 0xfff?
+> + */
+> +int of_iommu_configure(struct device *dev, struct device_node *master_np,
+> +		       const u32 *id)
+>  {
+>  	const struct iommu_ops *ops = NULL;
+>  	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+>  	int err = NO_IOMMU;
+>  
+>  	if (!master_np)
+> -		return NULL;
+> +		return -ENODEV;
+>  
+>  	if (fwspec) {
+>  		if (fwspec->ops)
+> -			return fwspec->ops;
+> +			return 0;
+>  
+>  		/* In the deferred case, start again from scratch */
+>  		iommu_fwspec_free(dev);
+> @@ -163,14 +169,15 @@ const struct iommu_ops *of_iommu_configure(struct device *dev,
+>  		err = iommu_probe_device(dev);
+>  
+>  	/* Ignore all other errors apart from EPROBE_DEFER */
+> -	if (err == -EPROBE_DEFER) {
+> -		ops = ERR_PTR(err);
+> -	} else if (err < 0) {
+> +	if (err < 0) {
+> +		if (err == -EPROBE_DEFER)
+> +			return err;
+>  		dev_dbg(dev, "Adding to IOMMU failed: %d\n", err);
 
-> Let us note that with the current implementation the min_align_size mask, that
-> is mechanism a) also controls the tlb_addr within the first slot so that:
-> tlb_addr & min_align_mask == orig_addr & min_align_mask. In that sense a) is
-> very unlike b) and c).
+minor thing, but should this use %pe and ERR_PTR(err) like is done
+in of_dma_configure_id?
 
-It is silently assumed that PAGE_SIZE >= IO_TLB_SIZE, so if the buffer
-is page-aligned, the lower bits of the alignment inside the io tlb slot
-must be zero.
+> -		ops = NULL;
+> +		return -ENODEV;
+>  	}
+> -
+> -	return ops;
+> +	if (!ops)
+> +		return -ENODEV;
+> +	return 0;
+>  }
+>  
+>  static enum iommu_resv_type __maybe_unused
+> diff --git a/drivers/of/device.c b/drivers/of/device.c
+> index 65c71be71a8d45..873d933e8e6d1d 100644
+> --- a/drivers/of/device.c
+> +++ b/drivers/of/device.c
+> @@ -93,12 +93,12 @@ of_dma_set_restricted_buffer(struct device *dev, struct device_node *np)
+>  int of_dma_configure_id(struct device *dev, struct device_node *np,
+>  			bool force_dma, const u32 *id)
+>  {
+> -	const struct iommu_ops *iommu;
+>  	const struct bus_dma_region *map = NULL;
+>  	struct device_node *bus_np;
+>  	u64 dma_start = 0;
+>  	u64 mask, end, size = 0;
+>  	bool coherent;
+> +	int iommu_ret;
+>  	int ret;
+>  
+>  	if (np == dev->of_node)
+> @@ -181,21 +181,29 @@ int of_dma_configure_id(struct device *dev, struct device_node *np,
+>  	dev_dbg(dev, "device is%sdma coherent\n",
+>  		coherent ? " " : " not ");
+>  
+> -	iommu = of_iommu_configure(dev, np, id);
+> -	if (PTR_ERR(iommu) == -EPROBE_DEFER) {
+> +	iommu_ret = of_iommu_configure(dev, np, id);
+> +	if (iommu_ret == -EPROBE_DEFER) {
+>  		/* Don't touch range map if it wasn't set from a valid dma-ranges */
+>  		if (!ret)
+>  			dev->dma_range_map = NULL;
+>  		kfree(map);
+>  		return -EPROBE_DEFER;
+> -	}
+> +	} else if (iommu_ret == -ENODEV) {
+> +		dev_dbg(dev, "device is not behind an iommu\n");
+> +	} else if (iommu_ret) {
+> +		dev_err(dev, "iommu configuration for device failed with %pe\n",
+> +			ERR_PTR(iommu_ret));
+>  
+> -	dev_dbg(dev, "device is%sbehind an iommu\n",
+> -		iommu ? " " : " not ");
+> +		/*
+> +		 * Historically this routine doesn't fail driver probing
+> +		 * due to errors in of_iommu_configure()
+> +		 */
+> +	} else
+> +		dev_dbg(dev, "device is behind an iommu\n");
+>  
+>  	arch_setup_dma_ops(dev, dma_start, size, coherent);
+>  
+> -	if (!iommu)
+> +	if (iommu_ret)
+>  		of_dma_set_restricted_buffer(dev, np);
+>  
+>  	return 0;
+> diff --git a/include/linux/of_iommu.h b/include/linux/of_iommu.h
+> index 9a5e6b410dd2fb..e61cbbe12dac6f 100644
+> --- a/include/linux/of_iommu.h
+> +++ b/include/linux/of_iommu.h
+> @@ -8,20 +8,19 @@ struct iommu_ops;
+>  
+>  #ifdef CONFIG_OF_IOMMU
+>  
+> -extern const struct iommu_ops *of_iommu_configure(struct device *dev,
+> -					struct device_node *master_np,
+> -					const u32 *id);
+> +extern int of_iommu_configure(struct device *dev, struct device_node *master_np,
+> +			      const u32 *id);
+>  
+>  extern void of_iommu_get_resv_regions(struct device *dev,
+>  				      struct list_head *list);
+>  
+>  #else
+>  
+> -static inline const struct iommu_ops *of_iommu_configure(struct device *dev,
+> -					 struct device_node *master_np,
+> -					 const u32 *id)
+> +static inline int of_iommu_configure(struct device *dev,
+> +				     struct device_node *master_np,
+> +				     const u32 *id)
+>  {
+> -	return NULL;
+> +	return -ENODEV;
+>  }
+>  
+>  static inline void of_iommu_get_resv_regions(struct device *dev,
+> -- 
+> 2.42.0
+> 
 
-If the same assumption is made about alloc_align_mask, it should be
-documented, but it is not.
-
->[...]
-> In our opinion the first step towards getting this right is to figure out what
-> the different kinds of alignments are really supposed to mean. For each of the
-> mechanisms we need to understand and document, whether making sure that the
-> bounce buffer does not stretch over more of certain units of memory (like,
-> pages, iova granule size, whatever), or is it about preserving offset within a
-> certain unit of memory, and if yes to what extent (the least significant n-bits
-> of the orig_addr dictated by the respective mask, or something different).
-
-
-Seconded. I have also been struggling with the various alignment
-constraints. I have even written (but not yet submitted) a patch to
-calculate the combined alignment mask in swiotlb_tbl_map_single() and
-pass it down to all other functions, just to make it clear what
-alignment mask is used.
-
-My understanding is that buffer alignment may be required by:
-
-1. hardware which cannot handle an unaligned base address (presumably
-   because the chip performs a simple OR operation to get the addresses
-   of individual fields);
-
-2. isolation of untrusted devices, where no two bounce buffers should
-   end up in the same iova granule;
-
-3. allocation size; I could not find an explanation, so this might be
-   merely an attempt at reducing SWIOTLB internal fragmentation.
-
-I hope other people on the Cc list can shed more light on the intended
-behaviour.
-
-Petr T
