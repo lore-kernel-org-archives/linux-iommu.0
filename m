@@ -1,121 +1,150 @@
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
+Received: from bee.tesarici.cz (bee.tesarici.cz [77.93.223.253])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 357D91872
-	for <iommu@lists.linux.dev>; Fri,  3 Nov 2023 18:45:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C3D6115AFA
+	for <iommu@lists.linux.dev>; Fri,  3 Nov 2023 18:59:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=tesarici.cz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tesarici.cz
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="ZfZ3FKYt"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ODJByuFUgbHrKhsSOtFyjris0Lw10jfOYGc1fyuT6VLBc2w/FZQqLKtf09sxMjIDTJjuTL6+UxUJQRUEzvDrNB3yOqlPsW4LTPSgdKUE7H9PkHA8aMJO6q36l98EqDTaP6iZdluAc4OEkF/TNqqrhLVlTQG/5vfnWi5H6y/Ovo2Mk2+fiil0IpTeu5FZkE4papQ3p5NpEV8ml6miTPOt14eDgvXAaWRYipMhvprOqBqZUYsPpUNujOVVGnw62QmeXreC+FZTe4qZP2D+9pTluVtaWnwM6qk3ATTxAQhEoJFQrfU73hYQUxqB99ErTD5XuJrIjIUTYRNu5ruUF07HoA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Ec3Mj3pQfEnjQZWRaQiboafW5Ied/I7MHZwVwwCvx7M=;
- b=nUPaoeZMN5nvdTy636R13mbI21LtJCL5ol5i6bjAMwUasEnKNBH3LMQOmm1Iw989ISEIxO/JUNyQ4MuoZaXc5WDBHo2TFwZSF1VVgmZxL4WOzQIUy4oiuNr8asaquCXvBtYaEYgaAZqPyeX4/QljG/PZl57PIUw8XYxyP1YShSZgCPciHLRtBzJKKDfYJ3GaZW5VonaO7vcPO3fgXLIyVxqHDm6a4EaFU8Eq25kJpagPMynXbKuXAawD+qqymSldo4xpFL9b0g5/5XAs2ERKTK93WDKaGNX9lKSnyQ2e8CvJQucl0jRaYxCpECv7az7+WWGxw2NREoClZQzl1qNw/g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Ec3Mj3pQfEnjQZWRaQiboafW5Ied/I7MHZwVwwCvx7M=;
- b=ZfZ3FKYtgWWy3Endyczf2CP1OyRbTh5A/91sW7DEdgnokYidqJv9pKzeTGkIN0si0fZNZM5qJlMYGGCEaaFC5ZN9i9FJ2cthcPUHZkn9dYqBD+vbZXqKuaFKuwgda2CE19lF2nwWq0aEL7jyrXqDKONWdylr6cCt6Ybs6LPDvwGoaX1CpYB6DioBx9UCI4pQyNt8iktuQlYg13XPUuhMC64wq8DxEWtS/rNrJOYx5DB6KNre0pbdpUtc5xlSbestubxfSntX9S+YA6pUANjoJhZgdvJOo393LhnaRDIsyXyoFPZ7vMmYuz3lci1MeyO9mqo8zvwbbV26TOcvOQNWHg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by IA1PR12MB6019.namprd12.prod.outlook.com (2603:10b6:208:3d5::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6954.21; Fri, 3 Nov
- 2023 18:45:04 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::b53a:1092:9be2:cfb9]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::b53a:1092:9be2:cfb9%4]) with mapi id 15.20.6933.027; Fri, 3 Nov 2023
- 18:45:03 +0000
-Date: Fri, 3 Nov 2023 15:45:03 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Vasant Hegde <vasant.hegde@amd.com>
-Cc: iommu@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com
-Subject: Re: [PATCH v1 08/13] iommu/amd: Consolidate
- amd_iommu_domain_flush_complete() call
-Message-ID: <20231103184503.GH223197@nvidia.com>
-References: <20231006101624.5912-1-vasant.hegde@amd.com>
- <20231006101624.5912-9-vasant.hegde@amd.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20231006101624.5912-9-vasant.hegde@amd.com>
-X-ClientProxiedBy: BL1PR13CA0336.namprd13.prod.outlook.com
- (2603:10b6:208:2c6::11) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+	dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b="abNuYzya"
+Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by bee.tesarici.cz (Postfix) with ESMTPSA id F2F4F19457D;
+	Fri,  3 Nov 2023 19:59:50 +0100 (CET)
+Authentication-Results: mail.tesarici.cz; dmarc=fail (p=none dis=none) header.from=tesarici.cz
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tesarici.cz; s=mail;
+	t=1699037991; bh=2X3978fiyf86cEJ5+RXIPYOu8hRy4Jy4zMNc86QDZf4=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=abNuYzyaS5QxEYL9NMfH+Nmbuy4G7HoKPsgJX0rOT5Ejarh1eA5C9drjyau8l2XpD
+	 5C2ZAtsFDYM48EzJYDhYmK+Oo5JsOmBfTKqZ8d7eSTYAYAmVJ7/sLZxZVg22hmNUvS
+	 +jF9ti6yBEx2SgluKXxZHI/7KxY5ofI4Gmy6VYQlVp1FaqI+wqK0lKvLE54rnFNhDu
+	 ucY5cvfAeEl3BJmuuCxCyJcy5pJqp0ozI6usiF6VvUyneMRmuhhMIYoaGZuV4FyUdG
+	 4LXqhDHgdv2YLkEsadXaNne9aN2qJp7TmUayd4xXXIzqnVl2ME0RK1wENoECTfdrL/
+	 t6eEmmD2sbffw==
+Date: Fri, 3 Nov 2023 19:59:49 +0100
+From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
+To: Niklas Schnelle <schnelle@linux.ibm.com>
+Cc: Christoph Hellwig <hch@lst.de>, Bjorn Helgaas <bhelgaas@google.com>,
+ Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy
+ <robin.murphy@arm.com>, Petr Tesarik <petr.tesarik1@huawei-partners.com>,
+ Ross Lagerwall <ross.lagerwall@citrix.com>, linux-pci
+ <linux-pci@vger.kernel.org>, linux-kernel@vger.kernel.org,
+ iommu@lists.linux.dev, Matthew Rosato <mjrosato@linux.ibm.com>, Halil Pasic
+  <pasic@linux.ibm.com>
+Subject: Re: Memory corruption with CONFIG_SWIOTLB_DYNAMIC=y
+Message-ID: <20231103195949.0af884d0@meshulam.tesarici.cz>
+In-Reply-To: <104a8c8fedffd1ff8a2890983e2ec1c26bff6810.camel@linux.ibm.com>
+References: <104a8c8fedffd1ff8a2890983e2ec1c26bff6810.camel@linux.ibm.com>
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; x86_64-suse-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|IA1PR12MB6019:EE_
-X-MS-Office365-Filtering-Correlation-Id: 1ef18118-b32c-414d-b44f-08dbdc9cfe05
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	RFE071O3pXsxyQUFGta7RYoEM545vLyQYyXpLIFFvx8gu9iu2z6BQDmxGbm+KW29fF3/fzpONYsjzoS+4XQLddmhuhmIaR0Qs2m82dwh4AVhQAnhAHLkXSv4Yq1KDug/hnAfsl0HDLTS/GKPSZcFy3UtOTKgljS6WPJON4A+UJXZdlyEa3Ku2DH4UgXiXDfHkCM+MUR4j4VvicbsHYyebK8IxorRyzZYK9r3BdOfH52t47JW1jrwqXWm6fjgYDJjv3T2S6Y+eMSpCmeNOEJqVX7ZTd0HfVg3aWMHmvkxJiIPbavU/0Wmav1WcHZj3+Fj5pd/wSOdOFH1grCG2JXCRzBFE17lZLv8iHi7ElP6l+rqI8YQnkbPwElIB7Dmc5/Y9C626pvOMAWQ97nkFrqHUy+7N4yX9FbzdNtAd+H5WKqVl62YSnsTBMCKVLSqvxuEsCLUxFACuZ3Tm3XCdAhOGrJj3uaqetcNrUrIsxV+O7Lk9UGDsyBeEfn0FygmIDgY4XDHwRUTDGOkzNbbLgxDlkY8dePUbBIejnT/OkV+6NzBwfjPnoFc38JvhUi7b+QAiz3TBrmyKK0c+FhedlyvBIRDuWTQlYj5K7O24W/KYpY=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(346002)(366004)(136003)(396003)(376002)(39860400002)(230922051799003)(451199024)(186009)(64100799003)(1800799009)(2906002)(4744005)(36756003)(33656002)(26005)(86362001)(6512007)(1076003)(6506007)(38100700002)(83380400001)(6486002)(41300700001)(478600001)(2616005)(66476007)(66946007)(6916009)(316002)(66556008)(4326008)(8676002)(5660300002)(8936002)(27376004);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?LMINPmvYNAwhTkE1/svT6qN5UNz7IQhJPtxVTNkOW/4jGXzeYmAASOEkBDiY?=
- =?us-ascii?Q?kJpMVOeb8qTYOZ4vTfpGbUTWLumW4V3D/kAhqzh0gSauCFM2qdf9skUzS8Jl?=
- =?us-ascii?Q?jrjBtBhfyTcxKBxnwuXju4xEpDgUdSCtGiur+igu85cjqw5AQ09TRb2IAKsO?=
- =?us-ascii?Q?xWOBYHiFZ28OiDXro4uQZ2oulh8rSamYspLWkXkoOXnQLKCZpps0SW+/BvrR?=
- =?us-ascii?Q?Sdrqt4VRzfs3uukoPVpbP3znMxl55ue22byl2kAy37TGFZ18DbDemp9SDHrL?=
- =?us-ascii?Q?TO5c+mcp9U4Id+ew2+KAFhYzctP8KE/nCHVCYrF2qq6s47cCyYRA6WqC0jSl?=
- =?us-ascii?Q?kBg/ZP4esJC9nwD2V3iEwnNqTR6SpZMxMpldieVXmaVSqM1GFo3qoYWEyrXQ?=
- =?us-ascii?Q?OqF+gs/iXAH1sG5hkTOlRh5nRE5OaTxTYKM7stQJejwygkoz9GrPBvHAJZzw?=
- =?us-ascii?Q?Wa/cy86bfBVwf5UkhgGIA1ZLcU7CsPmWy/7Xb4ynPqIZlZg17eQX1tOMWawG?=
- =?us-ascii?Q?rjhOUegEhBIPBvW7hhFi7VTeWbbuFsragXNQQ2y5wzoY0gHfUsu+8WYVo/fG?=
- =?us-ascii?Q?eEIlCnwt4LUVVBuA8mx/yacAfesbCq9I9JtWv13PYAzQKO9rxymrPFdyJSD5?=
- =?us-ascii?Q?i4jOKc/iYWgZqCHWO1WhvDnHKo8M4kYY+ZNpj/IlV+fMnzwEpaKsSIR8zT/T?=
- =?us-ascii?Q?9+DWUrnge7Eqrhz4zrQ06uS9R65jKdQSysK43i9e93OoY3XrUPYgf5OxdK73?=
- =?us-ascii?Q?k9iVJ1S0XHwAioqEJ9Jd+I3QVnMhzaiPSU8CPD53pcMNPlfaQL9LbT2DExkv?=
- =?us-ascii?Q?fQ0+V9DZo0h7BzGI63CfQkajroXtLP+Mh+BDp0aPUet1pAoP10R6WWv1qArK?=
- =?us-ascii?Q?WZ55NsPy8m5silxF2MQlep/Jf62NthKq8nDzmcixkAsSxMAdxNoY6hQ47Fek?=
- =?us-ascii?Q?WaZMnqRCdGawMP9BtO8PVQnDAmrdLe+YP5GOzNUOr06IZMj9Cn8NoZSNCIkc?=
- =?us-ascii?Q?823LOpQO5ck+TEXvm+BQnaOBTQKETehJzF4eSFoAeoQ2ojmE0mquwCE+SE3J?=
- =?us-ascii?Q?3Bn67P+jPI1RvWDCB8JJghVNgNi8hxvwLQIUQoUR3ec17QiVU7WUUeYPepfD?=
- =?us-ascii?Q?m+zE1zFdtFnNh/TocUh4Tyi0I2TWczbXvcmPf0vItuf4oMD17Kr3FSlu0MLK?=
- =?us-ascii?Q?imv1Ef1tVuoaESbjFKW3QtU8Tts/rk1v3rItfCmhsPATA1IAgtfB5nOBIcZs?=
- =?us-ascii?Q?MPSLGefjTZz0mXixAAYaOcFHbxwbZIiILWMRooqsbn5/n/HIy6R37zynXBSz?=
- =?us-ascii?Q?W/TEgGpTvla/58sHncNB5GJL4F2kH9ukxo/bWYtUgKQ/v0+UrgdUnsvZv+Ly?=
- =?us-ascii?Q?IuGsJVxnpsBpTGigxX5SGJCD4oahGPBMAvTFO43BW/2V2ow/srDfQWoniU7h?=
- =?us-ascii?Q?vzv75kTEuagY73QZbsrMq13f9rgfXZ5xsq1KTYREm1DN3KCEYQVQjOb7Z/Rb?=
- =?us-ascii?Q?hwtpuqgKPZhJghvtbvO6XuNtYBV8ZpwPzrUxjAbrPQPskB8vRMRioCMEazjt?=
- =?us-ascii?Q?G5tj6jwTpjL8+F+efK5FMcUenUeOxBW4QqCNQcQa?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1ef18118-b32c-414d-b44f-08dbdc9cfe05
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Nov 2023 18:45:03.8977
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: IGW4sp9laANF5CHVjJ1uZMbInpSSuDM8oesoNy89LJ4u8dpzYwGrkezeXLIzqqhi
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB6019
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Fri, Oct 06, 2023 at 10:16:19AM +0000, Vasant Hegde wrote:
-> Call amd_iommu_domain_flush_complete() from domain_flush_pages().
-> That way we can remove explicit call of amd_iommu_domain_flush_complete()
-> from various places.
+Hello Niklas,
+
+thank you for your report. This is some great analysis!
+
+On Fri, 03 Nov 2023 16:13:03 +0100
+Niklas Schnelle <schnelle@linux.ibm.com> wrote:
+
+> Hi Swiotlb Maintainers,
 > 
-> Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
-> ---
->  drivers/iommu/amd/io_pgtable.c |  1 -
->  drivers/iommu/amd/iommu.c      | 16 ++++++++--------
->  2 files changed, 8 insertions(+), 9 deletions(-)
+> With s390 slated to use dma-iommu.c I was experimenting with
+> CONFIG_SWIOTLB_DYNAMIC but was getting errors all over the place.
+> Debugging this I've managed to narrow things down to what I believe is
+> a memory corruption issue caused by overrunning the entire transient
+> memory pool allocated by swiotlb. In my test this happens on the
+> iommu_dma_map_page(), swiotlb_tbl_map_single() path when handling
+> untrusted PCI devices.
+> 
+> I've seen this happen only for transient pools when:
+> *  allocation size >=PAGE_SIZE and,
+> *  the original address of the mapping is not page aligned. 
+> 
+> The overrun can be seen clearly by adding a simple "tlb_addr +
+> alloc_size > pool->end' overrun check to swiotlb_tbl_map_single() and
+> forcing PCI test devices to be untrusted. With that in place while an
+> NVMe fio work load runs fine TCP/IP tests on a Mellanox ConnectX-4 VF
+> reliably trigger the overrun check and with a debug print produce
+> output like the following:
+> 
+> software IO TLB:
+> 	transient:1
+> 	index:1
+> 	dma_get_min_align_mask(dev):0
+> 	orig_addr:ac0caebe
+> 	tlb_addr=a4d0f800
+> 	start:a4d0f000
+> 	end:a4d10000
+> 	pool_size:4096
+> 	alloc_size:4096
+> 	offset:0
+> 
+> The complete code used for this test is available on my
+> git.kernel.org[0] repository but it's bascially v6.6 + iommu/next (for
+> s390 DMA API) + 2 trivial debug commits.
+> 
+> For further analysis I've worked closely with Halil Pasic.
+> 
+> The reason why we think this is happening seems twofold. Under a
+> certain set of circumstances in the function swiotlb_find_slots():
+> 1) the allocated transient pool can not fit the required bounce buffer,
 
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+I am aware that this can happen. It's in fact why the index returned by
+swiotlb_search_pool_area() is checked in swiotlb_find_slots().
 
-Jason
+> and
+> 2) the invocation of swiotlb_pool_find_slots() finds "a suitable
+> slot" even though it should fail.
+
+This needs fixing.
+
+> The reason for 2), i.e. swiotlb_pool_find_slots() thinking there is a
+> suitable bounce buffer in the pool is that for transient pools pool-
+> >slots[i].list end up nonsensical, because swiotlb_init_io_tlb_pool(),  
+> among other places in swiotlb, assumes that the nslabs of the pool is a
+> multiple of IO_TLB_SEGSIZE
+
+Ah... Yes, the transient pool size must also be a multiple of segment
+size, but it is not enforced.
+
+This reminds me of my debugging session that resulted in commit
+aabd12609f91 ("swiotlb: always set the number of areas before
+allocating the pool") and this conversation:
+
+https://lore.kernel.org/linux-iommu/20230629074403.7f8ed9d6@meshulam.tesarici.cz/
+
+> The reason for 1) is a bit more convoluted and not entirely understood
+> by us. We are certain though that the function swiotlb_find_slots()
+> allocates a pool with nr_slots(alloc_size), where this alloc_size is
+> the alloc_size from swiotlb_tbl_map_single() + swiotlb_align_offset(),
+> but for alignment reasons some slots may get "skipped over" in
+> swiotlb_area_find_slots() causing the picked slots to overrun the
+> allocation.
+
+Yes, this can happen.
+
+> Not sure how to properly fix this as the different alignment
+> requirements get pretty complex quickly. So would appreciate your
+> input.
+
+I don't think it's possible to improve the allocation logic without
+modifying the page allocator and/or the DMA atomic pool allocator to
+take additional constraints into account.
+
+I had a wild idea back in March, but it would require some intrusive
+changes in the mm subsystem. Among other things, it would make memory
+zones obsolete. I mean, people may actually like to get rid of DMA,
+DMA32 and NORMAL, but you see how many nasty bugs were introduced even
+by a relatively small change in SWIOTLB. Replacing memory zones with a
+system based on generic physical allocation constraints would probably
+blow up the universe. ;-)
+
+Petr T
