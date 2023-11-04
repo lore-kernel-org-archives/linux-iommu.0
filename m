@@ -1,49 +1,49 @@
-Received: from mail-ed1-f42.google.com (mail-ed1-f42.google.com [209.85.208.42])
+Received: from mail-ej1-f53.google.com (mail-ej1-f53.google.com [209.85.218.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A03EFBF5
-	for <iommu@lists.linux.dev>; Sat,  4 Nov 2023 11:22:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 596B63D68
+	for <iommu@lists.linux.dev>; Sat,  4 Nov 2023 11:29:41 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="c82i3ePq"
-Received: by mail-ed1-f42.google.com with SMTP id 4fb4d7f45d1cf-540fb78363bso4875535a12.0
-        for <iommu@lists.linux.dev>; Sat, 04 Nov 2023 04:22:44 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="aFg2LZF8"
+Received: by mail-ej1-f53.google.com with SMTP id a640c23a62f3a-9be02fcf268so434331466b.3
+        for <iommu@lists.linux.dev>; Sat, 04 Nov 2023 04:29:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1699096963; x=1699701763; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
+        d=linaro.org; s=google; t=1699097379; x=1699702179; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=WJWALZUYEHz2qJrIzaykiHfq3vsVJp3Wwr9DqTqCaGs=;
-        b=c82i3ePqBNpOkeQTgW+kATgviVQL7nxmgDinvZaE86njPiCaaC12UPFwTRAUg5QuxJ
-         XUfXx/Ckap4jNUkhT7t6rLWCRYLTc+1lFKLI9eF9o3ZZkSooYB35f8f7XobR/qYRsrhl
-         hbUXaUxrDPBmnOeyiPU20RA8hzfdSfVlzvqwTT0wgxvRyzb02gPJFylL6Nh0vuFKWqEJ
-         ioqDb5hQo3qaXz8TWN9nsOIuyu2tGqaypbcj2S9+V9g+quc4HtG/wC6KLarQoIA2ELY4
-         1T5DUT0Eyz2JkVSlMiQHpvv5ojp3LI90dSttVOOms+n7Ge4Z0bBlEmF1FSzkOX1VDmui
-         /GDA==
+        bh=ZJy2KKsB0PbRWKDGIHkbpjHuAvHX1QTO5G0UNsgJYlE=;
+        b=aFg2LZF8blSNI853ghjEX8wuHwbg2xYq/SgboVl2koHCeGQxKS5VH98idjwAftWaPP
+         l44tsJJ6nbFA7Sf5ET+ENK3WtGw+UQVme+Rbj7CO5dlT4MVQskZH9DOBD+TJQkLppjpl
+         75LgNL45Rn4CRRl3m1kgJWBpYBwuDJZiuW1gq3evZqPdnKcrOxjDRVs1KuJrFHjEtZOu
+         xSCaJPMbXYb9rcZMiuqR867AX5P9Bz444AzJRzfoY5OtYcHp5ePJM9e/WVAv/IMyyUZR
+         vt94wCVsAl7WuPnhIA1+zQWKTNsiwsRjkzfkYnaVv+iOmKEkLig9GnsN05lk598wZwW6
+         c0/Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1699096963; x=1699701763;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
+        d=1e100.net; s=20230601; t=1699097379; x=1699702179;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=WJWALZUYEHz2qJrIzaykiHfq3vsVJp3Wwr9DqTqCaGs=;
-        b=QNrEHu1DU1hXcDbr7+/0c1i2Gh2/pBqut0cXqH023zGHf7hm4G/Ca6dTnv5mVQdl0+
-         iTHwvyXrfC7fvGHq4UZat9PDDd6m/c1D0bTQtSBMl8BHsJGh9LODmXb1Oay2YGVRZKIQ
-         VjG+LDI6+8pl1nq9rkJKPaSYwpNotPm4D0Ex9FN7PX8fac6m0tkBYZHX/vTSJwmScpQ0
-         E20r3i0MOeDTfAUjeHrOnAaPF2mv5NIFzj3YqPFSwb2cZTp46hEWBFBlZP0do0kPeyh4
-         9jkWf7NJH4ksC303mireh+POyG60zyEhdtqFEUVIGdJnF/mUrx5eH8lMnz/UFj7mlC1G
-         ty3w==
-X-Gm-Message-State: AOJu0Yy966mYfsDy2Xy9qJgbOkzv7QIky7P63S249G0GlL5GDs5TL7WR
-	WYvqSHVY3VzjURE8c9p3EtUPvw==
-X-Google-Smtp-Source: AGHT+IFYwit9a4cCM20TiSal/gji4jZsIkBNwk7fYnmu8fkSz+lTSGolK6MFnP+SUhfQWJ7rZjhAzg==
-X-Received: by 2002:aa7:cd54:0:b0:531:1455:7528 with SMTP id v20-20020aa7cd54000000b0053114557528mr16625987edw.40.1699096963205;
-        Sat, 04 Nov 2023 04:22:43 -0700 (PDT)
+        bh=ZJy2KKsB0PbRWKDGIHkbpjHuAvHX1QTO5G0UNsgJYlE=;
+        b=CrogDtmAPLXE1R9GG6QZn8vavhLi1Orq8BrYb8veHlsnwwkg+ldhsHeG+s0KsFeOmw
+         FwEVpMrMwPQixsvoejwzMeugL9c1fO5Yt3RKxpsPK3OXamnbAYelX/3LLxq++DMYWBIf
+         of+ACjRNYHrbUC93YCGmCwhdFpnD7crxJsLBsu4uYStSf3oWxdRp2mG/xE0ga6AI7pjZ
+         ms3AlZu+yHPe5aFkpcFAkN7Q8Lo45yUiL5wjyHD6uD/FKqxo8Hx1nLAv5NtQKldbWMx7
+         SQ+j9IrrIXS/BCH4HMlFBRNoo7I3TMZl0icYcrS6hZxjXtv0Wv7W82rZT5ptg5HMaY2x
+         TVjA==
+X-Gm-Message-State: AOJu0YxUglkRz3PGoUjTEWLyjDbsJ1ueEvr+0z+A5PT0f2wj12gTSwPk
+	hllhRueY3eddgkDvJxtAfS3l9Q==
+X-Google-Smtp-Source: AGHT+IEuzZ1y3DjdgqAfYz2QBkwZeMYD0RlEFfRha4mPCbrG7WKwE7gDC2yS115Aw3rKUa0Nzo8mzg==
+X-Received: by 2002:a17:906:7955:b0:9dc:ee58:6604 with SMTP id l21-20020a170906795500b009dcee586604mr3980586ejo.21.1699097379512;
+        Sat, 04 Nov 2023 04:29:39 -0700 (PDT)
 Received: from [192.168.0.153] (178235177017.dynamic-4-waw-k-1-1-0.vectranet.pl. [178.235.177.17])
-        by smtp.gmail.com with ESMTPSA id i14-20020aa7c9ce000000b0053fa13e27dcsm1978317edt.48.2023.11.04.04.22.42
+        by smtp.gmail.com with ESMTPSA id s5-20020a170906454500b009c7608eb499sm1878707ejq.94.2023.11.04.04.29.38
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 04 Nov 2023 04:22:42 -0700 (PDT)
-Message-ID: <3e50565a-a098-4a33-b7c9-3b9a55077a8a@linaro.org>
-Date: Sat, 4 Nov 2023 12:22:40 +0100
+        Sat, 04 Nov 2023 04:29:39 -0700 (PDT)
+Message-ID: <27b4a561-a2af-47a4-912e-6ee6961f0f6b@linaro.org>
+Date: Sat, 4 Nov 2023 12:29:37 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -51,32 +51,46 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] MAINTAINERS: list all Qualcomm IOMMU drivers in the
- QUALCOMM IOMMU entry
-To: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
- Rob Clark <robdclark@gmail.com>, Andy Gross <agross@kernel.org>,
- Bjorn Andersson <andersson@kernel.org>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>
-Cc: Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
- linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20231103225413.1479857-1-dmitry.baryshkov@linaro.org>
+Subject: Re: [PATCH 2/3] iommu/arm-smmu: add ACTLR data and support for SM8550
 Content-Language: en-US
+To: Bibek Kumar Patro <quic_bibekkum@quicinc.com>, will@kernel.org,
+ robin.murphy@arm.com, joro@8bytes.org, dmitry.baryshkov@linaro.org,
+ a39.skl@gmail.com, quic_saipraka@quicinc.com, quic_pkondeti@quicinc.com,
+ quic_molvera@quicinc.com
+Cc: linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, qipl.kernel.upstream@quicinc.com
+References: <20231103215124.1095-1-quic_bibekkum@quicinc.com>
+ <20231103215124.1095-3-quic_bibekkum@quicinc.com>
 From: Konrad Dybcio <konrad.dybcio@linaro.org>
-In-Reply-To: <20231103225413.1479857-1-dmitry.baryshkov@linaro.org>
+In-Reply-To: <20231103215124.1095-3-quic_bibekkum@quicinc.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 
 
-On 11/3/23 23:54, Dmitry Baryshkov wrote:
-> For historical reasons the 'QUALCOMM IOMMU' entry lists only one
-> Qualcomm IOMMU driver. However there are also the historical MSM IOMMU
-> driver, which is used for old 32-bit platforms, and the
-> Qualcomm-specific customisations for the generic ARM SMMU driver. List
-> all these files under the QUALCOMM IOMMU entry.
+On 11/3/23 22:51, Bibek Kumar Patro wrote:
+> Add ACTLR data table for SM8550 along with support for
+> same including SM8550 specific implementation operations.
 > 
-> Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+> Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
 > ---
-Acked-by: Konrad Dybcio <konrad.dybcio@linaro.org>
+>   drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 85 +++++++++++++++++++++-
+>   1 file changed, 81 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> index 68c1f4908473..590b7c285299 100644
+> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> @@ -25,6 +25,64 @@ struct actlr_data {
+>   	u32 actlr;
+>   };
+> 
+> +static const struct actlr_data sm8550_apps_actlr_data[] = {
+I assume this data will be different for each SoC.. perhaps
+moving this to a separate file (not sure if dt makes sense if
+it's hardcoded per platform) makes sense.
+
+This will also assume that these can not differ between firmware
+versions.
 
 Konrad
