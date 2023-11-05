@@ -1,60 +1,59 @@
-Received: from mail-qv1-f49.google.com (mail-qv1-f49.google.com [209.85.219.49])
+Received: from mail-qk1-f171.google.com (mail-qk1-f171.google.com [209.85.222.171])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D157110940
-	for <iommu@lists.linux.dev>; Sun,  5 Nov 2023 18:00:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E46458F77
+	for <iommu@lists.linux.dev>; Sun,  5 Nov 2023 18:05:18 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="bZ/DjfKD"
-Received: by mail-qv1-f49.google.com with SMTP id 6a1803df08f44-670e7ae4a2eso39981886d6.1
-        for <iommu@lists.linux.dev>; Sun, 05 Nov 2023 10:00:31 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="kldnwU9l"
+Received: by mail-qk1-f171.google.com with SMTP id af79cd13be357-77063481352so385822185a.1
+        for <iommu@lists.linux.dev>; Sun, 05 Nov 2023 10:05:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1699207230; x=1699812030; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1699207517; x=1699812317; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=99lX1ZTZwhQsPKHlxFI14SLH3VASGZAr41ODVTCoXmA=;
-        b=bZ/DjfKD5oOPVrZU4ZfNwrQ+D/qeYl1NwD+xFzhFMVThAT10fqP92aXwrgRT45gnTF
-         98doHxmWUWilvXoaQranm5uP+SdAtCVsjIYEgOb2cd8uSa18NDDgJNWdIyX6mDzV/GUF
-         u4X8h5dniFoYQ5F5+QhWMS9N9FX+TpSiZoZWBl4pi6zb5XXvNgu8DbFWTwpNEgCnyVzN
-         oHmx0m3b7gH/HHXE7Etq1jd79z8PE/8pDAvs6cpz1KnO+iCHg5AkDIang5omTU5sXZLJ
-         HX9/weeehbAgkKw8TfC+rwU0DeYIKC4VmwZfDPCColxnE++dF86aYjiuzEKm+kx2AdQq
-         0Vdg==
+        bh=BOFvE5BxXumZq+X3e2z8ke3X9IP4rQkqWv36evFoPFY=;
+        b=kldnwU9lPN0eYSdSGVFBye0OM/GG7YBKPi0KQBgnBhxHLnwx9xDaXtlvQA7j1I39Py
+         YZmHhX2nvMWQVsw0GMg0ly2mjt2NWNtzqE5Jh1h/MsmnVEJcdSJBlXYqg17bUuxXg31U
+         b1owN6/7zj3FbK0hNgCFJ/DeXMOC5fQ2L9qVzSPDdZT5Og+KMtT55pM7bGF5YcQgPu7V
+         jDDmlcl+8rsEjdbvFGXVUMSIWwy0wa7/qBZq/Al6YFwhlJqKMTnOlOsdFGLVuT+aEyTp
+         1k2JN66XTRBcf2wJzbZsU7v0RC5SyAMM6kJYCgij2Kjy9YzS4TGxS5dWWZeytCYrcvgF
+         +0qA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1699207230; x=1699812030;
+        d=1e100.net; s=20230601; t=1699207517; x=1699812317;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=99lX1ZTZwhQsPKHlxFI14SLH3VASGZAr41ODVTCoXmA=;
-        b=WDs/SRzW350wCtjgAokapQCeLdtlTPxMJhyoLEGIGKDZWl/bwdAmhJ1c1+rvoDQ6TC
-         REy8lEiPOYomgFoZYhcvH5xHHh7QRYABsRSasQVFx1E+e6hRzYKnz++NB96czmlUHzCG
-         cKKeBqFM5XMJVNe6O0VnqV+sf+qSlA9AFKiskLW5K1tePCIe7qmYjpPkA4BIxP6NhS70
-         KIZzpmjo4CFwoGcEKJdDNGk3uR2By3iivZfEu/5GBSkhQ+7ZRoGPT8ANI0uVBXVRnZhi
-         N/95IYyIJlF4u6IrqcMUGSzFyOzaVzzDpRhM9Z6zBteVm592kA1REnY/7wyPi3ZQ/LoY
-         Eo3w==
-X-Gm-Message-State: AOJu0Yx5P5Q1g1nmUwlUe82ANzV7IbP+jpJRWEFRnRa1iR8ozjh2VDK3
-	lf2hYqvG+tZYpmuBWBAaAKBvBw==
-X-Google-Smtp-Source: AGHT+IGPNHP+G79rbSxC+VVqpNRHEygzHVp29PSjRTV1E4T6lgtFsQYHpFGdm6jGWPLMA1GMnIoDqQ==
-X-Received: by 2002:a05:6214:1c4e:b0:66d:303a:46bd with SMTP id if14-20020a0562141c4e00b0066d303a46bdmr13238946qvb.13.1699207230488;
-        Sun, 05 Nov 2023 10:00:30 -0800 (PST)
+        bh=BOFvE5BxXumZq+X3e2z8ke3X9IP4rQkqWv36evFoPFY=;
+        b=OoItuUvOLhVWGrb9EZIMAGanqr2nufZJMCr0BvOOxdN4sTyC1PeTwyQw9SDFsXUtt1
+         gJE1eFdqQQQKxjou7DxGUq9rw9FxRo97t0z0+7/9SRZGvWs6EVOj5tPqKKNX5ps/UsvJ
+         mqL7UW63xRetPu4SgeAbXKSgGBPbs/aKJubzCH9HeRJWoeH8wrTyWQdWihoaQEfr/LbT
+         HJ81hGOIbcxPwlMoFa3tXJ5am8QBF/Hbmh+K7A5O3LWFbR4/OOWjfUL3xyUHSuijdN4N
+         5aP7XKjCTj0DnU4y30C+fg3w9C9qjBRjjdbCjDNRaU8oEvZB0pmM5Bf8oYHrktiTycfT
+         /WOQ==
+X-Gm-Message-State: AOJu0Ywumw0Wv12hdEdTRNo4gTYX3zK2fbpr1viH3+GGUCzm0OkDcHQX
+	cXBn0vEmP1IL8XImXxZLyanZHQ==
+X-Google-Smtp-Source: AGHT+IEj6KfllrsLkrCJUkxeO8xhfgHJvNXwhpH+a3RB2WUCKN0agFDhagUoPkaq1W1S8ZnSmDUX0A==
+X-Received: by 2002:ad4:4a12:0:b0:65b:134:ed27 with SMTP id m18-20020ad44a12000000b0065b0134ed27mr10502966qvz.4.1699207517745;
+        Sun, 05 Nov 2023 10:05:17 -0800 (PST)
 Received: from ziepe.ca (hlfxns017vw-142-68-26-201.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.26.201])
-        by smtp.gmail.com with ESMTPSA id f5-20020a0cbec5000000b00641899958efsm2712271qvj.130.2023.11.05.10.00.29
+        by smtp.gmail.com with ESMTPSA id l10-20020a0ce6ca000000b0066d15724feesm2714194qvn.68.2023.11.05.10.05.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 05 Nov 2023 10:00:29 -0800 (PST)
+        Sun, 05 Nov 2023 10:05:17 -0800 (PST)
 Received: from jgg by wakko with local (Exim 4.95)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1qzhQC-001FZq-M1;
-	Sun, 05 Nov 2023 14:00:28 -0400
-Date: Sun, 5 Nov 2023 14:00:28 -0400
+	id 1qzhUq-001FcP-Je;
+	Sun, 05 Nov 2023 14:05:16 -0400
+Date: Sun, 5 Nov 2023 14:05:16 -0400
 From: Jason Gunthorpe <jgg@ziepe.ca>
 To: Vasant Hegde <vasant.hegde@amd.com>
 Cc: iommu@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com,
 	wei.huang2@amd.com, jsnitsel@redhat.com
-Subject: Re: [PATCH v3 01/13] iommu/amd: Pass struct iommu_dev_data to
- set_dte_entry()
-Message-ID: <20231105180028.GE4634@ziepe.ca>
+Subject: Re: [PATCH v3 02/13] iommu/amd: Introduce get_amd_iommu_from_dev()
+Message-ID: <20231105180516.GF4634@ziepe.ca>
 References: <20231013151652.6008-1-vasant.hegde@amd.com>
- <20231013151652.6008-2-vasant.hegde@amd.com>
+ <20231013151652.6008-3-vasant.hegde@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -63,18 +62,82 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20231013151652.6008-2-vasant.hegde@amd.com>
+In-Reply-To: <20231013151652.6008-3-vasant.hegde@amd.com>
 
-On Fri, Oct 13, 2023 at 03:16:40PM +0000, Vasant Hegde wrote:
-> Pass iommu_dev_data structure instead of passing indivisual variables.
+On Fri, Oct 13, 2023 at 03:16:41PM +0000, Vasant Hegde wrote:
+> From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 > 
-> No functional changes intended.
+> And replace rlookup_amd_iommu() with the new helper function where
+> applicable to avoid unnecessary loop to look up struct amd_iommu from
+> struct device.
 > 
+> Suggested-by: Jason Gunthorpe <jgg@ziepe.ca>
+> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 > Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
 > ---
->  drivers/iommu/amd/iommu.c | 22 ++++++++++------------
->  1 file changed, 10 insertions(+), 12 deletions(-)
+>  drivers/iommu/amd/amd_iommu.h | 14 ++++++++++++++
+>  drivers/iommu/amd/iommu.c     | 20 ++++++++++----------
+>  include/linux/iommu.h         | 13 +++++++++++++
+>  3 files changed, 37 insertions(+), 10 deletions(-)
+> 
+> diff --git a/drivers/iommu/amd/amd_iommu.h b/drivers/iommu/amd/amd_iommu.h
+> index 38b3f4562f3b..b2071ebc73b5 100644
+> --- a/drivers/iommu/amd/amd_iommu.h
+> +++ b/drivers/iommu/amd/amd_iommu.h
+> @@ -150,6 +150,20 @@ static inline void *alloc_pgtable_page(int nid, gfp_t gfp)
+>  	return page ? page_address(page) : NULL;
+>  }
+>  
+> +/*
+> + * This must be called after device probe completes. During probe
+> + * use rlookup_amd_iommu() get the iommu.
+> + */
+> +static inline struct amd_iommu *get_amd_iommu_from_dev(struct device *dev)
+> +{
+> +	struct iommu_device *iommu = iommu_get_iommu_dev(dev);
+> +
+> +	if (!iommu)
+> +		return NULL;
 
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+This shouldn't be done. See the comment for iommu_get_iommu_dev(). If
+you are calling this outside an op context it is broken and the if
+won't save it.
+
+Ideally you'd put these calls only at the top of functions
+implementing ops and then pass either the amd_iommu or iommu_dev_data
+pointers down the call chain.
+
+> +	return container_of(iommu, struct amd_iommu, iommu);
+> +}
+> +
+>  bool translation_pre_enabled(struct amd_iommu *iommu);
+>  bool amd_iommu_is_attach_deferred(struct device *dev);
+>  int __init add_special_device(u8 type, u8 id, u32 *devid, bool cmd_line);
+> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+> index 4f1b356adb8f..eedfa341085c 100644
+> --- a/drivers/iommu/amd/iommu.c
+> +++ b/drivers/iommu/amd/iommu.c
+> @@ -1408,7 +1408,7 @@ static int device_flush_iotlb_range(struct iommu_dev_data *dev_data,
+>  	bool gn = is_pasid_valid(pasid);
+>
+>  	qdep     = dev_data->ats_qdep;
+> -	iommu    = rlookup_amd_iommu(dev_data->dev);
+> +	iommu    = get_amd_iommu_from_dev(dev_data->dev);
+>  	if (!iommu)
+>  		return -EINVAL;
+
+Eg here we have an iommu_dev_data which must mean the device is probed
+and iommu is valid.
+
+> +/**
+> + * iommu_get_iommu_dev - Get iommu_device for a device
+> + * @dev: an end-point device
+> + *
+> + * Note that this function must be called from the iommu_ops
+> + * to retrieve the iommu_device for a device, which the core code
+> + * guarentees it will not invoke the op without an attached iommu.
+                                                  ^^^^^^^^^^^^^^^^^^
+
+Means the function never returns NULL.
 
 Jason
