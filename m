@@ -1,132 +1,109 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 912223D90
-	for <iommu@lists.linux.dev>; Mon,  6 Nov 2023 06:39:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5AF103D9F
+	for <iommu@lists.linux.dev>; Mon,  6 Nov 2023 07:13:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="i/xhgnoY"
-Received: from pps.filterd (m0279866.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 3A64TkVu017523;
-	Mon, 6 Nov 2023 06:39:37 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=qcppdkim1;
- bh=c3kjkWQlNwcEFxzjlS9Qs34MYis6hXyiIoEcJZeXQgw=;
- b=i/xhgnoY6DrfqzvfTiu1XSSc6ViwKRMIFfWLFtoI4T5zg3VL3smXi591k3ZorL2eRS8f
- hmIi0BdNfimbrYcwLJRYwccWoy90DVmzQjT+GYAbxbNfdOTW+ZIrQQWHODrtE0Ycimjf
- nXC3KKLm91zyEQPjOSiuughg/lTVtEF4M/ZY/k55rgTzmqXjC7B9p4X2jEvumFvHBQhc
- zKdEXaaQcT1LFFM906m7aFPvd9FnDscAnDg28UJD0JrNxeziFy8xe6sd89ERHvEReke7
- 5qStytPrZ1/ZeMamaEI5ScdgtZFxI/EJQhJtyuncK6tPXyIiqXjSYIbmGv9wjxT+388y ow== 
-Received: from nasanppmta02.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3u5f8du8ck-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 06 Nov 2023 06:39:36 +0000
-Received: from nasanex01c.na.qualcomm.com (nasanex01c.na.qualcomm.com [10.45.79.139])
-	by NASANPPMTA02.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 3A66dacg013940
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 6 Nov 2023 06:39:36 GMT
-Received: from [10.214.227.50] (10.80.80.8) by nasanex01c.na.qualcomm.com
- (10.45.79.139) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.39; Sun, 5 Nov
- 2023 22:39:30 -0800
-Message-ID: <6c4bd8fd-624a-4c2f-a9a8-dfdbd8281010@quicinc.com>
-Date: Mon, 6 Nov 2023 12:09:26 +0530
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="NQZxqehO"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1699254839; x=1730790839;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=E6/kgqA9Lo5JBiyk0XaJAk9Nzct4odqOsifYkRlm8ZI=;
+  b=NQZxqehOr5giCw/JVIsO+cd6Gz6KO3yg5FbgSEA2VP51gXj5nU8zDfFq
+   cBFIEbCFUl3KLgnwpi/TmHfwYN9G9NPLiR9D1l5H/erbJE9Vn4N1EhRhV
+   /VyvTosKJvaGSg5VWA2dr8Cs/0Qp4O26dComYRLJfHsSFSQ0hq/0R8jTk
+   wCGTGDu5KR4ECfTcfnnJWGQLWXjQHv1Hh+TwEVxsxKYWRm1w8pqp2Vi1G
+   C1zGNZMg+lJureajyEe0rEKMAkTVz/B3Eq80EpHtxEw7IrjszU5t/ROFw
+   +oepM/bzHkqyVZ03nqIDpE0nAtgoSpLF1uGIBKgwdF5OZ5x8eDkWtQLp7
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10885"; a="10759036"
+X-IronPort-AV: E=Sophos;i="6.03,280,1694761200"; 
+   d="scan'208";a="10759036"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Nov 2023 23:13:58 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10885"; a="1093690826"
+X-IronPort-AV: E=Sophos;i="6.03,280,1694761200"; 
+   d="scan'208";a="1093690826"
+Received: from sqa-gate.sh.intel.com (HELO localhost.localdomain) ([10.239.48.212])
+  by fmsmga005.fm.intel.com with ESMTP; 05 Nov 2023 23:13:55 -0800
+From: Tina Zhang <tina.zhang@intel.com>
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	joro@8bytes.org,
+	will@kernel.org,
+	Yi Liu <yi.l.liu@intel.com>
+Cc: virtualization@lists.linux-foundation.org,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Tina Zhang <tina.zhang@intel.com>
+Subject: [RFC PATCH 0/5] virtio-iommu: Add VT-d IO page table
+Date: Mon,  6 Nov 2023 02:12:21 -0500
+Message-Id: <20231106071226.9656-1-tina.zhang@intel.com>
+X-Mailer: git-send-email 2.39.3
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 0/3] iommu/arm-smmu: introduction of ACTLR implementation
- for Qualcomm SoCs
-Content-Language: en-US
-To: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-CC: <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
-        <a39.skl@gmail.com>, <konrad.dybcio@linaro.org>,
-        <quic_saipraka@quicinc.com>, <quic_pkondeti@quicinc.com>,
-        <quic_molvera@quicinc.com>, <linux-arm-kernel@lists.infradead.org>,
-        <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
-        <qipl.kernel.upstream@quicinc.com>
-References: <20231103215124.1095-1-quic_bibekkum@quicinc.com>
- <CAA8EJpqtZXNSz2-VEdQL2XTxi6GnZBkLABLe1qSUcwCbfoEHVQ@mail.gmail.com>
-From: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
-In-Reply-To: <CAA8EJpqtZXNSz2-VEdQL2XTxi6GnZBkLABLe1qSUcwCbfoEHVQ@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nasanex01c.na.qualcomm.com (10.45.79.139)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: JmLINs9g8SS7nRI1aHSSon2bII_xhLjt
-X-Proofpoint-GUID: JmLINs9g8SS7nRI1aHSSon2bII_xhLjt
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.272,Aquarius:18.0.987,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2023-11-06_04,2023-11-02_03,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 clxscore=1015
- priorityscore=1501 lowpriorityscore=0 malwarescore=0 adultscore=0
- mlxscore=0 suspectscore=0 phishscore=0 mlxlogscore=999 spamscore=0
- bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2310240000 definitions=main-2311060057
+Content-Transfer-Encoding: 8bit
+
+The proposal about virtio-iommu support page tables is being discussed in
+the virtio-comment mailing list[1]. This patch-set based on Jean's
+virtio-iommu/pgtables branch[2] tries to follow the proposal and add the
+basic VT-d IO page table support to virtio-iommu.
+
+On Intel platform with VT-d nested translation enabled, there are two
+main benefits for enabling virtual IOMMU support VT-d IO page table:
+1) Allowing vSVM (aka vSVA) usage. Virtual Shared Virtual Addressing
+   (vSVA) allows the virtual processor and virtual device to use the
+   same virtual addresses.
+2) Accelerating DMA buffer map operation for vIOVA usage by removing
+   the context switch on DMA buffer map operation.
+(Note: this patch-set doesn't include the whole patch-set for enabling
+vSVM on virtio-iommu, only includes the part for vIOVA case. However,
+the vSVM enabling patch-set needs to base on this patch-set.)
+
+There are three changes in this patch-set:
+1) The first patch is a bug fixing patch that tries to resolve an issue
+   about IOTLB invalidation request with incorrect page size.
+2) The next 3 patches are about adding generic IO page table support to
+   VT-d driver.
+3) The last one introduces the VT-d page format table to virtio-iommu
+   driver.
+
+The patch-set is also available at github:
+https://github.com/TinaZhangZW/linux/tree/vt-d-pgtable
+
+The QEMU part is available here:
+https://github.com/TinaZhangZW/qemu/tree/virtio-iommu/vt-d-pgtable
 
 
+[1]:https://lists.oasis-open.org/archives/virtio-comment/202310/msg00018.html
+[2]:https://jpbrucker.net/git/linux/log/?h=virtio-iommu/pgtables
 
-On 11/4/2023 4:14 AM, Dmitry Baryshkov wrote:
-> On Fri, 3 Nov 2023 at 23:53, Bibek Kumar Patro
-> <quic_bibekkum@quicinc.com> wrote:
->>
->> This patch series consists of three parts and covers the following:
->>
->> 1. Introducing intital set of driver changes to implement ACTLR register
->> for custom prefetcher settings in Qualcomm SoCs.
->>
->> 2. Adding ACTLR data and implementation operations for SM8550.
->>
->> 3. Re-enabling context caching for Qualcomm SoCs to retain prefetcher
->> settings during reset and runtime suspend.
->>
->> Link to discussion on RFC posted on ACTLR implementation:
->> https://lore.kernel.org/all/a01e7e60-6ead-4a9e-ba90-22a8a6bbd03f@quicinc.com/
-> 
-> First two patches in that thread were not archived for some reason.
-> 
-> However, as there was a previous iteration, it is suggested to include
-> the changelog between RFC and v1.
-> 
+Tina Zhang (5):
+  iommu/virtio-iommu: Correct the values of granule and nr_pages
+  iommu/vt-d: Add generic IO page table support
+  iommu/io-pgtable: Introduce struct vtd_cfg
+  iommu/vt-d: Adapt alloc_pgtable interface to be used by others
+  iommu/virtio-iommu: Support attaching VT-d IO pgtable
 
-Right, in the initial RFC sent somehow only the replies were archived.
-Although the RFC patch was a WIP patch in rough state, sent to take 
-upstream inputs.
-Will try adding the changelog in v2.
-To give a context, in the RFC patch, we we're initially proposing a dt
-based approach to set the actlr property, where we would piggyback on 
-the iommus property to store actlr value and set the property during
-smmu device probe.
+ drivers/iommu/intel/Kconfig       |   1 +
+ drivers/iommu/intel/iommu.c       | 157 ++++++++++++++++++++++++++++++
+ drivers/iommu/intel/iommu.h       |   7 ++
+ drivers/iommu/io-pgtable.c        |   3 +
+ drivers/iommu/virtio-iommu.c      |  27 ++++-
+ include/linux/io-pgtable.h        |   7 ++
+ include/uapi/linux/virtio_iommu.h |  26 +++++
+ 7 files changed, 226 insertions(+), 2 deletions(-)
 
->>
->> Bibek Kumar Patro (3):
->>    iommu/arm-smmu: introduction of ACTLR for custom prefetcher settings
->>    iommu/arm-smmu: add ACTLR data and support for sm8550
->>    iommu/arm-smmu: re-enable context caching in smmu reset operation
->>
->>   drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 143 ++++++++++++++++++++-
->>   drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h |   2 +
-> 
-> Although it is not mentioned in the MAINTAINERS file, could you please
-> CC linux-arm-msm when sending v2?
-> 
+-- 
+2.39.3
 
-Sure Dmitry, will take care of this and CC linux-arm-msm while sending v2.
-
->>   drivers/iommu/arm/arm-smmu/arm-smmu.c      |   5 +-
->>   drivers/iommu/arm/arm-smmu/arm-smmu.h      |   5 +
->>   4 files changed, 146 insertions(+), 9 deletions(-)
->>
->> --
->> 2.17.1
->>
-> 
-> 
