@@ -1,84 +1,280 @@
-Received: from mail-qt1-f174.google.com (mail-qt1-f174.google.com [209.85.160.174])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0FB4E8F77
-	for <iommu@lists.linux.dev>; Sun,  5 Nov 2023 18:17:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB8FE2F3D
+	for <iommu@lists.linux.dev>; Mon,  6 Nov 2023 06:10:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="Z+stHxKY"
-Received: by mail-qt1-f174.google.com with SMTP id d75a77b69052e-41cbf8e1f77so21628181cf.0
-        for <iommu@lists.linux.dev>; Sun, 05 Nov 2023 10:17:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1699208220; x=1699813020; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=uJ/4ly8I4Lzcl+B1iGhd5bwx1qXxyhHEC1tRizsoUUI=;
-        b=Z+stHxKY+5K0q5pt6RxYluEnzFa0UVG7pRZSS17xgfqoGvBVSuKIVYjpHezCuNWo8w
-         YHQzVODgrFNqop9T5UF7gfs5zNfl9CDvMWeTS0MjUPd4EyAkMfNTtEKLNBsKgFUSQBSn
-         Esxm0YmK9cmniQNHrVgQgoFSiwefW3uXluDASfAHr2QGbq0z4A+LkRMl2FAlXJPSaTSG
-         IFLoB3wIyLYDUxMcRHulypUyfGGDQFVUowTeX3z2zUzVXZmCATNqCLi4AnxPjkgTiMph
-         +yD/cMMDb3C83aW4iW0Iu6uyNfGVpO1gzrMJJ+93YsS+wXzRSkG2xxBXdb0LeeSJzZFo
-         LHKg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1699208220; x=1699813020;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=uJ/4ly8I4Lzcl+B1iGhd5bwx1qXxyhHEC1tRizsoUUI=;
-        b=KVAhC9ZsBmifFqhh+ro0D4yxWxpUFdbIavmqjwW37nrYmSTtA8XNHO8kU2I0DMPMg4
-         ymCK6v/dkXACaCvderF82gtsk1KsyCXiGYIidx+UzYvedf/kj9Lf8qzBA3Ftj5epbQoN
-         vOX6rGtlssJQKK+y1Bkr5MbVao+CxOKjecrg13Wj85KqjebI6JCXzzV0SN8GWlRQsgxz
-         82i5AsRdMMabS77WXcb1YfAVt9pHYHzVN+cAMYKcKvZiYm4OUh//I1CsgwC0O9d5Ovqy
-         couRx8QHoCjsaLrTW16H4/uA88MzcLv9ROJEqtVLqFo1FrBFoyMv51g7U5eNuu5Go53I
-         AzxQ==
-X-Gm-Message-State: AOJu0YzSx7DUoYHYraf4Lv6kfy/YPgkw+CpRBrpu+s3x0EIXxP5VeunA
-	g0tvPFWzPYwqan4ffj5qKdAIFw==
-X-Google-Smtp-Source: AGHT+IGUIYvWoIkVA+ArZ/oWFMmhkFTqlffURf/eAx3bnwWr39dzZFIYDbbZ0d5xzZJkKsUL2zxaVg==
-X-Received: by 2002:ac8:7d0c:0:b0:412:1fd7:dfa1 with SMTP id g12-20020ac87d0c000000b004121fd7dfa1mr26432238qtb.8.1699208219827;
-        Sun, 05 Nov 2023 10:16:59 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-68-26-201.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.26.201])
-        by smtp.gmail.com with ESMTPSA id ki23-20020a05622a771700b004166ab2e509sm2680150qtb.92.2023.11.05.10.16.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 05 Nov 2023 10:16:59 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1qzhgA-001FfV-Tx;
-	Sun, 05 Nov 2023 14:16:58 -0400
-Date: Sun, 5 Nov 2023 14:16:58 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Vasant Hegde <vasant.hegde@amd.com>
-Cc: iommu@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com,
-	wei.huang2@amd.com, jsnitsel@redhat.com
-Subject: Re: [PATCH v3 08/13] iommu/amd: Rearrange GCR3 table setup code
-Message-ID: <20231105181658.GI4634@ziepe.ca>
-References: <20231013151652.6008-1-vasant.hegde@amd.com>
- <20231013151652.6008-9-vasant.hegde@amd.com>
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="Fm79f/yf"
+Received: from pps.filterd (m0279867.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 3A664NBO020200;
+	Mon, 6 Nov 2023 06:09:45 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=qcppdkim1;
+ bh=QrZlxNMvJivigefguk9laFaTFc3zs+PbCWA5YdF7RUw=;
+ b=Fm79f/yfQnqofrmocAvIL10TgksopunWPGA+Vo0yU/00liCoNlJhxBB8Sf+X2et2dH9p
+ 2LZJSQfSxDWP7q0GWYeGc6OqpCa7KZ8FwqeCmjTuBgZFu34jA8xRxuTsnvysN7xrsKmb
+ HxxUEjSBdgt30sEl4/njJ/Q3+aCGnl26NAtYgfcBJkrJoumN4tYHsryZztCQ1zfcd+YA
+ Go0Ndo8Iq3PRhC4wkTMi0a+o4d2hWSKCGbyu0cSMt2f7LR50gcgcj0n/eTqTvFRULAM4
+ VTFjdFufW4sNhnIfEazROmEc2Zl9b83XAs8yB7LHcWYXGIo2bV0OJQVunA9psAJpOVJY gQ== 
+Received: from nasanppmta02.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3u5eg3u7cm-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 06 Nov 2023 06:09:45 +0000
+Received: from nasanex01c.na.qualcomm.com (nasanex01c.na.qualcomm.com [10.45.79.139])
+	by NASANPPMTA02.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 3A669iTk003029
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 6 Nov 2023 06:09:44 GMT
+Received: from [10.214.227.50] (10.80.80.8) by nasanex01c.na.qualcomm.com
+ (10.45.79.139) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.39; Sun, 5 Nov
+ 2023 22:09:39 -0800
+Message-ID: <e3d96ed5-af32-4087-b7df-d960eaf39797@quicinc.com>
+Date: Mon, 6 Nov 2023 11:39:30 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20231013151652.6008-9-vasant.hegde@amd.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 2/3] iommu/arm-smmu: add ACTLR data and support for SM8550
+Content-Language: en-US
+To: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+CC: <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
+        <a39.skl@gmail.com>, <konrad.dybcio@linaro.org>,
+        <quic_saipraka@quicinc.com>, <quic_pkondeti@quicinc.com>,
+        <quic_molvera@quicinc.com>, <linux-arm-kernel@lists.infradead.org>,
+        <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
+        <qipl.kernel.upstream@quicinc.com>
+References: <20231103215124.1095-1-quic_bibekkum@quicinc.com>
+ <20231103215124.1095-3-quic_bibekkum@quicinc.com>
+ <CAA8EJpqWdHwF_mZoXt8wpYeKLWQEFs3H83c-OsLVYVGYmi5mkQ@mail.gmail.com>
+ <fff5184b-3bf6-4f40-b99f-e77c01342fcc@quicinc.com>
+ <CAA8EJprkO=XZ=4na-JAKDsoKOxLt_AG42HQ4JTVNTZ2BSu8YdQ@mail.gmail.com>
+From: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+In-Reply-To: <CAA8EJprkO=XZ=4na-JAKDsoKOxLt_AG42HQ4JTVNTZ2BSu8YdQ@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nasanex01c.na.qualcomm.com (10.45.79.139)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: bWOvCrW3oVQScZfhx7HGfeNothsEjjt3
+X-Proofpoint-ORIG-GUID: bWOvCrW3oVQScZfhx7HGfeNothsEjjt3
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.987,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2023-11-06_03,2023-11-02_03,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 phishscore=0
+ adultscore=0 malwarescore=0 suspectscore=0 mlxlogscore=999 clxscore=1015
+ bulkscore=0 lowpriorityscore=0 priorityscore=1501 spamscore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2310240000 definitions=main-2311060052
 
-On Fri, Oct 13, 2023 at 03:16:47PM +0000, Vasant Hegde wrote:
-> Consolidate GCR3 table related code in one place so that its easy
-> to maintain.
-> 
-> Note that this patch doesn't move __set_gcr3/__clear_gcr3. We are moving
-> GCR3 table from per domain to per device. Following series will rework
-> these functions. During that time I will move these functions as well.
-> 
-> No functional changes intended.
-> 
-> Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
-> ---
->  drivers/iommu/amd/iommu.c | 64 +++++++++++++++++++--------------------
->  1 file changed, 32 insertions(+), 32 deletions(-)
 
-Same remark as before about just moving code..
 
-Jason
+On 11/4/2023 4:11 AM, Dmitry Baryshkov wrote:
+> On Sat, 4 Nov 2023 at 00:38, Bibek Kumar Patro
+> <quic_bibekkum@quicinc.com> wrote:
+>>
+>>
+>>
+>> On 11/4/2023 3:31 AM, Dmitry Baryshkov wrote:
+>>> On Fri, 3 Nov 2023 at 23:53, Bibek Kumar Patro
+>>> <quic_bibekkum@quicinc.com> wrote:
+>>>>
+>>>> Add ACTLR data table for SM8550 along with support for
+>>>> same including SM8550 specific implementation operations.
+>>>>
+>>>> Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+>>>> ---
+>>>>    drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 85 +++++++++++++++++++++-
+>>>>    1 file changed, 81 insertions(+), 4 deletions(-)
+>>>>
+>>>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>>> index 68c1f4908473..590b7c285299 100644
+>>>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>>> @@ -25,6 +25,64 @@ struct actlr_data {
+>>>>           u32 actlr;
+>>>>    };
+>>>>
+>>>> +static const struct actlr_data sm8550_apps_actlr_data[] = {
+>>>> +       { 0x18a0, 0x0000, 0x00000103 },
+>>>> +       { 0x18e0, 0x0000, 0x00000103 },
+>>>> +       { 0x0800, 0x0020, 0x00000001 },
+>>>> +       { 0x1800, 0x00c0, 0x00000001 },
+>>>> +       { 0x1820, 0x0000, 0x00000001 },
+>>>> +       { 0x1860, 0x0000, 0x00000001 },
+>>>> +       { 0x0c01, 0x0020, 0x00000303 },
+>>>> +       { 0x0c02, 0x0020, 0x00000303 },
+>>>> +       { 0x0c03, 0x0020, 0x00000303 },
+>>>> +       { 0x0c04, 0x0020, 0x00000303 },
+>>>> +       { 0x0c05, 0x0020, 0x00000303 },
+>>>> +       { 0x0c06, 0x0020, 0x00000303 },
+>>>> +       { 0x0c07, 0x0020, 0x00000303 },
+>>>> +       { 0x0c08, 0x0020, 0x00000303 },
+>>>> +       { 0x0c09, 0x0020, 0x00000303 },
+>>>> +       { 0x0c0c, 0x0020, 0x00000303 },
+>>>> +       { 0x0c0d, 0x0020, 0x00000303 },
+>>>> +       { 0x0c0e, 0x0020, 0x00000303 },
+>>>> +       { 0x0c0f, 0x0020, 0x00000303 },
+>>>> +       { 0x1961, 0x0000, 0x00000303 },
+>>>> +       { 0x1962, 0x0000, 0x00000303 },
+>>>> +       { 0x1963, 0x0000, 0x00000303 },
+>>>> +       { 0x1964, 0x0000, 0x00000303 },
+>>>> +       { 0x1965, 0x0000, 0x00000303 },
+>>>> +       { 0x1966, 0x0000, 0x00000303 },
+>>>> +       { 0x1967, 0x0000, 0x00000303 },
+>>>> +       { 0x1968, 0x0000, 0x00000303 },
+>>>> +       { 0x1969, 0x0000, 0x00000303 },
+>>>> +       { 0x196c, 0x0000, 0x00000303 },
+>>>> +       { 0x196d, 0x0000, 0x00000303 },
+>>>> +       { 0x196e, 0x0000, 0x00000303 },
+>>>> +       { 0x196f, 0x0000, 0x00000303 },
+>>>> +       { 0x19c1, 0x0010, 0x00000303 },
+>>>> +       { 0x19c2, 0x0010, 0x00000303 },
+>>>> +       { 0x19c3, 0x0010, 0x00000303 },
+>>>> +       { 0x19c4, 0x0010, 0x00000303 },
+>>>> +       { 0x19c5, 0x0010, 0x00000303 },
+>>>> +       { 0x19c6, 0x0010, 0x00000303 },
+>>>> +       { 0x19c7, 0x0010, 0x00000303 },
+>>>> +       { 0x19c8, 0x0010, 0x00000303 },
+>>>> +       { 0x19c9, 0x0010, 0x00000303 },
+>>>> +       { 0x19cc, 0x0010, 0x00000303 },
+>>>> +       { 0x19cd, 0x0010, 0x00000303 },
+>>>> +       { 0x19ce, 0x0010, 0x00000303 },
+>>>> +       { 0x19cf, 0x0010, 0x00000303 },
+>>>> +       { 0x1c00, 0x0002, 0x00000103 },
+>>>> +       { 0x1c01, 0x0000, 0x00000001 },
+>>>> +       { 0x1920, 0x0000, 0x00000103 },
+>>>> +       { 0x1923, 0x0000, 0x00000103 },
+>>>> +       { 0x1924, 0x0000, 0x00000103 },
+>>>> +       { 0x1940, 0x0000, 0x00000103 },
+>>>> +       { 0x1941, 0x0004, 0x00000103 },
+>>>> +       { 0x1943, 0x0000, 0x00000103 },
+>>>> +       { 0x1944, 0x0000, 0x00000103 },
+>>>> +       { 0x1947, 0x0000, 0x00000103 },
+>>>> +};
+>>>
+>>> This is nearly impossible to handle.
+>>> Please add defines for 0x1, 0x103 and 0x303. Also please consider
+>>> adding comments for the devices.
+>>>
+>>
+>> Ack, Initially added the comments for devices, but since only driver is
+>> handling this data, and clients won't refer this so removed it. Will
+>> consider adding it back.
+> 
+> It will help developers / porters who will try matching the SID and the device.
+> 
+
+Agree on the same, I'll add those comments for devices back.
+
+>>   This actlr field value might different (other
+>> than 0x1,0x103,0x303) in other platforms as per my anticipation,
+>> depending on the bit settings, so won't the defines change with
+>> different platforms? Hence this register setting value might be apt?
+> 
+> It is simple. 0x1, 0x103 and 0x303 are pure magic values. Please
+> provide sensible defines so that we can understand and review them.
+>
+
+Understandable, In next patch I'll populate the actlr_data in
+following format { SID, MASK, PRE_FETCH_n | CPRE | CMTLB }.
+where " PRE_FETCH_n | CPRE | CMTLB " will be defines for
+the actlr values (0x1,0x103,0x303).
+This would help in understanding these values. Hope this
+proposed format will be okay?
+
+
+> Other platforms might use new defines.
+> 
+>>
+>>>> +
+>>>>    static struct qcom_smmu *to_qcom_smmu(struct arm_smmu_device *smmu)
+>>>>    {
+>>>>           return container_of(smmu, struct qcom_smmu, smmu);
+>>>> @@ -444,6 +502,16 @@ static const struct arm_smmu_impl sdm845_smmu_500_impl = {
+>>>>           .tlb_sync = qcom_smmu_tlb_sync,
+>>>>    };
+>>>>
+>>>> +
+>>>> +static const struct arm_smmu_impl sm8550_smmu_500_impl = {
+>>>> +       .init_context = qcom_smmu_init_context,
+>>>> +       .cfg_probe = qcom_smmu_cfg_probe,
+>>>> +       .def_domain_type = qcom_smmu_def_domain_type,
+>>>> +       .reset = arm_mmu500_reset,
+>>>> +       .write_s2cr = qcom_smmu_write_s2cr,
+>>>> +       .tlb_sync = qcom_smmu_tlb_sync,
+>>>> +};
+>>>> +
+>>>>    static const struct arm_smmu_impl qcom_adreno_smmu_v2_impl = {
+>>>>           .init_context = qcom_adreno_smmu_init_context,
+>>>>           .def_domain_type = qcom_smmu_def_domain_type,
+>>>> @@ -507,6 +575,11 @@ static const struct qcom_smmu_config qcom_smmu_impl0_cfg = {
+>>>>           .reg_offset = qcom_smmu_impl0_reg_offset,
+>>>>    };
+>>>>
+>>>> +static const struct actlr_config sm8550_actlrcfg = {
+>>>> +       .adata = sm8550_apps_actlr_data,
+>>>> +       .size = ARRAY_SIZE(sm8550_apps_actlr_data),
+>>>> +};
+>>>> +
+>>>>    /*
+>>>>     * It is not yet possible to use MDP SMMU with the bypass quirk on the msm8996,
+>>>>     * there are not enough context banks.
+>>>> @@ -530,16 +603,20 @@ static const struct qcom_smmu_match_data sdm845_smmu_500_data = {
+>>>>           /* Also no debug configuration. */
+>>>>    };
+>>>>
+>>>> +
+>>>> +static const struct qcom_smmu_match_data sm8550_smmu_500_impl0_data = {
+>>>> +       .impl = &sm8550_smmu_500_impl,
+>>>> +       .adreno_impl = &qcom_adreno_smmu_500_impl,
+>>>> +       .cfg = &qcom_smmu_impl0_cfg,
+>>>> +       .actlrcfg = &sm8550_actlrcfg,
+>>>> +};
+>>>
+>>> This structure doesn't seem to be linked. Did you test your patches?
+>>>
+>>
+>> Apologies Dmitry, just checked back my patches, I tested it but while
+>> refining the patches I somehow missed this link
+>> { .compatible = "qcom,sm8550-smmu-500", .data =
+>> &sm8550_smmu_500_impl0_data };
+>> in below qcom_smmu_500_impl0_data structure.
+>> I will take care of this in next version.
+>>
+>>>> +
+>>>>    static const struct qcom_smmu_match_data qcom_smmu_500_impl0_data = {
+>>>>           .impl = &qcom_smmu_500_impl,
+>>>>           .adreno_impl = &qcom_adreno_smmu_500_impl,
+>>>>           .cfg = &qcom_smmu_impl0_cfg,
+>>>>    };
+>>>>
+>>>> -/*
+>>>> - * Do not add any more qcom,SOC-smmu-500 entries to this list, unless they need
+>>>> - * special handling and can not be covered by the qcom,smmu-500 entry.
+>>>> - */
+>>>
+>>> Leave the comment in place.
+>>>
+>>
+>> Thanks for this comment which helped me to note the above mentioned
+>> mistake.
+>>
+>>>>    static const struct of_device_id __maybe_unused qcom_smmu_impl_of_match[] = {
+>>>>           { .compatible = "qcom,msm8996-smmu-v2", .data = &msm8996_smmu_data },
+>>>>           { .compatible = "qcom,msm8998-smmu-v2", .data = &qcom_smmu_v2_data },
+>>>> --
+>>>> 2.17.1
+>>>>
+>>>
+>>>
+> 
+> 
+> 
