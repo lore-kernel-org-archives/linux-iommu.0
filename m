@@ -1,118 +1,147 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oi1-f170.google.com (mail-oi1-f170.google.com [209.85.167.170])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 18AC52941E
-	for <iommu@lists.linux.dev>; Mon,  6 Nov 2023 17:12:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E8BC241FF
+	for <iommu@lists.linux.dev>; Mon,  6 Nov 2023 17:29:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="Y+0xfMr2"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1699290755;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=xtsXGyrCZBmUJfCxzrPKMMdVxxHur1sL8JecsuLgwa0=;
-	b=Y+0xfMr2o5tCEnJaHnfqd7QUVxuT1ZZgxZs+imYKxly0YcZ/DEkMftE2YZBB7d0m3kIAZ/
-	S8Pfphv0I1F7+uesArUFqzAuOaUh7tDy4ZR8RlcdyjQHab+0zecKpDpdK8Eia1QhtST6Md
-	wWpQ9XED4ohq9YgBOEgLsuISksliftA=
-Received: from mimecast-mx02.redhat.com (mx-ext.redhat.com [66.187.233.73])
- by relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.3,
- cipher=TLS_AES_256_GCM_SHA384) id us-mta-632-_45CrAGuNjOuxKLbB7FT_Q-1; Mon,
- 06 Nov 2023 12:12:31 -0500
-X-MC-Unique: _45CrAGuNjOuxKLbB7FT_Q-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 674ED3821568;
-	Mon,  6 Nov 2023 17:12:30 +0000 (UTC)
-Received: from file1-rdu.file-001.prod.rdu2.dc.redhat.com (unknown [10.11.5.21])
-	by smtp.corp.redhat.com (Postfix) with ESMTPS id 47C5D1121308;
-	Mon,  6 Nov 2023 17:12:30 +0000 (UTC)
-Received: by file1-rdu.file-001.prod.rdu2.dc.redhat.com (Postfix, from userid 12668)
-	id 3227530C72A7; Mon,  6 Nov 2023 17:12:30 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
-	by file1-rdu.file-001.prod.rdu2.dc.redhat.com (Postfix) with ESMTP id 2E33F3FD16;
-	Mon,  6 Nov 2023 18:12:30 +0100 (CET)
-Date: Mon, 6 Nov 2023 18:12:30 +0100 (CET)
-From: Mikulas Patocka <mpatocka@redhat.com>
-To: Mike Snitzer <snitzer@kernel.org>
-cc: Keith Busch <kbusch@kernel.org>, Christoph Hellwig <hch@lst.de>, 
-    Juergen Gross <jgross@suse.com>, 
-    Stefano Stabellini <sstabellini@kernel.org>, 
-    xen-devel@lists.xenproject.org, iommu@lists.linux.dev, 
-    Marek Marczykowski-G'orecki <marmarek@invisiblethingslab.com>, 
-    Jens Axboe <axboe@fb.com>, Sagi Grimberg <sagi@grimberg.me>, 
-    Jan Kara <jack@suse.cz>, Vlastimil Babka <vbabka@suse.cz>, 
-    Andrew Morton <akpm@linux-foundation.org>, 
-    Matthew Wilcox <willy@infradead.org>, Michal Hocko <mhocko@suse.com>, 
-    stable@vger.kernel.org, regressions@lists.linux.dev, 
-    Alasdair Kergon <agk@redhat.com>, dm-devel@lists.linux.dev, 
-    linux-mm@kvack.org
-Subject: [PATCH v2] swiotlb-xen: provide the "max_mapping_size" method
-In-Reply-To: <ZUkGpblDX637QV9y@redhat.com>
-Message-ID: <151bef41-e817-aea9-675-a35fdac4ed@redhat.com>
-References: <3cb4133c-b6db-9187-a678-11ed8c9456e@redhat.com> <ZUUctamEFtAlSnSV@mail-itl> <ZUUlqJoS6_1IznzT@kbusch-mbp.dhcp.thefacebook.com> <ZUVYT1Xp4+hFT27W@mail-itl> <ZUV3TApYYoh_oiRR@kbusch-mbp.dhcp.thefacebook.com> <11a9886d-316c-edcd-d6da-24ad0b9a2b4@redhat.com>
- <ZUZOKitOAqqKiJ4n@kbusch-mbp.dhcp.thefacebook.com> <20231106071008.GB17022@lst.de> <928b5df7-fada-cf2f-6f6a-257a84547c3@redhat.com> <ZUkDUXDF6g4P86F3@kbusch-mbp.dhcp.thefacebook.com> <ZUkGpblDX637QV9y@redhat.com>
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="kWyF29Lj"
+Received: by mail-oi1-f170.google.com with SMTP id 5614622812f47-3b2ea7cca04so3070890b6e.2
+        for <iommu@lists.linux.dev>; Mon, 06 Nov 2023 09:29:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1699291773; x=1699896573; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=RyYrivOkwJW+lhkMVRCU+CqUAdrzHFncDNs9O3VP2o0=;
+        b=kWyF29LjFQhYXfcwUJ6Do35DRzHxpV9DtH+zIOuBXs7PJ08m/NLgZ2omrTuS6vZuGI
+         7EKyC9m5Hl4vQLrk+dcR8ntcmhAjjSt8PdNxRcsDlZcN8Dt1A0IR2z/4BKk44M0tlL3/
+         UiQF4/zjYeH40iwI7ab9LP2cchpg+OzLVX58tj5/B70LJfEanoYCvkExHze3sUudfnIf
+         bYyrpwfIgOKmHIPCHAy6GKZSl+kTVJcDupxgTvWjTEvxTRfiFxFEnGtPp8i/n3PNTt7X
+         AdyWMY0wnT/Zpppps6sqJhid/EX9OL5tfUC7DUDnDXTtrskXcCNhrVti+aon1oIhK9Ol
+         iZMg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1699291773; x=1699896573;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=RyYrivOkwJW+lhkMVRCU+CqUAdrzHFncDNs9O3VP2o0=;
+        b=D4nOg2Za35kmrCweQr4UiVtYRbxN4bt03uY+RmeyHkfq7viJm/gPINUqouVqu+UPAX
+         QVzTueSYa6SuuDttPduvtdKmf/FEzWBvfaRYAoXdbGToysohv4ypzewCom931cnvCXu6
+         v7WqUMTQ0uKqHtgtYxNL83Ct+MX4Eq6ksJ5OevfEtcQO34QBuag73pDJm7yMQNXur9Og
+         ENIYHXZp1kP6wEFb7xMlXaIIMLt1B1e4ApoMEb/qy9x00unvaAAbGKD7OS5bxSOAA3he
+         ia8QliAA4Bl/Qtq5M6qQY4tqdgEZjES+m+ODrNHX8j9HHhSun489gJBujV1Y4Oy7Ki54
+         9jPQ==
+X-Gm-Message-State: AOJu0Yz9CzCulHXT9uDFLRg4d1VP9VISqylo3fPwqIAspLEeyKtoxkcC
+	VCo972D6wnJas2QL/LszyS83Ig==
+X-Google-Smtp-Source: AGHT+IHMw4FzswnzQtwoObQGV1Erx6BWSEr74bc4mXWJhxEGvbZFkN9lxJtDhiSp/A6gYwID9WxPDA==
+X-Received: by 2002:a05:6808:1b14:b0:3a7:2390:3583 with SMTP id bx20-20020a0568081b1400b003a723903583mr37803220oib.38.1699291773259;
+        Mon, 06 Nov 2023 09:29:33 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-68-26-201.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.26.201])
+        by smtp.gmail.com with ESMTPSA id m17-20020a05620a24d100b00774292e636dsm3465530qkn.63.2023.11.06.09.29.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 Nov 2023 09:29:31 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1r03Pn-001P8S-7T;
+	Mon, 06 Nov 2023 13:29:31 -0400
+Date: Mon, 6 Nov 2023 13:29:31 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Vasant Hegde <vasant.hegde@amd.com>
+Cc: iommu@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com,
+	wei.huang2@amd.com, jsnitsel@redhat.com
+Subject: Re: [PATCH v3 10/13] iommu/amd: Refactor helper function for
+ attaching / detaching device
+Message-ID: <20231106172931.GM4634@ziepe.ca>
+References: <20231013151652.6008-1-vasant.hegde@amd.com>
+ <20231013151652.6008-11-vasant.hegde@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; BOUNDARY="185210117-1837111149-1699290694=:1497320"
-Content-ID: <478c056-3a19-eb50-34da-911cf13fc558@redhat.com>
-X-Scanned-By: MIMEDefang 3.4.1 on 10.11.54.3
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20231013151652.6008-11-vasant.hegde@amd.com>
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+On Fri, Oct 13, 2023 at 03:16:49PM +0000, Vasant Hegde wrote:
+> From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+> 
+> To use the new helper function for setting up GCR3 table.
+> 
+> If system is booted with V2 page table then setup default GCR3 with
+> domain GCR3 pointer. 
 
---185210117-1837111149-1699290694=:1497320
-Content-Type: text/plain; CHARSET=ISO-8859-15
-Content-Transfer-Encoding: 8BIT
-Content-ID: <4468b751-727c-3ffb-15cc-683422283a27@redhat.com>
+Lets stop talking about "booted with V2 page table" - "If the domain
+uses the V2 format then setup a GCR3 table in the device to point to it"
 
-From: Keith Busch <kbusch@kernel.org>
+> +static int _init_gcr3_tbl(struct iommu_dev_data *dev_data)
+> +{
+> +	struct gcr3_tbl_info *gcr3_info = &dev_data->gcr3_info;
+> +
+> +	/* By default, GCR3 is set to support non-PASID devices. */
+> +	gcr3_info->giov = true;
 
-There's a bug that when using the XEN hypervisor with bios with large
-multi-page bio vectors on NVMe, the kernel deadlocks [1].
+I admit I find it really hard to read the AMD spec here.. In terms of
+the SW model what modes are actually supportable by HW?
 
-The deadlocks are caused by inability to map a large bio vector -
-dma_map_sgtable always returns an error, this gets propagated to the block
-layer as BLK_STS_RESOURCE and the block layer retries the request
-indefinitely.
+No PASIDs being used:
+ RID domain=IDENTITY - yes [V=0]
+ RID domain=BLOCKED - yes [V=1, TV=1, GV=0, mode == 0]
+ RID domain=v1 - Yes [V=1, TV=1, GV=0, mode != 0]
+ RID domain=v2 - Yes [V=1, TV=0, GV=1, GIOV=1]
 
-XEN uses the swiotlb framework to map discontiguous pages into contiguous
-runs that are submitted to the PCIe device. The swiotlb framework has a
-limitation on the length of a mapping - this needs to be announced with
-the max_mapping_size method to make sure that the hardware drivers do not
-create larger mappings.
+Some kind of PASID in use:
+ RID domain=v2 & PASID - Yes [V=1, TV=0, GV=1, GIOV=1]
+ RID domain=V1 & PASID - No??
+ RID domain=IDENTITY & PASID - ?? [V=1, TV=1 GV=1, mode=0, GIOV=0] (Section 2.2.7.1?)
+ RID domain=BLOCKED & PASID - ?? [V=1, TV=0, GV=1, GIOV=1 with GCR3 entry 0 being non-valid] 
 
-Without max_mapping_size, the NVMe block driver would create large
-mappings that overrun the maximum mapping size.
+Did I get it right? If so GIOV should ultimately be deduced based on
+what domain the RID has?
 
-Reported-by: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
-Link: https://lore.kernel.org/stable/ZTNH0qtmint%2FzLJZ@mail-itl/ [1]
-Tested-by: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
-Suggested-by: Christoph Hellwig <hch@lst.de>
-Cc: stable@vger.kernel.org
-Signed-off-by: Keith Busch <kbusch@kernel.org>
-Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
+Look at how the SMMUv3 stuff ended up. Their STE is the same purpose
+as the AMD DTE. There are alot of combinations here, it was hard to
+make a code flow that was clean. It turned out pretty good when the
+DTE was generated in the ops->attach based on a calculation of exactly
+what the current configuration is, because we already know what we are
+in alot of detail at that point.
 
----
- drivers/xen/swiotlb-xen.c |    1 +
- 1 file changed, 1 insertion(+)
+eg we know if we are attaching an identity domain and PASIDs are in
+use that a single specific DTE should be created. So just call a
+function directly to get the required DTE.
 
-Index: linux-stable/drivers/xen/swiotlb-xen.c
-===================================================================
---- linux-stable.orig/drivers/xen/swiotlb-xen.c	2023-11-03 17:57:18.000000000 +0100
-+++ linux-stable/drivers/xen/swiotlb-xen.c	2023-11-06 15:30:59.000000000 +0100
-@@ -405,4 +405,5 @@ const struct dma_map_ops xen_swiotlb_dma
- 	.get_sgtable = dma_common_get_sgtable,
- 	.alloc_pages = dma_common_alloc_pages,
- 	.free_pages = dma_common_free_pages,
-+	.max_mapping_size = swiotlb_max_mapping_size,
- };
---185210117-1837111149-1699290694=:1497320--
+IOW - I'm not sure it really makes logical sense to store giov in
+gcr3_info.
 
+> +static int do_attach(struct iommu_dev_data *dev_data,
+> +		     struct protection_domain *domain)
+>  {
+>  	struct amd_iommu *iommu;
+> +	int ret = 0;
+>  
+>  	iommu = get_amd_iommu_from_dev(dev_data->dev);
+>  	if (!iommu)
+> -		return;
+> +		return -EINVAL;
+
+iommu can't be null here, have a dev_data.
+
+>  	dev_data->domain = domain;
+> @@ -2080,11 +2103,27 @@ static void do_attach(struct iommu_dev_data *dev_data,
+>  	if (domain_id_is_per_dev(domain))
+>  		dev_data->domid = domain_id_alloc();
+
+At some point this is the wrong place to put this, the domain ID is
+logically associated with the gcr3 table, it should never be used if
+there is no gcr table allocated, and it should be freed once the gcr3
+table is freed.
+
+> +	/* Init GCR3 table */
+> +	if (domain->pd_mode == PD_MODE_V2) {
+
+Is there a case where domain_id_is_per_dev() but we are attaching a v1
+table?
+
+Jason
