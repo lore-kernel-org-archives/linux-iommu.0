@@ -1,61 +1,60 @@
-Received: from mail-qt1-f169.google.com (mail-qt1-f169.google.com [209.85.160.169])
+Received: from mail-oi1-f181.google.com (mail-oi1-f181.google.com [209.85.167.181])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5DC6328E07
-	for <iommu@lists.linux.dev>; Mon,  6 Nov 2023 15:30:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; dkim=none
-Received: by mail-qt1-f169.google.com with SMTP id d75a77b69052e-41cc0e9d92aso29544371cf.3
-        for <iommu@lists.linux.dev>; Mon, 06 Nov 2023 07:30:48 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A45F29439
+	for <iommu@lists.linux.dev>; Mon,  6 Nov 2023 16:51:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="XW4qFImo"
+Received: by mail-oi1-f181.google.com with SMTP id 5614622812f47-3b2ea7cc821so3044013b6e.1
+        for <iommu@lists.linux.dev>; Mon, 06 Nov 2023 08:51:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1699289482; x=1699894282; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=34naG3oOhFipg6p0SId1WyC2GMj97M8nPwdZUr8gkUs=;
+        b=XW4qFImo8Nt+FmTYp423ESadmXwWhLQ9rawNItfgIcZWFOOuDAPkMVCll+B5CAgvMA
+         rydOfT3pj/k7sxLi/PRHrpfSZAUvMg5apxBgFNYTZ001xbKoxCwfQcC+n9I3O/d9135u
+         /cTMFaFPP7idUDCWGkbRgH6u+3PznSe++/UEtqZo/nK5qqP7DHe2U97pqRlWuiP4e2sM
+         JDH19rGmOoQ2FJ/PgIp5kv9XeftI3/M8igClLf/lCIF33xBhGR5m5xLnpo6hZZ/KVVZw
+         f8HfNt8sshKV4HBRG8l6nvrbGLjIDavzp6Teq4Iq3HL+4hw5zC08FgZPXxLWBIZlbt8X
+         li1g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1699284647; x=1699889447;
+        d=1e100.net; s=20230601; t=1699289482; x=1699894282;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=hrjYpFY8E2oiY2xxYzQ2GUG1YMJAJZ45VGuFmmeRh4c=;
-        b=FcHlb4LdYIYXt59bcKI9gKXXClNYHYy1Jf2ZHUVI09jkRutYvg3TfTRZao4JwGWp4e
-         rSNOHmMYxAOAuCn3ENnkNZp+fYM9AqpZLqaFzrlivJWhayz2mrC488eA6iy2TyTs5DR4
-         MwBrsQQlwE1gZXvFeUHBIpJmzNEDRbl88eE5Fgx+udvOk6h2Wy0siqcJiHf6DH9/IMuv
-         pMZT6dJrdv7TbrFZGNI7AYll3e913k84mBVlJhzc1XIqdETR6fti61kbso83ZIByZMpq
-         UduUVQvuZH69SLIl23qTmWFgGvDtqQD4I0VOqnYeIQNyddxV7BNbrUC7y8KLfEwFG9TW
-         LJlg==
-X-Gm-Message-State: AOJu0YzckpNwXUg2s5q3N6zhLOmzPyFmFnXE9AOHl/+njMQ9/ve903dF
-	weh7nSO67i1L+7STddv9oXWa8Pdxofw37Xm2DA==
-X-Google-Smtp-Source: AGHT+IEM/+zw76Fcxpj1WquMbJygUaMozC9Wk7yN5zbxmT5CSz4J9onVl5IQCkCNvJJhkdQNmfPFUA==
-X-Received: by 2002:ac8:7d50:0:b0:41c:bbf3:b24b with SMTP id h16-20020ac87d50000000b0041cbbf3b24bmr35421169qtb.27.1699284647197;
-        Mon, 06 Nov 2023 07:30:47 -0800 (PST)
-Received: from localhost (pool-68-160-141-91.bstnma.fios.verizon.net. [68.160.141.91])
-        by smtp.gmail.com with ESMTPSA id bb29-20020a05622a1b1d00b00418122186ccsm3481815qtb.12.2023.11.06.07.30.46
+        bh=34naG3oOhFipg6p0SId1WyC2GMj97M8nPwdZUr8gkUs=;
+        b=ncN/M1DgPsbsCmaxGYY/MMmwnITgwa8SZ1/Sb/EtHlv0mR9sYHxj/1o15QzeZ1PNKK
+         M7pYgVZeNp2peRAr0RbJ+tl+FsdTNL9IHUqLatYOxASCU8W+8cNV0sxYypIbP0/jadOf
+         s0XvHWd2z77VGlKoYwPO/nXSC9NHroOZwaKDGPzj4YDQU2ro8XaJY7/ghakMcytuuImz
+         6yiPRj+6qcmwShEfe+lBqdWHbb8LxmEe8Hkn2z/I+9321X+an8k3egQjngZP/E9eCxk+
+         Y/8riHGjzoHZPYdd3vmPNMQDqxW9kO+Fbzuxql+GVxeFJDqUI1kASE3GnFaDDr4MLYhE
+         SE/Q==
+X-Gm-Message-State: AOJu0YwZ8WZ2pV4EkraDpSqD/mGtBth6Sj/ERreqIPTJqCLZAa83DjcK
+	YglJHyTain9Mi7ryIvgP9KBM/yq8+wAKwpbySFQ=
+X-Google-Smtp-Source: AGHT+IGnKK/Z2gFvTaACKZsUmioZvZDykV/v302UY+b3S9/GnRSl/0lusqbRWw8NL6lurTmdHp0OUg==
+X-Received: by 2002:a05:6808:2394:b0:3ae:144f:f99b with SMTP id bp20-20020a056808239400b003ae144ff99bmr38328592oib.4.1699289482057;
+        Mon, 06 Nov 2023 08:51:22 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-68-26-201.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.26.201])
+        by smtp.gmail.com with ESMTPSA id e15-20020a05620a12cf00b0076eee688a95sm3472111qkl.0.2023.11.06.08.51.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Nov 2023 07:30:46 -0800 (PST)
-Date: Mon, 6 Nov 2023 10:30:45 -0500
-From: Mike Snitzer <snitzer@kernel.org>
-To: Keith Busch <kbusch@kernel.org>
-Cc: Mikulas Patocka <mpatocka@redhat.com>, Christoph Hellwig <hch@lst.de>,
-	Juergen Gross <jgross@suse.com>,
-	Stefano Stabellini <sstabellini@kernel.org>,
-	xen-devel@lists.xenproject.org, iommu@lists.linux.dev,
-	Marek Marczykowski-G'orecki <marmarek@invisiblethingslab.com>,
-	Jens Axboe <axboe@fb.com>, Sagi Grimberg <sagi@grimberg.me>,
-	Jan Kara <jack@suse.cz>, Vlastimil Babka <vbabka@suse.cz>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Matthew Wilcox <willy@infradead.org>,
-	Michal Hocko <mhocko@suse.com>, stable@vger.kernel.org,
-	regressions@lists.linux.dev, Alasdair Kergon <agk@redhat.com>,
-	dm-devel@lists.linux.dev, linux-mm@kvack.org
-Subject: Re: swiotlb-xen: provide the "max_mapping_size" method
-Message-ID: <ZUkGpblDX637QV9y@redhat.com>
-References: <3cb4133c-b6db-9187-a678-11ed8c9456e@redhat.com>
- <ZUUctamEFtAlSnSV@mail-itl>
- <ZUUlqJoS6_1IznzT@kbusch-mbp.dhcp.thefacebook.com>
- <ZUVYT1Xp4+hFT27W@mail-itl>
- <ZUV3TApYYoh_oiRR@kbusch-mbp.dhcp.thefacebook.com>
- <11a9886d-316c-edcd-d6da-24ad0b9a2b4@redhat.com>
- <ZUZOKitOAqqKiJ4n@kbusch-mbp.dhcp.thefacebook.com>
- <20231106071008.GB17022@lst.de>
- <928b5df7-fada-cf2f-6f6a-257a84547c3@redhat.com>
- <ZUkDUXDF6g4P86F3@kbusch-mbp.dhcp.thefacebook.com>
+        Mon, 06 Nov 2023 08:51:21 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1r02or-001Oz1-1z;
+	Mon, 06 Nov 2023 12:51:21 -0400
+Date: Mon, 6 Nov 2023 12:51:21 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Vasant Hegde <vasant.hegde@amd.com>
+Cc: iommu@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com,
+	wei.huang2@amd.com, jsnitsel@redhat.com
+Subject: Re: [PATCH v3 09/13] iommu/amd: Refactor helper function for setting
+ / clearing GCR3
+Message-ID: <20231106165121.GL4634@ziepe.ca>
+References: <20231013151652.6008-1-vasant.hegde@amd.com>
+ <20231013151652.6008-10-vasant.hegde@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -64,71 +63,50 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ZUkDUXDF6g4P86F3@kbusch-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20231013151652.6008-10-vasant.hegde@amd.com>
 
-On Mon, Nov 06 2023 at 10:16P -0500,
-Keith Busch <kbusch@kernel.org> wrote:
+On Fri, Oct 13, 2023 at 03:16:48PM +0000, Vasant Hegde wrote:
+> +static int __set_gcr3(struct iommu_dev_data *dev_data,
+> +		      ioasid_t pasid, unsigned long gcr3)
+> +{
+> +	struct gcr3_tbl_info *gcr3_info = &dev_data->gcr3_info;
+> +	u64 *pte;
+> +
+> +	lockdep_assert_held(&dev_data->lock);
+> +
+> +	pte = __get_gcr3_pte(gcr3_info, pasid, true);
+> +	if (pte == NULL)
+> +		return -ENOMEM;
+> +
+> +	*pte = (gcr3 & PAGE_MASK) | GCR3_VALID;
+> +	amd_iommu_dev_flush_pasid_all(dev_data, pasid);
+> +
+> +	return 0;
+> +}
+> +
+> +int amd_iommu_set_gcr3(struct iommu_dev_data *dev_data, ioasid_t pasid,
+> +		       unsigned long gcr3)
+> +{
+> +	struct gcr3_tbl_info *gcr3_info = &dev_data->gcr3_info;
+> +	int ret;
+> +
+> +	spin_lock(&dev_data->lock);
+> +
+> +	ret = __set_gcr3(dev_data, pasid, gcr3);
+> +	if (!ret)
+> +		gcr3_info->pasid_cnt++;
+> +
+> +	spin_unlock(&dev_data->lock);
 
-> On Mon, Nov 06, 2023 at 03:59:40PM +0100, Mikulas Patocka wrote:
-> > There's a bug that when using the XEN hypervisor with dm-crypt on NVMe, 
-> > the kernel deadlocks [1].
-> > 
-> > The deadlocks are caused by inability to map a large bio vector -
-> > dma_map_sgtable always returns an error, this gets propagated to the block
-> > layer as BLK_STS_RESOURCE and the block layer retries the request
-> > indefinitely.
-> > 
-> > XEN uses the swiotlb framework to map discontiguous pages into contiguous
-> > runs that are submitted to the PCIe device. The swiotlb framework has a
-> > limitation on the length of a mapping - this needs to be announced with
-> > the max_mapping_size method to make sure that the hardware drivers do not
-> > create larger mappings.
-> > 
-> > Without max_mapping_size, the NVMe block driver would create large
-> > mappings that overrun the maximum mapping size.
-> > 
-> > [1] https://lore.kernel.org/stable/ZTNH0qtmint%2FzLJZ@mail-itl/
-> 
-> This should be a "Link:" tag.
-> 
-> > Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-> > Reported-by: Marek Marczykowski-G'orecki <marmarek@invisiblethingslab.com>
-> > Tested-by: Marek Marczykowski-G'orecki <marmarek@invisiblethingslab.com>
-> > Suggested-by: Keith Busch <kbusch@kernel.org>
-> 
-> I was about to send the same thing. I did a little more than suggest
-> this: it's is the very patch I wrote for testing, minus the redundant
-> nvme bits! But since you already have a commit message for it...
-> 
-> Acked-by: Keith Busch <kbusch@kernel.org>
+I didn't check carefully but most likely this lock is not needed.
 
-No, this patch should be attributed to you Keith.
+All the attach/detach ops which are the only thing that should alter
+the GCR3 table are already called under the group->mutex.
 
-Mikulas, I like that you ran with getting a fix prepared but please
-update the patch so Keith is the author and use Link: as suggested for
-the v2. Note: you'll still use your Signed-off-by since you had a role
-in getting this patch together (but please move yours to the end of
-the header).
+I've been thinking about exporting a lockdep assertion for this, but
+drivers already rely on this propery.
 
-Mike
+Previously when the domain was holding the gcr3 it did need a
+dedicated lock.
 
-
-> 
-> > Suggested-by: Christoph Hellwig <hch@lst.de>
-> > Cc: stable@vger.kernel.org
-> > 
-> > ---
-> >  drivers/xen/swiotlb-xen.c |    1 +
-> >  1 file changed, 1 insertion(+)
-> > 
-> > Index: linux-stable/drivers/xen/swiotlb-xen.c
-> > ===================================================================
-> > --- linux-stable.orig/drivers/xen/swiotlb-xen.c	2023-11-03 17:57:18.000000000 +0100
-> > +++ linux-stable/drivers/xen/swiotlb-xen.c	2023-11-06 15:30:59.000000000 +0100
-> > @@ -405,4 +405,5 @@ const struct dma_map_ops xen_swiotlb_dma
-> >  	.get_sgtable = dma_common_get_sgtable,
-> >  	.alloc_pages = dma_common_alloc_pages,
-> >  	.free_pages = dma_common_free_pages,
-> > +	.max_mapping_size = swiotlb_max_mapping_size,
-> >  };
-> 
+Jason
