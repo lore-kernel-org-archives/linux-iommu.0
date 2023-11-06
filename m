@@ -1,167 +1,75 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E8ABBE62
-	for <iommu@lists.linux.dev>; Mon,  6 Nov 2023 07:14:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Pdvq3G9o"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1699254851; x=1730790851;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=JXrcRndberQgWoGawVfq93WylWTuPjjrsB1zsCyDKUk=;
-  b=Pdvq3G9oshsK/10S7GAfl+yak1B80KtayzriiEpXy+JD8IR8QmZarkj+
-   1GooCPhIB0OoS04T0mB9PgJoaiPGjdxWCEoT714ujaABCR369/0Evj3Ot
-   A6MnCHgwx0t3GrcK330ROjNsjD6c7fYeT6XIxmiz/1CrjRZARBWjWCC/F
-   Mrmk/5YXn9vRQkQodY26VRH2ASWb085Jw5ywtk4u4mFouRIHK8XED0xkC
-   Dt+Llx2haVlsbuGO4C1kRhn6iHg96ZfjGrNc8EjSupLwBZJE+ZgCSDE2C
-   +jShQeNsmNGjCh/oAOKLYu4UIjZm22lBTFQFWAToT7oxcPkCyI+jVCdXH
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10885"; a="10759076"
-X-IronPort-AV: E=Sophos;i="6.03,280,1694761200"; 
-   d="scan'208";a="10759076"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Nov 2023 23:14:11 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10885"; a="1093690912"
-X-IronPort-AV: E=Sophos;i="6.03,280,1694761200"; 
-   d="scan'208";a="1093690912"
-Received: from sqa-gate.sh.intel.com (HELO localhost.localdomain) ([10.239.48.212])
-  by fmsmga005.fm.intel.com with ESMTP; 05 Nov 2023 23:14:07 -0800
-From: Tina Zhang <tina.zhang@intel.com>
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Kevin Tian <kevin.tian@intel.com>,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 10176CA48;
+	Mon,  6 Nov 2023 07:17:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
+Authentication-Results: smtp.subspace.kernel.org; dkim=none
+Received: by verein.lst.de (Postfix, from userid 2407)
+	id 4BBAD6732D; Mon,  6 Nov 2023 08:17:33 +0100 (CET)
+Date: Mon, 6 Nov 2023 08:17:33 +0100
+From: Christoph Hellwig <hch@lst.de>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: acpica-devel@lists.linuxfoundation.org,
+	Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+	Albert Ou <aou@eecs.berkeley.edu>, asahi@lists.linux.dev,
 	Lu Baolu <baolu.lu@linux.intel.com>,
-	joro@8bytes.org,
-	will@kernel.org,
-	Yi Liu <yi.l.liu@intel.com>
-Cc: virtualization@lists.linux-foundation.org,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Tina Zhang <tina.zhang@intel.com>
-Subject: [RFC PATCH 5/5] iommu/virtio-iommu: Support attaching VT-d IO pgtable
-Date: Mon,  6 Nov 2023 02:12:26 -0500
-Message-Id: <20231106071226.9656-6-tina.zhang@intel.com>
-X-Mailer: git-send-email 2.39.3
-In-Reply-To: <20231106071226.9656-1-tina.zhang@intel.com>
-References: <20231106071226.9656-1-tina.zhang@intel.com>
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Dexuan Cui <decui@microsoft.com>, devicetree@vger.kernel.org,
+	David Woodhouse <dwmw2@infradead.org>,
+	Frank Rowand <frowand.list@gmail.com>,
+	Hanjun Guo <guohanjun@huawei.com>,
+	Haiyang Zhang <haiyangz@microsoft.com>,
+	Christoph Hellwig <hch@lst.de>, iommu@lists.linux.dev,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Jonathan Hunter <jonathanh@nvidia.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	"K. Y. Srinivasan" <kys@microsoft.com>, Len Brown <lenb@kernel.org>,
+	linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-hyperv@vger.kernel.org, linux-mips@vger.kernel.org,
+	linux-riscv@lists.infradead.org, linux-snps-arc@lists.infradead.org,
+	linux-tegra@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
+	Lorenzo Pieralisi <lpieralisi@kernel.org>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Hector Martin <marcan@marcan.st>,
+	Palmer Dabbelt <palmer@dabbelt.com>,
+	Paul Walmsley <paul.walmsley@sifive.com>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Robert Moore <robert.moore@intel.com>,
+	Rob Herring <robh+dt@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Sudeep Holla <sudeep.holla@arm.com>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Sven Peter <sven@svenpeter.dev>,
+	Thierry Reding <thierry.reding@gmail.com>,
+	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+	Krishna Reddy <vdumpa@nvidia.com>, Vineet Gupta <vgupta@kernel.org>,
+	virtualization@lists.linux-foundation.org,
+	Wei Liu <wei.liu@kernel.org>, Will Deacon <will@kernel.org>,
+	Zhenhua Huang <quic_zhenhuah@quicinc.com>
+Subject: Re: [PATCH RFC 01/17] iommu: Remove struct iommu_ops *iommu from
+ arch_setup_dma_ops()
+Message-ID: <20231106071733.GA17258@lst.de>
+References: <0-v1-5f734af130a3+34f-iommu_fwspec_jgg@nvidia.com> <1-v1-5f734af130a3+34f-iommu_fwspec_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1-v1-5f734af130a3+34f-iommu_fwspec_jgg@nvidia.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 
-Add VT-d IO page table support to ATTACH_TABLE request.
+On Fri, Nov 03, 2023 at 01:44:46PM -0300, Jason Gunthorpe wrote:
+> This is not being used to pass ops, it is just a way to tell if an
+> iommu driver was probed. These days this can be detected directly via
+> device_iommu_mapped(). Call device_iommu_mapped() in the two places that
+> need to check it and remove the iommu parameter everywhere.
 
-Signed-off-by: Tina Zhang <tina.zhang@intel.com>
----
- drivers/iommu/virtio-iommu.c      | 23 +++++++++++++++++++++++
- include/uapi/linux/virtio_iommu.h | 26 ++++++++++++++++++++++++++
- 2 files changed, 49 insertions(+)
+Yes, that's much better than exposing the iommu ops to a place that
+should not care about them:
 
-diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
-index b1ceaac974e2..b02eeb1d27a4 100644
---- a/drivers/iommu/virtio-iommu.c
-+++ b/drivers/iommu/virtio-iommu.c
-@@ -991,12 +991,25 @@ static int viommu_attach_pgtable(struct viommu_domain *vdomain,
- 	};
- 
- 	/* TODO: bypass flag? */
-+	if (vdomain->bypass == true)
-+		return 0;
- 
- 	switch (fmt) {
- 	case VIRT_IO_PGTABLE:
- 		req.format = cpu_to_le16(VIRTIO_IOMMU_FORMAT_PGTF_VIRT);
- 		req.pgd = cpu_to_le64((u64)cfg->virt.pgd);
- 		break;
-+	case INTEL_IOMMU: {
-+		struct virtio_iommu_req_attach_pgt_vtd *vtd_req =
-+			(struct virtio_iommu_req_attach_pgt_vtd *)&req;
-+
-+		vtd_req->format = cpu_to_le16(VIRTIO_IOMMU_FORMAT_PGTF_VTD);
-+		vtd_req->pgd = cpu_to_le64((u64)cfg->virt.pgd);
-+		vtd_req->addr_width = cpu_to_le32(cfg->oas);
-+		vtd_req->pasid = IOMMU_NO_PASID;
-+		break;
-+	}
-+
- 	default:
- 		return -EINVAL;
- 	};
-@@ -1034,6 +1047,16 @@ static int viommu_setup_pgtable(struct viommu_domain *vdomain,
- 	case VIRTIO_IOMMU_FORMAT_PGTF_VIRT:
- 		fmt = VIRT_IO_PGTABLE;
- 		break;
-+	case VIRTIO_IOMMU_FORMAT_PGTF_VTD:
-+	{
-+		struct virtio_iommu_probe_pgt_vtd *vtd_desc =
-+			(struct virtio_iommu_probe_pgt_vtd *)desc;
-+
-+		cfg.vtd_cfg.cap_reg = le64_to_cpu(vtd_desc->cap_reg);
-+		cfg.vtd_cfg.ecap_reg = le64_to_cpu(vtd_desc->ecap_reg);
-+		fmt = INTEL_IOMMU;
-+		break;
-+	}
- 	default:
- 		dev_warn(vdev->dev, "unsupported page table format 0x%x\n",
- 			 le16_to_cpu(desc->format));
-diff --git a/include/uapi/linux/virtio_iommu.h b/include/uapi/linux/virtio_iommu.h
-index 656be1f3d926..17e0d5fcdd54 100644
---- a/include/uapi/linux/virtio_iommu.h
-+++ b/include/uapi/linux/virtio_iommu.h
-@@ -139,6 +139,22 @@ struct virtio_iommu_req_attach_pgt_virt {
- 	struct virtio_iommu_req_tail		tail;
- };
- 
-+/* Vt-d I/O Page Table Descriptor */
-+struct virtio_iommu_req_attach_pgt_vtd {
-+	struct virtio_iommu_req_head		head;
-+	__le32					domain;
-+	__le32					endpoint;
-+	__le32					flags;
-+	__le16					format;
-+	__u8					reserved[2];
-+	__le32					pasid;
-+	__le64					pgd;
-+	__le64                                  fl_flags;
-+	__le32                                  addr_width;
-+	__u8					reserved2[36];
-+	struct virtio_iommu_req_tail		tail;
-+};
-+
- #define VIRTIO_IOMMU_MAP_F_READ			(1 << 0)
- #define VIRTIO_IOMMU_MAP_F_WRITE		(1 << 1)
- #define VIRTIO_IOMMU_MAP_F_MMIO			(1 << 2)
-@@ -224,6 +240,8 @@ struct virtio_iommu_probe_pasid_size {
- #define VIRTIO_IOMMU_FORMAT_PSTF_ARM_SMMU_V3	2
- /* Virt I/O page table format */
- #define VIRTIO_IOMMU_FORMAT_PGTF_VIRT		3
-+/* VT-d I/O page table format */
-+#define VIRTIO_IOMMU_FORMAT_PGTF_VTD		4
- 
- struct virtio_iommu_probe_table_format {
- 	struct virtio_iommu_probe_property	head;
-@@ -231,6 +249,14 @@ struct virtio_iommu_probe_table_format {
- 	__u8					reserved[2];
- };
- 
-+struct virtio_iommu_probe_pgt_vtd {
-+	struct virtio_iommu_probe_property	head;
-+	__le16					format;
-+	__u8					reserved[2];
-+	__le64					cap_reg;
-+	__le64					ecap_reg;
-+};
-+
- struct virtio_iommu_req_probe {
- 	struct virtio_iommu_req_head		head;
- 	__le32					endpoint;
--- 
-2.39.3
-
+Acked-by: Christoph Hellwig <hch@lst.de>
