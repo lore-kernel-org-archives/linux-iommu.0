@@ -1,173 +1,151 @@
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2063.outbound.protection.outlook.com [40.107.243.63])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f175.google.com (mail-qt1-f175.google.com [209.85.160.175])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 51D77200BA
-	for <iommu@lists.linux.dev>; Mon,  6 Nov 2023 13:13:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 27CCF1A71D
+	for <iommu@lists.linux.dev>; Mon,  6 Nov 2023 13:36:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="XfBIv+J6"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XFT6HOE23/BqF71wisoun0tY7gcihs9qrtyu8jDaEV1ZvtFS4WKw+N5CmjVrdxssWBmvT1rEEVmBaVUL8iE+0J8XCQ0ZU1HyWrdl+wRVJrXmrSJSQJilA/6TelJfNG/EBSiucjZKD3MPYba/5IeiSMFe9rscRvnFoTV0RkNwV5iBw3copBqBx0u3jTfX/8H9dCOMMtruoT+Qw3+t++psyq/UA1ZaC4B6htI9mqLO3xFFB2XvhNla3qUQMu7eBUE0I8XCxVENED0Dno8coabonZHJzsKtxeDzNqddH3qIqFQIjk6HB5VGP4xHOm3FPeR6NYUj35akG5CbvaYEFH8zGw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=YYtW4SjF03ZEq1F8+3l5vFnLHQdjFBG7WWMPz+GuNaI=;
- b=MDpo2IN+aY7qfMpGTKxivfvXVapNoGgQZ+dp9rHJWHpRLx5X8BgIoAJ5+HwVjVCvm7f02CP7SBxr0JIPvJQnTi4w0jN6k0dnLZr2tBZRhXln3om9Oi5RTootElnxtJBJs4hTqr/sZE5ydLkS1/Dn0ZOlsEzCUcgaot5X/vkDNExRaBHZOrpG2mc0/7TpZKd85OKE7maPW60IMqz1GVO/5dVi2tNMrKbe1pEEXGAzaD7lpKJL5JnDJbiTlPdxBK4TDbV3DsagpkrL/9Jthhvz6t+hw2f0WRBR8EFjg8JS/mfyd1KB+mb/sv91PIm+ApuT9e0h7igHqiunJWQIT2Iubg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=YYtW4SjF03ZEq1F8+3l5vFnLHQdjFBG7WWMPz+GuNaI=;
- b=XfBIv+J66/QME9MB1aIxug2KgyBWsE9LcgpGDVRuehq2meMW38/uA2sSomeYcqVEWmUUO+AqZutjPwrUUYHWhJu2X+AA1V6gC9KTgBft8obnnH4Ii9IZ1tr7j0J3XlMcqyHd05hAuqRc/wubqXN0Gkm8AeD9wd8ZhRtfdTovYLMFRirj5w+eVfx/9BD50dWHJmjZBf4DxBj0Ucuf1za/KwuxFTRdr5+U+bBim0pzoRak6XaV3i6VFbGPEovm+IevWvv16nduhd/QeE7xmOc/FdIkL6byn9GSEZck520p/aSj35h9EcwF3XNXqqWpjcmzobqPVlKH1f+zU4s1AG1slQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by CYXPR12MB9338.namprd12.prod.outlook.com (2603:10b6:930:e5::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6954.28; Mon, 6 Nov
- 2023 13:13:04 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::b53a:1092:9be2:cfb9]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::b53a:1092:9be2:cfb9%5]) with mapi id 15.20.6954.027; Mon, 6 Nov 2023
- 13:13:04 +0000
-Date: Mon, 6 Nov 2023 09:13:03 -0400
-From: Jason Gunthorpe <jgg@nvidia.com>
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="ccX4iHHf"
+Received: by mail-qt1-f175.google.com with SMTP id d75a77b69052e-41feb963f60so9862921cf.1
+        for <iommu@lists.linux.dev>; Mon, 06 Nov 2023 05:36:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1699277806; x=1699882606; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=KzUJinv9/fl8y3fgEplZsti39lStZsfyox5/IwZyEIY=;
+        b=ccX4iHHfTC49lwuWkN4EY05dfHOXVjJEFJ7/fqlJ+5JkpCesiLrlKrZehOJWeI3JYi
+         8lek4zaGe3UOtW7ow1z8DZIiYbccQayg0L5pYohk7Cgpq7lEPLeJpxqLIsWUNj+QJCby
+         KyeP0JBL6Wz5EUXHh21/+vBYCTfnlCneQXODrRZfEmzJ8QsfmkirL953zdKiJTLyL2sf
+         F+NVyu4pRkYUiDCBCEf4lLTw6SuX7j+oXOv9wyZFs19as2Mcohr3b8rnenYMjv7XEPlA
+         rmtBGXRN73Il3kbI9q551mMqGKlSTrCbDAeN+uMcALP1SgTwcMBn0aWLj2bQ0WYMhq3K
+         oluA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1699277806; x=1699882606;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=KzUJinv9/fl8y3fgEplZsti39lStZsfyox5/IwZyEIY=;
+        b=BVvJnmbYcV/kRtM3Pc3kB1Py3SD6d3KNQwgdXPuXMVXKYID0SCJ5VtMG+/j/huhWv1
+         GYxmnMEVubYMhIxhKfbbxbzPHrzSMSaae9+xtMK5+49OM14+VAinef6NjSfh2thzmCQV
+         OVQvQ8k27KRd75LMu/sHemc0RiD4wM+d+9X1EVs701p3X+zMkYfzeEGrtDN1oyPNKMwc
+         bdxn712B8QiOPfvYbD0F4aCL/xo1BH4o+ClXOZ2Yzsmbj52K4IO+FbXaenIpvNGnaZZQ
+         XI6u67xYCtAM0IyvsaYDWYLlY3mtr9oFGjLh0Df2LriPEp36mA6iwsGO2204uEqLqZgb
+         60LA==
+X-Gm-Message-State: AOJu0YzH5wMCo0eyXRSt78Pu4PExEY0a1+u/OjfBQUlua7ZPG7Av0S2q
+	OKw3JNkqp8jJnsl13i+rN/BFkg==
+X-Google-Smtp-Source: AGHT+IFzWkJz1CN7NQ17qgi+fv8XazK6oicoJyg6agqPXJvqxhXjM2ehmg3z58sCCv+xaKC1UDIDlw==
+X-Received: by 2002:a05:622a:1b8e:b0:418:1235:5c84 with SMTP id bp14-20020a05622a1b8e00b0041812355c84mr12938875qtb.10.1699277805891;
+        Mon, 06 Nov 2023 05:36:45 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-68-26-201.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.26.201])
+        by smtp.gmail.com with ESMTPSA id b8-20020a05622a020800b00419c39dd28fsm3373867qtx.20.2023.11.06.05.36.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 Nov 2023 05:36:45 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1qzzmW-001Me4-Qa;
+	Mon, 06 Nov 2023 09:36:44 -0400
+Date: Mon, 6 Nov 2023 09:36:44 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
 To: Vasant Hegde <vasant.hegde@amd.com>
-Cc: iommu@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com
-Subject: Re: [PATCH v1 10/13] iommu/amd: Consolidate domain flush logic
-Message-ID: <20231106131303.GG4488@nvidia.com>
-References: <20231006101624.5912-1-vasant.hegde@amd.com>
- <20231006101624.5912-11-vasant.hegde@amd.com>
- <20231105175559.GJ223197@nvidia.com>
- <5e95d78b-4c42-6596-c1b0-057e044197fc@amd.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5e95d78b-4c42-6596-c1b0-057e044197fc@amd.com>
-X-ClientProxiedBy: BL1PR13CA0327.namprd13.prod.outlook.com
- (2603:10b6:208:2c1::32) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+Cc: iommu@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com,
+	wei.huang2@amd.com, jsnitsel@redhat.com
+Subject: Re: [PATCH v3 06/13] iommu/amd: Introduce per-device domain ID to
+ workaround potential TLB aliasing issue
+Message-ID: <20231106133644.GJ4634@ziepe.ca>
+References: <20231013151652.6008-1-vasant.hegde@amd.com>
+ <20231013151652.6008-7-vasant.hegde@amd.com>
+ <20231105181604.GH4634@ziepe.ca>
+ <a4855a3e-02f5-2ebe-f8c7-92137421418e@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|CYXPR12MB9338:EE_
-X-MS-Office365-Filtering-Correlation-Id: f3751216-c8a4-40a4-f298-08dbdeca1c5a
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	TkE6hkBdph/qP4Y//uTjzjBsSTxrrSq2DkvTdHn9zyFrNNEEfXpm38OQHFF4RZ69TkaSVmOuAz++ymzYuSW2VtxhWDpqPpIWift7EKj5ZZtN3O67l0h0HqZeuhPnR7QsEde7f5wQb/VNLnrWD2ihB6CNENkSH+W1Msq1TggPZWK0h8ahCMvlpyAs6W8A4L2dF/EpVrhLe6OCW4rMA3R6j7yzL57qjsnU9QHvQ3bU/iY56TMeVKlJ0T16lGeBEBRiwCKhN5uxXpRB8+IQy0e5cx4M52K2hbTErD8jZE0Z4KehSIdcB/qCfiFfT9UlUXBAJxAgGhf2At/lv9yAY2E/0A821lUL9QdYjeJ5qXPLf5qyGX1hsaB8YAiQ/U5FvHMlLA4szat5JCyIhzcd4Bjhg5JcQXAcH+psXy5ggjG7KCxk3WduGC2pduCG/PxUvtKp1wJtxulkP7cP3xhwJzZkgR1ExGceVkWiIRah3Av8PVUrqeiIO5zuOqilCZyDpjsCjdtlYnNFoUJ7earl/wRRYUfz0iwv/O+8xEB1+I3rkcuNFPpfjm+/rSkQ7pzQet61
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(39860400002)(136003)(376002)(346002)(396003)(366004)(230922051799003)(186009)(1800799009)(64100799003)(451199024)(83380400001)(6916009)(316002)(38100700002)(478600001)(53546011)(6506007)(6486002)(66556008)(66476007)(26005)(6512007)(66946007)(1076003)(2616005)(5660300002)(2906002)(4326008)(36756003)(33656002)(86362001)(8676002)(8936002)(41300700001)(66899024);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?6/DjoJwqAbOLxUcSiBM1czQFAbeFQj+WLYgHO3H/PXwHBG7GQkMemABkcC/W?=
- =?us-ascii?Q?GzlT6ha58TG6Apq2fjj7+0s2Ua5uFdnzeDqq9dlBCRERYQXsZ/Nj4HVlliy8?=
- =?us-ascii?Q?uX7LL9XGxiA91Gog+MixY7mFNeGswPM6mHhxEDHJxfFPTDQ+QSQNOz5ANk1o?=
- =?us-ascii?Q?nMrXwoUF+YI8oyKEyzuHJwZ/6r2rivLnW2mqw8H506IGNkqGR3uUQFoHl9Eg?=
- =?us-ascii?Q?b6/tQCuiWLaafe/9jYV+DoqMazEHZcJyN4R1L3rZBN7dBI+i3iDZnAd8op1+?=
- =?us-ascii?Q?vbwPU6cJ+U4mAMvXsyf4wv1zzTheyj6RxMbkbRRLwgi6fufgJe3XzaT6Hxcv?=
- =?us-ascii?Q?/zJv9ifpdnZGDfZ7klDid4ubXfPxoNYmcgbz1Z9x7dNdhF4IpzyFTArT1gGL?=
- =?us-ascii?Q?ykRnUMkYVP5TCC7m9SpoYzn6xjIifDP4OPS0I73v6szp5Ihd27NqQfR2Jo5r?=
- =?us-ascii?Q?ZY3V8+iYOOC8o+fU2AhCKBh/qfXpQqcaGnZklVBbI+DwApUgPAhYssoWyhKc?=
- =?us-ascii?Q?TlIDJBbCU9zRBuBIgJunNHy1DhDqyjKeRPs+fVlAPsfW+WqjLLXviM0iRiTS?=
- =?us-ascii?Q?Ei2Ld+yZ/lOh5VWGBdddbrQZ+cvEBI2vVDokCpIa/NfQnVVnjqmR98S1cqvC?=
- =?us-ascii?Q?06HA/v37xUGfczKfC/qa3hxO3j32y7msdNolDsNe/BRaxSLGhfksU2mHNCMc?=
- =?us-ascii?Q?w+rkYXOSSPIW5cF1dpjF2AFbhMHpvRMxhvXQYVtesYXPZB2tAKyNh3lcK9hi?=
- =?us-ascii?Q?evshy8jbMo91SvnQNcgYJLI2JMRMdsRGDxtCkkhwka9uLAWlFIDg/afx8HUe?=
- =?us-ascii?Q?fPNFixCoEPAPanjLXx02Kdw/gZF8CfyvaDMpa33ItFdGq36mI3xYmMTmB7Ef?=
- =?us-ascii?Q?ppo7nj67/bYWj8EiS/pE6URARvcE1Jj75lByZtm0xyhKkyC6xaJO2GNg4++F?=
- =?us-ascii?Q?p8q6gAVYjp2O6PXCxvWZpHxL86OpsHe6exD6YtKsT0Bmt47EdWVs8dEVibJJ?=
- =?us-ascii?Q?HKrBx4JWTIbdzLppvHA64J9h757AFZMGoUvIH2Yx81Psv0r/PLJY2mAIFv//?=
- =?us-ascii?Q?JKe+VJ/6zowhuVa6twkB0gmYGRySI9hpLOfZ/HAvRxyZY1qiaveXN7uqw1Zt?=
- =?us-ascii?Q?7LjvBI+z91fv4ETlq0y1wMX5CpBbKEe1a7FVz0glYfB7seDyJFvg3tOT5IWT?=
- =?us-ascii?Q?T4EbZUGbvfxT17IB5NJ68uHR/lMPip8C+WkBWC/SJkfUroly8oSOT8FKV1Nh?=
- =?us-ascii?Q?pKtVzeHaR2AUxVSyRRKrcdUl4FHB3ap1IEd/uwuT3SEEp/D94dCHf91waOZB?=
- =?us-ascii?Q?ZY29KBVas7fkaz9wG32YADLdj29mmJUAwcnwxmZHz7VyMkh3Gxxv4BrgUHKi?=
- =?us-ascii?Q?daQVd07wOzgKqGyLB4uggXTyposyDq7Bu30MOl+PXykJRPn0k4yg0juXhk/I?=
- =?us-ascii?Q?g9dYkrT5OVHXNOi7+NWxx+HSigWiO8C97ewZP4VQ5yERYOpnYx4e8NVRIrO9?=
- =?us-ascii?Q?ennUKTkAzPvbydc/XtZL33T347rSo+wMpgXoMal92WPaXekoC5Aqj8ixvBlQ?=
- =?us-ascii?Q?NBYE8RUjDKeP9VFxGnPNBhzy/AWUi89bjE0M5AA7?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f3751216-c8a4-40a4-f298-08dbdeca1c5a
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Nov 2023 13:13:04.4407
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: vbJEp5tqdrHBsdQgsgUix9gA0dYaEc68rGrIY6Ro7ktmpISe5lnyxofponYvlZXK
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CYXPR12MB9338
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a4855a3e-02f5-2ebe-f8c7-92137421418e@amd.com>
 
-On Mon, Nov 06, 2023 at 04:42:17PM +0530, Vasant Hegde wrote:
-> 
-> 
-> On 11/5/2023 11:25 PM, Jason Gunthorpe wrote:
-> > On Fri, Oct 06, 2023 at 10:16:21AM +0000, Vasant Hegde wrote:
+On Mon, Nov 06, 2023 at 06:09:47PM +0530, Vasant Hegde wrote:
+
+> > I think this driver really suffers from not having the right
+> > data structures to handle everything cleanly.
 > > 
-> >> @@ -1557,7 +1583,9 @@ static void domain_flush_pages(struct protection_domain *domain,
-> >>  void amd_iommu_domain_flush_pages(struct protection_domain *pdom,
-> >>  				  u64 address, size_t size)
-> >>  {
-> >> -	return domain_flush_pages(pdom, address, size);
-> >> +	ioasid_t pasid = pdom_get_default_pasid(pdom);
-> >> +
-> >> +	return domain_flush_pages(pdom, pasid, address, size);
-> >>  }
+> > In smmuv3 I added a 'master_domain' structure that linked the PCI
+> > device to the iommu_domain. ie when attach is done you'd create a new
+> > master_domain that essentially stores the parameters required to do
+> > invalidation.
 > > 
-> > There should be no such thing as a pasid for a domain. There should
+> > For what is going on here I would say to do that an then put the
+> > "domain id" inside the "master_domain". Decide when the domain is
+> > attached if the domain id should by taken from the iommu_domain
+> > (device does not support PASID) or from the device (device does
+> > support PASID)
 > 
-> We do have default PASID (zero) when we boot in v2 page table mode.
+> We still have single domain concept (at least until we introduce
+> vIOMMU). All we are changing is how we allocate domain ID.
+>
+> Having another domain for each device just to keep invalidation info is
+> complicates things. Also IMO its unnecessary.
 
-That is the PASID for a RID, not the PASID or a domain.
+It is not another domain, it is cleaning up the mess of keeping track
+of what caches need to be invalidated for a single domain.
 
-> > not be an api called pdom_get_default_pasid(), it is nonsensical.
-> 
-> But we have single command to deal with all IOMMU TLB flush.
+Today we have this:
 
-This is probably a mistake..
+struct protection_domain {
+	struct list_head dev_list; /* List of all devices in this domain */
+	unsigned dev_iommu[MAX_IOMMUS]; /* per-IOMMU reference count */
 
-> I have a choice of doing all checks in low level function (what this patch does)
->  -OR- add checks in all API path (like flush_iotlb_all, iotlb_sync, etc). If
-> that's what preferred I can do that.
+(and I'm sorry, but using a global array of iommus and this dev_iommu
+thing is an insane design)
 
-Well, you should not have concepts like the 'pasid of a domain' and
-you should not encode the v1/v2 type into the pasid. I didn't look
-closely how to sort that out to say exactly.
+Now this adds a new concept domain_id_is_per_dev(), and it still
+doesn't support PASID properly!
 
-I can say that in SMMUv3 structuring it so that the attach op at the
-top of the call chain knows what to do, and called a bunch of specific
-helpers was reasonable. We know at the op level if we are going to do
-a V1 or V2 invalidation because the OP itself already knows if it is
-working on a V1/V2 iommu domain due to how it has to load the domain
-into the DTE/GCR3.
+Instead write it like this:
 
-So if you have:
+struct attachment {
+    struct list_head attachments_item;
+    struct amd_iommu *iommu;
+    struct iommu_dev_data *device;
+    ioasid_t pasid
+}
 
-   invalidate_iotlb_range/all_v1(domain)
-   invalidate_iotlb_range/all_v2(device, pasid)
-   invalidate_iotlb_full_v2(device)  // Clean every pasid
-   invalidate_atc_range/all(domain)
-     invalidate_atc_device_range_all(device, pasid)
-   invalidate_atc_full(device) // Clean every pasid
+struct protection_domain {
+    struct list_head attachments;
 
-As working functions then the ops should be writable to know exactly
-which of those call based on the op.
 
-For instance, if you have a v1 page table then you should have a v1
-specific flush op that does:
+Where every ops->attach_dev allocates a new struct attachment and
+threads it on the liked list of the protection_domain.
 
-   invalidate_iotlb_range/all_v1(domain)
-   if (domain->ats in use)
-     invalidate_atc_range/all(domain)
+Then the invalidation logic become completely straightforward, no
+confusing mess:
 
-No maze.
+invalidate_iotlb_v1:
+   list_for_each_iommu(elm, domain->attachments)
+       build_cmd_v1_invalidation(&cmd, domain->cache_tag,  ...);
+       iommu_queue_command(elm->iommu, &cmd);
+
+invalidate_iotlb_v2:
+   list_for_each_iommu(elm, domain->attachments)
+       build_cmd_v2_invalidation(&cmd, device->gcr3_cache_tag, elm->pasid, ...);
+       iommu_queue_command(elm->iommu, &cmd);
+
+invalidate_ats:
+   list_for_each(elm, domain->attachments)
+       if (!elm->device->ats enabled)
+             continue
+       build_cmd_atc_invalidation(&cmd, elm->device, elm->pasid, ...);
+       iommu_queue_command(elm->iommu, &cmd);
+
+Where list_for_each_iommu de-duplicates the iommus from the sorted
+list, Michael had a series that showed how to do this for SMMU.
+
+Basically you precalculate exactly the invalidations required and
+store it in a list associated with the domain. When it is time to do
+an invalidation then you just walk the list and do exactly what it
+says.
 
 Jason
