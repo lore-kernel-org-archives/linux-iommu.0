@@ -1,155 +1,129 @@
-Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2085.outbound.protection.outlook.com [40.107.20.85])
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E73B715ACC
-	for <iommu@lists.linux.dev>; Mon,  6 Nov 2023 09:11:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE6281772F
+	for <iommu@lists.linux.dev>; Mon,  6 Nov 2023 10:08:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=armh.onmicrosoft.com header.i=@armh.onmicrosoft.com header.b="SlnI7C71";
-	dkim=pass (1024-bit key) header.d=armh.onmicrosoft.com header.i=@armh.onmicrosoft.com header.b="SlnI7C71"
-ARC-Seal: i=2; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=pass;
- b=Ne6gsva7ICUxeCex2UBHSzoLuUCRrnJMytXeGhjy2s5y04t4bFs3DP3x8l7UW2okUyiuze87Sy4iRoXMsq1iP6hWew6jF/P/ofuxZF75bPUGSlTi2Y6KuTQrgDbqwp51ZovCDdmzdtxA5LhPYLuZlSgnGg8KqfcZjo+CqwP/S/IbRCeMNXxCGxxq9/VixMt+LVTaPSZDQ2SnrxqGgYCXOT5H4E8cNtCTWzXkcMIbVQB+FYowTK8sVPzH/8gooOZQntIESR9U4SHI7K6xCV+6G5f/AY25/wYhU8zxhv1m5ivvacpe/hFUaiDHICdXjDkIo4A2E61ZJGW+vVnDG9MQ+Q==
-ARC-Message-Signature: i=2; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=H6Nf8DQvbtM6AjNiKhuLU6kQW6Z80j3H6FDMmaPYuiE=;
- b=L+T3nYesQgA9c8I4r+oIA2fk5UW0TLQdqGeRsWJJOWoXq6mfVQVgAAnl94CujW2JfFbr8Q8LVub9jyPo+HV64qj2OOuqO9Ii0A2ZKtX63kRjREUkP9zScUFocF040lKMcPzlEO2lLyjCCF2vt8P3A6tjonmcMMOGKtRIBv/qan61Hdyt0MdZ56YD+pZkK/aIFicvr3O2Ghl1vaw2HfczXT3/Tvr/a/P04cLmjrFEiivAVfQB8QN/0p7B6MDJu35fL6Fhoo9QN5TqzE2tLHK258JpIc9yq5VjYV2oQq/mUKA7TOkEnZTUWtFs1viD6GjcOzm7S91b9DSPu1HV3LLnNQ==
-ARC-Authentication-Results: i=2; mx.microsoft.com 1; spf=pass (sender ip is
- 63.35.35.123) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=arm.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=arm.com;
- dkim=pass (signature was verified) header.d=armh.onmicrosoft.com; arc=pass (0
- oda=1 ltdi=1 spf=[1,1,smtp.mailfrom=arm.com] dkim=[1,1,header.d=arm.com]
- dmarc=[1,1,header.from=arm.com])
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=armh.onmicrosoft.com;
- s=selector2-armh-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=H6Nf8DQvbtM6AjNiKhuLU6kQW6Z80j3H6FDMmaPYuiE=;
- b=SlnI7C71gCYW7BkvB9BG9XVmXRUhhWC/0abRSx72g2j9UaCJFsL+xzRNUlZZ6CZGGWf5jt5QSW/IpC67B9oYIrMaz+cxleZObQkGF2/jmgcuIW2SJAm6QrgnU8B/2RCD7PiFXx7lvGpsLkL9TR7W88ZcNLfDiJG+ANNbxif4c7Q=
-Received: from AM5PR1001CA0051.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:206:15::28) by DB5PR08MB10189.eurprd08.prod.outlook.com
- (2603:10a6:10:4a4::10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6954.28; Mon, 6 Nov
- 2023 09:11:27 +0000
-Received: from AMS0EPF000001A5.eurprd05.prod.outlook.com
- (2603:10a6:206:15:cafe::cb) by AM5PR1001CA0051.outlook.office365.com
- (2603:10a6:206:15::28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6954.28 via Frontend
- Transport; Mon, 6 Nov 2023 09:11:26 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 63.35.35.123)
- smtp.mailfrom=arm.com; dkim=pass (signature was verified)
- header.d=armh.onmicrosoft.com;dmarc=pass action=none header.from=arm.com;
-Received-SPF: Pass (protection.outlook.com: domain of arm.com designates
- 63.35.35.123 as permitted sender) receiver=protection.outlook.com;
- client-ip=63.35.35.123; helo=64aa7808-outbound-1.mta.getcheckrecipient.com;
- pr=C
-Received: from 64aa7808-outbound-1.mta.getcheckrecipient.com (63.35.35.123) by
- AMS0EPF000001A5.mail.protection.outlook.com (10.167.16.232) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6977.16 via Frontend Transport; Mon, 6 Nov 2023 09:11:26 +0000
-Received: ("Tessian outbound 20615a7e7970:v228"); Mon, 06 Nov 2023 09:11:26 +0000
-X-CheckRecipientChecked: true
-X-CR-MTA-CID: 2fd4e6ce7bdd9698
-X-CR-MTA-TID: 64aa7808
-Received: from e72ed4ec88e9.2
-	by 64aa7808-outbound-1.mta.getcheckrecipient.com id FE551C90-730A-4C5F-9B10-C5B9F18E7677.1;
-	Mon, 06 Nov 2023 09:11:20 +0000
-Received: from EUR03-AM7-obe.outbound.protection.outlook.com
-    by 64aa7808-outbound-1.mta.getcheckrecipient.com with ESMTPS id e72ed4ec88e9.2
-    (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384);
-    Mon, 06 Nov 2023 09:11:20 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=RfWyu7c0Lc9flCJ/mwFziAU0yo91yN6Ay0WMifexdHQh7jwufugedM81oAs0xaSYfSDFJul47EPu9xoorW+Puvg7t0YIN5dMpgDvUoNCLxGzGGskjEvrb3VoLHDpg+9A8sheAmPNJaaeh2/QqR+ni9CFYPQHlUborDW/UrQcQhEnEFAFsQNzWzGfFhCj5iHwhJWRhijt6nVA+ghFR4fapie41r0PfZNn4Lj5ZzYwN4+CpsT5eKsZJvrb9jThuZ2llCckkmB8HP6r0JfOc8mszQveiWPY9MBAcCn8dDMjtBTTuFVe0NM8EjA7HWxBMKCf2oyQPW5RXNPxvumPAnGgiQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=H6Nf8DQvbtM6AjNiKhuLU6kQW6Z80j3H6FDMmaPYuiE=;
- b=DqzdJHeacnB4RGkTbqjQOV7IJ4m8mwOriwF46Qvkx0M0MxOc9q5hzO+N4jtmx70wrSknVVKSk5C6xAbgx/jZX6SyYtWCnr3OQdQBM0N4zORnBGGeicBsFTAfRo2KxpOzvzdxOF9AxiacyWDnKCiUe+BARNtOgqjpw/O6VNJwH+vQYRJAXzjbx3Ai6s+kU1cwlppOPuJr264EOt+g+1aLu7xQSZsk3F+ev8TlfIwJ1Z0nuQkoKARSgTRKbvMytWcEB42myGzV5zm2di2rpBWlabUeB47vvwN6QOlh1NgDWR5jXQGtee4ZatF8jMfyQ8iWDwLxgmCZYBF01oHofz0RBw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=arm.com; dmarc=pass action=none header.from=arm.com; dkim=pass
- header.d=arm.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=armh.onmicrosoft.com;
- s=selector2-armh-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=H6Nf8DQvbtM6AjNiKhuLU6kQW6Z80j3H6FDMmaPYuiE=;
- b=SlnI7C71gCYW7BkvB9BG9XVmXRUhhWC/0abRSx72g2j9UaCJFsL+xzRNUlZZ6CZGGWf5jt5QSW/IpC67B9oYIrMaz+cxleZObQkGF2/jmgcuIW2SJAm6QrgnU8B/2RCD7PiFXx7lvGpsLkL9TR7W88ZcNLfDiJG+ANNbxif4c7Q=
-Received: from DBBPR08MB4538.eurprd08.prod.outlook.com (2603:10a6:10:d2::15)
- by PAWPR08MB8838.eurprd08.prod.outlook.com (2603:10a6:102:337::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6954.28; Mon, 6 Nov
- 2023 09:11:18 +0000
-Received: from DBBPR08MB4538.eurprd08.prod.outlook.com
- ([fe80::1dde:912e:5599:2729]) by DBBPR08MB4538.eurprd08.prod.outlook.com
- ([fe80::1dde:912e:5599:2729%4]) with mapi id 15.20.6954.027; Mon, 6 Nov 2023
- 09:11:17 +0000
-From: Justin He <Justin.He@arm.com>
-To: Christoph Hellwig <hch@lst.de>
-CC: Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy
-	<Robin.Murphy@arm.com>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, nd
-	<nd@arm.com>
-Subject: RE: [PATCH v4 0/2] fix dma_addressing_limited() if dma_range_map
-Thread-Topic: [PATCH v4 0/2] fix dma_addressing_limited() if dma_range_map
-Thread-Index: AQHaCYh/HkxQHzgqYkq+Nqv+9m8GdrBs9PgAgAAaQoA=
-Date: Mon, 6 Nov 2023 09:11:17 +0000
-Message-ID:
- <DBBPR08MB4538F0C2E53B4EEE86582A1DF7AAA@DBBPR08MB4538.eurprd08.prod.outlook.com>
-References: <20231028102059.66891-1-justin.he@arm.com>
- <20231106073656.GA17712@lst.de>
-In-Reply-To: <20231106073656.GA17712@lst.de>
-Accept-Language: en-US, zh-CN
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-Authentication-Results-Original: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=arm.com;
-x-ms-traffictypediagnostic:
-	DBBPR08MB4538:EE_|PAWPR08MB8838:EE_|AMS0EPF000001A5:EE_|DB5PR08MB10189:EE_
-X-MS-Office365-Filtering-Correlation-Id: 62abb1f3-6a1c-43dc-f26d-08dbdea85b1c
-x-checkrecipientrouted: true
-nodisclaimer: true
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam-Untrusted: BCL:0;
-X-Microsoft-Antispam-Message-Info-Original:
- Hpaqwg/xtdYdGQtI1MDP2bN6kaVAsEVS+Yp6i+OM9kaAWQjdzGq4tyIoydZ4yTRjRXAlI8Rp1iZ9VRIktP1wd1SPw8WdG5C7jiUvwjsOip8e6Yu3Zl3Lw5Qc/XnIrSgvRS/em7EHfyNCXIyUeklAIVUx9dvsWCloCIFWfe4NvdGTR7yG3QZFWJzNhvfevuyp1HW/IywHqeRwlikmNoDLHOuKquLI4/XIVKewH2g+3J9y4NySMsuCCe/ecbgIpH1mpiOhhsZ9GWxcDd8dDGUbTMFYFuihgIOn79T+3rjybhdyaP7wUwoLfIgM8SBUQv6M586l0+HFznwJ8o1EH+OldJ7DrM3B0e+kDAuIL6tn4GVb5bADo2UySLtU5fE9zoS8CfCrJATKzd6pIyi/6tQU43WnxAB46jL+HFToZs+nDqftdt7+gCrxCsvXMDCyiRFGtvbqllH1dGYNuF/BWdTsZdWtuMkLlKDTkETpJx73eXAdxmsTwqHdOTVHSR2I/EhzR0XPknRMPVnE7z/1zBovC0qFNmkRKhenS2/+ncq9QRrRPcfX8kT6+jhW9GQtoVOcGB1vwunJhtelz1qBEVmtoaOfezT/mPLAWT1pajPF4jqblju28lEMPu8h30xQyPXD
-X-Forefront-Antispam-Report-Untrusted:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DBBPR08MB4538.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(136003)(346002)(376002)(366004)(39860400002)(396003)(230922051799003)(1800799009)(64100799003)(186009)(451199024)(83380400001)(9686003)(66946007)(76116006)(26005)(478600001)(7696005)(55016003)(6506007)(71200400001)(52536014)(8936002)(8676002)(4326008)(66556008)(66446008)(64756008)(54906003)(66476007)(316002)(6916009)(5660300002)(41300700001)(38100700002)(122000001)(86362001)(2906002)(38070700009)(33656002)(558084003);DIR:OUT;SFP:1101;
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="lswr8Tgg"
+Received: from pps.filterd (m0353728.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 3A69GR0M022738;
+	Mon, 6 Nov 2023 10:08:29 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : in-reply-to : references : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=r+aarlL2H82YLzRQAyKOowUBNf7+/61K2JZ3ILC5APA=;
+ b=lswr8Tggtlt6v32NsjakaA+fjX2D3IPSntIob56AFlmx2oSl9QAVS8MxMUmhl/A9mx4A
+ /R366vAKFm78uaAjO32knr5UVtX6juEtLrZnJErdECUc13ddd0mI3zVifm1/J1V7g2cT
+ VsG9VPyMHoqdZygCRXaRvKPA4ZhzNl64Pt5sQK2RNcY/g+jPenujQoVIkRxSHCs0fwYk
+ LTwz6YYsFWTgihuDkjzcBRtTfAGwmS5f8HY24zPGISIhhs+gl7o4V/8eJSCii+76SuTC
+ lPIQ0cyhF6ov+4sDNwUigL8d2nN3xPkw3Kn7oA/wvO4IC+wxZLFRvE71wvvs7mW8InfJ Xg== 
+Received: from pps.reinject (localhost [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3u6uj0n521-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 06 Nov 2023 10:08:28 +0000
+Received: from m0353728.ppops.net (m0353728.ppops.net [127.0.0.1])
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 3A69Gefb024600;
+	Mon, 6 Nov 2023 10:08:28 GMT
+Received: from ppma22.wdc07v.mail.ibm.com (5c.69.3da9.ip4.static.sl-reverse.com [169.61.105.92])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3u6uj0n514-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 06 Nov 2023 10:08:27 +0000
+Received: from pps.filterd (ppma22.wdc07v.mail.ibm.com [127.0.0.1])
+	by ppma22.wdc07v.mail.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 3A67qrbe007992;
+	Mon, 6 Nov 2023 10:08:26 GMT
+Received: from smtprelay05.fra02v.mail.ibm.com ([9.218.2.225])
+	by ppma22.wdc07v.mail.ibm.com (PPS) with ESMTPS id 3u60ny8kq9-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 06 Nov 2023 10:08:26 +0000
+Received: from smtpav03.fra02v.mail.ibm.com (smtpav03.fra02v.mail.ibm.com [10.20.54.102])
+	by smtprelay05.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 3A6A8N4422020764
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Mon, 6 Nov 2023 10:08:23 GMT
+Received: from smtpav03.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 6B77B20076;
+	Mon,  6 Nov 2023 10:08:23 +0000 (GMT)
+Received: from smtpav03.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 9255720075;
+	Mon,  6 Nov 2023 10:08:22 +0000 (GMT)
+Received: from li-ce58cfcc-320b-11b2-a85c-85e19b5285e0 (unknown [9.171.62.82])
+	by smtpav03.fra02v.mail.ibm.com (Postfix) with SMTP;
+	Mon,  6 Nov 2023 10:08:22 +0000 (GMT)
+Date: Mon, 6 Nov 2023 11:08:20 +0100
+From: Halil Pasic <pasic@linux.ibm.com>
+To: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
+Cc: Niklas Schnelle <schnelle@linux.ibm.com>, Christoph Hellwig
+ <hch@lst.de>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Marek Szyprowski
+ <m.szyprowski@samsung.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Petr
+ Tesarik <petr.tesarik1@huawei-partners.com>,
+        Ross Lagerwall
+ <ross.lagerwall@citrix.com>,
+        linux-pci <linux-pci@vger.kernel.org>, linux-kernel@vger.kernel.org,
+        iommu@lists.linux.dev, Matthew Rosato
+ <mjrosato@linux.ibm.com>,
+        Halil Pasic <pasic@linux.ibm.com>
+Subject: Re: Memory corruption with CONFIG_SWIOTLB_DYNAMIC=y
+Message-ID: <20231106110820.2bc70130.pasic@linux.ibm.com>
+In-Reply-To: <20231103214831.26d29f4d@meshulam.tesarici.cz>
+References: <104a8c8fedffd1ff8a2890983e2ec1c26bff6810.camel@linux.ibm.com>
+	<20231103171447.02759771.pasic@linux.ibm.com>
+	<20231103214831.26d29f4d@meshulam.tesarici.cz>
+Organization: IBM
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-redhat-linux-gnu)
+Content-Type: text/plain; charset=UTF-8
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: uIaTFOuqP_nB6juhOpnD6g8sASr2ro47
+X-Proofpoint-GUID: vlRs8r-Z4w7NX1o3vr7N-vTbSUM_1Wgm
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAWPR08MB8838
-Original-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=arm.com;
-X-EOPAttributedMessage: 0
-X-MS-Exchange-Transport-CrossTenantHeadersStripped:
- AMS0EPF000001A5.eurprd05.prod.outlook.com
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id-Prvs:
-	b06cba9c-5c3e-4ac8-75de-08dbdea855d5
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	3JTHqtrp4wZXgkFZcXsZhqeN8bFNvqYAZKhfac6lhRg6vTcWaAA0tCr4xkedmLmv3MP0X5MXNt4LspigAmsfgJYgcJ3Jj3t6bw6XEGOzOxDxpWQQB7hKqXG5mSXVXjtgLdBAcfRc1so51qxEeNBSfoj1rSTbeWb6vdYVPjfVMRP75wSHDxcLo3/xlg3U+EnJBMFGdGZGMqSCpbHrjpM/+CvY61GjiRTp6afnqYx31MN7doxmtFGP3xCvIp7BODO0I0rT6cMuOqwVFo/xyOp++Y4MwFBvqyS7T/eVyc2WRKvPIiQo0CKujtNBYOasbWRMSsQ923KZ9qI1ovOeQQz4tbjuckRuC9MutnBABlxZ70Zdj7mCHHp3CkvsvSJu+sgdDUKo3BGt5f/mcHT+RFl8jlxhStzPXrWS7C68R3wxYLaJLfZVEQ99JHwvqE08StBxFNLegQpGp6JwOAceyrkDkETfQvt7OddbsGHoL9P5JiEiU3PbAAZ0ObNtw7xjYEAGY8iyQxgyYKTHsmOE+RnJ9xpOy4btWRdth0UxU1X1LC6ZaYaZqC3s41Y/QYOAXPIEVcr4CZ50pUrmb5qDnPnM4QrZI/sktT+E+06+uBmwQsFzVlajDXiiekYinKAkFK8xPkw0DPgttev1E0pT7RQhDdLugXNDpTPM1t3qCnAwp6HZdXyMDtWcawO0hUNCDDx5xMc0If/as/nJARpMqF4eew==
-X-Forefront-Antispam-Report:
-	CIP:63.35.35.123;CTRY:IE;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:64aa7808-outbound-1.mta.getcheckrecipient.com;PTR:ec2-63-35-35-123.eu-west-1.compute.amazonaws.com;CAT:NONE;SFS:(13230031)(4636009)(136003)(39850400004)(376002)(346002)(396003)(230922051799003)(64100799003)(451199024)(186009)(82310400011)(1800799009)(46966006)(36840700001)(55016003)(40480700001)(9686003)(7696005)(6506007)(478600001)(36860700001)(33656002)(558084003)(82740400003)(356005)(81166007)(86362001)(70206006)(5660300002)(316002)(70586007)(41300700001)(336012)(47076005)(83380400001)(2906002)(26005)(8676002)(4326008)(6862004)(54906003)(8936002)(52536014);DIR:OUT;SFP:1101;
-X-OriginatorOrg: arm.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Nov 2023 09:11:26.7084
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 62abb1f3-6a1c-43dc-f26d-08dbdea85b1c
-X-MS-Exchange-CrossTenant-Id: f34e5979-57d9-4aaa-ad4d-b122a662184d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=f34e5979-57d9-4aaa-ad4d-b122a662184d;Ip=[63.35.35.123];Helo=[64aa7808-outbound-1.mta.getcheckrecipient.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	AMS0EPF000001A5.eurprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB5PR08MB10189
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.987,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2023-11-06_08,2023-11-02_03,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 clxscore=1011
+ mlxlogscore=802 spamscore=0 malwarescore=0 adultscore=0 mlxscore=0
+ lowpriorityscore=0 suspectscore=0 phishscore=0 bulkscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2310240000 definitions=main-2311060085
 
-SGkgQ2hyaXN0b3BoLA0KDQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IFRoYW5rcywN
-Cj4gDQo+IHRoaXMgbG9va3MgZ29vZCB0byBtZSwgYW5kIEkndmUgYXBwbGllZCB0aGlzIHdpdGgg
-dHdvIHR3ZWFrcyB0byB0aGUgZG1hLWFwcGluZw0KPiB0cmVlLg0KVGhhbmtzIGEgbG90IGZvciB0
-aGUgaGVscCDwn5iKDQo=
+On Fri, 3 Nov 2023 21:50:53 +0100
+Petr Tesařík <petr@tesarici.cz> wrote:
+
+> >[...]
+> > In our case min_align_mask == 0 and a) is thus not applicable, because b) and
+> > c) we end up with iotlb_align_mask = 0x800. And because orig_add & 0x800 ==
+> > 0x800 but pool->start & 0x800 == 0 and the slot at index i is skipped over. The
+> > slot 0 is skipped over because it is page aligned, when !!((1UL << PAGE_SHIFT)
+> > & orig_addr)   
+> 
+> Wait. These mask values can quickly become confusing. Do you mean
+> iotlb_align_mask == 0xfff?
+
+I mean iotlb_align_mask == 0x800. Because of  
+iotlb_align_mask &= ~(IO_TLB_SIZE - 1);
+in line 994 masks away the 0x7FF part
+(https://github.com/torvalds/linux/blob/d2f51b3516dade79269ff45eae2a7668ae711b25/kernel/dma/swiotlb.c#L994C2-L994C41)
+what remains of 0xfff (when PAGE_SHIFT == 12). My idea was to write 
+0x800 differently with a reference to PAGE_SHIFT, because for a
+larger PAGE_SHIFT we end up with a different pattern and thus
+requirement, but didn't really think it through properly because
+even (1UL << (PAGE_SHIFT- 1)) (which is for PAGE_SHIFT == 12
+0x800) does not tell the full story. Because all bits in the
+interval [PAGE_SHIFT,IO_TLB_SHIFT)  matter and not just the most
+significant one (for PAGE_SHIFT == 12 and IO_TLB_SHIFT == 1 there is
+just one).
+
+Shame on me! Sorry for the confusion!
+
+Regards,
+Halil
