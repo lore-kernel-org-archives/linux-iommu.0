@@ -1,90 +1,105 @@
-Received: from mail-vs1-f52.google.com (mail-vs1-f52.google.com [209.85.217.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC06C2EB1F
-	for <iommu@lists.linux.dev>; Mon,  6 Nov 2023 23:21:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C49608F40;
+	Tue,  7 Nov 2023 04:18:38 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="Zu5/hzD4"
-Received: by mail-vs1-f52.google.com with SMTP id ada2fe7eead31-45db499e2faso922594137.1
-        for <iommu@lists.linux.dev>; Mon, 06 Nov 2023 15:21:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1699312860; x=1699917660; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=VRyAzJJOswEJHybV5YKhah0pwAZfcPETkQNhN7yfvnA=;
-        b=Zu5/hzD4/2HfPbDE/O7cPP2YLh6Ly7AxOzXhCudDv7gfbEbOhngYbka89FAx09XWpp
-         0rZymhqNOaxTbGDNZOk4PmlV6s3Mb/Gis6lSZeeYYlZhcE4RgwtZevfDaywKfwWftal/
-         ntcUn/VKmt5o83J7XHzbTuG0H4kzJshTWOjcRMgxRY1t4txhtBeXHkcOVgsWuMovrJ99
-         grJgFoikuA3yP4agGAoS0j3HgKZ+t1vcJkvXOuyvsUDNJUWhM/vBY9fa4zbzv2tky3E+
-         rgI7/Si46fIMQrZQecWzN5mhWF8HaMwLiirSoPAELec/SkNu1N8opJiYJ+B2nusLMnQW
-         hdng==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1699312860; x=1699917660;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=VRyAzJJOswEJHybV5YKhah0pwAZfcPETkQNhN7yfvnA=;
-        b=qkx6ZcNQjxk25joQU3F2PcNxq/qfBosC0K3KQade/e2OYrgf1gtl/rMEKe4RCAkUWV
-         JtXs6ptvxIG5oLFcS2y07G9tlkZkakcek1FRmyEnxfozuVk1FoYBXjsaiEijycjCIPXK
-         PqYtUEGz9N4rrMzMLuuz0iEdt74oe+YcVd1VfiWUschOc/OrmVkgs2RSLtKHirN50REa
-         1N6plvHBLCu5qawYrWo+3IKW/LFTJymch13vyk0hVXpFp+ofgBu/tqisjSLmFJMjYllN
-         HSyUm/N4ji9R22gjGsJ8IfUgbwkbYoHtmhCt9rkITn64rMuMgSsW3l40m1FxQxgFowmp
-         /c4Q==
-X-Gm-Message-State: AOJu0Ywj9+5wwnZAD8kqtnaNfPGZjOAPMVF3DAIr3EaJi5WG2uPrfE9U
-	zjQa6sNTDorIlEqnszvC0MnW2g==
-X-Google-Smtp-Source: AGHT+IFk8bRrFrVxVByyjJpJ6OZ7I0ibMJsap8oOABaFk8sDXaTlbIMiMrJBRx2w4mohEFbI3UdpnA==
-X-Received: by 2002:a67:c384:0:b0:45d:9c41:ba93 with SMTP id s4-20020a67c384000000b0045d9c41ba93mr5963502vsj.28.1699312860430;
-        Mon, 06 Nov 2023 15:21:00 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-68-26-201.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.26.201])
-        by smtp.gmail.com with ESMTPSA id i4-20020a056214030400b0066da90f0c19sm3834114qvu.24.2023.11.06.15.20.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Nov 2023 15:21:00 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1r08tv-001Rr1-Do;
-	Mon, 06 Nov 2023 19:20:59 -0400
-Date: Mon, 6 Nov 2023 19:20:59 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Vasant Hegde <vasant.hegde@amd.com>
-Cc: iommu@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com,
-	wei.huang2@amd.com, jsnitsel@redhat.com
-Subject: Re: [PATCH v3 11/12] iommu/amd: Add IO page fault notifier handler
-Message-ID: <20231106232059.GW4634@ziepe.ca>
-References: <20231016104351.5749-1-vasant.hegde@amd.com>
- <20231016104351.5749-12-vasant.hegde@amd.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Bp79TRjy"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD399C433C7;
+	Tue,  7 Nov 2023 04:18:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1699330718;
+	bh=5PvihFHBU7SqgdRwrtVBo1+6I/pEiB/RH5ISX/VMPpA=;
+	h=Date:From:To:cc:Subject:In-Reply-To:References:From;
+	b=Bp79TRjy24dSDD/qE6n8ck8XIFc1iINY8FONEu+yGlfyIKf7sAGTIkE76bM888oZi
+	 t/diEaICWenT4mb89FLqqlQdr/kMR8ohF/pvt10vL2t3MlUQZ7W5Ej0iBA4Ey2oOkN
+	 piKy8MQFGWSR8jbtWOGfriFcQA+cCu5jAMkoeQ0AKDSBphqAXqQgoJX2EBGq7AUs9m
+	 ioOn9opMSHLLz4obHlrt6gDID/c0CNS2W8XpnuwKZL3U7uIcedn3ZGSugjsSZyBJeb
+	 8rD6UJHi0B64OlMSCYXWFRgCRWeUB583TG1QBgNuSaaCB5p2ZG8ANgU7du4WCoaekW
+	 pOdtrknRPGb8A==
+Date: Mon, 6 Nov 2023 20:18:31 -0800 (PST)
+From: Stefano Stabellini <sstabellini@kernel.org>
+X-X-Sender: sstabellini@ubuntu-linux-20-04-desktop
+To: Mikulas Patocka <mpatocka@redhat.com>
+cc: Mike Snitzer <snitzer@kernel.org>, Keith Busch <kbusch@kernel.org>, 
+    Christoph Hellwig <hch@lst.de>, Juergen Gross <jgross@suse.com>, 
+    Stefano Stabellini <sstabellini@kernel.org>, 
+    xen-devel@lists.xenproject.org, iommu@lists.linux.dev, 
+    Marek Marczykowski-G'orecki <marmarek@invisiblethingslab.com>, 
+    Jens Axboe <axboe@fb.com>, Sagi Grimberg <sagi@grimberg.me>, 
+    Jan Kara <jack@suse.cz>, Vlastimil Babka <vbabka@suse.cz>, 
+    Andrew Morton <akpm@linux-foundation.org>, 
+    Matthew Wilcox <willy@infradead.org>, Michal Hocko <mhocko@suse.com>, 
+    stable@vger.kernel.org, regressions@lists.linux.dev, 
+    Alasdair Kergon <agk@redhat.com>, dm-devel@lists.linux.dev, 
+    linux-mm@kvack.org
+Subject: Re: [PATCH v2] swiotlb-xen: provide the "max_mapping_size" method
+In-Reply-To: <151bef41-e817-aea9-675-a35fdac4ed@redhat.com>
+Message-ID: <alpine.DEB.2.22.394.2311061211080.3478774@ubuntu-linux-20-04-desktop>
+References: <3cb4133c-b6db-9187-a678-11ed8c9456e@redhat.com> <ZUUctamEFtAlSnSV@mail-itl> <ZUUlqJoS6_1IznzT@kbusch-mbp.dhcp.thefacebook.com> <ZUVYT1Xp4+hFT27W@mail-itl> <ZUV3TApYYoh_oiRR@kbusch-mbp.dhcp.thefacebook.com> <11a9886d-316c-edcd-d6da-24ad0b9a2b4@redhat.com>
+ <ZUZOKitOAqqKiJ4n@kbusch-mbp.dhcp.thefacebook.com> <20231106071008.GB17022@lst.de> <928b5df7-fada-cf2f-6f6a-257a84547c3@redhat.com> <ZUkDUXDF6g4P86F3@kbusch-mbp.dhcp.thefacebook.com> <ZUkGpblDX637QV9y@redhat.com>
+ <151bef41-e817-aea9-675-a35fdac4ed@redhat.com>
+User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20231016104351.5749-12-vasant.hegde@amd.com>
+Content-Type: multipart/mixed; BOUNDARY="8323329-46487316-1699301481=:3478774"
+Content-ID: <alpine.DEB.2.22.394.2311062018170.3478774@ubuntu-linux-20-04-desktop>
 
-On Mon, Oct 16, 2023 at 10:43:50AM +0000, Vasant Hegde wrote:
-> From: Wei Huang <wei.huang2@amd.com>
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
+
+--8323329-46487316-1699301481=:3478774
+Content-Type: text/plain; CHARSET=UTF-8
+Content-Transfer-Encoding: 8BIT
+Content-ID: <alpine.DEB.2.22.394.2311062018171.3478774@ubuntu-linux-20-04-desktop>
+
+On Mon, 6 Nov 2023, Mikulas Patocka wrote:
+> From: Keith Busch <kbusch@kernel.org>
 > 
-> Whenever there is a page fault IOMMU logs entry to ppr log and sends
-> interrupt to host. We have to handle the page fault and respond to IOMMU.
+> There's a bug that when using the XEN hypervisor with bios with large
+> multi-page bio vectors on NVMe, the kernel deadlocks [1].
 > 
-> Add support to validate page fault request and hook it to core iommu
-> page fault handler.
+> The deadlocks are caused by inability to map a large bio vector -
+> dma_map_sgtable always returns an error, this gets propagated to the block
+> layer as BLK_STS_RESOURCE and the block layer retries the request
+> indefinitely.
 > 
-> Signed-off-by: Wei Huang <wei.huang2@amd.com>
-> Co-developed-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-> Co-developed-by: Vasant Hegde <vasant.hegde@amd.com>
-> Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
+> XEN uses the swiotlb framework to map discontiguous pages into contiguous
+> runs that are submitted to the PCIe device. The swiotlb framework has a
+> limitation on the length of a mapping - this needs to be announced with
+> the max_mapping_size method to make sure that the hardware drivers do not
+> create larger mappings.
+> 
+> Without max_mapping_size, the NVMe block driver would create large
+> mappings that overrun the maximum mapping size.
+> 
+> Reported-by: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
+> Link: https://lore.kernel.org/stable/ZTNH0qtmint%2FzLJZ@mail-itl/ [1]
+> Tested-by: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
+> Suggested-by: Christoph Hellwig <hch@lst.de>
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Keith Busch <kbusch@kernel.org>
+> Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
+
+Acked-by: Stefano Stabellini <sstabellini@kernel.org>
+
+
 > ---
->  drivers/iommu/amd/amd_iommu_types.h |   8 +++
->  drivers/iommu/amd/ppr.c             | 100 +++++++++++++++++++++++++++-
->  2 files changed, 107 insertions(+), 1 deletion(-)
-
-These patches don't seem ordered quite right, the patch creating the
-SVA domain should be last, it should be organized so the SVA domain
-doesn't work then following patches fix it.
-
-Jason
+>  drivers/xen/swiotlb-xen.c |    1 +
+>  1 file changed, 1 insertion(+)
+> 
+> Index: linux-stable/drivers/xen/swiotlb-xen.c
+> ===================================================================
+> --- linux-stable.orig/drivers/xen/swiotlb-xen.c	2023-11-03 17:57:18.000000000 +0100
+> +++ linux-stable/drivers/xen/swiotlb-xen.c	2023-11-06 15:30:59.000000000 +0100
+> @@ -405,4 +405,5 @@ const struct dma_map_ops xen_swiotlb_dma
+>  	.get_sgtable = dma_common_get_sgtable,
+>  	.alloc_pages = dma_common_alloc_pages,
+>  	.free_pages = dma_common_free_pages,
+> +	.max_mapping_size = swiotlb_max_mapping_size,
+>  };
+--8323329-46487316-1699301481=:3478774--
