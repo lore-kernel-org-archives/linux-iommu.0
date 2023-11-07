@@ -1,198 +1,150 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2080.outbound.protection.outlook.com [40.107.92.80])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3104D651
-	for <iommu@lists.linux.dev>; Tue,  7 Nov 2023 12:02:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 598872DF91
+	for <iommu@lists.linux.dev>; Tue,  7 Nov 2023 13:09:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="BnRXp13b"
-Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 3A79gEep019554;
-	Tue, 7 Nov 2023 12:02:06 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
- mime-version : subject : from : to : cc : references : in-reply-to :
- content-type : content-transfer-encoding; s=qcppdkim1;
- bh=em+ugaoVK2qVG9P/FFyBDT7joZQnLbDf7hMigjmUsE4=;
- b=BnRXp13b4lxA1YkCFWOFfGlTUeMK074CGlT/WW525uK3fsHT7+ECY3n4x+Ggqr9KnF3A
- /+fjjJq/Fb2CIM5Jko+FQEYLqIV/bvYKhKGgEXrya0I6or6bWxFYYOR/gUAuzd1+y/63
- HARF1T8n9jIPFPWT0Ji/JdCnIefKjyI6E7/pgKKMXi0Z1VnVArJTBOi6UuwV6cztZUX4
- dvIvKmOCFB6tQgWbUhRtRF0h4MrGPPXMbBN8jgR4Rt0WpMkb+pZWo6eNP5feySzp5B2L
- t9wu69e9rRjMK2bN5St9VpxZmW6YA0vYXH7EWJjI8Ov1qJmWWN1HW6pFllXhZQyYlYEX Zg== 
-Received: from nalasppmta05.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3u7agf1bmp-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 07 Nov 2023 12:02:06 +0000
-Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-	by NALASPPMTA05.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 3A7C251L030180
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 7 Nov 2023 12:02:05 GMT
-Received: from [10.216.7.117] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.39; Tue, 7 Nov
- 2023 04:02:02 -0800
-Message-ID: <fa26357f-c742-651c-20f1-c1815437f6f7@quicinc.com>
-Date: Tue, 7 Nov 2023 17:31:57 +0530
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="ZDehB5wc"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=UHe8Wvs0xwhqxEQAI6SjHreAPi8PNk5ZZAsihjUZ/3w5jR+p420WOL+GxPUVEw8IVWPhscvxWVLzxEcTqq4h5Fav6APB8lFJrfN/alJFd/oHv9GbjH3+rTJUKnGsxjX1/qx99bgeSZ6S2ApmW69/kbCHneP6yWgERENamQ3shHoz03tJV2VCeAvXgCAHf155Or6ITiZTVQtMoDr+XnBoa+P/VRjUkGMhHsx1EPRPlsAJHTFqYOqm87bHjTGxWaWJM4r7OlaOjqHOoY47I6tjhHZNycIKxkqW2mSBIUYxCkFxWRfGS74yWW6P+7gVf9a4Vu4A0bas9VxZ6xiwFzyJYQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=RTzBXU2SPIOHmPU0RpO79aW554v6H576IZX7MhB8Cgo=;
+ b=fBIfQdv8WruCpd5i1tPrRhMENq5sNo53W96er1JHIQZt12t/VNTOvGvo8HgmnjVK5kY/+VnPpPyEIlBXHOtN5FdITdQ3zKtHVyyLICcYj+PdGseTNUppX5d1rtsb+VYLBo3ucc3va7/eon6Ubhwz9RtWW6BBWSeJjdkpEjwEB+sM1NsKotkoT3jiJXW8a55clldPkO32nf1ERKuYetDwrHVULArq1NSsjEEMNSbpnApQYJdrLie/DRoyap3nHsWsp+LJuUbs+Zoroj+FmYriEuRSig3rTLN5vHOTfLmI3IFk2ZumoL2e+HPROkQTPoV/BCJhjqPZ25G4+cADG2VLkA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=RTzBXU2SPIOHmPU0RpO79aW554v6H576IZX7MhB8Cgo=;
+ b=ZDehB5wcV70xw4Nwq1TgGNVg5q7Z0fU8hPlhLssf7cuBCO+Y1iRN8E2hYiW+REaVEfjHWtKR5YJpO3k0dZgKfaKvWQKLQMYOhG7cRRj56gmKLGjfJM4DWb1QJgjwbkMYlui1o8rlkxVMyXGZYJvsI/APWdJlTJRHqeEPzIJFA4K9vgD7xENe/5ot9q7pmrYhIJZPvTeRXhDPUIYrcU9BaW6bhgX8Fp8N+1dQQmhkSWNIBEsdn+d+sjQdkjuQy+bfqw2BS1zQtOstz5Yrhflmx2rX8wbRO18kBHT9NGz9Zr8PDJkMqI7kxVU6gswqz5EmA9U5c1NkWqt0w6cbgfu6dw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by IA0PR12MB8326.namprd12.prod.outlook.com (2603:10b6:208:40d::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6977.18; Tue, 7 Nov
+ 2023 13:09:18 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::b53a:1092:9be2:cfb9]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::b53a:1092:9be2:cfb9%5]) with mapi id 15.20.6954.027; Tue, 7 Nov 2023
+ 13:09:18 +0000
+Date: Tue, 7 Nov 2023 09:09:17 -0400
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Vasant Hegde <vasant.hegde@amd.com>
+Cc: iommu@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com
+Subject: Re: [PATCH v1 10/13] iommu/amd: Consolidate domain flush logic
+Message-ID: <20231107130917.GL4488@nvidia.com>
+References: <20231006101624.5912-1-vasant.hegde@amd.com>
+ <20231006101624.5912-11-vasant.hegde@amd.com>
+ <20231105175559.GJ223197@nvidia.com>
+ <5e95d78b-4c42-6596-c1b0-057e044197fc@amd.com>
+ <20231106131303.GG4488@nvidia.com>
+ <4267e033-6cf8-565b-9a89-492746c6c257@amd.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <4267e033-6cf8-565b-9a89-492746c6c257@amd.com>
+X-ClientProxiedBy: BL1PR13CA0417.namprd13.prod.outlook.com
+ (2603:10b6:208:2c2::32) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.0
-Subject: Re: [PATCH 0/2] iommu: Allow passing custom allocators to pgtable
- drivers
-Content-Language: en-US
-From: Gaurav Kohli <quic_gkohli@quicinc.com>
-To: Rob Clark <robdclark@gmail.com>, Steven Price <steven.price@arm.com>,
-        Will
- Deacon <will@kernel.org>
-CC: Boris Brezillon <boris.brezillon@collabora.com>,
-        Joerg Roedel
-	<joro@8bytes.org>, <iommu@lists.linux.dev>,
-        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-arm-msm@vger.kernel.org>
-References: <20230809121744.2341454-1-boris.brezillon@collabora.com>
- <f72e5ab1-c6f2-ec03-68d6-1686145f3a4d@arm.com>
- <CAF6AEGtDxkiiM5NNT7Y9-sY5eCQX15ij=RzU-NX2Mvf6kNk2nA@mail.gmail.com>
- <84277a5c-a33f-a412-6dec-2ab786b1a47d@quicinc.com>
-In-Reply-To: <84277a5c-a33f-a412-6dec-2ab786b1a47d@quicinc.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: o5y6EHRsmXIWtCPTUCdWzhMDLyOGriFp
-X-Proofpoint-GUID: o5y6EHRsmXIWtCPTUCdWzhMDLyOGriFp
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.272,Aquarius:18.0.987,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2023-11-07_02,2023-11-07_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 suspectscore=0
- phishscore=0 adultscore=0 mlxlogscore=999 lowpriorityscore=0
- impostorscore=0 spamscore=0 priorityscore=1501 bulkscore=0 mlxscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2310240000 definitions=main-2311070099
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|IA0PR12MB8326:EE_
+X-MS-Office365-Filtering-Correlation-Id: 26c9fecd-b596-4a3e-47f2-08dbdf92bffe
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	iqYr3RafQ3pY7hdwnbsMUyX89QDwcW1TDGKnsRgRtzocadhCs+nCxj0SlG1+BU6IAgOaoUYhWPHC6MUq8FC94GpL1QwZCFUw0LnlqWRp4IcimFWW21AQrowG1udP5n5q9mWunPVGcYvt3YWMjkNAFE7U2JENTwMrQqfk8OJSU2mhSM2zy95bAK8HmMg0aw3HRbY4ClIXveLWJuKZUy5Lx57e42y4Cjk2Tg77srCpig9WehUKb3MM2d9XBBmDSNYC3oRygPZknNe1/sChj0sndYR5DWTu6XO/XCzTM31gh3PZrCmzrYrmvzbyzap6eq0XaGIWz3Pd1i50UpcAR+qEf6o3JffO5uGFQhsx9oj+AUfvQDd5Ecv7/PTVYUv2RIobW7RynSXFfj0m+9jUsOLpkZxz2KYKqjEzNO3VF8jTru4T2musDQEBulI9QUZKsKSn8MIJm5uTee9P1hGTSVuvkIVa14PFQwkpeyQkh3wzRqEqUtt8Wt0kgofFY+6rwJc65Dxo37eQXxFPVwfTh1F+vU2q0YnJVOPJwmRnTV93lJ1MaNMldi/fVzj6Hipa/95Y
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(39860400002)(396003)(366004)(136003)(376002)(346002)(230922051799003)(64100799003)(186009)(451199024)(1800799009)(6512007)(2616005)(6486002)(6506007)(478600001)(38100700002)(36756003)(86362001)(33656002)(5660300002)(66556008)(66476007)(66946007)(83380400001)(2906002)(41300700001)(1076003)(26005)(6916009)(316002)(8936002)(8676002)(4326008);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?XvKt1Vtw6Qc+8uXJVoT9+qhDP8tQ86S80fVnFiXPs2v2883JGo6RkBsl1fu9?=
+ =?us-ascii?Q?djBQCnqxTny8BABp4ZCCVaghG9yH384Po4ZyGvnNvnouSENUz3ww8N0LfZAz?=
+ =?us-ascii?Q?YUkD++CgyawkDseVkOkS5s+0pNvacfeW/X1MTiEVgwjq7JxIoFKTpbYWypxS?=
+ =?us-ascii?Q?r4tQiluQCuwKz5YrUab1Cvyg5OrkcExj3QJmgTJc1ztqQiKy7NiU8Es52ai1?=
+ =?us-ascii?Q?/0pNAY/e21eXQgkylAydXuY9XLv7in1PC0phRephqfM8XqrEw8HXg8t4Bqej?=
+ =?us-ascii?Q?oDB1g+YHFfRDbJrciZ/iufd5IQPxPlq5/UXNuxR1UncmKiEW5QdppB80aKbz?=
+ =?us-ascii?Q?MCNHeEZlZH1g0HTmSsd8WnuZtHbO3Ku7E6cvIgQwB7IsbfUzGI60zI6vB+Fs?=
+ =?us-ascii?Q?qBgCggg9cqxznjbr7HG3bfFVy3ANdDjeLW4lCBwc1abTmUpSh2X1bclRyscm?=
+ =?us-ascii?Q?fylcm+eGUSXtnoY3RHXYcKMErmpYFzx/1WbcQJxumaeqXMPa2PFN6YINAo+6?=
+ =?us-ascii?Q?K/3BlLBzPJvigaTWsTDdGYeSZBkqvH2m076+sQIgfT1FwCXRAqztA3zagMOb?=
+ =?us-ascii?Q?Oevi4TiozDh/gRkuiLb2/v9M9uN8U6fghctkZ3MoXLk6El5rppD9TJjssjHH?=
+ =?us-ascii?Q?M+9g56+bCu+S9mWB1K+9psEDQFz31SgkF547iudWI0UxHqVA5gv0PbINTsDE?=
+ =?us-ascii?Q?RaWUawAcIPnXAlb3uCyKZuFvYHt7RHO87jjxbw3TipSahQTjuovYUFRd3AQ7?=
+ =?us-ascii?Q?EylT4AtLL9PAvFNY7yCa1OyD5sOXtcD6UIPwOAuJO41PYTbdM55gWGXA1252?=
+ =?us-ascii?Q?NJUT/MG/YFJKOMtwPzNr98bDePOt6E+EBCFnPsy55wNfMVN5yIApQ0UOynYO?=
+ =?us-ascii?Q?pj7Jafw7LuWfxiI4nbTWXlF8l32VE11vokYZhL2FJ8trn9934Ty7jkyEK36z?=
+ =?us-ascii?Q?hW/YwBwrv+lWc97AJ+r2/tMEzxKVrJ27yfZ/3Tvj52ORFOuNGUaYDT7SsvsP?=
+ =?us-ascii?Q?4An9us9Bgk8kpoAx8v3enaI3qijVn88EuSRiI7GS0+BSrHyX0N0WZO/XBGL5?=
+ =?us-ascii?Q?AWJ/nSArKTlTHXR1SSzEGlPfrxCblZ1T1CvucErP7EC9u2LF5f//ina4mU8k?=
+ =?us-ascii?Q?MYjbpkjFtcWESNxiAQmCmG+Guc8vkjCbch4EgP4/ow1FuFQYrGD5iFf6jC0A?=
+ =?us-ascii?Q?C6T4sHDZAz/MFoPVcGY/CTEp+0ruuxorDnwe2l1BgtF2fIeU3xL73ybznKeH?=
+ =?us-ascii?Q?3JphZpir+C/r7iGTUgOUf3QNAjQi3VkQNqZ5Whvr9K13+zTQJyaxYGZoRq/7?=
+ =?us-ascii?Q?vMyAK7eOi0dsy2sqSnrm9Lu6b7+NeIqdO1t/40XNK5zABxnIKR0CdZH/DA8d?=
+ =?us-ascii?Q?GMl9QNA6LSVTGg1G0su+FSlSDkBJW7/JV6QrtuXW1YUHpnmEHYFZnwTp5umR?=
+ =?us-ascii?Q?Xv203PamNRrSZr9PKQevUmW0QyNTimuh3ZRxb0AyQ8IYn3qZ3PV3MPr4h32i?=
+ =?us-ascii?Q?Hk/bnSa4WD9aqku86hgV/0fEbU75QF/zQAVc/bXOzV/UMElP0rBncEqRVrrT?=
+ =?us-ascii?Q?YPJ2t5fDhSXNToYpD494Ljq/rthwwfUMsrmGkG+x?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 26c9fecd-b596-4a3e-47f2-08dbdf92bffe
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Nov 2023 13:09:18.3872
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Up44QNXHRY+WRw6RgqnFRGr2L1L5megehGXKpYNUItjjNOMQSei/yhS2zjtp203H
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB8326
 
+On Tue, Nov 07, 2023 at 10:14:17AM +0530, Vasant Hegde wrote:
 
+> > I can say that in SMMUv3 structuring it so that the attach op at the
+> > top of the call chain knows what to do, and called a bunch of specific
+> > helpers was reasonable. We know at the op level if we are going to do
+> > a V1 or V2 invalidation because the OP itself already knows if it is
+> > working on a V1/V2 iommu domain due to how it has to load the domain
+> > into the DTE/GCR3.
+> 
+> AMD IOMMU invalidation is based on domain and we have single command which takes
+> PASID as well. Current code does have separate functions but that made code
+> duplicate. So I try to consolidate all low level functions.
 
-On 11/7/2023 5:22 PM, Gaurav Kohli wrote:
-> 
-> 
-> On 10/24/2023 2:32 AM, Rob Clark wrote:
->> On Wed, Sep 20, 2023 at 6:12 AM Steven Price <steven.price@arm.com> 
->> wrote:
->>>
->>> On 09/08/2023 13:17, Boris Brezillon wrote:
->>>> Hello,
->>>>
->>>> This patchset is an attempt at making page table allocation
->>>> customizable. This is useful to some GPU drivers for various reasons:
->>>>
->>>> - speed-up upcoming page table allocations by managing a pool of free
->>>>    pages
->>>> - batch page table allocation instead of allocating one page at a time
->>>> - pre-reserve pages for page tables needed for map/unmap operations and
->>>>    return the unused page tables to some pool
->>>>
->>>> The first and last reasons are particularly important for GPU drivers
->>>> wanting to implement asynchronous VM_BIND. Asynchronous VM_BIND 
->>>> requires
->>>> that any page table needed for a map/unmap operation to succeed be
->>>> allocated at VM_BIND job creation time. At the time of the job 
->>>> creation,
->>>> we don't know what the VM will look like when we get to execute the
->>>> map/unmap, and can't guess how many page tables we will need. Because
->>>> of that, we have to over-provision page tables for the worst case
->>>> scenario (page table tree is empty), which means we will allocate/free
->>>> a lot. Having pool a pool of free pages is crucial if we want to
->>>> speed-up VM_BIND requests.
->>>>
->>>> A real example of how such custom allocators can be used is available
->>>> here[1]. v2 of the Panthor driver is approaching submission, and I
->>>> figured I'd try to upstream the dependencies separately, which is
->>>> why I submit this series now, even though the user of this new API
->>>> will come afterwards. If you'd prefer to have those patches submitted
->>>> along with the Panthor driver, let me know.
->>>>
->>>> This approach has been discussed with Robin, and is hopefully not too
->>>> far from what he had in mind.
->>>
->>> The alternative would be to embed a cache of pages into the IOMMU
->>> framework, however kmem_cache sadly doesn't seem to support the
->>> 'reserve' of pages concept that we need. mempools could be a solution
->>> but the mempool would need to be created by the IOMMU framework as the
->>> alloc/free functions are specified when creating the pool. So it would
->>> be a much bigger change (to drivers/iommu).
->>>
->>> So, given that so far it's just Panthor this seems like the right
->>> approach for now - when/if other drivers want the same functionality
->>> then it might make sense to revisit the idea of doing the caching within
->>> the IOMMU framework.
->>
->> I have some plans to use this as well for drm/msm.. but the reasons
->> and requirements are basically the same as for panthor.  I think I
->> prefer the custom allocator approach, rather than tying this to IOMMU
->> framework.  (But ofc custom allocators, I guess, does not prevent the
->> iommu driver from doing it's own caching.)
->>
->> BR,
->> -R
->>
-> 
-> We have also posted one RFC patch series which is based on this current 
-> patches by Boris and helping us to define our custom alloc and free 
-> pgtable call. For our side usecase we have a requirement to create 
-> pgtable from HLOS and then share it to different entity(VMID) and 
-> basically that also requires few smc calls and for that we need
-> custom alloc/free callbacks.
-> 
-> https://lore.kernel.org/all/20231101071144.16309-1-quic_gkohli@quicinc.com/
-> 
-> 
-> So custom allocator and free ops is helping for us also. Is there any 
-> plan to merge these patches from Boris.
-> 
-> 
-> 
-> 
+It is really not different from SMMU, invalidation commands for S1 or
+S2 tables are constructed differently.
 
-Please use below tested by tag, if you are planning to merge patches by 
-Boris:
+I would say the driver should have a way to issue the commands and a
+way to construct the commands. Pass the actual command in instead of
+passing in a mess of arguments to try to guess what command the caller
+wanted.
 
-Tested-by: Gaurav Kohli <quic_gkohli@quicinc.com>
-
->>> Robin: Does this approach sound sensible?
->>>
->>> FWIW:
->>>
->>> Reviewed-by: Steven Price <steven.price@arm.com>
->>>
->>> Steve
->>>
->>>> Regards,
->>>>
->>>> Boris
->>>>
->>>> [1]https://gitlab.freedesktop.org/panfrost/linux/-/blob/panthor/drivers/gpu/drm/panthor/panthor_mmu.c#L441
->>>>
->>>> Boris Brezillon (2):
->>>>    iommu: Allow passing custom allocators to pgtable drivers
->>>>    iommu: Extend LPAE page table format to support custom allocators
->>>>
->>>>   drivers/iommu/io-pgtable-arm.c | 50 
->>>> +++++++++++++++++++++++-----------
->>>>   drivers/iommu/io-pgtable.c     | 31 +++++++++++++++++++++
->>>>   include/linux/io-pgtable.h     | 21 ++++++++++++++
->>>>   3 files changed, 86 insertions(+), 16 deletions(-)
->>>>
->>>
->>
->> _______________________________________________
->> linux-arm-kernel mailing list
->> linux-arm-kernel@lists.infradead.org
->> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+> > As working functions then the ops should be writable to know exactly
+> > which of those call based on the op.
+> > 
+> > For instance, if you have a v1 page table then you should have a v1
+> > specific flush op that does:
+> > 
+> >    invalidate_iotlb_range/all_v1(domain)
+> >    if (domain->ats in use)
+> >      invalidate_atc_range/all(domain)
 > 
+> That's exactly domain_flush_page() does (flush IOMMU TLB and then flush device
+> IOTLB). Just that I need to fix upper layer function and pass few extra params
+> to low level functions.
+
+Yes, but that is not always helpful to bury it like this because the
+ATC invalidation needs to be done in a few places seperated from the
+IOTLB invalidation, and sometimes done without a domain.
+
+Jason
