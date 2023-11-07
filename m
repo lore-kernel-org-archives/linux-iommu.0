@@ -1,141 +1,231 @@
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2050.outbound.protection.outlook.com [40.107.92.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qv1-f43.google.com (mail-qv1-f43.google.com [209.85.219.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A6AD2DF91
-	for <iommu@lists.linux.dev>; Tue,  7 Nov 2023 13:11:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 529532DF91
+	for <iommu@lists.linux.dev>; Tue,  7 Nov 2023 13:21:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="CXgFUNYp"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=dBb2gHyiRt/Buu30ccy8IMEK5vkMNbf8mrCQ7p+u6uaByNSiVV/12+ytQlwaTTJqcBeGSWVnOvibTWkk69SoXb/rB38Aguyka5MP60EDSedRKzq7Kh+AcoUzfebDyh01RkA0Vw+Witg/eiKFkIRfeKMk3e4DSHCKHKO0Y9SwtBIRsJjJarnxAWamujyR9wR3cQ6EmcC45iVcSoA+iNtJnGWvt+7SnilVdxj2n7AJdtQ0D4rHEXCxC7tYYRJmtX52xUXrICfAVG8lx8XpoOP1qhjkswmLjcZeAtxbUiKf3adQMOXw41nUuHxcU0gMKmzxbmpv2fXEEVkCVJRqrk3NgQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=mLHcO+UtWwXiAeIlrz/kwEnpbXxDfkAXopB77EOrUqk=;
- b=PfdGnRBuCsCrHwoIO5+E4e42rRNHqCgi1gI8BfPTIqZD0GCZJBhnk9XOS5bEGiqeefePSpSsnmC3ZL+IiZ6w1a2L+YcTShCqD6FCImrj8SJeTktZT5Gd683evL9MDIhCpCXy8r6uRiYhU0cmdmtq+t7M/u+fYwZ7ntpIFGQ9NmnyzBMJn7oej2vhw8vPUjp+nYpff5/zFWcXEAzxX4sPLv3sO3Jzq2hZMw6iawso2XbLwFKBlyRy0dEiBMGv3pBPVxNgGrskq92Hxuj5vHgmyami3vamsLGOo0hSKM4/lhrbr2Pf7K7Pf4Wt0UCFLUBuJQfIKmDLqM2qj2zVvLXwGA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mLHcO+UtWwXiAeIlrz/kwEnpbXxDfkAXopB77EOrUqk=;
- b=CXgFUNYpt3ZZb5rDSZCn2wULZsLFjxclkFedCivijTRhfk0yjOyjiu2Qzcd1WPmytHYCJ5Iw+eqJO4xHdKUA0i3QFl1Adh5p3YVlLPkRbq+vMKVim51JEA2SiJ3iKZbd7CE84cQ3gPQrd9/yolt+3z9j1BjaCprk1aVUvoNG6ziU+WmJWOm+RjRo+vMnKAxGwoBVjxgdUNPM7nu3GZaoQqSDvJrUpg2cKZhdV96+ofdt/a4pvSCfRd3bLBRV6R1UeO3NSYjl9SEAKhJ87pWHv5XU4zDyQL0Q1U10mL7noSq+sA38SHLGUtIeDj9Ag5mOhjnUpxn+sNRYYL40fwSNYQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by IA0PR12MB8326.namprd12.prod.outlook.com (2603:10b6:208:40d::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6977.18; Tue, 7 Nov
- 2023 13:11:23 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::b53a:1092:9be2:cfb9]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::b53a:1092:9be2:cfb9%5]) with mapi id 15.20.6954.027; Tue, 7 Nov 2023
- 13:11:23 +0000
-Date: Tue, 7 Nov 2023 09:11:22 -0400
-From: Jason Gunthorpe <jgg@nvidia.com>
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="S88vG29k"
+Received: by mail-qv1-f43.google.com with SMTP id 6a1803df08f44-66d060aa2a4so38731686d6.2
+        for <iommu@lists.linux.dev>; Tue, 07 Nov 2023 05:21:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1699363293; x=1699968093; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=g+ZGwdfOpQ5bFXzc3cVBNoStzv4X2p/HawoSIM5mxTM=;
+        b=S88vG29kL+to1BqhnkMM3DMXjdU2ZAciT/LCSD0VLZDWEozq61ywbFCpyezODSU03m
+         Kkk/vFC9s7jUR6pq1hPf3LAr2gglrdfXwlf0UBS16szLsb/kMNw6sAgVJBVF5FoCHK3c
+         e4Dlxzc3xo4jhjmYz54ZmjwljWdxKAiXXmC2ELUDUAqQgoXViO9nvcbufiEa1s8bJLqk
+         m3mBKedmSRvLy1gMbt4vjfTCa4Zi2qaf7MckIXGPr88zsDZSSbwX8rf0Xpd476RDgi0m
+         2rN4QY/FCT8iWX5z1XJ2lvmMoPzWNwwS0QlHyjRUImXVKIZpt6rUkIuOxhPHXx5GMmJR
+         ltZA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1699363293; x=1699968093;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=g+ZGwdfOpQ5bFXzc3cVBNoStzv4X2p/HawoSIM5mxTM=;
+        b=YdIxp69dpTnWKxmniPwyQe2qglkr5MRtO5xVlGoN+BU3hMP5d2T/wtArz5uXRDSO16
+         Cf5YCfvMlYmlJN65iOn78eyen1ya9Er6KB90i1x7FF4YoxG1js/CuSakRV5aU9DzZzgD
+         1UbwkS/12cl/+pIJFr7hLdwSYqAybHA5J1+m5/cO8suefvqPz4MeGtY3zjQUtDXwVJmH
+         GlqWh6poEt1TPPEGPrLoN4O5LjQKtxQIWGBDgXQVr7vIwUdxOcJMuFIW845/i92JcRCq
+         FOOYAKfZSSN71CIS4PjDiUZi6mQH2LZoRj7tIhkR6PVAhsyhSuPbRG7mMbIk/BElk91s
+         HjQw==
+X-Gm-Message-State: AOJu0YzPaF6DsKPX9uDibj9n3Juc4I4zSKO1Z3+tL4nvfDbh+8FiNAoh
+	J6G1BoLC1a5d9W/5qSzDzThJgZC69vu7JpEZs3s=
+X-Google-Smtp-Source: AGHT+IFFkdvAf2a8Vd+r4xjNAYj8HQoKjk18Wpov7uF1L3wuL5trrqNo2XVwjTLVqCVI0AIitvckpA==
+X-Received: by 2002:a05:6214:1d0d:b0:671:cc80:c59d with SMTP id e13-20020a0562141d0d00b00671cc80c59dmr33933572qvd.0.1699363292942;
+        Tue, 07 Nov 2023 05:21:32 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-68-26-201.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.26.201])
+        by smtp.gmail.com with ESMTPSA id mx1-20020a0562142e0100b0066d0ab215b5sm4380612qvb.13.2023.11.07.05.21.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Nov 2023 05:21:32 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1r0M1L-001Vg5-Je;
+	Tue, 07 Nov 2023 09:21:31 -0400
+Date: Tue, 7 Nov 2023 09:21:31 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
 To: Vasant Hegde <vasant.hegde@amd.com>
-Cc: iommu@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com
-Subject: Re: [PATCH v1 09/13] iommu/amd: Refactor domain flush global function
-Message-ID: <20231107131122.GM4488@nvidia.com>
-References: <20231006101624.5912-1-vasant.hegde@amd.com>
- <20231006101624.5912-10-vasant.hegde@amd.com>
- <20231105175228.GI223197@nvidia.com>
- <e4f69ac2-579a-ab71-653f-81af3c3bb3fb@amd.com>
- <20231106130139.GF4488@nvidia.com>
- <219f8020-68c5-358d-b101-db1f84468db1@amd.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <219f8020-68c5-358d-b101-db1f84468db1@amd.com>
-X-ClientProxiedBy: MN2PR16CA0030.namprd16.prod.outlook.com
- (2603:10b6:208:134::43) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+Cc: iommu@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com,
+	wei.huang2@amd.com, jsnitsel@redhat.com
+Subject: Re: [PATCH v3 06/13] iommu/amd: Introduce per-device domain ID to
+ workaround potential TLB aliasing issue
+Message-ID: <20231107132131.GX4634@ziepe.ca>
+References: <20231013151652.6008-1-vasant.hegde@amd.com>
+ <20231013151652.6008-7-vasant.hegde@amd.com>
+ <20231105181604.GH4634@ziepe.ca>
+ <a4855a3e-02f5-2ebe-f8c7-92137421418e@amd.com>
+ <20231106133644.GJ4634@ziepe.ca>
+ <2318eb1e-e62f-7e48-fa43-1d75331a75d9@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|IA0PR12MB8326:EE_
-X-MS-Office365-Filtering-Correlation-Id: 21e8f051-d295-46c8-83b3-08dbdf930abb
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	wJiISBi1jjCOYLPFsH65wAYUvI0Cledp3L5arAy58a82hndhj2jfqsrqb5VKIP7VaWPRX1GA0nysMo+eACPZ0xlKm4NldJc7DGpBJLv5dhDcBU+d86BfVyfeM7so7Pdxn9Gt/N0kvfF7gVyshpKD0Kn6jhDY40la3tx+2fI+4PBLPk4FHmUb0LOZhV8o2dYT3s4f/hrQ5inuwEzZ9ef/BVbUNnKTCZ9cyg6GNp0dWdQusDaoi14uemeJ6w/RnwKGvNDEzInmTrxm/zyFpvQrkpfEgic1NTOY19+/Tt6BQtxflaFYZFWbWmxFN9rC5i8bbGXdzqtF8YU441r6/MlY02zYZWUv+E0NasLUGQrlV8FhHRtHn/ZlxXeXdlPWyZ++xXa06AqMxNn/F+BECqypo+wXRMQYnhVC2pv+uvX7JWOlr8DBmHsnn99CbGQvPm/tUGytge6YvStVS3HaeuMwUg4I6SqNNRna1uxAHmZ+JiQ+fHqUQ04QFf7TJ/a8zQFvW4skSaqRxXA2rwggq9843YpPxAPkLD+hwr2sRufn9gnxBv+m/wHvfqEf60p+8KCq
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(39860400002)(396003)(366004)(136003)(376002)(346002)(230922051799003)(64100799003)(186009)(451199024)(1800799009)(6512007)(2616005)(6486002)(6506007)(478600001)(38100700002)(36756003)(86362001)(33656002)(5660300002)(66556008)(66476007)(66946007)(83380400001)(2906002)(41300700001)(1076003)(26005)(6916009)(316002)(8936002)(8676002)(4326008);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?OlFRz7I7kXLuvIqTORI+LHhhCdKNLa6/rSC6Am2LxlwrEbMzJENqeq9U2yZC?=
- =?us-ascii?Q?7v91Zd5R8hBWY6UdDWzgP/HTKFW4XISSezmQ1XR/EC52KTxuxdO8Q3gALyoY?=
- =?us-ascii?Q?1w476U6gH2u4488F0pRQ1aXcxlKZNEG7ZRnHB/8Jhp1TG0/23reCkGV5yqhQ?=
- =?us-ascii?Q?dsYzagIDNyTDqo3XNkqjK45SWR+VunxnOIO+VIoFPwc7lyk9HYJ4sr1q9H0A?=
- =?us-ascii?Q?p8iefzvJ2KFIHD8XEMsOr2q31/69pwSFjWkyVD+Qh2MJYiLYRISuC+z1CgUi?=
- =?us-ascii?Q?d6robsJBlTP7knEuH6oVVAovaL63XDl1pns+4V3ck7NBc5urN1wjts+9leh2?=
- =?us-ascii?Q?ZginRJAixC7NpCzlw1XJ6yk7b1sJTluIExfMKNZpEmL7uy+ZdbvOyU14MKGl?=
- =?us-ascii?Q?k7YtClrmVdWFxLNI2qr7h9Bd50pl8WEHj2Kem/m+b1UeNM4P3C1KzFugdtC0?=
- =?us-ascii?Q?M43hl9gADg9agm1Cvw7kVwQzSUNIZaXFcYGhOy2SSD44HLHSgy6a6uL0DpGS?=
- =?us-ascii?Q?WZiCoFajE70jjXqKS08nuS36nKVh5huMtxf2i3T+rQ+5x48t5OA6RLO53U11?=
- =?us-ascii?Q?cdRqs3tzKt9f4xJ2Zdx6CJGRZiPeEMdEVewMN3H7aRvOPMUaDA1R6d7oPB3O?=
- =?us-ascii?Q?D0B0kk1ge6oGXG8eReKo5tU50VVvSpvBF0CESRVgHpypGglu5TdBreOojPAm?=
- =?us-ascii?Q?jKXrcR1tyNlSH5MdjELDpfVzpiDOZUK0plbuhgqEPe7AG4feVwByokXHsb6v?=
- =?us-ascii?Q?kvS39WkjKET673SHOeNEWruqb7UvDV1zEGeVnWo74L+yfK8z5YeF7eRH+4Lj?=
- =?us-ascii?Q?Ktk3EsbNNGpxKI72rN7+nf6nVgCmoSN4cV064cf3a1VZdrs3fDwz8HTIqJ0V?=
- =?us-ascii?Q?ZNvFz4clchTE3gvu1st+W3nt1uqtMPvDqDzYVFukmU6jMdhJtBa9ioo2BEW+?=
- =?us-ascii?Q?xyaLz9Bd1ziEC8AuUrJvzoTsDS+y4+45G/5l2tPwEtMBreVfNmeQCNYV2kDJ?=
- =?us-ascii?Q?3w4fAiuRV9Dd+OVk0r3KUSMQeBmcuMhHl+dXiekRlm6eYLOicoi8UKhFJb3b?=
- =?us-ascii?Q?XKVehb7R4XDU6cNkZGIRi5PDnYAdX0sjW0iZBq2iWBsoyygzJRSL4rX9ex3p?=
- =?us-ascii?Q?PVBVS0NEoji+RdI+OGjd/M4nX50x2RvM7VpEACGg3HP+e89XEhj/uOQH1OhM?=
- =?us-ascii?Q?QxuDdeBnqOlk7I0jp6MwUIkvCZtoEhhPaGiCi8+2vgrRVpuej7GVXEKywToy?=
- =?us-ascii?Q?/hUfZATwMqd4GxUVniiRGAMS5yeujwVS+nckjnjam2uoSvI2ywy9odw0SmND?=
- =?us-ascii?Q?XDiuwTB/ip22rXLZXJTdeb9n6RlW1qFx7aMQ9mXzAdHOSlIOg6qQxcpxv0i3?=
- =?us-ascii?Q?tu6R7rja4+E1vE24nRi+1jx1b641NiOJqEpnKrKLw2mQYib7xi7sKZOsA4i3?=
- =?us-ascii?Q?MiZKtVTi1Naw7LYqDu5G6BUHSa8zCjRfcHCLqnu0kEqd1Bk5z3JJyR0jFQzA?=
- =?us-ascii?Q?Mcd4e3urtkamGnWxHLs0qnRKiaZ9GoP3jUfnghb8wf9jHrHWYKon3kkSgADs?=
- =?us-ascii?Q?zm2Z425IBtaJyYD+WWOMFVIxGIb4XQqemp6gfscj?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 21e8f051-d295-46c8-83b3-08dbdf930abb
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Nov 2023 13:11:23.7232
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: RHu6lH9VwlkwQ1gP6FUcQj0ge2WY+vIsyfSNYyo0xQECGPM8xiBAJKnxCDYpFlXt
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB8326
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2318eb1e-e62f-7e48-fa43-1d75331a75d9@amd.com>
 
-On Tue, Nov 07, 2023 at 10:23:16AM +0530, Vasant Hegde wrote:
-> >>>> @@ -1859,7 +1867,7 @@ static void do_detach(struct iommu_dev_data *dev_data)
-> >>>>  	device_flush_dte(dev_data);
-> >>>>  
-> >>>>  	/* Flush IOTLB and wait for the flushes to finish */
-> >>>> -	amd_iommu_domain_flush_tlb_pde(domain);
-> >>>> +	amd_iommu_domain_flush_all(domain);
-> >>>
-> >>> This is weird.. The cache tag for a domain shouldn't necessarily be
-> >>> flushed from the iotlb when a domain is removed from a dte, should it?
-> >>
-> >> In this path we need to flush IOMMU cache along with device IOTLB.
-> > 
-> > The iommu cache only needs to be flushed if the IOPTEs associated with
-> > the cache tag change, and that doesn't happen during "detach".
-> > 
-> > Some of this is confusing because we've largely removed the word
-> > 'detach' from the iommu language, we now just have attach, eg replace.
+On Tue, Nov 07, 2023 at 11:00:18AM +0530, Vasant Hegde wrote:
 > 
-> But we still need detach() function inside our driver so that we can safely
-> remove it from current domain and attach it to new domain.
+> 
+> On 11/6/2023 7:06 PM, Jason Gunthorpe wrote:
+> > On Mon, Nov 06, 2023 at 06:09:47PM +0530, Vasant Hegde wrote:
+> > 
+> >>> I think this driver really suffers from not having the right
+> >>> data structures to handle everything cleanly.
+> >>>
+> >>> In smmuv3 I added a 'master_domain' structure that linked the PCI
+> >>> device to the iommu_domain. ie when attach is done you'd create a new
+> >>> master_domain that essentially stores the parameters required to do
+> >>> invalidation.
+> >>>
+> >>> For what is going on here I would say to do that an then put the
+> >>> "domain id" inside the "master_domain". Decide when the domain is
+> >>> attached if the domain id should by taken from the iommu_domain
+> >>> (device does not support PASID) or from the device (device does
+> >>> support PASID)
+> >>
+> >> We still have single domain concept (at least until we introduce
+> >> vIOMMU). All we are changing is how we allocate domain ID.
+> >>
+> >> Having another domain for each device just to keep invalidation info is
+> >> complicates things. Also IMO its unnecessary.
+> > 
+> > It is not another domain, it is cleaning up the mess of keeping track
+> > of what caches need to be invalidated for a single domain.
+> > 
+> > Today we have this:
+> > 
+> > struct protection_domain {
+> > 	struct list_head dev_list; /* List of all devices in this domain */
+> > 	unsigned dev_iommu[MAX_IOMMUS]; /* per-IOMMU reference count */
+> > 
+> > (and I'm sorry, but using a global array of iommus and this dev_iommu
+> > thing is an insane design)
+> 
+> Devices behind different IOMMU can be attached to same domain (like VFIO case).
+> We do need to track the IOMMUs and as part of invalidation we have a requirement
+> to send `completion` command to each IOMMU. So this links domain to IOMMUs.
 
-No, you don't. It is like that today, but it is a functional bug that
-it works like this. The driver can't meet the core API expectations
-with this design. Review the smmuv3 series I sent to undertand this
-fully.
+I understand how it works.
 
-Please try to organize things so we are moving toward a direction of
-correctness and not gaining more problems.
+> Array is not a best thing here. I have it in my TODO list to change this to
+> xarray or something. But that's after SVA series as we are already making too
+> many changes to fundamental data structure in this series.
+
+'unsigned dev_iommu' is the problem not the array.
+ 
+> > Now this adds a new concept domain_id_is_per_dev(), and it still
+> > doesn't support PASID properly!
+> > 
+> > Instead write it like this:
+> > 
+> > struct attachment {
+> >     struct list_head attachments_item;
+> >     struct amd_iommu *iommu;
+> >     struct iommu_dev_data *device;
+> >     ioasid_t pasid
+> > }
+> > 
+> > struct protection_domain {
+> >     struct list_head attachments;
+> > 
+> > 
+> > Where every ops->attach_dev allocates a new struct attachment and
+> > threads it on the liked list of the protection_domain.
+> 
+> 
+> We support PASID only in V2 page table mode. V1 does not have PASID stuff. So we
+> just have list of devices in the domain. Then each device has PASID table (that
+> what this series does).
+
+Doesn't matter, v1 uses the dev_iommu and the point is to consolidate
+alll of this.
+
+> Also as mentioned above we have the requirement of `completion wait` call for
+> each IOMMU. Hence we track the IOMMU list. Having it per device like above
+> increases completion wait calls which is not good. IMO above changes
+> unnecessarily complicates stuff.
+
+It is not per device, it is still done per-iommu. I wrote:
+
+    list_for_each_iommu(elm, domain->attachments)
+        build_cmd_v1_invalidation(&cmd, domain->cache_tag,  ...);
+        iommu_queue_command(elm->iommu, &cmd);
+
+Which is the same work as iterating over protection_domain->dev_iommu,
+the iommus are extracted from the device list which is needed anyhow
+for ATS, PASID, and V2. So just use it everywhere.
+
+> > Then the invalidation logic become completely straightforward, no
+> > confusing mess:
+> > 
+> > invalidate_iotlb_v1:
+> >    list_for_each_iommu(elm, domain->attachments)
+> >        build_cmd_v1_invalidation(&cmd, domain->cache_tag,  ...);
+> >        iommu_queue_command(elm->iommu, &cmd);
+> 
+> Ours is domain based invalidation. So our flushing logic is
+
+> 	Flush IOMMU TLB for each IOMMUs
+> 	If device has ATS
+> 		Flush device IOTLB
+> 
+> 	For each IOMMU (dev_iommu list)
+> 		call completion wait
+
+This is what I wrote.
+
+> > invalidate_iotlb_v2:
+> >    list_for_each_iommu(elm, domain->attachments)
+> >        build_cmd_v2_invalidation(&cmd, device->gcr3_cache_tag, elm->pasid, ...);
+> >        iommu_queue_command(elm->iommu, &cmd);
+> 
+> From driver point of view, fundamentally V2 invalidation is not too different as
+> we have single invalidation command. All we need is few extra param to tell its
+> guest page table invalidation with PASID.
+
+From a SW perspective it is totally different because V1 invalidates a
+single domain id per IOMMU and V2 invalidates a domain_id&PASID for
+every device.
+
+> > invalidate_ats:
+> >    list_for_each(elm, domain->attachments)
+> >        if (!elm->device->ats enabled)
+> >              continue
+> >        build_cmd_atc_invalidation(&cmd, elm->device, elm->pasid, ...);
+> >        iommu_queue_command(elm->iommu, &cmd);
+> 
+> 
+> Driver already does this.
+
+The SVA series had code like this, I'm saying you need to generalize
+it.
+
+> > Where list_for_each_iommu de-duplicates the iommus from the sorted
+> > list, Michael had a series that showed how to do this for SMMU.
+> > 
+> > Basically you precalculate exactly the invalidations required and
+> > store it in a list associated with the domain. When it is time to do
+> > an invalidation then you just walk the list and do exactly what it
+> > says.
+> 
+> I think we have most things already in protection domain. Only extra check we
+> have is checking `pdom->dev_iommu[i]` which will be fixed separately.
+
+You have it but it is not structured in a logical way, that is why
+this series has introduced nonsensical things like a PASID for a
+domain, encoding the V1/v2 state ina PASID/etc, and then did a half
+version of this list anyway to make SVA work.
+
+Bring the list from the SVA series into this series, use it
+consistently, remove the weird stuff and then it will make sense.
+
+Do not have a list *and* a bunch of weird stuff, that is moving
+further away from what it needs to look like..
 
 Jason
