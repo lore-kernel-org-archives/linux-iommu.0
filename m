@@ -1,56 +1,56 @@
 Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0C2E220E7
-	for <iommu@lists.linux.dev>; Tue,  7 Nov 2023 05:30:37 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 08E091FD2
+	for <iommu@lists.linux.dev>; Tue,  7 Nov 2023 05:55:59 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="jRbXlZqM"
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="RcTmPUxa"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=YUBey/Yx8ukVOfkOGJ4+imDqNABzxO4x8GTPCz9e8VSoWJmZXTDC0IgvhpcT+oEgTPq9wEwlle4+ujxpFMVdjdfTpW0DKbMq5RC8SBW+UD+jbpDztCrdKzzc3GP11R+5njluOhI6XRGmyK8wtOrfwiMDY0HHfVAToRmuZDqxL/HGV4ks93IaSzdGAiOLfn6eD2ExhSiRw2kMoj0fgWIb4HTJgczMoFbQE/NLcobwt4rUiETQYCLF0NT/vicspE/3oo/ZkN2hsFNhWjKv1NTa4ejtm/nZdOqiohRGOQH6/sswwrWutLzysTqszx2uy67fIwL4PQPJB3ERfNGJoVi++g==
+ b=awGExvEuP+g16O1DCD9AEgkMHRKhP+qHOYAswJtNlRK5vgfQST0gWkjNeL3HyhDaXUbLzgcOYFt2cDAe4Tb4m9sQX7Y1Wj9upVXYDWndRhZw2ijdigxqjpRyb5CnqISw8mg4uCzPCtL4+SHdlxEGDrbZReWNA6mb0AAp2rsi/BxwLqcOxISWs3YQT7EMxS9m2tc+J7AXqv4hse0658ZLrhF17P5nUvfCzMr1LixYvN1nvz+D2itp8MfU+1RcTIzXP/VWDdZbY4PRksuHo2rD0Dnr/BqHva/GP556kRPuDw21oLBLGnlwdJdbKJFg/Of8aAMt0kUwlUQ9Bd8qYigF7Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=0jwAyKKAnuo9LFMkWsxYPDQCy3qKgWmGSlYuYxvcxfI=;
- b=nkd0j5ej6svVP1pkSnL/YznsPFf/kpuiYgBmQsrlb8FOXP8PPFa66GoKjxqInOfguMrAnpeS3LzmeTIeM9xEzIMRcGCh54Vt+qMKTi4VFpb6VtSTlIKpFMdMovA4J8fo8xMjjUu7r9HDyFST1IngdOsqNSvqC8qwj8VeuYnRuELeulSRRGi/9lBwW6py0NvsgNnloUeWj5Ai4/HpSVVhW+pJNTN3Uf0wBmNaZuhAvQPhgihO89iOPGYDvSCmxXPzw3l85hqwm7VtjqqSvdqP3nW1xIg9qFKd9tYY/HXd8Ba10E0TGjHz610FNtNBOfJfqtbKqJ68P4BkNiqBvKGD3g==
+ bh=tdY/kJ5sU/QQpvj0FqBqEllPBuZszLEs+9pWpE5GJfw=;
+ b=PI5Y34CuRm4yVaywagjl9l3kFD//gAqukEZnBnxHpt1m+Hnt862tT/qL6gmE6PokE6gLuYFxC/fY3JByDZ9LJ4Gue3yfDC3voMFELNj00+H/UhvjlX9gaZ75GqVG7zHXKuLD1wsLSNu8vj09+Jzpsr1IJdUTlxGZCQ9ppd2CmczZvV998YAZq4+CFjuNG/+kkQOydWW4OdUyUJSn6U2qSC4f9Dykcgs9JMJqBD/9lWFqPI1SDQHPHCG6wZzuSlN0i9bImFzxXn12bmknXF+ygFRsXFPUdUb+5GDteAJeCvon31M1ZPlLK9ESoamXmjgQxjWmidln3JLRdoUS68+qWw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
  header.d=amd.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0jwAyKKAnuo9LFMkWsxYPDQCy3qKgWmGSlYuYxvcxfI=;
- b=jRbXlZqMBXHrhxqxFKcagYL2P222jkrrJIuVj+szKuKECrFaHq245pAsaGSg3FbLMTr16HqMBDhN2pK0rnQBxmIYl13yRxz/oKFCMn/VU2TptMYcPoM72qZcoMyOSEC3eiOR18aM2kiYGaMXK3v26DA+ZxP724br+3JlxZANqoE=
+ bh=tdY/kJ5sU/QQpvj0FqBqEllPBuZszLEs+9pWpE5GJfw=;
+ b=RcTmPUxa5+H3tgGKzLRTvVctK++9yn+KTithm+qaMy8kfYJzN1B2hRQ/qvbgRee1qqKZj9mN4W6H9ZR1G5sUj4MJ/snIxkMX8w8if4uMxxPbc+xoT5Ka/MLvy+yPjosaCG4986qUnfIhToqXV37DaVNHERjCLPNXEWwnkPfw5Og=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=amd.com;
 Received: from DS7PR12MB6048.namprd12.prod.outlook.com (2603:10b6:8:9f::5) by
- CH0PR12MB5347.namprd12.prod.outlook.com (2603:10b6:610:d6::18) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6954.28; Tue, 7 Nov 2023 05:30:27 +0000
+ SN7PR12MB7274.namprd12.prod.outlook.com (2603:10b6:806:2ad::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6954.27; Tue, 7 Nov
+ 2023 05:55:57 +0000
 Received: from DS7PR12MB6048.namprd12.prod.outlook.com
  ([fe80::befc:daea:28e6:32af]) by DS7PR12MB6048.namprd12.prod.outlook.com
  ([fe80::befc:daea:28e6:32af%3]) with mapi id 15.20.6954.029; Tue, 7 Nov 2023
- 05:30:27 +0000
-Message-ID: <2318eb1e-e62f-7e48-fa43-1d75331a75d9@amd.com>
-Date: Tue, 7 Nov 2023 11:00:18 +0530
+ 05:55:57 +0000
+Message-ID: <f23aaa41-b22e-b274-5774-6317ba643e8a@amd.com>
+Date: Tue, 7 Nov 2023 11:25:49 +0530
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
  Thunderbird/91.8.1
-Subject: Re: [PATCH v3 06/13] iommu/amd: Introduce per-device domain ID to
- workaround potential TLB aliasing issue
+Subject: Re: [PATCH v3 10/13] iommu/amd: Refactor helper function for
+ attaching / detaching device
 Content-Language: en-US
 To: Jason Gunthorpe <jgg@ziepe.ca>
 Cc: iommu@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com,
  wei.huang2@amd.com, jsnitsel@redhat.com
 References: <20231013151652.6008-1-vasant.hegde@amd.com>
- <20231013151652.6008-7-vasant.hegde@amd.com> <20231105181604.GH4634@ziepe.ca>
- <a4855a3e-02f5-2ebe-f8c7-92137421418e@amd.com>
- <20231106133644.GJ4634@ziepe.ca>
+ <20231013151652.6008-11-vasant.hegde@amd.com>
+ <20231106172931.GM4634@ziepe.ca>
 From: Vasant Hegde <vasant.hegde@amd.com>
-In-Reply-To: <20231106133644.GJ4634@ziepe.ca>
+In-Reply-To: <20231106172931.GM4634@ziepe.ca>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: PN3PR01CA0158.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:c01:c8::11) To DS7PR12MB6048.namprd12.prod.outlook.com
+X-ClientProxiedBy: PN3PR01CA0022.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:c01:97::23) To DS7PR12MB6048.namprd12.prod.outlook.com
  (2603:10b6:8:9f::5)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -59,191 +59,189 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS7PR12MB6048:EE_|CH0PR12MB5347:EE_
-X-MS-Office365-Filtering-Correlation-Id: 0c856f34-807b-46d0-8fcf-08dbdf52a5ed
+X-MS-TrafficTypeDiagnostic: DS7PR12MB6048:EE_|SN7PR12MB7274:EE_
+X-MS-Office365-Filtering-Correlation-Id: a38e9906-0fc4-465a-5a6c-08dbdf5635ec
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	g/wt9MHkfE8KJeHyfYfllSfAb0JHHb4HUwoRnklvBbY6ur3rKCwN8HCCiFmIxmk9mUxS9erfuGppUwAv/b2MDPC3RdpElLc74tGVa7w0E61MPfiPlcdcVGkuib+1/BcHsMIwP7iZpg4NEVTnXRvGmoKau0d/63sFIiNKWq6ggnvd6JO2uBXglz7nCoyXTvr2ZHihaWvEI4pTIORDyAoVsTnKJI9TSUJih7HVIjkNuXywGKRVVgMqtmVwztoPxZlQQ07W9i3CUFg6/nSUOjvZBhcbdlpmQNLLde2KROE/7VwdRRx/wstOkNU6TM0107FDhZet2WzgjG1YG3fEVYpHGda3HM0KGoGSET3pAQv5/bu8MsNclanUMdxn2/YDUxJHssGJEeVbf5BbZKreiS9nqMaYBB5UayxN4FLLoWbt6lOKRzIySruSOaXIKLY7X0SI5BSsGhV2uMPK4yCaWT6vsqMi9AcYW+2PWb7LYFSB9EUowqj9gLWrA24GrlJSQb6Y7+AOKjdZ3ndcPVT4e9E/Dcvd7/lWmGO4BjXxB4rwiF6HV/Ctp0A+L/eMjog5SQEBlNeRej2YIdCyUzTns60yxpqbpWUIkg4w1GENyrEqSKVORGkI86lH4oNORWy6W0f+8koYy49WXrh29r9FpidF0g==
+	BX0vWDU607pGcsGf+C/IJ0LxZgsTWmVZwA/DeP5w3cPrNGp7kKwQ3SxTHkf49JLM1xN46hFV7Faq68srv5HSZbLQsm0OpJ3y2JIomBRKHOm6M81VlQgabWPGvN9TUBHGtLSc+2l4USDxevc6TOk47bSwU1SoLNrqgrhUUDIGbCcD65zKD/QIxLtPkUzknVnwaoyH39estmTjv+YTTs/9OJsU81ZuYfsAKQJmvpJgiQVOH8s/vRemU1jr/+hPkqQZwZOnC2z4DDgmtXHYfq2lo4cLImdYrWWOfH2oGS+cS6Y3I9fefVLfg8oWO8Tu+y/iXOEKx37xx6kSSlmC9qHYOAeBUyhOqcS0/1UKAVCjeZLH38nz9bOE2QdLx8lilzbuDhaBKRKa1Px73TpvQzs9DjyhCShtsu5WaTVtqutX8TS8ALq2UUHXlfXF8JQOEZOyBsTd1/Y1PBZIfC/uWIEAAWixKBbd4gDJFP1u1yXUdSO7+4VNg1EEeDJMWy9jsyAgsebUoWsm30kbEI/gFdwlwICbK/DicAurDcPFMRNS2j9Hral2W5BCqtYsHeq8Qv7QpOv0vL00QMZvTP/SAMvmzwXLIhNbi7Yllma13QSV3SJt6UhUOPvn63JiKhLbR9ZfjkOVkqvpqjJQaW4T4pEpeA==
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6048.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(376002)(366004)(396003)(39860400002)(346002)(136003)(230922051799003)(64100799003)(451199024)(186009)(1800799009)(2906002)(38100700002)(31686004)(4326008)(8676002)(41300700001)(83380400001)(5660300002)(86362001)(31696002)(44832011)(6512007)(8936002)(2616005)(66946007)(316002)(66556008)(66476007)(6916009)(6506007)(53546011)(6666004)(6486002)(26005)(478600001)(36756003)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6048.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(39860400002)(396003)(376002)(346002)(366004)(136003)(230922051799003)(451199024)(64100799003)(1800799009)(186009)(38100700002)(6666004)(6506007)(53546011)(83380400001)(31686004)(6512007)(4326008)(2616005)(36756003)(2906002)(41300700001)(86362001)(31696002)(5660300002)(6486002)(8936002)(6916009)(66476007)(66556008)(66946007)(44832011)(316002)(26005)(478600001)(8676002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?U3BKbmZ4UXRQQ09lL0crakpyRkMyeXUxalpQbmRUcU82bFdDc2UvOVFuVnRP?=
- =?utf-8?B?VXNIM2M0WHhjaENtcHJHcU1iMHRNQmc4SGgzaGpEVlY0WHZGVzZLRTNrWEdS?=
- =?utf-8?B?Y1kvT2J1eVM0QVc0aVN2UlRTUGVKUHZhZmE2bHpPd0ZaekQ5NUEwNUQ2TnJ4?=
- =?utf-8?B?Q2RHUGthNFh1TC9rbXg2aW9ZQTc1S2dQYTNPQXFaODNTMmpJOTVUZU5qb2JV?=
- =?utf-8?B?VVhRbXZmdnBiM056T3dRN0p1TkNDM2h0aGZQT2dMQ3l5VGtleVQxQ29jSjA0?=
- =?utf-8?B?SVlacnhtanl0SEplaXQrTkRyOGo3azc2WkRmMFh2YWplcldyRFVLZ1JweklK?=
- =?utf-8?B?YzJ5dGV6VVNOc3hiMnRGRVQ2SzIxNUZiVEFELzdZSzhhcnJwTTkvMGo4OVhh?=
- =?utf-8?B?YjFtTmorMlVWa2IvaS9OT201WVZyNU8za3lqSUhRK1VkYVdubTJ2L1BiNmlB?=
- =?utf-8?B?ODV0cU9JZEJ4a1pEL2c4RDArbDIzYm56cVBZc3lEK0gycEVRRmJpQnRVdGV4?=
- =?utf-8?B?aDZSN3FXQktITXNFYTVxTWFBQ0RsRUVmdEc5ZVprSXhNT09WVTdBcGkrVkE1?=
- =?utf-8?B?dllndVc1ampoN1MrZUtZVkVPQlBlMjQxQlIrSzg2S1oyTnZhUjd3SmQ0OXE2?=
- =?utf-8?B?YjVuRE9jRFJHMURiM2wzeXYrYWtEQ2Q5OUZ6TGxraHI4b3dTQ0pVcUFkQlNM?=
- =?utf-8?B?d3BWWU0yMGpnVnFwM3FGRjNSY1UzUjExckwxR0VSblZzcDJURXdwaUxjK2c3?=
- =?utf-8?B?WFhPcUs2NFVVck1hbE43a0pyN09HVFdEZllZWmEwOUh0R1ZwSzBHaUcyMmJ4?=
- =?utf-8?B?YktyQnd1QUNWdi82bTdoSlltSjJLMkJ6NXpzUWRmVG1ZRUpuMXkyVzJsOGpK?=
- =?utf-8?B?bXpmcnBZd21JWUhrMkhmVTMzUkhiTVJMTG5ES0Q4ZzFPTVB6WjJtczdJdEQ0?=
- =?utf-8?B?azNoZGIrZ3kzeEh3VHUxRDd5b0xxYlJYT2hZYmozUDNHV0hmQ1cwTklNRFhx?=
- =?utf-8?B?SVQ1c1hSMWoyMzlYb0RyUlhlTmNRZ1dpcmdROWVrQVNDaS9jdE9BUXFCY2Vz?=
- =?utf-8?B?ajROYlFvRk1OODdqcUppMzBlblJVSnNwbzluMG1STmJJQjRuWDFqd0RXODFo?=
- =?utf-8?B?Wk5nSHozWkhKRThnaW9xNG5YSFlQRGVlZkUxbnV6YnQwWitYK0RmWWpGYy9H?=
- =?utf-8?B?Rk5XODJPazJ4cG1OS29RaG1NYjdxSWxHTVo4dStkb2lnWitQeko0cEg3ZmdO?=
- =?utf-8?B?OFpVSE12a2ZIYWs3enN4Nmh4a1dzODJ6ekthd29oSTN3bkNWc3NOYm9pV0R4?=
- =?utf-8?B?cTNJcm50Nm1NaW1WM2locWlVdS9ORmlrRitLZ1h6Smh0S1ZpMjAzdWR4Unpw?=
- =?utf-8?B?OFUvak9EM3lBSzAvUWpjZHBsNnJNcGVwN1pHSVR6UHAyNTFjZVZQZW5SSFBv?=
- =?utf-8?B?bGM1cXhFS0JaRjNCOUMzdDNpdTBua0JreDVZUCs1ekp6Q3lPNUthZEJub1NP?=
- =?utf-8?B?U1p4VVRPN2JkT1lsNEljVU1vcmE4Vi9TVHlqTjRSMWhzRjNRVmZLN0h0Slhv?=
- =?utf-8?B?Q0J3TnRKK3ZJSkJHN0ExT2xmeTZwdStNZE5MKzUzVExmSVRHSXNLWnNkcWhW?=
- =?utf-8?B?S0NBRGk3NHFqRjJwY3l1VmsvUGh5Y3pxRGJRaGxSUjczWlROdU1Nci9nb084?=
- =?utf-8?B?QnNXQ3FaeDVkSEFWWnNMUUxobEtMRjc0aWo2V0RQQ05Ea21rdlJ4bk5YZHZK?=
- =?utf-8?B?MzZrb2VqQ05XUkVIamhCMDZjS3ZzN1QvZENHS1RCZVk2UElJZjJ3TTUwYjdC?=
- =?utf-8?B?VDRGQ250aVZSdWdUY0xoT0QxRE1qQWVyaFNrOTc5LzhHYUs1eXMxSUFyUUNk?=
- =?utf-8?B?Wm9nbkVWK2hrS0lOaE9LdG1JTEdxQzJ6ZGhsYjRSRmlBQ0kxRFhYQlJxTHJP?=
- =?utf-8?B?bStHRldrN05OVmRvQ3l0ZGpEZ1VYekpaZFRvcUMrSml2dFNHZWF3QmFiMWsw?=
- =?utf-8?B?b3R5V3JuUThNMzFqQkdRb3dDMU52YW9xVTBwaFBJSU9wenRhQmdJR3ZnNk9P?=
- =?utf-8?B?eEJlbU1uVnZ5RHBYL0xCcGo3MEN5dkkvcjA2VWtIU1hoSnM3Y0ZicnQxa3l2?=
- =?utf-8?Q?5vo36e0UQu+GCVkHM1xpOgCvV?=
+	=?utf-8?B?VnFrSDFWUkk0NHpXdTh4bGtvUFlOTmt1cmpxRmVrOFU3QUFLWWhXY0VySEVV?=
+ =?utf-8?B?VG1rdFVZN3Y5dExuc1hUalBvMGVjYWk3czAvTU9xcGUvbGxtV1Z1M25qQVdz?=
+ =?utf-8?B?aEFGZjBrdXZTZG5XNENzV0dWb0VFSXFyV2lMRVc1QjBUbm5BSGdwYU5QTUJ0?=
+ =?utf-8?B?UkNPYWIxT2lINlhVckFSUkUyeG10cmNqV3NBbGxoejFDRy94bjJGUnJ3VWg4?=
+ =?utf-8?B?Zk44TXlDV3RUckZUcWI4M0JMcnIyckYzNnNrUUFKV09NUmtUdUp4b1JCN3ht?=
+ =?utf-8?B?U0dtYzNWZjlWMngzTFlVc3hSTlFXd3lMenBQMmovQm5wRFNuYjVmU213MnBJ?=
+ =?utf-8?B?YkpSck1lOFVHWU9CMGRndmYzVzgxeUl1Smw3MTFwVWRVOFFMMUQrZGtuV0Iy?=
+ =?utf-8?B?THZtT0JjUndMeGtwOVlkSjlramZQNVNTejFtUUtuYXoxMkRrVXJ0ZElaVUxn?=
+ =?utf-8?B?Vjg5VER4TWt1WnUzaW9uRkRMc2dmSDBWekJGY1NoVWlWd3kyRVp6SlpmZzRl?=
+ =?utf-8?B?NStKbWRGOVN4YU1VMWN1dDh0Vk5FSHZLWXdVa1pYZWpzaU1UTng4Qk1uakls?=
+ =?utf-8?B?V3FoYUZMVlBtSk93THVSNUdpdzd5eG1GZzRlRzlsS2R1c3YyaTZrU3VNcFRT?=
+ =?utf-8?B?d1dNdkxqVUlrWXlUZjY3QWswWnFCRlZaYTJ0S3Nsc1JNcTZvWWdIOW1mcUQv?=
+ =?utf-8?B?Vm9rRS9YUWdXSHk2YTBWYm5uR2t3dS9OdGhoMGVqV242dDE1TjIzNk1DV3Vp?=
+ =?utf-8?B?a2UrNFVYRkwveHFHRWh2aTNialVuTk5iSS81OTVwb3JRUThZdFk1em5zZHBN?=
+ =?utf-8?B?YktMTWVvd25tQlZGOGZpYzIybUZDYXhmZm8xR2hkcmdCNzhJV3BadHFSZWNh?=
+ =?utf-8?B?THJuWUFxMTdrSGhGaURnalVvdll6MytoVTlqWXV6cWlQT3RFVis4bWVVbnJi?=
+ =?utf-8?B?TERud21zWUEvR1JLYnBodncvUEhEMEd4eGsyRittR245V2ZPbkQxZE9lb2JK?=
+ =?utf-8?B?NmtEYjdrY3Z0cHFuN1ppSElPald4NzdlSVAvenhsWUpaKy83YWxVS1lVd2Q1?=
+ =?utf-8?B?YzVYbXQ3VXI5Nkh3WVFLTXBxQW5tRGdlMlB6RWIwKzRtL1U4QTJMT21CSWZ3?=
+ =?utf-8?B?YXdPcTdPYTE4eE1ERkZTZktGNXhrK2VrOXRGMkJQbFVxV3lBTm04UnhUeXdi?=
+ =?utf-8?B?UjNSd1gwWjhxWmhhb045Ky9JSVkxVzlNeGZzbmswVkd6aGpTSW15U0lTS05t?=
+ =?utf-8?B?ZHQzYk9GbUNveWZmeVVpanl0b1crbWNoejVRblVDNTY3NXZiV2FnYk0rM1Fk?=
+ =?utf-8?B?MFIycGtucG9qVFRsTFA2dTd1Rk81V3QvSHZQa1F5dVBvdTNwOWFYdXBHOVpp?=
+ =?utf-8?B?ckNXQk5TaDVyV3dvam9ldEQ3TW43Rks3T1ZhNi9Da1hlQzBzWHZ5UDNGdWpF?=
+ =?utf-8?B?OXZxRVB0SVJzWUNzdVJ1OTkvL204dSs1UHE4VkhRdTZTWVZPdXhkL2VIOXE0?=
+ =?utf-8?B?aWJmd2piRm9aL1FBSXhEVDkvNFZDZERGRWk0dm8rUURXVDlKdE9VcTZ0Tkti?=
+ =?utf-8?B?Q093cXg3V21XSlNWVnA3NUZJdWRHbFI1Zkc4Q0dhaFVJZXhBc1RBczdpaVVU?=
+ =?utf-8?B?b2FDaG9XcENBWUp2b3dIdW1kZGMzNlV6QllqRkJOcm5JU0FabE9YaTgxV2cr?=
+ =?utf-8?B?UnpQOTNVS2pUNW1pSHRtcExuRWRmUVFIcVZwZk81U1ZUUHBDWVg3L2JRYlQv?=
+ =?utf-8?B?YVVDTW1aRWI5c2hkZ01oaXVuRHdpeXlZU2hwcXM1RTJXNENCc010QkdWZHNv?=
+ =?utf-8?B?eUlYbG1RZmRzMXVCdkRtT2c5WkZMeWdmRU8wbTR2UnpOdk9TM0lnVm9LbjYv?=
+ =?utf-8?B?VmxQTzM3SXB3ZWd6cHNlS245M1lzRmtUMUZRelgzdUFvbTBlekhueHlJUThj?=
+ =?utf-8?B?Z1RkMVJwcFpRTkJCT2Q5M0xCSlpCV3dDWFE2eXhpd2J0eVRlQnEzRnluOE5s?=
+ =?utf-8?B?VVlUdGhSa3ZrRHFrM2o5YnhHWUxiOFRJNTZONDROUEdQTGZJWUY0L2ltWnB5?=
+ =?utf-8?B?SDFvSE5CUUlobzNUM1FSN2w2NzFhTEhWR3p2QnZRelhrL2VOOVVETGxtRFdq?=
+ =?utf-8?Q?ITlhusFP9aKbwtylWtuNhzPcz?=
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0c856f34-807b-46d0-8fcf-08dbdf52a5ed
+X-MS-Exchange-CrossTenant-Network-Message-Id: a38e9906-0fc4-465a-5a6c-08dbdf5635ec
 X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6048.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Nov 2023 05:30:27.0295
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Nov 2023 05:55:57.1041
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: LtxZKK1iGWHyHXVwBceqLhV5mr3hdyJ+BRTN3+S1ydB3MHOIWjApDOIAZARbFECxUYF+xjewfGgyJO4GvxgGPg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR12MB5347
+X-MS-Exchange-CrossTenant-UserPrincipalName: la63t+p3FP7ITSQX1d387M3wCXXLHd54aGcYldv+c6YqDXR16qziVx5p4zI5yhF4ilpquztQC2puEElkHrr6Uw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB7274
 
 
 
-On 11/6/2023 7:06 PM, Jason Gunthorpe wrote:
-> On Mon, Nov 06, 2023 at 06:09:47PM +0530, Vasant Hegde wrote:
-> 
->>> I think this driver really suffers from not having the right
->>> data structures to handle everything cleanly.
->>>
->>> In smmuv3 I added a 'master_domain' structure that linked the PCI
->>> device to the iommu_domain. ie when attach is done you'd create a new
->>> master_domain that essentially stores the parameters required to do
->>> invalidation.
->>>
->>> For what is going on here I would say to do that an then put the
->>> "domain id" inside the "master_domain". Decide when the domain is
->>> attached if the domain id should by taken from the iommu_domain
->>> (device does not support PASID) or from the device (device does
->>> support PASID)
+On 11/6/2023 10:59 PM, Jason Gunthorpe wrote:
+> On Fri, Oct 13, 2023 at 03:16:49PM +0000, Vasant Hegde wrote:
+>> From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 >>
->> We still have single domain concept (at least until we introduce
->> vIOMMU). All we are changing is how we allocate domain ID.
+>> To use the new helper function for setting up GCR3 table.
 >>
->> Having another domain for each device just to keep invalidation info is
->> complicates things. Also IMO its unnecessary.
+>> If system is booted with V2 page table then setup default GCR3 with
+>> domain GCR3 pointer. 
 > 
-> It is not another domain, it is cleaning up the mess of keeping track
-> of what caches need to be invalidated for a single domain.
+> Lets stop talking about "booted with V2 page table" - "If the domain
+> uses the V2 format then setup a GCR3 table in the device to point to it"
 > 
-> Today we have this:
+>> +static int _init_gcr3_tbl(struct iommu_dev_data *dev_data)
+>> +{
+>> +	struct gcr3_tbl_info *gcr3_info = &dev_data->gcr3_info;
+>> +
+>> +	/* By default, GCR3 is set to support non-PASID devices. */
+>> +	gcr3_info->giov = true;
 > 
-> struct protection_domain {
-> 	struct list_head dev_list; /* List of all devices in this domain */
-> 	unsigned dev_iommu[MAX_IOMMUS]; /* per-IOMMU reference count */
-> 
-> (and I'm sorry, but using a global array of iommus and this dev_iommu
-> thing is an insane design)
+> I admit I find it really hard to read the AMD spec here.. In terms of
 
-Devices behind different IOMMU can be attached to same domain (like VFIO case).
-We do need to track the IOMMUs and as part of invalidation we have a requirement
-to send `completion` command to each IOMMU. So this links domain to IOMMUs.
+Sorry. I can't help.
 
-Array is not a best thing here. I have it in my TODO list to change this to
-xarray or something. But that's after SVA series as we are already making too
-many changes to fundamental data structure in this series.
-
+> the SW model what modes are actually supportable by HW?
 > 
-> Now this adds a new concept domain_id_is_per_dev(), and it still
-> doesn't support PASID properly!
-> 
-> Instead write it like this:
-> 
-> struct attachment {
->     struct list_head attachments_item;
->     struct amd_iommu *iommu;
->     struct iommu_dev_data *device;
->     ioasid_t pasid
-> }
-> 
-> struct protection_domain {
->     struct list_head attachments;
-> 
-> 
-> Where every ops->attach_dev allocates a new struct attachment and
-> threads it on the liked list of the protection_domain.
+> No PASIDs being used:
+>  RID domain=IDENTITY - yes [V=0]
 
+That's still valid. DTE[V]=1
 
-We support PASID only in V2 page table mode. V1 does not have PASID stuff. So we
-just have list of devices in the domain. Then each device has PASID table (that
-what this series does).
+>  RID domain=BLOCKED - yes [V=1, TV=1, GV=0, mode == 0]
 
-Also as mentioned above we have the requirement of `completion wait` call for
-each IOMMU. Hence we track the IOMMU list. Having it per device like above
-increases completion wait calls which is not good. IMO above changes
-unnecessarily complicates stuff.
+May be TV=1 is valid here, but I am not too sure. I am yet to explore this one.
+Rest of the flags are fine.
 
-> 
-> Then the invalidation logic become completely straightforward, no
-> confusing mess:
-> 
-> invalidate_iotlb_v1:
->    list_for_each_iommu(elm, domain->attachments)
->        build_cmd_v1_invalidation(&cmd, domain->cache_tag,  ...);
->        iommu_queue_command(elm->iommu, &cmd);
+>  RID domain=v1 - Yes [V=1, TV=1, GV=0, mode != 0]
+>  RID domain=v2 - Yes [V=1, TV=0, GV=1, GIOV=1]
 
-Ours is domain based invalidation. So our flushing logic is
-	Flush IOMMU TLB for each IOMMUs
-	If device has ATS
-		Flush device IOTLB
-
-	For each IOMMU (dev_iommu list)
-		call completion wait
-		
-
-> 
-> invalidate_iotlb_v2:
->    list_for_each_iommu(elm, domain->attachments)
->        build_cmd_v2_invalidation(&cmd, device->gcr3_cache_tag, elm->pasid, ...);
->        iommu_queue_command(elm->iommu, &cmd);
-
-From driver point of view, fundamentally V2 invalidation is not too different as
-we have single invalidation command. All we need is few extra param to tell its
-guest page table invalidation with PASID.
-
+TV=1. Rest of the flags are fine.
 
 
 > 
-> invalidate_ats:
->    list_for_each(elm, domain->attachments)
->        if (!elm->device->ats enabled)
->              continue
->        build_cmd_atc_invalidation(&cmd, elm->device, elm->pasid, ...);
->        iommu_queue_command(elm->iommu, &cmd);
+> Some kind of PASID in use:
+>  RID domain=v2 & PASID - Yes [V=1, TV=0, GV=1, GIOV=1]
 
+Correct.
 
-Driver already does this.
+>  RID domain=V1 & PASID - No??
+
+Correct. No PASID support.
+
+>  RID domain=IDENTITY & PASID - ?? [V=1, TV=1 GV=1, mode=0, GIOV=0] (Section 2.2.7.1?)
+
+This is supported.
+
+>  RID domain=BLOCKED & PASID - ?? [V=1, TV=0, GV=1, GIOV=1 with GCR3 entry 0 being non-valid] 
+
+I haven't thought this scenario. Why do we even need this case?
 
 > 
-> Where list_for_each_iommu de-duplicates the iommus from the sorted
-> list, Michael had a series that showed how to do this for SMMU.
+> Did I get it right? If so GIOV should ultimately be deduced based on
+> what domain the RID has?
 > 
-> Basically you precalculate exactly the invalidations required and
-> store it in a list associated with the domain. When it is time to do
-> an invalidation then you just walk the list and do exactly what it
-> says.
+> Look at how the SMMUv3 stuff ended up. Their STE is the same purpose
+> as the AMD DTE. There are alot of combinations here, it was hard to
+> make a code flow that was clean. It turned out pretty good when the
+> DTE was generated in the ops->attach based on a calculation of exactly
+> what the current configuration is, because we already know what we are
+> in alot of detail at that point.
+> 
+> eg we know if we are attaching an identity domain and PASIDs are in
+> use that a single specific DTE should be created. So just call a
+> function directly to get the required DTE.
+> 
+> IOW - I'm not sure it really makes logical sense to store giov in
+> gcr3_info.
 
-I think we have most things already in protection domain. Only extra check we
-have is checking `pdom->dev_iommu[i]` which will be fixed separately.
+We had a choice of having a giov flag inside gcr3_info as it tells how to
+configure GCR3 related bits in DTE -OR- having a extra logic to calculate it
+every time. I can be calculated.
+
+
+> 
+>> +static int do_attach(struct iommu_dev_data *dev_data,
+>> +		     struct protection_domain *domain)
+>>  {
+>>  	struct amd_iommu *iommu;
+>> +	int ret = 0;
+>>  
+>>  	iommu = get_amd_iommu_from_dev(dev_data->dev);
+>>  	if (!iommu)
+>> -		return;
+>> +		return -EINVAL;
+> 
+> iommu can't be null here, have a dev_data.
+
+Fixed.
+
+> 
+>>  	dev_data->domain = domain;
+>> @@ -2080,11 +2103,27 @@ static void do_attach(struct iommu_dev_data *dev_data,
+>>  	if (domain_id_is_per_dev(domain))
+>>  		dev_data->domid = domain_id_alloc();
+> 
+> At some point this is the wrong place to put this, the domain ID is
+> logically associated with the gcr3 table, it should never be used if
+> there is no gcr table allocated, and it should be freed once the gcr3
+> table is freed.
+
+Domain ID is decided based on page table type (and may be based on PASID later).
+ That's why I have a function to decide whether to allocate ID or not and it
+should be done in this path only. So that we can configure DTE.
+
+
+
+> 
+>> +	/* Init GCR3 table */
+>> +	if (domain->pd_mode == PD_MODE_V2) {
+> 
+> Is there a case where domain_id_is_per_dev() but we are attaching a v1
+> table?
+
+Not today.
 
 -Vasant
