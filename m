@@ -1,96 +1,118 @@
-Received: from mail-ot1-f42.google.com (mail-ot1-f42.google.com [209.85.210.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mail.tkos.co.il (guitar.tkos.co.il [84.110.109.230])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 41B1830D0C;
-	Wed,  8 Nov 2023 16:18:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; dkim=none
-Received: by mail-ot1-f42.google.com with SMTP id 46e09a7af769-6cf65093780so4340094a34.0;
-        Wed, 08 Nov 2023 08:18:26 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1699460305; x=1700065105;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=EYkPle1MdHD/QkRy5uvWyvoGAuw8CDQwR9sXIE03ZSs=;
-        b=bLLe3As3K/pzSGVO/59L0el1Lnu6NJ9lZZvs9YwOvwP2+aldKPiYLRghK+7XGVVylf
-         Ub5d0oMbgs76c5jvPelz7wvB8V1kb3BeEzRRm+zk2fcdgMhSL4FuSaMGUVNBYqFeo+gb
-         BRloRqnbm9TLHe43/E0JaVk0LgH5/+IT1yhfHYpDOwtcOT7Q1zzeaY8NoXxokB01hG/2
-         f49Opo48P1Ymhz6iIOrOcNxUn4CLmYNJA46UUZSFnDSxVxIm791VpUw8iIE3yDe/TLfM
-         cPEalcCyHATubWsRZT+fa6QCFBJDslS09U+F5M9v/athjwBYn5v73w5IfKY1em2yjRNj
-         HEVg==
-X-Gm-Message-State: AOJu0YzukdsVrYR+lb7obyC8fcvevMriLwItuvZsrzNjuiA3KA127ete
-	RcSfEskL7oZHjfZFpT7jdQ==
-X-Google-Smtp-Source: AGHT+IHdx3/gHf0uiMEsZF6g8NbonKAcCJCMoAU+4cEwM7tQNoaEke7MS1G/3+EpNqOeJUuZFsInWw==
-X-Received: by 2002:a05:6830:4394:b0:6d5:4daf:9894 with SMTP id s20-20020a056830439400b006d54daf9894mr2008363otv.7.1699460305289;
-        Wed, 08 Nov 2023 08:18:25 -0800 (PST)
-Received: from herring.priv (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id ew20-20020a0568303d9400b006b89dafb721sm1939661otb.78.2023.11.08.08.18.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Nov 2023 08:18:24 -0800 (PST)
-Received: (nullmailer pid 2333673 invoked by uid 1000);
-	Wed, 08 Nov 2023 16:18:22 -0000
-Date: Wed, 8 Nov 2023 10:18:22 -0600
-From: Rob Herring <robh@kernel.org>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: acpica-devel@lists.linuxfoundation.org, 
-	Alyssa Rosenzweig <alyssa@rosenzweig.io>, Albert Ou <aou@eecs.berkeley.edu>, asahi@lists.linux.dev, 
-	Lu Baolu <baolu.lu@linux.intel.com>, Catalin Marinas <catalin.marinas@arm.com>, 
-	Dexuan Cui <decui@microsoft.com>, devicetree@vger.kernel.org, 
-	David Woodhouse <dwmw2@infradead.org>, Frank Rowand <frowand.list@gmail.com>, 
-	Hanjun Guo <guohanjun@huawei.com>, Haiyang Zhang <haiyangz@microsoft.com>, 
-	Christoph Hellwig <hch@lst.de>, iommu@lists.linux.dev, 
-	Jean-Philippe Brucker <jean-philippe@linaro.org>, Jonathan Hunter <jonathanh@nvidia.com>, 
-	Joerg Roedel <joro@8bytes.org>, "K. Y. Srinivasan" <kys@microsoft.com>, Len Brown <lenb@kernel.org>, 
-	linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	linux-hyperv@vger.kernel.org, linux-mips@vger.kernel.org, 
-	linux-riscv@lists.infradead.org, linux-snps-arc@lists.infradead.org, 
-	linux-tegra@vger.kernel.org, Russell King <linux@armlinux.org.uk>, 
-	Lorenzo Pieralisi <lpieralisi@kernel.org>, Marek Szyprowski <m.szyprowski@samsung.com>, 
-	Hector Martin <marcan@marcan.st>, Palmer Dabbelt <palmer@dabbelt.com>, 
-	Paul Walmsley <paul.walmsley@sifive.com>, "Rafael J. Wysocki" <rafael@kernel.org>, 
-	Robert Moore <robert.moore@intel.com>, Robin Murphy <robin.murphy@arm.com>, 
-	Sudeep Holla <sudeep.holla@arm.com>, 
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, Sven Peter <sven@svenpeter.dev>, 
-	Thierry Reding <thierry.reding@gmail.com>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, 
-	Krishna Reddy <vdumpa@nvidia.com>, Vineet Gupta <vgupta@kernel.org>, 
-	virtualization@lists.linux-foundation.org, Wei Liu <wei.liu@kernel.org>, 
-	Will Deacon <will@kernel.org>, Zhenhua Huang <quic_zhenhuah@quicinc.com>
-Subject: Re: [PATCH RFC 01/17] iommu: Remove struct iommu_ops *iommu from
- arch_setup_dma_ops()
-Message-ID: <20231108161822.GC2254211-robh@kernel.org>
-References: <0-v1-5f734af130a3+34f-iommu_fwspec_jgg@nvidia.com>
- <1-v1-5f734af130a3+34f-iommu_fwspec_jgg@nvidia.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 52467321B8
+	for <iommu@lists.linux.dev>; Wed,  8 Nov 2023 17:39:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tkos.co.il
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tkos.co.il
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=tkos.co.il header.i=@tkos.co.il header.b="WYZBm2Gg"
+Received: from tarshish.tkos.co.il (unknown [10.0.8.3])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by mail.tkos.co.il (Postfix) with ESMTPS id CA51A440F61;
+	Wed,  8 Nov 2023 19:29:47 +0200 (IST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tkos.co.il;
+	s=default; t=1699464587;
+	bh=1yLvpECl2rEGKsiM0fBZ4N89l8tkzdS1xWi8lB8tcnY=;
+	h=From:To:Cc:Subject:Date:From;
+	b=WYZBm2Gg+ekQkqyy3/yQwk9KwZsuYzf7EPGZgq25AcBtEiQYIG9v79dlW0g7MFcOU
+	 Hh8ySGKTW3Fx0e3dCwYbkJIkzEE4adqj/fzuCKT6GF6OWXm5uPMvAOpJtDD/+GPcv3
+	 l3JXWD2sDN+i+jAFXUMtdp9R2vXm+qZ9eEzNs6WN2Gi88tDjetYxnUe7poiIGEBB6c
+	 MKEPDl4oIEyrXJgKK2MLlbgsWvSW0CQgDmaorWljdQfs+XGTfY+Y+ngeQyBxp060jM
+	 1UCzfy+cvy/JAkUjz81Nh1WfRBeb6B4pbjZJxgOgfyk3LPy+rok4L6pCKOXEC5OQDs
+	 HnR/oqxVyIfRA==
+From: Baruch Siach <baruch@tkos.co.il>
+To: Catalin Marinas <catalin.marinas@arm.com>,
+	Will Deacon <will@kernel.org>
+Cc: Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Ramon Fried <ramon@neureality.ai>,
+	iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	Baruch Siach <baruch@tkos.co.il>
+Subject: [PATCH RFC] arm64: DMA zone above 4GB
+Date: Wed,  8 Nov 2023 19:30:22 +0200
+Message-ID: <9af8a19c3398e7dc09cfc1fbafed98d795d9f83e.1699464622.git.baruch@tkos.co.il>
+X-Mailer: git-send-email 2.42.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1-v1-5f734af130a3+34f-iommu_fwspec_jgg@nvidia.com>
+Content-Transfer-Encoding: 8bit
 
-On Fri, Nov 03, 2023 at 01:44:46PM -0300, Jason Gunthorpe wrote:
-> This is not being used to pass ops, it is just a way to tell if an
-> iommu driver was probed. These days this can be detected directly via
-> device_iommu_mapped(). Call device_iommu_mapped() in the two places that
-> need to check it and remove the iommu parameter everywhere.
-> 
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> ---
->  arch/arc/mm/dma.c               |  2 +-
->  arch/arm/mm/dma-mapping-nommu.c |  2 +-
->  arch/arm/mm/dma-mapping.c       | 10 +++++-----
->  arch/arm64/mm/dma-mapping.c     |  4 ++--
->  arch/mips/mm/dma-noncoherent.c  |  2 +-
->  arch/riscv/mm/dma-noncoherent.c |  2 +-
->  drivers/acpi/scan.c             |  3 +--
->  drivers/hv/hv_common.c          |  2 +-
->  drivers/of/device.c             |  2 +-
+My platform RAM starts at 32GB. It has no RAM under 4GB. zone_sizes_init()
+puts the entire RAM in the DMA zone as follows:
 
-Acked-by: Rob Herring <robh@kernel.org>
+[    0.000000] Zone ranges:
+[    0.000000]   DMA      [mem 0x0000000800000000-0x00000008bfffffff]
+[    0.000000]   DMA32    empty
+[    0.000000]   Normal   empty
 
->  include/linux/dma-map-ops.h     |  4 ++--
->  10 files changed, 16 insertions(+), 17 deletions(-)
+Consider a bus with this 'dma-ranges' property:
+
+  #address-cells = <2>;
+  #size-cells = <2>;
+  dma-ranges = <0x00000000 0xc0000000 0x00000008 0x00000000 0x0 0x40000000>;
+
+Devices under this bus can see 1GB of DMA range between 3GB-4GB. This
+range is mapped to CPU memory at 32GB-33GB.
+
+Current zone_sizes_init() code considers 'dma-ranges' only when it maps
+to RAM under 4GB, because zone_dma_bits is limited to 32. In this case
+'dma-ranges' is ignored in practice, since DMA/DMA32 zones are both
+assumed to be located under 4GB. The result is that the stmmac driver
+DMA buffers allocation GFP_DMA32 flag has no effect. As a result DMA
+buffer allocations fail.
+
+The patch below is a crude workaround hack. It makes the  DMA zone
+cover the 1GB memory area that is visible to stmmac DMA as follows:
+
+[    0.000000] Zone ranges:
+[    0.000000]   DMA      [mem 0x0000000800000000-0x000000083fffffff]
+[    0.000000]   DMA32    empty
+[    0.000000]   Normal   [mem 0x0000000840000000-0x0000000bffffffff]
+...
+[    0.000000] software IO TLB: mapped [mem 0x000000083bfff000-0x000000083ffff000] (64MB)
+
+With this hack the stmmac driver works on my platform with no
+modification.
+
+Clearly this can't be the right solutions. zone_dma_bits is now wrong for
+one. It probably breaks other code as well.
+
+Is there any better suggestion to make DMA buffer allocations work on
+this hardware?
+
+Thanks
+---
+ arch/arm64/mm/init.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
+index 74c1db8ce271..5fe826ac3a5f 100644
+--- a/arch/arm64/mm/init.c
++++ b/arch/arm64/mm/init.c
+@@ -136,13 +136,13 @@ static void __init zone_sizes_init(void)
+ 	unsigned long max_zone_pfns[MAX_NR_ZONES]  = {0};
+ 	unsigned int __maybe_unused acpi_zone_dma_bits;
+ 	unsigned int __maybe_unused dt_zone_dma_bits;
+-	phys_addr_t __maybe_unused dma32_phys_limit = max_zone_phys(32);
++	phys_addr_t __maybe_unused dma32_phys_limit = DMA_BIT_MASK(32) + 1;
+ 
+ #ifdef CONFIG_ZONE_DMA
+ 	acpi_zone_dma_bits = fls64(acpi_iort_dma_get_max_cpu_address());
+ 	dt_zone_dma_bits = fls64(of_dma_get_max_cpu_address(NULL));
+ 	zone_dma_bits = min3(32U, dt_zone_dma_bits, acpi_zone_dma_bits);
+-	arm64_dma_phys_limit = max_zone_phys(zone_dma_bits);
++	arm64_dma_phys_limit = of_dma_get_max_cpu_address(NULL) + 1;
+ 	max_zone_pfns[ZONE_DMA] = PFN_DOWN(arm64_dma_phys_limit);
+ #endif
+ #ifdef CONFIG_ZONE_DMA32
+-- 
+2.42.0
+
