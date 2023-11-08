@@ -1,46 +1,79 @@
-Received: from bee.tesarici.cz (bee.tesarici.cz [77.93.223.253])
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 05D60DF46
-	for <iommu@lists.linux.dev>; Wed,  8 Nov 2023 09:13:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=tesarici.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tesarici.cz
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B84CC14261
+	for <iommu@lists.linux.dev>; Wed,  8 Nov 2023 10:52:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b="zQpYhRcZ"
-Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by bee.tesarici.cz (Postfix) with ESMTPSA id 5FDED184639;
-	Wed,  8 Nov 2023 10:13:51 +0100 (CET)
-Authentication-Results: mail.tesarici.cz; dmarc=fail (p=none dis=none) header.from=tesarici.cz
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tesarici.cz; s=mail;
-	t=1699434831; bh=8YvlJP4iehF5VC4lYo9yr3Gk1KOKmHeLrYZG+pdLVxc=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=zQpYhRcZSsQhsdYt6OAMWjWj/1XvjsMN6ErRHy5DsAcVuH/fDLaBQHivbO9laMGOg
-	 2l85K13CiAFz0ifJan0FYClLvJ4MdyM3QMgKJvnIckZr7af1Y4dShgg3YbLsluuUBj
-	 VFggBmKgfCCmzHdzASRGg4uBDynoa3fATMSvLSKGZ5lj4DJMSanfaZBXvasKhuVOHr
-	 ak/inXItCQaK7proFvieb6/oI8qOZC9siRHqWp7czMu4J1L48W5mPM370dM84klnWh
-	 +r3Z65N2Uxq2ZPhi/7myR/u6xsbh0kA1YRgPRnelz9XmiTlnsgGQou1xggb6UFfPuZ
-	 gUiOfBkWe8ogg==
-Date: Wed, 8 Nov 2023 10:13:47 +0100
-From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
-To: Halil Pasic <pasic@linux.ibm.com>
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="j9YzRz0u"
+Received: from pps.filterd (m0353722.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 3A8AjBmp006482;
+	Wed, 8 Nov 2023 10:52:16 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : in-reply-to : references : mime-version :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=Y6n9Wq/1lf6ns5MR5hkNe3aObEjXjSgg3FSfX8KTZQs=;
+ b=j9YzRz0uUiZGyCnQWMsCL8++tgBaXnTK6G5twhpJ8v4h4EcIAI3KGQ6aOd73/6KJ9LUf
+ Vs0MSWfIUztqahWCSZOtYN/+VLzO8ImiOHbaLXA7IUimQvIn3FWD5ni05QDvY6E7AEhf
+ HewSIQRWIkWkx0UklD6gmf8l24ZUrCh/fKaaMCskdWcUrpKZ6/SB0PYgdSULgChTWhFQ
+ oxZCRkuzcYGDuph7aYI2Suh46WYA512dzTN9KlgVMSlEZbTJC2mBcWY+TlB6tG6UM84u
+ pFznS6nqlPSn2CtSqSexw3MgEQ/cGGDnAbv35lZG2fZ1NQzlH8Uk9AmB7Ss2q5jgFkqQ Ig== 
+Received: from pps.reinject (localhost [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3u88uqrf9a-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 08 Nov 2023 10:52:16 +0000
+Received: from m0353722.ppops.net (m0353722.ppops.net [127.0.0.1])
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 3A8AjQxd009025;
+	Wed, 8 Nov 2023 10:52:15 GMT
+Received: from ppma12.dal12v.mail.ibm.com (dc.9e.1632.ip4.static.sl-reverse.com [50.22.158.220])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3u88uqrf7s-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 08 Nov 2023 10:52:15 +0000
+Received: from pps.filterd (ppma12.dal12v.mail.ibm.com [127.0.0.1])
+	by ppma12.dal12v.mail.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 3A88V7pS019256;
+	Wed, 8 Nov 2023 10:52:12 GMT
+Received: from smtprelay06.fra02v.mail.ibm.com ([9.218.2.230])
+	by ppma12.dal12v.mail.ibm.com (PPS) with ESMTPS id 3u7w23v4ms-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 08 Nov 2023 10:52:12 +0000
+Received: from smtpav05.fra02v.mail.ibm.com (smtpav05.fra02v.mail.ibm.com [10.20.54.104])
+	by smtprelay06.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 3A8Aq9eM41484886
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Wed, 8 Nov 2023 10:52:09 GMT
+Received: from smtpav05.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 40B2420043;
+	Wed,  8 Nov 2023 10:52:09 +0000 (GMT)
+Received: from smtpav05.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id E87A520040;
+	Wed,  8 Nov 2023 10:52:08 +0000 (GMT)
+Received: from li-ce58cfcc-320b-11b2-a85c-85e19b5285e0 (unknown [9.152.224.212])
+	by smtpav05.fra02v.mail.ibm.com (Postfix) with ESMTP;
+	Wed,  8 Nov 2023 10:52:08 +0000 (GMT)
+Date: Wed, 8 Nov 2023 11:52:07 +0100
+From: Halil Pasic <pasic@linux.ibm.com>
+To: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
 Cc: Niklas Schnelle <schnelle@linux.ibm.com>, Christoph Hellwig
- <hch@lst.de>, Bjorn Helgaas <bhelgaas@google.com>, Marek Szyprowski
- <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Petr
- Tesarik <petr.tesarik1@huawei-partners.com>, Ross Lagerwall
- <ross.lagerwall@citrix.com>, linux-pci <linux-pci@vger.kernel.org>,
- linux-kernel@vger.kernel.org, iommu@lists.linux.dev, Matthew Rosato
- <mjrosato@linux.ibm.com>, Jianxiong Gao <jxgao@google.com>
+ <hch@lst.de>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Marek Szyprowski
+ <m.szyprowski@samsung.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Petr
+ Tesarik <petr.tesarik1@huawei-partners.com>,
+        Ross Lagerwall
+ <ross.lagerwall@citrix.com>,
+        linux-pci <linux-pci@vger.kernel.org>, linux-kernel@vger.kernel.org,
+        iommu@lists.linux.dev, Matthew Rosato
+ <mjrosato@linux.ibm.com>,
+        Halil Pasic <pasic@linux.ibm.com>
 Subject: Re: Memory corruption with CONFIG_SWIOTLB_DYNAMIC=y
-Message-ID: <20231108101347.77cab795@meshulam.tesarici.cz>
-In-Reply-To: <20231107182420.0bd8c211.pasic@linux.ibm.com>
+Message-ID: <20231108115207.791a30d8.pasic@linux.ibm.com>
+In-Reply-To: <20231103195949.0af884d0@meshulam.tesarici.cz>
 References: <104a8c8fedffd1ff8a2890983e2ec1c26bff6810.camel@linux.ibm.com>
-	<20231103171447.02759771.pasic@linux.ibm.com>
-	<20231103214831.26d29f4d@meshulam.tesarici.cz>
-	<20231107182420.0bd8c211.pasic@linux.ibm.com>
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; x86_64-suse-linux-gnu)
+ <20231103195949.0af884d0@meshulam.tesarici.cz>
+Organization: IBM
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-redhat-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -48,151 +81,52 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: qK8Ky8dtByMWS9pE01Wz3idCdL0ui5So
+X-Proofpoint-ORIG-GUID: LT_y2TRDzFp56vukj3DHi7MXpkTZAqPi
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.987,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2023-11-08_01,2023-11-08_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ lowpriorityscore=0 mlxlogscore=999 clxscore=1015 adultscore=0 mlxscore=0
+ spamscore=0 suspectscore=0 bulkscore=0 phishscore=0 malwarescore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2311060000 definitions=main-2311080090
 
-On Tue, 7 Nov 2023 18:24:20 +0100
-Halil Pasic <pasic@linux.ibm.com> wrote:
+On Fri, 3 Nov 2023 19:59:49 +0100
+Petr Tesařík <petr@tesarici.cz> wrote:
 
-> On Fri, 3 Nov 2023 21:50:53 +0100
-> Petr Tesa=C5=99=C3=ADk <petr@tesarici.cz> wrote:
->=20
-> > > In our opinion the first step towards getting this right is to figure=
- out what
-> > > the different kinds of alignments are really supposed to mean. For ea=
-ch of the
-> > > mechanisms we need to understand and document, whether making sure th=
-at the
-> > > bounce buffer does not stretch over more of certain units of memory (=
-like,
-> > > pages, iova granule size, whatever), or is it about preserving offset=
- within a
-> > > certain unit of memory, and if yes to what extent (the least signific=
-ant n-bits
-> > > of the orig_addr dictated by the respective mask, or something differ=
-ent).   =20
-> >=20
-> >=20
-> > Seconded. I have also been struggling with the various alignment
-> > constraints. I have even written (but not yet submitted) a patch to
-> > calculate the combined alignment mask in swiotlb_tbl_map_single() and
-> > pass it down to all other functions, just to make it clear what
-> > alignment mask is used. =20
->=20
-> Can you cc me when posting that rework?
+> > Not sure how to properly fix this as the different alignment
+> > requirements get pretty complex quickly. So would appreciate your
+> > input.  
+> 
+> I don't think it's possible to improve the allocation logic without
+> modifying the page allocator and/or the DMA atomic pool allocator to
+> take additional constraints into account.
 
-Absolutely. I mean, if it still makes sense after we clarify the
-intended goals of the various alignment parameters. Because I believe
-you have indeed found something!
+I don't understand. What speaks against calculating the amount of space
+needed, so that with the waste we can still fit the bounce-buffer in the
+pool?
 
-> > My understanding is that buffer alignment may be required by:
-> >=20
-> > 1. hardware which cannot handle an unaligned base address (presumably
-> >    because the chip performs a simple OR operation to get the addresses
-> >    of individual fields); =20
->=20
-> I'm not sure I understood this properly. What is "base address" in this
-> context? Is for swiotlb "base address" basically the return value
-> of swiotlb_tbl_map_single() -- I referred to this as tlb_addr previously?
->
-> If yes, I understand that  satisfying 1 means satisfying=20
-> tlb_addr & combined_mask =3D=3D 0, where combined_mask describes the
-> combined alignment requirement (i.e. combined_mask =3D=3D min_align_mask |
-> alloc_align_mask | (alloc_size < PAGE_SIZE ? 0 : (PAGE_SIZE-1)). Does
-> that sound about right?
->=20
-> Can we assume that if 1. then the start address of the mapping
-> that is orig_addr needs to be already aligned?
+I believe alloc_size + combined_mask is a trivial upper bound, but we can
+do slightly better since we know that we allocate pages.
+
+For the sake of simplicity let us assume we only have the min_align_mask
+requirement. Then I believe the worst case is that we need 
+(orig_addr & min_align_mask & PAGE_MASK)  + (min_align_mask & ~PAGE_MASK)
+extra space to fit.
+
+Depending on how the semantics pan out one may be able to replace
+min_align_mask with combined_mask.
+
+Is your point that for large combined_mask values 
+_get_free_pages(GFP_NOWAIT | __GFP_NOWARN, required_order) is not
+likely to complete successfully?
+
+Regards,
+Halil
 
 
-No, not really. A very nice diagram can be found in commit 5f89468e2f06
-("swiotlb: manipulate orig_addr when tlb_addr has offset"):
 
-"""
-  1. Get dma_addr_t from dma_map_single()
 
-  dma_addr_t tlb_addr =3D dma_map_single(dev, vaddr, vsize, DMA_TO_DEVICE);
-
-      |<---------------vsize------------->|
-      +-----------------------------------+
-      |                                   | original buffer
-      +-----------------------------------+
-    vaddr
-
-   swiotlb_align_offset
-       |<----->|<---------------vsize------------->|
-       +-------+-----------------------------------+
-       |       |                                   | swiotlb buffer
-       +-------+-----------------------------------+
-	    tlb_addr
-"""
-
-Here, the aligned address is outside the original buffer at
-[vadddr; vaddr+vsize). This is what I referred to as "base
-address". The N lowest bits of this address are zero. It may not
-even be mapped in the SWIOTLB if N is greater than IO_TLB_SHIFT.
-However, the exact values of the N lowest bits of the original
-buffer's physical start address are preserved in tlb_addr.
-
-> > 2. isolation of untrusted devices, where no two bounce buffers should
-> >    end up in the same iova granule;
-> >=20
-> > 3. allocation size; I could not find an explanation, so this might be
-> >    merely an attempt at reducing SWIOTLB internal fragmentation. =20
->=20
->=20
-> Assumed I understood 1 correctly, I think we are missing something.
->=20
-> 4. preserve the n (0 <=3D n <=3D 31) lowest bits of all addresses within =
-the
-> mapping.
->=20
-> Was it just 1, 2 and 3 then we wouldn't need the whole offsetting
-> business introduced by commit 1f221a0d0dbf ("swiotlb: respect
-> min_align_mask"). Let me cite from its commit message:
->=20
-> """
->     Respect the min_align_mask in struct device_dma_parameters in swiotlb.
->    =20
->     There are two parts to it:
->      1) for the lower bits of the alignment inside the io tlb slot, just
->         extent the size of the allocation and leave the start of the slot
->          empty
->      2) for the high bits ensure we find a slot that matches the high bits
->         of the alignment to avoid wasting too much memory
->    =20
->     Based on an earlier patch from Jianxiong Gao <jxgao@google.com>.
-> """
->=20
-> Do we agree, that 4. needs to be added to the list? Or was it supposed
-> to be covered by 1.?
-
-That's it. It's what case 1 is supposed to be. However, IIUC cases
-2 and 3 don't need to preserve any lowest bits.
-
-At least for case 3, I'm now quite confident that the intention
-was to start big buffers on a page-aligned slot, leaving the gaps
-for buffers smaller than a page.
-
-Case 2 is not clear to me. Some comments suggest that it should
-prevent exposing a single iova granule to multiple untrusted
-devices. What the code really does now is prevent crossing an iova
-granule boundary if the original buffer did not cross one. I'm not
-sure whether it achieves the goal, because commit e81e99bacc9f
-("swiotlb: Support aligned swiotlb buffers") also references
-PAGE_SIZE, but AFAICS it should use the same logic as case 3
-(page-aligned allocations).
-
-To sum it up, there are two types of alignment:
-
-1. specified by a device's min_align_mask; this says how many low
-   bits of a buffer's physical address must be preserved,
-
-2. specified by allocation size and/or the alignment parameter;
-   this says how many low bits in the first IO TLB slot's physical
-   address must be zero.
-
-I hope somebody can confirm or correct this summary before I go
-and break something. You know, it's not like cleanups in SWIOTLB
-have never broken anything.  ;-)
-
-Petr T
