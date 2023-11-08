@@ -1,86 +1,95 @@
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+Received: from frasgout11.his.huawei.com (frasgout11.his.huawei.com [14.137.139.23])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E0C615488
-	for <iommu@lists.linux.dev>; Wed,  8 Nov 2023 11:04:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei-partners.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei-partners.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 52A2D154A9
+	for <iommu@lists.linux.dev>; Wed,  8 Nov 2023 11:13:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=huaweicloud.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=huaweicloud.com
 Authentication-Results: smtp.subspace.kernel.org; dkim=none
-Received: from frapeml500002.china.huawei.com (unknown [172.18.147.206])
-	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4SQMdF13hbz6K8sn;
-	Wed,  8 Nov 2023 19:03:13 +0800 (CST)
-Received: from [10.195.35.156] (10.195.35.156) by
- frapeml500002.china.huawei.com (7.182.85.205) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.31; Wed, 8 Nov 2023 12:04:14 +0100
-Message-ID: <41c0baf6-ba4d-4876-b692-279307265466@huawei-partners.com>
-Date: Wed, 8 Nov 2023 12:04:12 +0100
+Received: from mail02.huawei.com (unknown [172.18.147.227])
+	by frasgout11.his.huawei.com (SkyGuard) with ESMTP id 4SQMYm30tKz9xrdY
+	for <iommu@lists.linux.dev>; Wed,  8 Nov 2023 19:00:12 +0800 (CST)
+Received: from huaweicloud.com (unknown [10.195.35.156])
+	by APP2 (Coremail) with SMTP id GxC2BwDX1V9HbUtlqNFEAA--.11872S2;
+	Wed, 08 Nov 2023 12:13:23 +0100 (CET)
+From: Petr Tesarik <petrtesarik@huaweicloud.com>
+To: Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Petr Tesarik <petr.tesarik.ext@huawei.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	iommu@lists.linux.dev (open list:DMA MAPPING HELPERS),
+	linux-kernel@vger.kernel.org (open list)
+Cc: Wangkefeng <wangkefeng.wang@huawei.com>,
+	Roberto Sassu <roberto.sassu@huaweicloud.com>,
+	petr@tesarici.cz,
+	Petr Tesarik <petr.tesarik1@huawei-partners.com>,
+	Niklas Schnelle <schnelle@linux.ibm.com>,
+	Halil Pasic <pasic@linux.ibm.com>,
+	stable@vger.kernel.org
+Subject: [PATCH 1/1] swiotlb: fix out-of-bounds TLB allocations with CONFIG_SWIOTLB_DYNAMIC
+Date: Wed,  8 Nov 2023 12:12:49 +0100
+Message-Id: <20231108111249.261-1-petrtesarik@huaweicloud.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: Memory corruption with CONFIG_SWIOTLB_DYNAMIC=y
-To: Halil Pasic <pasic@linux.ibm.com>, =?UTF-8?B?UGV0ciBUZXNhxZnDrWs=?=
-	<petr@tesarici.cz>
-CC: Niklas Schnelle <schnelle@linux.ibm.com>, Christoph Hellwig <hch@lst.de>,
-	Bjorn Helgaas <bhelgaas@google.com>, Marek Szyprowski
-	<m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Ross
- Lagerwall <ross.lagerwall@citrix.com>, linux-pci <linux-pci@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>, Matthew Rosato
-	<mjrosato@linux.ibm.com>
-References: <104a8c8fedffd1ff8a2890983e2ec1c26bff6810.camel@linux.ibm.com>
- <20231103195949.0af884d0@meshulam.tesarici.cz>
- <20231108115207.791a30d8.pasic@linux.ibm.com>
-Content-Language: en-US
-From: Petr Tesarik <petr.tesarik1@huawei-partners.com>
-In-Reply-To: <20231108115207.791a30d8.pasic@linux.ibm.com>
-Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.195.35.156]
-X-ClientProxiedBy: frapeml100003.china.huawei.com (7.182.85.60) To
- frapeml500002.china.huawei.com (7.182.85.205)
+X-CM-TRANSID:GxC2BwDX1V9HbUtlqNFEAA--.11872S2
+X-Coremail-Antispam: 1UD129KBjvJXoW7Kw1DWF48Ar4UGw43KFW8Crg_yoW8Gw43pa
+	43Aw45GayjqF18Aw1qk3WUC3W8K3yDZrW7uFZ0q343ZryDWry5WF9a93y5K3s3Xr4v9F4a
+	kryFvr4rKayUZrDanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+	9KBjDU0xBIdaVrnRJUUUBS14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+	rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+	1l84ACjcxK6xIIjxv20xvE14v26r1j6r1xM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4j
+	6F4UM28EF7xvwVC2z280aVAFwI0_Gr0_Cr1l84ACjcxK6I8E87Iv6xkF7I0E14v26r4j6r
+	4UJwAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
+	I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r
+	4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwACI402YVCY1x02628v
+	n2kIc2xKxwCY1x0262kKe7AKxVWUtVW8ZwCY1x0264kExVAvwVAq07x20xyl42xK82IYc2
+	Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s02
+	6x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r4a6rW5MIIYrxkI7VAKI48JMIIF0x
+	vE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r4j6F4UMIIF0xvE
+	42xK8VAvwI8IcIk0rVWrJr0_WFyUJwCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87
+	Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjfU8c_-DUUUU
+X-CM-SenderInfo: hshw23xhvd2x3n6k3tpzhluzxrxghudrp/
 X-CFilter-Loop: Reflected
 
-On 11/8/2023 11:52 AM, Halil Pasic wrote:
-> On Fri, 3 Nov 2023 19:59:49 +0100
-> Petr Tesařík <petr@tesarici.cz> wrote:
-> 
->>> Not sure how to properly fix this as the different alignment
->>> requirements get pretty complex quickly. So would appreciate your
->>> input.  
->>
->> I don't think it's possible to improve the allocation logic without
->> modifying the page allocator and/or the DMA atomic pool allocator to
->> take additional constraints into account.
-> 
-> I don't understand. What speaks against calculating the amount of space
-> needed, so that with the waste we can still fit the bounce-buffer in the
-> pool?
-> 
-> I believe alloc_size + combined_mask is a trivial upper bound, but we can
-> do slightly better since we know that we allocate pages.
-> 
-> For the sake of simplicity let us assume we only have the min_align_mask
-> requirement. Then I believe the worst case is that we need 
-> (orig_addr & min_align_mask & PAGE_MASK)  + (min_align_mask & ~PAGE_MASK)
-> extra space to fit.
-> 
-> Depending on how the semantics pan out one may be able to replace
-> min_align_mask with combined_mask.
-> 
-> Is your point that for large combined_mask values 
-> _get_free_pages(GFP_NOWAIT | __GFP_NOWARN, required_order) is not
-> likely to complete successfully?
+From: Petr Tesarik <petr.tesarik1@huawei-partners.com>
 
-Yes, that's the reason. OTOH it's probably worth a try. The point is
-that mapping a DMA buffer is allowed to fail, so callers should be
-prepared anyway.
+Limit the free list length to the size of the IO TLB. Transient pool can be
+smaller than IO_TLB_SEGSIZE, but the free list is initialized with the
+assumption that the total number of slots is a multiple of IO_TLB_SEGSIZE.
+As a result, swiotlb_area_find_slots() may allocate slots past the end of
+a transient IO TLB buffer.
 
-And for the case you reported initially, I don't think there is any need
-to preserve bit 11 (0x800) from the original buffer's physical address,
-which is enough to fix it. See also my other email earlier today.
+Reported-by: Niklas Schnelle <schnelle@linux.ibm.com>
+Closes: https://lore.kernel.org/linux-iommu/104a8c8fedffd1ff8a2890983e2ec1c26bff6810.camel@linux.ibm.com/
+Fixes: 79636caad361 ("swiotlb: if swiotlb is full, fall back to a transient memory pool")
+Cc: Halil Pasic <pasic@linux.ibm.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Petr Tesarik <petr.tesarik1@huawei-partners.com>
+---
+ kernel/dma/swiotlb.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-Petr T
+diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+index 26202274784f..ec82524ba902 100644
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -283,7 +283,8 @@ static void swiotlb_init_io_tlb_pool(struct io_tlb_pool *mem, phys_addr_t start,
+ 	}
+ 
+ 	for (i = 0; i < mem->nslabs; i++) {
+-		mem->slots[i].list = IO_TLB_SEGSIZE - io_tlb_offset(i);
++		mem->slots[i].list = min(IO_TLB_SEGSIZE - io_tlb_offset(i),
++					 mem->nslabs - i);
+ 		mem->slots[i].orig_addr = INVALID_PHYS_ADDR;
+ 		mem->slots[i].alloc_size = 0;
+ 	}
+-- 
+2.42.1
+
