@@ -1,30 +1,31 @@
 Received: from verein.lst.de (verein.lst.de [213.95.11.211])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C967BD278
-	for <iommu@lists.linux.dev>; Wed,  8 Nov 2023 07:31:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F025CD278;
+	Wed,  8 Nov 2023 07:32:00 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
 Authentication-Results: smtp.subspace.kernel.org; dkim=none
 Received: by verein.lst.de (Postfix, from userid 2407)
-	id 61CA16732D; Wed,  8 Nov 2023 08:30:49 +0100 (CET)
-Date: Wed, 8 Nov 2023 08:30:48 +0100
+	id A3BAD6732D; Wed,  8 Nov 2023 08:31:57 +0100 (CET)
+Date: Wed, 8 Nov 2023 08:31:57 +0100
 From: Christoph Hellwig <hch@lst.de>
-To: Halil Pasic <pasic@linux.ibm.com>
-Cc: Christoph Hellwig <hch@lst.de>,
-	Petr =?utf-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>,
-	Niklas Schnelle <schnelle@linux.ibm.com>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Petr Tesarik <petr.tesarik1@huawei-partners.com>,
-	Ross Lagerwall <ross.lagerwall@citrix.com>,
-	linux-pci <linux-pci@vger.kernel.org>, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev, Matthew Rosato <mjrosato@linux.ibm.com>,
-	Jianxiong Gao <jxgao@google.com>
-Subject: Re: Memory corruption with CONFIG_SWIOTLB_DYNAMIC=y
-Message-ID: <20231108073048.GA5277@lst.de>
-References: <104a8c8fedffd1ff8a2890983e2ec1c26bff6810.camel@linux.ibm.com> <20231103171447.02759771.pasic@linux.ibm.com> <20231103214831.26d29f4d@meshulam.tesarici.cz> <20231106074243.GA17777@lst.de> <20231107182437.06632f6e.pasic@linux.ibm.com>
+To: Mikulas Patocka <mpatocka@redhat.com>
+Cc: Mike Snitzer <snitzer@kernel.org>, Keith Busch <kbusch@kernel.org>,
+	Christoph Hellwig <hch@lst.de>, Juergen Gross <jgross@suse.com>,
+	Stefano Stabellini <sstabellini@kernel.org>,
+	xen-devel@lists.xenproject.org, iommu@lists.linux.dev,
+	Marek Marczykowski-G'orecki <marmarek@invisiblethingslab.com>,
+	Jens Axboe <axboe@fb.com>, Sagi Grimberg <sagi@grimberg.me>,
+	Jan Kara <jack@suse.cz>, Vlastimil Babka <vbabka@suse.cz>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Matthew Wilcox <willy@infradead.org>,
+	Michal Hocko <mhocko@suse.com>, stable@vger.kernel.org,
+	regressions@lists.linux.dev, Alasdair Kergon <agk@redhat.com>,
+	dm-devel@lists.linux.dev, linux-mm@kvack.org
+Subject: Re: [PATCH v2] swiotlb-xen: provide the "max_mapping_size" method
+Message-ID: <20231108073157.GB5277@lst.de>
+References: <ZUUlqJoS6_1IznzT@kbusch-mbp.dhcp.thefacebook.com> <ZUVYT1Xp4+hFT27W@mail-itl> <ZUV3TApYYoh_oiRR@kbusch-mbp.dhcp.thefacebook.com> <11a9886d-316c-edcd-d6da-24ad0b9a2b4@redhat.com> <ZUZOKitOAqqKiJ4n@kbusch-mbp.dhcp.thefacebook.com> <20231106071008.GB17022@lst.de> <928b5df7-fada-cf2f-6f6a-257a84547c3@redhat.com> <ZUkDUXDF6g4P86F3@kbusch-mbp.dhcp.thefacebook.com> <ZUkGpblDX637QV9y@redhat.com> <151bef41-e817-aea9-675-a35fdac4ed@redhat.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -33,21 +34,9 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20231107182437.06632f6e.pasic@linux.ibm.com>
+In-Reply-To: <151bef41-e817-aea9-675-a35fdac4ed@redhat.com>
 User-Agent: Mutt/1.5.17 (2007-11-01)
 
-On Tue, Nov 07, 2023 at 06:24:37PM +0100, Halil Pasic wrote:
-> Thanks Christoph! So for NVMe in certain contexts the low
-> bits of addresses get discarded, but in other contexts the high bits
-> of addresses get discarded and the low bits need to remain the same
-> after the bounce (and that's why we need commits 36950f2da1ea ("driver
-> core: add a min_align_mask) and 1f221a0d0dbf ("swiotlb: respect
-> min_align_mask").
+Looks good:
 
-Nothing really gets discarded.  NVMe basicaly requires all pages
-(where the page is a device page, currently hard coded to 4k in
-Linux) except for the first to not have an offset.  This is what
-the driver sets the virt boundary to in Linux.  When bounce buffering
-thus all segments (except possibly the first) need to keep their
-alignment.
-
+Reviewed-by: Christoph Hellwig <hch@lst.de>
