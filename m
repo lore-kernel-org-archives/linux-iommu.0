@@ -1,37 +1,37 @@
-Received: from mail-oi1-f177.google.com (mail-oi1-f177.google.com [209.85.167.177])
+Received: from mail-oo1-f44.google.com (mail-oo1-f44.google.com [209.85.161.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 97A483067D;
-	Wed,  8 Nov 2023 16:11:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5625930F8F;
+	Wed,  8 Nov 2023 16:17:07 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; dkim=none
-Received: by mail-oi1-f177.google.com with SMTP id 5614622812f47-3b2f507c03cso3748002b6e.2;
-        Wed, 08 Nov 2023 08:11:42 -0800 (PST)
+Received: by mail-oo1-f44.google.com with SMTP id 006d021491bc7-589d412e8aeso535437eaf.3;
+        Wed, 08 Nov 2023 08:17:07 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1699459901; x=1700064701;
+        d=1e100.net; s=20230601; t=1699460226; x=1700065026;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=egO/3A8usR47pYsFMHy7at49a3WUUkqONQqbQuU8j7Y=;
-        b=hchpkMKQIJhQ5+x6WqcPeKEADDy6D9WqD1yHr2FijOG8LpMzBwvEgAI2ekhjjL7a3n
-         emdKunind1RSloLo9wpuVGEoqJwVRGIJobI4FnljYAmd9+iLYuGCFj3C9qRFkSVWRI6I
-         o/so52GVcbmEkdLJz0IfU4AtJEZXgVhKs9W5Cluuu4HyjWFk5CpqEissyO4YoS5nKSAs
-         XxYSoGWYf+2eJVz4eknfp20cJeRobgmMNd3GmdA2c/99rnBvNQ8+8PfvvRH5JLVUwzz1
-         Q3bMAjm499ut+YZcYBQjZudSiOzMAG6GoDdXNsWmjZHxOD4uk2N0jasOsa6DY8QeeZ11
-         hffQ==
-X-Gm-Message-State: AOJu0Yynl+m/Ak4ZAIYxd0GS2jEJW0KgYbpiMoDqHg2DWJdR7KdPOwmN
-	F80p594GgvPsqjQjOpmIHg==
-X-Google-Smtp-Source: AGHT+IFG1ydbraxTf3qUlkUHE402Zq2u5RjAY4fdhcYCPQiBAZE+mNt+Ni+JkQlZMBRuNIEkL2d3Ow==
-X-Received: by 2002:a05:6808:15a8:b0:3a9:cfb5:4641 with SMTP id t40-20020a05680815a800b003a9cfb54641mr3241896oiw.48.1699459901513;
-        Wed, 08 Nov 2023 08:11:41 -0800 (PST)
+        bh=BhueBKTq066e4mLfKHRgK40ZdUHgCtrKWznR5J+LNwA=;
+        b=qbYr4CB1YZMZpw0325wWZ3gPSDz61sgc7iyLReI2L0UguZXgI7Nkj0fJ9ffcmY/xBO
+         Ui2IqVW0rlcswx+gfzY3kQ6FA/aKoYuFLCttV9uargiao9ZpJdcDQ7IF55Ctar7b8zMZ
+         acWwTXh2StKJpYKjJPgRBMr9Yq1UKppVrIUMdITbGzat5T50zXEDZo0+hHN1jkEQKvei
+         mTjS8vFQTGmNsz+tYdlbH3PnyXw294G/8b6Rvki9W1WryBh7ZAUHrYRNRPQ99SmiagGQ
+         gQbUmsnWxPfWnYRvTMEaV5xPQYNHpOEt9+CeQoHAu2JOVulfXPAhY4+U+3brkCCJCUtb
+         L/RA==
+X-Gm-Message-State: AOJu0YzNxbBqLvk29jO2bRc7p0V92F0UOBL2/v1QbKaQ8hcZqC9n8u7Z
+	KbVVWCBy5jiJ3OyVjsyM7g==
+X-Google-Smtp-Source: AGHT+IFe/wqQx7jqSarQLsP5AynmlF1OwPY0v3LIXJSKefg7OTaZGlvutVeUSHDrZS8dzbY2HrAlbA==
+X-Received: by 2002:a4a:c208:0:b0:581:ff36:702b with SMTP id z8-20020a4ac208000000b00581ff36702bmr2227049oop.8.1699460225482;
+        Wed, 08 Nov 2023 08:17:05 -0800 (PST)
 Received: from herring.priv (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id bg42-20020a05680817aa00b003afc33bf048sm1959000oib.2.2023.11.08.08.11.39
+        by smtp.gmail.com with ESMTPSA id b24-20020a9d6b98000000b006bf0f95f702sm1914773otq.64.2023.11.08.08.17.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Nov 2023 08:11:40 -0800 (PST)
-Received: (nullmailer pid 2284755 invoked by uid 1000);
-	Wed, 08 Nov 2023 16:11:38 -0000
-Date: Wed, 8 Nov 2023 10:11:38 -0600
+        Wed, 08 Nov 2023 08:17:04 -0800 (PST)
+Received: (nullmailer pid 2331961 invoked by uid 1000);
+	Wed, 08 Nov 2023 16:17:02 -0000
+Date: Wed, 8 Nov 2023 10:17:02 -0600
 From: Rob Herring <robh@kernel.org>
 To: Jason Gunthorpe <jgg@nvidia.com>
 Cc: acpica-devel@lists.linuxfoundation.org, 
@@ -57,11 +57,11 @@ Cc: acpica-devel@lists.linuxfoundation.org,
 	Krishna Reddy <vdumpa@nvidia.com>, Vineet Gupta <vgupta@kernel.org>, 
 	virtualization@lists.linux-foundation.org, Wei Liu <wei.liu@kernel.org>, 
 	Will Deacon <will@kernel.org>, Zhenhua Huang <quic_zhenhuah@quicinc.com>
-Subject: Re: [PATCH RFC 03/17] of: Use -ENODEV consistently in
+Subject: Re: [PATCH RFC 02/17] of: Do not return struct iommu_ops from
  of_iommu_configure()
-Message-ID: <20231108161138.GA2254211-robh@kernel.org>
+Message-ID: <20231108161702.GB2254211-robh@kernel.org>
 References: <0-v1-5f734af130a3+34f-iommu_fwspec_jgg@nvidia.com>
- <3-v1-5f734af130a3+34f-iommu_fwspec_jgg@nvidia.com>
+ <2-v1-5f734af130a3+34f-iommu_fwspec_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -70,22 +70,18 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <3-v1-5f734af130a3+34f-iommu_fwspec_jgg@nvidia.com>
+In-Reply-To: <2-v1-5f734af130a3+34f-iommu_fwspec_jgg@nvidia.com>
 
-On Fri, Nov 03, 2023 at 01:44:48PM -0300, Jason Gunthorpe wrote:
-> Instead of returning 1 and trying to handle positive error codes just
-> stick to the convention of returning -ENODEV. Remove references to ops
-> from of_iommu_configure(), a NULL ops will already generate an error code.
-
-nit: "iommu: of: ..." or "iommu/of: " for the subject. "of: ..." is 
-generally drivers/of/.
-
-> 
-> There is no reason to check dev->bus, if err=0 at this point then the
-> called configure functions thought there was an iommu and we should try to
-> probe it. Remove it.
+On Fri, Nov 03, 2023 at 01:44:47PM -0300, Jason Gunthorpe wrote:
+> Nothing needs this pointer. Return a normal error code with the usual
+> IOMMU semantic that ENODEV means 'there is no IOMMU driver'.
 > 
 > Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 > ---
->  drivers/iommu/of_iommu.c | 42 +++++++++++++---------------------------
->  1 file changed, 13 insertions(+), 29 deletions(-)
+>  drivers/iommu/of_iommu.c | 29 ++++++++++++++++++-----------
+>  drivers/of/device.c      | 22 +++++++++++++++-------
+
+Acked-by: Rob Herring <robh@kernel.org>
+
+>  include/linux/of_iommu.h | 13 ++++++-------
+>  3 files changed, 39 insertions(+), 25 deletions(-)
