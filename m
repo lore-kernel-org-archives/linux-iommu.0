@@ -1,119 +1,86 @@
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.100])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yw1-f202.google.com (mail-yw1-f202.google.com [209.85.128.202])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5BD53CA4C
-	for <iommu@lists.linux.dev>; Wed,  8 Nov 2023 05:27:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D348AD263
+	for <iommu@lists.linux.dev>; Wed,  8 Nov 2023 06:22:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--danielmentz.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Vdc6cYBY"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1699421255; x=1730957255;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=fMu5EDzVmizg3Q2e6bKjnNDsScNf7NXsqCUrWwUVBJs=;
-  b=Vdc6cYBYtaYGrho1QIo4m9uPxlYoYnZQypzPrk1oiYy5PQ0jx3hM+k7k
-   Vfwq+7V7HMe7gUiWa8TCclIMEzSsgdAgCJEvhPL11QQi5WrJdf6G/lb0e
-   aE9f1fWYmNy7tA3g6DcoJMcDjsKN1icp90iDl+ekelrihWk7LU9qI7fUJ
-   mwgcFkXfDd7kaBqrKgwvISYKUEwvIHvhnON4v1ykZ6aH6hNfmnrFLYjfG
-   CfjlATLN087mJFDIT4v3K4kq2ifMi0SOZFiCMCutA6G070ZnGKS1rj5IW
-   O6GQEA1ZxBFOfLR7grqxy1o5lQJa1OO4x1s0tPBT20XwWpKaUX0WjN8FZ
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10887"; a="456189872"
-X-IronPort-AV: E=Sophos;i="6.03,285,1694761200"; 
-   d="scan'208";a="456189872"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Nov 2023 21:27:34 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10887"; a="880090281"
-X-IronPort-AV: E=Sophos;i="6.03,285,1694761200"; 
-   d="scan'208";a="880090281"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
-  by fmsmga002.fm.intel.com with ESMTP; 07 Nov 2023 21:27:31 -0800
-Message-ID: <78c28624-caa2-4207-b6dc-8810a4dfe2ab@linux.intel.com>
-Date: Wed, 8 Nov 2023 13:23:28 +0800
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="siKS+Q/P"
+Received: by mail-yw1-f202.google.com with SMTP id 00721157ae682-5a7cc433782so77638817b3.3
+        for <iommu@lists.linux.dev>; Tue, 07 Nov 2023 22:22:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1699424551; x=1700029351; darn=lists.linux.dev;
+        h=cc:to:from:subject:mime-version:message-id:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=vtkncXbsGTzkcpmqE5CtxJKiAY38OeROQGiJSCfS/Bw=;
+        b=siKS+Q/P87jYea4lnJ+UK+ceA5MWD5HOHr0TqW8Opbk3nfiBgOmSAm6gYFNF2faWgZ
+         OR6v8g22vvXzvuzS+p+LQhHukHYpnTYpEc3rVFBrr0IsN5lJnphrGzOaMLyqBuqLIyHD
+         +OfmEoKRLr8VYXE5qTdKL7UwFPyVM2IB9YhOukzYQiYyubUddUWTREsBHDGU1/bTWUrD
+         th380YbGUUGekUFM1o7Am6NMftAaP4pzvCHiuOfR5jFr5sdEv40tdpTSWzDH7MDYj+hf
+         z5BQM8cf119HPbnXqdmiIF/ACFH20DkyCvpXvANc9j430z0HvROLRLFFwYZLHZcTfKu8
+         0U2Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1699424551; x=1700029351;
+        h=cc:to:from:subject:mime-version:message-id:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=vtkncXbsGTzkcpmqE5CtxJKiAY38OeROQGiJSCfS/Bw=;
+        b=vXjhKUJpXYj1qZuRMUNJ0Xzs7oMb1i5dFuDVDhDm0/FMEKSkPh3OSioF0n4siD6l5b
+         rboVMt62msl2oC+0gcNUFWkoBZFLR+eKxeXBUlNwKFljKq+OUq4Jy/aPP+GyQlVHVAjR
+         a75S3B2RtM9Cn8xeweNsjZsvObV6gfiiWXqiP5pN3eq9TJsgbqZbRP3FS7OED3fC3B9j
+         szgNSIqcyzfzyRMzq8gSZ0qiE3OvnKsoApTZNbtm+a+xq6xadEMSL0nt6nhCyX/Jds5h
+         hzdcMoDwYR0pWezZJ/3f4bkh0W5xxxNRMIByoHJaYamkrPDcyfc/1oZmCi8nfUdmTV+q
+         Y47A==
+X-Gm-Message-State: AOJu0Yz+wAN/k9bxHj/NQOqYfSW4c1oj8jj8+wds+zDxmc9J2TTt9a17
+	cCgOKVgWaBV6RJRhAC7Tm+TKdIzROiIKha+UML4dIVAKUXfTuMP+5aIsDmTYp8XS30yqRyLNkzU
+	q7hq9e4i2xvyM5KZL0V/92NyOWEz9UDLvGNjJoLFbxOGcOFlrJ+1BtFFoa6WJCo4f+ZnUcjmZpw
+	==
+X-Google-Smtp-Source: AGHT+IFHKHZTU1b+Uv0rAAJi3YZuxBu9Bkz4bp3XNDgKryp3AH9pPzgQGaS9NQt4cjgUqefGJ6gP1O/n/3OmZXwI3g==
+X-Received: from danielmentz2.mtv.corp.google.com ([2620:15c:72:202:13ad:4116:9566:f14])
+ (user=danielmentz job=sendgmr) by 2002:a81:4853:0:b0:5a7:f68c:8d1 with SMTP
+ id v80-20020a814853000000b005a7f68c08d1mr14012ywa.10.1699424550472; Tue, 07
+ Nov 2023 22:22:30 -0800 (PST)
+Date: Tue,  7 Nov 2023 22:22:26 -0800
+Message-Id: <20231108062226.928985-1-danielmentz@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, iommu@lists.linux.dev,
- linux-arm-kernel@lists.infradead.org, quic_tingweiz@quicinc.com
-Subject: Re: [RFC PATCH 1/1] iommu: Fix one concurrency issue happens on
- non-iommu binding device
-Content-Language: en-US
-To: Zhenhua Huang <quic_zhenhuah@quicinc.com>, jgg@ziepe.ca,
- robin.murphy@arm.com, joro@8bytes.org, will@kernel.org
-References: <1698825902-10685-1-git-send-email-quic_zhenhuah@quicinc.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <1698825902-10685-1-git-send-email-quic_zhenhuah@quicinc.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.42.0.869.gea05f2083d-goog
+Subject: [PATCH] iommu: Fix printk arg in of_iommu_get_resv_regions()
+From: Daniel Mentz <danielmentz@google.com>
+To: iommu@lists.linux.dev
+Cc: Thierry Reding <treding@nvidia.com>, Frank Rowand <frowand.list@gmail.com>, 
+	Rob Herring <robh@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <jroedel@suse.de>, 
+	Daniel Mentz <danielmentz@google.com>
+Content-Type: text/plain; charset="UTF-8"
 
-On 11/1/23 4:05 PM, Zhenhua Huang wrote:
-> Thread (1)
-> During SMMU probe:
-> iommu_device_register
->          bus_iommu_probe
->                  probe_iommu_group for all devices in bus
->                          _probe_iommu_device
-> (non-iommu binding device)	first allocate dev->iommu then free
-> 
-> Thread (2)
-> client device probing:
-> dma_configure
->          of_iommu_configure
->                  get dev->iommu->fwspec and call fwspec->ops
-> 
-> There may be a time window that dev->iommu allocated even for non iommu
-> binding device in thread (1). It would be possible thread (2) meet Use-
-> after-free errors at that window.
-> 
-> Fix it by closing the time window, set dev->iommu only once
-> ops->probe_device successfully.
-> Previous discussion details:
-> https://lore.kernel.org/linux-arm-kernel/20231017163337.GE282036@ziepe.ca/T/#mee0d7bdc375541934a571ae69f43b9660f8e7312
-> 
-> Suggested-by: Jason Gunthorpe<jgg@ziepe.ca>
-> Signed-off-by: Zhenhua Huang<quic_zhenhuah@quicinc.com>
-> ---
-> Hi Jason, Robin,
-> Shall we first address non-iommu binding device crash with below patch? It's
-> seen a lot especially when smmu probing and other driver probing at same time.
-> Although it doesn't comprehensively fixes race with of_xlate VS probe, it
-> indeed solves issue for non-iommu binding device.
-> 
->   drivers/iommu/iommu.c | 42 +++++++++++++++++++++++++++++-------------
->   include/linux/iommu.h |  5 +----
->   2 files changed, 30 insertions(+), 17 deletions(-)
-> 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index f17a111..88ce802 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -386,6 +386,17 @@ static u32 dev_iommu_get_max_pasids(struct device *dev)
->   	return min_t(u32, max_pasids, dev->iommu->iommu_dev->max_pasids);
->   }
->   
-> +void dev_iommu_priv_set(struct device *dev, void *priv)
-> +{
-> +	struct dev_iommu *dev_iommu;
-> +
-> +	dev_iommu = dev_iommu_get(dev);
-> +	if (WARN_ON(!dev_iommu))
-> +		return;
-> +
-> +	dev->iommu->priv = priv;
-> +}
+The variable phys is defined as (struct resource *) which aligns with
+the printk format specifier %pr. Taking the address of it results in a
+value of type (struct resource **) which is incompatible with the format
+specifier %pr. Therefore, remove the address of operator (&).
 
-The dev_iommu_priv_set() function is intended for iommu drivers to store
-per-device iommu private data after successful device probing. Invoking
-dev_iommu_get() within this helper is inappropriate as it may
-inadvertently allocate dev->iommu, which is not the intended purpose of
-dev_iommu_priv_set().
+Fixes: a5bf3cfce8cb ("iommu: Implement of_iommu_get_resv_regions()")
+Signed-off-by: Daniel Mentz <danielmentz@google.com>
+---
+ drivers/iommu/of_iommu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Best regards,
-baolu
+diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+index 157b286e36bf..d1f3b92560bc 100644
+--- a/drivers/iommu/of_iommu.c
++++ b/drivers/iommu/of_iommu.c
+@@ -191,7 +191,7 @@ iommu_resv_region_get_type(struct device *dev,
+ 	if (start == phys->start && end == phys->end)
+ 		return IOMMU_RESV_DIRECT;
+ 
+-	dev_warn(dev, "treating non-direct mapping [%pr] -> [%pap-%pap] as reservation\n", &phys,
++	dev_warn(dev, "treating non-direct mapping [%pr] -> [%pap-%pap] as reservation\n", phys,
+ 		 &start, &end);
+ 	return IOMMU_RESV_RESERVED;
+ }
+-- 
+2.42.0.869.gea05f2083d-goog
+
