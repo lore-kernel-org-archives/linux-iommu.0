@@ -1,238 +1,198 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.151])
+Received: from bee.tesarici.cz (bee.tesarici.cz [77.93.223.253])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E9309DDA2
-	for <iommu@lists.linux.dev>; Wed,  8 Nov 2023 09:01:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 05D60DF46
+	for <iommu@lists.linux.dev>; Wed,  8 Nov 2023 09:13:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=tesarici.cz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tesarici.cz
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="gu5Dmcrk"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1699434108; x=1730970108;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=JrKd/FpYYdxtRgSOfkdwfAITwFk9FYcdWxpQYPKkCSI=;
-  b=gu5DmcrkPjNwb6S+yo0+d/iQIe05qmayE5sAM8DDJOQf+fqImOnffV7f
-   7dxxrhwqoAqSqiuI+QqKfYYK3LlSDTdWtRoKGw1oMxqTuDyR+DVuFp5Ds
-   RubiqN5WVTRmRjvIGAJ+Xn3BD/WVlji0geF4bDqE1xvr+4JQgTxc8Ir2Q
-   Bt0V4E7Ufbh3r7vclw3ZAhn73zGeyO7896aKdTGOH3E55QUBv1NcPS6DE
-   hHHdIMqulaPrpwMxsn4i/yyh3amBji7nKZC8fNL2E/YqBP5WAZ9vJk/Zc
-   Lm7tkg1xqss5nWoXFubcHQAjAehOeaIpiLu/ruT+CSFlGJM7wSUMukbQ8
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10887"; a="369925989"
-X-IronPort-AV: E=Sophos;i="6.03,285,1694761200"; 
-   d="scan'208";a="369925989"
-Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Nov 2023 01:01:30 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.03,285,1694761200"; 
-   d="scan'208";a="11124743"
-Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
-  by fmviesa001.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 08 Nov 2023 01:01:30 -0800
-Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.34; Wed, 8 Nov 2023 01:01:30 -0800
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.34; Wed, 8 Nov 2023 01:01:30 -0800
-Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.34 via Frontend Transport; Wed, 8 Nov 2023 01:01:30 -0800
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.41) by
- edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.34; Wed, 8 Nov 2023 01:01:29 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=crsk3O94y5KwBSJJdNW7nPFm8Kju0PLpnFnVnBjxYTIuUUxnNsnQJaL4KnYWwBINr+JDr1JQbDadRU9s4fekfeY2VB0lf0Cvq4RDAhyAd3hsByWIiaeIhv2dkFxstJUjKAI3X7RsOv4pDSoid/Qa/xzmqB6AxqFOEEEwjmgWaY/PgprCVogA52Y3xbmx8o4fmJ2zzxetEtJrN6ORJLWCFpFbJ/FI6tdbmpDy3achdvgHBFDp0GIeloDDHk5ooloUij8HSQuqjDFAjwXVcHRkmAfOoiJc0lpBHNipQqlMy0cqIoGJdbMTPPG1lagI9gXz7lgX8FcWs9W0a8eAGW3Pew==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=IMA2lIXg8511KNRRObnvfdydJiBlSLzUuINzr+tLvgg=;
- b=lpBQGKtYw1Ze3y0/iDWojpJ2qrAcwErOxJIFBfCKnevAfmbJNLkz182TKwCdTKlpI4tARP9Z8L8Iowh45T2ADHRcjpUDhMX8xW1sh7+alQLEaNNUhHMDyZTJcGk15nnxiEUAh2IMGumOJ/pZqVkOhfpo1mZwEsUMvjMPWlCGegW5iHhwe+yCx9Wb+EQYLVtLHO8bBFnLDRU2Umw+ZwOUyTdwStYc4jh5i/XX6lS+QOjalGOaJj1Lwg2bxsomo1aQjN+LiC6N4pnovF3vU0y5X1PhxbTFYOeqJjfxGbdvqpmdc7roJ6ZCuX94wuIeIm6d4vvuBnV6GjU85W4uB5ayiw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from DS0PR11MB7529.namprd11.prod.outlook.com (2603:10b6:8:141::20)
- by PH8PR11MB7118.namprd11.prod.outlook.com (2603:10b6:510:216::6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6954.28; Wed, 8 Nov
- 2023 09:01:27 +0000
-Received: from DS0PR11MB7529.namprd11.prod.outlook.com
- ([fe80::e4ae:3948:1f55:547d]) by DS0PR11MB7529.namprd11.prod.outlook.com
- ([fe80::e4ae:3948:1f55:547d%4]) with mapi id 15.20.6954.024; Wed, 8 Nov 2023
- 09:01:27 +0000
-Message-ID: <8aa35b4e-6bf1-461b-8d7a-5331dfdc3934@intel.com>
-Date: Wed, 8 Nov 2023 17:03:55 +0800
-User-Agent: Mozilla Thunderbird
-Subject: Re: [RFC 3/7] iommufd: Add iommufd_device_bind_pasid()
-Content-Language: en-US
-To: "Tian, Kevin" <kevin.tian@intel.com>, "joro@8bytes.org" <joro@8bytes.org>,
-	"alex.williamson@redhat.com" <alex.williamson@redhat.com>, "jgg@nvidia.com"
-	<jgg@nvidia.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>
-CC: "cohuck@redhat.com" <cohuck@redhat.com>, "eric.auger@redhat.com"
-	<eric.auger@redhat.com>, "nicolinc@nvidia.com" <nicolinc@nvidia.com>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>, "mjrosato@linux.ibm.com"
-	<mjrosato@linux.ibm.com>, "chao.p.peng@linux.intel.com"
-	<chao.p.peng@linux.intel.com>, "yi.y.sun@linux.intel.com"
-	<yi.y.sun@linux.intel.com>, "peterx@redhat.com" <peterx@redhat.com>,
-	"jasowang@redhat.com" <jasowang@redhat.com>,
-	"shameerali.kolothum.thodi@huawei.com"
-	<shameerali.kolothum.thodi@huawei.com>, "lulu@redhat.com" <lulu@redhat.com>,
-	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>, "Duan,
- Zhenzhong" <zhenzhong.duan@intel.com>, "Martins, Joao"
-	<joao.m.martins@oracle.com>
-References: <20231009085123.463179-1-yi.l.liu@intel.com>
- <20231009085123.463179-4-yi.l.liu@intel.com>
- <BN9PR11MB5276BCF486E9E4F24913883E8CCDA@BN9PR11MB5276.namprd11.prod.outlook.com>
- <0ea819d9-1169-48b1-8579-3a054a0bd077@intel.com>
- <BN9PR11MB5276A47616E386F00AC50D728CA8A@BN9PR11MB5276.namprd11.prod.outlook.com>
-From: Yi Liu <yi.l.liu@intel.com>
-In-Reply-To: <BN9PR11MB5276A47616E386F00AC50D728CA8A@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SI2PR01CA0011.apcprd01.prod.exchangelabs.com
- (2603:1096:4:191::6) To DS0PR11MB7529.namprd11.prod.outlook.com
- (2603:10b6:8:141::20)
+	dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b="zQpYhRcZ"
+Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by bee.tesarici.cz (Postfix) with ESMTPSA id 5FDED184639;
+	Wed,  8 Nov 2023 10:13:51 +0100 (CET)
+Authentication-Results: mail.tesarici.cz; dmarc=fail (p=none dis=none) header.from=tesarici.cz
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tesarici.cz; s=mail;
+	t=1699434831; bh=8YvlJP4iehF5VC4lYo9yr3Gk1KOKmHeLrYZG+pdLVxc=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=zQpYhRcZSsQhsdYt6OAMWjWj/1XvjsMN6ErRHy5DsAcVuH/fDLaBQHivbO9laMGOg
+	 2l85K13CiAFz0ifJan0FYClLvJ4MdyM3QMgKJvnIckZr7af1Y4dShgg3YbLsluuUBj
+	 VFggBmKgfCCmzHdzASRGg4uBDynoa3fATMSvLSKGZ5lj4DJMSanfaZBXvasKhuVOHr
+	 ak/inXItCQaK7proFvieb6/oI8qOZC9siRHqWp7czMu4J1L48W5mPM370dM84klnWh
+	 +r3Z65N2Uxq2ZPhi/7myR/u6xsbh0kA1YRgPRnelz9XmiTlnsgGQou1xggb6UFfPuZ
+	 gUiOfBkWe8ogg==
+Date: Wed, 8 Nov 2023 10:13:47 +0100
+From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
+To: Halil Pasic <pasic@linux.ibm.com>
+Cc: Niklas Schnelle <schnelle@linux.ibm.com>, Christoph Hellwig
+ <hch@lst.de>, Bjorn Helgaas <bhelgaas@google.com>, Marek Szyprowski
+ <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Petr
+ Tesarik <petr.tesarik1@huawei-partners.com>, Ross Lagerwall
+ <ross.lagerwall@citrix.com>, linux-pci <linux-pci@vger.kernel.org>,
+ linux-kernel@vger.kernel.org, iommu@lists.linux.dev, Matthew Rosato
+ <mjrosato@linux.ibm.com>, Jianxiong Gao <jxgao@google.com>
+Subject: Re: Memory corruption with CONFIG_SWIOTLB_DYNAMIC=y
+Message-ID: <20231108101347.77cab795@meshulam.tesarici.cz>
+In-Reply-To: <20231107182420.0bd8c211.pasic@linux.ibm.com>
+References: <104a8c8fedffd1ff8a2890983e2ec1c26bff6810.camel@linux.ibm.com>
+	<20231103171447.02759771.pasic@linux.ibm.com>
+	<20231103214831.26d29f4d@meshulam.tesarici.cz>
+	<20231107182420.0bd8c211.pasic@linux.ibm.com>
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; x86_64-suse-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS0PR11MB7529:EE_|PH8PR11MB7118:EE_
-X-MS-Office365-Filtering-Correlation-Id: 39c55044-e394-4175-29b2-08dbe0394a43
-X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: LjIpLP0lfOsHPtgzyGo7hNSnKUVxOv953Fa8eobJI1ssf72lwYmRg9vG8hFFcBOw5WwwxG1RoKKht69x7iN5JgPYOxHHkt9s/rjOYFbXMqlMVyHnQAReL2w/s1vyMBPywyGrYlX+yE8P3Kcr93gdkGDnjibxklTkVUfeWgMtdc0MAVIAM2gAlqC0VskiaZpI8QYt5/w1FE7uDDUAWl90dAavBM62REtC2p93lc7PN1JaLIeKy+72C/zwFQQen4YRlO58zLaUnpLr/mxMFsagUrWb3Xytw4aB+WCIJh5NJUWww9iw0Q0S5YMb8d1voAs+DO04NihWgbpIRnosVIq9KQIXpcB47WeUmg1aT3V1kA2pmeLO7QAgqMFyfPfoHSG9WKFXqvKahVNhwo/txe3HRACgFZE+twge8SBoasXEP3+IHEOPy38MaDPJROExdm7UGRSDJXdTjAN8+iKbh0RH0LR/1BRBy8Kw0GVoltw2gwcvXvUL4j/X8y9/eH1KF4ZplaW16p8u1eBopFS8j2iIobMirjowzMhkyhX3YuNl6l45clIFKWANrUSKmTUHHpojJo/aWY6a2FegEiAgdUqGE+XLUac444MDVht+HX+EF9++18Hy7QB53mAXGncEd65CN9swx8R/oskVwKBiD1Q7uw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS0PR11MB7529.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(396003)(366004)(39860400002)(376002)(346002)(136003)(230922051799003)(186009)(64100799003)(451199024)(1800799009)(6666004)(6486002)(6506007)(53546011)(6512007)(83380400001)(2616005)(26005)(2906002)(7416002)(5660300002)(66556008)(66946007)(41300700001)(8936002)(66476007)(316002)(478600001)(54906003)(110136005)(4326008)(8676002)(31696002)(38100700002)(36756003)(86362001)(82960400001)(66899024)(31686004)(45980500001)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?aEMzWnQxd2NwQnlkTmF5cERXS1B4UWJDekIzNnRHS3JtL2g3bmdMQUFkNEk0?=
- =?utf-8?B?YVdwd056Q0dPRWdaUWtKaXlyc3cyclJSRkdWTWJOQWtadFFMNjlmNXRDTkdJ?=
- =?utf-8?B?aVpocitqaHkwQ1ozZTVuZHd2NDBGbWFFZmd4ZFArcXN6MkF6K2lPT1YwL01O?=
- =?utf-8?B?ODVPQm51bTAwTmJUd08wKzRYVTk3ckFKS2wyeDZLK3g2ZE8xZExiMEFVVWp3?=
- =?utf-8?B?eUVsSWRFOG1JeVBOSHI1YitpQTBBTXJLcGY0KzBZb3QweWh3MVplZWFEanFS?=
- =?utf-8?B?VDgyS0lPRmJsSzNoMi96NXBqRFArem0rcEtUVmkwZ0hGQjc2bGxabzdKaS9G?=
- =?utf-8?B?Z3Z4b25MUzdIOWVFTTJMZUY2eTBwSnExU3ZtRUV4N2l2TU8wMWoxYk1lYzJk?=
- =?utf-8?B?Ry9qSXFvT2pDbmpuSHdVWGQxeFRCcUlTSE1aQlAwaS9BaHl2ZjhaUGxpM3NP?=
- =?utf-8?B?VHdDUTR1Mmk4WjBLUmdEdDRGb1hKSm4wcFJIcjFWVHlGM09ZS3RWTGdzM2lp?=
- =?utf-8?B?blZQNDZyd1VGeEQvUHB0dHlXMDAwU1Blcm9sVy9VcXVFak1Ubmh4YXAvUGhy?=
- =?utf-8?B?VDkxUE9yMUd0SUV5SmtFWkxKMjFXem5tc3VIZW81WXk3MHpJU09GZnBuZm84?=
- =?utf-8?B?MFFYbjhJbHZnT0wrbzFNbklyWmhBWFpvVkN1eGJmVkk5MFFybFRBLytrL2tt?=
- =?utf-8?B?WHdaeGRETmVQQ0hnL3dpSUZ6cDhVK0VTSFl1N1NpMm9EaVBTa2JMc3VkOWF5?=
- =?utf-8?B?VGxCeHNrZGJBeTdhM25abUtrRVBSV3Z6L3FORlVGQlRPMmlCbVQxVnNnWHVn?=
- =?utf-8?B?RDhzQUpHT3dQYnBSbVFBdVNWNlpSV3EyQ0lBVFlXM09vL3RBSFphK2Z1b3I3?=
- =?utf-8?B?NVhaYnpab2lxd0hWU1E5YkZjbmlNWlhucWh6QTBQYllSYjBRUXlsM0hLc3BQ?=
- =?utf-8?B?MkRjUjR2MVhScE9JY3V1MjN4M2hpaWdEMGRRNjgvYzBXQU1JRTdQRmRwMWRa?=
- =?utf-8?B?aU1SbVFrMmZvbm4rL0tQVTFUcTZWSUhiVGxUZEpEUzlUTEJQVlJmREZsRW9Z?=
- =?utf-8?B?NFQwMHIvVVdIZTRLU3c2TFBDOXFiZGpPV2UvejF6dmdBYTNZbTJOYUxUL25Q?=
- =?utf-8?B?NHVmRjBRa01mUUJqcnNab1BYekdxYjI4NVVUMW5oL1VIanh2MHpLRXN3YzFS?=
- =?utf-8?B?WDcvTno1ZnY5ZHQzN3VDWlpRaFpqUzEvSUt5U0dLWUVYYis4cHd6UHFTdjRv?=
- =?utf-8?B?Lys5Sk4zbTBnQTVVQ29zOEV3THlSbDRZc0t5Q3B0dGNod3ZsY0txV0FyL3lV?=
- =?utf-8?B?bzJqV05XSThVM1lGSjFtRVlEREtZU0oxQW1WY2FDTjZBNk5RdE9oZ3dyMzNQ?=
- =?utf-8?B?MDJ4ZmtIZlVMY2tscFl6bDlrNmxNUEFUL0g5cm1HbjZYZ1NXelUwZnJwNVor?=
- =?utf-8?B?ZEk3VVBBRmxLZkNxWXBKb29MZXdMdUxEc0pJMEFic01qOGRWY01pSHpoZTFr?=
- =?utf-8?B?NjFoRjBoUnRiWnVkQjczSlQwT21VdDFBZkh0WDZ5ZjMzZUQ1S3RmVkVPdjhM?=
- =?utf-8?B?MXREZE9NTkNCTm8xN3dkdndUdnIycHgrZEhHRlYxWEJhdTFLUkZjUmVTWXZD?=
- =?utf-8?B?MlptNFpobXNZSW1EL2kvV3dDSWdVUFBCL1Bad01MZXYyYk5WcmtiWnRsSHBY?=
- =?utf-8?B?aER5cFZxTVpSRkZGWjFhWFRUSEFoRWVVeTFZNXlJcFhySjlCeXJVR3JVRFJi?=
- =?utf-8?B?YmpIVnhtUXdZOGd5VDN6L24xdW5rcmdtTlZiRmhndm9Od0lmY0xBcnB1b0sv?=
- =?utf-8?B?Q2NqK1M3eGlGTHY4K1lNZXdSbEF2S2l0c3plUG55djlzdzBkTlRtV05sdXNR?=
- =?utf-8?B?VnUyVXNralI1TUFoY1BFaGt6bzFVanZLd1V5bnJmajZPNHZJM0ZDbUxBZGl6?=
- =?utf-8?B?QUNjejIyWU1lQzVNQ0dKeXpkU0YyRVVHMWV5allrQUU1TFFoTlArNHROKzNM?=
- =?utf-8?B?TFBudVJqTXpablR1elVsaHRqNVlMSWhmb1grZDRyaEk5UmVXeDQ2em9mN1cw?=
- =?utf-8?B?UWRDM21rRGFPMThpZUpxVWNPTU1GZWk5TUpjRi80ZmY0amNNUnVLd2xVWGFP?=
- =?utf-8?Q?F/t/mTzCoqYHoB3N96Wwg/AY9?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 39c55044-e394-4175-29b2-08dbe0394a43
-X-MS-Exchange-CrossTenant-AuthSource: DS0PR11MB7529.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Nov 2023 09:01:26.9837
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: prWrS1vKi6NKdXO1NkZhGN4fs/lTkPpdia/74JFTycIK4XNxN4P/9Lq/usVFLgqZvIzwRAgTt/5d0D4mxHFkLQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR11MB7118
-X-OriginatorOrg: intel.com
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On 2023/11/8 16:46, Tian, Kevin wrote:
->> From: Liu, Yi L <yi.l.liu@intel.com>
->> Sent: Wednesday, November 8, 2023 3:45 PM
->>
->> On 2023/10/10 16:19, Tian, Kevin wrote:
->>>> From: Liu, Yi L <yi.l.liu@intel.com>
->>>> Sent: Monday, October 9, 2023 4:51 PM
->>>>
->>>> +struct iommufd_device *iommufd_device_bind_pasid(struct
->> iommufd_ctx
->>>> *ictx,
->>>> +						 struct device *dev,
->>>> +						 u32 pasid, u32 *id)
->>>> +{
->>>> +	struct iommufd_device *idev;
->>>> +	int rc;
->>>> +
->>>> +	/*
->>>> +	 * iommufd always sets IOMMU_CACHE because we offer no way for
->>>> userspace
->>>> +	 * to restore cache coherency.
->>>> +	 */
->>>> +	if (!device_iommu_capable(dev, IOMMU_CAP_CACHE_COHERENCY))
->>>> +		return ERR_PTR(-EINVAL);
->>>> +
->>>> +	/*
->>>> +	 * No iommu supports pasid-granular msi message today. Here we
->>>> +	 * just check whether the parent device can do safe interrupts.
->>>> +	 * Isolation between virtual devices within the parent device
->>>> +	 * relies on the parent driver to enforce.
->>>> +	 */
->>>> +	if (!iommufd_selftest_is_mock_dev(dev) &&
->>>> +	    !msi_device_has_isolated_msi(dev)) {
->>>> +		rc = iommufd_allow_unsafe_interrupts(dev);
->>>> +		if (rc)
->>>> +			return ERR_PTR(rc);
->>>> +	}
->>>> +
->>>
->>> Only MemWr w/o pasid can be interpreted as an interrupt message
->>> then we need msi isolation to protect.
->>
->> yes.
->>
->>>
->>> But for SIOV all MemWr's are tagged with a pasid hence can never
->>> trigger an interrupt. From this angle looks this check is unnecessary.
->>
->> But the interrupts out from a SIOV virtual device do not have pasid (at
->> least today). Seems still need a check here if we consider this bind for
->> a SIOV virtual device just like binding a physical device.
->>
-> 
-> this check assumes the device is trusted. as long as there is no way
-> for malicious guest to generate arbitrary interrupt messages then
-> it's fine.
-> 
-> for physical device a MemWr can be interpreted as interrupt so
-> we need msi isolation.
-> 
-> for SIOV all MemWr has pasid then we don't have such worry.
-> IMS is under host's control so interrupt messages are already
-> sanitized.
+On Tue, 7 Nov 2023 18:24:20 +0100
+Halil Pasic <pasic@linux.ibm.com> wrote:
 
-sure. this makes sense to me now.:)
+> On Fri, 3 Nov 2023 21:50:53 +0100
+> Petr Tesa=C5=99=C3=ADk <petr@tesarici.cz> wrote:
+>=20
+> > > In our opinion the first step towards getting this right is to figure=
+ out what
+> > > the different kinds of alignments are really supposed to mean. For ea=
+ch of the
+> > > mechanisms we need to understand and document, whether making sure th=
+at the
+> > > bounce buffer does not stretch over more of certain units of memory (=
+like,
+> > > pages, iova granule size, whatever), or is it about preserving offset=
+ within a
+> > > certain unit of memory, and if yes to what extent (the least signific=
+ant n-bits
+> > > of the orig_addr dictated by the respective mask, or something differ=
+ent).   =20
+> >=20
+> >=20
+> > Seconded. I have also been struggling with the various alignment
+> > constraints. I have even written (but not yet submitted) a patch to
+> > calculate the combined alignment mask in swiotlb_tbl_map_single() and
+> > pass it down to all other functions, just to make it clear what
+> > alignment mask is used. =20
+>=20
+> Can you cc me when posting that rework?
 
--- 
-Regards,
-Yi Liu
+Absolutely. I mean, if it still makes sense after we clarify the
+intended goals of the various alignment parameters. Because I believe
+you have indeed found something!
+
+> > My understanding is that buffer alignment may be required by:
+> >=20
+> > 1. hardware which cannot handle an unaligned base address (presumably
+> >    because the chip performs a simple OR operation to get the addresses
+> >    of individual fields); =20
+>=20
+> I'm not sure I understood this properly. What is "base address" in this
+> context? Is for swiotlb "base address" basically the return value
+> of swiotlb_tbl_map_single() -- I referred to this as tlb_addr previously?
+>
+> If yes, I understand that  satisfying 1 means satisfying=20
+> tlb_addr & combined_mask =3D=3D 0, where combined_mask describes the
+> combined alignment requirement (i.e. combined_mask =3D=3D min_align_mask |
+> alloc_align_mask | (alloc_size < PAGE_SIZE ? 0 : (PAGE_SIZE-1)). Does
+> that sound about right?
+>=20
+> Can we assume that if 1. then the start address of the mapping
+> that is orig_addr needs to be already aligned?
+
+
+No, not really. A very nice diagram can be found in commit 5f89468e2f06
+("swiotlb: manipulate orig_addr when tlb_addr has offset"):
+
+"""
+  1. Get dma_addr_t from dma_map_single()
+
+  dma_addr_t tlb_addr =3D dma_map_single(dev, vaddr, vsize, DMA_TO_DEVICE);
+
+      |<---------------vsize------------->|
+      +-----------------------------------+
+      |                                   | original buffer
+      +-----------------------------------+
+    vaddr
+
+   swiotlb_align_offset
+       |<----->|<---------------vsize------------->|
+       +-------+-----------------------------------+
+       |       |                                   | swiotlb buffer
+       +-------+-----------------------------------+
+	    tlb_addr
+"""
+
+Here, the aligned address is outside the original buffer at
+[vadddr; vaddr+vsize). This is what I referred to as "base
+address". The N lowest bits of this address are zero. It may not
+even be mapped in the SWIOTLB if N is greater than IO_TLB_SHIFT.
+However, the exact values of the N lowest bits of the original
+buffer's physical start address are preserved in tlb_addr.
+
+> > 2. isolation of untrusted devices, where no two bounce buffers should
+> >    end up in the same iova granule;
+> >=20
+> > 3. allocation size; I could not find an explanation, so this might be
+> >    merely an attempt at reducing SWIOTLB internal fragmentation. =20
+>=20
+>=20
+> Assumed I understood 1 correctly, I think we are missing something.
+>=20
+> 4. preserve the n (0 <=3D n <=3D 31) lowest bits of all addresses within =
+the
+> mapping.
+>=20
+> Was it just 1, 2 and 3 then we wouldn't need the whole offsetting
+> business introduced by commit 1f221a0d0dbf ("swiotlb: respect
+> min_align_mask"). Let me cite from its commit message:
+>=20
+> """
+>     Respect the min_align_mask in struct device_dma_parameters in swiotlb.
+>    =20
+>     There are two parts to it:
+>      1) for the lower bits of the alignment inside the io tlb slot, just
+>         extent the size of the allocation and leave the start of the slot
+>          empty
+>      2) for the high bits ensure we find a slot that matches the high bits
+>         of the alignment to avoid wasting too much memory
+>    =20
+>     Based on an earlier patch from Jianxiong Gao <jxgao@google.com>.
+> """
+>=20
+> Do we agree, that 4. needs to be added to the list? Or was it supposed
+> to be covered by 1.?
+
+That's it. It's what case 1 is supposed to be. However, IIUC cases
+2 and 3 don't need to preserve any lowest bits.
+
+At least for case 3, I'm now quite confident that the intention
+was to start big buffers on a page-aligned slot, leaving the gaps
+for buffers smaller than a page.
+
+Case 2 is not clear to me. Some comments suggest that it should
+prevent exposing a single iova granule to multiple untrusted
+devices. What the code really does now is prevent crossing an iova
+granule boundary if the original buffer did not cross one. I'm not
+sure whether it achieves the goal, because commit e81e99bacc9f
+("swiotlb: Support aligned swiotlb buffers") also references
+PAGE_SIZE, but AFAICS it should use the same logic as case 3
+(page-aligned allocations).
+
+To sum it up, there are two types of alignment:
+
+1. specified by a device's min_align_mask; this says how many low
+   bits of a buffer's physical address must be preserved,
+
+2. specified by allocation size and/or the alignment parameter;
+   this says how many low bits in the first IO TLB slot's physical
+   address must be zero.
+
+I hope somebody can confirm or correct this summary before I go
+and break something. You know, it's not like cleanups in SWIOTLB
+have never broken anything.  ;-)
+
+Petr T
