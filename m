@@ -1,86 +1,53 @@
-Received: from mail-yw1-f202.google.com (mail-yw1-f202.google.com [209.85.128.202])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D348AD263
-	for <iommu@lists.linux.dev>; Wed,  8 Nov 2023 06:22:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--danielmentz.bounces.google.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="siKS+Q/P"
-Received: by mail-yw1-f202.google.com with SMTP id 00721157ae682-5a7cc433782so77638817b3.3
-        for <iommu@lists.linux.dev>; Tue, 07 Nov 2023 22:22:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1699424551; x=1700029351; darn=lists.linux.dev;
-        h=cc:to:from:subject:mime-version:message-id:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=vtkncXbsGTzkcpmqE5CtxJKiAY38OeROQGiJSCfS/Bw=;
-        b=siKS+Q/P87jYea4lnJ+UK+ceA5MWD5HOHr0TqW8Opbk3nfiBgOmSAm6gYFNF2faWgZ
-         OR6v8g22vvXzvuzS+p+LQhHukHYpnTYpEc3rVFBrr0IsN5lJnphrGzOaMLyqBuqLIyHD
-         +OfmEoKRLr8VYXE5qTdKL7UwFPyVM2IB9YhOukzYQiYyubUddUWTREsBHDGU1/bTWUrD
-         th380YbGUUGekUFM1o7Am6NMftAaP4pzvCHiuOfR5jFr5sdEv40tdpTSWzDH7MDYj+hf
-         z5BQM8cf119HPbnXqdmiIF/ACFH20DkyCvpXvANc9j430z0HvROLRLFFwYZLHZcTfKu8
-         0U2Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1699424551; x=1700029351;
-        h=cc:to:from:subject:mime-version:message-id:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=vtkncXbsGTzkcpmqE5CtxJKiAY38OeROQGiJSCfS/Bw=;
-        b=vXjhKUJpXYj1qZuRMUNJ0Xzs7oMb1i5dFuDVDhDm0/FMEKSkPh3OSioF0n4siD6l5b
-         rboVMt62msl2oC+0gcNUFWkoBZFLR+eKxeXBUlNwKFljKq+OUq4Jy/aPP+GyQlVHVAjR
-         a75S3B2RtM9Cn8xeweNsjZsvObV6gfiiWXqiP5pN3eq9TJsgbqZbRP3FS7OED3fC3B9j
-         szgNSIqcyzfzyRMzq8gSZ0qiE3OvnKsoApTZNbtm+a+xq6xadEMSL0nt6nhCyX/Jds5h
-         hzdcMoDwYR0pWezZJ/3f4bkh0W5xxxNRMIByoHJaYamkrPDcyfc/1oZmCi8nfUdmTV+q
-         Y47A==
-X-Gm-Message-State: AOJu0Yz+wAN/k9bxHj/NQOqYfSW4c1oj8jj8+wds+zDxmc9J2TTt9a17
-	cCgOKVgWaBV6RJRhAC7Tm+TKdIzROiIKha+UML4dIVAKUXfTuMP+5aIsDmTYp8XS30yqRyLNkzU
-	q7hq9e4i2xvyM5KZL0V/92NyOWEz9UDLvGNjJoLFbxOGcOFlrJ+1BtFFoa6WJCo4f+ZnUcjmZpw
-	==
-X-Google-Smtp-Source: AGHT+IFHKHZTU1b+Uv0rAAJi3YZuxBu9Bkz4bp3XNDgKryp3AH9pPzgQGaS9NQt4cjgUqefGJ6gP1O/n/3OmZXwI3g==
-X-Received: from danielmentz2.mtv.corp.google.com ([2620:15c:72:202:13ad:4116:9566:f14])
- (user=danielmentz job=sendgmr) by 2002:a81:4853:0:b0:5a7:f68c:8d1 with SMTP
- id v80-20020a814853000000b005a7f68c08d1mr14012ywa.10.1699424550472; Tue, 07
- Nov 2023 22:22:30 -0800 (PST)
-Date: Tue,  7 Nov 2023 22:22:26 -0800
-Message-Id: <20231108062226.928985-1-danielmentz@google.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C967BD278
+	for <iommu@lists.linux.dev>; Wed,  8 Nov 2023 07:31:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
+Authentication-Results: smtp.subspace.kernel.org; dkim=none
+Received: by verein.lst.de (Postfix, from userid 2407)
+	id 61CA16732D; Wed,  8 Nov 2023 08:30:49 +0100 (CET)
+Date: Wed, 8 Nov 2023 08:30:48 +0100
+From: Christoph Hellwig <hch@lst.de>
+To: Halil Pasic <pasic@linux.ibm.com>
+Cc: Christoph Hellwig <hch@lst.de>,
+	Petr =?utf-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>,
+	Niklas Schnelle <schnelle@linux.ibm.com>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Petr Tesarik <petr.tesarik1@huawei-partners.com>,
+	Ross Lagerwall <ross.lagerwall@citrix.com>,
+	linux-pci <linux-pci@vger.kernel.org>, linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev, Matthew Rosato <mjrosato@linux.ibm.com>,
+	Jianxiong Gao <jxgao@google.com>
+Subject: Re: Memory corruption with CONFIG_SWIOTLB_DYNAMIC=y
+Message-ID: <20231108073048.GA5277@lst.de>
+References: <104a8c8fedffd1ff8a2890983e2ec1c26bff6810.camel@linux.ibm.com> <20231103171447.02759771.pasic@linux.ibm.com> <20231103214831.26d29f4d@meshulam.tesarici.cz> <20231106074243.GA17777@lst.de> <20231107182437.06632f6e.pasic@linux.ibm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.42.0.869.gea05f2083d-goog
-Subject: [PATCH] iommu: Fix printk arg in of_iommu_get_resv_regions()
-From: Daniel Mentz <danielmentz@google.com>
-To: iommu@lists.linux.dev
-Cc: Thierry Reding <treding@nvidia.com>, Frank Rowand <frowand.list@gmail.com>, 
-	Rob Herring <robh@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <jroedel@suse.de>, 
-	Daniel Mentz <danielmentz@google.com>
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20231107182437.06632f6e.pasic@linux.ibm.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 
-The variable phys is defined as (struct resource *) which aligns with
-the printk format specifier %pr. Taking the address of it results in a
-value of type (struct resource **) which is incompatible with the format
-specifier %pr. Therefore, remove the address of operator (&).
+On Tue, Nov 07, 2023 at 06:24:37PM +0100, Halil Pasic wrote:
+> Thanks Christoph! So for NVMe in certain contexts the low
+> bits of addresses get discarded, but in other contexts the high bits
+> of addresses get discarded and the low bits need to remain the same
+> after the bounce (and that's why we need commits 36950f2da1ea ("driver
+> core: add a min_align_mask) and 1f221a0d0dbf ("swiotlb: respect
+> min_align_mask").
 
-Fixes: a5bf3cfce8cb ("iommu: Implement of_iommu_get_resv_regions()")
-Signed-off-by: Daniel Mentz <danielmentz@google.com>
----
- drivers/iommu/of_iommu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-index 157b286e36bf..d1f3b92560bc 100644
---- a/drivers/iommu/of_iommu.c
-+++ b/drivers/iommu/of_iommu.c
-@@ -191,7 +191,7 @@ iommu_resv_region_get_type(struct device *dev,
- 	if (start == phys->start && end == phys->end)
- 		return IOMMU_RESV_DIRECT;
- 
--	dev_warn(dev, "treating non-direct mapping [%pr] -> [%pap-%pap] as reservation\n", &phys,
-+	dev_warn(dev, "treating non-direct mapping [%pr] -> [%pap-%pap] as reservation\n", phys,
- 		 &start, &end);
- 	return IOMMU_RESV_RESERVED;
- }
--- 
-2.42.0.869.gea05f2083d-goog
+Nothing really gets discarded.  NVMe basicaly requires all pages
+(where the page is a device page, currently hard coded to 4k in
+Linux) except for the first to not have an offset.  This is what
+the driver sets the virt boundary to in Linux.  When bounce buffering
+thus all segments (except possibly the first) need to keep their
+alignment.
 
