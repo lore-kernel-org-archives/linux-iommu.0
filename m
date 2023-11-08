@@ -1,118 +1,115 @@
-Received: from mail.tkos.co.il (guitar.tkos.co.il [84.110.109.230])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oo1-f47.google.com (mail-oo1-f47.google.com [209.85.161.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 52467321B8
-	for <iommu@lists.linux.dev>; Wed,  8 Nov 2023 17:39:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tkos.co.il
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tkos.co.il
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7CE34321B9
+	for <iommu@lists.linux.dev>; Wed,  8 Nov 2023 17:39:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tkos.co.il header.i=@tkos.co.il header.b="WYZBm2Gg"
-Received: from tarshish.tkos.co.il (unknown [10.0.8.3])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by mail.tkos.co.il (Postfix) with ESMTPS id CA51A440F61;
-	Wed,  8 Nov 2023 19:29:47 +0200 (IST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tkos.co.il;
-	s=default; t=1699464587;
-	bh=1yLvpECl2rEGKsiM0fBZ4N89l8tkzdS1xWi8lB8tcnY=;
-	h=From:To:Cc:Subject:Date:From;
-	b=WYZBm2Gg+ekQkqyy3/yQwk9KwZsuYzf7EPGZgq25AcBtEiQYIG9v79dlW0g7MFcOU
-	 Hh8ySGKTW3Fx0e3dCwYbkJIkzEE4adqj/fzuCKT6GF6OWXm5uPMvAOpJtDD/+GPcv3
-	 l3JXWD2sDN+i+jAFXUMtdp9R2vXm+qZ9eEzNs6WN2Gi88tDjetYxnUe7poiIGEBB6c
-	 MKEPDl4oIEyrXJgKK2MLlbgsWvSW0CQgDmaorWljdQfs+XGTfY+Y+ngeQyBxp060jM
-	 1UCzfy+cvy/JAkUjz81Nh1WfRBeb6B4pbjZJxgOgfyk3LPy+rok4L6pCKOXEC5OQDs
-	 HnR/oqxVyIfRA==
-From: Baruch Siach <baruch@tkos.co.il>
-To: Catalin Marinas <catalin.marinas@arm.com>,
-	Will Deacon <will@kernel.org>
-Cc: Christoph Hellwig <hch@lst.de>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Ramon Fried <ramon@neureality.ai>,
-	iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
-	Baruch Siach <baruch@tkos.co.il>
-Subject: [PATCH RFC] arm64: DMA zone above 4GB
-Date: Wed,  8 Nov 2023 19:30:22 +0200
-Message-ID: <9af8a19c3398e7dc09cfc1fbafed98d795d9f83e.1699464622.git.baruch@tkos.co.il>
-X-Mailer: git-send-email 2.42.0
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="fXDyLWaM"
+Received: by mail-oo1-f47.google.com with SMTP id 006d021491bc7-586b512ba0aso3363253eaf.3
+        for <iommu@lists.linux.dev>; Wed, 08 Nov 2023 09:39:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1699465167; x=1700069967; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=fez7d2oD0jqA877WtYGemcz1mIG1xNotv9HuUKl17lg=;
+        b=fXDyLWaMDUTlZG7sHVFMH0QJyKg7qSV6k1H/0BzcUhSl6T8mJn+u8UIbLhqkew8spC
+         C/cN3HVgvjKfd2z7m4VAwf/UqoB9yrjtixOXDqUa2KokpaF3Jxsg0yrQ5f6X5D2o3bAg
+         qMvnO+S8CBo4aFraUyq023r5g03mx99fV+8XrdK/ikV6lUpgVUaCTnEe4HjyKGIElk6i
+         RYXh0KZNkrdHYpedjdXnnp5wnLnGWdq3EWBHKyiLsx/tiIZlHngxYWpQqWYElEjlpWwQ
+         QO/AsTv/zqqznIDE0Z+nnesAaD4mEg+mGubqTVEWOUi/kFNG12xm0lT3sMQ50wLhUj0v
+         MrPg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1699465167; x=1700069967;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=fez7d2oD0jqA877WtYGemcz1mIG1xNotv9HuUKl17lg=;
+        b=UGFJz6+XeklSfm95xhXjMPzuf9Feu1XqVEMmgnPry4fMbmjmkf0iqgUDMZMLmXkogU
+         qe7lmYap2PfNwyYeulOw/heW2RNbS/WJOt7ec8z1W8/cSBJmdSuyaIMRNMxjLviE9m7Z
+         ZmLYeI5JIcRn1FDJnfaxvTebj04gb2hY7HGvB3KelrfBKC3YAZJMaSqIwR+ACuO1ivRg
+         P+3viINmbjbYPgzTHQW4XBRZ2K5pfGVqt1EiWM+mvso9INKIyeinCyjk5eo67sjRZNvt
+         FrBmmtusNzS9JJ52Uc+zkQlVB3+F3io/euVCr3V135ciBI85t6Ib6mB/Ge92kcCSlb8T
+         wlQg==
+X-Gm-Message-State: AOJu0YwrUxZYe6UzRXJ39/2RJ+Zcuv0NiUlCaiDIK+VbY/L347s9knCH
+	FLmIty36PBEgRIUxM3NQM27k3g==
+X-Google-Smtp-Source: AGHT+IFej9NZgQ/+2LjPp+xoxu9RiYGW6gMR81sDvfm8bHBPH21cB7z0X7CwypR1KBJQgpyCkOlg8g==
+X-Received: by 2002:a4a:e282:0:b0:57b:de27:28ed with SMTP id k2-20020a4ae282000000b0057bde2728edmr1987087oot.6.1699465167350;
+        Wed, 08 Nov 2023 09:39:27 -0800 (PST)
+Received: from ziepe.ca ([12.97.180.36])
+        by smtp.gmail.com with ESMTPSA id v15-20020a4aad8f000000b005737ca61829sm940312oom.13.2023.11.08.09.39.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 08 Nov 2023 09:39:26 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1r0mWS-001gwa-G6;
+	Wed, 08 Nov 2023 13:39:24 -0400
+Date: Wed, 8 Nov 2023 13:39:24 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Cc: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	"Liu, Yi L" <yi.l.liu@intel.com>,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+	"virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 0/6] IOMMUFD: Deliver IO page faults to user space
+Message-ID: <20231108173924.GF4634@ziepe.ca>
+References: <20231026024930.382898-1-baolu.lu@linux.intel.com>
+ <20231102124742.GA4634@ziepe.ca>
+ <BN9PR11MB5276B1582CED568795725C198CA9A@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20231107175405.GD4634@ziepe.ca>
+ <BN9PR11MB52764A460BEDD56A56290BA48CA8A@BN9PR11MB5276.namprd11.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <BN9PR11MB52764A460BEDD56A56290BA48CA8A@BN9PR11MB5276.namprd11.prod.outlook.com>
 
-My platform RAM starts at 32GB. It has no RAM under 4GB. zone_sizes_init()
-puts the entire RAM in the DMA zone as follows:
+On Wed, Nov 08, 2023 at 08:53:00AM +0000, Tian, Kevin wrote:
 
-[    0.000000] Zone ranges:
-[    0.000000]   DMA      [mem 0x0000000800000000-0x00000008bfffffff]
-[    0.000000]   DMA32    empty
-[    0.000000]   Normal   empty
+> > There are many events related to object in guest memory or controlled
+> > by the guest, eg C_BAD_CD and C_BAD_STE. These should be relayed or
+> > the emulation is not working well.
+> 
+> so that's the category of unrecoverable faults?
 
-Consider a bus with this 'dma-ranges' property:
+I haven't looked exhaustively but I do have the impression that the
+only recoverable fault is the 'page not present' one.
 
-  #address-cells = <2>;
-  #size-cells = <2>;
-  dma-ranges = <0x00000000 0xc0000000 0x00000008 0x00000000 0x0 0x40000000>;
+> btw I can understand C_BAD_CD given it's walked by the physical SMMU
+> in nested configuration. But presumably STE is created by the smmu
+> driver itself then why would there be an error to be relayed for
+> guest STE?
 
-Devices under this bus can see 1GB of DMA range between 3GB-4GB. This
-range is mapped to CPU memory at 32GB-33GB.
+If the guest programs a bad STE it should still generate a C_BAD_STE
+even if the mediation SW could theoretically sanitize it (but sanitize
+it to what? BLOCKED?). Since we have to forward things like C_BAD_CD
+and others we may as well just drop an invalid STE and forward the
+event like real HW.
 
-Current zone_sizes_init() code considers 'dma-ranges' only when it maps
-to RAM under 4GB, because zone_dma_bits is limited to 32. In this case
-'dma-ranges' is ignored in practice, since DMA/DMA32 zones are both
-assumed to be located under 4GB. The result is that the stmmac driver
-DMA buffers allocation GFP_DMA32 flag has no effect. As a result DMA
-buffer allocations fail.
+> > > but I didn't get the last piece. If those domains are created by kernel
+> > > drivers why would they require a uAPI for userspace to specify fault
+> > > capable?
+> > 
+> > Not to userspace, but a kapi to request a fault capable domain and to
+> > supply the fault handler. Eg:
+> > 
+> >  iommu_domain_alloc_faultable(dev, handler);
+> 
+> Does it affect SVA too?
 
-The patch below is a crude workaround hack. It makes the  DMA zone
-cover the 1GB memory area that is visible to stmmac DMA as follows:
+Inside the driver the SVA should be constructed out of the same fault
+handling infrastructure, but a SVA domain allocation should have a
+different allocation function.
 
-[    0.000000] Zone ranges:
-[    0.000000]   DMA      [mem 0x0000000800000000-0x000000083fffffff]
-[    0.000000]   DMA32    empty
-[    0.000000]   Normal   [mem 0x0000000840000000-0x0000000bffffffff]
-...
-[    0.000000] software IO TLB: mapped [mem 0x000000083bfff000-0x000000083ffff000] (64MB)
-
-With this hack the stmmac driver works on my platform with no
-modification.
-
-Clearly this can't be the right solutions. zone_dma_bits is now wrong for
-one. It probably breaks other code as well.
-
-Is there any better suggestion to make DMA buffer allocations work on
-this hardware?
-
-Thanks
----
- arch/arm64/mm/init.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
-index 74c1db8ce271..5fe826ac3a5f 100644
---- a/arch/arm64/mm/init.c
-+++ b/arch/arm64/mm/init.c
-@@ -136,13 +136,13 @@ static void __init zone_sizes_init(void)
- 	unsigned long max_zone_pfns[MAX_NR_ZONES]  = {0};
- 	unsigned int __maybe_unused acpi_zone_dma_bits;
- 	unsigned int __maybe_unused dt_zone_dma_bits;
--	phys_addr_t __maybe_unused dma32_phys_limit = max_zone_phys(32);
-+	phys_addr_t __maybe_unused dma32_phys_limit = DMA_BIT_MASK(32) + 1;
- 
- #ifdef CONFIG_ZONE_DMA
- 	acpi_zone_dma_bits = fls64(acpi_iort_dma_get_max_cpu_address());
- 	dt_zone_dma_bits = fls64(of_dma_get_max_cpu_address(NULL));
- 	zone_dma_bits = min3(32U, dt_zone_dma_bits, acpi_zone_dma_bits);
--	arm64_dma_phys_limit = max_zone_phys(zone_dma_bits);
-+	arm64_dma_phys_limit = of_dma_get_max_cpu_address(NULL) + 1;
- 	max_zone_pfns[ZONE_DMA] = PFN_DOWN(arm64_dma_phys_limit);
- #endif
- #ifdef CONFIG_ZONE_DMA32
--- 
-2.42.0
-
+Jason
