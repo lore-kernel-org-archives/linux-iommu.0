@@ -1,80 +1,55 @@
-Received: from mail-ed1-f42.google.com (mail-ed1-f42.google.com [209.85.208.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5270138DDD
-	for <iommu@lists.linux.dev>; Thu,  9 Nov 2023 21:47:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linuxfoundation.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49C0338DEC
+	for <iommu@lists.linux.dev>; Thu,  9 Nov 2023 21:48:43 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b="ZCy7fBZ3"
-Received: by mail-ed1-f42.google.com with SMTP id 4fb4d7f45d1cf-53f9af41444so2318618a12.1
-        for <iommu@lists.linux.dev>; Thu, 09 Nov 2023 13:47:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google; t=1699566450; x=1700171250; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=57/MzW+inXIQgaszl6DSxcjhZsZp6Ijm+kZhgGNRRf4=;
-        b=ZCy7fBZ34K4SILsbWvR9m4uVVqLazqssyfdLn0ic/o4SYljZ1Ki+RpjTmIyd0oxRMT
-         f8vMwnE5B4PvC+IvkISo1pPHiFs2PvHnFrWAEBQCQwyauN3vN0ALbAcBb2LgDjZ2kQeT
-         tO0dBZyg2JqD78GPRuSb5O9Jr/QptUQvNZ8uc=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1699566450; x=1700171250;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=57/MzW+inXIQgaszl6DSxcjhZsZp6Ijm+kZhgGNRRf4=;
-        b=f5mk1Gh5l1M6SqMLnJfv6vZqPICx1ho5vs8Y/aGTiVP4ybiGHC5m4EalynMqJYP5GJ
-         SkS5XloJxn5SQGRwOT5gC5Vjc/Ce8HBAr8H48OSNq4KQxSckr5V5th6z7kuRtDKUOGhs
-         MOAAxKxdtVWLL9NVeRgp7iPrGnCXKQ0JPtGoQRvYQ+v1Uf9zDIFj5vjB38PV+e1EgWkJ
-         65JILFoe0IS99i6Ee+9aBXpl0Boesbr+K3nnj61tssf2kcTXqEzAkcHr5+gjwaGr8aRS
-         BKUZHQ2Z/t7mq/yvZu7u5LV27Im6G3/myVudD8qAqqLfQnuIRahROOlYfy79srOPEnW3
-         H8Ow==
-X-Gm-Message-State: AOJu0YyL84H30t6+SUsEvs+5IXvh8gAqkLnoZbyGobA6CNawsKYfJ8ey
-	lvDlxgg4sG+x3q7Vqtu/t4m8wbqrZnTLLHUX3aJQoQ==
-X-Google-Smtp-Source: AGHT+IG+YE1dayHUpXCtZNdjMU+BXaEOL6vMwgghzwx4h4WCwzEocNwFjZdk0haRgCnFApD+0jP2xQ==
-X-Received: by 2002:a50:f60e:0:b0:542:fb42:3631 with SMTP id c14-20020a50f60e000000b00542fb423631mr5088104edn.0.1699566450074;
-        Thu, 09 Nov 2023 13:47:30 -0800 (PST)
-Received: from mail-ed1-f47.google.com (mail-ed1-f47.google.com. [209.85.208.47])
-        by smtp.gmail.com with ESMTPSA id o21-20020aa7dd55000000b00543525d9fddsm306761edw.21.2023.11.09.13.47.29
-        for <iommu@lists.linux.dev>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 09 Nov 2023 13:47:29 -0800 (PST)
-Received: by mail-ed1-f47.google.com with SMTP id 4fb4d7f45d1cf-53de0d1dc46so2297295a12.3
-        for <iommu@lists.linux.dev>; Thu, 09 Nov 2023 13:47:29 -0800 (PST)
-X-Received: by 2002:a50:cdc4:0:b0:53e:2e74:7e0c with SMTP id
- h4-20020a50cdc4000000b0053e2e747e0cmr5745536edj.24.1699566448940; Thu, 09 Nov
- 2023 13:47:28 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="f+qYJQdl"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id BFF4AC433C8;
+	Thu,  9 Nov 2023 21:48:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1699566523;
+	bh=nSgX0L/aawAWLwrD2jqlQfUSo2zBLd0v+KjU+CVpnHk=;
+	h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+	b=f+qYJQdlK7lubmm6B1hcZ7JB++s3szZChlsdMT1aIahez8+EUiZjrjV8Lhs2klosX
+	 2N0DuQTZZTXzuk31q6+Pzf5Stj9xGajc2KkKvUQp/+Mpq91MbUsSLobQm4LHZ4q2qk
+	 5AQTXYO9VEhh9ed73rCqnwMbOuigrA9pRK7CTuAoctM81sAMqimCE5AXf4q3cgEgzZ
+	 BBWmJcH32VmAAvW3+bl6Rf3z000bmJ/QVLkOwI2kILSK09sVWwo9MRNEmXZ+rNSIeP
+	 1TNcAgpMcXjoaP0FlOOk5SG4zCzuehHONUKJ9jZOJemrnVGLJ7NBmhkbDem2ojKcyk
+	 d6cZc0L+dDITw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id AF718C43158;
+	Thu,  9 Nov 2023 21:48:43 +0000 (UTC)
+Subject: Re: [git pull] IOMMU Updates for Linux v6.7
+From: pr-tracker-bot@kernel.org
+In-Reply-To: <ZUkXojmVf2CmkXHh@8bytes.org>
+References: <ZUkXojmVf2CmkXHh@8bytes.org>
+X-PR-Tracked-List-Id: <iommu.lists.linux.dev>
+X-PR-Tracked-Message-Id: <ZUkXojmVf2CmkXHh@8bytes.org>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-updates-v6.7
+X-PR-Tracked-Commit-Id: e8cca466a84a75f8ff2a7a31173c99ee6d1c59d2
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 4bbdb725a36b0d235f3b832bd0c1e885f0442d9f
+Message-Id: <169956652371.24420.8103405540077152180.pr-tracker-bot@kernel.org>
+Date: Thu, 09 Nov 2023 21:48:43 +0000
+To: Joerg Roedel <joro@8bytes.org>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org, iommu@lists.linux.dev
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-References: <ZUkXojmVf2CmkXHh@8bytes.org>
-In-Reply-To: <ZUkXojmVf2CmkXHh@8bytes.org>
-From: Linus Torvalds <torvalds@linux-foundation.org>
-Date: Thu, 9 Nov 2023 13:47:11 -0800
-X-Gmail-Original-Message-ID: <CAHk-=wjHyBy2Mttaj8kySJBpZ9hUiCe09ZJPo8trCRHfhi7NBg@mail.gmail.com>
-Message-ID: <CAHk-=wjHyBy2Mttaj8kySJBpZ9hUiCe09ZJPo8trCRHfhi7NBg@mail.gmail.com>
-Subject: Re: [git pull] IOMMU Updates for Linux v6.7
-To: Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>
-Cc: Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org, iommu@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
 
-On Mon, 6 Nov 2023 at 08:43, Joerg Roedel <joro@8bytes.org> wrote:
->
-> There are conflicts with the current upstream code, mainly
-> from iommufd changes. My resolution is attached.
+The pull request you sent on Mon, 6 Nov 2023 17:43:14 +0100:
 
-Hmm. My resolution is slightly different. In particular, in the
-selftest code, I removed mock_domain_alloc() entirely in favor of
-mock_domain_alloc_paging(), the same way commit 13fbceb1b8e9
-("iommufd: Convert to alloc_domain_paging()") did.
+> git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-updates-v6.7
 
-That not only seems to logically match that change, it also matches
-what I think Jason (cc'd) intended with commit b2b67c997bf7 ("iommufd:
-Organize the mock domain alloc functions closer to Joerg's tree").
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/4bbdb725a36b0d235f3b832bd0c1e885f0442d9f
 
-Holler if something looks odd.
+Thank you!
 
-                  Linus
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
