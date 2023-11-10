@@ -1,261 +1,140 @@
 Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2326812E41
-	for <iommu@lists.linux.dev>; Fri, 10 Nov 2023 09:43:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0521512E46
+	for <iommu@lists.linux.dev>; Fri, 10 Nov 2023 09:47:55 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=collabora.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="HNq624iw"
-Received: from localhost.localdomain (cola.collaboradmins.com [195.201.22.229])
+	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="D2bXB3Bb"
+Received: from localhost (cola.collaboradmins.com [195.201.22.229])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(No client certificate requested)
 	(Authenticated sender: bbrezillon)
-	by madras.collabora.co.uk (Postfix) with ESMTPSA id F195066073F2;
-	Fri, 10 Nov 2023 09:43:57 +0000 (GMT)
+	by madras.collabora.co.uk (Postfix) with ESMTPSA id C56ED66073EF;
+	Fri, 10 Nov 2023 09:47:53 +0000 (GMT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-	s=mail; t=1699609438;
-	bh=2zK0pYRAiJ6poXr0T1cUKPQobg4HCRBK7BajtLillF8=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=HNq624iwdwEVKQI7VvgUDcwNvkkyhzRla4x7y4Rjt+skRb7f8B3GYkeXRnnHYdmL3
-	 HxlP77PpTAjbhdimetEjdbXvqOM8KAANVdKiQOS/GObqZ0fMGyRqDGtvZ5/bE7z3eI
-	 2wkskKjvoDOwQwcBL5TTw3tZsIRD1Xi6pp/QBR0oow96KwH6Y1dcmSwUu5bjjkw80c
-	 ekcst9dzUV/134oMkfOgrUR4IkI8Y2PG6dVuig8YGB3orGSXLgHGhr2nDQ0XXoF16A
-	 YubJKPUkeUvd2iMKIKGNJKV6a7/UZaofKiIMJKflPkGz4TSNW0P4go9yP5/KgKzwzM
-	 RYl5Kfg3w3nXA==
+	s=mail; t=1699609674;
+	bh=9v8ERUxib776BgthWEgOR4Rdi9JK7Ze5AX6GgNkbrYg=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=D2bXB3Bb5ngfck8o5JTnqvd17k4yJ705vylfd/zS0SmSwWw0gWBa9zii735rViqRm
+	 qK1Pr5GYMaRwU9YfpY8PxpYc4TydbhuOjM8a5uQlHiRpNFkvFtV6cVmjvgypK7jliP
+	 gbuFgCIOydCoDZO5zYxGimPkiirg0rkBLBZws6A6FemImZL/FokU0YpW9yi2u5+AwX
+	 z+HLp42pw/vAGP8e2pefMntlIWjeGaXEsgTl9R05aTifDpKLvY/LJJUbY2etEy5rny
+	 hsKG8DHh+kLCKSnymsDkk1TVBKxHmQAsPOIlTk7GAC+zHPghfcm/nTbSEUoOrIgp10
+	 EdkjRBNzNX/tA==
+Date: Fri, 10 Nov 2023 10:47:50 +0100
 From: Boris Brezillon <boris.brezillon@collabora.com>
-To: Joerg Roedel <joro@8bytes.org>,
-	iommu@lists.linux.dev,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	linux-arm-kernel@lists.infradead.org
-Cc: Rob Clark <robdclark@gmail.com>,
-	Gaurav Kohli <quic_gkohli@quicinc.com>,
-	Steven Price <steven.price@arm.com>,
-	Boris Brezillon <boris.brezillon@collabora.com>
-Subject: [PATCH v2 2/2] iommu: Extend LPAE page table format to support custom allocators
-Date: Fri, 10 Nov 2023 10:43:52 +0100
-Message-ID: <20231110094352.565347-3-boris.brezillon@collabora.com>
-X-Mailer: git-send-email 2.41.0
-In-Reply-To: <20231110094352.565347-1-boris.brezillon@collabora.com>
-References: <20231110094352.565347-1-boris.brezillon@collabora.com>
+To: Gaurav Kohli <quic_gkohli@quicinc.com>
+Cc: Rob Clark <robdclark@gmail.com>, Steven Price <steven.price@arm.com>,
+ Joerg Roedel <joro@8bytes.org>, <iommu@lists.linux.dev>, Will Deacon
+ <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ <linux-arm-kernel@lists.infradead.org>, <linux-arm-msm@vger.kernel.org>
+Subject: Re: [PATCH 0/2] iommu: Allow passing custom allocators to pgtable
+ drivers
+Message-ID: <20231110104750.198b6967@collabora.com>
+In-Reply-To: <84277a5c-a33f-a412-6dec-2ab786b1a47d@quicinc.com>
+References: <20230809121744.2341454-1-boris.brezillon@collabora.com>
+	<f72e5ab1-c6f2-ec03-68d6-1686145f3a4d@arm.com>
+	<CAF6AEGtDxkiiM5NNT7Y9-sY5eCQX15ij=RzU-NX2Mvf6kNk2nA@mail.gmail.com>
+	<84277a5c-a33f-a412-6dec-2ab786b1a47d@quicinc.com>
+Organization: Collabora
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; x86_64-redhat-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-We need that in order to implement the VM_BIND ioctl in the GPU driver
-targeting new Mali GPUs.
+Hi Gaurav,
 
-VM_BIND is about executing MMU map/unmap requests asynchronously,
-possibly after waiting for external dependencies encoded as dma_fences.
-We intend to use the drm_sched framework to automate the dependency
-tracking and VM job dequeuing logic, but this comes with its own set
-of constraints, one of them being the fact we are not allowed to
-allocate memory in the drm_gpu_scheduler_ops::run_job() to avoid this
-sort of deadlocks:
+On Tue, 7 Nov 2023 17:22:39 +0530
+Gaurav Kohli <quic_gkohli@quicinc.com> wrote:
 
-- VM_BIND map job needs to allocate a page table to map some memory
-  to the VM. No memory available, so kswapd is kicked
-- GPU driver shrinker backend ends up waiting on the fence attached to
-  the VM map job or any other job fence depending on this VM operation.
+> On 10/24/2023 2:32 AM, Rob Clark wrote:
+> > On Wed, Sep 20, 2023 at 6:12=E2=80=AFAM Steven Price <steven.price@arm.=
+com> wrote: =20
+> >>
+> >> On 09/08/2023 13:17, Boris Brezillon wrote: =20
+> >>> Hello,
+> >>>
+> >>> This patchset is an attempt at making page table allocation
+> >>> customizable. This is useful to some GPU drivers for various reasons:
+> >>>
+> >>> - speed-up upcoming page table allocations by managing a pool of free
+> >>>    pages
+> >>> - batch page table allocation instead of allocating one page at a time
+> >>> - pre-reserve pages for page tables needed for map/unmap operations a=
+nd
+> >>>    return the unused page tables to some pool
+> >>>
+> >>> The first and last reasons are particularly important for GPU drivers
+> >>> wanting to implement asynchronous VM_BIND. Asynchronous VM_BIND requi=
+res
+> >>> that any page table needed for a map/unmap operation to succeed be
+> >>> allocated at VM_BIND job creation time. At the time of the job creati=
+on,
+> >>> we don't know what the VM will look like when we get to execute the
+> >>> map/unmap, and can't guess how many page tables we will need. Because
+> >>> of that, we have to over-provision page tables for the worst case
+> >>> scenario (page table tree is empty), which means we will allocate/free
+> >>> a lot. Having pool a pool of free pages is crucial if we want to
+> >>> speed-up VM_BIND requests.
+> >>>
+> >>> A real example of how such custom allocators can be used is available
+> >>> here[1]. v2 of the Panthor driver is approaching submission, and I
+> >>> figured I'd try to upstream the dependencies separately, which is
+> >>> why I submit this series now, even though the user of this new API
+> >>> will come afterwards. If you'd prefer to have those patches submitted
+> >>> along with the Panthor driver, let me know.
+> >>>
+> >>> This approach has been discussed with Robin, and is hopefully not too
+> >>> far from what he had in mind. =20
+> >>
+> >> The alternative would be to embed a cache of pages into the IOMMU
+> >> framework, however kmem_cache sadly doesn't seem to support the
+> >> 'reserve' of pages concept that we need. mempools could be a solution
+> >> but the mempool would need to be created by the IOMMU framework as the
+> >> alloc/free functions are specified when creating the pool. So it would
+> >> be a much bigger change (to drivers/iommu).
+> >>
+> >> So, given that so far it's just Panthor this seems like the right
+> >> approach for now - when/if other drivers want the same functionality
+> >> then it might make sense to revisit the idea of doing the caching with=
+in
+> >> the IOMMU framework. =20
+> >=20
+> > I have some plans to use this as well for drm/msm.. but the reasons
+> > and requirements are basically the same as for panthor.  I think I
+> > prefer the custom allocator approach, rather than tying this to IOMMU
+> > framework.  (But ofc custom allocators, I guess, does not prevent the
+> > iommu driver from doing it's own caching.)
+> >=20
+> > BR,
+> > -R
+> >  =20
+>=20
+> We have also posted one RFC patch series which is based on this current=20
+> patches by Boris and helping us to define our custom alloc and free=20
+> pgtable call. For our side usecase we have a requirement to create=20
+> pgtable from HLOS and then share it to different entity(VMID) and=20
+> basically that also requires few smc calls and for that we need
+> custom alloc/free callbacks.
+>=20
+> https://lore.kernel.org/all/20231101071144.16309-1-quic_gkohli@quicinc.co=
+m/
+>=20
+>=20
+> So custom allocator and free ops is helping for us also. Is there any=20
+> plan to merge these patches from Boris.
 
-With custom allocators, we will be able to pre-reserve enough pages to
-guarantee the map/unmap operations we queued will take place without
-going through the system allocator. But we can also optimize
-allocation/reservation by not free-ing pages immediately, so any
-upcoming page table allocation requests can be serviced by some free
-page table pool kept at the driver level.
+Sorry for the late reply. I just sent a v2, but I forgot to add your
+Tested-by :-/. Feel free to add it back.
 
-I might also be valuable for other aspects of GPU and similar
-use-cases, like fine-grained memory accounting and resource limiting.
+Regards,
 
-Signed-off-by: Boris Brezillon <boris.brezillon@collabora.com>
-Reviewed-by: Steven Price <steven.price@arm.com>
----
-v2:
-- Add Steven R-b
-- Expand on possible use-cases for custom allocators
----
- drivers/iommu/io-pgtable-arm.c | 55 ++++++++++++++++++++++++----------
- 1 file changed, 39 insertions(+), 16 deletions(-)
-
-diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-index 72dcdd468cf3..4a4e2c315083 100644
---- a/drivers/iommu/io-pgtable-arm.c
-+++ b/drivers/iommu/io-pgtable-arm.c
-@@ -188,20 +188,28 @@ static dma_addr_t __arm_lpae_dma_addr(void *pages)
- }
- 
- static void *__arm_lpae_alloc_pages(size_t size, gfp_t gfp,
--				    struct io_pgtable_cfg *cfg)
-+				    struct io_pgtable_cfg *cfg,
-+				    void *cookie)
- {
- 	struct device *dev = cfg->iommu_dev;
- 	int order = get_order(size);
--	struct page *p;
- 	dma_addr_t dma;
- 	void *pages;
- 
- 	VM_BUG_ON((gfp & __GFP_HIGHMEM));
--	p = alloc_pages_node(dev_to_node(dev), gfp | __GFP_ZERO, order);
--	if (!p)
-+
-+	if (cfg->alloc) {
-+		pages = cfg->alloc(cookie, size, gfp | __GFP_ZERO);
-+	} else {
-+		struct page *p;
-+
-+		p = alloc_pages_node(dev_to_node(dev), gfp | __GFP_ZERO, order);
-+		pages = p ? page_address(p) : NULL;
-+	}
-+
-+	if (!pages)
- 		return NULL;
- 
--	pages = page_address(p);
- 	if (!cfg->coherent_walk) {
- 		dma = dma_map_single(dev, pages, size, DMA_TO_DEVICE);
- 		if (dma_mapping_error(dev, dma))
-@@ -220,18 +228,28 @@ static void *__arm_lpae_alloc_pages(size_t size, gfp_t gfp,
- out_unmap:
- 	dev_err(dev, "Cannot accommodate DMA translation for IOMMU page tables\n");
- 	dma_unmap_single(dev, dma, size, DMA_TO_DEVICE);
-+
- out_free:
--	__free_pages(p, order);
-+	if (cfg->free)
-+		cfg->free(cookie, pages, size);
-+	else
-+		free_pages((unsigned long)pages, order);
-+
- 	return NULL;
- }
- 
- static void __arm_lpae_free_pages(void *pages, size_t size,
--				  struct io_pgtable_cfg *cfg)
-+				  struct io_pgtable_cfg *cfg,
-+				  void *cookie)
- {
- 	if (!cfg->coherent_walk)
- 		dma_unmap_single(cfg->iommu_dev, __arm_lpae_dma_addr(pages),
- 				 size, DMA_TO_DEVICE);
--	free_pages((unsigned long)pages, get_order(size));
-+
-+	if (cfg->free)
-+		cfg->free(cookie, pages, size);
-+	else
-+		free_pages((unsigned long)pages, get_order(size));
- }
- 
- static void __arm_lpae_sync_pte(arm_lpae_iopte *ptep, int num_entries,
-@@ -373,13 +391,13 @@ static int __arm_lpae_map(struct arm_lpae_io_pgtable *data, unsigned long iova,
- 	/* Grab a pointer to the next level */
- 	pte = READ_ONCE(*ptep);
- 	if (!pte) {
--		cptep = __arm_lpae_alloc_pages(tblsz, gfp, cfg);
-+		cptep = __arm_lpae_alloc_pages(tblsz, gfp, cfg, data->iop.cookie);
- 		if (!cptep)
- 			return -ENOMEM;
- 
- 		pte = arm_lpae_install_table(cptep, ptep, 0, data);
- 		if (pte)
--			__arm_lpae_free_pages(cptep, tblsz, cfg);
-+			__arm_lpae_free_pages(cptep, tblsz, cfg, data->iop.cookie);
- 	} else if (!cfg->coherent_walk && !(pte & ARM_LPAE_PTE_SW_SYNC)) {
- 		__arm_lpae_sync_pte(ptep, 1, cfg);
- 	}
-@@ -524,7 +542,7 @@ static void __arm_lpae_free_pgtable(struct arm_lpae_io_pgtable *data, int lvl,
- 		__arm_lpae_free_pgtable(data, lvl + 1, iopte_deref(pte, data));
- 	}
- 
--	__arm_lpae_free_pages(start, table_size, &data->iop.cfg);
-+	__arm_lpae_free_pages(start, table_size, &data->iop.cfg, data->iop.cookie);
- }
- 
- static void arm_lpae_free_pgtable(struct io_pgtable *iop)
-@@ -552,7 +570,7 @@ static size_t arm_lpae_split_blk_unmap(struct arm_lpae_io_pgtable *data,
- 	if (WARN_ON(lvl == ARM_LPAE_MAX_LEVELS))
- 		return 0;
- 
--	tablep = __arm_lpae_alloc_pages(tablesz, GFP_ATOMIC, cfg);
-+	tablep = __arm_lpae_alloc_pages(tablesz, GFP_ATOMIC, cfg, data->iop.cookie);
- 	if (!tablep)
- 		return 0; /* Bytes unmapped */
- 
-@@ -575,7 +593,7 @@ static size_t arm_lpae_split_blk_unmap(struct arm_lpae_io_pgtable *data,
- 
- 	pte = arm_lpae_install_table(tablep, ptep, blk_pte, data);
- 	if (pte != blk_pte) {
--		__arm_lpae_free_pages(tablep, tablesz, cfg);
-+		__arm_lpae_free_pages(tablep, tablesz, cfg, data->iop.cookie);
- 		/*
- 		 * We may race against someone unmapping another part of this
- 		 * block, but anything else is invalid. We can't misinterpret
-@@ -882,7 +900,7 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
- 
- 	/* Looking good; allocate a pgd */
- 	data->pgd = __arm_lpae_alloc_pages(ARM_LPAE_PGD_SIZE(data),
--					   GFP_KERNEL, cfg);
-+					   GFP_KERNEL, cfg, cookie);
- 	if (!data->pgd)
- 		goto out_free_data;
- 
-@@ -984,7 +1002,7 @@ arm_64_lpae_alloc_pgtable_s2(struct io_pgtable_cfg *cfg, void *cookie)
- 
- 	/* Allocate pgd pages */
- 	data->pgd = __arm_lpae_alloc_pages(ARM_LPAE_PGD_SIZE(data),
--					   GFP_KERNEL, cfg);
-+					   GFP_KERNEL, cfg, cookie);
- 	if (!data->pgd)
- 		goto out_free_data;
- 
-@@ -1059,7 +1077,7 @@ arm_mali_lpae_alloc_pgtable(struct io_pgtable_cfg *cfg, void *cookie)
- 		 << ARM_LPAE_MAIR_ATTR_SHIFT(ARM_LPAE_MAIR_ATTR_IDX_DEV));
- 
- 	data->pgd = __arm_lpae_alloc_pages(ARM_LPAE_PGD_SIZE(data), GFP_KERNEL,
--					   cfg);
-+					   cfg, cookie);
- 	if (!data->pgd)
- 		goto out_free_data;
- 
-@@ -1080,26 +1098,31 @@ arm_mali_lpae_alloc_pgtable(struct io_pgtable_cfg *cfg, void *cookie)
- }
- 
- struct io_pgtable_init_fns io_pgtable_arm_64_lpae_s1_init_fns = {
-+	.caps	= IO_PGTABLE_CAP_CUSTOM_ALLOCATOR,
- 	.alloc	= arm_64_lpae_alloc_pgtable_s1,
- 	.free	= arm_lpae_free_pgtable,
- };
- 
- struct io_pgtable_init_fns io_pgtable_arm_64_lpae_s2_init_fns = {
-+	.caps	= IO_PGTABLE_CAP_CUSTOM_ALLOCATOR,
- 	.alloc	= arm_64_lpae_alloc_pgtable_s2,
- 	.free	= arm_lpae_free_pgtable,
- };
- 
- struct io_pgtable_init_fns io_pgtable_arm_32_lpae_s1_init_fns = {
-+	.caps	= IO_PGTABLE_CAP_CUSTOM_ALLOCATOR,
- 	.alloc	= arm_32_lpae_alloc_pgtable_s1,
- 	.free	= arm_lpae_free_pgtable,
- };
- 
- struct io_pgtable_init_fns io_pgtable_arm_32_lpae_s2_init_fns = {
-+	.caps	= IO_PGTABLE_CAP_CUSTOM_ALLOCATOR,
- 	.alloc	= arm_32_lpae_alloc_pgtable_s2,
- 	.free	= arm_lpae_free_pgtable,
- };
- 
- struct io_pgtable_init_fns io_pgtable_arm_mali_lpae_init_fns = {
-+	.caps	= IO_PGTABLE_CAP_CUSTOM_ALLOCATOR,
- 	.alloc	= arm_mali_lpae_alloc_pgtable,
- 	.free	= arm_lpae_free_pgtable,
- };
--- 
-2.41.0
-
+Boris
