@@ -1,75 +1,155 @@
-Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 66AE7186B
-	for <iommu@lists.linux.dev>; Fri, 10 Nov 2023 07:00:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8DA8811C8E
+	for <iommu@lists.linux.dev>; Fri, 10 Nov 2023 09:23:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="MnxFlr7v"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20210309; h=Content-Type:MIME-Version:Message-ID:
-	Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-	Content-Description:In-Reply-To:References;
-	bh=rTDDJ39p2/9RhU5/XQUbQQVJgSZq+xnn1qxqWoHI9x4=; b=MnxFlr7vhkts8x9CK+vrb8uBHw
-	yV3IBAU12521sMrM32umdbb2MX6cGbxP2MIRHt9JLRX803Yw07vA8QGC/BJn2/JhlZO7Tq6+jc0Uq
-	17XPnN+a9KdNoDCMS8B2oq8COdhJbztc3YWslWvOk6baoEM6YUfjm49w5Kc2ZsuwhwS0vRYr11qR+
-	KrGifuYDI+1nOEVbjumZfFxRdyqlzmsAsASoFmYi10CIqQvpSOwCEERwSyM6Kj1rNGnhLpX2rKUXE
-	ISbmpp/piVpIkLlhibI8fVWpHAwlVsM/MAj3ranSOjoreBdWR04KXUceZYjzOflt9GvAzTmcVNQB1
-	zakXh0vQ==;
-Received: from 2a02-8389-2341-5b80-39d3-4735-9a3c-88d8.cable.dynamic.v6.surfer.at ([2a02:8389:2341:5b80:39d3:4735:9a3c:88d8] helo=localhost)
-	by bombadil.infradead.org with esmtpsa (Exim 4.96 #2 (Red Hat Linux))
-	id 1r1LUn-007zwi-1a;
-	Fri, 10 Nov 2023 07:00:01 +0000
-Date: Fri, 10 Nov 2023 07:59:59 +0100
-From: Christoph Hellwig <hch@infradead.org>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev
-Subject: [GIT PULL] dma-mapping fixes for Linux 6.7
-Message-ID: <ZU3U759SwIC4Vv-F@infradead.org>
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="sgmKbhIM"
+Received: from pps.filterd (m0356516.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 3AA9DJHD019415;
+	Fri, 10 Nov 2023 09:22:53 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : in-reply-to : references : mime-version :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=HznTsQNl47/GQCrKjB/UG3RtaDQ6QdkoTZ2WIS6q3HA=;
+ b=sgmKbhIMOjGnIze4wT/YBq4hk8KJotdGY/Eh4G72tNuNZKNW4Wx8q1Nrmxf+rPeyU/S/
+ 4x90FWCue82TNGraPd2rBczxw+rOLPUp/8wpVB6Cs1FpNfeD+H22/XzNkv68k6i7ltNK
+ nJXpsjt626Xro8OXMsDR53mvx2nQgttEljiWjSnvAL9wYTX6sBKzfth2slrjmgW/QwtI
+ w5j3SWmFLBug1T8b8xCQkLUfCRKdriVA8UIlNoUN59vdsn68W5Qem73gbVU83sFK3nqP
+ 1EMPCEDCaaM/SxlxKIt8T6bMEFfK/oCGO9R6EXDfKpvY7PYmtNro0+1slGBWRtgIyDoe LQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3u9h71s7q0-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 10 Nov 2023 09:22:52 +0000
+Received: from m0356516.ppops.net (m0356516.ppops.net [127.0.0.1])
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 3AA9DW8S021570;
+	Fri, 10 Nov 2023 09:22:52 GMT
+Received: from ppma11.dal12v.mail.ibm.com (db.9e.1632.ip4.static.sl-reverse.com [50.22.158.219])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3u9h71s7pv-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 10 Nov 2023 09:22:52 +0000
+Received: from pps.filterd (ppma11.dal12v.mail.ibm.com [127.0.0.1])
+	by ppma11.dal12v.mail.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 3AA74s4i004132;
+	Fri, 10 Nov 2023 09:22:51 GMT
+Received: from smtprelay02.fra02v.mail.ibm.com ([9.218.2.226])
+	by ppma11.dal12v.mail.ibm.com (PPS) with ESMTPS id 3u7w219vjb-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 10 Nov 2023 09:22:51 +0000
+Received: from smtpav05.fra02v.mail.ibm.com (smtpav05.fra02v.mail.ibm.com [10.20.54.104])
+	by smtprelay02.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 3AA9MmQn28639904
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Fri, 10 Nov 2023 09:22:48 GMT
+Received: from smtpav05.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 87BF420043;
+	Fri, 10 Nov 2023 09:22:48 +0000 (GMT)
+Received: from smtpav05.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 6FF5A20040;
+	Fri, 10 Nov 2023 09:22:47 +0000 (GMT)
+Received: from li-ce58cfcc-320b-11b2-a85c-85e19b5285e0 (unknown [9.171.21.196])
+	by smtpav05.fra02v.mail.ibm.com (Postfix) with SMTP;
+	Fri, 10 Nov 2023 09:22:47 +0000 (GMT)
+Date: Fri, 10 Nov 2023 10:22:45 +0100
+From: Halil Pasic <pasic@linux.ibm.com>
+To: Petr Tesarik <petr.tesarik1@huawei-partners.com>
+Cc: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>,
+        Niklas Schnelle
+ <schnelle@linux.ibm.com>,
+        Christoph Hellwig <hch@lst.de>, Bjorn Helgaas
+ <bhelgaas@google.com>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Robin
+ Murphy <robin.murphy@arm.com>,
+        Ross Lagerwall <ross.lagerwall@citrix.com>,
+        linux-pci <linux-pci@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <iommu@lists.linux.dev>, Matthew Rosato <mjrosato@linux.ibm.com>,
+        Halil
+ Pasic <pasic@linux.ibm.com>
+Subject: Re: Memory corruption with CONFIG_SWIOTLB_DYNAMIC=y
+Message-ID: <20231110102245.6ac971b9.pasic@linux.ibm.com>
+In-Reply-To: <7a4f87c3-b3c6-42c5-9200-8eb56d1c8530@huawei-partners.com>
+References: <104a8c8fedffd1ff8a2890983e2ec1c26bff6810.camel@linux.ibm.com>
+	<20231103195949.0af884d0@meshulam.tesarici.cz>
+	<20231108115207.791a30d8.pasic@linux.ibm.com>
+	<41c0baf6-ba4d-4876-b692-279307265466@huawei-partners.com>
+	<20231108153230.6491acaa.pasic@linux.ibm.com>
+	<7a4f87c3-b3c6-42c5-9200-8eb56d1c8530@huawei-partners.com>
+Organization: IBM
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-redhat-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: oOuHQySkKhSqp4kaUhZWxxdqq2tOxfSE
+X-Proofpoint-ORIG-GUID: IIwt0OJc9stJoXlryv475MX4u7tTtuFY
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.987,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2023-11-10_05,2023-11-09_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
+ priorityscore=1501 bulkscore=0 adultscore=0 mlxscore=0 malwarescore=0
+ clxscore=1015 spamscore=0 phishscore=0 mlxlogscore=999 suspectscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2311060000 definitions=main-2311100075
 
-The following changes since commit 8f6f76a6a29f36d2f3e4510d0bde5046672f6924:
+On Wed, 8 Nov 2023 15:45:49 +0100
+Petr Tesarik <petr.tesarik1@huawei-partners.com> wrote:
 
-  Merge tag 'mm-nonmm-stable-2023-11-02-14-08' of git://git.kernel.org/pub/scm/linux/kernel/git/akpm/mm (2023-11-02 20:53:31 -1000)
+> On 11/8/2023 3:32 PM, Halil Pasic wrote:
+> > On Wed, 8 Nov 2023 12:04:12 +0100
+> > Petr Tesarik <petr.tesarik1@huawei-partners.com> wrote:
+> > [..]  
+> >>>
+> >>> For the sake of simplicity let us assume we only have the min_align_mask
+> >>> requirement. Then I believe the worst case is that we need 
+> >>> (orig_addr & min_align_mask & PAGE_MASK)  + (min_align_mask & ~PAGE_MASK)
+> >>> extra space to fit.
+> >>>
+> >>> Depending on how the semantics pan out one may be able to replace
+> >>> min_align_mask with combined_mask.
+> >>>
+> >>> Is your point that for large combined_mask values 
+> >>> _get_free_pages(GFP_NOWAIT | __GFP_NOWARN, required_order) is not
+> >>> likely to complete successfully?    
+> >>
+> >> Yes, that's the reason. OTOH it's probably worth a try. The point is
+> >> that mapping a DMA buffer is allowed to fail, so callers should be
+> >> prepared anyway.
+> >>
+> >> And for the case you reported initially, I don't think there is any need
+> >> to preserve bit 11 (0x800) from the original buffer's physical address,
+> >> which is enough to fix it. See also my other email earlier today.  
+> > 
+> > Hm. Do you mean "[PATCH 1/1] swiotlb: fix out-of-bounds TLB allocations
+> > with CONFIG_SWIOTLB_DYNAMIC" or a different one?
+> > 
+> > I only see "[PATCH 1/1] swiotlb: fix out-of-bounds TLB allocations
+> > with CONFIG_SWIOTLB_DYNAMIC" but I don't think that one takes
+> > care of "I don't think there is any need to preserve bit 11 (0x800)
+> > from the original buffer's physical address".  
+> 
+> Yes, I mean only this patch. I want to fix memory corruption fast, while
+> waiting for more feedback on my understanding of the alignment masks.
+> What I'm trying to say is that your specific use case may not even need
+> a bigger allocation if the page alignment should be interpreted differently.
+> 
+> Again, thank you for your in-depth inspection, because it's not totally
+> clear how the various alignment parameters should be interpreted. It's
+> difficult to write correct code then...
 
-are available in the Git repository at:
+I fully understand. Thanks for tackling this. We decided to go with a bug
+report and not with a fix because of the very same reasons: lack of
+clarity on how certain things are supposed to work. Let us see how
+the discussion develops. :)
 
-  git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-6.7-2023-11-10
+Regards,
+Halil
 
-for you to fetch changes up to 53c87e846e335e3c18044c397cc35178163d7827:
+> 
+> Petr T
 
-  swiotlb: fix out-of-bounds TLB allocations with CONFIG_SWIOTLB_DYNAMIC (2023-11-08 16:27:05 +0100)
-
-----------------------------------------------------------------
-ma-mapping fixes for Linux 6.7
-
- - don't leave pages decrypted for DMA in encrypted memory setups linger
-   around on failure (Petr Tesarik)
- - fix an out of bounds access in the new dynamic swiotlb code (Petr Tesarik)
- - fix dma_addressing_limited for systems with weird physical memory layouts
-   (Jia He)
-
-----------------------------------------------------------------
-Jia He (2):
-      dma-mapping: move dma_addressing_limited() out of line
-      dma-mapping: fix dma_addressing_limited() if dma_range_map can't cover all system RAM
-
-Petr Tesarik (2):
-      swiotlb: do not free decrypted pages if dynamic
-      swiotlb: fix out-of-bounds TLB allocations with CONFIG_SWIOTLB_DYNAMIC
-
- include/linux/dma-mapping.h | 19 +++++--------------
- kernel/dma/direct.c         | 40 ++++++++++++++++++++++++++++++++++++++++
- kernel/dma/direct.h         |  1 +
- kernel/dma/mapping.c        | 22 ++++++++++++++++++++++
- kernel/dma/swiotlb.c        | 28 ++++++++++++++++++----------
- 5 files changed, 86 insertions(+), 24 deletions(-)
