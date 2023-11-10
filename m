@@ -1,155 +1,98 @@
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8DA8811C8E
-	for <iommu@lists.linux.dev>; Fri, 10 Nov 2023 09:23:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C011D12B88
+	for <iommu@lists.linux.dev>; Fri, 10 Nov 2023 09:43:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=collabora.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="sgmKbhIM"
-Received: from pps.filterd (m0356516.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 3AA9DJHD019415;
-	Fri, 10 Nov 2023 09:22:53 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : in-reply-to : references : mime-version :
- content-type : content-transfer-encoding; s=pp1;
- bh=HznTsQNl47/GQCrKjB/UG3RtaDQ6QdkoTZ2WIS6q3HA=;
- b=sgmKbhIMOjGnIze4wT/YBq4hk8KJotdGY/Eh4G72tNuNZKNW4Wx8q1Nrmxf+rPeyU/S/
- 4x90FWCue82TNGraPd2rBczxw+rOLPUp/8wpVB6Cs1FpNfeD+H22/XzNkv68k6i7ltNK
- nJXpsjt626Xro8OXMsDR53mvx2nQgttEljiWjSnvAL9wYTX6sBKzfth2slrjmgW/QwtI
- w5j3SWmFLBug1T8b8xCQkLUfCRKdriVA8UIlNoUN59vdsn68W5Qem73gbVU83sFK3nqP
- 1EMPCEDCaaM/SxlxKIt8T6bMEFfK/oCGO9R6EXDfKpvY7PYmtNro0+1slGBWRtgIyDoe LQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3u9h71s7q0-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 10 Nov 2023 09:22:52 +0000
-Received: from m0356516.ppops.net (m0356516.ppops.net [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 3AA9DW8S021570;
-	Fri, 10 Nov 2023 09:22:52 GMT
-Received: from ppma11.dal12v.mail.ibm.com (db.9e.1632.ip4.static.sl-reverse.com [50.22.158.219])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3u9h71s7pv-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 10 Nov 2023 09:22:52 +0000
-Received: from pps.filterd (ppma11.dal12v.mail.ibm.com [127.0.0.1])
-	by ppma11.dal12v.mail.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 3AA74s4i004132;
-	Fri, 10 Nov 2023 09:22:51 GMT
-Received: from smtprelay02.fra02v.mail.ibm.com ([9.218.2.226])
-	by ppma11.dal12v.mail.ibm.com (PPS) with ESMTPS id 3u7w219vjb-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 10 Nov 2023 09:22:51 +0000
-Received: from smtpav05.fra02v.mail.ibm.com (smtpav05.fra02v.mail.ibm.com [10.20.54.104])
-	by smtprelay02.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 3AA9MmQn28639904
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Fri, 10 Nov 2023 09:22:48 GMT
-Received: from smtpav05.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 87BF420043;
-	Fri, 10 Nov 2023 09:22:48 +0000 (GMT)
-Received: from smtpav05.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 6FF5A20040;
-	Fri, 10 Nov 2023 09:22:47 +0000 (GMT)
-Received: from li-ce58cfcc-320b-11b2-a85c-85e19b5285e0 (unknown [9.171.21.196])
-	by smtpav05.fra02v.mail.ibm.com (Postfix) with SMTP;
-	Fri, 10 Nov 2023 09:22:47 +0000 (GMT)
-Date: Fri, 10 Nov 2023 10:22:45 +0100
-From: Halil Pasic <pasic@linux.ibm.com>
-To: Petr Tesarik <petr.tesarik1@huawei-partners.com>
-Cc: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>,
-        Niklas Schnelle
- <schnelle@linux.ibm.com>,
-        Christoph Hellwig <hch@lst.de>, Bjorn Helgaas
- <bhelgaas@google.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Robin
- Murphy <robin.murphy@arm.com>,
-        Ross Lagerwall <ross.lagerwall@citrix.com>,
-        linux-pci <linux-pci@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <iommu@lists.linux.dev>, Matthew Rosato <mjrosato@linux.ibm.com>,
-        Halil
- Pasic <pasic@linux.ibm.com>
-Subject: Re: Memory corruption with CONFIG_SWIOTLB_DYNAMIC=y
-Message-ID: <20231110102245.6ac971b9.pasic@linux.ibm.com>
-In-Reply-To: <7a4f87c3-b3c6-42c5-9200-8eb56d1c8530@huawei-partners.com>
-References: <104a8c8fedffd1ff8a2890983e2ec1c26bff6810.camel@linux.ibm.com>
-	<20231103195949.0af884d0@meshulam.tesarici.cz>
-	<20231108115207.791a30d8.pasic@linux.ibm.com>
-	<41c0baf6-ba4d-4876-b692-279307265466@huawei-partners.com>
-	<20231108153230.6491acaa.pasic@linux.ibm.com>
-	<7a4f87c3-b3c6-42c5-9200-8eb56d1c8530@huawei-partners.com>
-Organization: IBM
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-redhat-linux-gnu)
+	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="X0Oeosqr"
+Received: from localhost.localdomain (cola.collaboradmins.com [195.201.22.229])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	(Authenticated sender: bbrezillon)
+	by madras.collabora.co.uk (Postfix) with ESMTPSA id 5FF3266073E6;
+	Fri, 10 Nov 2023 09:43:56 +0000 (GMT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+	s=mail; t=1699609437;
+	bh=is0ZWawZ7jqZSJcJX0Mc3C68nH2lkPBAPkiqbprBLOY=;
+	h=From:To:Cc:Subject:Date:From;
+	b=X0OeosqrFuMIeI0Y+dc1G1lRieQ0S7uEnh0zjF9NMIq29TGs1sbEqfEWEB4gLlWE8
+	 dD0nBL5MflCxWpv6pVstiQ5X37Au5UvUYVJeH9jQ3wGI3CKqpaAduH033N0lMvHMY2
+	 08WaQ9d26p6QBTUnJjYQO9NAbd/2vEex7/Rg2NeLK6GT9dhdTbfMQwzcTp5QZxCiys
+	 NS7CHqhXJo7acThWHHgLWegR58F6e6zvOA6+IvSs3kCdecZAboq1eLMRSCiewfaMQ6
+	 fZcVJ25T9gPD2oXMSMS7ZvF3G6FqMe30gA/G4UVyfvnrpr56HMwxPT9O6Euo6UkFMZ
+	 zvuCjlDhTO2hg==
+From: Boris Brezillon <boris.brezillon@collabora.com>
+To: Joerg Roedel <joro@8bytes.org>,
+	iommu@lists.linux.dev,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	linux-arm-kernel@lists.infradead.org
+Cc: Rob Clark <robdclark@gmail.com>,
+	Gaurav Kohli <quic_gkohli@quicinc.com>,
+	Steven Price <steven.price@arm.com>,
+	Boris Brezillon <boris.brezillon@collabora.com>
+Subject: [PATCH v2 0/2] iommu: Allow passing custom allocators to pgtable drivers
+Date: Fri, 10 Nov 2023 10:43:50 +0100
+Message-ID: <20231110094352.565347-1-boris.brezillon@collabora.com>
+X-Mailer: git-send-email 2.41.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: oOuHQySkKhSqp4kaUhZWxxdqq2tOxfSE
-X-Proofpoint-ORIG-GUID: IIwt0OJc9stJoXlryv475MX4u7tTtuFY
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.272,Aquarius:18.0.987,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2023-11-10_05,2023-11-09_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
- priorityscore=1501 bulkscore=0 adultscore=0 mlxscore=0 malwarescore=0
- clxscore=1015 spamscore=0 phishscore=0 mlxlogscore=999 suspectscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2311060000 definitions=main-2311100075
 
-On Wed, 8 Nov 2023 15:45:49 +0100
-Petr Tesarik <petr.tesarik1@huawei-partners.com> wrote:
+Hello,
 
-> On 11/8/2023 3:32 PM, Halil Pasic wrote:
-> > On Wed, 8 Nov 2023 12:04:12 +0100
-> > Petr Tesarik <petr.tesarik1@huawei-partners.com> wrote:
-> > [..]  
-> >>>
-> >>> For the sake of simplicity let us assume we only have the min_align_mask
-> >>> requirement. Then I believe the worst case is that we need 
-> >>> (orig_addr & min_align_mask & PAGE_MASK)  + (min_align_mask & ~PAGE_MASK)
-> >>> extra space to fit.
-> >>>
-> >>> Depending on how the semantics pan out one may be able to replace
-> >>> min_align_mask with combined_mask.
-> >>>
-> >>> Is your point that for large combined_mask values 
-> >>> _get_free_pages(GFP_NOWAIT | __GFP_NOWARN, required_order) is not
-> >>> likely to complete successfully?    
-> >>
-> >> Yes, that's the reason. OTOH it's probably worth a try. The point is
-> >> that mapping a DMA buffer is allowed to fail, so callers should be
-> >> prepared anyway.
-> >>
-> >> And for the case you reported initially, I don't think there is any need
-> >> to preserve bit 11 (0x800) from the original buffer's physical address,
-> >> which is enough to fix it. See also my other email earlier today.  
-> > 
-> > Hm. Do you mean "[PATCH 1/1] swiotlb: fix out-of-bounds TLB allocations
-> > with CONFIG_SWIOTLB_DYNAMIC" or a different one?
-> > 
-> > I only see "[PATCH 1/1] swiotlb: fix out-of-bounds TLB allocations
-> > with CONFIG_SWIOTLB_DYNAMIC" but I don't think that one takes
-> > care of "I don't think there is any need to preserve bit 11 (0x800)
-> > from the original buffer's physical address".  
-> 
-> Yes, I mean only this patch. I want to fix memory corruption fast, while
-> waiting for more feedback on my understanding of the alignment masks.
-> What I'm trying to say is that your specific use case may not even need
-> a bigger allocation if the page alignment should be interpreted differently.
-> 
-> Again, thank you for your in-depth inspection, because it's not totally
-> clear how the various alignment parameters should be interpreted. It's
-> difficult to write correct code then...
+This patchset is an attempt at making page table allocation
+customizable. This is useful to some GPU drivers for various reasons:
 
-I fully understand. Thanks for tackling this. We decided to go with a bug
-report and not with a fix because of the very same reasons: lack of
-clarity on how certain things are supposed to work. Let us see how
-the discussion develops. :)
+- speed-up upcoming page table allocations by managing a pool of free
+  pages
+- batch page table allocation instead of allocating one page at a time
+- pre-reserve pages for page tables needed for map/unmap operations and
+  return the unused page tables to some pool
+
+The first and last reasons are particularly important for GPU drivers
+wanting to implement asynchronous VM_BIND. Asynchronous VM_BIND requires
+that any page table needed for a map/unmap operation to succeed be
+allocated at VM_BIND job creation time. At the time of the job creation,
+we don't know what the VM will look like when we get to execute the
+map/unmap, and can't guess how many page tables we will need. Because
+of that, we have to over-provision page tables for the worst case
+scenario (page table tree is empty), which means we will allocate/free
+a lot. Having pool a pool of free pages is crucial if we want to
+speed-up VM_BIND requests.
+
+There might also be other good reasons to want custom allocators, like
+fine-grained memory accounting and resource limiting.
+
+A real example of how such custom allocators can be used is available
+here[1]. v2 of the Panthor driver is approaching submission, and I
+figured I'd try to upstream the dependencies separately, which is
+why I submit this series now, even though the user of this new API
+will come afterwards. If you'd prefer to have those patches submitted
+along with the Panthor driver, let me know.
 
 Regards,
-Halil
 
-> 
-> Petr T
+Boris
+
+[1]https://gitlab.freedesktop.org/panfrost/linux/-/blob/panthor/drivers/gpu/drm/panthor/panthor_mmu.c#L441
+
+Boris Brezillon (2):
+  iommu: Allow passing custom allocators to pgtable drivers
+  iommu: Extend LPAE page table format to support custom allocators
+
+ drivers/iommu/io-pgtable-arm.c | 55 ++++++++++++++++++++++++----------
+ drivers/iommu/io-pgtable.c     | 23 ++++++++++++++
+ include/linux/io-pgtable.h     | 31 +++++++++++++++++++
+ 3 files changed, 93 insertions(+), 16 deletions(-)
+
+-- 
+2.41.0
 
