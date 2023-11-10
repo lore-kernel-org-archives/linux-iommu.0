@@ -1,44 +1,42 @@
 Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0521512E46
-	for <iommu@lists.linux.dev>; Fri, 10 Nov 2023 09:47:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F336712E46
+	for <iommu@lists.linux.dev>; Fri, 10 Nov 2023 09:52:36 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=collabora.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="D2bXB3Bb"
+	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="hr1IGq+o"
 Received: from localhost (cola.collaboradmins.com [195.201.22.229])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(No client certificate requested)
 	(Authenticated sender: bbrezillon)
-	by madras.collabora.co.uk (Postfix) with ESMTPSA id C56ED66073EF;
-	Fri, 10 Nov 2023 09:47:53 +0000 (GMT)
+	by madras.collabora.co.uk (Postfix) with ESMTPSA id D123166073EF;
+	Fri, 10 Nov 2023 09:52:34 +0000 (GMT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-	s=mail; t=1699609674;
-	bh=9v8ERUxib776BgthWEgOR4Rdi9JK7Ze5AX6GgNkbrYg=;
+	s=mail; t=1699609955;
+	bh=21JPMc5nCzm9ynbxzOvHCWdhr+G/7u4J/hhGJKmwPiQ=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=D2bXB3Bb5ngfck8o5JTnqvd17k4yJ705vylfd/zS0SmSwWw0gWBa9zii735rViqRm
-	 qK1Pr5GYMaRwU9YfpY8PxpYc4TydbhuOjM8a5uQlHiRpNFkvFtV6cVmjvgypK7jliP
-	 gbuFgCIOydCoDZO5zYxGimPkiirg0rkBLBZws6A6FemImZL/FokU0YpW9yi2u5+AwX
-	 z+HLp42pw/vAGP8e2pefMntlIWjeGaXEsgTl9R05aTifDpKLvY/LJJUbY2etEy5rny
-	 hsKG8DHh+kLCKSnymsDkk1TVBKxHmQAsPOIlTk7GAC+zHPghfcm/nTbSEUoOrIgp10
-	 EdkjRBNzNX/tA==
-Date: Fri, 10 Nov 2023 10:47:50 +0100
+	b=hr1IGq+oqoJ9Rr9acOW3M64iX3LlRXTD1EYZcN6fIQQ/5yG5CjEoniES62bBbkrpi
+	 h0ipr9LIm4GwFzFXISjFhjjCL8uUJUn8KEsOHTcV4P9HM7fCevRb7Q9ASJx2FXAOwE
+	 WUlBIBMI1YwEvRYeQB9VXnqxtu+h+QZYYz7psOCq7U1SWW1w/Xomq16zhGNsaPvYr4
+	 WJ6Yl3evU6bHj3OwofnGfx1Xg6BQ5otDfkLriVpTevxlhBFkoelAfAAKdaPbjq0V6v
+	 4qsQ1KkPQkPtKL936n1kwRJi3+oRdNXNqnbYVpqK8w3hr+fOhl6EJT4Ocd6Bd6gf76
+	 UDh+sRVxjpJIA==
+Date: Fri, 10 Nov 2023 10:52:31 +0100
 From: Boris Brezillon <boris.brezillon@collabora.com>
-To: Gaurav Kohli <quic_gkohli@quicinc.com>
-Cc: Rob Clark <robdclark@gmail.com>, Steven Price <steven.price@arm.com>,
- Joerg Roedel <joro@8bytes.org>, <iommu@lists.linux.dev>, Will Deacon
- <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- <linux-arm-kernel@lists.infradead.org>, <linux-arm-msm@vger.kernel.org>
-Subject: Re: [PATCH 0/2] iommu: Allow passing custom allocators to pgtable
- drivers
-Message-ID: <20231110104750.198b6967@collabora.com>
-In-Reply-To: <84277a5c-a33f-a412-6dec-2ab786b1a47d@quicinc.com>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Joerg Roedel <joro@8bytes.org>, iommu@lists.linux.dev, Will Deacon
+ <will@kernel.org>, linux-arm-kernel@lists.infradead.org, Rob Clark
+ <robdclark@gmail.com>
+Subject: Re: [PATCH 2/2] iommu: Extend LPAE page table format to support
+ custom allocators
+Message-ID: <20231110105231.3a8fd2ff@collabora.com>
+In-Reply-To: <04ae3d0c-d850-63c7-80bb-f90e26f5b758@arm.com>
 References: <20230809121744.2341454-1-boris.brezillon@collabora.com>
-	<f72e5ab1-c6f2-ec03-68d6-1686145f3a4d@arm.com>
-	<CAF6AEGtDxkiiM5NNT7Y9-sY5eCQX15ij=RzU-NX2Mvf6kNk2nA@mail.gmail.com>
-	<84277a5c-a33f-a412-6dec-2ab786b1a47d@quicinc.com>
+	<20230809121744.2341454-3-boris.brezillon@collabora.com>
+	<04ae3d0c-d850-63c7-80bb-f90e26f5b758@arm.com>
 Organization: Collabora
 X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; x86_64-redhat-linux-gnu)
 Precedence: bulk
@@ -47,93 +45,67 @@ List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-Hi Gaurav,
+On Wed, 20 Sep 2023 17:42:01 +0100
+Robin Murphy <robin.murphy@arm.com> wrote:
 
-On Tue, 7 Nov 2023 17:22:39 +0530
-Gaurav Kohli <quic_gkohli@quicinc.com> wrote:
+> On 09/08/2023 1:17 pm, Boris Brezillon wrote:
+> > We need that in order to implement the VM_BIND ioctl in the GPU driver
+> > targeting new Mali GPUs.
+> > 
+> > VM_BIND is about executing MMU map/unmap requests asynchronously,
+> > possibly after waiting for external dependencies encoded as dma_fences.
+> > We intend to use the drm_sched framework to automate the dependency
+> > tracking and VM job dequeuing logic, but this comes with its own set
+> > of constraints, one of them being the fact we are not allowed to
+> > allocate memory in the drm_gpu_scheduler_ops::run_job() to avoid this
+> > sort of deadlocks:
+> > 
+> > - VM_BIND map job needs to allocate a page table to map some memory
+> >    to the VM. No memory available, so kswapd is kicked
+> > - GPU driver shrinker backend ends up waiting on the fence attached to
+> >    the VM map job or any other job fence depending on this VM operation.
+> > 
+> > With custom allocators, we will be able to pre-reserve enough pages to
+> > guarantee the map/unmap operations we queued will take place without
+> > going through the system allocator. But we can also optimize
+> > allocation/reservation by not free-ing pages immediately, so any
+> > upcoming page table allocation requests can be serviced by some free
+> > page table pool kept at the driver level.  
+> 
+> We should bear in mind it's also potentially valuable for other aspects 
+> of GPU and similar use-cases, like fine-grained memory accounting and 
+> resource limiting. That's a significant factor in this approach vs. 
+> internal caching schemes that could only solve the specific reclaim concern.
 
-> On 10/24/2023 2:32 AM, Rob Clark wrote:
-> > On Wed, Sep 20, 2023 at 6:12=E2=80=AFAM Steven Price <steven.price@arm.=
-com> wrote: =20
-> >>
-> >> On 09/08/2023 13:17, Boris Brezillon wrote: =20
-> >>> Hello,
-> >>>
-> >>> This patchset is an attempt at making page table allocation
-> >>> customizable. This is useful to some GPU drivers for various reasons:
-> >>>
-> >>> - speed-up upcoming page table allocations by managing a pool of free
-> >>>    pages
-> >>> - batch page table allocation instead of allocating one page at a time
-> >>> - pre-reserve pages for page tables needed for map/unmap operations a=
-nd
-> >>>    return the unused page tables to some pool
-> >>>
-> >>> The first and last reasons are particularly important for GPU drivers
-> >>> wanting to implement asynchronous VM_BIND. Asynchronous VM_BIND requi=
-res
-> >>> that any page table needed for a map/unmap operation to succeed be
-> >>> allocated at VM_BIND job creation time. At the time of the job creati=
-on,
-> >>> we don't know what the VM will look like when we get to execute the
-> >>> map/unmap, and can't guess how many page tables we will need. Because
-> >>> of that, we have to over-provision page tables for the worst case
-> >>> scenario (page table tree is empty), which means we will allocate/free
-> >>> a lot. Having pool a pool of free pages is crucial if we want to
-> >>> speed-up VM_BIND requests.
-> >>>
-> >>> A real example of how such custom allocators can be used is available
-> >>> here[1]. v2 of the Panthor driver is approaching submission, and I
-> >>> figured I'd try to upstream the dependencies separately, which is
-> >>> why I submit this series now, even though the user of this new API
-> >>> will come afterwards. If you'd prefer to have those patches submitted
-> >>> along with the Panthor driver, let me know.
-> >>>
-> >>> This approach has been discussed with Robin, and is hopefully not too
-> >>> far from what he had in mind. =20
-> >>
-> >> The alternative would be to embed a cache of pages into the IOMMU
-> >> framework, however kmem_cache sadly doesn't seem to support the
-> >> 'reserve' of pages concept that we need. mempools could be a solution
-> >> but the mempool would need to be created by the IOMMU framework as the
-> >> alloc/free functions are specified when creating the pool. So it would
-> >> be a much bigger change (to drivers/iommu).
-> >>
-> >> So, given that so far it's just Panthor this seems like the right
-> >> approach for now - when/if other drivers want the same functionality
-> >> then it might make sense to revisit the idea of doing the caching with=
-in
-> >> the IOMMU framework. =20
-> >=20
-> > I have some plans to use this as well for drm/msm.. but the reasons
-> > and requirements are basically the same as for panthor.  I think I
-> > prefer the custom allocator approach, rather than tying this to IOMMU
-> > framework.  (But ofc custom allocators, I guess, does not prevent the
-> > iommu driver from doing it's own caching.)
-> >=20
-> > BR,
-> > -R
-> >  =20
->=20
-> We have also posted one RFC patch series which is based on this current=20
-> patches by Boris and helping us to define our custom alloc and free=20
-> pgtable call. For our side usecase we have a requirement to create=20
-> pgtable from HLOS and then share it to different entity(VMID) and=20
-> basically that also requires few smc calls and for that we need
-> custom alloc/free callbacks.
->=20
-> https://lore.kernel.org/all/20231101071144.16309-1-quic_gkohli@quicinc.co=
-m/
->=20
->=20
-> So custom allocator and free ops is helping for us also. Is there any=20
-> plan to merge these patches from Boris.
+I mentioned these other cases in v2. Let me know if that's not detailed
+enough.
 
-Sorry for the late reply. I just sent a v2, but I forgot to add your
-Tested-by :-/. Feel free to add it back.
+> > diff --git a/drivers/iommu/io-pgtable.c b/drivers/iommu/io-pgtable.c
+> > index f4caf630638a..e273c18ae22b 100644
+> > --- a/drivers/iommu/io-pgtable.c
+> > +++ b/drivers/iommu/io-pgtable.c
+> > @@ -47,6 +47,18 @@ static int check_custom_allocator(enum io_pgtable_fmt fmt,
+> >   	if (!cfg->alloc)
+> >   		return 0;
+> >   
+> > +	switch (fmt) {
+> > +	case ARM_32_LPAE_S1:
+> > +	case ARM_32_LPAE_S2:
+> > +	case ARM_64_LPAE_S1:
+> > +	case ARM_64_LPAE_S2:
+> > +	case ARM_MALI_LPAE:
+> > +		return 0;  
+> 
+> I remain not entirely convinced by the value of this, but could it at 
+> least be done in a more scalable manner like some kind of flag provided 
+> by the format itself?
+
+I added a caps flag to io_pgtable_init_fns in v2. Feels a bit weird to
+add a field that's not a function pointer in a struct that's prefixed
+with _fns (which I guess stands for _functions), but oh well.
 
 Regards,
 
