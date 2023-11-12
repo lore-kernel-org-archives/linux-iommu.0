@@ -1,34 +1,34 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39BA623DF
-	for <iommu@lists.linux.dev>; Sun, 12 Nov 2023 04:12:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E85C22100
+	for <iommu@lists.linux.dev>; Sun, 12 Nov 2023 04:12:12 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="WIBjrF21"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="bAC07Bvg"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1699762333; x=1731298333;
+  t=1699762332; x=1731298332;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=KgNwZKlEknUh48ho6jIqFjsi+lR3uCezgczS6gTj3Dk=;
-  b=WIBjrF219XP6zrvOyHqPgz8Clp2DHwy7fS2xRX2F8FUwdz3IVw5mj7DG
-   vOyjUSy+m1Jorq4+46ap7Njjpshh1r8JcWdyWRkmwlZRnpTA/WYWWGtnc
-   /2KIgSxTLWWE0Oazpyf+UbJmIymd+chN/xCA8aQgwwHc8eRmBaluX/Acz
-   XU5TbHdw5Q92Z9Ny4ga1zWUf2pMtaSOXzgqOV/JAufZ5lNgekaBEDUqzn
-   sUt7wFg/+8Q27XRadX00xZMEhkQmyidYgXbdcO7uDcCIIj4D42B7MNMMC
-   Qlh5ppvcZyNPrH0PSc+c8dYkpeiiAY5Jil6pDliY1luwO/gcHwEyonO/h
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10891"; a="476533895"
+  bh=XzHdLhX/vY4asS0xx/Bsw4Ay4NQKud3SHGFE5ORwta8=;
+  b=bAC07BvgMLCtRFY68FBg7tjLb2Xef6BSKRCC1EAdRru3D6WJdKSup62P
+   zp5dTWi+tMFdG/GQpHuG9LWVp9GvfGUevDNG4xOQj5JY2If5tTBKFiSge
+   QTln9mst+riZ+wepaLOsHRtU8Q6m1x7jJPHXxzEuqqwhwv/J/JDfwdR+x
+   QAOgGjSLGOdEmk+BNn4m4YR7fI38PgMU0L/6PuY/f4PukFCSqy6OSCUWH
+   Wr5e16ksamyvORfPzL5TF39Qd0nYuOYP437be9sRQKBttyi++etIJPd6X
+   4oxQW9vOTSWmGh5bOVVnvzSxpBZFF3BYNxuuER3ePomYGKQR+IoUN6xJ1
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10891"; a="476533883"
 X-IronPort-AV: E=Sophos;i="6.03,296,1694761200"; 
-   d="scan'208";a="476533895"
+   d="scan'208";a="476533883"
 Received: from orsmga003.jf.intel.com ([10.7.209.27])
   by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Nov 2023 20:12:08 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10891"; a="713936754"
+X-IronPort-AV: E=McAfee;i="6600,9927,10891"; a="713936751"
 X-IronPort-AV: E=Sophos;i="6.03,296,1694761200"; 
-   d="scan'208";a="713936754"
+   d="scan'208";a="713936751"
 Received: from srinivas-otcpl-7600.jf.intel.com (HELO jacob-builder.jf.intel.com) ([10.54.39.116])
   by orsmga003.jf.intel.com with ESMTP; 11 Nov 2023 20:12:08 -0800
 From: Jacob Pan <jacob.jun.pan@linux.intel.com>
@@ -50,9 +50,9 @@ Cc: Raj Ashok <ashok.raj@intel.com>,
 	seanjc@google.com,
 	"Robin Murphy" <robin.murphy@arm.com>,
 	Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: [PATCH RFC 06/13] x86/irq: Unionize PID.PIR for 64bit access w/o casting
-Date: Sat, 11 Nov 2023 20:16:36 -0800
-Message-Id: <20231112041643.2868316-7-jacob.jun.pan@linux.intel.com>
+Subject: [PATCH RFC 05/13] x86/irq: Set up per host CPU posted interrupt descriptors
+Date: Sat, 11 Nov 2023 20:16:35 -0800
+Message-Id: <20231112041643.2868316-6-jacob.jun.pan@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20231112041643.2868316-1-jacob.jun.pan@linux.intel.com>
 References: <20231112041643.2868316-1-jacob.jun.pan@linux.intel.com>
@@ -64,31 +64,107 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Make PIR field into u64 such that atomic xchg64 can be used without ugly
-casting.
+From: Thomas Gleixner <tglx@linutronix.de>
 
-Suggested-by: Thomas Gleixner <tglx@linutronix.de>
+To support posted MSIs, create a posted interrupt descriptor (PID) for each
+host CPU. Later on, when setting up IRQ CPU affinity, IOMMU's interrupt
+remapping table entry (IRTE) will point to the physical address of the
+matching CPU's PID.
+
+Each PID is initialized with the owner CPU's physical APICID as the
+destination.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
 ---
- arch/x86/include/asm/posted_intr.h | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ arch/x86/include/asm/hardirq.h     |  3 +++
+ arch/x86/include/asm/posted_intr.h |  7 +++++++
+ arch/x86/kernel/cpu/common.c       |  3 +++
+ arch/x86/kernel/irq.c              | 13 +++++++++++++
+ 4 files changed, 26 insertions(+)
 
+diff --git a/arch/x86/include/asm/hardirq.h b/arch/x86/include/asm/hardirq.h
+index 66837b8c67f1..72c6a084dba3 100644
+--- a/arch/x86/include/asm/hardirq.h
++++ b/arch/x86/include/asm/hardirq.h
+@@ -48,6 +48,9 @@ typedef struct {
+ 
+ DECLARE_PER_CPU_SHARED_ALIGNED(irq_cpustat_t, irq_stat);
+ 
++#ifdef CONFIG_X86_POSTED_MSI
++DECLARE_PER_CPU_ALIGNED(struct pi_desc, posted_interrupt_desc);
++#endif
+ #define __ARCH_IRQ_STAT
+ 
+ #define inc_irq_stat(member)	this_cpu_inc(irq_stat.member)
 diff --git a/arch/x86/include/asm/posted_intr.h b/arch/x86/include/asm/posted_intr.h
-index 2cd9ac1af835..3af00f5395e4 100644
+index 9f2fa38fa57b..2cd9ac1af835 100644
 --- a/arch/x86/include/asm/posted_intr.h
 +++ b/arch/x86/include/asm/posted_intr.h
-@@ -9,7 +9,10 @@
+@@ -94,4 +94,11 @@ static inline bool pi_test_sn(struct pi_desc *pi_desc)
+ 			(unsigned long *)&pi_desc->control);
+ }
  
- /* Posted-Interrupt Descriptor */
- struct pi_desc {
--	u32 pir[8];     /* Posted interrupt requested */
-+	union {
-+		u32 pir[8];     /* Posted interrupt requested */
-+		u64 pir_l[4];
-+	};
- 	union {
- 		struct {
- 				/* bit 256 - Outstanding Notification */
++#ifdef CONFIG_X86_POSTED_MSI
++extern void intel_posted_msi_init(void);
++
++#else
++static inline void intel_posted_msi_init(void) {};
++
++#endif /* X86_POSTED_MSI */
+ #endif /* _X86_POSTED_INTR_H */
+diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
+index 4e5ffc8b0e46..08b2d1560f8b 100644
+--- a/arch/x86/kernel/cpu/common.c
++++ b/arch/x86/kernel/cpu/common.c
+@@ -65,6 +65,7 @@
+ #include <asm/set_memory.h>
+ #include <asm/traps.h>
+ #include <asm/sev.h>
++#include <asm/posted_intr.h>
+ 
+ #include "cpu.h"
+ 
+@@ -2266,6 +2267,8 @@ void cpu_init(void)
+ 		barrier();
+ 
+ 		x2apic_setup();
++
++		intel_posted_msi_init();
+ 	}
+ 
+ 	mmgrab(&init_mm);
+diff --git a/arch/x86/kernel/irq.c b/arch/x86/kernel/irq.c
+index 11761c124545..fd4d664d81bb 100644
+--- a/arch/x86/kernel/irq.c
++++ b/arch/x86/kernel/irq.c
+@@ -22,6 +22,8 @@
+ #include <asm/desc.h>
+ #include <asm/traps.h>
+ #include <asm/thermal.h>
++#include <asm/posted_intr.h>
++#include <asm/irq_remapping.h>
+ 
+ #define CREATE_TRACE_POINTS
+ #include <asm/trace/irq_vectors.h>
+@@ -334,6 +336,17 @@ DEFINE_IDTENTRY_SYSVEC_SIMPLE(sysvec_kvm_posted_intr_nested_ipi)
+ }
+ #endif
+ 
++#ifdef CONFIG_X86_POSTED_MSI
++
++/* Posted Interrupt Descriptors for coalesced MSIs to be posted */
++DEFINE_PER_CPU_ALIGNED(struct pi_desc, posted_interrupt_desc);
++
++void intel_posted_msi_init(void)
++{
++	this_cpu_write(posted_interrupt_desc.nv, POSTED_MSI_NOTIFICATION_VECTOR);
++	this_cpu_write(posted_interrupt_desc.ndst, this_cpu_read(x86_cpu_to_apicid));
++}
++#endif /* X86_POSTED_MSI */
+ 
+ #ifdef CONFIG_HOTPLUG_CPU
+ /* A cpu has been removed from cpu_online_mask.  Reset irq affinities. */
 -- 
 2.25.1
 
