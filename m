@@ -1,98 +1,284 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f178.google.com (mail-pl1-f178.google.com [209.85.214.178])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D53F314288
-	for <iommu@lists.linux.dev>; Sun, 12 Nov 2023 15:17:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="mhKept8L"
-Received: from pps.filterd (m0279866.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 3ACFH16i031655;
-	Sun, 12 Nov 2023 15:17:01 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=qcppdkim1;
- bh=rshSxOKREaibv4UeEAeF1J8j26NHtl8y6YdFV0mWAao=;
- b=mhKept8LBjbPMF83lvOBnRL2xRfDjnKbhrX0HNlMThTUc67MzIbLzNJTAjwN98ahxJUs
- Q0DC6nX4v0qbXtRyRHxDKBiGrIUH7Hib34p1+Vzw0rbYR17w+WLxQfeycP+ChXrInspl
- ORzokMDHDabRXRum3O4Vf/0+tVSs/Lipy5oJF26+WbKu7pRL44eU3W8yehtlRJm9HhG3
- l2ZIRskieCKOUud9SDf3HUhJe/bJJac46xGNK3pXLOR7gDbBvsY7SKhEsnyInMTqu4uj
- VErsWGlMQ/oFXMzwWG/iQCScdZ1v1WzsFfhLX3tWa7DlqUeO/3dIGLu//LdhBYxQ9Ahn KQ== 
-Received: from nalasppmta03.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3ua2wfhvtk-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Sun, 12 Nov 2023 15:17:00 +0000
-Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-	by NALASPPMTA03.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 3ACFGxUj003702
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Sun, 12 Nov 2023 15:16:59 GMT
-Received: from [10.79.43.91] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.39; Sun, 12 Nov
- 2023 07:16:53 -0800
-Message-ID: <857eda79-ce06-4afb-1393-c6d14dcda8a2@quicinc.com>
-Date: Sun, 12 Nov 2023 20:46:50 +0530
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E4B814AA6;
+	Sun, 12 Nov 2023 17:35:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; dkim=none
+Received: by mail-pl1-f178.google.com with SMTP id d9443c01a7336-1ce1603f5cdso4680455ad.3;
+        Sun, 12 Nov 2023 09:35:24 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1699810524; x=1700415324;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=WoHWK6gINi+EEwKTGP1Dg7yIjtZGVaNrtn4vb+1P0Pc=;
+        b=BGrtT3QAxqFErpZgzazFu4i3SSKPO9WSnFfkuGM6dSPzms0/DRxpIBp+W74haJOzSn
+         HI0ONqvt2ffesiI4FhW0o5z8hWgBd4FY//0l1kIUAibmaKOMRxGkjsP8EC9CZUIDHdsM
+         01UGic/HvPDlpu0QY13R5i69iZiAhCsTb4S6QCxXnPF3xWpZ6cYdMuAOjYimLhy95qJt
+         rqUrix1XvNwlzkV4StyUFWP/5+yon8ySykx1k5M5MpKkNDlpBfg8viS4Q4FrXsFUv+Rb
+         1okyvPBaIalPa/ruNDE5ft3VWP2yu8b1VasOR1Md7uW8OGKRsTwkHiuyIyBrr8Jx3Gm1
+         WCcA==
+X-Gm-Message-State: AOJu0YzXRd4lYJGzWMVT4hnfq9LmMhN5jAXdmjAGmQ7l0Jxj2s/RHVkL
+	6JhNrZlW88iaRKrvTq2bY0Q=
+X-Google-Smtp-Source: AGHT+IFd+7BefBv/n/fSSGw7xmysLeuCAiNT7/refCQp1UZ16kLfECcyF3DpQcfnxFHM4Pm1w5+ajw==
+X-Received: by 2002:a17:902:b618:b0:1cc:138a:287b with SMTP id b24-20020a170902b61800b001cc138a287bmr2491072pls.3.1699810524296;
+        Sun, 12 Nov 2023 09:35:24 -0800 (PST)
+Received: from localhost ([156.39.10.100])
+        by smtp.gmail.com with ESMTPSA id b5-20020a170903228500b001cc32f46757sm2761359plh.107.2023.11.12.09.35.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 12 Nov 2023 09:35:23 -0800 (PST)
+Date: Sun, 12 Nov 2023 09:35:23 -0800
+From: Moritz Fischer <mdf@kernel.org>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: acpica-devel@lists.linuxfoundation.org,
+	Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+	Albert Ou <aou@eecs.berkeley.edu>, asahi@lists.linux.dev,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Dexuan Cui <decui@microsoft.com>, devicetree@vger.kernel.org,
+	David Woodhouse <dwmw2@infradead.org>,
+	Frank Rowand <frowand.list@gmail.com>,
+	Hanjun Guo <guohanjun@huawei.com>,
+	Haiyang Zhang <haiyangz@microsoft.com>,
+	Christoph Hellwig <hch@lst.de>, iommu@lists.linux.dev,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Jonathan Hunter <jonathanh@nvidia.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	"K. Y. Srinivasan" <kys@microsoft.com>, Len Brown <lenb@kernel.org>,
+	linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-hyperv@vger.kernel.org, linux-mips@vger.kernel.org,
+	linux-riscv@lists.infradead.org, linux-snps-arc@lists.infradead.org,
+	linux-tegra@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
+	Lorenzo Pieralisi <lpieralisi@kernel.org>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Hector Martin <marcan@marcan.st>,
+	Palmer Dabbelt <palmer@dabbelt.com>,
+	Paul Walmsley <paul.walmsley@sifive.com>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Robert Moore <robert.moore@intel.com>,
+	Rob Herring <robh+dt@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Sudeep Holla <sudeep.holla@arm.com>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Sven Peter <sven@svenpeter.dev>,
+	Thierry Reding <thierry.reding@gmail.com>,
+	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+	Krishna Reddy <vdumpa@nvidia.com>, Vineet Gupta <vgupta@kernel.org>,
+	virtualization@lists.linux-foundation.org,
+	Wei Liu <wei.liu@kernel.org>, Will Deacon <will@kernel.org>,
+	Zhenhua Huang <quic_zhenhuah@quicinc.com>
+Subject: Re: [PATCH RFC 01/17] iommu: Remove struct iommu_ops *iommu from
+ arch_setup_dma_ops()
+Message-ID: <ZVEM23qFzLnnXiEz@archbook>
+References: <0-v1-5f734af130a3+34f-iommu_fwspec_jgg@nvidia.com>
+ <1-v1-5f734af130a3+34f-iommu_fwspec_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Subject: Re: [PATCH 0/3] dt-bindings: Document gpi/scm/smmu for SC8380XP
-Content-Language: en-US
-To: <andersson@kernel.org>, <konrad.dybcio@linaro.org>, <will@kernel.org>,
-        <robin.murphy@arm.com>, <joro@8bytes.org>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>
-CC: <agross@kernel.org>, <vkoul@kernel.org>, <quic_gurus@quicinc.com>,
-        <conor+dt@kernel.org>, <quic_rjendra@quicinc.com>,
-        <abel.vesa@linaro.org>, <linux-arm-msm@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <dmaengine@vger.kernel.org>, <iommu@lists.linux.dev>,
-        <quic_tsoni@quicinc.com>, <neil.armstrong@linaro.org>
-References: <20231025140640.22601-1-quic_sibis@quicinc.com>
-From: Sibi Sankar <quic_sibis@quicinc.com>
-In-Reply-To: <20231025140640.22601-1-quic_sibis@quicinc.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: 88i6J94PxPNfGStcfcL4Gb-BKWOZF9MO
-X-Proofpoint-ORIG-GUID: 88i6J94PxPNfGStcfcL4Gb-BKWOZF9MO
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.272,Aquarius:18.0.987,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2023-11-12_12,2023-11-09_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 spamscore=0
- phishscore=0 clxscore=1011 mlxscore=0 impostorscore=0 malwarescore=0
- bulkscore=0 priorityscore=1501 adultscore=0 mlxlogscore=815
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2311060000 definitions=main-2311120134
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1-v1-5f734af130a3+34f-iommu_fwspec_jgg@nvidia.com>
 
-I'll be re-spinning the series with a part number change please refrain
-from picking this up as is. Thanks.
+On Fri, Nov 03, 2023 at 01:44:46PM -0300, Jason Gunthorpe wrote:
+> This is not being used to pass ops, it is just a way to tell if an
+> iommu driver was probed. These days this can be detected directly via
+> device_iommu_mapped(). Call device_iommu_mapped() in the two places that
+> need to check it and remove the iommu parameter everywhere.
+> 
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 
--Sibi
-
-On 10/25/23 19:36, Sibi Sankar wrote:
-> This series documents gpu/scm/smmu for the Qualcomm SC8380XP platform, aka Snapdragon X Elite.
+Reviewed-by: Moritz Fischer <mdf@kernel.org>
+> ---
+>  arch/arc/mm/dma.c               |  2 +-
+>  arch/arm/mm/dma-mapping-nommu.c |  2 +-
+>  arch/arm/mm/dma-mapping.c       | 10 +++++-----
+>  arch/arm64/mm/dma-mapping.c     |  4 ++--
+>  arch/mips/mm/dma-noncoherent.c  |  2 +-
+>  arch/riscv/mm/dma-noncoherent.c |  2 +-
+>  drivers/acpi/scan.c             |  3 +--
+>  drivers/hv/hv_common.c          |  2 +-
+>  drivers/of/device.c             |  2 +-
+>  include/linux/dma-map-ops.h     |  4 ++--
+>  10 files changed, 16 insertions(+), 17 deletions(-)
 > 
-> Dependencies: None
-> Release Link: https://www.qualcomm.com/news/releases/2023/10/qualcomm-unleashes-snapdragon-x-elite--the-ai-super-charged-plat
-> 
-> Rajendra Nayak (1):
->    dt-bindings: arm-smmu: Add compatible for SC8380XP SoC
-> 
-> Sibi Sankar (2):
->    dt-bindings: dma: qcom: gpi: add compatible for SC8380XP
->    dt-bindings: firmware: qcom,scm: document SCM on SC8380XP SoCs
-> 
->   Documentation/devicetree/bindings/dma/qcom,gpi.yaml      | 1 +
->   Documentation/devicetree/bindings/firmware/qcom,scm.yaml | 1 +
->   Documentation/devicetree/bindings/iommu/arm,smmu.yaml    | 2 ++
->   3 files changed, 4 insertions(+)
+> diff --git a/arch/arc/mm/dma.c b/arch/arc/mm/dma.c
+> index 2a7fbbb83b7056..197707bc765889 100644
+> --- a/arch/arc/mm/dma.c
+> +++ b/arch/arc/mm/dma.c
+> @@ -91,7 +91,7 @@ void arch_sync_dma_for_cpu(phys_addr_t paddr, size_t size,
+>   * Plug in direct dma map ops.
+>   */
+>  void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
+> -			const struct iommu_ops *iommu, bool coherent)
+> +			bool coherent)
+>  {
+>  	/*
+>  	 * IOC hardware snoops all DMA traffic keeping the caches consistent
+> diff --git a/arch/arm/mm/dma-mapping-nommu.c b/arch/arm/mm/dma-mapping-nommu.c
+> index cfd9c933d2f09c..b94850b579952a 100644
+> --- a/arch/arm/mm/dma-mapping-nommu.c
+> +++ b/arch/arm/mm/dma-mapping-nommu.c
+> @@ -34,7 +34,7 @@ void arch_sync_dma_for_cpu(phys_addr_t paddr, size_t size,
+>  }
+>  
+>  void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
+> -			const struct iommu_ops *iommu, bool coherent)
+> +			bool coherent)
+>  {
+>  	if (IS_ENABLED(CONFIG_CPU_V7M)) {
+>  		/*
+> diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
+> index 5409225b4abc06..6c359a3af8d9c7 100644
+> --- a/arch/arm/mm/dma-mapping.c
+> +++ b/arch/arm/mm/dma-mapping.c
+> @@ -1713,7 +1713,7 @@ void arm_iommu_detach_device(struct device *dev)
+>  EXPORT_SYMBOL_GPL(arm_iommu_detach_device);
+>  
+>  static void arm_setup_iommu_dma_ops(struct device *dev, u64 dma_base, u64 size,
+> -				    const struct iommu_ops *iommu, bool coherent)
+> +				    bool coherent)
+>  {
+>  	struct dma_iommu_mapping *mapping;
+>  
+> @@ -1748,7 +1748,7 @@ static void arm_teardown_iommu_dma_ops(struct device *dev)
+>  #else
+>  
+>  static void arm_setup_iommu_dma_ops(struct device *dev, u64 dma_base, u64 size,
+> -				    const struct iommu_ops *iommu, bool coherent)
+> +				    bool coherent)
+>  {
+>  }
+>  
+> @@ -1757,7 +1757,7 @@ static void arm_teardown_iommu_dma_ops(struct device *dev) { }
+>  #endif	/* CONFIG_ARM_DMA_USE_IOMMU */
+>  
+>  void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
+> -			const struct iommu_ops *iommu, bool coherent)
+> +			bool coherent)
+>  {
+>  	/*
+>  	 * Due to legacy code that sets the ->dma_coherent flag from a bus
+> @@ -1776,8 +1776,8 @@ void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
+>  	if (dev->dma_ops)
+>  		return;
+>  
+> -	if (iommu)
+> -		arm_setup_iommu_dma_ops(dev, dma_base, size, iommu, coherent);
+> +	if (device_iommu_mapped(dev))
+> +		arm_setup_iommu_dma_ops(dev, dma_base, size, coherent);
+>  
+>  	xen_setup_dma_ops(dev);
+>  	dev->archdata.dma_ops_setup = true;
+> diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
+> index 3cb101e8cb29ba..61886e43e3a10f 100644
+> --- a/arch/arm64/mm/dma-mapping.c
+> +++ b/arch/arm64/mm/dma-mapping.c
+> @@ -47,7 +47,7 @@ void arch_teardown_dma_ops(struct device *dev)
+>  #endif
+>  
+>  void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
+> -			const struct iommu_ops *iommu, bool coherent)
+> +			bool coherent)
+>  {
+>  	int cls = cache_line_size_of_cpu();
+>  
+> @@ -58,7 +58,7 @@ void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
+>  		   ARCH_DMA_MINALIGN, cls);
+>  
+>  	dev->dma_coherent = coherent;
+> -	if (iommu)
+> +	if (device_iommu_mapped(dev))
+>  		iommu_setup_dma_ops(dev, dma_base, dma_base + size - 1);
+>  
+>  	xen_setup_dma_ops(dev);
+> diff --git a/arch/mips/mm/dma-noncoherent.c b/arch/mips/mm/dma-noncoherent.c
+> index 3c4fc97b9f394b..0f3cec663a12cd 100644
+> --- a/arch/mips/mm/dma-noncoherent.c
+> +++ b/arch/mips/mm/dma-noncoherent.c
+> @@ -138,7 +138,7 @@ void arch_sync_dma_for_cpu(phys_addr_t paddr, size_t size,
+>  
+>  #ifdef CONFIG_ARCH_HAS_SETUP_DMA_OPS
+>  void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
+> -		const struct iommu_ops *iommu, bool coherent)
+> +		bool coherent)
+>  {
+>  	dev->dma_coherent = coherent;
+>  }
+> diff --git a/arch/riscv/mm/dma-noncoherent.c b/arch/riscv/mm/dma-noncoherent.c
+> index b76e7e192eb183..f91fa741c41211 100644
+> --- a/arch/riscv/mm/dma-noncoherent.c
+> +++ b/arch/riscv/mm/dma-noncoherent.c
+> @@ -135,7 +135,7 @@ void arch_dma_prep_coherent(struct page *page, size_t size)
+>  }
+>  
+>  void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
+> -		const struct iommu_ops *iommu, bool coherent)
+> +			bool coherent)
+>  {
+>  	WARN_TAINT(!coherent && riscv_cbom_block_size > ARCH_DMA_MINALIGN,
+>  		   TAINT_CPU_OUT_OF_SPEC,
+> diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
+> index 691d4b7686ee7e..a6891ad0ceee2c 100644
+> --- a/drivers/acpi/scan.c
+> +++ b/drivers/acpi/scan.c
+> @@ -1636,8 +1636,7 @@ int acpi_dma_configure_id(struct device *dev, enum dev_dma_attr attr,
+>  	if (PTR_ERR(iommu) == -EPROBE_DEFER)
+>  		return -EPROBE_DEFER;
+>  
+> -	arch_setup_dma_ops(dev, 0, U64_MAX,
+> -				iommu, attr == DEV_DMA_COHERENT);
+> +	arch_setup_dma_ops(dev, 0, U64_MAX, attr == DEV_DMA_COHERENT);
+>  
+>  	return 0;
+>  }
+> diff --git a/drivers/hv/hv_common.c b/drivers/hv/hv_common.c
+> index ccad7bca3fd3da..fd938b6dfa7ed4 100644
+> --- a/drivers/hv/hv_common.c
+> +++ b/drivers/hv/hv_common.c
+> @@ -489,7 +489,7 @@ void hv_setup_dma_ops(struct device *dev, bool coherent)
+>  	 * Hyper-V does not offer a vIOMMU in the guest
+>  	 * VM, so pass 0/NULL for the IOMMU settings
+>  	 */
+> -	arch_setup_dma_ops(dev, 0, 0, NULL, coherent);
+> +	arch_setup_dma_ops(dev, 0, 0, coherent);
+>  }
+>  EXPORT_SYMBOL_GPL(hv_setup_dma_ops);
+>  
+> diff --git a/drivers/of/device.c b/drivers/of/device.c
+> index 1ca42ad9dd159d..65c71be71a8d45 100644
+> --- a/drivers/of/device.c
+> +++ b/drivers/of/device.c
+> @@ -193,7 +193,7 @@ int of_dma_configure_id(struct device *dev, struct device_node *np,
+>  	dev_dbg(dev, "device is%sbehind an iommu\n",
+>  		iommu ? " " : " not ");
+>  
+> -	arch_setup_dma_ops(dev, dma_start, size, iommu, coherent);
+> +	arch_setup_dma_ops(dev, dma_start, size, coherent);
+>  
+>  	if (!iommu)
+>  		of_dma_set_restricted_buffer(dev, np);
+> diff --git a/include/linux/dma-map-ops.h b/include/linux/dma-map-ops.h
+> index f2fc203fb8a1a2..2cb98a12c50348 100644
+> --- a/include/linux/dma-map-ops.h
+> +++ b/include/linux/dma-map-ops.h
+> @@ -426,10 +426,10 @@ bool arch_dma_unmap_sg_direct(struct device *dev, struct scatterlist *sg,
+>  
+>  #ifdef CONFIG_ARCH_HAS_SETUP_DMA_OPS
+>  void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
+> -		const struct iommu_ops *iommu, bool coherent);
+> +		bool coherent);
+>  #else
+>  static inline void arch_setup_dma_ops(struct device *dev, u64 dma_base,
+> -		u64 size, const struct iommu_ops *iommu, bool coherent)
+> +		u64 size, bool coherent)
+>  {
+>  }
+>  #endif /* CONFIG_ARCH_HAS_SETUP_DMA_OPS */
+> -- 
+> 2.42.0
 > 
