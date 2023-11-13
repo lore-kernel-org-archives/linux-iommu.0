@@ -1,129 +1,154 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E712F208DC;
-	Mon, 13 Nov 2023 13:53:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="N3/cI2De"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C575C433C8;
-	Mon, 13 Nov 2023 13:53:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1699883607;
-	bh=NPFv8IDR5Iz2rcH50WIYXqaNrpO/dsM3gH+iAJPH420=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=N3/cI2DeHdNVzCIdnfdN7Vl0mIHYXVHKb8Rl2hjaiw/qxjNRMbPpoq/wU535DhBEl
-	 zt2sryiaj4HrNvbZvdpC1YwT7AIh8R5dIfKQZ8NKJRerLgJ92ZBvCvqXN5r9F8PNnw
-	 LSmZQ1hB1A3mXvGa7M5DKqK6dCinBfTweFwAGlT3Ev5FM2KQbdGreMWa5QwGVms4/M
-	 ZIjUu/q1POf2swVlmjq2TeNW9cB575o0fdn2rERoiTkk8DeO+wGL9M7/D4hGIbXew6
-	 mYMxtTQBePqS0V+4CwHGd1FmNt5qpD/XUV+M9whoprDJq7vyaKb1ceXMIYwAvGTgPi
-	 K4uS9o7BeNVbA==
-Date: Mon, 13 Nov 2023 13:53:24 +0000
-From: Conor Dooley <conor@kernel.org>
-To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: iommu: arm,smmu: document clocks for the
- SM8350 GPU SMMU
-Message-ID: <20231113-shredder-oversold-82a33b5d67d7@squawk>
-References: <20231112184522.3759-1-krzysztof.kozlowski@linaro.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 979C921109;
+	Mon, 13 Nov 2023 14:38:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dkim=none
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86E03C433C7;
+	Mon, 13 Nov 2023 14:38:28 +0000 (UTC)
+Message-ID: <a1f8a9fa-50c6-44e2-9be8-2c0cc60c9906@xs4all.nl>
+Date: Mon, 13 Nov 2023 15:38:26 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="QZm8CBtXdB5lkCMu"
-Content-Disposition: inline
-In-Reply-To: <20231112184522.3759-1-krzysztof.kozlowski@linaro.org>
+User-Agent: Mozilla Thunderbird
+Subject: Re: Regression: v4l/bttv vbi vs iommu
+Content-Language: en-US, nl
+To: "Dr. David Alan Gilbert" <dave@treblig.org>, a.j.buxton@gmail.com
+Cc: iommu@lists.linux.dev, mchehab@kernel.org, linux-media@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+References: <Y9qSwkLxeMpffZK/@gallifrey>
+ <d363902d-e465-8411-0c1e-58411b3a19b0@xs4all.nl>
+ <20230203063500.GA23520@lst.de>
+ <3a59ffba-a7fe-97b0-af76-7194f7b3896a@xs4all.nl> <ZNjXKjCx3lH0s1m3@gallifrey>
+ <8a667bd9-6a2d-301c-ee11-23e9466b193a@xs4all.nl> <ZU_cuavAminaVhuw@gallifrey>
+From: Hans Verkuil <hverkuil@xs4all.nl>
+Autocrypt: addr=hverkuil@xs4all.nl; keydata=
+ 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
+In-Reply-To: <ZU_cuavAminaVhuw@gallifrey>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
+Hi Dave,
 
---QZm8CBtXdB5lkCMu
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On 11/11/2023 20:57, Dr. David Alan Gilbert wrote:
+> * Hans Verkuil (hverkuil@xs4all.nl) wrote:
+>> On 13/08/2023 15:14, Dr. David Alan Gilbert wrote:
+>>> * Hans Verkuil (hverkuil@xs4all.nl) wrote:
+>>>> On 03/02/2023 07:35, Christoph Hellwig wrote:
+>>>>> On Wed, Feb 01, 2023 at 09:48:46PM +0100, Hans Verkuil wrote:
+>>>>>> In fact, the plan is to replace the old and deprecated videobuf framework by the vb2
+>>>>>> framework in the bttv driver in the next 2-3 months or so. That will also automatically
+>>>>>> solve this problem.
+>>>>>
+>>>>> It would be great to expedite removal of the old videbuf code given
+>>>>> how many problems it has.
+>>>>
+>>>> We're working on it. A lot of old drivers in drivers/staging/media/deprecated will
+>>>> be removed in 6.3, and that leaves the cx18, bttv and saa7146 drivers that still use
+>>>> vb1.
+>>>>
+>>>> This week I posted patches converting cx18 to vb2 and someone else will work on the
+>>>> bttv conversion. We thought we could remove saa7146 as well, but it turns out that
+>>>> that is still very much in use (somewhat unexpectedly), so I plan to convert that
+>>>> one this month (I hope).
+>>>>
+>>>> I aim for removing vb1 in kernel 6.4 or 6.5.
+>>>
+>>> Did this go in, I'm happy to give it a go if this is a world to test.
+>>
+>> I just merged it for 6.6.
+> 
+> Hi Hans,
+>   Apologies in the delay, I've just got around to looking at 6.6
+> for this.
+>   I'd say it's looking pretty good, oops free so far.
+> There are a couple of oddities, which I'm not sure are an issue or not:
+> 
+> a) Loss of 'seq' field.
+>   The bttv used to include a sequence number in each vbi line;
+> That now seems to be 0; I don't think it's a big loss, but it was
+> used by some tools to see if they dropped frames, and it's confusing
+> it into moaning about it.
 
-On Sun, Nov 12, 2023 at 07:45:22PM +0100, Krzysztof Kozlowski wrote:
-> Document the clocks for Qualcomm SM8350 Adreno GPU SMMU, already used in
-> DTS:
->=20
->   sm8350-hdk.dtb: iommu@3da0000: clock-names: False schema does not allow=
- ['bus', 'iface', 'ahb', 'hlos1_vote_gpu_smmu', 'cx_gmu', 'hub_cx_int', 'hu=
-b_aon']
->=20
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Hmm, I knew about this, but I thought it was something that the driver did.
+Instead, it turns out it was a videobuf 'feature' in videobuf_read_stream().
 
-Acked-by: Conor Dooley <conor.dooley@microchip.com>
+This would affect saa7146 and bttv, since both enabled that. None of the
+other driver with VBI capabilities ever used that, AFAICT.
 
-Thanks,
-Conor.
+> 
+> b) Frame vs fields
+> 
+> I tend to run xawtv at the same time as dumping vbi; with xawtv grabbing
+> frames, the vbi is showing it grabbing 50fps, if I drop xawtv to
+> no-capture, the vbi is showing it at 25fps; I've not figured out yet if
+> that's actually losing data or just reorganising it.
+> (The reason for running xawtv is that it was found that the AGC on the
+> bttv goes out if you've not got it running sometimes).
 
-> ---
->  .../devicetree/bindings/iommu/arm,smmu.yaml   | 25 ++++++++++++++++++-
->  1 file changed, 24 insertions(+), 1 deletion(-)
->=20
-> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml b/Docu=
-mentation/devicetree/bindings/iommu/arm,smmu.yaml
-> index 54c333ddf916..14dc54b0e7b3 100644
-> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-> @@ -429,6 +429,30 @@ allOf:
->              - description: interface clock required to access smmu's reg=
-isters
->                  through the TCU's programming interface.
-> =20
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          items:
-> +            - enum:
-> +                - qcom,sm8350-smmu-500
-> +            - const: qcom,adreno-smmu
-> +            - const: qcom,smmu-500
-> +            - const: arm,mmu-500
-> +    then:
-> +      properties:
-> +        clock-names:
-> +          items:
-> +            - const: bus
-> +            - const: iface
-> +            - const: ahb
-> +            - const: hlos1_vote_gpu_smmu
-> +            - const: cx_gmu
-> +            - const: hub_cx_int
-> +            - const: hub_aon
-> +        clocks:
-> +          minItems: 7
-> +          maxItems: 7
-> +
->    - if:
->        properties:
->          compatible:
-> @@ -472,7 +496,6 @@ allOf:
->                - qcom,sdx65-smmu-500
->                - qcom,sm6350-smmu-500
->                - qcom,sm6375-smmu-500
-> -              - qcom,sm8350-smmu-500
->                - qcom,sm8450-smmu-500
->                - qcom,sm8550-smmu-500
->      then:
-> --=20
-> 2.34.1
->=20
+Odd.
 
---QZm8CBtXdB5lkCMu
-Content-Type: application/pgp-signature; name="signature.asc"
+For both items it will have to wait until I have access again to my test
+equipment in 2 weeks.
 
------BEGIN PGP SIGNATURE-----
+Regards,
 
-iHUEARYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZVIqUAAKCRB4tDGHoIJi
-0nUEAQD8IIFMbwM8e6R5NOOw0fYY48i9PvQQ6lW7B4GAx+6XwAD9HMHYK2k8z3hb
-u0X2/zY5HBr11XM53V0ngkrxaTU8Xg0=
-=o2U6
------END PGP SIGNATURE-----
+	Hans
 
---QZm8CBtXdB5lkCMu--
+> 
+> Anyway, thanks for fixing the rework that fixed the crash!
+> 
+> Dave
+> 
+> 
+>>
+>> Regards,
+>>
+>> 	Hans
+>>
+
