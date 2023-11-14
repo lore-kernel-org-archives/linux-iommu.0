@@ -1,203 +1,267 @@
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.24])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 316DECA47
-	for <iommu@lists.linux.dev>; Tue, 14 Nov 2023 05:31:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 09D5F16412
+	for <iommu@lists.linux.dev>; Tue, 14 Nov 2023 10:20:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="HSJ4AbSI"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1699939890; x=1731475890;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=kK0uInazJhbKRixXg/Iut0udCefAJgZZ6t0EyQNLgzA=;
-  b=HSJ4AbSIVxLUqwVyAnAcMmx0gqua+u7yO3m8f3DntcBp/VH/hxkhq97C
-   eYlQXJxhQ/qezcD0YMboxonVoHGlViBLYC/TNhRWAcZjSX93jSxuuGWDw
-   ZpJd7WS3WWbLWQMtlO56wdNaKTrAKYJ69Ntr4HPiY+1cYEb8X+BTMEZGC
-   LAWif2hHD15haULzkpUu9BIze2b+T25k2VwGIYw+ZY+Lo0kF4dodmrFk/
-   IOxgZpcXkn/iq296SOaya5MVXx7kfQPC6qP6ZvxY3An1joZjpE9uZKnKM
-   VHHpO4xGGCEECR7cOwshg2X7SsmSrz8hjqWotztaPSzBAfrw/ny5SnKnz
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10893"; a="393444279"
-X-IronPort-AV: E=Sophos;i="6.03,301,1694761200"; 
-   d="scan'208";a="393444279"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Nov 2023 21:31:29 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10893"; a="768147470"
-X-IronPort-AV: E=Sophos;i="6.03,301,1694761200"; 
-   d="scan'208";a="768147470"
-Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
-  by fmsmga007.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 13 Nov 2023 21:31:28 -0800
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.34; Mon, 13 Nov 2023 21:31:28 -0800
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.34; Mon, 13 Nov 2023 21:31:27 -0800
-Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
- orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.34 via Frontend Transport; Mon, 13 Nov 2023 21:31:27 -0800
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.41) by
- edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.34; Mon, 13 Nov 2023 21:31:27 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=F1HufyA+H1SJhKnaCocAF730abbQ+GSMi6w4T/uBFdg1UaecB11GvMOGCB6qCM3lk2TQSxwv5G/+yZLPz4GcD9WOAXupyLnXO9kuxdrSqHJiJ6+8lYWuWLQWx7EAallR+v+1wn7GGQa5NqmrPWo250Wm1sfAy3jgfL3qPDS1I/c0h3lQdqW/y8E2VvhtTZ2UkL3kR7xMOrWNnmoSffEIHnSeDURZNzuh8I3fUJlRjZtXp/c4l4FqsNJm4GYNXvGwFLkyMmWzTgGA8crsN/MGnJnaeuVJD8qSJI9Jp3jVy56ULJMg+raysrxj17zVHMnMEfjo4NvP/+lBb2lJij6pWg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=kK0uInazJhbKRixXg/Iut0udCefAJgZZ6t0EyQNLgzA=;
- b=YufkUwBtudZyJACoFc+22K/Vth4gaX/at5uTdgWk6ZAJ1AjZ+L4TCJ/Ldz0c1uVm6rusmJDOxFNb1E93pkxZvFobJjEpkSvUrxz6rb7ZbazdkM9DO/QM+lxqrF9PvdzVs25Vo7/GJKJd1pGKSWeh+JwWN8p00lT3zulVuAEZuShz2GI0kuuBAscqYIT5U/VC/3rNIYwZGR7zpt1/j+wdd3y7rb5mvV6yY1MYCiSUr8N4vDGR82vrSAa5aFAhx7Wl/kNNSvtKODoBTNuZ8cmEclFurXLQVETH27M2sDf7fO2JeW0l9D9EdruOnEO8tSRainxfnjaJuooL8KaBRhN9nA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by SA1PR11MB8576.namprd11.prod.outlook.com (2603:10b6:806:3b5::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6977.29; Tue, 14 Nov
- 2023 05:31:20 +0000
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::e7a4:a757:2f2e:f96a]) by BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::e7a4:a757:2f2e:f96a%3]) with mapi id 15.20.6977.029; Tue, 14 Nov 2023
- 05:31:20 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Baolu Lu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, "Will
- Deacon" <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, "Jason
- Gunthorpe" <jgg@ziepe.ca>
-CC: "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH 1/1] iommu/vt-d: Omit devTLB invalidation requests when
- TES=0
-Thread-Topic: [PATCH 1/1] iommu/vt-d: Omit devTLB invalidation requests when
- TES=0
-Thread-Index: AQHaFpgA5wtOoye5ZkuI8htuBJqfJLB5I8pwgAAAI4CAABlw0IAAAtMAgAAKFQA=
-Date: Tue, 14 Nov 2023 05:31:20 +0000
-Message-ID: <BN9PR11MB527662008A42304A70AFA2378CB2A@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <20231114011036.70142-1-baolu.lu@linux.intel.com>
- <20231114011036.70142-2-baolu.lu@linux.intel.com>
- <BN9PR11MB52764263BE04AAFAC0907A8D8CB2A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <1a07a265-f834-4834-b9cb-5c7016ee9142@linux.intel.com>
- <BN9PR11MB52761EDB3AE90DE87661A3C28CB2A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <79b2f656-6342-4f46-a4cf-fe8152f1c67f@linux.intel.com>
-In-Reply-To: <79b2f656-6342-4f46-a4cf-fe8152f1c67f@linux.intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|SA1PR11MB8576:EE_
-x-ms-office365-filtering-correlation-id: 6c0ce04c-0ead-4129-8c7e-08dbe4d2eec1
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: RDPjSPmes438AkeIg5FwFeDqe0tzXA3L7mHFqUh7eMQDfl1k8030Xsxs9vUh9r9grgGm4h5NKFIbgrpNrhQlZoKrqTZMLZsuB61xlKrYlAdiiVpcQ3yfbsLkU2tu2nMYHy7e/ds5shEBsO4xkN1C2liTwZEtjhRI1ghXu431aSxsWIVvKD2lCjddrVIVsO2fghVyNFK2S+M5aEs5HQ9LkA+CqOqg1G0PRAIinfH3eoGeRmPSSxYwLQdvNt4C+PPj7oWOF3TumTHV/SzpAE8oPj2pXykYKVcOUNuQOYRpLSKuOAwDogwGn81jI5KSCfrRHpuASsbsnSE80mA1T4ITXbOeuH42U45PsxgNVyirDOPFlq50LiiiLYm7EGTRlUdnddFpAj93yhfJoPjrt5cITuZjbPQFGwS2SnV1pyCltdeIHXHsN8t+YebyNCxbSw8CIJwFCHmAhIPBnpOejfFE+d66d8COxbT7seZfBvCihQqg2VJ2f4KmtScCnL7ympp6anbo1/l276muGm2NBSsFSdTF8oYbD6OPHSTDG5zq0SZYN8fgnC40vZVsQfDXPkyaUH900P8BBpu1ZK3ey+pnGv70heOYcnwe2moWN1bJUGiGpOBXY/uOyFUHLtrF9Hrp
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(346002)(136003)(39860400002)(376002)(366004)(396003)(230922051799003)(451199024)(64100799003)(186009)(1800799009)(82960400001)(71200400001)(53546011)(6506007)(9686003)(83380400001)(52536014)(5660300002)(4326008)(41300700001)(8936002)(8676002)(478600001)(2906002)(7696005)(110136005)(66476007)(316002)(66946007)(66556008)(54906003)(76116006)(64756008)(66446008)(122000001)(86362001)(33656002)(38100700002)(26005)(38070700009)(55016003);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?bXh5aUZ2M2ViN2VaZXQzUjNjbTB2T2R5dVVoK3ZweFdKK2pwb2dtUEhwRnEz?=
- =?utf-8?B?ZHlybk5UWGUzWTdCY0d1RDdVUUpjK2hNNlBKWW8zajFiSmVjd2tMZHNESTJh?=
- =?utf-8?B?cGE0ZHFIbGxWK1FnMis0eXVmSXlmdXAvUFhOSEhMaTVUZngzajcyOE0razg2?=
- =?utf-8?B?NmQ1OWxJWFFzWHQ2bWNpc25oaDRraHBLWE5UMHhGQjM0TmI0OUIrandwaklt?=
- =?utf-8?B?WlVOVGhmaUFzUmJqODhmVXJaZzVaYlN0a0JzZXdYRVF6SUFPNFRYWjgzQnZx?=
- =?utf-8?B?cTVVbDJEZHZkNW1wcDB5c1RGalJSY0VhWVdwbG5nUUUvWG1peS9hL1B1c202?=
- =?utf-8?B?OFluTlhkSHhSbTZIbGoyUDB4SUN3L0xMak9xYmtiQUw0UGxtOThIZmlJTCsy?=
- =?utf-8?B?Q3hKTWRFYmNsbGFZWElwOHUwSjc5VjI1VXRMTjlyOE51bDJRUDlWajN3OFlv?=
- =?utf-8?B?cTRIUHExb0VwUGxYZDQ0d3BmRk5tMjZyTy9xRS9QQm9wUmdFV3k0bnFsWTZP?=
- =?utf-8?B?aDVaaUh2aTFmajc2M0tRQ3ZmdE9MTVBoVU5qMWcvUEphZlFGR1Y1L3ZkbEVl?=
- =?utf-8?B?eC9XL0RCYTMxak9IVkRYRmhzMzkvZktaMjJOd25BRWxzSE9ZdDI2ZkM3YWt1?=
- =?utf-8?B?V1U1blpkRzlVYzhWMUQvVmJ3NkRGZ0ZubmQvalNqMlphR3BDLzdGNlVCVy9Z?=
- =?utf-8?B?TVFRQ2p5MTdsRVMrNGZQanZGY1B5QTk1ZUplU1p2clFkZlJ0MDI4WU41dzBE?=
- =?utf-8?B?Sll3aGpCRWxodjEya0FBSWduVHBZd1ByU1QwOG1xUk92S2l6SklhTlRmVUF1?=
- =?utf-8?B?NDJyVjZnRVdmUEpQeDhzalVFZ3JJRkxhSjBubmNxczdOcXArTS9kbVRZQnJ2?=
- =?utf-8?B?ZEZvUG5oVVR5UFVYMmg4YXR5VnVFNEo4cmF1M0o5aTYxSVdTRFNnWW5OU04y?=
- =?utf-8?B?bGcxbU5KbURicmNibzJRT2ZadWVlTllFcVRialBsSHJ3ekUvVlVGMW1PWnNO?=
- =?utf-8?B?RjhDQngxVm9CeE9TZnhvZ010MzBuTWhjTFZ1U0VaRlViREFjU09CbEx6MWVK?=
- =?utf-8?B?d05YT2FhU0pRemRCUkhMNUtQVXNOeWIwUnZYbnRwMm1uSDNvNE9wUm9QQUpt?=
- =?utf-8?B?U3IxTlgzSWxRb1NlUlFFOXBVLzZoYkN6d0dJWTdGRmF3SXRYQU1rMmpOS0U5?=
- =?utf-8?B?eWJDeTNFaWtxekFoalZBamtwc1VkS3gvVXp1Znp3SmkrM3M4MUNncms5VmFG?=
- =?utf-8?B?VVdoMXpIK2oyTGF2Ylo3YkN0a3ZWU2VoSHRlMTBtOFphQjhISkNQUExQV2lU?=
- =?utf-8?B?STlQMUpOSmx3NmNTTnYxd3FJcUZ1MmQrMEQ3RW9Oa1BJeVQvUWV6QW93b0lp?=
- =?utf-8?B?UHRBWHUxdHkrcktGYTY5OFNTNjZtNWJPMUFod09hM3d5amNEMUFGVjU1WTZ6?=
- =?utf-8?B?VWZrR0wycmIvaWtDcDZvSVFQR3VuM3EzU2cwZVVSNnV5UmdjNGEzbkV2REFL?=
- =?utf-8?B?bmlOZWFPOW5RU2dnYkkwY1BtL281RWRQRWtEaEJZSzdMaXlkMUwzNG1TQWdo?=
- =?utf-8?B?Q2QrdEZvVE5aQmZDQVl0Wm8wS0NDTU0vWWltNHg1LzNZOGk3Rms5c2tSRXdG?=
- =?utf-8?B?U05FRFhwU21LYm00UllzNml4b1hxOGtwOVR1TVRIV2t3dVJLQUhoc2FyZUpR?=
- =?utf-8?B?T2RNcnlNeTZaZUowT05XblZvV3ZUMFNkQWdKS1Q3YlZvendtVkdhdTNGRFhz?=
- =?utf-8?B?MDArRXpOQlgzc3RFcm9SNGJLY0lVYTREWjZ3UE1KZ3pqWVRobTdJY1NZTUww?=
- =?utf-8?B?c1JzbGVXNTlCTk4wVGR4STJoYXdhUk5EM1AvSjRjbC9iVlczZUoySHpid2Np?=
- =?utf-8?B?Q3RoRVZkUkh6Q21TSWhJZENVMHgrQkZEb2QzOVhabnFMc1B5blBiM1FQR29D?=
- =?utf-8?B?Vkh0QzM2bTFHNC8xWUJCaGEwaEFEM1hCSElLbXRMSitkQUpPTFlQV0x6MWVE?=
- =?utf-8?B?SUx3WVcvK1FQYVM1aFg5a0FQbm4ySWIrVDNHbmZNRFdjWWdmTnYvRXp2bkt5?=
- =?utf-8?B?bnhUc29JdGhvc0RBangwNmNtandjS29jWkpOKzVqcFlsV2UyUjcxMHlBdE5K?=
- =?utf-8?Q?dqENN9O8L8FoJCfurg3ouw5Z9?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="Y2ZS+vVP"
+Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 3AE9rv35011818;
+	Tue, 14 Nov 2023 10:20:35 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
+ mime-version : subject : from : to : cc : references : in-reply-to :
+ content-type : content-transfer-encoding; s=qcppdkim1;
+ bh=3zTC19EFKQKE61sJzUZb97ngfh32j2pj5owHzT7XlW4=;
+ b=Y2ZS+vVPkWq+tKhHpPP/qKduMnMAf/o96Qy80uLariRVvknDDNPK1d6WtMUyoRO9zeuJ
+ 7V6fsxLzLq54w1WoO0HWc9zm9grwinVulj/4DnDyUtrxbNcd/NhGpAG9Ks7eI0AUdeKt
+ waxDLqlYntiJZJ1cQsORpnw3J4XARs3mozBilsFYV25UgLRQPlorZ9+sib3Uv4LSjJaQ
+ +skBz6mIcZRmV0n8m2MEsQoshWOB2MelK1sIbsgUCT8EffmM5q/EOwFgl/HHi+QTwDlf
+ i8jO31IxxX3KcPoKFftVz0G09T9m6bFKhyiudM8afMzqgV+XtTCK5myO6LPJ/7W85UeF Uw== 
+Received: from nasanppmta01.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3uc6nug1nx-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 14 Nov 2023 10:20:34 +0000
+Received: from nasanex01c.na.qualcomm.com (nasanex01c.na.qualcomm.com [10.45.79.139])
+	by NASANPPMTA01.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 3AEAKYMZ020162
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 14 Nov 2023 10:20:34 GMT
+Received: from [10.214.66.253] (10.80.80.8) by nasanex01c.na.qualcomm.com
+ (10.45.79.139) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.39; Tue, 14 Nov
+ 2023 02:20:29 -0800
+Message-ID: <3e1e38ed-8e5f-455e-8ab9-e5be2fb9a493@quicinc.com>
+Date: Tue, 14 Nov 2023 15:50:20 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6c0ce04c-0ead-4129-8c7e-08dbe4d2eec1
-X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Nov 2023 05:31:20.2404
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: j1huNgvOme97VEoAZY73ZzmB/vs4e+wFb+Pdew5UKhbcqzIURyJBODyZVsUNgJg8j+53tgHBhi9SemlOcDCxpw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR11MB8576
-X-OriginatorOrg: intel.com
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/3] iommu/arm-smmu: introduction of ACTLR for custom
+ prefetcher settings
+Content-Language: en-US
+From: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+To: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+CC: <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
+        <a39.skl@gmail.com>, <konrad.dybcio@linaro.org>,
+        <quic_saipraka@quicinc.com>, <quic_pkondeti@quicinc.com>,
+        <quic_molvera@quicinc.com>, <linux-arm-kernel@lists.infradead.org>,
+        <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
+        <qipl.kernel.upstream@quicinc.com>
+References: <20231103215124.1095-1-quic_bibekkum@quicinc.com>
+ <20231103215124.1095-2-quic_bibekkum@quicinc.com>
+ <CAA8EJpozPAAaTLwD_0d1_zKh9oNN5tFdSshn2icGFBe7vuMqiA@mail.gmail.com>
+ <212c4f7f-4b22-4e21-9848-906bbfd69f0e@quicinc.com>
+In-Reply-To: <212c4f7f-4b22-4e21-9848-906bbfd69f0e@quicinc.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nasanex01c.na.qualcomm.com (10.45.79.139)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: VVuJ5AdpFlGsHBPf2yNjt_tsDeTFAchC
+X-Proofpoint-GUID: VVuJ5AdpFlGsHBPf2yNjt_tsDeTFAchC
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.987,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2023-11-14_09,2023-11-09_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 spamscore=0
+ impostorscore=0 lowpriorityscore=0 phishscore=0 adultscore=0 mlxscore=0
+ bulkscore=0 clxscore=1015 malwarescore=0 mlxlogscore=999
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2311060000 definitions=main-2311140081
 
-PiBGcm9tOiBCYW9sdSBMdSA8YmFvbHUubHVAbGludXguaW50ZWwuY29tPg0KPiBTZW50OiBUdWVz
-ZGF5LCBOb3ZlbWJlciAxNCwgMjAyMyAxMjo1NSBQTQ0KPiANCj4gT24gMTEvMTQvMjMgMTI6NDUg
-UE0sIFRpYW4sIEtldmluIHdyb3RlOg0KPiA+PiBGcm9tOiBCYW9sdSBMdSA8YmFvbHUubHVAbGlu
-dXguaW50ZWwuY29tPg0KPiA+PiBTZW50OiBUdWVzZGF5LCBOb3ZlbWJlciAxNCwgMjAyMyAxMTox
-NCBBTQ0KPiA+Pg0KPiA+PiBPbiAxMS8xNC8yMyAxMToxNCBBTSwgVGlhbiwgS2V2aW4gd3JvdGU6
-DQo+ID4+Pj4gRnJvbTogTHUgQmFvbHU8YmFvbHUubHVAbGludXguaW50ZWwuY29tPg0KPiA+Pj4+
-IFNlbnQ6IFR1ZXNkYXksIE5vdmVtYmVyIDE0LCAyMDIzIDk6MTEgQU0NCj4gPj4+Pg0KPiA+Pj4+
-IFRoZSBsYXRlc3QgVlQtZCBzcGVjIGluZGljYXRlcyB0aGF0IHdoZW4gcmVtYXBwaW5nIGhhcmR3
-YXJlIGlzDQo+IGRpc2FibGVkDQo+ID4+Pj4gKFRFUz0wIGluIEdsb2JhbCBTdGF0dXMgUmVnaXN0
-ZXIpLCB1cHN0cmVhbSBBVFMgSW52YWxpZGF0aW9uIENvbXBsZXRpb24NCj4gPj4+PiByZXF1ZXN0
-cyBhcmUgdHJlYXRlZCBhcyBVUiAoVW5zdXBwb3J0ZWQgUmVxdWVzdCkuDQo+ID4+Pj4NCj4gPj4+
-PiBDb25zZXF1ZW50bHksIHRoZSBzcGVjIHJlY29tbWVuZHMgaW4gc2VjdGlvbiA0LjMgSGFuZGxp
-bmcgb2YgRGV2aWNlLQ0KPiBUTEINCj4gPj4+PiBJbnZhbGlkYXRpb25zIHRoYXQgc29mdHdhcmUg
-cmVmcmFpbiBmcm9tIHN1Ym1pdHRpbmcgYW55IERldmljZS1UTEINCj4gPj4+PiBpbnZhbGlkYXRp
-b24gcmVxdWVzdHMgd2hlbiBhZGRyZXNzIHJlbWFwcGluZyBoYXJkd2FyZSBpcyBkaXNhYmxlZC4N
-Cj4gPj4+Pg0KPiA+Pj4+IFZlcmlmeSBhZGRyZXNzIHJlbWFwcGluZyBoYXJkd2FyZSBpcyBlbmFi
-bGVkIHByaW9yIHRvIHN1Ym1pdHRpbmcNCj4gRGV2aWNlLQ0KPiA+Pj4+IFRMQiBpbnZhbGlkYXRp
-b24gcmVxdWVzdHMuDQo+ID4+Pj4NCj4gPj4+PiBGaXhlczogNzkyZmI0M2NlMmM5ICgiaW9tbXUv
-dnQtZDogRW5hYmxlIEludGVsIElPTU1VIHNjYWxhYmxlIG1vZGUNCj4gYnkNCj4gPj4+PiBkZWZh
-dWx0IikNCj4gPj4+PiBTaWduZWQtb2ZmLWJ5OiBMdSBCYW9sdTxiYW9sdS5sdUBsaW51eC5pbnRl
-bC5jb20+DQo+ID4+Pj4gLS0tDQo+ID4+Pj4gICAgZHJpdmVycy9pb21tdS9pbnRlbC9kbWFyLmMg
-fCAxOCArKysrKysrKysrKysrKysrKysNCj4gPj4+PiAgICAxIGZpbGUgY2hhbmdlZCwgMTggaW5z
-ZXJ0aW9ucygrKQ0KPiA+Pj4+DQo+ID4+Pj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUvaW50
-ZWwvZG1hci5jIGIvZHJpdmVycy9pb21tdS9pbnRlbC9kbWFyLmMNCj4gPj4+PiBpbmRleCBhMzQx
-NGFmZTExYjAuLjIzY2I4MGQ2MmE5YSAxMDA2NDQNCj4gPj4+PiAtLS0gYS9kcml2ZXJzL2lvbW11
-L2ludGVsL2RtYXIuYw0KPiA+Pj4+ICsrKyBiL2RyaXZlcnMvaW9tbXUvaW50ZWwvZG1hci5jDQo+
-ID4+Pj4gQEAgLTE1MjIsNiArMTUyMiwxNSBAQCB2b2lkIHFpX2ZsdXNoX2Rldl9pb3RsYihzdHJ1
-Y3QgaW50ZWxfaW9tbXUNCj4gPj4+PiAqaW9tbXUsIHUxNiBzaWQsIHUxNiBwZnNpZCwNCj4gPj4+
-PiAgICB7DQo+ID4+Pj4gICAgCXN0cnVjdCBxaV9kZXNjIGRlc2M7DQo+ID4+Pj4NCj4gPj4+PiAr
-CS8qDQo+ID4+Pj4gKwkgKiBWVC1kIHNwZWMsIHNlY3Rpb24gNC4zOg0KPiA+Pj4+ICsJICoNCj4g
-Pj4+PiArCSAqIFNvZnR3YXJlIGlzIHJlY29tbWVuZGVkIHRvIG5vdCBzdWJtaXQgYW55IERldmlj
-ZS1UTEINCj4gPj4+PiBpbnZhbGlkYXRpb24NCj4gPj4+PiArCSAqIHJlcXVlc3RzIHdoaWxlIGFk
-ZHJlc3MgcmVtYXBwaW5nIGhhcmR3YXJlIGlzIGRpc2FibGVkLg0KPiA+Pj4+ICsJICovDQo+ID4+
-Pj4gKwlpZiAoIShpb21tdS0+Z2NtZCAmIERNQV9HQ01EX1RFKSkNCj4gPj4+PiArCQlyZXR1cm47
-DQo+ID4+Pj4gKw0KPiA+Pj4gSXMgaXQgYSB2YWxpZCBjYXNlIHRvIHNlZSBzdWNoIHJlcXVlc3Qg
-d2hlbiB0aGUgaW9tbXUgaXMgZGlzYWJsZWQ/DQo+ID4+PiBJZiBub3QgdGhlbiBsZXQncyBhZGQg
-YSBXQVJOLg0KPiA+Pg0KPiA+PiBUaGVyZSBtaWdodCBiZSB2YWxpZCBjYXNlcy4gVGhlIFZULWQg
-dHJhbnNsYXRpb24gaXMgdHVybmVkIG9uIGFmdGVyIGFsbA0KPiA+PiBkZXZpY2VzIGdldCBwcm9i
-ZWQuDQo+ID4+DQo+ID4NCj4gPiBidXQgSSBkaWRuJ3QgZ2V0IHdoeSB0aGVyZSB3aWxsIGJlIGFj
-dHVhbCBtYXBwaW5nIGNoYW5nZXMgYmVmb3JlDQo+ID4gdnRkIHRyYW5zbGF0aW9uIGlzIGVuYWJs
-ZWQuLi4NCj4gDQo+IEZvciBhbiBleGFtcGxlLCBpbiBpb21tdV9jcmVhdGVfZGV2aWNlX2RpcmVj
-dF9tYXBwaW5ncygpLA0KPiBpb21tdV9mbHVzaF9pb3RsYl9hbGwoKSBpcyBjYWxsZWQgYWZ0ZXIg
-ZGlyZWN0IG1hcHBpbmdzIGFyZSBjcmVhdGVkLg0KPiANCg0KT2theS4NCg0KUmV2aWV3ZWQtYnk6
-IEtldmluIFRpYW4gPGtldmluLnRpYW5AaW50ZWwuY29tPg0K
+
+
+On 11/6/2023 11:42 AM, Bibek Kumar Patro wrote:
+> 
+> 
+> On 11/4/2023 3:33 AM, Dmitry Baryshkov wrote:
+>> On Fri, 3 Nov 2023 at 23:53, Bibek Kumar Patro
+>> <quic_bibekkum@quicinc.com> wrote:
+>>>
+>>> Currently in Qualcomm  SoCs the default prefetch is set to 1 which 
+>>> allows
+>>> the TLB to fetch just the next page table. MMU-500 features ACTLR
+>>> register which is implementation defined and is used for Qualcomm SoCs
+>>> to have a prefetch setting of 1/3/7/15 enabling TLB to prefetch
+>>> the next set of page tables accordingly allowing for faster 
+>>> translations.
+>>>
+>>> ACTLR value is unique for each SMR (Stream matching register) and stored
+>>> in a pre-populated table. This value is set to the register during
+>>> context bank initialisation.
+>>>
+>>> Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+>>> ---
+>>>   drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 34 ++++++++++++++++++++++
+>>>   drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h |  2 ++
+>>>   drivers/iommu/arm/arm-smmu/arm-smmu.c      |  5 ++--
+>>>   drivers/iommu/arm/arm-smmu/arm-smmu.h      |  5 ++++
+>>>   4 files changed, 44 insertions(+), 2 deletions(-)
+>>>
+>>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c 
+>>> b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>> index ae7cae015193..68c1f4908473 100644
+>>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>> @@ -14,6 +14,17 @@
+>>>
+>>>   #define QCOM_DUMMY_VAL -1
+>>>
+>>> +struct actlr_config {
+>>> +       const struct actlr_data *adata;
+>>> +       u32 size;
+>>
+>> This should be size_t.
+>>
+>> Also could you please drop the separate struct actlr_config and move
+>> these two fields into struct qcom_smmu_config.
+>>
+> 
+> Ack, will address both these inputs in the next patch.
+> 
+
+Dimitry, Tried moving both fields to qcom_smmu_config but since
+actlr_data need to be a pointer to array and not scalar, size needs
+to be calculated dynamically for each SoC data in a loop which is 
+doable.But readily available implementations like ARRAY_SIZE cannot be 
+used, so I think this extra struct indirection of actlr_config would be 
+beneficial.
+Some drivers like llcc (drivers/soc/qcom/llcc-qcom.c) is also using
+similar implementation, I believe for the same reason.
+
+regards,
+Bibek
+>>> +};
+>>> +
+>>> +struct actlr_data {
+>>> +       u16 sid;
+>>> +       u16 mask;
+>>> +       u32 actlr;
+>>> +};
+>>> +
+>>>   static struct qcom_smmu *to_qcom_smmu(struct arm_smmu_device *smmu)
+>>>   {
+>>>          return container_of(smmu, struct qcom_smmu, smmu);
+>>> @@ -270,6 +281,26 @@ static const struct of_device_id 
+>>> qcom_smmu_client_of_match[] __maybe_unused = {
+>>>   static int qcom_smmu_init_context(struct arm_smmu_domain *smmu_domain,
+>>>                  struct io_pgtable_cfg *pgtbl_cfg, struct device *dev)
+>>>   {
+>>> +       struct arm_smmu_device *smmu = smmu_domain->smmu;
+>>> +       struct qcom_smmu *qsmmu = to_qcom_smmu(smmu);
+>>> +       const struct actlr_config *actlrcfg;
+>>> +       struct arm_smmu_smr *smr = smmu->smrs;
+>>> +       int idx = smmu_domain->cfg.cbndx;
+>>> +       int i;
+>>> +       u16 id;
+>>> +       u16 mask;
+>>> +
+>>> +       if (qsmmu->actlrcfg) {
+>>> +               actlrcfg = qsmmu->actlrcfg;
+>>> +               for (i = 0; i < actlrcfg->size; ++i) {
+>>> +                       id = actlrcfg->adata[i].sid;
+>>> +                       mask = actlrcfg->adata[i].mask;
+>>> +                       if (!smr_is_subset(*smr, id, mask))
+>>> +                               arm_smmu_cb_write(smmu, idx, 
+>>> ARM_SMMU_CB_ACTLR,
+>>> +                                               
+>>> actlrcfg->adata[i].actlr);
+>>> +               }
+>>> +       }
+>>
+>> Consider extracting this to a separate function. This way you can
+>> reduce 4 indentation levels into a single loop.
+>>
+> 
+> Ack, thanks for this sugestion. Will move this entire for loop into a 
+> separate function for simplicity reduced indent levels.
+> 
+>>> +
+>>>          smmu_domain->cfg.flush_walk_prefer_tlbiasid = true;
+>>>
+>>>          return 0;
+>>> @@ -459,6 +490,9 @@ static struct arm_smmu_device 
+>>> *qcom_smmu_create(struct arm_smmu_device *smmu,
+>>>          qsmmu->smmu.impl = impl;
+>>>          qsmmu->cfg = data->cfg;
+>>>
+>>> +       if (data->actlrcfg && (data->actlrcfg->size))
+>>> +               qsmmu->actlrcfg = data->actlrcfg;
+>>> +
+>>>          return &qsmmu->smmu;
+>>>   }
+>>>
+>>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h 
+>>> b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h
+>>> index 593910567b88..4b6862715070 100644
+>>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h
+>>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h
+>>> @@ -9,6 +9,7 @@
+>>>   struct qcom_smmu {
+>>>          struct arm_smmu_device smmu;
+>>>          const struct qcom_smmu_config *cfg;
+>>> +       const struct actlr_config *actlrcfg;
+>>>          bool bypass_quirk;
+>>>          u8 bypass_cbndx;
+>>>          u32 stall_enabled;
+>>> @@ -25,6 +26,7 @@ struct qcom_smmu_config {
+>>>   };
+>>>
+>>>   struct qcom_smmu_match_data {
+>>> +       const struct actlr_config *actlrcfg;
+>>>          const struct qcom_smmu_config *cfg;
+>>>          const struct arm_smmu_impl *impl;
+>>>          const struct arm_smmu_impl *adreno_impl;
+>>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c 
+>>> b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+>>> index 4c79ef6f4c75..38ac1cbc799b 100644
+>>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
+>>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+>>> @@ -992,9 +992,10 @@ static int arm_smmu_find_sme(struct 
+>>> arm_smmu_device *smmu, u16 id, u16 mask)
+>>>                   * expect simply identical entries for this case, 
+>>> but there's
+>>>                   * no harm in accommodating the generalisation.
+>>>                   */
+>>> -               if ((mask & smrs[i].mask) == mask &&
+>>> -                   !((id ^ smrs[i].id) & ~smrs[i].mask))
+>>> +
+>>> +               if (smr_is_subset(smrs[i], id, mask))
+>>>                          return i;
+>>> +
+>>>                  /*
+>>>                   * If the new entry has any other overlap with an 
+>>> existing one,
+>>>                   * though, then there always exists at least one 
+>>> stream ID
+>>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.h 
+>>> b/drivers/iommu/arm/arm-smmu/arm-smmu.h
+>>> index 703fd5817ec1..b1638bbc41d4 100644
+>>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.h
+>>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.h
+>>> @@ -501,6 +501,11 @@ static inline void arm_smmu_writeq(struct 
+>>> arm_smmu_device *smmu, int page,
+>>>                  writeq_relaxed(val, arm_smmu_page(smmu, page) + 
+>>> offset);
+>>>   }
+>>>
+>>> +static inline bool smr_is_subset(struct arm_smmu_smr smrs, u16 id, 
+>>> u16 mask)
+>>> +{
+>>> +       return (mask & smrs.mask) == mask && !((id ^ smrs.id) & 
+>>> ~smrs.mask);
+>>> +}
+>>> +
+>>>   #define ARM_SMMU_GR0           0
+>>>   #define ARM_SMMU_GR1           1
+>>>   #define ARM_SMMU_CB(s, n)      ((s)->numpage + (n))
+>>> -- 
+>>> 2.17.1
+>>>
+>>
+>>
