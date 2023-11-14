@@ -1,55 +1,56 @@
-Received: from mail-yw1-f176.google.com (mail-yw1-f176.google.com [209.85.128.176])
+Received: from mail-yw1-f177.google.com (mail-yw1-f177.google.com [209.85.128.177])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C955405CA
-	for <iommu@lists.linux.dev>; Tue, 14 Nov 2023 14:12:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 63B0C405DB
+	for <iommu@lists.linux.dev>; Tue, 14 Nov 2023 14:15:35 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="b04RoQzb"
-Received: by mail-yw1-f176.google.com with SMTP id 00721157ae682-5a7fb84f6ceso58771647b3.1
-        for <iommu@lists.linux.dev>; Tue, 14 Nov 2023 06:12:47 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="DYnzenOI"
+Received: by mail-yw1-f177.google.com with SMTP id 00721157ae682-5a7dd65052aso66808677b3.0
+        for <iommu@lists.linux.dev>; Tue, 14 Nov 2023 06:15:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1699971166; x=1700575966; darn=lists.linux.dev;
+        d=linaro.org; s=google; t=1699971334; x=1700576134; darn=lists.linux.dev;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=wLybn58tnV4LODh5eqWQ7D0RxurjyyUSi/kfw3mvtg0=;
-        b=b04RoQzbQX2T7RZcuxxANdKsgwt4Hedi6qqLz6/DU/xiYWQVX3DqPv19FSwAgfAVdq
-         aabq5xG4pN9Kf+Ejvs0b1JKvQ6esI8j10CK4CyfYlCcoc0c7uu0yUkR0/dyxYnOtDDcC
-         JIZXe2Bdl/dWUTe3wYogl+U6nuktIQeBI+kGYEsKvCtqdYkouDXDPvi/XZyXEaCVDyDU
-         yqohXl8XyQYUMrpSGebLeXi1cZ4Gtkh247X2NY9SmVSOSFIarU2AOarcnrZsoAFnobJ7
-         omelWEurXeTK20UfKGGWK2IVAIwFmJkwMz94IONi25GbNDSZqRUIrx+6AHBn2omuetWo
-         4Flw==
+        bh=H9gudHAzsoMl11k13t49Tgymd183FsAsDTQ4+MjrDYg=;
+        b=DYnzenOI5Gqv+IMw/XFAWvw60uPHLdPg4wyzfbH9k+ROxZqQFzaeRfIyKikrQv5Mq1
+         LIbDxs/zOqzXZELcw/VqJtHsyOalGAmbc7aoxy6xsVZsYwZEU2hINA0nOd/iEEf/0XYH
+         J3KmcbjSmcpgXz2VXv2wjRcb9We7423WBTTd8LrCQ8vTCw2X/LdP16SG1agQv3zRZkj+
+         IWD8Yih9Jrcaqb2V5g7mILvVTZXOt1ZiEbpZqIFDURIGFzA0ggQazL0ti1oCouiSmh52
+         zHVkfuQDfxEIXtegeoMCkH8M1vEorr0+TZXPUOvSH5gF5CXn0FhD37z/K6Et8reeNmOL
+         XVcw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1699971166; x=1700575966;
+        d=1e100.net; s=20230601; t=1699971334; x=1700576134;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=wLybn58tnV4LODh5eqWQ7D0RxurjyyUSi/kfw3mvtg0=;
-        b=nPkH5rLAx8zJuLBr2X7jdyZVzVffH3saSJWmdlfl2pUdW0TNsLxYlt/7se1XFQnYr7
-         tfUC6Y2qVGFzD1HR0Ke9yRKBnYoBTHPYKE0kOwqB3BctOX0jjpXDKCVPN3na0b2s9IFo
-         IyUGvYykpv0V7pxA3/luuUKhO34wbGEqJPwaV5AB44j7ymG9BKql3mg7WrJ/sbxzTFx6
-         kVrGXLFzeOchdcInl/yOBQ1+DWfri+ykB6voz4fpy1YnV7irDug0cHkelZbeio86fMNU
-         Rm84GgQ+XtfcPPqxchtZQMI/DeIkv0YwtPvhOf1Eg2uO73jnwvTBI/8pSwz+KBLDv50y
-         M+xg==
-X-Gm-Message-State: AOJu0Yx6Z4OIYtTFoKMMmkpthBpzgj8jI9dG35Ptpz+Lvz/hXsBWybT2
-	2OtBLIVejtJpWJeastpQkgBSN0V+cIMx2uacwnZQGQ==
-X-Google-Smtp-Source: AGHT+IEtJgclugQVkDkziAKKvd96n/skukIzxkLqvzXlhYme19UyrdpKZBFuBXt8UQtSWsp61/DTGuSAR2X2whvMw6A=
-X-Received: by 2002:a0d:ea85:0:b0:5a7:e4d9:f091 with SMTP id
- t127-20020a0dea85000000b005a7e4d9f091mr7598356ywe.25.1699971166047; Tue, 14
- Nov 2023 06:12:46 -0800 (PST)
+        bh=H9gudHAzsoMl11k13t49Tgymd183FsAsDTQ4+MjrDYg=;
+        b=ud64pRm9R8gQRM4qOoG8EQm3u9GzKcMka8sNz+aDRumoIxP6PBNNAfikxuK05x3kdj
+         bA8kNW4aBffadtwHdydapz6Vl/gje7gq6j7w+kDKwuZzAKoT70n6eDf30FIV1nA3MNea
+         6VK8mfSCTojAi9cHswY/e+aEya/RnzyRf46WDwYxSSgOq+UOY/CRopTCRRqufO9z54Dj
+         Xsc+Ak745qMEk0lcPXWZT5bpoxE0a8G+YRoq3Kf4yCLfQnN/bmgExbMM8fDwvs6qu3fv
+         QeRK+PspSYSuNeDZeZae1BQY/Xq8rYkWysV79hO8EbVefcWiQxB3BAUMmRSC/SrZMDjj
+         V+6g==
+X-Gm-Message-State: AOJu0YyGRq4l5bL9L9ul82vdxvCq2FrJ7aPYlnTI79emRMlnt0HPmlPK
+	mQFbYgXN0Xqc5WOTSNtHPhmo3Alws13ZBeMeaWz6CQ==
+X-Google-Smtp-Source: AGHT+IE70nxRhJcbYkoU42dNYejri2XOGgM/Ozf5+wgTTc0YFE0/tNgIkF23HXIk8rTgfCLbOps33kblQnJHdqvFWjU=
+X-Received: by 2002:a25:414c:0:b0:da0:5775:fd77 with SMTP id
+ o73-20020a25414c000000b00da05775fd77mr7966567yba.63.1699971334217; Tue, 14
+ Nov 2023 06:15:34 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20231114135654.30475-1-quic_bibekkum@quicinc.com> <20231114135654.30475-3-quic_bibekkum@quicinc.com>
-In-Reply-To: <20231114135654.30475-3-quic_bibekkum@quicinc.com>
+References: <20231114135654.30475-1-quic_bibekkum@quicinc.com> <20231114135654.30475-4-quic_bibekkum@quicinc.com>
+In-Reply-To: <20231114135654.30475-4-quic_bibekkum@quicinc.com>
 From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Date: Tue, 14 Nov 2023 16:12:35 +0200
-Message-ID: <CAA8EJpr1NzqiuNVZ0YcLpJ=yeOYFbLouAFgN9VMOiKpmoGVdtQ@mail.gmail.com>
-Subject: Re: [PATCH v2 2/3] iommu/arm-smmu: add ACTLR data and support for SM8550
+Date: Tue, 14 Nov 2023 16:15:23 +0200
+Message-ID: <CAA8EJpoRmm42aAvyX61o3tMWXszUZmfFvJEtnNDEfYdDqy4Y0g@mail.gmail.com>
+Subject: Re: [PATCH v2 3/3] iommu/arm-smmu: re-enable context caching in smmu
+ reset operation
 To: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
 Cc: will@kernel.org, robin.murphy@arm.com, joro@8bytes.org, a39.skl@gmail.com, 
 	konrad.dybcio@linaro.org, quic_pkondeti@quicinc.com, quic_molvera@quicinc.com, 
@@ -61,162 +62,85 @@ Content-Type: text/plain; charset="UTF-8"
 On Tue, 14 Nov 2023 at 15:57, Bibek Kumar Patro
 <quic_bibekkum@quicinc.com> wrote:
 >
-> Add ACTLR data table for SM8550 along with support for
-> same including SM8550 specific implementation operations.
+> Context caching is re-enabled in the prefetch buffer for Qualcomm SoCs
+> through SoC specific reset ops, which is disabled in the default MMU-500
+> reset ops, but is expected for context banks using ACTLR register to
+> retain the prefetch value during reset and runtime suspend.
+
+Please refer to Documentation/process/submitting-patches.rst and
+rephrase this following the rules there.
+
 >
 > Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
 > ---
->  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 92 +++++++++++++++++++++-
->  1 file changed, 88 insertions(+), 4 deletions(-)
+>  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 25 ++++++++++++++++++----
+>  1 file changed, 21 insertions(+), 4 deletions(-)
 >
 > diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> index 578c662c7c30..0eaf6f2a2e49 100644
+> index 0eaf6f2a2e49..fa867b1d9d16 100644
 > --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
 > +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> @@ -25,6 +25,70 @@ struct actlr_data {
->         u32 actlr;
->  };
+> @@ -478,11 +478,28 @@ static int qcom_smmu_def_domain_type(struct device *dev)
+>         return match ? IOMMU_DOMAIN_IDENTITY : 0;
+>  }
 >
-> +#define PRE_FETCH_1    0
-> +#define PRE_FETCH_2    BIT(8)
-> +#define PRE_FETCH_3    (BIT(9) | BIT(8))
-
-What is the difference between PRE_FETCH_3 and PRE_FETCH_2? And
-PRE_FETCH_1? Are these real numbers that refer to some amount / count
-or just dummy names?
-
-> +#define CPRE           BIT(1)          /* Enable context caching in the prefetch buffer */
-> +#define CMTLB          BIT(0)          /* Enable context caching in the macro TLB */
+> +static int qcom_smmu500_reset(struct arm_smmu_device *smmu)
+> +{
+> +       int i;
+> +       u32 reg;
 > +
-> +static const struct actlr_data sm8550_apps_actlr_data[] = {
-> +       { 0x18a0, 0x0000, PRE_FETCH_2 | CPRE | CMTLB },
-> +       { 0x18e0, 0x0000, PRE_FETCH_2 | CPRE | CMTLB },
-> +       { 0x0800, 0x0020, PRE_FETCH_1 | CMTLB },
-> +       { 0x1800, 0x00c0, PRE_FETCH_1 | CMTLB },
-> +       { 0x1820, 0x0000, PRE_FETCH_1 | CMTLB },
-> +       { 0x1860, 0x0000, PRE_FETCH_1 | CMTLB },
-> +       { 0x0c01, 0x0020, PRE_FETCH_3 | CPRE | CMTLB },
-> +       { 0x0c02, 0x0020, PRE_FETCH_3 | CPRE | CMTLB },
-> +       { 0x0c03, 0x0020, PRE_FETCH_3 | CPRE | CMTLB },
-> +       { 0x0c04, 0x0020, PRE_FETCH_3 | CPRE | CMTLB },
-> +       { 0x0c05, 0x0020, PRE_FETCH_3 | CPRE | CMTLB },
-> +       { 0x0c06, 0x0020, PRE_FETCH_3 | CPRE | CMTLB },
-> +       { 0x0c07, 0x0020, PRE_FETCH_3 | CPRE | CMTLB },
-> +       { 0x0c08, 0x0020, PRE_FETCH_3 | CPRE | CMTLB },
-> +       { 0x0c09, 0x0020, PRE_FETCH_3 | CPRE | CMTLB },
-> +       { 0x0c0c, 0x0020, PRE_FETCH_3 | CPRE | CMTLB },
-> +       { 0x0c0d, 0x0020, PRE_FETCH_3 | CPRE | CMTLB },
-> +       { 0x0c0e, 0x0020, PRE_FETCH_3 | CPRE | CMTLB },
-> +       { 0x0c0f, 0x0020, PRE_FETCH_3 | CPRE | CMTLB },
-> +       { 0x1961, 0x0000, PRE_FETCH_3 | CPRE | CMTLB },
-> +       { 0x1962, 0x0000, PRE_FETCH_3 | CPRE | CMTLB },
-> +       { 0x1963, 0x0000, PRE_FETCH_3 | CPRE | CMTLB },
-> +       { 0x1964, 0x0000, PRE_FETCH_3 | CPRE | CMTLB },
-> +       { 0x1965, 0x0000, PRE_FETCH_3 | CPRE | CMTLB },
-> +       { 0x1966, 0x0000, PRE_FETCH_3 | CPRE | CMTLB },
-> +       { 0x1967, 0x0000, PRE_FETCH_3 | CPRE | CMTLB },
-> +       { 0x1968, 0x0000, PRE_FETCH_3 | CPRE | CMTLB },
-> +       { 0x1969, 0x0000, PRE_FETCH_3 | CPRE | CMTLB },
-> +       { 0x196c, 0x0000, PRE_FETCH_3 | CPRE | CMTLB },
-> +       { 0x196d, 0x0000, PRE_FETCH_3 | CPRE | CMTLB },
-> +       { 0x196e, 0x0000, PRE_FETCH_3 | CPRE | CMTLB },
-> +       { 0x196f, 0x0000, PRE_FETCH_3 | CPRE | CMTLB },
-> +       { 0x19c1, 0x0010, PRE_FETCH_3 | CPRE | CMTLB },
-> +       { 0x19c2, 0x0010, PRE_FETCH_3 | CPRE | CMTLB },
-> +       { 0x19c3, 0x0010, PRE_FETCH_3 | CPRE | CMTLB },
-> +       { 0x19c4, 0x0010, PRE_FETCH_3 | CPRE | CMTLB },
-> +       { 0x19c5, 0x0010, PRE_FETCH_3 | CPRE | CMTLB },
-> +       { 0x19c6, 0x0010, PRE_FETCH_3 | CPRE | CMTLB },
-> +       { 0x19c7, 0x0010, PRE_FETCH_3 | CPRE | CMTLB },
-> +       { 0x19c8, 0x0010, PRE_FETCH_3 | CPRE | CMTLB },
-> +       { 0x19c9, 0x0010, PRE_FETCH_3 | CPRE | CMTLB },
-> +       { 0x19cc, 0x0010, PRE_FETCH_3 | CPRE | CMTLB },
-> +       { 0x19cd, 0x0010, PRE_FETCH_3 | CPRE | CMTLB },
-> +       { 0x19ce, 0x0010, PRE_FETCH_3 | CPRE | CMTLB },
-> +       { 0x19cf, 0x0010, PRE_FETCH_3 | CPRE | CMTLB },
-> +       { 0x1c00, 0x0002, PRE_FETCH_2 | CPRE | CMTLB },
-> +       { 0x1c01, 0x0000, PRE_FETCH_1 | CMTLB },
-> +       { 0x1920, 0x0000, PRE_FETCH_2 | CPRE | CMTLB },
-> +       { 0x1923, 0x0000, PRE_FETCH_2 | CPRE | CMTLB },
-> +       { 0x1924, 0x0000, PRE_FETCH_2 | CPRE | CMTLB },
-> +       { 0x1940, 0x0000, PRE_FETCH_2 | CPRE | CMTLB },
-> +       { 0x1941, 0x0004, PRE_FETCH_2 | CPRE | CMTLB },
-> +       { 0x1943, 0x0000, PRE_FETCH_2 | CPRE | CMTLB },
-> +       { 0x1944, 0x0000, PRE_FETCH_2 | CPRE | CMTLB },
-> +       { 0x1947, 0x0000, PRE_FETCH_2 | CPRE | CMTLB },
-> +};
+> +       arm_mmu500_reset(smmu);
 > +
->  static struct qcom_smmu *to_qcom_smmu(struct arm_smmu_device *smmu)
+> +       /* Re-enable context caching after reset */
+> +       for (i = 0; i < smmu->num_context_banks; ++i) {
+> +               reg = arm_smmu_cb_read(smmu, i, ARM_SMMU_CB_ACTLR);
+> +               reg |= CPRE;
+> +               arm_smmu_cb_write(smmu, i, ARM_SMMU_CB_ACTLR, reg);
+> +       }
+> +
+> +       return 0;
+> +}
+> +
+>  static int qcom_sdm845_smmu500_reset(struct arm_smmu_device *smmu)
 >  {
->         return container_of(smmu, struct qcom_smmu, smmu);
-> @@ -459,6 +523,16 @@ static const struct arm_smmu_impl sdm845_smmu_500_impl = {
+>         int ret;
+>
+> -       arm_mmu500_reset(smmu);
+> +       qcom_smmu500_reset(smmu);
+
+Is this applicable for sdm845? For all other platforms supported by
+qcom_smmu_500 implementation?
+
+>
+>         /*
+>          * To address performance degradation in non-real time clients,
+> @@ -509,7 +526,7 @@ static const struct arm_smmu_impl qcom_smmu_500_impl = {
+>         .init_context = qcom_smmu_init_context,
+>         .cfg_probe = qcom_smmu_cfg_probe,
+>         .def_domain_type = qcom_smmu_def_domain_type,
+> -       .reset = arm_mmu500_reset,
+> +       .reset = qcom_smmu500_reset,
+>         .write_s2cr = qcom_smmu_write_s2cr,
 >         .tlb_sync = qcom_smmu_tlb_sync,
 >  };
->
-> +
-> +static const struct arm_smmu_impl sm8550_smmu_500_impl = {
-> +       .init_context = qcom_smmu_init_context,
-> +       .cfg_probe = qcom_smmu_cfg_probe,
-> +       .def_domain_type = qcom_smmu_def_domain_type,
-> +       .reset = arm_mmu500_reset,
-> +       .write_s2cr = qcom_smmu_write_s2cr,
-> +       .tlb_sync = qcom_smmu_tlb_sync,
-
-What is the difference between this one and qcom_smmu_500_impl ?
-
-> +};
-> +
->  static const struct arm_smmu_impl qcom_adreno_smmu_v2_impl = {
+> @@ -528,7 +545,7 @@ static const struct arm_smmu_impl sm8550_smmu_500_impl = {
+>         .init_context = qcom_smmu_init_context,
+>         .cfg_probe = qcom_smmu_cfg_probe,
+>         .def_domain_type = qcom_smmu_def_domain_type,
+> -       .reset = arm_mmu500_reset,
+> +       .reset = qcom_smmu500_reset,
+>         .write_s2cr = qcom_smmu_write_s2cr,
+>         .tlb_sync = qcom_smmu_tlb_sync,
+>  };
+> @@ -544,7 +561,7 @@ static const struct arm_smmu_impl qcom_adreno_smmu_v2_impl = {
+>  static const struct arm_smmu_impl qcom_adreno_smmu_500_impl = {
 >         .init_context = qcom_adreno_smmu_init_context,
 >         .def_domain_type = qcom_smmu_def_domain_type,
-> @@ -522,6 +596,11 @@ static const struct qcom_smmu_config qcom_smmu_impl0_cfg = {
->         .reg_offset = qcom_smmu_impl0_reg_offset,
->  };
->
-> +static const struct actlr_config sm8550_actlrcfg = {
-> +       .adata = sm8550_apps_actlr_data,
-> +       .size = ARRAY_SIZE(sm8550_apps_actlr_data),
-> +};
-> +
->  /*
->   * It is not yet possible to use MDP SMMU with the bypass quirk on the msm8996,
->   * there are not enough context banks.
-> @@ -545,16 +624,20 @@ static const struct qcom_smmu_match_data sdm845_smmu_500_data = {
->         /* Also no debug configuration. */
->  };
->
-> +
-> +static const struct qcom_smmu_match_data sm8550_smmu_500_impl0_data = {
-> +       .impl = &sm8550_smmu_500_impl,
-> +       .adreno_impl = &qcom_adreno_smmu_500_impl,
-> +       .cfg = &qcom_smmu_impl0_cfg,
-> +       .actlrcfg = &sm8550_actlrcfg,
-> +};
-> +
->  static const struct qcom_smmu_match_data qcom_smmu_500_impl0_data = {
->         .impl = &qcom_smmu_500_impl,
->         .adreno_impl = &qcom_adreno_smmu_500_impl,
->         .cfg = &qcom_smmu_impl0_cfg,
->  };
->
-> -/*
-> - * Do not add any more qcom,SOC-smmu-500 entries to this list, unless they need
-> - * special handling and can not be covered by the qcom,smmu-500 entry.
-> - */
-
-NAK, leave this in place.
-
->  static const struct of_device_id __maybe_unused qcom_smmu_impl_of_match[] = {
->         { .compatible = "qcom,msm8996-smmu-v2", .data = &msm8996_smmu_data },
->         { .compatible = "qcom,msm8998-smmu-v2", .data = &qcom_smmu_v2_data },
-> @@ -579,6 +662,7 @@ static const struct of_device_id __maybe_unused qcom_smmu_impl_of_match[] = {
->         { .compatible = "qcom,sm8250-smmu-500", .data = &qcom_smmu_500_impl0_data },
->         { .compatible = "qcom,sm8350-smmu-500", .data = &qcom_smmu_500_impl0_data },
->         { .compatible = "qcom,sm8450-smmu-500", .data = &qcom_smmu_500_impl0_data },
-> +       { .compatible = "qcom,sm8550-smmu-500", .data = &sm8550_smmu_500_impl0_data },
->         { .compatible = "qcom,smmu-500", .data = &qcom_smmu_500_impl0_data },
->         { }
->  };
+> -       .reset = arm_mmu500_reset,
+> +       .reset = qcom_smmu500_reset,
+>         .alloc_context_bank = qcom_adreno_smmu_alloc_context_bank,
+>         .write_sctlr = qcom_adreno_smmu_write_sctlr,
+>         .tlb_sync = qcom_smmu_tlb_sync,
 > --
 > 2.17.1
 >
