@@ -1,165 +1,107 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.88])
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.115])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4CE95747B
-	for <iommu@lists.linux.dev>; Tue, 14 Nov 2023 03:20:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F7678C01
+	for <iommu@lists.linux.dev>; Tue, 14 Nov 2023 03:26:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="jH9pE+Vo"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="D4qfei9J"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1699932023; x=1731468023;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=Rk1odlL5fQuIJaOl9mzg/hAvGyhUO5V0eVOAnbWa5Tc=;
-  b=jH9pE+VoNeNhLDJXbIFmZ2058J1Uj6tUYp2teV2kJ2Vtb+AUmxK4nnKK
-   g27g1MAYxcGD8v+CSKF5Nicq1UMaF16YhoJZJQ6/CcHpJSuF5dd4m5hvH
-   xKtRL+frJv7u1xcSAmXkg6akWkOCl7V8Fm8CzOpNlh1hW1v9Oq1QvDqf7
-   B9VBUNcfIKdB4F0LX9xYdYfUGId75jnBoDvvQEFFRaF1n+5LUI8KlTCig
-   ZVLb1DuNoMriXPmg1dRK9EhXYffqhITf5ZKNEcOhsQZImIjiHoiyBllfp
-   uhZPrRGU5dzfbxkp0kwIn4tOWYGtd6qhuXgcF6YGr5MShwcToGT8JR1sD
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10893"; a="421665203"
+  t=1699932393; x=1731468393;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=2Lrgjz0p3fqKsXXSmPfXk4FbDshEG0LNAMEKNDR7cwY=;
+  b=D4qfei9Jselj0iLBte3yOBjWlpQGI80Ehk+QOULC2bT7HSx94+h9JzoR
+   T+P4wayDQXrrvbKZ/lb7sLgVAoKPUlzWjW2gNXdtbSjdOna+ULZ4bqFiw
+   PPgHsJHzsDUcK2ob7jLWfeu3rbQ9eIDU6c6BmhOav8mLxcXWGN5oexliS
+   EECSfUgTH6k5RgmODw7unqWBqZSbHbJWOy2pCQmuukgZ8YJFXi0OMB7w9
+   wn3TMu4fzHT09+TH2+kBzqJSzUegF2dAb/DrR5ZKHoxfRqW9olhgCkGIk
+   /KnUHXitSOyj0TMPgTDkp17I6QHMYGVkLZZ8yHLShV9H/o1kn1kCbCcMN
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10893"; a="390366528"
 X-IronPort-AV: E=Sophos;i="6.03,299,1694761200"; 
-   d="scan'208";a="421665203"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Nov 2023 19:20:22 -0800
+   d="scan'208";a="390366528"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Nov 2023 19:26:32 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10893"; a="937901081"
+X-IronPort-AV: E=McAfee;i="6600,9927,10893"; a="793623114"
 X-IronPort-AV: E=Sophos;i="6.03,299,1694761200"; 
-   d="scan'208";a="937901081"
-Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
-  by orsmga005.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 13 Nov 2023 19:20:22 -0800
-Received: from orsmsx612.amr.corp.intel.com (10.22.229.25) by
- ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.34; Mon, 13 Nov 2023 19:20:21 -0800
-Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
- orsmsx612.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.34 via Frontend Transport; Mon, 13 Nov 2023 19:20:15 -0800
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.101)
- by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.34; Mon, 13 Nov 2023 19:20:10 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DfrdBBskgjNUhnEjTxsW2VaXcdoPIfGlOZUdoYlCUoF/bi/q6PA9+RD9mFlBFpS6FTvVAtclsGPvWripDUmOauZXI3vki1wR9YVqqrGC1230hNWYgZ8W6+Hc6zgZkoyP4sG0pkYe1HFIFUgg3Q1vWPcJV1NVDTd5dgb5dGAwC25fDwNPbsAEnndgiz2ReRWy+hRdjvebJzk621yaQgYCahp6uvT8qhXA3zdanOhoQGmimiCedRGoYAoQ8KfviaO33tI/Eh4qshvNmYTQWHobKCljbUrH27gWkkPejkPOYiooaFqdPXDVCO89/buWyKIVf3Vr86B9/lzvuj6qQXd0wA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Rk1odlL5fQuIJaOl9mzg/hAvGyhUO5V0eVOAnbWa5Tc=;
- b=YVEWCPiQicCv0vm8lSqfDJsB7Ek9Fhkz9z+ROXyIYBI0XJQJXE7IvgoGPKukUoVliltOYnyy7FkKeL9elGcuT2ydecQhFkkbdMRksEw5kWEZCOLvwswaUX0I7kFSGU1J4GLn5tKk+ZvOq5CAlRm3gbYYRA924Di19A2QhbgN+wS4gtS6CUlsxbkpiMyafM/Yr6l8d0jtB40H8+aga6pVblAMUGDL8/Qy9e98Fkbq1DiKEu/nL1g+xzOHonZrdDqX9UVAV6H5MZKMDKADu9B89eU6GwNSCXvaUhrskayLGsa20Y0/oQFOTlHv+XYBgg1ySDT07gYMB5LhPHKjZEaPtQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by CH0PR11MB5297.namprd11.prod.outlook.com (2603:10b6:610:bc::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6977.29; Tue, 14 Nov
- 2023 03:20:08 +0000
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::e7a4:a757:2f2e:f96a]) by BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::e7a4:a757:2f2e:f96a%3]) with mapi id 15.20.6977.029; Tue, 14 Nov 2023
- 03:20:08 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, "Will
- Deacon" <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, "Jason
- Gunthorpe" <jgg@ziepe.ca>
-CC: "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH 1/1] iommu/vt-d: Make context clearing consistent with
- context mapping
-Thread-Topic: [PATCH 1/1] iommu/vt-d: Make context clearing consistent with
- context mapping
-Thread-Index: AQHaFpgD7eV3C3aZ80+9ufH0otr//bB5JNYQ
-Date: Tue, 14 Nov 2023 03:20:08 +0000
-Message-ID: <BN9PR11MB52765C637BFAD28ADF1D24738CB2A@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <20231114011036.70142-1-baolu.lu@linux.intel.com>
- <20231114011036.70142-4-baolu.lu@linux.intel.com>
-In-Reply-To: <20231114011036.70142-4-baolu.lu@linux.intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|CH0PR11MB5297:EE_
-x-ms-office365-filtering-correlation-id: 894aca76-2da6-408e-693c-08dbe4c09b00
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: Bn7N5tVeuT2JOx8QRD6fcGzx45SGeycIDmx7iAJoVkqlxMdPGipO3/EpnK7s4ianz2ok9jYCy3pKSyleE0+h6IIx2CW0E9ttoOcnaKZtYO2U9t5cKRit+BsOVWyQ+oU0bYbsC8rxZ/Gv4XhHn/FIjccfyi06Sarlea389Da++egeRd9b1D+yUjWzhjfrTAdOcMzT+6HMsDGK0Mb2ZCSZdSdEjfmLdxoNm+EcAfVB8HHquKgJDu3cHqMIh4TX+CgkR4JgSul6rV4+KTXZTh43pmkp8tkue0ibFW9WVyN34pwYUGvzthgytzBPkH4bb7RxgSTX7Q4ZyjpG+1AYX3dvkHqSrUzvpFKQhuoA1T6Vc0lIavtYoWGUGLGm8/SP4iGMcB8d/dHeaTZrNGskQofMtsf1kFBV43R4JJWoX/V9C1XJOFZWW0Z5hfQJFJsY23Dni8WqxuYPygal25ZCJLMN5SHFdi4c5uL7JxvV0jnotgJy2U96sufEAtwoYO5IrJrl7Le1LcXXwEb2FTZxB0gZiQVF16c21HhzjG1kmVGqWRt0PumCyqQQOBJUkaRNrSH/sKtjFYZbeJhrBnf9MuHKnE5qmo0+L/ABqRY07G7cS8r0m3byIIbvfU6UxVC+uOhS
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(346002)(366004)(396003)(39860400002)(376002)(136003)(230922051799003)(64100799003)(451199024)(186009)(1800799009)(2906002)(8676002)(52536014)(4326008)(8936002)(66946007)(76116006)(316002)(64756008)(66556008)(54906003)(66446008)(66476007)(110136005)(33656002)(41300700001)(4744005)(86362001)(5660300002)(55016003)(83380400001)(38070700009)(82960400001)(122000001)(26005)(38100700002)(478600001)(71200400001)(9686003)(6506007)(7696005);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?8yH4dcvF9MDeP4hd+QjrhApy1yjfp7pG7H1CaSrEI8nJdiT6EOBKI0uf+Q6O?=
- =?us-ascii?Q?iZPKE3PEiX8Y/11aB+wJbfCVmDCedC9YkhOjgwCmzGVYyId1JNjIEBuSAjEO?=
- =?us-ascii?Q?RPca0Y9WZB/qeZjh41SqHCjpq7lzpgUi/R2Dtpu0BOiuxsUyr7CHd2uTUdrb?=
- =?us-ascii?Q?PAmmh/rN/f4h1F7gMiAEQRvhqb4WPQttHkl8nPlOpsE6DiBwMkMHebBi5v1P?=
- =?us-ascii?Q?2X65bV/sC9tFStkAp8ogJfP4dJwh1kAFr9WFWtfDn8rDViuP5wPynIFt2h//?=
- =?us-ascii?Q?OEie1sfyV8RB4pDfXBOGJ+vVS/su8ruoNc6WsEFU1ZAL5bfvalrFXKcGbNzG?=
- =?us-ascii?Q?+q7WOEK1UbIT+TJm2fCZsMPe5U13b2xZlq5VEHeJOEa+fd6m6icn3opSSI3i?=
- =?us-ascii?Q?bN9JQsW5RKzPloCOHa0eCECDTJL1ctvtPPsJPcmL+eGqHnuME/CkC/jCu4sU?=
- =?us-ascii?Q?z7vByAdxS49eSq7GdTeFvvHU1s8W3DUlMVeVVP14x+UCVWm80iMS4WrMREt7?=
- =?us-ascii?Q?Gw9SbgfHqX/ktE6yL17vrPZHLNevPGiZLviuXc9OQIydDQ5MBKS49pQTTi/3?=
- =?us-ascii?Q?v6rYRJa0oPQlQccqiB96IJI8MZs722fXlEcrzDZ6VVTJ17+XO6WMQrUfiJex?=
- =?us-ascii?Q?yV2kHqXFszOdWmruq7LgskXmFsRZ00R017kpVWjVJE8TToFMV96UlmQtVNc6?=
- =?us-ascii?Q?tOcPQBolYCctQCiIPEayMO9dfOcyrkGi+6I/1NlNBVc79cUx70fM1aUTJ+Q3?=
- =?us-ascii?Q?svAHPSKc0DS4BlAXxEzWhGNALLpzxiJlvfnWa9Xi31H6p1vKe0DVuzo/v9Hb?=
- =?us-ascii?Q?cKmFQe+AKThziGxZ2DHQvISgmvB9dUQkM08PvnBZ6i6oc92/UwXaqLWWN9Fe?=
- =?us-ascii?Q?WS33ocOyvUTjSMQR4krQAuwglBSKbgGP/UAxHMYYGhCHVOXmgsFTcAfOaVYH?=
- =?us-ascii?Q?QDTjLqtkAb+Il+HqZkj3TloI4n3Tal+m4I600HbXbWwskZumuHeYQ9u9aXrr?=
- =?us-ascii?Q?OBps2FoAA1pUE/ODWxz6K+qKnGt6EhAYLEgag4Y8/o7AX9yjcOAtVCdNybaY?=
- =?us-ascii?Q?tW0rBmoS3lbewtiniVVbGrrAa2IcJyb6mqdsiisrPt/y2QOiuHR0Gji/eObZ?=
- =?us-ascii?Q?/tQPR4uhX3+LNVMC0kvw9VWXvPT5dL+ga7ASuUOCE5MneV0SlcXr8yxnZu2D?=
- =?us-ascii?Q?2fuC6Z6xiSpK7k6byP1UE/qW7d0VbULEwJPQeY7T8HKnYbhAB/HnagA3Xj4W?=
- =?us-ascii?Q?3F1ePE5E6EW0YloYP8oR0LTtXFwcYw5n1lzE4zzO7udgv5xH6s3OYVRqt1uT?=
- =?us-ascii?Q?nw/GDPFS0OcBhBqs1I2g/03cs8eI4hjUQK3/BQEBYIadcud6zA5zxLID0oQc?=
- =?us-ascii?Q?DyzBcT4DXVyzSe93V2E7hvNedZeopHlboEzgI0v4ggNhiZpUpFh8hmQ8F41h?=
- =?us-ascii?Q?sKH1GZYWURlAPykSqeMdvu4KDywrCpxHDA/iDEEdAHYpJg1rsYEleXn4LO2u?=
- =?us-ascii?Q?53CFZtqIOGnnErWeOuZAAsaNOpEM7sVCwFoRjbQlHbfXikMxkq8ZPksRIWYv?=
- =?us-ascii?Q?HmRbJIjDEJtx76OdL3QsVwHWalkIZjQbaB9+Rpkb?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+   d="scan'208";a="793623114"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
+  by orsmga008.jf.intel.com with ESMTP; 13 Nov 2023 19:26:29 -0800
+Message-ID: <c3053d76-433b-4c4d-b19b-13ff61c7dab4@linux.intel.com>
+Date: Tue, 14 Nov 2023 11:22:19 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 894aca76-2da6-408e-693c-08dbe4c09b00
-X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Nov 2023 03:20:08.7821
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: fRxsh1aEDfTP059H+zQj8uUsRHs+NBggr78z6Lq5fOPuhwWldIObchZkLO5928bE9/vAKkBc5+5KBroeSexMtQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR11MB5297
-X-OriginatorOrg: intel.com
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, "iommu@lists.linux.dev"
+ <iommu@lists.linux.dev>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 1/1] iommu/vt-d: Make context clearing consistent with
+ context mapping
+Content-Language: en-US
+To: "Tian, Kevin" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Jason Gunthorpe <jgg@ziepe.ca>
+References: <20231114011036.70142-1-baolu.lu@linux.intel.com>
+ <20231114011036.70142-4-baolu.lu@linux.intel.com>
+ <BN9PR11MB52765C637BFAD28ADF1D24738CB2A@BN9PR11MB5276.namprd11.prod.outlook.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <BN9PR11MB52765C637BFAD28ADF1D24738CB2A@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-> From: Lu Baolu <baolu.lu@linux.intel.com>
-> Sent: Tuesday, November 14, 2023 9:11 AM
->=20
-> In the iommu probe_device path, domain_context_mapping() allows setting
-> up the context entry for a non-PCI device. However, in the iommu
-> release_device path, domain_context_clear() only clears context entries
-> for PCI devices.
->=20
-> Make domain_context_clear() behave consistently with
-> domain_context_mapping() by clearing context entries for both PCI and
-> non-PCI devices.
->=20
-> Fixes: 579305f75d34 ("iommu/vt-d: Update to use PCI DMA aliases")
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+On 11/14/23 11:20 AM, Tian, Kevin wrote:
+>> From: Lu Baolu <baolu.lu@linux.intel.com>
+>> Sent: Tuesday, November 14, 2023 9:11 AM
+>>
+>> In the iommu probe_device path, domain_context_mapping() allows setting
+>> up the context entry for a non-PCI device. However, in the iommu
+>> release_device path, domain_context_clear() only clears context entries
+>> for PCI devices.
+>>
+>> Make domain_context_clear() behave consistently with
+>> domain_context_mapping() by clearing context entries for both PCI and
+>> non-PCI devices.
+>>
+>> Fixes: 579305f75d34 ("iommu/vt-d: Update to use PCI DMA aliases")
+>> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> 
+> The code before the fix tag also has the same problem. If we really want
+> backport then let's find out the very first commit which exhibits this
+> problem.
 
-The code before the fix tag also has the same problem. If we really want
-backport then let's find out the very first commit which exhibits this
-problem.
+Commit 579305f75d34 allows non-PCI devices.
 
-But I wonder the actual impact w/o such fix. If there is no hot-remove
-possible for those non-PCI devices the context entry will be leaved
-enabled until the machine is off. Then this fix is nice-to-have then
-probably no need to backport?
++       if (!dev_is_pci(dev))
++               return domain_context_mapping_one(domain, iommu, bus, devfn,
+                                                   translation);
++
++       data.domain = domain;
++       data.iommu = iommu;
++       data.translation = translation;
++
++       return pci_for_each_dma_alias(to_pci_dev(dev),
++                                     &domain_context_mapping_cb, &data);
+
+But it forgot to update the domain_context_clear() helper. So this is
+actually a fix for that commit.
+
+> 
+> But I wonder the actual impact w/o such fix. If there is no hot-remove
+> possible for those non-PCI devices the context entry will be leaved
+> enabled until the machine is off. Then this fix is nice-to-have then
+> probably no need to backport?
+
+It doesn't cause real issues as far as I can see. So there's no need to
+back port it to stable kernels. That's the reason I didn't add cc-stable
+tag. But we still need a fix tag as it's actually a fix.
+
+Best regards,
+baolu
