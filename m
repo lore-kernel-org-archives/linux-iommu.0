@@ -1,242 +1,163 @@
-Received: from mail-pj1-f45.google.com (mail-pj1-f45.google.com [209.85.216.45])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.65])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 78933639
-	for <iommu@lists.linux.dev>; Wed, 15 Nov 2023 02:02:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1951764C
+	for <iommu@lists.linux.dev>; Wed, 15 Nov 2023 03:06:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ipdqyf4h"
-Received: by mail-pj1-f45.google.com with SMTP id 98e67ed59e1d1-2809fb0027cso35506a91.2
-        for <iommu@lists.linux.dev>; Tue, 14 Nov 2023 18:02:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1700013774; x=1700618574; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=Id6MwfiB5Pv0ZXowasXpEYmbdbnPyV9LKqTkNMYOdRU=;
-        b=ipdqyf4hwrWsfHJl+d2Fy7mW01xPdaqv8RJOy6si3PqO82JDR8jsAAtiUgBFEQWQPq
-         YPnniQ4AHp0ntMR2q+oXHCguOG8cx6c9F6EDDCN1h3MR0/0ZlIqmadqouTLcykgqWdPW
-         fg53mBntn+0UsxGU5RTdSXnP9AH+L+sDt8KQsKc5vtKnbJOLCwutvN1Dx7gsiMypeJKQ
-         zRQrLEBHbHb3JN7ZwU5rkTidEbnT4PM2wtwUUu6rj/P2ANtlYLNjCoDCLKZAC5iiiOCG
-         csOK5da6DPMN836YLcgXNNRaXSW1qhlsWmKRii6EccTLM8hqiIFeEKZMWci51z94BqMY
-         9tmg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1700013774; x=1700618574;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=Id6MwfiB5Pv0ZXowasXpEYmbdbnPyV9LKqTkNMYOdRU=;
-        b=CbvjOhILXz8nyNUu6wX/OkwkRpuUlFKlNxe/XNRKLEeESg28wQbaP7NQAbtWp7vwGw
-         WM9BKhPn7++dpaxIqcxt5Gl8xLryHlbZCPu2oRLY9gx/OpK4VAu3f91eBB9qQhd8KtYN
-         I8ss2eVLI/DTrX5guX0mxCAAc0BvjcvZmpIqGjDXLbcM5lO8Lp2Vae1xna6czo1ZzHx6
-         bbcOf5tYlliUt50ZZRjdncBzx7xNutINWmtMP7fXJP4UTqX6WWzXGqnDXEGn9XF8CPQs
-         kPOtxQvs6vUUudxh9bE62xs5HX9Ew1L6ADVF1PEcLGh1hL+lT8Ssiz3J/9GPorrERKzc
-         ECxg==
-X-Gm-Message-State: AOJu0Yybd2N5t5A4RtIo82w6ImPf2QQR9kxDM2LB55FJ98J8+RI0g4OS
-	cX/v9bhHHJLsIdfgLiK0/PQ=
-X-Google-Smtp-Source: AGHT+IECqFiO91Ny+OyS59YpVdL1lmTnIs1B2YgfSXtT4EjIvM1numDH3Yb/LVXNQ6gNzbxcSMNmww==
-X-Received: by 2002:a17:90b:3886:b0:27d:3ecb:3cbb with SMTP id mu6-20020a17090b388600b0027d3ecb3cbbmr9591264pjb.37.1700013773692;
-        Tue, 14 Nov 2023 18:02:53 -0800 (PST)
-Received: from localhost.localdomain ([129.227.63.229])
-        by smtp.gmail.com with ESMTPSA id z5-20020a1709027e8500b001b8622c1ad2sm6487842pla.130.2023.11.14.18.02.50
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 14 Nov 2023 18:02:53 -0800 (PST)
-From: yaozhenguo <yaozhenguo1@gmail.com>
-X-Google-Original-From: yaozhenguo <yaozhenguo@jd.com>
-To: yaozhenguo@jd.com,
-	dwmw2@infradead.org,
-	baolu.lu@linux.intel.com,
-	joro@8bytes.org,
-	will@kernel.org,
-	robin.murphy@arm.com,
-	alex.williamson@redhat.com
-Cc: iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="FAQAK+Vu"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1700017606; x=1731553606;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=VEXwhlFcqKiCWOgpOAvfe15/4ne2Hba6U+8v5HF4kCY=;
+  b=FAQAK+VunzLEPY+ybR7mTIV4sT51IGUG/F7HrqWkehKS3PxNOaR7vSUk
+   eshe3FX+AnllrlBe3ENT88sx+KifttL6BjPS67dz31DRBzuonaJPs9Xd4
+   LDfv5A/kNjtfEZCABRgoMvTmsCUlWAOn0ZJBg11JVqEYBK5ac9f8q1TZ2
+   7s4HczLAM+7SVPXtgd38lNTi0nalRptK/fFixfr+CpTtVzyRuyn8Yig7B
+   +i1sshQB2vTvc9YKf3wKk1tWdMzhaW8/nJLlLYPjz6UyycCHTj/EDvQqT
+   chLrEIRi0tp1qEhsm2nMbJS9+77JbQlYjzSRZPUKkgskMJuFxTFJhlSRZ
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10894"; a="394715284"
+X-IronPort-AV: E=Sophos;i="6.03,303,1694761200"; 
+   d="scan'208";a="394715284"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Nov 2023 19:06:45 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10894"; a="1012128763"
+X-IronPort-AV: E=Sophos;i="6.03,303,1694761200"; 
+   d="scan'208";a="1012128763"
+Received: from allen-box.sh.intel.com ([10.239.159.127])
+  by fmsmga006.fm.intel.com with ESMTP; 14 Nov 2023 19:06:41 -0800
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Nicolin Chen <nicolinc@nvidia.com>
+Cc: Yi Liu <yi.l.liu@intel.com>,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>,
+	Yan Zhao <yan.y.zhao@intel.com>,
+	iommu@lists.linux.dev,
 	kvm@vger.kernel.org,
-	Zhenguo Yao <yaozhenguo1@gmail.com>,
-	Wenchao Yao <yaowenchao@jd.com>,
-	ZiHan Zhou <zhouzihan30@jd.com>
-Subject: [PATCH V1] vfio: add attach_group_by_node to control behavior of attaching group to domain
-Date: Wed, 15 Nov 2023 10:02:09 +0800
-Message-Id: <20231115020209.4665-1-yaozhenguo@jd.com>
-X-Mailer: git-send-email 2.32.0
+	linux-kernel@vger.kernel.org,
+	Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH v7 00/12] iommu: Prepare to deliver page faults to user space
+Date: Wed, 15 Nov 2023 11:02:14 +0800
+Message-Id: <20231115030226.16700-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-From: Zhenguo Yao <yaozhenguo1@gmail.com>
+When a user-managed page table is attached to an IOMMU, it is necessary
+to deliver IO page faults to user space so that they can be handled
+appropriately. One use case for this is nested translation, which is
+currently being discussed in the mailing list.
 
-Groups will attach to one iommu_domain if ops and enforce_cache_coherency
-are equal. And all the iommu hardware share one pagetable by default.
-There are performance issue in some scenarios. For example:
-Host hardware topopy:
+I have posted a RFC series [1] that describes the implementation of
+delivering page faults to user space through IOMMUFD. This series has
+received several comments on the IOMMU refactoring, which I am trying to
+address in this series.
 
-node0 + PCIe RP0 ---+ GPU A100
-      |         |---+ GPU A100
-      |	        |---+ NIC Mellanox CX6
-      |	        |---+ NIC Mellanox CX6
-      + PCIe RP1 ---+ GPU A100
-                |---+ GPU A100
-      	        |---+ NIC Mellanox CX6
-                |---+ NIC Mellanox CX6
-node1 + PCIe RP0 ---+ GPU A100
-      |         |---+ GPU A100
-      |	        |---+ NIC Mellanox CX6
-      |	        |---+ NIC Mellanox CX6
-      + PCIe RP1 ---+ GPU A100
-                |---+ GPU A100
-      	        |---+ NIC Mellanox CX6
-                |---+ NIC Mellanox CX6
+The major refactoring includes:
 
-We passthrough all NICs and GPU to VM, and emulate host hardware topopy.
-Mellanox CX6 ATS feature is enabled, GPU direct RDMA enabled.
-We test NCCL allreduce in VM at different cases.
+- [PATCH 01 ~ 04] Move include/uapi/linux/iommu.h to
+  include/linux/iommu.h. Remove the unrecoverable fault data definition.
+- [PATCH 05 ~ 06] Remove iommu_[un]register_device_fault_handler().
+- [PATCH 07 ~ 10] Separate SVA and IOPF. Make IOPF a generic page fault
+  handling framework.
+- [PATCH 11 ~ 12] Improve iopf framework for iommufd use.
 
-Case1: allreduce test use 4nic and 4GPU in numa0.
-Case2：allreduce test use 4nic and 4GPU in numa1.
-case3: allreduce test use 8nic and 8GPU.
+This is also available at github [2].
 
-the result are below:
+[1] https://lore.kernel.org/linux-iommu/20230530053724.232765-1-baolu.lu@linux.intel.com/
+[2] https://github.com/LuBaolu/intel-iommu/commits/preparatory-io-pgfault-delivery-v7
 
-|        | algbw (GB/S) |
-| ------ | -------------|
-| case1  | 24           |
-| case2  | 32           |
-| case3  | 45           |
+Change log:
+v7:
+ - Rebase to v6.7-rc1.
+ - Export iopf_group_response() for global use.
+ - Release lock when calling iopf handler.
+ - The whole series has been verified to work for SVA case on Intel
+   platforms by Zhao Yan. Add her Tested-by to affected patches.
 
-We checked that IOMMU pagetable is allocated in numa1 when VM boot up.
-So, if IOTLB miss happan, IOMMU hardware in numa0 will access remote
-pagetable in numa1. This will drop performance. After apply this patch and
-attach_group_by_node is 1. Group in same node will attach to one domain.
-IOMMU will access there local pagetable. Performance is improved:
+v6: https://lore.kernel.org/linux-iommu/20230928042734.16134-1-baolu.lu@linux.intel.com/
+ - [PATCH 09/12] Check IS_ERR() against the iommu domain. [Jingqi/Jason]
+ - [PATCH 12/12] Rename the comments and name of iopf_queue_flush_dev(),
+   no functionality changes. [Kevin]
+ - All patches rebased on the latest iommu/core branch.
 
-|        | algbw (GB/S) |
-| ------ | -------------|
-| case1  | 32           |
-| case2  | 32           |
-| case3  | 63           |
+v5: https://lore.kernel.org/linux-iommu/20230914085638.17307-1-baolu.lu@linux.intel.com/
+ - Consolidate per-device fault data management. (New patch 11)
+ - Improve iopf_queue_flush_dev(). (New patch 12)
 
-Signed-off-by: Zhenguo Yao <yaozhenguo1@gmail.com>
-Co-developed-by: Wenchao Yao <yaowenchao@jd.com>
-Signed-off-by: Wenchao Yao <yaowenchao@jd.com>
-Co-developed-by: ZiHan Zhou <zhouzihan30@jd.com>
-Signed-off-by: ZiHan Zhou <zhouzihan30@jd.com>
----
- drivers/iommu/intel/iommu.c     |  8 +++++++-
- drivers/vfio/vfio_iommu_type1.c | 33 +++++++++++++++++++++------------
- include/linux/iommu.h           |  1 +
- 3 files changed, 29 insertions(+), 13 deletions(-)
+v4: https://lore.kernel.org/linux-iommu/20230825023026.132919-1-baolu.lu@linux.intel.com/
+ - Merge iommu_fault_event and iopf_fault. They are duplicate.
+ - Move iommu_report_device_fault() and iommu_page_response() to
+   io-pgfault.c.
+ - Move iommu_sva_domain_alloc() to iommu-sva.c.
+ - Add group->domain and use it directly in sva fault handler.
+ - Misc code refactoring and refining.
 
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 3531b95..2c6d8f0 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -569,8 +569,10 @@ void domain_update_iommu_cap(struct dmar_domain *domain)
- 	 * If RHSA is missing, we should default to the device numa domain
- 	 * as fall back.
- 	 */
--	if (domain->nid == NUMA_NO_NODE)
-+	if (domain->nid == NUMA_NO_NODE) {
- 		domain->nid = domain_update_device_node(domain);
-+		domain->domain.nid = domain->nid;
-+	}
- 
- 	/*
- 	 * First-level translation restricts the input-address to a
-@@ -1767,6 +1769,7 @@ static struct dmar_domain *alloc_domain(unsigned int type)
- 		return NULL;
- 
- 	domain->nid = NUMA_NO_NODE;
-+	domain->domain.nid = NUMA_NO_NODE;
- 	if (first_level_by_default(type))
- 		domain->use_first_level = true;
- 	domain->has_iotlb_device = false;
-@@ -1808,6 +1811,8 @@ int domain_attach_iommu(struct dmar_domain *domain, struct intel_iommu *iommu)
- 	info->refcnt	= 1;
- 	info->did	= num;
- 	info->iommu	= iommu;
-+	domain->nid     = iommu->node;
-+	domain->domain.nid     = iommu->node;
- 	curr = xa_cmpxchg(&domain->iommu_array, iommu->seq_id,
- 			  NULL, info, GFP_ATOMIC);
- 	if (curr) {
-@@ -1837,6 +1842,7 @@ void domain_detach_iommu(struct dmar_domain *domain, struct intel_iommu *iommu)
- 		clear_bit(info->did, iommu->domain_ids);
- 		xa_erase(&domain->iommu_array, iommu->seq_id);
- 		domain->nid = NUMA_NO_NODE;
-+		domain->domain.nid = NUMA_NO_NODE;
- 		domain_update_iommu_cap(domain);
- 		kfree(info);
- 	}
-diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-index eacd6ec..6a5641e 100644
---- a/drivers/vfio/vfio_iommu_type1.c
-+++ b/drivers/vfio/vfio_iommu_type1.c
-@@ -59,6 +59,11 @@
- module_param_named(dma_entry_limit, dma_entry_limit, uint, 0644);
- MODULE_PARM_DESC(dma_entry_limit,
- 		 "Maximum number of user DMA mappings per container (65535).");
-+static uint attach_group_by_node;
-+module_param_named(attach_group_by_node,
-+		attach_group_by_node, uint, 0644);
-+MODULE_PARM_DESC(attach_group_by_node,
-+		 "Attach group to domain when it's in same node");
- 
- struct vfio_iommu {
- 	struct list_head	domain_list;
-@@ -2287,19 +2292,23 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
- 		if (d->domain->ops == domain->domain->ops &&
- 		    d->enforce_cache_coherency ==
- 			    domain->enforce_cache_coherency) {
--			iommu_detach_group(domain->domain, group->iommu_group);
--			if (!iommu_attach_group(d->domain,
--						group->iommu_group)) {
--				list_add(&group->next, &d->group_list);
--				iommu_domain_free(domain->domain);
--				kfree(domain);
--				goto done;
--			}
-+			if ((attach_group_by_node == 1 &&
-+				d->domain->nid == domain->domain->nid) ||
-+				attach_group_by_node == 0) {
-+				iommu_detach_group(domain->domain, group->iommu_group);
-+				if (!iommu_attach_group(d->domain,
-+							group->iommu_group)) {
-+					list_add(&group->next, &d->group_list);
-+					iommu_domain_free(domain->domain);
-+					kfree(domain);
-+					goto done;
-+				}
- 
--			ret = iommu_attach_group(domain->domain,
--						 group->iommu_group);
--			if (ret)
--				goto out_domain;
-+				ret = iommu_attach_group(domain->domain,
-+						group->iommu_group);
-+				if (ret)
-+					goto out_domain;
-+			}
- 		}
- 	}
- 
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index ec289c1..c1330ed 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -123,6 +123,7 @@ struct iommu_domain {
- 			int users;
- 		};
- 	};
-+	int nid;
- };
- 
- static inline bool iommu_is_dma_domain(struct iommu_domain *domain)
+v3: https://lore.kernel.org/linux-iommu/20230817234047.195194-1-baolu.lu@linux.intel.com/
+ - Convert the fault data structures from uAPI to kAPI.
+ - Merge iopf_device_param into iommu_fault_param.
+ - Add debugging on domain lifetime for iopf.
+ - Remove patch "iommu: Change the return value of dev_iommu_get()".
+ - Remove patch "iommu: Add helper to set iopf handler for domain".
+ - Misc code refactoring and refining.
+
+v2: https://lore.kernel.org/linux-iommu/20230727054837.147050-1-baolu.lu@linux.intel.com/
+ - Remove unrecoverable fault data definition as suggested by Kevin.
+ - Drop the per-device fault cookie code considering that doesn't make
+   much sense for SVA.
+ - Make the IOMMU page fault handling framework generic. So that it can
+   available for use cases other than SVA.
+
+v1: https://lore.kernel.org/linux-iommu/20230711010642.19707-1-baolu.lu@linux.intel.com/
+
+Lu Baolu (12):
+  iommu: Move iommu fault data to linux/iommu.h
+  iommu/arm-smmu-v3: Remove unrecoverable faults reporting
+  iommu: Remove unrecoverable fault data
+  iommu: Cleanup iopf data structure definitions
+  iommu: Merge iopf_device_param into iommu_fault_param
+  iommu: Remove iommu_[un]register_device_fault_handler()
+  iommu: Merge iommu_fault_event and iopf_fault
+  iommu: Prepare for separating SVA and IOPF
+  iommu: Make iommu_queue_iopf() more generic
+  iommu: Separate SVA and IOPF
+  iommu: Consolidate per-device fault data management
+  iommu: Improve iopf_queue_flush_dev()
+
+ include/linux/iommu.h                         | 266 +++++++---
+ drivers/iommu/intel/iommu.h                   |   2 +-
+ drivers/iommu/iommu-sva.h                     |  71 ---
+ include/uapi/linux/iommu.h                    | 161 ------
+ .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   |  14 +-
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |  51 +-
+ drivers/iommu/intel/iommu.c                   |  25 +-
+ drivers/iommu/intel/svm.c                     |   8 +-
+ drivers/iommu/io-pgfault.c                    | 469 ++++++++++++------
+ drivers/iommu/iommu-sva.c                     |  66 ++-
+ drivers/iommu/iommu.c                         | 232 ---------
+ MAINTAINERS                                   |   1 -
+ drivers/iommu/Kconfig                         |   4 +
+ drivers/iommu/Makefile                        |   3 +-
+ drivers/iommu/intel/Kconfig                   |   1 +
+ 15 files changed, 601 insertions(+), 773 deletions(-)
+ delete mode 100644 drivers/iommu/iommu-sva.h
+ delete mode 100644 include/uapi/linux/iommu.h
+
 -- 
-1.8.3.1
+2.34.1
 
