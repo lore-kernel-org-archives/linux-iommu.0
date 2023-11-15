@@ -1,95 +1,103 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7AE2A3EA93
-	for <iommu@lists.linux.dev>; Wed, 15 Nov 2023 14:45:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="eMisUO8G"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1700059545;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=sqWGwV812/CXYndzj2W50PA7KOMPm+tHC+e+xjD2/M0=;
-	b=eMisUO8GETcoW33XgbVvGFoZSGvcs6sr8qGR7HdNuy6l7n+3b1r3cCgVaaTc4rmVnvIdFs
-	esAP0rORkrKtXky+DkVYgB6FJ4yK+vA/nAux7Gys3mK38+iEZ1SFTozp/AS0YvkuyBj+qC
-	QN055SZdG2DH06ofT8KRCvBNYieATAE=
-Received: from mail-oi1-f199.google.com (mail-oi1-f199.google.com
- [209.85.167.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-214-fFkSKOyLOvqXnYVudqpZUg-1; Wed, 15 Nov 2023 09:45:44 -0500
-X-MC-Unique: fFkSKOyLOvqXnYVudqpZUg-1
-Received: by mail-oi1-f199.google.com with SMTP id 5614622812f47-3b3447c72c4so8004203b6e.1
-        for <iommu@lists.linux.dev>; Wed, 15 Nov 2023 06:45:44 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1700059543; x=1700664343;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=sqWGwV812/CXYndzj2W50PA7KOMPm+tHC+e+xjD2/M0=;
-        b=PSRXdSYzNQDbF7L5K/NNPByJU1iwD3owMnNt/p2PDTRCzJ67BjjJiw3dkCDLfrtrpf
-         64NUnVyOqfk2Z4IDype4mCNFwE3yJebcyL+C94sEfLEZPayKGUVSONEz8bl9R+JY+PSg
-         as2UKDTn/WlrGOmCbT5H6+SuxbiPKdackzokPsmU9CgaBzXErwBBFYZ2FuS3N/JBVICH
-         3T30EdMxE0VqQ2DGOOq20mjEr9zAKiMgdu1BifMFaa2kfiZELZdnWyhQgDtOsWfj8ZjA
-         Bn5ab+B4i8X97PiCocZU4iaAKS3xhj4ZJeiJnXiVm2K8GJLYVmHiHU0uv+/6lYkYgJXU
-         pzqQ==
-X-Gm-Message-State: AOJu0YzUos4GgDEMOFOrf3GzF+HKbPB28I3TlG49zG1jnYe07Q4wXiHq
-	uYdsvirMNSc1FeLyLkrXwCttLZgWSeR1G6wJ7BpY5TShR04L1SODjtTrUUj+guALaux5TuM/g1v
-	8rYRl9REJN4sOiMI=
-X-Received: by 2002:a05:6358:919a:b0:16b:c64b:5dad with SMTP id j26-20020a056358919a00b0016bc64b5dadmr7077932rwa.10.1700059543527;
-        Wed, 15 Nov 2023 06:45:43 -0800 (PST)
-X-Google-Smtp-Source: AGHT+IHcJVORPEWxErQUmTJ/FpxcV4QjvJjDEY7Ir6ZH3gFB8P/4S+/kGnZXTGDIbciHJXITaJ6Zhw==
-X-Received: by 2002:a05:6358:919a:b0:16b:c64b:5dad with SMTP id j26-20020a056358919a00b0016bc64b5dadmr7077772rwa.10.1700059540988;
-        Wed, 15 Nov 2023 06:45:40 -0800 (PST)
-Received: from localhost (ip98-179-76-75.ph.ph.cox.net. [98.179.76.75])
-        by smtp.gmail.com with ESMTPSA id v10-20020a0cf90a000000b00655d6d31470sm577985qvn.43.2023.11.15.06.45.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Nov 2023 06:45:40 -0800 (PST)
-Date: Wed, 15 Nov 2023 07:45:39 -0700
-From: Jerry Snitselaar <jsnitsel@redhat.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: acpica-devel@lists.linux.dev, Alyssa Rosenzweig <alyssa@rosenzweig.io>, 
-	Albert Ou <aou@eecs.berkeley.edu>, asahi@lists.linux.dev, Catalin Marinas <catalin.marinas@arm.com>, 
-	Dexuan Cui <decui@microsoft.com>, devicetree@vger.kernel.org, 
-	David Woodhouse <dwmw2@infradead.org>, Frank Rowand <frowand.list@gmail.com>, 
-	Hanjun Guo <guohanjun@huawei.com>, Haiyang Zhang <haiyangz@microsoft.com>, iommu@lists.linux.dev, 
-	Jean-Philippe Brucker <jean-philippe@linaro.org>, Jonathan Hunter <jonathanh@nvidia.com>, 
-	Joerg Roedel <joro@8bytes.org>, "K. Y. Srinivasan" <kys@microsoft.com>, 
-	Len Brown <lenb@kernel.org>, linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	linux-hyperv@vger.kernel.org, linux-mips@vger.kernel.org, linux-riscv@lists.infradead.org, 
-	linux-snps-arc@lists.infradead.org, linux-tegra@vger.kernel.org, 
-	Russell King <linux@armlinux.org.uk>, Lorenzo Pieralisi <lpieralisi@kernel.org>, 
-	Marek Szyprowski <m.szyprowski@samsung.com>, Hector Martin <marcan@marcan.st>, 
-	Palmer Dabbelt <palmer@dabbelt.com>, patches@lists.linux.dev, 
-	Paul Walmsley <paul.walmsley@sifive.com>, "Rafael J. Wysocki" <rafael@kernel.org>, 
-	Robert Moore <robert.moore@intel.com>, Rob Herring <robh+dt@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Sudeep Holla <sudeep.holla@arm.com>, 
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, Sven Peter <sven@svenpeter.dev>, 
-	Thierry Reding <thierry.reding@gmail.com>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, 
-	Krishna Reddy <vdumpa@nvidia.com>, Vineet Gupta <vgupta@kernel.org>, virtualization@lists.linux.dev, 
-	Wei Liu <wei.liu@kernel.org>, Will Deacon <will@kernel.org>, 
-	=?utf-8?B?QW5kcsOp?= Draszik <andre.draszik@linaro.org>, Lu Baolu <baolu.lu@linux.intel.com>, 
-	Christoph Hellwig <hch@lst.de>, Moritz Fischer <mdf@kernel.org>, 
-	Zhenhua Huang <quic_zhenhuah@quicinc.com>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, 
-	Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v2 04/17] acpi: Do not return struct iommu_ops from
- acpi_iommu_configure_id()
-Message-ID: <qmb2wshxcq75o43xikgw3ks6d72yyiranapupkwmwcm5b4vkgp@mgm36neokikv>
-References: <0-v2-36a0088ecaa7+22c6e-iommu_fwspec_jgg@nvidia.com>
- <4-v2-36a0088ecaa7+22c6e-iommu_fwspec_jgg@nvidia.com>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 587E52D022
+	for <iommu@lists.linux.dev>; Wed, 15 Nov 2023 14:53:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Authentication-Results: smtp.subspace.kernel.org; dkim=none
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 706491FB;
+	Wed, 15 Nov 2023 06:53:53 -0800 (PST)
+Received: from [10.57.83.164] (unknown [10.57.83.164])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E01893F641;
+	Wed, 15 Nov 2023 06:53:05 -0800 (PST)
+Message-ID: <c75d107a-44cb-4df3-b583-13719df1f8be@arm.com>
+Date: Wed, 15 Nov 2023 14:53:04 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <4-v2-36a0088ecaa7+22c6e-iommu_fwspec_jgg@nvidia.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 1/3] iommu/arm-smmu: introduction of ACTLR for custom
+ prefetcher settings
+Content-Language: en-GB
+To: Bibek Kumar Patro <quic_bibekkum@quicinc.com>, will@kernel.org,
+ joro@8bytes.org, dmitry.baryshkov@linaro.org, a39.skl@gmail.com,
+ konrad.dybcio@linaro.org, quic_pkondeti@quicinc.com, quic_molvera@quicinc.com
+Cc: linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ qipl.kernel.upstream@quicinc.com
+References: <20231114135654.30475-1-quic_bibekkum@quicinc.com>
+ <20231114135654.30475-2-quic_bibekkum@quicinc.com>
+ <372885ab-b24d-44ae-afb8-76755bcd6e21@arm.com>
+ <40282b6e-9524-4a88-97ca-3ce890317279@quicinc.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <40282b6e-9524-4a88-97ca-3ce890317279@quicinc.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-Reviewed-by: Jerry Snitselaar <jsnitsel@redhat.com>
+On 2023-11-15 1:54 pm, Bibek Kumar Patro wrote:
+> 
+>>> @@ -467,6 +505,9 @@ static struct arm_smmu_device 
+>>> *qcom_smmu_create(struct arm_smmu_device *smmu,
+>>>       qsmmu->smmu.impl = impl;
+>>>       qsmmu->cfg = data->cfg;
+>>>
+>>> +    if (data->actlrcfg && (data->actlrcfg->size))
+>>> +        qsmmu->actlrcfg = data->actlrcfg;
+>>
+>> Do we really need to replicate multiple parts of the data, or would it 
+>> be sensible to just replace qsmmu->cfg with qsmmu->data and handle the 
+>> further dereferences in the places that want them?
+>>
+> 
+> Mm, could not understand this properly. :( Could you help explain more 
+> please?
+> As per my understanding aren't data and qsmmu different structures.
+> qcom_smmu is a superset of arm_smmu housing additonal properties
+> and qcom_smmu_match_data is kind of a superset of arm_smmu_impl with
+> additional specific implmentations, so both needs to be in place?
+> Apologies if I understood your statement incorrectly.
 
+My point is that the data is static and constant, so there's really no 
+point storing multiple pointers into different bits of it. So rather than:
+
+	qsmmu->cfg = data->cfg;
+	qssmu->actlrcfg = data->actlrcfg;
+	...
+	do_something(qsmmu->cfg);
+	...
+	do_other_thing(qsmmu->actlrcfg);
+
+we can just store the one pointer and have:
+
+	qsmmu->data = data;
+	...
+	do_something(qsmmu->data->cfg);
+	...
+	do_other_thing(qsmmu->data->actlrcfg);
+
+Thanks,
+Robin.
+
+>>> +
+>>>       return &qsmmu->smmu;
+>>>   }
+>>>
+>>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h 
+>>> b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h
+>>> index 593910567b88..4b6862715070 100644
+>>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h
+>>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h
+>>> @@ -9,6 +9,7 @@
+>>>   struct qcom_smmu {
+>>>       struct arm_smmu_device smmu;
+>>>       const struct qcom_smmu_config *cfg;
+>>> +    const struct actlr_config *actlrcfg;
+>>>       bool bypass_quirk;
+>>>       u8 bypass_cbndx;
+>>>       u32 stall_enabled;
+>>> @@ -25,6 +26,7 @@ struct qcom_smmu_config {
+>>>   };
+>>>
