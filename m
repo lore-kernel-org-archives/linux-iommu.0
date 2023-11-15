@@ -1,167 +1,171 @@
-Received: from mail-qt1-f180.google.com (mail-qt1-f180.google.com [209.85.160.180])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D8A31A598
-	for <iommu@lists.linux.dev>; Wed, 15 Nov 2023 15:16:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="NOOAXAQO"
-Received: by mail-qt1-f180.google.com with SMTP id d75a77b69052e-41ea9c5e83cso364491cf.0
-        for <iommu@lists.linux.dev>; Wed, 15 Nov 2023 07:16:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1700061362; x=1700666162; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=j/NfrA/AhI3IBeh3+JaRNZ83ErlUjI5ivLDH7Qt1YZA=;
-        b=NOOAXAQO0vH0ARxxzr/zCjkzKrSo/bnV+buV/MsX/wifLA7TVMEw9g+uoG29ZNFxxt
-         /907NQDToq28O+ht2B9xN7RVT/WnuJE+y1ME2leN6xm56ly4cQnKNwfNwMY3crFOEgH2
-         uw9Z9XunwZFagZDyr85tGRPLOeucckS+/Wf0qsKC731M9+oP16V+TXyFbBgt8heq4QyV
-         +cIC5emODQwysXOAwmBDUtsXvlzeiS+rXAshZOZgv2ocIRUgmoF2cdzdBvpS2jY/w/eD
-         KsCeOX28k9ukkPnDPnklC6hl5nJRi9pPYGTx/VjBTP3StVo+W3cs4vXGk8uu7shyCJqf
-         NmwA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1700061362; x=1700666162;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=j/NfrA/AhI3IBeh3+JaRNZ83ErlUjI5ivLDH7Qt1YZA=;
-        b=i58+jltrdNBdR2iDPR7RPsvpoH3QGzF4KR86H8NUziqip/HA2DLiww4/1a8sekD7Wx
-         QNzJ3g08E2JdQQ9afuyx+XIv5IeUPRjkB7EkMoNplnoXmRSqZWSaC9MwXQjP9PFKkWf5
-         wM/CVpG4vA274uZeZmEncYhP2RTwSRXV0GU2Al+9Lx5AadY/RP0VPcge4Th5hzwG1cSR
-         Pg4BCrJM5oX3UwNQCiM2iMZQq4enw5ify8IXB0yVX6K1CW3xRnqKaHVIMffiSulpoQPv
-         1MnB0979wYdPwolnfQWEL1aX+MyU051lHLXiPK5VoQT0oBW8AJuHn/HdO6C9tj7vcbjz
-         /vlw==
-X-Gm-Message-State: AOJu0Yw+kcnJosFkNaNPNV6SYxfDeKlCv47sQZV+8t+73Xyz7oWBgNuW
-	Xd5j/r9nbeCygglTWjeIri/+M5NVXmPUZvNaTaS/dw==
-X-Google-Smtp-Source: AGHT+IHsLkfd1mxk7ecbuNweGdtB1UIAK1+qdYZ92dNVDoJ/1Sup4inheYKgSuDVVFZQROqhBwKMmpHYkE8Z3XuTeTY=
-X-Received: by 2002:ac8:520b:0:b0:41e:3c2f:13cb with SMTP id
- r11-20020ac8520b000000b0041e3c2f13cbmr205910qtn.19.1700061361403; Wed, 15 Nov
- 2023 07:16:01 -0800 (PST)
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A2A56381CC;
+	Wed, 15 Nov 2023 15:22:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Authentication-Results: smtp.subspace.kernel.org; dkim=none
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6CF5FC15;
+	Wed, 15 Nov 2023 07:23:07 -0800 (PST)
+Received: from [10.57.83.164] (unknown [10.57.83.164])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 30E023F641;
+	Wed, 15 Nov 2023 07:22:11 -0800 (PST)
+Message-ID: <1316b55e-8074-4b2f-99df-585df2f3dd06@arm.com>
+Date: Wed, 15 Nov 2023 15:22:09 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <0-v2-de8b10590bf5+400-smmuv3_newapi_p1_jgg@nvidia.com> <11-v2-de8b10590bf5+400-smmuv3_newapi_p1_jgg@nvidia.com>
-In-Reply-To: <11-v2-de8b10590bf5+400-smmuv3_newapi_p1_jgg@nvidia.com>
-From: Michael Shavit <mshavit@google.com>
-Date: Wed, 15 Nov 2023 23:15:23 +0800
-Message-ID: <CAKHBV24X4-Mf3R8OqwBdAJf9P7UD9fep2fOmJVrcx_rkfABxBA@mail.gmail.com>
-Subject: Re: [PATCH v2 11/19] iommu/arm-smmu-v3: Do not change the STE twice
- during arm_smmu_attach_dev()
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>, 
-	linux-arm-kernel@lists.infradead.org, Robin Murphy <robin.murphy@arm.com>, 
-	Will Deacon <will@kernel.org>, Nicolin Chen <nicolinc@nvidia.com>, 
-	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 00/17] Solve iommu probe races around iommu_fwspec
+Content-Language: en-GB
+To: Jason Gunthorpe <jgg@nvidia.com>, acpica-devel@lists.linux.dev,
+ Alyssa Rosenzweig <alyssa@rosenzweig.io>, Albert Ou <aou@eecs.berkeley.edu>,
+ asahi@lists.linux.dev, Catalin Marinas <catalin.marinas@arm.com>,
+ Dexuan Cui <decui@microsoft.com>, devicetree@vger.kernel.org,
+ David Woodhouse <dwmw2@infradead.org>, Frank Rowand
+ <frowand.list@gmail.com>, Hanjun Guo <guohanjun@huawei.com>,
+ Haiyang Zhang <haiyangz@microsoft.com>, iommu@lists.linux.dev,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Jonathan Hunter <jonathanh@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
+ "K. Y. Srinivasan" <kys@microsoft.com>, Len Brown <lenb@kernel.org>,
+ linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-hyperv@vger.kernel.org, linux-mips@vger.kernel.org,
+ linux-riscv@lists.infradead.org, linux-snps-arc@lists.infradead.org,
+ linux-tegra@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
+ Lorenzo Pieralisi <lpieralisi@kernel.org>,
+ Marek Szyprowski <m.szyprowski@samsung.com>, Hector Martin
+ <marcan@marcan.st>, Palmer Dabbelt <palmer@dabbelt.com>,
+ patches@lists.linux.dev, Paul Walmsley <paul.walmsley@sifive.com>,
+ "Rafael J. Wysocki" <rafael@kernel.org>,
+ Robert Moore <robert.moore@intel.com>, Rob Herring <robh+dt@kernel.org>,
+ Sudeep Holla <sudeep.holla@arm.com>,
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ Sven Peter <sven@svenpeter.dev>, Thierry Reding <thierry.reding@gmail.com>,
+ Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+ Krishna Reddy <vdumpa@nvidia.com>, Vineet Gupta <vgupta@kernel.org>,
+ virtualization@lists.linux.dev, Wei Liu <wei.liu@kernel.org>,
+ Will Deacon <will@kernel.org>
+Cc: =?UTF-8?Q?Andr=C3=A9_Draszik?= <andre.draszik@linaro.org>,
+ Lu Baolu <baolu.lu@linux.intel.com>, Christoph Hellwig <hch@lst.de>,
+ Jerry Snitselaar <jsnitsel@redhat.com>, Moritz Fischer <mdf@kernel.org>,
+ Zhenhua Huang <quic_zhenhuah@quicinc.com>,
+ "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+ Rob Herring <robh@kernel.org>
+References: <0-v2-36a0088ecaa7+22c6e-iommu_fwspec_jgg@nvidia.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <0-v2-36a0088ecaa7+22c6e-iommu_fwspec_jgg@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Tue, Nov 14, 2023 at 1:53=E2=80=AFAM Jason Gunthorpe <jgg@nvidia.com> wr=
-ote:
->
-> This was needed because the STE code required the STE to be in
-> ABORT/BYPASS inorder to program a cdtable or S2 STE. Now that the STE cod=
-e
-> can automatically handle all transitions we can remove this step
-> from the attach_dev flow.
->
-> A few small bugs exist because of this:
->
-> 1) If the core code does BLOCKED -> UNMANAGED with disable_bypass=3Dfalse
->    then there will be a moment where the STE points at BYPASS. Since
->    this can be done by VFIO/IOMMUFD it is a small security race.
->
-> 2) If the core code does IDENTITY -> DMA then any IOMMU_RESV_DIRECT
->    regions will temporarily become BLOCKED. We'd like drivers to
->    work in a way that allows IOMMU_RESV_DIRECT to be continuously
->    functional during these transitions.
->
-> Make arm_smmu_release_device() put the STE back to the correct
-> ABORT/BYPASS setting. Fix a bug where a IOMMU_RESV_DIRECT was ignored on
-> this path.
->
-> Notice this subtly depends on the prior arm_smmu_asid_lock change as the
-> STE must be put to non-paging before removing the device for the linked
-> list to avoid races with arm_smmu_share_asid().
+On 2023-11-15 2:05 pm, Jason Gunthorpe wrote:
+> [Several people have tested this now, so it is something that should sit in
+> linux-next for a while]
 
-I'm a little confused by this comment. Is this suggesting that
-arm_smmu_detach_dev had a race condition before the arm_smmu_asid_lock
-changes, since it deletes the list entry before deactivating the STE
-that uses the domain and without grabbing the asid_lock, thus allowing
-a gap where the ASID might be re-acquired by an SVA domain while an
-STE with that ASID is still live on this device? Wouldn't that belong
-on the asid_lock patch instead if so?
+What's the aim here? This is obviously far, far too much for a stable 
+fix, but then it's also not the refactoring we want for the future 
+either, since it's moving in the wrong direction of cementing the 
+fundamental brokenness further in place rather than getting any closer 
+to removing it.
 
->
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> ---
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 15 +++++++++------
->  1 file changed, 9 insertions(+), 6 deletions(-)
->
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/=
-arm/arm-smmu-v3/arm-smmu-v3.c
-> index 4b157c2ddf9a80..f70862806211de 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -2482,7 +2482,6 @@ static void arm_smmu_disable_pasid(struct arm_smmu_=
-master *master)
->  static void arm_smmu_detach_dev(struct arm_smmu_master *master)
->  {
->         unsigned long flags;
-> -       struct arm_smmu_ste target;
->         struct arm_smmu_domain *smmu_domain =3D master->domain;
->
->         if (!smmu_domain)
-> @@ -2496,11 +2495,6 @@ static void arm_smmu_detach_dev(struct arm_smmu_ma=
-ster *master)
->
->         master->domain =3D NULL;
->         master->ats_enabled =3D false;
-> -       if (disable_bypass)
-> -               arm_smmu_make_abort_ste(&target);
-> -       else
-> -               arm_smmu_make_bypass_ste(&target);
-> -       arm_smmu_install_ste_for_dev(master, &target);
->         /*
->          * Clearing the CD entry isn't strictly required to detach the do=
-main
->          * since the table is uninstalled anyway, but it helps avoid conf=
-usion
-> @@ -2852,9 +2846,18 @@ static struct iommu_device *arm_smmu_probe_device(=
-struct device *dev)
->  static void arm_smmu_release_device(struct device *dev)
->  {
->         struct arm_smmu_master *master =3D dev_iommu_priv_get(dev);
-> +       struct arm_smmu_ste target;
->
->         if (WARN_ON(arm_smmu_master_sva_enabled(master)))
->                 iopf_queue_remove_device(master->smmu->evtq.iopf, dev);
-> +
-> +       /* Put the STE back to what arm_smmu_init_strtab() sets */
+Thanks,
+Robin.
 
-Hmmmm, it seems like checking iommu->require_direct may put STEs in
-bypass in scenarios where arm_smmu_init_strtab() wouldn't have.
-arm_smmu_init_strtab is calling iort_get_rmr_sids to pick streams to
-put into bypass, but IIUC iommu->require_direct also applies to
-dts-based reserved-memory regions, not just iort.
-
-I'm not very familiar with the history behind disable_bypass; why is
-putting an entire stream into bypass the correct behavior if a
-reserved-memory (which may be for a small finite region) exists?
-
-> +       if (disable_bypass && !dev->iommu->require_direct)
-> +               arm_smmu_make_abort_ste(&target);
-> +       else
-> +               arm_smmu_make_bypass_ste(&target);
-> +       arm_smmu_install_ste_for_dev(master, &target);
-> +
->         arm_smmu_detach_dev(master);
->         arm_smmu_disable_pasid(master);
->         arm_smmu_remove_master(master);
-> --
-> 2.42.0
->
+> The iommu subsystem uses dev->iommu to store bits of information about the
+> attached iommu driver. This has been co-opted by the ACPI/OF code to also
+> be a place to pass around the iommu_fwspec before a driver is probed.
+> 
+> Since both are using the same pointers without any locking it triggers
+> races if there is concurrent driver loading:
+> 
+>       CPU0                                     CPU1
+> of_iommu_configure()                iommu_device_register()
+>   ..                                   bus_iommu_probe()
+>    iommu_fwspec_of_xlate()              __iommu_probe_device()
+>                                          iommu_init_device()
+>     dev_iommu_get()
+>                                            .. ops->probe fails, no fwspec ..
+>                                            dev_iommu_free()
+>     dev->iommu->fwspec    *crash*
+> 
+> My first attempt get correct locking here was to use the device_lock to
+> protect the entire *_iommu_configure() and iommu_probe() paths. This
+> allowed safe use of dev->iommu within those paths. Unfortuately enough
+> drivers abuse the of_iommu_configure() flow without proper locking and
+> this approach failed.
+> 
+> This approach removes touches of dev->iommu from the *_iommu_configure()
+> code. The few remaining required touches are moved into iommu.c and
+> protected with the existing iommu_probe_device_lock.
+> 
+> To do this we change *_iommu_configure() to hold the iommu_fwspec on the
+> stack while it is being built. Once it is fully formed the core code will
+> install it into the dev->iommu when it calls probe.
+> 
+> This also removes all the touches of iommu_ops from
+> the *_iommu_configure() paths and makes that mechanism private to the
+> iommu core.
+> 
+> A few more lockdep assertions are added to discourage future mis-use.
+> 
+> This is on github: https://github.com/jgunthorpe/linux/commits/iommu_fwspec
+> 
+> v2:
+>   - Fix all the kconfig randomization 0-day stuff
+>   - Add missing kdoc parameters
+>   - Remove NO_IOMMU, replace it with ENODEV
+>   - Use PTR_ERR to print errno in the new/moved logging
+> v1: https://lore.kernel.org/r/0-v1-5f734af130a3+34f-iommu_fwspec_jgg@nvidia.com
+> 
+> Jason Gunthorpe (17):
+>    iommu: Remove struct iommu_ops *iommu from arch_setup_dma_ops()
+>    iommmu/of: Do not return struct iommu_ops from of_iommu_configure()
+>    iommu/of: Use -ENODEV consistently in of_iommu_configure()
+>    acpi: Do not return struct iommu_ops from acpi_iommu_configure_id()
+>    iommu: Make iommu_fwspec->ids a distinct allocation
+>    iommu: Add iommu_fwspec_alloc/dealloc()
+>    iommu: Add iommu_probe_device_fwspec()
+>    iommu/of: Do not use dev->iommu within of_iommu_configure()
+>    iommu: Add iommu_fwspec_append_ids()
+>    acpi: Do not use dev->iommu within acpi_iommu_configure()
+>    iommu: Hold iommu_probe_device_lock while calling ops->of_xlate
+>    iommu: Make iommu_ops_from_fwnode() static
+>    iommu: Remove dev_iommu_fwspec_set()
+>    iommu: Remove pointless iommu_fwspec_free()
+>    iommu: Add ops->of_xlate_fwspec()
+>    iommu: Mark dev_iommu_get() with lockdep
+>    iommu: Mark dev_iommu_priv_set() with a lockdep
+> 
+>   arch/arc/mm/dma.c                           |   2 +-
+>   arch/arm/mm/dma-mapping-nommu.c             |   2 +-
+>   arch/arm/mm/dma-mapping.c                   |  10 +-
+>   arch/arm64/mm/dma-mapping.c                 |   4 +-
+>   arch/mips/mm/dma-noncoherent.c              |   2 +-
+>   arch/riscv/mm/dma-noncoherent.c             |   2 +-
+>   drivers/acpi/arm64/iort.c                   |  42 ++--
+>   drivers/acpi/scan.c                         | 104 +++++----
+>   drivers/acpi/viot.c                         |  45 ++--
+>   drivers/hv/hv_common.c                      |   2 +-
+>   drivers/iommu/amd/iommu.c                   |   2 -
+>   drivers/iommu/apple-dart.c                  |   1 -
+>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c |   9 +-
+>   drivers/iommu/arm/arm-smmu/arm-smmu.c       |  23 +-
+>   drivers/iommu/intel/iommu.c                 |   2 -
+>   drivers/iommu/iommu.c                       | 227 +++++++++++++++-----
+>   drivers/iommu/of_iommu.c                    | 133 +++++-------
+>   drivers/iommu/omap-iommu.c                  |   1 -
+>   drivers/iommu/tegra-smmu.c                  |   1 -
+>   drivers/iommu/virtio-iommu.c                |   8 +-
+>   drivers/of/device.c                         |  24 ++-
+>   include/acpi/acpi_bus.h                     |   8 +-
+>   include/linux/acpi_iort.h                   |   8 +-
+>   include/linux/acpi_viot.h                   |   5 +-
+>   include/linux/dma-map-ops.h                 |   4 +-
+>   include/linux/iommu.h                       |  47 ++--
+>   include/linux/of_iommu.h                    |  13 +-
+>   27 files changed, 424 insertions(+), 307 deletions(-)
+> 
+> 
+> base-commit: b85ea95d086471afb4ad062012a4d73cd328fa86
