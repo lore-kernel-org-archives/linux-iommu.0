@@ -1,218 +1,258 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 80E34364B7
-	for <iommu@lists.linux.dev>; Wed, 15 Nov 2023 18:25:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Authentication-Results: smtp.subspace.kernel.org; dkim=none
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E4D47DA7;
-	Wed, 15 Nov 2023 10:26:39 -0800 (PST)
-Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id CC0653F641;
-	Wed, 15 Nov 2023 10:25:52 -0800 (PST)
-From: Robin Murphy <robin.murphy@arm.com>
-To: joro@8bytes.org,
-	will@kernel.org
-Cc: iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	linux-acpi@vger.kernel.org,
-	rafael@kernel.org,
-	lenb@kernel.org,
-	lpieralisi@kernel.org,
-	andre.draszik@linaro.org,
-	quic_zhenhuah@quicinc.com,
-	jgg@nvidia.com
-Subject: [PATCH] iommu: Avoid more races around device probe
-Date: Wed, 15 Nov 2023 18:25:44 +0000
-Message-Id: <16f433658661d7cadfea51e7c65da95826112a2b.1700071477.git.robin.murphy@arm.com>
-X-Mailer: git-send-email 2.39.2.101.g768bb238c484.dirty
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.115])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 60A653DBAC
+	for <iommu@lists.linux.dev>; Wed, 15 Nov 2023 19:59:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ju/wWnCI"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1700078361; x=1731614361;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=nrWkTvCzWNuE40twGKi0g9x8mI/HOylHkbIgQH6YMTw=;
+  b=ju/wWnCIo1vMui4X1niumgsVsi6O2yJz7ZdSUwrPTOzgNc8GQ0HpWOm8
+   xLaZVllvoRfHWbrIfiA3UqRN35vk+4/G5K3TApor77t5jSG7O+vAs/bmN
+   NrVPKMlm/nBsGdfZmnv+voItFucz9uonTV0ofJgKmvcJ9jlwj95KTH6K2
+   hIsF1HhP+zhjYrU+XJOjY3Bp58DP8v6bEoupyeLrDUTXhs7aEZ6NQTLd/
+   sAslhXFgKlEIDxc9BEi9ZSJQvJwtl0k/pknKglTeKvvu2ZWKNZ5BqeE4u
+   LxxEE1SzGjcNnIMk1UMemLjgV5Y+OWjftCIGLNbh7jyINVwaNg0YoLUra
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10895"; a="390743028"
+X-IronPort-AV: E=Sophos;i="6.03,305,1694761200"; 
+   d="scan'208";a="390743028"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Nov 2023 11:59:20 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.03,305,1694761200"; 
+   d="scan'208";a="12880278"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.24.100.114])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Nov 2023 11:59:21 -0800
+Date: Wed, 15 Nov 2023 12:04:01 -0800
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: Peter Zijlstra <peterz@infradead.org>
+Cc: LKML <linux-kernel@vger.kernel.org>, X86 Kernel <x86@kernel.org>,
+ iommu@lists.linux.dev, Thomas Gleixner <tglx@linutronix.de>, Lu Baolu
+ <baolu.lu@linux.intel.com>, kvm@vger.kernel.org, Dave Hansen
+ <dave.hansen@intel.com>, Joerg Roedel <joro@8bytes.org>, "H. Peter Anvin"
+ <hpa@zytor.com>, Borislav Petkov <bp@alien8.de>, Ingo Molnar
+ <mingo@redhat.com>, Raj Ashok <ashok.raj@intel.com>, "Tian, Kevin"
+ <kevin.tian@intel.com>, maz@kernel.org, seanjc@google.com, Robin Murphy
+ <robin.murphy@arm.com>, jacob.jun.pan@linux.intel.com
+Subject: Re: [PATCH RFC 09/13] x86/irq: Install posted MSI notification
+ handler
+Message-ID: <20231115120401.3e02d977@jacob-builder>
+In-Reply-To: <20231115125624.GF3818@noisy.programming.kicks-ass.net>
+References: <20231112041643.2868316-1-jacob.jun.pan@linux.intel.com>
+	<20231112041643.2868316-10-jacob.jun.pan@linux.intel.com>
+	<20231115125624.GF3818@noisy.programming.kicks-ass.net>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-It turns out there are more subtle races beyond just the main part of
-__iommu_probe_device() itself running in parallel - the dev_iommu_free()
-on the way out of an unsuccessful probe can still manage to trip up
-concurrent accesses to a device's fwspec. Thus, extend the scope of
-iommu_probe_device_lock() to also serialise fwspec creation and initial
-retrieval.
+Hi Peter,
 
-Reported-by: Zhenhua Huang <quic_zhenhuah@quicinc.com>
-Link: https://lore.kernel.org/linux-iommu/e2e20e1c-6450-4ac5-9804-b0000acdf7de@quicinc.com/
-Fixes: 01657bc14a39 ("iommu: Avoid races around device probe")
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
----
+On Wed, 15 Nov 2023 13:56:24 +0100, Peter Zijlstra <peterz@infradead.org>
+wrote:
 
-This is my idea of a viable fix, since it does not need a 700-line
-diffstat to make the code do what it was already *trying* to do anyway.
-This stuff should fundamentally not be hanging off driver probe in the
-first place, so I'd rather get on with removing the underlying
-brokenness than waste time and effort polishing it any further.
+> On Sat, Nov 11, 2023 at 08:16:39PM -0800, Jacob Pan wrote:
+> 
+> > +static __always_inline inline void handle_pending_pir(struct pi_desc
+> > *pid, struct pt_regs *regs) +{  
+> 
+> __always_inline means that... (A)
+> 
+> > +	int i, vec = FIRST_EXTERNAL_VECTOR;
+> > +	u64 pir_copy[4];
+> > +
+> > +	/*
+> > +	 * Make a copy of PIR which contains IRQ pending bits for
+> > vectors,
+> > +	 * then invoke IRQ handlers for each pending vector.
+> > +	 * If any new interrupts were posted while we are processing,
+> > will
+> > +	 * do again before allowing new notifications. The idea is to
+> > +	 * minimize the number of the expensive notifications if IRQs
+> > come
+> > +	 * in a high frequency burst.
+> > +	 */
+> > +	for (i = 0; i < 4; i++)
+> > +		pir_copy[i] = raw_atomic64_xchg((atomic64_t
+> > *)&pid->pir_l[i], 0); +
+> > +	/*
+> > +	 * Ideally, we should start from the high order bits set in
+> > the PIR
+> > +	 * since each bit represents a vector. Higher order bit
+> > position means
+> > +	 * the vector has higher priority. But external vectors are
+> > allocated
+> > +	 * based on availability not priority.
+> > +	 *
+> > +	 * EOI is included in the IRQ handlers call to apic_ack_irq,
+> > which
+> > +	 * allows higher priority system interrupt to get in between.
+> > +	 */
+> > +	for_each_set_bit_from(vec, (unsigned long *)&pir_copy[0], 256)
+> > +		call_irq_handler(vec, regs);
+> > +
+> > +}
+> > +
+> > +/*
+> > + * Performance data shows that 3 is good enough to harvest 90+% of the
+> > benefit
+> > + * on high IRQ rate workload.
+> > + * Alternatively, could make this tunable, use 3 as default.
+> > + */
+> > +#define MAX_POSTED_MSI_COALESCING_LOOP 3
+> > +
+> > +/*
+> > + * For MSIs that are delivered as posted interrupts, the CPU
+> > notifications
+> > + * can be coalesced if the MSIs arrive in high frequency bursts.
+> > + */
+> > +DEFINE_IDTENTRY_SYSVEC(sysvec_posted_msi_notification)
+> > +{
+> > +	struct pt_regs *old_regs = set_irq_regs(regs);
+> > +	struct pi_desc *pid;
+> > +	int i = 0;
+> > +
+> > +	pid = this_cpu_ptr(&posted_interrupt_desc);
+> > +
+> > +	inc_irq_stat(posted_msi_notification_count);
+> > +	irq_enter();
+> > +
+> > +	while (i++ < MAX_POSTED_MSI_COALESCING_LOOP) {
+> > +		handle_pending_pir(pid, regs);
+> > +
+> > +		/*
+> > +		 * If there are new interrupts posted in PIR, do
+> > again. If
+> > +		 * nothing pending, no need to wait for more
+> > interrupts.
+> > +		 */
+> > +		if (is_pir_pending(pid))  
+> 
+> So this reads those same 4 words we xchg in handle_pending_pir(), right?
+> 
+> > +			continue;
+> > +		else
+> > +			break;
+> > +	}
+> > +
+> > +	/*
+> > +	 * Clear outstanding notification bit to allow new IRQ
+> > notifications,
+> > +	 * do this last to maximize the window of interrupt coalescing.
+> > +	 */
+> > +	pi_clear_on(pid);
+> > +
+> > +	/*
+> > +	 * There could be a race of PI notification and the clearing
+> > of ON bit,
+> > +	 * process PIR bits one last time such that handling the new
+> > interrupts
+> > +	 * are not delayed until the next IRQ.
+> > +	 */
+> > +	if (unlikely(is_pir_pending(pid)))
+> > +		handle_pending_pir(pid, regs);  
+> 
+> (A) ... we get _two_ copies of that thing in this function. Does that
+> make sense ?
+> 
+> > +
+> > +	apic_eoi();
+> > +	irq_exit();
+> > +	set_irq_regs(old_regs);
+> > +}
+> >  #endif /* X86_POSTED_MSI */  
+> 
+> Would it not make more sense to write things something like:
+> 
+it is a great idea, we can save expensive xchg if pir[i] is 0. But I have
+to tweak a little to let it perform better.
 
- drivers/acpi/scan.c      |  7 ++++++-
- drivers/iommu/iommu.c    | 20 ++++++++++----------
- drivers/iommu/of_iommu.c | 12 +++++++++---
- include/linux/iommu.h    |  1 +
- 4 files changed, 26 insertions(+), 14 deletions(-)
+> bool handle_pending_pir()
+> {
+> 	bool handled = false;
+> 	u64 pir_copy[4];
+> 
+> 	for (i = 0; i < 4; i++) {
+> 		if (!pid-pir_l[i]) {
+> 			pir_copy[i] = 0;
+> 			continue;
+> 		}
+> 
+> 		pir_copy[i] = arch_xchg(&pir->pir_l[i], 0);
+we are interleaving cacheline read and xchg. So made it to
 
-diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index fa5dd71a80fa..02bb2cce423f 100644
---- a/drivers/acpi/scan.c
-+++ b/drivers/acpi/scan.c
-@@ -1568,17 +1568,22 @@ static const struct iommu_ops *acpi_iommu_configure_id(struct device *dev,
- 	int err;
- 	const struct iommu_ops *ops;
- 
-+	/* Serialise to make dev->iommu stable under our potential fwspec */
-+	mutex_lock(&iommu_probe_device_lock);
- 	/*
- 	 * If we already translated the fwspec there is nothing left to do,
- 	 * return the iommu_ops.
- 	 */
- 	ops = acpi_iommu_fwspec_ops(dev);
--	if (ops)
-+	if (ops) {
-+		mutex_unlock(&iommu_probe_device_lock);
- 		return ops;
-+	}
- 
- 	err = iort_iommu_configure_id(dev, id_in);
- 	if (err && err != -EPROBE_DEFER)
- 		err = viot_iommu_configure(dev);
-+	mutex_unlock(&iommu_probe_device_lock);
- 
- 	/*
- 	 * If we have reason to believe the IOMMU driver missed the initial
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index f17a1113f3d6..e0c962648dde 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -485,11 +485,12 @@ static void iommu_deinit_device(struct device *dev)
- 	dev_iommu_free(dev);
- }
- 
-+DEFINE_MUTEX(iommu_probe_device_lock);
-+
- static int __iommu_probe_device(struct device *dev, struct list_head *group_list)
- {
- 	const struct iommu_ops *ops = dev->bus->iommu_ops;
- 	struct iommu_group *group;
--	static DEFINE_MUTEX(iommu_probe_device_lock);
- 	struct group_device *gdev;
- 	int ret;
- 
-@@ -502,17 +503,15 @@ static int __iommu_probe_device(struct device *dev, struct list_head *group_list
- 	 * probably be able to use device_lock() here to minimise the scope,
- 	 * but for now enforcing a simple global ordering is fine.
- 	 */
--	mutex_lock(&iommu_probe_device_lock);
-+	lockdep_assert_held(&iommu_probe_device_lock);
- 
- 	/* Device is probed already if in a group */
--	if (dev->iommu_group) {
--		ret = 0;
--		goto out_unlock;
--	}
-+	if (dev->iommu_group)
-+		return 0;
- 
- 	ret = iommu_init_device(dev, ops);
- 	if (ret)
--		goto out_unlock;
-+		return ret;
- 
- 	group = dev->iommu_group;
- 	gdev = iommu_group_alloc_device(group, dev);
-@@ -548,7 +547,6 @@ static int __iommu_probe_device(struct device *dev, struct list_head *group_list
- 			list_add_tail(&group->entry, group_list);
- 	}
- 	mutex_unlock(&group->mutex);
--	mutex_unlock(&iommu_probe_device_lock);
- 
- 	if (dev_is_pci(dev))
- 		iommu_dma_set_pci_32bit_workaround(dev);
-@@ -562,8 +560,6 @@ static int __iommu_probe_device(struct device *dev, struct list_head *group_list
- 	iommu_deinit_device(dev);
- 	mutex_unlock(&group->mutex);
- 	iommu_group_put(group);
--out_unlock:
--	mutex_unlock(&iommu_probe_device_lock);
- 
- 	return ret;
- }
-@@ -573,7 +569,9 @@ int iommu_probe_device(struct device *dev)
- 	const struct iommu_ops *ops;
- 	int ret;
- 
-+	mutex_lock(&iommu_probe_device_lock);
- 	ret = __iommu_probe_device(dev, NULL);
-+	mutex_unlock(&iommu_probe_device_lock);
- 	if (ret)
- 		return ret;
- 
-@@ -1822,7 +1820,9 @@ static int probe_iommu_group(struct device *dev, void *data)
- 	struct list_head *group_list = data;
- 	int ret;
- 
-+	mutex_lock(&iommu_probe_device_lock);
- 	ret = __iommu_probe_device(dev, group_list);
-+	mutex_unlock(&iommu_probe_device_lock);
- 	if (ret == -ENODEV)
- 		ret = 0;
- 
-diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-index 157b286e36bf..c25b4ae6aeee 100644
---- a/drivers/iommu/of_iommu.c
-+++ b/drivers/iommu/of_iommu.c
-@@ -112,16 +112,20 @@ const struct iommu_ops *of_iommu_configure(struct device *dev,
- 					   const u32 *id)
- {
- 	const struct iommu_ops *ops = NULL;
--	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
-+	struct iommu_fwspec *fwspec;
- 	int err = NO_IOMMU;
- 
- 	if (!master_np)
- 		return NULL;
- 
-+	/* Serialise to make dev->iommu stable under our potential fwspec */
-+	mutex_lock(&iommu_probe_device_lock);
-+	fwspec = dev_iommu_fwspec_get(dev);
- 	if (fwspec) {
--		if (fwspec->ops)
-+		if (fwspec->ops) {
-+			mutex_unlock(&iommu_probe_device_lock);
- 			return fwspec->ops;
--
-+		}
- 		/* In the deferred case, start again from scratch */
- 		iommu_fwspec_free(dev);
- 	}
-@@ -155,6 +159,8 @@ const struct iommu_ops *of_iommu_configure(struct device *dev,
- 		fwspec = dev_iommu_fwspec_get(dev);
- 		ops    = fwspec->ops;
- 	}
-+	mutex_unlock(&iommu_probe_device_lock);
-+
- 	/*
- 	 * If we have reason to believe the IOMMU driver missed the initial
- 	 * probe for dev, replay it to get things in order.
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index ec289c1016f5..6291aa7b079b 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -845,6 +845,7 @@ static inline void dev_iommu_priv_set(struct device *dev, void *priv)
- 	dev->iommu->priv = priv;
- }
- 
-+extern struct mutex iommu_probe_device_lock;
- int iommu_probe_device(struct device *dev);
- 
- int iommu_dev_enable_feature(struct device *dev, enum iommu_dev_features f);
--- 
-2.39.2.101.g768bb238c484.dirty
+	for (i = 0; i < 4; i++) {
+		pir_copy[i] = pid->pir_l[i];
+	}
 
+	for (i = 0; i < 4; i++) {
+		if (pir_copy[i]) {
+			pir_copy[i] = arch_xchg(&pid->pir_l[i], 0);
+			handled = true;
+		}
+	}
+
+With DSA MEMFILL test just one queue one MSI, we are saving 3 xchg per loop.
+Here is the performance comparison in IRQ rate:
+
+Original RFC 9.29 m/sec, 
+Optimized in your email 8.82m/sec,
+Tweaked above: 9.54m/s
+
+I need to test with more MSI vectors spreading out to all 4 u64. I suspect
+the benefit will decrease since we need to do both read and xchg for
+non-zero entries.
+
+> 		handled |= true;
+> 	}
+
+
+> 
+> 	if (!handled)
+> 		return handled;
+> 
+> 	for_each_set_bit()
+> 		....
+> 
+> 	return handled.
+> }
+> 
+> sysvec_posted_blah_blah()
+> {
+> 	bool done = false;
+> 	bool handled;
+> 
+> 	for (;;) {
+> 		handled = handle_pending_pir();
+> 		if (done)
+> 			break;
+> 		if (!handled || ++loops > MAX_LOOPS) {
+> 			pi_clear_on(pid);
+> 			/* once more after clear_on */
+> 			done = true;
+> 		}
+> 	}
+> }
+> 
+> 
+> Hmm?
+
+
+
+
+Thanks,
+
+Jacob
