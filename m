@@ -1,96 +1,246 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F1BD92D02F
-	for <iommu@lists.linux.dev>; Wed, 15 Nov 2023 14:54:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="RbrA9WVk"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1700060050;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=1FlIYAXhM/ERDubCadB5WwuUe+5s0MuhfY1IPTS1Qc0=;
-	b=RbrA9WVkY0CxPT8naGjvvd1vu31JvoCBWu+MIy/tYtB18MVxvYiLSV+y8/sv7/qWNmKtxG
-	XKHQuqB6Sty+HZ9xG+RSxMx1hWGmQsmSJBTg4yUWuEqN6N6GwBEkArn2r3JitHht2KzkO8
-	svdxq5X6FeAkUmqbfpHNZLL2GYVQOeM=
-Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
- [209.85.222.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-164-dNj2OilLNgysMN-n8qExmw-1; Wed, 15 Nov 2023 09:54:09 -0500
-X-MC-Unique: dNj2OilLNgysMN-n8qExmw-1
-Received: by mail-qk1-f198.google.com with SMTP id af79cd13be357-7789a691086so807351785a.0
-        for <iommu@lists.linux.dev>; Wed, 15 Nov 2023 06:54:07 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1700060047; x=1700664847;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=1FlIYAXhM/ERDubCadB5WwuUe+5s0MuhfY1IPTS1Qc0=;
-        b=Oqws/ZC2LtBErZ6ncA+HQBQoqonCilfj9L7sFm2zYalOVmxFLWnq+me5kdWqO+mzQW
-         YT/Kyu0ZnXc7Ztz55GGRuYmxZRSUFefoy/OSMtDOMXUJiVpsJmoHZui3scjLRl79xYKK
-         DHtn+nQ1QK/hICw5d9jv0DzZY8Rxv9hw4b/oWP5Y73P10gfWJxkkP6wEH6rhTGtzv8eJ
-         Z6HJ6vKCUrGnoxpcPQiR3E+aopxbZVvspxdhkXwU9IRz0QUxm1i3s/gTRJl9rSCAS6BY
-         n8QmEMZ47vK54b6eXSugSqusl+JQaPS0H/bRXVdnjawMufiEyb/aemqhtv+DjvQhpwOU
-         4yNQ==
-X-Gm-Message-State: AOJu0YwTtdsmaXqs/ZQTpNrHaSsIWXgNo3oA4IvJQlI+gnQrkrK9AP1+
-	NXsTCCJWLi80g6Uc4TdACIsIBw9ysXsz9MnsvYBeuU6KZ7XeFsSAFpTIGT/KvB+eb/EmT3y4sb3
-	ph4V8MLPCakQejXY=
-X-Received: by 2002:a05:620a:560b:b0:77b:b34e:6262 with SMTP id vu11-20020a05620a560b00b0077bb34e6262mr6700761qkn.46.1700060047605;
-        Wed, 15 Nov 2023 06:54:07 -0800 (PST)
-X-Google-Smtp-Source: AGHT+IE8Q+hB6LwGEOpBjf0tTy48HeUIb95APpcQR8cIO4M7kaLSCpN0/vvs5U/8Y5mL2TRIxjAUaQ==
-X-Received: by 2002:a05:620a:560b:b0:77b:b34e:6262 with SMTP id vu11-20020a05620a560b00b0077bb34e6262mr6700714qkn.46.1700060047365;
-        Wed, 15 Nov 2023 06:54:07 -0800 (PST)
-Received: from localhost (ip98-179-76-75.ph.ph.cox.net. [98.179.76.75])
-        by smtp.gmail.com with ESMTPSA id dx8-20020a05620a608800b0076cc0a6e127sm3521399qkb.116.2023.11.15.06.54.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Nov 2023 06:54:07 -0800 (PST)
-Date: Wed, 15 Nov 2023 07:54:05 -0700
-From: Jerry Snitselaar <jsnitsel@redhat.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: acpica-devel@lists.linux.dev, Alyssa Rosenzweig <alyssa@rosenzweig.io>, 
-	Albert Ou <aou@eecs.berkeley.edu>, asahi@lists.linux.dev, Catalin Marinas <catalin.marinas@arm.com>, 
-	Dexuan Cui <decui@microsoft.com>, devicetree@vger.kernel.org, 
-	David Woodhouse <dwmw2@infradead.org>, Frank Rowand <frowand.list@gmail.com>, 
-	Hanjun Guo <guohanjun@huawei.com>, Haiyang Zhang <haiyangz@microsoft.com>, iommu@lists.linux.dev, 
-	Jean-Philippe Brucker <jean-philippe@linaro.org>, Jonathan Hunter <jonathanh@nvidia.com>, 
-	Joerg Roedel <joro@8bytes.org>, "K. Y. Srinivasan" <kys@microsoft.com>, 
-	Len Brown <lenb@kernel.org>, linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	linux-hyperv@vger.kernel.org, linux-mips@vger.kernel.org, linux-riscv@lists.infradead.org, 
-	linux-snps-arc@lists.infradead.org, linux-tegra@vger.kernel.org, 
-	Russell King <linux@armlinux.org.uk>, Lorenzo Pieralisi <lpieralisi@kernel.org>, 
-	Marek Szyprowski <m.szyprowski@samsung.com>, Hector Martin <marcan@marcan.st>, 
-	Palmer Dabbelt <palmer@dabbelt.com>, patches@lists.linux.dev, 
-	Paul Walmsley <paul.walmsley@sifive.com>, "Rafael J. Wysocki" <rafael@kernel.org>, 
-	Robert Moore <robert.moore@intel.com>, Rob Herring <robh+dt@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Sudeep Holla <sudeep.holla@arm.com>, 
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, Sven Peter <sven@svenpeter.dev>, 
-	Thierry Reding <thierry.reding@gmail.com>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, 
-	Krishna Reddy <vdumpa@nvidia.com>, Vineet Gupta <vgupta@kernel.org>, virtualization@lists.linux.dev, 
-	Wei Liu <wei.liu@kernel.org>, Will Deacon <will@kernel.org>, 
-	=?utf-8?B?QW5kcsOp?= Draszik <andre.draszik@linaro.org>, Lu Baolu <baolu.lu@linux.intel.com>, 
-	Christoph Hellwig <hch@lst.de>, Moritz Fischer <mdf@kernel.org>, 
-	Zhenhua Huang <quic_zhenhuah@quicinc.com>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, 
-	Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v2 00/17] Solve iommu probe races around iommu_fwspec
-Message-ID: <ah7jh6pi5o3s47mz5y4tms46fvpbmaisw6orom6tke2vdsqejm@qvjnxhejqs5i>
-References: <0-v2-36a0088ecaa7+22c6e-iommu_fwspec_jgg@nvidia.com>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 41EF6339A1
+	for <iommu@lists.linux.dev>; Wed, 15 Nov 2023 15:04:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Authentication-Results: smtp.subspace.kernel.org; dkim=none
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id F3775C15;
+	Wed, 15 Nov 2023 07:05:42 -0800 (PST)
+Received: from [10.57.83.164] (unknown [10.57.83.164])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 5755F3F641;
+	Wed, 15 Nov 2023 07:04:55 -0800 (PST)
+Message-ID: <23944508-1054-4a31-b119-66f006cf10de@arm.com>
+Date: Wed, 15 Nov 2023 15:04:53 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <0-v2-36a0088ecaa7+22c6e-iommu_fwspec_jgg@nvidia.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 1/3] iommu/arm-smmu: introduction of ACTLR for custom
+ prefetcher settings
+Content-Language: en-GB
+To: Bibek Kumar Patro <quic_bibekkum@quicinc.com>, will@kernel.org,
+ joro@8bytes.org, dmitry.baryshkov@linaro.org, a39.skl@gmail.com,
+ konrad.dybcio@linaro.org, quic_pkondeti@quicinc.com, quic_molvera@quicinc.com
+Cc: linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ qipl.kernel.upstream@quicinc.com
+References: <20231114135654.30475-1-quic_bibekkum@quicinc.com>
+ <20231114135654.30475-2-quic_bibekkum@quicinc.com>
+ <372885ab-b24d-44ae-afb8-76755bcd6e21@arm.com>
+ <2a65a498-6a0f-445c-9c00-9e9e4fbc3a98@quicinc.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <2a65a498-6a0f-445c-9c00-9e9e4fbc3a98@quicinc.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-Did patch 12 v2 get sent? I'm not seeing it locally, nor in lore, and b4 doesn't find it when pulling then thread.
+On 2023-11-15 12:32 pm, Bibek Kumar Patro wrote:
+> 
+> 
+> On 11/14/2023 10:25 PM, Robin Murphy wrote:
+>> On 14/11/2023 1:56 pm, Bibek Kumar Patro wrote:
+>>> Currently in Qualcomm  SoCs the default prefetch is set to 1 which 
+>>> allows
+>>> the TLB to fetch just the next page table. MMU-500 features ACTLR
+>>> register which is implementation defined and is used for Qualcomm SoCs
+>>> to have a prefetch setting of 1/3/7/15 enabling TLB to prefetch
+>>> the next set of page tables accordingly allowing for faster 
+>>> translations.
+>>>
+>>> ACTLR value is unique for each SMR (Stream matching register) and stored
+>>> in a pre-populated table. This value is set to the register during
+>>> context bank initialisation.
+>>>
+>>> Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+>>> ---
+>>>   drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 41 ++++++++++++++++++++++
+>>>   drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h |  2 ++
+>>>   drivers/iommu/arm/arm-smmu/arm-smmu.c      |  5 +--
+>>>   drivers/iommu/arm/arm-smmu/arm-smmu.h      |  5 +++
+>>>   4 files changed, 51 insertions(+), 2 deletions(-)
+>>>
+>>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c 
+>>> b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>> index 549ae4dba3a6..578c662c7c30 100644
+>>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>> @@ -14,6 +14,17 @@
+>>>
+>>>   #define QCOM_DUMMY_VAL    -1
+>>>
+>>> +struct actlr_config {
+>>> +    const struct actlr_data *adata;
+>>> +    size_t size;
+>>> +};
+>>> +
+>>> +struct actlr_data {
+>>> +    u16 sid;
+>>> +    u16 mask;
+>>
+>> Do we need to worry about masks? If you're already assuming that any 
+>> SMR will be programmed to match a superset of the data here, surely a 
+>> single unique ID per device would suffice?
+>>
+> 
+> If you refer to the arm_smmu_set_actlr below, mask would be needed as we 
+> would check for mask along with sid as well while assigning actlr 
+> configuration. Also with mask no of actlr entries can be reduces as
+> with out mask we have to have entry for each sid.
 
-Regards,
-Jerry
+But why? As far as I can tell, the design in patch #2 is to have a 
+single data entry for each distinct device, since you're expecting to 
+see a single SMR programmed to match at least the full id/mask range of 
+the entry. However any SMR which matches that full range will by 
+definition also match any smaller subset of that range as well, so we 
+can uniquely identify any device in this context from just any *one* of 
+its IDs, thus we could store less data and have simpler matching logic.
 
+>>> +    u32 actlr;
+>>> +};
+>>> +
+>>>   static struct qcom_smmu *to_qcom_smmu(struct arm_smmu_device *smmu)
+>>>   {
+>>>       return container_of(smmu, struct qcom_smmu, smmu);
+>>> @@ -261,9 +272,36 @@ static const struct of_device_id 
+>>> qcom_smmu_client_of_match[] __maybe_unused = {
+>>>       { }
+>>>   };
+>>>
+>>> +static void arm_smmu_set_actlr(struct arm_smmu_device *smmu, int idx,
+>>> +        const struct actlr_config *actlrcfg)
+>>> +{
+>>> +    struct arm_smmu_smr *smr = smmu->smrs;
+>>> +    int i;
+>>> +    u16 id;
+>>> +    u16 mask;
+>>> +
+>>> +    for (i = 0; i < actlrcfg->size; ++i) {
+>>> +        id = actlrcfg->adata[i].sid;
+>>> +        mask = actlrcfg->adata[i].mask;
+>>> +        if (!smr_is_subset(*smr, id, mask))
+>>
+>> How well have you tested this? ;)
+>>
+> 
+> Well, this logic has worked pretty good for us till now in our
+> downstream implementation. :) (During testing as well this logic helped 
+> to better match the SMRs instead of manually mathcing the mask and SID 
+> which missed some SIDs)
+> Also this is already being used to arm_smmu_find_sme hence packaged this
+> logic in a wrapper to be used in other places as well(including ACTLR
+> register setting case here.)
+
+1) Look at what you're matching the id and mask values *against*
+
+2) Look at the polarity of the condition
+
+3) Consider the old saying "two wrongs don't make a right"
+
+>>> +            arm_smmu_cb_write(smmu, idx, ARM_SMMU_CB_ACTLR,
+>>> +                    actlrcfg->adata[i].actlr);
+>>> +    }
+>>> +}
+>>> +
+>>>   static int qcom_smmu_init_context(struct arm_smmu_domain *smmu_domain,
+>>>           struct io_pgtable_cfg *pgtbl_cfg, struct device *dev)
+>>>   {
+>>> +    struct arm_smmu_device *smmu = smmu_domain->smmu;
+>>> +    struct qcom_smmu *qsmmu = to_qcom_smmu(smmu);
+>>> +    const struct actlr_config *actlrcfg;
+>>> +    int idx = smmu_domain->cfg.cbndx;
+>>> +
+>>> +    if (qsmmu->actlrcfg) {
+>>> +        actlrcfg = qsmmu->actlrcfg;
+>>> +        arm_smmu_set_actlr(smmu, idx, actlrcfg);
+>>> +    }
+>>> +
+>>>       smmu_domain->cfg.flush_walk_prefer_tlbiasid = true;
+>>>
+>>>       return 0;
+>>> @@ -467,6 +505,9 @@ static struct arm_smmu_device 
+>>> *qcom_smmu_create(struct arm_smmu_device *smmu,
+>>>       qsmmu->smmu.impl = impl;
+>>>       qsmmu->cfg = data->cfg;
+>>>
+>>> +    if (data->actlrcfg && (data->actlrcfg->size))
+>>> +        qsmmu->actlrcfg = data->actlrcfg;
+>>
+>> Do we really need to replicate multiple parts of the data, or would it 
+>> be sensible to just replace qsmmu->cfg with qsmmu->data and handle the 
+>> further dereferences in the places that want them?
+>>
+>>> +
+>>>       return &qsmmu->smmu;
+>>>   }
+>>>
+>>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h 
+>>> b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h
+>>> index 593910567b88..4b6862715070 100644
+>>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h
+>>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h
+>>> @@ -9,6 +9,7 @@
+>>>   struct qcom_smmu {
+>>>       struct arm_smmu_device smmu;
+>>>       const struct qcom_smmu_config *cfg;
+>>> +    const struct actlr_config *actlrcfg;
+>>>       bool bypass_quirk;
+>>>       u8 bypass_cbndx;
+>>>       u32 stall_enabled;
+>>> @@ -25,6 +26,7 @@ struct qcom_smmu_config {
+>>>   };
+>>>
+>>>   struct qcom_smmu_match_data {
+>>> +    const struct actlr_config *actlrcfg;
+>>>       const struct qcom_smmu_config *cfg;
+>>>       const struct arm_smmu_impl *impl;
+>>>       const struct arm_smmu_impl *adreno_impl;
+>>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c 
+>>> b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+>>> index d6d1a2a55cc0..8e4faf015286 100644
+>>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
+>>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+>>> @@ -990,9 +990,10 @@ static int arm_smmu_find_sme(struct 
+>>> arm_smmu_device *smmu, u16 id, u16 mask)
+>>>            * expect simply identical entries for this case, but there's
+>>>            * no harm in accommodating the generalisation.
+>>>            */
+>>> -        if ((mask & smrs[i].mask) == mask &&
+>>> -            !((id ^ smrs[i].id) & ~smrs[i].mask))
+>>> +
+>>> +        if (smr_is_subset(smrs[i], id, mask))
+>>>               return i;
+>>> +
+>>>           /*
+>>>            * If the new entry has any other overlap with an existing 
+>>> one,
+>>>            * though, then there always exists at least one stream ID
+>>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.h 
+>>> b/drivers/iommu/arm/arm-smmu/arm-smmu.h
+>>> index 703fd5817ec1..b1638bbc41d4 100644
+>>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.h
+>>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.h
+>>> @@ -501,6 +501,11 @@ static inline void arm_smmu_writeq(struct 
+>>> arm_smmu_device *smmu, int page,
+>>>           writeq_relaxed(val, arm_smmu_page(smmu, page) + offset);
+>>>   }
+>>>
+>>> +static inline bool smr_is_subset(struct arm_smmu_smr smrs, u16 id, 
+>>> u16 mask)
+>>
+>> Hmm, that name reads as implying the opposite of what it actually 
+>> tests, not to mention that passing structs by value is a bit horrid as 
+>> well :(
+>>
+> 
+> It might be okay to name it as subset_of_smr() though. You have any 
+> other naming suggestion in mind which could correctly describe the
+> logic?
+
+As above I think the ideal answer is to avoid the reason for factoring 
+it out at all, by using a simpler matching process to begin with.
+
+Thanks,
+Robin.
