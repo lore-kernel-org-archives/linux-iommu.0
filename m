@@ -1,171 +1,180 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A2A56381CC;
-	Wed, 15 Nov 2023 15:22:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Authentication-Results: smtp.subspace.kernel.org; dkim=none
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6CF5FC15;
-	Wed, 15 Nov 2023 07:23:07 -0800 (PST)
-Received: from [10.57.83.164] (unknown [10.57.83.164])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 30E023F641;
-	Wed, 15 Nov 2023 07:22:11 -0800 (PST)
-Message-ID: <1316b55e-8074-4b2f-99df-585df2f3dd06@arm.com>
-Date: Wed, 15 Nov 2023 15:22:09 +0000
+Received: from mail-qt1-f179.google.com (mail-qt1-f179.google.com [209.85.160.179])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C431C39FD3
+	for <iommu@lists.linux.dev>; Wed, 15 Nov 2023 15:33:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="ZnH/tMdW"
+Received: by mail-qt1-f179.google.com with SMTP id d75a77b69052e-41cdc669c5eso283781cf.1
+        for <iommu@lists.linux.dev>; Wed, 15 Nov 2023 07:33:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1700062384; x=1700667184; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=DBjJ6nTr/TaewUsJGLrbb2x3fZnL/RqPazjzAp7Eklg=;
+        b=ZnH/tMdWAx2F7GpRJ54ytXwu23s3DronuCUBFSrJNahQj4C9A4RybOXE6vBORGxhNg
+         fFroxZ1ugFWPs/gIGkLs/aMJsQtYBWAAvcibBBt/jZZzAhvKHB2YDOETv7Li+ksuDfxn
+         XJ/rDShqroJVwPYnsszUlJMtsrn32P9idiQ90R9VcihEh0vkK/JKHw7ED+BsklGquB7F
+         WKtW0Whe/8prs4Q+v7dUPsG6dylXCKVWOT1Hdfhdzkk4L/xnd6L19O6XMxMhwQat4kUO
+         EEN/hMXG2SbYKNL9B1riqEuvNhjznLPFVxxNXwb/pvuVFMMyBxq5QMAPpuBKU20O8p0h
+         8dHg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1700062384; x=1700667184;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=DBjJ6nTr/TaewUsJGLrbb2x3fZnL/RqPazjzAp7Eklg=;
+        b=CCXxhx7edSJStiGS+87GW8fuz/gqNY8/OQJy2UIGhWef5nWWh5DFZ33H4VJsTA1xFc
+         eyn3mu3CdoIVq2JMo5cMMoNhaQA7NLNKHwy1O7hCeOkwzVQXHJi4lPGkJm3YKB37Uay4
+         r9X3/bN3cK5f27Z1qUWnQFHsM3DcLrLigOEL/Ru9W+9c7Htyve+cN/wWcdvYSPqWZUhV
+         6xJ2qF4bJFfEWGYTzpjkIKzvnGLSrYlU02yIu2nkhF8zmg1cfOlTcI5sNrMAjZ+nyZZ1
+         dxFzrS2VOBmpfCyY8JJ4fv3nMDpOqMMfF+EL4hIMZZcPqlCdYuz1/OFL4pfO2xOEjUv8
+         HUxQ==
+X-Gm-Message-State: AOJu0YxMEA4vu992Y2l0q85ILTVNbC79aXvbsNf8R/0m3ulSMm32hTk1
+	WiMA9GONZJp+DJMpmIpyPPbceIIdRryNTZvo3znb7w==
+X-Google-Smtp-Source: AGHT+IGHYvrD2hqLbPiAzme52GClnpDJfW8wVtTrvxyOKnt8NLA2o2uO/VdTv+H3VS+MdkjS82i/I52wqHCtRHhsKsc=
+X-Received: by 2002:a05:622a:8107:b0:421:b3b5:7589 with SMTP id
+ jx7-20020a05622a810700b00421b3b57589mr202053qtb.19.1700062384319; Wed, 15 Nov
+ 2023 07:33:04 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 00/17] Solve iommu probe races around iommu_fwspec
-Content-Language: en-GB
-To: Jason Gunthorpe <jgg@nvidia.com>, acpica-devel@lists.linux.dev,
- Alyssa Rosenzweig <alyssa@rosenzweig.io>, Albert Ou <aou@eecs.berkeley.edu>,
- asahi@lists.linux.dev, Catalin Marinas <catalin.marinas@arm.com>,
- Dexuan Cui <decui@microsoft.com>, devicetree@vger.kernel.org,
- David Woodhouse <dwmw2@infradead.org>, Frank Rowand
- <frowand.list@gmail.com>, Hanjun Guo <guohanjun@huawei.com>,
- Haiyang Zhang <haiyangz@microsoft.com>, iommu@lists.linux.dev,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Jonathan Hunter <jonathanh@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
- "K. Y. Srinivasan" <kys@microsoft.com>, Len Brown <lenb@kernel.org>,
- linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-hyperv@vger.kernel.org, linux-mips@vger.kernel.org,
- linux-riscv@lists.infradead.org, linux-snps-arc@lists.infradead.org,
- linux-tegra@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
- Lorenzo Pieralisi <lpieralisi@kernel.org>,
- Marek Szyprowski <m.szyprowski@samsung.com>, Hector Martin
- <marcan@marcan.st>, Palmer Dabbelt <palmer@dabbelt.com>,
- patches@lists.linux.dev, Paul Walmsley <paul.walmsley@sifive.com>,
- "Rafael J. Wysocki" <rafael@kernel.org>,
- Robert Moore <robert.moore@intel.com>, Rob Herring <robh+dt@kernel.org>,
- Sudeep Holla <sudeep.holla@arm.com>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Sven Peter <sven@svenpeter.dev>, Thierry Reding <thierry.reding@gmail.com>,
- Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
- Krishna Reddy <vdumpa@nvidia.com>, Vineet Gupta <vgupta@kernel.org>,
- virtualization@lists.linux.dev, Wei Liu <wei.liu@kernel.org>,
- Will Deacon <will@kernel.org>
-Cc: =?UTF-8?Q?Andr=C3=A9_Draszik?= <andre.draszik@linaro.org>,
- Lu Baolu <baolu.lu@linux.intel.com>, Christoph Hellwig <hch@lst.de>,
- Jerry Snitselaar <jsnitsel@redhat.com>, Moritz Fischer <mdf@kernel.org>,
- Zhenhua Huang <quic_zhenhuah@quicinc.com>,
- "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
- Rob Herring <robh@kernel.org>
-References: <0-v2-36a0088ecaa7+22c6e-iommu_fwspec_jgg@nvidia.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <0-v2-36a0088ecaa7+22c6e-iommu_fwspec_jgg@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <0-v2-de8b10590bf5+400-smmuv3_newapi_p1_jgg@nvidia.com> <12-v2-de8b10590bf5+400-smmuv3_newapi_p1_jgg@nvidia.com>
+In-Reply-To: <12-v2-de8b10590bf5+400-smmuv3_newapi_p1_jgg@nvidia.com>
+From: Michael Shavit <mshavit@google.com>
+Date: Wed, 15 Nov 2023 23:32:28 +0800
+Message-ID: <CAKHBV25W3JoJ9CnX0+SWjtYauSznSx35KKu43X_9V0MWkBJC0w@mail.gmail.com>
+Subject: Re: [PATCH v2 12/19] iommu/arm-smmu-v3: Put writing the context
+ descriptor in the right order
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>, 
+	linux-arm-kernel@lists.infradead.org, Robin Murphy <robin.murphy@arm.com>, 
+	Will Deacon <will@kernel.org>, Nicolin Chen <nicolinc@nvidia.com>, 
+	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 2023-11-15 2:05 pm, Jason Gunthorpe wrote:
-> [Several people have tested this now, so it is something that should sit in
-> linux-next for a while]
+On Tue, Nov 14, 2023 at 1:53=E2=80=AFAM Jason Gunthorpe <jgg@nvidia.com> wr=
+ote:
+>
+> Get closer to the IOMMU API ideal that changes between domains can be
+> hitless. The ordering for the CD table entry is not entirely clean from
+> this perspective.
+>
+> When switching away from a STE with a CD table programmed in it we should
+> write the new STE first, then clear any old data in the CD entry.
+>
+> If we are programming a CD table for the first time to a STE then the CD
+> entry should be programmed before the STE is loaded.
+>
+> If we are replacing a CD table entry when the STE already points at the C=
+D
+> entry then we just need to do the make/break sequence.
+>
+> Lift this code out of arm_smmu_detach_dev() so it can all be sequenced
+> properly. The only other caller is arm_smmu_release_device() and it is
+> going to free the cdtable anyhow, so it doesn't matter what is in it.
+>
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Reviewed-by: Michael Shavit <mshavit@google.com>
 
-What's the aim here? This is obviously far, far too much for a stable 
-fix, but then it's also not the refactoring we want for the future 
-either, since it's moving in the wrong direction of cementing the 
-fundamental brokenness further in place rather than getting any closer 
-to removing it.
+This patch might be a better fit before the previous one. When going
+from S1 to S2 or bypass:
+Pre-both patches, attach_dev() installs a NULL STE, then clears the
+now unused CDE, then installs a new STE.
+After the previous patch, attach_dev() clears the *still used* CDE,
+and then replaces the STE.
+After this patch, attach_dev() replaces the STE, and then clears the CDE
 
-Thanks,
-Robin.
+Reordering the two patches removes the scenario where we could hit a
+NULL-ed CDE.
 
-> The iommu subsystem uses dev->iommu to store bits of information about the
-> attached iommu driver. This has been co-opted by the ACPI/OF code to also
-> be a place to pass around the iommu_fwspec before a driver is probed.
-> 
-> Since both are using the same pointers without any locking it triggers
-> races if there is concurrent driver loading:
-> 
->       CPU0                                     CPU1
-> of_iommu_configure()                iommu_device_register()
->   ..                                   bus_iommu_probe()
->    iommu_fwspec_of_xlate()              __iommu_probe_device()
->                                          iommu_init_device()
->     dev_iommu_get()
->                                            .. ops->probe fails, no fwspec ..
->                                            dev_iommu_free()
->     dev->iommu->fwspec    *crash*
-> 
-> My first attempt get correct locking here was to use the device_lock to
-> protect the entire *_iommu_configure() and iommu_probe() paths. This
-> allowed safe use of dev->iommu within those paths. Unfortuately enough
-> drivers abuse the of_iommu_configure() flow without proper locking and
-> this approach failed.
-> 
-> This approach removes touches of dev->iommu from the *_iommu_configure()
-> code. The few remaining required touches are moved into iommu.c and
-> protected with the existing iommu_probe_device_lock.
-> 
-> To do this we change *_iommu_configure() to hold the iommu_fwspec on the
-> stack while it is being built. Once it is fully formed the core code will
-> install it into the dev->iommu when it calls probe.
-> 
-> This also removes all the touches of iommu_ops from
-> the *_iommu_configure() paths and makes that mechanism private to the
-> iommu core.
-> 
-> A few more lockdep assertions are added to discourage future mis-use.
-> 
-> This is on github: https://github.com/jgunthorpe/linux/commits/iommu_fwspec
-> 
-> v2:
->   - Fix all the kconfig randomization 0-day stuff
->   - Add missing kdoc parameters
->   - Remove NO_IOMMU, replace it with ENODEV
->   - Use PTR_ERR to print errno in the new/moved logging
-> v1: https://lore.kernel.org/r/0-v1-5f734af130a3+34f-iommu_fwspec_jgg@nvidia.com
-> 
-> Jason Gunthorpe (17):
->    iommu: Remove struct iommu_ops *iommu from arch_setup_dma_ops()
->    iommmu/of: Do not return struct iommu_ops from of_iommu_configure()
->    iommu/of: Use -ENODEV consistently in of_iommu_configure()
->    acpi: Do not return struct iommu_ops from acpi_iommu_configure_id()
->    iommu: Make iommu_fwspec->ids a distinct allocation
->    iommu: Add iommu_fwspec_alloc/dealloc()
->    iommu: Add iommu_probe_device_fwspec()
->    iommu/of: Do not use dev->iommu within of_iommu_configure()
->    iommu: Add iommu_fwspec_append_ids()
->    acpi: Do not use dev->iommu within acpi_iommu_configure()
->    iommu: Hold iommu_probe_device_lock while calling ops->of_xlate
->    iommu: Make iommu_ops_from_fwnode() static
->    iommu: Remove dev_iommu_fwspec_set()
->    iommu: Remove pointless iommu_fwspec_free()
->    iommu: Add ops->of_xlate_fwspec()
->    iommu: Mark dev_iommu_get() with lockdep
->    iommu: Mark dev_iommu_priv_set() with a lockdep
-> 
->   arch/arc/mm/dma.c                           |   2 +-
->   arch/arm/mm/dma-mapping-nommu.c             |   2 +-
->   arch/arm/mm/dma-mapping.c                   |  10 +-
->   arch/arm64/mm/dma-mapping.c                 |   4 +-
->   arch/mips/mm/dma-noncoherent.c              |   2 +-
->   arch/riscv/mm/dma-noncoherent.c             |   2 +-
->   drivers/acpi/arm64/iort.c                   |  42 ++--
->   drivers/acpi/scan.c                         | 104 +++++----
->   drivers/acpi/viot.c                         |  45 ++--
->   drivers/hv/hv_common.c                      |   2 +-
->   drivers/iommu/amd/iommu.c                   |   2 -
->   drivers/iommu/apple-dart.c                  |   1 -
->   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c |   9 +-
->   drivers/iommu/arm/arm-smmu/arm-smmu.c       |  23 +-
->   drivers/iommu/intel/iommu.c                 |   2 -
->   drivers/iommu/iommu.c                       | 227 +++++++++++++++-----
->   drivers/iommu/of_iommu.c                    | 133 +++++-------
->   drivers/iommu/omap-iommu.c                  |   1 -
->   drivers/iommu/tegra-smmu.c                  |   1 -
->   drivers/iommu/virtio-iommu.c                |   8 +-
->   drivers/of/device.c                         |  24 ++-
->   include/acpi/acpi_bus.h                     |   8 +-
->   include/linux/acpi_iort.h                   |   8 +-
->   include/linux/acpi_viot.h                   |   5 +-
->   include/linux/dma-map-ops.h                 |   4 +-
->   include/linux/iommu.h                       |  47 ++--
->   include/linux/of_iommu.h                    |  13 +-
->   27 files changed, 424 insertions(+), 307 deletions(-)
-> 
-> 
-> base-commit: b85ea95d086471afb4ad062012a4d73cd328fa86
+> ---
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 29 ++++++++++++++-------
+>  1 file changed, 20 insertions(+), 9 deletions(-)
+>
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/=
+arm/arm-smmu-v3/arm-smmu-v3.c
+> index f70862806211de..eb5dcd357a42b8 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -2495,14 +2495,6 @@ static void arm_smmu_detach_dev(struct arm_smmu_ma=
+ster *master)
+>
+>         master->domain =3D NULL;
+>         master->ats_enabled =3D false;
+> -       /*
+> -        * Clearing the CD entry isn't strictly required to detach the do=
+main
+> -        * since the table is uninstalled anyway, but it helps avoid conf=
+usion
+> -        * in the call to arm_smmu_write_ctx_desc on the next attach (whi=
+ch
+> -        * expects the entry to be empty).
+> -        */
+> -       if (smmu_domain->stage =3D=3D ARM_SMMU_DOMAIN_S1 && master->cd_ta=
+ble.cdtab)
+> -               arm_smmu_write_ctx_desc(master, IOMMU_NO_PASID, NULL);
+>  }
+>
+>  static int arm_smmu_attach_dev(struct iommu_domain *domain, struct devic=
+e *dev)
+> @@ -2579,6 +2571,17 @@ static int arm_smmu_attach_dev(struct iommu_domain=
+ *domain, struct device *dev)
+>                                 master->domain =3D NULL;
+>                                 goto out_list_del;
+>                         }
+> +               } else {
+> +                       /*
+> +                        * arm_smmu_write_ctx_desc() relies on the entry =
+being
+> +                        * invalid to work, clear any existing entry.
+> +                        */
+> +                       ret =3D arm_smmu_write_ctx_desc(master, IOMMU_NO_=
+PASID,
+> +                                                     NULL);
+> +                       if (ret) {
+> +                               master->domain =3D NULL;
+> +                               goto out_list_del;
+> +                       }
+>                 }
+>
+>                 ret =3D arm_smmu_write_ctx_desc(master, IOMMU_NO_PASID, &=
+smmu_domain->cd);
+> @@ -2588,15 +2591,23 @@ static int arm_smmu_attach_dev(struct iommu_domai=
+n *domain, struct device *dev)
+>                 }
+>
+>                 arm_smmu_make_cdtable_ste(&target, master, &master->cd_ta=
+ble);
+> +               arm_smmu_install_ste_for_dev(master, &target);
+>                 break;
+>         case ARM_SMMU_DOMAIN_S2:
+>                 arm_smmu_make_s2_domain_ste(&target, master, smmu_domain)=
+;
+> +               arm_smmu_install_ste_for_dev(master, &target);
+> +               if (master->cd_table.cdtab)
+> +                       arm_smmu_write_ctx_desc(master, IOMMU_NO_PASID,
+> +                                                     NULL);
+>                 break;
+>         case ARM_SMMU_DOMAIN_BYPASS:
+>                 arm_smmu_make_bypass_ste(&target);
+> +               arm_smmu_install_ste_for_dev(master, &target);
+> +               if (master->cd_table.cdtab)
+> +                       arm_smmu_write_ctx_desc(master, IOMMU_NO_PASID,
+> +                                                     NULL);
+>                 break;
+>         }
+> -       arm_smmu_install_ste_for_dev(master, &target);
+>
+>         arm_smmu_enable_ats(master);
+>         goto out_unlock;
+> --
+> 2.42.0
+>
