@@ -1,258 +1,274 @@
-Received: from mail-qt1-f171.google.com (mail-qt1-f171.google.com [209.85.160.171])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 56A69179B8
-	for <iommu@lists.linux.dev>; Wed, 15 Nov 2023 12:17:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 06C2118AE4
+	for <iommu@lists.linux.dev>; Wed, 15 Nov 2023 12:33:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Rq3OPO8d"
-Received: by mail-qt1-f171.google.com with SMTP id d75a77b69052e-41cb7720579so230271cf.1
-        for <iommu@lists.linux.dev>; Wed, 15 Nov 2023 04:17:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1700050666; x=1700655466; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=GS39JNSU4Rgfxj7UvC1YB8x4uYZqZMO1nCDF7jz27S8=;
-        b=Rq3OPO8dwo70Sz/mR/VflUZfDRyw6/TYX5SYSE9DIt/ZhHbAxPO7yqvzpchLGjhTvB
-         AwlFuyMQD96+lf8a033BEVDZcqtMqZ64tJgEvIuCVeftEDKi9YNNkQVL2e6XPH415s8L
-         U4ogOTWWhzISrbgkJANBh/SRT46eNNDwv29gJrBNoBzOd2MlM8Za36D4xu8eV0N7vVYf
-         Q5gFeA3OlSMEBnJTVWo6iLqOvRb6yJhgdZg6G0HgFW8Xv/dCpR0bojwLWjOFSbPL8aSm
-         35+w1z6oUZWgzYAFkG9QpbrsWtT8+6IY2qI3MsSf4ItmNFKocW1EwFS9AeX9/8RqxU5S
-         gVpg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1700050666; x=1700655466;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=GS39JNSU4Rgfxj7UvC1YB8x4uYZqZMO1nCDF7jz27S8=;
-        b=Lp6LIM8ImlXpVLW8uSNsMPFuBfslV9TH9MYl6b4QcNTkXU7k/g1BdobKUfXm+y3nmh
-         8mwkimhKRcXT8Zyy56j8RAFsI9TVMprilXWshhdainu3pG25HZ41v+dNo+gc7CSWMNhH
-         cPlZUlaWay2fvuy+k+gWGDOYmU/TPo5a2doY6IE5Oa0ROKQ492CgkOtGrRJ4Nqq/4dnG
-         gC9UEg4fKjUjI2x/IyUMdB10XateEzBlCGoYQaopC9q0Og3lNDZk00B5zQaO8d8mV9oO
-         zYQn+xzah1xCm7PwSwc9cM0j+djEEu63eihy4J1SxvXKPyq0KKyWUJO047+adtYiTy2S
-         iEow==
-X-Gm-Message-State: AOJu0YzLnruXsuGn/einUa9hX4skMxoWhEyy1dGrVIErc6c0q1AHxoPa
-	DAgtfcWPLU7pkeA+JK+0F1tRj58VgjRgJCnj3I4mGw==
-X-Google-Smtp-Source: AGHT+IEA3YP/dHjVuJepeorpJw7QmfZm1LreY2bJaoUaWsECeImkCeqEdqzzTBhpuvaUZJOsdVPbo/f+SlvzJlWjMTk=
-X-Received: by 2002:ac8:1011:0:b0:421:be18:92fc with SMTP id
- z17-20020ac81011000000b00421be1892fcmr144305qti.13.1700050665982; Wed, 15 Nov
- 2023 04:17:45 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="GhKB2nU1"
+Received: from pps.filterd (m0279866.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 3AFC8jwi003356;
+	Wed, 15 Nov 2023 12:33:01 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=qcppdkim1;
+ bh=+bQBLNYBHmMmudPkza+zGHnV3erCE+9fpiGeOg9TFG0=;
+ b=GhKB2nU1LoTqsR2eV7ZPPHf15awBcusmt/pFoseDlSF/RUKwSiHmFirXu06L1T5a6pqM
+ NAEV03dIF5qpVwzaoEbfiBKImZiCVZCeNogKURfOIY9xHLahM7r99B2v/pagnx3Ok32t
+ 4lC8Gfz3DAnn9AAqU9hSCmDIIg9ywxIaAoXz1XRExJ5tKANUzqv4q+7qVaHyvPf8UjPA
+ urxnvsUPgt0Uh4q2ui+9/KFs+pz5KVtK+NhvGn4OzIQQxh/3D8nNVtM6C4JD1HzIXiaV
+ 2mWU/l0dDeewDIpAv/qb/ywY/cM51+uYqZgrvM+uFWeOxDYyfsW7KRS787LFq8mAdmg9 UQ== 
+Received: from nasanppmta04.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3ucfka9xcy-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 15 Nov 2023 12:33:01 +0000
+Received: from nasanex01c.na.qualcomm.com (nasanex01c.na.qualcomm.com [10.45.79.139])
+	by NASANPPMTA04.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 3AFCX0JO011172
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 15 Nov 2023 12:33:00 GMT
+Received: from [10.214.227.50] (10.80.80.8) by nasanex01c.na.qualcomm.com
+ (10.45.79.139) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.39; Wed, 15 Nov
+ 2023 04:32:55 -0800
+Message-ID: <2a65a498-6a0f-445c-9c00-9e9e4fbc3a98@quicinc.com>
+Date: Wed, 15 Nov 2023 18:02:52 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <0-v2-de8b10590bf5+400-smmuv3_newapi_p1_jgg@nvidia.com> <5-v2-de8b10590bf5+400-smmuv3_newapi_p1_jgg@nvidia.com>
-In-Reply-To: <5-v2-de8b10590bf5+400-smmuv3_newapi_p1_jgg@nvidia.com>
-From: Michael Shavit <mshavit@google.com>
-Date: Wed, 15 Nov 2023 20:17:10 +0800
-Message-ID: <CAKHBV26COVuN3NEBqjoM+bFfK23Zfwq0NYNB0JW+3gtEe+LFuw@mail.gmail.com>
-Subject: Re: [PATCH v2 05/19] iommu/arm-smmu-v3: Consolidate the STE
- generation for abort/bypass
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>, 
-	linux-arm-kernel@lists.infradead.org, Robin Murphy <robin.murphy@arm.com>, 
-	Will Deacon <will@kernel.org>, Nicolin Chen <nicolinc@nvidia.com>, 
-	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 1/3] iommu/arm-smmu: introduction of ACTLR for custom
+ prefetcher settings
+Content-Language: en-US
+To: Robin Murphy <robin.murphy@arm.com>, <will@kernel.org>, <joro@8bytes.org>,
+        <dmitry.baryshkov@linaro.org>, <a39.skl@gmail.com>,
+        <konrad.dybcio@linaro.org>, <quic_pkondeti@quicinc.com>,
+        <quic_molvera@quicinc.com>
+CC: <linux-arm-msm@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+        <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
+        <qipl.kernel.upstream@quicinc.com>
+References: <20231114135654.30475-1-quic_bibekkum@quicinc.com>
+ <20231114135654.30475-2-quic_bibekkum@quicinc.com>
+ <372885ab-b24d-44ae-afb8-76755bcd6e21@arm.com>
+From: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+In-Reply-To: <372885ab-b24d-44ae-afb8-76755bcd6e21@arm.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nasanex01c.na.qualcomm.com (10.45.79.139)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: v84a0kpEEPTvhyA8EjhmdlwiqJbvOBWe
+X-Proofpoint-GUID: v84a0kpEEPTvhyA8EjhmdlwiqJbvOBWe
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.987,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2023-11-15_11,2023-11-15_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
+ lowpriorityscore=0 adultscore=0 clxscore=1015 spamscore=0 bulkscore=0
+ phishscore=0 mlxscore=0 mlxlogscore=999 priorityscore=1501 suspectscore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2311060000 definitions=main-2311150096
 
-On Tue, Nov 14, 2023 at 1:53=E2=80=AFAM Jason Gunthorpe <jgg@nvidia.com> wr=
-ote:
->
-> This allows writing the flow of arm_smmu_write_strtab_ent() around abort
-> and bypass domains more naturally.
->
-> Note that the core code no longer supplies NULL domains, though there is
-> still a flow in the driver that end up in arm_smmu_write_strtab_ent() wit=
-h
-> NULL. A later patch will remove it.
->
-> Remove the duplicate calculation of the STE in arm_smmu_init_bypass_stes(=
-)
-> and remove the force parameter. arm_smmu_rmr_install_bypass_ste() can now
-> simply invoke arm_smmu_make_bypass_ste() directly.
->
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-Reviewed-by: Michael Shavit <mshavit@google.com>
 
-> ---
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 89 +++++++++++----------
->  1 file changed, 47 insertions(+), 42 deletions(-)
->
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/=
-arm/arm-smmu-v3/arm-smmu-v3.c
-> index 6430a8d89cb471..13cdb959ec8f58 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -1443,6 +1443,24 @@ static void arm_smmu_write_ste(struct arm_smmu_dev=
-ice *smmu, u32 sid,
->         }
->  }
->
-> +static void arm_smmu_make_abort_ste(struct arm_smmu_ste *target)
-> +{
-> +       memset(target, 0, sizeof(*target));
-> +       target->data[0] =3D cpu_to_le64(
-> +               STRTAB_STE_0_V |
-> +               FIELD_PREP(STRTAB_STE_0_CFG, STRTAB_STE_0_CFG_ABORT));
-> +}
-> +
-> +static void arm_smmu_make_bypass_ste(struct arm_smmu_ste *target)
-> +{
-> +       memset(target, 0, sizeof(*target));
-> +       target->data[0] =3D cpu_to_le64(
-> +               STRTAB_STE_0_V |
-> +               FIELD_PREP(STRTAB_STE_0_CFG, STRTAB_STE_0_CFG_BYPASS));
-> +       target->data[1] =3D cpu_to_le64(
-> +               FIELD_PREP(STRTAB_STE_1_SHCFG, STRTAB_STE_1_SHCFG_INCOMIN=
-G));
-> +}
-> +
->  static void arm_smmu_write_strtab_ent(struct arm_smmu_master *master, u3=
-2 sid,
->                                       struct arm_smmu_ste *dst)
->  {
-> @@ -1453,37 +1471,31 @@ static void arm_smmu_write_strtab_ent(struct arm_=
-smmu_master *master, u32 sid,
->         struct arm_smmu_domain *smmu_domain =3D master->domain;
->         struct arm_smmu_ste target =3D {};
->
-> -       if (smmu_domain) {
-> -               switch (smmu_domain->stage) {
-> -               case ARM_SMMU_DOMAIN_S1:
-> -                       cd_table =3D &master->cd_table;
-> -                       break;
-> -               case ARM_SMMU_DOMAIN_S2:
-> -                       s2_cfg =3D &smmu_domain->s2_cfg;
-> -                       break;
-> -               default:
-> -                       break;
-> -               }
-> +       if (!smmu_domain) {
-> +               if (disable_bypass)
-> +                       arm_smmu_make_abort_ste(&target);
-> +               else
-> +                       arm_smmu_make_bypass_ste(&target);
-> +               arm_smmu_write_ste(smmu, sid, dst, &target);
-> +               return;
-> +       }
-> +
-> +       switch (smmu_domain->stage) {
-> +       case ARM_SMMU_DOMAIN_S1:
-> +               cd_table =3D &master->cd_table;
-> +               break;
-> +       case ARM_SMMU_DOMAIN_S2:
-> +               s2_cfg =3D &smmu_domain->s2_cfg;
-> +               break;
-> +       case ARM_SMMU_DOMAIN_BYPASS:
-> +               arm_smmu_make_bypass_ste(&target);
-> +               arm_smmu_write_ste(smmu, sid, dst, &target);
-> +               return;
->         }
->
->         /* Nuke the existing STE_0 value, as we're going to rewrite it */
->         val =3D STRTAB_STE_0_V;
->
-> -       /* Bypass/fault */
-> -       if (!smmu_domain || !(cd_table || s2_cfg)) {
-> -               if (!smmu_domain && disable_bypass)
-> -                       val |=3D FIELD_PREP(STRTAB_STE_0_CFG, STRTAB_STE_=
-0_CFG_ABORT);
-> -               else
-> -                       val |=3D FIELD_PREP(STRTAB_STE_0_CFG, STRTAB_STE_=
-0_CFG_BYPASS);
-> -
-> -               target.data[0] =3D cpu_to_le64(val);
-> -               target.data[1] =3D cpu_to_le64(FIELD_PREP(STRTAB_STE_1_SH=
-CFG,
-> -                                               STRTAB_STE_1_SHCFG_INCOMI=
-NG));
-> -               target.data[2] =3D 0; /* Nuke the VMID */
-> -               arm_smmu_write_ste(smmu, sid, dst, &target);
-> -               return;
-> -       }
-> -
->         if (cd_table) {
->                 u64 strw =3D smmu->features & ARM_SMMU_FEAT_E2H ?
->                         STRTAB_STE_1_STRW_EL2 : STRTAB_STE_1_STRW_NSEL1;
-> @@ -1529,21 +1541,15 @@ static void arm_smmu_write_strtab_ent(struct arm_=
-smmu_master *master, u32 sid,
->  }
->
->  static void arm_smmu_init_bypass_stes(struct arm_smmu_ste *strtab,
-> -                                     unsigned int nent, bool force)
-> +                                     unsigned int nent)
->  {
->         unsigned int i;
-> -       u64 val =3D STRTAB_STE_0_V;
-> -
-> -       if (disable_bypass && !force)
-> -               val |=3D FIELD_PREP(STRTAB_STE_0_CFG, STRTAB_STE_0_CFG_AB=
-ORT);
-> -       else
-> -               val |=3D FIELD_PREP(STRTAB_STE_0_CFG, STRTAB_STE_0_CFG_BY=
-PASS);
->
->         for (i =3D 0; i < nent; ++i) {
-> -               strtab->data[0] =3D cpu_to_le64(val);
-> -               strtab->data[1] =3D cpu_to_le64(FIELD_PREP(
-> -                       STRTAB_STE_1_SHCFG, STRTAB_STE_1_SHCFG_INCOMING))=
-;
-> -               strtab->data[2] =3D 0;
-> +               if (disable_bypass)
-> +                       arm_smmu_make_abort_ste(strtab);
-> +               else
-> +                       arm_smmu_make_bypass_ste(strtab);
->                 strtab++;
->         }
->  }
-> @@ -1571,7 +1577,7 @@ static int arm_smmu_init_l2_strtab(struct arm_smmu_=
-device *smmu, u32 sid)
->                 return -ENOMEM;
->         }
->
-> -       arm_smmu_init_bypass_stes(desc->l2ptr, 1 << STRTAB_SPLIT, false);
-> +       arm_smmu_init_bypass_stes(desc->l2ptr, 1 << STRTAB_SPLIT);
->         arm_smmu_write_strtab_l1_desc(strtab, desc);
->         return 0;
->  }
-> @@ -3193,7 +3199,7 @@ static int arm_smmu_init_strtab_linear(struct arm_s=
-mmu_device *smmu)
->         reg |=3D FIELD_PREP(STRTAB_BASE_CFG_LOG2SIZE, smmu->sid_bits);
->         cfg->strtab_base_cfg =3D reg;
->
-> -       arm_smmu_init_bypass_stes(strtab, cfg->num_l1_ents, false);
-> +       arm_smmu_init_bypass_stes(strtab, cfg->num_l1_ents);
->         return 0;
->  }
->
-> @@ -3904,7 +3910,6 @@ static void arm_smmu_rmr_install_bypass_ste(struct =
-arm_smmu_device *smmu)
->         iort_get_rmr_sids(dev_fwnode(smmu->dev), &rmr_list);
->
->         list_for_each_entry(e, &rmr_list, list) {
-> -               struct arm_smmu_ste *step;
->                 struct iommu_iort_rmr_data *rmr;
->                 int ret, i;
->
-> @@ -3917,8 +3922,8 @@ static void arm_smmu_rmr_install_bypass_ste(struct =
-arm_smmu_device *smmu)
->                                 continue;
->                         }
->
-> -                       step =3D arm_smmu_get_step_for_sid(smmu, rmr->sid=
-s[i]);
-> -                       arm_smmu_init_bypass_stes(step, 1, true);
-> +                       arm_smmu_make_bypass_ste(
-> +                               arm_smmu_get_step_for_sid(smmu, rmr->sids=
-[i]));
->                 }
->         }
->
-> --
-> 2.42.0
->
+
+On 11/14/2023 10:25 PM, Robin Murphy wrote:
+> On 14/11/2023 1:56 pm, Bibek Kumar Patro wrote:
+>> Currently in Qualcomm  SoCs the default prefetch is set to 1 which allows
+>> the TLB to fetch just the next page table. MMU-500 features ACTLR
+>> register which is implementation defined and is used for Qualcomm SoCs
+>> to have a prefetch setting of 1/3/7/15 enabling TLB to prefetch
+>> the next set of page tables accordingly allowing for faster translations.
+>>
+>> ACTLR value is unique for each SMR (Stream matching register) and stored
+>> in a pre-populated table. This value is set to the register during
+>> context bank initialisation.
+>>
+>> Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+>> ---
+>>   drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 41 ++++++++++++++++++++++
+>>   drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h |  2 ++
+>>   drivers/iommu/arm/arm-smmu/arm-smmu.c      |  5 +--
+>>   drivers/iommu/arm/arm-smmu/arm-smmu.h      |  5 +++
+>>   4 files changed, 51 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c 
+>> b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>> index 549ae4dba3a6..578c662c7c30 100644
+>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>> @@ -14,6 +14,17 @@
+>>
+>>   #define QCOM_DUMMY_VAL    -1
+>>
+>> +struct actlr_config {
+>> +    const struct actlr_data *adata;
+>> +    size_t size;
+>> +};
+>> +
+>> +struct actlr_data {
+>> +    u16 sid;
+>> +    u16 mask;
+> 
+> Do we need to worry about masks? If you're already assuming that any SMR 
+> will be programmed to match a superset of the data here, surely a single 
+> unique ID per device would suffice?
+> 
+
+If you refer to the arm_smmu_set_actlr below, mask would be needed as we 
+would check for mask along with sid as well while assigning actlr 
+configuration. Also with mask no of actlr entries can be reduces as
+with out mask we have to have entry for each sid.
+
+>> +    u32 actlr;
+>> +};
+>> +
+>>   static struct qcom_smmu *to_qcom_smmu(struct arm_smmu_device *smmu)
+>>   {
+>>       return container_of(smmu, struct qcom_smmu, smmu);
+>> @@ -261,9 +272,36 @@ static const struct of_device_id 
+>> qcom_smmu_client_of_match[] __maybe_unused = {
+>>       { }
+>>   };
+>>
+>> +static void arm_smmu_set_actlr(struct arm_smmu_device *smmu, int idx,
+>> +        const struct actlr_config *actlrcfg)
+>> +{
+>> +    struct arm_smmu_smr *smr = smmu->smrs;
+>> +    int i;
+>> +    u16 id;
+>> +    u16 mask;
+>> +
+>> +    for (i = 0; i < actlrcfg->size; ++i) {
+>> +        id = actlrcfg->adata[i].sid;
+>> +        mask = actlrcfg->adata[i].mask;
+>> +        if (!smr_is_subset(*smr, id, mask))
+> 
+> How well have you tested this? ;)
+> 
+
+Well, this logic has worked pretty good for us till now in our
+downstream implementation. :) (During testing as well this logic helped 
+to better match the SMRs instead of manually mathcing the mask and SID 
+which missed some SIDs)
+Also this is already being used to arm_smmu_find_sme hence packaged this
+logic in a wrapper to be used in other places as well(including ACTLR
+register setting case here.)
+
+>> +            arm_smmu_cb_write(smmu, idx, ARM_SMMU_CB_ACTLR,
+>> +                    actlrcfg->adata[i].actlr);
+>> +    }
+>> +}
+>> +
+>>   static int qcom_smmu_init_context(struct arm_smmu_domain *smmu_domain,
+>>           struct io_pgtable_cfg *pgtbl_cfg, struct device *dev)
+>>   {
+>> +    struct arm_smmu_device *smmu = smmu_domain->smmu;
+>> +    struct qcom_smmu *qsmmu = to_qcom_smmu(smmu);
+>> +    const struct actlr_config *actlrcfg;
+>> +    int idx = smmu_domain->cfg.cbndx;
+>> +
+>> +    if (qsmmu->actlrcfg) {
+>> +        actlrcfg = qsmmu->actlrcfg;
+>> +        arm_smmu_set_actlr(smmu, idx, actlrcfg);
+>> +    }
+>> +
+>>       smmu_domain->cfg.flush_walk_prefer_tlbiasid = true;
+>>
+>>       return 0;
+>> @@ -467,6 +505,9 @@ static struct arm_smmu_device 
+>> *qcom_smmu_create(struct arm_smmu_device *smmu,
+>>       qsmmu->smmu.impl = impl;
+>>       qsmmu->cfg = data->cfg;
+>>
+>> +    if (data->actlrcfg && (data->actlrcfg->size))
+>> +        qsmmu->actlrcfg = data->actlrcfg;
+> 
+> Do we really need to replicate multiple parts of the data, or would it 
+> be sensible to just replace qsmmu->cfg with qsmmu->data and handle the 
+> further dereferences in the places that want them?
+> 
+>> +
+>>       return &qsmmu->smmu;
+>>   }
+>>
+>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h 
+>> b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h
+>> index 593910567b88..4b6862715070 100644
+>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h
+>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h
+>> @@ -9,6 +9,7 @@
+>>   struct qcom_smmu {
+>>       struct arm_smmu_device smmu;
+>>       const struct qcom_smmu_config *cfg;
+>> +    const struct actlr_config *actlrcfg;
+>>       bool bypass_quirk;
+>>       u8 bypass_cbndx;
+>>       u32 stall_enabled;
+>> @@ -25,6 +26,7 @@ struct qcom_smmu_config {
+>>   };
+>>
+>>   struct qcom_smmu_match_data {
+>> +    const struct actlr_config *actlrcfg;
+>>       const struct qcom_smmu_config *cfg;
+>>       const struct arm_smmu_impl *impl;
+>>       const struct arm_smmu_impl *adreno_impl;
+>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c 
+>> b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+>> index d6d1a2a55cc0..8e4faf015286 100644
+>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
+>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+>> @@ -990,9 +990,10 @@ static int arm_smmu_find_sme(struct 
+>> arm_smmu_device *smmu, u16 id, u16 mask)
+>>            * expect simply identical entries for this case, but there's
+>>            * no harm in accommodating the generalisation.
+>>            */
+>> -        if ((mask & smrs[i].mask) == mask &&
+>> -            !((id ^ smrs[i].id) & ~smrs[i].mask))
+>> +
+>> +        if (smr_is_subset(smrs[i], id, mask))
+>>               return i;
+>> +
+>>           /*
+>>            * If the new entry has any other overlap with an existing one,
+>>            * though, then there always exists at least one stream ID
+>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.h 
+>> b/drivers/iommu/arm/arm-smmu/arm-smmu.h
+>> index 703fd5817ec1..b1638bbc41d4 100644
+>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.h
+>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.h
+>> @@ -501,6 +501,11 @@ static inline void arm_smmu_writeq(struct 
+>> arm_smmu_device *smmu, int page,
+>>           writeq_relaxed(val, arm_smmu_page(smmu, page) + offset);
+>>   }
+>>
+>> +static inline bool smr_is_subset(struct arm_smmu_smr smrs, u16 id, 
+>> u16 mask)
+> 
+> Hmm, that name reads as implying the opposite of what it actually tests, 
+> not to mention that passing structs by value is a bit horrid as well :(
+> 
+
+It might be okay to name it as subset_of_smr() though. You have any 
+other naming suggestion in mind which could correctly describe the
+logic?
+
+Thanks & regards,
+Bibek
+
+> Thanks,
+> Robin.
+> 
+>> +{
+>> +    return (mask & smrs.mask) == mask && !((id ^ smrs.id) & ~smrs.mask);
+>> +}
+>> +
+>>   #define ARM_SMMU_GR0        0
+>>   #define ARM_SMMU_GR1        1
+>>   #define ARM_SMMU_CB(s, n)    ((s)->numpage + (n))
+>> -- 
+>> 2.17.1
+>>
