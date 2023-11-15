@@ -1,49 +1,49 @@
-Received: from mail-lf1-f41.google.com (mail-lf1-f41.google.com [209.85.167.41])
+Received: from mail-lf1-f52.google.com (mail-lf1-f52.google.com [209.85.167.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D7143BB57
-	for <iommu@lists.linux.dev>; Wed, 15 Nov 2023 16:42:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6A832E648
+	for <iommu@lists.linux.dev>; Wed, 15 Nov 2023 16:43:45 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="NMVWqR96"
-Received: by mail-lf1-f41.google.com with SMTP id 2adb3069b0e04-507a29c7eefso9828292e87.1
-        for <iommu@lists.linux.dev>; Wed, 15 Nov 2023 08:42:04 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="yHJXupdR"
+Received: by mail-lf1-f52.google.com with SMTP id 2adb3069b0e04-507973f3b65so9919355e87.3
+        for <iommu@lists.linux.dev>; Wed, 15 Nov 2023 08:43:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1700066522; x=1700671322; darn=lists.linux.dev;
+        d=linaro.org; s=google; t=1700066624; x=1700671424; darn=lists.linux.dev;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=u5FiyfL45nK0ILrQvVCbcGAZ+fU64odztAJCZA6s8wQ=;
-        b=NMVWqR96UTd0w1Lrmn8xNE8bB0xbPiSscnzzsMzHUeghTs8IUXzXMPcR+Enibl5kgJ
-         k+5tqjN+luCj7GEigDjuJXiNnQySYqdocufL6f7R71D+QZcNS4HQvebi/suRl0xZ1DDd
-         f+6ml7T7jt0ai2E4aN7/TWgMY4m5dLgKnr++dp2saicXgASUF6gDC3QpB2roTVXeksjB
-         6WKF4ephFa55K3W/5i8jVPbEUoFtUvLtqE5tQ+7UyVf9qrWzcF/x0FPPTx2yEDZfxVJr
-         K+E6ixyFOqTVlOYIS5BwCWX6vKFnZoeVSlq/7N+Pck6HO3nEi/q1fOAKV9oA29OTYmyk
-         fRdQ==
+        bh=xKwvuedBc9zWWjZXrz7fOSDDi6eG4P0hcIfiBzhjapM=;
+        b=yHJXupdRr2vz086eJ2Bw76GtAeEqqCTpFwgSWcwSNh65EE6Kty7qJxrRWjEee69dXw
+         4YCX8l2/cTt4QzJwc1kC8uhBC2rnxUXq7jLSiK1JNJ1v3EKMWZL48cJA5B59zyOp54za
+         RufuF+j8HueiVahi0V4CkpF5MJrMkb9y8Ia8sk3AAPb7Qk2zSQXXIRMdaIZjlUXrtKeC
+         deYThrXNA8zlvXZe64lzzXNBT7gJppmXGE6q/vNzKeAZbMQC4vOZOFZaLzgaKC978lKF
+         Ymjo+yMZ6tJDy79fmwOrNZItdMywj4U/tNxsN/DP/2bDZXDKGBfnWkWKr/ME+v9IoGkl
+         Kj0Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1700066522; x=1700671322;
+        d=1e100.net; s=20230601; t=1700066624; x=1700671424;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=u5FiyfL45nK0ILrQvVCbcGAZ+fU64odztAJCZA6s8wQ=;
-        b=dMMNyUOXKcs0uFZ0u+QlrJf+u60sjbG50irPixiknTPLHMFJF2CtZ9wgTeI7O9+Ho8
-         sF4j5k2N98uxavRbJ5SO0kklJq4NKVz3n0P6sdMfPp2991hSo/qgtZHNRhWUEeajtjBf
-         F5hV483bnwThoTNeRGhEYKSX8zCVitk8qsTB5x6V2HEUw6IJ62Lc3JswezAVzZhhoasW
-         4M+N5vYbfYlI50HRtf06jRHYImfORUVe4ef6rCmcD41K5bCrx1ftg9czQkfM58YyYe33
-         Z/35xQylEknbXLkwyZz6v/e4ReIBDTD8x/5xRIGsRACrRVQUSTDVd5q/0iz18dabQEFP
-         MDwg==
-X-Gm-Message-State: AOJu0Yw25Y//XxFiJzu7XDY6BgvK39MV4+naZCQzux9RoY0bGgEZz85P
-	7FLKjVkZLjBW1ztsorRmG6C/Hw==
-X-Google-Smtp-Source: AGHT+IFWMZo39Dt217xz3YvNvg1OMFxweVuoh5j1w9Sgi0b6RPHP9gLOt/PkYJVEHjLB5ztGS8bf8Q==
-X-Received: by 2002:a05:6512:234d:b0:508:268b:b087 with SMTP id p13-20020a056512234d00b00508268bb087mr11812039lfu.26.1700066522540;
-        Wed, 15 Nov 2023 08:42:02 -0800 (PST)
+        bh=xKwvuedBc9zWWjZXrz7fOSDDi6eG4P0hcIfiBzhjapM=;
+        b=hfnrYRYSXgr66ru2mJcyYcxrDBbFr6aI1sZMMxp2gp3fiJYKLLcUgKsnzYxYSmaPng
+         fYghrEVzyq/7SMFSHrwjuFUWr23S5OJMJBvY2GxcrfJ0HfB4owze77WGNsrzinAyGHbj
+         +/ENhtgVNaF5LDnjcFtAdaMpnOkbtj+6k91aaBjkHSRB12IkfcXu7Ze/IF3k7E4sE93K
+         A/rCohllOdfUT0Az5qEc6ID0ZbRacgIGHhOjHvj+hri6v5AfWAnkMSFOeaL6nIaLaIoB
+         OodJVnCW93m141qp3ZMBnq68hbpKnzdc0iyj4ihwLTY1GGXT+OEquLR5xxLn6eOnXpxG
+         wYcQ==
+X-Gm-Message-State: AOJu0Yxxw6C3Q7INYiwsDda5vgcFyvMiQMmkVxHwYXOZDsSn+Lv3VsQd
+	xeX499lPRu/YcroT1U6PTlKvsw==
+X-Google-Smtp-Source: AGHT+IEyO+JuxqtD22IlDEHQfvtuGmYUZnlYNdcdmZAwd7aiUoKMqvknqimL7DYcdHAQ0SP/2ilgmQ==
+X-Received: by 2002:a05:6512:3f1a:b0:508:266a:e85f with SMTP id y26-20020a0565123f1a00b00508266ae85fmr9820326lfa.1.1700066623747;
+        Wed, 15 Nov 2023 08:43:43 -0800 (PST)
 Received: from [172.30.204.150] (UNUSED.212-182-62-129.lubman.net.pl. [212.182.62.129])
-        by smtp.gmail.com with ESMTPSA id d27-20020a19385b000000b0050a026d3a26sm1705739lfj.227.2023.11.15.08.42.00
+        by smtp.gmail.com with ESMTPSA id d27-20020a19385b000000b0050a026d3a26sm1705739lfj.227.2023.11.15.08.43.42
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 15 Nov 2023 08:42:01 -0800 (PST)
-Message-ID: <be9675a6-a01e-4cf7-95b3-174220d4a042@linaro.org>
-Date: Wed, 15 Nov 2023 17:42:00 +0100
+        Wed, 15 Nov 2023 08:43:43 -0800 (PST)
+Message-ID: <e5b0d8c7-82cf-4a3a-9a6e-28e7b468df8d@linaro.org>
+Date: Wed, 15 Nov 2023 17:43:42 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -51,96 +51,38 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 2/3] iommu/arm-smmu: add ACTLR data and support for
- SM8550
+Subject: Re: [PATCH v2 3/3] iommu/arm-smmu: re-enable context caching in smmu
+ reset operation
 Content-Language: en-US
-To: Bibek Kumar Patro <quic_bibekkum@quicinc.com>,
- Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Cc: will@kernel.org, robin.murphy@arm.com, joro@8bytes.org,
- a39.skl@gmail.com, quic_pkondeti@quicinc.com, quic_molvera@quicinc.com,
- linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+To: Bibek Kumar Patro <quic_bibekkum@quicinc.com>, will@kernel.org,
+ robin.murphy@arm.com, joro@8bytes.org, dmitry.baryshkov@linaro.org,
+ a39.skl@gmail.com, quic_pkondeti@quicinc.com, quic_molvera@quicinc.com
+Cc: linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
  iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
  qipl.kernel.upstream@quicinc.com
 References: <20231114135654.30475-1-quic_bibekkum@quicinc.com>
- <20231114135654.30475-3-quic_bibekkum@quicinc.com>
- <CAA8EJpr1NzqiuNVZ0YcLpJ=yeOYFbLouAFgN9VMOiKpmoGVdtQ@mail.gmail.com>
- <7edad996-f148-42d5-8e72-0334d3b9101f@quicinc.com>
- <CAA8EJpqzEvC-LEjJrOk6Ed8utFNnqgP=qkb0mq-dOfMZd5ij4Q@mail.gmail.com>
- <dba223a1-0456-40b8-b295-ea960867dcf9@quicinc.com>
- <CAA8EJpqvXb_Zdmq0O0KEA8mn5UkSriCZ02w16dts7Gd84R30oQ@mail.gmail.com>
- <aebdf7f6-48b7-43d3-95af-83859ddc593f@quicinc.com>
+ <20231114135654.30475-4-quic_bibekkum@quicinc.com>
 From: Konrad Dybcio <konrad.dybcio@linaro.org>
-In-Reply-To: <aebdf7f6-48b7-43d3-95af-83859ddc593f@quicinc.com>
+In-Reply-To: <20231114135654.30475-4-quic_bibekkum@quicinc.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 
 
 
-On 11/15/23 13:49, Bibek Kumar Patro wrote:
+On 11/14/23 14:56, Bibek Kumar Patro wrote:
+> Context caching is re-enabled in the prefetch buffer for Qualcomm SoCs
+> through SoC specific reset ops, which is disabled in the default MMU-500
+> reset ops, but is expected for context banks using ACTLR register to
+> retain the prefetch value during reset and runtime suspend.
 > 
-> 
-> On 11/15/2023 4:15 PM, Dmitry Baryshkov wrote:
->> On Wed, 15 Nov 2023 at 11:51, Bibek Kumar Patro
->> <quic_bibekkum@quicinc.com> wrote:
->>>
->>>
->>>
->>> On 11/15/2023 3:08 PM, Dmitry Baryshkov wrote:
->>>> On Wed, 15 Nov 2023 at 11:22, Bibek Kumar Patro
->>>> <quic_bibekkum@quicinc.com> wrote:
->>>>>
->>>>>
->>>>>
->>>>> On 11/14/2023 7:42 PM, Dmitry Baryshkov wrote:
->>>>>> On Tue, 14 Nov 2023 at 15:57, Bibek Kumar Patro
->>>>>> <quic_bibekkum@quicinc.com> wrote:
->>>>>>>
->>>>>>> Add ACTLR data table for SM8550 along with support for
->>>>>>> same including SM8550 specific implementation operations.
->>>>>>>
->>>>>>> Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
->>>>>>> ---
->>>>>>>     drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 92 +++++++++++++++++++++-
->>>>>>>     1 file changed, 88 insertions(+), 4 deletions(-)
->>>>>>>
->>>>>>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
->>>>>>> index 578c662c7c30..0eaf6f2a2e49 100644
->>>>>>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
->>>>>>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
->>>>>>> @@ -25,6 +25,70 @@ struct actlr_data {
->>>>>>>            u32 actlr;
->>>>>>>     };
->>>>>>>
->>>>>>> +#define PRE_FETCH_1    0
->>>>>>> +#define PRE_FETCH_2    BIT(8)
->>>>>>> +#define PRE_FETCH_3    (BIT(9) | BIT(8))
->>>>>>
->>>>>> What is the difference between PRE_FETCH_3 and PRE_FETCH_2? And
->>>>>> PRE_FETCH_1? Are these real numbers that refer to some amount / count
->>>>>> or just dummy names?
->>>>>>
->>>>>
->>>>> No,these are not real numbers, but prefetch settings for a particular
->>>>> perfect configuration.
->>>>
->>>> Then I'd ask for some better names or descriptions.
->>>>
->>>
->>> Noted, PREFETCH_SETTING_n / PREFETCH_OPTION_n sounds like a better name
->>> in the following case. Would it be okay to use this name instead?
->>
->> Not really.
->>
-> 
-> Any suggestion you have in mind, if not this nomenclature?
-Dmitry's concern seems to be that you provide:
+> Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+> ---
+And I assume that goes for all SMMU500 implementations?
 
-PRE_FETCH_1 /* prefetcher with settings preset no. 1 */
-PRE_FETCH_2 /* prefetcher with settings preset no. 2 */
-PRE_FETCH_3 /* prefetcher with settings preset no. 3 */
+Looking at the 8550 ACTRL array from patch 2, CPRE is not enabled
+at all times.. Is that because of performance, or some other
+technical reason?
 
-whereas it would be both useful and interesting to see what these
-settings mean, i.e. what differences there are between all of
-these presets.
+Will this regress platforms without ACTRL tables?
 
 Konrad
