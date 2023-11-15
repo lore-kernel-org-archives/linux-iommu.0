@@ -1,273 +1,157 @@
-Received: from mail-yw1-f179.google.com (mail-yw1-f179.google.com [209.85.128.179])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-vi1eur04on2059.outbound.protection.outlook.com [40.107.8.59])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A37A3FBFE
-	for <iommu@lists.linux.dev>; Wed, 15 Nov 2023 10:45:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6066E14F76
+	for <iommu@lists.linux.dev>; Wed, 15 Nov 2023 11:01:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=nxp.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=nxp.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="fZ2/v7Se"
-Received: by mail-yw1-f179.google.com with SMTP id 00721157ae682-5a877e0f0d8so5682717b3.1
-        for <iommu@lists.linux.dev>; Wed, 15 Nov 2023 02:45:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1700045125; x=1700649925; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=4tMjpHymknIjwE2hE7SnQFQ2kYl/Ww1x/FcP4n9OE/g=;
-        b=fZ2/v7Se6RALOOwsqDAIsoF54hae19NofjawU7m3G+PE8AQPdOO2+CFaUW8EN6+/No
-         edhEpianQeiaHKZcZE6v8CSANPovDUvXHUpkrmTIEn3AhPM8qnu1MknjVUiNkA9qGXNN
-         xO99rAAoS4wNH4eF0kYLrx9MDzbcfegwD4twPkClnyAtp5cRGyrPCDvh/ZUyaUixV2Fw
-         PaFrPM+siR9wu6e7S/U5yT3pYkLQSZiOLVZjp3pn/zNrsIN6dWLxLKT2/Kvpg7Y2HlRZ
-         lDAcjAoJTHRrdWjOh7WZ+NAqLDXGBUkbHtN+wR276JGjWJ5HzXpxAN2f9X0SSwJsYwQf
-         TY6A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1700045125; x=1700649925;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=4tMjpHymknIjwE2hE7SnQFQ2kYl/Ww1x/FcP4n9OE/g=;
-        b=rzN5IFfbgVDa1nbp8KrpsDJKjBpKq2UTqRdydNuLja52052SdfSj8ELbfVlw48AmHF
-         rJUmHr4xVdQM+lLl2hI2zLqQvWSH0P3Uzv3kKbpbDLgzxdlOZIjTCkCvIFS1XWwXAat3
-         Bx/mFyHFPNNwOYIruYA/6Mb8HOFNjtVZQnrzZ0CktFP5zzoH20jpMyPUfzR1JQxxDz0A
-         w907oMQyRU9MVkDlIpMvAmPIwUeIZPftN74SCL+ci2zJHqiEdpzZb60DvgHyiLpK7Bdz
-         qTegQFX3Z+48A/VFzXnMn1l4NNDhLM7QxZ6IMvzW04jC7fG3IYKXGBgdmPIyD44yt0yK
-         4d0w==
-X-Gm-Message-State: AOJu0YxmlCKbIxBwJXpR+LZeEjjUd54V397oZP2livI8vB+HPXOtiXyF
-	7ki64wLCXvFwoXhstD1/Nydpz40ScPwP1ZIHt1lJzg==
-X-Google-Smtp-Source: AGHT+IHQcp+6p1x/gNHc8Re2et9RxCsmg/89emvtgK5Qeo5OKdn3Mc2rRm3rJ/1ibDMD7brPL+N6d5RE+gtweZi3j8o=
-X-Received: by 2002:a25:c04f:0:b0:da3:6fa0:1afe with SMTP id
- c76-20020a25c04f000000b00da36fa01afemr3868592ybf.21.1700045125514; Wed, 15
- Nov 2023 02:45:25 -0800 (PST)
+	dkim=pass (1024-bit key) header.d=nxp.com header.i=@nxp.com header.b="ggif7s4l"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=iaVl6y40hqlcDPpHhRsrvPzsjh2eKMBuUjc8YSjsad4GtEC7tZ8dow8pZB9pyjao0rMjp5diWa4GJO2HIg7+hzBJwVjBnNjyjbcVyFIEGadxpiWJn9xscus5bYweusaqImCS4f/t2WtM1mGg3A47IxMkYIRKML9a6dQ2wJwvpbX8xcw9JEIbSh+3MfEkWd4spMHiR75Z2SLgIor0CQYwiEajX8aunCz2x5QycndVG8Beqi7/V1tScBSddJDENZOm0QoWLkZuk3wuR1S68nkd7w9yGBxJEpF/ZZOtIWfhSP4gQFDO+jI6/mPMynkPL/2vAKY5nLyguC4eSa607MJ/Kg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=JSuHpc3c1Tw3OckWlmrCuT7dZZyQFQ0h63QNL1DV+ew=;
+ b=XRpHFhRs6VOi/kSReTt7/9aqfygnKTz/Vsavj+WS8F1fCR55BFXWd/7slAsW8c2t/sOnP4y3COncjp01YAYBzkEuiVS+s8cBh0HZGqaYT9EZPQk0ScH0c86r0e3NiTkPJnGZsOo2HKUDiZ8yWRfu5ON71jjYZuTZJzhhDoumgsPNjAhOkX1JvTM34Pa6MYgqirdLF3sKYq7t7cTxFZng4TmiMEsqjP84EoD3rOzCiSvsWu8/vHbD9eq58OX9p/BE6yPQjBqtNgiHsGfTBhiHwKwiVCWMbOnXimREQwlptzQT63mwdzvkuhLQs1SSXZlw0bk0ipsiINBzIYcccZnQ3g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=JSuHpc3c1Tw3OckWlmrCuT7dZZyQFQ0h63QNL1DV+ew=;
+ b=ggif7s4lsI++nsjifJxdKLSctzv36CxbfE5ixNphWE0lGmXSN8iP0oqO5mrCAoig0Tykg205TVexfru1s38X/WzliW7oY7nGBRmcWajzZONK4cLFKcKw8WDxj/yfVBAzKXF+ryJ+nXaLdNvLL/vHRP07KWjNWtqATxSQABt6u6U=
+Received: from DB9PR04MB9380.eurprd04.prod.outlook.com (2603:10a6:10:368::16)
+ by AS1PR04MB9429.eurprd04.prod.outlook.com (2603:10a6:20b:4db::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7002.17; Wed, 15 Nov
+ 2023 11:01:09 +0000
+Received: from DB9PR04MB9380.eurprd04.prod.outlook.com
+ ([fe80::4f4c:ffd8:df89:52dd]) by DB9PR04MB9380.eurprd04.prod.outlook.com
+ ([fe80::4f4c:ffd8:df89:52dd%3]) with mapi id 15.20.7002.015; Wed, 15 Nov 2023
+ 11:01:08 +0000
+From: Laurentiu Tudor <laurentiu.tudor@nxp.com>
+To: "joro@8bytes.org" <joro@8bytes.org>, "will@kernel.org" <will@kernel.org>,
+	"robin.murphy@arm.com" <robin.murphy@arm.com>, "treding@nvidia.com"
+	<treding@nvidia.com>, "jgg@nvidia.com" <jgg@nvidia.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v3] iommu: map reserved memory as cacheable if device is
+ coherent
+Thread-Topic: [PATCH v3] iommu: map reserved memory as cacheable if device is
+ coherent
+Thread-Index: AQHZ8I3HiIHmrRZNfEG+V4NHz2FFh7B6THUA
+Date: Wed, 15 Nov 2023 11:01:08 +0000
+Message-ID:
+ <DB9PR04MB93804D3ACA821792A5D2E94EECB1A@DB9PR04MB9380.eurprd04.prod.outlook.com>
+References: <20230926152600.8749-1-laurentiu.tudor@nxp.com>
+In-Reply-To: <20230926152600.8749-1-laurentiu.tudor@nxp.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+x-ms-exchange-imapappendstamp: DU2PR04MB9211.eurprd04.prod.outlook.com
+ (15.20.6977.003)
+user-agent: Mozilla Thunderbird
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-exchange-messagesentrepresentingtype: 1
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: DB9PR04MB9380:EE_|AS1PR04MB9429:EE_
+x-ms-office365-filtering-correlation-id: cd9c69f8-a4ff-4bd3-c69d-08dbe5ca2bef
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info:
+ dYVP3x4Ox1quqzuJw6oN5trAAJF/3r00db+wXlB2KznyDFaZMRiK8Y3uUDJ95947tfmq67XYAhmJEa0lCZFy2n2v68EoUmR4TD/lqK+m1SM8cvGQxRtq60/ERZl5/88TuiX4Dmh0UIRKUTGWgWZVnJiYrH1pmsxpl7or6fBHaCISt/rsgY4eAWP4710Nn+7733g7LZeAtfM4ljy0BCj1bwNoe/ssqk2URv9agxNXMOc9ctsiS9741ubiK5UlaSfd5bwHYV8frU7fblMGkoLiVe2nIhHTAbfGYv0N6JOYhUdWxUcy0y4cC0BuXnndLxLaKBnVJNTk/0hxu7yxOAJei9In4wzG3413bCjHvjd7BxsOIHTBdvgL/z4qJlUqbLVYhgzL1d+i2VQUZJEwuNnIFEoxKPsJrwGAIcQpGG7ildJP4oi1TXeQtfLCJ4cvMBqUWvNCU+5dccTHuylCObX2oj4mrz0Wvkm9Nv3H4uThav9amkonVltvo0tiKuDVsiVKdPcMNqwtxNQkztDolcHTLgV4GG4QZFf9hRQXMTewQdGAb81LeY1V82SLiWFYbZT17fr8k4St5itRZIR6GL2OEqte3bcjRBHrLaTELT2h/0Q/4R2O15jLPOm/RhspDWjxvn2MAgE8uOxiu3MgKLgGaT9kureTqGeHrx65BfbGCKY=
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR04MB9380.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(136003)(366004)(39860400002)(346002)(376002)(396003)(230922051799003)(64100799003)(451199024)(186009)(1800799009)(55016003)(8936002)(8676002)(2906002)(66556008)(5660300002)(83380400001)(52536014)(44832011)(966005)(38070700009)(66476007)(64756008)(316002)(86362001)(66946007)(33656002)(66446008)(41300700001)(38100700002)(478600001)(55236004)(53546011)(6506007)(7696005)(71200400001)(9686003)(110136005)(76116006)(26005)(122000001)(65966003)(43740500002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?utf-8?B?QUFway8ramFocUo2UGdJWXhpdnIvVnA3OTlUQnBNUnhtNTVKMUVDOGxPR09V?=
+ =?utf-8?B?blVwTzgySTM5YkRqYVlNaXRlZ1A0KytRdU5Fb1pVUGVMVUtOOXh3UkJiVGc5?=
+ =?utf-8?B?K282SXd2NGdCQlhod2dJSnhaNEM0WVZVZlpnM0RGd1NXcVVkUUxKcnhVNDJ0?=
+ =?utf-8?B?eWFrc2NySC9tMm5JVFMzMVlIdkoveGRmbXBiaDFtR0Z4RkFxYTA1VEVlcWhv?=
+ =?utf-8?B?VktDV1cvZjNwYzZvSUphQ3N6OGdYeHhWbm83RUdHTVAyOXlSNjllNWFDS3hV?=
+ =?utf-8?B?b05JSEZoNmp6N1JVY0I3Sy9BNndGV0t0Tzl0RFhIaXpFYlF0ZENVOVAvUWhp?=
+ =?utf-8?B?UVluWUw0SVdTZDV6SEppMlZkN3hUSmlUVldNbDFScW1BWHk0UlAxZnA5U3Bw?=
+ =?utf-8?B?QTRvSFVYSytmNXFVMkd4N0NGeU8xTGNsUDM0ckFLQmdVbmdTUHlKSDRkb3kr?=
+ =?utf-8?B?QmRvS3VlRGpIL0p1WVVqVnN1QVJRUHo1MVRQRmJtSjdNcnRjTnF3eUpUQ2Z4?=
+ =?utf-8?B?c29wT3lJdSthTWZwWjRrbG1lanlITndZMjFRM2ZLWE8ycGY5ZlNrMWNiMlFl?=
+ =?utf-8?B?TkMzTk5BQkMrbUFIZjh3K3F6bTBBSlcvanFxazJDQkxIbHVlRi9LVlZSNlBY?=
+ =?utf-8?B?S0tnOVRJM3pWcVJjczIzQUdUZG9ySWRNMWF2SEVyU0taaElXeTFqdzEwb3BK?=
+ =?utf-8?B?L2JTRFF4STZkQi9uamN0YVdJZjFRamUzb0FwTmd2MkNnbThhT21TZUkxTXFE?=
+ =?utf-8?B?bWxia3hQak1xQ3drN2RsOThJajNZMFVPYloydGYzQWtKWFJEaHNSSzhjM1Z1?=
+ =?utf-8?B?YjB0Qms3V1J4Z0tkNGRYUVNuengwamxqc0ZvUHp6ak1EY3JpbXhwQ25DYmRm?=
+ =?utf-8?B?OWdYRnhOd3NnZGk0UkRJU1VrVWgvZUY5ajZ1Z1JWUUtkT1d4cXF3U2FaZUUz?=
+ =?utf-8?B?dlhTZkN6L2ZhRHVoUTJBNmF4Z1phTmx1akppRno4TUhzU0kxbSsrL3piUms2?=
+ =?utf-8?B?NjZUd0xMdDRNZUNDVU1DOVBWZ3BJRi9rRkk1UzRueit3WjdlR0xRdGpzTGtG?=
+ =?utf-8?B?YzAzZkY0LzIvVUNqT2hOUHFFeWU4TXFlYit0WVd3OURjZGU3VlArd0Zkckgr?=
+ =?utf-8?B?cEdtcUUxY0xKZ1lQTFlzVnRTcS9tcHhmQTEyOUZGUElQeG5oWXg0Y1QyNzYw?=
+ =?utf-8?B?WEJYdHB5SURxcE1FQzFPZG9zS0pHRWdzb0M3TkJ2eUpzTDJtVXJMWGZLMUdV?=
+ =?utf-8?B?M0FPeGpyOXo3SGhOTDRDaS9kR2c4ZDJBbFVwTGVRT00xN204S3F2cG5PUnBn?=
+ =?utf-8?B?VEpGUE43czFQYytuV1Rlc1Rhc0FhSytTUlNYaU5QVmwzT0RDZDlHU09pNFM2?=
+ =?utf-8?B?QjdsZ1dsajA0b09MRkhmWnkzbW43RVYzS0U2RU5UT3ZJaTVNMnkxRTEvSFRj?=
+ =?utf-8?B?Y3VPa1dCZUROekJ4aGgzQWZEcDZDVEFCUUxMeWswbzFzTDVHRlY3b1Jqa0do?=
+ =?utf-8?B?VkNJNGdXNHBYRWQ2YmxUbE9nMDROSllZS3VTWlFOTGE1TGFYK3lZZGYwWEVG?=
+ =?utf-8?B?M3pjNUxzZ3d5YXBVRURnTys4ODBnVXR0dklIbERRdkppM1FVODQzQ09WRWl5?=
+ =?utf-8?B?eHJsZVJhQWkyODdxTG1scXdvSXM2cW44dVR1aEhZZ1VCSnJvaDM0TGxBWmc0?=
+ =?utf-8?B?WjhmbEVBdkJjbHVNbFJ0eCt6ZGFSZTlnQlROOXRKK2swK3RtMUtwelJUNUU2?=
+ =?utf-8?B?M2FCN2ZtQTZDaklOb0p4cWpmVDNIcVF5MFFUNGROU1ZqOXVRV3M0UHZDMWtr?=
+ =?utf-8?B?cVZnQ1Q1K2doVWpvY2hUY0JMOVBJWWZlRHZ2S3dRcnkvSHhzak1PWWkwaU1x?=
+ =?utf-8?B?S2EwRGZLaXVKc1FwbzQ2RjF2V3RGdnVTSmVTZkVVazJsYUhUTWIxU0V2UHBa?=
+ =?utf-8?B?WmFDQWhxc3U3L2FacmZsVXFZYzYzRUFJMTlwSk5NYlFOcXEzczE5U3NUZlVY?=
+ =?utf-8?B?cFhDQlAzS1NIQ0RoNy9PajVFbS9EaktLNTRnNXlpT0x2QndmYnp5aTFWNlRL?=
+ =?utf-8?B?WlI2ZkxwbUZEQzN2RklmWm5abWFtZHA5WU5XaytyYlp5WEdzNmRDN0ViWEg3?=
+ =?utf-8?Q?kJ9y7tzufP2U0/kZFjFB0wdPS?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <AC429AC62DDA1E4CA8B1A48305EC2D60@NXP1.onmicrosoft.com>
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20231114135654.30475-1-quic_bibekkum@quicinc.com>
- <20231114135654.30475-3-quic_bibekkum@quicinc.com> <CAA8EJpr1NzqiuNVZ0YcLpJ=yeOYFbLouAFgN9VMOiKpmoGVdtQ@mail.gmail.com>
- <7edad996-f148-42d5-8e72-0334d3b9101f@quicinc.com> <CAA8EJpqzEvC-LEjJrOk6Ed8utFNnqgP=qkb0mq-dOfMZd5ij4Q@mail.gmail.com>
- <dba223a1-0456-40b8-b295-ea960867dcf9@quicinc.com>
-In-Reply-To: <dba223a1-0456-40b8-b295-ea960867dcf9@quicinc.com>
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Date: Wed, 15 Nov 2023 12:45:14 +0200
-Message-ID: <CAA8EJpqvXb_Zdmq0O0KEA8mn5UkSriCZ02w16dts7Gd84R30oQ@mail.gmail.com>
-Subject: Re: [PATCH v2 2/3] iommu/arm-smmu: add ACTLR data and support for SM8550
-To: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
-Cc: will@kernel.org, robin.murphy@arm.com, joro@8bytes.org, a39.skl@gmail.com, 
-	konrad.dybcio@linaro.org, quic_pkondeti@quicinc.com, quic_molvera@quicinc.com, 
-	linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
-	qipl.kernel.upstream@quicinc.com
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DB9PR04MB9380.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: cd9c69f8-a4ff-4bd3-c69d-08dbe5ca2bef
+X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Nov 2023 11:01:08.6082
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 4JPe16cKXpX2SAJVNLbXwVmvrliXAOGRV0FbtWwJxMOcpOAN8bdRHmIlEj6JTLz2xifdlOOkiEZ9Tak1+i2xnQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS1PR04MB9429
 
-On Wed, 15 Nov 2023 at 11:51, Bibek Kumar Patro
-<quic_bibekkum@quicinc.com> wrote:
->
->
->
-> On 11/15/2023 3:08 PM, Dmitry Baryshkov wrote:
-> > On Wed, 15 Nov 2023 at 11:22, Bibek Kumar Patro
-> > <quic_bibekkum@quicinc.com> wrote:
-> >>
-> >>
-> >>
-> >> On 11/14/2023 7:42 PM, Dmitry Baryshkov wrote:
-> >>> On Tue, 14 Nov 2023 at 15:57, Bibek Kumar Patro
-> >>> <quic_bibekkum@quicinc.com> wrote:
-> >>>>
-> >>>> Add ACTLR data table for SM8550 along with support for
-> >>>> same including SM8550 specific implementation operations.
-> >>>>
-> >>>> Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
-> >>>> ---
-> >>>>    drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 92 +++++++++++++++++++++-
-> >>>>    1 file changed, 88 insertions(+), 4 deletions(-)
-> >>>>
-> >>>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> >>>> index 578c662c7c30..0eaf6f2a2e49 100644
-> >>>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> >>>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> >>>> @@ -25,6 +25,70 @@ struct actlr_data {
-> >>>>           u32 actlr;
-> >>>>    };
-> >>>>
-> >>>> +#define PRE_FETCH_1    0
-> >>>> +#define PRE_FETCH_2    BIT(8)
-> >>>> +#define PRE_FETCH_3    (BIT(9) | BIT(8))
-> >>>
-> >>> What is the difference between PRE_FETCH_3 and PRE_FETCH_2? And
-> >>> PRE_FETCH_1? Are these real numbers that refer to some amount / count
-> >>> or just dummy names?
-> >>>
-> >>
-> >> No,these are not real numbers, but prefetch settings for a particular
-> >> perfect configuration.
-> >
-> > Then I'd ask for some better names or descriptions.
-> >
->
-> Noted, PREFETCH_SETTING_n / PREFETCH_OPTION_n sounds like a better name
-> in the following case. Would it be okay to use this name instead?
-
-Not really.
-
->
-> >>
-> >>>> +#define CPRE           BIT(1)          /* Enable context caching in the prefetch buffer */
-> >>>> +#define CMTLB          BIT(0)          /* Enable context caching in the macro TLB */
-> >>>> +
-> >>>> +static const struct actlr_data sm8550_apps_actlr_data[] = {
-> >>>> +       { 0x18a0, 0x0000, PRE_FETCH_2 | CPRE | CMTLB },
-> >>>> +       { 0x18e0, 0x0000, PRE_FETCH_2 | CPRE | CMTLB },
-> >>>> +       { 0x0800, 0x0020, PRE_FETCH_1 | CMTLB },
-> >>>> +       { 0x1800, 0x00c0, PRE_FETCH_1 | CMTLB },
-> >>>> +       { 0x1820, 0x0000, PRE_FETCH_1 | CMTLB },
-> >>>> +       { 0x1860, 0x0000, PRE_FETCH_1 | CMTLB },
-> >>>> +       { 0x0c01, 0x0020, PRE_FETCH_3 | CPRE | CMTLB },
-> >>>> +       { 0x0c02, 0x0020, PRE_FETCH_3 | CPRE | CMTLB },
-> >>>> +       { 0x0c03, 0x0020, PRE_FETCH_3 | CPRE | CMTLB },
-> >>>> +       { 0x0c04, 0x0020, PRE_FETCH_3 | CPRE | CMTLB },
-> >>>> +       { 0x0c05, 0x0020, PRE_FETCH_3 | CPRE | CMTLB },
-> >>>> +       { 0x0c06, 0x0020, PRE_FETCH_3 | CPRE | CMTLB },
-> >>>> +       { 0x0c07, 0x0020, PRE_FETCH_3 | CPRE | CMTLB },
-> >>>> +       { 0x0c08, 0x0020, PRE_FETCH_3 | CPRE | CMTLB },
-> >>>> +       { 0x0c09, 0x0020, PRE_FETCH_3 | CPRE | CMTLB },
-> >>>> +       { 0x0c0c, 0x0020, PRE_FETCH_3 | CPRE | CMTLB },
-> >>>> +       { 0x0c0d, 0x0020, PRE_FETCH_3 | CPRE | CMTLB },
-> >>>> +       { 0x0c0e, 0x0020, PRE_FETCH_3 | CPRE | CMTLB },
-> >>>> +       { 0x0c0f, 0x0020, PRE_FETCH_3 | CPRE | CMTLB },
-> >>>> +       { 0x1961, 0x0000, PRE_FETCH_3 | CPRE | CMTLB },
-> >>>> +       { 0x1962, 0x0000, PRE_FETCH_3 | CPRE | CMTLB },
-> >>>> +       { 0x1963, 0x0000, PRE_FETCH_3 | CPRE | CMTLB },
-> >>>> +       { 0x1964, 0x0000, PRE_FETCH_3 | CPRE | CMTLB },
-> >>>> +       { 0x1965, 0x0000, PRE_FETCH_3 | CPRE | CMTLB },
-> >>>> +       { 0x1966, 0x0000, PRE_FETCH_3 | CPRE | CMTLB },
-> >>>> +       { 0x1967, 0x0000, PRE_FETCH_3 | CPRE | CMTLB },
-> >>>> +       { 0x1968, 0x0000, PRE_FETCH_3 | CPRE | CMTLB },
-> >>>> +       { 0x1969, 0x0000, PRE_FETCH_3 | CPRE | CMTLB },
-> >>>> +       { 0x196c, 0x0000, PRE_FETCH_3 | CPRE | CMTLB },
-> >>>> +       { 0x196d, 0x0000, PRE_FETCH_3 | CPRE | CMTLB },
-> >>>> +       { 0x196e, 0x0000, PRE_FETCH_3 | CPRE | CMTLB },
-> >>>> +       { 0x196f, 0x0000, PRE_FETCH_3 | CPRE | CMTLB },
-> >>>> +       { 0x19c1, 0x0010, PRE_FETCH_3 | CPRE | CMTLB },
-> >>>> +       { 0x19c2, 0x0010, PRE_FETCH_3 | CPRE | CMTLB },
-> >>>> +       { 0x19c3, 0x0010, PRE_FETCH_3 | CPRE | CMTLB },
-> >>>> +       { 0x19c4, 0x0010, PRE_FETCH_3 | CPRE | CMTLB },
-> >>>> +       { 0x19c5, 0x0010, PRE_FETCH_3 | CPRE | CMTLB },
-> >>>> +       { 0x19c6, 0x0010, PRE_FETCH_3 | CPRE | CMTLB },
-> >>>> +       { 0x19c7, 0x0010, PRE_FETCH_3 | CPRE | CMTLB },
-> >>>> +       { 0x19c8, 0x0010, PRE_FETCH_3 | CPRE | CMTLB },
-> >>>> +       { 0x19c9, 0x0010, PRE_FETCH_3 | CPRE | CMTLB },
-> >>>> +       { 0x19cc, 0x0010, PRE_FETCH_3 | CPRE | CMTLB },
-> >>>> +       { 0x19cd, 0x0010, PRE_FETCH_3 | CPRE | CMTLB },
-> >>>> +       { 0x19ce, 0x0010, PRE_FETCH_3 | CPRE | CMTLB },
-> >>>> +       { 0x19cf, 0x0010, PRE_FETCH_3 | CPRE | CMTLB },
-> >>>> +       { 0x1c00, 0x0002, PRE_FETCH_2 | CPRE | CMTLB },
-> >>>> +       { 0x1c01, 0x0000, PRE_FETCH_1 | CMTLB },
-> >>>> +       { 0x1920, 0x0000, PRE_FETCH_2 | CPRE | CMTLB },
-> >>>> +       { 0x1923, 0x0000, PRE_FETCH_2 | CPRE | CMTLB },
-> >>>> +       { 0x1924, 0x0000, PRE_FETCH_2 | CPRE | CMTLB },
-> >>>> +       { 0x1940, 0x0000, PRE_FETCH_2 | CPRE | CMTLB },
-> >>>> +       { 0x1941, 0x0004, PRE_FETCH_2 | CPRE | CMTLB },
-> >>>> +       { 0x1943, 0x0000, PRE_FETCH_2 | CPRE | CMTLB },
-> >>>> +       { 0x1944, 0x0000, PRE_FETCH_2 | CPRE | CMTLB },
-> >>>> +       { 0x1947, 0x0000, PRE_FETCH_2 | CPRE | CMTLB },
-> >>>> +};
-> >>>> +
-> >>>>    static struct qcom_smmu *to_qcom_smmu(struct arm_smmu_device *smmu)
-> >>>>    {
-> >>>>           return container_of(smmu, struct qcom_smmu, smmu);
-> >>>> @@ -459,6 +523,16 @@ static const struct arm_smmu_impl sdm845_smmu_500_impl = {
-> >>>>           .tlb_sync = qcom_smmu_tlb_sync,
-> >>>>    };
-> >>>>
-> >>>> +
-> >>>> +static const struct arm_smmu_impl sm8550_smmu_500_impl = {
-> >>>> +       .init_context = qcom_smmu_init_context,
-> >>>> +       .cfg_probe = qcom_smmu_cfg_probe,
-> >>>> +       .def_domain_type = qcom_smmu_def_domain_type,
-> >>>> +       .reset = arm_mmu500_reset,
-> >>>> +       .write_s2cr = qcom_smmu_write_s2cr,
-> >>>> +       .tlb_sync = qcom_smmu_tlb_sync,
-> >>>
-> >>> What is the difference between this one and qcom_smmu_500_impl ?
-> >>>
-> >>
-> >> Noted, will remove this and use qcom_smmu_500_impl instead.
-> >> Thanks for pointing this out.
-> >> Since inititally the reset ops was different to reset CPRE bit only for
-> >> sm8550 SoC hence sm8550_smmu_500_impl is defined, but now default reset
-> >> ops is modified to set CPRE bit for all SoCs ([PATCH v2 3/3]) so it
-> >> should be fine to use qcom_smmu_500_impl as there's no difference now.
-> >>
-> >>>> +};
-> >>>> +
-> >>>>    static const struct arm_smmu_impl qcom_adreno_smmu_v2_impl = {
-> >>>>           .init_context = qcom_adreno_smmu_init_context,
-> >>>>           .def_domain_type = qcom_smmu_def_domain_type,
-> >>>> @@ -522,6 +596,11 @@ static const struct qcom_smmu_config qcom_smmu_impl0_cfg = {
-> >>>>           .reg_offset = qcom_smmu_impl0_reg_offset,
-> >>>>    };
-> >>>>
-> >>>> +static const struct actlr_config sm8550_actlrcfg = {
-> >>>> +       .adata = sm8550_apps_actlr_data,
-> >>>> +       .size = ARRAY_SIZE(sm8550_apps_actlr_data),
-> >>>> +};
-> >>>> +
-> >>>>    /*
-> >>>>     * It is not yet possible to use MDP SMMU with the bypass quirk on the msm8996,
-> >>>>     * there are not enough context banks.
-> >>>> @@ -545,16 +624,20 @@ static const struct qcom_smmu_match_data sdm845_smmu_500_data = {
-> >>>>           /* Also no debug configuration. */
-> >>>>    };
-> >>>>
-> >>>> +
-> >>>> +static const struct qcom_smmu_match_data sm8550_smmu_500_impl0_data = {
-> >>>> +       .impl = &sm8550_smmu_500_impl,
-> >>>> +       .adreno_impl = &qcom_adreno_smmu_500_impl,
-> >>>> +       .cfg = &qcom_smmu_impl0_cfg,
-> >>>> +       .actlrcfg = &sm8550_actlrcfg,
-> >>>> +};
-> >>>> +
-> >>>>    static const struct qcom_smmu_match_data qcom_smmu_500_impl0_data = {
-> >>>>           .impl = &qcom_smmu_500_impl,
-> >>>>           .adreno_impl = &qcom_adreno_smmu_500_impl,
-> >>>>           .cfg = &qcom_smmu_impl0_cfg,
-> >>>>    };
-> >>>>
-> >>>> -/*
-> >>>> - * Do not add any more qcom,SOC-smmu-500 entries to this list, unless they need
-> >>>> - * special handling and can not be covered by the qcom,smmu-500 entry.
-> >>>> - */
-> >>>
-> >>> NAK, leave this in place.
-> >>>
-> >>
-> >> Ack, will address this in next version.
-> >>
-> >>>>    static const struct of_device_id __maybe_unused qcom_smmu_impl_of_match[] = {
-> >>>>           { .compatible = "qcom,msm8996-smmu-v2", .data = &msm8996_smmu_data },
-> >>>>           { .compatible = "qcom,msm8998-smmu-v2", .data = &qcom_smmu_v2_data },
-> >>>> @@ -579,6 +662,7 @@ static const struct of_device_id __maybe_unused qcom_smmu_impl_of_match[] = {
-> >>>>           { .compatible = "qcom,sm8250-smmu-500", .data = &qcom_smmu_500_impl0_data },
-> >>>>           { .compatible = "qcom,sm8350-smmu-500", .data = &qcom_smmu_500_impl0_data },
-> >>>>           { .compatible = "qcom,sm8450-smmu-500", .data = &qcom_smmu_500_impl0_data },
-> >>>> +       { .compatible = "qcom,sm8550-smmu-500", .data = &sm8550_smmu_500_impl0_data },
-> >>>>           { .compatible = "qcom,smmu-500", .data = &qcom_smmu_500_impl0_data },
-> >>>>           { }
-> >>>>    };
-> >>>> --
-> >>>> 2.17.1
-> >>>>
-> >>>
-> >>>
-> >
-> >
-> >
-
-
-
--- 
-With best wishes
-Dmitry
+SGVsbG8sDQoNCkFueSBjaGFuY2Ugb2YgaGF2aW5nIHRoaXMgcGlja2VkIHVwPyBJdCBpcyB0aGUg
+bGFzdCBtaXNzaW5nIGJpdCB0byBmaXggDQpib290aW5nIHZhbmlsbGEgaW1hZ2VzIG9uIHNvbWUg
+TlhQIHBsYXRmb3JtcyAoTGF5ZXJzY2FwZSBMWDIxNjBBLCANCkxTMjA4OEEsIExTMTA4OEEpIGdp
+dmVuIHRoYXQgdGhlIGJvb3Rsb2FkZXIgc2lkZSBvZiB0aGluZ3MgWzFdIHdhcyBhY2NlcHRlZC4N
+ClRoYW5rIHlvdSENCg0KWzFdIGh0dHBzOi8vcGF0Y2h3b3JrLm96bGFicy5vcmcvcHJvamVjdC91
+Ym9vdC9saXN0Lz9zZXJpZXM9Mzc1MTU0JnN0YXRlPSoNCg0KLS0tDQpCZXN0IFJlZ2FyZHMsIExh
+dXJlbnRpdQ0KDQpPbiA5LzI2LzIwMjMgNjoyNiBQTSwgTGF1cmVudGl1IFR1ZG9yIHdyb3RlOg0K
+PiBDaGVjayBpZiB0aGUgZGV2aWNlIGlzIG1hcmtlZCBhcyBETUEgY29oZXJlbnQgaW4gdGhlIERU
+IGFuZCBpZiBzbywNCj4gbWFwIGl0cyByZXNlcnZlZCBtZW1vcnkgYXMgY2FjaGVhYmxlIGluIHRo
+ZSBJT01NVS4NCj4gVGhpcyBmaXhlcyB0aGUgcmVjZW50bHkgYWRkZWQgSU9NTVUgcmVzZXJ2ZWQg
+bWVtb3J5IHN1cHBvcnQgd2hpY2gNCj4gdXNlcyBJT01NVV9SRVNWX0RJUkVDVCB3aXRob3V0IHBy
+b3Blcmx5IGJ1aWxkaW5nIHRoZSBQUk9UIGZvciB0aGUNCj4gbWFwcGluZy4NCj4gDQo+IEZpeGVz
+OiBhNWJmM2NmY2U4Y2IgKCJpb21tdTogSW1wbGVtZW50IG9mX2lvbW11X2dldF9yZXN2X3JlZ2lv
+bnMoKSIpDQo+IFNpZ25lZC1vZmYtYnk6IExhdXJlbnRpdSBUdWRvciA8bGF1cmVudGl1LnR1ZG9y
+QG54cC5jb20+DQo+IFJldmlld2VkLWJ5OiBKYXNvbiBHdW50aG9ycGUgPGpnZ0BudmlkaWEuY29t
+Pg0KPiBBY2tlZC1ieTogVGhpZXJyeSBSZWRpbmcgPHRyZWRpbmdAbnZpZGlhLmNvbT4NCj4gLS0t
+DQo+IENoYW5nZXMgaW4gdjM6DQo+ICAgLSBhZGRlZCBBY2tlZC1ieSB0YWcgKFRoaWVycnkpDQo+
+IA0KPiBDaGFuZ2VzIGluIHYyOg0KPiAgIC0gYWRkZWQgUmV2aWV3ZWQtYnkgdGFnIChKYXNvbikN
+Cj4gDQo+ICAgZHJpdmVycy9pb21tdS9vZl9pb21tdS5jIHwgMyArKysNCj4gICAxIGZpbGUgY2hh
+bmdlZCwgMyBpbnNlcnRpb25zKCspDQo+IA0KPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9pb21tdS9v
+Zl9pb21tdS5jIGIvZHJpdmVycy9pb21tdS9vZl9pb21tdS5jDQo+IGluZGV4IDE1N2IyODZlMzZi
+Zi4uNWIzNjMxYmE1YTQ1IDEwMDY0NA0KPiAtLS0gYS9kcml2ZXJzL2lvbW11L29mX2lvbW11LmMN
+Cj4gKysrIGIvZHJpdmVycy9pb21tdS9vZl9pb21tdS5jDQo+IEBAIC0yNTQsNiArMjU0LDkgQEAg
+dm9pZCBvZl9pb21tdV9nZXRfcmVzdl9yZWdpb25zKHN0cnVjdCBkZXZpY2UgKmRldiwgc3RydWN0
+IGxpc3RfaGVhZCAqbGlzdCkNCj4gICAJCQkJcGh5c19hZGRyX3QgaW92YTsNCj4gICAJCQkJc2l6
+ZV90IGxlbmd0aDsNCj4gICANCj4gKwkJCQlpZiAob2ZfZG1hX2lzX2NvaGVyZW50KGRldi0+b2Zf
+bm9kZSkpDQo+ICsJCQkJCXByb3QgfD0gSU9NTVVfQ0FDSEU7DQo+ICsNCj4gICAJCQkJbWFwcyA9
+IG9mX3RyYW5zbGF0ZV9kbWFfcmVnaW9uKG5wLCBtYXBzLCAmaW92YSwgJmxlbmd0aCk7DQo+ICAg
+CQkJCXR5cGUgPSBpb21tdV9yZXN2X3JlZ2lvbl9nZXRfdHlwZShkZXYsICZwaHlzLCBpb3ZhLCBs
+ZW5ndGgpOw0KPiAgIA0K
