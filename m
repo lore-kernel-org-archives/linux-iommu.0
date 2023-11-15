@@ -1,224 +1,95 @@
-Received: from mail-qt1-f182.google.com (mail-qt1-f182.google.com [209.85.160.182])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 68EE828DB8
-	for <iommu@lists.linux.dev>; Wed, 15 Nov 2023 14:16:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF3451A598
+	for <iommu@lists.linux.dev>; Wed, 15 Nov 2023 14:43:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="rdpgLU/N"
-Received: by mail-qt1-f182.google.com with SMTP id d75a77b69052e-421ae866bc2so342511cf.0
-        for <iommu@lists.linux.dev>; Wed, 15 Nov 2023 06:16:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1700057813; x=1700662613; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=1pj+wFwGYb0mXQFirH/s6Esls0Ipfw5sJ8mC4JVF9EI=;
-        b=rdpgLU/N/9SAr+8jvN8bm0zJZcz3zNcAxsrkck+G9X52fKplZCjkYX2nOTA5iwjGxP
-         qY7tC8IowPbU9wPclWRQMHrW97HCQUt1KUxqqEcUp55BzhyV8AFad5Nds+lj1p4k1qcC
-         YZW+ezBhTRgwzMie5aLE1sCo12xcq78uLg1G8iQHyu86rx2tv/Z/Ar5VJVnGLYuO6jtD
-         eklWJBIjX2FmGOba3kfdB7O44niN2DoTenYWDcruxXAhaGR1dTbfEu6JP5CWtTQaPojK
-         5T9JFsWWhzNQeNZY1fDNGeKB9YNFVv1kB8ON8Wjh1XLRXVqxwDqchlSe62W6kMHHw181
-         mdwA==
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="SxmaRbj2"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1700059382;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=sqWGwV812/CXYndzj2W50PA7KOMPm+tHC+e+xjD2/M0=;
+	b=SxmaRbj2UI7wyR4yRDkXPPbSFume3DPXj7iBSaRrChzCcyMUxrRk56D6qBBcBjNti+o+sk
+	z2EVJ0JhvAceSnAswTu72CVeIrcvh1n+Mzy/OTx27APEsFNjbMjeEedABWSTXKs3CAn9VC
+	3pSVHSmoo2m9KIJ5q611LilLLaf1XKQ=
+Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
+ [209.85.219.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-544-oD7TgZCwPj24Go230AwB3w-1; Wed, 15 Nov 2023 09:43:01 -0500
+X-MC-Unique: oD7TgZCwPj24Go230AwB3w-1
+Received: by mail-qv1-f71.google.com with SMTP id 6a1803df08f44-67012b06439so81296106d6.1
+        for <iommu@lists.linux.dev>; Wed, 15 Nov 2023 06:43:01 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1700057813; x=1700662613;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=1pj+wFwGYb0mXQFirH/s6Esls0Ipfw5sJ8mC4JVF9EI=;
-        b=AQUTaZCK83ztmOm+br7Ti/3ZXF6YgaRfTWOUe/w84Q4DN2vyc5r/jcdtns9KZHNR6e
-         2FjvRUX4SPO4RCt9r/HoVIA0vFyR7Lv8S2AiPmqE8hczdxO66oh9cPRlA60dEXJcL57B
-         BZFjATxsBYkXPlzEDrhiCCsltnep7JN7CtR3NszluySsaD+4g+zdAa/OqeX6Mkx8sajt
-         d7y+YPgaMrbZPbRVFNmHA/JF9JanTh1CUOdsR424yA5ZX1bWgzbwWdP/QTAEYhU/K7i5
-         XulErxpTxafAnV0i8EuNZDwMRqS7SxFijX5gA1ThWJrfEZ47HqZWUx5QnWABp+gCMI4X
-         Qymw==
-X-Gm-Message-State: AOJu0Ywqbxfe1vmBgOoJob0K2UT5bE0Q//b58NdVzxIl0vX/LqDeKcV1
-	8gl1c77dS6G5QDGzp8OGnVLYxjjnISrqMhxSh44buA==
-X-Google-Smtp-Source: AGHT+IHTnH9gOIxkBbSOg7iRc73eXH0A++HfdJDl94yFKZMws9co89+shaiVOjLGVAoya6AN0hFAhl1Fwl0YmvbiOSc=
-X-Received: by 2002:ac8:1011:0:b0:421:afe1:ec9e with SMTP id
- z17-20020ac81011000000b00421afe1ec9emr176958qti.27.1700057813030; Wed, 15 Nov
- 2023 06:16:53 -0800 (PST)
+        d=1e100.net; s=20230601; t=1700059381; x=1700664181;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=sqWGwV812/CXYndzj2W50PA7KOMPm+tHC+e+xjD2/M0=;
+        b=f2x2GNChiBFlzFFJ9zBhjnXoG+Bpfb5VfWXIrNUy1zkRHtUKDfda97IQaKvlhzvwLj
+         quPIBrqdUQ+A7oi0OTFBPn78AWfx497cYJawBYmY90fkhnTQwxRV5IAYXh8WkXTD511I
+         PYXpMdnpiZnGcKhAR28ovRQGUrFS03jZaAc16M/xdwTDnOUdrA1OL9IfS/z3C/xAcqgg
+         UZ++WZZHrEM7lzIJzTf5dy4ecQo2tqCxSCdbG0CTTFB4U06ds+1/bOTWI1fKOmkScn/m
+         b8Wtg1dvOqtk08uzGhoXGA13WNwSEtuvFmO1khwm9dAHoVH5ObRzMSVP864Iq5pKoc3R
+         HbjA==
+X-Gm-Message-State: AOJu0YzvPTvaSjhUJJbKFAN7XeRKLDTi2HcdT+n4Ob4D9ZVvsDNh1PUw
+	3a6BMDEldfX4we0Z48wHCKHMrh2oF4qxdtf1Q61ECFNXImJyfBK90D6z/UAIs7/tuKDMzQQBe9L
+	Q/nWpRJUex1aULeY=
+X-Received: by 2002:a0c:c3cf:0:b0:66d:1100:7b81 with SMTP id p15-20020a0cc3cf000000b0066d11007b81mr5491055qvi.18.1700059380995;
+        Wed, 15 Nov 2023 06:43:00 -0800 (PST)
+X-Google-Smtp-Source: AGHT+IF0jpQrK9oJO86ojMSo1dc0KOCSp7+RBS164Fh6GwHlgBAjmWNWgSHBdIgtMHXFSNVSzkNNdA==
+X-Received: by 2002:a0c:c3cf:0:b0:66d:1100:7b81 with SMTP id p15-20020a0cc3cf000000b0066d11007b81mr5491005qvi.18.1700059380669;
+        Wed, 15 Nov 2023 06:43:00 -0800 (PST)
+Received: from localhost (ip98-179-76-75.ph.ph.cox.net. [98.179.76.75])
+        by smtp.gmail.com with ESMTPSA id u2-20020a05621411a200b00674a45499dcsm578681qvv.88.2023.11.15.06.42.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Nov 2023 06:43:00 -0800 (PST)
+Date: Wed, 15 Nov 2023 07:42:58 -0700
+From: Jerry Snitselaar <jsnitsel@redhat.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: acpica-devel@lists.linux.dev, Alyssa Rosenzweig <alyssa@rosenzweig.io>, 
+	Albert Ou <aou@eecs.berkeley.edu>, asahi@lists.linux.dev, Catalin Marinas <catalin.marinas@arm.com>, 
+	Dexuan Cui <decui@microsoft.com>, devicetree@vger.kernel.org, 
+	David Woodhouse <dwmw2@infradead.org>, Frank Rowand <frowand.list@gmail.com>, 
+	Hanjun Guo <guohanjun@huawei.com>, Haiyang Zhang <haiyangz@microsoft.com>, iommu@lists.linux.dev, 
+	Jean-Philippe Brucker <jean-philippe@linaro.org>, Jonathan Hunter <jonathanh@nvidia.com>, 
+	Joerg Roedel <joro@8bytes.org>, "K. Y. Srinivasan" <kys@microsoft.com>, 
+	Len Brown <lenb@kernel.org>, linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+	linux-hyperv@vger.kernel.org, linux-mips@vger.kernel.org, linux-riscv@lists.infradead.org, 
+	linux-snps-arc@lists.infradead.org, linux-tegra@vger.kernel.org, 
+	Russell King <linux@armlinux.org.uk>, Lorenzo Pieralisi <lpieralisi@kernel.org>, 
+	Marek Szyprowski <m.szyprowski@samsung.com>, Hector Martin <marcan@marcan.st>, 
+	Palmer Dabbelt <palmer@dabbelt.com>, patches@lists.linux.dev, 
+	Paul Walmsley <paul.walmsley@sifive.com>, "Rafael J. Wysocki" <rafael@kernel.org>, 
+	Robert Moore <robert.moore@intel.com>, Rob Herring <robh+dt@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Sudeep Holla <sudeep.holla@arm.com>, 
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, Sven Peter <sven@svenpeter.dev>, 
+	Thierry Reding <thierry.reding@gmail.com>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, 
+	Krishna Reddy <vdumpa@nvidia.com>, Vineet Gupta <vgupta@kernel.org>, virtualization@lists.linux.dev, 
+	Wei Liu <wei.liu@kernel.org>, Will Deacon <will@kernel.org>, 
+	=?utf-8?B?QW5kcsOp?= Draszik <andre.draszik@linaro.org>, Lu Baolu <baolu.lu@linux.intel.com>, 
+	Christoph Hellwig <hch@lst.de>, Moritz Fischer <mdf@kernel.org>, 
+	Zhenhua Huang <quic_zhenhuah@quicinc.com>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, 
+	Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v2 03/17] iommu/of: Use -ENODEV consistently in
+ of_iommu_configure()
+Message-ID: <jtgj4qfpqzj5zowqwmcniaxd77kqvirspm2a7jkgg6vgmo2scy@5jpoatxkrkid>
+References: <0-v2-36a0088ecaa7+22c6e-iommu_fwspec_jgg@nvidia.com>
+ <3-v2-36a0088ecaa7+22c6e-iommu_fwspec_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <0-v2-de8b10590bf5+400-smmuv3_newapi_p1_jgg@nvidia.com> <10-v2-de8b10590bf5+400-smmuv3_newapi_p1_jgg@nvidia.com>
-In-Reply-To: <10-v2-de8b10590bf5+400-smmuv3_newapi_p1_jgg@nvidia.com>
-From: Michael Shavit <mshavit@google.com>
-Date: Wed, 15 Nov 2023 22:16:15 +0800
-Message-ID: <CAKHBV25+ToZC+=WKbFC2=LUSs1mNXiSV1K7SmrJo1qV-826ZrQ@mail.gmail.com>
-Subject: Re: [PATCH v2 10/19] iommu/arm-smmu-v3: Compute the STE only once for
- each master
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>, 
-	linux-arm-kernel@lists.infradead.org, Robin Murphy <robin.murphy@arm.com>, 
-	Will Deacon <will@kernel.org>, Nicolin Chen <nicolinc@nvidia.com>, 
-	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <3-v2-36a0088ecaa7+22c6e-iommu_fwspec_jgg@nvidia.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-On Tue, Nov 14, 2023 at 1:53=E2=80=AFAM Jason Gunthorpe <jgg@nvidia.com> wr=
-ote:
->
-> Currently arm_smmu_install_ste_for_dev() iterates over every SID and
-> computes from scratch an identical STE. Every SID should have the same ST=
-E
-> contents. Turn this inside out so that the STE is supplied by the caller
-> and arm_smmu_install_ste_for_dev() simply installs it to every SID.
->
-> This is possible now that the STE generation does not inform what sequenc=
-e
-> should be used to program it.
->
-> This allows splitting the STE calculation up according to the call site,
-> which following patches will make use of, and removes the confusing NULL
-> domain special case that only supported arm_smmu_detach_dev().
->
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-Reviewed-by: Michael Shavit <mshavit@google.com>
-> ---
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 58 ++++++++-------------
->  1 file changed, 22 insertions(+), 36 deletions(-)
->
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/=
-arm/arm-smmu-v3/arm-smmu-v3.c
-> index b11dc03ee16880..4b157c2ddf9a80 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -1536,36 +1536,6 @@ static void arm_smmu_make_s2_domain_ste(struct arm=
-_smmu_ste *target,
->                                       STRTAB_STE_3_S2TTB_MASK);
->  }
->
-> -static void arm_smmu_write_strtab_ent(struct arm_smmu_master *master, u3=
-2 sid,
-> -                                     struct arm_smmu_ste *dst)
-> -{
-> -       struct arm_smmu_device *smmu =3D master->smmu;
-> -       struct arm_smmu_domain *smmu_domain =3D master->domain;
-> -       struct arm_smmu_ste target =3D {};
-> -
-> -       if (!smmu_domain) {
-> -               if (disable_bypass)
-> -                       arm_smmu_make_abort_ste(&target);
-> -               else
-> -                       arm_smmu_make_bypass_ste(&target);
-> -               arm_smmu_write_ste(smmu, sid, dst, &target);
-> -               return;
-> -       }
-> -
-> -       switch (smmu_domain->stage) {
-> -       case ARM_SMMU_DOMAIN_S1:
-> -               arm_smmu_make_cdtable_ste(&target, master, &master->cd_ta=
-ble);
-> -               break;
-> -       case ARM_SMMU_DOMAIN_S2:
-> -               arm_smmu_make_s2_domain_ste(&target, master, smmu_domain)=
-;
-> -               break;
-> -       case ARM_SMMU_DOMAIN_BYPASS:
-> -               arm_smmu_make_bypass_ste(&target);
-> -               break;
-> -       }
-> -       arm_smmu_write_ste(smmu, sid, dst, &target);
-> -}
-> -
->  static void arm_smmu_init_bypass_stes(struct arm_smmu_ste *strtab,
->                                       unsigned int nent)
->  {
-> @@ -2387,7 +2357,8 @@ arm_smmu_get_step_for_sid(struct arm_smmu_device *s=
-mmu, u32 sid)
->         }
->  }
->
-> -static void arm_smmu_install_ste_for_dev(struct arm_smmu_master *master)
-> +static void arm_smmu_install_ste_for_dev(struct arm_smmu_master *master,
-> +                                        const struct arm_smmu_ste *targe=
-t)
->  {
->         int i, j;
->         struct arm_smmu_device *smmu =3D master->smmu;
-> @@ -2404,7 +2375,7 @@ static void arm_smmu_install_ste_for_dev(struct arm=
-_smmu_master *master)
->                 if (j < i)
->                         continue;
->
-> -               arm_smmu_write_strtab_ent(master, sid, step);
-> +               arm_smmu_write_ste(smmu, sid, step, target);
->         }
->  }
->
-> @@ -2511,6 +2482,7 @@ static void arm_smmu_disable_pasid(struct arm_smmu_=
-master *master)
->  static void arm_smmu_detach_dev(struct arm_smmu_master *master)
->  {
->         unsigned long flags;
-> +       struct arm_smmu_ste target;
->         struct arm_smmu_domain *smmu_domain =3D master->domain;
->
->         if (!smmu_domain)
-> @@ -2524,7 +2496,11 @@ static void arm_smmu_detach_dev(struct arm_smmu_ma=
-ster *master)
->
->         master->domain =3D NULL;
->         master->ats_enabled =3D false;
-> -       arm_smmu_install_ste_for_dev(master);
-> +       if (disable_bypass)
-> +               arm_smmu_make_abort_ste(&target);
-> +       else
-> +               arm_smmu_make_bypass_ste(&target);
-> +       arm_smmu_install_ste_for_dev(master, &target);
->         /*
->          * Clearing the CD entry isn't strictly required to detach the do=
-main
->          * since the table is uninstalled anyway, but it helps avoid conf=
-usion
-> @@ -2539,6 +2515,7 @@ static int arm_smmu_attach_dev(struct iommu_domain =
-*domain, struct device *dev)
->  {
->         int ret =3D 0;
->         unsigned long flags;
-> +       struct arm_smmu_ste target;
->         struct iommu_fwspec *fwspec =3D dev_iommu_fwspec_get(dev);
->         struct arm_smmu_device *smmu;
->         struct arm_smmu_domain *smmu_domain =3D to_smmu_domain(domain);
-> @@ -2600,7 +2577,8 @@ static int arm_smmu_attach_dev(struct iommu_domain =
-*domain, struct device *dev)
->         list_add(&master->domain_head, &smmu_domain->devices);
->         spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
->
-> -       if (smmu_domain->stage =3D=3D ARM_SMMU_DOMAIN_S1) {
-> +       switch (smmu_domain->stage) {
-> +       case ARM_SMMU_DOMAIN_S1:
->                 if (!master->cd_table.cdtab) {
->                         ret =3D arm_smmu_alloc_cd_tables(master);
->                         if (ret) {
-> @@ -2614,9 +2592,17 @@ static int arm_smmu_attach_dev(struct iommu_domain=
- *domain, struct device *dev)
->                         master->domain =3D NULL;
->                         goto out_list_del;
->                 }
-> -       }
->
-> -       arm_smmu_install_ste_for_dev(master);
-> +               arm_smmu_make_cdtable_ste(&target, master, &master->cd_ta=
-ble);
-> +               break;
-> +       case ARM_SMMU_DOMAIN_S2:
-> +               arm_smmu_make_s2_domain_ste(&target, master, smmu_domain)=
-;
-> +               break;
-> +       case ARM_SMMU_DOMAIN_BYPASS:
-> +               arm_smmu_make_bypass_ste(&target);
-> +               break;
-> +       }
-> +       arm_smmu_install_ste_for_dev(master, &target);
->
->         arm_smmu_enable_ats(master);
->         goto out_unlock;
-> --
-> 2.42.0
->
+Reviewed-by: Jerry Snitselaar <jsnitsel@redhat.com>
+
