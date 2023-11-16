@@ -1,83 +1,182 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 833B8364CD
-	for <iommu@lists.linux.dev>; Thu, 16 Nov 2023 16:52:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 40ED748CD7
+	for <iommu@lists.linux.dev>; Thu, 16 Nov 2023 17:04:17 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org; dkim=none
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 8ABAB1595;
-	Thu, 16 Nov 2023 08:53:10 -0800 (PST)
-Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 9F54E3F6C4;
-	Thu, 16 Nov 2023 08:52:23 -0800 (PST)
-From: Robin Murphy <robin.murphy@arm.com>
-To: kevin.tian@intel.com,
-	jgg@ziepe.ca
-Cc: joao.m.martins@oracle.com,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] iommufd/selftest: Fix dirty_bitmap tests
-Date: Thu, 16 Nov 2023 16:52:15 +0000
-Message-Id: <90e083045243ef407dd592bb1deec89cd1f4ddf2.1700153535.git.robin.murphy@arm.com>
-X-Mailer: git-send-email 2.39.2.101.g768bb238c484.dirty
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C2D1F1595;
+	Thu, 16 Nov 2023 09:05:02 -0800 (PST)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1B4C03F6C4;
+	Thu, 16 Nov 2023 09:04:15 -0800 (PST)
+Message-ID: <4db1b4d2-0aa9-4640-b7d7-7d18ab64569a@arm.com>
+Date: Thu, 16 Nov 2023 17:04:13 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 3/3] iommu/arm-smmu: re-enable context caching in smmu
+ reset operation
+Content-Language: en-GB
+To: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+ Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+Cc: will@kernel.org, joro@8bytes.org, a39.skl@gmail.com,
+ konrad.dybcio@linaro.org, quic_pkondeti@quicinc.com,
+ quic_molvera@quicinc.com, linux-arm-msm@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, qipl.kernel.upstream@quicinc.com
+References: <20231114135654.30475-1-quic_bibekkum@quicinc.com>
+ <20231114135654.30475-4-quic_bibekkum@quicinc.com>
+ <CAA8EJpoRmm42aAvyX61o3tMWXszUZmfFvJEtnNDEfYdDqy4Y0g@mail.gmail.com>
+ <72b30354-0497-45cf-8b71-e4f265eb0005@quicinc.com>
+ <CAA8EJprPE=z2VN5LkaUyLyvYpx6i1eF9dyxOzN_L86pi5tmU-Q@mail.gmail.com>
+ <0d290a5c-081f-4dfa-af9a-b061e6134662@quicinc.com>
+ <CAA8EJprHppoN6rg8-rS1F+4kynQqmV1L3OiHFnJ0HyrshywFig@mail.gmail.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <CAA8EJprHppoN6rg8-rS1F+4kynQqmV1L3OiHFnJ0HyrshywFig@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-The ASSERT_EQ() macro sneakily expands to two statements, so the loop
-here needs braces to ensure it captures both and actually terminates the
-test upon failure. Where these tests are currently failing on my arm64
-machine, this reduces the number of logged lines from a rather
-unreasonable ~197,000 down to 10. While we're at it, we can also clean
-up the tautologous "count" calculations whose assertions can never fail
-unless mathematics and/or the C language become fundamentally broken.
+On 16/11/2023 3:24 pm, Dmitry Baryshkov wrote:
+> On Thu, 16 Nov 2023 at 14:45, Bibek Kumar Patro
+> <quic_bibekkum@quicinc.com> wrote:
+>>
+>>
+>>
+>> On 11/15/2023 4:33 PM, Dmitry Baryshkov wrote:
+>>> On Wed, 15 Nov 2023 at 11:45, Bibek Kumar Patro
+>>> <quic_bibekkum@quicinc.com> wrote:
+>>>>
+>>>> On 11/14/2023 7:45 PM, Dmitry Baryshkov wrote:
+>>>>> On Tue, 14 Nov 2023 at 15:57, Bibek Kumar Patro
+>>>>> <quic_bibekkum@quicinc.com> wrote:
+>>>>>>
+>>>>>> Context caching is re-enabled in the prefetch buffer for Qualcomm SoCs
+>>>>>> through SoC specific reset ops, which is disabled in the default MMU-500
+>>>>>> reset ops, but is expected for context banks using ACTLR register to
+>>>>>> retain the prefetch value during reset and runtime suspend.
+>>>>>
+>>>>> Please refer to Documentation/process/submitting-patches.rst and
+>>>>> rephrase this following the rules there.
+>>>>>
+>>>>
+>>>> Noted, will go through the description once and rephrase it
+>>>> in next version complying with rules.
+>>>>
+>>>>>>
+>>>>>> Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+>>>>>> ---
+>>>>>>     drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 25 ++++++++++++++++++----
+>>>>>>     1 file changed, 21 insertions(+), 4 deletions(-)
+>>>>>>
+>>>>>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>>>>> index 0eaf6f2a2e49..fa867b1d9d16 100644
+>>>>>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>>>>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>>>>> @@ -478,11 +478,28 @@ static int qcom_smmu_def_domain_type(struct device *dev)
+>>>>>>            return match ? IOMMU_DOMAIN_IDENTITY : 0;
+>>>>>>     }
+>>>>>>
+>>>>>> +static int qcom_smmu500_reset(struct arm_smmu_device *smmu)
+>>>>>> +{
+>>>>>> +       int i;
+>>>>>> +       u32 reg;
+>>>>>> +
+>>>>>> +       arm_mmu500_reset(smmu);
+>>>>>> +
+>>>>>> +       /* Re-enable context caching after reset */
+>>>>>> +       for (i = 0; i < smmu->num_context_banks; ++i) {
+>>>>>> +               reg = arm_smmu_cb_read(smmu, i, ARM_SMMU_CB_ACTLR);
+>>>>>> +               reg |= CPRE;
+>>>>>> +               arm_smmu_cb_write(smmu, i, ARM_SMMU_CB_ACTLR, reg);
+>>>>>> +       }
+>>>>>> +
+>>>>>> +       return 0;
+>>>>>> +}
+>>>>>> +
+>>>>>>     static int qcom_sdm845_smmu500_reset(struct arm_smmu_device *smmu)
+>>>>>>     {
+>>>>>>            int ret;
+>>>>>>
+>>>>>> -       arm_mmu500_reset(smmu);
+>>>>>> +       qcom_smmu500_reset(smmu);
+>>>>>
+>>>>> Is this applicable for sdm845? For all other platforms supported by
+>>>>> qcom_smmu_500 implementation?
+>>>>>
+>>>>
+>>>> In arm_mmu500_reset operation drivers/iommu/arm/arm-smmu/arm-smmu-impl.c
+>>>> CPRE bit is reset for all SoC based on mmu500 platform, hence for all
+>>>> Qualcomm SoCs including sm845 we are setting back the CPRE bit.
+>>>
+>>> The errata for the CoreLink MMU-500 requires CPRE to be disabled for
+>>> all revisions before r2p2. Do we know whether these SoC used CoreLink
+>>> MMU-500 and which version of it?
+>>>
+>>
+>> Just checked all these SoCs are using r2p4 revision.
+>> So CPRE needs to be enabled back here then?
+> 
+> can be enabled, yes.
 
-Fixes: a9af47e382a4 ("iommufd/selftest: Test IOMMU_HWPT_GET_DIRTY_BITMAP")
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
----
- tools/testing/selftests/iommu/iommufd_utils.h | 13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
+There are still open errata #562869 and #1047329 which might need this 
+workaround. I guess one could argue that we're not (knowingly) using 
+nested translation at the moment, and also probably not running this in 
+situations which would end up using short-descriptor format, however 
+stuff like pKVM and IOMMUFD could potentially change those assumptions 
+in future, so they still feel a bit sketchy to me.
 
-diff --git a/tools/testing/selftests/iommu/iommufd_utils.h b/tools/testing/selftests/iommu/iommufd_utils.h
-index 050e9751321c..ad9202335656 100644
---- a/tools/testing/selftests/iommu/iommufd_utils.h
-+++ b/tools/testing/selftests/iommu/iommufd_utils.h
-@@ -293,15 +293,13 @@ static int _test_mock_dirty_bitmaps(int fd, __u32 hwpt_id, size_t length,
- 				    __u64 bitmap_size, __u32 flags,
- 				    struct __test_metadata *_metadata)
- {
--	unsigned long i, count, nbits = bitmap_size * BITS_PER_BYTE;
-+	unsigned long i, nbits = bitmap_size * BITS_PER_BYTE;
- 	unsigned long nr = nbits / 2;
- 	__u64 out_dirty = 0;
- 
- 	/* Mark all even bits as dirty in the mock domain */
--	for (count = 0, i = 0; i < nbits; count += !(i % 2), i++)
--		if (!(i % 2))
--			set_bit(i, (unsigned long *)bitmap);
--	ASSERT_EQ(nr, count);
-+	for (i = 0; i < nbits; i += 2)
-+		set_bit(i, (unsigned long *)bitmap);
- 
- 	test_cmd_mock_domain_set_dirty(fd, hwpt_id, length, iova, page_size,
- 				       bitmap, &out_dirty);
-@@ -311,9 +309,10 @@ static int _test_mock_dirty_bitmaps(int fd, __u32 hwpt_id, size_t length,
- 	memset(bitmap, 0, bitmap_size);
- 	test_cmd_get_dirty_bitmap(fd, hwpt_id, length, iova, page_size, bitmap,
- 				  flags);
--	for (count = 0, i = 0; i < nbits; count += !(i % 2), i++)
-+	/* Beware ASSERT_EQ() is two statements -- braces are not redundant! */
-+	for (i = 0; i < nbits; i++) {
- 		ASSERT_EQ(!(i % 2), test_bit(i, (unsigned long *)bitmap));
--	ASSERT_EQ(count, out_dirty);
-+	}
- 
- 	memset(bitmap, 0, bitmap_size);
- 	test_cmd_get_dirty_bitmap(fd, hwpt_id, length, iova, page_size, bitmap,
--- 
-2.39.2.101.g768bb238c484.dirty
+Thanks,
+Robin.
 
+> 
+>>
+>>>>
+>>>>>>
+>>>>>>            /*
+>>>>>>             * To address performance degradation in non-real time clients,
+>>>>>> @@ -509,7 +526,7 @@ static const struct arm_smmu_impl qcom_smmu_500_impl = {
+>>>>>>            .init_context = qcom_smmu_init_context,
+>>>>>>            .cfg_probe = qcom_smmu_cfg_probe,
+>>>>>>            .def_domain_type = qcom_smmu_def_domain_type,
+>>>>>> -       .reset = arm_mmu500_reset,
+>>>>>> +       .reset = qcom_smmu500_reset,
+>>>>>>            .write_s2cr = qcom_smmu_write_s2cr,
+>>>>>>            .tlb_sync = qcom_smmu_tlb_sync,
+>>>>>>     };
+>>>>>> @@ -528,7 +545,7 @@ static const struct arm_smmu_impl sm8550_smmu_500_impl = {
+>>>>>>            .init_context = qcom_smmu_init_context,
+>>>>>>            .cfg_probe = qcom_smmu_cfg_probe,
+>>>>>>            .def_domain_type = qcom_smmu_def_domain_type,
+>>>>>> -       .reset = arm_mmu500_reset,
+>>>>>> +       .reset = qcom_smmu500_reset,
+>>>>>>            .write_s2cr = qcom_smmu_write_s2cr,
+>>>>>>            .tlb_sync = qcom_smmu_tlb_sync,
+>>>>>>     };
+>>>>>> @@ -544,7 +561,7 @@ static const struct arm_smmu_impl qcom_adreno_smmu_v2_impl = {
+>>>>>>     static const struct arm_smmu_impl qcom_adreno_smmu_500_impl = {
+>>>>>>            .init_context = qcom_adreno_smmu_init_context,
+>>>>>>            .def_domain_type = qcom_smmu_def_domain_type,
+>>>>>> -       .reset = arm_mmu500_reset,
+>>>>>> +       .reset = qcom_smmu500_reset,
+>>>>>>            .alloc_context_bank = qcom_adreno_smmu_alloc_context_bank,
+>>>>>>            .write_sctlr = qcom_adreno_smmu_write_sctlr,
+>>>>>>            .tlb_sync = qcom_smmu_tlb_sync,
+>>>>>> --
+>>>>>> 2.17.1
+>>>>>>
+>>>>>
+>>>>>
+>>>
+>>>
+>>>
+>>> --
+>>> With best wishes
+>>> Dmitry
+> 
+> 
+> 
