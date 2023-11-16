@@ -1,121 +1,77 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.88])
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A1F77E
-	for <iommu@lists.linux.dev>; Thu, 16 Nov 2023 01:42:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 482FB7E
+	for <iommu@lists.linux.dev>; Thu, 16 Nov 2023 01:55:06 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="nkDmRGbr"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="PN2Yb2fo"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1700098952; x=1731634952;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=8V9GxQGhmWnHBzLUfmWUpWRTkqOnn/65G7sZH4jO9eQ=;
-  b=nkDmRGbrXspRXV5VeOZwalooLlfrN1dra02NJDtVYr8bvXbPORkwk7gZ
-   SYex2/FI6t/iwjJkzKyyd7EX28G6sUVerfaj/QM6REHw/8cQLH4O2EO5B
-   +uFSbviPzEsvN9lTZQ1uV4i1GL3D4aWYj8QQy71x7VFbyT8XdvceSqY6/
-   roLoECnPkNid2QLIpX+ViVyG8OArSphdDnngZj0z18okwcYQrfWyMtUCd
-   7kGSt566KQAjA/xM7wgmgBczRdZt9A0MNfWhrtM++ab4sdLU/YkJ2kuNt
-   wyWM+t2phrejevv1U2HcZj+L17PV28wiQGLPE2TZ5NqztHJSZDehf1Hfw
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10895"; a="422084505"
+  t=1700099706; x=1731635706;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=wT7dbjKEZPnJlKx0LG/sRI7UdmUYfosJsm3/37/KvOs=;
+  b=PN2Yb2forat/avhek0PzXxIDZtUGdpEKHHTLaepTe2mND+YaJjUkFzgU
+   gkhYgtGddaTD3wz/tlABo+YTtqfODRZ65Kg1aX4hXaZBXmSdTwnDqcqE+
+   jJ2hFUjvLuwblmgsn78XqyY8WHEmjOCxj7m/XJTynMH/q1bloj6T2KVQW
+   zs6k5eCJPxzwiHYclShWfaboHeDLR6CX75gfn4oIAhIUOXDQh102iWTX5
+   0yKGlBiPe4APhfj7zs2aAxB1pNP3n4VbT9kE1mhFpl04uCPFpcGi30DBv
+   9IxVkjd49ACaR7Zust0ROZ9OJ7ZokCODdU3R433GhHF/f0Nn81HxO5VnK
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10895"; a="381387670"
 X-IronPort-AV: E=Sophos;i="6.03,306,1694761200"; 
-   d="scan'208";a="422084505"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Nov 2023 17:42:31 -0800
+   d="scan'208";a="381387670"
+Received: from fmviesa001.fm.intel.com ([10.60.135.141])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Nov 2023 17:55:05 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10895"; a="908957353"
 X-IronPort-AV: E=Sophos;i="6.03,306,1694761200"; 
-   d="scan'208";a="908957353"
-Received: from linux.intel.com ([10.54.29.200])
-  by fmsmga001.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Nov 2023 17:42:30 -0800
-Received: from [10.93.24.3] (liujing-mobl1.ccr.corp.intel.com [10.93.24.3])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by linux.intel.com (Postfix) with ESMTPS id 0E2F2580D77;
-	Wed, 15 Nov 2023 17:42:25 -0800 (PST)
-Message-ID: <8f24918e-aa57-4160-902a-58d10021246e@linux.intel.com>
-Date: Thu, 16 Nov 2023 09:42:23 +0800
+   d="scan'208";a="13395413"
+Received: from allen-box.sh.intel.com ([10.239.159.127])
+  by fmviesa001.fm.intel.com with ESMTP; 15 Nov 2023 17:55:03 -0800
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Kevin Tian <kevin.tian@intel.com>
+Cc: iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH 0/4] iommu/vt-d: Miscellaneous cleanups
+Date: Thu, 16 Nov 2023 09:50:44 +0800
+Message-Id: <20231116015048.29675-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 0/6] IOMMUFD: Deliver IO page faults to user space
-Content-Language: en-US
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Lu Baolu <baolu.lu@linux.intel.com>, Kevin Tian <kevin.tian@intel.com>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>,
- Jacob Pan <jacob.jun.pan@linux.intel.com>, iommu@lists.linux.dev,
- linux-kselftest@vger.kernel.org, virtualization@lists.linux-foundation.org,
- linux-kernel@vger.kernel.org
-References: <20231026024930.382898-1-baolu.lu@linux.intel.com>
- <20231102124742.GA4634@ziepe.ca>
- <c774e157-9b47-4fb8-80dd-37441c69b43d@linux.intel.com>
- <ZVTObiybC1MYlSam@ziepe.ca>
-From: "Liu, Jing2" <jing2.liu@linux.intel.com>
-In-Reply-To: <ZVTObiybC1MYlSam@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-Hi Jason,
+This series includes several miscellaneous cleanups that were discovered
+during recent development. Please let me know if anything I have
+overlooked. 
 
-On 11/15/2023 9:58 PM, Jason Gunthorpe wrote:
-> On Wed, Nov 15, 2023 at 01:17:06PM +0800, Liu, Jing2 wrote:
->
->> This is the right way to approach it,
->>
->>     I learned that there was discussion about using io_uring to get the
->>     page fault without
->>
->>     eventfd notification in [1], and I am new at io_uring and studying the
->>     man page of
->>
->>     liburing, but there're questions in my mind on how can QEMU get the
->>     coming page fault
->>
->>     with a good performance.
->>
->>     Since both QEMU and Kernel don't know when comes faults, after QEMU
->>     submits one
->>
->>     read task to io_uring, we want kernel pending until fault comes. While
->>     based on
->>
->>     hwpt_fault_fops_read() in [patch v2 4/6], it just returns 0 since
->>     there's now no fault,
->>
->>     thus this round of read completes to CQ but it's not what we want. So
->>     I'm wondering
->>
->>     how kernel pending on the read until fault comes. Does fops callback
->>     need special work to
-> Implement a fops with poll support that triggers when a new event is
-> pushed and everything will be fine.
+Best regards,
+baolu
 
-Does userspace need also setup a POLL flag to let io_uring go into poll, 
-or io_uring
+Lu Baolu (4):
+  iommu/vt-d: Introduce dev_to_iommu()
+  iommu/vt-d: Remove unused parameter of
+    intel_pasid_setup_pass_through()
+  iommu/vt-d: Remove unused vcmd interfaces
+  iommu/vt-d: Move inline helpers to header files
 
-always try to poll?
+ drivers/iommu/intel/iommu.h | 184 +++++++++++++++++++++++-
+ drivers/iommu/intel/pasid.h | 213 +++++++++++++++++++++++++++-
+ drivers/iommu/intel/iommu.c | 237 +++----------------------------
+ drivers/iommu/intel/pasid.c | 274 +-----------------------------------
+ drivers/iommu/intel/svm.c   |  20 +--
+ 5 files changed, 421 insertions(+), 507 deletions(-)
 
-> There are many examples in the
-> kernel. The ones in the mlx5 vfio driver spring to mind as a scheme I
-> recently looked at.
+-- 
+2.34.1
 
-Thank you very much for guiding the way. We will study the example to 
-understand
-
-more.
-
-BRs,
-
-Jing
-
-> Jason
