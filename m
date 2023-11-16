@@ -1,198 +1,195 @@
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.31])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E17D633D4
-	for <iommu@lists.linux.dev>; Thu, 16 Nov 2023 08:24:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C99D7F9
+	for <iommu@lists.linux.dev>; Thu, 16 Nov 2023 12:45:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ZNwKqN6c"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1700123071; x=1731659071;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=l3FblwjFWPY5RN2tO1kzqXX5GnOEjRF7HXXQ+atqUHs=;
-  b=ZNwKqN6cwsMf4RPVSVTWdXBFkEtfUYWUIzrAm6QEYuaDhdn+UB7YZ4+G
-   cq12h+t1mkdUIoNUcLu5T7jZLaD1Oib2EInEKixBGq8iW/+LWqSSyKXuZ
-   FmjYDhTyjHapo/E4DnOnWQReyVIf37OR8l8pZOSyWbB6PHJ1586JlkCWS
-   DP1zyFIjCVp8GvB1z4ejXONBRVr2sPb/b1fC3Tkp7MT9Ddg7EJ0NSffTD
-   w1gMl0FZxAc2agIlNXVDBVGDq17JaXlSXOHJRpOGLZe/4IOtmKeNkscET
-   T8vlXvdWlP6ZW/yMGf0f9scMs/insLTvzWnqFBTANJbNt6aRS0eDJIDbZ
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10895"; a="455333419"
-X-IronPort-AV: E=Sophos;i="6.03,307,1694761200"; 
-   d="scan'208";a="455333419"
-Received: from orviesa002.jf.intel.com ([10.64.159.142])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Nov 2023 00:24:31 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.03,307,1694761200"; 
-   d="scan'208";a="6449151"
-Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
-  by orviesa002.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 16 Nov 2023 00:24:32 -0800
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.34; Thu, 16 Nov 2023 00:24:31 -0800
-Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.34 via Frontend Transport; Thu, 16 Nov 2023 00:24:31 -0800
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.40) by
- edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.34; Thu, 16 Nov 2023 00:24:30 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=EoS7JBnAahwCyRpJ9RRFNEnr7KyHaGx0u151FJAIn/IC5F5ykp0FPHmTN3v42zbzv1TbzGN7BpiRtQSiDVC5CA8Gw+ZJaY4MjU2bZpG3gyVq+T8eSHKBvncKXDFAKMZzNaz049E30NbYjeGTFqicI/GQu+wrtHYmrN70TWlKh0BklLfARHFHNwnV+X66qxSnMIZpnBdtxYwlYFJDGHPYa0cWyYsMvF48R2k5uKCPKcXr5aTSdS8oWB2GdYfwabgo39lDniFjylxElH9/E/MeGTtWUqW7TfCHHl1XL4T984+IMvuOh4z0ILYy9019xfDeQf9amjSEBPwIiOw+7YAnrw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=l3FblwjFWPY5RN2tO1kzqXX5GnOEjRF7HXXQ+atqUHs=;
- b=kZ3MGX2fjEAdocFLDj2Te3Gzz8y8fWWLi5wl1o56kWB4IfyMr9dPej4r4P8thLFky+DzN7OysaDEsz4ro5AWkFZ4w+xFay6FYUnnrEl5C4M/KQaDIFuVnY0kJa+KGLwJtzceJBOQAqqFdWL+Hfgv11U4xD8CRDmYNqCQ+WKq4EWw3vJYOvQUmI8bdnXa7ocgtNz2VBYk8FOQXJWr24fbSLT6LZgLU+9bhOmVhxs4fK24TNEkG714fIrtdG+YGZodNCd5jTc47/uJxwmIbf0X7eLF46/Pwuwafn90LFyZefFy/wj3P5ROLGwEfmKsMWbY+gUi20+2rBYHWDMFuejHZQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by CH3PR11MB8209.namprd11.prod.outlook.com (2603:10b6:610:15d::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7002.19; Thu, 16 Nov
- 2023 08:24:24 +0000
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::e7a4:a757:2f2e:f96a]) by BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::e7a4:a757:2f2e:f96a%3]) with mapi id 15.20.7002.021; Thu, 16 Nov 2023
- 08:24:24 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Baolu Lu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, "Will
- Deacon" <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, "Jason
- Gunthorpe" <jgg@ziepe.ca>
-CC: "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH 1/1] iommu/vt-d: Disable PCI ATS in legacy passthrough
- mode
-Thread-Topic: [PATCH 1/1] iommu/vt-d: Disable PCI ATS in legacy passthrough
- mode
-Thread-Index: AQHaFpgBxWBJti3g4kChnloBJh6r1bB8ka6AgAAMNYA=
-Date: Thu, 16 Nov 2023 08:24:23 +0000
-Message-ID: <BN9PR11MB52761B8ECFC7A5724A61894E8CB0A@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <20231114011036.70142-1-baolu.lu@linux.intel.com>
- <20231114011036.70142-3-baolu.lu@linux.intel.com>
- <0f8c95f3-c16e-497e-9734-85936ae08f82@linux.intel.com>
-In-Reply-To: <0f8c95f3-c16e-497e-9734-85936ae08f82@linux.intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|CH3PR11MB8209:EE_
-x-ms-office365-filtering-correlation-id: c306c6ff-3816-46bb-16a8-08dbe67d70aa
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: NCTGdII+JGZws1sC9fzS0PF6rReWdka2gjX7pE261BAFGcjMMNGPeOpJ+yhvhfFiZJ2WKgtslyzZs2KqZpI2YXgPAx3MoiJ8YbsA7TVVEJixnnYqMRJs+yrzTpU3pozCI2jmD8KNECQXgywDPwUcXqxmYtoVcE2aCXIzoBX94Y1zMzDOw6xnoG/xXIEWF4IKs3sb8eeAFAGc0sgsE4FEaw5H0tQ+pV6h9neYdtLIt5oBv9WBHjNAycPvxMJ1NDsH8MlgsFcSzC4F22GT1g4lJIAIiI6zOsko1tbwey62w6qU7hLU3446xMJ7uC2y3l1WKfQcRJFbU+58scCHD6G/7fUvLBIgiMXV7fE07l8uFiNlxA1nQ6zu+OfH7ff+luN479nnFEQB2f63NCoxMSllp53d4iB76GBo27Vj4Bl6Q/BGkQqmevazW4larRnJ5EyX/teq+gtJVa/OdHtmhyD3WJCEQvkES8fbxFPw5GPu8mN5IO9jFqPepMDpy0smPl896PBkOAFR+9VNEcgFPipWzea6LptJP1yN5JuMzVUyGMpASKHGaVmjsZ5QK920d1YLMhxh4iVuypcwAYInp76Pt0gfhHb8miF4GC3Y1RDqWhzwNBcEBliQpp9rCsOYsQMH
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(346002)(376002)(136003)(396003)(39860400002)(366004)(230922051799003)(451199024)(1800799009)(64100799003)(186009)(7696005)(76116006)(316002)(64756008)(66556008)(8676002)(4326008)(54906003)(66446008)(110136005)(66476007)(66946007)(8936002)(52536014)(71200400001)(478600001)(41300700001)(86362001)(33656002)(5660300002)(2906002)(122000001)(38100700002)(26005)(53546011)(9686003)(83380400001)(82960400001)(6506007)(38070700009)(55016003);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?ZjI2cXc0ekhvSmVWR0J1bUZ4ejZlTE0veFVhSlhBUFBTRzlKeXRFMXFwY0E3?=
- =?utf-8?B?Q2dmTHAwSm16VTFUSW5KaHN3OVlyWC9iaWNyMlk4N2N3WUJyMXNhVnJ2MGZv?=
- =?utf-8?B?WHlXSEtoSlc5NjBtNDJUVHRYMGpEcUlSb24wc0kraFhhcVBQWXRpVldtSGwz?=
- =?utf-8?B?cEpOS1ZTcUxuZVNmcmlBcHNuaWhZc0NGYkE1cTdUZVhKeTFySWducDlONEdm?=
- =?utf-8?B?SzY0STJJdFBkK3FEK2ZQV3lEN0hybHdOdmV3QU5tUnFEUWxDVjluVU1iZmgw?=
- =?utf-8?B?T2VYOFRZVVdRUnk2aXlXYm54aVFkNWZoUmMrMEdIb0V0NHl5RW91ZUlrbWV3?=
- =?utf-8?B?NmJ3clkrMG1rRkJ2UFdzWUFSdjdqYjk0QVh3WE9Cc3Q4eUZMTCt2a2wzTU9V?=
- =?utf-8?B?eXJoallNZ2VYWDVSdFF2QjIzSDU2b3dPbnhkTHBITVh4djBFUlBjbHd5Q1pL?=
- =?utf-8?B?OUN5QWpBdHErT0tmUTVOSHFUOWZNaUE0UjJUeXFZSnJMZUFLUFdDM1h6Z29v?=
- =?utf-8?B?VkF3MjhZUTdOak9BcHRYZ3lVSy9veUxkczlDRWlhb0c2RThlR0ZPZDkwdjlo?=
- =?utf-8?B?ZkFlTmJvT05YMjZDbm0wcmFlc2RMejc2SXk0TXVya2NHNXdIOUpzbmljRHh5?=
- =?utf-8?B?R2pKMHA2ZkdHQVVQMTI1RVNZV2tCYVJJUWtPVnZNclRpNEtvUG8rbXlvNDlp?=
- =?utf-8?B?SFU4bE9teTZQVmpRNis0UGdrNlpoRlJGM3BGMEZ4dVBKQ09SdlBFSHl0VUVi?=
- =?utf-8?B?U0o2NTdyblNRS2FVOEp5VDk5UFRGQzBRWGx3aHFxYzNvbkY5cmpyWmpZSEZP?=
- =?utf-8?B?WUdlNmFOamFSVldBSm5FaXFFV2duTzBDT3UvYVlETHcwVkwwaldVN09CVkhU?=
- =?utf-8?B?MVU0SkpVMCttMG4xdm5OaHJuOUUzd2hpMitidm8rNGJnSE1HVlRNOWZZdWpl?=
- =?utf-8?B?eUliV09TU2NyS2dyVjRqYTlNZDM5VGtveXdGazVraHorN2h5R1ZRQWd4SjAr?=
- =?utf-8?B?MVlNTks0L2F1bzBHUGdqVE1jN0NRZmY5amFZQVdKZXhBcVBCMkhidG5BVUhM?=
- =?utf-8?B?V3pUZFlpcmczZC90WlluekdYc2M4OTB2d3Zwc2FzdU1KdkxLUmVMeHcvQkx4?=
- =?utf-8?B?Q1ExWWc2K2dzelBpak11TDBlNkhxQTdZVDBZdXkwNXVLdEtmYmQ2aXQxYVU3?=
- =?utf-8?B?V0N0bGUzM2FtK2hQTjlUTHc1MzZhdUN4ZzM1MGNYRDN6UTYwRDJaL1BweGFR?=
- =?utf-8?B?amdwWm9zVityUFJoaEpZTDAyTktzNjJ5NHdlRjZPTkNTWWZhUUc3OG14c1Vv?=
- =?utf-8?B?ckpBTEZyWXArbDFNU0VBSjlXSzI5SEUyRkwyUmo5RWF0VWl2NDBaRVhnbTBH?=
- =?utf-8?B?bFJpZ3pSTUhVS294bmJidzQyeHZ1TkJKM0VsRkFBa3hlUmxOWmF4WUxWMnIw?=
- =?utf-8?B?OHF4V1oxcEdrTUFnaVhiaXd3UEJzd3dhOCtEZHBweC9vQjhrZitZcUhKdzlR?=
- =?utf-8?B?ODNSRGFPQ0ZCNXFGNHhOVnhQOUZaa3hZbitNenducFBYYUNFYUZ6M2FOZkpi?=
- =?utf-8?B?c3ZmK29Db0ZjSjhlMTU0TDlYbGZNclN1anNtU01qVUpFWjFXbUdwclpOQ0Rp?=
- =?utf-8?B?VTRCZjhRalZCb1RjUVhObVRUT09mbFNhbWowOEJ6bHFhUnJlcW1iWEJ6UWJG?=
- =?utf-8?B?QlZjb09DWThFMUdiZTVVSmFZWDFWSDd6N0xIU3hybGNDUFZiTktzN1d5Y201?=
- =?utf-8?B?bVJCQ3NmN3Vra2E4VjJPUm9oQ0Z1b3l3YXFjT0lYY2Z5QjJJVUw5bDd4MlhZ?=
- =?utf-8?B?UlpUdEZYdzRwZUxab0VWeVc5ZndqTzNMYVNNVjhxNDJmWHVhTUdKaEJpaXhC?=
- =?utf-8?B?ZDFPTWlpdWtqWGMybjRaVS92RzlzbGF1UmtTRnpLcitON3YxZGYvWFI5R1Bs?=
- =?utf-8?B?VmVkSUkzamNMYjNkTDNrUFhOT2k3K0xFRVlaZW5YVWNLOFczU09qc1g1WFNa?=
- =?utf-8?B?VFV1enBRaGhCd2gxSnRMRmY2WEVoTUJmZTZIek1TWC9LTVBHWU9RTjFRZzB1?=
- =?utf-8?B?U3FjVlRDeUdjekxleS94N1NDOWxpQ1JYcmFTcjU1bElrdTNKMVI5MEs0OHF2?=
- =?utf-8?Q?Y3ktNwKD3HwYLsk519Jtt6zwH?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="gWUaPg6d"
+Received: from pps.filterd (m0279864.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 3AGBQsIr006773;
+	Thu, 16 Nov 2023 12:44:45 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=qcppdkim1;
+ bh=baCBSVsMNXeO3j944GmUxKKioxYuIjPJVtEqyP3mlSk=;
+ b=gWUaPg6dzigG6bZlVwJCa+fRHDtAmn2nyQnL9UpWJsOG9HCryvqmh/PrWHC+xzBUFGja
+ 6FX/hZWFAz3Gf6BpCig6WqmgtcBjGH+1nr37oiKsLI8JkqJxNaMd/Czqd/0B35JFfBwZ
+ 6/wpcNu842357WI4LrSMulKbQQdTVqS5xWQN7Pz22KN4WRrtm2z43DEuxCx/xh9I9Cqd
+ 7axd82N91S8NacF51ft8X0edBqMM5VQ/fysO+xMmmCjevdQGzyGv6WeZeAaJaZ4wu1uB
+ Jz7+7PJfefXc6SE6GrUgm3HbxwihPPjY944KeFQsPgj2FgZ37vMcttUaqr8lW6olg9sY /Q== 
+Received: from nasanppmta04.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3ucubsb6ys-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 16 Nov 2023 12:44:44 +0000
+Received: from nasanex01c.na.qualcomm.com (nasanex01c.na.qualcomm.com [10.45.79.139])
+	by NASANPPMTA04.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 3AGCii2P009080
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 16 Nov 2023 12:44:44 GMT
+Received: from [10.214.66.253] (10.80.80.8) by nasanex01c.na.qualcomm.com
+ (10.45.79.139) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.39; Thu, 16 Nov
+ 2023 04:44:39 -0800
+Message-ID: <0d290a5c-081f-4dfa-af9a-b061e6134662@quicinc.com>
+Date: Thu, 16 Nov 2023 18:14:36 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c306c6ff-3816-46bb-16a8-08dbe67d70aa
-X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Nov 2023 08:24:23.8046
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: GRh2vQq40i4kWw7OOYRdqF7AWMH/jA0GHSLK++IJkaqFquY0P3Wq5gM0jnnz/p2GBTW5yBfkWBJ/tvuif7MRCA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR11MB8209
-X-OriginatorOrg: intel.com
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 3/3] iommu/arm-smmu: re-enable context caching in smmu
+ reset operation
+Content-Language: en-US
+To: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+CC: <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
+        <a39.skl@gmail.com>, <konrad.dybcio@linaro.org>,
+        <quic_pkondeti@quicinc.com>, <quic_molvera@quicinc.com>,
+        <linux-arm-msm@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
+        <linux-kernel@vger.kernel.org>, <qipl.kernel.upstream@quicinc.com>
+References: <20231114135654.30475-1-quic_bibekkum@quicinc.com>
+ <20231114135654.30475-4-quic_bibekkum@quicinc.com>
+ <CAA8EJpoRmm42aAvyX61o3tMWXszUZmfFvJEtnNDEfYdDqy4Y0g@mail.gmail.com>
+ <72b30354-0497-45cf-8b71-e4f265eb0005@quicinc.com>
+ <CAA8EJprPE=z2VN5LkaUyLyvYpx6i1eF9dyxOzN_L86pi5tmU-Q@mail.gmail.com>
+From: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+In-Reply-To: <CAA8EJprPE=z2VN5LkaUyLyvYpx6i1eF9dyxOzN_L86pi5tmU-Q@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nasanex01c.na.qualcomm.com (10.45.79.139)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: P5V2Nb4N9uO5XZt2vGlyYumM-eKoyeDx
+X-Proofpoint-GUID: P5V2Nb4N9uO5XZt2vGlyYumM-eKoyeDx
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.987,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2023-11-16_12,2023-11-16_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ impostorscore=0 malwarescore=0 mlxscore=0 clxscore=1015 bulkscore=0
+ suspectscore=0 lowpriorityscore=0 adultscore=0 phishscore=0 spamscore=0
+ mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2311060000 definitions=main-2311160100
 
-PiBGcm9tOiBCYW9sdSBMdSA8YmFvbHUubHVAbGludXguaW50ZWwuY29tPg0KPiBTZW50OiBUaHVy
-c2RheSwgTm92ZW1iZXIgMTYsIDIwMjMgMzozNSBQTQ0KPiANCj4gT24gMjAyMy8xMS8xNCA5OjEw
-LCBMdSBCYW9sdSB3cm90ZToNCj4gPiBXaGVuIElPTU1VIGhhcmR3YXJlIG9wZXJhdGVzIGluIGxl
-Z2FjeSBtb2RlLCB0aGUgVFQgZmllbGQgb2YgdGhlDQo+IGNvbnRleHQNCj4gPiBlbnRyeSBkZXRl
-cm1pbmVzIHRoZSB0cmFuc2xhdGlvbiB0eXBlLCB3aXRoIHRocmVlIHN1cHBvcnRlZCB0eXBlcyAo
-U2VjdGlvbg0KPiA+IDkuMyBDb250ZXh0IEVudHJ5KToNCj4gPg0KPiA+IC0gRE1BIHRyYW5zbGF0
-aW9uIHdpdGhvdXQgZGV2aWNlIFRMQiBzdXBwb3J0DQo+ID4gLSBETUEgdHJhbnNsYXRpb24gd2l0
-aCBkZXZpY2UgVExCIHN1cHBvcnQNCj4gPiAtIFBhc3N0aHJvdWdoIG1vZGUgd2l0aCB0cmFuc2xh
-dGVkIGFuZCB0cmFuc2xhdGlvbiByZXF1ZXN0cyBibG9ja2VkDQo+ID4NCj4gPiBEZXZpY2UgVExC
-IHN1cHBvcnQgaXMgYWJzZW50IHdoZW4gaGFyZHdhcmUgaXMgY29uZmlndXJlZCBpbiBwYXNzdGhy
-b3VnaA0KPiA+IG1vZGUuDQo+ID4NCj4gPiBEaXNhYmxlIHRoZSBQQ0kgQVRTIGZlYXR1cmUgd2hl
-biBJT01NVSBpcyBjb25maWd1cmVkIGZvciBwYXNzdGhyb3VnaA0KPiA+IHRyYW5zbGF0aW9uIHR5
-cGUgaW4gbGVnYWN5IChub24tc2NhbGFibGUpIG1vZGUuDQo+ID4NCj4gPiBGaXhlczogMGZhYTE5
-YTE1MTVmICgiaW9tbXUvdnQtZDogRGVjb3VwbGUgUEFTSUQgJiBQUkkgZW5hYmxpbmcgZnJvbQ0K
-PiBTVkEiKQ0KPiA+IFNpZ25lZC1vZmYtYnk6IEx1IEJhb2x1IDxiYW9sdS5sdUBsaW51eC5pbnRl
-bC5jb20+DQo+ID4gLS0tDQo+ID4gICBkcml2ZXJzL2lvbW11L2ludGVsL2lvbW11LmMgfCA0ICsr
-KysNCj4gPiAgIDEgZmlsZSBjaGFuZ2VkLCA0IGluc2VydGlvbnMoKykNCj4gPg0KPiA+IGRpZmYg
-LS1naXQgYS9kcml2ZXJzL2lvbW11L2ludGVsL2lvbW11LmMgYi9kcml2ZXJzL2lvbW11L2ludGVs
-L2lvbW11LmMNCj4gPiBpbmRleCAxMTY3MGNkODEyYTMuLmMzZWMwOTExOGFiMSAxMDA2NDQNCj4g
-PiAtLS0gYS9kcml2ZXJzL2lvbW11L2ludGVsL2lvbW11LmMNCj4gPiArKysgYi9kcml2ZXJzL2lv
-bW11L2ludGVsL2lvbW11LmMNCj4gPiBAQCAtMTQxMyw2ICsxNDEzLDEwIEBAIHN0YXRpYyB2b2lk
-IGlvbW11X2VuYWJsZV9wY2lfY2FwcyhzdHJ1Y3QNCj4gZGV2aWNlX2RvbWFpbl9pbmZvICppbmZv
-KQ0KPiA+ICAgCWlmICghZGV2X2lzX3BjaShpbmZvLT5kZXYpKQ0KPiA+ICAgCQlyZXR1cm47DQo+
-ID4NCj4gPiArCWlmICghc21fc3VwcG9ydGVkKGluZm8tPmlvbW11KSAmJiBpbmZvLT5kb21haW4g
-JiYNCj4gPiArCSAgICBkb21haW5fdHlwZV9pc19zaShpbmZvLT5kb21haW4pKQ0KPiA+ICsJCXJl
-dHVybjsNCj4gPiArDQo+ID4gICAJcGRldiA9IHRvX3BjaV9kZXYoaW5mby0+ZGV2KTsNCj4gPg0K
-PiA+ICAgCS8qIFRoZSBQQ0llIHNwZWMsIGluIGl0cyB3aXNkb20sIGRlY2xhcmVzIHRoYXQgdGhl
-IGJlaGF2aW91ciBvZg0KPiANCj4gUGVyaGFwcyB3ZSBjb3VsZCBtb3ZlIHRoZSBjaGVjayBpbnRv
-IHRoZSBjYWxsZXIgYW5kIG1ha2UgdGhpcyBoZWxwZXINCj4gdHJhbnNwYXJlbnQgdG8gdGhlIGlv
-bW11IG1vZGUgYW5kIGRvbWFpbiB0eXBlPw0KPiANCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9t
-bXUvaW50ZWwvaW9tbXUuYyBiL2RyaXZlcnMvaW9tbXUvaW50ZWwvaW9tbXUuYw0KPiBpbmRleCAx
-MTY3MGNkODEyYTMuLjliZGRkNGZiYmRmOCAxMDA2NDQNCj4gLS0tIGEvZHJpdmVycy9pb21tdS9p
-bnRlbC9pb21tdS5jDQo+ICsrKyBiL2RyaXZlcnMvaW9tbXUvaW50ZWwvaW9tbXUuYw0KPiBAQCAt
-MjQ5Miw3ICsyNDkyLDggQEAgc3RhdGljIGludCBkbWFyX2RvbWFpbl9hdHRhY2hfZGV2aWNlKHN0
-cnVjdA0KPiBkbWFyX2RvbWFpbiAqZG9tYWluLA0KPiAgICAgICAgICAgICAgICAgIHJldHVybiBy
-ZXQ7DQo+ICAgICAgICAgIH0NCj4gDQo+IC0gICAgICAgaW9tbXVfZW5hYmxlX3BjaV9jYXBzKGlu
-Zm8pOw0KPiArICAgICAgIGlmIChzbV9zdXBwb3J0ZWQoaW5mby0+aW9tbXUpIHx8ICFkb21haW5f
-dHlwZV9pc19zaShpbmZvLT5kb21haW4pKQ0KPiArICAgICAgICAgICAgICAgaW9tbXVfZW5hYmxl
-X3BjaV9jYXBzKGluZm8pOw0KPiANCg0KSU1ITyBib3RoIG9sZCBhbmQgdGhpcyBuZXcgdmVyc2lv
-biBhcmUgY29uZnVzaW5nIHJlZ2FyZGluZyB0byB0aGF0DQp0aGUgY29tbWl0IG1zZyB0YWxrcyBv
-bmx5IGFib3V0IEFUUyBidXQgdGhlIGFjdHVhbCBjb2RlIGRpc2FibGUgYWxsDQpwY2kgY2Fwcy4g
-SXQncyBjb3JyZWN0LCBiZWluZyB0aGF0IG9ubHkgQVRTIGlzIHJlbGV2YW50IGluIGxlZ2FjeSBt
-b2RlLA0KYnV0IHRoZSByZWFkYWJpbGl0eSBpcyBub3QgZ29vZC4NCg0Kd2hhdCBhYm91dCBpbnRy
-b2R1Y2luZyBhIGhlbHBlciBlLmcuIGRldmljZV9kb21haW5fYXRzX3N1cHBvcnRlZChpbmZvKQ0K
-d2hpY2ggaW5jbHVkZXMgYWJvdmUgY2hlY2tzIHBsdXMgaW5mby0+YXRzX3N1cHBvcnRlZCBhbmQg
-dGhlbiB1c2UgaXQNCnRvIHJlcGxhY2UgaW5mby0+YXRzX3N1cHBvcnRlZCBpbiBpb21tdV9lbmFi
-bGVfcGNpX2NhcHMoKT8NCg0K
+
+
+On 11/15/2023 4:33 PM, Dmitry Baryshkov wrote:
+> On Wed, 15 Nov 2023 at 11:45, Bibek Kumar Patro
+> <quic_bibekkum@quicinc.com> wrote:
+>>
+>> On 11/14/2023 7:45 PM, Dmitry Baryshkov wrote:
+>>> On Tue, 14 Nov 2023 at 15:57, Bibek Kumar Patro
+>>> <quic_bibekkum@quicinc.com> wrote:
+>>>>
+>>>> Context caching is re-enabled in the prefetch buffer for Qualcomm SoCs
+>>>> through SoC specific reset ops, which is disabled in the default MMU-500
+>>>> reset ops, but is expected for context banks using ACTLR register to
+>>>> retain the prefetch value during reset and runtime suspend.
+>>>
+>>> Please refer to Documentation/process/submitting-patches.rst and
+>>> rephrase this following the rules there.
+>>>
+>>
+>> Noted, will go through the description once and rephrase it
+>> in next version complying with rules.
+>>
+>>>>
+>>>> Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+>>>> ---
+>>>>    drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 25 ++++++++++++++++++----
+>>>>    1 file changed, 21 insertions(+), 4 deletions(-)
+>>>>
+>>>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>>> index 0eaf6f2a2e49..fa867b1d9d16 100644
+>>>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>>> @@ -478,11 +478,28 @@ static int qcom_smmu_def_domain_type(struct device *dev)
+>>>>           return match ? IOMMU_DOMAIN_IDENTITY : 0;
+>>>>    }
+>>>>
+>>>> +static int qcom_smmu500_reset(struct arm_smmu_device *smmu)
+>>>> +{
+>>>> +       int i;
+>>>> +       u32 reg;
+>>>> +
+>>>> +       arm_mmu500_reset(smmu);
+>>>> +
+>>>> +       /* Re-enable context caching after reset */
+>>>> +       for (i = 0; i < smmu->num_context_banks; ++i) {
+>>>> +               reg = arm_smmu_cb_read(smmu, i, ARM_SMMU_CB_ACTLR);
+>>>> +               reg |= CPRE;
+>>>> +               arm_smmu_cb_write(smmu, i, ARM_SMMU_CB_ACTLR, reg);
+>>>> +       }
+>>>> +
+>>>> +       return 0;
+>>>> +}
+>>>> +
+>>>>    static int qcom_sdm845_smmu500_reset(struct arm_smmu_device *smmu)
+>>>>    {
+>>>>           int ret;
+>>>>
+>>>> -       arm_mmu500_reset(smmu);
+>>>> +       qcom_smmu500_reset(smmu);
+>>>
+>>> Is this applicable for sdm845? For all other platforms supported by
+>>> qcom_smmu_500 implementation?
+>>>
+>>
+>> In arm_mmu500_reset operation drivers/iommu/arm/arm-smmu/arm-smmu-impl.c
+>> CPRE bit is reset for all SoC based on mmu500 platform, hence for all
+>> Qualcomm SoCs including sm845 we are setting back the CPRE bit.
+> 
+> The errata for the CoreLink MMU-500 requires CPRE to be disabled for
+> all revisions before r2p2. Do we know whether these SoC used CoreLink
+> MMU-500 and which version of it?
+> 
+
+Just checked all these SoCs are using r2p4 revision.
+So CPRE needs to be enabled back here then?
+
+>>
+>>>>
+>>>>           /*
+>>>>            * To address performance degradation in non-real time clients,
+>>>> @@ -509,7 +526,7 @@ static const struct arm_smmu_impl qcom_smmu_500_impl = {
+>>>>           .init_context = qcom_smmu_init_context,
+>>>>           .cfg_probe = qcom_smmu_cfg_probe,
+>>>>           .def_domain_type = qcom_smmu_def_domain_type,
+>>>> -       .reset = arm_mmu500_reset,
+>>>> +       .reset = qcom_smmu500_reset,
+>>>>           .write_s2cr = qcom_smmu_write_s2cr,
+>>>>           .tlb_sync = qcom_smmu_tlb_sync,
+>>>>    };
+>>>> @@ -528,7 +545,7 @@ static const struct arm_smmu_impl sm8550_smmu_500_impl = {
+>>>>           .init_context = qcom_smmu_init_context,
+>>>>           .cfg_probe = qcom_smmu_cfg_probe,
+>>>>           .def_domain_type = qcom_smmu_def_domain_type,
+>>>> -       .reset = arm_mmu500_reset,
+>>>> +       .reset = qcom_smmu500_reset,
+>>>>           .write_s2cr = qcom_smmu_write_s2cr,
+>>>>           .tlb_sync = qcom_smmu_tlb_sync,
+>>>>    };
+>>>> @@ -544,7 +561,7 @@ static const struct arm_smmu_impl qcom_adreno_smmu_v2_impl = {
+>>>>    static const struct arm_smmu_impl qcom_adreno_smmu_500_impl = {
+>>>>           .init_context = qcom_adreno_smmu_init_context,
+>>>>           .def_domain_type = qcom_smmu_def_domain_type,
+>>>> -       .reset = arm_mmu500_reset,
+>>>> +       .reset = qcom_smmu500_reset,
+>>>>           .alloc_context_bank = qcom_adreno_smmu_alloc_context_bank,
+>>>>           .write_sctlr = qcom_adreno_smmu_write_sctlr,
+>>>>           .tlb_sync = qcom_smmu_tlb_sync,
+>>>> --
+>>>> 2.17.1
+>>>>
+>>>
+>>>
+> 
+> 
+> 
+> --
+> With best wishes
+> Dmitry
