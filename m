@@ -1,38 +1,38 @@
 Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8B1A79C4
-	for <iommu@lists.linux.dev>; Thu, 16 Nov 2023 03:28:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CD6788F40
+	for <iommu@lists.linux.dev>; Thu, 16 Nov 2023 03:29:37 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="d0KbtNE2"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="GeS2vE5m"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1700105292; x=1731641292;
+  t=1700105378; x=1731641378;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=DhK1ix88G1Yi7MN02s45jcyCSJlvBkl/JOoMUxCCVrc=;
-  b=d0KbtNE2RIkc943+ZJA/xDacKkLQ9AlIbpkxtZxjXouhZ2OGjo1xlxKE
-   a5kZPKH/OCtMXegHjM/mClOyXKcHeplNNw9dNjcRsCl2GfShdXSYZoA7f
-   cFrTyLDeYIjpeiOVcay1rmNoj+RztGPPxvvm1hcSwaKcxNKa+Fmwpgg0N
-   rkUpCJ+XnlPwqoRKfECgDv71ls+qx+ciJ0nc+/pgNlu2nV207F5DGSpoW
-   Rhon4tkcDzYUrdJHyrVzcSlRSn2fneA6Mwy3NfxKl/QqpJJzopmR/b7Jv
-   40LOCKpWpc1HwuBRzWO7QHzEPIfW+fH5SUJk382txbILYJ5TjXcImAPyd
+  bh=e7Vj3hzUi2owuqUml83r8SMkIgCZDOcihonf5G65bzo=;
+  b=GeS2vE5mYfjjW9LOo9IspmTanB5MCfSIGXkH1J8Rn+LcaKgRDFzQk1Ce
+   01A5nJqBoNESlq8AYAVw1smvwxOH9XSzuCuws/EB1V8oCWHU7aowXXr2L
+   HJSiH/jUB1Vc3QGNqFrkptv4bJx7cKlnZMSRoyoljZn/iC2DOLgFAjk70
+   MHWBGDQ34sbfFRGlk5K6snXOb3DmPC82rw1jvbqe2Fa/EPGCRUeTW8mjO
+   Sv+zyYc6M1tK+sk+TIQ/jS+49CGGpEFwrSHyDjpe1W4n2ajOS7kv2X2gG
+   fJjpe40sV9dSW79xR1jS16FgQyy+WmqtIl7dZjXc+uWYJRcLRfMiXOyHz
    w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10895"; a="4132672"
+X-IronPort-AV: E=McAfee;i="6600,9927,10895"; a="4132799"
 X-IronPort-AV: E=Sophos;i="6.03,307,1694761200"; 
-   d="scan'208";a="4132672"
+   d="scan'208";a="4132799"
 Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Nov 2023 19:28:11 -0800
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Nov 2023 19:29:37 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10895"; a="765180519"
+X-IronPort-AV: E=McAfee;i="6600,9927,10895"; a="765180796"
 X-IronPort-AV: E=Sophos;i="6.03,307,1694761200"; 
-   d="scan'208";a="765180519"
+   d="scan'208";a="765180796"
 Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
-  by orsmga002.jf.intel.com with ESMTP; 15 Nov 2023 19:28:08 -0800
-Message-ID: <053e89dd-8de9-43f3-8530-1f65181efd46@linux.intel.com>
-Date: Thu, 16 Nov 2023 11:23:56 +0800
+  by orsmga002.jf.intel.com with ESMTP; 15 Nov 2023 19:29:14 -0800
+Message-ID: <d6e8fbaf-c49d-421f-ad05-7737060785ff@linux.intel.com>
+Date: Thu, 16 Nov 2023 11:25:01 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -43,39 +43,49 @@ User-Agent: Mozilla Thunderbird
 Cc: baolu.lu@linux.intel.com, "iommu@lists.linux.dev"
  <iommu@lists.linux.dev>,
  "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 1/4] iommu/vt-d: Introduce dev_to_iommu()
+Subject: Re: [PATCH 3/4] iommu/vt-d: Remove unused vcmd interfaces
+Content-Language: en-US
 To: "Tian, Kevin" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
  Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
  Jason Gunthorpe <jgg@ziepe.ca>
 References: <20231116015048.29675-1-baolu.lu@linux.intel.com>
- <20231116015048.29675-2-baolu.lu@linux.intel.com>
- <BN9PR11MB5276CF0833BF362C1BE5F2268CB0A@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Language: en-US
+ <20231116015048.29675-4-baolu.lu@linux.intel.com>
+ <BN9PR11MB52762063ED9337AD624E62148CB0A@BN9PR11MB5276.namprd11.prod.outlook.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <BN9PR11MB5276CF0833BF362C1BE5F2268CB0A@BN9PR11MB5276.namprd11.prod.outlook.com>
+In-Reply-To: <BN9PR11MB52762063ED9337AD624E62148CB0A@BN9PR11MB5276.namprd11.prod.outlook.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 11/16/23 11:19 AM, Tian, Kevin wrote:
+On 11/16/23 11:21 AM, Tian, Kevin wrote:
 >> From: Lu Baolu <baolu.lu@linux.intel.com>
 >> Sent: Thursday, November 16, 2023 9:51 AM
 >>
->> +static inline struct intel_iommu *dev_to_iommu(struct device *dev)
->> +{
->> +	/*
->> +	 * Assume that valid per-device iommu structure must be installed
->> +	 * if iommu_probe_device() has succeeded. This helper could only
->> +	 * be used after device is probed.
->> +	 */
->> +	return ((struct device_domain_info *)dev_iommu_priv_get(dev))-
->>> iommu;
->> +}
+>> Commit 99b5726b4423 ("iommu: Remove ioasid infrastructure") has
+>> removed
+>> ioasid allocation interfaces from the iommu subsystem. As a result, these
+>> vcmd interfaces have become obsolete. Remove them to avoid dead code.
+>>
+>> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 > 
-> Not sure whether this helper is useful. This is only used by 2 out of 5
-> post-probe users. Probably just open-coding in all 5 places is clearer.
+> it's a surprise to see some remaining vcmd bits not removed.
+> 
+> with a grep actually there are more (mostly in the header files):
+> 
+> drivers/iommu/intel/debugfs.c:  IOMMU_REGSET_ENTRY(VCMD),
+> drivers/iommu/intel/pasid.h:#define VCMD_CMD_ALLOC                      0x1
+> drivers/iommu/intel/pasid.h:#define VCMD_CMD_FREE                       0x2
+> drivers/iommu/intel/pasid.h:#define VCMD_VRSP_IP                        0x1
+> drivers/iommu/intel/pasid.h:#define VCMD_VRSP_SC(e)                     (((e) & 0xff) >> 1)
+> drivers/iommu/intel/pasid.h:#define VCMD_VRSP_SC_SUCCESS                0
+> drivers/iommu/intel/pasid.h:#define VCMD_VRSP_SC_NO_PASID_AVAIL 16
+> drivers/iommu/intel/pasid.h:#define VCMD_VRSP_SC_INVALID_PASID  16
+> drivers/iommu/intel/pasid.h:#define VCMD_VRSP_RESULT_PASID(e)   (((e) >> 16) & 0xfffff)
+> drivers/iommu/intel/pasid.h:#define VCMD_CMD_OPERAND(e)         ((e) << 16)
+> drivers/iommu/intel/iommu.h:#define DMAR_VCMD_REG               0xe00 /* Virtual command register */
+> 
+> 
 
-I thought it should get more users in the future development.
+Yeah! I will also remove these bits. Thanks!
 
 Best regards,
 baolu
-
