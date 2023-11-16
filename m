@@ -1,158 +1,130 @@
-Received: from mail-yw1-f182.google.com (mail-yw1-f182.google.com [209.85.128.182])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.88])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E1A420E7
-	for <iommu@lists.linux.dev>; Thu, 16 Nov 2023 06:52:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C1D3FBE2
+	for <iommu@lists.linux.dev>; Thu, 16 Nov 2023 07:24:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="g4ztFf7l"
-Received: by mail-yw1-f182.google.com with SMTP id 00721157ae682-5a7eef0b931so4986137b3.0
-        for <iommu@lists.linux.dev>; Wed, 15 Nov 2023 22:52:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1700117527; x=1700722327; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=oc5E6kIcla/Or4QU1XuvIaiW9BS0HQZyOIehNU3S8rI=;
-        b=g4ztFf7lHJmB/yBMiUCRl9P5tDDG50YLBLSCo1t2eYy7O5Ffjvf4XDGqRk6TbiQKa0
-         oadKyfxQ39gDMiJ4capykW9InyJHOeKvs4vxCco39gDTakPHMqdTMctmHHwjZ+QUZ4NK
-         vHJtvsRDYTROsQOPU4Ecc6oNXuYU4RAxT5BNFU68iuDrt8GfR2buE9OXqRsW8rak//81
-         roECVxy06xZo71i8aBdrzGI+qP9x53Z4REU1rMaB03XtucPD271UWa508B8KPDeEuHMD
-         Wa/QFPyujuqy5Uwg+3SGStTDFWoM8sojcwcoFOhDJgKuaVwjNrKM5qHTPqZyqCRj58HG
-         HOzA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1700117527; x=1700722327;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=oc5E6kIcla/Or4QU1XuvIaiW9BS0HQZyOIehNU3S8rI=;
-        b=E0IxLG+i3RCTRRol/tlhKXqW86lNMB1LgJBjHE7PJ5bgkC8CRsmWDV4t+1YfJ/4gIb
-         WiJsEVHz2WeOGhuyZzjZiCNoT/bnSbDXV+aaSWqS2qTSf12QfF49rF5oPkmYmS8TkMfK
-         U5+XXwF2FSTxk3RfsAiS/qKJOQ2vbYmVMR1z2z3XJrt+bqBgUGgwFvSXAn4y4dG6Thp/
-         CBZTXkiz9v15wJdWGg/Um6bXYR3X7fyJw5I+180pek5NsarS7VbuLOymwCraktV4pZC1
-         ZQeQasO7XlqYl+mGa5SEX+khre2Ho8IuKeihYQIRmrhGYUGKj3nrh8LYe+pmR/8O5k6e
-         eCeg==
-X-Gm-Message-State: AOJu0YxIQiIjvFWg4leEX4/69bHMWzxyjjVA6JX26CkDLMJ2fpnlK53R
-	kjqDMipgWwkZ819nTGh2X8cuZaxdMSz3peXTZB4I9Q==
-X-Google-Smtp-Source: AGHT+IF9xl+Hc9uyP+mSbdRq22l1klxH1FdSfYmdGQLsuU3qAhFB8KEVx7+2dM8/7H2WMf9mXaTnItbCGUXlosfWtoc=
-X-Received: by 2002:a81:a549:0:b0:57a:cf8:5b4 with SMTP id v9-20020a81a549000000b0057a0cf805b4mr14384806ywg.51.1700117527207;
- Wed, 15 Nov 2023 22:52:07 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="JemptJSB"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1700119498; x=1731655498;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=xzxCiQMFYJij7t6O0mSmHnDg/h78ww1UnMJV0w34NHk=;
+  b=JemptJSBdpoLLGJ8tU4XTzclXK+gvu4JCctjDn+ACdWay/HITzK8tLLn
+   y1N2fD88FUakbHYV+x8qmVgEbf6ForiwAlOpzjtH9+/zetHsCjZw0UwRi
+   OC3hySqrBLSgBdW57JzA1V4hh2goGEIM3FUK1lDO9Em37AQ9p3UGdFzea
+   ULqbN+vNnqdX2cXq0ZfO7FBLaSgpBaeM1GG5gQZ+OOcwZc4JjQQU5dV2J
+   8kPDWWN7Cz+ShVcNdDPxeV6a+OYnrpzVbngFKuaviGy2Ob9yr/DQ1wNv+
+   yUrKOXB10WvrWVqxn7RwbfBDpedZQ0JczJR3UIZOsBPXZn/YTRrd3edPx
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10895"; a="422124654"
+X-IronPort-AV: E=Sophos;i="6.03,307,1694761200"; 
+   d="scan'208";a="422124654"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Nov 2023 23:24:57 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10895"; a="938757177"
+X-IronPort-AV: E=Sophos;i="6.03,307,1694761200"; 
+   d="scan'208";a="938757177"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.255.31.199]) ([10.255.31.199])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Nov 2023 23:24:54 -0800
+Message-ID: <b825e828-6dff-4064-896e-df4de24aa6d6@linux.intel.com>
+Date: Thu, 16 Nov 2023 15:24:51 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20231114135654.30475-1-quic_bibekkum@quicinc.com>
- <20231114135654.30475-3-quic_bibekkum@quicinc.com> <CAA8EJpr1NzqiuNVZ0YcLpJ=yeOYFbLouAFgN9VMOiKpmoGVdtQ@mail.gmail.com>
- <7edad996-f148-42d5-8e72-0334d3b9101f@quicinc.com> <CAA8EJpqzEvC-LEjJrOk6Ed8utFNnqgP=qkb0mq-dOfMZd5ij4Q@mail.gmail.com>
- <dba223a1-0456-40b8-b295-ea960867dcf9@quicinc.com> <CAA8EJpqvXb_Zdmq0O0KEA8mn5UkSriCZ02w16dts7Gd84R30oQ@mail.gmail.com>
- <aebdf7f6-48b7-43d3-95af-83859ddc593f@quicinc.com> <be9675a6-a01e-4cf7-95b3-174220d4a042@linaro.org>
- <61d2885a-50f9-419f-8473-10308baed493@quicinc.com>
-In-Reply-To: <61d2885a-50f9-419f-8473-10308baed493@quicinc.com>
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Date: Thu, 16 Nov 2023 08:51:55 +0200
-Message-ID: <CAA8EJpoTeonht4S5JkW=1VJmKsSFm5iCb_Tz-ZempaRufnjmHQ@mail.gmail.com>
-Subject: Re: [PATCH v2 2/3] iommu/arm-smmu: add ACTLR data and support for SM8550
-To: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
-Cc: Konrad Dybcio <konrad.dybcio@linaro.org>, will@kernel.org, robin.murphy@arm.com, 
-	joro@8bytes.org, a39.skl@gmail.com, quic_pkondeti@quicinc.com, 
-	quic_molvera@quicinc.com, linux-arm-msm@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, 
-	linux-kernel@vger.kernel.org, qipl.kernel.upstream@quicinc.com
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, "iommu@lists.linux.dev"
+ <iommu@lists.linux.dev>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "Abdul Halim, Mohd Syazwan" <mohd.syazwan.abdul.halim@intel.com>,
+ "stable@vger.kernel.org" <stable@vger.kernel.org>
+Subject: Re: [PATCH 1/1] iommu/vt-d: Add MTL to quirk list to skip TE
+ disabling
+To: "Tian, Kevin" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Jason Gunthorpe <jgg@ziepe.ca>
+References: <20231116022324.30120-1-baolu.lu@linux.intel.com>
+ <BN9PR11MB527667F09E2FAD729AE2BC2C8CB0A@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <BN9PR11MB527667F09E2FAD729AE2BC2C8CB0A@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Thu, 16 Nov 2023 at 08:10, Bibek Kumar Patro
-<quic_bibekkum@quicinc.com> wrote:
->
->
->
-> On 11/15/2023 10:12 PM, Konrad Dybcio wrote:
-> >
-> >
-> > On 11/15/23 13:49, Bibek Kumar Patro wrote:
-> >>
-> >>
-> >> On 11/15/2023 4:15 PM, Dmitry Baryshkov wrote:
-> >>> On Wed, 15 Nov 2023 at 11:51, Bibek Kumar Patro
-> >>> <quic_bibekkum@quicinc.com> wrote:
-> >>>>
-> >>>>
-> >>>>
-> >>>> On 11/15/2023 3:08 PM, Dmitry Baryshkov wrote:
-> >>>>> On Wed, 15 Nov 2023 at 11:22, Bibek Kumar Patro
-> >>>>> <quic_bibekkum@quicinc.com> wrote:
-> >>>>>>
-> >>>>>>
-> >>>>>>
-> >>>>>> On 11/14/2023 7:42 PM, Dmitry Baryshkov wrote:
-> >>>>>>> On Tue, 14 Nov 2023 at 15:57, Bibek Kumar Patro
-> >>>>>>> <quic_bibekkum@quicinc.com> wrote:
-> >>>>>>>>
-> >>>>>>>> Add ACTLR data table for SM8550 along with support for
-> >>>>>>>> same including SM8550 specific implementation operations.
-> >>>>>>>>
-> >>>>>>>> Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
-> >>>>>>>> ---
-> >>>>>>>>     drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 92
-> >>>>>>>> +++++++++++++++++++++-
-> >>>>>>>>     1 file changed, 88 insertions(+), 4 deletions(-)
-> >>>>>>>>
-> >>>>>>>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> >>>>>>>> b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> >>>>>>>> index 578c662c7c30..0eaf6f2a2e49 100644
-> >>>>>>>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> >>>>>>>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> >>>>>>>> @@ -25,6 +25,70 @@ struct actlr_data {
-> >>>>>>>>            u32 actlr;
-> >>>>>>>>     };
-> >>>>>>>>
-> >>>>>>>> +#define PRE_FETCH_1    0
-> >>>>>>>> +#define PRE_FETCH_2    BIT(8)
-> >>>>>>>> +#define PRE_FETCH_3    (BIT(9) | BIT(8))
-> >>>>>>>
-> >>>>>>> What is the difference between PRE_FETCH_3 and PRE_FETCH_2? And
-> >>>>>>> PRE_FETCH_1? Are these real numbers that refer to some amount /
-> >>>>>>> count
-> >>>>>>> or just dummy names?
-> >>>>>>>
-> >>>>>>
-> >>>>>> No,these are not real numbers, but prefetch settings for a particular
-> >>>>>> perfect configuration.
-> >>>>>
-> >>>>> Then I'd ask for some better names or descriptions.
-> >>>>>
-> >>>>
-> >>>> Noted, PREFETCH_SETTING_n / PREFETCH_OPTION_n sounds like a better name
-> >>>> in the following case. Would it be okay to use this name instead?
-> >>>
-> >>> Not really.
-> >>>
-> >>
-> >> Any suggestion you have in mind, if not this nomenclature?
-> > Dmitry's concern seems to be that you provide:
-> >
-> > PRE_FETCH_1 /* prefetcher with settings preset no. 1 */
-> > PRE_FETCH_2 /* prefetcher with settings preset no. 2 */
-> > PRE_FETCH_3 /* prefetcher with settings preset no. 3 */
-> >
-> > whereas it would be both useful and interesting to see what these
-> > settings mean, i.e. what differences there are between all of
-> > these presets.
-> >
->
-> Ah, okay got it now from Dimitry and yours' response.
-> But we exactly won't be able to reveal what each of these settings
-> mean, as this might risk of revealing IP as ACTLR bits are
-> implementation defined (except CPRE and CMTLB) which other SoC vendors
-> might be using it in different manner(or different purpose) in their
-> downstream implementation.
-> We can name it like (e.g PREFETCH_DISABLE, PREFETCH_SHALLOW,
-> PREFETCH_DEEP) to indicate the behaviour, but won't be exactly
-> name/describe it to explain what it does with a particular setting.
+On 2023/11/16 11:27, Tian, Kevin wrote:
+>> From: Lu Baolu <baolu.lu@linux.intel.com>
+>> Sent: Thursday, November 16, 2023 10:23 AM
+>>
+>> From: "Abdul Halim, Mohd Syazwan"
+>> <mohd.syazwan.abdul.halim@intel.com>
+>>
+>> The VT-d spec requires (10.4.4 Global Command Register, TE field) that:
+>>
+>> Hardware implementations supporting DMA draining must drain any in-flight
+>> DMA read/write requests queued within the Root-Complex before
+>> completing
+>> the translation enable command and reflecting the status of the command
+>> through the TES field in the Global Status register.
+> 
+> this talks about 'enable'...
+> 
+>>
+>> Unfortunately, some integrated graphic devices fail to do so after some
+>> kind of power state transition. As the result, the system might stuck in
+>> iommu_disable_translation(), waiting for the completion of TE transition.
+> 
+> ...while this fixes 'disable'. wrong citation?
 
-This is already better than 1,2,3.
+Right. It's confusing. I will change it to below.
 
--- 
-With best wishes
-Dmitry
+"
+...before switching address translation on or off and reflecting the
+status of the command through the TES field in the Global Status
+register.
+"
+
+> 
+>> @@ -5080,7 +5080,7 @@ static void quirk_igfx_skip_te_disable(struct
+>> pci_dev *dev)
+>>   	ver = (dev->device >> 8) & 0xff;
+>>   	if (ver != 0x45 && ver != 0x46 && ver != 0x4c &&
+>>   	    ver != 0x4e && ver != 0x8a && ver != 0x98 &&
+>> -	    ver != 0x9a && ver != 0xa7)
+>> +	    ver != 0x9a && ver != 0xa7 && ver != 0x7d)
+>>   		return;
+>>
+> 
+> this fix alone is fine, but I found this quirk overall is not cleanly handled.
+> 
+> Basically it sets iommu_skip_te_disable as true, leading to early return
+> in iommu_disable_translation():
+> 
+> 	if (iommu_skip_te_disable && iommu->drhd->gfx_dedicated &&
+> 	   (cap_read_drain(iommu->cap) || cap_write_drain(iommu->cap)))
+> 		return;
+> 
+> However the caller of iommu_disable_translation() is not aware of this
+> quirk and continues as if the iommu is disabled. IMHO this is problematic
+> w/o meeting the caller's assumption.
+> 
+> e.g. kdump and suspend. We may want to abort those paths early in case
+> of such quirk...
+
+I can see your point.
+
+This fix is just to add a new device model to the established quirk
+list. All devices (including the new one) in this quirk list have
+undergone thorough verification. Therefor, I'd like to keep it as-is.
+
+We can refine the quirk implementation in a separated patch series with
+sufficient consideration and verification. Does this work for you?
+
+Best regards,
+baolu
