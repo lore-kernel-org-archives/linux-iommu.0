@@ -1,195 +1,140 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ot1-f52.google.com (mail-ot1-f52.google.com [209.85.210.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C99D7F9
-	for <iommu@lists.linux.dev>; Thu, 16 Nov 2023 12:45:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="gWUaPg6d"
-Received: from pps.filterd (m0279864.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 3AGBQsIr006773;
-	Thu, 16 Nov 2023 12:44:45 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=qcppdkim1;
- bh=baCBSVsMNXeO3j944GmUxKKioxYuIjPJVtEqyP3mlSk=;
- b=gWUaPg6dzigG6bZlVwJCa+fRHDtAmn2nyQnL9UpWJsOG9HCryvqmh/PrWHC+xzBUFGja
- 6FX/hZWFAz3Gf6BpCig6WqmgtcBjGH+1nr37oiKsLI8JkqJxNaMd/Czqd/0B35JFfBwZ
- 6/wpcNu842357WI4LrSMulKbQQdTVqS5xWQN7Pz22KN4WRrtm2z43DEuxCx/xh9I9Cqd
- 7axd82N91S8NacF51ft8X0edBqMM5VQ/fysO+xMmmCjevdQGzyGv6WeZeAaJaZ4wu1uB
- Jz7+7PJfefXc6SE6GrUgm3HbxwihPPjY944KeFQsPgj2FgZ37vMcttUaqr8lW6olg9sY /Q== 
-Received: from nasanppmta04.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3ucubsb6ys-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 16 Nov 2023 12:44:44 +0000
-Received: from nasanex01c.na.qualcomm.com (nasanex01c.na.qualcomm.com [10.45.79.139])
-	by NASANPPMTA04.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 3AGCii2P009080
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 16 Nov 2023 12:44:44 GMT
-Received: from [10.214.66.253] (10.80.80.8) by nasanex01c.na.qualcomm.com
- (10.45.79.139) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.39; Thu, 16 Nov
- 2023 04:44:39 -0800
-Message-ID: <0d290a5c-081f-4dfa-af9a-b061e6134662@quicinc.com>
-Date: Thu, 16 Nov 2023 18:14:36 +0530
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8525F328CB;
+	Thu, 16 Nov 2023 14:36:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; dkim=none
+Received: by mail-ot1-f52.google.com with SMTP id 46e09a7af769-6ce2de8da87so454512a34.1;
+        Thu, 16 Nov 2023 06:36:33 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1700145392; x=1700750192;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=hQe83AHexfh3GazMLDTY5AyEL167MohegfRBMKLl7I8=;
+        b=eew6CxPuwDBiLOspPOPPNFv6wx+5Uhf+qvP+98h1oirHQ6Tt5xjpcR6W5RCGCz6rkK
+         ojMtMh8NRAAwg8QA0MyIYB2p/61FhRWyd2MFine3U3Gv+YwkYRl5QIUyAMqAV7k/qZav
+         +DLuNrv9ZXYYBeOQ/4Pn2NShEd3K/KXsFfWUMxw4Ih5K8pOdzDJnm3MdR5IeB9ju20ji
+         ho5MSBLMYcwsr1/UncJUgI3tFOxMjdjcmrpDK9YefqBRmu4czGecUXmlNAj1/xvV1hr0
+         SPYtHV+ZNFA4JgAAE+w6o1JI1a9OKbzGnRctJiJQcxH7R+LII/nQyV+PfuToD2DwcMYz
+         iqzA==
+X-Gm-Message-State: AOJu0YyOI/rKbfYARZd5v9Ws+W35y60UCOgaYp9bUqdX6PhkuIznIVy5
+	H4DpB8K/LIgOViEztWfhTH0=
+X-Google-Smtp-Source: AGHT+IHU4Lxx+/myT+H5YB5iQwSXHLDIA41zmD2u+pjBktk3mb+GPBhIH+yVJJ2/AO7NCTzQtZy56A==
+X-Received: by 2002:a05:6830:10c7:b0:6c4:ae52:9599 with SMTP id z7-20020a05683010c700b006c4ae529599mr9476568oto.7.1700145392505;
+        Thu, 16 Nov 2023 06:36:32 -0800 (PST)
+Received: from localhost ([2600:380:7a60:430d:7a98:972a:884d:31ff])
+        by smtp.gmail.com with ESMTPSA id l2-20020a9d7082000000b006cd099bb052sm912460otj.1.2023.11.16.06.36.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Nov 2023 06:36:32 -0800 (PST)
+Date: Thu, 16 Nov 2023 06:36:30 -0800
+From: Moritz Fischer <mdf@kernel.org>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: acpica-devel@lists.linux.dev, Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+	Albert Ou <aou@eecs.berkeley.edu>, asahi@lists.linux.dev,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Dexuan Cui <decui@microsoft.com>, devicetree@vger.kernel.org,
+	David Woodhouse <dwmw2@infradead.org>,
+	Frank Rowand <frowand.list@gmail.com>,
+	Hanjun Guo <guohanjun@huawei.com>,
+	Haiyang Zhang <haiyangz@microsoft.com>, iommu@lists.linux.dev,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Jonathan Hunter <jonathanh@nvidia.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	"K. Y. Srinivasan" <kys@microsoft.com>, Len Brown <lenb@kernel.org>,
+	linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-hyperv@vger.kernel.org, linux-mips@vger.kernel.org,
+	linux-riscv@lists.infradead.org, linux-snps-arc@lists.infradead.org,
+	linux-tegra@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
+	Lorenzo Pieralisi <lpieralisi@kernel.org>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Hector Martin <marcan@marcan.st>,
+	Palmer Dabbelt <palmer@dabbelt.com>, patches@lists.linux.dev,
+	Paul Walmsley <paul.walmsley@sifive.com>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Robert Moore <robert.moore@intel.com>,
+	Rob Herring <robh+dt@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Sudeep Holla <sudeep.holla@arm.com>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Sven Peter <sven@svenpeter.dev>,
+	Thierry Reding <thierry.reding@gmail.com>,
+	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+	Krishna Reddy <vdumpa@nvidia.com>, Vineet Gupta <vgupta@kernel.org>,
+	virtualization@lists.linux.dev, Wei Liu <wei.liu@kernel.org>,
+	Will Deacon <will@kernel.org>,
+	=?iso-8859-1?Q?Andr=E9?= Draszik <andre.draszik@linaro.org>,
+	Lu Baolu <baolu.lu@linux.intel.com>, Christoph Hellwig <hch@lst.de>,
+	Jerry Snitselaar <jsnitsel@redhat.com>,
+	Moritz Fischer <mdf@kernel.org>,
+	Zhenhua Huang <quic_zhenhuah@quicinc.com>,
+	"Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+	Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v2 12/17] iommu: Make iommu_ops_from_fwnode() static
+Message-ID: <ZVYo7s_dV9HDm1qU@archbook>
+References: <0-v2-36a0088ecaa7+22c6e-iommu_fwspec_jgg@nvidia.com>
+ <12-v2-36a0088ecaa7+22c6e-iommu_fwspec_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 3/3] iommu/arm-smmu: re-enable context caching in smmu
- reset operation
-Content-Language: en-US
-To: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-CC: <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
-        <a39.skl@gmail.com>, <konrad.dybcio@linaro.org>,
-        <quic_pkondeti@quicinc.com>, <quic_molvera@quicinc.com>,
-        <linux-arm-msm@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
-        <linux-kernel@vger.kernel.org>, <qipl.kernel.upstream@quicinc.com>
-References: <20231114135654.30475-1-quic_bibekkum@quicinc.com>
- <20231114135654.30475-4-quic_bibekkum@quicinc.com>
- <CAA8EJpoRmm42aAvyX61o3tMWXszUZmfFvJEtnNDEfYdDqy4Y0g@mail.gmail.com>
- <72b30354-0497-45cf-8b71-e4f265eb0005@quicinc.com>
- <CAA8EJprPE=z2VN5LkaUyLyvYpx6i1eF9dyxOzN_L86pi5tmU-Q@mail.gmail.com>
-From: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
-In-Reply-To: <CAA8EJprPE=z2VN5LkaUyLyvYpx6i1eF9dyxOzN_L86pi5tmU-Q@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nasanex01c.na.qualcomm.com (10.45.79.139)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: P5V2Nb4N9uO5XZt2vGlyYumM-eKoyeDx
-X-Proofpoint-GUID: P5V2Nb4N9uO5XZt2vGlyYumM-eKoyeDx
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.272,Aquarius:18.0.987,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2023-11-16_12,2023-11-16_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- impostorscore=0 malwarescore=0 mlxscore=0 clxscore=1015 bulkscore=0
- suspectscore=0 lowpriorityscore=0 adultscore=0 phishscore=0 spamscore=0
- mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2311060000 definitions=main-2311160100
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <12-v2-36a0088ecaa7+22c6e-iommu_fwspec_jgg@nvidia.com>
 
-
-
-On 11/15/2023 4:33 PM, Dmitry Baryshkov wrote:
-> On Wed, 15 Nov 2023 at 11:45, Bibek Kumar Patro
-> <quic_bibekkum@quicinc.com> wrote:
->>
->> On 11/14/2023 7:45 PM, Dmitry Baryshkov wrote:
->>> On Tue, 14 Nov 2023 at 15:57, Bibek Kumar Patro
->>> <quic_bibekkum@quicinc.com> wrote:
->>>>
->>>> Context caching is re-enabled in the prefetch buffer for Qualcomm SoCs
->>>> through SoC specific reset ops, which is disabled in the default MMU-500
->>>> reset ops, but is expected for context banks using ACTLR register to
->>>> retain the prefetch value during reset and runtime suspend.
->>>
->>> Please refer to Documentation/process/submitting-patches.rst and
->>> rephrase this following the rules there.
->>>
->>
->> Noted, will go through the description once and rephrase it
->> in next version complying with rules.
->>
->>>>
->>>> Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
->>>> ---
->>>>    drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 25 ++++++++++++++++++----
->>>>    1 file changed, 21 insertions(+), 4 deletions(-)
->>>>
->>>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
->>>> index 0eaf6f2a2e49..fa867b1d9d16 100644
->>>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
->>>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
->>>> @@ -478,11 +478,28 @@ static int qcom_smmu_def_domain_type(struct device *dev)
->>>>           return match ? IOMMU_DOMAIN_IDENTITY : 0;
->>>>    }
->>>>
->>>> +static int qcom_smmu500_reset(struct arm_smmu_device *smmu)
->>>> +{
->>>> +       int i;
->>>> +       u32 reg;
->>>> +
->>>> +       arm_mmu500_reset(smmu);
->>>> +
->>>> +       /* Re-enable context caching after reset */
->>>> +       for (i = 0; i < smmu->num_context_banks; ++i) {
->>>> +               reg = arm_smmu_cb_read(smmu, i, ARM_SMMU_CB_ACTLR);
->>>> +               reg |= CPRE;
->>>> +               arm_smmu_cb_write(smmu, i, ARM_SMMU_CB_ACTLR, reg);
->>>> +       }
->>>> +
->>>> +       return 0;
->>>> +}
->>>> +
->>>>    static int qcom_sdm845_smmu500_reset(struct arm_smmu_device *smmu)
->>>>    {
->>>>           int ret;
->>>>
->>>> -       arm_mmu500_reset(smmu);
->>>> +       qcom_smmu500_reset(smmu);
->>>
->>> Is this applicable for sdm845? For all other platforms supported by
->>> qcom_smmu_500 implementation?
->>>
->>
->> In arm_mmu500_reset operation drivers/iommu/arm/arm-smmu/arm-smmu-impl.c
->> CPRE bit is reset for all SoC based on mmu500 platform, hence for all
->> Qualcomm SoCs including sm845 we are setting back the CPRE bit.
+On Wed, Nov 15, 2023 at 10:06:03AM -0400, Jason Gunthorpe wrote:
+> There are no external callers now.
 > 
-> The errata for the CoreLink MMU-500 requires CPRE to be disabled for
-> all revisions before r2p2. Do we know whether these SoC used CoreLink
-> MMU-500 and which version of it?
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Reviewed-by: Moritz Fischer <mdf@kernel.org>
+> ---
+>  drivers/iommu/iommu.c | 3 ++-
+>  include/linux/iommu.h | 7 -------
+>  2 files changed, 2 insertions(+), 8 deletions(-)
 > 
-
-Just checked all these SoCs are using r2p4 revision.
-So CPRE needs to be enabled back here then?
-
->>
->>>>
->>>>           /*
->>>>            * To address performance degradation in non-real time clients,
->>>> @@ -509,7 +526,7 @@ static const struct arm_smmu_impl qcom_smmu_500_impl = {
->>>>           .init_context = qcom_smmu_init_context,
->>>>           .cfg_probe = qcom_smmu_cfg_probe,
->>>>           .def_domain_type = qcom_smmu_def_domain_type,
->>>> -       .reset = arm_mmu500_reset,
->>>> +       .reset = qcom_smmu500_reset,
->>>>           .write_s2cr = qcom_smmu_write_s2cr,
->>>>           .tlb_sync = qcom_smmu_tlb_sync,
->>>>    };
->>>> @@ -528,7 +545,7 @@ static const struct arm_smmu_impl sm8550_smmu_500_impl = {
->>>>           .init_context = qcom_smmu_init_context,
->>>>           .cfg_probe = qcom_smmu_cfg_probe,
->>>>           .def_domain_type = qcom_smmu_def_domain_type,
->>>> -       .reset = arm_mmu500_reset,
->>>> +       .reset = qcom_smmu500_reset,
->>>>           .write_s2cr = qcom_smmu_write_s2cr,
->>>>           .tlb_sync = qcom_smmu_tlb_sync,
->>>>    };
->>>> @@ -544,7 +561,7 @@ static const struct arm_smmu_impl qcom_adreno_smmu_v2_impl = {
->>>>    static const struct arm_smmu_impl qcom_adreno_smmu_500_impl = {
->>>>           .init_context = qcom_adreno_smmu_init_context,
->>>>           .def_domain_type = qcom_smmu_def_domain_type,
->>>> -       .reset = arm_mmu500_reset,
->>>> +       .reset = qcom_smmu500_reset,
->>>>           .alloc_context_bank = qcom_adreno_smmu_alloc_context_bank,
->>>>           .write_sctlr = qcom_adreno_smmu_write_sctlr,
->>>>           .tlb_sync = qcom_smmu_tlb_sync,
->>>> --
->>>> 2.17.1
->>>>
->>>
->>>
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 5af98cad06f9ef..ea6aede326131e 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -2928,7 +2928,8 @@ bool iommu_default_passthrough(void)
+>  }
+>  EXPORT_SYMBOL_GPL(iommu_default_passthrough);
+>  
+> -const struct iommu_ops *iommu_ops_from_fwnode(struct fwnode_handle *fwnode)
+> +static const struct iommu_ops *
+> +iommu_ops_from_fwnode(struct fwnode_handle *fwnode)
+>  {
+>  	const struct iommu_ops *ops = NULL;
+>  	struct iommu_device *iommu;
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index 72ec71bd31a376..05c5ad6bad6339 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -831,7 +831,6 @@ static inline void iommu_fwspec_free(struct device *dev)
+>  	dev->iommu->fwspec = NULL;
+>  }
+>  int iommu_fwspec_add_ids(struct device *dev, u32 *ids, int num_ids);
+> -const struct iommu_ops *iommu_ops_from_fwnode(struct fwnode_handle *fwnode);
+>  int iommu_fwspec_append_ids(struct iommu_fwspec *fwspec, u32 *ids, int num_ids);
+>  
+>  static inline struct iommu_fwspec *dev_iommu_fwspec_get(struct device *dev)
+> @@ -1187,12 +1186,6 @@ static inline int iommu_fwspec_add_ids(struct device *dev, u32 *ids,
+>  	return -ENODEV;
+>  }
+>  
+> -static inline
+> -const struct iommu_ops *iommu_ops_from_fwnode(struct fwnode_handle *fwnode)
+> -{
+> -	return NULL;
+> -}
+> -
+>  static inline int
+>  iommu_dev_enable_feature(struct device *dev, enum iommu_dev_features feat)
+>  {
+> -- 
+> 2.42.0
 > 
-> 
-> 
-> --
-> With best wishes
-> Dmitry
