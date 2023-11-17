@@ -1,138 +1,152 @@
-Received: from mail-qt1-f179.google.com (mail-qt1-f179.google.com [209.85.160.179])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B2E7BCA63
-	for <iommu@lists.linux.dev>; Fri, 17 Nov 2023 04:15:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79E84D2EF
+	for <iommu@lists.linux.dev>; Fri, 17 Nov 2023 05:27:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="CuB4em/w"
-Received: by mail-qt1-f179.google.com with SMTP id d75a77b69052e-421ae866bc2so161741cf.0
-        for <iommu@lists.linux.dev>; Thu, 16 Nov 2023 20:15:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1700194537; x=1700799337; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=jnlrFTaQ1JfoVTTR1NXHSAnpdgT8biukh3l3bEluWvc=;
-        b=CuB4em/wVafe2MineoxjhnKY3MLnLPCqm7Ed/K+DD9sVJWiCxvZ+1hb6nKcD3th6GG
-         nGhcyeKJ2GJXD6plAnJVQ/JU4so/vT3E46nE9yzeq3utahZllXCKeJCTR8B3tQjBrS1W
-         b7waytbqeLgE86AobmTW+vFBx2ZmmUjd1TrQHjH/Cpkopo9o8STdAwrRHrVsthzA/I2C
-         j3+MavKP0gq3AU1Q6AEkZGVPbysURWnv+Dieugf9ahXLt/j/f9xSZuFHJOMLavdDCyRK
-         hoxh5Z71G/ndsZ2n9uwg+q1gmJDGytzvYsNMseYph9ttP7sxRerB81unUu+ddqAS7qfo
-         0jMA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1700194537; x=1700799337;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=jnlrFTaQ1JfoVTTR1NXHSAnpdgT8biukh3l3bEluWvc=;
-        b=iyGF+8VQZe5RkvfvP7Pe3x/4rJCmRvc0mgTPXNh0YCbojC517qbb/0rCQDXQ0iwgXV
-         5DZYPCMHD5bVN5uhAnfQ6xPkvcQYJKy8sxvCujJ7VaPPgYKjeQpvrmP2xRVhcDwwnGUO
-         qoWQMcCWHkgGi6g87MnN/7TtOJOY5BIqeaIyNVbv+ugJUMxyIkwhq0NO+ad4O78ZXIvT
-         Rb8VRjl9KI54sXKBE4v98tarXhYtRV3t83tksrOBLrYe896cOGdxGLbIPHbshs0es0fA
-         yzY1Nt4WrbnF9YVGtzPCnWhKKheNAEtMRyKNWHFKxyhcSjGEDTlBdSdz9+IJnlhJoXBN
-         wlVg==
-X-Gm-Message-State: AOJu0Yx1ig6Sb0zKmWyV7TDmOwMd5z+3DYrlZISnHjTDV8RKICObKn+m
-	l5w1XRwZhK7xRAMVbyIJNh/WAOyB3CPEYg3Iu8xERg==
-X-Google-Smtp-Source: AGHT+IHkT6Fj31VaKEiO1ujKdmZQOqp+fdL0L58iqjFAtUMRbFhYPcd8w3UBVmO1oEwux2HInuAkZyoJhw8/Ckb2e0s=
-X-Received: by 2002:a05:622a:719a:b0:41c:e10b:a3ff with SMTP id
- jd26-20020a05622a719a00b0041ce10ba3ffmr105434qtb.3.1700194537158; Thu, 16 Nov
- 2023 20:15:37 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="ntXWc8Hr"
+Received: from pps.filterd (m0279865.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 3AH4f9O6011080;
+	Fri, 17 Nov 2023 05:27:28 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=qcppdkim1;
+ bh=dhT2XdCd54WDofOXSqRAnO8rRI0rIMHIuPIIUVu1eco=;
+ b=ntXWc8HrWboTdgCttpqzEoK5kz1OPpjAfh9slOhrT3MUUTBHjTAZsZTIUsbrZSixNIKW
+ t6i30JWUz5GKshciH2V98nW1jXOvqi1msTPCKx30KFbm7LMjZdyoLSTefGpaD1RhsCWt
+ JCpSnyR7C/sJ/vSDlx8GXwIql2uHS/6EKJxF9tFo4t9AlLMDQ1wt5Cni05bRFxaUPO2+
+ GLo3amQGDhAgzVflxKpGaWZxP+XQJKLvcQ6OmLP9kEQb9pPoudfmppjhwcveZyIrUoB2
+ NaQN6JsasGSerqxgP/9VIgQg/8fabeEkf3zCl4hXytmpyXABumC/WHcWaPy1KlbB/6Iq ng== 
+Received: from nalasppmta01.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3udhe1t798-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 17 Nov 2023 05:27:27 +0000
+Received: from nalasex01c.na.qualcomm.com (nalasex01c.na.qualcomm.com [10.47.97.35])
+	by NALASPPMTA01.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 3AH5RRqd013039
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 17 Nov 2023 05:27:27 GMT
+Received: from [10.214.66.253] (10.80.80.8) by nalasex01c.na.qualcomm.com
+ (10.47.97.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.39; Thu, 16 Nov
+ 2023 21:27:22 -0800
+Message-ID: <9b406a7c-57b8-4b5f-8fbc-714560cce8cf@quicinc.com>
+Date: Fri, 17 Nov 2023 10:57:19 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <0-v2-de8b10590bf5+400-smmuv3_newapi_p1_jgg@nvidia.com>
- <12-v2-de8b10590bf5+400-smmuv3_newapi_p1_jgg@nvidia.com> <CAKHBV25W3JoJ9CnX0+SWjtYauSznSx35KKu43X_9V0MWkBJC0w@mail.gmail.com>
- <ZVZHgbbey+zao0Jv@nvidia.com>
-In-Reply-To: <ZVZHgbbey+zao0Jv@nvidia.com>
-From: Michael Shavit <mshavit@google.com>
-Date: Fri, 17 Nov 2023 12:14:59 +0800
-Message-ID: <CAKHBV27V9Unx5yiLLbuSGs6OGB7NHM=Ac84oGxAVmzt5OewjTw@mail.gmail.com>
-Subject: Re: [PATCH v2 12/19] iommu/arm-smmu-v3: Put writing the context
- descriptor in the right order
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>, 
-	linux-arm-kernel@lists.infradead.org, Robin Murphy <robin.murphy@arm.com>, 
-	Will Deacon <will@kernel.org>, Nicolin Chen <nicolinc@nvidia.com>, 
-	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 1/3] iommu/arm-smmu: introduction of ACTLR for custom
+ prefetcher settings
+Content-Language: en-US
+To: Robin Murphy <robin.murphy@arm.com>, <will@kernel.org>, <joro@8bytes.org>,
+        <dmitry.baryshkov@linaro.org>, <a39.skl@gmail.com>,
+        <konrad.dybcio@linaro.org>, <quic_pkondeti@quicinc.com>,
+        <quic_molvera@quicinc.com>
+CC: <linux-arm-msm@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+        <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
+        <qipl.kernel.upstream@quicinc.com>
+References: <20231114135654.30475-1-quic_bibekkum@quicinc.com>
+ <20231114135654.30475-2-quic_bibekkum@quicinc.com>
+ <372885ab-b24d-44ae-afb8-76755bcd6e21@arm.com>
+ <40282b6e-9524-4a88-97ca-3ce890317279@quicinc.com>
+ <c75d107a-44cb-4df3-b583-13719df1f8be@arm.com>
+From: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+In-Reply-To: <c75d107a-44cb-4df3-b583-13719df1f8be@arm.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01c.na.qualcomm.com (10.47.97.35)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: 855NDTmkIbrpzKNLihUn6YTDtBl0mx7P
+X-Proofpoint-ORIG-GUID: 855NDTmkIbrpzKNLihUn6YTDtBl0mx7P
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.987,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2023-11-17_03,2023-11-16_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 spamscore=0
+ priorityscore=1501 suspectscore=0 bulkscore=0 mlxlogscore=957
+ clxscore=1015 impostorscore=0 lowpriorityscore=0 mlxscore=0 adultscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2311060000 definitions=main-2311170037
 
-On Fri, Nov 17, 2023 at 12:47=E2=80=AFAM Jason Gunthorpe <jgg@nvidia.com> w=
-rote:
->
-> On Wed, Nov 15, 2023 at 11:32:28PM +0800, Michael Shavit wrote:
->
-> > > Lift this code out of arm_smmu_detach_dev() so it can all be sequence=
-d
-> > > properly. The only other caller is arm_smmu_release_device() and it i=
-s
-> > > going to free the cdtable anyhow, so it doesn't matter what is in it.
-> > >
-> > > Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> > Reviewed-by: Michael Shavit <mshavit@google.com>
-> >
-> > This patch might be a better fit before the previous one. When going
-> > from S1 to S2 or bypass:
-> > Pre-both patches, attach_dev() installs a NULL STE, then clears the
-> > now unused CDE, then installs a new STE.
-> > After the previous patch, attach_dev() clears the *still used* CDE,
-> > and then replaces the STE.
-> > After this patch, attach_dev() replaces the STE, and then clears the CD=
-E
-> >
-> > Reordering the two patches removes the scenario where we could hit a
-> > NULL-ed CDE.
->
-> NULLed =3D non-valid
->
-> I see what you mean, but I haven't thought carefully about a different
-> order so I'd rather leave it..
-Ack; it's probably too subtle to matter much anyhow.
->
-> Regardless of order the two prior patches will have cases that hit
-> non-valid/abort STE/CDEs, each step removes a few cases.
->
-> Thanks,
-> Jason
 
-On Fri, Nov 17, 2023 at 12:47=E2=80=AFAM Jason Gunthorpe <jgg@nvidia.com> w=
-rote:
->
-> On Wed, Nov 15, 2023 at 11:32:28PM +0800, Michael Shavit wrote:
->
-> > > Lift this code out of arm_smmu_detach_dev() so it can all be sequence=
-d
-> > > properly. The only other caller is arm_smmu_release_device() and it i=
-s
-> > > going to free the cdtable anyhow, so it doesn't matter what is in it.
-> > >
-> > > Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> > Reviewed-by: Michael Shavit <mshavit@google.com>
-> >
-> > This patch might be a better fit before the previous one. When going
-> > from S1 to S2 or bypass:
-> > Pre-both patches, attach_dev() installs a NULL STE, then clears the
-> > now unused CDE, then installs a new STE.
-> > After the previous patch, attach_dev() clears the *still used* CDE,
-> > and then replaces the STE.
-> > After this patch, attach_dev() replaces the STE, and then clears the CD=
-E
-> >
-> > Reordering the two patches removes the scenario where we could hit a
-> > NULL-ed CDE.
->
-> NULLed =3D non-valid
->
-> I see what you mean, but I haven't thought carefully about a different
-> order so I'd rather leave it..
->
-> Regardless of order the two prior patches will have cases that hit
-> non-valid/abort STE/CDEs, each step removes a few cases.
->
+
+On 11/15/2023 8:23 PM, Robin Murphy wrote:
+> On 2023-11-15 1:54 pm, Bibek Kumar Patro wrote:
+>>
+>>>> @@ -467,6 +505,9 @@ static struct arm_smmu_device 
+>>>> *qcom_smmu_create(struct arm_smmu_device *smmu,
+>>>>       qsmmu->smmu.impl = impl;
+>>>>       qsmmu->cfg = data->cfg;
+>>>>
+>>>> +    if (data->actlrcfg && (data->actlrcfg->size))
+>>>> +        qsmmu->actlrcfg = data->actlrcfg;
+>>>
+>>> Do we really need to replicate multiple parts of the data, or would 
+>>> it be sensible to just replace qsmmu->cfg with qsmmu->data and handle 
+>>> the further dereferences in the places that want them?
+>>>
+>>
+>> Mm, could not understand this properly. :( Could you help explain more 
+>> please?
+>> As per my understanding aren't data and qsmmu different structures.
+>> qcom_smmu is a superset of arm_smmu housing additonal properties
+>> and qcom_smmu_match_data is kind of a superset of arm_smmu_impl with
+>> additional specific implmentations, so both needs to be in place?
+>> Apologies if I understood your statement incorrectly.
+> 
+> My point is that the data is static and constant, so there's really no 
+> point storing multiple pointers into different bits of it. So rather than:
+> 
+>      qsmmu->cfg = data->cfg;
+>      qssmu->actlrcfg = data->actlrcfg;
+>      ...
+>      do_something(qsmmu->cfg);
+>      ...
+>      do_other_thing(qsmmu->actlrcfg);
+> 
+> we can just store the one pointer and have:
+> 
+>      qsmmu->data = data;
+>      ...
+>      do_something(qsmmu->data->cfg);
+>      ...
+>      do_other_thing(qsmmu->data->actlrcfg);
+> 
 > Thanks,
-> Jason
+> Robin.
+> 
+
+I see, this looks like probably we need a separate patch altogether for
+this cleanup, as "cfg" is used in other fault handling places as well as 
+i can see and is introduced as a part of different patch. Should we 
+scope this work for a separate patch if it's okay?
+
+Thanks,
+Bibek
+>>>> +
+>>>>       return &qsmmu->smmu;
+>>>>   }
+>>>>
+>>>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h 
+>>>> b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h
+>>>> index 593910567b88..4b6862715070 100644
+>>>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h
+>>>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h
+>>>> @@ -9,6 +9,7 @@
+>>>>   struct qcom_smmu {
+>>>>       struct arm_smmu_device smmu;
+>>>>       const struct qcom_smmu_config *cfg;
+>>>> +    const struct actlr_config *actlrcfg;
+>>>>       bool bypass_quirk;
+>>>>       u8 bypass_cbndx;
+>>>>       u32 stall_enabled;
+>>>> @@ -25,6 +26,7 @@ struct qcom_smmu_config {
+>>>>   };
+>>>>
