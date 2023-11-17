@@ -1,154 +1,96 @@
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.20])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D519321BF
-	for <iommu@lists.linux.dev>; Fri, 17 Nov 2023 13:18:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4DE3F9FD
+	for <iommu@lists.linux.dev>; Fri, 17 Nov 2023 16:02:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="H7Ao2OK6"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1700227103; x=1731763103;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=RidyZbnJH2WdtltNPSz30z+b1yF96itdW/+pcCRzRqI=;
-  b=H7Ao2OK6yRKeubgvj1luDyAVpbhy9kCPV21rK4vB+zYjQ12nfWQjrlXd
-   kJcUp/M7SnWfGPzyRSw0UwBHwzAE0qBf/Ug0CaFLgJJyDME1EJJ7ZWnF0
-   nzS7d2Uy8BzX/ICqfIOz9Jbc8dyX09dDPLL12tYAWQHTY8PW30gIuVtWL
-   qye8/NmPIxbTg952OcTyPl+X5mpsq5xaYSetIcJjjw2u+OlC+gxviz97Y
-   VjCP/8POzLAOlTgBe0qXqwBKhseY22krFDxT7uzXPqBQdndoG7U29SdUE
-   bY32wYF+B8F/78gRa2maT7O6ROxlE520ZNPOlwGBmjGT2rsSJCqkiPo3h
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10896"; a="381685616"
-X-IronPort-AV: E=Sophos;i="6.04,206,1695711600"; 
-   d="scan'208";a="381685616"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Nov 2023 05:18:20 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10896"; a="794831206"
-X-IronPort-AV: E=Sophos;i="6.04,206,1695711600"; 
-   d="scan'208";a="794831206"
-Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
-  by orsmga008.jf.intel.com with ESMTP; 17 Nov 2023 05:18:20 -0800
-From: Yi Liu <yi.l.liu@intel.com>
-To: joro@8bytes.org,
-	alex.williamson@redhat.com,
-	jgg@nvidia.com,
-	kevin.tian@intel.com,
-	robin.murphy@arm.com,
-	baolu.lu@linux.intel.com
-Cc: cohuck@redhat.com,
-	eric.auger@redhat.com,
-	nicolinc@nvidia.com,
-	kvm@vger.kernel.org,
-	mjrosato@linux.ibm.com,
-	chao.p.peng@linux.intel.com,
-	yi.l.liu@intel.com,
-	yi.y.sun@linux.intel.com,
-	peterx@redhat.com,
-	jasowang@redhat.com,
-	shameerali.kolothum.thodi@huawei.com,
-	lulu@redhat.com,
-	suravee.suthikulpanit@amd.com,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	linux-kselftest@vger.kernel.org,
-	zhenzhong.duan@intel.com,
-	joao.m.martins@oracle.com,
-	xin.zeng@intel.com,
-	yan.y.zhao@intel.com
-Subject: [PATCH v7 3/3] iommu/vt-d: Add iotlb flush for nested domain
-Date: Fri, 17 Nov 2023 05:18:16 -0800
-Message-Id: <20231117131816.24359-4-yi.l.liu@intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20231117131816.24359-1-yi.l.liu@intel.com>
-References: <20231117131816.24359-1-yi.l.liu@intel.com>
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="jOyDALbl"
+Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 3AHCv0fl014041;
+	Fri, 17 Nov 2023 16:02:25 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=qcppdkim1;
+ bh=x0M3wklGqflq1G+DQ/EFE56suGOIsWSY/I+nLdmUqqo=;
+ b=jOyDALbl6JXQ7g5iwKBUMsdapWtX53GmIZx696gE3wnpWDE+yfLmrmQJsa6YFpeacj2w
+ /arnCpHAh3lfTZXYHVIOBEzRtnvcUOhPC8aMVS3570iAw0uZCz4ydTmsBrAOSM++YUHh
+ ykEstO0jTkVHXOy2DWnFkPGXIVY+wRtw/Dr+ClnN69KqF1+bn7+gJtb5aeuP/ciWRPJJ
+ 3lqCi5RkM0pbJEXLDGEY+pyUGkOuSxooyDf2skpEvaJX4hEsxK9A5Lu6loQCSHSkpqWV
+ RdSoLBPS6Oom3kMD3I6UarqS/X6589JPeOylR2gu77cj5rnJkxJppJiyhhdYnRHvHVyk jg== 
+Received: from nalasppmta04.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3udkkuu75v-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 17 Nov 2023 16:02:25 +0000
+Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
+	by NALASPPMTA04.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 3AHG2OZg001517
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 17 Nov 2023 16:02:24 GMT
+Received: from [10.79.43.91] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.40; Fri, 17 Nov
+ 2023 08:02:17 -0800
+Message-ID: <045261f7-ec6d-7c90-bdbe-3cd1a58143b7@quicinc.com>
+Date: Fri, 17 Nov 2023 21:32:14 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.11.0
+Subject: Re: [PATCH V2 4/4] dt-bindings: interrupt-controller: qcom,pdc:
+ document pdc on X1E80100
+Content-Language: en-US
+To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        <andersson@kernel.org>, <konrad.dybcio@linaro.org>, <will@kernel.org>,
+        <robin.murphy@arm.com>, <joro@8bytes.org>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>
+CC: <agross@kernel.org>, <vkoul@kernel.org>, <quic_gurus@quicinc.com>,
+        <conor+dt@kernel.org>, <quic_rjendra@quicinc.com>,
+        <abel.vesa@linaro.org>, <linux-arm-msm@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <dmaengine@vger.kernel.org>, <iommu@lists.linux.dev>,
+        <quic_tsoni@quicinc.com>, <neil.armstrong@linaro.org>
+References: <20231117105635.343-1-quic_sibis@quicinc.com>
+ <20231117105635.343-5-quic_sibis@quicinc.com>
+ <67e7df38-d0a9-4513-9eb8-1114a9ecc3b3@linaro.org>
+From: Sibi Sankar <quic_sibis@quicinc.com>
+In-Reply-To: <67e7df38-d0a9-4513-9eb8-1114a9ecc3b3@linaro.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: YYKJT12kYHoQtWKXUVMdTT2tt_zrJJyC
+X-Proofpoint-ORIG-GUID: YYKJT12kYHoQtWKXUVMdTT2tt_zrJJyC
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.987,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2023-11-17_14,2023-11-17_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 malwarescore=0
+ mlxlogscore=498 clxscore=1015 spamscore=0 impostorscore=0
+ lowpriorityscore=0 phishscore=0 adultscore=0 bulkscore=0 suspectscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2311060000 definitions=main-2311170119
 
-This implements the .cache_invalidate_user() callback to support iotlb
-flush for nested domain.
+On 11/17/23 18:37, Krzysztof Kozlowski wrote:
+> On 17/11/2023 11:56, Sibi Sankar wrote:
+>> The X1E80100 SoC includes a PDC, document it.
+>>
+>> Signed-off-by: Sibi Sankar <quic_sibis@quicinc.com>
+>> ---
+> 
+> Please rebase on next.
 
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Signed-off-by: Yi Liu <yi.l.liu@intel.com>
----
- drivers/iommu/intel/nested.c | 54 ++++++++++++++++++++++++++++++++++++
- 1 file changed, 54 insertions(+)
+This series was based on lnext-20231117.
 
-diff --git a/drivers/iommu/intel/nested.c b/drivers/iommu/intel/nested.c
-index b5a5563ab32c..44ad48db7ea0 100644
---- a/drivers/iommu/intel/nested.c
-+++ b/drivers/iommu/intel/nested.c
-@@ -73,9 +73,63 @@ static void intel_nested_domain_free(struct iommu_domain *domain)
- 	kfree(to_dmar_domain(domain));
- }
- 
-+static void domain_flush_iotlb_psi(struct dmar_domain *domain,
-+				   u64 addr, unsigned long npages)
-+{
-+	struct iommu_domain_info *info;
-+	unsigned long i;
-+
-+	xa_for_each(&domain->iommu_array, i, info)
-+		iommu_flush_iotlb_psi(info->iommu, domain,
-+				      addr >> VTD_PAGE_SHIFT, npages, 1, 0);
-+}
-+
-+static int intel_nested_cache_invalidate_user(struct iommu_domain *domain,
-+					      struct iommu_user_data_array *array,
-+					      u32 *cerror_idx)
-+{
-+	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
-+	struct iommu_hwpt_vtd_s1_invalidate inv_info;
-+	u32 index;
-+	int ret;
-+
-+	/* REVISIT:
-+	 * VT-d has defined ITE, ICE, IQE for invalidation failure per hardware,
-+	 * but no error code yet, so just set the error code to be 0.
-+	 */
-+	*cerror_idx = 0;
-+
-+	for (index = 0; index < array->entry_num; index++) {
-+		ret = iommu_copy_struct_from_user_array(&inv_info, array,
-+							IOMMU_HWPT_DATA_VTD_S1,
-+							index, __reserved);
-+		if (ret) {
-+			pr_err_ratelimited("Failed to fetch invalidation request\n");
-+			break;
-+		}
-+
-+		if (inv_info.__reserved || (inv_info.flags & ~IOMMU_VTD_INV_FLAGS_LEAF) ||
-+		    !IS_ALIGNED(inv_info.addr, VTD_PAGE_SIZE)) {
-+			ret = -EINVAL;
-+			break;
-+		}
-+
-+		if (inv_info.addr == 0 && inv_info.npages == -1)
-+			intel_flush_iotlb_all(domain);
-+		else
-+			domain_flush_iotlb_psi(dmar_domain,
-+					       inv_info.addr, inv_info.npages);
-+	}
-+
-+	array->entry_num = index;
-+
-+	return ret;
-+}
-+
- static const struct iommu_domain_ops intel_nested_domain_ops = {
- 	.attach_dev		= intel_nested_attach_dev,
- 	.free			= intel_nested_domain_free,
-+	.cache_invalidate_user	= intel_nested_cache_invalidate_user,
- };
- 
- struct iommu_domain *intel_nested_domain_alloc(struct iommu_domain *parent,
--- 
-2.34.1
+-Sibi
 
+> 
+> Best regards,
+> Krzysztof
+> 
