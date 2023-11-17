@@ -1,17 +1,38 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DA5F245BED
-	for <iommu@lists.linux.dev>; Thu, 16 Nov 2023 17:43:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Authentication-Results: smtp.subspace.kernel.org; dkim=none
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DB40A1595;
-	Thu, 16 Nov 2023 09:44:37 -0800 (PST)
-Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A2A733F6C4;
-	Thu, 16 Nov 2023 09:43:50 -0800 (PST)
-Message-ID: <b541f87c-fa8e-4b09-bf1c-68829bc9e6c9@arm.com>
-Date: Thu, 16 Nov 2023 17:43:49 +0000
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 19A7110F4
+	for <iommu@lists.linux.dev>; Fri, 17 Nov 2023 01:13:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="lNCRpeem"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1700183635; x=1731719635;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=srIWrIHi33EZYV+G7ToWg2W37bXl/+0uSAUvKtzS4DE=;
+  b=lNCRpeemZcwkcHNQK+dQTGwKO1iAxsv/TXc8y9w4v80GSXhWW1IhzvUH
+   dXJ1nShyte9SEH2P/z5S6UkeeK0ckdtyTrU7ryTQEyNzlJUWC7TFQ2CO2
+   /H01g43dGaGrDoyiQXIfPHnipqzW+klq09ik3kFM1pfertzIebFlP/LX5
+   1fHdHuScfsnrNbWQ/fccCoGtta6sY83fWGJ5vTH62oGVtvSVnx7AKjFvm
+   W9Lc9iaOGOotTCGuJ6Ivo0w2+XxQsz18ybJL4+iaAWi35puSVYxnWglFf
+   0WfCXD+XCacNs/SwJtY7lBRyKeC9sqENjrPAJ0zRM3wfjvmaZG6k1ant1
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10896"; a="12762606"
+X-IronPort-AV: E=Sophos;i="6.04,205,1695711600"; 
+   d="scan'208";a="12762606"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Nov 2023 17:13:54 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10896"; a="741932026"
+X-IronPort-AV: E=Sophos;i="6.04,205,1695711600"; 
+   d="scan'208";a="741932026"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
+  by orsmga006.jf.intel.com with ESMTP; 16 Nov 2023 17:13:51 -0800
+Message-ID: <4643b52a-432b-48a7-9dcc-da5deead0a81@linux.intel.com>
+Date: Fri, 17 Nov 2023 09:09:38 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -19,99 +40,107 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] iommufd/selftest: Fix dirty_bitmap tests
-Content-Language: en-GB
-To: Joao Martins <joao.m.martins@oracle.com>, kevin.tian@intel.com,
- jgg@ziepe.ca
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <90e083045243ef407dd592bb1deec89cd1f4ddf2.1700153535.git.robin.murphy@arm.com>
- <72f0e75b-6c91-4c17-beb2-3f198ed05cd0@oracle.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <72f0e75b-6c91-4c17-beb2-3f198ed05cd0@oracle.com>
+Cc: baolu.lu@linux.intel.com, "iommu@lists.linux.dev"
+ <iommu@lists.linux.dev>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 1/1] iommu/vt-d: Disable PCI ATS in legacy passthrough
+ mode
+Content-Language: en-US
+To: "Tian, Kevin" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Jason Gunthorpe <jgg@ziepe.ca>
+References: <20231114011036.70142-1-baolu.lu@linux.intel.com>
+ <20231114011036.70142-3-baolu.lu@linux.intel.com>
+ <0f8c95f3-c16e-497e-9734-85936ae08f82@linux.intel.com>
+ <BN9PR11MB52761B8ECFC7A5724A61894E8CB0A@BN9PR11MB5276.namprd11.prod.outlook.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <BN9PR11MB52761B8ECFC7A5724A61894E8CB0A@BN9PR11MB5276.namprd11.prod.outlook.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 16/11/2023 5:28 pm, Joao Martins wrote:
-> On 16/11/2023 16:52, Robin Murphy wrote:
->> The ASSERT_EQ() macro sneakily expands to two statements, so the loop
->> here needs braces to ensure it captures both and actually terminates the
->> test upon failure.
-> 
-> Ugh
-> 
->> Where these tests are currently failing on my arm64
->> machine, this reduces the number of logged lines from a rather
->> unreasonable ~197,000 down to 10. While we're at it, we can also clean
->> up the tautologous "count" calculations whose assertions can never fail
->> unless mathematics and/or the C language become fundamentally broken.
+On 11/16/23 4:24 PM, Tian, Kevin wrote:
+>> From: Baolu Lu <baolu.lu@linux.intel.com>
+>> Sent: Thursday, November 16, 2023 3:35 PM
 >>
->> Fixes: a9af47e382a4 ("iommufd/selftest: Test IOMMU_HWPT_GET_DIRTY_BITMAP")
->> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-> 
-> I was going to say that the second assert is useful, but we are already test the
-> number of bits we set against what the mock domain set after
-> mock_domain_set_dirty(). So the second is redundantly testing the same, and can
-> be removed as you are doing. Thanks for fixing this.
-
-Yeah, it's still effectively just counting half the number of loop 
-iterations executed, but since there's no control flow that could exit 
-the loop early and still reach the assertion, it must always be true 
-following the previous assertion that out_dirty == nr == nbits/2.
-
-> I would suggest the subject to:
-> 
-> 	iommufd/selftest: Fix _test_mock_dirty_bitmaps()
-> 
-> Because dirty-bitmap tests seems to imply the whole fixture, which covers more
-> than the bitmaps.
-
-Sure, that sounds reasonable. Jason, Kevin, would you want a v2 for that 
-or could it be fixed up when applying?
-
->> ---
->>   tools/testing/selftests/iommu/iommufd_utils.h | 13 ++++++-------
->>   1 file changed, 6 insertions(+), 7 deletions(-)
+>> On 2023/11/14 9:10, Lu Baolu wrote:
+>>> When IOMMU hardware operates in legacy mode, the TT field of the
+>> context
+>>> entry determines the translation type, with three supported types (Section
+>>> 9.3 Context Entry):
+>>>
+>>> - DMA translation without device TLB support
+>>> - DMA translation with device TLB support
+>>> - Passthrough mode with translated and translation requests blocked
+>>>
+>>> Device TLB support is absent when hardware is configured in passthrough
+>>> mode.
+>>>
+>>> Disable the PCI ATS feature when IOMMU is configured for passthrough
+>>> translation type in legacy (non-scalable) mode.
+>>>
+>>> Fixes: 0faa19a1515f ("iommu/vt-d: Decouple PASID & PRI enabling from
+>> SVA")
+>>> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+>>> ---
+>>>    drivers/iommu/intel/iommu.c | 4 ++++
+>>>    1 file changed, 4 insertions(+)
+>>>
+>>> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+>>> index 11670cd812a3..c3ec09118ab1 100644
+>>> --- a/drivers/iommu/intel/iommu.c
+>>> +++ b/drivers/iommu/intel/iommu.c
+>>> @@ -1413,6 +1413,10 @@ static void iommu_enable_pci_caps(struct
+>> device_domain_info *info)
+>>>    	if (!dev_is_pci(info->dev))
+>>>    		return;
+>>>
+>>> +	if (!sm_supported(info->iommu) && info->domain &&
+>>> +	    domain_type_is_si(info->domain))
+>>> +		return;
+>>> +
+>>>    	pdev = to_pci_dev(info->dev);
+>>>
+>>>    	/* The PCIe spec, in its wisdom, declares that the behaviour of
 >>
->> diff --git a/tools/testing/selftests/iommu/iommufd_utils.h b/tools/testing/selftests/iommu/iommufd_utils.h
->> index 050e9751321c..ad9202335656 100644
->> --- a/tools/testing/selftests/iommu/iommufd_utils.h
->> +++ b/tools/testing/selftests/iommu/iommufd_utils.h
->> @@ -293,15 +293,13 @@ static int _test_mock_dirty_bitmaps(int fd, __u32 hwpt_id, size_t length,
->>   				    __u64 bitmap_size, __u32 flags,
->>   				    struct __test_metadata *_metadata)
->>   {
->> -	unsigned long i, count, nbits = bitmap_size * BITS_PER_BYTE;
->> +	unsigned long i, nbits = bitmap_size * BITS_PER_BYTE;
->>   	unsigned long nr = nbits / 2;
->>   	__u64 out_dirty = 0;
->>   
->>   	/* Mark all even bits as dirty in the mock domain */
->> -	for (count = 0, i = 0; i < nbits; count += !(i % 2), i++)
->> -		if (!(i % 2))
->> -			set_bit(i, (unsigned long *)bitmap);
->> -	ASSERT_EQ(nr, count);
->> +	for (i = 0; i < nbits; i += 2)
->> +		set_bit(i, (unsigned long *)bitmap);
->>   
->>   	test_cmd_mock_domain_set_dirty(fd, hwpt_id, length, iova, page_size,
->>   				       bitmap, &out_dirty);
->> @@ -311,9 +309,10 @@ static int _test_mock_dirty_bitmaps(int fd, __u32 hwpt_id, size_t length,
->>   	memset(bitmap, 0, bitmap_size);
->>   	test_cmd_get_dirty_bitmap(fd, hwpt_id, length, iova, page_size, bitmap,
->>   				  flags);
->> -	for (count = 0, i = 0; i < nbits; count += !(i % 2), i++)
->> +	/* Beware ASSERT_EQ() is two statements -- braces are not redundant! */
->> +	for (i = 0; i < nbits; i++) {
->>   		ASSERT_EQ(!(i % 2), test_bit(i, (unsigned long *)bitmap));
->> -	ASSERT_EQ(count, out_dirty);
->> +	}
->>   
->>   	memset(bitmap, 0, bitmap_size);
->>   	test_cmd_get_dirty_bitmap(fd, hwpt_id, length, iova, page_size, bitmap,
+>> Perhaps we could move the check into the caller and make this helper
+>> transparent to the iommu mode and domain type?
+>>
+>> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+>> index 11670cd812a3..9bddd4fbbdf8 100644
+>> --- a/drivers/iommu/intel/iommu.c
+>> +++ b/drivers/iommu/intel/iommu.c
+>> @@ -2492,7 +2492,8 @@ static int dmar_domain_attach_device(struct
+>> dmar_domain *domain,
+>>                   return ret;
+>>           }
+>>
+>> -       iommu_enable_pci_caps(info);
+>> +       if (sm_supported(info->iommu) || !domain_type_is_si(info->domain))
+>> +               iommu_enable_pci_caps(info);
+>>
 > 
-> Reviewed-by: Joao Martins <joao.m.martins@oracle.com>
-> Tested-by: Joao Martins <joao.m.martins@oracle.com>
+> IMHO both old and this new version are confusing regarding to that
+> the commit msg talks only about ATS but the actual code disable all
+> pci caps. It's correct, being that only ATS is relevant in legacy mode,
+> but the readability is not good.
 
-Thanks!
+The function name is a bit misleading, but its actual purpose is to
+enable the ATS feature. PASID is enabled within this function due to a
+specification requirement that prevents modifications to PASID registers
+after ATS activation.
 
-Robin.
+> 
+> what about introducing a helper e.g. device_domain_ats_supported(info)
+> which includes above checks plus info->ats_supported and then use it
+> to replace info->ats_supported in iommu_enable_pci_caps()?
+> 
+
+I have a patch series under test which moves the ATS control out to the
+device drivers or users (through sysfs node). With that done, we could
+simply remove all these and give the control to device drivers or users.
+
+How about considering above after I post that series? And for now, we
+can make the fix patch quick and simple.
+
+Best regards,
+baolu
