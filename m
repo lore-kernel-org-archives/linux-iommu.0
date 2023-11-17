@@ -1,95 +1,211 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.93])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2F8F81A70D
-	for <iommu@lists.linux.dev>; Fri, 17 Nov 2023 10:57:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A32F808
+	for <iommu@lists.linux.dev>; Fri, 17 Nov 2023 13:07:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="AMuxo1aa"
-Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 3AH9b93g025714;
-	Fri, 17 Nov 2023 10:57:42 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=qcppdkim1;
- bh=Yb0Wov1DSFMP/q+9h4qt/ZlWJwc1ivygrm6d38Dbxao=;
- b=AMuxo1aaTzC+P5A2bQKQiDn7sGzBndn0Dma3ch640DheGa2pKIzYH6DlsM8uILn/ccRe
- 5ngs5B05NgZXFfRIm7Xv/1FfHIF1XUEd28F/9qo0WCJThCQcz+/rFgGjum0cyQTz7r2Q
- ZjD+b2oEHuoPOaNtH/oVO0we70p25SigYAvyp2GNqnpBJGGFmx521OmoR+ntbBhZ/0pM
- GZlf6J2MIXoA5Q+T4GNciwRnWba48UEMo0TkyBLZ/uMsvWyM68hMgAOZCt5Wgv2YiqTe
- L9hg3vKvwqnhF5bfE5CY4NfZCVbhLDtUk3wIOv7l4R35oaVuvGH+V4LzZih3sdmm8PAH 6g== 
-Received: from nalasppmta01.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3ue5per527-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 17 Nov 2023 10:57:42 +0000
-Received: from nalasex01b.na.qualcomm.com (nalasex01b.na.qualcomm.com [10.47.209.197])
-	by NALASPPMTA01.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 3AHAvfOj003868
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 17 Nov 2023 10:57:41 GMT
-Received: from blr-ubuntu-87.ap.qualcomm.com (10.80.80.8) by
- nalasex01b.na.qualcomm.com (10.47.209.197) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.39; Fri, 17 Nov 2023 02:57:34 -0800
-From: Sibi Sankar <quic_sibis@quicinc.com>
-To: <andersson@kernel.org>, <konrad.dybcio@linaro.org>, <will@kernel.org>,
-        <robin.murphy@arm.com>, <joro@8bytes.org>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>
-CC: <agross@kernel.org>, <vkoul@kernel.org>, <quic_gurus@quicinc.com>,
-        <conor+dt@kernel.org>, <quic_rjendra@quicinc.com>,
-        <abel.vesa@linaro.org>, <linux-arm-msm@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <dmaengine@vger.kernel.org>, <iommu@lists.linux.dev>,
-        <quic_tsoni@quicinc.com>, <neil.armstrong@linaro.org>,
-        Sibi Sankar <quic_sibis@quicinc.com>
-Subject: [PATCH V2 4/4] dt-bindings: interrupt-controller: qcom,pdc: document pdc on X1E80100
-Date: Fri, 17 Nov 2023 16:26:35 +0530
-Message-ID: <20231117105635.343-5-quic_sibis@quicinc.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20231117105635.343-1-quic_sibis@quicinc.com>
-References: <20231117105635.343-1-quic_sibis@quicinc.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="HDbt7KaN"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1700226441; x=1731762441;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=p+Kod0Kjrk21wqwsn8JeKgSVzjdY4Ik14dg4MPgfld0=;
+  b=HDbt7KaNQBc4WhziOjuh7tpEyxd8XlqWMquc8X32Wp0T3UNFq/nrz/vj
+   +7BHmtbiiIW2kwju3D5kXBoK17IupBk3WecJzzyz9vNfKaymDtv7xIgSq
+   6goVKGX6taj5ayUqMAk6GpbTuW99TFpT2aS5/dSSPhVxPkd4yEz4iJJpR
+   pKD3c7cbGZMb7BdmwGgU4jQclslkn9XtDc6WU2yRK0Gh1X5I/Tcvmv1au
+   7ZXcDeH/ttRF/h35wn+vLvQs2a4Gjn/0nPRIcB8g9NRvAaJjLXqxfeKWk
+   KsHBWpUAR+dtkDz3saqXSOBJfgmBG3xkwXixA0n1ax+VZA6a+8l3QTCpP
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10896"; a="388446346"
+X-IronPort-AV: E=Sophos;i="6.04,206,1695711600"; 
+   d="scan'208";a="388446346"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Nov 2023 05:07:20 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10896"; a="836072044"
+X-IronPort-AV: E=Sophos;i="6.04,206,1695711600"; 
+   d="scan'208";a="836072044"
+Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
+  by fmsmga004.fm.intel.com with ESMTP; 17 Nov 2023 05:07:19 -0800
+From: Yi Liu <yi.l.liu@intel.com>
+To: joro@8bytes.org,
+	alex.williamson@redhat.com,
+	jgg@nvidia.com,
+	kevin.tian@intel.com,
+	robin.murphy@arm.com,
+	baolu.lu@linux.intel.com
+Cc: cohuck@redhat.com,
+	eric.auger@redhat.com,
+	nicolinc@nvidia.com,
+	kvm@vger.kernel.org,
+	mjrosato@linux.ibm.com,
+	chao.p.peng@linux.intel.com,
+	yi.l.liu@intel.com,
+	yi.y.sun@linux.intel.com,
+	peterx@redhat.com,
+	jasowang@redhat.com,
+	shameerali.kolothum.thodi@huawei.com,
+	lulu@redhat.com,
+	suravee.suthikulpanit@amd.com,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	linux-kselftest@vger.kernel.org,
+	zhenzhong.duan@intel.com,
+	joao.m.martins@oracle.com,
+	xin.zeng@intel.com,
+	yan.y.zhao@intel.com
+Subject: [PATCH v6 0/6] iommufd: Add nesting infrastructure (part 2/2)
+Date: Fri, 17 Nov 2023 05:07:11 -0800
+Message-Id: <20231117130717.19875-1-yi.l.liu@intel.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01b.na.qualcomm.com (10.47.209.197)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: iyGW0QgsUj_7CDD-XQiHftf0EzAMtZsx
-X-Proofpoint-ORIG-GUID: iyGW0QgsUj_7CDD-XQiHftf0EzAMtZsx
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.272,Aquarius:18.0.987,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2023-11-17_08,2023-11-16_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 phishscore=0
- mlxscore=0 suspectscore=0 mlxlogscore=853 clxscore=1015 lowpriorityscore=0
- malwarescore=0 adultscore=0 priorityscore=1501 spamscore=0 bulkscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2311060000
- definitions=main-2311170081
+Content-Transfer-Encoding: 8bit
 
-The X1E80100 SoC includes a PDC, document it.
+Nested translation is a hardware feature that is supported by many modern
+IOMMU hardwares. It has two stages (stage-1, stage-2) address translation
+to get access to the physical address. stage-1 translation table is owned
+by userspace (e.g. by a guest OS), while stage-2 is owned by kernel. Changes
+to stage-1 translation table should be followed by an IOTLB invalidation.
 
-Signed-off-by: Sibi Sankar <quic_sibis@quicinc.com>
----
- .../devicetree/bindings/interrupt-controller/qcom,pdc.yaml       | 1 +
- 1 file changed, 1 insertion(+)
+Take Intel VT-d as an example, the stage-1 translation table is I/O page
+table. As the below diagram shows, guest I/O page table pointer in GPA
+(guest physical address) is passed to host and be used to perform the stage-1
+address translation. Along with it, modifications to present mappings in the
+guest I/O page table should be followed with an IOTLB invalidation.
 
-diff --git a/Documentation/devicetree/bindings/interrupt-controller/qcom,pdc.yaml b/Documentation/devicetree/bindings/interrupt-controller/qcom,pdc.yaml
-index 86d61896f591..ea10cade3453 100644
---- a/Documentation/devicetree/bindings/interrupt-controller/qcom,pdc.yaml
-+++ b/Documentation/devicetree/bindings/interrupt-controller/qcom,pdc.yaml
-@@ -41,6 +41,7 @@ properties:
-           - qcom,sm8250-pdc
-           - qcom,sm8350-pdc
-           - qcom,sm8450-pdc
-+          - qcom,x1e80100-pdc
-       - const: qcom,pdc
- 
-   reg:
+    .-------------.  .---------------------------.
+    |   vIOMMU    |  | Guest I/O page table      |
+    |             |  '---------------------------'
+    .----------------/
+    | PASID Entry |--- PASID cache flush --+
+    '-------------'                        |
+    |             |                        V
+    |             |           I/O page table pointer in GPA
+    '-------------'
+Guest
+------| Shadow |---------------------------|--------
+      v        v                           v
+Host
+    .-------------.  .------------------------.
+    |   pIOMMU    |  |  FS for GIOVA->GPA     |
+    |             |  '------------------------'
+    .----------------/  |
+    | PASID Entry |     V (Nested xlate)
+    '----------------\.----------------------------------.
+    |             |   | SS for GPA->HPA, unmanaged domain|
+    |             |   '----------------------------------'
+    '-------------'
+Where:
+ - FS = First stage page tables
+ - SS = Second stage page tables
+<Intel VT-d Nested translation>
+
+This series adds the cache invalidation path for the userspace to invalidate
+cache after modifying the stage-1 page table. This is based on the first part
+of nesting [1]
+
+Complete code can be found in [2], QEMU could can be found in [3].
+
+At last, this is a team work together with Nicolin Chen, Lu Baolu. Thanks
+them for the help. ^_^. Look forward to your feedbacks.
+
+[1] https://lore.kernel.org/linux-iommu/20231026044216.64964-1-yi.l.liu@intel.com/ - merged
+[2] https://github.com/yiliu1765/iommufd/tree/iommufd_nesting
+[3] https://github.com/yiliu1765/qemu/tree/zhenzhong/wip/iommufd_nesting_rfcv1
+
+Change log:
+
+v6:
+ - No much change, just rebase on top of 6.7-rc1 as part 1/2 is merged
+
+v5: https://lore.kernel.org/linux-iommu/20231020092426.13907-1-yi.l.liu@intel.com/#t
+ - Split the iommufd nesting series into two parts of alloc_user and
+   invalidation (Jason)
+ - Split IOMMUFD_OBJ_HW_PAGETABLE to IOMMUFD_OBJ_HWPT_PAGING/_NESTED, and
+   do the same with the structures/alloc()/abort()/destroy(). Reworked the
+   selftest accordingly too. (Jason)
+ - Move hwpt/data_type into struct iommu_user_data from standalone op
+   arguments. (Jason)
+ - Rename hwpt_type to be data_type, the HWPT_TYPE to be HWPT_ALLOC_DATA,
+   _TYPE_DEFAULT to be _ALLOC_DATA_NONE (Jason, Kevin)
+ - Rename iommu_copy_user_data() to iommu_copy_struct_from_user() (Kevin)
+ - Add macro to the iommu_copy_struct_from_user() to calculate min_size
+   (Jason)
+ - Fix two bugs spotted by ZhaoYan
+
+v4: https://lore.kernel.org/linux-iommu/20230921075138.124099-1-yi.l.liu@intel.com/
+ - Separate HWPT alloc/destroy/abort functions between user-managed HWPTs
+   and kernel-managed HWPTs
+ - Rework invalidate uAPI to be a multi-request array-based design
+ - Add a struct iommu_user_data_array and a helper for driver to sanitize
+   and copy the entry data from user space invalidation array
+ - Add a patch fixing TEST_LENGTH() in selftest program
+ - Drop IOMMU_RESV_IOVA_RANGES patches
+ - Update kdoc and inline comments
+ - Drop the code to add IOMMU_RESV_SW_MSI to kernel-managed HWPT in nested translation,
+   this does not change the rule that resv regions should only be added to the
+   kernel-managed HWPT. The IOMMU_RESV_SW_MSI stuff will be added in later series
+   as it is needed only by SMMU so far.
+
+v3: https://lore.kernel.org/linux-iommu/20230724110406.107212-1-yi.l.liu@intel.com/
+ - Add new uAPI things in alphabetical order
+ - Pass in "enum iommu_hwpt_type hwpt_type" to op->domain_alloc_user for
+   sanity, replacing the previous op->domain_alloc_user_data_len solution
+ - Return ERR_PTR from domain_alloc_user instead of NULL
+ - Only add IOMMU_RESV_SW_MSI to kernel-managed HWPT in nested translation (Kevin)
+ - Add IOMMU_RESV_IOVA_RANGES to report resv iova ranges to userspace hence
+   userspace is able to exclude the ranges in the stage-1 HWPT (e.g. guest I/O
+   page table). (Kevin)
+ - Add selftest coverage for the new IOMMU_RESV_IOVA_RANGES ioctl
+ - Minor changes per Kevin's inputs
+
+v2: https://lore.kernel.org/linux-iommu/20230511143844.22693-1-yi.l.liu@intel.com/
+ - Add union iommu_domain_user_data to include all user data structures to avoid
+   passing void * in kernel APIs.
+ - Add iommu op to return user data length for user domain allocation
+ - Rename struct iommu_hwpt_alloc::data_type to be hwpt_type
+ - Store the invalidation data length in iommu_domain_ops::cache_invalidate_user_data_len
+ - Convert cache_invalidate_user op to be int instead of void
+ - Remove @data_type in struct iommu_hwpt_invalidate
+ - Remove out_hwpt_type_bitmap in struct iommu_hw_info hence drop patch 08 of v1
+
+v1: https://lore.kernel.org/linux-iommu/20230309080910.607396-1-yi.l.liu@intel.com/
+
+Thanks,
+	Yi Liu
+
+Lu Baolu (1):
+  iommu: Add cache_invalidate_user op
+
+Nicolin Chen (4):
+  iommu: Add iommu_copy_struct_from_user_array helper
+  iommufd/selftest: Add mock_domain_cache_invalidate_user support
+  iommufd/selftest: Add IOMMU_TEST_OP_MD_CHECK_IOTLB test op
+  iommufd/selftest: Add coverage for IOMMU_HWPT_INVALIDATE ioctl
+
+Yi Liu (1):
+  iommufd: Add IOMMU_HWPT_INVALIDATE
+
+ drivers/iommu/iommufd/hw_pagetable.c          | 35 ++++++++
+ drivers/iommu/iommufd/iommufd_private.h       |  9 ++
+ drivers/iommu/iommufd/iommufd_test.h          | 22 +++++
+ drivers/iommu/iommufd/main.c                  |  3 +
+ drivers/iommu/iommufd/selftest.c              | 69 +++++++++++++++
+ include/linux/iommu.h                         | 84 +++++++++++++++++++
+ include/uapi/linux/iommufd.h                  | 35 ++++++++
+ tools/testing/selftests/iommu/iommufd.c       | 75 +++++++++++++++++
+ tools/testing/selftests/iommu/iommufd_utils.h | 63 ++++++++++++++
+ 9 files changed, 395 insertions(+)
+
 -- 
-2.17.1
+2.34.1
 
