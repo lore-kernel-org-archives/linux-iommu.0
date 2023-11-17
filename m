@@ -1,133 +1,100 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.120])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 72023FBEE
-	for <iommu@lists.linux.dev>; Fri, 17 Nov 2023 09:14:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E99D1A702
+	for <iommu@lists.linux.dev>; Fri, 17 Nov 2023 10:57:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="GazIZusb"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1700212445; x=1731748445;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=0pd5FK7X1xEUkFM/KdlwbN/4e1CbLaaCS11NMMmROLc=;
-  b=GazIZusbUJEd+6+obO3UcKpxL5ujof/QoaXUMKat9GMx5gy23teVFHOw
-   sck3KGn5O0DgSRTKcQRxnqfc4cPgTY2LrD9JaccHeZC3WYu3iuyuESMlr
-   kc9UPV6ABq2Kc3TrlbOM87rxDC3LcJBkJHHxcSJ9u7fU4PHD0x7vxuIts
-   pwEzKzkjfgSnQ/gFRU4BBTkcYtlTb46b3crgqzrbWGtUQgAlzHdwm9nMY
-   wootS13XT7aKA8PxMFOXDHFWYGGRxvLbManaf+cSEw15CypuszDoGMLbp
-   KU/V2Up802JZkaooOlEePNcGFDkSG/0+BoMeDL8DlqI3YtBLgpVuWMrdm
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10896"; a="390119929"
-X-IronPort-AV: E=Sophos;i="6.04,206,1695711600"; 
-   d="scan'208";a="390119929"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Nov 2023 01:14:04 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10896"; a="800443032"
-X-IronPort-AV: E=Sophos;i="6.04,206,1695711600"; 
-   d="scan'208";a="800443032"
-Received: from allen-box.sh.intel.com ([10.239.159.127])
-  by orsmga001.jf.intel.com with ESMTP; 17 Nov 2023 01:14:00 -0800
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Kevin Tian <kevin.tian@intel.com>
-Cc: iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	stable@vger.kernel.org,
-	Huang Ying <ying.huang@intel.com>,
-	Alistair Popple <apopple@nvidia.com>,
-	Luo Yuzhang <yuzhang.luo@intel.com>,
-	Tony Zhu <tony.zhu@intel.com>
-Subject: [PATCH 1/1] iommu/vt-d: Fix incorrect cache invalidation for mm notification
-Date: Fri, 17 Nov 2023 17:09:33 +0800
-Message-Id: <20231117090933.75267-1-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="isHRkEh1"
+Received: from pps.filterd (m0279865.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 3AHAtT5s013510;
+	Fri, 17 Nov 2023 10:57:15 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=qcppdkim1;
+ bh=zWLKFtv9YS9AEAg3cjF84kmOJJWZ0UNo/rnIyLs2CFk=;
+ b=isHRkEh18CYAH70pgP94q1/c2LK7USOKwkW/uhn2Jk9aMwyNTFgHJUhDHpwFaHh5Z1Rh
+ r9u7Wtl4VT4VSl/YcqxxbNmh1HR/GxoPjfl65invS5q7v1cgBtRjl6JTts/cYZTcP2lk
+ 3b9tJbgnlQDdqx5FnCO9MByyyN85PKQ/Tf9y8gq26hWeDi4DZFYLYMJhBWaj1Q9P2oSC
+ lkxTNtHFMVWG9qgMXKBkpMtDgT1Ky5CBIQYsg1JSihvdMbthsb8V3PAg8Yzp+59I+oGV
+ Lnj+sm9gXnvR9kv0P+A/0yh6ZYnQZOPRPEyAx6vwAPHDDQMGO0+IP4weOsMPyO6q2Wmp BA== 
+Received: from nalasppmta05.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3ue2na0k6g-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 17 Nov 2023 10:57:15 +0000
+Received: from nalasex01b.na.qualcomm.com (nalasex01b.na.qualcomm.com [10.47.209.197])
+	by NALASPPMTA05.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 3AHAvEUi006976
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 17 Nov 2023 10:57:14 GMT
+Received: from blr-ubuntu-87.ap.qualcomm.com (10.80.80.8) by
+ nalasex01b.na.qualcomm.com (10.47.209.197) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.39; Fri, 17 Nov 2023 02:57:07 -0800
+From: Sibi Sankar <quic_sibis@quicinc.com>
+To: <andersson@kernel.org>, <konrad.dybcio@linaro.org>, <will@kernel.org>,
+        <robin.murphy@arm.com>, <joro@8bytes.org>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>
+CC: <agross@kernel.org>, <vkoul@kernel.org>, <quic_gurus@quicinc.com>,
+        <conor+dt@kernel.org>, <quic_rjendra@quicinc.com>,
+        <abel.vesa@linaro.org>, <linux-arm-msm@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <dmaengine@vger.kernel.org>, <iommu@lists.linux.dev>,
+        <quic_tsoni@quicinc.com>, <neil.armstrong@linaro.org>,
+        Sibi Sankar <quic_sibis@quicinc.com>
+Subject: [PATCH V2 0/4] dt-bindings: Document gpi/pdc/scm/smmu for X1E80100
+Date: Fri, 17 Nov 2023 16:26:31 +0530
+Message-ID: <20231117105635.343-1-quic_sibis@quicinc.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01b.na.qualcomm.com (10.47.209.197)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: 0PBHcr-a0GRXMqqHlT8i1OYJz--X3KFK
+X-Proofpoint-ORIG-GUID: 0PBHcr-a0GRXMqqHlT8i1OYJz--X3KFK
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.987,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2023-11-17_08,2023-11-16_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0
+ priorityscore=1501 malwarescore=0 mlxscore=0 lowpriorityscore=0
+ mlxlogscore=804 phishscore=0 suspectscore=0 clxscore=1015 adultscore=0
+ impostorscore=0 bulkscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2311060000 definitions=main-2311170081
 
-Commit 6bbd42e2df8f ("mmu_notifiers: call invalidate_range() when
-invalidating TLBs") moved the secondary TLB invalidations into the TLB
-invalidation functions to ensure that all secondary TLB invalidations
-happen at the same time as the CPU invalidation and added a flush-all
-type of secondary TLB invalidation for the batched mode, where a range
-of [0, -1UL) is used to indicates that the range extends to the end of
-the address space.
+This series documents gpi/pdc/scm/smmu for the Qualcomm X1E80100 platform,
+aka Snapdragon X Elite.
 
-However, using an end address of -1UL caused an overflow in the Intel
-IOMMU driver, where the end address was rounded up to the next page.
-As a result, both the IOTLB and device ATC were not invalidated correctly.
+Our v1 post of the patchsets adding support for Snapdragon X Elite SoC had
+the part number sc8380xp which is now updated to the new part number x1e80100
+based on the new branding scheme and refers to the exact same SoC.
 
-Add a flush all helper function and call it when the invalidation range
-is from 0 to -1UL, ensuring that the entire caches are invalidated
-correctly.
+v2:
+* Update the part number from sc8380xp to x1e80100.
+* Document PDC bindings as well.
+* List the interconnect requirements in bindings [Krzysztof].
+* Pickup Rbs.
 
-Fixes: 6bbd42e2df8f ("mmu_notifiers: call invalidate_range() when invalidating TLBs")
-Cc: stable@vger.kernel.org
-Cc: Huang Ying <ying.huang@intel.com>
-Cc: Alistair Popple <apopple@nvidia.com>
-Tested-by: Luo Yuzhang <yuzhang.luo@intel.com> # QAT
-Tested-by: Tony Zhu <tony.zhu@intel.com> # DSA
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- drivers/iommu/intel/svm.c | 26 ++++++++++++++++++++++++++
- 1 file changed, 26 insertions(+)
+Rajendra Nayak (1):
+  dt-bindings: arm-smmu: Add compatible for X1E80100 SoC
 
-diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
-index 50a481c895b8..588385050a07 100644
---- a/drivers/iommu/intel/svm.c
-+++ b/drivers/iommu/intel/svm.c
-@@ -216,6 +216,27 @@ static void intel_flush_svm_range(struct intel_svm *svm, unsigned long address,
- 	rcu_read_unlock();
- }
- 
-+static void intel_flush_svm_all(struct intel_svm *svm)
-+{
-+	struct device_domain_info *info;
-+	struct intel_svm_dev *sdev;
-+
-+	rcu_read_lock();
-+	list_for_each_entry_rcu(sdev, &svm->devs, list) {
-+		info = dev_iommu_priv_get(sdev->dev);
-+
-+		qi_flush_piotlb(sdev->iommu, sdev->did, svm->pasid, 0, -1UL, 1);
-+		if (info->ats_enabled) {
-+			qi_flush_dev_iotlb_pasid(sdev->iommu, sdev->sid, info->pfsid,
-+						 svm->pasid, sdev->qdep,
-+						 0, 64 - VTD_PAGE_SHIFT);
-+			quirk_extra_dev_tlb_flush(info, 0, 64 - VTD_PAGE_SHIFT,
-+						  svm->pasid, sdev->qdep);
-+		}
-+	}
-+	rcu_read_unlock();
-+}
-+
- /* Pages have been freed at this point */
- static void intel_arch_invalidate_secondary_tlbs(struct mmu_notifier *mn,
- 					struct mm_struct *mm,
-@@ -223,6 +244,11 @@ static void intel_arch_invalidate_secondary_tlbs(struct mmu_notifier *mn,
- {
- 	struct intel_svm *svm = container_of(mn, struct intel_svm, notifier);
- 
-+	if (start == 0 && end == -1UL) {
-+		intel_flush_svm_all(svm);
-+		return;
-+	}
-+
- 	intel_flush_svm_range(svm, start,
- 			      (end - start + PAGE_SIZE - 1) >> VTD_PAGE_SHIFT, 0);
- }
+Sibi Sankar (3):
+  dt-bindings: dma: qcom: gpi: add compatible for X1E80100
+  dt-bindings: firmware: qcom,scm: document SCM on X1E80100 SoCs
+  dt-bindings: interrupt-controller: qcom,pdc: document pdc on X1E80100
+
+ Documentation/devicetree/bindings/dma/qcom,gpi.yaml             | 1 +
+ Documentation/devicetree/bindings/firmware/qcom,scm.yaml        | 2 ++
+ .../devicetree/bindings/interrupt-controller/qcom,pdc.yaml      | 1 +
+ Documentation/devicetree/bindings/iommu/arm,smmu.yaml           | 2 ++
+ 4 files changed, 6 insertions(+)
+
 -- 
-2.34.1
+2.17.1
 
