@@ -1,104 +1,156 @@
-Received: from mail-qk1-f174.google.com (mail-qk1-f174.google.com [209.85.222.174])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.20])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB94D31A74
-	for <iommu@lists.linux.dev>; Fri, 17 Nov 2023 13:11:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F0B551B28D
+	for <iommu@lists.linux.dev>; Fri, 17 Nov 2023 13:18:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="LL0DLqGO"
-Received: by mail-qk1-f174.google.com with SMTP id af79cd13be357-778711ee748so119764285a.2
-        for <iommu@lists.linux.dev>; Fri, 17 Nov 2023 05:11:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1700226702; x=1700831502; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=kaNYB3Xe940CPqgg93YxvAASpaQANrmQi+eqY/SUT/0=;
-        b=LL0DLqGOOS6T9vVOzw1MdlOEp0hLGUI2dNBki9YVezv6TT5hSPsMCnoceoRaUviQ7m
-         atv7I+sABXUrO1enQZrFo6ZNY6PUPqKNAof8XxhNYlecd4I9GgwjJkf9AyAqhWInhvJI
-         JCAMfPgw4jSTBqdGWUKCJZEkzXc9QunKduRfFBtF9H5dgLKEf7ncHz0zIVNV6SYm6E7T
-         ZREzMxwf/crrvl9otsib8zoTUoWdrfGf/qmNGBA8i9wjAazHMpMdu/bKxMHQAclwWFTy
-         Ll2le7w2y/IIfSVTuFlg7FhPWI7VpT9xShJZsYlFshF+UBb9/cdgO+e3q9ckitvtTuco
-         I4ng==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1700226702; x=1700831502;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=kaNYB3Xe940CPqgg93YxvAASpaQANrmQi+eqY/SUT/0=;
-        b=GYqMKkz4akuEog1APpCKk94MFFC0/hBQAQRFQ2vaMwehl5mkujqlHWKxLMy7YJdD9c
-         VLtlL8oswSouPUljhHMm1ik92YUv9plB9KvOqJiGdi3OA4NWuymlQ4kzEifjag0UlSVb
-         OTUi3/vFPCIzRyTjg8KqjhqTewFj69esbCmtLUUmTYrbjS+RSBKrohqNKAmmkSgkem4u
-         fNcdLoxmlPti8QAfr3sZyqpZxnKqa8DydBY22FU1naVtAL5BsOCUsgj2+nh9j3Ejnt4A
-         zf+AGMOPbbjzlzYUiv9cwo9V0Fjiuzo+pzqWNt3/293WTZRn3Mz2q6r/zk1h9b4d3KZR
-         Pt2Q==
-X-Gm-Message-State: AOJu0YxXwKB11d9UpqBu/rn5P2cmnN6msFmAqnQMvtMkimuXZlGVzPAA
-	8QH2YfRUI+uTZjcDPdUs6gq2rA==
-X-Google-Smtp-Source: AGHT+IGnZW5/wrO7PBGh/UpKLxTkpqN/y74D3x1ti+8qQ4KoF7Qk5FiMI0mhwyrX+gXo9OA7upo0zA==
-X-Received: by 2002:a05:620a:269a:b0:77a:1d5b:2ccb with SMTP id c26-20020a05620a269a00b0077a1d5b2ccbmr13000584qkp.6.1700226702773;
-        Fri, 17 Nov 2023 05:11:42 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-134-23-187.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.134.23.187])
-        by smtp.gmail.com with ESMTPSA id x10-20020ae9f80a000000b00767d8e12ce3sm589893qkh.49.2023.11.17.05.11.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Nov 2023 05:11:42 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1r3ydJ-0001jP-R1;
-	Fri, 17 Nov 2023 09:11:41 -0400
-Date: Fri, 17 Nov 2023 09:11:41 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-	Huang Ying <ying.huang@intel.com>,
-	Alistair Popple <apopple@nvidia.com>,
-	Luo Yuzhang <yuzhang.luo@intel.com>, Tony Zhu <tony.zhu@intel.com>
-Subject: Re: [PATCH 1/1] iommu/vt-d: Fix incorrect cache invalidation for mm
- notification
-Message-ID: <20231117131141.GB6501@ziepe.ca>
-References: <20231117090933.75267-1-baolu.lu@linux.intel.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="OiLNxgOL"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1700227098; x=1731763098;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=Xlos/TDjJ1TlU8lUh8JteOAv937jkZW/VG6cMFf2KwU=;
+  b=OiLNxgOLCddfTQV8DMhPBB+WkvdYzEiFcO55Ngi5kiTI9E/xSf0Z711F
+   BwQEHODmsRFe1BCiGF0gmoaMYKGrUVdILVvFlYeFu/hV3eQaK2ldNpsr6
+   PB+1pOr4sbbJfK2aEYS7lV8uKkMP2X2I1i4o7buYbUOe36cPoEwVGBP5A
+   JT5dDD1IgwsfkOvp8dabwKLDceE+8TZSjXqccghacvm97VLt/b+2DGOkr
+   wYHij09QCgXqfg3GfF89H6EssPMAih/QRAu+HJv6ASb/2OWQQsLZXjGKQ
+   jRPO0XAfR3D4i5fYX7cUqUZLr151JzFjqXoJ8i9+xl7qkgiG1p2Qfi8ra
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10896"; a="381685578"
+X-IronPort-AV: E=Sophos;i="6.04,206,1695711600"; 
+   d="scan'208";a="381685578"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Nov 2023 05:18:18 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10896"; a="794831176"
+X-IronPort-AV: E=Sophos;i="6.04,206,1695711600"; 
+   d="scan'208";a="794831176"
+Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
+  by orsmga008.jf.intel.com with ESMTP; 17 Nov 2023 05:18:17 -0800
+From: Yi Liu <yi.l.liu@intel.com>
+To: joro@8bytes.org,
+	alex.williamson@redhat.com,
+	jgg@nvidia.com,
+	kevin.tian@intel.com,
+	robin.murphy@arm.com,
+	baolu.lu@linux.intel.com
+Cc: cohuck@redhat.com,
+	eric.auger@redhat.com,
+	nicolinc@nvidia.com,
+	kvm@vger.kernel.org,
+	mjrosato@linux.ibm.com,
+	chao.p.peng@linux.intel.com,
+	yi.l.liu@intel.com,
+	yi.y.sun@linux.intel.com,
+	peterx@redhat.com,
+	jasowang@redhat.com,
+	shameerali.kolothum.thodi@huawei.com,
+	lulu@redhat.com,
+	suravee.suthikulpanit@amd.com,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	linux-kselftest@vger.kernel.org,
+	zhenzhong.duan@intel.com,
+	joao.m.martins@oracle.com,
+	xin.zeng@intel.com,
+	yan.y.zhao@intel.com
+Subject: [PATCH v7 0/3] Add Intel VT-d nested translation (part 2/2)
+Date: Fri, 17 Nov 2023 05:18:13 -0800
+Message-Id: <20231117131816.24359-1-yi.l.liu@intel.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20231117090933.75267-1-baolu.lu@linux.intel.com>
+Content-Transfer-Encoding: 8bit
 
-On Fri, Nov 17, 2023 at 05:09:33PM +0800, Lu Baolu wrote:
-> Commit 6bbd42e2df8f ("mmu_notifiers: call invalidate_range() when
-> invalidating TLBs") moved the secondary TLB invalidations into the TLB
-> invalidation functions to ensure that all secondary TLB invalidations
-> happen at the same time as the CPU invalidation and added a flush-all
-> type of secondary TLB invalidation for the batched mode, where a range
-> of [0, -1UL) is used to indicates that the range extends to the end of
-> the address space.
-> 
-> However, using an end address of -1UL caused an overflow in the Intel
-> IOMMU driver, where the end address was rounded up to the next page.
-> As a result, both the IOTLB and device ATC were not invalidated correctly.
-> 
-> Add a flush all helper function and call it when the invalidation range
-> is from 0 to -1UL, ensuring that the entire caches are invalidated
-> correctly.
-> 
-> Fixes: 6bbd42e2df8f ("mmu_notifiers: call invalidate_range() when invalidating TLBs")
-> Cc: stable@vger.kernel.org
-> Cc: Huang Ying <ying.huang@intel.com>
-> Cc: Alistair Popple <apopple@nvidia.com>
-> Tested-by: Luo Yuzhang <yuzhang.luo@intel.com> # QAT
-> Tested-by: Tony Zhu <tony.zhu@intel.com> # DSA
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> ---
->  drivers/iommu/intel/svm.c | 26 ++++++++++++++++++++++++++
->  1 file changed, 26 insertions(+)
+This is the second part to add Intel VT-d nested translation based on IOMMUFD
+nesting infrastructure. As the iommufd nesting infrastructure series [1],
+iommu core supports new ops to invalidate the cache after the modifictions
+in stage-1 page table. So far, the cache invalidation data is vendor specific,
+the data_type (IOMMU_HWPT_DATA_VTD_S1) defined for the vendor specific HWPT
+allocation is reused in the cache invalidation path. User should provide the
+correct data_type that suit with the type used in HWPT allocation.
 
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+IOMMU_HWPT_INVALIDATE iotcl returns an error in @out_driver_error_code. However
+Intel VT-d does not define error code so far, so it's not easy to pre-define it
+in iommufd neither. As a result, this field should just be ignored on VT-d platform.
 
-This should go to -rc
+Complete code can be found in [2], corresponding QEMU could can be found in [3].
 
-Jason
+[1] https://lore.kernel.org/linux-iommu/20231117130717.19875-1-yi.l.liu@intel.com/#t
+[2] https://github.com/yiliu1765/iommufd/tree/iommufd_nesting
+[3] https://github.com/yiliu1765/qemu/tree/zhenzhong/wip/iommufd_nesting_rfcv1
+
+Change log:
+
+v7:
+ - No much change, just rebase on top of 6.7-rc1
+
+v6: https://lore.kernel.org/linux-iommu/20231020093719.18725-1-yi.l.liu@intel.com/
+ - Address comments from Kevin
+ - Split the VT-d nesting series into two parts (Jason)
+
+v5: https://lore.kernel.org/linux-iommu/20230921075431.125239-1-yi.l.liu@intel.com/
+ - Add Kevin's r-b for patch 2, 3 ,5 8, 10
+ - Drop enforce_cache_coherency callback from the nested type domain ops (Kevin)
+ - Remove duplicate agaw check in patch 04 (Kevin)
+ - Remove duplicate domain_update_iommu_cap() in patch 06 (Kevin)
+ - Check parent's force_snooping to set pgsnp in the pasid entry (Kevin)
+ - uapi data structure check (Kevin)
+ - Simplify the errata handling as user can allocate nested parent domain
+
+v4: https://lore.kernel.org/linux-iommu/20230724111335.107427-1-yi.l.liu@intel.com/
+ - Remove ascii art tables (Jason)
+ - Drop EMT (Tina, Jason)
+ - Drop MTS and related definitions (Kevin)
+ - Rename macro IOMMU_VTD_PGTBL_ to IOMMU_VTD_S1_ (Kevin)
+ - Rename struct iommu_hwpt_intel_vtd_ to iommu_hwpt_vtd_ (Kevin)
+ - Rename struct iommu_hwpt_intel_vtd to iommu_hwpt_vtd_s1 (Kevin)
+ - Put the vendor specific hwpt alloc data structure before enuma iommu_hwpt_type (Kevin)
+ - Do not trim the higher page levels of S2 domain in nested domain attachment as the
+   S2 domain may have been used independently. (Kevin)
+ - Remove the first-stage pgd check against the maximum address of s2_domain as hw
+   can check it anyhow. It makes sense to check every pfns used in the stage-1 page
+   table. But it cannot make it. So just leave it to hw. (Kevin)
+ - Split the iotlb flush part into an order of uapi, helper and callback implementation (Kevin)
+ - Change the policy of VT-d nesting errata, disallow RO mapping once a domain is used
+   as parent domain of a nested domain. This removes the nested_users counting. (Kevin)
+ - Minor fix for "make htmldocs"
+
+v3: https://lore.kernel.org/linux-iommu/20230511145110.27707-1-yi.l.liu@intel.com/
+ - Further split the patches into an order of adding helpers for nested
+   domain, iotlb flush, nested domain attachment and nested domain allocation
+   callback, then report the hw_info to userspace.
+ - Add batch support in cache invalidation from userspace
+ - Disallow nested translation usage if RO mappings exists in stage-2 domain
+   due to errata on readonly mappings on Sapphire Rapids platform.
+
+v2: https://lore.kernel.org/linux-iommu/20230309082207.612346-1-yi.l.liu@intel.com/
+ - The iommufd infrastructure is split to be separate series.
+
+v1: https://lore.kernel.org/linux-iommu/20230209043153.14964-1-yi.l.liu@intel.com/
+
+Regards,
+	Yi Liu
+
+Yi Liu (3):
+  iommufd: Add data structure for Intel VT-d stage-1 cache invalidation
+  iommu/vt-d: Make iotlb flush helpers to be extern
+  iommu/vt-d: Add iotlb flush for nested domain
+
+ drivers/iommu/intel/iommu.c  | 10 +++----
+ drivers/iommu/intel/iommu.h  |  6 ++++
+ drivers/iommu/intel/nested.c | 54 ++++++++++++++++++++++++++++++++++++
+ include/uapi/linux/iommufd.h | 36 ++++++++++++++++++++++++
+ 4 files changed, 101 insertions(+), 5 deletions(-)
+
+-- 
+2.34.1
+
