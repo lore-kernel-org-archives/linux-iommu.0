@@ -1,291 +1,326 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C6204501F
-	for <iommu@lists.linux.dev>; Fri, 17 Nov 2023 22:27:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 25B262582
+	for <iommu@lists.linux.dev>; Sat, 18 Nov 2023 02:27:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="c6EeYDg9"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1700260071;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=O8zmpHBLNONvEN8WDCNorVo2E+uOhoD7o7LlWLYwJes=;
-	b=c6EeYDg9wla2y8avKrMZih8uUsp4PUMkejCVYOLRPs4MXQckAXokZ7PNrasOUxm2f3041h
-	eJS9Opd3Sjk6SP9Hos2sRlXGmlf+2wxNghgs7MsMEWToMiXxnUknjCBKsggBRlB2b4k8PW
-	StvGoEQ0kDsQbZXTjn6ZhjZNkO3cCvo=
-Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com
- [209.85.160.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-251-xTvzMDTtMlitUW0mHvfPWw-1; Fri, 17 Nov 2023 17:27:50 -0500
-X-MC-Unique: xTvzMDTtMlitUW0mHvfPWw-1
-Received: by mail-qt1-f197.google.com with SMTP id d75a77b69052e-421ace48f00so26412181cf.2
-        for <iommu@lists.linux.dev>; Fri, 17 Nov 2023 14:27:49 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1700260069; x=1700864869;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=AiZjKSvYvhsu7/NaT39ijvKLN1v9uLeQ5qahPEsXOuA=;
-        b=TPIGjgfc29ihRhPt0+iZtTcQMTWfo6PiJ44L/EBBYcYwO1gkA0pcIg3e3CuRiKGjtK
-         CHWU3oNHcTnB7BR5QgwydJAUPccQvQ+FNcevq4pqzzkwmdyHaNgOzMoheD1pczI7qhg3
-         gz2V2NULIR+lv5R5q0V1ItNx/jwJZSnntywGwiYpqS0nmzfBOuP7KKfsXOU3tnEJhi/O
-         YtoTDxEFdD/jJ7tyzc7pS4Z+tnnW79i3c2+tjW1i+z8clcBo2Om/i7NTwY9wUTxZe8aX
-         dhjYOVOGpctwYyr4hWNiV+rnguu3PfO/HF3yOumBK6D7Dv5jjgpjSqEREvw44WPIEnk7
-         XbZg==
-X-Gm-Message-State: AOJu0Yy4lsC8Swhkzjqjjl5Ry+RJy9tnhE+JQd7JSW2QnEz4005veyol
-	TgZT7oCCoORaod8cIOf1/Mj0scpnqBkRG6oh7qkcW7C6dVdXY3RUw6EG245n9ZrkIMnf10DLmie
-	QgKh1+K8BshB4AIg=
-X-Received: by 2002:a05:622a:489:b0:418:134f:17f4 with SMTP id p9-20020a05622a048900b00418134f17f4mr1220632qtx.22.1700260069488;
-        Fri, 17 Nov 2023 14:27:49 -0800 (PST)
-X-Google-Smtp-Source: AGHT+IG3FkLYOtTnQ+GMh7ZthjKHMc/IDRfHJKSpZF/RA1Mg2kREUnam2d8pU1JSK/6NXHglK6YeCg==
-X-Received: by 2002:a05:622a:489:b0:418:134f:17f4 with SMTP id p9-20020a05622a048900b00418134f17f4mr1220612qtx.22.1700260069175;
-        Fri, 17 Nov 2023 14:27:49 -0800 (PST)
-Received: from redhat.com ([38.15.60.12])
-        by smtp.gmail.com with ESMTPSA id i2-20020ac84882000000b004166905aa2asm881752qtq.28.2023.11.17.14.27.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Nov 2023 14:27:48 -0800 (PST)
-Date: Fri, 17 Nov 2023 15:27:46 -0700
-From: Alex Williamson <alex.williamson@redhat.com>
-To: yaozhenguo <yaozhenguo1@gmail.com>
-Cc: yaozhenguo@jd.com, dwmw2@infradead.org, baolu.lu@linux.intel.com,
- joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
- Wenchao Yao <yaowenchao@jd.com>, ZiHan Zhou <zhouzihan30@jd.com>, Jason
- Gunthorpe <jgg@nvidia.com>
-Subject: Re: [PATCH V1] vfio: add attach_group_by_node to control behavior
- of attaching group to domain
-Message-ID: <20231117152746.3aa55d68.alex.williamson@redhat.com>
-In-Reply-To: <20231115020209.4665-1-yaozhenguo@jd.com>
-References: <20231115020209.4665-1-yaozhenguo@jd.com>
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; x86_64-redhat-linux-gnu)
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="b8PF+6ix"
+Received: from pps.filterd (m0279864.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 3AI1YfNf015220;
+	Sat, 18 Nov 2023 02:26:51 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=qcppdkim1;
+ bh=EBLwbQq9XUpnkFVoTrmt1IchJfwm5gg9Up4FkOyTlqQ=;
+ b=b8PF+6ixskCD/a40fMj8rDGhEZMuaskDp1H4DqtEjooTITid1jPQlnvZhis5KFXBA5lR
+ OMQ3+zxTSjvI6Av63WIKEd2vnnMleekXv9YF8MlCtBQoPx9JWEDFh4Bb/dy5ZbOnVXxn
+ dIJX9m4V4BdcMnQTgwPSFrshdRdmZY8lk5zrSD3o/Z+7Cg2dxwbAKzfovGSKoOR9fXhp
+ 9fM+IkUbjnBq6+AjGSF+feM/j+JnzfU3wtmcq9OfdijeeN8MrcNj0wjydRkWJoQ5WEYd
+ fz3A5ZjRz7LAT0evGjBabSIK+7+Gd/IpmlRKqLbhZyU0ClFIQYz9p4WAAFetOXDsMduH vQ== 
+Received: from nasanppmta04.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3udt8bu603-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Sat, 18 Nov 2023 02:26:51 +0000
+Received: from nasanex01a.na.qualcomm.com (nasanex01a.na.qualcomm.com [10.52.223.231])
+	by NASANPPMTA04.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 3AI2QoG1005961
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Sat, 18 Nov 2023 02:26:50 GMT
+Received: from [10.251.44.35] (10.80.80.8) by nasanex01a.na.qualcomm.com
+ (10.52.223.231) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.40; Fri, 17 Nov
+ 2023 18:26:46 -0800
+Message-ID: <c1d7922e-cc94-4773-8ca7-de33d937d41e@quicinc.com>
+Date: Sat, 18 Nov 2023 04:26:43 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 3/6] iommu/arm-smmu-qcom: Add Qualcomm TBU driver
+Content-Language: en-US
+To: Bjorn Andersson <andersson@kernel.org>
+CC: <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
+        <conor+dt@kernel.org>, <will@kernel.org>, <robin.murphy@arm.com>,
+        <joro@8bytes.org>, <devicetree@vger.kernel.org>,
+        <konrad.dybcio@linaro.org>, <linux-arm-kernel@lists.infradead.org>,
+        <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-msm@vger.kernel.org>, <quic_cgoldswo@quicinc.com>,
+        <quic_sukadev@quicinc.com>, <quic_pdaly@quicinc.com>,
+        <quic_sudaraja@quicinc.com>, <djakov@kernel.org>
+References: <20231019021923.13939-1-quic_c_gdjako@quicinc.com>
+ <20231019021923.13939-4-quic_c_gdjako@quicinc.com>
+ <ljbzuewnsi52qyolombjowuouiqmv5ybwbqf2z6ok34yuiacjc@7hwfysvidjqm>
+From: Georgi Djakov <quic_c_gdjako@quicinc.com>
+In-Reply-To: <ljbzuewnsi52qyolombjowuouiqmv5ybwbqf2z6ok34yuiacjc@7hwfysvidjqm>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nasanex01a.na.qualcomm.com (10.52.223.231)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: MlXcEeMHevVGwTZB6h-_0hknfY-tpv48
+X-Proofpoint-GUID: MlXcEeMHevVGwTZB6h-_0hknfY-tpv48
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.987,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2023-11-18_01,2023-11-17_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011 impostorscore=0
+ priorityscore=1501 suspectscore=0 mlxscore=0 mlxlogscore=999 adultscore=0
+ bulkscore=0 malwarescore=0 spamscore=0 phishscore=0 lowpriorityscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2311060000
+ definitions=main-2311180016
 
-On Wed, 15 Nov 2023 10:02:09 +0800
-yaozhenguo <yaozhenguo1@gmail.com> wrote:
+On 10/22/2023 12:05 AM, Bjorn Andersson wrote:
+> On Wed, Oct 18, 2023 at 07:19:20PM -0700, Georgi Djakov wrote:
+>> Add driver for the Qualcomm implementation of the ARM MMU-500 TBU.
+>> The driver will enable the resources needed by the TBU and will
+>> configure the registers for some debug features like checking if
+>> there are any pending transactions, capturing transactions and
+>> running ATOS (Address Translation Operations). ATOS/eCATS are used
+>> to manually trigger an address translation of IOVA to physical
+>> address by the SMMU hardware.
+> 
+> I still don't think this commit message clearly enough describe the
+> problem you're trying to solve.
+> 
+> Not until I had read the Kconfig help text did I pay attention to the
+> significance of the words "some debug features" in the middle of the
+> paragraph.
+> 
+> 
+> Please describe your changes in accordance with [1], i.e. clearly
+> describe the problem you're trying to solve, then discuss the technical
+> solution in the patch.
 
-> From: Zhenguo Yao <yaozhenguo1@gmail.com>
->=20
-> Groups will attach to one iommu_domain if ops and enforce_cache_coherency
-> are equal. And all the iommu hardware share one pagetable by default.
-> There are performance issue in some scenarios. For example:
-> Host hardware topopy:
->=20
-> node0 + PCIe RP0 ---+ GPU A100
->       |         |---+ GPU A100
->       |=09        |---+ NIC Mellanox CX6
->       |=09        |---+ NIC Mellanox CX6
->       + PCIe RP1 ---+ GPU A100
->                 |---+ GPU A100
->       =09        |---+ NIC Mellanox CX6
->                 |---+ NIC Mellanox CX6
-> node1 + PCIe RP0 ---+ GPU A100
->       |         |---+ GPU A100
->       |=09        |---+ NIC Mellanox CX6
->       |=09        |---+ NIC Mellanox CX6
->       + PCIe RP1 ---+ GPU A100
->                 |---+ GPU A100
->       =09        |---+ NIC Mellanox CX6
->                 |---+ NIC Mellanox CX6
->=20
-> We passthrough all NICs and GPU to VM, and emulate host hardware topopy.
-> Mellanox CX6 ATS feature is enabled, GPU direct RDMA enabled.
-> We test NCCL allreduce in VM at different cases.
->=20
-> Case1: allreduce test use 4nic and 4GPU in numa0.
-> Case2=EF=BC=9Aallreduce test use 4nic and 4GPU in numa1.
-> case3: allreduce test use 8nic and 8GPU.
->=20
-> the result are below:
->=20
-> |        | algbw (GB/S) |
-> | ------ | -------------|
-> | case1  | 24           |
-> | case2  | 32           |
-> | case3  | 45           |
->=20
-> We checked that IOMMU pagetable is allocated in numa1 when VM boot up.
-> So, if IOTLB miss happan, IOMMU hardware in numa0 will access remote
-> pagetable in numa1. This will drop performance. After apply this patch an=
-d
-> attach_group_by_node is 1. Group in same node will attach to one domain.
-> IOMMU will access there local pagetable. Performance is improved:
->=20
-> |        | algbw (GB/S) |
-> | ------ | -------------|
-> | case1  | 32           |
-> | case2  | 32           |
-> | case3  | 63           |
->=20
-> Signed-off-by: Zhenguo Yao <yaozhenguo1@gmail.com>
-> Co-developed-by: Wenchao Yao <yaowenchao@jd.com>
-> Signed-off-by: Wenchao Yao <yaowenchao@jd.com>
-> Co-developed-by: ZiHan Zhou <zhouzihan30@jd.com>
-> Signed-off-by: ZiHan Zhou <zhouzihan30@jd.com>
-> ---
->  drivers/iommu/intel/iommu.c     |  8 +++++++-
->  drivers/vfio/vfio_iommu_type1.c | 33 +++++++++++++++++++++------------
->  include/linux/iommu.h           |  1 +
->  3 files changed, 29 insertions(+), 13 deletions(-)
->=20
-> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-> index 3531b95..2c6d8f0 100644
-> --- a/drivers/iommu/intel/iommu.c
-> +++ b/drivers/iommu/intel/iommu.c
-> @@ -569,8 +569,10 @@ void domain_update_iommu_cap(struct dmar_domain *dom=
-ain)
->  =09 * If RHSA is missing, we should default to the device numa domain
->  =09 * as fall back.
->  =09 */
-> -=09if (domain->nid =3D=3D NUMA_NO_NODE)
-> +=09if (domain->nid =3D=3D NUMA_NO_NODE) {
->  =09=09domain->nid =3D domain_update_device_node(domain);
-> +=09=09domain->domain.nid =3D domain->nid;
-> +=09}
-> =20
->  =09/*
->  =09 * First-level translation restricts the input-address to a
-> @@ -1767,6 +1769,7 @@ static struct dmar_domain *alloc_domain(unsigned in=
-t type)
->  =09=09return NULL;
-> =20
->  =09domain->nid =3D NUMA_NO_NODE;
-> +=09domain->domain.nid =3D NUMA_NO_NODE;
->  =09if (first_level_by_default(type))
->  =09=09domain->use_first_level =3D true;
->  =09domain->has_iotlb_device =3D false;
-> @@ -1808,6 +1811,8 @@ int domain_attach_iommu(struct dmar_domain *domain,=
- struct intel_iommu *iommu)
->  =09info->refcnt=09=3D 1;
->  =09info->did=09=3D num;
->  =09info->iommu=09=3D iommu;
-> +=09domain->nid     =3D iommu->node;
-> +=09domain->domain.nid     =3D iommu->node;
->  =09curr =3D xa_cmpxchg(&domain->iommu_array, iommu->seq_id,
->  =09=09=09  NULL, info, GFP_ATOMIC);
->  =09if (curr) {
-> @@ -1837,6 +1842,7 @@ void domain_detach_iommu(struct dmar_domain *domain=
-, struct intel_iommu *iommu)
->  =09=09clear_bit(info->did, iommu->domain_ids);
->  =09=09xa_erase(&domain->iommu_array, iommu->seq_id);
->  =09=09domain->nid =3D NUMA_NO_NODE;
-> +=09=09domain->domain.nid =3D NUMA_NO_NODE;
->  =09=09domain_update_iommu_cap(domain);
->  =09=09kfree(info);
->  =09}
-> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_ty=
-pe1.c
-> index eacd6ec..6a5641e 100644
-> --- a/drivers/vfio/vfio_iommu_type1.c
-> +++ b/drivers/vfio/vfio_iommu_type1.c
-> @@ -59,6 +59,11 @@
->  module_param_named(dma_entry_limit, dma_entry_limit, uint, 0644);
->  MODULE_PARM_DESC(dma_entry_limit,
->  =09=09 "Maximum number of user DMA mappings per container (65535).");
-> +static uint attach_group_by_node;
-> +module_param_named(attach_group_by_node,
-> +=09=09attach_group_by_node, uint, 0644);
-> +MODULE_PARM_DESC(attach_group_by_node,
-> +=09=09 "Attach group to domain when it's in same node");
-> =20
->  struct vfio_iommu {
->  =09struct list_head=09domain_list;
-> @@ -2287,19 +2292,23 @@ static int vfio_iommu_type1_attach_group(void *io=
-mmu_data,
->  =09=09if (d->domain->ops =3D=3D domain->domain->ops &&
->  =09=09    d->enforce_cache_coherency =3D=3D
->  =09=09=09    domain->enforce_cache_coherency) {
-> -=09=09=09iommu_detach_group(domain->domain, group->iommu_group);
-> -=09=09=09if (!iommu_attach_group(d->domain,
-> -=09=09=09=09=09=09group->iommu_group)) {
-> -=09=09=09=09list_add(&group->next, &d->group_list);
-> -=09=09=09=09iommu_domain_free(domain->domain);
-> -=09=09=09=09kfree(domain);
-> -=09=09=09=09goto done;
-> -=09=09=09}
-> +=09=09=09if ((attach_group_by_node =3D=3D 1 &&
-> +=09=09=09=09d->domain->nid =3D=3D domain->domain->nid) ||
-> +=09=09=09=09attach_group_by_node =3D=3D 0) {
-> +=09=09=09=09iommu_detach_group(domain->domain, group->iommu_group);
-> +=09=09=09=09if (!iommu_attach_group(d->domain,
-> +=09=09=09=09=09=09=09group->iommu_group)) {
-> +=09=09=09=09=09list_add(&group->next, &d->group_list);
-> +=09=09=09=09=09iommu_domain_free(domain->domain);
-> +=09=09=09=09=09kfree(domain);
-> +=09=09=09=09=09goto done;
-> +=09=09=09=09}
-> =20
-> -=09=09=09ret =3D iommu_attach_group(domain->domain,
-> -=09=09=09=09=09=09 group->iommu_group);
-> -=09=09=09if (ret)
-> -=09=09=09=09goto out_domain;
-> +=09=09=09=09ret =3D iommu_attach_group(domain->domain,
-> +=09=09=09=09=09=09group->iommu_group);
-> +=09=09=09=09if (ret)
-> +=09=09=09=09=09goto out_domain;
-> +=09=09=09}
->  =09=09}
->  =09}
-> =20
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index ec289c1..c1330ed 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -123,6 +123,7 @@ struct iommu_domain {
->  =09=09=09int users;
->  =09=09};
->  =09};
-> +=09int nid;
->  };
-> =20
->  static inline bool iommu_is_dma_domain(struct iommu_domain *domain)
+Thanks Bjorn, I'll try to improve it! 
 
-As I understand what's being done here, we're duplicating
-dmar_domain.nid to iommu_domain.nid, then when enabled by this new
-module option, we'll use this node id as part of the match to determine
-whether to create a new domain within the same container context or
-re-use an existing domain, which may have non-favorably locality.
+> [1] https://docs.kernel.org/process/submitting-patches.html#describe-your-changes
+> 
+> [..]
+>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> [..]
+>> +#ifdef CONFIG_ARM_SMMU_QCOM_TBU
+>> +
+>> +struct qsmmuv500_tbu {
+>> +	struct device *dev;
+>> +	struct arm_smmu_device *smmu;
+>> +	u32 sid_range[2];
+>> +	struct list_head list;
+>> +	struct clk *clk;
+>> +	struct icc_path	*path;
+>> +	void __iomem *base;
+>> +	spinlock_t halt_lock; /* protects halt count */
+> 
+> But in particular it makes sure that multiple halt or resume can't
+> execute concurrently.
 
-If we're going to implement a node id on the iommu_domain, it should
-replace the existing use of node id in the device specific structure
-and not simply duplicate it.  This should also account for non-VT-d use
-cases as well, for example AMD IOMMU also has a nid field on their
-protection_domain structure.  Alternatively this might be implemented
-through iommu_domain_ops so we could query the node association for a
-domain.
+Exactly. Will mention it. 
 
-I question whether we need this solution at all though.  AIUI the
-initial domain is allocated in proximity to the initial group.  The
-problem comes when the user asks to add an additional group into the
-same container.  Another valid solution would be that the user
-recognizes that these groups are not within the same locality and
-creates a separate container for this group.  In fact, if we're using
-QEMU here and created a q35 VM with vIOMMU, each device would have a
-separate address space and therefore a separate container and we'd
-already avoid the issue this patch tries to solve.
+>> +	int halt_count;
+>> +};
+>> +
+>> +static DEFINE_SPINLOCK(ecats_lock);
+>> +
+>> +static struct qsmmuv500_tbu *qsmmuv500_find_tbu(struct qcom_smmu *qsmmu, u32 sid)
+>> +{
+>> +	struct qsmmuv500_tbu *tbu = NULL;
+>> +	u32 start, end;
+>> +
+>> +	mutex_lock(&qsmmu->tbu_list_lock);
+>> +
+>> +	list_for_each_entry(tbu, &qsmmu->tbu_list, list) {
+>> +		start = tbu->sid_range[0];
+>> +		end = start + tbu->sid_range[1];
+>> +
+>> +		if (start <= sid && sid < end)
+>> +			break;
+>> +	}
+>> +
+>> +	mutex_unlock(&qsmmu->tbu_list_lock);
+>> +
+>> +	return tbu;
+>> +}
+>> +
+>> +static int qsmmuv500_tbu_halt(struct qsmmuv500_tbu *tbu, struct arm_smmu_domain *smmu_domain)
+>> +{
+>> +	struct arm_smmu_device *smmu = smmu_domain->smmu;
+>> +	int ret = 0, idx = smmu_domain->cfg.cbndx;
+>> +	unsigned long flags;
+>> +	u32 val, fsr, status;
+>> +
+>> +	spin_lock_irqsave(&tbu->halt_lock, flags);
+> 
+> Does this really need to run with interrupts disabled?
 
-Separate containers per QEMU AddressSpace are a requirement, but QEMU
-might also implement a policy to not re-use vfio containers between
-virtual nodes such that if each locality were mapped to separate PXBs
-with unique proximities, then simply reflecting the physical locality
-into the VM would be sufficient to avoid this non-optimal domain
-allocation placement.
+This is being executed in threaded irq context. 
 
-In any case, the type1 vfio IOMMU backend is in the early stages of
-deprecation, so any choices we make here would also need to be reflected
-in IOMMUFD, both in the compatibility and native interfaces.  Thanks,
+>> +	if (tbu->halt_count) {
+>> +		tbu->halt_count++;
+>> +		goto out;
+>> +	}
+>> +
+> [..]
+>> +static phys_addr_t qsmmuv500_iova_to_phys(struct arm_smmu_domain *smmu_domain,
+>> +					  dma_addr_t iova, u32 sid)
+>> +{
+> [..]
+>> +	/* Only one concurrent atos operation */
+>> +	spin_lock_irqsave(&ecats_lock, flags);
+> 
+> Does this require interrupts to be disabled?
 
-Alex
+This also runs in the irq handler during context fault.
 
+>> +
+>> +	/*
+>> +	 * After a failed translation, the next successful translation will
+>> +	 * incorrectly be reported as a failure.
+> 
+> "So if the ECATS translation fails, attempt the lookup more time."
+> 
+>> +	 */
+>> +	do {
+>> +		phys = qsmmuv500_tbu_trigger_atos(smmu_domain, tbu, iova, sid);
+>> +
+>> +		fsr = arm_smmu_cb_read(smmu, idx, ARM_SMMU_CB_FSR);
+>> +		if (fsr & ARM_SMMU_FSR_FAULT) {
+>> +			/* Clear pending interrupts */
+>> +			arm_smmu_cb_write(smmu, idx, ARM_SMMU_CB_FSR, fsr);
+>> +			/*
+>> +			 * Barrier required to ensure that the FSR is cleared
+>> +			 * before resuming SMMU operation.
+>> +			 */
+> 
+> Better be clear on what this actually does, for future readers' sake:
+> 
+> 	 /* Ensure that FSR and RESUME operations aren't reordered. */
+> 
+> But is this really necessary, the two writes are for the same device,
+> can they still be reordered?
+
+Right, these are to the same endpoint. It can be dropped. 
+
+>> +			wmb();
+>> +
+>> +			if (fsr & ARM_SMMU_FSR_SS)
+>> +				arm_smmu_cb_write(smmu, idx, ARM_SMMU_CB_RESUME,
+>> +						  ARM_SMMU_RESUME_TERMINATE);
+>> +		}
+>> +	} while (!phys && needs_redo++ < 2);
+> 
+> "needs_redo" sounds like a boolean to me. I think "attempt" would be a
+> better fit here.
+> 
+
+Ok.
+
+>> +
+>> +	arm_smmu_cb_write(smmu, idx, ARM_SMMU_CB_SCTLR, sctlr_orig);
+>> +	spin_unlock_irqrestore(&ecats_lock, flags);
+>> +	qsmmuv500_tbu_resume(tbu);
+>> +
+>> +	/* Read to complete prior write transcations */
+>> +	readl_relaxed(tbu->base + DEBUG_SR_HALT_ACK_REG);
+>> +
+>> +	/* Wait for read to complete */
+> 
+> That's not what rmb() does. You don't need to do anything here,
+> readl_relaxed() returns when the read is done.
+
+Ack.
+
+>> +	rmb();
+>> +
+>> +disable_clk:
+>> +	clk_disable_unprepare(tbu->clk);
+>> +disable_icc:
+>> +	icc_set_bw(tbu->path, 0, 0);
+>> +
+>> +	return phys;
+>> +}
+>> +#endif
+>> +
+>>  static void qcom_smmu_tlb_sync(struct arm_smmu_device *smmu, int page,
+>>  				int sync, int status)
+>>  {
+>> @@ -588,3 +895,80 @@ struct arm_smmu_device *qcom_smmu_impl_init(struct arm_smmu_device *smmu)
+>>  
+>>  	return smmu;
+>>  }
+>> +
+>> +#ifdef CONFIG_ARM_SMMU_QCOM_TBU
+>> +
+>> +static const struct of_device_id qsmmuv500_tbu_of_match[] = {
+>> +	{ .compatible = "qcom,qsmmuv500-tbu" },
+>> +	{ }
+>> +};
+> 
+> Place this below the remove function, as most other drivers do.
+
+Ack.
+
+>> +
+>> +static int qsmmuv500_tbu_probe(struct platform_device *pdev)
+>> +{
+> [..]
+>> +	mutex_lock(&qsmmu->tbu_list_lock);
+>> +	list_add_tail(&tbu->list, &qsmmu->tbu_list);
+> 
+> "tbu" is devres allocated, but you don't pull it off the list (or
+> synchronize) during remove.
+
+Right, but I'll just make this a builtin.
+
+>> +	mutex_unlock(&qsmmu->tbu_list_lock);
+>> +
+>> +	dev_set_drvdata(dev, tbu);
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +static void qsmmuv500_tbu_remove(struct platform_device *pdev)
+>> +{
+>> +	struct qsmmuv500_tbu *tbu = dev_get_drvdata(&pdev->dev);
+>> +
+>> +	clk_disable_unprepare(tbu->clk);
+> 
+> This isn't balanced.
+> 
+>> +	clk_put(tbu->clk);
+>> +	icc_put(tbu->path);
+>> +}
+>> +
+>> +static struct platform_driver qsmmuv500_tbu_driver = {
+>> +	.driver = {
+>> +		.name           = "qsmmuv500-tbu",
+>> +		.of_match_table = of_match_ptr(qsmmuv500_tbu_of_match),
+> 
+> Won't of_match_ptr() result in a build warning if built without
+> CONFIG_OF?
+
+Will drop.
+
+>> +	},
+>> +	.probe  = qsmmuv500_tbu_probe,
+>> +	.remove_new = qsmmuv500_tbu_remove,
+>> +};
+>> +module_platform_driver(qsmmuv500_tbu_driver);
+> 
+> This file acts as a library for the arm-smmu driver today, adding a
+> platform_driver here makes it look like this is a separate driver.
+> 
+> Which makes me wonder, why is this a separate driver? Why not just
+> loop over the subnodes and build the tbu_list in qcom_smmu_impl_init()?
+> 
+
+I am using the platform framework in order to get a more compact code
+for this optional driver, but it adds some overhead.. I'll start with
+moving all the TBU stuff into a separate file and will try meanwhile
+your suggestion..
+
+Thanks,
+Georgi 
