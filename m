@@ -1,36 +1,36 @@
 Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B44FD28D
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 23D4FD27A
 	for <iommu@lists.linux.dev>; Sat, 18 Nov 2023 04:28:03 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="HsnVQCEt"
-Received: from pps.filterd (m0279872.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 3AI4NX6e008049;
-	Sat, 18 Nov 2023 04:27:46 GMT
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="DrvFQ9l1"
+Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 3AI3k7Ip010447;
+	Sat, 18 Nov 2023 04:27:45 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-type; s=qcppdkim1;
- bh=PPleGcYSH8RxRSSe6efKgk8zLZMVt7yWRx5+jtySmZc=;
- b=HsnVQCEt3DvpQgzuDDgvF6z/lsBR1cH3EFJ4KiOQCmaAV4iEgFUHATn+4c74gz9ABpiC
- MWn9MfK/Rb/WjUQZrLBXGgRCrNQbWxyH9+waYCNKuEZM2Hur+bC2yT+K1vOZSNRD13H1
- 9sTgHjCG5wlgvvFXQShbu+EdW/hca4IYGYg0uiCzuGGvcUViGjy3w6P/q15K3VNj+TjS
- wwb53cuY0lv+F3vV5IKNv0AcZBrhQOXbgQ8Kif8oNFYOcJq9gjoWKpPlblmSahUrRLF5
- YiibRiEbvvE3uDx+mpSK93SgENdDnQBhQB9hh2vDTaRFYC+zgUM7UJJf0ZBxnMkBgrnb 1Q== 
-Received: from nasanppmta01.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3uenne81ch-1
+ bh=L2nDY54y11Dy5wbGjepsB4nWhnJimhExwZX4yuZ0iTs=;
+ b=DrvFQ9l1GcS9KMgtMVfr8FAk3NY/5b4XANAB0hjDlJMw6zpjYQvcJPJkHWH9G8ygdRZb
+ UITWrsz6F6F9BEQ2kUORjf2TAgfCZntMy4yQg6I7Lr5+jyMksqSG1BosNL06Ah3JiY6m
+ /iM6AFqVKYZnow9z4bH4g8yh8wwahuJEniZI2xANaiLjiAD9IO46ngQaXYtH3H4BJp/P
+ KSv5klgaSaSnwIITFGdSyufHLA2QM7GpUFzfZ69IlbpwPpqhEBC/LiqmP/QTrI5fFSid
+ pT/C4eTIb2ru2N3aHD0S77fiCjcKs8DPMnE2gr1kTUK3QiAZ0rKf0A5Ir+vSgOISkCX6 ng== 
+Received: from nasanppmta02.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3uemks03pa-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Sat, 18 Nov 2023 04:27:46 +0000
+	Sat, 18 Nov 2023 04:27:45 +0000
 Received: from nasanex01a.na.qualcomm.com (nasanex01a.na.qualcomm.com [10.52.223.231])
-	by NASANPPMTA01.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 3AI4RjkR032732
+	by NASANPPMTA02.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 3AI4RivD024904
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Sat, 18 Nov 2023 04:27:45 GMT
+	Sat, 18 Nov 2023 04:27:44 GMT
 Received: from hu-c-gdjako-lv.qualcomm.com (10.49.16.6) by
  nasanex01a.na.qualcomm.com (10.52.223.231) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.40; Fri, 17 Nov 2023 20:27:44 -0800
+ 15.2.1118.40; Fri, 17 Nov 2023 20:27:43 -0800
 From: Georgi Djakov <quic_c_gdjako@quicinc.com>
 To: <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
         <conor+dt@kernel.org>, <will@kernel.org>, <robin.murphy@arm.com>,
@@ -41,9 +41,9 @@ CC: <devicetree@vger.kernel.org>, <andersson@kernel.org>,
         <linux-arm-msm@vger.kernel.org>, <quic_cgoldswo@quicinc.com>,
         <quic_sukadev@quicinc.com>, <quic_pdaly@quicinc.com>,
         <quic_sudaraja@quicinc.com>, <djakov@kernel.org>
-Subject: [PATCH v2 5/6] iommu/arm-smmu-qcom: Use a custom context fault handler for sdm845
-Date: Fri, 17 Nov 2023 20:27:29 -0800
-Message-ID: <20231118042730.2799-6-quic_c_gdjako@quicinc.com>
+Subject: [PATCH v2 3/6] iommu/arm-smmu-qcom: Add Qualcomm TBU driver
+Date: Fri, 17 Nov 2023 20:27:27 -0800
+Message-ID: <20231118042730.2799-4-quic_c_gdjako@quicinc.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20231118042730.2799-1-quic_c_gdjako@quicinc.com>
 References: <20231118042730.2799-1-quic_c_gdjako@quicinc.com>
@@ -59,196 +59,468 @@ X-ClientProxiedBy: nalasex01c.na.qualcomm.com (10.47.97.35) To
  nasanex01a.na.qualcomm.com (10.52.223.231)
 X-QCInternal: smtphost
 X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: AH0b62L-0u3yKxIL6HuC6DCQtzxUCCi4
-X-Proofpoint-GUID: AH0b62L-0u3yKxIL6HuC6DCQtzxUCCi4
+X-Proofpoint-GUID: RC3cQu1TDASFa2X9kotckax9K_exEGuN
+X-Proofpoint-ORIG-GUID: RC3cQu1TDASFa2X9kotckax9K_exEGuN
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.272,Aquarius:18.0.987,Hydra:6.0.619,FMLib:17.11.176.26
  definitions=2023-11-18_02,2023-11-17_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 suspectscore=0
- clxscore=1015 lowpriorityscore=0 impostorscore=0 priorityscore=1501
- spamscore=0 phishscore=0 mlxscore=0 malwarescore=0 adultscore=0
- mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2311060000 definitions=main-2311180032
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 impostorscore=0
+ suspectscore=0 phishscore=0 priorityscore=1501 mlxscore=0 adultscore=0
+ malwarescore=0 mlxlogscore=807 spamscore=0 lowpriorityscore=0 bulkscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2311060000
+ definitions=main-2311180032
 
-The sdm845 platform now supports TBUs, so let's get additional debug
-info from the TBUs when a context fault occurs. Implement a custom
-context fault handler that does both software + hardware page table
-walks and TLB Invalidate All.
+Add a driver for the Qualcomm implementation of the MMU-500 TBU.
+
+Operating the TBUs (Translation Buffer Units) from Linux can help
+with debugging context faults. The TBUs can provide debug features
+such as running ATOS (Address Translation Operations) to manually
+trigger address translation of IOVA to physical address in hardware.
+
+The driver will control the resources needed by the TBU to allow
+running ATOS on the TBUs or check for outstanding transactions.
 
 Signed-off-by: Georgi Djakov <quic_c_gdjako@quicinc.com>
 ---
- .../iommu/arm/arm-smmu/arm-smmu-qcom-tbu.c    | 138 ++++++++++++++++++
- drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c    |   4 +
- 2 files changed, 142 insertions(+)
+ drivers/iommu/Kconfig                         |   8 +
+ drivers/iommu/arm/arm-smmu/Makefile           |   1 +
+ .../iommu/arm/arm-smmu/arm-smmu-qcom-tbu.c    | 366 ++++++++++++++++++
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h    |   2 +
+ drivers/iommu/arm/arm-smmu/arm-smmu.h         |   2 +
+ 5 files changed, 379 insertions(+)
+ create mode 100644 drivers/iommu/arm/arm-smmu/arm-smmu-qcom-tbu.c
 
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index 7673bb82945b..adc5d6161fe8 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -370,6 +370,14 @@ config ARM_SMMU_QCOM
+ 	  When running on a Qualcomm platform that has the custom variant
+ 	  of the ARM SMMU, this needs to be built into the SMMU driver.
+ 
++config ARM_SMMU_QCOM_TBU
++	bool "Qualcomm TBU driver"
++	depends on ARM_SMMU_QCOM
++	help
++	  The SMMU on Qualcomm platform may include a Translation Buffer
++	  Units (TBUs) for each master. Enabling support for these will
++	  allow operating the TBUs to help debugging context faults.
++
+ config ARM_SMMU_QCOM_DEBUG
+ 	bool "ARM SMMU QCOM implementation defined debug support"
+ 	depends on ARM_SMMU_QCOM
+diff --git a/drivers/iommu/arm/arm-smmu/Makefile b/drivers/iommu/arm/arm-smmu/Makefile
+index 2a5a95e8e3f9..c35ff78fcfd5 100644
+--- a/drivers/iommu/arm/arm-smmu/Makefile
++++ b/drivers/iommu/arm/arm-smmu/Makefile
+@@ -3,4 +3,5 @@ obj-$(CONFIG_QCOM_IOMMU) += qcom_iommu.o
+ obj-$(CONFIG_ARM_SMMU) += arm_smmu.o
+ arm_smmu-objs += arm-smmu.o arm-smmu-impl.o arm-smmu-nvidia.o
+ arm_smmu-$(CONFIG_ARM_SMMU_QCOM) += arm-smmu-qcom.o
++arm_smmu-$(CONFIG_ARM_SMMU_QCOM_TBU) += arm-smmu-qcom-tbu.o
+ arm_smmu-$(CONFIG_ARM_SMMU_QCOM_DEBUG) += arm-smmu-qcom-debug.o
 diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom-tbu.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom-tbu.c
-index 2ab60f0a4ec2..a4c7db53067c 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom-tbu.c
+new file mode 100644
+index 000000000000..2ab60f0a4ec2
+--- /dev/null
 +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom-tbu.c
-@@ -52,6 +52,11 @@ static struct qcom_smmu *to_qcom_smmu(struct arm_smmu_device *smmu)
- 	return container_of(smmu, struct qcom_smmu, smmu);
- }
- 
-+static struct arm_smmu_domain *to_smmu_domain(struct iommu_domain *dom)
+@@ -0,0 +1,366 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved
++ */
++
++#include <linux/interconnect.h>
++#include <linux/iopoll.h>
++#include <linux/of_platform.h>
++#include <linux/platform_device.h>
++#include <linux/spinlock.h>
++
++#include "arm-smmu.h"
++#include "arm-smmu-qcom.h"
++
++#define TBU_DBG_TIMEOUT_US		100
++#define DEBUG_AXUSER_REG		0x30
++#define DEBUG_AXUSER_CDMID		GENMASK_ULL(43, 36)
++#define DEBUG_AXUSER_CDMID_VAL		0xff
++#define DEBUG_PAR_REG			0x28
++#define DEBUG_PAR_FAULT_VAL		BIT(0)
++#define DEBUG_PAR_PA			GENMASK_ULL(47, 12)
++#define DEBUG_SID_HALT_REG		0x0
++#define DEBUG_SID_HALT_VAL		BIT(16)
++#define DEBUG_SID_HALT_SID		GENMASK(9, 0)
++#define DEBUG_SR_HALT_ACK_REG		0x20
++#define DEBUG_SR_HALT_ACK_VAL		BIT(1)
++#define DEBUG_SR_ECATS_RUNNING_VAL	BIT(0)
++#define DEBUG_TXN_AXCACHE		GENMASK(5, 2)
++#define DEBUG_TXN_AXPROT		GENMASK(8, 6)
++#define DEBUG_TXN_AXPROT_PRIV		0x1
++#define DEBUG_TXN_AXPROT_NSEC		0x2
++#define DEBUG_TXN_TRIGG_REG		0x18
++#define DEBUG_TXN_TRIGGER		BIT(0)
++#define DEBUG_VA_ADDR_REG		0x8
++
++struct qsmmuv500_tbu {
++	struct device *dev;
++	struct arm_smmu_device *smmu;
++	u32 sid_range[2];
++	struct list_head list;
++	struct clk *clk;
++	struct icc_path	*path;
++	void __iomem *base;
++	spinlock_t halt_lock; /* multiple halt or resume can't execute concurrently */
++	int halt_count;
++};
++
++static DEFINE_SPINLOCK(atos_lock);
++
++static struct qcom_smmu *to_qcom_smmu(struct arm_smmu_device *smmu)
 +{
-+	return container_of(dom, struct arm_smmu_domain, domain);
++	return container_of(smmu, struct qcom_smmu, smmu);
 +}
 +
- static struct qsmmuv500_tbu *qsmmuv500_find_tbu(struct qcom_smmu *qsmmu, u32 sid)
- {
- 	struct qsmmuv500_tbu *tbu = NULL;
-@@ -301,6 +306,139 @@ static phys_addr_t qsmmuv500_iova_to_phys(struct arm_smmu_domain *smmu_domain,
- 	return phys;
- }
- 
-+static phys_addr_t qcom_smmu_iova_to_phys_hard(struct iommu_domain *domain, dma_addr_t iova)
++static struct qsmmuv500_tbu *qsmmuv500_find_tbu(struct qcom_smmu *qsmmu, u32 sid)
 +{
-+	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
-+	struct arm_smmu_device *smmu = smmu_domain->smmu;
-+	int idx = smmu_domain->cfg.cbndx;
-+	u32 frsynra;
-+	u16 sid;
++	struct qsmmuv500_tbu *tbu = NULL;
++	u32 start, end;
 +
-+	frsynra = arm_smmu_gr1_read(smmu, ARM_SMMU_GR1_CBFRSYNRA(idx));
-+	sid = FIELD_GET(ARM_SMMU_CBFRSYNRA_SID, frsynra);
++	mutex_lock(&qsmmu->tbu_list_lock);
 +
-+	return qsmmuv500_iova_to_phys(smmu_domain, iova, sid);
-+}
++	list_for_each_entry(tbu, &qsmmu->tbu_list, list) {
++		start = tbu->sid_range[0];
++		end = start + tbu->sid_range[1];
 +
-+static phys_addr_t qcom_smmu_verify_fault(struct iommu_domain *domain, dma_addr_t iova, u32 fsr)
-+{
-+	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
-+	struct io_pgtable *iop = io_pgtable_ops_to_pgtable(smmu_domain->pgtbl_ops);
-+	struct arm_smmu_device *smmu = smmu_domain->smmu;
-+	phys_addr_t phys_post_tlbiall;
-+	phys_addr_t phys;
-+
-+	phys = qcom_smmu_iova_to_phys_hard(domain, iova);
-+	io_pgtable_tlb_flush_all(iop);
-+	phys_post_tlbiall = qcom_smmu_iova_to_phys_hard(domain, iova);
-+
-+	if (phys != phys_post_tlbiall) {
-+		dev_err(smmu->dev,
-+			"ATOS results differed across TLBIALL... (before: %pa after: %pa)\n",
-+			&phys, &phys_post_tlbiall);
++		if (start <= sid && sid < end)
++			break;
 +	}
 +
-+	return (phys == 0 ? phys_post_tlbiall : phys);
++	mutex_unlock(&qsmmu->tbu_list_lock);
++
++	return tbu;
 +}
 +
-+irqreturn_t qcom_smmu_context_fault(int irq, void *dev)
++static int qsmmuv500_tbu_halt(struct qsmmuv500_tbu *tbu, struct arm_smmu_domain *smmu_domain)
 +{
-+	struct iommu_domain *domain = dev;
-+	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
-+	struct io_pgtable_ops *ops = smmu_domain->pgtbl_ops;
 +	struct arm_smmu_device *smmu = smmu_domain->smmu;
-+	u32 fsr, fsynr, cbfrsynra, resume = 0;
-+	int idx = smmu_domain->cfg.cbndx;
-+	phys_addr_t phys_soft;
-+	unsigned long iova;
-+	int ret, tmp;
++	int ret = 0, idx = smmu_domain->cfg.cbndx;
++	unsigned long flags;
++	u32 val, fsr, status;
 +
-+	static DEFINE_RATELIMIT_STATE(_rs,
-+				      DEFAULT_RATELIMIT_INTERVAL,
-+				      DEFAULT_RATELIMIT_BURST);
++	spin_lock_irqsave(&tbu->halt_lock, flags);
++	if (tbu->halt_count) {
++		tbu->halt_count++;
++		goto out;
++	}
++
++	val = readl_relaxed(tbu->base + DEBUG_SID_HALT_REG);
++	val |= DEBUG_SID_HALT_VAL;
++	writel_relaxed(val, tbu->base + DEBUG_SID_HALT_REG);
 +
 +	fsr = arm_smmu_cb_read(smmu, idx, ARM_SMMU_CB_FSR);
-+	if (!(fsr & ARM_SMMU_FSR_FAULT))
-+		return IRQ_NONE;
++	if ((fsr & ARM_SMMU_FSR_FAULT) && (fsr & ARM_SMMU_FSR_SS)) {
++		u32 sctlr_orig, sctlr;
 +
-+	fsynr = arm_smmu_cb_read(smmu, idx, ARM_SMMU_CB_FSYNR0);
-+	iova = arm_smmu_cb_readq(smmu, idx, ARM_SMMU_CB_FAR);
-+	cbfrsynra = arm_smmu_gr1_read(smmu, ARM_SMMU_GR1_CBFRSYNRA(idx));
-+
-+	phys_soft = ops->iova_to_phys(ops, iova);
-+
-+	tmp = report_iommu_fault(domain, NULL, iova,
-+				 fsynr & ARM_SMMU_FSYNR0_WNR ? IOMMU_FAULT_WRITE : IOMMU_FAULT_READ);
-+	if (!tmp || tmp == -EBUSY) {
-+		dev_dbg(smmu->dev,
-+			"Context fault handled by client: iova=0x%08lx, fsr=0x%x, fsynr=0x%x, cb=%d\n",
-+			iova, fsr, fsynr, idx);
-+		dev_dbg(smmu->dev, "soft iova-to-phys=%pa\n", &phys_soft);
-+		ret = IRQ_HANDLED;
-+		resume = ARM_SMMU_RESUME_TERMINATE;
-+	} else {
-+		phys_addr_t phys_atos = qcom_smmu_verify_fault(domain, iova, fsr);
-+
-+		if (__ratelimit(&_rs)) {
-+			dev_err(smmu->dev,
-+				"Unhandled context fault: fsr=0x%x, iova=0x%08lx, fsynr=0x%x, cbfrsynra=0x%x, cb=%d\n",
-+				fsr, iova, fsynr, cbfrsynra, idx);
-+			dev_err(smmu->dev,
-+				"FSR    = %08x [%s%s%s%s%s%s%s%s%s], SID=0x%x\n",
-+				fsr,
-+				(fsr & 0x02) ? "TF " : "",
-+				(fsr & 0x04) ? "AFF " : "",
-+				(fsr & 0x08) ? "PF " : "",
-+				(fsr & 0x10) ? "EF " : "",
-+				(fsr & 0x20) ? "TLBMCF " : "",
-+				(fsr & 0x40) ? "TLBLKF " : "",
-+				(fsr & 0x80) ? "MHF " : "",
-+				(fsr & 0x40000000) ? "SS " : "",
-+				(fsr & 0x80000000) ? "MULTI " : "",
-+				cbfrsynra);
-+
-+			dev_err(smmu->dev,
-+				"soft iova-to-phys=%pa\n", &phys_soft);
-+			if (!phys_soft)
-+				dev_err(smmu->dev,
-+					"SOFTWARE TABLE WALK FAILED! Looks like %s accessed an unmapped address!\n",
-+					dev_name(smmu->dev));
-+			if (phys_atos)
-+				dev_err(smmu->dev, "hard iova-to-phys (ATOS)=%pa\n",
-+					&phys_atos);
-+			else
-+				dev_err(smmu->dev, "hard iova-to-phys (ATOS) failed\n");
-+		}
-+		ret = IRQ_NONE;
-+		resume = ARM_SMMU_RESUME_TERMINATE;
-+	}
-+
-+	/*
-+	 * If the client returns -EBUSY, do not clear FSR and do not RESUME
-+	 * if stalled. This is required to keep the IOMMU client stalled on
-+	 * the outstanding fault. This gives the client a chance to take any
-+	 * debug action and then terminate the stalled transaction.
-+	 * So, the sequence in case of stall on fault should be:
-+	 * 1) Do not clear FSR or write to RESUME here
-+	 * 2) Client takes any debug action
-+	 * 3) Client terminates the stalled transaction and resumes the IOMMU
-+	 * 4) Client clears FSR. The FSR should only be cleared after 3) and
-+	 *    not before so that the fault remains outstanding. This ensures
-+	 *    SCTLR.HUPCF has the desired effect if subsequent transactions also
-+	 *    need to be terminated.
-+	 */
-+	if (tmp != -EBUSY) {
-+		/* Clear the faulting FSR */
++		/*
++		 * We are in a fault. Our request to halt the bus will not
++		 * complete until transactions in front of us (such as the fault
++		 * itself) have completed. Disable iommu faults and terminate
++		 * any existing transactions.
++		 */
++		sctlr_orig = arm_smmu_cb_read(smmu, idx, ARM_SMMU_CB_SCTLR);
++		sctlr = sctlr_orig & ~(ARM_SMMU_SCTLR_CFCFG | ARM_SMMU_SCTLR_CFIE);
++		arm_smmu_cb_write(smmu, idx, ARM_SMMU_CB_SCTLR, sctlr);
 +		arm_smmu_cb_write(smmu, idx, ARM_SMMU_CB_FSR, fsr);
-+
-+		/* Retry or terminate any stalled transactions */
-+		if (fsr & ARM_SMMU_FSR_SS)
-+			arm_smmu_cb_write(smmu, idx, ARM_SMMU_CB_RESUME, resume);
++		arm_smmu_cb_write(smmu, idx, ARM_SMMU_CB_RESUME, ARM_SMMU_RESUME_TERMINATE);
++		arm_smmu_cb_write(smmu, idx, ARM_SMMU_CB_SCTLR, sctlr_orig);
 +	}
 +
++	if (readl_poll_timeout_atomic(tbu->base + DEBUG_SR_HALT_ACK_REG, status,
++				      (status & DEBUG_SR_HALT_ACK_VAL),
++				      0, TBU_DBG_TIMEOUT_US)) {
++		dev_err(tbu->dev, "Timeout while trying to halt TBU!\n");
++		ret = -ETIMEDOUT;
++
++		val = readl_relaxed(tbu->base + DEBUG_SID_HALT_REG);
++		val &= ~DEBUG_SID_HALT_VAL;
++		writel_relaxed(val, tbu->base + DEBUG_SID_HALT_REG);
++
++		goto out;
++	}
++
++	tbu->halt_count = 1;
++
++out:
++	spin_unlock_irqrestore(&tbu->halt_lock, flags);
 +	return ret;
 +}
 +
- static int qsmmuv500_tbu_probe(struct platform_device *pdev)
- {
- 	struct device_node *np = pdev->dev.of_node;
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-index 1622abace484..1af3d4a7fe1d 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-@@ -421,6 +421,10 @@ static const struct arm_smmu_impl sdm845_smmu_500_impl = {
- 	.reset = qcom_sdm845_smmu500_reset,
- 	.write_s2cr = qcom_smmu_write_s2cr,
- 	.tlb_sync = qcom_smmu_tlb_sync,
-+#ifdef CONFIG_ARM_SMMU_QCOM_TBU
-+	.context_fault = qcom_smmu_context_fault,
-+	.context_fault_needs_threaded_irq = true,
-+#endif
++static void qsmmuv500_tbu_resume(struct qsmmuv500_tbu *tbu)
++{
++	unsigned long flags;
++	u32 val;
++
++	spin_lock_irqsave(&tbu->halt_lock, flags);
++	if (!tbu->halt_count) {
++		WARN(1, "%s: halt_count is 0", dev_name(tbu->dev));
++		goto out;
++	}
++
++	if (tbu->halt_count > 1) {
++		tbu->halt_count--;
++		goto out;
++	}
++
++	val = readl_relaxed(tbu->base + DEBUG_SID_HALT_REG);
++	val &= ~DEBUG_SID_HALT_VAL;
++	writel_relaxed(val, tbu->base + DEBUG_SID_HALT_REG);
++
++	tbu->halt_count = 0;
++out:
++	spin_unlock_irqrestore(&tbu->halt_lock, flags);
++}
++
++static phys_addr_t qsmmuv500_tbu_trigger_atos(struct arm_smmu_domain *smmu_domain,
++					      struct qsmmuv500_tbu *tbu, dma_addr_t iova, u32 sid)
++{
++	bool atos_timedout = false;
++	phys_addr_t phys = 0;
++	ktime_t timeout;
++	u64 val;
++
++	/* Set address and stream-id */
++	val = readq_relaxed(tbu->base + DEBUG_SID_HALT_REG);
++	val &= ~DEBUG_SID_HALT_SID;
++	val |= FIELD_PREP(DEBUG_SID_HALT_SID, sid);
++	writeq_relaxed(val, tbu->base + DEBUG_SID_HALT_REG);
++	writeq_relaxed(iova, tbu->base + DEBUG_VA_ADDR_REG);
++	val = FIELD_PREP(DEBUG_AXUSER_CDMID, DEBUG_AXUSER_CDMID_VAL);
++	writeq_relaxed(val, tbu->base + DEBUG_AXUSER_REG);
++
++	/* Write-back read and write-allocate */
++	val = FIELD_PREP(DEBUG_TXN_AXCACHE, 0xf);
++
++	/* Non-secure access */
++	val |= FIELD_PREP(DEBUG_TXN_AXPROT, DEBUG_TXN_AXPROT_NSEC);
++
++	/* Priviledged access */
++	val |= FIELD_PREP(DEBUG_TXN_AXPROT, DEBUG_TXN_AXPROT_PRIV);
++
++	val |= DEBUG_TXN_TRIGGER;
++	writeq_relaxed(val, tbu->base + DEBUG_TXN_TRIGG_REG);
++
++	timeout = ktime_add_us(ktime_get(), TBU_DBG_TIMEOUT_US);
++	for (;;) {
++		val = readl_relaxed(tbu->base + DEBUG_SR_HALT_ACK_REG);
++		if (!(val & DEBUG_SR_ECATS_RUNNING_VAL))
++			break;
++		val = readl_relaxed(tbu->base + DEBUG_PAR_REG);
++		if (val & DEBUG_PAR_FAULT_VAL)
++			break;
++		if (ktime_compare(ktime_get(), timeout) > 0) {
++			atos_timedout = true;
++			break;
++		}
++	}
++
++	val = readq_relaxed(tbu->base + DEBUG_PAR_REG);
++	if (val & DEBUG_PAR_FAULT_VAL)
++		dev_err(tbu->dev, "ATOS generated a fault interrupt! PAR = %llx, SID=0x%x\n",
++			val, sid);
++	else if (atos_timedout)
++		dev_err_ratelimited(tbu->dev, "ATOS translation timed out!\n");
++	else
++		phys = FIELD_GET(DEBUG_PAR_PA, val);
++
++	/* Reset hardware */
++	writeq_relaxed(0, tbu->base + DEBUG_TXN_TRIGG_REG);
++	writeq_relaxed(0, tbu->base + DEBUG_VA_ADDR_REG);
++	val = readl_relaxed(tbu->base + DEBUG_SID_HALT_REG);
++	val &= ~DEBUG_SID_HALT_SID;
++	writel_relaxed(val, tbu->base + DEBUG_SID_HALT_REG);
++
++	return phys;
++}
++
++static phys_addr_t qsmmuv500_iova_to_phys(struct arm_smmu_domain *smmu_domain,
++					  dma_addr_t iova, u32 sid)
++{
++	struct arm_smmu_device *smmu = smmu_domain->smmu;
++	struct qcom_smmu *qsmmu = to_qcom_smmu(smmu);
++	int idx = smmu_domain->cfg.cbndx;
++	struct qsmmuv500_tbu *tbu;
++	u32 sctlr_orig, sctlr;
++	phys_addr_t phys = 0;
++	unsigned long flags;
++	int attempt = 0;
++	int ret;
++	u64 fsr;
++
++	tbu = qsmmuv500_find_tbu(qsmmu, sid);
++	if (!tbu)
++		return 0;
++
++	ret = icc_set_bw(tbu->path, 0, UINT_MAX);
++	if (ret)
++		return ret;
++
++	ret = clk_prepare_enable(tbu->clk);
++	if (ret)
++		goto disable_icc;
++
++	ret = qsmmuv500_tbu_halt(tbu, smmu_domain);
++	if (ret)
++		goto disable_clk;
++
++	/*
++	 * ATOS/ECATS can trigger the fault interrupt, so disable it temporarily
++	 * and check for an interrupt manually.
++	 */
++	sctlr_orig = arm_smmu_cb_read(smmu, idx, ARM_SMMU_CB_SCTLR);
++	sctlr = sctlr_orig & ~(ARM_SMMU_SCTLR_CFCFG | ARM_SMMU_SCTLR_CFIE);
++	arm_smmu_cb_write(smmu, idx, ARM_SMMU_CB_SCTLR, sctlr);
++
++	fsr = arm_smmu_cb_read(smmu, idx, ARM_SMMU_CB_FSR);
++	if (fsr & ARM_SMMU_FSR_FAULT) {
++		/* Clear pending interrupts */
++		arm_smmu_cb_write(smmu, idx, ARM_SMMU_CB_FSR, fsr);
++
++		/*
++		 * TBU halt takes care of resuming any stalled transcation.
++		 * Kept it here for completeness sake.
++		 */
++		if (fsr & ARM_SMMU_FSR_SS)
++			arm_smmu_cb_write(smmu, idx, ARM_SMMU_CB_RESUME,
++					  ARM_SMMU_RESUME_TERMINATE);
++	}
++
++	/* Only one concurrent atos operation */
++	spin_lock_irqsave(&atos_lock, flags);
++
++	/*
++	 * If the translation fails, attempt the lookup more time."
++	 */
++	do {
++		phys = qsmmuv500_tbu_trigger_atos(smmu_domain, tbu, iova, sid);
++
++		fsr = arm_smmu_cb_read(smmu, idx, ARM_SMMU_CB_FSR);
++		if (fsr & ARM_SMMU_FSR_FAULT) {
++			/* Clear pending interrupts */
++			arm_smmu_cb_write(smmu, idx, ARM_SMMU_CB_FSR, fsr);
++
++			if (fsr & ARM_SMMU_FSR_SS)
++				arm_smmu_cb_write(smmu, idx, ARM_SMMU_CB_RESUME,
++						  ARM_SMMU_RESUME_TERMINATE);
++		}
++	} while (!phys && attempt++ < 2);
++
++	arm_smmu_cb_write(smmu, idx, ARM_SMMU_CB_SCTLR, sctlr_orig);
++	spin_unlock_irqrestore(&atos_lock, flags);
++	qsmmuv500_tbu_resume(tbu);
++
++	/* Read to complete prior write transcations */
++	readl_relaxed(tbu->base + DEBUG_SR_HALT_ACK_REG);
++
++disable_clk:
++	clk_disable_unprepare(tbu->clk);
++disable_icc:
++	icc_set_bw(tbu->path, 0, 0);
++
++	return phys;
++}
++
++static int qsmmuv500_tbu_probe(struct platform_device *pdev)
++{
++	struct device_node *np = pdev->dev.of_node;
++	struct device *dev = &pdev->dev;
++	struct arm_smmu_device *smmu;
++	struct qsmmuv500_tbu *tbu;
++	struct qcom_smmu *qsmmu;
++	int ret;
++
++	smmu = dev_get_drvdata(dev->parent);
++	if (!smmu)
++		return -EPROBE_DEFER;
++
++	qsmmu = to_qcom_smmu(smmu);
++
++	tbu = devm_kzalloc(dev, sizeof(*tbu), GFP_KERNEL);
++	if (!tbu)
++		return -ENOMEM;
++
++	tbu->dev = dev;
++	INIT_LIST_HEAD(&tbu->list);
++	spin_lock_init(&tbu->halt_lock);
++
++	tbu->base = devm_of_iomap(dev, np, 0, NULL);
++	if (IS_ERR(tbu->base))
++		return PTR_ERR(tbu->base);
++
++	ret = of_property_read_u32_array(np, "qcom,stream-id-range", tbu->sid_range, 2);
++	if (ret) {
++		dev_err(dev, "The DT property 'qcom,stream-id-range' is mandatory\n");
++		return ret;
++	}
++
++	tbu->clk = devm_clk_get_optional(dev, NULL);
++	if (IS_ERR(tbu->clk))
++		return PTR_ERR(tbu->clk);
++
++	tbu->path = devm_of_icc_get(dev, NULL);
++	if (IS_ERR(tbu->path))
++		return PTR_ERR(tbu->path);
++
++	mutex_lock(&qsmmu->tbu_list_lock);
++	list_add_tail(&tbu->list, &qsmmu->tbu_list);
++	mutex_unlock(&qsmmu->tbu_list_lock);
++
++	dev_set_drvdata(dev, tbu);
++
++	return 0;
++}
++
++static const struct of_device_id qsmmuv500_tbu_of_match[] = {
++	{ .compatible = "qcom,qsmmuv500-tbu" },
++	{ }
++};
++
++static struct platform_driver qsmmuv500_tbu_driver = {
++	.driver = {
++		.name           = "qsmmuv500-tbu",
++		.of_match_table = qsmmuv500_tbu_of_match,
++	},
++	.probe = qsmmuv500_tbu_probe,
++};
++builtin_platform_driver(qsmmuv500_tbu_driver);
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h
+index 2164a9cf3dde..1c0cf393d04e 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h
+@@ -32,6 +32,8 @@ struct qcom_smmu_match_data {
+ 	const struct arm_smmu_impl *adreno_impl;
  };
  
- static const struct arm_smmu_impl qcom_adreno_smmu_v2_impl = {
++irqreturn_t qcom_smmu_context_fault(int irq, void *dev);
++
+ #ifdef CONFIG_ARM_SMMU_QCOM_DEBUG
+ void qcom_smmu_tlb_sync_debug(struct arm_smmu_device *smmu);
+ #else
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.h b/drivers/iommu/arm/arm-smmu/arm-smmu.h
+index 703fd5817ec1..e5df65c0f81a 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu.h
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu.h
+@@ -136,6 +136,7 @@ enum arm_smmu_cbar_type {
+ #define ARM_SMMU_CBAR_VMID		GENMASK(7, 0)
+ 
+ #define ARM_SMMU_GR1_CBFRSYNRA(n)	(0x400 + ((n) << 2))
++#define ARM_SMMU_CBFRSYNRA_SID		GENMASK(15, 0)
+ 
+ #define ARM_SMMU_GR1_CBA2R(n)		(0x800 + ((n) << 2))
+ #define ARM_SMMU_CBA2R_VMID16		GENMASK(31, 16)
+@@ -238,6 +239,7 @@ enum arm_smmu_cbar_type {
+ #define ARM_SMMU_CB_ATSR		0x8f0
+ #define ARM_SMMU_ATSR_ACTIVE		BIT(0)
+ 
++#define ARM_SMMU_RESUME_TERMINATE	BIT(0)
+ 
+ /* Maximum number of context banks per SMMU */
+ #define ARM_SMMU_MAX_CBS		128
