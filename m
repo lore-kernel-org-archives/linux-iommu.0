@@ -1,92 +1,148 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.88])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B80962D
-	for <iommu@lists.linux.dev>; Sat, 18 Nov 2023 02:31:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 70B02CA68
+	for <iommu@lists.linux.dev>; Sat, 18 Nov 2023 04:27:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="CTYFMz1i"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1700274676; x=1731810676;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=OehhV+d7VO0CSQ4vXI/Vdbgi96ek9dXfotfoBbJcYbo=;
-  b=CTYFMz1i+VRMHfJcV/WccyglVv8A8YOCnaU284sGx7EiR6OI8b68EpWG
-   mNcDwF8pXjvq8aOuJLWrAowACDcSjeYhObMUbA+FQa92HADvB/lu5t9ZT
-   paa36P/++fAqkcbDaucg0/11SSPcsXPuUjYSkummIK8fKHbMbC1jskWGo
-   pPPlR2omAYLP1WjWH5rW3wReTvxGO6WBOaSojytI78UCJtFu0sXg0PDRs
-   SkUiY5XyWT0Df6Yn4nWYSPXbQlUFLTx0NAyxmXeRb7Ug02/HDvbBT5KZ2
-   BZPx7YBnmTVmTNoOlRJIBGnCBUAlGlHkZo0IvHmVai3cHzqUXG4abE7yl
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10897"; a="422494483"
-X-IronPort-AV: E=Sophos;i="6.04,206,1695711600"; 
-   d="scan'208";a="422494483"
-Received: from orviesa002.jf.intel.com ([10.64.159.142])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Nov 2023 18:31:15 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.04,206,1695711600"; 
-   d="scan'208";a="7023525"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
-  by orviesa002.jf.intel.com with ESMTP; 17 Nov 2023 18:31:14 -0800
-Message-ID: <79a1f935-12c1-4e12-92c8-2214bf6b7a73@linux.intel.com>
-Date: Sat, 18 Nov 2023 10:26:58 +0800
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="Ew2hxtAd"
+Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 3AI4PBgm009358;
+	Sat, 18 Nov 2023 04:27:44 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-type; s=qcppdkim1;
+ bh=mmbeYwPJXBs03oqwKkyxo03V4OBjPFgRa6rJJ6jq74I=;
+ b=Ew2hxtAdC8my2ihzyC4bBf+TYdBvFG5tkV5FJPROg1JPIFSLtefTdOwbcCPy5wabofYv
+ sjq4lSFDZiPOzj2swrQgqGVb5T1UevVW7VzWh+B07L34KFVTL14yYMtoaH6DpBIKmI7N
+ otiRw3k5HjUlJgnSq7VIU76Lc/wXyeb99Az89e4kKBLlgPA9x9tktjET0pvRnZf06r2Q
+ eTYmrw53KWG6om90tgvnoJ3dYMt2lDY1WX8Bg9oHLaZtQXcSUbE3J7pzzPHH0snubgOq
+ zoyOeQ7IenibyBIIoTABw5VVnBK/rNtXz4+etfl3UidZT15anSGWb5zXx8N2zGMv5Pw8 ig== 
+Received: from nasanppmta05.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3uep1qr0ed-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Sat, 18 Nov 2023 04:27:44 +0000
+Received: from nasanex01a.na.qualcomm.com (nasanex01a.na.qualcomm.com [10.52.223.231])
+	by NASANPPMTA05.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 3AI4RhWY005891
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Sat, 18 Nov 2023 04:27:43 GMT
+Received: from hu-c-gdjako-lv.qualcomm.com (10.49.16.6) by
+ nasanex01a.na.qualcomm.com (10.52.223.231) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.40; Fri, 17 Nov 2023 20:27:42 -0800
+From: Georgi Djakov <quic_c_gdjako@quicinc.com>
+To: <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
+        <conor+dt@kernel.org>, <will@kernel.org>, <robin.murphy@arm.com>,
+        <joro@8bytes.org>
+CC: <devicetree@vger.kernel.org>, <andersson@kernel.org>,
+        <konrad.dybcio@linaro.org>, <linux-arm-kernel@lists.infradead.org>,
+        <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-msm@vger.kernel.org>, <quic_cgoldswo@quicinc.com>,
+        <quic_sukadev@quicinc.com>, <quic_pdaly@quicinc.com>,
+        <quic_sudaraja@quicinc.com>, <djakov@kernel.org>
+Subject: [PATCH v2 2/6] iommu/arm-smmu-qcom: Add support for TBUs
+Date: Fri, 17 Nov 2023 20:27:26 -0800
+Message-ID: <20231118042730.2799-3-quic_c_gdjako@quicinc.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20231118042730.2799-1-quic_c_gdjako@quicinc.com>
+References: <20231118042730.2799-1-quic_c_gdjako@quicinc.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, "Tian, Kevin" <kevin.tian@intel.com>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 1/4] iommu/vt-d: Introduce dev_to_iommu()
-Content-Language: en-US
-To: Jason Gunthorpe <jgg@ziepe.ca>
-References: <20231116015048.29675-1-baolu.lu@linux.intel.com>
- <20231116015048.29675-2-baolu.lu@linux.intel.com>
- <BN9PR11MB5276CF0833BF362C1BE5F2268CB0A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <053e89dd-8de9-43f3-8530-1f65181efd46@linux.intel.com>
- <20231117130756.GA6501@ziepe.ca>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20231117130756.GA6501@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Originating-IP: [10.49.16.6]
+X-ClientProxiedBy: nalasex01c.na.qualcomm.com (10.47.97.35) To
+ nasanex01a.na.qualcomm.com (10.52.223.231)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: I9o253_haUnl9NecnLEHSkYFIxvoruw6
+X-Proofpoint-ORIG-GUID: I9o253_haUnl9NecnLEHSkYFIxvoruw6
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.987,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2023-11-18_02,2023-11-17_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 suspectscore=0
+ impostorscore=0 malwarescore=0 phishscore=0 spamscore=0 adultscore=0
+ mlxlogscore=999 clxscore=1015 lowpriorityscore=0 priorityscore=1501
+ bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2311060000 definitions=main-2311180032
 
-On 11/17/23 9:07 PM, Jason Gunthorpe wrote:
-> On Thu, Nov 16, 2023 at 11:23:56AM +0800, Baolu Lu wrote:
->> On 11/16/23 11:19 AM, Tian, Kevin wrote:
->>>> From: Lu Baolu<baolu.lu@linux.intel.com>
->>>> Sent: Thursday, November 16, 2023 9:51 AM
->>>>
->>>> +static inline struct intel_iommu *dev_to_iommu(struct device *dev)
->>>> +{
->>>> +	/*
->>>> +	 * Assume that valid per-device iommu structure must be installed
->>>> +	 * if iommu_probe_device() has succeeded. This helper could only
->>>> +	 * be used after device is probed.
->>>> +	 */
->>>> +	return ((struct device_domain_info *)dev_iommu_priv_get(dev))-
->>>>> iommu;
->>>> +}
->>> Not sure whether this helper is useful. This is only used by 2 out of 5
->>> post-probe users. Probably just open-coding in all 5 places is clearer.
->> I thought it should get more users in the future development.
-> The pattern in the SMMUv2 driver is like
-> 
->    struct device_domain_info *info = dev_iommu_priv_get(dev);
->    struct intel_iommu *iommu = info->iommu;
-> 
-> Which really isn't worth the helper, unless you have lots of caes
-> where info isn't needed at all?
+The ARM MMU-500 implements a Translation Buffer Unit (TBU) for each
+connected master besides a single TCU which controls and manages the
+address translations.
 
-No. As Kevin pointed out, there are only 2 places.
+Allow the Qualcomm SMMU driver to probe for any TBU devices that can
+provide additional debug features like triggering transactions, logging
+outstanding transactions, snapshot capture etc. The primary use-case
+would be to get information from a TBU and print it during a context
+fault.
 
-I will drop this helper.
+Signed-off-by: Georgi Djakov <quic_c_gdjako@quicinc.com>
+---
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 8 ++++++++
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h | 4 +++-
+ 2 files changed, 11 insertions(+), 1 deletion(-)
 
-Best regards,
-baolu
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+index 549ae4dba3a6..1622abace484 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+@@ -1,12 +1,14 @@
+ // SPDX-License-Identifier: GPL-2.0-only
+ /*
+  * Copyright (c) 2019, The Linux Foundation. All rights reserved.
++ * Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved
+  */
+ 
+ #include <linux/acpi.h>
+ #include <linux/adreno-smmu-priv.h>
+ #include <linux/delay.h>
+ #include <linux/of_device.h>
++#include <linux/of_platform.h>
+ #include <linux/firmware/qcom/qcom_scm.h>
+ 
+ #include "arm-smmu.h"
+@@ -444,6 +446,7 @@ static struct arm_smmu_device *qcom_smmu_create(struct arm_smmu_device *smmu,
+ 	const struct device_node *np = smmu->dev->of_node;
+ 	const struct arm_smmu_impl *impl;
+ 	struct qcom_smmu *qsmmu;
++	int ret;
+ 
+ 	if (!data)
+ 		return ERR_PTR(-EINVAL);
+@@ -467,6 +470,11 @@ static struct arm_smmu_device *qcom_smmu_create(struct arm_smmu_device *smmu,
+ 	qsmmu->smmu.impl = impl;
+ 	qsmmu->cfg = data->cfg;
+ 
++	INIT_LIST_HEAD(&qsmmu->tbu_list);
++	ret = devm_of_platform_populate(smmu->dev);
++	if (ret)
++		return ERR_PTR(ret);
++
+ 	return &qsmmu->smmu;
+ }
+ 
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h
+index 593910567b88..2164a9cf3dde 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h
+@@ -1,6 +1,6 @@
+ /* SPDX-License-Identifier: GPL-2.0-only */
+ /*
+- * Copyright (c) 2022, Qualcomm Innovation Center, Inc. All rights reserved.
++ * Copyright (c) 2022-2023, Qualcomm Innovation Center, Inc. All rights reserved.
+  */
+ 
+ #ifndef _ARM_SMMU_QCOM_H
+@@ -12,6 +12,8 @@ struct qcom_smmu {
+ 	bool bypass_quirk;
+ 	u8 bypass_cbndx;
+ 	u32 stall_enabled;
++	struct mutex tbu_list_lock;  /* protects tbu_list */
++	struct list_head tbu_list;
+ };
+ 
+ enum qcom_smmu_impl_reg_offset {
