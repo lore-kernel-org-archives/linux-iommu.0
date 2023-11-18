@@ -1,36 +1,36 @@
-Received: from mail-pf1-f169.google.com (mail-pf1-f169.google.com [209.85.210.169])
+Received: from mail-pl1-f171.google.com (mail-pl1-f171.google.com [209.85.214.171])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE7DC4F88B
-	for <iommu@lists.linux.dev>; Sat, 18 Nov 2023 16:19:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF9CC199AE
+	for <iommu@lists.linux.dev>; Sat, 18 Nov 2023 16:23:32 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=acm.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; dkim=none
-Received: by mail-pf1-f169.google.com with SMTP id d2e1a72fcca58-6b77ab73c6fso2206022b3a.1
-        for <iommu@lists.linux.dev>; Sat, 18 Nov 2023 08:19:01 -0800 (PST)
+Received: by mail-pl1-f171.google.com with SMTP id d9443c01a7336-1ce5e65ba37so11243185ad.1
+        for <iommu@lists.linux.dev>; Sat, 18 Nov 2023 08:23:32 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1700324341; x=1700929141;
+        d=1e100.net; s=20230601; t=1700324612; x=1700929412;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=JpJ9j3Rgf+MmL1x+LnpZ5rIj3NB2ZwiexLJ0+/VPyNs=;
-        b=Nm/Fx1c6Q3ZhyKPEHIwoVeedQHCtdUJ+4gUbz4FSajdzAYTUGbHa3zYx3iJCqhO34m
-         4bRlIIW4JHoIqMaIIvyB/5Gu+YUIJufkG1tDbeH1zMiHY1kaaUHbahteCPz+IWKqfu+o
-         6qN0g6onmqrJ9t3nVFpbM/A2CMd1yUCCIBC3t0TIzwGlGul6llwpVB98+FtO2cvk31kp
-         ZS+lsbi2iEF49R31cKg84/5JXnQnfb24ajwkybRnfl92kDHjQ8Yjy8+BsgMTrNT01i7E
-         Z3zBCHF+gP3EcJtqMeP4Gpg9V0dYRJkXYMJRjsEL5UZsodGKlmBAdTz4w3E4ZsRWlFG/
-         5NvQ==
-X-Gm-Message-State: AOJu0YxaIk4O9vAXctcS7BPElFWfZLFysnNskA9FIAsTfthq/Cj8TpC+
-	4XLO9hxfad5jjrucdcE8dtg=
-X-Google-Smtp-Source: AGHT+IF6DbzE+IGBVmgkkIXDBMasM05P7fXL7OHqGPwzqI5VVbby0wYg1pwoRaacJDugZHa97idotg==
-X-Received: by 2002:a05:6a20:4326:b0:187:e3a5:b35d with SMTP id h38-20020a056a20432600b00187e3a5b35dmr3138014pzk.13.1700324340672;
-        Sat, 18 Nov 2023 08:19:00 -0800 (PST)
+        bh=2erzZFOyxOrSdjM/KpGdx3oacnKwVcss5FA960Pxu5w=;
+        b=HQ8VxqFW4/8tu2fnMSiDMSOYWnBq9XEHnrQth7+rCLk8w/XlMyZWNKjnu+kqYB3XKP
+         nXSyCN1W3N7XrsTTiYY/yjAnh4q2rz8XVHThqyIhs3wxXXkjpBiSo6yR7PezbRiz2RTu
+         rDFEfk31YNwEBKe7reqRjizCW0Cpnoff0XGHftUSi3TqEKU+zCZ+zFAShG2yXM/JUL7T
+         uywaNH9ietS8YgOpNtqigls6ME5tBARHK7yVwrMbzLoF3JqiZVrigMxvw1vA+nER1j3h
+         Ndepdi3Xm/lCPJ9EWwBvRg7qV81DS5hjInBGDaSx9k5UJw8s9wc3y5vYQWHY0XhAaxBT
+         XyDA==
+X-Gm-Message-State: AOJu0YylmKp2vMYNVVsojFDeMcWBxxPYqtIQ66xmwEF4hrGvtnigxV/y
+	M8E1mhgRRIvF74fAV47P5yk=
+X-Google-Smtp-Source: AGHT+IFxNCOe1hV/UN7ql6AF5ylF4cLl3KjxD1pwBtnSiRvXE7Ae8L1R6+CdLXdA7EoHYLiLeUL3Gw==
+X-Received: by 2002:a17:902:6844:b0:1cf:5197:25ac with SMTP id f4-20020a170902684400b001cf519725acmr2006009pln.12.1700324611982;
+        Sat, 18 Nov 2023 08:23:31 -0800 (PST)
 Received: from ?IPV6:2601:647:4d7e:54f3:667:4981:ffa1:7be1? ([2601:647:4d7e:54f3:667:4981:ffa1:7be1])
-        by smtp.gmail.com with ESMTPSA id b9-20020a056a000a8900b006c7c6ae3755sm3179469pfl.80.2023.11.18.08.18.48
+        by smtp.gmail.com with ESMTPSA id u18-20020a170902e81200b001ce64bdfa19sm2051042plg.45.2023.11.18.08.23.22
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 18 Nov 2023 08:19:00 -0800 (PST)
-Message-ID: <792fc3d8-6834-48f8-9737-f1531459d245@acm.org>
-Date: Sat, 18 Nov 2023 08:18:46 -0800
+        Sat, 18 Nov 2023 08:23:31 -0800 (PST)
+Message-ID: <91a32cd2-903a-43df-8067-510c6c431ec7@acm.org>
+Date: Sat, 18 Nov 2023 08:23:20 -0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -38,7 +38,7 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 00/34] biops: add atomig find_bit() operations
+Subject: Re: [PATCH 01/34] lib/find: add atomic find_bit() primitives
 Content-Language: en-US
 To: Yury Norov <yury.norov@gmail.com>, linux-kernel@vger.kernel.org,
  "David S. Miller" <davem@davemloft.net>, "H. Peter Anvin" <hpa@zytor.com>,
@@ -101,8 +101,9 @@ Cc: Jan Kara <jack@suse.cz>, Mirsad Todorovac
  Maxim Kuvyrkov <maxim.kuvyrkov@linaro.org>,
  Alexey Klimov <klimov.linux@gmail.com>
 References: <20231118155105.25678-1-yury.norov@gmail.com>
+ <20231118155105.25678-2-yury.norov@gmail.com>
 From: Bart Van Assche <bvanassche@acm.org>
-In-Reply-To: <20231118155105.25678-1-yury.norov@gmail.com>
+In-Reply-To: <20231118155105.25678-2-yury.norov@gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
@@ -110,8 +111,7 @@ On 11/18/23 07:50, Yury Norov wrote:
 > Add helpers around test_and_{set,clear}_bit() that allow to search for
 > clear or set bits and flip them atomically.
 
-There is a typo in the subject: shouldn't "atomig" be changed
-into "atomic"?
+Has it been considered to add kunit tests for the new functions?
 
 Thanks,
 
