@@ -1,35 +1,36 @@
 Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D2B10CA7C
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E40C2D27A
 	for <iommu@lists.linux.dev>; Sat, 18 Nov 2023 04:28:01 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="DrGehSAV"
-Received: from pps.filterd (m0279872.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 3AI4D98Y023608;
-	Sat, 18 Nov 2023 04:27:43 GMT
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="jbtlV97J"
+Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 3AI4K7pO031048;
+	Sat, 18 Nov 2023 04:27:47 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type; s=qcppdkim1;
- bh=jUI5kbNVf/1FMYk4A19JfXE3UZu/sfvc3lv2Q1F5K1w=;
- b=DrGehSAVD3gu9Bby7HQcohYyDBKa+rN/pczLiZctWqUzZh9Zzbynw3Kitr/US4CUpAeB
- cNzlDF/cTo5qD344wUinjQbG10Y+XhXRGfqEaLdOboI9j0I1xGX1s8kSrTHL0pT4cNF8
- GWJYNT+Dl4U57tmaXIoxB1Y0uvQB+S+MEDGVJAdGHQia6xn+ZIifKABu8B2UDKpND2kP
- Bqb6FYDSqbyu1R2gNLsblyLvjd4/oaDwrpvZ8m2HYknyvoIPkL5x+iU8aeaFqNL82t7e
- yPfU9EpMYILFrjj6DQJ4wGcWzBKZkKlmldMDlQxtOR+7XJ6UG/WBYaCdpj3ne/OrHlMN 3g== 
-Received: from nasanppmta01.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3uenne81cf-1
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-type; s=qcppdkim1;
+ bh=Jx7XpE4p1+yp472e6E8rOuie91cn+ZCzBIkBDICt56c=;
+ b=jbtlV97JqKuVgtdayWyHjG8258pkiunQF4vdsf1eNFTcghxt/5T4y2EE83u3KrAtlX9Z
+ UBmuopyFaNDu1+VePio3P+Oz0XWsdxSDqd2ZLdvsj/ytbFlS58aXpkvWuct3rbXFLXcy
+ coqVOqAN8uEIWBDvps051r48tzZ3sGa+puG5k5a3WXn71wYYQ9u9TrpeX4yNeSqgJJfk
+ li7aKmUUeWfcYF/Pqjz6Ea68iK/QxNTYHQD8jVcBbis6iPpGrX0TiUxVAqTwIxUMg8WX
+ s7wQXSJcM65f6oMuqYmbG3bLy4xgO1U5AKw/NkVBZb7QjA/KMyTenlGxPQMKlWfPKIAh xg== 
+Received: from nasanppmta05.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3uemks03pb-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Sat, 18 Nov 2023 04:27:43 +0000
+	Sat, 18 Nov 2023 04:27:46 +0000
 Received: from nasanex01a.na.qualcomm.com (nasanex01a.na.qualcomm.com [10.52.223.231])
-	by NASANPPMTA01.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 3AI4RgJF032712
+	by NASANPPMTA05.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 3AI4RjeQ005937
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Sat, 18 Nov 2023 04:27:42 GMT
+	Sat, 18 Nov 2023 04:27:45 GMT
 Received: from hu-c-gdjako-lv.qualcomm.com (10.49.16.6) by
  nasanex01a.na.qualcomm.com (10.52.223.231) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.40; Fri, 17 Nov 2023 20:27:41 -0800
+ 15.2.1118.40; Fri, 17 Nov 2023 20:27:45 -0800
 From: Georgi Djakov <quic_c_gdjako@quicinc.com>
 To: <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
         <conor+dt@kernel.org>, <will@kernel.org>, <robin.murphy@arm.com>,
@@ -40,10 +41,12 @@ CC: <devicetree@vger.kernel.org>, <andersson@kernel.org>,
         <linux-arm-msm@vger.kernel.org>, <quic_cgoldswo@quicinc.com>,
         <quic_sukadev@quicinc.com>, <quic_pdaly@quicinc.com>,
         <quic_sudaraja@quicinc.com>, <djakov@kernel.org>
-Subject: [PATCH v2 0/6] Add support for Translation Buffer Units
-Date: Fri, 17 Nov 2023 20:27:24 -0800
-Message-ID: <20231118042730.2799-1-quic_c_gdjako@quicinc.com>
+Subject: [PATCH v2 6/6] arm64: dts: qcom: sdm845: Add DT nodes for the TBUs
+Date: Fri, 17 Nov 2023 20:27:30 -0800
+Message-ID: <20231118042730.2799-7-quic_c_gdjako@quicinc.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20231118042730.2799-1-quic_c_gdjako@quicinc.com>
+References: <20231118042730.2799-1-quic_c_gdjako@quicinc.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -56,64 +59,133 @@ X-ClientProxiedBy: nalasex01c.na.qualcomm.com (10.47.97.35) To
  nasanex01a.na.qualcomm.com (10.52.223.231)
 X-QCInternal: smtphost
 X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: 8JOfhQ0I-ti3QSgwp60sOsseosNNGr9M
-X-Proofpoint-GUID: 8JOfhQ0I-ti3QSgwp60sOsseosNNGr9M
+X-Proofpoint-GUID: 9JEs0RbV9wY5aJ2WFQgM00B4DHU9SYmY
+X-Proofpoint-ORIG-GUID: 9JEs0RbV9wY5aJ2WFQgM00B4DHU9SYmY
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.272,Aquarius:18.0.987,Hydra:6.0.619,FMLib:17.11.176.26
  definitions=2023-11-18_02,2023-11-17_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 suspectscore=0
- clxscore=1015 lowpriorityscore=0 impostorscore=0 priorityscore=1501
- spamscore=0 phishscore=0 mlxscore=0 malwarescore=0 adultscore=0
- mlxlogscore=838 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2311060000 definitions=main-2311180032
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 impostorscore=0
+ suspectscore=0 phishscore=0 priorityscore=1501 mlxscore=0 adultscore=0
+ malwarescore=0 mlxlogscore=975 spamscore=0 lowpriorityscore=0 bulkscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2311060000
+ definitions=main-2311180032
 
-The TCUs (Translation Control Units) and TBUs (Translation Buffer
-Units) are key components of the MMU-500. Multiple TBUs are connected
-to a single TCU over an interconnect. Each TBU contains a TLB that
-caches page tables. The MMU-500 implements a TBU for each connected
-master, and the TBU is designed, so that it is local to the master.
+Add the device-tree nodes for the TBUs (translation buffer units) that
+are present on the sdm845 platforms. The TBUs can be used debug the
+kernel and provide additional information when a context faults occur.
 
-The Qualcomm SDM845 platform has an implementation of the SMMU-500,
-that has multiple TBUs. A DT schema is added to describe the resources
-for each TBU (register space, power-domains, interconnects and clocks).
+Describe the all registers, clocks, interconnects and power-domain
+resources that are needed for each of the TBUs.
 
-The TBU driver will manage the resources and allow the system to
-operate the TBUs during a context fault to obtain details by doing
-s1 inv, software + hardware page table walks etc. This is implemented
-with ATOS/eCATs as the ATS feature is not supported. Being able to
-query the TBUs is useful for debugging various hardware/software
-issues on these platforms.
+Signed-off-by: Georgi Djakov <quic_c_gdjako@quicinc.com>
+---
+ arch/arm64/boot/dts/qcom/sdm845.dtsi | 82 ++++++++++++++++++++++++++++
+ 1 file changed, 82 insertions(+)
 
-v2: 
-- Improve DT binding description, add full example. (Konrad)
-- Drop Qcom specific stuff from the generic binding. (Rob)
-- Unconditionally try to populate subnodes. (Konrad)
-- Improve TBU driver commit text, remove memory barriers. (Bjorn)
-- Move TBU stuff into separate file. Make the driver builtin.
-- TODO: Evaluate whether to keep TBU support as a separate driver
-  or just instantiate things from qcom_smmu_impl_init()
-
-v1: https://lore.kernel.org/r/20231019021923.13939-1-quic_c_gdjako@quicinc.com
-
-Georgi Djakov (6):
-  dt-bindings: iommu: Add Translation Buffer Unit bindings
-  iommu/arm-smmu-qcom: Add support for TBUs
-  iommu/arm-smmu-qcom: Add Qualcomm TBU driver
-  iommu/arm-smmu: Allow using a threaded handler for context interrupts
-  iommu/arm-smmu-qcom: Use a custom context fault handler for sdm845
-  arm64: dts: qcom: sdm845: Add DT nodes for the TBUs
-
- .../devicetree/bindings/iommu/arm,smmu.yaml   |  25 +
- .../bindings/iommu/qcom,qsmmuv500-tbu.yaml    |  89 ++++
- arch/arm64/boot/dts/qcom/sdm845.dtsi          |  82 +++
- drivers/iommu/Kconfig                         |   8 +
- drivers/iommu/arm/arm-smmu/Makefile           |   1 +
- .../iommu/arm/arm-smmu/arm-smmu-qcom-tbu.c    | 504 ++++++++++++++++++
- drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c    |  12 +
- drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h    |   6 +-
- drivers/iommu/arm/arm-smmu/arm-smmu.c         |  12 +-
- drivers/iommu/arm/arm-smmu/arm-smmu.h         |   3 +
- 10 files changed, 739 insertions(+), 3 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/iommu/qcom,qsmmuv500-tbu.yaml
- create mode 100644 drivers/iommu/arm/arm-smmu/arm-smmu-qcom-tbu.c
-
+diff --git a/arch/arm64/boot/dts/qcom/sdm845.dtsi b/arch/arm64/boot/dts/qcom/sdm845.dtsi
+index bf5e6eb9d313..5c7174415ae9 100644
+--- a/arch/arm64/boot/dts/qcom/sdm845.dtsi
++++ b/arch/arm64/boot/dts/qcom/sdm845.dtsi
+@@ -15,6 +15,7 @@
+ #include <dt-bindings/dma/qcom-gpi.h>
+ #include <dt-bindings/firmware/qcom,scm.h>
+ #include <dt-bindings/gpio/gpio.h>
++#include <dt-bindings/interconnect/qcom,icc.h>
+ #include <dt-bindings/interconnect/qcom,osm-l3.h>
+ #include <dt-bindings/interconnect/qcom,sdm845.h>
+ #include <dt-bindings/interrupt-controller/arm-gic.h>
+@@ -5000,6 +5001,7 @@ pil-reloc@94c {
+ 		apps_smmu: iommu@15000000 {
+ 			compatible = "qcom,sdm845-smmu-500", "arm,mmu-500";
+ 			reg = <0 0x15000000 0 0x80000>;
++			ranges;
+ 			#iommu-cells = <2>;
+ 			#global-interrupts = <1>;
+ 			interrupts = <GIC_SPI 65 IRQ_TYPE_LEVEL_HIGH>,
+@@ -5067,6 +5069,86 @@ apps_smmu: iommu@15000000 {
+ 				     <GIC_SPI 341 IRQ_TYPE_LEVEL_HIGH>,
+ 				     <GIC_SPI 342 IRQ_TYPE_LEVEL_HIGH>,
+ 				     <GIC_SPI 343 IRQ_TYPE_LEVEL_HIGH>;
++
++			#address-cells = <2>;
++			#size-cells = <2>;
++
++			anoc_1_tbu: tbu@150c5000 {
++				compatible = "qcom,qsmmuv500-tbu";
++				reg = <0x0 0x150c5000 0x0 0x1000>;
++				reg-names = "base";
++				interconnects = <&system_noc MASTER_GNOC_SNOC QCOM_ICC_TAG_ACTIVE_ONLY
++						 &config_noc SLAVE_IMEM_CFG QCOM_ICC_TAG_ACTIVE_ONLY>;
++				power-domains = <&gcc HLOS1_VOTE_AGGRE_NOC_MMU_TBU1_GDSC>;
++				qcom,stream-id-range = <0x0 0x400>;
++			};
++
++			anoc_2_tbu: tbu@150c9000 {
++				compatible = "qcom,qsmmuv500-tbu";
++				reg = <0x0 0x150c9000 0x0 0x1000>;
++				reg-names = "base";
++				interconnects = <&system_noc MASTER_GNOC_SNOC QCOM_ICC_TAG_ACTIVE_ONLY
++						 &config_noc SLAVE_IMEM_CFG QCOM_ICC_TAG_ACTIVE_ONLY>;
++				power-domains = <&gcc HLOS1_VOTE_AGGRE_NOC_MMU_TBU2_GDSC>;
++				qcom,stream-id-range = <0x400 0x400>;
++			};
++
++			mnoc_hf_0_tbu: tbu@150cd000 {
++				compatible = "qcom,qsmmuv500-tbu";
++				reg = <0x0 0x150cd000 0x0 0x1000>;
++				reg-names = "base";
++				interconnects = <&mmss_noc MASTER_MDP0 QCOM_ICC_TAG_ACTIVE_ONLY
++						 &mmss_noc SLAVE_MNOC_HF_MEM_NOC QCOM_ICC_TAG_ACTIVE_ONLY>;
++				qcom,stream-id-range = <0x800 0x400>;
++			};
++
++			mnoc_hf_1_tbu: tbu@150d1000 {
++				compatible = "qcom,qsmmuv500-tbu";
++				reg = <0x0 0x150d1000 0x0 0x1000>;
++				reg-names = "base";
++				interconnects = <&mmss_noc MASTER_MDP0 QCOM_ICC_TAG_ACTIVE_ONLY
++						 &mmss_noc SLAVE_MNOC_HF_MEM_NOC QCOM_ICC_TAG_ACTIVE_ONLY>;
++				qcom,stream-id-range = <0xc00 0x400>;
++			};
++
++			mnoc_sf_0_tbu: tbu@150d5000 {
++				compatible = "qcom,qsmmuv500-tbu";
++				reg = <0x0 0x150d5000 0x0 0x1000>;
++				reg-names = "base";
++				interconnects = <&mmss_noc MASTER_CAMNOC_SF QCOM_ICC_TAG_ACTIVE_ONLY
++						 &mmss_noc SLAVE_MNOC_SF_MEM_NOC QCOM_ICC_TAG_ACTIVE_ONLY>;
++				qcom,stream-id-range = <0x1000 0x400>;
++			};
++
++			compute_dsp_tbu: tbu@150d9000 {
++				compatible = "qcom,qsmmuv500-tbu";
++				reg = <0x0 0x150d9000 0x0 0x1000>;
++				reg-names = "base";
++				interconnects = <&system_noc MASTER_GNOC_SNOC QCOM_ICC_TAG_ACTIVE_ONLY
++						 &config_noc SLAVE_IMEM_CFG QCOM_ICC_TAG_ACTIVE_ONLY>;
++				qcom,stream-id-range = <0x1400 0x400>;
++			};
++
++			adsp_tbu: tbu@150dd000 {
++				compatible = "qcom,qsmmuv500-tbu";
++				reg = <0x0 0x150dd000 0x0 0x1000>;
++				reg-names = "base";
++				interconnects = <&system_noc MASTER_GNOC_SNOC QCOM_ICC_TAG_ACTIVE_ONLY
++						 &config_noc SLAVE_IMEM_CFG QCOM_ICC_TAG_ACTIVE_ONLY>;
++				power-domains = <&gcc HLOS1_VOTE_AGGRE_NOC_MMU_AUDIO_TBU_GDSC>;
++				qcom,stream-id-range = <0x1800 0x400>;
++			};
++
++			anoc_1_pcie_tbu: tbu@150e1000 {
++				compatible = "qcom,qsmmuv500-tbu";
++				reg = <0x0 0x150e1000 0x0 0x1000>;
++				reg-names = "base";
++				clocks = <&gcc GCC_AGGRE_NOC_PCIE_TBU_CLK>;
++				interconnects = <&system_noc MASTER_GNOC_SNOC QCOM_ICC_TAG_ACTIVE_ONLY
++						 &config_noc SLAVE_IMEM_CFG QCOM_ICC_TAG_ACTIVE_ONLY>;
++				power-domains = <&gcc HLOS1_VOTE_AGGRE_NOC_MMU_PCIE_TBU_GDSC>;
++				qcom,stream-id-range = <0x1c00 0x400>;
++			};
+ 		};
+ 
+ 		lpasscc: clock-controller@17014000 {
