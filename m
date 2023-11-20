@@ -1,148 +1,110 @@
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2046.outbound.protection.outlook.com [40.107.94.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ot1-f48.google.com (mail-ot1-f48.google.com [209.85.210.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 261AA1B27B
-	for <iommu@lists.linux.dev>; Mon, 20 Nov 2023 13:50:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB8481C281
+	for <iommu@lists.linux.dev>; Mon, 20 Nov 2023 14:04:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="pj4g8FHI"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=c/3LhmKqsoH16kULP9hsICGGazOLItrVOEcxsnO3oR8Ztka8bkl21YF5bqBKOnImZvRNM4YdscCXPMTNiH625/zvp8HziajhAPgX8nG/wL1zww073VDjlBtdJnbO/2WCCJJe1H+zFTKcd2pgvhlkXeq02kj4FvN91emLnOKWAjpuQWuFFeDU5JBqS71OrPdiymIGMzca0rZKDENEJX+tOkitKRuv1ERPg8VEsNIfvI1w7T2EE34Vza1nh9kWYiOsLRMyRw2MDq5RFaaTsgGwNuXG1Q3Bz5HFWbyRQCNJPvC0fQjBiVFs48QG4nxKWmYME7Rt7l9punwf2UlveDYgAg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=afgkpMEbphgsiZGdKzkqMHUgz40TuvNRTj81X5GzDj0=;
- b=I/oA0hqWDy7Yd4Kr/jICS4GvZyXq+sGkWsnmVYvxAQa7hF1JCpDMJfHXuPXHTT+Tk4rEbbwKnfAnJJjx6So6dQMWL/sJHDL9Ggj1MU53tHA2YOGObUTCjO15hfL+eXiu+igvOFkI2Vjoz6wGkTTVrcYetsf7lQzBC2aSrqGG5foFDpWZj5QN4hroHIYoLHgV/EVpqxY820E+Afvw+bmLR17JnyoPZb9IGHByoexW0/EUmzcL1QxC9mebqQaTNjHAt85Q9dEn8MiRVj98B7/oQfVkjUBeaDw8tFplKbasFpldaGyjcrE0Md6sWVnrKnKT+UcKsm7F5k6Xe7V391yEyQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=afgkpMEbphgsiZGdKzkqMHUgz40TuvNRTj81X5GzDj0=;
- b=pj4g8FHInjQHtTnIL3sK7d1NlI0vilfpVV5JvM4PpLkBX1eXTgs5LotR5FouKzYd+hNzAel3Cv5JUiQxPYgcLvKVNefftgl4w9clw/I15EnxrMX2dNh8jx99qwK6lwZQCIeVWxo/nT3PxFVZYE99MypZVggWrdyCBob4RAN0yzqkONYC/hcxQU5jv4sW+pjgbr/CK8yRpuvONu49av1yM/hVbK7I7P+5QuN/3k/TmW1vGwHMZIoohuat1m6K2rKSsV/dBZ4yADDWO275+SckJqTN4cr9RYEgNvh6IAEDSVYhHNPurqqAYFAmsiLKlzSfuPN7ZZb6uMGDJE3Hnpns1w==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by DM6PR12MB4283.namprd12.prod.outlook.com (2603:10b6:5:211::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7002.27; Mon, 20 Nov
- 2023 13:50:29 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::60d4:c1e3:e1aa:8f93]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::60d4:c1e3:e1aa:8f93%4]) with mapi id 15.20.7002.027; Mon, 20 Nov 2023
- 13:50:28 +0000
-Date: Mon, 20 Nov 2023 09:50:27 -0400
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Alex Williamson <alex.williamson@redhat.com>
-Cc: yaozhenguo <yaozhenguo1@gmail.com>, yaozhenguo@jd.com,
-	dwmw2@infradead.org, baolu.lu@linux.intel.com, joro@8bytes.org,
-	will@kernel.org, robin.murphy@arm.com, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-	Wenchao Yao <yaowenchao@jd.com>, ZiHan Zhou <zhouzihan30@jd.com>
-Subject: Re: [PATCH V1] vfio: add attach_group_by_node to control behavior of
- attaching group to domain
-Message-ID: <20231120135027.GB6083@nvidia.com>
-References: <20231115020209.4665-1-yaozhenguo@jd.com>
- <20231117152746.3aa55d68.alex.williamson@redhat.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20231117152746.3aa55d68.alex.williamson@redhat.com>
-X-ClientProxiedBy: SN4PR0501CA0099.namprd05.prod.outlook.com
- (2603:10b6:803:42::16) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="IXNPG8EI"
+Received: by mail-ot1-f48.google.com with SMTP id 46e09a7af769-6ce2c5b2154so2684013a34.3
+        for <iommu@lists.linux.dev>; Mon, 20 Nov 2023 06:04:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1700489067; x=1701093867; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=rG0WCHMqWdGOoOpA8oz353io0iId12Ij+cwigESy5ls=;
+        b=IXNPG8EILObTP5t7ODNoClC7Zr4RiG9+IoLDU6af6jENg7VXRJfNiwcjGbQMXphcMz
+         h43wVdrYAt+nBj9duNJa7B0UCxOFnnCcC+ZAxthQQU+4BXRKzkOzP6fEjhJtpryDCFwU
+         JX4Wg90yJUCn+OmaPe2f6sn/CdtpAk//wvH30pNQ1knqLYLF5Gimcwqn3zpJfpzubiqD
+         HU09YE7EMfLBAmidoY2EhD2G3fn1HK1vMjJ4tl20bXx0OWhf0GYcxp3wQa7F+ll2q5UR
+         sxl+cpbLDGVxxIGPel/jF992BAxt5Zj8at5WoZpd+MqzHbBfbxxkSBnRxeg9DU05N018
+         NOvw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1700489067; x=1701093867;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=rG0WCHMqWdGOoOpA8oz353io0iId12Ij+cwigESy5ls=;
+        b=j4mRtM2MdQvdPhBQu7sWbPTNVLphr/3lMe9EDraqJra4HeXyrJhHfwshiCRYm9zcq1
+         hdSx7XGkp2Cy1uK5lTiecKe1wxPVF2RH9MvmEvtfx8lLZ/ryprab4ULGJrWNc5f5rmeh
+         2ZqC5SJvQNgSpsd8Dp+l/q0uIzKgMM2mQGg5Y72zcjEY6yj0rXVZejxAVJronlziMsOl
+         ybhONwp+Di7PWpshS77jaxNPZEskccAJ5l9MgYU0LN9QTutgmF06e3BJ6z+XHmr5pOMg
+         syk511VaySJbQ7tWO0OEWsmjvRxDVWSXToOq7eQ1NHlQdX6t4AAZb//LoFMwh17NjBb5
+         AQEQ==
+X-Gm-Message-State: AOJu0Yw1WhY56WBrPSRSYet1khT3rzKYLd4hGeYJtwHZJuFfCeSGqkGJ
+	7MaVvFa5Mt8IvcEdfAFNvyDQEA==
+X-Google-Smtp-Source: AGHT+IHHYsEhV7J+GzlVmc8OzgOHpcxM+6MzRUXt5ncp8iyh4bWAf3tzoGkaPba/CTOoUAru+Cl/hw==
+X-Received: by 2002:a05:6830:200f:b0:6b9:50a8:1e76 with SMTP id e15-20020a056830200f00b006b950a81e76mr7463127otp.17.1700489067691;
+        Mon, 20 Nov 2023 06:04:27 -0800 (PST)
+Received: from ziepe.ca ([12.97.180.36])
+        by smtp.gmail.com with ESMTPSA id y8-20020a9d5188000000b006c7c1868b05sm1168833otg.50.2023.11.20.06.04.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Nov 2023 06:04:26 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1r54sz-000Hvu-MZ;
+	Mon, 20 Nov 2023 10:04:25 -0400
+Date: Mon, 20 Nov 2023 10:04:25 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Boris Brezillon <boris.brezillon@collabora.com>
+Cc: Joerg Roedel <joro@8bytes.org>, iommu@lists.linux.dev,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	linux-arm-kernel@lists.infradead.org,
+	Rob Clark <robdclark@gmail.com>,
+	Gaurav Kohli <quic_gkohli@quicinc.com>,
+	Steven Price <steven.price@arm.com>
+Subject: Re: [PATCH v2 0/2] iommu: Allow passing custom allocators to pgtable
+ drivers
+Message-ID: <20231120140425.GA10140@ziepe.ca>
+References: <20231110094352.565347-1-boris.brezillon@collabora.com>
+ <20231110151428.GJ4634@ziepe.ca>
+ <20231110164809.270f82bc@collabora.com>
+ <20231110161229.GA462657@nvidia.com>
+ <20231110201652.629b7228@collabora.com>
+ <20231110194215.GR4488@nvidia.com>
+ <20231113101103.1cc05c8c@collabora.com>
+ <ZVOgBBEetWf1PFxX@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|DM6PR12MB4283:EE_
-X-MS-Office365-Filtering-Correlation-Id: 65d4a41b-79dc-4120-6237-08dbe9cfa7ec
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	ML/del772p75Ro/UOuaMaPq5F2DaEsmddVJkBDJ/CkBLSUpIXQeIETfSajPb21mVQUu+Vm6MsL9e3dEsc2bJFQtDBMOVzAmaoDJlBLqtskkKru67QjWsbdiQhV3Rdxz1AUC0qPTFUlNI0ZmHH5LIvm21kup9a5EWdtWu5qrVWXxfbKu9LOkjbdWXuBh7B9Xy1uGe/EtFK6yILBjgbD6rIC2qv/aWj6kIqBm3H4YTjqgrcpzl8By1fdZTRQKyAq2GFJS4SjCNUS5rM+MDfvZkpt3PAtX7Jth8dPuS5gUlNoIIx0MDHxOXRHAxrzgZb9EL1DjALVkwAa1FF6S6DIMW9eITe3VL5UJaxethpRGPfqQ4SspA9ctjYmgxOFUwZEvmTrk9dYSAd6Ewml5UQz5DdI2r4FC4RB5g9o0v4i8SpdKoiHwWx3xl5sii3st5bhMts9LijzlYo38c08yM4YQuIg7ntmbjwpv0nzOSLaS2ows4qNoVKV9mIqXG3v2sZFuAQuLjYDKXnZxLz4tUxpRfx5scoYLVAYpQu+Vt0196+zJsDIiGdDa/cgvs0HdVMZ+f
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(39860400002)(136003)(396003)(346002)(366004)(376002)(230922051799003)(64100799003)(451199024)(1800799012)(186009)(2906002)(4326008)(8676002)(8936002)(86362001)(7416002)(5660300002)(41300700001)(33656002)(36756003)(26005)(83380400001)(6512007)(6506007)(2616005)(1076003)(38100700002)(316002)(66476007)(66556008)(54906003)(6916009)(66946007)(478600001)(6486002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?VM074vEwOB8fDqSIHdjuvOl3acQHPIxbJL0+227E1L/zikiknrnBguikNeht?=
- =?us-ascii?Q?h5/RHaFq0MnASUkyf9zH4OoUfW+C9IRxk3NzXtekkgwObiu3WZdFcXaJBKYM?=
- =?us-ascii?Q?wlJJel43YLp8c9VfSCHCCipkLG4efED2uO2nu+b1qmoHhTXNxy5D5omflae2?=
- =?us-ascii?Q?RlPNDmlTzHXoL97xCJrrau6a/h8h4/eppSwoonkbNyIzm2RekgzCwe2iXKxn?=
- =?us-ascii?Q?LS49lmFbqKkgepV+O4xGtHVlmPK8mwEDgZDnpqhbe6e08FHvisxljJsPgjsg?=
- =?us-ascii?Q?cHoUqdWFAuHCqyqfJfhJaRSKBMo//bLod54UN7stysFyZ3N7YtauxWnUN+pB?=
- =?us-ascii?Q?7usOMmk3LcSGZTO1ud62ZlAArrSrRr+7cRpvNLmAiOniJQtkGPo8gMODIQGm?=
- =?us-ascii?Q?YMze1ACl+kEiFiCDmMSrDDXE/y4nVvDrJ23hBlawuf7tDDFCB+bE7uRzZX5O?=
- =?us-ascii?Q?CLjIhAx44kMNoqqOmQ3X9Q6mvTS47y4hYyqivCpLwN9tChDuMpa2kpVVV9di?=
- =?us-ascii?Q?439rkKp9PaYrmkjoIqeVhWFrfHeKEMBEFDtXTBnwKfbjRG4d7ZChUCl2gB2y?=
- =?us-ascii?Q?fdB5pWKdvV9J8wPykj6YM3SdMiDul5uu7GZBTGLYi6AEYCxrDrpxJjRoywhH?=
- =?us-ascii?Q?1IG55ptLt5BgoxFpzSdVAAumIKJeXkE4wF4kduIg+bC/E3sRyFqBg3cp1x09?=
- =?us-ascii?Q?TJwA9kjkbPgo0xXkjL9K1Keve4bJ2w0f0nC0Z5onUFp9hDAz+UBaF1N4AVNk?=
- =?us-ascii?Q?ofw9fuYmwE2u7X4PeIqido1owENlXXt6d6aDZUBu+L0SSgGUcks9qffpmEY2?=
- =?us-ascii?Q?PMZuRD6IFuwLJ1tNh6HOmajvYUvQIHeLBLBXbfXGdDHN7HGokoQnUEQxZGah?=
- =?us-ascii?Q?KWBqrek74V43vNMRgg4TNIOH+WYu5KmQ+uen+Xgr37Lhrd4HILClT6Nc0R9V?=
- =?us-ascii?Q?JQxdv0YHfd4wnc9C4LrpLxjlsgPF5CyoacPQLOi1cip0Lm05AYAAJBB0CWxO?=
- =?us-ascii?Q?CfPJC8lfLA0qzuUmx0UXp6Z0xgDbjYhmfbL1w8OnJSQq6z5Ab/MTTmyafeTC?=
- =?us-ascii?Q?zgGSQ4uW2W/JEzS9zPiQJHg60ZewNOOKV8p4EysTjDr5VN7T9A/ZSoCJRHWx?=
- =?us-ascii?Q?F3w46fNOqYW/6fSppwhtiSZKZZSru6/5Pa62Sifz6gMNmmFQmd9IWr2oO2WM?=
- =?us-ascii?Q?2gPBEIzjUQh9UpIEsm/DtJKu5ce+6w0GuTEP19EMF6YBYi7sF7xZFyiJw8jx?=
- =?us-ascii?Q?/B8x8gwO/WeyDD+mX8+jaoNuCp58PHTdolBKhanySpyy6NSWu3mZTJjmbdCb?=
- =?us-ascii?Q?1ay/tz0cJGU9rvbDZ65muumuB+Qts/1mS3eMFD2ajhaazF6nIKmq34YLqzVQ?=
- =?us-ascii?Q?Egkmu0OvdKeMlB1ZBNwrFwO/voj3Vm71LyxzChwQF1Ep7ncCNp+iJR8Efpff?=
- =?us-ascii?Q?QN8e8D4Qcbwye17KtnNpvHGMFehDGZMmHtZUkrsqYMN5xz+NoiksL9erSEdg?=
- =?us-ascii?Q?3Vig3H3OsNjnP4107XKk5Su3aK2z0AY5hdQLIB4QNfWGm/prloEdU296iMEg?=
- =?us-ascii?Q?2AatvLnhAetC+FMrkUI=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 65d4a41b-79dc-4120-6237-08dbe9cfa7ec
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Nov 2023 13:50:28.8995
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 8Z2qd05favWayvWP76rJ4qMpLa+PKqxhl5OWwps/2j0cbgpggkbKsKTWwSTh5lCf
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4283
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZVOgBBEetWf1PFxX@nvidia.com>
 
-On Fri, Nov 17, 2023 at 03:27:46PM -0700, Alex Williamson wrote:
-> > diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-> > index eacd6ec..6a5641e 100644
-> > --- a/drivers/vfio/vfio_iommu_type1.c
-> > +++ b/drivers/vfio/vfio_iommu_type1.c
-> > @@ -59,6 +59,11 @@
-> >  module_param_named(dma_entry_limit, dma_entry_limit, uint, 0644);
-> >  MODULE_PARM_DESC(dma_entry_limit,
-> >  		 "Maximum number of user DMA mappings per container (65535).");
-> > +static uint attach_group_by_node;
-> > +module_param_named(attach_group_by_node,
-> > +		attach_group_by_node, uint, 0644);
-> > +MODULE_PARM_DESC(attach_group_by_node,
-> > +		 "Attach group to domain when it's in same node");
+On Tue, Nov 14, 2023 at 12:27:48PM -0400, Jason Gunthorpe wrote:
 
-Definately no to any kind of module option..
+> > Anyway, given you already thought it through, can I ask you to provide
+> > a preliminary implementation for this IOVA range mechanism so I can
+> > play with it and adjust panthor accordingly. And if you don't have the
+> > time, can you at least give me extra details about the implementation
+> > you had in mind, so I don't have to guess and come back with something
+> > that's not matching what you had in mind.
+> 
+> Oh, I don't know if I can manage patches in any reasonable time frame,
+> though I think it is pretty straightforward really:
+> 
+>  - Patch to introduce some 'struct iopte_page' (see struct slab)
+>  - Adjust io pagetable implementations to consume it
+>  - Do RCU freeing of iopte_page
+>  - Add a reserve/unreserve io page table ops
+>  - Implement reserve/unresereve in arm by manipulating a new refcount
+>    in iopte_page. Rely on RCU to protect the derefs
+>  - Modify iommufd to call reserve/unreserve around areas attachment
+>    to have an intree user.
+> 
+> Some of this is a bit interesting, like reserving probably will
+> ideally want to invoke the batch allocator for efficiency which means
+> computing the number of radix levels required to fully populate the
+> current empty level - that should be general code somehow
 
-> I question whether we need this solution at all though.  AIUI the
-> initial domain is allocated in proximity to the initial group.  The
-> problem comes when the user asks to add an additional group into the
-> same container.  Another valid solution would be that the user
-> recognizes that these groups are not within the same locality and
-> creates a separate container for this group. 
+At LPC there was quite a lot if interest in improving the io page
+table stuff to work better. Based on that I'm even more against adding
+an external allocator at this time. :\
 
-qemu using iommufd should de-duplicate the IOAS though, so we would be
-back to this discussion.
-
-Regardless, I agree this should be handled by userspace. The kernel
-driver should associate the NUMA locality of the iommu_domain to the
-first iommu instance that it was allocated against.
-
-The explicit HWPTs in iommufd already will allow userspace to choose
-the appropriate locality. We many need to expose a bit more
-information in iommufd ioctls showing the instance to device
-association.
+I may try to write a sketch of something but I'm not sure when..
 
 Jason
