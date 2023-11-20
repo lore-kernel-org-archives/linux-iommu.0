@@ -1,419 +1,148 @@
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.126])
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2046.outbound.protection.outlook.com [40.107.94.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7714D14F8A
-	for <iommu@lists.linux.dev>; Mon, 20 Nov 2023 11:34:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 261AA1B27B
+	for <iommu@lists.linux.dev>; Mon, 20 Nov 2023 13:50:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="IyOsthyw"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1700480061; x=1732016061;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=ALg7aRm8HDUzcoLeQTe5aQTvAuPKnbdlNSYa+yIhmEU=;
-  b=IyOsthywRCbury8GNGOmgEGYU76UPRT+Jdahq5lqKSlMNY4j7Ipcn7Xc
-   UgjEdresrYR0w6BJKislp07er6PB7bIjM1XZ5g0Tjvark/eqDL7iX4ZT5
-   grWVOToc3imePcO3VPqxUU9eZI4rN2isNI3/UvByAN7S+QJYbeAgtA/iP
-   81F0+Lx6ThLKgP+jxcraMWBslzP0jgbdbrNKg+NzSaci6VT8UehD1vaUl
-   rUNg9jMNE21JECHsW0fkf/+q8CXdMY1gwKH4E2mJaDij5/pUGqC6v4lUG
-   QItCdKhr8jkvPFe/UZ2Z26P7w8xgNmntAodD87JFNVqBUIeYTbR/16o4d
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10899"; a="376635034"
-X-IronPort-AV: E=Sophos;i="6.04,213,1695711600"; 
-   d="scan'208";a="376635034"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Nov 2023 03:34:19 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10899"; a="856963657"
-X-IronPort-AV: E=Sophos;i="6.04,213,1695711600"; 
-   d="scan'208";a="856963657"
-Received: from allen-box.sh.intel.com ([10.239.159.127])
-  by FMSMGA003.fm.intel.com with ESMTP; 20 Nov 2023 03:34:17 -0800
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Kevin Tian <kevin.tian@intel.com>
-Cc: iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH 5/5] iommu/vt-d: Remove si_domain
-Date: Mon, 20 Nov 2023 19:29:44 +0800
-Message-Id: <20231120112944.142741-6-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20231120112944.142741-1-baolu.lu@linux.intel.com>
-References: <20231120112944.142741-1-baolu.lu@linux.intel.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="pj4g8FHI"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=c/3LhmKqsoH16kULP9hsICGGazOLItrVOEcxsnO3oR8Ztka8bkl21YF5bqBKOnImZvRNM4YdscCXPMTNiH625/zvp8HziajhAPgX8nG/wL1zww073VDjlBtdJnbO/2WCCJJe1H+zFTKcd2pgvhlkXeq02kj4FvN91emLnOKWAjpuQWuFFeDU5JBqS71OrPdiymIGMzca0rZKDENEJX+tOkitKRuv1ERPg8VEsNIfvI1w7T2EE34Vza1nh9kWYiOsLRMyRw2MDq5RFaaTsgGwNuXG1Q3Bz5HFWbyRQCNJPvC0fQjBiVFs48QG4nxKWmYME7Rt7l9punwf2UlveDYgAg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=afgkpMEbphgsiZGdKzkqMHUgz40TuvNRTj81X5GzDj0=;
+ b=I/oA0hqWDy7Yd4Kr/jICS4GvZyXq+sGkWsnmVYvxAQa7hF1JCpDMJfHXuPXHTT+Tk4rEbbwKnfAnJJjx6So6dQMWL/sJHDL9Ggj1MU53tHA2YOGObUTCjO15hfL+eXiu+igvOFkI2Vjoz6wGkTTVrcYetsf7lQzBC2aSrqGG5foFDpWZj5QN4hroHIYoLHgV/EVpqxY820E+Afvw+bmLR17JnyoPZb9IGHByoexW0/EUmzcL1QxC9mebqQaTNjHAt85Q9dEn8MiRVj98B7/oQfVkjUBeaDw8tFplKbasFpldaGyjcrE0Md6sWVnrKnKT+UcKsm7F5k6Xe7V391yEyQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=afgkpMEbphgsiZGdKzkqMHUgz40TuvNRTj81X5GzDj0=;
+ b=pj4g8FHInjQHtTnIL3sK7d1NlI0vilfpVV5JvM4PpLkBX1eXTgs5LotR5FouKzYd+hNzAel3Cv5JUiQxPYgcLvKVNefftgl4w9clw/I15EnxrMX2dNh8jx99qwK6lwZQCIeVWxo/nT3PxFVZYE99MypZVggWrdyCBob4RAN0yzqkONYC/hcxQU5jv4sW+pjgbr/CK8yRpuvONu49av1yM/hVbK7I7P+5QuN/3k/TmW1vGwHMZIoohuat1m6K2rKSsV/dBZ4yADDWO275+SckJqTN4cr9RYEgNvh6IAEDSVYhHNPurqqAYFAmsiLKlzSfuPN7ZZb6uMGDJE3Hnpns1w==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by DM6PR12MB4283.namprd12.prod.outlook.com (2603:10b6:5:211::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7002.27; Mon, 20 Nov
+ 2023 13:50:29 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::60d4:c1e3:e1aa:8f93]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::60d4:c1e3:e1aa:8f93%4]) with mapi id 15.20.7002.027; Mon, 20 Nov 2023
+ 13:50:28 +0000
+Date: Mon, 20 Nov 2023 09:50:27 -0400
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Alex Williamson <alex.williamson@redhat.com>
+Cc: yaozhenguo <yaozhenguo1@gmail.com>, yaozhenguo@jd.com,
+	dwmw2@infradead.org, baolu.lu@linux.intel.com, joro@8bytes.org,
+	will@kernel.org, robin.murphy@arm.com, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+	Wenchao Yao <yaowenchao@jd.com>, ZiHan Zhou <zhouzihan30@jd.com>
+Subject: Re: [PATCH V1] vfio: add attach_group_by_node to control behavior of
+ attaching group to domain
+Message-ID: <20231120135027.GB6083@nvidia.com>
+References: <20231115020209.4665-1-yaozhenguo@jd.com>
+ <20231117152746.3aa55d68.alex.williamson@redhat.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20231117152746.3aa55d68.alex.williamson@redhat.com>
+X-ClientProxiedBy: SN4PR0501CA0099.namprd05.prod.outlook.com
+ (2603:10b6:803:42::16) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|DM6PR12MB4283:EE_
+X-MS-Office365-Filtering-Correlation-Id: 65d4a41b-79dc-4120-6237-08dbe9cfa7ec
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	ML/del772p75Ro/UOuaMaPq5F2DaEsmddVJkBDJ/CkBLSUpIXQeIETfSajPb21mVQUu+Vm6MsL9e3dEsc2bJFQtDBMOVzAmaoDJlBLqtskkKru67QjWsbdiQhV3Rdxz1AUC0qPTFUlNI0ZmHH5LIvm21kup9a5EWdtWu5qrVWXxfbKu9LOkjbdWXuBh7B9Xy1uGe/EtFK6yILBjgbD6rIC2qv/aWj6kIqBm3H4YTjqgrcpzl8By1fdZTRQKyAq2GFJS4SjCNUS5rM+MDfvZkpt3PAtX7Jth8dPuS5gUlNoIIx0MDHxOXRHAxrzgZb9EL1DjALVkwAa1FF6S6DIMW9eITe3VL5UJaxethpRGPfqQ4SspA9ctjYmgxOFUwZEvmTrk9dYSAd6Ewml5UQz5DdI2r4FC4RB5g9o0v4i8SpdKoiHwWx3xl5sii3st5bhMts9LijzlYo38c08yM4YQuIg7ntmbjwpv0nzOSLaS2ows4qNoVKV9mIqXG3v2sZFuAQuLjYDKXnZxLz4tUxpRfx5scoYLVAYpQu+Vt0196+zJsDIiGdDa/cgvs0HdVMZ+f
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(39860400002)(136003)(396003)(346002)(366004)(376002)(230922051799003)(64100799003)(451199024)(1800799012)(186009)(2906002)(4326008)(8676002)(8936002)(86362001)(7416002)(5660300002)(41300700001)(33656002)(36756003)(26005)(83380400001)(6512007)(6506007)(2616005)(1076003)(38100700002)(316002)(66476007)(66556008)(54906003)(6916009)(66946007)(478600001)(6486002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?VM074vEwOB8fDqSIHdjuvOl3acQHPIxbJL0+227E1L/zikiknrnBguikNeht?=
+ =?us-ascii?Q?h5/RHaFq0MnASUkyf9zH4OoUfW+C9IRxk3NzXtekkgwObiu3WZdFcXaJBKYM?=
+ =?us-ascii?Q?wlJJel43YLp8c9VfSCHCCipkLG4efED2uO2nu+b1qmoHhTXNxy5D5omflae2?=
+ =?us-ascii?Q?RlPNDmlTzHXoL97xCJrrau6a/h8h4/eppSwoonkbNyIzm2RekgzCwe2iXKxn?=
+ =?us-ascii?Q?LS49lmFbqKkgepV+O4xGtHVlmPK8mwEDgZDnpqhbe6e08FHvisxljJsPgjsg?=
+ =?us-ascii?Q?cHoUqdWFAuHCqyqfJfhJaRSKBMo//bLod54UN7stysFyZ3N7YtauxWnUN+pB?=
+ =?us-ascii?Q?7usOMmk3LcSGZTO1ud62ZlAArrSrRr+7cRpvNLmAiOniJQtkGPo8gMODIQGm?=
+ =?us-ascii?Q?YMze1ACl+kEiFiCDmMSrDDXE/y4nVvDrJ23hBlawuf7tDDFCB+bE7uRzZX5O?=
+ =?us-ascii?Q?CLjIhAx44kMNoqqOmQ3X9Q6mvTS47y4hYyqivCpLwN9tChDuMpa2kpVVV9di?=
+ =?us-ascii?Q?439rkKp9PaYrmkjoIqeVhWFrfHeKEMBEFDtXTBnwKfbjRG4d7ZChUCl2gB2y?=
+ =?us-ascii?Q?fdB5pWKdvV9J8wPykj6YM3SdMiDul5uu7GZBTGLYi6AEYCxrDrpxJjRoywhH?=
+ =?us-ascii?Q?1IG55ptLt5BgoxFpzSdVAAumIKJeXkE4wF4kduIg+bC/E3sRyFqBg3cp1x09?=
+ =?us-ascii?Q?TJwA9kjkbPgo0xXkjL9K1Keve4bJ2w0f0nC0Z5onUFp9hDAz+UBaF1N4AVNk?=
+ =?us-ascii?Q?ofw9fuYmwE2u7X4PeIqido1owENlXXt6d6aDZUBu+L0SSgGUcks9qffpmEY2?=
+ =?us-ascii?Q?PMZuRD6IFuwLJ1tNh6HOmajvYUvQIHeLBLBXbfXGdDHN7HGokoQnUEQxZGah?=
+ =?us-ascii?Q?KWBqrek74V43vNMRgg4TNIOH+WYu5KmQ+uen+Xgr37Lhrd4HILClT6Nc0R9V?=
+ =?us-ascii?Q?JQxdv0YHfd4wnc9C4LrpLxjlsgPF5CyoacPQLOi1cip0Lm05AYAAJBB0CWxO?=
+ =?us-ascii?Q?CfPJC8lfLA0qzuUmx0UXp6Z0xgDbjYhmfbL1w8OnJSQq6z5Ab/MTTmyafeTC?=
+ =?us-ascii?Q?zgGSQ4uW2W/JEzS9zPiQJHg60ZewNOOKV8p4EysTjDr5VN7T9A/ZSoCJRHWx?=
+ =?us-ascii?Q?F3w46fNOqYW/6fSppwhtiSZKZZSru6/5Pa62Sifz6gMNmmFQmd9IWr2oO2WM?=
+ =?us-ascii?Q?2gPBEIzjUQh9UpIEsm/DtJKu5ce+6w0GuTEP19EMF6YBYi7sF7xZFyiJw8jx?=
+ =?us-ascii?Q?/B8x8gwO/WeyDD+mX8+jaoNuCp58PHTdolBKhanySpyy6NSWu3mZTJjmbdCb?=
+ =?us-ascii?Q?1ay/tz0cJGU9rvbDZ65muumuB+Qts/1mS3eMFD2ajhaazF6nIKmq34YLqzVQ?=
+ =?us-ascii?Q?Egkmu0OvdKeMlB1ZBNwrFwO/voj3Vm71LyxzChwQF1Ep7ncCNp+iJR8Efpff?=
+ =?us-ascii?Q?QN8e8D4Qcbwye17KtnNpvHGMFehDGZMmHtZUkrsqYMN5xz+NoiksL9erSEdg?=
+ =?us-ascii?Q?3Vig3H3OsNjnP4107XKk5Su3aK2z0AY5hdQLIB4QNfWGm/prloEdU296iMEg?=
+ =?us-ascii?Q?2AatvLnhAetC+FMrkUI=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 65d4a41b-79dc-4120-6237-08dbe9cfa7ec
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Nov 2023 13:50:28.8995
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 8Z2qd05favWayvWP76rJ4qMpLa+PKqxhl5OWwps/2j0cbgpggkbKsKTWwSTh5lCf
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4283
 
-The static identity domain has been introduced, rendering the si_domain
-obsolete. Remove si_domain and cleanup the code accordingly.
+On Fri, Nov 17, 2023 at 03:27:46PM -0700, Alex Williamson wrote:
+> > diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+> > index eacd6ec..6a5641e 100644
+> > --- a/drivers/vfio/vfio_iommu_type1.c
+> > +++ b/drivers/vfio/vfio_iommu_type1.c
+> > @@ -59,6 +59,11 @@
+> >  module_param_named(dma_entry_limit, dma_entry_limit, uint, 0644);
+> >  MODULE_PARM_DESC(dma_entry_limit,
+> >  		 "Maximum number of user DMA mappings per container (65535).");
+> > +static uint attach_group_by_node;
+> > +module_param_named(attach_group_by_node,
+> > +		attach_group_by_node, uint, 0644);
+> > +MODULE_PARM_DESC(attach_group_by_node,
+> > +		 "Attach group to domain when it's in same node");
 
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- drivers/iommu/intel/iommu.c | 226 ++++--------------------------------
- 1 file changed, 23 insertions(+), 203 deletions(-)
+Definately no to any kind of module option..
 
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index ad2e53821a05..90dd7f24beda 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -97,15 +97,6 @@ static phys_addr_t root_entry_uctp(struct root_entry *re)
- 	return re->hi & VTD_PAGE_MASK;
- }
- 
--/*
-- * This domain is a statically identity mapping domain.
-- *	1. This domain creats a static 1:1 mapping to all usable memory.
-- * 	2. It maps to each iommu if successful.
-- *	3. Each iommu mapps to this domain if successful.
-- */
--static struct dmar_domain *si_domain;
--static int hw_pass_through = 1;
--
- struct dmar_rmrr_unit {
- 	struct list_head list;		/* list of rmrr units	*/
- 	struct acpi_dmar_header *hdr;	/* ACPI header		*/
-@@ -240,11 +231,6 @@ void free_pgtable_page(void *vaddr)
- 	free_page((unsigned long)vaddr);
- }
- 
--static int domain_type_is_si(struct dmar_domain *domain)
--{
--	return domain->domain.type == IOMMU_DOMAIN_IDENTITY;
--}
--
- static int domain_pfn_supported(struct dmar_domain *domain, unsigned long pfn)
- {
- 	int addr_width = agaw_to_width(domain->agaw) - VTD_PAGE_SHIFT;
-@@ -1796,9 +1782,6 @@ static int domain_context_mapping_one(struct dmar_domain *domain,
- 	struct context_entry *context;
- 	int agaw, ret;
- 
--	if (hw_pass_through && domain_type_is_si(domain))
--		translation = CONTEXT_TT_PASS_THROUGH;
--
- 	pr_debug("Set context mapping for %02x:%02x.%d\n",
- 		bus, PCI_SLOT(devfn), PCI_FUNC(devfn));
- 
-@@ -1817,34 +1800,24 @@ static int domain_context_mapping_one(struct dmar_domain *domain,
- 
- 	context_set_domain_id(context, did);
- 
--	if (translation != CONTEXT_TT_PASS_THROUGH) {
--		/*
--		 * Skip top levels of page tables for iommu which has
--		 * less agaw than default. Unnecessary for PT mode.
--		 */
--		for (agaw = domain->agaw; agaw > iommu->agaw; agaw--) {
--			ret = -ENOMEM;
--			pgd = phys_to_virt(dma_pte_addr(pgd));
--			if (!dma_pte_present(pgd))
--				goto out_unlock;
--		}
--
--		if (info && info->ats_supported)
--			translation = CONTEXT_TT_DEV_IOTLB;
--		else
--			translation = CONTEXT_TT_MULTI_LEVEL;
--
--		context_set_address_root(context, virt_to_phys(pgd));
--		context_set_address_width(context, agaw);
--	} else {
--		/*
--		 * In pass through mode, AW must be programmed to
--		 * indicate the largest AGAW value supported by
--		 * hardware. And ASR is ignored by hardware.
--		 */
--		context_set_address_width(context, iommu->msagaw);
-+	/*
-+	 * Skip top levels of page tables for iommu which has
-+	 * less agaw than default. Unnecessary for PT mode.
-+	 */
-+	for (agaw = domain->agaw; agaw > iommu->agaw; agaw--) {
-+		ret = -ENOMEM;
-+		pgd = phys_to_virt(dma_pte_addr(pgd));
-+		if (!dma_pte_present(pgd))
-+			goto out_unlock;
- 	}
- 
-+	if (info && info->ats_supported)
-+		translation = CONTEXT_TT_DEV_IOTLB;
-+	else
-+		translation = CONTEXT_TT_MULTI_LEVEL;
-+
-+	context_set_address_root(context, virt_to_phys(pgd));
-+	context_set_address_width(context, agaw);
- 	context_set_translation_type(context, translation);
- 	context_set_fault_enable(context);
- 	context_set_present(context);
-@@ -2078,14 +2051,10 @@ static void domain_context_clear_one(struct device_domain_info *info, u8 bus, u8
- 		return;
- 	}
- 
--	if (sm_supported(iommu)) {
--		if (hw_pass_through && domain_type_is_si(info->domain))
--			did_old = FLPT_DEFAULT_DID;
--		else
--			did_old = domain_id_iommu(info->domain, iommu);
--	} else {
--		did_old = context_domain_id(context);
--	}
-+	if (info->domain)
-+		did_old = domain_id_iommu(info->domain, iommu);
-+	else
-+		did_old = FLPT_DEFAULT_DID;
- 
- 	context_clear_entry(context);
- 	__iommu_flush_cache(iommu, context, sizeof(*context));
-@@ -2148,80 +2117,6 @@ static bool dev_is_real_dma_subdevice(struct device *dev)
- 	       pci_real_dma_dev(to_pci_dev(dev)) != to_pci_dev(dev);
- }
- 
--static int iommu_domain_identity_map(struct dmar_domain *domain,
--				     unsigned long first_vpfn,
--				     unsigned long last_vpfn)
--{
--	/*
--	 * RMRR range might have overlap with physical memory range,
--	 * clear it first
--	 */
--	dma_pte_clear_range(domain, first_vpfn, last_vpfn);
--
--	return __domain_mapping(domain, first_vpfn,
--				first_vpfn, last_vpfn - first_vpfn + 1,
--				DMA_PTE_READ|DMA_PTE_WRITE, GFP_KERNEL);
--}
--
--static int md_domain_init(struct dmar_domain *domain, int guest_width);
--
--static int __init si_domain_init(int hw)
--{
--	struct dmar_rmrr_unit *rmrr;
--	struct device *dev;
--	int i, nid, ret;
--
--	si_domain = alloc_domain(IOMMU_DOMAIN_IDENTITY);
--	if (!si_domain)
--		return -EFAULT;
--
--	if (md_domain_init(si_domain, DEFAULT_DOMAIN_ADDRESS_WIDTH)) {
--		domain_exit(si_domain);
--		si_domain = NULL;
--		return -EFAULT;
--	}
--
--	if (hw)
--		return 0;
--
--	for_each_online_node(nid) {
--		unsigned long start_pfn, end_pfn;
--		int i;
--
--		for_each_mem_pfn_range(i, nid, &start_pfn, &end_pfn, NULL) {
--			ret = iommu_domain_identity_map(si_domain,
--					mm_to_dma_pfn_start(start_pfn),
--					mm_to_dma_pfn_end(end_pfn));
--			if (ret)
--				return ret;
--		}
--	}
--
--	/*
--	 * Identity map the RMRRs so that devices with RMRRs could also use
--	 * the si_domain.
--	 */
--	for_each_rmrr_units(rmrr) {
--		for_each_active_dev_scope(rmrr->devices, rmrr->devices_cnt,
--					  i, dev) {
--			unsigned long long start = rmrr->base_address;
--			unsigned long long end = rmrr->end_address;
--
--			if (WARN_ON(end < start ||
--				    end >> agaw_to_width(si_domain->agaw)))
--				continue;
--
--			ret = iommu_domain_identity_map(si_domain,
--					mm_to_dma_pfn_start(start >> PAGE_SHIFT),
--					mm_to_dma_pfn_end(end >> PAGE_SHIFT));
--			if (ret)
--				return ret;
--		}
--	}
--
--	return 0;
--}
--
- static int dmar_domain_attach_device(struct dmar_domain *domain,
- 				     struct device *dev)
- {
-@@ -2243,8 +2138,6 @@ static int dmar_domain_attach_device(struct dmar_domain *domain,
- 
- 	if (!sm_supported(iommu))
- 		ret = domain_context_mapping(domain, dev);
--	else if (hw_pass_through && domain_type_is_si(domain))
--		ret = intel_pasid_setup_pass_through(iommu, dev, IOMMU_NO_PASID);
- 	else if (domain->use_first_level)
- 		ret = domain_setup_first_level(iommu, domain, dev, IOMMU_NO_PASID);
- 	else
-@@ -2255,8 +2148,7 @@ static int dmar_domain_attach_device(struct dmar_domain *domain,
- 		return ret;
- 	}
- 
--	if (sm_supported(info->iommu) || !domain_type_is_si(info->domain))
--		iommu_enable_pci_caps(info);
-+	iommu_enable_pci_caps(info);
- 
- 	return 0;
- }
-@@ -2606,8 +2498,6 @@ static int __init init_dmars(void)
- 			}
- 		}
- 
--		if (!ecap_pass_through(iommu->ecap))
--			hw_pass_through = 0;
- 		intel_svm_check(iommu);
- 	}
- 
-@@ -2630,10 +2520,6 @@ static int __init init_dmars(void)
- 
- 	check_tylersburg_isoch();
- 
--	ret = si_domain_init(hw_pass_through);
--	if (ret)
--		goto free_iommu;
--
- 	/*
- 	 * for each drhd
- 	 *   enable fault log
-@@ -2679,10 +2565,6 @@ static int __init init_dmars(void)
- 		disable_dmar_iommu(iommu);
- 		free_dmar_iommu(iommu);
- 	}
--	if (si_domain) {
--		domain_exit(si_domain);
--		si_domain = NULL;
--	}
- 
- 	return ret;
- }
-@@ -3057,12 +2939,6 @@ static int intel_iommu_add(struct dmar_drhd_unit *dmaru)
- 	if (ret)
- 		goto out;
- 
--	if (hw_pass_through && !ecap_pass_through(iommu->ecap)) {
--		pr_warn("%s: Doesn't support hardware pass through.\n",
--			iommu->name);
--		return -ENXIO;
--	}
--
- 	sp = domain_update_iommu_superpage(NULL, iommu) - 1;
- 	if (sp >= 0 && !(cap_super_page_val(iommu->cap) & (1 << sp))) {
- 		pr_warn("%s: Doesn't support large page.\n",
-@@ -3313,52 +3189,6 @@ int dmar_iommu_notify_scope_dev(struct dmar_pci_notify_info *info)
- 	return 0;
- }
- 
--static int intel_iommu_memory_notifier(struct notifier_block *nb,
--				       unsigned long val, void *v)
--{
--	struct memory_notify *mhp = v;
--	unsigned long start_vpfn = mm_to_dma_pfn_start(mhp->start_pfn);
--	unsigned long last_vpfn = mm_to_dma_pfn_end(mhp->start_pfn +
--			mhp->nr_pages - 1);
--
--	switch (val) {
--	case MEM_GOING_ONLINE:
--		if (iommu_domain_identity_map(si_domain,
--					      start_vpfn, last_vpfn)) {
--			pr_warn("Failed to build identity map for [%lx-%lx]\n",
--				start_vpfn, last_vpfn);
--			return NOTIFY_BAD;
--		}
--		break;
--
--	case MEM_OFFLINE:
--	case MEM_CANCEL_ONLINE:
--		{
--			struct dmar_drhd_unit *drhd;
--			struct intel_iommu *iommu;
--			LIST_HEAD(freelist);
--
--			domain_unmap(si_domain, start_vpfn, last_vpfn, &freelist);
--
--			rcu_read_lock();
--			for_each_active_iommu(iommu, drhd)
--				iommu_flush_iotlb_psi(iommu, si_domain,
--					start_vpfn, mhp->nr_pages,
--					list_empty(&freelist), 0);
--			rcu_read_unlock();
--			put_pages_list(&freelist);
--		}
--		break;
--	}
--
--	return NOTIFY_OK;
--}
--
--static struct notifier_block intel_iommu_memory_nb = {
--	.notifier_call = intel_iommu_memory_notifier,
--	.priority = 0
--};
--
- static void intel_disable_iommus(void)
- {
- 	struct intel_iommu *iommu = NULL;
-@@ -3655,12 +3485,7 @@ int __init intel_iommu_init(void)
- 
- 		iommu_pmu_register(iommu);
- 	}
--	up_read(&dmar_global_lock);
- 
--	if (si_domain && !hw_pass_through)
--		register_memory_notifier(&intel_iommu_memory_nb);
--
--	down_read(&dmar_global_lock);
- 	if (probe_acpi_namespace_devices())
- 		pr_warn("ACPI name space devices didn't probe correctly\n");
- 
-@@ -3827,8 +3652,6 @@ static struct iommu_domain *intel_iommu_domain_alloc(unsigned type)
- 		domain->geometry.force_aperture = true;
- 
- 		return domain;
--	case IOMMU_DOMAIN_IDENTITY:
--		return &si_domain->domain;
- 	case IOMMU_DOMAIN_SVA:
- 		return intel_svm_domain_alloc();
- 	default:
-@@ -3888,8 +3711,7 @@ intel_iommu_domain_alloc_user(struct device *dev, u32 flags,
- 
- static void intel_iommu_domain_free(struct iommu_domain *domain)
- {
--	if (domain != &si_domain->domain)
--		domain_exit(to_dmar_domain(domain));
-+	domain_exit(to_dmar_domain(domain));
- }
- 
- int prepare_domain_attach_device(struct iommu_domain *domain,
-@@ -4596,9 +4418,7 @@ static int intel_iommu_set_dev_pasid(struct iommu_domain *domain,
- 	if (ret)
- 		goto out_free;
- 
--	if (domain_type_is_si(dmar_domain))
--		ret = intel_pasid_setup_pass_through(iommu, dev, pasid);
--	else if (dmar_domain->use_first_level)
-+	if (dmar_domain->use_first_level)
- 		ret = domain_setup_first_level(iommu, dmar_domain,
- 					       dev, pasid);
- 	else
--- 
-2.34.1
+> I question whether we need this solution at all though.  AIUI the
+> initial domain is allocated in proximity to the initial group.  The
+> problem comes when the user asks to add an additional group into the
+> same container.  Another valid solution would be that the user
+> recognizes that these groups are not within the same locality and
+> creates a separate container for this group. 
 
+qemu using iommufd should de-duplicate the IOAS though, so we would be
+back to this discussion.
+
+Regardless, I agree this should be handled by userspace. The kernel
+driver should associate the NUMA locality of the iommu_domain to the
+first iommu instance that it was allocated against.
+
+The explicit HWPTs in iommufd already will allow userspace to choose
+the appropriate locality. We many need to expose a bit more
+information in iommufd ioctls showing the instance to device
+association.
+
+Jason
