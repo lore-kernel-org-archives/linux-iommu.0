@@ -1,237 +1,138 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ot1-f43.google.com (mail-ot1-f43.google.com [209.85.210.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 171211D556
-	for <iommu@lists.linux.dev>; Mon, 20 Nov 2023 15:36:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0CA8719BB9
+	for <iommu@lists.linux.dev>; Mon, 20 Nov 2023 15:45:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="UT0Suq6v"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1700494593;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=i/pq20FpKEDkMWF6mczv+TQIrPVshe9FhaHWZG9axRE=;
-	b=UT0Suq6vgmtCr0te54mrpIoHasaln2j4747ht8e3YnspCrL/ncVw8mxdAkei8foQZffE9O
-	OzxWp6ctPyrNo8hYNHYqt6QJ/ItdIRG7jW83hYmotfuW9kHRa+8kNVeDlYpZAIlnSPmYCD
-	Pjva+IKduTnDmCrQp0FcI2pGzA3VvXc=
-Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
- [209.85.222.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-157-iw4POK1bPCuSNLUpygg_Mg-1; Mon, 20 Nov 2023 10:36:31 -0500
-X-MC-Unique: iw4POK1bPCuSNLUpygg_Mg-1
-Received: by mail-qk1-f197.google.com with SMTP id af79cd13be357-7789577b4e0so532138585a.2
-        for <iommu@lists.linux.dev>; Mon, 20 Nov 2023 07:36:31 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="KUkUl2PO"
+Received: by mail-ot1-f43.google.com with SMTP id 46e09a7af769-6d3260385b5so2230867a34.0
+        for <iommu@lists.linux.dev>; Mon, 20 Nov 2023 07:45:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1700495138; x=1701099938; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=OM9uvcoV5ag+HkmTgVNIfQvYLbzKwuT2srRTitPCGCI=;
+        b=KUkUl2POWtvquxqEZD+R6HMSzZERSq5ouxvalsHrRZrBpNZL2SbT0PkwzEct3wyV5w
+         3/7tCYsqyqq7Ckt1IjLrcgEpzE6WcNdl8Kwmj8mIESQiZEyh1CytTtzp+TBltzedmplQ
+         lnlYEjOgEnzkb8yncJ2TnXZHuIXX+/eeZnDD5kPO35MA/26iX6r08GRVBhqiML66xVc5
+         8fEy3vSyQNAn4SNSTbk8efdM9esMUzclhQiUpLRj4+XzByc1346+JvkmLOiuwkHLV2fT
+         SyWVzrywuTzRCiDg8kyhxy0WO9Il8cNrkxRVk1LBEeBb6GeVkNUWd5n7wmZHnV9Q+sCS
+         jVJA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1700494590; x=1701099390;
+        d=1e100.net; s=20230601; t=1700495138; x=1701099938;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=i/pq20FpKEDkMWF6mczv+TQIrPVshe9FhaHWZG9axRE=;
-        b=TrGl+v999p+cOaH5ESQvMwrIukDWiXEXr8mplZrJCrxH9MdSY20UOTuxF23982isQZ
-         qB1DMZyj21R5vs+5Zfk5NHd/qC/uVzC1cPZR9XzFWDUaSYN8RD6u2fGX/03jIjmlnxZf
-         EKiLIY4vQYe1CeDN+aqah1aiF/2zr63BNS+RHVsVSVP8ObsdNqo6omq8R2p56TiYYYyx
-         j1WgDWIOkxlBTgsKF9Re9M/PSBTzuK2s7NB1H38AVmqtXpLP0DytmFvxHjAdu4LfgOge
-         Fmycww1u/MztABe6AhAplN5paPXSgWRMfEkJaGipofP3L3oAV3Eat1pgexFUpgUf74kW
-         upbQ==
-X-Gm-Message-State: AOJu0Yxdo0k3k8GmjupcWNM46j4+p27Jdu194wECcExHdQIXTHIYC7SO
-	xRdMxWAvDQKuJHg9KEeQpFTR4o0zvq6HHM8yX8tG+CAgCvdre8JtRjf1DkWnENc6scva8wbJceZ
-	/DaTNJHSg9Y+YRbI=
-X-Received: by 2002:ae9:f007:0:b0:779:cf09:2854 with SMTP id l7-20020ae9f007000000b00779cf092854mr7246787qkg.41.1700494590690;
-        Mon, 20 Nov 2023 07:36:30 -0800 (PST)
-X-Google-Smtp-Source: AGHT+IFJU92akWFbNdoe8uj5JJanhTdOw2Ezmo4/fkRHH8F2zU4ZoIjdJM6k0l4TH5jql8hCAuabSw==
-X-Received: by 2002:ae9:f007:0:b0:779:cf09:2854 with SMTP id l7-20020ae9f007000000b00779cf092854mr7246762qkg.41.1700494590351;
-        Mon, 20 Nov 2023 07:36:30 -0800 (PST)
-Received: from fedora ([2600:1700:1ff0:d0e0::37])
-        by smtp.gmail.com with ESMTPSA id dt17-20020a05620a479100b0076c96e571f3sm2749361qkb.26.2023.11.20.07.36.29
+        bh=OM9uvcoV5ag+HkmTgVNIfQvYLbzKwuT2srRTitPCGCI=;
+        b=oFNwxJlO2kxJrKB/HsMWZwzd2DBcIVtGAgzyqf4cPPgKdWLzDtNpkQ83zTyGnQxG6Z
+         x/a60VbC5YEUQjRf34Ioi7aTRBcfYemBmEAs0tx2qFG0vLNA+0sgg/akI/LtIKUml4iQ
+         G0C+TbQEGk15+wtjyLo5mzHyfL6cmV87X4MP5PeU7cQ6RCLa//l+c7GFtXi2TXwQbPpI
+         OTAf32iDdhM2+/++kjbIhjS3I6JVJB6D8y21KVScbFqq6NQhupTj2uaVoMwywzBM6elj
+         tZotMM22AcOD1T+k/DM2XjtHOq8VSMGAAkpqvOWxQvVXpV4Tr0kH0iMrY7+CPC5fzbTs
+         uh5Q==
+X-Gm-Message-State: AOJu0Yx+TgJPCQkl8WWAPG84TZXvlcCDLRnT4YZptYcRwghzcPv6K5bF
+	vxxKwOBVgXrE6fI+7HkS6OqgbA==
+X-Google-Smtp-Source: AGHT+IHazKAMmMUu7WG6XKk34HRvrp2GXdikeXTyF9zWwYYOH3ewfnPuO4HJIzH8J7s1XmGRpIszKw==
+X-Received: by 2002:a05:6830:2007:b0:6d6:c0ec:6de8 with SMTP id e7-20020a056830200700b006d6c0ec6de8mr3231220otp.14.1700495138014;
+        Mon, 20 Nov 2023 07:45:38 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-134-23-187.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.134.23.187])
+        by smtp.gmail.com with ESMTPSA id cu24-20020a056830681800b006c4d822bea7sm1216744otb.31.2023.11.20.07.45.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Nov 2023 07:36:30 -0800 (PST)
-Date: Mon, 20 Nov 2023 09:36:27 -0600
-From: Andrew Halaney <ahalaney@redhat.com>
-To: Georgi Djakov <quic_c_gdjako@quicinc.com>
-Cc: robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org, 
-	conor+dt@kernel.org, will@kernel.org, robin.murphy@arm.com, joro@8bytes.org, 
-	devicetree@vger.kernel.org, andersson@kernel.org, konrad.dybcio@linaro.org, 
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
-	linux-arm-msm@vger.kernel.org, quic_cgoldswo@quicinc.com, quic_sukadev@quicinc.com, 
-	quic_pdaly@quicinc.com, quic_sudaraja@quicinc.com, djakov@kernel.org
-Subject: Re: [PATCH v2 1/6] dt-bindings: iommu: Add Translation Buffer Unit
- bindings
-Message-ID: <4q56egm4g6df4wittfddcipsxhvqkffa6ytd7dz4f55godax6p@3gbobpu2mpzx>
-References: <20231118042730.2799-1-quic_c_gdjako@quicinc.com>
- <20231118042730.2799-2-quic_c_gdjako@quicinc.com>
+        Mon, 20 Nov 2023 07:45:37 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1r56Su-000j0f-EH;
+	Mon, 20 Nov 2023 11:45:36 -0400
+Date: Mon, 20 Nov 2023 11:45:36 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Boris Brezillon <boris.brezillon@collabora.com>
+Cc: Joerg Roedel <joro@8bytes.org>, iommu@lists.linux.dev,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	linux-arm-kernel@lists.infradead.org,
+	Rob Clark <robdclark@gmail.com>,
+	Gaurav Kohli <quic_gkohli@quicinc.com>,
+	Steven Price <steven.price@arm.com>
+Subject: Re: [PATCH v2 0/2] iommu: Allow passing custom allocators to pgtable
+ drivers
+Message-ID: <20231120154536.GE10140@ziepe.ca>
+References: <20231110164809.270f82bc@collabora.com>
+ <20231110161229.GA462657@nvidia.com>
+ <20231110201652.629b7228@collabora.com>
+ <20231110194215.GR4488@nvidia.com>
+ <20231113101103.1cc05c8c@collabora.com>
+ <ZVOgBBEetWf1PFxX@nvidia.com>
+ <20231120140425.GA10140@ziepe.ca>
+ <20231120153838.2166e7b8@collabora.com>
+ <20231120144604.GD10140@ziepe.ca>
+ <20231120161418.5eca178e@collabora.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <20231118042730.2799-2-quic_c_gdjako@quicinc.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20231120161418.5eca178e@collabora.com>
 
-On Fri, Nov 17, 2023 at 08:27:25PM -0800, Georgi Djakov wrote:
-> The "apps_smmu" on the Qualcomm sdm845 platform is an implementation
-> of the SMMU-500, that consists of a single TCU (Translation Control
-> Unit) and multiple TBUs (Translation Buffer Units). The TCU is already
-> being described in the generic SMMU DT schema. Add also bindings for
+On Mon, Nov 20, 2023 at 04:14:18PM +0100, Boris Brezillon wrote:
+> On Mon, 20 Nov 2023 10:46:04 -0400
+> Jason Gunthorpe <jgg@ziepe.ca> wrote:
+> 
+> > On Mon, Nov 20, 2023 at 03:38:38PM +0100, Boris Brezillon wrote:
+> > 
+> > > > At LPC there was quite a lot if interest in improving the io page
+> > > > table stuff to work better. Based on that I'm even more against adding
+> > > > an external allocator at this time. :\  
+> > > 
+> > > I'm sure this has been discussed with the IOMMU maintainers, but I'd
+> > > really like to hear it from them if you don't mind. Especially since,
+> > > as I mentioned, the custom allocator idea comes from Robin, not me...  
+> > 
+> > It is a community effort - this is my opinion. We now understand this
+> > io page table area needs a lot of work to meet all the new needs. I'm
+> > against hacking it up like this and making that work harder.
+> 
+> Consider it a hack if you like, but the thing is pretty self-contained,
+> and I doubt it will get to a point where things become unmaintainable
+> before you get the generic caching system working. Not to mention
+> Gaurav's use case, which can't really be solved with your caching
+> solution.
 
-nit for if you respin: s/Add also/Add/ or similar :)
+Gaurav doesn't need a custom allocator, he needs a way to manage
+sharing page table memory with the hypervisor. A different set of ops
+that don't replace the entire allocator would be fine for them.
 
-> the TBUs to describe their properties and resources that needs to be
-> managed in order to operate them.
-> 
-> In this DT schema, the TBUs are modelled as child devices of the TCU
-> and each of them is described with it's register space, clocks, power
-> domains, interconnects etc.
-> 
-> Signed-off-by: Georgi Djakov <quic_c_gdjako@quicinc.com>
-> ---
->  .../devicetree/bindings/iommu/arm,smmu.yaml   | 25 ++++++
->  .../bindings/iommu/qcom,qsmmuv500-tbu.yaml    | 89 +++++++++++++++++++
->  2 files changed, 114 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iommu/qcom,qsmmuv500-tbu.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-> index aa9e1c0895a5..f7f89be5f7a3 100644
-> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-> @@ -231,6 +231,18 @@ properties:
->        enabled for any given device.
->      $ref: /schemas/types.yaml#/definitions/phandle
->  
-> +  '#address-cells':
-> +    enum: [ 1, 2 ]
-> +
-> +  '#size-cells':
-> +    enum: [ 1, 2 ]
-> +
-> +  ranges: true
-> +
-> +patternProperties:
-> +  "^tbu@[0-9a-f]*":
-> +    type: object
-> +
->  required:
->    - compatible
->    - reg
-> @@ -453,6 +465,19 @@ allOf:
->              - description: Voter clock required for HLOS SMMU access
->              - description: Interface clock required for register access
->  
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          contains:
-> +            const: qcom,smmu-500
-> +    then:
-> +      patternProperties:
-> +        "^tbu@[0-9a-f]*":
-> +          $ref: qcom,qsmmuv500-tbu.yaml
-> +          unevaluatedProperties: false
-> +      properties:
-> +        ranges: true
-> +
->    # Disallow clocks for all other platforms with specific compatibles
->    - if:
->        properties:
-> diff --git a/Documentation/devicetree/bindings/iommu/qcom,qsmmuv500-tbu.yaml b/Documentation/devicetree/bindings/iommu/qcom,qsmmuv500-tbu.yaml
-> new file mode 100644
-> index 000000000000..4dc9d0ca33c9
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iommu/qcom,qsmmuv500-tbu.yaml
-> @@ -0,0 +1,89 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/iommu/qcom,qsmmuv500-tbu.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Qualcomm TBU (Translation Buffer Unit)
-> +
-> +maintainers:
-> +  - Georgi Djakov <quic_c_gdjako@quicinc.com>
-> +
-> +description:
-> +  The Qualcomm SMMU500 implementation consists of TCU and TBU. The TBU contains
-> +  a Translation Lookaside Buffer (TLB) that caches page tables. TBUs provides
-> +  debug features to trace and trigger debug transactions. There are multiple TBU
-> +  instances distributes with each client core.
-> +
-> +properties:
-> +  $nodename:
-> +    pattern: "^tbu@[0-9a-f]+$"
-> +
-> +  compatible:
-> +    const: qcom,qsmmuv500-tbu
-> +
-> +  reg:
-> +    items:
-> +      - description: Address and size of the TBU's register space.
-> +
-> +  reg-names:
-> +    items:
-> +      - const: base
-> +
-> +  clocks:
-> +    maxItems: 1
-> +
-> +  interconnects:
-> +    maxItems: 1
-> +
-> +  power-domains:
-> +    maxItems: 1
-> +
-> +  qcom,stream-id-range:
-> +    $ref: /schemas/types.yaml#/definitions/uint32-array
-> +    description: Stream ID range (address and size) that is assigned by the TBU
-> +    items:
-> +      minItems: 2
-> +      maxItems: 2
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - interconnects
-> +  - qcom,stream-id-range
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/clock/qcom,gcc-sdm845.h>
-> +    #include <dt-bindings/interconnect/qcom,icc.h>
-> +    #include <dt-bindings/interconnect/qcom,sdm845.h>
-> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
-> +    #include <dt-bindings/interrupt-controller/irq.h>
-> +    #include <dt-bindings/power/qcom-rpmpd.h>
-> +
-> +    apps_smmu: iommu@15000000 {
-> +        compatible = "qcom,sdm845-smmu-500", "arm,mmu-500";
-> +        reg = <0x15000000 0x80000>;
-> +        ranges = <0 0 0 0 0xffffffff>;
-> +        #iommu-cells = <2>;
-> +        #global-interrupts = <1>;
-> +        interrupts = <GIC_SPI 65 IRQ_TYPE_LEVEL_HIGH>,
-> +                     <GIC_SPI 343 IRQ_TYPE_LEVEL_HIGH>;
-> +        #address-cells = <2>;
-> +        #size-cells = <2>;
-> +
-> +        anoc_1_pcie_tbu: tbu@150e1000 {
-> +            compatible = "qcom,qsmmuv500-tbu";
-> +            reg = <0x0 0x150e1000 0x0 0x1000>;
-> +            reg-names = "base";
-> +            clocks = <&gcc GCC_AGGRE_NOC_PCIE_TBU_CLK>;
-> +            interconnects = <&system_noc MASTER_GNOC_SNOC QCOM_ICC_TAG_ACTIVE_ONLY
-> +                             &config_noc SLAVE_IMEM_CFG QCOM_ICC_TAG_ACTIVE_ONLY>;
-> +            power-domains = <&gcc HLOS1_VOTE_AGGRE_NOC_MMU_PCIE_TBU_GDSC>;
-> +            qcom,stream-id-range = <0x1c00 0x400>;
-> +        };
-> +    };
-> +
-> +...
-> 
+The issue with taking away the alloc_page is that it complicates the
+ability for the common code to use the struct page fields and more. We
+already know we are going to need those to do some of the things that
+are being asked for, eg RCU freeing and refcounting.
 
+> > I would not expect a resolution in a few weeks.
+> 
+> OOC, what's the time frame?
+
+The larger need has been discussed is considerable work, I would be
+surprised if something could be merged in less than 6 months,
+especially with the upcoming holiday season
+
+> I've maintained a subsystem for a few years, so I know what it means
+> to contribute upstream and ask or being asked to extend the core to do
+> something the right way. I'm generally patient and try to follow
+> maintainers' recommendations, but there's some point where waiting is
+> no more an option, and you have to be more pragmatic, because there's
+> always a better way of doing things, and perfection is often the enemy
+> of good...
+
+Here I am not talking about perfection, I am concerned about messing
+up work that I now see as important for other iommu drivers related
+things by making a hack for a DRM driver (which as I've said has,
+unravelling these hacks has been traumatic for many of us
+historically)
+
+So while I would not like you copying the code to DRM, but I think it
+would be less troublesome to everyone in the longer term.
+
+Jason
