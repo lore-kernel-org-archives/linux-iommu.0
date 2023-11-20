@@ -1,112 +1,144 @@
-Received: from mail-ot1-f49.google.com (mail-ot1-f49.google.com [209.85.210.49])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F18EB12E4A
-	for <iommu@lists.linux.dev>; Mon, 20 Nov 2023 14:46:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C1EE14A8C
+	for <iommu@lists.linux.dev>; Mon, 20 Nov 2023 14:52:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="LMzvLS4O"
-Received: by mail-ot1-f49.google.com with SMTP id 46e09a7af769-6ce353df504so2644207a34.3
-        for <iommu@lists.linux.dev>; Mon, 20 Nov 2023 06:46:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1700491566; x=1701096366; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=hKGlpsR4MZQ4PbPAr4iKvpD/NWTg43d9w2WorVRFaEM=;
-        b=LMzvLS4O1ib5P5gw30LVdXKiWIgyy7KcN1whorf1jsldu/1FOf37u+HRF0pdxNQPYw
-         ZrT+1Ob9K3Pz7KuAa1JLYmvQrID/2uAr5rCSFaaIq+17VR4JIccB+3lXFd36UbhWygY2
-         zLTm8fNJiXBtafbKehFxTPX/J79gi/obTOZsImq96cNj7DsDDj2h2dKcQOT7tf6Mmhog
-         nmE5pRfMmTCi01VYuYNlg49XIBm8cTuZMLJgtU4ZMZgtwvNOEQch7z3RNC0dA1LSXDKp
-         4pLqHUscQXys1f7gI76SMYBG+irxQBPUJu2qRnOLeaX8Ah2VL/4FwDLyBWl/v88UjYbk
-         4xXA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1700491566; x=1701096366;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=hKGlpsR4MZQ4PbPAr4iKvpD/NWTg43d9w2WorVRFaEM=;
-        b=VkTPXgLAQBAA/wftAaX0XLJ/eFMeKnkefadDdAevr2M7wqcDOhcZQqsZvG3d8CatRW
-         cpf+QsRUPFI9QSYcqQvtmBGtASQ2GTjmBQE2dgKnp1Obb1sWlOcJ8d6xVPNLepK5i/Vm
-         JoDQo8srrRX9xx/AUJall+u1D4SlwDKOiNTZybsRxF6M1kzKYDn12vHVwX4/luArxBts
-         PkUkLQIP/QzReUd7Mlr/g1dbelhe3iD9eYe0Cbj39NC3g1fyeVbXbz4Czf7jCMUL1Gqo
-         k7708Oc+8/v092cjVRFz+stl+kySwR3Eag+FOu4QveI1zC5juSfaQUV4lKnYSL8+D0eF
-         Km3Q==
-X-Gm-Message-State: AOJu0YygH0FerWsBBQE9MiOB8Km1A0q+c+qnh5RftmVX1Ehf4vAEC8ae
-	4lfOgfTJm8ZW7/AELlq7YpHiOw==
-X-Google-Smtp-Source: AGHT+IFzZWviPZZa03nWXuOFzGQ0tzH2Ne9zQ6glH9lIYEu9EVAdXzYpaCSS1UB1eu0G4bKU3Pfz2A==
-X-Received: by 2002:a05:6870:288a:b0:1f4:a122:6b02 with SMTP id gy10-20020a056870288a00b001f4a1226b02mr9420967oab.45.1700491566071;
-        Mon, 20 Nov 2023 06:46:06 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-134-23-187.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.134.23.187])
-        by smtp.gmail.com with ESMTPSA id y1-20020a056870a34100b001f949c5a757sm220261oak.38.2023.11.20.06.46.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Nov 2023 06:46:05 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1r55XI-000bho-Hg;
-	Mon, 20 Nov 2023 10:46:04 -0400
-Date: Mon, 20 Nov 2023 10:46:04 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Boris Brezillon <boris.brezillon@collabora.com>
-Cc: Joerg Roedel <joro@8bytes.org>, iommu@lists.linux.dev,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	linux-arm-kernel@lists.infradead.org,
-	Rob Clark <robdclark@gmail.com>,
-	Gaurav Kohli <quic_gkohli@quicinc.com>,
-	Steven Price <steven.price@arm.com>
-Subject: Re: [PATCH v2 0/2] iommu: Allow passing custom allocators to pgtable
- drivers
-Message-ID: <20231120144604.GD10140@ziepe.ca>
-References: <20231110094352.565347-1-boris.brezillon@collabora.com>
- <20231110151428.GJ4634@ziepe.ca>
- <20231110164809.270f82bc@collabora.com>
- <20231110161229.GA462657@nvidia.com>
- <20231110201652.629b7228@collabora.com>
- <20231110194215.GR4488@nvidia.com>
- <20231113101103.1cc05c8c@collabora.com>
- <ZVOgBBEetWf1PFxX@nvidia.com>
- <20231120140425.GA10140@ziepe.ca>
- <20231120153838.2166e7b8@collabora.com>
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="EkNobIrV"
+Received: from pps.filterd (m0353722.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 3AKEgxib020299;
+	Mon, 20 Nov 2023 14:52:18 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : date : subject :
+ content-type : message-id : references : in-reply-to : to : cc :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=MKqs0kH46522/dBFUNoDwo0NLDCnu0C5KWXCe66OgJM=;
+ b=EkNobIrVVFt8l0NSnypVifJYz4lzV7FwXRka+a6U33wViI6pgn3VV6909aoQ8OUk6Kps
+ FeE8O4R9uCdIP6XXeitCmo8jQXVMGVT12Y5TdXlG3IClzW0jDYTKJoxri92XNBQvXoMI
+ JetblLJTEhajpwV+jN/eJQqZWhjhkdXTR9mU6bRSSZVml7VrNMG+jY/vZx2jKjHbnuvc
+ GuikvJshewMsQpn0gUVsvOizVh4NJcx2ROSYoYBtX7RLRxIBO+BUCPAcrvqdzFe8E9nj
+ bGXyxGvER5VgKsgcr45j616uRE6Y5PLh4G2gHXq5+d0Exx84eDtIiabQIz9zUf6sYtS0 XQ== 
+Received: from ppma22.wdc07v.mail.ibm.com (5c.69.3da9.ip4.static.sl-reverse.com [169.61.105.92])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3ug92b0xce-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 20 Nov 2023 14:52:18 +0000
+Received: from pps.filterd (ppma22.wdc07v.mail.ibm.com [127.0.0.1])
+	by ppma22.wdc07v.mail.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 3AKDRelH008982;
+	Mon, 20 Nov 2023 14:52:17 GMT
+Received: from smtprelay04.fra02v.mail.ibm.com ([9.218.2.228])
+	by ppma22.wdc07v.mail.ibm.com (PPS) with ESMTPS id 3uf7yy9ygr-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 20 Nov 2023 14:52:17 +0000
+Received: from smtpav02.fra02v.mail.ibm.com (smtpav02.fra02v.mail.ibm.com [10.20.54.101])
+	by smtprelay04.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 3AKEqFnF41484696
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Mon, 20 Nov 2023 14:52:15 GMT
+Received: from smtpav02.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 9B2F820040;
+	Mon, 20 Nov 2023 14:52:15 +0000 (GMT)
+Received: from smtpav02.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 69F7B20043;
+	Mon, 20 Nov 2023 14:52:15 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+	by smtpav02.fra02v.mail.ibm.com (Postfix) with ESMTP;
+	Mon, 20 Nov 2023 14:52:15 +0000 (GMT)
+From: Niklas Schnelle <schnelle@linux.ibm.com>
+Date: Mon, 20 Nov 2023 15:51:56 +0100
+Subject: [PATCH v3 1/2] iommu/virtio: Make use of ops->iotlb_sync_map
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <20231120-viommu-sync-map-v3-1-50a57ecf78b5@linux.ibm.com>
+References: <20231120-viommu-sync-map-v3-0-50a57ecf78b5@linux.ibm.com>
+In-Reply-To: <20231120-viommu-sync-map-v3-0-50a57ecf78b5@linux.ibm.com>
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Jason Gunthorpe <jgg@ziepe.ca>, Robin Murphy <robin.murphy@arm.com>
+Cc: Niklas Schnelle <schnelle@linux.ibm.com>,
+        virtualization@lists.linux-foundation.org, iommu@lists.linux.dev,
+        linux-kernel@vger.kernel.org
+X-Mailer: b4 0.12.3
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1933;
+ i=schnelle@linux.ibm.com; h=from:subject:message-id;
+ bh=61dRzahqb+NckHJJYg5DlB8RlYEAYvbeelbu3VOGu+E=;
+ b=owGbwMvMwCH2Wz534YHOJ2GMp9WSGFKjiybrNew5vV+NpcZt26w6kStO11xKjbKb12Wm3Yv15
+ eupiljbUcrCIMbBICumyLKoy9lvXcEU0z1B/R0wc1iZQIYwcHEKwERi3Rj+Cupc5xYLfZthKPOG
+ 5Vd4aMnx1DPB5399WvjqidiDmhsn9jL8D5RviXUX5120La6E83qOa8hxlr3tAV0uqicWzbasy97
+ LCAA=
+X-Developer-Key: i=schnelle@linux.ibm.com; a=openpgp;
+ fpr=9DB000B2D2752030A5F72DDCAFE43F15E8C26090
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: vG_dkTNHMYheTaa0pdY1jAJaupmtev7C
+X-Proofpoint-GUID: vG_dkTNHMYheTaa0pdY1jAJaupmtev7C
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20231120153838.2166e7b8@collabora.com>
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.987,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2023-11-20_14,2023-11-20_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 suspectscore=0
+ clxscore=1015 spamscore=0 impostorscore=0 bulkscore=0 malwarescore=0
+ mlxlogscore=369 priorityscore=1501 lowpriorityscore=0 mlxscore=0
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2311060000 definitions=main-2311200103
 
-On Mon, Nov 20, 2023 at 03:38:38PM +0100, Boris Brezillon wrote:
+Pull out the sync operation from viommu_map_pages() by implementing
+ops->iotlb_sync_map. This allows the common IOMMU code to map multiple
+elements of an sg with a single sync (see iommu_map_sg()).
 
-> > At LPC there was quite a lot if interest in improving the io page
-> > table stuff to work better. Based on that I'm even more against adding
-> > an external allocator at this time. :\
-> 
-> I'm sure this has been discussed with the IOMMU maintainers, but I'd
-> really like to hear it from them if you don't mind. Especially since,
-> as I mentioned, the custom allocator idea comes from Robin, not me...
+Link: https://lore.kernel.org/lkml/20230726111433.1105665-1-schnelle@linux.ibm.com/
+Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
+---
+ drivers/iommu/virtio-iommu.c | 17 ++++++++++++++++-
+ 1 file changed, 16 insertions(+), 1 deletion(-)
 
-It is a community effort - this is my opinion. We now understand this
-io page table area needs a lot of work to meet all the new needs. I'm
-against hacking it up like this and making that work harder.
+diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
+index 379ebe03efb6..3f18f69d70d8 100644
+--- a/drivers/iommu/virtio-iommu.c
++++ b/drivers/iommu/virtio-iommu.c
+@@ -843,7 +843,7 @@ static int viommu_map_pages(struct iommu_domain *domain, unsigned long iova,
+ 			.flags		= cpu_to_le32(flags),
+ 		};
+ 
+-		ret = viommu_send_req_sync(vdomain->viommu, &map, sizeof(map));
++		ret = viommu_add_req(vdomain->viommu, &map, sizeof(map));
+ 		if (ret) {
+ 			viommu_del_mappings(vdomain, iova, end);
+ 			return ret;
+@@ -912,6 +912,20 @@ static void viommu_iotlb_sync(struct iommu_domain *domain,
+ 	viommu_sync_req(vdomain->viommu);
+ }
+ 
++static int viommu_iotlb_sync_map(struct iommu_domain *domain,
++				 unsigned long iova, size_t size)
++{
++	struct viommu_domain *vdomain = to_viommu_domain(domain);
++
++	/*
++	 * May be called before the viommu is initialized including
++	 * while creating direct mapping
++	 */
++	if (!vdomain->nr_endpoints)
++		return 0;
++	return viommu_sync_req(vdomain->viommu);
++}
++
+ static void viommu_get_resv_regions(struct device *dev, struct list_head *head)
+ {
+ 	struct iommu_resv_region *entry, *new_entry, *msi = NULL;
+@@ -1058,6 +1072,7 @@ static struct iommu_ops viommu_ops = {
+ 		.unmap_pages		= viommu_unmap_pages,
+ 		.iova_to_phys		= viommu_iova_to_phys,
+ 		.iotlb_sync		= viommu_iotlb_sync,
++		.iotlb_sync_map		= viommu_iotlb_sync_map,
+ 		.free			= viommu_domain_free,
+ 	}
+ };
 
-> v1, was a sign this was good to go. If the final call is to reject the
-> custom allocator approach, and there's no updates on your generic
-> solution in the next couple weeks, I'll probably copy the pgtable code
-> in panthor so I can implement my own stuff, and later switch back to
-> the generic io-pgtable implementation when things have settled down.
+-- 
+2.39.2
 
-That's horrible, DRM should refuse that too, yet I expect you will
-probably end up merging like that.
-
-I would not expect a resolution in a few weeks.
-
-> Nothing against you or your solution (I actually commit to move to the
-> new approach when it's ready), but we have different priorities, and I
-> can't really delay the driver merging by several months unless there's
-> a very good reason to do it.
-
-Welcome to Linux, nothing runs fast :(
-
-Jason
