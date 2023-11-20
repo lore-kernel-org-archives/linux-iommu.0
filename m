@@ -1,138 +1,129 @@
-Received: from mail-ot1-f43.google.com (mail-ot1-f43.google.com [209.85.210.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2081.outbound.protection.outlook.com [40.107.93.81])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0CA8719BB9
-	for <iommu@lists.linux.dev>; Mon, 20 Nov 2023 15:45:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB5211A5B9
+	for <iommu@lists.linux.dev>; Mon, 20 Nov 2023 17:25:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="KUkUl2PO"
-Received: by mail-ot1-f43.google.com with SMTP id 46e09a7af769-6d3260385b5so2230867a34.0
-        for <iommu@lists.linux.dev>; Mon, 20 Nov 2023 07:45:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1700495138; x=1701099938; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=OM9uvcoV5ag+HkmTgVNIfQvYLbzKwuT2srRTitPCGCI=;
-        b=KUkUl2POWtvquxqEZD+R6HMSzZERSq5ouxvalsHrRZrBpNZL2SbT0PkwzEct3wyV5w
-         3/7tCYsqyqq7Ckt1IjLrcgEpzE6WcNdl8Kwmj8mIESQiZEyh1CytTtzp+TBltzedmplQ
-         lnlYEjOgEnzkb8yncJ2TnXZHuIXX+/eeZnDD5kPO35MA/26iX6r08GRVBhqiML66xVc5
-         8fEy3vSyQNAn4SNSTbk8efdM9esMUzclhQiUpLRj4+XzByc1346+JvkmLOiuwkHLV2fT
-         SyWVzrywuTzRCiDg8kyhxy0WO9Il8cNrkxRVk1LBEeBb6GeVkNUWd5n7wmZHnV9Q+sCS
-         jVJA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1700495138; x=1701099938;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=OM9uvcoV5ag+HkmTgVNIfQvYLbzKwuT2srRTitPCGCI=;
-        b=oFNwxJlO2kxJrKB/HsMWZwzd2DBcIVtGAgzyqf4cPPgKdWLzDtNpkQ83zTyGnQxG6Z
-         x/a60VbC5YEUQjRf34Ioi7aTRBcfYemBmEAs0tx2qFG0vLNA+0sgg/akI/LtIKUml4iQ
-         G0C+TbQEGk15+wtjyLo5mzHyfL6cmV87X4MP5PeU7cQ6RCLa//l+c7GFtXi2TXwQbPpI
-         OTAf32iDdhM2+/++kjbIhjS3I6JVJB6D8y21KVScbFqq6NQhupTj2uaVoMwywzBM6elj
-         tZotMM22AcOD1T+k/DM2XjtHOq8VSMGAAkpqvOWxQvVXpV4Tr0kH0iMrY7+CPC5fzbTs
-         uh5Q==
-X-Gm-Message-State: AOJu0Yx+TgJPCQkl8WWAPG84TZXvlcCDLRnT4YZptYcRwghzcPv6K5bF
-	vxxKwOBVgXrE6fI+7HkS6OqgbA==
-X-Google-Smtp-Source: AGHT+IHazKAMmMUu7WG6XKk34HRvrp2GXdikeXTyF9zWwYYOH3ewfnPuO4HJIzH8J7s1XmGRpIszKw==
-X-Received: by 2002:a05:6830:2007:b0:6d6:c0ec:6de8 with SMTP id e7-20020a056830200700b006d6c0ec6de8mr3231220otp.14.1700495138014;
-        Mon, 20 Nov 2023 07:45:38 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-134-23-187.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.134.23.187])
-        by smtp.gmail.com with ESMTPSA id cu24-20020a056830681800b006c4d822bea7sm1216744otb.31.2023.11.20.07.45.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Nov 2023 07:45:37 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1r56Su-000j0f-EH;
-	Mon, 20 Nov 2023 11:45:36 -0400
-Date: Mon, 20 Nov 2023 11:45:36 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Boris Brezillon <boris.brezillon@collabora.com>
-Cc: Joerg Roedel <joro@8bytes.org>, iommu@lists.linux.dev,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	linux-arm-kernel@lists.infradead.org,
-	Rob Clark <robdclark@gmail.com>,
-	Gaurav Kohli <quic_gkohli@quicinc.com>,
-	Steven Price <steven.price@arm.com>
-Subject: Re: [PATCH v2 0/2] iommu: Allow passing custom allocators to pgtable
- drivers
-Message-ID: <20231120154536.GE10140@ziepe.ca>
-References: <20231110164809.270f82bc@collabora.com>
- <20231110161229.GA462657@nvidia.com>
- <20231110201652.629b7228@collabora.com>
- <20231110194215.GR4488@nvidia.com>
- <20231113101103.1cc05c8c@collabora.com>
- <ZVOgBBEetWf1PFxX@nvidia.com>
- <20231120140425.GA10140@ziepe.ca>
- <20231120153838.2166e7b8@collabora.com>
- <20231120144604.GD10140@ziepe.ca>
- <20231120161418.5eca178e@collabora.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="Q64fjgR0"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=YmYhixCcgUWUNmchSSemRf2Gqbv+XOu4Da8Cpe79a5R2nk2n/8iYmvInzrwNjfQmIuvxiSqb+shrIhLhj5WQXZUgAQ/aEydW4bASe/95r4yf10Ph3nf3hjD87eiNd1iSJjotJcgFkzYFaZUb7RjaVTyvAR4pVUlg/W7MGzJi8JtzPEkqOOVC+sx9tRRwr8LW41X6pPjxaiOqSChxlSwSzSo+Fu8EcOe7L6DR73cIq+plIUNSr/7XyT+/qMD4zqTl+gp7XRE87ZK9FW/2xGuiv70z2W1AOoLcgLYyvV4FmnpnMstLMFoewHgzesBt3kBNLrUyL8soPJylmpzCLQB+FA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=5KTcE2P8rRPX3ABCXVh/tcLAyVOsyE7muUJvu+G6fUA=;
+ b=GYAsoRI4HSLdEAhRAc6VnOg+lksBXTWSZj03NDMhK1GhWy/IvExfwXOTdZzHYHG7n46zHqhkywg/IjpNor+2Dy4ojy02fF9V4XYC+hqRaVgKfMWaQxdxzmOo3gq4s0av8ZJGxvG/2o+fIKErpE0dyfiaqt0IGC2f8E/BmpfzoY+oDveZz6E727gmRcvyJx4MJDHlS9Te9Se8AMIpy+tnIcp8Vst2MZG0MJ+JNQ+rRa9JjJHHJ2FJLPRR9JDuJMByS8/NOIx4sOpNpQgqeddKFQVumvbJ2yzJ1sIPVOBD3llWD8LEhOPkfcF4CCk3YX/rNDTDoTj0+dWtr2CZRtF7AQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.118.232) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=5KTcE2P8rRPX3ABCXVh/tcLAyVOsyE7muUJvu+G6fUA=;
+ b=Q64fjgR0xnxcXUIgu0caR2UQPcbiz8Qlsvpvi0aRR9al4XqSsLUWQY81iCNVXBPQpLqMmB7CDVYBvO+Atq2W6bj4Y0zB0D7UV46+9Jnh/+vMvJro/7aWvtUqY7K7ygtA711yqxl44i8B9mnsKbYZe8VtX3jC3JeqXBR3yusyvUF4S3hmNpwTOiFFpQU0lcv6WffINneO6VvP/lG63OB1IpypexpXd8FcY0lsfBKBxqBw9Qaow96WTHnWpB2aEAe26GrgVO8GyH7hmDErDK2IMIWyIiXNE9pivb3445nYfL70p/A/IQWDomRHHhyjFas0ohIKebxARUT6JCx79bbkdQ==
+Received: from SN6PR16CA0060.namprd16.prod.outlook.com (2603:10b6:805:ca::37)
+ by BN9PR12MB5241.namprd12.prod.outlook.com (2603:10b6:408:11e::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7002.28; Mon, 20 Nov
+ 2023 17:25:24 +0000
+Received: from SN1PEPF0002BA4F.namprd03.prod.outlook.com
+ (2603:10b6:805:ca:cafe::8) by SN6PR16CA0060.outlook.office365.com
+ (2603:10b6:805:ca::37) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7002.26 via Frontend
+ Transport; Mon, 20 Nov 2023 17:25:24 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.232) by
+ SN1PEPF0002BA4F.mail.protection.outlook.com (10.167.242.72) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.7025.12 via Frontend Transport; Mon, 20 Nov 2023 17:25:24 +0000
+Received: from drhqmail203.nvidia.com (10.126.190.182) by mail.nvidia.com
+ (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Mon, 20 Nov
+ 2023 09:25:11 -0800
+Received: from drhqmail203.nvidia.com (10.126.190.182) by
+ drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.41; Mon, 20 Nov 2023 09:25:10 -0800
+Received: from Asurada-Nvidia (10.127.8.11) by mail.nvidia.com
+ (10.126.190.182) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41 via Frontend
+ Transport; Mon, 20 Nov 2023 09:25:09 -0800
+Date: Mon, 20 Nov 2023 09:25:08 -0800
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+CC: "Liu, Yi L" <yi.l.liu@intel.com>, "joro@8bytes.org" <joro@8bytes.org>,
+	"alex.williamson@redhat.com" <alex.williamson@redhat.com>, "jgg@nvidia.com"
+	<jgg@nvidia.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>, "cohuck@redhat.com"
+	<cohuck@redhat.com>, "eric.auger@redhat.com" <eric.auger@redhat.com>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>, "mjrosato@linux.ibm.com"
+	<mjrosato@linux.ibm.com>, "chao.p.peng@linux.intel.com"
+	<chao.p.peng@linux.intel.com>, "yi.y.sun@linux.intel.com"
+	<yi.y.sun@linux.intel.com>, "peterx@redhat.com" <peterx@redhat.com>,
+	"jasowang@redhat.com" <jasowang@redhat.com>,
+	"shameerali.kolothum.thodi@huawei.com"
+	<shameerali.kolothum.thodi@huawei.com>, "lulu@redhat.com" <lulu@redhat.com>,
+	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>, "Duan,
+ Zhenzhong" <zhenzhong.duan@intel.com>, "joao.m.martins@oracle.com"
+	<joao.m.martins@oracle.com>, "Zeng, Xin" <xin.zeng@intel.com>, "Zhao, Yan Y"
+	<yan.y.zhao@intel.com>
+Subject: Re: [PATCH v6 3/6] iommu: Add iommu_copy_struct_from_user_array
+ helper
+Message-ID: <ZVuWdEwYw+9uAaUz@Asurada-Nvidia>
+References: <20231117130717.19875-1-yi.l.liu@intel.com>
+ <20231117130717.19875-4-yi.l.liu@intel.com>
+ <BN9PR11MB52763299F886D4A534D6E0BA8CB4A@BN9PR11MB5276.namprd11.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <20231120161418.5eca178e@collabora.com>
+In-Reply-To: <BN9PR11MB52763299F886D4A534D6E0BA8CB4A@BN9PR11MB5276.namprd11.prod.outlook.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SN1PEPF0002BA4F:EE_|BN9PR12MB5241:EE_
+X-MS-Office365-Filtering-Correlation-Id: 1a24dea2-455a-4b9a-b0be-08dbe9edae55
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	UAP/Ow5Dn8OW/i2x7CWw8xpp/JVAFnmc0/lVSq2qXZxgfuZSnk6bYVNVBoAZyvZ2ZXqx75CgFPqCAwpafZ4OtDDDiE7MzBKrTa58llyUDvx8HuECs8Y47WVAx+HnfBNVjoDqm71/nyXaJsPZmfWasWsONQ2PrEGGkatsoo5RzFRggva9AqjvVnZP6FL73an9oa1YhZhTaZVyHG+wVZOkXydSIV+GSNfoVkF26+XunD9XfGHZYerf1CVqbw3tfzNOORP2EiEmmNQ9ZqzGKLB81wtjvOt/u3SQBWX0mXm3ZEyMlgEflpcCDBB3ZnqcVu+rIPJ1qiMCTotDwOKq7LULNN5TP3YLw3ee2mVNlxD6agce19oKNtvc+F6Upio0A6Tg3mlvS39hU3J8b9KtLCWoyFkxVK4bROHW8JGLKdpnf+1KLx6f+kfqIo47Ev8dDATzNON/nuFJ4KhvClvAEuyMYqatrRh2WknqxjBHeuVz+rcl3zCu6/ArnOlQHE6f1WtzkiLxSZCaGKOx2bosRSw7LyvH6SrP5poKfS6Y7TQoUE88IH+XauYTYpamk6JE7M4zStDrklvsWGVTyMucbtiVPnD24PGOs1VZPk1yrLsAok0qJ3j1wrV2M8qbDrOiMxI8sDu6hlvD3fAKAzOrUS1a7ZKgjclh/A4Xbc/VWp9CNXUHksvlkWJJojPBFHHYBjFMRyMvb+mIwquYTpBYMIR7so5gn3smDK+h1zxfJxgUe6TTjZyEZSAWgDOhraOqUOOKsXNORtpY5/YAhxi19+9/nw==
+X-Forefront-Antispam-Report:
+	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230031)(4636009)(396003)(376002)(39860400002)(346002)(136003)(230922051799003)(1800799012)(82310400011)(186009)(64100799003)(451199024)(46966006)(36840700001)(40470700004)(4326008)(2906002)(4744005)(36860700001)(8936002)(8676002)(41300700001)(55016003)(26005)(426003)(70206006)(70586007)(6916009)(316002)(54906003)(9686003)(5660300002)(7416002)(478600001)(336012)(47076005)(40480700001)(7636003)(356005)(33716001)(82740400003)(86362001)(40460700003)(67856001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Nov 2023 17:25:24.3023
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1a24dea2-455a-4b9a-b0be-08dbe9edae55
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	SN1PEPF0002BA4F.namprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN9PR12MB5241
 
-On Mon, Nov 20, 2023 at 04:14:18PM +0100, Boris Brezillon wrote:
-> On Mon, 20 Nov 2023 10:46:04 -0400
-> Jason Gunthorpe <jgg@ziepe.ca> wrote:
+On Mon, Nov 20, 2023 at 08:17:47AM +0000, Tian, Kevin wrote:
+> > From: Liu, Yi L <yi.l.liu@intel.com>
+> > Sent: Friday, November 17, 2023 9:07 PM
+> >
+> > +/**
+> > + * __iommu_copy_struct_from_user_array - Copy iommu driver specific
 > 
-> > On Mon, Nov 20, 2023 at 03:38:38PM +0100, Boris Brezillon wrote:
-> > 
-> > > > At LPC there was quite a lot if interest in improving the io page
-> > > > table stuff to work better. Based on that I'm even more against adding
-> > > > an external allocator at this time. :\  
-> > > 
-> > > I'm sure this has been discussed with the IOMMU maintainers, but I'd
-> > > really like to hear it from them if you don't mind. Especially since,
-> > > as I mentioned, the custom allocator idea comes from Robin, not me...  
-> > 
-> > It is a community effort - this is my opinion. We now understand this
-> > io page table area needs a lot of work to meet all the new needs. I'm
-> > against hacking it up like this and making that work harder.
-> 
-> Consider it a hack if you like, but the thing is pretty self-contained,
-> and I doubt it will get to a point where things become unmaintainable
-> before you get the generic caching system working. Not to mention
-> Gaurav's use case, which can't really be solved with your caching
-> solution.
+> __iommu_copy_entry_from_user_array?
 
-Gaurav doesn't need a custom allocator, he needs a way to manage
-sharing page table memory with the hypervisor. A different set of ops
-that don't replace the entire allocator would be fine for them.
-
-The issue with taking away the alloc_page is that it complicates the
-ability for the common code to use the struct page fields and more. We
-already know we are going to need those to do some of the things that
-are being asked for, eg RCU freeing and refcounting.
-
-> > I would not expect a resolution in a few weeks.
-> 
-> OOC, what's the time frame?
-
-The larger need has been discussed is considerable work, I would be
-surprised if something could be merged in less than 6 months,
-especially with the upcoming holiday season
-
-> I've maintained a subsystem for a few years, so I know what it means
-> to contribute upstream and ask or being asked to extend the core to do
-> something the right way. I'm generally patient and try to follow
-> maintainers' recommendations, but there's some point where waiting is
-> no more an option, and you have to be more pragmatic, because there's
-> always a better way of doing things, and perfection is often the enemy
-> of good...
-
-Here I am not talking about perfection, I am concerned about messing
-up work that I now see as important for other iommu drivers related
-things by making a hack for a DRM driver (which as I've said has,
-unravelling these hacks has been traumatic for many of us
-historically)
-
-So while I would not like you copying the code to DRM, but I think it
-would be less troublesome to everyone in the longer term.
-
-Jason
+I think "struct" and "entry" are interchangeable. Yet, aligning
+with the {__}iommu_copy_struct_from_user seems to be nicer?
