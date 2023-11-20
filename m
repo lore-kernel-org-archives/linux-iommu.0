@@ -1,119 +1,186 @@
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.20])
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.31])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 707CF20F1
-	for <iommu@lists.linux.dev>; Mon, 20 Nov 2023 04:21:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F271CEDD
+	for <iommu@lists.linux.dev>; Mon, 20 Nov 2023 07:54:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Gri5v89c"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="T5qY8F3N"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1700454110; x=1731990110;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=6v/qk6XILJ+EShe/DB479gTNTuB+ktH4JpqYg6NOK44=;
-  b=Gri5v89c3emaAYFCIIK4RTwo7EropjZxTtjHnru0JhnqlzVbE0g4HQcQ
-   WR/Ae3/x7mvbx3nzRe6uCNlJ+yB/yoexsIn19utS9RhS9Ho7zBGvOtDgq
-   h6byLIlwaxHgMUyp6F7ljw8Fi+urVjDDWmztcDs8w9/2G6UIs731kkZ1S
-   2Q9LA+WX32noRNyIMlILVymHAwEnwziTvFWD/bJlhdhh5qcFnVPxQSYOv
-   f84dlK9qZ6smKg+vTEORGh+WgvWqBrAzXV2YF9B1lDtQGVykENmVd4SH4
-   3zejx7Esva3aic3xH02xSGIoP9arljI6Zt2ViECa1GvxgBsvMZ1w0d1il
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10899"; a="381939858"
-X-IronPort-AV: E=Sophos;i="6.04,212,1695711600"; 
-   d="scan'208";a="381939858"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Nov 2023 20:21:49 -0800
+  t=1700466856; x=1732002856;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=gXbl6yaNmYAygXQGhXABOZh3YttEfI2MJdn0fyfezOY=;
+  b=T5qY8F3Ny6ls9leWEdHsqNrIuBBBOTKxXZBeyiDK/3ndSJ86pQTDXk0x
+   Wu8vJ0PmJ/ADpXvPIEQqRCMJsULbUuMDKdWfRcwqK/LZ+NP79Yy3N7ns5
+   ew8sUlLN9EXrN7pjx5NSIV6xFqpcVVDbIsXn3t1kiL31Eqx4wKz20t86T
+   AKJ1FqF3TiabdDF0lQ6V1VriGQxS/oqphKhDFbB7b0kPJv1ZANv8+8MHV
+   X3TwfCAHfCAPu7g3lWIdbPnTcTc58oHOKpSop1Iztr5nqG3LOW3iITUtG
+   DsJ+a9hBWuE+H7vgEhjDhNzDeJVauFmbSchfxhZSaOZCFFmpmyG6yzDxd
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10899"; a="455892692"
+X-IronPort-AV: E=Sophos;i="6.04,213,1695711600"; 
+   d="scan'208";a="455892692"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Nov 2023 23:54:15 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10899"; a="716104605"
-X-IronPort-AV: E=Sophos;i="6.04,212,1695711600"; 
-   d="scan'208";a="716104605"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
-  by orsmga003.jf.intel.com with ESMTP; 19 Nov 2023 20:21:46 -0800
-Message-ID: <c67754fc-9fff-43b4-82ce-078e71134815@linux.intel.com>
-Date: Mon, 20 Nov 2023 12:17:28 +0800
+X-IronPort-AV: E=McAfee;i="6600,9927,10899"; a="836660276"
+X-IronPort-AV: E=Sophos;i="6.04,213,1695711600"; 
+   d="scan'208";a="836660276"
+Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
+  by fmsmga004.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 19 Nov 2023 23:54:15 -0800
+Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.34; Sun, 19 Nov 2023 23:54:14 -0800
+Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.34; Sun, 19 Nov 2023 23:54:14 -0800
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.34 via Frontend Transport; Sun, 19 Nov 2023 23:54:14 -0800
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.169)
+ by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.34; Sun, 19 Nov 2023 23:54:13 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=OYenpfr3qD3AgANwraQMQwLyydQ3OzD6YH+/4u0KgNiVRCRs4lMI/IAivf7x6hmmhv/DeiTfGmRJ/uj9xQEU8TC4Jlq/KaMdyf/Oe2AdA0GMOM3+JwjHQ+CT/Br5r3qXinJgWaEgBoU4fi1vs2ZVpG/WmoySqwibvyvWMS9sNKSpLfwxP5bmE2zpuCZNHemrKg/6k12O9oJK3AEesmx0Q45NB9xCU0Wtokb80x7HcBHJ9vpGceVV8Qi6AGvGQhnby+MRmB2P/0qqfW2n+pKD/s+gGxOANZ/otsjAIqHCcKLnU+hQGS2XcKJZxoGFvAdTJkGz6DEwMnwiGvcxJUZW9w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=gXbl6yaNmYAygXQGhXABOZh3YttEfI2MJdn0fyfezOY=;
+ b=I66GSZ6XkHAH6VHq1aZGsf4U7sTMEjZHCgiehLwz+CosKvf1u6jhEevHiGiZZlpKjMeuCrIsR5x5JoadjVFd/tqQMSuWlZZBm9FnloGNPG52CxSRCUFA/2+iT6eGIuqFYlHA0mL7fb+VI7b0P5MLDKHC2KAOkrxjmFOvs9ePyNIpkumFa3N6TFZpYGYJfTi4t7I4wIbU9Cat4z3W8q9vZ4Sgk/TVmNuIVkGv4p0zDaZlufEKYWXffG3eCFILamTlQ/oFN9FT+Cdhu6+PCM2Ff64k0a8GKMtNXy8dWaPukqYyYrHBaCJ1yNGUVXSO2APBGP5qKAUBiMRL20gB7CJ6aA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
+ by SJ0PR11MB6742.namprd11.prod.outlook.com (2603:10b6:a03:47b::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7002.27; Mon, 20 Nov
+ 2023 07:53:54 +0000
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::e7a4:a757:2f2e:f96a]) by BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::e7a4:a757:2f2e:f96a%3]) with mapi id 15.20.7002.027; Mon, 20 Nov 2023
+ 07:53:54 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: "Liu, Yi L" <yi.l.liu@intel.com>, "joro@8bytes.org" <joro@8bytes.org>,
+	"alex.williamson@redhat.com" <alex.williamson@redhat.com>, "jgg@nvidia.com"
+	<jgg@nvidia.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>
+CC: "cohuck@redhat.com" <cohuck@redhat.com>, "eric.auger@redhat.com"
+	<eric.auger@redhat.com>, "nicolinc@nvidia.com" <nicolinc@nvidia.com>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>, "mjrosato@linux.ibm.com"
+	<mjrosato@linux.ibm.com>, "chao.p.peng@linux.intel.com"
+	<chao.p.peng@linux.intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
+	"yi.y.sun@linux.intel.com" <yi.y.sun@linux.intel.com>, "peterx@redhat.com"
+	<peterx@redhat.com>, "jasowang@redhat.com" <jasowang@redhat.com>,
+	"shameerali.kolothum.thodi@huawei.com"
+	<shameerali.kolothum.thodi@huawei.com>, "lulu@redhat.com" <lulu@redhat.com>,
+	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>, "Duan,
+ Zhenzhong" <zhenzhong.duan@intel.com>, "joao.m.martins@oracle.com"
+	<joao.m.martins@oracle.com>, "Zeng, Xin" <xin.zeng@intel.com>, "Zhao, Yan Y"
+	<yan.y.zhao@intel.com>
+Subject: RE: [PATCH v6 1/6] iommu: Add cache_invalidate_user op
+Thread-Topic: [PATCH v6 1/6] iommu: Add cache_invalidate_user op
+Thread-Index: AQHaGVcNayoxbcmcj0OdszlR/Hf6VbCC1vgA
+Date: Mon, 20 Nov 2023 07:53:53 +0000
+Message-ID: <BN9PR11MB5276E28A12D9CE3477E669A98CB4A@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <20231117130717.19875-1-yi.l.liu@intel.com>
+ <20231117130717.19875-2-yi.l.liu@intel.com>
+In-Reply-To: <20231117130717.19875-2-yi.l.liu@intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|SJ0PR11MB6742:EE_
+x-ms-office365-filtering-correlation-id: c073decd-2696-4c80-969f-08dbe99dd758
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: C5wzHQsfRgQHQj4NAHkalmRGX8/Cqo2a1dxKXt3g4zrmmazbMDSOBEGqhLXNCgcT51bO4KVB4ZInox8atlhGCkrHPP/zqoLCLYLcKu4YpG9zKy9XrICe2PWFBIWUBRN3FgGsz0g1TH6Dk30f8kNIqXYzzqL/TJCwy6dmDhfnsGuYe4GgKPaKCANk3v0H+ptOa6ZsP7s+EB/BQJiqInhQcYh621yQ6LawvoyxTvQ6/chKPr8o3DpUwUrV+DaZwiofumHBdovosLpTyO6R5eKxWgFkyvkqP0EdZVaK9g7me6kpxgrSq1zdZiJAY6wKAic7v+EhrKUX6XkDITAnLiXWuVIAQic1YLnsGkwVcoLxylff1VGT3KeoBkuaanKELxgtFVcWcjHQxoo9TNVhrZ9x5bBl5vcBQd4lOvciX9g/lNXB2smEXQINs8pIcLsztyVmnbpVUG9UY6YxFJe76Di3L1QYaXkMGTndqHZk2Kd05tNZxz4v8z+q+31EycqbqWty1YdxoGhZ6H6tjptWKkGRwVf0CmR3BF+xtzJ7UZvlRmAFI8Sz06RWaVp0xMUPA30jTeU6ISkJxo/zCVhZ/ivel0VSTe9G58agGydcMzp246bPC/jwRRuhMrjC3WDbIL/J
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(39860400002)(346002)(396003)(366004)(136003)(376002)(230922051799003)(64100799003)(186009)(1800799012)(451199024)(55016003)(38070700009)(82960400001)(86362001)(71200400001)(110136005)(7696005)(6506007)(76116006)(66446008)(64756008)(66476007)(66556008)(316002)(54906003)(66946007)(33656002)(122000001)(9686003)(26005)(7416002)(4744005)(2906002)(41300700001)(478600001)(5660300002)(38100700002)(8936002)(52536014)(8676002)(4326008);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?2aLHawlDcmHWGsw4FfqwPRVeYVgngOJHemuzNhy8Bk9dGDKg2IpWW+l+HIh6?=
+ =?us-ascii?Q?lNayRCpfqcxenKwjnkoPLFGMeXoKxZDx1N5pSQFsARNKYKFz7FoFogi9XI8q?=
+ =?us-ascii?Q?V3wdWC+HjAUq7rp5+mb+waLTIl1UckWQ1mhNUC96mvt0TE8pv0k47Gc/rEgP?=
+ =?us-ascii?Q?tpQHmt5F6/nH7GGw+Wbj42wMNviwTPHEbTfFAgfAT4CQJDBjj0huMJjAYQVO?=
+ =?us-ascii?Q?CUi+Lz7MWVCStHJ8q/9RqPuqdIspgO4n8raYdpQSd1FP8awK5EZ2Ezd9QHol?=
+ =?us-ascii?Q?dH4PS5ZYrOL6vsOCcfU7CTuQHkV/xjMCu9OH3DIevIzLOXvGca6UlF6OLp7l?=
+ =?us-ascii?Q?9Zki9o4ZxxFZfCN8e7ZAm5sGFE9HfUjQ1Sm/mKiRwKeQuK1EsE0Cvam8RzU3?=
+ =?us-ascii?Q?LWfrBOTL3rrW/02MXWrmOwKYTgHf4wgY7Fn8s1RphdcqkjoUbRXvyeOzkPbo?=
+ =?us-ascii?Q?SqKreh8C7HtH4nDARrBs3CJu40+H1YvE+jYTc6J+9kPKlA1DR/b4muA6zgM8?=
+ =?us-ascii?Q?BzGJzhAGz9CswCx65bUdPOgjLQhFrXRbWSy7pevVuX7Gczyr/xyvgKfoMxu3?=
+ =?us-ascii?Q?XD+inp3UudtNJuq11Y47VB1WUud1kbt2bD+hSidBIffqk+z7/lvmg3ZI+c6O?=
+ =?us-ascii?Q?eMmlbHqr759TXFUNhIc8rxiZwpKIRTb6WH8wIM0Dh982UOjNf2ejoi0pLfxg?=
+ =?us-ascii?Q?mCPVNlEoXPnESZPkv0CKEi9Bbyps6yeJUJvY4ioVcTcpRzyeEFGQTsvxQtO3?=
+ =?us-ascii?Q?j0bPImsPnrxXCdB8NoKXaP+Cuf8WxcCqLz9NaYPYNzNNYlCzyqT+C4603sFZ?=
+ =?us-ascii?Q?OE4P2+FuGSvbUDRIkviBH/JYN6aKjiU6SdBcLB2wdZ9aF42e1ARokykPRx6f?=
+ =?us-ascii?Q?SRWai/CHjBqCbDg8knGLtsEl7i2+u/gxLaGmIh6Bm2jwNSXMcwYfr5UHXPUu?=
+ =?us-ascii?Q?N7rf3L0LpQeY+80DcBGiH2iYnKspPDwegUsRcbL/vo+FZOUUu59mup2Qf7uD?=
+ =?us-ascii?Q?H39vC2Gr/upBg9bS7PGS/uP6iL7gEqlhsKTqBVUXAke/Xba7z0rkmvzDmjCB?=
+ =?us-ascii?Q?NT0Jf/EUudeBrCdF4TVzCk8G8brfc2GeYYGW0BrrYP5/gqSYw9tcjFOSXdOW?=
+ =?us-ascii?Q?FkULJfWWXmegJtHHUohjGTPkk8GHTE6bmlHd227Ix5uCFSSfEpVLpBpiMOXd?=
+ =?us-ascii?Q?c8W2inHfNdND2mcRFp1TmG09Z1zQ7Iuw4QTUGecV/FH2O5L8mMpkgjIkVYVp?=
+ =?us-ascii?Q?cBBJkerQzNoRm8GR6Z1ReFwFqY4d+KzyM0ysRhLxFWyeeH/S1GIjxF+m4jnA?=
+ =?us-ascii?Q?15SBrrhVnLTAkahiK8kyP+7x2qkSfMiDGc9RJXnPZ9zlfOTL3oZzHibZUTnc?=
+ =?us-ascii?Q?bMYPxDFCjaBBOqEyZHMVhFrW3kNoY6ex9YM+U+lFyz35meO2qpOOaYpR0W8s?=
+ =?us-ascii?Q?iln7xDFO1sHqhC5PMaVTVpwqH2WYlChM3386IxE6HBQVM20nOCGBtpzXo6GD?=
+ =?us-ascii?Q?Z9d1OYVz3XQwvEqMbp62QLkwP3ZTPK1+qZBQlvR3vDD7a5sggH/k8In/zFxK?=
+ =?us-ascii?Q?8Wv7Q2C7UKV5iGIS3IdooOJTxXiRYJ0h5fGKzIPW?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, "iommu@lists.linux.dev"
- <iommu@lists.linux.dev>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "stable@vger.kernel.org" <stable@vger.kernel.org>,
- "Huang, Ying" <ying.huang@intel.com>, Alistair Popple <apopple@nvidia.com>,
- "Luo, Yuzhang" <yuzhang.luo@intel.com>, "Zhu, Tony" <tony.zhu@intel.com>
-Subject: Re: [PATCH 1/1] iommu/vt-d: Fix incorrect cache invalidation for mm
- notification
-Content-Language: en-US
-To: "Tian, Kevin" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Jason Gunthorpe <jgg@ziepe.ca>
-References: <20231117090933.75267-1-baolu.lu@linux.intel.com>
- <BN9PR11MB52768C9149602718CD2EFC1B8CB4A@BN9PR11MB5276.namprd11.prod.outlook.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <BN9PR11MB52768C9149602718CD2EFC1B8CB4A@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c073decd-2696-4c80-969f-08dbe99dd758
+X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Nov 2023 07:53:53.5007
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: sFkmYpEJYHANYSTgrmxuiHKwQJuRJcadIJBERz3QzIEPWLoVcQcFd4d5mOZNGnRiBdIn76kCKsqnCkylEYGPIw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR11MB6742
+X-OriginatorOrg: intel.com
 
-On 11/20/23 11:45 AM, Tian, Kevin wrote:
->> From: Lu Baolu<baolu.lu@linux.intel.com>
->> Sent: Friday, November 17, 2023 5:10 PM
->>
->> Commit 6bbd42e2df8f ("mmu_notifiers: call invalidate_range() when
->> invalidating TLBs") moved the secondary TLB invalidations into the TLB
->> invalidation functions to ensure that all secondary TLB invalidations
->> happen at the same time as the CPU invalidation and added a flush-all
->> type of secondary TLB invalidation for the batched mode, where a range
->> of [0, -1UL) is used to indicates that the range extends to the end of
->> the address space.
->>
->> However, using an end address of -1UL caused an overflow in the Intel
->> IOMMU driver, where the end address was rounded up to the next page.
->> As a result, both the IOTLB and device ATC were not invalidated correctly.
->>
->> Add a flush all helper function and call it when the invalidation range
->> is from 0 to -1UL, ensuring that the entire caches are invalidated
->> correctly.
->>
->> Fixes: 6bbd42e2df8f ("mmu_notifiers: call invalidate_range() when
->> invalidating TLBs")
->> Cc:stable@vger.kernel.org
->> Cc: Huang Ying<ying.huang@intel.com>
->> Cc: Alistair Popple<apopple@nvidia.com>
->> Tested-by: Luo Yuzhang<yuzhang.luo@intel.com>  # QAT
->> Tested-by: Tony Zhu<tony.zhu@intel.com>  # DSA
->> Signed-off-by: Lu Baolu<baolu.lu@linux.intel.com>
->> ---
->>   drivers/iommu/intel/svm.c | 26 ++++++++++++++++++++++++++
->>   1 file changed, 26 insertions(+)
->>
->> diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
->> index 50a481c895b8..588385050a07 100644
->> --- a/drivers/iommu/intel/svm.c
->> +++ b/drivers/iommu/intel/svm.c
->> @@ -216,6 +216,27 @@ static void intel_flush_svm_range(struct intel_svm
->> *svm, unsigned long address,
->>   	rcu_read_unlock();
->>   }
->>
->> +static void intel_flush_svm_all(struct intel_svm *svm)
->> +{
->> +	struct device_domain_info *info;
->> +	struct intel_svm_dev *sdev;
->> +
->> +	rcu_read_lock();
->> +	list_for_each_entry_rcu(sdev, &svm->devs, list) {
->> +		info = dev_iommu_priv_get(sdev->dev);
->> +
->> +		qi_flush_piotlb(sdev->iommu, sdev->did, svm->pasid, 0, -1UL,
->> 1);
-> Why setting 'ih' to skip invalidating page structure caches?
+> From: Yi Liu <yi.l.liu@intel.com>
+> Sent: Friday, November 17, 2023 9:07 PM
+>=20
+> +/**
+> + * struct iommu_user_data_array - iommu driver specific user space data
+> array
+> + * @type: The data type of all the entries in the user buffer array
+> + * @uptr: Pointer to the user buffer array for copy_from_user()
 
-It should be set to '0'. Good catch! Thank you!
+remove "for copy_from_user()"
 
-Best regards,
-baolu
+> + * @entry_len: The fixed-width length of a entry in the array, in bytes
+
+s/a/an/
+
+> + * @entry_num: The number of total entries in the array
+> + *
+> + * A array having a @entry_num number of @entry_len sized entries, each
+> entry is
+> + * user space data, an uAPI defined in include/uapi/linux/iommufd.h wher=
+e
+> @type
+> + * is also defined as enum iommu_xyz_data_type.
+
+* The user buffer array has @entry_num entries, each with a fixed size
+ * @entry_len. The entry format and related type are defined in
+ * include/uapi/linux/iommufd.h
