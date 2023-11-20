@@ -1,156 +1,101 @@
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2070.outbound.protection.outlook.com [40.107.93.70])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com [209.85.221.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4A5D522308
-	for <iommu@lists.linux.dev>; Mon, 20 Nov 2023 17:37:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3205732196
+	for <iommu@lists.linux.dev>; Mon, 20 Nov 2023 18:38:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="lLjb5JXJ"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=JUxVIIcHGyS/ivmwPoXjaxf+WDrEN3AL+hGV7cKpI8fsUJKHA7/Dfl72oigaD5CV1mbg8CBkzHcuTsKWNVGDjerGeKB7A3WtWgS6YzaeK07TV5XB5GmtcGHMa1bR5KS4h71qb+EUGla+ZncYdyDErVMK7oq/MTWvVvM0vAeCUWEu1EIAZQby4MXz+hGIuAYK9hodOb4MiYU8RlqMyAnpZXntiQCu4ACzcFFnPaCDgE7Tuu/CxAJvkuPixwgQnRQNl+MVL1gAPRtxpJeKDAzSSfwd8fYIVS2PflHT2X/lR/Vlygwv02m+fgEFDaErSpBI05MCNd0hOfbwTc+NYKYSRg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=FhZwJ20CqL6sdve2xchAM9rsVw29+8BY5EX0MItUy0w=;
- b=YjrGyAsOSwDDm5avZD7nfk/vmVf1UJ/FTp8cjqphMC1F9Sjc5BFwUW3cz+1iF0WFo/lhUgA251MIZbEJBKr5t1IWV2YPfvj3otkN1QDYbx8PNiKxGPZHLmDNRrceJ4HKzIDQIzsY3widyoVK21CifoyZ621nwjEgMFULwRGQQIWsc0uEs6CIuyt84WbK0iKsyGd5hJ2t+gEd7oBfCj08IemiAeQZ6qOQTceO+NxoKcnrK+K9fKjIxwIYE+M6Ur6jXcv34pkJjXRaZvPSD1+2kT0l4YL48Gu+CC4c58R2bVo1XoNFGBQhxmfz/C1fznnn2XSVrkrEK63poA7k98d2NA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=FhZwJ20CqL6sdve2xchAM9rsVw29+8BY5EX0MItUy0w=;
- b=lLjb5JXJ8fiEPsGDkVbuuLPr4tMh2dk1kCPUbqcra0xBdhMnEdFAQJ1syU5XRDFwkvBcNPNYGdMcvWfNn3e1tRJyy8Vvm8xiTGCMlGzPSrEc8CrqluW+FGTYI117cqykhAQw6jgz578S2nZvjDbGOrhqeDU9wEyO8TX9jtmARKZ2yB6cdPyY16lgn43cWLE7t4SRTT+GxEePzJnoDZSnu2GXEw6RSOJYuCYw92KP6WBGHZi6uWidXfyeUOSS5LXxe2bMPhKiCQ4aeo6mVSl5FjgdT/aE7v4zBI7ln+ExlJUqgrsVSIhvrZZSrcvwjSeJJLt++Am9sT1IkUuC5fp7BA==
-Received: from CH0P221CA0043.NAMP221.PROD.OUTLOOK.COM (2603:10b6:610:11d::23)
- by SJ2PR12MB7867.namprd12.prod.outlook.com (2603:10b6:a03:4cd::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7002.26; Mon, 20 Nov
- 2023 17:37:14 +0000
-Received: from CY4PEPF0000E9D3.namprd03.prod.outlook.com
- (2603:10b6:610:11d:cafe::dc) by CH0P221CA0043.outlook.office365.com
- (2603:10b6:610:11d::23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7002.27 via Frontend
- Transport; Mon, 20 Nov 2023 17:37:13 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- CY4PEPF0000E9D3.mail.protection.outlook.com (10.167.241.146) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.7025.12 via Frontend Transport; Mon, 20 Nov 2023 17:37:13 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Mon, 20 Nov
- 2023 09:37:01 -0800
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Mon, 20 Nov
- 2023 09:37:00 -0800
-Received: from Asurada-Nvidia (10.127.8.11) by mail.nvidia.com (10.129.68.7)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41 via Frontend
- Transport; Mon, 20 Nov 2023 09:36:59 -0800
-Date: Mon, 20 Nov 2023 09:36:57 -0800
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-CC: "Liu, Yi L" <yi.l.liu@intel.com>, "joro@8bytes.org" <joro@8bytes.org>,
-	"alex.williamson@redhat.com" <alex.williamson@redhat.com>, "jgg@nvidia.com"
-	<jgg@nvidia.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>, "cohuck@redhat.com"
-	<cohuck@redhat.com>, "eric.auger@redhat.com" <eric.auger@redhat.com>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>, "mjrosato@linux.ibm.com"
-	<mjrosato@linux.ibm.com>, "chao.p.peng@linux.intel.com"
-	<chao.p.peng@linux.intel.com>, "yi.y.sun@linux.intel.com"
-	<yi.y.sun@linux.intel.com>, "peterx@redhat.com" <peterx@redhat.com>,
-	"jasowang@redhat.com" <jasowang@redhat.com>,
-	"shameerali.kolothum.thodi@huawei.com"
-	<shameerali.kolothum.thodi@huawei.com>, "lulu@redhat.com" <lulu@redhat.com>,
-	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>, "Duan,
- Zhenzhong" <zhenzhong.duan@intel.com>, "joao.m.martins@oracle.com"
-	<joao.m.martins@oracle.com>, "Zeng, Xin" <xin.zeng@intel.com>, "Zhao, Yan Y"
-	<yan.y.zhao@intel.com>
-Subject: Re: [PATCH v6 2/6] iommufd: Add IOMMU_HWPT_INVALIDATE
-Message-ID: <ZVuZOYFzAaCuJjXZ@Asurada-Nvidia>
-References: <20231117130717.19875-1-yi.l.liu@intel.com>
- <20231117130717.19875-3-yi.l.liu@intel.com>
- <BN9PR11MB5276D8406BF08B853329288C8CB4A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <fa736836-e136-4ed4-a6af-8ea2f0e7c0dd@intel.com>
- <BN9PR11MB527659462CCB7280055858D98CB4A@BN9PR11MB5276.namprd11.prod.outlook.com>
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="qedE6CwE"
+Received: by mail-wr1-f54.google.com with SMTP id ffacd0b85a97d-32daeed7771so2897864f8f.3
+        for <iommu@lists.linux.dev>; Mon, 20 Nov 2023 10:38:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1700505505; x=1701110305; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=Kg0bpxRdcL8t4yRhGzqbCgUsQk8IIqBGTHsR5xQerDs=;
+        b=qedE6CwEnFz+MDPN/xm23BHCQTTi3poJ3wLKYofKk9YK1ogTyai9n7dgZOT8A7b5+W
+         zu+CatljVkXEI+G1rYVIgrosufsmpJB10bLvNnEMKSUq1n7NuHlnqDPlMUz9HWtWsOOX
+         S0utkjoaCrOzfOQBBisfMihodrg/LLGyPLj6VthSv7KyXuBoSA9+D+Ai3GcmcoCFhNGP
+         c11t6dWygv3xaGhCbSLkyb1zBy7lAaSkk4bHZwV2dnD9QsnpEHkorkmd0d1JCKAF4DV8
+         /G2FugZPO+aF+zDNZ1/0ofpH/OZzlrt1gBGIwta/WWtsBiPfc7inqYWrX7VIF6bfTLCw
+         dsyw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1700505505; x=1701110305;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Kg0bpxRdcL8t4yRhGzqbCgUsQk8IIqBGTHsR5xQerDs=;
+        b=a20YmerYIBmIC2nWZd8qHBbZz2QluqFYkP6XKo19tbMPHBNs1VU1kYsRsarfMdnASs
+         VG5Dh6SxxzWmNhSaOaPna9n9Wib962r+QPSkOsS8kzS44jXBGfApxKNh7D4fHx+BEvU0
+         bn7LY8LW2x/kc9e+1OW6CP2U5WiV52BfA0jwaw2yfxZpiTOT0Vou1EQkUzaXfFnlt9WB
+         CLxhdkNmTnx4+3nFZsgea22Z93UkLQR8djtpBJNNhs+hZko0R+UOJlER1DZL9FmktKhH
+         GbSb85X4UBYxoDynZRLLagM/LO33Qq6/14u0XaDd72rxfGbDLWSe8W+1Sv42bNgYCqRE
+         Jh7Q==
+X-Gm-Message-State: AOJu0YwLKoMDKhrdV3fXTvcoywpCuC9HiUIwgYJ0D+0MZ3P+zYgkC/F0
+	AwoDJtTjPhgXRpGJm4bL4P1giA==
+X-Google-Smtp-Source: AGHT+IHMunydcfDqafYEVS8rh4UBWcg4B9mAZ2t8F2fQH+JRl/yole2wNILvFQ9UWlf9jYlmdOnM/g==
+X-Received: by 2002:a05:6000:18a9:b0:332:c9c3:2cd3 with SMTP id b9-20020a05600018a900b00332c9c32cd3mr2386984wri.47.1700505504906;
+        Mon, 20 Nov 2023 10:38:24 -0800 (PST)
+Received: from myrica ([2.221.137.100])
+        by smtp.gmail.com with ESMTPSA id y4-20020a5d4ac4000000b003316c8ad545sm10939806wrs.76.2023.11.20.10.38.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Nov 2023 10:38:24 -0800 (PST)
+Date: Mon, 20 Nov 2023 18:38:33 +0000
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: Niklas Schnelle <schnelle@linux.ibm.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Jason Gunthorpe <jgg@ziepe.ca>, Robin Murphy <robin.murphy@arm.com>,
+	virtualization@lists.linux-foundation.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 0/2] iommu/virtio: Enable IOMMU_CAP_DERRED_FLUSH
+Message-ID: <20231120183833.GA38524@myrica>
+References: <20231120-viommu-sync-map-v3-0-50a57ecf78b5@linux.ibm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <BN9PR11MB527659462CCB7280055858D98CB4A@BN9PR11MB5276.namprd11.prod.outlook.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY4PEPF0000E9D3:EE_|SJ2PR12MB7867:EE_
-X-MS-Office365-Filtering-Correlation-Id: dec4ebed-d41e-407b-298b-08dbe9ef54d9
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	0WtQ0b+9HXG6TTj+StAwCjQOfnfLyCCZ8AFc4VMMFwQ7DLwNqcDDeUeqzb7ocIhvkHKen2xkK9muw7u8JAdxRqlhTmYNcG3//znRorVF7QgnyP3NslXSAF32TE2DAju5OzIS0TMXsfoPq7YLu55e/DOdl6nRW1l9r5hLCo0z25hraCNga/vivPZygVRNuWDPj0PSX4HUhNcEVqYOy/rlNprMvCNMf2lszhrXbLSxLbBl1FCSM6tU8l5IAkAuVKj4cEiCeilyImG1y5U1ijDkiLXDqC7gwhM0V0BPMKjef8U0MN+ScasMvmK5M+lr5L6D7VE9Pt4qZIPKf0cMLOw60kPybK/XnrhvhIIggAC8tE0RrMKMQgjT6Zf7BzaBgOKXONlWNt7vOiHF59H2juipoaQWhYhXeO3jtZiV423rc0qUIcgNlmNnCM9CGkg5Ht6EwY0xtgdFZjuyvV1FJ1ssSUPY4/gUGqJ9yInn4xqCLzMnAPtO7wbpbKKdMjML4+gYVLuc/3J2GhMJ7HOEBtvs8GLj7AgecbZVxgCxDbBjh6qzLOSVtCHdaWHr+XXEkop4a/OsLE+BigGlAyxliWwsfLeYm27PSCuDBdA8Jl89iVCcwiUhwoV3EhXjXlC1TfDCm63tpMfbvGXOkDfstCDd77rm5nbJs7aS1tPuBJti32gPHOQmYoN+dV0kZud/Omi91iFX4dm/+/U68GQqj9ViiPOCGxAIpIS7FLgwCGM+u0NIcDpK7BGyDn/QITw1vw9H
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230031)(4636009)(396003)(39860400002)(376002)(136003)(346002)(230922051799003)(82310400011)(451199024)(1800799012)(186009)(64100799003)(40470700004)(36840700001)(46966006)(41300700001)(40460700003)(86362001)(7416002)(5660300002)(2906002)(33716001)(82740400003)(7636003)(356005)(40480700001)(83380400001)(9686003)(478600001)(53546011)(26005)(55016003)(336012)(426003)(4326008)(8676002)(8936002)(70206006)(316002)(47076005)(6916009)(70586007)(54906003)(36860700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Nov 2023 17:37:13.1468
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: dec4ebed-d41e-407b-298b-08dbe9ef54d9
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CY4PEPF0000E9D3.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ2PR12MB7867
+In-Reply-To: <20231120-viommu-sync-map-v3-0-50a57ecf78b5@linux.ibm.com>
 
-On Mon, Nov 20, 2023 at 08:34:58AM +0000, Tian, Kevin wrote:
-> > From: Liu, Yi L <yi.l.liu@intel.com>
-> > Sent: Monday, November 20, 2023 4:30 PM
-> >
-> > On 2023/11/20 16:09, Tian, Kevin wrote:
-> > >> From: Liu, Yi L <yi.l.liu@intel.com>
-> > >> Sent: Friday, November 17, 2023 9:07 PM
-> > >> + * @req_len: Length (in bytes) of a request entry in the request array
-> > >> + * @req_num: Input the number of cache invalidation requests in the
-> > array.
-> > >> + *           Output the number of requests successfully handled by kernel.
-> > >> + * @out_driver_error_code: Report a driver speicifc error code upon
-> > failure.
-> > >> + *                         It's optional, driver has a choice to fill it or
-> > >> + *                         not.
-> > >
-> > > Being optional how does the user tell whether the code is filled or not?
+Hi Niklas,
 
-Well, naming it "error_code" indicates zero means no error while
-non-zero means something? An error return from this ioctl could
-also tell the user space to look up for this driver error code,
-if it ever cares.
-
-> > seems like we need a flag for it. otherwise, a reserved special value is
-> > required. or is it enough to just document it that this field is available
-> > or not per the iommu_hw_info_type?
-> >
+On Mon, Nov 20, 2023 at 03:51:55PM +0100, Niklas Schnelle wrote:
+> Hi All,
 > 
-> No guarantee that a reserved special value applies to all vendors.
+> Previously I used virtio-iommu as a non-s390x test vehicle[0] for the
+> single queue flushing scheme introduced by my s390x DMA API conversion
+> series[1]. For this I modified virtio-iommu to a) use .iotlb_sync_map
+> and b) enable IOMMU_CAP_DEFERRED_FLUSH. It turned out that deferred
+> flush and even just the introduction of ops->iotlb_sync_map yield
+> performance uplift[2] even with per-CPU queues. So here is a small
+> series of these two changes.
 > 
-> I'll just remove the optional part. the viommu driver knows what a valid
-> code is, if the driver fills it.
+> The code is also available on the b4/viommu-deferred-flush branch of my
+> kernel.org git repository[3].
+> 
+> Note on testing: I tested this series on my AMD Ryzen 3900X workstation
+> using QEMU 8.1.2 a pass-through NVMe and Intel 82599 NIC VFs. For the
+> NVMe I saw an increase of about 10% in IOPS and 30% in read bandwidth
+> compared with v6.7-rc2. One odd thing though is that QEMU seemed to make
+> the entire guest resident/pinned once I passed-through a PCI device.
+> I seem to remember this wasn't the case with my last version but not
+> sure which QEMU version I used back then.
 
-Hmm, remove out_driver_error_code? Do you mean by reusing ioctl
-error code to tell the user space what driver error code it gets?
+That's probably expected, now that boot-bypass is enabled by default: on
+VM boot, endpoints are able to do DMA to the entire guest-physical address
+space, until a virtio-iommu driver disables global bypass in the config
+space (at which point the pinned memory is hopefully reclaimed by the
+host). QEMU enables it by default to mimic other IOMMU implementations,
+and to allow running firmware or OS that don't support virtio-iommu. It
+can be disabled with boot-bypass=off
 
-Nicolin
+> @Jean-Philippe: I didn't include your R-b's as I changed back to the
+> nr_endpoints check and this is like 30% of the patches.
+
+Thank you for the patches. For the series:
+
+Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
