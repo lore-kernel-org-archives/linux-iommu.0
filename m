@@ -1,59 +1,59 @@
-Received: from mail-oi1-f182.google.com (mail-oi1-f182.google.com [209.85.167.182])
+Received: from mail-oo1-f54.google.com (mail-oo1-f54.google.com [209.85.161.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE0181B282
-	for <iommu@lists.linux.dev>; Mon, 20 Nov 2023 14:07:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C58641BDF4
+	for <iommu@lists.linux.dev>; Mon, 20 Nov 2023 14:07:36 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="Zehqc1vJ"
-Received: by mail-oi1-f182.google.com with SMTP id 5614622812f47-3b6ccaf0516so2669421b6e.0
-        for <iommu@lists.linux.dev>; Mon, 20 Nov 2023 06:07:22 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="E406WB+y"
+Received: by mail-oo1-f54.google.com with SMTP id 006d021491bc7-58cdc801f69so120675eaf.3
+        for <iommu@lists.linux.dev>; Mon, 20 Nov 2023 06:07:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1700489242; x=1701094042; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1700489256; x=1701094056; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=dtTFOxKWbZfwNolFiplUiXEYr9h+c2cIVO+Z2ob7Zak=;
-        b=Zehqc1vJO/XpGqGE6Hli3d0cEZOQmnBD0/NTF0IHTOd51onQAf9E8weT7FExobfUYo
-         /wVhZjvni5FSYSFtpcaSDocVkfuXzRjKgsgdiC1zmOnqtd+tsnycAUwLAb/OYVhHzgdk
-         EJ5ZB6KLpGomLtaU4EMuWuDF/6ltbi7kIBsYg2AcwtCxaeudjcmLztsGjMSFeAi1yAJg
-         yDgDtZvKecuVFsOMH8MzWAhon+6EwaasNFzooZLQUsqDBzAB5bFkijjO1d0biE0R6PMf
-         pEWnhXPJA/NyAJ10bVP3EDkGWLPrLtFJB+ZElJKgD7epki0MSKbq1LusBeK6lznd/T2z
-         47zg==
+        bh=92tZ6SZMCW6Rm9Jpds4d9aM0YVAWPI0Lxc7DBxrVWsM=;
+        b=E406WB+yu2lU9Bq6ZPsCgqV/CQXPAHk2vYoDRI5wPwERxSJp6/c7nnxfA4c2jZU28R
+         PFWCKeMxqNkw3Ed3R8bCUaO5mvn7ORIziWnQ7IaUQkNw5OZvO6M/dfy4m4z7jyVa9vcA
+         HRM2fA4NbJ1GXVZwQbpnqkZiiC4D+Tobmkbv4qvfJienbY7MyILXBtftb0ndfVraGqVU
+         qasZA11dZ1rIG1Af49l9X2B8SvEIGLe2OGFKLO6Kg2sv/3P8ReLKI8T50V+p+XLKumwa
+         25eCO4DIKd0kJWWRO9Nebe21mFvwYmMzyV/dAVTumZxho+7yNNTOPKUQBoBLHfmY4UYk
+         ld/Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1700489242; x=1701094042;
+        d=1e100.net; s=20230601; t=1700489256; x=1701094056;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=dtTFOxKWbZfwNolFiplUiXEYr9h+c2cIVO+Z2ob7Zak=;
-        b=BBw3NQnaATDTqd3Ofa9jRGfDV7RLOuEvYi3dwy4iIpEshCDfgLzadwEZ15MdBDGPAJ
-         lKrvb+CX4z6Ja60J5ndGnQl3UuCqsw0TCtr+Oz6DTaV5imaslnV0tmDSWrWy+HPwxTjd
-         Z5HmSVLGw46LLW4hqgQLgb59gRajS3l4IcrE+wyxrf+bwjj+x5MESlMHH9avumXI0EKW
-         hEkDwcL7qJmt/lHuHoGY1yE8sqdvE2R75wot9bnchBsn6PnN+xU1jh5L7S2ndhh8SK3G
-         oMC1CWu7YVyZkyCN09JU9++aYHFPRUgX/aGS55nRikXwPgrUti0vQWtkLAhzX5fI2ptZ
-         a+0w==
-X-Gm-Message-State: AOJu0Yxo6ck9TYB5oFRO6dGFxUG1+GUgapLQ3HYqkjVYDQqv3nictAQA
-	iibPcbemJs2KuS8eihJoutSzWQ==
-X-Google-Smtp-Source: AGHT+IGKsTGLM718ckD3rnBPLZlMZ9DtHCfdorOXO342ru0cGWgBCz3/aJihfBC2iGk2diECJZvEYw==
-X-Received: by 2002:a05:6808:2123:b0:3b2:f344:3a41 with SMTP id r35-20020a056808212300b003b2f3443a41mr3189406oiw.2.1700489241828;
-        Mon, 20 Nov 2023 06:07:21 -0800 (PST)
+        bh=92tZ6SZMCW6Rm9Jpds4d9aM0YVAWPI0Lxc7DBxrVWsM=;
+        b=VVELNNYgLoI5gSFqrieERsGKqsHH5f/JF+C1tOH00uXxVlv/b/Chc3s8fiz0Tfzsq0
+         rSUnf5SerLb3afDXVaKsY6DpV3xiOekHmTQEOJFraUifYDI5+Dm5f16bvbAQeE3QbNIx
+         4jyulXmqYBME3guduLxlIMZUUHSHJyzaqUN7MDeZ9o+goEhQDm88uTORkNjkYDARrJLL
+         ZZYDt4bKau+x/+YUx68Eenmz1BTT3V924DxNuIqUgn8NH4vSyDfZL55ElufurZUxjhqx
+         NK6ejWpZfybO0XT9Lxa5H4mmqNMV0kXsFPCdxyLQxwEnmnqDFuubhj/aL2LeLRLNRyNV
+         h5PQ==
+X-Gm-Message-State: AOJu0Yz3ziUyLwswXkbPi5Ubt5GoeqWSdSDXmP28obeSoZRwV4hSshyr
+	c8d3XAO+g8o6SZhk1dK5c40/7Q==
+X-Google-Smtp-Source: AGHT+IH6nCadtndcP8MoadqJOEI1uE2x4sdLOvyEq8pu1hVPGC0TaARjdXuTNslbQyHvhistT7ejrg==
+X-Received: by 2002:a05:6820:81f:b0:589:f58f:8641 with SMTP id bg31-20020a056820081f00b00589f58f8641mr8070209oob.2.1700489255838;
+        Mon, 20 Nov 2023 06:07:35 -0800 (PST)
 Received: from ziepe.ca ([12.97.180.36])
-        by smtp.gmail.com with ESMTPSA id dd1-20020a056808604100b003a747ea96a8sm1262478oib.43.2023.11.20.06.07.21
+        by smtp.gmail.com with ESMTPSA id e189-20020a4a55c6000000b00586c4324f5dsm1460999oob.35.2023.11.20.06.07.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Nov 2023 06:07:21 -0800 (PST)
+        Mon, 20 Nov 2023 06:07:35 -0800 (PST)
 Received: from jgg by wakko with local (Exim 4.95)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1r54vo-000Hxj-A2;
-	Mon, 20 Nov 2023 10:07:20 -0400
-Date: Mon, 20 Nov 2023 10:07:20 -0400
+	id 1r54w2-000Hy2-EB;
+	Mon, 20 Nov 2023 10:07:34 -0400
+Date: Mon, 20 Nov 2023 10:07:34 -0400
 From: Jason Gunthorpe <jgg@ziepe.ca>
 To: Kunwu Chan <chentao@kylinos.cn>
-Cc: joro@8bytes.org, suravee.suthikulpanit@amd.com, will@kernel.org,
-	robin.murphy@arm.com, kunwu.chan@hotmail.com, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iommu/amd: Set variable amd_dirty_ops to static
-Message-ID: <20231120140720.GB10140@ziepe.ca>
-References: <20231120095342.1102999-1-chentao@kylinos.cn>
+Cc: dwmw2@infradead.org, baolu.lu@linux.intel.com, joro@8bytes.org,
+	will@kernel.org, robin.murphy@arm.com, kunwu.chan@hotmail.com,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iommu/vt-d: Set variable intel_dirty_ops to static
+Message-ID: <20231120140734.GC10140@ziepe.ca>
+References: <20231120101025.1103404-1-chentao@kylinos.cn>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -62,18 +62,18 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20231120095342.1102999-1-chentao@kylinos.cn>
+In-Reply-To: <20231120101025.1103404-1-chentao@kylinos.cn>
 
-On Mon, Nov 20, 2023 at 05:53:42PM +0800, Kunwu Chan wrote:
+On Mon, Nov 20, 2023 at 06:10:25PM +0800, Kunwu Chan wrote:
 > Fix the followng warning:
-> drivers/iommu/amd/iommu.c:67:30: warning: symbol
->  'amd_dirty_ops' was not declared. Should it be static?
+> drivers/iommu/intel/iommu.c:302:30: warning: symbol
+>  'intel_dirty_ops' was not declared. Should it be static?
 > 
 > This variable is only used in its defining file, so it should be static.
 > 
 > Signed-off-by: Kunwu Chan <chentao@kylinos.cn>
 > ---
->  drivers/iommu/amd/iommu.c | 4 ++--
+>  drivers/iommu/intel/iommu.c | 4 ++--
 >  1 file changed, 2 insertions(+), 2 deletions(-)
 
 Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
