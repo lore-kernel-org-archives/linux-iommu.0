@@ -1,189 +1,321 @@
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.24])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E91D6F4F9
-	for <iommu@lists.linux.dev>; Mon, 20 Nov 2023 08:35:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E6B812B9C
+	for <iommu@lists.linux.dev>; Mon, 20 Nov 2023 10:25:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="cWkguxdQ"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1700469325; x=1732005325;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=9/kU11Si2C8Q2cGmC0fpIcAKY7NNqkeefaJERNpcgUs=;
-  b=cWkguxdQqhAkgA+BcPIIGQ9Td78vF5xsVyKkItEtiJM6/JKPpB7JMfKg
-   73DIeMnjqLSyhlmYriNSKdk7BOfwQr2ekNZi/2MA4pCnJxT/634T8vabO
-   Fg94J2EV0FHfCSYAp5/ZKt2lB4nBObYsNY213Oe/8u/7fZgKsOZwKg35t
-   Th9fvhI7RFhmf8eCGHnj0LHBpJs+uuA8SI/iJIfHr/LehbP6ceQ6kl4/E
-   jESlHuf8oKD3o89YqLScoVhAM85e3NCaR3fpIY/b4RKqzXqfn9mlpVPLD
-   f8K/9ANCRUhxCJfQru3OmXF/6DdJL9mlmnp2AVA/XV/H89uKDMHXVnAXg
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10899"; a="394425765"
-X-IronPort-AV: E=Sophos;i="6.04,213,1695711600"; 
-   d="scan'208";a="394425765"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Nov 2023 00:35:07 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.04,213,1695711600"; 
-   d="scan'208";a="14082835"
-Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
-  by orviesa001.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 20 Nov 2023 00:35:07 -0800
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.34; Mon, 20 Nov 2023 00:35:06 -0800
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.34; Mon, 20 Nov 2023 00:35:06 -0800
-Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
- orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.34 via Frontend Transport; Mon, 20 Nov 2023 00:35:06 -0800
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.41) by
- edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.34; Mon, 20 Nov 2023 00:35:05 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Ry/0qlfiJ1RNQbdhRjuFXSqNR+gFNXahPIqvOOzpdaOaCn5ei3PkWOSLYGCIYSfZa3BmI7kK9IncAPt03LBlnE3gdYKMhBFCR+kZ4do1xraUFGHVD/o9/eWWMTqfuxsQCn8KDkuC7tsVPRlAyGt6KUo5xrVu9YpKdq9j98dLnNkkthRdUVzMoYQ808ezq5sCYfevb4Zj9SH7ewM/dJ4RP4z2JQ7hHhQZ69Zk2+ZaWS1ZuSHNYP/QnCTGzenXB8CbFtv64lp3bkYchlIS8xb1OPF9EefnAPnoMJjlFByaE5ciYTvr5fuDOVQldb+l7BOWxZktbvSexpf6uLR6kvdNkQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=9/kU11Si2C8Q2cGmC0fpIcAKY7NNqkeefaJERNpcgUs=;
- b=VRDtU/nHdU7OyJ5PL2TyGZGWrFRTFvU9ACfzHV/K8BZamX1+eRu6RSQLd2SgsfqhqMejLHKcIhc1McaIhraaSoYDS28tRJNe8+MEkXJXarCoUSLPWBid6wl6DR69HtGscrFlTickDPf8gs62SKTCGHDToA//te9GAmP8RDoiuYNEqvsZMW0tMGcyfzMbqbI/+/YPIXU+AKhhrEJXZL8kkuPwtNyx9t6F7preXmRcQwvTXVB0jB4F01u4atxn9hwbxugIExJQpRfb8JAAzj8jLzApp7Kln80OFxmQLhy2l80sR8hWVFVJ+lA4XEhbAQFf6xHz6qcwMUDm7NggEjkXbg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by PH7PR11MB8549.namprd11.prod.outlook.com (2603:10b6:510:308::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7002.26; Mon, 20 Nov
- 2023 08:34:59 +0000
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::e7a4:a757:2f2e:f96a]) by BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::e7a4:a757:2f2e:f96a%3]) with mapi id 15.20.7002.027; Mon, 20 Nov 2023
- 08:34:59 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: "Liu, Yi L" <yi.l.liu@intel.com>, "joro@8bytes.org" <joro@8bytes.org>,
-	"alex.williamson@redhat.com" <alex.williamson@redhat.com>, "jgg@nvidia.com"
-	<jgg@nvidia.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>
-CC: "cohuck@redhat.com" <cohuck@redhat.com>, "eric.auger@redhat.com"
-	<eric.auger@redhat.com>, "nicolinc@nvidia.com" <nicolinc@nvidia.com>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>, "mjrosato@linux.ibm.com"
-	<mjrosato@linux.ibm.com>, "chao.p.peng@linux.intel.com"
-	<chao.p.peng@linux.intel.com>, "yi.y.sun@linux.intel.com"
-	<yi.y.sun@linux.intel.com>, "peterx@redhat.com" <peterx@redhat.com>,
-	"jasowang@redhat.com" <jasowang@redhat.com>,
-	"shameerali.kolothum.thodi@huawei.com"
-	<shameerali.kolothum.thodi@huawei.com>, "lulu@redhat.com" <lulu@redhat.com>,
-	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>, "Duan,
- Zhenzhong" <zhenzhong.duan@intel.com>, "joao.m.martins@oracle.com"
-	<joao.m.martins@oracle.com>, "Zeng, Xin" <xin.zeng@intel.com>, "Zhao, Yan Y"
-	<yan.y.zhao@intel.com>
-Subject: RE: [PATCH v6 2/6] iommufd: Add IOMMU_HWPT_INVALIDATE
-Thread-Topic: [PATCH v6 2/6] iommufd: Add IOMMU_HWPT_INVALIDATE
-Thread-Index: AQHaGVcJ4nFLu64FV02Qq9BjVpwSvbCC3axQgAAHEwCAAAD1wA==
-Date: Mon, 20 Nov 2023 08:34:58 +0000
-Message-ID: <BN9PR11MB527659462CCB7280055858D98CB4A@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <20231117130717.19875-1-yi.l.liu@intel.com>
- <20231117130717.19875-3-yi.l.liu@intel.com>
- <BN9PR11MB5276D8406BF08B853329288C8CB4A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <fa736836-e136-4ed4-a6af-8ea2f0e7c0dd@intel.com>
-In-Reply-To: <fa736836-e136-4ed4-a6af-8ea2f0e7c0dd@intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|PH7PR11MB8549:EE_
-x-ms-office365-filtering-correlation-id: 1d7d9f79-293b-437b-f350-08dbe9a394c7
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: UAC7mrhh+ZYW4KE+L0cbfz+eMuxbz0OUL1HFtkwjp8wmQIlfDQEnq7ecDa0iP17OmxiaqUoTkAluqk7umLvJCGgt+Yd8bqwhXTSpplrzJxI2/vIufNSlFb/qzDEqD0CB7c7l2UlH5kV0dY4yx82XkwpxrNSrvJ2/2Ss5fez1Fqc66rUcuGZu2I8uZPBdzcFezzoHknwwwhpaaCxPmOR3CZReyvvktav9+gHIno0AMV335wKUiBwbkBheUhM6IBPBhV54FThVAaM5KQCg6DeLYdINdFNXfIStl+3LJ3COaG9L0C7HPUq/aRFK6V7GATG7Ld6Fsr494DztOQSaBUfcbtrq+G9SqA/xX2UkEQTUCeq5juFXI8JWvYGd+FiYTIfoBLZx4uB1YAM8Wbp/1j43lpvVc1NkExu2CTgzuPNq8Du2QxMIyRcaFX/EQHGMefWj/syrFdP+Lehx0879mZtDobCmzMp/RVf34XMlYgplgYSC+7lltCrOTUP51pROMOmvtJ/ed76fsIMaXY/LIPaslVR19dWpPfLaeIIHgFgRV+G3FI7WNZj0dYledrPlF2WUVionY2MGO15gdAqvntON3AdSX8DLZYfHQvhXDnbIWVPYvVAe8HflxxQIDF7OFg92
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(396003)(39860400002)(346002)(136003)(376002)(366004)(230922051799003)(64100799003)(1800799012)(451199024)(186009)(478600001)(122000001)(7696005)(6506007)(33656002)(38100700002)(71200400001)(83380400001)(26005)(53546011)(55016003)(9686003)(82960400001)(66556008)(66446008)(76116006)(316002)(66476007)(66946007)(64756008)(54906003)(110136005)(86362001)(5660300002)(7416002)(2906002)(38070700009)(41300700001)(8676002)(8936002)(4326008)(52536014);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?dlUwY3ZUT0tScnF6bmVGbDdZRStHNUQ2VHVIeThpL044bHh1bm1OZE1NWEsv?=
- =?utf-8?B?STBGK0wrUHVZaXo0SU56dUd4dkRjVkNHdkVZUTNrU3VRVjFJVW40ZHFMei8z?=
- =?utf-8?B?QUJYRnZBeTBuRmV4Q2w4N2VXOG53K3FRWnRKaHhtME4wSzB2TDVRU3lOLzFL?=
- =?utf-8?B?ZGNDN2pNc3U5QWhFVG0xQnFCd3hBUkJ6QXhZSFpoVkxSRXVJNCtCbzZRVUVt?=
- =?utf-8?B?RWZMNFY5VWUxRzhsdHoyRlo0eEpGdS9McmorYlF5ZHJnUEQwM0E4bnFJNjEx?=
- =?utf-8?B?WUFFakd0Rnl0bmhSWXVsM1RsSWU2b0xYSFJCVVNBZEdnendKMWJobUl6T1RX?=
- =?utf-8?B?ZFB5TlkrTU9kZ3JZTjE2TVhPeTNUTnByN1JaU1psZDNIRm9QQU9GNjU2RjVn?=
- =?utf-8?B?K2tGdzh0anlGQXcrcVlIbzF1cnh6NFloTkxZY2VMcUFXYXdnODN4b3BYV1Fn?=
- =?utf-8?B?VUEyNWVVdmsvN0QvRklEbUJleEVvVm84SFJ5cWJIUE5JWjRzN01aMGN0a2pn?=
- =?utf-8?B?TGNKR0wrVTloYlpvRURwb296TnZIU2s0SEgwSlZUR0RFYXFrczVPSkthZVhn?=
- =?utf-8?B?eDV4cCt0VTdrL2t2UnNKTVBoNWZ2dXlFSkFla2FvakNzQ1FoM29WNXpNYUxK?=
- =?utf-8?B?bGNOUTFUS0htakFCTzhBNlB5L040YXM3bjNQZTZVTGNYNHZnbDdkNi9jTENE?=
- =?utf-8?B?bGtyVW01VGJUUForbDgybmZWTWlMRG9jYW9pMnFqelJubzcySzJCTjQ3TUhS?=
- =?utf-8?B?TFFpOThXWkM0WHZTNlZISE1HV004NHJWakJ1RkpWbys4U25zWmltSHZqaUt4?=
- =?utf-8?B?VW13a2d6b0ZOMXEzMEJTaDBNeHk2dGtHekpBQlNlbFhSSWFndFZDN3h5SWQr?=
- =?utf-8?B?dFZ6UnJKN3VYV3pQZnQ1RjkwRlA1dXgrU0szaWg5M1g2bWNhTEVkcmNXUkhB?=
- =?utf-8?B?STFtYmpZa2FvU3ZCSnk0djlmQjBjaFdWTW1rMll1UURDcWJLUFM0R1dKVEEv?=
- =?utf-8?B?c2hMVjFtR1UrcjViUUFQL1N1RTZJVHhSSzZubXg0OElyNFk2dkRuRUFkdko2?=
- =?utf-8?B?Ym9uSjNmUVU0dDA4OXRlMnZ3Mk5rOFZxcjhwRzVlSFFGVC85KzMvZ3lQK3hM?=
- =?utf-8?B?T3pZUGFKUjhyZUhGa3hreFpZVzJLM0hmWFppazJ6Z0lhYUVvOHdpNmw5YVIv?=
- =?utf-8?B?OFVBY1dRZjY3bTFRR1F4ai9ZWUFLYUpaUmh5Q3Z1TGh6QnNHczRSL0pKL0t4?=
- =?utf-8?B?SFU0bmN0TTVPSk9vb0FyWkp5RHh3SGl5MGFTSmlZWms1ejZ4WlpVSU5RSGdT?=
- =?utf-8?B?S2dWWGVIYkNFTGc1d0UyUDFPTm9MdTlYaHBBNTdkWFRsQXU1d3liVVcrQ0dy?=
- =?utf-8?B?RjRrVGxuWW54cTVrSFlLVlpvcFVFMjFReEhQTCt0ZzJBM3lNWlYxWGtpK2Za?=
- =?utf-8?B?aUdlUWJ1aVVId1NzYjBBMzArZEJSdG5LaHlINForYkg4WFdpbEU1TExpc2tv?=
- =?utf-8?B?WTFTYlhmczhjY2JXOGhwaHlHTkxPY0ZCZlo5RS9VMDFMWnJkdkFiSmVHUk9F?=
- =?utf-8?B?YUJaeUtxc1IzaExJOE9CUVl5VUNSNTgrWENDWFJGV0dZemZrY2RyQ2NiSEdR?=
- =?utf-8?B?MFROL3JpelYrS3A3c25HVXQyVmFiRmxtRldJWnFVdVJrZXI3N0lmdWNaSnd5?=
- =?utf-8?B?VW9Kb0ZDUFc4aVpGTGFzWHZNRlNiRWUrODFDVDM4QmZTZUpMT3ZUd0hlR3l4?=
- =?utf-8?B?SmVoKysxV1NLUmFpRlpVVExVMWMyUStBTlpEN1ZMaW00T0pZRVZuWVZRVGUv?=
- =?utf-8?B?MEhTU3k4WFhpS2krZmJVelUrOERRYlRSMUd3SXpwaE9DOHpZLzc2UldhNnlL?=
- =?utf-8?B?N05DYVJwZzB0RWYwWlQvOWpmVWlDcndld2NjdkI0SnJJY0dmNFdOc2tTOXRu?=
- =?utf-8?B?djRsbjVZQmVHUDZCWEtPMEJBbzJ3L3RLdDU3aDY3NVBISmNSUHlaM3RlY2Nh?=
- =?utf-8?B?dmhScy9NSXh2czU5Sjl5WDhWVENPRHE2enlEU0NWUVJ0VXZzaXBsT0xCNllt?=
- =?utf-8?B?b3hjTEtCRXFJYStiWUVGaFBGcDdqZWtIQ3l1cnJNRWR1MnpzWU9iTE01bENw?=
- =?utf-8?Q?UWikJpqre80FbNEf354lza9Sw?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="aiHhMCy+"
+Received: from pps.filterd (m0279866.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 3AK55xPM024798;
+	Mon, 20 Nov 2023 10:25:13 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=qcppdkim1;
+ bh=HARuH2/uywFft0s3b5vZDnvbX98avvpKAPa/J9pF1To=;
+ b=aiHhMCy+MP/oLPFNtu9+mmoVBTo6YCXXwiQ41DhpeKLjvDSuvjJEiu1alWARN6yc2fnU
+ cDY/HazMUcuzMMNZw+9D75AOSx0r/78ZRDS2pdf+OantOSL0KcDviTCWuLzOTe5c1JQs
+ jyO8mxqT3jkWoVabitgxxbznCRu2FOOxoQY0vFrzS71wJIBwx+IED12CheEMbvEJvsKe
+ v7PyaV26ZSW7Hqo7ooq57GOJrwTr1xtzGDs9W7BscQLFIgdcasOHlQFQ0zqFluBXoNrk
+ bKiaVaNuMRgRh6nc8SFKzIlrW2WL46Twm2Ua1XQ0IaB7mKL+o3uDLrb2EQ4hDhUQRCl+ Kg== 
+Received: from nalasppmta02.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3uepjhkjvx-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 20 Nov 2023 10:25:13 +0000
+Received: from nalasex01c.na.qualcomm.com (nalasex01c.na.qualcomm.com [10.47.97.35])
+	by NALASPPMTA02.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 3AKAPCrO030524
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 20 Nov 2023 10:25:12 GMT
+Received: from [10.214.66.253] (10.80.80.8) by nalasex01c.na.qualcomm.com
+ (10.47.97.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.40; Mon, 20 Nov
+ 2023 02:25:07 -0800
+Message-ID: <350c2fbe-a04d-4bcb-a7a9-cf9ca34ba10b@quicinc.com>
+Date: Mon, 20 Nov 2023 15:54:59 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1d7d9f79-293b-437b-f350-08dbe9a394c7
-X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Nov 2023 08:34:58.8087
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 1QDIKS72/RK3YK60OoJQQrrNmVKAakPXRnUyP/nBHAjuoP2Zut5KvfENld7KF7l4e1Yab1ehpHmMLhdyDCfwqg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR11MB8549
-X-OriginatorOrg: intel.com
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 1/3] iommu/arm-smmu: introduction of ACTLR for custom
+ prefetcher settings
+Content-Language: en-US
+To: Robin Murphy <robin.murphy@arm.com>, <will@kernel.org>, <joro@8bytes.org>,
+        <dmitry.baryshkov@linaro.org>, <a39.skl@gmail.com>,
+        <konrad.dybcio@linaro.org>, <quic_pkondeti@quicinc.com>,
+        <quic_molvera@quicinc.com>
+CC: <linux-arm-msm@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+        <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
+        <qipl.kernel.upstream@quicinc.com>
+References: <20231114135654.30475-1-quic_bibekkum@quicinc.com>
+ <20231114135654.30475-2-quic_bibekkum@quicinc.com>
+ <372885ab-b24d-44ae-afb8-76755bcd6e21@arm.com>
+ <2a65a498-6a0f-445c-9c00-9e9e4fbc3a98@quicinc.com>
+ <23944508-1054-4a31-b119-66f006cf10de@arm.com>
+From: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+In-Reply-To: <23944508-1054-4a31-b119-66f006cf10de@arm.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01c.na.qualcomm.com (10.47.97.35)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: DiKnjHq3dS0rSM4JfvEThUf_sXV90UNx
+X-Proofpoint-GUID: DiKnjHq3dS0rSM4JfvEThUf_sXV90UNx
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.987,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2023-11-20_08,2023-11-20_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ bulkscore=0 mlxlogscore=999 clxscore=1015 suspectscore=0 impostorscore=0
+ adultscore=0 lowpriorityscore=0 spamscore=0 malwarescore=0 mlxscore=0
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2311060000 definitions=main-2311200070
 
-PiBGcm9tOiBMaXUsIFlpIEwgPHlpLmwubGl1QGludGVsLmNvbT4NCj4gU2VudDogTW9uZGF5LCBO
-b3ZlbWJlciAyMCwgMjAyMyA0OjMwIFBNDQo+IA0KPiBPbiAyMDIzLzExLzIwIDE2OjA5LCBUaWFu
-LCBLZXZpbiB3cm90ZToNCj4gPj4gRnJvbTogTGl1LCBZaSBMIDx5aS5sLmxpdUBpbnRlbC5jb20+
-DQo+ID4+IFNlbnQ6IEZyaWRheSwgTm92ZW1iZXIgMTcsIDIwMjMgOTowNyBQTQ0KPiA+PiArICog
-QHJlcV9sZW46IExlbmd0aCAoaW4gYnl0ZXMpIG9mIGEgcmVxdWVzdCBlbnRyeSBpbiB0aGUgcmVx
-dWVzdCBhcnJheQ0KPiA+PiArICogQHJlcV9udW06IElucHV0IHRoZSBudW1iZXIgb2YgY2FjaGUg
-aW52YWxpZGF0aW9uIHJlcXVlc3RzIGluIHRoZQ0KPiBhcnJheS4NCj4gPj4gKyAqICAgICAgICAg
-ICBPdXRwdXQgdGhlIG51bWJlciBvZiByZXF1ZXN0cyBzdWNjZXNzZnVsbHkgaGFuZGxlZCBieSBr
-ZXJuZWwuDQo+ID4+ICsgKiBAb3V0X2RyaXZlcl9lcnJvcl9jb2RlOiBSZXBvcnQgYSBkcml2ZXIg
-c3BlaWNpZmMgZXJyb3IgY29kZSB1cG9uDQo+IGZhaWx1cmUuDQo+ID4+ICsgKiAgICAgICAgICAg
-ICAgICAgICAgICAgICBJdCdzIG9wdGlvbmFsLCBkcml2ZXIgaGFzIGEgY2hvaWNlIHRvIGZpbGwg
-aXQgb3INCj4gPj4gKyAqICAgICAgICAgICAgICAgICAgICAgICAgIG5vdC4NCj4gPg0KPiA+IEJl
-aW5nIG9wdGlvbmFsIGhvdyBkb2VzIHRoZSB1c2VyIHRlbGwgd2hldGhlciB0aGUgY29kZSBpcyBm
-aWxsZWQgb3Igbm90Pw0KPiANCj4gc2VlbXMgbGlrZSB3ZSBuZWVkIGEgZmxhZyBmb3IgaXQuIG90
-aGVyd2lzZSwgYSByZXNlcnZlZCBzcGVjaWFsIHZhbHVlIGlzDQo+IHJlcXVpcmVkLiBvciBpcyBp
-dCBlbm91Z2ggdG8ganVzdCBkb2N1bWVudCBpdCB0aGF0IHRoaXMgZmllbGQgaXMgYXZhaWxhYmxl
-DQo+IG9yIG5vdCBwZXIgdGhlIGlvbW11X2h3X2luZm9fdHlwZT8NCj4gDQoNCk5vIGd1YXJhbnRl
-ZSB0aGF0IGEgcmVzZXJ2ZWQgc3BlY2lhbCB2YWx1ZSBhcHBsaWVzIHRvIGFsbCB2ZW5kb3JzLg0K
-DQpJJ2xsIGp1c3QgcmVtb3ZlIHRoZSBvcHRpb25hbCBwYXJ0LiB0aGUgdmlvbW11IGRyaXZlciBr
-bm93cyB3aGF0IGEgdmFsaWQNCmNvZGUgaXMsIGlmIHRoZSBkcml2ZXIgZmlsbHMgaXQuDQo=
+
+
+On 11/15/2023 8:34 PM, Robin Murphy wrote:
+> On 2023-11-15 12:32 pm, Bibek Kumar Patro wrote:
+>>
+>>
+>> On 11/14/2023 10:25 PM, Robin Murphy wrote:
+>>> On 14/11/2023 1:56 pm, Bibek Kumar Patro wrote:
+>>>> Currently in Qualcomm  SoCs the default prefetch is set to 1 which 
+>>>> allows
+>>>> the TLB to fetch just the next page table. MMU-500 features ACTLR
+>>>> register which is implementation defined and is used for Qualcomm SoCs
+>>>> to have a prefetch setting of 1/3/7/15 enabling TLB to prefetch
+>>>> the next set of page tables accordingly allowing for faster 
+>>>> translations.
+>>>>
+>>>> ACTLR value is unique for each SMR (Stream matching register) and 
+>>>> stored
+>>>> in a pre-populated table. This value is set to the register during
+>>>> context bank initialisation.
+>>>>
+>>>> Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+>>>> ---
+>>>>   drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 41 
+>>>> ++++++++++++++++++++++
+>>>>   drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h |  2 ++
+>>>>   drivers/iommu/arm/arm-smmu/arm-smmu.c      |  5 +--
+>>>>   drivers/iommu/arm/arm-smmu/arm-smmu.h      |  5 +++
+>>>>   4 files changed, 51 insertions(+), 2 deletions(-)
+>>>>
+>>>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c 
+>>>> b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>>> index 549ae4dba3a6..578c662c7c30 100644
+>>>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>>> @@ -14,6 +14,17 @@
+>>>>
+>>>>   #define QCOM_DUMMY_VAL    -1
+>>>>
+>>>> +struct actlr_config {
+>>>> +    const struct actlr_data *adata;
+>>>> +    size_t size;
+>>>> +};
+>>>> +
+>>>> +struct actlr_data {
+>>>> +    u16 sid;
+>>>> +    u16 mask;
+>>>
+>>> Do we need to worry about masks? If you're already assuming that any 
+>>> SMR will be programmed to match a superset of the data here, surely a 
+>>> single unique ID per device would suffice?
+>>>
+
+Thanks for this comment. I see now, only assuming smrs might not be able
+to correctly set the ACTLR values for all the context banks without the
+index. it should be smr = smmu->smrs[idx] instead of smr = smmu->smrs
+or it will be considering the single SMR for all the associated devices.
+
+>>
+>> If you refer to the arm_smmu_set_actlr below, mask would be needed as 
+>> we would check for mask along with sid as well while assigning actlr 
+>> configuration. Also with mask no of actlr entries can be reduces as
+>> with out mask we have to have entry for each sid.
+> 
+> But why? As far as I can tell, the design in patch #2 is to have a 
+> single data entry for each distinct device, since you're expecting to 
+> see a single SMR programmed to match at least the full id/mask range of 
+> the entry. However any SMR which matches that full range will by 
+> definition also match any smaller subset of that range as well, so we 
+> can uniquely identify any device in this context from just any *one* of 
+> its IDs, thus we could store less data and have simpler matching logic.
+> 
+
+I was going though your earlier reply once again and noticed we would
+need to mention the context bank index against the smr as well to take
+the right ACTLR value, as I replied to your earlier response above.
+
+>>>> +    u32 actlr;
+>>>> +};
+>>>> +
+>>>>   static struct qcom_smmu *to_qcom_smmu(struct arm_smmu_device *smmu)
+>>>>   {
+>>>>       return container_of(smmu, struct qcom_smmu, smmu);
+>>>> @@ -261,9 +272,36 @@ static const struct of_device_id 
+>>>> qcom_smmu_client_of_match[] __maybe_unused = {
+>>>>       { }
+>>>>   };
+>>>>
+>>>> +static void arm_smmu_set_actlr(struct arm_smmu_device *smmu, int idx,
+>>>> +        const struct actlr_config *actlrcfg)
+>>>> +{
+>>>> +    struct arm_smmu_smr *smr = smmu->smrs;
+
+It would be smr = smmu->smrs[idx] instead of smr = smmu->smrs to get
+sid of individual device attached to corresponding context bank.
+
+>>>> +    int i;
+>>>> +    u16 id;
+>>>> +    u16 mask;
+>>>> +
+>>>> +    for (i = 0; i < actlrcfg->size; ++i) {
+>>>> +        id = actlrcfg->adata[i].sid;
+>>>> +        mask = actlrcfg->adata[i].mask;
+>>>> +        if (!smr_is_subset(*smr, id, mask))
+>>>
+>>> How well have you tested this? ;)
+>>>
+>>
+>> Well, this logic has worked pretty good for us till now in our
+>> downstream implementation. :) (During testing as well this logic 
+>> helped to better match the SMRs instead of manually mathcing the mask 
+>> and SID which missed some SIDs)
+>> Also this is already being used to arm_smmu_find_sme hence packaged this
+>> logic in a wrapper to be used in other places as well(including ACTLR
+>> register setting case here.)
+> 
+> 1) Look at what you're matching the id and mask values *against*
+> 
+
+Got this now. Will take care of this in next version.
+
+> 2) Look at the polarity of the condition
+> 
+> 3) Consider the old saying "two wrongs don't make a right"
+> 
+
+Noted.
+
+>>>> +            arm_smmu_cb_write(smmu, idx, ARM_SMMU_CB_ACTLR,
+>>>> +                    actlrcfg->adata[i].actlr);
+>>>> +    }
+>>>> +}
+>>>> +
+>>>>   static int qcom_smmu_init_context(struct arm_smmu_domain 
+>>>> *smmu_domain,
+>>>>           struct io_pgtable_cfg *pgtbl_cfg, struct device *dev)
+>>>>   {
+>>>> +    struct arm_smmu_device *smmu = smmu_domain->smmu;
+>>>> +    struct qcom_smmu *qsmmu = to_qcom_smmu(smmu);
+>>>> +    const struct actlr_config *actlrcfg;
+>>>> +    int idx = smmu_domain->cfg.cbndx;
+>>>> +
+>>>> +    if (qsmmu->actlrcfg) {
+>>>> +        actlrcfg = qsmmu->actlrcfg;
+>>>> +        arm_smmu_set_actlr(smmu, idx, actlrcfg);
+>>>> +    }
+>>>> +
+>>>>       smmu_domain->cfg.flush_walk_prefer_tlbiasid = true;
+>>>>
+>>>>       return 0;
+>>>> @@ -467,6 +505,9 @@ static struct arm_smmu_device 
+>>>> *qcom_smmu_create(struct arm_smmu_device *smmu,
+>>>>       qsmmu->smmu.impl = impl;
+>>>>       qsmmu->cfg = data->cfg;
+>>>>
+>>>> +    if (data->actlrcfg && (data->actlrcfg->size))
+>>>> +        qsmmu->actlrcfg = data->actlrcfg;
+>>>
+>>> Do we really need to replicate multiple parts of the data, or would 
+>>> it be sensible to just replace qsmmu->cfg with qsmmu->data and handle 
+>>> the further dereferences in the places that want them?
+>>>
+>>>> +
+>>>>       return &qsmmu->smmu;
+>>>>   }
+>>>>
+>>>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h 
+>>>> b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h
+>>>> index 593910567b88..4b6862715070 100644
+>>>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h
+>>>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h
+>>>> @@ -9,6 +9,7 @@
+>>>>   struct qcom_smmu {
+>>>>       struct arm_smmu_device smmu;
+>>>>       const struct qcom_smmu_config *cfg;
+>>>> +    const struct actlr_config *actlrcfg;
+>>>>       bool bypass_quirk;
+>>>>       u8 bypass_cbndx;
+>>>>       u32 stall_enabled;
+>>>> @@ -25,6 +26,7 @@ struct qcom_smmu_config {
+>>>>   };
+>>>>
+>>>>   struct qcom_smmu_match_data {
+>>>> +    const struct actlr_config *actlrcfg;
+>>>>       const struct qcom_smmu_config *cfg;
+>>>>       const struct arm_smmu_impl *impl;
+>>>>       const struct arm_smmu_impl *adreno_impl;
+>>>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c 
+>>>> b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+>>>> index d6d1a2a55cc0..8e4faf015286 100644
+>>>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
+>>>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+>>>> @@ -990,9 +990,10 @@ static int arm_smmu_find_sme(struct 
+>>>> arm_smmu_device *smmu, u16 id, u16 mask)
+>>>>            * expect simply identical entries for this case, but there's
+>>>>            * no harm in accommodating the generalisation.
+>>>>            */
+>>>> -        if ((mask & smrs[i].mask) == mask &&
+>>>> -            !((id ^ smrs[i].id) & ~smrs[i].mask))
+>>>> +
+>>>> +        if (smr_is_subset(smrs[i], id, mask))
+>>>>               return i;
+>>>> +
+>>>>           /*
+>>>>            * If the new entry has any other overlap with an existing 
+>>>> one,
+>>>>            * though, then there always exists at least one stream ID
+>>>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.h 
+>>>> b/drivers/iommu/arm/arm-smmu/arm-smmu.h
+>>>> index 703fd5817ec1..b1638bbc41d4 100644
+>>>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.h
+>>>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.h
+>>>> @@ -501,6 +501,11 @@ static inline void arm_smmu_writeq(struct 
+>>>> arm_smmu_device *smmu, int page,
+>>>>           writeq_relaxed(val, arm_smmu_page(smmu, page) + offset);
+>>>>   }
+>>>>
+>>>> +static inline bool smr_is_subset(struct arm_smmu_smr smrs, u16 id, 
+>>>> u16 mask)
+>>>
+>>> Hmm, that name reads as implying the opposite of what it actually 
+>>> tests, not to mention that passing structs by value is a bit horrid 
+>>> as well :(
+>>>
+>>
+>> It might be okay to name it as subset_of_smr() though. You have any 
+>> other naming suggestion in mind which could correctly describe the
+>> logic?
+> 
+> As above I think the ideal answer is to avoid the reason for factoring 
+> it out at all, by using a simpler matching process to begin with.
+>
+
+As per the approach mentioned above to use the context bank index,
+this same approach should be okay to go forward with.
+
+Thanks Robin for you above comments, I have noted the inputs and will
+take care of this in next version.
+
+Thanks & regards,
+Bibek
+
+> Thanks,
+> Robin.
