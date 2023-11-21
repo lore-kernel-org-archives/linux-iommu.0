@@ -1,215 +1,134 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 85F9222065
-	for <iommu@lists.linux.dev>; Tue, 21 Nov 2023 18:04:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Authentication-Results: smtp.subspace.kernel.org; dkim=none
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 37F741BB2;
-	Tue, 21 Nov 2023 10:05:10 -0800 (PST)
-Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 6C5233F6C4;
-	Tue, 21 Nov 2023 10:04:22 -0800 (PST)
-From: Robin Murphy <robin.murphy@arm.com>
-To: joro@8bytes.org,
-	will@kernel.org
-Cc: iommu@lists.linux.dev,
-	jgg@nvidia.com,
-	baolu.lu@linux.intel.com,
-	linux-kernel@vger.kernel.org,
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2059.outbound.protection.outlook.com [40.107.244.59])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 987A728394
+	for <iommu@lists.linux.dev>; Tue, 21 Nov 2023 18:52:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="BneQCk7O"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=UosOhunnEBsL8omriu5o2UT8wl2TVmfIk65vk5vZZLZWg5/RwYuInq9UxEIB8J5BcDDfpPwwUAIw/JvjDIAqLsZ/BZD2sglMNPzkNSugbNN9bVwDsxQiePH1MNmTIsaIpJaSgbDHjf5KkfQgT+Ws72kJXtEaUYIixrtqCdg+v4VySYB168KkHc5cDO1DyBl2JJ+blNtTnZaJgwPRauZdY042pUv9MRY/tgZbBj33GoxhMv5xDdWXRaf5VSwMn25STMzNH+42AvDfF+ORi0HCgOH6E40aSPl7hZtF1nmHv25z0BkmLWW3kOLq29utpiRmvj5Zadc83Zh2B44joFTILA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=23xIg7dLtNcZmUMLopm4+LU3pFjmnJR9AT2GcFOWrfg=;
+ b=YgH2sZju7NfKNM5cq8RAV+YwF148RovM0laeYp0Te/nqmW9GDU9VV18xQY6sBCPQlRY+1VKrqGQag49eei5rAvijUebW/UCabvrl9tvhSglRrBhZxcRAU+5XsXem8Dvtj1nyRQZ9uMEexQlAEwunSx9mV23/nif34GjWYxTqycD3iFdbtWsm5b9PsH4y9I1QErjk4TVgvDo7bxqN4ag5KjP5ocLIZP6XX0d087wEHsj5aiQmcX+TDNvmi+menQ1SQFdsd2ehpBLfItcy2byauEwOwtI9HwrAnunBQpOrBq3m6lLtvgTjQlPUdKPt+smHrr38nuoX/14EVOZlzbmMLw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=23xIg7dLtNcZmUMLopm4+LU3pFjmnJR9AT2GcFOWrfg=;
+ b=BneQCk7OQkP68TZFaC6kHkxvKVqIWoIUoR/2Vhl42QcUUFuTuInr691lMk8Jyxx9Ckq2II7hiZOAUe8bDJl2ph8qMf0RTI2mvQiKN9qPWW1U/lBqdw5loQEuvDwOcz7PjyJk5ujmsAWl8eI7P8/w0QuoMbzlPW0U7DIb5L2rMiO41uK371l2lvJe45F+Za+Wcic55DJ1jM//jCY7bxKmSfVXkBNolcP4sYC9OAYOWcplOMT+97zi/ksHu/FXmQaN75Qdxqi/sjkUdup6GXfBrzKvM0b9PJVJkWuEJAC8ItgMQ5Q9xUPdAUiL/X37h/0zLl2078FnUnI/kd8SEJXRiA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by DS0PR12MB8368.namprd12.prod.outlook.com (2603:10b6:8:fe::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7002.27; Tue, 21 Nov
+ 2023 18:52:34 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::60d4:c1e3:e1aa:8f93]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::60d4:c1e3:e1aa:8f93%4]) with mapi id 15.20.7002.027; Tue, 21 Nov 2023
+ 18:52:34 +0000
+Date: Tue, 21 Nov 2023 14:52:32 -0400
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: joro@8bytes.org, will@kernel.org, iommu@lists.linux.dev,
+	baolu.lu@linux.intel.com, linux-kernel@vger.kernel.org,
 	jsnitsel@redhat.com
-Subject: [PATCH v6 7/7] iommu: Clean up open-coded ownership checks
-Date: Tue, 21 Nov 2023 18:04:03 +0000
-Message-Id: <58a9879ce3f03562bb061e6714fe6efb554c3907.1700589539.git.robin.murphy@arm.com>
-X-Mailer: git-send-email 2.39.2.101.g768bb238c484.dirty
-In-Reply-To: <cover.1700589539.git.robin.murphy@arm.com>
+Subject: Re: [PATCH v6 3/7] iommu: Validate that devices match domains
+Message-ID: <20231121185232.GI6083@nvidia.com>
 References: <cover.1700589539.git.robin.murphy@arm.com>
+ <097c6f30480e4efe12195d00ba0e84ea4837fb4c.1700589539.git.robin.murphy@arm.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <097c6f30480e4efe12195d00ba0e84ea4837fb4c.1700589539.git.robin.murphy@arm.com>
+X-ClientProxiedBy: SA1P222CA0119.NAMP222.PROD.OUTLOOK.COM
+ (2603:10b6:806:3c5::18) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|DS0PR12MB8368:EE_
+X-MS-Office365-Filtering-Correlation-Id: 2087bb5d-c438-4556-2d36-08dbeac305d4
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	G01uGirUKoBmTFngwELbFichmgu2AVfDpN0gwsW91xXwb/TcOXwnc2cZwe4I8uKpqvxoEhtkz4GuQjH+Dkct60y5G5l4BU+DnJmCSZ84EGbOe087Mbj1zj1iciKd3lf6wdOwSN4+h4aftwa+6pOBkGr/HKgmjYW5PRgmSJV5AsuPUG6nxDAy6qDaO3FLN1eziNmZAkFurVshQ18soawJWHAyJvArM0ch1ockCCIptrx7kHSlYC73Up0eMj5U0EFbvMwrkTckbnz1k6MaosBo+5y0p7SbUeuY9Il0AiG9UvX0uquvwC7uM90lO24J6ZJIOIjjgLddFly5EDSOxh+1LsRdo44Xk5O5CzasZctS71UH4Db4ZXXt1D35Q7MhqgEUcg+7z1AP9+8lLe8yf4eDAFCXH0bbrNZ9voFrZ4SsA4vytr8vXRi7AqE+52WsVNip9grPo6C+xRAXUGIJiGiEdfZcq7GKNFeD6C2bQmr0PBxbXuWkAkjg5b1BxRVdO3aiYc6/tXr/SYwXEfq/UthRzorWONHJ7jmfGYU9snBJUO7GnwH1H6cQRLjZfe5eS3/8
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(376002)(366004)(346002)(39860400002)(396003)(136003)(230922051799003)(64100799003)(186009)(1800799012)(451199024)(38100700002)(66476007)(6916009)(316002)(2906002)(5660300002)(8676002)(41300700001)(8936002)(478600001)(66946007)(66556008)(4326008)(6512007)(1076003)(6486002)(26005)(2616005)(86362001)(6506007)(33656002)(36756003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?cED4UDMIR9w88RvdiukQzTQDIet4viiwtT/RjZeGxcRZVdF71LuwolMqHah8?=
+ =?us-ascii?Q?YltaO3RTrkTxCBbRIVWMH4Oo8mIir6Iba0oyUEarUwe1/nyEELLYAVqKNdCM?=
+ =?us-ascii?Q?+tAJ3JRtHocKn4mLG/EHpS9iQjOBQTrYn1nNr5HvfAnCzW+DY+Zv+m7Y7YpR?=
+ =?us-ascii?Q?vJlyCY3tiz8kunMGeOC7PSKealNQZlF1ag9adi2X3g1LwrFXQ9KxFqe7SHPY?=
+ =?us-ascii?Q?sJVWkmv5YUHLp+VpfgmzU8Q9fyXLx4gqJSLSwpcSsy7zSv7HScBp+DJZ+vHV?=
+ =?us-ascii?Q?XGUHZWhj0oqE1h4GQYZpsw/ZzE+jlHf2Jsr7nxI1xyNk/kg9ZVrlwQSOFmda?=
+ =?us-ascii?Q?XZy68ql0/QDFTs2OGiysz3JVdXEnT33bs2YGspDDb0nHJ0SbS/8C9HOE1+J7?=
+ =?us-ascii?Q?hJqnDHrRCUHffPlZ/R3O6U2IbTY/ukPj5wEVBW2oXUx7BcOFetxr55+TwX7d?=
+ =?us-ascii?Q?0Z0mrv8I+vXM+b71DfjleXDBrJ+8aL5Cq4VfJBcZ5RC+3TIhLuo1623yWh9U?=
+ =?us-ascii?Q?82CH+GgvhtuhYHgAGHQJrjk+Xv8jg/uNdttIfUWJ9m+18cx5Dr908UU3SW/P?=
+ =?us-ascii?Q?t0mN5NVC4XSh1Eti504FkRYgafhQIrqbm792IfAOsgQs1MabUOr9di02q+NN?=
+ =?us-ascii?Q?ZV3VTC8fQnY5+OQ5Q+EFY8dx1nhd648MEQNZ9LXyivUhqj3P/kwAlGHfqCfk?=
+ =?us-ascii?Q?PTCaJBy1Jv7q5vDIHPdsRA7rtgmv/F1nB37sn6I9VXsGWX5AuIzB4xTU/LJZ?=
+ =?us-ascii?Q?R+hLkx4naCL0TYxg+4po4evEgKtN78bpwPlBQ6IrPN+xaLSqcKASnwOIwA7o?=
+ =?us-ascii?Q?QXppmHUwQ0NiNwnc+KXadfErYSKTdRMylkJvtKbd26py68r46geRb4Mo9xom?=
+ =?us-ascii?Q?ttaVJ0qgnQ8G+HuKwmmunl9ikiBLIb3uFVb/InOT6z8jE93u8kZ0/jHE0pXD?=
+ =?us-ascii?Q?Am0Ik8L7vKBN4otQdU1RzGY+2eORFzXBQPrF7GTmkeh8+B/A/80lHErmdF8h?=
+ =?us-ascii?Q?hfS3OH3D9Y+FNHTeqA/9GIVIRqdn54jkSubvBODA0pRSPKMdYP4zuCOIp4fp?=
+ =?us-ascii?Q?XzrrKGBO4UyQJ2Tu8bVy8LBkTPypgBc6cpGM12PD96iuoS9XYyK1jn7l0Jcc?=
+ =?us-ascii?Q?JSRh5t/S8wKfDN977KjpMwtbfrE7gKkVER//d+YmycRLLJbBEix+E4U1Kf3k?=
+ =?us-ascii?Q?XEvtwe/CzbKVlwLlg95bMDwxK0+bnnH6jv8jaVhAR3ovZGsrFf7QqixFl1WQ?=
+ =?us-ascii?Q?AsnFvuFRbRvJLpLksOrPOTz6Kwiu20lTZpUBpZTv5nO6JaYDxQVB8zSuML+K?=
+ =?us-ascii?Q?Mi2m0oDwDb71xtpQmoDJob7YUqVZshziC1wC8JhEoH3IVaMQ2TCnjXzbT5d2?=
+ =?us-ascii?Q?l0KUykHI/clnM7MDSzFPq7J1XB9Cp2/d5T+Nn5BTF/gevJtc/1pjot7Hpvst?=
+ =?us-ascii?Q?Hpm5AonQrWlw2sL76Fc8tNtrnVnxjN8GGNQvVOa+gn/Sww4ohlnUE5Bh7G4p?=
+ =?us-ascii?Q?n4lhEtUOmpTvtPzkaRS61E7PLMBe2YutOts2gXuCepjRPUr5DNJlGGmwHTOP?=
+ =?us-ascii?Q?nRHAD6p4B/KQYCIuR9pBn7Bq5zDWxd15Cc/S+SLD?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2087bb5d-c438-4556-2d36-08dbeac305d4
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Nov 2023 18:52:34.1457
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: ZT60stN3JYEmujBprLfCJJeF3RwvKGC5A7W4aBflXHPsXS18+jGwbjT26+ogdTGV
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB8368
 
-Some drivers already implement their own defence against the possibility
-of being given someone else's device. Since this is now taken care of by
-the core code (and via a slightly different path from the original
-fwspec-based idea), let's clean them up.
+On Tue, Nov 21, 2023 at 06:03:59PM +0000, Robin Murphy wrote:
+> Before we can allow drivers to coexist, we need to make sure that one
+> driver's domain ops can't misinterpret another driver's dev_iommu_priv
+> data. To that end, add a token to the domain so we can remember how it
+> was allocated - for now this may as well be the device ops, since they
+> still correlate 1:1 with drivers. We can trust ourselves for internal
+> default domain attachment, so add checks to cover all the public attach
+> interfaces.
+> 
+> Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+> Reviewed-by: Jerry Snitselaar <jsnitsel@redhat.com>
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+> 
+> ---
+> 
+> v4: Cover iommu_attach_device_pasid() as well, and improve robustness
+>     against theoretical attempts to attach a noiommu group.
+> v6: Cover new iommu_domain_alloc_user() sites as well. I don't entirely
+>     dislike the idea of tying this into the domain ops, but I'd rather
+>     do the simple thing for now and revisit that in future, since domain
+>     ops also deserve some other cleanup.
 
-Acked-by: Will Deacon <will@kernel.org>
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-Reviewed-by: Jerry Snitselaar <jsnitsel@redhat.com>
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
----
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c |  3 ---
- drivers/iommu/arm/arm-smmu/arm-smmu.c       |  9 +--------
- drivers/iommu/arm/arm-smmu/qcom_iommu.c     | 16 +++-------------
- drivers/iommu/mtk_iommu.c                   |  7 +------
- drivers/iommu/mtk_iommu_v1.c                |  3 ---
- drivers/iommu/sprd-iommu.c                  |  8 +-------
- drivers/iommu/virtio-iommu.c                |  3 ---
- 7 files changed, 6 insertions(+), 43 deletions(-)
+Looks good
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 7445454c2af2..fc4317c25b6d 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -2649,9 +2649,6 @@ static struct iommu_device *arm_smmu_probe_device(struct device *dev)
- 	struct arm_smmu_master *master;
- 	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
- 
--	if (!fwspec || fwspec->ops != &arm_smmu_ops)
--		return ERR_PTR(-ENODEV);
--
- 	if (WARN_ON_ONCE(dev_iommu_priv_get(dev)))
- 		return ERR_PTR(-EBUSY);
- 
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-index 4b83a3adacd6..4d09c0047892 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-@@ -1116,11 +1116,6 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
- 	struct arm_smmu_device *smmu;
- 	int ret;
- 
--	if (!fwspec || fwspec->ops != &arm_smmu_ops) {
--		dev_err(dev, "cannot attach to SMMU, is it on the same bus?\n");
--		return -ENXIO;
--	}
--
- 	/*
- 	 * FIXME: The arch/arm DMA API code tries to attach devices to its own
- 	 * domains between of_xlate() and probe_device() - we have no way to cope
-@@ -1357,10 +1352,8 @@ static struct iommu_device *arm_smmu_probe_device(struct device *dev)
- 		fwspec = dev_iommu_fwspec_get(dev);
- 		if (ret)
- 			goto out_free;
--	} else if (fwspec && fwspec->ops == &arm_smmu_ops) {
--		smmu = arm_smmu_get_by_fwnode(fwspec->iommu_fwnode);
- 	} else {
--		return ERR_PTR(-ENODEV);
-+		smmu = arm_smmu_get_by_fwnode(fwspec->iommu_fwnode);
- 	}
- 
- 	ret = -EINVAL;
-diff --git a/drivers/iommu/arm/arm-smmu/qcom_iommu.c b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-index 97b2122032b2..33f3c870086c 100644
---- a/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-+++ b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-@@ -79,16 +79,6 @@ static struct qcom_iommu_domain *to_qcom_iommu_domain(struct iommu_domain *dom)
- 
- static const struct iommu_ops qcom_iommu_ops;
- 
--static struct qcom_iommu_dev * to_iommu(struct device *dev)
--{
--	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
--
--	if (!fwspec || fwspec->ops != &qcom_iommu_ops)
--		return NULL;
--
--	return dev_iommu_priv_get(dev);
--}
--
- static struct qcom_iommu_ctx * to_ctx(struct qcom_iommu_domain *d, unsigned asid)
- {
- 	struct qcom_iommu_dev *qcom_iommu = d->iommu;
-@@ -372,7 +362,7 @@ static void qcom_iommu_domain_free(struct iommu_domain *domain)
- 
- static int qcom_iommu_attach_dev(struct iommu_domain *domain, struct device *dev)
- {
--	struct qcom_iommu_dev *qcom_iommu = to_iommu(dev);
-+	struct qcom_iommu_dev *qcom_iommu = dev_iommu_priv_get(dev);
- 	struct qcom_iommu_domain *qcom_domain = to_qcom_iommu_domain(domain);
- 	int ret;
- 
-@@ -404,7 +394,7 @@ static int qcom_iommu_identity_attach(struct iommu_domain *identity_domain,
- 	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
- 	struct qcom_iommu_domain *qcom_domain;
- 	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
--	struct qcom_iommu_dev *qcom_iommu = to_iommu(dev);
-+	struct qcom_iommu_dev *qcom_iommu = dev_iommu_priv_get(dev);
- 	unsigned int i;
- 
- 	if (domain == identity_domain || !domain)
-@@ -535,7 +525,7 @@ static bool qcom_iommu_capable(struct device *dev, enum iommu_cap cap)
- 
- static struct iommu_device *qcom_iommu_probe_device(struct device *dev)
- {
--	struct qcom_iommu_dev *qcom_iommu = to_iommu(dev);
-+	struct qcom_iommu_dev *qcom_iommu = dev_iommu_priv_get(dev);
- 	struct device_link *link;
- 
- 	if (!qcom_iommu)
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 75279500a4a8..7abe9e85a570 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -863,16 +863,11 @@ static phys_addr_t mtk_iommu_iova_to_phys(struct iommu_domain *domain,
- static struct iommu_device *mtk_iommu_probe_device(struct device *dev)
- {
- 	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
--	struct mtk_iommu_data *data;
-+	struct mtk_iommu_data *data = dev_iommu_priv_get(dev);
- 	struct device_link *link;
- 	struct device *larbdev;
- 	unsigned int larbid, larbidx, i;
- 
--	if (!fwspec || fwspec->ops != &mtk_iommu_ops)
--		return ERR_PTR(-ENODEV); /* Not a iommu client device */
--
--	data = dev_iommu_priv_get(dev);
--
- 	if (!MTK_IOMMU_IS_TYPE(data->plat_data, MTK_IOMMU_TYPE_MM))
- 		return &data->iommu;
- 
-diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
-index 67e044c1a7d9..25b41222abae 100644
---- a/drivers/iommu/mtk_iommu_v1.c
-+++ b/drivers/iommu/mtk_iommu_v1.c
-@@ -481,9 +481,6 @@ static struct iommu_device *mtk_iommu_v1_probe_device(struct device *dev)
- 		idx++;
- 	}
- 
--	if (!fwspec || fwspec->ops != &mtk_iommu_v1_ops)
--		return ERR_PTR(-ENODEV); /* Not a iommu client device */
--
- 	data = dev_iommu_priv_get(dev);
- 
- 	/* Link the consumer device with the smi-larb device(supplier) */
-diff --git a/drivers/iommu/sprd-iommu.c b/drivers/iommu/sprd-iommu.c
-index 2eb9fb46703b..537359f10997 100644
---- a/drivers/iommu/sprd-iommu.c
-+++ b/drivers/iommu/sprd-iommu.c
-@@ -385,13 +385,7 @@ static phys_addr_t sprd_iommu_iova_to_phys(struct iommu_domain *domain,
- 
- static struct iommu_device *sprd_iommu_probe_device(struct device *dev)
- {
--	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
--	struct sprd_iommu_device *sdev;
--
--	if (!fwspec || fwspec->ops != &sprd_iommu_ops)
--		return ERR_PTR(-ENODEV);
--
--	sdev = dev_iommu_priv_get(dev);
-+	struct sprd_iommu_device *sdev = dev_iommu_priv_get(dev);
- 
- 	return &sdev->iommu;
- }
-diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
-index 379ebe03efb6..9bcffdde6175 100644
---- a/drivers/iommu/virtio-iommu.c
-+++ b/drivers/iommu/virtio-iommu.c
-@@ -969,9 +969,6 @@ static struct iommu_device *viommu_probe_device(struct device *dev)
- 	struct viommu_dev *viommu = NULL;
- 	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
- 
--	if (!fwspec || fwspec->ops != &viommu_ops)
--		return ERR_PTR(-ENODEV);
--
- 	viommu = viommu_get_by_fwnode(fwspec->iommu_fwnode);
- 	if (!viommu)
- 		return ERR_PTR(-ENODEV);
--- 
-2.39.2.101.g768bb238c484.dirty
-
+Jason
