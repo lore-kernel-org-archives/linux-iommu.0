@@ -1,15 +1,15 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9F43D22060
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D8A8C22062
 	for <iommu@lists.linux.dev>; Tue, 21 Nov 2023 18:04:17 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org; dkim=none
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 481BF1042;
-	Tue, 21 Nov 2023 10:04:58 -0800 (PST)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id F024F169C;
+	Tue, 21 Nov 2023 10:05:03 -0800 (PST)
 Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 7B08A3F6C4;
-	Tue, 21 Nov 2023 10:04:10 -0800 (PST)
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 2D5763F6C4;
+	Tue, 21 Nov 2023 10:04:16 -0800 (PST)
 From: Robin Murphy <robin.murphy@arm.com>
 To: joro@8bytes.org,
 	will@kernel.org
@@ -18,10 +18,12 @@ Cc: iommu@lists.linux.dev,
 	baolu.lu@linux.intel.com,
 	linux-kernel@vger.kernel.org,
 	jsnitsel@redhat.com
-Subject: [PATCH v6 0/7] iommu: Retire bus ops
-Date: Tue, 21 Nov 2023 18:03:56 +0000
-Message-Id: <cover.1700589539.git.robin.murphy@arm.com>
+Subject: [PATCH v6 2/7] iommu: Decouple iommu_present() from bus ops
+Date: Tue, 21 Nov 2023 18:03:58 +0000
+Message-Id: <caa93680bb9d35a8facbcd8ff46267ca67335229.1700589539.git.robin.murphy@arm.com>
 X-Mailer: git-send-email 2.39.2.101.g768bb238c484.dirty
+In-Reply-To: <cover.1700589539.git.robin.murphy@arm.com>
+References: <cover.1700589539.git.robin.murphy@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -30,40 +32,62 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-v5: https://lore.kernel.org/linux-iommu/cover.1697047261.git.robin.murphy@arm.com/
+Much as I'd like to remove iommu_present(), the final remaining users
+are proving stubbornly difficult to clean up, so kick that can down the
+road and just rework it to preserve the current behaviour without
+depending on bus ops. Since commit 57365a04c921 ("iommu: Move bus setup
+to IOMMU device registration"), any registered IOMMU instance is already
+considered "present" for every entry in iommu_buses, so it's simply a
+case of validating the bus and checking we have at least once IOMMU.
 
-Yet another rebase, this time just tweaking patch #3 for the new
-domain_alloc_user() sites, and picking up reviews/acks.
+Reviewed-by: Jason Gunthorpe<jgg@nvidia.com>
+Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+Reviewed-by: Jerry Snitselaar <jsnitsel@redhat.com>
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 
-Thanks,
-Robin.
+---
 
+v3: Tweak to use the ops-based check rather than group-based, to
+    properly match the existing behaviour
+v4: Just look for IOMMU instances instead of managed devices
+---
+ drivers/iommu/iommu.c | 21 ++++++++++++++++++++-
+ 1 file changed, 20 insertions(+), 1 deletion(-)
 
-Robin Murphy (7):
-  iommu: Factor out some helpers
-  iommu: Decouple iommu_present() from bus ops
-  iommu: Validate that devices match domains
-  iommu: Decouple iommu_domain_alloc() from bus ops
-  iommu/arm-smmu: Don't register fwnode for legacy binding
-  iommu: Retire bus ops
-  iommu: Clean up open-coded ownership checks
-
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c |   3 -
- drivers/iommu/arm/arm-smmu/arm-smmu.c       |  12 +-
- drivers/iommu/arm/arm-smmu/qcom_iommu.c     |  16 +--
- drivers/iommu/iommu.c                       | 143 +++++++++++++-------
- drivers/iommu/iommufd/hw_pagetable.c        |   2 +
- drivers/iommu/mtk_iommu.c                   |   7 +-
- drivers/iommu/mtk_iommu_v1.c                |   3 -
- drivers/iommu/sprd-iommu.c                  |   8 +-
- drivers/iommu/virtio-iommu.c                |   3 -
- include/acpi/acpi_bus.h                     |   2 +
- include/linux/device.h                      |   1 -
- include/linux/device/bus.h                  |   5 -
- include/linux/dma-map-ops.h                 |   1 +
- include/linux/iommu.h                       |   2 +-
- 14 files changed, 110 insertions(+), 98 deletions(-)
-
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 5c555fc0d54c..7fafd073c33e 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -2001,9 +2001,28 @@ int bus_iommu_probe(const struct bus_type *bus)
+ 	return 0;
+ }
+ 
++/**
++ * iommu_present() - make platform-specific assumptions about an IOMMU
++ * @bus: bus to check
++ *
++ * Do not use this function. You want device_iommu_mapped() instead.
++ *
++ * Return: true if some IOMMU is present and aware of devices on the given bus;
++ * in general it may not be the only IOMMU, and it may not have anything to do
++ * with whatever device you are ultimately interested in.
++ */
+ bool iommu_present(const struct bus_type *bus)
+ {
+-	return bus->iommu_ops != NULL;
++	bool ret = false;
++
++	for (int i = 0; i < ARRAY_SIZE(iommu_buses); i++) {
++		if (iommu_buses[i] == bus) {
++			spin_lock(&iommu_device_lock);
++			ret = !list_empty(&iommu_device_list);
++			spin_unlock(&iommu_device_lock);
++		}
++	}
++	return ret;
+ }
+ EXPORT_SYMBOL_GPL(iommu_present);
+ 
 -- 
 2.39.2.101.g768bb238c484.dirty
 
