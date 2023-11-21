@@ -1,66 +1,68 @@
-Received: from esa4.hc3370-68.iphmx.com (esa4.hc3370-68.iphmx.com [216.71.155.144])
+Received: from esa5.hc3370-68.iphmx.com (esa5.hc3370-68.iphmx.com [216.71.155.168])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C4B64495E3
-	for <iommu@lists.linux.dev>; Tue, 21 Nov 2023 12:20:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A47D4A9AF
+	for <iommu@lists.linux.dev>; Tue, 21 Nov 2023 12:31:50 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=citrix.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=citrix.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=citrix.com header.i=@citrix.com header.b="QguQkE0O"
+	dkim=pass (1024-bit key) header.d=citrix.com header.i=@citrix.com header.b="D697YV0Z"
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=citrix.com; s=securemail; t=1700569204;
+  d=citrix.com; s=securemail; t=1700569910;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=gw3SJ//CYccv+LfEcReK3mjikYD+hKyjOkLSU+xz4JM=;
-  b=QguQkE0OKWcq5j6RxumHew9+pwOeyMEQzwDLX/EhC7NUDzZzQyh7SBfU
-   1GyFd0poU3S7l4LJOuquXifGOHXLPQlELFkn9xoaHKhWgXajFfk9hp9Ef
-   fWBEAzYfN0pN5B5kLtvPxAsiyXSz0W/OM9ZXQoYvXsaPWDs1DZqDPsAAw
-   Q=;
-X-CSE-ConnectionGUID: FmN2m58OQJ6Gedl0bVHtOw==
-X-CSE-MsgGUID: 1prvCd9oQ162SCnUiibNeA==
-Authentication-Results: esa4.hc3370-68.iphmx.com; dkim=none (message not signed) header.i=none
+  bh=OfoVueAJlT4dRW0E9lJhs8DFNbsX126SwsKVxUZs1vM=;
+  b=D697YV0ZfoDQL6WUBkDXXHVj/O2yTZbq0CwdEz7SDzxhToL3T0T1zGev
+   eTih34YXe2xPLxpEAujACrtZIvqgPWvt6IRCmBFQeqz4EEMRN2agLCpyx
+   b1os6VzKMqkiC+N7nhngBl8DEgU+YKJZ786VEFX77hq2/LqFtremyxAS+
+   Y=;
+X-CSE-ConnectionGUID: cz63FxWPTwKsGv/+JsD3aw==
+X-CSE-MsgGUID: AlsNrc4xQm26dA3J7Mc9YQ==
+Authentication-Results: esa5.hc3370-68.iphmx.com; dkim=none (message not signed) header.i=none
 X-SBRS: 4.0
-X-MesageID: 131026723
-X-Ironport-Server: esa4.hc3370-68.iphmx.com
+X-MesageID: 126809421
+X-Ironport-Server: esa5.hc3370-68.iphmx.com
 X-Remote-IP: 162.221.159.70
 X-Policy: $RELAYED
 X-ThreatScanner-Verdict: Negative
-IronPort-Data: A9a23:47AA8aghrZVL9B4zjtlgabxkX161uBAKZh0ujC45NGQN5FlHY01je
- htvUW/QOK2CNjekL94gYdnk8h8C6pLSnNNhGgA+/ilgE3kb9cadCdqndUqhZCn6wu8v7q5Ex
- 55HNoSfdpBcolv0/ErF3m3J9CEkvU2wbuOhTraCYmYoHVMMpB4J0XpLg/Q+jpNjne+3CgaMv
- cKai8DEMRqu1iUc3lg8sspvkzsx+qyu0N8klgZmP6sS5QWHzyB94K83fsldEVOpGuG4IcbiL
- wrz5OnR1n/U+R4rFuSknt7TGqHdauePVeQmoiM+t5mK2nCulARrukoIHKN0hXNsoyeIh7hMJ
- OBl7vRcf+uL0prkw4zxWzEAe8130DYvFLXveRBTuuTLp6HKnueFL1yDwyjaMKVBktubD12i+
- tQ2LRZXa03ToNuUnp22Ru00jPoDMO70adZ3VnFIlVk1DN4jSJHHBa7L+cVZzHE7gcUm8fT2P
- pRDL2A1NVKZPkwJZQ9/5JEWxY9EglHWdTFCpU3Tjq0w+2XJlyR60aT3McqTcduPLSlQth/D/
- zqcoTujWXn2MvTG0SCb2X79gdaWw3nAc4QvFbyy0PND1Qj7Kms7V0RNCArTTeOCoky5QdV3e
- 0YF5ic1668o+ySDVcTnVgO1rTifowIcWtlNF/Uz7gCR4qPR70CSAW1sZiFAbNgOt8IsQzEuk
- FiTkLvBHztlsbvTTG+H7reFhTqoPG4eKmpqTSMbSBRfy9jlrps6gh/GQpBkCqHdptf8HjXth
- TSXhCw/gagDy88Ny6i/u1vAhlqEp5/MSxMd4gTMQnnj6gJ/eZ7ja4G2gXDf7PBdPMOaQ0OHs
- XwshceT9qYNAIuLmSjLR/8CdJm5t6itLjLRmxhsEoMn+jDr/GSsFb28+xkneh0vaJxdP2a0M
- QmM4Wu9+aO/IlOEaIktZt/hLP0Ik4ftGdC9XM70cv1RN80ZmBC8wM1+WaKB9zmyyBBwwP9lY
- MnzTCq6MZoN5U1aINuKqwQ1i+ZDKtgWnz+7eHwC503PPUCiTHCUU6wZF1CFc/o06qiJyC2Mr
- I4HapPXkUkGCbKgCsUyzWL1BQpSRZTcLcquw/G7i8bZelY2cI3fI6O5LUwdl3xNwP0Oy7agE
- oCVUU5E0lvv7UAr2i3TAk2PnIjHBM4lxVpiZHxEALpd8yR7CWpZxPtFJsRfkHhO3LAL8MOYu
- NFfIp/cXa0fEm+ek9nfBLGkxLFfmN2QrVrmF0KYjPIXJvaMmyShFgfYQzbS
-IronPort-HdrOrdr: A9a23:CCsZV68zPzvxS5+Ly1puk+DcI+orL9Y04lQ7vn2ZHyYlFvBw9v
- rPoB1173TJYVoqMk3I+urgBEDjexzhHMVOkOws1N6ZNWHbUQ2TQb2KhrGN/9SPIUHDHkE279
- YGT0DTYueAbmSTLKzBkWuFL+o=
-X-Talos-CUID: 9a23:j9e0G28UUi1SBL7nK+mVv2ARPJogLy369VWODEK0DT5jdp2JbkDFrQ==
-X-Talos-MUID: =?us-ascii?q?9a23=3AGaz4nQyLmsX8fjhD+VjXWO7UnN+aqP22El4mncQ?=
- =?us-ascii?q?BgpDabxdbPQqcjT6RT6Zyfw=3D=3D?=
+IronPort-Data: A9a23:5Apvj6zl1a/4qeD0xe96t+fIxirEfRIJ4+MujC+fZmUNrF6WrkUGy
+ GIfDGqCbvyNamPyf9AlOtni804C6pKDytdlTgQ/+CAxQypGp/SeCIXCJC8cHc8wwu7rFxs7s
+ ppEOrEsCOhuExcwcz/0auCJQUFUjPzOHvykTrecZkidfCc8IA85kxVvhuUltYBhhNm9Emult
+ Mj75sbSIzdJ4RYtWo4vw/zF8E8HUMja4mtC5QVnP6kT5TcyqlFOZH4hDfDpR5fHatE88t6SH
+ 47r0Ly/92XFyBYhYvvNfmHTKxBirhb6ZGBiu1IOM0SQqkEqSh8ai87XAME0e0ZP4whlqvgqo
+ Dl7WT5cfi9yVkHEsLx1vxC1iEiSN4UekFPMCSDXXcB+UyQq2pYjqhljJBheAGEWxgp4KWpcq
+ 6c2OA81Ug+gnM2oh/GZUcU3j9t2eaEHPKtH0p1h5TTQDPJgSpHfWaTao9Rf2V/chOgXQ6yYP
+ ZBAL2MyPVKfO3WjOX9OYH46tM6uimPybHtzr1WNqLBsy2PS0BZwwP7mN9+9ltmiHJ8Lzh7J+
+ jifl4j/KjgeL/qFwmaVy3f22OPmxgGkfYlDJYTto5aGh3XMnzdOWXX6T2CTpfi/l177WN9FL
+ UEQ0jQhoLJ090GxSNT5GRqirxasvBkGXPIAGfwm5RrLzbDbiy6CG3INUDNMLsc7qM83RiEuz
+ laPns/BDDlj9raSTBq17LCerDX0PDUPNW8TTSYeSE0O5NyLiI0siw2VZtdlHrS8gtD8FXf32
+ T/ihCI3gLEOy8oW/6G6+03XxTOqupXNCAUy423/X2Wg6x5RYI++e5fu7Vnd8OYGIIuHJnGev
+ XwAs8uT9uYDCdeKjiPlaPVdQpmq6uyDPTmahkRgd7Er7xyk/3+ue9AW7DwWDFtmNtYsfT7vf
+ VPJvgVQ9NlfMROXgbRfOtzrTZ5wlO65SIWjCai8gsdyjoZZfx3Zpw9+WnaswEP2v1Zr0oMkF
+ cySbpP5ZZoFMpiL3AZaVs9EjudzmnFgnzqNLa0X2ShLxlZ3WZJ0dVvmGAHXBgzBxPnYyDg5C
+ v4GXydw9z1RUfflfg7c+pMJIFYBIBATXM+u85EPK7Tfe1M5RgnN7sM9J5t7I+SJeIwPzo/1E
+ oyVABcEmDITe1WbQel1VpyTQOy2BssuxZ7KFSctIUypyxAejXWHtc8im28MVeB/roRLlKckJ
+ 8Tpju3cWpyjvByboWVCBXQ8xaQ+HCmWafWmZXP/PGdmL8Y7HmQkOLbMJ2PSycXHNQLv3eNWn
+ lFq/lqzrUYrL+i6MPvrVQ==
+IronPort-HdrOrdr: A9a23:piF0vatRZjd5HolJTVmXdofB7skDTtV00zEX/kB9WHVpmszxra
+ 6TdZMgpHnJYVcqKQkdcL+7WJVoLUmxyXcx2/h1AV7AZniAhILLFvAA0WKK+VSJcEeSygce79
+ YFT0EXMqyIMbEQt6fHCWeDfOrIuOP3kpyVuQ==
+X-Talos-CUID: 9a23:I71WkG400JmlZUQbNdss/1xKQe41TUXh01TLDFH/SkRyZOacVgrF
+X-Talos-MUID: =?us-ascii?q?9a23=3A6t1vTwzSTP0z8QrzsxJjyRO3wdmaqI2qE2YXmsk?=
+ =?us-ascii?q?WgszeayBZYBXCqT/mc7Zyfw=3D=3D?=
 X-IronPort-AV: E=Sophos;i="6.04,215,1695700800"; 
-   d="scan'208";a="131026723"
+   d="scan'208";a="126809421"
 From: Andrew Cooper <andrew.cooper3@citrix.com>
 To: LKML <linux-kernel@vger.kernel.org>
 CC: Andrew Cooper <andrew.cooper3@citrix.com>, Joerg Roedel <joro@8bytes.org>,
 	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, Will Deacon
 	<will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, David Woodhouse
 	<dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>,
-	<iommu@lists.linux.dev>, <x86@vger.kernel.org>
-Subject: x86/apic: Further apic::delivery_mode cleanup
-Date: Tue, 21 Nov 2023 12:18:49 +0000
-Message-ID: <20231121121849.1441264-1-andrew.cooper3@citrix.com>
+	<iommu@lists.linux.dev>, <x86@kernel.org>, Borislav Petkov <bp@alien8.de>,
+	Thomas Gleixner <tglx@linutronix.de>
+Subject: [PATCH RESEND] x86/apic: Further apic::delivery_mode cleanup
+Date: Tue, 21 Nov 2023 12:30:34 +0000
+Message-ID: <20231121123034.1442059-1-andrew.cooper3@citrix.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20231121120411.GDZVycu2OPzz8Jqq4Z@fat_crate.local>
 References: <20231121120411.GDZVycu2OPzz8Jqq4Z@fat_crate.local>
@@ -86,12 +88,15 @@ CC: David Woodhouse <dwmw2@infradead.org>
 CC: Lu Baolu <baolu.lu@linux.intel.com>
 CC: iommu@lists.linux.dev
 CC: linux-kernel@vger.kernel.org
-CC: x86@vger.kernel.org
+CC: x86@kernel.org
+CC: Borislav Petkov <bp@alien8.de>
+CC: Thomas Gleixner <tglx@linutronix.de>
+
+RESEND, this time with working x86 maintainer emails.
 
 Does this want a fixes tag?  If so,
 
 Fixes: b5148dfe66f5 ("x86/apic: Drop apic::delivery_mode")
-
 
 diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
 index 95bd7c25ba6f..542b823f9827 100644
