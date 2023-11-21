@@ -1,160 +1,170 @@
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2050.outbound.protection.outlook.com [40.107.93.50])
+Received: from mail.marcansoft.com (marcansoft.com [212.63.210.85])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 905441EB46
-	for <iommu@lists.linux.dev>; Tue, 21 Nov 2023 06:15:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 134E619BD6;
+	Tue, 21 Nov 2023 06:48:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=marcan.st
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=marcan.st
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="iYNrkBcP"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UqCMM7CBOwmSXVTHx2KM+dao0wRRK0U2HCkUtSBzdMXebYO7mxqQE+V7gl0xO8CdfZ6gH+j1nXvLD+73TrZes44lAcbALJ1iP67mYGcyW0kwCk1x66Dbdht437kaSOyLts5RGOvcQug7aMkF5Y4dK9E5553QebdJGnep/Z6M8/El3tmo8K4S60u65uJLLa9Ewk8silKdk5cpBQOYJGt5JQy5PCU4YCuFyE5bIOaWc17Wxxosy9uOGT/oEpJbHCvdvF8fDGTtJIz0KsTfq25aA9gZWzO3nl6VUje9qSq0LHxi3fRDbrWgRihldyntxNgoje6VVMNDlr0bFC/HnJqhgQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=tEJ/0jhiLlAj5NKKVmbg6DnSqk+YY1VVE/Zsj54CHRQ=;
- b=X0z7HW2Xe3xvcKBZ6aNWXsgJCuPw8ySykO50uk3++RbdRdamo66kPYetUM4UiaCHgCYyA69vThx1NCinfHmuDdQqD1S4nFvGCTwFB0xNfTMgseCJEoWuwqKc3cwTMxsec3vNxwTjBbu+DLYHciKGox/FxFcMLEHXKSedIJAoM8dA/t+0D0BMzIgIBCIlzQuzm7NdGmTJIcbVlLR9q1VL3IVD0WHLGVDL2G/cH8aGE4sYoyfBX5e1vCugfvyW8WO7DHHqpz0RQiVdvVK1uUVPWGzloOzC+ayQ+/a8pBQzAzQfLxXlhtOu1GeAG0dxD5pdB0BrRFmLt12PnkaWesukPw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=tEJ/0jhiLlAj5NKKVmbg6DnSqk+YY1VVE/Zsj54CHRQ=;
- b=iYNrkBcP8/CTHXqEElvV9RmmrK8IjC/TuLCAl6rCXQguAtPelg2NaC6uVcY4ZQNnPZlK6gjJt9YzpoerBcjabcEPPO+Tt3CAKZf6FV0VBZjWqEStN0Wj3OUtXJWSZPYPMgGF03pMRJFHXH7MJUvAXe/UiYRlIrrQLMspWHK6Vzs=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DS7PR12MB6048.namprd12.prod.outlook.com (2603:10b6:8:9f::5) by
- PH0PR12MB7908.namprd12.prod.outlook.com (2603:10b6:510:28e::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7002.25; Tue, 21 Nov
- 2023 06:15:20 +0000
-Received: from DS7PR12MB6048.namprd12.prod.outlook.com
- ([fe80::befc:daea:28e6:32af]) by DS7PR12MB6048.namprd12.prod.outlook.com
- ([fe80::befc:daea:28e6:32af%3]) with mapi id 15.20.7002.027; Tue, 21 Nov 2023
- 06:15:20 +0000
-Message-ID: <2c8daf55-22f8-f79e-ae02-6fc8d505ade2@amd.com>
-Date: Tue, 21 Nov 2023 11:45:11 +0530
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH] iommu/amd: Set variable amd_dirty_ops to static
-Content-Language: en-US
-To: Kunwu Chan <chentao@kylinos.cn>, joro@8bytes.org,
- suravee.suthikulpanit@amd.com, will@kernel.org, robin.murphy@arm.com
-Cc: kunwu.chan@hotmail.com, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org
-References: <20231120095342.1102999-1-chentao@kylinos.cn>
-From: Vasant Hegde <vasant.hegde@amd.com>
-In-Reply-To: <20231120095342.1102999-1-chentao@kylinos.cn>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: PN2PR01CA0224.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:c01:ea::19) To DS7PR12MB6048.namprd12.prod.outlook.com
- (2603:10b6:8:9f::5)
+	dkim=pass (2048-bit key) header.d=marcan.st header.i=@marcan.st header.b="yBZ7Udel"
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits))
+	(No client certificate requested)
+	(Authenticated sender: marcan@marcan.st)
+	by mail.marcansoft.com (Postfix) with ESMTPSA id EDDAF42137;
+	Tue, 21 Nov 2023 06:47:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=marcan.st; s=default;
+	t=1700549281; bh=ujaYq3QQkb3U4N6JNFFQq4uH4QKQpO8RJp9aJVbB0w0=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To;
+	b=yBZ7Udel893+M2pzDMgdTushmaUgXq0nIf/5xxASROF107adcyenfoQIJKpJop3QE
+	 1+yTIUhVbWxOP7swSXHE/1waIz+ytnfqIeOR+pXsrjnxJ9YDy9OcehudknnZZfDU0W
+	 yBoxtsLq/eITHB2A8C7zHMk/QpuQDhn54/ueeppNZr5bacp1NBly8id6vI/+HcZLF9
+	 Y3o89xan9Av9novKYwloiJeRxCXK4RdvbSm3KrREtUx62PnuC+h7WkJf1goRn4PDd/
+	 8BaauSYV42Ok4T8UBbrfnw8aItI789XfEb5enuqF6bZ2I7QNWWCAUkdCy2CTlvEfD+
+	 wJAB4I2ql495A==
+Message-ID: <90855bbf-e845-4e4d-a713-df71d1e477d2@marcan.st>
+Date: Tue, 21 Nov 2023 15:47:48 +0900
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS7PR12MB6048:EE_|PH0PR12MB7908:EE_
-X-MS-Office365-Filtering-Correlation-Id: 4187f003-e97e-404b-5b95-08dbea593d04
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	T2BGyR64IftisJJu+TGbF7QsvHT5wLsWTA0u9bYRNyAQ8ATjJ5rwp0/RWmAa8tmf8te8UXU4nfr8rRYRu9hIOhlsHCEffyol6dTZ4nL9pbIrsPMU79DhXnX6OxH1cTY+uZ1hQEUcBCabp2pk75EfL4T4EgvAUH0GFMv6nuRJ/wO2YwdB1ExRgVFn6hJzH7m6jFlvdLlTbcYtFT7wEwQHTBD0eO07S+kz8iXY53wf/svPThPY6TNv+EkDs6hYpbsnGRNYOdAK1++uEBAYdXSuY1cJXiK2aFpwi1sJQUaiGLoMrgH0PSUOC7zDlgAsKiLUE4YByWaVmsN4Ewe5KNSsq/2Uvg3pUTTpfjbr1A/MjDSccjPn2PPo7hhtiOcu93q4OJdF1BMHFFMF9IFkHvgWgH/ryXynCuRCkawWIVku2fxDWDqfWc3eeUsPPVvaUY1ab88GJ6PvHnKYwOk3vefQkljz/FWW+ahQ0P6PWSEanmO2f4wpJjHIbRluI8ZW0ENRToVQ0o+lnPc2Px8hoX7vh9PaJ9t5DqW3j83UxzKEtCoeIBIyLS+kXQ1oLuhAeEsGfL+X11fUFSZ0qrk+/UDVLQd3HZzPNYZI5VZz2n455scB1jxQSx+O8ujAcM2d8X5sv35ttchambUfw2jXbpqg1nHBJ1MIMVVrpmJDddqYc6rM09rL4VKeIDkIQmd0PgG31bt+CMykdS0EgDAtvutOcQ==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6048.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366004)(39860400002)(376002)(136003)(346002)(396003)(230173577357003)(230922051799003)(230273577357003)(186009)(1800799012)(64100799003)(451199024)(31696002)(31686004)(86362001)(6486002)(6666004)(6506007)(66946007)(66556008)(66476007)(316002)(36756003)(2616005)(53546011)(6512007)(26005)(41300700001)(83380400001)(478600001)(44832011)(2906002)(5660300002)(4326008)(38100700002)(8676002)(8936002)(14143004)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?RXhXZndpT3NLMnB5eVMzU3J3eVRCeGpuZjg4M1BNeGtVeDFORUxBZ0ZQR0Rn?=
- =?utf-8?B?OCs3eUhFSDBMZkVycHo3dnN1ellVRjljeGNVcEhCbGJ3RGk2QUtQYlU5VXFF?=
- =?utf-8?B?cGk5UHFSd1dVTTU2OGovTncxTFBvVEZDUVVwck5ZQ0Q0RHZlMlpPY0hnYmI5?=
- =?utf-8?B?OW1DVkVEVUM5S29IemNuckREakY3azd3Vkt3Y3U5R3Evb3l6amMrL3B6OUpu?=
- =?utf-8?B?ODBoYzZVdHdjOFR2QXByYnI3Zzc0RHVvMUlpRWtHcEdOUm8yQzlzT1Jsc285?=
- =?utf-8?B?dDVoRE9CcVFYNjhRYUEvMnJpWGVzOHpZSGozVXovUTBwanJ4a1lCWDJyck43?=
- =?utf-8?B?eG8xaitpNk55UE1IWGhPZ1VXMlZ4d0VWN1BvRHMxbDM1Tk1TRW8yTUlobGJP?=
- =?utf-8?B?MW93UnBQRUhvNEo0N1RVbFVOWm9oNzRDYUhXMFJhUnRHOWc3aFk0NzhPUThw?=
- =?utf-8?B?RmJyOTlSWjdpdFN1aXNkOUtQK0lDbHBlOUs3SW51Ti8wVGdnQzhKMXRXVnl5?=
- =?utf-8?B?Vmp3V1NQZVZBY3Z0N0R4bVViZHdNaGZJVno4Q2dtSFJTa3RYdEEva21aeGRL?=
- =?utf-8?B?OUtOWnJjNytlODRlNVIyRXFyNFQwbXVoTm9QRVRsa0pkdkpVSmdNMWRtbkto?=
- =?utf-8?B?LzdOeXFLVWxhb25RQytwZFh3MVFtdERnOEFSVHBFT2R6OWFWZWtRNXcyR1Fh?=
- =?utf-8?B?djlHUEU2Ykh0Rnk1YWdQVGtYUTdneFFFSkVUcmd0cUNvSmI0Yjk3Njd2QVVk?=
- =?utf-8?B?Z1Q4cFVRdU5PWWhTYnE3YWMwa2ZLcmF3OVZhL1h0VjMzVk8yTHk3a0N5OUhF?=
- =?utf-8?B?czdEbm5vbU9BbWtaVk0xS3grQ1NvdVB4SlFSNWtZYXZWREFWOHBwS21xSW0x?=
- =?utf-8?B?ak9oSituQndKenhXNGhtNDRRSU1QdzZ2WHppQXNMcXRlTEttN2pWeGo1TnJq?=
- =?utf-8?B?RGczcm9kU3hZc250eUtoOG9PU2dUNmtEVExCZTFxZUl3S3R6OHBvcGJiQ3Zz?=
- =?utf-8?B?Zm1Gc0gxb0dBSGNJdVBTODlQRHJSdTNmZkxHVndaTkVxL1pQYzlWYy84RFc4?=
- =?utf-8?B?UTkwNTZZSW50ejZrWDA0bmdQdUN5QmZSNExEaTBPSkZsaGNqRHVGdXA2MVVq?=
- =?utf-8?B?STdPdmx1eFp0N2JucXRjcHY4RnZ1N1JrRHNSc1ZKRUxtbTlKS3VkU29hWS9J?=
- =?utf-8?B?OEZIZHlQaEVKSkE0bmhRUzZaTHpPaEpMZUdmQzA4b1ZjTkVLUFhtaHZvOVZL?=
- =?utf-8?B?UC80QWpjMWdGbzEzek5VMXZDbzRxL1VmZG5QZzdlaUVVb2pyQTd1SEFlcmRm?=
- =?utf-8?B?MkN2czE2ek1vOWQzUlM1bTBPeFdjTjBNSjUyN3JzWGRrMEl0K0ljWkVqNGZK?=
- =?utf-8?B?NmJCTTVueXF4SlJXNy9yY1lIOWpqWG43SFR4Rm1GNzRJK3RVcGpXTWJqOU9R?=
- =?utf-8?B?TExwUXkveGh3VkNBL3hIT0ptRlN2b3NvMEREb3FLb1pzRUFlMDZXM2Fxc0I3?=
- =?utf-8?B?TFFLL0pWYWJiOG15ZWJudDlVWmM3TzJHQk14K3gzVXlVdDZLVXRuRWJIck9P?=
- =?utf-8?B?V0ZIOGs4UGYwUlNrMFppanRmcmVqN0R2eWFETlhLc09kNy9IeklZUk0ydzVs?=
- =?utf-8?B?TDJUcytaeXI3TWNodTQ0bkQrZG1lMVdSb2x1WUZQNzFEZVdGWDRPYU5xL3Zr?=
- =?utf-8?B?dUpiRllJTHhOdUxSVFRVQjJhQU0ybTlyS3JTd3FZOHZPMEw3WjNudlhhVmZF?=
- =?utf-8?B?TTg4N3JsM291YjdrbzJsUGpTWW5Wa2lMblB1cEtuUGUwMkFkNURYNHBLQnlp?=
- =?utf-8?B?eVNUYmV0UGlxNFk4Y285cWlrd0l0Si9Hb1puUWJvNXBnQ3lHUkhyODY0aHRI?=
- =?utf-8?B?NEYrUlNrZzVzNUVhVUp6YXYxZ2trUTN0TFhkVytmUHBOUW56YkRNd1h5ZHUx?=
- =?utf-8?B?K3RtQngzNk9MVUFBNlZaaXlEbnZDTGxmcFFIamdCS0orNHJqYmJ3ZzNwSE8y?=
- =?utf-8?B?L0ZaQnB6eW1NVVY3dTYxcjh6bFRSNW9QN002NEVhYW05RjJaclF4OU1yS001?=
- =?utf-8?B?STl2cG1MT0M1dndiS1FYSm9qVmZWRzhtZWNHN3Fzc0NLRUc4RGk2QVB6aXdN?=
- =?utf-8?Q?fpYbTZQgWGS156Tqm0Rw6U6Ev?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4187f003-e97e-404b-5b95-08dbea593d04
-X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6048.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Nov 2023 06:15:20.4534
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Wh61lM0dnE/v1oyyWHZuTyy9aF9u1lXHIaE7Pb2FNd7U18uSCOlWamltguPrk5q4hTugGWTCNafYXYxOXV9jFA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR12MB7908
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 06/17] iommu: Add iommu_fwspec_alloc/dealloc()
+Content-Language: en-US
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: acpica-devel@lists.linux.dev, Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+ Albert Ou <aou@eecs.berkeley.edu>, asahi@lists.linux.dev,
+ Catalin Marinas <catalin.marinas@arm.com>, Dexuan Cui <decui@microsoft.com>,
+ devicetree@vger.kernel.org, David Woodhouse <dwmw2@infradead.org>,
+ Frank Rowand <frowand.list@gmail.com>, Hanjun Guo <guohanjun@huawei.com>,
+ Haiyang Zhang <haiyangz@microsoft.com>, iommu@lists.linux.dev,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Jonathan Hunter <jonathanh@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
+ "K. Y. Srinivasan" <kys@microsoft.com>, Len Brown <lenb@kernel.org>,
+ linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-hyperv@vger.kernel.org, linux-mips@vger.kernel.org,
+ linux-riscv@lists.infradead.org, linux-snps-arc@lists.infradead.org,
+ linux-tegra@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
+ Lorenzo Pieralisi <lpieralisi@kernel.org>,
+ Marek Szyprowski <m.szyprowski@samsung.com>,
+ Palmer Dabbelt <palmer@dabbelt.com>, patches@lists.linux.dev,
+ Paul Walmsley <paul.walmsley@sifive.com>,
+ "Rafael J. Wysocki" <rafael@kernel.org>,
+ Robert Moore <robert.moore@intel.com>, Rob Herring <robh+dt@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Sudeep Holla <sudeep.holla@arm.com>,
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ Sven Peter <sven@svenpeter.dev>, Thierry Reding <thierry.reding@gmail.com>,
+ Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+ Krishna Reddy <vdumpa@nvidia.com>, Vineet Gupta <vgupta@kernel.org>,
+ virtualization@lists.linux.dev, Wei Liu <wei.liu@kernel.org>,
+ Will Deacon <will@kernel.org>
+References: <6-v2-36a0088ecaa7+22c6e-iommu_fwspec_jgg@nvidia.com>
+ <20a7ef6d-a8ca-4bd8-ad7e-11856db617a2@marcan.st>
+ <1eb12c35-e64e-4c32-af99-8743dc2ec266@marcan.st>
+ <20231119141329.GA6083@nvidia.com>
+From: Hector Martin <marcan@marcan.st>
+In-Reply-To: <20231119141329.GA6083@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On 11/20/2023 3:23 PM, Kunwu Chan wrote:
-> Fix the followng warning:
-> drivers/iommu/amd/iommu.c:67:30: warning: symbol
->  'amd_dirty_ops' was not declared. Should it be static?
+
+
+On 2023/11/19 23:13, Jason Gunthorpe wrote:
+> On Sun, Nov 19, 2023 at 06:19:43PM +0900, Hector Martin wrote:
+>>>> +static int iommu_fwspec_assign_iommu(struct iommu_fwspec *fwspec,
+>>>> +				     struct device *dev,
+>>>> +				     struct fwnode_handle *iommu_fwnode)
+>>>> +{
+>>>> +	const struct iommu_ops *ops;
+>>>> +
+>>>> +	if (fwspec->iommu_fwnode) {
+>>>> +		/*
+>>>> +		 * fwspec->iommu_fwnode is the first iommu's fwnode. In the rare
+>>>> +		 * case of multiple iommus for one device they must point to the
+>>>> +		 * same driver, checked via same ops.
+>>>> +		 */
+>>>> +		ops = iommu_ops_from_fwnode(iommu_fwnode);
+>>>
+>>> This carries over a related bug from the original code: If a device has
+>>> two IOMMUs and the first one probes but the second one defers, ops will
+>>> be NULL here and the check will fail with EINVAL.
+>>>
+>>> Adding a check for that case here fixes it:
+>>>
+>>> 		if (!ops)
+>>> 			return driver_deferred_probe_check_state(dev);
 > 
-> This variable is only used in its defining file, so it should be static.
+> Yes!
 > 
-> Signed-off-by: Kunwu Chan <chentao@kylinos.cn>
-
-Thanks for the fix. Looks good to me.
-
-Reviewed-by: Vasant Hegde <vasant.hegde@amd.com>
-
--Vasant
-
-> ---
->  drivers/iommu/amd/iommu.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+>>> With that, for the whole series:
+>>>
+>>> Tested-by: Hector Martin <marcan@marcan.st>
+>>>
+>>> I can't specifically test for the probe races the series intends to fix
+>>> though, since that bug we only hit extremely rarely. I'm just testing
+>>> that nothing breaks.
+>>
+>> Actually no, this fix is not sufficient. If the first IOMMU is ready
+>> then the xlate path allocates dev->iommu, which then
+>> __iommu_probe_device takes as a sign that all IOMMUs are ready and does
+>> the device init.
 > 
-> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-> index fcc987f5d4ed..9f7064360828 100644
-> --- a/drivers/iommu/amd/iommu.c
-> +++ b/drivers/iommu/amd/iommu.c
-> @@ -64,7 +64,7 @@ LIST_HEAD(hpet_map);
->  LIST_HEAD(acpihid_map);
->  
->  const struct iommu_ops amd_iommu_ops;
-> -const struct iommu_dirty_ops amd_dirty_ops;
-> +static const struct iommu_dirty_ops amd_dirty_ops;
->  
->  int amd_iommu_max_glx_val = -1;
->  
-> @@ -2635,7 +2635,7 @@ static bool amd_iommu_enforce_cache_coherency(struct iommu_domain *domain)
->  	return true;
->  }
->  
-> -const struct iommu_dirty_ops amd_dirty_ops = {
-> +static const struct iommu_dirty_ops amd_dirty_ops = {
->  	.set_dirty_tracking = amd_iommu_set_dirty_tracking,
->  	.read_and_clear_dirty = amd_iommu_read_and_clear_dirty,
->  };
+> It doesn't.. The code there is:
+> 
+> 	if (!fwspec && dev->iommu)
+> 		fwspec = dev->iommu->fwspec;
+> 	if (fwspec)
+> 		ops = fwspec->ops;
+> 	else
+> 		ops = dev->bus->iommu_ops;
+> 	if (!ops) {
+> 		ret = -ENODEV;
+> 		goto out_unlock;
+> 	}
+> 
+> Which is sensitive only to !NULL fwspec, and if EPROBE_DEFER is
+> returned fwspec will be freed and dev->iommu->fwspec will be NULL
+> here.
+> 
+> In the NULL case it does a 'bus probe' with a NULL fwspec and all the
+> fwspec drivers return immediately from their probe functions.
+> 
+> Did I miss something?
 
+apple_dart is not a fwspec driver and doesn't do that :-)
+
+> 
+>> Then when the xlate comes along again after suceeding
+>> with the second IOMMU, __iommu_probe_device sees the device is already
+>> in a group and never initializes the second IOMMU, leaving the device
+>> with only one IOMMU.
+> 
+> This should be fixed by the first hunk to check every iommu and fail?
+> 
+> BTW, do you have a systems with same device attached to multiple
+> iommus?
+
+Yes, Apple ARM64 machines all have multiple ganged IOMMUs for certain
+devices (USB and ISP). We also attach all display IOMMUs to the global
+virtual display-subsystem device to handle framebuffer mappings, instead
+of trying to dynamically map them to a bunch of individual display
+controllers (which is a lot more painful). That last one is what
+reliably reproduces this problem, display breaks without both previous
+patches ever since we started supporting more than one display output.
+The first one is not enough.
+
+> I've noticed another bug here, many drivers don't actually support
+> differing iommu instances and nothing seems to check it..
+
+apple-dart does (as long as all the IOMMUs are using that driver).
+
+> 
+> Thanks,
+> Jason
+> 
+> 
+
+- Hector
