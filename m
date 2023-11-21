@@ -1,124 +1,175 @@
-Received: from mail-ot1-f52.google.com (mail-ot1-f52.google.com [209.85.210.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.31])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F32B6FBF
-	for <iommu@lists.linux.dev>; Tue, 21 Nov 2023 01:39:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D0B0747D
+	for <iommu@lists.linux.dev>; Tue, 21 Nov 2023 02:48:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="YosRf/aS"
-Received: by mail-ot1-f52.google.com with SMTP id 46e09a7af769-6ce2eaf7c2bso3160383a34.0
-        for <iommu@lists.linux.dev>; Mon, 20 Nov 2023 17:39:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1700530779; x=1701135579; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=fz4p3ZfFny6qJVN9sQ219rkze+bwswpB7VIcNz890As=;
-        b=YosRf/aSj/eINhybHKFyXl2eOxnbk50Dc+7XxMvJoYCOYx5xYtSJW0LVmq1C0HTpZW
-         MceTo5+ZfLaT57ToaKQRPOWMHRV4LjARIkLraOyK/DdL1B8Le4L4HyFoOBjtFcV7nykQ
-         HYlrFo+O3r0kBI5oRwk6bnWA+Frw0P9PpmNFbTnEKnCLUhLjGkTozOVXMmtrF95ujy+w
-         Q3szrdEjUjrDU4jTIRSl1tb+V5Qu1RNVxARdf61WGez3tWPT3ewF2dQZ7gzkmBNfDN+5
-         Wg0YEmu1kN1b5b2DUzFbuhIIowaipKEL9su+MX1CuAF/u5EryFZYp8vaGGI+Kb9HrmU0
-         vPMw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1700530779; x=1701135579;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=fz4p3ZfFny6qJVN9sQ219rkze+bwswpB7VIcNz890As=;
-        b=K8K9amtUNBnYtKV3+cTSutygFQmJbqRZ2blPrtBcsMut3IaIzGofUZuhTNDlsg6heu
-         L5eXTiv/vEE250P/ZVtNFJjnMUNSqjUYaiZ5seOUVSAI6XjvjaP5fCfjqmK079wtZu7D
-         mxBPb2yGOmGeD2JB1o/O96nt9hKnAQzAxmfMH0bt09it35OChAD4WKEqgIdzWTK0R6TO
-         qI/uyglmuVgNIuAFlU2Mi3El6QXKvvhv6fsFRkNYtVMjwb4cO817yq7CUyj1I0bPjmOf
-         1y0pN8gWo0Yz4HVdlwO2Nt2LXBQoRa3csG7HhvqpjJSNiw/ddfsb0/DtNOYp5PBa4rt+
-         KgYw==
-X-Gm-Message-State: AOJu0YwXKbr5C4LUX5iMOR3WZSflNWGngpS5NV0+ybP0LusPYIeMBFir
-	HaioK1PdOmvUxZ1Uh98bfYbbkQ==
-X-Google-Smtp-Source: AGHT+IFpJxUvxxA1GysD6LVJ2r9vV1Nbcc/QLq4q22f/ResIN8lV5LRXcM9XYXXO7322vKdE/MGt8w==
-X-Received: by 2002:a9d:69c5:0:b0:6d6:4f84:b5cb with SMTP id v5-20020a9d69c5000000b006d64f84b5cbmr9401174oto.38.1700530779180;
-        Mon, 20 Nov 2023 17:39:39 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-134-23-187.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.134.23.187])
-        by smtp.gmail.com with ESMTPSA id cz23-20020a0568306a1700b006b8b55297b5sm1396727otb.42.2023.11.20.17.39.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Nov 2023 17:39:38 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1r5Fjl-001AWJ-Cd;
-	Mon, 20 Nov 2023 21:39:37 -0400
-Date: Mon, 20 Nov 2023 21:39:37 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Cc: Robin Murphy <robin.murphy@arm.com>,
-	Joao Martins <joao.m.martins@oracle.com>,
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="V/HwDu9X"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1700534929; x=1732070929;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=OiAuBvNvNBUWilHTsa+mIPF1Zbrt8eA/nmfUJvgp1JI=;
+  b=V/HwDu9XSEnxZzdpoOod2bUaG7dzYqhTcNKTLZTYFZ0Qu0vGndBu0fEO
+   sd6bhHbTyg8hkTFcvLFcRhlP4/zCxgFIrvoQnEEGcBq7hQACW/Mdt5gsj
+   XkKyGVXljqrAuNXc2iA4f+HDx1I5qJFQqmiKsGmSg8UTA7SRe+9VzDVf5
+   QlFnMtsFiKSRQA3sPJZPNSZWDBqiMelLtCiBnqe5QeZ/f6zRYe0f8ghnj
+   TIxFPGN/ZZLGUrhoHUm8GTVZK3Gb/J/cGJ2HsxMJBH5JegoXHFc4daf+I
+   5r6A7xMBE/YGQKSspAzoP5vmvXCqnuZfugsd5xLpBkvONm0gY9sDlSahY
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10900"; a="456088388"
+X-IronPort-AV: E=Sophos;i="6.04,215,1695711600"; 
+   d="scan'208";a="456088388"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Nov 2023 18:48:48 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10900"; a="742896571"
+X-IronPort-AV: E=Sophos;i="6.04,215,1695711600"; 
+   d="scan'208";a="742896571"
+Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
+  by orsmga006.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 20 Nov 2023 18:48:48 -0800
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.34; Mon, 20 Nov 2023 18:48:47 -0800
+Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
+ orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.34 via Frontend Transport; Mon, 20 Nov 2023 18:48:47 -0800
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.101)
+ by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.34; Mon, 20 Nov 2023 18:48:47 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=g2Ddtq6HYio05LjhWKPWz1cQ8VxInojVSuQh5p26TBePQfMt43AyIPAGh3ezvlT9TkDoyu+Wgy8wMZIlVci+X9IGnGHSqZ6jqtf/ZO28XIHYzfEZpmPKAR3tiEQ6MiJWoly/xSR/iG6iyrB3YOr+B4YYhgRc6yb6vJho+r104qlZMeyOzAII5MewYkUZQOq9VpMseB/Ivk1sHOWsGmv9DmbiGgc/v8Vo+S8wVNKyu+xFq4P1KXaV3z7AiwCpc/K0jDXIbGmxyueVLDICG8I0raGJGrzGyWg7YQfkQ7CPFxg+5Qc/dlWNX6VZ1HcUT37hDUbSHFAVLI6kXLBDccpvbA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=OiAuBvNvNBUWilHTsa+mIPF1Zbrt8eA/nmfUJvgp1JI=;
+ b=VXriQ5rlr20iA9LtzXsrr2zUSDHQkoFEVI4iIKtIjp8RmmjHorv6uiVYVuCl5rjr0osb8QO/TweaofEaf9WxDi5NwFfVOLDGLwZaHeXEXVJTJBM7wKgB5NQ3mEatPArtjuW1aqViCenLADmONhr8UZaFuCD5D6UKsS8O4Lda9nQ/Yi1ekeSuvSID4BlxQ/kuxRiPTc6QkYxO2MS8McCT2QvDso3bTIyAi9jrOFrF6NihxvqEZ2ok+6pfI+kGXtMtq5RV0iU1fja+WTy+1K2Ry7gCiYFdhTulebS/fWvuozmQxyPVVYeu830a22af+PqqbjQY6K+jQNjwDkOPEso5oQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
+ by DM6PR11MB4612.namprd11.prod.outlook.com (2603:10b6:5:2a8::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7002.27; Tue, 21 Nov
+ 2023 02:48:40 +0000
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::e7a4:a757:2f2e:f96a]) by BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::e7a4:a757:2f2e:f96a%3]) with mapi id 15.20.7002.027; Tue, 21 Nov 2023
+ 02:48:40 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+CC: "Liu, Yi L" <yi.l.liu@intel.com>, "joro@8bytes.org" <joro@8bytes.org>,
+	"alex.williamson@redhat.com" <alex.williamson@redhat.com>, "jgg@nvidia.com"
+	<jgg@nvidia.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>, "cohuck@redhat.com"
+	<cohuck@redhat.com>, "eric.auger@redhat.com" <eric.auger@redhat.com>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>, "mjrosato@linux.ibm.com"
+	<mjrosato@linux.ibm.com>, "chao.p.peng@linux.intel.com"
+	<chao.p.peng@linux.intel.com>, "yi.y.sun@linux.intel.com"
+	<yi.y.sun@linux.intel.com>, "peterx@redhat.com" <peterx@redhat.com>,
+	"jasowang@redhat.com" <jasowang@redhat.com>,
+	"shameerali.kolothum.thodi@huawei.com"
+	<shameerali.kolothum.thodi@huawei.com>, "lulu@redhat.com" <lulu@redhat.com>,
+	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
 	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] iommufd/selftest: Fix dirty_bitmap tests
-Message-ID: <20231121013937.GH10140@ziepe.ca>
-References: <90e083045243ef407dd592bb1deec89cd1f4ddf2.1700153535.git.robin.murphy@arm.com>
- <72f0e75b-6c91-4c17-beb2-3f198ed05cd0@oracle.com>
- <b541f87c-fa8e-4b09-bf1c-68829bc9e6c9@arm.com>
- <BN9PR11MB52768448A70C9B3CCB2CDE3D8CB7A@BN9PR11MB5276.namprd11.prod.outlook.com>
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>, "Duan,
+ Zhenzhong" <zhenzhong.duan@intel.com>, "joao.m.martins@oracle.com"
+	<joao.m.martins@oracle.com>, "Zeng, Xin" <xin.zeng@intel.com>, "Zhao, Yan Y"
+	<yan.y.zhao@intel.com>
+Subject: RE: [PATCH v6 3/6] iommu: Add iommu_copy_struct_from_user_array
+ helper
+Thread-Topic: [PATCH v6 3/6] iommu: Add iommu_copy_struct_from_user_array
+ helper
+Thread-Index: AQHaGVcISf8BaZEQJUSSGRR/7aBQN7CC4RvAgACZOwCAAJ1hAA==
+Date: Tue, 21 Nov 2023 02:48:40 +0000
+Message-ID: <BN9PR11MB5276B273F59D66A757B178AB8CBBA@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <20231117130717.19875-1-yi.l.liu@intel.com>
+ <20231117130717.19875-4-yi.l.liu@intel.com>
+ <BN9PR11MB52763299F886D4A534D6E0BA8CB4A@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <ZVuWdEwYw+9uAaUz@Asurada-Nvidia>
+In-Reply-To: <ZVuWdEwYw+9uAaUz@Asurada-Nvidia>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|DM6PR11MB4612:EE_
+x-ms-office365-filtering-correlation-id: e7bb829c-de4a-4356-a99e-08dbea3c5e13
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: Fpt/lkk6o8eRfMe4hoU+km2539iG9XhSIZ1fEDXfquk4tNt+2piQ0RXYPtHFVM+JN/lkcP3Z55AE1xLX2dsGiUkr00vnzQxDh/2E4EqdrqFmGIKosqdczOdtnxrWFz/MqkCyy+rNQkI6wtd4XaaZG96lcP8KWOo8VwgO9Kr2+HiP5MBI7RdnSLk4yHlS7fuCcN9x6JMICaE9C0ehnlj1sBfBCrXyHnpfTZOU4ScdxGGM3zyR8P7Dej+7SUn0ybS+XuF22p+SxQ3GCwbchpDHDmSELku1mF6Kl4AF5fTt61I8DzAQ3q1AEqxnaeh/Si/wW5nBf9rfizNXj6kTGwM/+JEA+YTWLGyzwmEsw4vFgj+0k2CiVxBViL8rm+7P0BX5rWNIml2qfUUT3k1pU6sGh8FgdphMYjx4kkrMKYc+wk+FFPEi6sFKlaPptvBKvU0/l6RSFHLhFzl3IjAvOJ+EOKSVln/NhxczKEU22SrUMLF00iPEL5Aei/04b0s2PZFmcFDK4/viMJAhgJcV+bt56mx081SqiayH51qtK1L0wo5qacvo2Hyu6vUJHtG8D+6AnCxQcEHP0nj/P9f67l7NQL/oAsr2GSBkB3hgLhspRk2rid93Dlztkb9UqqsISkHC
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366004)(396003)(376002)(39860400002)(346002)(136003)(230922051799003)(451199024)(64100799003)(186009)(1800799012)(66446008)(66946007)(66476007)(66556008)(76116006)(6916009)(64756008)(54906003)(316002)(7696005)(9686003)(71200400001)(6506007)(26005)(478600001)(38070700009)(38100700002)(82960400001)(122000001)(33656002)(86362001)(55016003)(2906002)(5660300002)(7416002)(4744005)(4326008)(8676002)(8936002)(52536014)(41300700001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?n0rVZN2KLNh3JsPz/wc5sRXGuQxYFcOAClSffj/WUkVULYJ4oinIFLba/lJs?=
+ =?us-ascii?Q?8xh/F+YiUfHj5aD1FiLUwG6yscMgUggASinpypZYRvL3zWmOe5EQchfIEq8q?=
+ =?us-ascii?Q?fR9i3SZBmmOvdM5HvpO8RmZXBwL38Iw7YQiFUMkOuRohIoH2ntlvsQl6SWVJ?=
+ =?us-ascii?Q?F+WuVXo84VjQHMfMfG5WLtS7kUwH0hLmSn6F5fjIO4bthTZ8nMnh24rRknj8?=
+ =?us-ascii?Q?Uf3cDiFxHX3XOgXSXWYc89aXK7QNil3KSfNNXb87EyGQY5fFd0IblCCY61eD?=
+ =?us-ascii?Q?iYgY5VQc67qjh5bzzO7cfTQ4edkq22tSFhM2WPRtt0xFBOs4RSqtU6x6W8b7?=
+ =?us-ascii?Q?+6GjL4YaV0pj2f0OyFzm4qBBuWFnSeROA9kaU1DSCGGrOszNEzIG+NYBq2yL?=
+ =?us-ascii?Q?naCAROracVN3ijw7ce/urVNTzmmhPKxl1T0/2DG6SxvIbMYvt883y8CSpJpw?=
+ =?us-ascii?Q?GYKTVrKe4vB+2ZaGbt0vqnQQIsm5gcrPz/foljCFqprcbrccqxxk2FJQHZhJ?=
+ =?us-ascii?Q?rgyP4zT0ba0No/AjYPV1UAGs74vwzadyFBRtaCex8dSy3k1qGXiHeShE2lKx?=
+ =?us-ascii?Q?+BecbqyzF2yq4vP2sVu1foBdybxAvxY4BeVpNXbofDCYHwsgMU0SpPsJMJll?=
+ =?us-ascii?Q?Ty080S6+pSP5Se/HlcdjZP9bRxvBJHhHYPrMZ7iqnQ+j4gyeCNznUT2v2aiP?=
+ =?us-ascii?Q?lKXq2MXRxKGbNqNuUu74Xhq6PzIfS02IGIAQ4et+30eQsMrKzHQ2CDVoujEK?=
+ =?us-ascii?Q?3E+W6bQqCyo/XvVRTxkJfrVZ3jRvVRveZFH1BTnBSoqqPb16NZpV1AM4bcXt?=
+ =?us-ascii?Q?C5yj0cpiFDrXOOcEA3v6ZBGeoGhD8N7CPavvse95m6RCdh4dD2VXEGVZn1ni?=
+ =?us-ascii?Q?oxLNFiOdWnX0YS6UqZBre96iVjW8V3FZKoMD4O2nT3d0hzB/5/YMavPC9x49?=
+ =?us-ascii?Q?P9gjVykmNl7wwf5GbBgWcVhOtmI1EipwL6BWCb69ipkqtrRCOaUuAa5lTHai?=
+ =?us-ascii?Q?jBjbDPmi+cE9fOXsXxWto+TstTErTXzvQdejgB3A5p2YZZm6IiVg8wjDsLyJ?=
+ =?us-ascii?Q?eCwkvkb/QVpGJQJ+Uqss4T3MebjPHtxXGRTiNPA73ESK2k11/C8SxNWQE9Qy?=
+ =?us-ascii?Q?s80XNVYSwPpft+8L6GWP5qLuaim60kyBzR8qDQbGN0+qMiSNHdyW3Ni4jG6R?=
+ =?us-ascii?Q?tDT2vgVSklmvQS6p5Juq2GGMkTWH+by+Sqov1ldkpyqBfHD4pOKEEBcgjwJv?=
+ =?us-ascii?Q?fJSMcgjIWbJxBlNuDgjClTRmwEfwcjBsGkODRIw1oYwqjD4z3dcJk7DoUy1e?=
+ =?us-ascii?Q?HvWdkDiTwynUNiO/Kj6+SH+3gATP7VKPXBEIn4AgF0LXC3VgTkd85/sSgmsn?=
+ =?us-ascii?Q?vAqXH4OWqoEtJT2pg7210bUN+uddvNrh1hPqX1YoOCb3Nc1CU14l104MV9Jp?=
+ =?us-ascii?Q?xhFhYk0UiISxWzcXzW0SP+d5nebCaqaN0SA/0ItHLpaCE6HDiykPSZQgyqEt?=
+ =?us-ascii?Q?/7Miazgz2RGOSCe9MVEshXwqtmfgjfAbvnsqMR0fRFpWQMXrM9pnQ32XzDpn?=
+ =?us-ascii?Q?5Jekj/WnsgJzGI1Inv7caf/OoEIqhGkXJo8Ff/mE?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <BN9PR11MB52768448A70C9B3CCB2CDE3D8CB7A@BN9PR11MB5276.namprd11.prod.outlook.com>
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e7bb829c-de4a-4356-a99e-08dbea3c5e13
+X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Nov 2023 02:48:40.0338
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: OOnw/pYQaA590/zFldq2xoRkRb0kTv3RzJCNdPcgIKKJHsqUzaO5p5+38k7h6T1iVzYImaUATNFSIytaOgBm9Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB4612
+X-OriginatorOrg: intel.com
 
-On Fri, Nov 17, 2023 at 03:15:25AM +0000, Tian, Kevin wrote:
-> > From: Robin Murphy <robin.murphy@arm.com>
-> > Sent: Friday, November 17, 2023 1:44 AM
-> > 
-> > On 16/11/2023 5:28 pm, Joao Martins wrote:
-> > > On 16/11/2023 16:52, Robin Murphy wrote:
-> > >> The ASSERT_EQ() macro sneakily expands to two statements, so the loop
-> > >> here needs braces to ensure it captures both and actually terminates the
-> > >> test upon failure.
+> From: Nicolin Chen <nicolinc@nvidia.com>
+> Sent: Tuesday, November 21, 2023 1:25 AM
+>=20
+> On Mon, Nov 20, 2023 at 08:17:47AM +0000, Tian, Kevin wrote:
+> > > From: Liu, Yi L <yi.l.liu@intel.com>
+> > > Sent: Friday, November 17, 2023 9:07 PM
 > > >
-> > > Ugh
-> > >
-> > >> Where these tests are currently failing on my arm64
-> > >> machine, this reduces the number of logged lines from a rather
-> > >> unreasonable ~197,000 down to 10. While we're at it, we can also clean
-> > >> up the tautologous "count" calculations whose assertions can never fail
-> > >> unless mathematics and/or the C language become fundamentally broken.
-> > >>
-> > >> Fixes: a9af47e382a4 ("iommufd/selftest: Test
-> > IOMMU_HWPT_GET_DIRTY_BITMAP")
-> > >> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-> > >
-> > > I was going to say that the second assert is useful, but we are already test
-> > the
-> > > number of bits we set against what the mock domain set after
-> > > mock_domain_set_dirty(). So the second is redundantly testing the same,
-> > and can
-> > > be removed as you are doing. Thanks for fixing this.
-> > 
-> > Yeah, it's still effectively just counting half the number of loop
-> > iterations executed, but since there's no control flow that could exit
-> > the loop early and still reach the assertion, it must always be true
-> > following the previous assertion that out_dirty == nr == nbits/2.
-> > 
-> > > I would suggest the subject to:
-> > >
-> > > 	iommufd/selftest: Fix _test_mock_dirty_bitmaps()
-> > >
-> > > Because dirty-bitmap tests seems to imply the whole fixture, which covers
-> > more
-> > > than the bitmaps.
-> > 
-> > Sure, that sounds reasonable. Jason, Kevin, would you want a v2 for that
-> > or could it be fixed up when applying?
-> > 
-> 
-> Jason can help fix it when applying.
-> 
-> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+> > > +/**
+> > > + * __iommu_copy_struct_from_user_array - Copy iommu driver specific
+> >
+> > __iommu_copy_entry_from_user_array?
+>=20
+> I think "struct" and "entry" are interchangeable. Yet, aligning
+> with the {__}iommu_copy_struct_from_user seems to be nicer?
 
-Done
-
-Thanks,
-Jason
+ok
