@@ -1,15 +1,15 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8F21922060
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E9FBA2206A
 	for <iommu@lists.linux.dev>; Tue, 21 Nov 2023 18:04:22 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org; dkim=none
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C1917168F;
-	Tue, 21 Nov 2023 10:05:02 -0800 (PST)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0C8361BB0;
+	Tue, 21 Nov 2023 10:05:09 -0800 (PST)
 Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 0147A3F6C4;
-	Tue, 21 Nov 2023 10:04:14 -0800 (PST)
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id E6CE33F6C4;
+	Tue, 21 Nov 2023 10:04:20 -0800 (PST)
 From: Robin Murphy <robin.murphy@arm.com>
 To: joro@8bytes.org,
 	will@kernel.org
@@ -17,10 +17,13 @@ Cc: iommu@lists.linux.dev,
 	jgg@nvidia.com,
 	baolu.lu@linux.intel.com,
 	linux-kernel@vger.kernel.org,
-	jsnitsel@redhat.com
-Subject: [PATCH v6 1/7] iommu: Factor out some helpers
-Date: Tue, 21 Nov 2023 18:03:57 +0000
-Message-Id: <566cbd161546caa6aed49662c9b3e8f09dc9c3cf.1700589539.git.robin.murphy@arm.com>
+	jsnitsel@redhat.com,
+	"Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
+	Christoph Hellwig <hch@lst.de>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: [PATCH v6 6/7] iommu: Retire bus ops
+Date: Tue, 21 Nov 2023 18:04:02 +0000
+Message-Id: <a59011ef65b4b6657cb0b7a388d786b779b61305.1700589539.git.robin.murphy@arm.com>
 X-Mailer: git-send-email 2.39.2.101.g768bb238c484.dirty
 In-Reply-To: <cover.1700589539.git.robin.murphy@arm.com>
 References: <cover.1700589539.git.robin.murphy@arm.com>
@@ -32,14 +35,20 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The pattern for picking the first device out of the group list is
-repeated a few times now, so it's clearly worth factoring out, which
-also helps hide the iommu_group_dev detail from places that don't need
-to know. Similarly, the safety check for dev_iommu_ops() at certain
-public interfaces starts looking a bit repetitive, and might not be
-completely obvious at first glance, so let's factor that out for clarity
-as well, in preparation for more uses of both.
+With the rest of the API internals converted, it's time to finally
+tackle probe_device and how we bootstrap the per-device ops association
+to begin with. This ends up being disappointingly straightforward, since
+fwspec users are already doing it in order to find their of_xlate
+callback, and it works out that we can easily do the equivalent for
+other drivers too. Then shuffle the remaining awareness of iommu_ops
+into the couple of core headers that still need it, and breathe a sigh
+of relief.
 
+Ding dong the bus ops are gone!
+
+CC: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Acked-by: Christoph Hellwig <hch@lst.de>
+Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
 Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 Reviewed-by: Jerry Snitselaar <jsnitsel@redhat.com>
@@ -47,153 +56,151 @@ Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 
 ---
 
-v3: Rename dev_iommu_ops_valid() to reflect what it's actually checking,
-    rather than an implied consequence.
-v4: Rebase, also catch the sneaky one in iommu_get_group_resv_regions()
-    which wasn't the full pattern (but really should be since it guards
-    the dev_iommu_ops() invocation in iommu_get_resv_regions()).
+v4: Don't forget new reference in iommu_device_register_bus()
 ---
- drivers/iommu/iommu.c | 56 ++++++++++++++++++++-----------------------
- 1 file changed, 26 insertions(+), 30 deletions(-)
+ drivers/iommu/iommu.c       | 31 ++++++++++++++++++-------------
+ include/acpi/acpi_bus.h     |  2 ++
+ include/linux/device.h      |  1 -
+ include/linux/device/bus.h  |  5 -----
+ include/linux/dma-map-ops.h |  1 +
+ 5 files changed, 21 insertions(+), 19 deletions(-)
 
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index f17a1113f3d6..5c555fc0d54c 100644
+index 88aeae0acd9b..254f42b4220b 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
-@@ -368,6 +368,15 @@ static void dev_iommu_free(struct device *dev)
- 	kfree(param);
- }
+@@ -148,7 +148,7 @@ struct iommu_group_attribute iommu_group_attr_##_name =		\
+ static LIST_HEAD(iommu_device_list);
+ static DEFINE_SPINLOCK(iommu_device_lock);
  
-+/*
-+ * Internal equivalent of device_iommu_mapped() for when we care that a device
-+ * actually has API ops, and don't want false positives from VFIO-only groups.
-+ */
-+static bool dev_has_iommu(struct device *dev)
-+{
-+	return dev->iommu && dev->iommu->iommu_dev;
-+}
-+
- static u32 dev_iommu_get_max_pasids(struct device *dev)
+-static struct bus_type * const iommu_buses[] = {
++static const struct bus_type * const iommu_buses[] = {
+ 	&platform_bus_type,
+ #ifdef CONFIG_PCI
+ 	&pci_bus_type,
+@@ -257,13 +257,6 @@ int iommu_device_register(struct iommu_device *iommu,
+ 	/* We need to be able to take module references appropriately */
+ 	if (WARN_ON(is_module_address((unsigned long)ops) && !ops->owner))
+ 		return -EINVAL;
+-	/*
+-	 * Temporarily enforce global restriction to a single driver. This was
+-	 * already the de-facto behaviour, since any possible combination of
+-	 * existing drivers would compete for at least the PCI or platform bus.
+-	 */
+-	if (iommu_buses[0]->iommu_ops && iommu_buses[0]->iommu_ops != ops)
+-		return -EBUSY;
+ 
+ 	iommu->ops = ops;
+ 	if (hwdev)
+@@ -273,10 +266,8 @@ int iommu_device_register(struct iommu_device *iommu,
+ 	list_add_tail(&iommu->list, &iommu_device_list);
+ 	spin_unlock(&iommu_device_lock);
+ 
+-	for (int i = 0; i < ARRAY_SIZE(iommu_buses) && !err; i++) {
+-		iommu_buses[i]->iommu_ops = ops;
++	for (int i = 0; i < ARRAY_SIZE(iommu_buses) && !err; i++)
+ 		err = bus_iommu_probe(iommu_buses[i]);
+-	}
+ 	if (err)
+ 		iommu_device_unregister(iommu);
+ 	return err;
+@@ -329,7 +320,6 @@ int iommu_device_register_bus(struct iommu_device *iommu,
+ 	list_add_tail(&iommu->list, &iommu_device_list);
+ 	spin_unlock(&iommu_device_lock);
+ 
+-	bus->iommu_ops = ops;
+ 	err = bus_iommu_probe(bus);
+ 	if (err) {
+ 		iommu_device_unregister_bus(iommu, bus, nb);
+@@ -496,12 +486,27 @@ static void iommu_deinit_device(struct device *dev)
+ 
+ static int __iommu_probe_device(struct device *dev, struct list_head *group_list)
  {
- 	u32 max_pasids = 0, bits = 0;
-@@ -620,7 +629,7 @@ static void __iommu_group_remove_device(struct device *dev)
+-	const struct iommu_ops *ops = dev->bus->iommu_ops;
++	const struct iommu_ops *ops;
++	struct iommu_fwspec *fwspec;
+ 	struct iommu_group *group;
+ 	static DEFINE_MUTEX(iommu_probe_device_lock);
+ 	struct group_device *gdev;
+ 	int ret;
  
- 		list_del(&device->list);
- 		__iommu_group_free_device(group, device);
--		if (dev->iommu && dev->iommu->iommu_dev)
-+		if (dev_has_iommu(dev))
- 			iommu_deinit_device(dev);
- 		else
- 			dev->iommu_group = NULL;
-@@ -819,7 +828,7 @@ int iommu_get_group_resv_regions(struct iommu_group *group,
- 		 * Non-API groups still expose reserved_regions in sysfs,
- 		 * so filter out calls that get here that way.
- 		 */
--		if (!device->dev->iommu)
-+		if (!dev_has_iommu(device->dev))
- 			break;
- 
- 		INIT_LIST_HEAD(&dev_resv_regions);
-@@ -1225,6 +1234,12 @@ void iommu_group_remove_device(struct device *dev)
- }
- EXPORT_SYMBOL_GPL(iommu_group_remove_device);
- 
-+static struct device *iommu_group_first_dev(struct iommu_group *group)
-+{
-+	lockdep_assert_held(&group->mutex);
-+	return list_first_entry(&group->devices, struct group_device, list)->dev;
-+}
++	/*
++	 * For FDT-based systems and ACPI IORT/VIOT, drivers register IOMMU
++	 * instances with non-NULL fwnodes, and client devices should have been
++	 * identified with a fwspec by this point. Otherwise, we can currently
++	 * assume that only one of Intel, AMD, s390, PAMU or legacy SMMUv2 can
++	 * be present, and that any of their registered instances has suitable
++	 * ops for probing, and thus cheekily co-opt the same mechanism.
++	 */
++	fwspec = dev_iommu_fwspec_get(dev);
++	if (fwspec && fwspec->ops)
++		ops = fwspec->ops;
++	else
++		ops = iommu_ops_from_fwnode(NULL);
 +
- /**
-  * iommu_group_for_each_dev - iterate over each device in the group
-  * @group: the group
-@@ -1752,23 +1767,6 @@ __iommu_group_alloc_default_domain(struct iommu_group *group, int req_type)
- 	return __iommu_group_domain_alloc(group, req_type);
- }
+ 	if (!ops)
+ 		return -ENODEV;
+ 	/*
+diff --git a/include/acpi/acpi_bus.h b/include/acpi/acpi_bus.h
+index afeed6e72049..383efddb4a67 100644
+--- a/include/acpi/acpi_bus.h
++++ b/include/acpi/acpi_bus.h
+@@ -626,6 +626,8 @@ struct acpi_pci_root {
  
--/*
-- * Returns the iommu_ops for the devices in an iommu group.
-- *
-- * It is assumed that all devices in an iommu group are managed by a single
-- * IOMMU unit. Therefore, this returns the dev_iommu_ops of the first device
-- * in the group.
-- */
--static const struct iommu_ops *group_iommu_ops(struct iommu_group *group)
--{
--	struct group_device *device =
--		list_first_entry(&group->devices, struct group_device, list);
+ /* helper */
+ 
++struct iommu_ops;
++
+ bool acpi_dma_supported(const struct acpi_device *adev);
+ enum dev_dma_attr acpi_get_dma_attr(struct acpi_device *adev);
+ int acpi_iommu_fwspec_init(struct device *dev, u32 id,
+diff --git a/include/linux/device.h b/include/linux/device.h
+index d7a72a8749ea..0314dbbdb534 100644
+--- a/include/linux/device.h
++++ b/include/linux/device.h
+@@ -42,7 +42,6 @@ struct class;
+ struct subsys_private;
+ struct device_node;
+ struct fwnode_handle;
+-struct iommu_ops;
+ struct iommu_group;
+ struct dev_pin_info;
+ struct dev_iommu;
+diff --git a/include/linux/device/bus.h b/include/linux/device/bus.h
+index ae10c4322754..e25aab08f873 100644
+--- a/include/linux/device/bus.h
++++ b/include/linux/device/bus.h
+@@ -62,9 +62,6 @@ struct fwnode_handle;
+  *			this bus.
+  * @pm:		Power management operations of this bus, callback the specific
+  *		device driver's pm-ops.
+- * @iommu_ops:  IOMMU specific operations for this bus, used to attach IOMMU
+- *              driver implementations to a bus and allow the driver to do
+- *              bus-specific setup
+  * @need_parent_lock:	When probing or removing a device on this bus, the
+  *			device core should lock the device's parent.
+  *
+@@ -104,8 +101,6 @@ struct bus_type {
+ 
+ 	const struct dev_pm_ops *pm;
+ 
+-	const struct iommu_ops *iommu_ops;
 -
--	lockdep_assert_held(&group->mutex);
--
--	return dev_iommu_ops(device->dev);
--}
--
+ 	bool need_parent_lock;
+ };
+ 
+diff --git a/include/linux/dma-map-ops.h b/include/linux/dma-map-ops.h
+index f2fc203fb8a1..a52e508d1869 100644
+--- a/include/linux/dma-map-ops.h
++++ b/include/linux/dma-map-ops.h
+@@ -11,6 +11,7 @@
+ #include <linux/slab.h>
+ 
+ struct cma;
++struct iommu_ops;
+ 
  /*
-  * req_type of 0 means "auto" which means to select a domain based on
-  * iommu_def_domain_type or what the driver actually supports.
-@@ -1776,7 +1774,7 @@ static const struct iommu_ops *group_iommu_ops(struct iommu_group *group)
- static struct iommu_domain *
- iommu_group_alloc_default_domain(struct iommu_group *group, int req_type)
- {
--	const struct iommu_ops *ops = group_iommu_ops(group);
-+	const struct iommu_ops *ops = dev_iommu_ops(iommu_group_first_dev(group));
- 	struct iommu_domain *dom;
- 
- 	lockdep_assert_held(&group->mutex);
-@@ -1854,7 +1852,7 @@ static int iommu_bus_notifier(struct notifier_block *nb,
- static int iommu_get_def_domain_type(struct iommu_group *group,
- 				     struct device *dev, int cur_type)
- {
--	const struct iommu_ops *ops = group_iommu_ops(group);
-+	const struct iommu_ops *ops = dev_iommu_ops(dev);
- 	int type;
- 
- 	if (!ops->def_domain_type)
-@@ -2021,7 +2019,7 @@ bool device_iommu_capable(struct device *dev, enum iommu_cap cap)
- {
- 	const struct iommu_ops *ops;
- 
--	if (!dev->iommu || !dev->iommu->iommu_dev)
-+	if (!dev_has_iommu(dev))
- 		return false;
- 
- 	ops = dev_iommu_ops(dev);
-@@ -2120,11 +2118,9 @@ static struct iommu_domain *__iommu_domain_alloc(const struct iommu_ops *ops,
- static struct iommu_domain *
- __iommu_group_domain_alloc(struct iommu_group *group, unsigned int type)
- {
--	struct device *dev =
--		list_first_entry(&group->devices, struct group_device, list)
--			->dev;
-+	struct device *dev = iommu_group_first_dev(group);
- 
--	return __iommu_domain_alloc(group_iommu_ops(group), dev, type);
-+	return __iommu_domain_alloc(dev_iommu_ops(dev), dev, type);
- }
- 
- struct iommu_domain *iommu_domain_alloc(const struct bus_type *bus)
-@@ -2987,8 +2983,8 @@ EXPORT_SYMBOL_GPL(iommu_fwspec_add_ids);
-  */
- int iommu_dev_enable_feature(struct device *dev, enum iommu_dev_features feat)
- {
--	if (dev->iommu && dev->iommu->iommu_dev) {
--		const struct iommu_ops *ops = dev->iommu->iommu_dev->ops;
-+	if (dev_has_iommu(dev)) {
-+		const struct iommu_ops *ops = dev_iommu_ops(dev);
- 
- 		if (ops->dev_enable_feat)
- 			return ops->dev_enable_feat(dev, feat);
-@@ -3003,8 +2999,8 @@ EXPORT_SYMBOL_GPL(iommu_dev_enable_feature);
-  */
- int iommu_dev_disable_feature(struct device *dev, enum iommu_dev_features feat)
- {
--	if (dev->iommu && dev->iommu->iommu_dev) {
--		const struct iommu_ops *ops = dev->iommu->iommu_dev->ops;
-+	if (dev_has_iommu(dev)) {
-+		const struct iommu_ops *ops = dev_iommu_ops(dev);
- 
- 		if (ops->dev_disable_feat)
- 			return ops->dev_disable_feat(dev, feat);
+  * Values for struct dma_map_ops.flags:
 -- 
 2.39.2.101.g768bb238c484.dirty
 
