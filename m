@@ -1,142 +1,89 @@
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.24])
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.115])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3BB21A597
-	for <iommu@lists.linux.dev>; Wed, 22 Nov 2023 02:36:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 409208820
+	for <iommu@lists.linux.dev>; Wed, 22 Nov 2023 03:30:29 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="DaEkRuTS"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="E8oAyK/b"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1700620604; x=1732156604;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=XpeZeMNRKx6fjfNcJza/391hB0gfEObFGgA1WhB5A6k=;
-  b=DaEkRuTSS80XQxpWLqayarWDCR1gJwvwKfQGR5aTwKLm01QDG3baPoID
-   CWZ5zyU77eT5/DnZMCsyyez9DtKAAq+YyUJCOxEo2iheaUFW0CNfQkaI2
-   iAnujYSmWlgs3dpJfpkQQbQLr6FSs+mI22BN0Aq9kYskNx2y2Ov8ho/kg
-   VUQnucWC1I6L/Bjg4tH6JB8xqa/0/twgpovdLMq/v9VBWhmUcGEustbv7
-   ky/jEk7JzJd4AjA4bFLzTbPI3B9Hx/tbagG5zR1+x42zBOSmcct9Ic2lK
-   r1SlTJvuWiMKuioZJVnEI19i1AsTJFusr1NlQKnq2H+mYEfTIQJ58LTTs
+  t=1700623830; x=1732159830;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=M4RFN6C5anem5Gt5zf3iTGGH/gQovytqONM6TO/5w4I=;
+  b=E8oAyK/bblvndlo0Hst4tj7DLib72KpcSuUmaPB7vAFOCKdEStblbY7a
+   AUel8M45RL1uhyT2iKMpnPJNfnoa0F2TzQ9MaH/Ev7UUPHdhb3P4GG/0o
+   QJ20hjy8H1YidJF+daboBydzntkQrMB8ocxqyF/AeYihtKdrT7BPmOz+P
+   UujvGUAY5Jy8tTZ4UKOfY/guerfd8CIia4cjDyjZiFWFAFYv4xHt8qZmo
+   TWRQEt8YLZTGpf1ziho16JLqifr48qoesCiRJ6utbvLLNcjZ3F6eDAmk2
+   TmUzp4FWqwO4iITuBbbPx7fXxldSN/61x5LXNMCpuFwrMqd+kiQW1zCXc
    Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10901"; a="394804920"
+X-IronPort-AV: E=McAfee;i="6600,9927,10901"; a="391742767"
 X-IronPort-AV: E=Sophos;i="6.04,217,1695711600"; 
-   d="scan'208";a="394804920"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Nov 2023 18:36:43 -0800
+   d="scan'208";a="391742767"
+Received: from orviesa002.jf.intel.com ([10.64.159.142])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Nov 2023 19:30:29 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.04,217,1695711600"; 
-   d="scan'208";a="8289961"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
-  by fmviesa002.fm.intel.com with ESMTP; 21 Nov 2023 18:36:38 -0800
-Message-ID: <f5b27724-7c86-4823-ae86-76c92a2760b4@linux.intel.com>
-Date: Wed, 22 Nov 2023 10:32:18 +0800
+   d="scan'208";a="8090158"
+Received: from allen-box.sh.intel.com ([10.239.159.127])
+  by orviesa002.jf.intel.com with ESMTP; 21 Nov 2023 19:30:28 -0800
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Joerg Roedel <joro@8bytes.org>
+Cc: mohd.syazwan.abdul.halim@intel.com,
+	Kunwu Chan <chentao@kylinos.cn>,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH 0/7] [PULL REQUEST] iommu/vt-d: Fixes for v6.7-rc3
+Date: Wed, 22 Nov 2023 11:26:01 +0800
+Message-Id: <20231122032608.165144-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, "Liu, Yi L" <yi.l.liu@intel.com>,
- "joro@8bytes.org" <joro@8bytes.org>,
- "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>,
- "cohuck@redhat.com" <cohuck@redhat.com>,
- "eric.auger@redhat.com" <eric.auger@redhat.com>,
- "nicolinc@nvidia.com" <nicolinc@nvidia.com>,
- "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "mjrosato@linux.ibm.com" <mjrosato@linux.ibm.com>,
- "chao.p.peng@linux.intel.com" <chao.p.peng@linux.intel.com>,
- "yi.y.sun@linux.intel.com" <yi.y.sun@linux.intel.com>,
- "peterx@redhat.com" <peterx@redhat.com>,
- "jasowang@redhat.com" <jasowang@redhat.com>,
- "shameerali.kolothum.thodi@huawei.com"
- <shameerali.kolothum.thodi@huawei.com>, "lulu@redhat.com" <lulu@redhat.com>,
- "suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
- "Duan, Zhenzhong" <zhenzhong.duan@intel.com>,
- "joao.m.martins@oracle.com" <joao.m.martins@oracle.com>,
- "Zeng, Xin" <xin.zeng@intel.com>, "Zhao, Yan Y" <yan.y.zhao@intel.com>
-Subject: Re: [PATCH v7 1/3] iommufd: Add data structure for Intel VT-d stage-1
- cache invalidation
-Content-Language: en-US
-To: Jason Gunthorpe <jgg@nvidia.com>, "Tian, Kevin" <kevin.tian@intel.com>
-References: <20231117131816.24359-1-yi.l.liu@intel.com>
- <20231117131816.24359-2-yi.l.liu@intel.com>
- <BN9PR11MB52761D7A88BB2F655355A7728CB4A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20231120230451.GD6083@nvidia.com>
- <BN9PR11MB5276EF10FCE9C96F593696E18CBBA@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20231121121704.GE6083@nvidia.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20231121121704.GE6083@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 11/21/23 8:17 PM, Jason Gunthorpe wrote:
-> On Tue, Nov 21, 2023 at 02:54:15AM +0000, Tian, Kevin wrote:
->>> From: Jason Gunthorpe <jgg@nvidia.com>
->>> Sent: Tuesday, November 21, 2023 7:05 AM
->>>
->>> On Mon, Nov 20, 2023 at 08:26:31AM +0000, Tian, Kevin wrote:
->>>>> From: Liu, Yi L <yi.l.liu@intel.com>
->>>>> Sent: Friday, November 17, 2023 9:18 PM
->>>>>
->>>>> This adds the data structure for flushing iotlb for the nested domain
->>>>> allocated with IOMMU_HWPT_DATA_VTD_S1 type.
->>>>>
->>>>> This only supports invalidating IOTLB, but no for device-TLB as device-TLB
->>>>> invalidation will be covered automatically in the IOTLB invalidation if the
->>>>> underlying IOMMU driver has enabled ATS for the affected device.
->>>>
->>>> "no for device-TLB" is misleading. Here just say that cache invalidation
->>>> request applies to both IOTLB and device TLB (if ATS is enabled ...)
->>>
->>> I think we should forward the ATS invalidation from the guest too?
->>> That is what ARM and AMD will have to do, can we keep them all
->>> consistent?
->>>
->>> I understand Intel keeps track of enough stuff to know what the RIDs
->>> are, but is it necessary to make it different?
->>
->> probably ask the other way. Now intel-iommu driver always flushes
->> iotlb and device tlb together then is it necessary to separate them
->> in uAPI for no good (except doubled syscalls)? :)
-> 
-> I wish I knew more about Intel CC design to be able to answer that :|
-> 
-> Doesn't the VM issue the ATC flush command regardless? How does it
-> know it has a working ATC but does not need to flush it?
-> 
+Hi Joerg,
 
-The Intel VT-d spec doesn't require the driver to flush iotlb and device
-tlb together. Therefore, the current approach of relying on caching mode
-to determine whether device TLB invalidation is necessary appears to be
-a performance optimization rather than an architectural requirement.
+The following fixes have been queued for v6.7. They aim to:
 
-The vIOMMU driver assumes that it is running within a VM guest when
-caching mode is enabled. This assumption leads to an omission of device
-TLB invalidation, relying on the hypervisor to perform a combined flush
-of the IOLB and device TLB.
+- Do not support enforcing cache coherency for non-empty domains
+- Avoid devTLB invalidation if iommu is off
+- Disable PCI ATS in legacy passthrough mode
+- Support non-PCI devices when clearing context
+- Fix incorrect cache invalidation for mm notification
+- Add MTL to quirk list to skip TE disabling
+- Set variable intel_dirty_ops to static
 
-While this optimization aims to reduce VMEXIT overhead, it introduces
-potential issues:
-
-- When a Linux guest running on a hypervisor other than KVM/QEMU, the
-   assumption of combined IOLB and device TLB flushing by the hypervisor
-   may be incorrect, potentially leading to missed device TLB
-   invalidation.
-
-- The caching mode doesn't apply to first-stage translation. Therefore,
-   if the driver uses first-stage translation and still relies on caching
-   mode to determine device TLB invalidation, the optimization fails.
-
-A more reasonable optimization would be to allocate a bit in the iommu
-capability registers. The vIOMMU driver could then leverage this bit to
-determine whether it could eliminate a device invalidation request.
+Please consider them for the iommu/fix branch.
 
 Best regards,
-baolu
+Lu Baolu
+
+Abdul Halim, Mohd Syazwan (1):
+  iommu/vt-d: Add MTL to quirk list to skip TE disabling
+
+Kunwu Chan (1):
+  iommu/vt-d: Set variable intel_dirty_ops to static
+
+Lu Baolu (5):
+  iommu/vt-d: Support enforce_cache_coherency only for empty domains
+  iommu/vt-d: Omit devTLB invalidation requests when TES=0
+  iommu/vt-d: Disable PCI ATS in legacy passthrough mode
+  iommu/vt-d: Make context clearing consistent with context mapping
+  iommu/vt-d: Fix incorrect cache invalidation for mm notification
+
+ drivers/iommu/intel/iommu.h |  3 +++
+ drivers/iommu/intel/dmar.c  | 18 ++++++++++++++++++
+ drivers/iommu/intel/iommu.c | 18 +++++++++++-------
+ drivers/iommu/intel/svm.c   | 26 ++++++++++++++++++++++++++
+ 4 files changed, 58 insertions(+), 7 deletions(-)
+
+-- 
+2.34.1
+
