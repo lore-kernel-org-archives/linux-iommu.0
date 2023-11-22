@@ -1,134 +1,295 @@
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2059.outbound.protection.outlook.com [40.107.244.59])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f45.google.com (mail-ed1-f45.google.com [209.85.208.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 987A728394
-	for <iommu@lists.linux.dev>; Tue, 21 Nov 2023 18:52:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 66BB81381
+	for <iommu@lists.linux.dev>; Wed, 22 Nov 2023 01:02:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="BneQCk7O"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UosOhunnEBsL8omriu5o2UT8wl2TVmfIk65vk5vZZLZWg5/RwYuInq9UxEIB8J5BcDDfpPwwUAIw/JvjDIAqLsZ/BZD2sglMNPzkNSugbNN9bVwDsxQiePH1MNmTIsaIpJaSgbDHjf5KkfQgT+Ws72kJXtEaUYIixrtqCdg+v4VySYB168KkHc5cDO1DyBl2JJ+blNtTnZaJgwPRauZdY042pUv9MRY/tgZbBj33GoxhMv5xDdWXRaf5VSwMn25STMzNH+42AvDfF+ORi0HCgOH6E40aSPl7hZtF1nmHv25z0BkmLWW3kOLq29utpiRmvj5Zadc83Zh2B44joFTILA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=23xIg7dLtNcZmUMLopm4+LU3pFjmnJR9AT2GcFOWrfg=;
- b=YgH2sZju7NfKNM5cq8RAV+YwF148RovM0laeYp0Te/nqmW9GDU9VV18xQY6sBCPQlRY+1VKrqGQag49eei5rAvijUebW/UCabvrl9tvhSglRrBhZxcRAU+5XsXem8Dvtj1nyRQZ9uMEexQlAEwunSx9mV23/nif34GjWYxTqycD3iFdbtWsm5b9PsH4y9I1QErjk4TVgvDo7bxqN4ag5KjP5ocLIZP6XX0d087wEHsj5aiQmcX+TDNvmi+menQ1SQFdsd2ehpBLfItcy2byauEwOwtI9HwrAnunBQpOrBq3m6lLtvgTjQlPUdKPt+smHrr38nuoX/14EVOZlzbmMLw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=23xIg7dLtNcZmUMLopm4+LU3pFjmnJR9AT2GcFOWrfg=;
- b=BneQCk7OQkP68TZFaC6kHkxvKVqIWoIUoR/2Vhl42QcUUFuTuInr691lMk8Jyxx9Ckq2II7hiZOAUe8bDJl2ph8qMf0RTI2mvQiKN9qPWW1U/lBqdw5loQEuvDwOcz7PjyJk5ujmsAWl8eI7P8/w0QuoMbzlPW0U7DIb5L2rMiO41uK371l2lvJe45F+Za+Wcic55DJ1jM//jCY7bxKmSfVXkBNolcP4sYC9OAYOWcplOMT+97zi/ksHu/FXmQaN75Qdxqi/sjkUdup6GXfBrzKvM0b9PJVJkWuEJAC8ItgMQ5Q9xUPdAUiL/X37h/0zLl2078FnUnI/kd8SEJXRiA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by DS0PR12MB8368.namprd12.prod.outlook.com (2603:10b6:8:fe::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7002.27; Tue, 21 Nov
- 2023 18:52:34 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::60d4:c1e3:e1aa:8f93]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::60d4:c1e3:e1aa:8f93%4]) with mapi id 15.20.7002.027; Tue, 21 Nov 2023
- 18:52:34 +0000
-Date: Tue, 21 Nov 2023 14:52:32 -0400
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: joro@8bytes.org, will@kernel.org, iommu@lists.linux.dev,
-	baolu.lu@linux.intel.com, linux-kernel@vger.kernel.org,
-	jsnitsel@redhat.com
-Subject: Re: [PATCH v6 3/7] iommu: Validate that devices match domains
-Message-ID: <20231121185232.GI6083@nvidia.com>
-References: <cover.1700589539.git.robin.murphy@arm.com>
- <097c6f30480e4efe12195d00ba0e84ea4837fb4c.1700589539.git.robin.murphy@arm.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <097c6f30480e4efe12195d00ba0e84ea4837fb4c.1700589539.git.robin.murphy@arm.com>
-X-ClientProxiedBy: SA1P222CA0119.NAMP222.PROD.OUTLOOK.COM
- (2603:10b6:806:3c5::18) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="cAc50IBe"
+Received: by mail-ed1-f45.google.com with SMTP id 4fb4d7f45d1cf-54553e4888bso8683572a12.2
+        for <iommu@lists.linux.dev>; Tue, 21 Nov 2023 17:02:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1700614944; x=1701219744; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=zXAWsG9iOloHUdNE5mm3jXIIiOW32R7yz4554A63aDM=;
+        b=cAc50IBeJ3u8nrHQeoKq/GrhNmv5jid6NfXPNoGyy6lxwhqrYCKnimEBkZ39q26Qzu
+         7ppEAWEXHkEM/0OmTGu/bBYvGcohwLLwk6v+jM3pfCx/zbjjJiWWhZQSLFChhp+//oDA
+         47w7WuPFEY8En1sbQH9N7qPgmUHcvfJmk6GmZZUJ6l8VgqvRzjJNbXWjCJleFgOSv3Lx
+         3DMlbCmC05ikUDRLgOW0aNQ7wKwe9MRbRlgdatmPdk0Q3dkdFgSq1A1KDrguyY+eLH11
+         i6OMFstf48emW5LnHJaHJzVRXDudSk9z+kUHftkAW9VrW4tso71pd9OuXwTAVTxmXU1E
+         m+Dw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1700614944; x=1701219744;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=zXAWsG9iOloHUdNE5mm3jXIIiOW32R7yz4554A63aDM=;
+        b=fLr99Riir2Mjf9ULhobjZEyTJVTg7BLwp8cdS+rl+Jvt1rGUQH6vdwMC5RwqSrAaSp
+         KHMiZUGSi6iJq/n0aJiwFrN/c9fH1/oQu9hjpjWXvqyCYlkFNk1lSNuz9Lud7+md2i24
+         8ym5isq79s2CiOzqL5TUe5dfH4q+OPtEdD15Ftc7yrsYZlg2SWpikuMU/B2FK0EYHBeZ
+         PYyH2n2siAQ23pCcvd8e8N0mqJW6kpb7BLtlsPIZWlafNEP3aYg0ds4XLNYjV2zp21N1
+         EaNDLOEysF2VMb2HxwhR8mBjRuq0CiPjGL5Nq0zSrFO/h7aIEI5cxfBNFsVv9tD+7oc0
+         pvSA==
+X-Gm-Message-State: AOJu0YwQKCtWmnaT6lLsY11Lx23nEZ7H/epKAf7wKLVHUD2S7Wa9rE3/
+	ERNic3jPAxQPkFEMomrW6/CCnoGyjXPFlD3492I=
+X-Google-Smtp-Source: AGHT+IFAAdSEYQU+FjN4tYW+dYheU4U1L4a17RYKBvYXsMva3YuIChgqqiL7+fiTRx2WV4Qr3vc5DWuiTLVP4mKrrMs=
+X-Received: by 2002:a50:ed89:0:b0:548:5fa3:1483 with SMTP id
+ h9-20020a50ed89000000b005485fa31483mr630561edr.6.1700614944335; Tue, 21 Nov
+ 2023 17:02:24 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|DS0PR12MB8368:EE_
-X-MS-Office365-Filtering-Correlation-Id: 2087bb5d-c438-4556-2d36-08dbeac305d4
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	G01uGirUKoBmTFngwELbFichmgu2AVfDpN0gwsW91xXwb/TcOXwnc2cZwe4I8uKpqvxoEhtkz4GuQjH+Dkct60y5G5l4BU+DnJmCSZ84EGbOe087Mbj1zj1iciKd3lf6wdOwSN4+h4aftwa+6pOBkGr/HKgmjYW5PRgmSJV5AsuPUG6nxDAy6qDaO3FLN1eziNmZAkFurVshQ18soawJWHAyJvArM0ch1ockCCIptrx7kHSlYC73Up0eMj5U0EFbvMwrkTckbnz1k6MaosBo+5y0p7SbUeuY9Il0AiG9UvX0uquvwC7uM90lO24J6ZJIOIjjgLddFly5EDSOxh+1LsRdo44Xk5O5CzasZctS71UH4Db4ZXXt1D35Q7MhqgEUcg+7z1AP9+8lLe8yf4eDAFCXH0bbrNZ9voFrZ4SsA4vytr8vXRi7AqE+52WsVNip9grPo6C+xRAXUGIJiGiEdfZcq7GKNFeD6C2bQmr0PBxbXuWkAkjg5b1BxRVdO3aiYc6/tXr/SYwXEfq/UthRzorWONHJ7jmfGYU9snBJUO7GnwH1H6cQRLjZfe5eS3/8
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(376002)(366004)(346002)(39860400002)(396003)(136003)(230922051799003)(64100799003)(186009)(1800799012)(451199024)(38100700002)(66476007)(6916009)(316002)(2906002)(5660300002)(8676002)(41300700001)(8936002)(478600001)(66946007)(66556008)(4326008)(6512007)(1076003)(6486002)(26005)(2616005)(86362001)(6506007)(33656002)(36756003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?cED4UDMIR9w88RvdiukQzTQDIet4viiwtT/RjZeGxcRZVdF71LuwolMqHah8?=
- =?us-ascii?Q?YltaO3RTrkTxCBbRIVWMH4Oo8mIir6Iba0oyUEarUwe1/nyEELLYAVqKNdCM?=
- =?us-ascii?Q?+tAJ3JRtHocKn4mLG/EHpS9iQjOBQTrYn1nNr5HvfAnCzW+DY+Zv+m7Y7YpR?=
- =?us-ascii?Q?vJlyCY3tiz8kunMGeOC7PSKealNQZlF1ag9adi2X3g1LwrFXQ9KxFqe7SHPY?=
- =?us-ascii?Q?sJVWkmv5YUHLp+VpfgmzU8Q9fyXLx4gqJSLSwpcSsy7zSv7HScBp+DJZ+vHV?=
- =?us-ascii?Q?XGUHZWhj0oqE1h4GQYZpsw/ZzE+jlHf2Jsr7nxI1xyNk/kg9ZVrlwQSOFmda?=
- =?us-ascii?Q?XZy68ql0/QDFTs2OGiysz3JVdXEnT33bs2YGspDDb0nHJ0SbS/8C9HOE1+J7?=
- =?us-ascii?Q?hJqnDHrRCUHffPlZ/R3O6U2IbTY/ukPj5wEVBW2oXUx7BcOFetxr55+TwX7d?=
- =?us-ascii?Q?0Z0mrv8I+vXM+b71DfjleXDBrJ+8aL5Cq4VfJBcZ5RC+3TIhLuo1623yWh9U?=
- =?us-ascii?Q?82CH+GgvhtuhYHgAGHQJrjk+Xv8jg/uNdttIfUWJ9m+18cx5Dr908UU3SW/P?=
- =?us-ascii?Q?t0mN5NVC4XSh1Eti504FkRYgafhQIrqbm792IfAOsgQs1MabUOr9di02q+NN?=
- =?us-ascii?Q?ZV3VTC8fQnY5+OQ5Q+EFY8dx1nhd648MEQNZ9LXyivUhqj3P/kwAlGHfqCfk?=
- =?us-ascii?Q?PTCaJBy1Jv7q5vDIHPdsRA7rtgmv/F1nB37sn6I9VXsGWX5AuIzB4xTU/LJZ?=
- =?us-ascii?Q?R+hLkx4naCL0TYxg+4po4evEgKtN78bpwPlBQ6IrPN+xaLSqcKASnwOIwA7o?=
- =?us-ascii?Q?QXppmHUwQ0NiNwnc+KXadfErYSKTdRMylkJvtKbd26py68r46geRb4Mo9xom?=
- =?us-ascii?Q?ttaVJ0qgnQ8G+HuKwmmunl9ikiBLIb3uFVb/InOT6z8jE93u8kZ0/jHE0pXD?=
- =?us-ascii?Q?Am0Ik8L7vKBN4otQdU1RzGY+2eORFzXBQPrF7GTmkeh8+B/A/80lHErmdF8h?=
- =?us-ascii?Q?hfS3OH3D9Y+FNHTeqA/9GIVIRqdn54jkSubvBODA0pRSPKMdYP4zuCOIp4fp?=
- =?us-ascii?Q?XzrrKGBO4UyQJ2Tu8bVy8LBkTPypgBc6cpGM12PD96iuoS9XYyK1jn7l0Jcc?=
- =?us-ascii?Q?JSRh5t/S8wKfDN977KjpMwtbfrE7gKkVER//d+YmycRLLJbBEix+E4U1Kf3k?=
- =?us-ascii?Q?XEvtwe/CzbKVlwLlg95bMDwxK0+bnnH6jv8jaVhAR3ovZGsrFf7QqixFl1WQ?=
- =?us-ascii?Q?AsnFvuFRbRvJLpLksOrPOTz6Kwiu20lTZpUBpZTv5nO6JaYDxQVB8zSuML+K?=
- =?us-ascii?Q?Mi2m0oDwDb71xtpQmoDJob7YUqVZshziC1wC8JhEoH3IVaMQ2TCnjXzbT5d2?=
- =?us-ascii?Q?l0KUykHI/clnM7MDSzFPq7J1XB9Cp2/d5T+Nn5BTF/gevJtc/1pjot7Hpvst?=
- =?us-ascii?Q?Hpm5AonQrWlw2sL76Fc8tNtrnVnxjN8GGNQvVOa+gn/Sww4ohlnUE5Bh7G4p?=
- =?us-ascii?Q?n4lhEtUOmpTvtPzkaRS61E7PLMBe2YutOts2gXuCepjRPUr5DNJlGGmwHTOP?=
- =?us-ascii?Q?nRHAD6p4B/KQYCIuR9pBn7Bq5zDWxd15Cc/S+SLD?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2087bb5d-c438-4556-2d36-08dbeac305d4
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Nov 2023 18:52:34.1457
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ZT60stN3JYEmujBprLfCJJeF3RwvKGC5A7W4aBflXHPsXS18+jGwbjT26+ogdTGV
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB8368
+References: <20231115020209.4665-1-yaozhenguo@jd.com> <20231117152746.3aa55d68.alex.williamson@redhat.com>
+In-Reply-To: <20231117152746.3aa55d68.alex.williamson@redhat.com>
+From: Zhenguo Yao <yaozhenguo1@gmail.com>
+Date: Wed, 22 Nov 2023 09:02:13 +0800
+Message-ID: <CA+WzAR=7R=JPeu4+-ojgfjM7vgP5pcg7fS0yU_CRaLzNSdRaLA@mail.gmail.com>
+Subject: Re: [PATCH V1] vfio: add attach_group_by_node to control behavior of
+ attaching group to domain
+To: Alex Williamson <alex.williamson@redhat.com>
+Cc: yaozhenguo@jd.com, dwmw2@infradead.org, baolu.lu@linux.intel.com, 
+	joro@8bytes.org, will@kernel.org, robin.murphy@arm.com, iommu@lists.linux.dev, 
+	linux-kernel@vger.kernel.org, kvm@vger.kernel.org, 
+	Wenchao Yao <yaowenchao@jd.com>, ZiHan Zhou <zhouzihan30@jd.com>, Jason Gunthorpe <jgg@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, Nov 21, 2023 at 06:03:59PM +0000, Robin Murphy wrote:
-> Before we can allow drivers to coexist, we need to make sure that one
-> driver's domain ops can't misinterpret another driver's dev_iommu_priv
-> data. To that end, add a token to the domain so we can remember how it
-> was allocated - for now this may as well be the device ops, since they
-> still correlate 1:1 with drivers. We can trust ourselves for internal
-> default domain attachment, so add checks to cover all the public attach
-> interfaces.
-> 
-> Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
-> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-> Reviewed-by: Jerry Snitselaar <jsnitsel@redhat.com>
-> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-> 
-> ---
-> 
-> v4: Cover iommu_attach_device_pasid() as well, and improve robustness
->     against theoretical attempts to attach a noiommu group.
-> v6: Cover new iommu_domain_alloc_user() sites as well. I don't entirely
->     dislike the idea of tying this into the domain ops, but I'd rather
->     do the simple thing for now and revisit that in future, since domain
->     ops also deserve some other cleanup.
+Understood, thanks=EF=BC=81
 
-Looks good
-
-Jason
+Alex Williamson <alex.williamson@redhat.com> =E4=BA=8E2023=E5=B9=B411=E6=9C=
+=8818=E6=97=A5=E5=91=A8=E5=85=AD 06:27=E5=86=99=E9=81=93=EF=BC=9A
+>
+> On Wed, 15 Nov 2023 10:02:09 +0800
+> yaozhenguo <yaozhenguo1@gmail.com> wrote:
+>
+> > From: Zhenguo Yao <yaozhenguo1@gmail.com>
+> >
+> > Groups will attach to one iommu_domain if ops and enforce_cache_coheren=
+cy
+> > are equal. And all the iommu hardware share one pagetable by default.
+> > There are performance issue in some scenarios. For example:
+> > Host hardware topopy:
+> >
+> > node0 + PCIe RP0 ---+ GPU A100
+> >       |         |---+ GPU A100
+> >       |               |---+ NIC Mellanox CX6
+> >       |               |---+ NIC Mellanox CX6
+> >       + PCIe RP1 ---+ GPU A100
+> >                 |---+ GPU A100
+> >                       |---+ NIC Mellanox CX6
+> >                 |---+ NIC Mellanox CX6
+> > node1 + PCIe RP0 ---+ GPU A100
+> >       |         |---+ GPU A100
+> >       |               |---+ NIC Mellanox CX6
+> >       |               |---+ NIC Mellanox CX6
+> >       + PCIe RP1 ---+ GPU A100
+> >                 |---+ GPU A100
+> >                       |---+ NIC Mellanox CX6
+> >                 |---+ NIC Mellanox CX6
+> >
+> > We passthrough all NICs and GPU to VM, and emulate host hardware topopy=
+.
+> > Mellanox CX6 ATS feature is enabled, GPU direct RDMA enabled.
+> > We test NCCL allreduce in VM at different cases.
+> >
+> > Case1: allreduce test use 4nic and 4GPU in numa0.
+> > Case2=EF=BC=9Aallreduce test use 4nic and 4GPU in numa1.
+> > case3: allreduce test use 8nic and 8GPU.
+> >
+> > the result are below:
+> >
+> > |        | algbw (GB/S) |
+> > | ------ | -------------|
+> > | case1  | 24           |
+> > | case2  | 32           |
+> > | case3  | 45           |
+> >
+> > We checked that IOMMU pagetable is allocated in numa1 when VM boot up.
+> > So, if IOTLB miss happan, IOMMU hardware in numa0 will access remote
+> > pagetable in numa1. This will drop performance. After apply this patch =
+and
+> > attach_group_by_node is 1. Group in same node will attach to one domain=
+.
+> > IOMMU will access there local pagetable. Performance is improved:
+> >
+> > |        | algbw (GB/S) |
+> > | ------ | -------------|
+> > | case1  | 32           |
+> > | case2  | 32           |
+> > | case3  | 63           |
+> >
+> > Signed-off-by: Zhenguo Yao <yaozhenguo1@gmail.com>
+> > Co-developed-by: Wenchao Yao <yaowenchao@jd.com>
+> > Signed-off-by: Wenchao Yao <yaowenchao@jd.com>
+> > Co-developed-by: ZiHan Zhou <zhouzihan30@jd.com>
+> > Signed-off-by: ZiHan Zhou <zhouzihan30@jd.com>
+> > ---
+> >  drivers/iommu/intel/iommu.c     |  8 +++++++-
+> >  drivers/vfio/vfio_iommu_type1.c | 33 +++++++++++++++++++++------------
+> >  include/linux/iommu.h           |  1 +
+> >  3 files changed, 29 insertions(+), 13 deletions(-)
+> >
+> > diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> > index 3531b95..2c6d8f0 100644
+> > --- a/drivers/iommu/intel/iommu.c
+> > +++ b/drivers/iommu/intel/iommu.c
+> > @@ -569,8 +569,10 @@ void domain_update_iommu_cap(struct dmar_domain *d=
+omain)
+> >        * If RHSA is missing, we should default to the device numa domai=
+n
+> >        * as fall back.
+> >        */
+> > -     if (domain->nid =3D=3D NUMA_NO_NODE)
+> > +     if (domain->nid =3D=3D NUMA_NO_NODE) {
+> >               domain->nid =3D domain_update_device_node(domain);
+> > +             domain->domain.nid =3D domain->nid;
+> > +     }
+> >
+> >       /*
+> >        * First-level translation restricts the input-address to a
+> > @@ -1767,6 +1769,7 @@ static struct dmar_domain *alloc_domain(unsigned =
+int type)
+> >               return NULL;
+> >
+> >       domain->nid =3D NUMA_NO_NODE;
+> > +     domain->domain.nid =3D NUMA_NO_NODE;
+> >       if (first_level_by_default(type))
+> >               domain->use_first_level =3D true;
+> >       domain->has_iotlb_device =3D false;
+> > @@ -1808,6 +1811,8 @@ int domain_attach_iommu(struct dmar_domain *domai=
+n, struct intel_iommu *iommu)
+> >       info->refcnt    =3D 1;
+> >       info->did       =3D num;
+> >       info->iommu     =3D iommu;
+> > +     domain->nid     =3D iommu->node;
+> > +     domain->domain.nid     =3D iommu->node;
+> >       curr =3D xa_cmpxchg(&domain->iommu_array, iommu->seq_id,
+> >                         NULL, info, GFP_ATOMIC);
+> >       if (curr) {
+> > @@ -1837,6 +1842,7 @@ void domain_detach_iommu(struct dmar_domain *doma=
+in, struct intel_iommu *iommu)
+> >               clear_bit(info->did, iommu->domain_ids);
+> >               xa_erase(&domain->iommu_array, iommu->seq_id);
+> >               domain->nid =3D NUMA_NO_NODE;
+> > +             domain->domain.nid =3D NUMA_NO_NODE;
+> >               domain_update_iommu_cap(domain);
+> >               kfree(info);
+> >       }
+> > diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_=
+type1.c
+> > index eacd6ec..6a5641e 100644
+> > --- a/drivers/vfio/vfio_iommu_type1.c
+> > +++ b/drivers/vfio/vfio_iommu_type1.c
+> > @@ -59,6 +59,11 @@
+> >  module_param_named(dma_entry_limit, dma_entry_limit, uint, 0644);
+> >  MODULE_PARM_DESC(dma_entry_limit,
+> >                "Maximum number of user DMA mappings per container (6553=
+5).");
+> > +static uint attach_group_by_node;
+> > +module_param_named(attach_group_by_node,
+> > +             attach_group_by_node, uint, 0644);
+> > +MODULE_PARM_DESC(attach_group_by_node,
+> > +              "Attach group to domain when it's in same node");
+> >
+> >  struct vfio_iommu {
+> >       struct list_head        domain_list;
+> > @@ -2287,19 +2292,23 @@ static int vfio_iommu_type1_attach_group(void *=
+iommu_data,
+> >               if (d->domain->ops =3D=3D domain->domain->ops &&
+> >                   d->enforce_cache_coherency =3D=3D
+> >                           domain->enforce_cache_coherency) {
+> > -                     iommu_detach_group(domain->domain, group->iommu_g=
+roup);
+> > -                     if (!iommu_attach_group(d->domain,
+> > -                                             group->iommu_group)) {
+> > -                             list_add(&group->next, &d->group_list);
+> > -                             iommu_domain_free(domain->domain);
+> > -                             kfree(domain);
+> > -                             goto done;
+> > -                     }
+> > +                     if ((attach_group_by_node =3D=3D 1 &&
+> > +                             d->domain->nid =3D=3D domain->domain->nid=
+) ||
+> > +                             attach_group_by_node =3D=3D 0) {
+> > +                             iommu_detach_group(domain->domain, group-=
+>iommu_group);
+> > +                             if (!iommu_attach_group(d->domain,
+> > +                                                     group->iommu_grou=
+p)) {
+> > +                                     list_add(&group->next, &d->group_=
+list);
+> > +                                     iommu_domain_free(domain->domain)=
+;
+> > +                                     kfree(domain);
+> > +                                     goto done;
+> > +                             }
+> >
+> > -                     ret =3D iommu_attach_group(domain->domain,
+> > -                                              group->iommu_group);
+> > -                     if (ret)
+> > -                             goto out_domain;
+> > +                             ret =3D iommu_attach_group(domain->domain=
+,
+> > +                                             group->iommu_group);
+> > +                             if (ret)
+> > +                                     goto out_domain;
+> > +                     }
+> >               }
+> >       }
+> >
+> > diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> > index ec289c1..c1330ed 100644
+> > --- a/include/linux/iommu.h
+> > +++ b/include/linux/iommu.h
+> > @@ -123,6 +123,7 @@ struct iommu_domain {
+> >                       int users;
+> >               };
+> >       };
+> > +     int nid;
+> >  };
+> >
+> >  static inline bool iommu_is_dma_domain(struct iommu_domain *domain)
+>
+> As I understand what's being done here, we're duplicating
+> dmar_domain.nid to iommu_domain.nid, then when enabled by this new
+> module option, we'll use this node id as part of the match to determine
+> whether to create a new domain within the same container context or
+> re-use an existing domain, which may have non-favorably locality.
+>
+> If we're going to implement a node id on the iommu_domain, it should
+> replace the existing use of node id in the device specific structure
+> and not simply duplicate it.  This should also account for non-VT-d use
+> cases as well, for example AMD IOMMU also has a nid field on their
+> protection_domain structure.  Alternatively this might be implemented
+> through iommu_domain_ops so we could query the node association for a
+> domain.
+>
+> I question whether we need this solution at all though.  AIUI the
+> initial domain is allocated in proximity to the initial group.  The
+> problem comes when the user asks to add an additional group into the
+> same container.  Another valid solution would be that the user
+> recognizes that these groups are not within the same locality and
+> creates a separate container for this group.  In fact, if we're using
+> QEMU here and created a q35 VM with vIOMMU, each device would have a
+> separate address space and therefore a separate container and we'd
+> already avoid the issue this patch tries to solve.
+>
+> Separate containers per QEMU AddressSpace are a requirement, but QEMU
+> might also implement a policy to not re-use vfio containers between
+> virtual nodes such that if each locality were mapped to separate PXBs
+> with unique proximities, then simply reflecting the physical locality
+> into the VM would be sufficient to avoid this non-optimal domain
+> allocation placement.
+>
+> In any case, the type1 vfio IOMMU backend is in the early stages of
+> deprecation, so any choices we make here would also need to be reflected
+> in IOMMUFD, both in the compatibility and native interfaces.  Thanks,
+>
+> Alex
+>
