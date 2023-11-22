@@ -1,148 +1,167 @@
-Received: from mail-oi1-f178.google.com (mail-oi1-f178.google.com [209.85.167.178])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D1DDC4C3CE
-	for <iommu@lists.linux.dev>; Wed, 22 Nov 2023 17:50:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A91865E0A0
+	for <iommu@lists.linux.dev>; Wed, 22 Nov 2023 19:22:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="DFzs9ASI"
-Received: by mail-oi1-f178.google.com with SMTP id 5614622812f47-3b83c4c5aefso50778b6e.1
-        for <iommu@lists.linux.dev>; Wed, 22 Nov 2023 09:50:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1700675458; x=1701280258; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=nz8V9rweqecmN/L6SV+gBbsJ4Hg3ddyVevYX1Lj6BmI=;
-        b=DFzs9ASIiL/YLYbdyxw5U1WbXYv6nS1paOwNY9R3JBOje3dBK3zAiZjLHUY9+6781v
-         5NfZuPpz45VM08HcTcjaX/jMA+7DbMBdu6ZohAgaOYed3SXux849yt2x3wH/b61TDnm0
-         gW4d0acJXaDt/FFIR9MQNmNYhirQVfwV1IG9NwhWWk+/atxiEIEfEeU4wJ+g5hXz95i2
-         tYu2CxyDR1pRdhAkPtaYjQhNKQiRaGAqmVnYaUemWJgr91eCQHT6VroMIbfI4ZoDo6BY
-         2vJiKbs44BYtgwMzyZqVzmYIpUQZMlP204+KVfF2axsTsMUVkoZRE1PU+rx5x6+4M0pX
-         qwTw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1700675458; x=1701280258;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=nz8V9rweqecmN/L6SV+gBbsJ4Hg3ddyVevYX1Lj6BmI=;
-        b=B6Emhq9QnYiuC742nD/z1QhUH9qrB+NNjudjmbXqtJPncKPK+yOzyu3KyGD8aekOIz
-         2TPe6wowKc395KGKV4Dq2YDH48tOc+YzyUKc+hyMFQrYreLkOyDyBk1KOPGZY8P8WdzQ
-         k/Q3nX2FooXFIxSAjHrgSdt2O6roA1q+R9LSVTq46U07SJDkuONfYcYtzpz852p1J/MT
-         7dK/EvvY5r74W7hHOFPZWWbJCnRNrRxplux0nk1shk2VVBP5HywPJx0dbYXI749xAYPj
-         DHvGqOLBijbg3KIG+slGAQEW2TPXWFU6YsP7JkT36TVUlmw4f5gHebBxudzcfjjbqDNZ
-         TgWQ==
-X-Gm-Message-State: AOJu0YxgF6I8PDwagTaERtxbMoMxovSe1nIDmJzS1tqccgqGXL9AGm2C
-	V0Gj3zh4QqbZ0EGW6msCiHDibw==
-X-Google-Smtp-Source: AGHT+IE+sHgWkgjDL3HKxojzOCpNaYYUzNGrbePDWKzfLgoTlvyEA+capCzFwvDnlBFWeg+wqRDriA==
-X-Received: by 2002:a05:6808:2224:b0:3b8:3ddd:d490 with SMTP id bd36-20020a056808222400b003b83dddd490mr3304098oib.59.1700675457762;
-        Wed, 22 Nov 2023 09:50:57 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-134-23-187.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.134.23.187])
-        by smtp.gmail.com with ESMTPSA id z19-20020a056808029300b003a78d196acasm7520oic.32.2023.11.22.09.50.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Nov 2023 09:50:56 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1r5rNH-001ftT-QO;
-	Wed, 22 Nov 2023 13:50:55 -0400
-Date: Wed, 22 Nov 2023 13:50:55 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Boris Brezillon <boris.brezillon@collabora.com>,
-	Joerg Roedel <joro@8bytes.org>, iommu@lists.linux.dev,
-	Will Deacon <will@kernel.org>, linux-arm-kernel@lists.infradead.org,
-	Rob Clark <robdclark@gmail.com>,
-	Gaurav Kohli <quic_gkohli@quicinc.com>,
-	Steven Price <steven.price@arm.com>
-Subject: Re: [PATCH v2 0/2] iommu: Allow passing custom allocators to pgtable
- drivers
-Message-ID: <20231122175055.GI10140@ziepe.ca>
-References: <20231110201652.629b7228@collabora.com>
- <20231110194215.GR4488@nvidia.com>
- <20231113101103.1cc05c8c@collabora.com>
- <ZVOgBBEetWf1PFxX@nvidia.com>
- <20231120140425.GA10140@ziepe.ca>
- <20231120153838.2166e7b8@collabora.com>
- <20231120144604.GD10140@ziepe.ca>
- <20231120161418.5eca178e@collabora.com>
- <20231120154536.GE10140@ziepe.ca>
- <6e74bd37-9e10-416e-9fbd-0cebb7948e2b@arm.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="OW6xettQ"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=WpkqDqNVFjLLoIoGdeudqbe6F+3xbkm6CsLOJRkoX7pvFJlUhgtKa5Su+2PAH+lLf12ufyL7jdNiXICG5urqkePwHDi36L0uUn35oRq68vHTku8zeQDMqVqvpxuhIbeGc3Dv2pe7JLNHzgOF/99+tVvqY3cmh8J1/JCvMLdTa97YU/qn6FXZ29/EB04nMxw4ShghaLe8kn2cs+ZS0eBXDcl/JOFCVL4aJlzDrsGYuh2C197GyjZUtoCyCG/1ZrwDxOBjpIL49j3lbXAnQ5Y7QGbhtqYj9HKGm7csaro2S6GAbtrrRV5sMbaEeugB6Pb7AW7Vy4qe0G90I3zd3JuWXw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=oJJQOVXO+7jjhb8I4eHUI+figkBgp21XwARtBsqsr+g=;
+ b=dHZC2koXBBL399dQBf0j33Rll1n7tMTkjEZXao661yTDHDNUa81t29vJP7ST48X4FbYCa/rIJOMND2++v4BIoDn2jEKGLxsT3Yvs7u3Ut4WY3cIyoFRHyfu+ml8f41IwOhGqQnsoDhF2mUQlkJEBvnXiOvIp57JOJWI6xlvN1XjelhZBWToYjkuw7APmsGB8ZbYNDvuHzxh7w4yo8A5y1GChPuHlZUxaaHHULSrE+t9xub+wBwBxQEUwslZ5zoxYwiTb0iJHt4ZPoiP0kOgHp1vQaLa1jIwZisAjxPEBU1NAdI3+4m/6yKt4iStCCklVWcXhY2k4fhBhRJuDVd5xMQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=oJJQOVXO+7jjhb8I4eHUI+figkBgp21XwARtBsqsr+g=;
+ b=OW6xettQICzT08FE9ZfsxVBOP0YCKulFnXdKIbgzjtWsD5IW8ycXqBMjQWMKVxZD7YxTjw+nTt0SpnC03fWKpLEaMJ2V1ActbzoXp5U29UU5nmbzY1NE/vtTMe4HZCI8B+07AkxS6DYaFZJEOVqHBZ+BMU3/Bk4wGWHoDnqqCP0HFmzumCLjV1NhPyGUG8MT6l30eekIAtVEUyXlgGOl9+Cky3VJvX5XqjgQSv7fhqoSPyN/lz6LWuBS3wfpXDPBE3AevfiI0ATJjSuQKE65fdD7Hr5AbAKGul06sI5/o7BWTTuRTv8hHuoJcsDkwMJDg8FOxaK6gS6P+CTP9Ze0RA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by IA1PR12MB6652.namprd12.prod.outlook.com (2603:10b6:208:38a::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7002.28; Wed, 22 Nov
+ 2023 19:22:51 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::60d4:c1e3:e1aa:8f93]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::60d4:c1e3:e1aa:8f93%4]) with mapi id 15.20.7002.027; Wed, 22 Nov 2023
+ 19:22:51 +0000
+Date: Wed, 22 Nov 2023 15:22:49 -0400
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org, will@kernel.org,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	linux-acpi@vger.kernel.org, rafael@kernel.org, lenb@kernel.org,
+	lpieralisi@kernel.org, andre.draszik@linaro.org,
+	quic_zhenhuah@quicinc.com
+Subject: Re: [PATCH] iommu: Avoid more races around device probe
+Message-ID: <20231122192249.GA399352@nvidia.com>
+References: <16f433658661d7cadfea51e7c65da95826112a2b.1700071477.git.robin.murphy@arm.com>
+ <ZVZL9kZuVsb9VPnM@nvidia.com>
+ <2023112238-sierra-chewable-86fc@gregkh>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2023112238-sierra-chewable-86fc@gregkh>
+X-ClientProxiedBy: DS7PR03CA0057.namprd03.prod.outlook.com
+ (2603:10b6:5:3b5::32) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <6e74bd37-9e10-416e-9fbd-0cebb7948e2b@arm.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|IA1PR12MB6652:EE_
+X-MS-Office365-Filtering-Correlation-Id: 02916b17-a80b-48b1-df09-08dbeb906b47
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	KtsKvXH5kQKYO4BTcZIONJtHMIIGeEekhomv77sdvIQksMyLEp3KKV/bay6gbpmfcBQGDiq2lj/+R0t42Y2i7hn/PaDKUfSMrp6bA/gIg0V3Lfyy5ISn8YU9tqoErwSkwhB0J7fww2V4vd/Lx3BMRaRU9U1P2DvYy/7kE5Pv4tSQwglxU9dL9Ec/SIKqhy7H3xJ0sOAmpztxF5ca8Y5hxVJ0dDcRoi/zBpHIBQzVFGYTBp5WW4L1b/sNKmOOaZCEZBP5pLXYwK3hS9CKW4pT0dxaBLOjJYUSc1Djtsah26WN6yiJIyfv2pZ7rJnEdLbV9l4FIW+Ykgbsq991aE70vpHVUTXsrBrGZQQFM9lguYsoqf10DATNA+82ybEvmF8dUyai4eQqcsiWCUOSz5CHxGcUGymL/IPPFUlBdOWef/XO1R4qH5AVys3ZyOQDbGcn5uvDkxLjWw/AMLZqWkQXyzUzps92m02DcVVdfSq8hfEpO4b+mTko4SgXgl3IksZpZom99XKnty5awAxbdZnUbXtATWNv1TDsfKqeVg4I76wLhJA6TxfPQ45pgO3odCh++du+2Kd/FbXTHPBHB/tYIYWZDVZM8KhRw2Frd+TuMkja0NL2VK1ePvgejf9dT00t3amUhJjrD3TC0Ox/LD2++iqJCo/pWFfr5ALaSRiyLr43Hni3xaZdrwikkv/0yI++
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(136003)(366004)(346002)(39860400002)(396003)(376002)(230922051799003)(451199024)(186009)(1800799012)(64100799003)(86362001)(38100700002)(33656002)(36756003)(6916009)(66556008)(316002)(66476007)(66946007)(966005)(2616005)(1076003)(41300700001)(478600001)(6506007)(5660300002)(26005)(6512007)(7416002)(2906002)(8676002)(4326008)(8936002)(6486002)(83380400001)(27376004);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?EPZD3qzJ7DYFvyfskpBc5dDD0GiPQtd7xpb0bbfO6G7i28np4WODqmdPKwgs?=
+ =?us-ascii?Q?nzrjDSxxo+W7Ie4hpKWqLMbuh2z0/vImLZTvY+xZxjDvCpklqvh6qnT16/R0?=
+ =?us-ascii?Q?auIX70k9qr3031EGoiqA4X2W3RnLvmNxWjc0vzzpGaMGqm1nquW33ZX/NYIK?=
+ =?us-ascii?Q?gYnIXoT9r0F2wtJeimbiFMzUG3RCaFQtKUcVa/LSUNTr53QKHShMkAgBtGy0?=
+ =?us-ascii?Q?u5i3KxRB21ujv0lnVcXsaOFFh93ia8+9EP+iL7QyUpVl3Vyq/hadc3ISPd+h?=
+ =?us-ascii?Q?YXLPgYrlHAOKY7jSpU3a8uLOX+86Ei9wz/bXkBIF+JBIY82qeJgTzye6isoe?=
+ =?us-ascii?Q?ovQZL6UlPOMpUZcZ8BZzmIUJ2olIMHRKPHQmTlDkf/sbatRuO7sJxNHXsfrs?=
+ =?us-ascii?Q?eb09hBSw0eWRIla2Bg+qv+AY2wlpvT40g6JHf/T+iUHl+tfaWSzk1jb3D+QE?=
+ =?us-ascii?Q?J6WylsCVd3t0hA1x3FXhtkmVCZUMSIjOELE2Hg1dcJL8r1p3GOx0nXOsGVF4?=
+ =?us-ascii?Q?ozEHrSn3Wv0pbsZPkgBBKgnIHcN9F+jQ0UEjhfST8Pj+Adxkl+BMR2ihaG0w?=
+ =?us-ascii?Q?H+t7NxyhwXsXGug4+Wa6dsVewks4mrgJCkrVsGp83NrEQt+WqZbpaDyZQb41?=
+ =?us-ascii?Q?0gJwbPSJ1B54oTpzg19w53E6L37dPMD0BM1/dLDgOK73s6qIvn20/xRIDvds?=
+ =?us-ascii?Q?i/9QQ/S4MzCJ8Svw+4dm4YlpjgzLLCFQxzlMLemk/v2WvJq2QmjUpJGHDRDK?=
+ =?us-ascii?Q?VXE5mu555ur2j/L+cGf5uFIiEg8iuUtNPJ0W4LapG9/M931hjMQ/BphYPlRu?=
+ =?us-ascii?Q?KMxFqx9wXrKYw6hFzYDNOLF93UTL7hoq4vrYMu4F29VtPTTb5KZTFZAILAU/?=
+ =?us-ascii?Q?5m65/t3KrIaqaCYQbaImjuYhrBREFFs+HSTwZ1c2wFC1eAhRHi574/fWNv+1?=
+ =?us-ascii?Q?BaXo/iwx84lL+z3VVnSAsJyU4YTUpUoQbhBgFka+YUIuG4dlYlVWN7Y5oUkk?=
+ =?us-ascii?Q?K4ujryuFpvjaaK2F53UU6VBK2tdzL4tQPClTRKUpJ82PTASyOzzjVtzDLyMx?=
+ =?us-ascii?Q?4Ssb2ZSzdulkby1xSwB1cetktFRN8KiPj8oJ0CZIb9YI8fpNYCmF0KPTTwC0?=
+ =?us-ascii?Q?aD0DpLws1HXmZ9mkc1bam6s6gIqCa6KXgCWsEmOL96vuCAVKJzY73HMlB39/?=
+ =?us-ascii?Q?Y69yG2S1hQSbSwsHSdWVy/Qmq/Wd6WKUHCheyTFwi5hKknV60qFGCSBmbehB?=
+ =?us-ascii?Q?b0QSbyHW35M2oW1lYaIkn3aFQslBO0OYovRCAJ6rsqXTaFG18Sp4W4glG3xE?=
+ =?us-ascii?Q?hvkb4PNVNmlxfGuA1E5eXAUvQD6dX3UVdt4iKugtQblb/IcIaRESdm6SBXO0?=
+ =?us-ascii?Q?LuAKN66JUZRy2A5MS+iye84TNcAW4g+zlnGjJVjC5BXiKTd0bzNt+7ajLFOP?=
+ =?us-ascii?Q?U2cMS9+tmq9GlTgDr4ZjZ43ge7jEVSVrcjq3EK87xcrxCN8jHfr9D4d7J3jU?=
+ =?us-ascii?Q?7XyR8TFNcVDOwd0pSRKcVjLezIxXyUqS1fcfLn2DuQdDjmYTJdqQPTN7jCVp?=
+ =?us-ascii?Q?m8TY8w7oj3tdhGRycn4iGaZwNLWNh6TjByVJP0J8?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 02916b17-a80b-48b1-df09-08dbeb906b47
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Nov 2023 19:22:51.2621
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: /ZEcaEc6bvk0w+WJcWzPB6yOH190+KpJwxfzUfNnsEJzUsw7NSdhn8RezrUh4yJ9
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB6652
 
-On Wed, Nov 22, 2023 at 05:23:34PM +0000, Robin Murphy wrote:
-> > Gaurav doesn't need a custom allocator, he needs a way to manage
-> > sharing page table memory with the hypervisor. A different set of ops
-> > that don't replace the entire allocator would be fine for them.
+On Wed, Nov 22, 2023 at 02:44:53PM +0000, Greg KH wrote:
+> On Thu, Nov 16, 2023 at 01:05:58PM -0400, Jason Gunthorpe wrote:
+> > On Wed, Nov 15, 2023 at 06:25:44PM +0000, Robin Murphy wrote:
+> > > It turns out there are more subtle races beyond just the main part of
+> > > __iommu_probe_device() itself running in parallel - the dev_iommu_free()
+> > > on the way out of an unsuccessful probe can still manage to trip up
+> > > concurrent accesses to a device's fwspec. Thus, extend the scope of
+> > > iommu_probe_device_lock() to also serialise fwspec creation and initial
+> > > retrieval.
+> > > 
+> > > Reported-by: Zhenhua Huang <quic_zhenhuah@quicinc.com>
+> > > Link: https://lore.kernel.org/linux-iommu/e2e20e1c-6450-4ac5-9804-b0000acdf7de@quicinc.com/
+> > > Fixes: 01657bc14a39 ("iommu: Avoid races around device probe")
+> > > Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+> > > ---
+> > > 
+> > > This is my idea of a viable fix, since it does not need a 700-line
+> > > diffstat to make the code do what it was already *trying* to do anyway.
+> > > This stuff should fundamentally not be hanging off driver probe in the
+> > > first place, so I'd rather get on with removing the underlying
+> > > brokenness than waste time and effort polishing it any further.
 > > 
-> > The issue with taking away the alloc_page is that it complicates the
-> > ability for the common code to use the struct page fields and more. We
-> > already know we are going to need those to do some of the things that
-> > are being asked for, eg RCU freeing and refcounting.
+> > I'm fine with this as some hacky backport, but I don't want to see
+> > this cross-layer leakage left in the next merge window.
+> > 
+> > ie we should still do my other series on top of and reverting this.
+> > 
+> > I've poked at moving parts of it under probe and I think we can do
+> > substantial amounts in about two more series and a tidy a bunch of
+> > other stuff too.
 > 
-> Oh come on, for all the things you claim are simple, you don't think it's
-> trivial to make the fancy stuff conditional? (Hint: we already have control
-> flow all over which is conditional on the cfg and/or calling context, and
-> that future stuff may well end up wanting to be conditional in its own right
-> anyway since not all io-pgtable-arm users will need or want it).
-
-I really don't want to make it conditional! I'd want to have one
-common set of radix algorithms shared by the enterprise IOMMUs, so we
-can actually improve those drivers and get all the special features
-people want without writing everything 5 times.
-
-> > Here I am not talking about perfection, I am concerned about messing
-> > up work that I now see as important for other iommu drivers related
-> > things by making a hack for a DRM driver (which as I've said has,
-> > unravelling these hacks has been traumatic for many of us
-> > historically)
+> I agree, it's messy and acpi should not need this, BUT at the moment, I
+> can't see any other way to resolve this simply.
 > 
-> In your own words, this is a community effort. You do not own this code, and
-> you do not get to prevent the community from solving multiple problems they
-> have now, in a way which is reasonable now, just because *you* don't like
-> it, and *you* believe it might possibly make it harder to do something at
-> some indeterminate point in future. Your objection is noted, but as above, I
-> for one do not see a convincing basis for it anyway.
+> So here's a begrudged ack:
+> 
+> Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> 
+> and hopefully the larger series should resolve this correctly?  Can that
+> be rebased on top of this?
 
-I've said already it is my opinion, if you want to bring another one
-then you can particpate too. Thank you for noting my objection.
+Yeah, I'm working on something more along the lines of Robin's desire
+for a full reorganization.
 
-> You know what *the community* sees as important? Not having to maintain
-> multiple copies of near-identical pagetable code, because maintenance is an
-> established and very real concern. 
+The existing series has been tested by a few people now. We can decide
+which order to put things in maybe next week if I get the new approach
+done..
 
-What I heard at LPC is we badly need to stop maintaining independent
-radix algorithms across at least the enterprise iommu drivers. This
-was clearly an articulated need for many different people *from the
-community*.
+> Also, cc: stable on this for whomever applies it?
 
-> This is why we have the io-pgtable
-> library in the first place, and why we adapted io-pgtable-arm to support
-> panfrost when that came along. If supporting panfrost and panthor as
-> io-pgtable users really does ever become a practical problem at some point
-> in the future, we will work to address that problem at that point.
+Also please update the commit message, the text from here does
+describe the race:
 
-You mean Joao or myself will get stuck with it. Not "we". :(
-
-> meantime, we can get on with the common goal of making Linux do the things
-> people want it to do, in the best way that the maintainers are happy to
-> maintain. This is not "a hack for a DRM driver", it's a simple and
-> convenient generalisation of part of io-pgtable, in keeping with the design
-> of io-pgtable (user-provided callbacks are nothing new), and
-> straightforwardly serving at least two completely different use-cases
-> already.
-
-I've already explained to Boris, and he agreed, that it is the *wrong*
-generalization because it is implementing a generally useful algorithm
-in the DRM driver and keeping it out of the core code.
-
-If we deliberately do the wrong thing then, yes, it is a hack.
+https://lore.kernel.org/linux-iommu/11-v2-36a0088ecaa7+22c6e-iommu_fwspec_jgg@nvidia.com/
 
 Jason
