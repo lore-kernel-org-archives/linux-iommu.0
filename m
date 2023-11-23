@@ -1,107 +1,137 @@
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D09835EE8
-	for <iommu@lists.linux.dev>; Thu, 23 Nov 2023 15:48:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=collabora.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="WJ+ze4VU"
-Received: from localhost (cola.collaboradmins.com [195.201.22.229])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	(Authenticated sender: bbrezillon)
-	by madras.collabora.co.uk (Postfix) with ESMTPSA id 5CBD966073C8;
-	Thu, 23 Nov 2023 15:48:47 +0000 (GMT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-	s=mail; t=1700754528;
-	bh=HtHhhwKzqiAmW0q6ZmXEw8LmlFeUglATrn7z4cKTM9s=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=WJ+ze4VUzHRjNkBmb6lHmuf+Ebafd6xx5KUHZAu3ciKi8Z9HslrU7lKnm3FrQEMEJ
-	 fyrMpd2ysP8Smsy4P1xV+3HPvZNL0jnu3AG5vDnK7srtUsDj9JpEI/Ff+A76wKrReN
-	 FxOdklU12dId4ezpOa6L9wswuq/9XddLllvpFDET6066MKt5aA3UNZ+FXMuSlTleVU
-	 oYxVqNxTznf15TalnGYoESVFvVnaB5NPPDNaTjceLbQXy4ZLr7+QFpJUozDNPRr+Ar
-	 3gIqMZTTwX0T4s63bOGd4qxMS4vBsscDDjlzhFen/tat7oN+lntrgfbHCX88V7FKk2
-	 Q9nIo+TiEMpCw==
-Date: Thu, 23 Nov 2023 16:48:43 +0100
-From: Boris Brezillon <boris.brezillon@collabora.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
- iommu@lists.linux.dev, Will Deacon <will@kernel.org>,
- linux-arm-kernel@lists.infradead.org, Rob Clark <robdclark@gmail.com>,
- Gaurav Kohli <quic_gkohli@quicinc.com>, Steven Price
- <steven.price@arm.com>, Pasha Tatashin <pasha.tatashin@soleen.com>, Sean
- Christopherson <seanjc@google.com>, Alex Williamson
- <alex.williamson@redhat.com>, Joao Martins <joao.m.martins@oracle.com>,
- Krzysztof =?UTF-8?B?V2lsY3p5xYRza2k=?= <kwilczynski@kernel.org>
-Subject: Re: Light summary of LPC discussions on io page table
-Message-ID: <20231123164843.040a2c67@collabora.com>
-In-Reply-To: <20231123151118.GA436110@nvidia.com>
-References: <20231123151118.GA436110@nvidia.com>
-Organization: Collabora
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; x86_64-redhat-linux-gnu)
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id DD7C3266A7
+	for <iommu@lists.linux.dev>; Thu, 23 Nov 2023 16:49:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Authentication-Results: smtp.subspace.kernel.org; dkim=none
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 857E0106F;
+	Thu, 23 Nov 2023 08:50:10 -0800 (PST)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D40BD3F7A6;
+	Thu, 23 Nov 2023 08:49:22 -0800 (PST)
+Message-ID: <ff23d70e-8af6-47b5-a85c-de68ebaab4e8@arm.com>
+Date: Thu, 23 Nov 2023 16:49:21 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 0/2] iommu: Allow passing custom allocators to pgtable
+ drivers
+Content-Language: en-GB
+To: Jason Gunthorpe <jgg@ziepe.ca>,
+ Boris Brezillon <boris.brezillon@collabora.com>
+Cc: Joerg Roedel <joro@8bytes.org>, iommu@lists.linux.dev,
+ Will Deacon <will@kernel.org>, linux-arm-kernel@lists.infradead.org,
+ Rob Clark <robdclark@gmail.com>, Gaurav Kohli <quic_gkohli@quicinc.com>,
+ Steven Price <steven.price@arm.com>
+References: <20231113101103.1cc05c8c@collabora.com>
+ <ZVOgBBEetWf1PFxX@nvidia.com> <20231120140425.GA10140@ziepe.ca>
+ <20231120153838.2166e7b8@collabora.com> <20231120144604.GD10140@ziepe.ca>
+ <20231120161418.5eca178e@collabora.com> <20231120154536.GE10140@ziepe.ca>
+ <6e74bd37-9e10-416e-9fbd-0cebb7948e2b@arm.com>
+ <20231122175055.GI10140@ziepe.ca> <20231123095141.19dc26d6@collabora.com>
+ <20231123134800.GA432016@ziepe.ca>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20231123134800.GA432016@ziepe.ca>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-Hi Jason,
-
-On Thu, 23 Nov 2023 11:11:18 -0400
-Jason Gunthorpe <jgg@nvidia.com> wrote:
-
+On 23/11/2023 1:48 pm, Jason Gunthorpe wrote:
 > On Thu, Nov 23, 2023 at 09:51:41AM +0100, Boris Brezillon wrote:
+>> Beside, I think your objection that custom allocators are in the way of
+>> this caching generalization is a bit of an over statement, especially if
+>> custom allocators provide the same guarantees you get from existing
+>> allocations (page-backed, no fields used in the page, etc). Worst case
+>> scenario, you disable the generic cache for all users that pass a custom
+>> allocator, and add a pr_warn() (or WARN_ON() if you want to be pushy)
+>> to make sure driver owners take that into consideration quickly.
 > 
-> > Can these people please raise their voice here? Or maybe LPC's IOMMU
-> > discussions were summarized somewhere in an email sent to the IOMMU ML,
-> > where we could discuss that, instead of this thread.  
+> I want to have common algorithms to manage the radix system, like mm
+> does, and then have some fairly hairy stuff done in the new common
+> code to address all the needs we now understand people have. This is
+> not just "caching".
 > 
-> I think we are using session recordings mostly these days? I have a
-> bunch of people interested - I'm going to work to launch another group
-> project to tackle this. Maybe in Jan.
+> One of the important things on this list is RCU freeing of the table
+> memory.
 > 
-> The recordings are not broken up yet, but here is the master:
+> RCU freeing requires precious space in the struct page.
 > 
-> https://www.youtube.com/live/vO2mAM8wOvU
+> External ops mean we must have the io page table instance available
+> inside the RCU callback so it knows what op to call to free.
 > 
-> Pasha's talk is first at 2:21, and there was some discussion in the
-> room that may be hard to hear including the use of RCU and the
-> refcount. Pasha is interested in solving the memory waste his VFIO
-> application causes which is basically an algorithmic problem inside
-> the io page table.  There was also some side discussion about
-> optimizations. mm implements a batch free technique that could apply
-> here too, and a batch alloc is also potentially interesting.
+> This means the struct page needs to store both a rcu_head and another
+> pointer.
 > 
-> My talk starts at 3:11 and we have another discussion later around
-> this issue in the context of dirty tracking optimization. Joao has
-> written and shared some code for what is concerning there in an
-> earlier email Sean C is the voice at the back sharing the KVM
-> learnings that getting to a common implementation is highly
-> recommended
+> Currently the similar page table algorithms in the mm side consume all
+> the free struct page space. I don't expect the future io page table
+> version of the same stuff to be much different.
 > 
-> I had an interesting hallway discussion about a use case for bringing
-> back the old VFIO type 1.0 huge page split behavior and implementing
-> it in every enterprise iommu.
+> So it is not just that the allocator side can't use the struct page
+> memory. It is that an external allocator inherently demands *more*
+> space in the struct page, space we may not have to give.
 > 
-> Then we have this DRM need, which I've come to think of as a
-> guarenteed map without a table level allocate.
+> Worse, the entire idea of RCU free seems to be incompatible with what
+> you are trying to achieve since pages could be unavailable for use
+> while they are waiting in RCU.
 > 
-> These need touching all the "enterprise" focused page table
-> formats. There are so many now, doing the algorithm work 5-7 times is
-> not reasonable. A common radix algorithm and a more complex shared
-> implementation relying on RCU is the direction I want to head in. mm
-> shows a template how to achieve this, and I have some rough ideas to
-> explore.
+> I'm looking at this and thinking we loose the option to do RCU in the
+> generic code to accommodate external ops. "make RCU optional" is
+> basically saying to duplicate alot of stuff because RCU becomes pretty
+> fundamental to features and algorithm design.
+> 
+> Do you understand my alarm to this direction better now?  I'm sorry if
+> I haven't explained this clearly enough. (I'm coming at this from the
+> MM perspective where the sorts of algorithms and problems here are
+> already well known)
+> 
+>> unresponsive and reluctant to change how they use the APIs. So, if I
+>> follow your way of thinking, you'll just be stuck in the same place,
+>> waiting for DRM drivers to accept the transversal changes you intend to
+>> push.
+> 
+> I wasn't imagining a forced API change. I think the current API can
+> work fine along with an optional pre-allocation scheme.
+> 
+>> What I strongly oppose to though, is having someone say 'I have the
+>> perfect solution for you', and then tell me, 'but you have to wait
+>> another six months, maybe more, to see what it looks like'.
+> 
+> I never said you should be blocked. I agreed with duplicating if
+> necessary to be unblocked.
+> 
+> I also outlined and encouraged you to solve the general problem, but I
+> fully understand you don't want to take it on. That's fine too.
+> 
+> You are both mis-characterizing my position as trying to block the DRM
+> driver :(
+> 
+> I'm trying to accomodate the work I see we need to do soon on the
+> enterprise iommu side that touches this same code.
+> 
+> Look, if we go down this road then we may end up duplicating the page
+> table code so the iommu drivers can use the improved versions until
+> the DRM driver can be changed. Maybe doing duplication later is better
+> than sooner.
 
-Thanks for pulling this together. I'll try to watch the video and make
-sense of what's explained there. I'll get back to you if I have
-questions.
+Oh, so essentially your plan is to replace io-pgtable-arm with something 
+else entirely. That's fair enough; happy to review that when I see it, 
+but as I pointed out, realistically this change hardly makes that any 
+worse than what's *already* present in io-pgtable-arm that you're going 
+to have to deal with anyway.
 
-Regards,
+I would instinctively assume that an "enterprise" optimised version 
+would want to be a clean-slate fork itself since I can't imagine it 
+wants to be burdened with having to handle non-coherent pagetables, 
+Armv7 LPAE format, or any of the quirks for embedded and mobile IOMMUs. 
+I have no issue with moving SMMUv3 to a shiny new pagetable 
+implementation in future, but that is quite clearly not at all 
+incompatible with leaving the existing implementation in place for all 
+the *other* decidedly non-enterprise io-pgtable-arm users, both IOMMU 
+and GPU, not to mention GPU-via-IOMMU in the case of Adreno.
 
-Boris
+Thanks,
+Robin.
