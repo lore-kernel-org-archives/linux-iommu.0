@@ -1,84 +1,83 @@
-Received: from bee.tesarici.cz (bee.tesarici.cz [77.93.223.253])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3D8C224D4
-	for <iommu@lists.linux.dev>; Thu, 23 Nov 2023 10:23:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=tesarici.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tesarici.cz
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b="DDPSK0lG"
-Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by bee.tesarici.cz (Postfix) with ESMTPSA id 4ED651A1F9E;
-	Thu, 23 Nov 2023 11:16:10 +0100 (CET)
-Authentication-Results: mail.tesarici.cz; dmarc=fail (p=none dis=none) header.from=tesarici.cz
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tesarici.cz; s=mail;
-	t=1700734570; bh=IdlZbZ9FL5iny9zKRN7ZMCUL5Jenf+2OfYnJsvJqcig=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=DDPSK0lGkfZJHOQZNuLlkLCLbHz1wjzqVXLySg3Q8z8v7t5gijyPAbAiww7BW4rQr
-	 X2EHNtMdFNvELQGkgNrK29IfFgUDgjQUmz9dd+wWZuWnxYFT9HUPPY/tIjAr/4Z7Al
-	 LCbuCRwmyx01ek0FkLAGYG8vqjsa3KscngzQWmOLXmSMp5woK+anXKMYENadtfWAxO
-	 4mvc7VDKq40/5hTwubz8kifMxUhkDWkl8oEpJYxKuIkSGXypzDhcoE9I4CU5hYWWQ1
-	 4JPUyw025ZJ6Qux1IpbkqUH/wC+OyAm2Y3txJyL3Mm0XJYDyM6WznR/dLWgi1+vEqY
-	 AdxDvgM/iHMNg==
-Date: Thu, 23 Nov 2023 11:16:08 +0100
-From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
-To: Christoph Hellwig <hch@lst.de>
-Cc: Halil Pasic <pasic@linux.ibm.com>, Niklas Schnelle
- <schnelle@linux.ibm.com>, Bjorn Helgaas <bhelgaas@google.com>, Marek
- Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>,
- Petr Tesarik <petr.tesarik1@huawei-partners.com>, Ross Lagerwall
- <ross.lagerwall@citrix.com>, linux-pci <linux-pci@vger.kernel.org>,
- linux-kernel@vger.kernel.org, iommu@lists.linux.dev, Matthew Rosato
- <mjrosato@linux.ibm.com>, Jianxiong Gao <jxgao@google.com>
-Subject: Re: Memory corruption with CONFIG_SWIOTLB_DYNAMIC=y
-Message-ID: <20231123111608.17727968@meshulam.tesarici.cz>
-In-Reply-To: <20231108101347.77cab795@meshulam.tesarici.cz>
-References: <104a8c8fedffd1ff8a2890983e2ec1c26bff6810.camel@linux.ibm.com>
-	<20231103171447.02759771.pasic@linux.ibm.com>
-	<20231103214831.26d29f4d@meshulam.tesarici.cz>
-	<20231107182420.0bd8c211.pasic@linux.ibm.com>
-	<20231108101347.77cab795@meshulam.tesarici.cz>
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; x86_64-suse-linux-gnu)
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D66F4224E8
+	for <iommu@lists.linux.dev>; Thu, 23 Nov 2023 11:13:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Authentication-Results: smtp.subspace.kernel.org; dkim=none
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 56C701042;
+	Thu, 23 Nov 2023 03:14:16 -0800 (PST)
+Received: from [10.57.70.183] (unknown [10.57.70.183])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 502F33F73F;
+	Thu, 23 Nov 2023 03:13:28 -0800 (PST)
+Message-ID: <2ba7bab4-daee-4883-acd4-ec9a10c82103@arm.com>
+Date: Thu, 23 Nov 2023 11:13:13 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] iommu: Don't reserve IOVA when address and size are zero
+To: Ashish Mhetre <amhetre@nvidia.com>, joro@8bytes.org, will@kernel.org,
+ robh@kernel.org, treding@nvidia.com
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ linux-tegra@vger.kernel.org
+References: <20231123061201.16614-1-amhetre@nvidia.com>
+Content-Language: en-GB
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20231123061201.16614-1-amhetre@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Hello everybody,
+On 2023-11-23 6:12 am, Ashish Mhetre wrote:
+> When the bootloader/firmware doesn't setup the framebuffers, their
+> address and size are zero in "iommu-addresses" property. If we intend to
+> use display driver in kernel without framebuffer then it's causing
+> the display IOMMU mappings to fail as IOVA is reserved with size and
+> address as zero.
 
-I don't think I have ever seen an answer to my question regarding
-alignment constraints on swiotlb bounce buffers:
+Can you clarify the problem there? Looking at the code in 
+iova_reserve_iommu_regions() I'm guessing it's that "region->start + 
+region->length - 1" underflows so reserve_iova() actually ends up 
+reserving the entire valid IOVA space?
 
-On Wed, 8 Nov 2023 10:13:47 +0100
-Petr Tesa=C5=99=C3=ADk <petr@tesarici.cz> wrote:
+> An ideal solution would be firmware removing the "iommu-addresses"
+> property and corresponding "memory-region" if display is not present.
+> But the kernel should be able to handle this by checking for size and
+> address of IOVA and skipping the IOVA reservation if both are 0.
 
->[...]
-> To sum it up, there are two types of alignment:
->=20
-> 1. specified by a device's min_align_mask; this says how many low
->    bits of a buffer's physical address must be preserved,
->=20
-> 2. specified by allocation size and/or the alignment parameter;
->    this says how many low bits in the first IO TLB slot's physical
->    address must be zero.
->=20
-> I hope somebody can confirm or correct this summary before I go
-> and break something. You know, it's not like cleanups in SWIOTLB
-> have never broken anything.  ;-)
+Surely it doesn't make sense to reserve a 0-length region at *any* base 
+address? The symptom above wouldn't be quite the same if the base was 
+nonzero, but corrupting the rbtree with an entry where pfn_hi < pfn_lo 
+would definitely not be good either.
 
-If no answer means that nobody knows, then based on my understanding the
-existing code (both implementation and users), I can assume that this
-is the correct interpretation.
+> Fixes: a5bf3cfce8cb ("iommu: Implement of_iommu_get_resv_regions()")
+> Signed-off-by: Ashish Mhetre <amhetre@nvidia.com>
+> ---
+>   drivers/iommu/of_iommu.c | 4 ++++
+>   1 file changed, 4 insertions(+)
+> 
+> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+> index 157b286e36bf..150ef65d357a 100644
+> --- a/drivers/iommu/of_iommu.c
+> +++ b/drivers/iommu/of_iommu.c
+> @@ -255,6 +255,10 @@ void of_iommu_get_resv_regions(struct device *dev, struct list_head *list)
+>   				size_t length;
+>   
+>   				maps = of_translate_dma_region(np, maps, &iova, &length);
+> +				if (iova == 0 && length == 0) {
+> +					dev_dbg(dev, "Skipping IOVA reservation as address and size are zero\n");
 
-I'm giving it a few more days. If there's still no reaction, expect a
-beautiful documentation patch and a less beautiful cleanup patch in the
-next week.
+FWIW I'd be inclined to log a visible warning that firmware is giving us 
+nonsense.
 
-Petr T
+Thanks,
+Robin.
+
+> +					continue;
+> +				}
+>   				type = iommu_resv_region_get_type(dev, &phys, iova, length);
+>   
+>   				region = iommu_alloc_resv_region(iova, length, prot, type,
