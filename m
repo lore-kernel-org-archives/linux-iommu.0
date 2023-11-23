@@ -1,131 +1,200 @@
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2049.outbound.protection.outlook.com [40.107.92.49])
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 78202D2E8
-	for <iommu@lists.linux.dev>; Thu, 23 Nov 2023 06:12:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C587C8E3
+	for <iommu@lists.linux.dev>; Thu, 23 Nov 2023 08:51:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=collabora.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="o/L6lebv"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=WZNuIy3E63aBpdEm0B3q6/yVF2MlxWiKklT2kzkVCO7k5vKfFmSSAMpzOew4zRrVRDIHxPd8LjWhtANDnSvm0/LVKjfEuoezEpGNr/um4P4u7JnarLGnpSGE7nK1NE+ZmyqLMx3hS9/ykhz5M2WloyQ6yfBKCPWZoN3SlTaw3NjtRG6mcTxzAFLUABRp/2YrOHCvFAYZtpedJQoOoxF7gythJ2FGnt8aRiNJN/aZHgpDw2JnduPLn6xET9XYlvjpNrYJkrRUdV1OeJklkDJml+CY63mPW375efzaWB9H/CZ0KmS/gycdSgcgjpMpxUbO2tOyH1cCcTt9F9XYwI7oOA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=DsewroVGgFflXzhuj5kumgX+BUuSSpBaCj+bLWL0rwQ=;
- b=DPZrYQ6VfJxnRozLCOrhFPRcxI4JHl1BQl+GOihpD8UikgLOhRwTmdkDYXe+V39gYaFhAaf0TiTT2VF+IYp5GroAzuOIQh0NRVbgVMiF6PH9sENNsfY7s8rKNV8+twXon8iE4mCVzfz8wBX+0cLDvYRKOXB/sYZSm6B7+MJUM1KD4ohz5VU+ntr2JPOxD8XZLerOO3q2OU8x4PhhcY+i4Cyen+KEAdCd+vBA/3yETkpdsgZXQiai5oKEBJPX61aQnNCMqwLexGXuNx29tMSKKoyoK/8z2O7XLQRlKppLKzUCo6Gug/Iati+dXBNnz6s25pNJHa/K2N8Gy/V4qoCz4A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=8bytes.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=DsewroVGgFflXzhuj5kumgX+BUuSSpBaCj+bLWL0rwQ=;
- b=o/L6lebvrcHNnDzucTbwJ8eg2CjhkiKo1T65FIWSDGty10xdvkChDFjCz2b5Nn8Uiy7t/uZkUJv3sF0oOG4xQF9j5xV5xKsFBcPqYO3t6b0UeKDjIkxFvMw9JBQ02FN3LzR1OgfQamkLIdVII7r0WCgPeZkNc4H1dqur2kQbJTeC8kjGVZQSVyz9dakDiGG+haSWf1mxm1PdpFILXA4ep03AgSwULK8N991PlEzz+gVtbSJa6z9Rc42u0zVAMOqjL4Z7h8aOrrLSvZZMWMdRzDcW4YxFbA0B5q2TfXOlwiwNGjvxo25x3o4CdzQ5kVXR0juOII7yuo3G0FAGvi6RaA==
-Received: from BY3PR05CA0011.namprd05.prod.outlook.com (2603:10b6:a03:254::16)
- by SA1PR12MB8095.namprd12.prod.outlook.com (2603:10b6:806:33f::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7025.18; Thu, 23 Nov
- 2023 06:12:20 +0000
-Received: from CO1PEPF000044F3.namprd05.prod.outlook.com
- (2603:10b6:a03:254:cafe::2) by BY3PR05CA0011.outlook.office365.com
- (2603:10b6:a03:254::16) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7025.18 via Frontend
- Transport; Thu, 23 Nov 2023 06:12:19 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- CO1PEPF000044F3.mail.protection.outlook.com (10.167.241.73) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.7025.12 via Frontend Transport; Thu, 23 Nov 2023 06:12:19 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Wed, 22 Nov
- 2023 22:12:07 -0800
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Wed, 22 Nov
- 2023 22:12:07 -0800
-Received: from amhetre.nvidia.com (10.127.8.9) by mail.nvidia.com
- (10.129.68.9) with Microsoft SMTP Server id 15.2.986.41 via Frontend
- Transport; Wed, 22 Nov 2023 22:12:04 -0800
-From: Ashish Mhetre <amhetre@nvidia.com>
-To: <joro@8bytes.org>, <will@kernel.org>, <robin.murphy@arm.com>,
-	<robh@kernel.org>, <treding@nvidia.com>
-CC: <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
-	<linux-tegra@vger.kernel.org>, Ashish Mhetre <amhetre@nvidia.com>
-Subject: [PATCH] iommu: Don't reserve IOVA when address and size are zero
-Date: Thu, 23 Nov 2023 11:42:01 +0530
-Message-ID: <20231123061201.16614-1-amhetre@nvidia.com>
-X-Mailer: git-send-email 2.17.1
-X-NVConfidentiality: public
+	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="eH6Uk8Fg"
+Received: from localhost (cola.collaboradmins.com [195.201.22.229])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	(Authenticated sender: bbrezillon)
+	by madras.collabora.co.uk (Postfix) with ESMTPSA id C740E6607390;
+	Thu, 23 Nov 2023 08:51:44 +0000 (GMT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+	s=mail; t=1700729505;
+	bh=75Gwo3kIBEkDKruOZT+UBq5pXMBZY7eBy6cWsyZVOVg=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=eH6Uk8FgBKNIQIdYbqRHzV9FqqPJvp8VFpwg/shZf5rmDbo3oRI9fbgsy0vFvQ3ua
+	 RMGUBEtPRCKFA/o/TblvyocRYc8eVUKXaBmU2DjvktA/iQnxq4R2XEgnKvXsscB9d+
+	 FYrb5W/pD7RKLIsJ0Bmph0LKF8hJBmnt8NbzoSQ3FbvJuT2SgPDLkhagClq3cUj5Fk
+	 ZptDnjsNK0GplhMrIGtKcJWzL8QqMink0nuOvTiOEE+itcYiUFN81dFjxAWM1jVuUu
+	 +FO1h70UMkAjBUKtDpP/61vVvZWBjN94/C7OByp2fQzXGvS87rvfZTFAznovMoyZzG
+	 7D6tksLC45ctw==
+Date: Thu, 23 Nov 2023 09:51:41 +0100
+From: Boris Brezillon <boris.brezillon@collabora.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+ iommu@lists.linux.dev, Will Deacon <will@kernel.org>,
+ linux-arm-kernel@lists.infradead.org, Rob Clark <robdclark@gmail.com>,
+ Gaurav Kohli <quic_gkohli@quicinc.com>, Steven Price <steven.price@arm.com>
+Subject: Re: [PATCH v2 0/2] iommu: Allow passing custom allocators to
+ pgtable drivers
+Message-ID: <20231123095141.19dc26d6@collabora.com>
+In-Reply-To: <20231122175055.GI10140@ziepe.ca>
+References: <20231110201652.629b7228@collabora.com>
+	<20231110194215.GR4488@nvidia.com>
+	<20231113101103.1cc05c8c@collabora.com>
+	<ZVOgBBEetWf1PFxX@nvidia.com>
+	<20231120140425.GA10140@ziepe.ca>
+	<20231120153838.2166e7b8@collabora.com>
+	<20231120144604.GD10140@ziepe.ca>
+	<20231120161418.5eca178e@collabora.com>
+	<20231120154536.GE10140@ziepe.ca>
+	<6e74bd37-9e10-416e-9fbd-0cebb7948e2b@arm.com>
+	<20231122175055.GI10140@ziepe.ca>
+Organization: Collabora
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; x86_64-redhat-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1PEPF000044F3:EE_|SA1PR12MB8095:EE_
-X-MS-Office365-Filtering-Correlation-Id: 08b28bd9-61a8-4250-ce16-08dbebeb2673
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	8Yww6NmGKgXsHlTMOOYWi9rHDou5qfo1muFvInFrsYpLDyfu017v+39GdiKLRH8IE96et4Lvtrso3+QpEb65w9w2U+uw9X/cfPN9u1eKvWhBrFt2GmrbzqKz4dw3o8/rtkxdSQYcw1AEXDMsbAEB6tAZpctqTHMpLwJ8N7ZsKttn0v0+T7b70WL9Y7he8J+GE8j/9UXqjBvU68+BL8juKfgMWm3omRwZkdNhN082DXcXHQSq3pHShNzdtU5dHkBOHmKnAmSSofKuJnv9X6WdFJipnWsWNXvlmw3OK3DyLoRSlseGMQsboxNNrYK2wdaIg5xCDut8mfTB4RPXQi2T7Deb0udzV0vdgaVlPzAvMDT1wWfFm3rdPQYSdY0hR8PyP5z9ApLi/Tkfe2uPvV9EapGJ6hwm2wrK74Xfdjcl2Wgi9LhudVqeFOqCs7Ted91KlNDnh6/yM8tEFH/JhyC5nybYeAUP36w/PTeQxKvH/KB8w5DN4HGWUjKNEtJdU+/yi4Af9YuzmRvJscybSa4mdftsvOfzhGjnKL3pNDYbRbGh96xJgjC4Gmb9mO4wqy75CR/cJtGfbjTqU3TxcZdA7ytRHE4SGFJZh0yHFKxaJiEjsJ8jP4tldRHaewNs/GtcPNvVhjVyGGGDDs/t+p5gAlZzf3JBLFPpVi4tfHUx/AVPYoLZRKCX5yZ8LWdpX7qmyFz1P5SAnQkWLObYGwa5u3g3c5TR5s1SNZQ+Ca7TUtL5LXlX/gRdOK5zeIrX4PYfqC/eUApFJg0xqjkJxj5Aqg==
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230031)(4636009)(376002)(39860400002)(136003)(396003)(346002)(230922051799003)(451199024)(64100799003)(186009)(82310400011)(1800799012)(36840700001)(40470700004)(46966006)(40460700003)(26005)(107886003)(336012)(6666004)(7696005)(426003)(2616005)(36860700001)(478600001)(4326008)(8936002)(41300700001)(47076005)(8676002)(2906002)(5660300002)(1076003)(316002)(6636002)(70206006)(110136005)(54906003)(70586007)(86362001)(36756003)(82740400003)(356005)(7636003)(40480700001)(66899024)(2101003);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Nov 2023 06:12:19.6460
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 08b28bd9-61a8-4250-ce16-08dbebeb2673
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CO1PEPF000044F3.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB8095
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-When the bootloader/firmware doesn't setup the framebuffers, their
-address and size are zero in "iommu-addresses" property. If we intend to
-use display driver in kernel without framebuffer then it's causing
-the display IOMMU mappings to fail as IOVA is reserved with size and
-address as zero.
-An ideal solution would be firmware removing the "iommu-addresses"
-property and corresponding "memory-region" if display is not present.
-But the kernel should be able to handle this by checking for size and
-address of IOVA and skipping the IOVA reservation if both are 0.
+Hi Jason,
 
-Fixes: a5bf3cfce8cb ("iommu: Implement of_iommu_get_resv_regions()")
-Signed-off-by: Ashish Mhetre <amhetre@nvidia.com>
----
- drivers/iommu/of_iommu.c | 4 ++++
- 1 file changed, 4 insertions(+)
+On Wed, 22 Nov 2023 13:50:55 -0400
+Jason Gunthorpe <jgg@ziepe.ca> wrote:
 
-diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-index 157b286e36bf..150ef65d357a 100644
---- a/drivers/iommu/of_iommu.c
-+++ b/drivers/iommu/of_iommu.c
-@@ -255,6 +255,10 @@ void of_iommu_get_resv_regions(struct device *dev, struct list_head *list)
- 				size_t length;
- 
- 				maps = of_translate_dma_region(np, maps, &iova, &length);
-+				if (iova == 0 && length == 0) {
-+					dev_dbg(dev, "Skipping IOVA reservation as address and size are zero\n");
-+					continue;
-+				}
- 				type = iommu_resv_region_get_type(dev, &phys, iova, length);
- 
- 				region = iommu_alloc_resv_region(iova, length, prot, type,
--- 
-2.17.1
+> On Wed, Nov 22, 2023 at 05:23:34PM +0000, Robin Murphy wrote:
+> > > Gaurav doesn't need a custom allocator, he needs a way to manage
+> > > sharing page table memory with the hypervisor. A different set of ops
+> > > that don't replace the entire allocator would be fine for them.
+> > > 
+> > > The issue with taking away the alloc_page is that it complicates the
+> > > ability for the common code to use the struct page fields and more. We
+> > > already know we are going to need those to do some of the things that
+> > > are being asked for, eg RCU freeing and refcounting.  
+> > 
+> > Oh come on, for all the things you claim are simple, you don't think it's
+> > trivial to make the fancy stuff conditional? (Hint: we already have control
+> > flow all over which is conditional on the cfg and/or calling context, and
+> > that future stuff may well end up wanting to be conditional in its own right
+> > anyway since not all io-pgtable-arm users will need or want it).  
+> 
+> I really don't want to make it conditional! I'd want to have one
+> common set of radix algorithms shared by the enterprise IOMMUs, so we
+> can actually improve those drivers and get all the special features
+> people want without writing everything 5 times.
 
+Just because it's optional doesn't mean you can't have a common
+implementation shared across drivers. Feels like you're stuck on an
+all-or-nothing mindset instead of trying to progressively push stuff to
+more drivers, until you end up with everyone using your caching system,
+at which point you can decide to make it part of the mandatory/core
+features.
+
+> 
+> > > Here I am not talking about perfection, I am concerned about messing
+> > > up work that I now see as important for other iommu drivers related
+> > > things by making a hack for a DRM driver (which as I've said has,
+> > > unravelling these hacks has been traumatic for many of us
+> > > historically)  
+> > 
+> > In your own words, this is a community effort. You do not own this code, and
+> > you do not get to prevent the community from solving multiple problems they
+> > have now, in a way which is reasonable now, just because *you* don't like
+> > it, and *you* believe it might possibly make it harder to do something at
+> > some indeterminate point in future. Your objection is noted, but as above, I
+> > for one do not see a convincing basis for it anyway.  
+> 
+> I've said already it is my opinion, if you want to bring another one
+> then you can particpate too. Thank you for noting my objection.
+> 
+> > You know what *the community* sees as important? Not having to maintain
+> > multiple copies of near-identical pagetable code, because maintenance is an
+> > established and very real concern.   
+> 
+> What I heard at LPC is we badly need to stop maintaining independent
+> radix algorithms across at least the enterprise iommu drivers. This
+> was clearly an articulated need for many different people *from the
+> community*.
+
+Can these people please raise their voice here? Or maybe LPC's IOMMU
+discussions were summarized somewhere in an email sent to the IOMMU ML,
+where we could discuss that, instead of this thread.
+
+> 
+> > This is why we have the io-pgtable
+> > library in the first place, and why we adapted io-pgtable-arm to support
+> > panfrost when that came along. If supporting panfrost and panthor as
+> > io-pgtable users really does ever become a practical problem at some point
+> > in the future, we will work to address that problem at that point.  
+> 
+> You mean Joao or myself will get stuck with it. Not "we". :(
+
+Oh come on, I'm tired of hearing that argument. I proposed my help, and
+am still happy to help in any way I can, including reviewing DRM
+changes, or helping patching DRM drivers, if that's the main blocker.
+If there's a set of specific DRM drivers you had problem with, please
+name them, so we can discuss it with the rest of the DRM community in
+order to try and find a solution.
+
+> 
+> > meantime, we can get on with the common goal of making Linux do the things
+> > people want it to do, in the best way that the maintainers are happy to
+> > maintain. This is not "a hack for a DRM driver", it's a simple and
+> > convenient generalisation of part of io-pgtable, in keeping with the design
+> > of io-pgtable (user-provided callbacks are nothing new), and
+> > straightforwardly serving at least two completely different use-cases
+> > already.  
+> 
+> I've already explained to Boris, and he agreed, that it is the *wrong*
+> generalization because it is implementing a generally useful algorithm
+> in the DRM driver and keeping it out of the core code.
+
+Sorry, but I never said that. I said your approach was interesting (and
+I keep thinking it is), tried to see how it'd fit in the panthor
+picture, and said I wouldn't mind porting panthor to it when it's
+ready. I still strongly disagree on the form though. Blocking
+driver-merging/framework-evolutions for months just because you decided
+how you want it done, and that nothing else can happen in the meantime
+because it might get in the way, sounds like a single man decision, not
+something widely agreed across the iommu community.
+
+Beside, I think your objection that custom allocators are in the way of
+this caching generalization is a bit of an over statement, especially if
+custom allocators provide the same guarantees you get from existing
+allocations (page-backed, no fields used in the page, etc). Worst case
+scenario, you disable the generic cache for all users that pass a custom
+allocator, and add a pr_warn() (or WARN_ON() if you want to be pushy)
+to make sure driver owners take that into consideration quickly.
+
+Last but not least, IIUC your approach implies explicit VA range
+allocation/deallocation to work (through new API calls), which means
+you'll need to patch all io-pgtable users get acks from their
+maintainers. That includes IOMMU drivers living in drivers/iommu, which,
+if I read behind the lines, should be easy peasy, but also external
+io-pgtable users like DRM drivers, which, according to you, are
+unresponsive and reluctant to change how they use the APIs. So, if I
+follow your way of thinking, you'll just be stuck in the same place,
+waiting for DRM drivers to accept the transversal changes you intend to
+push.
+
+> 
+> If we deliberately do the wrong thing then, yes, it is a hack.
+
+We don't deliberately do the 'wrong' thing. We do something that's
+working but you consider to be wrong/inappropriate, and we commit to
+revisit our implementation when the new/fancy thing is out. I don't see
+how more constructive I can be here.
+
+What I strongly oppose to though, is having someone say 'I have the
+perfect solution for you', and then tell me, 'but you have to wait
+another six months, maybe more, to see what it looks like'. I already
+see your counter argument coming, that I can pick it up, and try to
+implement it myself. Problem is, in this sort of situation, the guy
+proposing his help (me) rarely has the same vision of what the
+implementation should look like, and ends up spending a considerable
+amount of time working on something that's, at best, barely matching
+the original idea.
+
+Regards,
+
+Boris
