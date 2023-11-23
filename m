@@ -1,200 +1,132 @@
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+Received: from mail.marcansoft.com (marcansoft.com [212.63.210.85])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C587C8E3
-	for <iommu@lists.linux.dev>; Thu, 23 Nov 2023 08:51:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=collabora.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B49FC2031F;
+	Thu, 23 Nov 2023 09:08:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=marcan.st
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=marcan.st
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="eH6Uk8Fg"
-Received: from localhost (cola.collaboradmins.com [195.201.22.229])
+	dkim=pass (2048-bit key) header.d=marcan.st header.i=@marcan.st header.b="bEylMheX"
+Received: from [127.0.0.1] (localhost [127.0.0.1])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(No client certificate requested)
-	(Authenticated sender: bbrezillon)
-	by madras.collabora.co.uk (Postfix) with ESMTPSA id C740E6607390;
-	Thu, 23 Nov 2023 08:51:44 +0000 (GMT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-	s=mail; t=1700729505;
-	bh=75Gwo3kIBEkDKruOZT+UBq5pXMBZY7eBy6cWsyZVOVg=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=eH6Uk8FgBKNIQIdYbqRHzV9FqqPJvp8VFpwg/shZf5rmDbo3oRI9fbgsy0vFvQ3ua
-	 RMGUBEtPRCKFA/o/TblvyocRYc8eVUKXaBmU2DjvktA/iQnxq4R2XEgnKvXsscB9d+
-	 FYrb5W/pD7RKLIsJ0Bmph0LKF8hJBmnt8NbzoSQ3FbvJuT2SgPDLkhagClq3cUj5Fk
-	 ZptDnjsNK0GplhMrIGtKcJWzL8QqMink0nuOvTiOEE+itcYiUFN81dFjxAWM1jVuUu
-	 +FO1h70UMkAjBUKtDpP/61vVvZWBjN94/C7OByp2fQzXGvS87rvfZTFAznovMoyZzG
-	 7D6tksLC45ctw==
-Date: Thu, 23 Nov 2023 09:51:41 +0100
-From: Boris Brezillon <boris.brezillon@collabora.com>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
- iommu@lists.linux.dev, Will Deacon <will@kernel.org>,
- linux-arm-kernel@lists.infradead.org, Rob Clark <robdclark@gmail.com>,
- Gaurav Kohli <quic_gkohli@quicinc.com>, Steven Price <steven.price@arm.com>
-Subject: Re: [PATCH v2 0/2] iommu: Allow passing custom allocators to
- pgtable drivers
-Message-ID: <20231123095141.19dc26d6@collabora.com>
-In-Reply-To: <20231122175055.GI10140@ziepe.ca>
-References: <20231110201652.629b7228@collabora.com>
-	<20231110194215.GR4488@nvidia.com>
-	<20231113101103.1cc05c8c@collabora.com>
-	<ZVOgBBEetWf1PFxX@nvidia.com>
-	<20231120140425.GA10140@ziepe.ca>
-	<20231120153838.2166e7b8@collabora.com>
-	<20231120144604.GD10140@ziepe.ca>
-	<20231120161418.5eca178e@collabora.com>
-	<20231120154536.GE10140@ziepe.ca>
-	<6e74bd37-9e10-416e-9fbd-0cebb7948e2b@arm.com>
-	<20231122175055.GI10140@ziepe.ca>
-Organization: Collabora
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; x86_64-redhat-linux-gnu)
+	(Authenticated sender: marcan@marcan.st)
+	by mail.marcansoft.com (Postfix) with ESMTPSA id 9BDB241EF0;
+	Thu, 23 Nov 2023 09:08:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=marcan.st; s=default;
+	t=1700730528; bh=tKvmM8VauJ2SKlC76Ts+IMS9Y0f1D93gbN6PS2aS1RQ=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To;
+	b=bEylMheXkP1AY7uDhyUgpvOvmafAgnH8kYOyGsGvzSEm3AG0TuKGO12XpHG7pIpPk
+	 7DWjDpQ/2UVGkEBlWmpkMsK+kkFSTbFl2mNZf+evyauyJJjLkxYiIMvQnQZccc7GYl
+	 eyA+fRFKB/4nH2lfKLFZ7jOWf+ZnhEEAdxplIRYiCSC8oH9YCENIvFOPHr97tQOVpS
+	 vFMyIE8sCHGbUWmMQTW6+kNNQZA2kAYPQ/d2k1mzDzQUzP4vU581SpL8b4NQXqoDyL
+	 Nq2SuV6KB6PtAtBepsn6kZamgJlbVvwi56sMxTDqNBWGfHkerXitbj24KAHWAlJH6q
+	 nnb+VrbjJRB5A==
+Message-ID: <ab23469f-19ce-4681-afc9-65518730b51b@marcan.st>
+Date: Thu, 23 Nov 2023 18:08:33 +0900
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 06/17] iommu: Add iommu_fwspec_alloc/dealloc()
+Content-Language: en-US
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: acpica-devel@lists.linux.dev, Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+ Albert Ou <aou@eecs.berkeley.edu>, asahi@lists.linux.dev,
+ Catalin Marinas <catalin.marinas@arm.com>, Dexuan Cui <decui@microsoft.com>,
+ devicetree@vger.kernel.org, David Woodhouse <dwmw2@infradead.org>,
+ Frank Rowand <frowand.list@gmail.com>, Hanjun Guo <guohanjun@huawei.com>,
+ Haiyang Zhang <haiyangz@microsoft.com>, iommu@lists.linux.dev,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Jonathan Hunter <jonathanh@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
+ "K. Y. Srinivasan" <kys@microsoft.com>, Len Brown <lenb@kernel.org>,
+ linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-hyperv@vger.kernel.org, linux-mips@vger.kernel.org,
+ linux-riscv@lists.infradead.org, linux-snps-arc@lists.infradead.org,
+ linux-tegra@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
+ Lorenzo Pieralisi <lpieralisi@kernel.org>,
+ Marek Szyprowski <m.szyprowski@samsung.com>,
+ Palmer Dabbelt <palmer@dabbelt.com>, patches@lists.linux.dev,
+ Paul Walmsley <paul.walmsley@sifive.com>,
+ "Rafael J. Wysocki" <rafael@kernel.org>,
+ Robert Moore <robert.moore@intel.com>, Rob Herring <robh+dt@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Sudeep Holla <sudeep.holla@arm.com>,
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ Sven Peter <sven@svenpeter.dev>, Thierry Reding <thierry.reding@gmail.com>,
+ Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+ Krishna Reddy <vdumpa@nvidia.com>, Vineet Gupta <vgupta@kernel.org>,
+ virtualization@lists.linux.dev, Wei Liu <wei.liu@kernel.org>,
+ Will Deacon <will@kernel.org>
+References: <6-v2-36a0088ecaa7+22c6e-iommu_fwspec_jgg@nvidia.com>
+ <20a7ef6d-a8ca-4bd8-ad7e-11856db617a2@marcan.st>
+ <1eb12c35-e64e-4c32-af99-8743dc2ec266@marcan.st>
+ <20231119141329.GA6083@nvidia.com>
+ <90855bbf-e845-4e4d-a713-df71d1e477d2@marcan.st>
+ <20231121160058.GG6083@nvidia.com>
+From: Hector Martin <marcan@marcan.st>
+In-Reply-To: <20231121160058.GG6083@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-Hi Jason,
-
-On Wed, 22 Nov 2023 13:50:55 -0400
-Jason Gunthorpe <jgg@ziepe.ca> wrote:
-
-> On Wed, Nov 22, 2023 at 05:23:34PM +0000, Robin Murphy wrote:
-> > > Gaurav doesn't need a custom allocator, he needs a way to manage
-> > > sharing page table memory with the hypervisor. A different set of ops
-> > > that don't replace the entire allocator would be fine for them.
-> > > 
-> > > The issue with taking away the alloc_page is that it complicates the
-> > > ability for the common code to use the struct page fields and more. We
-> > > already know we are going to need those to do some of the things that
-> > > are being asked for, eg RCU freeing and refcounting.  
-> > 
-> > Oh come on, for all the things you claim are simple, you don't think it's
-> > trivial to make the fancy stuff conditional? (Hint: we already have control
-> > flow all over which is conditional on the cfg and/or calling context, and
-> > that future stuff may well end up wanting to be conditional in its own right
-> > anyway since not all io-pgtable-arm users will need or want it).  
+On 2023/11/22 1:00, Jason Gunthorpe wrote:
+> On Tue, Nov 21, 2023 at 03:47:48PM +0900, Hector Martin wrote:
+>>> Which is sensitive only to !NULL fwspec, and if EPROBE_DEFER is
+>>> returned fwspec will be freed and dev->iommu->fwspec will be NULL
+>>> here.
+>>>
+>>> In the NULL case it does a 'bus probe' with a NULL fwspec and all the
+>>> fwspec drivers return immediately from their probe functions.
+>>>
+>>> Did I miss something?
+>>
+>> apple_dart is not a fwspec driver and doesn't do that :-)
 > 
-> I really don't want to make it conditional! I'd want to have one
-> common set of radix algorithms shared by the enterprise IOMMUs, so we
-> can actually improve those drivers and get all the special features
-> people want without writing everything 5 times.
-
-Just because it's optional doesn't mean you can't have a common
-implementation shared across drivers. Feels like you're stuck on an
-all-or-nothing mindset instead of trying to progressively push stuff to
-more drivers, until you end up with everyone using your caching system,
-at which point you can decide to make it part of the mandatory/core
-features.
-
+> It implements of_xlate that makes it a driver using the fwspec probe
+> path.
 > 
-> > > Here I am not talking about perfection, I am concerned about messing
-> > > up work that I now see as important for other iommu drivers related
-> > > things by making a hack for a DRM driver (which as I've said has,
-> > > unravelling these hacks has been traumatic for many of us
-> > > historically)  
-> > 
-> > In your own words, this is a community effort. You do not own this code, and
-> > you do not get to prevent the community from solving multiple problems they
-> > have now, in a way which is reasonable now, just because *you* don't like
-> > it, and *you* believe it might possibly make it harder to do something at
-> > some indeterminate point in future. Your objection is noted, but as above, I
-> > for one do not see a convincing basis for it anyway.  
+> The issue is in apple-dart. Its logic for avoiding bus probe vs
+> fwspec probe is not correct.
 > 
-> I've said already it is my opinion, if you want to bring another one
-> then you can particpate too. Thank you for noting my objection.
+> It does:
 > 
-> > You know what *the community* sees as important? Not having to maintain
-> > multiple copies of near-identical pagetable code, because maintenance is an
-> > established and very real concern.   
+> static int apple_dart_of_xlate(struct device *dev, struct of_phandle_args *args)
+> {
+>  [..]
+>  	dev_iommu_priv_set(dev, cfg);
 > 
-> What I heard at LPC is we badly need to stop maintaining independent
-> radix algorithms across at least the enterprise iommu drivers. This
-> was clearly an articulated need for many different people *from the
-> community*.
-
-Can these people please raise their voice here? Or maybe LPC's IOMMU
-discussions were summarized somewhere in an email sent to the IOMMU ML,
-where we could discuss that, instead of this thread.
-
 > 
-> > This is why we have the io-pgtable
-> > library in the first place, and why we adapted io-pgtable-arm to support
-> > panfrost when that came along. If supporting panfrost and panthor as
-> > io-pgtable users really does ever become a practical problem at some point
-> > in the future, we will work to address that problem at that point.  
+> Then:
 > 
-> You mean Joao or myself will get stuck with it. Not "we". :(
-
-Oh come on, I'm tired of hearing that argument. I proposed my help, and
-am still happy to help in any way I can, including reviewing DRM
-changes, or helping patching DRM drivers, if that's the main blocker.
-If there's a set of specific DRM drivers you had problem with, please
-name them, so we can discuss it with the rest of the DRM community in
-order to try and find a solution.
-
+> static struct iommu_device *apple_dart_probe_device(struct device *dev)
+> {
+> 	struct apple_dart_master_cfg *cfg = dev_iommu_priv_get(dev);
+> 	struct apple_dart_stream_map *stream_map;
+> 	int i;
 > 
-> > meantime, we can get on with the common goal of making Linux do the things
-> > people want it to do, in the best way that the maintainers are happy to
-> > maintain. This is not "a hack for a DRM driver", it's a simple and
-> > convenient generalisation of part of io-pgtable, in keeping with the design
-> > of io-pgtable (user-provided callbacks are nothing new), and
-> > straightforwardly serving at least two completely different use-cases
-> > already.  
+> 	if (!cfg)
+> 		return ERR_PTR(-ENODEV);
 > 
-> I've already explained to Boris, and he agreed, that it is the *wrong*
-> generalization because it is implementing a generally useful algorithm
-> in the DRM driver and keeping it out of the core code.
-
-Sorry, but I never said that. I said your approach was interesting (and
-I keep thinking it is), tried to see how it'd fit in the panthor
-picture, and said I wouldn't mind porting panthor to it when it's
-ready. I still strongly disagree on the form though. Blocking
-driver-merging/framework-evolutions for months just because you decided
-how you want it done, and that nothing else can happen in the meantime
-because it might get in the way, sounds like a single man decision, not
-something widely agreed across the iommu community.
-
-Beside, I think your objection that custom allocators are in the way of
-this caching generalization is a bit of an over statement, especially if
-custom allocators provide the same guarantees you get from existing
-allocations (page-backed, no fields used in the page, etc). Worst case
-scenario, you disable the generic cache for all users that pass a custom
-allocator, and add a pr_warn() (or WARN_ON() if you want to be pushy)
-to make sure driver owners take that into consideration quickly.
-
-Last but not least, IIUC your approach implies explicit VA range
-allocation/deallocation to work (through new API calls), which means
-you'll need to patch all io-pgtable users get acks from their
-maintainers. That includes IOMMU drivers living in drivers/iommu, which,
-if I read behind the lines, should be easy peasy, but also external
-io-pgtable users like DRM drivers, which, according to you, are
-unresponsive and reluctant to change how they use the APIs. So, if I
-follow your way of thinking, you'll just be stuck in the same place,
-waiting for DRM drivers to accept the transversal changes you intend to
-push.
-
+> Which leaks the cfg memory on rare error cases and wrongly allows the
+> driver to probe without a fwspec, which I think is what you are
+> hitting.
 > 
-> If we deliberately do the wrong thing then, yes, it is a hack.
+> It should be
+> 
+>        if (!dev_iommu_fwspec_get(dev) || !cfg)
+> 		return ERR_PTR(-ENODEV);
+> 
+> To ensure the driver never probes on the bus path.
+> 
+> Clearing the dev->iommu in the core code has the side effect of
+> clearing (and leaking) the cfg which would hide this issue.
 
-We don't deliberately do the 'wrong' thing. We do something that's
-working but you consider to be wrong/inappropriate, and we commit to
-revisit our implementation when the new/fancy thing is out. I don't see
-how more constructive I can be here.
+Aha! Yes, that makes it work with only the first change. I'll throw the
+apple-dart fix into our tree (and submit it once I get to clearing out
+the branch; the affected consumer driver isn't upstream yet so this
+isn't particularly urgent).
 
-What I strongly oppose to though, is having someone say 'I have the
-perfect solution for you', and then tell me, 'but you have to wait
-another six months, maybe more, to see what it looks like'. I already
-see your counter argument coming, that I can pick it up, and try to
-implement it myself. Problem is, in this sort of situation, the guy
-proposing his help (me) rarely has the same vision of what the
-implementation should look like, and ends up spending a considerable
-amount of time working on something that's, at best, barely matching
-the original idea.
-
-Regards,
-
-Boris
+- Hector
