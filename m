@@ -1,132 +1,84 @@
-Received: from mail.marcansoft.com (marcansoft.com [212.63.210.85])
+Received: from bee.tesarici.cz (bee.tesarici.cz [77.93.223.253])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B49FC2031F;
-	Thu, 23 Nov 2023 09:08:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=marcan.st
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=marcan.st
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3D8C224D4
+	for <iommu@lists.linux.dev>; Thu, 23 Nov 2023 10:23:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=tesarici.cz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tesarici.cz
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=marcan.st header.i=@marcan.st header.b="bEylMheX"
-Received: from [127.0.0.1] (localhost [127.0.0.1])
+	dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b="DDPSK0lG"
+Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	(Authenticated sender: marcan@marcan.st)
-	by mail.marcansoft.com (Postfix) with ESMTPSA id 9BDB241EF0;
-	Thu, 23 Nov 2023 09:08:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=marcan.st; s=default;
-	t=1700730528; bh=tKvmM8VauJ2SKlC76Ts+IMS9Y0f1D93gbN6PS2aS1RQ=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=bEylMheXkP1AY7uDhyUgpvOvmafAgnH8kYOyGsGvzSEm3AG0TuKGO12XpHG7pIpPk
-	 7DWjDpQ/2UVGkEBlWmpkMsK+kkFSTbFl2mNZf+evyauyJJjLkxYiIMvQnQZccc7GYl
-	 eyA+fRFKB/4nH2lfKLFZ7jOWf+ZnhEEAdxplIRYiCSC8oH9YCENIvFOPHr97tQOVpS
-	 vFMyIE8sCHGbUWmMQTW6+kNNQZA2kAYPQ/d2k1mzDzQUzP4vU581SpL8b4NQXqoDyL
-	 Nq2SuV6KB6PtAtBepsn6kZamgJlbVvwi56sMxTDqNBWGfHkerXitbj24KAHWAlJH6q
-	 nnb+VrbjJRB5A==
-Message-ID: <ab23469f-19ce-4681-afc9-65518730b51b@marcan.st>
-Date: Thu, 23 Nov 2023 18:08:33 +0900
+	by bee.tesarici.cz (Postfix) with ESMTPSA id 4ED651A1F9E;
+	Thu, 23 Nov 2023 11:16:10 +0100 (CET)
+Authentication-Results: mail.tesarici.cz; dmarc=fail (p=none dis=none) header.from=tesarici.cz
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tesarici.cz; s=mail;
+	t=1700734570; bh=IdlZbZ9FL5iny9zKRN7ZMCUL5Jenf+2OfYnJsvJqcig=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=DDPSK0lGkfZJHOQZNuLlkLCLbHz1wjzqVXLySg3Q8z8v7t5gijyPAbAiww7BW4rQr
+	 X2EHNtMdFNvELQGkgNrK29IfFgUDgjQUmz9dd+wWZuWnxYFT9HUPPY/tIjAr/4Z7Al
+	 LCbuCRwmyx01ek0FkLAGYG8vqjsa3KscngzQWmOLXmSMp5woK+anXKMYENadtfWAxO
+	 4mvc7VDKq40/5hTwubz8kifMxUhkDWkl8oEpJYxKuIkSGXypzDhcoE9I4CU5hYWWQ1
+	 4JPUyw025ZJ6Qux1IpbkqUH/wC+OyAm2Y3txJyL3Mm0XJYDyM6WznR/dLWgi1+vEqY
+	 AdxDvgM/iHMNg==
+Date: Thu, 23 Nov 2023 11:16:08 +0100
+From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
+To: Christoph Hellwig <hch@lst.de>
+Cc: Halil Pasic <pasic@linux.ibm.com>, Niklas Schnelle
+ <schnelle@linux.ibm.com>, Bjorn Helgaas <bhelgaas@google.com>, Marek
+ Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>,
+ Petr Tesarik <petr.tesarik1@huawei-partners.com>, Ross Lagerwall
+ <ross.lagerwall@citrix.com>, linux-pci <linux-pci@vger.kernel.org>,
+ linux-kernel@vger.kernel.org, iommu@lists.linux.dev, Matthew Rosato
+ <mjrosato@linux.ibm.com>, Jianxiong Gao <jxgao@google.com>
+Subject: Re: Memory corruption with CONFIG_SWIOTLB_DYNAMIC=y
+Message-ID: <20231123111608.17727968@meshulam.tesarici.cz>
+In-Reply-To: <20231108101347.77cab795@meshulam.tesarici.cz>
+References: <104a8c8fedffd1ff8a2890983e2ec1c26bff6810.camel@linux.ibm.com>
+	<20231103171447.02759771.pasic@linux.ibm.com>
+	<20231103214831.26d29f4d@meshulam.tesarici.cz>
+	<20231107182420.0bd8c211.pasic@linux.ibm.com>
+	<20231108101347.77cab795@meshulam.tesarici.cz>
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; x86_64-suse-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 06/17] iommu: Add iommu_fwspec_alloc/dealloc()
-Content-Language: en-US
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: acpica-devel@lists.linux.dev, Alyssa Rosenzweig <alyssa@rosenzweig.io>,
- Albert Ou <aou@eecs.berkeley.edu>, asahi@lists.linux.dev,
- Catalin Marinas <catalin.marinas@arm.com>, Dexuan Cui <decui@microsoft.com>,
- devicetree@vger.kernel.org, David Woodhouse <dwmw2@infradead.org>,
- Frank Rowand <frowand.list@gmail.com>, Hanjun Guo <guohanjun@huawei.com>,
- Haiyang Zhang <haiyangz@microsoft.com>, iommu@lists.linux.dev,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Jonathan Hunter <jonathanh@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
- "K. Y. Srinivasan" <kys@microsoft.com>, Len Brown <lenb@kernel.org>,
- linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-hyperv@vger.kernel.org, linux-mips@vger.kernel.org,
- linux-riscv@lists.infradead.org, linux-snps-arc@lists.infradead.org,
- linux-tegra@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
- Lorenzo Pieralisi <lpieralisi@kernel.org>,
- Marek Szyprowski <m.szyprowski@samsung.com>,
- Palmer Dabbelt <palmer@dabbelt.com>, patches@lists.linux.dev,
- Paul Walmsley <paul.walmsley@sifive.com>,
- "Rafael J. Wysocki" <rafael@kernel.org>,
- Robert Moore <robert.moore@intel.com>, Rob Herring <robh+dt@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Sudeep Holla <sudeep.holla@arm.com>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Sven Peter <sven@svenpeter.dev>, Thierry Reding <thierry.reding@gmail.com>,
- Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
- Krishna Reddy <vdumpa@nvidia.com>, Vineet Gupta <vgupta@kernel.org>,
- virtualization@lists.linux.dev, Wei Liu <wei.liu@kernel.org>,
- Will Deacon <will@kernel.org>
-References: <6-v2-36a0088ecaa7+22c6e-iommu_fwspec_jgg@nvidia.com>
- <20a7ef6d-a8ca-4bd8-ad7e-11856db617a2@marcan.st>
- <1eb12c35-e64e-4c32-af99-8743dc2ec266@marcan.st>
- <20231119141329.GA6083@nvidia.com>
- <90855bbf-e845-4e4d-a713-df71d1e477d2@marcan.st>
- <20231121160058.GG6083@nvidia.com>
-From: Hector Martin <marcan@marcan.st>
-In-Reply-To: <20231121160058.GG6083@nvidia.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
 
-On 2023/11/22 1:00, Jason Gunthorpe wrote:
-> On Tue, Nov 21, 2023 at 03:47:48PM +0900, Hector Martin wrote:
->>> Which is sensitive only to !NULL fwspec, and if EPROBE_DEFER is
->>> returned fwspec will be freed and dev->iommu->fwspec will be NULL
->>> here.
->>>
->>> In the NULL case it does a 'bus probe' with a NULL fwspec and all the
->>> fwspec drivers return immediately from their probe functions.
->>>
->>> Did I miss something?
->>
->> apple_dart is not a fwspec driver and doesn't do that :-)
-> 
-> It implements of_xlate that makes it a driver using the fwspec probe
-> path.
-> 
-> The issue is in apple-dart. Its logic for avoiding bus probe vs
-> fwspec probe is not correct.
-> 
-> It does:
-> 
-> static int apple_dart_of_xlate(struct device *dev, struct of_phandle_args *args)
-> {
->  [..]
->  	dev_iommu_priv_set(dev, cfg);
-> 
-> 
-> Then:
-> 
-> static struct iommu_device *apple_dart_probe_device(struct device *dev)
-> {
-> 	struct apple_dart_master_cfg *cfg = dev_iommu_priv_get(dev);
-> 	struct apple_dart_stream_map *stream_map;
-> 	int i;
-> 
-> 	if (!cfg)
-> 		return ERR_PTR(-ENODEV);
-> 
-> Which leaks the cfg memory on rare error cases and wrongly allows the
-> driver to probe without a fwspec, which I think is what you are
-> hitting.
-> 
-> It should be
-> 
->        if (!dev_iommu_fwspec_get(dev) || !cfg)
-> 		return ERR_PTR(-ENODEV);
-> 
-> To ensure the driver never probes on the bus path.
-> 
-> Clearing the dev->iommu in the core code has the side effect of
-> clearing (and leaking) the cfg which would hide this issue.
+Hello everybody,
 
-Aha! Yes, that makes it work with only the first change. I'll throw the
-apple-dart fix into our tree (and submit it once I get to clearing out
-the branch; the affected consumer driver isn't upstream yet so this
-isn't particularly urgent).
+I don't think I have ever seen an answer to my question regarding
+alignment constraints on swiotlb bounce buffers:
 
-- Hector
+On Wed, 8 Nov 2023 10:13:47 +0100
+Petr Tesa=C5=99=C3=ADk <petr@tesarici.cz> wrote:
+
+>[...]
+> To sum it up, there are two types of alignment:
+>=20
+> 1. specified by a device's min_align_mask; this says how many low
+>    bits of a buffer's physical address must be preserved,
+>=20
+> 2. specified by allocation size and/or the alignment parameter;
+>    this says how many low bits in the first IO TLB slot's physical
+>    address must be zero.
+>=20
+> I hope somebody can confirm or correct this summary before I go
+> and break something. You know, it's not like cleanups in SWIOTLB
+> have never broken anything.  ;-)
+
+If no answer means that nobody knows, then based on my understanding the
+existing code (both implementation and users), I can assume that this
+is the correct interpretation.
+
+I'm giving it a few more days. If there's still no reaction, expect a
+beautiful documentation patch and a less beautiful cleanup patch in the
+next week.
+
+Petr T
