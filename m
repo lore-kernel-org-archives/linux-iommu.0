@@ -1,169 +1,108 @@
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D06294687
-	for <iommu@lists.linux.dev>; Fri, 24 Nov 2023 06:49:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; dkim=none
-Received: from kwepemm000005.china.huawei.com (unknown [172.30.72.55])
-	by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4Sc4jb3kDBzMnNt;
-	Fri, 24 Nov 2023 14:25:39 +0800 (CST)
-Received: from [10.67.121.110] (10.67.121.110) by
- kwepemm000005.china.huawei.com (7.193.23.27) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35; Fri, 24 Nov 2023 14:30:24 +0800
-Subject: Re: [PATCH v7 00/12] iommu: Prepare to deliver page faults to user
- space
-To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, Will
- Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Jason
- Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>, Jean-Philippe
- Brucker <jean-philippe@linaro.org>, Nicolin Chen <nicolinc@nvidia.com>
-CC: Yi Liu <yi.l.liu@intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>,
-	Yan Zhao <yan.y.zhao@intel.com>, <iommu@lists.linux.dev>,
-	<kvm@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-References: <20231115030226.16700-1-baolu.lu@linux.intel.com>
-From: liulongfang <liulongfang@huawei.com>
-Message-ID: <1a029033-3c9e-aeab-06bf-1e7020c2bc7d@huawei.com>
-Date: Fri, 24 Nov 2023 14:30:23 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4FA218044
+	for <iommu@lists.linux.dev>; Fri, 24 Nov 2023 10:08:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="TfW3XNLB"
+Received: from pps.filterd (m0279872.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 3AO6Gsli015529;
+	Fri, 24 Nov 2023 10:08:41 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=qcppdkim1;
+ bh=8HF7zz6c/6H2uWG8LyrQ8lCHlmsf5iqtfWUT7ePKpBQ=;
+ b=TfW3XNLBzCeI6C5lkqxv1yC/hokZickGP9zaJEljFt54Wn7P3jjL31CFegwA4jqC7911
+ WfSAfCYikWR3QYerMkVyEWXZQsEuk2E5V/ciITLKQ+qTtq3awByEbaPAUVlRUG7aZuCR
+ Zi8ndy+SDh87SRusW5ox0yUMFFcIw5Q8PT24J8/hDfOqMDzmNKAuYhdWOf5/QhOsRDmp
+ fw7J2EPhhxcu8nz/7t/KjOsGOQbShmZkIQij5aZSFADLQ/bIhcyDNcR2HUTzSxrpzbjH
+ EdoJCNozW8R2hrZo46dBgzCKgwHRDO3NeyJqaoUyeXdFL6vwidDzkTU+8PtMeuZG0YVT xw== 
+Received: from nalasppmta03.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3uj3ec2j0k-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 24 Nov 2023 10:08:41 +0000
+Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
+	by NALASPPMTA03.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 3AOA8d8A021188
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 24 Nov 2023 10:08:39 GMT
+Received: from blr-ubuntu-253.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.40; Fri, 24 Nov 2023 02:08:33 -0800
+From: Sibi Sankar <quic_sibis@quicinc.com>
+To: <andersson@kernel.org>, <konrad.dybcio@linaro.org>, <will@kernel.org>,
+        <robin.murphy@arm.com>, <joro@8bytes.org>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <conor+dt@kernel.org>
+CC: <agross@kernel.org>, <vkoul@kernel.org>, <quic_gurus@quicinc.com>,
+        <quic_rjendra@quicinc.com>, <abel.vesa@linaro.org>,
+        <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <dmaengine@vger.kernel.org>,
+        <iommu@lists.linux.dev>, <quic_tsoni@quicinc.com>,
+        <neil.armstrong@linaro.org>, Sibi Sankar <quic_sibis@quicinc.com>
+Subject: [PATCH V3 0/5] dt-bindings: Document gpi/pdc/scm/smmu for X1E80100
+Date: Fri, 24 Nov 2023 15:36:03 +0530
+Message-ID: <20231124100608.29964-1-quic_sibis@quicinc.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <20231115030226.16700-1-baolu.lu@linux.intel.com>
-Content-Type: text/plain; charset="gbk"
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- kwepemm000005.china.huawei.com (7.193.23.27)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: wm1OaCnBjO1Cq3NJ1TY86h4DIkLKDNvE
+X-Proofpoint-GUID: wm1OaCnBjO1Cq3NJ1TY86h4DIkLKDNvE
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.987,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2023-11-23_15,2023-11-22_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 suspectscore=0
+ clxscore=1015 mlxlogscore=997 phishscore=0 impostorscore=0
+ priorityscore=1501 mlxscore=0 bulkscore=0 lowpriorityscore=0 adultscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2311060000 definitions=main-2311240079
 
-On 2023/11/15 11:02, Lu Baolu Wrote:
-> When a user-managed page table is attached to an IOMMU, it is necessary
-> to deliver IO page faults to user space so that they can be handled
-> appropriately. One use case for this is nested translation, which is
-> currently being discussed in the mailing list.
-> 
-> I have posted a RFC series [1] that describes the implementation of
-> delivering page faults to user space through IOMMUFD. This series has
-> received several comments on the IOMMU refactoring, which I am trying to
-> address in this series.
-> 
-> The major refactoring includes:
-> 
-> - [PATCH 01 ~ 04] Move include/uapi/linux/iommu.h to
->   include/linux/iommu.h. Remove the unrecoverable fault data definition.
-> - [PATCH 05 ~ 06] Remove iommu_[un]register_device_fault_handler().
-> - [PATCH 07 ~ 10] Separate SVA and IOPF. Make IOPF a generic page fault
->   handling framework.
-> - [PATCH 11 ~ 12] Improve iopf framework for iommufd use.
-> 
-> This is also available at github [2].
-> 
-> [1] https://lore.kernel.org/linux-iommu/20230530053724.232765-1-baolu.lu@linux.intel.com/
-> [2] https://github.com/LuBaolu/intel-iommu/commits/preparatory-io-pgfault-delivery-v7
-> 
-> Change log:
-> v7:
->  - Rebase to v6.7-rc1.
->  - Export iopf_group_response() for global use.
->  - Release lock when calling iopf handler.
->  - The whole series has been verified to work for SVA case on Intel
->    platforms by Zhao Yan. Add her Tested-by to affected patches.
-> 
-> v6: https://lore.kernel.org/linux-iommu/20230928042734.16134-1-baolu.lu@linux.intel.com/
->  - [PATCH 09/12] Check IS_ERR() against the iommu domain. [Jingqi/Jason]
->  - [PATCH 12/12] Rename the comments and name of iopf_queue_flush_dev(),
->    no functionality changes. [Kevin]
->  - All patches rebased on the latest iommu/core branch.
-> 
-> v5: https://lore.kernel.org/linux-iommu/20230914085638.17307-1-baolu.lu@linux.intel.com/
->  - Consolidate per-device fault data management. (New patch 11)
->  - Improve iopf_queue_flush_dev(). (New patch 12)
-> 
-> v4: https://lore.kernel.org/linux-iommu/20230825023026.132919-1-baolu.lu@linux.intel.com/
->  - Merge iommu_fault_event and iopf_fault. They are duplicate.
->  - Move iommu_report_device_fault() and iommu_page_response() to
->    io-pgfault.c.
->  - Move iommu_sva_domain_alloc() to iommu-sva.c.
->  - Add group->domain and use it directly in sva fault handler.
->  - Misc code refactoring and refining.
-> 
-> v3: https://lore.kernel.org/linux-iommu/20230817234047.195194-1-baolu.lu@linux.intel.com/
->  - Convert the fault data structures from uAPI to kAPI.
->  - Merge iopf_device_param into iommu_fault_param.
->  - Add debugging on domain lifetime for iopf.
->  - Remove patch "iommu: Change the return value of dev_iommu_get()".
->  - Remove patch "iommu: Add helper to set iopf handler for domain".
->  - Misc code refactoring and refining.
-> 
-> v2: https://lore.kernel.org/linux-iommu/20230727054837.147050-1-baolu.lu@linux.intel.com/
->  - Remove unrecoverable fault data definition as suggested by Kevin.
->  - Drop the per-device fault cookie code considering that doesn't make
->    much sense for SVA.
->  - Make the IOMMU page fault handling framework generic. So that it can
->    available for use cases other than SVA.
-> 
-> v1: https://lore.kernel.org/linux-iommu/20230711010642.19707-1-baolu.lu@linux.intel.com/
-> 
-> Lu Baolu (12):
->   iommu: Move iommu fault data to linux/iommu.h
->   iommu/arm-smmu-v3: Remove unrecoverable faults reporting
->   iommu: Remove unrecoverable fault data
->   iommu: Cleanup iopf data structure definitions
->   iommu: Merge iopf_device_param into iommu_fault_param
->   iommu: Remove iommu_[un]register_device_fault_handler()
->   iommu: Merge iommu_fault_event and iopf_fault
->   iommu: Prepare for separating SVA and IOPF
->   iommu: Make iommu_queue_iopf() more generic
->   iommu: Separate SVA and IOPF
->   iommu: Consolidate per-device fault data management
->   iommu: Improve iopf_queue_flush_dev()
-> 
->  include/linux/iommu.h                         | 266 +++++++---
->  drivers/iommu/intel/iommu.h                   |   2 +-
->  drivers/iommu/iommu-sva.h                     |  71 ---
->  include/uapi/linux/iommu.h                    | 161 ------
->  .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   |  14 +-
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |  51 +-
->  drivers/iommu/intel/iommu.c                   |  25 +-
->  drivers/iommu/intel/svm.c                     |   8 +-
->  drivers/iommu/io-pgfault.c                    | 469 ++++++++++++------
->  drivers/iommu/iommu-sva.c                     |  66 ++-
->  drivers/iommu/iommu.c                         | 232 ---------
->  MAINTAINERS                                   |   1 -
->  drivers/iommu/Kconfig                         |   4 +
->  drivers/iommu/Makefile                        |   3 +-
->  drivers/iommu/intel/Kconfig                   |   1 +
->  15 files changed, 601 insertions(+), 773 deletions(-)
->  delete mode 100644 drivers/iommu/iommu-sva.h
->  delete mode 100644 include/uapi/linux/iommu.h
-> 
+This series documents gpi/pdc/scm/smmu/soc for the Qualcomm X1E80100
+platform, aka Snapdragon X Elite.
 
-Tested-By: Longfang Liu <liulongfang@huawei.com>
+Our v1 post of the patchsets adding support for Snapdragon X Elite SoC had
+the part number sc8380xp which is now updated to the new part number x1e80100
+based on the new branding scheme and refers to the exact same SoC.
 
-The Arm SVA mode based on HiSilicon crypto accelerator completed the functional test
-and performance test of page fault scenarios.
-1. The IOMMU page fault processing function is normal.
-2. Performance test on 128 core ARM platform. performance is reduced:
+v3:
+* Extend pattern matching support for the X1E platform. [Konrad]
+* Rebased to the latest lnext. [Krzysztof]
+* Pickup Rbs.
 
-Threads  Performance
-8         -0.77%
-16        -1.1%
-32        -0.31%
-64        -0.49%
-128       -0.72%
-256       -1.7%
-384       -4.94%
-512       NA£¨iopf timeout£©
+v2:
+* Update the part number from sc8380xp to x1e80100.
+* Document PDC bindings as well.
+* List the interconnect requirements in bindings. [Krzysztof]
+* Pickup Rbs.
 
-Finally, continuing to increase the number of threads will cause iommu's page fault
-processing to time out(more than 4.2 seconds).
-This problem occurs both in the before version(kernel6.7-rc1) and
-in the after modification's version.
+Dependencies: https://lore.kernel.org/lkml/20231120100617.47156-1-krzysztof.kozlowski@linaro.org/
+Release Link: https://www.qualcomm.com/news/releases/2023/10/qualcomm-unleashes-snapdragon-x-elite--the-ai-super-charged-plat
 
-Thanks.
-Longfang.
+Rajendra Nayak (1):
+  dt-bindings: arm-smmu: Add compatible for X1E80100 SoC
+
+Sibi Sankar (4):
+  dt-bindings: arm: qcom-soc: extend pattern matching for X1E80100 SoC
+  dt-bindings: dma: qcom: gpi: add compatible for X1E80100
+  dt-bindings: firmware: qcom,scm: document SCM on X1E80100 SoCs
+  dt-bindings: interrupt-controller: qcom,pdc: document pdc on X1E80100
+
+ Documentation/devicetree/bindings/arm/qcom-soc.yaml       | 8 ++++----
+ Documentation/devicetree/bindings/dma/qcom,gpi.yaml       | 1 +
+ Documentation/devicetree/bindings/firmware/qcom,scm.yaml  | 2 ++
+ .../bindings/interrupt-controller/qcom,pdc.yaml           | 1 +
+ Documentation/devicetree/bindings/iommu/arm,smmu.yaml     | 2 ++
+ 5 files changed, 10 insertions(+), 4 deletions(-)
+
+-- 
+2.17.1
+
