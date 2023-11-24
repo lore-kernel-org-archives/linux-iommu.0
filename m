@@ -1,49 +1,38 @@
-Received: from mail-ej1-f54.google.com (mail-ej1-f54.google.com [209.85.218.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 07A1418C20
-	for <iommu@lists.linux.dev>; Fri, 24 Nov 2023 10:18:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2330B200B2
+	for <iommu@lists.linux.dev>; Fri, 24 Nov 2023 12:01:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="LJ6qTzof"
-Received: by mail-ej1-f54.google.com with SMTP id a640c23a62f3a-9fd0059a967so541435566b.1
-        for <iommu@lists.linux.dev>; Fri, 24 Nov 2023 02:18:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1700821135; x=1701425935; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=sVfLAD0SAh88quit8wvboqEwon0PkYr8hAnaxk4593s=;
-        b=LJ6qTzofEcDaAY8wW7guszBdL607Xlm0nu9wrWKac0UeOV75MNdmVWAW9pyIwrSUvj
-         /HTRt60DPMIY12yq2tcuoZLC9F978UFqbWgPJFKetTtTkfu1aKQg4nMbHNup8o+5oTvr
-         ryOs+3muLP76PVYXs+pdYqmRftIZ4bM8yefK/ipt87NLHj+xUyryV1/ysQcD6eFr/UnZ
-         yZsbB4Rk2UhHI7CxcdTLfA5/ViTQHLEg/+bc9eUruNxCvKG6hSQAKDbnAcz52x9SLb3C
-         z99e9HblorTca8zgZwVib74RGJaqWaRTRxrQVhwhAJLlMBXhf1mxFPRAyFmcX91Orbp/
-         t4qg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1700821135; x=1701425935;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=sVfLAD0SAh88quit8wvboqEwon0PkYr8hAnaxk4593s=;
-        b=lX4uYuIRwSpr7DMnQs04fsICYuTT7O4vL3Hidbzy0us9oWJQSWKzNdMApKq6IgXbgr
-         c6NwcQK1rEz8X0sSv0nANSiu3l0NuWvJDBFloNY/iM50EM9L1hdGSRBPZOl2YyBcepGV
-         ryAwXPeScykr0rxbTuEXPqw28K9QCL4+CbmRBAJ0HBJsBwwCOnwkLd4TUWqgSlN6s+g/
-         kx2frs3Jq67K8P1YFvlxW30mjBTrgLFoJXCBlSUargQYrecM5qcCKPvUrqHgW9NbreS+
-         uEoZbkpUTj768lEvy7USb+ba2jKeSSfUhBgkgwFB30iX7ZhO/Uto0bDd7cR/eK8QekU/
-         8WAQ==
-X-Gm-Message-State: AOJu0Ywg5s0AHs/GiyOEwFNJeGQphldZjSlUcC5+M+kARtwqi85PxO+C
-	18yd6b6pNzaqUZFTDfZ56+eslA==
-X-Google-Smtp-Source: AGHT+IF34FPSc1XRNxx6ZRXQXY5VaoC/3epqzBdA2qB7Z+ywKzZaJ4WmaSuOnoRrKrocC/pjzpyGxw==
-X-Received: by 2002:a17:907:e92:b0:9a5:dc2b:6a5 with SMTP id ho18-20020a1709070e9200b009a5dc2b06a5mr5791235ejc.35.1700821135184;
-        Fri, 24 Nov 2023 02:18:55 -0800 (PST)
-Received: from [192.168.1.20] ([178.197.218.100])
-        by smtp.gmail.com with ESMTPSA id e27-20020a1709062c1b00b009fda627abd9sm1870560ejh.79.2023.11.24.02.18.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 24 Nov 2023 02:18:54 -0800 (PST)
-Message-ID: <7d87a9f0-d5e8-4896-9b5f-f178dba92b56@linaro.org>
-Date: Fri, 24 Nov 2023 11:18:53 +0100
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="EGp9mrNJ"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1700827313; x=1732363313;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=vnwBM3tljMEcetDptjzZqGvpgTMc7X/b1g4fgPwK904=;
+  b=EGp9mrNJRFFZ0N98qfBCtLuInT5UwMTSdRp4Qjq5eai2JVnTKDaZ0d7b
+   mahw7JtTTyGNELLLzaHnq6JqKBHJEnioqJeOC34iGHfAU7JURj80JMuzl
+   mv+p/XVsLhqIjAW7PcdVU3eMQKxQc1BNzyXarkM2aZ2GH6OO+ZFBhSJVu
+   RaPB+DDUKlbHks1Ru5ZBTiIl7m0FRbmg+8uYLicBAoP2AarF2kbtwoCGz
+   KPDHFC8808ONB1dGxbA0Dg5pBLB047ESxxuyXeUuGEWkopEyN1+i9U2Z4
+   Swj3dyJF8zenZ6vSxSo8O6RKPud1uJTngoZ2ku7ai2ueG2o5C7+4Dc13K
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10902"; a="13967943"
+X-IronPort-AV: E=Sophos;i="6.04,224,1695711600"; 
+   d="scan'208";a="13967943"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Nov 2023 04:01:51 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10902"; a="838068621"
+X-IronPort-AV: E=Sophos;i="6.04,224,1695711600"; 
+   d="scan'208";a="838068621"
+Received: from moqiongz-mobl.ccr.corp.intel.com (HELO [10.255.28.60]) ([10.255.28.60])
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Nov 2023 04:01:47 -0800
+Message-ID: <7a683525-07ca-4ff1-97bd-0193d07dc857@linux.intel.com>
+Date: Fri, 24 Nov 2023 20:01:45 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -51,77 +40,158 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH V3 5/5] dt-bindings: interrupt-controller: qcom,pdc:
- document pdc on X1E80100
+Cc: baolu.lu@linux.intel.com, Yi Liu <yi.l.liu@intel.com>,
+ Jacob Pan <jacob.jun.pan@linux.intel.com>, Yan Zhao <yan.y.zhao@intel.com>,
+ iommu@lists.linux.dev, kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v7 00/12] iommu: Prepare to deliver page faults to user
+ space
+To: liulongfang <liulongfang@huawei.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Nicolin Chen <nicolinc@nvidia.com>
+References: <20231115030226.16700-1-baolu.lu@linux.intel.com>
+ <1a029033-3c9e-aeab-06bf-1e7020c2bc7d@huawei.com>
 Content-Language: en-US
-To: Sibi Sankar <quic_sibis@quicinc.com>, andersson@kernel.org,
- konrad.dybcio@linaro.org, will@kernel.org, robin.murphy@arm.com,
- joro@8bytes.org, robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
- conor+dt@kernel.org
-Cc: agross@kernel.org, vkoul@kernel.org, quic_gurus@quicinc.com,
- quic_rjendra@quicinc.com, abel.vesa@linaro.org,
- linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org,
- iommu@lists.linux.dev, quic_tsoni@quicinc.com, neil.armstrong@linaro.org
-References: <20231124100608.29964-1-quic_sibis@quicinc.com>
- <20231124100608.29964-6-quic_sibis@quicinc.com>
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
- 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
- D2GYIS41Kv4Isx2dEFh+/Q==
-In-Reply-To: <20231124100608.29964-6-quic_sibis@quicinc.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <1a029033-3c9e-aeab-06bf-1e7020c2bc7d@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On 24/11/2023 11:06, Sibi Sankar wrote:
-> The X1E80100 SoC includes a PDC, document it.
+On 2023/11/24 14:30, liulongfang wrote:
+> On 2023/11/15 11:02, Lu Baolu Wrote:
+>> When a user-managed page table is attached to an IOMMU, it is necessary
+>> to deliver IO page faults to user space so that they can be handled
+>> appropriately. One use case for this is nested translation, which is
+>> currently being discussed in the mailing list.
+>>
+>> I have posted a RFC series [1] that describes the implementation of
+>> delivering page faults to user space through IOMMUFD. This series has
+>> received several comments on the IOMMU refactoring, which I am trying to
+>> address in this series.
+>>
+>> The major refactoring includes:
+>>
+>> - [PATCH 01 ~ 04] Move include/uapi/linux/iommu.h to
+>>    include/linux/iommu.h. Remove the unrecoverable fault data definition.
+>> - [PATCH 05 ~ 06] Remove iommu_[un]register_device_fault_handler().
+>> - [PATCH 07 ~ 10] Separate SVA and IOPF. Make IOPF a generic page fault
+>>    handling framework.
+>> - [PATCH 11 ~ 12] Improve iopf framework for iommufd use.
+>>
+>> This is also available at github [2].
+>>
+>> [1] https://lore.kernel.org/linux-iommu/20230530053724.232765-1-baolu.lu@linux.intel.com/
+>> [2] https://github.com/LuBaolu/intel-iommu/commits/preparatory-io-pgfault-delivery-v7
+>>
+>> Change log:
+>> v7:
+>>   - Rebase to v6.7-rc1.
+>>   - Export iopf_group_response() for global use.
+>>   - Release lock when calling iopf handler.
+>>   - The whole series has been verified to work for SVA case on Intel
+>>     platforms by Zhao Yan. Add her Tested-by to affected patches.
+>>
+>> v6: https://lore.kernel.org/linux-iommu/20230928042734.16134-1-baolu.lu@linux.intel.com/
+>>   - [PATCH 09/12] Check IS_ERR() against the iommu domain. [Jingqi/Jason]
+>>   - [PATCH 12/12] Rename the comments and name of iopf_queue_flush_dev(),
+>>     no functionality changes. [Kevin]
+>>   - All patches rebased on the latest iommu/core branch.
+>>
+>> v5: https://lore.kernel.org/linux-iommu/20230914085638.17307-1-baolu.lu@linux.intel.com/
+>>   - Consolidate per-device fault data management. (New patch 11)
+>>   - Improve iopf_queue_flush_dev(). (New patch 12)
+>>
+>> v4: https://lore.kernel.org/linux-iommu/20230825023026.132919-1-baolu.lu@linux.intel.com/
+>>   - Merge iommu_fault_event and iopf_fault. They are duplicate.
+>>   - Move iommu_report_device_fault() and iommu_page_response() to
+>>     io-pgfault.c.
+>>   - Move iommu_sva_domain_alloc() to iommu-sva.c.
+>>   - Add group->domain and use it directly in sva fault handler.
+>>   - Misc code refactoring and refining.
+>>
+>> v3: https://lore.kernel.org/linux-iommu/20230817234047.195194-1-baolu.lu@linux.intel.com/
+>>   - Convert the fault data structures from uAPI to kAPI.
+>>   - Merge iopf_device_param into iommu_fault_param.
+>>   - Add debugging on domain lifetime for iopf.
+>>   - Remove patch "iommu: Change the return value of dev_iommu_get()".
+>>   - Remove patch "iommu: Add helper to set iopf handler for domain".
+>>   - Misc code refactoring and refining.
+>>
+>> v2: https://lore.kernel.org/linux-iommu/20230727054837.147050-1-baolu.lu@linux.intel.com/
+>>   - Remove unrecoverable fault data definition as suggested by Kevin.
+>>   - Drop the per-device fault cookie code considering that doesn't make
+>>     much sense for SVA.
+>>   - Make the IOMMU page fault handling framework generic. So that it can
+>>     available for use cases other than SVA.
+>>
+>> v1: https://lore.kernel.org/linux-iommu/20230711010642.19707-1-baolu.lu@linux.intel.com/
+>>
+>> Lu Baolu (12):
+>>    iommu: Move iommu fault data to linux/iommu.h
+>>    iommu/arm-smmu-v3: Remove unrecoverable faults reporting
+>>    iommu: Remove unrecoverable fault data
+>>    iommu: Cleanup iopf data structure definitions
+>>    iommu: Merge iopf_device_param into iommu_fault_param
+>>    iommu: Remove iommu_[un]register_device_fault_handler()
+>>    iommu: Merge iommu_fault_event and iopf_fault
+>>    iommu: Prepare for separating SVA and IOPF
+>>    iommu: Make iommu_queue_iopf() more generic
+>>    iommu: Separate SVA and IOPF
+>>    iommu: Consolidate per-device fault data management
+>>    iommu: Improve iopf_queue_flush_dev()
+>>
+>>   include/linux/iommu.h                         | 266 +++++++---
+>>   drivers/iommu/intel/iommu.h                   |   2 +-
+>>   drivers/iommu/iommu-sva.h                     |  71 ---
+>>   include/uapi/linux/iommu.h                    | 161 ------
+>>   .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   |  14 +-
+>>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |  51 +-
+>>   drivers/iommu/intel/iommu.c                   |  25 +-
+>>   drivers/iommu/intel/svm.c                     |   8 +-
+>>   drivers/iommu/io-pgfault.c                    | 469 ++++++++++++------
+>>   drivers/iommu/iommu-sva.c                     |  66 ++-
+>>   drivers/iommu/iommu.c                         | 232 ---------
+>>   MAINTAINERS                                   |   1 -
+>>   drivers/iommu/Kconfig                         |   4 +
+>>   drivers/iommu/Makefile                        |   3 +-
+>>   drivers/iommu/intel/Kconfig                   |   1 +
+>>   15 files changed, 601 insertions(+), 773 deletions(-)
+>>   delete mode 100644 drivers/iommu/iommu-sva.h
+>>   delete mode 100644 include/uapi/linux/iommu.h
+>>
 > 
-> Signed-off-by: Sibi Sankar <quic_sibis@quicinc.com>
-> ---
+> Tested-By: Longfang Liu <liulongfang@huawei.com>
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Thank you for the testing.
+
+> 
+> The Arm SVA mode based on HiSilicon crypto accelerator completed the functional test
+> and performance test of page fault scenarios.
+> 1. The IOMMU page fault processing function is normal.
+> 2. Performance test on 128 core ARM platform. performance is reduced:
+> 
+> Threads  Performance
+> 8         -0.77%
+> 16        -1.1%
+> 32        -0.31%
+> 64        -0.49%
+> 128       -0.72%
+> 256       -1.7%
+> 384       -4.94%
+> 512       NA（iopf timeout）
+> 
+> Finally, continuing to increase the number of threads will cause iommu's page fault
+> processing to time out(more than 4.2 seconds).
+> This problem occurs both in the before version(kernel6.7-rc1) and
+> in the after modification's version.
+
+Probably you can check whether commit 6bbd42e2df8f ("mmu_notifiers: call
+invalidate_range() when invalidating TLBs") matters.
+
+It was discussed in this thread.
+
+https://lore.kernel.org/linux-iommu/20231117090933.75267-1-baolu.lu@linux.intel.com/
 
 Best regards,
-Krzysztof
-
+baolu
