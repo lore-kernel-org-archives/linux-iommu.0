@@ -1,137 +1,130 @@
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2078.outbound.protection.outlook.com [40.107.93.78])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6AAB52EAE2
-	for <iommu@lists.linux.dev>; Fri, 24 Nov 2023 15:35:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="Ogcdb8XN"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=KssHfeUrBgnk0k/B9F+2/fhd0DD3vX503EacQVohNNwuRmfF5b9njHpje1Nel968tv1jMgJ2KO+5JVawwwP/SyJE7VG1f9DLHFuz7QWM+gnHR9lD6/3e24qRkoIj2ds2X6uOIkNg+4Y0xvhVXn7xDVon2epxTZKBjwcMdrGeerEDL3Du6kTjZtqYR6akq6PB5St35UFQahC2S7/D7we/uHT8M8FRxfWaYLYMRIgj8OoR1yJrUy7sm5KXL1Oggs47I07yp9ouyoAzed8V/WNIMRijrHguQFYDHV2r9WZud3COFkNZK3pq0UypSeIq9rcqXZvlL6eC3he7tTo6x8cEog==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=28FYHT2Sw9QobHVYU08OcWvAnUNMG7iYHtCHvLIoW5k=;
- b=UjvY3gvg0woDHjrwDP6l20eQiTB/fdXX3IwvCB4IilLoFGmytG0sb4mb0lOUlaJREVQPgzbs7Xm9v6Yz8iIHSZ0wLC9tpDEnlL+WatyjGIkqaiwxCHPXh9dhIZ6oM500nt6ri22JA+9p1nRVlSMw+3RX5KFcxdqNx/Jrf3tauNO4CoIFWvXtMFb7KsD97QVH1A8adNRHU3hdRs2FtIjoxt5EoDm6Z2K41ozR2WS+l/9Z1peoZc/vBKAoyrQ2efCLHPT/K6KhwrH/ZQsPHcZZbyovqYWK7O6AGit0QaxXMj3KnGMFZS6/uukKCgPHjvCBpcjwneKRrqBqwrHzUUyibg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=28FYHT2Sw9QobHVYU08OcWvAnUNMG7iYHtCHvLIoW5k=;
- b=Ogcdb8XNAX3+JsMxriAm7s2gCRejB9yd0Eoc9a9ZKNf0wRSuCmnjqSXIlCOYB5iViOBv+5meJHHnwrasX9pjhj7r6WgIznpt1uffXMYXZ6bKtHrjiShSTqIAaUBjKfs+UTGcljY71o5p6+6nZkAXQ2YGmhkH3VzSQAJBjdOiwYi+eW4O1rkdRCQflF3qoXoSkvtB5faoEtO2expQQnE6zGolD19m1jFC+guuaZ3xvF2yC6U/L7YPhLLOzrhwgPegvvxeXdqQdFGz2/Gi6AiUgUxkZjbs3hKLsOTf/7Q12uOkDeHXT5ZwObFiQ1gIsDpA7sFI5Od5c9nDyi4tdyKbKg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by CY8PR12MB7707.namprd12.prod.outlook.com (2603:10b6:930:86::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7025.21; Fri, 24 Nov
- 2023 15:35:23 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::60d4:c1e3:e1aa:8f93]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::60d4:c1e3:e1aa:8f93%4]) with mapi id 15.20.7025.020; Fri, 24 Nov 2023
- 15:35:22 +0000
-Date: Fri, 24 Nov 2023 11:35:20 -0400
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: joro@8bytes.org, will@kernel.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
-	rafael@kernel.org, lenb@kernel.org, lpieralisi@kernel.org,
-	andre.draszik@linaro.org, quic_zhenhuah@quicinc.com
-Subject: Re: [PATCH] iommu: Avoid more races around device probe
-Message-ID: <20231124153520.GA558245@nvidia.com>
-References: <16f433658661d7cadfea51e7c65da95826112a2b.1700071477.git.robin.murphy@arm.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <16f433658661d7cadfea51e7c65da95826112a2b.1700071477.git.robin.murphy@arm.com>
-X-ClientProxiedBy: DM6PR02CA0113.namprd02.prod.outlook.com
- (2603:10b6:5:1b4::15) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 641B9364A4
+	for <iommu@lists.linux.dev>; Fri, 24 Nov 2023 18:10:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Authentication-Results: smtp.subspace.kernel.org; dkim=none
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2CC141007;
+	Fri, 24 Nov 2023 10:10:55 -0800 (PST)
+Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 800793F73F;
+	Fri, 24 Nov 2023 10:10:07 -0800 (PST)
+From: Robin Murphy <robin.murphy@arm.com>
+To: hch@lst.de
+Cc: rafael@kernel.org,
+	lenb@kernel.org,
+	robh+dt@kernel.org,
+	frowand.list@gmail.com,
+	m.szyprowski@samsung.com,
+	james.quinlan@broadcom.com,
+	iommu@lists.linux.dev,
+	linux-acpi@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH] dma-mapping: Don't store redundant offsets
+Date: Fri, 24 Nov 2023 18:10:03 +0000
+Message-Id: <94e0cec15546ef2be61d90869e499e40e2a55308.1700849106.git.robin.murphy@arm.com>
+X-Mailer: git-send-email 2.39.2.101.g768bb238c484.dirty
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|CY8PR12MB7707:EE_
-X-MS-Office365-Filtering-Correlation-Id: 23c59bf0-76d8-42c9-a8f9-08dbed02f898
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	bP2xlG9KnMJrsVdXYUy/CZOj2kFDmi/9Drc3SlRrTIlgxEHMAeQ8K/f3fjYcVqqhlugXaFYAssj5L/fS7cn+st5Ff1N7zFNfLzTaTCJRlubjgB3/cbi9uY/wepzq+ydXf5eWWUU7og6kQZyPLaEeS7rTWsVLTLhQbeGqK+9lQT8M/BQ+NAXOsk+kEC3fhGlrHaZUsQNiRV+y7TDUxIXAFEbqYsmxXpK2ctS9IIqaUyAZR9EDR5gFjxt9jHQS0JR8w4YkqVqGEsRJze9xA8C/F9dDtf16d5j8XgMD93VeiF6mfaBR8XKpNL6pXMYwNX9+RLbUNWTdZdUOXoKmG+o2CtS1RO04jxAGlfDqPEQo8C7reWbsXYjVE7Gr2zARcA2wLqZl/XI1RoiTMtRlgBu3oF4D29OJaOMA9XRdJSIyitCOoE9EvjmVa822UZwle60Hz9wY0/b/TubCOV9bKec5ecMJoUBbRn7k27RxOyHZgnTVVO8bnL4eX3+oL+H/fQjpaygzGmGLHzV+6G7MB08kDd+5Rp35eMWpTBHAtcMuox+JwQq4kn/75FO4rds57QlYT8QRebVMinA6fm7eaaRp+fkYGWtadRtGEMG1RRrZyY1UewJihfmiQ9xaZSgVHpkfsuByZx+G7gmoCYCOI4rIpQ==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(396003)(366004)(39860400002)(136003)(376002)(346002)(230922051799003)(1800799012)(186009)(451199024)(64100799003)(66946007)(38100700002)(83380400001)(6486002)(966005)(478600001)(66476007)(6916009)(316002)(66556008)(6512007)(6506007)(2906002)(33656002)(36756003)(4326008)(8936002)(8676002)(5660300002)(7416002)(26005)(2616005)(1076003)(41300700001)(86362001)(27376004);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?EQEK8Xba3Mpsd6v9+QGyFg7z5YQFNEbg2vpHOhXuv++EyISewaE0OfvkDgqZ?=
- =?us-ascii?Q?Ods007LfKHTAPlSQmnDzNYwWvAztNUCZ93Cg51M0JM+J4zUp5Rqi89Il2qa6?=
- =?us-ascii?Q?MQ1N9GmMnBKSWOKbL+9U3oCT3awS1fK/bdC+MRkAvM+BbuXGhx41RK74xw1o?=
- =?us-ascii?Q?fun2i5fb7xBO54YaMthCPqOtB6tz2J0D8PLj3CDZh/YP6j3leiiy4/bwzN8T?=
- =?us-ascii?Q?b339Tg3DbjXi0hlqd8dDpzUPIpcHOnp2I4hJmPrpwhPHrSYdnCn3HN1BFh4y?=
- =?us-ascii?Q?CXvpsUIpnvct4joEhhyn1e/n9z+eOKvt7CgBstNcBNYpvdT89I8nzOmVwY7b?=
- =?us-ascii?Q?McyitDd6rqqKQYM4dmBqP0SovSYaMKXtYFNR7wQA7lNswBwP+6ANNTm4CbYD?=
- =?us-ascii?Q?nnwAPSqeMSL0AslkpvNVCP7w0VsEy42MFoR8gSJmt+wXW7T7m8w9p51hI4uy?=
- =?us-ascii?Q?WozEBAkY2LdxVXIfoazfarfhqgDogbH3IrgTJv14afzEZ1UnqR2Tk82HlqjA?=
- =?us-ascii?Q?V4pkeJ2RIICXrTBtGbduUHYQYOT2y7oMndEwNZ9ZCUr1CdlWrFiNVk1PU8zz?=
- =?us-ascii?Q?r5vLWgYqBeF9B4FomLCjiucESudipiioSNsLr3gc0/a36QyhvDhMwQAx/dbO?=
- =?us-ascii?Q?jKSBjp4x80vK4bFt5uaU1jIYsySPKitZtZo9IRgVneGi9EmFWjSdor+oMjHN?=
- =?us-ascii?Q?xcgQgPX63IVXeYxXOIMrplnpgBUt4dlWwB+WZTnlSQOPdeYcUxz9ZHtJtU+S?=
- =?us-ascii?Q?RvatPPfBu6P3wc0o/LogjnSlENH0tzEps7w5eLxPCzYeaRva8jroNRMVKP4O?=
- =?us-ascii?Q?9a+596wrlpgxO+4UlaUTUxQCbs7TNVE2VElMeAVApL1azlPYzrrnIPx2FuJd?=
- =?us-ascii?Q?4RE94/CK2V7yMyJkfTT0v1QeujY2lTCe1cvtR8YDy1kQOX4Rd62VCeulDJwH?=
- =?us-ascii?Q?MdA4vFrKNp2L3ltwrvuIGIIMaYrjBk4TYon1lGqwfPA0MtH0NtUFTKcYgmvl?=
- =?us-ascii?Q?HjTNeP8HtXXFHmRuNCid2FNvSfFDzNvwm9BfOoDFtH1NSVHmVcwzsMd1pDV6?=
- =?us-ascii?Q?4P9ZxiiRuJYyBSl8UaXwPB+0jQncCqmkY7rF44FvPs5D3S6+oW9YV8XTuM4y?=
- =?us-ascii?Q?tvrWxH1bKRVwVfJ6fQ1eCssLwAgymMxBjAXHJvY5nBpmW9MPlgf1Wao1aynh?=
- =?us-ascii?Q?5itIPZ6UUmH4i+aFGCSB1bK8ZwuKVYKeEqXESo3hITHlZob9tvTpZUbJ/RVa?=
- =?us-ascii?Q?C/Px9FpHsUfCyw7GgA6CLPkEo5DqKHyBcrzBkxNYm4z7iigsk+I73jjvjLKX?=
- =?us-ascii?Q?AUat5n7weoGsegmrhqBpgGjmCLyFHBQoZAmoJcf865WdZfcFMMbK2S9DnYGn?=
- =?us-ascii?Q?Fl0yR4cE5/aqnlyTxkAoFkZS4cLOUt2U7PuJdV/op2TrDumrMd+Sr6GO79nC?=
- =?us-ascii?Q?1rE8Z2iaL0F1rXCtzfGhxfkodNs51owgMFQg2OtrX0krT8UnivOrL2ZOIAzs?=
- =?us-ascii?Q?jaxKFLIIMZhWtmQHXDohzjsS+MssqF+bI+lciakqKnh+lYwJ7jx8VNP1aRSt?=
- =?us-ascii?Q?NF8g4YaCAUPZEBaW4IwGKCVKZFTmfvsGW91/a4Bl?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 23c59bf0-76d8-42c9-a8f9-08dbed02f898
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Nov 2023 15:35:22.1051
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: lL6e2eHMcHzLTjjAeYwUY2OQek3O00vkEUYw0QLzl/fQzgqODL8gA3S2oD3cyTji
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR12MB7707
+Content-Transfer-Encoding: 8bit
 
-On Wed, Nov 15, 2023 at 06:25:44PM +0000, Robin Murphy wrote:
-> It turns out there are more subtle races beyond just the main part of
-> __iommu_probe_device() itself running in parallel - the dev_iommu_free()
-> on the way out of an unsuccessful probe can still manage to trip up
-> concurrent accesses to a device's fwspec. Thus, extend the scope of
-> iommu_probe_device_lock() to also serialise fwspec creation and initial
-> retrieval.
-> 
-> Reported-by: Zhenhua Huang <quic_zhenhuah@quicinc.com>
-> Link: https://lore.kernel.org/linux-iommu/e2e20e1c-6450-4ac5-9804-b0000acdf7de@quicinc.com/
+A bus_dma_region necessarily stores both CPU and DMA base addresses for
+a range, so there's no need to also store the difference between them.
 
-Apparently this is "Closes:" nowadays
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+---
+ drivers/acpi/scan.c        |  1 -
+ drivers/of/address.c       |  1 -
+ include/linux/dma-direct.h | 19 ++++++++++++-------
+ kernel/dma/direct.c        |  1 -
+ 4 files changed, 12 insertions(+), 10 deletions(-)
 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index f17a1113f3d6..e0c962648dde 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -485,11 +485,12 @@ static void iommu_deinit_device(struct device *dev)
->  	dev_iommu_free(dev);
->  }
->  
-> +DEFINE_MUTEX(iommu_probe_device_lock);
-> +
+diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
+index 026130b37967..c72155606550 100644
+--- a/drivers/acpi/scan.c
++++ b/drivers/acpi/scan.c
+@@ -1532,7 +1532,6 @@ int acpi_dma_get_range(struct device *dev, const struct bus_dma_region **map)
+ 			r->cpu_start = rentry->res->start;
+ 			r->dma_start = rentry->res->start - rentry->offset;
+ 			r->size = resource_size(rentry->res);
+-			r->offset = rentry->offset;
+ 			r++;
+ 		}
+ 	}
+diff --git a/drivers/of/address.c b/drivers/of/address.c
+index b59956310f66..ae46a3605904 100644
+--- a/drivers/of/address.c
++++ b/drivers/of/address.c
+@@ -955,7 +955,6 @@ int of_dma_get_range(struct device_node *np, const struct bus_dma_region **map)
+ 		r->cpu_start = range.cpu_addr;
+ 		r->dma_start = range.bus_addr;
+ 		r->size = range.size;
+-		r->offset = range.cpu_addr - range.bus_addr;
+ 		r++;
+ 	}
+ out:
+diff --git a/include/linux/dma-direct.h b/include/linux/dma-direct.h
+index 18aade195884..3eb3589ff43e 100644
+--- a/include/linux/dma-direct.h
++++ b/include/linux/dma-direct.h
+@@ -21,7 +21,6 @@ struct bus_dma_region {
+ 	phys_addr_t	cpu_start;
+ 	dma_addr_t	dma_start;
+ 	u64		size;
+-	u64		offset;
+ };
+ 
+ static inline dma_addr_t translate_phys_to_dma(struct device *dev,
+@@ -29,9 +28,12 @@ static inline dma_addr_t translate_phys_to_dma(struct device *dev,
+ {
+ 	const struct bus_dma_region *m;
+ 
+-	for (m = dev->dma_range_map; m->size; m++)
+-		if (paddr >= m->cpu_start && paddr - m->cpu_start < m->size)
+-			return (dma_addr_t)paddr - m->offset;
++	for (m = dev->dma_range_map; m->size; m++) {
++		u64 offset = paddr - m->cpu_start;
++
++		if (paddr >= m->cpu_start && offset < m->size)
++			return m->dma_start + offset;
++	}
+ 
+ 	/* make sure dma_capable fails when no translation is available */
+ 	return DMA_MAPPING_ERROR;
+@@ -42,9 +44,12 @@ static inline phys_addr_t translate_dma_to_phys(struct device *dev,
+ {
+ 	const struct bus_dma_region *m;
+ 
+-	for (m = dev->dma_range_map; m->size; m++)
+-		if (dma_addr >= m->dma_start && dma_addr - m->dma_start < m->size)
+-			return (phys_addr_t)dma_addr + m->offset;
++	for (m = dev->dma_range_map; m->size; m++) {
++		u64 offset = dma_addr - m->dma_start;
++
++		if (dma_addr >= m->dma_start && offset < m->size)
++			return m->cpu_start + offset;
++	}
+ 
+ 	return (phys_addr_t)-1;
+ }
+diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+index 73c95815789a..98b2e192fd69 100644
+--- a/kernel/dma/direct.c
++++ b/kernel/dma/direct.c
+@@ -677,7 +677,6 @@ int dma_direct_set_offset(struct device *dev, phys_addr_t cpu_start,
+ 		return -ENOMEM;
+ 	map[0].cpu_start = cpu_start;
+ 	map[0].dma_start = dma_start;
+-	map[0].offset = offset;
+ 	map[0].size = size;
+ 	dev->dma_range_map = map;
+ 	return 0;
+-- 
+2.39.2.101.g768bb238c484.dirty
 
-Please put this at the top of the file with the other declarations, I
-will rebase the lockdep annotations from the other series
-
-Thanks,
-Jason
