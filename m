@@ -1,35 +1,36 @@
 Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4FA218044
-	for <iommu@lists.linux.dev>; Fri, 24 Nov 2023 10:08:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E67A1805E
+	for <iommu@lists.linux.dev>; Fri, 24 Nov 2023 10:09:02 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="TfW3XNLB"
-Received: from pps.filterd (m0279872.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 3AO6Gsli015529;
-	Fri, 24 Nov 2023 10:08:41 GMT
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="kf6i08KD"
+Received: from pps.filterd (m0279871.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 3AO5qG2V016718;
+	Fri, 24 Nov 2023 10:08:54 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type; s=qcppdkim1;
- bh=8HF7zz6c/6H2uWG8LyrQ8lCHlmsf5iqtfWUT7ePKpBQ=;
- b=TfW3XNLBzCeI6C5lkqxv1yC/hokZickGP9zaJEljFt54Wn7P3jjL31CFegwA4jqC7911
- WfSAfCYikWR3QYerMkVyEWXZQsEuk2E5V/ciITLKQ+qTtq3awByEbaPAUVlRUG7aZuCR
- Zi8ndy+SDh87SRusW5ox0yUMFFcIw5Q8PT24J8/hDfOqMDzmNKAuYhdWOf5/QhOsRDmp
- fw7J2EPhhxcu8nz/7t/KjOsGOQbShmZkIQij5aZSFADLQ/bIhcyDNcR2HUTzSxrpzbjH
- EdoJCNozW8R2hrZo46dBgzCKgwHRDO3NeyJqaoUyeXdFL6vwidDzkTU+8PtMeuZG0YVT xw== 
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-type; s=qcppdkim1;
+ bh=aUVfSE7o29E/Ln05PzcZvHLfe4Lx0nIxOUnYZnZypjY=;
+ b=kf6i08KDApRbTqFq2bB4h9zqh6TOSaFBJPsYsyWL45xExvTFcNPobqgnKKKxe9sIpnHA
+ XnaWijs3Ngg9MEsQzxLk6leeiQbmILM7KRluPN9ri6TEH8CLJU73SbFnMRc04gaAHW5K
+ hvZMPBKD8mGQjp8p7dE8dzrkOh9jabD5B62aYN5y6FDvCkZy4a1a3T2mqXRcjjGxuK6H
+ v8C3fKBnAkOkVMIwD6qD998L30yMnED+9Zv22+BRivgtLDL0y41YAbeDkymVGH7ffH3u
+ v2PNa80iNHF5Fs5A5oxWEvnKEekZo2ung5/Yj02YgrplSDm2Vp0Df7bte5u8OI5RrkKZ ww== 
 Received: from nalasppmta03.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3uj3ec2j0k-1
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3uj7gjt09u-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 24 Nov 2023 10:08:41 +0000
+	Fri, 24 Nov 2023 10:08:54 +0000
 Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-	by NALASPPMTA03.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 3AOA8d8A021188
+	by NALASPPMTA03.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 3AOA8rAx021312
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 24 Nov 2023 10:08:39 GMT
+	Fri, 24 Nov 2023 10:08:53 GMT
 Received: from blr-ubuntu-253.qualcomm.com (10.80.80.8) by
  nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.40; Fri, 24 Nov 2023 02:08:33 -0800
+ 15.2.1118.40; Fri, 24 Nov 2023 02:08:46 -0800
 From: Sibi Sankar <quic_sibis@quicinc.com>
 To: <andersson@kernel.org>, <konrad.dybcio@linaro.org>, <will@kernel.org>,
         <robin.murphy@arm.com>, <joro@8bytes.org>, <robh+dt@kernel.org>,
@@ -40,10 +41,12 @@ CC: <agross@kernel.org>, <vkoul@kernel.org>, <quic_gurus@quicinc.com>,
         <linux-kernel@vger.kernel.org>, <dmaengine@vger.kernel.org>,
         <iommu@lists.linux.dev>, <quic_tsoni@quicinc.com>,
         <neil.armstrong@linaro.org>, Sibi Sankar <quic_sibis@quicinc.com>
-Subject: [PATCH V3 0/5] dt-bindings: Document gpi/pdc/scm/smmu for X1E80100
-Date: Fri, 24 Nov 2023 15:36:03 +0530
-Message-ID: <20231124100608.29964-1-quic_sibis@quicinc.com>
+Subject: [PATCH V3 2/5] dt-bindings: arm-smmu: Add compatible for X1E80100 SoC
+Date: Fri, 24 Nov 2023 15:36:05 +0530
+Message-ID: <20231124100608.29964-3-quic_sibis@quicinc.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20231124100608.29964-1-quic_sibis@quicinc.com>
+References: <20231124100608.29964-1-quic_sibis@quicinc.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -55,54 +58,53 @@ X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
  nalasex01a.na.qualcomm.com (10.47.209.196)
 X-QCInternal: smtphost
 X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: wm1OaCnBjO1Cq3NJ1TY86h4DIkLKDNvE
-X-Proofpoint-GUID: wm1OaCnBjO1Cq3NJ1TY86h4DIkLKDNvE
+X-Proofpoint-ORIG-GUID: 8qzI-eJINC1nvXaA1yJjxtT3YR_CML_b
+X-Proofpoint-GUID: 8qzI-eJINC1nvXaA1yJjxtT3YR_CML_b
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.272,Aquarius:18.0.987,Hydra:6.0.619,FMLib:17.11.176.26
  definitions=2023-11-23_15,2023-11-22_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 suspectscore=0
- clxscore=1015 mlxlogscore=997 phishscore=0 impostorscore=0
- priorityscore=1501 mlxscore=0 bulkscore=0 lowpriorityscore=0 adultscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ impostorscore=0 mlxscore=0 lowpriorityscore=0 clxscore=1015 malwarescore=0
+ suspectscore=0 spamscore=0 phishscore=0 bulkscore=0 adultscore=0
+ mlxlogscore=902 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2311060000 definitions=main-2311240079
 
-This series documents gpi/pdc/scm/smmu/soc for the Qualcomm X1E80100
-platform, aka Snapdragon X Elite.
+From: Rajendra Nayak <quic_rjendra@quicinc.com>
 
-Our v1 post of the patchsets adding support for Snapdragon X Elite SoC had
-the part number sc8380xp which is now updated to the new part number x1e80100
-based on the new branding scheme and refers to the exact same SoC.
+Add the SoC specific compatible for X1E80100 implementing arm,mmu-500.
+
+Signed-off-by: Rajendra Nayak <quic_rjendra@quicinc.com>
+Co-developed-by: Sibi Sankar <quic_sibis@quicinc.com>
+Signed-off-by: Sibi Sankar <quic_sibis@quicinc.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
 
 v3:
-* Extend pattern matching support for the X1E platform. [Konrad]
-* Rebased to the latest lnext. [Krzysztof]
 * Pickup Rbs.
 
-v2:
-* Update the part number from sc8380xp to x1e80100.
-* Document PDC bindings as well.
-* List the interconnect requirements in bindings. [Krzysztof]
-* Pickup Rbs.
+ Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Dependencies: https://lore.kernel.org/lkml/20231120100617.47156-1-krzysztof.kozlowski@linaro.org/
-Release Link: https://www.qualcomm.com/news/releases/2023/10/qualcomm-unleashes-snapdragon-x-elite--the-ai-super-charged-plat
-
-Rajendra Nayak (1):
-  dt-bindings: arm-smmu: Add compatible for X1E80100 SoC
-
-Sibi Sankar (4):
-  dt-bindings: arm: qcom-soc: extend pattern matching for X1E80100 SoC
-  dt-bindings: dma: qcom: gpi: add compatible for X1E80100
-  dt-bindings: firmware: qcom,scm: document SCM on X1E80100 SoCs
-  dt-bindings: interrupt-controller: qcom,pdc: document pdc on X1E80100
-
- Documentation/devicetree/bindings/arm/qcom-soc.yaml       | 8 ++++----
- Documentation/devicetree/bindings/dma/qcom,gpi.yaml       | 1 +
- Documentation/devicetree/bindings/firmware/qcom,scm.yaml  | 2 ++
- .../bindings/interrupt-controller/qcom,pdc.yaml           | 1 +
- Documentation/devicetree/bindings/iommu/arm,smmu.yaml     | 2 ++
- 5 files changed, 10 insertions(+), 4 deletions(-)
-
+diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+index aa9e1c0895a5..7ae4f65fe236 100644
+--- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
++++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+@@ -56,6 +56,7 @@ properties:
+               - qcom,sm8350-smmu-500
+               - qcom,sm8450-smmu-500
+               - qcom,sm8550-smmu-500
++              - qcom,x1e80100-smmu-500
+           - const: qcom,smmu-500
+           - const: arm,mmu-500
+ 
+@@ -475,6 +476,7 @@ allOf:
+               - qcom,sm8350-smmu-500
+               - qcom,sm8450-smmu-500
+               - qcom,sm8550-smmu-500
++              - qcom,x1e80100-smmu-500
+     then:
+       properties:
+         clock-names: false
 -- 
 2.17.1
 
