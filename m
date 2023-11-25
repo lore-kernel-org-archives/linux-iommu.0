@@ -1,130 +1,201 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 641B9364A4
-	for <iommu@lists.linux.dev>; Fri, 24 Nov 2023 18:10:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3D65C2106
+	for <iommu@lists.linux.dev>; Sat, 25 Nov 2023 04:05:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
 Authentication-Results: smtp.subspace.kernel.org; dkim=none
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2CC141007;
-	Fri, 24 Nov 2023 10:10:55 -0800 (PST)
-Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 800793F73F;
-	Fri, 24 Nov 2023 10:10:07 -0800 (PST)
-From: Robin Murphy <robin.murphy@arm.com>
-To: hch@lst.de
-Cc: rafael@kernel.org,
-	lenb@kernel.org,
-	robh+dt@kernel.org,
-	frowand.list@gmail.com,
-	m.szyprowski@samsung.com,
-	james.quinlan@broadcom.com,
-	iommu@lists.linux.dev,
-	linux-acpi@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] dma-mapping: Don't store redundant offsets
-Date: Fri, 24 Nov 2023 18:10:03 +0000
-Message-Id: <94e0cec15546ef2be61d90869e499e40e2a55308.1700849106.git.robin.murphy@arm.com>
-X-Mailer: git-send-email 2.39.2.101.g768bb238c484.dirty
+Received: from kwepemm000005.china.huawei.com (unknown [172.30.72.56])
+	by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4ScdT80YHxz1P8mx;
+	Sat, 25 Nov 2023 12:01:48 +0800 (CST)
+Received: from [10.67.121.110] (10.67.121.110) by
+ kwepemm000005.china.huawei.com (7.193.23.27) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35; Sat, 25 Nov 2023 12:05:19 +0800
+Subject: Re: [PATCH v7 00/12] iommu: Prepare to deliver page faults to user
+ space
+To: Baolu Lu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, Will
+ Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Jason
+ Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>, Jean-Philippe
+ Brucker <jean-philippe@linaro.org>, Nicolin Chen <nicolinc@nvidia.com>
+CC: Yi Liu <yi.l.liu@intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>,
+	Yan Zhao <yan.y.zhao@intel.com>, <iommu@lists.linux.dev>,
+	<kvm@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+References: <20231115030226.16700-1-baolu.lu@linux.intel.com>
+ <1a029033-3c9e-aeab-06bf-1e7020c2bc7d@huawei.com>
+ <7a683525-07ca-4ff1-97bd-0193d07dc857@linux.intel.com>
+From: liulongfang <liulongfang@huawei.com>
+Message-ID: <8757f78c-8f4f-a783-6824-0af44b28fd51@huawei.com>
+Date: Sat, 25 Nov 2023 12:05:19 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+In-Reply-To: <7a683525-07ca-4ff1-97bd-0193d07dc857@linux.intel.com>
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ kwepemm000005.china.huawei.com (7.193.23.27)
+X-CFilter-Loop: Reflected
 
-A bus_dma_region necessarily stores both CPU and DMA base addresses for
-a range, so there's no need to also store the difference between them.
+On 2023/11/24 20:01, Baolu Lu wrote:
+> On 2023/11/24 14:30, liulongfang wrote:
+>> On 2023/11/15 11:02, Lu Baolu Wrote:
+>>> When a user-managed page table is attached to an IOMMU, it is necessary
+>>> to deliver IO page faults to user space so that they can be handled
+>>> appropriately. One use case for this is nested translation, which is
+>>> currently being discussed in the mailing list.
+>>>
+>>> I have posted a RFC series [1] that describes the implementation of
+>>> delivering page faults to user space through IOMMUFD. This series has
+>>> received several comments on the IOMMU refactoring, which I am trying to
+>>> address in this series.
+>>>
+>>> The major refactoring includes:
+>>>
+>>> - [PATCH 01 ~ 04] Move include/uapi/linux/iommu.h to
+>>>    include/linux/iommu.h. Remove the unrecoverable fault data definition.
+>>> - [PATCH 05 ~ 06] Remove iommu_[un]register_device_fault_handler().
+>>> - [PATCH 07 ~ 10] Separate SVA and IOPF. Make IOPF a generic page fault
+>>>    handling framework.
+>>> - [PATCH 11 ~ 12] Improve iopf framework for iommufd use.
+>>>
+>>> This is also available at github [2].
+>>>
+>>> [1] https://lore.kernel.org/linux-iommu/20230530053724.232765-1-baolu.lu@linux.intel.com/
+>>> [2] https://github.com/LuBaolu/intel-iommu/commits/preparatory-io-pgfault-delivery-v7
+>>>
+>>> Change log:
+>>> v7:
+>>>   - Rebase to v6.7-rc1.
+>>>   - Export iopf_group_response() for global use.
+>>>   - Release lock when calling iopf handler.
+>>>   - The whole series has been verified to work for SVA case on Intel
+>>>     platforms by Zhao Yan. Add her Tested-by to affected patches.
+>>>
+>>> v6: https://lore.kernel.org/linux-iommu/20230928042734.16134-1-baolu.lu@linux.intel.com/
+>>>   - [PATCH 09/12] Check IS_ERR() against the iommu domain. [Jingqi/Jason]
+>>>   - [PATCH 12/12] Rename the comments and name of iopf_queue_flush_dev(),
+>>>     no functionality changes. [Kevin]
+>>>   - All patches rebased on the latest iommu/core branch.
+>>>
+>>> v5: https://lore.kernel.org/linux-iommu/20230914085638.17307-1-baolu.lu@linux.intel.com/
+>>>   - Consolidate per-device fault data management. (New patch 11)
+>>>   - Improve iopf_queue_flush_dev(). (New patch 12)
+>>>
+>>> v4: https://lore.kernel.org/linux-iommu/20230825023026.132919-1-baolu.lu@linux.intel.com/
+>>>   - Merge iommu_fault_event and iopf_fault. They are duplicate.
+>>>   - Move iommu_report_device_fault() and iommu_page_response() to
+>>>     io-pgfault.c.
+>>>   - Move iommu_sva_domain_alloc() to iommu-sva.c.
+>>>   - Add group->domain and use it directly in sva fault handler.
+>>>   - Misc code refactoring and refining.
+>>>
+>>> v3: https://lore.kernel.org/linux-iommu/20230817234047.195194-1-baolu.lu@linux.intel.com/
+>>>   - Convert the fault data structures from uAPI to kAPI.
+>>>   - Merge iopf_device_param into iommu_fault_param.
+>>>   - Add debugging on domain lifetime for iopf.
+>>>   - Remove patch "iommu: Change the return value of dev_iommu_get()".
+>>>   - Remove patch "iommu: Add helper to set iopf handler for domain".
+>>>   - Misc code refactoring and refining.
+>>>
+>>> v2: https://lore.kernel.org/linux-iommu/20230727054837.147050-1-baolu.lu@linux.intel.com/
+>>>   - Remove unrecoverable fault data definition as suggested by Kevin.
+>>>   - Drop the per-device fault cookie code considering that doesn't make
+>>>     much sense for SVA.
+>>>   - Make the IOMMU page fault handling framework generic. So that it can
+>>>     available for use cases other than SVA.
+>>>
+>>> v1: https://lore.kernel.org/linux-iommu/20230711010642.19707-1-baolu.lu@linux.intel.com/
+>>>
+>>> Lu Baolu (12):
+>>>    iommu: Move iommu fault data to linux/iommu.h
+>>>    iommu/arm-smmu-v3: Remove unrecoverable faults reporting
+>>>    iommu: Remove unrecoverable fault data
+>>>    iommu: Cleanup iopf data structure definitions
+>>>    iommu: Merge iopf_device_param into iommu_fault_param
+>>>    iommu: Remove iommu_[un]register_device_fault_handler()
+>>>    iommu: Merge iommu_fault_event and iopf_fault
+>>>    iommu: Prepare for separating SVA and IOPF
+>>>    iommu: Make iommu_queue_iopf() more generic
+>>>    iommu: Separate SVA and IOPF
+>>>    iommu: Consolidate per-device fault data management
+>>>    iommu: Improve iopf_queue_flush_dev()
+>>>
+>>>   include/linux/iommu.h                         | 266 +++++++---
+>>>   drivers/iommu/intel/iommu.h                   |   2 +-
+>>>   drivers/iommu/iommu-sva.h                     |  71 ---
+>>>   include/uapi/linux/iommu.h                    | 161 ------
+>>>   .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   |  14 +-
+>>>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |  51 +-
+>>>   drivers/iommu/intel/iommu.c                   |  25 +-
+>>>   drivers/iommu/intel/svm.c                     |   8 +-
+>>>   drivers/iommu/io-pgfault.c                    | 469 ++++++++++++------
+>>>   drivers/iommu/iommu-sva.c                     |  66 ++-
+>>>   drivers/iommu/iommu.c                         | 232 ---------
+>>>   MAINTAINERS                                   |   1 -
+>>>   drivers/iommu/Kconfig                         |   4 +
+>>>   drivers/iommu/Makefile                        |   3 +-
+>>>   drivers/iommu/intel/Kconfig                   |   1 +
+>>>   15 files changed, 601 insertions(+), 773 deletions(-)
+>>>   delete mode 100644 drivers/iommu/iommu-sva.h
+>>>   delete mode 100644 include/uapi/linux/iommu.h
+>>>
+>>
+>> Tested-By: Longfang Liu <liulongfang@huawei.com>
+> 
+> Thank you for the testing.
+> 
+>>
+>> The Arm SVA mode based on HiSilicon crypto accelerator completed the functional test
+>> and performance test of page fault scenarios.
+>> 1. The IOMMU page fault processing function is normal.
+>> 2. Performance test on 128 core ARM platform. performance is reduced:
+>>
+>> Threads  Performance
+>> 8         -0.77%
+>> 16        -1.1%
+>> 32        -0.31%
+>> 64        -0.49%
+>> 128       -0.72%
+>> 256       -1.7%
+>> 384       -4.94%
+>> 512       NA（iopf timeout）
+>>
+>> Finally, continuing to increase the number of threads will cause iommu's page fault
+>> processing to time out(more than 4.2 seconds).
+>> This problem occurs both in the before version(kernel6.7-rc1) and
+>> in the after modification's version.
+> 
+> Probably you can check whether commit 6bbd42e2df8f ("mmu_notifiers: call
+> invalidate_range() when invalidating TLBs") matters.
+> 
+> It was discussed in this thread.
+> 
+> https://lore.kernel.org/linux-iommu/20231117090933.75267-1-baolu.lu@linux.intel.com/
+>
 
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
----
- drivers/acpi/scan.c        |  1 -
- drivers/of/address.c       |  1 -
- include/linux/dma-direct.h | 19 ++++++++++++-------
- kernel/dma/direct.c        |  1 -
- 4 files changed, 12 insertions(+), 10 deletions(-)
+Thanks for your reminder. But the reason for the iopf timeout in this test scenario is
+different from what is pointed out in your patch.
 
-diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index 026130b37967..c72155606550 100644
---- a/drivers/acpi/scan.c
-+++ b/drivers/acpi/scan.c
-@@ -1532,7 +1532,6 @@ int acpi_dma_get_range(struct device *dev, const struct bus_dma_region **map)
- 			r->cpu_start = rentry->res->start;
- 			r->dma_start = rentry->res->start - rentry->offset;
- 			r->size = resource_size(rentry->res);
--			r->offset = rentry->offset;
- 			r++;
- 		}
- 	}
-diff --git a/drivers/of/address.c b/drivers/of/address.c
-index b59956310f66..ae46a3605904 100644
---- a/drivers/of/address.c
-+++ b/drivers/of/address.c
-@@ -955,7 +955,6 @@ int of_dma_get_range(struct device_node *np, const struct bus_dma_region **map)
- 		r->cpu_start = range.cpu_addr;
- 		r->dma_start = range.bus_addr;
- 		r->size = range.size;
--		r->offset = range.cpu_addr - range.bus_addr;
- 		r++;
- 	}
- out:
-diff --git a/include/linux/dma-direct.h b/include/linux/dma-direct.h
-index 18aade195884..3eb3589ff43e 100644
---- a/include/linux/dma-direct.h
-+++ b/include/linux/dma-direct.h
-@@ -21,7 +21,6 @@ struct bus_dma_region {
- 	phys_addr_t	cpu_start;
- 	dma_addr_t	dma_start;
- 	u64		size;
--	u64		offset;
- };
- 
- static inline dma_addr_t translate_phys_to_dma(struct device *dev,
-@@ -29,9 +28,12 @@ static inline dma_addr_t translate_phys_to_dma(struct device *dev,
- {
- 	const struct bus_dma_region *m;
- 
--	for (m = dev->dma_range_map; m->size; m++)
--		if (paddr >= m->cpu_start && paddr - m->cpu_start < m->size)
--			return (dma_addr_t)paddr - m->offset;
-+	for (m = dev->dma_range_map; m->size; m++) {
-+		u64 offset = paddr - m->cpu_start;
-+
-+		if (paddr >= m->cpu_start && offset < m->size)
-+			return m->dma_start + offset;
-+	}
- 
- 	/* make sure dma_capable fails when no translation is available */
- 	return DMA_MAPPING_ERROR;
-@@ -42,9 +44,12 @@ static inline phys_addr_t translate_dma_to_phys(struct device *dev,
- {
- 	const struct bus_dma_region *m;
- 
--	for (m = dev->dma_range_map; m->size; m++)
--		if (dma_addr >= m->dma_start && dma_addr - m->dma_start < m->size)
--			return (phys_addr_t)dma_addr + m->offset;
-+	for (m = dev->dma_range_map; m->size; m++) {
-+		u64 offset = dma_addr - m->dma_start;
-+
-+		if (dma_addr >= m->dma_start && offset < m->size)
-+			return m->cpu_start + offset;
-+	}
- 
- 	return (phys_addr_t)-1;
- }
-diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-index 73c95815789a..98b2e192fd69 100644
---- a/kernel/dma/direct.c
-+++ b/kernel/dma/direct.c
-@@ -677,7 +677,6 @@ int dma_direct_set_offset(struct device *dev, phys_addr_t cpu_start,
- 		return -ENOMEM;
- 	map[0].cpu_start = cpu_start;
- 	map[0].dma_start = dma_start;
--	map[0].offset = offset;
- 	map[0].size = size;
- 	dev->dma_range_map = map;
- 	return 0;
--- 
-2.39.2.101.g768bb238c484.dirty
+Our analysis found that the emergence of iopf is related to the numa balance function.
+The CMWQ solution for iommu's iopf currently uses a large number of kernel threads.
+The page fault processing in the numa balance function will compete with the page fault
+processing in iommu to occupy the CPU.
+This will lead to a longer page fault processing time and trigger repeated page faults
+in the IO task.This will produce an unpredictable and huge amount of page fault events,
+eventually causing the entire system to be unable to respond to page fault processing
+in a timely manner.
 
+Thanks.
+Longfang.
+> Best regards,
+> baolu
+> 
+> .
+> 
