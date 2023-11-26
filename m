@@ -1,82 +1,75 @@
 Received: from out1-smtp.messagingengine.com (out1-smtp.messagingengine.com [66.111.4.25])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 38925EC2;
-	Sun, 26 Nov 2023 15:17:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49A63DDC3;
+	Sun, 26 Nov 2023 16:20:19 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=svenpeter.dev
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=svenpeter.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=svenpeter.dev header.i=@svenpeter.dev header.b="Z0trJmkX";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="V2ZlWk6S"
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-	by mailout.nyi.internal (Postfix) with ESMTP id 8895C5C0130;
-	Sun, 26 Nov 2023 10:17:20 -0500 (EST)
+	dkim=pass (2048-bit key) header.d=svenpeter.dev header.i=@svenpeter.dev header.b="mz9yoPop";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="pYW6R4XC"
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+	by mailout.nyi.internal (Postfix) with ESMTP id 093F35C0162;
+	Sun, 26 Nov 2023 11:20:19 -0500 (EST)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Sun, 26 Nov 2023 10:17:20 -0500
+  by compute2.internal (MEProxy); Sun, 26 Nov 2023 11:20:19 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svenpeter.dev;
 	 h=cc:cc:content-transfer-encoding:content-type:date:date:from
-	:from:in-reply-to:in-reply-to:message-id:mime-version:references
-	:reply-to:sender:subject:subject:to:to; s=fm1; t=1701011840; x=
-	1701098240; bh=8R0p6DlkXF+oFfSCrVqGL6mEemuNQRmY1fVSrZeXoEA=; b=Z
-	0trJmkX4q1fVZfB1XQyy6tkRrvUMNsk5XtYTLvwCq4RShayw8OvHIHdWng0PC+6q
-	qWlyMTphrtYq6Fra8y2H8dAtnmTmAvKgI4MX2vEZpyuuv7ZkaKUVAZohep16VRdS
-	buk1tEB50Sr1+DtbyJKTJyicWW3Ho9Sx82qWxwP81ZCshxM4ePxme+Wjvmwb9dFn
-	kjFF5nioIYYzaqakcgMyuSCAHxC+LAfOXxdsW7vBqKjjusWkImcHeOha6atnDgFG
-	gJQ3A2U6XMgRWVFUIK4OoalwLa63NgLwnQ0aKyIPKQDUmuFIiAmPQ8l2AOcZpgxu
-	LYBSAe0KWphdsn8qlTpHA==
+	:from:in-reply-to:message-id:mime-version:reply-to:sender
+	:subject:subject:to:to; s=fm1; t=1701015619; x=1701102019; bh=Qy
+	P8UlmkQUxctXvsLY+u2IDuION9oeAKPUhsirOlXLA=; b=mz9yoPopTnP5Pp9VMl
+	d2z+GxcdEHJ0tmL5X3c0HKcOBIgBBPogGES9smTlQf/Y7YpXCFNuyR/cbd4eblDR
+	U6itJOlmN29E0epnkGmKfcmml1kGtIIC8knv6lWDBXqAyizfMmZZ8uixkEfL9s0l
+	gz64qKje4FM0BruZ0MVm/5QhsyanRTIhxhKBvMRD0t46o+qW88VhK6tOT1V8nhgi
+	NLeR2JdE2uT0WNdG6vPoFqDD+9uRIQTDDM19javDpLi8/BW3yD9a35v/LmdOCh+s
+	GmtmzU+bP2ys02U4p/7K2B8wDTEsX3PfdUs0GrgusNVLm+cGbN0qyt8614odS95O
+	qWqA==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
 	messagingengine.com; h=cc:cc:content-transfer-encoding
 	:content-type:date:date:feedback-id:feedback-id:from:from
-	:in-reply-to:in-reply-to:message-id:mime-version:references
-	:reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-	:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1701011840; x=
-	1701098240; bh=8R0p6DlkXF+oFfSCrVqGL6mEemuNQRmY1fVSrZeXoEA=; b=V
-	2ZlWk6SZ/YL3bxtXeocJt8UjUvfK7pF2TV8LH+HWLif3MMIh06Ap1MRaixQCkNlj
-	ZwwpYKXVlGRPqvA00YsqUhEdPBkqgkZPzxeZVWUznNLAVhzUByTSdl/ZVECpUUSG
-	PTUoqrXBu+qn1xRAHubC/S4hz6+9IHtgEPuxeQeyiqHqEpNCbBEFBpezCYLFVUTh
-	ueZ6TomLyPaxguyK+m/W+WLRmInGQOtym2tdJkbmlUaWCx6lr4uLESsgOVNjRAdu
-	dwL3S4cDHbZcClNW0NtxEGHI/Ku9zt1kVWj6wQ2RDCBfkuXOl82gFKN77dFjOe21
-	6csLZwA0NSRgfNn7fW2ew==
-X-ME-Sender: <xms:gGFjZXx-qRHg9f3ZgefBnRaAp4OaEE1evmDpPU69J2eMAgSXQOFGhA>
-    <xme:gGFjZfReFDcMzqbXhaXgo8PEgTK_iZCF63KU50gMCce4fnVEpVZGB3rMax3vmFC57
-    AypoS8P6hhMr8RZKcE>
-X-ME-Received: <xmr:gGFjZRX-S9nsOyTPXL5tCQxIRQ-Eu2-yfGRHjk96fPxJLCVNGg7Ayx2bYEWvW4eTzm8cSAfzeL9p86Wn3Zrnzz-QRA0f0Y_L4_sFAN5C3ODTuzRrP8C0wL0TLQBj960>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvkedrudehledgjeeiucetufdoteggodetrfdotf
+	:in-reply-to:message-id:mime-version:reply-to:sender:subject
+	:subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+	:x-sasl-enc; s=fm1; t=1701015619; x=1701102019; bh=QyP8UlmkQUxct
+	XvsLY+u2IDuION9oeAKPUhsirOlXLA=; b=pYW6R4XCzRWd0vTqOJWtxZ77G2Xa0
+	tiANXLIVKppJ2E10z+/38o4klXtIPbKRjbPZi0unsaPsdbWSkXKDPre2IDOZMDca
+	3fMLyDSrRIdACt1SgcX6EPjR0nfz6GpRo0+KhEsos1aOIq+mwzrrF1IfPsMgU/Il
+	Yl8JMJPkrG/dBGxFcUjkinRSPBoW+jCImanE7oeCzAwFjNv2KAgh7Cx44BwZ9/3Z
+	ufgv2gtu5LCLod4X9+evU0B0azE0ziOhagcQNvM+MbNC/hxFh1X3IB5qZWRU/EUW
+	dKzARYnqNs7VRYa86/mEFocyApbgQik8UTYqlJu27PmINuvmOk6wIaHQQ==
+X-ME-Sender: <xms:QnBjZV5cDDVJbvYPtkQ9ryzJUBGmbD2Swxwsv6tnrPl-J-IJ84LjAQ>
+    <xme:QnBjZS7k3aPMObtfVzaI_FLh7lerL1ppTkFc_zxCsNTVROm982brmjmpy70tFUk1b
+    EwBe4F6TzWiM3VkB74>
+X-ME-Received: <xmr:QnBjZcfTQ1ZYM3ZMwgmcFK02dJPttc8k5NWhdDdABE61PbtFU-gOoh70BYyH6DhOJBXz0cFJsFZn5rRrzkmDXqlVzYtDyXF7Qa_v-IC8OhLGXEZ4HMHvyGM_Y-ls3uw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvkedrudehledgledtucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhephffvvefufffkofgjfhgggfestdekredtredttdenucfhrhhomhepufhvvghn
-    ucfrvghtvghruceoshhvvghnsehsvhgvnhhpvghtvghrrdguvghvqeenucggtffrrghtth
-    gvrhhnpeejieehheekgedvjefhveekjefguddtfefhteehtdeiffelkeeiuedufeelkeej
-    geenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehsvh
-    gvnhesshhvvghnphgvthgvrhdruggvvh
-X-ME-Proxy: <xmx:gGFjZRh54YF9Ch5KVMOmIutgFSQCZK7pb0d8b0hyCd-pTQ9RcPAJAw>
-    <xmx:gGFjZZDjL463XmgFVk9fUA3t36WCv0wmvDBce-VomRbqHE2TML3jOQ>
-    <xmx:gGFjZaLgfbrxsG_OKVy0ijr3SlE70ZPHKfgPvUiOhqNVkzVIGtCvvg>
-    <xmx:gGFjZd5igePXAKioXfooE5PKwsogm9WxGVH8m2CSpjExAOMwA2Kc4Q>
+    cujfgurhephffvvefufffkofgggfestdekredtredttdenucfhrhhomhepufhvvghnucfr
+    vghtvghruceoshhvvghnsehsvhgvnhhpvghtvghrrdguvghvqeenucggtffrrghtthgvrh
+    hnpeeludffieehueevtdffvedtueelleejuddugfettdevhfefffdvgffhjeehgfelleen
+    ucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehsvhgvnh
+    esshhvvghnphgvthgvrhdruggvvh
+X-ME-Proxy: <xmx:QnBjZeJhfb2l1cvB8aiiCBBqvgCMwubJsyjh2Xg_Ow7bx5LS9IHGFw>
+    <xmx:QnBjZZJ978hMrfxgmqD292uDOHG4gqeCceuXFraHAFZ8EMgsLww9MQ>
+    <xmx:QnBjZXw_SJi0LXt1FRu8hOt0eZVit57-2ptaaCBAQ4rFAkl2M1B0uw>
+    <xmx:Q3BjZQ88uzyYXxa_Wgbci8FNl3bKjHQRDhLuFwi9nEQcCcUWFenojA>
 Feedback-ID: i51094778:Fastmail
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sun,
- 26 Nov 2023 10:17:18 -0500 (EST)
+ 26 Nov 2023 11:20:16 -0500 (EST)
 From: Sven Peter <sven@svenpeter.dev>
 To: Hector Martin <marcan@marcan.st>,
 	Sven Peter <sven@svenpeter.dev>,
 	Joerg Roedel <joro@8bytes.org>,
 	Will Deacon <will@kernel.org>,
 	Robin Murphy <robin.murphy@arm.com>
-Cc: Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-	linux-arm-kernel@lists.infradead.org,
+Cc: Alyssa Rosenzweig <alyssa@rosenzweig.io>,
 	asahi@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org,
 	iommu@lists.linux.dev,
-	devicetree@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH v4 3/3] iommu: dart: Add support for t8103 USB4 DART
-Date: Sun, 26 Nov 2023 16:17:01 +0100
-Message-Id: <20231126151701.16534-4-sven@svenpeter.dev>
+Subject: [PATCH] iommu: dart: Use readl instead of readl_relaxed for consistency
+Date: Sun, 26 Nov 2023 17:20:09 +0100
+Message-Id: <20231126162009.17934-1-sven@svenpeter.dev>
 X-Mailer: git-send-email 2.39.3 (Apple Git-145)
-In-Reply-To: <20231126151701.16534-1-sven@svenpeter.dev>
-References: <20231126151701.16534-1-sven@svenpeter.dev>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -85,70 +78,28 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-This variant of the regular t8103 DART is used for the two
-USB4/Thunderbolt PCIe controllers. It supports 64 instead of 16 streams
-which requires a slightly different MMIO layout.
+While the readl_relaxed in apple_dart_suspend is correct the rest of the
+driver uses the non-relaxed variants everywhere and the single
+readl_relaxed is inconsistent and possibly confusing.
 
-Acked-by: Hector Martin <marcan@marcan.st>
 Signed-off-by: Sven Peter <sven@svenpeter.dev>
 ---
- drivers/iommu/apple-dart.c | 29 +++++++++++++++++++++++++++++
- 1 file changed, 29 insertions(+)
+ drivers/iommu/apple-dart.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/apple-dart.c b/drivers/iommu/apple-dart.c
-index 8b6b0cdba9b5..f47f60c0a4d0 100644
+index 59cf256bf40f..c7f047ce0a7a 100644
 --- a/drivers/iommu/apple-dart.c
 +++ b/drivers/iommu/apple-dart.c
-@@ -81,6 +81,7 @@
- #define DART_T8020_TCR_BYPASS_DAPF      BIT(12)
+@@ -1272,7 +1272,7 @@ static __maybe_unused int apple_dart_suspend(struct device *dev)
+ 	unsigned int sid, idx;
  
- #define DART_T8020_TTBR       0x200
-+#define DART_T8020_USB4_TTBR  0x400
- #define DART_T8020_TTBR_VALID BIT(31)
- #define DART_T8020_TTBR_ADDR_FIELD_SHIFT 0
- #define DART_T8020_TTBR_SHIFT 12
-@@ -1217,6 +1218,33 @@ static const struct apple_dart_hw apple_dart_hw_t8103 = {
- 	.ttbr_shift = DART_T8020_TTBR_SHIFT,
- 	.ttbr_count = 4,
- };
-+
-+static const struct apple_dart_hw apple_dart_hw_t8103_usb4 = {
-+	.type = DART_T8020,
-+	.irq_handler = apple_dart_t8020_irq,
-+	.invalidate_tlb = apple_dart_t8020_hw_invalidate_tlb,
-+	.oas = 36,
-+	.fmt = APPLE_DART,
-+	.max_sid_count = 64,
-+
-+	.enable_streams = DART_T8020_STREAMS_ENABLE,
-+	.lock = DART_T8020_CONFIG,
-+	.lock_bit = DART_T8020_CONFIG_LOCK,
-+
-+	.error = DART_T8020_ERROR,
-+
-+	.tcr = DART_T8020_TCR,
-+	.tcr_enabled = DART_T8020_TCR_TRANSLATE_ENABLE,
-+	.tcr_disabled = 0,
-+	.tcr_bypass = 0,
-+
-+	.ttbr = DART_T8020_USB4_TTBR,
-+	.ttbr_valid = DART_T8020_TTBR_VALID,
-+	.ttbr_addr_field_shift = DART_T8020_TTBR_ADDR_FIELD_SHIFT,
-+	.ttbr_shift = DART_T8020_TTBR_SHIFT,
-+	.ttbr_count = 4,
-+};
-+
- static const struct apple_dart_hw apple_dart_hw_t6000 = {
- 	.type = DART_T6000,
- 	.irq_handler = apple_dart_t8020_irq,
-@@ -1309,6 +1337,7 @@ static DEFINE_SIMPLE_DEV_PM_OPS(apple_dart_pm_ops, apple_dart_suspend, apple_dar
- 
- static const struct of_device_id apple_dart_of_match[] = {
- 	{ .compatible = "apple,t8103-dart", .data = &apple_dart_hw_t8103 },
-+	{ .compatible = "apple,t8103-usb4-dart", .data = &apple_dart_hw_t8103_usb4 },
- 	{ .compatible = "apple,t8110-dart", .data = &apple_dart_hw_t8110 },
- 	{ .compatible = "apple,t6000-dart", .data = &apple_dart_hw_t6000 },
- 	{},
+ 	for (sid = 0; sid < dart->num_streams; sid++) {
+-		dart->save_tcr[sid] = readl_relaxed(dart->regs + DART_TCR(dart, sid));
++		dart->save_tcr[sid] = readl(dart->regs + DART_TCR(dart, sid));
+ 		for (idx = 0; idx < dart->hw->ttbr_count; idx++)
+ 			dart->save_ttbr[sid][idx] =
+ 				readl(dart->regs + DART_TTBR(dart, sid, idx));
 -- 
 2.34.1
 
