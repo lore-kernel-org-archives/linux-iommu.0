@@ -1,49 +1,49 @@
-Received: from mail-ej1-f45.google.com (mail-ej1-f45.google.com [209.85.218.45])
+Received: from mail-ej1-f53.google.com (mail-ej1-f53.google.com [209.85.218.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8BE98DDB9
-	for <iommu@lists.linux.dev>; Mon, 27 Nov 2023 06:57:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB4E3D534
+	for <iommu@lists.linux.dev>; Mon, 27 Nov 2023 06:58:24 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="KUdDR+R6"
-Received: by mail-ej1-f45.google.com with SMTP id a640c23a62f3a-a0b65cbf096so189195066b.1
-        for <iommu@lists.linux.dev>; Sun, 26 Nov 2023 22:57:30 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="fHX+x4A9"
+Received: by mail-ej1-f53.google.com with SMTP id a640c23a62f3a-a08e4352992so332489366b.1
+        for <iommu@lists.linux.dev>; Sun, 26 Nov 2023 22:58:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1701068249; x=1701673049; darn=lists.linux.dev;
+        d=linaro.org; s=google; t=1701068303; x=1701673103; darn=lists.linux.dev;
         h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
          :to:content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=fQWfitv18ORc9/USvUJVF1huPbml9HkmehHEfqgU8EA=;
-        b=KUdDR+R6tr1mXWk0cRk74cDE99+iwqaAqJhABrokMZNg7Wp6t7MmWRW5Z6DkP7jrd+
-         LYqfyPmydjGizaHIpKP3OYd6J8lxOJRJ1OhxB+1r2RnIkx9tTCWmG/PuuzHY1hl9lNqP
-         jVylpk9O4zKvCnAXWNr0qlax+6OrV0eGKXNJsfh10REyWDkeZBgwizzWghchvmQHN7YN
-         LLcX3g+29FZ1Gq6r5aUcV2C8wCU7T8xyCDLmbSMRyySbFJebWZXHUomGQwS8XFTBmurZ
-         ND/YPh7xO0dsS13aA5eCg5EgUp13Xh0Yj2HGYrHeXa6Sk5NCQDChYhPpWpRAexyqRUHW
-         Qr8Q==
+        bh=W77NnNP4ZVuW1WjW6wyi/bvlo3XiP3nnrA4RIS+7zUs=;
+        b=fHX+x4A9xEcK8Mh5FmQlaYE/BXxPd5H848BfIqLu3nIkb2GLpHOZb0Kf7hySqL61ln
+         7G6R/xW4/xSCt5KHLY+j9FpY2WDTWvP+Ep1IXo19vfsBOgtMh+ViJu9j+Q+EqfPGWVCm
+         YvqvHBDXVG3LlWE1ffzo+hdsdm8ALJ5Xj2k/LGEHXavB0bvwKjDnnvZzrAWfsTTBlpQD
+         KsnMcQel2yoZx9wQRm0ahjLk6WbLwdtHJMBixfmfExVjkZ3uo1rfG4q4Qtd180ykQRfi
+         jNQgeXk6Bp8nId3S7kxTRVWQfxVnNWTgBmrCoosxtvtnB+NZwY4GBoUgluBGtAqZV7hO
+         zKFA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701068249; x=1701673049;
+        d=1e100.net; s=20230601; t=1701068303; x=1701673103;
         h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
          :to:content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=fQWfitv18ORc9/USvUJVF1huPbml9HkmehHEfqgU8EA=;
-        b=WMgmZakwbeiWV1mtt/+AF35qpYSRWOh8LUlZtAISj8iwtUFbOQVdwNnJ/EAmpGArL9
-         X6l2TF9eP5iAbhTvue0k9kgN+Go12135B8TptZiuoOkmNPnlg6ecv7B+vRFDmS69NEdZ
-         twK4g07P/QUZ8mGXrV3xE8Yta8rla7SuR+enyKEWlTqzAxtkyqi54WT3lMuz72gbRhKm
-         9j+5k3DGfvrBU5e4sujvTvv75yP7Qk7iGUxjNficcZAkdg47vlba+DyR8DCPnOFL14R0
-         Vz99/D8Jb4ZcryhMWx+p7pLrtVEnC0T25QYkWrBB+nIXdOWirEB0uilKPVhskX3TlJeX
-         adYA==
-X-Gm-Message-State: AOJu0Yyp2AsgsL7yRIl4YW0hVr2ZRchxChXPEWWCxzbP7RqpU11m1CTh
-	riYfYNUh5mP+/kGjwGzhaTIesA==
-X-Google-Smtp-Source: AGHT+IGnaOY6UqqkGlohuWVoBLraQEN9HQbTV+4TI7Mwks3kyfEukG+HVT/DEcFn43jttfy/0rDkVw==
-X-Received: by 2002:a17:906:40ca:b0:9dc:2291:d384 with SMTP id a10-20020a17090640ca00b009dc2291d384mr7756720ejk.22.1701068248854;
-        Sun, 26 Nov 2023 22:57:28 -0800 (PST)
+        bh=W77NnNP4ZVuW1WjW6wyi/bvlo3XiP3nnrA4RIS+7zUs=;
+        b=ipuR3qpEZ9Yz/CUH8UZXt0p5bYC8ROAW+YlTLYKKOSFvXzCFTxc+BfMbb6ADpEEjS9
+         e9Pj4uDvfatG1kx5hu+xJvuDwvv2K4710LvpBmkYsaLI8A+T9P4Chz5l1gnM2t0j4+cq
+         MMMZT4q2bv0s1lmDFQ7OStttOE39xzmbORO3PyQyO7sZvgXrmSAGsdW0Rzc0FX3j5CP3
+         6GdThfp5PDXzdHp3gfaDtAcccTwTEbiM0w5va5fByESH5GMBwFvssg8doexgQ8bjT8BI
+         QESd+IVbivOgL8O4AitROcY2HcV3Ncqi/8/TJSTab9JN0lztZpIRA2dsYnTPUYb0YxEo
+         t19A==
+X-Gm-Message-State: AOJu0Yx15GfaDGBDvWC/i4Dkwc7VSY7kp0aLgpsgjMq/T4mYZuuhNGXq
+	K7x+ureoK2eXMiX71CIjEG40cw==
+X-Google-Smtp-Source: AGHT+IEk87xVB4hyXdESdrJNTz2Nm6jp02qaDjknNezspe+31fk+3LxEo3WZ7eXbjjYHZOOvg5oM/g==
+X-Received: by 2002:a17:906:a1c9:b0:9be:2b53:ac4d with SMTP id bx9-20020a170906a1c900b009be2b53ac4dmr7352566ejb.74.1701068303185;
+        Sun, 26 Nov 2023 22:58:23 -0800 (PST)
 Received: from [192.168.1.20] ([178.197.223.109])
-        by smtp.gmail.com with ESMTPSA id a19-20020a170906469300b009ade1a4f795sm5291000ejr.168.2023.11.26.22.57.25
+        by smtp.gmail.com with ESMTPSA id a19-20020a170906469300b009ade1a4f795sm5291000ejr.168.2023.11.26.22.58.20
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 26 Nov 2023 22:57:28 -0800 (PST)
-Message-ID: <456b2f76-f4c3-4d51-8a07-7d14bd89ba53@linaro.org>
-Date: Mon, 27 Nov 2023 07:57:25 +0100
+        Sun, 26 Nov 2023 22:58:22 -0800 (PST)
+Message-ID: <c0de6206-daf5-4dcc-8a61-cc1ff7d6efc8@linaro.org>
+Date: Mon, 27 Nov 2023 07:58:20 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -51,8 +51,8 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 05/12] dt-bindings: interconnect: qcom,msm8998-bwmon: Add
- QCM2290 bwmon instance
+Subject: Re: [PATCH 06/12] dt-bindings: firmware: qcom,scm: Allow interconnect
+ for everyone
 Content-Language: en-US
 To: Konrad Dybcio <konrad.dybcio@linaro.org>, Rob Clark
  <robdclark@gmail.com>, Abhinav Kumar <quic_abhinavk@quicinc.com>,
@@ -76,7 +76,7 @@ Cc: Marijn Suijten <marijn.suijten@somainline.org>,
  linux-pm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
  iommu@lists.linux.dev
 References: <20231125-topic-rb1_feat-v1-0-11d71b12b058@linaro.org>
- <20231125-topic-rb1_feat-v1-5-11d71b12b058@linaro.org>
+ <20231125-topic-rb1_feat-v1-6-11d71b12b058@linaro.org>
 From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
  xsFNBFVDQq4BEAC6KeLOfFsAvFMBsrCrJ2bCalhPv5+KQF2PS2+iwZI8BpRZoV+Bd5kWvN79
@@ -122,12 +122,13 @@ Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
  KQ06ztUMRrj8eVtpImjsWCd0bDWRaaR4vqhCHvAG9iWXZu4qh3ipie2Y0oSJygcZT7H3UZxq
  fyYKiqEmRuqsvv6dcbblD8ZLkz1EVZL6djImH5zc5x8qpVxlA0A0i23v5QvN00m6G9NFF0Le
  D2GYIS41Kv4Isx2dEFh+/Q==
-In-Reply-To: <20231125-topic-rb1_feat-v1-5-11d71b12b058@linaro.org>
+In-Reply-To: <20231125-topic-rb1_feat-v1-6-11d71b12b058@linaro.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
 On 25/11/2023 15:17, Konrad Dybcio wrote:
-> QCM2290 has a single BWMONv4 intance for CPU. Document it.
+> Every Qualcomm SoC physically has a "CRYPTO0<->DDR" interconnect lane.
+> Allow this property to be present, no matter the SoC.
 > 
 > Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
 > ---
