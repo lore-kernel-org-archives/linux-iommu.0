@@ -1,171 +1,108 @@
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f43.google.com (mail-lf1-f43.google.com [209.85.167.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E33AE2D623
-	for <iommu@lists.linux.dev>; Mon, 27 Nov 2023 16:10:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; dkim=none
-Received: from mail.maildlp.com (unknown [172.18.186.216])
-	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Sf9Xq3Fmfz6JBR6;
-	Tue, 28 Nov 2023 00:10:19 +0800 (CST)
-Received: from lhrpeml500001.china.huawei.com (unknown [7.191.163.213])
-	by mail.maildlp.com (Postfix) with ESMTPS id B49E9140C98;
-	Tue, 28 Nov 2023 00:10:33 +0800 (CST)
-Received: from lhrpeml500005.china.huawei.com (7.191.163.240) by
- lhrpeml500001.china.huawei.com (7.191.163.213) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35; Mon, 27 Nov 2023 16:10:33 +0000
-Received: from lhrpeml500005.china.huawei.com ([7.191.163.240]) by
- lhrpeml500005.china.huawei.com ([7.191.163.240]) with mapi id 15.01.2507.035;
- Mon, 27 Nov 2023 16:10:33 +0000
-From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-To: Jason Gunthorpe <jgg@nvidia.com>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>, Joerg Roedel <joro@8bytes.org>,
-	"linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>, Robin Murphy <robin.murphy@arm.com>,
-	Will Deacon <will@kernel.org>
-CC: Michael Shavit <mshavit@google.com>, Nicolin Chen <nicolinc@nvidia.com>
-Subject: RE: [PATCH v2 00/19] Update SMMUv3 to the modern iommu API (part 1/3)
-Thread-Topic: [PATCH v2 00/19] Update SMMUv3 to the modern iommu API (part
- 1/3)
-Thread-Index: AQHaFlpcboVCOVh91k2mJ0kS0C1kaLCOZrqw
-Date: Mon, 27 Nov 2023 16:10:33 +0000
-Message-ID: <daa2f15d7f6b475d8388cbea7a9f4cb5@huawei.com>
-References: <0-v2-de8b10590bf5+400-smmuv3_newapi_p1_jgg@nvidia.com>
-In-Reply-To: <0-v2-de8b10590bf5+400-smmuv3_newapi_p1_jgg@nvidia.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4DCD34CE0
+	for <iommu@lists.linux.dev>; Mon, 27 Nov 2023 16:20:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="ZvPe4mt2"
+Received: by mail-lf1-f43.google.com with SMTP id 2adb3069b0e04-50aabfa1b75so6263874e87.3
+        for <iommu@lists.linux.dev>; Mon, 27 Nov 2023 08:20:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1701102010; x=1701706810; darn=lists.linux.dev;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=o7VqPtYpwoj+TW7Y8BWDK43UozTyH/qVC7KhQCmuFRM=;
+        b=ZvPe4mt2AxGRQIGFamvrOBy6rUn6vk10ndNcAgar/XbQdwNv7uPttE4bEEmkYob4zK
+         Mo1fBlblS9x4gR0SkAyMgjWOpqQBuOL5jfccdQV8E7dlEKVR0gbAkg+q2oBmszOUPb65
+         ZNGlREGSSQa2gt9TcmEACPXnW7zqgDi660Xk4jZON6/8z+DCU2YND+dxnnNlU5q891md
+         EXP3lUwdUUY6gCCZF8o6hj7XXHvXrI/Eo1XFGrirjy3sL30uZW5BdHI948ZSjvfVfWd/
+         nWctCbPZQvdbGZgsO7pYCdN7mJbt8jTFoH2wyguYHNgePExS1hGxQfTvYnHs7ZOTgErt
+         L+Vg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1701102010; x=1701706810;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=o7VqPtYpwoj+TW7Y8BWDK43UozTyH/qVC7KhQCmuFRM=;
+        b=qb+1O6eWIJIklgL/YCQ2ett9/P0Wlu2j6sPtQEF9pbYHq/c97ngG/+SCFMRm1RKDsq
+         NsAbJRNiIyGmR/LnJ8Cjf5QiydtwpGjjJCqBHwJODfjvmkON8Cbk1nh/AhcoGAUEDZd1
+         Z66RG9gtj7BJLknyzIgIbZY0tSM8eRgH4U1VnEIcuCw4OEPmEdNAgim8F1jy8LvAMb96
+         wwPgWmhgyq5i7BGW7BHvfl94xBeIrv/89fp5M9HuIVaSvVKLnot+piIIfM/kMpJQVDQH
+         3+MZZHNXO5j3O9BwNmO90oEgq/F4+YJ3ZlyXioE2ddrf9s3MzDJq1iaS7j5AgpJRjq+P
+         i4aA==
+X-Gm-Message-State: AOJu0Yzrn5yViQdW7zOCCaqsRztWw0nYrVWgx86bZAeMmFrMBqwej3yh
+	NE0riHUQ9C7tetqITQB8wVKbiA==
+X-Google-Smtp-Source: AGHT+IHmgRxGBQwnhbTyFCMdrlJjPEqWPP9SdrVlRVuS7yeIr7kA+AYZlSRHNy1rJX25Nv8IL8B7dg==
+X-Received: by 2002:a05:6512:3196:b0:50b:aa13:a761 with SMTP id i22-20020a056512319600b0050baa13a761mr5779827lfe.46.1701102010662;
+        Mon, 27 Nov 2023 08:20:10 -0800 (PST)
+Received: from [10.167.154.1] (178235187180.dynamic-4-waw-k-2-3-0.vectranet.pl. [178.235.187.180])
+        by smtp.gmail.com with ESMTPSA id m12-20020a1709062acc00b009c3828fec06sm5734760eje.81.2023.11.27.08.20.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Nov 2023 08:20:10 -0800 (PST)
+From: Konrad Dybcio <konrad.dybcio@linaro.org>
+Subject: [PATCH 0/6] SM8450 / SM8550 Adreno
+Date: Mon, 27 Nov 2023 17:20:02 +0100
+Message-Id: <20231127-topic-a7xx_dt-v1-0-a228b8122ebf@linaro.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIALLBZGUC/x2NUQqDMBAFryL77UKTCoJXKaWsyVMXJEqiJSDev
+ Us/Z2CYiwqyotDQXJTx1aJbMnBtQ2GRNIM1GpN/+Kdzvudj2zWw9LV+4sETgM51HjEKWTNKAY9
+ ZUlisSue6mtwzJq3/yet93z/OMxPedAAAAA==
+To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+ Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>, 
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Andy Gross <agross@kernel.org>, 
+ Bjorn Andersson <andersson@kernel.org>
+Cc: Marijn Suijten <marijn.suijten@somainline.org>, 
+ Neil Armstrong <neil.armstrong@linaro.org>, 
+ Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, 
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, 
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ linux-arm-msm@vger.kernel.org, Konrad Dybcio <konrad.dybcio@linaro.org>
+X-Mailer: b4 0.12.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1701102008; l=1189;
+ i=konrad.dybcio@linaro.org; s=20230215; h=from:subject:message-id;
+ bh=/aCt/tpWduoy987CggdzKos+vz6oIxXcKvTXjXKLxJ8=;
+ b=/fFdW2I4PegFvbTzHnoeeKoejhyDoNRfMyRHqa4iYNbe/GxP/qCjLCCo4xiLaXyEVTacKmf9c
+ nJik6l90SFTAynj16yrttBu/TokmhuJ4L2xau17nJBJgUOOGLFeHYzE
+X-Developer-Key: i=konrad.dybcio@linaro.org; a=ed25519;
+ pk=iclgkYvtl2w05SSXO5EjjSYlhFKsJ+5OSZBjOkQuEms=
 
+Following the merging of related bindings, driver and mesa changes, enable
+the GPU on both of these platforms.
 
+P1 for Will/iommu, rest for qcom
 
-> -----Original Message-----
-> From: Jason Gunthorpe [mailto:jgg@nvidia.com]
-> Sent: 13 November 2023 17:53
-> To: iommu@lists.linux.dev; Joerg Roedel <joro@8bytes.org>;
-> linux-arm-kernel@lists.infradead.org; Robin Murphy
-> <robin.murphy@arm.com>; Will Deacon <will@kernel.org>
-> Cc: Michael Shavit <mshavit@google.com>; Nicolin Chen
-> <nicolinc@nvidia.com>; Shameerali Kolothum Thodi
-> <shameerali.kolothum.thodi@huawei.com>
-> Subject: [PATCH v2 00/19] Update SMMUv3 to the modern iommu API (part
-> 1/3)
->=20
-> The SMMUv3 driver was originally written in 2015 when the iommu driver
-> facing API looked quite different. The API has evolved, especially lately=
-,
-> and the driver has fallen behind.
->=20
-> This work aims to bring make the SMMUv3 driver the best IOMMU driver
-> with
-> the most comprehensive implementation of the API. After all parts it
-> addresses:
->=20
->  - Global static BLOCKED and IDENTITY domains with 'never fail' attach
->    semantics. BLOCKED is desired for efficient VFIO.
->=20
->  - Support map before attach for PAGING iommu_domains.
->=20
->  - attach_dev failure does not change the HW configuration.
->=20
->  - Fully hitless transitions between IDENTITY -> DMA -> IDENTITY.
->    The API has IOMMU_RESV_DIRECT which is expected to be
->    continuously translating.
->=20
->  - Safe transitions between PAGING -> BLOCKED, do not ever temporarily
->    do IDENTITY. This is required for iommufd security.
->=20
->  - Full PASID API support including:
->     - S1/SVA domains attached to PASIDs
->     - IDENTITY/BLOCKED/S1 attached to RID
->     - Change of the RID domain while PASIDs are attached
->=20
->  - Streamlined SVA support using the core infrastructure
->=20
->  - Hitless, whenever possible, change between two domains
->=20
->  - iommufd IOMMU_GET_HW_INFO, IOMMU_HWPT_ALLOC_NEST_PARENT,
-> and
->    IOMMU_DOMAIN_NESTED support
->=20
-> Over all these things are going to become more accessible to iommufd, and
-> exposed to VMs, so it is important for the driver to have a robust
-> implementation of the API.
->=20
-> The work is split into three parts, with this part largely focusing on th=
-e
-> STE and building up to the BLOCKED & IDENTITY global static domains.
->=20
-> The second part largely focuses on the CD and builds up to having a commo=
-n
-> PASID infrastructure that SVA and S1 domains equally use.
->=20
-> The third part has some random cleanups and the iommufd related parts.
->=20
-> Overall this takes the approach of turning the STE/CD programming upside
-> down where the CD/STE value is computed right at a driver callback
-> function and then pushed down into programming logic. The programming
-> logic hides the details of the required CD/STE tear-less update. This
-> makes the CD/STE functions independent of the arm_smmu_domain which
-> makes
-> it fairly straightforward to untangle all the different call chains, and
-> add news ones.
->=20
-> Further, this frees the arm_smmu_domain related logic from keeping track
-> of what state the STE/CD is currently in so it can carefully sequence the
-> correct update. There are many new update pairs that are subtly introduce=
-d
-> as the work progresses.
->=20
-> The locking to support BTM via arm_smmu_asid_lock is a bit subtle right
-> now and patches throughout this work adjust and tighten this so that it i=
-s
-> clearer and doesn't get broken.
->=20
-> Once the lower STE layers no longer need to touch arm_smmu_domain we
-> can
-> isolate struct arm_smmu_domain to be only used for PAGING domains, audit
-> all the to_smmu_domain() calls to be only in PAGING domain ops, and
-> introduce the normal global static BLOCKED/IDENTITY domains using the
-> new
-> STE infrastructure. Part 2 will ultimately migrate SVA over to use
-> arm_smmu_domain as well.
->=20
-> All parts are on github:
->=20
->  https://github.com/jgunthorpe/linux/commits/smmuv3_newapi
+Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
+---
+Konrad Dybcio (6):
+      dt-bindings: arm-smmu: Document SM8[45]50 GPU SMMU
+      arm64: dts: qcom: sm8450: Add GPU nodes
+      arm64: dts: qcom: sm8550: Add GPU nodes
+      arm64: dts: qcom: sm8550-qrd: Enable the A740 GPU
+      arm64: dts: qcom: sm8550-mtp: Enable the A740 GPU
+      arm64: dts: qcom: sm8450-hdk: Enable the A730 GPU
 
-Hi Jason,
+ .../devicetree/bindings/iommu/arm,smmu.yaml        |  48 ++++-
+ arch/arm64/boot/dts/qcom/sm8450-hdk.dts            |   8 +
+ arch/arm64/boot/dts/qcom/sm8450.dtsi               | 202 +++++++++++++++++++++
+ arch/arm64/boot/dts/qcom/sm8550-mtp.dts            |   8 +
+ arch/arm64/boot/dts/qcom/sm8550-qrd.dts            |   8 +
+ arch/arm64/boot/dts/qcom/sm8550.dtsi               | 166 +++++++++++++++++
+ 6 files changed, 438 insertions(+), 2 deletions(-)
+---
+base-commit: 48bbaf8b793e0770798519f8ee1ea2908ff0943a
+change-id: 20231127-topic-a7xx_dt-feee4142edda
 
-I had a go with the above branch on our HiSilicon D06 board(SMMUv3).
-
-Basically covered the following functionality test runs:
--Host kernel: boot with DOMAIN_DMA.
--Host kernel: boot with DOMAIN_IDENTITY.
--Host kernel: ACC dev SVA test run with uadk/uadk_tool benchmark.
-
-And with Qemu branch: https://github.com/yiliu1765/qemu/tree/zhenzhong/iomm=
-ufd_cdev_v7
-
--Guest boot with a n/w VF dev assigned, legacy VFIO mode.
--Guest boot with a n/w VF dev assigned, IOMMUFD mode.
--Device Hot plug(add/del) on both VFIO and IOMMUFD modes.
-
-All the tests seems to be fine so far.
-
-FWIW:
-Tested-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-
-Thanks,
-Shameer
+Best regards,
+-- 
+Konrad Dybcio <konrad.dybcio@linaro.org>
 
