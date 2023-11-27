@@ -1,36 +1,36 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.120])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BAF0DDDC1
-	for <iommu@lists.linux.dev>; Mon, 27 Nov 2023 06:34:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C773D27A
+	for <iommu@lists.linux.dev>; Mon, 27 Nov 2023 06:34:34 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="K7drhoiJ"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="QgkCXAPq"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1701066871; x=1732602871;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=8V+xYNV0cvL7zGYJZTO/m6MOhpbNHj0iVzK6EBYh80Q=;
-  b=K7drhoiJf/htiubRmBicvkGBzdo3J/BfpcvT7+jtQjVbD+PRPzHfZUUd
-   IZJWGBKavfV7oJG30wrVVKtWEpMija2uVxB7LdDwQpz2h24Y/XCaIArQ1
-   CQ0O8ZaURMJe4ZXXUbOdJppS/8HEuFjU86qt5MrF7ZHFr71EUJUnSwhnV
-   PeuNlfktfDEybMfUDas4WbH81DnspB4SfgJzhhgHVzvRIdwlh6I5EwnyV
-   4fDAfSE7GeE+qpJ4PpKzP4u68P5SwReFKu0j8U6cWUl+whsMEQayKKuwX
-   iBF4Xlcw0J0Gbv+FHTV0Mnixyc+z7DbVN5pPEo+9gJsY34SxB7QfagDjx
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10906"; a="391518123"
+  t=1701066874; x=1732602874;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=gfJ5Tr0rMCO47IrzKCPsGdamJiWS8H3RpIXUStFV1G8=;
+  b=QgkCXAPqEUvVwIqkKMmvp6M/LiX59pohBmsdkPaduycbM8i+KugtVD7R
+   AjR5D+OD4pICTN+mdXWJFLdrUvborXygT69SByhUDVaK/csjEY7/C84ot
+   aAWL4hm06PZ68luVrwINELFCopWMQf4YmZ7Ma6RW1LoGSXSWef/I+gMm/
+   ofChD7rUoU3UBrDJY7gFV/eDOLXrXNv5wE7Fv9iBpWIkG+Y49S2b2M/38
+   fP3sQO3XIYu41RY/1lQrAOzOXoshP3b7lbOD76eXMrdbObTIXotsX21qV
+   sgsFpWpCk7v+Wde/+0D/rmmpgwf22AWyLBXPkgfU+VDGafzPsI40wyAit
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10906"; a="391518147"
 X-IronPort-AV: E=Sophos;i="6.04,230,1695711600"; 
-   d="scan'208";a="391518123"
+   d="scan'208";a="391518147"
 Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Nov 2023 22:34:30 -0800
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Nov 2023 22:34:33 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10906"; a="838608923"
+X-IronPort-AV: E=McAfee;i="6600,9927,10906"; a="838608931"
 X-IronPort-AV: E=Sophos;i="6.04,230,1695711600"; 
-   d="scan'208";a="838608923"
+   d="scan'208";a="838608931"
 Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
-  by fmsmga004.fm.intel.com with ESMTP; 26 Nov 2023 22:34:29 -0800
+  by fmsmga004.fm.intel.com with ESMTP; 26 Nov 2023 22:34:32 -0800
 From: Yi Liu <yi.l.liu@intel.com>
 To: joro@8bytes.org,
 	alex.williamson@redhat.com,
@@ -58,10 +58,12 @@ Cc: cohuck@redhat.com,
 	joao.m.martins@oracle.com,
 	xin.zeng@intel.com,
 	yan.y.zhao@intel.com
-Subject: [PATCH 0/8] iommufd support pasid attach/replace
-Date: Sun, 26 Nov 2023 22:34:20 -0800
-Message-Id: <20231127063428.127436-1-yi.l.liu@intel.com>
+Subject: [PATCH 2/8] iommufd: replace attach_fn with a structure
+Date: Sun, 26 Nov 2023 22:34:22 -0800
+Message-Id: <20231127063428.127436-3-yi.l.liu@intel.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20231127063428.127436-1-yi.l.liu@intel.com>
+References: <20231127063428.127436-1-yi.l.liu@intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -70,70 +72,147 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-PASID (Process Address Space ID) is a PCIe extension to tag the DMA
-transactions out of a physical device, and most modern IOMMU hardware
-have supported PASID granular address translation. So a PASID-capable
-device can be attached to multiple hwpts (a.k.a. domains), each attachment
-is tagged with a pasid.
+Most of the core logic before conducting the actual device attach/
+replace operation can be shared with pasid attach/replace. Create
+a new structure so more information (e.g. pasid) can be later added
+along with the attach_fn.
 
-This series first adds a missing iommu API to replace domain for a pasid,
-then adds iommufd APIs for device drivers to attach/replace/detach pasid
-to/from hwpt per userspace's request, and adds selftest to validate the
-iommufd APIs.
+Signed-off-by: Kevin Tian <kevin.tian@intel.com>
+Signed-off-by: Yi Liu <yi.l.liu@intel.com>
+---
+ drivers/iommu/iommufd/device.c          | 35 ++++++++++++++++---------
+ drivers/iommu/iommufd/iommufd_private.h |  8 ++++++
+ 2 files changed, 30 insertions(+), 13 deletions(-)
 
-pasid attach/replace is mandatory on Intel VT-d given the PASID table
-locates in the physical address space hence must be managed by the kernel,
-both for supporting vSVA and coming SIOV. But it's optional on ARM/AMD
-which allow configuring the PASID/CD table either in host physical address
-space or nested on top of an GPA address space. This series only add VT-d
-support as the minimal requirement.
-
-Complete code can be found in below link:
-
-https://github.com/yiliu1765/iommufd/tree/iommufd_pasid
-
-Change log:
-
-v1:
- - Implemnet iommu_replace_device_pasid() to fall back to the original domain
-   if this replacement failed (Kevin)
- - Add check in do_attach() to check corressponding attach_fn per the pasid value.
-
-rfc: https://lore.kernel.org/linux-iommu/20230926092651.17041-1-yi.l.liu@intel.com/
-
-Regards,
-	Yi Liu
-
-Kevin Tian (1):
-  iommufd: Support attach/replace hwpt per pasid
-
-Lu Baolu (2):
-  iommu: Introduce a replace API for device pasid
-  iommu/vt-d: Add set_dev_pasid callback for nested domain
-
-Yi Liu (5):
-  iommufd: replace attach_fn with a structure
-  iommufd/selftest: Add set_dev_pasid and remove_dev_pasid in mock iommu
-  iommufd/selftest: Add a helper to get test device
-  iommufd/selftest: Add test ops to test pasid attach/detach
-  iommufd/selftest: Add coverage for iommufd pasid attach/detach
-
- drivers/iommu/intel/nested.c                  |  47 +++++
- drivers/iommu/iommu-priv.h                    |   2 +
- drivers/iommu/iommu.c                         |  82 ++++++--
- drivers/iommu/iommufd/Makefile                |   1 +
- drivers/iommu/iommufd/device.c                |  50 +++--
- drivers/iommu/iommufd/iommufd_private.h       |  23 +++
- drivers/iommu/iommufd/iommufd_test.h          |  24 +++
- drivers/iommu/iommufd/pasid.c                 | 138 ++++++++++++++
- drivers/iommu/iommufd/selftest.c              | 176 ++++++++++++++++--
- include/linux/iommufd.h                       |   6 +
- tools/testing/selftests/iommu/iommufd.c       | 172 +++++++++++++++++
- .../selftests/iommu/iommufd_fail_nth.c        |  28 ++-
- tools/testing/selftests/iommu/iommufd_utils.h |  78 ++++++++
- 13 files changed, 785 insertions(+), 42 deletions(-)
- create mode 100644 drivers/iommu/iommufd/pasid.c
-
+diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
+index 59d3a07300d9..0992d9d46af9 100644
+--- a/drivers/iommu/iommufd/device.c
++++ b/drivers/iommu/iommufd/device.c
+@@ -531,8 +531,11 @@ iommufd_device_do_replace(struct iommufd_device *idev,
+ 	return ERR_PTR(rc);
+ }
+ 
+-typedef struct iommufd_hw_pagetable *(*attach_fn)(
+-	struct iommufd_device *idev, struct iommufd_hw_pagetable *hwpt);
++static struct iommufd_hw_pagetable *do_attach(struct iommufd_device *idev,
++		struct iommufd_hw_pagetable *hwpt, struct attach_data *data)
++{
++	return data->attach_fn(idev, hwpt);
++}
+ 
+ /*
+  * When automatically managing the domains we search for a compatible domain in
+@@ -542,7 +545,7 @@ typedef struct iommufd_hw_pagetable *(*attach_fn)(
+ static struct iommufd_hw_pagetable *
+ iommufd_device_auto_get_domain(struct iommufd_device *idev,
+ 			       struct iommufd_ioas *ioas, u32 *pt_id,
+-			       attach_fn do_attach)
++			       struct attach_data *data)
+ {
+ 	/*
+ 	 * iommufd_hw_pagetable_attach() is called by
+@@ -551,7 +554,7 @@ iommufd_device_auto_get_domain(struct iommufd_device *idev,
+ 	 * to use the immediate_attach path as it supports drivers that can't
+ 	 * directly allocate a domain.
+ 	 */
+-	bool immediate_attach = do_attach == iommufd_device_do_attach;
++	bool immediate_attach = data->attach_fn == iommufd_device_do_attach;
+ 	struct iommufd_hw_pagetable *destroy_hwpt;
+ 	struct iommufd_hwpt_paging *hwpt_paging;
+ 	struct iommufd_hw_pagetable *hwpt;
+@@ -569,7 +572,7 @@ iommufd_device_auto_get_domain(struct iommufd_device *idev,
+ 		hwpt = &hwpt_paging->common;
+ 		if (!iommufd_lock_obj(&hwpt->obj))
+ 			continue;
+-		destroy_hwpt = (*do_attach)(idev, hwpt);
++		destroy_hwpt = do_attach(idev, hwpt, data);
+ 		if (IS_ERR(destroy_hwpt)) {
+ 			iommufd_put_object(&hwpt->obj);
+ 			/*
+@@ -596,7 +599,7 @@ iommufd_device_auto_get_domain(struct iommufd_device *idev,
+ 	hwpt = &hwpt_paging->common;
+ 
+ 	if (!immediate_attach) {
+-		destroy_hwpt = (*do_attach)(idev, hwpt);
++		destroy_hwpt = do_attach(idev, hwpt, data);
+ 		if (IS_ERR(destroy_hwpt))
+ 			goto out_abort;
+ 	} else {
+@@ -617,8 +620,8 @@ iommufd_device_auto_get_domain(struct iommufd_device *idev,
+ 	return destroy_hwpt;
+ }
+ 
+-static int iommufd_device_change_pt(struct iommufd_device *idev, u32 *pt_id,
+-				    attach_fn do_attach)
++int iommufd_device_change_pt(struct iommufd_device *idev, u32 *pt_id,
++			     struct attach_data *data)
+ {
+ 	struct iommufd_hw_pagetable *destroy_hwpt;
+ 	struct iommufd_object *pt_obj;
+@@ -633,7 +636,7 @@ static int iommufd_device_change_pt(struct iommufd_device *idev, u32 *pt_id,
+ 		struct iommufd_hw_pagetable *hwpt =
+ 			container_of(pt_obj, struct iommufd_hw_pagetable, obj);
+ 
+-		destroy_hwpt = (*do_attach)(idev, hwpt);
++		destroy_hwpt = do_attach(idev, hwpt, data);
+ 		if (IS_ERR(destroy_hwpt))
+ 			goto out_put_pt_obj;
+ 		break;
+@@ -643,7 +646,7 @@ static int iommufd_device_change_pt(struct iommufd_device *idev, u32 *pt_id,
+ 			container_of(pt_obj, struct iommufd_ioas, obj);
+ 
+ 		destroy_hwpt = iommufd_device_auto_get_domain(idev, ioas, pt_id,
+-							      do_attach);
++							      data);
+ 		if (IS_ERR(destroy_hwpt))
+ 			goto out_put_pt_obj;
+ 		break;
+@@ -679,8 +682,11 @@ static int iommufd_device_change_pt(struct iommufd_device *idev, u32 *pt_id,
+ int iommufd_device_attach(struct iommufd_device *idev, u32 *pt_id)
+ {
+ 	int rc;
++	struct attach_data data = {
++		.attach_fn = &iommufd_device_do_attach,
++	};
+ 
+-	rc = iommufd_device_change_pt(idev, pt_id, &iommufd_device_do_attach);
++	rc = iommufd_device_change_pt(idev, pt_id, &data);
+ 	if (rc)
+ 		return rc;
+ 
+@@ -710,8 +716,11 @@ EXPORT_SYMBOL_NS_GPL(iommufd_device_attach, IOMMUFD);
+  */
+ int iommufd_device_replace(struct iommufd_device *idev, u32 *pt_id)
+ {
+-	return iommufd_device_change_pt(idev, pt_id,
+-					&iommufd_device_do_replace);
++	struct attach_data data = {
++		.attach_fn = &iommufd_device_do_replace,
++	};
++
++	return iommufd_device_change_pt(idev, pt_id, &data);
+ }
+ EXPORT_SYMBOL_NS_GPL(iommufd_device_replace, IOMMUFD);
+ 
+diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
+index 160521800d9b..24fee2c37ce8 100644
+--- a/drivers/iommu/iommufd/iommufd_private.h
++++ b/drivers/iommu/iommufd/iommufd_private.h
+@@ -363,6 +363,14 @@ iommufd_get_device(struct iommufd_ucmd *ucmd, u32 id)
+ void iommufd_device_destroy(struct iommufd_object *obj);
+ int iommufd_get_hw_info(struct iommufd_ucmd *ucmd);
+ 
++struct attach_data {
++	union {
++		struct iommufd_hw_pagetable *(*attach_fn)(
++				struct iommufd_device *idev,
++				struct iommufd_hw_pagetable *hwpt);
++	};
++};
++
+ struct iommufd_access {
+ 	struct iommufd_object obj;
+ 	struct iommufd_ctx *ictx;
 -- 
 2.34.1
 
