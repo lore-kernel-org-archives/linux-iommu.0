@@ -1,187 +1,148 @@
-Received: from mail-oi1-f176.google.com (mail-oi1-f176.google.com [209.85.167.176])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2064.outbound.protection.outlook.com [40.107.223.64])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D6363BB4E
-	for <iommu@lists.linux.dev>; Mon, 27 Nov 2023 18:13:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; dkim=none
-Received: by mail-oi1-f176.google.com with SMTP id 5614622812f47-3b843fea0dfso2721672b6e.3
-        for <iommu@lists.linux.dev>; Mon, 27 Nov 2023 10:13:49 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701108829; x=1701713629;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=IR1Rs/ndx5ls/RDGhrbQcXFAp09UG6IwnVF2MyVPSLg=;
-        b=Nugj+Nz6xNbzGPviWdtpxBlGZvEwcKAwLYB3UcCcq7JxR4R2/TaKaE4FoqejQ8Ls8n
-         kKbH/+kZ0Pc4ilBb0QFTLFqfWtwT6mMaJuVRrllOM9PRBzQmHyaXfi1xiqO3/Y11t71G
-         AO/Zp8kh/PnqAqCFvbD8xHvutTkTA9+OpktS8ydLVb7oJUPAGMB7RMVEzdSDvJckkpm8
-         TNIR/axAxXHGfN4Np+tMtOPFVxCHrsNxKam6d0nxgbQXyf2pF+LjXC+fSffy+GP8Z+AA
-         CNTrbPAWb2ekjmith/JehcGbS5736YwPA9peIUgUj9M0y72PXAiNnYZ3/QcaK5f3sZPC
-         mE/A==
-X-Gm-Message-State: AOJu0Yxyk2OGE16Sj3dAzEZcfqAJbkL7PsjbzumkxeWmMZKj/61DNCcA
-	4Fr+UIJmLzb1Yada/+gHMA==
-X-Google-Smtp-Source: AGHT+IEm/Eap+gR2fTM/l+v5zOO+PgePHcGsnBPWYC1e0nJGthy00BuM6p6br3QKG2WYcF/pn+lYpw==
-X-Received: by 2002:a05:6808:1a0e:b0:3b6:ced9:4176 with SMTP id bk14-20020a0568081a0e00b003b6ced94176mr17481305oib.31.1701108828974;
-        Mon, 27 Nov 2023 10:13:48 -0800 (PST)
-Received: from herring.priv (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id bi21-20020a056808189500b003b85c5813fdsm919620oib.21.2023.11.27.10.13.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Nov 2023 10:13:48 -0800 (PST)
-Received: (nullmailer pid 2053755 invoked by uid 1000);
-	Mon, 27 Nov 2023 18:13:47 -0000
-Date: Mon, 27 Nov 2023 12:13:47 -0600
-From: Rob Herring <robh@kernel.org>
-To: Georgi Djakov <quic_c_gdjako@quicinc.com>
-Cc: krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org, will@kernel.org, robin.murphy@arm.com, joro@8bytes.org, devicetree@vger.kernel.org, andersson@kernel.org, konrad.dybcio@linaro.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org, quic_cgoldswo@quicinc.com, quic_sukadev@quicinc.com, quic_pdaly@quicinc.com, quic_sudaraja@quicinc.com, djakov@kernel.org
-Subject: Re: [PATCH v2 1/6] dt-bindings: iommu: Add Translation Buffer Unit
- bindings
-Message-ID: <20231127181347.GA1953740-robh@kernel.org>
-References: <20231118042730.2799-1-quic_c_gdjako@quicinc.com>
- <20231118042730.2799-2-quic_c_gdjako@quicinc.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF8F61C292
+	for <iommu@lists.linux.dev>; Mon, 27 Nov 2023 18:21:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="RFWZ7aCi"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=gtzOL9SNAES7NxZdyq9Die8EekZ0LS2CcArOIJ6QYLQKXj0MzGpicx5+xT2SbfxwsvIcHjhK/Ri2uSjWT/wN3mPuHa3LzcVz1McECioj6uqV6H6alRfjAcSj5jrNNdJm+oGCyjTaE9+jKB4zTsmy1b+NTawj5GstM58y59cEVblPmxVx1lB7ytsLLzfXsBjyBy4j9T3PJtosnLk2qAePbziZY6ZnZfHLSCkoAkxpTht62WoTylUABsLCNl/kag0HKvuj2LiC7UWX6pYZl5vkxpWLqgn9xwLTn3n6IvSsrbfvBpyGj2wM5D1al33VBjOJkUAPmUM75Ck4TqqPT8FQlw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=FWYfGa0KlODfgTp+0x76+CMNCm8n88JtNCkmVfsRSgA=;
+ b=QQmWbFyPDeY9owrNZV8nUT96HNptYlkNJkBWp/S0FCKpz5DjpnzBfrxBATEW8Cue3mCnyilgvYtRmsHaydzO/BDzWbc9KiORiX1+4tuLTeBQ/xARoA0GJgk/gvMzHB42yrAuNZMIqXCfId43FkHLCos/Sr7reocjZOjs3eXtzbFLDjhhlJE3kdZfx9HfrqskoUYQ1ETt6O41S/T+PAXhNirWaKfcbaTY1XLCkGCQxM5La0p2YGDERmUQquF+M/95XcxJGhPbOg1c8SFP6J/JKg99mApePpYz4GV7kICwwvZPfrIDENVRPKlLJTzRh8Mj2mmT8KWBkjwryyvtBt9HyQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=FWYfGa0KlODfgTp+0x76+CMNCm8n88JtNCkmVfsRSgA=;
+ b=RFWZ7aCiubAimz4glegS9YArOHi9g6oVqGuynY8kVVeznDyHLyKR/VAArZ9oxDEmW+gv7cQRrksArBSgs4YH+ZZ2+14sHuEyPHMc2BjaY7SSyktkkbyyHUCdml70nAJrM8Yjj7bGJrJ981mn2q0xiW8G0aZj1AnjFxPacBzNXoWTEBzdr4WdL0EkuEQ3frx/ivYo2pfoVWCOCUFE9e42XPpjoKUutSnmH2Cph7kJtgWrgGWzP21Lo9lYGUWUUgGEFNAY4YZQIL8Zt6A+tggz5c3zQRsqTfVa/k9sRD0K5Ri/8leom6nKE6NHP6Clk2Yh7e7wbk1bICzQzzphFUaC+A==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by SA0PR12MB4464.namprd12.prod.outlook.com (2603:10b6:806:9f::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7025.28; Mon, 27 Nov
+ 2023 18:21:45 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::60d4:c1e3:e1aa:8f93]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::60d4:c1e3:e1aa:8f93%4]) with mapi id 15.20.7025.022; Mon, 27 Nov 2023
+ 18:21:45 +0000
+Date: Mon, 27 Nov 2023 14:21:43 -0400
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Eric Auger <eauger@redhat.com>
+Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+	linux-arm-kernel@lists.infradead.org,
+	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
+	Michael Shavit <mshavit@google.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+Subject: Re: [PATCH v2 01/19] iommu/arm-smmu-v3: Add a type for the STE
+Message-ID: <20231127182143.GD1165737@nvidia.com>
+References: <1-v2-de8b10590bf5+400-smmuv3_newapi_p1_jgg@nvidia.com>
+ <0a2a9fb5-0506-4a46-9c93-3c4001d0b966@redhat.com>
+ <20231127174235.GA1165737@nvidia.com>
+ <5ebcbd88-bd2a-4853-a0c7-1c2f0f7dc592@redhat.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <5ebcbd88-bd2a-4853-a0c7-1c2f0f7dc592@redhat.com>
+X-ClientProxiedBy: SA1PR03CA0006.namprd03.prod.outlook.com
+ (2603:10b6:806:2d3::19) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20231118042730.2799-2-quic_c_gdjako@quicinc.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|SA0PR12MB4464:EE_
+X-MS-Office365-Filtering-Correlation-Id: 5ef5fbe4-2cd3-4e1b-756f-08dbef75b61c
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	b7Nte1XDvwY+9GCKbIcAO+awYiI6NpDccq5ti5R5UEiZ4W9mei3s1UryIP4lweAD1HsAye/xfHIqT4ts5YksRVaZk9YlwwdGFeRlcwgRF6aCDEt7b08nk+XMtx2b0sHsx0PLXrW84vzUyCun/fPGDo2yQW+kzDQ/UVHWrnipp169R2fkTfmppwrNJwT4P28cFEfbNK9UnHzmr6QSDMrGKyD3sPZq57JVMKk+7un25t/0R6RBZDJQe5qxEB4mKi63iEFvG7uywK+erJI3FPxiUgn5gQ/vORvqxlMW1y6lpZgMLrnF951HuV9EL71cZ21gZZCNvCllzbYQQBFitjkLd0+eG2dfqw0y4edUMM/x4NCVS9BRkIj4p71BcK8uKm/3mcHIA1L6QWl2TB5o9yLP3mHEwRRowvTbhwJag+nWqkhL3d/u46sFm07VIC3WaKuJIIBXf7BPznCGY0nwYyeMVh6ziE+fBAXISX6g+28zWBhMs4Jd+QBjagJkuh+NGLWxQZob+3K+lW5/UOrs9L18YRyaTRaso9gRzbfKxxqOobhja+xZthf401AnlFjaWQQy
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366004)(136003)(39860400002)(376002)(346002)(396003)(230922051799003)(1800799012)(451199024)(186009)(64100799003)(38100700002)(8936002)(6512007)(8676002)(6506007)(316002)(66946007)(66556008)(66476007)(54906003)(6916009)(53546011)(86362001)(4326008)(6486002)(478600001)(5660300002)(33656002)(2906002)(41300700001)(36756003)(1076003)(26005)(2616005);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?cbnq6A1bQ2lNIiCINEVyruqFyuAqlSPJAxKBCmnyq6fBqiC+fsqa8FX6D2tX?=
+ =?us-ascii?Q?l4IuIFA+bs0Jc2rBTcvZV6rKj4ppdcmHO1HSshmf0FrlzBJNOLpjR+hADTlw?=
+ =?us-ascii?Q?M941ON4CECZcv5KBo6HHXA8sMbreo2RWoGdopppIEIp88C4v+DIcaI9FOWz8?=
+ =?us-ascii?Q?XHmzLkbnZ/OkHuHQkB/OHmdt0F+X6I/Su/rqLRmyTlsDmWocmRNZMdIttr2x?=
+ =?us-ascii?Q?CZstdrAe9+82wSZH8o6k68pRTvHcFvXzU6hHPdk7aMqG0g6rCZkG3iR2OGDX?=
+ =?us-ascii?Q?AU0jVwr34CkRERV0Nd8zitK/172Z6gAms9PoReYb8Oo4JO2R36VITJo5QjGN?=
+ =?us-ascii?Q?oLhz5jIZ+oNxyhRCPHiMO8BAUdsmik0/AQX7206UiAWsdiBSzHKl4TJ2V9aq?=
+ =?us-ascii?Q?6ZFAnFs10f2SKd+Q/Zq6LQzyJ7EZVK3f3M1RZ3jG8hBvB+kOLOhbXzfJ+ziq?=
+ =?us-ascii?Q?ZU5WbYfcCmWS/2z7sCv4bMxeqDrQ6nvF4TP4yo1vzqj4JsoybUhywGnDUSH7?=
+ =?us-ascii?Q?oV207HtY7K+IjJ9ojCmtZkMp2Ap/Vnaly+9KR220DjoW1TJE7ZcdvBQFKL2N?=
+ =?us-ascii?Q?YbTrnDv03RNFlQrHKmXAArR4wMVyyjpzDLygZiU/80J48ylcCyFW8KwvrKpm?=
+ =?us-ascii?Q?Lbn+ZOTUsTUTwZrnvM60NVONIXwemoVr06oG5mYI7nnA/kvQRXX3A80Omx/B?=
+ =?us-ascii?Q?2mFLk9PkqgYiCmM0zRyXl6Dl59up9W00ejomcGZ0V3uU9bXUOMeJ1FbJBWGL?=
+ =?us-ascii?Q?erF59bbpE5x/2f2+uYyYFYfyrly5XJH6W3OjuPyq1Adg/QTT82wVnxwJsSM7?=
+ =?us-ascii?Q?W6reucmH2CZBOChE9v1+9jecagcO84vyZCIhyM4PwIQ22PH5crvX3DkSwjdi?=
+ =?us-ascii?Q?eMfWTQpaS/kFlbYCnjuLFr6k4qLaCEOSQ5IUh9xE8jpj27dSxfVz3R0HBJ2g?=
+ =?us-ascii?Q?Pnob9nl90oWkm96EtOpZ7ZGTIQ0yHVqAuLD6JY4P3xWC2IjbqR/BUza1zS2l?=
+ =?us-ascii?Q?hv1pYJJtLg0aetyDKWc13kUzpwyRyBxN5oeatilNlxU9ME2VOqexRxqJ6EME?=
+ =?us-ascii?Q?Nf2hheir5omxZTHVCp9FKWZezSeVeAS88kBiW4UqMI9sn2+L72QUEGQIfKPr?=
+ =?us-ascii?Q?zNh9pIPSYORAz6X2KMBH3EIpjYNPAcsArsZpKo3kMxAm33Zv7Dv5e/VRDZM1?=
+ =?us-ascii?Q?ch0VLal6NfVJ6dmv0TkOY8LVcJb7/bvgk26fzUGwtN40gAVXOA8yHVrlUtZe?=
+ =?us-ascii?Q?eBoRBBQ0PgfcF/LZxebsSfDlyL4wdy9+jxGjcsCjrj07MFZEh9QpRtYljCFl?=
+ =?us-ascii?Q?7lxWdEccb9qs7FIsadikHeQXIQaWe2eMWk9PB4SW/7GfnpDgppyK+P3wxgxX?=
+ =?us-ascii?Q?+ZcIJBqbmcSi+JOVVSq2+0M+aPKGNYi5eUR4uLHKCLBXLdZagYXBRI1HM94Q?=
+ =?us-ascii?Q?SxFDsYFpeC4Cd9Q/Awd8rAppwne8Nxq6m+vqqbh11jbsWGWAJNI14rqEupQg?=
+ =?us-ascii?Q?p+OjKnJdzMFPMgreKm1qWUvyD4Kxty1VbF3B4DRDuhTYvEHU1joqbIhJw8Rl?=
+ =?us-ascii?Q?ykQmIlN9v31IMXrPzn0=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5ef5fbe4-2cd3-4e1b-756f-08dbef75b61c
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Nov 2023 18:21:45.0039
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: JCXzUIoSsf8/v/q8MpXuq0WRylUhZQU9zH+iVUxTBXZ3lIl0QRoeevvDsiq/mEh+
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR12MB4464
 
-On Fri, Nov 17, 2023 at 08:27:25PM -0800, Georgi Djakov wrote:
-> The "apps_smmu" on the Qualcomm sdm845 platform is an implementation
-> of the SMMU-500, that consists of a single TCU (Translation Control
-> Unit) and multiple TBUs (Translation Buffer Units). The TCU is already
-> being described in the generic SMMU DT schema. Add also bindings for
-> the TBUs to describe their properties and resources that needs to be
-> managed in order to operate them.
+On Mon, Nov 27, 2023 at 06:51:21PM +0100, Eric Auger wrote:
+> Hi Jason,
 > 
-> In this DT schema, the TBUs are modelled as child devices of the TCU
-> and each of them is described with it's register space, clocks, power
-> domains, interconnects etc.
-> 
-> Signed-off-by: Georgi Djakov <quic_c_gdjako@quicinc.com>
-> ---
->  .../devicetree/bindings/iommu/arm,smmu.yaml   | 25 ++++++
->  .../bindings/iommu/qcom,qsmmuv500-tbu.yaml    | 89 +++++++++++++++++++
->  2 files changed, 114 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iommu/qcom,qsmmuv500-tbu.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-> index aa9e1c0895a5..f7f89be5f7a3 100644
-> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-> @@ -231,6 +231,18 @@ properties:
->        enabled for any given device.
->      $ref: /schemas/types.yaml#/definitions/phandle
->  
-> +  '#address-cells':
-> +    enum: [ 1, 2 ]
-> +
-> +  '#size-cells':
-> +    enum: [ 1, 2 ]
-> +
-> +  ranges: true
-> +
-> +patternProperties:
-> +  "^tbu@[0-9a-f]*":
-> +    type: object
-> +
->  required:
->    - compatible
->    - reg
-> @@ -453,6 +465,19 @@ allOf:
->              - description: Voter clock required for HLOS SMMU access
->              - description: Interface clock required for register access
->  
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          contains:
-> +            const: qcom,smmu-500
+> On 11/27/23 18:42, Jason Gunthorpe wrote:
+> > On Mon, Nov 27, 2023 at 05:03:36PM +0100, Eric Auger wrote:
+> > 
+> >>> -static __le64 *arm_smmu_get_step_for_sid(struct arm_smmu_device *smmu, u32 sid)
+> >>> +static struct arm_smmu_ste *
+> >>> +arm_smmu_get_step_for_sid(struct arm_smmu_device *smmu, u32 sid)
+> >>>  {
+> >>> -	__le64 *step;
+> >>>  	struct arm_smmu_strtab_cfg *cfg = &smmu->strtab_cfg;
+> >>>  
+> >>>  	if (smmu->features & ARM_SMMU_FEAT_2_LVL_STRTAB) {
+> >>> -		struct arm_smmu_strtab_l1_desc *l1_desc;
+> >>>  		int idx;
+> >>>  
+> >>>  		/* Two-level walk */
+> >>>  		idx = (sid >> STRTAB_SPLIT) * STRTAB_L1_DESC_DWORDS;
+> >>> -		l1_desc = &cfg->l1_desc[idx];
+> >>> -		idx = (sid & ((1 << STRTAB_SPLIT) - 1)) * STRTAB_STE_DWORDS;
+> >>> -		step = &l1_desc->l2ptr[idx];
+> >>> +		return &cfg->l1_desc[idx].l2ptr[sid & ((1 << STRTAB_SPLIT) - 1)];
+> >> This looks less readable to me than it was before.
+> > 
+> > You would like the idx calculation outside?
+> > 
+> >   		idx1 = (sid >> STRTAB_SPLIT) * STRTAB_L1_DESC_DWORDS;
+> > 		idx2 = sid & ((1 << STRTAB_SPLIT) - 1);
+> > 		return &cfg->l1_desc[idx].l2ptr[idx2];
+> Yes this looks more readable to me
 
-Doesn't match your example. No failure either, so there's some problem 
-with your schema. The issue is the tbu@ entry above has no constraint on 
-child properties. Dropping it would solve the issue. However, having a 
-TBU is not QCom specific, so that doesn't feel right.
+done
 
-
-> +    then:
-> +      patternProperties:
-> +        "^tbu@[0-9a-f]*":
-
-'+' rather than '*' as 1 is the minimum, not 0.
-
-> +          $ref: qcom,qsmmuv500-tbu.yaml
-> +          unevaluatedProperties: false
-> +      properties:
-> +        ranges: true
-> +
->    # Disallow clocks for all other platforms with specific compatibles
->    - if:
->        properties:
-> diff --git a/Documentation/devicetree/bindings/iommu/qcom,qsmmuv500-tbu.yaml b/Documentation/devicetree/bindings/iommu/qcom,qsmmuv500-tbu.yaml
-> new file mode 100644
-> index 000000000000..4dc9d0ca33c9
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iommu/qcom,qsmmuv500-tbu.yaml
-> @@ -0,0 +1,89 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/iommu/qcom,qsmmuv500-tbu.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Qualcomm TBU (Translation Buffer Unit)
-> +
-> +maintainers:
-> +  - Georgi Djakov <quic_c_gdjako@quicinc.com>
-> +
-> +description:
-> +  The Qualcomm SMMU500 implementation consists of TCU and TBU. The TBU contains
-> +  a Translation Lookaside Buffer (TLB) that caches page tables. TBUs provides
-> +  debug features to trace and trigger debug transactions. There are multiple TBU
-> +  instances distributes with each client core.
-> +
-> +properties:
-> +  $nodename:
-> +    pattern: "^tbu@[0-9a-f]+$"
-
-Drop. You defined this in the parent already.
-
-> +
-> +  compatible:
-> +    const: qcom,qsmmuv500-tbu
-> +
-> +  reg:
-> +    items:
-> +      - description: Address and size of the TBU's register space.
-> +
-> +  reg-names:
-> +    items:
-> +      - const: base
-
-Not a useful name. Drop.
-
-> +
-> +  clocks:
-> +    maxItems: 1
-> +
-> +  interconnects:
-> +    maxItems: 1
-> +
-> +  power-domains:
-> +    maxItems: 1
-> +
-> +  qcom,stream-id-range:
-> +    $ref: /schemas/types.yaml#/definitions/uint32-array
-> +    description: Stream ID range (address and size) that is assigned by the TBU
-> +    items:
-> +      minItems: 2
-> +      maxItems: 2
-
-Perhaps implementations other than QCom's needs this?
-
-Rob
+Jason
