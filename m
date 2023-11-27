@@ -1,49 +1,49 @@
-Received: from mail-lf1-f51.google.com (mail-lf1-f51.google.com [209.85.167.51])
+Received: from mail-ed1-f54.google.com (mail-ed1-f54.google.com [209.85.208.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C06DC568D
-	for <iommu@lists.linux.dev>; Mon, 27 Nov 2023 06:54:08 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14E1BD2E5
+	for <iommu@lists.linux.dev>; Mon, 27 Nov 2023 06:55:25 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="y3YXDXYE"
-Received: by mail-lf1-f51.google.com with SMTP id 2adb3069b0e04-507975d34e8so5345441e87.1
-        for <iommu@lists.linux.dev>; Sun, 26 Nov 2023 22:54:08 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="siAzOXPC"
+Received: by mail-ed1-f54.google.com with SMTP id 4fb4d7f45d1cf-544455a4b56so5060985a12.1
+        for <iommu@lists.linux.dev>; Sun, 26 Nov 2023 22:55:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1701068047; x=1701672847; darn=lists.linux.dev;
+        d=linaro.org; s=google; t=1701068124; x=1701672924; darn=lists.linux.dev;
         h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
          :to:content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=g7O18zBiTgze+LVcu41zvOHt3KDlXKTRguomVeb/Thw=;
-        b=y3YXDXYEkUmebLuMTKFp7JtZWv6LbgfMDnEIoHA1pjPJlQR70xjZHI6AWor4u21/J9
-         4w04mCjCS15/QHDlcwgiE7s2Gym4zHZNfGZUL1LzypsZGK4BpBhPboNdgjL6C1BnmgSD
-         E1PQk0BIPme0u+ZNrOj159zPfa3n3mkpmJOBZVrczIRB/Mt3JTlTDY1DvtTWf5zytzwl
-         jw7K8nWHWKuUShysscvlqst0kdSODt3ZT59T1qKi7pQPr+Mf864ynzTB7eCGEC5WDGFb
-         c+F3B8a5s0KpXp1H+HHbb0v+gXEqzjTNzcjB7070XKZWB1KbJ2e+VhkFS+g80TvHCweJ
-         gYbA==
+        bh=fvoDgA0KUEavMZgSwz2q0okOEwjLaa+M4rFji12SNTI=;
+        b=siAzOXPCGZIbvrhsgO0nNQlZxnBi1IhvwxGwoQYRH5Jcja1KfJipi3A4zJqhC1SrEk
+         LDl6tmhyX5aC2tFGxlsjDFG1yFCOFmCPLfDHXQ5f2X+H6pFRTKoxciPlF9RHfCwBg7X5
+         95j0gYO6eCnL12GLbR1dIPhhUw3fe7WC9TUgIIxf9EPYm7i0n8g9siMP23nmCfzI5RhG
+         ItUyRD/r3wyq5vUXcZtUsHduRmFxOrEeHC+wpC0GB+TUlYUyb1vv+83qfK65Cvt/lj8O
+         uRKzc9Go8AEMxvnMqtxmqYPVfIlQdHWRrQKr9sWpmWdBS4436Xv9kf4vlVxEpAAZQbxh
+         QBqA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701068047; x=1701672847;
+        d=1e100.net; s=20230601; t=1701068124; x=1701672924;
         h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
          :to:content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=g7O18zBiTgze+LVcu41zvOHt3KDlXKTRguomVeb/Thw=;
-        b=dn431DRRsRsBPXs8NKzHHXhdluN9ZTevY/veUOr5v+cgqpyYPwLwjYIVNiBbTUvTwa
-         kF471kAqQojBovmT4w9aPQgwk5nbDIfHORMJwrHrRzEWnkVoZRjGqG04ZkosGzmTfk0e
-         ImmZ28tvxj+IZ2Q2CdgESYbQkUyc+0nJrS4HTTq3iJq5h2FxiOX6zPlHElHk/XSPq0GQ
-         yUGJJEmZg0wPJ+RgSKvZqxuPJA4TeQnvlZC/Qa3DBsE2E4r4ZWGM+KuOq1D27KFHKuqq
-         YmGWCtoZNWyWqpnKy/eME7RBnzzpj+GkZCkx6a14XAaiuMNdwOBJTGFvIOLkQAWbA1DN
-         +khQ==
-X-Gm-Message-State: AOJu0Yy/WwuR+Ylc6HymgTSU75RpFOR/h+TUEyPPc2J59pzn/uL9jQjk
-	lH+vgcEAaLii43W6+ef/r6lMxQ==
-X-Google-Smtp-Source: AGHT+IGySsVCaGz+BUtPFjXidV9mOz6tbh6cIk6Zv9lyxPI3Wu3V0ZesH3rLnRic2lXgw0/WByl3Zw==
-X-Received: by 2002:a05:6512:12c8:b0:50a:7575:1339 with SMTP id p8-20020a05651212c800b0050a75751339mr9573201lfg.18.1701068046576;
-        Sun, 26 Nov 2023 22:54:06 -0800 (PST)
+        bh=fvoDgA0KUEavMZgSwz2q0okOEwjLaa+M4rFji12SNTI=;
+        b=uBvkqve7811nlwzBs2QWJnG32v7bvkX40ZUhOtW2wyQ5lBeHsFKRjdOGh500G8YM2T
+         4P+w3w/Wvu4qQLiw2ebkfPxiXRw8w9KhmGgrQ9GzuQz0bbyvbIQh2WAmt3B2kD7te9oS
+         KIFcEr2Ohsnbkvny2Bk80J5/KW0a8fiudY7KqnrAMJGeQCeTc6fwbvHIVoEFV+J9hIpO
+         J1kdFponiu2V6yXMjVl4yMxsFIDUj2/CCPYWJRRW3lm/Mpjj4+ZAqvGF/qE1IfqYqZnQ
+         zAtklaeZ0b3FEWcRGOUUMOvn/udhW6Rhtpv0LSO+6ncURyFg7adtyy3/FDTg2OBDUsbM
+         fNBg==
+X-Gm-Message-State: AOJu0Yz+zMhPushB1oa6ecqWYmqArP6+4Cin7oWiqWeH6I2m+6JpFq5o
+	lA+ZHhGPLNyBJdlQS5y4vZGKpQ==
+X-Google-Smtp-Source: AGHT+IH3uL19TulhmqPpzsz8xj7/gK1xsaMeXYzhDs1LLK/qqzEwTdegJjUqfJKBktgeMffAI+Y04Q==
+X-Received: by 2002:a05:6402:5152:b0:54b:5f8:2df with SMTP id n18-20020a056402515200b0054b05f802dfmr6025025edd.9.1701068124075;
+        Sun, 26 Nov 2023 22:55:24 -0800 (PST)
 Received: from [192.168.1.20] ([178.197.223.109])
-        by smtp.gmail.com with ESMTPSA id c15-20020a05640227cf00b0054b564d04e8sm1258290ede.85.2023.11.26.22.54.03
+        by smtp.gmail.com with ESMTPSA id c15-20020a05640227cf00b0054b564d04e8sm1258290ede.85.2023.11.26.22.55.21
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 26 Nov 2023 22:54:06 -0800 (PST)
-Message-ID: <d1113c4f-cb67-4850-bd46-9ed2ec97ff08@linaro.org>
-Date: Mon, 27 Nov 2023 07:54:02 +0100
+        Sun, 26 Nov 2023 22:55:23 -0800 (PST)
+Message-ID: <72202fa6-6f0a-4f63-bfdc-36afe14207fd@linaro.org>
+Date: Mon, 27 Nov 2023 07:55:21 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -51,8 +51,8 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 01/12] dt-bindings: display: msm: qcm2290-mdss: Use the
- non-deprecated DSI compat
+Subject: Re: [PATCH 02/12] dt-bindings: display: msm: Add reg bus and rotator
+ interconnects
 Content-Language: en-US
 To: Konrad Dybcio <konrad.dybcio@linaro.org>, Rob Clark
  <robdclark@gmail.com>, Abhinav Kumar <quic_abhinavk@quicinc.com>,
@@ -76,7 +76,7 @@ Cc: Marijn Suijten <marijn.suijten@somainline.org>,
  linux-pm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
  iommu@lists.linux.dev
 References: <20231125-topic-rb1_feat-v1-0-11d71b12b058@linaro.org>
- <20231125-topic-rb1_feat-v1-1-11d71b12b058@linaro.org>
+ <20231125-topic-rb1_feat-v1-2-11d71b12b058@linaro.org>
 From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
  xsFNBFVDQq4BEAC6KeLOfFsAvFMBsrCrJ2bCalhPv5+KQF2PS2+iwZI8BpRZoV+Bd5kWvN79
@@ -122,37 +122,27 @@ Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
  KQ06ztUMRrj8eVtpImjsWCd0bDWRaaR4vqhCHvAG9iWXZu4qh3ipie2Y0oSJygcZT7H3UZxq
  fyYKiqEmRuqsvv6dcbblD8ZLkz1EVZL6djImH5zc5x8qpVxlA0A0i23v5QvN00m6G9NFF0Le
  D2GYIS41Kv4Isx2dEFh+/Q==
-In-Reply-To: <20231125-topic-rb1_feat-v1-1-11d71b12b058@linaro.org>
+In-Reply-To: <20231125-topic-rb1_feat-v1-2-11d71b12b058@linaro.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
 On 25/11/2023 15:17, Konrad Dybcio wrote:
-> The "qcom,dsi-ctrl-6g-qcm2290" has been deprecated in commit 0c0f65c6dd44
-> ("dt-bindings: msm: dsi-controller-main: Add compatible strings for every
-> current SoC"), but the example hasn't been updated to reflect that.
+> Apart from the already handled data bus (MAS_MDP_Pn<->DDR), there are
+> other connection paths:
+> - a path that connects rotator block to the DDR.
+> - a path that needs to be handled to ensure MDSS register access
+>   functions properly, namely the "reg bus", a.k.a the CPU-MDSS CFG
+>   interconnect.
 > 
-> Fix that.
+> Describe these paths bindings to allow using them in device trees and in
+> the driver
 > 
-> Fixes: 0c0f65c6dd44 ("dt-bindings: msm: dsi-controller-main: Add compatible strings for every current SoC")
+> Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+> [Konrad: rework for one vs two MDP paths]
 > Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
 > ---
->  Documentation/devicetree/bindings/display/msm/qcom,qcm2290-mdss.yaml | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/display/msm/qcom,qcm2290-mdss.yaml b/Documentation/devicetree/bindings/display/msm/qcom,qcm2290-mdss.yaml
-> index 5ad155612b6c..3d82c00a9f85 100644
-> --- a/Documentation/devicetree/bindings/display/msm/qcom,qcm2290-mdss.yaml
-> +++ b/Documentation/devicetree/bindings/display/msm/qcom,qcm2290-mdss.yaml
-> @@ -56,7 +56,9 @@ patternProperties:
->  
->      properties:
->        compatible:
-> -        const: qcom,dsi-ctrl-6g-qcm2290
-> +        items:
-> +          - const: qcom,qcm2290-dsi-ctrl
-> +          - const: qcom,mdss-dsi-ctrl
 
-You must also update the example here.
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
 Best regards,
 Krzysztof
