@@ -1,49 +1,49 @@
-Received: from mail-lf1-f44.google.com (mail-lf1-f44.google.com [209.85.167.44])
+Received: from mail-ed1-f49.google.com (mail-ed1-f49.google.com [209.85.208.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D59193174D
-	for <iommu@lists.linux.dev>; Mon, 27 Nov 2023 15:33:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9AE9631A8E
+	for <iommu@lists.linux.dev>; Mon, 27 Nov 2023 15:34:41 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="Kc4+En9v"
-Received: by mail-lf1-f44.google.com with SMTP id 2adb3069b0e04-50ba73196b1so3404180e87.0
-        for <iommu@lists.linux.dev>; Mon, 27 Nov 2023 07:33:52 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="f2rH332l"
+Received: by mail-ed1-f49.google.com with SMTP id 4fb4d7f45d1cf-5482df11e73so5792130a12.0
+        for <iommu@lists.linux.dev>; Mon, 27 Nov 2023 07:34:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1701099231; x=1701704031; darn=lists.linux.dev;
+        d=linaro.org; s=google; t=1701099280; x=1701704080; darn=lists.linux.dev;
         h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
          :to:content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=L5pj3woLlVzQJZC1DHmBekzs9Hlj3z5FIn7Gwi4atXo=;
-        b=Kc4+En9vqlzYwoobHOffhsCp9rEixCizO5rzVG/7l63Mfj3s9ijYnIJNzEfavhR6+7
-         jjHHXr9hDssQurM/pBFFDvrQewjd3WhD/uOvNPgCZzc7Q+LdheAWg7hfZnf7sdMyegT2
-         jSsfGKlFXinfgV+QrEnWEfz7fq2dqfBLzXB3dAbJsIMBa3RtKL2vMy5LfhKTF44EFghH
-         FNI6pFNnbs3ZzQsDdwNLIcG2NrCew7JpGfZu8HmLON50Ldy/WeAo3XEGouO6ADIJNsdY
-         5TxkgJAibt665K85HYF3L0cyq6tze0+mTkkgz67WX9nT6zE0gJn5tliw9AqpnzIdELGZ
-         iC0w==
+        bh=QisU+sGRQtSRKQO4WVRt1/5HsESylrqy0n02GS4nlIQ=;
+        b=f2rH332lHOeq3xhChw8lKpKgMkxbGU7g+qqNowwpI5l+JApA59VAHenN0Y5DLmN9ky
+         5QfHkvQ/B6MvPuLJOHI+4VpM9KzjRC1c63YDkDc7a4HDalQ4HmNHzcf0XEJ1JuvwYqHG
+         PgoncsrLFLTlpO797Spkj9poHr+2meo+QqELOMUqB/cvyKFrmn6a62J+IVVbZyEmzQ+y
+         ZDM5AR42LAhyK9x7GxAdh8t/jq0fPd4tfFHnzGzdP2y67ydT7MHVvWaj5SP9oyT/53Hy
+         TDFIuW2U7/i/CyMOD5fsh+gFg/U2qZ75Q8fFMT4zda8cVq+dc7gHrZVgpTmW6Tm/dbU1
+         QK4g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701099231; x=1701704031;
+        d=1e100.net; s=20230601; t=1701099280; x=1701704080;
         h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
          :to:content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=L5pj3woLlVzQJZC1DHmBekzs9Hlj3z5FIn7Gwi4atXo=;
-        b=TMRJoJ5ukBNGmZIyhPFSSOF5plGx1/9HjVdd2ekCQd3qsMGqg0+vPp4DB3kmmh4jq3
-         28uq1HxAX/93klGksO7kU2tt9z6qKrXQ4+Fgn6L+BFU6y8m6Gz5UUYkYpt6cZToyB5DG
-         jjEcPV+ZOPe9XpRLCttbiZBEECTqVn0pOz1cDONTJiPmebxIYp1Zf/NoF5miWJTGZON7
-         8XBWROvviJPZywIbvbrxaz1DTvXCATI0VmbIYEC2mCMA+dklWFz5IS8og1Wv/zsnTBuT
-         4yguo/rnn9iV3OE1hCU9ozHY5GpiSysbRV5384ACQNjXbIyrslEA54pSQP1ObfXs1lpK
-         Jz+w==
-X-Gm-Message-State: AOJu0YyJV63KB4NA53IP0t1MMTxAZF1Bul9rVYogJmgsmMd8ZriQCfwN
-	VcZPzk24elc67ULbOdk5JtvBgw==
-X-Google-Smtp-Source: AGHT+IFE6+jIwgjV+bU6S8pWzC8Ho1QeLM8bL4PoJmcfpwr0byT6KC7IHAVksPuxSd74itzjrPt+mA==
-X-Received: by 2002:a05:6512:33cf:b0:503:1783:d5a9 with SMTP id d15-20020a05651233cf00b005031783d5a9mr10561182lfg.3.1701099230916;
-        Mon, 27 Nov 2023 07:33:50 -0800 (PST)
+        bh=QisU+sGRQtSRKQO4WVRt1/5HsESylrqy0n02GS4nlIQ=;
+        b=Bzyv5OTztX0a8E31xDpomD1OQBp+uu+CImMMIPotJfT1buRNUdMV3n+dD4fV5uG8DE
+         hG87diCaQa+SnDSVcCgPqHRDZZ5PWV4dk4AiOwYEDYqwF6RjpNe85ZlAccuL7dlyjsNO
+         ZDNrMilDMkJUsWO2V/MsEGGkJtMeG21uWJZjdfDM7tEAj0ZOzytX/4l1oWIe8ubgnIyN
+         QxIQqq7c03V+c0S6Mz+ISwoZUAmhxdUft4Z1uUnMreHQG+mI8omDTho9I0JZNdmrmRQG
+         CC/7pC0S2MO8pRNGjqjrRJyfisJ93d7DGRT6bQqq8pfDoqL4WeUmmU/AADpVFuy9yU/v
+         TP4w==
+X-Gm-Message-State: AOJu0YwYAq2jE5cEuA3hOhbhl5YzXzApBeJjSHofm6+X4PqyW4/15M4y
+	z9eiY2cMSlymTDVunvXh2ui/3g==
+X-Google-Smtp-Source: AGHT+IENlBVBkPbodSNFhC8gFnnNVtDggi2yCL+4ztHlU9SMlu0NcFmq+ogo/nggmf+u7Ru5xN53yQ==
+X-Received: by 2002:a05:6402:3458:b0:54b:1ca8:8539 with SMTP id l24-20020a056402345800b0054b1ca88539mr5528279edc.5.1701099279875;
+        Mon, 27 Nov 2023 07:34:39 -0800 (PST)
 Received: from [192.168.201.100] (178235187180.dynamic-4-waw-k-2-3-0.vectranet.pl. [178.235.187.180])
-        by smtp.gmail.com with ESMTPSA id h9-20020a056402280900b0054aeece37cesm4370406ede.52.2023.11.27.07.33.48
+        by smtp.gmail.com with ESMTPSA id h9-20020a056402280900b0054aeece37cesm4370406ede.52.2023.11.27.07.34.37
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 27 Nov 2023 07:33:50 -0800 (PST)
-Message-ID: <cfbf33cd-0faf-47c6-8e0f-b13c088670df@linaro.org>
-Date: Mon, 27 Nov 2023 16:33:47 +0100
+        Mon, 27 Nov 2023 07:34:39 -0800 (PST)
+Message-ID: <dcadb98e-8e54-4517-a4ec-c31731787bbe@linaro.org>
+Date: Mon, 27 Nov 2023 16:34:37 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -51,8 +51,8 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 1/4] iommu/arm-smmu: introduction of ACTLR for custom
- prefetcher settings
+Subject: Re: [PATCH v3 2/4] iommu/arm-smmu: add ACTLR data and support for
+ SM8550
 Content-Language: en-US
 To: Bibek Kumar Patro <quic_bibekkum@quicinc.com>, will@kernel.org,
  robin.murphy@arm.com, joro@8bytes.org, dmitry.baryshkov@linaro.org,
@@ -64,7 +64,7 @@ Cc: linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
  iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
  qipl.kernel.upstream@quicinc.com
 References: <20231127145412.3981-1-quic_bibekkum@quicinc.com>
- <20231127145412.3981-2-quic_bibekkum@quicinc.com>
+ <20231127145412.3981-3-quic_bibekkum@quicinc.com>
 From: Konrad Dybcio <konrad.dybcio@linaro.org>
 Autocrypt: addr=konrad.dybcio@linaro.org; keydata=
  xsFNBF9ALYUBEADWAhxdTBWrwAgDQQzc1O/bJ5O7b6cXYxwbBd9xKP7MICh5YA0DcCjJSOum
@@ -101,125 +101,16 @@ Autocrypt: addr=konrad.dybcio@linaro.org; keydata=
  bGqMHex48FVZhexNPYOd58EY9/7mL5u0sJmo+jTeb4JBgIbFPJCFyng4HwbniWgQJZ1WqaUC
  nas9J77uICis2WH7N8Bs9jy0wQYezNzqS+FxoNXmDQg2jetX8en4bO2Di7Pmx0jXA4TOb9TM
  izWDgYvmBE8=
-In-Reply-To: <20231127145412.3981-2-quic_bibekkum@quicinc.com>
+In-Reply-To: <20231127145412.3981-3-quic_bibekkum@quicinc.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
 On 27.11.2023 15:54, Bibek Kumar Patro wrote:
-> Currently in Qualcomm  SoCs the default prefetch is set to 1 which allows
-> the TLB to fetch just the next page table. MMU-500 features ACTLR
-> register which is implementation defined and is used for Qualcomm SoCs
-> to have a prefetch setting of 1/3/7/15 enabling TLB to prefetch
-> the next set of page tables accordingly allowing for faster translations.
-> 
-> ACTLR value is unique for each SMR (Stream matching register) and stored
-> in a pre-populated table. This value is set to the register during
-> context bank initialisation.
+> Add ACTLR data table for SM8550 along with support for
+> same including SM8550 specific implementation operations.
 > 
 > Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
-> 
 > ---
->  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 56 +++++++++++++++++++++-
->  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h |  6 ++-
->  drivers/iommu/arm/arm-smmu/arm-smmu.c      |  5 +-
->  drivers/iommu/arm/arm-smmu/arm-smmu.h      |  5 ++
->  4 files changed, 68 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> index 7f52ac67495f..4a38cae29be2 100644
-> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> @@ -14,6 +14,12 @@
-> 
->  #define QCOM_DUMMY_VAL	-1
-> 
-> +struct actlr_config {
-> +	u16 sid;
-> +	u16 mask;
-> +	u32 actlr;
-> +};
-> +
->  static struct qcom_smmu *to_qcom_smmu(struct arm_smmu_device *smmu)
->  {
->  	return container_of(smmu, struct qcom_smmu, smmu);
-> @@ -205,10 +211,40 @@ static bool qcom_adreno_can_do_ttbr1(struct arm_smmu_device *smmu)
->  	return true;
->  }
-> 
-> +static void arm_smmu_set_actlr(struct device *dev, struct arm_smmu_device *smmu, int cbndx,
-> +		const struct actlr_config *actlrcfg, size_t actlrcfg_size)
-> +{
-> +	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
-> +	struct arm_smmu_master_cfg *cfg = dev_iommu_priv_get(dev);
-> +	struct arm_smmu_smr *smr;
-> +	int i;
-> +	int j;
-> +	u16 id;
-> +	u16 mask;
-> +	int idx;
-> +
-> +	for (i = 0; i < actlrcfg_size; ++i) {
-> +		id = (actlrcfg + i)->sid;
-> +		mask = (actlrcfg + i)->mask;
-actrlcfg[i].id?
-
-> +
-> +		for_each_cfg_sme(cfg, fwspec, j, idx) {
-> +			smr = &smmu->smrs[idx];
-> +			if (smr_is_subset(*smr, id, mask))
-Any reason for this value to be a pointer?
-
-> +				arm_smmu_cb_write(smmu, cbndx, ARM_SMMU_CB_ACTLR,
-> +						(actlrcfg + i)->actlr);
-ditto
-
-> +		}
-> +	}
-> +}
-> +
->  static int qcom_adreno_smmu_init_context(struct arm_smmu_domain *smmu_domain,
->  		struct io_pgtable_cfg *pgtbl_cfg, struct device *dev)
->  {
->  	struct adreno_smmu_priv *priv;
-> +	struct arm_smmu_device *smmu = smmu_domain->smmu;
-> +	struct qcom_smmu *qsmmu = to_qcom_smmu(smmu);
-> +	const struct actlr_config *actlrcfg;
-> +	size_t actlrcfg_size;
-> +	int cbndx = smmu_domain->cfg.cbndx;
-Reverse-Christmas-tree sorting, please
-
-> 
->  	smmu_domain->cfg.flush_walk_prefer_tlbiasid = true;
-> 
-> @@ -238,6 +274,12 @@ static int qcom_adreno_smmu_init_context(struct arm_smmu_domain *smmu_domain,
->  	priv->set_stall = qcom_adreno_smmu_set_stall;
->  	priv->resume_translation = qcom_adreno_smmu_resume_translation;
-> 
-> +	if (qsmmu->data->actlrcfg_gfx) {
-> +		actlrcfg = qsmmu->data->actlrcfg_gfx;
-> +		actlrcfg_size = qsmmu->data->actlrcfg_gfx_size;
-These can be passed directly s arm_smmu_set_actrl arguments
-
-> +		arm_smmu_set_actlr(dev, smmu, cbndx, actlrcfg, actlrcfg_size);
-> +	}
-> +
->  	return 0;
->  }
-> 
-> @@ -263,6 +305,18 @@ static const struct of_device_id qcom_smmu_client_of_match[] __maybe_unused = {
->  static int qcom_smmu_init_context(struct arm_smmu_domain *smmu_domain,
->  		struct io_pgtable_cfg *pgtbl_cfg, struct device *dev)
->  {
-> +	struct arm_smmu_device *smmu = smmu_domain->smmu;
-> +	struct qcom_smmu *qsmmu = to_qcom_smmu(smmu);
-> +	const struct actlr_config *actlrcfg;
-> +	size_t actlrcfg_size;
-> +	int cbndx = smmu_domain->cfg.cbndx;
-> +
-> +	if (qsmmu->data->actlrcfg) {
-> +		actlrcfg = qsmmu->data->actlrcfg;
-> +		actlrcfg_size = qsmmu->data->actlrcfg_size;
-> +		arm_smmu_set_actlr(dev, smmu, cbndx, actlrcfg, actlrcfg_size);
-ditto
+Acked-by: Konrad Dybcio <konrad.dybcio@linaro.org>
 
 Konrad
