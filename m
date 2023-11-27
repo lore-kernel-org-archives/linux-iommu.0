@@ -1,143 +1,160 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f46.google.com (mail-ed1-f46.google.com [209.85.208.46])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0435430663
-	for <iommu@lists.linux.dev>; Mon, 27 Nov 2023 14:55:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A51B31A9A
+	for <iommu@lists.linux.dev>; Mon, 27 Nov 2023 15:28:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="IXnyBvPp"
-Received: from pps.filterd (m0279865.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 3ARDX4C9025349;
-	Mon, 27 Nov 2023 14:55:05 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=qcppdkim1;
- bh=5w8AVM6ZRZcbTx9e/Vp6YkCqKtNMrWDc3V+eTYGPBek=;
- b=IXnyBvPp+Wc9YNNhrklUpuYNKFbE9z71+ObmkzDuEg0IE+AOKgqHzkqbTJ9FRxYrQauD
- A8avsA7j+UdZnF8KIBD4zMeS+dgCgSiSLAFHMnI83Gz+HwY78yfoKLGnicz3iSIO/yYC
- eVpVLrTid9l0+7mCMN2frUTtqOCsPGJoXNLx7JQqfHiBTWY1hY+Z2GDSPcNwy5jvLoKb
- 5p0OC5heWBGBHqsYkBArEpWGxwVnmZbrvs1d7xl1Ja83dwSjwjrdan8/Lmu4eRAoXpPc
- DSN62a6RuMCT29Vroy0uM1yFG4gBQYdotjbL3rctnINC+jo8JCelAW3LLMJAJmuzS4m3 lw== 
-Received: from nalasppmta02.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3umt4qgjfw-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 27 Nov 2023 14:55:05 +0000
-Received: from nalasex01c.na.qualcomm.com (nalasex01c.na.qualcomm.com [10.47.97.35])
-	by NALASPPMTA02.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 3AREt4sl004534
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 27 Nov 2023 14:55:04 GMT
-Received: from hu-bibekkum-hyd.qualcomm.com (10.80.80.8) by
- nalasex01c.na.qualcomm.com (10.47.97.35) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.40; Mon, 27 Nov 2023 06:54:58 -0800
-From: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
-To: <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
-        <dmitry.baryshkov@linaro.org>, <a39.skl@gmail.com>,
-        <konrad.dybcio@linaro.org>, <quic_bjorande@quicinc.com>,
-        <mani@kernel.org>, <quic_eberman@quicinc.com>,
-        <robdclark@chromium.org>, <u.kleine-koenig@pengutronix.de>,
-        <robh@kernel.org>, <vladimir.oltean@nxp.com>,
-        <quic_pkondeti@quicinc.com>, <quic_molvera@quicinc.com>
-CC: <linux-arm-msm@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
-        <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
-        <qipl.kernel.upstream@quicinc.com>,
-        Bibek Kumar Patro
-	<quic_bibekkum@quicinc.com>
-Subject: [PATCH v3 4/4] iommu/arm-smmu: re-enable context caching in smmu reset operation
-Date: Mon, 27 Nov 2023 20:24:12 +0530
-Message-ID: <20231127145412.3981-5-quic_bibekkum@quicinc.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20231127145412.3981-1-quic_bibekkum@quicinc.com>
-References: <20231127145412.3981-1-quic_bibekkum@quicinc.com>
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="Hq/2lxhz"
+Received: by mail-ed1-f46.google.com with SMTP id 4fb4d7f45d1cf-54b0310f536so5337969a12.0
+        for <iommu@lists.linux.dev>; Mon, 27 Nov 2023 07:28:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1701098929; x=1701703729; darn=lists.linux.dev;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=xH7djIzH2lWtg+ZnnlMA49TMMB9EdHS+GmuOJoHr84A=;
+        b=Hq/2lxhz4OtjfQxJkKPo/oSqGDuaANhHqgFkujRQRWpNeFDiqOBtA/OgjGaRGcd53E
+         97n0q7E4d6DpcLU8hNs5sxIUzHiB4CL32BfsLV3/RjtBbBCHwUkA6MHSKlY6krWZ6Ck0
+         YnwP96BNcFUdZPdE+gfZmUnTB7qGEekiYaHAB9FEzfbOQfsN2JJybiXAGYjHPfTCxK/V
+         2553+1vNBuGvWUN/IK2aLhlYuio+1AEhrQaFizET6hZfKRckIfheHCWeMBCVVC+5UjMx
+         7oC/RmIhF8Jq610oYFrh9SGhaiD9Fs3tFBhnxxOFRgdw+cnguHKZhkDdU8et7afK/p8H
+         SjgA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1701098929; x=1701703729;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=xH7djIzH2lWtg+ZnnlMA49TMMB9EdHS+GmuOJoHr84A=;
+        b=il5tGW5PSyqBkf0dWjmf2qkGJlyIPF+EFTOTUBDybeaIib7eI8noAnUBJ28dLCD5Ua
+         fBRm4F4tVU5EBXuu5kcYD9CwmjQ7CNPKpxM4bLTVwXsn22R2hSbv7kUZziQlOmbJ/Z1j
+         c9wcfHNlRq2lT5T7eGRseh+a8gTqtXXsFC5l7RQQb9rVhanybMT7I51HL1Sf0VbUH+Iz
+         RSVPaHtJoyQ9RlqpzntuDPECZT1xTXIU2BNd0uDilQh3Oj6deWHyoz7UGj0YmFagR1KP
+         bcRt73X/vVOQ4LP7BoMWsZSSZ8w3BMpuCKZNIZcdTOtWX3XyuUBU1rR/hQJQlYUwcQqF
+         weeQ==
+X-Gm-Message-State: AOJu0YyjiUF8bURAnGmREYT2qoQxjvUf918sNCCoKGqhlPZbG52P9m0S
+	gx+OvtOi7VipeEzb1Urkdzzw1A==
+X-Google-Smtp-Source: AGHT+IFVq8VVBBAB+9CYcFJYQtXvol9+Oolg8Bycg8P4iRm8ZI2RLM5GY7iy8CP/g/zrCxgD8BoRag==
+X-Received: by 2002:aa7:c401:0:b0:54b:3bba:8372 with SMTP id j1-20020aa7c401000000b0054b3bba8372mr5619318edq.5.1701098929327;
+        Mon, 27 Nov 2023 07:28:49 -0800 (PST)
+Received: from [10.167.154.1] (178235187180.dynamic-4-waw-k-2-3-0.vectranet.pl. [178.235.187.180])
+        by smtp.gmail.com with ESMTPSA id e7-20020a056402104700b00542db304680sm5321002edu.63.2023.11.27.07.28.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Nov 2023 07:28:48 -0800 (PST)
+From: Konrad Dybcio <konrad.dybcio@linaro.org>
+Subject: [PATCH v2 00/12] RB1/QCM2290 features
+Date: Mon, 27 Nov 2023 16:28:40 +0100
+Message-Id: <20231125-topic-rb1_feat-v2-0-979b28f35e4a@linaro.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01c.na.qualcomm.com (10.47.97.35)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: _Yu8egJUf_Dh3CRpUn-cVfT1UcUWDUfJ
-X-Proofpoint-GUID: _Yu8egJUf_Dh3CRpUn-cVfT1UcUWDUfJ
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.272,Aquarius:18.0.987,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2023-11-27_13,2023-11-27_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015
- priorityscore=1501 malwarescore=0 bulkscore=0 mlxlogscore=999 mlxscore=0
- phishscore=0 adultscore=0 spamscore=0 lowpriorityscore=0 suspectscore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2311060000 definitions=main-2311270102
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAKm1ZGUC/3WNQQqDMBBFryJZNyUzkrZ01XuIlMSMOiCJTKy0i
+ Hdv6r7L9+D/t6lMwpTVvdqU0MqZUyyAp0p1o4sDaQ6FFRqsAdDqJc3cafHw7MktOgQLxtZ4QfC
+ qjLzLpL242I1lFl/TVOQs1PP7qDRt4ZHzkuRzRFf42b//K2ijAcIVPKA39vaYODpJ5ySDavd9/
+ wI0+5IFwgAAAA==
+To: Rob Clark <robdclark@gmail.com>, 
+ Abhinav Kumar <quic_abhinavk@quicinc.com>, 
+ Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, Sean Paul <sean@poorly.run>, 
+ David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>, 
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
+ Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, 
+ Rob Herring <robh+dt@kernel.org>, 
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Loic Poulain <loic.poulain@linaro.org>, 
+ Bryan O'Donoghue <bryan.odonoghue@linaro.org>, 
+ Andy Gross <agross@kernel.org>, Bjorn Andersson <andersson@kernel.org>, 
+ Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, 
+ Georgi Djakov <djakov@kernel.org>, Will Deacon <will@kernel.org>, 
+ Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, 
+ Krishna Manikandan <quic_mkrishn@quicinc.com>, 
+ Robert Marko <robimarko@gmail.com>, Das Srinagesh <quic_gurus@quicinc.com>, 
+ cros-qcom-dts-watchers@chromium.org
+Cc: Marijn Suijten <marijn.suijten@somainline.org>, 
+ Rob Herring <robh@kernel.org>, linux-arm-msm@vger.kernel.org, 
+ dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org, 
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ linux-pm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+ iommu@lists.linux.dev, Konrad Dybcio <konrad.dybcio@linaro.org>
+X-Mailer: b4 0.12.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1701098925; l=2755;
+ i=konrad.dybcio@linaro.org; s=20230215; h=from:subject:message-id;
+ bh=yZgEzYKRpKaQPQoGOfb7ONUfzFPf2ls77sgBQdDr3ME=;
+ b=V5UwjbXyluYT3sCqyhvxMPLK7n4ewU5ni508NwKZPVwcvivC25/OkbkbE+ilYnCDD3fCiiOod
+ mruf6Ot8p8aBmYMfhBp209eYwgjnXewqW2wsmN8WL5VleHqw0qEtTZV
+X-Developer-Key: i=konrad.dybcio@linaro.org; a=ed25519;
+ pk=iclgkYvtl2w05SSXO5EjjSYlhFKsJ+5OSZBjOkQuEms=
 
-Default MMU-500 reset operation disables context caching in
-prefetch buffer. It is however expected for context banks using
-the ACTLR register to retain their prefetch value during reset
-and runtime suspend.
+This series brings:
+- interconnect plumbing
+- display setup
 
-Replace default MMU-500 reset operation with Qualcomm specific reset
-operation which envelope the default reset operation and re-enables
-context caching in prefetch buffer for Qualcomm SoCs.
+for QCM2290/QRB2210 and
 
-Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+- CAN bus controller
+- HDMI display
+- wifi fw variant name
+
+for QTI RB1
+
+and the necessary bindings changes
+
+Patch 1-2 is for Dmitry/freedreno
+Patch 3 for Georgi/icc
+Patch 5 for Will/iommu
+the rest are for Bjorn/qcom
+
+Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
 ---
- drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 23 +++++++++++++++++++---
- 1 file changed, 20 insertions(+), 3 deletions(-)
+Changes in v2:
+- Fix up the bindings example in "qcm2290-mdss: Use the non-deprecated DSI compat" (krzk)
+- Fix up sc7180 & sc7280 DTs as a result of the bindings changes
+- Pick up rbs where it makes sense
+- Link to v1: https://lore.kernel.org/r/20231125-topic-rb1_feat-v1-0-11d71b12b058@linaro.org
 
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-index f0ad09f9a974..2c676a09fa31 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-@@ -512,11 +512,28 @@ static int qcom_smmu_def_domain_type(struct device *dev)
- 	return match ? IOMMU_DOMAIN_IDENTITY : 0;
- }
+---
+Dmitry Baryshkov (1):
+      arm64: dts: qcom: qrb2210-rb1: add wifi variant property
 
-+static int qcom_smmu500_reset(struct arm_smmu_device *smmu)
-+{
-+	int i;
-+	u32 reg;
-+
-+	arm_mmu500_reset(smmu);
-+
-+	/* Re-enable context caching after reset */
-+	for (i = 0; i < smmu->num_context_banks; ++i) {
-+		reg = arm_smmu_cb_read(smmu, i, ARM_SMMU_CB_ACTLR);
-+		reg |= CPRE;
-+		arm_smmu_cb_write(smmu, i, ARM_SMMU_CB_ACTLR, reg);
-+	}
-+
-+	return 0;
-+}
-+
- static int qcom_sdm845_smmu500_reset(struct arm_smmu_device *smmu)
- {
- 	int ret;
+Konrad Dybcio (11):
+      dt-bindings: display: msm: qcm2290-mdss: Use the non-deprecated DSI compat
+      dt-bindings: display: msm: Add reg bus and rotator interconnects
+      dt-bindings: interconnect: qcom,msm8998-bwmon: Add QCM2290 bwmon instance
+      dt-bindings: firmware: qcom,scm: Allow interconnect for everyone
+      iommu/arm-smmu-qcom: Add QCM2290 DPU compatible
+      arm64: dts: qcom: sc7180: Add the missing MDSS icc path
+      arm64: dts: qcom: sc7280: Add the missing MDSS icc path
+      arm64: dts: qcom: qcm2290: Add display nodes
+      arm64: dts: qcom: qcm2290: Hook up interconnects
+      arm64: dts: qcom: qrb2210-rb1: Set up HDMI
+      arm64: dts: qcom: qrb2210-rb1: Enable CAN bus controller
 
--	arm_mmu500_reset(smmu);
-+	qcom_smmu500_reset(smmu);
+ .../bindings/display/msm/mdss-common.yaml          |  18 +-
+ .../bindings/display/msm/qcom,qcm2290-mdss.yaml    |  21 +-
+ .../bindings/display/msm/qcom,sc7180-mdss.yaml     |  14 +-
+ .../bindings/display/msm/qcom,sc7280-mdss.yaml     |  14 +-
+ .../bindings/display/msm/qcom,sm6115-mdss.yaml     |  10 +
+ .../bindings/display/msm/qcom,sm6125-mdss.yaml     |   8 +-
+ .../bindings/display/msm/qcom,sm6350-mdss.yaml     |   8 +-
+ .../bindings/display/msm/qcom,sm6375-mdss.yaml     |   8 +-
+ .../bindings/display/msm/qcom,sm8450-mdss.yaml     |  13 +-
+ .../devicetree/bindings/firmware/qcom,scm.yaml     |  15 -
+ .../bindings/interconnect/qcom,msm8998-bwmon.yaml  |   1 +
+ arch/arm64/boot/dts/qcom/qcm2290.dtsi              | 462 +++++++++++++++++++++
+ arch/arm64/boot/dts/qcom/qrb2210-rb1.dts           | 109 +++++
+ arch/arm64/boot/dts/qcom/sc7180.dtsi               |   8 +-
+ arch/arm64/boot/dts/qcom/sc7280.dtsi               |   9 +-
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c         |   1 +
+ 16 files changed, 671 insertions(+), 48 deletions(-)
+---
+base-commit: 48bbaf8b793e0770798519f8ee1ea2908ff0943a
+change-id: 20231125-topic-rb1_feat-dd510532621b
 
- 	/*
- 	 * To address performance degradation in non-real time clients,
-@@ -543,7 +560,7 @@ static const struct arm_smmu_impl qcom_smmu_500_impl = {
- 	.init_context = qcom_smmu_init_context,
- 	.cfg_probe = qcom_smmu_cfg_probe,
- 	.def_domain_type = qcom_smmu_def_domain_type,
--	.reset = arm_mmu500_reset,
-+	.reset = qcom_smmu500_reset,
- 	.write_s2cr = qcom_smmu_write_s2cr,
- 	.tlb_sync = qcom_smmu_tlb_sync,
- };
-@@ -568,7 +585,7 @@ static const struct arm_smmu_impl qcom_adreno_smmu_v2_impl = {
- static const struct arm_smmu_impl qcom_adreno_smmu_500_impl = {
- 	.init_context = qcom_adreno_smmu_init_context,
- 	.def_domain_type = qcom_smmu_def_domain_type,
--	.reset = arm_mmu500_reset,
-+	.reset = qcom_smmu500_reset,
- 	.alloc_context_bank = qcom_adreno_smmu_alloc_context_bank,
- 	.write_sctlr = qcom_adreno_smmu_write_sctlr,
- 	.tlb_sync = qcom_smmu_tlb_sync,
---
-2.17.1
+Best regards,
+-- 
+Konrad Dybcio <konrad.dybcio@linaro.org>
 
