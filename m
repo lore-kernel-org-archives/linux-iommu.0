@@ -1,35 +1,37 @@
 Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id EEC5017738
-	for <iommu@lists.linux.dev>; Mon, 27 Nov 2023 09:59:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id CEFE83FDF
+	for <iommu@lists.linux.dev>; Mon, 27 Nov 2023 10:02:06 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="HDXDP6XK"
+	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="fO+VvxuN"
 Received: from 8bytes.org (p4ffe1e67.dip0.t-ipconnect.de [79.254.30.103])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 994461A4799;
-	Mon, 27 Nov 2023 10:59:40 +0100 (CET)
+	by mail.8bytes.org (Postfix) with ESMTPSA id 8C6131A6D51;
+	Mon, 27 Nov 2023 11:02:05 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1701079180;
-	bh=4fArJRY/2HnzmxUj53izSkP6rBCg7+/g9dmdWslHlew=;
+	s=default; t=1701079325;
+	bh=ezz9eUC2caA+2Tdu14GIo+of2pGcK/lrliKHiFdso+w=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=HDXDP6XK3tzZcqks7doJbHJjpzTD3i0Mcr7rXbKut6VMKq7tn41JGS+AgtrMqADUR
-	 DycAaNxqepOoSCaUujibeVsWPBdWKwy/YnEvl3BOGnTDjOw6tYxvjmj9TF3hHtkWTB
-	 7Jo4MA/GjrNKC/YLux0u1nUjvAd6zOmMNrFECfE1Oacsiqk93/HXFpYHWmqqG8/LTJ
-	 ExUadNXoaVUy5ro2UpuFtenuUcPKFegLPml4oFD/4dG3oBRvhJrJg0C4CKE4EvrOnV
-	 P7ZFvI6nA62KbgeKc6ThxcHO9BnIkfIpUkQAlMyEdjJG53UEF9bsmE+EyqXD4DztWo
-	 903cjIF6XV4zQ==
-Date: Mon, 27 Nov 2023 10:59:39 +0100
+	b=fO+VvxuN8Hc87mMNAmJ1SLGRNIT8mNfNtMdQujA6lKxhSPDmUNjsA7456rUF5hMdb
+	 SPLicYIzXe4E71HxY59PpcGpQtAinF3B0gXUjJtWJrdnKPX/D6vTT/jvfjt5HxCbef
+	 /Ny2i/+SecictrROp3kP+5mw3oqI+rlf3tnZXlrTVH/WSL/QIJmbvMbnk67KnIHEXj
+	 c2+U7LF1FZ/dpKAnU8Gd4BtUaj0NSqOxkI/sziKS5/eAsumAEZWyTCPWPRzqqJyhPr
+	 gSkwlCrUqH4qyAOLzF4A1NezGMJCzgjjzYAFp9F2sSy+IxJHZDDNJPYObJb0coNvdz
+	 DHi2I3U0sn8Mw==
+Date: Mon, 27 Nov 2023 11:02:04 +0100
 From: Joerg Roedel <joro@8bytes.org>
-To: Kunwu Chan <chentao@kylinos.cn>
-Cc: suravee.suthikulpanit@amd.com, will@kernel.org, robin.murphy@arm.com,
-	kunwu.chan@hotmail.com, iommu@lists.linux.dev,
+To: Niklas Schnelle <schnelle@linux.ibm.com>
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>,
+	Robin Murphy <robin.murphy@arm.com>,
+	virtualization@lists.linux-foundation.org, iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iommu/amd: Set variable amd_dirty_ops to static
-Message-ID: <ZWRoiywi9Y5nlSOn@8bytes.org>
-References: <20231120095342.1102999-1-chentao@kylinos.cn>
+Subject: Re: [PATCH v3 0/2] iommu/virtio: Enable IOMMU_CAP_DERRED_FLUSH
+Message-ID: <ZWRpHGOwELiDRQIv@8bytes.org>
+References: <20231120-viommu-sync-map-v3-0-50a57ecf78b5@linux.ibm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -38,10 +40,14 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20231120095342.1102999-1-chentao@kylinos.cn>
+In-Reply-To: <20231120-viommu-sync-map-v3-0-50a57ecf78b5@linux.ibm.com>
 
-On Mon, Nov 20, 2023 at 05:53:42PM +0800, Kunwu Chan wrote:
->  drivers/iommu/amd/iommu.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+On Mon, Nov 20, 2023 at 03:51:55PM +0100, Niklas Schnelle wrote:
+> Niklas Schnelle (2):
+>       iommu/virtio: Make use of ops->iotlb_sync_map
+>       iommu/virtio: Add ops->flush_iotlb_all and enable deferred flush
+> 
+>  drivers/iommu/virtio-iommu.c | 33 ++++++++++++++++++++++++++++++++-
+>  1 file changed, 32 insertions(+), 1 deletion(-)
 
 Applied, thanks.
