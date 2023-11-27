@@ -1,49 +1,49 @@
-Received: from mail-ed1-f49.google.com (mail-ed1-f49.google.com [209.85.208.49])
+Received: from mail-ed1-f47.google.com (mail-ed1-f47.google.com [209.85.208.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9AE9631A8E
-	for <iommu@lists.linux.dev>; Mon, 27 Nov 2023 15:34:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E6EFB31A8E
+	for <iommu@lists.linux.dev>; Mon, 27 Nov 2023 15:35:16 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="f2rH332l"
-Received: by mail-ed1-f49.google.com with SMTP id 4fb4d7f45d1cf-5482df11e73so5792130a12.0
-        for <iommu@lists.linux.dev>; Mon, 27 Nov 2023 07:34:41 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="jCBDf+dQ"
+Received: by mail-ed1-f47.google.com with SMTP id 4fb4d7f45d1cf-54af61f2a40so4056385a12.3
+        for <iommu@lists.linux.dev>; Mon, 27 Nov 2023 07:35:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1701099280; x=1701704080; darn=lists.linux.dev;
+        d=linaro.org; s=google; t=1701099315; x=1701704115; darn=lists.linux.dev;
         h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
          :to:content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=QisU+sGRQtSRKQO4WVRt1/5HsESylrqy0n02GS4nlIQ=;
-        b=f2rH332lHOeq3xhChw8lKpKgMkxbGU7g+qqNowwpI5l+JApA59VAHenN0Y5DLmN9ky
-         5QfHkvQ/B6MvPuLJOHI+4VpM9KzjRC1c63YDkDc7a4HDalQ4HmNHzcf0XEJ1JuvwYqHG
-         PgoncsrLFLTlpO797Spkj9poHr+2meo+QqELOMUqB/cvyKFrmn6a62J+IVVbZyEmzQ+y
-         ZDM5AR42LAhyK9x7GxAdh8t/jq0fPd4tfFHnzGzdP2y67ydT7MHVvWaj5SP9oyT/53Hy
-         TDFIuW2U7/i/CyMOD5fsh+gFg/U2qZ75Q8fFMT4zda8cVq+dc7gHrZVgpTmW6Tm/dbU1
-         QK4g==
+        bh=5BeRSQ2NgtW3CkQnVCOjk3/1p7m2vsB5QkdRb/jJ4L0=;
+        b=jCBDf+dQfPJjaCG7OQfoL7TdJOHDpw1JrOET8rlpjYuAQjXjy82Ne8C1CRRemSzP1f
+         pTY28FLBPr+PTJW5yYQfxT5n2HifrwzyMbm0uGYvwJ60hvzdDTdWlkHmfv9JAo5SEUyM
+         K5QzqIkiPMjsTv/yAZW0DRn4KExLO9DPayd7ve3IsNaQK8mK/z0PyefPyvT4Ho3OvxK1
+         6DuuXMVHT35VTbj9gwnsp8E6V1Rl0blHiumY7HU2Z9byBDEZSmdK877NnCansju5DkMs
+         Ph9fed8BElCYkCXAWu+heaWPm9aDrYbubp/U1RSnxkczWdbyEapne9/xIydt+iR6eBuV
+         naIQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701099280; x=1701704080;
+        d=1e100.net; s=20230601; t=1701099315; x=1701704115;
         h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
          :to:content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=QisU+sGRQtSRKQO4WVRt1/5HsESylrqy0n02GS4nlIQ=;
-        b=Bzyv5OTztX0a8E31xDpomD1OQBp+uu+CImMMIPotJfT1buRNUdMV3n+dD4fV5uG8DE
-         hG87diCaQa+SnDSVcCgPqHRDZZ5PWV4dk4AiOwYEDYqwF6RjpNe85ZlAccuL7dlyjsNO
-         ZDNrMilDMkJUsWO2V/MsEGGkJtMeG21uWJZjdfDM7tEAj0ZOzytX/4l1oWIe8ubgnIyN
-         QxIQqq7c03V+c0S6Mz+ISwoZUAmhxdUft4Z1uUnMreHQG+mI8omDTho9I0JZNdmrmRQG
-         CC/7pC0S2MO8pRNGjqjrRJyfisJ93d7DGRT6bQqq8pfDoqL4WeUmmU/AADpVFuy9yU/v
-         TP4w==
-X-Gm-Message-State: AOJu0YwYAq2jE5cEuA3hOhbhl5YzXzApBeJjSHofm6+X4PqyW4/15M4y
-	z9eiY2cMSlymTDVunvXh2ui/3g==
-X-Google-Smtp-Source: AGHT+IENlBVBkPbodSNFhC8gFnnNVtDggi2yCL+4ztHlU9SMlu0NcFmq+ogo/nggmf+u7Ru5xN53yQ==
-X-Received: by 2002:a05:6402:3458:b0:54b:1ca8:8539 with SMTP id l24-20020a056402345800b0054b1ca88539mr5528279edc.5.1701099279875;
-        Mon, 27 Nov 2023 07:34:39 -0800 (PST)
+        bh=5BeRSQ2NgtW3CkQnVCOjk3/1p7m2vsB5QkdRb/jJ4L0=;
+        b=enlT6FYSi7cywuy0AwvF0IwYtnsMF6sJRuXDhG2J2J8J9kfNQTz3GrJLkcllhg4KKj
+         tzNxcvQPdbMTNUXOowV4ac2IJU7vIcb0oIDdEnbjIc/Ngpa/sp46v/PxkI5C3k7otofx
+         dMl9+KxR7JWg4Gg0BfmAWEdWaNZUkSub7DjYzkaVhaw+eaw5t8vACMnT2DfDqvXkQmjS
+         K5cq3nC/pFNpnUklwxCtmCn2JOtUldyh4ljqxfc5NWAj4XDPkN3oU/JRQ2FIf7pxubp3
+         8CIV+RidOpl6+89zo+nd+LZ1UHsi4iDqwzWwoBJbSiVLAv188uLKhrg4+XpKZvNTQNf8
+         rwTw==
+X-Gm-Message-State: AOJu0YzOq2bUCzVYSWnCaJU390t6qYpWkMYZmFwON0ICy+bD+tQSMZHG
+	6Kjl3bYdTYIo6QytiYnJGETbZQ==
+X-Google-Smtp-Source: AGHT+IHOX/xkrK1RJFK21Ya6CH7VkQg6wVP1hQ5nJKlX8lT4H9axnaQBUp5u5Co0kTJ/p5w37pduug==
+X-Received: by 2002:a05:6402:78e:b0:54a:f8d9:8026 with SMTP id d14-20020a056402078e00b0054af8d98026mr7906465edy.12.1701099315088;
+        Mon, 27 Nov 2023 07:35:15 -0800 (PST)
 Received: from [192.168.201.100] (178235187180.dynamic-4-waw-k-2-3-0.vectranet.pl. [178.235.187.180])
-        by smtp.gmail.com with ESMTPSA id h9-20020a056402280900b0054aeece37cesm4370406ede.52.2023.11.27.07.34.37
+        by smtp.gmail.com with ESMTPSA id h9-20020a056402280900b0054aeece37cesm4370406ede.52.2023.11.27.07.35.12
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 27 Nov 2023 07:34:39 -0800 (PST)
-Message-ID: <dcadb98e-8e54-4517-a4ec-c31731787bbe@linaro.org>
-Date: Mon, 27 Nov 2023 16:34:37 +0100
+        Mon, 27 Nov 2023 07:35:14 -0800 (PST)
+Message-ID: <ec4b7dfa-6fcf-4ccc-8857-d99573349599@linaro.org>
+Date: Mon, 27 Nov 2023 16:35:12 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -51,8 +51,8 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 2/4] iommu/arm-smmu: add ACTLR data and support for
- SM8550
+Subject: Re: [PATCH v3 3/4] iommu/arm-smmu: add ACTLR data and support for
+ SC7280
 Content-Language: en-US
 To: Bibek Kumar Patro <quic_bibekkum@quicinc.com>, will@kernel.org,
  robin.murphy@arm.com, joro@8bytes.org, dmitry.baryshkov@linaro.org,
@@ -64,7 +64,7 @@ Cc: linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
  iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
  qipl.kernel.upstream@quicinc.com
 References: <20231127145412.3981-1-quic_bibekkum@quicinc.com>
- <20231127145412.3981-3-quic_bibekkum@quicinc.com>
+ <20231127145412.3981-4-quic_bibekkum@quicinc.com>
 From: Konrad Dybcio <konrad.dybcio@linaro.org>
 Autocrypt: addr=konrad.dybcio@linaro.org; keydata=
  xsFNBF9ALYUBEADWAhxdTBWrwAgDQQzc1O/bJ5O7b6cXYxwbBd9xKP7MICh5YA0DcCjJSOum
@@ -101,16 +101,38 @@ Autocrypt: addr=konrad.dybcio@linaro.org; keydata=
  bGqMHex48FVZhexNPYOd58EY9/7mL5u0sJmo+jTeb4JBgIbFPJCFyng4HwbniWgQJZ1WqaUC
  nas9J77uICis2WH7N8Bs9jy0wQYezNzqS+FxoNXmDQg2jetX8en4bO2Di7Pmx0jXA4TOb9TM
  izWDgYvmBE8=
-In-Reply-To: <20231127145412.3981-3-quic_bibekkum@quicinc.com>
+In-Reply-To: <20231127145412.3981-4-quic_bibekkum@quicinc.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
 On 27.11.2023 15:54, Bibek Kumar Patro wrote:
-> Add ACTLR data table for SM8550 along with support for
-> same including SM8550 specific implementation operations.
+> Add ACTLR data table for SC7280 along with support for
+> same including SC7280 specific implementation operations.
 > 
 > Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
 > ---
-Acked-by: Konrad Dybcio <konrad.dybcio@linaro.org>
+>  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 25 +++++++++++++++++++++-
+>  1 file changed, 24 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> index 247eaa194129..f0ad09f9a974 100644
+> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> @@ -27,6 +27,20 @@ struct actlr_config {
+>  #define CPRE			BIT(1)		/* Enable context caching in the prefetch buffer */
+>  #define CMTLB			BIT(0)		/* Enable context caching in the macro TLB */
+> 
+> +static const struct actlr_config sc7280_apps_actlr_cfg[] = {
+> +	{ 0x0800, 0x24E1, PREFETCH_DISABLE | CMTLB },
+hex should be lowercase
+
+> +	{ 0x2000, 0x0163, PREFETCH_DISABLE | CMTLB },
+> +	{ 0x2080, 0x0461, PREFETCH_DISABLE | CMTLB },
+> +	{ 0x2100, 0x0161, PREFETCH_DISABLE | CMTLB },
+> +	{ 0x0900, 0x0407, PREFETCH_SHALLOW | CPRE | CMTLB },
+> +	{ 0x2180, 0x0027, PREFETCH_SHALLOW | CPRE | CMTLB },
+> +	{ 0x1000, 0x07ff, PREFETCH_DEEP | CPRE | CMTLB },
+> +};
+Any reason this list is so much smaller than 8550's? Is it complete?
 
 Konrad
