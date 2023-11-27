@@ -1,49 +1,55 @@
-Received: from mail-ed1-f47.google.com (mail-ed1-f47.google.com [209.85.208.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E6EFB31A8E
-	for <iommu@lists.linux.dev>; Mon, 27 Nov 2023 15:35:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E99F0182A7
+	for <iommu@lists.linux.dev>; Mon, 27 Nov 2023 15:41:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="jCBDf+dQ"
-Received: by mail-ed1-f47.google.com with SMTP id 4fb4d7f45d1cf-54af61f2a40so4056385a12.3
-        for <iommu@lists.linux.dev>; Mon, 27 Nov 2023 07:35:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1701099315; x=1701704115; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=5BeRSQ2NgtW3CkQnVCOjk3/1p7m2vsB5QkdRb/jJ4L0=;
-        b=jCBDf+dQfPJjaCG7OQfoL7TdJOHDpw1JrOET8rlpjYuAQjXjy82Ne8C1CRRemSzP1f
-         pTY28FLBPr+PTJW5yYQfxT5n2HifrwzyMbm0uGYvwJ60hvzdDTdWlkHmfv9JAo5SEUyM
-         K5QzqIkiPMjsTv/yAZW0DRn4KExLO9DPayd7ve3IsNaQK8mK/z0PyefPyvT4Ho3OvxK1
-         6DuuXMVHT35VTbj9gwnsp8E6V1Rl0blHiumY7HU2Z9byBDEZSmdK877NnCansju5DkMs
-         Ph9fed8BElCYkCXAWu+heaWPm9aDrYbubp/U1RSnxkczWdbyEapne9/xIydt+iR6eBuV
-         naIQ==
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="BqDBOHrW"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1701099692;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=trlRZGaWwOa4OdLh+VqMKyI2A0CG6rsUX5Pgp/NJz1A=;
+	b=BqDBOHrWc0h5FqjJ3Q70rmsaOFo/B7bJZVRXHFtbxgu/IB59+4Wnd5Mbf/o9/uDKqonNdh
+	guHDaWgRh34qq8EZSl555891AyPBWruvF7cmavoMt1nNuNxFs9Qi/NxgTnh9t5SbwlxPjB
+	VuaOAIpU6557upXU84/sieIl+uaEjj4=
+Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
+ [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-541-zn-7SWmCMZmUhnGFPQolGg-1; Mon, 27 Nov 2023 10:41:31 -0500
+X-MC-Unique: zn-7SWmCMZmUhnGFPQolGg-1
+Received: by mail-qv1-f69.google.com with SMTP id 6a1803df08f44-67a3773e271so18617106d6.3
+        for <iommu@lists.linux.dev>; Mon, 27 Nov 2023 07:41:31 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701099315; x=1701704115;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
+        d=1e100.net; s=20230601; t=1701099691; x=1701704491;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=5BeRSQ2NgtW3CkQnVCOjk3/1p7m2vsB5QkdRb/jJ4L0=;
-        b=enlT6FYSi7cywuy0AwvF0IwYtnsMF6sJRuXDhG2J2J8J9kfNQTz3GrJLkcllhg4KKj
-         tzNxcvQPdbMTNUXOowV4ac2IJU7vIcb0oIDdEnbjIc/Ngpa/sp46v/PxkI5C3k7otofx
-         dMl9+KxR7JWg4Gg0BfmAWEdWaNZUkSub7DjYzkaVhaw+eaw5t8vACMnT2DfDqvXkQmjS
-         K5cq3nC/pFNpnUklwxCtmCn2JOtUldyh4ljqxfc5NWAj4XDPkN3oU/JRQ2FIf7pxubp3
-         8CIV+RidOpl6+89zo+nd+LZ1UHsi4iDqwzWwoBJbSiVLAv188uLKhrg4+XpKZvNTQNf8
-         rwTw==
-X-Gm-Message-State: AOJu0YzOq2bUCzVYSWnCaJU390t6qYpWkMYZmFwON0ICy+bD+tQSMZHG
-	6Kjl3bYdTYIo6QytiYnJGETbZQ==
-X-Google-Smtp-Source: AGHT+IHOX/xkrK1RJFK21Ya6CH7VkQg6wVP1hQ5nJKlX8lT4H9axnaQBUp5u5Co0kTJ/p5w37pduug==
-X-Received: by 2002:a05:6402:78e:b0:54a:f8d9:8026 with SMTP id d14-20020a056402078e00b0054af8d98026mr7906465edy.12.1701099315088;
-        Mon, 27 Nov 2023 07:35:15 -0800 (PST)
-Received: from [192.168.201.100] (178235187180.dynamic-4-waw-k-2-3-0.vectranet.pl. [178.235.187.180])
-        by smtp.gmail.com with ESMTPSA id h9-20020a056402280900b0054aeece37cesm4370406ede.52.2023.11.27.07.35.12
+        bh=trlRZGaWwOa4OdLh+VqMKyI2A0CG6rsUX5Pgp/NJz1A=;
+        b=bjrpne2JaQe9kOYO/8AJeSOsjhPzXiJjF4xChZ5gux/Tu1wLMCJ8kDGgkgThw/4e9N
+         NJRP8JGO6mkV1hesDlp/8dTlWiuZql3IPYLzaQnr7cpyploFwgkR6od7oJQqiHBUNhBp
+         4RFjGVpLHz8P7OS03phFqUvw+cyPHhUdokiJSC6lbkZyt8C9Rr5xe99o6E+BO0+s18TF
+         3invHVjgv95aROS/N61En/+ah5RZI321qJoabEY7YtzZAcPijRcVIjRPjSxfmL5pSpng
+         kFN7FduNDB/Ngxt7YVFE4gySDsJRxha0FC1c8vvkheZqlPS7Ot62PFtsRnC0HIwBuKmb
+         Vt7Q==
+X-Gm-Message-State: AOJu0Yze0C+n61hPIYK0fotyUp1Mw/xTT74OdZw3t68NsjTkl/eLOE/m
+	kgsf0OkFSXx+LKDeJ57OCSEeCtxIHRjOOfex25rtNfIMqB73Djzap5kWgRWsOo6lxQPOGAmG2Wr
+	xG0RuZXJOLHdHvBQ=
+X-Received: by 2002:a05:6214:cce:b0:67a:1580:d7c3 with SMTP id 14-20020a0562140cce00b0067a1580d7c3mr18665581qvx.58.1701099690823;
+        Mon, 27 Nov 2023 07:41:30 -0800 (PST)
+X-Google-Smtp-Source: AGHT+IFwdYeuSCwaZFkmXA2r4JClIbyW6DLiolODtDtamQUhQE+K2DuC5boIrMydIesr7kyDs0Msnw==
+X-Received: by 2002:a05:6214:cce:b0:67a:1580:d7c3 with SMTP id 14-20020a0562140cce00b0067a1580d7c3mr18665560qvx.58.1701099690604;
+        Mon, 27 Nov 2023 07:41:30 -0800 (PST)
+Received: from ?IPV6:2a01:e0a:59e:9d80:527b:9dff:feef:3874? ([2a01:e0a:59e:9d80:527b:9dff:feef:3874])
+        by smtp.gmail.com with ESMTPSA id oo28-20020a056214451c00b0067a18167533sm3323974qvb.83.2023.11.27.07.41.28
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 27 Nov 2023 07:35:14 -0800 (PST)
-Message-ID: <ec4b7dfa-6fcf-4ccc-8857-d99573349599@linaro.org>
-Date: Mon, 27 Nov 2023 16:35:12 +0100
+        Mon, 27 Nov 2023 07:41:30 -0800 (PST)
+Message-ID: <39f2ba60-a627-4df7-9a1a-f5c1ec12b16a@redhat.com>
+Date: Mon, 27 Nov 2023 16:41:26 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -51,88 +57,62 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 3/4] iommu/arm-smmu: add ACTLR data and support for
- SC7280
+Subject: Re: [PATCH v2 02/19] iommu/arm-smmu-v3: Master cannot be NULL in
+ arm_smmu_write_strtab_ent()
+To: Jason Gunthorpe <jgg@nvidia.com>, iommu@lists.linux.dev,
+ Joerg Roedel <joro@8bytes.org>, linux-arm-kernel@lists.infradead.org,
+ Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>
+Cc: Michael Shavit <mshavit@google.com>, Nicolin Chen <nicolinc@nvidia.com>,
+ Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+References: <2-v2-de8b10590bf5+400-smmuv3_newapi_p1_jgg@nvidia.com>
+From: Eric Auger <eauger@redhat.com>
+In-Reply-To: <2-v2-de8b10590bf5+400-smmuv3_newapi_p1_jgg@nvidia.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
 Content-Language: en-US
-To: Bibek Kumar Patro <quic_bibekkum@quicinc.com>, will@kernel.org,
- robin.murphy@arm.com, joro@8bytes.org, dmitry.baryshkov@linaro.org,
- a39.skl@gmail.com, quic_bjorande@quicinc.com, mani@kernel.org,
- quic_eberman@quicinc.com, robdclark@chromium.org,
- u.kleine-koenig@pengutronix.de, robh@kernel.org, vladimir.oltean@nxp.com,
- quic_pkondeti@quicinc.com, quic_molvera@quicinc.com
-Cc: linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- qipl.kernel.upstream@quicinc.com
-References: <20231127145412.3981-1-quic_bibekkum@quicinc.com>
- <20231127145412.3981-4-quic_bibekkum@quicinc.com>
-From: Konrad Dybcio <konrad.dybcio@linaro.org>
-Autocrypt: addr=konrad.dybcio@linaro.org; keydata=
- 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
- izWDgYvmBE8=
-In-Reply-To: <20231127145412.3981-4-quic_bibekkum@quicinc.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 27.11.2023 15:54, Bibek Kumar Patro wrote:
-> Add ACTLR data table for SC7280 along with support for
-> same including SC7280 specific implementation operations.
+Hi Jason,
+On 11/13/23 18:53, Jason Gunthorpe wrote:
+> The only caller is arm_smmu_install_ste_for_dev() which never has a NULL
+> master. Remove the confusing if.
 > 
-> Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Reviewed-by: Eric Auger <eric.auger@redhat.com>
+
+Eric
 > ---
->  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 25 +++++++++++++++++++++-
->  1 file changed, 24 insertions(+), 1 deletion(-)
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 9 ++-------
+>  1 file changed, 2 insertions(+), 7 deletions(-)
 > 
-> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> index 247eaa194129..f0ad09f9a974 100644
-> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> @@ -27,6 +27,20 @@ struct actlr_config {
->  #define CPRE			BIT(1)		/* Enable context caching in the prefetch buffer */
->  #define CMTLB			BIT(0)		/* Enable context caching in the macro TLB */
-> 
-> +static const struct actlr_config sc7280_apps_actlr_cfg[] = {
-> +	{ 0x0800, 0x24E1, PREFETCH_DISABLE | CMTLB },
-hex should be lowercase
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index 519749d15fbda0..9117e769a965e1 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -1269,10 +1269,10 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_master *master, u32 sid,
+>  	 */
+>  	u64 val = le64_to_cpu(dst->data[0]);
+>  	bool ste_live = false;
+> -	struct arm_smmu_device *smmu = NULL;
+> +	struct arm_smmu_device *smmu = master->smmu;
+>  	struct arm_smmu_ctx_desc_cfg *cd_table = NULL;
+>  	struct arm_smmu_s2_cfg *s2_cfg = NULL;
+> -	struct arm_smmu_domain *smmu_domain = NULL;
+> +	struct arm_smmu_domain *smmu_domain = master->domain;
+>  	struct arm_smmu_cmdq_ent prefetch_cmd = {
+>  		.opcode		= CMDQ_OP_PREFETCH_CFG,
+>  		.prefetch	= {
+> @@ -1280,11 +1280,6 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_master *master, u32 sid,
+>  		},
+>  	};
+>  
+> -	if (master) {
+> -		smmu_domain = master->domain;
+> -		smmu = master->smmu;
+> -	}
+> -
+>  	if (smmu_domain) {
+>  		switch (smmu_domain->stage) {
+>  		case ARM_SMMU_DOMAIN_S1:
 
-> +	{ 0x2000, 0x0163, PREFETCH_DISABLE | CMTLB },
-> +	{ 0x2080, 0x0461, PREFETCH_DISABLE | CMTLB },
-> +	{ 0x2100, 0x0161, PREFETCH_DISABLE | CMTLB },
-> +	{ 0x0900, 0x0407, PREFETCH_SHALLOW | CPRE | CMTLB },
-> +	{ 0x2180, 0x0027, PREFETCH_SHALLOW | CPRE | CMTLB },
-> +	{ 0x1000, 0x07ff, PREFETCH_DEEP | CPRE | CMTLB },
-> +};
-Any reason this list is so much smaller than 8550's? Is it complete?
-
-Konrad
