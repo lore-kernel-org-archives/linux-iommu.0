@@ -1,64 +1,87 @@
-Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id CE956182A2;
-	Mon, 27 Nov 2023 10:18:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="4YRrXkYs"
-Received: from 8bytes.org (p4ffe1e67.dip0.t-ipconnect.de [79.254.30.103])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 69D241A6E90;
-	Mon, 27 Nov 2023 11:18:10 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1701080290;
-	bh=+9XZsv2MkSw2ep1fiHnmE+Po3/h00hYAxkvBiSQeloM=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=4YRrXkYsLXB/rmy11VvYsY25P6pCK+6+3Ojbhgxhg6yTy/v6TkybXY0SdX6BCgdRh
-	 8rrpUJL6ZIB/CqY1o+pRDED2bhBhRHRJBP23HHKhg558PYeKkEr10gqtbPn+zyqMZM
-	 mJL8Bukn/4rgHn/qhAxi57iov5BKqBJ1rLW5sqoaN0psxHPl/gSsdKWIHlAVuCQ0CD
-	 4bzApBKojQ0a58dFXER37NOtMLculE+C9Wkzg6DBnE0uJ4HWmIyz2UMJV0Aiii/vnL
-	 NFRcD9u1dqhy9SOYz/bIHesVLkxNwvqha3JgvF5GTwb5QTygTnAJM2SNRNLggNfsAz
-	 PZ+amGWVqZQaQ==
-Date: Mon, 27 Nov 2023 11:18:08 +0100
-From: Joerg Roedel <joro@8bytes.org>
-To: Sven Peter <sven@svenpeter.dev>
-Cc: Hector Martin <marcan@marcan.st>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Alyssa Rosenzweig <alyssa@rosenzweig.io>, asahi@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iommu: dart: Use readl instead of readl_relaxed for
- consistency
-Message-ID: <ZWRs4Cq_X8Bm3btp@8bytes.org>
-References: <20231126162009.17934-1-sven@svenpeter.dev>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 106A019447
+	for <iommu@lists.linux.dev>; Mon, 27 Nov 2023 11:24:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Authentication-Results: smtp.subspace.kernel.org; dkim=none
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D8C672F4;
+	Mon, 27 Nov 2023 03:25:24 -0800 (PST)
+Received: from [10.57.73.142] (unknown [10.57.73.142])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 21BC93F73F;
+	Mon, 27 Nov 2023 03:24:35 -0800 (PST)
+Message-ID: <6415df67-8d5f-44e5-8ca6-57007adf9aae@arm.com>
+Date: Mon, 27 Nov 2023 11:24:33 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20231126162009.17934-1-sven@svenpeter.dev>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] kernel: dma: let dma use vmalloc area
+Content-Language: en-GB
+To: Zhaoyang Huang <huangzhaoyang@gmail.com>, Christoph Hellwig <hch@lst.de>
+Cc: "zhaoyang.huang" <zhaoyang.huang@unisoc.com>,
+ Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, steve.kang@unisoc.com
+References: <20231127030930.1074374-1-zhaoyang.huang@unisoc.com>
+ <20231127071430.GA28214@lst.de>
+ <CAGWkznFf5hdFRomLXDzoxEKVgiKY--DFbHjRLAMvgvodA01EFw@mail.gmail.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <CAGWkznFf5hdFRomLXDzoxEKVgiKY--DFbHjRLAMvgvodA01EFw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Sun, Nov 26, 2023 at 05:20:09PM +0100, Sven Peter wrote:
-> While the readl_relaxed in apple_dart_suspend is correct the rest of the
-> driver uses the non-relaxed variants everywhere and the single
-> readl_relaxed is inconsistent and possibly confusing.
+On 2023-11-27 8:56 am, Zhaoyang Huang wrote:
+> On Mon, Nov 27, 2023 at 3:14 PM Christoph Hellwig <hch@lst.de> wrote:
+>>
+>> On Mon, Nov 27, 2023 at 11:09:30AM +0800, zhaoyang.huang wrote:
+>>> From: Zhaoyang Huang <zhaoyang.huang@unisoc.com>
+>>>
+>>> memremap within dma_init_coherent_memory will map the given phys_addr
+>>> into vmalloc area if the pa is not found during iterating iomem_resources,
+>>> which conflict the rejection of vmalloc area in dma_map_single_attrs.
+>>
+>> I can't parse this sentence.
+> Sorry for the confusion, please find below codes for more information.
+> dma_init_coherent_memory
+>      memremap
+>          addr = ioremap_wt(offset, size);
+> What I mean is addr is a vmalloc address, which is implicitly mapped
+> by dma's framework and not be aware of to the driver.
+>>
+>>> IMO, it is find to let all valid virtual address be valid for DMA as the
+>>> user will keep corresponding RAM safe for transfer.
+>>
+>> No, vmalloc address can't be passed to map_single.  You need to pass
+>> the page to dma_map_page, and explicitly mange cache consistency
+>> using the invalidate_kernel_vmap_range and flush_kernel_vmap_range
+>> helpers.
+> Please correct me if I am wrong. According to my understanding, cache
+> consistency could be solved inside dma_map_page via either
+> dma_direct_map_page(swio/arch_sync_dma_for_device) or ops->map_page.
+> The original thought of rejecting vmalloc is that this pa is not safe
+> as this mapping could go in any time. What I am suggesting is to let
+> this kind of va be enrolled.
+
+No, the point is that dma_map_single() uses virt_to_page(), and 
+virt_to_page() is definitely not valid for vmalloc addresses. At worst 
+it may blow up in itself with an out-of-bounds dereference; at best it's 
+going to return a completely bogus page pointer which may then make 
+dma_map_page() fall over.
+
+Thanks,
+Robin.
+
 > 
-> Signed-off-by: Sven Peter <sven@svenpeter.dev>
-> ---
->  drivers/iommu/apple-dart.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-
-Applied, thanks.
-
-In the future, can you please use "iommu/apple-dart:" as the prefix for
-you patch subject-lines? That fits better into the overall convention in
-the iommu-tree, thanks.
-
-Regards,
-
-	Joerg
+>   static inline dma_addr_t dma_map_single_attrs(struct device *dev, void *ptr,
+>                  size_t size, enum dma_data_direction dir, unsigned long attrs)
+>   {
+>         /* DMA must never operate on areas that might be remapped. */
+>         if (dev_WARN_ONCE(dev, is_vmalloc_addr(ptr),
+>                           "rejecting DMA map of vmalloc memory\n"))
+>                 return DMA_MAPPING_ERROR;
+> 
+>>
+> 
