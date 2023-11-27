@@ -1,87 +1,98 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 106A019447
-	for <iommu@lists.linux.dev>; Mon, 27 Nov 2023 11:24:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Authentication-Results: smtp.subspace.kernel.org; dkim=none
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D8C672F4;
-	Mon, 27 Nov 2023 03:25:24 -0800 (PST)
-Received: from [10.57.73.142] (unknown [10.57.73.142])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 21BC93F73F;
-	Mon, 27 Nov 2023 03:24:35 -0800 (PST)
-Message-ID: <6415df67-8d5f-44e5-8ca6-57007adf9aae@arm.com>
-Date: Mon, 27 Nov 2023 11:24:33 +0000
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C1CA32F50A
+	for <iommu@lists.linux.dev>; Mon, 27 Nov 2023 13:36:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="ACL1gHnD"
+Received: from pps.filterd (m0279867.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 3ARAxs1k022888;
+	Mon, 27 Nov 2023 13:36:19 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=qcppdkim1;
+ bh=eaYDENFudgkNQ4NfcB5K66/PQg1e93ahVRYS/UHpGyY=;
+ b=ACL1gHnDQj3KBNGmQt24cyCoSj/bzGr5xQgEK/1YzTw8qOr0Yf15CDRnPEJ3ZeCC2kpo
+ Kdrwk2k/1ujuXTokLy87k7fRe2xDgM1Ii5trikrpy41HlKSV4CUdbE3ymYMq8OLlIpcu
+ Bm/dO+RLduh2ydWDyNwBO7+0h0/RPPQNUIlG906e9trV6IV8PEQwT6Wqj/PKh4b8c4ZZ
+ bElIzACqrN5Vs+LswJLvwOY1o8Wia+fvD7nLBpiBkr4wG0QWVTO7tmmNl2CF26CuHvD5
+ sUF4jE480PXqEDy264hTvhnYkEjZz3wgLMt5qAbfYoQ0FA33wfhbbupGIYIfJjB7qhv4 uw== 
+Received: from nalasppmta01.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3umqxh0jcv-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 27 Nov 2023 13:36:19 +0000
+Received: from nalasex01c.na.qualcomm.com (nalasex01c.na.qualcomm.com [10.47.97.35])
+	by NALASPPMTA01.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 3ARDaI5Z016356
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 27 Nov 2023 13:36:18 GMT
+Received: from [10.216.27.212] (10.80.80.8) by nalasex01c.na.qualcomm.com
+ (10.47.97.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.40; Mon, 27 Nov
+ 2023 05:36:14 -0800
+Message-ID: <89623ca4-4b49-1b3f-5bb0-f4b398e69b9f@quicinc.com>
+Date: Mon, 27 Nov 2023 19:05:53 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] kernel: dma: let dma use vmalloc area
-Content-Language: en-GB
-To: Zhaoyang Huang <huangzhaoyang@gmail.com>, Christoph Hellwig <hch@lst.de>
-Cc: "zhaoyang.huang" <zhaoyang.huang@unisoc.com>,
- Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, steve.kang@unisoc.com
-References: <20231127030930.1074374-1-zhaoyang.huang@unisoc.com>
- <20231127071430.GA28214@lst.de>
- <CAGWkznFf5hdFRomLXDzoxEKVgiKY--DFbHjRLAMvgvodA01EFw@mail.gmail.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <CAGWkznFf5hdFRomLXDzoxEKVgiKY--DFbHjRLAMvgvodA01EFw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.0
+Subject: Re: [PATCH v3 0/2] iommu: Allow passing custom allocators to pgtable
+ drivers
+To: Joerg Roedel <joro@8bytes.org>,
+        Boris Brezillon
+	<boris.brezillon@collabora.com>
+CC: <iommu@lists.linux.dev>, Will Deacon <will@kernel.org>,
+        Robin Murphy
+	<robin.murphy@arm.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        Rob Clark
+	<robdclark@gmail.com>, Steven Price <steven.price@arm.com>,
+        Jason Gunthorpe
+	<jgg@ziepe.ca>, <kernel@collabora.com>
+References: <20231124142434.1577550-1-boris.brezillon@collabora.com>
+ <ZWRrLhxEHxzNz41r@8bytes.org>
+Content-Language: en-US
+From: Gaurav Kohli <quic_gkohli@quicinc.com>
+In-Reply-To: <ZWRrLhxEHxzNz41r@8bytes.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01c.na.qualcomm.com (10.47.97.35)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: vGf19Miy2vFe7qG8dFCSi6ewfMRTRyjZ
+X-Proofpoint-ORIG-GUID: vGf19Miy2vFe7qG8dFCSi6ewfMRTRyjZ
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.987,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2023-11-27_11,2023-11-27_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 malwarescore=0
+ clxscore=1011 phishscore=0 mlxlogscore=385 spamscore=0 bulkscore=0
+ priorityscore=1501 adultscore=0 lowpriorityscore=0 impostorscore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2311060000 definitions=main-2311270093
 
-On 2023-11-27 8:56 am, Zhaoyang Huang wrote:
-> On Mon, Nov 27, 2023 at 3:14 PM Christoph Hellwig <hch@lst.de> wrote:
->>
->> On Mon, Nov 27, 2023 at 11:09:30AM +0800, zhaoyang.huang wrote:
->>> From: Zhaoyang Huang <zhaoyang.huang@unisoc.com>
->>>
->>> memremap within dma_init_coherent_memory will map the given phys_addr
->>> into vmalloc area if the pa is not found during iterating iomem_resources,
->>> which conflict the rejection of vmalloc area in dma_map_single_attrs.
->>
->> I can't parse this sentence.
-> Sorry for the confusion, please find below codes for more information.
-> dma_init_coherent_memory
->      memremap
->          addr = ioremap_wt(offset, size);
-> What I mean is addr is a vmalloc address, which is implicitly mapped
-> by dma's framework and not be aware of to the driver.
->>
->>> IMO, it is find to let all valid virtual address be valid for DMA as the
->>> user will keep corresponding RAM safe for transfer.
->>
->> No, vmalloc address can't be passed to map_single.  You need to pass
->> the page to dma_map_page, and explicitly mange cache consistency
->> using the invalidate_kernel_vmap_range and flush_kernel_vmap_range
->> helpers.
-> Please correct me if I am wrong. According to my understanding, cache
-> consistency could be solved inside dma_map_page via either
-> dma_direct_map_page(swio/arch_sync_dma_for_device) or ops->map_page.
-> The original thought of rejecting vmalloc is that this pa is not safe
-> as this mapping could go in any time. What I am suggesting is to let
-> this kind of va be enrolled.
 
-No, the point is that dma_map_single() uses virt_to_page(), and 
-virt_to_page() is definitely not valid for vmalloc addresses. At worst 
-it may blow up in itself with an out-of-bounds dereference; at best it's 
-going to return a completely bogus page pointer which may then make 
-dma_map_page() fall over.
 
-Thanks,
-Robin.
-
+On 11/27/2023 3:40 PM, Joerg Roedel wrote:
+> On Fri, Nov 24, 2023 at 03:24:32PM +0100, Boris Brezillon wrote:
+>> Boris Brezillon (2):
+>>    iommu: Allow passing custom allocators to pgtable drivers
+>>    iommu: Extend LPAE page table format to support custom allocators
+>>
+>>   drivers/iommu/io-pgtable-arm.c | 55 ++++++++++++++++++++++++----------
+>>   drivers/iommu/io-pgtable.c     | 23 ++++++++++++++
+>>   include/linux/io-pgtable.h     | 34 +++++++++++++++++++++
+>>   3 files changed, 96 insertions(+), 16 deletions(-)
 > 
->   static inline dma_addr_t dma_map_single_attrs(struct device *dev, void *ptr,
->                  size_t size, enum dma_data_direction dir, unsigned long attrs)
->   {
->         /* DMA must never operate on areas that might be remapped. */
->         if (dev_WARN_ONCE(dev, is_vmalloc_addr(ptr),
->                           "rejecting DMA map of vmalloc memory\n"))
->                 return DMA_MAPPING_ERROR;
-> 
->>
-> 
+> Applied, thanks.
+
+Tested patch v3 also and reviewed also, both looks good , please feel 
+free to add in case of merging:
+
+Reviewed-by: Gaurav Kohli <quic_gkohli@quicinc.com>
+Tested-by: Gaurav Kohli <quic_gkohli@quicinc.com>
