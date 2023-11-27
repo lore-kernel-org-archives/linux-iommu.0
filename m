@@ -1,50 +1,50 @@
-Received: from mail-lf1-f45.google.com (mail-lf1-f45.google.com [209.85.167.45])
+Received: from mail-ed1-f47.google.com (mail-ed1-f47.google.com [209.85.208.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 00DF732C6C
-	for <iommu@lists.linux.dev>; Mon, 27 Nov 2023 15:29:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 57400321BA
+	for <iommu@lists.linux.dev>; Mon, 27 Nov 2023 15:29:16 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="FhqZvcEC"
-Received: by mail-lf1-f45.google.com with SMTP id 2adb3069b0e04-50a6ff9881fso6641469e87.1
-        for <iommu@lists.linux.dev>; Mon, 27 Nov 2023 07:29:12 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="MHbg6OGe"
+Received: by mail-ed1-f47.google.com with SMTP id 4fb4d7f45d1cf-548f0b7ab11so5993907a12.1
+        for <iommu@lists.linux.dev>; Mon, 27 Nov 2023 07:29:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1701098951; x=1701703751; darn=lists.linux.dev;
+        d=linaro.org; s=google; t=1701098954; x=1701703754; darn=lists.linux.dev;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=3WME6ubitd3vxaAOMdHVezdwhed8qbighnDEBO169Ec=;
-        b=FhqZvcECAfbFqZviX9QViqEfzFZcLoYoJTmgozxEDv7HKnGh5v7RvZ8m+afGadNbPs
-         MSiU1MIRyVhRrBYEc7aJibaMCosWtoQT42wJY+l6CTGBqpUOwrZpaHYdDE8+ulAanNNG
-         5CIQ7KKyR0kQXsR+/Q6Blg2wSdAtmcE8fTWNsHwZ23rX+fSdnqbdaMVsQk2awW+TCUUd
-         eBUzl3hggLQEnUxOJ7Tk1TyQJxiyEIOhjvJa9gCAPl8AHzfr7wy5HkEiGJbcVvUuFOd4
-         NSxDuL1kbFhF0Lfjsi/QdB2IxjAGHOpiJR3ZCQDCAFkyQWv6789R/3A4podJB5TAqeww
-         oZqw==
+        bh=9K/KL6rUHA7mDcBMrrqIFDkXaVSeDD2iYf5D2W8YBIg=;
+        b=MHbg6OGeoqt2mVNwPGJlYvRzkh9IzWDIs+KNFB0/K5vQ7nBHkE/enwQp3TayHa7Knj
+         EbhcwcjSslWkTSEfnbnvNQaHHTL7fvQpQUOKCZyCRWz1D1h0t/ZpSpckLhpb6LHBS+vN
+         z0cxLIE5RKDQKrhrKQ3Fc6Ik570xR1I0yBLtxjW8o/RLtQOGgk/yjw/wm4xzLSvhQxft
+         +XsoAbvwM/wokzDyy1+9EIedJ9B+CsgoCjIPno/SjA8OE0uEB6scGiLzSna3MaWgnH3A
+         tMCuMU0PsVJ3RS0MV3xb9QNiiGJO2YEzHapUhMx/MsvIR+VFxgxfbECgBvfqqYnf9BmL
+         27cA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701098951; x=1701703751;
+        d=1e100.net; s=20230601; t=1701098954; x=1701703754;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=3WME6ubitd3vxaAOMdHVezdwhed8qbighnDEBO169Ec=;
-        b=DWAU3Y5DJcBPdE4HNQyLFrfa6ubxPL5mE7q2Rdf8reIlKhPtVLWEw8to7Xrpf2Bsty
-         0Rxf0t5uuWC3Fzlb8S0fRs+dxGHOCoDblxGh6KJgOhjnhYl704ttGlfGkfSX0AYsAyXT
-         VJ3V37Lpu2w2WOPPMH5e/top+QW4hFVXUkIhuFJ1BTOq3V3Ln8jbpwX2NnhLlOaMu7KB
-         r5+ZYqjjF6Pk2mAiQEuXImfTgthKt040McZ9E3H5WYMQjCEIgSNBRXm/wh0SNa4AJ7mQ
-         Ro9Sg4s1LWLpPAQeu2uaexN8qR2huwqvCPjP5TuHIm7JtlJSVvtyg9NaI9dHjZYs9sru
-         LVQw==
-X-Gm-Message-State: AOJu0YxyqWx33AUM36D2ucytxJVypAMnAwv7nGGB4EwwXlR9S7HwE6aX
-	+OQLKVgsesjyi4IZWGe+Jbj8Zw==
-X-Google-Smtp-Source: AGHT+IH9PASqf8+9MS/t3uEvXsv+5J3bCkLHJgeNIv00zKAMBrW7rkqqrSRlRaaexUly2vTsBuJ+TA==
-X-Received: by 2002:a19:ac48:0:b0:50a:6fc5:e95c with SMTP id r8-20020a19ac48000000b0050a6fc5e95cmr7956561lfc.60.1701098951013;
-        Mon, 27 Nov 2023 07:29:11 -0800 (PST)
+        bh=9K/KL6rUHA7mDcBMrrqIFDkXaVSeDD2iYf5D2W8YBIg=;
+        b=GSjiAEIJwH7a4Glpojtec2vbOMIlagTmYjJjfUHwTy5LERGmVsoSEWmU6LOaU0uKLO
+         SPf9qz+3sPQ6KjvvngRsSLaIQMmctqBHMMuws9VajpxVsGf6jG1y8I+wPuvVDxM85vD4
+         PiozOsTd7prGFAJAcAhgNG1lwHHAyZkMYEic7G7LwoVhJ9djNCuO3JFPVNj/Tk4MyNVe
+         ZWxihvc8EZWOOjwOk2IygjvR+r6vnPf7rFGIkjfhJimCB0sEgGdEjfE7QcKVbONKlpRt
+         uFu+l9/5rNMGXgVTXD470TuDQUHyodAHLz9XcvNQYFv8gebskvjtLH+7XUeDQiGa875n
+         G+og==
+X-Gm-Message-State: AOJu0YxDiLIuHOc7YFnoF9k8HcdHQgLlpW/rcCKhvOoTWbbi0SFi8XHx
+	Ch3oPrHK19G1PAia5DOR/RPvFg==
+X-Google-Smtp-Source: AGHT+IEIiagBs4pKlQcv6cU58laBuVympuk9luCBlm1ZQI6HobNWAnEpM0jGc9hClEDNkc6Pr54I+w==
+X-Received: by 2002:a50:c04a:0:b0:53d:d913:d3cb with SMTP id u10-20020a50c04a000000b0053dd913d3cbmr9226012edd.28.1701098954710;
+        Mon, 27 Nov 2023 07:29:14 -0800 (PST)
 Received: from [10.167.154.1] (178235187180.dynamic-4-waw-k-2-3-0.vectranet.pl. [178.235.187.180])
-        by smtp.gmail.com with ESMTPSA id e7-20020a056402104700b00542db304680sm5321002edu.63.2023.11.27.07.29.08
+        by smtp.gmail.com with ESMTPSA id e7-20020a056402104700b00542db304680sm5321002edu.63.2023.11.27.07.29.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Nov 2023 07:29:10 -0800 (PST)
+        Mon, 27 Nov 2023 07:29:14 -0800 (PST)
 From: Konrad Dybcio <konrad.dybcio@linaro.org>
-Date: Mon, 27 Nov 2023 16:28:46 +0100
-Subject: [PATCH v2 06/12] arm64: dts: qcom: sc7180: Add the missing MDSS
+Date: Mon, 27 Nov 2023 16:28:47 +0100
+Subject: [PATCH v2 07/12] arm64: dts: qcom: sc7280: Add the missing MDSS
  icc path
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -54,7 +54,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20231125-topic-rb1_feat-v2-6-979b28f35e4a@linaro.org>
+Message-Id: <20231125-topic-rb1_feat-v2-7-979b28f35e4a@linaro.org>
 References: <20231125-topic-rb1_feat-v2-0-979b28f35e4a@linaro.org>
 In-Reply-To: <20231125-topic-rb1_feat-v2-0-979b28f35e4a@linaro.org>
 To: Rob Clark <robdclark@gmail.com>, 
@@ -81,11 +81,11 @@ Cc: Marijn Suijten <marijn.suijten@somainline.org>,
  linux-pm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
  iommu@lists.linux.dev, Konrad Dybcio <konrad.dybcio@linaro.org>
 X-Mailer: b4 0.12.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1701098925; l=1145;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1701098925; l=1493;
  i=konrad.dybcio@linaro.org; s=20230215; h=from:subject:message-id;
- bh=QxbVxThi6gj4JqQP8V9LpJsjR/myuVOnIJbwHX7amYU=;
- b=fS2uPRd3j9acJg11U61tq9XVN8ayomlEw9d5ATm43L3nTtaAyensMfnnnvE/jpMI6SBpUTurk
- TEzmocPClnSCqU9FEoaODlLAlpLeRUPaiJm5qFPFJKjE9fYnQKYi6tN
+ bh=RpzLMWuMbYjvqQjs1yjMVMPj1VmkWicMXA9dO0pSXPQ=;
+ b=R55EDfVA3vNj1gKF5/rCo8RrwCBiKh1MWLkiyJUgCpQVrEUf8nd/J8yIoPfGKZI92hXoMX4hD
+ 5r03X65uJfzC/GqWapMJgl2lg6iTLvi+NlygsZ5KcTfiGZHefthMnG8
 X-Developer-Key: i=konrad.dybcio@linaro.org; a=ed25519;
  pk=iclgkYvtl2w05SSXO5EjjSYlhFKsJ+5OSZBjOkQuEms=
 
@@ -97,14 +97,22 @@ Add the missing path.
 
 Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
 ---
- arch/arm64/boot/dts/qcom/sc7180.dtsi | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ arch/arm64/boot/dts/qcom/sc7280.dtsi | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/sc7180.dtsi b/arch/arm64/boot/dts/qcom/sc7180.dtsi
-index 11f353d416b4..9664e42faeb1 100644
---- a/arch/arm64/boot/dts/qcom/sc7180.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sc7180.dtsi
-@@ -3100,8 +3100,12 @@ mdss: display-subsystem@ae00000 {
+diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
+index 04bf85b0399a..41d327b1f1b6 100644
+--- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
++++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
+@@ -15,6 +15,7 @@
+ #include <dt-bindings/dma/qcom-gpi.h>
+ #include <dt-bindings/firmware/qcom,scm.h>
+ #include <dt-bindings/gpio/gpio.h>
++#include <dt-bindings/interconnect/qcom,icc.h>
+ #include <dt-bindings/interconnect/qcom,osm-l3.h>
+ #include <dt-bindings/interconnect/qcom,sc7280.h>
+ #include <dt-bindings/interrupt-controller/arm-gic.h>
+@@ -3958,8 +3959,12 @@ mdss: display-subsystem@ae00000 {
  			interrupt-controller;
  			#interrupt-cells = <1>;
  
@@ -113,11 +121,11 @@ index 11f353d416b4..9664e42faeb1 100644
 +			interconnects = <&mmss_noc MASTER_MDP0 QCOM_ICC_TAG_ALWAYS
 +					 &mc_virt SLAVE_EBI1 QCOM_ICC_TAG_ALWAYS>,
 +					<&gem_noc MASTER_APPSS_PROC QCOM_ICC_TAG_ALWAYS
-+					 &config_noc SLAVE_DISPLAY_CFG QCOM_ICC_TAG_ALWAYS>;
++					 &cnoc2 SLAVE_DISPLAY_CFG QCOM_ICC_TAG_ALWAYS>;
 +			interconnect-names = "mdp0-mem",
 +					     "cpu-cfg";
  
- 			iommus = <&apps_smmu 0x800 0x2>;
+ 			iommus = <&apps_smmu 0x900 0x402>;
  
 
 -- 
