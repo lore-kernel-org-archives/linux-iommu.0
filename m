@@ -1,248 +1,142 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2088.outbound.protection.outlook.com [40.107.93.88])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F103233C4
-	for <iommu@lists.linux.dev>; Mon, 27 Nov 2023 17:14:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4BD2E1C292
+	for <iommu@lists.linux.dev>; Mon, 27 Nov 2023 17:42:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="KXn8mUtK"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1701105278;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=Q/lzc/Q0P67zpQSBQ4vjzQ1L40aVP3IrTe077/xfP/I=;
-	b=KXn8mUtKhhhfTYJEd9f8nSRuSPnH6R1z0FPxgh1r1TCK4B54IHCyTxfDK4JzSem2XYAGd/
-	IUHLibN3xRcE2AMBjLq3GIxB9W/FF0XuN/MdDTcihnh/7eVn61SSpr6zXdKJaCS85jOU2A
-	s1DFLTnfomQnAYrkbflsF902S7ginN4=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-552-sRZj14qVMY2JF-q9HxwMoA-1; Mon, 27 Nov 2023 12:14:34 -0500
-X-MC-Unique: sRZj14qVMY2JF-q9HxwMoA-1
-Received: by mail-wm1-f69.google.com with SMTP id 5b1f17b1804b1-40b42bd8de5so11504015e9.1
-        for <iommu@lists.linux.dev>; Mon, 27 Nov 2023 09:14:34 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701105273; x=1701710073;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Q/lzc/Q0P67zpQSBQ4vjzQ1L40aVP3IrTe077/xfP/I=;
-        b=uWTMb8zSGCQg/gPPqfjptlfehkQnBkAEw3HQ+WSIGJZCybKGZPmHiYnSnnpC/OWpi+
-         54ZvaXUVrXNfLyzHJzZmEj2pTe2m+x5TjnJPvgfQrUfiMilIdJLpB3wV4+wOKVIjG50h
-         09xtfxZuI9/1DK+T/3hjzgqMgwfewjybK+pr7R4O7uqhN9ixpbvbSTAxYZzbAyIVkEMQ
-         ljORRPIw/a3w3FJ/WLGnAxI2mF3OfxifF3wtxB4AUK8j3fjxFOySKvXephgpqONnq5sG
-         yKh+2PNK9EfGrC0TGpp+HRy134oPrL9YMXbGTdOZiemsQ9HRRNALN5rhEoWTVTtfaCfG
-         UQww==
-X-Gm-Message-State: AOJu0Yw2bRR2NmPVDWAg2MWoBDEUa2fVUV+HjMCESvWpevk7VcYh/mce
-	wMuCPoROxEBGUjiZoc8RKBVIY1jUGeFpPchplS1UucB3rBI96HlnyLEUsDkx0NN7WngABPGiKNU
-	fTjva6VZo7zwSgh8=
-X-Received: by 2002:adf:e981:0:b0:332:c9f5:e5b5 with SMTP id h1-20020adfe981000000b00332c9f5e5b5mr9898895wrm.0.1701105273290;
-        Mon, 27 Nov 2023 09:14:33 -0800 (PST)
-X-Google-Smtp-Source: AGHT+IFMSr48V5gzC1nkMiaXIll+FWd5UWN/RMRktYG6IhAsunTRvT7T0Z6W3FwMe6R9/sHjGaGFsQ==
-X-Received: by 2002:adf:e981:0:b0:332:c9f5:e5b5 with SMTP id h1-20020adfe981000000b00332c9f5e5b5mr9898875wrm.0.1701105272985;
-        Mon, 27 Nov 2023 09:14:32 -0800 (PST)
-Received: from ?IPV6:2a01:e0a:59e:9d80:527b:9dff:feef:3874? ([2a01:e0a:59e:9d80:527b:9dff:feef:3874])
-        by smtp.gmail.com with ESMTPSA id f8-20020adff988000000b00332e75eae4asm10663652wrr.85.2023.11.27.09.14.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 27 Nov 2023 09:14:32 -0800 (PST)
-Message-ID: <6fff20dd-46d5-4974-a4a5-fb4e7a59ce44@redhat.com>
-Date: Mon, 27 Nov 2023 18:14:30 +0100
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="sShpQ+Jq"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ST/LL7X7AAO9qV6gInhyLZVUR9LL9c6ro9/pbFY195HgFNz8B1LGcCGcTMqoA3DzsJxkRrfh8YuTjfSARbyNdJ/Cn05LXkHvdv/cFPBPwrJsMOSskBAbEIsJoK+f2wj1WJiUe7KgbM1+m1tTUp3ptlt1fqhFr9PUqu7AdstLQPCMcbcy3lsmA9K6/ahSJqsygvJGKwXBWJ/Duna7nv/8tmsJ1jxE2xN2SzOOUvK2BGqUOSBPLAiSs3ScvylKhrRyDjhKoYvGE7xPYkTSMuxmRwA5DhbHj52Z8c0s11t4rHoifpefeguxSO8m68Cs0Zt0WRoaTIwTWdE6MAUq6kDVQQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=MiFdXiMUHy6K3dmu/ipO7vW/BoyoE5CyBs/qBkLM+YQ=;
+ b=OH9QB6r49hJ8AIgkI/PwQ3Gkh57nnzkUBZny0DY/Ala3OJvW4Kiu9t1FTUGYciQvZoHwH27D9Q6FCRmqq6ydx4WLuh1WedwrYH5ZD5c2WQZlVghjskGz3Uj6RCk+XwBeINvgB2rsaXNLemx8XshuCO25hJPYpUesQMP3966rJXeK2oDOuul25LAstJBoyxqGAaKDS/A6Zr+WW4eqxxi/J4+Wr+MvOcbiDB4H7fU9do+DYpoi9H1t5vqLpSHfvXDgZp09NfWTLjxnJEEasI/dTxoJ0AYLeYD8O4HzeZrSJoRPFin3aYitzSBtrPdD/h6gXJ8/jSh5T+gnwAPSdglQuQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=MiFdXiMUHy6K3dmu/ipO7vW/BoyoE5CyBs/qBkLM+YQ=;
+ b=sShpQ+JqjVmqvoyEeoKvucr/UoRgrOGFujmdwUXm1qRyWaolAJPYGShPq5xIOWbXiOFB7pJYkszR+dOBUV/jn8ZE/PtsKP/dTrQZejIUth9KpcBsZxrq0MeyJc4eXDhcEwdmKhapzeeJQaDfSll56/ybwJbCTjNPWhK96My26tQziUb4sr1cJo/g3u8qTl5PWKfYspCdysZU6XZkSEeYKrc08w9H316qGUCBFdth+CblWGvp2u2pguCEldCbfLrsaScUXuEgfNMDUS69NAIGfTqIkl5H5ybTlMEWyYA0HAvbk0nXItEV6XivQoOyggKhq332HmsXmcFWX5l6yVBO6Q==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by CH3PR12MB8935.namprd12.prod.outlook.com (2603:10b6:610:169::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7025.28; Mon, 27 Nov
+ 2023 17:42:37 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::60d4:c1e3:e1aa:8f93]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::60d4:c1e3:e1aa:8f93%4]) with mapi id 15.20.7025.022; Mon, 27 Nov 2023
+ 17:42:37 +0000
+Date: Mon, 27 Nov 2023 13:42:35 -0400
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Eric Auger <eauger@redhat.com>
+Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+	linux-arm-kernel@lists.infradead.org,
+	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
+	Michael Shavit <mshavit@google.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+Subject: Re: [PATCH v2 01/19] iommu/arm-smmu-v3: Add a type for the STE
+Message-ID: <20231127174235.GA1165737@nvidia.com>
+References: <1-v2-de8b10590bf5+400-smmuv3_newapi_p1_jgg@nvidia.com>
+ <0a2a9fb5-0506-4a46-9c93-3c4001d0b966@redhat.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0a2a9fb5-0506-4a46-9c93-3c4001d0b966@redhat.com>
+X-ClientProxiedBy: BL0PR02CA0004.namprd02.prod.outlook.com
+ (2603:10b6:207:3c::17) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 14/19] iommu/arm-smmu-v3: Remove
- arm_smmu_master->domain
-To: Jason Gunthorpe <jgg@nvidia.com>, iommu@lists.linux.dev,
- Joerg Roedel <joro@8bytes.org>, linux-arm-kernel@lists.infradead.org,
- Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>
-Cc: Michael Shavit <mshavit@google.com>, Nicolin Chen <nicolinc@nvidia.com>,
- Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-References: <14-v2-de8b10590bf5+400-smmuv3_newapi_p1_jgg@nvidia.com>
-From: Eric Auger <eauger@redhat.com>
-In-Reply-To: <14-v2-de8b10590bf5+400-smmuv3_newapi_p1_jgg@nvidia.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|CH3PR12MB8935:EE_
+X-MS-Office365-Filtering-Correlation-Id: d6a09bc2-e34b-4c56-0d61-08dbef703e87
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	BDuI2p2TMvgAg6g/tZRdLO7NTLtsaQAA35yMOeTisR2At0TbokEkJXY/DOK8+sYQlrZEiTSLfRdJNfeHaFtO/VtK2MeZ17hW1AvAqINusZ+9lLsvfn9137hZp/+GJj1CL2LRslyRfL+mSAlDyOzZ+iu6T0aurBulV+d9RORAyvYVdQ/VPcMha0gABOl2YspV6O83IUu+szGAFtSy8Bng1vDVS7EAIbYjMVakMcodPzuy4z9HNqVjSJGWUH1mFDYntkY3xUQXRtkc4+6eGjTWAF3QYf/SlUpvHHXjCBq/oV2dSQ/PRdOS/HFYqWaV7d2S9h97ugskpXKoVOx669QU9LbM4yZaYM4V5YsUBiajeStcdEugHBU4kWp81tCvHayMg3wdNPVhERVSvzTqj5gM2BnIGAQoHbbhy8R7Ievw3c4tNShBJApPDV2UxxabtPefsrNg8m9jYUajkNl5FnRc5pkJmHxv/AXt05D2vo/jUkhV82dEb7tgWrimDfVjMo7j5l1pC34lOxFVbCPFuoqIGwda49ycqLYI193OWz8GVVIKaQAYW0Bo5GxQsuxe9D+V
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(376002)(136003)(366004)(396003)(346002)(39860400002)(230922051799003)(451199024)(1800799012)(64100799003)(186009)(8936002)(4326008)(8676002)(6512007)(6506007)(66476007)(54906003)(66556008)(66946007)(6916009)(316002)(6486002)(478600001)(2906002)(4744005)(33656002)(38100700002)(36756003)(41300700001)(1076003)(86362001)(26005)(2616005)(5660300002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?HCKl+9/NHInlsInmxl2VBs1/Z+m1Z080JrEczO3RYaUwQ0Fbf/KocUAKTNJI?=
+ =?us-ascii?Q?uk5RdBVqlxhLAznci/dfS7LIwJCyKfrLREBOxxads2NWKuSGpz6dYdbqoAjK?=
+ =?us-ascii?Q?DPNv3ufazdNXcdfCIIpP+JJQhtpYZFr9iGOW/jCWc/llzceBbiv3dFTSvS98?=
+ =?us-ascii?Q?4INoovxSQ/i4N2l3h3u8TfMDED1Y+wYpN0V/GNeaTEcDbrguFFXWb6r4e8A6?=
+ =?us-ascii?Q?VW0is2+UWyTCoiOpTEMLBQNsxdzwkMWb2HIfRnO90EGfNTnUg+Lb30nMcnFA?=
+ =?us-ascii?Q?eU5b7b2UX8v8+kTsDB930P6cKlDNfIFyv05RBImjRJGfBYyDCmPFsaZb5FQn?=
+ =?us-ascii?Q?Ru4duHtxkpoc9WtP4Jny7Rsz7Jxj/6UJw4+Jlo0xlprMEwhUJOBJVZpJI8nf?=
+ =?us-ascii?Q?M2r68OTN23n/wiQKUu2ppX4/ZFSTEiDAcyQi8GzJzffIHvfj6mYILrHFOKdF?=
+ =?us-ascii?Q?wi3v2cj23FGwtzI8fG6c0L74qREHCiLAgvqz2652HZjm/uT5235bVinFuzjH?=
+ =?us-ascii?Q?p+xN82ayd0V4piuAwc+KaGE375Wmf7QKA7ou4dw7dqrqdWkGm40wd29MXxHY?=
+ =?us-ascii?Q?8YooWRHqM7swj4coH1/AQESM+/QLRc0JyZZyjNk1gBfLjWmM3utXoCt8FOOY?=
+ =?us-ascii?Q?e3q9b+QbMCHMAhPPXIer7g8vNSTV1Der4CFEP+7r/XgmrU0VB0O51tH1YST5?=
+ =?us-ascii?Q?r5B8PbrKHcaNa6YzTkAEvtfq8DewAkAmAHqnZyAFHSMIo6p1as2DqB0EbQWt?=
+ =?us-ascii?Q?EF5FBXC+9p76FTpLv3B4DM9E2GZtyGaK51ieTNC7OuLPvB4xTQVWKAPygR95?=
+ =?us-ascii?Q?yBopd1nVy3vUAmwD0ufuPkceSn6kwCrbA7EFKaIoEPGaH5ub5RRIb19kA365?=
+ =?us-ascii?Q?m95mZ9lfyNuCZP4NVYNsIlYtf+sBQcY10fSBNTe1M9rkY/RYF29DDzSWp6zA?=
+ =?us-ascii?Q?THUER9oBlMbeANid2TbWQQAmnilCCjcVycmu5TjmxeE1l99Acy5cxsinbPvu?=
+ =?us-ascii?Q?eUjzPstLcmSWINltaRjs0AnirjlHlSRr7NI6TQ+b0hISLlqcWGqRhLm5VsMW?=
+ =?us-ascii?Q?oOh6+0zKlEFxrtS7d18sfV5oWQgBBEhsZw18jfFFjs3+dojleC3qkn1HGHBT?=
+ =?us-ascii?Q?8tRO/75oWmca/aogPV4HLaJtrc2If2Jty8PK/6SMMpUXkFwI37DFUbwxDm8N?=
+ =?us-ascii?Q?IpPl5Yx45vvnntyGxZQyzYkfdsJJwa2vOobNtt1al6RLwSn1JUJSMzf5nb0/?=
+ =?us-ascii?Q?tmwCgFFs/B0O3PQX5rYP8xdO4sJjaCU7K4XXzIc0uHT/lWplNpbbKFm5aee5?=
+ =?us-ascii?Q?K4NMcRzzHtyf6Czbj5qvqhMO6hDEQE9/VcMUSqfpXU0sdJvdPUdg52Qo3669?=
+ =?us-ascii?Q?YAIsZE0EOQaKECXITe1St3vMdgEn28bhmFV6+YxzdCzveMgeSKaqTmq3ZLjq?=
+ =?us-ascii?Q?N32+bjdcKhKygj8x+hCMmKIFnDGnFK3gAVlLkAwx/CN0ogxr/3M2xpmYK/Gg?=
+ =?us-ascii?Q?Scb0p3QvnaTUquYJur8nW7oo3XdoHkovdc53L+gOc2esum67tMbd4iggqeWt?=
+ =?us-ascii?Q?WVPApbsZtyg9oIqM1Y8sHp25KASskUylMDXHaPQS?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d6a09bc2-e34b-4c56-0d61-08dbef703e87
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Nov 2023 17:42:36.9208
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: qoZ0ikAnVVjhdoQTpdVvD/U+jde4xVgsOhEF0Cl3x9Tmw656IS0GG1MYQWNsRltu
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR12MB8935
 
-Hi Jason,
+On Mon, Nov 27, 2023 at 05:03:36PM +0100, Eric Auger wrote:
 
-On 11/13/23 18:53, Jason Gunthorpe wrote:
-> Introducing global statics which are of type struct iommu_domain, not
-> struct arm_smmu_domain makes it difficult to retain
-> arm_smmu_master->domain, as it can no longer point to an IDENTITY or
-> BLOCKED domain.
-> 
-> The only place that uses the value is arm_smmu_detach_dev(). Change things
-> to work like other drivers and call iommu_get_domain_for_dev() to obtain
-> the current domain.
-> 
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> > -static __le64 *arm_smmu_get_step_for_sid(struct arm_smmu_device *smmu, u32 sid)
+> > +static struct arm_smmu_ste *
+> > +arm_smmu_get_step_for_sid(struct arm_smmu_device *smmu, u32 sid)
+> >  {
+> > -	__le64 *step;
+> >  	struct arm_smmu_strtab_cfg *cfg = &smmu->strtab_cfg;
+> >  
+> >  	if (smmu->features & ARM_SMMU_FEAT_2_LVL_STRTAB) {
+> > -		struct arm_smmu_strtab_l1_desc *l1_desc;
+> >  		int idx;
+> >  
+> >  		/* Two-level walk */
+> >  		idx = (sid >> STRTAB_SPLIT) * STRTAB_L1_DESC_DWORDS;
+> > -		l1_desc = &cfg->l1_desc[idx];
+> > -		idx = (sid & ((1 << STRTAB_SPLIT) - 1)) * STRTAB_STE_DWORDS;
+> > -		step = &l1_desc->l2ptr[idx];
+> > +		return &cfg->l1_desc[idx].l2ptr[sid & ((1 << STRTAB_SPLIT) - 1)];
+> This looks less readable to me than it was before.
 
-This patch introduces a crash on my machine. See below.
+You would like the idx calculation outside?
 
-Eric
+  		idx1 = (sid >> STRTAB_SPLIT) * STRTAB_L1_DESC_DWORDS;
+		idx2 = sid & ((1 << STRTAB_SPLIT) - 1);
+		return &cfg->l1_desc[idx].l2ptr[idx2];
 
-[    7.209854] list_del corruption, ffff007f82e5f890->next is NULL
-[    7.216154] ------------[ cut here ]------------
-[    7.220952] kernel BUG at lib/list_debug.c:52!
-[    7.225750] Internal error: Oops - BUG: 00000000f2000800 [#1] SMP
-[    7.232188] Modules linked in:
-[    7.235407] CPU: 3 PID: 263 Comm: kworker/u97:1 Not tainted
-6.7.0-rc2-upstream+ #11
-[    7.243598] Hardware name: FUJITSU FX700/CMUA        , BIOS 1.8.0 Nov
-26 2021
-[    7.251073] Workqueue: events_unbound deferred_probe_work_func
-[    7.257452] pstate: 604000c9 (nZCv daIF +PAN -UAO -TCO -DIT -SSBS
-BTYPE=--)
-[    7.264779] pc : __list_del_entry_valid_or_report+0x6c/0xd8
-[    7.270736] lr : __list_del_entry_valid_or_report+0x6c/0xd8
-[    7.276689] sp : ffff800089def970
-[    7.280164] x29: ffff800089def970 x28: ffff8000820f19c0 x27:
-ffff007f82e01248
-[    7.287869] x26: ffff007f80030f00 x25: ffff007f82e01268 x24:
-ffff007f82e00900
-[    7.295372] x23: ffff800082580cf8 x22: 0000000000000000 x21:
-0000000000000000
-[    7.303075] x20: ffff007f82e009d8 x19: ffff007f82e5f880 x18:
-ffffffffffffffff
-[    7.310773] x17: 0000000000000001 x16: 0000000000000040 x15:
-ffff800109def597
-[    7.318254] x14: 0000000000000000 x13: 4c4c554e20736920 x12:
-7478656e3e2d3039
-[    7.325956] x11: 00000000ffff7fff x10: 00000000ffff7fff x9 :
-ffff80008012cee4
-[    7.333463] x8 : 00000000000bffe8 x7 : c0000000ffff7fff x6 :
-00000000002bffa8
-[    7.341161] x5 : 0000000000007fff x4 : 0000000000000000 x3 :
-0000000000000000
-[    7.348636] x2 : 0000000000000000 x1 : ffff007f824bc840 x0 :
-0000000000000033
-[    7.356329] Call trace:
-[    7.358961]  __list_del_entry_valid_or_report+0x6c/0xd8
-[    7.364556]  arm_smmu_detach_dev+0x4c/0x128
-[    7.368908]  arm_smmu_attach_dev+0xe0/0x580
-[    7.373475]  __iommu_attach_device+0x28/0xf8
-[    7.377934]  __iommu_device_set_domain+0x74/0xd8
-[    7.382900]  __iommu_probe_device+0x15c/0x270
-[    7.387423]  iommu_probe_device+0x20/0x60
-[    7.391819]  acpi_dma_configure_id+0xc4/0x150
-[    7.396365]  pci_dma_configure+0xe8/0xf8
-[    7.400671]  really_probe+0x78/0x3d0
-[    7.404412]  __driver_probe_device+0x80/0x178
-[    7.409153]  driver_probe_device+0x44/0x120
-[    7.413499]  __device_attach_driver+0xb8/0x158
-[    7.418369]  bus_for_each_drv+0x84/0xe8
-[    7.422387]  __device_attach+0xac/0x1e0
-[    7.426407]  device_initial_probe+0x18/0x28
-[    7.430946]  bus_probe_device+0xa8/0xb8
-[    7.434942]  deferred_probe_work_func+0xb8/0x110
-[    7.439918]  process_one_work+0x174/0x3c8
-[    7.444110]  worker_thread+0x2c8/0x3e0
-[    7.448222]  kthread+0x100/0x110
-[    7.451616]  ret_from_fork+0x10/0x20
-[    7.455386] Code: d65f03c0 b00062a0 910d2000 97ec9112 (d4210000)
-[    7.461832] ---[ end trace 0000000000000000 ]---
-[    7.466827] Kernel panic - not syncing: Oops - BUG: Fatal exception
-[    7.473439] SMP: stopping secondary CPUs
-[    7.477729] Kernel Offset: disabled
-[    7.481399] CPU features: 0x0,00000001,90028144,21017203
-[    7.487061] Memory Limit: none
-[    7.490280] ---[ end Kernel panic - not syncing: Oops - BUG: Fatal
-exception ]---
+?
 
-> ---
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 21 +++++++--------------
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  1 -
->  2 files changed, 7 insertions(+), 15 deletions(-)
-> 
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index 7d2dd3ea47ab68..23dda64722ea17 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -2480,19 +2480,20 @@ static void arm_smmu_disable_pasid(struct arm_smmu_master *master)
->  
->  static void arm_smmu_detach_dev(struct arm_smmu_master *master)
->  {
-> +	struct iommu_domain *domain = iommu_get_domain_for_dev(master->dev);
-> +	struct arm_smmu_domain *smmu_domain;
->  	unsigned long flags;
-> -	struct arm_smmu_domain *smmu_domain = master->domain;
->  
-> -	if (!smmu_domain)
-> +	if (!domain)
->  		return;
->  
-> +	smmu_domain = to_smmu_domain(domain);
->  	arm_smmu_disable_ats(master, smmu_domain);
->  
->  	spin_lock_irqsave(&smmu_domain->devices_lock, flags);
->  	list_del(&master->domain_head);
->  	spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
->  
-> -	master->domain = NULL;
->  	master->ats_enabled = false;
->  }
->  
-> @@ -2546,8 +2547,6 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
->  
->  	arm_smmu_detach_dev(master);
->  
-> -	master->domain = smmu_domain;
-> -
->  	/*
->  	 * The SMMU does not support enabling ATS with bypass. When the STE is
->  	 * in bypass (STE.Config[2:0] == 0b100), ATS Translation Requests and
-> @@ -2566,10 +2565,8 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
->  	case ARM_SMMU_DOMAIN_S1:
->  		if (!master->cd_table.cdtab) {
->  			ret = arm_smmu_alloc_cd_tables(master);
-> -			if (ret) {
-> -				master->domain = NULL;
-> +			if (ret)
->  				goto out_list_del;
-> -			}
->  		} else {
->  			/*
->  			 * arm_smmu_write_ctx_desc() relies on the entry being
-> @@ -2577,17 +2574,13 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
->  			 */
->  			ret = arm_smmu_write_ctx_desc(master, IOMMU_NO_PASID,
->  						      NULL);
-> -			if (ret) {
-> -				master->domain = NULL;
-> +			if (ret)
->  				goto out_list_del;
-> -			}
->  		}
->  
->  		ret = arm_smmu_write_ctx_desc(master, IOMMU_NO_PASID, &smmu_domain->cd);
-> -		if (ret) {
-> -			master->domain = NULL;
-> +		if (ret)
->  			goto out_list_del;
-> -		}
->  
->  		arm_smmu_make_cdtable_ste(&target, master, &master->cd_table);
->  		arm_smmu_install_ste_for_dev(master, &target);
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> index 1be0c1151c50c3..21f2f73501019a 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> @@ -695,7 +695,6 @@ struct arm_smmu_stream {
->  struct arm_smmu_master {
->  	struct arm_smmu_device		*smmu;
->  	struct device			*dev;
-> -	struct arm_smmu_domain		*domain;
->  	struct list_head		domain_head;
->  	struct arm_smmu_stream		*streams;
->  	/* Locked by the iommu core using the group mutex */
-
+Thanks,
+Jason
