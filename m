@@ -1,108 +1,130 @@
-Received: from mail-ej1-f52.google.com (mail-ej1-f52.google.com [209.85.218.52])
+Received: from mail-ej1-f53.google.com (mail-ej1-f53.google.com [209.85.218.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 447D6364D7
-	for <iommu@lists.linux.dev>; Mon, 27 Nov 2023 16:20:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 925A3364B9
+	for <iommu@lists.linux.dev>; Mon, 27 Nov 2023 16:21:35 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="TSrNyraE"
-Received: by mail-ej1-f52.google.com with SMTP id a640c23a62f3a-a04196fc957so645796266b.2
-        for <iommu@lists.linux.dev>; Mon, 27 Nov 2023 08:20:24 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="K7vNp4aP"
+Received: by mail-ej1-f53.google.com with SMTP id a640c23a62f3a-a00d5b0ec44so613793266b.0
+        for <iommu@lists.linux.dev>; Mon, 27 Nov 2023 08:21:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1701102022; x=1701706822; darn=lists.linux.dev;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=8gQ6YImSRCbx+1xRUL4mfy0bfTlxIzI8pSH1DPk4t6M=;
-        b=TSrNyraEvh/ShSxWb5ov3iEqU4L15/FU3xg6cO4T7ckSop87y4J+f+rr4SA8azktpp
-         s9s2zjFg53a87BqfTT4ROKP3tGSovq5UngfflCDBskDe/SuFYB2KlxQ2YKVRjal4Y17u
-         ZzBUMoPNuWOrn6rA9+35n6jvJGee+O1TKsKPDOfMlGOayYHmH2HFPVqEVleZOlGkAfRF
-         djtrptdgTvTTXkFl6lBGlBQt208d2R/mSpfZjqa8tgRbEtKl4Q2oBO6dk+aJeBqqq5oA
-         9BeYJMV/3jQ0YUuw3TgMI8lH9KE5BC4HixsWssMiEtOb2XZk11rb3q0XEdVEuVNV7+Zb
-         aUNA==
+        d=linaro.org; s=google; t=1701102094; x=1701706894; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=3erlyWF+ueA0yqXvaDfoXtHwcIbzLXsmd6GnvrsfR8I=;
+        b=K7vNp4aPW0oJHy7VqB8Fi3j5xnhwslIofcSfTBeNeJbEivgantdhHFwjGDKJPrnmbt
+         Hx8Doi6JN+ZUtUl00ifIWeD8xtudemgBInKSzx8LTdZjbEXUb3v1W7hCSM+zdZo48eYK
+         1BFbL5nno7FywOkgeuS6+RJ1HDbTZnTowKNtBl33R4xMGh+MzzMy+xgeKfzuKVDi5R2y
+         EjHcfUSASVu0piPgVH6gmKgoIr6/KmVqT4sxIhILN3o847eYyhvZoUM2I/+pKLJkP4hD
+         tHiGT9PwftcHD6gauG9fqWjf5luhvp1QtjpACBDefIYfuY05dIrgesw1uN86Bu2qbQQQ
+         wNsw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701102022; x=1701706822;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=8gQ6YImSRCbx+1xRUL4mfy0bfTlxIzI8pSH1DPk4t6M=;
-        b=b1VQo1c2RcY9G1aVGsfGvQZp1ktCOtoURR/ILXXiGMQ0cGTLFIjxX3ucnAmgUSbKvJ
-         fNymPCACLKWr188xx6zR5AdB8v8kV0fkV4+YMXUlnFidcAqSQPSjgO83N6jHawRqwPqB
-         enJJDbRRhCPUuoXRqmFUX6DEy6MqidMUnlLJP/S+9p/EZEGvNBs8OIYLqLFBTvHlGkrm
-         3Oq6AkwtDRIcxd5WlIcRQpoqe+XDELzq3WvhtP4paIP1DenqDiBIxAP19fMn9ojuI2PG
-         r2HGeuRwSu0i+DfWY9DIXe4sDD2Qqagr4gWc//FeM58LGyQYJW7ng0efyQwk3pPHiQyV
-         ZYYw==
-X-Gm-Message-State: AOJu0Yzm/ZI8wc36kZgzio1gQyDBwI88m7oAOqY3rnR2sTY4zrObupJ3
-	7emvUAHwhR42WOvxD5svIYk97g==
-X-Google-Smtp-Source: AGHT+IFPmWmSTHMcfL1yecPUgSq8wRk41FMgkXe1PITU3Isy6yZrSpKslVtSqdOYlcbiQ944Gj61HQ==
-X-Received: by 2002:a17:906:3e0e:b0:9c1:edd8:43c2 with SMTP id k14-20020a1709063e0e00b009c1edd843c2mr8518492eji.42.1701102022689;
-        Mon, 27 Nov 2023 08:20:22 -0800 (PST)
-Received: from [10.167.154.1] (178235187180.dynamic-4-waw-k-2-3-0.vectranet.pl. [178.235.187.180])
-        by smtp.gmail.com with ESMTPSA id m12-20020a1709062acc00b009c3828fec06sm5734760eje.81.2023.11.27.08.20.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Nov 2023 08:20:22 -0800 (PST)
-From: Konrad Dybcio <konrad.dybcio@linaro.org>
-Date: Mon, 27 Nov 2023 17:20:08 +0100
-Subject: [PATCH 6/6] arm64: dts: qcom: sm8450-hdk: Enable the A730 GPU
+        d=1e100.net; s=20230601; t=1701102094; x=1701706894;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=3erlyWF+ueA0yqXvaDfoXtHwcIbzLXsmd6GnvrsfR8I=;
+        b=tswQs+ldKtnPm5Uf/LELbrmwK3M80wCqEmSLMB2QCBg1EKNnrIPem8SwTOSJaOiwHi
+         jsd3xQBDZyWretPsFi1nwDp968Jphm2ATlzM2r/LNWSfqpUe3RUw25oLtQCSWuK6eyz7
+         DsyGtKX/WDhLD9kKqoUUgq2cFDC2Qs+XlGoKUMi0Tlu5k/bu1qDgBijBthx8m1rCNUq8
+         cKj+hLyKmtuu2OS5WVembN2lpBL+GD3sQvQIPJj60uYWCHd4NFYhHaI5QKhgbW76eUyf
+         AcAFsrDz/vQ3rEE9gBKSifmScu/gULEqK4tmFZHSJ24dFR1Ah1uoUblZfly9YEZzyOZv
+         Y8Cg==
+X-Gm-Message-State: AOJu0Yx5SjSnV/CKb5Y91IpZp1E4zLdvJrhW75w2iXXwzYRxgsWSZYzr
+	tZ22t+Eq/e2giI1sWuSdHd0FIQ==
+X-Google-Smtp-Source: AGHT+IHuv4uYZilc320a6HNCLtNjx5znS+f3fr0a13Cdowg7Gpk5l4WHAQUrW4HAXxm8vpKxOVgEEg==
+X-Received: by 2002:a17:906:a290:b0:9e0:8782:fb9e with SMTP id i16-20020a170906a29000b009e08782fb9emr9286362ejz.19.1701102093765;
+        Mon, 27 Nov 2023 08:21:33 -0800 (PST)
+Received: from [192.168.201.100] (178235187180.dynamic-4-waw-k-2-3-0.vectranet.pl. [178.235.187.180])
+        by smtp.gmail.com with ESMTPSA id me22-20020a170906aed600b009dd8473559dsm5808209ejb.110.2023.11.27.08.21.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 27 Nov 2023 08:21:33 -0800 (PST)
+Message-ID: <6504d0d8-3087-4990-a8f3-1517eb68707b@linaro.org>
+Date: Mon, 27 Nov 2023 17:21:30 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20231127-topic-a7xx_dt-v1-6-a228b8122ebf@linaro.org>
-References: <20231127-topic-a7xx_dt-v1-0-a228b8122ebf@linaro.org>
-In-Reply-To: <20231127-topic-a7xx_dt-v1-0-a228b8122ebf@linaro.org>
-To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
- Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>, 
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, 
- Conor Dooley <conor+dt@kernel.org>, Andy Gross <agross@kernel.org>, 
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 3/6] arm64: dts: qcom: sm8550: Add GPU nodes
+Content-Language: en-US
+To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Conor Dooley <conor+dt@kernel.org>, Andy Gross <agross@kernel.org>,
  Bjorn Andersson <andersson@kernel.org>
-Cc: Marijn Suijten <marijn.suijten@somainline.org>, 
- Neil Armstrong <neil.armstrong@linaro.org>, 
- Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, 
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, 
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
- linux-arm-msm@vger.kernel.org, Konrad Dybcio <konrad.dybcio@linaro.org>
-X-Mailer: b4 0.12.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1701102008; l=685;
- i=konrad.dybcio@linaro.org; s=20230215; h=from:subject:message-id;
- bh=ZUlIcXR6hgLx+DM+J1BHsWNt1eWJies/ihFtsM1lhWs=;
- b=Cedfa+rVMp6sij89sdZZMlPzRmUJXcuOfEsRWBEN2D21fqvMOO59apxBjB3KBAs4/TDPO0Kqr
- SYlvJAJGZQ/CbFapt8rBADbCSma58YbPuNklA1x7+9wefmw9suo3yzI
-X-Developer-Key: i=konrad.dybcio@linaro.org; a=ed25519;
- pk=iclgkYvtl2w05SSXO5EjjSYlhFKsJ+5OSZBjOkQuEms=
+Cc: Marijn Suijten <marijn.suijten@somainline.org>,
+ Neil Armstrong <neil.armstrong@linaro.org>,
+ Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-arm-msm@vger.kernel.org
+References: <20231127-topic-a7xx_dt-v1-0-a228b8122ebf@linaro.org>
+ <20231127-topic-a7xx_dt-v1-3-a228b8122ebf@linaro.org>
+From: Konrad Dybcio <konrad.dybcio@linaro.org>
+Autocrypt: addr=konrad.dybcio@linaro.org; keydata=
+ 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
+ izWDgYvmBE8=
+In-Reply-To: <20231127-topic-a7xx_dt-v1-3-a228b8122ebf@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-Enable the GPU and provide a path for the ZAP blob.
+On 27.11.2023 17:20, Konrad Dybcio wrote:
+> Add the required nodes to support the A740 GPU.
+> 
+> Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
+> ---
+>  arch/arm64/boot/dts/qcom/sm8550.dtsi | 166 +++++++++++++++++++++++++++++++++++
+>  1 file changed, 166 insertions(+)
+> 
+> diff --git a/arch/arm64/boot/dts/qcom/sm8550.dtsi b/arch/arm64/boot/dts/qcom/sm8550.dtsi
+> index 7bafb3d88d69..8f6641c58b3b 100644
+> --- a/arch/arm64/boot/dts/qcom/sm8550.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/sm8550.dtsi
+> @@ -2841,6 +2841,172 @@ dispcc: clock-controller@af00000 {
+>  			#power-domain-cells = <1>;
+>  		};
+>  
+> +		gpu: gpu@3d00000 {
+> +			compatible = "qcom,adreno-740.1", "qcom,adreno";
+The milisecond I pressed "send" I realized this is not the correct revision
+of this patch.. The compatible needs to change.
 
-Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
----
- arch/arm64/boot/dts/qcom/sm8450-hdk.dts | 8 ++++++++
- 1 file changed, 8 insertions(+)
-
-diff --git a/arch/arm64/boot/dts/qcom/sm8450-hdk.dts b/arch/arm64/boot/dts/qcom/sm8450-hdk.dts
-index 20153d08edde..a20d5d76af35 100644
---- a/arch/arm64/boot/dts/qcom/sm8450-hdk.dts
-+++ b/arch/arm64/boot/dts/qcom/sm8450-hdk.dts
-@@ -580,6 +580,14 @@ &dispcc {
- 	status = "okay";
- };
- 
-+&gpu {
-+	status = "okay";
-+
-+	zap-shader {
-+		firmware-name = "qcom/sm8450/a730_zap.mbn";
-+	};
-+};
-+
- &i2c9 {
- 	clock-frequency = <400000>;
- 	status = "okay";
-
--- 
-2.43.0
-
+Konrad
