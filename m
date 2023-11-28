@@ -1,57 +1,57 @@
-Received: from mail-ej1-f46.google.com (mail-ej1-f46.google.com [209.85.218.46])
+Received: from mail-qt1-f172.google.com (mail-qt1-f172.google.com [209.85.160.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5BCFE44386
-	for <iommu@lists.linux.dev>; Tue, 28 Nov 2023 21:34:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C56DA5025D
+	for <iommu@lists.linux.dev>; Tue, 28 Nov 2023 22:32:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=soleen.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=soleen.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="kSd8hIzs"
-Received: by mail-ej1-f46.google.com with SMTP id a640c23a62f3a-a00cbb83c80so825027766b.0
-        for <iommu@lists.linux.dev>; Tue, 28 Nov 2023 13:34:36 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=soleen.com header.i=@soleen.com header.b="dhEQZBE7"
+Received: by mail-qt1-f172.google.com with SMTP id d75a77b69052e-41cd8bd5727so31400791cf.3
+        for <iommu@lists.linux.dev>; Tue, 28 Nov 2023 14:32:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1701207274; x=1701812074; darn=lists.linux.dev;
+        d=soleen.com; s=google; t=1701210752; x=1701815552; darn=lists.linux.dev;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=8NXFzGfhAzOfJO06Gf5RsXFoYKrXmtsSvTLzk7MbcCk=;
-        b=kSd8hIzswciYWMCQxPyGklw/do7mkRmXRHKpOc/T9kjeCxiTmzB3TlVuCP1itDdqBJ
-         79iLSBAWloOyHaN9ZcleCe1GGV0JXJ4j/mlF4MLwq+pP4ZyUVFQUyNcqn+TR0RzFVDyR
-         +TD0Pkz0dkDZ5B+yRqhBnOyk7XkoJR3gUX22gNewri7lPgDG6msVSzDu51DnEKc7zVsQ
-         qRv2a6zCFPaf6wizzDBkyqocyBq3XubRHPn7tK9oJebUZnIyAyLQa8iFqNlaa80Xoewp
-         zuALj5eyKW5rRIuDksy384xCH7Bawv0mN9eiQ1T08P1j/ord9i8kJAB0278UOSlRT1GV
-         iVlQ==
+        bh=zXmxZJr3Rk1RKmtjvCLdJSQvKQY1rkK5dlcrmMuZJj4=;
+        b=dhEQZBE75HRZ1ozQU8hFhiQHtYFwIdVJ7IQm+965H/NDb7dmGsDgSN6AyjMSmIObdz
+         ySzLB30fPax1/QijqGFmSz1VPsh/gf2G08ppdtqJbIenhZlnPe2en8SWZ8hNxObcoYlq
+         Lm8FwISQNIZq4JxlQAqxrvMQoEklu1V3cFRHrCdSc7b8hEI4GYZDjwuq0+/YMAuQmE94
+         g1UulsqrL/et/vmMWUhBL6xvaMhgtAeR5mq3jam1L8izk4NRzliJUimdN45KbzroghlM
+         5Mr2J1u9wsA+k4Oyck7EG9rmJRZiTyq6+SRw0OyUdsldKo8xEBkZTaNBtam72h8y0uxp
+         1OGg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701207274; x=1701812074;
+        d=1e100.net; s=20230601; t=1701210752; x=1701815552;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=8NXFzGfhAzOfJO06Gf5RsXFoYKrXmtsSvTLzk7MbcCk=;
-        b=kuqIiH2+nzMpsNNQ1NycCJO4p5NBddySmWMa3tFs2ueQBFyVY+d8jZgjmRFX4nCeXB
-         VXGCuMnBdbQmdi6EMyiWaBByrPpElzwO8/qNMVl7zCSo+tW/49uWGKvfrIYCgQu0M9fk
-         jWUKUY0JUJSr4Zqf6LR+AeSjlV+z2Zr9cfYPdYoTPVummYjQyG6hqKSRMNTa//1Kjt9v
-         it/SFMNMrrnKFLqNFZomvfDHkhqZc31bwWKXnDAbHW4TQyLT6+BwOzshSpHSOMDDcVde
-         tAwYgFb9wH5j+kES+3Oz3RtcTpSFn/BI3E8gI94O+0qLVBIlWg3LJJOeSFy75X93viUb
-         4Hwg==
-X-Gm-Message-State: AOJu0YxN7AOZdNuTshO0ayA12Y4R7zce48btG1cXcdT6Akt5383FoMEB
-	Ocb+PijkQ9679Ueny39p4LU2Fcis83zeFHEZBHxteA==
-X-Google-Smtp-Source: AGHT+IFrrdaJl+8CDzGqIseL+lJ7M7KDt9GszVwJUOFBD/DHsSLfgFwP8+NKKfkfsTtyJyGUtnD8OJJylXlFpNkSb5g=
-X-Received: by 2002:a17:906:b248:b0:a04:cc0e:ff3b with SMTP id
- ce8-20020a170906b24800b00a04cc0eff3bmr12465188ejb.27.1701207274446; Tue, 28
- Nov 2023 13:34:34 -0800 (PST)
+        bh=zXmxZJr3Rk1RKmtjvCLdJSQvKQY1rkK5dlcrmMuZJj4=;
+        b=pbm+acVm4yE8EYNkrxKVKJANJcArOTO3HyKVY+rAelH/WxUyfnzl43uAr0ticRDj9g
+         lQ2P8CWZuEDSCf+mc4+AbvnxRaCMNtFGRZ2JRtXosMoSP39AtejglGutYjKtkg2ELS7G
+         CVpxT+3e9oecmMlcTeRVT5NzeeKXi6F75Vom871XCoHgqbDaoIfLcRHwD+CBZi4E6/MT
+         mmheUJSQmkmu8k2ZEbuVrCaNFz1+xExhH8z69+CFqBdgAwqDk8Xgais/1XkHle8SoQHz
+         4FeIWbxK4um0Yy3JUOBXxeyU7MzAJOqeLWoso4og0SJu0Q567KhZohMXjYZ1Ak0+Uhi6
+         KHoA==
+X-Gm-Message-State: AOJu0YzUSIb+CY3HMeDDS6pn6MoGDWXLNLhL9A0r6+5P/T8MftRxlGJ0
+	diKwzLc8Ij6xQJksnfNsJI1qwz7ezkzGmq3vbDTi+Q==
+X-Google-Smtp-Source: AGHT+IGpMWKNhES/9/sulDYyAvK/WWWt51B5qkJu4RoDrGLcGdrRp1qT0nJmPQj10gvcniDpUMl30iZYOH63zrZzia0=
+X-Received: by 2002:a05:622a:5da6:b0:423:a0e1:c58f with SMTP id
+ fu38-20020a05622a5da600b00423a0e1c58fmr10804025qtb.59.1701210751688; Tue, 28
+ Nov 2023 14:32:31 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20231128204938.1453583-1-pasha.tatashin@soleen.com>
-In-Reply-To: <20231128204938.1453583-1-pasha.tatashin@soleen.com>
-From: Yosry Ahmed <yosryahmed@google.com>
-Date: Tue, 28 Nov 2023 13:33:55 -0800
-Message-ID: <CAJD7tkb1FqTqwONrp2nphBDkEamQtPCOFm0208H3tp0Gq2OLMQ@mail.gmail.com>
+References: <20231128204938.1453583-1-pasha.tatashin@soleen.com> <CAJD7tkb1FqTqwONrp2nphBDkEamQtPCOFm0208H3tp0Gq2OLMQ@mail.gmail.com>
+In-Reply-To: <CAJD7tkb1FqTqwONrp2nphBDkEamQtPCOFm0208H3tp0Gq2OLMQ@mail.gmail.com>
+From: Pasha Tatashin <pasha.tatashin@soleen.com>
+Date: Tue, 28 Nov 2023 17:31:54 -0500
+Message-ID: <CA+CK2bB3nHfu1Z6_6fqN3YTAzKXMiJ12MOWpbs8JY7rQo4Fq0g@mail.gmail.com>
 Subject: Re: [PATCH 00/16] IOMMU memory observability
-To: Pasha Tatashin <pasha.tatashin@soleen.com>
+To: Yosry Ahmed <yosryahmed@google.com>
 Cc: akpm@linux-foundation.org, alex.williamson@redhat.com, 
 	alim.akhtar@samsung.com, alyssa@rosenzweig.io, asahi@lists.linux.dev, 
 	baolu.lu@linux.intel.com, bhelgaas@google.com, cgroups@vger.kernel.org, 
@@ -73,119 +73,141 @@ Cc: akpm@linux-foundation.org, alex.williamson@redhat.com,
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Nov 28, 2023 at 12:49=E2=80=AFPM Pasha Tatashin
-<pasha.tatashin@soleen.com> wrote:
+On Tue, Nov 28, 2023 at 4:34=E2=80=AFPM Yosry Ahmed <yosryahmed@google.com>=
+ wrote:
 >
-> From: Pasha Tatashin <tatashin@google.com>
+> On Tue, Nov 28, 2023 at 12:49=E2=80=AFPM Pasha Tatashin
+> <pasha.tatashin@soleen.com> wrote:
+> >
+> > From: Pasha Tatashin <tatashin@google.com>
+> >
+> > IOMMU subsystem may contain state that is in gigabytes. Majority of tha=
+t
+> > state is iommu page tables. Yet, there is currently, no way to observe
+> > how much memory is actually used by the iommu subsystem.
+> >
+> > This patch series solves this problem by adding both observability to
+> > all pages that are allocated by IOMMU, and also accountability, so
+> > admins can limit the amount if via cgroups.
+> >
+> > The system-wide observability is using /proc/meminfo:
+> > SecPageTables:    438176 kB
+> >
+> > Contains IOMMU and KVM memory.
+> >
+> > Per-node observability:
+> > /sys/devices/system/node/nodeN/meminfo
+> > Node N SecPageTables:    422204 kB
+> >
+> > Contains IOMMU and KVM memory memory in the given NUMA node.
+> >
+> > Per-node IOMMU only observability:
+> > /sys/devices/system/node/nodeN/vmstat
+> > nr_iommu_pages 105555
+> >
+> > Contains number of pages IOMMU allocated in the given node.
 >
-> IOMMU subsystem may contain state that is in gigabytes. Majority of that
-> state is iommu page tables. Yet, there is currently, no way to observe
-> how much memory is actually used by the iommu subsystem.
+> Does it make sense to have a KVM-only entry there as well?
 >
-> This patch series solves this problem by adding both observability to
-> all pages that are allocated by IOMMU, and also accountability, so
-> admins can limit the amount if via cgroups.
->
-> The system-wide observability is using /proc/meminfo:
-> SecPageTables:    438176 kB
->
-> Contains IOMMU and KVM memory.
->
-> Per-node observability:
-> /sys/devices/system/node/nodeN/meminfo
-> Node N SecPageTables:    422204 kB
->
-> Contains IOMMU and KVM memory memory in the given NUMA node.
->
-> Per-node IOMMU only observability:
-> /sys/devices/system/node/nodeN/vmstat
-> nr_iommu_pages 105555
->
-> Contains number of pages IOMMU allocated in the given node.
+> In that case, if SecPageTables in /proc/meminfo is found to be
+> suspiciously high, it should be easy to tell which component is
+> contributing most usage through vmstat. I understand that users can do
+> the subtraction, but we wouldn't want userspace depending on that, in
+> case a third class of "secondary" page tables emerges that we want to
+> add to SecPageTables. The in-kernel implementation can do the
+> subtraction for now if it makes sense though.
 
-Does it make sense to have a KVM-only entry there as well?
+Hi Yosry,
 
-In that case, if SecPageTables in /proc/meminfo is found to be
-suspiciously high, it should be easy to tell which component is
-contributing most usage through vmstat. I understand that users can do
-the subtraction, but we wouldn't want userspace depending on that, in
-case a third class of "secondary" page tables emerges that we want to
-add to SecPageTables. The in-kernel implementation can do the
-subtraction for now if it makes sense though.
+Yes, another counter for KVM could be added. On the other hand KVM
+only can be computed by subtracting one from another as there are only
+two types of secondary page tables, KVM and IOMMU:
+
+/sys/devices/system/node/node0/meminfo
+Node 0 SecPageTables:    422204 kB
+
+ /sys/devices/system/node/nodeN/vmstat
+nr_iommu_pages 105555
+
+KVM only =3D SecPageTables - nr_iommu_pages * PAGE_SIZE / 1024
+
+Pasha
 
 >
-> Accountability: using sec_pagetables cgroup-v2 memory.stat entry.
->
-> With the change, iova_stress[1] stops as limit is reached:
->
-> # ./iova_stress
-> iova space:     0T      free memory:   497G
-> iova space:     1T      free memory:   495G
-> iova space:     2T      free memory:   493G
-> iova space:     3T      free memory:   491G
->
-> stops as limit is reached.
->
-> This series encorporates suggestions that came from the discussion
-> at LPC [2].
->
-> [1] https://github.com/soleen/iova_stress
-> [2] https://lpc.events/event/17/contributions/1466
->
-> Pasha Tatashin (16):
->   iommu/vt-d: add wrapper functions for page allocations
->   iommu/amd: use page allocation function provided by iommu-pages.h
->   iommu/io-pgtable-arm: use page allocation function provided by
->     iommu-pages.h
->   iommu/io-pgtable-dart: use page allocation function provided by
->     iommu-pages.h
->   iommu/io-pgtable-arm-v7s: use page allocation function provided by
->     iommu-pages.h
->   iommu/dma: use page allocation function provided by iommu-pages.h
->   iommu/exynos: use page allocation function provided by iommu-pages.h
->   iommu/fsl: use page allocation function provided by iommu-pages.h
->   iommu/iommufd: use page allocation function provided by iommu-pages.h
->   iommu/rockchip: use page allocation function provided by iommu-pages.h
->   iommu/sun50i: use page allocation function provided by iommu-pages.h
->   iommu/tegra-smmu: use page allocation function provided by
->     iommu-pages.h
->   iommu: observability of the IOMMU allocations
->   iommu: account IOMMU allocated memory
->   vhost-vdpa: account iommu allocations
->   vfio: account iommu allocations
->
->  Documentation/admin-guide/cgroup-v2.rst |   2 +-
->  Documentation/filesystems/proc.rst      |   4 +-
->  drivers/iommu/amd/amd_iommu.h           |   8 -
->  drivers/iommu/amd/init.c                |  91 +++++-----
->  drivers/iommu/amd/io_pgtable.c          |  13 +-
->  drivers/iommu/amd/io_pgtable_v2.c       |  20 +-
->  drivers/iommu/amd/iommu.c               |  13 +-
->  drivers/iommu/dma-iommu.c               |   8 +-
->  drivers/iommu/exynos-iommu.c            |  14 +-
->  drivers/iommu/fsl_pamu.c                |   5 +-
->  drivers/iommu/intel/dmar.c              |  10 +-
->  drivers/iommu/intel/iommu.c             |  47 ++---
->  drivers/iommu/intel/iommu.h             |   2 -
->  drivers/iommu/intel/irq_remapping.c     |  10 +-
->  drivers/iommu/intel/pasid.c             |  12 +-
->  drivers/iommu/intel/svm.c               |   7 +-
->  drivers/iommu/io-pgtable-arm-v7s.c      |   9 +-
->  drivers/iommu/io-pgtable-arm.c          |   7 +-
->  drivers/iommu/io-pgtable-dart.c         |  37 ++--
->  drivers/iommu/iommu-pages.h             | 231 ++++++++++++++++++++++++
->  drivers/iommu/iommufd/iova_bitmap.c     |   6 +-
->  drivers/iommu/rockchip-iommu.c          |  14 +-
->  drivers/iommu/sun50i-iommu.c            |   7 +-
->  drivers/iommu/tegra-smmu.c              |  18 +-
->  drivers/vfio/vfio_iommu_type1.c         |   8 +-
->  drivers/vhost/vdpa.c                    |   3 +-
->  include/linux/mmzone.h                  |   5 +-
->  mm/vmstat.c                             |   3 +
->  28 files changed, 415 insertions(+), 199 deletions(-)
->  create mode 100644 drivers/iommu/iommu-pages.h
->
-> --
-> 2.43.0.rc2.451.g8631bc7472-goog
->
->
+> >
+> > Accountability: using sec_pagetables cgroup-v2 memory.stat entry.
+> >
+> > With the change, iova_stress[1] stops as limit is reached:
+> >
+> > # ./iova_stress
+> > iova space:     0T      free memory:   497G
+> > iova space:     1T      free memory:   495G
+> > iova space:     2T      free memory:   493G
+> > iova space:     3T      free memory:   491G
+> >
+> > stops as limit is reached.
+> >
+> > This series encorporates suggestions that came from the discussion
+> > at LPC [2].
+> >
+> > [1] https://github.com/soleen/iova_stress
+> > [2] https://lpc.events/event/17/contributions/1466
+> >
+> > Pasha Tatashin (16):
+> >   iommu/vt-d: add wrapper functions for page allocations
+> >   iommu/amd: use page allocation function provided by iommu-pages.h
+> >   iommu/io-pgtable-arm: use page allocation function provided by
+> >     iommu-pages.h
+> >   iommu/io-pgtable-dart: use page allocation function provided by
+> >     iommu-pages.h
+> >   iommu/io-pgtable-arm-v7s: use page allocation function provided by
+> >     iommu-pages.h
+> >   iommu/dma: use page allocation function provided by iommu-pages.h
+> >   iommu/exynos: use page allocation function provided by iommu-pages.h
+> >   iommu/fsl: use page allocation function provided by iommu-pages.h
+> >   iommu/iommufd: use page allocation function provided by iommu-pages.h
+> >   iommu/rockchip: use page allocation function provided by iommu-pages.=
+h
+> >   iommu/sun50i: use page allocation function provided by iommu-pages.h
+> >   iommu/tegra-smmu: use page allocation function provided by
+> >     iommu-pages.h
+> >   iommu: observability of the IOMMU allocations
+> >   iommu: account IOMMU allocated memory
+> >   vhost-vdpa: account iommu allocations
+> >   vfio: account iommu allocations
+> >
+> >  Documentation/admin-guide/cgroup-v2.rst |   2 +-
+> >  Documentation/filesystems/proc.rst      |   4 +-
+> >  drivers/iommu/amd/amd_iommu.h           |   8 -
+> >  drivers/iommu/amd/init.c                |  91 +++++-----
+> >  drivers/iommu/amd/io_pgtable.c          |  13 +-
+> >  drivers/iommu/amd/io_pgtable_v2.c       |  20 +-
+> >  drivers/iommu/amd/iommu.c               |  13 +-
+> >  drivers/iommu/dma-iommu.c               |   8 +-
+> >  drivers/iommu/exynos-iommu.c            |  14 +-
+> >  drivers/iommu/fsl_pamu.c                |   5 +-
+> >  drivers/iommu/intel/dmar.c              |  10 +-
+> >  drivers/iommu/intel/iommu.c             |  47 ++---
+> >  drivers/iommu/intel/iommu.h             |   2 -
+> >  drivers/iommu/intel/irq_remapping.c     |  10 +-
+> >  drivers/iommu/intel/pasid.c             |  12 +-
+> >  drivers/iommu/intel/svm.c               |   7 +-
+> >  drivers/iommu/io-pgtable-arm-v7s.c      |   9 +-
+> >  drivers/iommu/io-pgtable-arm.c          |   7 +-
+> >  drivers/iommu/io-pgtable-dart.c         |  37 ++--
+> >  drivers/iommu/iommu-pages.h             | 231 ++++++++++++++++++++++++
+> >  drivers/iommu/iommufd/iova_bitmap.c     |   6 +-
+> >  drivers/iommu/rockchip-iommu.c          |  14 +-
+> >  drivers/iommu/sun50i-iommu.c            |   7 +-
+> >  drivers/iommu/tegra-smmu.c              |  18 +-
+> >  drivers/vfio/vfio_iommu_type1.c         |   8 +-
+> >  drivers/vhost/vdpa.c                    |   3 +-
+> >  include/linux/mmzone.h                  |   5 +-
+> >  mm/vmstat.c                             |   3 +
+> >  28 files changed, 415 insertions(+), 199 deletions(-)
+> >  create mode 100644 drivers/iommu/iommu-pages.h
+> >
+> > --
+> > 2.43.0.rc2.451.g8631bc7472-goog
+> >
+> >
