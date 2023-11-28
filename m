@@ -1,113 +1,145 @@
-Received: from mail-ed1-f42.google.com (mail-ed1-f42.google.com [209.85.208.42])
+Received: from mail-pf1-f178.google.com (mail-pf1-f178.google.com [209.85.210.178])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8BA244F5F1
-	for <iommu@lists.linux.dev>; Tue, 28 Nov 2023 11:25:20 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0DEE83457D;
+	Tue, 28 Nov 2023 13:09:31 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KNTqZuLj"
-Received: by mail-ed1-f42.google.com with SMTP id 4fb4d7f45d1cf-54af2498e85so5592409a12.0
-        for <iommu@lists.linux.dev>; Tue, 28 Nov 2023 03:25:20 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Bh+kyIvR"
+Received: by mail-pf1-f178.google.com with SMTP id d2e1a72fcca58-6c115026985so5305741b3a.1;
+        Tue, 28 Nov 2023 05:09:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1701170719; x=1701775519; darn=lists.linux.dev;
-        h=user-agent:in-reply-to:content-disposition:mime-version:references
-         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
+        d=gmail.com; s=20230601; t=1701176971; x=1701781771; darn=lists.linux.dev;
+        h=content-transfer-encoding:subject:from:cc:to:content-language
+         :user-agent:mime-version:date:message-id:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=NNUOJ8uqp2dGRLuoBkbadBA/67h+j2C/uKAs+8CYKXM=;
-        b=KNTqZuLj5L3+uHLHFx1M9XBgb6JJ5A7ORrJjzQKC/qRKrVcuIfU81+ykNwV/6wNq9F
-         V1dnewJl74R42qteH7393NOeX5kdDk1jpURaJMbtEHyIoUY2aJzwCMO1Chj5Y1E4nIa7
-         NjzfC9ojzCB/PBWVfSUUn3ZEcsh+dofBDn4ULu+RW9D3SUhd7Ez7CQR4381P01Mp/B9l
-         z4Fvzpqun2rYCxfwl8Dq3nPRVnSfupZuD0Ih7al+/PxrrSDPGzlRVYAUp03jJvl0pP2U
-         Si7HSHcHysM58no9k0oIucKQq1Xqhx+yJFBXaTu7BvBTnsD+7L7nlKBWgNGXsboDXd1r
-         wwlQ==
+        bh=A8wlpDIqNbi5vLnzI15P5Lxtzc5A7rbfuNGTA7aBUUY=;
+        b=Bh+kyIvR3RR3FnyAVN4RibQ28YQo2KDojNuDU4FLIhnTOtf0eYE6f6t+MglSUm4eYW
+         k6yoLJdDxqwkuKXiwVxotCtwM1Oqa9jbSItowlTgeWsvCrvw2qm7SrirRVXNDKAHOGKK
+         zQ0U/u8Q+F1f59mOhBjZK3wexZ3thfPrHU8Rqkf2ExvrAJ+0Mcnt+/EtvMfBPJvTxH/P
+         akE7nVnUKDbar/1cWuvpUKVxqwoHkxk4VRXAjQgy06kCGIF6GwfsXKcxxiGGyDugVIR1
+         vlAEptdVHLA3K+DFFEOXYULjYOJEdk8HY6wzb6Isn/vMT4x2jjFj/tQg8pSk2wfvgViX
+         mK1Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701170719; x=1701775519;
-        h=user-agent:in-reply-to:content-disposition:mime-version:references
-         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=NNUOJ8uqp2dGRLuoBkbadBA/67h+j2C/uKAs+8CYKXM=;
-        b=vK3eLYTzjpKm7sMEd9mrHIpJW8ctjEW/OZGb8M5lP3Ysrq5/GJJx1rhepFE5IDKFRo
-         zyg2ArwD/79ttMkySby8BEphRPj0YyGEj0auGnuaIZpoQuRPr8yEmGZ20KqXIpgo8zcc
-         ZQFepClTVABqtugN8aEFO3XHoYzkJWwlyByXnFrndXtkQuex1JtmQREE/RKEYPZu4NCJ
-         c3ok1YKzsC6SQ3yiQyp87TGFUBsNnU3BXvcARlYf/Z+rHqgW9CK7UYP8k72TSeepNrHJ
-         kzAr8maRUO/OidHBl3MeH7urWAdpTlx+2/AC6NWvd0obdNZoSJfJ0VPlciDLSVQfIWql
-         Wy5g==
-X-Gm-Message-State: AOJu0Yxc5giNW/x+uvn1ya9up6PTZvIK7yHgAZQR4GUEd+ShKqSAC7gs
-	qhA0aXC16PtW+grJ/wPfNcY=
-X-Google-Smtp-Source: AGHT+IHqbMoYr9M/PBSf9Q1XSD3aTt9QqOplQiVgAE1r6Wwb8HV4II+bQf9Ppd8QDWo6j6Q7X3fGSg==
-X-Received: by 2002:a17:906:7691:b0:a04:837e:87af with SMTP id o17-20020a170906769100b00a04837e87afmr11132340ejm.33.1701170718549;
-        Tue, 28 Nov 2023 03:25:18 -0800 (PST)
-Received: from orome.fritz.box (p200300e41f0fa600f22f74fffe1f3a53.dip0.t-ipconnect.de. [2003:e4:1f0f:a600:f22f:74ff:fe1f:3a53])
-        by smtp.gmail.com with ESMTPSA id pw11-20020a17090720ab00b00a0f1025b17asm2417847ejb.130.2023.11.28.03.25.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Nov 2023 03:25:18 -0800 (PST)
-Date: Tue, 28 Nov 2023 12:25:16 +0100
-From: Thierry Reding <thierry.reding@gmail.com>
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Dario Binacchi <dario.binacchi@amarulasolutions.com>,
-	linux-kernel@vger.kernel.org, Baolu Lu <baolu.lu@linux.intel.com>,
-	Jonathan Hunter <jonathanh@nvidia.com>,
-	Krishna Reddy <vdumpa@nvidia.com>,
-	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
-	iommu@lists.linux.dev, linux-tegra@vger.kernel.org
-Subject: Re: [PATCH v2] iommu/tegra-smmu: drop error checking for
- debugfs_create_dir()
-Message-ID: <ZWXOHI48GyIJsdnT@orome.fritz.box>
-References: <20231025152609.2042815-1-dario.binacchi@amarulasolutions.com>
- <ZWRhDMgPCjP_hlZW@8bytes.org>
+        d=1e100.net; s=20230601; t=1701176971; x=1701781771;
+        h=content-transfer-encoding:subject:from:cc:to:content-language
+         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=A8wlpDIqNbi5vLnzI15P5Lxtzc5A7rbfuNGTA7aBUUY=;
+        b=gjlasLQ6hsJl23v45p4JsNrGoRE0nANMD8NCoG0vchNglObf404KgAANyRMIX+HNrA
+         MX6cD8GdhaiWjtD5HB3O6jnT26Y9MRB8tkDc96fukA8ImweRulmzjl2wQBLKgtptvrSQ
+         5O7kZrE7IOr884d2mIVrfrQ723mBkXhb4It0pFIeD1edhYmd9HUosJ07xT6Lc/fMfUEw
+         6MMCKggQj+AgDqzRl4tj+CODNiV1FuLcsx87ufrWHnCVCuIwE1f+D1qp4x9sw807Z7Fl
+         eLXodh/PgYri7CxhoiE4JyV2CJOW7lkU56zGe6G4FKYMJm4cI/iYF0Qhm8wQ8lghcn5b
+         4Dvg==
+X-Gm-Message-State: AOJu0Yzi7hFRDXOczX/TEQ31ONoj2Lj7Tn51z4llmzEp3Dm3FWUppRTK
+	a09OEVh6lz3OrKfufdrygko=
+X-Google-Smtp-Source: AGHT+IFPqMtwLgpXsxzmkLwbwnT2E+yfl9IJPiQNoF7hcNQN73mIlZ/wQyvyYleB711N0rjXyFYIxQ==
+X-Received: by 2002:a05:6a00:3909:b0:6be:130a:22a0 with SMTP id fh9-20020a056a00390900b006be130a22a0mr16638210pfb.14.1701176971167;
+        Tue, 28 Nov 2023 05:09:31 -0800 (PST)
+Received: from [192.168.0.106] ([103.131.18.64])
+        by smtp.gmail.com with ESMTPSA id s6-20020aa78d46000000b006cbb5f2cbe0sm8768749pfe.102.2023.11.28.05.09.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 28 Nov 2023 05:09:30 -0800 (PST)
+Message-ID: <4b3c624a-f114-4e39-9e1c-0df18f307e8c@gmail.com>
+Date: Tue, 28 Nov 2023 20:09:24 +0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="nNpisfqc0N5bJikl"
-Content-Disposition: inline
-In-Reply-To: <ZWRhDMgPCjP_hlZW@8bytes.org>
-User-Agent: Mutt/2.2.12 (2023-09-09)
+User-Agent: Mozilla Thunderbird
+Content-Language: en-US
+To: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+ Linux Regressions <regressions@lists.linux.dev>,
+ Linux IOMMU <iommu@lists.linux.dev>,
+ Linux Power Management <linux-pm@vger.kernel.org>
+Cc: David Woodhouse <dwmw2@infradead.org>, Lu Baolu
+ <baolu.lu@linux.intel.com>, "Rafael J. Wysocki" <rafael@kernel.org>,
+ kbugreports@proton.me
+From: Bagas Sanjaya <bagasdotme@gmail.com>
+Subject: Fwd: Kernels v6.5 and v6.6 break resume from standby (s3) on some
+ Intel systems if VT-d is enabled
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
+Hi,
 
---nNpisfqc0N5bJikl
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+I notice a regression report on Bugzilla [1]. Quoting from it:
 
-On Mon, Nov 27, 2023 at 10:27:40AM +0100, Joerg Roedel wrote:
-> On Wed, Oct 25, 2023 at 05:25:58PM +0200, Dario Binacchi wrote:
-> > The return value of debugfs_create_dir() should be checked using the
-> > IS_ERR() function. The patch, however, drops the check statement without
-> > fixing it because the subsequent functions (i. e. debugfs_create_file())
-> > can handle the case where `@parent` is an error pointer.
->=20
-> This deserves a comment in the code explaining why no error checking is
-> needed.
+> Note:
+> 
+> I'm just a Linux user, I don't work in IT or even write code, so, I'm probably using terms to describe the issue that are not the ones someone who knows code and what the system does under the hood would use.
+> 
+> Affected system:
+> 
+> Thinkpad, Intel Kaby Lake (i7-7600U) chipset / cpu and onboard gpu (Intel HD 620), no separate graphics card, current bios firmware; running Void Linux, xfce / lightdm
+> 
+> Symptom / problem:
+> 
+> Since the upgrade to kernel v6.5.5 (from v6.3.13) my system doesn't wake up from standby, i.e. resume from s3 fails 100% of the time.
+> When pressing a key or the power button nothing happens. The LED that indicates different states of the system, keeps indicating standby mode.
+> The only way to use the system again is hard reset by pressing the power button for a few seconds.
+> 
+> So, there is no crashing on resume or incomplete resume or only sometimes failing to resume or failing to go into standby in the first place.
+> 
+> Granted, this issue was present with kernels before v6.5, but only occasionally and it would not re-appear for many many boot cycles. So, I never had any lead as to why it would happen.
+> 
+> I installed kernel v6.4.16 to test for the bug - it's not in there.
+> 
+> For further testing I also installed kernel v6.5.2, as this was the first kernel of the 6.5 series available on void linux, (and because the kernel logs mention VT-d for kernel v6.5.5 and v6.5.3, see below). Result: The bug is already in v6.5.2, too.
+> 
+> There's only one thing I noticed from comparing logs between kernels v6.5/6.6 vs v6.1/6.3/6.4. In the moment the system goes into standby, if running one of the latter three kernel versions the system would print the following messages:
+> 
+> [elogind-daemon] Entering sleep state 'suspend'...
+> [kernel] PM: suspend entry (deep)
+> 
+> 
+> But with kernels v6.5/6.6, the kernel message is missing, only the elogind-daemon message shows up in the logs. As if the kernel didn't get the memo and thus didn't prepare and didn't listen for the wake-up call to resume.
+> 
+> 
+> To see, if this is a bug that might be tight to a certain chipset / cpu generation, I tested kernel v6.5 on my old Thinkpad (Intel Sandy Bridge chipset / cpu, and also onboard graphics only). Its BIOS also has VT-d enabled. Interestingly, on that system, resume from standby with kernel v6.5 is no problem, even though its system is set up the same as the current Thinkpad.
+> 
+> So, this bug seems to be limited to certain set of chipset / cpu. Which seems feasible, as I couldn't find a bug report on this - not too many seem to be affected.
+> 
+> 
+> 
+> There's an older bug report on similar symptoms, but the cure doesn't work on my system:
+> 
+> "intel_iommu=on breaks resume from suspend on several Thinkpad models"
+> https://bugzilla.kernel.org/show_bug.cgi?id=197029
+> 
+> 
+> Although it sounds just like what my system is experiencing - apart from the fact that term suspend being sometimes also used to describe hibernation and it is not specified which one is meant in the bug report.
+> 
+> So, I was hopeful on the one hand that the (workaround) fix (adding intel_iommu=off to the kernel parameters) would work on my system, too - on the other hand, this bug report was for kernel v4.13, so it's probably not necessarily relevant to similar symptoms with kernel v6.5 and v6.6, respectively.
+> 
+> Anyway, adding intel_iommu=off to the kernel parameters didn't change anything on my system. I made, of course, sure once the system was running, that intel_iommu=off was in indeed used as one of the kernel parameters.
+> 
+> 
+> With this information in mind I did a regular internet search and found some information that in case intel_iommu=off in the kernel parameters doesn't help, disabling VT-d in BIOS might.
+> And in my case it does indeed help avoiding the bug - for both kernel versions, v6.5 and v6.6.
+> 
+> Reading some other bug reports and some changelogs, I noticed that iommu and vt-s are connected, to I posted this bug report in drivers/iommu. If it is misplaced here, please feel free to move it to the correct category.
+> 
+> 
+> I attached a file with the output of some commands I found being used in several other bug reports on here, just in case they might be needed / helpful.
+> 
+> 
+> Thank you very much for your help in advance!
 
-This is a duplicate of f7da9c081517 ("iommu/tegra-smmu: Drop unnecessary
-error check for for debugfs_create_dir()"), which is already in v6.7-rc1
-so I think we can ignore this one.
+See Bugzilla for the full thread.
 
-Thierry
+Anyway, I'm adding this regression to regzbot:
 
---nNpisfqc0N5bJikl
-Content-Type: application/pgp-signature; name="signature.asc"
+#regzbot introduced: v6.3..v6.5 https://bugzilla.kernel.org/show_bug.cgi?id=218191
+#regzbot title: resume from standby fails on Thinkpad with Kaby Lake CPU
 
------BEGIN PGP SIGNATURE-----
+Thanks.
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmVlzhwACgkQ3SOs138+
-s6HGDRAAgujp8COqpO6Y7LdZQaRa4p7ssRczFgQWmdy2vpheWyCgu7OyKfl+9EHL
-tT5/soH/rqrC0i3oq8qqWHOUjRSYYoIqCGz8j/4y8KkdVYQ8GTto0mp4rtIpB1ie
-g1Cc32zVimxrZHqaxU4K0U6Jq6fWM5WWs12ZCzlbdjl7U8hwD44vNh/kS76Y6JZh
-XNVuTL1ijVskDAdxQLULdoBW7S5qCOWjfDbNbW3v9AxOyr789oW5llERZwddvw5G
-ndiKBnvtfCsA72jGO71z7A/Vg9gXKkfBJLxTsd1aShhOCW/psC3s+jVC27AJ82xo
-giT0rssa9TQlgy4foU+N0JRJ30GODYFF5vRApYREIIHU2bb2qaiG3s6Oavl51gVY
-jdihwdz31vjcHrHcj4lC93AvIjl+N418uzaAjvGPhPrVsOw3qQI5onR4WMQ0ZwP+
-Tk40z9FyDHFQQKpseUo8+S+qrmlUVYZUm950DMA0mzk7d+KpCKEsPswNnTcStsKU
-MnPMzS4w35d8k9JOwfILR5cy5ouXtAwOXbrnKdjLMazFNhlpAYyb3MZgMnCQgLtz
-f97/E56oMdODosYuc5S42wKn8CR5Xmd7vnXy7+DXXg8aS4LubEE5jk1YGAgdHh3V
-A332A20cCAWZKvgFYbE46Tj6A0eQBD4O5edw0bJZxQQofvNYOfY=
-=mBlz
------END PGP SIGNATURE-----
+[1]: https://bugzilla.kernel.org/show_bug.cgi?id=218191
 
---nNpisfqc0N5bJikl--
+-- 
+An old man doll... just what I always wanted! - Clara
