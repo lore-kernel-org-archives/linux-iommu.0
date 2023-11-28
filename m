@@ -1,55 +1,54 @@
-Received: from mail-oo1-f52.google.com (mail-oo1-f52.google.com [209.85.161.52])
+Received: from mail-ot1-f49.google.com (mail-ot1-f49.google.com [209.85.210.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E1AE5C080
-	for <iommu@lists.linux.dev>; Tue, 28 Nov 2023 23:50:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2462E5C08D
+	for <iommu@lists.linux.dev>; Tue, 28 Nov 2023 23:52:16 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="V8HzhwGv"
-Received: by mail-oo1-f52.google.com with SMTP id 006d021491bc7-58d06bfadf8so3650171eaf.1
-        for <iommu@lists.linux.dev>; Tue, 28 Nov 2023 15:50:39 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="N/xB1GIY"
+Received: by mail-ot1-f49.google.com with SMTP id 46e09a7af769-6d81fc0ad6eso2058873a34.2
+        for <iommu@lists.linux.dev>; Tue, 28 Nov 2023 15:52:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1701215438; x=1701820238; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=XYTfkI+bm13XmNm4VDm7JNv4il6+T5S3nBbruRBN+40=;
-        b=V8HzhwGvaxnXVUB4Ij72juxqDP3Gyww6qyfpKvd0qzazabxHQm/EeIZWagPDlt2vP9
-         hDju+cairoks5tCO9CVLKouuA36ODmjjn3PM7n1/dsIRI12MltoTPfwWqX9bpR8bMfRw
-         KmQ/83+AOufZLEiOayxyZugm/vTLam9TDWtOgM1LLEiMaI1MoYxxwXUwlfN1956glD5q
-         fj60UQanKRaaDfkI9FktZAHIqlFts4djDRA3JjdSW7iBpOa59p5ovLnCpXjfXG5IAPaG
-         gEZdwYS5sZTfH/SjAXjqwvtg3F3htY/BQwbCyQReK7r/4noLSUBPCVy1x3xTkMMjgQ3G
-         /LsA==
+        d=ziepe.ca; s=google; t=1701215536; x=1701820336; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=KGeDrNEnimmhtGEyy4xADkNVo65XsrpvCKCPlUM9+8M=;
+        b=N/xB1GIYe9kW68z9NOYGmBPpBaa+CN1i1vQJAlY53lJmW2SdmOsFlQ1797+I5JrYXa
+         Yv0FDwRtRCnoIZzRrx+fCUlUwjaouHVAUirwe4YQOlKYinOo6OZNln3nDa4Q9VgNVyEN
+         nvxwIYjNclppXHZLgt76s0n5QSegCra4YgNJGxQhaP02WoNmKzojfomvTLGy2g4P39+m
+         hpCGUKJGDO80Fi63MXjJXW7VIEsQn9OfZrhVYtgKYqJRJG5R/Jn2HOaAaTlzoo5d/zCA
+         SUWyAe+My4VMMzO8ocSHb1SSI1UZOODCqiyRZzSE+9W+n5Rm8jgvua5I/77Gn+T9ffNV
+         NQZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701215438; x=1701820238;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=XYTfkI+bm13XmNm4VDm7JNv4il6+T5S3nBbruRBN+40=;
-        b=e5kzds1klVh3OJerviTjEQmDL1xZgasHiMQL8IoXtNPRUCsYXY8nOZD9GU6Boo48Bq
-         g9a+q2mby/NxB6OuBL3meZF0Jtw3QSKYIIO4JoPp64b3Ro4ZRlec5WaRoTn3hx/LjuuW
-         aYtxEqnZDcff302sqb1IiXD3WK4nSrYFYjR9Et+5/DQiQF4kfxciZcjhrlnvEgQnv0h5
-         xi9FWAN4L90kZfu02NTCRle9ARb/vQsWYI+AUBA4ZsjKs0w0kyWzuK0X9rJcAM1cG7Lk
-         6zzdmC1T4a0npgXbHKhMrektlc1n1s+m6KPuM/bw+efKeNJ9QiheF853EnImYSkX0RzJ
-         sKFw==
-X-Gm-Message-State: AOJu0Yz+Vw0NCPWjMmB5CIv+wamR+RZUQYVgK8Q3OBnQms7mAhpdG9C+
-	/jmkzL1ze1P+s9Vd2g/An8L2MQ==
-X-Google-Smtp-Source: AGHT+IGwgOr6qdtdfdMX4Rg2CnVVZBQ0aH/828IT9FkkN9y3SJG6wbzLt3OY2goWTqPUl1CtrUxcHA==
-X-Received: by 2002:a05:6820:809:b0:58d:a6ed:5601 with SMTP id bg9-20020a056820080900b0058da6ed5601mr6252111oob.1.1701215438416;
-        Tue, 28 Nov 2023 15:50:38 -0800 (PST)
+        d=1e100.net; s=20230601; t=1701215536; x=1701820336;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=KGeDrNEnimmhtGEyy4xADkNVo65XsrpvCKCPlUM9+8M=;
+        b=jWVC4fV+vjXCpm9pkdqNfITH7SRlOE9NF7AUXvS9TSdzJDPiLb0i6VxdxX/JfIGLwl
+         U7ZyM+1kK55WAVqzfKpHoi1knZ3KphLLMT3ElFlb8bwvmqzrJaDK+zItkJOpqEAg+Me3
+         1PcsZ2ZyPh5tggyK+HtW44yPICbEcaIHfsu/pnFW2Lm3IOIpve4u4NO1l9PbILopriCI
+         SSfs+lc9ogh4UYeBIQBXYzBIDIcnssppVQ+usHGQB9CtsKBmdb6XZK6vM7FFgU6kKkmr
+         PdFc9pzVqYK+ne4d/1OLKAf2Q87OBdykw2yrO3nQOb0fcnFE/N8DMJ7Rauyfe2C48kM4
+         lWqQ==
+X-Gm-Message-State: AOJu0Yx1d+OlYFTKvSqBVh4DvQWSCT8QBwTHNDK3O62a6a9iEE9DeOfK
+	l/G9qXf5Y/Dw4BME7feghBGsZA==
+X-Google-Smtp-Source: AGHT+IH9LmWzJO7y47O3QlJBfbaegvjW4JiiPSyZGlFsMKhzquzPk2K8a5k6oldvIY99Eeb+EHerAg==
+X-Received: by 2002:a9d:6403:0:b0:6d6:4972:b7ae with SMTP id h3-20020a9d6403000000b006d64972b7aemr18597902otl.13.1701215536183;
+        Tue, 28 Nov 2023 15:52:16 -0800 (PST)
 Received: from ziepe.ca (hlfxns017vw-142-134-23-187.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.134.23.187])
-        by smtp.gmail.com with ESMTPSA id b35-20020a4a98e6000000b0058d2ea19475sm1934017ooj.11.2023.11.28.15.50.37
+        by smtp.gmail.com with ESMTPSA id v10-20020a056830140a00b006d834fd3399sm504997otp.59.2023.11.28.15.52.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Nov 2023 15:50:37 -0800 (PST)
+        Tue, 28 Nov 2023 15:52:15 -0800 (PST)
 Received: from jgg by wakko with local (Exim 4.95)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1r87qf-005jHH-5R;
-	Tue, 28 Nov 2023 19:50:37 -0400
-Date: Tue, 28 Nov 2023 19:50:37 -0400
+	id 1r87sE-005jI0-V5;
+	Tue, 28 Nov 2023 19:52:14 -0400
+Date: Tue, 28 Nov 2023 19:52:14 -0400
 From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Pasha Tatashin <pasha.tatashin@soleen.com>
-Cc: Robin Murphy <robin.murphy@arm.com>, akpm@linux-foundation.org,
+To: Yosry Ahmed <yosryahmed@google.com>
+Cc: Pasha Tatashin <pasha.tatashin@soleen.com>, akpm@linux-foundation.org,
 	alex.williamson@redhat.com, alim.akhtar@samsung.com,
 	alyssa@rosenzweig.io, asahi@lists.linux.dev,
 	baolu.lu@linux.intel.com, bhelgaas@google.com,
@@ -66,69 +65,51 @@ Cc: Robin Murphy <robin.murphy@arm.com>, akpm@linux-foundation.org,
 	linux-tegra@vger.kernel.org, lizefan.x@bytedance.com,
 	marcan@marcan.st, mhiramat@kernel.org, mst@redhat.com,
 	m.szyprowski@samsung.com, netdev@vger.kernel.org,
-	paulmck@kernel.org, rdunlap@infradead.org, samuel@sholland.org,
-	suravee.suthikulpanit@amd.com, sven@svenpeter.dev,
-	thierry.reding@gmail.com, tj@kernel.org, tomas.mudrunka@gmail.com,
-	vdumpa@nvidia.com, virtualization@lists.linux.dev, wens@csie.org,
-	will@kernel.org, yu-cheng.yu@intel.com
-Subject: Re: [PATCH 08/16] iommu/fsl: use page allocation function provided
- by iommu-pages.h
-Message-ID: <20231128235037.GC1312390@ziepe.ca>
+	paulmck@kernel.org, rdunlap@infradead.org, robin.murphy@arm.com,
+	samuel@sholland.org, suravee.suthikulpanit@amd.com,
+	sven@svenpeter.dev, thierry.reding@gmail.com, tj@kernel.org,
+	tomas.mudrunka@gmail.com, vdumpa@nvidia.com,
+	virtualization@lists.linux.dev, wens@csie.org, will@kernel.org,
+	yu-cheng.yu@intel.com
+Subject: Re: [PATCH 00/16] IOMMU memory observability
+Message-ID: <20231128235214.GD1312390@ziepe.ca>
 References: <20231128204938.1453583-1-pasha.tatashin@soleen.com>
- <20231128204938.1453583-9-pasha.tatashin@soleen.com>
- <1c6156de-c6c7-43a7-8c34-8239abee3978@arm.com>
- <CA+CK2bCOtwZxTUS60PHOQ3szXdCzau7OpopgFEbbC6a9Frxafg@mail.gmail.com>
+ <CAJD7tkb1FqTqwONrp2nphBDkEamQtPCOFm0208H3tp0Gq2OLMQ@mail.gmail.com>
+ <CA+CK2bB3nHfu1Z6_6fqN3YTAzKXMiJ12MOWpbs8JY7rQo4Fq0g@mail.gmail.com>
+ <CAJD7tkZZNhf4KGV+7N+z8NFpJrvyeNudXU-WdVeE8Rm9pobfgQ@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CA+CK2bCOtwZxTUS60PHOQ3szXdCzau7OpopgFEbbC6a9Frxafg@mail.gmail.com>
+In-Reply-To: <CAJD7tkZZNhf4KGV+7N+z8NFpJrvyeNudXU-WdVeE8Rm9pobfgQ@mail.gmail.com>
 
-On Tue, Nov 28, 2023 at 06:00:13PM -0500, Pasha Tatashin wrote:
-> On Tue, Nov 28, 2023 at 5:53 PM Robin Murphy <robin.murphy@arm.com> wrote:
+On Tue, Nov 28, 2023 at 03:03:30PM -0800, Yosry Ahmed wrote:
+> > Yes, another counter for KVM could be added. On the other hand KVM
+> > only can be computed by subtracting one from another as there are only
+> > two types of secondary page tables, KVM and IOMMU:
 > >
-> > On 2023-11-28 8:49 pm, Pasha Tatashin wrote:
-> > > Convert iommu/fsl_pamu.c to use the new page allocation functions
-> > > provided in iommu-pages.h.
+> > /sys/devices/system/node/node0/meminfo
+> > Node 0 SecPageTables:    422204 kB
 > >
-> > Again, this is not a pagetable. This thing doesn't even *have* pagetables.
+> >  /sys/devices/system/node/nodeN/vmstat
+> > nr_iommu_pages 105555
 > >
-> > Similar to patches #1 and #2 where you're lumping in configuration
-> > tables which belong to the IOMMU driver itself, as opposed to pagetables
-> > which effectively belong to an IOMMU domain's user. But then there are
-> > still drivers where you're *not* accounting similar configuration
-> > structures, so I really struggle to see how this metric is useful when
-> > it's so completely inconsistent in what it's counting :/
+> > KVM only = SecPageTables - nr_iommu_pages * PAGE_SIZE / 1024
+> >
 > 
-> The whole IOMMU subsystem allocates a significant amount of kernel
-> locked memory that we want to at least observe. The new field in
-> vmstat does just that: it reports ALL buddy allocator memory that
-> IOMMU allocates. However, for accounting purposes, I agree, we need to
-> do better, and separate at least iommu pagetables from the rest.
-> 
-> We can separate the metric into two:
-> iommu pagetable only
-> iommu everything
-> 
-> or into three:
-> iommu pagetable only
-> iommu dma
-> iommu everything
-> 
-> What do you think?
+> Right, but as I mention above, if userspace starts depending on this
+> equation, we won't be able to add any more classes of "secondary" page
+> tables to SecPageTables. I'd like to avoid that if possible. We can do
+> the subtraction in the kernel.
 
-I think I said this at LPC - if you want to have fine grained
-accounting of memory by owner you need to go talk to the cgroup people
-and come up with something generic. Adding ever open coded finer
-category breakdowns just for iommu doesn't make alot of sense.
-
-You can make some argument that the pagetable memory should be counted
-because kvm counts it's shadow memory, but I wouldn't go into further
-detail than that with hand coded counters..
+What Sean had suggested was that SecPageTables was always intended to
+account all the non-primary mmu memory used by page tables. If this is
+the case we shouldn't be trying to break it apart into finer
+counters. These are big picture counters, not detailed allocation by
+owner counters.
 
 Jason
