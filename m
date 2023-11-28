@@ -1,43 +1,44 @@
-Received: from mail-qt1-f170.google.com (mail-qt1-f170.google.com [209.85.160.170])
+Received: from mail-qt1-f173.google.com (mail-qt1-f173.google.com [209.85.160.173])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E42C57317
-	for <iommu@lists.linux.dev>; Tue, 28 Nov 2023 23:08:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 52DCB57338
+	for <iommu@lists.linux.dev>; Tue, 28 Nov 2023 23:32:58 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=soleen.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=soleen.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=soleen.com header.i=@soleen.com header.b="CAgFjWEV"
-Received: by mail-qt1-f170.google.com with SMTP id d75a77b69052e-41c157bbd30so32728441cf.0
-        for <iommu@lists.linux.dev>; Tue, 28 Nov 2023 15:08:49 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=soleen.com header.i=@soleen.com header.b="lXMg1hwg"
+Received: by mail-qt1-f173.google.com with SMTP id d75a77b69052e-423a9cb7e80so18586831cf.3
+        for <iommu@lists.linux.dev>; Tue, 28 Nov 2023 15:32:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=soleen.com; s=google; t=1701212928; x=1701817728; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=ZwfH1boRaqUSm7vYG/zdQBuuZhpN21nmfcJNTWlLUDE=;
-        b=CAgFjWEV1i7lsjJZ3dUjsqrn0k4hiHWdO8eFkw+IJFR+iHQr/ZDbQpUvWTtJnoOYCD
-         NoeYUhCbX/fDm1OiUZZTPZz0Ui/lLM+IqBwxvTjz9tUqex+umzsGksZMqioPFLQBfy5K
-         fqc65pqkPprbw9TZk9hmt482GD6aBqec3e4fCLn6PwOl2XE1bJWCdU6m8COa61vPTSen
-         gVmAjJG+fPGOlZ+9pTmq3uemlrPTllf8XMHm0oo5SA0UrEvyq3/O0x6TT8LzMMaoNwuP
-         Vf7fK5MqtJ6EulQkFxAXwNg4YhEbWKjVpD2Km3PgfbqXzS0CtOkBZEtwPMBph+EgQ6A3
-         T60Q==
+        d=soleen.com; s=google; t=1701214377; x=1701819177; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=T5E8YxJ+6DFizX8w/tjdr1Q20AjeSOztly1v+T84HO0=;
+        b=lXMg1hwgMejrOrH3CA6kHcNCFIxpVkoeOlXOpIhqz4KRikM2jjA0m2cO6VsdjgA8KB
+         rLS/UkRnxTfe4PFGKHLYFZHj2XSUici4YLK2u48BSFgC9UT1WPG3cKB8TfsZD1m9rnMQ
+         WCF7Ww5v33/IRmyneaB1CGamJJ0AF8rGMy3rH9LWaYxzRIYFZACjuGyziAbmCGkO5bAw
+         fJDy3hCaAvdXiyuSI9rpoXi5/JKdn59Cf0c7fz6EuqSTXxrF7DgDz8/wbbC9ez8GiQp7
+         q6ofwb9LiRrXZnWxPY1/C9Mg1kC79KvGnbPqtxMwRjGAO79OlwQ8qz5Mhh494JoCUoa6
+         5Vlw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701212928; x=1701817728;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=ZwfH1boRaqUSm7vYG/zdQBuuZhpN21nmfcJNTWlLUDE=;
-        b=HufKC2hAGehH4XnqqC7igZr5isOHOmWqFZvW0j7XxOcP5mNYOtdtgqikAcbShDDrJ3
-         UIVTCsn4f+LfXhqheayfVXonvylXeEA8LV67cJZvBK8PFB1G0KSOaGNAbeo7Elxdv352
-         FXhoxj8+WQ3v8f2sEjn/umuFaKXtc+4s6JlBgEkuB/++/CbqLQsUpgCtHEIjQc+/K4RR
-         0STHLJ5zR/X+kuhsIvvoXdpU9n25m/EAlbdNGSN74y48/Z18Eo8/iECvrNXqrYSEiZbh
-         mo4gYyNktJzFK8k+7bTRRBH0o8Z2y/90FF2pGsFw9V/6kSdzrxLFZy/UnRkGTyE3UnsF
-         xqMA==
-X-Gm-Message-State: AOJu0YwO8bnHYIg/FgNV1Z5oXZqj+Gy2kZnAvracqZRZCjIyn+HRsYFL
-	dxPoOux+o/ayNlIJvCkUIOdbtylcbt2iv4g7CVFosQ==
-X-Google-Smtp-Source: AGHT+IH+DSzeg4H32kbSmeDdX42LwmFTBbiExz1cQ9Spo9pVMTh9OFSxf1oX9/Sr0tuUo1qYELK4l02okd8aqJLSMys=
-X-Received: by 2002:a05:622a:d2:b0:423:7f91:3a17 with SMTP id
- p18-20020a05622a00d200b004237f913a17mr22124861qtw.21.1701212928489; Tue, 28
- Nov 2023 15:08:48 -0800 (PST)
+        d=1e100.net; s=20230601; t=1701214377; x=1701819177;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=T5E8YxJ+6DFizX8w/tjdr1Q20AjeSOztly1v+T84HO0=;
+        b=u0dJ3RioLvHghYJN7jLIwimWcd4J59OR8FV27JJEIcmlvZe98UtjSIHr+m/TqWiHHG
+         HI0pCksFdW04BE7vJUZU2ExflI/U/k3SpSJzZybryIClGt8CTlIux3W7cn+/XQtYsoZr
+         MpGE9eaNrJmFTSrMVINqrtVC+fT2obO5ENVJ+vet2niR2wZfJGeyVLBIhGwBepolBbRx
+         T02x1WT7rw7fo/MMG+0QqldvunXkpEQx0Zt1CvCL4pnW2x8auJqYoHBcTIXP4zB6mfPv
+         i44Dyc1o5lxaTLL0ctL0nzoNThh7bBd6BTpKl+2JCQK11A6pVVnqx4QVPZk2xh+qUyF6
+         nKEw==
+X-Gm-Message-State: AOJu0YyU7z/atJLrnpUhjvis2XAXz7NtikDC/0sAlF9zGpm/gkqlEEwf
+	3Q2PTSXNgNiWTyoh3XaNEpQzM8Haikq9pvBfJ+wLBw==
+X-Google-Smtp-Source: AGHT+IEOuxWHhR77aLWnHKpzlrX1TcnL7YFPpFLtYSrpaVGNIqLOq9dSsp5P0HO6NZm9ZocGV6nook5EATgkphMBWlk=
+X-Received: by 2002:ac8:5c06:0:b0:419:a2c6:820e with SMTP id
+ i6-20020ac85c06000000b00419a2c6820emr19578443qti.12.1701214377257; Tue, 28
+ Nov 2023 15:32:57 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -45,13 +46,14 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 References: <20231128204938.1453583-1-pasha.tatashin@soleen.com>
- <20231128204938.1453583-7-pasha.tatashin@soleen.com> <d99e0d4a-94a9-482b-b5b5-833cba518b86@arm.com>
- <CA+CK2bDswtrqiOMt3+0LBb0+7nJY9aBpzZdsmrWRzy9WxBqKEg@mail.gmail.com> <79c397ee-b71b-470e-9184-401b4b96a0d2@arm.com>
-In-Reply-To: <79c397ee-b71b-470e-9184-401b4b96a0d2@arm.com>
+ <20231128204938.1453583-6-pasha.tatashin@soleen.com> <8e1961c9-0359-4450-82d8-2b2fcb2c5557@arm.com>
+ <CA+CK2bDFAi1+397fd4cYetUgmHxqE2hUG4fa2m9Fi3weykQdpA@mail.gmail.com> <6f9ff0aa-7713-4de1-869e-4725828942e4@arm.com>
+In-Reply-To: <6f9ff0aa-7713-4de1-869e-4725828942e4@arm.com>
 From: Pasha Tatashin <pasha.tatashin@soleen.com>
-Date: Tue, 28 Nov 2023 18:08:11 -0500
-Message-ID: <CA+CK2bDZUHSLWB=ec6Jdjbi+y6fD8=j96bK-kPHYKc1uiVLZWw@mail.gmail.com>
-Subject: Re: [PATCH 06/16] iommu/dma: use page allocation function provided by iommu-pages.h
+Date: Tue, 28 Nov 2023 18:32:20 -0500
+Message-ID: <CA+CK2bDKaXqemr2Hp=MRxxMB_=AoRnUK_D2SGm9cDkKa+JaT7A@mail.gmail.com>
+Subject: Re: [PATCH 05/16] iommu/io-pgtable-arm-v7s: use page allocation
+ function provided by iommu-pages.h
 To: Robin Murphy <robin.murphy@arm.com>
 Cc: akpm@linux-foundation.org, alex.williamson@redhat.com, 
 	alim.akhtar@samsung.com, alyssa@rosenzweig.io, asahi@lists.linux.dev, 
@@ -72,25 +74,30 @@ Cc: akpm@linux-foundation.org, alex.williamson@redhat.com,
 	vdumpa@nvidia.com, virtualization@lists.linux.dev, wens@csie.org, 
 	will@kernel.org, yu-cheng.yu@intel.com
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-> > This is true, however, we want to account and observe the pages
-> > allocated by IOMMU subsystem for DMA buffers, as they are essentially
-> > unmovable locked pages. Should we separate IOMMU memory from KVM
-> > memory all together and add another field to /proc/meminfo, something
-> > like "iommu -> iommu pagetable and dma memory", or do we want to
-> > export DMA memory separately from IOMMU page tables?
+On Tue, Nov 28, 2023 at 6:08=E2=80=AFPM Robin Murphy <robin.murphy@arm.com>=
+ wrote:
 >
-> These are not allocated by "the IOMMU subsystem", they are allocated by
-> the DMA API. Even if you want to claim that a driver pinning memory via
-> iommu_dma_ops is somehow different from the same driver pinning the same
-> amount of memory via dma-direct when iommu.passthrough=1, it's still
-> nonsense because you're failing to account the pages which iommu_dma_ops
-> gets from CMA, dma_common_alloc_pages(), dynamic SWIOTLB, the various
-> pools, and so on.
+> On 2023-11-28 10:55 pm, Pasha Tatashin wrote:
+> >>>                kmem_cache_free(data->l2_tables, table);
+> >
+> > We only account page allocations, not subpages, however, this is
+> > something I was surprised about this particular architecture of why do
+> > we allocate l2 using kmem ? Are the second level tables on arm v7s
+> > really sub-page in size?
+>
+> Yes, L2 tables are 1KB, so the kmem_cache could still quite easily end
+> up consuming significantly more memory than the L1 table, which is
+> usually 16KB (but could potentially be smaller depending on the config,
+> or up to 64KB with the Mediatek hacks).
 
-I see, IOMMU variants are used only for discontiguous allocations, and
-the common ones are defined outside of driver/iommu. Alright, I can
-remove all the changes for all no-page table related IOMMU
-allocations.
+I am OK removing support for this architecture, or keeping only info
+for L1, I do not think there is a reason to worry about sub-page
+accounting only for v7s.
 
 Pasha
+
+>
+> Thanks,
+> Robin.
