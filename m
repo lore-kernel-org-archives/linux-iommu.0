@@ -1,120 +1,109 @@
-Received: from mail-lj1-f173.google.com (mail-lj1-f173.google.com [209.85.208.173])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E78456B77
-	for <iommu@lists.linux.dev>; Tue, 28 Nov 2023 13:18:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="QJRwd2W6"
-Received: by mail-lj1-f173.google.com with SMTP id 38308e7fff4ca-2c9ba5753bcso703661fa.1
-        for <iommu@lists.linux.dev>; Tue, 28 Nov 2023 05:18:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1701177511; x=1701782311; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=tTf2yUtECbY/OYuChMFvXRgzzGsfDdzdXOehMmGhewk=;
-        b=QJRwd2W6VRXrS4A/CBhp2YcbC3sU4ZAmPGeKVZFT1WgHZggwetwhSZeDaVxv4Aktuf
-         WytqGCQI6LnNbrg07xeSz3IzVGKS7gA8V4HV3YpvZYe2XF2pHpPCUZ/jMNlV5tuoKFSh
-         thaVVE/Bj7+ADN1gIzBCB3ZldzUW9elGxh6Ru0DOCFqwSp0JQzblj3sSCl9meTgs2GDJ
-         TNbSVhh+IcLUajQqo+Pdj2tBCkwnF8DCDGb67pjcmD7zqC2+S5zEH9zlbI2pmpnyZJa/
-         LJEdGSiCARQAsvrM2SxlgvnoD1EsdB+YRpT9jxgodejcPfhdTBsnxuo0qTESjlXlJL7V
-         0WZA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701177511; x=1701782311;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=tTf2yUtECbY/OYuChMFvXRgzzGsfDdzdXOehMmGhewk=;
-        b=rWFHX3zXBIb3Cn9S+b9gDGyR9e2vAwr44smWU9hKuA1ubWPzY8yz8JybfjJI46iHOP
-         viq+bUdfKuk4yNIrBfi6ZvjCJ49rc8JoLd2bx5HGWYQMNeFjzTshcEexYrdoSYS7jxh3
-         62DoWdOlVFfL5xscFRBbLIojTSY0Wg84+Y2VF5Z/3gh7DC9eFtNQYnNvHqc9GNSwXtaM
-         pTLlP76XQ1x0FX06N3DkLWd/hjAhPhHkkjF649WEaQA3kbUKWz0WebS6oxt9aQgD7Hww
-         4Orsp/zOy8p0W0ofHhs9Ss+KJfvxJUReQFzO9Cw/ZgGa5dUxaGOPtP6upRd2n0DBr8ME
-         1DKQ==
-X-Gm-Message-State: AOJu0YzNoE1AtQQfj/bT3hn62MjMWHbwIz+UR7R+oHVqVzo05q22b34r
-	fnzYer5/O8nYQx11VGFEm2zbvA==
-X-Google-Smtp-Source: AGHT+IGqrSCmGnNKknw600PvCwdJ4nyNLsm/yU9AqIvf2jLutSas7DdHhjfbocjXyLUEEP7CqlRP5A==
-X-Received: by 2002:a05:651c:39d:b0:2c9:9983:6fba with SMTP id e29-20020a05651c039d00b002c999836fbamr5636031ljp.52.1701177511295;
-        Tue, 28 Nov 2023 05:18:31 -0800 (PST)
-Received: from ?IPV6:2001:14ba:a0db:1f00::227? (dzdqv0yyyyyyyyyyyykxt-3.rev.dnainternet.fi. [2001:14ba:a0db:1f00::227])
-        by smtp.gmail.com with ESMTPSA id t7-20020a2e9547000000b002b657f10b78sm1707226ljh.58.2023.11.28.05.18.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 28 Nov 2023 05:18:30 -0800 (PST)
-Message-ID: <83e4f84f-63bd-4f53-886e-5cff215fd802@linaro.org>
-Date: Tue, 28 Nov 2023 15:18:30 +0200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39E6058AA9
+	for <iommu@lists.linux.dev>; Tue, 28 Nov 2023 13:37:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
+Authentication-Results: smtp.subspace.kernel.org; dkim=none
+Received: by verein.lst.de (Postfix, from userid 2407)
+	id 9FA90227A87; Tue, 28 Nov 2023 14:37:02 +0100 (CET)
+Date: Tue, 28 Nov 2023 14:37:02 +0100
+From: Christoph Hellwig <hch@lst.de>
+To: Alan Stern <stern@rowland.harvard.edu>
+Cc: Christoph Hellwig <hch@lst.de>,
+	Hamza Mahfooz <someguy@effective-light.com>,
+	Dan Williams <dan.j.williams@intel.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Andrew <travneff@gmail.com>, Ferry Toth <ferry.toth@elsinga.info>,
+	Andy Shevchenko <andy.shevchenko@gmail.com>,
+	Thorsten Leemhuis <regressions@leemhuis.info>,
+	iommu@lists.linux.dev,
+	Kernel development list <linux-kernel@vger.kernel.org>,
+	USB mailing list <linux-usb@vger.kernel.org>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>
+Subject: Re: Bug in add_dma_entry()'s debugging code
+Message-ID: <20231128133702.GA9917@lst.de>
+References: <736e584f-7d5f-41aa-a382-2f4881ba747f@rowland.harvard.edu> <20231127160759.GA1668@lst.de> <637d6dff-de56-4815-a15a-1afccde073f0@rowland.harvard.edu>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 05/12] iommu/arm-smmu-qcom: Add QCM2290 DPU compatible
-Content-Language: en-GB
-To: Konrad Dybcio <konrad.dybcio@linaro.org>, Rob Clark
- <robdclark@gmail.com>, Abhinav Kumar <quic_abhinavk@quicinc.com>,
- Sean Paul <sean@poorly.run>, David Airlie <airlied@gmail.com>,
- Daniel Vetter <daniel@ffwll.ch>,
- Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
- Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>,
- Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Conor Dooley <conor+dt@kernel.org>, Loic Poulain <loic.poulain@linaro.org>,
- Bryan O'Donoghue <bryan.odonoghue@linaro.org>, Andy Gross
- <agross@kernel.org>, Bjorn Andersson <andersson@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
- Georgi Djakov <djakov@kernel.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
- Krishna Manikandan <quic_mkrishn@quicinc.com>,
- Robert Marko <robimarko@gmail.com>, Das Srinagesh <quic_gurus@quicinc.com>,
- cros-qcom-dts-watchers@chromium.org
-Cc: Marijn Suijten <marijn.suijten@somainline.org>,
- Rob Herring <robh@kernel.org>, linux-arm-msm@vger.kernel.org,
- dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-pm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- iommu@lists.linux.dev
-References: <20231125-topic-rb1_feat-v2-0-979b28f35e4a@linaro.org>
- <20231125-topic-rb1_feat-v2-5-979b28f35e4a@linaro.org>
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-In-Reply-To: <20231125-topic-rb1_feat-v2-5-979b28f35e4a@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <637d6dff-de56-4815-a15a-1afccde073f0@rowland.harvard.edu>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 
-On 27/11/2023 17:28, Konrad Dybcio wrote:
-> Add the QCM2290 DPU compatible to clients compatible list, as it also
-> needs the workarounds.
+On Mon, Nov 27, 2023 at 11:51:21AM -0500, Alan Stern wrote:
+> The buffers in the bug report were allocated by kmalloc().  Doesn't 
+> kmalloc() guarantee that on architectures with non-cache-coherent DMA, 
+> allocations will be aligned on cache-line boundaries (or larger)?  Isn't 
+> this what ARCH_DMA_MINALIGN and ARCH_KMALLOC_MINALIGN are supposed to 
+> take care of in include/linux/slab.h?
 
-Nit: MDSS, not DPU compatible
+Oh.  Yes, the variable alignment from kmalloc make things complicated.
 
-With that fixed:
+> 	Architectures must ensure that kmalloc'ed buffer is
+> 	DMA-safe. Drivers and subsystems depend on it. If an architecture
+> 	isn't fully DMA-coherent (i.e. hardware doesn't ensure that data in
+> 	the CPU cache is identical to data in main memory),
+> 	ARCH_DMA_MINALIGN must be set so that the memory allocator
+> 	makes sure that kmalloc'ed buffer doesn't share a cache line with
+> 	the others. See arch/arm/include/asm/cache.h as an example.
+> 
+> It says nothing about avoiding more than one DMA operation at a time to 
+> prevent overlap.  Is the documentation wrong?
 
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+The documentation is a bit lacking unfortunately.  Again, assuming
+you actually have non-coherent mappings you'd easily break the fragile
+cache line ownership if you did.  That doesn't apply to x86 as-is, but
+we really try to keep drivers portable.
 
+> >  This might not have an
+> > effect on the particular plaform you are currently running on, but it
+> > is still wrong.
+> 
+> Who decides what is right and what is wrong in this area?  Clearly you 
+> have a different opinion from David S. Miller, Richard Henderson, and 
+> Jakub Jelinek (the authors of that documentation file).
+
+I don't think this about anyone's opinion. It's a fundamental propery of
+how to manage caches in the face of non-coherent DMA.
 
 > 
-> Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
-> ---
->   drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 1 +
->   1 file changed, 1 insertion(+)
+> >  Note that there have been various mumblings about
+> > using nosnoop dma on x86, in which case you'll have the issue there
+> > as well.
 > 
-> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> index 549ae4dba3a6..aea5e85b20ff 100644
-> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> @@ -245,6 +245,7 @@ static const struct of_device_id qcom_smmu_client_of_match[] __maybe_unused = {
->   	{ .compatible = "qcom,adreno" },
->   	{ .compatible = "qcom,mdp4" },
->   	{ .compatible = "qcom,mdss" },
-> +	{ .compatible = "qcom,qcm2290-mdss" },
->   	{ .compatible = "qcom,sc7180-mdss" },
->   	{ .compatible = "qcom,sc7180-mss-pil" },
->   	{ .compatible = "qcom,sc7280-mdss" },
-> 
+> Unless the people who implement nosnoop DMA also modify kmalloc() or 
+> ARCH_DMA_MINALIGN.
 
--- 
-With best wishes
-Dmitry
+Or don't do it on kmalloc buffers.
 
+> I guess the real question boils down to where the responsiblity should 
+> lie.  Should kmalloc() guarantee that the memory regions it provides 
+> will always be suitable for DMA, with no overlap issues?  Or should all 
+> the innumerable users of kmalloc() be responsible for jumping through 
+> hoops to request arch-specific minimum alignment for their DMA buffers?
+
+I'd actually go one step back:
+
+ 1) for not cache coherent DMA you can't do overlapping operations inside
+    a cache line
+ 2) dma-debug is intended to find DMA API misuses, even if they don't
+    have bad effects on your particular system
+ 3) the fact that the kmalloc implementation returns differently aligned
+    memory depending on the platform breaks how dma-debug works currently
+
+The logical confcusion from that would be that IFF dma-debug is enabled on
+any platform we need to set ARCH_DMA_MINALIGN to the cache line size.
+
+BUT:  we're actually reduzing our dependency on ARCH_DMA_MINALIGN by
+moving to bounce buffering unaligned memory for non-coherent
+architectures, which makes this even more complicated.  Right now I
+don't have a good idea how to actually deal with having the cachline
+sanity checks with that, but I'm Ccing some of the usual suspects if
+they have a better idea.
