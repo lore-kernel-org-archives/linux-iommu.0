@@ -1,153 +1,121 @@
-Received: from mail-ed1-f52.google.com (mail-ed1-f52.google.com [209.85.208.52])
+Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E2C515AEA
-	for <iommu@lists.linux.dev>; Tue, 28 Nov 2023 08:23:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 517F1156C2
+	for <iommu@lists.linux.dev>; Tue, 28 Nov 2023 08:38:04 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="g6mHTbbj"
-Received: by mail-ed1-f52.google.com with SMTP id 4fb4d7f45d1cf-54b0c7987easo4459076a12.3
-        for <iommu@lists.linux.dev>; Tue, 28 Nov 2023 00:23:48 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="KiXTH/Gq"
+Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-40b479ec4a3so12902185e9.2
+        for <iommu@lists.linux.dev>; Tue, 28 Nov 2023 00:38:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1701159827; x=1701764627; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=1UOlh2DBPRlglTZsxnljR4k/aNf8IkPiVHCesZDf2rE=;
-        b=g6mHTbbjeWnrk2uwAXXeluDwpO746zW200pKNPwmohvvOFUrldII+JaPfbJG0AIRv3
-         1Z8ff7Hzy63ZJkNZ/0zV4fCRbwv0zlootkJesnd1qsl+xFyGA08V/SdI7PZJ7ilktD75
-         JtgxOXsN3yY6qrqvoEqY9YD3SpK7cY38WqZUagUGZ8+Q/YKHzvnzlvpZm1jfMCCORMfz
-         pYa5HTeg04jzkv4e9lr0cZKabV72ryNljZ37iKHndqVQbhO+j0G+oqA7D5X1H8mMAl/e
-         Gt02248XlaR4oDx9owAM8uZ29ty7C9GygJa4XQyK62c1080p+idAMQE9Ba0sa7DKzzns
-         aghQ==
+        d=linaro.org; s=google; t=1701160682; x=1701765482; darn=lists.linux.dev;
+        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
+         :date:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=crclIHZgLMbk6m6cpstTsXFLirHjxlOQ97dZu+AQEPg=;
+        b=KiXTH/Gq5k9DLrxhp7peKfWHT04OHaVMgJMfbQGbo16gOY71U/VhoYxJzUJQ9+9JJ8
+         X0Y4kS4J8GAtpMJA+PjVafKfcQHFZ8lHmKVdEsmA0ZuciGoe7s8ZNVN0fnIz6i/I/oAW
+         Ku86oglPmSCSL3DQubzQ3Ex0SPp1G2K2T8mKa8rR6xs4KBgEfRfnZJvDJnKt83Xyquse
+         8Wu/S+3eAMmYAyWFbOcQqKXl0V86T9LM/TJNL+vRs91sZSX3QQM8bDG+4rxXvLjZUy9R
+         /KpJIromh6mPfmXxEe5dX9h3/8yGlEifwcJ1YkmCOP1Q9F2zkxuf1E54fAVmAw1QlPQE
+         lGRw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701159827; x=1701764627;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=1UOlh2DBPRlglTZsxnljR4k/aNf8IkPiVHCesZDf2rE=;
-        b=ZzvTF5jwhNibfcr9J8weRtX0UvtS4ipvkV6dMs4xzdtDWMBz3WhQBue5cYd7MN9Wr8
-         C5LgJ9WZHNvQRru+IRWQaXCYI+z3el5cnKldwikkZRQbas1x9jYvVjk+RQn39VPOmUQB
-         19zDbSXA98JitjwDWFeewXDXRWSIOTQKmIwp1qsYeoF4z2/Ww14FgjXvBNCU4IOiakbI
-         howkpCx6rV4d6Z+/uiahQ0TsyWjobLZyHrJIkjbuQPagZTqC3ZZ3TYJfHWaPkLp91uPK
-         ZangPx8ZfgZjBRcCEHeIPxvQZeuTcINVeg7GxZRPKlc/SK3cT4DrYhaz3gd6aFmC484x
-         9a+A==
-X-Gm-Message-State: AOJu0YzVPQNhdYzo+I4riRlr4zYcnE1WK7wQ4sOpPQJ5Moid0Bf7092H
-	//7kW4vmKE0ACwgWIs8jq2XTmw==
-X-Google-Smtp-Source: AGHT+IEWSLfSH2rm0ZeDonvf6plZljG4gTf78THbXKuJ5NkitUThcGz4eAHzdOYzRW5mLVZYsC0kWQ==
-X-Received: by 2002:a05:6402:42c5:b0:54a:ed2a:fa7e with SMTP id i5-20020a05640242c500b0054aed2afa7emr13330706edc.24.1701159827034;
-        Tue, 28 Nov 2023 00:23:47 -0800 (PST)
-Received: from [192.168.1.20] ([178.197.223.109])
-        by smtp.gmail.com with ESMTPSA id x1-20020aa7d381000000b00548ab1abc75sm6180302edq.51.2023.11.28.00.23.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 28 Nov 2023 00:23:46 -0800 (PST)
-Message-ID: <79916a3e-70c2-4eaa-b4eb-9375c859f53e@linaro.org>
-Date: Tue, 28 Nov 2023 09:23:43 +0100
+        d=1e100.net; s=20230601; t=1701160682; x=1701765482;
+        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
+         :date:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=crclIHZgLMbk6m6cpstTsXFLirHjxlOQ97dZu+AQEPg=;
+        b=HRaxBmGrmG1tXeFww5Ax3kuiUXN0tebnO4wIFb1t5cocFevcIYbNhklSVBNlSa3Njs
+         dgwk2uKFI8tV4rHZrf/7R8zTovMy9jB0HdNFQlftL6BFVzL8foNnR0CIrL2ebO1bw7uU
+         XSc/Dz+xvEjFO4Wo7JQmaA1hUUlzPbzRgJyGT9mY0wq6yBP2VHiL9gsF1etlfMgQF9KO
+         6HqiKsY3w8M0S6wAsvLejaZu2SghZz1+GlGKztP73rSwdCa/15jDlpyAg3lXI+qqRlp+
+         WxfluNOFe3eYGqvSY4VTaH68jJa1HRtyRPhmNuBYgzhgN1fsQBz0cO5sJBMw8k8YcYQx
+         KlxA==
+X-Gm-Message-State: AOJu0YziNl7DmmBBZXzu0BsxSqn4Y0eyr9nq7syljKMBjcjBpnwMaSwa
+	4W3AwJUn5nL82TIqV+xUEBVz6Q==
+X-Google-Smtp-Source: AGHT+IGJhOJb3UCnHXw0kECBhzTOYoNKUyrbF2v0TFjW3e4PIQzArhIUJmoMawYTO9aIZqORwmHskw==
+X-Received: by 2002:a05:600c:470f:b0:40b:37ef:3671 with SMTP id v15-20020a05600c470f00b0040b37ef3671mr11367081wmo.38.1701160682275;
+        Tue, 28 Nov 2023 00:38:02 -0800 (PST)
+Received: from arrakeen.starnux.net ([2a01:e0a:982:cbb0:52eb:f6ff:feb3:451a])
+        by smtp.gmail.com with ESMTPSA id c4-20020a05600c0a4400b003fefaf299b6sm16718638wmq.38.2023.11.28.00.38.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Nov 2023 00:38:01 -0800 (PST)
+From: Neil Armstrong <neil.armstrong@linaro.org>
+Date: Tue, 28 Nov 2023 09:37:59 +0100
+Subject: [PATCH RESEND] dt-bindings: iommu: arm,smmu: document the SM8650
+ System MMU
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 02/12] dt-bindings: display: msm: Add reg bus and
- rotator interconnects
-Content-Language: en-US
-To: Konrad Dybcio <konrad.dybcio@linaro.org>, Rob Clark
- <robdclark@gmail.com>, Abhinav Kumar <quic_abhinavk@quicinc.com>,
- Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, Sean Paul <sean@poorly.run>,
- David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
- Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
- Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>,
- Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Conor Dooley <conor+dt@kernel.org>, Loic Poulain <loic.poulain@linaro.org>,
- Bryan O'Donoghue <bryan.odonoghue@linaro.org>, Andy Gross
- <agross@kernel.org>, Bjorn Andersson <andersson@kernel.org>,
- Georgi Djakov <djakov@kernel.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
- Krishna Manikandan <quic_mkrishn@quicinc.com>,
- Robert Marko <robimarko@gmail.com>, Das Srinagesh <quic_gurus@quicinc.com>,
- cros-qcom-dts-watchers@chromium.org
-Cc: Marijn Suijten <marijn.suijten@somainline.org>,
- Rob Herring <robh@kernel.org>, linux-arm-msm@vger.kernel.org,
- dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-pm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- iommu@lists.linux.dev
-References: <20231125-topic-rb1_feat-v2-0-979b28f35e4a@linaro.org>
- <20231125-topic-rb1_feat-v2-2-979b28f35e4a@linaro.org>
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
- 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
- D2GYIS41Kv4Isx2dEFh+/Q==
-In-Reply-To: <20231125-topic-rb1_feat-v2-2-979b28f35e4a@linaro.org>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
+Message-Id: <20231128-topic-sm8650-upstream-bindings-smmu-v1-1-d330854170d4@linaro.org>
+To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+ Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>, 
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, 
+ Conor Dooley <conor+dt@kernel.org>
+Cc: linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, 
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ Neil Armstrong <neil.armstrong@linaro.org>
+X-Mailer: b4 0.12.3
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1415;
+ i=neil.armstrong@linaro.org; h=from:subject:message-id;
+ bh=88P3e6NmMBveIZbiqKlF5tiz9ASGje5GZTyQzmMCUXo=;
+ b=owEBbQKS/ZANAwAKAXfc29rIyEnRAcsmYgBlZabpqbPdoPQ1taztccvMYrIrhnlTcN2ProIe2tPh
+ XJSM8r+JAjMEAAEKAB0WIQQ9U8YmyFYF/h30LIt33NvayMhJ0QUCZWWm6QAKCRB33NvayMhJ0ToJD/
+ wIZQE+dwjvziSy/ZB2A2vdc+xTal7T4iFb4xeYUY5f3BR/HHGHUoJFnxhq5dH8ogXzTh7uLQ5bmL8j
+ +PjJrEeQ+fye0WSqRKn06FI7bAR7/ugL5pyol+I1IfaAn0AdVc9oaLtUo0PkobawcvQCgpd6KP36du
+ iTTNc/E+3PE6qDOOCXyNvmQnBtGa1+noRQpuivp9CO4znj0aOSZzc0bQtwN61HqK4DetMSTU9i7/Ca
+ x4HQkJYx+6aprnnnpk3x5jKal2XbgeJ01HFhv6tz3jQgmmnlGQe5h6lV5KP1l7m5ni6eSPKJCbRhlE
+ W/Kriv/+duBA/6EreApVb/z8o9r5dMWHWEjBWB7tVd0KLD3NvA8zySC0XYLBL97xwMqFFdbe3spNqo
+ kZHRiVht1I0//eZJpI24Z3rvsTSq0+7nL7h+jCcvT639fmeT50T8DL904TxRb1oSyMDnh0zRE3Cf5l
+ 9seqw6+sBfWjzHNrTcF90F6BV4CFQyGJczF7/gNyKApz6oYo0dUbsbzcC2KXzR5zPgjW3IqeWsypyx
+ 3faV08W7hsEtn6rpSuVWDckfVDSUWwpOTPhNP9+5z0q7yxDTztM0YimB4ulxrgyH0XOpOynBUlez0Y
+ +5SjIX6DiuozGGDcn3J2YxcS5kFKd0BBSk8NS/oazKcZ5b1x+ebs+LAJFb8g==
+X-Developer-Key: i=neil.armstrong@linaro.org; a=openpgp;
+ fpr=89EC3D058446217450F22848169AB7B1A4CFF8AE
 
-On 27/11/2023 16:28, Konrad Dybcio wrote:
-> Apart from the already handled data bus (MAS_MDP_Pn<->DDR), there are
-> other connection paths:
-> - a path that connects rotator block to the DDR.
-> - a path that needs to be handled to ensure MDSS register access
->   functions properly, namely the "reg bus", a.k.a the CPU-MDSS CFG
->   interconnect.
-> 
-> Describe these paths to allow using them in device trees and in the
-> driver.
-> 
-> Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-> [Konrad: rework for one vs two MDP paths, update examples]
-> Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
-> ---
+Document the System MMU on the SM8650 Platform.
 
-Thanks, looks good.
+Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
+---
+For convenience, a regularly refreshed linux-next based git tree containing
+all the SM8650 related work is available at:
+https://git.codelinaro.org/neil.armstrong/linux/-/tree/topic/sm85650/upstream/integ
+---
+ Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 2 ++
+ 1 file changed, 2 insertions(+)
 
+diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+index aa9e1c0895a5..157de0d0a24d 100644
+--- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
++++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+@@ -56,6 +56,7 @@ properties:
+               - qcom,sm8350-smmu-500
+               - qcom,sm8450-smmu-500
+               - qcom,sm8550-smmu-500
++              - qcom,sm8650-smmu-500
+           - const: qcom,smmu-500
+           - const: arm,mmu-500
+ 
+@@ -475,6 +476,7 @@ allOf:
+               - qcom,sm8350-smmu-500
+               - qcom,sm8450-smmu-500
+               - qcom,sm8550-smmu-500
++              - qcom,sm8650-smmu-500
+     then:
+       properties:
+         clock-names: false
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+base-commit: fe1998aa935b44ef873193c0772c43bce74f17dc
+change-id: 20231016-topic-sm8650-upstream-bindings-smmu-7d52c88bc6ff
 
 Best regards,
-Krzysztof
+-- 
+Neil Armstrong <neil.armstrong@linaro.org>
 
