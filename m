@@ -1,216 +1,124 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1234F4412
-	for <iommu@lists.linux.dev>; Tue, 28 Nov 2023 17:36:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD89C39AC1;
+	Tue, 28 Nov 2023 17:44:53 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dkim=none
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B2398C15;
-	Tue, 28 Nov 2023 09:37:23 -0800 (PST)
-Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 3AE053F6C4;
-	Tue, 28 Nov 2023 09:36:35 -0800 (PST)
-Message-ID: <a9674ad7-e773-495b-abc3-dae1f74a7694@arm.com>
-Date: Tue, 28 Nov 2023 17:36:33 +0000
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC3D5C433C7;
+	Tue, 28 Nov 2023 17:44:50 +0000 (UTC)
+Date: Tue, 28 Nov 2023 17:44:48 +0000
+From: Catalin Marinas <catalin.marinas@arm.com>
+To: Alan Stern <stern@rowland.harvard.edu>
+Cc: Christoph Hellwig <hch@lst.de>,
+	Hamza Mahfooz <someguy@effective-light.com>,
+	Dan Williams <dan.j.williams@intel.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Andrew <travneff@gmail.com>, Ferry Toth <ferry.toth@elsinga.info>,
+	Andy Shevchenko <andy.shevchenko@gmail.com>,
+	Thorsten Leemhuis <regressions@leemhuis.info>,
+	iommu@lists.linux.dev,
+	Kernel development list <linux-kernel@vger.kernel.org>,
+	USB mailing list <linux-usb@vger.kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>
+Subject: Re: Bug in add_dma_entry()'s debugging code
+Message-ID: <ZWYnECPRKca5Dpqc@arm.com>
+References: <736e584f-7d5f-41aa-a382-2f4881ba747f@rowland.harvard.edu>
+ <20231127160759.GA1668@lst.de>
+ <637d6dff-de56-4815-a15a-1afccde073f0@rowland.harvard.edu>
+ <20231128133702.GA9917@lst.de>
+ <cb7dc5da-37cb-45ba-9846-5a085f55692e@rowland.harvard.edu>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/2] iommufd/selftest: Use a fwnode to distinguish devices
-Content-Language: en-GB
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: joro@8bytes.org, kevin.tian@intel.com, will@kernel.org,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <cover.1701165201.git.robin.murphy@arm.com>
- <e365c08b21a8d0b60e6f5d1411be6701c1a06a53.1701165201.git.robin.murphy@arm.com>
- <20231128144331.GA1191405@ziepe.ca>
- <69db9205-cb9a-425a-a48e-6d68d1f900f1@arm.com>
- <20231128163342.GI432016@ziepe.ca>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20231128163342.GI432016@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cb7dc5da-37cb-45ba-9846-5a085f55692e@rowland.harvard.edu>
 
-On 28/11/2023 4:33 pm, Jason Gunthorpe wrote:
-> On Tue, Nov 28, 2023 at 04:02:42PM +0000, Robin Murphy wrote:
->> On 28/11/2023 2:43 pm, Jason Gunthorpe wrote:
->>> On Tue, Nov 28, 2023 at 10:42:11AM +0000, Robin Murphy wrote:
->>>> With bus ops gone, the trick of registering against a specific bus no
->>>> longer really works, and we start getting given devices from other buses
->>>> to probe,
->>>
->>> Make sense
->>>
->>>> which leads to spurious groups for devices with no IOMMU on
->>>> arm64,
->>>
->>> I'm not sure I'm fully understanding what this means?
->>
->> It means on my arm64 ACPI system, random platform devices which are created
->> after iommufd_test_init() has run get successfully probed by the mock
->> driver, unexpectedly:
+On Tue, Nov 28, 2023 at 10:18:19AM -0500, Alan Stern wrote:
+> On Tue, Nov 28, 2023 at 02:37:02PM +0100, Christoph Hellwig wrote:
+> > I'd actually go one step back:
+> > 
+> >  1) for not cache coherent DMA you can't do overlapping operations inside
+> >     a cache line
 > 
-> Okay that is what I guessed
-> 
->>> I guess that the mock driver is matching random things once it starts
->>> being called all the time because this is missing:
->>>
->>>    static struct iommu_device *mock_probe_device(struct device *dev)
->>>    {
->>> +       if (dev->bus != &iommufd_mock_bus_type)
->>> +               return -ENODEV;
->>>           return &mock_iommu_device;
->>>    }
->>>
->>> Is that sufficient to solve the problem?
->>
->> Unfortunately not...
-> 
-> I see, so we create the other problem that without bus ops we don't
-> get to have two 'global' drivers and with the above mock won't probe
-> on x86.
-> 
->> I did intend coexistence to work on x86 too, where the "other" driver would
->> be virtio-iommu using fwnodes, so aligning the mock driver that way seemed
->> far neater than any more special-case hacks in core code.
-> 
-> Lets just do the above and what I suggested earlier. This is from a
-> WIP tree I have, it shows the idea but needs other stuff to work. If
-> you agree I'll pull its parts out and post a clean version of them.
-> 
-> commit 51c9a54cc111b4b31af6a0527015db82e782e1d3
-> Author: Jason Gunthorpe <jgg@ziepe.ca>
-> Date:   Tue Nov 28 11:54:47 2023 -0400
-> 
->      iommu: Call all drivers if there is no fwspec
->      
->      Real systems only have one ops, so this effectively invokes the single op
->      in the system to probe each device. If there are multiple ops we invoke
->      each one once, and drivers that don't understand the struct device should
->      return -ENODEV.
+> Rephrasing slightly: You mustn't perform multiple non-cache-coherent DMA 
+> operations that touch the same cache line concurrently.  (The word 
+> "overlapping" is a a little ambiguous in this context.)
 
-You see this is exactly the kind of complexity I *don't* want, since the 
-only thing it would foreseeably benefit is the one special case of the 
-IOMMUFD selftest, which can far more trivially just adopt the other of 
-the two "standard" usage models we have. I've been trying to get *away* 
-from having to have boilerplate checks in all the drivers, and this 
-would require bringing back a load of the ones I've just removed :(
+The problem is worse. I'd say you should not perform even a single
+non-cache-coherent DMA (usually from-device or bidirectional) operation
+if the cache line is shared with anything else modifying it. It doesn't
+need to be another DMA operation. But that's more difficult to add to
+the DMA API debug code (maybe something like the bouncing logic in
+dma_kmalloc_needs_bounce()).
 
-As I said before, I really want to avoid the perf_event_init model of 
-calling round every driver saying "hey, do you want this?" since it's 
-also error-prone if any of those drivers doesn't get the boilerplate 
-exactly right and inadvertently fails to reject something it should 
-have. The difference with perf is that it has the notion of generic 
-events which *can* be handled by more than one driver. We do not, and 
-conceivably never will, have that for IOMMU client devices, so we can 
-realistically make the core code responsible for calling the right 
-driver by construction, and since we're now mostly there already, it 
-seem by far the most sensible thing to continue in that direction.
+> > The logical confcusion from that would be that IFF dma-debug is enabled on
+> > any platform we need to set ARCH_DMA_MINALIGN to the cache line size.
 
-Thanks,
-Robin.
+Or just force the kmalloc() min align to cache_line_size(), something
+like:
 
+diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+index 4a658de44ee9..3ece20367636 100644
+--- a/include/linux/dma-mapping.h
++++ b/include/linux/dma-mapping.h
+@@ -543,6 +543,8 @@ static inline int dma_get_cache_alignment(void)
+ #ifdef ARCH_HAS_DMA_MINALIGN
+ 	return ARCH_DMA_MINALIGN;
+ #endif
++	if (IS_ENABLED(CONFIG_DMA_API_DEBUG))
++		return cache_line_size();
+ 	return 1;
+ }
+ #endif
+diff --git a/mm/slab_common.c b/mm/slab_common.c
+index 8d431193c273..d0b21d6e9328 100644
+--- a/mm/slab_common.c
++++ b/mm/slab_common.c
+@@ -879,7 +879,7 @@ static unsigned int __kmalloc_minalign(void)
+ 	unsigned int minalign = dma_get_cache_alignment();
+ 
+ 	if (IS_ENABLED(CONFIG_DMA_BOUNCE_UNALIGNED_KMALLOC) &&
+-	    is_swiotlb_allocated())
++	    is_swiotlb_allocated() && !IS_ENABLED(CONFIG_DMA_API_DEBUG))
+ 		minalign = ARCH_KMALLOC_MINALIGN;
+ 
+ 	return max(minalign, arch_slab_minalign());
 
->      Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Also note that to_cacheline_number() in kernel/dma/debug.c only takes
+into account the L1_CACHE_SHIFT. On arm64 for example, cache_line_size()
+returns the maximum line of all the cache levels (and we've seen
+hardware where the L1 is 64-byte, L2 is 128).
+
+> > BUT:  we're actually reduzing our dependency on ARCH_DMA_MINALIGN by
+> > moving to bounce buffering unaligned memory for non-coherent
+> > architectures,
 > 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 7468a64778931b..54e3f14429b3b4 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -241,6 +241,26 @@ static int remove_iommu_group(struct device *dev, void *data)
->   	return 0;
->   }
->   
-> +static void iommu_device_add(struct iommu_device *iommu)
-> +{
-> +	struct iommu_device *cur;
-> +
-> +	/*
-> +	 * Keep the iommu_device_list grouped by ops so that
-> +	 * iommu_find_init_device() works efficiently.
-> +	 */
-> +	mutex_lock(&iommu_probe_device_lock);
-> +	list_for_each_entry(cur, &iommu_device_list, list) {
-> +		if (cur->ops == iommu->ops) {
-> +			list_add(&iommu->list, &cur->list);
-> +			goto out;
-> +		}
-> +	}
-> +	list_add(&iommu->list, &iommu_device_list);
-> +out:
-> +	mutex_unlock(&iommu_probe_device_lock);
-> +}
-> +
->   /**
->    * iommu_device_register() - Register an IOMMU hardware instance
->    * @iommu: IOMMU handle for the instance
-> @@ -262,9 +282,7 @@ int iommu_device_register(struct iommu_device *iommu,
->   	if (hwdev)
->   		iommu->fwnode = dev_fwnode(hwdev);
->   
-> -	mutex_lock(&iommu_probe_device_lock);
-> -	list_add_tail(&iommu->list, &iommu_device_list);
-> -	mutex_unlock(&iommu_probe_device_lock);
-> +	iommu_device_add(iommu);
->   
->   	for (int i = 0; i < ARRAY_SIZE(iommu_buses) && !err; i++)
->   		err = bus_iommu_probe(iommu_buses[i]);
-> @@ -502,6 +520,29 @@ static void iommu_deinit_device(struct device *dev)
->   
->   DEFINE_MUTEX(iommu_probe_device_lock);
->   
-> +static int iommu_find_init_device(struct iommu_probe_info *pinf)
-> +{
-> +	const struct iommu_ops *ops = NULL;
-> +	struct iommu_device *iommu;
-> +	int ret;
-> +
-> +	lockdep_assert_held(&iommu_probe_device_lock);
-> +
-> +	/*
-> +	 * Each unique ops gets a chance to claim the device, -ENODEV means the
-> +	 * driver does not support the device.
-> +	 */
-> +	list_for_each_entry(iommu, &iommu_device_list, list) {
-> +		if (iommu->ops != ops) {
-> +			ops = iommu->ops;
-> +			ret = iommu_init_device(pinf, iommu->ops);
-> +			if (ret != -ENODEV)
-> +				return ret;
-> +		}
-> +	}
-> +	return -ENODEV;
-> +}
-> +
->   static int __iommu_probe_device(struct iommu_probe_info *pinf)
->   {
->   	struct device *dev = pinf->dev;
-> @@ -524,13 +565,6 @@ static int __iommu_probe_device(struct iommu_probe_info *pinf)
->   		ops = fwspec->ops;
->   		if (!ops)
->   			return -ENODEV;
-> -	} else {
-> -		struct iommu_device *iommu;
-> -
-> -		iommu = iommu_device_from_fwnode(NULL);
-> -		if (!iommu)
-> -			return -ENODEV;
-> -		ops = iommu->ops;
->   	}
->   
->   	/*
-> @@ -546,7 +580,10 @@ static int __iommu_probe_device(struct iommu_probe_info *pinf)
->   	if (dev->iommu_group)
->   		return 0;
->   
-> -	ret = iommu_init_device(pinf, ops);
-> +	if (ops)
-> +		ret = iommu_init_device(pinf, ops);
-> +	else
-> +		ret = iommu_find_init_device(pinf);
->   	if (ret)
->   		return ret;
->   
+> What's the reason for this?  To allow the minimum allocation size to be
+> smaller than the cache line size?  Does the savings in memory make up 
+> for the extra overhead of bounce buffering?
+> 
+> Or is this just to allow people to be more careless about how they 
+> allocate their DMA buffers (which doesn't seem to make sense)?
+
+It's the former and it does make a difference with lots of small
+structure or string allocations.
+
+[...]
+> I get the impression that you would really like to have two different 
+> versions of kmalloc() and friends: one for buffers that will be used in 
+> DMA (and hence require cache-line alignment) and one for buffers that 
+> won't be.
+
+We've been there for the past 2-3 years (and a few other options). It's
+hard to guess in a generic way because the allocation place may not
+necessarily know how the device is going to access that memory (PIO,
+DMA). The conclusion was that for those cases where the buffer is small,
+we just do a bounce. If it's performance critical, the driver can use a
+kmem_cache_create(SLAB_HWCACHE_ALIGN) and avoid the bouncing.
+
+-- 
+Catalin
