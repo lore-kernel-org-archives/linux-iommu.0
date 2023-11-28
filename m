@@ -1,44 +1,44 @@
-Received: from mail-qt1-f170.google.com (mail-qt1-f170.google.com [209.85.160.170])
+Received: from mail-oo1-f52.google.com (mail-oo1-f52.google.com [209.85.161.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CFBA35026C
-	for <iommu@lists.linux.dev>; Tue, 28 Nov 2023 23:00:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=soleen.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=soleen.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 03F7844375
+	for <iommu@lists.linux.dev>; Tue, 28 Nov 2023 23:04:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=soleen.com header.i=@soleen.com header.b="S/aURZRh"
-Received: by mail-qt1-f170.google.com with SMTP id d75a77b69052e-41cd4cc515fso33926071cf.1
-        for <iommu@lists.linux.dev>; Tue, 28 Nov 2023 15:00:50 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="bLWg/+c0"
+Received: by mail-oo1-f52.google.com with SMTP id 006d021491bc7-58cdc801f69so3624481eaf.3
+        for <iommu@lists.linux.dev>; Tue, 28 Nov 2023 15:04:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=soleen.com; s=google; t=1701212450; x=1701817250; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1701212652; x=1701817452; darn=lists.linux.dev;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=i5qTeYLca2e2he2/h7lciNlkt/VVLJwBuHOteswziYE=;
-        b=S/aURZRhCaI2OEfLkjHEu0q0ZKabLkhnQGfT3T8juPF60Tesp9+tu/2r+hgcUJJmQX
-         ciXlp9dBf+w2XlTI81ad+Wk7LXcFkV3i6rurkGp/8saeKwZQJcd3iG0tDTD6l1pFRDgE
-         IPQUTSnpw0NCOhJVLxYiOxABrKXpXNgd0Z8mWWCi2yPOKIj6t6BE3VqCYJLVnFecEl88
-         ekfbuwCVMQkfgLQkSE4E5KckpuK/aR/5uW0MpQWLQQP5sxd+uvbIsjWvb0pJNy1Xmt1g
-         HVEfmsDeYLojZbOJSjnftObO9SYzBsBHkfvpWz7vw+K74qfaLdZAveg8neLFVq/mpr9v
-         H1Iw==
+        bh=43/GorJHph6wZf7ST1s9EfwOKwV7OvTpzkca3ztNxsA=;
+        b=bLWg/+c0QN1DaBiDsmaM4u8Z/zv8U9buF6VL/wIAbJm0TYgm6gya9tabHvLKroYru/
+         m1n8aftpE0Kstb3UjCcG91zi94jORAY7GF4rQ5pJNVlUSIRKCJ3mIKeU0TIy3/VuPfW4
+         IGRgMk7rZqoyaKceOEQiRittsQPlA88cXZ4l5/4xCLDtwPhkHc2i/rdhLDlxDGS2BXUY
+         sEZxiCZCu7uToG+chW6/uddSgnA8vL552TRfk+fkuU+/WOZtrZn5TiOybN7CMrkIpJvS
+         frszJ51udzld3CphJbJmU2R3u7gqzoQ8uOD1I/f1wem3wjco1RBtlZ78WVzEusQqsYti
+         Mqaw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701212450; x=1701817250;
+        d=1e100.net; s=20230601; t=1701212652; x=1701817452;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=i5qTeYLca2e2he2/h7lciNlkt/VVLJwBuHOteswziYE=;
-        b=dkmgF7sU/BknkP794wYcrnB1wG9Oe4jdmqkj0UPW0k9eLHcp+25Q4k+QOQAlMPUXN0
-         Aus47rC3F7ZDCULbfsYK/lqHi+PLZQ/MuqolIvxIAesXmsR6dgM918jclgO4uhAUD8Vk
-         boKnIUKkZq8tKFLuRjQnAH7c8w6sAg360tYws5hPSRJc+2rEsmYpoDvUk4Z47LXLJC+k
-         P5xkrDaM/2oKoMeJa9k0DVnm8+rT9s6dKnU7A2A2e6fgii81wQvjEwCvN6895dttSfOR
-         lYUjPJceTCIKMZsuP2KayFX031ngbvhBxQdH4XRGihLGCWiIXd8SGdjBIV+Kd++h06DJ
-         7oiA==
-X-Gm-Message-State: AOJu0YyplBlOoIe6Z3shNqC/+kshwetiQydiNWBXkUZcGXU52qe3Fcrl
-	SHGyjeWfG3Dp5U8ebQZfLsDVeaUQs0t+lwVlzG7Q2Q==
-X-Google-Smtp-Source: AGHT+IEPyMHIunggDlyG5iB0FMPH+mJhboCaVsS2S6rrqwyBMR/AatdaxBsSOQb0215dRYgwc4yOM/dAMVD+X08yuok=
-X-Received: by 2002:a05:622a:34c:b0:41e:213d:3c8e with SMTP id
- r12-20020a05622a034c00b0041e213d3c8emr18601609qtw.32.1701212449795; Tue, 28
- Nov 2023 15:00:49 -0800 (PST)
+        bh=43/GorJHph6wZf7ST1s9EfwOKwV7OvTpzkca3ztNxsA=;
+        b=TIONOgcbZ+Y6eD4ky848XazpIABm5dkPP0MssqmG2OEpfEAzBFQ5MTvtlzIHa4q3Pj
+         aKR2rOQ129ExNYczKoE8GpEsdY671+yIsJEeu7+MF2ev+QxUkSXr4/kaJN0YFVjNuzSR
+         Yytmomxw0gasAj6pdfg3PhXqd3NHcEJnz+3WKHi6D2URaBpT1UfP1OKXYL0DONuds0uN
+         hSsLanQwzvpzZykqeGN2IyYe8veSCtWqXcjr+iYl9fpZ4l5gjssDCJQaMlRp6VoaPbMD
+         LaPtfmjiA936CxQ9voSvqFgGh4zrixXrFE2b8iLOI/euRnWp/jVOH+PFFiLhgopPG1Cb
+         BUoQ==
+X-Gm-Message-State: AOJu0YzXYZA8tzJultHQ+gRRkNS1TQ1g2ZY6T8YrY20LVh+kUi8vW5wD
+	YZB22tBNCv2OmS3swpsuTkRva/H6XOclXleKS5jQag==
+X-Google-Smtp-Source: AGHT+IGHG/fZ39GpQH7XprtM75RYsFLPLsqrr/P3BS2SaFOkE/NfcmuncSRUnInNrgp9PW0qlhq9u6ZhURJEjUsg//c=
+X-Received: by 2002:a05:6359:67a9:b0:16d:bd74:19c9 with SMTP id
+ sq41-20020a05635967a900b0016dbd7419c9mr14576065rwb.16.1701212651861; Tue, 28
+ Nov 2023 15:04:11 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -46,13 +46,13 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 References: <20231128204938.1453583-1-pasha.tatashin@soleen.com>
- <20231128204938.1453583-9-pasha.tatashin@soleen.com> <1c6156de-c6c7-43a7-8c34-8239abee3978@arm.com>
-In-Reply-To: <1c6156de-c6c7-43a7-8c34-8239abee3978@arm.com>
-From: Pasha Tatashin <pasha.tatashin@soleen.com>
-Date: Tue, 28 Nov 2023 18:00:13 -0500
-Message-ID: <CA+CK2bCOtwZxTUS60PHOQ3szXdCzau7OpopgFEbbC6a9Frxafg@mail.gmail.com>
-Subject: Re: [PATCH 08/16] iommu/fsl: use page allocation function provided by iommu-pages.h
-To: Robin Murphy <robin.murphy@arm.com>
+ <CAJD7tkb1FqTqwONrp2nphBDkEamQtPCOFm0208H3tp0Gq2OLMQ@mail.gmail.com> <CA+CK2bB3nHfu1Z6_6fqN3YTAzKXMiJ12MOWpbs8JY7rQo4Fq0g@mail.gmail.com>
+In-Reply-To: <CA+CK2bB3nHfu1Z6_6fqN3YTAzKXMiJ12MOWpbs8JY7rQo4Fq0g@mail.gmail.com>
+From: Yosry Ahmed <yosryahmed@google.com>
+Date: Tue, 28 Nov 2023 15:03:30 -0800
+Message-ID: <CAJD7tkZZNhf4KGV+7N+z8NFpJrvyeNudXU-WdVeE8Rm9pobfgQ@mail.gmail.com>
+Subject: Re: [PATCH 00/16] IOMMU memory observability
+To: Pasha Tatashin <pasha.tatashin@soleen.com>
 Cc: akpm@linux-foundation.org, alex.williamson@redhat.com, 
 	alim.akhtar@samsung.com, alyssa@rosenzweig.io, asahi@lists.linux.dev, 
 	baolu.lu@linux.intel.com, bhelgaas@google.com, cgroups@vger.kernel.org, 
@@ -67,88 +67,77 @@ Cc: akpm@linux-foundation.org, alex.williamson@redhat.com,
 	linux-tegra@vger.kernel.org, lizefan.x@bytedance.com, marcan@marcan.st, 
 	mhiramat@kernel.org, mst@redhat.com, m.szyprowski@samsung.com, 
 	netdev@vger.kernel.org, paulmck@kernel.org, rdunlap@infradead.org, 
-	samuel@sholland.org, suravee.suthikulpanit@amd.com, sven@svenpeter.dev, 
-	thierry.reding@gmail.com, tj@kernel.org, tomas.mudrunka@gmail.com, 
-	vdumpa@nvidia.com, virtualization@lists.linux.dev, wens@csie.org, 
-	will@kernel.org, yu-cheng.yu@intel.com
+	robin.murphy@arm.com, samuel@sholland.org, suravee.suthikulpanit@amd.com, 
+	sven@svenpeter.dev, thierry.reding@gmail.com, tj@kernel.org, 
+	tomas.mudrunka@gmail.com, vdumpa@nvidia.com, virtualization@lists.linux.dev, 
+	wens@csie.org, will@kernel.org, yu-cheng.yu@intel.com
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Nov 28, 2023 at 5:53=E2=80=AFPM Robin Murphy <robin.murphy@arm.com>=
- wrote:
+On Tue, Nov 28, 2023 at 2:32=E2=80=AFPM Pasha Tatashin
+<pasha.tatashin@soleen.com> wrote:
 >
-> On 2023-11-28 8:49 pm, Pasha Tatashin wrote:
-> > Convert iommu/fsl_pamu.c to use the new page allocation functions
-> > provided in iommu-pages.h.
+> On Tue, Nov 28, 2023 at 4:34=E2=80=AFPM Yosry Ahmed <yosryahmed@google.co=
+m> wrote:
+> >
+> > On Tue, Nov 28, 2023 at 12:49=E2=80=AFPM Pasha Tatashin
+> > <pasha.tatashin@soleen.com> wrote:
+> > >
+> > > From: Pasha Tatashin <tatashin@google.com>
+> > >
+> > > IOMMU subsystem may contain state that is in gigabytes. Majority of t=
+hat
+> > > state is iommu page tables. Yet, there is currently, no way to observ=
+e
+> > > how much memory is actually used by the iommu subsystem.
+> > >
+> > > This patch series solves this problem by adding both observability to
+> > > all pages that are allocated by IOMMU, and also accountability, so
+> > > admins can limit the amount if via cgroups.
+> > >
+> > > The system-wide observability is using /proc/meminfo:
+> > > SecPageTables:    438176 kB
+> > >
+> > > Contains IOMMU and KVM memory.
+> > >
+> > > Per-node observability:
+> > > /sys/devices/system/node/nodeN/meminfo
+> > > Node N SecPageTables:    422204 kB
+> > >
+> > > Contains IOMMU and KVM memory memory in the given NUMA node.
+> > >
+> > > Per-node IOMMU only observability:
+> > > /sys/devices/system/node/nodeN/vmstat
+> > > nr_iommu_pages 105555
+> > >
+> > > Contains number of pages IOMMU allocated in the given node.
+> >
+> > Does it make sense to have a KVM-only entry there as well?
+> >
+> > In that case, if SecPageTables in /proc/meminfo is found to be
+> > suspiciously high, it should be easy to tell which component is
+> > contributing most usage through vmstat. I understand that users can do
+> > the subtraction, but we wouldn't want userspace depending on that, in
+> > case a third class of "secondary" page tables emerges that we want to
+> > add to SecPageTables. The in-kernel implementation can do the
+> > subtraction for now if it makes sense though.
 >
-> Again, this is not a pagetable. This thing doesn't even *have* pagetables=
-.
+> Hi Yosry,
 >
-> Similar to patches #1 and #2 where you're lumping in configuration
-> tables which belong to the IOMMU driver itself, as opposed to pagetables
-> which effectively belong to an IOMMU domain's user. But then there are
-> still drivers where you're *not* accounting similar configuration
-> structures, so I really struggle to see how this metric is useful when
-> it's so completely inconsistent in what it's counting :/
-
-The whole IOMMU subsystem allocates a significant amount of kernel
-locked memory that we want to at least observe. The new field in
-vmstat does just that: it reports ALL buddy allocator memory that
-IOMMU allocates. However, for accounting purposes, I agree, we need to
-do better, and separate at least iommu pagetables from the rest.
-
-We can separate the metric into two:
-iommu pagetable only
-iommu everything
-
-or into three:
-iommu pagetable only
-iommu dma
-iommu everything
-
-What do you think?
-
-Pasha
-
+> Yes, another counter for KVM could be added. On the other hand KVM
+> only can be computed by subtracting one from another as there are only
+> two types of secondary page tables, KVM and IOMMU:
 >
-> Thanks,
-> Robin.
+> /sys/devices/system/node/node0/meminfo
+> Node 0 SecPageTables:    422204 kB
 >
-> > Signed-off-by: Pasha Tatashin <pasha.tatashin@soleen.com>
-> > ---
-> >   drivers/iommu/fsl_pamu.c | 5 +++--
-> >   1 file changed, 3 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/drivers/iommu/fsl_pamu.c b/drivers/iommu/fsl_pamu.c
-> > index f37d3b044131..7bfb49940f0c 100644
-> > --- a/drivers/iommu/fsl_pamu.c
-> > +++ b/drivers/iommu/fsl_pamu.c
-> > @@ -16,6 +16,7 @@
-> >   #include <linux/platform_device.h>
-> >
-> >   #include <asm/mpc85xx.h>
-> > +#include "iommu-pages.h"
-> >
-> >   /* define indexes for each operation mapping scenario */
-> >   #define OMI_QMAN        0x00
-> > @@ -828,7 +829,7 @@ static int fsl_pamu_probe(struct platform_device *p=
-dev)
-> >               (PAGE_SIZE << get_order(OMT_SIZE));
-> >       order =3D get_order(mem_size);
-> >
-> > -     p =3D alloc_pages(GFP_KERNEL | __GFP_ZERO, order);
-> > +     p =3D __iommu_alloc_pages(GFP_KERNEL, order);
-> >       if (!p) {
-> >               dev_err(dev, "unable to allocate PAACT/SPAACT/OMT block\n=
-");
-> >               ret =3D -ENOMEM;
-> > @@ -916,7 +917,7 @@ static int fsl_pamu_probe(struct platform_device *p=
-dev)
-> >               iounmap(guts_regs);
-> >
-> >       if (ppaact)
-> > -             free_pages((unsigned long)ppaact, order);
-> > +             iommu_free_pages(ppaact, order);
-> >
-> >       ppaact =3D NULL;
-> >
+>  /sys/devices/system/node/nodeN/vmstat
+> nr_iommu_pages 105555
+>
+> KVM only =3D SecPageTables - nr_iommu_pages * PAGE_SIZE / 1024
+>
+
+Right, but as I mention above, if userspace starts depending on this
+equation, we won't be able to add any more classes of "secondary" page
+tables to SecPageTables. I'd like to avoid that if possible. We can do
+the subtraction in the kernel.
