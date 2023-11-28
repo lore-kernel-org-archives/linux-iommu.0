@@ -1,225 +1,93 @@
-Received: from mail-oa1-f47.google.com (mail-oa1-f47.google.com [209.85.160.47])
+Received: from mail-qv1-f42.google.com (mail-qv1-f42.google.com [209.85.219.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA89A5E0CE
-	for <iommu@lists.linux.dev>; Tue, 28 Nov 2023 16:33:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 705DA5E0C7
+	for <iommu@lists.linux.dev>; Tue, 28 Nov 2023 16:35:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="FgcI2b0E"
-Received: by mail-oa1-f47.google.com with SMTP id 586e51a60fabf-1f9e0e44fecso2848283fac.3
-        for <iommu@lists.linux.dev>; Tue, 28 Nov 2023 08:33:44 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="JTV3PNmZ"
+Received: by mail-qv1-f42.google.com with SMTP id 6a1803df08f44-67a38b1437dso16027936d6.3
+        for <iommu@lists.linux.dev>; Tue, 28 Nov 2023 08:35:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1701189224; x=1701794024; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=HN35qZ+uGTBAFYCaQRWTgLrt9+VoejNBpfU4/ki1w6g=;
-        b=FgcI2b0EkpV+y+8kNXr0j+YM3xRYit1fCveLevsTiKutE9delqZlvYPlBORnAt6+As
-         qeKc/kZuoYO7iYYWi/bEIH6f7qky0TGuR/dabsvr35Yt6/AZ4FFZyQPE71qzPOtv2izH
-         LjRJ2HD3jmYN8Ah94uN89FpqSmeBY95tCNdxcgIQFgJ/PRejalokV7aq0XGhgvcQfcW+
-         aLv2GUZ/ZDQHySi1EPslrsN+pXfqkHkr39BHOaR6/6oeZ1/FQt3vjUPIt3Mmr4700/ba
-         CkjziQwaqgr/PglxLwmtZlrJSy6PJ4YBI3b0p1CmVAtgxHWWYFSvpfsJlWzV3T8++YlL
-         Rocg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701189224; x=1701794024;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20230601; t=1701189315; x=1701794115; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=HN35qZ+uGTBAFYCaQRWTgLrt9+VoejNBpfU4/ki1w6g=;
-        b=err73aDHVB38CW6swRFcImQjIyZtX1pGso4PhiJPrlRxFld8cPaiMfonvlYxBCr/bg
-         qSP5GFf7JTZ1DCzpr1MbIIWOLnaqjhpEXVEmfUDRyy+SXSONNMdoVJdBVLekz5Vy2cT+
-         /yVCMn1fP8h6pTqvrp0HLuksQN+nsmks3yRa6/KN4DgWVG0gYNGaTlswyuko54PDwOpP
-         lFUoJ51+4wNim5Oue3OiW0KQBtVV5o2T3KYgyC/JFjLMTWPKFwlZLDMMFD240OTfsMe6
-         4I/jVNs6RYTZSPdWi5gC1d/YSDJGs5eiCldOc8CtRsRs05kOoS+udr4C3fQt5kASH96t
-         rSyQ==
-X-Gm-Message-State: AOJu0YzyM7N6Cku6xz/Qt+5aK/SAuWOfD63ZeO21t8+gMlSpkjeh1t3T
-	5SKt4TQiKtDWaza8L+Cx9U77VA==
-X-Google-Smtp-Source: AGHT+IFTCfs4volRi4dOFIcsdSDNqlvXP8PkQi+sW0alsSi8XNp6WNUtD/IJadmfz7As4aT8DcCV/w==
-X-Received: by 2002:a05:6871:328b:b0:1eb:e8b:7206 with SMTP id mp11-20020a056871328b00b001eb0e8b7206mr24273641oac.14.1701189223401;
-        Tue, 28 Nov 2023 08:33:43 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-134-23-187.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.134.23.187])
-        by smtp.gmail.com with ESMTPSA id ml13-20020a056871724d00b001fa4f5ffd90sm1123887oac.26.2023.11.28.08.33.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Nov 2023 08:33:42 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1r811q-005VHk-1K;
-	Tue, 28 Nov 2023 12:33:42 -0400
-Date: Tue, 28 Nov 2023 12:33:42 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: joro@8bytes.org, kevin.tian@intel.com, will@kernel.org,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] iommufd/selftest: Use a fwnode to distinguish devices
-Message-ID: <20231128163342.GI432016@ziepe.ca>
-References: <cover.1701165201.git.robin.murphy@arm.com>
- <e365c08b21a8d0b60e6f5d1411be6701c1a06a53.1701165201.git.robin.murphy@arm.com>
- <20231128144331.GA1191405@ziepe.ca>
- <69db9205-cb9a-425a-a48e-6d68d1f900f1@arm.com>
+        bh=pNmZZAJm2YxwR7DMqdumV8vSovbtuf3uRewFcn2TeXM=;
+        b=JTV3PNmZH2zzegGPobfdPhj3dCdfTdCqNRsOaWFopgGKhjSgNyeRAW2oUfq1e1faMc
+         NbWkvOdM2aB0cnDvU0e3zZQTygZgZ+PwS55eEZ5thwdFWyJuaAT7NT0uifQIlvO9Emmo
+         GMXD+B1WB2Ljar812EY2RdBHpIoLB+39m7eAUk3UpXC8KGxLSVj9LMt7SbLkhPoIoyBl
+         n8FWrk++BSY4KYMA71UydMdmchdpD8Nj5OBPUApAthuvqKZBBYiwRZEA4jRoU+RQuthE
+         SJNmrCzq5vX6Xtr+UW+OQZS2gpAIq1h2SXVJH5pKlxQCoMsQ/33ay3tMm0yejJnMFf9Z
+         RYBA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1701189315; x=1701794115;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=pNmZZAJm2YxwR7DMqdumV8vSovbtuf3uRewFcn2TeXM=;
+        b=fzzNIwO3gwFvRcC1nlKPojILII5bkPuV6JtPM67nibw72F90PBLbiIejLq2lgQRJDn
+         Y5t0KpMPHV6+mKMxszyhC0loAmbO0f0fnFsT6ZA9pE+Nwa5/0QXJrrEg7RLA3bFIScwd
+         lGISLqXdKgNLu2Bg1Wmq1QV50AZxSkzgoXW0DC8alqoApIiJfLqJ8puZKSkunnO+hblt
+         WiymCNW8x0JXDCklVreb/M0oSTlWUOrXc+me9Jzx0VnoGR7qrBapZysncvUjiVk/N1i6
+         p6ss/+AXMm4NmKdQHJBA8x6qJ1M3ZgEZgVZ1nBac0WveTgTpyvlCYjnMjHkralEXFqXn
+         yZuQ==
+X-Gm-Message-State: AOJu0Yz0UA5bNbnhQKajzRRzPFLe1UfT5T+dhSpPeTd7JUEEbGbfI1p7
+	dzLxK3t/iWj4suELZ5PYIokCYi3NUU85uqOCp0I=
+X-Google-Smtp-Source: AGHT+IF4u8tnCbc5ns4vATp/l2oSaX8XAhbxKbRsjtsRxvdX88kLcQYNs4C5F3VMiy5REfQ93WvV4m2Dl7gAHWdwtFE=
+X-Received: by 2002:ad4:5ca2:0:b0:67a:2ae3:a973 with SMTP id
+ q2-20020ad45ca2000000b0067a2ae3a973mr13976373qvh.4.1701189315061; Tue, 28 Nov
+ 2023 08:35:15 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <69db9205-cb9a-425a-a48e-6d68d1f900f1@arm.com>
+References: <736e584f-7d5f-41aa-a382-2f4881ba747f@rowland.harvard.edu>
+ <20231127160759.GA1668@lst.de> <637d6dff-de56-4815-a15a-1afccde073f0@rowland.harvard.edu>
+ <20231128133702.GA9917@lst.de> <cb7dc5da-37cb-45ba-9846-5a085f55692e@rowland.harvard.edu>
+ <a91938e3-a7cb-4f74-aeaa-7cb56c0b43a4@arm.com>
+In-Reply-To: <a91938e3-a7cb-4f74-aeaa-7cb56c0b43a4@arm.com>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Date: Tue, 28 Nov 2023 18:34:39 +0200
+Message-ID: <CAHp75VeQoOFQ7V7gbVfR3-ANNMRT=-UniOCbnUtszo-1F3NMDA@mail.gmail.com>
+Subject: Re: Bug in add_dma_entry()'s debugging code
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Alan Stern <stern@rowland.harvard.edu>, Christoph Hellwig <hch@lst.de>, 
+	Hamza Mahfooz <someguy@effective-light.com>, Dan Williams <dan.j.williams@intel.com>, 
+	Marek Szyprowski <m.szyprowski@samsung.com>, Andrew <travneff@gmail.com>, 
+	Ferry Toth <ferry.toth@elsinga.info>, Thorsten Leemhuis <regressions@leemhuis.info>, 
+	iommu@lists.linux.dev, Kernel development list <linux-kernel@vger.kernel.org>, 
+	USB mailing list <linux-usb@vger.kernel.org>, Catalin Marinas <catalin.marinas@arm.com>, 
+	Will Deacon <will@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, Nov 28, 2023 at 04:02:42PM +0000, Robin Murphy wrote:
-> On 28/11/2023 2:43 pm, Jason Gunthorpe wrote:
-> > On Tue, Nov 28, 2023 at 10:42:11AM +0000, Robin Murphy wrote:
-> > > With bus ops gone, the trick of registering against a specific bus no
-> > > longer really works, and we start getting given devices from other buses
-> > > to probe,
-> > 
-> > Make sense
-> > 
-> > > which leads to spurious groups for devices with no IOMMU on
-> > > arm64,
-> > 
-> > I'm not sure I'm fully understanding what this means?
-> 
-> It means on my arm64 ACPI system, random platform devices which are created
-> after iommufd_test_init() has run get successfully probed by the mock
-> driver, unexpectedly:
+On Tue, Nov 28, 2023 at 6:31=E2=80=AFPM Robin Murphy <robin.murphy@arm.com>=
+ wrote:
+> On 28/11/2023 3:18 pm, Alan Stern wrote:
+> > On Tue, Nov 28, 2023 at 02:37:02PM +0100, Christoph Hellwig wrote:
 
-Okay that is what I guessed
+...
 
-> > I guess that the mock driver is matching random things once it starts
-> > being called all the time because this is missing:
-> > 
-> >   static struct iommu_device *mock_probe_device(struct device *dev)
-> >   {
-> > +       if (dev->bus != &iommufd_mock_bus_type)
-> > +               return -ENODEV;
-> >          return &mock_iommu_device;
-> >   }
-> > 
-> > Is that sufficient to solve the problem?
-> 
-> Unfortunately not...
+> >> The logical confcusion from that would be that IFF dma-debug is enable=
+d on
+> >> any platform we need to set ARCH_DMA_MINALIGN to the cache line size.
+> >
+> > (IF, not IFF.)  And tell distributions that CONFIG_DMA_API_DEBUG is not
+> > meant for production systems but rather for kernel testing, right?
+>
+> Yikes, I'd hope that distros are heeding the warning that the Kconfig
+> calls out already. It's perhaps somewhat understated, as I'd describe
+> the performance impact to large modern systems with high-bandwidth I/O
+> as somewhere between "severe" and "crippling".
 
-I see, so we create the other problem that without bus ops we don't
-get to have two 'global' drivers and with the above mock won't probe
-on x86.
+Independently on the distros configurations the (false positive)
+message(s) will make difficult to debug the actual things, shouldn't
+we have our code robust in any case?
 
-> I did intend coexistence to work on x86 too, where the "other" driver would
-> be virtio-iommu using fwnodes, so aligning the mock driver that way seemed
-> far neater than any more special-case hacks in core code.
-
-Lets just do the above and what I suggested earlier. This is from a
-WIP tree I have, it shows the idea but needs other stuff to work. If
-you agree I'll pull its parts out and post a clean version of them.
-
-commit 51c9a54cc111b4b31af6a0527015db82e782e1d3
-Author: Jason Gunthorpe <jgg@ziepe.ca>
-Date:   Tue Nov 28 11:54:47 2023 -0400
-
-    iommu: Call all drivers if there is no fwspec
-    
-    Real systems only have one ops, so this effectively invokes the single op
-    in the system to probe each device. If there are multiple ops we invoke
-    each one once, and drivers that don't understand the struct device should
-    return -ENODEV.
-    
-    Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 7468a64778931b..54e3f14429b3b4 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -241,6 +241,26 @@ static int remove_iommu_group(struct device *dev, void *data)
- 	return 0;
- }
- 
-+static void iommu_device_add(struct iommu_device *iommu)
-+{
-+	struct iommu_device *cur;
-+
-+	/*
-+	 * Keep the iommu_device_list grouped by ops so that
-+	 * iommu_find_init_device() works efficiently.
-+	 */
-+	mutex_lock(&iommu_probe_device_lock);
-+	list_for_each_entry(cur, &iommu_device_list, list) {
-+		if (cur->ops == iommu->ops) {
-+			list_add(&iommu->list, &cur->list);
-+			goto out;
-+		}
-+	}
-+	list_add(&iommu->list, &iommu_device_list);
-+out:
-+	mutex_unlock(&iommu_probe_device_lock);
-+}
-+
- /**
-  * iommu_device_register() - Register an IOMMU hardware instance
-  * @iommu: IOMMU handle for the instance
-@@ -262,9 +282,7 @@ int iommu_device_register(struct iommu_device *iommu,
- 	if (hwdev)
- 		iommu->fwnode = dev_fwnode(hwdev);
- 
--	mutex_lock(&iommu_probe_device_lock);
--	list_add_tail(&iommu->list, &iommu_device_list);
--	mutex_unlock(&iommu_probe_device_lock);
-+	iommu_device_add(iommu);
- 
- 	for (int i = 0; i < ARRAY_SIZE(iommu_buses) && !err; i++)
- 		err = bus_iommu_probe(iommu_buses[i]);
-@@ -502,6 +520,29 @@ static void iommu_deinit_device(struct device *dev)
- 
- DEFINE_MUTEX(iommu_probe_device_lock);
- 
-+static int iommu_find_init_device(struct iommu_probe_info *pinf)
-+{
-+	const struct iommu_ops *ops = NULL;
-+	struct iommu_device *iommu;
-+	int ret;
-+
-+	lockdep_assert_held(&iommu_probe_device_lock);
-+
-+	/*
-+	 * Each unique ops gets a chance to claim the device, -ENODEV means the
-+	 * driver does not support the device.
-+	 */
-+	list_for_each_entry(iommu, &iommu_device_list, list) {
-+		if (iommu->ops != ops) {
-+			ops = iommu->ops;
-+			ret = iommu_init_device(pinf, iommu->ops);
-+			if (ret != -ENODEV)
-+				return ret;
-+		}
-+	}
-+	return -ENODEV;
-+}
-+
- static int __iommu_probe_device(struct iommu_probe_info *pinf)
- {
- 	struct device *dev = pinf->dev;
-@@ -524,13 +565,6 @@ static int __iommu_probe_device(struct iommu_probe_info *pinf)
- 		ops = fwspec->ops;
- 		if (!ops)
- 			return -ENODEV;
--	} else {
--		struct iommu_device *iommu;
--
--		iommu = iommu_device_from_fwnode(NULL);
--		if (!iommu)
--			return -ENODEV;
--		ops = iommu->ops;
- 	}
- 
- 	/*
-@@ -546,7 +580,10 @@ static int __iommu_probe_device(struct iommu_probe_info *pinf)
- 	if (dev->iommu_group)
- 		return 0;
- 
--	ret = iommu_init_device(pinf, ops);
-+	if (ops)
-+		ret = iommu_init_device(pinf, ops);
-+	else
-+		ret = iommu_find_init_device(pinf);
- 	if (ret)
- 		return ret;
- 
+--=20
+With Best Regards,
+Andy Shevchenko
