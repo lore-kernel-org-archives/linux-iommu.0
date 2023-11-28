@@ -1,236 +1,113 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id BAF1F3EA87
-	for <iommu@lists.linux.dev>; Tue, 28 Nov 2023 10:42:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Authentication-Results: smtp.subspace.kernel.org; dkim=none
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C7A151692;
-	Tue, 28 Nov 2023 02:43:06 -0800 (PST)
-Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 6B8FF3F73F;
-	Tue, 28 Nov 2023 02:42:18 -0800 (PST)
-From: Robin Murphy <robin.murphy@arm.com>
-To: joro@8bytes.org,
-	jgg@ziepe.ca,
-	kevin.tian@intel.com
-Cc: will@kernel.org,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH 2/2] iommufd/selftest: Use normal IOMMU registration
-Date: Tue, 28 Nov 2023 10:42:12 +0000
-Message-Id: <44ee6854da69e86b208f49752f60a4c18205c32a.1701165201.git.robin.murphy@arm.com>
-X-Mailer: git-send-email 2.39.2.101.g768bb238c484.dirty
-In-Reply-To: <cover.1701165201.git.robin.murphy@arm.com>
-References: <cover.1701165201.git.robin.murphy@arm.com>
+Received: from mail-ed1-f42.google.com (mail-ed1-f42.google.com [209.85.208.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8BA244F5F1
+	for <iommu@lists.linux.dev>; Tue, 28 Nov 2023 11:25:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KNTqZuLj"
+Received: by mail-ed1-f42.google.com with SMTP id 4fb4d7f45d1cf-54af2498e85so5592409a12.0
+        for <iommu@lists.linux.dev>; Tue, 28 Nov 2023 03:25:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1701170719; x=1701775519; darn=lists.linux.dev;
+        h=user-agent:in-reply-to:content-disposition:mime-version:references
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=NNUOJ8uqp2dGRLuoBkbadBA/67h+j2C/uKAs+8CYKXM=;
+        b=KNTqZuLj5L3+uHLHFx1M9XBgb6JJ5A7ORrJjzQKC/qRKrVcuIfU81+ykNwV/6wNq9F
+         V1dnewJl74R42qteH7393NOeX5kdDk1jpURaJMbtEHyIoUY2aJzwCMO1Chj5Y1E4nIa7
+         NjzfC9ojzCB/PBWVfSUUn3ZEcsh+dofBDn4ULu+RW9D3SUhd7Ez7CQR4381P01Mp/B9l
+         z4Fvzpqun2rYCxfwl8Dq3nPRVnSfupZuD0Ih7al+/PxrrSDPGzlRVYAUp03jJvl0pP2U
+         Si7HSHcHysM58no9k0oIucKQq1Xqhx+yJFBXaTu7BvBTnsD+7L7nlKBWgNGXsboDXd1r
+         wwlQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1701170719; x=1701775519;
+        h=user-agent:in-reply-to:content-disposition:mime-version:references
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=NNUOJ8uqp2dGRLuoBkbadBA/67h+j2C/uKAs+8CYKXM=;
+        b=vK3eLYTzjpKm7sMEd9mrHIpJW8ctjEW/OZGb8M5lP3Ysrq5/GJJx1rhepFE5IDKFRo
+         zyg2ArwD/79ttMkySby8BEphRPj0YyGEj0auGnuaIZpoQuRPr8yEmGZ20KqXIpgo8zcc
+         ZQFepClTVABqtugN8aEFO3XHoYzkJWwlyByXnFrndXtkQuex1JtmQREE/RKEYPZu4NCJ
+         c3ok1YKzsC6SQ3yiQyp87TGFUBsNnU3BXvcARlYf/Z+rHqgW9CK7UYP8k72TSeepNrHJ
+         kzAr8maRUO/OidHBl3MeH7urWAdpTlx+2/AC6NWvd0obdNZoSJfJ0VPlciDLSVQfIWql
+         Wy5g==
+X-Gm-Message-State: AOJu0Yxc5giNW/x+uvn1ya9up6PTZvIK7yHgAZQR4GUEd+ShKqSAC7gs
+	qhA0aXC16PtW+grJ/wPfNcY=
+X-Google-Smtp-Source: AGHT+IHqbMoYr9M/PBSf9Q1XSD3aTt9QqOplQiVgAE1r6Wwb8HV4II+bQf9Ppd8QDWo6j6Q7X3fGSg==
+X-Received: by 2002:a17:906:7691:b0:a04:837e:87af with SMTP id o17-20020a170906769100b00a04837e87afmr11132340ejm.33.1701170718549;
+        Tue, 28 Nov 2023 03:25:18 -0800 (PST)
+Received: from orome.fritz.box (p200300e41f0fa600f22f74fffe1f3a53.dip0.t-ipconnect.de. [2003:e4:1f0f:a600:f22f:74ff:fe1f:3a53])
+        by smtp.gmail.com with ESMTPSA id pw11-20020a17090720ab00b00a0f1025b17asm2417847ejb.130.2023.11.28.03.25.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Nov 2023 03:25:18 -0800 (PST)
+Date: Tue, 28 Nov 2023 12:25:16 +0100
+From: Thierry Reding <thierry.reding@gmail.com>
+To: Joerg Roedel <joro@8bytes.org>
+Cc: Dario Binacchi <dario.binacchi@amarulasolutions.com>,
+	linux-kernel@vger.kernel.org, Baolu Lu <baolu.lu@linux.intel.com>,
+	Jonathan Hunter <jonathanh@nvidia.com>,
+	Krishna Reddy <vdumpa@nvidia.com>,
+	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
+	iommu@lists.linux.dev, linux-tegra@vger.kernel.org
+Subject: Re: [PATCH v2] iommu/tegra-smmu: drop error checking for
+ debugfs_create_dir()
+Message-ID: <ZWXOHI48GyIJsdnT@orome.fritz.box>
+References: <20231025152609.2042815-1-dario.binacchi@amarulasolutions.com>
+ <ZWRhDMgPCjP_hlZW@8bytes.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="nNpisfqc0N5bJikl"
+Content-Disposition: inline
+In-Reply-To: <ZWRhDMgPCjP_hlZW@8bytes.org>
+User-Agent: Mutt/2.2.12 (2023-09-09)
 
-The IOMMU core now supports coexistence of fwspec-based drivers, which
-the mock driver now is, so let's bring the mock bus into iommu_buses,
-drop the special interface, and use the normal registration flow. The
-one concession we have to make is to ensure that the mock bus is
-registered early enough so that bus_for_each_dev() doesn't error out
-for other IOMMU drivers registering before iommufd_test_init() runs.
 
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
----
- drivers/iommu/iommu-priv.h           |  7 -----
- drivers/iommu/iommu.c                | 46 +++-------------------------
- drivers/iommu/iommufd/iommufd_test.h |  2 ++
- drivers/iommu/iommufd/selftest.c     | 36 ++++++++--------------
- 4 files changed, 18 insertions(+), 73 deletions(-)
+--nNpisfqc0N5bJikl
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/drivers/iommu/iommu-priv.h b/drivers/iommu/iommu-priv.h
-index 2024a2313348..663bd4fa166f 100644
---- a/drivers/iommu/iommu-priv.h
-+++ b/drivers/iommu/iommu-priv.h
-@@ -20,11 +20,4 @@ static inline const struct iommu_ops *dev_iommu_ops(struct device *dev)
- int iommu_group_replace_domain(struct iommu_group *group,
- 			       struct iommu_domain *new_domain);
- 
--int iommu_device_register_bus(struct iommu_device *iommu,
--			      const struct iommu_ops *ops, struct bus_type *bus,
--			      struct notifier_block *nb);
--void iommu_device_unregister_bus(struct iommu_device *iommu,
--				 struct bus_type *bus,
--				 struct notifier_block *nb);
--
- #endif /* __LINUX_IOMMU_PRIV_H */
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 824989874dee..559999cfd9d4 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -35,8 +35,8 @@
- 
- #include "dma-iommu.h"
- #include "iommu-priv.h"
--
- #include "iommu-sva.h"
-+#include "iommufd/iommufd_test.h"
- 
- static struct kset *iommu_group_kset;
- static DEFINE_IDA(iommu_group_ida);
-@@ -165,6 +165,9 @@ static const struct bus_type * const iommu_buses[] = {
- #ifdef CONFIG_CDX_BUS
- 	&cdx_bus_type,
- #endif
-+#ifdef CONFIG_IOMMUFD_TEST
-+	&iommufd_mock_bus_type,
-+#endif
- };
- 
- /*
-@@ -289,47 +292,6 @@ void iommu_device_unregister(struct iommu_device *iommu)
- }
- EXPORT_SYMBOL_GPL(iommu_device_unregister);
- 
--#if IS_ENABLED(CONFIG_IOMMUFD_TEST)
--void iommu_device_unregister_bus(struct iommu_device *iommu,
--				 struct bus_type *bus,
--				 struct notifier_block *nb)
--{
--	bus_unregister_notifier(bus, nb);
--	iommu_device_unregister(iommu);
--}
--EXPORT_SYMBOL_GPL(iommu_device_unregister_bus);
--
--/*
-- * Register an iommu driver against a single bus. This is only used by iommufd
-- * selftest to create a mock iommu driver. The caller must provide
-- * some memory to hold a notifier_block.
-- */
--int iommu_device_register_bus(struct iommu_device *iommu,
--			      const struct iommu_ops *ops, struct bus_type *bus,
--			      struct notifier_block *nb)
--{
--	int err;
--
--	iommu->ops = ops;
--	nb->notifier_call = iommu_bus_notifier;
--	err = bus_register_notifier(bus, nb);
--	if (err)
--		return err;
--
--	spin_lock(&iommu_device_lock);
--	list_add_tail(&iommu->list, &iommu_device_list);
--	spin_unlock(&iommu_device_lock);
--
--	err = bus_iommu_probe(bus);
--	if (err) {
--		iommu_device_unregister_bus(iommu, bus, nb);
--		return err;
--	}
--	return 0;
--}
--EXPORT_SYMBOL_GPL(iommu_device_register_bus);
--#endif
--
- static struct dev_iommu *dev_iommu_get(struct device *dev)
- {
- 	struct dev_iommu *param = dev->iommu;
-diff --git a/drivers/iommu/iommufd/iommufd_test.h b/drivers/iommu/iommufd/iommufd_test.h
-index 7910fbe1962d..a2d2c55a9315 100644
---- a/drivers/iommu/iommufd/iommufd_test.h
-+++ b/drivers/iommu/iommufd/iommufd_test.h
-@@ -148,4 +148,6 @@ struct iommu_hwpt_selftest {
- 	__u32 iotlb;
- };
- 
-+extern struct bus_type iommufd_mock_bus_type;
-+
- #endif
-diff --git a/drivers/iommu/iommufd/selftest.c b/drivers/iommu/iommufd/selftest.c
-index f46ce0f8808d..bb09abb5bcbb 100644
---- a/drivers/iommu/iommufd/selftest.c
-+++ b/drivers/iommu/iommufd/selftest.c
-@@ -530,15 +530,8 @@ get_md_pagetable_nested(struct iommufd_ucmd *ucmd, u32 mockpt_id,
- 	return hwpt;
- }
- 
--struct mock_bus_type {
--	struct bus_type bus;
--	struct notifier_block nb;
--};
--
--static struct mock_bus_type iommufd_mock_bus_type = {
--	.bus = {
--		.name = "iommufd_mock",
--	},
-+struct bus_type iommufd_mock_bus_type = {
-+	.name = "iommufd_mock",
- };
- 
- static atomic_t mock_dev_num;
-@@ -566,7 +559,7 @@ static struct mock_dev *mock_dev_create(unsigned long dev_flags)
- 	device_initialize(&mdev->dev);
- 	mdev->flags = dev_flags;
- 	mdev->dev.release = mock_dev_release;
--	mdev->dev.bus = &iommufd_mock_bus_type.bus;
-+	mdev->dev.bus = &iommufd_mock_bus_type;
- 
- 	rc = dev_set_name(&mdev->dev, "iommufd_mock%u",
- 			  atomic_inc_return(&mock_dev_num));
-@@ -1327,6 +1320,12 @@ bool iommufd_should_fail(void)
- 	return should_fail(&fail_iommufd, 1);
- }
- 
-+int __init iommufd_bus_init(void)
-+{
-+	return bus_register(&iommufd_mock_bus_type);
-+}
-+subsys_initcall(iommufd_bus_init);
-+
- int __init iommufd_test_init(void)
- {
- 	struct platform_device_info pdevinfo = {
-@@ -1343,27 +1342,19 @@ int __init iommufd_test_init(void)
- 		goto err_dbgfs;
- 	}
- 
--	rc = bus_register(&iommufd_mock_bus_type.bus);
--	if (rc)
--		goto err_platform;
--
- 	rc = iommu_device_sysfs_add(&mock_iommu_device,
- 				    &selftest_iommu_dev->dev, NULL, "%s",
- 				    dev_name(&selftest_iommu_dev->dev));
- 	if (rc)
--		goto err_bus;
-+		goto err_platform;
- 
--	rc = iommu_device_register_bus(&mock_iommu_device, &mock_ops,
--				  &iommufd_mock_bus_type.bus,
--				  &iommufd_mock_bus_type.nb);
-+	rc = iommu_device_register(&mock_iommu_device, &mock_ops, NULL);
- 	if (rc)
- 		goto err_sysfs;
- 	return 0;
- 
- err_sysfs:
- 	iommu_device_sysfs_remove(&mock_iommu_device);
--err_bus:
--	bus_unregister(&iommufd_mock_bus_type.bus);
- err_platform:
- 	platform_device_unregister(selftest_iommu_dev);
- err_dbgfs:
-@@ -1374,10 +1365,7 @@ int __init iommufd_test_init(void)
- void iommufd_test_exit(void)
- {
- 	iommu_device_sysfs_remove(&mock_iommu_device);
--	iommu_device_unregister_bus(&mock_iommu_device,
--				    &iommufd_mock_bus_type.bus,
--				    &iommufd_mock_bus_type.nb);
--	bus_unregister(&iommufd_mock_bus_type.bus);
-+	iommu_device_unregister(&mock_iommu_device);
- 	platform_device_unregister(selftest_iommu_dev);
- 	debugfs_remove_recursive(dbgfs_root);
- }
--- 
-2.39.2.101.g768bb238c484.dirty
+On Mon, Nov 27, 2023 at 10:27:40AM +0100, Joerg Roedel wrote:
+> On Wed, Oct 25, 2023 at 05:25:58PM +0200, Dario Binacchi wrote:
+> > The return value of debugfs_create_dir() should be checked using the
+> > IS_ERR() function. The patch, however, drops the check statement without
+> > fixing it because the subsequent functions (i. e. debugfs_create_file())
+> > can handle the case where `@parent` is an error pointer.
+>=20
+> This deserves a comment in the code explaining why no error checking is
+> needed.
 
+This is a duplicate of f7da9c081517 ("iommu/tegra-smmu: Drop unnecessary
+error check for for debugfs_create_dir()"), which is already in v6.7-rc1
+so I think we can ignore this one.
+
+Thierry
+
+--nNpisfqc0N5bJikl
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmVlzhwACgkQ3SOs138+
+s6HGDRAAgujp8COqpO6Y7LdZQaRa4p7ssRczFgQWmdy2vpheWyCgu7OyKfl+9EHL
+tT5/soH/rqrC0i3oq8qqWHOUjRSYYoIqCGz8j/4y8KkdVYQ8GTto0mp4rtIpB1ie
+g1Cc32zVimxrZHqaxU4K0U6Jq6fWM5WWs12ZCzlbdjl7U8hwD44vNh/kS76Y6JZh
+XNVuTL1ijVskDAdxQLULdoBW7S5qCOWjfDbNbW3v9AxOyr789oW5llERZwddvw5G
+ndiKBnvtfCsA72jGO71z7A/Vg9gXKkfBJLxTsd1aShhOCW/psC3s+jVC27AJ82xo
+giT0rssa9TQlgy4foU+N0JRJ30GODYFF5vRApYREIIHU2bb2qaiG3s6Oavl51gVY
+jdihwdz31vjcHrHcj4lC93AvIjl+N418uzaAjvGPhPrVsOw3qQI5onR4WMQ0ZwP+
+Tk40z9FyDHFQQKpseUo8+S+qrmlUVYZUm950DMA0mzk7d+KpCKEsPswNnTcStsKU
+MnPMzS4w35d8k9JOwfILR5cy5ouXtAwOXbrnKdjLMazFNhlpAYyb3MZgMnCQgLtz
+f97/E56oMdODosYuc5S42wKn8CR5Xmd7vnXy7+DXXg8aS4LubEE5jk1YGAgdHh3V
+A332A20cCAWZKvgFYbE46Tj6A0eQBD4O5edw0bJZxQQofvNYOfY=
+=mBlz
+-----END PGP SIGNATURE-----
+
+--nNpisfqc0N5bJikl--
