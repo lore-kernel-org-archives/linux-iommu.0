@@ -1,49 +1,49 @@
-Received: from mail-lj1-f174.google.com (mail-lj1-f174.google.com [209.85.208.174])
+Received: from mail-lj1-f173.google.com (mail-lj1-f173.google.com [209.85.208.173])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D195C524D6
-	for <iommu@lists.linux.dev>; Tue, 28 Nov 2023 13:17:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E78456B77
+	for <iommu@lists.linux.dev>; Tue, 28 Nov 2023 13:18:32 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="XdXO28+j"
-Received: by mail-lj1-f174.google.com with SMTP id 38308e7fff4ca-2c8879a1570so69693961fa.1
-        for <iommu@lists.linux.dev>; Tue, 28 Nov 2023 05:17:57 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="QJRwd2W6"
+Received: by mail-lj1-f173.google.com with SMTP id 38308e7fff4ca-2c9ba5753bcso703661fa.1
+        for <iommu@lists.linux.dev>; Tue, 28 Nov 2023 05:18:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1701177476; x=1701782276; darn=lists.linux.dev;
+        d=linaro.org; s=google; t=1701177511; x=1701782311; darn=lists.linux.dev;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=ob6Dwe9f9aR6JR07mR40cYGUta2Fbcmoo05Dfdz/Nc0=;
-        b=XdXO28+j56XS+wkbEPxF3HVY6YK9qnCxcQz6gwdmiX0/6Zb1EIReK1f95u2Nm8HAIS
-         ZoMdovvysBlG8KAEkjjT9K51CQ2g6+njomB9i+lCVLLrU0V3QBr5+FmQbvWycr4oSml7
-         jyu85lIQHxKr/1VGm/i6FU5A9wNzejiUpGd0omo29LhIULtUOMMsy9uj7VGlkCka1rlC
-         QpdhYnrwugS6qH/apk3GSyjiv/v3GOUjX2P5zFV/U761PQ4MU3Wne2dXYl+UnRQEHOu7
-         Pv6m1TKhVeG69xLr8J/easGb84kPalCJQjCT10VCmEKIU05T9THY32Hs/J89sWKPwcmd
-         Ro8A==
+        bh=tTf2yUtECbY/OYuChMFvXRgzzGsfDdzdXOehMmGhewk=;
+        b=QJRwd2W6VRXrS4A/CBhp2YcbC3sU4ZAmPGeKVZFT1WgHZggwetwhSZeDaVxv4Aktuf
+         WytqGCQI6LnNbrg07xeSz3IzVGKS7gA8V4HV3YpvZYe2XF2pHpPCUZ/jMNlV5tuoKFSh
+         thaVVE/Bj7+ADN1gIzBCB3ZldzUW9elGxh6Ru0DOCFqwSp0JQzblj3sSCl9meTgs2GDJ
+         TNbSVhh+IcLUajQqo+Pdj2tBCkwnF8DCDGb67pjcmD7zqC2+S5zEH9zlbI2pmpnyZJa/
+         LJEdGSiCARQAsvrM2SxlgvnoD1EsdB+YRpT9jxgodejcPfhdTBsnxuo0qTESjlXlJL7V
+         0WZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701177476; x=1701782276;
+        d=1e100.net; s=20230601; t=1701177511; x=1701782311;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=ob6Dwe9f9aR6JR07mR40cYGUta2Fbcmoo05Dfdz/Nc0=;
-        b=vmN7a7vMOmWOuF7yjp7JcWIYciVtfLAL0rIZfP0jj6RH93G1CZPm95PLwMCKPxDdlN
-         1euKMqoGBbzf2FZy3Z/HPr67RWbrPcY3tLhKLkey2ZkyA1cVTR9Hli6DrUDvcCIDZjlk
-         Zwq/TxUbXDC2pF8/6ooyHbXlFSUYsnSyu78gATnHCGV9BnNEnWoHAFt+DGY3fvlqTvHh
-         0A/mS/U5k73pzkIQUT9FkFjQeHP9uXaYpbOfL7FR5vTcAUCXlNqqdYj6PoV5+qOD8P5m
-         M9USfBqWKD0uJxC5+OYxbvHaU86O5C3UlAt70Nify71ljjOHxFIKHSZc7rxU9wqxs96S
-         6MVA==
-X-Gm-Message-State: AOJu0YyGH8UTOZ5cWQ5T/hEXDiZf9AwEN1pUeFzzs7PHLTGEGwNDM5hW
-	zeZzvEpIZNHslugpKdMTTjO5Sg==
-X-Google-Smtp-Source: AGHT+IH1GIPmjgbvzy/uIw06dHH67zeJBobtku+FnhWeFT/vxlN0iIsyhl9fDbfRokKA4LPRXfdxDg==
-X-Received: by 2002:a2e:b5ad:0:b0:2c9:a1f5:488d with SMTP id f13-20020a2eb5ad000000b002c9a1f5488dmr3993190ljn.24.1701177475968;
-        Tue, 28 Nov 2023 05:17:55 -0800 (PST)
+        bh=tTf2yUtECbY/OYuChMFvXRgzzGsfDdzdXOehMmGhewk=;
+        b=rWFHX3zXBIb3Cn9S+b9gDGyR9e2vAwr44smWU9hKuA1ubWPzY8yz8JybfjJI46iHOP
+         viq+bUdfKuk4yNIrBfi6ZvjCJ49rc8JoLd2bx5HGWYQMNeFjzTshcEexYrdoSYS7jxh3
+         62DoWdOlVFfL5xscFRBbLIojTSY0Wg84+Y2VF5Z/3gh7DC9eFtNQYnNvHqc9GNSwXtaM
+         pTLlP76XQ1x0FX06N3DkLWd/hjAhPhHkkjF649WEaQA3kbUKWz0WebS6oxt9aQgD7Hww
+         4Orsp/zOy8p0W0ofHhs9Ss+KJfvxJUReQFzO9Cw/ZgGa5dUxaGOPtP6upRd2n0DBr8ME
+         1DKQ==
+X-Gm-Message-State: AOJu0YzNoE1AtQQfj/bT3hn62MjMWHbwIz+UR7R+oHVqVzo05q22b34r
+	fnzYer5/O8nYQx11VGFEm2zbvA==
+X-Google-Smtp-Source: AGHT+IGqrSCmGnNKknw600PvCwdJ4nyNLsm/yU9AqIvf2jLutSas7DdHhjfbocjXyLUEEP7CqlRP5A==
+X-Received: by 2002:a05:651c:39d:b0:2c9:9983:6fba with SMTP id e29-20020a05651c039d00b002c999836fbamr5636031ljp.52.1701177511295;
+        Tue, 28 Nov 2023 05:18:31 -0800 (PST)
 Received: from ?IPV6:2001:14ba:a0db:1f00::227? (dzdqv0yyyyyyyyyyyykxt-3.rev.dnainternet.fi. [2001:14ba:a0db:1f00::227])
-        by smtp.gmail.com with ESMTPSA id t7-20020a2e9547000000b002b657f10b78sm1707226ljh.58.2023.11.28.05.17.54
+        by smtp.gmail.com with ESMTPSA id t7-20020a2e9547000000b002b657f10b78sm1707226ljh.58.2023.11.28.05.18.30
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 28 Nov 2023 05:17:55 -0800 (PST)
-Message-ID: <e7fbb6ea-da13-4cb1-a459-99e8636bdd67@linaro.org>
-Date: Tue, 28 Nov 2023 15:17:54 +0200
+        Tue, 28 Nov 2023 05:18:30 -0800 (PST)
+Message-ID: <83e4f84f-63bd-4f53-886e-5cff215fd802@linaro.org>
+Date: Tue, 28 Nov 2023 15:18:30 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -51,7 +51,7 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 08/12] arm64: dts: qcom: qcm2290: Add display nodes
+Subject: Re: [PATCH v2 05/12] iommu/arm-smmu-qcom: Add QCM2290 DPU compatible
 Content-Language: en-GB
 To: Konrad Dybcio <konrad.dybcio@linaro.org>, Rob Clark
  <robdclark@gmail.com>, Abhinav Kumar <quic_abhinavk@quicinc.com>,
@@ -77,22 +77,42 @@ Cc: Marijn Suijten <marijn.suijten@somainline.org>,
  linux-pm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
  iommu@lists.linux.dev
 References: <20231125-topic-rb1_feat-v2-0-979b28f35e4a@linaro.org>
- <20231125-topic-rb1_feat-v2-8-979b28f35e4a@linaro.org>
+ <20231125-topic-rb1_feat-v2-5-979b28f35e4a@linaro.org>
 From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-In-Reply-To: <20231125-topic-rb1_feat-v2-8-979b28f35e4a@linaro.org>
+In-Reply-To: <20231125-topic-rb1_feat-v2-5-979b28f35e4a@linaro.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 27/11/2023 17:28, Konrad Dybcio wrote:
-> Add the required nodes to support display on QCM2290.
-> 
-> Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
-> ---
->   arch/arm64/boot/dts/qcom/qcm2290.dtsi | 214 ++++++++++++++++++++++++++++++++++
->   1 file changed, 214 insertions(+)
+> Add the QCM2290 DPU compatible to clients compatible list, as it also
+> needs the workarounds.
+
+Nit: MDSS, not DPU compatible
+
+With that fixed:
 
 Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 
+
+> 
+> Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
+> ---
+>   drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 1 +
+>   1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> index 549ae4dba3a6..aea5e85b20ff 100644
+> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> @@ -245,6 +245,7 @@ static const struct of_device_id qcom_smmu_client_of_match[] __maybe_unused = {
+>   	{ .compatible = "qcom,adreno" },
+>   	{ .compatible = "qcom,mdp4" },
+>   	{ .compatible = "qcom,mdss" },
+> +	{ .compatible = "qcom,qcm2290-mdss" },
+>   	{ .compatible = "qcom,sc7180-mdss" },
+>   	{ .compatible = "qcom,sc7180-mss-pil" },
+>   	{ .compatible = "qcom,sc7280-mdss" },
+> 
 
 -- 
 With best wishes
