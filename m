@@ -1,237 +1,123 @@
-Received: from mail-lj1-f180.google.com (mail-lj1-f180.google.com [209.85.208.180])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7BF6E3A8EE;
-	Wed, 29 Nov 2023 16:23:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HbXC+4Su"
-Received: by mail-lj1-f180.google.com with SMTP id 38308e7fff4ca-2c8880f14eeso88619391fa.3;
-        Wed, 29 Nov 2023 08:23:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1701274997; x=1701879797; darn=lists.linux.dev;
-        h=user-agent:in-reply-to:content-disposition:mime-version:references
-         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=BE4DN2NIJid+M8TUF/vMVc9hXeYzBXdHSi7xojD4wk4=;
-        b=HbXC+4SuhJxcKg1S7uZAPWIPZNNL9iv6jRGY4HeQ40++zv1zXlridOAJvZgvmZCI4s
-         k7Yb4q0nw4oiEdy683Wn7v0XHDW9YEp1YI+BKlT+v+XZEhZIv1fxUmNl3hB61sXPt2jn
-         uoDIrgpRsHAQhqAjniyH6I1pp1BFPsJwpgb4jKLYt3+6auij+GmGZfjLX4iz7WysU71P
-         wdiGt9vS6AplviU5laQOnbW/0nVEfNl0uApirj9M0VTb34dUdLjJgheP7iCQaTA9EuSA
-         HpV7UPmvHfagJiSt9JKwcXqV77mu0EVuKqfeTUaz+1alhYCFS7SkcD6sgY8Br2MmFg1t
-         /ljg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701274997; x=1701879797;
-        h=user-agent:in-reply-to:content-disposition:mime-version:references
-         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=BE4DN2NIJid+M8TUF/vMVc9hXeYzBXdHSi7xojD4wk4=;
-        b=Ecc8w5vc6gaRMACGCTu5zLssmUFjEBqNpekShRpLkvwu+li3zxumjX8l6lJ44A72kR
-         Ub79ut1y/ouAezv8ngCh9h87SQ40SerTGBG+hIT9tAQ7CMifsQWA3rGvPoZE7dcHKWT2
-         zEfvsKqe/da74vSnVkiymJT9e0ixvIjFvMQYYQaLBBPS083nN/wKZq7fROBSNqoDUaKg
-         wvy99lLjLj6o34cM3/sDsPcYPqFhuWZx3Bw7elw9BYs1ue2vTw46eIG/IA7bBoIgRJbJ
-         rPorZ2+s+aklvE8qGVFnddvAQPRksYblHAx2AOQNpHRoq/YVnaVQ54at4XV2wtbZp8xs
-         r8wQ==
-X-Gm-Message-State: AOJu0YzKZNdKRT7XtPlcKoD6fcAMtsfw4tZLw5wQEATGubLrApWhrl9F
-	oft0n8PJF7HJCAkFen4UZuQ=
-X-Google-Smtp-Source: AGHT+IFpkXFRA9JtjkMulyQU+vE6lllIuj8DaTvHOgPc7kkDjVJCH1EZdgBzk/x+Nxw/nDpm1ZgC3Q==
-X-Received: by 2002:a2e:9557:0:b0:2c9:b623:ddf1 with SMTP id t23-20020a2e9557000000b002c9b623ddf1mr3708530ljh.51.1701274997225;
-        Wed, 29 Nov 2023 08:23:17 -0800 (PST)
-Received: from orome.fritz.box (p200300e41f0fa600f22f74fffe1f3a53.dip0.t-ipconnect.de. [2003:e4:1f0f:a600:f22f:74ff:fe1f:3a53])
-        by smtp.gmail.com with ESMTPSA id n16-20020a05600c501000b00407b93d8085sm2743768wmr.27.2023.11.29.08.23.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Nov 2023 08:23:16 -0800 (PST)
-Date: Wed, 29 Nov 2023 17:23:13 +0100
-From: Thierry Reding <thierry.reding@gmail.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: David Airlie <airlied@gmail.com>,
-	Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-	Albert Ou <aou@eecs.berkeley.edu>, asahi@lists.linux.dev,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Danilo Krummrich <dakr@redhat.com>, Daniel Vetter <daniel@ffwll.ch>,
-	Dexuan Cui <decui@microsoft.com>, devicetree@vger.kernel.org,
-	dmaengine@vger.kernel.org, dri-devel@lists.freedesktop.org,
-	David Woodhouse <dwmw2@infradead.org>,
-	Frank Rowand <frowand.list@gmail.com>,
-	Hanjun Guo <guohanjun@huawei.com>,
-	Haiyang Zhang <haiyangz@microsoft.com>, iommu@lists.linux.dev,
-	Jon Hunter <jonathanh@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
-	Karol Herbst <kherbst@redhat.com>,
-	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-	"K. Y. Srinivasan" <kys@microsoft.com>,
-	Laxman Dewangan <ldewangan@nvidia.com>, Len Brown <lenb@kernel.org>,
-	linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-hyperv@vger.kernel.org, linux-mips@vger.kernel.org,
-	linux-riscv@lists.infradead.org, linux-snps-arc@lists.infradead.org,
-	linux-tegra@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
-	Lorenzo Pieralisi <lpieralisi@kernel.org>,
-	Lyude Paul <lyude@redhat.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	nouveau@lists.freedesktop.org, Palmer Dabbelt <palmer@dabbelt.com>,
-	Paul Walmsley <paul.walmsley@sifive.com>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Sudeep Holla <sudeep.holla@arm.com>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Sven Peter <sven@svenpeter.dev>,
-	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-	Vineet Gupta <vgupta@kernel.org>, Vinod Koul <vkoul@kernel.org>,
-	Wei Liu <wei.liu@kernel.org>, Will Deacon <will@kernel.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>, Christoph Hellwig <hch@lst.de>,
-	Jerry Snitselaar <jsnitsel@redhat.com>,
-	Hector Martin <marcan@marcan.st>, Moritz Fischer <mdf@kernel.org>,
-	patches@lists.linux.dev,
-	"Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-	Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH 08/10] iommu/tegra: Use tegra_dev_iommu_get_stream_id()
- in the remaining places
-Message-ID: <ZWdlcboM4Xzs38NI@orome.fritz.box>
-References: <0-v1-720585788a7d+811b-iommu_fwspec_p1_jgg@nvidia.com>
- <8-v1-720585788a7d+811b-iommu_fwspec_p1_jgg@nvidia.com>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8FF3839854;
+	Wed, 29 Nov 2023 16:48:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Authentication-Results: smtp.subspace.kernel.org; dkim=none
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 96AD0C15;
+	Wed, 29 Nov 2023 08:49:40 -0800 (PST)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 69D1A3F73F;
+	Wed, 29 Nov 2023 08:48:47 -0800 (PST)
+Message-ID: <52de3aca-41b1-471e-8f87-1a77de547510@arm.com>
+Date: Wed, 29 Nov 2023 16:48:43 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="OR6CuieIvqboqm08"
-Content-Disposition: inline
-In-Reply-To: <8-v1-720585788a7d+811b-iommu_fwspec_p1_jgg@nvidia.com>
-User-Agent: Mutt/2.2.12 (2023-09-09)
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 08/16] iommu/fsl: use page allocation function provided by
+ iommu-pages.h
+Content-Language: en-GB
+To: Jason Gunthorpe <jgg@ziepe.ca>, Pasha Tatashin <pasha.tatashin@soleen.com>
+Cc: akpm@linux-foundation.org, alex.williamson@redhat.com,
+ alim.akhtar@samsung.com, alyssa@rosenzweig.io, asahi@lists.linux.dev,
+ baolu.lu@linux.intel.com, bhelgaas@google.com, cgroups@vger.kernel.org,
+ corbet@lwn.net, david@redhat.com, dwmw2@infradead.org, hannes@cmpxchg.org,
+ heiko@sntech.de, iommu@lists.linux.dev, jasowang@redhat.com,
+ jernej.skrabec@gmail.com, jonathanh@nvidia.com, joro@8bytes.org,
+ kevin.tian@intel.com, krzysztof.kozlowski@linaro.org, kvm@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
+ linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-mm@kvack.org, linux-rockchip@lists.infradead.org,
+ linux-samsung-soc@vger.kernel.org, linux-sunxi@lists.linux.dev,
+ linux-tegra@vger.kernel.org, lizefan.x@bytedance.com, marcan@marcan.st,
+ mhiramat@kernel.org, mst@redhat.com, m.szyprowski@samsung.com,
+ netdev@vger.kernel.org, paulmck@kernel.org, rdunlap@infradead.org,
+ samuel@sholland.org, suravee.suthikulpanit@amd.com, sven@svenpeter.dev,
+ thierry.reding@gmail.com, tj@kernel.org, tomas.mudrunka@gmail.com,
+ vdumpa@nvidia.com, virtualization@lists.linux.dev, wens@csie.org,
+ will@kernel.org, yu-cheng.yu@intel.com
+References: <20231128204938.1453583-1-pasha.tatashin@soleen.com>
+ <20231128204938.1453583-9-pasha.tatashin@soleen.com>
+ <1c6156de-c6c7-43a7-8c34-8239abee3978@arm.com>
+ <CA+CK2bCOtwZxTUS60PHOQ3szXdCzau7OpopgFEbbC6a9Frxafg@mail.gmail.com>
+ <20231128235037.GC1312390@ziepe.ca>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20231128235037.GC1312390@ziepe.ca>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
+On 28/11/2023 11:50 pm, Jason Gunthorpe wrote:
+> On Tue, Nov 28, 2023 at 06:00:13PM -0500, Pasha Tatashin wrote:
+>> On Tue, Nov 28, 2023 at 5:53 PM Robin Murphy <robin.murphy@arm.com> wrote:
+>>>
+>>> On 2023-11-28 8:49 pm, Pasha Tatashin wrote:
+>>>> Convert iommu/fsl_pamu.c to use the new page allocation functions
+>>>> provided in iommu-pages.h.
+>>>
+>>> Again, this is not a pagetable. This thing doesn't even *have* pagetables.
+>>>
+>>> Similar to patches #1 and #2 where you're lumping in configuration
+>>> tables which belong to the IOMMU driver itself, as opposed to pagetables
+>>> which effectively belong to an IOMMU domain's user. But then there are
+>>> still drivers where you're *not* accounting similar configuration
+>>> structures, so I really struggle to see how this metric is useful when
+>>> it's so completely inconsistent in what it's counting :/
+>>
+>> The whole IOMMU subsystem allocates a significant amount of kernel
+>> locked memory that we want to at least observe. The new field in
+>> vmstat does just that: it reports ALL buddy allocator memory that
+>> IOMMU allocates. However, for accounting purposes, I agree, we need to
+>> do better, and separate at least iommu pagetables from the rest.
+>>
+>> We can separate the metric into two:
+>> iommu pagetable only
+>> iommu everything
+>>
+>> or into three:
+>> iommu pagetable only
+>> iommu dma
+>> iommu everything
+>>
+>> What do you think?
+> 
+> I think I said this at LPC - if you want to have fine grained
+> accounting of memory by owner you need to go talk to the cgroup people
+> and come up with something generic. Adding ever open coded finer
+> category breakdowns just for iommu doesn't make alot of sense.
+> 
+> You can make some argument that the pagetable memory should be counted
+> because kvm counts it's shadow memory, but I wouldn't go into further
+> detail than that with hand coded counters..
 
---OR6CuieIvqboqm08
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Right, pagetable memory is interesting since it's something that any 
+random kernel user can indirectly allocate via iommu_domain_alloc() and 
+iommu_map(), and some of those users may even be doing so on behalf of 
+userspace. I have no objection to accounting and potentially applying 
+limits to *that*.
 
-On Tue, Nov 28, 2023 at 08:48:04PM -0400, Jason Gunthorpe wrote:
-> This API was defined to formalize the access to internal iommu details on
-> some Tegra SOCs, but a few callers got missed. Add them.
->=20
-> The helper already masks by 0xFFFF so remove this code from the callers.
->=20
-> Suggested-by: Thierry Reding <thierry.reding@gmail.com>
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> ---
->  drivers/dma/tegra186-gpc-dma.c                  |  8 +++-----
->  drivers/gpu/drm/nouveau/nvkm/subdev/ltc/gp10b.c |  7 ++-----
->  drivers/memory/tegra/tegra186.c                 | 12 ++++++------
->  3 files changed, 11 insertions(+), 16 deletions(-)
->=20
-> diff --git a/drivers/dma/tegra186-gpc-dma.c b/drivers/dma/tegra186-gpc-dm=
-a.c
-> index fa4d4142a68a21..88547a23825b18 100644
-> --- a/drivers/dma/tegra186-gpc-dma.c
-> +++ b/drivers/dma/tegra186-gpc-dma.c
-> @@ -1348,8 +1348,8 @@ static int tegra_dma_program_sid(struct tegra_dma_c=
-hannel *tdc, int stream_id)
->  static int tegra_dma_probe(struct platform_device *pdev)
->  {
->  	const struct tegra_dma_chip_data *cdata =3D NULL;
-> -	struct iommu_fwspec *iommu_spec;
-> -	unsigned int stream_id, i;
-> +	unsigned int i;
-> +	u32 stream_id;
->  	struct tegra_dma *tdma;
->  	int ret;
-> =20
-> @@ -1378,12 +1378,10 @@ static int tegra_dma_probe(struct platform_device=
- *pdev)
-> =20
->  	tdma->dma_dev.dev =3D &pdev->dev;
-> =20
-> -	iommu_spec =3D dev_iommu_fwspec_get(&pdev->dev);
-> -	if (!iommu_spec) {
-> +	if (!tegra_dev_iommu_get_stream_id(&pdev->dev, &stream_id)) {
->  		dev_err(&pdev->dev, "Missing iommu stream-id\n");
->  		return -EINVAL;
->  	}
-> -	stream_id =3D iommu_spec->ids[0] & 0xffff;
-> =20
->  	ret =3D device_property_read_u32(&pdev->dev, "dma-channel-mask",
->  				       &tdma->chan_mask);
-> diff --git a/drivers/gpu/drm/nouveau/nvkm/subdev/ltc/gp10b.c b/drivers/gp=
-u/drm/nouveau/nvkm/subdev/ltc/gp10b.c
-> index e7e8fdf3adab7a..b40fd1dbb21617 100644
-> --- a/drivers/gpu/drm/nouveau/nvkm/subdev/ltc/gp10b.c
-> +++ b/drivers/gpu/drm/nouveau/nvkm/subdev/ltc/gp10b.c
-> @@ -28,16 +28,13 @@ static void
->  gp10b_ltc_init(struct nvkm_ltc *ltc)
->  {
->  	struct nvkm_device *device =3D ltc->subdev.device;
-> -	struct iommu_fwspec *spec;
-> +	u32 sid;
-> =20
->  	nvkm_wr32(device, 0x17e27c, ltc->ltc_nr);
->  	nvkm_wr32(device, 0x17e000, ltc->ltc_nr);
->  	nvkm_wr32(device, 0x100800, ltc->ltc_nr);
-> =20
-> -	spec =3D dev_iommu_fwspec_get(device->dev);
-> -	if (spec) {
-> -		u32 sid =3D spec->ids[0] & 0xffff;
-> -
-> +	if (tegra_dev_iommu_get_stream_id(device->dev, &sid)) {
->  		/* stream ID */
->  		nvkm_wr32(device, 0x160000, sid << 2);
+Beyond that, though, there is nothing special about "the IOMMU 
+subsystem". The amount of memory an IOMMU driver needs to allocate for 
+itself in order to function is not of interest beyond curiosity, it just 
+is what it is; limiting it would only break the IOMMU, and if a user 
+thinks it's "too much", the only actionable thing that might help is to 
+physically remove devices from the system. Similar for DMA buffers; it 
+might be intriguing to account those, but it's not really an actionable 
+metric - in the overwhelming majority of cases you can't simply tell a 
+driver to allocate less than what it needs. And that is of course 
+assuming if we were to account *all* DMA buffers, since whether they 
+happen to have an IOMMU translation or not is irrelevant (we'd have 
+already accounted the pagetables as pagetables if so).
 
-We could probably also remove the comment now since the function and
-variable names make it obvious what's being written here.
+I bet "the networking subsystem" also consumes significant memory on the 
+same kind of big systems where IOMMU pagetables would be of any concern. 
+I believe some of the some of the "serious" NICs can easily run up 
+hundreds of megabytes if not gigabytes worth of queues, SKB pools, etc. 
+- would you propose accounting those too?
 
->  	}
-> diff --git a/drivers/memory/tegra/tegra186.c b/drivers/memory/tegra/tegra=
-186.c
-> index 533f85a4b2bdb7..3e4fbe94dd666e 100644
-> --- a/drivers/memory/tegra/tegra186.c
-> +++ b/drivers/memory/tegra/tegra186.c
-> @@ -111,21 +111,21 @@ static void tegra186_mc_client_sid_override(struct =
-tegra_mc *mc,
->  static int tegra186_mc_probe_device(struct tegra_mc *mc, struct device *=
-dev)
->  {
->  #if IS_ENABLED(CONFIG_IOMMU_API)
-> -	struct iommu_fwspec *fwspec =3D dev_iommu_fwspec_get(dev);
->  	struct of_phandle_args args;
->  	unsigned int i, index =3D 0;
-> +	u32 sid;
-> =20
-> +	WARN_ON(!tegra_dev_iommu_get_stream_id(dev, &sid));
-
-I know the code previously didn't check for any errors, but we may want
-to do so now. If tegra_dev_iommu_get_stream_id() ever fails we may end
-up writing some undefined value into the override register.
-
-I'm also unsure if WARN_ON() is appropriate here. I vaguely recall that
-->probe_device() was called for all devices on the bus and not all of
-them may have been associated with the IOMMU. Not all of them may in
-fact access memory in the first place.
-
-Perhaps I'm misremembering and the IOMMU core now takes care of only
-calling this when fwspec is indeed valid?
-
-Thierry
-
---OR6CuieIvqboqm08
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmVnZW8ACgkQ3SOs138+
-s6H3xA/+PnJPzNAATgGeEaxpY8VPfo7h0kY98vc1QYnUCiV46yzQPUq+/nVkkq24
-ybBtQ8hr0vl4ZxtflekHYxb0WsXO560ODmmckXEYPWRfVyxckFz+CRyvDx+zxyxJ
-d/TtD8p0l6DGFlZGume2h/cDafF5+3td2JEJ2vEfu0tMmRLIFC7L+Pj2IB4/Fz21
-2M6M6T0Al7obecinfW9jzg00G20RybQSrdPq+H9z3BNhOXGKy+1fjIzCsnr4H0gD
-kE4WooU9uLbMdpEYYZ8idqC1OieIr6p2IF802/4/TAvWHreHlH7uPcDRry8rxkwQ
-j0CAwBlcvLLtLj2pw7kYgxMpXwahgXSuhxX42CXDWsUUW4mxiZkvG0o8Cv2EGtSD
-emTIMrC3w1R2MSemI8+RQdOHhOnTNC0sADGo9EyurPrYC9TzwqTOPI35kNqJ8ZAw
-zCmhDKieZM9dxlOdFrpC+eLz8eVEjo5oV+OchMT6k8nw7TkD6dGHBOJlDhQeJNWZ
-tZBnlBamoEmlD5Kz/Oe90S47MnYtx8EX7o9bpEV6/ZO13P+F07rasP3l6hCJuybO
-c2YAeCxY8cuwHLnIJZTm3hR7UU9PQwPn4utolLuSqaXkL5wSdVr+1eZyTye25W0J
-CSzMCL3SkMgfKaZ7L6ptSRFtOWxiH6943ahvYpDBXlgEp/R9aVg=
-=ORi/
------END PGP SIGNATURE-----
-
---OR6CuieIvqboqm08--
+Thanks,
+Robin.
