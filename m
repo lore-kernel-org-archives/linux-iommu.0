@@ -1,50 +1,51 @@
-Received: from mail-lf1-f51.google.com (mail-lf1-f51.google.com [209.85.167.51])
+Received: from mail-ej1-f49.google.com (mail-ej1-f49.google.com [209.85.218.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9CACA32C74
-	for <iommu@lists.linux.dev>; Wed, 29 Nov 2023 14:44:26 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DEA893219A
+	for <iommu@lists.linux.dev>; Wed, 29 Nov 2023 14:44:29 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="fFQ+Hg8w"
-Received: by mail-lf1-f51.google.com with SMTP id 2adb3069b0e04-50bc4fe8158so1088769e87.0
-        for <iommu@lists.linux.dev>; Wed, 29 Nov 2023 06:44:26 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="N1mofVDr"
+Received: by mail-ej1-f49.google.com with SMTP id a640c23a62f3a-a178e82a445so80288866b.2
+        for <iommu@lists.linux.dev>; Wed, 29 Nov 2023 06:44:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1701269064; x=1701873864; darn=lists.linux.dev;
+        d=linaro.org; s=google; t=1701269068; x=1701873868; darn=lists.linux.dev;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=wo1sJJZHw7KBTaKmEN30ScvrIwX30d4f2jOhkPUqxBM=;
-        b=fFQ+Hg8wc9dh7p3NS6ljOvsVFWZFjQnezBI/Ela6ge6UblKdHTH8bwCHN/W7WitBLl
-         alf71ps/s1S1yQ5mBag7x1N4n3wgwwEy7qigZHCipMYmz+rhSEr+MqTfkFIka606iGQz
-         E9WHc2HnDvrP0/e4uHkXxOY0MZoPO7IU5PN4TIKk3prMliiAoQFYrRNcJ1YnUF5XYn4S
-         8q6WNhb6MNXkZD3okLNsJ8vhWFtnBFlOFP8EQ5dpHl52fEZVrsj9VT2n7XbJP/j1IwQ+
-         rp1sAJnCuO4eEdo7X9MPyuRskLgQ3rqpyy66H9YUZWU0LzxmhWEX46Wdezoz8vIgzBlY
-         nLMA==
+        bh=3WME6ubitd3vxaAOMdHVezdwhed8qbighnDEBO169Ec=;
+        b=N1mofVDrsgfjcKCgkoceWj8OBwliPYhiH5k6TDE5yzlYxJSPdD2LM8UQYmbeTnXlvn
+         MZ+sKcergTrtYwhMXWgyKkXOUFHF+8QKxsUOTy0p888oTXtgBULehafGjkRQb7idWqgP
+         mpzccWqcsW6OXdG6siahRzS5QV+nTLsCkUPsXsz95NPXWaRhl2f3QvH4BaT2BVc5G+sG
+         QW44QWkLPaelFQ/hhclwJ8rNhiy52UiWf49k/F/9Ot8grxOzA3rBp9NptYpNDJVJvEKx
+         R7qw1I3HnkBnY+MFSDRHNVSoJ6mM1wNKsFcToSD9LY9IUJBwB1Nr7gvpLKenedwmDQ9z
+         tMDA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701269064; x=1701873864;
+        d=1e100.net; s=20230601; t=1701269068; x=1701873868;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=wo1sJJZHw7KBTaKmEN30ScvrIwX30d4f2jOhkPUqxBM=;
-        b=BpOOQTHTZu2W9xHsoZ3zshyXqgbxiRzJfL/DkUyllc4lktJRskbO3un2KgusBOA2K4
-         Vw+xZjseAPWrjcwo4Umqu/rEnM7g+8KDa2/dyvJRX/Ki4G8JN4rZgl74iMzvakpwduqf
-         CA+pez8htzM/SUXKvUvtPUCT77gI9/2YvEeKKT7vmbLlZYJgGWa39vhfORRRAZuFNXTy
-         CClRzyLoXfqONbp5PoCE0dEwUyJMom/RT0W6JEdKXXrRXeip/ILgVE9Kky6cDC0DMKaE
-         UZ1UY+VXAnGR7TebZ7o9wEwJtCMTajjqW4vIZ0U4Hro+B9kkkTwOuyHf8p6/+D/tbGK3
-         cZ2w==
-X-Gm-Message-State: AOJu0YyeN5Dj+E+s+ckbnXB6ZS75TDt+NYgqlt8BiZ4c6k1hoAKy/HIf
-	gXi3k0Uft9L07knhDjvxHzQVrw==
-X-Google-Smtp-Source: AGHT+IHIFF7EvttkvKqxTdo7EUCkiD1rO8UjhJ/NykBDp9vXAQKIDUWYvgiQY1lP0nrgP7lsgpW8vw==
-X-Received: by 2002:a05:6512:3d94:b0:507:9a66:3577 with SMTP id k20-20020a0565123d9400b005079a663577mr11819960lfv.5.1701269064766;
-        Wed, 29 Nov 2023 06:44:24 -0800 (PST)
+        bh=3WME6ubitd3vxaAOMdHVezdwhed8qbighnDEBO169Ec=;
+        b=CIOXikOAGIqUzhswPtlCAA45IxsdUmCPdSisxH7XWV3nkLNOVgVzkx7lksiifEkcaS
+         AC+goQpl5Nr/yd6tYQkY2tn41BZG97ZMp4bwJERc2hMqa4mIDGKDWjzgNP75EPyvQye8
+         6vnvDw8UICcHzTCIzqa65/7dBAiuI//UO7FMMJRlm++L0mJIn0rchgP+vzfbmEIK/yrC
+         4eoiVpHDIFUtho/6oqBy7HP5OgegNYKyytz5sfKpH2GpD19Lzxmzn7G4VaZ6CQoLYs4r
+         rIgpRyseeEklpgDXsKdrGdThoQe4o/uQQiorwLP2GXRayml886gE7bh+NHHyjpBNpUUS
+         MFtg==
+X-Gm-Message-State: AOJu0YxbREQgXNJIXlFvwMZmQ39E/vlk4xqrDXwo1IToNpbOPhQ1fDLH
+	OQ+eAquaTXEPB+kuPLZQH2rgBA==
+X-Google-Smtp-Source: AGHT+IH+RwsuXNKo7mRRSs5QfH4RQDMAsxgT6mJOUDi04ruodSJZaS3PyYqxW9aAR+nUNX0ZJcUxXA==
+X-Received: by 2002:a17:906:fcce:b0:9f8:2b44:7b7f with SMTP id qx14-20020a170906fcce00b009f82b447b7fmr13038742ejb.70.1701269068288;
+        Wed, 29 Nov 2023 06:44:28 -0800 (PST)
 Received: from [10.167.154.1] (178235187166.dynamic-4-waw-k-2-3-0.vectranet.pl. [178.235.187.166])
-        by smtp.gmail.com with ESMTPSA id e27-20020a1709062c1b00b009fda627abd9sm7913738ejh.79.2023.11.29.06.44.21
+        by smtp.gmail.com with ESMTPSA id e27-20020a1709062c1b00b009fda627abd9sm7913738ejh.79.2023.11.29.06.44.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Nov 2023 06:44:24 -0800 (PST)
+        Wed, 29 Nov 2023 06:44:27 -0800 (PST)
 From: Konrad Dybcio <konrad.dybcio@linaro.org>
-Date: Wed, 29 Nov 2023 15:44:02 +0100
-Subject: [PATCH v3 05/12] iommu/arm-smmu-qcom: Add QCM2290 MDSS compatible
+Date: Wed, 29 Nov 2023 15:44:03 +0100
+Subject: [PATCH v3 06/12] arm64: dts: qcom: sc7180: Add the missing MDSS
+ icc path
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -53,7 +54,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20231125-topic-rb1_feat-v3-5-4cbb567743bb@linaro.org>
+Message-Id: <20231125-topic-rb1_feat-v3-6-4cbb567743bb@linaro.org>
 References: <20231125-topic-rb1_feat-v3-0-4cbb567743bb@linaro.org>
 In-Reply-To: <20231125-topic-rb1_feat-v3-0-4cbb567743bb@linaro.org>
 To: Rob Clark <robdclark@gmail.com>, 
@@ -80,35 +81,44 @@ Cc: Marijn Suijten <marijn.suijten@somainline.org>,
  linux-pm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
  iommu@lists.linux.dev, Konrad Dybcio <konrad.dybcio@linaro.org>
 X-Mailer: b4 0.12.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1701269042; l=938;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1701269042; l=1145;
  i=konrad.dybcio@linaro.org; s=20230215; h=from:subject:message-id;
- bh=ZKnU1eVaZSjTBiyHSPh2Tjy7o0Kv51jXq1kQ7e4q0JU=;
- b=0+UJnE/UFmA357lPZt/AVpOt+TH32uQu3LcDEhl3VCvws5BJst6hotge8OV/5/cQmoLRQIEVm
- h3sFcW4Ar/GDlhsMpOlDPsgg2azmr+u1A/lG/dy/MwcPNnwfEdJT2bg
+ bh=QxbVxThi6gj4JqQP8V9LpJsjR/myuVOnIJbwHX7amYU=;
+ b=sYPUfm+T2CO9HyMoVEn+/8/AzljQnlW0jC9XeZnrz01woxrBDGuDswi+m+bEgPSkuiCtZLp8N
+ BR3hZTS03LmDYMTViL/cCS/WJooBooB/al2zibrNvM1dONg09omgSvQ
 X-Developer-Key: i=konrad.dybcio@linaro.org; a=ed25519;
  pk=iclgkYvtl2w05SSXO5EjjSYlhFKsJ+5OSZBjOkQuEms=
 
-Add the QCM2290 MDSS compatible to clients compatible list, as it also
-needs the workarounds.
+MDSS, aside from the MDP-MEM path, also requires the CPU-DISP_CFG one.
+Failing to provide it may result in register accesses failing and that's
+never good.
 
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Add the missing path.
+
 Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
 ---
- drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/arm64/boot/dts/qcom/sc7180.dtsi | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-index 549ae4dba3a6..aea5e85b20ff 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-@@ -245,6 +245,7 @@ static const struct of_device_id qcom_smmu_client_of_match[] __maybe_unused = {
- 	{ .compatible = "qcom,adreno" },
- 	{ .compatible = "qcom,mdp4" },
- 	{ .compatible = "qcom,mdss" },
-+	{ .compatible = "qcom,qcm2290-mdss" },
- 	{ .compatible = "qcom,sc7180-mdss" },
- 	{ .compatible = "qcom,sc7180-mss-pil" },
- 	{ .compatible = "qcom,sc7280-mdss" },
+diff --git a/arch/arm64/boot/dts/qcom/sc7180.dtsi b/arch/arm64/boot/dts/qcom/sc7180.dtsi
+index 11f353d416b4..9664e42faeb1 100644
+--- a/arch/arm64/boot/dts/qcom/sc7180.dtsi
++++ b/arch/arm64/boot/dts/qcom/sc7180.dtsi
+@@ -3100,8 +3100,12 @@ mdss: display-subsystem@ae00000 {
+ 			interrupt-controller;
+ 			#interrupt-cells = <1>;
+ 
+-			interconnects = <&mmss_noc MASTER_MDP0 0 &mc_virt SLAVE_EBI1 0>;
+-			interconnect-names = "mdp0-mem";
++			interconnects = <&mmss_noc MASTER_MDP0 QCOM_ICC_TAG_ALWAYS
++					 &mc_virt SLAVE_EBI1 QCOM_ICC_TAG_ALWAYS>,
++					<&gem_noc MASTER_APPSS_PROC QCOM_ICC_TAG_ALWAYS
++					 &config_noc SLAVE_DISPLAY_CFG QCOM_ICC_TAG_ALWAYS>;
++			interconnect-names = "mdp0-mem",
++					     "cpu-cfg";
+ 
+ 			iommus = <&apps_smmu 0x800 0x2>;
+ 
 
 -- 
 2.43.0
