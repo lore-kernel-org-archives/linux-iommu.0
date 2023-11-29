@@ -1,51 +1,51 @@
-Received: from mail-oo1-f45.google.com (mail-oo1-f45.google.com [209.85.161.45])
+Received: from mail-ot1-f44.google.com (mail-ot1-f44.google.com [209.85.210.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B3CB160EDE
-	for <iommu@lists.linux.dev>; Wed, 29 Nov 2023 20:36:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 27A2B1DDCE
+	for <iommu@lists.linux.dev>; Wed, 29 Nov 2023 20:40:44 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="jBUj8iX2"
-Received: by mail-oo1-f45.google.com with SMTP id 006d021491bc7-58dc434442dso604387eaf.0
-        for <iommu@lists.linux.dev>; Wed, 29 Nov 2023 12:36:44 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="UL7BLVqX"
+Received: by mail-ot1-f44.google.com with SMTP id 46e09a7af769-6d84ddd642fso164147a34.0
+        for <iommu@lists.linux.dev>; Wed, 29 Nov 2023 12:40:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1701290203; x=1701895003; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1701290444; x=1701895244; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=SEEWYYfbaxLfYva0ae/C7ZnG1wW28/cSiuyFpLC5DM4=;
-        b=jBUj8iX2wFu0bL4WTwhhSRYDyLxpQaZ3xudifhktGhthuabEuEj5Qba8B7ez/6P+UE
-         PUpqjQxVkqeQomYY/WNrzTGiXG0YtQpqZ3Zm2UMKNhRZRyl9m+UJuaDxV4ZbBR2nT3J6
-         B3PuONUq2Rpv2qRbDnQ1M4eWd9LIa7Eh0HMDXoMzCACpLwNXPwaRpItZTWUFjpCRphvp
-         +IAtWQ8gKDcirrBHyhqKnM4YoyDRmG8dYsi1Ucsj3zOgsjNPDnZy7SRGCzY+NttX1A/T
-         NKywtHL4ph7g+60EeJ8MXv6dMI69Dai0g8pBQdf28R4Rme+AvM9pC/hdu2gr0T+TEP/V
-         LQiA==
+        bh=i4is+UaFXgNmfUwcjSjgaiG0RVAiB9ug48COJL1kEfc=;
+        b=UL7BLVqXj2LByqaHMJTxfx6PoGNkX8SOm7lraB7KAX4hgEN+i+cYhxWSRloFUnVFB0
+         lQneV5A7mvYJwSBBJq8M6mjsdZwiA0X0c9unTDhq4lIxY+q/mpWRs71+YZf2apgagEbC
+         c8DcrqRfwGnYlOilIRVLdWCld9Hq9Jkcd554Xgye4801Zgy9heM+s9n7+EzhgwHUUgAP
+         sXkJfr1c/vfvcStu5Luq3KUQfK9fcMxBjWMRM6uVr0ziwg4sn1YhdOP/Q9ZNhhWd5h5u
+         a+AWRzJHwsn7IbSoAA9q4v1INIQ04ebOd8b3pKnPeTLl0NsDbeCj2UXA15dsMbwGhB5v
+         rRYQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701290204; x=1701895004;
+        d=1e100.net; s=20230601; t=1701290444; x=1701895244;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=SEEWYYfbaxLfYva0ae/C7ZnG1wW28/cSiuyFpLC5DM4=;
-        b=jva1XEEQN+JNNe9MwhC0Nw/pdOOgF+ZyHn7UrpzDs8g7LhJrkpssb+aIRZMhrdzIyy
-         ITPsNTk9jz5v3wyJlm8aCDYBaeG+kN+qli0AVbQdMwLgv2I1lc3gRy8DYyN/5PBRRZ1Q
-         Y7PIpG5X4UhScKgFNDVDnFJdYgIfhqr5fJ3UI79/pl+WiiB904ornbZCIu3bjaL1lPDc
-         +mM1UBfvm024azsvgVCPEC7OEPkkufoKRZ09IOhQEoB2KKQ+00Py64ZqbZNIGr3+ukP6
-         QBx+xJrnWVDE+b3CLpuEphweJG50d6ENL9Im0PsNU1hZ2rYjRVmmUz0vrkhxkJFyMoIK
-         zmcA==
-X-Gm-Message-State: AOJu0Yy8yKMRhMA2GwQc+3RFfeBnHEvUhznlce873pEQEkTMJLc+05S+
-	0KRPDbUj1nyWUScSumrx+e3rsg==
-X-Google-Smtp-Source: AGHT+IHmOgaQ+837kiXjy012BQ8mhYf6brt1F8AtFjpilauVwFsZjspevsWNCbIpo0nFHydtgIy6ZQ==
-X-Received: by 2002:a05:6871:3322:b0:1fa:29b7:f2a0 with SMTP id nf34-20020a056871332200b001fa29b7f2a0mr7173525oac.23.1701290203779;
-        Wed, 29 Nov 2023 12:36:43 -0800 (PST)
+        bh=i4is+UaFXgNmfUwcjSjgaiG0RVAiB9ug48COJL1kEfc=;
+        b=C0OEmy4hT9zslC1Wqyhe7z53BzujOYFgRfZeUPoHKRrVmyVu4JH+qyyBp29Vqsvx/f
+         TOB+Vhvg52fTACYUTIYkI6hgGUoBFyosYX1bitSdk5dRJ2a8WHC9McPtFrl2CYKy2lOL
+         XjuBPc3cF/Dbz03XIPW3RXDYVil9YO9QpelQ4/+P3jV6ktG7DMNNCOpAMuCLtN9Cva9m
+         +QqsiJSmLGgewC8rsvQ8pEnhJZwrk3LHZNedFDKYboOmN8pN132fegaKKrlBttpoqU1l
+         /P+0+9KQ1xlIyARvbMtQK6xMwMjO4ccTTmk9AwELDmqFGgrDhuotusg1e6OgV60sxXmy
+         ZhHg==
+X-Gm-Message-State: AOJu0YzcOPPV+BxgaqqRA9DrUtt/ro7CaCgfT8NZ9a4I29ziEy5ZE5dZ
+	O8slsk3STwZG8weVpi7ho48uVQ==
+X-Google-Smtp-Source: AGHT+IEnrq+40pWqc9tikvXUqS6Y6R2hs7giuPFXyADBt3dDnfao9L3w+T91fxfG4h2rkEvYDjFXYw==
+X-Received: by 2002:a05:6830:1d41:b0:6d6:3ff8:aab7 with SMTP id p1-20020a0568301d4100b006d63ff8aab7mr19895331oth.1.1701290444152;
+        Wed, 29 Nov 2023 12:40:44 -0800 (PST)
 Received: from ziepe.ca (hlfxns017vw-142-134-23-187.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.134.23.187])
-        by smtp.gmail.com with ESMTPSA id z19-20020a056870515300b001efce0658e6sm3567983oak.39.2023.11.29.12.36.43
+        by smtp.gmail.com with ESMTPSA id e11-20020a9d560b000000b006d3161e612dsm2113398oti.30.2023.11.29.12.40.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Nov 2023 12:36:43 -0800 (PST)
+        Wed, 29 Nov 2023 12:40:43 -0800 (PST)
 Received: from jgg by wakko with local (Exim 4.95)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1r8RIY-005pe4-9r;
-	Wed, 29 Nov 2023 16:36:42 -0400
-Date: Wed, 29 Nov 2023 16:36:42 -0400
+	id 1r8RMQ-005pfu-R5;
+	Wed, 29 Nov 2023 16:40:42 -0400
+Date: Wed, 29 Nov 2023 16:40:42 -0400
 From: Jason Gunthorpe <jgg@ziepe.ca>
 To: Robin Murphy <robin.murphy@arm.com>
 Cc: Joerg Roedel <joro@8bytes.org>, Christoph Hellwig <hch@lst.de>,
@@ -77,9 +77,10 @@ Cc: Joerg Roedel <joro@8bytes.org>, Christoph Hellwig <hch@lst.de>,
 	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
 	linux-acpi@vger.kernel.org, iommu@lists.linux.dev,
 	devicetree@vger.kernel.org
-Subject: Re: [PATCH 0/7] dma-mapping: Clean up arch_setup_dma_ops()
-Message-ID: <20231129203642.GO1312390@ziepe.ca>
+Subject: Re: [PATCH 4/7] dma-mapping: Add helpers for dma_range_map bounds
+Message-ID: <20231129204042.GP1312390@ziepe.ca>
 References: <cover.1701268753.git.robin.murphy@arm.com>
+ <b6626985d97ddc33a23b4b9fafa881b35001547e.1701268753.git.robin.murphy@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -88,33 +89,20 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <cover.1701268753.git.robin.murphy@arm.com>
+In-Reply-To: <b6626985d97ddc33a23b4b9fafa881b35001547e.1701268753.git.robin.murphy@arm.com>
 
-On Wed, Nov 29, 2023 at 05:42:57PM +0000, Robin Murphy wrote:
-> Hi all,
+On Wed, Nov 29, 2023 at 05:43:01PM +0000, Robin Murphy wrote:
+> Several places want to compute the lower and/or upper bounds of a
+> dma_range_map, so let's factor that out into reusable helpers.
 > 
-> Prompted by Jason's proposal[1], here's a first step towards truly
-> unpicking the dma_configure vs. IOMMU mess. As I commented before, we
-> have an awful lot of accumulated cruft and technical debt here making
-> things more complicated than they need to be, and we already have hacks
-> on top of hacks trying to work around it, so polishing those hacks even
-> further is really not a desirable direction of travel. And I do know
-> they're hacks, because I wrote most of them and still remember enough of
-> the context of the time ;)
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+> ---
+>  arch/loongarch/kernel/dma.c |  9 ++-------
+>  drivers/acpi/arm64/dma.c    |  8 +-------
+>  drivers/of/device.c         | 11 ++---------
+>  include/linux/dma-direct.h  | 18 ++++++++++++++++++
+>  4 files changed, 23 insertions(+), 23 deletions(-)
 
-I quite like this, I was also looking at getting rid of those other
-parameters.
-
-I wanted to take smaller steps because it is all pretty hairy.
-
-One thing that still concerns me is if the FW data restricts the valid
-IOVA window that really should be reflected into the reserved ranges
-and not just dumped into the struct device for use by the DMA API.
-
-Or, perhaps, viof/iommufd should be using the struct device data to
-generate some additional reserved ranges?
-
-Either way, I would like to see the dma_iommu and the rest of the
-subsystem agree on what the valid IOVA ranges actually are.
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
 Jason
