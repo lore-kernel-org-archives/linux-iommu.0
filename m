@@ -1,120 +1,216 @@
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 64683101F3
-	for <iommu@lists.linux.dev>; Wed, 29 Nov 2023 09:09:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; dkim=none
-Received: from mail.maildlp.com (unknown [172.18.186.231])
-	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4SgD5t3LfDz6HJkv;
-	Wed, 29 Nov 2023 17:09:06 +0800 (CST)
-Received: from lhrpeml100002.china.huawei.com (unknown [7.191.160.241])
-	by mail.maildlp.com (Postfix) with ESMTPS id 93A30140EE7;
-	Wed, 29 Nov 2023 17:08:25 +0800 (CST)
-Received: from lhrpeml500005.china.huawei.com (7.191.163.240) by
- lhrpeml100002.china.huawei.com (7.191.160.241) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35; Wed, 29 Nov 2023 09:08:21 +0000
-Received: from lhrpeml500005.china.huawei.com ([7.191.163.240]) by
- lhrpeml500005.china.huawei.com ([7.191.163.240]) with mapi id 15.01.2507.035;
- Wed, 29 Nov 2023 09:08:21 +0000
-From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-	"Kevin Tian" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>, Will
- Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Jean-Philippe
- Brucker <jean-philippe@linaro.org>, Nicolin Chen <nicolinc@nvidia.com>, Yi
- Liu <yi.l.liu@intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>
-CC: "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-	"virtualization@lists.linux-foundation.org"
-	<virtualization@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH v2 0/6] IOMMUFD: Deliver IO page faults to user space
-Thread-Topic: [PATCH v2 0/6] IOMMUFD: Deliver IO page faults to user space
-Thread-Index: AQHaB7eiyREckpQTNkq/zZ6Gqko1E7CRNsbw
-Date: Wed, 29 Nov 2023 09:08:21 +0000
-Message-ID: <55ed1ac0f2024c429b396cb751773d62@huawei.com>
-References: <20231026024930.382898-1-baolu.lu@linux.intel.com>
-In-Reply-To: <20231026024930.382898-1-baolu.lu@linux.intel.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 447BB46B3
+	for <iommu@lists.linux.dev>; Wed, 29 Nov 2023 11:47:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="M6yfliDn"
+Received: from pps.filterd (m0279873.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 3AT6TUGH029956;
+	Wed, 29 Nov 2023 11:47:20 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=qcppdkim1;
+ bh=PRkDXyYxUN+epgRlp9Gxs5pkKmtQ9d0GvJ3wxnx/ZcI=;
+ b=M6yfliDnEbaENNsE5nVSNaoZeKk0QMAi0R4DQcYSeOSkP2niCxyD/wbIZ2NzAmoQiIan
+ Oxf7qDSB8Oyk/FWQmCp3EfGJpTFFoq3t7YTDZcZaOL4s+bfZ6rxFTu88UE2h4PsJX4Nd
+ rOw0dKWq/nl+1RlEzxCRerHhekxDkrK17OpKUa+9CmIs1COjA1JYNX3pHg93UdBcfUYN
+ PIgxG4vMaz6gHkkUUzxMILLifC060lWqbul2pk35jm5i6kcEmOB0iozx0gCnmfOA/p1D
+ /nZqeY7JKwP4cS8P/+Pprsdt0TssOfR5DRcIGZmD9Ta9HUcfHdrm2zrYEqG2SwABupFq IA== 
+Received: from nalasppmta03.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3up02xrs58-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 29 Nov 2023 11:47:20 +0000
+Received: from nalasex01c.na.qualcomm.com (nalasex01c.na.qualcomm.com [10.47.97.35])
+	by NALASPPMTA03.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 3ATBlIO3030168
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 29 Nov 2023 11:47:18 GMT
+Received: from [10.214.66.253] (10.80.80.8) by nalasex01c.na.qualcomm.com
+ (10.47.97.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.40; Wed, 29 Nov
+ 2023 03:47:12 -0800
+Message-ID: <26227b9e-e604-43a4-b9ca-949842330009@quicinc.com>
+Date: Wed, 29 Nov 2023 17:17:08 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 1/4] iommu/arm-smmu: introduction of ACTLR for custom
+ prefetcher settings
+Content-Language: en-US
+To: Konrad Dybcio <konrad.dybcio@linaro.org>, <will@kernel.org>,
+        <robin.murphy@arm.com>, <joro@8bytes.org>,
+        <dmitry.baryshkov@linaro.org>, <a39.skl@gmail.com>,
+        <quic_bjorande@quicinc.com>, <mani@kernel.org>,
+        <quic_eberman@quicinc.com>, <robdclark@chromium.org>,
+        <u.kleine-koenig@pengutronix.de>, <robh@kernel.org>,
+        <vladimir.oltean@nxp.com>, <quic_pkondeti@quicinc.com>,
+        <quic_molvera@quicinc.com>
+CC: <linux-arm-msm@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+        <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
+        <qipl.kernel.upstream@quicinc.com>
+References: <20231127145412.3981-1-quic_bibekkum@quicinc.com>
+ <20231127145412.3981-2-quic_bibekkum@quicinc.com>
+ <cfbf33cd-0faf-47c6-8e0f-b13c088670df@linaro.org>
+From: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+In-Reply-To: <cfbf33cd-0faf-47c6-8e0f-b13c088670df@linaro.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01c.na.qualcomm.com (10.47.97.35)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: E-WKoFgOLDezuQBIbLehdFLAGP4lWBsX
+X-Proofpoint-GUID: E-WKoFgOLDezuQBIbLehdFLAGP4lWBsX
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.997,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2023-11-29_09,2023-11-29_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 bulkscore=0
+ suspectscore=0 phishscore=0 adultscore=0 lowpriorityscore=0 spamscore=0
+ priorityscore=1501 impostorscore=0 mlxlogscore=999 clxscore=1015
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2311060000 definitions=main-2311290088
 
 
 
-> -----Original Message-----
-> From: Lu Baolu [mailto:baolu.lu@linux.intel.com]
-> Sent: 26 October 2023 03:49
-> To: Jason Gunthorpe <jgg@ziepe.ca>; Kevin Tian <kevin.tian@intel.com>;
-> Joerg Roedel <joro@8bytes.org>; Will Deacon <will@kernel.org>; Robin
-> Murphy <robin.murphy@arm.com>; Jean-Philippe Brucker
-> <jean-philippe@linaro.org>; Nicolin Chen <nicolinc@nvidia.com>; Yi Liu
-> <yi.l.liu@intel.com>; Jacob Pan <jacob.jun.pan@linux.intel.com>
-> Cc: iommu@lists.linux.dev; linux-kselftest@vger.kernel.org;
-> virtualization@lists.linux-foundation.org; linux-kernel@vger.kernel.org; =
-Lu
-> Baolu <baolu.lu@linux.intel.com>
-> Subject: [PATCH v2 0/6] IOMMUFD: Deliver IO page faults to user space
->=20
-> Hi folks,
->=20
-> This series implements the functionality of delivering IO page faults to
-> user space through the IOMMUFD framework for nested translation. Nested
-> translation is a hardware feature that supports two-stage translation
-> tables for IOMMU. The second-stage translation table is managed by the
-> host VMM, while the first-stage translation table is owned by user
-> space. This allows user space to control the IOMMU mappings for its
-> devices.
->=20
-> When an IO page fault occurs on the first-stage translation table, the
-> IOMMU hardware can deliver the page fault to user space through the
-> IOMMUFD framework. User space can then handle the page fault and
-> respond
-> to the device top-down through the IOMMUFD. This allows user space to
-> implement its own IO page fault handling policies.
->=20
-> User space indicates its capability of handling IO page faults by
-> setting the IOMMU_HWPT_ALLOC_IOPF_CAPABLE flag when allocating a
-> hardware page table (HWPT). IOMMUFD will then set up its infrastructure
-> for page fault delivery. On a successful return of HWPT allocation, the
-> user can retrieve and respond to page faults by reading and writing to
-> the file descriptor (FD) returned in out_fault_fd.
->=20
-> The iommu selftest framework has been updated to test the IO page fault
-> delivery and response functionality.
->=20
-> This series is based on the latest implementation of nested translation
-> under discussion [1] and the page fault handling framework refactoring in
-> the IOMMU core [2].
->=20
-> The series and related patches are available on GitHub: [3]
->=20
-> [1]
-> https://lore.kernel.org/linux-iommu/20230921075138.124099-1-yi.l.liu@int
-> el.com/
-> [2]
-> https://lore.kernel.org/linux-iommu/20230928042734.16134-1-baolu.lu@li
-> nux.intel.com/
-> [3]
-> https://github.com/LuBaolu/intel-iommu/commits/iommufd-io-pgfault-deliv
-> ery-v2
+On 11/27/2023 9:03 PM, Konrad Dybcio wrote:
+> On 27.11.2023 15:54, Bibek Kumar Patro wrote:
+>> Currently in Qualcomm  SoCs the default prefetch is set to 1 which allows
+>> the TLB to fetch just the next page table. MMU-500 features ACTLR
+>> register which is implementation defined and is used for Qualcomm SoCs
+>> to have a prefetch setting of 1/3/7/15 enabling TLB to prefetch
+>> the next set of page tables accordingly allowing for faster translations.
+>>
+>> ACTLR value is unique for each SMR (Stream matching register) and stored
+>> in a pre-populated table. This value is set to the register during
+>> context bank initialisation.
+>>
+>> Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+>>
+>> ---
+>>   drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 56 +++++++++++++++++++++-
+>>   drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h |  6 ++-
+>>   drivers/iommu/arm/arm-smmu/arm-smmu.c      |  5 +-
+>>   drivers/iommu/arm/arm-smmu/arm-smmu.h      |  5 ++
+>>   4 files changed, 68 insertions(+), 4 deletions(-)
+>>
+>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>> index 7f52ac67495f..4a38cae29be2 100644
+>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>> @@ -14,6 +14,12 @@
+>>
+>>   #define QCOM_DUMMY_VAL	-1
+>>
+>> +struct actlr_config {
+>> +	u16 sid;
+>> +	u16 mask;
+>> +	u32 actlr;
+>> +};
+>> +
+>>   static struct qcom_smmu *to_qcom_smmu(struct arm_smmu_device *smmu)
+>>   {
+>>   	return container_of(smmu, struct qcom_smmu, smmu);
+>> @@ -205,10 +211,40 @@ static bool qcom_adreno_can_do_ttbr1(struct arm_smmu_device *smmu)
+>>   	return true;
+>>   }
+>>
+>> +static void arm_smmu_set_actlr(struct device *dev, struct arm_smmu_device *smmu, int cbndx,
+>> +		const struct actlr_config *actlrcfg, size_t actlrcfg_size)
+>> +{
+>> +	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+>> +	struct arm_smmu_master_cfg *cfg = dev_iommu_priv_get(dev);
+>> +	struct arm_smmu_smr *smr;
+>> +	int i;
+>> +	int j;
+>> +	u16 id;
+>> +	u16 mask;
+>> +	int idx;
+>> +
+>> +	for (i = 0; i < actlrcfg_size; ++i) {
+>> +		id = (actlrcfg + i)->sid;
+>> +		mask = (actlrcfg + i)->mask;
+> actrlcfg[i].id?
+> 
 
-Hi Baolu,
+Noted, array indexing instead of incrementing the base address
+should also work.
 
-Do you have a corresponding Qemu git to share? I could give it a spin on ou=
-r ARM=20
-platform. Please let me know.
+>> +
+>> +		for_each_cfg_sme(cfg, fwspec, j, idx) {
+>> +			smr = &smmu->smrs[idx];
+>> +			if (smr_is_subset(*smr, id, mask))
+> Any reason for this value to be a pointer?
+> 
+>> +				arm_smmu_cb_write(smmu, cbndx, ARM_SMMU_CB_ACTLR,
+>> +						(actlrcfg + i)->actlr);
+> ditto
+> 
 
-Thanks,
-Shameer
+Noted
 
+>> +		}
+>> +	}
+>> +}
+>> +
+>>   static int qcom_adreno_smmu_init_context(struct arm_smmu_domain *smmu_domain,
+>>   		struct io_pgtable_cfg *pgtbl_cfg, struct device *dev)
+>>   {
+>>   	struct adreno_smmu_priv *priv;
+>> +	struct arm_smmu_device *smmu = smmu_domain->smmu;
+>> +	struct qcom_smmu *qsmmu = to_qcom_smmu(smmu);
+>> +	const struct actlr_config *actlrcfg;
+>> +	size_t actlrcfg_size;
+>> +	int cbndx = smmu_domain->cfg.cbndx;
+> Reverse-Christmas-tree sorting, please
+> 
+
+Noted, thanks for pointing this, I will
+take care of this in next revision.
+
+>>
+>>   	smmu_domain->cfg.flush_walk_prefer_tlbiasid = true;
+>>
+>> @@ -238,6 +274,12 @@ static int qcom_adreno_smmu_init_context(struct arm_smmu_domain *smmu_domain,
+>>   	priv->set_stall = qcom_adreno_smmu_set_stall;
+>>   	priv->resume_translation = qcom_adreno_smmu_resume_translation;
+>>
+>> +	if (qsmmu->data->actlrcfg_gfx) {
+>> +		actlrcfg = qsmmu->data->actlrcfg_gfx;
+>> +		actlrcfg_size = qsmmu->data->actlrcfg_gfx_size;
+> These can be passed directly s arm_smmu_set_actrl arguments
+> 
+
+Noted, will address in next revision. since there won't be any issue 
+during time of access, I can pass these values directly.
+
+>> +		arm_smmu_set_actlr(dev, smmu, cbndx, actlrcfg, actlrcfg_size);
+>> +	}
+>> +
+>>   	return 0;
+>>   }
+>>
+>> @@ -263,6 +305,18 @@ static const struct of_device_id qcom_smmu_client_of_match[] __maybe_unused = {
+>>   static int qcom_smmu_init_context(struct arm_smmu_domain *smmu_domain,
+>>   		struct io_pgtable_cfg *pgtbl_cfg, struct device *dev)
+>>   {
+>> +	struct arm_smmu_device *smmu = smmu_domain->smmu;
+>> +	struct qcom_smmu *qsmmu = to_qcom_smmu(smmu);
+>> +	const struct actlr_config *actlrcfg;
+>> +	size_t actlrcfg_size;
+>> +	int cbndx = smmu_domain->cfg.cbndx;
+>> +
+>> +	if (qsmmu->data->actlrcfg) {
+>> +		actlrcfg = qsmmu->data->actlrcfg;
+>> +		actlrcfg_size = qsmmu->data->actlrcfg_size;
+>> +		arm_smmu_set_actlr(dev, smmu, cbndx, actlrcfg, actlrcfg_size);
+> ditto
+>
+Noted.
+
+> Konrad
