@@ -1,137 +1,237 @@
-Received: from mail-lf1-f51.google.com (mail-lf1-f51.google.com [209.85.167.51])
+Received: from mail-lj1-f180.google.com (mail-lj1-f180.google.com [209.85.208.180])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1384B328D8
-	for <iommu@lists.linux.dev>; Wed, 29 Nov 2023 14:44:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7BF6E3A8EE;
+	Wed, 29 Nov 2023 16:23:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="GUp4xEPn"
-Received: by mail-lf1-f51.google.com with SMTP id 2adb3069b0e04-507a29c7eefso8946296e87.1
-        for <iommu@lists.linux.dev>; Wed, 29 Nov 2023 06:44:50 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HbXC+4Su"
+Received: by mail-lj1-f180.google.com with SMTP id 38308e7fff4ca-2c8880f14eeso88619391fa.3;
+        Wed, 29 Nov 2023 08:23:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1701269089; x=1701873889; darn=lists.linux.dev;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=x8Ud0RYAeHgIKaviw6GV2Mnmt4ajtcz1/Tj2KEhmPX4=;
-        b=GUp4xEPnP1Rq1EtaljdL9LzNpOOaMSdO9UEV0aoyBQoqszrOtyQjX/yyTjDKR5++Gz
-         Fcq7k9lvlKsrz2A4v0zLva1jFUQ4VrI3Mo3wYqtXE/2EbEfgl8wmtc6A5H0nrg/hjejJ
-         bSbMsP5Z8sttPVuvyqsHyYHW+rZJFAa8jgyyhCadmbj5/Jwu5JeXFMMjMlQ9E40wdljI
-         nwra4M8gjm7FY4pfEMotX/wsQI++kZ9Zaav300vVZuy+u6Omgd3SMMw3OyyJ7z5BSPY6
-         eBvvqGxxI7SBUpmDCQpjn1bWJWmlp5+cvAgTrOYrJ4lAS697ZMaiO9o5tPeN16B8J5ZN
-         OxuQ==
+        d=gmail.com; s=20230601; t=1701274997; x=1701879797; darn=lists.linux.dev;
+        h=user-agent:in-reply-to:content-disposition:mime-version:references
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=BE4DN2NIJid+M8TUF/vMVc9hXeYzBXdHSi7xojD4wk4=;
+        b=HbXC+4SuhJxcKg1S7uZAPWIPZNNL9iv6jRGY4HeQ40++zv1zXlridOAJvZgvmZCI4s
+         k7Yb4q0nw4oiEdy683Wn7v0XHDW9YEp1YI+BKlT+v+XZEhZIv1fxUmNl3hB61sXPt2jn
+         uoDIrgpRsHAQhqAjniyH6I1pp1BFPsJwpgb4jKLYt3+6auij+GmGZfjLX4iz7WysU71P
+         wdiGt9vS6AplviU5laQOnbW/0nVEfNl0uApirj9M0VTb34dUdLjJgheP7iCQaTA9EuSA
+         HpV7UPmvHfagJiSt9JKwcXqV77mu0EVuKqfeTUaz+1alhYCFS7SkcD6sgY8Br2MmFg1t
+         /ljg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701269089; x=1701873889;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:x-gm-message-state:from:to:cc
+        d=1e100.net; s=20230601; t=1701274997; x=1701879797;
+        h=user-agent:in-reply-to:content-disposition:mime-version:references
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=x8Ud0RYAeHgIKaviw6GV2Mnmt4ajtcz1/Tj2KEhmPX4=;
-        b=JszwoFy9OaQRKjiLVnghmJLkaoFv++pwlzjpicDny3pa3RVRIIly298eLJfxmf7TFu
-         g3tsROLlyXBMk8ANml8aMyNslaYo2rwMmd10HmLLZOGPM0Vi4ohTbk5XeKZDFIeE+N3O
-         hUmx44mqXlRrsA3pu+JYNU1X9fw4p06SV1w1PGSP+H6zk5w/MUvRVwDSzUCrChRadV0s
-         VUMf0kILUfZnuxrGkseWiuLclW0C8lpcHV+JV+c9GZzNJs37X+zzfuvzgPT70PktaIJC
-         z7wgh3E5t0WUOzS5hsNdYweNqnwkKU0/5os7HOMbe/lrzsAS+JQj1CWY5vbt0PdXgGoO
-         Y0AQ==
-X-Gm-Message-State: AOJu0YxhaZup9/YReWYZctgSBA12R7FBAQTMlSErUhU74fcHBcJMPK6t
-	ExkWj+WFZjAkCXaai32K+SYJHw==
-X-Google-Smtp-Source: AGHT+IEucXvhP6CZlLyjmhm2eErpw/rjkI+AVAy2NrjVrl9sMS9FNrRYfvXWv/KyNqVzhsUfV8Y3cw==
-X-Received: by 2002:a05:6512:11eb:b0:50a:a6b4:de4f with SMTP id p11-20020a05651211eb00b0050aa6b4de4fmr10377057lfs.36.1701269089155;
-        Wed, 29 Nov 2023 06:44:49 -0800 (PST)
-Received: from [10.167.154.1] (178235187166.dynamic-4-waw-k-2-3-0.vectranet.pl. [178.235.187.166])
-        by smtp.gmail.com with ESMTPSA id e27-20020a1709062c1b00b009fda627abd9sm7913738ejh.79.2023.11.29.06.44.45
+        bh=BE4DN2NIJid+M8TUF/vMVc9hXeYzBXdHSi7xojD4wk4=;
+        b=Ecc8w5vc6gaRMACGCTu5zLssmUFjEBqNpekShRpLkvwu+li3zxumjX8l6lJ44A72kR
+         Ub79ut1y/ouAezv8ngCh9h87SQ40SerTGBG+hIT9tAQ7CMifsQWA3rGvPoZE7dcHKWT2
+         zEfvsKqe/da74vSnVkiymJT9e0ixvIjFvMQYYQaLBBPS083nN/wKZq7fROBSNqoDUaKg
+         wvy99lLjLj6o34cM3/sDsPcYPqFhuWZx3Bw7elw9BYs1ue2vTw46eIG/IA7bBoIgRJbJ
+         rPorZ2+s+aklvE8qGVFnddvAQPRksYblHAx2AOQNpHRoq/YVnaVQ54at4XV2wtbZp8xs
+         r8wQ==
+X-Gm-Message-State: AOJu0YzKZNdKRT7XtPlcKoD6fcAMtsfw4tZLw5wQEATGubLrApWhrl9F
+	oft0n8PJF7HJCAkFen4UZuQ=
+X-Google-Smtp-Source: AGHT+IFpkXFRA9JtjkMulyQU+vE6lllIuj8DaTvHOgPc7kkDjVJCH1EZdgBzk/x+Nxw/nDpm1ZgC3Q==
+X-Received: by 2002:a2e:9557:0:b0:2c9:b623:ddf1 with SMTP id t23-20020a2e9557000000b002c9b623ddf1mr3708530ljh.51.1701274997225;
+        Wed, 29 Nov 2023 08:23:17 -0800 (PST)
+Received: from orome.fritz.box (p200300e41f0fa600f22f74fffe1f3a53.dip0.t-ipconnect.de. [2003:e4:1f0f:a600:f22f:74ff:fe1f:3a53])
+        by smtp.gmail.com with ESMTPSA id n16-20020a05600c501000b00407b93d8085sm2743768wmr.27.2023.11.29.08.23.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Nov 2023 06:44:48 -0800 (PST)
-From: Konrad Dybcio <konrad.dybcio@linaro.org>
-Date: Wed, 29 Nov 2023 15:44:09 +0100
-Subject: [PATCH v3 12/12] arm64: dts: qcom: qrb2210-rb1: add wifi variant
- property
+        Wed, 29 Nov 2023 08:23:16 -0800 (PST)
+Date: Wed, 29 Nov 2023 17:23:13 +0100
+From: Thierry Reding <thierry.reding@gmail.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: David Airlie <airlied@gmail.com>,
+	Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+	Albert Ou <aou@eecs.berkeley.edu>, asahi@lists.linux.dev,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Danilo Krummrich <dakr@redhat.com>, Daniel Vetter <daniel@ffwll.ch>,
+	Dexuan Cui <decui@microsoft.com>, devicetree@vger.kernel.org,
+	dmaengine@vger.kernel.org, dri-devel@lists.freedesktop.org,
+	David Woodhouse <dwmw2@infradead.org>,
+	Frank Rowand <frowand.list@gmail.com>,
+	Hanjun Guo <guohanjun@huawei.com>,
+	Haiyang Zhang <haiyangz@microsoft.com>, iommu@lists.linux.dev,
+	Jon Hunter <jonathanh@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
+	Karol Herbst <kherbst@redhat.com>,
+	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+	"K. Y. Srinivasan" <kys@microsoft.com>,
+	Laxman Dewangan <ldewangan@nvidia.com>, Len Brown <lenb@kernel.org>,
+	linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-hyperv@vger.kernel.org, linux-mips@vger.kernel.org,
+	linux-riscv@lists.infradead.org, linux-snps-arc@lists.infradead.org,
+	linux-tegra@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
+	Lorenzo Pieralisi <lpieralisi@kernel.org>,
+	Lyude Paul <lyude@redhat.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	nouveau@lists.freedesktop.org, Palmer Dabbelt <palmer@dabbelt.com>,
+	Paul Walmsley <paul.walmsley@sifive.com>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Sudeep Holla <sudeep.holla@arm.com>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Sven Peter <sven@svenpeter.dev>,
+	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+	Vineet Gupta <vgupta@kernel.org>, Vinod Koul <vkoul@kernel.org>,
+	Wei Liu <wei.liu@kernel.org>, Will Deacon <will@kernel.org>,
+	Lu Baolu <baolu.lu@linux.intel.com>, Christoph Hellwig <hch@lst.de>,
+	Jerry Snitselaar <jsnitsel@redhat.com>,
+	Hector Martin <marcan@marcan.st>, Moritz Fischer <mdf@kernel.org>,
+	patches@lists.linux.dev,
+	"Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+	Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH 08/10] iommu/tegra: Use tegra_dev_iommu_get_stream_id()
+ in the remaining places
+Message-ID: <ZWdlcboM4Xzs38NI@orome.fritz.box>
+References: <0-v1-720585788a7d+811b-iommu_fwspec_p1_jgg@nvidia.com>
+ <8-v1-720585788a7d+811b-iommu_fwspec_p1_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20231125-topic-rb1_feat-v3-12-4cbb567743bb@linaro.org>
-References: <20231125-topic-rb1_feat-v3-0-4cbb567743bb@linaro.org>
-In-Reply-To: <20231125-topic-rb1_feat-v3-0-4cbb567743bb@linaro.org>
-To: Rob Clark <robdclark@gmail.com>, 
- Abhinav Kumar <quic_abhinavk@quicinc.com>, 
- Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, Sean Paul <sean@poorly.run>, 
- David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>, 
- Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
- Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, 
- Rob Herring <robh+dt@kernel.org>, 
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, 
- Conor Dooley <conor+dt@kernel.org>, Loic Poulain <loic.poulain@linaro.org>, 
- Bryan O'Donoghue <bryan.odonoghue@linaro.org>, 
- Andy Gross <agross@kernel.org>, Bjorn Andersson <andersson@kernel.org>, 
- Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, 
- Georgi Djakov <djakov@kernel.org>, Will Deacon <will@kernel.org>, 
- Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, 
- Krishna Manikandan <quic_mkrishn@quicinc.com>, 
- Robert Marko <robimarko@gmail.com>, Das Srinagesh <quic_gurus@quicinc.com>, 
- cros-qcom-dts-watchers@chromium.org
-Cc: Marijn Suijten <marijn.suijten@somainline.org>, 
- Rob Herring <robh@kernel.org>, linux-arm-msm@vger.kernel.org, 
- dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org, 
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
- linux-pm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
- iommu@lists.linux.dev, Konrad Dybcio <konrad.dybcio@linaro.org>
-X-Mailer: b4 0.12.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1701269042; l=1902;
- i=konrad.dybcio@linaro.org; s=20230215; h=from:subject:message-id;
- bh=1sgurZzJDT6Mn40jAYTNDegr3ChD6TId8sRBg0GBQe8=;
- b=cvzdQPMDO1F9MJyUcHFhovdEgAZaKe0knG3gwp2ASXtsecxDnq1fzPtkf1NxnntN9lGnvr+4o
- HRe4f+YzatxCdTcA3W9nOqNu8vqMZKGisf58bgSH/Wc7Zvb5uMJJ/lr
-X-Developer-Key: i=konrad.dybcio@linaro.org; a=ed25519;
- pk=iclgkYvtl2w05SSXO5EjjSYlhFKsJ+5OSZBjOkQuEms=
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="OR6CuieIvqboqm08"
+Content-Disposition: inline
+In-Reply-To: <8-v1-720585788a7d+811b-iommu_fwspec_p1_jgg@nvidia.com>
+User-Agent: Mutt/2.2.12 (2023-09-09)
 
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 
-The RB1 platform doesn't have board-specific board-id programmed, it uses
-generic 0xff. Thus add the property with the 'variant' of the
-calibration data.
+--OR6CuieIvqboqm08
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Note: the driver will check for the calibration data for the following
-IDs, so existing board-2.bin files will continue to work.
+On Tue, Nov 28, 2023 at 08:48:04PM -0400, Jason Gunthorpe wrote:
+> This API was defined to formalize the access to internal iommu details on
+> some Tegra SOCs, but a few callers got missed. Add them.
+>=20
+> The helper already masks by 0xFFFF so remove this code from the callers.
+>=20
+> Suggested-by: Thierry Reding <thierry.reding@gmail.com>
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> ---
+>  drivers/dma/tegra186-gpc-dma.c                  |  8 +++-----
+>  drivers/gpu/drm/nouveau/nvkm/subdev/ltc/gp10b.c |  7 ++-----
+>  drivers/memory/tegra/tegra186.c                 | 12 ++++++------
+>  3 files changed, 11 insertions(+), 16 deletions(-)
+>=20
+> diff --git a/drivers/dma/tegra186-gpc-dma.c b/drivers/dma/tegra186-gpc-dm=
+a.c
+> index fa4d4142a68a21..88547a23825b18 100644
+> --- a/drivers/dma/tegra186-gpc-dma.c
+> +++ b/drivers/dma/tegra186-gpc-dma.c
+> @@ -1348,8 +1348,8 @@ static int tegra_dma_program_sid(struct tegra_dma_c=
+hannel *tdc, int stream_id)
+>  static int tegra_dma_probe(struct platform_device *pdev)
+>  {
+>  	const struct tegra_dma_chip_data *cdata =3D NULL;
+> -	struct iommu_fwspec *iommu_spec;
+> -	unsigned int stream_id, i;
+> +	unsigned int i;
+> +	u32 stream_id;
+>  	struct tegra_dma *tdma;
+>  	int ret;
+> =20
+> @@ -1378,12 +1378,10 @@ static int tegra_dma_probe(struct platform_device=
+ *pdev)
+> =20
+>  	tdma->dma_dev.dev =3D &pdev->dev;
+> =20
+> -	iommu_spec =3D dev_iommu_fwspec_get(&pdev->dev);
+> -	if (!iommu_spec) {
+> +	if (!tegra_dev_iommu_get_stream_id(&pdev->dev, &stream_id)) {
+>  		dev_err(&pdev->dev, "Missing iommu stream-id\n");
+>  		return -EINVAL;
+>  	}
+> -	stream_id =3D iommu_spec->ids[0] & 0xffff;
+> =20
+>  	ret =3D device_property_read_u32(&pdev->dev, "dma-channel-mask",
+>  				       &tdma->chan_mask);
+> diff --git a/drivers/gpu/drm/nouveau/nvkm/subdev/ltc/gp10b.c b/drivers/gp=
+u/drm/nouveau/nvkm/subdev/ltc/gp10b.c
+> index e7e8fdf3adab7a..b40fd1dbb21617 100644
+> --- a/drivers/gpu/drm/nouveau/nvkm/subdev/ltc/gp10b.c
+> +++ b/drivers/gpu/drm/nouveau/nvkm/subdev/ltc/gp10b.c
+> @@ -28,16 +28,13 @@ static void
+>  gp10b_ltc_init(struct nvkm_ltc *ltc)
+>  {
+>  	struct nvkm_device *device =3D ltc->subdev.device;
+> -	struct iommu_fwspec *spec;
+> +	u32 sid;
+> =20
+>  	nvkm_wr32(device, 0x17e27c, ltc->ltc_nr);
+>  	nvkm_wr32(device, 0x17e000, ltc->ltc_nr);
+>  	nvkm_wr32(device, 0x100800, ltc->ltc_nr);
+> =20
+> -	spec =3D dev_iommu_fwspec_get(device->dev);
+> -	if (spec) {
+> -		u32 sid =3D spec->ids[0] & 0xffff;
+> -
+> +	if (tegra_dev_iommu_get_stream_id(device->dev, &sid)) {
+>  		/* stream ID */
+>  		nvkm_wr32(device, 0x160000, sid << 2);
 
-- 'bus=snoc,qmi-board-id=ff,qmi-chip-id=120,variant=Thundercomm_RB1'
-- 'bus=snoc,qmi-board-id=ff,qmi-chip-id=120'
-- 'bus=snoc,qmi-board-id=ff'
+We could probably also remove the comment now since the function and
+variable names make it obvious what's being written here.
 
-For the reference, the board is identified by the driver in the
-following way:
+>  	}
+> diff --git a/drivers/memory/tegra/tegra186.c b/drivers/memory/tegra/tegra=
+186.c
+> index 533f85a4b2bdb7..3e4fbe94dd666e 100644
+> --- a/drivers/memory/tegra/tegra186.c
+> +++ b/drivers/memory/tegra/tegra186.c
+> @@ -111,21 +111,21 @@ static void tegra186_mc_client_sid_override(struct =
+tegra_mc *mc,
+>  static int tegra186_mc_probe_device(struct tegra_mc *mc, struct device *=
+dev)
+>  {
+>  #if IS_ENABLED(CONFIG_IOMMU_API)
+> -	struct iommu_fwspec *fwspec =3D dev_iommu_fwspec_get(dev);
+>  	struct of_phandle_args args;
+>  	unsigned int i, index =3D 0;
+> +	u32 sid;
+> =20
+> +	WARN_ON(!tegra_dev_iommu_get_stream_id(dev, &sid));
 
-ath10k_snoc c800000.wifi: qmi chip_id 0x120 chip_family 0x4007 board_id 0xff soc_id 0x40670000
-ath10k_snoc c800000.wifi: qmi fw_version 0x337302d3 fw_build_timestamp 2023-01-06 01:50 fw_build_id QC_IMAGE_VERSION_STRING=WLAN.HL.3.3.7.c2-00723-QCAHLSWMTPLZ-1
-ath10k_snoc c800000.wifi: wcn3990 hw1.0 target 0x00000008 chip_id 0x00000000 sub 0000:0000
-ath10k_snoc c800000.wifi: kconfig debug 0 debugfs 0 tracing 0 dfs 0 testmode 0
-ath10k_snoc c800000.wifi: firmware ver  api 5 features wowlan,mgmt-tx-by-reference,non-bmi crc32 b3d4b790
-ath10k_snoc c800000.wifi: htt-ver 3.114 wmi-op 4 htt-op 3 cal file max-sta 32 raw 0 hwcrypto 1
+I know the code previously didn't check for any errors, but we may want
+to do so now. If tegra_dev_iommu_get_stream_id() ever fails we may end
+up writing some undefined value into the override register.
 
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Reviewed-by: Konrad Dybcio <konrad.dybcio@linaro.org>
-Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
----
- arch/arm64/boot/dts/qcom/qrb2210-rb1.dts | 1 +
- 1 file changed, 1 insertion(+)
+I'm also unsure if WARN_ON() is appropriate here. I vaguely recall that
+->probe_device() was called for all devices on the bus and not all of
+them may have been associated with the IOMMU. Not all of them may in
+fact access memory in the first place.
 
-diff --git a/arch/arm64/boot/dts/qcom/qrb2210-rb1.dts b/arch/arm64/boot/dts/qcom/qrb2210-rb1.dts
-index ac597eb3fe9d..bd7bcf803654 100644
---- a/arch/arm64/boot/dts/qcom/qrb2210-rb1.dts
-+++ b/arch/arm64/boot/dts/qcom/qrb2210-rb1.dts
-@@ -535,6 +535,7 @@ &wifi {
- 	vdd-1.8-xo-supply = <&pm2250_l13>;
- 	vdd-1.3-rfa-supply = <&pm2250_l10>;
- 	vdd-3.3-ch0-supply = <&pm2250_l22>;
-+	qcom,ath10k-calibration-variant = "Thundercomm_RB1";
- 	status = "okay";
- };
- 
+Perhaps I'm misremembering and the IOMMU core now takes care of only
+calling this when fwspec is indeed valid?
 
--- 
-2.43.0
+Thierry
 
+--OR6CuieIvqboqm08
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmVnZW8ACgkQ3SOs138+
+s6H3xA/+PnJPzNAATgGeEaxpY8VPfo7h0kY98vc1QYnUCiV46yzQPUq+/nVkkq24
+ybBtQ8hr0vl4ZxtflekHYxb0WsXO560ODmmckXEYPWRfVyxckFz+CRyvDx+zxyxJ
+d/TtD8p0l6DGFlZGume2h/cDafF5+3td2JEJ2vEfu0tMmRLIFC7L+Pj2IB4/Fz21
+2M6M6T0Al7obecinfW9jzg00G20RybQSrdPq+H9z3BNhOXGKy+1fjIzCsnr4H0gD
+kE4WooU9uLbMdpEYYZ8idqC1OieIr6p2IF802/4/TAvWHreHlH7uPcDRry8rxkwQ
+j0CAwBlcvLLtLj2pw7kYgxMpXwahgXSuhxX42CXDWsUUW4mxiZkvG0o8Cv2EGtSD
+emTIMrC3w1R2MSemI8+RQdOHhOnTNC0sADGo9EyurPrYC9TzwqTOPI35kNqJ8ZAw
+zCmhDKieZM9dxlOdFrpC+eLz8eVEjo5oV+OchMT6k8nw7TkD6dGHBOJlDhQeJNWZ
+tZBnlBamoEmlD5Kz/Oe90S47MnYtx8EX7o9bpEV6/ZO13P+F07rasP3l6hCJuybO
+c2YAeCxY8cuwHLnIJZTm3hR7UU9PQwPn4utolLuSqaXkL5wSdVr+1eZyTye25W0J
+CSzMCL3SkMgfKaZ7L6ptSRFtOWxiH6943ahvYpDBXlgEp/R9aVg=
+=ORi/
+-----END PGP SIGNATURE-----
+
+--OR6CuieIvqboqm08--
