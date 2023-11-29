@@ -1,190 +1,120 @@
-Received: from mail-yw1-f201.google.com (mail-yw1-f201.google.com [209.85.128.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 69B03D269
-	for <iommu@lists.linux.dev>; Wed, 29 Nov 2023 06:09:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--moritzf.bounces.google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 630847473
+	for <iommu@lists.linux.dev>; Wed, 29 Nov 2023 06:15:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="00uqWIrC"
-Received: by mail-yw1-f201.google.com with SMTP id 00721157ae682-5ca2a6f07b6so93427167b3.2
-        for <iommu@lists.linux.dev>; Tue, 28 Nov 2023 22:09:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1701238147; x=1701842947; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=KtrAPaslMvSrZFznq3cpY4nyS514mOCdxUhLK1bsTtI=;
-        b=00uqWIrCQl5GmYJO3GSjIbcVF/XpjLfkNMo5oJnzPQI65r2y2G++5nNZKpRhxxNg4v
-         W/NKiy5dAFe1s5LSWjY/UsL4VRnn72H4L3R7ieQ7GuOu79UJsXpwycY3yk8vWMdVn1p0
-         /77K9Ca4YV2sM7GD5RmV7wEUg6J2dWFCbI4fNDPBBiXgE1QgIicAniMyfdyuUgoWgf8k
-         p9a5nFa1DnnaYdbVRnjzn7fk6RodYrjuZ0866YdxZLHvSM0Dw8cc3Ofyo164PzvJc/hv
-         EYcVbtbxE21pj3db4PYDJ6FnCjTTrkQY8qnpyVPkY0Mb8peZTG8E00XJt42Y2zyYnvVj
-         G8uw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701238147; x=1701842947;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=KtrAPaslMvSrZFznq3cpY4nyS514mOCdxUhLK1bsTtI=;
-        b=IXNIVcD/CV/sHajughMqMwj1zt0ho1KQqkZNaFF9nXJ8H6qyF8BpMBjNiP1evzb0a3
-         BPH53LGsKy8GNMRepzh10QhMgGpkIw3j8VyU44SgJVn+Lpym5N1ORzoGszY5sozFZWLv
-         G435XrNGZ4eM2JgVaPG+CGBxlXiB9vPzSopdrMlVhB94LNb7l8kIjzNzkCz7ICgaOe2F
-         vKXVUCH10TELss8ws+HGIe6Nj4+L1x4sUi73RLctxPUpzw2EP9xZ2OzsqT5pUuLs2YGi
-         l88se22jxkmfc085VK+3xSE0AGl3A/8Jzsw051szGghTglFQOaIGFoR78iAb9hCUOJfP
-         3cqA==
-X-Gm-Message-State: AOJu0YxwZtFFD8w9CfXs/btKFMvXjVwN7P9rqo5qjEycdXLKtEBrly0T
-	M2QKVW2XOIaG9141BdozcLwEXJbv9HLj
-X-Google-Smtp-Source: AGHT+IErKpR33sSuZDb458AGzbTTTl+rmkeUZNxvoUYyius6/ySrcsirHg/Fcs0NR9CFHutX0EyL3PHfE3h2
-X-Received: from morats.c.googlers.com ([fda3:e722:ac3:cc00:14:4d90:c0a8:d9e])
- (user=moritzf job=sendgmr) by 2002:a25:3741:0:b0:db5:2a4:aef1 with SMTP id
- e62-20020a253741000000b00db502a4aef1mr107973yba.13.1701238147290; Tue, 28 Nov
- 2023 22:09:07 -0800 (PST)
-Date: Wed, 29 Nov 2023 06:09:06 +0000
-In-Reply-To: <7-v1-720585788a7d+811b-iommu_fwspec_p1_jgg@nvidia.com>
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="ogZ//AFp"
+Received: from pps.filterd (m0279869.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 3AT4dpr8028631;
+	Wed, 29 Nov 2023 06:14:59 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=qcppdkim1;
+ bh=yrBWEX2HQ+kskdGGVrGhtux9ivj/AH3ovrf63KZChR4=;
+ b=ogZ//AFpz8t8Fj6Wzz+TNkGeqICmeZcud0FsjAgfN4h3Jb0y0PnzZUdm8BK2nhjsa1Hp
+ OUwOadL23R/X5jX4HF3CpLQXw0+Qw7H7RLjphwJWTeq4s4ccmixxHLIhSGw1DknjONfP
+ B1x3l7y4fjXPFQsP8u29OaUxe1+l1GDkG2Ypj40S1W8xth0dXWSmpAatbAWs62+8Xpsw
+ e1hf9WVqolxOMhHpIw4yfEjWipaU+DeHhN3hVlF8KMGY0FrxJV35VmJxyAVVEUjJBekW
+ Dd5GogmEmtaoTN7f2bNh42NHfdPwdFXUJy4JoqRK1+PMEV6MlWZ/iwS4t+GuUp3OoIYJ SA== 
+Received: from nalasppmta02.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3unvetrf6w-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 29 Nov 2023 06:14:58 +0000
+Received: from nalasex01c.na.qualcomm.com (nalasex01c.na.qualcomm.com [10.47.97.35])
+	by NALASPPMTA02.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 3AT6EvGu022001
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 29 Nov 2023 06:14:57 GMT
+Received: from [10.214.66.253] (10.80.80.8) by nalasex01c.na.qualcomm.com
+ (10.47.97.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.40; Tue, 28 Nov
+ 2023 22:14:51 -0800
+Message-ID: <7df38308-872b-4bae-9fb0-5075611290d9@quicinc.com>
+Date: Wed, 29 Nov 2023 11:44:38 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <0-v1-720585788a7d+811b-iommu_fwspec_p1_jgg@nvidia.com> <7-v1-720585788a7d+811b-iommu_fwspec_p1_jgg@nvidia.com>
-Message-ID: <20231129060906.qti7uztsk2u7ehlp@google.com>
-Subject: Re: [PATCH 07/10] acpi: Do not return struct iommu_ops from acpi_iommu_configure_id()
-From: Moritz Fischer <moritzf@google.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: David Airlie <airlied@gmail.com>, Alyssa Rosenzweig <alyssa@rosenzweig.io>, 
-	Albert Ou <aou@eecs.berkeley.edu>, asahi@lists.linux.dev, 
-	Catalin Marinas <catalin.marinas@arm.com>, Danilo Krummrich <dakr@redhat.com>, 
-	Daniel Vetter <daniel@ffwll.ch>, Dexuan Cui <decui@microsoft.com>, devicetree@vger.kernel.org, 
-	dmaengine@vger.kernel.org, dri-devel@lists.freedesktop.org, 
-	David Woodhouse <dwmw2@infradead.org>, Frank Rowand <frowand.list@gmail.com>, 
-	Hanjun Guo <guohanjun@huawei.com>, Haiyang Zhang <haiyangz@microsoft.com>, iommu@lists.linux.dev, 
-	Jon Hunter <jonathanh@nvidia.com>, Joerg Roedel <joro@8bytes.org>, 
-	Karol Herbst <kherbst@redhat.com>, Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, 
-	"K. Y. Srinivasan" <kys@microsoft.com>, Laxman Dewangan <ldewangan@nvidia.com>, Len Brown <lenb@kernel.org>, 
-	linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	linux-hyperv@vger.kernel.org, linux-mips@vger.kernel.org, 
-	linux-riscv@lists.infradead.org, linux-snps-arc@lists.infradead.org, 
-	linux-tegra@vger.kernel.org, Russell King <linux@armlinux.org.uk>, 
-	Lorenzo Pieralisi <lpieralisi@kernel.org>, Lyude Paul <lyude@redhat.com>, 
-	Marek Szyprowski <m.szyprowski@samsung.com>, nouveau@lists.freedesktop.org, 
-	Palmer Dabbelt <palmer@dabbelt.com>, Paul Walmsley <paul.walmsley@sifive.com>, 
-	"Rafael J. Wysocki" <rafael@kernel.org>, Rob Herring <robh+dt@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Sudeep Holla <sudeep.holla@arm.com>, 
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, Sven Peter <sven@svenpeter.dev>, 
-	Thomas Bogendoerfer <tsbogend@alpha.franken.de>, Vineet Gupta <vgupta@kernel.org>, 
-	Vinod Koul <vkoul@kernel.org>, Wei Liu <wei.liu@kernel.org>, Will Deacon <will@kernel.org>, 
-	Lu Baolu <baolu.lu@linux.intel.com>, Christoph Hellwig <hch@lst.de>, 
-	Jerry Snitselaar <jsnitsel@redhat.com>, Hector Martin <marcan@marcan.st>, Moritz Fischer <mdf@kernel.org>, 
-	patches@lists.linux.dev, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, 
-	Rob Herring <robh@kernel.org>, Thierry Reding <thierry.reding@gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
-
-On Tue, Nov 28, 2023 at 08:48:03PM -0400, Jason Gunthorpe wrote:
-> Nothing needs this pointer. Return a normal error code with the usual
-> IOMMU semantic that ENODEV means 'there is no IOMMU driver'.
-
-> Acked-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-> Reviewed-by: Jerry Snitselaar <jsnitsel@redhat.com>
-> Tested-by: Hector Martin <marcan@marcan.st>
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> ---
->   drivers/acpi/scan.c | 29 +++++++++++++++++------------
->   1 file changed, 17 insertions(+), 12 deletions(-)
-
-> diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-> index 444a0b3c72f2d8..340ba720c72129 100644
-> --- a/drivers/acpi/scan.c
-> +++ b/drivers/acpi/scan.c
-> @@ -1562,8 +1562,7 @@ static inline const struct iommu_ops  
-> *acpi_iommu_fwspec_ops(struct device *dev)
->   	return fwspec ? fwspec->ops : NULL;
->   }
-
-> -static const struct iommu_ops *acpi_iommu_configure_id(struct device  
-> *dev,
-> -						       const u32 *id_in)
-> +static int acpi_iommu_configure_id(struct device *dev, const u32 *id_in)
->   {
->   	int err;
->   	const struct iommu_ops *ops;
-> @@ -1577,7 +1576,7 @@ static const struct iommu_ops  
-> *acpi_iommu_configure_id(struct device *dev,
->   	ops = acpi_iommu_fwspec_ops(dev);
->   	if (ops) {
->   		mutex_unlock(&iommu_probe_device_lock);
-> -		return ops;
-> +		return 0;
->   	}
-
->   	err = iort_iommu_configure_id(dev, id_in);
-> @@ -1594,12 +1593,14 @@ static const struct iommu_ops  
-> *acpi_iommu_configure_id(struct device *dev,
-
->   	/* Ignore all other errors apart from EPROBE_DEFER */
->   	if (err == -EPROBE_DEFER) {
-> -		return ERR_PTR(err);
-> +		return err;
->   	} else if (err) {
->   		dev_dbg(dev, "Adding to IOMMU failed: %d\n", err);
-> -		return NULL;
-> +		return -ENODEV;
->   	}
-> -	return acpi_iommu_fwspec_ops(dev);
-> +	if (!acpi_iommu_fwspec_ops(dev))
-> +		return -ENODEV;
-> +	return 0;
->   }
-
->   #else /* !CONFIG_IOMMU_API */
-> @@ -1611,10 +1612,9 @@ int acpi_iommu_fwspec_init(struct device *dev, u32  
-> id,
->   	return -ENODEV;
->   }
-
-> -static const struct iommu_ops *acpi_iommu_configure_id(struct device  
-> *dev,
-> -						       const u32 *id_in)
-> +static int acpi_iommu_configure_id(struct device *dev, const u32 *id_in)
->   {
-> -	return NULL;
-> +	return -ENODEV;
->   }
-
->   #endif /* !CONFIG_IOMMU_API */
-> @@ -1628,7 +1628,7 @@ static const struct iommu_ops  
-> *acpi_iommu_configure_id(struct device *dev,
->   int acpi_dma_configure_id(struct device *dev, enum dev_dma_attr attr,
->   			  const u32 *input_id)
->   {
-> -	const struct iommu_ops *iommu;
-> +	int ret;
-
->   	if (attr == DEV_DMA_NOT_SUPPORTED) {
->   		set_dma_ops(dev, &dma_dummy_ops);
-> @@ -1637,10 +1637,15 @@ int acpi_dma_configure_id(struct device *dev,  
-> enum dev_dma_attr attr,
-
->   	acpi_arch_dma_setup(dev);
-
-> -	iommu = acpi_iommu_configure_id(dev, input_id);
-> -	if (PTR_ERR(iommu) == -EPROBE_DEFER)
-> +	ret = acpi_iommu_configure_id(dev, input_id);
-> +	if (ret == -EPROBE_DEFER)
->   		return -EPROBE_DEFER;
-
-> +	/*
-> +	 * Historically this routine doesn't fail driver probing due to errors
-> +	 * in acpi_iommu_configure_id()
-> +	 */
-> +
->   	arch_setup_dma_ops(dev, 0, U64_MAX, attr == DEV_DMA_COHERENT);
-
->   	return 0;
-> --
-> 2.42.0
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 3/4] iommu/arm-smmu: add ACTLR data and support for
+ SC7280
+Content-Language: en-US
+To: Konrad Dybcio <konrad.dybcio@linaro.org>, <will@kernel.org>,
+        <robin.murphy@arm.com>, <joro@8bytes.org>,
+        <dmitry.baryshkov@linaro.org>, <a39.skl@gmail.com>,
+        <quic_bjorande@quicinc.com>, <mani@kernel.org>,
+        <quic_eberman@quicinc.com>, <robdclark@chromium.org>,
+        <u.kleine-koenig@pengutronix.de>, <robh@kernel.org>,
+        <vladimir.oltean@nxp.com>, <quic_pkondeti@quicinc.com>,
+        <quic_molvera@quicinc.com>
+CC: <linux-arm-msm@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+        <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
+        <qipl.kernel.upstream@quicinc.com>
+References: <20231127145412.3981-1-quic_bibekkum@quicinc.com>
+ <20231127145412.3981-4-quic_bibekkum@quicinc.com>
+ <ec4b7dfa-6fcf-4ccc-8857-d99573349599@linaro.org>
+From: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+In-Reply-To: <ec4b7dfa-6fcf-4ccc-8857-d99573349599@linaro.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01c.na.qualcomm.com (10.47.97.35)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: b20UzmWvZjZ6T6Mgl-0gOa1_D0N0XlOc
+X-Proofpoint-ORIG-GUID: b20UzmWvZjZ6T6Mgl-0gOa1_D0N0XlOc
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.997,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2023-11-29_03,2023-11-27_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 malwarescore=0
+ spamscore=0 mlxscore=0 impostorscore=0 phishscore=0 mlxlogscore=999
+ bulkscore=0 priorityscore=1501 clxscore=1015 lowpriorityscore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2311060000 definitions=main-2311290043
 
 
-Reviewed-by: Moritz Fischer <moritzf@google.com>
 
-Cheers,
-Moritz
+On 11/27/2023 9:05 PM, Konrad Dybcio wrote:
+> On 27.11.2023 15:54, Bibek Kumar Patro wrote:
+>> Add ACTLR data table for SC7280 along with support for
+>> same including SC7280 specific implementation operations.
+>>
+>> Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+>> ---
+>>   drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 25 +++++++++++++++++++++-
+>>   1 file changed, 24 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>> index 247eaa194129..f0ad09f9a974 100644
+>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>> @@ -27,6 +27,20 @@ struct actlr_config {
+>>   #define CPRE			BIT(1)		/* Enable context caching in the prefetch buffer */
+>>   #define CMTLB			BIT(0)		/* Enable context caching in the macro TLB */
+>>
+>> +static const struct actlr_config sc7280_apps_actlr_cfg[] = {
+>> +	{ 0x0800, 0x24E1, PREFETCH_DISABLE | CMTLB },
+> hex should be lowercase
+Noted,thanks for pointing this out will take care of this in next
+version.
+> 
+>> +	{ 0x2000, 0x0163, PREFETCH_DISABLE | CMTLB },
+>> +	{ 0x2080, 0x0461, PREFETCH_DISABLE | CMTLB },
+>> +	{ 0x2100, 0x0161, PREFETCH_DISABLE | CMTLB },
+>> +	{ 0x0900, 0x0407, PREFETCH_SHALLOW | CPRE | CMTLB },
+>> +	{ 0x2180, 0x0027, PREFETCH_SHALLOW | CPRE | CMTLB },
+>> +	{ 0x1000, 0x07ff, PREFETCH_DEEP | CPRE | CMTLB },
+>> +};
+> Any reason this list is so much smaller than 8550's? Is it complete?
+Yes it's complete only. This list varies targetwise actually so we just 
+fill it referring the hardware settings reference document. So size of 
+the list might vary as per target.
+> 
+> Konrad
+
+Thanks & regards,
+Bibek
