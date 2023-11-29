@@ -1,201 +1,133 @@
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2073.outbound.protection.outlook.com [40.107.243.73])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ot1-f48.google.com (mail-ot1-f48.google.com [209.85.210.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4EFABA32
-	for <iommu@lists.linux.dev>; Wed, 29 Nov 2023 00:51:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8DB8ED8
+	for <iommu@lists.linux.dev>; Wed, 29 Nov 2023 00:54:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="kFboe8Jm"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QibiT8iZ4SadFdjePh4gHhs8PZapIlBauDaBMvZ0wCgbLbUPgukvMe6WFC5KQj6itGu20iJOPMAsYWTSTrT7pgNH+K01byMsRhOqdwy/hND4/O6V4OmUAhJ/AgbYVLYtq8FZVrM45dOsSRprOWItf7wNGeBGed3KBiuKyjiLS0NRh2AowWqDeaAuiC8wSjMdV6XbvJNW6iduztxcHMSDczIxNoNKOQ58i4wxKywc50TvNtj3hGi9RSi6qMXrVcChECjF2BhaolPr3KEAu1VPaixdBaFTkYMTdE78imchiLmvZCr7KW8D2gt4osfaqgBE36/JY0ZaxGOkYC6mEQcpag==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=S4V12ocUeRn9/nHO66BTnzjSEUrVobZtf2LoWheKElI=;
- b=QalJpBB4S2ofSZj61MVpu2mnFIHzBq0G5U9fOcKRHYlXpwBa2GktO/yfZ3lnaJwXHJRbWhZuEQzLnMkHCu9cyD8Bm56aXR37toUIi82lHCtbn3+yPTXg7HjHhlT+BtlGzJ5K5xlDCQBfwaELY5JekJLNAaTeerISES/YHeRldXWfF8IDk7QQGTzhb0Wv4fIuNavPT5/dfywxGJa0r7bwonTP8noyzWwVRuUNJTt7FkDry6plL43KfSC+zyFia/9/pz7STYL3J+d63PCCsKIYvhQJBDO6YIMsW5JtL818M4mcATUM3st99k9j2+7HCKXH47wtrsT9RM3ZZGdPdjssrQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=S4V12ocUeRn9/nHO66BTnzjSEUrVobZtf2LoWheKElI=;
- b=kFboe8JmZsJnHvf6w1Tm1szUxRm/7fK7LRDh8z7TM/+AzyMy3IV2TTTMhnFrRGhVM4jXU766+hKqkL0hTAw4H5ToJihzYKHNenIVHRD0eCaqmYmi+ma96xereJTRvQuRiIeNVZwOOQTLrTgmu8nv2VJILUbNokJ6+3qFA7TREJkhNhjR5XN84s0QlFaOWGT1ZOOGKHgdgYk0IeJJda3uunGqDsXOmNMI477mnyt0S5AxxgkUyZmxl9IA3n5FFG1n+hg/zhjEJTh+qOqhMdjlruLmGM+CowtXc6tMkXvcC97ML7NVqfAC2zHmlTaIGghZ2B6UEcUgUpB07KIazo6vpQ==
-Received: from PH7PR13CA0008.namprd13.prod.outlook.com (2603:10b6:510:174::15)
- by CH3PR12MB9169.namprd12.prod.outlook.com (2603:10b6:610:1a0::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7025.28; Wed, 29 Nov
- 2023 00:51:42 +0000
-Received: from SN1PEPF0002BA4D.namprd03.prod.outlook.com
- (2603:10b6:510:174:cafe::fb) by PH7PR13CA0008.outlook.office365.com
- (2603:10b6:510:174::15) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7046.22 via Frontend
- Transport; Wed, 29 Nov 2023 00:51:41 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- SN1PEPF0002BA4D.mail.protection.outlook.com (10.167.242.70) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.7046.17 via Frontend Transport; Wed, 29 Nov 2023 00:51:41 +0000
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Tue, 28 Nov
- 2023 16:51:24 -0800
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail204.nvidia.com
- (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Tue, 28 Nov
- 2023 16:51:24 -0800
-Received: from Asurada-Nvidia (10.127.8.12) by mail.nvidia.com (10.129.68.6)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41 via Frontend
- Transport; Tue, 28 Nov 2023 16:51:23 -0800
-Date: Tue, 28 Nov 2023 16:51:21 -0800
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-CC: "Liu, Yi L" <yi.l.liu@intel.com>, "joro@8bytes.org" <joro@8bytes.org>,
-	"alex.williamson@redhat.com" <alex.williamson@redhat.com>, "jgg@nvidia.com"
-	<jgg@nvidia.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>, "cohuck@redhat.com"
-	<cohuck@redhat.com>, "eric.auger@redhat.com" <eric.auger@redhat.com>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>, "mjrosato@linux.ibm.com"
-	<mjrosato@linux.ibm.com>, "chao.p.peng@linux.intel.com"
-	<chao.p.peng@linux.intel.com>, "yi.y.sun@linux.intel.com"
-	<yi.y.sun@linux.intel.com>, "peterx@redhat.com" <peterx@redhat.com>,
-	"jasowang@redhat.com" <jasowang@redhat.com>,
-	"shameerali.kolothum.thodi@huawei.com"
-	<shameerali.kolothum.thodi@huawei.com>, "lulu@redhat.com" <lulu@redhat.com>,
-	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>, "Duan,
- Zhenzhong" <zhenzhong.duan@intel.com>, "joao.m.martins@oracle.com"
-	<joao.m.martins@oracle.com>, "Zeng, Xin" <xin.zeng@intel.com>, "Zhao, Yan Y"
-	<yan.y.zhao@intel.com>
-Subject: Re: [PATCH v6 2/6] iommufd: Add IOMMU_HWPT_INVALIDATE
-Message-ID: <ZWaLCSAMIOXTlghk@Asurada-Nvidia>
-References: <20231117130717.19875-3-yi.l.liu@intel.com>
- <BN9PR11MB5276D8406BF08B853329288C8CB4A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <fa736836-e136-4ed4-a6af-8ea2f0e7c0dd@intel.com>
- <BN9PR11MB527659462CCB7280055858D98CB4A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <ZVuZOYFzAaCuJjXZ@Asurada-Nvidia>
- <BN9PR11MB5276C8EACE2C300A646EA8A18CBBA@BN9PR11MB5276.namprd11.prod.outlook.com>
- <ZVw/BXxgGCuCZCA6@Asurada-Nvidia>
- <BN9PR11MB52761A9B48A25E89BEECE6308CB8A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <ZWTzoBTDDEWAKMs9@Asurada-Nvidia>
- <BN9PR11MB5276FD60A0EDF8E3F231FCC88CBCA@BN9PR11MB5276.namprd11.prod.outlook.com>
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="bkAyZ2JT"
+Received: by mail-ot1-f48.google.com with SMTP id 46e09a7af769-6d81173a219so2657659a34.3
+        for <iommu@lists.linux.dev>; Tue, 28 Nov 2023 16:54:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1701219291; x=1701824091; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=KD7A1Mi78WcdpTbacYeqydWRhhJC6MIZ9wADFHK3ceE=;
+        b=bkAyZ2JTpzWaxcXpES67EX95rz91wW+Wa7jZRHWOQbPI/0dyQ4gx5quiB2kjpDePIh
+         6S+ulDcmnlY0c0EsfKH10836ipaB7FHR2a1zRj8lBjA7uLbLVpo/PfpYjlTkc52mbAa0
+         9+/4iHsW6ki45CoE/rWypSIhzdUwfbkVNf7Ll5RZl6NEIeNrIudKVj/6p+Uc24+M3tYY
+         4DYUi0paxNWKx+Vaz3yN1QhkVaKJqsR0rXao8L1c9goHpkjte6hK7bpljqmGAT26HIMi
+         5u+VOF6PLbP0mTchaU/KrWVyviAcnOgRRzUQv4nmJzV4RVZrRHx61IED9IflRcKsJ5QS
+         TrGA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1701219291; x=1701824091;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=KD7A1Mi78WcdpTbacYeqydWRhhJC6MIZ9wADFHK3ceE=;
+        b=OCWLvtf9AQgTkueo6yyO4a1icIEg2NJ7yb4YPWR7TTW5GdKTImoHI+gDy828//PizM
+         SZse/CSHYC1EiWuD8s3wo7NfyXfcjO94Jjue/H4wkegRUtIGGtqi9ZwAFMIbyXfAPjz2
+         lEkXThq2Qhx+iM5wm2p0mNBCggtT/ilAnxSqQpb2OlPTtl4LGYa6xtJ13dRrkKXRNq5X
+         e+tKTkE0yiIQjZfPaUHvNaica2LtL2k2V2An87dbLg4dTI3kYFp57A/qYa8fi3C04Cjn
+         kFPyM4gqMp99Sv10GUjOGklbYzm53eS69S1pkHswtrES4R3F8eCCkixwQuxnhhHZ++kK
+         39iQ==
+X-Gm-Message-State: AOJu0YyMzYNWDm6nKyxojtQgsKMllVHhz5UByNMyhHHh0GBguLETdSrz
+	wPSnvyRa4T0jrKgHTx5U2l9GZQ==
+X-Google-Smtp-Source: AGHT+IGKiwEuykqxh29J1y1VqvKSA4pC1uEUHtE7SoQBvdHo0iXpRqPiFg8DX/ZmKtSwphh/2Jx77g==
+X-Received: by 2002:a05:6870:c690:b0:1fa:2f8:c734 with SMTP id cv16-20020a056870c69000b001fa02f8c734mr16951479oab.5.1701219291679;
+        Tue, 28 Nov 2023 16:54:51 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-134-23-187.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.134.23.187])
+        by smtp.gmail.com with ESMTPSA id b1-20020a056830344100b006d81e704023sm945291otu.2.2023.11.28.16.54.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Nov 2023 16:54:51 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1r88qo-005kIY-2m;
+	Tue, 28 Nov 2023 20:54:50 -0400
+Date: Tue, 28 Nov 2023 20:54:50 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Yosry Ahmed <yosryahmed@google.com>
+Cc: Pasha Tatashin <pasha.tatashin@soleen.com>, akpm@linux-foundation.org,
+	alex.williamson@redhat.com, alim.akhtar@samsung.com,
+	alyssa@rosenzweig.io, asahi@lists.linux.dev,
+	baolu.lu@linux.intel.com, bhelgaas@google.com,
+	cgroups@vger.kernel.org, corbet@lwn.net, david@redhat.com,
+	dwmw2@infradead.org, hannes@cmpxchg.org, heiko@sntech.de,
+	iommu@lists.linux.dev, jasowang@redhat.com,
+	jernej.skrabec@gmail.com, jonathanh@nvidia.com, joro@8bytes.org,
+	kevin.tian@intel.com, krzysztof.kozlowski@linaro.org,
+	kvm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-doc@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+	linux-rockchip@lists.infradead.org,
+	linux-samsung-soc@vger.kernel.org, linux-sunxi@lists.linux.dev,
+	linux-tegra@vger.kernel.org, lizefan.x@bytedance.com,
+	marcan@marcan.st, mhiramat@kernel.org, mst@redhat.com,
+	m.szyprowski@samsung.com, netdev@vger.kernel.org,
+	paulmck@kernel.org, rdunlap@infradead.org, robin.murphy@arm.com,
+	samuel@sholland.org, suravee.suthikulpanit@amd.com,
+	sven@svenpeter.dev, thierry.reding@gmail.com, tj@kernel.org,
+	tomas.mudrunka@gmail.com, vdumpa@nvidia.com,
+	virtualization@lists.linux.dev, wens@csie.org, will@kernel.org,
+	yu-cheng.yu@intel.com
+Subject: Re: [PATCH 00/16] IOMMU memory observability
+Message-ID: <20231129005450.GH1312390@ziepe.ca>
+References: <20231128204938.1453583-1-pasha.tatashin@soleen.com>
+ <CAJD7tkb1FqTqwONrp2nphBDkEamQtPCOFm0208H3tp0Gq2OLMQ@mail.gmail.com>
+ <CA+CK2bB3nHfu1Z6_6fqN3YTAzKXMiJ12MOWpbs8JY7rQo4Fq0g@mail.gmail.com>
+ <CAJD7tkZZNhf4KGV+7N+z8NFpJrvyeNudXU-WdVeE8Rm9pobfgQ@mail.gmail.com>
+ <20231128235214.GD1312390@ziepe.ca>
+ <CAJD7tkbbq6bHtPn7yE3wSS693OSthh1eBDvF-_MWZfDMXDYPKw@mail.gmail.com>
+ <20231129002826.GG1312390@ziepe.ca>
+ <CAJD7tkbxhK7XFcf7h+XE2poNuOsFBQFrxZyeFr=9DoEG_acssA@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <BN9PR11MB5276FD60A0EDF8E3F231FCC88CBCA@BN9PR11MB5276.namprd11.prod.outlook.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SN1PEPF0002BA4D:EE_|CH3PR12MB9169:EE_
-X-MS-Office365-Filtering-Correlation-Id: b93850fb-437b-4629-f2e0-08dbf0755a2a
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	09thnlgSWlpeL27whKlJsgkhblM7dVQrgLGKz60dJoVHf2Eti/4pWLuX4gyQiuEOF+VMVUdOXOYajIR+YzCBCH2IipYpCYfO1/zccjgS2rO0WR22B2jWO8YEgjnUAK/SKiQ8WY3izFDQHM0HzFyt4A1PG2SnVvKD8g4idWPQuu62bIvKZGUeS4bsgdBXPFToSYgTL243f58iFZj3oPo/HRbmVgxOY8A0FP09JIy7Iy5JdmaCFOJKUcrxHNhyZ6J22QDoGNWC+TRLhtLiJWsjzgjb7PLsvtyFx+NJ4rHwAdX6LLaDAjw7/wXs+yVOklBl7XhrTP7XqDn9K0MhgCEr06HIJoxRPnJkIpz9MqOlIsavBiYFs1rUSrULJ35g6DUg96CDYvBRkpYGxwjk0o2GLbB7RlKfW/id/lsc4IBXecwrckSFGDn7KWC71qArPUFgkHnsHUfH89nGhh4QixkmjeyVHQhd6cOyMM+QNI0PTfWoyGoxseO9xVi+wvzbB7Un5DRSl5q9BaI538OSC2obTv+GgUphnfTq/m+ZtQscwmZmz1MAuf8Vy2LFk5PYmvfzWiHCuI+hs3VWsgW+DbYv7+uDmVpSH0GonGNtsfWQZczzpl2LWrwaPmVxQn7qAdSmOLW1M8KWLxTWiA4CLGQ3c96YSRTxkjn2zKKH0obQBK4Xev+7Mqi1803onF2oUhVVgENE6Qc0WV1VSkko8rnQZhtNRfMTFKsKECHVANTs5mLbI4sIBzUfj1l+y6agEO7X
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230031)(4636009)(396003)(39860400002)(136003)(376002)(346002)(230922051799003)(64100799003)(186009)(451199024)(1800799012)(82310400011)(36840700001)(40470700004)(46966006)(40460700003)(8936002)(336012)(4326008)(82740400003)(426003)(55016003)(6916009)(478600001)(8676002)(5660300002)(7416002)(86362001)(70586007)(316002)(70206006)(54906003)(36860700001)(83380400001)(26005)(47076005)(356005)(7636003)(2906002)(40480700001)(33716001)(41300700001)(9686003);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Nov 2023 00:51:41.6254
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: b93850fb-437b-4629-f2e0-08dbf0755a2a
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	SN1PEPF0002BA4D.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR12MB9169
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAJD7tkbxhK7XFcf7h+XE2poNuOsFBQFrxZyeFr=9DoEG_acssA@mail.gmail.com>
 
-On Tue, Nov 28, 2023 at 08:03:35AM +0000, Tian, Kevin wrote:
-> > From: Nicolin Chen <nicolinc@nvidia.com>
-> > Sent: Tuesday, November 28, 2023 3:53 AM
+On Tue, Nov 28, 2023 at 04:30:27PM -0800, Yosry Ahmed wrote:
+> On Tue, Nov 28, 2023 at 4:28 PM Jason Gunthorpe <jgg@ziepe.ca> wrote:
 > >
-> > On Fri, Nov 24, 2023 at 02:36:29AM +0000, Tian, Kevin wrote:
+> > On Tue, Nov 28, 2023 at 04:25:03PM -0800, Yosry Ahmed wrote:
 > >
-> > > > > > > > >> + * @out_driver_error_code: Report a driver speicifc error code
-> > > > upon
-> > > > > > > > failure.
-> > > > > > > > >> + *                         It's optional, driver has a choice to fill it or
-> > > > > > > > >> + *                         not.
-> > > > > > > > >
-> > > > > > > > > Being optional how does the user tell whether the code is filled
-> > or
-> > > > not?
-> > > > > >
-> > > > > > Well, naming it "error_code" indicates zero means no error while
-> > > > > > non-zero means something? An error return from this ioctl could
-> > > > > > also tell the user space to look up for this driver error code,
-> > > > > > if it ever cares.
-> > > > >
-> > > > > probably over-thinking but I'm not sure whether zero is guaranteed to
-> > > > > mean no error in all implementations...
+> > > > > Right, but as I mention above, if userspace starts depending on this
+> > > > > equation, we won't be able to add any more classes of "secondary" page
+> > > > > tables to SecPageTables. I'd like to avoid that if possible. We can do
+> > > > > the subtraction in the kernel.
 > > > >
-> > > > Well, you are right. Usually HW conveniently raises a flag in a
-> > > > register to indicate something wrong, yet it is probably unsafe
-> > > > to say it definitely.
-> > > >
+> > > > What Sean had suggested was that SecPageTables was always intended to
+> > > > account all the non-primary mmu memory used by page tables. If this is
+> > > > the case we shouldn't be trying to break it apart into finer
+> > > > counters. These are big picture counters, not detailed allocation by
+> > > > owner counters.
 > > >
-> > > this reminds me one open. What about an implementation having
-> > > a hierarchical error code layout e.g. one main error register with
-> > > each bit representing an error category then multiple error code
-> > > registers each for one error category? In this case probably
-> > > a single out_driver_error_code cannot carry that raw information.
+> > > Right, I agree with that, but if SecPageTables includes page tables
+> > > from multiple sources, and it is observed to be suspiciously high, the
+> > > logical next step is to try to find the culprit, right?
 > >
-> > Hmm, good point.
+> > You can make that case already, if it is high wouldn't you want to
+> > find the exact VMM process that was making it high?
 > >
-> > > Instead the iommu driver may need to define a customized error
-> > > code convention in uapi header which is converted from the
-> > > raw error information.
-> > >
-> > > From this angle should we simply say that the error code definition
-> > > must be included in the uapi header? If raw error information can
-> > > be carried by this field then this hw can simply say that the error
-> > > code format is same as the hw spec defines.
-> > >
-> > > With that explicit information then the viommu can easily tell
-> > > whether error code is filled or not based on its own convention.
-> >
-> > That'd be to put this error_code field into the driver uAPI
-> > structure right?
-> >
-> > I also thought about making this out_driver_error_code per HW.
-> > Yet, an error can be either per array or per entry/quest. The
-> > array-related error should be reported in the array structure
-> > that is a core uAPI, v.s. the per-HW entry structure. Though
-> > we could still report an array error in the entry structure
-> > at the first entry (or indexed by "array->entry_num")?
-> >
+> > It is a sign of fire, not a detailed debug tool.
 > 
-> why would there be an array error? array is just a software
-> entity containing actual HW invalidation cmds. If there is
-> any error with the array itself it should be reported via
-> ioctl errno.
+> Fair enough. We can always add separate counters later if needed,
+> potentially under KVM stats to get more fine-grained details as you
+> mentioned.
+> 
+> I am only worried about users subtracting the iommu-only counter to
+> get a KVM counter. We should at least document that  SecPageTables may
+> be expanded to include other sources later to avoid that.
 
-User array reading is a software operation, but kernel array
-reading is a hardware operation that can raise an error when
-the memory location to the array is incorrect or so.
+Well, we just broke it already, anyone thinking it was only kvm
+counters is going to be sad now :) As I understand it was already
+described to be more general that kvm so probably nothing to do really
 
-With that being said, I think errno (-EIO) could do the job,
-as you suggested too.
-
-Thanks
-Nic
-
-> Jason, how about your opinion? I didn't spot big issues
-> except this one. Hope it can make into 6.8.
+Jason
