@@ -1,123 +1,123 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8FF3839854;
-	Wed, 29 Nov 2023 16:48:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8CC5B34CF7
+	for <iommu@lists.linux.dev>; Wed, 29 Nov 2023 17:43:17 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org; dkim=none
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 96AD0C15;
-	Wed, 29 Nov 2023 08:49:40 -0800 (PST)
-Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 69D1A3F73F;
-	Wed, 29 Nov 2023 08:48:47 -0800 (PST)
-Message-ID: <52de3aca-41b1-471e-8f87-1a77de547510@arm.com>
-Date: Wed, 29 Nov 2023 16:48:43 +0000
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 8BBFBC15;
+	Wed, 29 Nov 2023 09:44:03 -0800 (PST)
+Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 81BF13F73F;
+	Wed, 29 Nov 2023 09:43:12 -0800 (PST)
+From: Robin Murphy <robin.murphy@arm.com>
+To: Joerg Roedel <joro@8bytes.org>,
+	Christoph Hellwig <hch@lst.de>
+Cc: Vineet Gupta <vgupta@kernel.org>,
+	Russell King <linux@armlinux.org.uk>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Will Deacon <will@kernel.org>,
+	Huacai Chen <chenhuacai@kernel.org>,
+	WANG Xuerui <kernel@xen0n.name>,
+	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+	Paul Walmsley <paul.walmsley@sifive.com>,
+	Palmer Dabbelt <palmer@dabbelt.com>,
+	Albert Ou <aou@eecs.berkeley.edu>,
+	Lorenzo Pieralisi <lpieralisi@kernel.org>,
+	Hanjun Guo <guohanjun@huawei.com>,
+	Sudeep Holla <sudeep.holla@arm.com>,
+	"K. Y. Srinivasan" <kys@microsoft.com>,
+	Haiyang Zhang <haiyangz@microsoft.com>,
+	Wei Liu <wei.liu@kernel.org>,
+	Dexuan Cui <decui@microsoft.com>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Niklas Schnelle <schnelle@linux.ibm.com>,
+	Matthew Rosato <mjrosato@linux.ibm.com>,
+	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Frank Rowand <frowand.list@gmail.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-acpi@vger.kernel.org,
+	iommu@lists.linux.dev,
+	devicetree@vger.kernel.org
+Subject: [PATCH 0/7] dma-mapping: Clean up arch_setup_dma_ops()
+Date: Wed, 29 Nov 2023 17:42:57 +0000
+Message-Id: <cover.1701268753.git.robin.murphy@arm.com>
+X-Mailer: git-send-email 2.39.2.101.g768bb238c484.dirty
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 08/16] iommu/fsl: use page allocation function provided by
- iommu-pages.h
-Content-Language: en-GB
-To: Jason Gunthorpe <jgg@ziepe.ca>, Pasha Tatashin <pasha.tatashin@soleen.com>
-Cc: akpm@linux-foundation.org, alex.williamson@redhat.com,
- alim.akhtar@samsung.com, alyssa@rosenzweig.io, asahi@lists.linux.dev,
- baolu.lu@linux.intel.com, bhelgaas@google.com, cgroups@vger.kernel.org,
- corbet@lwn.net, david@redhat.com, dwmw2@infradead.org, hannes@cmpxchg.org,
- heiko@sntech.de, iommu@lists.linux.dev, jasowang@redhat.com,
- jernej.skrabec@gmail.com, jonathanh@nvidia.com, joro@8bytes.org,
- kevin.tian@intel.com, krzysztof.kozlowski@linaro.org, kvm@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
- linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-mm@kvack.org, linux-rockchip@lists.infradead.org,
- linux-samsung-soc@vger.kernel.org, linux-sunxi@lists.linux.dev,
- linux-tegra@vger.kernel.org, lizefan.x@bytedance.com, marcan@marcan.st,
- mhiramat@kernel.org, mst@redhat.com, m.szyprowski@samsung.com,
- netdev@vger.kernel.org, paulmck@kernel.org, rdunlap@infradead.org,
- samuel@sholland.org, suravee.suthikulpanit@amd.com, sven@svenpeter.dev,
- thierry.reding@gmail.com, tj@kernel.org, tomas.mudrunka@gmail.com,
- vdumpa@nvidia.com, virtualization@lists.linux.dev, wens@csie.org,
- will@kernel.org, yu-cheng.yu@intel.com
-References: <20231128204938.1453583-1-pasha.tatashin@soleen.com>
- <20231128204938.1453583-9-pasha.tatashin@soleen.com>
- <1c6156de-c6c7-43a7-8c34-8239abee3978@arm.com>
- <CA+CK2bCOtwZxTUS60PHOQ3szXdCzau7OpopgFEbbC6a9Frxafg@mail.gmail.com>
- <20231128235037.GC1312390@ziepe.ca>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20231128235037.GC1312390@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-On 28/11/2023 11:50 pm, Jason Gunthorpe wrote:
-> On Tue, Nov 28, 2023 at 06:00:13PM -0500, Pasha Tatashin wrote:
->> On Tue, Nov 28, 2023 at 5:53 PM Robin Murphy <robin.murphy@arm.com> wrote:
->>>
->>> On 2023-11-28 8:49 pm, Pasha Tatashin wrote:
->>>> Convert iommu/fsl_pamu.c to use the new page allocation functions
->>>> provided in iommu-pages.h.
->>>
->>> Again, this is not a pagetable. This thing doesn't even *have* pagetables.
->>>
->>> Similar to patches #1 and #2 where you're lumping in configuration
->>> tables which belong to the IOMMU driver itself, as opposed to pagetables
->>> which effectively belong to an IOMMU domain's user. But then there are
->>> still drivers where you're *not* accounting similar configuration
->>> structures, so I really struggle to see how this metric is useful when
->>> it's so completely inconsistent in what it's counting :/
->>
->> The whole IOMMU subsystem allocates a significant amount of kernel
->> locked memory that we want to at least observe. The new field in
->> vmstat does just that: it reports ALL buddy allocator memory that
->> IOMMU allocates. However, for accounting purposes, I agree, we need to
->> do better, and separate at least iommu pagetables from the rest.
->>
->> We can separate the metric into two:
->> iommu pagetable only
->> iommu everything
->>
->> or into three:
->> iommu pagetable only
->> iommu dma
->> iommu everything
->>
->> What do you think?
-> 
-> I think I said this at LPC - if you want to have fine grained
-> accounting of memory by owner you need to go talk to the cgroup people
-> and come up with something generic. Adding ever open coded finer
-> category breakdowns just for iommu doesn't make alot of sense.
-> 
-> You can make some argument that the pagetable memory should be counted
-> because kvm counts it's shadow memory, but I wouldn't go into further
-> detail than that with hand coded counters..
+Hi all,
 
-Right, pagetable memory is interesting since it's something that any 
-random kernel user can indirectly allocate via iommu_domain_alloc() and 
-iommu_map(), and some of those users may even be doing so on behalf of 
-userspace. I have no objection to accounting and potentially applying 
-limits to *that*.
+Prompted by Jason's proposal[1], here's a first step towards truly
+unpicking the dma_configure vs. IOMMU mess. As I commented before, we
+have an awful lot of accumulated cruft and technical debt here making
+things more complicated than they need to be, and we already have hacks
+on top of hacks trying to work around it, so polishing those hacks even
+further is really not a desirable direction of travel. And I do know
+they're hacks, because I wrote most of them and still remember enough of
+the context of the time ;)
 
-Beyond that, though, there is nothing special about "the IOMMU 
-subsystem". The amount of memory an IOMMU driver needs to allocate for 
-itself in order to function is not of interest beyond curiosity, it just 
-is what it is; limiting it would only break the IOMMU, and if a user 
-thinks it's "too much", the only actionable thing that might help is to 
-physically remove devices from the system. Similar for DMA buffers; it 
-might be intriguing to account those, but it's not really an actionable 
-metric - in the overwhelming majority of cases you can't simply tell a 
-driver to allocate less than what it needs. And that is of course 
-assuming if we were to account *all* DMA buffers, since whether they 
-happen to have an IOMMU translation or not is irrelevant (we'd have 
-already accounted the pagetables as pagetables if so).
-
-I bet "the networking subsystem" also consumes significant memory on the 
-same kind of big systems where IOMMU pagetables would be of any concern. 
-I believe some of the some of the "serious" NICs can easily run up 
-hundreds of megabytes if not gigabytes worth of queues, SKB pools, etc. 
-- would you propose accounting those too?
+I'm taking a methodical bottom-up approach here, so step 1 is cleaning
+*all* the out-of-date stuff from arch_setup_dma_ops() and simplifying
+that interface, which gets it right out of the way for the next step of
+pulling apart {of,acpi}_dma_configure(). This part is really a
+dma-mapping series, but I'm not sure yet if would need to target the
+IOMMU tree - nothing here should strictly depend on the pending IOMMU
+change, but the follow-up patches might. Still working on those, so
+hopefully I'll know soon...
 
 Thanks,
 Robin.
+
+[1] https://lore.kernel.org/linux-iommu/0-v1-720585788a7d+811b-iommu_fwspec_p1_jgg@nvidia.com/
+
+
+Robin Murphy (7):
+  OF: Retire dma-ranges mask workaround
+  OF: Simplify DMA range calculations
+  ACPI/IORT: Handle memory address size limits as limits
+  dma-mapping: Add helpers for dma_range_map bounds
+  iommu/dma: Make limit checks self-contained
+  iommu/dma: Centralise iommu_setup_dma_ops()
+  dma-mapping: Simplify arch_setup_dma_ops()
+
+ arch/arc/mm/dma.c               |  3 +--
+ arch/arm/mm/dma-mapping-nommu.c |  3 +--
+ arch/arm/mm/dma-mapping.c       | 12 ++++++----
+ arch/arm64/mm/dma-mapping.c     |  5 +---
+ arch/loongarch/kernel/dma.c     |  9 ++-----
+ arch/mips/mm/dma-noncoherent.c  |  3 +--
+ arch/riscv/mm/dma-noncoherent.c |  3 +--
+ drivers/acpi/arm64/dma.c        | 17 ++++---------
+ drivers/acpi/arm64/iort.c       | 18 +++++++-------
+ drivers/acpi/scan.c             |  3 +--
+ drivers/hv/hv_common.c          |  6 +----
+ drivers/iommu/amd/iommu.c       |  8 -------
+ drivers/iommu/dma-iommu.c       | 35 ++++++++++-----------------
+ drivers/iommu/dma-iommu.h       |  6 +++++
+ drivers/iommu/intel/iommu.c     |  7 ------
+ drivers/iommu/iommu.c           |  2 ++
+ drivers/iommu/s390-iommu.c      |  6 -----
+ drivers/iommu/virtio-iommu.c    | 10 --------
+ drivers/of/device.c             | 42 ++++++---------------------------
+ include/linux/acpi_iort.h       |  4 ++--
+ include/linux/dma-direct.h      | 18 ++++++++++++++
+ include/linux/dma-map-ops.h     |  6 ++---
+ include/linux/iommu.h           |  7 ------
+ 23 files changed, 78 insertions(+), 155 deletions(-)
+
+-- 
+2.39.2.101.g768bb238c484.dirty
+
