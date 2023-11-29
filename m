@@ -1,51 +1,51 @@
-Received: from mail-ot1-f44.google.com (mail-ot1-f44.google.com [209.85.210.44])
+Received: from mail-oi1-f170.google.com (mail-oi1-f170.google.com [209.85.167.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 27A2B1DDCE
-	for <iommu@lists.linux.dev>; Wed, 29 Nov 2023 20:40:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 000AE219EF
+	for <iommu@lists.linux.dev>; Wed, 29 Nov 2023 20:43:18 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="UL7BLVqX"
-Received: by mail-ot1-f44.google.com with SMTP id 46e09a7af769-6d84ddd642fso164147a34.0
-        for <iommu@lists.linux.dev>; Wed, 29 Nov 2023 12:40:44 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="gdmmMH17"
+Received: by mail-oi1-f170.google.com with SMTP id 5614622812f47-3b8952b8066so561748b6e.1
+        for <iommu@lists.linux.dev>; Wed, 29 Nov 2023 12:43:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1701290444; x=1701895244; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1701290598; x=1701895398; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=i4is+UaFXgNmfUwcjSjgaiG0RVAiB9ug48COJL1kEfc=;
-        b=UL7BLVqXj2LByqaHMJTxfx6PoGNkX8SOm7lraB7KAX4hgEN+i+cYhxWSRloFUnVFB0
-         lQneV5A7mvYJwSBBJq8M6mjsdZwiA0X0c9unTDhq4lIxY+q/mpWRs71+YZf2apgagEbC
-         c8DcrqRfwGnYlOilIRVLdWCld9Hq9Jkcd554Xgye4801Zgy9heM+s9n7+EzhgwHUUgAP
-         sXkJfr1c/vfvcStu5Luq3KUQfK9fcMxBjWMRM6uVr0ziwg4sn1YhdOP/Q9ZNhhWd5h5u
-         a+AWRzJHwsn7IbSoAA9q4v1INIQ04ebOd8b3pKnPeTLl0NsDbeCj2UXA15dsMbwGhB5v
-         rRYQ==
+        bh=VQkQZtrQbpqMHU38TIDcUDo5JEq87aQQf1MaJK/f8fE=;
+        b=gdmmMH17F3AZhCI7aQ66kUPO2lpWyHL15owIIdOG6vINjzQnNk/jN+wXQPGQzGYsAG
+         MH+RoDfhTKwJ8+6oy3ejZ74V2+JCvq1DGbRHMnekgt35npRh1RvrOJoTTgXHkW/G1L8l
+         erm3EsuuVpf54AcyXlPRQnSV8i8uhQS/6TyeZoof7gtH7sBwAZTfyx37eSbjtAWs7fss
+         qjXX9k9SjA/+PDQ/LOxOSjz4MFVCU4POus5ybS4W4iVg830P97yK2X4nXXBve4hUIYWQ
+         WyOlSyk1bgoeoZgzNaYG9cSnMsnOEdtFrYtJzSGizEFudIm3Nr5Cp2bzEzkkohx/8bUf
+         C4LA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701290444; x=1701895244;
+        d=1e100.net; s=20230601; t=1701290598; x=1701895398;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=i4is+UaFXgNmfUwcjSjgaiG0RVAiB9ug48COJL1kEfc=;
-        b=C0OEmy4hT9zslC1Wqyhe7z53BzujOYFgRfZeUPoHKRrVmyVu4JH+qyyBp29Vqsvx/f
-         TOB+Vhvg52fTACYUTIYkI6hgGUoBFyosYX1bitSdk5dRJ2a8WHC9McPtFrl2CYKy2lOL
-         XjuBPc3cF/Dbz03XIPW3RXDYVil9YO9QpelQ4/+P3jV6ktG7DMNNCOpAMuCLtN9Cva9m
-         +QqsiJSmLGgewC8rsvQ8pEnhJZwrk3LHZNedFDKYboOmN8pN132fegaKKrlBttpoqU1l
-         /P+0+9KQ1xlIyARvbMtQK6xMwMjO4ccTTmk9AwELDmqFGgrDhuotusg1e6OgV60sxXmy
-         ZhHg==
-X-Gm-Message-State: AOJu0YzcOPPV+BxgaqqRA9DrUtt/ro7CaCgfT8NZ9a4I29ziEy5ZE5dZ
-	O8slsk3STwZG8weVpi7ho48uVQ==
-X-Google-Smtp-Source: AGHT+IEnrq+40pWqc9tikvXUqS6Y6R2hs7giuPFXyADBt3dDnfao9L3w+T91fxfG4h2rkEvYDjFXYw==
-X-Received: by 2002:a05:6830:1d41:b0:6d6:3ff8:aab7 with SMTP id p1-20020a0568301d4100b006d63ff8aab7mr19895331oth.1.1701290444152;
-        Wed, 29 Nov 2023 12:40:44 -0800 (PST)
+        bh=VQkQZtrQbpqMHU38TIDcUDo5JEq87aQQf1MaJK/f8fE=;
+        b=Nz8cDzgK61zf9JtjDwmMMDTCGEEeLk/P7PLB1/70Xt8rfnqW8Oyn4aj1gT2NIxj4L8
+         +p5+99zr8AALnCnMneWsHSkHhA/tHZEg9WU5mzpJrC5oDfDMtKK4EsPriLNcLnLV0Izl
+         7lQRYgOP2jhAXDj5883Xbxgoe6pucIAYWXZ624MV26TodmxvJ7C8TW2vHBtJlZJuAhoS
+         I00r18spXYvAl9bXO4Q6j7y87d1nM8M0Fy4mTMQnnZv2bgadteMedKrHRdoBi5PkIh7o
+         9STkj7PDndU6ufCaxfEXhKSA1qesGjAosWP58yCKqVXWUNMdCHRbsuX0+7JOXk+dc4Uj
+         rviw==
+X-Gm-Message-State: AOJu0YzEGB4RMK545KWj+OKcGtOHwbZLfYAKxEHF/uHhveRzgkxgi5Nw
+	E/2IbjtNsiB6vdSuePa0t062KQ==
+X-Google-Smtp-Source: AGHT+IGLoniM+wElYPIWxSKpX9Eo477s4X8dPUqDwUM2qIN0+StQVm9ol890wMZQ9Fmvg1ybJUuFzw==
+X-Received: by 2002:a05:6808:152b:b0:3b8:3399:84bf with SMTP id u43-20020a056808152b00b003b8339984bfmr11564700oiw.15.1701290598186;
+        Wed, 29 Nov 2023 12:43:18 -0800 (PST)
 Received: from ziepe.ca (hlfxns017vw-142-134-23-187.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.134.23.187])
-        by smtp.gmail.com with ESMTPSA id e11-20020a9d560b000000b006d3161e612dsm2113398oti.30.2023.11.29.12.40.43
+        by smtp.gmail.com with ESMTPSA id bd33-20020a056808222100b003af644e6e81sm1782211oib.45.2023.11.29.12.43.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Nov 2023 12:40:43 -0800 (PST)
+        Wed, 29 Nov 2023 12:43:17 -0800 (PST)
 Received: from jgg by wakko with local (Exim 4.95)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1r8RMQ-005pfu-R5;
-	Wed, 29 Nov 2023 16:40:42 -0400
-Date: Wed, 29 Nov 2023 16:40:42 -0400
+	id 1r8ROv-005pgb-4k;
+	Wed, 29 Nov 2023 16:43:17 -0400
+Date: Wed, 29 Nov 2023 16:43:17 -0400
 From: Jason Gunthorpe <jgg@ziepe.ca>
 To: Robin Murphy <robin.murphy@arm.com>
 Cc: Joerg Roedel <joro@8bytes.org>, Christoph Hellwig <hch@lst.de>,
@@ -77,10 +77,10 @@ Cc: Joerg Roedel <joro@8bytes.org>, Christoph Hellwig <hch@lst.de>,
 	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
 	linux-acpi@vger.kernel.org, iommu@lists.linux.dev,
 	devicetree@vger.kernel.org
-Subject: Re: [PATCH 4/7] dma-mapping: Add helpers for dma_range_map bounds
-Message-ID: <20231129204042.GP1312390@ziepe.ca>
+Subject: Re: [PATCH 5/7] iommu/dma: Make limit checks self-contained
+Message-ID: <20231129204317.GQ1312390@ziepe.ca>
 References: <cover.1701268753.git.robin.murphy@arm.com>
- <b6626985d97ddc33a23b4b9fafa881b35001547e.1701268753.git.robin.murphy@arm.com>
+ <951f52b59b401418a7ccc00beed15632d1aabd7a.1701268753.git.robin.murphy@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -89,20 +89,31 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <b6626985d97ddc33a23b4b9fafa881b35001547e.1701268753.git.robin.murphy@arm.com>
+In-Reply-To: <951f52b59b401418a7ccc00beed15632d1aabd7a.1701268753.git.robin.murphy@arm.com>
 
-On Wed, Nov 29, 2023 at 05:43:01PM +0000, Robin Murphy wrote:
-> Several places want to compute the lower and/or upper bounds of a
-> dma_range_map, so let's factor that out into reusable helpers.
+On Wed, Nov 29, 2023 at 05:43:02PM +0000, Robin Murphy wrote:
+> It's now easy to retrieve the device's DMA limits if we want to check
+> them against the domain aperture, so do that ourselves instead of
+> relying on them being passed through the callchain.
 > 
 > Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 > ---
->  arch/loongarch/kernel/dma.c |  9 ++-------
->  drivers/acpi/arm64/dma.c    |  8 +-------
->  drivers/of/device.c         | 11 ++---------
->  include/linux/dma-direct.h  | 18 ++++++++++++++++++
->  4 files changed, 23 insertions(+), 23 deletions(-)
+>  drivers/iommu/dma-iommu.c | 18 ++++++++----------
+>  1 file changed, 8 insertions(+), 10 deletions(-)
+
+When I spent some time noodling on this a few weeks ago I was looking
+at putting the dma_range_map_min() effectively as a new reserved
+region in the common reserved region code so it naturally flows out to
+all the right places.
+
+But this is no worse in that regard than what we have right now:
 
 Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+
+>  	/* Check the domain allows at least some access to the device... */
+> -	if (domain->geometry.force_aperture) {
+> +	if (map) {
+
+Oh, I've been sitting on a patch to delete force_aperture now too..
 
 Jason
