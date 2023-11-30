@@ -1,59 +1,59 @@
-Received: from mail-ot1-f52.google.com (mail-ot1-f52.google.com [209.85.210.52])
+Received: from mail-oi1-f181.google.com (mail-oi1-f181.google.com [209.85.167.181])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C7681E53F
-	for <iommu@lists.linux.dev>; Thu, 30 Nov 2023 17:52:15 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0AAF61E53F
+	for <iommu@lists.linux.dev>; Thu, 30 Nov 2023 17:53:59 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="F1JWOWjr"
-Received: by mail-ot1-f52.google.com with SMTP id 46e09a7af769-6ce2eaf7c2bso777329a34.0
-        for <iommu@lists.linux.dev>; Thu, 30 Nov 2023 09:52:15 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="ZAPaZRvJ"
+Received: by mail-oi1-f181.google.com with SMTP id 5614622812f47-3b84e328327so707337b6e.2
+        for <iommu@lists.linux.dev>; Thu, 30 Nov 2023 09:53:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1701366735; x=1701971535; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1701366839; x=1701971639; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=dEJkZfHY21+MgpNSYij29D5tRNZwoiHBNJGjnsZe1nw=;
-        b=F1JWOWjrC5W2wh1UmaAX6UKEJJtGuEKXotOUnweniQgBVHGdnFoob8+3ZpEiXhbxBW
-         7eb3zgjU1VU7RLMVGHrPGlVSwQ9y2Nh4N20Ue56pGYrPgD/YnPkCY7XHViqp3emgq13p
-         Pq2eNt2d28Tqy7M3R2BpK5EjQ4ZHgWWhB/e9IoPGKKdtTXnlPbMHfa9Shqe2V2EEbe3y
-         uAYIG9gUBuHh0IwrGmx9xbXhNJNRhS+hNVrFbTPlOa/PiNsFj25y6ehOf/mlksP29iHr
-         773276HubrfcsC2GKJRmYXNKH683I3UA5w/j/spCgUseBs58qJTuGIObrRvRvOHgPjpV
-         htRg==
+        bh=m697ifUX9X9ZplebMMGMHLUBOgLEyfUm1TWhOvlFGBE=;
+        b=ZAPaZRvJD/4mcl+5yapJ6DqMSM1EBaUSWwzEcW5BrompA+AJj66ZAHHdhSSV9gwYQG
+         pBETxTQ1Tb9VhqsF0XcHPChZc2nc4KdOTT59xVGoNpJvRx1jI4vxskgqaXragJBYtx+1
+         6ascSxBU4GjinKAGQ96MFgyHhv1AF6aNkpfIFCOntc573FUXxdsK9Fok5iO5xWedotw4
+         LrHhyBl5PJv4kNp+/qq7waigNfNzWD8j70QkF85MM38J3O6vn116iyu5OkDMu0eBmAXy
+         GP3NB9G+jZo20qPAACFX+xan5VOKM1QD23w+7+k2Q0jOcdftNzofvMn+zmvOu69dKHHb
+         C+9g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701366735; x=1701971535;
+        d=1e100.net; s=20230601; t=1701366839; x=1701971639;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=dEJkZfHY21+MgpNSYij29D5tRNZwoiHBNJGjnsZe1nw=;
-        b=Irohg925fN4QXDXzAxiJnMjDd0Dyb+6xx9llYEnfbp7yrE5X4jmLRJM2ex4/o6j+fx
-         /oStIQnXwBNxZTe4And68FvUSMwQDu+Qt5+l2MFaGQnBvBqVypbOFz8GB7yr9/pG4DBh
-         x+UHiDNNyj7ouHlT77eZNgcs3clTvv1uZD6/PgVe6VrHFRMV0e17on9ezg1vj/Jy0Glo
-         GUjPHa+ekw+f3p2qZoY92bdAOljEdX1Z7x78RlaPwBsBkfqevp7vL2UQP5FeCiEANSkC
-         F3JqZAl6LAumbxnlOjzI8Ng9zbLcogW4FVJ8S+0YTp9/lUk/QIwtV63UCmgrEA+BRAHj
-         lowQ==
-X-Gm-Message-State: AOJu0YyXUJzwOLFL2n6sLtV6dg6SM8b/MGs4rke/is5jz01DOaSuO+Bl
-	JsiWIu9JKSxUo+DlUPl3/X4x0g==
-X-Google-Smtp-Source: AGHT+IEAuWzP61yg+IBAfhtyxl2EcxuJScz0seHFAFC3nPdV8GCUX5E2bIokm1RyROBbpjxGhUQmmg==
-X-Received: by 2002:a05:6830:1483:b0:6d8:1c20:85c3 with SMTP id s3-20020a056830148300b006d81c2085c3mr326213otq.20.1701366735265;
-        Thu, 30 Nov 2023 09:52:15 -0800 (PST)
+        bh=m697ifUX9X9ZplebMMGMHLUBOgLEyfUm1TWhOvlFGBE=;
+        b=kSU7hHAH1eYyUETgfHzmy7yVyLIGb2HyV6CbEk291u0DVToNh3QnF+O2VyWQL8pRst
+         2cnA9Izl3q8XOWzPAqejWi6BxGGQciZP8CKbt+zdL++IOtMyKjZE8F04Zf4+KQJ+Ivd6
+         U578JjVWGjxZuIT6zQ9A4cS1YuT0V+e6MzcKrRsZgHVd2eXawgr7h7jef70q3FxNKArx
+         L6UN2Yi+sol/ydmdvHu7Mk0JBgbdouHKLC8Fz6CoJO85205+drm6pgHGB8TMh5sbXMTE
+         XQWUHErQanXCwWsxMiDjtfoXA0fn6QsHZ2ocGFhK6OYn7g/jpsoC42VpzDgyp5mGvNUx
+         4BMg==
+X-Gm-Message-State: AOJu0YxsJgq6qDp5Hu1NWGxJ+nh1grjWsUeSYcHjJAdlj+Z+OoLvvka4
+	keG2EtPbV84coOxj6bYS38K0y+Irx6wjTj3wgGY=
+X-Google-Smtp-Source: AGHT+IFMPbsJbBI3lrkjpFYiOHwTbmJIP7X15WXFHXZfc/G6uHQ/CdvMqdvhdvdKwiy5zgESNqeISQ==
+X-Received: by 2002:a05:6808:238d:b0:3b2:e61f:f0a8 with SMTP id bp13-20020a056808238d00b003b2e61ff0a8mr327099oib.45.1701366839061;
+        Thu, 30 Nov 2023 09:53:59 -0800 (PST)
 Received: from ziepe.ca (hlfxns017vw-142-134-23-187.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.134.23.187])
-        by smtp.gmail.com with ESMTPSA id i1-20020a9d68c1000000b006cd33d6fd5csm223135oto.11.2023.11.30.09.52.14
+        by smtp.gmail.com with ESMTPSA id bm5-20020a0568081a8500b003b8695c93d3sm252155oib.32.2023.11.30.09.53.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Nov 2023 09:52:14 -0800 (PST)
+        Thu, 30 Nov 2023 09:53:58 -0800 (PST)
 Received: from jgg by wakko with local (Exim 4.95)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1r8lCw-0069oJ-47;
-	Thu, 30 Nov 2023 13:52:14 -0400
-Date: Thu, 30 Nov 2023 13:52:14 -0400
+	id 1r8lEb-0069oj-Qf;
+	Thu, 30 Nov 2023 13:53:57 -0400
+Date: Thu, 30 Nov 2023 13:53:57 -0400
 From: Jason Gunthorpe <jgg@ziepe.ca>
 To: Vasant Hegde <vasant.hegde@amd.com>
 Cc: iommu@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com
-Subject: Re: [PATCH v2 8/9] iommu/amd: Make domain_flush_pages as global
- function
-Message-ID: <20231130175214.GF1394392@ziepe.ca>
+Subject: Re: [PATCH v2 9/9] iommu/amd/pgtbl_v2: Invalidate updated page
+ ranges only
+Message-ID: <20231130175357.GG1394392@ziepe.ca>
 References: <20231122090215.6191-1-vasant.hegde@amd.com>
- <20231122090215.6191-9-vasant.hegde@amd.com>
+ <20231122090215.6191-10-vasant.hegde@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -62,23 +62,21 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20231122090215.6191-9-vasant.hegde@amd.com>
+In-Reply-To: <20231122090215.6191-10-vasant.hegde@amd.com>
 
-On Wed, Nov 22, 2023 at 09:02:14AM +0000, Vasant Hegde wrote:
-> - Rename domain_flush_pages() -> amd_iommu_domain_flush_pages() and make
->   it as global function.
+On Wed, Nov 22, 2023 at 09:02:15AM +0000, Vasant Hegde wrote:
+> Enhance __domain_flush_pages() to detect domain page table mode and use
+> that info to build invalidation commands. So that we can use
+> amd_iommu_domain_flush_pages() to invalidate v2 page table.
 > 
-> - Rename amd_iommu_domain_flush_tlb_pde() -> amd_iommu_domain_flush_all()
->   and make it as static.
-> 
-> - Convert v1 page table (io_pgtble.c) to use amd_iommu_domain_flush_pages().
+> Also pass PASID, gn variable to device_flush_iotlb() so that it can build
+> IOTLB invalidation command for both v1 and v2 page table.
 > 
 > Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
 > ---
->  drivers/iommu/amd/amd_iommu.h  |  3 ++-
->  drivers/iommu/amd/io_pgtable.c |  4 +++-
->  drivers/iommu/amd/iommu.c      | 22 ++++++++++++----------
->  3 files changed, 17 insertions(+), 12 deletions(-)
+>  drivers/iommu/amd/io_pgtable_v2.c | 10 ++--------
+>  drivers/iommu/amd/iommu.c         | 28 ++++++++++++++++++++--------
+>  2 files changed, 22 insertions(+), 16 deletions(-)
 
 Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
