@@ -1,88 +1,98 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
+Received: from szxga06-in.huawei.com (szxga06-in.huawei.com [45.249.212.32])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A3E813AC8
-	for <iommu@lists.linux.dev>; Thu, 30 Nov 2023 06:09:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="RVGtWnK9"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1701324598; x=1732860598;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=od25jifz4eVRuBZX5AfB3lIKHX+oCAQS49YG9v4v83A=;
-  b=RVGtWnK9814m7yt9ohUCa69m/zytbToX3NI/lGsvOQA57Xi36+p3sExV
-   KkTW4m0MhFAIZAXwMfoR94sVWl7O1Tdpp79ob5Eu14xiTkxcQOkz9fZIF
-   TxSxHVEXk9+TiWV2YJFdU8ELl+1WcuF+Xe41g3hieCI2DOGiVv6bIFQf2
-   oLW86u8st+CYWGpqROsYn3g9TGXolk7AzSz3Y0WbkyeIF3atPal7NT9a/
-   hApz9HxLLCrhSocGu+ZL77k95rj2jolQQlp3MYAZzuHehzhDS3d1LXvtp
-   Omz+YpXqenotbAL2+4wTiJ7z8lY3gb4bM4DSgbTEj4onLDzUr7XUCJAKa
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10909"; a="154301"
-X-IronPort-AV: E=Sophos;i="6.04,237,1695711600"; 
-   d="scan'208";a="154301"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Nov 2023 22:09:57 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10909"; a="913087219"
-X-IronPort-AV: E=Sophos;i="6.04,237,1695711600"; 
-   d="scan'208";a="913087219"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.249.171.155]) ([10.249.171.155])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Nov 2023 22:09:54 -0800
-Message-ID: <1af87099-ad52-4b34-a87c-f12925903a15@linux.intel.com>
-Date: Thu, 30 Nov 2023 14:09:52 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5810B168BD
+	for <iommu@lists.linux.dev>; Thu, 30 Nov 2023 09:05:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; dkim=none
+Received: from dggems704-chm.china.huawei.com (unknown [172.30.72.60])
+	by szxga06-in.huawei.com (SkyGuard) with ESMTP id 4Sgqx60g8Mz17MKq;
+	Thu, 30 Nov 2023 17:03:38 +0800 (CST)
+Received: from lhrpeml500005.china.huawei.com (7.191.163.240) by
+ dggems704-chm.china.huawei.com (10.3.19.181) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35; Thu, 30 Nov 2023 17:05:31 +0800
+Received: from lhrpeml500005.china.huawei.com ([7.191.163.240]) by
+ lhrpeml500005.china.huawei.com ([7.191.163.240]) with mapi id 15.01.2507.035;
+ Thu, 30 Nov 2023 09:05:29 +0000
+From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>, "robin.murphy@arm.com"
+	<robin.murphy@arm.com>, "will@kernel.org" <will@kernel.org>,
+	"joro@8bytes.org" <joro@8bytes.org>, "kevin.tian@intel.com"
+	<kevin.tian@intel.com>, "nicolinc@nvidia.com" <nicolinc@nvidia.com>,
+	"mshavit@google.com" <mshavit@google.com>, "eric.auger@redhat.com"
+	<eric.auger@redhat.com>, "joao.m.martins@oracle.com"
+	<joao.m.martins@oracle.com>, jiangkunkun <jiangkunkun@huawei.com>, zhukeqian
+	<zhukeqian1@huawei.com>, Linuxarm <linuxarm@huawei.com>
+Subject: RE: [PATCH 3/5] iommu/arm-smmu-v3: Add read_and_clear_dirty() support
+Thread-Topic: [PATCH 3/5] iommu/arm-smmu-v3: Add read_and_clear_dirty()
+ support
+Thread-Index: AQHaIeBW6UH91H0G8kmtzlEDGUzUpLCRso4AgADiScA=
+Date: Thu, 30 Nov 2023 09:05:29 +0000
+Message-ID: <acdd6b446d164d52957f436964d46de1@huawei.com>
+References: <20231128094940.1344-1-shameerali.kolothum.thodi@huawei.com>
+ <20231128094940.1344-4-shameerali.kolothum.thodi@huawei.com>
+ <20231129193506.GB436702@nvidia.com>
+In-Reply-To: <20231129193506.GB436702@nvidia.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Kevin Tian <kevin.tian@intel.com>, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 4/5] iommu/vt-d: Add support for static identity domain
-Content-Language: en-US
-To: Jason Gunthorpe <jgg@nvidia.com>
-References: <20231120112944.142741-1-baolu.lu@linux.intel.com>
- <20231120112944.142741-5-baolu.lu@linux.intel.com>
- <20231129202615.GN1312390@ziepe.ca> <20231129202851.GG436702@nvidia.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20231129202851.GG436702@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-CFilter-Loop: Reflected
 
-On 2023/11/30 4:28, Jason Gunthorpe wrote:
-> On Wed, Nov 29, 2023 at 04:26:15PM -0400, Jason Gunthorpe wrote:
->> On Mon, Nov 20, 2023 at 07:29:43PM +0800, Lu Baolu wrote:
->>
->>> @@ -2311,6 +2316,13 @@ static int device_def_domain_type(struct device *dev)
->>>   			return IOMMU_DOMAIN_IDENTITY;
->>>   	}
->>>   
->>> +	/*
->>> +	 * Hardware does not support the passthrough translation mode.
->>> +	 * Always use a dynamaic mapping domain.
->>> +	 */
->>> +	if (!ecap_pass_through(iommu->ecap))
->>> +		return IOMMU_DOMAIN_DMA;
->>> +
->> Doesn't this return from def_domain_type completely prevent using an
->> identity domain?
->>
->> I thought the point of this was to allow the identity domain but have
->> it be translating?
-> I suppose the answer is the next patch deletes that stuff.
-> 
-> I would probably have structured this in the other order, first add
-> this hunk and say that old HW is being de-supported. Remove all the
-> now-dead code creating the 1:1 page table, then refactor the remainder
-> to create the global static.
 
-Okay, that would be more readable.
 
-Best regards,
-baolu
+> -----Original Message-----
+> From: Jason Gunthorpe <jgg@nvidia.com>
+> Sent: Wednesday, November 29, 2023 7:35 PM
+> To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+> Cc: iommu@lists.linux.dev; linux-arm-kernel@lists.infradead.org;
+> robin.murphy@arm.com; will@kernel.org; joro@8bytes.org;
+> kevin.tian@intel.com; nicolinc@nvidia.com; mshavit@google.com;
+> eric.auger@redhat.com; joao.m.martins@oracle.com; jiangkunkun
+> <jiangkunkun@huawei.com>; zhukeqian <zhukeqian1@huawei.com>; Linuxarm
+> <linuxarm@huawei.com>
+> Subject: Re: [PATCH 3/5] iommu/arm-smmu-v3: Add read_and_clear_dirty()
+> support
+>=20
+> On Tue, Nov 28, 2023 at 09:49:38AM +0000, Shameer Kolothum wrote:
+>=20
+> > +static int arm_smmu_read_and_clear_dirty(struct iommu_domain *domain,
+> > +					 unsigned long iova, size_t size,
+> > +					 unsigned long flags,
+> > +					 struct iommu_dirty_bitmap *dirty)
+> > +{
+> > +	struct arm_smmu_domain *smmu_domain =3D
+> to_smmu_domain(domain);
+> > +	struct io_pgtable_ops *ops =3D smmu_domain->pgtbl_ops;
+> > +	int ret;
+> > +
+> > +	if (smmu_domain->stage !=3D ARM_SMMU_DOMAIN_S1)
+> > +		return -EINVAL;
+> > +
+> > +	if (!ops || !ops->read_and_clear_dirty) {
+> > +		pr_err_once("io-pgtable don't support dirty tracking\n");
+> > +		return -ENODEV;
+>=20
+> All these prints concern me, either these can never happen due to
+> constraints on the caller, eg iommufd, in which case use WARN_ON_ONCe
+>=20
+> Or iommufd does allow these improper things and thus it should
+> silently fail.
+>=20
+Ok. Will revisit these for next revision.
+
+Thanks,
+Shameer
