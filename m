@@ -1,51 +1,51 @@
-Received: from mail-lf1-f41.google.com (mail-lf1-f41.google.com [209.85.167.41])
+Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C42B13984D
-	for <iommu@lists.linux.dev>; Thu, 30 Nov 2023 09:54:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B843D3A285
+	for <iommu@lists.linux.dev>; Thu, 30 Nov 2023 09:54:08 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="QCMwFnpB"
-Received: by mail-lf1-f41.google.com with SMTP id 2adb3069b0e04-50bca4df746so1065087e87.1
-        for <iommu@lists.linux.dev>; Thu, 30 Nov 2023 01:54:01 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="Ym4zRiOS"
+Received: by mail-wm1-f52.google.com with SMTP id 5b1f17b1804b1-40b427507b7so4507475e9.2
+        for <iommu@lists.linux.dev>; Thu, 30 Nov 2023 01:54:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1701338040; x=1701942840; darn=lists.linux.dev;
+        d=linaro.org; s=google; t=1701338047; x=1701942847; darn=lists.linux.dev;
         h=content-transfer-encoding:in-reply-to:organization:autocrypt
          :references:cc:to:content-language:subject:reply-to:from:user-agent
          :mime-version:date:message-id:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=ypfBE2mUwRlOk1/UJSC/vFHOZBQNyijLp08IOFnj5HA=;
-        b=QCMwFnpBLXZw3z1+un/j8kkdG9DH4mo0A8AKjNd47NmL2Ukz1ITR9EqQqD8mtKln0H
-         i1qwxnelsq+SF/txTK1LRbAnhPx8EiwZzHG1vT/jaKgv8uZ6Kr7JFvg0XR/q2Zx2ummS
-         0jYmvDuJX5LjXl11hq4viyWRv1KyswJrbyGLr2IKvNmlC9fQ6BSAAUduYnecuMoFifbF
-         Wb/z+g/LOeJim+xjrWU6TdW9T9/xTEIYt5VSe/8E1hs7+gIl4VtSPSIIAMplz9uOKfMv
-         foPUXn8Z9Jw12ym0As/oHu44E/GMkNtv7gTEozk72RlJiAEP2k/lgweZ3WpKdjWjbbBx
-         Egzg==
+        bh=oFnK2W1R2fhcw00BqzFHQ4o1k7qynf7VtO0VZ35BT6I=;
+        b=Ym4zRiOSKMmUOTKUp6dydoeVy/ZknXesZqtkjnBKEHtLH35jsewS+M0VEY5bcllwG3
+         wI6BCHZQH168vO2dzIKjiA+DR/TCl2JvFgAKHSH31kAK0G2nDgDHN73tP4oGUuqm1E10
+         6e6K/cNOmA5BYBIvnGp3xyoo3Mj+qBTdF+SEV8BzLLMsH0ILNwX198BkZ5v2P63nAi4j
+         xZTqNeu51gIaV+SC6hWog6uhp19gkXwDmAbjIH3xyIO2gIpAcP2KXO4OKqGZls9XvNOm
+         BHf8eZ2R96V6QGObczxIhogTqhzH9aSy5L0nVqQq9g5WpJhfWsd5Qi+yXH3EZF/qldUZ
+         g/Uw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701338040; x=1701942840;
+        d=1e100.net; s=20230601; t=1701338047; x=1701942847;
         h=content-transfer-encoding:in-reply-to:organization:autocrypt
          :references:cc:to:content-language:subject:reply-to:from:user-agent
          :mime-version:date:message-id:x-gm-message-state:from:to:cc:subject
          :date:message-id:reply-to;
-        bh=ypfBE2mUwRlOk1/UJSC/vFHOZBQNyijLp08IOFnj5HA=;
-        b=bpAQO+7EdbQeyTbmrzpoTjlxU5yUN9iOhmi5SyjhkeuWWxiIT4kLU6qcDynoFgVG7V
-         zkXXQr8QA90mNfv4LLVrIMvf4cpAJQb9rqf4TVPTaiVxZeW3HWcDd2HkszN/oDjhRykI
-         zKvGUxEXR7PTjbf4CNTYNqKfqSxGeWl0bik1C9KTBSJcELgiT1nsUKY/p+Dtfou/OMnM
-         OJdvXXLgwtT7RN2UYfKsSpFv9A/C0i7FcBHlEABHBLeEi6Bj91KM9aXWbqujn3vteyzQ
-         HK6Q1hsTBkPrAKmSMuTedePpTNlbRJYius7b/n75mUPLrgbwNrw363HM1zHVFCilajsB
-         hpjA==
-X-Gm-Message-State: AOJu0Ywibwk5SOEAsT6wpZltQWsniYpB6M5MsQ+snlWo48pNy0DmqWwn
-	Zsv59zrDOWp5kQUVzMAEDtFOtQ==
-X-Google-Smtp-Source: AGHT+IFQF0CXVcTmNFy629odrwl/+5IqbhhxIfzAGd022vGwwKFmQ/6DCgniBrfFH0RwMSsmADJpjQ==
-X-Received: by 2002:ac2:52ba:0:b0:50b:bd23:75e0 with SMTP id r26-20020ac252ba000000b0050bbd2375e0mr4614022lfm.35.1701338039886;
-        Thu, 30 Nov 2023 01:53:59 -0800 (PST)
+        bh=oFnK2W1R2fhcw00BqzFHQ4o1k7qynf7VtO0VZ35BT6I=;
+        b=fBgwzvBzJllQqGIbQad8DLqHMhAJ2b5JV0U2aWC7XKRQaxqsulEa6T6CF/Z0ZwHjRB
+         wnfP4A+2nkkb6KRsHgSkgcJZuBkN9sQXFy3q0QX6NEWepznmyQhNSthbHxWn0Y7J3cjJ
+         jHC7zsTQwy0ASCa9fi8AARAJfdYOx/8t3DwYqSY/lKqOd0zYxbJFPsk+X7rMmo91akLU
+         8U0hdtHlU2YhHZxtUeX2Qcr5jTdVUpaXu+QXjyZ1mn3ZTWipUSWNWtCsv+SHdT6WUamn
+         CQH4oEOM/SYHJ2R/FXYKxiG8X0LwetgHMJZBEfxKwPnk/KJJwIMGZB36QKoIaXU6fUsT
+         S5RQ==
+X-Gm-Message-State: AOJu0YxKfgdYgkj8wV4NOFdBJN8zxfLlqPW11keu0LNlewjSA5yPPcD7
+	mDQcFxbrw/YSUQjawVkQCXVshg==
+X-Google-Smtp-Source: AGHT+IERbAR5kCEXoFWKv930fgPayDnjMttXIi85mFVhsgzWECqO8UigNd0v3U/lwOMValdiRaGRQA==
+X-Received: by 2002:a05:600c:1c1c:b0:40b:37eb:900c with SMTP id j28-20020a05600c1c1c00b0040b37eb900cmr13788686wms.6.1701338046906;
+        Thu, 30 Nov 2023 01:54:06 -0800 (PST)
 Received: from ?IPV6:2a01:e0a:982:cbb0:41c9:3acd:a6e2:5242? ([2a01:e0a:982:cbb0:41c9:3acd:a6e2:5242])
-        by smtp.gmail.com with ESMTPSA id p36-20020a05600c1da400b0040b478da760sm1358964wms.48.2023.11.30.01.53.58
+        by smtp.gmail.com with ESMTPSA id p36-20020a05600c1da400b0040b478da760sm1358964wms.48.2023.11.30.01.54.05
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 30 Nov 2023 01:53:59 -0800 (PST)
-Message-ID: <45fcc388-d0d8-49fe-bb51-d5f8f33236ad@linaro.org>
-Date: Thu, 30 Nov 2023 10:53:58 +0100
+        Thu, 30 Nov 2023 01:54:06 -0800 (PST)
+Message-ID: <690b7dbd-3165-4aa5-af85-1a1eaa12d176@linaro.org>
+Date: Thu, 30 Nov 2023 10:54:05 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -55,7 +55,7 @@ MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
 From: Neil Armstrong <neil.armstrong@linaro.org>
 Reply-To: neil.armstrong@linaro.org
-Subject: Re: [PATCH 5/6] arm64: dts: qcom: sm8550-mtp: Enable the A740 GPU
+Subject: Re: [PATCH 6/6] arm64: dts: qcom: sm8450-hdk: Enable the A730 GPU
 Content-Language: en-US, fr
 To: Konrad Dybcio <konrad.dybcio@linaro.org>, Will Deacon <will@kernel.org>,
  Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
@@ -69,7 +69,7 @@ Cc: Marijn Suijten <marijn.suijten@somainline.org>,
  devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
  linux-arm-msm@vger.kernel.org
 References: <20231127-topic-a7xx_dt-v1-0-a228b8122ebf@linaro.org>
- <20231127-topic-a7xx_dt-v1-5-a228b8122ebf@linaro.org>
+ <20231127-topic-a7xx_dt-v1-6-a228b8122ebf@linaro.org>
 Autocrypt: addr=neil.armstrong@linaro.org; keydata=
  xsBNBE1ZBs8BCAD78xVLsXPwV/2qQx2FaO/7mhWL0Qodw8UcQJnkrWmgTFRobtTWxuRx8WWP
  GTjuhvbleoQ5Cxjr+v+1ARGCH46MxFP5DwauzPekwJUD5QKZlaw/bURTLmS2id5wWi3lqVH4
@@ -95,7 +95,7 @@ Autocrypt: addr=neil.armstrong@linaro.org; keydata=
  4zcsPWvwnXgfe5tk680fEKZVwOZKIEuJC3v+/yZpQzDvGYJvbyix0lHnrCzq43WefRHI5XTT
  QbM0WUIBIcGmq38+OgUsMYu4NzLu7uZFAcmp6h8g
 Organization: Linaro Developer Services
-In-Reply-To: <20231127-topic-a7xx_dt-v1-5-a228b8122ebf@linaro.org>
+In-Reply-To: <20231127-topic-a7xx_dt-v1-6-a228b8122ebf@linaro.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
@@ -104,28 +104,28 @@ On 27/11/2023 17:20, Konrad Dybcio wrote:
 > 
 > Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
 > ---
->   arch/arm64/boot/dts/qcom/sm8550-mtp.dts | 8 ++++++++
+>   arch/arm64/boot/dts/qcom/sm8450-hdk.dts | 8 ++++++++
 >   1 file changed, 8 insertions(+)
 > 
-> diff --git a/arch/arm64/boot/dts/qcom/sm8550-mtp.dts b/arch/arm64/boot/dts/qcom/sm8550-mtp.dts
-> index 9a70875028b7..52244e9bfdee 100644
-> --- a/arch/arm64/boot/dts/qcom/sm8550-mtp.dts
-> +++ b/arch/arm64/boot/dts/qcom/sm8550-mtp.dts
-> @@ -512,6 +512,14 @@ vreg_l3g_1p2: ldo3 {
->   	};
+> diff --git a/arch/arm64/boot/dts/qcom/sm8450-hdk.dts b/arch/arm64/boot/dts/qcom/sm8450-hdk.dts
+> index 20153d08edde..a20d5d76af35 100644
+> --- a/arch/arm64/boot/dts/qcom/sm8450-hdk.dts
+> +++ b/arch/arm64/boot/dts/qcom/sm8450-hdk.dts
+> @@ -580,6 +580,14 @@ &dispcc {
+>   	status = "okay";
 >   };
 >   
 > +&gpu {
 > +	status = "okay";
 > +
 > +	zap-shader {
-> +		firmware-name = "qcom/sm8550/a740_zap.mbn";
+> +		firmware-name = "qcom/sm8450/a730_zap.mbn";
 > +	};
 > +};
 > +
->   &i2c_master_hub_0 {
+>   &i2c9 {
+>   	clock-frequency = <400000>;
 >   	status = "okay";
->   };
 > 
 
 Reviewed-by: Neil Armstrong <neil.armstrong@linaro.org>
