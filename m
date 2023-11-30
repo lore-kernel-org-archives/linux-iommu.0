@@ -1,38 +1,38 @@
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2073.outbound.protection.outlook.com [40.107.93.73])
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 844181C39;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED2251FBF;
 	Thu, 30 Nov 2023 01:14:48 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="d1Vb+2wc"
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="e0rnZxPy"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DgCrtPVkWmnRHAiiNjldInWiJvuinV96ZDD0l0szCpjy/iuty8jptWzzBllDKfrruSGwVrZku9aZEE2rLibEfC6r3Vi43nme60Zb5yR6IlsR4kKJYT6NEmUvLw3O4WIPPRBVcyYG+Eh//aMzBAzeENCXz6IqHn1qjyDohnNqbgXfUx9cvMp5hVnyXJiAZ6OQ8RCxyfK+Kdl9Pzx91l+6hYxK5Hhm/wwMHCiO0nioiN6eUmPO5m9YGOnyNWM+MZwhyeKdlwf9Pq6gBgEOjbOt8HxiotySNNJr5C2bEo/PHavRLA5Vw9PWca/3Ym1CRWa8qeRMrWLyrKVAIR4aEnCmSQ==
+ b=kXlBWeKsjzZyZuNC7fG3jAxRDQxrCJ3PkrU8Oy6arq0hcnpX2/ll+sqxeHqMKl8dZd56/KTOkyzgPM90CoYi1/6fUAzn7So7p6XmNWe06GXwBpt+CY0X+ZLd5IEJDGbyuZ8YTh1blVMLmNJ2kdx+V6q1wKLJE+w3btz7ZuGYTXPUDOZAyFsWt/nf57oj+tGmV5Wh6uvj8zI6ImdLTS9LLj+7aypuAfySIHouTLPjz5kCXc3U/y1gl6IR8hfMPVN0KVuVuuDSrtmNr9hwTMyRd61rTbj5VGlJ+uiqaeClP0lMhY1DzvH18ALw9gegeNHlfy4Nc1l60QutX+DV0dOyLw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=472sQygPvvhZhJ8WiOO2/mkS7+2EbUYdhDQB/DwfKZ8=;
- b=dzTYFpI/gxhEle75n4T2ZGOqaeli+03q1x/yk+3oCqMmOUnDAwdbZaHvGXFBh7JFvK6qpgx5iVMVJNrucCjSDY/I8K5MipJiiOvV8dVXkEy0okUY3a4H7fm2vBfMzOaw5FxlChe/WEZ5jt7PHRKzql9N74shkWw0kjywlX5T7DxpmNVi1ICuheA9BdIdguViffvqTkJTfJShscYq31F1lwboNNzAuLRPupPzJXOxggwLa8CItZXMETBJ7p7l/s1xIF0zTvBHLLuvlx+d9bPVwSszH6m0YrXd+JfzCw8ZsoI0A9grsOQc4040h/ZtZwncWGtKGUWqrIw1AxiW6lPV3g==
+ bh=Hq1FeEtZzTGLjMBeHZUc8BYLNkFyjkdrYErvAcq9nLo=;
+ b=aZAmJ55fEifEF6tj54sDXKUKdLqUpGoicbBdXh/5FkVa494i+I4J8y/rlk0crEBrMnVt5kKzT4WxnzLX6ndgCgEf3xofayJD8zWDTMxHW6RHx/PzYdvMeHVPbdCDPpcetCWYPyCrQC8Pxy3rwLomts9rSyIw28sP2HWoXBxzNQ42xQbJKvw1vh6t+hqBp3pNoHQoAvNkQnkT4glOVuDyP7KfVPU/Zr1FBwFo/NJsqNl1hidkEpL0pOxJUqf4+/8QR+RZs3nzrsT8n42ucUY2UDE16UBnrq7dtcoqIQcY8cVGysPh5D1jDDI9MTj1lflAxlFlYYMjctRp3+asGK4v2Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=472sQygPvvhZhJ8WiOO2/mkS7+2EbUYdhDQB/DwfKZ8=;
- b=d1Vb+2wcn59iiDfGPF17wzNLkS3A5pHoC7CvJc3oykA0DwvP1fErXHZaYJFGuLYaeieDiHd7T1rA2L8zfq7ItOjyeBRDYLEdmgtAfK9H+0nfogDyNZGEZDCdGU3WHj2MpBuHDTYfAuD7SIV6atawEVNY8RxZHvzNOSkadKeiVY8QjtlcfXWIHZSdBQgLuIQfF5+CFEcOz0MWtLF6SS0h16HbvwSmv44ckC+1si5AI7qkmmJwos8Ij8L7MYnqh4P0+oe7VMM4JVgdeZHF5SXWdAmd2EXqnG1up1PS13Oaq+lSxYXTsDZ25eSez3LFNvK55uWQWp76nkdanS20gj5DCw==
+ bh=Hq1FeEtZzTGLjMBeHZUc8BYLNkFyjkdrYErvAcq9nLo=;
+ b=e0rnZxPy7zFTOuo056Q7WaK1DiwHi6g8x53IaTg9kFRP1TyWb/fOZxMybcdbnkKjkWPn67s/5k0xdpjygtpyGukF9AUF1n42KB+QkOvuHBJmD8BDBKEtyeqlmu3gT1OgkN69W/eKbcdPCncoI7o9VbK51Iimib1RnUhlpWUFzbU7W8q0cW24v5TH3M5uM5zGUFdJO5R8KQeeP7aTHdKkQcc2zfOSi/fD3y9kio9WiyqFXhZAvdJwAR+WalZp3r/KRUvWKEWuarDhSP9h62xZQD8uYQRVtR2jQbEM9oRlcp9S3611EV8tKhm2FiZ5jmbtpU61itlLGN/m9o+NXES//g==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by MN0PR12MB5836.namprd12.prod.outlook.com (2603:10b6:208:37b::14) with
+ by DM6PR12MB4484.namprd12.prod.outlook.com (2603:10b6:5:28f::24) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7046.22; Thu, 30 Nov
- 2023 01:14:40 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7046.23; Thu, 30 Nov
+ 2023 01:14:36 +0000
 Received: from LV2PR12MB5869.namprd12.prod.outlook.com
  ([fe80::60d4:c1e3:e1aa:8f93]) by LV2PR12MB5869.namprd12.prod.outlook.com
  ([fe80::60d4:c1e3:e1aa:8f93%4]) with mapi id 15.20.7046.015; Thu, 30 Nov 2023
- 01:14:39 +0000
+ 01:14:36 +0000
 From: Jason Gunthorpe <jgg@nvidia.com>
 To:
 Cc: acpica-devel@lists.linux.dev,
@@ -41,15 +41,15 @@ Cc: acpica-devel@lists.linux.dev,
 	Joerg Roedel <joro@8bytes.org>,
 	Hector Martin <marcan@marcan.st>,
 	Robin Murphy <robin.murphy@arm.com>
-Subject: [PATCH v2 06/30] iommu: Make iommu_ops_from_fwnode() return the iommu_device
-Date: Wed, 29 Nov 2023 21:14:06 -0400
-Message-ID: <6-v2-f82a05539a64+5109-iommu_fwspec_p2_jgg@nvidia.com>
+Subject: [PATCH v2 07/30] iommu/of: Call of_iommu_get_resv_regions() directly
+Date: Wed, 29 Nov 2023 21:14:07 -0400
+Message-ID: <7-v2-f82a05539a64+5109-iommu_fwspec_p2_jgg@nvidia.com>
 In-Reply-To: <0-v2-f82a05539a64+5109-iommu_fwspec_p2_jgg@nvidia.com>
 References:
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: SA9PR13CA0105.namprd13.prod.outlook.com
- (2603:10b6:806:24::20) To LV2PR12MB5869.namprd12.prod.outlook.com
+X-ClientProxiedBy: SA1PR03CA0001.namprd03.prod.outlook.com
+ (2603:10b6:806:2d3::12) To LV2PR12MB5869.namprd12.prod.outlook.com
  (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -58,292 +58,219 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|MN0PR12MB5836:EE_
-X-MS-Office365-Filtering-Correlation-Id: 46ef5bdf-3aa5-4777-9c14-08dbf141b650
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|DM6PR12MB4484:EE_
+X-MS-Office365-Filtering-Correlation-Id: 9f7df381-5df8-42c8-ab66-08dbf141b5fe
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	y60t36f9HYC2fRXe7ZctsrmYbnIN5AnDgdD1U3b2NmSbb2dZbzkz2kN0qql2xv+VfaqFG3RPcOIoo6drepB2ylgC+5OSN4P+NmcERFWkxH7ToKUzfbufPn9vpkWBXSNo9xdcagbT6Xk2mSCg+h7R2QPApCkSlmy/t9E7C0CTVzuhaL3B2QdvVl0ww/v4r/Oc7VWihntnVPHxNqORhHRlIlPMdhBns2O2QIHdePiLyZRJiwca30GO/HEkH3DqpDcLZYeREh1IKxvGHU8XrP0nnao0EVDyRnDgbSkzU9W1Eq3nByGwJKjNJ59tC4yQ2krDVkOKZgRr9Ael77PRlbG96hOMzxzVCgUV0g5Hkx4PKIkRhMD+6ZcxYiMmQWxShBA3ECJ1RwQrhiMv/evVxnp+2munEaKoprAOdm0gLTF9DcBKAqIgveROSGDI38PqXj7w7EuQWbphskbyuCxXhJG0p9E0sk8cIGSQiO8Eyi5lGPJLmLZJ7bkOhkz2/GqQ+V6xlBMSOVMxiSSmAbGR0j9SSsTZdiq17bL5xfKbG/QwFjOZYZaugxzGYqRa7VRJmpAGf00V2o9eAW+oUgrSZQ5sKqMLnsK5evHl75MAZyALzVUpDQC7RtaIAk6rD0cMbaLe
+	SR0vquVqZoC5xUjjKkkpxGkUGnZOsdZIuQQqvD9gPcBrlVgU8MOwUYDrzlm76ghF13FgAcGYNT7q4EQLbBAPvavre8FGiaOSDQejz0tpGPd0M+Bbz7MtLuVYDYne0A2jyT1IJ9sfDdCAMC1WN5f3rfra8xe7x/yIShPJ4EcSh4ew39yVJ9QKCWR3LfsQ+FKcxFp+9Q3wztB6PlL0Dq2UcnE8scvQBR/NW2V86dnpbOJOeouK1XHJhYB1zGG/5C8e+kKDZlaVCOWj/b0eUaXzEL8mzxydCMQ4t8RjgjiQPEu633zRZhWx+dJU4z4yzjZIwC8PeOBd0yGEBwxssfel2xb1XugDAAoxVXl/oYpBcJuEsHxIjvWCT/2vP6q1zzrxiSgSbfpDU5uZL9UYhlz6DHTcMpFSikyydO+AJE7fPalJz3/Y0BRmrWFTeZFuBUFEU8MMvwVPFc0FyJqOOS6bQ0W5Q5i5LW9oCxEtN1jOpHbCpUs4hmh4ShMJOHCCeeK4lHtFyEu2zrbikRuOaYPzMnLHUHni2SNBtZpwsHrpKnuUCMVPzI3LZ6y6PENSkdnKVN1ahiP4zn9PAL2HlPDNcVPRjx/uJh5uwvpAWQYEGp/YjN7W24EvTnjh588cwOM0
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366004)(346002)(136003)(396003)(39860400002)(376002)(230922051799003)(1800799012)(186009)(64100799003)(109986022)(451199024)(6486002)(4326008)(478600001)(8676002)(86362001)(5660300002)(8936002)(54906003)(66476007)(66556008)(66946007)(6506007)(2906002)(316002)(6666004)(6512007)(36756003)(26005)(2616005)(83380400001)(41300700001)(38100700002)(4216001)(266003);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(376002)(366004)(396003)(136003)(346002)(39860400002)(230922051799003)(109986022)(1800799012)(451199024)(186009)(64100799003)(83380400001)(2616005)(26005)(66476007)(66946007)(54906003)(66556008)(2906002)(8676002)(4326008)(8936002)(86362001)(5660300002)(41300700001)(6506007)(6666004)(6512007)(36756003)(316002)(478600001)(6486002)(38100700002)(4216001)(266003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?ZkmPTfBggaSsLYTFFJZSzVzhMyPJUsm6xB5QDDLh10LgmVukkDdaR53MmeAq?=
- =?us-ascii?Q?2NiBH61ErMWPuP4ZeaJGj3o+AmttDLUaOeJDJyGcFBOI+8a6oHf+7VAcGOWw?=
- =?us-ascii?Q?KJiKgkBu3HvmqPg0mBeoA/+kpvza/r9YmophWNwFW1e+pNdZHi533dPyKKP6?=
- =?us-ascii?Q?2A6Qrm6lRNdrJSeUiivN4xoxbdZpCrxZlWg0FdDtAvnoy5o4HFs/nu95PYq1?=
- =?us-ascii?Q?PB2U/2/jfoEvyJcmZ8hxj3FZkevNqfvi37PVP94VCUcX9VEiLuOzvLWzx51f?=
- =?us-ascii?Q?cqDlQ083ZCtJOVWWnV8lR4L3/yU4rfsMDzq7b69vfiMjdjXwc1VIQYPSysMv?=
- =?us-ascii?Q?hcDZLBU51hIjrhVk9h7vsoxoebIRZ8Es0R/Cj3pKHD99V6P0Bll5VnVS56A7?=
- =?us-ascii?Q?FZegEYkYRMkln88nUCq52++5fO031wS4gCHcTCgQpKUG9eAGY7g9PWh1LWIn?=
- =?us-ascii?Q?iqKIO8Z0+vvOYjFahIGJVUW5Cg4jkBpjtkZr54VODmAPyxmt+1KwLr33CTZm?=
- =?us-ascii?Q?tdjAb/1Oe6wSYeDKz8GlXmNYz1R5IEE2brn3/qTG9QsTcFfGZ4ygPbRAapS3?=
- =?us-ascii?Q?k2F7qboxINYr50By+zsdbHnVMQGDmoYMT2fpUZAToT+pgjhGZDju7dwdo11b?=
- =?us-ascii?Q?JhzXBqmTCTTT51npYSgbxonbdm/J/mD8XbeLdiMyCEASkIzx+imtNkPL+Mt2?=
- =?us-ascii?Q?wCEtmFb7SNZHBhljhISM8MXT3SL50omrsLQ+UMDXlC6CQW8EiFEpB+MfDRXf?=
- =?us-ascii?Q?3IEXvvuTLiQa2jRPw+sL5xXWtg6pLsP2nOQfXmSXkCxlwbvrwyoHNpd8v07g?=
- =?us-ascii?Q?x7sGntMG/siWjdXGRa57t3IpvvP9vhjVTb5Zvp16DCgi/iltwwDyekN5bHfP?=
- =?us-ascii?Q?geMlQqJ5hF87hjudVcnWnV9zI6/D2yxybjIqSM1EmcRW0N5R4eb4RKKt1RJq?=
- =?us-ascii?Q?LxBVJQ+fWpX01ea5ptGDg55Ufam8P5vTgVXi6/kNi+RJTHQUtlsEus56LS82?=
- =?us-ascii?Q?lHkrkELtrr2VLxPn/YVJo8JqHR+Liw37ywFMUCSyxjBPew3/qNnCctW6sAu6?=
- =?us-ascii?Q?e02B5RdeEboGWYLzsOcvk6Z1WJEvbaApBOb4exPuQ38T+QJKmobvgAjy3ff5?=
- =?us-ascii?Q?pxVeL1ow2dU0c8RRF7y9NCOcMkpA2sXg0N1xDMOZBiM2pYkh5MC8KB6I9MIt?=
- =?us-ascii?Q?D7BzcTbmoUIqogMnwLhqqb7f3s6cyjibm6cyydEXcJvWNetNcE0MJXlZ1yJb?=
- =?us-ascii?Q?zdKJ+ZyYm4+LlaJ8of41a46BllbveoUICL4KNDv6SsHb6OTpPPs+0vui0dpm?=
- =?us-ascii?Q?uJfxdi7eBWDMHNLBmRl/8TxPuOCgBhet21z3Wddxz2iloP0hOn3CkTKYBQU7?=
- =?us-ascii?Q?ygr2F6HXqcwYZMN2CdV1CoHyCqiI52a49b6IfScbJQAa1tghRFDooIezUavE?=
- =?us-ascii?Q?BbK0VBbmoSqB8WkUqntTBIF/irgWhMgzD+ZuEmGpZOs0eUbS04ivWnmhUniI?=
- =?us-ascii?Q?mtgu/y4866xYiSPf5YSViQrJcRsvlTka5jgJfP9Oi9KbaT53l6KAA73WL7fD?=
- =?us-ascii?Q?39WIXbz/MRx1U3vF1U4XvRkSa9ZbtTE7aFQZW7Rv?=
+	=?us-ascii?Q?XaUnw3csMT089QXEqI3qaHPJlPkmGIjGA9GPaqDcTsN9KP30o8tVnBslvxz2?=
+ =?us-ascii?Q?7gwzXfUTpKYKSt9yAhDphkh2plGFI55MSgJs4liTucj3+4uPI+VvpUBxM4Ib?=
+ =?us-ascii?Q?L9cTHe1hA+3UQSAlxJ+clbeRkH6Mb7Vmhx1YPGVQ2+IZVz2dyHjr0Founvgm?=
+ =?us-ascii?Q?HD9QFDwsxt0zwiDOyXlje5iCUA3E8tL1hvvd3y+fdbyLVUzQYfj/Moo+TpEs?=
+ =?us-ascii?Q?yyC7Z0hLbz2DP1jpPl7LzbIQdRmNfZxmpXiij14kNtBsmxPNbZ/Ax2JTPMVA?=
+ =?us-ascii?Q?4NXJgZdU8bAe9/Fs2OMODnDRw93e478EcLnmlZS/q1Wq+rDgfy7EKm3x6Odb?=
+ =?us-ascii?Q?HHO+U5scT51DXFy8O0DbycF4s/nipTkRKwzjj7nGx0QRKMs0y/vQxbue1JDu?=
+ =?us-ascii?Q?rXyDQm02NrmWTpQ2gJhEIbbL0BrOZEmUB28aYoe5GesYSk7q2XEgDxSquyZP?=
+ =?us-ascii?Q?yNRvbbg736PkPfHp4NufTpa1Ii8RyU5+O1RqEDFphc3pUnbpQc7b7atyHIek?=
+ =?us-ascii?Q?nndAynz8Jt79H9eJbqNyqo5pedLTNgYMR2nSUzfKXKZcZ/zUBT2vSj8tenC3?=
+ =?us-ascii?Q?wwsHTsuBtLpdrz9P725WLsPcUzq/L0s1nrC8TuUiLQaWtqk1pXhWCVsdGLoE?=
+ =?us-ascii?Q?u5bC7LHlIWvV9BEiirWfhot8DjY243yr9P6esYMsUy/0a9vwZNHULyiycLGN?=
+ =?us-ascii?Q?Q1IWAlnAOBxyCMLSIzRDFNPnLhWw2VhfWkAvAiaUKOtLrhlWyfUciG/iauqQ?=
+ =?us-ascii?Q?D4+dQBQYXZv6bvnQk1PeLpLH9QP2tymRQmDBl/2a3yw2DmnXgnZz9q/tCJ1h?=
+ =?us-ascii?Q?Zoe6VJOVfRZPdNMvYWv9PdoXcqkjvQ5fGDx9r6eKlGRjlZQze1qfDAbl673f?=
+ =?us-ascii?Q?tqg1IA2ecX8u3frIcu5LBTf+JbiWbZRkRS1wcYDEOL0RpN/jk5vdJWMkSA4M?=
+ =?us-ascii?Q?2OrAgmhCknJqwNwD0KdjSVMNXDGReRDZSr6ZwMWiavpq6wkgciqm1W3PUZVF?=
+ =?us-ascii?Q?LWJjdMspY9JoAZFq9PFZ+87FNrKhLI9c7cMZzzt+6+35X8QSBCWX9RL37z5K?=
+ =?us-ascii?Q?VC12L5JJm5xPcf6yM9IXLW2dShXWQg3uEIw6jwNSwAH0hALWaPWcmTgfx3hj?=
+ =?us-ascii?Q?f0VR/lrAehn0mHHzMLsQxVXcO3Ubd3/8g06O4bTt5edyokQ8ztRff2KkkEy+?=
+ =?us-ascii?Q?Or/SvShd+9tdGQ+B05n1plmE3xahdJuN94MaeLAp6UO4QBxm5QDxKxg2CuST?=
+ =?us-ascii?Q?Wze1+IN/ZIiBJecp6d9ZSV7QxulsMFl2fGEkNbc9GBzVWzeHwLp5Dg/0sbXa?=
+ =?us-ascii?Q?AEXFsHhYciU+dfV0s2O9awsn7/Z7KVGoc+e6QSYcd3mfcv9kudGPP+f7uTrD?=
+ =?us-ascii?Q?ox5XLcqT9VrHqeZ8o0+ihDxyQlnh2F7+jOtF6QoKPegGDf4uI6ICiziPVhZs?=
+ =?us-ascii?Q?ac3XMGWvZ2AA8ksT6ulD23JRTI88HW+3VDRMNum0hou6XRK4y7YGAM3RTcRl?=
+ =?us-ascii?Q?6bFHyMYu4KvlD6vxNrVl3tGkszgY/pZaevOXYE8Rbuitn67h+KNebvGanv6F?=
+ =?us-ascii?Q?Mu//wWnFMakzU8WizynCO0lO7b/K1WQkpswdx8ER?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 46ef5bdf-3aa5-4777-9c14-08dbf141b650
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9f7df381-5df8-42c8-ab66-08dbf141b5fe
 X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Nov 2023 01:14:33.8834
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Nov 2023 01:14:33.2375
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: HqIGW3H/VOVYFxFJX9FPu4M3ak8jqtHFTKh1M44DPQ3jxyXVjHY4LcduxgJB+WfL
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR12MB5836
+X-MS-Exchange-CrossTenant-UserPrincipalName: fEVgcPgsmdIJLwIIAZrooxl2J8+KKEU+W+BaIszef5xEA50OHgcDVpAg8jfigrNS
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4484
 
-Return the entire struct iommu_device instead of just the ops. Name
-the changed function iommu_device_from_fwnode().
+virtio-iommu and dart already parse the ACPI firmware description in their
+own get_resv_regions() callback. They just need to parse the OF
+description.
 
-The iommu_device pointer is kept valid because this is always called
-under the iommu_probe_device_lock.
+The generic iommu_dma_get_resv_regions() really just knows how to parse
+the IORT ACPI in addition to OF.
 
-If iommu_device is valid then ops is valid too, the module refcounting
-is pointless. Remove it.
+Directly call of_iommu_get_resv_regions() instead.
+
+Move the declaration of of_iommu_get_resv_regions() to iommu-driver.h
+since it is now intended to be called by drivers.
 
 Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 ---
- drivers/acpi/arm64/iort.c    | 12 +++++++-----
- drivers/acpi/viot.c          |  9 +++++----
- drivers/iommu/iommu.c        | 20 +++++++++++++-------
- drivers/iommu/of_iommu.c     | 16 ++++++----------
- include/linux/iommu-driver.h |  3 +++
- include/linux/iommu.h        |  7 -------
- 6 files changed, 34 insertions(+), 33 deletions(-)
+ drivers/iommu/apple-dart.c   | 5 ++---
+ drivers/iommu/dma-iommu.c    | 5 ++---
+ drivers/iommu/of_iommu.c     | 3 +++
+ drivers/iommu/virtio-iommu.c | 5 ++---
+ include/linux/iommu-driver.h | 9 +++++++++
+ include/linux/of_iommu.h     | 8 --------
+ 6 files changed, 18 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
-index 93e30f2f5004f0..798c0b344f4be8 100644
---- a/drivers/acpi/arm64/iort.c
-+++ b/drivers/acpi/arm64/iort.c
-@@ -797,6 +797,8 @@ void acpi_configure_pmsi_domain(struct device *dev)
- }
- 
- #ifdef CONFIG_IOMMU_API
-+#include <linux/iommu-driver.h>
-+
- static void iort_rmr_free(struct device *dev,
- 			  struct iommu_resv_region *region)
- {
-@@ -1242,7 +1244,7 @@ static int iort_iommu_xlate(struct acpi_iort_node *node, u32 streamid,
- 			    void *info)
- {
- 	struct device *dev = info;
--	const struct iommu_ops *ops;
-+	struct iommu_device *iommu;
- 	struct fwnode_handle *iort_fwnode;
- 
- 	if (!node)
-@@ -1253,19 +1255,19 @@ static int iort_iommu_xlate(struct acpi_iort_node *node, u32 streamid,
- 		return -ENODEV;
- 
- 	/*
--	 * If the ops look-up fails, this means that either
-+	 * If the iommu look-up fails, this means that either
- 	 * the SMMU drivers have not been probed yet or that
- 	 * the SMMU drivers are not built in the kernel;
- 	 * Depending on whether the SMMU drivers are built-in
- 	 * in the kernel or not, defer the IOMMU configuration
- 	 * or just abort it.
- 	 */
--	ops = iommu_ops_from_fwnode(iort_fwnode);
--	if (!ops)
-+	iommu = iommu_device_from_fwnode(iort_fwnode);
-+	if (!iommu)
- 		return iort_iommu_driver_enabled(node->type) ?
- 		       -EPROBE_DEFER : -ENODEV;
- 
--	return acpi_iommu_fwspec_init(dev, streamid, iort_fwnode, ops);
-+	return acpi_iommu_fwspec_init(dev, streamid, iort_fwnode, iommu->ops);
- }
- 
- struct iort_pci_alias_info {
-diff --git a/drivers/acpi/viot.c b/drivers/acpi/viot.c
-index 7ab35ef05c84e0..9780b1d477503e 100644
---- a/drivers/acpi/viot.c
-+++ b/drivers/acpi/viot.c
-@@ -21,6 +21,7 @@
- #include <linux/acpi_viot.h>
- #include <linux/fwnode.h>
+diff --git a/drivers/iommu/apple-dart.c b/drivers/iommu/apple-dart.c
+index 25135440b5dd54..bb0e5a4577fc03 100644
+--- a/drivers/iommu/apple-dart.c
++++ b/drivers/iommu/apple-dart.c
+@@ -20,6 +20,7 @@
+ #include <linux/interrupt.h>
+ #include <linux/io-pgtable.h>
  #include <linux/iommu.h>
 +#include <linux/iommu-driver.h>
- #include <linux/list.h>
- #include <linux/pci.h>
- #include <linux/platform_device.h>
-@@ -299,7 +300,7 @@ void __init acpi_viot_init(void)
- 
- static int viot_dev_iommu_init(struct viot_iommu *viommu, u32 epid, void *info)
- {
--	const struct iommu_ops *ops;
-+	struct iommu_device *iommu;
- 	struct device *dev = info;
- 
- 	if (!viommu)
-@@ -309,12 +310,12 @@ static int viot_dev_iommu_init(struct viot_iommu *viommu, u32 epid, void *info)
- 	if (device_match_fwnode(dev, viommu->fwnode))
- 		return -EINVAL;
- 
--	ops = iommu_ops_from_fwnode(viommu->fwnode);
--	if (!ops)
-+	iommu = iommu_device_from_fwnode(viommu->fwnode);
-+	if (!iommu)
- 		return IS_ENABLED(CONFIG_VIRTIO_IOMMU) ?
- 			-EPROBE_DEFER : -ENODEV;
- 
--	return acpi_iommu_fwspec_init(dev, epid, viommu->fwnode, ops);
-+	return acpi_iommu_fwspec_init(dev, epid, viommu->fwnode, iommu->ops);
- }
- 
- struct viot_pci_iommu_alias_info {
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 76b245973cfafc..45e6543748fd46 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -520,13 +520,19 @@ static int __iommu_probe_device(struct iommu_probe_info *pinf)
- 	 * ops for probing, and thus cheekily co-opt the same mechanism.
- 	 */
- 	fwspec = dev_iommu_fwspec_get(dev);
--	if (fwspec && fwspec->ops)
-+	if (fwspec && fwspec->ops) {
- 		ops = fwspec->ops;
--	else
--		ops = iommu_ops_from_fwnode(NULL);
-+		if (!ops)
-+			return -ENODEV;
-+	} else {
-+		struct iommu_device *iommu;
-+
-+		iommu = iommu_device_from_fwnode(NULL);
-+		if (!iommu)
-+			return -ENODEV;
-+		ops = iommu->ops;
-+	}
- 
--	if (!ops)
--		return -ENODEV;
- 	/*
- 	 * Serialise to avoid races between IOMMU drivers registering in
- 	 * parallel and/or the "replay" calls from ACPI/OF code via client
-@@ -2997,7 +3003,7 @@ bool iommu_default_passthrough(void)
- }
- EXPORT_SYMBOL_GPL(iommu_default_passthrough);
- 
--const struct iommu_ops *iommu_ops_from_fwnode(struct fwnode_handle *fwnode)
-+struct iommu_device *iommu_device_from_fwnode(struct fwnode_handle *fwnode)
- {
- 	struct iommu_device *iommu;
- 
-@@ -3005,7 +3011,7 @@ const struct iommu_ops *iommu_ops_from_fwnode(struct fwnode_handle *fwnode)
- 
- 	list_for_each_entry(iommu, &iommu_device_list, list)
- 		if (iommu->fwnode == fwnode)
--			return iommu->ops;
-+			return iommu;
- 	return NULL;
- }
- 
-diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-index fb743ddd239e0b..cf68cdebc9f318 100644
---- a/drivers/iommu/of_iommu.c
-+++ b/drivers/iommu/of_iommu.c
-@@ -21,16 +21,16 @@
- static int of_iommu_xlate(struct of_phandle_args *iommu_spec, void *info)
- {
- 	struct device *dev = info;
--	const struct iommu_ops *ops;
-+	struct iommu_device *iommu;
- 	struct fwnode_handle *fwnode = &iommu_spec->np->fwnode;
- 	int ret;
- 
--	ops = iommu_ops_from_fwnode(fwnode);
--	if ((ops && !ops->of_xlate) ||
-+	iommu = iommu_device_from_fwnode(fwnode);
-+	if ((iommu && !iommu->ops->of_xlate) ||
- 	    !of_device_is_available(iommu_spec->np))
- 		return -ENODEV;
- 
--	ret = iommu_fwspec_init(dev, &iommu_spec->np->fwnode, ops);
-+	ret = iommu_fwspec_init(dev, &iommu_spec->np->fwnode, iommu->ops);
- 	if (ret)
- 		return ret;
- 	/*
-@@ -38,14 +38,10 @@ static int of_iommu_xlate(struct of_phandle_args *iommu_spec, void *info)
- 	 * IOMMU device we're waiting for, which will be useful if we ever get
- 	 * a proper probe-ordering dependency mechanism in future.
- 	 */
--	if (!ops)
-+	if (!iommu)
- 		return driver_deferred_probe_check_state(dev);
- 
--	if (!try_module_get(ops->owner))
--		return -ENODEV;
--
--	ret = ops->of_xlate(dev, iommu_spec);
--	module_put(ops->owner);
-+	ret = iommu->ops->of_xlate(dev, iommu_spec);
- 	return ret;
- }
- 
-diff --git a/include/linux/iommu-driver.h b/include/linux/iommu-driver.h
-index b85c9f15cf478b..636b5b5f18f76f 100644
---- a/include/linux/iommu-driver.h
-+++ b/include/linux/iommu-driver.h
-@@ -14,6 +14,8 @@
- 
+ #include <linux/iopoll.h>
+ #include <linux/module.h>
+ #include <linux/of.h>
+@@ -32,8 +33,6 @@
+ #include <linux/swab.h>
  #include <linux/types.h>
  
-+struct fwnode_handle;
+-#include "dma-iommu.h"
+-
+ #define DART_MAX_STREAMS 256
+ #define DART_MAX_TTBR 4
+ #define MAX_DARTS_PER_DEVICE 2
+@@ -972,7 +971,7 @@ static void apple_dart_get_resv_regions(struct device *dev,
+ 		list_add_tail(&region->list, head);
+ 	}
+ 
+-	iommu_dma_get_resv_regions(dev, head);
++	of_iommu_get_resv_regions(dev, head);
+ }
+ 
+ static const struct iommu_ops apple_dart_iommu_ops = {
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index d644b0502ef48e..5a828c92cd38b2 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -23,7 +23,7 @@
+ #include <linux/memremap.h>
+ #include <linux/mm.h>
+ #include <linux/mutex.h>
+-#include <linux/of_iommu.h>
++#include <linux/iommu-driver.h>
+ #include <linux/pci.h>
+ #include <linux/scatterlist.h>
+ #include <linux/spinlock.h>
+@@ -475,8 +475,7 @@ void iommu_dma_get_resv_regions(struct device *dev, struct list_head *list)
+ 					    fwspec->ids, fwspec->num_ids);
+ 	}
+ 
+-	if (dev->of_node)
+-		of_iommu_get_resv_regions(dev, list);
++	of_iommu_get_resv_regions(dev, list);
+ }
+ EXPORT_SYMBOL(iommu_dma_get_resv_regions);
+ 
+diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+index cf68cdebc9f318..20266a8edd5c71 100644
+--- a/drivers/iommu/of_iommu.c
++++ b/drivers/iommu/of_iommu.c
+@@ -217,6 +217,9 @@ void of_iommu_get_resv_regions(struct device *dev, struct list_head *list)
+ 	struct of_phandle_iterator it;
+ 	int err;
+ 
++	if (!dev->of_node)
++		return;
 +
- struct iommu_probe_info {
- 	struct device *dev;
- 	struct list_head *deferred_group_list;
-@@ -21,5 +23,6 @@ struct iommu_probe_info {
- };
+ 	of_for_each_phandle(&it, err, dev->of_node, "memory-region", NULL, 0) {
+ 		const __be32 *maps, *end;
+ 		struct resource phys;
+diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
+index 34db37fd9675cd..b1a7b14a6c7a2f 100644
+--- a/drivers/iommu/virtio-iommu.c
++++ b/drivers/iommu/virtio-iommu.c
+@@ -12,6 +12,7 @@
+ #include <linux/freezer.h>
+ #include <linux/interval_tree.h>
+ #include <linux/iommu.h>
++#include <linux/iommu-driver.h>
+ #include <linux/module.h>
+ #include <linux/of.h>
+ #include <linux/pci.h>
+@@ -22,8 +23,6 @@
  
+ #include <uapi/linux/virtio_iommu.h>
+ 
+-#include "dma-iommu.h"
+-
+ #define MSI_IOVA_BASE			0x8000000
+ #define MSI_IOVA_LENGTH			0x100000
+ 
+@@ -969,7 +968,7 @@ static void viommu_get_resv_regions(struct device *dev, struct list_head *head)
+ 		list_add_tail(&msi->list, head);
+ 	}
+ 
+-	iommu_dma_get_resv_regions(dev, head);
++	of_iommu_get_resv_regions(dev, head);
+ }
+ 
+ static struct iommu_ops viommu_ops;
+diff --git a/include/linux/iommu-driver.h b/include/linux/iommu-driver.h
+index 636b5b5f18f76f..c572620d3069b4 100644
+--- a/include/linux/iommu-driver.h
++++ b/include/linux/iommu-driver.h
+@@ -25,4 +25,13 @@ struct iommu_probe_info {
  int iommu_probe_device_pinf(struct iommu_probe_info *pinf);
-+struct iommu_device *iommu_device_from_fwnode(struct fwnode_handle *fwnode);
+ struct iommu_device *iommu_device_from_fwnode(struct fwnode_handle *fwnode);
  
++#if IS_ENABLED(CONFIG_OF_IOMMU)
++void of_iommu_get_resv_regions(struct device *dev, struct list_head *list);
++#else
++static inline void of_iommu_get_resv_regions(struct device *dev,
++					     struct list_head *list)
++{
++}
++#endif
++
  #endif
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index cf578b8e0b59a4..f0aaf55db3c09b 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -819,7 +819,6 @@ int iommu_fwspec_init(struct device *dev, struct fwnode_handle *iommu_fwnode,
- 		      const struct iommu_ops *ops);
- void iommu_fwspec_free(struct device *dev);
- int iommu_fwspec_add_ids(struct device *dev, u32 *ids, int num_ids);
--const struct iommu_ops *iommu_ops_from_fwnode(struct fwnode_handle *fwnode);
+diff --git a/include/linux/of_iommu.h b/include/linux/of_iommu.h
+index e61cbbe12dac6f..9d5532f2f11486 100644
+--- a/include/linux/of_iommu.h
++++ b/include/linux/of_iommu.h
+@@ -11,9 +11,6 @@ struct iommu_ops;
+ extern int of_iommu_configure(struct device *dev, struct device_node *master_np,
+ 			      const u32 *id);
  
- static inline struct iommu_fwspec *dev_iommu_fwspec_get(struct device *dev)
- {
-@@ -1168,12 +1167,6 @@ static inline int iommu_fwspec_add_ids(struct device *dev, u32 *ids,
+-extern void of_iommu_get_resv_regions(struct device *dev,
+-				      struct list_head *list);
+-
+ #else
+ 
+ static inline int of_iommu_configure(struct device *dev,
+@@ -23,11 +20,6 @@ static inline int of_iommu_configure(struct device *dev,
  	return -ENODEV;
  }
  
--static inline
--const struct iommu_ops *iommu_ops_from_fwnode(struct fwnode_handle *fwnode)
+-static inline void of_iommu_get_resv_regions(struct device *dev,
+-					     struct list_head *list)
 -{
--	return NULL;
 -}
 -
- static inline int
- iommu_dev_enable_feature(struct device *dev, enum iommu_dev_features feat)
- {
+ #endif	/* CONFIG_OF_IOMMU */
+ 
+ #endif /* __OF_IOMMU_H */
 -- 
 2.42.0
 
