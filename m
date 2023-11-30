@@ -1,179 +1,226 @@
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2044.outbound.protection.outlook.com [40.107.243.44])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 109825A0E7
-	for <iommu@lists.linux.dev>; Thu, 30 Nov 2023 20:41:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 09EB859525
+	for <iommu@lists.linux.dev>; Thu, 30 Nov 2023 23:25:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="UnNs42TM"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=fhtq8XHKH28IJIeGcwNGXmtn7is8LcFXtvPwroJF3xHJ6CSiOgyfHdGMOsCPrZjild+w4todwyO83bGcLqvN3rvgIoyqp9654D0xZ+xDvZgL8aRQW7uKSZyN82PRGplQKtkP9iUFcA48Y2EYiokkP77WlKyQRfNcBxT6D6UUDuN1U7gTnpoMjPXfZufKh8E1EUc2bYq77dyU7srLP4NNZySYeUdEqjdEtdEx523WyVie91ofOXQ0uITgkl51KfQlTUBe7eeN1uAbvwXBHPtoKwQmXXdVOP1ka6ZQ/N85H+6M5avD8lNctYtPajNEO3fZxyRV/6a1ugR9RDuSe2DCRw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=rg6XE4LP0MWCssOY70exAojC5zQyaQlr1CoEpz7a4G4=;
- b=E0caypBJ0ekBpWpIydix8Ve3AoV0PnNQcjQBjIH78utQMeHFLspV55e/L9ENUqAjiTqJCbRVJZYiyNQkj9BOQk+Mjh2+Q1YCmcC1Nz7EHO2pifo3tQIuWJmgepw+Z4j4o+ml2IbfpllsWWD160lBoRCD5HMxiesEre3llF708cY5H7xu0CqIOAFTlIxFdoMFq44/oAy6qFtUf6QKKAxldo8JU5t8Qk/IX/qElPu5ONVaSSg/dTjb5LShc/IS4j4whrLf1UGYtW/q8vb1gJb/fdABUrXvOeRtrrVeNNnGvNbxzLTW1UUOcwQcqUt83Q3ldhBN+uZmzyuisP8giMj5Zw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=oracle.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=rg6XE4LP0MWCssOY70exAojC5zQyaQlr1CoEpz7a4G4=;
- b=UnNs42TM+vxTSwuUP4Niv+yjKR+1yw33g5nKVLjHsXzhOt3gZNpbaaZE649wE5W97ZLyiGRJCLr3SHd918BmLbkyRC/0M2kdQwGWI3tkgnff5aAj68tpZrxu0m4Vinr3CF1nkVgINh8OZ4mjMhGA4OoxXYDYxENSxBXdg0EuoB0VGfmKh/3YNygzpjcx4U8CyQWmCJrjL1xBN4HTxqR+4UFFdUeXM76xBy+/nAKkYLAAXtfTe/Ao6K6DIq49+6tBtasjmHD3utfa/xh8lnzhRpKnK05ykSdiMmqWknn5w9RbtjeRQy3DCBiJhK/DgIWVO/A8p4LUx3F7II8O/8UvZQ==
-Received: from DM6PR06CA0095.namprd06.prod.outlook.com (2603:10b6:5:336::28)
- by PH7PR12MB9104.namprd12.prod.outlook.com (2603:10b6:510:2f3::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7025.29; Thu, 30 Nov
- 2023 20:41:36 +0000
-Received: from DS3PEPF000099DB.namprd04.prod.outlook.com
- (2603:10b6:5:336:cafe::fc) by DM6PR06CA0095.outlook.office365.com
- (2603:10b6:5:336::28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7025.29 via Frontend
- Transport; Thu, 30 Nov 2023 20:41:36 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- DS3PEPF000099DB.mail.protection.outlook.com (10.167.17.197) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.7046.17 via Frontend Transport; Thu, 30 Nov 2023 20:41:36 +0000
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Thu, 30 Nov
- 2023 12:41:23 -0800
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail204.nvidia.com
- (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Thu, 30 Nov
- 2023 12:41:23 -0800
-Received: from Asurada-Nvidia (10.127.8.9) by mail.nvidia.com (10.129.68.8)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41 via Frontend
- Transport; Thu, 30 Nov 2023 12:41:21 -0800
-Date: Thu, 30 Nov 2023 12:41:20 -0800
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: "Tian, Kevin" <kevin.tian@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
-	"joro@8bytes.org" <joro@8bytes.org>, "alex.williamson@redhat.com"
-	<alex.williamson@redhat.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>, "cohuck@redhat.com"
-	<cohuck@redhat.com>, "eric.auger@redhat.com" <eric.auger@redhat.com>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>, "mjrosato@linux.ibm.com"
-	<mjrosato@linux.ibm.com>, "chao.p.peng@linux.intel.com"
-	<chao.p.peng@linux.intel.com>, "yi.y.sun@linux.intel.com"
-	<yi.y.sun@linux.intel.com>, "peterx@redhat.com" <peterx@redhat.com>,
-	"jasowang@redhat.com" <jasowang@redhat.com>,
-	"shameerali.kolothum.thodi@huawei.com"
-	<shameerali.kolothum.thodi@huawei.com>, "lulu@redhat.com" <lulu@redhat.com>,
-	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>, "Duan,
- Zhenzhong" <zhenzhong.duan@intel.com>, "joao.m.martins@oracle.com"
-	<joao.m.martins@oracle.com>, "Zeng, Xin" <xin.zeng@intel.com>, "Zhao, Yan Y"
-	<yan.y.zhao@intel.com>
-Subject: Re: [PATCH v6 2/6] iommufd: Add IOMMU_HWPT_INVALIDATE
-Message-ID: <ZWjzcEAAg8ptVH4A@Asurada-Nvidia>
-References: <ZVw/BXxgGCuCZCA6@Asurada-Nvidia>
- <BN9PR11MB52761A9B48A25E89BEECE6308CB8A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <ZWTzoBTDDEWAKMs9@Asurada-Nvidia>
- <BN9PR11MB5276FD60A0EDF8E3F231FCC88CBCA@BN9PR11MB5276.namprd11.prod.outlook.com>
- <ZWaLCSAMIOXTlghk@Asurada-Nvidia>
- <20231129005715.GS436702@nvidia.com>
- <ZWaPM4p7yjJ0sEKk@Asurada-Nvidia>
- <20231129195804.GF436702@nvidia.com>
- <ZWe2PvatTkkyNCY5@Asurada-Nvidia>
- <20231130000816.GB1389974@nvidia.com>
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="JUlpujqb"
+Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 3AUMv1ds007817;
+	Thu, 30 Nov 2023 23:24:56 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=qcppdkim1;
+ bh=dzdwa52RQD+dDIN5fCjoN/RBg7vTB76JT4geO1rWUWs=;
+ b=JUlpujqbfV3FJWXKWzbm+qCutDkbwjRAVycUZZ4U6h0HDb9nxyj7Md3e139Io7p/T0G2
+ KNTh4CPupPHbDPAWM5cKxMgi72BYb0aV+Iw+2aRYA6feshcd/EuWcZfOI4F1PT7t3I/f
+ H0NXVn1BVkVPJCOx6W7N/325jS73Ado/ASQ/NM8tdAr4iPHE96aVAzifePuVHZN+3rJ1
+ 2G/HG6PkhIR57BywSnIpUQgs2KZ3T03neyZaowpY88nG8aRgYXnDKybCxOriA+6lzO1p
+ 0Cu4Gb9lU7p3BQJv1j7UcWejJqeYxVd/O7/O6r++iqo0R5e6+KGYFCL2Nf9ZmXsaq/DK 8w== 
+Received: from nasanppmta03.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3upv481b03-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 30 Nov 2023 23:24:56 +0000
+Received: from nasanex01a.na.qualcomm.com (nasanex01a.na.qualcomm.com [10.52.223.231])
+	by NASANPPMTA03.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 3AUNOtCO030237
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 30 Nov 2023 23:24:55 GMT
+Received: from [10.251.45.12] (10.80.80.8) by nasanex01a.na.qualcomm.com
+ (10.52.223.231) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.40; Thu, 30 Nov
+ 2023 15:24:51 -0800
+Message-ID: <cc2eb772-ae0f-4861-a36e-304a5f45b1bf@quicinc.com>
+Date: Fri, 1 Dec 2023 01:24:48 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20231130000816.GB1389974@nvidia.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS3PEPF000099DB:EE_|PH7PR12MB9104:EE_
-X-MS-Office365-Filtering-Correlation-Id: 2209f2fa-1066-48a7-05a8-08dbf1e4bef8
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	3pTn51y3BMQt7vlSQRy55wjzzcPZgNbopuWIbSGNt7Cn50SHsudaOoN4wlPvxbxai5MV8+Y2uKL1BNVqv3E2boqUgYlnNrgnFW0SOHleORXfyEhSeP74CARyBqA0X8ydxd5AxEft5PPNcqWq8C3LGKrx63W1Jj1YD+MyYVcZhHQ5+Ewm0LQdYfnOuRLitl1hFXbf6EgVHBVGIlazADm27K4lc7IUOxeK98mFfJ/p0KSUIiZRpyr9FYz8BgH+3vqxDbkWsEgQONg5bVgHYak4rs7FSK95M1zMmP/WdSxcuWJIk3CznvYZUmifT7P7I/fVqqdvf3nkylZvetJoj6jHSO118hpXdy3+q9kuN1yTUHVhx8lBQjBJpFaSOTRCTQUDDR1BSZhNZK6mPXmyR4BP5FkvSwJ6ZnyOmFrJY8QwcvSPIkNgvSfIcwpMWZzCLdfdaSzI49xPeGmQ9veTq377XyFD25qm9bfYEChlEWtOiNs/QJMeSQH6/IcX6Y75WEkkMJNDpIaPJuSnVOMxl0/L19WAA+rKNrj5SbWqy7XRutomDmPUj4QMDUjLFZ5kBLnHaOhoti7Viv/c/DjmfsyusaJ9NoNCp3h4BZYDnG+AymsBI0YbkA8XI83gSw1N63M0j8FCTosV2SQCQ4x3/8cKcLbovsWrjNWxRRz50K3v9cUInZlfLlqHoTAJc/h5etF+kwFQRoRqhHBP6JAwGUmSheILIwsfXXAhYYvQr/fp20KcXsJ1h8AsIVkI4rVcL2CM
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230031)(4636009)(376002)(39860400002)(346002)(136003)(396003)(230922051799003)(1800799012)(186009)(64100799003)(451199024)(82310400011)(46966006)(40470700004)(36840700001)(2906002)(5660300002)(55016003)(7416002)(4326008)(6862004)(8676002)(8936002)(40480700001)(41300700001)(70586007)(70206006)(316002)(6636002)(54906003)(40460700003)(9686003)(86362001)(47076005)(7636003)(36860700001)(478600001)(83380400001)(336012)(26005)(426003)(33716001)(356005)(82740400003);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Nov 2023 20:41:36.0413
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2209f2fa-1066-48a7-05a8-08dbf1e4bef8
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	DS3PEPF000099DB.namprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB9104
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 1/6] dt-bindings: iommu: Add Translation Buffer Unit
+ bindings
+Content-Language: en-US
+To: Rob Herring <robh@kernel.org>
+CC: <krzysztof.kozlowski+dt@linaro.org>, <conor+dt@kernel.org>,
+        <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
+        <devicetree@vger.kernel.org>, <andersson@kernel.org>,
+        <konrad.dybcio@linaro.org>, <linux-arm-kernel@lists.infradead.org>,
+        <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-msm@vger.kernel.org>, <quic_cgoldswo@quicinc.com>,
+        <quic_sukadev@quicinc.com>, <quic_pdaly@quicinc.com>,
+        <quic_sudaraja@quicinc.com>, <djakov@kernel.org>
+References: <20231118042730.2799-1-quic_c_gdjako@quicinc.com>
+ <20231118042730.2799-2-quic_c_gdjako@quicinc.com>
+ <20231127181347.GA1953740-robh@kernel.org>
+From: Georgi Djakov <quic_c_gdjako@quicinc.com>
+In-Reply-To: <20231127181347.GA1953740-robh@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nasanex01a.na.qualcomm.com (10.52.223.231)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: r9Ny_bSdGNAkhGlvkpVOItl5sxEyNfkt
+X-Proofpoint-ORIG-GUID: r9Ny_bSdGNAkhGlvkpVOItl5sxEyNfkt
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.997,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2023-11-30_23,2023-11-30_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 malwarescore=0
+ spamscore=0 clxscore=1015 impostorscore=0 lowpriorityscore=0 mlxscore=0
+ phishscore=0 suspectscore=0 bulkscore=0 priorityscore=1501 mlxlogscore=999
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2311060000
+ definitions=main-2311300173
 
-On Wed, Nov 29, 2023 at 08:08:16PM -0400, Jason Gunthorpe wrote:
-> On Wed, Nov 29, 2023 at 02:07:58PM -0800, Nicolin Chen wrote:
-> > On Wed, Nov 29, 2023 at 03:58:04PM -0400, Jason Gunthorpe wrote:
-> > > On Tue, Nov 28, 2023 at 05:09:07PM -0800, Nicolin Chen wrote:
-> > > 
-> > > > > > With that being said, I think errno (-EIO) could do the job,
-> > > > > > as you suggested too.
-> > > > > 
-> > > > > Do we have any idea what HW failures can be generated by the commands
-> > > > > this will execture? IIRC I don't remember seeing any smmu specific
-> > > > > codes related to invalid invalidation? Everything is a valid input?
-> > > > 
-> > > > "7.1 Command queue errors" has the info.
-> > > 
-> > > Hmm CERROR_ATC_INV_SYNC needs to be forwarded to the guest somehow
-> > 
-> > Oh, for sure. That's typically triggered with an asynchronous
-> > timeout from the eventq, so we'd need the io page fault series
-> > as you previously remarked. Though I also wonder if an invalid
-> > vSID that doesn't link to a pSID should be CERROR_ATC_INV_SYNC
-> > also v.s. CERROR_ILL.
+Hi Rob,
+
+Thanks for the feedback!
+
+On 11/27/2023 8:13 PM, Rob Herring wrote:
+> On Fri, Nov 17, 2023 at 08:27:25PM -0800, Georgi Djakov wrote:
+>> The "apps_smmu" on the Qualcomm sdm845 platform is an implementation
+>> of the SMMU-500, that consists of a single TCU (Translation Control
+>> Unit) and multiple TBUs (Translation Buffer Units). The TCU is already
+>> being described in the generic SMMU DT schema. Add also bindings for
+>> the TBUs to describe their properties and resources that needs to be
+>> managed in order to operate them.
+>>
+>> In this DT schema, the TBUs are modelled as child devices of the TCU
+>> and each of them is described with it's register space, clocks, power
+>> domains, interconnects etc.
+>>
+>> Signed-off-by: Georgi Djakov <quic_c_gdjako@quicinc.com>
+>> ---
+>>  .../devicetree/bindings/iommu/arm,smmu.yaml   | 25 ++++++
+>>  .../bindings/iommu/qcom,qsmmuv500-tbu.yaml    | 89 +++++++++++++++++++
+>>  2 files changed, 114 insertions(+)
+>>  create mode 100644 Documentation/devicetree/bindings/iommu/qcom,qsmmuv500-tbu.yaml
+>>
+>> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+>> index aa9e1c0895a5..f7f89be5f7a3 100644
+>> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+>> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+>> @@ -231,6 +231,18 @@ properties:
+>>        enabled for any given device.
+>>      $ref: /schemas/types.yaml#/definitions/phandle
+>>  
+>> +  '#address-cells':
+>> +    enum: [ 1, 2 ]
+>> +
+>> +  '#size-cells':
+>> +    enum: [ 1, 2 ]
+>> +
+>> +  ranges: true
+>> +
+>> +patternProperties:
+>> +  "^tbu@[0-9a-f]*":
+>> +    type: object
+>> +
+>>  required:
+>>    - compatible
+>>    - reg
+>> @@ -453,6 +465,19 @@ allOf:
+>>              - description: Voter clock required for HLOS SMMU access
+>>              - description: Interface clock required for register access
+>>  
+>> +  - if:
+>> +      properties:
+>> +        compatible:
+>> +          contains:
+>> +            const: qcom,smmu-500
 > 
-> Yes, something like that make sense
+> Doesn't match your example. No failure either, so there's some problem 
+> with your schema. The issue is the tbu@ entry above has no constraint on 
+> child properties. Dropping it would solve the issue. However, having a 
+> TBU is not QCom specific, so that doesn't feel right.
+
+Having a TBU is not Qcom specific. The ARM MMU-500 implementation for example has TBUs, but the registers are within the SMMU address space, there are no clocks, no power-domains or other resources. Not sure about other implementations. So should we just allow empty tbu child nodes with no properties?
+
+>> +    then:
+>> +      patternProperties:
+>> +        "^tbu@[0-9a-f]*":
 > 
-> Presumably sync becomes emulated and turns into something generated
-> when the ioctl returns.
+> '+' rather than '*' as 1 is the minimum, not 0.
 
-CMD_SYNC right? Yes. When the ioctl returns, VMM simply moves the
-CONS index next to CMD_SYNC upon a success, or stops the index at
-the faulty command upon a failure.
+Ok.
 
-> So userspace would have to read the event FD
-> before returning to be correct?
+>> +          $ref: qcom,qsmmuv500-tbu.yaml
+>> +          unevaluatedProperties: false
+>> +      properties:
+>> +        ranges: true
+>> +
+>>    # Disallow clocks for all other platforms with specific compatibles
+>>    - if:
+>>        properties:
+>> diff --git a/Documentation/devicetree/bindings/iommu/qcom,qsmmuv500-tbu.yaml b/Documentation/devicetree/bindings/iommu/qcom,qsmmuv500-tbu.yaml
+>> new file mode 100644
+>> index 000000000000..4dc9d0ca33c9
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/iommu/qcom,qsmmuv500-tbu.yaml
+>> @@ -0,0 +1,89 @@
+>> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+>> +%YAML 1.2
+>> +---
+>> +$id: http://devicetree.org/schemas/iommu/qcom,qsmmuv500-tbu.yaml#
+>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+>> +
+>> +title: Qualcomm TBU (Translation Buffer Unit)
+>> +
+>> +maintainers:
+>> +  - Georgi Djakov <quic_c_gdjako@quicinc.com>
+>> +
+>> +description:
+>> +  The Qualcomm SMMU500 implementation consists of TCU and TBU. The TBU contains
+>> +  a Translation Lookaside Buffer (TLB) that caches page tables. TBUs provides
+>> +  debug features to trace and trigger debug transactions. There are multiple TBU
+>> +  instances distributes with each client core.
+>> +
+>> +properties:
+>> +  $nodename:
+>> +    pattern: "^tbu@[0-9a-f]+$"
 > 
-> Maybe the kernel can somehow return a flag to indicate the event fd
-> has data in it?
+> Drop. You defined this in the parent already.
+
+Ok.
+
+>> +
+>> +  compatible:
+>> +    const: qcom,qsmmuv500-tbu
+>> +
+>> +  reg:
+>> +    items:
+>> +      - description: Address and size of the TBU's register space.
+>> +
+>> +  reg-names:
+>> +    items:
+>> +      - const: base
 > 
-> If yes then all errors would flow through the event fd?
+> Not a useful name. Drop.
 
-I think it'd be nicer to return an immediate error to stop guest
-CMDQ to raise a fault there accordingly, similar to returning a
--EIO for a bad STE in your SMMU part-3 series.
+Agree.
 
-If the "return a flag" is an errno of the ioctl, it could work by
-reading from a separate memory that belongs to the event fd. Yet,
-in this case, an eventfd signal (assuming there is one to trigger
-VMM's fault handler) becomes unnecessary, since the invalidation
-ioctl is already handling it?
-
-Thanks
-Nic
-
-> Would Intel be basically the same too?
+>> +
+>> +  clocks:
+>> +    maxItems: 1
+>> +
+>> +  interconnects:
+>> +    maxItems: 1
+>> +
+>> +  power-domains:
+>> +    maxItems: 1
+>> +
+>> +  qcom,stream-id-range:
+>> +    $ref: /schemas/types.yaml#/definitions/uint32-array
+>> +    description: Stream ID range (address and size) that is assigned by the TBU
+>> +    items:
+>> +      minItems: 2
+>> +      maxItems: 2
 > 
-> Jason
+> Perhaps implementations other than QCom's needs this?
+
+Yes, maybe. A TBU can service a fixed amount of stream IDs and this looks like something common for all TBUs. I'll drop the vendor prefix.
+
+Thanks,
+Georgi
