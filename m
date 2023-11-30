@@ -1,38 +1,38 @@
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2089.outbound.protection.outlook.com [40.107.237.89])
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2073.outbound.protection.outlook.com [40.107.93.73])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8958917FC;
-	Thu, 30 Nov 2023 01:14:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 22C5C187D;
+	Thu, 30 Nov 2023 01:14:45 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="USmOgGVc"
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="Y2KAbUCh"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=iF4V2LJ8UVVOm3I0MK9SVt6I5Mo295EGcepW5XhPVfo6+dXHgozUgNXBXFVdWOgPGErstVmwJxpQ0G5tHwzsSAG5XrjDKl0PZYiSxcEub/Y34V/owEIelFe4iA4mdV5ioei/RjgvOK3mFzBj1SJItmb4HIN5ZzmVHVrvbJfkxN2YigPQn6kPBQJaUl4+ZRq0BegmMdEA4Z7gJ6JLXSD8Mjo9DcZVXKZ6k4bSiw1wYzf0G0CGtO5TK+y2w7VNY35e2I5zYDpwwMJAGdxO2Qi3STOJhbnzHwkFU1PO8uCgsGlrAzdvYHC/XX16/1ZkE4URphLww32qxK3BOFIK4tRg+A==
+ b=CIBr6s7IlUxzEbgx0SmRb8lAk8cxjekU3dut2Bq+KlfrM5RG5BdGol7w5xDmE0vjJtDw+Occ1ApQLM9peDeb2oRxn2rb3sg6U0b0MtHT3FS3M/K6hQD24g/yltAAXdvYv7kGnmFUfm4AAvaPbd7G5ab2+UJ2Tc+M6oGQsyvKmCEb1frrvX3XF/7qtdv7hZNNOkFxqf//wD9sZwtnP/sD26PdWmdYkqfyCjiTMW7xjH88uesOz9T1JF4kOsO9eTYuUIg3PrinvVFkkqvr0/wylAjNlNBkmGHVrsISZTGVbKzlmxKhCtm/Kib8Fj8ctSAFzRXardURiQkdwM1QwYfFYg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=fVSr9+bQP69hK+Giq+u9FoxDlVZiQRDX7oYqcWOEYLw=;
- b=fGPOY5zvAYmBuGM09M8DBMNv33RJkUZTcSIaYCDUcmOn0XwKNWHHuINpYl4RIN55dC132Zd7upSHpo+EX3Kdy4Frgi03E60lFWLKJZp4GAEaPNI64lmfXmrgdfuNcynI6U8Oz7tgVSjPqz2jCw3M/NeP3ZtSjtf0/jEV161cJCpudBo+VgfjeGBm6kzn3QxPYYQteuT2IbtFC4IfNu0HUHP2SB6gnGFFWWj5M8oxVghl0tsbBSe3qifLLNOTboKQ4m060xIKPp3QEam9JFD9+hJg+AFBzCYrov26z++bl5ujMcRyKl0+laIPUGjWOaJkOa7Kx8H/pe34ijK0LehFYw==
+ bh=fwf/8BLazV78Ujjm7q8f4RCgFTKfbzZbel/RjT7b+os=;
+ b=ZUH4CIFxhDYXxYPgpUcTuPMEcfrfvdmwiIWh50DhEzMCGfWyXLaM7x7rA1MwKWjeMnhUPJQ2XnerW1htAi6vrUGnDRTALj7CQMFSe84n18amf2aGSSIKLb5Z8lzyPe58p3jgSj72hn+a4Tu9IMCZp0rUQjEGG6tuFPKYx5g9CxhegvDso8+5by6nLYVVl/nozE+R5G21M7cXoHNDAoXgj1WOmKcb1A1E/lwUm5QyDE0UY2f3wuF5NFHwUy0JanTUNp3Y7aSOyfang/rgwM9kD87T8BXlEy6uqbnVwFm+c/rIH/Z/NqOchui7/UsLc8gJqN8+aj0lrptZc1SKYYY4Eg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=fVSr9+bQP69hK+Giq+u9FoxDlVZiQRDX7oYqcWOEYLw=;
- b=USmOgGVcFzJIgouWOAhF8uG6iLD+s1B2vy8nJkLy2RmuivHJANg4VL3sku9jVFdeJJx7z/GbaLerVKg8RlYC6AM/O6pXumjzTR0v2TOTjSsQJkdXYqFYoLCDz8jJYTYNjEGBP6/rh3S9jG+96OXKZAL0LxyJdEgbqJTH6lC4l8zvq5zWlUHE3sE4yKe0W5/5dfJh6utHYtxCXuvYbnR07dLD5njWH3tDdTfiN94c+tdp0VEI7/tvhhVgHJZ6IWJmjyp2LLIRYXpS5+cYnDkTAj9jyhSVuwSM9uTwWwlo4JGL4eGY87VTbLzqQN9vjxKLnTgs85fJERUr+M94zq6kFw==
+ bh=fwf/8BLazV78Ujjm7q8f4RCgFTKfbzZbel/RjT7b+os=;
+ b=Y2KAbUChVbTggcY5pakuxzWtiUu07/1YfBbfUsPmjY2hNQQ0U2MQpwY4pbjtqkChEfsXv8ZVQD0ocnmVQrYk7CiDfB1PQVX+Nu4847UwbPhKbelFnnBD9J/z/NMqvSpSCMVgIR45Iu6oBcuTjnSKxW0hKpMRjctaSeOpUVhrtdc9/YstcrC76oQNrkbK5220mBXrEf5yJ0foVcQ2O16s1qHH3Iqdb8My0Z+M/8RNIK55VayqU8oQFCOPDeMCjDc1b8uXeQ3qFpdjmIoX3CAMv0MS0q90KTsYvt7s+bEK58UVKwhUzK1Hzl0Stm2FE5V3W5sva5VSsj8Ef6j2HjelXw==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by IA0PR12MB7627.namprd12.prod.outlook.com (2603:10b6:208:437::12) with
+ by MN0PR12MB5836.namprd12.prod.outlook.com (2603:10b6:208:37b::14) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7046.23; Thu, 30 Nov
- 2023 01:14:32 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7046.22; Thu, 30 Nov
+ 2023 01:14:39 +0000
 Received: from LV2PR12MB5869.namprd12.prod.outlook.com
  ([fe80::60d4:c1e3:e1aa:8f93]) by LV2PR12MB5869.namprd12.prod.outlook.com
  ([fe80::60d4:c1e3:e1aa:8f93%4]) with mapi id 15.20.7046.015; Thu, 30 Nov 2023
- 01:14:32 +0000
+ 01:14:39 +0000
 From: Jason Gunthorpe <jgg@nvidia.com>
 To:
 Cc: acpica-devel@lists.linux.dev,
@@ -41,15 +41,15 @@ Cc: acpica-devel@lists.linux.dev,
 	Joerg Roedel <joro@8bytes.org>,
 	Hector Martin <marcan@marcan.st>,
 	Robin Murphy <robin.murphy@arm.com>
-Subject: [PATCH v2 22/30] iommu/qcom: Move to iommu_fw_alloc_per_device_ids()
-Date: Wed, 29 Nov 2023 21:14:22 -0400
-Message-ID: <22-v2-f82a05539a64+5109-iommu_fwspec_p2_jgg@nvidia.com>
+Subject: [PATCH v2 08/30] iommu/of: Add iommu_of_get_single_iommu()
+Date: Wed, 29 Nov 2023 21:14:08 -0400
+Message-ID: <8-v2-f82a05539a64+5109-iommu_fwspec_p2_jgg@nvidia.com>
 In-Reply-To: <0-v2-f82a05539a64+5109-iommu_fwspec_p2_jgg@nvidia.com>
 References:
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: SA1PR03CA0001.namprd03.prod.outlook.com
- (2603:10b6:806:2d3::12) To LV2PR12MB5869.namprd12.prod.outlook.com
+X-ClientProxiedBy: SN6PR16CA0057.namprd16.prod.outlook.com
+ (2603:10b6:805:ca::34) To LV2PR12MB5869.namprd12.prod.outlook.com
  (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -58,428 +58,353 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|IA0PR12MB7627:EE_
-X-MS-Office365-Filtering-Correlation-Id: f6ccca84-6b13-4875-2628-08dbf141b539
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|MN0PR12MB5836:EE_
+X-MS-Office365-Filtering-Correlation-Id: fe799dc3-ea7c-43ac-3e46-08dbf141b647
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	yeZvjdqgZftlnRquYOD7pwx314fSEv4bbfQcSBAMhGMpnKr/7V+Sv48T88VaNByR6w3KQ/wijn1mdATU8ewT+s1iBLrBH9rGnzR3c4Kx+6MYB/qFNrmje28ilVcEBFd2b/NIad8k1pVpRXcJRUcb9ky4olYAcHXxQWM/aD67gieR5ORy/uSTGVA45FIEEZbh1C+V/y4cWwelV/q+7HedZ07SME93KwvBjIGWLg4Yg4tGYyv8Rsfv6Tqf5xyBU2/k/W475gRb9K1Omxeoee1w9gBpHU/On7J1dWF9wCc9cG9US/YmDqypP1WjpN5e4W7dlyXu8sAYiqJem1VKlUrcAJLr9xhyOXHySKdm3vlLtTIBRA5udTYqzGk5v2YCb8EAOWrjEbjmDUzdyVxz0L7oDxdqP++09LNe1ChhZbXSq7D1lgNDi9+aZO6cx4qyxeBEztji5USQWa1v6rJl0u5AQ+kZqHGiFx/mIHnmUsNQsa06TT9buRmtOkH/8rMwH2bJkEdfgmwZqQ2yU8nysJyuJvHpJdP5VjbOpnjTF0cP5+oGU3M39tIa2rA+TJxiqVYzENGjqi26rHzPAr3yeCymwysBQCPUVg6l0am52RU5NFY=
+	bidHljiJgv90sfO/r869tRZ8uCHTK7R/ZGQNWfybmp/ceBj3koq8ebEPsn9ypXPA+zIjU6Dbz53EpUFVoUSt65VaKIsIjOJGswLn1Ji2xzTx7xx/rP7ahiWQWQHVZSGAzQkzAFvzIQsZZJMVPCDFr0uDPQWbHsyCZuUC+Vf+gVium18jmq3yCFsi5spRoQwAs8Dmp6rs6cFdvfgOS0aGvC7LN4yPx0Nb9cp1ggR4ay4wc/r9dsU4zmFZ7IwpfJB9QXdUUCYMCSZr7A0lh/brxQoUoSyG+QHJwKC+iCXAJch7imH9qiqpyOpIMTBkjeREJ+yPYj7fnnMkRcTib8jUlLO7+FL/1ezUTJCEBoEzwPUJpVgNqmSsFqqJ3UuJNkBe0Gsdzg7gFLhzBT5woqDTAc4Cdt58RsGMZ1Rcv47VFrRb1TcNJ2oPNYU99StbdPS9x+q2MAWUxKJEzjsiMCsCO4QWlPnBPwK/3fiLfotR7uym+dDZFFrB8IB682bsT3nKJq8SQJA9D28h7I7tubR8xmL0bprbBNHj3tgV5D5rmS0bsEILtKP1z/RI+aYZ/wiJ3Md1KLSh+vzzkwYjRtygXtJA2yYqKy2MNJe/KMbuJVYwDvixp2R2fY19ijARF9fS
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(346002)(366004)(396003)(39860400002)(136003)(376002)(230922051799003)(186009)(1800799012)(64100799003)(451199024)(109986022)(41300700001)(2616005)(4326008)(86362001)(38100700002)(8676002)(6666004)(8936002)(5660300002)(2906002)(30864003)(26005)(6506007)(478600001)(316002)(66556008)(66946007)(66476007)(6486002)(54906003)(83380400001)(36756003)(6512007)(266003);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366004)(346002)(136003)(396003)(39860400002)(376002)(230922051799003)(1800799012)(186009)(64100799003)(109986022)(451199024)(6486002)(4326008)(478600001)(8676002)(86362001)(5660300002)(8936002)(54906003)(66476007)(66556008)(66946007)(6506007)(2906002)(316002)(6666004)(6512007)(36756003)(26005)(2616005)(83380400001)(41300700001)(38100700002)(4216001)(266003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?WTTAyqsY+fsr7ZHIQS2fd/obYZ8DKkc8SifJm1vveg4N5f28lp2cHGNGhNqq?=
- =?us-ascii?Q?H7HdpMvX0ZI7E41QBJz5Bqj7fHIXIlIAhuhtGCS49akgbEJLTg94ic81aAPc?=
- =?us-ascii?Q?HUh/0Nb6tIoSaLdusT0mO+FezMWQl9nzQRYDQS85T4Jng+6A+CkiH0N3jF+V?=
- =?us-ascii?Q?ejF17ZHvlNrxpG6Ozp6AwwDHxFcEVxuanE74ZvwEfVRWfnlOXQuzpJJpOJyB?=
- =?us-ascii?Q?MqwxWxUpBlKAeR/fboPhLUDmeUWF68z0GrO5V2KdloL0n8Bno8YTTOFQFTl4?=
- =?us-ascii?Q?1PxDQ+O1d/vWpZ7hwxwCSVL/+Xa0Ie8mr8rtXTXdr6HsNc7Ta+2+xhUlTthy?=
- =?us-ascii?Q?XmNOt/9jdRWmTfovsEBVYgQAz0rI2KiuOCPLlqm/HbapZ9/VMgxq8DErpJnA?=
- =?us-ascii?Q?A+2Vmv+gSdgJqCzCimgaFEYcHCpSyXfmJS4+4UlGyg3gIXFw1HzJWIIoUarI?=
- =?us-ascii?Q?JFV5RkzaNY/ki6Ujr1lVplY4Aw+BvEFQj1xn3xHlzxCBVuCWcgrMgxf09pZq?=
- =?us-ascii?Q?HLfw/xX5zLNhr+mZ2Ftw5uqY6KlAU0jpB38ML7OMkTXkkjaHExFv5+eN5raK?=
- =?us-ascii?Q?GoLoFLXp37GKj2Fe5M6kfmKRxm7mMW0v9szUI3Iug+hIg6trEx1VpU0weFeY?=
- =?us-ascii?Q?VD3zQusUp3Q/+/LEEGpmQkB5ZwyJXq4Ft0NTxZPxqCJHgwE5BB6DrwXhtwqI?=
- =?us-ascii?Q?CqDuZArjDkzkpcAlDsXbSqB+HemS7Nriia63iE34ZJ3rRpEXI8p0Tfemm8Yu?=
- =?us-ascii?Q?jXEQq+eGigOBEfAUXS6wzi2LU6nIzY3aSsjyip2KmtJuSh5c92jX/Zp3ZiA5?=
- =?us-ascii?Q?GQG17ARaIaqNy2Lu7ZC+DIa4DPp+S+5/vteE2Iltl5J632HhdB7exPJLBqQp?=
- =?us-ascii?Q?uEnUNUd+5AqYEJVSki2VEVoObSWe0ipKBN75DjdunnJAL8kQZboYXmT+Fo1/?=
- =?us-ascii?Q?eprVbqPrKuF3IaD6ube9soTnOjU0uLRcYY/7lVvmf0uweFjVGr6liudf4aZR?=
- =?us-ascii?Q?laV8gxQsg3cy1fR8db7ypo6CuXMDxLbKzzDVRFHWRqzpmjJr5YE8vgjmNK4a?=
- =?us-ascii?Q?dZDJhtsaSgGkNXbfRortVYkxEn8onjMWWkgA1eHl2ok1YD5Wfr1WfrcgrGwl?=
- =?us-ascii?Q?hLokC7agYqBI2gyTUBaLH2x+pcXiBFx4cl58MraqwhbZV7EtFos4pHWkFSN/?=
- =?us-ascii?Q?wFZ/7r0YpBe+Y9c9YKvxvQtMiCfuSJ+81bnqScx+rsG8My973xB+XHpqMtAY?=
- =?us-ascii?Q?kTt7OPan8rF2KzJ+IY7yBulRSI+pH4wdPfC8FmaS8XAj/VQbgNT3rt0EVN5+?=
- =?us-ascii?Q?zKrdwSdlmhgqdcD3CLHsu5Va87Bl7pJaSmxIZVvPgyEik0/e+ELQk4jkD16G?=
- =?us-ascii?Q?6WKdP+OS5YVCyil45O/Qf2HBt6IjIjNfvxMR8xOY9nrN39ppJWNeq1+5nV1L?=
- =?us-ascii?Q?WJy2MkC7xtzyndWYFqC887sEHosV2mJRf3ORVw29bQPptCMYyVPMyfxdz/XA?=
- =?us-ascii?Q?38ee9Ec5Wz51UoYKncN852PRrxrd7rFLsA0nsn24Ebe66QdEGoa7CoDsmoPg?=
- =?us-ascii?Q?mmtQKS9ZbWemo9cVcEc/2AC5GFkpv/s1PyuQAQbE?=
+	=?us-ascii?Q?OMekdgaiXf9NIoAzD1ehw31u8p5L49WG7BptfqFLGHU3ixIp9z6a+ByKzuRe?=
+ =?us-ascii?Q?iGYvUuXvd5AN5Sa65AmOb5Xx8glrqwDDF1+jF9SIRy3OWeXuC7XRqDlnQeYD?=
+ =?us-ascii?Q?4HJ8YcgkvSR7Hd1gakzyeOfK2bt/QdntnbIYAvRSx/6km4EzIiP0i8jHgss9?=
+ =?us-ascii?Q?T80glWpsXGRiWR5KJUxbbTfa23a4DwuI5y7W4grLf62n9hsBBlYgPAhuwo0q?=
+ =?us-ascii?Q?wdG5fMDbHzbX8a3xVhiFdpdz9hRaNgjY6R+LrxF+lVF1GftdrbVobNrDpQtv?=
+ =?us-ascii?Q?LI8roIPXruBqm7lqX/OlJV0an0htI+mFVCKgkl3QCrKDi9tw03NXoWlsZuES?=
+ =?us-ascii?Q?yzcmADxwQwwzI/3ENtRBR5GpvjalrG7LZ2DcAMnWvp5EVrGZ7Xr4fnPhcS5I?=
+ =?us-ascii?Q?HfemQU7e0ELc+mpUTq0kiDmXXd6ZVMmakBxVvyWmpUxtxhzzmctKtLxvC4sc?=
+ =?us-ascii?Q?pQ8I+QB7/twjmFVYiFE3GLw4b1WE4Q/l7AJ+KyHGMaiuOeLWUUbYJo2NawlI?=
+ =?us-ascii?Q?W+/UhPaG/6P4o0+ahERqx2cbPonb9zyWpCsWtbS0v3Gw6okslrBu0a9Asl6v?=
+ =?us-ascii?Q?h8PRvA1nhPm0JX6C7rqyCgMPMXlYl/vLLlyWdA60S9oZEXhe1MHTGvYyQlEx?=
+ =?us-ascii?Q?TT5aYqrUgZuwerwuLv/FlAnwQW4miqLeqcUE4dCerpOU/ModRQpWFPRyjO08?=
+ =?us-ascii?Q?KWbm39kd+Y23e0qK3xX0VNYOBUUby+02XO+qxfLPDNuhWmasK39TnTV0Vx9F?=
+ =?us-ascii?Q?mCJHxU2Qj3g3feHTLM/Mvs16jtRr35JFa0bfxfuM9vDJE/4gLSQSZ9VWEL5i?=
+ =?us-ascii?Q?1T0ZHIXliBU7TqCb18EEZwDoi/tkWPpsC/VGkDB5mMdIfWno60D5IDXXMhgB?=
+ =?us-ascii?Q?d0Y4ZEwjoMPicd3l0rb17zN6mxaBcKjyMGdHfudeP8vJLzwpWYx2l9ZgafL+?=
+ =?us-ascii?Q?OPv9sovFOH5GVfPRPF2kVOuNyTwtIAK+4gB7x5O/Rsmq6/5CkSq+NB/dw+cU?=
+ =?us-ascii?Q?u1aTgHqG7EtIcAFWnrNlo8ZuMzffc/jwdQySlKBRuFQCjooZPhxxEH/aapGd?=
+ =?us-ascii?Q?iilysYa/NmJfNt9H3RhtIKn65n1BbRLwFtqnbRRroX+tx80nsdeB05RWbOrM?=
+ =?us-ascii?Q?RbKUMedlbEaIr9Mc1Wu0DW/x7ICcZL8zaA5qZK8s7EExcOLWCw05CSClv7lJ?=
+ =?us-ascii?Q?/RyED/Mdjb02snyTJUL/wvW6O4snKGkWHNCg+87jAG3bl+7e1/OwiPJ9hsG4?=
+ =?us-ascii?Q?Nkm3QD4tN8d8D/uFdkjjpery6HU5V+wLIvYj5Nixw7lhkk0YGbF5Fj8eIWhi?=
+ =?us-ascii?Q?rfKR1CwHzlR5d19p7+N6GqvBOwgSsHkzTjUl5YcbiXrstdz/TVL2xZgKn38p?=
+ =?us-ascii?Q?AYIRh0uta9VjWJTIH2V17GiWoI5Ka3jMT15FN3rgy4j2BAFEAykHNYWhfTWa?=
+ =?us-ascii?Q?tJSscNPpBV4cNKVuN5O/C5Fv5isxctC1ngYAb4QPsidhY2H2JpbdLzcwp6Uj?=
+ =?us-ascii?Q?RTJrJBNKcC86rBN54g3WGTTyxgodpzL1C7MyWdm6Fyn+d5rc77jJSrhzldRw?=
+ =?us-ascii?Q?oDZTlgpZSnpqJ8uf315NaXSdsiY6TzqUBXiPlzc2?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f6ccca84-6b13-4875-2628-08dbf141b539
+X-MS-Exchange-CrossTenant-Network-Message-Id: fe799dc3-ea7c-43ac-3e46-08dbf141b647
 X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Nov 2023 01:14:32.0152
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Nov 2023 01:14:33.8107
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: WiNUKz2IUlh2rRGkRHSMwCouaFuW4j5dPFxVdRyth0libpEfsLqtUj8sNf5gCvZA
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB7627
+X-MS-Exchange-CrossTenant-UserPrincipalName: 2yCDh1WKx1ItRRSAj+FyNRXPpHshPMVqkO1gx3V2NxxB2+9XogNcxM2+CMIc4OL3
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR12MB5836
 
-qcom supports a single iommu instance with multiple ids.
+This function can be called by drivers in their probe function to return a
+single iommu_device instance associated with the current probe.
 
-Introduce a per-device data to store the iommu and ids list. Allocate and
-initialize it with iommu_fw_alloc_per_device_ids(). Remove
-qcom_iommu_of_xlate().
+All drivers need a way to get the iommu_device instance the FW says the
+device should be using. Wrap the function with a macro that does the
+container_of().
 
-This already was checking that all instances are the same, it is now done
-in common code.
+The driver indicates what instances it accepts by passing in its ops.
 
-Convert the rest of the funcs from calling dev_iommu_fwspec_get() to using
-the per-device data and remove all use of fwspec. Store the per-dev data
-in the qcom_iommu_domain instead of the iommu and fwspec pointers.
+num_cells is provided to validate that the args are correctly sized.
 
-Convert the places using dev_iommu_priv_get() to use the per-device data
-not the iommu.
+This function is all that is required by drivers that only support a
+single IOMMU instance and no IDs data. Driver's should follow a typical
+pattern in their probe_device:
 
-Remove to_iommu().
+	iommu = iommu_of_get_single_iommu(pinf, &rk_iommu_ops, -1,
+					  struct rk_iommu, iommu);
+	if (IS_ERR(iommu)) return ERR_CAST(iommu);
+
+	data = kzalloc(sizeof(*data), GFP_KERNEL);
+	if (!data) return ERR_PTR(-ENOMEM);
+	[..]
+	dev_iommu_priv_set(dev, data);
+        return &iommu->iommu;
 
 Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 ---
- drivers/iommu/arm/arm-smmu/qcom_iommu.c | 161 ++++++++++++------------
- 1 file changed, 81 insertions(+), 80 deletions(-)
+ drivers/acpi/scan.c          |  1 +
+ drivers/iommu/iommu.c        | 52 ++++++++++++++++++++++
+ drivers/iommu/of_iommu.c     | 59 +++++++++++++++++++++++++
+ include/linux/iommu-driver.h | 85 ++++++++++++++++++++++++++++++++++++
+ 4 files changed, 197 insertions(+)
 
-diff --git a/drivers/iommu/arm/arm-smmu/qcom_iommu.c b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-index 33f3c870086cea..4baca45df99971 100644
---- a/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-+++ b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-@@ -17,6 +17,7 @@
- #include <linux/io-64-nonatomic-hi-lo.h>
- #include <linux/io-pgtable.h>
- #include <linux/iommu.h>
-+#include <linux/iommu-driver.h>
- #include <linux/iopoll.h>
- #include <linux/kconfig.h>
- #include <linux/init.h>
-@@ -54,6 +55,12 @@ struct qcom_iommu_dev {
- 	struct qcom_iommu_ctx	*ctxs[];   /* indexed by asid */
- };
- 
-+struct qcom_iommu_master {
-+	struct qcom_iommu_dev *iommu;
-+	unsigned int num_ids;
-+	u32 ids[] __counted_by(num_ids);
-+};
-+
- struct qcom_iommu_ctx {
- 	struct device		*dev;
- 	void __iomem		*base;
-@@ -68,8 +75,7 @@ struct qcom_iommu_domain {
- 	spinlock_t		 pgtbl_lock;
- 	struct mutex		 init_mutex; /* Protects iommu pointer */
- 	struct iommu_domain	 domain;
--	struct qcom_iommu_dev	*iommu;
--	struct iommu_fwspec	*fwspec;
-+	struct qcom_iommu_master *master;
- };
- 
- static struct qcom_iommu_domain *to_qcom_iommu_domain(struct iommu_domain *dom)
-@@ -81,7 +87,7 @@ static const struct iommu_ops qcom_iommu_ops;
- 
- static struct qcom_iommu_ctx * to_ctx(struct qcom_iommu_domain *d, unsigned asid)
- {
--	struct qcom_iommu_dev *qcom_iommu = d->iommu;
-+	struct qcom_iommu_dev *qcom_iommu = d->master->iommu;
- 	if (!qcom_iommu)
- 		return NULL;
- 	return qcom_iommu->ctxs[asid];
-@@ -114,11 +120,11 @@ iommu_readq(struct qcom_iommu_ctx *ctx, unsigned reg)
- static void qcom_iommu_tlb_sync(void *cookie)
- {
- 	struct qcom_iommu_domain *qcom_domain = cookie;
--	struct iommu_fwspec *fwspec = qcom_domain->fwspec;
-+	struct qcom_iommu_master *master = qcom_domain->master;
- 	unsigned i;
- 
--	for (i = 0; i < fwspec->num_ids; i++) {
--		struct qcom_iommu_ctx *ctx = to_ctx(qcom_domain, fwspec->ids[i]);
-+	for (i = 0; i < master->num_ids; i++) {
-+		struct qcom_iommu_ctx *ctx = to_ctx(qcom_domain, master->ids[i]);
- 		unsigned int val, ret;
- 
- 		iommu_writel(ctx, ARM_SMMU_CB_TLBSYNC, 0);
-@@ -133,11 +139,11 @@ static void qcom_iommu_tlb_sync(void *cookie)
- static void qcom_iommu_tlb_inv_context(void *cookie)
- {
- 	struct qcom_iommu_domain *qcom_domain = cookie;
--	struct iommu_fwspec *fwspec = qcom_domain->fwspec;
-+	struct qcom_iommu_master *master = qcom_domain->master;
- 	unsigned i;
- 
--	for (i = 0; i < fwspec->num_ids; i++) {
--		struct qcom_iommu_ctx *ctx = to_ctx(qcom_domain, fwspec->ids[i]);
-+	for (i = 0; i < master->num_ids; i++) {
-+		struct qcom_iommu_ctx *ctx = to_ctx(qcom_domain, master->ids[i]);
- 		iommu_writel(ctx, ARM_SMMU_CB_S1_TLBIASID, ctx->asid);
- 	}
- 
-@@ -148,13 +154,13 @@ static void qcom_iommu_tlb_inv_range_nosync(unsigned long iova, size_t size,
- 					    size_t granule, bool leaf, void *cookie)
- {
- 	struct qcom_iommu_domain *qcom_domain = cookie;
--	struct iommu_fwspec *fwspec = qcom_domain->fwspec;
-+	struct qcom_iommu_master *master = qcom_domain->master;
- 	unsigned i, reg;
- 
- 	reg = leaf ? ARM_SMMU_CB_S1_TLBIVAL : ARM_SMMU_CB_S1_TLBIVA;
- 
--	for (i = 0; i < fwspec->num_ids; i++) {
--		struct qcom_iommu_ctx *ctx = to_ctx(qcom_domain, fwspec->ids[i]);
-+	for (i = 0; i < master->num_ids; i++) {
-+		struct qcom_iommu_ctx *ctx = to_ctx(qcom_domain, master->ids[i]);
- 		size_t s = size;
- 
- 		iova = (iova >> 12) << 12;
-@@ -218,14 +224,14 @@ static int qcom_iommu_init_domain(struct iommu_domain *domain,
- 				  struct device *dev)
- {
- 	struct qcom_iommu_domain *qcom_domain = to_qcom_iommu_domain(domain);
--	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
-+	struct qcom_iommu_master *master = dev_iommu_priv_get(dev);
- 	struct io_pgtable_ops *pgtbl_ops;
- 	struct io_pgtable_cfg pgtbl_cfg;
- 	int i, ret = 0;
- 	u32 reg;
- 
- 	mutex_lock(&qcom_domain->init_mutex);
--	if (qcom_domain->iommu)
-+	if (qcom_domain->master)
- 		goto out_unlock;
- 
- 	pgtbl_cfg = (struct io_pgtable_cfg) {
-@@ -236,8 +242,7 @@ static int qcom_iommu_init_domain(struct iommu_domain *domain,
- 		.iommu_dev	= qcom_iommu->dev,
+diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
+index 9c13df632aa5e0..de36299c3b75bf 100644
+--- a/drivers/acpi/scan.c
++++ b/drivers/acpi/scan.c
+@@ -1570,6 +1570,7 @@ static int acpi_iommu_configure_id(struct device *dev, const u32 *id_in)
+ 	const struct iommu_ops *ops;
+ 	struct iommu_probe_info pinf = {
+ 		.dev = dev,
++		.is_dma_configure = true,
  	};
  
--	qcom_domain->iommu = qcom_iommu;
--	qcom_domain->fwspec = fwspec;
-+	qcom_domain->master = master;
- 
- 	pgtbl_ops = alloc_io_pgtable_ops(ARM_32_LPAE_S1, &pgtbl_cfg, qcom_domain);
- 	if (!pgtbl_ops) {
-@@ -251,8 +256,8 @@ static int qcom_iommu_init_domain(struct iommu_domain *domain,
- 	domain->geometry.aperture_end = (1ULL << pgtbl_cfg.ias) - 1;
- 	domain->geometry.force_aperture = true;
- 
--	for (i = 0; i < fwspec->num_ids; i++) {
--		struct qcom_iommu_ctx *ctx = to_ctx(qcom_domain, fwspec->ids[i]);
-+	for (i = 0; i < master->num_ids; i++) {
-+		struct qcom_iommu_ctx *ctx = to_ctx(qcom_domain, master->ids[i]);
- 
- 		if (!ctx->secure_init) {
- 			ret = qcom_scm_restore_sec_cfg(qcom_iommu->sec_id, ctx->asid);
-@@ -316,7 +321,7 @@ static int qcom_iommu_init_domain(struct iommu_domain *domain,
- 	return 0;
- 
- out_clear_iommu:
--	qcom_domain->iommu = NULL;
-+	qcom_domain->master = NULL;
- out_unlock:
- 	mutex_unlock(&qcom_domain->init_mutex);
- 	return ret;
-@@ -345,16 +350,16 @@ static void qcom_iommu_domain_free(struct iommu_domain *domain)
- {
- 	struct qcom_iommu_domain *qcom_domain = to_qcom_iommu_domain(domain);
- 
--	if (qcom_domain->iommu) {
-+	if (qcom_domain->master) {
- 		/*
- 		 * NOTE: unmap can be called after client device is powered
- 		 * off, for example, with GPUs or anything involving dma-buf.
- 		 * So we cannot rely on the device_link.  Make sure the IOMMU
- 		 * is on to avoid unclocked accesses in the TLB inv path:
- 		 */
--		pm_runtime_get_sync(qcom_domain->iommu->dev);
-+		pm_runtime_get_sync(qcom_domain->master->iommu->dev);
- 		free_io_pgtable_ops(qcom_domain->pgtbl_ops);
--		pm_runtime_put_sync(qcom_domain->iommu->dev);
-+		pm_runtime_put_sync(qcom_domain->master->iommu->dev);
- 	}
- 
- 	kfree(qcom_domain);
-@@ -362,7 +367,8 @@ static void qcom_iommu_domain_free(struct iommu_domain *domain)
- 
- static int qcom_iommu_attach_dev(struct iommu_domain *domain, struct device *dev)
- {
--	struct qcom_iommu_dev *qcom_iommu = dev_iommu_priv_get(dev);
-+	struct qcom_iommu_master *master = dev_iommu_priv_get(dev);
-+	struct qcom_iommu_dev *qcom_iommu = master->iommu;
- 	struct qcom_iommu_domain *qcom_domain = to_qcom_iommu_domain(domain);
- 	int ret;
- 
-@@ -382,7 +388,7 @@ static int qcom_iommu_attach_dev(struct iommu_domain *domain, struct device *dev
- 	 * Sanity check the domain. We don't support domains across
- 	 * different IOMMUs.
- 	 */
--	if (qcom_domain->iommu != qcom_iommu)
-+	if (qcom_domain->master->iommu != qcom_iommu)
- 		return -EINVAL;
- 
- 	return 0;
-@@ -393,20 +399,20 @@ static int qcom_iommu_identity_attach(struct iommu_domain *identity_domain,
- {
- 	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
- 	struct qcom_iommu_domain *qcom_domain;
--	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
--	struct qcom_iommu_dev *qcom_iommu = dev_iommu_priv_get(dev);
-+	struct qcom_iommu_master *master = dev_iommu_priv_get(dev);
-+	struct qcom_iommu_dev *qcom_iommu = master->iommu;
- 	unsigned int i;
- 
- 	if (domain == identity_domain || !domain)
- 		return 0;
- 
- 	qcom_domain = to_qcom_iommu_domain(domain);
--	if (WARN_ON(!qcom_domain->iommu))
-+	if (WARN_ON(!qcom_domain->master))
- 		return -EINVAL;
- 
- 	pm_runtime_get_sync(qcom_iommu->dev);
--	for (i = 0; i < fwspec->num_ids; i++) {
--		struct qcom_iommu_ctx *ctx = to_ctx(qcom_domain, fwspec->ids[i]);
-+	for (i = 0; i < master->num_ids; i++) {
-+		struct qcom_iommu_ctx *ctx = to_ctx(qcom_domain, master->ids[i]);
- 
- 		/* Disable the context bank: */
- 		iommu_writel(ctx, ARM_SMMU_CB_SCTLR, 0);
-@@ -461,11 +467,11 @@ static size_t qcom_iommu_unmap(struct iommu_domain *domain, unsigned long iova,
- 	 * cannot rely on the device_link.  Make sure the IOMMU is on to
- 	 * avoid unclocked accesses in the TLB inv path:
- 	 */
--	pm_runtime_get_sync(qcom_domain->iommu->dev);
-+	pm_runtime_get_sync(qcom_domain->master->iommu->dev);
- 	spin_lock_irqsave(&qcom_domain->pgtbl_lock, flags);
- 	ret = ops->unmap_pages(ops, iova, pgsize, pgcount, gather);
- 	spin_unlock_irqrestore(&qcom_domain->pgtbl_lock, flags);
--	pm_runtime_put_sync(qcom_domain->iommu->dev);
-+	pm_runtime_put_sync(qcom_domain->master->iommu->dev);
- 
- 	return ret;
- }
-@@ -478,9 +484,9 @@ static void qcom_iommu_flush_iotlb_all(struct iommu_domain *domain)
- 	if (!qcom_domain->pgtbl_ops)
- 		return;
- 
--	pm_runtime_get_sync(qcom_domain->iommu->dev);
-+	pm_runtime_get_sync(qcom_domain->master->iommu->dev);
- 	qcom_iommu_tlb_sync(pgtable->cookie);
--	pm_runtime_put_sync(qcom_domain->iommu->dev);
-+	pm_runtime_put_sync(qcom_domain->master->iommu->dev);
+ 	/* Serialise to make dev->iommu stable under our potential fwspec */
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 45e6543748fd46..ca411ad14c1182 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -3015,6 +3015,58 @@ struct iommu_device *iommu_device_from_fwnode(struct fwnode_handle *fwnode)
+ 	return NULL;
  }
  
- static void qcom_iommu_iotlb_sync(struct iommu_domain *domain,
-@@ -523,13 +529,38 @@ static bool qcom_iommu_capable(struct device *dev, enum iommu_cap cap)
- 	}
- }
- 
--static struct iommu_device *qcom_iommu_probe_device(struct device *dev)
-+static struct iommu_device *
-+qcom_iommu_probe_device(struct iommu_probe_info *pinf)
- {
--	struct qcom_iommu_dev *qcom_iommu = dev_iommu_priv_get(dev);
-+	struct qcom_iommu_dev *qcom_iommu;
-+	struct qcom_iommu_master *master;
-+	struct device *dev = pinf->dev;
- 	struct device_link *link;
-+	int ret;
-+	int i;
- 
--	if (!qcom_iommu)
--		return ERR_PTR(-ENODEV);
-+	qcom_iommu = iommu_of_get_single_iommu(pinf, &qcom_iommu_ops, 1,
-+					       struct qcom_iommu_dev, iommu);
-+	if (IS_ERR(qcom_iommu))
-+		return ERR_CAST(qcom_iommu);
++/*
++ * Helper for FW interfaces to parse the fwnode into an iommu_driver. This
++ * caches past search results to avoid re-searching the linked list and computes
++ * if the FW is describing a single or multi-instance ID list.
++ */
++struct iommu_device *
++iommu_device_from_fwnode_pinf(struct iommu_probe_info *pinf,
++			      const struct iommu_ops *ops,
++			      struct fwnode_handle *fwnode)
++{
++	struct iommu_device *iommu = pinf->cached_iommu;
 +
-+	master = iommu_fw_alloc_per_device_ids(pinf, master);
-+	if (IS_ERR(master))
-+		return ERR_CAST(master);
++	if (!pinf->num_ids)
++		pinf->cached_single_iommu = true;
 +
-+	for (i = 0; i != master->num_ids; i++) {
-+		u32 asid = master->ids[i];
-+
-+		/*
-+		 * Make sure the asid specified in dt is valid, so we don't have
-+		 * to sanity check this elsewhere:
-+		 */
-+		if (WARN_ON(asid > qcom_iommu->max_asid) ||
-+		    WARN_ON(qcom_iommu->ctxs[asid] == NULL)) {
-+			ret = -EINVAL;
-+			goto err_free;
-+		}
++	if (!iommu || iommu->fwnode != fwnode) {
++		iommu = iommu_device_from_fwnode(fwnode);
++		if (!iommu)
++			return ERR_PTR(
++				driver_deferred_probe_check_state(pinf->dev));
++		pinf->cached_iommu = iommu;
++		if (pinf->num_ids)
++			pinf->cached_single_iommu = false;
 +	}
- 
- 	/*
- 	 * Establish the link between iommu and master, so that the
-@@ -540,63 +571,33 @@ static struct iommu_device *qcom_iommu_probe_device(struct device *dev)
- 	if (!link) {
- 		dev_err(qcom_iommu->dev, "Unable to create device link between %s and %s\n",
- 			dev_name(qcom_iommu->dev), dev_name(dev));
--		return ERR_PTR(-ENODEV);
-+		ret = -ENODEV;
-+		goto err_free;
- 	}
- 
-+	dev_iommu_priv_set(dev, master);
- 	return &qcom_iommu->iommu;
 +
-+err_free:
-+	kfree(master);
-+	return ERR_PTR(ret);
- }
- 
--static int qcom_iommu_of_xlate(struct device *dev, struct of_phandle_args *args)
-+static void qcom_iommu_release_device(struct device *dev)
++	/* NULL ops is used for the -EPROBE_DEFER check, match everything */
++	if (ops && iommu->ops != ops) {
++		if (!pinf->num_ids)
++			return ERR_PTR(-ENODEV);
++		dev_err(pinf->dev,
++			FW_BUG
++			"One device in the FW has iommu's with different Linux drivers, expecting %ps FW wants %ps.",
++			ops, iommu->ops);
++		return ERR_PTR(-EINVAL);
++	}
++	return iommu;
++}
++
++struct iommu_device *iommu_fw_finish_get_single(struct iommu_probe_info *pinf)
++{
++	if (WARN_ON(!pinf->num_ids || !pinf->cached_iommu))
++		return ERR_PTR(-EINVAL);
++	if (!pinf->cached_single_iommu) {
++		dev_err(pinf->dev,
++			FW_BUG
++			"The iommu driver %ps expects only one iommu instance, the FW has more.\n",
++			pinf->cached_iommu->ops);
++		return ERR_PTR(-EINVAL);
++	}
++	return pinf->cached_iommu;
++}
++
+ int iommu_fwspec_init(struct device *dev, struct fwnode_handle *iommu_fwnode,
+ 		      const struct iommu_ops *ops)
  {
--	struct qcom_iommu_dev *qcom_iommu;
--	struct platform_device *iommu_pdev;
--	unsigned asid = args->args[0];
-+	struct qcom_iommu_master *master = dev_iommu_priv_get(dev);
- 
--	if (args->args_count != 1) {
--		dev_err(dev, "incorrect number of iommu params found for %s "
--			"(found %d, expected 1)\n",
--			args->np->full_name, args->args_count);
--		return -EINVAL;
--	}
--
--	iommu_pdev = of_find_device_by_node(args->np);
--	if (WARN_ON(!iommu_pdev))
--		return -EINVAL;
--
--	qcom_iommu = platform_get_drvdata(iommu_pdev);
--
--	/* make sure the asid specified in dt is valid, so we don't have
--	 * to sanity check this elsewhere:
--	 */
--	if (WARN_ON(asid > qcom_iommu->max_asid) ||
--	    WARN_ON(qcom_iommu->ctxs[asid] == NULL)) {
--		put_device(&iommu_pdev->dev);
--		return -EINVAL;
--	}
--
--	if (!dev_iommu_priv_get(dev)) {
--		dev_iommu_priv_set(dev, qcom_iommu);
--	} else {
--		/* make sure devices iommus dt node isn't referring to
--		 * multiple different iommu devices.  Multiple context
--		 * banks are ok, but multiple devices are not:
--		 */
--		if (WARN_ON(qcom_iommu != dev_iommu_priv_get(dev))) {
--			put_device(&iommu_pdev->dev);
--			return -EINVAL;
--		}
--	}
--
--	return iommu_fwspec_add_ids(dev, &asid, 1);
-+	kfree(master);
+diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+index 20266a8edd5c71..37af32a6bc84e5 100644
+--- a/drivers/iommu/of_iommu.c
++++ b/drivers/iommu/of_iommu.c
+@@ -138,6 +138,9 @@ int of_iommu_configure(struct device *dev, struct device_node *master_np,
+ {
+ 	struct iommu_probe_info pinf = {
+ 		.dev = dev,
++		.of_master_np = master_np,
++		.of_map_id = id,
++		.is_dma_configure = true,
+ 	};
+ 	struct iommu_fwspec *fwspec;
+ 	int err;
+@@ -277,3 +280,59 @@ void of_iommu_get_resv_regions(struct device *dev, struct list_head *list)
+ #endif
  }
+ EXPORT_SYMBOL(of_iommu_get_resv_regions);
++
++struct parse_info {
++	struct iommu_probe_info *pinf;
++	const struct iommu_ops *ops;
++	int num_cells;
++};
++
++static struct iommu_device *parse_iommu(struct parse_info *info,
++					struct of_phandle_args *iommu_spec)
++{
++	if (!of_device_is_available(iommu_spec->np))
++		return ERR_PTR(-ENODEV);
++
++	if (info->num_cells != -1 && iommu_spec->args_count != info->num_cells) {
++		dev_err(info->pinf->dev,
++			FW_BUG
++			"Driver %ps expects number of cells %u but DT has %u\n",
++			info->ops, info->num_cells, iommu_spec->args_count);
++		return ERR_PTR(-EINVAL);
++	}
++	return iommu_device_from_fwnode_pinf(info->pinf, info->ops,
++					     &iommu_spec->np->fwnode);
++}
++
++static int parse_single_iommu(struct of_phandle_args *iommu_spec, void *_info)
++{
++	struct parse_info *info = _info;
++	struct iommu_device *iommu;
++
++	iommu = parse_iommu(info, iommu_spec);
++	if (IS_ERR(iommu))
++		return PTR_ERR(iommu);
++	info->pinf->num_ids++;
++	return 0;
++}
++
++struct iommu_device *__iommu_of_get_single_iommu(struct iommu_probe_info *pinf,
++						 const struct iommu_ops *ops,
++						 int num_cells)
++{
++	struct parse_info info = { .pinf = pinf,
++				   .ops = ops,
++				   .num_cells = num_cells };
++	int err;
++
++	if (!pinf->is_dma_configure || !pinf->of_master_np)
++		return ERR_PTR(-ENODEV);
++
++	iommu_fw_clear_cache(pinf);
++	err = of_iommu_for_each_id(pinf->dev, pinf->of_master_np,
++				   pinf->of_map_id, parse_single_iommu, &info);
++	if (err)
++		return ERR_PTR(err);
++	return iommu_fw_finish_get_single(pinf);
++}
++EXPORT_SYMBOL_GPL(__iommu_of_get_single_iommu);
+diff --git a/include/linux/iommu-driver.h b/include/linux/iommu-driver.h
+index c572620d3069b4..597998a62b0dd6 100644
+--- a/include/linux/iommu-driver.h
++++ b/include/linux/iommu-driver.h
+@@ -13,25 +13,110 @@
+ #endif
  
- static const struct iommu_ops qcom_iommu_ops = {
- 	.identity_domain = &qcom_iommu_identity_domain,
- 	.capable	= qcom_iommu_capable,
- 	.domain_alloc_paging = qcom_iommu_domain_alloc_paging,
--	.probe_device	= qcom_iommu_probe_device,
-+	.probe_device_pinf = qcom_iommu_probe_device,
-+	.release_device = qcom_iommu_release_device,
- 	.device_group	= generic_device_group,
--	.of_xlate	= qcom_iommu_of_xlate,
-+	.of_xlate	= iommu_dummy_of_xlate,
- 	.pgsize_bitmap	= SZ_4K | SZ_64K | SZ_1M | SZ_16M,
- 	.default_domain_ops = &(const struct iommu_domain_ops) {
- 		.attach_dev	= qcom_iommu_attach_dev,
+ #include <linux/types.h>
++#include <linux/err.h>
++#include <linux/slab.h>
+ 
++struct of_phandle_args;
+ struct fwnode_handle;
++struct iommu_device;
++struct iommu_ops;
++
++/*
++ * FIXME this is sort of like container_of_safe() that was removed, do we want
++ * to put it in the common header?
++ */
++#define container_of_err(ptr, type, member)                       \
++	({                                                        \
++		void *__mptr = (void *)(ptr);                     \
++								  \
++		(offsetof(type, member) != 0 && IS_ERR(__mptr)) ? \
++			(type *)ERR_CAST(__mptr) :                \
++			container_of(ptr, type, member);          \
++	})
+ 
+ struct iommu_probe_info {
+ 	struct device *dev;
+ 	struct list_head *deferred_group_list;
++	struct iommu_device *cached_iommu;
++	struct device_node *of_master_np;
++	const u32 *of_map_id;
++	unsigned int num_ids;
+ 	bool defer_setup : 1;
++	bool is_dma_configure : 1;
++	bool cached_single_iommu : 1;
+ };
+ 
++static inline void iommu_fw_clear_cache(struct iommu_probe_info *pinf)
++{
++	pinf->num_ids = 0;
++	pinf->cached_single_iommu = true;
++}
++
+ int iommu_probe_device_pinf(struct iommu_probe_info *pinf);
+ struct iommu_device *iommu_device_from_fwnode(struct fwnode_handle *fwnode);
++struct iommu_device *
++iommu_device_from_fwnode_pinf(struct iommu_probe_info *pinf,
++			      const struct iommu_ops *ops,
++			      struct fwnode_handle *fwnode);
++struct iommu_device *iommu_fw_finish_get_single(struct iommu_probe_info *pinf);
+ 
+ #if IS_ENABLED(CONFIG_OF_IOMMU)
+ void of_iommu_get_resv_regions(struct device *dev, struct list_head *list);
++
++struct iommu_device *__iommu_of_get_single_iommu(struct iommu_probe_info *pinf,
++						 const struct iommu_ops *ops,
++						 int num_cells);
+ #else
+ static inline void of_iommu_get_resv_regions(struct device *dev,
+ 					     struct list_head *list)
+ {
+ }
++static inline
++struct iommu_device *__iommu_of_get_single_iommu(struct iommu_probe_info *pinf,
++						 const struct iommu_ops *ops,
++						 int num_cells)
++{
++	return ERR_PTR(-ENODEV);
++}
+ #endif
+ 
++/**
++ * iommu_of_get_single_iommu - Return the driver's iommu instance
++ * @pinf: The iommu_probe_info
++ * @ops: The ops the iommu instance must have
++ * @num_cells: #iommu-cells value to enforce, -1 is no check
++ * @drv_struct: The driver struct containing the struct iommu_device
++ * @member: The name of the iommu_device member
++ *
++ * Parse the OF table describing the iommus and return a pointer to the driver's
++ * iommu_device struct that the OF table points to. Check that the OF table is
++ * well formed with a single iommu for all the entries and that the table refers
++ * to this iommu driver. Integrates a container_of() to simplify all users.
++ */
++#define iommu_of_get_single_iommu(pinf, ops, num_cells, drv_struct, member)  \
++	container_of_err(__iommu_of_get_single_iommu(pinf, ops, num_cells), \
++			  drv_struct, member)
++
++/**
++ * iommu_of_num_ids - Return the number of iommu associations the FW has
++ * @pinf: The iommu_probe_info
++ *
++ * For drivers using iommu_of_get_single_iommu() this will return the number
++ * of ids associated with the iommu instance. For other cases this will return
++ * the sum of all ids across all instances. Returns >= 1.
++ */
++static inline unsigned int iommu_of_num_ids(struct iommu_probe_info *pinf)
++{
++	return pinf->num_ids;
++}
++
++/*
++ * Used temporarily to indicate drivers that have moved to the new probe method.
++ */
++static inline int iommu_dummy_of_xlate(struct device *dev,
++				       struct of_phandle_args *args)
++{
++	return 0;
++}
++
+ #endif
 -- 
 2.42.0
 
