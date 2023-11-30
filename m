@@ -1,196 +1,216 @@
-Received: from mail-ej1-f51.google.com (mail-ej1-f51.google.com [209.85.218.51])
+Received: from mail-qv1-f45.google.com (mail-qv1-f45.google.com [209.85.219.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E939063CE
-	for <iommu@lists.linux.dev>; Thu, 30 Nov 2023 20:08:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1AD5A537ED
+	for <iommu@lists.linux.dev>; Thu, 30 Nov 2023 20:15:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=soleen.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=soleen.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hyuZwOPg"
-Received: by mail-ej1-f51.google.com with SMTP id a640c23a62f3a-a00ac0101d9so199790166b.0
-        for <iommu@lists.linux.dev>; Thu, 30 Nov 2023 12:08:26 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=soleen.com header.i=@soleen.com header.b="g20Nn9gN"
+Received: by mail-qv1-f45.google.com with SMTP id 6a1803df08f44-67a894ccb4eso4343236d6.3
+        for <iommu@lists.linux.dev>; Thu, 30 Nov 2023 12:15:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1701374905; x=1701979705; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=NVmjRzgAua03WdwORo421gdt6nsBZn8xmvtY8qjfbPE=;
-        b=hyuZwOPg/9d+osQmrqFACrDHN8bWYzW0yQLESTL0WmD6wnc3+kfVjX6ibKv1QehDFA
-         nDQysCuOadBmER/6gdrUuT8qOKhiiAp6S/7ledvAoJCjmcciiSY6o75GegJ9nPkRPabK
-         0f+kQAkvlCH5psgz1/OxGYB4FpSH4tTSNufx4mUtdV3kv6a8C8MP0COhCYA1Q4OlH8Da
-         e6cNNdsTSfEMXbPqSNS3pENAYVaMZf3X5YrknJVjMEKeD8vlec4ARuBXQI745r8zvlqw
-         ATq0w4gPqhNkFOYPK0dmuQG3g0322tXlmfOu8VJpOnniduw0Qgn+fGdR9H00HZcvVDla
-         utEQ==
+        d=soleen.com; s=google; t=1701375308; x=1701980108; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:to
+         :from:from:to:cc:subject:date:message-id:reply-to;
+        bh=X5AMqGJYt6SEyyaxLyp7JmYGeHIyK2cLcP93CB0xsAo=;
+        b=g20Nn9gNKCvhzWpvF7IIoayJU0dS+Pu7iksh2f/CZCWUgxawHi8Wrd/cT4rJeWywJW
+         GaAnjcwwdK3yeflRLQgAh1l0xGev/h3kZj8lnBM1SbMOEDVRyFxx6hlIttkufC4dWo2Y
+         L/XnyaOvE6uebCaMyWYlAZG6qJR6Fe2ouGrIFU9ld5K8WoKMqMOU/nMi8Cy9XeezSX+P
+         8GQL68SmhYeoXqnm8Qjyhkez7KM1lgG4p6bM13vHauJfSwhojagcY9Fgx9Y7hUmUjeY8
+         D9PqHEXGSV20QJfnJXnfq1sTJQH43qlr0r7FOYnWLIb8ehSS5EbvfGDXumX+jNczGGbZ
+         ssPg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701374905; x=1701979705;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=NVmjRzgAua03WdwORo421gdt6nsBZn8xmvtY8qjfbPE=;
-        b=CgTMgG31EUCER/kHaZyY75FimDl7Fnwg0hjvVdDKfb3wpm1nZN+jNwZdP+ZnAVF+JG
-         deI1HJexi6sPhpI1j3xeRCqceERv7L6bZ8cNn3Sf2yhPB1wJ/2LtHWKZ0zTG0qoeiGzv
-         xXokob3xYSvxHDc3VJEHGayP7Mh4Bve+s+syMUUBsCLO4OVrjbBxOJAiQ1O63X0Qrzrf
-         JxxVyiS040A55VN7PRiMSq11hd3VjkG73zGC5IBw/qJBlEsCV/puL1CrTnqBomnvF+Vy
-         25Fup/VfYyH1mDesDm6F+8Oq8P3U8gcSHy+Fh/Q8gW6da5Wap48iS22cXVYKCPkonldl
-         Y0Ww==
-X-Gm-Message-State: AOJu0YzGFTlR2tcdlavPBJJfSk3t/vhREBTrMdrWOc5ecQdxJXx56vco
-	Ft8ht6xO3/r9gPVxRYy255E=
-X-Google-Smtp-Source: AGHT+IGDj/cYED/zn7ZI/6ywZMAiLSEGIkHHYOLRjRCrTSCtxJdUs79XKkQbwFcSDTOef56n9FK6XQ==
-X-Received: by 2002:a17:906:c306:b0:a19:34c1:de22 with SMTP id s6-20020a170906c30600b00a1934c1de22mr55366ejz.76.1701374904976;
-        Thu, 30 Nov 2023 12:08:24 -0800 (PST)
-Received: from ?IPV6:2a02:a466:68ed:1:d1c5:6360:2926:652a? (2a02-a466-68ed-1-d1c5-6360-2926-652a.fixed6.kpn.net. [2a02:a466:68ed:1:d1c5:6360:2926:652a])
-        by smtp.gmail.com with ESMTPSA id ay5-20020a170906d28500b009fc3f347109sm1036124ejb.156.2023.11.30.12.08.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 30 Nov 2023 12:08:24 -0800 (PST)
-Message-ID: <76e8def2-ff45-47d3-91ab-96876ea84079@gmail.com>
-Date: Thu, 30 Nov 2023 21:08:23 +0100
+        d=1e100.net; s=20230601; t=1701375308; x=1701980108;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:to
+         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=X5AMqGJYt6SEyyaxLyp7JmYGeHIyK2cLcP93CB0xsAo=;
+        b=UdXVCOGn3JDyMrgwuTSZNJxsuOedWsKdULgXrNzQ6Hln4Q1R1CDKvD3spX40fv+7XW
+         V5REjJdedDnvI6ehZPlvCHQHwv0f2Ga/5O2PsWZf1NcPYBf6Xp9mUmChROgQzSRHqPn8
+         Nt8rAjkRRM8sdeVRjJZECSa2teKUrVSxIz1LrjGXu5BHFYjHW8hMeh4K9WmGhjQqAxYl
+         QB052NViWMC7igludwdHLRAXS1FOkhjBhTnC6FIia+WP2H1PwBA7NQAsKwVXJ5DDnFXS
+         2Ns956fB2LdGFK3eOKnbV1zWQYMiV8hkRziI9W93Dc3Nrsk8jGxKNjIqD+fUOJg/bO06
+         IU8Q==
+X-Gm-Message-State: AOJu0Yw0TPsAmOLMuR5gskTahC+YrP8q51uyuNIKObKmrQ93/HETXx9A
+	SzxW4gdhJeRFratiyi5ykPcYzA==
+X-Google-Smtp-Source: AGHT+IEJXctu9WcvSzFXt39rV8QEM3y7T1pFE0WiGQYLYtGfkA61KyCWh7Z0c00L3koHxXYwUBpejQ==
+X-Received: by 2002:ad4:41c8:0:b0:67a:45e5:4aed with SMTP id a8-20020ad441c8000000b0067a45e54aedmr13542036qvq.21.1701375307954;
+        Thu, 30 Nov 2023 12:15:07 -0800 (PST)
+Received: from soleen.c.googlers.com.com (55.87.194.35.bc.googleusercontent.com. [35.194.87.55])
+        by smtp.gmail.com with ESMTPSA id e1-20020a0cb441000000b0067a35608186sm795252qvf.28.2023.11.30.12.15.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 30 Nov 2023 12:15:07 -0800 (PST)
+From: Pasha Tatashin <pasha.tatashin@soleen.com>
+To: akpm@linux-foundation.org,
+	alim.akhtar@samsung.com,
+	alyssa@rosenzweig.io,
+	asahi@lists.linux.dev,
+	baolu.lu@linux.intel.com,
+	bhelgaas@google.com,
+	cgroups@vger.kernel.org,
+	corbet@lwn.net,
+	david@redhat.com,
+	dwmw2@infradead.org,
+	hannes@cmpxchg.org,
+	heiko@sntech.de,
+	iommu@lists.linux.dev,
+	jernej.skrabec@gmail.com,
+	jonathanh@nvidia.com,
+	joro@8bytes.org,
+	krzysztof.kozlowski@linaro.org,
+	linux-doc@vger.kernel.org,
+	linux-fsdevel@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-mm@kvack.org,
+	linux-rockchip@lists.infradead.org,
+	linux-samsung-soc@vger.kernel.org,
+	linux-sunxi@lists.linux.dev,
+	linux-tegra@vger.kernel.org,
+	lizefan.x@bytedance.com,
+	marcan@marcan.st,
+	mhiramat@kernel.org,
+	m.szyprowski@samsung.com,
+	pasha.tatashin@soleen.com,
+	paulmck@kernel.org,
+	rdunlap@infradead.org,
+	robin.murphy@arm.com,
+	samuel@sholland.org,
+	suravee.suthikulpanit@amd.com,
+	sven@svenpeter.dev,
+	thierry.reding@gmail.com,
+	tj@kernel.org,
+	tomas.mudrunka@gmail.com,
+	vdumpa@nvidia.com,
+	wens@csie.org,
+	will@kernel.org,
+	yu-cheng.yu@intel.com
+Subject: [PATCH v2 00/10] IOMMU memory observability
+Date: Thu, 30 Nov 2023 20:14:54 +0000
+Message-ID: <20231130201504.2322355-1-pasha.tatashin@soleen.com>
+X-Mailer: git-send-email 2.43.0.rc2.451.g8631bc7472-goog
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: Bug in add_dma_entry()'s debugging code
-Content-Language: en-US
-To: Catalin Marinas <catalin.marinas@arm.com>,
- Alan Stern <stern@rowland.harvard.edu>
-Cc: Christoph Hellwig <hch@lst.de>,
- Hamza Mahfooz <someguy@effective-light.com>,
- Dan Williams <dan.j.williams@intel.com>,
- Marek Szyprowski <m.szyprowski@samsung.com>, Andrew <travneff@gmail.com>,
- Ferry Toth <ferry.toth@elsinga.info>,
- Andy Shevchenko <andy.shevchenko@gmail.com>,
- Thorsten Leemhuis <regressions@leemhuis.info>, iommu@lists.linux.dev,
- Kernel development list <linux-kernel@vger.kernel.org>,
- USB mailing list <linux-usb@vger.kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>
-References: <736e584f-7d5f-41aa-a382-2f4881ba747f@rowland.harvard.edu>
- <20231127160759.GA1668@lst.de>
- <637d6dff-de56-4815-a15a-1afccde073f0@rowland.harvard.edu>
- <20231128133702.GA9917@lst.de>
- <cb7dc5da-37cb-45ba-9846-5a085f55692e@rowland.harvard.edu>
- <ZWYnECPRKca5Dpqc@arm.com>
-From: Ferry Toth <fntoth@gmail.com>
-In-Reply-To: <ZWYnECPRKca5Dpqc@arm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-Hi,
+From: Pasha Tatashin <tatashin@google.com>
 
-Op 28-11-2023 om 18:44 schreef Catalin Marinas:
-> On Tue, Nov 28, 2023 at 10:18:19AM -0500, Alan Stern wrote:
->> On Tue, Nov 28, 2023 at 02:37:02PM +0100, Christoph Hellwig wrote:
->>> I'd actually go one step back:
->>>
->>>   1) for not cache coherent DMA you can't do overlapping operations inside
->>>      a cache line
->>
->> Rephrasing slightly: You mustn't perform multiple non-cache-coherent DMA
->> operations that touch the same cache line concurrently.  (The word
->> "overlapping" is a a little ambiguous in this context.)
-> 
-> The problem is worse. I'd say you should not perform even a single
-> non-cache-coherent DMA (usually from-device or bidirectional) operation
-> if the cache line is shared with anything else modifying it. It doesn't
-> need to be another DMA operation. But that's more difficult to add to
-> the DMA API debug code (maybe something like the bouncing logic in
-> dma_kmalloc_needs_bounce()).
-> 
->>> The logical confcusion from that would be that IFF dma-debug is enabled on
->>> any platform we need to set ARCH_DMA_MINALIGN to the cache line size.
-> 
-> Or just force the kmalloc() min align to cache_line_size(), something
-> like:
-> 
-> diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-> index 4a658de44ee9..3ece20367636 100644
-> --- a/include/linux/dma-mapping.h
-> +++ b/include/linux/dma-mapping.h
-> @@ -543,6 +543,8 @@ static inline int dma_get_cache_alignment(void)
->   #ifdef ARCH_HAS_DMA_MINALIGN
->   	return ARCH_DMA_MINALIGN;
->   #endif
-> +	if (IS_ENABLED(CONFIG_DMA_API_DEBUG))
-> +		return cache_line_size();
->   	return 1;
->   }
->   #endif
-> diff --git a/mm/slab_common.c b/mm/slab_common.c
-> index 8d431193c273..d0b21d6e9328 100644
-> --- a/mm/slab_common.c
-> +++ b/mm/slab_common.c
-> @@ -879,7 +879,7 @@ static unsigned int __kmalloc_minalign(void)
->   	unsigned int minalign = dma_get_cache_alignment();
->   
->   	if (IS_ENABLED(CONFIG_DMA_BOUNCE_UNALIGNED_KMALLOC) &&
-> -	    is_swiotlb_allocated())
-> +	    is_swiotlb_allocated() && !IS_ENABLED(CONFIG_DMA_API_DEBUG))
->   		minalign = ARCH_KMALLOC_MINALIGN;
->   
->   	return max(minalign, arch_slab_minalign());
+----------------------------------------------------------------------
+Changelog
+----------------------------------------------------------------------
+v2:
+- Added Reviewed-by Janne Grunau
+- Sync with 6.7.0-rc3, 3b47bc037bd44f142ac09848e8d3ecccc726be99
+- Separated form the series patches:
+vhost-vdpa: account iommu allocations
+https://lore.kernel.org/all/20231130200447.2319543-1-pasha.tatashin@soleen.com
+vfio: account iommu allocations
+https://lore.kernel.org/all/20231130200900.2320829-1-pasha.tatashin@soleen.com
+as suggested by Jason Gunthorpe
+- Fixed SPARC build issue detected by kernel test robot
+- Drop the following patches as they do account iommu page tables:
+iommu/dma: use page allocation function provided by iommu-pages.h
+iommu/fsl: use page allocation function provided by iommu-pages.h
+iommu/iommufd: use page allocation function provided by iommu-pages.h
+as suggested by Robin Murphy. These patches are not related to IOMMU
+page tables. We might need to do a separate work to support DMA
+observability.
+- Remove support iommu/io-pgtable-arm-v7s as the 2nd level pages are
+under a page size, thanks Robin Murphy for pointing this out.
 
-With above suggestion "force the kmalloc() min align to 
-cache_line_size()" + Alan's debug code:
+----------------------------------------------------------------------
+Description
+----------------------------------------------------------------------
+IOMMU subsystem may contain state that is in gigabytes. Majority of that
+state is iommu page tables. Yet, there is currently, no way to observe
+how much memory is actually used by the iommu subsystem.
 
-root@yuna:~# journalctl -k | grep hub
-kernel: usbcore: registered new interface driver hub
-kernel: hub 1-0:1.0: USB hub found
-kernel: usb usb1: hub buffer at 71c7180, status at 71c71c0
-kernel: hub 1-0:1.0: 1 port detected
-kernel: hub 2-0:1.0: USB hub found
-kernel: usb usb2: hub buffer at 71c79c0, status at 71c7a00
-kernel: hub 2-0:1.0: 1 port detected
-kernel: hub 1-1:1.0: USB hub found
-kernel: usb 1-1: hub buffer at 65b36c0, status at 6639340
-kernel: hub 1-1:1.0: 7 ports detected
+This patch series solves this problem by adding both observability to
+all pages that are allocated by IOMMU, and also accountability, so
+admins can limit the amount if via cgroups.
 
-and the stack trace indeed goes away.
+The system-wide observability is using /proc/meminfo:
+SecPageTables:    438176 kB
 
-IOW also the 2 root hub kmalloc() are now also aligned to the cache line 
-size, even though these never triggered the stack trace. Strange: hub 
-status is aligned far away from hub buffer, kmalloc mysteries.
+Contains IOMMU and KVM memory.
 
-This still did not land for me: are we detecting a false alarm here as 
-the 2 DMA operations can never happen on the same cache line on 
-non-cache-coherent platforms? If so, shouldn't we fix up the dma debug 
-code to not detect a false alarm? Instead of changing the alignment?
-Or, is this a bonafide warning (for non-cache-coherent platforms)? Then 
-we should not silence it by force aligning it, but issue a WARN (on a 
-cache coherent platform) that is more useful (i.e. here we have not an 
-overlap but a shared cache line). On a non-cache coherent platform 
-something stronger than a WARN might be appropriate?
+Per-node observability:
+/sys/devices/system/node/nodeN/meminfo
+Node N SecPageTables:    422204 kB
 
-> Also note that to_cacheline_number() in kernel/dma/debug.c only takes
-> into account the L1_CACHE_SHIFT. On arm64 for example, cache_line_size()
-> returns the maximum line of all the cache levels (and we've seen
-> hardware where the L1 is 64-byte, L2 is 128).
-> 
->>> BUT:  we're actually reduzing our dependency on ARCH_DMA_MINALIGN by
->>> moving to bounce buffering unaligned memory for non-coherent
->>> architectures,
->>
->> What's the reason for this?  To allow the minimum allocation size to be
->> smaller than the cache line size?  Does the savings in memory make up
->> for the extra overhead of bounce buffering?
->>
->> Or is this just to allow people to be more careless about how they
->> allocate their DMA buffers (which doesn't seem to make sense)?
-> 
-> It's the former and it does make a difference with lots of small
-> structure or string allocations.
-> 
-> [...]
->> I get the impression that you would really like to have two different
->> versions of kmalloc() and friends: one for buffers that will be used in
->> DMA (and hence require cache-line alignment) and one for buffers that
->> won't be.
-> 
-> We've been there for the past 2-3 years (and a few other options). It's
-> hard to guess in a generic way because the allocation place may not
-> necessarily know how the device is going to access that memory (PIO,
-> DMA). The conclusion was that for those cases where the buffer is small,
-> we just do a bounce. If it's performance critical, the driver can use a
-> kmem_cache_create(SLAB_HWCACHE_ALIGN) and avoid the bouncing.
-> 
+Contains IOMMU and KVM memory memory in the given NUMA node.
+
+Per-node IOMMU only observability:
+/sys/devices/system/node/nodeN/vmstat
+nr_iommu_pages 105555
+
+Contains number of pages IOMMU allocated in the given node.
+
+Accountability: using sec_pagetables cgroup-v2 memory.stat entry.
+
+With the change, iova_stress[1] stops as limit is reached:
+
+# ./iova_stress
+iova space:     0T      free memory:   497G
+iova space:     1T      free memory:   495G
+iova space:     2T      free memory:   493G
+iova space:     3T      free memory:   491G
+
+stops as limit is reached.
+
+This series encorporates suggestions that came from the discussion
+at LPC [2].
+----------------------------------------------------------------------
+[1] https://github.com/soleen/iova_stress
+[2] https://lpc.events/event/17/contributions/1466
+----------------------------------------------------------------------
+Previous versions
+v1: https://lore.kernel.org/all/20231128204938.1453583-1-pasha.tatashin@soleen.com
+----------------------------------------------------------------------
+
+Pasha Tatashin (10):
+  iommu/vt-d: add wrapper functions for page allocations
+  iommu/amd: use page allocation function provided by iommu-pages.h
+  iommu/io-pgtable-arm: use page allocation function provided by
+    iommu-pages.h
+  iommu/io-pgtable-dart: use page allocation function provided by
+    iommu-pages.h
+  iommu/exynos: use page allocation function provided by iommu-pages.h
+  iommu/rockchip: use page allocation function provided by iommu-pages.h
+  iommu/sun50i: use page allocation function provided by iommu-pages.h
+  iommu/tegra-smmu: use page allocation function provided by
+    iommu-pages.h
+  iommu: observability of the IOMMU allocations
+  iommu: account IOMMU allocated memory
+
+ Documentation/admin-guide/cgroup-v2.rst |   2 +-
+ Documentation/filesystems/proc.rst      |   4 +-
+ drivers/iommu/amd/amd_iommu.h           |   8 -
+ drivers/iommu/amd/init.c                |  91 +++++-----
+ drivers/iommu/amd/io_pgtable.c          |  13 +-
+ drivers/iommu/amd/io_pgtable_v2.c       |  20 +-
+ drivers/iommu/amd/iommu.c               |  13 +-
+ drivers/iommu/exynos-iommu.c            |  14 +-
+ drivers/iommu/intel/dmar.c              |  10 +-
+ drivers/iommu/intel/iommu.c             |  47 ++---
+ drivers/iommu/intel/iommu.h             |   2 -
+ drivers/iommu/intel/irq_remapping.c     |  10 +-
+ drivers/iommu/intel/pasid.c             |  12 +-
+ drivers/iommu/intel/svm.c               |   7 +-
+ drivers/iommu/io-pgtable-arm.c          |   7 +-
+ drivers/iommu/io-pgtable-dart.c         |  37 ++--
+ drivers/iommu/iommu-pages.h             | 231 ++++++++++++++++++++++++
+ drivers/iommu/rockchip-iommu.c          |  14 +-
+ drivers/iommu/sun50i-iommu.c            |   7 +-
+ drivers/iommu/tegra-smmu.c              |  18 +-
+ include/linux/mmzone.h                  |   5 +-
+ mm/vmstat.c                             |   3 +
+ 22 files changed, 390 insertions(+), 185 deletions(-)
+ create mode 100644 drivers/iommu/iommu-pages.h
+
+-- 
+2.43.0.rc2.451.g8631bc7472-goog
 
