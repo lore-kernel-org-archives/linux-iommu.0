@@ -1,120 +1,204 @@
-Received: from mail-ot1-f44.google.com (mail-ot1-f44.google.com [209.85.210.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2067.outbound.protection.outlook.com [40.107.102.67])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 179C045C1C
-	for <iommu@lists.linux.dev>; Thu, 30 Nov 2023 12:15:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB26C3E494;
+	Thu, 30 Nov 2023 12:21:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="dpZ4YqZt"
-Received: by mail-ot1-f44.google.com with SMTP id 46e09a7af769-6d84ec109fbso529316a34.3
-        for <iommu@lists.linux.dev>; Thu, 30 Nov 2023 04:15:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1701346547; x=1701951347; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=qJCc9G3EC+NAjT0tK5yC9iiI0skMSbzKL4bpKApwWpE=;
-        b=dpZ4YqZt8yVlI+/Uqxo2as7CBz1WeeQMZTUO+OjcpoA1BEVRohmdqFeit9RRAOz1/c
-         H0sQEUzbxWkhMg6kcN9ioqnnJ9F0+haQbWQ2E5lC0bmlCP8w37hvbLfo7kItbFB+oHj9
-         dbqN4wuJJ9Wy7KYZ9Y2rZH3rekm9gmZZr7xzpIz5IKo4IvAsFAI56/m0NnkVw2QanwmB
-         ktuqnBHMw1kKWRYgG9WiVWZSFEtIFcE/aQls04uu6er3wMQ2Opd8XsmndMJvyNE+qd9b
-         5CRBH+ILT5HaANt7woqPftqqBMp3FX5uKCowkHenSRHDYup8kz7gxWJ/A+N9dbN3nv3r
-         C92Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701346547; x=1701951347;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=qJCc9G3EC+NAjT0tK5yC9iiI0skMSbzKL4bpKApwWpE=;
-        b=wTrxwvgSGOPX7iXiIT1BG9D9HM1tlL3Br4ITgEaTg7/VCNQairea5VyyhyLaqTjpbl
-         itAZsI4spmTDnxlcSnzO0iMVoKUmFljpX5tD9qWcExyveugOQXLA94gDSFLeWQ42QvgP
-         GFb6LcCepHw9j1PrtSCnROYnhOJSq91z6sJ/jtajPpGudGtkLytOTYXQKVZedULXWnvw
-         N/g32GrQsZP8/OLrVn8nbYXtw8nbQ6bWv0x/yVi+gO+WHxvsSA2lK9wH6dTWnbO+3l9S
-         yFmHaV/utMUEqJa4QhWu6mQ+fKc81G+sRWvhC8QhZ5YuY2PffgGioPNuCaPqQ9NH7x45
-         wlLA==
-X-Gm-Message-State: AOJu0Yzrm+L7gGio6D0WVkYbkgAdhA6yjNKQNcnKR4ZguwtjXPlIJk8j
-	ySO8ThWzgv3GnRQAqAHbm5v8SA==
-X-Google-Smtp-Source: AGHT+IH4aK3LYbDZTOXkpMfqtUQj0FJCc/XdP+zPGlT1qcjW2LqvVfNRQxQAJceD1zjJyXpuw++Cpw==
-X-Received: by 2002:a05:6870:9e83:b0:1fa:1bf6:b6a3 with SMTP id pu3-20020a0568709e8300b001fa1bf6b6a3mr23299174oab.28.1701346546810;
-        Thu, 30 Nov 2023 04:15:46 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-134-23-187.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.134.23.187])
-        by smtp.gmail.com with ESMTPSA id b26-20020a9d6b9a000000b006b74bea76c0sm127412otq.47.2023.11.30.04.15.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Nov 2023 04:15:45 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1r8fxI-005u3o-RF;
-	Thu, 30 Nov 2023 08:15:44 -0400
-Date: Thu, 30 Nov 2023 08:15:44 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="AiT86x1s"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=SbrYtRd/m7aeL7wxtVSgoWxcla1sgjQ3evd/MJvNCzpiBdA4Ipvu84YG0TW189c5MjZnX27ErQR7j3/eh0UrzfeuvSeJlwfeeyADJt2WNAGbro08aDH/GNszDzFMHf4DNC0xH9vdB8RuMnrXxhni8iJZt+MZWEaXIHxBr5joU+HNx/d8/0A7X+Efjps48cVyYU3z5H529YEtKtrIZIQ+lZF37r94KGkoPrQxIhuQVgob06HuMLuSAglSXuSK382hZHtmh0LHMzkYAwbZTwZNFBTKo7wHeYGdNpLDx+axmNpR/K+80bX4ixvuRpPYcOXjHR4WzkK1wUe1p2CEw3tT0Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=LJixQ+w47ibikbkMDvSQCF2sK7jVRhZawzlwIjz7Jh8=;
+ b=FVYrwI3BqFs6O8JvmQaavPBE2kfDcLYc6T70rQH64s8L0vKSIsyjMjIb60f1hpAJcXm0gYREzNG2NEhQDDrw/GXSFXcea7LKzVJvwPJ7bD75zwXZaQKOo/8ZRs0zouEZiNoCs64MeLQMyqVt0fj2Q5GcBaQKFTlZKdJvhdXsAV8Y4JxpoMcRpXOHfHuhlt6dJ6pOVW+5QT/UdVRztShK78USMwNmzeloEDE1O0vtvaRXIKkx/lfEjSDe1ggTt3CRXbFAVxF8iCLWL7U/mvtqeA7FFrM7A65wzqzz9IGePT6EVrqAdoK+sS5Tcwgm6nOa0e0+VaEQUKBUvXkw4bRt2w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=LJixQ+w47ibikbkMDvSQCF2sK7jVRhZawzlwIjz7Jh8=;
+ b=AiT86x1sH4H83A1T+sAtqjfSfze+2wc9rFhL6g6CKdJFbZxaG8ljv3u3rj8RKBVeDtqma7DE+IT6Fw+6Cq1v1TDFOG0EPJkWNVqgIynm8o5m182yR5oRsi7APEcy3XhwQmTI5UktxK1YM18HhwBJp1Xvbg28WUcqcLRsKrcfCSCas1aRxGmKtyHRL+zH9THeMhUt5rSv5VfjgU08zEEQz3sX7P7l1VudS/t7p2X7amc+eEKo1gnBwpUFghy3kDMLjPHfvb/4n1eqen0Eiaz+tdR7V1MVYtkSEJUyerzwnJQ5MIW0lmnNJTy4dq314xGvXAjLSk8K8qFSPqdDGLHtsg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by SN7PR12MB6839.namprd12.prod.outlook.com (2603:10b6:806:265::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7046.23; Thu, 30 Nov
+ 2023 12:21:37 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::60d4:c1e3:e1aa:8f93]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::60d4:c1e3:e1aa:8f93%4]) with mapi id 15.20.7046.015; Thu, 30 Nov 2023
+ 12:21:37 +0000
+Date: Thu, 30 Nov 2023 08:21:35 -0400
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Lorenzo Pieralisi <lpieralisi@kernel.org>
+Cc: linux-hyperv@vger.kernel.org, Karol Herbst <kherbst@redhat.com>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Jerry Snitselaar <jsnitsel@redhat.com>,
+	dri-devel@lists.freedesktop.org, patches@lists.linux.dev,
+	Laxman Dewangan <ldewangan@nvidia.com>,
+	Hanjun Guo <guohanjun@huawei.com>, linux-riscv@lists.infradead.org,
+	"K. Y. Srinivasan" <kys@microsoft.com>,
+	Frank Rowand <frowand.list@gmail.com>,
+	Christoph Hellwig <hch@lst.de>,
+	Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Wei Liu <wei.liu@kernel.org>, Joerg Roedel <joro@8bytes.org>,
+	"Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+	Dexuan Cui <decui@microsoft.com>,
+	Russell King <linux@armlinux.org.uk>,
+	Jon Hunter <jonathanh@nvidia.com>, linux-acpi@vger.kernel.org,
+	iommu@lists.linux.dev, Danilo Krummrich <dakr@redhat.com>,
+	nouveau@lists.freedesktop.org, linux-snps-arc@lists.infradead.org,
+	Len Brown <lenb@kernel.org>, devicetree@vger.kernel.org,
+	Albert Ou <aou@eecs.berkeley.edu>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Will Deacon <will@kernel.org>, Sven Peter <sven@svenpeter.dev>,
+	Haiyang Zhang <haiyangz@microsoft.com>,
+	Vineet Gupta <vgupta@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+	Moritz Fischer <mdf@kernel.org>,
+	Paul Walmsley <paul.walmsley@sifive.com>,
+	linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	Vinod Koul <vkoul@kernel.org>,
+	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
 	Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/1] iommu/vt-d: Omit devTLB invalidation requests when
- TES=0
-Message-ID: <20231130121544.GC1394392@ziepe.ca>
-References: <20231114011036.70142-1-baolu.lu@linux.intel.com>
- <20231114011036.70142-2-baolu.lu@linux.intel.com>
- <20231129201020.GK1312390@ziepe.ca>
- <2f2582df-fb56-4b46-8ce3-364879b34734@linux.intel.com>
+	Hector Martin <marcan@marcan.st>, linux-mips@vger.kernel.org,
+	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+	Thierry Reding <thierry.reding@gmail.com>,
+	Palmer Dabbelt <palmer@dabbelt.com>, asahi@lists.linux.dev,
+	Sudeep Holla <sudeep.holla@arm.com>, dmaengine@vger.kernel.org,
+	David Woodhouse <dwmw2@infradead.org>,
+	Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH 10/10] ACPI: IORT: Allow COMPILE_TEST of IORT
+Message-ID: <20231130122135.GG1389974@nvidia.com>
+References: <0-v1-720585788a7d+811b-iommu_fwspec_p1_jgg@nvidia.com>
+ <10-v1-720585788a7d+811b-iommu_fwspec_p1_jgg@nvidia.com>
+ <ZWc0qPWzNWPkL8vt@lpieralisi>
+ <20231129191240.GZ436702@nvidia.com>
+ <ZWhuGl1l5V5b+w4P@lpieralisi>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZWhuGl1l5V5b+w4P@lpieralisi>
+X-ClientProxiedBy: SN7PR04CA0044.namprd04.prod.outlook.com
+ (2603:10b6:806:120::19) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2f2582df-fb56-4b46-8ce3-364879b34734@linux.intel.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|SN7PR12MB6839:EE_
+X-MS-Office365-Filtering-Correlation-Id: c56a3fcf-77c8-480d-4e3a-08dbf19ee5ee
+X-LD-Processed: 43083d15-7273-40c1-b7db-39efd9ccc17a,ExtAddr
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	39FFJvs4blwieyKepVr5RR0vYatdHBvCBb9hFrGowdz0BtQ0tVmCh3QDzaU54xor4zGD/pG3D5aQB3M9uOCicc4qbN2RUTajGFko2au/K19O3GcVhgW9R5FD4BAuF0jRNbir+o5GRQ+ZkB073U+MdMAan8BHs14AJjN4fUU3Da/34Jn4CaYyncmyGOxKyFu4Z6vwDGmhO5HsoP4UZfSC8Rt9FYXvh/NbzOcRw7eCODzcJbYzEYumoJ0RJswjWRAgQTrNBILXLSnVCSzTAbnJwMVYuJH1gdzPoHNaw6hlj6aSqPRyTf4/K8ATMyetMq3srP19UEZS7vLLYJ3UCyW8RY2LphTvuA3RjS3FCDzGYzire27e4vaoCFyAE+Fb71YwDpDE3gaeOux2G4k71O4C9/01y5TGhjDQ2LVG1FHY6fM6cg0JLQSlbB/3uDKIk90wv0XOOJOqhgYxXSZ3ua4jbsrVYi7kspkV/N0ai4AeZTXfc34MFcVeYZeefScV+v0IiPD9kGrtRfWmZOWpfanv7EhVzrZIQjMs3gKQOvJTL4sSVHdy4awo1KXRh+m3DimbxQ4nBlsCLvs2bs0wteRNCOnxwI8RPKaKKCdV5XDhy9Ymxjb0pyhQyaYnw1f6pa0C
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(376002)(366004)(136003)(346002)(39860400002)(396003)(230922051799003)(451199024)(186009)(64100799003)(1800799012)(26005)(1076003)(2616005)(66476007)(66946007)(54906003)(66556008)(7406005)(7366002)(316002)(6916009)(7416002)(2906002)(8676002)(4326008)(8936002)(86362001)(5660300002)(41300700001)(6506007)(6512007)(36756003)(33656002)(478600001)(6486002)(202311291699003)(38100700002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?7Q7CRmLAOPiTqvKa4MushueP6OP8H9hIZQ6Te0DL2gWMKU/iv6R82N5TRtvk?=
+ =?us-ascii?Q?SvnkdJ4yaOqIrtrsCOZL/c/tk9ffutF/khz0rtIuTu19sTZVkyHocI7uFRyb?=
+ =?us-ascii?Q?g91G7Gbx3QSi5ip0eIs8pz7GIp0yAsjXqpTGQI+Ns5SqnLDPSNPtb8Hz4tiL?=
+ =?us-ascii?Q?+oR+1VRcZb6S+j+gXxyeRHwGUyPtxpSrlfSwVfRb5Z9pAhuWmRRk/hokCgyQ?=
+ =?us-ascii?Q?SnPhvdu7hFXD9LI4p6bdYYLgQa4TIKe6RyLh3JflHX24/oGEtcAlCELdaDlH?=
+ =?us-ascii?Q?7usCpFs/wbHteN6xLSUCokxDJ0IYOiVpXO1APUE+uwAHHMDgIkhL7pa5/58F?=
+ =?us-ascii?Q?IoV9HZFlQVSZrIyhqwF1/BfBBMjJqJ+ZaYo8kWBuxyt4A61RL4lo6AHkKUz/?=
+ =?us-ascii?Q?WATqc988SA13uf8+JL1eh2Yg4g3HlqUXZyshb+x6nYxDEh2MkYau7JJ8YwP/?=
+ =?us-ascii?Q?9mxVVODNoM0umEJWXT0KN6a1mPCRPlp7AWzbYU8YzLVunPMyYInZ3Re3VIXU?=
+ =?us-ascii?Q?knglSLO6mG4K5gVMYxujP3prkuRBzk7IZOFbBTfob4ypYF8Imtbxhza7jgUs?=
+ =?us-ascii?Q?N7arU1R2GuluqVmK2g1QGzGCkRCF+zpm2E8H7s/GKrvI0qlKimlEqd5TM5mC?=
+ =?us-ascii?Q?b3YutF8/PRG0Otip9tn1O79Z2j6Q17hxUmMgU4+UP4khMHwPKfxOhIltdgRS?=
+ =?us-ascii?Q?0uq/TyvfY/NsaZoVKvR31r9JTDbS6KwL87eIKfJ5A6pSb0+9E+lWT5E+Jekh?=
+ =?us-ascii?Q?k0DVzfvseOTBtwnscMzZnz2iSVDAmRfK9lK/BWyYq/T60M62YnxX4khhOazm?=
+ =?us-ascii?Q?1UBoavCZX2OKHzPDc3BmQPNcTsCmg7eL0n51J8MPLL9hZJ/ijF5EISHqsSB2?=
+ =?us-ascii?Q?WwwUnCNNsM18EL+S6Nrg8LWbTCKzVYeGqG58R1Beh0TXT1ZrrZcOW/tzOuI5?=
+ =?us-ascii?Q?xl65s89OdshmQ2Z+26vu03QJRbWWiSpZp7NBBiEQRO6nnFdsNrnPRQx1isn4?=
+ =?us-ascii?Q?h/cyVO7k2oJ34gxD1dJ7HDeZvRULCwmcNuAAP0629F7yw+vGOnhsVL7wL8p3?=
+ =?us-ascii?Q?RrUIYS4ITjjF6SYKdKXpqswOwY3stNsz3Aaw0nuxznHMHRYRY3Rc8sGlUnxk?=
+ =?us-ascii?Q?HJAC7RFdIKTWOdURMx2KhMXsb+0r3fE85TQ9TtbzTS0DoyIgxg0IcCKcuGiU?=
+ =?us-ascii?Q?Z9K3ShSiXVqXrckwtBMDteA+v2/+4+jBDaR4TJY5vfDPn2ZiyV4m0nGoqzuS?=
+ =?us-ascii?Q?fTY6cPUK39xNePVTBG9+wQR82ac9m86kcn18hex8XB5yN1HctG1mFkv9vcnQ?=
+ =?us-ascii?Q?hF+oV8S7AcsGjjUF8rE6vCulz8Ns0v1gGUEbOVpDotqn9nM/u77L5rKbqZic?=
+ =?us-ascii?Q?e9/GW7NiAM3M64unOzbRAsaydlqqzg6pZnLAiEJz+miFRaBEh+G03zb/JF8J?=
+ =?us-ascii?Q?s35/S8NfrhoyrgjAobq/CKyMIqp5e5mquTexI5teWFjP66fQSbETceSq2hal?=
+ =?us-ascii?Q?6gHQTIYilnNCustLzHFAJhF+Ri2bNcHmjfPOcFcmLhGdQvIZwCdLkVosY8TK?=
+ =?us-ascii?Q?VsgDO12aG5oWGjMoOPTmcuvxZNCjeOS7R9o4RSRS?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c56a3fcf-77c8-480d-4e3a-08dbf19ee5ee
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Nov 2023 12:21:36.8906
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Tr94XYyL/1BPueDwYPWzJnAyAKGBEQmBCWZ46SEOUfaMp2CKrqq1JyDvvSPchVYF
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB6839
 
-On Thu, Nov 30, 2023 at 12:06:59PM +0800, Baolu Lu wrote:
-> On 2023/11/30 4:10, Jason Gunthorpe wrote:
-> > On Tue, Nov 14, 2023 at 09:10:34AM +0800, Lu Baolu wrote:
-> > > The latest VT-d spec indicates that when remapping hardware is disabled
-> > > (TES=0 in Global Status Register), upstream ATS Invalidation Completion
-> > > requests are treated as UR (Unsupported Request).
-> > > 
-> > > Consequently, the spec recommends in section 4.3 Handling of Device-TLB
-> > > Invalidations that software refrain from submitting any Device-TLB
-> > > invalidation requests when address remapping hardware is disabled.
-> > > 
-> > > Verify address remapping hardware is enabled prior to submitting Device-
-> > > TLB invalidation requests.
-> > > 
-> > > Fixes: 792fb43ce2c9 ("iommu/vt-d: Enable Intel IOMMU scalable mode by default")
-> > > Signed-off-by: Lu Baolu<baolu.lu@linux.intel.com>
-> > > ---
-> > >   drivers/iommu/intel/dmar.c | 18 ++++++++++++++++++
-> > >   1 file changed, 18 insertions(+)
-> > How did you get to the point where flush_dev_iotlb could even be
-> > called if the iommu has somehow been globally disabled?
+On Thu, Nov 30, 2023 at 12:12:26PM +0100, Lorenzo Pieralisi wrote:
+> On Wed, Nov 29, 2023 at 03:12:40PM -0400, Jason Gunthorpe wrote:
+> > On Wed, Nov 29, 2023 at 01:55:04PM +0100, Lorenzo Pieralisi wrote:
 > > 
-> > Shouldn't the attach of the domain compeltely fail if the HW is
-> > disabled?
+> > > I don't think it should be done this way. Is the goal compile testing
+> > > IORT code ? 
 > > 
-> > If the domain is not attached to anything why would flushing happen?
+> > Yes
+> > 
+> > > If so, why are we forcing it through the SMMU (only because
+> > > it can be compile tested while eg SMMUv3 driver can't ?) menu entry ?
+> > 
+> > Because something needs to select it, and SMMU is one of the places
+> > that are implicitly using it.
+> > 
+> > It isn't (and shouldn't be) a user selectable kconfig. Currently the
+> > only thing that selects it is the ARM64 master kconfig.
 > 
-> The VT-d hardware can be in a state where the hardware is on but DMA
-> translation is deactivated. In this state, the device probe process
-> during boot proceeds as follows:
-> 
-> 1) Initialize the IOMMU contexts: This sets up the data structures that
->    the IOMMU uses to manage address translation for DMA operations.
-> 
-> 2) Register the IOMMU devices: This registers the IOMMU devices to the
->    core. The core then probes devices on buses like PCI.
-> 
-> 3) Enable DMA translation: This step activates DMA translation.
-> 
-> With regard to step 2), the call to iommu_flush_iotlb_all() in
-> iommu_create_device_direct_mappings() can potentially cause device TBL
-> invalidation when the VT-d DMA translation is deactivated.
+> I never said it should be a user selectable kconfig. I said that
+> I don't like using the SMMU entry (only) to select it just because
+> that entry allows COMPILE_TEST.
 
-You are trying to create an atomic change at boot from non-translating
-to DMA translating for HW that doesn't support the identity mode?
+So you would like each of the drivers that use it to select it?
 
-This should probably get a comment in this patch..
+> > SMMUv3 doesn't COMPILE_TEST so it picks up the dependency transitivity
+> > through ARM64. I'm not sure why IORT was put as a global ARM64 kconfig
+> > dependency and not put in the places that directly need it.
+> 
+> Because IORT is used by few ARM64 system IPs (that are enabled by
+> default, eg GIC), it makes sense to have a generic ARM64 select (if ACPI).
+
+IMHO that is not a good way to use kconfig, it is obfuscating and
+doesn't support things like COMPILE_TEST.
+
+> > > Maybe we can move IORT code into drivers/acpi and add a silent config
+> > > option there with a dependency on ARM64 || COMPILE_TEST.
+> > 
+> > That seems pretty weird to me, this is the right way to approach it,
+> > IMHO. Making an entire directory condition is pretty incompatible with
+> > COMPILE_TEST as a philosophy.
+> 
+> That's not what I was suggesting. I was suggesting to move iort.c (or
+> some portions of it) into drivers/acpi if we care enough to compile test
+> it on arches !ARM64.
+> 
+> It is also weird to have a file in drivers/acpi/arm64 that you want
+> to compile test on other arches IMO (and I don't think it is very useful
+> to compile test it either).
+
+Why? Just because the directory is named "arm64" doesn't mean it
+should be excluded from COMPILE_TEST. arch/arm64 yes, but not random
+directories in the driver tree.
+
+Stuff under drivers/ should strive to get 100% COMPILE_TEST coverage
+as much as practical. This makes everyone else's life easier.
 
 Jason
