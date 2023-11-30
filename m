@@ -1,224 +1,179 @@
-Received: from mail-ot1-f48.google.com (mail-ot1-f48.google.com [209.85.210.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2044.outbound.protection.outlook.com [40.107.243.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 78EEE53E29
-	for <iommu@lists.linux.dev>; Thu, 30 Nov 2023 20:15:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=soleen.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=soleen.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 109825A0E7
+	for <iommu@lists.linux.dev>; Thu, 30 Nov 2023 20:41:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=soleen.com header.i=@soleen.com header.b="kFXLASi4"
-Received: by mail-ot1-f48.google.com with SMTP id 46e09a7af769-6d7f3a4bbc6so796534a34.2
-        for <iommu@lists.linux.dev>; Thu, 30 Nov 2023 12:15:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=soleen.com; s=google; t=1701375316; x=1701980116; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:to:from:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=B42Ompk/0S+0FHWlF0c0WCUF97rKJOKtrfjrMLAbFqA=;
-        b=kFXLASi45+imXunyh/LohfErEPwYAGD33OSHQ2uWbwr5qizqTbdV9PkQ/KSZiSk04S
-         xcnC9GvwBnfxiP5wfAVCV1yQOdmqr8BkAmRM54wZDeXvI/VExHUST5S66aOqiKeuX+7W
-         TTqrqjZd77+yrFaiOMvvbFBDz4hxRJYR80E/v8n+xsUHHXGNkED/Y7iRPiyhNWvfG/i0
-         TIbnV3s4A+mPg86p8bNrvgczQrJWU2kUlCDu8cuB4smOyPfiqmbwYaQ3XWea/5zTHE1o
-         evW9V42QaZluC6pzic0AcW0AEmixGlcxYgBW7Nz6gSpsZUWlrpiMVjBYY+/4+7bUOJdx
-         xw7A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701375316; x=1701980116;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=B42Ompk/0S+0FHWlF0c0WCUF97rKJOKtrfjrMLAbFqA=;
-        b=R5RP9NKZlpi4GaiKE0LhNx8C+Dtn7WkDmH3+MfUZglral6630KCJp7tpUUUDmHtCca
-         GEn/+N8RrrwWY3z0BFEO+o/H6pJUZkXLZsAAdjg/hEJpyRZOsdb6XAniNU+fmfTVv5HZ
-         9AOCg13MG3C0TDrGQnRiH8UfRTrM0eqQtU3xjDqWq1QsEoZGlJWFPNK2iFbzj0//0WV6
-         MccSBwcaRwvVk1EyJ3dWe7fRCdvfY1BQyYwhSn6or9IM6enYCw+kJ3580g3lwN4ETNma
-         abQQpEbnZXDNUaA5lluOaQaNv3px0LBlPJWKe9zwr+zMDGI/JSPBZEmO1WEynIFfvm7I
-         vtVg==
-X-Gm-Message-State: AOJu0YyQU+BivFVVEvmHXzR8EmaS7hX4AXyZZfpwhc5ID4sDQqacIAja
-	7h9JWO83RkY+Wc3Mgt7eSL8kaQ==
-X-Google-Smtp-Source: AGHT+IFm2VZamMYGPMsf9vCHQb4stofA9P0lnINgFWclhv2SjMIVDU5Q4H8UbP8D1DLG6NZm/4QG2w==
-X-Received: by 2002:a9d:7dd2:0:b0:6d7:f02f:dcc3 with SMTP id k18-20020a9d7dd2000000b006d7f02fdcc3mr809535otn.28.1701375316245;
-        Thu, 30 Nov 2023 12:15:16 -0800 (PST)
-Received: from soleen.c.googlers.com.com (55.87.194.35.bc.googleusercontent.com. [35.194.87.55])
-        by smtp.gmail.com with ESMTPSA id e1-20020a0cb441000000b0067a35608186sm795252qvf.28.2023.11.30.12.15.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Nov 2023 12:15:15 -0800 (PST)
-From: Pasha Tatashin <pasha.tatashin@soleen.com>
-To: akpm@linux-foundation.org,
-	alim.akhtar@samsung.com,
-	alyssa@rosenzweig.io,
-	asahi@lists.linux.dev,
-	baolu.lu@linux.intel.com,
-	bhelgaas@google.com,
-	cgroups@vger.kernel.org,
-	corbet@lwn.net,
-	david@redhat.com,
-	dwmw2@infradead.org,
-	hannes@cmpxchg.org,
-	heiko@sntech.de,
-	iommu@lists.linux.dev,
-	jernej.skrabec@gmail.com,
-	jonathanh@nvidia.com,
-	joro@8bytes.org,
-	krzysztof.kozlowski@linaro.org,
-	linux-doc@vger.kernel.org,
-	linux-fsdevel@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-mm@kvack.org,
-	linux-rockchip@lists.infradead.org,
-	linux-samsung-soc@vger.kernel.org,
-	linux-sunxi@lists.linux.dev,
-	linux-tegra@vger.kernel.org,
-	lizefan.x@bytedance.com,
-	marcan@marcan.st,
-	mhiramat@kernel.org,
-	m.szyprowski@samsung.com,
-	pasha.tatashin@soleen.com,
-	paulmck@kernel.org,
-	rdunlap@infradead.org,
-	robin.murphy@arm.com,
-	samuel@sholland.org,
-	suravee.suthikulpanit@amd.com,
-	sven@svenpeter.dev,
-	thierry.reding@gmail.com,
-	tj@kernel.org,
-	tomas.mudrunka@gmail.com,
-	vdumpa@nvidia.com,
-	wens@csie.org,
-	will@kernel.org,
-	yu-cheng.yu@intel.com
-Subject: [PATCH v2 09/10] iommu: observability of the IOMMU allocations
-Date: Thu, 30 Nov 2023 20:15:03 +0000
-Message-ID: <20231130201504.2322355-10-pasha.tatashin@soleen.com>
-X-Mailer: git-send-email 2.43.0.rc2.451.g8631bc7472-goog
-In-Reply-To: <20231130201504.2322355-1-pasha.tatashin@soleen.com>
-References: <20231130201504.2322355-1-pasha.tatashin@soleen.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="UnNs42TM"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=fhtq8XHKH28IJIeGcwNGXmtn7is8LcFXtvPwroJF3xHJ6CSiOgyfHdGMOsCPrZjild+w4todwyO83bGcLqvN3rvgIoyqp9654D0xZ+xDvZgL8aRQW7uKSZyN82PRGplQKtkP9iUFcA48Y2EYiokkP77WlKyQRfNcBxT6D6UUDuN1U7gTnpoMjPXfZufKh8E1EUc2bYq77dyU7srLP4NNZySYeUdEqjdEtdEx523WyVie91ofOXQ0uITgkl51KfQlTUBe7eeN1uAbvwXBHPtoKwQmXXdVOP1ka6ZQ/N85H+6M5avD8lNctYtPajNEO3fZxyRV/6a1ugR9RDuSe2DCRw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=rg6XE4LP0MWCssOY70exAojC5zQyaQlr1CoEpz7a4G4=;
+ b=E0caypBJ0ekBpWpIydix8Ve3AoV0PnNQcjQBjIH78utQMeHFLspV55e/L9ENUqAjiTqJCbRVJZYiyNQkj9BOQk+Mjh2+Q1YCmcC1Nz7EHO2pifo3tQIuWJmgepw+Z4j4o+ml2IbfpllsWWD160lBoRCD5HMxiesEre3llF708cY5H7xu0CqIOAFTlIxFdoMFq44/oAy6qFtUf6QKKAxldo8JU5t8Qk/IX/qElPu5ONVaSSg/dTjb5LShc/IS4j4whrLf1UGYtW/q8vb1gJb/fdABUrXvOeRtrrVeNNnGvNbxzLTW1UUOcwQcqUt83Q3ldhBN+uZmzyuisP8giMj5Zw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.160) smtp.rcpttodomain=oracle.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=rg6XE4LP0MWCssOY70exAojC5zQyaQlr1CoEpz7a4G4=;
+ b=UnNs42TM+vxTSwuUP4Niv+yjKR+1yw33g5nKVLjHsXzhOt3gZNpbaaZE649wE5W97ZLyiGRJCLr3SHd918BmLbkyRC/0M2kdQwGWI3tkgnff5aAj68tpZrxu0m4Vinr3CF1nkVgINh8OZ4mjMhGA4OoxXYDYxENSxBXdg0EuoB0VGfmKh/3YNygzpjcx4U8CyQWmCJrjL1xBN4HTxqR+4UFFdUeXM76xBy+/nAKkYLAAXtfTe/Ao6K6DIq49+6tBtasjmHD3utfa/xh8lnzhRpKnK05ykSdiMmqWknn5w9RbtjeRQy3DCBiJhK/DgIWVO/A8p4LUx3F7II8O/8UvZQ==
+Received: from DM6PR06CA0095.namprd06.prod.outlook.com (2603:10b6:5:336::28)
+ by PH7PR12MB9104.namprd12.prod.outlook.com (2603:10b6:510:2f3::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7025.29; Thu, 30 Nov
+ 2023 20:41:36 +0000
+Received: from DS3PEPF000099DB.namprd04.prod.outlook.com
+ (2603:10b6:5:336:cafe::fc) by DM6PR06CA0095.outlook.office365.com
+ (2603:10b6:5:336::28) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7025.29 via Frontend
+ Transport; Thu, 30 Nov 2023 20:41:36 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ DS3PEPF000099DB.mail.protection.outlook.com (10.167.17.197) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.7046.17 via Frontend Transport; Thu, 30 Nov 2023 20:41:36 +0000
+Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Thu, 30 Nov
+ 2023 12:41:23 -0800
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail204.nvidia.com
+ (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Thu, 30 Nov
+ 2023 12:41:23 -0800
+Received: from Asurada-Nvidia (10.127.8.9) by mail.nvidia.com (10.129.68.8)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41 via Frontend
+ Transport; Thu, 30 Nov 2023 12:41:21 -0800
+Date: Thu, 30 Nov 2023 12:41:20 -0800
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: "Tian, Kevin" <kevin.tian@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
+	"joro@8bytes.org" <joro@8bytes.org>, "alex.williamson@redhat.com"
+	<alex.williamson@redhat.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>, "cohuck@redhat.com"
+	<cohuck@redhat.com>, "eric.auger@redhat.com" <eric.auger@redhat.com>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>, "mjrosato@linux.ibm.com"
+	<mjrosato@linux.ibm.com>, "chao.p.peng@linux.intel.com"
+	<chao.p.peng@linux.intel.com>, "yi.y.sun@linux.intel.com"
+	<yi.y.sun@linux.intel.com>, "peterx@redhat.com" <peterx@redhat.com>,
+	"jasowang@redhat.com" <jasowang@redhat.com>,
+	"shameerali.kolothum.thodi@huawei.com"
+	<shameerali.kolothum.thodi@huawei.com>, "lulu@redhat.com" <lulu@redhat.com>,
+	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>, "Duan,
+ Zhenzhong" <zhenzhong.duan@intel.com>, "joao.m.martins@oracle.com"
+	<joao.m.martins@oracle.com>, "Zeng, Xin" <xin.zeng@intel.com>, "Zhao, Yan Y"
+	<yan.y.zhao@intel.com>
+Subject: Re: [PATCH v6 2/6] iommufd: Add IOMMU_HWPT_INVALIDATE
+Message-ID: <ZWjzcEAAg8ptVH4A@Asurada-Nvidia>
+References: <ZVw/BXxgGCuCZCA6@Asurada-Nvidia>
+ <BN9PR11MB52761A9B48A25E89BEECE6308CB8A@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <ZWTzoBTDDEWAKMs9@Asurada-Nvidia>
+ <BN9PR11MB5276FD60A0EDF8E3F231FCC88CBCA@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <ZWaLCSAMIOXTlghk@Asurada-Nvidia>
+ <20231129005715.GS436702@nvidia.com>
+ <ZWaPM4p7yjJ0sEKk@Asurada-Nvidia>
+ <20231129195804.GF436702@nvidia.com>
+ <ZWe2PvatTkkyNCY5@Asurada-Nvidia>
+ <20231130000816.GB1389974@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20231130000816.GB1389974@nvidia.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS3PEPF000099DB:EE_|PH7PR12MB9104:EE_
+X-MS-Office365-Filtering-Correlation-Id: 2209f2fa-1066-48a7-05a8-08dbf1e4bef8
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	3pTn51y3BMQt7vlSQRy55wjzzcPZgNbopuWIbSGNt7Cn50SHsudaOoN4wlPvxbxai5MV8+Y2uKL1BNVqv3E2boqUgYlnNrgnFW0SOHleORXfyEhSeP74CARyBqA0X8ydxd5AxEft5PPNcqWq8C3LGKrx63W1Jj1YD+MyYVcZhHQ5+Ewm0LQdYfnOuRLitl1hFXbf6EgVHBVGIlazADm27K4lc7IUOxeK98mFfJ/p0KSUIiZRpyr9FYz8BgH+3vqxDbkWsEgQONg5bVgHYak4rs7FSK95M1zMmP/WdSxcuWJIk3CznvYZUmifT7P7I/fVqqdvf3nkylZvetJoj6jHSO118hpXdy3+q9kuN1yTUHVhx8lBQjBJpFaSOTRCTQUDDR1BSZhNZK6mPXmyR4BP5FkvSwJ6ZnyOmFrJY8QwcvSPIkNgvSfIcwpMWZzCLdfdaSzI49xPeGmQ9veTq377XyFD25qm9bfYEChlEWtOiNs/QJMeSQH6/IcX6Y75WEkkMJNDpIaPJuSnVOMxl0/L19WAA+rKNrj5SbWqy7XRutomDmPUj4QMDUjLFZ5kBLnHaOhoti7Viv/c/DjmfsyusaJ9NoNCp3h4BZYDnG+AymsBI0YbkA8XI83gSw1N63M0j8FCTosV2SQCQ4x3/8cKcLbovsWrjNWxRRz50K3v9cUInZlfLlqHoTAJc/h5etF+kwFQRoRqhHBP6JAwGUmSheILIwsfXXAhYYvQr/fp20KcXsJ1h8AsIVkI4rVcL2CM
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230031)(4636009)(376002)(39860400002)(346002)(136003)(396003)(230922051799003)(1800799012)(186009)(64100799003)(451199024)(82310400011)(46966006)(40470700004)(36840700001)(2906002)(5660300002)(55016003)(7416002)(4326008)(6862004)(8676002)(8936002)(40480700001)(41300700001)(70586007)(70206006)(316002)(6636002)(54906003)(40460700003)(9686003)(86362001)(47076005)(7636003)(36860700001)(478600001)(83380400001)(336012)(26005)(426003)(33716001)(356005)(82740400003);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Nov 2023 20:41:36.0413
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2209f2fa-1066-48a7-05a8-08dbf1e4bef8
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	DS3PEPF000099DB.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB9104
 
-Add NR_IOMMU_PAGES into node_stat_item that counts number of pages
-that are allocated by the IOMMU subsystem.
+On Wed, Nov 29, 2023 at 08:08:16PM -0400, Jason Gunthorpe wrote:
+> On Wed, Nov 29, 2023 at 02:07:58PM -0800, Nicolin Chen wrote:
+> > On Wed, Nov 29, 2023 at 03:58:04PM -0400, Jason Gunthorpe wrote:
+> > > On Tue, Nov 28, 2023 at 05:09:07PM -0800, Nicolin Chen wrote:
+> > > 
+> > > > > > With that being said, I think errno (-EIO) could do the job,
+> > > > > > as you suggested too.
+> > > > > 
+> > > > > Do we have any idea what HW failures can be generated by the commands
+> > > > > this will execture? IIRC I don't remember seeing any smmu specific
+> > > > > codes related to invalid invalidation? Everything is a valid input?
+> > > > 
+> > > > "7.1 Command queue errors" has the info.
+> > > 
+> > > Hmm CERROR_ATC_INV_SYNC needs to be forwarded to the guest somehow
+> > 
+> > Oh, for sure. That's typically triggered with an asynchronous
+> > timeout from the eventq, so we'd need the io page fault series
+> > as you previously remarked. Though I also wonder if an invalid
+> > vSID that doesn't link to a pSID should be CERROR_ATC_INV_SYNC
+> > also v.s. CERROR_ILL.
+> 
+> Yes, something like that make sense
+> 
+> Presumably sync becomes emulated and turns into something generated
+> when the ioctl returns.
 
-The allocations can be view per-node via:
-/sys/devices/system/node/nodeN/vmstat.
+CMD_SYNC right? Yes. When the ioctl returns, VMM simply moves the
+CONS index next to CMD_SYNC upon a success, or stops the index at
+the faulty command upon a failure.
 
-For example:
+> So userspace would have to read the event FD
+> before returning to be correct?
+> 
+> Maybe the kernel can somehow return a flag to indicate the event fd
+> has data in it?
+> 
+> If yes then all errors would flow through the event fd?
 
-$ grep iommu /sys/devices/system/node/node*/vmstat
-/sys/devices/system/node/node0/vmstat:nr_iommu_pages 106025
-/sys/devices/system/node/node1/vmstat:nr_iommu_pages 3464
+I think it'd be nicer to return an immediate error to stop guest
+CMDQ to raise a fault there accordingly, similar to returning a
+-EIO for a bad STE in your SMMU part-3 series.
 
-The value is in page-count, therefore, in the above example
-the iommu allocations amount to ~428M.
+If the "return a flag" is an errno of the ioctl, it could work by
+reading from a separate memory that belongs to the event fd. Yet,
+in this case, an eventfd signal (assuming there is one to trigger
+VMM's fault handler) becomes unnecessary, since the invalidation
+ioctl is already handling it?
 
-Signed-off-by: Pasha Tatashin <pasha.tatashin@soleen.com>
----
- drivers/iommu/iommu-pages.h | 30 ++++++++++++++++++++++++++++++
- include/linux/mmzone.h      |  3 +++
- mm/vmstat.c                 |  3 +++
- 3 files changed, 36 insertions(+)
+Thanks
+Nic
 
-diff --git a/drivers/iommu/iommu-pages.h b/drivers/iommu/iommu-pages.h
-index 2332f807d514..69895a355c0c 100644
---- a/drivers/iommu/iommu-pages.h
-+++ b/drivers/iommu/iommu-pages.h
-@@ -17,6 +17,30 @@
-  * state can be rather large, i.e. multiple gigabytes in size.
-  */
- 
-+/**
-+ * __iommu_alloc_account - account for newly allocated page.
-+ * @pages: head struct page of the page.
-+ * @order: order of the page
-+ */
-+static inline void __iommu_alloc_account(struct page *pages, int order)
-+{
-+	const long pgcnt = 1l << order;
-+
-+	mod_node_page_state(page_pgdat(pages), NR_IOMMU_PAGES, pgcnt);
-+}
-+
-+/**
-+ * __iommu_free_account - account a page that is about to be freed.
-+ * @pages: head struct page of the page.
-+ * @order: order of the page
-+ */
-+static inline void __iommu_free_account(struct page *pages, int order)
-+{
-+	const long pgcnt = 1l << order;
-+
-+	mod_node_page_state(page_pgdat(pages), NR_IOMMU_PAGES, -pgcnt);
-+}
-+
- /**
-  * __iommu_alloc_pages_node - allocate a zeroed page of a given order from
-  * specific NUMA node.
-@@ -35,6 +59,8 @@ static inline struct page *__iommu_alloc_pages_node(int nid, gfp_t gfp,
- 	if (!pages)
- 		return NULL;
- 
-+	__iommu_alloc_account(pages, order);
-+
- 	return pages;
- }
- 
-@@ -53,6 +79,8 @@ static inline struct page *__iommu_alloc_pages(gfp_t gfp, int order)
- 	if (!pages)
- 		return NULL;
- 
-+	__iommu_alloc_account(pages, order);
-+
- 	return pages;
- }
- 
-@@ -89,6 +117,7 @@ static inline void __iommu_free_pages(struct page *pages, int order)
- 	if (!pages)
- 		return;
- 
-+	__iommu_free_account(pages, order);
- 	__free_pages(pages, order);
- }
- 
-@@ -192,6 +221,7 @@ static inline void iommu_free_pages_list(struct list_head *pages)
- 		struct page *p = list_entry(pages->prev, struct page, lru);
- 
- 		list_del(&p->lru);
-+		__iommu_free_account(p, 0);
- 		put_page(p);
- 	}
- }
-diff --git a/include/linux/mmzone.h b/include/linux/mmzone.h
-index 3c25226beeed..1a4d0bba3e8b 100644
---- a/include/linux/mmzone.h
-+++ b/include/linux/mmzone.h
-@@ -200,6 +200,9 @@ enum node_stat_item {
- #endif
- 	NR_PAGETABLE,		/* used for pagetables */
- 	NR_SECONDARY_PAGETABLE, /* secondary pagetables, e.g. KVM pagetables */
-+#ifdef CONFIG_IOMMU_SUPPORT
-+	NR_IOMMU_PAGES,		/* # of pages allocated by IOMMU */
-+#endif
- #ifdef CONFIG_SWAP
- 	NR_SWAPCACHE,
- #endif
-diff --git a/mm/vmstat.c b/mm/vmstat.c
-index 359460deb377..801b58890b6c 100644
---- a/mm/vmstat.c
-+++ b/mm/vmstat.c
-@@ -1242,6 +1242,9 @@ const char * const vmstat_text[] = {
- #endif
- 	"nr_page_table_pages",
- 	"nr_sec_page_table_pages",
-+#ifdef CONFIG_IOMMU_SUPPORT
-+	"nr_iommu_pages",
-+#endif
- #ifdef CONFIG_SWAP
- 	"nr_swapcached",
- #endif
--- 
-2.43.0.rc2.451.g8631bc7472-goog
-
+> Would Intel be basically the same too?
+> 
+> Jason
