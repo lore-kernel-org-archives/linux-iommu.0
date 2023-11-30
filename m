@@ -1,38 +1,37 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.151])
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.120])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 221AF4CB2D
-	for <iommu@lists.linux.dev>; Thu, 30 Nov 2023 03:48:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 53F3B156E5
+	for <iommu@lists.linux.dev>; Thu, 30 Nov 2023 04:07:05 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="StbgcdQH"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="nVvQMUci"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1701316128; x=1732852128;
+  t=1701317225; x=1732853225;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=xC3dwYlDuD1hlwFCoRdZoguQbZrD/kr1AFHDGZNT2y0=;
-  b=StbgcdQHHPyd7f5OSvbR2aQabj0jlk2U6jGfWdfVvcscKtfUwVXCRtbt
-   Wp9YZFZ4EmD8XOzz5lZBzCJ6mWuEYWIWxGE8n5/eGQfhM5tI6cxoayO0N
-   Mpaj7VrgmgWPszduTT7GIyS9iN4wLpZMSf5hvfi0oSHBA1h1hzZ0s8rhv
-   /lXC/Z4g6ptTQZbGCMVGGPB0chGCl0huT9jMWD4IQygNAws5hnblpouUH
-   7HZJWkOSyRBQHuQcbTlPAWqVx47a2YL8L83IARBZhllPFJdQdw3PN3sN9
-   krJfICq7fuzyCS6gyk6SxKxJIG1EKy1xpXgD1JSlKCRaVPT4RwgVyt3Gl
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10909"; a="373447807"
+  bh=KxJStMIjvmZs8RPaJO7hZ8ggE4sIsO6JisfWuT7Iv7g=;
+  b=nVvQMUciSArajxBaRSlI6sfxr26hs5JZRvIV9QpVvKeP28mkRg8b33Ye
+   Jp1KIMogLY/Unkaany6Y05YeIEZeqWApgrFDxlJDvY1sh+tNdcQyJwDSo
+   K3QihKIoWQFb3RdaTdZAYkjKXC74ktU138nHyRiVoa8HpBWyYNEkEOF6B
+   7RBvJSbml2uc0Q8GQTR02vMYik4rJ46wpdF8f+JjO26D4HJtdcgZB3s/K
+   /ItLqHqCJfCiYpupVBc7KUXDshL7eQYZrLlLCi6OD5xIHGuB5RPpx0D5X
+   L0ApufIMz6NUNfoIi9yYb1Qycmxwzn/Wow8lzB/h7h+wTpTUz+m8lAnd6
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10909"; a="392130200"
 X-IronPort-AV: E=Sophos;i="6.04,237,1695711600"; 
-   d="scan'208";a="373447807"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Nov 2023 19:48:47 -0800
+   d="scan'208";a="392130200"
+Received: from orviesa002.jf.intel.com ([10.64.159.142])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Nov 2023 20:07:04 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10909"; a="1100780499"
 X-IronPort-AV: E=Sophos;i="6.04,237,1695711600"; 
-   d="scan'208";a="1100780499"
+   d="scan'208";a="10614646"
 Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.249.171.155]) ([10.249.171.155])
-  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Nov 2023 19:48:45 -0800
-Message-ID: <07f6d0f1-0b3d-486a-a26b-483874a93b24@linux.intel.com>
-Date: Thu, 30 Nov 2023 11:48:43 +0800
+  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Nov 2023 20:07:02 -0800
+Message-ID: <2f2582df-fb56-4b46-8ce3-364879b34734@linux.intel.com>
+Date: Thu, 30 Nov 2023 12:06:59 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -44,40 +43,59 @@ Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
  Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
  Kevin Tian <kevin.tian@intel.com>, iommu@lists.linux.dev,
  linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/1] iommu/vt-d: Support enforce_cache_coherency only for
- empty domains
+Subject: Re: [PATCH 1/1] iommu/vt-d: Omit devTLB invalidation requests when
+ TES=0
 Content-Language: en-US
 To: Jason Gunthorpe <jgg@ziepe.ca>
 References: <20231114011036.70142-1-baolu.lu@linux.intel.com>
- <20231129200834.GJ1312390@ziepe.ca>
+ <20231114011036.70142-2-baolu.lu@linux.intel.com>
+ <20231129201020.GK1312390@ziepe.ca>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20231129200834.GJ1312390@ziepe.ca>
+In-Reply-To: <20231129201020.GK1312390@ziepe.ca>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2023/11/30 4:08, Jason Gunthorpe wrote:
-> On Tue, Nov 14, 2023 at 09:10:33AM +0800, Lu Baolu wrote:
->> diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
->> index 65d37a138c75..ce030c5b5772 100644
->> --- a/drivers/iommu/intel/iommu.h
->> +++ b/drivers/iommu/intel/iommu.h
->> @@ -602,6 +602,9 @@ struct dmar_domain {
->>   					 */
->>   	u8 dirty_tracking:1;		/* Dirty tracking is enabled */
->>   	u8 nested_parent:1;		/* Has other domains nested on it */
->> +	u8 has_mappings:1;		/* Has mappings configured through
->> +					 * iommu_map() interface.
->> +					 */
-> Is it racey?
+On 2023/11/30 4:10, Jason Gunthorpe wrote:
+> On Tue, Nov 14, 2023 at 09:10:34AM +0800, Lu Baolu wrote:
+>> The latest VT-d spec indicates that when remapping hardware is disabled
+>> (TES=0 in Global Status Register), upstream ATS Invalidation Completion
+>> requests are treated as UR (Unsupported Request).
+>>
+>> Consequently, the spec recommends in section 4.3 Handling of Device-TLB
+>> Invalidations that software refrain from submitting any Device-TLB
+>> invalidation requests when address remapping hardware is disabled.
+>>
+>> Verify address remapping hardware is enabled prior to submitting Device-
+>> TLB invalidation requests.
+>>
+>> Fixes: 792fb43ce2c9 ("iommu/vt-d: Enable Intel IOMMU scalable mode by default")
+>> Signed-off-by: Lu Baolu<baolu.lu@linux.intel.com>
+>> ---
+>>   drivers/iommu/intel/dmar.c | 18 ++++++++++++++++++
+>>   1 file changed, 18 insertions(+)
+> How did you get to the point where flush_dev_iotlb could even be
+> called if the iommu has somehow been globally disabled?
 > 
-> The other option is to make iommfd do this and forbid it from
-> switching the enforce_cache_coherency if the IOAS has any maps
-> attached. We can get the correct locking at that point.
+> Shouldn't the attach of the domain compeltely fail if the HW is
+> disabled?
 > 
-> AMD has the same issue if it ever wants to implement its per-PTE bit
+> If the domain is not attached to anything why would flushing happen?
 
-Yes. It's better to do this in iommufd. With that done, we can then
-remove this code.
+The VT-d hardware can be in a state where the hardware is on but DMA
+translation is deactivated. In this state, the device probe process
+during boot proceeds as follows:
+
+1) Initialize the IOMMU contexts: This sets up the data structures that
+    the IOMMU uses to manage address translation for DMA operations.
+
+2) Register the IOMMU devices: This registers the IOMMU devices to the
+    core. The core then probes devices on buses like PCI.
+
+3) Enable DMA translation: This step activates DMA translation.
+
+With regard to step 2), the call to iommu_flush_iotlb_all() in
+iommu_create_device_direct_mappings() can potentially cause device TBL
+invalidation when the VT-d DMA translation is deactivated.
 
 Best regards,
 baolu
