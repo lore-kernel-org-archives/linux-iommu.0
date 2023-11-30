@@ -1,144 +1,109 @@
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2063.outbound.protection.outlook.com [40.107.237.63])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oo1-f53.google.com (mail-oo1-f53.google.com [209.85.161.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A388262B;
-	Thu, 30 Nov 2023 00:37:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E455386
+	for <iommu@lists.linux.dev>; Thu, 30 Nov 2023 00:39:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="Mye/6Joa"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=FiHSgsLFS5dpjuDNwmU5ZYBUTiGSlODZlenN+rDwfBTx1cpkWYrEvl02J7mCcV8Bm6kxOh6lrGrhpBnS4Pdz/Eozb9Nh2HIIHO1R5C+aYElqWJl4uLGa/ZPaz5WNgH24Mwp5e3aNE5KWtDF75Kh+zDQsogOtg47aT9sUb6W49PEcOymiKl+tQz5Q9vLqQlhYdWHmh+UYk4Mj/D1ks/9oJsQKOX4a7vvxVBLkN1CgcrLsY58S52lSxdyrrOl871X45VRrAo5uIcNMRL/wKFeWk5yuSA2zsUcJxR/pV7i7QCurwAw5I/jApELPRzRF0urZ3t4R1fL6wGARlzjDi3WbQg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=HjoUrd1T9VI3umfzovSLL7Ep3GMMa2dIJKaOQZvZOX8=;
- b=BYolFq3xqGkWkL7z7BrPrdWmwoR51E6Ik4DCQk320eeNPwVTXgVioPWhUi2wt1SYo66wjcp820nC8oku4iFys4uwPIzq8ca7QzyJAdEKrqnki9TUzrRdzdnOufBp2/tgJM4PC0P8pBEDBQdoGSBp2PQ9p1UwuBAl1EIM0NlNEZu7B4zNji3HP8Gth1HDBW4LQXf7Aoqn8M+WyyTbOwaxuxUH0qtzU6ORWGQWFWQYCa9drq1E4XEdkCQkU7N5J4Bre/pmzsNQE8EZVTA+sEat24wEFMlLUVmZj445SQ223zaw6GFo4848ZZPeOjkDAerjhDyhPjCqU+CI++ZZTcHJmA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HjoUrd1T9VI3umfzovSLL7Ep3GMMa2dIJKaOQZvZOX8=;
- b=Mye/6Joa08KedvdAtIR8MEmbJ77IB83QAvDYPFjf2VVgQv4ZPbvJ8Ypb0tJ5SJDr2uezANYfjFRgpeTXGj36xX3GlDu7RITCqSay98mBF3SuCjaepSkkZZFdAgOFCmvkCepa4z1U1jOJCfPi2hVV/GZwmOAckVZRtbi1K4IqWaZGfWBjzvJc9KOA2uaZU5ZI7EBN/vTctOhi0ySOTsz3BWSAWq1q5CbQ4UzHI/qMRIg0dp8RfOXDW95UuZrwrLFMMNpIk2le7QVv48lJW3/tPHMipludHVwhZJhs01pnWGrauVJLm35IN8cxyw+pzt/p/8MluVqXyb+9p2dQcgzpLg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by CY5PR12MB6228.namprd12.prod.outlook.com (2603:10b6:930:20::6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7025.29; Thu, 30 Nov
- 2023 00:37:24 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::60d4:c1e3:e1aa:8f93]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::60d4:c1e3:e1aa:8f93%4]) with mapi id 15.20.7046.015; Thu, 30 Nov 2023
- 00:37:24 +0000
-Date: Wed, 29 Nov 2023 20:37:22 -0400
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: iommu@lists.linux.dev
-Cc: Lu Baolu <baolu.lu@linux.intel.com>, Eric Auger <eric.auger@redhat.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Lixiao Yang <lixiao.yang@intel.com>,
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="htpgIwRF"
+Received: by mail-oo1-f53.google.com with SMTP id 006d021491bc7-58d52e0065fso186776eaf.0
+        for <iommu@lists.linux.dev>; Wed, 29 Nov 2023 16:39:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1701304792; x=1701909592; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=dqKTf6r/9DX5X0G9N0YPszfAss74aB4UlJwKc4ipXlY=;
+        b=htpgIwRFHaIEjl9itPq9xbgt3M9d7TG5AyqdhUL30SRmxI78U2uWg2e3jjaxRuted3
+         luPtViNn1G12mdGj0AvNgMyqKfid6lSJvIn2SlCcc6yMUf8eMZDBRFYnqrsVzxMq+7C9
+         6UIZ6/igNCwMyBtmsqF0F/kwPfeutBVwL186Ft3jy5cCOtJLjdykEBDybPF+atNefbCa
+         edcyCYbX93earG/WVQOWjuqJ5kJDNUpSXtNJhA+MoJpwW+YwXC4R4RJd6tk4XbBpGYok
+         yw4WrOHs4qsv6+QUfv13Ja0NRIsMucJdZ72rp4zJHPbkEpPxELB0k7R+WktgDafMBepU
+         a8hQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1701304792; x=1701909592;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=dqKTf6r/9DX5X0G9N0YPszfAss74aB4UlJwKc4ipXlY=;
+        b=YqIPY+ZUGrOq540NPuVYuePmSjEp485t2YDITICYQUFu0CDmnylYpN0P/dytSzRdbD
+         7ychPClUy/dzOcg3urmharZbgd2rwFrxAd6LymyqZSWYv4rbjmOO6vibhTye9mJGxPHk
+         j5R8tCHt4pvinJxO2FzWmU7nhUb/aiSLdyyVOg2shEwi40NfgUumqx4W6cTVP9ElmoTN
+         rB8pfp68PY36W9MiU2IE7fVSaOSAuT7cRu8uc12NaEJ4IV0EIwlk8yAaOqEQHJEk4wtS
+         7SwZYjPVS1fD1+S/b1FYsnaTP2JSOPmHGeIh422mUurtxFqISSqQ3gXAMlyEssjxO8HK
+         Yxsw==
+X-Gm-Message-State: AOJu0Yxips18IReX+7nxoggN2eVnZt0E+brEj3E/ZGcOMaZ79hfzGD9y
+	rtIt5kLo7kosYf1Bj2qan4seYw==
+X-Google-Smtp-Source: AGHT+IG4kpqJkp5MuGe0QWOyJQ+HDuDWisfSFN2LiYZ3lNwDJg400B3FZHlbHx5WpKar2Jc43DZwNA==
+X-Received: by 2002:a4a:a645:0:b0:58d:6bf6:4daf with SMTP id j5-20020a4aa645000000b0058d6bf64dafmr7941560oom.2.1701304792652;
+        Wed, 29 Nov 2023 16:39:52 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-134-23-187.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.134.23.187])
+        by smtp.gmail.com with ESMTPSA id i14-20020a4aab0e000000b0057327cecdd8sm2410792oon.10.2023.11.29.16.39.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 29 Nov 2023 16:39:52 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1r8V5r-005qzk-3H;
+	Wed, 29 Nov 2023 20:39:51 -0400
+Date: Wed, 29 Nov 2023 20:39:51 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Christoph Hellwig <hch@lst.de>,
+	Vineet Gupta <vgupta@kernel.org>,
+	Russell King <linux@armlinux.org.uk>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Will Deacon <will@kernel.org>, Huacai Chen <chenhuacai@kernel.org>,
+	WANG Xuerui <kernel@xen0n.name>,
+	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+	Paul Walmsley <paul.walmsley@sifive.com>,
+	Palmer Dabbelt <palmer@dabbelt.com>,
+	Albert Ou <aou@eecs.berkeley.edu>,
+	Lorenzo Pieralisi <lpieralisi@kernel.org>,
+	Hanjun Guo <guohanjun@huawei.com>,
+	Sudeep Holla <sudeep.holla@arm.com>,
+	"K. Y. Srinivasan" <kys@microsoft.com>,
+	Haiyang Zhang <haiyangz@microsoft.com>,
+	Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Niklas Schnelle <schnelle@linux.ibm.com>,
 	Matthew Rosato <mjrosato@linux.ibm.com>,
-	Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev,
-	syzbot+7574ebfe589049630608@syzkaller.appspotmail.com,
-	syzbot+d31adfb277377ef8fcba@syzkaller.appspotmail.com,
-	Yi Liu <yi.l.liu@intel.com>
-Subject: Re: [PATCH rc v2 0/2] Do not UAF during iommufd_put_object()
-Message-ID: <20231130003722.GA1395235@nvidia.com>
-References: <0-v2-ca9e00171c5b+123-iommufd_syz4_jgg@nvidia.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0-v2-ca9e00171c5b+123-iommufd_syz4_jgg@nvidia.com>
-X-ClientProxiedBy: SA1P222CA0140.NAMP222.PROD.OUTLOOK.COM
- (2603:10b6:806:3c2::23) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Frank Rowand <frowand.list@gmail.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-acpi@vger.kernel.org, iommu@lists.linux.dev,
+	devicetree@vger.kernel.org
+Subject: Re: [PATCH 3/7] ACPI/IORT: Handle memory address size limits as
+ limits
+Message-ID: <20231130003951.GA1394392@ziepe.ca>
+References: <cover.1701268753.git.robin.murphy@arm.com>
+ <2ae6199a9cf035c1defd42e48675b827f41cdc95.1701268753.git.robin.murphy@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|CY5PR12MB6228:EE_
-X-MS-Office365-Filtering-Correlation-Id: 0159d956-30de-4c39-00bd-08dbf13c8588
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	t4W9CnAvhznPKjrcuDPnEbUNl4/U8BErD4/2OOJrg/tmMi2KGPPul8Zaa2uKubnluPZG7L3QoCm+bs8cowY0QpbWnTFmdN+DJGlHiVHaFjmLVxCgR5sEn4IAZPLuWBMDSNMkwz/lRbF9iVXmvMfE17qDF3/O3+uXWakAU0UboPvH8nmH4ygDMTkSgrdmDS/+lzvTnetg+NKEwGrzayBQ7nRC91U7LnnGZ7dAjQYJmdUdjQt16tUsipf0+SM2hgwEU46l1rtVCcrm39iE/Kl7PwWwf7l6fus5sOoTCvhXCDKIfOYb+tZ4gj5OwmXAxILRkaZtnackWbAxGOM4QhXbpB/HSd4Vmiy623kV6nHTMD/yzVxJRzuGrVLHAXvG4GvV230Z/RT07DoPW4AKop6EAaXeCEFcw7VlUWgZMdPD9STJtwy/UNgr21yb4aqzZalDC/Q4rRh+mDRkdcrSnKu+F+Rs4YhYrw222XD9rWyE48j3gNcS793eJkP/p1t2GvyjlAD7cHcUc6tx8aEkTWbu6s2IC+PF/a/uYHtHYdlSSU7o25dcn7DMVwXZGr17/pjoMpsfygVxtiu5dL7/h4VrtOiRYGM5H7rFG8I40VKa82H26vnaF441zXNycJI5p9yl
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366004)(376002)(346002)(136003)(39860400002)(396003)(230922051799003)(451199024)(186009)(64100799003)(1800799012)(86362001)(38100700002)(36756003)(6486002)(33656002)(478600001)(966005)(54906003)(66556008)(6916009)(316002)(66946007)(1076003)(26005)(66476007)(6506007)(5660300002)(2616005)(6512007)(4326008)(7416002)(2906002)(8936002)(8676002)(41300700001)(202311291699003)(83380400001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?Z2xc2w41fMyzCH66+td32LPrI5ap+CUPnLafPtYZ/lPVDHF4NZHtKgXsp9wB?=
- =?us-ascii?Q?jxiZuFvf6frvOdyPPWF71oU5Z2XQvlY9eoyNRlFzCBozYo2f2cOl/qvQLIjr?=
- =?us-ascii?Q?HR+yIJ+h24v5Voxh0a2fjAg2A5BL2TIp4gtKn7tKeDw/tP3geXPnn95kdC77?=
- =?us-ascii?Q?UiGzXVrLTHwJe6Zfhv7331bnok/TVBMeeJQ0xhS5aqN+aIbk7NCCQim4xv9n?=
- =?us-ascii?Q?uriDMxIYQ6D9xfX7c6smNRH2LknorgIy67ECcnj5rPRP0JUXmKHmboDygXAE?=
- =?us-ascii?Q?xXV5ybzmAxYmyyIU3f2qlWWrs/cZcHtf89BzCgy0qcth7R6nwc6SGba/EE9+?=
- =?us-ascii?Q?19k+iUeGMoc2w3GZM7NCYuYBKDI9H6QXl+T0uReKCamlwwoXWXH1qNUsHRjj?=
- =?us-ascii?Q?3XpvW+PVwebwLML60Ec4TG1/iAdCau+ysYlovMGFDOVcBcKw2gbhdfChS/KI?=
- =?us-ascii?Q?GShqG8eH56HOPTqaRJTHTsYUvzaK/nOTgJH3kZZoungP/5uL2/Rn5bZDBpor?=
- =?us-ascii?Q?gQlevHZ6T0hvGTPVHdxCR6EVl/17eNEa7OC1rUANGARqud4yKhpjsRumsrDr?=
- =?us-ascii?Q?13I6ydvwKlo0l6KqeuwhC0GEG2ljdPFKTTjmHLnkOXs7PCrApnawCH/NUsrm?=
- =?us-ascii?Q?ymhj7G2gOuTkykxajIZppKWN4v06oxJhNzZDI9tZ4vQv5fJfCRtbB8Vld4Py?=
- =?us-ascii?Q?a8dRUoAfKFD8DGs23puSPJaTByts75DV9KZgszR+vxWVxj8h42h5KTWxyJrm?=
- =?us-ascii?Q?JAEGjf2mwGXZgrf3b75jtFnFnY1B1wsp7479lNbh8dFc+TB5f5+oE2lb1tkC?=
- =?us-ascii?Q?I01E184RsIosCFwtsfpVG71G0FZldSj/uREqZKcPgGozY2pfs1eqSb9J2psM?=
- =?us-ascii?Q?HbrPLuQkYA6ebIBdqa0nupIlXePyBAnaWNjHl7LAWyzq0H5sL57qvEP6L1aR?=
- =?us-ascii?Q?y+j+Jj+Q/hgs855dD4v8JPXMhdd5egARoeUbZfMJsy3SMx/HhAiAjL8qZcjO?=
- =?us-ascii?Q?yA44YSwWlqTwErWVmbAx45SZp/FQ4atQBb955ht5cuUdxok1jFwZHp6ElzO8?=
- =?us-ascii?Q?quJIRFCvfiZf9lHkMvJokn12t6wYqf9DGdAfT+5P+ICInuhkBWyo+bG0BpQz?=
- =?us-ascii?Q?sN7l1fuZBa+IoA5ag0LGeRAWRI6AKRejcTB6J5krP9e/02bpVKXrNF20rB9C?=
- =?us-ascii?Q?Fy52QLdxMdq3R7yDnXedsH7gLl642IFWVMkZO6D+a/H8yH5mP+nbkxHn0WwY?=
- =?us-ascii?Q?YNs+z/N94+JLjGbodjWYG/1yNrTQhxx4sTXtv49ril3X01PV5HDHvCAWXX/t?=
- =?us-ascii?Q?l4iTiCLxJg+m3bA+lXHURSkmu1IPjQe+HV8LgI2uOSMzrgeJTHi3WBhIH1JU?=
- =?us-ascii?Q?2oieydNFI2D6clyKmVKZMM+HTwR1k8aD0eWmBvXODkxdq635teysijYGx3Yd?=
- =?us-ascii?Q?YHPkRbVwni844MK8w8ix+M/DcJLRWcafWfp6gneFDOPXFMCHvPGhwFTl2QJs?=
- =?us-ascii?Q?S1/ANVgCAiQsOBdM7ikdP5oMkq8XjS8LwhVBjliRlENS8TUO2zzJzGtEXEPx?=
- =?us-ascii?Q?QvQhecNVo9kxuUG+Pl2lzjLSBNDDbU/tQPVKxfaT?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0159d956-30de-4c39-00bd-08dbf13c8588
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Nov 2023 00:37:24.4685
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: oXa5JM1ZjSBFTEXCtTPfwL3JZyMxDOKDb8O63kbn9+VRWgdSiI9cNFKhE50px9zm
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY5PR12MB6228
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2ae6199a9cf035c1defd42e48675b827f41cdc95.1701268753.git.robin.murphy@arm.com>
 
-On Wed, Nov 22, 2023 at 09:13:17AM -0400, Jason Gunthorpe wrote:
-> The mixture of kernel and user space lifecycle objects continues to be
-> complicated inside iommufd. The obj->destroy_rwsem is used to bring order
-> to the kernel driver destruction sequence but it cannot be sequenced right
-> with the other refcounts so we end up possibly UAF'ing.
+On Wed, Nov 29, 2023 at 05:43:00PM +0000, Robin Murphy wrote:
+> Return the Root Complex/Named Component memory address size limit as an
+> inclusive limit value, rather than an exclusive size.  This saves us
+> having to special-case 64-bit overflow, and simplifies our caller too.
 > 
-> Fix it by using two refcounts and a wait queue to sequence the destruction
-> process.
-> 
-> v2:
->  - Use refcount_inc_not_zero in both places in iommu_lock_obj() for
->    robustness
->  - Move the wait_event_timeout sequence into
->    iommufd_object_dec_wait_shortterm()
->  - Consistently dec users on the bug path to give close() a chance to
->    recover
->  - Change the order so if users reaches zero then we clean the xarray and
->    then unlock. Wait for shortterm to reach zero outside the lock
->  - Make iommufd_object_remove() non-static and use inlines to call it in
->    the various cases
->  - Comments
-> v1: https://lore.kernel.org/r/0-v1-4c9a7fbb5702+107a-iommufd_syz4_jgg@nvidia.com
-> 
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> 
-> Jason Gunthorpe (2):
->   iommufd: Add iommufd_ctx to iommufd_put_object()
->   iommufd: Do not UAF during iommufd_put_object()
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+> ---
+>  drivers/acpi/arm64/dma.c  |  9 +++------
+>  drivers/acpi/arm64/iort.c | 18 ++++++++----------
+>  include/linux/acpi_iort.h |  4 ++--
+>  3 files changed, 13 insertions(+), 18 deletions(-)
 
-Applied to the rc branch with the comment updates
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
 Jason
