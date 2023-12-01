@@ -1,280 +1,199 @@
-Received: from frasgout12.his.huawei.com (frasgout12.his.huawei.com [14.137.139.154])
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam04on2086.outbound.protection.outlook.com [40.107.101.86])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A55C25558
-	for <iommu@lists.linux.dev>; Fri,  1 Dec 2023 12:30:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=huaweicloud.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=huaweicloud.com
-Received: from mail.maildlp.com (unknown [172.18.186.29])
-	by frasgout12.his.huawei.com (SkyGuard) with ESMTP id 4ShWl55ftlz9ysk4
-	for <iommu@lists.linux.dev>; Fri,  1 Dec 2023 19:57:21 +0800 (CST)
-Received: from mail02.huawei.com (unknown [7.182.16.47])
-	by mail.maildlp.com (Postfix) with ESMTP id D5EC9140119
-	for <iommu@lists.linux.dev>; Fri,  1 Dec 2023 20:14:13 +0800 (CST)
-Received: from huaweicloud.com (unknown [10.126.171.73])
-	by APP1 (Coremail) with SMTP id LxC2BwAnFXUNzmllZ722AQ--.28684S2;
-	Fri, 01 Dec 2023 13:14:13 +0100 (CET)
-From: Petr Tesarik <petrtesarik@huaweicloud.com>
-To: Christoph Hellwig <hch@lst.de>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	iommu@lists.linux.dev (open list:DMA MAPPING HELPERS),
-	linux-kernel@vger.kernel.org (open list)
-Cc: Wangkefeng <wangkefeng.wang@huawei.com>,
-	Roberto Sassu <roberto.sassu@huaweicloud.com>,
-	petr@tesarici.cz,
-	Petr Tesarik <petr.tesarik1@huawei-partners.com>
-Subject: [PATCH RESEND] swiotlb: reduce area lock contention for non-primary IO TLB pools
-Date: Fri,  1 Dec 2023 13:13:52 +0100
-Message-Id: <20231201121352.195-1-petrtesarik@huaweicloud.com>
-X-Mailer: git-send-email 2.34.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B3A561D559
+	for <iommu@lists.linux.dev>; Fri,  1 Dec 2023 12:55:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="j/xi5Ru/"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=EEpFcH6ineAx8EIbTDqaERvZuh2AH512q5R3qIPOtnpbF+MTr4autZrn99NmzmYK9x/q4PFqpU2nZYFi+2Cg7bt2lkZSYI1GQkrUNGa9SlRjWI3YA3S1/o7xMS7MhOrzAvQu/I9xfiLOSvb0et6nqojhUCjt5KTh/nee1ql1VKbPMrq0nXZ5Nsmjau5XRAIwQkmr6SdbKUOBrnKq6Lq3n+CiEdmH+cZFqGsnNhtb6Y8ptPErA/7aVMShKe69coiQqb9Q0+Fv0Ewk6a4PuFmydmBrLfDhDFkFLeOikGp2VUwbygB2dmJsMDiYZADc3/wA9HTOps7qDISRTyDlRpoOJg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=z9brPDbBrTZeraQwpu1L7QVYslCLELEMD4eYfQti6JQ=;
+ b=E6ZHPsOphB1ncpgpLsDqSwqMMMRcWIHmqjAX7W2Rhz+16xYMFHD1PmbY3Swf+ubzlRCzaxNh3cTZHqmjHvM/sEwM1ax8BBccpt/WLJOTiCJHUdjQxQn8+YVEbhmMezlqBLs5X94Gy7EVpCE1tuHAmUeHuNdp05QwC5CmSZEg44cr08EEmb07Zz2a/tqKkyha2BdFtKYIIyVx/5s3flEYPyCW/5J7U+hSzk+p5BAMLI6M8LuLxPEA6ZhLj6bqyFrDXuCd0ky5JlnNKMwH394aSvUXZwBlwoQRLoVigHRAQ5Tw/LHKBAjwxCYQMJ0jarhlwrgI9a38tTMcjx1zxYJ/Cg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=z9brPDbBrTZeraQwpu1L7QVYslCLELEMD4eYfQti6JQ=;
+ b=j/xi5Ru/wV3tl5dHCH+xCgE/u7oQBZKBOO/L7pPW7uuv/1j/113lm6ylefd1vU0dy5E7Qy4SSKpk5wkT+gtNCddhGmVPgOi04lzrWQCSD4CPRp1CI9Ug8QQ0mflKz9JD7QSu5cExu/HTnlE6AI4TMoF+KUxQ2OFYByqMHV40Gx0IFTqtWYvEmJ+D0rZSX30I7b5JnfRr5I3x1DRP7WOHHsEzdLRlbyhv3hYMqcSRHMXb+xV7zHgtSoGdpnD2GliFx1MeO3Xs0iEFlfPNkO4b22uR8zGDS/ds5mPvjWMeSwCp1NM4i45BHESRjUKJnSe6rK1/ND0IYglTpaWTwPs7Mw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by SN7PR12MB7936.namprd12.prod.outlook.com (2603:10b6:806:347::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7046.24; Fri, 1 Dec
+ 2023 12:55:40 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::60d4:c1e3:e1aa:8f93]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::60d4:c1e3:e1aa:8f93%4]) with mapi id 15.20.7046.027; Fri, 1 Dec 2023
+ 12:55:39 +0000
+Date: Fri, 1 Dec 2023 08:55:38 -0400
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
+	"joro@8bytes.org" <joro@8bytes.org>,
+	"alex.williamson@redhat.com" <alex.williamson@redhat.com>,
+	"robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
+	"cohuck@redhat.com" <cohuck@redhat.com>,
+	"eric.auger@redhat.com" <eric.auger@redhat.com>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+	"mjrosato@linux.ibm.com" <mjrosato@linux.ibm.com>,
+	"chao.p.peng@linux.intel.com" <chao.p.peng@linux.intel.com>,
+	"yi.y.sun@linux.intel.com" <yi.y.sun@linux.intel.com>,
+	"peterx@redhat.com" <peterx@redhat.com>,
+	"jasowang@redhat.com" <jasowang@redhat.com>,
+	"shameerali.kolothum.thodi@huawei.com" <shameerali.kolothum.thodi@huawei.com>,
+	"lulu@redhat.com" <lulu@redhat.com>,
+	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+	"Duan, Zhenzhong" <zhenzhong.duan@intel.com>,
+	"joao.m.martins@oracle.com" <joao.m.martins@oracle.com>,
+	"Zeng, Xin" <xin.zeng@intel.com>,
+	"Zhao, Yan Y" <yan.y.zhao@intel.com>
+Subject: Re: [PATCH v6 2/6] iommufd: Add IOMMU_HWPT_INVALIDATE
+Message-ID: <20231201125538.GK1389974@nvidia.com>
+References: <BN9PR11MB5276FD60A0EDF8E3F231FCC88CBCA@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <ZWaLCSAMIOXTlghk@Asurada-Nvidia>
+ <20231129005715.GS436702@nvidia.com>
+ <ZWaPM4p7yjJ0sEKk@Asurada-Nvidia>
+ <20231129195804.GF436702@nvidia.com>
+ <ZWe2PvatTkkyNCY5@Asurada-Nvidia>
+ <20231130000816.GB1389974@nvidia.com>
+ <ZWjzcEAAg8ptVH4A@Asurada-Nvidia>
+ <20231201004523.GJ1389974@nvidia.com>
+ <ZWlhLk3JVwX0hRt/@Asurada-Nvidia>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZWlhLk3JVwX0hRt/@Asurada-Nvidia>
+X-ClientProxiedBy: MN2PR07CA0022.namprd07.prod.outlook.com
+ (2603:10b6:208:1a0::32) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:LxC2BwAnFXUNzmllZ722AQ--.28684S2
-X-Coremail-Antispam: 1UD129KBjvJXoW3Xw48XrykuF1DtF17Gry8Zrb_yoW3GF45pF
-	4rAFyftFs8XF1xG34jyayrWF1Fkw1kKrW7Jayak34F9r1UJr90qFykt3yYqFyrWFWxZFW7
-	ta90vrWrCF47XrJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDU0xBIdaVrnRJUUUkE14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-	rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-	1l84ACjcxK6xIIjxv20xvE14v26r1j6r1xM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4j
-	6F4UM28EF7xvwVC2z280aVAFwI0_Gr0_Cr1l84ACjcxK6I8E87Iv6xkF7I0E14v26r4UJV
-	WxJr1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
-	2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJV
-	W8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lc7CjxVAKzI0EY4vE
-	52x082I5MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrV
-	AFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUtVW8ZwCI
-	c40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267
-	AKxVWUJVW8JwCI42IY6xAIw20EY4v20xvaj40_WFyUJVCq3wCI42IY6I8E87Iv67AKxVWU
-	JVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r1j6r4UYxBIdaVFxhVjvjDU0xZFpf9x0JU2fO
-	wUUUUU=
-X-CM-SenderInfo: hshw23xhvd2x3n6k3tpzhluzxrxghudrp/
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|SN7PR12MB7936:EE_
+X-MS-Office365-Filtering-Correlation-Id: 356c53a2-2503-4f5e-2194-08dbf26cd194
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	gsbYIrVqKmCwOpJHMICsL9kdYOawqjEpp/t7MccEvytJUk9QeIH4OO++L+kr9ztPAK8pnfm77E0UkaBzzrNS06qHmzcWxD3Zey8PoFLGlLlsepmmkSwBz9bBnZz5nCkE1HhKzxAk6YQYiKRigyZF11/3WVJNVBCVC53hYXQ3sIFKdPeRgGDMIS8H88smRlfuonqBsXy16eqpNwX9VzaQWUi3vQui0TqH1aZRiL6RlQWfy5Jiw1e5AylK4pCNd+kGvCC+Py/o4CU55YG9BROvOmkPBmLwQQDSMzW+R2TmMer9u+un6PP2Wy6xfDUNqu+iS8/zGfTzxpOohJFo/688TBRzmbwkJzpArMZeaI9wPv9hRg81RfXd1AGxNl15xWxwjA0YXKHRnnlyVOTdE4uC0iX6fagsbrXKVGr0TZRFxF9ShE7Mpemu0zIjrrfavqatcYJ+xSLmH8wPdBhkQPTIoZNfotvUWSIenPsFnUZLDyvqSKEUZYMKy9Mgl5M3riyytU6AEE64021oolmBtjszt4SCNSiO6k74RAesAqXyU6O/yl5W3z1p7jWMBswbK2q8
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366004)(376002)(346002)(136003)(396003)(39860400002)(230922051799003)(1800799012)(451199024)(186009)(64100799003)(66556008)(8676002)(6862004)(8936002)(37006003)(66476007)(316002)(66946007)(4326008)(6486002)(86362001)(41300700001)(36756003)(478600001)(54906003)(6636002)(7416002)(5660300002)(2906002)(33656002)(38100700002)(2616005)(1076003)(6512007)(6506007)(83380400001)(26005);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?e1O9J4d2pew4P3gOPbBf3DVsVTIPwL2eao2hKr6BXQMYNEI9ZKPIHpBoE3DU?=
+ =?us-ascii?Q?t/PMALcIWZJ93wf6uo5a5R/G2LTKQ8UNoFKJYs2ASxGPKgxd2BY9ju2nk4aB?=
+ =?us-ascii?Q?FAfao+kroEjuS0dJfV/y7NZei8xmqmQllepeGUJFY7ryh8dSwkDBTxiqH14e?=
+ =?us-ascii?Q?cUR3YQpw/yejWGtGoOfJij0NrDFpNbXhs73VXeBeur8vERDSxSFeRLsGND7D?=
+ =?us-ascii?Q?skgSwtMh0kFCBEPMk6/oNC9hFHR9AEcL3oFDY3DpUaY2YJPJG4wgMDaKv/0f?=
+ =?us-ascii?Q?SKd9aseNIrTxb17vmmZKg8E9O2VQxLC1CWIjMTEnaBkccHGcHevFr7AHwnwS?=
+ =?us-ascii?Q?CA0AptLZKveWy90RpWQCojfFiDyntNJ2/kz5p24H6DXhxcJdIQQgGW1/tR14?=
+ =?us-ascii?Q?t0NtZAPevUMCWeqWmwLsOvSevSWhfPPpTfPEFBMMMiVlWp71eqNIbKCcmSN8?=
+ =?us-ascii?Q?uJe4ufcvpWbYmOGtUPkqPkz31RqFEIkK0AZyPzFnPHWqS9xu3zygkSOH0XNt?=
+ =?us-ascii?Q?jjppHYwMYpWlA3L6KPnAR+2+Y9gSihGlt2PXclAJ6WW1+RVo9XS3jEZFFGFE?=
+ =?us-ascii?Q?CHGZzs/twPAu+0JKdhaGT5zZ+tU1r8q3vpqZ7WD/oURIcHwvUWzmWIPbWCM7?=
+ =?us-ascii?Q?QPVAI080hP4rQqHPKOpw7OoN6ITFL7fmD580pu+zAUwcziz2zJVu8V5C3ZLF?=
+ =?us-ascii?Q?V/d0m8gXhEGU4NfkU4w5hSf7xtHeGQPrZT1fKRtZWcdaCiHEke0JQrzSjld9?=
+ =?us-ascii?Q?JaoB7TeVl9flunKrv+WTb7ZQiV6qpietdeze8XEqJwWaD3trldmhoTb/qwPa?=
+ =?us-ascii?Q?3foGuaER/E/4+Uwt+g2DTvBEbX0E9BnyoQNFniuFyc/7qNJ1VaZHogfjjILF?=
+ =?us-ascii?Q?8FR0tI0XxDGZHRS6ngKZa5N4A3Lw2LQdnyFZ0OPSDBPcuQM0R6S1Kym6iVIV?=
+ =?us-ascii?Q?ImGizmAPiUN+xzDwLSp+kgXwXb3DdPIXiH62yRYPxBSIAQ3XZOO5Qx5gD+eP?=
+ =?us-ascii?Q?jgwtQOVeJ9PphXbH6n+uzoylAinPKa2vQ6BNQlYd0J8atNN+qY87IMGwjnAh?=
+ =?us-ascii?Q?50fadkpkEtIyxwb56QH23jwdFU3bcv87GsWJU3RTvtcVbfwEaIz2JZgTyyuE?=
+ =?us-ascii?Q?zW7n10soQzmGq4c1t6aJQRccY/2NV2yBTQOu0pFhO6te99+yLz8WW9kuRyms?=
+ =?us-ascii?Q?JQZReWpaaD+PlVs0wtFmioI6ccoKNsByPVwemrGx3qg8SIaK+aov8pj0i9OB?=
+ =?us-ascii?Q?OtqbWtHyEa+io04J2FWYNLcBGxJEqM1m66C+fDOKqG5CDaYdkBOaMMtQuA4D?=
+ =?us-ascii?Q?UGgiG1Bg+nSjPsYSDYNHbFb/7OtiDcxuJv0KwZfd30DngGdGbu7vJe8Nkd8Q?=
+ =?us-ascii?Q?67aXt/swtTGydWQ8axWqj0Vwjb59aAe8yhA3rPD0fxg/LEPiME8qeN5t30S8?=
+ =?us-ascii?Q?gCzwy0yfiOtL0aeDFGZ8xhzp/2Yyy+iHDmtAtGkamEjs+gRKt7MurRUhyKZx?=
+ =?us-ascii?Q?qOVZc6sD+18ETdVtrJBtH2FBVgKpwK8Ci2b7ZNR+ILieE4PxBnWpkqwSoPD/?=
+ =?us-ascii?Q?boImrxqh/VbxaBZ1woUB1XpvwQrlrZu5jQmT5wOD?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 356c53a2-2503-4f5e-2194-08dbf26cd194
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Dec 2023 12:55:39.1019
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: kYIYY0hxlU4d8Cc3iHCGF1T0KvuCIQeQZRfT/66dLBsSPHt52Uahb6xLJlZJVE/8
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB7936
 
-From: Petr Tesarik <petr.tesarik1@huawei-partners.com>
+On Thu, Nov 30, 2023 at 08:29:34PM -0800, Nicolin Chen wrote:
+> On Thu, Nov 30, 2023 at 08:45:23PM -0400, Jason Gunthorpe wrote:
+> > On Thu, Nov 30, 2023 at 12:41:20PM -0800, Nicolin Chen wrote:
+> > 
+> > > > So userspace would have to read the event FD
+> > > > before returning to be correct?
+> > > > 
+> > > > Maybe the kernel can somehow return a flag to indicate the event fd
+> > > > has data in it?
+> > > > 
+> > > > If yes then all errors would flow through the event fd?
+> > > 
+> > > I think it'd be nicer to return an immediate error to stop guest
+> > > CMDQ to raise a fault there accordingly, similar to returning a
+> > > -EIO for a bad STE in your SMMU part-3 series.
+> > > 
+> > > If the "return a flag" is an errno of the ioctl, it could work by
+> > > reading from a separate memory that belongs to the event fd. Yet,
+> > > in this case, an eventfd signal (assuming there is one to trigger
+> > > VMM's fault handler) becomes unnecessary, since the invalidation
+> > > ioctl is already handling it?
+> > 
+> > My concern is how does all this fit together and do we push the right
+> > things to the right places in the right order when an error occurs.
+> > 
+> > I did not study the spec carefully to see what exactly is supposed to
+> > happen here, and I don't see things in Linux that make me think it
+> > particularly cares..
+> > 
+> > ie Linux doesn't seem like it will know that an async event was even
+> > triggered while processing the sync to generate an EIO. It looks like
+> > it just gets ETIMEDOUT? Presumably we should be checking the event
+> > queue to detect a pushed error?
+> > 
+> > It is worth understanding if the spec has language that requires
+> > certain order so we can try to follow it.
+> 
+> Oh, I replied one misinformation previously. Actually eventq
+> doesn't report a CERROR. The global error interrupt does.
+> 
+> 7.1 has that sequence: 1) CMDQ stops 2) Log current index
+> to the CONS register 3) Log error code to the CONS register
+> 4) Set bit-0 "CMDQ error" of GERROR register to rise an irq.
 
-If multiple areas and multiple IO TLB pools exist, first iterate the
-current CPU specific area in all pools. Then move to the next area index.
+Which triggers some async mechanism that seems to restart the command
+queue and convert the error into a printk.
 
-This is best illustrated by a diagram:
+It seems there is not a simple way to realize this error back to
+userspace since we can't block the global command queue and we proceed
+to complete commands that the real HW would not have completed.
 
-        area 0 |  area 1 | ... | area M |
-pool 0    A         B              C
-pool 1    D         E
-...
-pool N    F         G              H
+To actually emulate this the gerror handler would have to capture all
+the necessary registers, return them back to the thread doing
+invalidate_user and all of that would have to return back to userspace
+to go into the virtual version of all the same registers.
 
-Currently, each pool is searched before moving on to the next pool,
-i.e. the search order is A, B ... C, D, E ... F, G ... H. With this patch,
-each area is searched in all pools before moving on to the next area,
-i.e. the search order is A, D ... F, B, E ... G ... C ... H.
+Yes, it can be synchronous it seems, but we don't have any
+infrastructure in the driver to do this.
 
-Note that preemption is not disabled, and raw_smp_processor_id() may not
-return a stable result, but it is called only once to determine the initial
-area index. The search will iterate over all areas eventually, even if the
-current task is preempted.
+Given this is pretty niche maybe we just don't support error
+forwarding and simply ensure it could be added to the uapi later?
 
-Next, some pools may have less (but not more) areas than default_nareas.
-Skip such pools if the distance from the initial area index is greater than
-pool->nareas. This logic ensures that for every pool the search starts in
-the initial CPU's own area and never tries any area twice.
-
-To verify performance impact, I booted the kernel with a minimum pool
-size ("swiotlb=512,4,force"), so multiple pools get allocated, and I ran
-these benchmarks:
-
-- small: single-threaded I/O of 4 KiB blocks,
-- big: single-threaded I/O of 64 KiB blocks,
-- 4way: 4-way parallel I/O of 4 KiB blocks.
-
-The "var" column in the tables below is the coefficient of variance over 5
-runs of the test, the "diff" column is the relative difference against base
-in read-write I/O bandwidth (MiB/s).
-
-Tested on an x86 VM against a QEMU virtio SATA driver backed by a RAM-based
-block device on the host:
-
-	base	   patched
-	var	var	diff
-small	0.69%	0.62%	+25.4%
-big	2.14%	2.27%	+25.7%
-4way	2.65%	1.70%	+23.6%
-
-Tested on a Raspberry Pi against a class-10 A1 microSD card:
-
-	base	   patched
-	var	var	diff
-small	0.53%	1.96%	-0.3%
-big	0.02%	0.57%	+0.8%
-4way	6.17%	0.40%	+0.3%
-
-These results confirm that there is significant performance boost in the
-software IO TLB slot allocation itself. Where performance is dominated by
-actual hardware, there is no measurable change.
-
-Signed-off-by: Petr Tesarik <petr.tesarik1@huawei-partners.com>
----
- kernel/dma/swiotlb.c | 90 +++++++++++++++++++++++++++-----------------
- 1 file changed, 55 insertions(+), 35 deletions(-)
-
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index 33d942615be5..e20b856255ef 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -957,7 +957,7 @@ static void dec_used(struct io_tlb_mem *mem, unsigned int nslots)
- #endif /* CONFIG_DEBUG_FS */
- 
- /**
-- * swiotlb_area_find_slots() - search for slots in one IO TLB memory area
-+ * swiotlb_search_pool_area() - search one memory area in one pool
-  * @dev:	Device which maps the buffer.
-  * @pool:	Memory pool to be searched.
-  * @area_index:	Index of the IO TLB memory area to be searched.
-@@ -972,7 +972,7 @@ static void dec_used(struct io_tlb_mem *mem, unsigned int nslots)
-  *
-  * Return: Index of the first allocated slot, or -1 on error.
-  */
--static int swiotlb_area_find_slots(struct device *dev, struct io_tlb_pool *pool,
-+static int swiotlb_search_pool_area(struct device *dev, struct io_tlb_pool *pool,
- 		int area_index, phys_addr_t orig_addr, size_t alloc_size,
- 		unsigned int alloc_align_mask)
- {
-@@ -1066,41 +1066,50 @@ static int swiotlb_area_find_slots(struct device *dev, struct io_tlb_pool *pool,
- 	return slot_index;
- }
- 
-+#ifdef CONFIG_SWIOTLB_DYNAMIC
-+
- /**
-- * swiotlb_pool_find_slots() - search for slots in one memory pool
-+ * swiotlb_search_area() - search one memory area in all pools
-  * @dev:	Device which maps the buffer.
-- * @pool:	Memory pool to be searched.
-+ * @start_cpu:	Start CPU number.
-+ * @cpu_offset:	Offset from @start_cpu.
-  * @orig_addr:	Original (non-bounced) IO buffer address.
-  * @alloc_size: Total requested size of the bounce buffer,
-  *		including initial alignment padding.
-  * @alloc_align_mask:	Required alignment of the allocated buffer.
-+ * @retpool:	Used memory pool, updated on return.
-  *
-- * Search through one memory pool to find a sequence of slots that match the
-+ * Search one memory area in all pools for a sequence of slots that match the
-  * allocation constraints.
-  *
-  * Return: Index of the first allocated slot, or -1 on error.
-  */
--static int swiotlb_pool_find_slots(struct device *dev, struct io_tlb_pool *pool,
--		phys_addr_t orig_addr, size_t alloc_size,
--		unsigned int alloc_align_mask)
-+static int swiotlb_search_area(struct device *dev, int start_cpu,
-+		int cpu_offset, phys_addr_t orig_addr, size_t alloc_size,
-+		unsigned int alloc_align_mask, struct io_tlb_pool **retpool)
- {
--	int start = raw_smp_processor_id() & (pool->nareas - 1);
--	int i = start, index;
--
--	do {
--		index = swiotlb_area_find_slots(dev, pool, i, orig_addr,
--						alloc_size, alloc_align_mask);
--		if (index >= 0)
--			return index;
--		if (++i >= pool->nareas)
--			i = 0;
--	} while (i != start);
-+	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
-+	struct io_tlb_pool *pool;
-+	int area_index;
-+	int index = -1;
- 
--	return -1;
-+	rcu_read_lock();
-+	list_for_each_entry_rcu(pool, &mem->pools, node) {
-+		if (cpu_offset >= pool->nareas)
-+			continue;
-+		area_index = (start_cpu + cpu_offset) & (pool->nareas - 1);
-+		index = swiotlb_search_pool_area(dev, pool, area_index,
-+						 orig_addr, alloc_size,
-+						 alloc_align_mask);
-+		if (index >= 0) {
-+			*retpool = pool;
-+			break;
-+		}
-+	}
-+	rcu_read_unlock();
-+	return index;
- }
- 
--#ifdef CONFIG_SWIOTLB_DYNAMIC
--
- /**
-  * swiotlb_find_slots() - search for slots in the whole swiotlb
-  * @dev:	Device which maps the buffer.
-@@ -1124,18 +1133,17 @@ static int swiotlb_find_slots(struct device *dev, phys_addr_t orig_addr,
- 	unsigned long nslabs;
- 	unsigned long flags;
- 	u64 phys_limit;
-+	int cpu, i;
- 	int index;
- 
--	rcu_read_lock();
--	list_for_each_entry_rcu(pool, &mem->pools, node) {
--		index = swiotlb_pool_find_slots(dev, pool, orig_addr,
--						alloc_size, alloc_align_mask);
--		if (index >= 0) {
--			rcu_read_unlock();
-+	cpu = raw_smp_processor_id();
-+	for (i = 0; i < default_nareas; ++i) {
-+		index = swiotlb_search_area(dev, cpu, i, orig_addr, alloc_size,
-+					    alloc_align_mask, &pool);
-+		if (index >= 0)
- 			goto found;
--		}
- 	}
--	rcu_read_unlock();
-+
- 	if (!mem->can_grow)
- 		return -1;
- 
-@@ -1148,8 +1156,8 @@ static int swiotlb_find_slots(struct device *dev, phys_addr_t orig_addr,
- 	if (!pool)
- 		return -1;
- 
--	index = swiotlb_pool_find_slots(dev, pool, orig_addr,
--					alloc_size, alloc_align_mask);
-+	index = swiotlb_search_pool_area(dev, pool, 0, orig_addr,
-+					 alloc_size, alloc_align_mask);
- 	if (index < 0) {
- 		swiotlb_dyn_free(&pool->rcu);
- 		return -1;
-@@ -1192,9 +1200,21 @@ static int swiotlb_find_slots(struct device *dev, phys_addr_t orig_addr,
- 		size_t alloc_size, unsigned int alloc_align_mask,
- 		struct io_tlb_pool **retpool)
- {
--	*retpool = &dev->dma_io_tlb_mem->defpool;
--	return swiotlb_pool_find_slots(dev, *retpool,
--				       orig_addr, alloc_size, alloc_align_mask);
-+	struct io_tlb_pool *pool;
-+	int start, i;
-+	int index;
-+
-+	*retpool = pool = &dev->dma_io_tlb_mem->defpool;
-+	i = start = raw_smp_processor_id() & (pool->nareas - 1);
-+	do {
-+		index = swiotlb_search_pool_area(dev, pool, i, orig_addr,
-+						 alloc_size, alloc_align_mask);
-+		if (index >= 0)
-+			return index;
-+		if (++i >= pool->nareas)
-+			i = 0;
-+	} while (i != start);
-+	return -1;
- }
- 
- #endif /* CONFIG_SWIOTLB_DYNAMIC */
--- 
-2.42.1
-
+Jason
