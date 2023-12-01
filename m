@@ -1,58 +1,33 @@
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.65])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B926B1C6A9;
-	Fri,  1 Dec 2023 10:09:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="J44a0mOV"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1701425379; x=1732961379;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=girjUnjQyiTvSrN9wz2D2bp+2sMZV3KcMTRgUm6aORo=;
-  b=J44a0mOVhpSaBHclYh8TmDENZKmInXY/lZHlzRHBH9dhZCeWRvYldDCI
-   +hfwC3BY1BM8K+TrKQhrp8JPqEGYizUg/GG9l5+aUVGFzT6rbNRJgXPRP
-   Xpwo5e2fAd68mO0+8+z/VxTTXlVlfqRuZjyEUA4tm+y5Sl1M19RuPwfNM
-   RXcCQKaTfdZc2cUi5DhFcLp2t2OBksLNfe/ZTEugVh21cdaX/3AdgKDHD
-   q6jNWBQ0Pjda+yN4uWQRfvYZ594An16MTqLcTVEMspkxZtF95rEOZPJCI
-   SHrdatYqYBkyufpTldkOADnEgef/EfF4lraZCsJ2eMHvABmVAcpHG93sc
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10910"; a="397364674"
-X-IronPort-AV: E=Sophos;i="6.04,241,1695711600"; 
-   d="scan'208";a="397364674"
-Received: from orviesa002.jf.intel.com ([10.64.159.142])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Dec 2023 02:09:39 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.04,241,1695711600"; 
-   d="scan'208";a="11107011"
-Received: from lkp-server02.sh.intel.com (HELO b07ab15da5fe) ([10.239.97.151])
-  by orviesa002.jf.intel.com with ESMTP; 01 Dec 2023 02:09:33 -0800
-Received: from kbuild by b07ab15da5fe with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1r90Sg-0003TS-0w;
-	Fri, 01 Dec 2023 10:09:30 +0000
-Date: Fri, 1 Dec 2023 18:09:04 +0800
-From: kernel test robot <lkp@intel.com>
-To: Bibek Kumar Patro <quic_bibekkum@quicinc.com>, will@kernel.org,
-	robin.murphy@arm.com, joro@8bytes.org, dmitry.baryshkov@linaro.org,
-	a39.skl@gmail.com, konrad.dybcio@linaro.org,
-	quic_bjorande@quicinc.com, mani@kernel.org,
-	quic_eberman@quicinc.com, robdclark@chromium.org,
-	u.kleine-koenig@pengutronix.de, robh@kernel.org,
-	vladimir.oltean@nxp.com, quic_pkondeti@quicinc.com,
-	quic_molvera@quicinc.com
-Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
-	linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	qipl.kernel.upstream@quicinc.com,
-	Bibek Kumar Patro <quic_bibekkum@quicinc.com>
-Subject: Re: [PATCH v3 1/4] iommu/arm-smmu: introduction of ACTLR for custom
- prefetcher settings
-Message-ID: <202312011750.Pwca3TWE-lkp@intel.com>
-References: <20231127145412.3981-2-quic_bibekkum@quicinc.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8D8A210E0;
+	Fri,  1 Dec 2023 11:08:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BBCAC433C7;
+	Fri,  1 Dec 2023 11:08:46 +0000 (UTC)
+Date: Fri, 1 Dec 2023 11:08:43 +0000
+From: Catalin Marinas <catalin.marinas@arm.com>
+To: Ferry Toth <fntoth@gmail.com>
+Cc: Alan Stern <stern@rowland.harvard.edu>, Christoph Hellwig <hch@lst.de>,
+	Hamza Mahfooz <someguy@effective-light.com>,
+	Dan Williams <dan.j.williams@intel.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Andrew <travneff@gmail.com>, Ferry Toth <ferry.toth@elsinga.info>,
+	Andy Shevchenko <andy.shevchenko@gmail.com>,
+	Thorsten Leemhuis <regressions@leemhuis.info>,
+	iommu@lists.linux.dev,
+	Kernel development list <linux-kernel@vger.kernel.org>,
+	USB mailing list <linux-usb@vger.kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>
+Subject: Re: Bug in add_dma_entry()'s debugging code
+Message-ID: <ZWm-u2kV1UP09M84@arm.com>
+References: <736e584f-7d5f-41aa-a382-2f4881ba747f@rowland.harvard.edu>
+ <20231127160759.GA1668@lst.de>
+ <637d6dff-de56-4815-a15a-1afccde073f0@rowland.harvard.edu>
+ <20231128133702.GA9917@lst.de>
+ <cb7dc5da-37cb-45ba-9846-5a085f55692e@rowland.harvard.edu>
+ <ZWYnECPRKca5Dpqc@arm.com>
+ <76e8def2-ff45-47d3-91ab-96876ea84079@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -61,56 +36,87 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20231127145412.3981-2-quic_bibekkum@quicinc.com>
+In-Reply-To: <76e8def2-ff45-47d3-91ab-96876ea84079@gmail.com>
 
-Hi Bibek,
+On Thu, Nov 30, 2023 at 09:08:23PM +0100, Ferry Toth wrote:
+> Op 28-11-2023 om 18:44 schreef Catalin Marinas:
+> > Or just force the kmalloc() min align to cache_line_size(), something
+> > like:
+> > 
+> > diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+> > index 4a658de44ee9..3ece20367636 100644
+> > --- a/include/linux/dma-mapping.h
+> > +++ b/include/linux/dma-mapping.h
+> > @@ -543,6 +543,8 @@ static inline int dma_get_cache_alignment(void)
+> >   #ifdef ARCH_HAS_DMA_MINALIGN
+> >   	return ARCH_DMA_MINALIGN;
+> >   #endif
+> > +	if (IS_ENABLED(CONFIG_DMA_API_DEBUG))
+> > +		return cache_line_size();
+> >   	return 1;
+> >   }
+> >   #endif
+> > diff --git a/mm/slab_common.c b/mm/slab_common.c
+> > index 8d431193c273..d0b21d6e9328 100644
+> > --- a/mm/slab_common.c
+> > +++ b/mm/slab_common.c
+> > @@ -879,7 +879,7 @@ static unsigned int __kmalloc_minalign(void)
+> >   	unsigned int minalign = dma_get_cache_alignment();
+> >   	if (IS_ENABLED(CONFIG_DMA_BOUNCE_UNALIGNED_KMALLOC) &&
+> > -	    is_swiotlb_allocated())
+> > +	    is_swiotlb_allocated() && !IS_ENABLED(CONFIG_DMA_API_DEBUG))
+> >   		minalign = ARCH_KMALLOC_MINALIGN;
+> >   	return max(minalign, arch_slab_minalign());
+> 
+> With above suggestion "force the kmalloc() min align to cache_line_size()" +
+> Alan's debug code:
+> 
+> root@yuna:~# journalctl -k | grep hub
+> kernel: usbcore: registered new interface driver hub
+> kernel: hub 1-0:1.0: USB hub found
+> kernel: usb usb1: hub buffer at 71c7180, status at 71c71c0
+> kernel: hub 1-0:1.0: 1 port detected
+> kernel: hub 2-0:1.0: USB hub found
+> kernel: usb usb2: hub buffer at 71c79c0, status at 71c7a00
+> kernel: hub 2-0:1.0: 1 port detected
+> kernel: hub 1-1:1.0: USB hub found
+> kernel: usb 1-1: hub buffer at 65b36c0, status at 6639340
+> kernel: hub 1-1:1.0: 7 ports detected
+> 
+> and the stack trace indeed goes away.
+> 
+> IOW also the 2 root hub kmalloc() are now also aligned to the cache line
+> size, even though these never triggered the stack trace. Strange: hub status
+> is aligned far away from hub buffer, kmalloc mysteries.
 
-kernel test robot noticed the following build errors:
+They are 64 bytes apart in most cases other than the last one which I
+guess the status had to go to a different slab page.
 
-[auto build test ERROR on v6.7-rc3]
-[also build test ERROR on linus/master next-20231201]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+> This still did not land for me: are we detecting a false alarm here as the 2
+> DMA operations can never happen on the same cache line on non-cache-coherent
+> platforms? If so, shouldn't we fix up the dma debug code to not detect a
+> false alarm? Instead of changing the alignment?
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Bibek-Kumar-Patro/iommu-arm-smmu-add-ACTLR-data-and-support-for-SM8550/20231127-235746
-base:   v6.7-rc3
-patch link:    https://lore.kernel.org/r/20231127145412.3981-2-quic_bibekkum%40quicinc.com
-patch subject: [PATCH v3 1/4] iommu/arm-smmu: introduction of ACTLR for custom prefetcher settings
-config: arm64-allyesconfig (https://download.01.org/0day-ci/archive/20231201/202312011750.Pwca3TWE-lkp@intel.com/config)
-compiler: clang version 17.0.0 (https://github.com/llvm/llvm-project.git 4a5ac14ee968ff0ad5d2cc1ffa0299048db4c88a)
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20231201/202312011750.Pwca3TWE-lkp@intel.com/reproduce)
+It's a false alarm indeed on this hardware since the DMA is
+cache-coherent. I think Christoph mentioned earlier in this thread that
+he'd like the DMA API debug to report potential problems even if the
+hardware it is running on is safe.
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202312011750.Pwca3TWE-lkp@intel.com/
+> Or, is this a bonafide warning (for non-cache-coherent platforms)? Then we
+> should not silence it by force aligning it, but issue a WARN (on a cache
+> coherent platform) that is more useful (i.e. here we have not an overlap but
+> a shared cache line). On a non-cache coherent platform something stronger
+> than a WARN might be appropriate?
 
-All errors (new ones prefixed by >>):
+A non-cache coherent platform would either have the kmalloc()
+allocations aligned or it would bounce those small, unaligned buffers.
+So it doesn't seem right to issue a warning on x86 where kmalloc()
+minimum alignment is 8 and not getting the warning on a non-coherent
+platform which forces the kmalloc() alignment.
 
->> drivers/iommu/arm/arm-smmu/arm-smmu-qcom-debug.c:25:16: error: no member named 'cfg' in 'struct qcom_smmu'
-      25 |                 cfg = qsmmu->cfg;
-         |                       ~~~~~  ^
-   1 error generated.
-
-
-vim +25 drivers/iommu/arm/arm-smmu/arm-smmu-qcom-debug.c
-
-b9b721d117e9d3 Sai Prakash Ranjan 2022-07-08  12  
-b9b721d117e9d3 Sai Prakash Ranjan 2022-07-08  13  void qcom_smmu_tlb_sync_debug(struct arm_smmu_device *smmu)
-b9b721d117e9d3 Sai Prakash Ranjan 2022-07-08  14  {
-b9b721d117e9d3 Sai Prakash Ranjan 2022-07-08  15  	int ret;
-b9b721d117e9d3 Sai Prakash Ranjan 2022-07-08  16  	u32 tbu_pwr_status, sync_inv_ack, sync_inv_progress;
-b9b721d117e9d3 Sai Prakash Ranjan 2022-07-08  17  	struct qcom_smmu *qsmmu = container_of(smmu, struct qcom_smmu, smmu);
-b9b721d117e9d3 Sai Prakash Ranjan 2022-07-08  18  	const struct qcom_smmu_config *cfg;
-b9b721d117e9d3 Sai Prakash Ranjan 2022-07-08  19  	static DEFINE_RATELIMIT_STATE(rs, DEFAULT_RATELIMIT_INTERVAL,
-b9b721d117e9d3 Sai Prakash Ranjan 2022-07-08  20  				      DEFAULT_RATELIMIT_BURST);
-b9b721d117e9d3 Sai Prakash Ranjan 2022-07-08  21  
-b9b721d117e9d3 Sai Prakash Ranjan 2022-07-08  22  	if (__ratelimit(&rs)) {
-b9b721d117e9d3 Sai Prakash Ranjan 2022-07-08  23  		dev_err(smmu->dev, "TLB sync timed out -- SMMU may be deadlocked\n");
-b9b721d117e9d3 Sai Prakash Ranjan 2022-07-08  24  
-b9b721d117e9d3 Sai Prakash Ranjan 2022-07-08 @25  		cfg = qsmmu->cfg;
+If we consider the kmalloc() aspect already covered by bouncing or force
+alignment, the DMA API debug code can still detect other cache line
+sharing situations.
 
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+Catalin
