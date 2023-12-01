@@ -1,216 +1,280 @@
-Received: from mailfilter06-out30.webhostingserver.nl (mailfilter06-out30.webhostingserver.nl [195.211.73.76])
+Received: from frasgout12.his.huawei.com (frasgout12.his.huawei.com [14.137.139.154])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E1DF24B34
-	for <iommu@lists.linux.dev>; Fri,  1 Dec 2023 12:19:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=elsinga.info
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=elsinga.info
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=elsinga.info header.i=@elsinga.info header.b="DHtDohKQ"
-ARC-Seal: i=2; a=rsa-sha256; t=1701433071; cv=pass;
-	d=webhostingserver.nl; s=whs1;
-	b=HjDAlW0PrnJGDk6ph2NcsErw84OPWrGWIgIoLsIm3F5ijnO9tqJc07oznDHfgoIyJoo/dlNEgq+V6
-	 HO7Gd3lk+s/O9e/y/NC586DEQdHxdTwd/iL/2Gx3hLn0NDgaIJ8jB0hzcTSdoLfdZXCPO5w4IB1UY0
-	 6GquHl5pkVrBjz9Yxz/lmyq1U8xxEodDtQHbgZu9tBwop1Y2NSTuiRQakvCs7Jr/f5s+udetBlq7Xr
-	 jXV15vYPzkcR8X4w1BGiKDSqQyJaFDnjvOjOh036UU3z3Ddc5B9Rct5SSurRx8WETVRpNwdDnpn3Uv
-	 UvGxFSbOa/sr2tUyhDQbAXdlx9tOKew==
-ARC-Message-Signature: i=2; a=rsa-sha256; c=relaxed/relaxed;
-	d=webhostingserver.nl; s=whs1;
-	h=content-transfer-encoding:content-type:in-reply-to:from:references:cc:to:
-	 subject:mime-version:date:message-id:dkim-signature:from;
-	bh=yxpfp6W8Fp6DLbwBF/kgwWsTWE16o4TY8bwwqfhZLqg=;
-	b=HoVqjDWXY0fSIQGqSrhlxOuBppyaLCbCawfBoz20GbkYS6ywED6rjhZo5Rx9Khes9heu4SMVkiW4A
-	 SooB3vo9+oIn77Kh1Vduzyqqgje8bAhlI/3ILjuezBBZbaOUya607GUI+SyXr+DoQyG5OA6Udi+6yN
-	 tST4Zu9EzmcQba7LcUKHahjDsRn4/cof5yVtcLVfQxqDh6DhEyloToT/YsHMSsreGpk65ErokIPpM9
-	 i5bMuan+5IVqfXb5XgPCJ065+WuJzlSmudQGEQp3dZWPbfKKh7Mcy5ZEZYfYUDdqLE46yuQ2EJtmLp
-	 oGgLCc0wbCMneWaxatqzLaclmNxryRg==
-ARC-Authentication-Results: i=2; mailfilter06.webhostingserver.nl;
-	spf=pass smtp.mailfrom=elsinga.info smtp.remote-ip=141.138.168.154;
-	dmarc=pass header.from=elsinga.info;
-	arc=pass header.oldest-pass=0;
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=elsinga.info; s=whs1;
-	h=content-transfer-encoding:content-type:in-reply-to:from:references:cc:to:
-	 subject:mime-version:date:message-id:from;
-	bh=yxpfp6W8Fp6DLbwBF/kgwWsTWE16o4TY8bwwqfhZLqg=;
-	b=DHtDohKQmEY+eqynGBAOn7iNpoPS0RUk0b8s8aPaG5ZrreFKwwhvcyBNfekLs99DjIS83ITA7TDkZ
-	 NnU7/E1vIrvldMtpbI8tCBEy6NG85Prk3yDxi3wMrfFo/63wcTS78MyNe/RMMYrw2phmc82Vecp8Qt
-	 8Sx/uzMACH7rIhsmKbDzeVhVhdNpors6af46jwV1jeco1JNJyY1oU5z2fxphN/QWOEg0GYZOg9oYoN
-	 artc//CuFuUPI9Z67EvC0g17LeedPkWuoGrHQaM09H8q+1EpdnwBxjS/lB6X5HnpJnhOnRwD49HkmQ
-	 dWN2MyGFq/HrYuVlCZgnzCSS+pSIfDg==
-X-Halon-ID: a4b5a065-9043-11ee-aaea-001a4a4cb958
-Received: from s198.webhostingserver.nl (s198.webhostingserver.nl [141.138.168.154])
-	by mailfilter06.webhostingserver.nl (Halon) with ESMTPSA
-	id a4b5a065-9043-11ee-aaea-001a4a4cb958;
-	Fri, 01 Dec 2023 13:17:49 +0100 (CET)
-ARC-Seal: i=1; cv=none; a=rsa-sha256; d=webhostingserver.nl; s=whs1; t=1701433069;
-	 b=ZO1kv4yCzwZXVpW6uIo/3k9Ho99IJMKp0wU/UVGutWkyYp3zQXrp/IFH37tqJpLV66M4PgXOb2
-	  1i8kqkK4bKjivojFuEjJtDiYe0tH+OuGSAxOeRbLaAR2fm+MOPpaXZnQrdfOAW8SuoBiBJ21KB
-	  fg4mXgbaSiIJz4bQUO4EYoKrp3YH05kCGkJfpMtdZIWjNoWaEEk4v8ZVOOFMdfHA11oTSGFVqW
-	  p+jqndO8Pln3Jqk1nDP0U4MzMMzZpQS24pitLRyn25VDCBkRhk3HCf1WJIw9sJuI6wtwvWcnMP
-	  6nXtqQdTF/zhC7UzvJDVEpMO/HhRtQswG5nsQWlthCVXPA==;
-ARC-Authentication-Results: i=1; webhostingserver.nl; smtp.remote-ip=178.250.146.69;
-	iprev=pass (cust-178-250-146-69.breedbanddelft.nl) smtp.remote-ip=178.250.146.69;
-	auth=pass (PLAIN) smtp.auth=ferry.toth@elsinga.info;
-	spf=softfail smtp.mailfrom=elsinga.info;
-	dmarc=skipped header.from=elsinga.info;
-	arc=none
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed; d=webhostingserver.nl; s=whs1; t=1701433069;
-	bh=xcmaprzeJXX9JycvvDRK4GIG8vXC2u+XIWrfOky6RTk=;
-	h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:References:Cc:To:
-	  Subject:MIME-Version:Date:Message-ID;
-	b=M1YPdQCDkTu4qcv+vPrxFr3u2sIJajNHjarRWY9XArlRnWuMWSAt0rA+I5bl7q3alfkegTfBOb
-	  3A/ZM04rn82H5jMt0T78RPijXiJWjASwZDgWctQC3n3p+J82liXWot/rcFmJXj71ykTP+eWVkj
-	  XuXzILQ0lvlhBeFi7j3xDGUFlVdTaeiO3xwEOKCUUBFPNwDr7cFF8hVIajtKzRZedtCDAkrhiq
-	  seNnCsYA5+aygQBJL9uCRRkBQkD6Chr/ZdqMTmiIaplBDKiPx30f8qGZMZS0B2wPCSOgN9cd8e
-	  4CdS3ZIvoEWONSvxoF6jq3r2HXQu4JuzhoRU50zLhsy4XQ==;
-Authentication-Results: webhostingserver.nl;
-	iprev=pass (cust-178-250-146-69.breedbanddelft.nl) smtp.remote-ip=178.250.146.69;
-	auth=pass (PLAIN) smtp.auth=ferry.toth@elsinga.info;
-	spf=softfail smtp.mailfrom=elsinga.info;
-	dmarc=skipped header.from=elsinga.info;
-	arc=none
-Received: from cust-178-250-146-69.breedbanddelft.nl ([178.250.146.69] helo=smtp)
-	by s198.webhostingserver.nl with esmtpa (Exim 4.97)
-	(envelope-from <ferry.toth@elsinga.info>)
-	id 1r92Sr-00000008FSj-14wA;
-	Fri, 01 Dec 2023 13:17:49 +0100
-Message-ID: <5425cf42-0f49-41b5-b26d-1e099d5bdcc2@elsinga.info>
-Date: Fri, 1 Dec 2023 13:17:43 +0100
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A55C25558
+	for <iommu@lists.linux.dev>; Fri,  1 Dec 2023 12:30:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=huaweicloud.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=huaweicloud.com
+Received: from mail.maildlp.com (unknown [172.18.186.29])
+	by frasgout12.his.huawei.com (SkyGuard) with ESMTP id 4ShWl55ftlz9ysk4
+	for <iommu@lists.linux.dev>; Fri,  1 Dec 2023 19:57:21 +0800 (CST)
+Received: from mail02.huawei.com (unknown [7.182.16.47])
+	by mail.maildlp.com (Postfix) with ESMTP id D5EC9140119
+	for <iommu@lists.linux.dev>; Fri,  1 Dec 2023 20:14:13 +0800 (CST)
+Received: from huaweicloud.com (unknown [10.126.171.73])
+	by APP1 (Coremail) with SMTP id LxC2BwAnFXUNzmllZ722AQ--.28684S2;
+	Fri, 01 Dec 2023 13:14:13 +0100 (CET)
+From: Petr Tesarik <petrtesarik@huaweicloud.com>
+To: Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	iommu@lists.linux.dev (open list:DMA MAPPING HELPERS),
+	linux-kernel@vger.kernel.org (open list)
+Cc: Wangkefeng <wangkefeng.wang@huawei.com>,
+	Roberto Sassu <roberto.sassu@huaweicloud.com>,
+	petr@tesarici.cz,
+	Petr Tesarik <petr.tesarik1@huawei-partners.com>
+Subject: [PATCH RESEND] swiotlb: reduce area lock contention for non-primary IO TLB pools
+Date: Fri,  1 Dec 2023 13:13:52 +0100
+Message-Id: <20231201121352.195-1-petrtesarik@huaweicloud.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: Bug in add_dma_entry()'s debugging code
-To: Catalin Marinas <catalin.marinas@arm.com>, Ferry Toth <fntoth@gmail.com>
-Cc: Alan Stern <stern@rowland.harvard.edu>, Christoph Hellwig <hch@lst.de>,
- Hamza Mahfooz <someguy@effective-light.com>,
- Dan Williams <dan.j.williams@intel.com>,
- Marek Szyprowski <m.szyprowski@samsung.com>, Andrew <travneff@gmail.com>,
- Andy Shevchenko <andy.shevchenko@gmail.com>,
- Thorsten Leemhuis <regressions@leemhuis.info>, iommu@lists.linux.dev,
- Kernel development list <linux-kernel@vger.kernel.org>,
- USB mailing list <linux-usb@vger.kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>
-References: <736e584f-7d5f-41aa-a382-2f4881ba747f@rowland.harvard.edu>
- <20231127160759.GA1668@lst.de>
- <637d6dff-de56-4815-a15a-1afccde073f0@rowland.harvard.edu>
- <20231128133702.GA9917@lst.de>
- <cb7dc5da-37cb-45ba-9846-5a085f55692e@rowland.harvard.edu>
- <ZWYnECPRKca5Dpqc@arm.com> <76e8def2-ff45-47d3-91ab-96876ea84079@gmail.com>
- <ZWm-u2kV1UP09M84@arm.com>
-Content-Language: en-US, nl
-From: Ferry Toth <ferry.toth@elsinga.info>
-In-Reply-To: <ZWm-u2kV1UP09M84@arm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Antivirus-Scanner: Clean mail though you should still use an Antivirus
+X-CM-TRANSID:LxC2BwAnFXUNzmllZ722AQ--.28684S2
+X-Coremail-Antispam: 1UD129KBjvJXoW3Xw48XrykuF1DtF17Gry8Zrb_yoW3GF45pF
+	4rAFyftFs8XF1xG34jyayrWF1Fkw1kKrW7Jayak34F9r1UJr90qFykt3yYqFyrWFWxZFW7
+	ta90vrWrCF47XrJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+	9KBjDU0xBIdaVrnRJUUUkE14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+	rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+	1l84ACjcxK6xIIjxv20xvE14v26r1j6r1xM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4j
+	6F4UM28EF7xvwVC2z280aVAFwI0_Gr0_Cr1l84ACjcxK6I8E87Iv6xkF7I0E14v26r4UJV
+	WxJr1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
+	2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJV
+	W8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lc7CjxVAKzI0EY4vE
+	52x082I5MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrV
+	AFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUtVW8ZwCI
+	c40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267
+	AKxVWUJVW8JwCI42IY6xAIw20EY4v20xvaj40_WFyUJVCq3wCI42IY6I8E87Iv67AKxVWU
+	JVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r1j6r4UYxBIdaVFxhVjvjDU0xZFpf9x0JU2fO
+	wUUUUU=
+X-CM-SenderInfo: hshw23xhvd2x3n6k3tpzhluzxrxghudrp/
 
-Hi
+From: Petr Tesarik <petr.tesarik1@huawei-partners.com>
 
-On 01-12-2023 12:08, Catalin Marinas wrote:
-> On Thu, Nov 30, 2023 at 09:08:23PM +0100, Ferry Toth wrote:
->> Op 28-11-2023 om 18:44 schreef Catalin Marinas:
->>> Or just force the kmalloc() min align to cache_line_size(), something
->>> like:
->>>
->>> diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
->>> index 4a658de44ee9..3ece20367636 100644
->>> --- a/include/linux/dma-mapping.h
->>> +++ b/include/linux/dma-mapping.h
->>> @@ -543,6 +543,8 @@ static inline int dma_get_cache_alignment(void)
->>>    #ifdef ARCH_HAS_DMA_MINALIGN
->>>    	return ARCH_DMA_MINALIGN;
->>>    #endif
->>> +	if (IS_ENABLED(CONFIG_DMA_API_DEBUG))
->>> +		return cache_line_size();
->>>    	return 1;
->>>    }
->>>    #endif
->>> diff --git a/mm/slab_common.c b/mm/slab_common.c
->>> index 8d431193c273..d0b21d6e9328 100644
->>> --- a/mm/slab_common.c
->>> +++ b/mm/slab_common.c
->>> @@ -879,7 +879,7 @@ static unsigned int __kmalloc_minalign(void)
->>>    	unsigned int minalign = dma_get_cache_alignment();
->>>    	if (IS_ENABLED(CONFIG_DMA_BOUNCE_UNALIGNED_KMALLOC) &&
->>> -	    is_swiotlb_allocated())
->>> +	    is_swiotlb_allocated() && !IS_ENABLED(CONFIG_DMA_API_DEBUG))
->>>    		minalign = ARCH_KMALLOC_MINALIGN;
->>>    	return max(minalign, arch_slab_minalign());
->> With above suggestion "force the kmalloc() min align to cache_line_size()" +
->> Alan's debug code:
->>
->> root@yuna:~# journalctl -k | grep hub
->> kernel: usbcore: registered new interface driver hub
->> kernel: hub 1-0:1.0: USB hub found
->> kernel: usb usb1: hub buffer at 71c7180, status at 71c71c0
->> kernel: hub 1-0:1.0: 1 port detected
->> kernel: hub 2-0:1.0: USB hub found
->> kernel: usb usb2: hub buffer at 71c79c0, status at 71c7a00
->> kernel: hub 2-0:1.0: 1 port detected
->> kernel: hub 1-1:1.0: USB hub found
->> kernel: usb 1-1: hub buffer at 65b36c0, status at 6639340
->> kernel: hub 1-1:1.0: 7 ports detected
->>
->> and the stack trace indeed goes away.
->>
->> IOW also the 2 root hub kmalloc() are now also aligned to the cache line
->> size, even though these never triggered the stack trace. Strange: hub status
->> is aligned far away from hub buffer, kmalloc mysteries.
-> They are 64 bytes apart in most cases other than the last one which I
-> guess the status had to go to a different slab page.
->
->> This still did not land for me: are we detecting a false alarm here as the 2
->> DMA operations can never happen on the same cache line on non-cache-coherent
->> platforms? If so, shouldn't we fix up the dma debug code to not detect a
->> false alarm? Instead of changing the alignment?
-> It's a false alarm indeed on this hardware since the DMA is
-> cache-coherent. I think Christoph mentioned earlier in this thread that
-> he'd like the DMA API debug to report potential problems even if the
-> hardware it is running on is safe.
+If multiple areas and multiple IO TLB pools exist, first iterate the
+current CPU specific area in all pools. Then move to the next area index.
 
-I agree with Christoph. So, my question is "are we detecting a false 
-alarm", not "a false alarm indeed on this hardware"?
+This is best illustrated by a diagram:
 
->> Or, is this a bonafide warning (for non-cache-coherent platforms)? Then we
->> should not silence it by force aligning it, but issue a WARN (on a cache
->> coherent platform) that is more useful (i.e. here we have not an overlap but
->> a shared cache line). On a non-cache coherent platform something stronger
->> than a WARN might be appropriate?
-> A non-cache coherent platform would either have the kmalloc()
-> allocations aligned or it would bounce those small, unaligned buffers.
-It would? Or it always has?
-> So it doesn't seem right to issue a warning on x86 where kmalloc()
-> minimum alignment is 8 and not getting the warning on a non-coherent
-> platform which forces the kmalloc() alignment.
+        area 0 |  area 1 | ... | area M |
+pool 0    A         B              C
+pool 1    D         E
+...
+pool N    F         G              H
 
-If *all*non-coherent platforms implement either correct alignment or 
-bounce buffer, and on (coherent) x86 we get an WARN, then it is a false 
-alarm right?
+Currently, each pool is searched before moving on to the next pool,
+i.e. the search order is A, B ... C, D, E ... F, G ... H. With this patch,
+each area is searched in all pools before moving on to the next area,
+i.e. the search order is A, D ... F, B, E ... G ... C ... H.
 
-That is exactly my question (because I have no idea which platforms have 
-non-coherent caches).
+Note that preemption is not disabled, and raw_smp_processor_id() may not
+return a stable result, but it is called only once to determine the initial
+area index. The search will iterate over all areas eventually, even if the
+current task is preempted.
 
-> If we consider the kmalloc() aspect already covered by bouncing or force
-> alignment, the DMA API debug code can still detect other cache line
-> sharing situations.
+Next, some pools may have less (but not more) areas than default_nareas.
+Skip such pools if the distance from the initial area index is greater than
+pool->nareas. This logic ensures that for every pool the search starts in
+the initial CPU's own area and never tries any area twice.
 
-Consider? Or know?
+To verify performance impact, I booted the kernel with a minimum pool
+size ("swiotlb=512,4,force"), so multiple pools get allocated, and I ran
+these benchmarks:
 
-If we know, and we can not easily prevent false WARN's on x86 it could 
-be sufficient to change the message to "possible cacheline sharing 
-detected" and add a line that "DMA_API_DEBUG" should be disabled on 
-production systems.
+- small: single-threaded I/O of 4 KiB blocks,
+- big: single-threaded I/O of 64 KiB blocks,
+- 4way: 4-way parallel I/O of 4 KiB blocks.
 
-And while at it, we might be able to fix the missed real cacheline 
-sharing mentioned by Alan:
+The "var" column in the tables below is the coefficient of variance over 5
+runs of the test, the "diff" column is the relative difference against base
+in read-write I/O bandwidth (MiB/s).
 
-  "As a separate issue, active_cacheline_insert() fails to detect
-overlap in situations where a mapping occupies more than one cache line.
-For example, if mapping A uses lines N and N+1 and mapping B uses line
-N+1, no overlap will be detected because the radix-tree keys for A and B
-will be different (N vs. N+1)."
+Tested on an x86 VM against a QEMU virtio SATA driver backed by a RAM-based
+block device on the host:
+
+	base	   patched
+	var	var	diff
+small	0.69%	0.62%	+25.4%
+big	2.14%	2.27%	+25.7%
+4way	2.65%	1.70%	+23.6%
+
+Tested on a Raspberry Pi against a class-10 A1 microSD card:
+
+	base	   patched
+	var	var	diff
+small	0.53%	1.96%	-0.3%
+big	0.02%	0.57%	+0.8%
+4way	6.17%	0.40%	+0.3%
+
+These results confirm that there is significant performance boost in the
+software IO TLB slot allocation itself. Where performance is dominated by
+actual hardware, there is no measurable change.
+
+Signed-off-by: Petr Tesarik <petr.tesarik1@huawei-partners.com>
+---
+ kernel/dma/swiotlb.c | 90 +++++++++++++++++++++++++++-----------------
+ 1 file changed, 55 insertions(+), 35 deletions(-)
+
+diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+index 33d942615be5..e20b856255ef 100644
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -957,7 +957,7 @@ static void dec_used(struct io_tlb_mem *mem, unsigned int nslots)
+ #endif /* CONFIG_DEBUG_FS */
+ 
+ /**
+- * swiotlb_area_find_slots() - search for slots in one IO TLB memory area
++ * swiotlb_search_pool_area() - search one memory area in one pool
+  * @dev:	Device which maps the buffer.
+  * @pool:	Memory pool to be searched.
+  * @area_index:	Index of the IO TLB memory area to be searched.
+@@ -972,7 +972,7 @@ static void dec_used(struct io_tlb_mem *mem, unsigned int nslots)
+  *
+  * Return: Index of the first allocated slot, or -1 on error.
+  */
+-static int swiotlb_area_find_slots(struct device *dev, struct io_tlb_pool *pool,
++static int swiotlb_search_pool_area(struct device *dev, struct io_tlb_pool *pool,
+ 		int area_index, phys_addr_t orig_addr, size_t alloc_size,
+ 		unsigned int alloc_align_mask)
+ {
+@@ -1066,41 +1066,50 @@ static int swiotlb_area_find_slots(struct device *dev, struct io_tlb_pool *pool,
+ 	return slot_index;
+ }
+ 
++#ifdef CONFIG_SWIOTLB_DYNAMIC
++
+ /**
+- * swiotlb_pool_find_slots() - search for slots in one memory pool
++ * swiotlb_search_area() - search one memory area in all pools
+  * @dev:	Device which maps the buffer.
+- * @pool:	Memory pool to be searched.
++ * @start_cpu:	Start CPU number.
++ * @cpu_offset:	Offset from @start_cpu.
+  * @orig_addr:	Original (non-bounced) IO buffer address.
+  * @alloc_size: Total requested size of the bounce buffer,
+  *		including initial alignment padding.
+  * @alloc_align_mask:	Required alignment of the allocated buffer.
++ * @retpool:	Used memory pool, updated on return.
+  *
+- * Search through one memory pool to find a sequence of slots that match the
++ * Search one memory area in all pools for a sequence of slots that match the
+  * allocation constraints.
+  *
+  * Return: Index of the first allocated slot, or -1 on error.
+  */
+-static int swiotlb_pool_find_slots(struct device *dev, struct io_tlb_pool *pool,
+-		phys_addr_t orig_addr, size_t alloc_size,
+-		unsigned int alloc_align_mask)
++static int swiotlb_search_area(struct device *dev, int start_cpu,
++		int cpu_offset, phys_addr_t orig_addr, size_t alloc_size,
++		unsigned int alloc_align_mask, struct io_tlb_pool **retpool)
+ {
+-	int start = raw_smp_processor_id() & (pool->nareas - 1);
+-	int i = start, index;
+-
+-	do {
+-		index = swiotlb_area_find_slots(dev, pool, i, orig_addr,
+-						alloc_size, alloc_align_mask);
+-		if (index >= 0)
+-			return index;
+-		if (++i >= pool->nareas)
+-			i = 0;
+-	} while (i != start);
++	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
++	struct io_tlb_pool *pool;
++	int area_index;
++	int index = -1;
+ 
+-	return -1;
++	rcu_read_lock();
++	list_for_each_entry_rcu(pool, &mem->pools, node) {
++		if (cpu_offset >= pool->nareas)
++			continue;
++		area_index = (start_cpu + cpu_offset) & (pool->nareas - 1);
++		index = swiotlb_search_pool_area(dev, pool, area_index,
++						 orig_addr, alloc_size,
++						 alloc_align_mask);
++		if (index >= 0) {
++			*retpool = pool;
++			break;
++		}
++	}
++	rcu_read_unlock();
++	return index;
+ }
+ 
+-#ifdef CONFIG_SWIOTLB_DYNAMIC
+-
+ /**
+  * swiotlb_find_slots() - search for slots in the whole swiotlb
+  * @dev:	Device which maps the buffer.
+@@ -1124,18 +1133,17 @@ static int swiotlb_find_slots(struct device *dev, phys_addr_t orig_addr,
+ 	unsigned long nslabs;
+ 	unsigned long flags;
+ 	u64 phys_limit;
++	int cpu, i;
+ 	int index;
+ 
+-	rcu_read_lock();
+-	list_for_each_entry_rcu(pool, &mem->pools, node) {
+-		index = swiotlb_pool_find_slots(dev, pool, orig_addr,
+-						alloc_size, alloc_align_mask);
+-		if (index >= 0) {
+-			rcu_read_unlock();
++	cpu = raw_smp_processor_id();
++	for (i = 0; i < default_nareas; ++i) {
++		index = swiotlb_search_area(dev, cpu, i, orig_addr, alloc_size,
++					    alloc_align_mask, &pool);
++		if (index >= 0)
+ 			goto found;
+-		}
+ 	}
+-	rcu_read_unlock();
++
+ 	if (!mem->can_grow)
+ 		return -1;
+ 
+@@ -1148,8 +1156,8 @@ static int swiotlb_find_slots(struct device *dev, phys_addr_t orig_addr,
+ 	if (!pool)
+ 		return -1;
+ 
+-	index = swiotlb_pool_find_slots(dev, pool, orig_addr,
+-					alloc_size, alloc_align_mask);
++	index = swiotlb_search_pool_area(dev, pool, 0, orig_addr,
++					 alloc_size, alloc_align_mask);
+ 	if (index < 0) {
+ 		swiotlb_dyn_free(&pool->rcu);
+ 		return -1;
+@@ -1192,9 +1200,21 @@ static int swiotlb_find_slots(struct device *dev, phys_addr_t orig_addr,
+ 		size_t alloc_size, unsigned int alloc_align_mask,
+ 		struct io_tlb_pool **retpool)
+ {
+-	*retpool = &dev->dma_io_tlb_mem->defpool;
+-	return swiotlb_pool_find_slots(dev, *retpool,
+-				       orig_addr, alloc_size, alloc_align_mask);
++	struct io_tlb_pool *pool;
++	int start, i;
++	int index;
++
++	*retpool = pool = &dev->dma_io_tlb_mem->defpool;
++	i = start = raw_smp_processor_id() & (pool->nareas - 1);
++	do {
++		index = swiotlb_search_pool_area(dev, pool, i, orig_addr,
++						 alloc_size, alloc_align_mask);
++		if (index >= 0)
++			return index;
++		if (++i >= pool->nareas)
++			i = 0;
++	} while (i != start);
++	return -1;
+ }
+ 
+ #endif /* CONFIG_SWIOTLB_DYNAMIC */
+-- 
+2.42.1
+
