@@ -1,51 +1,51 @@
-Received: from mail-qk1-f181.google.com (mail-qk1-f181.google.com [209.85.222.181])
+Received: from mail-qk1-f176.google.com (mail-qk1-f176.google.com [209.85.222.176])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A2A721171C
-	for <iommu@lists.linux.dev>; Fri,  1 Dec 2023 14:24:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B0E33E48D
+	for <iommu@lists.linux.dev>; Fri,  1 Dec 2023 14:38:12 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="PDNrvdUo"
-Received: by mail-qk1-f181.google.com with SMTP id af79cd13be357-77dd073b5baso115532285a.1
-        for <iommu@lists.linux.dev>; Fri, 01 Dec 2023 06:24:29 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="GWlZlHR+"
+Received: by mail-qk1-f176.google.com with SMTP id af79cd13be357-7788ebea620so110691385a.3
+        for <iommu@lists.linux.dev>; Fri, 01 Dec 2023 06:38:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1701440668; x=1702045468; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1701441491; x=1702046291; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=ZBsvr3M7y7nivS2i0Ob2cINhbfVirpoyS0qfXlH/VdM=;
-        b=PDNrvdUoYQL7S33vOSKU22sqhhzRPgc2HTOK72loggDUobMeBFqzP52usAQQs00ADy
-         4KPUJw1G8pB5PEePCPzJs/66as00/47zgIgwlAjhMOfALq1e8hNJ2dJppwRXN9XxfoJQ
-         HbIzU68Rz7BYXwDDF/DmIeepLbNgRwFG7WO/+4MT93H2DbJVSo5MhR/6tJqvNPGDvz2E
-         DTxkvIu8e+W4sDniZ7YHUUzx3i3ZDM/F7d6NlYIyieEVb5jWGKszB3Ez9ThlsUdLvXJv
-         HpQV74MRMAPkaFWUbwB7ZsOcX33LeLLrOq3OWHfNYxF5y1imNyfjuXxZxqy+gQ8+w+ws
-         ylsw==
+        bh=hXr7TXa/tMpuDEqpeATCPHGX6v9H50ZNaBHg4Hp0sUA=;
+        b=GWlZlHR+dX2eJV8hHndPqMypMFmTYXP9AaQXwMqe4qOlRj1TSKSkRcX/GvriyJqPJY
+         co88r2Qd++W9+5xbxMB9Qgs2zQ1cIvuYbz7iN/Is1jwsOLJXc65Kjgkqv/HcKb6+1+S5
+         vb0ls0+0BvI/jSss4In+tc1TyQMo5dVOcf6e9e94HSypM+PBYQa47zM6uhIaL1JCAWyw
+         Sb3U8RBDawXu1sJyvUoQklgJzM2oCLPSFSd1jWCaw1BeiYKfoWgoUIgYjOgLuuzJ6Yf4
+         MoBs9WrsRAbBaXRWBrRP2vYvjpnBj3g3vRkRFmFPm2p2qml6aeLV7FgaHuxBITYtTtdC
+         sULQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701440668; x=1702045468;
+        d=1e100.net; s=20230601; t=1701441491; x=1702046291;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=ZBsvr3M7y7nivS2i0Ob2cINhbfVirpoyS0qfXlH/VdM=;
-        b=qnRd27+ARhbpS0cEKac/PhFAr9xvOeq6EVpkkN3YNvLR77+cICfCVcZyVHHLObl28L
-         fEdP6HGHsQ93P44LfKVwHSuv+KkPg2FrNuEbCfxnRZ2TmvJRDaiwfZr3kvwD5217YQUc
-         E3u455IgrLM37eEYDA+k0lF0To4/HkVdne0Q+Oe18Nn3v6zhO5iJib6TTgiKCUBMt8Rk
-         jMyLAD3Xz1AT/3yR0hr4WkJfGZjDADzdDFcL7mCe0vgfzbb50pzb9jSzI3CK8abLzmWx
-         pvyq8Ck5lKYklFXLjLKR8hKvCtAA1a0w0crpwUY8pXfAD5We/c6lIvWOnX6UmRREd8f8
-         1uCw==
-X-Gm-Message-State: AOJu0YwOK1bPYb6HP5x8K22+C1nMa/nDuYK3hpqlJ5G8wu8PTEuf8TLi
-	miAgL/L8gzf7nh38AKY484Ed3Q==
-X-Google-Smtp-Source: AGHT+IFhbf0pnfqRmkrdAgeW6divQjwDnNZXsygeLqQa4cWucFhgEwsEVMG94jE+nlw/p5nE/n3K4A==
-X-Received: by 2002:a05:620a:1daa:b0:779:deb9:72c6 with SMTP id pj42-20020a05620a1daa00b00779deb972c6mr24340270qkn.14.1701440668556;
-        Fri, 01 Dec 2023 06:24:28 -0800 (PST)
+        bh=hXr7TXa/tMpuDEqpeATCPHGX6v9H50ZNaBHg4Hp0sUA=;
+        b=gn+LzlQNvO7PuiGfqMkgA8xVKZmM0//GGzh/PqkisBPr1SXTkRGAH1OYLSo81X6Xuo
+         O9Nql+feTqBlajI0l88kAsNpbOpC1lVyBT9O7Pyj+KUN9kPiL7w7H5eqrojeVIWkj9Yl
+         Unsm6y7k4gxrExH4Ws0/IQ2ZBfoZqU2HLQFfmFZDs0DyNhl+QXcKoJ7KP4athKwt+Wrv
+         ei+T/X0v0szW1vGv93Dx+gJQGAi/fwzyije2hg51zjQ6gYLgD8IA8EZ++rSk2Ez0RtR5
+         RTkE4gjiv6AQd5D6L4IeXDGmwlDiD34/Pw//s8L9NyGHAQAispcel4Q+1uj6HLB7mcDu
+         nfdg==
+X-Gm-Message-State: AOJu0YyVF+gD9hq1haUpd7pDeWXl5zK8jKMc3qEP/fyo8mj27gQlOVOc
+	gULR1vBKq/K7JSr/Tm/YpY868tY38w0eXyEeDBo=
+X-Google-Smtp-Source: AGHT+IFe8E0VqRO1AEaToLaRVQzH95JILmWc2UsaE9FahWhPD0VYJtmSp9BHS2kePetr70qtmP4TFw==
+X-Received: by 2002:a05:620a:c0d:b0:778:ba89:2fbd with SMTP id l13-20020a05620a0c0d00b00778ba892fbdmr22271407qki.36.1701441491386;
+        Fri, 01 Dec 2023 06:38:11 -0800 (PST)
 Received: from ziepe.ca (hlfxns017vw-142-134-23-187.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.134.23.187])
-        by smtp.gmail.com with ESMTPSA id v15-20020a05620a122f00b0077d606bec92sm1519643qkj.108.2023.12.01.06.24.27
+        by smtp.gmail.com with ESMTPSA id o1-20020a05620a110100b0077dd463da60sm1533049qkk.126.2023.12.01.06.38.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 01 Dec 2023 06:24:27 -0800 (PST)
+        Fri, 01 Dec 2023 06:38:10 -0800 (PST)
 Received: from jgg by wakko with local (Exim 4.95)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1r94RP-006FTp-4e;
-	Fri, 01 Dec 2023 10:24:27 -0400
-Date: Fri, 1 Dec 2023 10:24:27 -0400
+	id 1r94eg-006FYA-Dl;
+	Fri, 01 Dec 2023 10:38:10 -0400
+Date: Fri, 1 Dec 2023 10:38:10 -0400
 From: Jason Gunthorpe <jgg@ziepe.ca>
 To: Lu Baolu <baolu.lu@linux.intel.com>
 Cc: Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
@@ -56,9 +56,10 @@ Cc: Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
 	linux-kselftest@vger.kernel.org,
 	virtualization@lists.linux-foundation.org,
 	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 0/6] IOMMUFD: Deliver IO page faults to user space
-Message-ID: <20231201142427.GJ1394392@ziepe.ca>
+Subject: Re: [PATCH v2 1/6] iommu: Add iommu page fault cookie helpers
+Message-ID: <20231201143810.GK1394392@ziepe.ca>
 References: <20231026024930.382898-1-baolu.lu@linux.intel.com>
+ <20231026024930.382898-2-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -67,36 +68,48 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20231026024930.382898-1-baolu.lu@linux.intel.com>
+In-Reply-To: <20231026024930.382898-2-baolu.lu@linux.intel.com>
 
-On Thu, Oct 26, 2023 at 10:49:24AM +0800, Lu Baolu wrote:
-> Hi folks,
-> 
-> This series implements the functionality of delivering IO page faults to
-> user space through the IOMMUFD framework for nested translation. Nested
-> translation is a hardware feature that supports two-stage translation
-> tables for IOMMU. The second-stage translation table is managed by the
-> host VMM, while the first-stage translation table is owned by user
-> space. This allows user space to control the IOMMU mappings for its
-> devices.
-> 
-> When an IO page fault occurs on the first-stage translation table, the
-> IOMMU hardware can deliver the page fault to user space through the
-> IOMMUFD framework. User space can then handle the page fault and respond
-> to the device top-down through the IOMMUFD. This allows user space to
-> implement its own IO page fault handling policies.
-> 
-> User space indicates its capability of handling IO page faults by
-> setting the IOMMU_HWPT_ALLOC_IOPF_CAPABLE flag when allocating a
-> hardware page table (HWPT). IOMMUFD will then set up its infrastructure
-> for page fault delivery. On a successful return of HWPT allocation, the
-> user can retrieve and respond to page faults by reading and writing to
-> the file descriptor (FD) returned in out_fault_fd.
+On Thu, Oct 26, 2023 at 10:49:25AM +0800, Lu Baolu wrote:
 
-This is probably backwards, userspace should allocate the FD with a
-dedicated ioctl and provide it during domain allocation.
+> +void *iopf_pasid_cookie_get(struct device *dev, ioasid_t pasid)
+> +{
+> +	struct iommu_fault_param *iopf_param = iopf_get_dev_fault_param(dev);
+> +	void *curr;
+> +
+> +	if (!iopf_param)
+> +		return ERR_PTR(-ENODEV);
+> +
+> +	xa_lock(&iopf_param->pasid_cookie);
+> +	curr = xa_load(&iopf_param->pasid_cookie, pasid);
+> +	xa_unlock(&iopf_param->pasid_cookie);
 
-If the userspace wants a fd per domain then it should do that. If it
-wants to share fds between domains that should work too.
+No need for this locking, the caller has to provide some kind of
+locking to protect the returned pointer.
+
+I'm not sure how this can work really..
+
+What iommfd wants is to increment the device object refcount under
+this xa_lock.
+
+I'm not sure this is the right arrangement: Basically you want to
+have a cookie per domain attachment for iopf domains that is forwarded
+to the handler.
+
+So maybe this entire thing is not quite right, instead of having a
+generic iopf attached to the domain the iopf should be supplied at
+domain attach time? Something like:
+
+iommu_domain_attach_iopf(struct iommu_domain *, struct device *,
+                         ioasid_t pasid, struct iopf *, void *cookie);
+
+The per-attach cookie would be passed to the iopf function
+automatically by the infrastructure.
+
+Detach would have the necessary locking to ensure that no handler is
+running across detach
+
+Then the cookie is logically placed in the API and properly protected
+with natural locking we already need.
 
 Jason
