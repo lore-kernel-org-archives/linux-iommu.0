@@ -1,199 +1,106 @@
-Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam04on2086.outbound.protection.outlook.com [40.107.101.86])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B3A561D559
-	for <iommu@lists.linux.dev>; Fri,  1 Dec 2023 12:55:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="j/xi5Ru/"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=EEpFcH6ineAx8EIbTDqaERvZuh2AH512q5R3qIPOtnpbF+MTr4autZrn99NmzmYK9x/q4PFqpU2nZYFi+2Cg7bt2lkZSYI1GQkrUNGa9SlRjWI3YA3S1/o7xMS7MhOrzAvQu/I9xfiLOSvb0et6nqojhUCjt5KTh/nee1ql1VKbPMrq0nXZ5Nsmjau5XRAIwQkmr6SdbKUOBrnKq6Lq3n+CiEdmH+cZFqGsnNhtb6Y8ptPErA/7aVMShKe69coiQqb9Q0+Fv0Ewk6a4PuFmydmBrLfDhDFkFLeOikGp2VUwbygB2dmJsMDiYZADc3/wA9HTOps7qDISRTyDlRpoOJg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=z9brPDbBrTZeraQwpu1L7QVYslCLELEMD4eYfQti6JQ=;
- b=E6ZHPsOphB1ncpgpLsDqSwqMMMRcWIHmqjAX7W2Rhz+16xYMFHD1PmbY3Swf+ubzlRCzaxNh3cTZHqmjHvM/sEwM1ax8BBccpt/WLJOTiCJHUdjQxQn8+YVEbhmMezlqBLs5X94Gy7EVpCE1tuHAmUeHuNdp05QwC5CmSZEg44cr08EEmb07Zz2a/tqKkyha2BdFtKYIIyVx/5s3flEYPyCW/5J7U+hSzk+p5BAMLI6M8LuLxPEA6ZhLj6bqyFrDXuCd0ky5JlnNKMwH394aSvUXZwBlwoQRLoVigHRAQ5Tw/LHKBAjwxCYQMJ0jarhlwrgI9a38tTMcjx1zxYJ/Cg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=z9brPDbBrTZeraQwpu1L7QVYslCLELEMD4eYfQti6JQ=;
- b=j/xi5Ru/wV3tl5dHCH+xCgE/u7oQBZKBOO/L7pPW7uuv/1j/113lm6ylefd1vU0dy5E7Qy4SSKpk5wkT+gtNCddhGmVPgOi04lzrWQCSD4CPRp1CI9Ug8QQ0mflKz9JD7QSu5cExu/HTnlE6AI4TMoF+KUxQ2OFYByqMHV40Gx0IFTqtWYvEmJ+D0rZSX30I7b5JnfRr5I3x1DRP7WOHHsEzdLRlbyhv3hYMqcSRHMXb+xV7zHgtSoGdpnD2GliFx1MeO3Xs0iEFlfPNkO4b22uR8zGDS/ds5mPvjWMeSwCp1NM4i45BHESRjUKJnSe6rK1/ND0IYglTpaWTwPs7Mw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by SN7PR12MB7936.namprd12.prod.outlook.com (2603:10b6:806:347::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7046.24; Fri, 1 Dec
- 2023 12:55:40 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::60d4:c1e3:e1aa:8f93]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::60d4:c1e3:e1aa:8f93%4]) with mapi id 15.20.7046.027; Fri, 1 Dec 2023
- 12:55:39 +0000
-Date: Fri, 1 Dec 2023 08:55:38 -0400
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
-	"joro@8bytes.org" <joro@8bytes.org>,
-	"alex.williamson@redhat.com" <alex.williamson@redhat.com>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
-	"cohuck@redhat.com" <cohuck@redhat.com>,
-	"eric.auger@redhat.com" <eric.auger@redhat.com>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-	"mjrosato@linux.ibm.com" <mjrosato@linux.ibm.com>,
-	"chao.p.peng@linux.intel.com" <chao.p.peng@linux.intel.com>,
-	"yi.y.sun@linux.intel.com" <yi.y.sun@linux.intel.com>,
-	"peterx@redhat.com" <peterx@redhat.com>,
-	"jasowang@redhat.com" <jasowang@redhat.com>,
-	"shameerali.kolothum.thodi@huawei.com" <shameerali.kolothum.thodi@huawei.com>,
-	"lulu@redhat.com" <lulu@redhat.com>,
-	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-	"Duan, Zhenzhong" <zhenzhong.duan@intel.com>,
-	"joao.m.martins@oracle.com" <joao.m.martins@oracle.com>,
-	"Zeng, Xin" <xin.zeng@intel.com>,
-	"Zhao, Yan Y" <yan.y.zhao@intel.com>
-Subject: Re: [PATCH v6 2/6] iommufd: Add IOMMU_HWPT_INVALIDATE
-Message-ID: <20231201125538.GK1389974@nvidia.com>
-References: <BN9PR11MB5276FD60A0EDF8E3F231FCC88CBCA@BN9PR11MB5276.namprd11.prod.outlook.com>
- <ZWaLCSAMIOXTlghk@Asurada-Nvidia>
- <20231129005715.GS436702@nvidia.com>
- <ZWaPM4p7yjJ0sEKk@Asurada-Nvidia>
- <20231129195804.GF436702@nvidia.com>
- <ZWe2PvatTkkyNCY5@Asurada-Nvidia>
- <20231130000816.GB1389974@nvidia.com>
- <ZWjzcEAAg8ptVH4A@Asurada-Nvidia>
- <20231201004523.GJ1389974@nvidia.com>
- <ZWlhLk3JVwX0hRt/@Asurada-Nvidia>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZWlhLk3JVwX0hRt/@Asurada-Nvidia>
-X-ClientProxiedBy: MN2PR07CA0022.namprd07.prod.outlook.com
- (2603:10b6:208:1a0::32) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 18FCB6FAE
+	for <iommu@lists.linux.dev>; Fri,  1 Dec 2023 13:07:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9229F1007;
+	Fri,  1 Dec 2023 05:08:28 -0800 (PST)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 3165C3F73F;
+	Fri,  1 Dec 2023 05:07:38 -0800 (PST)
+Message-ID: <ae27768f-a6fa-4971-b44c-92899a81a2b7@arm.com>
+Date: Fri, 1 Dec 2023 13:07:36 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|SN7PR12MB7936:EE_
-X-MS-Office365-Filtering-Correlation-Id: 356c53a2-2503-4f5e-2194-08dbf26cd194
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	gsbYIrVqKmCwOpJHMICsL9kdYOawqjEpp/t7MccEvytJUk9QeIH4OO++L+kr9ztPAK8pnfm77E0UkaBzzrNS06qHmzcWxD3Zey8PoFLGlLlsepmmkSwBz9bBnZz5nCkE1HhKzxAk6YQYiKRigyZF11/3WVJNVBCVC53hYXQ3sIFKdPeRgGDMIS8H88smRlfuonqBsXy16eqpNwX9VzaQWUi3vQui0TqH1aZRiL6RlQWfy5Jiw1e5AylK4pCNd+kGvCC+Py/o4CU55YG9BROvOmkPBmLwQQDSMzW+R2TmMer9u+un6PP2Wy6xfDUNqu+iS8/zGfTzxpOohJFo/688TBRzmbwkJzpArMZeaI9wPv9hRg81RfXd1AGxNl15xWxwjA0YXKHRnnlyVOTdE4uC0iX6fagsbrXKVGr0TZRFxF9ShE7Mpemu0zIjrrfavqatcYJ+xSLmH8wPdBhkQPTIoZNfotvUWSIenPsFnUZLDyvqSKEUZYMKy9Mgl5M3riyytU6AEE64021oolmBtjszt4SCNSiO6k74RAesAqXyU6O/yl5W3z1p7jWMBswbK2q8
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366004)(376002)(346002)(136003)(396003)(39860400002)(230922051799003)(1800799012)(451199024)(186009)(64100799003)(66556008)(8676002)(6862004)(8936002)(37006003)(66476007)(316002)(66946007)(4326008)(6486002)(86362001)(41300700001)(36756003)(478600001)(54906003)(6636002)(7416002)(5660300002)(2906002)(33656002)(38100700002)(2616005)(1076003)(6512007)(6506007)(83380400001)(26005);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?e1O9J4d2pew4P3gOPbBf3DVsVTIPwL2eao2hKr6BXQMYNEI9ZKPIHpBoE3DU?=
- =?us-ascii?Q?t/PMALcIWZJ93wf6uo5a5R/G2LTKQ8UNoFKJYs2ASxGPKgxd2BY9ju2nk4aB?=
- =?us-ascii?Q?FAfao+kroEjuS0dJfV/y7NZei8xmqmQllepeGUJFY7ryh8dSwkDBTxiqH14e?=
- =?us-ascii?Q?cUR3YQpw/yejWGtGoOfJij0NrDFpNbXhs73VXeBeur8vERDSxSFeRLsGND7D?=
- =?us-ascii?Q?skgSwtMh0kFCBEPMk6/oNC9hFHR9AEcL3oFDY3DpUaY2YJPJG4wgMDaKv/0f?=
- =?us-ascii?Q?SKd9aseNIrTxb17vmmZKg8E9O2VQxLC1CWIjMTEnaBkccHGcHevFr7AHwnwS?=
- =?us-ascii?Q?CA0AptLZKveWy90RpWQCojfFiDyntNJ2/kz5p24H6DXhxcJdIQQgGW1/tR14?=
- =?us-ascii?Q?t0NtZAPevUMCWeqWmwLsOvSevSWhfPPpTfPEFBMMMiVlWp71eqNIbKCcmSN8?=
- =?us-ascii?Q?uJe4ufcvpWbYmOGtUPkqPkz31RqFEIkK0AZyPzFnPHWqS9xu3zygkSOH0XNt?=
- =?us-ascii?Q?jjppHYwMYpWlA3L6KPnAR+2+Y9gSihGlt2PXclAJ6WW1+RVo9XS3jEZFFGFE?=
- =?us-ascii?Q?CHGZzs/twPAu+0JKdhaGT5zZ+tU1r8q3vpqZ7WD/oURIcHwvUWzmWIPbWCM7?=
- =?us-ascii?Q?QPVAI080hP4rQqHPKOpw7OoN6ITFL7fmD580pu+zAUwcziz2zJVu8V5C3ZLF?=
- =?us-ascii?Q?V/d0m8gXhEGU4NfkU4w5hSf7xtHeGQPrZT1fKRtZWcdaCiHEke0JQrzSjld9?=
- =?us-ascii?Q?JaoB7TeVl9flunKrv+WTb7ZQiV6qpietdeze8XEqJwWaD3trldmhoTb/qwPa?=
- =?us-ascii?Q?3foGuaER/E/4+Uwt+g2DTvBEbX0E9BnyoQNFniuFyc/7qNJ1VaZHogfjjILF?=
- =?us-ascii?Q?8FR0tI0XxDGZHRS6ngKZa5N4A3Lw2LQdnyFZ0OPSDBPcuQM0R6S1Kym6iVIV?=
- =?us-ascii?Q?ImGizmAPiUN+xzDwLSp+kgXwXb3DdPIXiH62yRYPxBSIAQ3XZOO5Qx5gD+eP?=
- =?us-ascii?Q?jgwtQOVeJ9PphXbH6n+uzoylAinPKa2vQ6BNQlYd0J8atNN+qY87IMGwjnAh?=
- =?us-ascii?Q?50fadkpkEtIyxwb56QH23jwdFU3bcv87GsWJU3RTvtcVbfwEaIz2JZgTyyuE?=
- =?us-ascii?Q?zW7n10soQzmGq4c1t6aJQRccY/2NV2yBTQOu0pFhO6te99+yLz8WW9kuRyms?=
- =?us-ascii?Q?JQZReWpaaD+PlVs0wtFmioI6ccoKNsByPVwemrGx3qg8SIaK+aov8pj0i9OB?=
- =?us-ascii?Q?OtqbWtHyEa+io04J2FWYNLcBGxJEqM1m66C+fDOKqG5CDaYdkBOaMMtQuA4D?=
- =?us-ascii?Q?UGgiG1Bg+nSjPsYSDYNHbFb/7OtiDcxuJv0KwZfd30DngGdGbu7vJe8Nkd8Q?=
- =?us-ascii?Q?67aXt/swtTGydWQ8axWqj0Vwjb59aAe8yhA3rPD0fxg/LEPiME8qeN5t30S8?=
- =?us-ascii?Q?gCzwy0yfiOtL0aeDFGZ8xhzp/2Yyy+iHDmtAtGkamEjs+gRKt7MurRUhyKZx?=
- =?us-ascii?Q?qOVZc6sD+18ETdVtrJBtH2FBVgKpwK8Ci2b7ZNR+ILieE4PxBnWpkqwSoPD/?=
- =?us-ascii?Q?boImrxqh/VbxaBZ1woUB1XpvwQrlrZu5jQmT5wOD?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 356c53a2-2503-4f5e-2194-08dbf26cd194
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Dec 2023 12:55:39.1019
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: kYIYY0hxlU4d8Cc3iHCGF1T0KvuCIQeQZRfT/66dLBsSPHt52Uahb6xLJlZJVE/8
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB7936
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 0/7] dma-mapping: Clean up arch_setup_dma_ops()
+Content-Language: en-GB
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Joerg Roedel <joro@8bytes.org>, Christoph Hellwig <hch@lst.de>,
+ Vineet Gupta <vgupta@kernel.org>, Russell King <linux@armlinux.org.uk>,
+ Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>,
+ Huacai Chen <chenhuacai@kernel.org>, WANG Xuerui <kernel@xen0n.name>,
+ Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+ Paul Walmsley <paul.walmsley@sifive.com>, Palmer Dabbelt
+ <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>,
+ Lorenzo Pieralisi <lpieralisi@kernel.org>, Hanjun Guo
+ <guohanjun@huawei.com>, Sudeep Holla <sudeep.holla@arm.com>,
+ "K. Y. Srinivasan" <kys@microsoft.com>,
+ Haiyang Zhang <haiyangz@microsoft.com>, Wei Liu <wei.liu@kernel.org>,
+ Dexuan Cui <decui@microsoft.com>,
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>,
+ Niklas Schnelle <schnelle@linux.ibm.com>,
+ Matthew Rosato <mjrosato@linux.ibm.com>,
+ Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Rob Herring <robh+dt@kernel.org>, Frank Rowand <frowand.list@gmail.com>,
+ Marek Szyprowski <m.szyprowski@samsung.com>, linux-kernel@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org,
+ iommu@lists.linux.dev, devicetree@vger.kernel.org
+References: <cover.1701268753.git.robin.murphy@arm.com>
+ <20231129203642.GO1312390@ziepe.ca>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20231129203642.GO1312390@ziepe.ca>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Thu, Nov 30, 2023 at 08:29:34PM -0800, Nicolin Chen wrote:
-> On Thu, Nov 30, 2023 at 08:45:23PM -0400, Jason Gunthorpe wrote:
-> > On Thu, Nov 30, 2023 at 12:41:20PM -0800, Nicolin Chen wrote:
-> > 
-> > > > So userspace would have to read the event FD
-> > > > before returning to be correct?
-> > > > 
-> > > > Maybe the kernel can somehow return a flag to indicate the event fd
-> > > > has data in it?
-> > > > 
-> > > > If yes then all errors would flow through the event fd?
-> > > 
-> > > I think it'd be nicer to return an immediate error to stop guest
-> > > CMDQ to raise a fault there accordingly, similar to returning a
-> > > -EIO for a bad STE in your SMMU part-3 series.
-> > > 
-> > > If the "return a flag" is an errno of the ioctl, it could work by
-> > > reading from a separate memory that belongs to the event fd. Yet,
-> > > in this case, an eventfd signal (assuming there is one to trigger
-> > > VMM's fault handler) becomes unnecessary, since the invalidation
-> > > ioctl is already handling it?
-> > 
-> > My concern is how does all this fit together and do we push the right
-> > things to the right places in the right order when an error occurs.
-> > 
-> > I did not study the spec carefully to see what exactly is supposed to
-> > happen here, and I don't see things in Linux that make me think it
-> > particularly cares..
-> > 
-> > ie Linux doesn't seem like it will know that an async event was even
-> > triggered while processing the sync to generate an EIO. It looks like
-> > it just gets ETIMEDOUT? Presumably we should be checking the event
-> > queue to detect a pushed error?
-> > 
-> > It is worth understanding if the spec has language that requires
-> > certain order so we can try to follow it.
+On 29/11/2023 8:36 pm, Jason Gunthorpe wrote:
+> On Wed, Nov 29, 2023 at 05:42:57PM +0000, Robin Murphy wrote:
+>> Hi all,
+>>
+>> Prompted by Jason's proposal[1], here's a first step towards truly
+>> unpicking the dma_configure vs. IOMMU mess. As I commented before, we
+>> have an awful lot of accumulated cruft and technical debt here making
+>> things more complicated than they need to be, and we already have hacks
+>> on top of hacks trying to work around it, so polishing those hacks even
+>> further is really not a desirable direction of travel. And I do know
+>> they're hacks, because I wrote most of them and still remember enough of
+>> the context of the time ;)
 > 
-> Oh, I replied one misinformation previously. Actually eventq
-> doesn't report a CERROR. The global error interrupt does.
+> I quite like this, I was also looking at getting rid of those other
+> parameters.
 > 
-> 7.1 has that sequence: 1) CMDQ stops 2) Log current index
-> to the CONS register 3) Log error code to the CONS register
-> 4) Set bit-0 "CMDQ error" of GERROR register to rise an irq.
+> I wanted to take smaller steps because it is all pretty hairy.
+> 
+> One thing that still concerns me is if the FW data restricts the valid
+> IOVA window that really should be reflected into the reserved ranges
+> and not just dumped into the struct device for use by the DMA API.
+> 
+> Or, perhaps, viof/iommufd should be using the struct device data to
+> generate some additional reserved ranges?
+> 
+> Either way, I would like to see the dma_iommu and the rest of the
+> subsystem agree on what the valid IOVA ranges actually are.
 
-Which triggers some async mechanism that seems to restart the command
-queue and convert the error into a printk.
+Note that there is some intentional divergence where iommu-dma reserves 
+IOVAs matching PCI outbound windows because it knows it wants to avoid 
+clashing with potential peer-to-peer addresses and doesn't want to have 
+to get into the details of ACS redirect etc., but we don't expose those 
+as generic reserved regions because they're firmly a property of the PCI 
+host bridge, not of the IOMMU group (and more practically, because we 
+did do so briefly and it made QEMU unhappy). I think there may also have 
+been some degree of conclusion that it's not the IOMMU API's place to 
+get in the way of other domain users trying to do weird P2P stuff if 
+they really want to.
 
-It seems there is not a simple way to realize this error back to
-userspace since we can't block the global command queue and we proceed
-to complete commands that the real HW would not have completed.
+Another issue is that the generic dma_range_map strictly represents 
+device-specific constraints which may not always be desirable or 
+appropriate to apply to a whole group. There wasn't really a conscious 
+decision as such, but it kind of works out as why we still only consider 
+PCI's bridge->dma_ranges (which comes from the same underlying data), 
+since we can at least assume every device behind a bridge accesses 
+memory through that bridge and so inherits its restrictions. However I 
+don't recall any conscious decision for inbound windows to only be 
+considered for DMA domain reservations rather than for proper reserved 
+regions - pretty sure that's just a case of that code being added in the 
+place where it seemed to fit best at the time (because hey it's more 
+host bridge windows and we already have a thing for host bridge windows...)
 
-To actually emulate this the gerror handler would have to capture all
-the necessary registers, return them back to the thread doing
-invalidate_user and all of that would have to return back to userspace
-to go into the virtual version of all the same registers.
-
-Yes, it can be synchronous it seems, but we don't have any
-infrastructure in the driver to do this.
-
-Given this is pretty niche maybe we just don't support error
-forwarding and simply ensure it could be added to the uapi later?
-
-Jason
+Thanks,
+Robin.
