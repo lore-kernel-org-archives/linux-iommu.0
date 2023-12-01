@@ -1,87 +1,64 @@
 Received: from mail-qk1-f181.google.com (mail-qk1-f181.google.com [209.85.222.181])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD66D1D698
-	for <iommu@lists.linux.dev>; Fri,  1 Dec 2023 13:57:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A2A721171C
+	for <iommu@lists.linux.dev>; Fri,  1 Dec 2023 14:24:29 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="o14EvG5w"
-Received: by mail-qk1-f181.google.com with SMTP id af79cd13be357-77d6f853ba0so264873385a.0
-        for <iommu@lists.linux.dev>; Fri, 01 Dec 2023 05:57:46 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="PDNrvdUo"
+Received: by mail-qk1-f181.google.com with SMTP id af79cd13be357-77dd073b5baso115532285a.1
+        for <iommu@lists.linux.dev>; Fri, 01 Dec 2023 06:24:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1701439065; x=1702043865; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1701440668; x=1702045468; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=w5RfSzjMMhEGY5HPP+VV7KP4PAnFpwToiPE40rmIjTE=;
-        b=o14EvG5wdrmi3i4bvsFhSUyh71JXtX99ClAFZ3vfrsLdW5EkfP5KSf41rhoM52/lVv
-         36fZrgtGhpPWiTa931ywmiKRK/XKlXEPp3bgJYqtHU6wvPm0LgskVkK9XsADL6KheJHT
-         tN7L68purXuwHoGv7BKMyaDpBIT14M8CCDRf7NwiQLGyv8qUBtAZLdKUsdesBwq1Wcwo
-         KBMYGETX9twzQDg+bRNgWu+kmSv2pGmWmmxYMEomCu43tgS1dpnlaPQ6sOmALaqcIWTy
-         P+NCaVKlMu5iZCk7FEtGQnCwbIhdC03BwA0Wl2DYFrMCOwEOWNGRVFPncH66VvKisKog
-         ligw==
+        bh=ZBsvr3M7y7nivS2i0Ob2cINhbfVirpoyS0qfXlH/VdM=;
+        b=PDNrvdUoYQL7S33vOSKU22sqhhzRPgc2HTOK72loggDUobMeBFqzP52usAQQs00ADy
+         4KPUJw1G8pB5PEePCPzJs/66as00/47zgIgwlAjhMOfALq1e8hNJ2dJppwRXN9XxfoJQ
+         HbIzU68Rz7BYXwDDF/DmIeepLbNgRwFG7WO/+4MT93H2DbJVSo5MhR/6tJqvNPGDvz2E
+         DTxkvIu8e+W4sDniZ7YHUUzx3i3ZDM/F7d6NlYIyieEVb5jWGKszB3Ez9ThlsUdLvXJv
+         HpQV74MRMAPkaFWUbwB7ZsOcX33LeLLrOq3OWHfNYxF5y1imNyfjuXxZxqy+gQ8+w+ws
+         ylsw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701439065; x=1702043865;
+        d=1e100.net; s=20230601; t=1701440668; x=1702045468;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=w5RfSzjMMhEGY5HPP+VV7KP4PAnFpwToiPE40rmIjTE=;
-        b=mlamGXBmrHaKCfh+VaBxg5g3smw63k9OpYbLXBsDwaoqwWn9LgTbOJY6XCq596FDsy
-         KlKH6JHMYBfz0IJNvtsHScmlpBhFhlZpVmriZ33mGiTOnrjKC895h1RHktVxJeNJRzbU
-         G3NALS1nRZiNSulvGZ23YVAKGavtVIHsjl0SAosiVHIz/MdafXN21zL7h5lp6j0JQPeE
-         xAsO4yIkhoWpJZlegSD9SO+OqoQx8OczofVKsEGn3AcHnIUaFX/ieApJKVbjzmn/TzHF
-         krGlRji43MdgoMYszZ80UuzUSWoY/3ltcVGPsTyaEStLG0+Hzy9CguRbs9B2Ha/K3W3J
-         aZJA==
-X-Gm-Message-State: AOJu0Ywcva2L+uPLVqSHdo3q5oK7IzWhFUe8ngVtka933YlzQqo1EY3C
-	0kYAXTxCOt4GIcE4Y9lUmhovXQ==
-X-Google-Smtp-Source: AGHT+IGiHfUB0BG86D+k/H8bgXmfkHHxfAODJ1IDqy5rd6EVUw0TGcCvkgnXizQa+DzIHgV9yCckKw==
-X-Received: by 2002:a05:620a:29c9:b0:773:c43e:5e73 with SMTP id s9-20020a05620a29c900b00773c43e5e73mr47263709qkp.25.1701439065500;
-        Fri, 01 Dec 2023 05:57:45 -0800 (PST)
+        bh=ZBsvr3M7y7nivS2i0Ob2cINhbfVirpoyS0qfXlH/VdM=;
+        b=qnRd27+ARhbpS0cEKac/PhFAr9xvOeq6EVpkkN3YNvLR77+cICfCVcZyVHHLObl28L
+         fEdP6HGHsQ93P44LfKVwHSuv+KkPg2FrNuEbCfxnRZ2TmvJRDaiwfZr3kvwD5217YQUc
+         E3u455IgrLM37eEYDA+k0lF0To4/HkVdne0Q+Oe18Nn3v6zhO5iJib6TTgiKCUBMt8Rk
+         jMyLAD3Xz1AT/3yR0hr4WkJfGZjDADzdDFcL7mCe0vgfzbb50pzb9jSzI3CK8abLzmWx
+         pvyq8Ck5lKYklFXLjLKR8hKvCtAA1a0w0crpwUY8pXfAD5We/c6lIvWOnX6UmRREd8f8
+         1uCw==
+X-Gm-Message-State: AOJu0YwOK1bPYb6HP5x8K22+C1nMa/nDuYK3hpqlJ5G8wu8PTEuf8TLi
+	miAgL/L8gzf7nh38AKY484Ed3Q==
+X-Google-Smtp-Source: AGHT+IFhbf0pnfqRmkrdAgeW6divQjwDnNZXsygeLqQa4cWucFhgEwsEVMG94jE+nlw/p5nE/n3K4A==
+X-Received: by 2002:a05:620a:1daa:b0:779:deb9:72c6 with SMTP id pj42-20020a05620a1daa00b00779deb972c6mr24340270qkn.14.1701440668556;
+        Fri, 01 Dec 2023 06:24:28 -0800 (PST)
 Received: from ziepe.ca (hlfxns017vw-142-134-23-187.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.134.23.187])
-        by smtp.gmail.com with ESMTPSA id vy13-20020a05620a490d00b0077da601f06csm1508858qkn.10.2023.12.01.05.57.44
+        by smtp.gmail.com with ESMTPSA id v15-20020a05620a122f00b0077d606bec92sm1519643qkj.108.2023.12.01.06.24.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 01 Dec 2023 05:57:44 -0800 (PST)
+        Fri, 01 Dec 2023 06:24:27 -0800 (PST)
 Received: from jgg by wakko with local (Exim 4.95)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1r941X-006F8M-UN;
-	Fri, 01 Dec 2023 09:57:43 -0400
-Date: Fri, 1 Dec 2023 09:57:43 -0400
+	id 1r94RP-006FTp-4e;
+	Fri, 01 Dec 2023 10:24:27 -0400
+Date: Fri, 1 Dec 2023 10:24:27 -0400
 From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Christoph Hellwig <hch@lst.de>,
-	Vineet Gupta <vgupta@kernel.org>,
-	Russell King <linux@armlinux.org.uk>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Will Deacon <will@kernel.org>, Huacai Chen <chenhuacai@kernel.org>,
-	WANG Xuerui <kernel@xen0n.name>,
-	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-	Paul Walmsley <paul.walmsley@sifive.com>,
-	Palmer Dabbelt <palmer@dabbelt.com>,
-	Albert Ou <aou@eecs.berkeley.edu>,
-	Lorenzo Pieralisi <lpieralisi@kernel.org>,
-	Hanjun Guo <guohanjun@huawei.com>,
-	Sudeep Holla <sudeep.holla@arm.com>,
-	"K. Y. Srinivasan" <kys@microsoft.com>,
-	Haiyang Zhang <haiyangz@microsoft.com>,
-	Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Niklas Schnelle <schnelle@linux.ibm.com>,
-	Matthew Rosato <mjrosato@linux.ibm.com>,
-	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
 	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Frank Rowand <frowand.list@gmail.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-acpi@vger.kernel.org, iommu@lists.linux.dev,
-	devicetree@vger.kernel.org
-Subject: Re: [PATCH 0/7] dma-mapping: Clean up arch_setup_dma_ops()
-Message-ID: <20231201135743.GI1394392@ziepe.ca>
-References: <cover.1701268753.git.robin.murphy@arm.com>
- <20231129203642.GO1312390@ziepe.ca>
- <ae27768f-a6fa-4971-b44c-92899a81a2b7@arm.com>
+	Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>, iommu@lists.linux.dev,
+	linux-kselftest@vger.kernel.org,
+	virtualization@lists.linux-foundation.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 0/6] IOMMUFD: Deliver IO page faults to user space
+Message-ID: <20231201142427.GJ1394392@ziepe.ca>
+References: <20231026024930.382898-1-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -90,74 +67,36 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ae27768f-a6fa-4971-b44c-92899a81a2b7@arm.com>
+In-Reply-To: <20231026024930.382898-1-baolu.lu@linux.intel.com>
 
-On Fri, Dec 01, 2023 at 01:07:36PM +0000, Robin Murphy wrote:
-> On 29/11/2023 8:36 pm, Jason Gunthorpe wrote:
-> > On Wed, Nov 29, 2023 at 05:42:57PM +0000, Robin Murphy wrote:
-> > > Hi all,
-> > > 
-> > > Prompted by Jason's proposal[1], here's a first step towards truly
-> > > unpicking the dma_configure vs. IOMMU mess. As I commented before, we
-> > > have an awful lot of accumulated cruft and technical debt here making
-> > > things more complicated than they need to be, and we already have hacks
-> > > on top of hacks trying to work around it, so polishing those hacks even
-> > > further is really not a desirable direction of travel. And I do know
-> > > they're hacks, because I wrote most of them and still remember enough of
-> > > the context of the time ;)
-> > 
-> > I quite like this, I was also looking at getting rid of those other
-> > parameters.
-> > 
-> > I wanted to take smaller steps because it is all pretty hairy.
-> > 
-> > One thing that still concerns me is if the FW data restricts the valid
-> > IOVA window that really should be reflected into the reserved ranges
-> > and not just dumped into the struct device for use by the DMA API.
-> > 
-> > Or, perhaps, viof/iommufd should be using the struct device data to
-> > generate some additional reserved ranges?
-> > 
-> > Either way, I would like to see the dma_iommu and the rest of the
-> > subsystem agree on what the valid IOVA ranges actually are.
+On Thu, Oct 26, 2023 at 10:49:24AM +0800, Lu Baolu wrote:
+> Hi folks,
 > 
-> Note that there is some intentional divergence where iommu-dma reserves
-> IOVAs matching PCI outbound windows because it knows it wants to avoid
-> clashing with potential peer-to-peer addresses and doesn't want to have to
-> get into the details of ACS redirect etc., but we don't expose those as
-> generic reserved regions because they're firmly a property of the PCI host
-> bridge, not of the IOMMU group (and more practically, because we did do so
-> briefly and it made QEMU unhappy). I think there may also have been some
-> degree of conclusion that it's not the IOMMU API's place to get in the way
-> of other domain users trying to do weird P2P stuff if they really want to.
+> This series implements the functionality of delivering IO page faults to
+> user space through the IOMMUFD framework for nested translation. Nested
+> translation is a hardware feature that supports two-stage translation
+> tables for IOMMU. The second-stage translation table is managed by the
+> host VMM, while the first-stage translation table is owned by user
+> space. This allows user space to control the IOMMU mappings for its
+> devices.
+> 
+> When an IO page fault occurs on the first-stage translation table, the
+> IOMMU hardware can deliver the page fault to user space through the
+> IOMMUFD framework. User space can then handle the page fault and respond
+> to the device top-down through the IOMMUFD. This allows user space to
+> implement its own IO page fault handling policies.
+> 
+> User space indicates its capability of handling IO page faults by
+> setting the IOMMU_HWPT_ALLOC_IOPF_CAPABLE flag when allocating a
+> hardware page table (HWPT). IOMMUFD will then set up its infrastructure
+> for page fault delivery. On a successful return of HWPT allocation, the
+> user can retrieve and respond to page faults by reading and writing to
+> the file descriptor (FD) returned in out_fault_fd.
 
-I'm not sure this is the fully correct conclusion - eg if today we
-take a NIC device on a non-ACS topology and run DPDK through VFIO it
-has a chance of failure because some IOVA simply cannot be used by
-DPDK for DMA at all.
+This is probably backwards, userspace should allocate the FD with a
+dedicated ioctl and provide it during domain allocation.
 
-qemu and kvm are a different situation that want different things. Eg
-it would want to identity map the PCI BAR spaces to the IOVA they are
-claiming.
-
-It should still somehow carve out any other IOVA that is unusable due
-to guest-invisible ACS and reflect it through FW tables into the VM.
-
-I'm starting to see people build non-ACS systems and want it to work
-with VFIO and I'm a little worried we have been too loose here.
-
-> bridge and so inherits its restrictions. However I don't recall any
-> conscious decision for inbound windows to only be considered for DMA domain
-> reservations rather than for proper reserved regions - pretty sure that's
-> just a case of that code being added in the place where it seemed to fit
-> best at the time (because hey it's more host bridge windows and we already
-> have a thing for host bridge windows...)
-
-Yeah, and I don't think anyone actually cared much..
-
-At least as a step it would be nice if the DMA API only restrictions
-can come out as a special type of reserved region. Then the caller
-could decide if they want to follow them or not. iommufd could provide
-an opt-in API to DPDK that matches DMA API's safe IOVA allocator.
+If the userspace wants a fd per domain then it should do that. If it
+wants to share fds between domains that should work too.
 
 Jason
