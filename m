@@ -1,109 +1,146 @@
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.223.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D12A279F5
-	for <iommu@lists.linux.dev>; Fri,  1 Dec 2023 09:17:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.de
+Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 10AD2882A
+	for <iommu@lists.linux.dev>; Fri,  1 Dec 2023 09:48:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="yVkOS/DH";
-	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="bk2dZbMW"
-Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [10.150.64.97])
+	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="zCSOAgoS"
+Received: from 8bytes.org (p4ffe1e67.dip0.t-ipconnect.de [79.254.30.103])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by smtp-out2.suse.de (Postfix) with ESMTPS id DA5151FD66;
-	Fri,  1 Dec 2023 09:17:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-	t=1701422249; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=KI6n0l2M6RINtXQBgd987hu016XL0f967I+M87+XwxM=;
-	b=yVkOS/DH0LpcxAQvYe/ypP009MgElX0atOAM3RjI44rYq3eiQg5hpsYgjOILlU5SXafXK9
-	Rzex6ysI/U3FQBLvdc+y1RgRLrHhtvHITLdyzsij3GI85G2uiptrK16ZBzFVXL4bc48Le3
-	Vgz8uSVe806r+6sj5cWWvdirt7yHQzA=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-	s=susede2_ed25519; t=1701422249;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=KI6n0l2M6RINtXQBgd987hu016XL0f967I+M87+XwxM=;
-	b=bk2dZbMWMMJUBIevgy9Ugb57hqQ6mMhR/4JWpVP6CQJP2elRTH7mLHCVttxOms6Iq27Vhp
-	OJcfW8XAgajzR7Dw==
-Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 736C41369E;
-	Fri,  1 Dec 2023 09:17:29 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
-	by imap1.dmz-prg2.suse.org with ESMTPSA
-	id 7L4KGamkaWXkTAAAD6G6ig
-	(envelope-from <jroedel@suse.de>); Fri, 01 Dec 2023 09:17:29 +0000
-Date: Fri, 1 Dec 2023 10:17:27 +0100
-From: Joerg Roedel <jroedel@suse.de>
-To: Daniel Mentz <danielmentz@google.com>
-Cc: iommu@lists.linux.dev, Thierry Reding <treding@nvidia.com>,
-	Frank Rowand <frowand.list@gmail.com>,
-	Rob Herring <robh@kernel.org>, Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH] iommu: Fix printk arg in of_iommu_get_resv_regions()
-Message-ID: <ZWmkp84a1lhdSfKD@suse.de>
-References: <20231108062226.928985-1-danielmentz@google.com>
+	by mail.8bytes.org (Postfix) with ESMTPSA id D971F1A9C6D;
+	Fri,  1 Dec 2023 10:48:09 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
+	s=default; t=1701424089;
+	bh=E/kNTt4ZtHJ7uU7hhO4Xh8THisOQftO+mIU4Wug48vE=;
+	h=Date:From:To:Cc:Subject:From;
+	b=zCSOAgoSynAP5bwNHyxIfNF9WpBoKphc22mnnYumcY00KmfQgAyCrv2Ny0pAXkaoG
+	 trF2ugPgoYZ83mIw7KCJNHgGATSR7iJ9dh6LAwtgjuCHhdQ7EeXhuvfx3ILDm1kBgN
+	 IVxoRL1ykgXeG+17kiIrE8VJYaOaziSN/DZryvhANiyslEo7nEf2VGU/w8niffoESZ
+	 CtwSUpNqYPRS9vX2DKj6dTa2pIBQccNmIh3mI3fhqqL1wNcQdYfNhxXl1JtsJynPvQ
+	 R4gQ1GhF1X6u3s5panvKlyjkroODdXAHIkxHrx2JHW5JhjJT8AQoBYCBc8lrtEXniq
+	 drRkfW5xFlhlw==
+Date: Fri, 1 Dec 2023 10:48:08 +0100
+From: Joerg Roedel <joro@8bytes.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev
+Subject: [git pull] IOMMU Fixes for Linux v6.7-rc3
+Message-ID: <ZWmr2O2Lb8Pn_Hhc@8bytes.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="GTdm2kIbdMeztoIc"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20231108062226.928985-1-danielmentz@google.com>
-X-Spam-Flag: NO
-Authentication-Results: smtp-out2.suse.de;
-	none
-X-Spam-Level: 
-X-Spamd-Result: default: False [0.20 / 50.00];
-	 ARC_NA(0.00)[];
-	 RCVD_VIA_SMTP_AUTH(0.00)[];
-	 MID_RHS_MATCH_FROM(0.00)[];
-	 FROM_HAS_DN(0.00)[];
-	 TO_DN_SOME(0.00)[];
-	 FREEMAIL_ENVRCPT(0.00)[gmail.com];
-	 TO_MATCH_ENVRCPT_ALL(0.00)[];
-	 TAGGED_RCPT(0.00)[];
-	 MIME_GOOD(-0.10)[text/plain];
-	 NEURAL_HAM_LONG(-1.00)[-1.000];
-	 RCPT_COUNT_FIVE(0.00)[6];
-	 RCVD_COUNT_THREE(0.00)[3];
-	 DKIM_SIGNED(0.00)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
-	 NEURAL_HAM_SHORT(-0.20)[-0.999];
-	 BAYES_HAM(-0.00)[30.48%];
-	 DBL_BLOCKED_OPENRESOLVER(0.00)[suse.de:email];
-	 FUZZY_BLOCKED(0.00)[rspamd.com];
-	 FROM_EQ_ENVFROM(0.00)[];
-	 MIME_TRACE(0.00)[0:+];
-	 FREEMAIL_CC(0.00)[lists.linux.dev,nvidia.com,gmail.com,kernel.org,arm.com];
-	 RCVD_TLS_ALL(0.00)[];
-	 SUSPICIOUS_RECIPS(1.50)[]
-X-Spam-Score: 0.20
 
-On Tue, Nov 07, 2023 at 10:22:26PM -0800, Daniel Mentz wrote:
->  drivers/iommu/of_iommu.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
 
-Applied, thanks.
--- 
-Jörg Rödel
-jroedel@suse.de
+--GTdm2kIbdMeztoIc
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-SUSE Software Solutions Germany GmbH
-Frankenstraße 146
-90461 Nürnberg
-Germany
+Hi Linus,
 
-(HRB 36809, AG Nürnberg)
-Geschäftsführer: Ivo Totev, Andrew Myers, Andrew McDonald, Boudien Moerman
+The following changes since commit 2cc14f52aeb78ce3f29677c2de1f06c0e91471ab:
 
+  Linux 6.7-rc3 (2023-11-26 19:59:33 -0800)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v6.7-rc3
+
+for you to fetch changes up to c2183b3dcc9dd41b768569ea88bededa58cceebb:
+
+  iommu: Fix printk arg in of_iommu_get_resv_regions() (2023-12-01 10:13:49 +0100)
+
+----------------------------------------------------------------
+IOMMU Fixes for Linux v6.7-rc3
+
+Including:
+
+	- Fix race conditions in device probe path
+
+	- Handle ERR_PTR() returns in __iommu_domain_alloc() path
+
+	- Update MAINTAINERS entry for Qualcom IOMMUs
+
+	- Printk argument fix in device tree specific code
+
+	- Several Intel VT-d fixes from Lu Baolu:
+	  - Do not support enforcing cache coherency for non-empty domains
+	  - Avoid devTLB invalidation if iommu is off
+	  - Disable PCI ATS in legacy passthrough mode
+	  - Support non-PCI devices when clearing context
+	  - Fix incorrect cache invalidation for mm notification
+	  - Add MTL to quirk list to skip TE disabling
+	  - Set variable intel_dirty_ops to static
+
+----------------------------------------------------------------
+Abdul Halim, Mohd Syazwan (1):
+      iommu/vt-d: Add MTL to quirk list to skip TE disabling
+
+Daniel Mentz (1):
+      iommu: Fix printk arg in of_iommu_get_resv_regions()
+
+Dmitry Baryshkov (1):
+      MAINTAINERS: list all Qualcomm IOMMU drivers in the QUALCOMM IOMMU entry
+
+Jason Gunthorpe (1):
+      iommu: Flow ERR_PTR out from __iommu_domain_alloc()
+
+Kunwu Chan (1):
+      iommu/vt-d: Set variable intel_dirty_ops to static
+
+Lu Baolu (5):
+      iommu/vt-d: Support enforce_cache_coherency only for empty domains
+      iommu/vt-d: Omit devTLB invalidation requests when TES=0
+      iommu/vt-d: Disable PCI ATS in legacy passthrough mode
+      iommu/vt-d: Make context clearing consistent with context mapping
+      iommu/vt-d: Fix incorrect cache invalidation for mm notification
+
+Robin Murphy (1):
+      iommu: Avoid more races around device probe
+
+ MAINTAINERS                 |  2 ++
+ drivers/acpi/scan.c         |  7 +++-
+ drivers/iommu/intel/dmar.c  | 18 +++++++++++
+ drivers/iommu/intel/iommu.c | 18 +++++++----
+ drivers/iommu/intel/iommu.h |  3 ++
+ drivers/iommu/intel/svm.c   | 26 +++++++++++++++
+ drivers/iommu/iommu.c       | 79 ++++++++++++++++++++++++++++-----------------
+ drivers/iommu/of_iommu.c    | 14 +++++---
+ include/linux/iommu.h       |  1 +
+ 9 files changed, 126 insertions(+), 42 deletions(-)
+
+Please pull.
+
+Thanks,
+
+	Joerg
+
+--GTdm2kIbdMeztoIc
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEr9jSbILcajRFYWYyK/BELZcBGuMFAmVpq9gACgkQK/BELZcB
+GuP6OA//WlniPB/zH7X7VeD7VFmCiy3NJmRg/9mK+2UgibuPClbMVtxVhT8ugfYA
+ASh8H7YzCcD8lxTnTvWz4WPKRvjcImUlecdWkRRE7oiV7qI/TuhO2Khl+kEKzT2k
+Q8QMWICutC5TT9sNDUcbIkqSrrcySo9c3dFUgDEEBYj8nDqSSPMH3Caz1BewRlPF
+rY1uuF+HkeEV/y2qAPyXVfR50LfMvEuk/OKJOViPSlGXGMEMjK0yAcFsHntIwaHg
+SXM0WP/JMTo2aa2X4wpOzYXVtSuFaSLtemY5Zuk287uBgX/1iH+MgotEuSXIXDS1
+3bSNnUevIhxhQjZ6ElOGUKV6sBs/727ND1Cx9GpkZAFmtjxNVh9Q4IyMHTHyew0a
+DJlZ1WIez2sWwWJ6LcIfZ0Mm+Uc5+iq1N11Iab11GFCOS/XlE602PdXq3Uh+2V1F
+zFkzbVzUSEvnvCA4CgB3DyBYmNlQiq4e84q8r4f28NmtK2KmgGKO5xGHV6++Ad0G
+Ea4IhmZlJ9Hz4YD88r246Cvzc+rFfr9AlfK9cLQgFMdlOwsXXgUTfqNsf2RW+dIr
+0b2F/yJRmwxG/uP5vD38l5tUTk6kGfGzMy7zU6ZRZ+2jml7zl55572IMcvGxdRWZ
+v2k3HXdPR0U0OOku6TWPmVZwDw6UEuMJf9wu0mU8qAIKvay05zw=
+=GWmz
+-----END PGP SIGNATURE-----
+
+--GTdm2kIbdMeztoIc--
