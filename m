@@ -1,36 +1,36 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D522711C87
-	for <iommu@lists.linux.dev>; Sat,  2 Dec 2023 09:46:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A201613ACD
+	for <iommu@lists.linux.dev>; Sat,  2 Dec 2023 09:46:38 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="cvnSYbts"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="EiOZUBnG"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1701510364; x=1733046364;
+  t=1701510397; x=1733046397;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references;
-  bh=i9OyDLqUL8MDcPXZYwlSXijUUvemlGAamKue93VaY0k=;
-  b=cvnSYbts+s4GoWYobm/2DkUYUfrDOubaPo2zk169Kai1B3S1t6zn0sRq
-   4ZrXjgSJEOvrh1W5WAAPAp3UZM9sTPbpekEDKGwDB0rLAUFR0rI+qubzR
-   TN+/ELfGzAOfNsBcAJkgszuYi90xyCJE3c/omEs3ArXUUHDQvAmFRDeZ1
-   /gWOkuWgQ0RSvZq22tlqcN+Jh/l1oVq7BCeL2ipPPNefMVf55kpWDjjJd
-   5rNZ2lMIjjwBli7sgjhHt1S/E7gD7l6uXyLLenidaXR6kZk8dsxrPV+lp
-   wJeWZ78jz03rDZzUjukKn0onBtjnh3w6yeJjq8N3y6mGHnLFalrx3Ba4D
+  bh=D/v0y2NA6xRqP9bnDret0xs9lulZFX+zXryP5QvmzLE=;
+  b=EiOZUBnGvWc5ig6ReBPF1rRhdmTjc3C1kDyppQEQwB7NNWjwl8oZg/GL
+   txc/sR8/dq2XgpnEZDHE6FCRUGdl7qvVVnXmiZpFnecP9yShA5ovF6pP7
+   RyYNHhCiSAs0PRIztVNCLWu8OK7YdUdogb1zLs9OxHHzJWkg39Xb41tVL
+   UzkG6x4uE2gJ9SF9VZj8srzAG/8P1vG0UJSIHfPj2lZjqQghWemtImckJ
+   T2MbNLT8/GAOu0L2wV5/uS1z4W0NWhvOnpRAtKbph8CKH0bz9c+ddmHa/
+   FNZYSzl4QZhAQ2IYM8oJxKplEmeTRvpIQwWNYOaPPYwy87T4qSvyyvBQO
    w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10911"; a="6886199"
+X-IronPort-AV: E=McAfee;i="6600,9927,10911"; a="372982757"
 X-IronPort-AV: E=Sophos;i="6.04,245,1695711600"; 
-   d="scan'208";a="6886199"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Dec 2023 01:46:03 -0800
+   d="scan'208";a="372982757"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Dec 2023 01:46:36 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10911"; a="746278747"
+X-IronPort-AV: E=McAfee;i="6600,9927,10911"; a="773705785"
 X-IronPort-AV: E=Sophos;i="6.04,245,1695711600"; 
-   d="scan'208";a="746278747"
+   d="scan'208";a="773705785"
 Received: from yzhao56-desk.sh.intel.com ([10.239.159.62])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Dec 2023 01:45:59 -0800
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Dec 2023 01:46:33 -0800
 From: Yan Zhao <yan.y.zhao@intel.com>
 To: iommu@lists.linux.dev,
 	kvm@vger.kernel.org,
@@ -47,9 +47,9 @@ Cc: alex.williamson@redhat.com,
 	dwmw2@infradead.org,
 	yi.l.liu@intel.com,
 	Yan Zhao <yan.y.zhao@intel.com>
-Subject: [RFC PATCH 05/42] KVM: Embed "arch" object and call arch init/destroy in TDP FD
-Date: Sat,  2 Dec 2023 17:16:59 +0800
-Message-Id: <20231202091659.13707-1-yan.y.zhao@intel.com>
+Subject: [RFC PATCH 06/42] KVM: Register/Unregister importers to KVM exported TDP
+Date: Sat,  2 Dec 2023 17:17:38 +0800
+Message-Id: <20231202091738.13770-1-yan.y.zhao@intel.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20231202091211.13376-1-yan.y.zhao@intel.com>
 References: <20231202091211.13376-1-yan.y.zhao@intel.com>
@@ -59,131 +59,149 @@ List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 
-Embed "arch" object in private "kvm_exported_tdp" object of KVM TDP FD
-object in order to associate a TDP page table to this private object.
+Each TDP exported by KVM has its own list of importers. External components
+can register/unregister itself as an importer with a unique importer ops.
 
-With later patches for arch x86, the overall data structure hierarchy on
-x86 for TDP FD to export TDP is outlined below for preview.
+The sequence for external components to register/unregister as importer is
+like:
+1. call kvm_tdp_fd_get() to get a KVM TDP fd object.
+2. call tdp_fd->ops->register_importer() to register itself as an importer.
+3. call tdp_fd->ops->unregister_importer() to unregister itself as
+   importer.
+4. call kvm_tdp_fd_put() to put the KVM TDP fd object.
 
-kvm_tdp_fd
- .------
- |  ops-|-->kvm_exported_tdp_ops
- | file |                                                 public
------------------------------------------------------------------------
- | priv-|-->kvm_exported_tdp                              private
- '------'   .-----------.
-            |  tdp_fd   |
-            |   as_id   |
-            |    kvm    |
-            | importers |
-            |   arch   -|-->kvm_arch_exported_tdp
-            | list_node |   .------.
-            '-----------'   | mmu -|--> kvm_exported_tdp_mmu
-                            | meta |   .-----------.
-                            '--|---'   |   common -|--> kvm_mmu_common
-                               |       | root_page |
-                               |       '-----------'
-                               |
-                               |
-                               |
-                               +-->kvm_exported_tdp_meta_vmx
-                                  .--------------------.
-                                  |      type          |
-                                  |      level         |
-                                  |     root_hpa       |
-                                  | max_huge_page_level|
-                                  | rsvd_bits_mask     |
-                                  '--------------------'
+When destroying a KVM TDP fd object, all importers are force-unregistered.
+There's no extra notification to the importers at that time because the
+force-unregister should only happen when importers calls kvm_tdp_fd_put()
+without calling tdp_fd->ops->unregister_importer() first.
 
 Signed-off-by: Yan Zhao <yan.y.zhao@intel.com>
 ---
- include/linux/kvm_host.h | 17 +++++++++++++++++
- virt/kvm/tdp_fd.c        | 12 +++++++++---
- 2 files changed, 26 insertions(+), 3 deletions(-)
+ include/linux/kvm_host.h |  5 +++
+ virt/kvm/tdp_fd.c        | 68 +++++++++++++++++++++++++++++++++++++++-
+ 2 files changed, 72 insertions(+), 1 deletion(-)
 
 diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
-index 122f47c94ecae..5a74b2b0ac81f 100644
+index 5a74b2b0ac81f..f73d32eef8833 100644
 --- a/include/linux/kvm_host.h
 +++ b/include/linux/kvm_host.h
-@@ -2327,6 +2327,9 @@ static inline void kvm_account_pgtable_pages(void *virt, int nr)
- #ifdef CONFIG_HAVE_KVM_EXPORTED_TDP
- 
- struct kvm_exported_tdp {
-+#ifdef __KVM_HAVE_ARCH_EXPORTED_TDP
-+	struct kvm_arch_exported_tdp arch;
-+#endif
- 	struct kvm_tdp_fd *tdp_fd;
+@@ -2334,6 +2334,11 @@ struct kvm_exported_tdp {
  
  	struct kvm *kvm;
-@@ -2335,5 +2338,19 @@ struct kvm_exported_tdp {
+ 	u32 as_id;
++
++	/* protect importers list */
++	spinlock_t importer_lock;
++	struct list_head importers;
++
+ 	/* head at kvm->exported_tdp_list */
  	struct list_head list_node;
  };
- 
-+#ifdef __KVM_HAVE_ARCH_EXPORTED_TDP
-+int kvm_arch_exported_tdp_init(struct kvm *kvm, struct kvm_exported_tdp *tdp);
-+void kvm_arch_exported_tdp_destroy(struct kvm_exported_tdp *tdp);
-+#else
-+static inline int kvm_arch_exported_tdp_init(struct kvm *kvm,
-+					     struct kvm_exported_tdp *tdp)
-+{
-+	return -EOPNOTSUPP;
-+}
-+static inline void kvm_arch_exported_tdp_destroy(struct kvm_exported_tdp *tdp)
-+{
-+}
-+#endif /* __KVM_HAVE_ARCH_EXPORTED_TDP */
-+
- #endif /* CONFIG_HAVE_KVM_EXPORTED_TDP */
- #endif
 diff --git a/virt/kvm/tdp_fd.c b/virt/kvm/tdp_fd.c
-index a5c4c3597e94f..7e68199ea9643 100644
+index 7e68199ea9643..3271da1a4b2c1 100644
 --- a/virt/kvm/tdp_fd.c
 +++ b/virt/kvm/tdp_fd.c
-@@ -52,17 +52,20 @@ int kvm_create_tdp_fd(struct kvm *kvm, struct kvm_create_tdp_fd *ct)
- 		goto out;
- 	}
- 	tdp->kvm = kvm;
-+	ret = kvm_arch_exported_tdp_init(kvm, tdp);
-+	if (ret)
-+		goto out;
+@@ -13,6 +13,13 @@ static inline int is_tdp_fd_file(struct file *file);
+ static const struct file_operations kvm_tdp_fd_fops;
+ static const struct kvm_exported_tdp_ops exported_tdp_ops;
  
++struct kvm_tdp_importer {
++	struct kvm_tdp_importer_ops *ops;
++	void *data;
++	struct list_head node;
++};
++static void kvm_tdp_unregister_all_importers(struct kvm_exported_tdp *tdp);
++
+ int kvm_create_tdp_fd(struct kvm *kvm, struct kvm_create_tdp_fd *ct)
+ {
+ 	struct kvm_exported_tdp *tdp;
+@@ -56,6 +63,9 @@ int kvm_create_tdp_fd(struct kvm *kvm, struct kvm_create_tdp_fd *ct)
+ 	if (ret)
+ 		goto out;
+ 
++	INIT_LIST_HEAD(&tdp->importers);
++	spin_lock_init(&tdp->importer_lock);
++
  	tdp_fd->file = anon_inode_getfile("tdp_fd", &kvm_tdp_fd_fops,
  					tdp_fd, O_RDWR | O_CLOEXEC);
  	if (!tdp_fd->file) {
- 		ret = -EFAULT;
--		goto out;
-+		goto out_uninit;
- 	}
- 
- 	fd = get_unused_fd_flags(O_RDWR | O_CLOEXEC);
- 	if (fd < 0)
--		goto out;
-+		goto out_uninit;
- 
- 	fd_install(fd, tdp_fd->file);
- 	ct->fd = fd;
-@@ -73,10 +76,12 @@ int kvm_create_tdp_fd(struct kvm *kvm, struct kvm_create_tdp_fd *ct)
- 	spin_unlock(&kvm->exported_tdplist_lock);
- 	return 0;
- 
--out:
-+out_uninit:
- 	if (tdp_fd->file)
- 		fput(tdp_fd->file);
- 
-+	kvm_arch_exported_tdp_destroy(tdp);
-+out:
- 	if (tdp->kvm)
- 		kvm_put_kvm_no_destroy(tdp->kvm);
- 	kfree(tdp);
-@@ -102,6 +107,7 @@ static int kvm_tdp_fd_release(struct inode *inode, struct file *file)
+@@ -107,6 +117,7 @@ static int kvm_tdp_fd_release(struct inode *inode, struct file *file)
  	list_del(&tdp->list_node);
  	spin_unlock(&tdp->kvm->exported_tdplist_lock);
  
-+	kvm_arch_exported_tdp_destroy(tdp);
++	kvm_tdp_unregister_all_importers(tdp);
+ 	kvm_arch_exported_tdp_destroy(tdp);
  	kvm_put_kvm(tdp->kvm);
  	kfree(tdp);
- 	kfree(tdp_fd);
+@@ -141,12 +152,67 @@ static inline int is_tdp_fd_file(struct file *file)
+ static int kvm_tdp_register_importer(struct kvm_tdp_fd *tdp_fd,
+ 				     struct kvm_tdp_importer_ops *ops, void *data)
+ {
+-	return -EOPNOTSUPP;
++	struct kvm_tdp_importer *importer, *tmp;
++	struct kvm_exported_tdp *tdp;
++
++	if (!tdp_fd || !tdp_fd->priv || !ops)
++		return -EINVAL;
++
++	tdp = tdp_fd->priv;
++	importer = kzalloc(sizeof(*importer), GFP_KERNEL);
++	if (!importer)
++		return -ENOMEM;
++
++	spin_lock(&tdp->importer_lock);
++	list_for_each_entry(tmp, &tdp->importers, node) {
++		if (tmp->ops != ops)
++			continue;
++
++		kfree(importer);
++		spin_unlock(&tdp->importer_lock);
++		return -EBUSY;
++	}
++
++	importer->ops = ops;
++	importer->data = data;
++	list_add(&importer->node, &tdp->importers);
++
++	spin_unlock(&tdp->importer_lock);
++
++	return 0;
+ }
+ 
+ static void kvm_tdp_unregister_importer(struct kvm_tdp_fd *tdp_fd,
+ 					struct kvm_tdp_importer_ops *ops)
+ {
++	struct kvm_tdp_importer *importer, *n;
++	struct kvm_exported_tdp *tdp;
++
++	if (!tdp_fd || !tdp_fd->priv)
++		return;
++
++	tdp = tdp_fd->priv;
++	spin_lock(&tdp->importer_lock);
++	list_for_each_entry_safe(importer, n, &tdp->importers, node) {
++		if (importer->ops != ops)
++			continue;
++
++		list_del(&importer->node);
++		kfree(importer);
++	}
++	spin_unlock(&tdp->importer_lock);
++}
++
++static void kvm_tdp_unregister_all_importers(struct kvm_exported_tdp *tdp)
++{
++	struct kvm_tdp_importer *importer, *n;
++
++	spin_lock(&tdp->importer_lock);
++	list_for_each_entry_safe(importer, n, &tdp->importers, node) {
++		list_del(&importer->node);
++		kfree(importer);
++	}
++	spin_unlock(&tdp->importer_lock);
+ }
+ 
+ static void *kvm_tdp_get_metadata(struct kvm_tdp_fd *tdp_fd)
 -- 
 2.17.1
 
