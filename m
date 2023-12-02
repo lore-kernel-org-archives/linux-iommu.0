@@ -1,36 +1,36 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.88])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D27AD15AC7
-	for <iommu@lists.linux.dev>; Sat,  2 Dec 2023 10:02:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2F2B215496
+	for <iommu@lists.linux.dev>; Sat,  2 Dec 2023 10:02:54 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="SyLHtsbV"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="gijIxFC6"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1701511349; x=1733047349;
+  t=1701511374; x=1733047374;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references;
-  bh=hmQiFx37c9kQD8NB0bOovdRfd/CdlZnR5EzplmD7wsQ=;
-  b=SyLHtsbVOIzjpge9tnxB/Y0SmYF18pY2YhHcm9fEGKMDXw+RfG2v/s6y
-   AE9+Gd0nAAT6yaPfv0Lzklsqi9f3N3vqPFmWhMcUjXk5lWAXH/bybxAaX
-   pvceSYnkQeYM5RbqwrCgczkq/FfV9QcJBRL73KL+NwnpWgxWEQ+0s+Be1
-   qrVLRl0d2xunzwilHMuSKdy8lXR4LfIPWFtd4PU3+u830mynjlYz042tW
-   nI8irqPC/VTbxY/+VbYeUJGroU27D7Bm2UFCEnGypFJId8E2WiwlYQb2R
-   LlOGOXzBv5WVgi1OtjD1UkUujczpzSxrkJ7AY+02S8gRGQ8kS4aiysI4j
+  bh=Ny7K/1p6mPwz6jo6BVXvIZBJop8cXIZXURz+qH/CFNo=;
+  b=gijIxFC6jopU4pWVqFN/ctcLsWBffJ+q7KuDJulxRFRl/x/kRuG7DhCC
+   mmEixPhssYaD53nlNi7gZlUyuJW1RsF/eWz/yreEU8TiQDWmDygJXzfcB
+   2ee+A5xe3oyiTOm8VLoNCePrhlLgzDTpJI/b7UT07Lc2yZtEOMBubEC8b
+   sLHBVmHbth+I3YjDlQbAk4XU2iYwGdK62rnTzd+pCcdYYrhJUTNWKHcz5
+   fun9LkT4MYz4wkBc6p2mM0aC83BYbSwh1hJaLX52DaSwPxHv+de9aQTwt
+   uMgBGr7kjGIy95toZunWwTkYRoXgoWrOekcH0v7Unelu4E0XED1IkoM0c
    g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10911"; a="12304634"
+X-IronPort-AV: E=McAfee;i="6600,9927,10911"; a="424756539"
 X-IronPort-AV: E=Sophos;i="6.04,245,1695711600"; 
-   d="scan'208";a="12304634"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Dec 2023 02:02:29 -0800
+   d="scan'208";a="424756539"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Dec 2023 02:02:53 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10911"; a="1101537971"
+X-IronPort-AV: E=McAfee;i="6600,9927,10911"; a="836023023"
 X-IronPort-AV: E=Sophos;i="6.04,245,1695711600"; 
-   d="scan'208";a="1101537971"
+   d="scan'208";a="836023023"
 Received: from yzhao56-desk.sh.intel.com ([10.239.159.62])
-  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Dec 2023 02:02:24 -0800
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Dec 2023 02:02:49 -0800
 From: Yan Zhao <yan.y.zhao@intel.com>
 To: iommu@lists.linux.dev,
 	kvm@vger.kernel.org,
@@ -47,9 +47,9 @@ Cc: alex.williamson@redhat.com,
 	dwmw2@infradead.org,
 	yi.l.liu@intel.com,
 	Yan Zhao <yan.y.zhao@intel.com>
-Subject: [RFC PATCH 36/42] KVM: x86/mmu: Keep exported TDP root valid
-Date: Sat,  2 Dec 2023 17:33:25 +0800
-Message-Id: <20231202093325.15676-1-yan.y.zhao@intel.com>
+Subject: [RFC PATCH 37/42] KVM: x86: Implement KVM exported TDP fault handler on x86
+Date: Sat,  2 Dec 2023 17:33:55 +0800
+Message-Id: <20231202093355.15745-1-yan.y.zhao@intel.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20231202091211.13376-1-yan.y.zhao@intel.com>
 References: <20231202091211.13376-1-yan.y.zhao@intel.com>
@@ -59,121 +59,242 @@ List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 
-Keep exported TDP root always valid and zap all leaf entries to replace
-the "root role invalid" operation.
+Implement fault handler of KVM exported TDP on x86.
+The fault handler will fail if the GFN to be faulted is in emulated MMIO
+range or in write-tracked range.
 
-Unlike TDP roots accessed by vCPUs only, update of TDP root exported to
-external components must be in an atomic way, like
-1. allocating new root,
-2. updating and notifying new root to external components,
-3. making old root invalid,
+kvm_tdp_mmu_map_exported_root() is actually a duplicate of
+kvm_tdp_mmu_map() except that its shadow pages are allocated from exported
+TDP specific header/page caches in kvm arch rather than from each vCPU's
+header/page caches.
 
-So, it's more efficient to just zap all leaf entries of the exported TDP.
-
-Though zapping all leaf entries will make "fast zap" not fast enough, as
-with commit 0df9dab891ff ("KVM: x86/mmu: Stop zapping invalidated TDP MMU
-roots asynchronously"), zap of root is anyway required to be done
-synchronously in kvm_mmu_zap_all_fast() before completing memslot removal.
-
-Besides, it's also safe to skip invalidating "exported" root in
-kvm_tdp_mmu_invalidate_all_roots() for path kvm_mmu_uninit_tdp_mmu(),
-because when the VM is shutting down, as TDP FD will hold reference count
-of kvm, kvm_mmu_uninit_tdp_mmu() --> kvm_tdp_mmu_invalidate_all_roots()
-will not come until the TDP root is unmarked as "exported" and put. All
-children entries are also zapped before the root is put.
+The exported TDP specific header/page caches are used is because fault
+handler of KVM exported TDP is not called in vCPU thread.
+Will seek to remove the duplication in future.
 
 Signed-off-by: Yan Zhao <yan.y.zhao@intel.com>
 ---
- arch/x86/kvm/mmu/mmu.c     |  3 +++
- arch/x86/kvm/mmu/tdp_mmu.c | 40 +++++++++++++++++++++++++++++++++-----
- arch/x86/kvm/mmu/tdp_mmu.h |  1 +
- 3 files changed, 39 insertions(+), 5 deletions(-)
+ arch/x86/kvm/mmu.h         |  1 +
+ arch/x86/kvm/mmu/mmu.c     | 57 +++++++++++++++++++++++++++
+ arch/x86/kvm/mmu/tdp_mmu.c | 81 ++++++++++++++++++++++++++++++++++++++
+ arch/x86/kvm/mmu/tdp_mmu.h |  2 +
+ arch/x86/kvm/x86.c         | 22 +++++++++++
+ 5 files changed, 163 insertions(+)
 
+diff --git a/arch/x86/kvm/mmu.h b/arch/x86/kvm/mmu.h
+index 3d11f2068572d..a6e6802fb4d56 100644
+--- a/arch/x86/kvm/mmu.h
++++ b/arch/x86/kvm/mmu.h
+@@ -254,6 +254,7 @@ void kvm_mmu_pre_destroy_vm(struct kvm *kvm);
+ #ifdef CONFIG_HAVE_KVM_EXPORTED_TDP
+ int kvm_mmu_get_exported_tdp(struct kvm *kvm, struct kvm_exported_tdp *tdp);
+ void kvm_mmu_put_exported_tdp(struct kvm_exported_tdp *tdp);
++int kvm_mmu_fault_exported_tdp(struct kvm_exported_tdp *tdp, unsigned long gfn, u32 err);
+ #endif
+ 
+ static inline bool kvm_shadow_root_allocated(struct kvm *kvm)
 diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-index 3e2475c678c27..37a903fff582a 100644
+index 37a903fff582a..b4b1ede30642d 100644
 --- a/arch/x86/kvm/mmu/mmu.c
 +++ b/arch/x86/kvm/mmu/mmu.c
-@@ -6187,6 +6187,9 @@ static void kvm_mmu_zap_all_fast(struct kvm *kvm)
- 
- 	kvm_zap_obsolete_pages(kvm);
- 
-+	if (tdp_mmu_enabled)
-+		kvm_tdp_mmu_zap_exported_roots(kvm);
-+
+@@ -7324,4 +7324,61 @@ void kvm_mmu_put_exported_tdp(struct kvm_exported_tdp *tdp)
+ 	mmu->root_page = NULL;
  	write_unlock(&kvm->mmu_lock);
- 
- 	/*
+ }
++
++int kvm_mmu_fault_exported_tdp(struct kvm_exported_tdp *tdp, unsigned long gfn, u32 err)
++{
++	struct kvm *kvm = tdp->kvm;
++	struct kvm_page_fault fault = {
++		.addr = gfn << PAGE_SHIFT,
++		.error_code = err,
++		.prefetch = false,
++		.exec = err & PFERR_FETCH_MASK,
++		.write = err & PFERR_WRITE_MASK,
++		.present = err & PFERR_PRESENT_MASK,
++		.rsvd = err & PFERR_RSVD_MASK,
++		.user = err & PFERR_USER_MASK,
++		.is_tdp = true,
++		.nx_huge_page_workaround_enabled = is_nx_huge_page_enabled(kvm),
++		.max_level = KVM_MAX_HUGEPAGE_LEVEL,
++		.req_level = PG_LEVEL_4K,
++		.goal_level = PG_LEVEL_4K,
++		.gfn = gfn,
++		.slot = gfn_to_memslot(kvm, gfn),
++	};
++	struct kvm_exported_tdp_mmu *mmu = &tdp->arch.mmu;
++	int r;
++
++	if (page_fault_handle_page_track(kvm, &fault))
++		return -EINVAL;
++retry:
++	r = kvm_faultin_pfn(kvm, NULL, &fault, ACC_ALL);
++	if (r != RET_PF_CONTINUE)
++		goto out;
++
++	mutex_lock(&kvm->arch.exported_tdp_cache_lock);
++	r = mmu_topup_exported_tdp_caches(kvm);
++	if (r)
++		goto out_cache;
++
++	r = RET_PF_RETRY;
++	read_lock(&kvm->mmu_lock);
++	if (fault.slot && mmu_invalidate_retry_hva(kvm, fault.mmu_seq, fault.hva))
++		goto out_mmu;
++
++	if (mmu->root_page && is_obsolete_sp(kvm, mmu->root_page))
++		goto out_mmu;
++
++	r = kvm_tdp_mmu_map_exported_root(kvm, mmu, &fault);
++
++out_mmu:
++	read_unlock(&kvm->mmu_lock);
++out_cache:
++	mutex_unlock(&kvm->arch.exported_tdp_cache_lock);
++	kvm_release_pfn_clean(fault.pfn);
++out:
++	if (r == RET_PF_RETRY)
++		goto retry;
++
++	return r == RET_PF_FIXED ? 0 : -EFAULT;
++}
+ #endif
 diff --git a/arch/x86/kvm/mmu/tdp_mmu.c b/arch/x86/kvm/mmu/tdp_mmu.c
-index 47edf54961e89..36a309ad27d47 100644
+index 36a309ad27d47..e7587aefc3304 100644
 --- a/arch/x86/kvm/mmu/tdp_mmu.c
 +++ b/arch/x86/kvm/mmu/tdp_mmu.c
-@@ -897,12 +897,38 @@ void kvm_tdp_mmu_zap_invalidated_roots(struct kvm *kvm)
- 	read_unlock(&kvm->mmu_lock);
+@@ -1900,4 +1900,85 @@ void kvm_tdp_mmu_put_exported_root(struct kvm *kvm, struct kvm_mmu_page *root)
+ 	kvm_tdp_mmu_put_root(kvm, root, false);
  }
  
-+void kvm_tdp_mmu_zap_exported_roots(struct kvm *kvm)
++int kvm_tdp_mmu_map_exported_root(struct kvm *kvm, struct kvm_exported_tdp_mmu *mmu,
++				  struct kvm_page_fault *fault)
 +{
-+#ifdef CONFIG_HAVE_KVM_EXPORTED_TDP
-+	struct kvm_mmu_page *root;
-+	bool flush;
++	struct tdp_iter iter;
++	struct kvm_mmu_page *sp;
++	int ret = RET_PF_RETRY;
 +
-+	lockdep_assert_held_write(&kvm->mmu_lock);
++	kvm_mmu_hugepage_adjust(kvm, fault);
++
++	trace_kvm_mmu_spte_requested(fault);
 +
 +	rcu_read_lock();
 +
-+	list_for_each_entry_rcu(root, &kvm->arch.tdp_mmu_roots, link) {
-+		if (!root->exported)
++	tdp_mmu_for_each_pte(iter, mmu, fault->gfn, fault->gfn + 1) {
++		int r;
++
++		if (fault->nx_huge_page_workaround_enabled)
++			disallowed_hugepage_adjust(fault, iter.old_spte, iter.level);
++
++		/*
++		 * If SPTE has been frozen by another thread, just give up and
++		 * retry, avoiding unnecessary page table allocation and free.
++		 */
++		if (is_removed_spte(iter.old_spte))
++			goto retry;
++
++		if (iter.level == fault->goal_level)
++			goto map_target_level;
++
++		/* Step down into the lower level page table if it exists. */
++		if (is_shadow_present_pte(iter.old_spte) &&
++		    !is_large_pte(iter.old_spte))
 +			continue;
 +
-+		flush = tdp_mmu_zap_leafs(kvm, root, 0, -1ULL, false, false);
-+		if (flush)
-+			kvm_flush_remote_tlbs(kvm);
++		/*
++		 * The SPTE is either non-present or points to a huge page that
++		 * needs to be split.
++		 */
++		sp = tdp_mmu_alloc_sp_exported_cache(kvm);
++		tdp_mmu_init_child_sp(sp, &iter);
++
++		sp->nx_huge_page_disallowed = fault->huge_page_disallowed;
++
++		if (is_shadow_present_pte(iter.old_spte))
++			r = tdp_mmu_split_huge_page(kvm, &iter, sp, true);
++		else
++			r = tdp_mmu_link_sp(kvm, &iter, sp, true);
++
++		/*
++		 * Force the guest to retry if installing an upper level SPTE
++		 * failed, e.g. because a different task modified the SPTE.
++		 */
++		if (r) {
++			tdp_mmu_free_sp(sp);
++			goto retry;
++		}
++
++		if (fault->huge_page_disallowed &&
++		    fault->req_level >= iter.level) {
++			spin_lock(&kvm->arch.tdp_mmu_pages_lock);
++			if (sp->nx_huge_page_disallowed)
++				track_possible_nx_huge_page(kvm, sp);
++			spin_unlock(&kvm->arch.tdp_mmu_pages_lock);
++		}
 +	}
 +
++	/*
++	 * The walk aborted before reaching the target level, e.g. because the
++	 * iterator detected an upper level SPTE was frozen during traversal.
++	 */
++	WARN_ON_ONCE(iter.level == fault->goal_level);
++	goto retry;
++
++map_target_level:
++	ret = tdp_mmu_map_handle_target_level(kvm, NULL, &mmu->common, fault, &iter);
++
++retry:
 +	rcu_read_unlock();
-+#endif
++	return ret;
 +}
 +
- /*
-- * Mark each TDP MMU root as invalid to prevent vCPUs from reusing a root that
-- * is about to be zapped, e.g. in response to a memslots update.  The actual
-- * zapping is done separately so that it happens with mmu_lock with read,
-- * whereas invalidating roots must be done with mmu_lock held for write (unless
-- * the VM is being destroyed).
-+ * Mark each TDP MMU root (except exported root) as invalid to prevent vCPUs from
-+ * reusing a root that is about to be zapped, e.g. in response to a memslots
-+ * update.
-+ * The actual zapping is done separately so that it happens with mmu_lock
-+ * with read, whereas invalidating roots must be done with mmu_lock held for write
-+ * (unless the VM is being destroyed).
-+ * For exported root, zap is done in kvm_tdp_mmu_zap_exported_roots() before
-+ * the memslot update completes with mmu_lock held for write.
-  *
-  * Note, kvm_tdp_mmu_zap_invalidated_roots() is gifted the TDP MMU's reference.
-  * See kvm_tdp_mmu_get_vcpu_root_hpa().
-@@ -932,6 +958,10 @@ void kvm_tdp_mmu_invalidate_all_roots(struct kvm *kvm)
- 	 * or get/put references to roots.
- 	 */
- 	list_for_each_entry(root, &kvm->arch.tdp_mmu_roots, link) {
-+#ifdef CONFIG_HAVE_KVM_EXPORTED_TDP
-+		if (root->exported)
-+			continue;
-+#endif
- 		/*
- 		 * Note, invalid roots can outlive a memslot update!  Invalid
- 		 * roots must be *zapped* before the memslot update completes,
+ #endif
 diff --git a/arch/x86/kvm/mmu/tdp_mmu.h b/arch/x86/kvm/mmu/tdp_mmu.h
-index 1d36ed378848b..df42350022a3f 100644
+index df42350022a3f..a3ea418aaffed 100644
 --- a/arch/x86/kvm/mmu/tdp_mmu.h
 +++ b/arch/x86/kvm/mmu/tdp_mmu.h
-@@ -25,6 +25,7 @@ bool kvm_tdp_mmu_zap_sp(struct kvm *kvm, struct kvm_mmu_page *sp);
- void kvm_tdp_mmu_zap_all(struct kvm *kvm);
- void kvm_tdp_mmu_invalidate_all_roots(struct kvm *kvm);
- void kvm_tdp_mmu_zap_invalidated_roots(struct kvm *kvm);
-+void kvm_tdp_mmu_zap_exported_roots(struct kvm *kvm);
+@@ -80,6 +80,8 @@ static inline bool is_tdp_mmu_page(struct kvm_mmu_page *sp) { return false; }
+ struct kvm_mmu_page *kvm_tdp_mmu_get_exported_root(struct kvm *kvm,
+ 						   struct kvm_exported_tdp_mmu *mmu);
+ void kvm_tdp_mmu_put_exported_root(struct kvm *kvm, struct kvm_mmu_page *root);
++int kvm_tdp_mmu_map_exported_root(struct kvm *kvm, struct kvm_exported_tdp_mmu *mmu,
++				  struct kvm_page_fault *fault);
+ #endif
  
- int kvm_tdp_mmu_map(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault);
+ #endif /* __KVM_X86_MMU_TDP_MMU_H */
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index afc0e5372ddce..2886eac0590d8 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -13445,6 +13445,28 @@ void kvm_arch_exported_tdp_destroy(struct kvm_exported_tdp *tdp)
+ {
+ 	kvm_mmu_put_exported_tdp(tdp);
+ }
++
++int kvm_arch_fault_exported_tdp(struct kvm_exported_tdp *tdp, unsigned long gfn,
++				struct kvm_tdp_fault_type type)
++{
++	u32 err = 0;
++	int ret;
++
++	if (type.read)
++		err |= PFERR_PRESENT_MASK | PFERR_USER_MASK;
++
++	if (type.write)
++		err |= PFERR_WRITE_MASK;
++
++	if (type.exec)
++		err |= PFERR_FETCH_MASK;
++
++	mutex_lock(&tdp->kvm->slots_lock);
++	ret = kvm_mmu_fault_exported_tdp(tdp, gfn, err);
++	mutex_unlock(&tdp->kvm->slots_lock);
++	return ret;
++}
++
+ #endif
  
+ int kvm_spec_ctrl_test_value(u64 value)
 -- 
 2.17.1
 
