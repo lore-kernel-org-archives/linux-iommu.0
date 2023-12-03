@@ -1,219 +1,382 @@
-Received: from mail-pf1-f176.google.com (mail-pf1-f176.google.com [209.85.210.176])
+Received: from mail-yw1-f175.google.com (mail-yw1-f175.google.com [209.85.128.175])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 538BBD26D;
-	Sun,  3 Dec 2023 12:31:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 783FD16432
+	for <iommu@lists.linux.dev>; Sun,  3 Dec 2023 19:24:26 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="mnzinRh0"
-Received: by mail-pf1-f176.google.com with SMTP id d2e1a72fcca58-6cdd28aa7f8so2853046b3a.3;
-        Sun, 03 Dec 2023 04:31:39 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="WyH/1jKv"
+Received: by mail-yw1-f175.google.com with SMTP id 00721157ae682-5d05ff42db0so42180857b3.2
+        for <iommu@lists.linux.dev>; Sun, 03 Dec 2023 11:24:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1701606698; x=1702211498; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=0MUy55F2F+wgLbUaq7AQf9HgfhTQk1XTmdlJL+JJNEo=;
-        b=mnzinRh0ovIb61yTm8d6Qhzmi/K87b5M9mAC4fbSJ5VgX1KTyLDKttFkxWpMaXO1sd
-         61+DRprMpNVWc2BY63lMhJ1S5f7Dxlq7d7COhMdjyMMnNF7ebZbETx1ODLTKCgCa70r1
-         A7xZv7nhjTeFo6uN4O0/lDAhQRukEo9QP6yoG8nC+4E2oGD4hI+K4DlqqnyvbQb0n3fb
-         hLWb6ojm1w09qWgzOFg709zUCpx7TK7PgebJc+3OyHwuIUWourPBpKmGNDFKWspF82E4
-         0I1sv2/JjHiFOxO7lkTZQowNGAI1A9M1rwGRf9MnjxDmTVSBA0n1u/F7lPlesMTvWsjR
-         OPmQ==
+        d=gmail.com; s=20230601; t=1701631465; x=1702236265; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=1nWfzgURTGtt75w4dP8mSFcskypLkgCfSwsONcOlJ4g=;
+        b=WyH/1jKvRtiifF/eU46ZPsvDTLNn5XAp3XI40CFwBrFu/EBXG0kgf3tfB9cNiPGxsV
+         qSd/2L6dPtl4jqCuPWRVcY1SG4n3oxbnaUThBUXhjPIY2VaJolZLxL/WkqMN460XI38m
+         n2PBb0VEoRWEBKBavTj2iVtEs7JuX4qOSa2+UhJDDYyK8TuBTtqJLhWdeFlu7kVkZEq1
+         wu2DvBZOQ13DyMWglrD8yB6BhqQC7kSUm4PiG44x7wbT0LzjikfBvxFryNM/uoQ7xbex
+         24zndxYhyQo+IwLrHT3V+uvO/t7oNA/rUmLiCpBZZpuC6MSHXD+ta90LmCX8IUTNDscp
+         ucvA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701606698; x=1702211498;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=0MUy55F2F+wgLbUaq7AQf9HgfhTQk1XTmdlJL+JJNEo=;
-        b=QCgiwJqUQqWri+AOoy23hPs5Q/uVDMvtjDq+hk8HIbSuipckZbwu2ziTZNQWSNfflL
-         u2sfEhZMyAYELQHXxn/c/d2BCvnX9QghDb0THLsZIFdKdtoNzgaUWKzqy/lcP2BO3A/p
-         bUk9hnbEpljJayHX9XwKRRY8nLQKGiUn+OJ6gWq+cd0bCf3pWy8stR3XUaI6qgxc+NA0
-         zpn5DveX0gJMZsDryeIjxSiH5UnHRSZupIhZwvxyggYHv2blmeiVNBlnA9i5lNyUJTLx
-         Hb14REsu2K5AI8U5VPx5GQXnvQgUI5LGC3geZBgpV1xaBW6fuYpmcBfWWNBIrf7cb+tj
-         FHdA==
-X-Gm-Message-State: AOJu0YzPDW2A9GD34tlO/0pn8JsH1rdmFC8L1nydbkrHr+iu0qKqAaoc
-	p+9kFK9xmKUvRVoYTFu/orE=
-X-Google-Smtp-Source: AGHT+IHmLadSlZkgkEbu7BCMhHy54Dhejaw4nkpOT9L4Al3PzBof4xcJ8kA+G2XiA2o5lw1MMiqVvg==
-X-Received: by 2002:a05:6a21:81a9:b0:18b:cd15:b832 with SMTP id pd41-20020a056a2181a900b0018bcd15b832mr777612pzb.42.1701606698415;
-        Sun, 03 Dec 2023 04:31:38 -0800 (PST)
-Received: from archie.me ([103.131.18.64])
-        by smtp.gmail.com with ESMTPSA id h12-20020a170902b94c00b001c613b4aa33sm6529854pls.287.2023.12.03.04.31.37
+        d=1e100.net; s=20230601; t=1701631465; x=1702236265;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=1nWfzgURTGtt75w4dP8mSFcskypLkgCfSwsONcOlJ4g=;
+        b=B144Fd/k8NnGHLPhDoozeq2P3BIk1yzBGGqMQ/b7j39w1vFZ9slEAnX6XTomx3M6Jt
+         l9zEIoI7JvnluV5izX9EICt8ZSEdQhYx9OpKS2nALYQDnBah+AJr8JlSBom5hpBPPgsG
+         T/31gN7hOuR809cqHqYoXZKQa/aRGRuI4xnu42ic7iq0D71EyYOSVPPMYA+9L/k6RIxV
+         cZomN7cRCYQfawVvrzWol56jQqgLf1SLPovxOLPyuXyZWPFgDnIGktQ/ny+j1fJl/nEg
+         gITKB4/Xlo03orNvqpiXQbScqguQXCprlKaW4uac3mFSiaXoA2fDsXgtgmGGCVm45Q2k
+         a7jA==
+X-Gm-Message-State: AOJu0Ywvt1V433chOxfkd53KH+LRp7QjA/SMUXGy/5Hra5X6vKUh+4Z5
+	2oGRVFL3CjSqCuBU4sSbgmw=
+X-Google-Smtp-Source: AGHT+IEg2kLnAuyhggdL3cVe4WpdM9rW+n2mVmMYjFUgPYcn1MOaP0Gt5Q6CzY6AfDTMwD33c5FMKw==
+X-Received: by 2002:a81:984c:0:b0:5d7:1941:2c2a with SMTP id p73-20020a81984c000000b005d719412c2amr2115940ywg.87.1701631465118;
+        Sun, 03 Dec 2023 11:24:25 -0800 (PST)
+Received: from localhost ([2601:344:8301:57f0:cb98:c3e:57c:8191])
+        by smtp.gmail.com with ESMTPSA id z83-20020a814c56000000b005d3c950160csm2377207ywa.4.2023.12.03.11.24.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 03 Dec 2023 04:31:37 -0800 (PST)
-Received: by archie.me (Postfix, from userid 1000)
-	id 8AE2D1033EDE8; Sun,  3 Dec 2023 19:31:28 +0700 (WIB)
-Date: Sun, 3 Dec 2023 19:31:28 +0700
-From: Bagas Sanjaya <bagasdotme@gmail.com>
-To: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-	Linux Regressions <regressions@lists.linux.dev>,
-	Linux IOMMU <iommu@lists.linux.dev>,
-	Linux Power Management <linux-pm@vger.kernel.org>
-Cc: David Woodhouse <dwmw2@infradead.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Thomas Gleixner <tglx@linutronix.de>,
+        Sun, 03 Dec 2023 11:24:24 -0800 (PST)
+From: Yury Norov <yury.norov@gmail.com>
+To: linux-kernel@vger.kernel.org,
+	"David S. Miller" <davem@davemloft.net>,
+	"H. Peter Anvin" <hpa@zytor.com>,
+	"James E.J. Bottomley" <jejb@linux.ibm.com>,
+	"K. Y. Srinivasan" <kys@microsoft.com>,
+	"Md. Haris Iqbal" <haris.iqbal@ionos.com>,
+	Akinobu Mita <akinobu.mita@gmail.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Bjorn Andersson <andersson@kernel.org>,
+	Borislav Petkov <bp@alien8.de>,
+	Chaitanya Kulkarni <kch@nvidia.com>,
+	Christian Brauner <brauner@kernel.org>,
+	Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+	Dave Hansen <dave.hansen@linux.intel.com>,
+	David Disseldorp <ddiss@suse.de>,
+	Edward Cree <ecree.xilinx@gmail.com>,
+	Eric Dumazet <edumazet@google.com>,
+	Fenghua Yu <fenghua.yu@intel.com>,
+	Geert Uytterhoeven <geert@linux-m68k.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Gregory Greenman <gregory.greenman@intel.com>,
+	Hans Verkuil <hverkuil@xs4all.nl>,
+	Hans de Goede <hdegoede@redhat.com>,
+	Hugh Dickins <hughd@google.com>,
+	Ingo Molnar <mingo@redhat.com>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Jaroslav Kysela <perex@perex.cz>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Jens Axboe <axboe@kernel.dk>,
+	Jiri Pirko <jiri@resnulli.us>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Kalle Valo <kvalo@kernel.org>,
+	Karsten Graul <kgraul@linux.ibm.com>,
+	Karsten Keil <isdn@linux-pingi.de>,
+	Kees Cook <keescook@chromium.org>,
+	Leon Romanovsky <leon@kernel.org>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Martin Habets <habetsm.xilinx@gmail.com>,
+	Mauro Carvalho Chehab <mchehab@kernel.org>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Michal Simek <monstr@monstr.eu>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	Oliver Neukum <oneukum@suse.com>,
+	Paolo Abeni <pabeni@redhat.com>,
+	Paolo Bonzini <pbonzini@redhat.com>,
 	Peter Zijlstra <peterz@infradead.org>,
-	Michael Kelley <mikelley@microsoft.com>,
-	Oleksandr Natalenko <oleksandr@natalenko.name>,
-	Helge Deller <deller@gmx.de>,
-	"Guilherme G. Piccoli" <gpiccoli@igalia.com>, kbugreports@proton.me
-Subject: Re: Fwd: Kernels v6.5 and v6.6 break resume from standby (s3) on
- some Intel systems if VT-d is enabled
-Message-ID: <ZWx1IHBE9KCk6rWj@archie.me>
-References: <4b3c624a-f114-4e39-9e1c-0df18f307e8c@gmail.com>
+	Ping-Ke Shih <pkshih@realtek.com>,
+	Rich Felker <dalias@libc.org>,
+	Rob Herring <robh@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Sean Christopherson <seanjc@google.com>,
+	Shuai Xue <xueshuai@linux.alibaba.com>,
+	Stanislaw Gruszka <stf_xl@wp.pl>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Valentin Schneider <vschneid@redhat.com>,
+	Vitaly Kuznetsov <vkuznets@redhat.com>,
+	Wenjia Zhang <wenjia@linux.ibm.com>,
+	Will Deacon <will@kernel.org>,
+	Yoshinori Sato <ysato@users.sourceforge.jp>,
+	GR-QLogic-Storage-Upstream@marvell.com,
+	alsa-devel@alsa-project.org,
+	ath10k@lists.infradead.org,
+	dmaengine@vger.kernel.org,
+	iommu@lists.linux.dev,
+	kvm@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-arm-msm@vger.kernel.org,
+	linux-block@vger.kernel.org,
+	linux-bluetooth@vger.kernel.org,
+	linux-hyperv@vger.kernel.org,
+	linux-m68k@lists.linux-m68k.org,
+	linux-media@vger.kernel.org,
+	linux-mips@vger.kernel.org,
+	linux-net-drivers@amd.com,
+	linux-pci@vger.kernel.org,
+	linux-rdma@vger.kernel.org,
+	linux-s390@vger.kernel.org,
+	linux-scsi@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	linux-sh@vger.kernel.org,
+	linux-sound@vger.kernel.org,
+	linux-usb@vger.kernel.org,
+	linux-wireless@vger.kernel.org,
+	linuxppc-dev@lists.ozlabs.org,
+	mpi3mr-linuxdrv.pdl@broadcom.com,
+	netdev@vger.kernel.org,
+	sparclinux@vger.kernel.org,
+	x86@kernel.org
+Cc: Yury Norov <yury.norov@gmail.com>,
+	Jan Kara <jack@suse.cz>,
+	Mirsad Todorovac <mirsad.todorovac@alu.unizg.hr>,
+	Matthew Wilcox <willy@infradead.org>,
+	Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Maxim Kuvyrkov <maxim.kuvyrkov@linaro.org>,
+	Alexey Klimov <klimov.linux@gmail.com>,
+	Bart Van Assche <bvanassche@acm.org>,
+	Sergey Shtylyov <s.shtylyov@omp.ru>
+Subject: [PATCH v2 00/35] bitops: add atomic find_bit() operations
+Date: Sun,  3 Dec 2023 11:23:47 -0800
+Message-Id: <20231203192422.539300-1-yury.norov@gmail.com>
+X-Mailer: git-send-email 2.40.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="dO/hfGGfuReF84Ss"
-Content-Disposition: inline
-In-Reply-To: <4b3c624a-f114-4e39-9e1c-0df18f307e8c@gmail.com>
+Content-Transfer-Encoding: 8bit
 
+Add helpers around test_and_{set,clear}_bit() that allow to search for
+clear or set bits and flip them atomically.
 
---dO/hfGGfuReF84Ss
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+The target patterns may look like this:
 
-On Tue, Nov 28, 2023 at 08:09:24PM +0700, Bagas Sanjaya wrote:
-> Hi,
->=20
-> I notice a regression report on Bugzilla [1]. Quoting from it:
->=20
-> > Note:
-> >=20
-> > I'm just a Linux user, I don't work in IT or even write code, so, I'm p=
-robably using terms to describe the issue that are not the ones someone who=
- knows code and what the system does under the hood would use.
-> >=20
-> > Affected system:
-> >=20
-> > Thinkpad, Intel Kaby Lake (i7-7600U) chipset / cpu and onboard gpu (Int=
-el HD 620), no separate graphics card, current bios firmware; running Void =
-Linux, xfce / lightdm
-> >=20
-> > Symptom / problem:
-> >=20
-> > Since the upgrade to kernel v6.5.5 (from v6.3.13) my system doesn't wak=
-e up from standby, i.e. resume from s3 fails 100% of the time.
-> > When pressing a key or the power button nothing happens. The LED that i=
-ndicates different states of the system, keeps indicating standby mode.
-> > The only way to use the system again is hard reset by pressing the powe=
-r button for a few seconds.
-> >=20
-> > So, there is no crashing on resume or incomplete resume or only sometim=
-es failing to resume or failing to go into standby in the first place.
-> >=20
-> > Granted, this issue was present with kernels before v6.5, but only occa=
-sionally and it would not re-appear for many many boot cycles. So, I never =
-had any lead as to why it would happen.
-> >=20
-> > I installed kernel v6.4.16 to test for the bug - it's not in there.
-> >=20
-> > For further testing I also installed kernel v6.5.2, as this was the fir=
-st kernel of the 6.5 series available on void linux, (and because the kerne=
-l logs mention VT-d for kernel v6.5.5 and v6.5.3, see below). Result: The b=
-ug is already in v6.5.2, too.
-> >=20
-> > There's only one thing I noticed from comparing logs between kernels v6=
-=2E5/6.6 vs v6.1/6.3/6.4. In the moment the system goes into standby, if ru=
-nning one of the latter three kernel versions the system would print the fo=
-llowing messages:
-> >=20
-> > [elogind-daemon] Entering sleep state 'suspend'...
-> > [kernel] PM: suspend entry (deep)
-> >=20
-> >=20
-> > But with kernels v6.5/6.6, the kernel message is missing, only the elog=
-ind-daemon message shows up in the logs. As if the kernel didn't get the me=
-mo and thus didn't prepare and didn't listen for the wake-up call to resume.
-> >=20
-> >=20
-> > To see, if this is a bug that might be tight to a certain chipset / cpu=
- generation, I tested kernel v6.5 on my old Thinkpad (Intel Sandy Bridge ch=
-ipset / cpu, and also onboard graphics only). Its BIOS also has VT-d enable=
-d. Interestingly, on that system, resume from standby with kernel v6.5 is n=
-o problem, even though its system is set up the same as the current Thinkpa=
-d.
-> >=20
-> > So, this bug seems to be limited to certain set of chipset / cpu. Which=
- seems feasible, as I couldn't find a bug report on this - not too many see=
-m to be affected.
-> >=20
-> >=20
-> >=20
-> > There's an older bug report on similar symptoms, but the cure doesn't w=
-ork on my system:
-> >=20
-> > "intel_iommu=3Don breaks resume from suspend on several Thinkpad models"
-> > https://bugzilla.kernel.org/show_bug.cgi?id=3D197029
-> >=20
-> >=20
-> > Although it sounds just like what my system is experiencing - apart fro=
-m the fact that term suspend being sometimes also used to describe hibernat=
-ion and it is not specified which one is meant in the bug report.
-> >=20
-> > So, I was hopeful on the one hand that the (workaround) fix (adding int=
-el_iommu=3Doff to the kernel parameters) would work on my system, too - on =
-the other hand, this bug report was for kernel v4.13, so it's probably not =
-necessarily relevant to similar symptoms with kernel v6.5 and v6.6, respect=
-ively.
-> >=20
-> > Anyway, adding intel_iommu=3Doff to the kernel parameters didn't change=
- anything on my system. I made, of course, sure once the system was running=
-, that intel_iommu=3Doff was in indeed used as one of the kernel parameters.
-> >=20
-> >=20
-> > With this information in mind I did a regular internet search and found=
- some information that in case intel_iommu=3Doff in the kernel parameters d=
-oesn't help, disabling VT-d in BIOS might.
-> > And in my case it does indeed help avoiding the bug - for both kernel v=
-ersions, v6.5 and v6.6.
-> >=20
-> > Reading some other bug reports and some changelogs, I noticed that iomm=
-u and vt-s are connected, to I posted this bug report in drivers/iommu. If =
-it is misplaced here, please feel free to move it to the correct category.
-> >=20
-> >=20
-> > I attached a file with the output of some commands I found being used i=
-n several other bug reports on here, just in case they might be needed / he=
-lpful.
-> >=20
-> >=20
-> > Thank you very much for your help in advance!
->=20
-> See Bugzilla for the full thread.
->=20
-> Anyway, I'm adding this regression to regzbot:
->=20
-> #regzbot introduced: v6.3..v6.5 https://bugzilla.kernel.org/show_bug.cgi?=
-id=3D218191
-> #regzbot title: resume from standby fails on Thinkpad with Kaby Lake CPU
->=20
+	for (idx = 0; idx < nbits; idx++)
+		if (test_and_clear_bit(idx, bitmap))
+			do_something(idx);
 
-The reporter had done bisection (see Bugzilla for details), so telling
-regzbot:
+Or like this:
 
-#regzbot introduced: 0c7ffa32dbd6b0
+	do {
+		bit = find_first_bit(bitmap, nbits);
+		if (bit >= nbits)
+			return nbits;
+	} while (!test_and_clear_bit(bit, bitmap));
+	return bit;
 
-Thanks.
+In both cases, the opencoded loop may be converted to a single function
+or iterator call. Correspondingly:
 
---=20
-An old man doll... just what I always wanted! - Clara
+	for_each_test_and_clear_bit(idx, bitmap, nbits)
+		do_something(idx);
 
---dO/hfGGfuReF84Ss
-Content-Type: application/pgp-signature; name="signature.asc"
+Or:
+	return find_and_clear_bit(bitmap, nbits);
 
------BEGIN PGP SIGNATURE-----
+Obviously, the less routine code people have to write themself, the
+less probability to make a mistake.
 
-iHUEABYKAB0WIQSSYQ6Cy7oyFNCHrUH2uYlJVVFOowUCZWx1HAAKCRD2uYlJVVFO
-o9tkAQD39PHo7FdONECmYZXrv+d6mV48M232+oW13+R1CiakrgEA1d/iKH+VFtPl
-UK+NIN72mc22rpkszIA/Br5ww/0w0gw=
-=tabU
------END PGP SIGNATURE-----
+Those are not only handy helpers but also resolve a non-trivial
+issue of using non-atomic find_bit() together with atomic
+test_and_{set,clear)_bit().
 
---dO/hfGGfuReF84Ss--
+The trick is that find_bit() implies that the bitmap is a regular
+non-volatile piece of memory, and compiler is allowed to use such
+optimization techniques like re-fetching memory instead of caching it.
+
+For example, find_first_bit() is implemented like this:
+
+      for (idx = 0; idx * BITS_PER_LONG < sz; idx++) {
+              val = addr[idx];
+              if (val) {
+                      sz = min(idx * BITS_PER_LONG + __ffs(val), sz);
+                      break;
+              }
+      }
+
+On register-memory architectures, like x86, compiler may decide to
+access memory twice - first time to compare against 0, and second time
+to fetch its value to pass it to __ffs().
+
+When running find_first_bit() on volatile memory, the memory may get
+changed in-between, and for instance, it may lead to passing 0 to
+__ffs(), which is undefined. This is a potentially dangerous call.
+
+find_and_clear_bit() as a wrapper around test_and_clear_bit()
+naturally treats underlying bitmap as a volatile memory and prevents
+compiler from such optimizations.
+
+Now that KCSAN is catching exactly this type of situations and warns on
+undercover memory modifications. We can use it to reveal improper usage
+of find_bit(), and convert it to atomic find_and_*_bit() as appropriate.
+
+The 1st patch of the series adds the following atomic primitives:
+
+	find_and_set_bit(addr, nbits);
+	find_and_set_next_bit(addr, nbits, start);
+	...
+
+Here find_and_{set,clear} part refers to the corresponding
+test_and_{set,clear}_bit function. Suffixes like _wrap or _lock
+derive their semantics from corresponding find() or test() functions.
+
+For brevity, the naming omits the fact that we search for zero bit in
+find_and_set, and correspondingly search for set bit in find_and_clear
+functions.
+
+The patch also adds iterators with atomic semantics, like
+for_each_test_and_set_bit(). Here, the naming rule is to simply prefix
+corresponding atomic operation with 'for_each'.
+
+This series is a result of discussion [1]. All find_bit() functions imply
+exclusive access to the bitmaps. However, KCSAN reports quite a number
+of warnings related to find_bit() API. Some of them are not pointing
+to real bugs because in many situations people intentionally allow
+concurrent bitmap operations.
+
+If so, find_bit() can be annotated such that KCSAN will ignore it:
+
+        bit = data_race(find_first_bit(bitmap, nbits));
+
+This series addresses the other important case where people really need
+atomic find ops. As the following patches show, the resulting code
+looks safer and more verbose comparing to opencoded loops followed by
+atomic bit flips.
+
+In [1] Mirsad reported 2% slowdown in a single-thread search test when
+switching find_bit() function to treat bitmaps as volatile arrays. On
+the other hand, kernel robot in the same thread reported +3.7% to the
+performance of will-it-scale.per_thread_ops test.
+
+Assuming that our compilers are sane and generate better code against
+properly annotated data, the above discrepancy doesn't look weird. When
+running on non-volatile bitmaps, plain find_bit() outperforms atomic
+find_and_bit(), and vice-versa.
+
+So, all users of find_bit() API, where heavy concurrency is expected,
+are encouraged to switch to atomic find_and_bit() as appropriate.
+
+The 1st patch of this series adds atomic find_and_bit() API, 2nd adds
+a basic test for new API, and all the following patches spread it over
+the kernel.
+
+They can be applied separately from each other on per-subsystems basis,
+or I can pull them in bitmap tree, as appropriate.
+
+[1] https://lore.kernel.org/lkml/634f5fdf-e236-42cf-be8d-48a581c21660@alu.unizg.hr/T/#m3e7341eb3571753f3acf8fe166f3fb5b2c12e615
+---
+v1: https://lore.kernel.org/netdev/20231118155105.25678-29-yury.norov@gmail.com/T/
+v2:
+ - Add a basic test for the new API # Bart Van Assche;
+ - Add collected reviewers' tags. Thank you guys!
+ - Fix typos where found/pointed by;
+ - Drop erroneous patch #v1-31 ("drivers/perf: optimize m1_pmu_get_event_idx()...") @ Marc Zyngier;
+ - Drop unneeded patch #v1-12 ("wifi: intel: use atomic find_bit() API...") @ Johannes Berg;
+ - Patch #v1-15: split SCSI changes per subsystems @ Bart Van Assche;
+ - Patch  #5: keep changes inside __mm_cid_try_get() @ Mathieu Desnoyers;
+ - Patch  #8: use find_and_set_next_bit() @ Will Deacon;
+ - Patch #13: keep test against stimer->config.enable @ Vitaly Kuznetsov;
+ - Patch #15: use find_and_set_next_bit @ Bart Van Assche;
+ - Patch #31: edit commit message @ Tony Lu, Alexandra Winter;
+ - Patch #35: edit tag @ John Paul Adrian Glaubitz;
+
+Yury Norov (35):
+  lib/find: add atomic find_bit() primitives
+  lib/find: add test for atomic find_bit() ops
+  lib/sbitmap; make __sbitmap_get_word() using find_and_set_bit()
+  watch_queue: use atomic find_bit() in post_one_notification()
+  sched: add cpumask_find_and_set() and use it in __mm_cid_get()
+  mips: sgi-ip30: rework heart_alloc_int()
+  sparc: fix opencoded find_and_set_bit() in alloc_msi()
+  perf/arm: optimize opencoded atomic find_bit() API
+  drivers/perf: optimize ali_drw_get_counter_idx() by using find_bit()
+  dmaengine: idxd: optimize perfmon_assign_event()
+  ath10k: optimize ath10k_snoc_napi_poll() by using find_bit()
+  wifi: rtw88: optimize rtw_pci_tx_kick_off() by using find_bit()
+  KVM: x86: hyper-v: optimize and cleanup kvm_hv_process_stimers()
+  PCI: hv: switch hv_get_dom_num() to use atomic find_bit()
+  scsi: core: use atomic find_bit() API where appropriate
+  scsi: mpi3mr: switch to using atomic find_and_set_bit()
+  scsi: qedi: rework qedi_get_task_idx()
+  powerpc: use atomic find_bit() API where appropriate
+  iommu: use atomic find_bit() API where appropriate
+  media: radio-shark: use atomic find_bit() API where appropriate
+  sfc: switch to using atomic find_bit() API where appropriate
+  tty: nozomi: optimize interrupt_handler()
+  usb: cdc-acm: optimize acm_softint()
+  block: null_blk: fix opencoded find_and_set_bit() in get_tag()
+  RDMA/rtrs: fix opencoded find_and_set_bit_lock() in
+    __rtrs_get_permit()
+  mISDN: optimize get_free_devid()
+  media: em28xx: cx231xx: fix opencoded find_and_set_bit()
+  ethernet: rocker: optimize ofdpa_port_internal_vlan_id_get()
+  serial: sc12is7xx: optimize sc16is7xx_alloc_line()
+  bluetooth: optimize cmtp_alloc_block_id()
+  net: smc:  use find_and_set_bit() in smc_wr_tx_get_free_slot_index()
+  ALSA: use atomic find_bit() functions where applicable
+  m68k: rework get_mmu_context()
+  microblaze: rework get_mmu_context()
+  sh: mach-x3proto: rework ilsel_enable()
+
+ arch/m68k/include/asm/mmu_context.h          |  11 +-
+ arch/microblaze/include/asm/mmu_context_mm.h |  11 +-
+ arch/mips/sgi-ip30/ip30-irq.c                |  12 +-
+ arch/powerpc/mm/book3s32/mmu_context.c       |  10 +-
+ arch/powerpc/platforms/pasemi/dma_lib.c      |  45 +--
+ arch/powerpc/platforms/powernv/pci-sriov.c   |  12 +-
+ arch/sh/boards/mach-x3proto/ilsel.c          |   4 +-
+ arch/sparc/kernel/pci_msi.c                  |   9 +-
+ arch/x86/kvm/hyperv.c                        |  39 ++-
+ drivers/block/null_blk/main.c                |  41 +--
+ drivers/dma/idxd/perfmon.c                   |   8 +-
+ drivers/infiniband/ulp/rtrs/rtrs-clt.c       |  15 +-
+ drivers/iommu/arm/arm-smmu/arm-smmu.h        |  10 +-
+ drivers/iommu/msm_iommu.c                    |  18 +-
+ drivers/isdn/mISDN/core.c                    |   9 +-
+ drivers/media/radio/radio-shark.c            |   5 +-
+ drivers/media/radio/radio-shark2.c           |   5 +-
+ drivers/media/usb/cx231xx/cx231xx-cards.c    |  16 +-
+ drivers/media/usb/em28xx/em28xx-cards.c      |  37 +--
+ drivers/net/ethernet/rocker/rocker_ofdpa.c   |  11 +-
+ drivers/net/ethernet/sfc/rx_common.c         |   4 +-
+ drivers/net/ethernet/sfc/siena/rx_common.c   |   4 +-
+ drivers/net/ethernet/sfc/siena/siena_sriov.c |  14 +-
+ drivers/net/wireless/ath/ath10k/snoc.c       |   9 +-
+ drivers/net/wireless/realtek/rtw88/pci.c     |   5 +-
+ drivers/net/wireless/realtek/rtw89/pci.c     |   5 +-
+ drivers/pci/controller/pci-hyperv.c          |   7 +-
+ drivers/perf/alibaba_uncore_drw_pmu.c        |  10 +-
+ drivers/perf/arm-cci.c                       |  24 +-
+ drivers/perf/arm-ccn.c                       |  10 +-
+ drivers/perf/arm_dmc620_pmu.c                |   9 +-
+ drivers/perf/arm_pmuv3.c                     |   8 +-
+ drivers/scsi/mpi3mr/mpi3mr_os.c              |  21 +-
+ drivers/scsi/qedi/qedi_main.c                |   9 +-
+ drivers/scsi/scsi_lib.c                      |   7 +-
+ drivers/tty/nozomi.c                         |   5 +-
+ drivers/tty/serial/sc16is7xx.c               |   8 +-
+ drivers/usb/class/cdc-acm.c                  |   5 +-
+ include/linux/cpumask.h                      |  12 +
+ include/linux/find.h                         | 293 +++++++++++++++++++
+ kernel/sched/sched.h                         |  14 +-
+ kernel/watch_queue.c                         |   6 +-
+ lib/find_bit.c                               |  85 ++++++
+ lib/sbitmap.c                                |  46 +--
+ lib/test_bitmap.c                            |  61 ++++
+ net/bluetooth/cmtp/core.c                    |  10 +-
+ net/smc/smc_wr.c                             |  10 +-
+ sound/pci/hda/hda_codec.c                    |   7 +-
+ sound/usb/caiaq/audio.c                      |  13 +-
+ 49 files changed, 629 insertions(+), 420 deletions(-)
+
+-- 
+2.40.1
+
