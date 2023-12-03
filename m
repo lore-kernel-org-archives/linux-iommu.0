@@ -1,104 +1,167 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.151])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D8AB2912;
-	Sun,  3 Dec 2023 04:51:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1CD85138C
+	for <iommu@lists.linux.dev>; Sun,  3 Dec 2023 08:57:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ClC7S2eT"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 969F3C433C9;
-	Sun,  3 Dec 2023 04:51:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1701579106;
-	bh=+mcK+T08LUgzP9YfqK4zh9i6t9Yd2MbXJsZSM5gqgbc=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=ClC7S2eTLXzjsH0+pEQz0cSBjgV2+nHLT/+/akgQpyM7CS2/bBplE4exGO6GkgQZ7
-	 VTVz8K0QniTpz5KqPi5Nx1PIRakIfq4FA4KhQcJRc3k46YFSCl9XM1mX9Ti0Jyttmm
-	 FS1QvTXU0B7qTzCvAJRZTOejdiPDOGZm5rbMkj2BQ0xDrVR7jjaXvLKoVGyhz36KaL
-	 ArZHVVgjV+UpXE3Qu2wBb+2M7RC/1nvkfQ4mvtkZPSz6kX2IcDvl9f3HQpr3In/C97
-	 JlIux05ueGDr+TxzCzUM0rZtjisw9dOk2vykOZ/xLbq/OKrqCwC5SF9hANg79srjq3
-	 QtwOlcTpMTwpA==
-From: Bjorn Andersson <andersson@kernel.org>
-To: Rob Clark <robdclark@gmail.com>,
-	Abhinav Kumar <quic_abhinavk@quicinc.com>,
-	Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-	Sean Paul <sean@poorly.run>,
-	David Airlie <airlied@gmail.com>,
-	Daniel Vetter <daniel@ffwll.ch>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Maxime Ripard <mripard@kernel.org>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Loic Poulain <loic.poulain@linaro.org>,
-	Bryan O'Donoghue <bryan.odonoghue@linaro.org>,
-	Andy Gross <agross@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-	Georgi Djakov <djakov@kernel.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Krishna Manikandan <quic_mkrishn@quicinc.com>,
-	Robert Marko <robimarko@gmail.com>,
-	Das Srinagesh <quic_gurus@quicinc.com>,
-	cros-qcom-dts-watchers@chromium.org,
-	Konrad Dybcio <konrad.dybcio@linaro.org>
-Cc: Marijn Suijten <marijn.suijten@somainline.org>,
-	Rob Herring <robh@kernel.org>,
-	linux-arm-msm@vger.kernel.org,
-	dri-devel@lists.freedesktop.org,
-	freedreno@lists.freedesktop.org,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-pm@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev
-Subject: Re: (subset) [PATCH v3 00/12] RB1/QCM2290 features
-Date: Sat,  2 Dec 2023 20:54:35 -0800
-Message-ID: <170157925828.1717511.10065827987884757444.b4-ty@kernel.org>
-X-Mailer: git-send-email 2.42.0
-In-Reply-To: <20231125-topic-rb1_feat-v3-0-4cbb567743bb@linaro.org>
-References: <20231125-topic-rb1_feat-v3-0-4cbb567743bb@linaro.org>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="dWbFyFzD"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1701593864; x=1733129864;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=fIgYj/pz0YnU67OHlSdQgp575vg0zeIleAakheq2FcQ=;
+  b=dWbFyFzD67C9Q0IntQCNg6tI9J5famjZCyM83zJSk5K9Z2i6bEE6rc3w
+   vKUrGTw7nWu4zOaiVQHVwlnO24Cf9jPs1dWSKNvAJEephx0f3Myp1UW61
+   mbzgPKV+/JPv7YH9OnZj8Bll+nCpcjPJjIRcN8/pmz6e3wF4knUCys5dJ
+   GCT5upQuFrsAaTnhWVytF0K0oJdQiObiq6Nt6nAdIQKBtDiqV4OrH67x9
+   pxIltosp+FApK2SH4A6O/b+o4RRqgRd3NBSXvXQ/jZUGLR+hmGvmZfbBG
+   XpK5tmAvQR05OeSM6ozyKXrGhTVqWRgf6ZvIw7a0YYqhN7Oev2TjWyhJC
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10912"; a="373827077"
+X-IronPort-AV: E=Sophos;i="6.04,247,1695711600"; 
+   d="scan'208";a="373827077"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Dec 2023 00:57:43 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10912"; a="1101771107"
+X-IronPort-AV: E=Sophos;i="6.04,247,1695711600"; 
+   d="scan'208";a="1101771107"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
+  by fmsmga005.fm.intel.com with ESMTP; 03 Dec 2023 00:57:39 -0800
+Message-ID: <a0ef3a4f-88fc-40fe-9891-495d1b6b365b@linux.intel.com>
+Date: Sun, 3 Dec 2023 16:53:08 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Kevin Tian <kevin.tian@intel.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>,
+ Jacob Pan <jacob.jun.pan@linux.intel.com>, Yan Zhao <yan.y.zhao@intel.com>,
+ iommu@lists.linux.dev, kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v7 12/12] iommu: Improve iopf_queue_flush_dev()
+To: Jason Gunthorpe <jgg@ziepe.ca>
+References: <20231115030226.16700-1-baolu.lu@linux.intel.com>
+ <20231115030226.16700-13-baolu.lu@linux.intel.com>
+ <20231201203536.GG1489931@ziepe.ca>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20231201203536.GG1489931@ziepe.ca>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-
-On Wed, 29 Nov 2023 15:43:57 +0100, Konrad Dybcio wrote:
-> This series brings:
-> - interconnect plumbing
-> - display setup
+On 12/2/23 4:35 AM, Jason Gunthorpe wrote:
+> On Wed, Nov 15, 2023 at 11:02:26AM +0800, Lu Baolu wrote:
+>> The iopf_queue_flush_dev() is called by the iommu driver before releasing
+>> a PASID. It ensures that all pending faults for this PASID have been
+>> handled or cancelled, and won't hit the address space that reuses this
+>> PASID. The driver must make sure that no new fault is added to the queue.
+> This needs more explanation, why should anyone care?
 > 
-> for QCM2290/QRB2210 and
+> More importantly, why is*discarding*  the right thing to do?
+> Especially why would we discard a partial page request group?
 > 
-> - CAN bus controller
-> - HDMI display
-> - wifi fw variant name
+> After we change a translation we may have PRI requests in a
+> queue. They need to be acknowledged, not discarded. The DMA in the
+> device should be restarted and the device should observe the new
+> translation - if it is blocking then it should take a DMA error.
 > 
-> [...]
+> More broadly, we should just let things run their normal course. The
+> domain to deliver the fault to should be determined very early. If we
+> get a fault and there is no fault domain currently assigned then just
+> restart it.
+> 
+> The main reason to fence would be to allow the domain to become freed
+> as the faults should be holding pointers to it. But I feel there are
+> simpler options for that then this..
 
-Applied, thanks!
+In the iommu_detach_device_pasid() path, the domain is about to be
+removed from the pasid of device. The IOMMU driver performs the
+following steps sequentially:
 
-[06/12] arm64: dts: qcom: sc7180: Add the missing MDSS icc path
-        commit: 8786398f8686d1a4267ab52f830b25f17e6d62fc
-[07/12] arm64: dts: qcom: sc7280: Add the missing MDSS icc path
-        commit: c657056d99878c8a8ea84d5d4a9101bcb90b47f2
-[08/12] arm64: dts: qcom: qcm2290: Add display nodes
-        commit: a2b32096709dbf4af02675d98356a9d3ad86ff05
-[09/12] arm64: dts: qcom: qcm2290: Hook up interconnects
-        commit: 5b970ff0193d67da4a8d2d5fda50dd8ddb50a71e
-[10/12] arm64: dts: qcom: qrb2210-rb1: Set up HDMI
-        commit: 616eda24edd48b8b56516886c51d211fbfd2679b
-[11/12] arm64: dts: qcom: qrb2210-rb1: Enable CAN bus controller
-        commit: 252bc7ad359478dba8d77bce9502f2cc7bb547a3
-[12/12] arm64: dts: qcom: qrb2210-rb1: add wifi variant property
-        commit: b6a56a5a25d6273729b2b5139d58e3d390318ed2
+1. Clears the pasid translation entry. Thus, all subsequent DMA
+    transactions (translation requests, translated requests or page
+    requests) targeting the iommu domain will be blocked.
+
+2. Waits until all pending page requests for the device's PASID have
+    been reported to upper layers via the iommu_report_device_fault().
+    However, this does not guarantee that all page requests have been
+    responded.
+
+3. Free all partial page requests for this pasid since the page request
+    response is only needed for a complete request group. There's no
+    action required for the page requests which are not last of a request
+    group.
+
+4. Iterate through the list of pending page requests and identifies
+    those originating from the device's PASID. For each identified
+    request, the driver responds to the hardware with the
+    IOMMU_PAGE_RESP_INVALID code, indicating that the request cannot be
+    handled and retries should not be attempted. This response code
+    corresponds to the "Invalid Request" status defined in the PCI PRI
+    specification.
+
+5. Follow the IOMMU hardware requirements (for example, VT-d sepc,
+    section 7.10, Software Steps to Drain Page Requests & Responses) to
+    drain in-flight page requests and page group responses between the
+    remapping hardware queues and the endpoint device.
+
+With above steps done in iommu_detach_device_pasid(), the pasid could be
+re-used for any other address space.
+
+The iopf_queue_discard_dev_pasid() helper does step 3 and 4.
+
+> 
+>> The SMMUv3 driver doesn't use it because it only implements the
+>> Arm-specific stall fault model where DMA transactions are held in the SMMU
+>> while waiting for the OS to handle iopf's. Since a device driver must
+>> complete all DMA transactions before detaching domain, there are no
+>> pending iopf's with the stall model. PRI support requires adding a call to
+>> iopf_queue_flush_dev() after flushing the hardware page fault queue.
+> This explanation doesn't make much sense, from a device driver
+> perspective both PRI and stall cause the device to not complete DMAs.
+> 
+> The difference between stall and PRI is fairly small, stall causes an
+> internal bus to lock up while PRI does not.
+> 
+>> -int iopf_queue_flush_dev(struct device *dev)
+>> +int iopf_queue_discard_dev_pasid(struct device *dev, ioasid_t pasid)
+>>   {
+>>   	struct iommu_fault_param *iopf_param = iopf_get_dev_fault_param(dev);
+>> +	const struct iommu_ops *ops = dev_iommu_ops(dev);
+>> +	struct iommu_page_response resp;
+>> +	struct iopf_fault *iopf, *next;
+>> +	int ret = 0;
+>>   
+>>   	if (!iopf_param)
+>>   		return -ENODEV;
+>>   
+>>   	flush_workqueue(iopf_param->queue->wq);
+>> +
+> A naked flush_workqueue like this is really suspicious, it needs a
+> comment explaining why the queue can't get more work queued at this
+> point.
+> 
+> I suppose the driver is expected to stop calling
+> iommu_report_device_fault() before calling this function, but that
+> doesn't seem like it is going to be possible. Drivers should be
+> implementing atomic replace for the PASID updates and in that case
+> there is no momement when it can say the HW will stop generating PRI.
+
+Atomic domain replacement for a PASID is not currently implemented in
+the core or driver. Even if atomic replacement were to be implemented,
+it would be necessary to ensure that all translation requests,
+translated requests, page requests and responses for the old domain are
+drained before switching to the new domain. I am not sure whether the
+existing iommu hardware architecture supports this functionality.
 
 Best regards,
--- 
-Bjorn Andersson <andersson@kernel.org>
+baolu
