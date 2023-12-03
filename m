@@ -1,86 +1,74 @@
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.20])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 526DF156DD
-	for <iommu@lists.linux.dev>; Sat,  2 Dec 2023 10:06:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A18C27F5;
+	Sun,  3 Dec 2023 04:06:00 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="F8wGCTFZ"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1701511571; x=1733047571;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references;
-  bh=Kur6VrDVtWtZgYRN/PKml2utDvkLe+OiXJiTkkUWmVs=;
-  b=F8wGCTFZk2QUknO7gbXDejUEEb48++ssQQ0oTcPgn+IvpZwj373BhywE
-   oBuan7FuN2fOBZtxFCvFyDuYB+uXrCiP9hLsI09Xk2EJXrBZPiTSWYt+E
-   +gepyrYcVIStGEJ9pYti4pyaUrjuURhupDe4W6pd8lc7V9UedhyVWf0Ft
-   ypAMK62lK2pZctfH8ScnM/Kjukr7QfHYTyAw5LsruhPudT6VpDABAdV1p
-   ffJxv4xL4sQl5ga9DmyWgd2WT4OBjNK7WPgqzqu0nggO40NOGrCwXEeM2
-   F3Mtpn3X0PHtz2PiffhMztIAKC7n839j5uoLFI5ci+eOZ4/K9F4TbLQC/
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10911"; a="383989386"
-X-IronPort-AV: E=Sophos;i="6.04,245,1695711600"; 
-   d="scan'208";a="383989386"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Dec 2023 02:06:10 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10911"; a="913854410"
-X-IronPort-AV: E=Sophos;i="6.04,245,1695711600"; 
-   d="scan'208";a="913854410"
-Received: from yzhao56-desk.sh.intel.com ([10.239.159.62])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Dec 2023 02:06:07 -0800
-From: Yan Zhao <yan.y.zhao@intel.com>
-To: iommu@lists.linux.dev,
-	kvm@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Cc: alex.williamson@redhat.com,
-	jgg@nvidia.com,
-	pbonzini@redhat.com,
-	seanjc@google.com,
-	joro@8bytes.org,
-	will@kernel.org,
-	robin.murphy@arm.com,
-	kevin.tian@intel.com,
-	baolu.lu@linux.intel.com,
-	dwmw2@infradead.org,
-	yi.l.liu@intel.com,
-	Yan Zhao <yan.y.zhao@intel.com>
-Subject: [RFC PATCH 42/42] KVM: VMX: Notify importers of exported TDP to flush TLBs on KVM flushes EPT
-Date: Sat,  2 Dec 2023 17:37:12 +0800
-Message-Id: <20231202093712.16049-1-yan.y.zhao@intel.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20231202091211.13376-1-yan.y.zhao@intel.com>
-References: <20231202091211.13376-1-yan.y.zhao@intel.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ttHCk4BM"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0414C433C7;
+	Sun,  3 Dec 2023 04:05:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1701576359;
+	bh=Sb12NKNzKiav+jhQefJAJ2Uqyi4PD3GBfm4v+Jz7tuo=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=ttHCk4BMXGN5JaDPzXmzd/FxEWDj8BieAXsEcaW4u+TkzJJjHxJ/A52/MENRP4Dem
+	 mQwoKEdc4BGiAeQ2OSFc3yxxP0P9yilcpKNhHC+qQ8aqV4JZlfb3JkZwn5vHBQmrT6
+	 ZnxFwo/mPllkY/ErqrYmUEnc31NjYp+ZfBNplxejMRjBhXuFtOsoB9RoxrBU1wd2l5
+	 TfZ6dt8MMSrHV+sRHLl3udTLkz4QY7A+8c60MZHmDLltUMQGND7fT9cng2bL6gZz9c
+	 4SOvwS6vIi1rftm55YBYTwqqtUnniRY6faF0++8ImYFUC3TZrHigKLOE555Owsm5Il
+	 rbt3PSafIVGdQ==
+Date: Sat, 2 Dec 2023 20:09:24 -0800
+From: Bjorn Andersson <andersson@kernel.org>
+To: Konrad Dybcio <konrad.dybcio@linaro.org>
+Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+	Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>, 
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Andy Gross <agross@kernel.org>, Marijn Suijten <marijn.suijten@somainline.org>, 
+	Neil Armstrong <neil.armstrong@linaro.org>, Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, 
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org
+Subject: Re: [PATCH 3/6] arm64: dts: qcom: sm8550: Add GPU nodes
+Message-ID: <y23kmalezyvwcd42jacpoksl7vh2p77e2we3jlbsfiszojmodd@uxlpmdyi3cuq>
+References: <20231127-topic-a7xx_dt-v1-0-a228b8122ebf@linaro.org>
+ <20231127-topic-a7xx_dt-v1-3-a228b8122ebf@linaro.org>
+ <6504d0d8-3087-4990-a8f3-1517eb68707b@linaro.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <6504d0d8-3087-4990-a8f3-1517eb68707b@linaro.org>
 
-Call TDP FD helper to notify importers of exported TDP to flush TLBs when
-KVM flushes EPT.
+On Mon, Nov 27, 2023 at 05:21:30PM +0100, Konrad Dybcio wrote:
+> On 27.11.2023 17:20, Konrad Dybcio wrote:
+> > Add the required nodes to support the A740 GPU.
+> > 
+> > Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
+> > ---
+> >  arch/arm64/boot/dts/qcom/sm8550.dtsi | 166 +++++++++++++++++++++++++++++++++++
+> >  1 file changed, 166 insertions(+)
+> > 
+> > diff --git a/arch/arm64/boot/dts/qcom/sm8550.dtsi b/arch/arm64/boot/dts/qcom/sm8550.dtsi
+> > index 7bafb3d88d69..8f6641c58b3b 100644
+> > --- a/arch/arm64/boot/dts/qcom/sm8550.dtsi
+> > +++ b/arch/arm64/boot/dts/qcom/sm8550.dtsi
+> > @@ -2841,6 +2841,172 @@ dispcc: clock-controller@af00000 {
+> >  			#power-domain-cells = <1>;
+> >  		};
+> >  
+> > +		gpu: gpu@3d00000 {
+> > +			compatible = "qcom,adreno-740.1", "qcom,adreno";
+> The milisecond I pressed "send" I realized this is not the correct revision
+> of this patch.. The compatible needs to change.
+> 
 
-Signed-off-by: Yan Zhao <yan.y.zhao@intel.com>
----
- arch/x86/kvm/vmx/vmx.c | 3 +++
- 1 file changed, 3 insertions(+)
+I could have corrected it while applying the patch if you only included
+the revision here...
 
-diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-index 2fec351a3fa5b..3a2b6ddcde108 100644
---- a/arch/x86/kvm/vmx/vmx.c
-+++ b/arch/x86/kvm/vmx/vmx.c
-@@ -7547,6 +7547,9 @@ static int vmx_vcpu_create(struct kvm_vcpu *vcpu)
- static int vmx_flush_remote_tlbs_range(struct kvm *kvm, gfn_t gfn, gfn_t nr_pages)
- {
- 	kvm_make_all_cpus_request(kvm, KVM_REQ_TLB_FLUSH);
-+#if IS_ENABLED(CONFIG_KVM_INTEL_EXPORTED_EPT)
-+	kvm_tdp_fd_flush_notify(kvm, gfn, nr_pages);
-+#endif
- 	return 0;
- }
- 
--- 
-2.17.1
+Looking forward to v2.
 
+Regards,
+Bjorn
