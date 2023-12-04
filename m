@@ -1,156 +1,232 @@
-Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam02on2045.outbound.protection.outlook.com [40.107.212.45])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f178.google.com (mail-pf1-f178.google.com [209.85.210.178])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC4652E41A
-	for <iommu@lists.linux.dev>; Mon,  4 Dec 2023 17:30:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC25B2EAEE;
+	Mon,  4 Dec 2023 18:07:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="YwVTfPu7"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Db2qQJPF9rZqemYT464A/fOdU028w9fdikXFomhmgirdr60gmgS1ZjF6A89am1OJh5rEhxzUUBK8ydL6SrYnw7a5btYXZ95gvUUdUqhjF2E2J29cbxFbbm4qp52nYxDn4NRMhoFVx9yuop7aFILTCYrr3nnSwq5cdWH+E2Y8XCMuZ5Ti/mNJjCDf+IEV/ApuJEwpI2cA05N6C9CEwYMY3uHkaKXb80Oals4hWiJrgyXcMe1fUKq5OGmw6VI3DMsxOk2V2mljfjVvNOIFuYEDTNrd5RNLZ50mPrZRRfCYF17+NPc/r5vt+AxyUpZSW+sHlk55Z8h8ebinbJzeMc5RxQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=6VAT1mPhTSEAPwE1fvGIjV6jQxeJGVrGepcj52ejD5w=;
- b=mbmYx1eH9GIEoKQDXB1IIlXziL3hcHi2oz+8MLWH4n9IN5nrRQcsj8kNRk6TMnQev8DoDjTm4P5n0gG63Y6WKnKMgiAgPytIb7JmlxyDsz3DwYOr7SigfRHQymTDe5T4Rb4ueujqy0AKbATKUuC5Ncy70u+pQ+YHcMhM/bR4SHW31avT158Dp+0RIvq3NooBzFxM5JCcMYoQu37B/V4t8pxPvwTRefPXsHr11N3si7n6VIQPNG7iS4om9K6TD2qPynnHFL2YEN7VHWSQRM3AVL4l6tXDBatUPkJPCMu6lQjIZtKLqBKNEz9w2WVSNZ2NdDzUDuP1Fm0hpQiFo4lQ6Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6VAT1mPhTSEAPwE1fvGIjV6jQxeJGVrGepcj52ejD5w=;
- b=YwVTfPu7CSuS94Fe80UXgOkPsDknigxPQLuk4s1y5apUvax4D7kpQFXJ95z6NtAciUsKk4VWGB3kjDqHsrc4noWDeXM/Sx5ODXn5DcElESWsKqLsr9vvtmdpRnOWABLixMLlfAgKXKfovVvvrEAd0vCpVThZOY5UqYFsiHvU79fAcdHV7J6XDb/MLRiOvA6fXH0uUIMAHwoooWFiGbvSgKVeIm4E40b/H76WWMXy2ay91usOc0HY1E5Ra+piSjsA5odQeqzwldOFHYCkYPiCn+CxxsD9DoM2b+N0H9CC00+1QNfc3L2KfpD6YkY1pOadC9ZQbnqHEYtCJQybVSeVng==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by DS0PR12MB7801.namprd12.prod.outlook.com (2603:10b6:8:140::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7046.34; Mon, 4 Dec
- 2023 17:30:29 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::60d4:c1e3:e1aa:8f93]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::60d4:c1e3:e1aa:8f93%4]) with mapi id 15.20.7046.033; Mon, 4 Dec 2023
- 17:30:29 +0000
-Date: Mon, 4 Dec 2023 13:30:28 -0400
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Sean Christopherson <seanjc@google.com>
-Cc: Yan Zhao <yan.y.zhao@intel.com>, iommu@lists.linux.dev,
-	kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-	alex.williamson@redhat.com, pbonzini@redhat.com, joro@8bytes.org,
-	will@kernel.org, robin.murphy@arm.com, kevin.tian@intel.com,
-	baolu.lu@linux.intel.com, dwmw2@infradead.org, yi.l.liu@intel.com
-Subject: Re: [RFC PATCH 00/42] Sharing KVM TDP to IOMMU
-Message-ID: <20231204173028.GJ1493156@nvidia.com>
-References: <20231202091211.13376-1-yan.y.zhao@intel.com>
- <ZW4Fx2U80L1PJKlh@google.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZW4Fx2U80L1PJKlh@google.com>
-X-ClientProxiedBy: BLAPR03CA0022.namprd03.prod.outlook.com
- (2603:10b6:208:32b::27) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="BAdqp2C9"
+Received: by mail-pf1-f178.google.com with SMTP id d2e1a72fcca58-6cbe716b511so3612846b3a.3;
+        Mon, 04 Dec 2023 10:07:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1701713230; x=1702318030; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=vnKGL9rVmaXJ0k7UQTGGb8qgGBw3yaFYXulmlj0ClVk=;
+        b=BAdqp2C9jaqTixzb/RqbWj6j+fbXIo9g8Vr1IfcXLOi1ExQcsg6zD6XR3u3v0E9UXi
+         dhKhR91o7S7Fyxu1wHgC6YwfemXBCCiKM9r8yGTQULCTxcHaNlWB7jFzQ5CYLEkKiJdz
+         95tAIObV4J8/GrXsn+zPz/5/3y8ACVBHeCDWFyaibYjrONw9CaRCXfUYTP/pt35KIasG
+         8EpV3FXB4Z8DpYkdQi1cSLd549vrG5X8zVE0uDeONDkrokG2h6XZrJP27Hp08mtLsJw7
+         QU1gYxZj14F8i1GO3tt4gGRPO8ELfHGpqX5BLBtMk11LMwiuLtXZO3TbyHo1JgI4vqk0
+         UaHw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1701713230; x=1702318030;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=vnKGL9rVmaXJ0k7UQTGGb8qgGBw3yaFYXulmlj0ClVk=;
+        b=he5SGYjKVGQARA/PhUYh56u7b9COctHmRVpEvbSz7KK/2uSG0YLAfLxJMrU/nP1ycl
+         edoAUaM+7Ruv9ZrzciK6UuAW085vcISzTbAPCwF8/qKvJEJ9kxLrD9IVSOord/gDwDuz
+         DwvjyxAsz+scA/fDyX1ZgjVKgAQ4y/ozSdhIcVg3txKem0UEO88E9EqAtvOu6Hy/n+Fm
+         nFrlNnpgXUuwbl3MbcnXHzd+PT/OPX5sm8hxip+Ux3m9hR2P+a82q4FTSnxgmWPxmS0h
+         m1TPaqX4RKlVvGlbdbzv3xugS+HKFGeuKO4UKePuG3bXN20/LJ7HV1n0GaDtTixBI+8h
+         EA4Q==
+X-Gm-Message-State: AOJu0YydfZPcS6PgUVsaogLiOEbfd1hnFxP74iScFY6v8cUwwIJwpDi+
+	T8QYBxbgulxu5sCySBUC8XQ=
+X-Google-Smtp-Source: AGHT+IGDIGeeBa7UWPj4E4w2SIGHBjZgGz8oxGqwAWzNb+KD7mpnEvIno4bt3NIHORxil3wMtNwC4w==
+X-Received: by 2002:a05:6a20:1448:b0:18c:374c:6e64 with SMTP id a8-20020a056a20144800b0018c374c6e64mr27716780pzi.36.1701713229690;
+        Mon, 04 Dec 2023 10:07:09 -0800 (PST)
+Received: from localhost ([2620:10d:c090:400::4:27ef])
+        by smtp.gmail.com with ESMTPSA id u2-20020a056a00158200b006cdd507ca2esm7943470pfk.167.2023.12.04.10.07.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Dec 2023 10:07:09 -0800 (PST)
+Sender: Tejun Heo <htejun@gmail.com>
+Date: Mon, 4 Dec 2023 08:07:07 -1000
+From: Tejun Heo <tj@kernel.org>
+To: Naohiro Aota <Naohiro.Aota@wdc.com>
+Cc: Lai Jiangshan <jiangshanlai@gmail.com>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-btrfs@vger.kernel.org" <linux-btrfs@vger.kernel.org>,
+	"ceph-devel@vger.kernel.org" <ceph-devel@vger.kernel.org>,
+	"cgroups@vger.kernel.org" <cgroups@vger.kernel.org>,
+	"coreteam@netfilter.org" <coreteam@netfilter.org>,
+	"dm-devel@lists.linux.dev" <dm-devel@lists.linux.dev>,
+	"dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+	"gfs2@lists.linux.dev" <gfs2@lists.linux.dev>,
+	"intel-gfx@lists.freedesktop.org" <intel-gfx@lists.freedesktop.org>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
+	"linux-bcachefs@vger.kernel.org" <linux-bcachefs@vger.kernel.org>,
+	"linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
+	"linux-cachefs@redhat.com" <linux-cachefs@redhat.com>,
+	"linux-cifs@vger.kernel.org" <linux-cifs@vger.kernel.org>,
+	"linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
+	"linux-erofs@lists.ozlabs.org" <linux-erofs@lists.ozlabs.org>,
+	"linux-f2fs-devel@lists.sourceforge.net" <linux-f2fs-devel@lists.sourceforge.net>,
+	"linux-fscrypt@vger.kernel.org" <linux-fscrypt@vger.kernel.org>,
+	"linux-media@vger.kernel.org" <linux-media@vger.kernel.org>,
+	"linux-mediatek@lists.infradead.org" <linux-mediatek@lists.infradead.org>,
+	"linux-mm@kvack.org" <linux-mm@kvack.org>,
+	"linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
+	"linux-nfs@vger.kernel.org" <linux-nfs@vger.kernel.org>,
+	"linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>,
+	"linux-raid@vger.kernel.org" <linux-raid@vger.kernel.org>,
+	"linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+	"linux-remoteproc@vger.kernel.org" <linux-remoteproc@vger.kernel.org>,
+	"linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
+	"linux-trace-kernel@vger.kernel.org" <linux-trace-kernel@vger.kernel.org>,
+	"linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
+	"linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+	"linux-xfs@vger.kernel.org" <linux-xfs@vger.kernel.org>,
+	"nbd@other.debian.org" <nbd@other.debian.org>,
+	"netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+	"ntb@lists.linux.dev" <ntb@lists.linux.dev>,
+	"open-iscsi@googlegroups.com" <open-iscsi@googlegroups.com>,
+	"oss-drivers@corigine.com" <oss-drivers@corigine.com>,
+	"platform-driver-x86@vger.kernel.org" <platform-driver-x86@vger.kernel.org>,
+	"samba-technical@lists.samba.org" <samba-technical@lists.samba.org>,
+	"target-devel@vger.kernel.org" <target-devel@vger.kernel.org>,
+	"virtualization@lists.linux.dev" <virtualization@lists.linux.dev>,
+	"wireguard@lists.zx2c4.com" <wireguard@lists.zx2c4.com>
+Subject: Re: Performance drop due to alloc_workqueue() misuse and recent
+ change
+Message-ID: <ZW4VS3Z0auYCjg-W@slm.duckdns.org>
+References: <dbu6wiwu3sdhmhikb2w6lns7b27gbobfavhjj57kwi2quafgwl@htjcc5oikcr3>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|DS0PR12MB7801:EE_
-X-MS-Office365-Filtering-Correlation-Id: ef126a39-f212-4e8b-eb6e-08dbf4eeb573
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	kEyTG2DG6OUQ6eJ/8vepvgtrXblJ+uxZ0yURjWJB5CXh6OBnLdZgk6NmCW9pc3jlCtFDo1nrbfSFCSkybZgYWjxzEAFkWwbfL17SwL3xjY53Mu2izwS2fgRAUoBIW3IWdthGO+kiI4OUJ4H/oCZemR/WVibtkWCNhqrMenuImw/GO1Ywfp1RcgWTvOWBKYpc910yIEbthGDVdAvis+iLnLxaHM15maP1fmutWACA3QGSj4Ppcc+6hMxocW84D1mm9J1RyO+JOICkOXHo2kr6k4VOY5Xalea3TS357GPDm0nxIv7YcSPOIkup57cSh5fggmgM+gEjcfaIbQGbUy6b4xs3cI3oDAragDa+bmdfuKxy+e0QMwBWwPpL9aMFQGic4LSphybKhkIgO0ItNKziznW5+57//Qkcj3JpHHew5262nb29NQ1g7K7Ki9Nt0tqch1JTESGz5xJp3iecMDqyZm5l8IAggSIbC9OiZ4xweeWtWdeI/nB7Wn3cyoXk/lN6Rm4ejyKlaXmqCEaBiyhjXsMoJUpwaoiDolMKrBsEuMGQBqp2NGTkftiooVXBXGH4
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366004)(136003)(346002)(39860400002)(396003)(376002)(230922051799003)(186009)(64100799003)(1800799012)(451199024)(66556008)(66476007)(66946007)(316002)(6916009)(478600001)(6486002)(38100700002)(7416002)(5660300002)(36756003)(41300700001)(2906002)(33656002)(86362001)(4326008)(8676002)(8936002)(1076003)(2616005)(83380400001)(26005)(6512007)(6506007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?4mtBC+LyVR3NsbGHNuJRz6AEMrAEPgkSfbSdDs0G0VK2wIC4j52vVTMwIxqM?=
- =?us-ascii?Q?QI5Vml2VkgXK/VYQTXZWIsy2qy4KNpr9FMPVcxHZny0lRlirR3oB+4bnwLw6?=
- =?us-ascii?Q?tvVorqNiMvOY/U/Og0I8MMj3kZPCG5sej+mlCRk5Vdd+9VjK/HlCQnW52UGn?=
- =?us-ascii?Q?UQ1k8kiq6TfBWrwHOFaggxb7y2N8mt8jZ6e4QZfyHg/XjE1cvR2YhEQYHHUd?=
- =?us-ascii?Q?tLaWKmGilbO2QSswDypfRz4FeETqwrS2C2IGiYfEZcBhu2hONiJF08XeIc+H?=
- =?us-ascii?Q?J7/qgM2saGkOV+PIshthKuC0hNdiSUTGUYzOC0GxRAg3ybq9FK+vXWo00o0J?=
- =?us-ascii?Q?/HTt0bt4uKr1UKTk8qy0vx9dkaH0xikak4UvaROvldJ6ZlXG02J1Xm4oButk?=
- =?us-ascii?Q?EN2P2E/npst9EwHQ2wB5kmbhvYa1cPBixXetDYrxmTMTxHYd/w7n/KRi+zoy?=
- =?us-ascii?Q?2cXDqex2+Cln2bAGYpKs1o2Tk1zhxodSNArUzDfnxye+6gmcJ12aAPABGR1e?=
- =?us-ascii?Q?8JyVeU2Dsxa9JVJ/l48Sug85TG6WAHc2MtG1tYnBYhV6F0EjFCKc9sfxnb5X?=
- =?us-ascii?Q?8qYvkBcTepnEwa/TEZK2WeRg6Y88lujRhVYt6mBn4I4ZNdZdET/SnzPDwUDk?=
- =?us-ascii?Q?mexCnw2uVpVVPz12MF8w2Xbv+JHm+8/ku6+j3eLBXRm2Fr8/pNpiCcqHvQiQ?=
- =?us-ascii?Q?nyPqIcabU6GIjQw2GIUllUOKMbhcKS8FZWRHJ+uyugeRT+PbJNf7nSNyawoZ?=
- =?us-ascii?Q?R+dsJeNbOVW5KgFVJaaPgcj8cNd9UOiuTHBbe3ZkgwlxDDT/bggt4lHZ+IFY?=
- =?us-ascii?Q?XiYqLTlLSAYEyfObTyhGc5qKsFRTMRwS5w+eElkOSaloSWOeJDhNy+5shO0z?=
- =?us-ascii?Q?+iM1X6iMJT5U48tAiuyAu6cvBosrols8LgsxVxTdrZWJy2SwJfPKJcuWbs0W?=
- =?us-ascii?Q?iVV7zXIlShh8AC6tjJd37TST6r0hY1cYcSehS/gm7Zr7f9TSSGogvy922GXk?=
- =?us-ascii?Q?hkq1YdeCC9cHdXnnf8vWfmbmwo9mLY7NzR8rW0nVsGE9uQmukmeL19REneXA?=
- =?us-ascii?Q?zHzx2gtpQ05hIjtm/h0GktUCeQ5C0mU9029p7cGkDDyUXbsVJgEkP1B52rmp?=
- =?us-ascii?Q?JvWSpaA/6lrSHnv3omuy0MJs0MWlYHeCJq+GN7lbWxiPw4rtLVD46fbh0xiq?=
- =?us-ascii?Q?RYzPidH8RT7K3h3mwqLthI6680ltQfhpFAJoGgg75b+uwoB09Bi7zH3wIVtb?=
- =?us-ascii?Q?HJzxnjJo2fhv0JNgdb6EwSua3jbPwqjNlMEVarb7WAIp/QqDfvLpyuWt6knz?=
- =?us-ascii?Q?rEzB5kYItErRh6yxC9VWcbU/vjNFi6+KW8NZCVI+WtDWY3FRCMAHUN38d41e?=
- =?us-ascii?Q?HtfxEKRDgFjRTTqvwQLGZlT5FmAarYLKYleJt734Q3ov6ld3wrhFjMKSHxdg?=
- =?us-ascii?Q?CDjHguHTXnh1Z4P32XyfREqWGIi3ATuPhGkdLZwxTVmb1GNaLBFK+raWyy3L?=
- =?us-ascii?Q?aAgLMQ9tfSz5JIXZYNjF0vQEmjOeZ7e9bVEGGZMnBs+D/KsrJyhfnsA06WIx?=
- =?us-ascii?Q?aScHO8Wqi/tW1XwLCEplaz6zJn8QlazWQYjjT9NX?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ef126a39-f212-4e8b-eb6e-08dbf4eeb573
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Dec 2023 17:30:28.8949
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Il8tgf+oO+OsXttnjHkN8e4mSLdxGk8cRVmDy/z1iJinSy6RJJ8vEL9WGky9WANZ
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB7801
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <dbu6wiwu3sdhmhikb2w6lns7b27gbobfavhjj57kwi2quafgwl@htjcc5oikcr3>
 
-On Mon, Dec 04, 2023 at 09:00:55AM -0800, Sean Christopherson wrote:
+Hello,
 
-> There are more approaches beyond having IOMMUFD and KVM be
-> completely separate entities.  E.g. extract the bulk of KVM's "TDP
-> MMU" implementation to common code so that IOMMUFD doesn't need to
-> reinvent the wheel.
+On Mon, Dec 04, 2023 at 04:03:47PM +0000, Naohiro Aota wrote:
+> Recently, commit 636b927eba5b ("workqueue: Make unbound workqueues to use
+> per-cpu pool_workqueues") changed WQ_UNBOUND workqueue's behavior. It
+> changed the meaning of alloc_workqueue()'s max_active from an upper limit
+> imposed per NUMA node to a limit per CPU. As a result, massive number of
+> workers can be running at the same time, especially if the workqueue user
+> thinks the max_active is a global limit.
+> 
+> Actually, it is already written it is per-CPU limit in the documentation
+> before the commit. However, several callers seem to misuse max_active,
+> maybe thinking it is a global limit. It is an unexpected behavior change
+> for them.
 
-We've pretty much done this already, it is called "hmm" and it is what
-the IO world uses. Merging/splitting huge page is just something that
-needs some coding in the page table code, that people want for other
-reasons anyhow.
+Right, and the behavior has been like that for a very long time and there
+was no other way to achieve reasonable level of concurrency, so the current
+situation is expected.
 
-> - Subjects IOMMUFD to all of KVM's historical baggage, e.g. the memslot deletion
->   mess, the truly nasty MTRR emulation (which I still hope to delete), the NX
->   hugepage mitigation, etc.
+> For example, these callers set max_active = num_online_cpus(), which is a
+> suspicious limit applying to per-CPU. This config means we can have nr_cpu
+> * nr_cpu active tasks working at the same time.
 
-Does it? I think that just remains isolated in kvm. The output from
-KVM is only a radix table top pointer, it is up to KVM how to manage
-it still.
+Yeah, that sounds like a good indicator.
 
-> I'm not convinced that memory consumption is all that interesting.  If a VM is
-> mapping the majority of memory into a device, then odds are good that the guest
-> is backed with at least 2MiB page, if not 1GiB pages, at which point the memory
-> overhead for pages tables is quite small, especially relative to the total amount
-> of memory overheads for such systems.
+> fs/f2fs/data.c: sbi->post_read_wq = alloc_workqueue("f2fs_post_read_wq",
+> fs/f2fs/data.c-                                          WQ_UNBOUND | WQ_HIGHPRI,
+> fs/f2fs/data.c-                                          num_online_cpus());
+> 
+> fs/crypto/crypto.c:     fscrypt_read_workqueue = alloc_workqueue("fscrypt_read_queue",
+> fs/crypto/crypto.c-                                              WQ_UNBOUND | WQ_HIGHPRI,
+> fs/crypto/crypto.c-                                              num_online_cpus());
+> 
+> fs/verity/verify.c:     fsverity_read_workqueue = alloc_workqueue("fsverity_read_queue",
+> fs/verity/verify.c-                                               WQ_HIGHPRI,
+> fs/verity/verify.c-                                               num_online_cpus());
+> 
+> drivers/crypto/hisilicon/qm.c:  qm->wq = alloc_workqueue("%s", WQ_HIGHPRI | WQ_MEM_RECLAIM |
+> drivers/crypto/hisilicon/qm.c-                           WQ_UNBOUND, num_online_cpus(),
+> drivers/crypto/hisilicon/qm.c-                           pci_name(qm->pdev));
+> 
+> block/blk-crypto-fallback.c:    blk_crypto_wq = alloc_workqueue("blk_crypto_wq",
+> block/blk-crypto-fallback.c-                                    WQ_UNBOUND | WQ_HIGHPRI |
+> block/blk-crypto-fallback.c-                                    WQ_MEM_RECLAIM, num_online_cpus());
+> 
+> drivers/md/dm-crypt.c:          cc->crypt_queue = alloc_workqueue("kcryptd/%s",
+> drivers/md/dm-crypt.c-                                            WQ_CPU_INTENSIVE | WQ_MEM_RECLAIM | WQ_UNBOUND,
+> drivers/md/dm-crypt.c-                                            num_online_cpus(), devname);
 
-AFAIK the main argument is performance. It is similar to why we want
-to do IOMMU SVA with MM page table sharing.
+Most of these work items are CPU bound but not completley so. e.g.
+kcrypt_crypt_write_continue() does wait_for_completion(), so setting
+max_active to 1 likely isn't what they want either. They mostly want some
+reasonable system-wide concurrency limit w.r.t. the CPU count while keeping
+some level of flexibility in terms of task placement.
 
-If IOMMU mirrors/shadows/copies a page table using something like HMM
-techniques then the invalidations will mark ranges of IOVA as
-non-present and faults will occur to trigger hmm_range_fault to do the
-shadowing.
+The previous max_active wasn't great for this because its meaning changed
+depending on the number of nodes. Now, the meaning doesn't change but it's
+not really useful for the above purpose. It's only useful for avoiding
+melting the system completely.
 
-This means that pretty much all IO will always encounter a non-present
-fault, certainly at the start and maybe worse while ongoing.
+One way to go about it is to declare that concurrency level management for
+unbound workqueue is on users but that seems not ideal given many use cases
+would want it anyway.
 
-On the other hand, if we share the exact page table then natural CPU
-touches will usually make the page present before an IO happens in
-almost all cases and we don't have to take the horribly expensive IO
-page fault at all.
+Let me think it over but I think the right way to go about it is going the
+other direction - ie. making max_active apply to the whole system regardless
+of the number of nodes / ccx's / whatever.
 
-We were not able to make bi-dir notifiers with with the CPU mm, I'm
-not sure that is "relatively easy" :(
+> Furthermore, the change affects performance in a certain case.
+> 
+> Btrfs creates several WQ_UNBOUND workqueues with a default max_active =
+> min(NRCPUS + 2, 8). As my machine has 96 CPUs with NUMA disabled, this
+> max_active config allows running over 700 active works. Before the commit,
+> it is limited to 8 if NUMA is disabled or limited to 16 if NUMA nodes is 2.
+> 
+> I reverted the workqueue code back to before the commit, and I ran the
+> following fio command on RAID0 btrfs on 6 SSDs.
+> 
+> fio --group_reporting --eta=always --eta-interval=30s --eta-newline=30s \
+>     --rw=write --fallocate=none \
+>     --direct=1 --ioengine=libaio --iodepth=32 \
+>     --filesize=100G \
+>     --blocksize=64k \
+>     --time_based --runtime=300s \
+>     --end_fsync=1 \
+>     --directory=${MNT} \
+>     --name=writer --numjobs=32
+> 
+> By changing workqueue's max_active, the result varies.
+> 
+> - wq max_active=8   (intended limit by btrfs?)
+>   WRITE: bw=2495MiB/s (2616MB/s), 2495MiB/s-2495MiB/s (2616MB/s-2616MB/s), io=753GiB (808GB), run=308953-308953msec
+> - wq max_active=16  (actual limit on 2 NUMA nodes setup)
+>   WRITE: bw=1736MiB/s (1820MB/s), 1736MiB/s-1736MiB/s (1820MB/s-1820MB/s), io=670GiB (720GB), run=395532-395532msec
+> - wq max_active=768 (simulating current limit)
+>   WRITE: bw=1276MiB/s (1338MB/s), 1276MiB/s-1276MiB/s (1338MB/s-1338MB/s), io=375GiB (403GB), run=300984-300984msec
+> 
+> The current performance is slower than the previous limit (max_active=16)
+> by 27%, or it is 50% slower than the intended limit.  The performance drop
+> might be due to contention of the btrfs-endio-write works. There are over
+> 700 kworker instances were created and 100 works are on the 'D' state
+> competing for a lock.
+> 
+> More specifically, I tested the same workload on the commit.
+> 
+> - At commit 636b927eba5b ("workqueue: Make unbound workqueues to use per-cpu pool_workqueues")
+>   WRITE: bw=1191MiB/s (1249MB/s), 1191MiB/s-1191MiB/s (1249MB/s-1249MB/s), io=350GiB (376GB), run=300714-300714msec
+> - At the previous commit = 4cbfd3de73 ("workqueue: Call wq_update_unbound_numa() on all CPUs in NUMA node on CPU hotplug")
+>   WRITE: bw=1747MiB/s (1832MB/s), 1747MiB/s-1747MiB/s (1832MB/s-1832MB/s), io=748GiB (803GB), run=438134-438134msec
+> 
+> So, it is -31.8% performance down with the commit.
+> 
+> In summary, we misuse max_active, considering it is a global limit. And,
+> the recent commit introduced a huge performance drop in some cases.  We
+> need to review alloc_workqueue() usage to check if its max_active setting
+> is proper or not.
 
-Jason
+Thanks a lot for the report. I think it's a lot more reasonable to assume
+that max_active is global for unbound workqueues. The current workqueue
+behavior is not very intuitive or useful. I'll try to find something more
+reasonable. Thanks for the report and analysis. Much appreciated.
+
+Thanks.
+
+-- 
+tejun
