@@ -1,125 +1,87 @@
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2070.outbound.protection.outlook.com [40.107.244.70])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f175.google.com (mail-qt1-f175.google.com [209.85.160.175])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F8A828DD7
-	for <iommu@lists.linux.dev>; Mon,  4 Dec 2023 15:09:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1AB9328DC7
+	for <iommu@lists.linux.dev>; Mon,  4 Dec 2023 15:32:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="RQOBz0ev"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=IyQxsBnXMKiLzELL8iPbSeiGQ6JGLeI/H4LhQE1U2Oj1OPaIgtnlh8qpXXHYUcrJcfStyveA9s1jIW1X+TidQ9KiCJX9zBd3qOAxhy/3CeBIhvumslm2bgG16OuzJPE6pf5luPOHH8rLCngRqOpFZldQwmT5aLPFvY6jtD0NdCB6ueNg60RFSNVhJRjVi1z+pGb3ibnWTaSC8L3QENX8AxdXgufxEiN80by8b1GflTrgLGTEX7fmjmecry6PjeSpWWe2TPomhYrYuPULjiGWzw8jUYrY79YvZRB8n7tHCrsNvYbceglGtMqkODCxMP2YMhaAvoj5W61vOgdUEa7Z0w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Nxac5h4CRgVuVmgAxO2EgTP8skxMtasLUbyOZ6SDHbA=;
- b=Hszx30Quip6RnxzJlMCTcbU1L3lFPg+BYwrxrOgRp3n5rwlE+lMDu8eH9oimmG+t9jqmp039K3FcYEEpGUv9KJqxpTMoUKXPHoN3CApmZg1/RXoXPtxPiK5YUbSTuhGwoQ7OAcq4MqRFKfp5zYr6/4uI19eq+WXpXkueLGmr1BfPE8GbzL2OgH773R4GvoyKASUBQckqazCpR7T2qAFGRoM0rvmYWIr07DzN86hOQeiIvaQusdqksR6V/CkmMepIXBzhdoQdmRmAXZzXA0oX1NDwclSaBIWUc5mp5tWwNf4IZk/x3GVqTirST9VPIPvO9VTIr3JPBccZEy46tmqb9Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Nxac5h4CRgVuVmgAxO2EgTP8skxMtasLUbyOZ6SDHbA=;
- b=RQOBz0ev79+cHcb4QbGBFKEb+JSn/kExjOYzpexrn0TUSu/B5R+Ct6R0iaAEWyYXLVqpR7kN6oCnOuWtX1cG9nDpoLU9JVAR+U7YzW7FihodF3D4hW53QjVFcXoipyLFTNIG3IXLKlRsnREhlY47VO37kP7k2CduZYPcg2auY3hJrHlwVr1zGpRS6JA9DCE6ecMvkOAEwaMKyNw7O2NH8lsK9TeHIFFDbZIvRkgiTGEKci/FaCZ4UrTOxl9QEbc0Wt6xzozg2oE4kJpqtHJIWaoJe2k+N16Fm+iwp5mKPqBBcjXEQZWuj2VH71lj8cNI0tY7PrmTcRpPQSLai4KWlg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by PH7PR12MB7113.namprd12.prod.outlook.com (2603:10b6:510:1ec::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7046.33; Mon, 4 Dec
- 2023 15:09:46 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::60d4:c1e3:e1aa:8f93]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::60d4:c1e3:e1aa:8f93%4]) with mapi id 15.20.7046.033; Mon, 4 Dec 2023
- 15:09:46 +0000
-Date: Mon, 4 Dec 2023 11:09:45 -0400
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Yan Zhao <yan.y.zhao@intel.com>
-Cc: iommu@lists.linux.dev, kvm@vger.kernel.org,
-	linux-kernel@vger.kernel.org, alex.williamson@redhat.com,
-	pbonzini@redhat.com, seanjc@google.com, joro@8bytes.org,
-	will@kernel.org, robin.murphy@arm.com, kevin.tian@intel.com,
-	baolu.lu@linux.intel.com, dwmw2@infradead.org, yi.l.liu@intel.com
-Subject: Re: [RFC PATCH 11/42] iommu: Add new domain op cache_invalidate_kvm
-Message-ID: <20231204150945.GF1493156@nvidia.com>
-References: <20231202091211.13376-1-yan.y.zhao@intel.com>
- <20231202092041.14084-1-yan.y.zhao@intel.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20231202092041.14084-1-yan.y.zhao@intel.com>
-X-ClientProxiedBy: MN2PR14CA0026.namprd14.prod.outlook.com
- (2603:10b6:208:23e::31) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="Rqy0ykEG"
+Received: by mail-qt1-f175.google.com with SMTP id d75a77b69052e-42542b1ed5dso22134061cf.1
+        for <iommu@lists.linux.dev>; Mon, 04 Dec 2023 07:32:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1701703931; x=1702308731; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=QNErOhF1qMkgPNVpHAnyVSyCwAUX/1YSBmZDFvsm8OU=;
+        b=Rqy0ykEGKFeI2Fw9eA6XEKSonOOqUqi+Su7BHbj+isLFvuS3WXcMZ75cbiDHV/Xb0p
+         AOBCPWGrPVFAFSVeYoqAXGUNacSqYQgas5uH7xu09PhqmT1qMXvG7z5zSfCIE7bGYG0o
+         WRNUetn9YjtbVMWPG9jpYUl/2j7eX9u1v0RhmbCviblt5CYl/DLgtY/CJDJmlg91csGw
+         kmpomDdOVHkAO4PuPMyxfNi2VPcRwqUHqfoTVS1yX+iHeiqnX9JFn8Gc3uPJglkVZ+Ab
+         2RNfxGCRuEM1UgWao2wZxiwjA1y8g6xmSWhiKquxtHw6zcuDVTt4coXQHRsYahZk75HM
+         hItg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1701703931; x=1702308731;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=QNErOhF1qMkgPNVpHAnyVSyCwAUX/1YSBmZDFvsm8OU=;
+        b=r6x0SsOBqq7jlJ6HliZEeE/BJYK09im/QIhzF0ZVhLzRKhQe0odjrMYZoKNyQcjk7h
+         ZpRoaSV5oC2xHyFwKpbwbuZgEcJe1vMGEetkE9pThqlNbMQK82kWdflAjl1aECe8VyPj
+         qe2oO9pQBQesYvuUR86ln9sPmaPR5Ofk9PUjovE5HoTOvMufMdHfSH/MEU1Gip+SSZkQ
+         J7cSv2Vn8Cb74QGDOVlsFdT4jTmvtqEworixARimEzq1kqvqSwOpDDmsW471kPkg3Lkm
+         5q49blwN2rc/lp8eLmibLcVGw7X2BsVaytdE2H7Grl1AZ7FXei68Y22gxUtIH7tvr5c9
+         KSJQ==
+X-Gm-Message-State: AOJu0Yw8CG0wHMIgWGlmmNSzwR5Xl5Ji40ZoUkEDZJh6K4VnUiPdlH65
+	MWOGGcgKjgKfKCTnmnGFe1FxGg==
+X-Google-Smtp-Source: AGHT+IEnloh+umt8D2CaTqj/3erJ8LZq5gKurAnArFiVByvdfAGoIgyiu/VWyqqDTZ8kj1dh4ApCGQ==
+X-Received: by 2002:a05:622a:1c8:b0:425:4043:96e2 with SMTP id t8-20020a05622a01c800b00425404396e2mr6614490qtw.111.1701703930810;
+        Mon, 04 Dec 2023 07:32:10 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-134-23-187.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.134.23.187])
+        by smtp.gmail.com with ESMTPSA id df15-20020a05622a0ecf00b00423da75b0f4sm4371928qtb.71.2023.12.04.07.32.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Dec 2023 07:32:10 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1rAAvZ-00B2r2-ML;
+	Mon, 04 Dec 2023 11:32:09 -0400
+Date: Mon, 4 Dec 2023 11:32:09 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Joel Granados <j.granados@samsung.com>
+Cc: Lu Baolu <baolu.lu@linux.intel.com>, Kevin Tian <kevin.tian@intel.com>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>, iommu@lists.linux.dev,
+	linux-kselftest@vger.kernel.org,
+	virtualization@lists.linux-foundation.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 0/6] IOMMUFD: Deliver IO page faults to user space
+Message-ID: <20231204153209.GN1489931@ziepe.ca>
+References: <20231026024930.382898-1-baolu.lu@linux.intel.com>
+ <CGME20231204150747eucas1p2365e92a7ac33ba99b801d7c800acaf6a@eucas1p2.samsung.com>
+ <20231204150744.db3hfpq4v55cuavn@localhost>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|PH7PR12MB7113:EE_
-X-MS-Office365-Filtering-Correlation-Id: 5de207a8-7848-438c-24da-08dbf4db0d6c
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	7D3+Mtd2VawevYtxgfNoCL6tAIwenzwTh0t/RS72BNKBBuVk4iTznhi0/dY7srEP2eRX5CM21GgtonZDSejHluLwWoOAmtEn0owCYygffBNNBqhLUbao5y3fAEEBbM736p0pAYL6NCq7rukYJdeY0SGeI0RZNbuOGN0jAFnth/l75DP01pHFgWH9fb2eTwKUDejDEVKIw4xhxuXEZBc2LGr+K0VzmhoQEbH72E9K3MoTrHjqjYJlIteI3zN8CajQ9ubfrbNi7LfaOqZQ50DavUQc1c9LX7JSdbLETWy1fw22QwaHeOvCrdCRjZtjLL0RXuPHhBaS2NSKAz0zKryd06MmkkQQaPykTC0iBEz5yCnTml8hzIsENyo9k5fgRFMIW9gADuqR+fWcOdz5vZw/W28mzlzUNx9jtecoDrFgmIyN4MQHuPI5NGQeC8F+ydh6uge5fmmd6qHG8PnaVxIjlYkLwp3mTvo6RpJ1avNSLVfYHO6wjuuoNVMzYeksHHaGJdyEAuD0ywJnokLZP4CwhXLCbP2/VT5DrQu+ZTW+cN0t6Iv0HRbfx841oHz80LmW
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(346002)(376002)(396003)(366004)(39860400002)(136003)(230922051799003)(186009)(451199024)(64100799003)(1800799012)(38100700002)(33656002)(4744005)(5660300002)(2906002)(7416002)(83380400001)(6512007)(26005)(6506007)(1076003)(2616005)(478600001)(6486002)(36756003)(41300700001)(66946007)(66556008)(6916009)(4326008)(316002)(8936002)(66476007)(86362001)(8676002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?4MRwM/DtMtWT0c4vh7pNitcXu7Pdl9JnIJl7e6Dl047h0WCc5JEeSqe0PaxF?=
- =?us-ascii?Q?jGrG04IeomlNA/UEDTczlKHKPiqEyhYjuF0lrrJAucaQ9vGyC5Tovv4WzZR4?=
- =?us-ascii?Q?sGpDa2VjD9H4tWMPJI9bTBrmrxrbDkzwagxcggrq3II3m6CrxH/QwUsyA1JN?=
- =?us-ascii?Q?zkZHNySyHo5BC7ws6hUuId5ONJELAdpdcJkyylFuruYB7kRRzM6LOffy+6/5?=
- =?us-ascii?Q?fdz9RmWUnCC/9Me6/R2RkUjwe5ONyeIC/t5VPP8iq4DbmAK9TobnW1mj0sB5?=
- =?us-ascii?Q?mGRB+NDEe9VTXajvw26XwUNFjllVh7M/RHGwYjafspNZGriej9qbWhFdZu96?=
- =?us-ascii?Q?boYj+i50cNdl4rsDn1LqoX5a1GVrwI7pQydzJKorIv2Dx0HmJVGSNOwbh4zt?=
- =?us-ascii?Q?8XkDYtNidDYkoZuVe0cYJXrxU2zO5AvcFr/f880V6H6QEOJutXcIWGdJv5K2?=
- =?us-ascii?Q?fwbsRp9hJR3Dc0gdTIRWO0Hgai7RrUdh4eWlzhOhWnlKbhdJePLk2+xIaokL?=
- =?us-ascii?Q?grDZk8+S9oFUZ3KO5vNsusqkhi69gHJmSbpP7DORA7p9MEUOURSB6rHqGfPL?=
- =?us-ascii?Q?RDaUV7T7W7FDDQzQMf5ZtIANBoKQoAUOO8ZE4QEDWHMWc8cTpl4odLdfeL/L?=
- =?us-ascii?Q?6311/umVA2qx8CwgSB+1jq0a/sAo/ddBtVawVNFmFgQAnvZfpvoTjwFuURtq?=
- =?us-ascii?Q?diyQmW8HgdMY+Z+sTvfbkOtxbHYa/OLh4VZUO0T8rZY6Q/70lY3ViNbdIr6X?=
- =?us-ascii?Q?uqsTJMJZdOrcdzsz/LYYoYSigtprtj0Ky9EmaXuAKKowo/nCT3zZwjW7oRRL?=
- =?us-ascii?Q?6FU0Pql3xi/w7v0hGVA+v8V6McKaxSsEu2kLH6ORqwRXP7a2YocPGpdpJjuI?=
- =?us-ascii?Q?W+2jfjjlRp+/DhXP2jCvpkufO5StAImLpcY3AJ0uCw8+q5KbVyzbe5cY3KCR?=
- =?us-ascii?Q?IbyeLbbC2a3zep90IUMuysgyvATakF7QVt0aM8sbFNt9ZnPn59GA9nbby/Ms?=
- =?us-ascii?Q?RByXhOAjtbZZHQM5whZluyQa6VgYr0/AtXCNxE5WnGFujR9pVxtoAscEHC7a?=
- =?us-ascii?Q?fFS42Xsz8lHm3IMoMdkwBMgor7se+MQdD2e/iYBAZH79CC3d3sP5nOIHpHdI?=
- =?us-ascii?Q?65vb8yEGmO6ptA8pKaPAVt+vmoMBWfmdlsXJZb/3cDkkTVaGPi/jfQ+Dpe/r?=
- =?us-ascii?Q?SlJs7xuMAhoL06tDx/b8t2AR6PDcCKq3pO0j+CaeA87hgbIL3TCounmuzRM/?=
- =?us-ascii?Q?cl3BrrFQ/zQsfQqlZALhYT3TK51rfagFsqUPfyJDJNnWQfSzBzE1icVis5Mm?=
- =?us-ascii?Q?VdWgfBj1bTC7h+n7LnVzmZMIW+ce7mq7a/8POjmSpy7tgOYRZ79rYf5D+tWh?=
- =?us-ascii?Q?6SVXHbMXcblF8CPlsePdHAjFEf7lGNU3u4BqZzHcGSa51MJU7SJ4LL3o/dkX?=
- =?us-ascii?Q?gs6MIQn7Kh1e2PuADWUseSVBwtgxLA1ro4MTVxKZb0pVbnDg/+5lN8jNfQqZ?=
- =?us-ascii?Q?Un+espzRQ533p7xnVrU4YhoxaMqCqB2Oid07IH01lkBN/2Xqormi917inyyR?=
- =?us-ascii?Q?F9uazMRjDwsW3DZr5DvpNOpdB3qqubFelPI1cQln?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5de207a8-7848-438c-24da-08dbf4db0d6c
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Dec 2023 15:09:46.4544
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: g8ttZteJsigb0HdONx/WStg/sR9Sx556zA/z6s/iTDPCLf51ZbWOdE3umsF0PYR2
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB7113
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20231204150744.db3hfpq4v55cuavn@localhost>
 
-On Sat, Dec 02, 2023 at 05:20:41PM +0800, Yan Zhao wrote:
-> On KVM invalidates mappings that are shared to IOMMU stage 2 paging
-> structures, IOMMU driver needs to invalidate hardware TLBs accordingly.
-> 
-> The new op cache_invalidate_kvm is called from IOMMUFD to invalidate
-> hardware TLBs upon receiving invalidation notifications from KVM.
+On Mon, Dec 04, 2023 at 04:07:44PM +0100, Joel Granados wrote:
+> On Thu, Oct 26, 2023 at 10:49:24AM +0800, Lu Baolu wrote:
+> > Hi folks,
+> > 
+> > This series implements the functionality of delivering IO page faults to
+> > user space through the IOMMUFD framework for nested translation. Nested
+> Does this mean the IOPF_CAPABLE HWPT needs to be parented by a HWPT
+> created with IOMMU_HWPT_ALLOC_NEST_PARENT set?
 
-Why?
-
-SVA hooks the invalidation directly to the mm, shouldn't KVM also hook
-the invalidation directly from the kvm? Why do we need to call a chain
-of function pointers? iommufd isn't adding any value in the chain
-here.
+I would expect no. Both a nested and un-nested configuration should
+work.
 
 Jason
