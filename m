@@ -1,51 +1,51 @@
-Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
+Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D6F6B171B8
-	for <iommu@lists.linux.dev>; Mon,  4 Dec 2023 12:56:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 26DDA171B8
+	for <iommu@lists.linux.dev>; Mon,  4 Dec 2023 12:57:06 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="MSkmp1gp"
-Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-40c0e7b8a9bso4460655e9.3
-        for <iommu@lists.linux.dev>; Mon, 04 Dec 2023 04:56:59 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="p3AcFm5h"
+Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-40c09b021daso13514905e9.0
+        for <iommu@lists.linux.dev>; Mon, 04 Dec 2023 04:57:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1701694618; x=1702299418; darn=lists.linux.dev;
+        d=linaro.org; s=google; t=1701694625; x=1702299425; darn=lists.linux.dev;
         h=content-transfer-encoding:in-reply-to:organization:autocrypt
          :references:cc:to:content-language:subject:reply-to:from:user-agent
          :mime-version:date:message-id:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=d+q9PsfDSbiTCX4sRk2gAmeG6TMjtVXB3TsNuwU3s2M=;
-        b=MSkmp1gpVova1rYl6oMXAxrLY4SVbBRodXhpqnER0iwYzeWIWldpBX/aNmDbnlqf7e
-         8HBdj11C5WN3UQC0AVsbQe3g0uAtOEprIS6uaeMkZL0wFrg35xX1J7Vtvzpm5ywLfmym
-         fEnIZ1HYS84nZ8KQlj93K3XRUUkg1pc4Bj0VGkH8C7aJlq0IzFekjehSH+204fbZ912q
-         3/PYYAIBEzjm2SeOkSiXi/ynwPolTABfOubzxfgcrUt8y5kct5qwGfzeB54hfGQX/E+C
-         OeBZehUqmxbDJ7s3R76WDkfSz1ZW0haloFx5F298kMATsM72mSjHF1p1Md0EipfCoaPk
-         I3GA==
+        bh=OQxUoSlgKQDc8MMwqLTcF6hSga+T/gfF/ZomSBCTcmI=;
+        b=p3AcFm5hzWfZ0DAB5g2VNkV73Ld/MbSUnHZTnAI60zX4eQFuNsrroRA7+wJkVo0KXS
+         pNoZgMyHTckS3QALO6FOJeG0FRRloM3g68ArpAF1wGEsX9PEila5TRRqtLEkalitPi4q
+         6m8uslM+dJxRZ6tKs6vzSmokz0BkH2v3PgeolEv/iH1QAp+oJU5y/d5Mlw6ZE66dmVlE
+         2JPWpaeHuZPhcxg/Wzs372HpguNytPZfUwJkGHa2oqiuLztM2sjyX9a3Pryg5hWxszE1
+         3OSed7YkTaOoZEeR7YV4ZsoBFvyE7VVzhKeaWh/hvksfYyr1v9WUpDQyBUFde+ww3tDr
+         uSQA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701694618; x=1702299418;
+        d=1e100.net; s=20230601; t=1701694625; x=1702299425;
         h=content-transfer-encoding:in-reply-to:organization:autocrypt
          :references:cc:to:content-language:subject:reply-to:from:user-agent
          :mime-version:date:message-id:x-gm-message-state:from:to:cc:subject
          :date:message-id:reply-to;
-        bh=d+q9PsfDSbiTCX4sRk2gAmeG6TMjtVXB3TsNuwU3s2M=;
-        b=EXIjBWidQOU7GkQ9UJVtzE6HIaaYZv2BgMglSxeD/gvPuqF3OZ1LFYpDzrM17m49dn
-         +o3gJ988AunPku3Wl6rVBljUftY+nBhOov5RVx088GHkQuy9uN8tBf+E+mntCruZUIiL
-         eWzLdVQpFhVAA7LXjhx4hSkeYz9wihqALMu1AfULT39Nd8MQWibGmRgqvn6+ufymM9ia
-         6BrbPcJFzN6T1pczBHinkKvu/8kixAeKQ4cyLYfsOarVLk2vfYb5Q/Wqs6mxj7liV163
-         BTk3PDAUVKwxgSBg5oDKDBoOeeFMdJpx2Gg5cYK98gH8iQqMQd0tQSBz8E6Ph0FJpo9Q
-         0piQ==
-X-Gm-Message-State: AOJu0YwAlI3d52meLGnU5CsOv94heFhKGPQHrHyrOTYAzA2dbrvGGUw7
-	IX+tbBSbh0P4k/UC9vhv73SY1g==
-X-Google-Smtp-Source: AGHT+IFJLWGbQaVwO4b9GwX7Vw8hCjkfJlTSLbKMOiI//kogOkjAYBUDbjwRRBgpR+k3ipTX8EbuNA==
-X-Received: by 2002:a05:600c:11d2:b0:409:19a0:d247 with SMTP id b18-20020a05600c11d200b0040919a0d247mr2866954wmi.18.1701694618080;
-        Mon, 04 Dec 2023 04:56:58 -0800 (PST)
+        bh=OQxUoSlgKQDc8MMwqLTcF6hSga+T/gfF/ZomSBCTcmI=;
+        b=gD4FprCqJgGuaJlgyqVCowLGs0z99/89SrKgXP/ev7c/Cktvpf/Xm+3qnCYcXV/zcp
+         5WHZ4+U2fshpNzxXzGmWkr71ZMCns64VraAA+7bZamri9XnOcUTc24+gYDDuI+7ZAzKt
+         nCSdbUWo1+XTm7OZBLIuY+zIg37bZe+q2tts/jIinPvKLsl7tNm3Hwt6KmlkjGo6TPma
+         7ERNa108cvKLT/d/CBHkC7DyTaH0WNpMqGUvTVARta8NTIK1QmXECPDLI/ULJz9n9g8y
+         WbQkyJ4eIfwtTcMoXdARlWjqO8PCO42aOo37hDrJa3O/xGQzrkTtPGBvuW/eMxLO990/
+         JtVg==
+X-Gm-Message-State: AOJu0YyQOW946F8gdpTkVa4wgqlGu2tqkgsndt7yKJFdCIUY70KqUTOX
+	BuXGcGIs96tlQdWm5gyMNV+o2w==
+X-Google-Smtp-Source: AGHT+IGWMvIc+OEdNJr1CsIP8UbVai4BWUfMDlunsOUJC+LgT5h4NJ8q3+IWPo/TPzxR+lv+Bs+jEg==
+X-Received: by 2002:a05:600c:4588:b0:40b:5e21:bdb5 with SMTP id r8-20020a05600c458800b0040b5e21bdb5mr2303118wmo.68.1701694625398;
+        Mon, 04 Dec 2023 04:57:05 -0800 (PST)
 Received: from ?IPV6:2a01:e0a:982:cbb0:58:12b5:777b:9d17? ([2a01:e0a:982:cbb0:58:12b5:777b:9d17])
-        by smtp.gmail.com with ESMTPSA id n16-20020a05600c501000b00407b93d8085sm18677041wmr.27.2023.12.04.04.56.56
+        by smtp.gmail.com with ESMTPSA id n16-20020a05600c501000b00407b93d8085sm18677041wmr.27.2023.12.04.04.57.03
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 04 Dec 2023 04:56:57 -0800 (PST)
-Message-ID: <771bdf58-31ac-48b7-8b49-3034426634da@linaro.org>
-Date: Mon, 4 Dec 2023 13:56:54 +0100
+        Mon, 04 Dec 2023 04:57:04 -0800 (PST)
+Message-ID: <b52212f4-39a9-474c-87ea-72f6d08a8388@linaro.org>
+Date: Mon, 4 Dec 2023 13:57:03 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -55,7 +55,7 @@ MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
 From: Neil Armstrong <neil.armstrong@linaro.org>
 Reply-To: neil.armstrong@linaro.org
-Subject: Re: [PATCH v2 4/6] arm64: dts: qcom: sm8550-qrd: Enable the A740 GPU
+Subject: Re: [PATCH v2 3/6] arm64: dts: qcom: sm8550: Add GPU nodes
 Content-Language: en-US, fr
 To: Konrad Dybcio <konrad.dybcio@linaro.org>, Will Deacon <will@kernel.org>,
  Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
@@ -69,7 +69,7 @@ Cc: Marijn Suijten <marijn.suijten@somainline.org>,
  devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
  linux-arm-msm@vger.kernel.org
 References: <20231127-topic-a7xx_dt-v2-0-2a437588e563@linaro.org>
- <20231127-topic-a7xx_dt-v2-4-2a437588e563@linaro.org>
+ <20231127-topic-a7xx_dt-v2-3-2a437588e563@linaro.org>
 Autocrypt: addr=neil.armstrong@linaro.org; keydata=
  xsBNBE1ZBs8BCAD78xVLsXPwV/2qQx2FaO/7mhWL0Qodw8UcQJnkrWmgTFRobtTWxuRx8WWP
  GTjuhvbleoQ5Cxjr+v+1ARGCH46MxFP5DwauzPekwJUD5QKZlaw/bURTLmS2id5wWi3lqVH4
@@ -95,38 +95,202 @@ Autocrypt: addr=neil.armstrong@linaro.org; keydata=
  4zcsPWvwnXgfe5tk680fEKZVwOZKIEuJC3v+/yZpQzDvGYJvbyix0lHnrCzq43WefRHI5XTT
  QbM0WUIBIcGmq38+OgUsMYu4NzLu7uZFAcmp6h8g
 Organization: Linaro Developer Services
-In-Reply-To: <20231127-topic-a7xx_dt-v2-4-2a437588e563@linaro.org>
+In-Reply-To: <20231127-topic-a7xx_dt-v2-3-2a437588e563@linaro.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 04/12/2023 13:55, Konrad Dybcio wrote:
-> Enable the GPU and provide a path for the ZAP blob.
+> Add the required nodes to support the A740 GPU.
 > 
-> Reviewed-by: Neil Armstrong <neil.armstrong@linaro.org>
 > Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
 > ---
->   arch/arm64/boot/dts/qcom/sm8550-qrd.dts | 8 ++++++++
->   1 file changed, 8 insertions(+)
+>   arch/arm64/boot/dts/qcom/sm8550.dtsi | 166 +++++++++++++++++++++++++++++++++++
+>   1 file changed, 166 insertions(+)
 > 
-> diff --git a/arch/arm64/boot/dts/qcom/sm8550-qrd.dts b/arch/arm64/boot/dts/qcom/sm8550-qrd.dts
-> index eef811def39b..9fe51d308675 100644
-> --- a/arch/arm64/boot/dts/qcom/sm8550-qrd.dts
-> +++ b/arch/arm64/boot/dts/qcom/sm8550-qrd.dts
-> @@ -596,6 +596,14 @@ &gcc {
->   		 <&usb_dp_qmpphy QMP_USB43DP_USB3_PIPE_CLK>;
->   };
+> diff --git a/arch/arm64/boot/dts/qcom/sm8550.dtsi b/arch/arm64/boot/dts/qcom/sm8550.dtsi
+> index 7bafb3d88d69..8f59085c804d 100644
+> --- a/arch/arm64/boot/dts/qcom/sm8550.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/sm8550.dtsi
+> @@ -1984,6 +1984,128 @@ tcsr: clock-controller@1fc0000 {
+>   			#reset-cells = <1>;
+>   		};
 >   
-> +&gpu {
-> +	status = "okay";
+> +		gpu: gpu@3d00000 {
+> +			compatible = "qcom,adreno-43050a01", "qcom,adreno";
+> +			reg = <0x0 0x03d00000 0x0 0x40000>,
+> +			      <0x0 0x03d9e000 0x0 0x1000>,
+> +			      <0x0 0x03d61000 0x0 0x800>;
+> +			reg-names = "kgsl_3d0_reg_memory",
+> +				    "cx_mem",
+> +				    "cx_dbgc";
 > +
-> +	zap-shader {
-> +		firmware-name = "qcom/sm8550/a740_zap.mbn";
-> +	};
-> +};
+> +			interrupts = <GIC_SPI 300 IRQ_TYPE_LEVEL_HIGH>;
 > +
->   &lpass_tlmm {
->   	spkr_1_sd_n_active: spkr-1-sd-n-active-state {
->   		pins = "gpio17";
+> +			iommus = <&adreno_smmu 0 0x0>,
+> +				 <&adreno_smmu 1 0x0>;
+> +
+> +			operating-points-v2 = <&gpu_opp_table>;
+> +
+> +			qcom,gmu = <&gmu>;
+> +
+> +			status = "disabled";
+> +
+> +			zap-shader {
+> +				memory-region = <&gpu_micro_code_mem>;
+> +			};
+> +
+> +			/* Speedbin needs more work on A740+, keep only lower freqs */
+> +			gpu_opp_table: opp-table {
+> +				compatible = "operating-points-v2";
+> +
+> +				opp-680000000 {
+> +					opp-hz = /bits/ 64 <680000000>;
+> +					opp-level = <RPMH_REGULATOR_LEVEL_SVS_L1>;
+> +				};
+> +
+> +				opp-615000000 {
+> +					opp-hz = /bits/ 64 <615000000>;
+> +					opp-level = <RPMH_REGULATOR_LEVEL_SVS_L0>;
+> +				};
+> +
+> +				opp-550000000 {
+> +					opp-hz = /bits/ 64 <550000000>;
+> +					opp-level = <RPMH_REGULATOR_LEVEL_SVS>;
+> +				};
+> +
+> +				opp-475000000 {
+> +					opp-hz = /bits/ 64 <475000000>;
+> +					opp-level = <RPMH_REGULATOR_LEVEL_LOW_SVS_L1>;
+> +				};
+> +
+> +				opp-401000000 {
+> +					opp-hz = /bits/ 64 <401000000>;
+> +					opp-level = <RPMH_REGULATOR_LEVEL_LOW_SVS>;
+> +				};
+> +
+> +				opp-348000000 {
+> +					opp-hz = /bits/ 64 <348000000>;
+> +					opp-level = <RPMH_REGULATOR_LEVEL_LOW_SVS_D0>;
+> +				};
+> +
+> +				opp-295000000 {
+> +					opp-hz = /bits/ 64 <295000000>;
+> +					opp-level = <RPMH_REGULATOR_LEVEL_LOW_SVS_D1>;
+> +				};
+> +
+> +				opp-220000000 {
+> +					opp-hz = /bits/ 64 <220000000>;
+> +					opp-level = <RPMH_REGULATOR_LEVEL_LOW_SVS_D2>;
+> +				};
+> +			};
+> +		};
+> +
+> +		gmu: gmu@3d6a000 {
+> +			compatible = "qcom,adreno-gmu-740.1", "qcom,adreno-gmu";
+> +			reg = <0x0 0x03d6a000 0x0 0x35000>,
+> +			      <0x0 0x03d50000 0x0 0x10000>,
+> +			      <0x0 0x0b280000 0x0 0x10000>;
+> +			reg-names = "gmu", "rscc", "gmu_pdc";
+> +
+> +			interrupts = <GIC_SPI 304 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 305 IRQ_TYPE_LEVEL_HIGH>;
+> +			interrupt-names = "hfi", "gmu";
+> +
+> +			clocks = <&gpucc GPU_CC_AHB_CLK>,
+> +				 <&gpucc GPU_CC_CX_GMU_CLK>,
+> +				 <&gpucc GPU_CC_CXO_CLK>,
+> +				 <&gcc GCC_DDRSS_GPU_AXI_CLK>,
+> +				 <&gcc GCC_GPU_MEMNOC_GFX_CLK>,
+> +				 <&gpucc GPU_CC_HUB_CX_INT_CLK>,
+> +				 <&gpucc GPU_CC_DEMET_CLK>;
+> +			clock-names = "ahb",
+> +				      "gmu",
+> +				      "cxo",
+> +				      "axi",
+> +				      "memnoc",
+> +				      "hub",
+> +				      "demet";
+> +
+> +			power-domains = <&gpucc GPU_CC_CX_GDSC>,
+> +					<&gpucc GPU_CC_GX_GDSC>;
+> +			power-domain-names = "cx",
+> +					     "gx";
+> +
+> +			iommus = <&adreno_smmu 5 0x0>;
+> +
+> +			qcom,qmp = <&aoss_qmp>;
+> +
+> +			operating-points-v2 = <&gmu_opp_table>;
+> +
+> +			gmu_opp_table: opp-table {
+> +				compatible = "operating-points-v2";
+> +
+> +				opp-500000000 {
+> +					opp-hz = /bits/ 64 <500000000>;
+> +					opp-level = <RPMH_REGULATOR_LEVEL_SVS>;
+> +				};
+> +
+> +				opp-200000000 {
+> +					opp-hz = /bits/ 64 <200000000>;
+> +					opp-level = <RPMH_REGULATOR_LEVEL_LOW_SVS>;
+> +				};
+> +			};
+> +		};
+> +
+>   		gpucc: clock-controller@3d90000 {
+>   			compatible = "qcom,sm8550-gpucc";
+>   			reg = <0 0x03d90000 0 0xa000>;
+> @@ -1995,6 +2117,50 @@ gpucc: clock-controller@3d90000 {
+>   			#power-domain-cells = <1>;
+>   		};
+>   
+> +		adreno_smmu: iommu@3da0000 {
+> +			compatible = "qcom,sm8550-smmu-500", "qcom,adreno-smmu",
+> +				     "qcom,smmu-500", "arm,mmu-500";
+> +			reg = <0x0 0x03da0000 0x0 0x40000>;
+> +			#iommu-cells = <2>;
+> +			#global-interrupts = <1>;
+> +			interrupts = <GIC_SPI 673 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 677 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 678 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 679 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 680 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 681 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 682 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 683 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 684 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 685 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 686 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 687 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 422 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 476 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 574 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 575 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 576 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 577 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 659 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 661 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 664 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 665 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 666 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 668 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 669 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 699 IRQ_TYPE_LEVEL_HIGH>;
+> +			clocks = <&gpucc GPU_CC_HLOS1_VOTE_GPU_SMMU_CLK>,
+> +				 <&gcc GCC_GPU_MEMNOC_GFX_CLK>,
+> +				 <&gcc GCC_GPU_SNOC_DVM_GFX_CLK>,
+> +				 <&gpucc GPU_CC_AHB_CLK>;
+> +			clock-names = "hlos",
+> +				      "bus",
+> +				      "iface",
+> +				      "ahb";
+> +			power-domains = <&gpucc GPU_CC_CX_GDSC>;
+> +			dma-coherent;
+> +		};
+> +
+>   		remoteproc_mpss: remoteproc@4080000 {
+>   			compatible = "qcom,sm8550-mpss-pas";
+>   			reg = <0x0 0x04080000 0x0 0x4040>;
 > 
 
 Tested-by: Neil Armstrong <neil.armstrong@linaro.org> # on SM8550-QRD
