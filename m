@@ -1,145 +1,156 @@
-Received: from mail-yw1-f201.google.com (mail-yw1-f201.google.com [209.85.128.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam02on2045.outbound.protection.outlook.com [40.107.212.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB26C171D9
-	for <iommu@lists.linux.dev>; Mon,  4 Dec 2023 17:00:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC4652E41A
+	for <iommu@lists.linux.dev>; Mon,  4 Dec 2023 17:30:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="a+cSYROU"
-Received: by mail-yw1-f201.google.com with SMTP id 00721157ae682-5d1b2153ba1so61828857b3.2
-        for <iommu@lists.linux.dev>; Mon, 04 Dec 2023 09:00:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1701709257; x=1702314057; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=WYdbFfqQVc4k25YSG4S3L8dDRO2OtAWhg6g/c/qnL28=;
-        b=a+cSYROUnPyMVlWUYLv+jinp/GNM6qw+kgn++GqcRxHrbOs5aR+5eb1OZyp2hYQnmJ
-         MuOz0tAE9qQT2tjK/MaCUDwQ6ZOor5HIUqjBMl/8zX1207A6V9+NB+sApIRPZUOa4WJA
-         zm/uLmvlEfd1yVMrzLI1PxolbOoRYwkc/6NMg8F1LUe0Vxle4ris67h9fLZQ+qS64Kx3
-         rEUieTigNEuBu6U2uBZD6sskx3UCYukNxp3lMMCcmLeW7Pb6sm9r5aeM6SUJUN0beIlx
-         mN2lOeNhHuq4+e0x9r6pbzerTmP6mET1EL/J7F3yAFiHo/mfttKthuNUgo2tEjr9XznY
-         F8jQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701709257; x=1702314057;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=WYdbFfqQVc4k25YSG4S3L8dDRO2OtAWhg6g/c/qnL28=;
-        b=fpEALT7+q8+Nk+69TqA6ASLvmee5Xq5VaRRid4QuA69AbHS+kNT/WZvJ5f05Uc6vkj
-         gT56BwqUDK0CoROO9qSNx623VDHJnwdUq5tp1SIlNMkC3yJ10a4VIREm0D7dSpOUjMr8
-         OSDtA6UNWcq4KzSRQoZz6VYnByw6yW6M8MtspnHCYphXbResErGfPRTg5g6FLVP2WtZH
-         zid25i+MAwMD4BM8lzxKdcJ/4uxQjiSSnw3y6WUWbpQmW/emvw5VYEUay9TAas0rrK9l
-         iWRxfjEQkP0vH16hrKlh2X96TLXkCqF1gIXkouXUbQX4QSwOcsuuXugCYYypP+rfNY29
-         esgQ==
-X-Gm-Message-State: AOJu0YyQu5XqCYV6Qd2gxcd34umL9HS27cWDGhPxyUK6GCJenlQEV59H
-	g9z4q7riKu/cv2j2shH095Ehd/GOAGA=
-X-Google-Smtp-Source: AGHT+IEPCfmM37uwj/R0nZjh6f3LmvLyxTh2BlKFePY0Bda+oPcSkY5OKZC+FPUtCahZN6LQsjl4BmkVlA8=
-X-Received: from zagreus.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5c37])
- (user=seanjc job=sendgmr) by 2002:a05:690c:300d:b0:5d3:a348:b0b7 with SMTP id
- ey13-20020a05690c300d00b005d3a348b0b7mr314719ywb.7.1701709257595; Mon, 04 Dec
- 2023 09:00:57 -0800 (PST)
-Date: Mon, 4 Dec 2023 09:00:55 -0800
-In-Reply-To: <20231202091211.13376-1-yan.y.zhao@intel.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="YwVTfPu7"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Db2qQJPF9rZqemYT464A/fOdU028w9fdikXFomhmgirdr60gmgS1ZjF6A89am1OJh5rEhxzUUBK8ydL6SrYnw7a5btYXZ95gvUUdUqhjF2E2J29cbxFbbm4qp52nYxDn4NRMhoFVx9yuop7aFILTCYrr3nnSwq5cdWH+E2Y8XCMuZ5Ti/mNJjCDf+IEV/ApuJEwpI2cA05N6C9CEwYMY3uHkaKXb80Oals4hWiJrgyXcMe1fUKq5OGmw6VI3DMsxOk2V2mljfjVvNOIFuYEDTNrd5RNLZ50mPrZRRfCYF17+NPc/r5vt+AxyUpZSW+sHlk55Z8h8ebinbJzeMc5RxQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=6VAT1mPhTSEAPwE1fvGIjV6jQxeJGVrGepcj52ejD5w=;
+ b=mbmYx1eH9GIEoKQDXB1IIlXziL3hcHi2oz+8MLWH4n9IN5nrRQcsj8kNRk6TMnQev8DoDjTm4P5n0gG63Y6WKnKMgiAgPytIb7JmlxyDsz3DwYOr7SigfRHQymTDe5T4Rb4ueujqy0AKbATKUuC5Ncy70u+pQ+YHcMhM/bR4SHW31avT158Dp+0RIvq3NooBzFxM5JCcMYoQu37B/V4t8pxPvwTRefPXsHr11N3si7n6VIQPNG7iS4om9K6TD2qPynnHFL2YEN7VHWSQRM3AVL4l6tXDBatUPkJPCMu6lQjIZtKLqBKNEz9w2WVSNZ2NdDzUDuP1Fm0hpQiFo4lQ6Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=6VAT1mPhTSEAPwE1fvGIjV6jQxeJGVrGepcj52ejD5w=;
+ b=YwVTfPu7CSuS94Fe80UXgOkPsDknigxPQLuk4s1y5apUvax4D7kpQFXJ95z6NtAciUsKk4VWGB3kjDqHsrc4noWDeXM/Sx5ODXn5DcElESWsKqLsr9vvtmdpRnOWABLixMLlfAgKXKfovVvvrEAd0vCpVThZOY5UqYFsiHvU79fAcdHV7J6XDb/MLRiOvA6fXH0uUIMAHwoooWFiGbvSgKVeIm4E40b/H76WWMXy2ay91usOc0HY1E5Ra+piSjsA5odQeqzwldOFHYCkYPiCn+CxxsD9DoM2b+N0H9CC00+1QNfc3L2KfpD6YkY1pOadC9ZQbnqHEYtCJQybVSeVng==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by DS0PR12MB7801.namprd12.prod.outlook.com (2603:10b6:8:140::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7046.34; Mon, 4 Dec
+ 2023 17:30:29 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::60d4:c1e3:e1aa:8f93]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::60d4:c1e3:e1aa:8f93%4]) with mapi id 15.20.7046.033; Mon, 4 Dec 2023
+ 17:30:29 +0000
+Date: Mon, 4 Dec 2023 13:30:28 -0400
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Sean Christopherson <seanjc@google.com>
+Cc: Yan Zhao <yan.y.zhao@intel.com>, iommu@lists.linux.dev,
+	kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+	alex.williamson@redhat.com, pbonzini@redhat.com, joro@8bytes.org,
+	will@kernel.org, robin.murphy@arm.com, kevin.tian@intel.com,
+	baolu.lu@linux.intel.com, dwmw2@infradead.org, yi.l.liu@intel.com
+Subject: Re: [RFC PATCH 00/42] Sharing KVM TDP to IOMMU
+Message-ID: <20231204173028.GJ1493156@nvidia.com>
+References: <20231202091211.13376-1-yan.y.zhao@intel.com>
+ <ZW4Fx2U80L1PJKlh@google.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZW4Fx2U80L1PJKlh@google.com>
+X-ClientProxiedBy: BLAPR03CA0022.namprd03.prod.outlook.com
+ (2603:10b6:208:32b::27) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <20231202091211.13376-1-yan.y.zhao@intel.com>
-Message-ID: <ZW4Fx2U80L1PJKlh@google.com>
-Subject: Re: [RFC PATCH 00/42] Sharing KVM TDP to IOMMU
-From: Sean Christopherson <seanjc@google.com>
-To: Yan Zhao <yan.y.zhao@intel.com>
-Cc: iommu@lists.linux.dev, kvm@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	alex.williamson@redhat.com, jgg@nvidia.com, pbonzini@redhat.com, 
-	joro@8bytes.org, will@kernel.org, robin.murphy@arm.com, kevin.tian@intel.com, 
-	baolu.lu@linux.intel.com, dwmw2@infradead.org, yi.l.liu@intel.com
-Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|DS0PR12MB7801:EE_
+X-MS-Office365-Filtering-Correlation-Id: ef126a39-f212-4e8b-eb6e-08dbf4eeb573
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	kEyTG2DG6OUQ6eJ/8vepvgtrXblJ+uxZ0yURjWJB5CXh6OBnLdZgk6NmCW9pc3jlCtFDo1nrbfSFCSkybZgYWjxzEAFkWwbfL17SwL3xjY53Mu2izwS2fgRAUoBIW3IWdthGO+kiI4OUJ4H/oCZemR/WVibtkWCNhqrMenuImw/GO1Ywfp1RcgWTvOWBKYpc910yIEbthGDVdAvis+iLnLxaHM15maP1fmutWACA3QGSj4Ppcc+6hMxocW84D1mm9J1RyO+JOICkOXHo2kr6k4VOY5Xalea3TS357GPDm0nxIv7YcSPOIkup57cSh5fggmgM+gEjcfaIbQGbUy6b4xs3cI3oDAragDa+bmdfuKxy+e0QMwBWwPpL9aMFQGic4LSphybKhkIgO0ItNKziznW5+57//Qkcj3JpHHew5262nb29NQ1g7K7Ki9Nt0tqch1JTESGz5xJp3iecMDqyZm5l8IAggSIbC9OiZ4xweeWtWdeI/nB7Wn3cyoXk/lN6Rm4ejyKlaXmqCEaBiyhjXsMoJUpwaoiDolMKrBsEuMGQBqp2NGTkftiooVXBXGH4
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366004)(136003)(346002)(39860400002)(396003)(376002)(230922051799003)(186009)(64100799003)(1800799012)(451199024)(66556008)(66476007)(66946007)(316002)(6916009)(478600001)(6486002)(38100700002)(7416002)(5660300002)(36756003)(41300700001)(2906002)(33656002)(86362001)(4326008)(8676002)(8936002)(1076003)(2616005)(83380400001)(26005)(6512007)(6506007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?4mtBC+LyVR3NsbGHNuJRz6AEMrAEPgkSfbSdDs0G0VK2wIC4j52vVTMwIxqM?=
+ =?us-ascii?Q?QI5Vml2VkgXK/VYQTXZWIsy2qy4KNpr9FMPVcxHZny0lRlirR3oB+4bnwLw6?=
+ =?us-ascii?Q?tvVorqNiMvOY/U/Og0I8MMj3kZPCG5sej+mlCRk5Vdd+9VjK/HlCQnW52UGn?=
+ =?us-ascii?Q?UQ1k8kiq6TfBWrwHOFaggxb7y2N8mt8jZ6e4QZfyHg/XjE1cvR2YhEQYHHUd?=
+ =?us-ascii?Q?tLaWKmGilbO2QSswDypfRz4FeETqwrS2C2IGiYfEZcBhu2hONiJF08XeIc+H?=
+ =?us-ascii?Q?J7/qgM2saGkOV+PIshthKuC0hNdiSUTGUYzOC0GxRAg3ybq9FK+vXWo00o0J?=
+ =?us-ascii?Q?/HTt0bt4uKr1UKTk8qy0vx9dkaH0xikak4UvaROvldJ6ZlXG02J1Xm4oButk?=
+ =?us-ascii?Q?EN2P2E/npst9EwHQ2wB5kmbhvYa1cPBixXetDYrxmTMTxHYd/w7n/KRi+zoy?=
+ =?us-ascii?Q?2cXDqex2+Cln2bAGYpKs1o2Tk1zhxodSNArUzDfnxye+6gmcJ12aAPABGR1e?=
+ =?us-ascii?Q?8JyVeU2Dsxa9JVJ/l48Sug85TG6WAHc2MtG1tYnBYhV6F0EjFCKc9sfxnb5X?=
+ =?us-ascii?Q?8qYvkBcTepnEwa/TEZK2WeRg6Y88lujRhVYt6mBn4I4ZNdZdET/SnzPDwUDk?=
+ =?us-ascii?Q?mexCnw2uVpVVPz12MF8w2Xbv+JHm+8/ku6+j3eLBXRm2Fr8/pNpiCcqHvQiQ?=
+ =?us-ascii?Q?nyPqIcabU6GIjQw2GIUllUOKMbhcKS8FZWRHJ+uyugeRT+PbJNf7nSNyawoZ?=
+ =?us-ascii?Q?R+dsJeNbOVW5KgFVJaaPgcj8cNd9UOiuTHBbe3ZkgwlxDDT/bggt4lHZ+IFY?=
+ =?us-ascii?Q?XiYqLTlLSAYEyfObTyhGc5qKsFRTMRwS5w+eElkOSaloSWOeJDhNy+5shO0z?=
+ =?us-ascii?Q?+iM1X6iMJT5U48tAiuyAu6cvBosrols8LgsxVxTdrZWJy2SwJfPKJcuWbs0W?=
+ =?us-ascii?Q?iVV7zXIlShh8AC6tjJd37TST6r0hY1cYcSehS/gm7Zr7f9TSSGogvy922GXk?=
+ =?us-ascii?Q?hkq1YdeCC9cHdXnnf8vWfmbmwo9mLY7NzR8rW0nVsGE9uQmukmeL19REneXA?=
+ =?us-ascii?Q?zHzx2gtpQ05hIjtm/h0GktUCeQ5C0mU9029p7cGkDDyUXbsVJgEkP1B52rmp?=
+ =?us-ascii?Q?JvWSpaA/6lrSHnv3omuy0MJs0MWlYHeCJq+GN7lbWxiPw4rtLVD46fbh0xiq?=
+ =?us-ascii?Q?RYzPidH8RT7K3h3mwqLthI6680ltQfhpFAJoGgg75b+uwoB09Bi7zH3wIVtb?=
+ =?us-ascii?Q?HJzxnjJo2fhv0JNgdb6EwSua3jbPwqjNlMEVarb7WAIp/QqDfvLpyuWt6knz?=
+ =?us-ascii?Q?rEzB5kYItErRh6yxC9VWcbU/vjNFi6+KW8NZCVI+WtDWY3FRCMAHUN38d41e?=
+ =?us-ascii?Q?HtfxEKRDgFjRTTqvwQLGZlT5FmAarYLKYleJt734Q3ov6ld3wrhFjMKSHxdg?=
+ =?us-ascii?Q?CDjHguHTXnh1Z4P32XyfREqWGIi3ATuPhGkdLZwxTVmb1GNaLBFK+raWyy3L?=
+ =?us-ascii?Q?aAgLMQ9tfSz5JIXZYNjF0vQEmjOeZ7e9bVEGGZMnBs+D/KsrJyhfnsA06WIx?=
+ =?us-ascii?Q?aScHO8Wqi/tW1XwLCEplaz6zJn8QlazWQYjjT9NX?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ef126a39-f212-4e8b-eb6e-08dbf4eeb573
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Dec 2023 17:30:28.8949
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Il8tgf+oO+OsXttnjHkN8e4mSLdxGk8cRVmDy/z1iJinSy6RJJ8vEL9WGky9WANZ
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB7801
 
-On Sat, Dec 02, 2023, Yan Zhao wrote:
-> This RFC series proposes a framework to resolve IOPF by sharing KVM TDP
-> (Two Dimensional Paging) page table to IOMMU as its stage 2 paging
-> structure to support IOPF (IO page fault) on IOMMU's stage 2 paging
-> structure.
-> 
-> Previously, all guest pages have to be pinned and mapped in IOMMU stage 2 
-> paging structures after pass-through devices attached, even if the device
-> has IOPF capability. Such all-guest-memory pinning can be avoided when IOPF
-> handling for stage 2 paging structure is supported and if there are only
-> IOPF-capable devices attached to a VM.
-> 
-> There are 2 approaches to support IOPF on IOMMU stage 2 paging structures:
-> - Supporting by IOMMUFD/IOMMU alone
->   IOMMUFD handles IO page faults on stage-2 HWPT by calling GUPs and then
->   iommu_map() to setup IOVA mappings. (IOAS is required to keep info of GPA
->   to HVA, but page pinning/unpinning needs to be skipped.)
->   Then upon MMU notifiers on host primary MMU, iommu_unmap() is called to
->   adjust IOVA mappings accordingly.
->   IOMMU driver needs to support unmapping sub-ranges of a previous mapped
->   range and take care of huge page merge and split in atomic way. [1][2].
-> 
-> - Sharing KVM TDP
->   IOMMUFD sets the root of KVM TDP page table (EPT/NPT in x86) as the root
->   of IOMMU stage 2 paging structure, and routes IO page faults to KVM.
->   (This assumes that the iommu hw supports the same stage-2 page table
->   format as CPU.)
->   In this model the page table is centrally managed by KVM (mmu notifier,
->   page mapping, subpage unmapping, atomic huge page split/merge, etc.),
->   while IOMMUFD only needs to invalidate iotlb/devtlb properly.
+On Mon, Dec 04, 2023 at 09:00:55AM -0800, Sean Christopherson wrote:
 
-There are more approaches beyond having IOMMUFD and KVM be completely separate
-entities.  E.g. extract the bulk of KVM's "TDP MMU" implementation to common code
-so that IOMMUFD doesn't need to reinvent the wheel.
+> There are more approaches beyond having IOMMUFD and KVM be
+> completely separate entities.  E.g. extract the bulk of KVM's "TDP
+> MMU" implementation to common code so that IOMMUFD doesn't need to
+> reinvent the wheel.
 
-> Currently, there's no upstream code available to support stage 2 IOPF yet.
-> 
-> This RFC chooses to implement "Sharing KVM TDP" approach which has below
-> main benefits:
+We've pretty much done this already, it is called "hmm" and it is what
+the IO world uses. Merging/splitting huge page is just something that
+needs some coding in the page table code, that people want for other
+reasons anyhow.
 
-Please list out the pros and cons for each.  In the cons column for piggybacking
-KVM's page tables:
+> - Subjects IOMMUFD to all of KVM's historical baggage, e.g. the memslot deletion
+>   mess, the truly nasty MTRR emulation (which I still hope to delete), the NX
+>   hugepage mitigation, etc.
 
- - *Significantly* increases the complexity in KVM
- - Puts constraints on what KVM can/can't do in the future (see the movement
-   of SPTE_MMU_PRESENT).
- - Subjects IOMMUFD to all of KVM's historical baggage, e.g. the memslot deletion
-   mess, the truly nasty MTRR emulation (which I still hope to delete), the NX
-   hugepage mitigation, etc.
+Does it? I think that just remains isolated in kvm. The output from
+KVM is only a radix table top pointer, it is up to KVM how to manage
+it still.
 
-Please also explain the intended/expected/targeted use cases.  E.g. if the main
-use case is for device passthrough to slice-of-hardware VMs that aren't memory
-oversubscribed, 
+> I'm not convinced that memory consumption is all that interesting.  If a VM is
+> mapping the majority of memory into a device, then odds are good that the guest
+> is backed with at least 2MiB page, if not 1GiB pages, at which point the memory
+> overhead for pages tables is quite small, especially relative to the total amount
+> of memory overheads for such systems.
 
-> - Unified page table management
->   The complexity of allocating guest pages per GPAs, registering to MMU
->   notifier on host primary MMU, sub-page unmapping, atomic page merge/split
+AFAIK the main argument is performance. It is similar to why we want
+to do IOMMU SVA with MM page table sharing.
 
-Please find different terminology than "sub-page".  With Sub-Page Protection, Intel
-has more or less established "sub-page" to mean "less than 4KiB granularity".  But
-that can't possibly what you mean here because KVM doesn't support (un)mapping
-memory at <4KiB granularity.  Based on context above, I assume you mean "unmapping
-arbitrary pages within a given range".
+If IOMMU mirrors/shadows/copies a page table using something like HMM
+techniques then the invalidations will mark ranges of IOVA as
+non-present and faults will occur to trigger hmm_range_fault to do the
+shadowing.
 
->   are only required to by handled in KVM side, which has been doing that
->   well for a long time.
-> 
-> - Reduced page faults:
->   Only one page fault is triggered on a single GPA, either caused by IO
->   access or by vCPU access. (compared to one IO page fault for DMA and one
->   CPU page fault for vCPUs in the non-shared approach.)
+This means that pretty much all IO will always encounter a non-present
+fault, certainly at the start and maybe worse while ongoing.
 
-This would be relatively easy to solve with bi-directional notifiers, i.e. KVM
-notifies IOMMUFD when a vCPU faults in a page, and vice versa.
- 
-> - Reduced memory consumption:
->   Memory of one page table are saved.
+On the other hand, if we share the exact page table then natural CPU
+touches will usually make the page present before an IO happens in
+almost all cases and we don't have to take the horribly expensive IO
+page fault at all.
 
-I'm not convinced that memory consumption is all that interesting.  If a VM is
-mapping the majority of memory into a device, then odds are good that the guest
-is backed with at least 2MiB page, if not 1GiB pages, at which point the memory
-overhead for pages tables is quite small, especially relative to the total amount
-of memory overheads for such systems.
+We were not able to make bi-dir notifiers with with the CPU mm, I'm
+not sure that is "relatively easy" :(
 
-If a VM is mapping only a small subset of its memory into devices, then the IOMMU
-page tables should be sparsely populated, i.e. won't consume much memory.
+Jason
