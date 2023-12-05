@@ -1,37 +1,37 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.126])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A2D8156770
-	for <iommu@lists.linux.dev>; Tue,  5 Dec 2023 12:09:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1ACF6523A
+	for <iommu@lists.linux.dev>; Tue,  5 Dec 2023 12:13:43 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="n24yWAoH"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="kKNUN3Rn"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1701778168; x=1733314168;
+  t=1701778424; x=1733314424;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=Dn/M9F9sxfkXiA0xOpEAl/WusJJHZZTNof4eq56gqNg=;
-  b=n24yWAoH+XNbaawjMjJE41FBpdYfDhTw8xa2uNIqm7yaBegSfxlVAy2S
-   WQRiAUiFk2UnE77pxi5xena60a0K/NmdWSBUz01ekzkdQLwCnZXz7mJz3
-   HLa5H1bpkBS7FM5Bq21sGhyH+peLtFZbb4e+lgTlPWG4tDrlu/o+mvTlD
-   Abw7bpT3wwzTPo5f5nCAP+YWwaM6B+QxL6nG/0u0JbSoezAH91F8RExDI
-   MR0g15GTFP0hPhx5xuBbIv69BGJ+GXpoFN7m762OT7CK4omKfpC1hUeJd
-   pRNowJeTLsrwvUDVa7nhPa7wRzr+E6RrQzUBYV65HW/7aGCaneqA7UPz/
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10914"; a="7229872"
+  bh=MYqOhIpAjG+tcFzzzvBDM/zAZxf8GMMLxtt+rsWwboM=;
+  b=kKNUN3RnlPM0c171n7bCs9rHgGnZLkqdJ0McghfnfRFqgyaysKR6j98P
+   sFNKrOvCFaFDQJu247SBTIE8o8HCe1zhhBLtFtciMjjuqu3YXzDq2NjMq
+   FyqhA0arPRuZM/jP3z3SlcqhzXYvc/hzF3MyAa9AKqHdU0TUfmJC8HnIw
+   IFrvY3Idvh/UBXO+K4WwWRqeAxjLHJEhXSXnMBjrdHkUoFOj/sq/u//lL
+   owZvrr0HS5NIKaG2h1epRhersh82zteXAnC9OAPklWathcMWQ2V2qq+GD
+   sphAveYVr5AJHnR8caCigYWuUR0U9co9rsiXdLi8h1Sz2m8/buht+IXwW
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10914"; a="378910570"
 X-IronPort-AV: E=Sophos;i="6.04,252,1695711600"; 
-   d="scan'208";a="7229872"
-Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Dec 2023 04:09:27 -0800
+   d="scan'208";a="378910570"
+Received: from orviesa002.jf.intel.com ([10.64.159.142])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Dec 2023 04:13:43 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.04,252,1695711600"; 
-   d="scan'208";a="17349497"
+   d="scan'208";a="12315536"
 Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.255.31.68]) ([10.255.31.68])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Dec 2023 04:09:23 -0800
-Message-ID: <f61dca1b-3de6-4767-96ac-0c20fd730bec@linux.intel.com>
-Date: Tue, 5 Dec 2023 20:09:20 +0800
+  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Dec 2023 04:13:40 -0800
+Message-ID: <dfb350c8-b3e3-48ad-86b3-201205521153@linux.intel.com>
+Date: Tue, 5 Dec 2023 20:13:37 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -41,9 +41,8 @@ MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
 Cc: baolu.lu@linux.intel.com, Jacob Pan <jacob.jun.pan@linux.intel.com>,
  Yan Zhao <yan.y.zhao@intel.com>, iommu@lists.linux.dev, kvm@vger.kernel.org,
- linux-kernel@vger.kernel.org, Jason Gunthorpe <jgg@nvidia.com>
-Subject: Re: [PATCH v7 06/12] iommu: Remove
- iommu_[un]register_device_fault_handler()
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v7 09/12] iommu: Make iommu_queue_iopf() more generic
 Content-Language: en-US
 To: Yi Liu <yi.l.liu@intel.com>, Joerg Roedel <joro@8bytes.org>,
  Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
@@ -51,27 +50,44 @@ To: Yi Liu <yi.l.liu@intel.com>, Joerg Roedel <joro@8bytes.org>,
  Jean-Philippe Brucker <jean-philippe@linaro.org>,
  Nicolin Chen <nicolinc@nvidia.com>
 References: <20231115030226.16700-1-baolu.lu@linux.intel.com>
- <20231115030226.16700-7-baolu.lu@linux.intel.com>
- <2516df8c-6d2a-49f7-bbea-123d0763bc00@intel.com>
+ <20231115030226.16700-10-baolu.lu@linux.intel.com>
+ <e18c7c93-7184-4bbc-97cd-61fc0bc0aa3d@intel.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <2516df8c-6d2a-49f7-bbea-123d0763bc00@intel.com>
+In-Reply-To: <e18c7c93-7184-4bbc-97cd-61fc0bc0aa3d@intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-On 2023/12/4 20:36, Yi Liu wrote:
->>   /**
->>    * iommu_report_device_fault() - Report fault event to device driver
->>    * @dev: the device
->> @@ -1395,10 +1325,6 @@ int iommu_report_device_fault(struct device 
->> *dev, struct iommu_fault_event *evt)
->>       /* we only report device fault if there is a handler registered */
->>       mutex_lock(&param->lock);
->>       fparam = param->fault_param;
->> -    if (!fparam || !fparam->handler) {
+On 2023/12/5 15:13, Yi Liu wrote:
+>> @@ -157,8 +173,8 @@ int iommu_queue_iopf(struct iommu_fault *fault, 
+>> struct device *dev)
+>>       group->dev = dev;
+>>       group->last_fault.fault = *fault;
+>>       INIT_LIST_HEAD(&group->faults);
+>> +    group->domain = domain;
+>>       list_add(&group->last_fault.list, &group->faults);
+>> -    INIT_WORK(&group->work, iopf_handler);
+>>       /* See if we have partial faults for this group */
+>>       list_for_each_entry_safe(iopf, next, &iopf_param->partial, list) {
+>> @@ -167,9 +183,13 @@ int iommu_queue_iopf(struct iommu_fault *fault, 
+>> struct device *dev)
+>>               list_move(&iopf->list, &group->faults);
+>>       }
+>> -    queue_work(iopf_param->queue->wq, &group->work);
+>> -    return 0;
+>> +    mutex_unlock(&iopf_param->lock);
+>> +    ret = domain->iopf_handler(group);
+>> +    mutex_lock(&iopf_param->lock);
 > 
-> should it still check the fparam?
+> After this change, this function (iommu_queue_iopf) does not queue
+> anything. Should this function be renamed? Except this, I didn't see
+> other problem.
 
-Yes.
+It's renamed in the next patch.
+
+> 
+> Reviewed-by:Yi Liu <yi.l.liu@intel.com>
+
+Thank you!
 
 Best regards,
 baolu
