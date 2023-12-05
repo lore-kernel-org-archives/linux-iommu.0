@@ -1,88 +1,181 @@
-Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [80.237.130.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qk1-f170.google.com (mail-qk1-f170.google.com [209.85.222.170])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB61067E64;
-	Tue,  5 Dec 2023 14:57:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=leemhuis.info
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=leemhuis.info
-Received: from [2a02:8108:8980:2478:8cde:aa2c:f324:937e]; authenticated
-	by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-	id 1rAWrq-0005mA-Tn; Tue, 05 Dec 2023 15:57:46 +0100
-Message-ID: <01210f0e-9340-41bb-bb41-e3ca0774faa9@leemhuis.info>
-Date: Tue, 5 Dec 2023 15:57:46 +0100
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA9B95F1EE
+	for <iommu@lists.linux.dev>; Tue,  5 Dec 2023 15:52:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="SD+BiNFF"
+Received: by mail-qk1-f170.google.com with SMTP id af79cd13be357-77efe9be09fso94141785a.3
+        for <iommu@lists.linux.dev>; Tue, 05 Dec 2023 07:52:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1701791568; x=1702396368; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=BrWHWTFaRknhgdb4x9no/GQPxrAlB7YYcLeiCxHpSTA=;
+        b=SD+BiNFF9dbQy7loU3VEKHbbLBSLaJ9iw0Her315mwRhThePkKunVnkoNPYd+ZZXjX
+         IVAJxa5CTMNF5ibeermcHh1amuf9AZqrnAnuwkjoeP9Z0tSdnI/2FiPPrHsovPjJcpXO
+         PYANKlNOfGzoB189rhIQyKQynAYShWSA1vlTGAOcfEjavpvkwYi5wzVlHcAJe8IhTmQ0
+         KmpUZqJeWBquncFLnhWXIqYgasdJrQ1PCjyLu4Cgfmja0wXAd2A60+HSZrW3pefj5Nb5
+         Yn+ZDQgxTx35cxqU7rDVAriyhcfSFIS/OxPb6KJ5a7SytB8mFygN4qvW18nWnb2ESMoV
+         VW7w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1701791568; x=1702396368;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=BrWHWTFaRknhgdb4x9no/GQPxrAlB7YYcLeiCxHpSTA=;
+        b=RylEaqaSv+X0p3o2qZLgEwUQEoGlz+6bBpVgFME3cDr2YmjC27Cxk/qspIzQ5xOX1u
+         JVZoxwZeulJrEesKulbKxWDuBTrfwx1f3Rqc2Mw7W7Z+YnTlcwkG1fiV6Ywihn/WHADe
+         pc/4XBdiBGsjTIBl2+lDZH7GZGOh3MDaDxRZDMCjcgrcLLtV11Q0fMTIFioQq9nROWM6
+         RW/0e1F0Mrfgm5NY80ggVZ4RoZ1lx2BWlnFjGBc0quoAyYky8a5r9OEI5+ZvGWfJZ6Q7
+         yZpw0EVL3wxnXt62AmRH2daaxfjgzrYgAZZCY6c7AaxzchPSR2ojF4S5D9qKATpMoGUX
+         KNDw==
+X-Gm-Message-State: AOJu0YxDQomaRXoEnd90aeH4bKZmfN0HmasSWECdPy2BmhblPciRwtHr
+	68JjEcFpk5hpNjyqI/UsT2wQgg==
+X-Google-Smtp-Source: AGHT+IEWTjimK7HJTjtG4zURBrKJAMSWy2Q5Rd8yPZ4Mg4dhFMa48d0hohgGPIWQhH1eR0Unx2klsA==
+X-Received: by 2002:a05:620a:e84:b0:77d:992f:857e with SMTP id w4-20020a05620a0e8400b0077d992f857emr1354994qkm.61.1701791568321;
+        Tue, 05 Dec 2023 07:52:48 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-134-23-187.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.134.23.187])
+        by smtp.gmail.com with ESMTPSA id y18-20020a05620a44d200b0077da7a46b0fsm5189422qkp.69.2023.12.05.07.52.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Dec 2023 07:52:47 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1rAXj4-00BiMh-Cl;
+	Tue, 05 Dec 2023 11:52:46 -0400
+Date: Tue, 5 Dec 2023 11:52:46 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Cc: Baolu Lu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	"Liu, Yi L" <yi.l.liu@intel.com>,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>,
+	"Zhao, Yan Y" <yan.y.zhao@intel.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v7 12/12] iommu: Improve iopf_queue_flush_dev()
+Message-ID: <20231205155246.GR1489931@ziepe.ca>
+References: <20231115030226.16700-13-baolu.lu@linux.intel.com>
+ <20231201203536.GG1489931@ziepe.ca>
+ <a0ef3a4f-88fc-40fe-9891-495d1b6b365b@linux.intel.com>
+ <20231203141414.GJ1489931@ziepe.ca>
+ <2354dd69-0179-4689-bc35-f4bf4ea5a886@linux.intel.com>
+ <BN9PR11MB5276999D29A133F33C3C4FEA8C86A@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20231204132503.GL1489931@ziepe.ca>
+ <BN9PR11MB5276908231BA164E4AF8806F8C85A@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20231205015306.GQ1489931@ziepe.ca>
+ <BN9PR11MB527687FD2CD3EB17F04B22458C85A@BN9PR11MB5276.namprd11.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-From: Thorsten Leemhuis <regressions@leemhuis.info>
-Subject: Re: Fwd: Kernels v6.5 and v6.6 break resume from standby (s3) on some
- Intel systems if VT-d is enabled
-To: Linux Regressions <regressions@lists.linux.dev>
-Cc: Lu Baolu <baolu.lu@linux.intel.com>, "Rafael J. Wysocki"
- <rafael@kernel.org>, Peter Zijlstra <peterz@infradead.org>,
- Michael Kelley <mikelley@microsoft.com>,
- Oleksandr Natalenko <oleksandr@natalenko.name>, Helge Deller
- <deller@gmx.de>, "Guilherme G. Piccoli" <gpiccoli@igalia.com>,
- kbugreports@proton.me, Linux IOMMU <iommu@lists.linux.dev>,
- Linux Power Management <linux-pm@vger.kernel.org>,
- Bagas Sanjaya <bagasdotme@gmail.com>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- Mario Limonciello <mario.limonciello@amd.com>,
- David Woodhouse <dwmw2@infradead.org>, Thomas Gleixner <tglx@linutronix.de>
-References: <4b3c624a-f114-4e39-9e1c-0df18f307e8c@gmail.com>
- <ZWx1IHBE9KCk6rWj@archie.me>
-Content-Language: en-US, de-DE
-In-Reply-To: <ZWx1IHBE9KCk6rWj@archie.me>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1701788276;bc0ff3a3;
-X-HE-SMSGID: 1rAWrq-0005mA-Tn
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <BN9PR11MB527687FD2CD3EB17F04B22458C85A@BN9PR11MB5276.namprd11.prod.outlook.com>
 
-[CCing Mario, as he might be interested]
+On Tue, Dec 05, 2023 at 03:23:05AM +0000, Tian, Kevin wrote:
 
-On 03.12.23 13:31, Bagas Sanjaya wrote:
-> On Tue, Nov 28, 2023 at 08:09:24PM +0700, Bagas Sanjaya wrote:
->> I notice a regression report on Bugzilla [1]. Quoting from it:
->>> 
->>> Affected system:
->>> 
->>> Thinkpad, Intel Kaby Lake (i7-7600U) chipset / cpu and onboard
->>> gpu (Intel HD 620), no separate graphics card, current bios
->>> firmware; running Void Linux, xfce / lightdm
->>> 
->>> Symptom / problem:
->>> 
->>> Since the upgrade to kernel v6.5.5 (from v6.3.13) my system
->>> doesn't wake up from standby, i.e. resume from s3 fails 100% of
->>> the time.
->
->> https://bugzilla.kernel.org/show_bug.cgi?id=218191 
+> > I didn't said the PRI would fail, I said the ATS would fail with a
+> > non-present.
+> > 
+> > It has to work this way or it is completely broken with respect to
+> > existing races in the mm side. Agents must retry non-present ATS
+> > answers until you get a present or a ATS failure.
 > 
-> The reporter had done bisection (see Bugzilla for details),
+> My understanding of the sequence is like below:
+> 
+> <'D' for device, 'I' for IOMMU>
+> 
+>   (D) send a ATS translation request
+>   (I) respond translation result
+>   (D) If success then sends DMA to the target page
+>       otherwise send a PRI request
+>         (I) raise an IOMMU interrupt allowing sw to fix the translation
+>         (I) generate a PRI response to device
+>         (D) if success then jump to the first step to retry
+>             otherwise abort the current request
+> 
+> If mm changes the mapping after a success PRI response, mmu notifier
+> callback in iommu driver needs to wait for device tlb invalidation completion
+> which the device will order properly with outstanding DMA requests using
+> the old translation.
+> 
+> If you refer to the 'retry' after receiving a success PRI response, then yes.
+> 
+> but there is really no reason to retry upon a PRI response failure which
+> indicates that the faulting address is not a valid one which OS would like
+> to fix.
 
-Turns out the kernel used by the reporter is not vanilla, as zfs is
-involved -- and due to that the reporter is not even able to check if
-mainline is still affected. I'll thus remove this from the tracking.
-Sorry for the noise.
+Right
 
-In case anyone nevertheless cares: The bisection result from the report
-was 0c7ffa32dbd6b0 ("x86/smpboot/64: Implement
-arch_cpuhp_init_parallel_bringup() and enable it") [v6.5-rc1].
-This time on a Intel machine. Mario's "Fixes for s3 with parallel
-bootup" patch-series[1] (the one were abandoned because things turned
-out to be a BIOS bug affecting some AMD systems) apparently resolved the
-problem for the reporter.
+> > Draining has to be ordered correctly with whatever the device is
+> > doing. Drain needs to come after FLR, for instance. It needs to come
+> > after a work queue reset, because drain doesn't make any sense unless
+> > it is coupled with a DMA stop at the device.
+> 
+> Okay that makes sense. As Baolu and you already agreed let's separate
+> this fix out of this series.
+> 
+> The minor interesting aspect is how to document this requirement
+> clearly so drivers won't skip calling it when sva is enabled. 
 
-[1]
-https://lore.kernel.org/all/20231026170330.4657-1-mario.limonciello@amd.com/
+All changes to translation inside kernel drivers should only be done
+once the DMA is halted, otherwise things possibily become security
+troubled.
 
-Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
---
-Everything you wanna know about Linux kernel regression tracking:
-https://linux-regtracking.leemhuis.info/about/#tldr
-If I did something stupid, please tell me, as explained on that page.
+We should document this clearly, it is already expected in common
+cases like using the DMA API and when removing() drivers. It also
+applies when the driver is manually changing a PASID.
 
-#regzbot inconclusive: kernel used by the reporter is not vanilla
+The issue is not drain, it is that the HW is still doing DMA on the
+PASID and the PASID may be assigned to a new process. This kernel
+*must* prevent this directly and strongly.
+
+If the device requires a drain to halt its DMA, then that is a device
+specific sequence. Otherwise it should simply halt its DMA in whatever
+device specific way it has.
+
+> > Hacking a DMA stop by forcing a blocking translation is not logically
+> > correct, with wrong ordering the device may see unexpected translation
+> > failures which may trigger AERs or bad things..
+> 
+> where is such hack? though the current implementation of draining
+> is not clean, it's put inside pasid-disable-sequence instead of forcing
+> a blocking translation implicitly in iommu driver i.e. it's still the driver
+> making decision for what translation to be used...
+
+It is mis-understanding the purpose of drain.
+
+In normal operating cases PRI just flows and the device will
+eventually, naturally, reach a stable terminal case. We don't provide
+any ordering guarentees across translation changes so PRI just follows
+that design. If you change the translation with ongoing DMA then you
+just don't know what order things will happen in.
+
+The main purpose of drain is to keep the PRI protocol itself in sync
+against events on the device side that cause it to forget about the
+tags it has already issued. Eg a FLR should reset the tag record. If a
+device then issues a new PRI with a tag that matches a tag that was
+outstanding prior to FLR we can get a corruption.
+
+So any drain sequence should start with the device halting new
+PRIs. We flush all PRI tags from the system completely, and then the
+device may resume issuing new PRIs.
+
+When the device resets it's tag labels is a property of the device.
+
+Notice none of this has anything to do with change of
+translation. Change of translation, or flush of ATC, does not
+invalidate the tags.
+
+A secondary case is to help devices halt their DMA when they cannot do
+this on their own.
+
+Jason
