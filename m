@@ -1,226 +1,131 @@
-Received: from mail-yb1-f170.google.com (mail-yb1-f170.google.com [209.85.219.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam04on2061.outbound.protection.outlook.com [40.107.100.61])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1312A17F1
-	for <iommu@lists.linux.dev>; Tue,  5 Dec 2023 01:53:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B82C317F1
+	for <iommu@lists.linux.dev>; Tue,  5 Dec 2023 01:55:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="ND8PgpdM"
-Received: by mail-yb1-f170.google.com with SMTP id 3f1490d57ef6-db4364ecd6aso2677902276.2
-        for <iommu@lists.linux.dev>; Mon, 04 Dec 2023 17:53:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1701741188; x=1702345988; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=oRH2uAYogUYIUa/oY+a6fjeOWjq8l8YTwpKlfGIpMx0=;
-        b=ND8PgpdMNL0q1h03ZGlapMNwJCF3NCq1B4Lh6qnPUujGELvQqmzzQN8mHGR2c2fGjE
-         3Le9gCRlnkIyiz53jhIyKd/L0l88wIFIyiqBV7Q6xc7WC1wKBaMZEn61i79D1p1RblsO
-         0umY8mbl9NnjBT8zYBkeJuDYrpwDOnZsr7IZt1wJTraru/+tVE+iaqR4kh3AmhggUHY/
-         KrdMiUdnGdmx5bTUF1ULuAyBm84i28sXzc1Cdk3Bi2ycbGt+NAUl+MaJiXe+D746vTgM
-         HB6m+4WXPTUgTDBD+fr7aff3MoI+Z/7185GBoaO0fda3xCdS5YWyMrbYyAY1a7ouQ2Jp
-         coug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701741188; x=1702345988;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=oRH2uAYogUYIUa/oY+a6fjeOWjq8l8YTwpKlfGIpMx0=;
-        b=w+Qtawv50tSLhfJhn6sYu6Cu4vabjM3QlTHRprDGAgBOrTXylorf+6vlderwOeNjhV
-         cYYwJk9zHD2nsSxxN1JscfcYN022wXwQ9leHhyUjH9SJGcAe39FMXkM+pwschBD1E2We
-         VoReQfoABP2awXy6erCvwxQ6vzexXW0XZ9s44g5ixrbv6D8oWt8bHID66On0xKhQbtSc
-         VksAPnhmCxsX+ueJP7eg1E6Thp4X5dWhd8GviMsnc4FHmtVV8RcBKKqh+nQXcjdnD47h
-         BxOgNpSwURYUedmbE+Di6NHNdqObHAg8Ha3GMg9nXrw5vgPXR6iW1W1yJ0gf1+PYHuIH
-         0cZg==
-X-Gm-Message-State: AOJu0YwnB/TdJ/9f/kFOqPReqAyoh/V7AZAEesyLUdXVrSNM3I2l8Ond
-	TSVNopCLHKeeyyu7/sBpY5HEyQ==
-X-Google-Smtp-Source: AGHT+IF4VBn6tyOozvzM9CVoRs+gAsRv4cTJQMkyaZ1xVdhvLbMy7MIth4hCI5Sf5Nd+zU02NLjOhA==
-X-Received: by 2002:a25:9cc3:0:b0:db7:dacf:4d68 with SMTP id z3-20020a259cc3000000b00db7dacf4d68mr2426282ybo.100.1701741187849;
-        Mon, 04 Dec 2023 17:53:07 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-134-23-187.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.134.23.187])
-        by smtp.gmail.com with ESMTPSA id i2-20020a056214030200b0067ac8bedcd4sm1356376qvu.88.2023.12.04.17.53.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Dec 2023 17:53:07 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1rAKcU-00BeKU-SY;
-	Mon, 04 Dec 2023 21:53:06 -0400
-Date: Mon, 4 Dec 2023 21:53:06 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Cc: Baolu Lu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	"Liu, Yi L" <yi.l.liu@intel.com>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>,
-	"Zhao, Yan Y" <yan.y.zhao@intel.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v7 12/12] iommu: Improve iopf_queue_flush_dev()
-Message-ID: <20231205015306.GQ1489931@ziepe.ca>
-References: <20231115030226.16700-1-baolu.lu@linux.intel.com>
- <20231115030226.16700-13-baolu.lu@linux.intel.com>
- <20231201203536.GG1489931@ziepe.ca>
- <a0ef3a4f-88fc-40fe-9891-495d1b6b365b@linux.intel.com>
- <20231203141414.GJ1489931@ziepe.ca>
- <2354dd69-0179-4689-bc35-f4bf4ea5a886@linux.intel.com>
- <BN9PR11MB5276999D29A133F33C3C4FEA8C86A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20231204132503.GL1489931@ziepe.ca>
- <BN9PR11MB5276908231BA164E4AF8806F8C85A@BN9PR11MB5276.namprd11.prod.outlook.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="iahTnkKj"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=SIvRtq0NxmrD4TLltKDiHCWcBELW4ErHnf1ehgyROjlI70f6HVlY20XU3QHChbmGK2ZqBbIJrUUe3tgOz6Sl5AmvYKi80FpTMG4J/E/ZzN3lKoa3BNyKq8E0Mk+tkLpZkTvzuEuEkz68nE2Yx+scSsbCKGytJh6gWnfAGwW7mDjOpa35uU7flRI78rWGrUIEh7fVq6Af10/a+M9tsu3O5dRH8nPWmDNA3m8JWpdcszQyKj6Z0tB86NKIEJwq+FXQgppRJkLcDYnAIfW93xhkJefRIAH8H3fGZfKbo5RtLCluundOqDetpb7ka/jBBvara0F/flgEG/VUxRxiz+1WOQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=z53gardtjvDUhpMLHGbKmmBbzrCmPPo6Yt52hlj0yBg=;
+ b=FB+UTgMMQasYVFiWa57i5vF/enJarA+qFz1cojpm5TH9/Ufrx/p3l2Cwo3vPTfiGKVjmhhFX2SU72/sHRpxFbB/REKW9hUHm8otO+Gdi5Dw5HRgViYO5Ky5UdhS93bZYGmkc9ApjaKEsBiSsRPXINNxsAlRMdNezY0oMs+vf0oBlJQoffSc4bfj6uoyGdPXwntuj1W8cm10jJ+AbRqbn0jzljStbVJOUNscsXpumcsfN0BQbMyFlpgbugSiUvgsLE2BYeEI1iWdbOQ/7p6+FEPwvXz6CKH0WU19OQlxVyptGxRbEojkPVYs65jaFmPPqWb4x00cbBvPD3tcxUZ86dw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=z53gardtjvDUhpMLHGbKmmBbzrCmPPo6Yt52hlj0yBg=;
+ b=iahTnkKjRuZGa2oPKyw6D0N1h6LNJ6vXU1CyQjRCn1vj9Qwk2iQMkUNYCtS1drAIffQvJtMrJTchVMo7ENkoijBGi8AJwGIjExMKteefOvEKSiJinr78ZDEzxTct8RjVvEFNPrXAfv7POB01yMKcOOtvlvSYnSwPzF8kuqO+RHSZ5wpTxbpk4RHevr3+3ulPGl+G2sauKvW1IPZPDfnIuWlH5MBZgHzAkK1o6lJB169btf5HZWmwI7s2iwk4dZwteyhcozS1YDZis+8Wg6AAoRwLwJtugCO21AXpd88rQGEv4jpm749Clk2GboNkS+ur7fpCWvfp0TPnuZXe8d4SkQ==
+Received: from CY5PR15CA0131.namprd15.prod.outlook.com (2603:10b6:930:68::22)
+ by CH3PR12MB8457.namprd12.prod.outlook.com (2603:10b6:610:154::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7046.34; Tue, 5 Dec
+ 2023 01:55:16 +0000
+Received: from CY4PEPF0000EDD2.namprd03.prod.outlook.com
+ (2603:10b6:930:68:cafe::ed) by CY5PR15CA0131.outlook.office365.com
+ (2603:10b6:930:68::22) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7046.34 via Frontend
+ Transport; Tue, 5 Dec 2023 01:55:16 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ CY4PEPF0000EDD2.mail.protection.outlook.com (10.167.241.206) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.7068.20 via Frontend Transport; Tue, 5 Dec 2023 01:55:15 +0000
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Mon, 4 Dec 2023
+ 17:55:06 -0800
+Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail202.nvidia.com
+ (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Mon, 4 Dec 2023
+ 17:55:06 -0800
+Received: from Asurada-Nvidia (10.127.8.10) by mail.nvidia.com (10.129.68.6)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41 via Frontend
+ Transport; Mon, 4 Dec 2023 17:55:05 -0800
+Date: Mon, 4 Dec 2023 17:55:03 -0800
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: <iommu@lists.linux.dev>, Joerg Roedel <joro@8bytes.org>,
+	<linux-arm-kernel@lists.infradead.org>, Robin Murphy <robin.murphy@arm.com>,
+	Will Deacon <will@kernel.org>, Michael Shavit <mshavit@google.com>,
+	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+Subject: Re: [PATCH v2 07/19] iommu/arm-smmu-v3: Move the STE generation for
+ S1 and S2 domains into functions
+Message-ID: <ZW6C9yepEVC1amuu@Asurada-Nvidia>
+References: <0-v2-de8b10590bf5+400-smmuv3_newapi_p1_jgg@nvidia.com>
+ <7-v2-de8b10590bf5+400-smmuv3_newapi_p1_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <BN9PR11MB5276908231BA164E4AF8806F8C85A@BN9PR11MB5276.namprd11.prod.outlook.com>
+In-Reply-To: <7-v2-de8b10590bf5+400-smmuv3_newapi_p1_jgg@nvidia.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CY4PEPF0000EDD2:EE_|CH3PR12MB8457:EE_
+X-MS-Office365-Filtering-Correlation-Id: 6215c791-95b5-4d47-92b0-08dbf5353a29
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	G/1unLSPixQVt3sckFAXUn056fBzUBZZSsYWAy43nPNnc6H3wZqT7bDb61t7LjJpQWLBDs2QnnmxKlaxE0Iu4zGklJe4Xu4nnGDZGyIWFMQt2CDMst7l3srkAOvIPYGSaMhi9my3by+5ZOubQsjZd72nKs5j1Qcrb3sA3wSqGR8AAwPggr0cPQ32VhmZzdhwyxpwu5hVO/9ccJ/EaFFHR2oF2Cn20kG1umtLZZowbTz5NYrSeXW0liLxyqKv5rUZ+St1n4lj5rtbKPpXamejk/VBXmMWt5DRtEpUWbFdidaFAprZcDNc4d26yoIQdNjmnTTMWaUohSpthXj0yrDM1ZtSNTQRT198wdW6/00U541kuw0CAkonpRRaTmB+zEptSqHn1nkk+Zc9P3bEniqi+pAqagaEwxKtZiOol1bmxXGi2J5m3q6ZqC8Zyyfl9c8kx5ZJzyNViyCxsRJVe2eWrIPijyR+dnKRMWEQw6tM8Yvw06mjz6EPGR6Jsi/kAqw9EWn7uZ2SY6hOdVvYoA/b3UqywHMCM1ztMA5K0Jv8653+eFEYAUdbipbatTIYazfUSv2TH+v/Sj6QSBEsSRQxz+mcI96PTKII4EOQGq9tG2OyBziSip1qUtBcN1os7kvrdg8BueVV0m6DJ4rxggtwBVEIKBb4dWEpsTPezfBgQ84cuCGIZyoci7NSnFOoQ/G+kzB7bbLhdGs+YZUKCu0HPyAGqd/fGyzYy3f+W1W2nKAzVmvctOloddAqowT+lEdG
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230031)(4636009)(346002)(376002)(136003)(39860400002)(396003)(230922051799003)(451199024)(1800799012)(186009)(82310400011)(64100799003)(46966006)(40470700004)(36840700001)(8936002)(8676002)(6862004)(4326008)(26005)(9686003)(40460700003)(54906003)(316002)(70586007)(6636002)(70206006)(478600001)(41300700001)(4744005)(5660300002)(33716001)(2906002)(86362001)(47076005)(36860700001)(40480700001)(82740400003)(356005)(7636003)(55016003)(336012)(426003);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Dec 2023 01:55:15.9838
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6215c791-95b5-4d47-92b0-08dbf5353a29
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	CY4PEPF0000EDD2.namprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR12MB8457
 
-On Tue, Dec 05, 2023 at 01:32:26AM +0000, Tian, Kevin wrote:
-> > From: Jason Gunthorpe <jgg@ziepe.ca>
-> > Sent: Monday, December 4, 2023 9:25 PM
-> > 
-> > On Mon, Dec 04, 2023 at 05:37:13AM +0000, Tian, Kevin wrote:
-> > > > From: Baolu Lu <baolu.lu@linux.intel.com>
-> > > > Sent: Monday, December 4, 2023 9:33 AM
-> > > >
-> > > > On 12/3/23 10:14 PM, Jason Gunthorpe wrote:
-> > > > > On Sun, Dec 03, 2023 at 04:53:08PM +0800, Baolu Lu wrote:
-> > > > >> Even if atomic replacement were to be implemented,
-> > > > >> it would be necessary to ensure that all translation requests,
-> > > > >> translated requests, page requests and responses for the old domain
-> > are
-> > > > >> drained before switching to the new domain.
-> > > > >
-> > > > > Again, no it isn't required.
-> > > > >
-> > > > > Requests simply have to continue to be acked, it doesn't matter if
-> > > > > they are acked against the wrong domain because the device will simply
-> > > > > re-issue them..
-> > > >
-> > > > Ah! I start to get your point now.
-> > > >
-> > > > Even a page fault response is postponed to a new address space, which
-> > > > possibly be another address space or hardware blocking state, the
-> > > > hardware just retries.
-> > >
-> > > if blocking then the device shouldn't retry.
-> > 
-> > It does retry.
-> > 
-> > The device is waiting on a PRI, it gets back an completion. It issues
-> > a new ATS (this is the rety) and the new-domain responds back with a
-> > failure indication.
+On Mon, Nov 13, 2023 at 01:53:14PM -0400, Jason Gunthorpe wrote:
+> This is preparation to move the STE calculation higher up in to the call
+> chain and remove arm_smmu_write_strtab_ent(). These new functions will be
+> called directly from attach_dev.
 > 
-> I'm not sure that is the standard behavior defined by PCIe spec.
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 
-> According to "10.4.2 Page Request Group Response Message", function's
-> response to Page Request failure is implementation specific.
-> 
-> so a new ATS is optional and likely the device will instead abort the DMA
-> if PRI response already indicates a failure.
+> +static void arm_smmu_make_cdtable_ste(struct arm_smmu_ste *target,
+> +				      struct arm_smmu_master *master,
+> +				      struct arm_smmu_ctx_desc_cfg *cd_table)
+> +{
+> +	struct arm_smmu_device *smmu = master->smmu;
+> +
+> +	memset(target, 0, sizeof(*target));
+> +	target->data[0] = cpu_to_le64(
 
-I didn't said the PRI would fail, I said the ATS would fail with a
-non-present.
+Nit: can add a line in-between like arm_smmu_make_s2_domain_ste does?
 
-It has to work this way or it is completely broken with respect to
-existing races in the mm side. Agents must retry non-present ATS
-answers until you get a present or a ATS failure.
+Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
 
-> > Again, all racy. If a DMA is ongoing at the same instant things are
-> > changed there is no definitive way to say if it resolved before or
-> > after.
-> > 
-> > The only thing we care about is that dmas that are completed before
-> > see the before translation and dmas that are started after see the
-> > after translation.
-> > 
-> > DMAs that cross choose one at random.
-> 
-> Yes that makes sense for replacement.
-> 
-> But here we are talking about a draining requirement when disabling
-> a pasid entry, which is certainly not involved in replacement.
-
-It is the same argument, you are replacing a PTE that was non-present
-with one that is failing/blocking - the result of a DMA that crosses
-this event can be either.
-
-> > > I don't think atomic replace is the main usage for this draining
-> > > requirement. Instead I'm more interested in the basic popular usage:
-> > > attach-detach-attach and not convinced that no draining is required
-> > > between iommu/device to avoid interference between activities
-> > > from old/new address space.
-> > 
-> > Something like IDXD needs to halt DMAs on the PASID and flush all
-> > outstanding DMA to get to a state where the PASID is quiet from the
-> > device perspective. This is the only way to stop interference.
-> 
-> why is it IDXD specific behavior? I suppose all devices need to quiesce
-> the outstanding DMAs when tearing down the binding between the
-> PASID and previous address space.
-
-Because it is so simple HW I assume this is why this code is being
-pushed here :)
-
-> but there are also terminal conditions e.g. when a workqueue is
-> reset after hang hence additional draining is required from the 
-> iommu side to ensure all the outstanding page requests/responses
-> are properly handled.
-
-Then it should be coded as an explicit drain request from device when
-and where they need it.
-
-It should not be integrated into the iommu side because it is
-nonsensical. Devices expecting consistent behavior must stop DMA
-before changing translation, and if they need help to do it they must
-call APIs. Changing translation is not required after a so called
-"terminal event".
-
-> vt-d spec defines a draining process to cope with those terminal
-> conditions (see 7.9 Pending Page Request Handling on Terminal
-> Conditions). intel-iommu driver just implements it by default for
-> simplicity (one may consider providing explicit API for drivers to
-> call but not sure of the necessity if such terminal conditions
-> apply to most devices). anyway this is not a fast path.
-
-It is not "by default" it is in the wrong place. These terminal
-conditions are things like FLR. FLR has nothing to do with changing
-the translation. I can trigger FLR and keep the current translation
-and still would want to flush out all the PRIs before starting DMA
-again to avoid protocol confusion.
-
-An API is absolutely necessary. Confusing the cases that need draining
-with translation change is just not logically right.
-
-eg we do need to modify VFIO to do the drain on FLR like the spec
-explains!
-
-Draining has to be ordered correctly with whatever the device is
-doing. Drain needs to come after FLR, for instance. It needs to come
-after a work queue reset, because drain doesn't make any sense unless
-it is coupled with a DMA stop at the device.
-
-Hacking a DMA stop by forcing a blocking translation is not logically
-correct, with wrong ordering the device may see unexpected translation
-failures which may trigger AERs or bad things..
-
-> another example might be stop marker. A device using stop marker
-> doesn't need to wait for outstanding page requests. According to PCIe
-> spec (10.4.1.2 Managing PASID Usage on PRG Requests) the device
-> simply marks outstanding page request as stale and sends a stop
-> marker message to the IOMMU. Page responses for those stale
-> requests are ignored. But presumably the iommu driver still needs
-> to drain those requests until the stop marker message in unbind
-> to avoid them incorrectly routed to a new address space in case the
-> PASID is rebound to another process immediately.
-
-Stop marker doesn't change anything, in all processing it just removes
-requests that have yet to complete. If a device is using stop then
-most likely the whole thing is racy and the OS simply has to be ready
-to handle stop at any time.
-
-Jason
+> +static void arm_smmu_make_s2_domain_ste(struct arm_smmu_ste *target,
+> +					struct arm_smmu_master *master,
+> +					struct arm_smmu_domain *smmu_domain)
+> +{
+> +	struct arm_smmu_s2_cfg *s2_cfg = &smmu_domain->s2_cfg;
+> +
+> +	memset(target, 0, sizeof(*target));
+> +
+> +	target->data[0] = cpu_to_le64(
