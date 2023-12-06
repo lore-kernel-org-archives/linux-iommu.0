@@ -1,55 +1,49 @@
-Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.93])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB3FA1BDDC
-	for <iommu@lists.linux.dev>; Wed,  6 Dec 2023 09:57:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED1F330333;
+	Wed,  6 Dec 2023 10:43:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="YyOeyAXb"
-Received: by mail-wm1-f52.google.com with SMTP id 5b1f17b1804b1-40b397793aaso3695435e9.0
-        for <iommu@lists.linux.dev>; Wed, 06 Dec 2023 01:57:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1701856629; x=1702461429; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=6WOufZeE4P5YrzNvJiHEpQChOUhjcC+wU9d3XJlhAto=;
-        b=YyOeyAXbnokpE/B+J6iF97+f7U2E7d4YljYWF96A0PrtKJrS4867TWNck5lYo88h56
-         TxSnja/vukTRFUa4eC0wd3hWraZJpUZqics2fSsZLdUV8kW7cRshaWHATzfXsNesYR6h
-         SKu8NDpTaY2tVQyQQYkMDkCqMqRUwntsE7+/6YqorxHk6hh5UnsNlCZ1aU2lo+7i2JUu
-         Qb7fwhp5UPZ9Lhbirovg1GBIHF7vbft3fIjywKq6YXWONq7KhENXoBqLaKEfZy4BfazW
-         JAdIDfggaY+x/aE13MTOtpw/a1JLfSYPSZfcfFt/M9uuAECMuEoLeqY6zStWYVRGOISY
-         J+nQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701856629; x=1702461429;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=6WOufZeE4P5YrzNvJiHEpQChOUhjcC+wU9d3XJlhAto=;
-        b=RfVszff27t1ful/1RyYHTNdT1tXrr5rjFbFk8Ne9UavGaSrVv38fuz3CyTMBVZNPng
-         pHKwuJ7qNbmxPI/oF/4uG3Ca/sugIQQfZPXU+NNky5Svu/5rEar0LnkVnvVIabIM8jD7
-         qgXhUErCKCFF6iod0sc/894js8VJ3+cqsZjSg+5VkRWSL2LOxOqcYG7agT7ViF1ZB/Tw
-         m5bpwdfJxa2om7Gc2e966OwCzH8yP3DerOWBWKD5LZ7EBHTVcKJUgDYrUM61yZDSewy1
-         SvUrpboxpsH/uNDPQ9hs1cJrNUX8GjhJfxHc2dVNH9BOHzrKTKKDa0U4Mmiqusu3hUFI
-         5uiA==
-X-Gm-Message-State: AOJu0Yw9Z+pWuUALiHAYuc0mVTFCRI89qW80CWsvzvfil+f9ZXCXLvPO
-	CBZdB/Z14n9PrPd+9wVOlm+/dA==
-X-Google-Smtp-Source: AGHT+IFsH8K0hxbQzyVbZh44+ZBYduzN3cYJsMNckKn76oaG9oDcMavmkJSmuqzOJjocAnEZClHfhw==
-X-Received: by 2002:a05:600c:4d8f:b0:40b:5e56:7b42 with SMTP id v15-20020a05600c4d8f00b0040b5e567b42mr1439954wmp.139.1701856629051;
-        Wed, 06 Dec 2023 01:57:09 -0800 (PST)
-Received: from myrica ([2.221.137.100])
-        by smtp.gmail.com with ESMTPSA id f13-20020a5d64cd000000b003334898aafasm8182940wri.11.2023.12.06.01.57.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Dec 2023 01:57:08 -0800 (PST)
-Date: Wed, 6 Dec 2023 09:57:17 +0000
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: Zhangfei Gao <zhangfei.gao@linaro.org>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Jason Gunthorpe <jgg@nvidia.com>, iommu@lists.linux.dev,
-	kvm@vger.kernel.org, Wenkai Lin <linwenkai6@hisilicon.com>
-Subject: Re: [PATCH] iommu/arm-smmu-v3: disable stall for quiet_cd
-Message-ID: <20231206095717.GA2643771@myrica>
-References: <20231206005727.46150-1-zhangfei.gao@linaro.org>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Bn6ijy6K"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1701859412; x=1733395412;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Xi/Tvlsu8RZu+OF2u1C2q0qQLAQ8vl2Z9OL3pG5pHY0=;
+  b=Bn6ijy6Kt5aDwAYCsuXPlrZRI/yK5efvewNX2hl2DYGVvBlEDrF15py+
+   Hy23Fuynlokr2aoEvLd2PYfk84gjJogjj3p5uuxhV1dmciLHL3IDcVkH9
+   Z/9jCJ57kHlKrCbaJZJIf4WDj44AnzOvykjvwwDc5OZTrCF2R3vW/y792
+   +Dv1oSJF+bIoNKwHZYIijgYo5JFIFXeaKyDsmfit7/+k8t7bAvcXc+P9J
+   JTqid6rw4NnMHVBAselTy07+8yhL5Yo57eOIbXV9bQGHBCAta69HXutZP
+   L+QgTof5jgFwaUXjX4HYQIg8DfI3Dmj+d5PEnYbFWKuCP62yqZrEHc1AZ
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10915"; a="391213754"
+X-IronPort-AV: E=Sophos;i="6.04,254,1695711600"; 
+   d="scan'208";a="391213754"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Dec 2023 02:43:31 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10915"; a="1018524737"
+X-IronPort-AV: E=Sophos;i="6.04,254,1695711600"; 
+   d="scan'208";a="1018524737"
+Received: from lkp-server02.sh.intel.com (HELO b07ab15da5fe) ([10.239.97.151])
+  by fmsmga006.fm.intel.com with ESMTP; 06 Dec 2023 02:43:30 -0800
+Received: from kbuild by b07ab15da5fe with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1rApNI-000AeK-1L;
+	Wed, 06 Dec 2023 10:43:28 +0000
+Date: Wed, 6 Dec 2023 18:42:37 +0800
+From: kernel test robot <lkp@intel.com>
+To: Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org, jgg@ziepe.ca,
+	kevin.tian@intel.com
+Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev, will@kernel.org,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] iommufd/selftest: Use normal IOMMU registration
+Message-ID: <202312061821.knvqS2Hz-lkp@intel.com>
+References: <44ee6854da69e86b208f49752f60a4c18205c32a.1701165201.git.robin.murphy@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -58,54 +52,56 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20231206005727.46150-1-zhangfei.gao@linaro.org>
+In-Reply-To: <44ee6854da69e86b208f49752f60a4c18205c32a.1701165201.git.robin.murphy@arm.com>
 
-On Wed, Dec 06, 2023 at 08:57:27AM +0800, Zhangfei Gao wrote:
-> From: Wenkai Lin <linwenkai6@hisilicon.com>
-> 
-> In the stall model, invalid transactions were expected to be
-> stalled and aborted by the IOPF handler.
-> 
-> However, when killing a test case with a huge amount of data, the
-> accelerator streamline can not stop until all data is consumed
-> even if the page fault handler reports errors. As a result, the
-> kill may take a long time, about 10 seconds with numerous iopf
-> interrupts.
-> 
-> So disable stall for quiet_cd in the non-force stall model, since
-> force stall model (STALL_MODEL==0b10) requires CD.S must be 1.
-> 
-> Signed-off-by: Zhangfei Gao <zhangfei.gao@linaro.org>
-> Signed-off-by: Wenkai Lin <linwenkai6@hisilicon.com>
-> Suggested-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Hi Robin,
 
-Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+kernel test robot noticed the following build warnings:
 
-> ---
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 3 +++
->  1 file changed, 3 insertions(+)
-> 
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index 7445454c2af2..7086e5fa41ff 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -1063,6 +1063,7 @@ int arm_smmu_write_ctx_desc(struct arm_smmu_master *master, int ssid,
->  	bool cd_live;
->  	__le64 *cdptr;
->  	struct arm_smmu_ctx_desc_cfg *cd_table = &master->cd_table;
-> +	struct arm_smmu_device *smmu = master->smmu;
->  
->  	if (WARN_ON(ssid >= (1 << cd_table->s1cdmax)))
->  		return -E2BIG;
-> @@ -1077,6 +1078,8 @@ int arm_smmu_write_ctx_desc(struct arm_smmu_master *master, int ssid,
->  	if (!cd) { /* (5) */
->  		val = 0;
->  	} else if (cd == &quiet_cd) { /* (4) */
-> +		if (!(smmu->features & ARM_SMMU_FEAT_STALL_FORCE))
-> +			val &= ~(CTXDESC_CD_0_S | CTXDESC_CD_0_R);
->  		val |= CTXDESC_CD_0_TCR_EPD0;
->  	} else if (cd_live) { /* (3) */
->  		val &= ~CTXDESC_CD_0_ASID;
-> -- 
-> 2.39.3 (Apple Git-145)
-> 
+[auto build test WARNING on next-20231128]
+[cannot apply to joro-iommu/next v6.7-rc3 v6.7-rc2 v6.7-rc1 linus/master v6.7-rc4]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Robin-Murphy/iommufd-selftest-Use-a-fwnode-to-distinguish-devices/20231128-185058
+base:   next-20231128
+patch link:    https://lore.kernel.org/r/44ee6854da69e86b208f49752f60a4c18205c32a.1701165201.git.robin.murphy%40arm.com
+patch subject: [PATCH 2/2] iommufd/selftest: Use normal IOMMU registration
+config: x86_64-allyesconfig (https://download.01.org/0day-ci/archive/20231206/202312061821.knvqS2Hz-lkp@intel.com/config)
+compiler: clang version 16.0.4 (https://github.com/llvm/llvm-project.git ae42196bc493ffe877a7e3dff8be32035dea4d07)
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20231206/202312061821.knvqS2Hz-lkp@intel.com/reproduce)
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202312061821.knvqS2Hz-lkp@intel.com/
+
+All warnings (new ones prefixed by >>):
+
+>> drivers/iommu/iommufd/selftest.c:1323:12: warning: no previous prototype for function 'iommufd_bus_init' [-Wmissing-prototypes]
+   int __init iommufd_bus_init(void)
+              ^
+   drivers/iommu/iommufd/selftest.c:1323:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   int __init iommufd_bus_init(void)
+   ^
+   static 
+   drivers/iommu/iommufd/selftest.c:515:1: warning: unused function 'get_md_pagetable_nested' [-Wunused-function]
+   get_md_pagetable_nested(struct iommufd_ucmd *ucmd, u32 mockpt_id,
+   ^
+   2 warnings generated.
+
+
+vim +/iommufd_bus_init +1323 drivers/iommu/iommufd/selftest.c
+
+  1322	
+> 1323	int __init iommufd_bus_init(void)
+  1324	{
+  1325		return bus_register(&iommufd_mock_bus_type);
+  1326	}
+  1327	subsys_initcall(iommufd_bus_init);
+  1328	
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
