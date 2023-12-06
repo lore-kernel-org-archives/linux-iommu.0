@@ -1,49 +1,49 @@
 Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 90E2D47F49
-	for <iommu@lists.linux.dev>; Wed,  6 Dec 2023 19:50:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 19C4D47F7A
+	for <iommu@lists.linux.dev>; Wed,  6 Dec 2023 20:09:19 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="v+urtsd1";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="lGzQtl9x"
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="qeV8sL4N";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="wO9GqRfs"
 From: Thomas Gleixner <tglx@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1701892225;
+	s=2020; t=1701893358;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=9Dhk4+zCj2bSVdaz1f+DwCjhCz2nloe+08Lq1HubewE=;
-	b=v+urtsd1FTU9ZhLnfNMCVE4t5FHdgO9qBV8ZKGd9TpMRxHH/CEWRGbEy4B+0vGbO4suTau
-	wkZdYWlpRePNfzJLQy0BJa0Rh5RCB44e1qerQk/+rqH2Kuxw1JD5rXXd38vUPHy/UaNfD7
-	CuB044qCEi9KUXNO4sdAO5+XlNWUFZr+rKjuYaZ45SI2Tr1BVqhKMx/ElfSYpG8SqoBKQl
-	i5d9YiXVBrEUTzLU+M+B8U1EhdRdYXYjwtG+Inz5kqy416Tc2thKlKAt2VcOgX5ZLSfzzD
-	av1/CKw9UkzTHaJ5OGGwop03VQVPbDBCweKuV1mA0BYPlLNulU2MD3+7iOvLag==
+	bh=7dbW0vrOnX4IbvYPSelJWPZTu1xdvo3BzQO97dlKHxY=;
+	b=qeV8sL4NtDdpC+v98nxJ4YFKVOOWfHp2g6n3wWz51mR3auxn6LBI0HtkY4MvRXiDWwNVoP
+	wNpoHq/gBo82SQ6AAblKYvofi0cnZSmpkGq+AJgot54INj94Wsb7mnVGhhS7TWa4aBA0ro
+	XZh/QZPNCZgbSR68EModhMZezBhyZYqi50JYNEbFW7YGIoxwicQc6OW327a/9s0kmYvbIt
+	L6VsFYRDQfBpTt/alXFH1z9XxlwgKo6yaVs477xVLupTh6J/7Pwzlb1NcwQpJMdVuc+oN8
+	98LsEDjHF5IjePvq9BSSpYXSKNgCObJMxVu8faYOVYl54tC684CMmgwiz2fObg==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1701892225;
+	s=2020e; t=1701893358;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=9Dhk4+zCj2bSVdaz1f+DwCjhCz2nloe+08Lq1HubewE=;
-	b=lGzQtl9x+ofH+fpqUAxl6pXbPHwEXsgGEzAYM7ctVOK90MAjAnLeYQaVWkrQ4Jcv/RiiwP
-	ECczWzS12VAPxEBA==
-To: Peter Zijlstra <peterz@infradead.org>, Jacob Pan
- <jacob.jun.pan@linux.intel.com>
-Cc: LKML <linux-kernel@vger.kernel.org>, X86 Kernel <x86@kernel.org>,
+	bh=7dbW0vrOnX4IbvYPSelJWPZTu1xdvo3BzQO97dlKHxY=;
+	b=wO9GqRfsT0j4miTOei94cHhFBtNkngyWls/haTanPD0XtoG5yo1CZiFdGQTTKhwHhkTvkZ
+	+Egma6PkYZuw3mBQ==
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>, LKML
+ <linux-kernel@vger.kernel.org>, X86 Kernel <x86@kernel.org>,
  iommu@lists.linux.dev, Lu Baolu <baolu.lu@linux.intel.com>,
  kvm@vger.kernel.org, Dave Hansen <dave.hansen@intel.com>, Joerg Roedel
  <joro@8bytes.org>, "H. Peter Anvin" <hpa@zytor.com>, Borislav Petkov
- <bp@alien8.de>, Ingo Molnar <mingo@redhat.com>, Raj Ashok
- <ashok.raj@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>,
- maz@kernel.org, seanjc@google.com, Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH RFC 09/13] x86/irq: Install posted MSI notification handler
-In-Reply-To: <20231115125624.GF3818@noisy.programming.kicks-ass.net>
+ <bp@alien8.de>, Ingo Molnar <mingo@redhat.com>
+Cc: Raj Ashok <ashok.raj@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>,
+ maz@kernel.org, peterz@infradead.org, seanjc@google.com, Robin Murphy
+ <robin.murphy@arm.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>
+Subject: Re: [PATCH RFC 10/13] x86/irq: Handle potential lost IRQ during
+ migration and CPU offline
+In-Reply-To: <20231112041643.2868316-11-jacob.jun.pan@linux.intel.com>
 References: <20231112041643.2868316-1-jacob.jun.pan@linux.intel.com>
- <20231112041643.2868316-10-jacob.jun.pan@linux.intel.com>
- <20231115125624.GF3818@noisy.programming.kicks-ass.net>
-Date: Wed, 06 Dec 2023 20:50:24 +0100
-Message-ID: <87cyvjun3z.ffs@tglx>
+ <20231112041643.2868316-11-jacob.jun.pan@linux.intel.com>
+Date: Wed, 06 Dec 2023 21:09:17 +0100
+Message-ID: <87a5qnum8i.ffs@tglx>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,101 +52,100 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain
 
-On Wed, Nov 15 2023 at 13:56, Peter Zijlstra wrote:
+On Sat, Nov 11 2023 at 20:16, Jacob Pan wrote:
+> Though IRTE modification for IRQ affinity change is a atomic operation,
+> it does not guarantee the timing of IRQ posting at PID.
+
+No acronyms please.
+
+> considered the following scenario:
+> 	Device		system agent		iommu		memory 		CPU/LAPIC
+> 1	FEEX_XXXX
+> 2			Interrupt request
+> 3						Fetch IRTE	->
+> 4						->Atomic Swap PID.PIR(vec)
+> 						Push to Global Observable(GO)
+> 5						if (ON*)
+> 	i						done;*
+> 						else
+> 6							send a notification ->
 >
-> Would it not make more sense to write things something like:
+> * ON: outstanding notification, 1 will suppress new notifications
 >
-> bool handle_pending_pir()
-> {
-> 	bool handled = false;
-> 	u64 pir_copy[4];
+> If IRQ affinity change happens between 3 and 5 in IOMMU, old CPU's PIR could
+> have pending bit set for the vector being moved. We must check PID.PIR
+> to prevent the lost of interrupts.
+
+We must check nothing. We must ensure that the code is correct, right?
+
+> Suggested-by: Thomas Gleixner <tglx@linutronix.de>
+> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> ---
+>  arch/x86/kernel/apic/vector.c |  8 +++++++-
+>  arch/x86/kernel/irq.c         | 20 +++++++++++++++++---
+>  2 files changed, 24 insertions(+), 4 deletions(-)
 >
-> 	for (i = 0; i < 4; i++) {
-> 		if (!pid-pir_l[i]) {
-> 			pir_copy[i] = 0;
-> 			continue;
-> 		}
->
-> 		pir_copy[i] = arch_xchg(&pir->pir_l[i], 0);
-> 		handled |= true;
-> 	}
->
-> 	if (!handled)
-> 		return handled;
->
-> 	for_each_set_bit()
-> 		....
->
-> 	return handled.
-> }
+> diff --git a/arch/x86/kernel/apic/vector.c b/arch/x86/kernel/apic/vector.c
+> index 319448d87b99..14fc33cfdb37 100644
+> --- a/arch/x86/kernel/apic/vector.c
+> +++ b/arch/x86/kernel/apic/vector.c
+> @@ -19,6 +19,7 @@
+>  #include <asm/apic.h>
+>  #include <asm/i8259.h>
+>  #include <asm/desc.h>
+> +#include <asm/posted_intr.h>
+>  #include <asm/irq_remapping.h>
+>  
+>  #include <asm/trace/irq_vectors.h>
+> @@ -978,9 +979,14 @@ static void __vector_cleanup(struct vector_cleanup *cl, bool check_irr)
+>  		 * Do not check IRR when called from lapic_offline(), because
+>  		 * fixup_irqs() was just called to scan IRR for set bits and
+>  		 * forward them to new destination CPUs via IPIs.
+> +		 *
+> +		 * If the vector to be cleaned is delivered as posted intr,
+> +		 * it is possible that the interrupt has been posted but
+> +		 * not made to the IRR due to coalesced notifications.
 
-I don't understand what the whole copy business is about. It's
-absolutely not required.
+not made to?
 
-static bool handle_pending_pir(unsigned long *pir)
-{
-        unsigned int idx, vec;
-	bool handled = false;
-        unsigned long pend;
-        
-        for (idx = 0; offs < 4; idx++) {
-                if (!pir[idx])
-                	continue;
-		pend = arch_xchg(pir + idx, 0);
-                for_each_set_bit(vec, &pend, 64)
-			call_irq_handler(vec + idx * 64, NULL);
-                handled = true;
-	}
-        return handled;
-}
+> +		 * Therefore, check PIR to see if the interrupt was posted.
+>  		 */
+>  		irr = check_irr ? apic_read(APIC_IRR + (vector / 32 * 0x10)) : 0;
+> -		if (irr & (1U << (vector % 32))) {
+> +		if (irr & (1U << (vector % 32)) || is_pi_pending_this_cpu(vector)) {
 
-No?
+The comment above this code clearly explains what check_irr is
+about. Why would the PIR pending check have different rules? Just
+because its PIR, right?
 
-> sysvec_posted_blah_blah()
-> {
-> 	bool done = false;
-> 	bool handled;
->
-> 	for (;;) {
-> 		handled = handle_pending_pir();
-> 		if (done)
-> 			break;
-> 		if (!handled || ++loops > MAX_LOOPS) {
+>  
+> +/*
+> + * Check if a given vector is pending in APIC IRR or PIR if posted interrupt
+> + * is enabled for coalesced interrupt delivery (CID).
+> + */
+> +static inline bool is_vector_pending(unsigned int vector)
+> +{
+> +	unsigned int irr;
+> +
+> +	irr = apic_read(APIC_IRR + (vector / 32 * 0x10));
+> +	if (irr  & (1 << (vector % 32)))
+> +		return true;
+> +
+> +	return is_pi_pending_this_cpu(vector);
+> +}
 
-That does one loop too many. Should be ++loops == MAX_LOOPS. No?
+Why is this outside of the #ifdef region? Just because there was space
+to put it, right?
 
-> 			pi_clear_on(pid);
-> 			/* once more after clear_on */
-> 			done = true;
-> 		}
-> 	}
-> }
->
->
-> Hmm?
+And of course we need the same thing open coded in two locations.
 
-I think that can be done less convoluted.
+What's wrong with using this inline function in __vector_cleanup() too?
 
-{
-	struct pi_desc *pid = this_cpu_ptr(&posted_interrupt_desc);
-	struct pt_regs *old_regs = set_irq_regs(regs);
-        int loops;
+	if (check_irr && vector_is_pending(vector)) {
+        	pr_warn_once(...);
+                ....
+        }
 
-	for (loops = 0;;) {
-        	bool handled = handle_pending_pir((unsigned long)pid->pir);
+That would make the logic of __vector_cleanup() correct _AND_ share the
+code.
 
-                if (++loops > MAX_LOOPS)
-                	break;
-
-                if (!handled || loops == MAX_LOOPS) {
-                	pi_clear_on(pid);
-                        /* Break the loop after handle_pending_pir()! */
-                        loops = MAX_LOOPS;
-                }
-	}
-
-	...
-	set_irq_regs(old_regs);
-}
-
-Hmm? :)
