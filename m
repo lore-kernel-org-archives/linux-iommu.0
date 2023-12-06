@@ -1,109 +1,157 @@
-Received: from mail-oi1-f169.google.com (mail-oi1-f169.google.com [209.85.167.169])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.93])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BDDC4651
-	for <iommu@lists.linux.dev>; Wed,  6 Dec 2023 00:57:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F922EBC
+	for <iommu@lists.linux.dev>; Wed,  6 Dec 2023 01:25:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="xsWqQhuG"
-Received: by mail-oi1-f169.google.com with SMTP id 5614622812f47-3b84e328327so3692427b6e.2
-        for <iommu@lists.linux.dev>; Tue, 05 Dec 2023 16:57:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1701824257; x=1702429057; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=15PtUMzm1CCv273Hbndys2UZ7tBEJDNkUXj6E0nA6q4=;
-        b=xsWqQhuGItDZGqw9I6XpWHKZn/PAJhjNk5hLDIab0jM68/yBYIAqgIb0AUSEqhwdA8
-         thQVMZSxjiXqLA6fIileEvZANYsvKYpfquTkjkOKM+KP0JqdiY/uOiJk+FN1xwtmVRs8
-         r1PGJCkarfkrTiedsbC125keOUKbo40XSP9Ar7sSKdrZnbQthkiovFTHYHlXZ0DX85yX
-         xCnSnNKszjSScyZAE7m1EqBkk+ZzraDX1n5AbD2IO5htYE/dkbx/IKZV5Lfy2iXBmDQy
-         ldTwOCsKQnqHmHEG2LVwgQkCChYL+bNSUOqEYTyg2hmc5hO5GHDuyC37kPCmGLxlDDwe
-         TcVw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701824257; x=1702429057;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=15PtUMzm1CCv273Hbndys2UZ7tBEJDNkUXj6E0nA6q4=;
-        b=c5Vri00TOFqkk1uAE5L0hqedM3l2KnUNWHqD8AxQ9/MOve5lc2KwTHfQuSdBvlmgmT
-         0ay1y2ywlid9/Vup5mPXghhZn5/9FpUtopiHp7nZal9J98qfXTo376p+GEsMYLSkrwLq
-         ok5b2eGC87CszYSrAW55falcX1u9ybWw+bXQzlT9xjeaf9hpKrt+tQvD5mQUygVOLf/e
-         84hgWEMBLA9c/YMAWEKCcFgrktxwD62xEzcjhvOi8WFBCOsEk7biZLqlnOK69sYaxUOr
-         Or2TZmsoBF/0JvuUhH6gflHtYOgjCYSc/6HruFWx+i/+EwCOiy0FMZQvFbqVsQuKLbXY
-         Ag6w==
-X-Gm-Message-State: AOJu0Yxr/XCLr3M0ViqN4VcjP2eNg2CAMDhZvsxZfgsYVVgqcbbiQPYJ
-	9vphsbsu8Zp+XYX6fb5xoT5INw==
-X-Google-Smtp-Source: AGHT+IE5ulwG4V0s2m8jeafUFyOjHpVi+hGh+noPkhcaG114A6cDiNvh20aA9d+SEUvHswrSwKpRqQ==
-X-Received: by 2002:a05:6808:319b:b0:3b8:b063:6bb8 with SMTP id cd27-20020a056808319b00b003b8b0636bb8mr185810oib.103.1701824256810;
-        Tue, 05 Dec 2023 16:57:36 -0800 (PST)
-Received: from localhost.localdomain ([36.5.194.73])
-        by smtp.gmail.com with ESMTPSA id fe18-20020a056a002f1200b006cddecbf432sm3569583pfb.96.2023.12.05.16.57.33
-        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Tue, 05 Dec 2023 16:57:36 -0800 (PST)
-From: Zhangfei Gao <zhangfei.gao@linaro.org>
-To: Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	jean-philippe <jean-philippe@linaro.org>,
-	Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev,
-	kvm@vger.kernel.org,
-	Wenkai Lin <linwenkai6@hisilicon.com>,
-	Zhangfei Gao <zhangfei.gao@linaro.org>
-Subject: [PATCH] iommu/arm-smmu-v3: disable stall for quiet_cd
-Date: Wed,  6 Dec 2023 08:57:27 +0800
-Message-Id: <20231206005727.46150-1-zhangfei.gao@linaro.org>
-X-Mailer: git-send-email 2.39.3 (Apple Git-145)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ak/mrLF9"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1701825913; x=1733361913;
+  h=date:from:to:cc:subject:message-id:reply-to:references:
+   in-reply-to:mime-version;
+  bh=Dpb/wEAiGbc4H5m6AAJO2qz8HI2uMp8/qqZnsmjDgS0=;
+  b=ak/mrLF9t15K7Zb1ksp96Ib3Dm6eD2LEWevdI0SdL1V1rLLY7dTGwJJh
+   /BBTNahE08LJmU0mvBhLYvYBwjbtS+G2zA420u2h8mi6ehS8dH0VNYhtW
+   gq32GxWLDI2VNCaSFpxr5eN+5zyIsZbaQuJVsVxQUS1LKNwlYGSMVc0hP
+   MFbHNVznqHIjwm6PLtc8NWShiKJoJ86JpDxypaf4l78v/rFyf1Maccpa6
+   kV2Q+pbgG/UpUPeq+47NZP0EbHqoT/oyauTtgeleXf8ZiE14QS4lIBpCy
+   eRCcFOPkiXi3qDqIzBbA5eprn2oDmwYgzWzctJh8+/CUKHrx1EjDTeMkZ
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10915"; a="391155167"
+X-IronPort-AV: E=Sophos;i="6.04,254,1695711600"; 
+   d="scan'208";a="391155167"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Dec 2023 17:24:57 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10915"; a="771123434"
+X-IronPort-AV: E=Sophos;i="6.04,254,1695711600"; 
+   d="scan'208";a="771123434"
+Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
+  by orsmga002.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 05 Dec 2023 17:24:56 -0800
+Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35; Tue, 5 Dec 2023 17:24:54 -0800
+Received: from fmsmsx603.amr.corp.intel.com (10.18.126.83) by
+ fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35; Tue, 5 Dec 2023 17:24:54 -0800
+Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
+ fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35 via Frontend Transport; Tue, 5 Dec 2023 17:24:54 -0800
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.100)
+ by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.34; Tue, 5 Dec 2023 17:24:54 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=X9n53WcK4ijE1FGwKvGEJ5iJN07DmiR468pqSKVmwUj+QWh4Upn0NU6S4wOl4GrjXFMPX+dm6vhVx+T73aqlPgVn2a0EwoxRGt/QYLNEmbdP2zOUMJbPvu5AvHYA7hROokBs2ZrqZQdK2nEeyHC2xi9f8AjLFycQmBUb75u5W9EGOD2td12F8Mt40H7Y23z50E1aTXaAuZNnS4//TZODTx1e1UvOecLyfH+rKPkSzNGQ5wSaCzfjv8xTLeBN5M/lMlhcoIP3SBUKf6IpVL+A3eC5kxmwVKMQ93bVtMCimmf0huTXLbG0Hw5VSj+3lCqTKuhvqXhS9G1B3x+Mw5QnJw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=BntUOtgkzrt5Hpr/iigoXv6Qv7dxdZYJc46e44sTMkw=;
+ b=n6+gLmz9wpPvf37Fyi1TUucxKfdIe2l4kRHu+ckyK+K1275HiA6Nx3cdwgbk0blS19peNspRnJswb494O8DCN3zz4VoZmru8+Nwu69OcSWJsJQgzISzC1LJbcE7LnhOUQBVkXytI9JFmXg8mX32oKyWTjQkXxp7BdUy5AlIm8W5+o8JqlzDcx/3iv0eqg9rK6NoaKr1fhPwhsDO8k6DbhO8jJQpXre+BvR/QXmMKpJIqE8MK0dDKr2hagyQU8ydayUCtmFdLczjJhfU/J/w4Nzj1KZfk8MTPaMAIXjJgUv2CuK5t2cXEqMHEEbIfRAT5PTE3OyeWOaU6GtUtDO6fGg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from DS7PR11MB5966.namprd11.prod.outlook.com (2603:10b6:8:71::6) by
+ LV8PR11MB8697.namprd11.prod.outlook.com (2603:10b6:408:1fe::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7046.34; Wed, 6 Dec
+ 2023 01:24:52 +0000
+Received: from DS7PR11MB5966.namprd11.prod.outlook.com
+ ([fe80::32a9:54b8:4253:31d4]) by DS7PR11MB5966.namprd11.prod.outlook.com
+ ([fe80::32a9:54b8:4253:31d4%4]) with mapi id 15.20.7046.034; Wed, 6 Dec 2023
+ 01:24:51 +0000
+Date: Wed, 6 Dec 2023 08:55:47 +0800
+From: Yan Zhao <yan.y.zhao@intel.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: <iommu@lists.linux.dev>, <kvm@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>, <alex.williamson@redhat.com>,
+	<pbonzini@redhat.com>, <seanjc@google.com>, <joro@8bytes.org>,
+	<will@kernel.org>, <robin.murphy@arm.com>, <kevin.tian@intel.com>,
+	<baolu.lu@linux.intel.com>, <dwmw2@infradead.org>, <yi.l.liu@intel.com>
+Subject: Re: [RFC PATCH 16/42] iommufd: Enable device feature IOPF during
+ device attachment to KVM HWPT
+Message-ID: <ZW/Gk1Ili6uHBHYK@yzhao56-desk.sh.intel.com>
+Reply-To: Yan Zhao <yan.y.zhao@intel.com>
+References: <20231202091211.13376-1-yan.y.zhao@intel.com>
+ <20231202092311.14392-1-yan.y.zhao@intel.com>
+ <20231204183603.GN1493156@nvidia.com>
+ <ZW7NwSCzswweHZh6@yzhao56-desk.sh.intel.com>
+ <20231205145341.GF2787277@nvidia.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20231205145341.GF2787277@nvidia.com>
+X-ClientProxiedBy: SG2P153CA0054.APCP153.PROD.OUTLOOK.COM (2603:1096:4:c6::23)
+ To DS7PR11MB5966.namprd11.prod.outlook.com (2603:10b6:8:71::6)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS7PR11MB5966:EE_|LV8PR11MB8697:EE_
+X-MS-Office365-Filtering-Correlation-Id: 9fe7d384-ea56-4006-c612-08dbf5fa24ef
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: SQhToq4+fGl+UXrxFFOk6B68/xXciWv7nRoAZCF/C1LlW1olwN/Bch7MJE+bRh5USdNvprVY+aQvgxCeQZxeAsddy4UMs9aSLqNWdTo6hncOCDL1lRrVqQ8R300CQpUbQUHXHJkwhXvJ1EzBQCXze7lCidFeCzk49ZDpBFmNhnSTzFwI69S9nFsjGJVp8bpoo2kyXw8bZwdRiD1c5fLNCx6TDUc+gjop456zeW4Bk/1X4+w/p44WkTG6UslEeaiaGYrHJAFvLRBrg0vulSrjlT2STzaMve/8X/uW8puzGBxfy51EmSMOmgpjNW4UUDfInigng68TrUzs7keeyohBgW3DaAcLZ46Z/1J1WcW2Z2YmUQDZfEB7fIAzrDKZF718vwaqVIwWnE15Gb75lA8Zav38xU6W2TWTErEjc7j/ZeqoMLUxpLOvuFXNTMbsCwqfFsFADuPXqcFuRBb/KhOCId8NbyvNxAklDAP0JYK/YL+g1pZTGT0nx1eHdjl+HWF1PrCAdqm2yJMiEuGedcpqLsUgB5Lc1QiPO5IoYoZy+xqaaDzUH1mejTegG4O66f9/
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR11MB5966.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(39860400002)(136003)(366004)(376002)(396003)(346002)(230922051799003)(1800799012)(186009)(451199024)(64100799003)(4744005)(2906002)(3450700001)(5660300002)(7416002)(86362001)(41300700001)(38100700002)(82960400001)(6512007)(26005)(6506007)(6666004)(478600001)(6486002)(54906003)(316002)(83380400001)(66556008)(66476007)(66946007)(6916009)(4326008)(8936002)(8676002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ahaMuA3tKE5DVCqmjISs2pYvtbwCiFST/TxIOPRXIANT7puqNo7ixcDpT2x/?=
+ =?us-ascii?Q?5O6KUwOiRyZV5SyyLDpMK9nn6V/cL/r8zAshGAFUHYWOM/cwAI564Iv615Xv?=
+ =?us-ascii?Q?zqrexPLwylkaBLhpRIAfHJSxvOjXV4TBPX92wgj4uFwN+8R4WXFKpTtQFR6m?=
+ =?us-ascii?Q?F56NihhcqJN+GSrsZ5LouPuzdCGe314SfUTF52tjazGMPGGcjXGgTn1Jw+pc?=
+ =?us-ascii?Q?OKGXIFQ6W+1aWLpbz/OwJJzBtSLxEUpkXUxsi06LITHqA+/eXVF9RL3MN62J?=
+ =?us-ascii?Q?T4tqoDVlsAno7Spv+/QQZDSXCGq0MuX1J9nPF68wFlm8MElmST8T4LgzKnU4?=
+ =?us-ascii?Q?bqK19mLtuNcR618JOkANM91L5JxQw+WQEiiwYkOrW/kDrlWllytA8kJ8gOHY?=
+ =?us-ascii?Q?YOUG9Ue9izrttuin6RgktKhWoHdgl3LI6sPxpG2hnHrz3gr2zYFkbiG3vPoJ?=
+ =?us-ascii?Q?xRZH5a2jw6K3eY1MxtwMzpYLODNgDH2Mugj27rmsbCH77RhsavgNIRhPg10B?=
+ =?us-ascii?Q?IbbYvSyO3qhpHu3f0W2KGghdRjaH5L/S2mEBAYOEjpBCpBEmvLM9C0m5cn19?=
+ =?us-ascii?Q?CFIg1xsOxLys3wNCbFQwdww7v6IKxdIOMAe7s/TRht4UTQLqHiQehEUP3xIc?=
+ =?us-ascii?Q?PtTLu/oOSjHgBli4kEokg4O9DKE6RXliPUNhqCw73Lr2hRXiNlXMtoQMN87f?=
+ =?us-ascii?Q?vlZBBSerV4Nm4M7HfEbKA+IBHxi41EbkfzF8tGJlmnPPoBm/Vq45pUAAytF2?=
+ =?us-ascii?Q?kl2MIj1D8Ysp3WcghPgoNRRNjICrC5JlCPWuVsR+oad6uFP6fa8Lzq8EPW7I?=
+ =?us-ascii?Q?xNV6UwUFsRE9QSqOg6+xON3y8BWOoc7xXfNHMEViBMFngCxKUsO/ZyjKr3YE?=
+ =?us-ascii?Q?NUAw/EP2HqrdP1NexQ0Ak72GmcvgtVgkoZSNRFqSstNG1oqR7I9LR3EgwyAt?=
+ =?us-ascii?Q?dw1qVjdI1M8EPvibvAzUa226edc/xainltqk7UeR9VtJZ4wROS1pBxXmtd9P?=
+ =?us-ascii?Q?/GFKRbeM5Eo26ycVBoWPKAqJx7+1fYIu/665Ht8Nkerc58tgpfXRepGZZ2b5?=
+ =?us-ascii?Q?E7F6EsFsW3dzD7ydXHjJEJOdAZ6iNDaDadqvLJLrgoFJv8QT3z7AJZwCylx8?=
+ =?us-ascii?Q?4XQ1nR88D/4AM43eLtyHJBfZHYC04PXhk+3sZqxZLXEyC6gI/XfM1vxsFZlG?=
+ =?us-ascii?Q?jW+gLt/oNa9n+OsVn/KM45dG5f8h2DJ1i9lNDM2qxeUKD7oYLV/mGRFFkFr/?=
+ =?us-ascii?Q?bT0WvIOOwN8QFo4kGnCMZTv5LsPIq/klxOcyz8eGv/32IhbyIY/RkXDhGBZ2?=
+ =?us-ascii?Q?4GHX9Llhe44nw92ik/RKaPonbixqLLeYmexzZnDCKDqz5RViSHvbc4EPhdJ5?=
+ =?us-ascii?Q?+50xU3b6MKnmyMz5LRmZ/N105Aetd4MV/fe5Kgz7J6c0kVN1w+eTszVuhNVY?=
+ =?us-ascii?Q?mTQ/RwUUgu3dtdVd7d5m+Snb/BJyLqnH5kfM81+Kf8tQhO3FJ1I+dogROYbX?=
+ =?us-ascii?Q?iuN+M91bL7DbwFG3rhJyWQG0t2EZjsQ7C63xN3NwjufgrSNLmQI+HU2kK2BB?=
+ =?us-ascii?Q?ZR+8hkNhscmHCGoKr8AKE+0aXwH11UedsYFi3hsx?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9fe7d384-ea56-4006-c612-08dbf5fa24ef
+X-MS-Exchange-CrossTenant-AuthSource: DS7PR11MB5966.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Dec 2023 01:24:51.7064
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: rATRVpnBMSw2nGVSb6uildlbEsUUIx/nf6ZMSKXqPyGkPwo3tujQTWvf06e2QgeIebrHvh2LOEBu9G2NjxiRHQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV8PR11MB8697
+X-OriginatorOrg: intel.com
 
-From: Wenkai Lin <linwenkai6@hisilicon.com>
-
-In the stall model, invalid transactions were expected to be
-stalled and aborted by the IOPF handler.
-
-However, when killing a test case with a huge amount of data, the
-accelerator streamline can not stop until all data is consumed
-even if the page fault handler reports errors. As a result, the
-kill may take a long time, about 10 seconds with numerous iopf
-interrupts.
-
-So disable stall for quiet_cd in the non-force stall model, since
-force stall model (STALL_MODEL==0b10) requires CD.S must be 1.
-
-Signed-off-by: Zhangfei Gao <zhangfei.gao@linaro.org>
-Signed-off-by: Wenkai Lin <linwenkai6@hisilicon.com>
-Suggested-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
----
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 7445454c2af2..7086e5fa41ff 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -1063,6 +1063,7 @@ int arm_smmu_write_ctx_desc(struct arm_smmu_master *master, int ssid,
- 	bool cd_live;
- 	__le64 *cdptr;
- 	struct arm_smmu_ctx_desc_cfg *cd_table = &master->cd_table;
-+	struct arm_smmu_device *smmu = master->smmu;
- 
- 	if (WARN_ON(ssid >= (1 << cd_table->s1cdmax)))
- 		return -E2BIG;
-@@ -1077,6 +1078,8 @@ int arm_smmu_write_ctx_desc(struct arm_smmu_master *master, int ssid,
- 	if (!cd) { /* (5) */
- 		val = 0;
- 	} else if (cd == &quiet_cd) { /* (4) */
-+		if (!(smmu->features & ARM_SMMU_FEAT_STALL_FORCE))
-+			val &= ~(CTXDESC_CD_0_S | CTXDESC_CD_0_R);
- 		val |= CTXDESC_CD_0_TCR_EPD0;
- 	} else if (cd_live) { /* (3) */
- 		val &= ~CTXDESC_CD_0_ASID;
--- 
-2.39.3 (Apple Git-145)
-
+On Tue, Dec 05, 2023 at 10:53:41AM -0400, Jason Gunthorpe wrote:
+> On Tue, Dec 05, 2023 at 03:14:09PM +0800, Yan Zhao wrote:
+> 
+> > > I would like to remove IOMMU_DEV_FEAT_IOPF completely please
+> > 
+> > So, turn on device PRI during device attachment in IOMMU vendor driver?
+> 
+> If a fault requesting domain is attached then PRI should just be
+> enabled in the driver
+>
+Right, it makes sense!
