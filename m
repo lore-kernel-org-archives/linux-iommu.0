@@ -1,48 +1,49 @@
 Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 86B8139FF5
-	for <iommu@lists.linux.dev>; Wed,  6 Dec 2023 19:14:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 90E2D47F49
+	for <iommu@lists.linux.dev>; Wed,  6 Dec 2023 19:50:27 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="Ta9+GWcI";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="fqBgTJoR"
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="v+urtsd1";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="lGzQtl9x"
 From: Thomas Gleixner <tglx@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1701890067;
+	s=2020; t=1701892225;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=fHlmot3W1hhRj+RWqh+9nLkMzx3bkSfmuH5Fhyq8ADM=;
-	b=Ta9+GWcIJxmj4d3u9BZvjYQhpsZjvcjZIb44L8e6cn4XTb4CIhUcvDzJLCt7wOJeA4xekA
-	mpeOiCHxEu/ZfwhtK5xjUTTh9nUp9A1VCQA+6TmCSQOSE6KIm1+Kih7Bwehkqn4w/HwYZ4
-	sZYL/9Orrwze2CGSaRbAo0f3jR4/oKO6t/McU73XqFss0yb04x5DeghQFpqS8lsC459s8T
-	jyeTcsptwKI8UnnSLtrrWyLKadomGiy6LK8jfijeDXwLqBDkxyaGdzBDvGTKU9/ARSGmOs
-	TCLeRnuYrVQ7qyu3qKHNC2T7mj2ucXesX1CgZ/6RF2sg77Iy/dju/5kzq8Iseg==
+	bh=9Dhk4+zCj2bSVdaz1f+DwCjhCz2nloe+08Lq1HubewE=;
+	b=v+urtsd1FTU9ZhLnfNMCVE4t5FHdgO9qBV8ZKGd9TpMRxHH/CEWRGbEy4B+0vGbO4suTau
+	wkZdYWlpRePNfzJLQy0BJa0Rh5RCB44e1qerQk/+rqH2Kuxw1JD5rXXd38vUPHy/UaNfD7
+	CuB044qCEi9KUXNO4sdAO5+XlNWUFZr+rKjuYaZ45SI2Tr1BVqhKMx/ElfSYpG8SqoBKQl
+	i5d9YiXVBrEUTzLU+M+B8U1EhdRdYXYjwtG+Inz5kqy416Tc2thKlKAt2VcOgX5ZLSfzzD
+	av1/CKw9UkzTHaJ5OGGwop03VQVPbDBCweKuV1mA0BYPlLNulU2MD3+7iOvLag==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1701890067;
+	s=2020e; t=1701892225;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=fHlmot3W1hhRj+RWqh+9nLkMzx3bkSfmuH5Fhyq8ADM=;
-	b=fqBgTJoRu7ALJihn+tfBI49CmKGFW+utQWueC8s/a4DoaCJ/f/XOWK39jjpK3PNctsTv71
-	PTtg5JewcVGDXYDw==
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>, LKML
- <linux-kernel@vger.kernel.org>, X86 Kernel <x86@kernel.org>,
+	bh=9Dhk4+zCj2bSVdaz1f+DwCjhCz2nloe+08Lq1HubewE=;
+	b=lGzQtl9x+ofH+fpqUAxl6pXbPHwEXsgGEzAYM7ctVOK90MAjAnLeYQaVWkrQ4Jcv/RiiwP
+	ECczWzS12VAPxEBA==
+To: Peter Zijlstra <peterz@infradead.org>, Jacob Pan
+ <jacob.jun.pan@linux.intel.com>
+Cc: LKML <linux-kernel@vger.kernel.org>, X86 Kernel <x86@kernel.org>,
  iommu@lists.linux.dev, Lu Baolu <baolu.lu@linux.intel.com>,
  kvm@vger.kernel.org, Dave Hansen <dave.hansen@intel.com>, Joerg Roedel
  <joro@8bytes.org>, "H. Peter Anvin" <hpa@zytor.com>, Borislav Petkov
- <bp@alien8.de>, Ingo Molnar <mingo@redhat.com>
-Cc: Raj Ashok <ashok.raj@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>,
- maz@kernel.org, peterz@infradead.org, seanjc@google.com, Robin Murphy
- <robin.murphy@arm.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>
+ <bp@alien8.de>, Ingo Molnar <mingo@redhat.com>, Raj Ashok
+ <ashok.raj@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>,
+ maz@kernel.org, seanjc@google.com, Robin Murphy <robin.murphy@arm.com>
 Subject: Re: [PATCH RFC 09/13] x86/irq: Install posted MSI notification handler
-In-Reply-To: <20231112041643.2868316-10-jacob.jun.pan@linux.intel.com>
+In-Reply-To: <20231115125624.GF3818@noisy.programming.kicks-ass.net>
 References: <20231112041643.2868316-1-jacob.jun.pan@linux.intel.com>
  <20231112041643.2868316-10-jacob.jun.pan@linux.intel.com>
-Date: Wed, 06 Dec 2023 20:14:26 +0100
-Message-ID: <87fs0fuorx.ffs@tglx>
+ <20231115125624.GF3818@noisy.programming.kicks-ass.net>
+Date: Wed, 06 Dec 2023 20:50:24 +0100
+Message-ID: <87cyvjun3z.ffs@tglx>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -51,44 +52,101 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain
 
-On Sat, Nov 11 2023 at 20:16, Jacob Pan wrote:
-> +	/*
-> +	 * Ideally, we should start from the high order bits set in the PIR
-> +	 * since each bit represents a vector. Higher order bit position means
-> +	 * the vector has higher priority. But external vectors are allocated
-> +	 * based on availability not priority.
-> +	 *
-> +	 * EOI is included in the IRQ handlers call to apic_ack_irq, which
-> +	 * allows higher priority system interrupt to get in between.
+On Wed, Nov 15 2023 at 13:56, Peter Zijlstra wrote:
+>
+> Would it not make more sense to write things something like:
+>
+> bool handle_pending_pir()
+> {
+> 	bool handled = false;
+> 	u64 pir_copy[4];
+>
+> 	for (i = 0; i < 4; i++) {
+> 		if (!pid-pir_l[i]) {
+> 			pir_copy[i] = 0;
+> 			continue;
+> 		}
+>
+> 		pir_copy[i] = arch_xchg(&pir->pir_l[i], 0);
+> 		handled |= true;
+> 	}
+>
+> 	if (!handled)
+> 		return handled;
+>
+> 	for_each_set_bit()
+> 		....
+>
+> 	return handled.
+> }
 
-What? This does not make sense.
+I don't understand what the whole copy business is about. It's
+absolutely not required.
 
-_IF_ we go there then
+static bool handle_pending_pir(unsigned long *pir)
+{
+        unsigned int idx, vec;
+	bool handled = false;
+        unsigned long pend;
+        
+        for (idx = 0; offs < 4; idx++) {
+                if (!pir[idx])
+                	continue;
+		pend = arch_xchg(pir + idx, 0);
+                for_each_set_bit(vec, &pend, 64)
+			call_irq_handler(vec + idx * 64, NULL);
+                handled = true;
+	}
+        return handled;
+}
 
-     1) The EOI must be explicit in sysvec_posted_msi_notification()
+No?
 
-     2) Interrupt enabling must happen explicit at a dedicated place in
-        sysvec_posted_msi_notification()
+> sysvec_posted_blah_blah()
+> {
+> 	bool done = false;
+> 	bool handled;
+>
+> 	for (;;) {
+> 		handled = handle_pending_pir();
+> 		if (done)
+> 			break;
+> 		if (!handled || ++loops > MAX_LOOPS) {
 
-        You _CANNOT_ run all the device handlers with interrupts
-        enabled.
+That does one loop too many. Should be ++loops == MAX_LOOPS. No?
 
-Please remove all traces of non-working wishful thinking from this series.
+> 			pi_clear_on(pid);
+> 			/* once more after clear_on */
+> 			done = true;
+> 		}
+> 	}
+> }
+>
+>
+> Hmm?
 
-> +	 */
-> +	for_each_set_bit_from(vec, (unsigned long *)&pir_copy[0], 256)
+I think that can be done less convoluted.
 
-Why does this need to check up to vector 255? The vector space does not
-magially expand just because of posted interrupts, really. At least not
-without major modifications to the vector management.
+{
+	struct pi_desc *pid = this_cpu_ptr(&posted_interrupt_desc);
+	struct pt_regs *old_regs = set_irq_regs(regs);
+        int loops;
 
-> +		call_irq_handler(vec, regs);
-> +
+	for (loops = 0;;) {
+        	bool handled = handle_pending_pir((unsigned long)pid->pir);
 
-Stray newline.
+                if (++loops > MAX_LOOPS)
+                	break;
 
-> +}
+                if (!handled || loops == MAX_LOOPS) {
+                	pi_clear_on(pid);
+                        /* Break the loop after handle_pending_pir()! */
+                        loops = MAX_LOOPS;
+                }
+	}
 
-Thanks,
+	...
+	set_irq_regs(old_regs);
+}
 
-        tglx
+Hmm? :)
