@@ -1,64 +1,112 @@
-Received: from netrider.rowland.org (netrider.rowland.org [192.131.102.5])
-	by smtp.subspace.kernel.org (Postfix) with SMTP id A796F46536
-	for <iommu@lists.linux.dev>; Wed,  6 Dec 2023 16:21:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=rowland.harvard.edu
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=netrider.rowland.org
-Received: (qmail 460384 invoked by uid 1000); 6 Dec 2023 11:21:50 -0500
-Date: Wed, 6 Dec 2023 11:21:50 -0500
-From: Alan Stern <stern@rowland.harvard.edu>
-To: Ferry Toth <fntoth@gmail.com>
-Cc: Catalin Marinas <catalin.marinas@arm.com>, Christoph Hellwig <hch@lst.de>,
-  Hamza Mahfooz <someguy@effective-light.com>,
-  Dan Williams <dan.j.williams@intel.com>,
-  Marek Szyprowski <m.szyprowski@samsung.com>, Andrew <travneff@gmail.com>,
-  Andy Shevchenko <andy.shevchenko@gmail.com>,
-  Thorsten Leemhuis <regressions@leemhuis.info>, iommu@lists.linux.dev,
-  Kernel development list <linux-kernel@vger.kernel.org>,
-  USB mailing list <linux-usb@vger.kernel.org>,
-  Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>
-Subject: Re: Bug in add_dma_entry()'s debugging code
-Message-ID: <c952ef3f-2890-4f1e-bb5d-057b0db36b46@rowland.harvard.edu>
-References: <20231128133702.GA9917@lst.de>
- <cb7dc5da-37cb-45ba-9846-5a085f55692e@rowland.harvard.edu>
- <ZWYnECPRKca5Dpqc@arm.com>
- <76e8def2-ff45-47d3-91ab-96876ea84079@gmail.com>
- <ZWm-u2kV1UP09M84@arm.com>
- <5425cf42-0f49-41b5-b26d-1e099d5bdcc2@elsinga.info>
- <5093ce37-047e-4aa8-a9e8-2978da9d734a@rowland.harvard.edu>
- <ZWobHJqBji80CTm-@arm.com>
- <e22ae13a-aafc-49da-8092-1a17f60ae420@rowland.harvard.edu>
- <1e4df825-08fa-40cf-a565-9c0d285c9b73@gmail.com>
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E437E487AB
+	for <iommu@lists.linux.dev>; Wed,  6 Dec 2023 16:33:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="aAvqveN+";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="Krj3CK7I"
+From: Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1701880409;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=mEaYjes49h5l2UrFqiq7e/jCeK/naAAzBiirxhQzhc8=;
+	b=aAvqveN+yO3hoMfIlimEtuaxwhgvna0Ou/j29UGyQS7lm54ba0nXr0Tt1as+OBFPtwVpdK
+	j49aitst25afRLI6yPRRZMOknvg8XN/djd9ir7We/GY7KWj3e6EvV3rujrCITZzozzJfzi
+	NxAaygeYrNqoUGv0/h9XCNOPg2BrJ6ihwanGEV14zbyAxuJwM63Mni9IdC7E/CSFfZxLC4
+	15tx/FMXHlfMwlmtkVdKKvWoaTLTFxAOn55L9lE+GwTpZsUcMeqTLwpWjWclL1ArJiz9kr
+	2XuzMbwKjzLL5XGrNNo+arQ+Nt9PDsGcEQa4IRXZpyOk/nZgFwlE8O07w7U3fg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1701880409;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=mEaYjes49h5l2UrFqiq7e/jCeK/naAAzBiirxhQzhc8=;
+	b=Krj3CK7I8oY4UPJ8ojb0Z+E5QF/2QTLdhVsRXSSUnhW6eWEJfzPDr+g8EsQhCtDQFN8q1y
+	CZdmFnO8KDP6huCQ==
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>, LKML
+ <linux-kernel@vger.kernel.org>, X86 Kernel <x86@kernel.org>,
+ iommu@lists.linux.dev, Lu Baolu <baolu.lu@linux.intel.com>,
+ kvm@vger.kernel.org, Dave Hansen <dave.hansen@intel.com>, Joerg Roedel
+ <joro@8bytes.org>, "H. Peter Anvin" <hpa@zytor.com>, Borislav Petkov
+ <bp@alien8.de>, Ingo Molnar <mingo@redhat.com>
+Cc: Raj Ashok <ashok.raj@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>,
+ maz@kernel.org, peterz@infradead.org, seanjc@google.com, Robin Murphy
+ <robin.murphy@arm.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>
+Subject: Re: [PATCH RFC 01/13] x86: Move posted interrupt descriptor out of
+ vmx code
+In-Reply-To: <20231112041643.2868316-2-jacob.jun.pan@linux.intel.com>
+References: <20231112041643.2868316-1-jacob.jun.pan@linux.intel.com>
+ <20231112041643.2868316-2-jacob.jun.pan@linux.intel.com>
+Date: Wed, 06 Dec 2023 17:33:28 +0100
+Message-ID: <87wmtruw87.ffs@tglx>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1e4df825-08fa-40cf-a565-9c0d285c9b73@gmail.com>
+Content-Type: text/plain
 
-On Wed, Dec 06, 2023 at 05:12:40PM +0100, Ferry Toth wrote:
-> Hi
-> 
-> On 05-12-2023 19:28, Alan Stern wrote:
-> > In the long run, it may turn out that trying to detect memory usage
-> > patterns that could cause problems for architectures other than the one
-> > currently running is not workable.  Certainly it is a bad idea to have a
-> 
-> Maybe. But while debugging code on your platform it is a good thing to get
-> warnings for potential issues on other platforms.
+On Sat, Nov 11 2023 at 20:16, Jacob Pan wrote:
+> +/* Posted-Interrupt Descriptor */
+> +struct pi_desc {
+> +	u32 pir[8];     /* Posted interrupt requested */
+> +	union {
+> +		struct {
+> +				/* bit 256 - Outstanding Notification */
+> +			u16	on	: 1,
+> +				/* bit 257 - Suppress Notification */
+> +				sn	: 1,
+> +				/* bit 271:258 - Reserved */
+> +				rsvd_1	: 14;
+> +				/* bit 279:272 - Notification Vector */
+> +			u8	nv;
+> +				/* bit 287:280 - Reserved */
+> +			u8	rsvd_2;
+> +				/* bit 319:288 - Notification Destination */
+> +			u32	ndst;
 
-Oh, absolutely!  It's definitely a good thing.  I'm just saying that 
-doing it may not be practical -- there may be too many false positives 
-(as in this bug report) and false negatives.
+This mixture of bitfields and types is weird and really not intuitive:
 
-> In this case we (I) got misled by the warning message itself. That should be
-> easy enough to improve.
+/* Posted-Interrupt Descriptor */
+struct pi_desc {
+	/* Posted interrupt requested */
+	u32			pir[8];
 
-I don't think so.  Issuing incorrect warnings that should be ignored is 
-a very bad idea, no matter what the wording is.  After seeing a few 
-messages like that, people learn to expect them -- and then they ignore 
-the valid warnings along with the incorrect ones.
+	union {
+		struct {
+				/* bit 256 - Outstanding Notification */
+			u64	on	:  1,
+				/* bit 257 - Suppress Notification */
+				sn	:  1,
+				/* bit 271:258 - Reserved */
+					: 14,
+				/* bit 279:272 - Notification Vector */
+				nv	:  8,
+				/* bit 287:280 - Reserved */
+					:  8,
+				/* bit 319:288 - Notification Destination */
+				ndst	: 32;
+		};
+		u64		control;
+	};
+	u32			rsvd[6];
+} __aligned(64);
 
-Alan Stern
+Hmm?
+
+> +static inline bool pi_test_and_set_on(struct pi_desc *pi_desc)
+> +{
+> +	return test_and_set_bit(POSTED_INTR_ON,
+> +			(unsigned long *)&pi_desc->control);
+
+Please get rid of those line breaks.
+
+Thanks,
+
+        tglx
