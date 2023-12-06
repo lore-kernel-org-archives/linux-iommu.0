@@ -1,63 +1,62 @@
-Received: from mail-lf1-f52.google.com (mail-lf1-f52.google.com [209.85.167.52])
+Received: from mail-lf1-f43.google.com (mail-lf1-f43.google.com [209.85.167.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EFB2837152
-	for <iommu@lists.linux.dev>; Wed,  6 Dec 2023 13:46:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B65639FF1
+	for <iommu@lists.linux.dev>; Wed,  6 Dec 2023 13:48:02 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="fkCzaFsq"
-Received: by mail-lf1-f52.google.com with SMTP id 2adb3069b0e04-50bf7bc38c0so4232679e87.2
-        for <iommu@lists.linux.dev>; Wed, 06 Dec 2023 05:46:52 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="wMjAXLpZ"
+Received: by mail-lf1-f43.google.com with SMTP id 2adb3069b0e04-50bef9b7a67so4935609e87.1
+        for <iommu@lists.linux.dev>; Wed, 06 Dec 2023 05:48:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1701870411; x=1702475211; darn=lists.linux.dev;
+        d=linaro.org; s=google; t=1701870480; x=1702475280; darn=lists.linux.dev;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=Cx5g+5SMQxcicok5kYvCUK6eBKquWgCzB86sfFem4PI=;
-        b=fkCzaFsq3k1KdMGgdYHeEz6v5rKFFBngtqdlHaB4TSxdPGojJyrZQ9SV5wq5OJwU8K
-         7eqw2T0fjsggTV/nk42QYk5Shw/HmuYrEEtEKQ2iXu9fDssepZ51BK8OIP3qyvPAcGh1
-         YWn8LtdpylSi0TXXXG0aGeBR/KLOpYzusEJY7VpzPJ1AWzU6WgHypTlEAMf+a6PQasww
-         AL9Py3XOYcMmO0ZhKqqAT584JaOjhdDqvi3oLQ24P9XAEl7pKMx4z2kKdqYiSmo9uv4V
-         CiomzqeYwyZCMH8zgiPuvDQ+6wBtqbCEhl6qBUrsHQpdbxNYa76wiUQMlU2J0gOhqL7s
-         V+7A==
+        bh=9miOKK/UUvaSvAzOVHQH1JTB5Oh8DCGH0eTcRA1Hgqc=;
+        b=wMjAXLpZbi3j1RetC7hZnRZ+z+c4zmdaBpG0AFUg+mxf/0orwvR5hErrWTU184FhvS
+         t635cHvXkX756Q6Aehs3mcX2+DbG2VX/sMywPxXWS44dXORAJKfO88l5hP5aTmSPEu2J
+         hdvnbEDGiuakbByTu8X7bKJV7lg2NoRYeXZlcuOw4lilwjO0lYE8BJnQH3eGNH6rCemA
+         MyEuJvbkN4/hKZ25GULKlZMaKAj9aLoyQGBiiFBLC9NoSpWf673jf+ekUFcG6YlEcKlR
+         l3MHcP4uG85g3Iuw+06Ewetj4DGwCwXqgU1jA5psowRORHZnYkcLrfIswGCB3u8X4lHT
+         efSA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701870411; x=1702475211;
+        d=1e100.net; s=20230601; t=1701870480; x=1702475280;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=Cx5g+5SMQxcicok5kYvCUK6eBKquWgCzB86sfFem4PI=;
-        b=stscx2Y132t8TdHE/JJufrxgqwhKB7uUMAoTa0/p1YGxTIt5XUkHLVzKbevL8JsYA4
-         SpE4r/+BV5XLGCzGPNsN25HhNmWHxxFuhHxYrkeBi9ww2nk7fPFBzZ7xRII8LkLwlR1f
-         PcNybERoVHDhPBJDaUFs94j8x01QEfR/mQPbBdhV7ZrwzE8SydSi6nN2ZwjDz01lgdVx
-         7yTeu5Nl3KlHiob7vl+0/qg8/HwrnlBEHFQF7fbwaXJMlZ7yta+kkjbVuC1PRCI32Dhv
-         rCpgUYcwol4xIubsvde0rms4hkjK39U1NbQHl3yFTwaEHMlp51tX9MYiJYJ0CjnSVWck
-         WHNQ==
-X-Gm-Message-State: AOJu0Yx3JWbQ4/dP2Bm9VyGNVZdfM0YQUMJjyp5cXWM7nXdVX53UpVE4
-	eMSUXmTCobSKl84XMn7TNnv643iNaBDCu8OmOnKYxw==
-X-Google-Smtp-Source: AGHT+IFDPczFKh5GMvs5SBPQNG9ZyK/pZsKfhVA9gUmBbF0dGQ7YqvGAQFTEpGYilkKRMT/TRZA9w5RZm2ZVFqdXvnc=
-X-Received: by 2002:a05:6512:e97:b0:50c:17d6:fff6 with SMTP id
- bi23-20020a0565120e9700b0050c17d6fff6mr314987lfb.1.1701870410783; Wed, 06 Dec
- 2023 05:46:50 -0800 (PST)
+        bh=9miOKK/UUvaSvAzOVHQH1JTB5Oh8DCGH0eTcRA1Hgqc=;
+        b=DAqrAkpFljLoFrZIsNvbDPR2/1OOt9efrp2j7I2kMmcT/6Sua9/TngjYT0dGT8Y/US
+         eRn5PVjxhcUwmS5jpOzwf+EXI7qR0q4BN9ZiI1DxgYRIiZfK2vsOU7MSLkvm+lSr65G5
+         aJffwApvvLE7+8DoCeF65+frc3/xRx/bJxLsMfyDsLZern/yRL41LKlqIGcxcA3CKaNN
+         JqiTE8KteJuN1fu1Krr5ogailDEy8l5qNKduOiHiVhuS4Wh7ibZnFcoKpRGAC6FpjpKK
+         VUg/5KFsM6xTTHPZPFPI6LSqycYil4V18lXoZgQ01rHp88Ts5a/QEe2w++GxLeGSnWJZ
+         5tiA==
+X-Gm-Message-State: AOJu0YxpCV6ofqWnHk+y0i0nqP5D8jksuZRG2OrXJvjTY0RUTUkG/7qq
+	s817Wj0/L1LyNlBGgcEUSGUbwftpBfXhaeRxx1CevA==
+X-Google-Smtp-Source: AGHT+IHw3P3cXoW7pJNEQWcIDG3J+FZRlOarsKh/yt7qJA5ssgURhZvvxsqlatP7qeWxo5iGA+5Hy5O+DWF/K4Beido=
+X-Received: by 2002:a19:f711:0:b0:50b:e750:dd94 with SMTP id
+ z17-20020a19f711000000b0050be750dd94mr588145lfe.1.1701870479946; Wed, 06 Dec
+ 2023 05:47:59 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20231206005727.46150-1-zhangfei.gao@linaro.org> <20231206095717.GA2643771@myrica>
-In-Reply-To: <20231206095717.GA2643771@myrica>
+References: <20231206005727.46150-1-zhangfei.gao@linaro.org> <20231206013039.GN2692119@nvidia.com>
+In-Reply-To: <20231206013039.GN2692119@nvidia.com>
 From: Zhangfei Gao <zhangfei.gao@linaro.org>
-Date: Wed, 6 Dec 2023 21:46:39 +0800
-Message-ID: <CABQgh9E5GH4xm=+doz=FO+yJuFa0w5f6D2hovj0kUhgkr_sr0w@mail.gmail.com>
+Date: Wed, 6 Dec 2023 21:47:48 +0800
+Message-ID: <CABQgh9GVUh-6vXG=pgGgY5YotNb8VMQPUv6ESd11T8rb98Rd1Q@mail.gmail.com>
 Subject: Re: [PATCH] iommu/arm-smmu-v3: disable stall for quiet_cd
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@nvidia.com>, 
-	iommu@lists.linux.dev, kvm@vger.kernel.org, 
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	jean-philippe <jean-philippe@linaro.org>, iommu@lists.linux.dev, kvm@vger.kernel.org, 
 	Wenkai Lin <linwenkai6@hisilicon.com>
 Content-Type: text/plain; charset="UTF-8"
 
-On Wed, 6 Dec 2023 at 17:57, Jean-Philippe Brucker
-<jean-philippe@linaro.org> wrote:
+On Wed, 6 Dec 2023 at 09:30, Jason Gunthorpe <jgg@nvidia.com> wrote:
 >
 > On Wed, Dec 06, 2023 at 08:57:27AM +0800, Zhangfei Gao wrote:
 > > From: Wenkai Lin <linwenkai6@hisilicon.com>
@@ -73,11 +72,38 @@ On Wed, 6 Dec 2023 at 17:57, Jean-Philippe Brucker
 > >
 > > So disable stall for quiet_cd in the non-force stall model, since
 > > force stall model (STALL_MODEL==0b10) requires CD.S must be 1.
-> >
-> > Signed-off-by: Zhangfei Gao <zhangfei.gao@linaro.org>
-> > Signed-off-by: Wenkai Lin <linwenkai6@hisilicon.com>
-> > Suggested-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 >
-> Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> I think this force-stall thing should get a closer look, it doesn't
+> look completely implemented and what does it mean for, eg, non-SVA
+> domains attached to the device (as we now support with S2 and soon
+> with PASID)
+>
+> The manual says:
+>
+> 0b10 Stall is forced (all faults eligible to stall cause stall),
+>      STE.S2S and CD.S must be 1.
+>
+> And there is a note:
+>
+>  Note: For faulting transactions that are associated with client
+>  devices that have been configured to stall, but where
+>  the system has not explicitly advertised the client devices to be
+>  usable with the stall model, Arm recommends for
+>  software to expect that events might be recorded with Stall == 0.
+>
+> Which makes it seem like it isn't actually "force" per-say, but
+> something else.
+>
+> I notice the driver never sets STE.S2S, and it isn't entirely clear
+> what software should even do for a standard non-faulting domain where
+> non-present means failure? Take the fault event and always respond
+> with failure? What is the purpose?
 
-Thanks Jean.
+Sorry, I have no idea :)
+
+>
+> Aside from that the change looks OK to me:
+>
+> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+
+Thanks Jason.
