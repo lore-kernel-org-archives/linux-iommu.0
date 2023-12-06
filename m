@@ -1,153 +1,199 @@
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2049.outbound.protection.outlook.com [40.107.94.49])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qv1-f73.google.com (mail-qv1-f73.google.com [209.85.219.73])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4C00EBC
-	for <iommu@lists.linux.dev>; Wed,  6 Dec 2023 01:30:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D5D446B6
+	for <iommu@lists.linux.dev>; Wed,  6 Dec 2023 01:53:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--moritzf.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="NZedMS4t"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Z5vA++seuxp/i5xh7bRxVrwAYTWKAlVFjSlFo1RiNNOQZhQb74gpF+BWpa5+GngWx93fnn7k7g8/6VEyzYqYk7PRjCGi+cn0Kp6xZ20RkZh6jFK7KnYuS0mm73obWRvXWL9Yu4ncgmigASbq/Mf4+82+owtcWBOYP+8+vjfXmSOTP3bw0uhKHHMQNdtLl1JrQ01yv/Y3RPwF+OTYh4CVuyxd+8V8Vhr2tS3ByNEkQ2oUa8iTaOMmj+3tKTzta6ztkEg+yxxTlWFb/KeZQiKVxAHaTN2kcoNkqpaeck03SJfQGTuoa9b8iCoNYMuNdgnsJXf5Z03lIPAiz8JxyHQuLQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=aZKVRlPtMnSbCXthrXj6sCe71qmiohhSnAhUOFeg1Oc=;
- b=Ld5Xr53aSUdr19iPvsrosiWhHlA3b6hFoiCsrHzAxQ1iYKcFeLhLS6r/VVXU5yj6uYDSi5CgfiU8+ZRaooyg02pIVGwjQAcOe/G6lJkYYEjPlT2uMl1v+qS7MCxGmyXUGC+WLtRECvvC6isMAqjK4IurRNSHTz8uHQAoEi9ghDy+p7dLxAUx25Le5k4OA1R9gd8b7v1y3zszTF8D9ARbHZv6Pj2qx9x2V6siD4LYQV4ofJ5/GjSqlTR1CsoDkKLRMNEQ43ihnHrfVNEsVwMJsrJxT8eGS5IVwyLq3w0HHfjt3eJOLcQFE+qm5KikNnsHtgAy6wP4MAmc2ss3zXKacQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=aZKVRlPtMnSbCXthrXj6sCe71qmiohhSnAhUOFeg1Oc=;
- b=NZedMS4tFGZlh5PiOVJsfXJ8G05XqVPYJTfbwwEgqu5h8JQG6IK1908vvX+AjjiTCuhBSQ0EGTnZGU0eHZv/m5QM1RHIvnJkf8EHSSWNBGTlyCkvVFU6j/2B7tNJxxFjPpgOJPd/3llCKZylwlFiYgXF4XFURmq/sgbwYhjBnOdyAwhjVXmNRiyDfQB/FEbJhEUdj0mFYkaZ9DhsjWQZ6VkJUhhGaWziCYugpN72f6qg2tvhuFE5aZSks5RZ/lsM2u/QfZ4XjisJ78lGXkv1eC+wYDluhVAuHErmxDOz9NRQvA381N9dJcoN+tcR4JV3+hzZfr948FTdPb4yJiC3yA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by SJ0PR12MB8092.namprd12.prod.outlook.com (2603:10b6:a03:4ee::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7068.25; Wed, 6 Dec
- 2023 01:30:46 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::60d4:c1e3:e1aa:8f93]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::60d4:c1e3:e1aa:8f93%4]) with mapi id 15.20.7046.034; Wed, 6 Dec 2023
- 01:30:40 +0000
-Date: Tue, 5 Dec 2023 21:30:39 -0400
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Zhangfei Gao <zhangfei.gao@linaro.org>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	jean-philippe <jean-philippe@linaro.org>, iommu@lists.linux.dev,
-	kvm@vger.kernel.org, Wenkai Lin <linwenkai6@hisilicon.com>
-Subject: Re: [PATCH] iommu/arm-smmu-v3: disable stall for quiet_cd
-Message-ID: <20231206013039.GN2692119@nvidia.com>
-References: <20231206005727.46150-1-zhangfei.gao@linaro.org>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20231206005727.46150-1-zhangfei.gao@linaro.org>
-X-ClientProxiedBy: BL0PR02CA0008.namprd02.prod.outlook.com
- (2603:10b6:207:3c::21) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="rIUcQPFz"
+Received: by mail-qv1-f73.google.com with SMTP id 6a1803df08f44-67a93902530so65896436d6.3
+        for <iommu@lists.linux.dev>; Tue, 05 Dec 2023 17:53:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1701827620; x=1702432420; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=WF0zb0TZTsACwR1koj3GHJ0g9xK3Yw40DA0v34OkQWI=;
+        b=rIUcQPFzNd1V/pnItbCc/a2hshpLt+IbqtjUyedPzUzzWBKsxy+i4pf4UF97WNDxiy
+         zdbVqa8s67VhuSTEO6CUJvTNiuOjbyKKmEiFlb7uQxVD1yqvVMIB8amTMcxGazZt2oOI
+         3zAN4QUgAY/rwGgxckGxVBT3UreGtKSCp4K1EwfqtnVr5B9rIxRFUqb5GaVMaPwK1V6g
+         vrB45Mr16D0s+Wb/+APIvg/cAk7smlNEr1Dtqyf5+iGghGdCuMusDoAgGGXPEZd9CEUw
+         CAv37aKiEJpGMgo7mbfmIjn9quRXZ3db3s6soWQ/+zo1jxqvkrXLQHgcbh5Bj3CY22uo
+         cbew==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1701827620; x=1702432420;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=WF0zb0TZTsACwR1koj3GHJ0g9xK3Yw40DA0v34OkQWI=;
+        b=paebrZu5fNkzg8IEoYpoM7ib/9eu/erX1Axj8v8OI0UjN8N+vHRaT3u6DXFZVAw0wR
+         DLcRJViXn251HhOS+p8/rIxjVDuuWNXrq69kR9oFm29x4aV2XY1wEQE8jm9ughOmLn9v
+         W2wT/IV1X+38jkV0MpN/0uuQPYMSe3LdOE4MooKdpEFcFecFGN043lBBaXFD2ZnEA3d3
+         Poq47UjT6PVQIFw8QHZTAb6YOT8xNJlbuhQ7YpQmLAbkTcJirOON5kMhJ/KYIB5wrnW9
+         NYfP/0xxVyPOeBaCCIPnqJU1V5wsbiywOJsV6B5xsw6B+mBL6CmMV3QpVDkb4d9vEh9Y
+         9S4g==
+X-Gm-Message-State: AOJu0YwSaxaqZ4dKTiOxolC62jORulYJurRR++EZHig/Rj8h1XRLU9yL
+	RnO62mdzN38Fj/Oos7MpZleuYUmnX+FG
+X-Google-Smtp-Source: AGHT+IFQS/QRtXt0EUqefufu0Zn/eM7b8YHeCDl8xRh8AdtVoKcskpac+q85tiAK6Cmtjz0G29BBdaPgmikA
+X-Received: from morats.c.googlers.com ([fda3:e722:ac3:cc00:14:4d90:c0a8:d9e])
+ (user=moritzf job=sendgmr) by 2002:a0c:e912:0:b0:67a:b419:5443 with SMTP id
+ a18-20020a0ce912000000b0067ab4195443mr1250qvo.5.1701827619921; Tue, 05 Dec
+ 2023 17:53:39 -0800 (PST)
+Date: Wed, 6 Dec 2023 01:53:37 +0000
+In-Reply-To: <0-v3-d794f8d934da+411a-smmuv3_newapi_p1_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|SJ0PR12MB8092:EE_
-X-MS-Office365-Filtering-Correlation-Id: a677fd9c-fccd-4228-954b-08dbf5faf4a2
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	uFVcKAPm+OFAyV/u32/MZcTztsl+HwfubmTRRESRzKPMtsLOyL8liVpfqBzGqivcC/q/zyH5/hC6YZJkQ5j/laEsoaXgTtDvAtsm7NnPa6JU2gi3CTPqFihpV/sBQ49oow5CB7vPmCOymMnK6HQ0qzng1zidSOaEmMak0q+44bbpg2NbrG5469Aon5aF1LB5nhAsaAHkRd5M83qKXGzwziyxq4MoVhIDsbNRD32uNOoFf7x3fGYqdSkB7Ke4ofEYVpV7NW9q5Rjc6lVJkkKOsOPcNab0wX8TZ2cB6b+t4Le9aGbCSsS9B7jsTCYyxxRbQ70yC4TrMM5Txy5zC5BV/SLXIoDZOJ5/dnZfIOAp415CJQZkK+7fo8sbuGMhJEbdHBmbx5mITAG+BvDBN9B+hFkvnh5vQQExP3xtiL+Ptxf8/hiye3bd2/9nQQH/Y4gUeOJ9GsR0WVNPL85kqC3YLuZERJksxWOiTwipyhHYo5BDVyQYzv2viehkPSzFeeTe3uxw9C/avH8Fd/QyfZFZlL+RvovZXSOnNjX55k+620x/puBv45UZ/Qo0pQZDvl/D
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(136003)(376002)(396003)(346002)(39860400002)(366004)(230922051799003)(64100799003)(1800799012)(186009)(451199024)(38100700002)(41300700001)(86362001)(33656002)(83380400001)(1076003)(2616005)(6512007)(36756003)(6506007)(2906002)(8936002)(8676002)(6486002)(478600001)(316002)(54906003)(26005)(4326008)(66946007)(5660300002)(66556008)(6916009)(66476007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?vRoBT6cCtBCETK9toa780eJqKmJjz8WQsg4PF/Rkx29r/QY9bLi6dl5WMqwh?=
- =?us-ascii?Q?QScrSzCPaXpiAZ3AQSEWC9QuS2Fh0kVhFcXIu7bu4S8mqunIfowGTVASFbMT?=
- =?us-ascii?Q?Oq2WEU/FViM/5y8rWKhHmGkjpXd2dGHPc9CULeZ2lmMqiGK/YD0XQ4zzwQ/8?=
- =?us-ascii?Q?bU7mO3At3Zq4BD7mKE61wHFrHHUihgdjCdEVUTn628zpFrA8ukCr9EHAqphR?=
- =?us-ascii?Q?aoiohyz1fQCuiSYIBG4tA97Y0OJmMcWvldMcltSVBOp38jybpW36QRMiH4aM?=
- =?us-ascii?Q?EBvLl+NC+WRKbRrGHhVH2LBMeWROP1w0bTLf5aaFelr5E01XTLGCFZ8w0Uol?=
- =?us-ascii?Q?uth55iMYDFNMBapEKwcyVxV1ShPIGlRLgdBZXo18hE9utNT8CGZ3Zcp8ESan?=
- =?us-ascii?Q?yXPsNmv34jPzbAtcKY+46pKXsdhVe2OHtlJPfPTixSsCys5qQn9PePEFiP8F?=
- =?us-ascii?Q?JUIrRyxD8Ok0nr7ppyCcZW+FP3mfs1Xq+AxiqlOz7kTHvUZROQpizUI8YZai?=
- =?us-ascii?Q?vcv5DdWWGNH4jZ0KlYPgryd61DPSDzNnUmiYIEsVcAWD9TZvViFVFiRFge8G?=
- =?us-ascii?Q?Eek3/LzJ5tHkLZHGOKADssoOJBXdp7TCyEaI8UucRQZtcjkMx0jsYopTCHQO?=
- =?us-ascii?Q?ZvK+9ELQKnAUwqfoMDHZw0pp1WJtFCnPtI0Pzlol6wP9F5QPsLRydz6Q74+V?=
- =?us-ascii?Q?nglCF56iNNrKx+RKz50ptjKabmp8p8fQF2OLXYPXCBsN6PdLxpXrhAS1KtJv?=
- =?us-ascii?Q?lOCN/uZWUVS8HHIhm+MNviE7/kryjJiR2b1Cxsa8/BCL1I5acERqvyXbuzxo?=
- =?us-ascii?Q?Ywv8YDwB+BXFpBkvtz5M3U7Hdg+JE8xlCJ6jAtv49kn3mPRd9DlalewsAUzj?=
- =?us-ascii?Q?rie+UUrT/h3qqaQLM4fgjZwYUVXZwas/aeA6R3CmXTxaPCeuGudnWXPcvpSB?=
- =?us-ascii?Q?0kU40wrPbUg/QIvmScU7GHBlRnaCWOtq7kdbJxLAgEH3E3L+pziJkEgDezdw?=
- =?us-ascii?Q?8T4pYBigcGbONcqFVyqmsoOc4MCnbjcKQaKD5f8XBUH5xFVGl2ayqOniDyfY?=
- =?us-ascii?Q?u7MuASM4OSzgrJFSvh8YaaeP/JfJMI1Y/MwfC13FOUrjy+cMtJLqB+FgVgdu?=
- =?us-ascii?Q?Ym4P/anv03Pshbf7dX/V3+rnZRUqtH12SVZl/+dFqKISAwNzrRmiZcq+tKiU?=
- =?us-ascii?Q?NgsA/F4X19HFQY+FJu2woWGPjmBBLU4X6mlx3OpdKJQPKbQ/oyxpsFYPnJYy?=
- =?us-ascii?Q?v+wgZZAxlsPv+geN+5rzt9ffeyItdJk+wcZUwFcrhrM9EGea6ityflHXACeX?=
- =?us-ascii?Q?nIwGtZCBnKr3kC2OFn54/OeUoB3vPLj0M+PvaviYbfSXji0ea7rZAhBPsWXS?=
- =?us-ascii?Q?xEemyZk4i+rFaVeK352iYTrWUlXckobRo6DrwHloMy02lvAoA2Z5VdViMWM0?=
- =?us-ascii?Q?eirdpiK7mb0sD+fAxKSybtga7US1GgGfC/Y2SsQ03DylhkmFQE4HRGkljMPF?=
- =?us-ascii?Q?y8oKgDmkrFhYSAZ/IjKrssLcKrLlE+frjcyAIBEaomkDear0Vf/gwMZuXYjx?=
- =?us-ascii?Q?mlVb4aPTgmErlzho8TFHsjfa9zNa34DSQx1xSvYe?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a677fd9c-fccd-4228-954b-08dbf5faf4a2
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Dec 2023 01:30:39.9302
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: fNAC6b33akEA1g1ilNkU9M2FVSkD61uAXJaR7ng3ZC57uYJPGJqHcvfYHhRx7xBL
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR12MB8092
+Mime-Version: 1.0
+References: <0-v3-d794f8d934da+411a-smmuv3_newapi_p1_jgg@nvidia.com>
+Message-ID: <20231206015337.edefoajnku374qpm@google.com>
+Subject: Re: [PATCH v3 00/19] Update SMMUv3 to the modern iommu API (part 1/3)
+From: Moritz Fischer <moritzf@google.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>, 
+	linux-arm-kernel@lists.infradead.org, Robin Murphy <robin.murphy@arm.com>, 
+	Will Deacon <will@kernel.org>, Eric Auger <eric.auger@redhat.com>, Moritz Fischer <mdf@kernel.org>, 
+	Michael Shavit <mshavit@google.com>, Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev, 
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 
-On Wed, Dec 06, 2023 at 08:57:27AM +0800, Zhangfei Gao wrote:
-> From: Wenkai Lin <linwenkai6@hisilicon.com>
-> 
-> In the stall model, invalid transactions were expected to be
-> stalled and aborted by the IOPF handler.
-> 
-> However, when killing a test case with a huge amount of data, the
-> accelerator streamline can not stop until all data is consumed
-> even if the page fault handler reports errors. As a result, the
-> kill may take a long time, about 10 seconds with numerous iopf
-> interrupts.
-> 
-> So disable stall for quiet_cd in the non-force stall model, since
-> force stall model (STALL_MODEL==0b10) requires CD.S must be 1.
+Hi Jason,
 
-I think this force-stall thing should get a closer look, it doesn't
-look completely implemented and what does it mean for, eg, non-SVA
-domains attached to the device (as we now support with S2 and soon
-with PASID)
+just got back to actually having access to my machine...
 
-The manual says:
+On Tue, Dec 05, 2023 at 03:14:32PM -0400, Jason Gunthorpe wrote:
+> The SMMUv3 driver was originally written in 2015 when the iommu driver
+> facing API looked quite different. The API has evolved, especially lately,
+> and the driver has fallen behind.
 
-0b10 Stall is forced (all faults eligible to stall cause stall),
-     STE.S2S and CD.S must be 1.
+> This work aims to bring make the SMMUv3 driver the best IOMMU driver with
+> the most comprehensive implementation of the API. After all parts it
+> addresses:
 
-And there is a note:
+>   - Global static BLOCKED and IDENTITY domains with 'never fail' attach
+>     semantics. BLOCKED is desired for efficient VFIO.
 
- Note: For faulting transactions that are associated with client
- devices that have been configured to stall, but where
- the system has not explicitly advertised the client devices to be
- usable with the stall model, Arm recommends for
- software to expect that events might be recorded with Stall == 0.
+>   - Support map before attach for PAGING iommu_domains.
 
-Which makes it seem like it isn't actually "force" per-say, but
-something else.
+>   - attach_dev failure does not change the HW configuration.
 
-I notice the driver never sets STE.S2S, and it isn't entirely clear
-what software should even do for a standard non-faulting domain where
-non-present means failure? Take the fault event and always respond
-with failure? What is the purpose?
+>   - Fully hitless transitions between IDENTITY -> DMA -> IDENTITY.
+>     The API has IOMMU_RESV_DIRECT which is expected to be
+>     continuously translating.
 
-Aside from that the change looks OK to me:
+>   - Safe transitions between PAGING -> BLOCKED, do not ever temporarily
+>     do IDENTITY. This is required for iommufd security.
 
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+>   - Full PASID API support including:
+>      - S1/SVA domains attached to PASIDs
+>      - IDENTITY/BLOCKED/S1 attached to RID
+>      - Change of the RID domain while PASIDs are attached
 
-Jason
+>   - Streamlined SVA support using the core infrastructure
+
+>   - Hitless, whenever possible, change between two domains
+
+>   - iommufd IOMMU_GET_HW_INFO, IOMMU_HWPT_ALLOC_NEST_PARENT, and
+>     IOMMU_DOMAIN_NESTED support
+
+> Over all these things are going to become more accessible to iommufd, and
+> exposed to VMs, so it is important for the driver to have a robust
+> implementation of the API.
+
+> The work is split into three parts, with this part largely focusing on the
+> STE and building up to the BLOCKED & IDENTITY global static domains.
+
+> The second part largely focuses on the CD and builds up to having a common
+> PASID infrastructure that SVA and S1 domains equally use.
+
+> The third part has some random cleanups and the iommufd related parts.
+
+> Overall this takes the approach of turning the STE/CD programming upside
+> down where the CD/STE value is computed right at a driver callback
+> function and then pushed down into programming logic. The programming
+> logic hides the details of the required CD/STE tear-less update. This
+> makes the CD/STE functions independent of the arm_smmu_domain which makes
+> it fairly straightforward to untangle all the different call chains, and
+> add news ones.
+
+> Further, this frees the arm_smmu_domain related logic from keeping track
+> of what state the STE/CD is currently in so it can carefully sequence the
+> correct update. There are many new update pairs that are subtly introduced
+> as the work progresses.
+
+> The locking to support BTM via arm_smmu_asid_lock is a bit subtle right
+> now and patches throughout this work adjust and tighten this so that it is
+> clearer and doesn't get broken.
+
+> Once the lower STE layers no longer need to touch arm_smmu_domain we can
+> isolate struct arm_smmu_domain to be only used for PAGING domains, audit
+> all the to_smmu_domain() calls to be only in PAGING domain ops, and
+> introduce the normal global static BLOCKED/IDENTITY domains using the new
+> STE infrastructure. Part 2 will ultimately migrate SVA over to use
+> arm_smmu_domain as well.
+
+> All parts are on github:
+
+>   https://github.com/jgunthorpe/linux/commits/smmuv3_newapi
+
+> v3:
+>   - Use some local variables in arm_smmu_get_step_for_sid() for clarity
+>   - White space and spelling changes
+>   - Commit message updates
+>   - Keep master->domain_head initialized to avoid a list_del corruption
+> v2:  
+> https://lore.kernel.org/r/0-v2-de8b10590bf5+400-smmuv3_newapi_p1_jgg@nvidia.com
+>   - Rebased on v6.7-rc1
+>   - Improve the comment for arm_smmu_write_entry_step()
+>   - Fix the botched memcmp
+>   - Document the spec justification for the SHCFG exclusion in used
+>   - Include STRTAB_STE_1_SHCFG for STRTAB_STE_0_CFG_S2_TRANS in used
+>   - WARN_ON for unknown STEs in used
+>   - Fix error unwind in arm_smmu_attach_dev()
+>   - Whitespace, spelling, and checkpatch related items
+> v1:  
+> https://lore.kernel.org/r/0-v1-e289ca9121be+2be-smmuv3_newapi_p1_jgg@nvidia.com
+
+> Jason Gunthorpe (19):
+>    iommu/arm-smmu-v3: Add a type for the STE
+>    iommu/arm-smmu-v3: Master cannot be NULL in
+>      arm_smmu_write_strtab_ent()
+>    iommu/arm-smmu-v3: Remove ARM_SMMU_DOMAIN_NESTED
+>    iommu/arm-smmu-v3: Make STE programming independent of the callers
+>    iommu/arm-smmu-v3: Consolidate the STE generation for abort/bypass
+>    iommu/arm-smmu-v3: Move arm_smmu_rmr_install_bypass_ste()
+>    iommu/arm-smmu-v3: Move the STE generation for S1 and S2 domains into
+>      functions
+>    iommu/arm-smmu-v3: Build the whole STE in
+>      arm_smmu_make_s2_domain_ste()
+>    iommu/arm-smmu-v3: Hold arm_smmu_asid_lock during all of attach_dev
+>    iommu/arm-smmu-v3: Compute the STE only once for each master
+>    iommu/arm-smmu-v3: Do not change the STE twice during
+>      arm_smmu_attach_dev()
+>    iommu/arm-smmu-v3: Put writing the context descriptor in the right
+>      order
+>    iommu/arm-smmu-v3: Pass smmu_domain to arm_enable/disable_ats()
+>    iommu/arm-smmu-v3: Remove arm_smmu_master->domain
+>    iommu/arm-smmu-v3: Add a global static IDENTITY domain
+>    iommu/arm-smmu-v3: Add a global static BLOCKED domain
+>    iommu/arm-smmu-v3: Use the identity/blocked domain during release
+>    iommu/arm-smmu-v3: Pass arm_smmu_domain and arm_smmu_device to
+>      finalize
+>    iommu/arm-smmu-v3: Convert to domain_alloc_paging()
+
+>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 729 +++++++++++++-------
+>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  12 +-
+>   2 files changed, 477 insertions(+), 264 deletions(-)
+
+
+> base-commit: ca7fcaff577c92d85f0e05cc7be79759155fe328
+> --
+> 2.43.0
+
+
+For whole series:
+Tested-by: Moritz Fischer <moritzf@google.com>
+
+Cheers,
+Moritz
