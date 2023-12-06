@@ -1,199 +1,235 @@
-Received: from mail-qv1-f73.google.com (mail-qv1-f73.google.com [209.85.219.73])
+Received: from mail-pf1-f175.google.com (mail-pf1-f175.google.com [209.85.210.175])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D5D446B6
-	for <iommu@lists.linux.dev>; Wed,  6 Dec 2023 01:53:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--moritzf.bounces.google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F898C8F5
+	for <iommu@lists.linux.dev>; Wed,  6 Dec 2023 05:25:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="rIUcQPFz"
-Received: by mail-qv1-f73.google.com with SMTP id 6a1803df08f44-67a93902530so65896436d6.3
-        for <iommu@lists.linux.dev>; Tue, 05 Dec 2023 17:53:41 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HxgRlL5B"
+Received: by mail-pf1-f175.google.com with SMTP id d2e1a72fcca58-6cda22140f2so6236641b3a.1
+        for <iommu@lists.linux.dev>; Tue, 05 Dec 2023 21:25:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1701827620; x=1702432420; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=WF0zb0TZTsACwR1koj3GHJ0g9xK3Yw40DA0v34OkQWI=;
-        b=rIUcQPFzNd1V/pnItbCc/a2hshpLt+IbqtjUyedPzUzzWBKsxy+i4pf4UF97WNDxiy
-         zdbVqa8s67VhuSTEO6CUJvTNiuOjbyKKmEiFlb7uQxVD1yqvVMIB8amTMcxGazZt2oOI
-         3zAN4QUgAY/rwGgxckGxVBT3UreGtKSCp4K1EwfqtnVr5B9rIxRFUqb5GaVMaPwK1V6g
-         vrB45Mr16D0s+Wb/+APIvg/cAk7smlNEr1Dtqyf5+iGghGdCuMusDoAgGGXPEZd9CEUw
-         CAv37aKiEJpGMgo7mbfmIjn9quRXZ3db3s6soWQ/+zo1jxqvkrXLQHgcbh5Bj3CY22uo
-         cbew==
+        d=gmail.com; s=20230601; t=1701840315; x=1702445115; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=6huBbZbAII0X6eZV6S+b7knvK6KuHJo8Bh0bkLgUxxE=;
+        b=HxgRlL5BAqOfFxUMZ/uFPP/nUOKrqTY9MX2spwbSSzK9biSsv8Rs9wEI5OyN5a0cno
+         T8/TghC6eXfLBud3QFPd5JaEsZHXXAEr3GpsDXHUmweP5njG4We55LQL8+9buA3MACww
+         4T3n8j1+maG6w/vA/r2US3G0crawxodjjs1dskxHhDSxVtuuRgCaMk0CEueLdblv0NEl
+         WMjiLn373ULYKUdbWNInQnsmp0K6eJGfdWaPsIAeRGjFhuw0+ybgRg59zTRzjeOdEoQF
+         sexW+RI0l3A4XfJ4y2nr6tBMTVHuOklGdKzCDtuCRd/8bn9O/HDWB2FTvbBSSpyUIXe/
+         kgZg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701827620; x=1702432420;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=WF0zb0TZTsACwR1koj3GHJ0g9xK3Yw40DA0v34OkQWI=;
-        b=paebrZu5fNkzg8IEoYpoM7ib/9eu/erX1Axj8v8OI0UjN8N+vHRaT3u6DXFZVAw0wR
-         DLcRJViXn251HhOS+p8/rIxjVDuuWNXrq69kR9oFm29x4aV2XY1wEQE8jm9ughOmLn9v
-         W2wT/IV1X+38jkV0MpN/0uuQPYMSe3LdOE4MooKdpEFcFecFGN043lBBaXFD2ZnEA3d3
-         Poq47UjT6PVQIFw8QHZTAb6YOT8xNJlbuhQ7YpQmLAbkTcJirOON5kMhJ/KYIB5wrnW9
-         NYfP/0xxVyPOeBaCCIPnqJU1V5wsbiywOJsV6B5xsw6B+mBL6CmMV3QpVDkb4d9vEh9Y
-         9S4g==
-X-Gm-Message-State: AOJu0YwSaxaqZ4dKTiOxolC62jORulYJurRR++EZHig/Rj8h1XRLU9yL
-	RnO62mdzN38Fj/Oos7MpZleuYUmnX+FG
-X-Google-Smtp-Source: AGHT+IFQS/QRtXt0EUqefufu0Zn/eM7b8YHeCDl8xRh8AdtVoKcskpac+q85tiAK6Cmtjz0G29BBdaPgmikA
-X-Received: from morats.c.googlers.com ([fda3:e722:ac3:cc00:14:4d90:c0a8:d9e])
- (user=moritzf job=sendgmr) by 2002:a0c:e912:0:b0:67a:b419:5443 with SMTP id
- a18-20020a0ce912000000b0067ab4195443mr1250qvo.5.1701827619921; Tue, 05 Dec
- 2023 17:53:39 -0800 (PST)
-Date: Wed, 6 Dec 2023 01:53:37 +0000
-In-Reply-To: <0-v3-d794f8d934da+411a-smmuv3_newapi_p1_jgg@nvidia.com>
+        d=1e100.net; s=20230601; t=1701840315; x=1702445115;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=6huBbZbAII0X6eZV6S+b7knvK6KuHJo8Bh0bkLgUxxE=;
+        b=VgB9F42qWlRAst9GCUIpuU6I1SgmV0GMmMtJw/agLrDkOOekvuzZq0Q4UsCmCxdmFp
+         wXMkO6AAGGeI/+O8C/nLGaqsI7BIsILoOzO2n59qOUkw1RKWJak9IH69W9+M5FJlDLMO
+         jntpa0k6h4yKf//T+ky53iaAuzw/SVGAq8EQf5t1OaHI+6Y104i6A0VsUC+Tc8rfZu2f
+         OxFEd/iBXZMB6IenFoCFqDrWOrixp47SGB5qSOSFwRYyhYGj93F/qZsqaV6zEcxKG5TB
+         cEszbEQYwYTCMtbx3DlshbXr6a3s+5LLSLy9j5fx4X+WD7uQG5ZHCiuDkGIV2vM4dteO
+         84QA==
+X-Gm-Message-State: AOJu0YzMCizb764dmjDugvEtLRLOblxuJUnAbMU1jclmvTdlcZoDJhVq
+	hSPzJStvQQcGJkmADi4ACro=
+X-Google-Smtp-Source: AGHT+IFMxfqg8FxPkhbWeYw87iiXO3hRoVhFhH1xtCbWG3FZaVDEj9UfTpo1oYq4IqfLZ3ft2t7YHQ==
+X-Received: by 2002:a05:6a00:98e:b0:6ce:6420:e174 with SMTP id u14-20020a056a00098e00b006ce6420e174mr407397pfg.36.1701840315262;
+        Tue, 05 Dec 2023 21:25:15 -0800 (PST)
+Received: from localhost ([216.228.127.130])
+        by smtp.gmail.com with ESMTPSA id ka32-20020a056a0093a000b006ce455a7faasm5350125pfb.150.2023.12.05.21.25.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Dec 2023 21:25:14 -0800 (PST)
+Date: Tue, 5 Dec 2023 21:22:59 -0800
+From: Yury Norov <yury.norov@gmail.com>
+To: Jan Kara <jack@suse.cz>
+Cc: linux-kernel@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+	"H. Peter Anvin" <hpa@zytor.com>,
+	"James E.J. Bottomley" <jejb@linux.ibm.com>,
+	"K. Y. Srinivasan" <kys@microsoft.com>,
+	"Md. Haris Iqbal" <haris.iqbal@ionos.com>,
+	Akinobu Mita <akinobu.mita@gmail.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Bjorn Andersson <andersson@kernel.org>,
+	Borislav Petkov <bp@alien8.de>, Chaitanya Kulkarni <kch@nvidia.com>,
+	Christian Brauner <brauner@kernel.org>,
+	Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+	Dave Hansen <dave.hansen@linux.intel.com>,
+	David Disseldorp <ddiss@suse.de>,
+	Edward Cree <ecree.xilinx@gmail.com>,
+	Eric Dumazet <edumazet@google.com>,
+	Fenghua Yu <fenghua.yu@intel.com>,
+	Geert Uytterhoeven <geert@linux-m68k.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Gregory Greenman <gregory.greenman@intel.com>,
+	Hans Verkuil <hverkuil@xs4all.nl>,
+	Hans de Goede <hdegoede@redhat.com>,
+	Hugh Dickins <hughd@google.com>, Ingo Molnar <mingo@redhat.com>,
+	Jakub Kicinski <kuba@kernel.org>, Jaroslav Kysela <perex@perex.cz>,
+	Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
+	Jiri Pirko <jiri@resnulli.us>, Jiri Slaby <jirislaby@kernel.org>,
+	Kalle Valo <kvalo@kernel.org>, Karsten Graul <kgraul@linux.ibm.com>,
+	Karsten Keil <isdn@linux-pingi.de>,
+	Kees Cook <keescook@chromium.org>,
+	Leon Romanovsky <leon@kernel.org>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Martin Habets <habetsm.xilinx@gmail.com>,
+	Mauro Carvalho Chehab <mchehab@kernel.org>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Michal Simek <monstr@monstr.eu>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	Oliver Neukum <oneukum@suse.com>, Paolo Abeni <pabeni@redhat.com>,
+	Paolo Bonzini <pbonzini@redhat.com>,
+	Peter Zijlstra <peterz@infradead.org>,
+	Ping-Ke Shih <pkshih@realtek.com>, Rich Felker <dalias@libc.org>,
+	Rob Herring <robh@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Sean Christopherson <seanjc@google.com>,
+	Shuai Xue <xueshuai@linux.alibaba.com>,
+	Stanislaw Gruszka <stf_xl@wp.pl>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Valentin Schneider <vschneid@redhat.com>,
+	Vitaly Kuznetsov <vkuznets@redhat.com>,
+	Wenjia Zhang <wenjia@linux.ibm.com>, Will Deacon <will@kernel.org>,
+	Yoshinori Sato <ysato@users.sourceforge.jp>,
+	GR-QLogic-Storage-Upstream@marvell.com, alsa-devel@alsa-project.org,
+	ath10k@lists.infradead.org, dmaengine@vger.kernel.org,
+	iommu@lists.linux.dev, kvm@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+	linux-block@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+	linux-hyperv@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
+	linux-media@vger.kernel.org, linux-mips@vger.kernel.org,
+	linux-net-drivers@amd.com, linux-pci@vger.kernel.org,
+	linux-rdma@vger.kernel.org, linux-s390@vger.kernel.org,
+	linux-scsi@vger.kernel.org, linux-serial@vger.kernel.org,
+	linux-sh@vger.kernel.org, linux-sound@vger.kernel.org,
+	linux-usb@vger.kernel.org, linux-wireless@vger.kernel.org,
+	linuxppc-dev@lists.ozlabs.org, mpi3mr-linuxdrv.pdl@broadcom.com,
+	netdev@vger.kernel.org, sparclinux@vger.kernel.org, x86@kernel.org,
+	Mirsad Todorovac <mirsad.todorovac@alu.unizg.hr>,
+	Matthew Wilcox <willy@infradead.org>,
+	Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Maxim Kuvyrkov <maxim.kuvyrkov@linaro.org>,
+	Alexey Klimov <klimov.linux@gmail.com>,
+	Bart Van Assche <bvanassche@acm.org>,
+	Sergey Shtylyov <s.shtylyov@omp.ru>
+Subject: Re: [PATCH v2 00/35] bitops: add atomic find_bit() operations
+Message-ID: <ZXAFM2VZugdhM3oE@yury-ThinkPad>
+References: <20231203192422.539300-1-yury.norov@gmail.com>
+ <20231204185101.ddmkvsr2xxsmoh2u@quack3>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <0-v3-d794f8d934da+411a-smmuv3_newapi_p1_jgg@nvidia.com>
-Message-ID: <20231206015337.edefoajnku374qpm@google.com>
-Subject: Re: [PATCH v3 00/19] Update SMMUv3 to the modern iommu API (part 1/3)
-From: Moritz Fischer <moritzf@google.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>, 
-	linux-arm-kernel@lists.infradead.org, Robin Murphy <robin.murphy@arm.com>, 
-	Will Deacon <will@kernel.org>, Eric Auger <eric.auger@redhat.com>, Moritz Fischer <mdf@kernel.org>, 
-	Michael Shavit <mshavit@google.com>, Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev, 
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20231204185101.ddmkvsr2xxsmoh2u@quack3>
 
-Hi Jason,
+On Mon, Dec 04, 2023 at 07:51:01PM +0100, Jan Kara wrote:
+> Hello Yury!
+> 
+> On Sun 03-12-23 11:23:47, Yury Norov wrote:
+> > Add helpers around test_and_{set,clear}_bit() that allow to search for
+> > clear or set bits and flip them atomically.
+> > 
+> > The target patterns may look like this:
+> > 
+> > 	for (idx = 0; idx < nbits; idx++)
+> > 		if (test_and_clear_bit(idx, bitmap))
+> > 			do_something(idx);
+> > 
+> > Or like this:
+> > 
+> > 	do {
+> > 		bit = find_first_bit(bitmap, nbits);
+> > 		if (bit >= nbits)
+> > 			return nbits;
+> > 	} while (!test_and_clear_bit(bit, bitmap));
+> > 	return bit;
+> > 
+> > In both cases, the opencoded loop may be converted to a single function
+> > or iterator call. Correspondingly:
+> > 
+> > 	for_each_test_and_clear_bit(idx, bitmap, nbits)
+> > 		do_something(idx);
+> > 
+> > Or:
+> > 	return find_and_clear_bit(bitmap, nbits);
+> 
+> These are fine cleanups but they actually don't address the case that has
+> triggered all these changes - namely the xarray use of find_next_bit() in
+> xas_find_chunk().
+> 
+> ...
+> > This series is a result of discussion [1]. All find_bit() functions imply
+> > exclusive access to the bitmaps. However, KCSAN reports quite a number
+> > of warnings related to find_bit() API. Some of them are not pointing
+> > to real bugs because in many situations people intentionally allow
+> > concurrent bitmap operations.
+> > 
+> > If so, find_bit() can be annotated such that KCSAN will ignore it:
+> > 
+> >         bit = data_race(find_first_bit(bitmap, nbits));
+> 
+> No, this is not a correct thing to do. If concurrent bitmap changes can
+> happen, find_first_bit() as it is currently implemented isn't ever a safe
+> choice because it can call __ffs(0) which is dangerous as you properly note
+> above. I proposed adding READ_ONCE() into find_first_bit() / find_next_bit()
+> implementation to fix this issue but you disliked that. So other option we
+> have is adding find_first_bit() and find_next_bit() variants that take
+> volatile 'addr' and we have to use these in code like xas_find_chunk()
+> which cannot be converted to your new helpers.
 
-just got back to actually having access to my machine...
+Here is some examples when concurrent operations with plain find_bit()
+are acceptable:
 
-On Tue, Dec 05, 2023 at 03:14:32PM -0400, Jason Gunthorpe wrote:
-> The SMMUv3 driver was originally written in 2015 when the iommu driver
-> facing API looked quite different. The API has evolved, especially lately,
-> and the driver has fallen behind.
+ - two threads running find_*_bit(): safe wrt ffs(0) and returns correct
+   value, because underlying bitmap is unchanged;
+ - find_next_bit() in parallel with set or clear_bit(), when modifying
+   a bit prior to the start bit to search: safe and correct;
+ - find_first_bit() in parallel with set_bit(): safe, but may return wrong
+   bit number;
+ - find_first_zero_bit() in parallel with clear_bit(): same as above.
 
-> This work aims to bring make the SMMUv3 driver the best IOMMU driver with
-> the most comprehensive implementation of the API. After all parts it
-> addresses:
+In last 2 cases find_bit() may not return a correct bit number, but
+it may be OK if caller requires any (not exactly first) set or clear
+bit, correspondingly.
 
->   - Global static BLOCKED and IDENTITY domains with 'never fail' attach
->     semantics. BLOCKED is desired for efficient VFIO.
+In such cases, KCSAN may be safely silenced.
+ 
+> > This series addresses the other important case where people really need
+> > atomic find ops. As the following patches show, the resulting code
+> > looks safer and more verbose comparing to opencoded loops followed by
+> > atomic bit flips.
+> > 
+> > In [1] Mirsad reported 2% slowdown in a single-thread search test when
+> > switching find_bit() function to treat bitmaps as volatile arrays. On
+> > the other hand, kernel robot in the same thread reported +3.7% to the
+> > performance of will-it-scale.per_thread_ops test.
+> 
+> It was actually me who reported the regression here [2] but whatever :)
+> 
+> [2] https://lore.kernel.org/all/20231011150252.32737-1-jack@suse.cz
 
->   - Support map before attach for PAGING iommu_domains.
+My apologize.
 
->   - attach_dev failure does not change the HW configuration.
-
->   - Fully hitless transitions between IDENTITY -> DMA -> IDENTITY.
->     The API has IOMMU_RESV_DIRECT which is expected to be
->     continuously translating.
-
->   - Safe transitions between PAGING -> BLOCKED, do not ever temporarily
->     do IDENTITY. This is required for iommufd security.
-
->   - Full PASID API support including:
->      - S1/SVA domains attached to PASIDs
->      - IDENTITY/BLOCKED/S1 attached to RID
->      - Change of the RID domain while PASIDs are attached
-
->   - Streamlined SVA support using the core infrastructure
-
->   - Hitless, whenever possible, change between two domains
-
->   - iommufd IOMMU_GET_HW_INFO, IOMMU_HWPT_ALLOC_NEST_PARENT, and
->     IOMMU_DOMAIN_NESTED support
-
-> Over all these things are going to become more accessible to iommufd, and
-> exposed to VMs, so it is important for the driver to have a robust
-> implementation of the API.
-
-> The work is split into three parts, with this part largely focusing on the
-> STE and building up to the BLOCKED & IDENTITY global static domains.
-
-> The second part largely focuses on the CD and builds up to having a common
-> PASID infrastructure that SVA and S1 domains equally use.
-
-> The third part has some random cleanups and the iommufd related parts.
-
-> Overall this takes the approach of turning the STE/CD programming upside
-> down where the CD/STE value is computed right at a driver callback
-> function and then pushed down into programming logic. The programming
-> logic hides the details of the required CD/STE tear-less update. This
-> makes the CD/STE functions independent of the arm_smmu_domain which makes
-> it fairly straightforward to untangle all the different call chains, and
-> add news ones.
-
-> Further, this frees the arm_smmu_domain related logic from keeping track
-> of what state the STE/CD is currently in so it can carefully sequence the
-> correct update. There are many new update pairs that are subtly introduced
-> as the work progresses.
-
-> The locking to support BTM via arm_smmu_asid_lock is a bit subtle right
-> now and patches throughout this work adjust and tighten this so that it is
-> clearer and doesn't get broken.
-
-> Once the lower STE layers no longer need to touch arm_smmu_domain we can
-> isolate struct arm_smmu_domain to be only used for PAGING domains, audit
-> all the to_smmu_domain() calls to be only in PAGING domain ops, and
-> introduce the normal global static BLOCKED/IDENTITY domains using the new
-> STE infrastructure. Part 2 will ultimately migrate SVA over to use
-> arm_smmu_domain as well.
-
-> All parts are on github:
-
->   https://github.com/jgunthorpe/linux/commits/smmuv3_newapi
-
-> v3:
->   - Use some local variables in arm_smmu_get_step_for_sid() for clarity
->   - White space and spelling changes
->   - Commit message updates
->   - Keep master->domain_head initialized to avoid a list_del corruption
-> v2:  
-> https://lore.kernel.org/r/0-v2-de8b10590bf5+400-smmuv3_newapi_p1_jgg@nvidia.com
->   - Rebased on v6.7-rc1
->   - Improve the comment for arm_smmu_write_entry_step()
->   - Fix the botched memcmp
->   - Document the spec justification for the SHCFG exclusion in used
->   - Include STRTAB_STE_1_SHCFG for STRTAB_STE_0_CFG_S2_TRANS in used
->   - WARN_ON for unknown STEs in used
->   - Fix error unwind in arm_smmu_attach_dev()
->   - Whitespace, spelling, and checkpatch related items
-> v1:  
-> https://lore.kernel.org/r/0-v1-e289ca9121be+2be-smmuv3_newapi_p1_jgg@nvidia.com
-
-> Jason Gunthorpe (19):
->    iommu/arm-smmu-v3: Add a type for the STE
->    iommu/arm-smmu-v3: Master cannot be NULL in
->      arm_smmu_write_strtab_ent()
->    iommu/arm-smmu-v3: Remove ARM_SMMU_DOMAIN_NESTED
->    iommu/arm-smmu-v3: Make STE programming independent of the callers
->    iommu/arm-smmu-v3: Consolidate the STE generation for abort/bypass
->    iommu/arm-smmu-v3: Move arm_smmu_rmr_install_bypass_ste()
->    iommu/arm-smmu-v3: Move the STE generation for S1 and S2 domains into
->      functions
->    iommu/arm-smmu-v3: Build the whole STE in
->      arm_smmu_make_s2_domain_ste()
->    iommu/arm-smmu-v3: Hold arm_smmu_asid_lock during all of attach_dev
->    iommu/arm-smmu-v3: Compute the STE only once for each master
->    iommu/arm-smmu-v3: Do not change the STE twice during
->      arm_smmu_attach_dev()
->    iommu/arm-smmu-v3: Put writing the context descriptor in the right
->      order
->    iommu/arm-smmu-v3: Pass smmu_domain to arm_enable/disable_ats()
->    iommu/arm-smmu-v3: Remove arm_smmu_master->domain
->    iommu/arm-smmu-v3: Add a global static IDENTITY domain
->    iommu/arm-smmu-v3: Add a global static BLOCKED domain
->    iommu/arm-smmu-v3: Use the identity/blocked domain during release
->    iommu/arm-smmu-v3: Pass arm_smmu_domain and arm_smmu_device to
->      finalize
->    iommu/arm-smmu-v3: Convert to domain_alloc_paging()
-
->   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 729 +++++++++++++-------
->   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  12 +-
->   2 files changed, 477 insertions(+), 264 deletions(-)
-
-
-> base-commit: ca7fcaff577c92d85f0e05cc7be79759155fe328
-> --
-> 2.43.0
-
-
-For whole series:
-Tested-by: Moritz Fischer <moritzf@google.com>
-
-Cheers,
-Moritz
+> > Assuming that our compilers are sane and generate better code against
+> > properly annotated data, the above discrepancy doesn't look weird. When
+> > running on non-volatile bitmaps, plain find_bit() outperforms atomic
+> > find_and_bit(), and vice-versa.
+> > 
+> > So, all users of find_bit() API, where heavy concurrency is expected,
+> > are encouraged to switch to atomic find_and_bit() as appropriate.
+> 
+> Well, all users where any concurrency can happen should switch. Otherwise
+> they are prone to the (admittedly mostly theoretical) data race issue.
+> 
+> 								Honza
+> -- 
+> Jan Kara <jack@suse.com>
+> SUSE Labs, CR
