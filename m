@@ -1,33 +1,33 @@
 Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE0606EB5A
-	for <iommu@lists.linux.dev>; Wed,  6 Dec 2023 20:26:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A9893FB34
+	for <iommu@lists.linux.dev>; Wed,  6 Dec 2023 20:44:08 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="Dx3zUkXn";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="cm4lSW9G"
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="kIlh4/LD";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="uKMrxTVR"
 From: Thomas Gleixner <tglx@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1701894416;
+	s=2020; t=1701895443;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=kqh7GJ3rdYwLUSDYgl+gNKDmu46Ojy1zKysyN8CB3PA=;
-	b=Dx3zUkXnBMm4PIrqdahEibZhO1yy5UJQsEexfAvFuyvV+nW6+zBezgyCZo+LL6QhzGrqSu
-	TSfYMIh9rn+gK/uOHTyzZbDwudn2yF9Ai82oaYimTHIvldekh+tLWACpNm9g/wmnRmxC38
-	07CpNlabWYsqEF/CUR7K+s12Y8RbfhU/4juyiJJv9Qbx/1PtvxwHNOgiWlkq9B6fqAfoeX
-	VgCo8h7aCC2yd6opZKrtTgQnNdXzvLNU2TOSkscwChU89zqDgbnPA9uPeLrF7KnZo41W2U
-	IkqGyjVPLXedUpPK2UEr+dmBCUJfb3Cn778WjDuw9yEwwqnEc/BzukSPVyeNPQ==
+	bh=tt/d27mY59C3uUO6MUg2plSSXPKh9R05K6pzapnG0gA=;
+	b=kIlh4/LDNh8d4Kj8mF2tshqjkGW8VUg6IY6TQZALVmfSU1bOYfxNCFkPNET+IL3SuoCHK7
+	38cFzSwsoTIpPnaj2XHCvqHMpqZd25mTW7oDvJARAvwjU86YavzyZEAtxpG+ucN4kfMQW3
+	87wk/GrPJnAjopOogtnHZjj/Gzh56ux4sIl8cb+7WqkkYopClnkB1saOBCXzKsDPsgNsgn
+	qFF6W0h0V6+08QAtk6cKFTSlx4R+7pRVRKlsvhaXlMjzn1fRPRxryRgo++x34fpjC9QgkT
+	fIJoKbzOioRZWjvDowdLAqmGbIz/qBjMbCAPpStUdL0vb2aWD8HYUUp5uuuMKQ==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1701894416;
+	s=2020e; t=1701895443;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=kqh7GJ3rdYwLUSDYgl+gNKDmu46Ojy1zKysyN8CB3PA=;
-	b=cm4lSW9GTi7RqBu3Yh/KXEw7CN9Ktdug13v2YXI4gYKAtP8Ow02khQivs91iaWtlha6u1V
-	fsm8DveWhxUy1NAQ==
+	bh=tt/d27mY59C3uUO6MUg2plSSXPKh9R05K6pzapnG0gA=;
+	b=uKMrxTVRbmTQOuVwzsvgOlKvSPYJrwjcJ2j6NmtCUTFAY0aZNpzQ6QzlKQz/zs3C1NujSf
+	62DSSdDBuApYu8Bg==
 To: Jacob Pan <jacob.jun.pan@linux.intel.com>, LKML
  <linux-kernel@vger.kernel.org>, X86 Kernel <x86@kernel.org>,
  iommu@lists.linux.dev, Lu Baolu <baolu.lu@linux.intel.com>,
@@ -37,12 +37,12 @@ To: Jacob Pan <jacob.jun.pan@linux.intel.com>, LKML
 Cc: Raj Ashok <ashok.raj@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>,
  maz@kernel.org, peterz@infradead.org, seanjc@google.com, Robin Murphy
  <robin.murphy@arm.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: Re: [PATCH RFC 13/13] iommu/vt-d: Enable posted mode for device MSIs
-In-Reply-To: <20231112041643.2868316-14-jacob.jun.pan@linux.intel.com>
+Subject: Re: [PATCH RFC 11/13] iommu/vt-d: Add an irq_chip for posted MSIs
+In-Reply-To: <20231112041643.2868316-12-jacob.jun.pan@linux.intel.com>
 References: <20231112041643.2868316-1-jacob.jun.pan@linux.intel.com>
- <20231112041643.2868316-14-jacob.jun.pan@linux.intel.com>
-Date: Wed, 06 Dec 2023 21:26:55 +0100
-Message-ID: <87zfynt6uo.ffs@tglx>
+ <20231112041643.2868316-12-jacob.jun.pan@linux.intel.com>
+Date: Wed, 06 Dec 2023 21:44:02 +0100
+Message-ID: <87wmtrt625.ffs@tglx>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,103 +52,24 @@ MIME-Version: 1.0
 Content-Type: text/plain
 
 On Sat, Nov 11 2023 at 20:16, Jacob Pan wrote:
->  #ifdef CONFIG_X86_POSTED_MSI
->  
->  static u64 get_pi_desc_addr(struct irq_data *irqd)
-> @@ -1133,6 +1144,29 @@ static u64 get_pi_desc_addr(struct irq_data *irqd)
->  
->  	return __pa(per_cpu_ptr(&posted_interrupt_desc, cpu));
->  }
-> +
-> +static void intel_ir_reconfigure_irte_posted(struct irq_data *irqd)
-> +{
-> +	struct intel_ir_data *ir_data = irqd->chip_data;
-> +	struct irte *irte = &ir_data->irte_entry;
-> +	struct irte irte_pi;
-> +	u64 pid_addr;
-> +
-> +	pid_addr = get_pi_desc_addr(irqd);
-> +
-> +	memset(&irte_pi, 0, sizeof(irte_pi));
-> +
-> +	/* The shared IRTE already be set up as posted during alloc_irte */
-
--ENOPARSE
-
-> +	dmar_copy_shared_irte(&irte_pi, irte);
-> +
-> +	irte_pi.pda_l = (pid_addr >> (32 - PDA_LOW_BIT)) & ~(-1UL << PDA_LOW_BIT);
-> +	irte_pi.pda_h = (pid_addr >> 32) & ~(-1UL << PDA_HIGH_BIT);
-> +
-> +	modify_irte(&ir_data->irq_2_iommu, &irte_pi);
-> +}
-> +
-> +#else
-> +static inline void intel_ir_reconfigure_irte_posted(struct irq_data *irqd) {}
->  #endif
->  
->  static void intel_ir_reconfigure_irte(struct irq_data *irqd, bool force)
-> @@ -1148,8 +1182,9 @@ static void intel_ir_reconfigure_irte(struct irq_data *irqd, bool force)
->  	irte->vector = cfg->vector;
->  	irte->dest_id = IRTE_DEST(cfg->dest_apicid);
->  
-> -	/* Update the hardware only if the interrupt is in remapped mode. */
-> -	if (force || ir_data->irq_2_iommu.mode == IRQ_REMAPPING)
-> +	if (ir_data->irq_2_iommu.posted_msi)
-> +		intel_ir_reconfigure_irte_posted(irqd);
-> +	else if (force || ir_data->irq_2_iommu.mode == IRQ_REMAPPING)
->  		modify_irte(&ir_data->irq_2_iommu, irte);
->  }
->  
-> @@ -1203,7 +1238,7 @@ static int intel_ir_set_vcpu_affinity(struct irq_data *data, void *info)
->  	struct intel_ir_data *ir_data = data->chip_data;
->  	struct vcpu_data *vcpu_pi_info = info;
->  
-> -	/* stop posting interrupts, back to remapping mode */
-> +	/* stop posting interrupts, back to the default mode */
->  	if (!vcpu_pi_info) {
->  		modify_irte(&ir_data->irq_2_iommu, &ir_data->irte_entry);
->  	} else {
-> @@ -1300,10 +1335,14 @@ static void intel_irq_remapping_prepare_irte(struct intel_ir_data *data,
+>  static void fill_msi_msg(struct msi_msg *msg, u32 index, u32 subhandle)
 >  {
->  	struct irte *irte = &data->irte_entry;
+>  	memset(msg, 0, sizeof(*msg));
+> @@ -1361,7 +1397,7 @@ static int intel_irq_remapping_alloc(struct irq_domain *domain,
 >  
-> -	prepare_irte(irte, irq_cfg->vector, irq_cfg->dest_apicid);
-> +	if (data->irq_2_iommu.mode == IRQ_POSTING)
-> +		prepare_irte_posted(irte);
-> +	else
-> +		prepare_irte(irte, irq_cfg->vector, irq_cfg->dest_apicid);
->  
->  	switch (info->type) {
->  	case X86_IRQ_ALLOC_TYPE_IOAPIC:
-> +		prepare_irte(irte, irq_cfg->vector, irq_cfg->dest_apicid);
+>  		irq_data->hwirq = (index << 16) + i;
+>  		irq_data->chip_data = ird;
+> -		irq_data->chip = &intel_ir_chip;
+> +		irq_data->chip = posted_msi_supported() ? &intel_ir_chip_post_msi : &intel_ir_chip;
 
-What? This is just wrong. Above you have:
+This is just wrong because you change the chip to posted for _ALL_
+domains unconditionally.
 
-> +	if (data->irq_2_iommu.mode == IRQ_POSTING)
-> +		prepare_irte_posted(irte);
-> +	else
-> +		prepare_irte(irte, irq_cfg->vector, irq_cfg->dest_apicid);
+The only domains which want this chip are the PCI/MSI domains. And those
+are distinct from the domains which serve IO/APIC, HPET, no?
 
-Can you spot the fail?
+So you can set that chip only for PCI/MSI and just let IO/APIC, HPET
+domains keep the original chip, which spares any modification of the
+IO/APIC domain.
 
->  		/* Set source-id of interrupt request */
->  		set_ioapic_sid(irte, info->devid);
->  		apic_printk(APIC_VERBOSE, KERN_DEBUG "IOAPIC[%d]: Set IRTE entry (P:%d FPD:%d Dst_Mode:%d Redir_hint:%d Trig_Mode:%d Dlvry_Mode:%X Avail:%X Vector:%02X Dest:%08X SID:%04X SQ:%X SVT:%X)\n",
-> @@ -1315,10 +1354,18 @@ static void intel_irq_remapping_prepare_irte(struct intel_ir_data *data,
->  		sub_handle = info->ioapic.pin;
->  		break;
->  	case X86_IRQ_ALLOC_TYPE_HPET:
-> +		prepare_irte(irte, irq_cfg->vector, irq_cfg->dest_apicid);
->  		set_hpet_sid(irte, info->devid);
->  		break;
->  	case X86_IRQ_ALLOC_TYPE_PCI_MSI:
->  	case X86_IRQ_ALLOC_TYPE_PCI_MSIX:
-> +		if (posted_msi_supported()) {
-> +			prepare_irte_posted(irte);
-> +			data->irq_2_iommu.posted_msi = 1;
-> +		} else {
-> +			prepare_irte(irte, irq_cfg->vector, irq_cfg->dest_apicid);
-> +		}
 
-Here it gets even more hilarious.
