@@ -1,36 +1,36 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8CD2913FF1
-	for <iommu@lists.linux.dev>; Thu,  7 Dec 2023 06:48:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D84213FF1
+	for <iommu@lists.linux.dev>; Thu,  7 Dec 2023 06:48:13 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="FZwHDjQ4"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Ny9L+K3S"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1701931688; x=1733467688;
+  t=1701931694; x=1733467694;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=8HruJAoKbOqwaNGcie+K2FNu38IQJY0ZfRkunAESKds=;
-  b=FZwHDjQ4+TIRFNslykqawCaDKBhuslpymiDEbUyjE1omDS2nH6WM7CMK
-   soReen7F6P6w1ynBd+k/scWSlztORrVs/4Qy0X3Sja7cxanaBbsUMsj8R
-   Cc101W6C0EsDrCnnXjWjVEWvzVuPmoF/FhtO+Sa7sm+xp93M3s/kGb+/5
-   YpyZIJvVW3C1k8oBuU0tVhHYn5qn08ijbw3w91hI8tHF80+Z9y3h/wRtG
-   qGO91gDw/lfBy8yMCIMcqkk2ydBiOhcELcz39iN3upJ2rvTPwwgJ1+5i3
-   S9inhzIVHTc1QMYnRnxOn1XcIJbPH0WCFPuq/BF2aSssN60l1ChohvaVu
+  bh=weytwHlJaT9QkpiPWOupsraUsDXK0tGZy4jHhXFC/0o=;
+  b=Ny9L+K3SV43ON9KHhE1r0dpbsj7jtHFMEe8MPIqWEdh1DI+bRB0Ti5Sg
+   lB4rxRkRljj+5EihCF+PnR0zvFFVonRHkwe5WE+3OXpRecI2ch2ZA3bQg
+   Bke0PTaaMjwdTnWSh+rZc4KzhIPVqOExYWa9mkrGoYef+ND9qjtxOnGK/
+   LA/DPiBlqyX6TJ9mu2ROsnw5x3lNxJqFQOCEnv+Op7heOftnbgAhuM0FW
+   F3D/uRKlA+ksmdBWoYaO97WRxnvGAPMhKu6vhoVQfyG8HJnwJhk5C+3zO
+   WbU0KCE934m1W58Y7Bv+XRzb789xjDsxW/wJZvmrSW0IiBTwn4w3t4KIt
    A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10916"; a="1014902"
+X-IronPort-AV: E=McAfee;i="6600,9927,10916"; a="1014915"
 X-IronPort-AV: E=Sophos;i="6.04,256,1695711600"; 
-   d="scan'208";a="1014902"
+   d="scan'208";a="1014915"
 Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Dec 2023 22:48:07 -0800
+  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Dec 2023 22:48:13 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10916"; a="771611438"
+X-IronPort-AV: E=McAfee;i="6600,9927,10916"; a="771611494"
 X-IronPort-AV: E=Sophos;i="6.04,256,1695711600"; 
-   d="scan'208";a="771611438"
+   d="scan'208";a="771611494"
 Received: from allen-box.sh.intel.com ([10.239.159.127])
-  by orsmga002.jf.intel.com with ESMTP; 06 Dec 2023 22:48:01 -0800
+  by orsmga002.jf.intel.com with ESMTP; 06 Dec 2023 22:48:07 -0800
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>,
 	Will Deacon <will@kernel.org>,
@@ -48,9 +48,9 @@ Cc: Yi Liu <yi.l.liu@intel.com>,
 	linux-kernel@vger.kernel.org,
 	Lu Baolu <baolu.lu@linux.intel.com>,
 	Jason Gunthorpe <jgg@nvidia.com>
-Subject: [PATCH v8 02/12] iommu/arm-smmu-v3: Remove unrecoverable faults reporting
-Date: Thu,  7 Dec 2023 14:42:58 +0800
-Message-Id: <20231207064308.313316-3-baolu.lu@linux.intel.com>
+Subject: [PATCH v8 03/12] iommu: Remove unrecoverable fault data
+Date: Thu,  7 Dec 2023 14:42:59 +0800
+Message-Id: <20231207064308.313316-4-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20231207064308.313316-1-baolu.lu@linux.intel.com>
 References: <20231207064308.313316-1-baolu.lu@linux.intel.com>
@@ -62,99 +62,113 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-No device driver registers fault handler to handle the reported
-unrecoveraable faults. Remove it to avoid dead code.
+The unrecoverable fault data is not used anywhere. Remove it to avoid
+dead code.
 
+Suggested-by: Kevin Tian <kevin.tian@intel.com>
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
 Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+Tested-by: Yan Zhao <yan.y.zhao@intel.com>
 Tested-by: Longfang Liu <liulongfang@huawei.com>
 ---
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 46 ++++++---------------
- 1 file changed, 13 insertions(+), 33 deletions(-)
+ include/linux/iommu.h | 72 ++-----------------------------------------
+ 1 file changed, 2 insertions(+), 70 deletions(-)
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index fc4317c25b6d..0f33b212ca28 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -1463,7 +1463,6 @@ arm_smmu_find_master(struct arm_smmu_device *smmu, u32 sid)
- static int arm_smmu_handle_evt(struct arm_smmu_device *smmu, u64 *evt)
- {
- 	int ret;
--	u32 reason;
- 	u32 perm = 0;
- 	struct arm_smmu_master *master;
- 	bool ssid_valid = evt[0] & EVTQ_0_SSV;
-@@ -1473,16 +1472,9 @@ static int arm_smmu_handle_evt(struct arm_smmu_device *smmu, u64 *evt)
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index d683ebf152bd..c1e4369b1957 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -50,67 +50,7 @@ struct iommu_dma_cookie;
  
- 	switch (FIELD_GET(EVTQ_0_ID, evt[0])) {
- 	case EVT_ID_TRANSLATION_FAULT:
--		reason = IOMMU_FAULT_REASON_PTE_FETCH;
--		break;
- 	case EVT_ID_ADDR_SIZE_FAULT:
--		reason = IOMMU_FAULT_REASON_OOR_ADDRESS;
--		break;
- 	case EVT_ID_ACCESS_FAULT:
--		reason = IOMMU_FAULT_REASON_ACCESS;
--		break;
- 	case EVT_ID_PERMISSION_FAULT:
--		reason = IOMMU_FAULT_REASON_PERMISSION;
- 		break;
- 	default:
- 		return -EOPNOTSUPP;
-@@ -1492,6 +1484,9 @@ static int arm_smmu_handle_evt(struct arm_smmu_device *smmu, u64 *evt)
- 	if (evt[1] & EVTQ_1_S2)
- 		return -EFAULT;
- 
-+	if (!(evt[1] & EVTQ_1_STALL))
-+		return -EOPNOTSUPP;
-+
- 	if (evt[1] & EVTQ_1_RnW)
- 		perm |= IOMMU_FAULT_PERM_READ;
- 	else
-@@ -1503,32 +1498,17 @@ static int arm_smmu_handle_evt(struct arm_smmu_device *smmu, u64 *evt)
- 	if (evt[1] & EVTQ_1_PnU)
- 		perm |= IOMMU_FAULT_PERM_PRIV;
- 
--	if (evt[1] & EVTQ_1_STALL) {
--		flt->type = IOMMU_FAULT_PAGE_REQ;
--		flt->prm = (struct iommu_fault_page_request) {
--			.flags = IOMMU_FAULT_PAGE_REQUEST_LAST_PAGE,
--			.grpid = FIELD_GET(EVTQ_1_STAG, evt[1]),
--			.perm = perm,
--			.addr = FIELD_GET(EVTQ_2_ADDR, evt[2]),
--		};
-+	flt->type = IOMMU_FAULT_PAGE_REQ;
-+	flt->prm = (struct iommu_fault_page_request) {
-+		.flags = IOMMU_FAULT_PAGE_REQUEST_LAST_PAGE,
-+		.grpid = FIELD_GET(EVTQ_1_STAG, evt[1]),
-+		.perm = perm,
-+		.addr = FIELD_GET(EVTQ_2_ADDR, evt[2]),
-+	};
- 
--		if (ssid_valid) {
--			flt->prm.flags |= IOMMU_FAULT_PAGE_REQUEST_PASID_VALID;
--			flt->prm.pasid = FIELD_GET(EVTQ_0_SSID, evt[0]);
--		}
--	} else {
--		flt->type = IOMMU_FAULT_DMA_UNRECOV;
--		flt->event = (struct iommu_fault_unrecoverable) {
--			.reason = reason,
--			.flags = IOMMU_FAULT_UNRECOV_ADDR_VALID,
--			.perm = perm,
--			.addr = FIELD_GET(EVTQ_2_ADDR, evt[2]),
--		};
+ /* Generic fault types, can be expanded IRQ remapping fault */
+ enum iommu_fault_type {
+-	IOMMU_FAULT_DMA_UNRECOV = 1,	/* unrecoverable fault */
+-	IOMMU_FAULT_PAGE_REQ,		/* page request fault */
+-};
 -
--		if (ssid_valid) {
--			flt->event.flags |= IOMMU_FAULT_UNRECOV_PASID_VALID;
--			flt->event.pasid = FIELD_GET(EVTQ_0_SSID, evt[0]);
--		}
-+	if (ssid_valid) {
-+		flt->prm.flags |= IOMMU_FAULT_PAGE_REQUEST_PASID_VALID;
-+		flt->prm.pasid = FIELD_GET(EVTQ_0_SSID, evt[0]);
- 	}
+-enum iommu_fault_reason {
+-	IOMMU_FAULT_REASON_UNKNOWN = 0,
+-
+-	/* Could not access the PASID table (fetch caused external abort) */
+-	IOMMU_FAULT_REASON_PASID_FETCH,
+-
+-	/* PASID entry is invalid or has configuration errors */
+-	IOMMU_FAULT_REASON_BAD_PASID_ENTRY,
+-
+-	/*
+-	 * PASID is out of range (e.g. exceeds the maximum PASID
+-	 * supported by the IOMMU) or disabled.
+-	 */
+-	IOMMU_FAULT_REASON_PASID_INVALID,
+-
+-	/*
+-	 * An external abort occurred fetching (or updating) a translation
+-	 * table descriptor
+-	 */
+-	IOMMU_FAULT_REASON_WALK_EABT,
+-
+-	/*
+-	 * Could not access the page table entry (Bad address),
+-	 * actual translation fault
+-	 */
+-	IOMMU_FAULT_REASON_PTE_FETCH,
+-
+-	/* Protection flag check failed */
+-	IOMMU_FAULT_REASON_PERMISSION,
+-
+-	/* access flag check failed */
+-	IOMMU_FAULT_REASON_ACCESS,
+-
+-	/* Output address of a translation stage caused Address Size fault */
+-	IOMMU_FAULT_REASON_OOR_ADDRESS,
+-};
+-
+-/**
+- * struct iommu_fault_unrecoverable - Unrecoverable fault data
+- * @reason: reason of the fault, from &enum iommu_fault_reason
+- * @flags: parameters of this fault (IOMMU_FAULT_UNRECOV_* values)
+- * @pasid: Process Address Space ID
+- * @perm: requested permission access using by the incoming transaction
+- *        (IOMMU_FAULT_PERM_* values)
+- * @addr: offending page address
+- * @fetch_addr: address that caused a fetch abort, if any
+- */
+-struct iommu_fault_unrecoverable {
+-	__u32	reason;
+-#define IOMMU_FAULT_UNRECOV_PASID_VALID		(1 << 0)
+-#define IOMMU_FAULT_UNRECOV_ADDR_VALID		(1 << 1)
+-#define IOMMU_FAULT_UNRECOV_FETCH_ADDR_VALID	(1 << 2)
+-	__u32	flags;
+-	__u32	pasid;
+-	__u32	perm;
+-	__u64	addr;
+-	__u64	fetch_addr;
++	IOMMU_FAULT_PAGE_REQ = 1,	/* page request fault */
+ };
  
- 	mutex_lock(&smmu->streams_mutex);
+ /**
+@@ -142,19 +82,11 @@ struct iommu_fault_page_request {
+ /**
+  * struct iommu_fault - Generic fault data
+  * @type: fault type from &enum iommu_fault_type
+- * @padding: reserved for future use (should be zero)
+- * @event: fault event, when @type is %IOMMU_FAULT_DMA_UNRECOV
+  * @prm: Page Request message, when @type is %IOMMU_FAULT_PAGE_REQ
+- * @padding2: sets the fault size to allow for future extensions
+  */
+ struct iommu_fault {
+ 	__u32	type;
+-	__u32	padding;
+-	union {
+-		struct iommu_fault_unrecoverable event;
+-		struct iommu_fault_page_request prm;
+-		__u8 padding2[56];
+-	};
++	struct iommu_fault_page_request prm;
+ };
+ 
+ /**
 -- 
 2.34.1
 
