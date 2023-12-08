@@ -1,64 +1,49 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD20D1D54B;
-	Fri,  8 Dec 2023 14:51:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6AFBB1E529;
+	Fri,  8 Dec 2023 14:51:28 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ddDBkLl6"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CAC8DC433C9;
-	Fri,  8 Dec 2023 14:51:08 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NMyGGvr8"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7495C433C8;
+	Fri,  8 Dec 2023 14:51:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1702047071;
-	bh=ohK5wX1yFJfy8/8zjMggRBNNLI7jTP/Vv+IAlntxkNU=;
+	s=k20201202; t=1702047088;
+	bh=oZazlu35FGl33bAmgGLk0gjDXlFaLMKUUL6nhzMSGko=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=ddDBkLl6lE5iBcxFWJMiFQt3fVnLr/Cwbzih41o3YRm2zukZm0dTh7ddZcogheTXm
-	 rHqbZlRyEceL5LTNoabbZC5/xtYECeh4Az5iNOqz6ishtpWn3ChVQBE3E9jC0DFpBy
-	 KKpBrboJ+F2EBZ5S1TzsfiBYwdgBNHT1M8Tewo44ztTgL8SxUCT8DzKtRNYMdkkPM3
-	 FT9ObRbUmW4watQwVLjf0c7jWSM08QRSYudUebfFv46GbvHFUZ/J1tQ23hu5VoPp5s
-	 oEOOZ0UFNIIcn9SGcnp/JXT15aykZP88Jy1dU/9YjVsLktL3yLh4A82XxYs2hNxnCJ
-	 vH2fG+OYN8J4A==
+	b=NMyGGvr8nnocoVdTTf7cH1BT/N0uoRTUIVKR8Vj/O99E/XXj/QWf5IKxFNWxgeXTp
+	 SOVqEb6FRxbggOnwhVVg5yeFqhWw+GLIDhdv2hHQvSj9OcmfbWUbHsTBqk34YjBsrh
+	 geYE/fEl6O1ozpsLaUMQvOInB3fKxlrzZx5h1npblP+/l60Q0bV9WUfBBRwmHPwUZR
+	 5O92m/ScT8bvjh/dytXBTfhMtqALe4vl6FAvjwaB23y5JlWNJdyXqwpr1ot6DYR2B/
+	 f872WxhQJADs1kB+w1YrFQEoHLD6F3BSfCh/Lik8d0A1dRDqJd/zRoam1892TPqhUl
+	 TSQzyOzP6XuzA==
 From: Bjorn Andersson <andersson@kernel.org>
-To: Rob Clark <robdclark@gmail.com>,
-	Abhinav Kumar <quic_abhinavk@quicinc.com>,
-	Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-	Sean Paul <sean@poorly.run>,
-	David Airlie <airlied@gmail.com>,
-	Daniel Vetter <daniel@ffwll.ch>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Maxime Ripard <mripard@kernel.org>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Loic Poulain <loic.poulain@linaro.org>,
-	Bryan O'Donoghue <bryan.odonoghue@linaro.org>,
-	Andy Gross <agross@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-	Georgi Djakov <djakov@kernel.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Krishna Manikandan <quic_mkrishn@quicinc.com>,
-	Robert Marko <robimarko@gmail.com>,
-	Das Srinagesh <quic_gurus@quicinc.com>,
-	cros-qcom-dts-watchers@chromium.org,
-	Konrad Dybcio <konrad.dybcio@linaro.org>
-Cc: Marijn Suijten <marijn.suijten@somainline.org>,
-	Rob Herring <robh@kernel.org>,
+To: konrad.dybcio@linaro.org,
+	will@kernel.org,
+	robin.murphy@arm.com,
+	joro@8bytes.org,
+	robh+dt@kernel.org,
+	krzysztof.kozlowski+dt@linaro.org,
+	conor+dt@kernel.org,
+	Sibi Sankar <quic_sibis@quicinc.com>
+Cc: agross@kernel.org,
+	vkoul@kernel.org,
+	quic_gurus@quicinc.com,
+	quic_rjendra@quicinc.com,
+	abel.vesa@linaro.org,
 	linux-arm-msm@vger.kernel.org,
-	dri-devel@lists.freedesktop.org,
-	freedreno@lists.freedesktop.org,
 	devicetree@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	linux-pm@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev
-Subject: Re: (subset) [PATCH v3 00/12] RB1/QCM2290 features
-Date: Fri,  8 Dec 2023 06:55:19 -0800
-Message-ID: <170204733634.342318.13908717706706425417.b4-ty@kernel.org>
+	dmaengine@vger.kernel.org,
+	iommu@lists.linux.dev,
+	quic_tsoni@quicinc.com,
+	neil.armstrong@linaro.org
+Subject: Re: (subset) [PATCH V3 0/5] dt-bindings: Document gpi/pdc/scm/smmu for X1E80100
+Date: Fri,  8 Dec 2023 06:55:35 -0800
+Message-ID: <170204733628.342318.12423965421675968471.b4-ty@kernel.org>
 X-Mailer: git-send-email 2.42.0
-In-Reply-To: <20231125-topic-rb1_feat-v3-0-4cbb567743bb@linaro.org>
-References: <20231125-topic-rb1_feat-v3-0-4cbb567743bb@linaro.org>
+In-Reply-To: <20231124100608.29964-1-quic_sibis@quicinc.com>
+References: <20231124100608.29964-1-quic_sibis@quicinc.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -69,23 +54,20 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 
 
-On Wed, 29 Nov 2023 15:43:57 +0100, Konrad Dybcio wrote:
-> This series brings:
-> - interconnect plumbing
-> - display setup
+On Fri, 24 Nov 2023 15:36:03 +0530, Sibi Sankar wrote:
+> This series documents gpi/pdc/scm/smmu/soc for the Qualcomm X1E80100
+> platform, aka Snapdragon X Elite.
 > 
-> for QCM2290/QRB2210 and
-> 
-> - CAN bus controller
-> - HDMI display
-> - wifi fw variant name
+> Our v1 post of the patchsets adding support for Snapdragon X Elite SoC had
+> the part number sc8380xp which is now updated to the new part number x1e80100
+> based on the new branding scheme and refers to the exact same SoC.
 > 
 > [...]
 
 Applied, thanks!
 
-[04/12] dt-bindings: firmware: qcom,scm: Allow interconnect for everyone
-        commit: 56fdc35ef067c8dffee22038dd3a84bb3fa6d2a4
+[4/5] dt-bindings: firmware: qcom,scm: document SCM on X1E80100 SoCs
+      commit: 696945e427e63ebbabad656893fb82da1ee2a980
 
 Best regards,
 -- 
