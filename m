@@ -1,179 +1,173 @@
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.65])
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.120])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 37DEF41C8E
-	for <iommu@lists.linux.dev>; Fri,  8 Dec 2023 19:58:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 18B095733C
+	for <iommu@lists.linux.dev>; Fri,  8 Dec 2023 23:12:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="RV8v6MrT"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="JLsBMza2"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1702065492; x=1733601492;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=hzztr2vL6DpeporjOTsxI9y9kBcB6HDvx6vV8t2DZhw=;
-  b=RV8v6MrTzdbBWd5lmLT6qHgJSel/TnzY5mLK7mMwYJLRasLUyv4CfkOR
-   8OI5wYva+IdTpfQTOYIW2iPJT325Wlci2Oc/P2A48sAlBeNN87pS0Au70
-   zrKHg5VTv2r2f24AbvZlf9NnUN7N0gtUT/mL32mmWlpvgRghlKbnUB6kU
-   3PcRRlHHAuxzPEIBu3oi5G5rwWYPHWahoM3llN+59sKxemPxOXYnkh2lC
-   ipPY4V1nOJRqpmMLKvvvJJJNlXVblpzgagLXOvRJvWqMMwp3NiLvVBHtJ
-   lKtHZtpOozxna0MUmFH8tN7zVMibN1ZKATk4MHAVTgallxHMbVh/IVVvA
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10918"; a="398320437"
-X-IronPort-AV: E=Sophos;i="6.04,261,1695711600"; 
-   d="scan'208";a="398320437"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Dec 2023 11:57:44 -0800
+  t=1702077165; x=1733613165;
+  h=date:from:to:cc:subject:message-id;
+  bh=EZ8Nd2SEoqsCXHP4OYwqtiOfRlnLleCpd54fW+Zs5CU=;
+  b=JLsBMza2xOSfDhlzgtOnDUSVUMeAfUMaQtjYLkbeuhVmp8Lv/b6a9I32
+   Obs9cdMkI8Z9Sh3aS2n5X67NnqUiVsnTBSqA4ID+uY/ZDyiuhFXGLLrS5
+   Jrd3gN+yZzqsmySeT9oLn1DKVBEwXCfG6hHkacEJeMrFodeidhAFikPMr
+   NZ0evx5Gabb44/VvPsgghSeu1MBU/LOe4SYDh+ci1N1PEiMg8Lsql1NcG
+   llo2LO3mg/9veP1jFSDQkVb/DD1OYVLWrjDQsDvkexO+QXSEy6S8fsXCo
+   SJKF/xXc+OhzM67bxoPwyFfx+k3an0uocH+e6JdFGheRz2d/sIPS9MNgZ
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10918"; a="393344282"
+X-IronPort-AV: E=Sophos;i="6.04,262,1695711600"; 
+   d="scan'208";a="393344282"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Dec 2023 15:12:39 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10918"; a="842723679"
-X-IronPort-AV: E=Sophos;i="6.04,261,1695711600"; 
-   d="scan'208";a="842723679"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.24.100.114])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Dec 2023 11:57:44 -0800
-Date: Fri, 8 Dec 2023 12:02:36 -0800
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Thomas Gleixner <tglx@linutronix.de>
-Cc: Peter Zijlstra <peterz@infradead.org>, LKML
- <linux-kernel@vger.kernel.org>, X86 Kernel <x86@kernel.org>,
- iommu@lists.linux.dev, Lu Baolu <baolu.lu@linux.intel.com>,
- kvm@vger.kernel.org, Dave Hansen <dave.hansen@intel.com>, Joerg Roedel
- <joro@8bytes.org>, "H. Peter Anvin" <hpa@zytor.com>, Borislav Petkov
- <bp@alien8.de>, Ingo Molnar <mingo@redhat.com>, Raj Ashok
- <ashok.raj@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>,
- maz@kernel.org, seanjc@google.com, Robin Murphy <robin.murphy@arm.com>,
- jacob.jun.pan@linux.intel.com
-Subject: Re: [PATCH RFC 09/13] x86/irq: Install posted MSI notification
- handler
-Message-ID: <20231208120236.0f3b287d@jacob-builder>
-In-Reply-To: <87zfyksyge.ffs@tglx>
-References: <20231112041643.2868316-1-jacob.jun.pan@linux.intel.com>
-	<20231112041643.2868316-10-jacob.jun.pan@linux.intel.com>
-	<20231115125624.GF3818@noisy.programming.kicks-ass.net>
-	<87cyvjun3z.ffs@tglx>
-	<20231207204607.2d2a3b72@jacob-builder>
-	<87zfyksyge.ffs@tglx>
-Organization: OTC
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+X-IronPort-AV: E=McAfee;i="6600,9927,10918"; a="748498798"
+X-IronPort-AV: E=Sophos;i="6.04,262,1695711600"; 
+   d="scan'208";a="748498798"
+Received: from lkp-server02.sh.intel.com (HELO b07ab15da5fe) ([10.239.97.151])
+  by orsmga006.jf.intel.com with ESMTP; 08 Dec 2023 15:12:36 -0800
+Received: from kbuild by b07ab15da5fe with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1rBk1K-000EWX-00;
+	Fri, 08 Dec 2023 23:12:34 +0000
+Date: Sat, 09 Dec 2023 07:11:38 +0800
+From: kernel test robot <lkp@intel.com>
+To: Andrew Morton <akpm@linux-foundation.org>
+Cc: Linux Memory Management List <linux-mm@kvack.org>,
+ iommu@lists.linux.dev, linux-btrfs@vger.kernel.org,
+ linux-pm@vger.kernel.org, linux-scsi@vger.kernel.org
+Subject: [linux-next:pending-fixes] BUILD REGRESSION
+ e142e0e4b174b269d1fd400aa676c5f0483b608c
+Message-ID: <202312090734.Ent2gD13-lkp@intel.com>
+User-Agent: s-nail v14.9.24
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
 
-Hi Thomas,
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git pending-fixes
+branch HEAD: e142e0e4b174b269d1fd400aa676c5f0483b608c  Merge branch 'for-linux-next-fixes' of git://anongit.freedesktop.org/drm/drm-misc
 
-On Fri, 08 Dec 2023 12:52:49 +0100, Thomas Gleixner <tglx@linutronix.de>
-wrote:
+Error/Warning ids grouped by kconfigs:
 
-> On Thu, Dec 07 2023 at 20:46, Jacob Pan wrote:
-> > On Wed, 06 Dec 2023 20:50:24 +0100, Thomas Gleixner <tglx@linutronix.de>
-> > wrote:  
-> >> I don't understand what the whole copy business is about. It's
-> >> absolutely not required.  
-> >
-> > My thinking is the following:
-> > The PIR cache line is contended by between CPU and IOMMU, where CPU can
-> > access PIR much faster. Nevertheless, when IOMMU does atomic swap of the
-> > PID (PIR included), L1 cache gets evicted. Subsequent CPU read or xchg
-> > will deal with invalid cold cache.
-> >
-> > By making a copy of PIR as quickly as possible and clearing PIR with
-> > xchg, we minimized the chance that IOMMU does atomic swap in the middle.
-> > Therefore, having less L1D misses.
-> >
-> > In the code above, it does read, xchg, and call_irq_handler() in a loop
-> > to handle the 4 64bit PIR bits at a time. IOMMU has a greater chance to
-> > do atomic xchg on the PIR cache line while doing call_irq_handler().
-> > Therefore, it causes more L1D misses.  
-> 
-> That makes sense and if we go there it wants to be documented.
-will do. How about this explanation:
-"
-Posted interrupt descriptor (PID) fits in a cache line that is frequently
-accessed by both CPU and IOMMU.
+gcc_recent_errors
+|-- arm-randconfig-r063-20231208
+|   `-- drivers-power-supply-cw2015_battery.c:WARNING-opportunity-for-max()
+|-- sh-randconfig-r053-20231208
+|   |-- fs-btrfs-extent_io.c:WARNING:atomic_dec_and_test-variation-before-object-free-at-line-.
+|   |-- fs-btrfs-extent_io.c:preceding-lock-on-line
+|   `-- fs-btrfs-ordered-data.c:WARNING:atomic_dec_and_test-variation-before-object-free-at-line-.
+|-- sh-randconfig-r062-20231208
+|   `-- drivers-power-supply-cw2015_battery.c:WARNING-opportunity-for-max()
+`-- sparc-randconfig-r054-20231208
+    `-- drivers-power-supply-cw2015_battery.c:WARNING-opportunity-for-max()
+clang_recent_errors
+|-- i386-randconfig-051-20231208
+|   |-- drivers-power-supply-cw2015_battery.c:WARNING-opportunity-for-max()
+|   |-- fs-btrfs-extent_io.c:WARNING:atomic_dec_and_test-variation-before-object-free-at-line-.
+|   |-- fs-btrfs-extent_io.c:preceding-lock-on-line
+|   `-- fs-btrfs-ordered-data.c:WARNING:atomic_dec_and_test-variation-before-object-free-at-line-.
+|-- i386-randconfig-053-20231208
+|   |-- drivers-scsi-be2iscsi-be_main.c:ERROR:mem_descr-mem_array-is-NULL-but-dereferenced.
+|   |-- fs-btrfs-extent_io.c:WARNING:atomic_dec_and_test-variation-before-object-free-at-line-.
+|   |-- fs-btrfs-extent_io.c:preceding-lock-on-line
+|   `-- fs-btrfs-ordered-data.c:WARNING:atomic_dec_and_test-variation-before-object-free-at-line-.
+|-- i386-randconfig-054-20231208
+|   |-- drivers-power-supply-cw2015_battery.c:WARNING-opportunity-for-max()
+|   |-- fs-btrfs-extent_io.c:WARNING:atomic_dec_and_test-variation-before-object-free-at-line-.
+|   |-- fs-btrfs-extent_io.c:preceding-lock-on-line
+|   `-- fs-btrfs-ordered-data.c:WARNING:atomic_dec_and_test-variation-before-object-free-at-line-.
+|-- i386-randconfig-r051-20231208
+|   |-- drivers-power-supply-cw2015_battery.c:WARNING-opportunity-for-max()
+|   |-- fs-btrfs-extent_io.c:WARNING:atomic_dec_and_test-variation-before-object-free-at-line-.
+|   |-- fs-btrfs-extent_io.c:preceding-lock-on-line
+|   `-- fs-btrfs-ordered-data.c:WARNING:atomic_dec_and_test-variation-before-object-free-at-line-.
+|-- x86_64-randconfig-101-20231208
+|   |-- drivers-iommu-iommufd-hw_pagetable.c:preceding-lock-on-line
+|   |-- fs-btrfs-extent_io.c:WARNING:atomic_dec_and_test-variation-before-object-free-at-line-.
+|   `-- fs-btrfs-extent_io.c:preceding-lock-on-line
+|-- x86_64-randconfig-102-20231208
+|   `-- drivers-power-supply-cw2015_battery.c:WARNING-opportunity-for-max()
+`-- x86_64-randconfig-103-20231208
+    |-- drivers-iommu-iommufd-hw_pagetable.c:preceding-lock-on-line
+    |-- drivers-power-supply-cw2015_battery.c:WARNING-opportunity-for-max()
+    |-- fs-btrfs-extent_io.c:WARNING:atomic_dec_and_test-variation-before-object-free-at-line-.
+    |-- fs-btrfs-extent_io.c:preceding-lock-on-line
+    `-- fs-btrfs-ordered-data.c:WARNING:atomic_dec_and_test-variation-before-object-free-at-line-.
 
-During posted MSI processing, the CPU needs to do 64-bit read and xchg for
-checking and clearing posted interrupt request (PIR), a 256 bit field
-within the PID. On the other side, IOMMU do atomic swaps of the entire
-PID cache line when posting interrupts. The CPU can access the cache line
-much faster than the IOMMU.
+elapsed time: 1475m
 
-The cache line states after each operation are as follows:
+configs tested: 61
+configs skipped: 0
 
-CPU		IOMMU			PID Cache line state
--------------------------------------------------------------
-read64					exclusive
-lock xchg64				modified
-		post/atomic swap	invalid
--------------------------------------------------------------
-Note that PID cache line is evicted after each IOMMU interrupt posting.
+tested configs:
+alpha                             allnoconfig   gcc  
+alpha                               defconfig   gcc  
+arc                               allnoconfig   gcc  
+arc                                 defconfig   gcc  
+arc                   randconfig-001-20231209   gcc  
+arc                   randconfig-002-20231209   gcc  
+arm                               allnoconfig   gcc  
+arm                   randconfig-001-20231209   gcc  
+arm                   randconfig-002-20231209   gcc  
+arm                   randconfig-003-20231209   gcc  
+arm                   randconfig-004-20231209   gcc  
+arm64                             allnoconfig   gcc  
+arm64                 randconfig-001-20231209   gcc  
+arm64                 randconfig-002-20231209   gcc  
+arm64                 randconfig-003-20231209   gcc  
+arm64                 randconfig-004-20231209   gcc  
+csky                              allnoconfig   gcc  
+csky                  randconfig-001-20231209   gcc  
+csky                  randconfig-002-20231209   gcc  
+hexagon               randconfig-001-20231209   clang
+hexagon               randconfig-002-20231209   clang
+i386                             allmodconfig   clang
+i386                              allnoconfig   clang
+i386                             allyesconfig   clang
+i386         buildonly-randconfig-001-20231208   clang
+i386         buildonly-randconfig-002-20231208   clang
+i386         buildonly-randconfig-003-20231208   clang
+i386         buildonly-randconfig-004-20231208   clang
+i386         buildonly-randconfig-005-20231208   clang
+i386         buildonly-randconfig-006-20231208   clang
+i386                                defconfig   gcc  
+i386                  randconfig-001-20231208   clang
+i386                  randconfig-002-20231208   clang
+i386                  randconfig-003-20231208   clang
+i386                  randconfig-004-20231208   clang
+i386                  randconfig-005-20231208   clang
+i386                  randconfig-006-20231208   clang
+i386                  randconfig-011-20231208   gcc  
+i386                  randconfig-012-20231208   gcc  
+i386                  randconfig-013-20231208   gcc  
+i386                  randconfig-014-20231208   gcc  
+i386                  randconfig-015-20231208   gcc  
+i386                  randconfig-016-20231208   gcc  
+loongarch             randconfig-001-20231209   gcc  
+loongarch             randconfig-002-20231209   gcc  
+nios2                 randconfig-001-20231209   gcc  
+nios2                 randconfig-002-20231209   gcc  
+parisc                randconfig-001-20231209   gcc  
+s390                             allmodconfig   gcc  
+s390                             allyesconfig   gcc  
+sh                               allmodconfig   gcc  
+sh                               allyesconfig   gcc  
+sparc                            allmodconfig   gcc  
+sparc64                          allmodconfig   gcc  
+sparc64                          allyesconfig   gcc  
+um                               allmodconfig   clang
+um                               allyesconfig   clang
+x86_64                            allnoconfig   gcc  
+x86_64                           allyesconfig   clang
+x86_64                              defconfig   gcc  
+x86_64                          rhel-8.3-rust   clang
 
-The posted MSI demuxing loop is written to optimize the cache performance
-based on the two considerations around the PID cache line:
-
-1. Reduce L1 data cache miss by avoiding contention with IOMMU's interrupt
-posting/atomic swap, a copy of PIR is used to dispatch interrupt handlers.
-
-2. Keep the cache line state consistent as much as possible. e.g. when
-making a copy and clearing the PIR (assuming non-zero PIR bits are present
-in the entire PIR), do:
-read, read, read, read, xchg, xchg, xchg, xchg
-instead of:
-read, xchg, read, xchg, read, xchg, read, xchg
-"
-
-> 
-> > Without PIR copy:
-> >
-> > DMA memfill bandwidth: 4.944 Gbps
-> > Performance counter stats for './run_intr.sh 512 30':
-> > 
-> >     77,313,298,506      L1-dcache-loads
-> >               (79.98%) 8,279,458      L1-dcache-load-misses     #
-> > 0.01% of all L1-dcache accesses  (80.03%) 41,654,221,245
-> > L1-dcache-stores                                              (80.01%)
-> > 10,476      LLC-load-misses           #    0.31% of all LL-cache
-> > accesses  (79.99%) 3,332,748      LLC-loads
-> >                         (80.00%) 30.212055434 seconds time elapsed
-> > 
-> >        0.002149000 seconds user
-> > 30.183292000 seconds sys
-> >                         
-> >
-> > With PIR copy:
-> > DMA memfill bandwidth: 5.029 Gbps
-> > Performance counter stats for './run_intr.sh 512 30':
-> >
-> >     78,327,247,423      L1-dcache-loads
-> >               (80.01%) 7,762,311      L1-dcache-load-misses     #
-> > 0.01% of all L1-dcache accesses  (80.01%) 42,203,221,466
-> > L1-dcache-stores                                              (79.99%)
-> > 23,691      LLC-load-misses           #    0.67% of all LL-cache
-> > accesses  (80.01%) 3,561,890      LLC-loads
-> >                         (80.00%)
-> >
-> >       30.201065706 seconds time elapsed
-> >
-> >        0.005950000 seconds user
-> >       30.167885000 seconds sys  
-> 
-> Interesting, though I'm not really convinced that this DMA memfill
-> microbenchmark resembles real work loads.
-> 
-It is just a tool to get some quick experiments done, not realistic. Though
-I am adding various knobs to make it more useful. e.g. adjustable interrupt
-rate, delays in idxd hardirq handler.
-
-> Did you test with something realistic, e.g. storage or networking, too?
-> 
-Not yet for this particular code, working on testing with FIO on Samsung
-Gen5 NVMe disks. I am getting help from the people with the set up.
-
-
-Thanks,
-
-Jacob
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
