@@ -1,152 +1,75 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4CFCC523B
-	for <iommu@lists.linux.dev>; Fri,  8 Dec 2023 04:49:40 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ECA1F5224
+	for <iommu@lists.linux.dev>; Fri,  8 Dec 2023 05:14:58 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="FmG95ClQ"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="KHqW05BF"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1702010980; x=1733546980;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=rRbc8jEQsK6Twf+fS79kJj0RpcKvEBd0c38qzLKizrs=;
-  b=FmG95ClQIe54FWVvc3yFxeqksYWIK91V0GT3JDNc26rWa2rN/W3/FnMf
-   PpPLs2NgjKce7nkfFaN4p+pXG+kVR6n0aKc5+r4PuXx6gu9aa6hQITJvi
-   UCXOdmUufAL++dpjFlLFaEhqXmKOTm4zdVemZhxcHfQ7djr/3SDFuK9HI
-   vfowd+T6aFg5fyCpDzU/NeQrwl9zb6SjLHNA4G6aMArtgu2wBQUoWAxS3
-   1jJCMxLijT3VPmU2pQuC9zrRqh9kR6N8RjiOmYM51zZwPKRunxa6ABlIO
-   EvZtTaPljzaFBBhUuzRf1059LhoiAcD6dBdpvFCnilVZt832LqXq+yHj5
+  t=1702012498; x=1733548498;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=eMqZIBfmXsW4JIGVz2VpEyeyCc8OAVvggzWL9Lorv+E=;
+  b=KHqW05BFCOsrKdTN0f28nOoNf0Ekp5GLHowo324aWo/3rVQnzUm7FkGK
+   LLPte9FZP04ZqtRIrQuguESpWyilpvlo8hMPCOZm/lA0DMPfFLPi2Ac1w
+   IlE6OE7l8q8gxGpFa/zic3lyemFmBVjHktR+BZkIYRoJHFoMq2g82TY8C
+   tXaD1UMAOj1btoxmSMVFfMdoPPgobtnCUm9vX96SnzPpcrOM8Alqoldou
+   i/2ICWFS3u21Ogy4fxgAKJn8aVM0mfaBfY6i2OfKrPxIV3ebsh/IG5JR6
+   cdwMHgsIo3fIKLKxSK+kUiXVqPcKHXOKgJuUW/XMKu8pow+W3tIBLZpM7
    w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10917"; a="1180701"
+X-IronPort-AV: E=McAfee;i="6600,9927,10917"; a="480554315"
 X-IronPort-AV: E=Sophos;i="6.04,259,1695711600"; 
-   d="scan'208";a="1180701"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Dec 2023 20:49:39 -0800
+   d="scan'208";a="480554315"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Dec 2023 21:14:57 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10917"; a="765363581"
+X-IronPort-AV: E=McAfee;i="6600,9927,10917"; a="775684230"
 X-IronPort-AV: E=Sophos;i="6.04,259,1695711600"; 
-   d="scan'208";a="765363581"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.24.100.114])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Dec 2023 20:49:38 -0800
-Date: Thu, 7 Dec 2023 20:54:31 -0800
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Thomas Gleixner <tglx@linutronix.de>
-Cc: LKML <linux-kernel@vger.kernel.org>, X86 Kernel <x86@kernel.org>,
- iommu@lists.linux.dev, Lu Baolu <baolu.lu@linux.intel.com>,
- kvm@vger.kernel.org, Dave Hansen <dave.hansen@intel.com>, Joerg Roedel
- <joro@8bytes.org>, "H. Peter Anvin" <hpa@zytor.com>, Borislav Petkov
- <bp@alien8.de>, Ingo Molnar <mingo@redhat.com>, Raj Ashok
- <ashok.raj@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>,
- maz@kernel.org, peterz@infradead.org, seanjc@google.com, Robin Murphy
- <robin.murphy@arm.com>, jacob.jun.pan@linux.intel.com
-Subject: Re: [PATCH RFC 01/13] x86: Move posted interrupt descriptor out of
- vmx code
-Message-ID: <20231207205431.75a214c2@jacob-builder>
-In-Reply-To: <87wmtruw87.ffs@tglx>
-References: <20231112041643.2868316-1-jacob.jun.pan@linux.intel.com>
-	<20231112041643.2868316-2-jacob.jun.pan@linux.intel.com>
-	<87wmtruw87.ffs@tglx>
-Organization: OTC
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+   d="scan'208";a="775684230"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
+  by fmsmga007.fm.intel.com with ESMTP; 07 Dec 2023 21:14:54 -0800
+Message-ID: <8d29c6fb-0928-4c11-a9af-02647597cb4e@linux.intel.com>
+Date: Fri, 8 Dec 2023 13:10:17 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, Jason Gunthorpe <jgg@ziepe.ca>,
+ Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>,
+ Jacob Pan <jacob.jun.pan@linux.intel.com>, iommu@lists.linux.dev,
+ linux-kselftest@vger.kernel.org, virtualization@lists.linux-foundation.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 0/6] IOMMUFD: Deliver IO page faults to user space
+Content-Language: en-US
+To: Joel Granados <j.granados@samsung.com>
+References: <20231026024930.382898-1-baolu.lu@linux.intel.com>
+ <CGME20231204150747eucas1p2365e92a7ac33ba99b801d7c800acaf6a@eucas1p2.samsung.com>
+ <20231204150744.db3hfpq4v55cuavn@localhost>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20231204150744.db3hfpq4v55cuavn@localhost>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Hi Thomas,
+On 12/4/23 11:07 PM, Joel Granados wrote:
+> On Thu, Oct 26, 2023 at 10:49:24AM +0800, Lu Baolu wrote:
+>> Hi folks,
+>>
+>> This series implements the functionality of delivering IO page faults to
+>> user space through the IOMMUFD framework for nested translation. Nested
+> Does this mean the IOPF_CAPABLE HWPT needs to be parented by a HWPT
+> created with IOMMU_HWPT_ALLOC_NEST_PARENT set?
 
-On Wed, 06 Dec 2023 17:33:28 +0100, Thomas Gleixner <tglx@linutronix.de>
-wrote:
+No. It's generic, nested translation is simply a use case that is
+currently feasible.
 
-> On Sat, Nov 11 2023 at 20:16, Jacob Pan wrote:
-> > +/* Posted-Interrupt Descriptor */
-> > +struct pi_desc {
-> > +	u32 pir[8];     /* Posted interrupt requested */
-> > +	union {
-> > +		struct {
-> > +				/* bit 256 - Outstanding Notification
-> > */
-> > +			u16	on	: 1,
-> > +				/* bit 257 - Suppress Notification */
-> > +				sn	: 1,
-> > +				/* bit 271:258 - Reserved */
-> > +				rsvd_1	: 14;
-> > +				/* bit 279:272 - Notification Vector */
-> > +			u8	nv;
-> > +				/* bit 287:280 - Reserved */
-> > +			u8	rsvd_2;
-> > +				/* bit 319:288 - Notification
-> > Destination */
-> > +			u32	ndst; =20
->=20
-> This mixture of bitfields and types is weird and really not intuitive:
->=20
-> /* Posted-Interrupt Descriptor */
-> struct pi_desc {
-> 	/* Posted interrupt requested */
-> 	u32			pir[8];
->=20
-> 	union {
-> 		struct {
-> 				/* bit 256 - Outstanding Notification */
-> 			u64	on	:  1,
-> 				/* bit 257 - Suppress Notification */
-> 				sn	:  1,
-> 				/* bit 271:258 - Reserved */
-> 					: 14,
-> 				/* bit 279:272 - Notification Vector */
-> 				nv	:  8,
-> 				/* bit 287:280 - Reserved */
-> 					:  8,
-> 				/* bit 319:288 - Notification Destination
-> */ ndst	: 32;
-> 		};
-> 		u64		control;
-> 	};
-> 	u32			rsvd[6];
-> } __aligned(64);
->=20
-It seems bit-fields cannot pass type check. I got these compile error.
-
-arch/x86/kernel/irq.c: In function =E2=80=98intel_posted_msi_init=E2=80=99:
-./include/linux/percpu-defs.h:363:20: error: cannot take address of bit-fie=
-ld =E2=80=98nv=E2=80=99
-  363 |  __verify_pcpu_ptr(&(variable));     \
-      |                    ^
-./include/linux/percpu-defs.h:219:47: note: in definition of macro =E2=80=
-=98__verify_pcpu_ptr=E2=80=99
-  219 |  const void __percpu *__vpp_verify =3D (typeof((ptr) + 0))NULL; \
-      |                                               ^~~
-./include/linux/percpu-defs.h:490:34: note: in expansion of macro =E2=80=98=
-__pcpu_size_call=E2=80=99
-  490 | #define this_cpu_write(pcp, val) __pcpu_size_call(this_cpu_write_, =
-pcp, val)
-      |                                  ^~~~~~~~~~~~~~~~
-arch/x86/kernel/irq.c:358:2: note: in expansion of macro =E2=80=98this_cpu_=
-write=E2=80=99
-  358 |  this_cpu_write(posted_interrupt_desc.nv, POSTED_MSI_NOTIFICATION_V=
-ECTOR);
-      |  ^~~~~~~~~~~~~~
-./include/linux/percpu-defs.h:364:15: error: =E2=80=98sizeof=E2=80=99 appli=
-ed to a bit-field
-  364 |  switch(sizeof(variable)) {     \
->=20
-> > +static inline bool pi_test_and_set_on(struct pi_desc *pi_desc)
-> > +{
-> > +	return test_and_set_bit(POSTED_INTR_ON,
-> > +			(unsigned long *)&pi_desc->control); =20
->=20
-> Please get rid of those line breaks.
-will do.
-
-
-Thanks,
-
-Jacob
+Best regards,
+baolu
