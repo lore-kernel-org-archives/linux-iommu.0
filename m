@@ -1,16 +1,38 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9B9E419BB6
-	for <iommu@lists.linux.dev>; Fri,  8 Dec 2023 11:15:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 69E4411FB;
-	Fri,  8 Dec 2023 03:15:48 -0800 (PST)
-Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D89AB3F762;
-	Fri,  8 Dec 2023 03:15:01 -0800 (PST)
-Message-ID: <4fb1b999-7b1b-4d54-a0ca-87b596458ba0@arm.com>
-Date: Fri, 8 Dec 2023 11:15:00 +0000
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.115])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF3201B26E
+	for <iommu@lists.linux.dev>; Fri,  8 Dec 2023 11:43:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="GOZ1N66u"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1702035811; x=1733571811;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=ZmkAP0N/gOOmFK2HS73Ar6ckEAFg8Q3aZC+p9EeSO1Y=;
+  b=GOZ1N66uIDbEVMD4+BhgoazD/AoEsfQ94BjrcIkQdHTbZUOB5cnjx47X
+   b64apZQ1fMDcaDzkh8O4CJIpwkdxJr/vhPfEChmsi75RVxt1aXVXXQzxB
+   W+H9MQYM2Ahv6KqGPo4K8vabl7GWHNn3liYDbGfm7tgdjIPL0X8VyGGEw
+   8/vyGDS5TGKwe0JC95SLyOCcTg5zDK1Ezx/wL0qSmaqTuvP9hsK6irLog
+   7MjevueSoiPOw9liSjmTcgQuNXxUFdyT/X+/+S93SEGX8yAN7YdXWojhm
+   WmVN0GCDJ930q5xO0c5jYG+ESr0EJL4l6R23fPTx8oc/zIikDVW4qai2i
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10917"; a="394134282"
+X-IronPort-AV: E=Sophos;i="6.04,260,1695711600"; 
+   d="scan'208";a="394134282"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Dec 2023 03:43:30 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10917"; a="765465888"
+X-IronPort-AV: E=Sophos;i="6.04,260,1695711600"; 
+   d="scan'208";a="765465888"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.255.31.238]) ([10.255.31.238])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Dec 2023 03:43:27 -0800
+Message-ID: <abc94be4-a909-4255-bb08-f0fcf45a21b8@linux.intel.com>
+Date: Fri, 8 Dec 2023 19:43:12 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -18,54 +40,109 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2] iommu: Set owner token to SVA domain
-Content-Language: en-GB
-To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>,
- Kevin Tian <kevin.tian@intel.com>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <20231208015314.320663-1-baolu.lu@linux.intel.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20231208015314.320663-1-baolu.lu@linux.intel.com>
+Cc: baolu.lu@linux.intel.com, Kevin Tian <kevin.tian@intel.com>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>,
+ Jacob Pan <jacob.jun.pan@linux.intel.com>, iommu@lists.linux.dev,
+ linux-kselftest@vger.kernel.org, virtualization@lists.linux-foundation.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 4/6] iommufd: Deliver fault messages to user space
+To: Jason Gunthorpe <jgg@ziepe.ca>
+References: <20231026024930.382898-1-baolu.lu@linux.intel.com>
+ <20231026024930.382898-5-baolu.lu@linux.intel.com>
+ <20231201152459.GB1489931@ziepe.ca>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20231201152459.GB1489931@ziepe.ca>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 08/12/2023 1:53 am, Lu Baolu wrote:
-> Commit a9c362db3920 ("iommu: Validate that devices match domains") added
-> an owner token to the iommu_domain. This token is checked during domain
-> attachment to RID or PASID through the generic iommu interfaces.
+On 2023/12/1 23:24, Jason Gunthorpe wrote:
+> On Thu, Oct 26, 2023 at 10:49:28AM +0800, Lu Baolu wrote:
 > 
-> The SVA domains are attached to PASIDs through those iommu interfaces.
-> Therefore, they require the owner token to be set during allocation.
-> Otherwise, they fail to attach.
+>> +static ssize_t hwpt_fault_fops_write(struct file *filep,
+>> +				     const char __user *buf,
+>> +				     size_t count, loff_t *ppos)
+>> +{
+>> +	size_t response_size = sizeof(struct iommu_hwpt_page_response);
+>> +	struct hw_pgtable_fault *fault = filep->private_data;
+>> +	struct iommu_hwpt_page_response response;
+>> +	struct iommufd_hw_pagetable *hwpt;
+>> +	struct iopf_group *iter, *group;
+>> +	struct iommufd_device *idev;
+>> +	size_t done = 0;
+>> +	int rc = 0;
+>> +
+>> +	if (*ppos || count % response_size)
+>> +		return -ESPIPE;
+>> +
+>> +	mutex_lock(&fault->mutex);
+>> +	while (!list_empty(&fault->response) && count > done) {
+>> +		rc = copy_from_user(&response, buf + done, response_size);
+>> +		if (rc)
+>> +			break;
+>> +
+>> +		/* Get the device that this response targets at. */
+>> +		idev = container_of(iommufd_get_object(fault->ictx,
+>> +						       response.dev_id,
+>> +						       IOMMUFD_OBJ_DEVICE),
+>> +				    struct iommufd_device, obj);
+>> +		if (IS_ERR(idev)) {
+>> +			rc = PTR_ERR(idev);
+>> +			break;
+>> +		}
 > 
-> Set the owner token for SVA domains.
+> See here it might be better to have a per-fd list of outstanding
+> faults per-fd and then the cookie would just index that list, then you
+> get everything in one shot instead of having to do a xarray looking
+> and then a linear list search
 
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+Yours is more efficient. I will do it that way in the next version.
 
-> Fixes: a9c362db3920 ("iommu: Validate that devices match domains")
-> Cc: Robin Murphy <robin.murphy@arm.com>
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> ---
->   drivers/iommu/iommu.c | 1 +
->   1 file changed, 1 insertion(+)
 > 
-> Change log:
-> v2:
-> - The user domain allocation path does the right thing. Hence no need
->    to fix anything.
-> v1:
-> - https://lore.kernel.org/linux-iommu/20231207021938.306738-1-baolu.lu@linux.intel.com/
+>> +static const struct file_operations hwpt_fault_fops = {
+>> +	.owner		= THIS_MODULE,
+>> +	.read		= hwpt_fault_fops_read,
+>> +	.write		= hwpt_fault_fops_write,
+>> +};
 > 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 0d25468d53a6..d0a28667479a 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -3617,6 +3617,7 @@ struct iommu_domain *iommu_sva_domain_alloc(struct device *dev,
->   	domain->type = IOMMU_DOMAIN_SVA;
->   	mmgrab(mm);
->   	domain->mm = mm;
-> +	domain->owner = ops;
->   	domain->iopf_handler = iommu_sva_handle_iopf;
->   	domain->fault_data = mm;
->   
+> nonseekable_open() behavior should be integrated into this
+
+Sure.
+
+> 
+>> +static int hw_pagetable_get_fault_fd(struct hw_pgtable_fault *fault)
+>> +{
+>> +	struct file *filep;
+>> +	int fdno;
+>> +
+>> +	fdno = get_unused_fd_flags(O_CLOEXEC);
+>> +	if (fdno < 0)
+>> +		return fdno;
+>> +
+>> +	filep = anon_inode_getfile("[iommufd-pgfault]", &hwpt_fault_fops,
+>> +				   fault, O_RDWR);
+>> +	if (IS_ERR(filep)) {
+>> +		put_unused_fd(fdno);
+>> +		return PTR_ERR(filep);
+>> +	}
+>> +
+>> +	fd_install(fdno, filep);
+>> +	fault->fault_file = filep;
+>> +	fault->fault_fd = fdno;
+> 
+> fd_install must be the very last thing before returning success from a
+> system call because we cannot undo it.
+
+Yes.
+
+> 
+> There are other failure paths before here and the final return
+> 
+> Jason
+
+Best regards,
+baolu
+
