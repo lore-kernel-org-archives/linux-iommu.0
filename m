@@ -1,60 +1,70 @@
-Received: from mail-qv1-f41.google.com (mail-qv1-f41.google.com [209.85.219.41])
+Received: from mail-qt1-f182.google.com (mail-qt1-f182.google.com [209.85.160.182])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D957B1C290
-	for <iommu@lists.linux.dev>; Fri,  8 Dec 2023 13:40:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EBAC01C68F
+	for <iommu@lists.linux.dev>; Fri,  8 Dec 2023 13:41:41 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="Xsztx9ax"
-Received: by mail-qv1-f41.google.com with SMTP id 6a1803df08f44-67a959e3afaso11609446d6.2
-        for <iommu@lists.linux.dev>; Fri, 08 Dec 2023 05:40:27 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="XqXXC5SC"
+Received: by mail-qt1-f182.google.com with SMTP id d75a77b69052e-425922f5b89so9153121cf.0
+        for <iommu@lists.linux.dev>; Fri, 08 Dec 2023 05:41:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1702042826; x=1702647626; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1702042900; x=1702647700; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=n8e2o0WXAr4ymK3d3VhrPB5sSWDppvhuD0Mr+xQ4HHM=;
-        b=Xsztx9axZhpfTm4WSuDDN5FcEu+dKqfjmaKYirF9ke+v/4IVSvOzQ0j1nIneDfGxDB
-         gbY1PHuI5aRK1emww5s+wxcoDiflNreqB3zckFVsxGVuAY2Cm9iMcPQ37z04WX0ht7ZM
-         uVQvOikniE4d0tSUuVBG807RYx++zhpqMkye4p3v0Yw0K7Qk2+0GcgCIO09InDtDiHJr
-         pGhQvjMa/jKnuczRnLLzIaHHnnKQLmSn0DexdgH6rhvcx4JxEY4sMdVesFQ/5ouCeSKi
-         AMrFdEtNmUofj0RX6XzdWDiQX4Brt7KDLsEgqGvarvjoF1sjYD16wx548BQqIcarFthT
-         invA==
+        bh=YucZctI9OnES6g1Fy1Wtf0Z1+OcLPgAF9qFfV1szyvI=;
+        b=XqXXC5SC8Y54dqBHdK722AwJJRnD/2tlRnDXhffI5sYHiP8x25AVyqjnN6Sjgo/Mr1
+         A3W+E9A3PGKCdumsNlwBEJHZmU4PCwFqO//jCiQ8Fp8SWnd+omCYEuxTDNCBNGcPh2F1
+         v+i1F27QNHrK+LhaxS5lUGTL8LRdzJVjeLdfbdZNQg9FTPsleeQh14IZ+wOK0EeQzSrj
+         l5ZNHo8a5560eBDnnJqUPKMaZ2dGlPHs3ExK61kYfY4EzouIDqmKknfmO41LsipRzHRp
+         0CMtHzdWL6oH8MrrCSbzvDW/CJ4FvHPMM02Yjh8UDHIX/vpRwPNecvl+y9Yeq3Slg47Y
+         AT3A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1702042826; x=1702647626;
+        d=1e100.net; s=20230601; t=1702042900; x=1702647700;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=n8e2o0WXAr4ymK3d3VhrPB5sSWDppvhuD0Mr+xQ4HHM=;
-        b=B0w8gjXBTC812gOUK13htbGFWZ4dUxHb8egi3wLCnpo8Vo1XIKqqEocsDvJUzKsDYl
-         +EFP9C08LQhhiZ35FpV70tfZk9uqMyvBAMifB0JonVWTSTsImQoziwHfxCx7Y5bs08eC
-         U5lTQfZoLyApH00z8bt7L9OaXdBw6i4C9vDE0bAuq7rv65S00nGv5kgOVPj/9MbYZplc
-         uPFfvjlAV7EiLL1m4uweIRq8v+uHpUtUKF+q5MN25ORIqM2Tgux34/hMJcssfjJ0o/2w
-         mx0CCnN4fVo8tFutwFmpdvupbl7qsDUUpE085yNmToVqTxOxPlJaiSFUKYNOnnViU9HM
-         nUAQ==
-X-Gm-Message-State: AOJu0YyQcei7oDqU2rGtFOsK/JHFyvzlGIzmHlmvGbDWHBxoc22ZxDgA
-	7SJ6yTaYxY/mIAn5oP9y7X35Rw==
-X-Google-Smtp-Source: AGHT+IG+42h3wSDDnzyiUdmBDnnmwEZgxwWvJKW+1f6Wnxx1cI9jSsHp0wxIJsybMJwE+p1mPdNlxw==
-X-Received: by 2002:ad4:57ac:0:b0:67a:9d24:5e95 with SMTP id g12-20020ad457ac000000b0067a9d245e95mr3820818qvx.31.1702042826613;
-        Fri, 08 Dec 2023 05:40:26 -0800 (PST)
+        bh=YucZctI9OnES6g1Fy1Wtf0Z1+OcLPgAF9qFfV1szyvI=;
+        b=OF+EwRWNKKf2VIrMCYsqg9t7rnLhQxLH+WP282n25QnQ23d+YVFxhNyVyvhbzM+NTC
+         F5BlQ2XI+prZnchbAlxWJuxsKr6QNy/FTTnmLBAmGPHXnMh3mB/Gnp/KLTLt/1QTRhgT
+         SZJx1pbeF5HwMz1Qp9C3LVW1cUfktrrEOBNXj12BCgQ19O12kVeA80gYdFA/eoXqcSUQ
+         baKgdZiu+fGLZBNmW9xY2TdH9HmuuMQ0kFMfIJjvzBRHlZRW7a7HFuMuKS502j/W5DW0
+         8aKGs1kTpZ1qFWABHTBjgY3sqCSr8LxKxgJLH4v+NgxRaXgfBEP8mxTrLaSsVXTrb0pz
+         P3rg==
+X-Gm-Message-State: AOJu0YxI2vjGXKN8/V2JWUBn4edK2tTUQEJcrMLtaHZaA9vIGRCZHlC6
+	gsE/2FVB8tyRQp3IX1+Zpd7gNA==
+X-Google-Smtp-Source: AGHT+IHjZ5fbgyGNj4pXddo/yd/fsGP0DpJlldXMV869RcUAC8mCOG4RaDWeA5g67kLmuW+2zDsrMw==
+X-Received: by 2002:a05:622a:1708:b0:425:4043:1d77 with SMTP id h8-20020a05622a170800b0042540431d77mr105008qtk.74.1702042900661;
+        Fri, 08 Dec 2023 05:41:40 -0800 (PST)
 Received: from ziepe.ca (hlfxns017vw-142-134-23-187.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.134.23.187])
-        by smtp.gmail.com with ESMTPSA id lf10-20020a0562142cca00b0067c4b7ca239sm805168qvb.22.2023.12.08.05.40.25
+        by smtp.gmail.com with ESMTPSA id cd5-20020a05622a418500b004255fd32eeasm543901qtb.7.2023.12.08.05.41.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Dec 2023 05:40:25 -0800 (PST)
+        Fri, 08 Dec 2023 05:41:40 -0800 (PST)
 Received: from jgg by wakko with local (Exim 4.95)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1rBb5c-00C888-Tx;
-	Fri, 08 Dec 2023 09:40:24 -0400
-Date: Fri, 8 Dec 2023 09:40:24 -0400
+	id 1rBb6p-00C88X-Fn;
+	Fri, 08 Dec 2023 09:41:39 -0400
+Date: Fri, 8 Dec 2023 09:41:39 -0400
 From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>, iommu@lists.linux.dev,
+To: Baolu Lu <baolu.lu@linux.intel.com>
+Cc: Joel Granados <j.granados@samsung.com>,
+	Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>, iommu@lists.linux.dev,
+	linux-kselftest@vger.kernel.org,
+	virtualization@lists.linux-foundation.org,
 	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] iommu: Set owner token to SVA domain
-Message-ID: <20231208134024.GV1489931@ziepe.ca>
-References: <20231208015314.320663-1-baolu.lu@linux.intel.com>
+Subject: Re: [PATCH v2 4/6] iommufd: Deliver fault messages to user space
+Message-ID: <20231208134139.GW1489931@ziepe.ca>
+References: <20231026024930.382898-1-baolu.lu@linux.intel.com>
+ <20231026024930.382898-5-baolu.lu@linux.intel.com>
+ <CGME20231207163412eucas1p2fa912b4923031804c27c764e5c8d67e7@eucas1p2.samsung.com>
+ <20231207163410.ap3w4faii6wkgwed@localhost>
+ <20231207171742.GU1489931@ziepe.ca>
+ <c72184d8-693d-43ce-aed9-00a8fc684137@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -63,26 +73,49 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20231208015314.320663-1-baolu.lu@linux.intel.com>
+In-Reply-To: <c72184d8-693d-43ce-aed9-00a8fc684137@linux.intel.com>
 
-On Fri, Dec 08, 2023 at 09:53:14AM +0800, Lu Baolu wrote:
-> Commit a9c362db3920 ("iommu: Validate that devices match domains") added
-> an owner token to the iommu_domain. This token is checked during domain
-> attachment to RID or PASID through the generic iommu interfaces.
+On Fri, Dec 08, 2023 at 01:47:35PM +0800, Baolu Lu wrote:
+> On 12/8/23 1:17 AM, Jason Gunthorpe wrote:
+> > On Thu, Dec 07, 2023 at 05:34:10PM +0100, Joel Granados wrote:
+> > > > @@ -58,6 +255,8 @@ static void hw_pagetable_fault_free(struct hw_pgtable_fault *fault)
+> > > >   	WARN_ON(!list_empty(&fault->deliver));
+> > > >   	WARN_ON(!list_empty(&fault->response));
+> > > > +	fput(fault->fault_file);
+> > > > +	put_unused_fd(fault->fault_fd);
+> > > I have resolved this in a naive way by just not calling the
+> > > put_unused_fd function.
+> > That is correct.
+> > 
+> > put_unused_fd() should only be called on error paths prior to the
+> > syscall return.
+> > 
+> > The design of a FD must follow this pattern
+> > 
+> >   syscall():
+> >     fdno = get_unused_fd_flags(O_CLOEXEC);
+> >     filep = [..]
+> >     // syscall MUST succeed after this statement:
+> >     fd_install(fdno, filep);
+> >     return 0;
+> > 
+> >    err:
+> >      put_unused_fd(fdno)
+> >      return -ERRNO
 > 
-> The SVA domains are attached to PASIDs through those iommu interfaces.
-> Therefore, they require the owner token to be set during allocation.
-> Otherwise, they fail to attach.
+> Yes. Agreed.
 > 
-> Set the owner token for SVA domains.
+> > 
+> > Also the refcounting looks a little strange, the filep reference is
+> > consumed by fd_install, so what is that fput pairing with in fault_free?
 > 
-> Fixes: a9c362db3920 ("iommu: Validate that devices match domains")
-> Cc: Robin Murphy <robin.murphy@arm.com>
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> ---
->  drivers/iommu/iommu.c | 1 +
->  1 file changed, 1 insertion(+)
+> fput() pairs with get_unused_fd_flags()? fd_install() does not seem to
+> increase any reference.
 
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+fd_install() transfers the reference to the fd table and that
+reference is put back by the close() system call.
+
+Notice that instantly after fd_install() a concurrent user can free
+the filep.
 
 Jason
