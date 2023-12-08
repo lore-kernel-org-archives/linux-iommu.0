@@ -1,141 +1,88 @@
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.100])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qv1-f41.google.com (mail-qv1-f41.google.com [209.85.219.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 63B8D5662
-	for <iommu@lists.linux.dev>; Fri,  8 Dec 2023 12:46:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D957B1C290
+	for <iommu@lists.linux.dev>; Fri,  8 Dec 2023 13:40:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="L0lNu5y/"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1702039563; x=1733575563;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=bu4e0kS+eTFh8LO/rxI+3py26OcsItsVKKRs07FwizA=;
-  b=L0lNu5y/ORfws7waVHN1LBC1pWYUmjnDtWwMmbzELMAsVS+Hvv4FlSCw
-   2ZtVdFhj4Zd3JqoNgj0yXxv0vgDyiuvHWdvZ8nmMLGPqqiS/CdCHw7G9k
-   al7d/3S8Nt7o6raokGjR4VXKeHRoGG41PgtRI0oVChC4fWyJlQLZ9pB73
-   0HPNJxP12aGf0p5+1tGvGpeRvDGaEcAJ8R30wNV/YGTMIQ8A6iJ4Ertmg
-   hUJ3Lai3xMwdwnuU9nLi+Ge4ooXq7P2QT362YnAO7Swjjrq0rKdq5wHBi
-   fdvPeu/a5q5xSKD/ngq63B03z9cO4XxCCZGWKAq0Abr0HjRhZMvZ7rsyU
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10917"; a="460877115"
-X-IronPort-AV: E=Sophos;i="6.04,260,1695711600"; 
-   d="scan'208";a="460877115"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Dec 2023 04:46:02 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10917"; a="801107227"
-X-IronPort-AV: E=Sophos;i="6.04,260,1695711600"; 
-   d="scan'208";a="801107227"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.255.31.238]) ([10.255.31.238])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Dec 2023 04:46:00 -0800
-Message-ID: <1161d8aa-9fcc-4e9e-a7d3-c461fee19a54@linux.intel.com>
-Date: Fri, 8 Dec 2023 20:45:57 +0800
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="Xsztx9ax"
+Received: by mail-qv1-f41.google.com with SMTP id 6a1803df08f44-67a959e3afaso11609446d6.2
+        for <iommu@lists.linux.dev>; Fri, 08 Dec 2023 05:40:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1702042826; x=1702647626; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=n8e2o0WXAr4ymK3d3VhrPB5sSWDppvhuD0Mr+xQ4HHM=;
+        b=Xsztx9axZhpfTm4WSuDDN5FcEu+dKqfjmaKYirF9ke+v/4IVSvOzQ0j1nIneDfGxDB
+         gbY1PHuI5aRK1emww5s+wxcoDiflNreqB3zckFVsxGVuAY2Cm9iMcPQ37z04WX0ht7ZM
+         uVQvOikniE4d0tSUuVBG807RYx++zhpqMkye4p3v0Yw0K7Qk2+0GcgCIO09InDtDiHJr
+         pGhQvjMa/jKnuczRnLLzIaHHnnKQLmSn0DexdgH6rhvcx4JxEY4sMdVesFQ/5ouCeSKi
+         AMrFdEtNmUofj0RX6XzdWDiQX4Brt7KDLsEgqGvarvjoF1sjYD16wx548BQqIcarFthT
+         invA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1702042826; x=1702647626;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=n8e2o0WXAr4ymK3d3VhrPB5sSWDppvhuD0Mr+xQ4HHM=;
+        b=B0w8gjXBTC812gOUK13htbGFWZ4dUxHb8egi3wLCnpo8Vo1XIKqqEocsDvJUzKsDYl
+         +EFP9C08LQhhiZ35FpV70tfZk9uqMyvBAMifB0JonVWTSTsImQoziwHfxCx7Y5bs08eC
+         U5lTQfZoLyApH00z8bt7L9OaXdBw6i4C9vDE0bAuq7rv65S00nGv5kgOVPj/9MbYZplc
+         uPFfvjlAV7EiLL1m4uweIRq8v+uHpUtUKF+q5MN25ORIqM2Tgux34/hMJcssfjJ0o/2w
+         mx0CCnN4fVo8tFutwFmpdvupbl7qsDUUpE085yNmToVqTxOxPlJaiSFUKYNOnnViU9HM
+         nUAQ==
+X-Gm-Message-State: AOJu0YyQcei7oDqU2rGtFOsK/JHFyvzlGIzmHlmvGbDWHBxoc22ZxDgA
+	7SJ6yTaYxY/mIAn5oP9y7X35Rw==
+X-Google-Smtp-Source: AGHT+IG+42h3wSDDnzyiUdmBDnnmwEZgxwWvJKW+1f6Wnxx1cI9jSsHp0wxIJsybMJwE+p1mPdNlxw==
+X-Received: by 2002:ad4:57ac:0:b0:67a:9d24:5e95 with SMTP id g12-20020ad457ac000000b0067a9d245e95mr3820818qvx.31.1702042826613;
+        Fri, 08 Dec 2023 05:40:26 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-134-23-187.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.134.23.187])
+        by smtp.gmail.com with ESMTPSA id lf10-20020a0562142cca00b0067c4b7ca239sm805168qvb.22.2023.12.08.05.40.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 Dec 2023 05:40:25 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1rBb5c-00C888-Tx;
+	Fri, 08 Dec 2023 09:40:24 -0400
+Date: Fri, 8 Dec 2023 09:40:24 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Kevin Tian <kevin.tian@intel.com>, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] iommu: Set owner token to SVA domain
+Message-ID: <20231208134024.GV1489931@ziepe.ca>
+References: <20231208015314.320663-1-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, "iommu@lists.linux.dev"
- <iommu@lists.linux.dev>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 4/6] iommu/vt-d: Remove 1:1 mappings from identity
- domain
-Content-Language: en-US
-To: "Tian, Kevin" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Jason Gunthorpe <jgg@ziepe.ca>
-References: <20231205012203.244584-1-baolu.lu@linux.intel.com>
- <20231205012203.244584-5-baolu.lu@linux.intel.com>
- <BN9PR11MB52761FF9AB496B422596DDDF8C8AA@BN9PR11MB5276.namprd11.prod.outlook.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <BN9PR11MB52761FF9AB496B422596DDDF8C8AA@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20231208015314.320663-1-baolu.lu@linux.intel.com>
 
-On 2023/12/8 17:09, Tian, Kevin wrote:
->> From: Lu Baolu <baolu.lu@linux.intel.com>
->> Sent: Tuesday, December 5, 2023 9:22 AM
->>
->> Older VT-d hardware implementations did not support pass-through
->> translation mode. The iommu driver relied on a DMA domain with all
->> physical memory addresses identically mapped to the same IOVA to
->> simulate pass-through translation.
->>
->> This workaround is no longer necessary due to the evolution of iommu
->> core. The core has introduced def_domain_type op, allowing the iommu
->> driver to specify its capabilities. Additionally, the identity domain
->> has become a static system domain with "never fail" attach semantics.
+On Fri, Dec 08, 2023 at 09:53:14AM +0800, Lu Baolu wrote:
+> Commit a9c362db3920 ("iommu: Validate that devices match domains") added
+> an owner token to the iommu_domain. This token is checked during domain
+> attachment to RID or PASID through the generic iommu interfaces.
 > 
-> I'm not sure above explains the reason for removing the identity support
-> on older hardware. Looks the reason is simply that continuing to maintain
-> that debt prevents intel-iommu driver from catching up  with iommu core
-> evolution so we decide to remove it.
-
-It is not that simple. I should put more words here.
-
-Generally speaking, hardware lacking passthrough translation support,
-but the iommu driver fakes it by using a DMA domain with 1:1 mappings,
-makes no sense because it doesn't mitigate any hardware overheads.
-
-If the device driver uses the kernel DMA API to do DMA, it does not need
-to care about the DMA translation type. This is a user-decided policy.
-The iommu subsystem has already provided this support to users through
-kernel build options, kernel boot commands, and sysfs nodes.
-
-If the device driver doesn't use kernel API for DMA. While we discourage
-this behavior, the iommu subsystem provides the DMA ownership mechanism.
-This allows the driver to take over the DMA ownership, allocate and
-manage its own domain, and replace it with the default domain, as the
-iommu default domain is only designed for kernel DMA with the DMA API.
-
-In summary, whether or not to use a DMA domain with 1:1 mappings should
-be a design decision made in the device driver, not a common behavior
-for a modern iommu driver.
-
+> The SVA domains are attached to PASIDs through those iommu interfaces.
+> Therefore, they require the owner token to be set during allocation.
+> Otherwise, they fail to attach.
 > 
->>
->> Eliminate support for the 1:1 mapping domain on older hardware and
->> removes the unused code that created the 1:1 page table. This paves a
->> way for the implementation of a global static identity domain.
+> Set the owner token for SVA domains.
 > 
-> Do you know how old such hardware is?
+> Fixes: a9c362db3920 ("iommu: Validate that devices match domains")
+> Cc: Robin Murphy <robin.murphy@arm.com>
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> ---
+>  drivers/iommu/iommu.c | 1 +
+>  1 file changed, 1 insertion(+)
 
-I am not sure, but I have a desktop that is over 10 years old and
-supports passthrough translation. :-)
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
-> 
->> @@ -2311,6 +2257,13 @@ static int device_def_domain_type(struct device
->> *dev)
->>   			return IOMMU_DOMAIN_IDENTITY;
->>   	}
->>
->> +	/*
->> +	 * Hardware does not support the passthrough translation mode.
->> +	 * Always use a dynamaic mapping domain.
->> +	 */
->> +	if (!ecap_pass_through(iommu->ecap))
->> +		return IOMMU_DOMAIN_DMA;
->> +
->>   	return 0;
-> 
-> there are two cases above which mandates IDENTITY. Have you confirmed
-> that those platforms support hardware passthrough? otherwise this change
-> is broken.
-
-Those two cases should be hardware quirks for SoC-integrated devices. It
-makes no reason that a quirk requires IOMMU passthrough translation, but
-the hardware doesn't support it.
-
-If, unfortunately, those quirks turn out to be workarounds for a poorly
-designed device driver, we should remove those quirks and request the
-device driver to utilize the DMA ownership framework to achieve the same
-functionality within the driver itself.
-
-Best regards,
-baolu
-
+Jason
