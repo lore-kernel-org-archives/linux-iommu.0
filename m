@@ -1,65 +1,71 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B5A917E6
-	for <iommu@lists.linux.dev>; Fri,  8 Dec 2023 09:31:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="eK8feyvc";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="ezKUFhDk"
-From: Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1702027880;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=ypJIbnUsUGwwnCZqSIYAJ+IV09KDSne8At3TT8svy18=;
-	b=eK8feyvcv7dCOLbb3xHKW7Acre82SMz5YWHKDZFYbnvXnZOB1I1/Bi0Uj6sp/Gh3o7+ABJ
-	m37gEy5bRrzDFqd3kkVnXrhP85y9xB7WkvZigcVJly0zOktwV0RBgiescyBr+RQnsuPXVQ
-	Xd3p8bDEIeeoG//vNQWxRno19a1nNuzorDgeaFIN/lFtZK0ZMAyD3caGo6q9aQDIdxLxep
-	41/D8OKXO5lNoch+sz7xx9fAcQfnVTFZ3FxC5S60E8WUa8FKOlQz4iLbS66pE6iEr0l2Md
-	2vtKjc4WjhNDbw/3sH+9PuR2Yy1eIqX8QZpmT/D+eoVuuhvwmMTFJAfSXDLUdw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1702027880;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=ypJIbnUsUGwwnCZqSIYAJ+IV09KDSne8At3TT8svy18=;
-	b=ezKUFhDk5y4jvHILEopD7H1/aDqy17wzslA8uxl3siTltIT35KLucBg9bN7BUKNjtSpp/J
-	aLNnYfiHrVnGimAg==
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Cc: LKML <linux-kernel@vger.kernel.org>, X86 Kernel <x86@kernel.org>,
- iommu@lists.linux.dev, Lu Baolu <baolu.lu@linux.intel.com>,
- kvm@vger.kernel.org, Dave Hansen <dave.hansen@intel.com>, Joerg Roedel
- <joro@8bytes.org>, "H. Peter Anvin" <hpa@zytor.com>, Borislav Petkov
- <bp@alien8.de>, Ingo Molnar <mingo@redhat.com>, Raj Ashok
- <ashok.raj@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>,
- maz@kernel.org, peterz@infradead.org, seanjc@google.com, Robin Murphy
- <robin.murphy@arm.com>, jacob.jun.pan@linux.intel.com
-Subject: Re: [PATCH RFC 01/13] x86: Move posted interrupt descriptor out of
- vmx code
-In-Reply-To: <20231207205431.75a214c2@jacob-builder>
-References: <20231112041643.2868316-1-jacob.jun.pan@linux.intel.com>
- <20231112041643.2868316-2-jacob.jun.pan@linux.intel.com>
- <87wmtruw87.ffs@tglx> <20231207205431.75a214c2@jacob-builder>
-Date: Fri, 08 Dec 2023 10:31:20 +0100
-Message-ID: <875y19t507.ffs@tglx>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9B9E419BB6
+	for <iommu@lists.linux.dev>; Fri,  8 Dec 2023 11:15:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 69E4411FB;
+	Fri,  8 Dec 2023 03:15:48 -0800 (PST)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D89AB3F762;
+	Fri,  8 Dec 2023 03:15:01 -0800 (PST)
+Message-ID: <4fb1b999-7b1b-4d54-a0ca-87b596458ba0@arm.com>
+Date: Fri, 8 Dec 2023 11:15:00 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2] iommu: Set owner token to SVA domain
+Content-Language: en-GB
+To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>,
+ Kevin Tian <kevin.tian@intel.com>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <20231208015314.320663-1-baolu.lu@linux.intel.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20231208015314.320663-1-baolu.lu@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Thu, Dec 07 2023 at 20:54, Jacob Pan wrote:
-> On Wed, 06 Dec 2023 17:33:28 +0100, Thomas Gleixner <tglx@linutronix.de>
-> wrote:
->> On Sat, Nov 11 2023 at 20:16, Jacob Pan wrote:
->> 	u32			rsvd[6];
->> } __aligned(64);
->> 
-> It seems bit-fields cannot pass type check. I got these compile error.
+On 08/12/2023 1:53 am, Lu Baolu wrote:
+> Commit a9c362db3920 ("iommu: Validate that devices match domains") added
+> an owner token to the iommu_domain. This token is checked during domain
+> attachment to RID or PASID through the generic iommu interfaces.
+> 
+> The SVA domains are attached to PASIDs through those iommu interfaces.
+> Therefore, they require the owner token to be set during allocation.
+> Otherwise, they fail to attach.
+> 
+> Set the owner token for SVA domains.
 
-And why are you telling me that instead if simply fixing it?
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+
+> Fixes: a9c362db3920 ("iommu: Validate that devices match domains")
+> Cc: Robin Murphy <robin.murphy@arm.com>
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> ---
+>   drivers/iommu/iommu.c | 1 +
+>   1 file changed, 1 insertion(+)
+> 
+> Change log:
+> v2:
+> - The user domain allocation path does the right thing. Hence no need
+>    to fix anything.
+> v1:
+> - https://lore.kernel.org/linux-iommu/20231207021938.306738-1-baolu.lu@linux.intel.com/
+> 
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 0d25468d53a6..d0a28667479a 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -3617,6 +3617,7 @@ struct iommu_domain *iommu_sva_domain_alloc(struct device *dev,
+>   	domain->type = IOMMU_DOMAIN_SVA;
+>   	mmgrab(mm);
+>   	domain->mm = mm;
+> +	domain->owner = ops;
+>   	domain->iopf_handler = iommu_sva_handle_iopf;
+>   	domain->fault_data = mm;
+>   
