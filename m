@@ -1,103 +1,91 @@
-Received: from mail-pg1-f169.google.com (mail-pg1-f169.google.com [209.85.215.169])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD82D73187
-	for <iommu@lists.linux.dev>; Thu,  7 Dec 2023 21:27:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 51667136F
+	for <iommu@lists.linux.dev>; Fri,  8 Dec 2023 01:46:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="C0ONlRWj"
-Received: by mail-pg1-f169.google.com with SMTP id 41be03b00d2f7-5c66e7eafabso1147468a12.0
-        for <iommu@lists.linux.dev>; Thu, 07 Dec 2023 13:27:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1701984427; x=1702589227; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=Px2TdaotpIYQ6sIN9yY8qaT1+HH5T+pH93w2l1LXKbY=;
-        b=C0ONlRWjuTZh81csEFgOzBRmtgAvRFzIIxby3Cw5FDejG5r6eZQX9n11ls2gEwTpqc
-         Ju6eVfMEJrEU1wJLuPUZm94IdfTZhXY493ruOO4MKxJ3jGIjJzEpvAeVyWUx2G9LP1B6
-         6FSVor1Ior54AnaFilb4FaXNSL2DO4MgG7y9X3PWnAFhW14iv4R7CVjsUF6FqNJMHyit
-         psiGeaLYpf1SaWVyF20mjxR9/zCy1rU9T+i/YA9FXhcLT5e2pgQNTHc4BQ+pvuW74EZK
-         N2AnSz2AXM9vV0N7hIfehJjjm+Z7+Ot8DKK/jy9cXW+75OWTqBB8b/9bNUnl/9gSl1N/
-         AgYg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701984427; x=1702589227;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=Px2TdaotpIYQ6sIN9yY8qaT1+HH5T+pH93w2l1LXKbY=;
-        b=xCdWPyWvf7eE8STc6X51SNOCSxt7EivlXs1BLcT47dT84fZ7fhe0YBidDMirvYWD45
-         s0rDh2Uoc9d761i5Y2GO+S/RzcAK/RXmzSH+ykt7RvGRBSVTfsjFlDj+Lt2rISXYYShS
-         CFpPOsRg+bmvP/1N+xdXH5smgyWYYGf8IwrmiFxmi5RO5SZYuidO2G/3bWZK4u+tCMa4
-         24LVI+FynsvC+J+k5Gsb+M8qhftQfjULeXYYp0uV1u3iZ0dxDulkCppz7w57U7BE5ZBk
-         rzFoRVaXuGUyRLLml2dzz32OGugQHaWP9k3Y5SM2lLXJti37S0N2TPpGQtJZBl/CRDbQ
-         CWmA==
-X-Gm-Message-State: AOJu0YxPgDwl3INsOLN2E1Uvf9B70n4vIkltHuK1q3aaZU2+4ePbSEeJ
-	nFUwtLt+gYa3lqQAGvhGWSo=
-X-Google-Smtp-Source: AGHT+IHmgFAdaNpu9/4tm5vsxNdq2+tiP4Ccd9SFpbqI/bLYNy2EA7+7YCXFBASFrF7Nf+u/eTyJbg==
-X-Received: by 2002:a05:6a20:12ca:b0:187:df72:48ef with SMTP id v10-20020a056a2012ca00b00187df7248efmr3188889pzg.0.1701984426614;
-        Thu, 07 Dec 2023 13:27:06 -0800 (PST)
-Received: from localhost ([100.84.200.15])
-        by smtp.gmail.com with ESMTPSA id q19-20020a056a00151300b006cdcfd814e9sm241008pfu.147.2023.12.07.13.27.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Dec 2023 13:27:05 -0800 (PST)
-From: Rob Clark <robdclark@gmail.com>
-To: iommu@lists.linux-foundation.org
-Cc: freedreno@lists.freedesktop.org,
-	linux-arm-msm@vger.kernel.org,
-	Rob Clark <robdclark@chromium.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Konrad Dybcio <konrad.dybcio@linaro.org>,
-	Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-	Bjorn Andersson <quic_bjorande@quicinc.com>,
-	Elliot Berman <quic_eberman@quicinc.com>,
-	Richard Acayan <mailingradian@gmail.com>,
-	Manivannan Sadhasivam <mani@kernel.org>,
-	linux-arm-kernel@lists.infradead.org (moderated list:ARM SMMU DRIVERS),
-	iommu@lists.linux.dev (open list:IOMMU SUBSYSTEM),
-	linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH] iommu/arm-smmu-qcom: Add missing GMU entry to match table
-Date: Thu,  7 Dec 2023 13:24:39 -0800
-Message-ID: <20231207212441.6199-1-robdclark@gmail.com>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="NxkiifHR"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1702000006; x=1733536006;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=a1V5oe8F0zniWg/dMhRfRIr1GS+4k6skm7a7EwrxAtk=;
+  b=NxkiifHRHo2ZGbkz5gS2HueEUWNS4zQ0TDA6Awnbs0qZdpfaEhp+avo/
+   oyIQh5VFdwLZFFbSfhGMGsOuqjyAnHWsMThUxxVEw2lLdOR+AHjTnSyvI
+   SGvvfGJVihg38ep2f83xlD+qznnnof3FpsH5b3M9HsPhDtnn9/7vw+FQn
+   iczNe8wdrt4mqBL83/JUwaamlzwaAnO87EEauQZg0xb96YS2jJC1BERFN
+   ggia+G680afp1+DeYPeuTE/QISD5EIH+zGCzvx27zOD3KTPWLDsWLXahk
+   rsBzi9bE25m2cFRtiJyrI3yEOdBgf6K3PfddXS0qjGx/qkrCjlAF2bS3u
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10917"; a="7664312"
+X-IronPort-AV: E=Sophos;i="6.04,259,1695711600"; 
+   d="scan'208";a="7664312"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Dec 2023 17:46:41 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10917"; a="775644369"
+X-IronPort-AV: E=Sophos;i="6.04,259,1695711600"; 
+   d="scan'208";a="775644369"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
+  by fmsmga007.fm.intel.com with ESMTP; 07 Dec 2023 17:46:39 -0800
+Message-ID: <449c288c-0ab1-4287-814d-91b704fb3b46@linux.intel.com>
+Date: Fri, 8 Dec 2023 09:42:02 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Kevin Tian <kevin.tian@intel.com>,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/1] iommu: Set owner token to sva and nested domains
+Content-Language: en-US
+To: Jason Gunthorpe <jgg@ziepe.ca>, Robin Murphy <robin.murphy@arm.com>
+References: <20231207021938.306738-1-baolu.lu@linux.intel.com>
+ <f1c473f7-ba40-454e-bd3e-a47f6d58513e@arm.com>
+ <20231207133630.GS1489931@ziepe.ca>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20231207133630.GS1489931@ziepe.ca>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-From: Rob Clark <robdclark@chromium.org>
+On 12/7/23 9:36 PM, Jason Gunthorpe wrote:
+> On Thu, Dec 07, 2023 at 09:56:10AM +0000, Robin Murphy wrote:
+>> On 2023-12-07 2:19 am, Lu Baolu wrote:
+>>> Commit a9c362db3920 ("iommu: Validate that devices match domains") added
+>>> an owner token to an iommu_domain. This token is checked during domain
+>>> attachment to RID or PASID through the generic iommu interfaces.
+>>>
+>>> The sva and nested domains are attached to device or PASID through the
+>>> generic iommu interfaces. Therefore, they require the owner token to be
+>>> set during allocation. Otherwise, they fail to attach.
+>> Oops, I missed that iommu_sva_domain_alloc() is a thing - when did we get
+>> such a confusing proliferation of domain allocation paths? Sigh...
+> We have alot of different kinds of domains now, APIs that are giant
+> multiplexers are not good.
+> 
+> What I've been wanting to do for a while is to have the drivers call a
+> helper to allocate their domain struct and the helper would initialize
+> the common iommu_domain instead of doing this after the op
+> returns. This is more typical kernel pattern and avoids some of the
+> confusion about when struct members are valid or not (notice some of
+> driver code needs iommu_domain stuff set earlier and we confusingly
+> initialize things twice :()
+> 
+>> I think we should set the owner generically there, since presumably it's
+>> being missed for SMMUv3/AMD/etc. SVA domains as well. Nested domains are
+>> supposed to be OK since both ->domain_alloc_user callsites are covered, or
+>> is there some other sneaky path I've also missed?
+> Indeed, I also think the first hunk is not needed, the second hunk was
+> missed.
 
-We also want the default domain for the GMU to be an identy domain,
-so it does not get a context bank assigned.  Without this, both
-of_dma_configure() and drm/msm's iommu_domain_attach() will trigger
-allocating and configuring a context bank.  So GMU ends up attached
-to both cbndx 1 and cbndx 2.  This arrangement seemingly confounds
-and surprises the firmware if the GPU later triggers a translation
-fault, resulting (on sc8280xp / lenovo x13s, at least) in the SMMU
-getting wedged and the GPU stuck without memory access.
+Oh, yes! I overlooked that iommufd has already done that for nested
+domain. I will update it with a v2.
 
-Signed-off-by: Rob Clark <robdclark@chromium.org>
----
- drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-index 549ae4dba3a6..d326fa230b96 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-@@ -243,6 +243,7 @@ static int qcom_adreno_smmu_init_context(struct arm_smmu_domain *smmu_domain,
- 
- static const struct of_device_id qcom_smmu_client_of_match[] __maybe_unused = {
- 	{ .compatible = "qcom,adreno" },
-+	{ .compatible = "qcom,adreno-gmu" },
- 	{ .compatible = "qcom,mdp4" },
- 	{ .compatible = "qcom,mdss" },
- 	{ .compatible = "qcom,sc7180-mdss" },
--- 
-2.43.0
-
+Best regards,
+baolu
