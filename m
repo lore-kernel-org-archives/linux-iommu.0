@@ -1,173 +1,94 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.120])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 18B095733C
-	for <iommu@lists.linux.dev>; Fri,  8 Dec 2023 23:12:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 035681FDC
+	for <iommu@lists.linux.dev>; Fri,  8 Dec 2023 23:16:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="JLsBMza2"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="BekHBSob"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1702077165; x=1733613165;
-  h=date:from:to:cc:subject:message-id;
-  bh=EZ8Nd2SEoqsCXHP4OYwqtiOfRlnLleCpd54fW+Zs5CU=;
-  b=JLsBMza2xOSfDhlzgtOnDUSVUMeAfUMaQtjYLkbeuhVmp8Lv/b6a9I32
-   Obs9cdMkI8Z9Sh3aS2n5X67NnqUiVsnTBSqA4ID+uY/ZDyiuhFXGLLrS5
-   Jrd3gN+yZzqsmySeT9oLn1DKVBEwXCfG6hHkacEJeMrFodeidhAFikPMr
-   NZ0evx5Gabb44/VvPsgghSeu1MBU/LOe4SYDh+ci1N1PEiMg8Lsql1NcG
-   llo2LO3mg/9veP1jFSDQkVb/DD1OYVLWrjDQsDvkexO+QXSEy6S8fsXCo
-   SJKF/xXc+OhzM67bxoPwyFfx+k3an0uocH+e6JdFGheRz2d/sIPS9MNgZ
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10918"; a="393344282"
+  t=1702077388; x=1733613388;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=lrkQgErWxcsZqBk5WmhIoSbSMmbYCndRvIe0pEDMALU=;
+  b=BekHBSobLZraC6ncHb7g6OINonqvji0EUe//7QrpfpUVRUylSY3T7nTA
+   uDP9JLgLR6uUoBMFs9ZBZj26vvBck0EdO+7nkCENZy2NJ0WLtce72goI6
+   0BWgx/dmsv9EHEI2JAWCvrn8jgfdQBlI9HxWp3wiope59kj2TFGK8ROv2
+   +mkNAz8zGO60XcsfXIeQb5UT16m4RkWJtvWQsKarED/8vRBT4DcY0oK7k
+   uxceqFPImdbMXSfB2LRkMN3hnU4PXN7fDlyklwqJohGW5hk1tWTZ1Zpap
+   u1OUUmisYGEpOW6gITFlKOiT0HGi8ugsUpdmj7DNUlanaJ6h/LImyTmkK
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10918"; a="1328111"
 X-IronPort-AV: E=Sophos;i="6.04,262,1695711600"; 
-   d="scan'208";a="393344282"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Dec 2023 15:12:39 -0800
+   d="scan'208";a="1328111"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Dec 2023 15:16:26 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10918"; a="748498798"
+X-IronPort-AV: E=McAfee;i="6600,9927,10918"; a="1103722427"
 X-IronPort-AV: E=Sophos;i="6.04,262,1695711600"; 
-   d="scan'208";a="748498798"
-Received: from lkp-server02.sh.intel.com (HELO b07ab15da5fe) ([10.239.97.151])
-  by orsmga006.jf.intel.com with ESMTP; 08 Dec 2023 15:12:36 -0800
-Received: from kbuild by b07ab15da5fe with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1rBk1K-000EWX-00;
-	Fri, 08 Dec 2023 23:12:34 +0000
-Date: Sat, 09 Dec 2023 07:11:38 +0800
-From: kernel test robot <lkp@intel.com>
-To: Andrew Morton <akpm@linux-foundation.org>
-Cc: Linux Memory Management List <linux-mm@kvack.org>,
- iommu@lists.linux.dev, linux-btrfs@vger.kernel.org,
- linux-pm@vger.kernel.org, linux-scsi@vger.kernel.org
-Subject: [linux-next:pending-fixes] BUILD REGRESSION
- e142e0e4b174b269d1fd400aa676c5f0483b608c
-Message-ID: <202312090734.Ent2gD13-lkp@intel.com>
-User-Agent: s-nail v14.9.24
+   d="scan'208";a="1103722427"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.24.100.114])
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Dec 2023 15:16:24 -0800
+Date: Fri, 8 Dec 2023 15:21:16 -0800
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: Thomas Gleixner <tglx@linutronix.de>
+Cc: LKML <linux-kernel@vger.kernel.org>, X86 Kernel <x86@kernel.org>,
+ iommu@lists.linux.dev, Lu Baolu <baolu.lu@linux.intel.com>,
+ kvm@vger.kernel.org, Dave Hansen <dave.hansen@intel.com>, Joerg Roedel
+ <joro@8bytes.org>, "H. Peter Anvin" <hpa@zytor.com>, Borislav Petkov
+ <bp@alien8.de>, Ingo Molnar <mingo@redhat.com>, Raj Ashok
+ <ashok.raj@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>,
+ maz@kernel.org, peterz@infradead.org, seanjc@google.com, Robin Murphy
+ <robin.murphy@arm.com>, jacob.jun.pan@linux.intel.com
+Subject: Re: [PATCH RFC 01/13] x86: Move posted interrupt descriptor out of
+ vmx code
+Message-ID: <20231208152116.1c09a17c@jacob-builder>
+In-Reply-To: <875y19t507.ffs@tglx>
+References: <20231112041643.2868316-1-jacob.jun.pan@linux.intel.com>
+	<20231112041643.2868316-2-jacob.jun.pan@linux.intel.com>
+	<87wmtruw87.ffs@tglx>
+	<20231207205431.75a214c2@jacob-builder>
+	<875y19t507.ffs@tglx>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git pending-fixes
-branch HEAD: e142e0e4b174b269d1fd400aa676c5f0483b608c  Merge branch 'for-linux-next-fixes' of git://anongit.freedesktop.org/drm/drm-misc
+Hi Thomas,
 
-Error/Warning ids grouped by kconfigs:
+On Fri, 08 Dec 2023 10:31:20 +0100, Thomas Gleixner <tglx@linutronix.de>
+wrote:
 
-gcc_recent_errors
-|-- arm-randconfig-r063-20231208
-|   `-- drivers-power-supply-cw2015_battery.c:WARNING-opportunity-for-max()
-|-- sh-randconfig-r053-20231208
-|   |-- fs-btrfs-extent_io.c:WARNING:atomic_dec_and_test-variation-before-object-free-at-line-.
-|   |-- fs-btrfs-extent_io.c:preceding-lock-on-line
-|   `-- fs-btrfs-ordered-data.c:WARNING:atomic_dec_and_test-variation-before-object-free-at-line-.
-|-- sh-randconfig-r062-20231208
-|   `-- drivers-power-supply-cw2015_battery.c:WARNING-opportunity-for-max()
-`-- sparc-randconfig-r054-20231208
-    `-- drivers-power-supply-cw2015_battery.c:WARNING-opportunity-for-max()
-clang_recent_errors
-|-- i386-randconfig-051-20231208
-|   |-- drivers-power-supply-cw2015_battery.c:WARNING-opportunity-for-max()
-|   |-- fs-btrfs-extent_io.c:WARNING:atomic_dec_and_test-variation-before-object-free-at-line-.
-|   |-- fs-btrfs-extent_io.c:preceding-lock-on-line
-|   `-- fs-btrfs-ordered-data.c:WARNING:atomic_dec_and_test-variation-before-object-free-at-line-.
-|-- i386-randconfig-053-20231208
-|   |-- drivers-scsi-be2iscsi-be_main.c:ERROR:mem_descr-mem_array-is-NULL-but-dereferenced.
-|   |-- fs-btrfs-extent_io.c:WARNING:atomic_dec_and_test-variation-before-object-free-at-line-.
-|   |-- fs-btrfs-extent_io.c:preceding-lock-on-line
-|   `-- fs-btrfs-ordered-data.c:WARNING:atomic_dec_and_test-variation-before-object-free-at-line-.
-|-- i386-randconfig-054-20231208
-|   |-- drivers-power-supply-cw2015_battery.c:WARNING-opportunity-for-max()
-|   |-- fs-btrfs-extent_io.c:WARNING:atomic_dec_and_test-variation-before-object-free-at-line-.
-|   |-- fs-btrfs-extent_io.c:preceding-lock-on-line
-|   `-- fs-btrfs-ordered-data.c:WARNING:atomic_dec_and_test-variation-before-object-free-at-line-.
-|-- i386-randconfig-r051-20231208
-|   |-- drivers-power-supply-cw2015_battery.c:WARNING-opportunity-for-max()
-|   |-- fs-btrfs-extent_io.c:WARNING:atomic_dec_and_test-variation-before-object-free-at-line-.
-|   |-- fs-btrfs-extent_io.c:preceding-lock-on-line
-|   `-- fs-btrfs-ordered-data.c:WARNING:atomic_dec_and_test-variation-before-object-free-at-line-.
-|-- x86_64-randconfig-101-20231208
-|   |-- drivers-iommu-iommufd-hw_pagetable.c:preceding-lock-on-line
-|   |-- fs-btrfs-extent_io.c:WARNING:atomic_dec_and_test-variation-before-object-free-at-line-.
-|   `-- fs-btrfs-extent_io.c:preceding-lock-on-line
-|-- x86_64-randconfig-102-20231208
-|   `-- drivers-power-supply-cw2015_battery.c:WARNING-opportunity-for-max()
-`-- x86_64-randconfig-103-20231208
-    |-- drivers-iommu-iommufd-hw_pagetable.c:preceding-lock-on-line
-    |-- drivers-power-supply-cw2015_battery.c:WARNING-opportunity-for-max()
-    |-- fs-btrfs-extent_io.c:WARNING:atomic_dec_and_test-variation-before-object-free-at-line-.
-    |-- fs-btrfs-extent_io.c:preceding-lock-on-line
-    `-- fs-btrfs-ordered-data.c:WARNING:atomic_dec_and_test-variation-before-object-free-at-line-.
+> On Thu, Dec 07 2023 at 20:54, Jacob Pan wrote:
+> > On Wed, 06 Dec 2023 17:33:28 +0100, Thomas Gleixner <tglx@linutronix.de>
+> > wrote: =20
+> >> On Sat, Nov 11 2023 at 20:16, Jacob Pan wrote:
+> >> 	u32			rsvd[6];
+> >> } __aligned(64);
+> >>  =20
+> > It seems bit-fields cannot pass type check. I got these compile error. =
+=20
+>=20
+> And why are you telling me that instead if simply fixing it?
+My point is that I am not sure this change is worthwhile unless I don't do
+the per CPU pointer check.
 
-elapsed time: 1475m
+gcc cannot take bit-field address afaik. So the problem is that with this
+bit-field change we don't have individual members anymore to check pointers.
 
-configs tested: 61
-configs skipped: 0
+e.g.
+./include/linux/percpu-defs.h:363:20: error: cannot take address of
+bit-field =E2=80=98nv=E2=80=99 363 |  __verify_pcpu_ptr(&(variable)); =20
 
-tested configs:
-alpha                             allnoconfig   gcc  
-alpha                               defconfig   gcc  
-arc                               allnoconfig   gcc  
-arc                                 defconfig   gcc  
-arc                   randconfig-001-20231209   gcc  
-arc                   randconfig-002-20231209   gcc  
-arm                               allnoconfig   gcc  
-arm                   randconfig-001-20231209   gcc  
-arm                   randconfig-002-20231209   gcc  
-arm                   randconfig-003-20231209   gcc  
-arm                   randconfig-004-20231209   gcc  
-arm64                             allnoconfig   gcc  
-arm64                 randconfig-001-20231209   gcc  
-arm64                 randconfig-002-20231209   gcc  
-arm64                 randconfig-003-20231209   gcc  
-arm64                 randconfig-004-20231209   gcc  
-csky                              allnoconfig   gcc  
-csky                  randconfig-001-20231209   gcc  
-csky                  randconfig-002-20231209   gcc  
-hexagon               randconfig-001-20231209   clang
-hexagon               randconfig-002-20231209   clang
-i386                             allmodconfig   clang
-i386                              allnoconfig   clang
-i386                             allyesconfig   clang
-i386         buildonly-randconfig-001-20231208   clang
-i386         buildonly-randconfig-002-20231208   clang
-i386         buildonly-randconfig-003-20231208   clang
-i386         buildonly-randconfig-004-20231208   clang
-i386         buildonly-randconfig-005-20231208   clang
-i386         buildonly-randconfig-006-20231208   clang
-i386                                defconfig   gcc  
-i386                  randconfig-001-20231208   clang
-i386                  randconfig-002-20231208   clang
-i386                  randconfig-003-20231208   clang
-i386                  randconfig-004-20231208   clang
-i386                  randconfig-005-20231208   clang
-i386                  randconfig-006-20231208   clang
-i386                  randconfig-011-20231208   gcc  
-i386                  randconfig-012-20231208   gcc  
-i386                  randconfig-013-20231208   gcc  
-i386                  randconfig-014-20231208   gcc  
-i386                  randconfig-015-20231208   gcc  
-i386                  randconfig-016-20231208   gcc  
-loongarch             randconfig-001-20231209   gcc  
-loongarch             randconfig-002-20231209   gcc  
-nios2                 randconfig-001-20231209   gcc  
-nios2                 randconfig-002-20231209   gcc  
-parisc                randconfig-001-20231209   gcc  
-s390                             allmodconfig   gcc  
-s390                             allyesconfig   gcc  
-sh                               allmodconfig   gcc  
-sh                               allyesconfig   gcc  
-sparc                            allmodconfig   gcc  
-sparc64                          allmodconfig   gcc  
-sparc64                          allyesconfig   gcc  
-um                               allmodconfig   clang
-um                               allyesconfig   clang
-x86_64                            allnoconfig   gcc  
-x86_64                           allyesconfig   clang
-x86_64                              defconfig   gcc  
-x86_64                          rhel-8.3-rust   clang
 
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+Thanks,
+
+Jacob
