@@ -1,38 +1,38 @@
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.100])
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.120])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1337F5394
-	for <iommu@lists.linux.dev>; Sat,  9 Dec 2023 07:57:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF0951C3E
+	for <iommu@lists.linux.dev>; Sat,  9 Dec 2023 08:01:50 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="DOHuGEUd"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="nzR/ci46"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1702108643; x=1733644643;
+  t=1702108910; x=1733644910;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=IfcEoRZ+GUIXcMKDg9WsBnRqP0HY5kXEDbcOQjV/3bM=;
-  b=DOHuGEUdPfANeqsLqpfGUHNaYIGIOcXENfrEe1zM5cdrnagYjlVit8MK
-   tFuBL6lO1p510yHrQ/gYA9q564RWuvnV/Wjcko8eabt5PaOmx6Bj+9p1U
-   WbUpxcgsuHSy8OyTi9lYUvhJ5Z2r3PGLyUm12wZLOZdR2RZd43qM0iHCk
-   X3rbCfzSMwbOFNkRNF9Vv+iFQQM9kdk2NbqrPh5xaFXL7e+ks3zvkYNhQ
-   5zaMaf2LDVC2cSBQVoqBIGRavYBu/QQ53uom0ZewzlzKTVCxk1Dwm2+Y3
-   8JLHsjOKyR2ZjpuSXWBmX3NColgVuJ4L23clOFEj1rT84fviFKxajc5DI
+  bh=NUc+BkL6jE5j3KWG1JFS0oURBsEf4rQv7us7KnVUVP8=;
+  b=nzR/ci46d+eOrbn2H+mp399qDbAVLff58HgOKYm9WoxKtPrImNCTblcy
+   IFewpUst532RfDLv3ATncSYZ0lpFVmbc/M3Y64JQ+PqDsUwTQHolFw3EI
+   0SNldUiQHY+Dg2fedyzdV3CDPkxTUyeR6Guc1f+HG41srAl3jVegnaVea
+   HpTrJjGc2Sn1Gt+/g2eE76yjgz1E1OAMYYfB/zucIriF1dmeoUOb7EGJw
+   WupEgrN5uu0vn5feTNR6yQlF1JMoe9ySeFD+DjQvkoGeP2+09VOi/95MO
+   KTSIOoUyzndw8quLofG1jBVwRg4uT2YtzVm8PkQ4XAnrg3YfCSaTbcnMk
    w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10918"; a="460972595"
+X-IronPort-AV: E=McAfee;i="6600,9927,10918"; a="393367976"
 X-IronPort-AV: E=Sophos;i="6.04,262,1695711600"; 
-   d="scan'208";a="460972595"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Dec 2023 23:57:22 -0800
+   d="scan'208";a="393367976"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Dec 2023 00:01:49 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10918"; a="838366809"
+X-IronPort-AV: E=McAfee;i="6600,9927,10918"; a="765743417"
 X-IronPort-AV: E=Sophos;i="6.04,262,1695711600"; 
-   d="scan'208";a="838366809"
+   d="scan'208";a="765743417"
 Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
-  by fmsmga008.fm.intel.com with ESMTP; 08 Dec 2023 23:57:19 -0800
-Message-ID: <0008adc6-57fd-4ac8-8e8e-5a966596ad61@linux.intel.com>
-Date: Sat, 9 Dec 2023 15:52:44 +0800
+  by orsmga007.jf.intel.com with ESMTP; 09 Dec 2023 00:01:47 -0800
+Message-ID: <93847593-3fe2-4292-b579-f65ebc3772ac@linux.intel.com>
+Date: Sat, 9 Dec 2023 15:57:11 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -43,161 +43,63 @@ User-Agent: Mozilla Thunderbird
 Cc: baolu.lu@linux.intel.com, "iommu@lists.linux.dev"
  <iommu@lists.linux.dev>,
  "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 1/6] iommu/vt-d: Setup scalable mode context entry in
- probe path
+Subject: Re: [PATCH v2 2/6] iommu/vt-d: Remove scalable mode context entry
+ setup from attach_dev
+Content-Language: en-US
 To: "Tian, Kevin" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
  Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
  Jason Gunthorpe <jgg@ziepe.ca>
 References: <20231205012203.244584-1-baolu.lu@linux.intel.com>
- <20231205012203.244584-2-baolu.lu@linux.intel.com>
- <BN9PR11MB5276A5F34EA7CBBF026E264E8C8AA@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Language: en-US
+ <20231205012203.244584-3-baolu.lu@linux.intel.com>
+ <BN9PR11MB5276C76349963BBF68307FF48C8AA@BN9PR11MB5276.namprd11.prod.outlook.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <BN9PR11MB5276A5F34EA7CBBF026E264E8C8AA@BN9PR11MB5276.namprd11.prod.outlook.com>
+In-Reply-To: <BN9PR11MB5276C76349963BBF68307FF48C8AA@BN9PR11MB5276.namprd11.prod.outlook.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 12/8/23 4:50 PM, Tian, Kevin wrote:
+On 12/8/23 4:56 PM, Tian, Kevin wrote:
 >> From: Lu Baolu <baolu.lu@linux.intel.com>
 >> Sent: Tuesday, December 5, 2023 9:22 AM
 >>
->> @@ -304,6 +304,11 @@ int intel_pasid_setup_first_level(struct intel_iommu
->> *iommu,
->>   		return -EINVAL;
->>   	}
+>>   static int domain_context_mapping_one(struct dmar_domain *domain,
+>>   				      struct intel_iommu *iommu,
+>> -				      struct pasid_table *table,
+>>   				      u8 bus, u8 devfn)
+> 
+> since this is called in legacy now it's clearer to add a legacy_ prefix
+> to this and other related functions.
+
+Okay, that would make the code more readable.
+
 >>
->> +	if (intel_pasid_setup_sm_context(dev, true)) {
->> +		dev_err(dev, "Context entry is not configured\n");
->> +		return -ENODEV;
->> +	}
->> +
->>   	spin_lock(&iommu->lock);
->>   	pte = intel_pasid_get_entry(dev, pasid);
->>   	if (!pte) {
->> @@ -384,6 +389,11 @@ int intel_pasid_setup_second_level(struct
->> intel_iommu *iommu,
->>   		return -EINVAL;
->>   	}
->>
->> +	if (intel_pasid_setup_sm_context(dev, true)) {
->> +		dev_err(dev, "Context entry is not configured\n");
->> +		return -ENODEV;
->> +	}
->> +
->>   	pgd = domain->pgd;
->>   	agaw = iommu_skip_agaw(domain, iommu, &pgd);
->>   	if (agaw < 0) {
->> @@ -505,6 +515,11 @@ int intel_pasid_setup_pass_through(struct
->> intel_iommu *iommu,
->>   	u16 did = FLPT_DEFAULT_DID;
->>   	struct pasid_entry *pte;
->>
->> +	if (intel_pasid_setup_sm_context(dev, true)) {
->> +		dev_err(dev, "Context entry is not configured\n");
->> +		return -ENODEV;
->> +	}
->> +
->>   	spin_lock(&iommu->lock);
->>   	pte = intel_pasid_get_entry(dev, pasid);
->>   	if (!pte) {
-> 
-> instead of replicating the invocation in all three stubs it's simpler to
-> do once in dmar_domain_attach_device() for all of them.
-
-It's not good to repeat the code. Perhaps we can add this check to
-intel_pasid_get_entry()? The rule is that you can't get the pasid entry
-if the context is copied.
-
-> Then put the deferred check outside of intel_pasid_setup_sm_context()
-> instead of using a Boolean flag
-
-Okay, that's more readable.
-
->> @@ -623,6 +638,11 @@ int intel_pasid_setup_nested(struct intel_iommu
->> *iommu, struct device *dev,
->>   		return -EINVAL;
->>   	}
->>
->> +	if (intel_pasid_setup_sm_context(dev, true)) {
->> +		dev_err_ratelimited(dev, "Context entry is not configured\n");
->> +		return -ENODEV;
->> +	}
->> +
-> 
-> Do we support nested in kdump?
-
-No.
-
-> 
->> +
->> +	/*
->> +	 * Cache invalidation for changes to a scalable-mode context table
->> +	 * entry.
->> +	 *
->> +	 * Section 6.5.3.3 of the VT-d spec:
->> +	 * - Device-selective context-cache invalidation;
->> +	 * - Domain-selective PASID-cache invalidation to affected domains
->> +	 *   (can be skipped if all PASID entries were not-present);
->> +	 * - Domain-selective IOTLB invalidation to affected domains;
->> +	 * - Global Device-TLB invalidation to affected functions.
->> +	 *
->> +	 * For kdump cases, old valid entries may be cached due to the
->> +	 * in-flight DMA and copied pgtable, but there is no unmapping
->> +	 * behaviour for them, thus we need explicit cache flushes for all
->> +	 * affected domain IDs and PASIDs used in the copied PASID table.
->> +	 * Given that we have no idea about which domain IDs and PASIDs
->> were
->> +	 * used in the copied tables, upgrade them to global PASID and IOTLB
->> +	 * cache invalidation.
->> +	 *
->> +	 * For kdump case, at this point, the device is supposed to finish
->> +	 * reset at its driver probe stage, so no in-flight DMA will exist,
->> +	 * and we don't need to worry anymore hereafter.
->> +	 */
->> +	if (context_copied(iommu, bus, devfn)) {
->> +		context_clear_entry(context);
->> +		clear_context_copied(iommu, bus, devfn);
->> +		iommu->flush.flush_context(iommu, 0,
->> +					   (((u16)bus) << 8) | devfn,
->> +					   DMA_CCMD_MASK_NOBIT,
->> +					   DMA_CCMD_DEVICE_INVL);
->> +		qi_flush_pasid_cache(iommu, 0, QI_PC_GLOBAL, 0);
->> +		iommu->flush.flush_iotlb(iommu, 0, 0, 0,
->> DMA_TLB_GLOBAL_FLUSH);
->> +		devtlb_invalidation_with_pasid(iommu, dev,
->> IOMMU_NO_PASID);
->> +	}
-> 
-> I don't see this logic from existing code. If it's a bug fix then
-> please send it separately first.
-
-This code originates from domain_context_mapping_one(). It's not a bug
-fix.
-
->> +
->> +	context_entry_set_pasid_table(context, dev);
-> 
-> and here is additional change to the context entry. Why is the
-> context cache invalidated in the start?
-
-The previous context entry may be copied from a previous kernel.
-Therefore, we need to tear down the entry and flush the caches before
-reusing it.
-
-> 
->> +
->> +static int pci_pasid_table_setup(struct pci_dev *pdev, u16 alias, void *data)
->> +{
->> +	struct device *dev = data;
->> +
->> +	if (dev != &pdev->dev)
+>> -	/* PASID table is mandatory for a PCI device in scalable mode. */
+>> -	if (sm_supported(iommu) && !dev_is_real_dma_subdevice(dev)) {
+>> -		/* Setup the PASID entry for requests without PASID: */
+>> -		if (hw_pass_through && domain_type_is_si(domain))
+>> -			ret = intel_pasid_setup_pass_through(iommu,
+>> -					dev, IOMMU_NO_PASID);
+>> -		else if (domain->use_first_level)
+>> -			ret = domain_setup_first_level(iommu, domain, dev,
+>> -					IOMMU_NO_PASID);
+>> -		else
+>> -			ret = intel_pasid_setup_second_level(iommu,
+>> domain,
+>> -					dev, IOMMU_NO_PASID);
+>> -		if (ret) {
+>> -			dev_err(dev, "Setup RID2PASID failed\n");
+>> -			device_block_translation(dev);
+>> -			return ret;
+>> -		}
+>> -	}
+>> +	if (dev_is_real_dma_subdevice(dev))
 >> +		return 0;
 > 
-> what is it for? the existing domain_context_mapping_cb() doesn't have
-> this check then implying a behavior change.
+> is it a functional change? old code doesn't early exit for such device.
 
-Emm, I should remove this line and keep it consistent with the exiting
-code.
+This type of device is aliased to a RID on another bus. Therefore,
+there's no need to set up the context and PASID table for them. I should
+make the change mentioned above in a separate patch to make the
+background clear.
 
 Best regards,
 baolu
