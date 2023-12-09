@@ -1,89 +1,203 @@
-Received: from m12.mail.163.com (m12.mail.163.com [220.181.12.217])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A76BF7F
-	for <iommu@lists.linux.dev>; Sat,  9 Dec 2023 03:22:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.100])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1337F5394
+	for <iommu@lists.linux.dev>; Sat,  9 Dec 2023 07:57:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="YHbdN3p4"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-	s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=hDOWo
-	ySA4CZNBE7lDkM9JvLOpbEJ+zrh02ycvkDH8j8=; b=YHbdN3p44zuvEHiPDNNxd
-	8rnOhUySjsWhqV8PWkh60ad0I5el+QC0jzmNBF3uLH56/c70hO+SqEqwQTX+kwAU
-	llELJdBt+tD5AqILXfcJi9cIgyj5BaF5/+WUukv+fybAxchFu9WvbYul7F0VOM3U
-	uzW+4nk+u3EvACfxwOP+YI=
-Received: from ProDesk.. (unknown [58.22.7.114])
-	by zwqz-smtp-mta-g3-1 (Coremail) with SMTP id _____wBXn4Dwx3NlPIyWFA--.59698S2;
-	Sat, 09 Dec 2023 09:50:43 +0800 (CST)
-From: Andy Yan <andyshrk@163.com>
-To: conor+dt@kernel.org,
-	heiko@sntech.de,
-	krzysztof.kozlowski+dt@linaro.org,
-	robh+dt@kernel.org,
-	robin.murphy@arm.com,
-	devicetree@vger.kernel.org,
-	iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
-	linux-rockchip@lists.infradead.org
-Cc: Andy Yan <andy.yan@rock-chips.com>,
-	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH] dt-bindings: iommu: rockchip: Add Rockchip RK3588
-Date: Sat,  9 Dec 2023 09:50:38 +0800
-Message-Id: <20231209015038.1457967-1-andyshrk@163.com>
-X-Mailer: git-send-email 2.34.1
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="DOHuGEUd"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1702108643; x=1733644643;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=IfcEoRZ+GUIXcMKDg9WsBnRqP0HY5kXEDbcOQjV/3bM=;
+  b=DOHuGEUdPfANeqsLqpfGUHNaYIGIOcXENfrEe1zM5cdrnagYjlVit8MK
+   tFuBL6lO1p510yHrQ/gYA9q564RWuvnV/Wjcko8eabt5PaOmx6Bj+9p1U
+   WbUpxcgsuHSy8OyTi9lYUvhJ5Z2r3PGLyUm12wZLOZdR2RZd43qM0iHCk
+   X3rbCfzSMwbOFNkRNF9Vv+iFQQM9kdk2NbqrPh5xaFXL7e+ks3zvkYNhQ
+   5zaMaf2LDVC2cSBQVoqBIGRavYBu/QQ53uom0ZewzlzKTVCxk1Dwm2+Y3
+   8JLHsjOKyR2ZjpuSXWBmX3NColgVuJ4L23clOFEj1rT84fviFKxajc5DI
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10918"; a="460972595"
+X-IronPort-AV: E=Sophos;i="6.04,262,1695711600"; 
+   d="scan'208";a="460972595"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Dec 2023 23:57:22 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10918"; a="838366809"
+X-IronPort-AV: E=Sophos;i="6.04,262,1695711600"; 
+   d="scan'208";a="838366809"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
+  by fmsmga008.fm.intel.com with ESMTP; 08 Dec 2023 23:57:19 -0800
+Message-ID: <0008adc6-57fd-4ac8-8e8e-5a966596ad61@linux.intel.com>
+Date: Sat, 9 Dec 2023 15:52:44 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:_____wBXn4Dwx3NlPIyWFA--.59698S2
-X-Coremail-Antispam: 1Uf129KBjvdXoW7JF17JF4DJF4rurW7KFWrAFb_yoWkKFX_C3
-	WxXw15XF48tFWFv3WDA3yxGryDGw12krn5XF9YkF1kCw1qvry8J393Jw15Aw18Wr47uFyS
-	93WxWry2gF9xGjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-	9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IU8GYLDUUUUU==
-X-CM-SenderInfo: 5dqg52xkunqiywtou0bp/1tbiqBdBXmVOA2VgAwAAsO
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, "iommu@lists.linux.dev"
+ <iommu@lists.linux.dev>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 1/6] iommu/vt-d: Setup scalable mode context entry in
+ probe path
+To: "Tian, Kevin" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Jason Gunthorpe <jgg@ziepe.ca>
+References: <20231205012203.244584-1-baolu.lu@linux.intel.com>
+ <20231205012203.244584-2-baolu.lu@linux.intel.com>
+ <BN9PR11MB5276A5F34EA7CBBF026E264E8C8AA@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <BN9PR11MB5276A5F34EA7CBBF026E264E8C8AA@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-From: Andy Yan <andy.yan@rock-chips.com>
+On 12/8/23 4:50 PM, Tian, Kevin wrote:
+>> From: Lu Baolu <baolu.lu@linux.intel.com>
+>> Sent: Tuesday, December 5, 2023 9:22 AM
+>>
+>> @@ -304,6 +304,11 @@ int intel_pasid_setup_first_level(struct intel_iommu
+>> *iommu,
+>>   		return -EINVAL;
+>>   	}
+>>
+>> +	if (intel_pasid_setup_sm_context(dev, true)) {
+>> +		dev_err(dev, "Context entry is not configured\n");
+>> +		return -ENODEV;
+>> +	}
+>> +
+>>   	spin_lock(&iommu->lock);
+>>   	pte = intel_pasid_get_entry(dev, pasid);
+>>   	if (!pte) {
+>> @@ -384,6 +389,11 @@ int intel_pasid_setup_second_level(struct
+>> intel_iommu *iommu,
+>>   		return -EINVAL;
+>>   	}
+>>
+>> +	if (intel_pasid_setup_sm_context(dev, true)) {
+>> +		dev_err(dev, "Context entry is not configured\n");
+>> +		return -ENODEV;
+>> +	}
+>> +
+>>   	pgd = domain->pgd;
+>>   	agaw = iommu_skip_agaw(domain, iommu, &pgd);
+>>   	if (agaw < 0) {
+>> @@ -505,6 +515,11 @@ int intel_pasid_setup_pass_through(struct
+>> intel_iommu *iommu,
+>>   	u16 did = FLPT_DEFAULT_DID;
+>>   	struct pasid_entry *pte;
+>>
+>> +	if (intel_pasid_setup_sm_context(dev, true)) {
+>> +		dev_err(dev, "Context entry is not configured\n");
+>> +		return -ENODEV;
+>> +	}
+>> +
+>>   	spin_lock(&iommu->lock);
+>>   	pte = intel_pasid_get_entry(dev, pasid);
+>>   	if (!pte) {
+> 
+> instead of replicating the invocation in all three stubs it's simpler to
+> do once in dmar_domain_attach_device() for all of them.
 
-Add a Rockchip RK3588 compatible
+It's not good to repeat the code. Perhaps we can add this check to
+intel_pasid_get_entry()? The rule is that you can't get the pasid entry
+if the context is copied.
 
-I split it from the vop2 patch series as suggested by Heiko[0]
+> Then put the deferred check outside of intel_pasid_setup_sm_context()
+> instead of using a Boolean flag
 
-Signed-off-by: Andy Yan <andy.yan@rock-chips.com>
-Reviewed-by: Heiko Stuebner <heiko@sntech.de>
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Okay, that's more readable.
 
-[0]https://patchwork.kernel.org/project/dri-devel/patch/20231207080235.652719-1-andyshrk@163.com/
+>> @@ -623,6 +638,11 @@ int intel_pasid_setup_nested(struct intel_iommu
+>> *iommu, struct device *dev,
+>>   		return -EINVAL;
+>>   	}
+>>
+>> +	if (intel_pasid_setup_sm_context(dev, true)) {
+>> +		dev_err_ratelimited(dev, "Context entry is not configured\n");
+>> +		return -ENODEV;
+>> +	}
+>> +
+> 
+> Do we support nested in kdump?
 
----
+No.
 
- .../devicetree/bindings/iommu/rockchip,iommu.yaml     | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+> 
+>> +
+>> +	/*
+>> +	 * Cache invalidation for changes to a scalable-mode context table
+>> +	 * entry.
+>> +	 *
+>> +	 * Section 6.5.3.3 of the VT-d spec:
+>> +	 * - Device-selective context-cache invalidation;
+>> +	 * - Domain-selective PASID-cache invalidation to affected domains
+>> +	 *   (can be skipped if all PASID entries were not-present);
+>> +	 * - Domain-selective IOTLB invalidation to affected domains;
+>> +	 * - Global Device-TLB invalidation to affected functions.
+>> +	 *
+>> +	 * For kdump cases, old valid entries may be cached due to the
+>> +	 * in-flight DMA and copied pgtable, but there is no unmapping
+>> +	 * behaviour for them, thus we need explicit cache flushes for all
+>> +	 * affected domain IDs and PASIDs used in the copied PASID table.
+>> +	 * Given that we have no idea about which domain IDs and PASIDs
+>> were
+>> +	 * used in the copied tables, upgrade them to global PASID and IOTLB
+>> +	 * cache invalidation.
+>> +	 *
+>> +	 * For kdump case, at this point, the device is supposed to finish
+>> +	 * reset at its driver probe stage, so no in-flight DMA will exist,
+>> +	 * and we don't need to worry anymore hereafter.
+>> +	 */
+>> +	if (context_copied(iommu, bus, devfn)) {
+>> +		context_clear_entry(context);
+>> +		clear_context_copied(iommu, bus, devfn);
+>> +		iommu->flush.flush_context(iommu, 0,
+>> +					   (((u16)bus) << 8) | devfn,
+>> +					   DMA_CCMD_MASK_NOBIT,
+>> +					   DMA_CCMD_DEVICE_INVL);
+>> +		qi_flush_pasid_cache(iommu, 0, QI_PC_GLOBAL, 0);
+>> +		iommu->flush.flush_iotlb(iommu, 0, 0, 0,
+>> DMA_TLB_GLOBAL_FLUSH);
+>> +		devtlb_invalidation_with_pasid(iommu, dev,
+>> IOMMU_NO_PASID);
+>> +	}
+> 
+> I don't see this logic from existing code. If it's a bug fix then
+> please send it separately first.
 
-diff --git a/Documentation/devicetree/bindings/iommu/rockchip,iommu.yaml b/Documentation/devicetree/bindings/iommu/rockchip,iommu.yaml
-index ba9124f721f1..621dde0e45d8 100644
---- a/Documentation/devicetree/bindings/iommu/rockchip,iommu.yaml
-+++ b/Documentation/devicetree/bindings/iommu/rockchip,iommu.yaml
-@@ -19,9 +19,14 @@ description: |+
- 
- properties:
-   compatible:
--    enum:
--      - rockchip,iommu
--      - rockchip,rk3568-iommu
-+    oneOf:
-+      - enum:
-+          - rockchip,iommu
-+          - rockchip,rk3568-iommu
-+      - items:
-+          - enum:
-+              - rockchip,rk3588-iommu
-+          - const: rockchip,rk3568-iommu
- 
-   reg:
-     items:
--- 
-2.34.1
+This code originates from domain_context_mapping_one(). It's not a bug
+fix.
 
+>> +
+>> +	context_entry_set_pasid_table(context, dev);
+> 
+> and here is additional change to the context entry. Why is the
+> context cache invalidated in the start?
+
+The previous context entry may be copied from a previous kernel.
+Therefore, we need to tear down the entry and flush the caches before
+reusing it.
+
+> 
+>> +
+>> +static int pci_pasid_table_setup(struct pci_dev *pdev, u16 alias, void *data)
+>> +{
+>> +	struct device *dev = data;
+>> +
+>> +	if (dev != &pdev->dev)
+>> +		return 0;
+> 
+> what is it for? the existing domain_context_mapping_cb() doesn't have
+> this check then implying a behavior change.
+
+Emm, I should remove this line and keep it consistent with the exiting
+code.
+
+Best regards,
+baolu
