@@ -1,141 +1,216 @@
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2074.outbound.protection.outlook.com [40.107.94.74])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D3924EB4D;
-	Mon, 11 Dec 2023 18:03:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3C734F20D
+	for <iommu@lists.linux.dev>; Mon, 11 Dec 2023 18:03:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="Xd6gh7ET"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MMMCI/upkoOmZ5E2GIiHGz0P99CqjmCq3zKaLFbOo31vgafOSCeJbLW/mJQYmdY/8YvEN/DyHsg6szF2HdxFMB8OiCNArxtS+GfdGog0Hc6IESEhG+qPrYzfn2PtTZmFOHzfnVb5WBxonNW2ZvEF0aHvocdn/6H8JJqkWFXC9XwtAM+2lUXHahOfTJAK8afFVpat/Up0uvnxVgFsolZv4ydW0Th7jEK/pQcC2ex07QFL2QkfV7wa2t6b1O5SJPzoLxoawTIww40QBXuoI+A62dHq5zwPYHKVbahzochLXIvTd/KJx4mSRbPoxSm67froqtlcQTZAZ10rsLJgo4X2vA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=8PN9fFjxMUxGMKxhSYTXCx09rk23qfYEG184ZZgwt+4=;
- b=XZcfl3eIMAu9jm6aCjUjNx3tthePlVHOjBH2G19u99GCcxwg/BEiv4qEIb001WQV7R/rPiujlgp+6kXbLqKr9+rwgRfqWD/regY/rjD6EDAgyvAw/a5CeB0NvXEjwbPFfu//HmCznezOItuZKpJnxGPEJIKfnaHO58sSyJzpHe3p/TAdUZBxSwbBjEOiXgvu0RIrKQv9RLpFptoUAF8dEhNM7Ivb1xFK27J652EA50x54WySBtfjVilQQEdsaVSZtET4VMBxXBsdnGbRt2/KWtz9q7KP1P0KCT87aD7eAPejxa84m6MTCV5ZfYf1yEj5ALbMjcpkjBDmy5osZUO/mw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8PN9fFjxMUxGMKxhSYTXCx09rk23qfYEG184ZZgwt+4=;
- b=Xd6gh7ET+YpcMeXzQG/zFxyYk+54uFoF2R44tBCxmr9WiSkyN9z5p0wjuSqWvji/16fPTJPdz6SiF+PphnpJqiKVKxXz/yl4gXjDGWGWG7XAFTG+g0cUcUizpE51FvvZkRre778QqHEHlBJDc6TRBPBNsDu2DQgqJyhxuYSbgp23eNvUF5q/k5UMxDGRZyZ1QY5tkWRw9817vpmuQ0H45ylk8lTyC3Dgzc7yEs7le3uXpKuFdEWVTPznXKiLqJcIHa0ivdC/Y7wjKnE4aFIx9vkrJ0BdJV0oERbiwiIjaB+dtYu+LSdpCLESg49ZHh4plWutk/YQQikYbJLsXJYfOg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by BN9PR12MB5227.namprd12.prod.outlook.com (2603:10b6:408:100::6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7068.32; Mon, 11 Dec
- 2023 18:03:25 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::60d4:c1e3:e1aa:8f93]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::60d4:c1e3:e1aa:8f93%4]) with mapi id 15.20.7068.031; Mon, 11 Dec 2023
- 18:03:25 +0000
-Date: Mon, 11 Dec 2023 14:03:24 -0400
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
-	linux-arm-kernel@lists.infradead.org,
-	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>
-Cc: Eric Auger <eric.auger@redhat.com>, Moritz Fischer <mdf@kernel.org>,
-	Michael Shavit <mshavit@google.com>,
-	Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-Subject: Re: [PATCH v3 00/19] Update SMMUv3 to the modern iommu API (part 1/3)
-Message-ID: <20231211180324.GA3012960@nvidia.com>
-References: <0-v3-d794f8d934da+411a-smmuv3_newapi_p1_jgg@nvidia.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0-v3-d794f8d934da+411a-smmuv3_newapi_p1_jgg@nvidia.com>
-X-ClientProxiedBy: BL1PR13CA0442.namprd13.prod.outlook.com
- (2603:10b6:208:2c3::27) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="Pouv8Xf3"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1702317832;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=MaxmWb0gmmOa2NNadHjgN+9H3pLxhDx5JIlGNJciyGA=;
+	b=Pouv8Xf3Zy3EV+ekmlFj9KlaZy0AKLgUG1P+4QRZt94FJM1oQ2mS/SLwewXRNTn6Nx2QDE
+	hG3U/OPd6IyD9lwNPnVi7zX1E23chMEd/CvtkiNHOnVyYblyytW9AhLDMYMXCrnisFhrqh
+	gtK9gWSxEIk0jVwFQF/Zy/9EHRG8C50=
+Received: from mail-ot1-f70.google.com (mail-ot1-f70.google.com
+ [209.85.210.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-656-045CKcHdNoiGXovdRLuQEA-1; Mon, 11 Dec 2023 13:03:50 -0500
+X-MC-Unique: 045CKcHdNoiGXovdRLuQEA-1
+Received: by mail-ot1-f70.google.com with SMTP id 46e09a7af769-6d9feae8dfdso3690088a34.2
+        for <iommu@lists.linux.dev>; Mon, 11 Dec 2023 10:03:50 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1702317830; x=1702922630;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=MaxmWb0gmmOa2NNadHjgN+9H3pLxhDx5JIlGNJciyGA=;
+        b=f+dArHYKpHFOy/+sXUMIxzRfRn84UFKkO5W5YrEflAqtPT30utdjByUGTvyDIqJIBr
+         +0BaNhrtWlOxytqrdupmTVeaW1DrdbmaE+o+pUJileJZ3OxT/OXxvRnaZ8EdByr0cVWZ
+         0BOkDg7/y+QQFUgJrH0/C/DFzJGntWEBped31k77XliZpvzkTaD7O/ITtWvLHR0M96TR
+         BZlwpnZ5Q5/Cmt0kbzrHWJeKlldUJiiHgYeWKENd6qAsMHYgib3qbduEpCl7dOD5kYOv
+         nxCJ4Z09MURWbC64YF4bYUcFnlrDM7xS8Dyx/uWqkEbbj51POOCdDfpMlyzaOtIf4Mza
+         VD4g==
+X-Gm-Message-State: AOJu0Yw6GY7Sl+lTbNOPyFHg4CoXOUvHR8JCA+42z5A0Nhb6cZn9w8cf
+	KDr3vPA+E5To+sdWnpMJIkp+qqE/uaLhoWXSnK6OQXUlAHGW9NIf1rzT1EwmSUgBE5DDAfk4H1c
+	iGbEj4bk/QQfMpzU=
+X-Received: by 2002:a9d:4e8f:0:b0:6d8:8053:af56 with SMTP id v15-20020a9d4e8f000000b006d88053af56mr5256020otk.39.1702317829721;
+        Mon, 11 Dec 2023 10:03:49 -0800 (PST)
+X-Google-Smtp-Source: AGHT+IFSgJpcgGM/uc3eXwfGlIeFBE+F5c01rkGI5ZWrgUL/mGmyGdintBKaoq0B478Ka1tOjndr+w==
+X-Received: by 2002:a9d:4e8f:0:b0:6d8:8053:af56 with SMTP id v15-20020a9d4e8f000000b006d88053af56mr5256002otk.39.1702317829439;
+        Mon, 11 Dec 2023 10:03:49 -0800 (PST)
+Received: from redhat.com ([38.15.60.12])
+        by smtp.gmail.com with ESMTPSA id c25-20020a9d6859000000b006d9a7a7048asm1827521oto.49.2023.12.11.10.03.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Dec 2023 10:03:48 -0800 (PST)
+Date: Mon, 11 Dec 2023 11:03:45 -0700
+From: Alex Williamson <alex.williamson@redhat.com>
+To: Yi Liu <yi.l.liu@intel.com>
+Cc: joro@8bytes.org, jgg@nvidia.com, kevin.tian@intel.com,
+ robin.murphy@arm.com, baolu.lu@linux.intel.com, cohuck@redhat.com,
+ eric.auger@redhat.com, nicolinc@nvidia.com, kvm@vger.kernel.org,
+ mjrosato@linux.ibm.com, chao.p.peng@linux.intel.com,
+ yi.y.sun@linux.intel.com, peterx@redhat.com, jasowang@redhat.com,
+ shameerali.kolothum.thodi@huawei.com, lulu@redhat.com,
+ suravee.suthikulpanit@amd.com, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+ zhenzhong.duan@intel.com, joao.m.martins@oracle.com, xin.zeng@intel.com,
+ yan.y.zhao@intel.com
+Subject: Re: [PATCH 3/3] vfio: Report PASID capability via
+ VFIO_DEVICE_FEATURE ioctl
+Message-ID: <20231211110345.1b4526c6.alex.williamson@redhat.com>
+In-Reply-To: <20231127063909.129153-4-yi.l.liu@intel.com>
+References: <20231127063909.129153-1-yi.l.liu@intel.com>
+	<20231127063909.129153-4-yi.l.liu@intel.com>
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; x86_64-redhat-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|BN9PR12MB5227:EE_
-X-MS-Office365-Filtering-Correlation-Id: f30ddbef-1ef6-4652-98bd-08dbfa7378a2
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	CVIsKYvXjEcc8OUB/CJjw7CktonOGolPvDQc5btBpO/qGD1bzimK7354Mmm+wxdIQrv4qRxj3GvMqBHkc6LErlgYwPX81PFoLXNMgqBtgtRDRqF56vY9wraUWkKIdiMUvadqBfHCMiNrHhTA3BErGcBXMuWqNgo+FrHpagJKm978+gRm2MQ64nLfDJbwxCJNs2PvL4yvLwzxzx+WdJ4CnOVR1Ultzrgnn9D34KbLdEjN61dowZWkxJgBN3u5Y4GwDxWapxyFURoyadWh2M656xrlVO/L4LW3ElnN3mkbgiUVULFbL2F4HBJs/jr2KtZjPDpQwr6fxBdH7/Gfzbckfyw4od8pk6EOR5PVwcH5HUpDf4qsl8UKdXXSS4eFSX9mh9SQ7dGV7jcqfv87/iV6BGJ9o7/d/9gVZYlSBxnIscDPl+UP0jHP8PfpbWpxD+Mw5iq0Ub5XXl5HCz3ZLwKdYLgZMonIM6dXp5WU8ohZ9jqn0RfQWO8MAQLg5UUKiOGZut58UqN5kF8BOIn8jOtbKhybBVsHTYeWJkyDtg4oyNjZI78EJjaNND2x2IxmtwWzYrtghm3QFt/3EIdx9gBaYoeD7e4jn3VI4otbo5nEKg0=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(39860400002)(376002)(396003)(136003)(366004)(346002)(230922051799003)(1800799012)(186009)(64100799003)(451199024)(15650500001)(7416002)(2906002)(41300700001)(38100700002)(110136005)(36756003)(33656002)(86362001)(2616005)(6512007)(1076003)(26005)(478600001)(6486002)(83380400001)(6506007)(966005)(4326008)(5660300002)(316002)(66556008)(66476007)(54906003)(66946007)(8936002)(8676002)(66899024);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?gLgRAP9K6uBHtKoXlRxm/esng48fcQxSVJ1JJXU+izxGNFTa6/40oGAHvxGY?=
- =?us-ascii?Q?uRThHupDXV20Hvd32R/M/kxbtRwjy+SvFOYyWoKS4ICcomPkIenJSn1ViMYu?=
- =?us-ascii?Q?k0kyuGHPMD4jgy1oSsRDP7ng0mmBTlrp8LImXXM4idvYKLM9NleJanL1gwIZ?=
- =?us-ascii?Q?m8x8+Gqc9M5wEn3dpLXZ3sABL7evFJqLtvS1eE9vBODQAjGyeB4aLgva0hGg?=
- =?us-ascii?Q?4uS5zzEuczZoH7p2JXLfcXf8qEO8CUNUNF4Zf9VU4OKP1i1v7tu6GtRe5U8g?=
- =?us-ascii?Q?UkT/YGnfbs6jfszQ0obu8EIsuO7CB6jbtEeRZiZJ2MNz8CdcPA/koV+GvK66?=
- =?us-ascii?Q?InHH35ic3liqEJ36bxe/ynVdSz5IbOcwhf64HAWJwzm2pzf7/hz3NdPtyB/d?=
- =?us-ascii?Q?2ZdZnSPnuxiduWvTyicOI6Oq0uNvQbKAQYR2d5sezilIx6EKRAbx5iXprv2U?=
- =?us-ascii?Q?2JCkK894xpSrJFJkljw0FmGh7wQDJ/U4h1nhZXtAM4vShb/U4Yt38KJ/TQLV?=
- =?us-ascii?Q?7BEOLzmdXm9tL709UvBSTuY0n5MNi588h0jZ7PLCt6JlXKbsQ0+XFnqvEgat?=
- =?us-ascii?Q?5xa3XRPqkJqdUtSIUJUoiIX9OciTWIjbFWkuADPNzGVdP18EKmEmNGcGJQFK?=
- =?us-ascii?Q?EAYcgxE49q+pqjruwiToWhd2MbHlra2yF4IqMcbO4LvgHjsmr+NjkbcEK/tn?=
- =?us-ascii?Q?3eneH/PRx8BCZF6SZkxL93kOfhvJVCm1z+bnVA+vipr6KKbdMG3N7TJSuwr5?=
- =?us-ascii?Q?6A1lIUeWJ4sMX+k/pOfpMmT5VNy/GaT4eEZLhQX0GJ2WGmi+7/qx/bYFXPYq?=
- =?us-ascii?Q?GsioKUEzsByLoJ+qSfz4ev/8tKj0wkl2qk47nwaN8NxnUPuYi9XYGT2uKYzk?=
- =?us-ascii?Q?05S+zpUHjMqO09NitO2ERbZcHfyOEpYczAphfXpA/O7nv/VsmnrqGbARan9S?=
- =?us-ascii?Q?lMj45RfAA6+vXbeBsWpfeSWrXij2MGBQS9AKKbiUlSOSxRMRWadiEMYwJrte?=
- =?us-ascii?Q?Y58NGkdL8n35NzAYIUo2X4XqmYIwtYrQYzZtLZPzjxqJVhbiBmhstjtEjs8C?=
- =?us-ascii?Q?Ed+gWOhW06ELmi8xLiC9HbRiZRTk81wslZ9TS1cwktN3+mPtZ9a/Ax9YWUqO?=
- =?us-ascii?Q?Rrtrl0QFCdmwesb/TPY35TULfQJo1o5BFpMzs6vFtnao6uvDs49a/V+q35Cp?=
- =?us-ascii?Q?NVzRFfwM+8HFGRkNXroBx+T5nYpOsg/rZOHhKSd42H7dUMniYu2Fuev1SSfB?=
- =?us-ascii?Q?xXcjpAJ88QjXUodKs4N0RmVt4WPRL81za0ftwnaO0B476TaRfCDCJ9eodNPJ?=
- =?us-ascii?Q?s+d6Kop0HY6IBRH1n1Sa+kr4GZXEJDwBY5j7Ik2oHDykDodREwNWjq64+u95?=
- =?us-ascii?Q?1KnU4Ro+XHkBkI62nvOkxRHdpH4xy2NOI+rmpK0sbRmkRIRLs026gxq5gnqP?=
- =?us-ascii?Q?ezIyq8xdRsagc/R+jT4eXOYGkRxqKA0uUJ045cVZ/IWvmrL87nqs9d7AQROC?=
- =?us-ascii?Q?92QpTDebBdQjTiPB4cPW9K8nx5FnmYo62FP9tqEyISkZQpGmwdHPJ4JPOxnq?=
- =?us-ascii?Q?EulVB7uBOKE9G8wA5UA6kIftF+4BicMQboHylt+v?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f30ddbef-1ef6-4652-98bd-08dbfa7378a2
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Dec 2023 18:03:25.6778
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: d9Hjdgjv1Vci1OAizpGHCKcMhgiCXo5XG4fMpkuppSK8E91/Fnv04kcpicvguj1H
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN9PR12MB5227
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Tue, Dec 05, 2023 at 03:14:32PM -0400, Jason Gunthorpe wrote:
-> All parts are on github:
+On Sun, 26 Nov 2023 22:39:09 -0800
+Yi Liu <yi.l.liu@intel.com> wrote:
+
+> This reports the PASID capability data to userspace via VFIO_DEVICE_FEATURE,
+> hence userspace could probe PASID capability by it. This is a bit different
+> with other capabilities which are reported to userspace when the user reads
+> the device's PCI configuration space. There are two reasons for this.
 > 
->  https://github.com/jgunthorpe/linux/commits/smmuv3_newapi
+>  - First, Qemu by default exposes all available PCI capabilities in vfio-pci
+>    config space to the guest as read-only, so adding PASID capability in the
+>    vfio-pci config space will make it exposed to the guest automatically while
+>    an old Qemu doesn't really support it.
+
+Shouldn't we also be working on hiding the PASID capability in QEMU
+ASAP?  This feature only allows QEMU to know PASID control is actually
+available, not the guest.  Maybe we're hoping this is really only used
+by VFs where there's no capability currently exposed to the guest?
+
+>  - Second, PASID capability does not exit on VFs (instead shares the cap of
+
+s/exit/exist/
+
+>    the PF). Creating a virtual PASID capability in vfio-pci config space needs
+>    to find a hole to place it, but doing so may require device specific
+>    knowledge to avoid potential conflict with device specific registers like
+>    hiden bits in VF config space. It's simpler by moving this burden to the
+>    VMM instead of maintaining a quirk system in the kernel.
+
+This feels a bit like an incomplete solution though and we might
+already posses device specific knowledge in the form of a variant
+driver.  Should this feature structure include a flag + field that
+could serve to generically indicate to the VMM a location for
+implementing the PASID capability?  The default core implementation
+might fill this only for PFs where clearly an emualted PASID capability
+can overlap the physical capability.  Thanks,
+
+Alex
+
+> Suggested-by: Alex Williamson <alex.williamson@redhat.com>
+> Signed-off-by: Yi Liu <yi.l.liu@intel.com>
+> ---
+>  drivers/vfio/pci/vfio_pci_core.c | 47 ++++++++++++++++++++++++++++++++
+>  include/uapi/linux/vfio.h        | 13 +++++++++
+>  2 files changed, 60 insertions(+)
 > 
-> v3:
->  - Use some local variables in arm_smmu_get_step_for_sid() for clarity
->  - White space and spelling changes
->  - Commit message updates
->  - Keep master->domain_head initialized to avoid a list_del corruption
-> v2: https://lore.kernel.org/r/0-v2-de8b10590bf5+400-smmuv3_newapi_p1_jgg@nvidia.com
->  - Rebased on v6.7-rc1
->  - Improve the comment for arm_smmu_write_entry_step()
->  - Fix the botched memcmp
->  - Document the spec justification for the SHCFG exclusion in used
->  - Include STRTAB_STE_1_SHCFG for STRTAB_STE_0_CFG_S2_TRANS in used
->  - WARN_ON for unknown STEs in used
->  - Fix error unwind in arm_smmu_attach_dev()
->  - Whitespace, spelling, and checkpatch related items
-> v1: https://lore.kernel.org/r/0-v1-e289ca9121be+2be-smmuv3_newapi_p1_jgg@nvidia.com
+> diff --git a/drivers/vfio/pci/vfio_pci_core.c b/drivers/vfio/pci/vfio_pci_core.c
+> index 1929103ee59a..8038aa45500e 100644
+> --- a/drivers/vfio/pci/vfio_pci_core.c
+> +++ b/drivers/vfio/pci/vfio_pci_core.c
+> @@ -1495,6 +1495,51 @@ static int vfio_pci_core_feature_token(struct vfio_device *device, u32 flags,
+>  	return 0;
+>  }
+>  
+> +static int vfio_pci_core_feature_pasid(struct vfio_device *device, u32 flags,
+> +				       struct vfio_device_feature_pasid __user *arg,
+> +				       size_t argsz)
+> +{
+> +	struct vfio_pci_core_device *vdev =
+> +		container_of(device, struct vfio_pci_core_device, vdev);
+> +	struct vfio_device_feature_pasid pasid = { 0 };
+> +	struct pci_dev *pdev = vdev->pdev;
+> +	u32 capabilities = 0;
+> +	int ret;
+> +
+> +	/* We do not support SET of the PASID capability */
+> +	ret = vfio_check_feature(flags, argsz, VFIO_DEVICE_FEATURE_GET,
+> +				 sizeof(pasid));
+> +	if (ret != 1)
+> +		return ret;
+> +
+> +	/*
+> +	 * Needs go to PF if the device is VF as VF shares its PF's
+> +	 * PASID Capability.
+> +	 */
+> +	if (pdev->is_virtfn)
+> +		pdev = pci_physfn(pdev);
+> +
+> +	if (!pdev->pasid_enabled)
+> +		goto out;
+> +
+> +#ifdef CONFIG_PCI_PASID
+> +	pci_read_config_dword(pdev, pdev->pasid_cap + PCI_PASID_CAP,
+> +			      &capabilities);
+> +#endif
+> +
+> +	if (capabilities & PCI_PASID_CAP_EXEC)
+> +		pasid.capabilities |= VFIO_DEVICE_PASID_CAP_EXEC;
+> +	if (capabilities & PCI_PASID_CAP_PRIV)
+> +		pasid.capabilities |= VFIO_DEVICE_PASID_CAP_PRIV;
+> +
+> +	pasid.width = (capabilities >> 8) & 0x1f;
+> +
+> +out:
+> +	if (copy_to_user(arg, &pasid, sizeof(pasid)))
+> +		return -EFAULT;
+> +	return 0;
+> +}
+> +
+>  int vfio_pci_core_ioctl_feature(struct vfio_device *device, u32 flags,
+>  				void __user *arg, size_t argsz)
+>  {
+> @@ -1508,6 +1553,8 @@ int vfio_pci_core_ioctl_feature(struct vfio_device *device, u32 flags,
+>  		return vfio_pci_core_pm_exit(device, flags, arg, argsz);
+>  	case VFIO_DEVICE_FEATURE_PCI_VF_TOKEN:
+>  		return vfio_pci_core_feature_token(device, flags, arg, argsz);
+> +	case VFIO_DEVICE_FEATURE_PASID:
+> +		return vfio_pci_core_feature_pasid(device, flags, arg, argsz);
+>  	default:
+>  		return -ENOTTY;
+>  	}
+> diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
+> index 495193629029..8326faf8622b 100644
+> --- a/include/uapi/linux/vfio.h
+> +++ b/include/uapi/linux/vfio.h
+> @@ -1512,6 +1512,19 @@ struct vfio_device_feature_bus_master {
+>  };
+>  #define VFIO_DEVICE_FEATURE_BUS_MASTER 10
+>  
+> +/**
+> + * Upon VFIO_DEVICE_FEATURE_GET, return the PASID capability for the device.
+> + * Zero width means no support for PASID.
+> + */
+> +struct vfio_device_feature_pasid {
+> +	__u16 capabilities;
+> +#define VFIO_DEVICE_PASID_CAP_EXEC	(1 << 0)
+> +#define VFIO_DEVICE_PASID_CAP_PRIV	(1 << 1)
+> +	__u8 width;
+> +	__u8 __reserved;
+> +};
+> +#define VFIO_DEVICE_FEATURE_PASID 11
+> +
+>  /* -------- API for Type1 VFIO IOMMU -------- */
+>  
+>  /**
 
-This hasn't changed significantly in the last three months, so I feel
-done now. I think Eric may still have a formal Tested-by for his
-Fujitsu system to record the run he did.
-
-Will, we are waiting for you to say something so we can shift review
-and testing focus to part 2, ideally in January. Many people are
-waiting for this.
-
-Thanks,
-Jason
