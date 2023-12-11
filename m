@@ -1,282 +1,175 @@
-Received: from bee.tesarici.cz (bee.tesarici.cz [77.93.223.253])
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2045.outbound.protection.outlook.com [40.107.92.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 304C93D96B
-	for <iommu@lists.linux.dev>; Mon, 11 Dec 2023 13:10:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=tesarici.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tesarici.cz
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E817D3D388
+	for <iommu@lists.linux.dev>; Mon, 11 Dec 2023 13:20:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b="Rz/IRLmB"
-Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by bee.tesarici.cz (Postfix) with ESMTPSA id 502F515E0CA;
-	Mon, 11 Dec 2023 14:01:13 +0100 (CET)
-Authentication-Results: mail.tesarici.cz; dmarc=fail (p=none dis=none) header.from=tesarici.cz
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tesarici.cz; s=mail;
-	t=1702299673; bh=GqgdD5vBHRpXHBZ9myHZrhikHhnZmHg4Q0B8HRHjSX0=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=Rz/IRLmBDVtf+75PPRlBJ1PQ6+vSmERJAlOSCgTdzgJlduA2eLpW3vF4T/h1YrF8T
-	 p8f1VR9wRnKU+PTncuSafat4AhHvpZEvkW33Z48dGQ+xCjdzu87qkgWghVlvT7sZfF
-	 4wM3u/Q6E8Zrc4QC5n1SnVh5FnnFSHaYL3i1VOadyQL+SFHqDyDGv7Jq4cSoJH6h/M
-	 Q831LVlea0z/CB8r4pxN58WKmt8EmupqwtG5UbRFSmHaO6wCtJiYnEonVaSVZZaCqA
-	 7OiqSxiOOisj2+3lMo2BZEER3XcCv2Px8PdgXYp7PrY4OszRyliQ8sHsO1dqk1sNYW
-	 ovdZpVkf010KA==
-Date: Mon, 11 Dec 2023 14:01:11 +0100
-From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
-To: Christoph Hellwig <hch@lst.de>
-Cc: Petr Tesarik <petrtesarik@huaweicloud.com>, Marek Szyprowski
- <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>,
- iommu@lists.linux.dev (open list:DMA MAPPING HELPERS),
- linux-kernel@vger.kernel.org (open list), Wangkefeng
- <wangkefeng.wang@huawei.com>, Roberto Sassu
- <roberto.sassu@huaweicloud.com>, Petr Tesarik
- <petr.tesarik1@huawei-partners.com>
-Subject: Re: [PATCH RESEND] swiotlb: reduce area lock contention for
- non-primary IO TLB pools
-Message-ID: <20231211140111.5dbb74c0@meshulam.tesarici.cz>
-In-Reply-To: <20231201121352.195-1-petrtesarik@huaweicloud.com>
-References: <20231201121352.195-1-petrtesarik@huaweicloud.com>
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; x86_64-suse-linux-gnu)
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="BJItbru2"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=F4rpjM1iHybaI0vX/nOADeutbLukThbPon8DA8gNGUHFHT3tkB15efbRYKK2P56pmOVryEuezdptbrn6+Bu0uUgB+Vi+VwRkJ16DnYuXUpxx0RHMCeK4FEyye5ZBc39x0altVw0I1ILOTchmdvdDbsDrLjzlD/XwxzvWTX3gyyKUTYsRZZPzlbBSg7ttrLpSewaAi2Pf6OkCljq6BwwfFlU698mxTEd/eoXj9uXkGffQwXq28uukY9XbghEF/F95+J35/YIM20XxeCkUmLDwXpdUil/m1CUx+j8ySVzOGLLaRV5qcKiKATx71n1/GeAshfxYs0Y0fAJepYC3D2o67Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=W+WITRz0gjyWRA3VOGox+SRsg3Itx/VuYGmKozrmE1o=;
+ b=UFrMHlTz60fE1ioHO8PIwsyBMLdLYczT0yYWx9YqNGs7w0JZJl9MHPOD6I2GPArIGvi8CMrTzI0Do/zXIltTfDVgupQaOXRJ/vTBhBWVl9FdRBxp5HvmRprBtOmG/Z8lmQzonJL40PFxUZl1tzTMVi7gmLDmsoGo1pc97W6HkU5DK4h2P3odUrAD0tbNgEPOI9AUPaghYk81CHXrJQHjzKgTpHTF6+VbR7inKbOzkz8q1sCbgOcrH9BgeXg4ByZMSDY6eqAX5oXAxLAfNo10nwt+PrfahHloP8G3nyQzqz8GAgg8qYlvNVuzxPvQ+Er3dt6XVMXFQdrzuprpcIUqfg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=W+WITRz0gjyWRA3VOGox+SRsg3Itx/VuYGmKozrmE1o=;
+ b=BJItbru2mQv9eTxsePpH6XHlrxQi9VQR09ItX+u1Najs85x+cc4pnb9jlhrqiLkwJ1SGQB0H/2M0TzpiHBVLYYI1xxD/NXxmwpfmCMpv9A7sPRKHf9OOacz89PtIUyFxr/jha+XpyJtC2yPVnI6aAzzNm6vIyQQOlEUlxAzeJ+5O+RCMQXNbzmtVih6Re8UV3iKhN5o9UlbwvYVkSeBkz8FqHoAZ9lMBWTHqEGItRloqXFWpNDhkg2vhYqbLbdFmXr++gPjQbs9+jlOJ+FqLRwHKAcwKCHd3ZkmYVW7Ud5kmljSHTiuzfVlQMSs9YyjyOxG/62lQXWuYAp+hDeegwA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by BY5PR12MB4178.namprd12.prod.outlook.com (2603:10b6:a03:20e::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7068.32; Mon, 11 Dec
+ 2023 13:20:43 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::60d4:c1e3:e1aa:8f93]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::60d4:c1e3:e1aa:8f93%4]) with mapi id 15.20.7068.031; Mon, 11 Dec 2023
+ 13:20:42 +0000
+Date: Mon, 11 Dec 2023 09:20:41 -0400
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Yi Liu <yi.l.liu@intel.com>
+Cc: "Giani, Dhaval" <Dhaval.Giani@amd.com>,
+	Vasant Hegde <vasant.hegde@amd.com>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	joro@8bytes.org, alex.williamson@redhat.com, kevin.tian@intel.com,
+	robin.murphy@arm.com, baolu.lu@linux.intel.com, cohuck@redhat.com,
+	eric.auger@redhat.com, nicolinc@nvidia.com, kvm@vger.kernel.org,
+	mjrosato@linux.ibm.com, chao.p.peng@linux.intel.com,
+	yi.y.sun@linux.intel.com, peterx@redhat.com, jasowang@redhat.com,
+	shameerali.kolothum.thodi@huawei.com, lulu@redhat.com,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	linux-kselftest@vger.kernel.org, zhenzhong.duan@intel.com,
+	joao.m.martins@oracle.com, xin.zeng@intel.com, yan.y.zhao@intel.com
+Subject: Re: [PATCH v6 0/6] iommufd: Add nesting infrastructure (part 2/2)
+Message-ID: <20231211132041.GE2944114@nvidia.com>
+References: <20231117130717.19875-1-yi.l.liu@intel.com>
+ <20231209014726.GA2945299@nvidia.com>
+ <77ac47d0-2ef0-41fa-86c2-091358541465@intel.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <77ac47d0-2ef0-41fa-86c2-091358541465@intel.com>
+X-ClientProxiedBy: BL6PEPF00013DF7.NAMP222.PROD.OUTLOOK.COM
+ (2603:10b6:22e:400:0:1001:0:9) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|BY5PR12MB4178:EE_
+X-MS-Office365-Filtering-Correlation-Id: d2d80785-df60-43fe-fd54-08dbfa4bfa07
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	tDBsMTHoYR9L8xV2gjK98vO+SgRK3l+RZILJ8t2VAeKByDjkJ9+8lBhEKVquPb63+KTdSvl7qkXasAyUrBTBXFwYztjb+EG6q9klJpNZ7K+DqFCuqQL/qV9txNssymHqU63fEylLNu3URcRTMEKdkTNvZTABw1kk3uxYU+VRB6BO6yp9Lr/anWM+qPwjE5+iGDpLBnoZioL9SxnTexO+YAnKA/VmtlWlA9vpZcTzkNhYUxyIZ4hg3HU5Tw5CPz7DISl+kwfmG8vG/le7qtJPS9HdZx5o60d1f69PnQmFC86L4VPy8puTkQg8TjBTEZZIHaT4I+ausulN3XBSVG7FhCGjJiFk5cmPAd2BaQG2GpBvofOdQiILvavwSts3NiKNZJQNFQ7D5u+Sr7ohfojKh5zUGLcV2D7e/Ork77r6/aPGBtpAFF/TDEOKl5kiSmYTaBhj3bCsH8ETldamEaKBgcUm2g3od25gbDDIBz4juzRCeOKY1f1D4+IkBD8dhETn1HQIKAvDF+dIcqU/yIeus9xFGOFRFtcQWUfA/UfJ74l1i5TknyF2O9cqwX7vI9ez/PEEooiIiCSU91iwFsOVe37evbkPO7RdsFYUY9pshps=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(136003)(39860400002)(376002)(346002)(396003)(366004)(230922051799003)(451199024)(1800799012)(186009)(64100799003)(1076003)(26005)(2616005)(6506007)(6512007)(83380400001)(5660300002)(7416002)(41300700001)(2906002)(4326008)(478600001)(6486002)(66946007)(8936002)(8676002)(316002)(66476007)(54906003)(6916009)(66556008)(33656002)(38100700002)(86362001)(36756003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?0BcBTaelb7kFCycCipzLQzRcElUN91/lSyFFkZ+DBZyqcT77dNUkbEbGa9ws?=
+ =?us-ascii?Q?Zb7LQsJ00WuEMc266xArwI/o7+xY3v4bf/zTXYAbMsU8Zs1YS76SmoXOHqf8?=
+ =?us-ascii?Q?DDIdX9ea3HHjYzYrFrizmXhxJm8Ooor/2+Mxnulx9dMoflhlI5JJKsJzWGSC?=
+ =?us-ascii?Q?nLWbQO6V1pPdN/kRk/Gbea+uEmpCXg1tKz5lxlWZodTMx7tsZIhrkwsMRn5P?=
+ =?us-ascii?Q?L6VmxG42CCy/lKnos5GxcFhPr7xEx4V1E/mctIfDsrl5JgmbK1iHsYbSzy1W?=
+ =?us-ascii?Q?5Cv8/ciSl6Q5KIlUfbBFVzxuHqDmEnmd2RRz0K4LC3rTY7Fzki+imMFp6VtS?=
+ =?us-ascii?Q?m4U3PonW5FH57YBw3uOrEgr8cEW7kR73FBHsQtq1SbQUlO1l3LBkYPu8RLcA?=
+ =?us-ascii?Q?KeoZZPTAv1C2ohwLxTJBRjURIll68MDfwINvQXdV3cb8K5rMX+l3jMgde+Y6?=
+ =?us-ascii?Q?GUjFTJs51GGTRU1V6CIFXBkFB2BJu/MOKHLZMWdp1UmNAhWCJNGY0IoXCn59?=
+ =?us-ascii?Q?8OAcLnozEsS3O5J9nmvAWUvNKfaG3iOLXmOi57TF8lwebFUpkmcT/1w2HHeq?=
+ =?us-ascii?Q?Mpsk6JzD6MTV8HKuSashM9PFxI8Ob2xL0pFAhkYjv9be2LgvuC9BioeADMLM?=
+ =?us-ascii?Q?qSwVc1H6o5U1TDTvqbWn792Z2TX7CErJBwc3ZmtDNGyhE0C+dPTmS5gF2Tzi?=
+ =?us-ascii?Q?4XekRBpXSXkLBgSWww0grG+4GyNpNCD7DgUXpM2FxtHZF4vXvl8DTXE+5Xb7?=
+ =?us-ascii?Q?acj9mGzcXZgU+6PSBbqPjuiEv5zNhy026jdAj/ifdwgX+ApBVOkQTd9e7HtK?=
+ =?us-ascii?Q?OFP45Dd7DkHGBxjGhNajdsS5dNaPHS80x8At90WwrKnQwHlVsh40JPxCCe5Y?=
+ =?us-ascii?Q?cQWDqQ5YKCXo1QfestCqaq5egdUYMQCkvT2fKYo/UNJsbXRzkbQu14dLHuVC?=
+ =?us-ascii?Q?UN0Y5VBFKCyeBpDxqcp4Y05zA0d1QPdbAJYqQBNNetyzQeCPB32xpnH5uGdb?=
+ =?us-ascii?Q?UBUbT88WOA20L4p0kEYjS1LTIgRpdg04um5Ah46kNP6xNKkM1Npx3cCork10?=
+ =?us-ascii?Q?heos1uI6h73PhzM65c7zvwsW55WqpFiaqhpgDADF5kb2I0I+CzvX/6Pxk+06?=
+ =?us-ascii?Q?WHuXjBscm20l9ji7H55VyxSmNZs71zImrtTSUgFcHmGNq9XD3i8OBNYF/jtW?=
+ =?us-ascii?Q?tsZsYIIUbljry2rL9M5kNtVsvUnJFWHXEUewMwqs/CgbIAO/BsduzLF+IYsh?=
+ =?us-ascii?Q?XsMY9CIuWllZpSDJMlORIBTUb7B14jaILhwZ96Sc0TWVg+Z53S4c9RsO+ZMy?=
+ =?us-ascii?Q?2gZNNPPtsqkopqwdi3fm0dsXawJZtn6wwd80SEEDeP+VNDKQNdq/ywAnETxe?=
+ =?us-ascii?Q?sMLm3t9g/Cxu7ciOvEHitncg9sOzzKsjDXNZVoajvGTdlPkoZm/4ny/7LviX?=
+ =?us-ascii?Q?nl69g9y2n6ycw8jlY70o2XSWXb4Y963UpgJ5RHxFdq6I+v+sSJ/7Kbw4vQNJ?=
+ =?us-ascii?Q?abXkH/vtM9MRc6J7KYopva7fmu8PRP1T8luIwPF9uSVvH+g70b0XELW031R8?=
+ =?us-ascii?Q?GpYqJxffyBibHfg4tTR7hph34K2dC7cik0TyUQ0G?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d2d80785-df60-43fe-fd54-08dbfa4bfa07
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Dec 2023 13:20:42.8520
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 6USC606W1KUQG6muXesMZiz0WErARjrBK6U2Iy+mpyRkoxXXe0ke2lv1GxnJ9n9N
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4178
 
-Hi Christoph,
+On Mon, Dec 11, 2023 at 08:35:09PM +0800, Yi Liu wrote:
 
-just a friendly ping about the following patch. Does it need more time
-to review, or has it gone lost?
+> > What iommufd object should receive the IOTLB invalidation command list:
+> >   Intel: The Nesting domain. The command list has to be broken up per
+> >          (vDomain-ID,PASID) and that batch delivered to the single
+> > 	nesting domain. Kernel ignores vDomain-ID/PASID and just
+> > 	invalidates whatever the nesting domain is actually attached to
+> 
+> this is what we are doing in current series[1]. is it?
 
-Petr T
+I think so
 
-On Fri,  1 Dec 2023 13:13:52 +0100
-Petr Tesarik <petrtesarik@huaweicloud.com> wrote:
+> > So.. In short.. Invalidation is a PITA. The idea is the same but
+> > annoying little details interfere with actually having a compltely
+> > common API here. IMHO the uAPI in this series is fine. It will support
+> > Intel invalidation and non-ATC invalidation on AMD/ARM. It should be
+> > setup to allow that the target domain object can be any HWPT.
+> 
+> This HWPT is still nested domain. Is it? But it can represent a guest I/O
+> page table (VT-d), guest CD table (ARM), guest CR3 Table (AMD, it seems to
+> be a set of guest CR3 table pointers). May ARM and AMD guys keep me honest
+> here.
 
-> From: Petr Tesarik <petr.tesarik1@huawei-partners.com>
-> 
-> If multiple areas and multiple IO TLB pools exist, first iterate the
-> current CPU specific area in all pools. Then move to the next area index.
-> 
-> This is best illustrated by a diagram:
-> 
->         area 0 |  area 1 | ... | area M |
-> pool 0    A         B              C
-> pool 1    D         E
-> ...
-> pool N    F         G              H
-> 
-> Currently, each pool is searched before moving on to the next pool,
-> i.e. the search order is A, B ... C, D, E ... F, G ... H. With this patch,
-> each area is searched in all pools before moving on to the next area,
-> i.e. the search order is A, D ... F, B, E ... G ... C ... H.
-> 
-> Note that preemption is not disabled, and raw_smp_processor_id() may not
-> return a stable result, but it is called only once to determine the initial
-> area index. The search will iterate over all areas eventually, even if the
-> current task is preempted.
-> 
-> Next, some pools may have less (but not more) areas than default_nareas.
-> Skip such pools if the distance from the initial area index is greater than
-> pool->nareas. This logic ensures that for every pool the search starts in
-> the initial CPU's own area and never tries any area twice.
-> 
-> To verify performance impact, I booted the kernel with a minimum pool
-> size ("swiotlb=512,4,force"), so multiple pools get allocated, and I ran
-> these benchmarks:
-> 
-> - small: single-threaded I/O of 4 KiB blocks,
-> - big: single-threaded I/O of 64 KiB blocks,
-> - 4way: 4-way parallel I/O of 4 KiB blocks.
-> 
-> The "var" column in the tables below is the coefficient of variance over 5
-> runs of the test, the "diff" column is the relative difference against base
-> in read-write I/O bandwidth (MiB/s).
-> 
-> Tested on an x86 VM against a QEMU virtio SATA driver backed by a RAM-based
-> block device on the host:
-> 
-> 	base	   patched
-> 	var	var	diff
-> small	0.69%	0.62%	+25.4%
-> big	2.14%	2.27%	+25.7%
-> 4way	2.65%	1.70%	+23.6%
-> 
-> Tested on a Raspberry Pi against a class-10 A1 microSD card:
-> 
-> 	base	   patched
-> 	var	var	diff
-> small	0.53%	1.96%	-0.3%
-> big	0.02%	0.57%	+0.8%
-> 4way	6.17%	0.40%	+0.3%
-> 
-> These results confirm that there is significant performance boost in the
-> software IO TLB slot allocation itself. Where performance is dominated by
-> actual hardware, there is no measurable change.
-> 
-> Signed-off-by: Petr Tesarik <petr.tesarik1@huawei-partners.com>
-> ---
->  kernel/dma/swiotlb.c | 90 +++++++++++++++++++++++++++-----------------
->  1 file changed, 55 insertions(+), 35 deletions(-)
-> 
-> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-> index 33d942615be5..e20b856255ef 100644
-> --- a/kernel/dma/swiotlb.c
-> +++ b/kernel/dma/swiotlb.c
-> @@ -957,7 +957,7 @@ static void dec_used(struct io_tlb_mem *mem, unsigned int nslots)
->  #endif /* CONFIG_DEBUG_FS */
->  
->  /**
-> - * swiotlb_area_find_slots() - search for slots in one IO TLB memory area
-> + * swiotlb_search_pool_area() - search one memory area in one pool
->   * @dev:	Device which maps the buffer.
->   * @pool:	Memory pool to be searched.
->   * @area_index:	Index of the IO TLB memory area to be searched.
-> @@ -972,7 +972,7 @@ static void dec_used(struct io_tlb_mem *mem, unsigned int nslots)
->   *
->   * Return: Index of the first allocated slot, or -1 on error.
->   */
-> -static int swiotlb_area_find_slots(struct device *dev, struct io_tlb_pool *pool,
-> +static int swiotlb_search_pool_area(struct device *dev, struct io_tlb_pool *pool,
->  		int area_index, phys_addr_t orig_addr, size_t alloc_size,
->  		unsigned int alloc_align_mask)
->  {
-> @@ -1066,41 +1066,50 @@ static int swiotlb_area_find_slots(struct device *dev, struct io_tlb_pool *pool,
->  	return slot_index;
->  }
->  
-> +#ifdef CONFIG_SWIOTLB_DYNAMIC
-> +
->  /**
-> - * swiotlb_pool_find_slots() - search for slots in one memory pool
-> + * swiotlb_search_area() - search one memory area in all pools
->   * @dev:	Device which maps the buffer.
-> - * @pool:	Memory pool to be searched.
-> + * @start_cpu:	Start CPU number.
-> + * @cpu_offset:	Offset from @start_cpu.
->   * @orig_addr:	Original (non-bounced) IO buffer address.
->   * @alloc_size: Total requested size of the bounce buffer,
->   *		including initial alignment padding.
->   * @alloc_align_mask:	Required alignment of the allocated buffer.
-> + * @retpool:	Used memory pool, updated on return.
->   *
-> - * Search through one memory pool to find a sequence of slots that match the
-> + * Search one memory area in all pools for a sequence of slots that match the
->   * allocation constraints.
->   *
->   * Return: Index of the first allocated slot, or -1 on error.
->   */
-> -static int swiotlb_pool_find_slots(struct device *dev, struct io_tlb_pool *pool,
-> -		phys_addr_t orig_addr, size_t alloc_size,
-> -		unsigned int alloc_align_mask)
-> +static int swiotlb_search_area(struct device *dev, int start_cpu,
-> +		int cpu_offset, phys_addr_t orig_addr, size_t alloc_size,
-> +		unsigned int alloc_align_mask, struct io_tlb_pool **retpool)
->  {
-> -	int start = raw_smp_processor_id() & (pool->nareas - 1);
-> -	int i = start, index;
-> -
-> -	do {
-> -		index = swiotlb_area_find_slots(dev, pool, i, orig_addr,
-> -						alloc_size, alloc_align_mask);
-> -		if (index >= 0)
-> -			return index;
-> -		if (++i >= pool->nareas)
-> -			i = 0;
-> -	} while (i != start);
-> +	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
-> +	struct io_tlb_pool *pool;
-> +	int area_index;
-> +	int index = -1;
->  
-> -	return -1;
-> +	rcu_read_lock();
-> +	list_for_each_entry_rcu(pool, &mem->pools, node) {
-> +		if (cpu_offset >= pool->nareas)
-> +			continue;
-> +		area_index = (start_cpu + cpu_offset) & (pool->nareas - 1);
-> +		index = swiotlb_search_pool_area(dev, pool, area_index,
-> +						 orig_addr, alloc_size,
-> +						 alloc_align_mask);
-> +		if (index >= 0) {
-> +			*retpool = pool;
-> +			break;
-> +		}
-> +	}
-> +	rcu_read_unlock();
-> +	return index;
->  }
->  
-> -#ifdef CONFIG_SWIOTLB_DYNAMIC
-> -
->  /**
->   * swiotlb_find_slots() - search for slots in the whole swiotlb
->   * @dev:	Device which maps the buffer.
-> @@ -1124,18 +1133,17 @@ static int swiotlb_find_slots(struct device *dev, phys_addr_t orig_addr,
->  	unsigned long nslabs;
->  	unsigned long flags;
->  	u64 phys_limit;
-> +	int cpu, i;
->  	int index;
->  
-> -	rcu_read_lock();
-> -	list_for_each_entry_rcu(pool, &mem->pools, node) {
-> -		index = swiotlb_pool_find_slots(dev, pool, orig_addr,
-> -						alloc_size, alloc_align_mask);
-> -		if (index >= 0) {
-> -			rcu_read_unlock();
-> +	cpu = raw_smp_processor_id();
-> +	for (i = 0; i < default_nareas; ++i) {
-> +		index = swiotlb_search_area(dev, cpu, i, orig_addr, alloc_size,
-> +					    alloc_align_mask, &pool);
-> +		if (index >= 0)
->  			goto found;
-> -		}
->  	}
-> -	rcu_read_unlock();
-> +
->  	if (!mem->can_grow)
->  		return -1;
->  
-> @@ -1148,8 +1156,8 @@ static int swiotlb_find_slots(struct device *dev, phys_addr_t orig_addr,
->  	if (!pool)
->  		return -1;
->  
-> -	index = swiotlb_pool_find_slots(dev, pool, orig_addr,
-> -					alloc_size, alloc_align_mask);
-> +	index = swiotlb_search_pool_area(dev, pool, 0, orig_addr,
-> +					 alloc_size, alloc_align_mask);
->  	if (index < 0) {
->  		swiotlb_dyn_free(&pool->rcu);
->  		return -1;
-> @@ -1192,9 +1200,21 @@ static int swiotlb_find_slots(struct device *dev, phys_addr_t orig_addr,
->  		size_t alloc_size, unsigned int alloc_align_mask,
->  		struct io_tlb_pool **retpool)
->  {
-> -	*retpool = &dev->dma_io_tlb_mem->defpool;
-> -	return swiotlb_pool_find_slots(dev, *retpool,
-> -				       orig_addr, alloc_size, alloc_align_mask);
-> +	struct io_tlb_pool *pool;
-> +	int start, i;
-> +	int index;
-> +
-> +	*retpool = pool = &dev->dma_io_tlb_mem->defpool;
-> +	i = start = raw_smp_processor_id() & (pool->nareas - 1);
-> +	do {
-> +		index = swiotlb_search_pool_area(dev, pool, i, orig_addr,
-> +						 alloc_size, alloc_align_mask);
-> +		if (index >= 0)
-> +			return index;
-> +		if (++i >= pool->nareas)
-> +			i = 0;
-> +	} while (i != start);
-> +	return -1;
->  }
->  
->  #endif /* CONFIG_SWIOTLB_DYNAMIC */
+I was thinking ARM would not want to use a nested domain because
+really the invalidation is global to the entire nesting parent.
 
+But, there is an issue with that - the nesting parent could be
+attached to multiple iommu instances but we only want to invalidate a
+single instance. 
+
+However, specifying the nesting domain instead, and restricting the
+nesting domain to be single-instance would provide the kernel enough
+information without providing weird new APIs. So maybe it is best to
+just make everything use the nesting domain even if it is somewhat
+semantically weird on arm.
+
+> The Intel guest I/O page table case may be the simplest as userspace only
+> needs to provide the HWPT ID and the affected ranges for invalidating. As
+> mentioned above, kernel will find out the attached device/pasid and
+> invalidating cache with the device/pasid. For ARM and AMD case, extra
+> information is needed. Am I getting you correct?
+
+Yes
+ 
+> > Thus next steps:
+> >   - Respin this and lets focus on Intel only (this will be tough for
+> >     the holidays, but if it is available I will try)
+> 
+> I've respinned the iommufd cache invalidation part with the change to
+> report error_code/error_data per invalidation entry. yet still busy on
+> making Intel VTd part to report the error_code. Besides, I didn't see
+> other respin needed for Intel VT-d invalidation. If I missed thing, please
+> do let me know.:)
+
+Lets see
+
+Jason
