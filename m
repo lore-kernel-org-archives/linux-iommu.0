@@ -1,119 +1,257 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 84988495F3
-	for <iommu@lists.linux.dev>; Mon, 11 Dec 2023 16:13:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 44658FEC;
-	Mon, 11 Dec 2023 08:14:31 -0800 (PST)
-Received: from [10.57.85.194] (unknown [10.57.85.194])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 7959B3F738;
-	Mon, 11 Dec 2023 08:13:39 -0800 (PST)
-Message-ID: <ae904525-66e7-4702-925d-0d42481cd354@arm.com>
-Date: Mon, 11 Dec 2023 16:13:38 +0000
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E1D74CDFB
+	for <iommu@lists.linux.dev>; Mon, 11 Dec 2023 17:05:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="chIFSCY7"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1702314309;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=vf61yoq47ivJlsZLQPeNQqLuBRNn9/vpoIvzy095ZJA=;
+	b=chIFSCY75sbRrZEGJVrcpOYr/jQNUD6nidzfvlJOYIwwyLTMCZRmYJiQfqtS/RZHi7Z4qJ
+	ZwcN2ZCkZzk+dXnKWxVbUrbBstqCCE5++ofJjr2KkBtdFQv8pq+fyRCB2TKf2LX0rgcEA/
+	PXvOMu1qgxx7T0A4d0V8i/Ak6gs34uw=
+Received: from mail-oa1-f71.google.com (mail-oa1-f71.google.com
+ [209.85.160.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-151-AXdiu4BkNt-F2wYghkbtvA-1; Mon, 11 Dec 2023 12:05:07 -0500
+X-MC-Unique: AXdiu4BkNt-F2wYghkbtvA-1
+Received: by mail-oa1-f71.google.com with SMTP id 586e51a60fabf-1fb34e3da36so8233107fac.1
+        for <iommu@lists.linux.dev>; Mon, 11 Dec 2023 09:05:07 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1702314306; x=1702919106;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=vf61yoq47ivJlsZLQPeNQqLuBRNn9/vpoIvzy095ZJA=;
+        b=aQ1txve1LKpY9MtwIMI/zmVnuzg/9+DrcMOVkgu8YUZ9Z/cuM3xy+kSqpC03ZMnVUD
+         lplcvHCq3vM1M65N0rKK/i3ejyfh23sSJe9ZzVn3Zg9d2IPm5hpw+BrMNhKsO3mn0cLs
+         MuIGfbCSdIFQ61aBDZ9g5rIB15uzrRag3hZuJaPpJCncWWcprM+lua+hLXvVPRUIq589
+         yYe3E/tyslgD3zPxskpkON4zAxL/BtqteBEnmN6D8XHAmM3tkDgDGa4OYT95yQkMHbqa
+         cFLagUXSh1EnhMPacLgvEUN+cK1TStZ0cBCl4ubhbmMLiP3/737/uULu4Nqrlwa5ei4N
+         uKbg==
+X-Gm-Message-State: AOJu0YwEtpHrJFqTfHfrWItuek5UB4lH0JEQzCKXWX1UptFuR++X8zJ4
+	iPCVixlvkEl+La+sp6GOSVBwZgyz9aiCLMfgEKRMk28srSFF2Ybl2WvrxeQY89F5dk6zq7HR03Z
+	BWbGBBqEWsmWbGSQ=
+X-Received: by 2002:a05:6870:f80a:b0:1fb:75a:c427 with SMTP id fr10-20020a056870f80a00b001fb075ac427mr4985660oab.80.1702314306443;
+        Mon, 11 Dec 2023 09:05:06 -0800 (PST)
+X-Google-Smtp-Source: AGHT+IFFhrETJonEXrQjlh2mPHiZP3//QFKXmo58R+PKFDFVyI6IF3dcDP9kAOwdekNmdu56hvOvRw==
+X-Received: by 2002:a05:6870:f80a:b0:1fb:75a:c427 with SMTP id fr10-20020a056870f80a00b001fb075ac427mr4985640oab.80.1702314306116;
+        Mon, 11 Dec 2023 09:05:06 -0800 (PST)
+Received: from redhat.com ([38.15.60.12])
+        by smtp.gmail.com with ESMTPSA id hf15-20020a0568707a0f00b001fae2d2630dsm2514301oab.18.2023.12.11.09.05.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Dec 2023 09:05:05 -0800 (PST)
+Date: Mon, 11 Dec 2023 10:05:01 -0700
+From: Alex Williamson <alex.williamson@redhat.com>
+To: Yi Liu <yi.l.liu@intel.com>
+Cc: joro@8bytes.org, jgg@nvidia.com, kevin.tian@intel.com,
+ robin.murphy@arm.com, baolu.lu@linux.intel.com, cohuck@redhat.com,
+ eric.auger@redhat.com, nicolinc@nvidia.com, kvm@vger.kernel.org,
+ mjrosato@linux.ibm.com, chao.p.peng@linux.intel.com,
+ yi.y.sun@linux.intel.com, peterx@redhat.com, jasowang@redhat.com,
+ shameerali.kolothum.thodi@huawei.com, lulu@redhat.com,
+ suravee.suthikulpanit@amd.com, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+ zhenzhong.duan@intel.com, joao.m.martins@oracle.com, xin.zeng@intel.com,
+ yan.y.zhao@intel.com
+Subject: Re: [PATCH 2/3] vfio: Add VFIO_DEVICE_PASID_[AT|DE]TACH_IOMMUFD_PT
+Message-ID: <20231211100501.1c4032ce.alex.williamson@redhat.com>
+In-Reply-To: <20231127063909.129153-3-yi.l.liu@intel.com>
+References: <20231127063909.129153-1-yi.l.liu@intel.com>
+	<20231127063909.129153-3-yi.l.liu@intel.com>
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; x86_64-redhat-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 3/7] ACPI/IORT: Handle memory address size limits as
- limits
-Content-Language: en-GB
-To: Mark Rutland <mark.rutland@arm.com>, Will Deacon <will@kernel.org>
-Cc: Joerg Roedel <joro@8bytes.org>, Christoph Hellwig <hch@lst.de>,
- Vineet Gupta <vgupta@kernel.org>, Russell King <linux@armlinux.org.uk>,
- Catalin Marinas <catalin.marinas@arm.com>,
- Huacai Chen <chenhuacai@kernel.org>, WANG Xuerui <kernel@xen0n.name>,
- Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
- Paul Walmsley <paul.walmsley@sifive.com>, Palmer Dabbelt
- <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>,
- Lorenzo Pieralisi <lpieralisi@kernel.org>, Hanjun Guo
- <guohanjun@huawei.com>, Sudeep Holla <sudeep.holla@arm.com>,
- "K. Y. Srinivasan" <kys@microsoft.com>,
- Haiyang Zhang <haiyangz@microsoft.com>, Wei Liu <wei.liu@kernel.org>,
- Dexuan Cui <decui@microsoft.com>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>,
- Niklas Schnelle <schnelle@linux.ibm.com>,
- Matthew Rosato <mjrosato@linux.ibm.com>,
- Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Rob Herring <robh+dt@kernel.org>, Frank Rowand <frowand.list@gmail.com>,
- Marek Szyprowski <m.szyprowski@samsung.com>, Jason Gunthorpe <jgg@ziepe.ca>,
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-acpi@vger.kernel.org, iommu@lists.linux.dev, devicetree@vger.kernel.org
-References: <cover.1701268753.git.robin.murphy@arm.com>
- <2ae6199a9cf035c1defd42e48675b827f41cdc95.1701268753.git.robin.murphy@arm.com>
- <20231211132757.GE25681@willie-the-truck>
- <91b22090-485f-49c9-a536-849fd7f92f8e@arm.com>
- <20231211153023.GA26048@willie-the-truck>
- <ZXctTJ-q9e1FPBhH@FVFF77S0Q05N.cambridge.arm.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <ZXctTJ-q9e1FPBhH@FVFF77S0Q05N.cambridge.arm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On 2023-12-11 3:39 pm, Mark Rutland wrote:
-> On Mon, Dec 11, 2023 at 03:30:24PM +0000, Will Deacon wrote:
->> On Mon, Dec 11, 2023 at 03:01:27PM +0000, Robin Murphy wrote:
->>> On 2023-12-11 1:27 pm, Will Deacon wrote:
->>>> On Wed, Nov 29, 2023 at 05:43:00PM +0000, Robin Murphy wrote:
->>>>> Return the Root Complex/Named Component memory address size limit as an
->>>>> inclusive limit value, rather than an exclusive size.  This saves us
->>>>> having to special-case 64-bit overflow, and simplifies our caller too.
->>>>>
->>>>> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
->>>>> ---
->>>>>    drivers/acpi/arm64/dma.c  |  9 +++------
->>>>>    drivers/acpi/arm64/iort.c | 18 ++++++++----------
->>>>>    include/linux/acpi_iort.h |  4 ++--
->>>>>    3 files changed, 13 insertions(+), 18 deletions(-)
->>>>
->>>> [...]
->>>>
->>>>> diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
->>>>> index 6496ff5a6ba2..eb64d8e17dd1 100644
->>>>> --- a/drivers/acpi/arm64/iort.c
->>>>> +++ b/drivers/acpi/arm64/iort.c
->>>>> @@ -1367,7 +1367,7 @@ int iort_iommu_configure_id(struct device *dev, const u32 *input_id)
->>>>>    { return -ENODEV; }
->>>>>    #endif
->>>>> -static int nc_dma_get_range(struct device *dev, u64 *size)
->>>>> +static int nc_dma_get_range(struct device *dev, u64 *limit)
->>>>>    {
->>>>>    	struct acpi_iort_node *node;
->>>>>    	struct acpi_iort_named_component *ncomp;
->>>>> @@ -1384,13 +1384,12 @@ static int nc_dma_get_range(struct device *dev, u64 *size)
->>>>>    		return -EINVAL;
->>>>>    	}
->>>>> -	*size = ncomp->memory_address_limit >= 64 ? U64_MAX :
->>>>> -			1ULL<<ncomp->memory_address_limit;
->>>>> +	*limit = (1ULL << ncomp->memory_address_limit) - 1;
->>>>
->>>> The old code handled 'ncomp->memory_address_limit >= 64' -- why is it safe
->>>> to drop that? You mention it in the cover letter, so clearly I'm missing
->>>> something!
->>>
->>> Because an unsigned shift by 64 or more generates 0 (modulo 2^64), thus
->>> subtracting 1 results in the correct all-bits-set value for an inclusive
->>> 64-bit limit.
->>
->> Oh, I'd have thought you'd have gotten one of those "left shift count >=
->> width of type" warnings if you did that.
-> 
-> I think you'll get a UBSAN splat, but here the compiler doesn't know what
-> 'ncomp->memory_address_limit' will be and so doesn't produce a compile-time
-> warning.
-> 
-> Regardless, it's undefined behaviour.
+On Sun, 26 Nov 2023 22:39:08 -0800
+Yi Liu <yi.l.liu@intel.com> wrote:
 
-Urgh, you're right... I double-checked 6.5.7.4 in the standard but 
-managed to miss 6.5.7.3. So yeah, even though "4 << 62" or "2 << 63" are 
-well-defined here, "1  << 64" isn't, dang. Thanks, funky old ISAs which 
-did weird things for crazy large shifts and have no relevance to this 
-code :(
+> This adds ioctls for the userspace to attach a given pasid of a vfio
+> device to/from an IOAS/HWPT.
+> 
+> Signed-off-by: Yi Liu <yi.l.liu@intel.com>
+> ---
+>  drivers/vfio/device_cdev.c | 45 +++++++++++++++++++++++++++++++
+>  drivers/vfio/vfio.h        |  4 +++
+>  drivers/vfio/vfio_main.c   |  8 ++++++
+>  include/uapi/linux/vfio.h  | 55 ++++++++++++++++++++++++++++++++++++++
+>  4 files changed, 112 insertions(+)
+> 
+> diff --git a/drivers/vfio/device_cdev.c b/drivers/vfio/device_cdev.c
+> index e75da0a70d1f..c2ac7ed44537 100644
+> --- a/drivers/vfio/device_cdev.c
+> +++ b/drivers/vfio/device_cdev.c
+> @@ -210,6 +210,51 @@ int vfio_df_ioctl_detach_pt(struct vfio_device_file *df,
+>  	return 0;
+>  }
+>  
+> +int vfio_df_ioctl_pasid_attach_pt(struct vfio_device_file *df,
+> +				  struct vfio_device_pasid_attach_iommufd_pt __user *arg)
+> +{
+> +	struct vfio_device *device = df->device;
+> +	struct vfio_device_pasid_attach_iommufd_pt attach;
+> +	unsigned long minsz;
+> +	int ret;
+> +
+> +	minsz = offsetofend(struct vfio_device_pasid_attach_iommufd_pt, pt_id);
+> +
+> +	if (copy_from_user(&attach, arg, minsz))
+> +		return -EFAULT;
+> +
+> +	if (attach.argsz < minsz || attach.flags)
+> +		return -EINVAL;
+> +
+> +	mutex_lock(&device->dev_set->lock);
+> +	ret = device->ops->pasid_attach_ioas(device, attach.pasid, &attach.pt_id);
 
-Cheers,
-Robin.
+These callbacks were only implemented for vfio-pci in the previous
+patch but they're called unconditionally.  Thanks,
+
+Alex
+
+> +	mutex_unlock(&device->dev_set->lock);
+> +
+> +	return ret;
+> +}
+> +
+> +int vfio_df_ioctl_pasid_detach_pt(struct vfio_device_file *df,
+> +				  struct vfio_device_pasid_detach_iommufd_pt __user *arg)
+> +{
+> +	struct vfio_device *device = df->device;
+> +	struct vfio_device_pasid_detach_iommufd_pt detach;
+> +	unsigned long minsz;
+> +
+> +	minsz = offsetofend(struct vfio_device_pasid_detach_iommufd_pt, flags);
+> +
+> +	if (copy_from_user(&detach, arg, minsz))
+> +		return -EFAULT;
+> +
+> +	if (detach.argsz < minsz || detach.flags)
+> +		return -EINVAL;
+> +
+> +	mutex_lock(&device->dev_set->lock);
+> +	device->ops->pasid_detach_ioas(device, detach.pasid);
+> +	mutex_unlock(&device->dev_set->lock);
+> +
+> +	return 0;
+> +}
+> +
+>  static char *vfio_device_devnode(const struct device *dev, umode_t *mode)
+>  {
+>  	return kasprintf(GFP_KERNEL, "vfio/devices/%s", dev_name(dev));
+> diff --git a/drivers/vfio/vfio.h b/drivers/vfio/vfio.h
+> index 307e3f29b527..d228cdb6b345 100644
+> --- a/drivers/vfio/vfio.h
+> +++ b/drivers/vfio/vfio.h
+> @@ -353,6 +353,10 @@ int vfio_df_ioctl_attach_pt(struct vfio_device_file *df,
+>  			    struct vfio_device_attach_iommufd_pt __user *arg);
+>  int vfio_df_ioctl_detach_pt(struct vfio_device_file *df,
+>  			    struct vfio_device_detach_iommufd_pt __user *arg);
+> +int vfio_df_ioctl_pasid_attach_pt(struct vfio_device_file *df,
+> +				  struct vfio_device_pasid_attach_iommufd_pt __user *arg);
+> +int vfio_df_ioctl_pasid_detach_pt(struct vfio_device_file *df,
+> +				  struct vfio_device_pasid_detach_iommufd_pt __user *arg);
+>  
+>  #if IS_ENABLED(CONFIG_VFIO_DEVICE_CDEV)
+>  void vfio_init_device_cdev(struct vfio_device *device);
+> diff --git a/drivers/vfio/vfio_main.c b/drivers/vfio/vfio_main.c
+> index 8d4995ada74a..ff50c239873d 100644
+> --- a/drivers/vfio/vfio_main.c
+> +++ b/drivers/vfio/vfio_main.c
+> @@ -1240,6 +1240,14 @@ static long vfio_device_fops_unl_ioctl(struct file *filep,
+>  		case VFIO_DEVICE_DETACH_IOMMUFD_PT:
+>  			ret = vfio_df_ioctl_detach_pt(df, uptr);
+>  			goto out;
+> +
+> +		case VFIO_DEVICE_PASID_ATTACH_IOMMUFD_PT:
+> +			ret = vfio_df_ioctl_pasid_attach_pt(df, uptr);
+> +			goto out;
+> +
+> +		case VFIO_DEVICE_PASID_DETACH_IOMMUFD_PT:
+> +			ret = vfio_df_ioctl_pasid_detach_pt(df, uptr);
+> +			goto out;
+>  		}
+>  	}
+>  
+> diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
+> index 94b3badefde3..495193629029 100644
+> --- a/include/uapi/linux/vfio.h
+> +++ b/include/uapi/linux/vfio.h
+> @@ -977,6 +977,61 @@ struct vfio_device_detach_iommufd_pt {
+>  
+>  #define VFIO_DEVICE_DETACH_IOMMUFD_PT		_IO(VFIO_TYPE, VFIO_BASE + 20)
+>  
+> +/*
+> + * VFIO_DEVICE_PASID_ATTACH_IOMMUFD_PT - _IOW(VFIO_TYPE, VFIO_BASE + 21,
+> + *					      struct vfio_device_pasid_attach_iommufd_pt)
+> + * @argsz:	User filled size of this data.
+> + * @flags:	Must be 0.
+> + * @pasid:	The pasid to be attached.
+> + * @pt_id:	Input the target id which can represent an ioas or a hwpt
+> + *		allocated via iommufd subsystem.
+> + *		Output the input ioas id or the attached hwpt id which could
+> + *		be the specified hwpt itself or a hwpt automatically created
+> + *		for the specified ioas by kernel during the attachment.
+> + *
+> + * Associate a pasid (of a cdev device) with an address space within the
+> + * bound iommufd. Undo by VFIO_DEVICE_PASID_DETACH_IOMMUFD_PT or device fd
+> + * close. This is only allowed on cdev fds.
+> + *
+> + * If a pasid is currently attached to a valid hw_pagetable (hwpt), without
+> + * doing a VFIO_DEVICE_PASID_DETACH_IOMMUFD_PT, a second
+> + * VFIO_DEVICE_PASID_ATTACH_IOMMUFD_PT ioctl passing in another hwpt id is
+> + * allowed. This action, also known as a hwpt replacement, will replace the
+> + * pasid's currently attached hwpt with a new hwpt corresponding to the given
+> + * @pt_id.
+> + *
+> + * Return: 0 on success, -errno on failure.
+> + */
+> +struct vfio_device_pasid_attach_iommufd_pt {
+> +	__u32	argsz;
+> +	__u32	flags;
+> +	__u32	pasid;
+> +	__u32	pt_id;
+> +};
+> +
+> +#define VFIO_DEVICE_PASID_ATTACH_IOMMUFD_PT	_IO(VFIO_TYPE, VFIO_BASE + 21)
+> +
+> +/*
+> + * VFIO_DEVICE_PASID_DETACH_IOMMUFD_PT - _IOW(VFIO_TYPE, VFIO_BASE + 22,
+> + *					      struct vfio_device_pasid_detach_iommufd_pt)
+> + * @argsz:	User filled size of this data.
+> + * @flags:	Must be 0.
+> + * @pasid:	The pasid to be detached.
+> + *
+> + * Remove the association of a pasid (of a cdev device) and its current
+> + * associated address space.  After it, the pasid of the device should be in
+> + * a blocking DMA state.  This is only allowed on cdev fds.
+> + *
+> + * Return: 0 on success, -errno on failure.
+> + */
+> +struct vfio_device_pasid_detach_iommufd_pt {
+> +	__u32	argsz;
+> +	__u32	flags;
+> +	__u32	pasid;
+> +};
+> +
+> +#define VFIO_DEVICE_PASID_DETACH_IOMMUFD_PT	_IO(VFIO_TYPE, VFIO_BASE + 22)
+> +
+>  /*
+>   * Provide support for setting a PCI VF Token, which is used as a shared
+>   * secret between PF and VF drivers.  This feature may only be set on a
+
