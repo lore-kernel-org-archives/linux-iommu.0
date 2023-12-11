@@ -1,112 +1,177 @@
-Received: from mail-pf1-f179.google.com (mail-pf1-f179.google.com [209.85.210.179])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.120])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A3A06FAD
-	for <iommu@lists.linux.dev>; Sun, 10 Dec 2023 18:07:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F372628EA
+	for <iommu@lists.linux.dev>; Mon, 11 Dec 2023 02:30:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="mlwDX+fW"
-Received: by mail-pf1-f179.google.com with SMTP id d2e1a72fcca58-6ce72730548so3148099b3a.1
-        for <iommu@lists.linux.dev>; Sun, 10 Dec 2023 10:07:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1702231622; x=1702836422; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=/OTV7HGPkUIAwckXy51M7re7fb1HUU7ow6BY0UtdbRw=;
-        b=mlwDX+fWw/xZkYjZsaRLyPcMjO1tFIw94YUWatZHtjXhXQRLpZQJkw069Mz20s6Ho5
-         DstxgT9WHDs5q2X9up8Mum80SdJdLIPf8KX9Jiwp9Qx0yIE/6+CWlPMBo8iaOQe+475p
-         3DhHMi05G1Y3861JOvqYsVa1hZiWAkvXh6pt66rAlmsW0r5hATf1GEtutVBwKCNZ6MpQ
-         Ns0gswpK7/LQSFkbG6oqa2xDbkfoeq2DexWx/Vmc1K5WLOuG2UOqMcORgFPMfYubq7Wh
-         rFscNhywmHNBMiOAktNyPcdHNhiBuD+TGjoe8Hn+9RE/cyr56K4MSPOHSk5yNK9zTZUo
-         hIjw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1702231622; x=1702836422;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=/OTV7HGPkUIAwckXy51M7re7fb1HUU7ow6BY0UtdbRw=;
-        b=Xn1Hb3duLHkjfehy0iE6F7pWEZmTK8mL3RnFluZcNsn1gLASgGI+KL/ACJsPxgsDDw
-         naz4drdcOUrigFh9rX5aJ2vCVdaMSj5mvdSV80neiKj93U6qmFwcYYUwspwUz1zpTVVn
-         aUGIAEvnqew65MQV69d/pu0PcAfGIhEk6Kr054yH9oYLshW/RL5FiupZBow8Q6mJ4ZpX
-         1aW9y6UI5+uq1Vt9VMq/M1bUPNdsx3ifUVZo8EkixiazJRAKwALoAij7xCZD85gTOnJ7
-         h5jEbptgspChtzoKlBmMH3q9rO5MR8IPw2G9jq4xeQaZVCJJKxlnd4nUL7DxxewIdvjR
-         4SxQ==
-X-Gm-Message-State: AOJu0Yzu2S33bdgLWrpIZu5FZrzVoJEMUj4SyevlQSUbqWq3bcyjwicG
-	x+YbQjn/09l/jESpa4vNHe0=
-X-Google-Smtp-Source: AGHT+IGf1cjoJui1YLxDAmJIwqwz1hXkSEY0wBxCHb7JCefydWE1QX71XuqaZiGK7iUv67Arc0VJrQ==
-X-Received: by 2002:a05:6a20:7f9b:b0:18f:97c:8a3b with SMTP id d27-20020a056a207f9b00b0018f097c8a3bmr5034958pzj.102.1702231621767;
-        Sun, 10 Dec 2023 10:07:01 -0800 (PST)
-Received: from localhost (c-73-37-105-206.hsd1.or.comcast.net. [73.37.105.206])
-        by smtp.gmail.com with ESMTPSA id 11-20020a63154b000000b005b458aa0541sm4769792pgv.15.2023.12.10.10.07.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 10 Dec 2023 10:07:01 -0800 (PST)
-From: Rob Clark <robdclark@gmail.com>
-To: iommu@lists.linux-foundation.org
-Cc: freedreno@lists.freedesktop.org,
-	linux-arm-msm@vger.kernel.org,
-	Robin Murphy <robin.murphy@arm.com>,
-	Johan Hovold <johan@kernel.org>,
-	Rob Clark <robdclark@chromium.org>,
-	stable@vger.kernel.org,
-	Will Deacon <will@kernel.org>,
-	Joerg Roedel <joro@8bytes.org>,
-	Konrad Dybcio <konrad.dybcio@linaro.org>,
-	Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-	Bjorn Andersson <quic_bjorande@quicinc.com>,
-	Manivannan Sadhasivam <mani@kernel.org>,
-	Danila Tikhonov <danila@jiaxyga.com>,
-	Elliot Berman <quic_eberman@quicinc.com>,
-	linux-arm-kernel@lists.infradead.org (moderated list:ARM SMMU DRIVERS),
-	iommu@lists.linux.dev (open list:IOMMU SUBSYSTEM),
-	linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH v2] iommu/arm-smmu-qcom: Add missing GMU entry to match table
-Date: Sun, 10 Dec 2023 10:06:53 -0800
-Message-ID: <20231210180655.75542-1-robdclark@gmail.com>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="gvPpLQ5K"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1702261814; x=1733797814;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=hJLxE9ua4sukd89jxifKYz0r5650TeqBYFF2rmN/TX4=;
+  b=gvPpLQ5KXdJixM34Zn69nIAtzGsw81hOEFMlwoJBFOeOGFO3Ju6tT7UJ
+   yz9XudC1vTBnLRbxMc3MFmz+7Lymj3x8C7aI3uclikW39bkX/wGWndpRn
+   txmyI/usCt6Q6kcbVsfohF26+c5oNNo2bzzlMiHoyrCYfizfARQCKKiUY
+   WBMq/PF+JrXHXeiOWohgS5CuOMSlVEviy/NBMUm/r/ttl5Ud51s4y9rt9
+   zxyc/ay2LGohE1b+nW1n6jcX4uxzVdz52kiWfS8mpbkg2wifNihvoo1jp
+   nJG4t8kqsIn9ZU5GlOzGrXD89jSrgr6ZN1jnYzQbUNTehRaJMVhUXVClN
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10920"; a="393447992"
+X-IronPort-AV: E=Sophos;i="6.04,266,1695711600"; 
+   d="scan'208";a="393447992"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Dec 2023 18:30:12 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10920"; a="766189340"
+X-IronPort-AV: E=Sophos;i="6.04,266,1695711600"; 
+   d="scan'208";a="766189340"
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
+  by orsmga007.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 10 Dec 2023 18:30:11 -0800
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35; Sun, 10 Dec 2023 18:30:05 -0800
+Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35; Sun, 10 Dec 2023 18:30:04 -0800
+Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
+ fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35 via Frontend Transport; Sun, 10 Dec 2023 18:30:04 -0800
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.168)
+ by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.35; Sun, 10 Dec 2023 18:30:00 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=F3+oHHy+g7z/tumBmaN16WcHaQi11BoGjwex88xQaYtpn1cKHbzk5GoPTLmVK6DmS7QO+tIwLQRk0AWFVddmLcqbXBxF1NrxE7GnGrCwcIidQHItMfh/zprTUd7p9FQZEz1nuHr7yzzSv7pYwytRgeEMtJsRA1m8M6om5LDl/MVycVGtzM0UTU/scQBOLOr6gnr2w8OcTODYSvqhQ8EHX6bSs/WO6WY42zuHlx8dpPccbFsqwDZItjhpkuthhIP3CY94Cl/LIOrCN7Zv7EMPwxh+QO1tCS4hdX5ea43HCxe693dXdWmlGNX76imjdLkCAuoBjGpDi0KUIgLLLFEDCw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=rddNAA6n51KKJk1Y9oJeU75OSc97YWVa2CocOkbiHyU=;
+ b=Y4lu/DUIXAWr7n9lIpmM373xI1T2Nq2LXNYo9PzfL7wVl6lIfwDOAei8O7Leq1ioRyltiB/lRYQHWzf3UVMAVed9rIJ0w3plWWfOtUUiDni/9YdWOedx8DRkUq4/7AP+ZUvCHlzzMDZVjF7nVzQfzExZq0CzGL85r3WaHVSLZBDtWGpJed9GUlrlQF3w0Wixi9im61vmKDuew9FEavb1TBqRC8U+s6a7HURxyPatAdz6MTOO+r8tYjMWR4YqDza3blGXXWW+ab9JOgMLNNNm/5cfAPN7lRC2Me78D73XmHz7FgIFisvd9EHGSzrZuNiWgicx5KZffKCUDX4d8eoXFQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
+ by SA3PR11MB7485.namprd11.prod.outlook.com (2603:10b6:806:31c::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7068.32; Mon, 11 Dec
+ 2023 02:29:57 +0000
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::e7a4:a757:2f2e:f96a]) by BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::e7a4:a757:2f2e:f96a%3]) with mapi id 15.20.7068.031; Mon, 11 Dec 2023
+ 02:29:56 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: Jason Gunthorpe <jgg@nvidia.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
+	"Giani, Dhaval" <Dhaval.Giani@amd.com>, Vasant Hegde <vasant.hegde@amd.com>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+CC: "joro@8bytes.org" <joro@8bytes.org>, "alex.williamson@redhat.com"
+	<alex.williamson@redhat.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>, "cohuck@redhat.com"
+	<cohuck@redhat.com>, "eric.auger@redhat.com" <eric.auger@redhat.com>,
+	"nicolinc@nvidia.com" <nicolinc@nvidia.com>, "kvm@vger.kernel.org"
+	<kvm@vger.kernel.org>, "mjrosato@linux.ibm.com" <mjrosato@linux.ibm.com>,
+	"chao.p.peng@linux.intel.com" <chao.p.peng@linux.intel.com>,
+	"yi.y.sun@linux.intel.com" <yi.y.sun@linux.intel.com>, "peterx@redhat.com"
+	<peterx@redhat.com>, "jasowang@redhat.com" <jasowang@redhat.com>,
+	"shameerali.kolothum.thodi@huawei.com"
+	<shameerali.kolothum.thodi@huawei.com>, "lulu@redhat.com" <lulu@redhat.com>,
+	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>, "Duan,
+ Zhenzhong" <zhenzhong.duan@intel.com>, "joao.m.martins@oracle.com"
+	<joao.m.martins@oracle.com>, "Zeng, Xin" <xin.zeng@intel.com>, "Zhao, Yan Y"
+	<yan.y.zhao@intel.com>
+Subject: RE: [PATCH v6 0/6] iommufd: Add nesting infrastructure (part 2/2)
+Thread-Topic: [PATCH v6 0/6] iommufd: Add nesting infrastructure (part 2/2)
+Thread-Index: AQHaGVcGB9517zktWkq6XlvDSMgylbCgUKQAgAMup4A=
+Date: Mon, 11 Dec 2023 02:29:55 +0000
+Message-ID: <BN9PR11MB527647A4DA1620DE354983898C8FA@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <20231117130717.19875-1-yi.l.liu@intel.com>
+ <20231209014726.GA2945299@nvidia.com>
+In-Reply-To: <20231209014726.GA2945299@nvidia.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|SA3PR11MB7485:EE_
+x-ms-office365-filtering-correlation-id: e4dbc62f-fe5f-49c6-82ea-08dbf9f1104e
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: IvSsszgN5HUHsgSampEMthvqcl+mMpIEz+YE6/Uj1fCjFIQsf7Nq5FFiNmKyWhn80shm4KxvfZKZqM0DTV+Wk4xl2wJby2YiqdXdJNLl88ADm449GKz+o+tS8Y9CYilDOrqs9SqK4trcZaI/FewqgbdmQLFb8AoSt9S1z/mpgzCoy86D9Iv8OZb1ZUrs376ccIFLvI6e+mqLrQxvaM0I027bifMVb0CtpWLD02g2Lbca7544WxhYf1LB1RHPLV5DfqRpmqZ5gh5A+9w+P+Yqv/AlCEYClxmOQ+0wF9kN2NR9TDhS07Q8nQjYpO0vKiWo0uZEvmHhNAvHqSrECtsQlCHxPuI+KrIXxfd2c2fa+9+I0gf10gzXvC9884WOYCvArvHm1E6R0YSc6hXOsRlj55uuz/sy+rWYAKokGRzizJGy7qwJA68qGnl69boN2Wy339oTSgtCpHt/kEPJGyffWwuZ7hyVR2IUceFMj5vMhxUQkwNGxr3v4ZP63Av44jRBuCnpXGXUPMidY4nnbaTQCXVNAJJBGM78OyMlZr+Eo6TQl06UUoVRsKKOgUDMkfSOtHldofVbJhwgBbZ/Oo7Pnc8N501QIj8FdDVQeyiIjk4tIFVUdOTGxHeeipv1J0zz
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(39860400002)(376002)(136003)(346002)(396003)(366004)(230922051799003)(451199024)(186009)(64100799003)(1800799012)(41300700001)(26005)(82960400001)(38070700009)(33656002)(86362001)(38100700002)(122000001)(5660300002)(316002)(8936002)(4326008)(8676002)(52536014)(7416002)(4744005)(2906002)(7696005)(6506007)(9686003)(71200400001)(66946007)(66556008)(66476007)(66446008)(64756008)(54906003)(76116006)(110136005)(478600001)(55016003);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?NT/LxjK0Idknn0MJYd88eGyizDtcquQVRkA4OUjDBBM0xPycWrpDkThcGOv5?=
+ =?us-ascii?Q?fcSDsGVjiWhujk09JHzblaGkbcdKKFSrjys/ldOAEbfEC5dM3igWd2cekp9G?=
+ =?us-ascii?Q?kWG4Ts5CN6MLZtfdhhbYsPi+cTMlMPXguACzputp8tkbqi1tX8dAQc50OCUq?=
+ =?us-ascii?Q?4DUO4UeSXaUddzgTgRa0pYYUs5rG1iVuIErpCih1bHVSHesKZnSPLIvcOKOJ?=
+ =?us-ascii?Q?0fuoBdUNQp2IkTDSquxOqm2gb5pRzIfJ8rzBFAi/Ywbq5NVa21tCpqVmCbI1?=
+ =?us-ascii?Q?LHR272qzda1PgW6HGdYvWDmJ0w8HlbdJn7Qoxc/NPHUmauMXHzAHumwvpVtG?=
+ =?us-ascii?Q?U1A+qibSbtkMDTgR9aHZT3Oh/unxOiPVSMbLCCBWWhBLzhcg2dnpMaL8ZoWy?=
+ =?us-ascii?Q?G5cZJ0COZwNISlVbKXM58LbJRgK1A/8wDiuok1eIG1oGJFFNdWX9YHBbc2cc?=
+ =?us-ascii?Q?cDDdDvsFOtfvxwAtyoMjkoRT8KTQbNEtFDJkIFULDKSm0Fyis4rcVwsGStxt?=
+ =?us-ascii?Q?p8Z/nWiLbKmt/PvAHBifSGwS72p5RSpuRI+YqxPC3vCJ71ejYb1ennYnWgJ2?=
+ =?us-ascii?Q?kd6JYgcl2MPvKLk26xDmieAlEl8+fZSuJdGkoXIRF1KzdZZfi26tvurUowff?=
+ =?us-ascii?Q?I5maqSnjXUenOqdVV7hMfxj6745ZmLegStjEh0A+AqiGkWAgC6WctKKkQhpk?=
+ =?us-ascii?Q?LxEbv/2ZyfteRQXR4WYquHzL5/2bOe+wqFdmxlPSB6TZHNajgxJqtEivemwA?=
+ =?us-ascii?Q?kFqVzfcLQezalKujp1hD7DE5giI9GoGtumZFMPxH8aWRA9Dk99aMZdnoKwoM?=
+ =?us-ascii?Q?loMCCFtoHt20tyz7EHdbTX9YDDGXBWpod6pXo0j/CaEh2Zgc+4MdG3hURc0a?=
+ =?us-ascii?Q?jiHx8B+YojKMOBlzfAVHZLbQ8WKPOWg60RnkBNdDfGoR3Z/EC3VCvN8vE4nA?=
+ =?us-ascii?Q?8Tvu7eguXyRhj31fFUiA+Im0YJeNvEvAfskomLepgm2GeNqOZy7uPLjP09j/?=
+ =?us-ascii?Q?Bh4AFf04nnpftIyK5wPftPxLofdxDuhpkd7VciVUnAm5TkswRdmjFfhYiQRr?=
+ =?us-ascii?Q?FaVgZNuh9ZmekdXUZ0b7MtpQ0nArojy6umaMt81lWQjDBi9QspFZcGosxSA6?=
+ =?us-ascii?Q?GPbzlGRyeKD5MdzviBF/H9bB6j7ocf/LIUjSRRsUieETRxsG1NEdogaLzR6b?=
+ =?us-ascii?Q?KA090bg1Ztq1U1p9S9+Hz3JECqk+Maik6uSexbRCN8sxORahaEPfeQbXlH/N?=
+ =?us-ascii?Q?qmkkk3gwJ0q/dt/2QyfvU7+rBkscERiIEIJ3kQ6AR4wclI2mcpwheA9w661S?=
+ =?us-ascii?Q?75IbycPebzuQO5FsjBHWqqoKyx1bl+A8dpKskCi5YqIIwMR3XRxzMpwukt95?=
+ =?us-ascii?Q?cVdf5OYHv+Y4uEYETjPzSSKVLmQBZSnixLJbGsE8TKUgCpN6PD36D0zqtNPS?=
+ =?us-ascii?Q?JE8G/rs+pgIAuca6pGp0deOyLn8JwQUGvPK0Tl6hR4YbnkTmM5Mz6N3Ubjgf?=
+ =?us-ascii?Q?3vUXyNfgZ50hKBNOPM8zpLuRGO788dKPinp31ZXJQK4YYYAAY+g+d6OP2gbx?=
+ =?us-ascii?Q?RJQlVYddhe/ijlAjXuYOZmxRL6BB+lTf8JPw+nLB?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e4dbc62f-fe5f-49c6-82ea-08dbf9f1104e
+X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Dec 2023 02:29:55.8723
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: yVhxBFfSUtvPPofFRMlilgdgNxjt5b6MYq3dFtTkai+Fs7BHTAVBiVELkv9LybQidI14rMkjKH/NnHDb1tNX+w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA3PR11MB7485
+X-OriginatorOrg: intel.com
 
-From: Rob Clark <robdclark@chromium.org>
+> From: Jason Gunthorpe <jgg@nvidia.com>
+> Sent: Saturday, December 9, 2023 9:47 AM
+>=20
+> What is in a Nested domain:
+>  Intel: A single IO page table refereed to by a PASID entry
+>         Each vDomain-ID,PASID allocates a unique nesting domain
+>  AMD: A GCR3 table pointer
+>       Nesting domains are created for every unique GCR3 pointer.
+>       vDomain-ID can possibly refer to multiple Nesting domains :(
+>  ARM: A CD table pointer
+>       Nesting domains are created for every unique CD table top pointer.
 
-In some cases the firmware expects cbndx 1 to be assigned to the GMU,
-so we also want the default domain for the GMU to be an identy domain.
-This way it does not get a context bank assigned.  Without this, both
-of_dma_configure() and drm/msm's iommu_domain_attach() will trigger
-allocating and configuring a context bank.  So GMU ends up attached to
-both cbndx 1 and later cbndx 2.  This arrangement seemingly confounds
-and surprises the firmware if the GPU later triggers a translation
-fault, resulting (on sc8280xp / lenovo x13s, at least) in the SMMU
-getting wedged and the GPU stuck without memory access.
+this AMD/ARM difference is not very clear to me.
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Rob Clark <robdclark@chromium.org>
----
-
-I didn't add a fixes tag because really this issue has been there
-all along, but either didn't matter with other firmware or we didn't 
-notice the problem.
-
- drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-index 549ae4dba3a6..d326fa230b96 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-@@ -243,6 +243,7 @@ static int qcom_adreno_smmu_init_context(struct arm_smmu_domain *smmu_domain,
- 
- static const struct of_device_id qcom_smmu_client_of_match[] __maybe_unused = {
- 	{ .compatible = "qcom,adreno" },
-+	{ .compatible = "qcom,adreno-gmu" },
- 	{ .compatible = "qcom,mdp4" },
- 	{ .compatible = "qcom,mdss" },
- 	{ .compatible = "qcom,sc7180-mdss" },
--- 
-2.43.0
-
+How could a vDomain-ID refer to multiple GCR3 pointers? Wouldn't it
+lead to cache tag conflict when a same PASID entry in multiple GCR3 tables
+points to different I/O page tables?
