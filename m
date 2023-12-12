@@ -1,112 +1,187 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2040.outbound.protection.outlook.com [40.107.236.40])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A269F1173C
-	for <iommu@lists.linux.dev>; Tue, 12 Dec 2023 06:25:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D20BB1642E
+	for <iommu@lists.linux.dev>; Tue, 12 Dec 2023 07:30:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="AZ9SzLBz"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1702362340; x=1733898340;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=kACYgNP4fFKqMuvf/CAgyapT7zWGWBcU7fPSLJDh5J0=;
-  b=AZ9SzLBzCE1G0zh4xKXuXLznso2nNEvC/hC6AaqZAcfCi7xDEifd+yRJ
-   52mUIKBi6NDBE2hJj+hicBhiMWu9/FVSXjcPLf+rHaqWocMkcQ+9O4wCU
-   fB1G/dv4f06YD+Ge9bzNHqPDnHZAWO1UQR0MDP/RP1sSoRIA++rQgtkQl
-   /Tgs+CRr6yBH2UkjzGSUEjS08s6Y320UxdMWl7m7jcbd7qs7mRqHiuIVT
-   7SG/JdmzhIv4N7yyvSR7iGqurCS/7aF1iJcVaPHnY98xkW9pA+EFufeaQ
-   A4ecWgLdDj36qNXKZJAKZ4gOEGSPy2khjvKDiSPihxrRD35J5ScMtMktZ
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10921"; a="1622587"
-X-IronPort-AV: E=Sophos;i="6.04,269,1695711600"; 
-   d="scan'208";a="1622587"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Dec 2023 22:25:39 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10921"; a="802347749"
-X-IronPort-AV: E=Sophos;i="6.04,269,1695711600"; 
-   d="scan'208";a="802347749"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
-  by orsmga008.jf.intel.com with ESMTP; 11 Dec 2023 22:25:35 -0800
-Message-ID: <bef0f903-3665-492f-8999-fe759be5fed4@linux.intel.com>
-Date: Tue, 12 Dec 2023 14:20:56 +0800
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="TILEy6is"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=fNYxG8TdojzxaXxTYNDg68kmL+5E3GXhhTAEr7X6G9NLjgBVptuuX0kVcwrA7yZPqY6jJYzg+xEO5aEKrzUojfNOjMkd22QoXoO9w2VdqA5g302Z5z8H7a6/m157wMoBcj1taeqiHMJKpgJQkbg8HFLgQT9D61DHV16rG11tIEQsOaKaOAUI6z/Yo/7VSbVXOKEK/HSDsVAoScYZrmn4+OrJthQcFwMVxjU4scPwj8UIdmQo0/mOkWTpc1o4sTyW+xrOaVrKyRAC2/a4gyfN8oVSRhNu1hv+LIsHAgk7s69YK2Ya7FiW8Ir2H8DkJ0ssIVtKph9ovyD2t65/J+8qHA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=XptjxMBNQYJ7lZXSwFu+Z2T6o9exH+CjGyIcjOSxTEk=;
+ b=TUVR3ypC/GTGsaNnUbr50BfE/c1cNv8z049o0echtZH6670eNqNwhOCieqROqhu3WBhh+NhfOpO9v23bQ2G52rLj7z+21yP8ZNDpHjIl6mC8bjTzA7RUybNoHe7BGB0qeDQq2RMFU52wgvUgDx4PDNSrDbJuVY50ubI9gYyrbfwsXpA9Z8R7tFFKV56euQod8qqQwPYI0OpC+/t3+5fNDaPWWSCLdWyVntmiiC49wm73v+mHuT5gdCOc7xbXvbI8D1mDVtQTFm4qMRRtn/x20SiVZXwVDAqDTbnB3bCp96QBeuNct9mdVRUoMvTTrbVyVqgMwmJENIcrRgdP2XJ2uQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.118.233) smtp.rcpttodomain=oracle.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=XptjxMBNQYJ7lZXSwFu+Z2T6o9exH+CjGyIcjOSxTEk=;
+ b=TILEy6isH6pkxFQHXiRmb7Gw7+5gplp4b7cXJtT6B39dB0roE/xqUNAX5ijWbNTXX9jG2DVOjdVTrMXhXtPpZvHaSTXYXbdqGI07uKS/gjSvVPPNpHP0nHXZ268uHOsJzNVSt9VvQClX8hB4euPlUcuFuU7fIeyWhBFZHRXqyXSM/BLBCn17TADC4rKDa2/xmkOpvNRXjm/58qn+GHGNTd+l1qj0DVX+ABDwLEV9jgdPK1Jstqs2niBXoCNmwpeVh++rrZ2MlnqmOacSnyO7E/KaFFbFoEJRezlhJ3zznJH59cWBMj2NxEOX1Jz1MMnjfemAgG/4FPYbcVbJKnJqbw==
+Received: from BLAPR03CA0121.namprd03.prod.outlook.com (2603:10b6:208:32e::6)
+ by MW4PR12MB6921.namprd12.prod.outlook.com (2603:10b6:303:208::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7068.33; Tue, 12 Dec
+ 2023 07:30:16 +0000
+Received: from BL6PEPF0001AB73.namprd02.prod.outlook.com
+ (2603:10b6:208:32e:cafe::88) by BLAPR03CA0121.outlook.office365.com
+ (2603:10b6:208:32e::6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7068.33 via Frontend
+ Transport; Tue, 12 Dec 2023 07:30:15 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.233) by
+ BL6PEPF0001AB73.mail.protection.outlook.com (10.167.242.166) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.7091.18 via Frontend Transport; Tue, 12 Dec 2023 07:30:15 +0000
+Received: from drhqmail203.nvidia.com (10.126.190.182) by mail.nvidia.com
+ (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Mon, 11 Dec
+ 2023 23:30:03 -0800
+Received: from drhqmail203.nvidia.com (10.126.190.182) by
+ drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.41; Mon, 11 Dec 2023 23:30:03 -0800
+Received: from Asurada-Nvidia (10.127.8.9) by mail.nvidia.com (10.126.190.182)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41 via Frontend
+ Transport; Mon, 11 Dec 2023 23:30:02 -0800
+Date: Mon, 11 Dec 2023 23:30:00 -0800
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: Yi Liu <yi.l.liu@intel.com>, "Giani, Dhaval" <Dhaval.Giani@amd.com>,
+	Vasant Hegde <vasant.hegde@amd.com>, Suravee Suthikulpanit
+	<suravee.suthikulpanit@amd.com>, <joro@8bytes.org>,
+	<alex.williamson@redhat.com>, <kevin.tian@intel.com>, <robin.murphy@arm.com>,
+	<baolu.lu@linux.intel.com>, <cohuck@redhat.com>, <eric.auger@redhat.com>,
+	<kvm@vger.kernel.org>, <mjrosato@linux.ibm.com>,
+	<chao.p.peng@linux.intel.com>, <yi.y.sun@linux.intel.com>,
+	<peterx@redhat.com>, <jasowang@redhat.com>,
+	<shameerali.kolothum.thodi@huawei.com>, <lulu@redhat.com>,
+	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
+	<linux-kselftest@vger.kernel.org>, <zhenzhong.duan@intel.com>,
+	<joao.m.martins@oracle.com>, <xin.zeng@intel.com>, <yan.y.zhao@intel.com>
+Subject: Re: [PATCH v6 0/6] iommufd: Add nesting infrastructure (part 2/2)
+Message-ID: <ZXgL+GCGPgH+hlXo@Asurada-Nvidia>
+References: <20231117130717.19875-1-yi.l.liu@intel.com>
+ <20231209014726.GA2945299@nvidia.com>
+ <ZXd+1UVrcAQePjnD@Asurada-Nvidia>
+ <20231211215738.GB3014157@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, "iommu@lists.linux.dev"
- <iommu@lists.linux.dev>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 4/6] iommu/vt-d: Remove 1:1 mappings from identity
- domain
-Content-Language: en-US
-To: "Tian, Kevin" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Jason Gunthorpe <jgg@ziepe.ca>
-References: <20231205012203.244584-1-baolu.lu@linux.intel.com>
- <20231205012203.244584-5-baolu.lu@linux.intel.com>
- <BN9PR11MB52761FF9AB496B422596DDDF8C8AA@BN9PR11MB5276.namprd11.prod.outlook.com>
- <1161d8aa-9fcc-4e9e-a7d3-c461fee19a54@linux.intel.com>
- <BN9PR11MB5276AC40C423A0BAAE9F40A98C8FA@BN9PR11MB5276.namprd11.prod.outlook.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <BN9PR11MB5276AC40C423A0BAAE9F40A98C8FA@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20231211215738.GB3014157@nvidia.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BL6PEPF0001AB73:EE_|MW4PR12MB6921:EE_
+X-MS-Office365-Filtering-Correlation-Id: 20950ca9-a22c-4845-c095-08dbfae42f3b
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	wptgO8K+EY7Z6iyZjoTb+IvXsZ0S8NVAgh7y4Pkt9+JG0JOkdYCY4+HY3jmsX9ZtRvtKu/2ScZblP1Poy19ml6IOnUSmcCcurQ4qADDiRww1QGXfGAaqO5llcNd2Fx4r634EsookGDv2yJVNQk1HP1q35uIKf1LJbKTj5Pld+ClHi5glBUo6HizYoFS94FixfK85RI8DoCGW5FoLQZQvBfXLJLPy8xztprjbhtm36fm4dvWYn96FQzNV6K+Xq9txXozUytfDf1XbU5CwyIu9vLP2JcNeLCUevOaAkSwXJGVO/ma/wEwRwFsuyzfoyCx958u7NZbRPX8W3QIBxIjjbxfxKSrK39RSGagiZW0Ww8tzWOkzaenNa0IB49lYmfqQtfmiglUQjqpcqKRHxi+ffNxNnNox5LMluFalBwOv+m/Per6SQzp9NbhilCqlhRQ4c6TwI5Vave2PAj1EKDKfC/hfnje0YdK/KibjgCHwkuSgN8avs5RM1xg/xLs2xlYDYJVtE5fBnnRLWY6hbnTZDw9DUKfpBfh0TzFletp40oxIzc7vbOxSKWAoQZgi0Ea+7KXtWQwue7+AoecyX92YJzeGwQg2qqOT85qjesjXsRguW8D2bljtlqkdmS1wTcpb+/oPUILQVANWpQSbsxitYRCuADcY5d6clwZ1vnLhxiie60iz1FIX2Jwnen6UIaRDOVY5mEvlSXFwBkgA4TWInOzKk9i5lm+bTiW3x9PWgKQaxVB1fpUK4Wxj1tKpZ3Vi
+X-Forefront-Antispam-Report:
+	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230031)(4636009)(136003)(376002)(346002)(39860400002)(396003)(230922051799003)(451199024)(1800799012)(82310400011)(186009)(64100799003)(36840700001)(40470700004)(46966006)(7636003)(41300700001)(8676002)(356005)(82740400003)(478600001)(8936002)(6636002)(70586007)(70206006)(33716001)(86362001)(54906003)(316002)(7416002)(26005)(5660300002)(9686003)(336012)(47076005)(36860700001)(6862004)(2906002)(83380400001)(426003)(4326008)(40480700001)(55016003)(40460700003);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Dec 2023 07:30:15.3114
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 20950ca9-a22c-4845-c095-08dbfae42f3b
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BL6PEPF0001AB73.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR12MB6921
 
-On 12/11/23 11:58 AM, Tian, Kevin wrote:
->>> there are two cases above which mandates IDENTITY. Have you confirmed
->>> that those platforms support hardware passthrough? otherwise this
->> change
->>> is broken.
->> Those two cases should be hardware quirks for SoC-integrated devices. It
->> makes no reason that a quirk requires IOMMU passthrough translation, but
->> the hardware doesn't support it.
->>
->> If, unfortunately, those quirks turn out to be workarounds for a poorly
->> designed device driver, we should remove those quirks and request the
->> device driver to utilize the DMA ownership framework to achieve the same
->> functionality within the driver itself.
->>
-> if that is the case you should fix the drivers first before breaking them.
+On Mon, Dec 11, 2023 at 05:57:38PM -0400, Jason Gunthorpe wrote:
+> On Mon, Dec 11, 2023 at 01:27:49PM -0800, Nicolin Chen wrote:
+> > On Fri, Dec 08, 2023 at 09:47:26PM -0400, Jason Gunthorpe wrote:
+> > > What is in a Nested domain:
+> > >  ARM: A CD table pointer
+> > >       Nesting domains are created for every unique CD table top pointer.
+> > 
+> > I think we basically implemented in a way of syncing STE, i,e,
+> > vSTE.Config must be "S1 Translate" besides a CD table pointer,
+> > and a nested domain is freed when vSTE.Config=BYPASS even if a
+> > CD table pointer is present, right?
 > 
-> But at a glance looks those two quirks are just fine.
+> Yes, but you can also de-duplicate the nested domains based on the CD
+> table pointer. It is not as critical for ARM as others, but may
+> still be worth doing.
+
+Ah right! Should do that.
+
+> > If we do implement an IOMMUFD_DEV_ASSIGN_VIRTUAL_ID, do we need
+> > an IOMMUFD_DEV_RESIGN_VIRTUAL_ID? (or better word than resign).
 > 
-> For Azalia sound device the problem is that BIOS enables a dedicated
-> DMAR for it but allocates zero TLB entries to cause deadlock. This
-> implies a hw passthrough mode otherwise it's still broken.
+> I don't think so.. The vRID is basically fixed, if it needs to be
+> changed then the device can be destroyed (or assign can just change it)
 
-Yes. It's safe for Azalia sound device.
+OK. Will insert the cleanup piece to the unbind()/destroy().
 
+> > Could the structure just look like this?
+> > struct iommu_dev_assign_virtual_id {
+> >        __u32 size;
+> >        __u32 dev_id;
+> >        __u32 id_type;
+> >        __u32 id;
+> > };
 > 
-> For GFX it's a workaround added since day one. there is even still
-> an option CONFIG_INTEL_IOMMU_BROKEN_GFX_WA available. But
-> now its meaning is really disabling IOMMU instead of using identity.
+> It needs to take in the viommu_id also, and I'd make the id 64 bits
+> just for good luck.
+
+What is viommu_id required for in this context? I thought we
+already know which SMMU instance to issue commands via dev_id?
+
+> > > IOMMUFD_DEV_INVALIDATE should be introduced with the same design as
+> > > HWPT invalidate. This would be used for AMD/ARM's ATC invalidation
+> > > (and just force the stream ID, userspace must direct the vRID to the
+> > > correct dev_id).
+> > 
+> > SMMU's CD invalidations could fall into this category too.
+
+Do we need a different iommu API for this ioctl? We currently
+have the cache_invalidate_user as a domain op. The new device
+op will be an iommu op?
+
+And should we rename the "cache_invalidate_user"? Would VT-d
+still uses it for device cache?
+
+> > I previously drafted something to test it out with iommufd.
+> > Basically it needs the pairing of vRID/pRID in attach_dev()
+> > and another ioctl to mmap/config user queue(s):
+> > +struct iommu_hwpt_cache_config_tegra241_vcmdq {
+> > +       __u32 vcmdq_id;			// queue id
+> > +       __u32 vcmdq_log2size;		// queue size
+> > +       __aligned_u64 vcmdq_base;	// queue guest PA
+> > +};
 > 
-> sounds like IDENTMAP_GFX can be fully removed now:
-> 
-> #ifdef CONFIG_INTEL_IOMMU_BROKEN_GFX_WA
-> 	dmar_map_gfx = 0;
-> #endif
+> vRID/pRID pairing should come from IOMMUFD_DEV_ASSIGN_VIRTUAL_ID. When
+> a HWPT is allocated it would be connected to the viommu_id and then it
+> would all be bundled together in the HW somehow
 
-We should already remove the workaround for the 2.6 kernel. :-)
+Since we were talking about sharing stage-2 domain, the HWPT
+to the stage-2 domain will be shared among the vIOMMU/pIOMMU
+instances too? I think I am not quite getting the viommu_id
+part yet. From the other side of this thread, viommu object
+is created per vIOMMU instance and each one actually tied to
+a pIOMMU by nature?
 
-It's default "n". Therefore, if any gfx driver still needs this
-workaround, there should already be a bug report.
-
-> 
-> 	if (!dmar_map_gfx)
-> 		iommu_identity_mapping |= IDENTMAP_GFX;
-
-So with above cleaned up, we have no need to worry about drivers that
-are not capable of handling remapped dma address any more.
-
-Did I miss anything?
-
-Best regards,
-baolu
+Thanks
+Nicolin
