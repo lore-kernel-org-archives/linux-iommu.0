@@ -1,50 +1,39 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB7597B3CC;
-	Tue, 12 Dec 2023 17:21:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9BBBD7B3CC;
+	Tue, 12 Dec 2023 17:21:49 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Sg+6t1As"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F012AC433C8;
-	Tue, 12 Dec 2023 17:21:42 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dS4NWFWM"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F6EFC433D9;
+	Tue, 12 Dec 2023 17:21:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1702401706;
-	bh=ycMr8MM5ftWs8zYQIf6QMOdO2N+q3aTQBI93SqgK/d0=;
+	s=k20201202; t=1702401709;
+	bh=6YhYaM20GOsMdc8Rc2Fzhf1uOeyj3UQk4B0AXX9Ihmg=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=Sg+6t1As+Ksr5VxeJvEvdiiiTLI1ak5JqD++Q2iMDZhhJLoBe1W/aSYz28Gxk5nUb
-	 Q63YaHJgpn9vV3Ovd5HDucifW5ZpcFeCZqFISTOq/qNPgXU7M9foPkwnHDHocOkGug
-	 N/Wo2v9HwGNyPSUzVURcAQwHk3ntFaJYh3Z4YGXbPNcfEFh9/8bzSSSZk2yMvrr42E
-	 /vZMFkE6O1qirpjyUiTFA8USm3zON92CUHKPwd3h6xNeNWVA6TjZ0+PdRGzF/gMdWe
-	 GwD0OCZ1iQdFkdX9FWk4RZLVKua3a3qTqFLmd1VPRl8jvGInPacmSZGcuNa5HSjdbz
-	 Qbi+vYX9fiv4A==
+	b=dS4NWFWMEHgzREWxWKBFj9rk19fcouhWvSkakRNe8hzRVRCBQuceUS5Up9m96KetH
+	 WFKwF+0JemkvA2gEXJmwBNgrpJHq+fo0vCe4cCBSFdzg+atzZVkOkqaMy7TVq8XRTg
+	 qB+n5IqGaHJDkNp/tX/Oru0HZpv9gUuJJLtlWFxJAuowjuz7NIhpH0BorrfpFpTD0q
+	 DhQ1udij026w9OKig7NQJu4oDIJWfoY6wxgioMsq2QTWy7ZdTIKXy5gmI1scZ54ka9
+	 QvW8B0r82vg7FWoRP2fhTq2ZH7BZfdKmzWmkJgfxvd3r2IPUVZPdZj0sjlzxviQ27F
+	 Mb7QA48DmU0YA==
 From: Will Deacon <will@kernel.org>
-To: Rob Clark <robdclark@gmail.com>,
-	iommu@lists.linux-foundation.org
+To: Zhangfei Gao <zhangfei.gao@linaro.org>,
+	jean-philippe <jean-philippe@linaro.org>,
+	Joerg Roedel <joro@8bytes.org>,
+	Jason Gunthorpe <jgg@nvidia.com>
 Cc: catalin.marinas@arm.com,
 	kernel-team@android.com,
 	Will Deacon <will@kernel.org>,
-	"open list:IOMMU SUBSYSTEM" <iommu@lists.linux.dev>,
-	Manivannan Sadhasivam <mani@kernel.org>,
-	open list <linux-kernel@vger.kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Konrad Dybcio <konrad.dybcio@linaro.org>,
-	Rob Clark <robdclark@chromium.org>,
-	Johan Hovold <johan@kernel.org>,
-	Joerg Roedel <joro@8bytes.org>,
-	linux-arm-msm@vger.kernel.org,
-	stable@vger.kernel.org,
-	freedreno@lists.freedesktop.org,
-	Danila Tikhonov <danila@jiaxyga.com>,
-	"moderated list:ARM SMMU DRIVERS" <linux-arm-kernel@lists.infradead.org>,
-	Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-	Elliot Berman <quic_eberman@quicinc.com>,
-	Bjorn Andersson <quic_bjorande@quicinc.com>
-Subject: Re: [PATCH v2] iommu/arm-smmu-qcom: Add missing GMU entry to match table
-Date: Tue, 12 Dec 2023 17:21:00 +0000
-Message-Id: <170238423845.3097390.5149753894021729752.b4-ty@kernel.org>
+	iommu@lists.linux.dev,
+	kvm@vger.kernel.org,
+	Wenkai Lin <linwenkai6@hisilicon.com>
+Subject: Re: [PATCH] iommu/arm-smmu-v3: disable stall for quiet_cd
+Date: Tue, 12 Dec 2023 17:21:01 +0000
+Message-Id: <170238473311.3099166.16078152394414654471.b4-ty@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20231210180655.75542-1-robdclark@gmail.com>
-References: <20231210180655.75542-1-robdclark@gmail.com>
+In-Reply-To: <20231206005727.46150-1-zhangfei.gao@linaro.org>
+References: <20231206005727.46150-1-zhangfei.gao@linaro.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -54,25 +43,24 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 
-On Sun, 10 Dec 2023 10:06:53 -0800, Rob Clark wrote:
-> From: Rob Clark <robdclark@chromium.org>
+On Wed, 6 Dec 2023 08:57:27 +0800, Zhangfei Gao wrote:
+> From: Wenkai Lin <linwenkai6@hisilicon.com>
 > 
-> In some cases the firmware expects cbndx 1 to be assigned to the GMU,
-> so we also want the default domain for the GMU to be an identy domain.
-> This way it does not get a context bank assigned.  Without this, both
-> of_dma_configure() and drm/msm's iommu_domain_attach() will trigger
-> allocating and configuring a context bank.  So GMU ends up attached to
-> both cbndx 1 and later cbndx 2.  This arrangement seemingly confounds
-> and surprises the firmware if the GPU later triggers a translation
-> fault, resulting (on sc8280xp / lenovo x13s, at least) in the SMMU
-> getting wedged and the GPU stuck without memory access.
+> In the stall model, invalid transactions were expected to be
+> stalled and aborted by the IOPF handler.
+> 
+> However, when killing a test case with a huge amount of data, the
+> accelerator streamline can not stop until all data is consumed
+> even if the page fault handler reports errors. As a result, the
+> kill may take a long time, about 10 seconds with numerous iopf
+> interrupts.
 > 
 > [...]
 
 Applied to will (for-joerg/arm-smmu/updates), thanks!
 
-[1/1] iommu/arm-smmu-qcom: Add missing GMU entry to match table
-      https://git.kernel.org/will/c/afc95681c306
+[1/1] iommu/arm-smmu-v3: disable stall for quiet_cd
+      https://git.kernel.org/will/c/b41932f54458
 
 Cheers,
 -- 
