@@ -1,38 +1,38 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.120])
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.100])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3FE527F5
-	for <iommu@lists.linux.dev>; Tue, 12 Dec 2023 05:28:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0EB15156C3
+	for <iommu@lists.linux.dev>; Tue, 12 Dec 2023 05:39:01 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="AyPR2qNZ"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="fyH+DHnG"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1702358892; x=1733894892;
+  t=1702359542; x=1733895542;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=LCn4/xvODPorX9mTjeGLTue7GovKBlpADEjiJxDVln0=;
-  b=AyPR2qNZE1IruQBU2I7LX6f+NafNi/Iml0xnCSjlj2j1fb84Wzr7VVhG
-   p3Nw0t4xQiu+3GG+ysRRKwCOLWAMESw7/7IOsWSzjuF+XpdbesaM+ps2e
-   b1NdH72R8/5p/Mrin7Lb3urgpLuc9/q4OfYTTkF/W/k/R4lFXAZkkeQko
-   BA2sofpxytPzeVWRCJDq0QCbyQtxoaIyVGZmaouA5cHKJXG5iUpfDubct
-   vXi1lvkkNOPzsL6Cyql7E7bhr4DKblqbspZ7UTLfHG13QE2hKAvebwQRS
-   760cFsGdqClP7uPNFj2dnEZJ49OFmhL/UcfKX9EDdG5Ij6JbwRH+SDLKt
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10921"; a="393626918"
+  bh=URPPQzLd2OI8UNUzOy+LBsiW7V7L/EcaPm3oslOKIC4=;
+  b=fyH+DHnG8dzbokKj0RU0RmEzqx6fvAlNNLgSHOLolBtTN6GJlGGUeayI
+   +w3OitBH57j3PQMCLEVb6Mc4kUl5wLBFg+Kfm5tuhfdTbzWyRAqTCPtUH
+   We3RJr6gzaSwsGPVcoNE4Mx5zZzXNQN69/TuMSGoaRTZc+1vNzJrKM0b9
+   J/lHTJdaMGZxWE3HHqkeU8vLC66E+y2GiU3YV12YZ0NGLHs8R19iaxGlG
+   LPgV/dSXSv1Q/jLc2weCL9iM/ksBinlG8vnNKS1WsxokeGrSynXlCItgt
+   RbUMkKPy9CAkpi7fEWWAgWumvlmON5ji1xBgPXORJO8Yg7gJnQXUpgxTd
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10921"; a="461231782"
 X-IronPort-AV: E=Sophos;i="6.04,269,1695711600"; 
-   d="scan'208";a="393626918"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Dec 2023 21:28:11 -0800
+   d="scan'208";a="461231782"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Dec 2023 21:39:00 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10921"; a="807612687"
+X-IronPort-AV: E=McAfee;i="6600,9927,10921"; a="917149775"
 X-IronPort-AV: E=Sophos;i="6.04,269,1695711600"; 
-   d="scan'208";a="807612687"
+   d="scan'208";a="917149775"
 Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
-  by orsmga001.jf.intel.com with ESMTP; 11 Dec 2023 21:28:07 -0800
-Message-ID: <d95e9104-e518-4aa5-8dd8-b6b7fd2294b6@linux.intel.com>
-Date: Tue, 12 Dec 2023 13:23:28 +0800
+  by fmsmga001.fm.intel.com with ESMTP; 11 Dec 2023 21:38:58 -0800
+Message-ID: <11b4b1db-2fde-413c-a203-0734bc18f4f7@linux.intel.com>
+Date: Tue, 12 Dec 2023 13:34:19 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -42,45 +42,47 @@ MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
 Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
  Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Kevin Tian <kevin.tian@intel.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>,
- Jacob Pan <jacob.jun.pan@linux.intel.com>,
- Longfang Liu <liulongfang@huawei.com>, Yan Zhao <yan.y.zhao@intel.com>,
- iommu@lists.linux.dev, kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v8 12/12] iommu: Use refcount for fault data access
+ Kevin Tian <kevin.tian@intel.com>, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/6] iommu/vt-d: Setup scalable mode context entry in
+ probe path
 Content-Language: en-US
 To: Jason Gunthorpe <jgg@ziepe.ca>
-References: <20231207064308.313316-1-baolu.lu@linux.intel.com>
- <20231207064308.313316-13-baolu.lu@linux.intel.com>
- <20231211152456.GB1489931@ziepe.ca>
+References: <20231205012203.244584-1-baolu.lu@linux.intel.com>
+ <20231205012203.244584-2-baolu.lu@linux.intel.com>
+ <20231211173826.GE1489931@ziepe.ca>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20231211152456.GB1489931@ziepe.ca>
+In-Reply-To: <20231211173826.GE1489931@ziepe.ca>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 12/11/23 11:24 PM, Jason Gunthorpe wrote:
->> @@ -282,22 +313,15 @@ EXPORT_SYMBOL_GPL(iommu_page_response);
->>    */
->>   int iopf_queue_flush_dev(struct device *dev)
->>   {
->> -	int ret = 0;
->> -	struct iommu_fault_param *iopf_param;
->> -	struct dev_iommu *param = dev->iommu;
->> +	struct iommu_fault_param *iopf_param = iopf_get_dev_fault_param(dev);
->>   
->> -	if (!param)
->> +	if (!iopf_param)
->>   		return -ENODEV;
-> And this also seems unnecessary, it is a bug to call this after
-> iopf_queue_remove_device() right? Just
+On 12/12/23 1:38 AM, Jason Gunthorpe wrote:
+> On Tue, Dec 05, 2023 at 09:21:58AM +0800, Lu Baolu wrote:
+>> +/*
+>> + * Get the PASID directory size for scalable mode context entry.
+>> + * Value of X in the PDTS field of a scalable mode context entry
+>> + * indicates PASID directory with 2^(X + 7) entries.
+>> + */
+>> +static unsigned long context_get_sm_pds(struct pasid_table *table)
+>> +{
+>> +	unsigned long pds, max_pde;
+>> +
+>> +	max_pde = table->max_pasid >> PASID_PDE_SHIFT;
+>> +	pds = find_first_bit(&max_pde, MAX_NR_PASID_BITS);
+>> +	if (pds < 7)
+>> +		return 0;
+>> +
+>> +	return pds - 7;
+> This seems like a convoluted way to write
+>    max(ilog2(table-max_pasid) - 7,0)
+> 
+> ?
 
-Yes. They both are called from the iommu driver. The iommu driver should
-guarantee this.
+Yes. :-)
 
-> rcu_derefernce(param->fault_param, true) and WARN_ON NULL.
+Something like,
 
-Okay, sure.
+     max(ilog2(table->max_pasid >> PASID_PDE_SHIFT) - 7, 0)
 
 Best regards,
 baolu
