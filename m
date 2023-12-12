@@ -1,170 +1,155 @@
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2052.outbound.protection.outlook.com [40.107.94.52])
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2070.outbound.protection.outlook.com [40.107.243.70])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B9B3745E7
-	for <iommu@lists.linux.dev>; Tue, 12 Dec 2023 15:35:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B360F76DC8
+	for <iommu@lists.linux.dev>; Tue, 12 Dec 2023 16:02:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="FD50YnUr"
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="c2l7caL7"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UfT+FJeFGIMEJQ3cPJ6D+qT2+Hw6zkX8DS6NMbT7NhgpAT0RuWTDdx+LJ7kR2yKB+AgC692+ssB/UaWEb5sFMvg7dj4+CRgKLd7ytDodRscb7V6iAAsT+3QeaKS4Ak5gXhPVJdoTfZoYzavonIY96ilQCZcbb11Wehqas4MBRANjXxSQN2upMfIMWczVlTiGH/95ofBGH6y3hnpCGbKbehD1nC6bslWYDrEQWpporo6Z5hNkLKpxz3m1JP3sLhIyViYYfhe/1vXCRbLBvvIBHWQCG4y5Hx8gwWqy5607lcyzkvVNhlrjTU2x55sUkHv6SAdA1U4X3Ms66+IR4wZPUw==
+ b=FGrXVjaYU705kl2CTSqBhbM2vfVbdor+vhbimNGnHMWjRyYW1OnZ7o0cVCbz7jVvUssaSHKKcb5N8QSxyTHDAGOu7DtVMki++bHOpBsDkWu+UrF48JYc9dVavsk5HOILPaW2PB7iPylfKvHyKd1+uetauzEwNBskd5hwIbpJkDzGrvdx851sYqIOksdtRXILwe8uGxSpslyjJN4SR2I8OtFJsu7s9ohhA+y0b31K5QTuSp4uHPT/HlM1AmDCHpzxAmUFCVwYfyYUnZu3jTCSCXiOmtBzQyutqONKliVg2Vw2t7Z4YqDkiMWdCIujrRT9i+S0cIsIl+cjHFZsERUogg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=gUMrgHmqVVlL5srQ3cIufu0V11MfT2Xjy6T+jg/iiJM=;
- b=mI4ZjZdWMFYRJMNf3J0I2N57FlMdS2tvkL/H7dUCtibhuK/zLInK3kYFpEduTcqDNqkVlE2YdX2zp1S1xH9XaO6g52tTPPZ37LNAgCmlC2jsmnejlWtr9/ha/SW/jqRlLHP6voKIPG93lacpNRrcaskyrKWDs+wLuBvfIroYGkFD3xEaCrRDEJn2QjbFafbGEzHoWxMDkZ5NED1WWaKcO2V3FY/U9MsKAQs8T2KalYicERqtjUkHZYllQtEL4Nwtz6hGGgriTaG6BLwZeC5+/URprX9pUotMBIcgOh4fyfgdozVDgSrUhqhRSrKk5Xc5C25teEbvgjJ5Gh5VxvgOTQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
+ bh=aWhVOs0udo9c4gf4sTzQa7yVWiKWAKmXM4mC+AOgz50=;
+ b=hn0PysZtlRv9z3ssrZB3apzIaHfMfrbBeZM0HsEzeR5ryhykNL0y9RJEbxbhXVANFOHmcfn5rR1rhArT69eR8mcevrwU64kudPOeCSPA9nX4YmCmFmyz9KnZifvuDO3P0B8lrt/62DGvHv633so7Nzts8GevAWAix3+TXCuS8WYEf2JbOTtS0dw8aK6tX96lTBcbSGnbguRhjkURN1Mi7EVPNEtjangTZFzgvQq/tlyEcqUQ8xNdMJ7Q8yE3CLQjkIaWfQVUZtMZl1rEOWJ+48IV55RpphYOQ83xl7KxZoogaEgwgKuow9qRnphNZsRpgW/tMbSWuSxa1U7TygVhXw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=gUMrgHmqVVlL5srQ3cIufu0V11MfT2Xjy6T+jg/iiJM=;
- b=FD50YnUr+yo94e2m4TP1WSNOM0gMsh1tWEfY+QK1pPWKC0qFd/ev3rAVDnCIWMdJd2c87dNbKjtZs4KLvS4E0tSQfElR61OW9hfQrylKyMWw9SdKA90AWHagkrRor3Z6x9szrbD2GJv6PfM+AWTZnmjF76s5ORyN70FHdnrRPH5kaAmzOqosY9WHJZKBUomhfGqb/IuevZr2zrWO2vfYRrFi9W0sm/zpbpA98wu5Mip6xmecAjUgybG095Uf2mcH4GwuKooKjS6qW44zYmWr1HC6R3YWKqHDOESt8JLii7jV28+W9Hw/5Rl94edIkfaN3Vy1FG96JhcJJeKlBT1CQA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by DM4PR12MB5103.namprd12.prod.outlook.com (2603:10b6:5:392::13) with
+ bh=aWhVOs0udo9c4gf4sTzQa7yVWiKWAKmXM4mC+AOgz50=;
+ b=c2l7caL7B6Bpwp+FOtttzdAwZ63D0QZr9rkmwNa60QabJZsJ2LSZtbb+m53G5rRcJ5ElIoAT5mQCBa3SuLeKebIwBsLLg5ywGm5LJ2rezwjJEjqUGFp1J+4jf7ylu7gf83GnyAW63fK1X3XeJg8cs5chZbVReBtewsSC369Qu58=
+Received: from BL0PR02CA0045.namprd02.prod.outlook.com (2603:10b6:207:3d::22)
+ by CH2PR12MB4907.namprd12.prod.outlook.com (2603:10b6:610:68::20) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7091.26; Tue, 12 Dec
- 2023 15:35:05 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::60d4:c1e3:e1aa:8f93]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::60d4:c1e3:e1aa:8f93%4]) with mapi id 15.20.7091.022; Tue, 12 Dec 2023
- 15:35:05 +0000
-Date: Tue, 12 Dec 2023 11:35:04 -0400
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Alex Williamson <alex.williamson@redhat.com>
-Cc: Yi Liu <yi.l.liu@intel.com>, joro@8bytes.org, kevin.tian@intel.com,
-	robin.murphy@arm.com, baolu.lu@linux.intel.com, cohuck@redhat.com,
-	eric.auger@redhat.com, nicolinc@nvidia.com, kvm@vger.kernel.org,
-	mjrosato@linux.ibm.com, chao.p.peng@linux.intel.com,
-	yi.y.sun@linux.intel.com, peterx@redhat.com, jasowang@redhat.com,
-	shameerali.kolothum.thodi@huawei.com, lulu@redhat.com,
-	suravee.suthikulpanit@amd.com, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-	zhenzhong.duan@intel.com, joao.m.martins@oracle.com,
-	xin.zeng@intel.com, yan.y.zhao@intel.com
-Subject: Re: [PATCH 3/3] vfio: Report PASID capability via
- VFIO_DEVICE_FEATURE ioctl
-Message-ID: <20231212153504.GL3014157@nvidia.com>
-References: <20231127063909.129153-1-yi.l.liu@intel.com>
- <20231127063909.129153-4-yi.l.liu@intel.com>
- <20231211110345.1b4526c6.alex.williamson@redhat.com>
- <20231211181028.GL2944114@nvidia.com>
- <20231211114949.273b21c0.alex.williamson@redhat.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20231211114949.273b21c0.alex.williamson@redhat.com>
-X-ClientProxiedBy: MN2PR19CA0050.namprd19.prod.outlook.com
- (2603:10b6:208:19b::27) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7068.33; Tue, 12 Dec
+ 2023 16:02:04 +0000
+Received: from MN1PEPF0000ECDB.namprd02.prod.outlook.com
+ (2603:10b6:207:3d:cafe::d) by BL0PR02CA0045.outlook.office365.com
+ (2603:10b6:207:3d::22) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7091.26 via Frontend
+ Transport; Tue, 12 Dec 2023 16:02:04 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ MN1PEPF0000ECDB.mail.protection.outlook.com (10.167.242.139) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.7091.26 via Frontend Transport; Tue, 12 Dec 2023 16:02:04 +0000
+Received: from ruby-95f9host.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.34; Tue, 12 Dec
+ 2023 10:02:02 -0600
+From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+To: <linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>,
+	<joro@8bytes.org>, <jgg@nvidia.com>
+CC: <yi.l.liu@intel.com>, <kevin.tian@intel.com>, <nicolinc@nvidia.com>,
+	<eric.auger@redhat.com>, <vasant.hegde@amd.com>, <jon.grimm@amd.com>,
+	<santosh.shukla@amd.com>, <Dhaval.Giani@amd.com>, <pandoh@google.com>,
+	<loganodell@google.com>, Suravee Suthikulpanit
+	<suravee.suthikulpanit@amd.com>
+Subject: [RFC PATCH 0/6] iommu/amd: Introduce hardware info reporting and nested translation support
+Date: Tue, 12 Dec 2023 10:01:33 -0600
+Message-ID: <20231212160139.174229-1-suravee.suthikulpanit@amd.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|DM4PR12MB5103:EE_
-X-MS-Office365-Filtering-Correlation-Id: cb8e4706-2061-44d4-30ab-08dbfb27ea13
+X-MS-TrafficTypeDiagnostic: MN1PEPF0000ECDB:EE_|CH2PR12MB4907:EE_
+X-MS-Office365-Filtering-Correlation-Id: e7e49e9a-8939-4086-4477-08dbfb2baf2d
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	6rsgQMyZ/cg/RzfEyCL66AAZtHanRHA4LtRdizDIGxDWNczvblFnkGzeG68X/AyncAofvWxlwv685OEf6GCM0RpLGUJV0F4+C/XRsaSV65EeWNJgnMejbO+T10+DiyBniyD67Yd1qddlKgczjnD+MHme4e5137G2ZRh2vEEtAUu3uVwVSlw8OCKnyEUV79sUmYRpMQieiDZNJRyGecZ6J0nsYCocPN/5cmQ3LfR7BWN8MxM4eaJpKhiDPe41JbND6EjcCs6g1RXsiA7HDXPh82OqK6uFm2OtXCMY/YDoA5g+/x5PglCC+HUApzRuzvDLpUMnX8ufJX7u3PngVQuNio749CnqvaO/tsz+P5GngexAO/tQ07Ta71Mw5XTaXMx7m06GN2tLkKPNdSr+NVTDjmC6JvHS/2aFOG95WkuKXKyVpcVQ/sYtiIdbYMYi7l3GmpYJo71/66s0YLISwyetnzj9JXtPVAkgqyuzS+3RevwXGKHknH8N/sc+DF9pRVc2BZo0LwIAwNM4TVeGIqSjiK8x5HqQviySRC9fBqZ6axxRUnn1RX6iWkdHBxN4xNW5
+	bMzMUM+t2ax4p4GWaO7JGL2VrUovb4PWQL6U4BlNWY9hU+un6G+QKXUPIu3ebzvQJAx9nkxxlw4vorkSAJwRmOTEmD3bZGXXLhqzQz09b0vjhWUDtHh08XaAqSJmLsrMxFYGdxEEuAHEHwJhYjtnsQTkI6O2ijWhiVTAINh4LwLMIRLGnBYUPXqdAmE3fQVjoEripxVEYi2j3BeZVk6T0MMN9zz07mcZ3jCFPU6yGqtVTwrKMYuQd1Vsw/4SAKKuOGinC0bgJYlzbC5R7KibtBkPPDPAaIY5kRYrMtnTYtpVGMIpNNUrJwrKB4XnXn5WquemQ1Ri6A6E6486oJXHR8lAITh8WVge0M5hWFizLwMK9RDXVgYrlk2m5Y0D6S35Ro1lgOxgYVufV33a+dtPTSKin6bk9gmk5wSQi3yYaB38VHcsts9KTbxtuDXnTLiKLWig1Vkk0L11GLTGv86dsYeNSaCRtk1sk7gfn2FccUOnl+H6UjDyq7oHQbw2b5Gutk0nCtqLBV/Y2Mox3l5lPngaztYK3wXD/p8w1fb5jgsKH02D5JjujA1SilNlZmDoVQkaD0uwgoNQ87voHfTw5R9nJk2t/TaNSCUbeIuLPyK7SpnTTs2Qm8l0CbaSV8i4WnHWV8ZyRXNSy3MQT63Wf1Q1qwIoG0YoESobAqoJyCBREeJZz8dq7hAwe+PanoczFqKm1nz3WgAnCwq2VTYFYi0F2kEGCBVeE76fIB9xAfkqmdljbCsJNu5zVsqVu04ovXPewSdkoGhpCKjy94fU9PPyom8MAD8emeaeS4nHMoFvKwXBBWpxnLSSyc5lLZ9E
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(346002)(366004)(39860400002)(376002)(396003)(136003)(230922051799003)(186009)(451199024)(64100799003)(1800799012)(478600001)(6486002)(33656002)(86362001)(316002)(36756003)(66556008)(66476007)(6916009)(66946007)(2616005)(26005)(1076003)(6506007)(6512007)(38100700002)(41300700001)(4326008)(8676002)(8936002)(5660300002)(7416002)(2906002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?F/3pGY9YuUAmH/wOYAVmlw3Xm9Bh5LUrwu3nlH7PA8VINP7IjLm6tW6JBvkz?=
- =?us-ascii?Q?U5g/U7cSyMC16K/CqzY1DMlnF0XReiHpwayTgzbIuNSKeXiyrKXQ5JbzV8CY?=
- =?us-ascii?Q?P8DJ+QyPyaznsUMiKvkxX6AmhyPjw+Euo7BxDUuzRJiZ+J7pMmdDFp06UrCB?=
- =?us-ascii?Q?OIt7TfV5tuqVTgVaXrUypIhj6WVvJ9MDIQxshR+qjPSwrwx/TAs3URyILvIk?=
- =?us-ascii?Q?GBbLiJcWzubzNZZSsyC86njQ/Fvx1uuI4/4XXq9ddQu1b0EWsHka3GEDRpjq?=
- =?us-ascii?Q?C0uYEn7XRAoPRUwAnELVf7ViDNOVQOUnWUkv4gRo0QwlRnC98x5kBFCguilo?=
- =?us-ascii?Q?PsMyqIB89/2ehb44kY3BXb9CCXjPJvaUKUKRo3ZkO+J5QFs0crq6H0yfOICq?=
- =?us-ascii?Q?h4jtH6nDRcn0ZG67M2zK6bKj6QTmw/cIXBjRrlG5m9xr9zuw5voxaKBGm2oW?=
- =?us-ascii?Q?fpV0lABKNT6kiltVVO1DEjlz+xBljpsNQwwMQvjVGbfnluq/B7A/6al6WlFX?=
- =?us-ascii?Q?OjZKQVFTGanXY+gFa9Y0inFxlG/PlUpLtPYNaLSCvJ94KJVnspJK9xz+lgUs?=
- =?us-ascii?Q?E9j5PDpFeflKdnZ1Va89QGweTPlbM5b47ZqK+xv04P1JsMAT2Qt9DUPcwZYy?=
- =?us-ascii?Q?hiZg/KtHI2lXyoN/OOSStltxWDrr1GSOT4P+0+cFjhUb2cvMsV9Sg3eTvM8j?=
- =?us-ascii?Q?NHvShnlYWxo5B53VY68Ycr/+/UG6c5iTFsTrYvbK05OEhLVvkxBWyPhj+I2n?=
- =?us-ascii?Q?KGiTIDGnaNAfKs2UhmSKMLJQfiGnuUTLtpGr6Dr6La6xm6fLGvxdIqVmJEoT?=
- =?us-ascii?Q?bbmTQU5GFv2mY9s1ZLA0NbqaNm1ch/y5kxzJyVSQQVFJtGRjDEiPy3pM8PFH?=
- =?us-ascii?Q?usefjCaaMiqrg8bImTDSIm3ArsSOVJtzemW7JoefqRglLCeNarIJn+HOCXHj?=
- =?us-ascii?Q?J/yhIoj5tpqofYjE2ZqRE/FwbMebWaGE+abxSNshT6fhBXkcFNVkX71WfgF2?=
- =?us-ascii?Q?0KcXrOuAJMGfc3Z+co5NLLHk1Xi3gCvPItBFOrj8vp2CgSczvFMLraCPn7uE?=
- =?us-ascii?Q?h4iQmVWmADJZnIuWDt0M1LyYWcrtjVI7ZhJFTPKiIOnpxY9ZISynnPkan/TJ?=
- =?us-ascii?Q?nTKdZvrwTQUiNC3uDgeGxv+fTAu1Guw0LIeq2Uw3FnT2u+hIDTHih0Zy1l5u?=
- =?us-ascii?Q?4DYVsERAJoxPlzB+8qyxwWujA2P8n1lJApp+LQh2eR33hHLZra9YLK3ZmQ4D?=
- =?us-ascii?Q?AvOW2rwioPd993EX7xDKEVkJUTmZZWRzYNTHuJuoyvHUFdKNJ+yJgcy6zcy7?=
- =?us-ascii?Q?atMXx17NDuBDMJpc44OcZqwcdogSVNvF9OpfosWdCZ/nG5ADvtbRRHHL7db9?=
- =?us-ascii?Q?xM+0XaPOTUFA645Arl6fB4kpcA8EYYe29ohtOr46fBOQ2/ZP+EoF8DSYy51H?=
- =?us-ascii?Q?nKTSmcjyAtIVeYW8bF5W/Amps76PGYZjyvjeaZCXQEyz6bYRGRGTODAkxN8R?=
- =?us-ascii?Q?5a1srxJmbS/1PCkYnfyCzbRTPh+PCM32CCRNaR9ghY79VSu324dp3aboFq8p?=
- =?us-ascii?Q?xoFrn47/m45JzSkhb3vnrUdpjTGvj4amFRIiWlJR?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: cb8e4706-2061-44d4-30ab-08dbfb27ea13
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Dec 2023 15:35:05.3901
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230031)(4636009)(39860400002)(136003)(396003)(376002)(346002)(230922051799003)(82310400011)(1800799012)(186009)(64100799003)(451199024)(46966006)(36840700001)(40470700004)(4326008)(8676002)(8936002)(7416002)(2906002)(40480700001)(44832011)(316002)(40460700003)(5660300002)(70586007)(70206006)(54906003)(110136005)(478600001)(36860700001)(966005)(26005)(336012)(426003)(36756003)(7696005)(1076003)(6666004)(41300700001)(2616005)(16526019)(356005)(81166007)(82740400003)(47076005)(83380400001)(86362001)(36900700001)(2101003);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Dec 2023 16:02:04.3733
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: f3aBEEvZQFC2/3N/NxJYZVnW9s39rcaappZLg2Dtw38NGcxk1G158Ql+KYaJmzMZ
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5103
+X-MS-Exchange-CrossTenant-Network-Message-Id: e7e49e9a-8939-4086-4477-08dbfb2baf2d
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	MN1PEPF0000ECDB.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB4907
 
-On Mon, Dec 11, 2023 at 11:49:49AM -0700, Alex Williamson wrote:
-> On Mon, 11 Dec 2023 14:10:28 -0400
-> Jason Gunthorpe <jgg@nvidia.com> wrote:
-> 
-> > On Mon, Dec 11, 2023 at 11:03:45AM -0700, Alex Williamson wrote:
-> > > On Sun, 26 Nov 2023 22:39:09 -0800
-> > > Yi Liu <yi.l.liu@intel.com> wrote:
-> 
-> > > >    the PF). Creating a virtual PASID capability in vfio-pci config space needs
-> > > >    to find a hole to place it, but doing so may require device specific
-> > > >    knowledge to avoid potential conflict with device specific registers like
-> > > >    hiden bits in VF config space. It's simpler by moving this burden to the
-> > > >    VMM instead of maintaining a quirk system in the kernel.  
-> > > 
-> > > This feels a bit like an incomplete solution though and we might
-> > > already posses device specific knowledge in the form of a variant
-> > > driver.  Should this feature structure include a flag + field that
-> > > could serve to generically indicate to the VMM a location for
-> > > implementing the PASID capability?  The default core implementation
-> > > might fill this only for PFs where clearly an emualted PASID capability
-> > > can overlap the physical capability.  Thanks,  
-> > 
-> > In many ways I would perfer to solve this for good by having a way to
-> > learn a range of available config space - I liked the suggestion to
-> > use a DVSEC to mark empty space.
-> 
-> Yes, DVSEC is the most plausible option for the device itself to convey
-> unused config space, but that requires hardware adoption so presumably
-> we're going to need to fill the gaps with device specific code.  That
-> code might live in a variant driver or in the VMM.  If we have faith
-> that DVSEC is the way, it'd make sense for a variant driver to
-> implement a virtual DVSEC to work out the QEMU implementation and set a
-> precedent.
+OVERVIEW
+--------
+This is the first part of multi-part series to introduce the AMD IOMMU
+nested translation support with Hardware-virtualized IOMMU (HW-vIOMMU),
+which allows user-space to take adventage of hardware accelerated
+AMD IOMMU in the guest.
 
-How hard do you think it would be for the kernel to synthesize the
-dvsec if the varient driver can provide a range for it?
+The part 1 introduces AMD IOMMU hardware info reporting support via
+the ioctl IOMMU_GET_HW_INFO with enum IOMMU_HW_INFO_TYPE_AMD. This allows
+hypervisor to communicate the supported capabilities to user-space.
+For example, this information can be used by QEMU to populate EFR and EFR2
+field in the guest IVRS table when building guest ACPI table.
 
-On the other hand I'm not so keen on having variant drivers that are
-only doing this just to avoid a table in qemu :\ It seems like a
-reasonable thing to add to existing drivers, though none of them
-support PASID yet..
+In addition, this series introduces nested translation support for the
+AMD IOMMU v2 page table (stage-1) via the IOMMUFD nesting infrastructure.
+This allows User-space to set up the v2 page table and communicate
+information via the struct iommu_hwpt_amd_v2 with enum
+IOMMU_HWPT_DATA_AMD_V2.
 
-> I mostly just want us to recognize that this feature structure also has
-> the possibility to fill this gap and we're consciously passing it over
-> and should maybe formally propose the DVSEC solution and reference it
-> in the commit log or comments here to provide a complete picture.
+This series is based on top of:
+  * Linux v6.7-rc5
+  * Series [PATCH v2 0/9] Improve TLB invalidation logic
+    (Currently queued in https://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git/log/?h=next)
+  * Series [PATCH v4 00/16] iommu/amd: SVA Support (part 3) - refactor support for GCR3 table
+    (https://lore.kernel.org/all/20231212085224.6985-1-vasant.hegde@amd.com/)
 
-You mean by passing an explicit empty range or something in a feature
-IOCTL?
+GITHUB
+------
+[1] https://github.com/AMDESE/linux/tree/iommu_sva_part3_v4_v6.7_rc5-amd_nesting_rfc_v1
+    (Complete code for the part 1 of this series)
+[2] https://github.com/AMDESE/linux/tree/wip/iommu_sva_part3_v4_v6.7_rc5-amd_viommu_20231212
+    (WIP for Linux AMD Hw-vIOMMU support)
 
-Jason
+HISTORY
+-------
+* [RFC PATCH 00/21] iommu/amd: Introduce support for HW accelerated vIOMMU w/ nested page table
+  (https://lore.kernel.org/lkml/20230621235508.113949-1-suravee.suthikulpanit@amd.com/)
+
+Thank you,
+Suravee
+
+Suravee Suthikulpanit (6):
+  iommu/amd: Update PASID, GATS, and GLX feature related macros
+  iommu/amd: Add support for hw_info for iommu capability query
+  iommu/amd: Introduce Guest-ID struct amd_iommu_vminfo
+  iommufd: Introduce data struct for AMD nested domain allocation
+  iommu/amd: Introduce helper functions to setup GCR3TRPMode
+  iommu/amd: Introduce nested translation support
+
+ drivers/iommu/amd/Makefile          |   2 +-
+ drivers/iommu/amd/amd_iommu.h       |  20 +-
+ drivers/iommu/amd/amd_iommu_types.h |  26 ++-
+ drivers/iommu/amd/init.c            |   8 +-
+ drivers/iommu/amd/iommu.c           | 299 +++++++++++++++++++++++++++-
+ drivers/iommu/amd/nested.c          | 107 ++++++++++
+ include/uapi/linux/iommufd.h        |  36 ++++
+ 7 files changed, 475 insertions(+), 23 deletions(-)
+ create mode 100644 drivers/iommu/amd/nested.c
+
+-- 
+2.34.1
+
