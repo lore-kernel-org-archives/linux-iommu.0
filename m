@@ -1,187 +1,185 @@
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2040.outbound.protection.outlook.com [40.107.236.40])
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D20BB1642E
-	for <iommu@lists.linux.dev>; Tue, 12 Dec 2023 07:30:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95F2D56B90
+	for <iommu@lists.linux.dev>; Tue, 12 Dec 2023 08:52:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="TILEy6is"
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="38k+SBKZ"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=fNYxG8TdojzxaXxTYNDg68kmL+5E3GXhhTAEr7X6G9NLjgBVptuuX0kVcwrA7yZPqY6jJYzg+xEO5aEKrzUojfNOjMkd22QoXoO9w2VdqA5g302Z5z8H7a6/m157wMoBcj1taeqiHMJKpgJQkbg8HFLgQT9D61DHV16rG11tIEQsOaKaOAUI6z/Yo/7VSbVXOKEK/HSDsVAoScYZrmn4+OrJthQcFwMVxjU4scPwj8UIdmQo0/mOkWTpc1o4sTyW+xrOaVrKyRAC2/a4gyfN8oVSRhNu1hv+LIsHAgk7s69YK2Ya7FiW8Ir2H8DkJ0ssIVtKph9ovyD2t65/J+8qHA==
+ b=IJRcpa+8o3eQ2agAXyYCx4oBBeXKfg5/ohYp1KhMCRaRhMGtthePCsMQpj2bPPV5d5Abg8yDkUmZ/PdHk+5cuFn2v4FETenSHwhAzxfUQ12ZQ1L6l+9tsMOkyT5+d+uleFKn6BxKKQmexwd7uJ4RcAz33sJmreVU3JYnG6w4YZ29DPve3CReZOMHFnMRwGwCGV0vahxNP+Xtpg9th/eOMH4ArvWe5UxoI4zrO0QW9CDJ9cfZob3iZd/oyCOVKKNM/0T5HXeZ0nZtGor9yQqT2GxO1J+IUsq8G2UbO068NPH+B8zU4s9vyagvvYkRoZECR5r1RjwaKuGBGkxkXDLDYw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=XptjxMBNQYJ7lZXSwFu+Z2T6o9exH+CjGyIcjOSxTEk=;
- b=TUVR3ypC/GTGsaNnUbr50BfE/c1cNv8z049o0echtZH6670eNqNwhOCieqROqhu3WBhh+NhfOpO9v23bQ2G52rLj7z+21yP8ZNDpHjIl6mC8bjTzA7RUybNoHe7BGB0qeDQq2RMFU52wgvUgDx4PDNSrDbJuVY50ubI9gYyrbfwsXpA9Z8R7tFFKV56euQod8qqQwPYI0OpC+/t3+5fNDaPWWSCLdWyVntmiiC49wm73v+mHuT5gdCOc7xbXvbI8D1mDVtQTFm4qMRRtn/x20SiVZXwVDAqDTbnB3bCp96QBeuNct9mdVRUoMvTTrbVyVqgMwmJENIcrRgdP2XJ2uQ==
+ bh=uXGuhK5fLf+K2MYTQEP7vwwe6SyIvAwMWWVoCFKhkOs=;
+ b=mbDLzhM8Z36xwz/D/pWexNOwpk2t2Ufpf2jX/NyEg9LtiOrBNHaHNwtJ3cfkhP7vup5X5l06M6+pct8wphAQEOmpYyZ2h2nzZYhGLw7JRJGNhxwFf542QBkaPE/DFk6/z/NoZFp4BQSsYljdR6fr8sktqh6X1euxYpVZWPI/vgtL9XT4Swzi8zv4fDIH4gmBHONYEfFvlIQG6rx+gG0BBuh0bUyi83Tfgh1/gYihtDhXTE7qmBVhpCXbZzKamndXkeUR7ySuu3znf0HXrFhXC7v94p8bkZAU5ja6qR73o0TT6iSsnGGz16Uyt8V+mnLbDyuq5QCb2NgL99Jja03sSg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.233) smtp.rcpttodomain=oracle.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
+ 165.204.84.17) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XptjxMBNQYJ7lZXSwFu+Z2T6o9exH+CjGyIcjOSxTEk=;
- b=TILEy6isH6pkxFQHXiRmb7Gw7+5gplp4b7cXJtT6B39dB0roE/xqUNAX5ijWbNTXX9jG2DVOjdVTrMXhXtPpZvHaSTXYXbdqGI07uKS/gjSvVPPNpHP0nHXZ268uHOsJzNVSt9VvQClX8hB4euPlUcuFuU7fIeyWhBFZHRXqyXSM/BLBCn17TADC4rKDa2/xmkOpvNRXjm/58qn+GHGNTd+l1qj0DVX+ABDwLEV9jgdPK1Jstqs2niBXoCNmwpeVh++rrZ2MlnqmOacSnyO7E/KaFFbFoEJRezlhJ3zznJH59cWBMj2NxEOX1Jz1MMnjfemAgG/4FPYbcVbJKnJqbw==
-Received: from BLAPR03CA0121.namprd03.prod.outlook.com (2603:10b6:208:32e::6)
- by MW4PR12MB6921.namprd12.prod.outlook.com (2603:10b6:303:208::8) with
+ bh=uXGuhK5fLf+K2MYTQEP7vwwe6SyIvAwMWWVoCFKhkOs=;
+ b=38k+SBKZRFA42bC09oCM346tt2qScElhY/5bXz1XJ7JjJ37YkzT9slj5IfjfDqB2zPM9UtY56qqM02EcfCFxsq5539r67pPfBaJJ5sLN628HjRG5pFndWHC13hYIsk3j7zj9XPy9tYKVEi8tLPLP7CZy17FEwM4++aCjVzdnagk=
+Received: from MW4PR04CA0331.namprd04.prod.outlook.com (2603:10b6:303:8a::6)
+ by SA3PR12MB8764.namprd12.prod.outlook.com (2603:10b6:806:31f::16) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7068.33; Tue, 12 Dec
- 2023 07:30:16 +0000
-Received: from BL6PEPF0001AB73.namprd02.prod.outlook.com
- (2603:10b6:208:32e:cafe::88) by BLAPR03CA0121.outlook.office365.com
- (2603:10b6:208:32e::6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7068.33 via Frontend
- Transport; Tue, 12 Dec 2023 07:30:15 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.233) by
- BL6PEPF0001AB73.mail.protection.outlook.com (10.167.242.166) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.7091.18 via Frontend Transport; Tue, 12 Dec 2023 07:30:15 +0000
-Received: from drhqmail203.nvidia.com (10.126.190.182) by mail.nvidia.com
- (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Mon, 11 Dec
- 2023 23:30:03 -0800
-Received: from drhqmail203.nvidia.com (10.126.190.182) by
- drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.41; Mon, 11 Dec 2023 23:30:03 -0800
-Received: from Asurada-Nvidia (10.127.8.9) by mail.nvidia.com (10.126.190.182)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41 via Frontend
- Transport; Mon, 11 Dec 2023 23:30:02 -0800
-Date: Mon, 11 Dec 2023 23:30:00 -0800
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: Yi Liu <yi.l.liu@intel.com>, "Giani, Dhaval" <Dhaval.Giani@amd.com>,
-	Vasant Hegde <vasant.hegde@amd.com>, Suravee Suthikulpanit
-	<suravee.suthikulpanit@amd.com>, <joro@8bytes.org>,
-	<alex.williamson@redhat.com>, <kevin.tian@intel.com>, <robin.murphy@arm.com>,
-	<baolu.lu@linux.intel.com>, <cohuck@redhat.com>, <eric.auger@redhat.com>,
-	<kvm@vger.kernel.org>, <mjrosato@linux.ibm.com>,
-	<chao.p.peng@linux.intel.com>, <yi.y.sun@linux.intel.com>,
-	<peterx@redhat.com>, <jasowang@redhat.com>,
-	<shameerali.kolothum.thodi@huawei.com>, <lulu@redhat.com>,
-	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
-	<linux-kselftest@vger.kernel.org>, <zhenzhong.duan@intel.com>,
-	<joao.m.martins@oracle.com>, <xin.zeng@intel.com>, <yan.y.zhao@intel.com>
-Subject: Re: [PATCH v6 0/6] iommufd: Add nesting infrastructure (part 2/2)
-Message-ID: <ZXgL+GCGPgH+hlXo@Asurada-Nvidia>
-References: <20231117130717.19875-1-yi.l.liu@intel.com>
- <20231209014726.GA2945299@nvidia.com>
- <ZXd+1UVrcAQePjnD@Asurada-Nvidia>
- <20231211215738.GB3014157@nvidia.com>
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7068.32; Tue, 12 Dec
+ 2023 08:52:53 +0000
+Received: from CO1PEPF000042A8.namprd03.prod.outlook.com
+ (2603:10b6:303:8a:cafe::c4) by MW4PR04CA0331.outlook.office365.com
+ (2603:10b6:303:8a::6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7068.32 via Frontend
+ Transport; Tue, 12 Dec 2023 08:52:53 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ CO1PEPF000042A8.mail.protection.outlook.com (10.167.243.37) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.7091.26 via Frontend Transport; Tue, 12 Dec 2023 08:52:53 +0000
+Received: from kali.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.34; Tue, 12 Dec
+ 2023 02:52:49 -0600
+From: Vasant Hegde <vasant.hegde@amd.com>
+To: <iommu@lists.linux.dev>, <joro@8bytes.org>
+CC: <suravee.suthikulpanit@amd.com>, <wei.huang2@amd.com>,
+	<jsnitsel@redhat.com>, <jgg@ziepe.ca>, Vasant Hegde <vasant.hegde@amd.com>
+Subject: [PATCH v4 00/16] iommu/amd: SVA Support (part 3) - refactor support for GCR3 table
+Date: Tue, 12 Dec 2023 08:52:08 +0000
+Message-ID: <20231212085224.6985-1-vasant.hegde@amd.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20231211215738.GB3014157@nvidia.com>
-X-NV-OnPremToCloud: ExternallySecured
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BL6PEPF0001AB73:EE_|MW4PR12MB6921:EE_
-X-MS-Office365-Filtering-Correlation-Id: 20950ca9-a22c-4845-c095-08dbfae42f3b
+X-MS-TrafficTypeDiagnostic: CO1PEPF000042A8:EE_|SA3PR12MB8764:EE_
+X-MS-Office365-Filtering-Correlation-Id: d98f54f3-34d2-462d-6119-08dbfaefba3c
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	wptgO8K+EY7Z6iyZjoTb+IvXsZ0S8NVAgh7y4Pkt9+JG0JOkdYCY4+HY3jmsX9ZtRvtKu/2ScZblP1Poy19ml6IOnUSmcCcurQ4qADDiRww1QGXfGAaqO5llcNd2Fx4r634EsookGDv2yJVNQk1HP1q35uIKf1LJbKTj5Pld+ClHi5glBUo6HizYoFS94FixfK85RI8DoCGW5FoLQZQvBfXLJLPy8xztprjbhtm36fm4dvWYn96FQzNV6K+Xq9txXozUytfDf1XbU5CwyIu9vLP2JcNeLCUevOaAkSwXJGVO/ma/wEwRwFsuyzfoyCx958u7NZbRPX8W3QIBxIjjbxfxKSrK39RSGagiZW0Ww8tzWOkzaenNa0IB49lYmfqQtfmiglUQjqpcqKRHxi+ffNxNnNox5LMluFalBwOv+m/Per6SQzp9NbhilCqlhRQ4c6TwI5Vave2PAj1EKDKfC/hfnje0YdK/KibjgCHwkuSgN8avs5RM1xg/xLs2xlYDYJVtE5fBnnRLWY6hbnTZDw9DUKfpBfh0TzFletp40oxIzc7vbOxSKWAoQZgi0Ea+7KXtWQwue7+AoecyX92YJzeGwQg2qqOT85qjesjXsRguW8D2bljtlqkdmS1wTcpb+/oPUILQVANWpQSbsxitYRCuADcY5d6clwZ1vnLhxiie60iz1FIX2Jwnen6UIaRDOVY5mEvlSXFwBkgA4TWInOzKk9i5lm+bTiW3x9PWgKQaxVB1fpUK4Wxj1tKpZ3Vi
+	VWlrl9FGqx+8bGq4+Veyt+n0UelNFlSufquyyNG6JunjSXSGgjqKYQI6fHpy0Gr8KSJ8vENoWinD5VjV5aw3e0rXgYMna0bGYMsfSNzsKJ8N3QAHGnGUdbKihi3A/qZsHZrXU/MCz6C7YPXrkO4T4Wlvbfc4a0ak9NOaqRpc69PKzk+OA3NG5rNzVLLY0Oa+iNS1PPOTqksqNl3H2P1vENzoLM3jkYjOgBNqQrYVmK6xS0VBBvBVSEryTzDgg2XrV+kGza2i6dg+xG8WE/HFlPxZitd5cKjVrRC1T3VY83SZ5LyTtGW880SNsfBfcGN5aqB6NhbDTKqAi7Q8D908t1CihBSfCKRzCAZULB0VrW2F9usZcnSZRCmPXQMlMjOFkaqHNIXDw2UrQWEhAl9DoEydWJveVoT1WzSkPGbsSFS1CUc+3w0sAZubytGG5QXteIo4yots61Qb5d697axRv5Db6JDuryZ80NcYlfHR01PJjwMy+2zfXWF16xM/GPyCZyKIMKB3/7G4R4PodN3Lu7zYPO9QsqAxj0AdGeh6qcFXZrUK1EXghDyUaT76juvZAcyDz23jPqz24qQSxlDa4BCxjqoBdOUwFNdVHGpA8krHQ8nub9ahqTDQ/Ngn5LE5NugTke9GYqN8CZzTSIc+3rXIqOXXJ0lT2A9QtvBN3ZrcQ9aDErSqWL6nlytS2ZSzNiJJUCrouBw+T31Ur2Bvw6uWaJpO5RSdF9zT45Iptk5pXn9S08cE38OFrMSIGcZAHEOcsR8rEGKP4HhkrynuUr6VcANqbaBDm838yN6wHoM=
 X-Forefront-Antispam-Report:
-	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230031)(4636009)(136003)(376002)(346002)(39860400002)(396003)(230922051799003)(451199024)(1800799012)(82310400011)(186009)(64100799003)(36840700001)(40470700004)(46966006)(7636003)(41300700001)(8676002)(356005)(82740400003)(478600001)(8936002)(6636002)(70586007)(70206006)(33716001)(86362001)(54906003)(316002)(7416002)(26005)(5660300002)(9686003)(336012)(47076005)(36860700001)(6862004)(2906002)(83380400001)(426003)(4326008)(40480700001)(55016003)(40460700003);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Dec 2023 07:30:15.3114
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230031)(4636009)(39860400002)(136003)(396003)(346002)(376002)(230922051799003)(1800799012)(451199024)(64100799003)(186009)(82310400011)(36840700001)(40470700004)(46966006)(40460700003)(36860700001)(1076003)(47076005)(5660300002)(336012)(26005)(2616005)(16526019)(44832011)(36756003)(40480700001)(426003)(70206006)(54906003)(70586007)(966005)(2906002)(83380400001)(86362001)(82740400003)(81166007)(478600001)(41300700001)(356005)(7696005)(8936002)(4326008)(8676002)(110136005)(316002)(6666004)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Dec 2023 08:52:53.0141
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 20950ca9-a22c-4845-c095-08dbfae42f3b
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-Network-Message-Id: d98f54f3-34d2-462d-6119-08dbfaefba3c
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	BL6PEPF0001AB73.namprd02.prod.outlook.com
+	CO1PEPF000042A8.namprd03.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR12MB6921
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA3PR12MB8764
 
-On Mon, Dec 11, 2023 at 05:57:38PM -0400, Jason Gunthorpe wrote:
-> On Mon, Dec 11, 2023 at 01:27:49PM -0800, Nicolin Chen wrote:
-> > On Fri, Dec 08, 2023 at 09:47:26PM -0400, Jason Gunthorpe wrote:
-> > > What is in a Nested domain:
-> > >  ARM: A CD table pointer
-> > >       Nesting domains are created for every unique CD table top pointer.
-> > 
-> > I think we basically implemented in a way of syncing STE, i,e,
-> > vSTE.Config must be "S1 Translate" besides a CD table pointer,
-> > and a nested domain is freed when vSTE.Config=BYPASS even if a
-> > CD table pointer is present, right?
-> 
-> Yes, but you can also de-duplicate the nested domains based on the CD
-> table pointer. It is not as critical for ARM as others, but may
-> still be worth doing.
+This is part 3 of the 4-part series to introduce Share Virtual
+Address (SVA) support, which focuses on refactoring GCR3 table.
+This moves GCR3 related information from protection domain
+structure to iommu_dev_data (per device) structure.
 
-Ah right! Should do that.
+It contains the following enhancements:
 
-> > If we do implement an IOMMUFD_DEV_ASSIGN_VIRTUAL_ID, do we need
-> > an IOMMUFD_DEV_RESIGN_VIRTUAL_ID? (or better word than resign).
-> 
-> I don't think so.. The vRID is basically fixed, if it needs to be
-> changed then the device can be destroyed (or assign can just change it)
+* Patch 1 - 3:
+  Cleanup and introduce helper function
 
-OK. Will insert the cleanup piece to the unbind()/destroy().
+* Patch 4 - 13:
+  Introduce per device GCR3 table, per device domain ID, invalidation based
+  on per device and code refactoring
 
-> > Could the structure just look like this?
-> > struct iommu_dev_assign_virtual_id {
-> >        __u32 size;
-> >        __u32 dev_id;
-> >        __u32 id_type;
-> >        __u32 id;
-> > };
-> 
-> It needs to take in the viommu_id also, and I'd make the id 64 bits
-> just for good luck.
+* Patch 14 - 16:
+  Remove unused variable, rearrange functions to make it easy to maintain
 
-What is viommu_id required for in this context? I thought we
-already know which SMMU instance to issue commands via dev_id?
+This patch series is based on top of iommu/next branch (commit bd19c7637024).
 
-> > > IOMMUFD_DEV_INVALIDATE should be introduced with the same design as
-> > > HWPT invalidate. This would be used for AMD/ARM's ATC invalidation
-> > > (and just force the stream ID, userspace must direct the vRID to the
-> > > correct dev_id).
-> > 
-> > SMMU's CD invalidations could fall into this category too.
+This is also available at github :
+  https://github.com/AMDESE/linux/tree/iommu_sva_part3_v4_v6.7_rc5
 
-Do we need a different iommu API for this ioctl? We currently
-have the cache_invalidate_user as a domain op. The new device
-op will be an iommu op?
+Thanks Jason for reviewing previous versions and providing valuable feedbacks.
 
-And should we rename the "cache_invalidate_user"? Would VT-d
-still uses it for device cache?
 
-> > I previously drafted something to test it out with iommufd.
-> > Basically it needs the pairing of vRID/pRID in attach_dev()
-> > and another ioctl to mmap/config user queue(s):
-> > +struct iommu_hwpt_cache_config_tegra241_vcmdq {
-> > +       __u32 vcmdq_id;			// queue id
-> > +       __u32 vcmdq_log2size;		// queue size
-> > +       __aligned_u64 vcmdq_base;	// queue guest PA
-> > +};
-> 
-> vRID/pRID pairing should come from IOMMUFD_DEV_ASSIGN_VIRTUAL_ID. When
-> a HWPT is allocated it would be connected to the viommu_id and then it
-> would all be bundled together in the HW somehow
+Changes from v3 -> v4:
+  - Added new patch to enable IOMMU GT feature early
+  - Fixed dirty tracking path to use get_amd_iommu_from_dev()
+  - Fixed duplicate flush issue in do_attach() path
+  - Removed gcr3_info->giov variable. Instead we use domain page table mode to decide
+    DTE[GIOV] bit.
+  - Free gcr3_table before calling set_dte_entry (otherwise there is a possibility
+    of its setting up gcr3 table with glx 0)
+  - Adjusted gfp_t flag for GCR3 table allocation (GPF_ATOMIC -> GFP_KERNEL)
+  - Moved below patches from invalidation improvement series to this series
+    * Remove unused flush_pasid() related functions
+      (Originally it was part of Invalidation improvement series, I had to push it to
+       this series as set_gcr3() was still using __amd_iommu_flush_tlb()).
+    * Added patch to Rearrange device flush code
 
-Since we were talking about sharing stage-2 domain, the HWPT
-to the stage-2 domain will be shared among the vIOMMU/pIOMMU
-instances too? I think I am not quite getting the viommu_id
-part yet. From the other side of this thread, viommu object
-is created per vIOMMU instance and each one actually tied to
-a pIOMMU by nature?
+v3 : https://lore.kernel.org/linux-iommu/20231013151652.6008-1-vasant.hegde@amd.com/T/#t
 
-Thanks
-Nicolin
+Changes from v2 -> v3:
+  - Dropped "iommu/amd: Use struct protection_domain in helper functions" as flush related
+    functions are already fixed and set_gcr3 related functions is reworked in this series.
+  - Removed moving to_pdomain() function from this series. It will be introduced
+    in SVA series where it will be used.
+  - Added per device domain ID and per device invalidation functions
+  - Added functions to flush TLB for the given device
+  - Added Review-by tags
+
+v2 : https://lore.kernel.org/linux-iommu/20230816174031.634453-1-vasant.hegde@amd.com/T/#t
+
+Changes from v1 - v2:
+  - Dropped iommu_v2 module related support as newly introduced Part2
+    removed iommu_v2 module.
+  - Moved Patch 'Use struct protection_domain in helper functions' from Part1 to
+    Part3
+  - Updated get_amd_iommu_from_dev() to retrieve iommu from device structure
+  - Removed 'PD_MODE_PT'
+
+v1 : https://lore.kernel.org/linux-iommu/20230808100232.5977-1-vasant.hegde@amd.com/T/#t
+
+Suravee Suthikulpanit (8):
+  iommu/amd: Introduce get_amd_iommu_from_dev()
+  iommu/amd: Introduce struct protection_domain.pd_mode
+  iommu/amd: Introduce per-device GCR3 table
+  iommu/amd: Refactor helper function for setting / clearing GCR3
+  iommu/amd: Refactor attaching / detaching device functions
+  iommu/amd: Refactor protection_domain helper functions
+  iommu/amd: Refactor GCR3 table helper functions
+  iommu/amd: Remove unused GCR3 table parameters from struct
+    protection_domain
+
+Vasant Hegde (8):
+  iommu/amd: Pass struct iommu_dev_data to set_dte_entry()
+  iommu/amd: Enable Guest Translation before registering devices
+  iommu/amd: Use protection_domain.flags to check page table mode
+  iommu/amd: Introduce per-device domain ID to workaround potential TLB
+    aliasing issue
+  iommu/amd: Add support for device based TLB invalidation
+  iommu/amd: Rearrange GCR3 table setup code
+  iommu/amd: Remove unused flush pasid functions
+  iommu/amd: Rearrange device flush code
+
+ drivers/iommu/amd/amd_iommu.h       |  25 +-
+ drivers/iommu/amd/amd_iommu_types.h |  27 +-
+ drivers/iommu/amd/init.c            |   6 +-
+ drivers/iommu/amd/io_pgtable_v2.c   |  21 +-
+ drivers/iommu/amd/iommu.c           | 646 ++++++++++++++--------------
+ include/linux/iommu.h               |  13 +
+ 6 files changed, 371 insertions(+), 367 deletions(-)
+
+-- 
+2.31.1
+
