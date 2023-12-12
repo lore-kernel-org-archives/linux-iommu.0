@@ -1,389 +1,273 @@
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2059.outbound.protection.outlook.com [40.107.220.59])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E461676DC8
-	for <iommu@lists.linux.dev>; Tue, 12 Dec 2023 16:02:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4812A7765B;
+	Tue, 12 Dec 2023 16:23:59 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="EO3CP/o3"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Ly+bXBlxvin74UKo+TAby8MQ60q+a4yKE2KccX0czfEoOhgvkwxW1w/JNPZXq0Dx/dWvK12estfIp+EPuuKtRCUP6jKf7zLQgvl91NMOLxPggg0R3ZTvN1STQ4sMQ+IOCWNus33NYsk4m8FSURX6CZXWQPHFLkijIwnCMRzT39jDYjWVVL/RfSBC36uaVu0qVYWM0ZnRlRzqbdyoFK7jHem6gUMjN/+jaBivbggHCQqt04uzVaK9oiCxqbb9z7sefDOgR7+Ej8suGGMGLIOxJrZjjluhGbxghccOGrxm3s7SGyQLlztI6MRdzUc1GOX8rO8FoTcMjyTxHa8TiV+4pA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=N6VDxnUGupzhSbze1Gx+uztUEK1it5dGt3r44BSI1wk=;
- b=F8PNm4+kQ44RwbtfGWRPLMWNpU+C/LSiEzvtrYykcCtMEqtc5z4qiPPuvqWz40Hnn2HVta0VFUhNG5TwOvm4AH4YfsRejDoOgOT7WaCo9TPL06xhdpbm9E5E7pX6Ovo1jYi4RmYShnwJOxwtSgVTc9noBSsfsgBrguDDoqrPWqbojko+6PJwdjVblBYgvcIt29uQPYuUExUAGgWoL13xzASqtTLQUQjptsWMD4Bolr25OEsRvJcnka81B0EO3u1SJC/6RJDOFXc+RNIAevuRbgeoZRqf73dQJGCeXgLADimFtywmkf2L0vwrxrL3oE/6LFlXAPk0PjBGxcoKP7IN2Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=N6VDxnUGupzhSbze1Gx+uztUEK1it5dGt3r44BSI1wk=;
- b=EO3CP/o3wMCxT/TYaG9vFB9EoAzBEbmQAeFjf6Vnd8rXMU1AffAQc78hh4Xf+ZjZStCTlU86ac8gte2wPqB0UWsG/D+w9bcwimmmQ4IlzBLRegX7V/HyKH8hMcf155l5zM2w35XntI7FK4qDMxhE8crggnZFhu0hkyH+x/oTCaE=
-Received: from BL0PR02CA0087.namprd02.prod.outlook.com (2603:10b6:208:51::28)
- by BY5PR12MB5512.namprd12.prod.outlook.com (2603:10b6:a03:1df::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7068.33; Tue, 12 Dec
- 2023 16:02:12 +0000
-Received: from MN1PEPF0000ECD6.namprd02.prod.outlook.com
- (2603:10b6:208:51:cafe::31) by BL0PR02CA0087.outlook.office365.com
- (2603:10b6:208:51::28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7068.33 via Frontend
- Transport; Tue, 12 Dec 2023 16:02:10 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- MN1PEPF0000ECD6.mail.protection.outlook.com (10.167.242.135) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.7091.18 via Frontend Transport; Tue, 12 Dec 2023 16:02:10 +0000
-Received: from ruby-95f9host.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.34; Tue, 12 Dec
- 2023 10:02:08 -0600
-From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-To: <linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>,
-	<joro@8bytes.org>, <jgg@nvidia.com>
-CC: <yi.l.liu@intel.com>, <kevin.tian@intel.com>, <nicolinc@nvidia.com>,
-	<eric.auger@redhat.com>, <vasant.hegde@amd.com>, <jon.grimm@amd.com>,
-	<santosh.shukla@amd.com>, <Dhaval.Giani@amd.com>, <pandoh@google.com>,
-	<loganodell@google.com>, Suravee Suthikulpanit
-	<suravee.suthikulpanit@amd.com>
-Subject: [RFC PATCH 6/6] iommu/amd: Introduce nested translation support
-Date: Tue, 12 Dec 2023 10:01:39 -0600
-Message-ID: <20231212160139.174229-7-suravee.suthikulpanit@amd.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20231212160139.174229-1-suravee.suthikulpanit@amd.com>
-References: <20231212160139.174229-1-suravee.suthikulpanit@amd.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GZvxvHGM"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC153C433C7;
+	Tue, 12 Dec 2023 16:23:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1702398239;
+	bh=N0YmmaPyPHajCi7Js8VUkU8lZscCx1Z3LEh9ObmNJEI=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=GZvxvHGMzD2IIvqekKK+8Kb5nnpZy/d+JSwmW2ve9Cwkblr3KvjmHQhH06fmhDcIa
+	 EybIxvmVTJNYZoCaAicDoVJVs1WOEAKhgR7QtUo6KpMeKC+prINe2+l4TK2qQ99Qvz
+	 8DCm+DH27pZYrBxaRp8HJKpz8aBABgfGVIoceSNlQ5sehXDUZl8BSMyqAn6NvWn1lE
+	 IS0thKG1hYrg3hzZ08QglVZEbGrUGPg/I5jKSHTFWW++qyXTggBSXX/SBxWl+j4Avv
+	 GBN0VtwzMmB2voUSuVFBOlK3x7NEZprE+At3V6I7fAjcpk+jd/mPCw4bF27IcC7A7A
+	 H8Oc3tNooJsFg==
+Date: Tue, 12 Dec 2023 16:23:53 +0000
+From: Will Deacon <will@kernel.org>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+	linux-arm-kernel@lists.infradead.org,
+	Robin Murphy <robin.murphy@arm.com>,
+	Eric Auger <eric.auger@redhat.com>, Moritz Fischer <mdf@kernel.org>,
+	Michael Shavit <mshavit@google.com>,
+	Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev,
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+Subject: Re: [PATCH v3 04/19] iommu/arm-smmu-v3: Make STE programming
+ independent of the callers
+Message-ID: <20231212162353.GA29871@willie-the-truck>
+References: <0-v3-d794f8d934da+411a-smmuv3_newapi_p1_jgg@nvidia.com>
+ <4-v3-d794f8d934da+411a-smmuv3_newapi_p1_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: MN1PEPF0000ECD6:EE_|BY5PR12MB5512:EE_
-X-MS-Office365-Filtering-Correlation-Id: 8f8c8c74-9d1e-40b6-db34-08dbfb2bb2cb
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	q7qpAN8pj4XMARlKXO5PhCvN5sboiPFRptC6Y2dEKegqDHCBcA/XjUBkGDV7Rubk7asP8GLQEpumbQQP54ncakv/8SS6zBDRtUZrfgKXDtWNMQLPDjHPWFVmyA3N8LLzlX1X4dVDwc8wR5QHif5WR7KyrSqP0hjJlWf6/VDTv8G+AmblycZH/pGYDE4C7++ElPkGjLUhL4kwzPQMamAo/+0hDfQjCfJZhD21BOuJif7oWIE6aZBTJPNyjNuHjzyaqa0/ts6OJsCxW1UKrrE54inGHD3+2hvmmAYww4fHczCX19jOLhDNbwMjvqy8rm7F7nHyycNTZISbEadSWdWN84HKNuSZjzRAaolsev3BDy+lUJWKUjqC3blu8bBhN5zwbVOyzDtR9jAG8BkdB3UTSQ+cTuVy9e9jslF39N5iU9Vy76O5qwkEExXjx55GObkEA91CujCzJp3Lb0p2AH8+NoagOfy/6KNvsfazWTKck3l7amUyrzHiPDjMu3IUtx+HnKtxXBKARHQGocsiMUNmXE8obBRl2XzaR67c/lsL03CwQVvpGPaFGjl2E+/hChD1Pl02VZXTOzVUEJg+Vx4sR+MZHPhomcgQiXXxfNDDrU8Uffey/7Dc1ZL7TKwSTfAjgOgxvLebXNqRqYXHVMfI0t742PKQTXTFBCyPGK/utZNzhmSZQmviKN5Wkl0YE0nYS1JMG1rkcKPWu6bXgHLtgFJ9vbBXn72KM1FF8OkeBk0yp6eBQAg60Ws8/Jdiv4PLcW9hBNkjzOs4zSIOkWDEi3iMSGflQJy2Z2oKQO86Lyg=
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230031)(4636009)(39860400002)(376002)(346002)(136003)(396003)(230922051799003)(451199024)(82310400011)(1800799012)(186009)(64100799003)(36840700001)(46966006)(40470700004)(41300700001)(5660300002)(7416002)(2906002)(2616005)(1076003)(6666004)(478600001)(36756003)(7696005)(47076005)(82740400003)(81166007)(426003)(83380400001)(16526019)(336012)(8936002)(26005)(40480700001)(4326008)(70206006)(54906003)(40460700003)(36860700001)(356005)(316002)(110136005)(8676002)(70586007)(44832011)(86362001)(2101003)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Dec 2023 16:02:10.4458
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8f8c8c74-9d1e-40b6-db34-08dbfb2bb2cb
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	MN1PEPF0000ECD6.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB5512
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <4-v3-d794f8d934da+411a-smmuv3_newapi_p1_jgg@nvidia.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 
-To support nested translation on AMD IOMMU, the driver needs to
-program DTE[GCR3 Table Root Pointer] with the address provided by
-the guest via struct iommu_hwpt_amd_v2, which is passed as a parameter
-of the struct iommu_ops.domain_alloc_user() with the flag
-IOMMU_HWPT_ALLOC_NEST_PARENT.
+Hi Jason,
 
-Note that current implementation only support GCR3TRPMode for
-nested translation, which uses GPA to program GCR3 Table Root Pointer.
+On Tue, Dec 05, 2023 at 03:14:36PM -0400, Jason Gunthorpe wrote:
+> As the comment in arm_smmu_write_strtab_ent() explains, this routine has
+> been limited to only work correctly in certain scenarios that the caller
+> must ensure. Generally the caller must put the STE into ABORT or BYPASS
+> before attempting to program it to something else.
+> 
+> The next patches/series are going to start removing some of this logic
+> from the callers, and add more complex state combinations than currently.
+> 
+> Thus, consolidate all the complexity here. Callers do not have to care
+> about what STE transition they are doing, this function will handle
+> everything optimally.
+> 
+> Revise arm_smmu_write_strtab_ent() so it algorithmically computes the
+> required programming sequence to avoid creating an incoherent 'torn' STE
+> in the HW caches. The update algorithm follows the same design that the
+> driver already uses: it is safe to change bits that HW doesn't currently
+> use and then do a single 64 bit update, with sync's in between.
+> 
+> The basic idea is to express in a bitmask what bits the HW is actually
+> using based on the V and CFG bits. Based on that mask we know what STE
+> changes are safe and which are disruptive. We can count how many 64 bit
+> QWORDS need a disruptive update and know if a step with V=0 is required.
+> 
+> This gives two basic flows through the algorithm.
+> 
+> If only a single 64 bit quantity needs disruptive replacement:
+>  - Write the target value into all currently unused bits
+>  - Write the single 64 bit quantity
+>  - Zero the remaining different bits
+> 
+> If multiple 64 bit quantities need disruptive replacement then do:
+>  - Write V=0 to QWORD 0
+>  - Write the entire STE except QWORD 0
+>  - Write QWORD 0
+> 
+> With HW flushes at each step, that can be skipped if the STE didn't change
+> in that step.
+> 
+> At this point it generates the same sequence of updates as the current
+> code, except that zeroing the VMID on entry to BYPASS/ABORT will do an
+> extra sync (this seems to be an existing bug).
 
-Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
----
- drivers/iommu/amd/Makefile          |   2 +-
- drivers/iommu/amd/amd_iommu.h       |   8 +++
- drivers/iommu/amd/amd_iommu_types.h |   3 +
- drivers/iommu/amd/iommu.c           |  63 ++++++++++++++--
- drivers/iommu/amd/nested.c          | 107 ++++++++++++++++++++++++++++
- 5 files changed, 175 insertions(+), 8 deletions(-)
- create mode 100644 drivers/iommu/amd/nested.c
+This is certainly very clever, but at the same time I can't help but feel
+that it's slightly over-engineered to solve the general case, whereas I'm
+struggling to see why such a level of complexity is necessary.
 
-diff --git a/drivers/iommu/amd/Makefile b/drivers/iommu/amd/Makefile
-index f454fbb1569e..447cb6bb48eb 100644
---- a/drivers/iommu/amd/Makefile
-+++ b/drivers/iommu/amd/Makefile
-@@ -1,3 +1,3 @@
- # SPDX-License-Identifier: GPL-2.0-only
--obj-$(CONFIG_AMD_IOMMU) += iommu.o init.o quirks.o io_pgtable.o io_pgtable_v2.o
-+obj-$(CONFIG_AMD_IOMMU) += iommu.o init.o quirks.o io_pgtable.o io_pgtable_v2.o nested.o
- obj-$(CONFIG_AMD_IOMMU_DEBUGFS) += debugfs.o
-diff --git a/drivers/iommu/amd/amd_iommu.h b/drivers/iommu/amd/amd_iommu.h
-index 55479a6efaae..6ea146a964df 100644
---- a/drivers/iommu/amd/amd_iommu.h
-+++ b/drivers/iommu/amd/amd_iommu.h
-@@ -7,6 +7,7 @@
- #ifndef AMD_IOMMU_H
- #define AMD_IOMMU_H
- 
-+#include <uapi/linux/iommufd.h>
- #include <linux/iommu.h>
- 
- #include "amd_iommu_types.h"
-@@ -75,6 +76,8 @@ void amd_iommu_dev_flush_pasid_all(struct iommu_dev_data *dev_data,
- 				   ioasid_t pasid);
- 
- void amd_iommu_build_efr(u64 *efr, u64 *efr2);
-+int amd_iommu_attach_device(struct iommu_domain *dom, struct device *dev);
-+void amd_iommu_domain_free(struct iommu_domain *dom);
- 
- #ifdef CONFIG_IRQ_REMAP
- int amd_iommu_create_irq_domain(struct amd_iommu *iommu);
-@@ -190,4 +193,9 @@ int amd_iommu_vminfo_alloc(struct amd_iommu *iommu, struct amd_iommu_vminfo *vmi
- void amd_iommu_vminfo_free(struct amd_iommu *iommu, struct amd_iommu_vminfo *vminfo);
- struct amd_iommu_vminfo *amd_iommu_get_vminfo(int gid);
- 
-+/* NESTED */
-+struct protection_domain *to_pdomain(struct iommu_domain *dom);
-+struct iommu_domain *amd_iommu_nested_domain_alloc(struct device *dev,
-+						   struct iommu_hwpt_amd_v2 *hwpt);
-+
- #endif
-diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
-index 1b150e0cb689..c2055b476a97 100644
---- a/drivers/iommu/amd/amd_iommu_types.h
-+++ b/drivers/iommu/amd/amd_iommu_types.h
-@@ -114,6 +114,8 @@
- #define FEATURE_PASMAX_MASK	(0x1FULL << FEATURE_PASMAX_SHIFT)
- 
- /* Extended Feature 2 Bits */
-+#define FEATURE_GCR3TRPMODE	BIT_ULL(3)
-+
- #define FEATURE_SNPAVICSUP_SHIFT	5
- #define FEATURE_SNPAVICSUP_MASK		(0x07ULL << FEATURE_SNPAVICSUP_SHIFT)
- #define FEATURE_SNPAVICSUP_GAM(x) \
-@@ -1058,6 +1060,7 @@ struct amd_irte_ops {
- struct amd_iommu_vminfo {
- 	u16 gid;
- 	struct hlist_node hnode;
-+	u64 *devid_table;
- };
- 
- #ifdef CONFIG_IRQ_REMAP
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index 8bf12674dc84..2a7e29e8c112 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -260,7 +260,7 @@ static struct amd_iommu *rlookup_amd_iommu(struct device *dev)
- 	return __rlookup_amd_iommu(seg, PCI_SBDF_TO_DEVID(devid));
- }
- 
--static struct protection_domain *to_pdomain(struct iommu_domain *dom)
-+struct protection_domain *to_pdomain(struct iommu_domain *dom)
- {
- 	return container_of(dom, struct protection_domain, domain);
- }
-@@ -2526,21 +2526,70 @@ static struct iommu_domain *amd_iommu_domain_alloc(unsigned int type)
- 	return domain;
- }
- 
-+static int udata_to_iommu_hwpt_amd_v2(const struct iommu_user_data *user_data,
-+				       struct iommu_hwpt_amd_v2 *hwpt)
-+{
-+	if (!user_data)
-+		return -EINVAL;
-+
-+	if (user_data->type != IOMMU_HWPT_DATA_AMD_V2)
-+		return -EOPNOTSUPP;
-+
-+	return iommu_copy_struct_from_user(hwpt, user_data,
-+					   IOMMU_HWPT_DATA_AMD_V2,
-+					   guest_paging_mode);
-+}
-+
-+static bool check_nested_support(u32 flags)
-+{
-+	if (!(flags & IOMMU_HWPT_ALLOC_NEST_PARENT))
-+		return true;
-+
-+	if (!check_feature(FEATURE_GT) ||
-+	    !check_feature(FEATURE_GIOSUP) ||
-+	    !check_feature2(FEATURE_GCR3TRPMODE))
-+		return false;
-+
-+	return true;
-+}
-+
- static struct iommu_domain *
- amd_iommu_domain_alloc_user(struct device *dev, u32 flags,
- 			    struct iommu_domain *parent,
- 			    const struct iommu_user_data *user_data)
--
- {
--	unsigned int type = IOMMU_DOMAIN_UNMANAGED;
-+	struct iommu_domain *dom;
-+
-+	if (parent) {
-+		int ret;
-+		struct iommu_hwpt_amd_v2 hwpt;
-+
-+		if (parent->ops != amd_iommu_ops.default_domain_ops)
-+			return ERR_PTR(-EINVAL);
- 
--	if ((flags & ~IOMMU_HWPT_ALLOC_DIRTY_TRACKING) || parent || user_data)
-+		ret = udata_to_iommu_hwpt_amd_v2(user_data, &hwpt);
-+		if (ret)
-+			return ERR_PTR(ret);
-+
-+		return amd_iommu_nested_domain_alloc(dev, &hwpt);
-+	}
-+
-+	/* Check supported flags */
-+	if (flags & (~(IOMMU_HWPT_ALLOC_NEST_PARENT |
-+		       IOMMU_HWPT_ALLOC_DIRTY_TRACKING)))
-+		return ERR_PTR(-EOPNOTSUPP);
-+
-+	if (!check_nested_support(flags))
- 		return ERR_PTR(-EOPNOTSUPP);
- 
--	return do_iommu_domain_alloc(type, dev, flags);
-+	dom = iommu_domain_alloc(dev->bus);
-+	if (!dom)
-+		return ERR_PTR(-ENOMEM);
-+
-+	return dom;
- }
- 
--static void amd_iommu_domain_free(struct iommu_domain *dom)
-+void amd_iommu_domain_free(struct iommu_domain *dom)
- {
- 	struct protection_domain *domain;
- 	unsigned long flags;
-@@ -2559,7 +2608,7 @@ static void amd_iommu_domain_free(struct iommu_domain *dom)
- 	protection_domain_free(domain);
- }
- 
--static int amd_iommu_attach_device(struct iommu_domain *dom,
-+int amd_iommu_attach_device(struct iommu_domain *dom,
- 				   struct device *dev)
- {
- 	struct iommu_dev_data *dev_data = dev_iommu_priv_get(dev);
-diff --git a/drivers/iommu/amd/nested.c b/drivers/iommu/amd/nested.c
-new file mode 100644
-index 000000000000..332f7efcdc92
---- /dev/null
-+++ b/drivers/iommu/amd/nested.c
-@@ -0,0 +1,107 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * Copyright (C) 2023 Advanced Micro Devices, Inc.
-+ * Author: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-+ */
-+
-+#define pr_fmt(fmt)     "AMD-Vi: " fmt
-+#define dev_fmt(fmt)    pr_fmt(fmt)
-+
-+#include <linux/iommu.h>
-+#include <uapi/linux/iommufd.h>
-+
-+#include "amd_iommu.h"
-+
-+static struct amd_iommu *get_amd_iommu_from_devid(u16 devid)
-+{
-+	struct amd_iommu *iommu;
-+
-+	for_each_iommu(iommu)
-+		if (iommu->devid == devid)
-+			return iommu;
-+	return NULL;
-+}
-+
-+/*
-+ * Note:
-+ * Host-DevID is stored in the per-VM DevID mapping table,
-+ * which is indexed by the Guest-DevID.
-+ */
-+static u16 get_hdev_id(struct amd_iommu *iommu, u16 guestId, u16 gdev_id)
-+{
-+	struct amd_iommu_vminfo *vminfo;
-+	void *addr;
-+	u64 offset;
-+
-+	vminfo = amd_iommu_get_vminfo(guestId);
-+	if (!vminfo)
-+		return -1;
-+
-+	addr = vminfo->devid_table;
-+	offset = gdev_id << 4;
-+	return (*((u64 *)(addr + offset)) >> 24) & 0xFFFF;
-+}
-+
-+static int nested_gcr3_update(struct iommu_hwpt_amd_v2 *hwpt, struct iommu_domain *udom)
-+{
-+	int ret;
-+	u16 hdev_id;
-+	struct pci_dev *pdev;
-+	struct amd_iommu *iommu;
-+
-+	iommu = get_amd_iommu_from_devid(hwpt->iommu_id);
-+	hdev_id = get_hdev_id(iommu, hwpt->gid, hwpt->gdev_id);
-+
-+	pr_debug("%s: gid=%u, hdev_id=%#x, gcr3=%#llx\n",
-+		 __func__, hwpt->gid, hdev_id,
-+		 (unsigned long long) hwpt->gcr3);
-+
-+	pdev = pci_get_domain_bus_and_slot(0, PCI_BUS_NUM(hdev_id),
-+					   hdev_id & 0xff);
-+	if (!pdev)
-+		return -EINVAL;
-+
-+	/* Note: Currently only support GCR3TRPMode with nested translation */
-+	if (!check_feature2(FEATURE_GCR3TRPMODE))
-+		return -EOPNOTSUPP;
-+
-+	ret = amd_iommu_set_gcr3tbl_trp(iommu, pdev, hwpt->gcr3, hwpt->glx,
-+					hwpt->guest_paging_mode);
-+	if (ret) {
-+		pr_err("%s: Fail to enable gcr3 (devid=%#x)\n", __func__,
-+		       pci_dev_id(pdev));
-+	}
-+
-+	return ret;
-+}
-+
-+static const struct iommu_domain_ops nested_domain_ops = {
-+	.attach_dev		= amd_iommu_attach_device,
-+	.free			= amd_iommu_domain_free,
-+};
-+
-+struct iommu_domain *amd_iommu_nested_domain_alloc(struct device *dev,
-+						   struct iommu_hwpt_amd_v2 *hwpt)
-+{
-+	int ret;
-+	struct iommu_domain *dom;
-+	struct protection_domain *pdom;
-+
-+	dom = iommu_domain_alloc(dev->bus);
-+	if (!dom)
-+		return ERR_PTR(-ENOMEM);
-+
-+	pdom = to_pdomain(dom);
-+	dom->type = IOMMU_DOMAIN_NESTED;
-+	dom->ops = &nested_domain_ops;
-+
-+	ret = nested_gcr3_update(hwpt, dom);
-+	if (ret)
-+		goto err_out;
-+
-+	return dom;
-+
-+err_out:
-+	iommu_domain_free(dom);
-+	return ERR_PTR(-EINVAL);
-+}
--- 
-2.34.1
+In the comment, you say:
 
+> + * In the most general case we can make any update in three steps:
+> + *  - Disrupting the entry (V=0)
+> + *  - Fill now unused bits, all bits except V
+> + *  - Make valid (V=1), single 64 bit store
+> + *
+> + * However this disrupts the HW while it is happening. There are several
+> + * interesting cases where a STE/CD can be updated without disturbing the HW
+> + * because only a small number of bits are changing (S1DSS, CONFIG, etc) or
+> + * because the used bits don't intersect. We can detect this by calculating how
+> + * many 64 bit values need update after adjusting the unused bits and skip the
+> + * V=0 process.
+
+Please can you spell out these "interesting cases"? For cases where we're
+changing CONFIG, I'd have thought it would be perfectly fine to go via an
+invalid STE. What am I missing?
+
+Generally, I like where the later patches in the series take things, but
+I'd really like to reduce the complexity of the strtab updating code to
+what is absolutely required.
+
+I've left some minor comments on the code below, but I'd really like to
+see this whole thing simplified if possible.
+
+> + */
+> +static bool arm_smmu_write_entry_step(__le64 *cur, const __le64 *cur_used,
+> +				      const __le64 *target,
+> +				      const __le64 *target_used, __le64 *step,
+> +				      __le64 v_bit,
+> +				      unsigned int len)
+> +{
+> +	u8 step_used_diff = 0;
+> +	u8 step_change = 0;
+> +	unsigned int i;
+> +
+> +	/*
+> +	 * Compute a step that has all the bits currently unused by HW set to
+> +	 * their target values.
+> +	 */
+
+Well, ok, I do have a cosmetic nit here: using 'step' for both "STE pointer"
+and "incremental change" is perhaps, err, a step too far ;)
+
+> +	for (i = 0; i != len; i++) {
+> +		step[i] = (cur[i] & cur_used[i]) | (target[i] & ~cur_used[i]);
+
+Isn't 'cur[i] & cur_used[i]' always cur[i]?
+
+> +		if (cur[i] != step[i])
+> +			step_change |= 1 << i;
+> +		/*
+> +		 * Each bit indicates if the step is incorrect compared to the
+> +		 * target, considering only the used bits in the target
+> +		 */
+> +		if ((step[i] & target_used[i]) != (target[i] & target_used[i]))
+> +			step_used_diff |= 1 << i;
+> +	}
+> +
+> +	if (hweight8(step_used_diff) > 1) {
+> +		/*
+> +		 * More than 1 qword is mismatched, this cannot be done without
+> +		 * a break. Clear the V bit and go again.
+> +		 */
+> +		step[0] &= ~v_bit;
+> +	} else if (!step_change && step_used_diff) {
+> +		/*
+> +		 * Have exactly one critical qword, all the other qwords are set
+> +		 * correctly, so we can set this qword now.
+> +		 */
+> +		i = ffs(step_used_diff) - 1;
+> +		step[i] = target[i];
+> +	} else if (!step_change) {
+> +		/* cur == target, so all done */
+> +		if (memcmp(cur, target, len * sizeof(*cur)) == 0)
+> +			return true;
+> +
+> +		/*
+> +		 * All the used HW bits match, but unused bits are different.
+> +		 * Set them as well. Technically this isn't necessary but it
+> +		 * brings the entry to the full target state, so if there are
+> +		 * bugs in the mask calculation this will obscure them.
+> +		 */
+> +		memcpy(step, target, len * sizeof(*step));
+
+Bah, I'm not a huge fan of this sort of defensive programming. I'd prefer
+to propagate the error rather than quietly try to cover it up.
+
+> +/*
+> + * Based on the value of ent report which bits of the STE the HW will access. It
+> + * would be nice if this was complete according to the spec, but minimally it
+> + * has to capture the bits this driver uses.
+> + */
+> +static void arm_smmu_get_ste_used(const struct arm_smmu_ste *ent,
+> +				  struct arm_smmu_ste *used_bits)
+> +{
+> +	memset(used_bits, 0, sizeof(*used_bits));
+> +
+> +	used_bits->data[0] = cpu_to_le64(STRTAB_STE_0_V);
+> +	if (!(ent->data[0] & cpu_to_le64(STRTAB_STE_0_V)))
+> +		return;
+> +
+> +	/*
+> +	 * If S1 is enabled S1DSS is valid, see 13.5 Summary of
+> +	 * attribute/permission configuration fields for the SHCFG behavior.
+> +	 */
+> +	if (FIELD_GET(STRTAB_STE_0_CFG, le64_to_cpu(ent->data[0])) & 1 &&
+> +	    FIELD_GET(STRTAB_STE_1_S1DSS, le64_to_cpu(ent->data[1])) ==
+> +		    STRTAB_STE_1_S1DSS_BYPASS)
+> +		used_bits->data[1] |= cpu_to_le64(STRTAB_STE_1_SHCFG);
+> +
+> +	used_bits->data[0] |= cpu_to_le64(STRTAB_STE_0_CFG);
+> +	switch (FIELD_GET(STRTAB_STE_0_CFG, le64_to_cpu(ent->data[0]))) {
+> +	case STRTAB_STE_0_CFG_ABORT:
+> +		break;
+> +	case STRTAB_STE_0_CFG_BYPASS:
+> +		used_bits->data[1] |= cpu_to_le64(STRTAB_STE_1_SHCFG);
+> +		break;
+> +	case STRTAB_STE_0_CFG_S1_TRANS:
+> +		used_bits->data[0] |= cpu_to_le64(STRTAB_STE_0_S1FMT |
+> +						  STRTAB_STE_0_S1CTXPTR_MASK |
+> +						  STRTAB_STE_0_S1CDMAX);
+> +		used_bits->data[1] |=
+> +			cpu_to_le64(STRTAB_STE_1_S1DSS | STRTAB_STE_1_S1CIR |
+> +				    STRTAB_STE_1_S1COR | STRTAB_STE_1_S1CSH |
+> +				    STRTAB_STE_1_S1STALLD | STRTAB_STE_1_STRW);
+> +		used_bits->data[1] |= cpu_to_le64(STRTAB_STE_1_EATS);
+> +		break;
+> +	case STRTAB_STE_0_CFG_S2_TRANS:
+> +		used_bits->data[1] |=
+> +			cpu_to_le64(STRTAB_STE_1_EATS | STRTAB_STE_1_SHCFG);
+> +		used_bits->data[2] |=
+> +			cpu_to_le64(STRTAB_STE_2_S2VMID | STRTAB_STE_2_VTCR |
+> +				    STRTAB_STE_2_S2AA64 | STRTAB_STE_2_S2ENDI |
+> +				    STRTAB_STE_2_S2PTW | STRTAB_STE_2_S2R);
+> +		used_bits->data[3] |= cpu_to_le64(STRTAB_STE_3_S2TTB_MASK);
+> +		break;
+
+I think this is going to be a pain to maintain :/
+
+> +static bool arm_smmu_write_ste_step(struct arm_smmu_ste *cur,
+> +				    const struct arm_smmu_ste *target,
+> +				    const struct arm_smmu_ste *target_used)
+> +{
+> +	struct arm_smmu_ste cur_used;
+> +	struct arm_smmu_ste step;
+> +
+> +	arm_smmu_get_ste_used(cur, &cur_used);
+> +	return arm_smmu_write_entry_step(cur->data, cur_used.data, target->data,
+> +					 target_used->data, step.data,
+> +					 cpu_to_le64(STRTAB_STE_0_V),
+> +					 ARRAY_SIZE(cur->data));
+> +}
+> +
+> +static void arm_smmu_write_ste(struct arm_smmu_device *smmu, u32 sid,
+> +			       struct arm_smmu_ste *ste,
+> +			       const struct arm_smmu_ste *target)
+> +{
+> +	struct arm_smmu_ste target_used;
+> +	int i;
+> +
+> +	arm_smmu_get_ste_used(target, &target_used);
+> +	/* Masks in arm_smmu_get_ste_used() are up to date */
+> +	for (i = 0; i != ARRAY_SIZE(target->data); i++)
+> +		WARN_ON_ONCE(target->data[i] & ~target_used.data[i]);
+
+That's a runtime cost on every single STE update for what would be a driver
+bug.
+
+> +
+> +	while (true) {
+> +		if (arm_smmu_write_ste_step(ste, target, &target_used))
+> +			break;
+> +		arm_smmu_sync_ste_for_sid(smmu, sid);
+> +	}
+
+This really should be bounded...
+
+Will
