@@ -1,67 +1,42 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C04E47B3CC;
-	Tue, 12 Dec 2023 17:21:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B78AE7B3CC;
+	Tue, 12 Dec 2023 17:21:31 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NjNBK6p0"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 121F8C433C9;
-	Tue, 12 Dec 2023 17:21:21 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Sz7J+vz6"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19992C43397;
+	Tue, 12 Dec 2023 17:21:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1702401688;
-	bh=iJbsCCsQPExgoBlXs13IszghcdhAlE8CqVmzx5/6CUw=;
+	s=k20201202; t=1702401691;
+	bh=sSxIwv9uKyJ/rIqLLqJ7vYztgpbdcDuftbN+NtSi6mE=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=NjNBK6p0cc6mZk7B3InU4ICb7IP8uBhF+KNLoACi3S+7zVAKgZH0b4X9E9LQy9kMZ
-	 ITnv4OYQg+erUKTrk1aeZ+z+pit1r0iUPHhFCjKFPbYyC2Obok34R0/U9ZG4NLIv+2
-	 7DcaScI78W4tvHyFDsQuTQ4V0gkWACMGbK/PuI/iSscysuZjFqbo0R8k0ko/JfW8KM
-	 tRyB4SCg6BmzBDnDt1tQtJXeNrc2LKWW/mj8JeArHn120+W4epFDm5cAbtHJlqgeJE
-	 lBqjabQH3m6Wd/qKL4NGv3UnTyP4rZmK45YWaPn2q7xOQBYFLHjUU9gWn7sXx5PyAf
-	 vCLa5e4BJUQkg==
+	b=Sz7J+vz6px2kl/is1dj9InR8F/YBJ+KgTJGGmsdAI7LOZhZRF1Me2Ruxof2xfvEaH
+	 ArPuC4+niMfP0keucraLSyGDYm6GdKzinkmCC1kgrBR4BoMa/HnrQWhEniRc2DJLk0
+	 ZDqbUYFW2SbANM0J0zGyG6GPEsjFwdnJpUDmxb2YRBFaYFKXF9qfAEIacylu9lbpw5
+	 ramdUTUWcyiEm7T4+m0q2LnIBldGDfQunCmw51ETRL9MwZ7HFPDS0eQjI5c15ARlfI
+	 JqHx8QZxo+ReFnWREgmzMPyAb8NMvN/0p5CbHco9Lj5YnjxiJyIou8Oj1OyfhsrgJM
+	 TLiDA2UXhV88w==
 From: Will Deacon <will@kernel.org>
-To: Thomas Zimmermann <tzimmermann@suse.de>,
-	Andy Gross <agross@kernel.org>,
-	Maxime Ripard <mripard@kernel.org>,
-	Abhinav Kumar <quic_abhinavk@quicinc.com>,
-	David Airlie <airlied@gmail.com>,
-	Robert Marko <robimarko@gmail.com>,
-	Rob Clark <robdclark@gmail.com>,
-	Robin Murphy <robin.murphy@arm.com>,
+To: linux-arm-kernel@lists.infradead.org,
+	Rob Herring <robh+dt@kernel.org>,
+	iommu@lists.linux.dev,
 	Joerg Roedel <joro@8bytes.org>,
-	cros-qcom-dts-watchers@chromium.org,
-	Konrad Dybcio <konrad.dybcio@linaro.org>,
-	Daniel Vetter <daniel@ffwll.ch>,
-	Das Srinagesh <quic_gurus@quicinc.com>,
-	Loic Poulain <loic.poulain@linaro.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+	linux-kernel@vger.kernel.org,
 	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Georgi Djakov <djakov@kernel.org>,
-	Sean Paul <sean@poorly.run>,
-	Bryan O'Donoghue <bryan.odonoghue@linaro.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Bjorn Andersson <andersson@kernel.org>,
-	Krishna Manikandan <quic_mkrishn@quicinc.com>,
-	Rob Herring <robh+dt@kernel.org>
+	Robin Murphy <robin.murphy@arm.com>,
+	devicetree@vger.kernel.org,
+	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+	Conor Dooley <conor+dt@kernel.org>
 Cc: catalin.marinas@arm.com,
 	kernel-team@android.com,
-	Will Deacon <will@kernel.org>,
-	linux-pm@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	dri-devel@lists.freedesktop.org,
-	Rob Herring <robh@kernel.org>,
-	freedreno@lists.freedesktop.org,
-	linux-arm-kernel@lists.infradead.org,
-	Marijn Suijten <marijn.suijten@somainline.org>,
-	linux-arm-msm@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev
-Subject: Re: [PATCH v3 00/12] RB1/QCM2290 features
-Date: Tue, 12 Dec 2023 17:20:55 +0000
-Message-Id: <170238433491.3098250.94876533885104502.b4-ty@kernel.org>
+	Will Deacon <will@kernel.org>
+Subject: Re: [PATCH] dt-bindings: iommu: arm,smmu: document clocks for the SM8350 GPU SMMU
+Date: Tue, 12 Dec 2023 17:20:56 +0000
+Message-Id: <170238274439.3091090.6038983968830615339.b4-ty@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20231125-topic-rb1_feat-v3-0-4cbb567743bb@linaro.org>
-References: <20231125-topic-rb1_feat-v3-0-4cbb567743bb@linaro.org>
+In-Reply-To: <20231112184522.3759-1-krzysztof.kozlowski@linaro.org>
+References: <20231112184522.3759-1-krzysztof.kozlowski@linaro.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -71,23 +46,18 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 
-On Wed, 29 Nov 2023 15:43:57 +0100, Konrad Dybcio wrote:
-> This series brings:
-> - interconnect plumbing
-> - display setup
+On Sun, 12 Nov 2023 19:45:22 +0100, Krzysztof Kozlowski wrote:
+> Document the clocks for Qualcomm SM8350 Adreno GPU SMMU, already used in
+> DTS:
 > 
-> for QCM2290/QRB2210 and
+>   sm8350-hdk.dtb: iommu@3da0000: clock-names: False schema does not allow ['bus', 'iface', 'ahb', 'hlos1_vote_gpu_smmu', 'cx_gmu', 'hub_cx_int', 'hub_aon']
 > 
-> - CAN bus controller
-> - HDMI display
-> - wifi fw variant name
 > 
-> [...]
 
-Applied SMMU update to will (for-joerg/arm-smmu/updates), thanks!
+Applied to will (for-joerg/arm-smmu/bindings), thanks!
 
-[05/12] iommu/arm-smmu-qcom: Add QCM2290 MDSS compatible
-        https://git.kernel.org/will/c/28af105cb650
+[1/1] dt-bindings: iommu: arm,smmu: document clocks for the SM8350 GPU SMMU
+      https://git.kernel.org/will/c/54dae6d5d3f0
 
 Cheers,
 -- 
