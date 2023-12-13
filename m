@@ -1,56 +1,82 @@
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1nam02on2082.outbound.protection.outlook.com [40.107.96.82])
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2074.outbound.protection.outlook.com [40.107.244.74])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A747029CE7
-	for <iommu@lists.linux.dev>; Wed, 13 Dec 2023 14:04:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2487E28DD6
+	for <iommu@lists.linux.dev>; Wed, 13 Dec 2023 14:11:42 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="Ewfg+oAO"
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="tLZQavZE"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Kak2+TZetYIlCVMKLHXDgCkvry/S3Ubop7MqhIs1V7aVdRb2F9fxxVRPdVJ/RnqBlvY7Gn51eVB6JmxWOCiJ/XWl0hjNP3Oa0Tl8YE+wBS4DVQk1vHdMGIA53HZVwbbFlTkuADEjxcn8o2X0ipm0GldOPvgDgD/q2hUg+dlxwtdqpBbx7V8teQ1M6kDG0DAtcyTI0LSZzD6DNn0r5lF6+QkGzDzJZrM7BOSze8fjs7YNCkwnpVJ6dfYmi1Ie60KzLArbhxA55Ep4sq+9DtEGR9FCzuzvaIUTTcr2AnE3Jgo0LfSQJPJHofoSJgUJAXSAOf8iDMqulcHWbabSSgP2eg==
+ b=MSJ3tkjoXpvD+5Rxz4s2t1JMa+Ovu3Z5qnqW5DA8On04nbA42JU10IwcV11xhJZrURowxD70pFOqvsEVadhqqGSHd5ObXTCvQHDlLy5aqvCkidwGbTMdaE6wJx4DpCvlVQ7g6aiEARMsPrbrioO7NTs00XdEn9HCbWoaYWLoPLpi87C73GKnOj9OamdM3Mh+1IxDfBbH9eqbZjD8O/oBQICDBxoOuN0VxrWs/gh8EvnaFYxgohQ88JiLCHypn+r87DgH/ElZjsjuLN6IL+SMB1BN4HCVpzYUIxyqkM6JTUhsbfHKtZ/RNekgFTiuPNqjCPySfXjAeJQ4eTk8IOWJ9w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=e9vTUJl2LOahluXSqUMl2Y7QWGrbwFFZegpbSjVnd/U=;
- b=ZRzCJdy4VmRrATnW0s6FP8fkq5QWe31w2t1JwEkqsAXuBtQSldMXDyIPMesBD3SBlEomPttfqK1WBx185EvPxFZML7OssRWcYrKweEHJkPymIsi3iT/noq0FnAGtAevCp2n4kBMh9l9JcF9x+R4ZQibaalIMlI8WYDaUHIwrtT7jfAfx1nmibA94uz1OUs5xn+Rc1ccrZabYa5LRH1S6uuTkkx66+CzxGUDWsWEHm3OvNXPiS+riFatekmYg6JAZ6KJW3T55T1yK95jVIEzMrB3osFkmNeUmaxNSd8LWU0hQhbppxmqae6o1yDDCy+72j3LH8eGrqRQ4gzYaTEDvjg==
+ bh=hLa8nYtNedIbip2sdEow3VA99gPvogcDm+vZO2mF2Tc=;
+ b=fBw1HFTzYEtp/r5gUYjEeKqz51qWdAVWBBcqpVk8VVFwtERnMcQC61RAiFKlwTWejleR1lMNPCAxBrA457lk7vyhQEN3I0gLJjCuset0TBnlSDPr9fuNIsOlbqxljtL0vNmG8wAJ8zjVTwLySESybP0///WzMZ4OMzDFHZWBraWyk3tnndFgWqvRR9HO3HH19yKq2B1EdIub49Uy1HJKxI7JDdXq//XD3HTcJfDcxmg5ZW9Djd+kNNnySW/efT9itPo7DbDjyy0aReAC+BEOJszKEXWeKuuT/LNTegkrMizTR0WpmqFV3hjagIDIm1mo4r0KKZHjje2f9z4w2x8X+A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=e9vTUJl2LOahluXSqUMl2Y7QWGrbwFFZegpbSjVnd/U=;
- b=Ewfg+oAOHMTl+9FZCDS0Gp+CEm0stN/c3uGpy+pxH7dcrOIPszd4RjfhOomnAwuMMvDQ9X4jed9kjFkLiPjHd7Cr5Gza5ioRmPIx/vZPC6MtrlHdi4EoeTdWOVcFh+hBxfcomwM4hEPB1ctcHs67TSKHWygH1kQlc/pR0+9Ncy01t8waYm6NOh1E98eHAX/UYUm3/iUPhWoaYXI74eEqHWDE4fecip88dNZE3OMoiX6Zy8F1OMWuuEAT8aIWBVWlpHRBc8qPrrs3dFdBnV4K66ylaW6vIsbdv7lSPAKOVJUHTRs7YnHAOkt0dtAfPJQZ6R3oo3vPYc1PY1fH2ylD5w==
+ bh=hLa8nYtNedIbip2sdEow3VA99gPvogcDm+vZO2mF2Tc=;
+ b=tLZQavZEM+38lCz3eJFuWoXB6aO24Ey366WXvgFYXwuP1gMSUje5Ak0yt6uxRPs3BW2p7WJfZildkFGrHYCasQh9IROwGa3JTFBhVaJ/fIi47Tovg+Gjixhs3MO0Ijx2DE1j/V9Ewrd3Yu7QDOecOSRBFyGBUXCEnK2BrflCQq6lS2tu56qkHwKD9rg64yI3GnNRZVCDfKPSw6Pjhjto+rsjhj9RxxI6Y4+O1PAYq7A7slf8v6hpZI/BQvKsl47RatCgsDzbpU7KFZLaf2yGQyxKwqq8P5InOW7kphIx40V/WqVWcSw9SnXEO/+y0DDVyqB1Z450HlAaBDbZLlRi1Q==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by CH2PR12MB4939.namprd12.prod.outlook.com (2603:10b6:610:61::14) with
+ by BY5PR12MB4097.namprd12.prod.outlook.com (2603:10b6:a03:213::20) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7091.26; Wed, 13 Dec
- 2023 14:04:00 +0000
+ 2023 14:11:40 +0000
 Received: from LV2PR12MB5869.namprd12.prod.outlook.com
  ([fe80::60d4:c1e3:e1aa:8f93]) by LV2PR12MB5869.namprd12.prod.outlook.com
  ([fe80::60d4:c1e3:e1aa:8f93%4]) with mapi id 15.20.7091.022; Wed, 13 Dec 2023
- 14:04:00 +0000
-Date: Wed, 13 Dec 2023 10:03:59 -0400
+ 14:11:39 +0000
+Date: Wed, 13 Dec 2023 10:11:38 -0400
 From: Jason Gunthorpe <jgg@nvidia.com>
-To: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev, joro@8bytes.org,
-	yi.l.liu@intel.com, kevin.tian@intel.com, nicolinc@nvidia.com,
-	eric.auger@redhat.com, vasant.hegde@amd.com, jon.grimm@amd.com,
-	santosh.shukla@amd.com, Dhaval.Giani@amd.com, pandoh@google.com,
-	loganodell@google.com
-Subject: Re: [RFC PATCH 4/6] iommufd: Introduce data struct for AMD nested
- domain allocation
-Message-ID: <20231213140359.GU3014157@nvidia.com>
-References: <20231212160139.174229-1-suravee.suthikulpanit@amd.com>
- <20231212160139.174229-5-suravee.suthikulpanit@amd.com>
+To: "Liu, Yi L" <yi.l.liu@intel.com>
+Cc: "Tian, Kevin" <kevin.tian@intel.com>,
+	"joro@8bytes.org" <joro@8bytes.org>,
+	"alex.williamson@redhat.com" <alex.williamson@redhat.com>,
+	"robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
+	"cohuck@redhat.com" <cohuck@redhat.com>,
+	"eric.auger@redhat.com" <eric.auger@redhat.com>,
+	"nicolinc@nvidia.com" <nicolinc@nvidia.com>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+	"mjrosato@linux.ibm.com" <mjrosato@linux.ibm.com>,
+	"chao.p.peng@linux.intel.com" <chao.p.peng@linux.intel.com>,
+	"yi.y.sun@linux.intel.com" <yi.y.sun@linux.intel.com>,
+	"peterx@redhat.com" <peterx@redhat.com>,
+	"jasowang@redhat.com" <jasowang@redhat.com>,
+	"shameerali.kolothum.thodi@huawei.com" <shameerali.kolothum.thodi@huawei.com>,
+	"lulu@redhat.com" <lulu@redhat.com>,
+	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+	"Duan, Zhenzhong" <zhenzhong.duan@intel.com>,
+	"joao.m.martins@oracle.com" <joao.m.martins@oracle.com>,
+	"Zeng, Xin" <xin.zeng@intel.com>,
+	"Zhao, Yan Y" <yan.y.zhao@intel.com>
+Subject: Re: [PATCH v6 2/6] iommufd: Add IOMMU_HWPT_INVALIDATE
+Message-ID: <20231213141138.GX3014157@nvidia.com>
+References: <20231117130717.19875-1-yi.l.liu@intel.com>
+ <20231117130717.19875-3-yi.l.liu@intel.com>
+ <112383df-3ea3-475f-963f-5c53232a1bf4@intel.com>
+ <BN9PR11MB5276283CAEAB7A24871B4B188C8BA@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20231207144208.GJ2692119@nvidia.com>
+ <8c05763d-1668-4b99-af35-b43a34e966c2@intel.com>
+ <20231211132135.GF2944114@nvidia.com>
+ <DS0PR11MB7529AA3F28F4418A80D869B0C38EA@DS0PR11MB7529.namprd11.prod.outlook.com>
+ <20231212144025.GG3014157@nvidia.com>
+ <SN7PR11MB7540259246D97147A224B486C38DA@SN7PR11MB7540.namprd11.prod.outlook.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20231212160139.174229-5-suravee.suthikulpanit@amd.com>
-X-ClientProxiedBy: BL1PR13CA0259.namprd13.prod.outlook.com
- (2603:10b6:208:2ba::24) To LV2PR12MB5869.namprd12.prod.outlook.com
+In-Reply-To: <SN7PR11MB7540259246D97147A224B486C38DA@SN7PR11MB7540.namprd11.prod.outlook.com>
+X-ClientProxiedBy: BLAPR05CA0013.namprd05.prod.outlook.com
+ (2603:10b6:208:36e::28) To LV2PR12MB5869.namprd12.prod.outlook.com
  (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -59,124 +85,94 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|CH2PR12MB4939:EE_
-X-MS-Office365-Filtering-Correlation-Id: 3be0193c-7099-484a-f150-08dbfbe45b01
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|BY5PR12MB4097:EE_
+X-MS-Office365-Filtering-Correlation-Id: 24c47e41-91bc-4772-fe90-08dbfbe56c8e
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	e7Hq0w3W/cBW8SSxHhaqc6tekxIQBBLkwF22PinKcdojHTE6UMLSbLrTOFxlsiFNNb8qR+LjbP/KvnH1ZmggTVVPMNGLQAfKVlk1qpdokEk+AsXAaZE0naOg/UZb+TB+OIZm9oe3yFaB8LN+EeQb4ZreKLYSUkBEt5KtED0qIZO7u629czBDb+2ws3s2zgvWOhV/0HiGnVNPkZXXIDFJtZeTKJ0kjcYHlEpTRxieKqRoe6aqvIWXZFN3/yIgJxvIOiF/gz3usM9d6WQ9dmKU64eUKUGW+ussxMIHUBtF6WmbtZPdPT+X8ii0aru10ag2CVW+SDSXwCGLtCs/v25RIxUSyMGrnrjUjDEohq/acWMCdU/Kwj78asJrfcNoFWM83omEIWK/5k6yxYdJUTr2ESokucOdmCO6EtBGreJZmb1KsvcwsBp6r7GDLSwyHoFc6DVGXBegOI466JLhrIYAIyJJmaAFYRDk49JvT9BcabeGe1VNKfrb8i2ak8vr9Apd0pyVk8IXAsiPe57VTNkFNsVCNSKYMiC5AKCcv3wWrjU+G/CfVQlYtTRxeI+dQtVI
+	yjpEwudCtqHiQ6s5BM+PmznwN7z6XZrTg9ztzMMej/zzPG5TedIL/EtCgByWlY1ELAIlVLNfagv3d79rRCvw7ZUnsCNceL9l1VRh9RI426mtsrHoIyoAl5y0ZToZIQqRzf38PoAhF9ebbScikCRiOwMBE4SKm+1wXPBXdyNI+b3X4gfQ4DbSUFuIUfoJ7nyslhxCG/agP6FNFeHl4LFObw+awzxMRBW3pm3wQ0urJiEQJuUA9F4ximW8C4UxFQm74rPeUKH+h7DY0Gr2wl/PEe983kxApgVxwTI5NK478emPo4PWPn8FWZqBqV79LPrajtrBrMjm1tw1Yssq+W60uaAhe4rJENxEidFYM9GQFSLui212pWSJHpXcb8+bncJnsze4rGb9MFLLCn+ZeQmBJQnmkW8VqdkX6/aWtY5WUL6AUb+PvJ8y1Yj1oXfmhIyqIdpelgSb1CEqYnMmSLh5JctYC8Fs4q8hlwn8MLqEcw7iH2o6RbPN82Q5zswXbIbXto5gedYt/aen9oflEGApERq2MAIJQZ0LCkR9OlcGqG0nZZAde70UKBGARYDFp+f+
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(136003)(396003)(39860400002)(366004)(346002)(376002)(230922051799003)(1800799012)(64100799003)(186009)(451199024)(2906002)(41300700001)(33656002)(36756003)(86362001)(38100700002)(66556008)(6916009)(66476007)(6486002)(6512007)(478600001)(2616005)(6506007)(83380400001)(1076003)(26005)(7416002)(5660300002)(8936002)(8676002)(316002)(66946007)(4326008);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(376002)(346002)(396003)(39860400002)(136003)(366004)(230922051799003)(451199024)(1800799012)(186009)(64100799003)(1076003)(2616005)(26005)(6512007)(6506007)(86362001)(33656002)(36756003)(38100700002)(5660300002)(8676002)(8936002)(7416002)(4326008)(66476007)(54906003)(6916009)(66556008)(66946007)(41300700001)(2906002)(316002)(6486002)(478600001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?A6CvbpEMz207i/95ghQ74vPximsK9CXxnsKud5aONP8FA9kzUy3SyJgRWHHx?=
- =?us-ascii?Q?qq2o8pV8S9kIQ7D34J3KTRzAIkT5nD97cP+0lsgjoDfKX2mwLHfBZYwhsU6T?=
- =?us-ascii?Q?uvvDJns/xwV4yhY6WOOM8LL0OLmD2ErSy2QrTGvvogbB5ZN4j7N5L9WvjmT5?=
- =?us-ascii?Q?IRbgb4XVVoWonsrgGYWgzeV4gqO1G50vGuNQUsQUZRmMj0bAGkuKJUvKJIP1?=
- =?us-ascii?Q?WVdqJfMEcDk3euMhIhj+rai37uFyjECENGzeZLR8Ay2aMECFiLPLuJM7+0Uw?=
- =?us-ascii?Q?V6X0+94nOqIhT8oqycoqvx7I2otINksA4g1lBlKgtN2mNcE0mcSRx9YEaJZq?=
- =?us-ascii?Q?ngtgjgfOMwNkSqC4NK/fID/JUfu0Qwcsi3SAL0T4eJAp/bf4OLh4ZCawEt49?=
- =?us-ascii?Q?9JarqfAPKzU98SXhcRt2Zmlo5jJxL8VnF5VubH56ZlXrrnxqhVm8Wrr0EGQA?=
- =?us-ascii?Q?HMTO7dGVm1qXXOwO+OlhP9tdCCWjQzmiLe+/S5ox3WzqRpLQZn/ThthGIT6a?=
- =?us-ascii?Q?9pEnz+z09fBEfh+ELAZT8I1NTGDGpOYVuvC0u1Ow0C439NRfo8yARw9SaX4Y?=
- =?us-ascii?Q?LROdMXvnpgkTn1k0zeR1EUzHiRio0+f64QFp6FgbLMmBuTyJ6sPXNAKrv8uZ?=
- =?us-ascii?Q?YrFQ8WhGvHsvXCUDVB8s8Ms5fvcZkWY1T9aN+FF2O82Kb1e0gn+PFnD+SS28?=
- =?us-ascii?Q?9lMIT7OCNUn0KAHMMeVEigk5PzsbY5m2PtzgF2JRfAlfM7vUjKBB/7YyZAKz?=
- =?us-ascii?Q?LEhuw+t0U9MThsrlv8wsfM6YqIJ4yjFkVJGkyWBZo2PPGVMMzG8ha0vpr7nD?=
- =?us-ascii?Q?gPSCR1k7PrOHnIyxwzK7QMI04O1bSxQH/um9+L2rFmmDOg/r0+cApbPZMJeX?=
- =?us-ascii?Q?0lbUd0v80PO8kc/yz3OcSfPsgOskrsACEMtPKcydJq6ayjvpuAvQE7kXGSsT?=
- =?us-ascii?Q?TZnnEcspIoovdusJ/v7/bi/Q4E2fNFh0YjkGLuuo/LSRA2wZe9TAd5FgwDH9?=
- =?us-ascii?Q?jzPQBQEzOMzrnNEWSWcbOc3HTmg6D2m9rBNT+HM4H4cDqZDxIl88WHC97Pcb?=
- =?us-ascii?Q?spxUJnLeRNzxvpePNUPOCQZX55JGPk1JUR13Uq/qkRO/HIsT1GL9ZnDk4jfJ?=
- =?us-ascii?Q?zcgsYUmkeoP11DsDMj3gqN1Zj2KB/3DaRIM9nbAJDPTx0px4yUuiYBeLQOw0?=
- =?us-ascii?Q?oFbto/wEb31o0AQBDB548Jtzcegb8OKEZH3okzYnPTQNJZFboEymGDHSERIU?=
- =?us-ascii?Q?WmSKsx1YkqmXRjPPNFaUBkpARygA6kNvbnQgBU1G26R71Y0ZbMbwhUW8qHFc?=
- =?us-ascii?Q?ECZaywSXIdCklTJT7cRkQpPk0imYSB6k0IwiQ4lkgA1cHu67wNDVQ/JoD3FD?=
- =?us-ascii?Q?go6DMLZuJz8+W2LVZ9wC0dO4Mibglny85yk4k40FibXtt+vbdrdaqr+3IiGJ?=
- =?us-ascii?Q?JaC+vGf10KsRJzurHVsqeavJzRTRwh94Wovo3krOS6CVGDL7I4jF6r5CmL00?=
- =?us-ascii?Q?I9E3zC3PxrGmooJDg/xXvqbsTbaZ7Re8IWhWK6NBxtFO+6QU8dY5uLadH4vM?=
- =?us-ascii?Q?BMBz72M1liwbzGY1t2kLkCnsaQDlEtPS7/k6dtVX?=
+	=?us-ascii?Q?/Orfq7LpW2Hmppk5WyunT2UmUirmt3tLTo9gxzx7Vu1x0MPMBJ9016R26oDN?=
+ =?us-ascii?Q?UVmwzzRfzRQYSmGvD/c+FT7sWkLsNmRo9dy5SDXuIMG5P87fmU3mbhoqXOFW?=
+ =?us-ascii?Q?4Ilxq9SHzkt5X1Saf5B4sBN4f0qw2AuIZMJ4gTu0sF5BZC04Lz9iQ05lGo0A?=
+ =?us-ascii?Q?8phLv0bVGWHwa4tXRgT7vTeWXAd5ajwwizA4AmaDkNRKyAw1QHhB5DWHHW0+?=
+ =?us-ascii?Q?dWjwE4VTr4hiAjBOjfGXtWo598OJHFpkJsMpyubfmkBzfG5zr4FWBzxxuj8Q?=
+ =?us-ascii?Q?WHbTNez4A6WP7urT/nAabK6hNjUPkOsODK3pyjdrC+4gEq8BXccOTjB/NivN?=
+ =?us-ascii?Q?kfs/KLQ67VFbJNcV/8P2FI39pFif9w2hPLjl2lARzHlPw0SjjhlZ13Rth0ED?=
+ =?us-ascii?Q?sIphFuVLtBMBRU9jMfz+1Px6GLgQlTWGFqbQ+6bcS+KqF2AJcAMsuagishHs?=
+ =?us-ascii?Q?m3dysop6YG7rT/QcHuI5nwubBAUFZV4M7iXjpDw0Nl34nR7h1e4FIqfnMbA+?=
+ =?us-ascii?Q?5YsQSQc/Bb7Sj/StDgqXkCcQXQdNNUYKPxiMJrJlHIkcANvB6p6JNZB80UJV?=
+ =?us-ascii?Q?rKfnuYijPCu+fon7sWfTAz16yxU1Ylxwp8xbl3Pm4NgoTBbBUv4IHSff59jG?=
+ =?us-ascii?Q?vzEdZcx3kU47xrluxlMSVBFCMSU7593Qs+R1sMq/893o1E1mtVQkvSoCDeQ7?=
+ =?us-ascii?Q?AOvKuaS+bwsnpKNurUCBgXjHS/o3g8PVuPdr0phsi5ZiqRjXCdKbg4u2Qtst?=
+ =?us-ascii?Q?rlpGSkAPmCbVxgh16NgrO7yw7KPqGSxMpTjaU3f2i0WQxb/i4UmGRE+Rkm2o?=
+ =?us-ascii?Q?g8E4CKnEcWykX1J6oIJitk2gjVi9IM3D9O9nEkDvMaTqO4NEyirOt1cZaAfU?=
+ =?us-ascii?Q?WYQ2KbJ2vv1wcrg5V5/nLQSUUmFw4kkvN9jORZ7OEVVi7iUaN1NKjEf6+zwE?=
+ =?us-ascii?Q?9Ro4xZEs7wTTE5+4QSle2HXaSHtuSiqE95gE+vP5DApTyWCbxwlGKGKiwQER?=
+ =?us-ascii?Q?/Y60zohY/q4saoJvcdpFaUwxhb0c4HguVsDp5GAaZ86Yca+DL3UrEvlZHBEC?=
+ =?us-ascii?Q?sbNpVJwaPpKjETkQFoNKIiNh2HL8C3Bjh90Vu7Y70WA0PdbOl8uJMeu4ywyi?=
+ =?us-ascii?Q?qqnoc9W0zmyq4xGLxplTnyDP1RJoObiI+xwDLfbHgJbjkJdMRbV+DGAg1dPc?=
+ =?us-ascii?Q?LMrMHCcl8oi3dy7RrtpL8J3rERBYz31bL28QTWn9Z91lTOXw/MQMbPhaE3R4?=
+ =?us-ascii?Q?uvFGmb0uFHQMPD8ZPkcveDhay4g6lHtB9o8Sbe1akIFp+mb+QtENaWJjzNpP?=
+ =?us-ascii?Q?LiyEpEn4f0+AuvarYzduer71cZPYlnQn5EJ20MoxL11kaC25YRecWZs2fX/6?=
+ =?us-ascii?Q?AhtPyx6WxIiUxgmb71mB8Ep6A1UjRoEhAPX4GPw4Bj8XFogpng5qVSo1YaQS?=
+ =?us-ascii?Q?kN+Bq2N9DkbMxNrI8mLCakWFgo+jBp86xh21fXXmKrjYCwYJcwU93led947p?=
+ =?us-ascii?Q?1+AKetJcgr/rniTp3+FqUaMQfGkibOFN+5is1p3YZ3hAAED8zb8zAD7q8PYV?=
+ =?us-ascii?Q?I9peSA4M+x0JXuBVPXI/sRTRCNMqUHMSWjNILibW?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3be0193c-7099-484a-f150-08dbfbe45b01
+X-MS-Exchange-CrossTenant-Network-Message-Id: 24c47e41-91bc-4772-fe90-08dbfbe56c8e
 X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Dec 2023 14:04:00.2613
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Dec 2023 14:11:39.2034
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 9tIa0t29cYeD5gzZA0gx8N3u/sJNtH1N8hha2bokvaCvwKETMYQAPa2+LRtBo53+
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB4939
+X-MS-Exchange-CrossTenant-UserPrincipalName: RNHWJpFrwZs5HiBWyS3xvypVA2Vx7mCWBkWK8FlGzggw38qbTcci3GQrUKAeDGzR
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4097
 
-On Tue, Dec 12, 2023 at 10:01:37AM -0600, Suravee Suthikulpanit wrote:
-> Introduce IOMMU_HWPT_DATA_AMD_V2 data type for AMD IOMMU v2 page table,
-> which is used for stage-1 in nested translation. The data structure
-> contains information necessary for setting up the AMD HW-vIOMMU support.
+On Wed, Dec 13, 2023 at 01:47:54PM +0000, Liu, Yi L wrote:
+> > From: Jason Gunthorpe <jgg@nvidia.com>
+> > Sent: Tuesday, December 12, 2023 10:40 PM
+> > 
+> > On Tue, Dec 12, 2023 at 01:45:16PM +0000, Liu, Yi L wrote:
+> > > > From: Jason Gunthorpe <jgg@nvidia.com>
+> > > > Sent: Monday, December 11, 2023 9:22 PM
+> > > >
+> > > > On Mon, Dec 11, 2023 at 03:53:40PM +0800, Yi Liu wrote:
+> > > >
+> > > > > > >  From that thread Jason mentioned to make the invalidation format
+> > > > > > > part of domain allocation. If that is the direction to go then there
+> > > > > > > won't be multiple invalidation formats per hwpt. The user should
+> > > > > > > create multiple hwpt's per invalidation format (though mixing
+> > > > > > > formats in one virtual platform is very unlikely)?
+> > > > > >
+> > > > > > I think we could do either, but I have a vauge cleanness preference
+> > > > > > that the enums are just different? That would follow a pretty typical
+> > > > > > pattern for a structure tag to reflect the content of the structure.
+> > > > >
+> > > > > Is this still following the direction to make the invalidation format
+> > > > > part of domain allocation?
+> > > >
+> > > > I think you should make it seperate
+> > >
+> > > Sure. I'll add a separate enum for cache invalidation format. Just to
+> > > see if it is good to pass down the invalidation format in the hwpt
+> > > alloc path? So iommu driver can check if the invalidation format
+> > > can be used for the hwpt to be allocated.
+> > 
+> > I would skip it in the invalidation. If necessary drivers can push a 0
+> > length invalidation to do 'try and fail' discovery of supported types.
 > 
-> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-> ---
->  include/uapi/linux/iommufd.h | 23 +++++++++++++++++++++++
->  1 file changed, 23 insertions(+)
-> 
-> diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
-> index bf4a1f8ab748..e2240d430dd1 100644
-> --- a/include/uapi/linux/iommufd.h
-> +++ b/include/uapi/linux/iommufd.h
-> @@ -389,14 +389,37 @@ struct iommu_hwpt_vtd_s1 {
->  	__u32 __reserved;
->  };
->  
-> +/**
-> + * struct iommu_hwpt_amd_v2 - AMD IOMMU specific user-managed
-> + *                            v2 I/O page table data
-> + * @gcr3: GCR3 guest physical ddress
-> + * @gid: Guest ID
-> + * @iommu_id: IOMMU host device ID
-> + * @gdev_id: Guest device ID
-> + * @gdom_id: Guest domain ID
-> + * @glx: GCR3 table levels
-> + * @guest_paging_mode: Guest v2 page table paging mode
-> + */
-> +struct iommu_hwpt_amd_v2 {
-> +	__aligned_u64 gcr3;
-> +	__u32 gid;
-> +	__u32 iommu_id;
-> +	__u16 gdev_id;
-> +	__u16 gdom_id;
-> +	__u16 glx;
-> +	__u16 guest_paging_mode;
+> I think you mean keep passing the req_type in cache invalidation path
+> instead of the way I proposed. For the 'try and fail' discovery, we should
+> allow a zero-length array, is it? If the req_type is supported by the iommu
+> driver, then return successful, otherwise fail the ioctl. Is it?
 
-Add explicit padding please
-
-Also, I'm pretty sure that most of these IDs cannot be here.
-
-These are Ok:
-
-	__aligned_u64 gcr3; // table top pointer
-	__u16 gdom_id;      // virtual cache tag
-        __u16 glx;          // configuration of radix
-        __u16 guest_paging_mode; // configuration of radix
-
-These are confusing, probably incorrect.
-
- +	__u32 gid;
- +	__u32 iommu_id;
- +	__u16 gdev_id;
-
-iommu_id is the RID of the IOMMU, so definately not. The iommu
-instance to work on is specifed by the generic dev_id which becomes a
-struct device * in the driver callback. Access the target iommu
-instance via dev_iommu_priv_get()/etc
-
-The translation of gdev_id to pdev_dev needs to be connected to some
-future viommu object, so this shouldn't be part of this series, and
-will eventually be provided through some new viommu object API - see
-my long outline email
-
-The viommu object should hold the GID. I'm not sure you need a GID
-right now (can you just issue invalidation on the physical side?), but
-if you do need GID to bridge until the viommu is ready it should
-probably be allocated by and stored in the nesting parent.
+Yes
 
 Jason
