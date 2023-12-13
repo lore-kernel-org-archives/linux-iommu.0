@@ -1,99 +1,85 @@
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF6BA224C9
-	for <iommu@lists.linux.dev>; Wed, 13 Dec 2023 11:15:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oracle.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oracle.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="Z7VkBX9K"
-Received: from pps.filterd (m0246630.ppops.net [127.0.0.1])
-	by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 3BD9StgE027181;
-	Wed, 13 Dec 2023 11:15:04 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding;
- s=corp-2023-11-20; bh=mFa7+wZnRy8DezWqs2TWtFukUiLrknEYht2j11vwEQI=;
- b=Z7VkBX9Kp9KMSvBOM8UoEnTKH4b1RsQyEGFsiFP0xtts1NNu6P+6cIPR9KlNs1oCJvjg
- yp95QdfGi66FjjcH4sA6KFtXtdQTyDmF2HPdviZMAUYDHqwGBokOU6r0Ul+Bmn6jNZJy
- Wqj22nRblWG/KqTCOMyB4Zn8mHflkgeHYkjAh/0nALyzscPQY9oK5VwswGTTPmXXlVtG
- 10+J9KVCvrf1g3GEdcsvucvJNjRqCOazK2bIheqSFsU7Qk+lzzsbQtsncnVrou510ZpK
- FJGPjgLi5dpocJTpnK7zIhu8ImrVWV/NcndFM9ajDOPBDOmTa9v6FJd3KQn+IRZHTSiR wg== 
-Received: from phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta03.appoci.oracle.com [138.1.37.129])
-	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3uwgn3p7wb-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Wed, 13 Dec 2023 11:15:04 +0000
-Received: from pps.filterd (phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-	by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (8.17.1.19/8.17.1.19) with ESMTP id 3BDB8pgV012799;
-	Wed, 13 Dec 2023 11:15:03 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-	by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 3uvep840j7-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Wed, 13 Dec 2023 11:15:03 +0000
-Received: from phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 3BDBF2Ib002232;
-	Wed, 13 Dec 2023 11:15:02 GMT
-Received: from ca-dev112.us.oracle.com (ca-dev112.us.oracle.com [10.129.136.47])
-	by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTP id 3uvep840fw-1;
-	Wed, 13 Dec 2023 11:15:02 +0000
-From: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
-To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
-        linux-kernel@vger.kernel.org
-Cc: dan.carpenter@linaro.org, kernel-janitors@vger.kernel.org,
-        error27@gmail.com, harshit.m.mogalapalli@oracle.com
-Subject: [PATCH] iommu/sva: Fix memory leak in iommu_sva_bind_device()
-Date: Wed, 13 Dec 2023 03:14:50 -0800
-Message-ID: <20231213111450.2487861-1-harshit.m.mogalapalli@oracle.com>
-X-Mailer: git-send-email 2.42.0
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E51231EB35
+	for <iommu@lists.linux.dev>; Wed, 13 Dec 2023 11:54:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9EB2FFEC;
+	Wed, 13 Dec 2023 03:54:54 -0800 (PST)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 5F46E3F7F4;
+	Wed, 13 Dec 2023 03:54:07 -0800 (PST)
+Message-ID: <3b7742c4-bbae-4a78-a5a6-30df936a17d4@arm.com>
+Date: Wed, 13 Dec 2023 11:54:05 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.272,Aquarius:18.0.997,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2023-12-13_03,2023-12-13_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 bulkscore=0 spamscore=0
- mlxscore=0 adultscore=0 phishscore=0 malwarescore=0 suspectscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2311290000
- definitions=main-2312130081
-X-Proofpoint-ORIG-GUID: 0m8zQ4kmDUFzs7rwrZVMGrzKT8O08beB
-X-Proofpoint-GUID: 0m8zQ4kmDUFzs7rwrZVMGrzKT8O08beB
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 2/2] iommu/vt-d: don's issue devTLB flush request when
+ device is disconnected
+Content-Language: en-GB
+To: Lukas Wunner <lukas@wunner.de>, Ethan Zhao <haifeng.zhao@linux.intel.com>
+Cc: bhelgaas@google.com, baolu.lu@linux.intel.com, dwmw2@infradead.org,
+ will@kernel.org, linux-pci@vger.kernel.org, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, Haorong Ye <yehaorong@bytedance.com>
+References: <20231213034637.2603013-1-haifeng.zhao@linux.intel.com>
+ <20231213034637.2603013-3-haifeng.zhao@linux.intel.com>
+ <20231213104417.GA31964@wunner.de>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20231213104417.GA31964@wunner.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Free the handle when the domain allocation fails before unlocking and
-returning.
+On 13/12/2023 10:44 am, Lukas Wunner wrote:
+> On Tue, Dec 12, 2023 at 10:46:37PM -0500, Ethan Zhao wrote:
+>> For those endpoint devices connect to system via hotplug capable ports,
+>> users could request a warm reset to the device by flapping device's link
+>> through setting the slot's link control register,
+> 
+> Well, users could just *unplug* the device, right?  Why is it relevant
+> that thay could fiddle with registers in config space?
+> 
+> 
+>> as pciehpt_ist() DLLSC
+>> interrupt sequence response, pciehp will unload the device driver and
+>> then power it off. thus cause an IOMMU devTLB flush request for device to
+>> be sent and a long time completion/timeout waiting in interrupt context.
+> 
+> A completion timeout should be on the order of usecs or msecs, why does it
+> cause a hard lockup?  The dmesg excerpt you've provided shows a 12 *second*
+> delay between hot removal and watchdog reaction.
 
-Fixes: 092edaddb660 ("iommu: Support mm PASID 1:n with sva domains")
-Signed-off-by: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
----
-This is based on static analysis with smatch, only compile tested.
----
- drivers/iommu/iommu-sva.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+The PCIe spec only requires an endpoint to respond to an ATS invalidate 
+within a rather hilarious 90 seconds, so it's primarily a question of 
+how patient the root complex and bridges in between are prepared to be.
 
-diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
-index 5175e8d85247..c3fc9201d0be 100644
---- a/drivers/iommu/iommu-sva.c
-+++ b/drivers/iommu/iommu-sva.c
-@@ -101,7 +101,7 @@ struct iommu_sva *iommu_sva_bind_device(struct device *dev, struct mm_struct *mm
- 	domain = iommu_sva_domain_alloc(dev, mm);
- 	if (!domain) {
- 		ret = -ENOMEM;
--		goto out_unlock;
-+		goto out_free_handle;
- 	}
- 
- 	ret = iommu_attach_device_pasid(domain, dev, iommu_mm->pasid);
-@@ -118,6 +118,7 @@ struct iommu_sva *iommu_sva_bind_device(struct device *dev, struct mm_struct *mm
- 
- out_free_domain:
- 	iommu_domain_free(domain);
-+out_free_handle:
- 	kfree(handle);
- out_unlock:
- 	mutex_unlock(&iommu_sva_lock);
--- 
-2.39.3
+>> Fix it by checking the device's error_state in
+>> devtlb_invalidation_with_pasid() to avoid sending meaningless devTLB flush
+>> request to link down device that is set to pci_channel_io_perm_failure and
+>> then powered off in
+> 
+> This doesn't seem to be a proper fix.  It will work most of the time
+> but not always.  A user might bring down the slot via sysfs, then yank
+> the card from the slot just when the iommu flush occurs such that the
+> pci_dev_is_disconnected(pdev) check returns false but the card is
+> physically gone immediately afterwards.  In other words, you've shrunk
+> the time window during which the issue may occur, but haven't eliminated
+> it completely.
 
+Yeah, I think we have a subtle but fundamental issue here in that the 
+iommu_release_device() callback is hooked to BUS_NOTIFY_REMOVED_DEVICE, 
+so in general probably shouldn't be assuming it's safe to do anything 
+with the device itself *after* it's already been removed from its bus - 
+this step is primarily about cleaning up any of the IOMMU's own state 
+relating to the given device.
+
+I think if we want to ensure ATCs are invalidated on hot-unplug we need 
+an additional pre-removal notifier to take care of that, and that step 
+would then want to distinguish between an orderly removal where cleaning 
+up is somewhat meaningful, and a surprise removal where it definitely isn't.
+
+Thanks,
+Robin.
