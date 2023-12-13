@@ -1,209 +1,197 @@
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2085.outbound.protection.outlook.com [40.107.223.85])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2F33E6829E
-	for <iommu@lists.linux.dev>; Wed, 13 Dec 2023 19:54:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 16F2D7FBB2
+	for <iommu@lists.linux.dev>; Wed, 13 Dec 2023 21:55:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="Oe2AIAnT"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=h1Z+8RiXtXZWaudsHokVoIBm1Cuj9/GGczVDXsdWa6S0gpGHcOmdj2VnCehFmg/Y4EsopYfKTYoh3Crli26dy8ak/Gq1ofBRd9P1peQxOncyMMHpoGd0+QMKhFUeUlOeguCXuS1aOhr7iq0h+wSPyGO+wyCiQvuyAJXLJqP2jCnYkM6tZv4KMCYInKWaw1j5YmNNmYBgI6ABkuHIKO30oKHQREGuhtCMo4Gl8z45snCU5oJ36RpJxx6hcF2IfD8h/nediPuRaezIaWLWxLQCTkrxH4vwHbA2cZLA+0Ne3RIn5XWToTQTTpBsHpop3CGHCpieg7I7oEBMup7QurazXg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=DKUcmJlezdzVRlWijeebQQqbeIEOYwdh6FBYCTEmMx0=;
- b=ItjkDG9uFnHS+cPet40VNkv0YBoU8ftQoXxarF3wAC703G/mgacYE75wGiDCKaR5wBUtLVkZG8t8meDr+RNvE8hEYMHr3fLmi025Rf28XZZ0ofghiiVnN8h75J3XA6UC6/X9B07GBONYhqyZCCyXeSsKdMl5NXgo7hIEwOUx2vtDeBLyilbde0tAkVRpYrvNaJDKPSIvYrPvWnTTbE2MnsTq5WO1/pjXXCvef7bUuNrPQMX2G8nD0BOluoo9HMn2RNLqspra4SiViV0rNglJfuDMaIw0qF+b91JIB3L8DAakEvlQNEmS5//s7ofM60Hl2NRh6s4vM0tRe0NQ0KA6lw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=oracle.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=DKUcmJlezdzVRlWijeebQQqbeIEOYwdh6FBYCTEmMx0=;
- b=Oe2AIAnT9g225jHNCaWyAH7yYdXl23JSsevDFhJ+KZQur5i7JFVIH0/2MXcBDM1RBzcWObPPkCkrs9wh3K3ruVylqB9TZKLv3nx4BhsWaNu5FLdFgM3davpHPtKUGa41VG/f7RyNwhldsinBmWmLhN5f2T5hv2+S/DmN8Sa/VLUoNkVgww3amGerc7d43CscPpner/XB+QamyknBkpNvCe38Kz0LDz8nHr6ggbK7VotazbgRhgqNedIKqohun1ZLeL1iYn+3lfWHiYy9UE1fjtzAbkGqgh6aXBG946WPEUxE/if9n2r8rQaiUuAVxFkG4TLhM4lVTbmMoL+ozu2J+g==
-Received: from CY5PR15CA0154.namprd15.prod.outlook.com (2603:10b6:930:67::21)
- by CY8PR12MB7754.namprd12.prod.outlook.com (2603:10b6:930:86::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7091.26; Wed, 13 Dec
- 2023 19:54:33 +0000
-Received: from CY4PEPF0000E9D2.namprd03.prod.outlook.com
- (2603:10b6:930:67:cafe::26) by CY5PR15CA0154.outlook.office365.com
- (2603:10b6:930:67::21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7091.26 via Frontend
- Transport; Wed, 13 Dec 2023 19:54:33 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- CY4PEPF0000E9D2.mail.protection.outlook.com (10.167.241.145) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.7091.26 via Frontend Transport; Wed, 13 Dec 2023 19:54:33 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Wed, 13 Dec
- 2023 11:54:18 -0800
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Wed, 13 Dec
- 2023 11:54:18 -0800
-Received: from Asurada-Nvidia (10.127.8.9) by mail.nvidia.com (10.129.68.6)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41 via Frontend
- Transport; Wed, 13 Dec 2023 11:54:16 -0800
-Date: Wed, 13 Dec 2023 11:54:15 -0800
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: Yi Liu <yi.l.liu@intel.com>, "Giani, Dhaval" <Dhaval.Giani@amd.com>,
-	Vasant Hegde <vasant.hegde@amd.com>, Suravee Suthikulpanit
-	<suravee.suthikulpanit@amd.com>, <joro@8bytes.org>,
-	<alex.williamson@redhat.com>, <kevin.tian@intel.com>, <robin.murphy@arm.com>,
-	<baolu.lu@linux.intel.com>, <cohuck@redhat.com>, <eric.auger@redhat.com>,
-	<kvm@vger.kernel.org>, <mjrosato@linux.ibm.com>,
-	<chao.p.peng@linux.intel.com>, <yi.y.sun@linux.intel.com>,
-	<peterx@redhat.com>, <jasowang@redhat.com>,
-	<shameerali.kolothum.thodi@huawei.com>, <lulu@redhat.com>,
-	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
-	<linux-kselftest@vger.kernel.org>, <zhenzhong.duan@intel.com>,
-	<joao.m.martins@oracle.com>, <xin.zeng@intel.com>, <yan.y.zhao@intel.com>
-Subject: Re: [PATCH v6 0/6] iommufd: Add nesting infrastructure (part 2/2)
-Message-ID: <ZXoL56s1EIchNRzD@Asurada-Nvidia>
-References: <20231117130717.19875-1-yi.l.liu@intel.com>
- <20231209014726.GA2945299@nvidia.com>
- <ZXd+1UVrcAQePjnD@Asurada-Nvidia>
- <20231211215738.GB3014157@nvidia.com>
- <ZXgL+GCGPgH+hlXo@Asurada-Nvidia>
- <20231212144421.GH3014157@nvidia.com>
- <ZXiw4XK/1+ZdsFV1@Asurada-Nvidia>
- <20231212192100.GP3014157@nvidia.com>
- <ZXi9FaPSkHkCm679@Asurada-Nvidia>
- <20231213124055.GR3014157@nvidia.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="QG1ufpIW"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1702504527; x=1734040527;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=o2lEbwHxUNP/lL0Zv5x84LTlhNESluWyXeo3F7KR8cs=;
+  b=QG1ufpIWnyLB6Up/SG/2/l0SBsGxKtIXVr9pqrSIXikgVjTw7BH93F5V
+   3K3N2STz19gAQGHcapG1HsRgcSz4nwHKgKBG5bOBWJhZAroMqy54coHb1
+   H8sAIUJED7wa84abxrJH1xKF+zAoRhlrGcO+G2Z3WOs1KiNNkqoIhQ/Sp
+   B2J/eLnKdkLYuD80ER/h/2oDnz9oQqBROtanRtMjHw3dQ/+t4R13TbW5o
+   PsWfTEKYve1sPwIIZwR7QNC/ca3auSOAszXHKLt+6puaNGU562MpIc3fs
+   RHybNZTKqE3wUeERDn4xaxcbejNnU6A9ySpXe/+IzMP2TopElH8LjLBfd
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10923"; a="2176911"
+X-IronPort-AV: E=Sophos;i="6.04,274,1695711600"; 
+   d="scan'208";a="2176911"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Dec 2023 13:55:26 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10923"; a="808320353"
+X-IronPort-AV: E=Sophos;i="6.04,274,1695711600"; 
+   d="scan'208";a="808320353"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.24.100.114])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Dec 2023 13:55:26 -0800
+Date: Wed, 13 Dec 2023 14:00:21 -0800
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: Thomas Gleixner <tglx@linutronix.de>
+Cc: LKML <linux-kernel@vger.kernel.org>, X86 Kernel <x86@kernel.org>,
+ iommu@lists.linux.dev, Lu Baolu <baolu.lu@linux.intel.com>,
+ kvm@vger.kernel.org, Dave Hansen <dave.hansen@intel.com>, Joerg Roedel
+ <joro@8bytes.org>, "H. Peter Anvin" <hpa@zytor.com>, Borislav Petkov
+ <bp@alien8.de>, Ingo Molnar <mingo@redhat.com>, Raj Ashok
+ <ashok.raj@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>,
+ maz@kernel.org, peterz@infradead.org, seanjc@google.com, Robin Murphy
+ <robin.murphy@arm.com>, jacob.jun.pan@linux.intel.com
+Subject: Re: [PATCH RFC 13/13] iommu/vt-d: Enable posted mode for device
+ MSIs
+Message-ID: <20231213140021.4cc84bb2@jacob-builder>
+In-Reply-To: <87zfynt6uo.ffs@tglx>
+References: <20231112041643.2868316-1-jacob.jun.pan@linux.intel.com>
+	<20231112041643.2868316-14-jacob.jun.pan@linux.intel.com>
+	<87zfynt6uo.ffs@tglx>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20231213124055.GR3014157@nvidia.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY4PEPF0000E9D2:EE_|CY8PR12MB7754:EE_
-X-MS-Office365-Filtering-Correlation-Id: b6ec181f-7a33-459b-3d50-08dbfc1553f6
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	aCKM+BZ8czRNrqvy2P2p580kSnjmIacgrQk6VpXLlCwqXu+EQH0JDX1QsIDkUT8P/x0gXSL0wjtNQdkYIeB4Ub9GsbG1c8pm1rZZ10wMvuxZpkcvysllfQb5wVKXozWZdw7ISCurzgNa2JXXcKBd3OsbdMgBj1ufhSobdBGaXKYS/aMuNfT/HstBQQiqsan0ehO56lrjgSoEs6of6TDNe/xtepH4zR6XLuOVsP1Sucg08XQQc6IJ2/DkCpnmkRsOeMXnrOP2ITWQEx5f7Gs6YFMF4q5UwXWfJUD9ed/IPOS4/CFaVdb5YZwknIs/h5yMc7n5URq7OaAKSqJjEq950vfj+h6JIiEIEePXFpyyoXLIyxwFNeLHVEwMJ3g+BGe8ywNxFwmYiyun3G0o3CoNgSOE25at+mkIyXqWZWZXiT9G/USQ2HWDHRphZMsTPXEbDx7o1L/RaA+YsyonEy8pg43qKes4dqrNw6EL4lWl/5adiIfoIEP7rnpAOIWf+TaAVInu/oGINJ7YDXLdPngcrtIhV5G15QX8ax3/Z0IwLOLXBpLxnDBZG4rFhecnvwv53ooylI/Gqsw1Q7jXdhfUsf4m9mxyom4DCIyYJgrdSYd4RANWIQGd5tUgmY0iqK1s4lRlLgCdmRIL7TAXO0CNwkQAnW7pC+Um/C9WzgJziJvj8zng5sAgTb60zIJ85xWnU2USnJYYoPG67hdwKRfL48kO/0KGym0VvR5MHH7EfLYSRL2a2HyG4PXEq6zokrlm
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230031)(4636009)(376002)(396003)(346002)(39860400002)(136003)(230922051799003)(1800799012)(82310400011)(64100799003)(186009)(451199024)(46966006)(36840700001)(40470700004)(40460700003)(26005)(336012)(426003)(9686003)(36860700001)(47076005)(83380400001)(8676002)(5660300002)(4326008)(7416002)(6862004)(8936002)(33716001)(41300700001)(2906002)(478600001)(316002)(6636002)(54906003)(70586007)(70206006)(82740400003)(86362001)(7636003)(356005)(55016003)(40480700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Dec 2023 19:54:33.4810
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: b6ec181f-7a33-459b-3d50-08dbfc1553f6
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CY4PEPF0000E9D2.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR12MB7754
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Wed, Dec 13, 2023 at 08:40:55AM -0400, Jason Gunthorpe wrote:
-> On Tue, Dec 12, 2023 at 12:05:41PM -0800, Nicolin Chen wrote:
-> > > > // iommufd_private.h
-> > > > 
-> > > > enum iommufd_object_type {
-> > > > 	...
-> > > > +	IOMMUFD_OBJ_VIOMMU,
-> > > > 	...
-> > > > };
-> > > > 
-> > > > +struct iommufd_viommu {
-> > > > +	struct iommufd_object obj;
-> > > > +	struct iommufd_hwpt_paging *hwpt;
-> > > > +	struct xarray devices;
-> > > > +};
-> > > > 
-> > > > struct iommufd_hwpt_paging hwpt {
-> > > > 	...
-> > > > +	struct list_head viommu_list;
-> > > > 	...
-> > > > };
-> > > 
-> > > I'd probably first try to go backwards and link the hwpt to the
-> > > viommu.
-> > 
-> > I think a VM should have only one hwpt_paging object while one
-> > or more viommu objects, so we could do only viommu->hwpt_paging
-> > and hwpt_paging->viommu_list. How to go backwards?
+Hi Thomas,
+
+On Wed, 06 Dec 2023 21:26:55 +0100, Thomas Gleixner <tglx@linutronix.de>
+wrote:
+
+> On Sat, Nov 11 2023 at 20:16, Jacob Pan wrote:
+> >  #ifdef CONFIG_X86_POSTED_MSI
+> >  
+> >  static u64 get_pi_desc_addr(struct irq_data *irqd)
+> > @@ -1133,6 +1144,29 @@ static u64 get_pi_desc_addr(struct irq_data
+> > *irqd) 
+> >  	return __pa(per_cpu_ptr(&posted_interrupt_desc, cpu));
+> >  }
+> > +
+> > +static void intel_ir_reconfigure_irte_posted(struct irq_data *irqd)
+> > +{
+> > +	struct intel_ir_data *ir_data = irqd->chip_data;
+> > +	struct irte *irte = &ir_data->irte_entry;
+> > +	struct irte irte_pi;
+> > +	u64 pid_addr;
+> > +
+> > +	pid_addr = get_pi_desc_addr(irqd);
+> > +
+> > +	memset(&irte_pi, 0, sizeof(irte_pi));
+> > +
+> > +	/* The shared IRTE already be set up as posted during
+> > alloc_irte */  
 > 
-> That is probably how things would work but I don't know if it makes
-> sense to enforce it in the kernel logic..
+> -ENOPARSE
+Will delete this. What I meant was that the shared IRTE has already been
+setup as posted mode instead of remappable mode. So when we make a copy,
+there is no need to change the mode.
+
+> > +	dmar_copy_shared_irte(&irte_pi, irte);
+> > +
+> > +	irte_pi.pda_l = (pid_addr >> (32 - PDA_LOW_BIT)) & ~(-1UL <<
+> > PDA_LOW_BIT);
+> > +	irte_pi.pda_h = (pid_addr >> 32) & ~(-1UL << PDA_HIGH_BIT);
+> > +
+> > +	modify_irte(&ir_data->irq_2_iommu, &irte_pi);
+> > +}
+> > +
+> > +#else
+> > +static inline void intel_ir_reconfigure_irte_posted(struct irq_data
+> > *irqd) {} #endif
+> >  
+> >  static void intel_ir_reconfigure_irte(struct irq_data *irqd, bool
+> > force) @@ -1148,8 +1182,9 @@ static void
+> > intel_ir_reconfigure_irte(struct irq_data *irqd, bool force)
+> > irte->vector = cfg->vector; irte->dest_id = IRTE_DEST(cfg->dest_apicid);
+> >  
+> > -	/* Update the hardware only if the interrupt is in remapped
+> > mode. */
+> > -	if (force || ir_data->irq_2_iommu.mode == IRQ_REMAPPING)
+> > +	if (ir_data->irq_2_iommu.posted_msi)
+> > +		intel_ir_reconfigure_irte_posted(irqd);
+> > +	else if (force || ir_data->irq_2_iommu.mode == IRQ_REMAPPING)
+> >  		modify_irte(&ir_data->irq_2_iommu, irte);
+> >  }
+> >  
+> > @@ -1203,7 +1238,7 @@ static int intel_ir_set_vcpu_affinity(struct
+> > irq_data *data, void *info) struct intel_ir_data *ir_data =
+> > data->chip_data; struct vcpu_data *vcpu_pi_info = info;
+> >  
+> > -	/* stop posting interrupts, back to remapping mode */
+> > +	/* stop posting interrupts, back to the default mode */
+> >  	if (!vcpu_pi_info) {
+> >  		modify_irte(&ir_data->irq_2_iommu,
+> > &ir_data->irte_entry); } else {
+> > @@ -1300,10 +1335,14 @@ static void
+> > intel_irq_remapping_prepare_irte(struct intel_ir_data *data, {
+> >  	struct irte *irte = &data->irte_entry;
+> >  
+> > -	prepare_irte(irte, irq_cfg->vector, irq_cfg->dest_apicid);
+> > +	if (data->irq_2_iommu.mode == IRQ_POSTING)
+> > +		prepare_irte_posted(irte);
+> > +	else
+> > +		prepare_irte(irte, irq_cfg->vector,
+> > irq_cfg->dest_apicid); 
+> >  	switch (info->type) {
+> >  	case X86_IRQ_ALLOC_TYPE_IOAPIC:
+> > +		prepare_irte(irte, irq_cfg->vector,
+> > irq_cfg->dest_apicid);  
 > 
-> Point the S2 to a list of viommu objects it is linked to
-
-Hmm, isn't that hwpt_paging->viommu_list already?
-
-> > > The second version maybe we have the xarray, or maybe we just push the
-> > > xarray to the eventual viommu series.
-> > 
-> > I think that I still don't get the purpose of the xarray here.
-> > It was needed previously because a cache invalidate per hwpt
-> > doesn't know which device. Now IOMMUFD_DEV_INVALIDATE knows.
-> > 
-> > Maybe it's related to that narrative "logically we could have
-> > multiple mappings per iommufd" that you mentioned above. Mind
-> > elaborating a bit?
-> > 
-> > In my mind, viommu is allocated by VMM per piommu, by detecting
-> > the piommu_id via hw_info. In that case, viommu can only have
-> > one unique device list. If IOMMUFD_DEV_INVALIDATE passes in the
-> > dev_id, we don't really need a mapping of vRID-pRID in a multi-
-> > viommu case either? In another word, VMM already has a mapping
-> > from vRID to dev_id, so it could call the DEV_INVALIDATE ioctl
-> > in the first place?
+> What? This is just wrong. Above you have:
 > 
-> The xarray exists to optimize the invalidation flow.
+> > +	if (data->irq_2_iommu.mode == IRQ_POSTING)
+> > +		prepare_irte_posted(irte);
+> > +	else
+> > +		prepare_irte(irte, irq_cfg->vector,
+> > irq_cfg->dest_apicid);  
 > 
-> For SW you can imagine issuing an invalidation against the viommu
-> itself and *all* commands, be they ASID or ATC invalidations can be
-> processed in one shot. The xarray allows converting the vSID to pSID
-> to process ATC invalidations, and the viommu object forces a single
-> VMID to handle the ATC invalidations. If we want to do this, I don't
-> know.
+> Can you spot the fail?
+My bad, I forgot to delete this.
 
-I drafted some patches with IOMMUFD_DEV_INVALIDATE yesterday,
-and realized the same problem that you pointed out here: how
-VMM should handle a group of commands interlaced with ASID and
-ATC commands. If VMM dispatches commands into two groups, the
-executions of the commands will be in a different order than
-what the guest kernel issued in. This might be bitter if there
-is an error occurring in the middle of command executions, in
-which case some later invalidations are done successfully but
-the CONS index would have to stop at a command prior.
+It is probably easier just override the IRTE for the posted MSI case.
+@@ -1274,6 +1354,11 @@ static void intel_irq_remapping_prepare_irte(struct intel_ir_data 
+*data,
+                break;
+        case X86_IRQ_ALLOC_TYPE_PCI_MSI:
+        case X86_IRQ_ALLOC_TYPE_PCI_MSIX:
++               if (posted_msi_supported()) {
++                       prepare_irte_posted(irte);
++                       data->irq_2_iommu.posted_msi = 1;
++               }
++
 
-And even if there are only ATC invalidations in a guest queue,
-there's no guarantee that all commands are for the same dev_id,
-i.e. ATC invalidations themselves would be dispatched into more
-groups and separate IOMMUFD_DEV_INVALIDATE calls.
+> 
+> >  		/* Set source-id of interrupt request */
+> >  		set_ioapic_sid(irte, info->devid);
+> >  		apic_printk(APIC_VERBOSE, KERN_DEBUG "IOAPIC[%d]: Set
+> > IRTE entry (P:%d FPD:%d Dst_Mode:%d Redir_hint:%d Trig_Mode:%d
+> > Dlvry_Mode:%X Avail:%X Vector:%02X Dest:%08X SID:%04X SQ:%X SVT:%X)\n",
+> > @@ -1315,10 +1354,18 @@ static void
+> > intel_irq_remapping_prepare_irte(struct intel_ir_data *data, sub_handle
+> > = info->ioapic.pin; break; case X86_IRQ_ALLOC_TYPE_HPET:
+> > +		prepare_irte(irte, irq_cfg->vector,
+> > irq_cfg->dest_apicid); set_hpet_sid(irte, info->devid);
+> >  		break;
+> >  	case X86_IRQ_ALLOC_TYPE_PCI_MSI:
+> >  	case X86_IRQ_ALLOC_TYPE_PCI_MSIX:
+> > +		if (posted_msi_supported()) {
+> > +			prepare_irte_posted(irte);
+> > +			data->irq_2_iommu.posted_msi = 1;
+> > +		} else {
+> > +			prepare_irte(irte, irq_cfg->vector,
+> > irq_cfg->dest_apicid);
+> > +		}  
+> 
+> Here it gets even more hilarious.
 
-With the xarray, perhaps we could provide a viommu_id in data
-structure of the current iommu_hwpt_invalidate, i.e. reshaping
-the existing invalidate uAPI per viommu, so it can be reused by
-ATC invalidations too instead of adding IOMMUFD_DEV_INVALIDATE?
-Then we wouldn't have the out-of-order execution problem above.
 
-> For HW, the xarray holds the vSID to pSID mapping that must be
-> programmed into the HW operating the dedicated invalidation queue.
+Thanks,
 
-Ah, right! VCMDQ at least needs that.
-
-Thanks
-Nicolin
+Jacob
