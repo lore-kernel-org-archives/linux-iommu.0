@@ -1,197 +1,87 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 16F2D7FBB2
-	for <iommu@lists.linux.dev>; Wed, 13 Dec 2023 21:55:26 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B2AC038E
+	for <iommu@lists.linux.dev>; Thu, 14 Dec 2023 00:58:57 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="QG1ufpIW"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="T885dl0E"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1702504527; x=1734040527;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=o2lEbwHxUNP/lL0Zv5x84LTlhNESluWyXeo3F7KR8cs=;
-  b=QG1ufpIWnyLB6Up/SG/2/l0SBsGxKtIXVr9pqrSIXikgVjTw7BH93F5V
-   3K3N2STz19gAQGHcapG1HsRgcSz4nwHKgKBG5bOBWJhZAroMqy54coHb1
-   H8sAIUJED7wa84abxrJH1xKF+zAoRhlrGcO+G2Z3WOs1KiNNkqoIhQ/Sp
-   B2J/eLnKdkLYuD80ER/h/2oDnz9oQqBROtanRtMjHw3dQ/+t4R13TbW5o
-   PsWfTEKYve1sPwIIZwR7QNC/ca3auSOAszXHKLt+6puaNGU562MpIc3fs
-   RHybNZTKqE3wUeERDn4xaxcbejNnU6A9ySpXe/+IzMP2TopElH8LjLBfd
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10923"; a="2176911"
+  t=1702515537; x=1734051537;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=w4CvfAEx5Otr1z8ctNIsiiCXmkHh9thOmbmC19YRFYY=;
+  b=T885dl0EKN8uwwAjzBtP+zyxpJ8siNu0y6RzoXOan2pVdUNmvUY9ywk9
+   uTSJuVD8ulWjtKyqMqCqQz3N4SNfA+M4rYu+OK5lRC/foEEBgpA9RNc15
+   NfiyjD/QNLsafu5z1z2mWHe7CuemehDmMVMElFjhDgOE92knpXZ4LKpEb
+   E8zzNnvrq4w83nxBhchvJok/7Vkgx6ZnuCdJH2yRQrs1g21j2iDHPyBam
+   EStwvKjxoWH6eeiGcodqBUzOQmQm35p1R28T6mxmcQe+P1H84d2hxa4m7
+   TCoQJRzayBoi3zqQBNSgzuXfujviMmsT5eZecIK6srbBk8w7/rhZfMjVC
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10923"; a="481246316"
 X-IronPort-AV: E=Sophos;i="6.04,274,1695711600"; 
-   d="scan'208";a="2176911"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Dec 2023 13:55:26 -0800
+   d="scan'208";a="481246316"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Dec 2023 16:58:56 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10923"; a="808320353"
+X-IronPort-AV: E=McAfee;i="6600,9927,10923"; a="750326235"
 X-IronPort-AV: E=Sophos;i="6.04,274,1695711600"; 
-   d="scan'208";a="808320353"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.24.100.114])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Dec 2023 13:55:26 -0800
-Date: Wed, 13 Dec 2023 14:00:21 -0800
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Thomas Gleixner <tglx@linutronix.de>
-Cc: LKML <linux-kernel@vger.kernel.org>, X86 Kernel <x86@kernel.org>,
- iommu@lists.linux.dev, Lu Baolu <baolu.lu@linux.intel.com>,
- kvm@vger.kernel.org, Dave Hansen <dave.hansen@intel.com>, Joerg Roedel
- <joro@8bytes.org>, "H. Peter Anvin" <hpa@zytor.com>, Borislav Petkov
- <bp@alien8.de>, Ingo Molnar <mingo@redhat.com>, Raj Ashok
- <ashok.raj@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>,
- maz@kernel.org, peterz@infradead.org, seanjc@google.com, Robin Murphy
- <robin.murphy@arm.com>, jacob.jun.pan@linux.intel.com
-Subject: Re: [PATCH RFC 13/13] iommu/vt-d: Enable posted mode for device
- MSIs
-Message-ID: <20231213140021.4cc84bb2@jacob-builder>
-In-Reply-To: <87zfynt6uo.ffs@tglx>
-References: <20231112041643.2868316-1-jacob.jun.pan@linux.intel.com>
-	<20231112041643.2868316-14-jacob.jun.pan@linux.intel.com>
-	<87zfynt6uo.ffs@tglx>
-Organization: OTC
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+   d="scan'208";a="750326235"
+Received: from jiqing1x-mobl1.ccr.corp.intel.com (HELO [10.254.210.186]) ([10.254.210.186])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Dec 2023 16:58:53 -0800
+Message-ID: <31bd82b6-6f7e-4dc4-8cbb-46fa806d699f@linux.intel.com>
+Date: Thu, 14 Dec 2023 08:58:49 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/2] PCI: make pci_dev_is_disconnected() helper public for
+ other drivers
+To: Lukas Wunner <lukas@wunner.de>
+Cc: bhelgaas@google.com, baolu.lu@linux.intel.com, dwmw2@infradead.org,
+ will@kernel.org, robin.murphy@arm.com, linux-pci@vger.kernel.org,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ Haorong Ye <yehaorong@bytedance.com>
+References: <20231213034637.2603013-1-haifeng.zhao@linux.intel.com>
+ <20231213034637.2603013-2-haifeng.zhao@linux.intel.com>
+ <20231213104930.GB31964@wunner.de>
+From: Ethan Zhao <haifeng.zhao@linux.intel.com>
+In-Reply-To: <20231213104930.GB31964@wunner.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-Hi Thomas,
 
-On Wed, 06 Dec 2023 21:26:55 +0100, Thomas Gleixner <tglx@linutronix.de>
-wrote:
+On 12/13/2023 6:49 PM, Lukas Wunner wrote:
+> On Tue, Dec 12, 2023 at 10:46:36PM -0500, Ethan Zhao wrote:
+>> move pci_dev_is_disconnected() from driver/pci/pci.h to public
+>> include/linux/pci.h for other driver's reference.
+>> no function change.
+> That's merely a prose description of the code.  A reader can already
+> see from the code what it's doing.  You need to explain the *reason*
+> for the change instead.  E.g.:  "Make pci_dev_is_disconnected() public
+> so that it can be called from $DRIVER to speed up hot removal
+> handling which may otherwise take seconds because of $REASONS."
 
-> On Sat, Nov 11 2023 at 20:16, Jacob Pan wrote:
-> >  #ifdef CONFIG_X86_POSTED_MSI
-> >  
-> >  static u64 get_pi_desc_addr(struct irq_data *irqd)
-> > @@ -1133,6 +1144,29 @@ static u64 get_pi_desc_addr(struct irq_data
-> > *irqd) 
-> >  	return __pa(per_cpu_ptr(&posted_interrupt_desc, cpu));
-> >  }
-> > +
-> > +static void intel_ir_reconfigure_irte_posted(struct irq_data *irqd)
-> > +{
-> > +	struct intel_ir_data *ir_data = irqd->chip_data;
-> > +	struct irte *irte = &ir_data->irte_entry;
-> > +	struct irte irte_pi;
-> > +	u64 pid_addr;
-> > +
-> > +	pid_addr = get_pi_desc_addr(irqd);
-> > +
-> > +	memset(&irte_pi, 0, sizeof(irte_pi));
-> > +
-> > +	/* The shared IRTE already be set up as posted during
-> > alloc_irte */  
-> 
-> -ENOPARSE
-Will delete this. What I meant was that the shared IRTE has already been
-setup as posted mode instead of remappable mode. So when we make a copy,
-there is no need to change the mode.
+Yup, why I made it public. then how about
 
-> > +	dmar_copy_shared_irte(&irte_pi, irte);
-> > +
-> > +	irte_pi.pda_l = (pid_addr >> (32 - PDA_LOW_BIT)) & ~(-1UL <<
-> > PDA_LOW_BIT);
-> > +	irte_pi.pda_h = (pid_addr >> 32) & ~(-1UL << PDA_HIGH_BIT);
-> > +
-> > +	modify_irte(&ir_data->irq_2_iommu, &irte_pi);
-> > +}
-> > +
-> > +#else
-> > +static inline void intel_ir_reconfigure_irte_posted(struct irq_data
-> > *irqd) {} #endif
-> >  
-> >  static void intel_ir_reconfigure_irte(struct irq_data *irqd, bool
-> > force) @@ -1148,8 +1182,9 @@ static void
-> > intel_ir_reconfigure_irte(struct irq_data *irqd, bool force)
-> > irte->vector = cfg->vector; irte->dest_id = IRTE_DEST(cfg->dest_apicid);
-> >  
-> > -	/* Update the hardware only if the interrupt is in remapped
-> > mode. */
-> > -	if (force || ir_data->irq_2_iommu.mode == IRQ_REMAPPING)
-> > +	if (ir_data->irq_2_iommu.posted_msi)
-> > +		intel_ir_reconfigure_irte_posted(irqd);
-> > +	else if (force || ir_data->irq_2_iommu.mode == IRQ_REMAPPING)
-> >  		modify_irte(&ir_data->irq_2_iommu, irte);
-> >  }
-> >  
-> > @@ -1203,7 +1238,7 @@ static int intel_ir_set_vcpu_affinity(struct
-> > irq_data *data, void *info) struct intel_ir_data *ir_data =
-> > data->chip_data; struct vcpu_data *vcpu_pi_info = info;
-> >  
-> > -	/* stop posting interrupts, back to remapping mode */
-> > +	/* stop posting interrupts, back to the default mode */
-> >  	if (!vcpu_pi_info) {
-> >  		modify_irte(&ir_data->irq_2_iommu,
-> > &ir_data->irte_entry); } else {
-> > @@ -1300,10 +1335,14 @@ static void
-> > intel_irq_remapping_prepare_irte(struct intel_ir_data *data, {
-> >  	struct irte *irte = &data->irte_entry;
-> >  
-> > -	prepare_irte(irte, irq_cfg->vector, irq_cfg->dest_apicid);
-> > +	if (data->irq_2_iommu.mode == IRQ_POSTING)
-> > +		prepare_irte_posted(irte);
-> > +	else
-> > +		prepare_irte(irte, irq_cfg->vector,
-> > irq_cfg->dest_apicid); 
-> >  	switch (info->type) {
-> >  	case X86_IRQ_ALLOC_TYPE_IOAPIC:
-> > +		prepare_irte(irte, irq_cfg->vector,
-> > irq_cfg->dest_apicid);  
-> 
-> What? This is just wrong. Above you have:
-> 
-> > +	if (data->irq_2_iommu.mode == IRQ_POSTING)
-> > +		prepare_irte_posted(irte);
-> > +	else
-> > +		prepare_irte(irte, irq_cfg->vector,
-> > irq_cfg->dest_apicid);  
-> 
-> Can you spot the fail?
-My bad, I forgot to delete this.
+"
 
-It is probably easier just override the IRTE for the posted MSI case.
-@@ -1274,6 +1354,11 @@ static void intel_irq_remapping_prepare_irte(struct intel_ir_data 
-*data,
-                break;
-        case X86_IRQ_ALLOC_TYPE_PCI_MSI:
-        case X86_IRQ_ALLOC_TYPE_PCI_MSIX:
-+               if (posted_msi_supported()) {
-+                       prepare_irte_posted(irte);
-+                       data->irq_2_iommu.posted_msi = 1;
-+               }
-+
+Make pci_dev_is_disconnected() public so that it can be called from
+Intel vt-d driver to check the device's hotplug removal state when
+issue devTLB flush request."
 
-> 
-> >  		/* Set source-id of interrupt request */
-> >  		set_ioapic_sid(irte, info->devid);
-> >  		apic_printk(APIC_VERBOSE, KERN_DEBUG "IOAPIC[%d]: Set
-> > IRTE entry (P:%d FPD:%d Dst_Mode:%d Redir_hint:%d Trig_Mode:%d
-> > Dlvry_Mode:%X Avail:%X Vector:%02X Dest:%08X SID:%04X SQ:%X SVT:%X)\n",
-> > @@ -1315,10 +1354,18 @@ static void
-> > intel_irq_remapping_prepare_irte(struct intel_ir_data *data, sub_handle
-> > = info->ioapic.pin; break; case X86_IRQ_ALLOC_TYPE_HPET:
-> > +		prepare_irte(irte, irq_cfg->vector,
-> > irq_cfg->dest_apicid); set_hpet_sid(irte, info->devid);
-> >  		break;
-> >  	case X86_IRQ_ALLOC_TYPE_PCI_MSI:
-> >  	case X86_IRQ_ALLOC_TYPE_PCI_MSIX:
-> > +		if (posted_msi_supported()) {
-> > +			prepare_irte_posted(irte);
-> > +			data->irq_2_iommu.posted_msi = 1;
-> > +		} else {
-> > +			prepare_irte(irte, irq_cfg->vector,
-> > irq_cfg->dest_apicid);
-> > +		}  
-> 
-> Here it gets even more hilarious.
 
 
 Thanks,
 
-Jacob
+Ethan
+
+>
+> Thanks,
+>
+> Lukas
