@@ -1,248 +1,162 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
+Received: from APC01-SG2-obe.outbound.protection.outlook.com (mail-sgaapc01on2073.outbound.protection.outlook.com [40.107.215.73])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C01BE384
-	for <iommu@lists.linux.dev>; Thu, 14 Dec 2023 02:55:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="oJQin7Tb"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1702522548; x=1734058548;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=b6G3AaKY1QqyEgro3ByPARL0kAKRkGeie3aD4IwcR4Q=;
-  b=oJQin7TbO+ouz+StOnUt1Y0Ycy8Uw7eP7r003qIHLN/DlXpStYJYhcZo
-   gm92imWkx2mYtrKBIKRjNunNirL6Elv2s8Yw6mOicbx+vL0cepKaI/zsJ
-   jirWipttiySJLwWKL0od+lBB8DGLyaVedJm1692sksJb9F9CBjhu+wMSI
-   w+AG5ASMn64n+sYdg/dfvNSRde5ImiXQheObOEujUJObKHEWc+HBysEBq
-   IjPtw4pZGHNur1qkb4nacnRPlugPjgg8NgVwysgvcDUBKRsYkd4TBQRBv
-   XomXa+oN1Z6kvDxKeMfM38xc61bZCtI5+iCL2cOpnRAppD4v7SrUpvfNn
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10923"; a="8420571"
-X-IronPort-AV: E=Sophos;i="6.04,274,1695711600"; 
-   d="scan'208";a="8420571"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Dec 2023 18:55:47 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10923"; a="803104373"
-X-IronPort-AV: E=Sophos;i="6.04,274,1695711600"; 
-   d="scan'208";a="803104373"
-Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
-  by orsmga008.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 13 Dec 2023 18:55:46 -0800
-Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35; Wed, 13 Dec 2023 18:55:45 -0800
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35; Wed, 13 Dec 2023 18:55:45 -0800
-Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35 via Frontend Transport; Wed, 13 Dec 2023 18:55:45 -0800
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.168)
- by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.35; Wed, 13 Dec 2023 18:55:44 -0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 754A8171A8
+	for <iommu@lists.linux.dev>; Thu, 14 Dec 2023 08:25:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=cixtech.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cixtech.com
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=YsNaGzIi+J+6+uHXxWzD1+ryGlLDNXD/X5jod2kd88QghHkXCLjqAETOThdBiuu3Ad16JqXYnW7V8MwLi6a+Xsr20ouZLvfC8tVcO6b2Sh0GJwQxh/eQG6Xxf6KYUJLUBFK7NYpkzs1uMTACpBvKsA1iszRqZ4sqIR64SitspmE24VnnJH3PuGLav0lCMt83D4/DIY3ryKJ/ns3+CDQ684UXv4zgeiZnnHiHe/FATZ931L3rHPsMYTQ+PLiZux7JTfM99jn+tVcGQqDzLlntC3/Flu/5eCDXFuPlJ8PNmbadm5Gk4A1eKsjf6mrsNz1U5D7/3zrW1J5iYvV2xanS8A==
+ b=K15a0RTavsqlua2/4kanfD/y9piHbmUokSb64YBbhVyJ6wyRytoApEufheRDj/VjXtfMfg05eHqUsyL2q1xMhpey4/kBJTJcC+q+j64MdjJwt23i+CKOC9q4I9IOAftVkVf79HyGrN9IBy03HL67lMvmN0yBjQP3t6kLJ2gXEV6IX/ibQxccrsjRPT52yr3LMdqhC8SuXdYDzMGjfy9Lozs8ggcZ0Smyt+wh00YnYulAZuzQLhsos4cyQHlSFVueiRxHVl/dLPLYMBIH7PnK0iSGg1+5LzNpAlvAEREftffDX9R7YODRiqCipxOiFpgc+USoA/96Rm+kumNeyuZF6Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ERmdwQMcqfzQ1H42MiG96f21fLvaIJVkq8z9GRrvxMI=;
- b=icWb915z5nyUreTs7f9nmq8bQMGAmGlfAlHLyWkRcGBQJzGy/c+eZBWv8324Y775M6s7oanhl1A4qaqP4p4DoJLWcMREEIAEehs+4vHRK32WX5/zAmTIxMAXxMBUfTg/LQUmS8IJOhabchPBJM/Vzb+y/VvB2JUOjjmyHH08PQ5CAhokyUamewuwesBNSe4JnDR2Hr24xjdra8AnzaqjUhHRuzPSLN6JjGAP6o257ISi9njUjouDV23ZTUdF9cA6WE9rUSFYq3gU7mirCPI3Zs9XS/9267KSPoeTgVMKdklahj3DvgJCGaB5J2b7EiyJnmAAHVoq3cBl7WGW54E7ew==
+ bh=NHc5VSPrWAPulDYslQb+keGbRzaONhpdX6ViJQ8Z2zQ=;
+ b=ajQYNPYcDmsKk48M2w1JBcGHHSUaVVQXGKOOqqZd85SB0LHVwWx4+ExEabVOhgPnK4wJ70Y46dsq2jlyYKY3IRnDBOHiHws0orqsY0zTCkMT2YavOOU26zghMuVry/y5Ad/W/FWFRIGofTElqsZMvYMcJNVt6+BGPlY5J/ZnJ2dFlETMuSAu9pMVV7fZjhidyU9J0SZjuJ4Sad864IF42VhRMJDzbL3+/I9gS7LyTw9r67xFV85CrNFbgWgla5hmtm0gtz8zGU1OhtIWK4yd51h2srhcZSufkJ7fF4vxxEWh/flJ64kqZuEVmyb2TM/aMzCGwkrm+o4QDCNURsQkQQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
+ smtp.mailfrom=cixtech.com; dmarc=pass action=none header.from=cixtech.com;
+ dkim=pass header.d=cixtech.com; arc=none
 Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from PH0PR11MB4965.namprd11.prod.outlook.com (2603:10b6:510:34::7)
- by MW3PR11MB4649.namprd11.prod.outlook.com (2603:10b6:303:5b::17) with
+ header.d=none;dmarc=none action=none header.from=cixtech.com;
+Received: from KL1PR06MB6020.apcprd06.prod.outlook.com (2603:1096:820:d8::5)
+ by TY0PR06MB5259.apcprd06.prod.outlook.com (2603:1096:400:206::9) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7091.28; Thu, 14 Dec
- 2023 02:55:41 +0000
-Received: from PH0PR11MB4965.namprd11.prod.outlook.com
- ([fe80::ea04:122f:f20c:94e8]) by PH0PR11MB4965.namprd11.prod.outlook.com
- ([fe80::ea04:122f:f20c:94e8%2]) with mapi id 15.20.7068.033; Thu, 14 Dec 2023
- 02:55:41 +0000
-Message-ID: <a19031b0-7c30-45e6-b171-c53e3578b867@intel.com>
-Date: Thu, 14 Dec 2023 10:55:25 +0800
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 8/8] iommu/vt-d: Add set_dev_pasid callback for nested
- domain
-To: Yi Liu <yi.l.liu@intel.com>, <baolu.lu@linux.intel.com>
-CC: <robin.murphy@arm.com>, <kevin.tian@intel.com>, <jgg@nvidia.com>,
-	<alex.williamson@redhat.com>, <joro@8bytes.org>, <cohuck@redhat.com>,
-	<eric.auger@redhat.com>, <nicolinc@nvidia.com>, <kvm@vger.kernel.org>,
-	<mjrosato@linux.ibm.com>, <chao.p.peng@linux.intel.com>,
-	<yi.y.sun@linux.intel.com>, <peterx@redhat.com>, <jasowang@redhat.com>,
-	<shameerali.kolothum.thodi@huawei.com>, <lulu@redhat.com>,
-	<suravee.suthikulpanit@amd.com>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
-	<zhenzhong.duan@intel.com>, <joao.m.martins@oracle.com>,
-	<xin.zeng@intel.com>, <yan.y.zhao@intel.com>
-References: <20231127063428.127436-1-yi.l.liu@intel.com>
- <20231127063428.127436-9-yi.l.liu@intel.com>
-Content-Language: en-US
-From: "Yang, Weijiang" <weijiang.yang@intel.com>
-In-Reply-To: <20231127063428.127436-9-yi.l.liu@intel.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SG2PR04CA0195.apcprd04.prod.outlook.com
- (2603:1096:4:14::33) To PH0PR11MB4965.namprd11.prod.outlook.com
- (2603:10b6:510:34::7)
+ 2023 08:25:48 +0000
+Received: from KL1PR06MB6020.apcprd06.prod.outlook.com
+ ([fe80::2625:d246:abd7:4a7a]) by KL1PR06MB6020.apcprd06.prod.outlook.com
+ ([fe80::2625:d246:abd7:4a7a%4]) with mapi id 15.20.7091.028; Thu, 14 Dec 2023
+ 08:25:48 +0000
+From: joakim.zhang@cixtech.com
+To: hch@lst.de,
+	m.szyprowski@samsung.com,
+	robin.murphy@arm.com
+Cc: iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	cix-kernel-upstream@cixtech.com,
+	Joakim Zhang <joakim.zhang@cixtech.com>
+Subject: [PATCH V2] dma-mapping: Set dma_mem pointer as NULL after it's freed
+Date: Thu, 14 Dec 2023 16:25:26 +0800
+Message-Id: <20231214082526.1212264-1-joakim.zhang@cixtech.com>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
+X-ClientProxiedBy: SI2P153CA0013.APCP153.PROD.OUTLOOK.COM
+ (2603:1096:4:140::12) To KL1PR06MB6020.apcprd06.prod.outlook.com
+ (2603:1096:820:d8::5)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR11MB4965:EE_|MW3PR11MB4649:EE_
-X-MS-Office365-Filtering-Correlation-Id: 51effe6a-3aa3-4f10-c000-08dbfc502857
+X-MS-TrafficTypeDiagnostic: KL1PR06MB6020:EE_|TY0PR06MB5259:EE_
+X-MS-Office365-Filtering-Correlation-Id: df46f8e3-2b5e-4adc-653a-08dbfc7e463c
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: HikMozAiU6DmM1weboTqgXmD/gY2QfI/VeK6ruY0hm62NU08VnEEVZxuowViGK9btv8dYiklayq5WWvE7m8LQi1as4nMTuicgWj02kTriGnxYnR67CStO5rLLCc56XForqXM33ZFeQmAsuXtQgtoe2G7kgUl+umDnF0NZEguZzTpvV55gfVhm+Gsa9U9e5zCUH6CEc3BBXIvgC+Hw7lu6N1/txEy9wr5305Fkfu7IC1BKA7awFjJQrnWsW9hJ4QdAR/LrB2T6c/JxJ7JB5sWCCAZPD4vah6UFVQwqrqz4SH28mSXufvhCFgt5C5V7REOXiY2giPPrMsW1uB215LivwiDK5080l5Ljte58tXRpDCus2e92ve5Jzo7pSwuqdCN75CxFROKbVNCTtOC+lZLIXYIElztmnwoA0y5Y/sRsSyfKBIdS2w5QqoZjAPKYQ00vIdujYr50LmhLJ78TVWfhk5osnwJn5dLAlB5l5VGAhZ5MC/UcZxM6rRAOYPWouvdNisAwPgk3JigQcEtcBPf0X++3WeX3vFm/XSUbaiVcZe+ydyB78L7MH38V/2YRZrzck40sDCuNfNfBiYjK8sf45zjoNlAvtaq41qQbfrC2dfaBpvqNM8aYtItIf4C7Sa7Pfvclji0zrS3Fdnt4wzK6A==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB4965.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(39860400002)(346002)(366004)(396003)(376002)(136003)(230922051799003)(64100799003)(186009)(451199024)(1800799012)(82960400001)(26005)(36756003)(41300700001)(83380400001)(6506007)(86362001)(6666004)(53546011)(31696002)(8676002)(8936002)(4326008)(7416002)(6512007)(5660300002)(478600001)(31686004)(38100700002)(6486002)(66946007)(316002)(66556008)(66476007)(2616005)(2906002)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info:
+	1O7hU6fHisYz5U8C2ukTT/yUW6oOpWmipKURzlAk7K+tzTrMwty9ILrQClLhhrL8XTGvP3DbTxDHDkrvBPiNTNnJqK7Vvooq+k1XWABMhqY5fhLA+Jy1XKuDyq7zCreykn8SHc5wukejQLetsJuFCRoZspl8WHzn73RTR4g9SJSm1fQE8bgs9zGkD6pRQgdjwreoaGswDocaITYA86oXB9KadiRXTpupG3pIZ7TXX9uDfPkIG1Aobhxtna6RC+O3w3lwkWVVc8hfhaEK+QaXY9Um0k2VD3Rd9Zsk7psuIEq+9stYY/Egu5frxJKYtYej5aohv8B2f7j6R4hygImQMd+Fi3R2tJjWVVnF8ObbDqdO8WlhH64gelIwK3I0lBlxEt7tBZo2OPyxB8YkxM5dHRvU1yDTlUJ4y+3eeAyL7/88FwuQVXk5TkZD0Q4HzD+fEXT/FVCyFWkkEtguZqQ9LVaxjsyBsCgFbQcM1wR1fR77Vd1Ik8vzzlGDMpx1lQ1xt6lNzUyJbmAecPNmu349YdWkilVxNQBPLKt2k/WKXQ1kVnakxCNoFvZgve+JGPFlc///aIHFdMHmqZJyDBN5/svUOQ/+MYgi+ON+gq+cWne1FzLrBzkRTl4kf9h0nxVM
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:KL1PR06MB6020.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(396003)(346002)(366004)(39840400004)(376002)(136003)(230922051799003)(451199024)(186009)(64100799003)(1800799012)(478600001)(6486002)(2906002)(9686003)(6506007)(6512007)(6666004)(52116002)(8676002)(8936002)(5660300002)(4326008)(36756003)(316002)(66476007)(66556008)(66946007)(38350700005)(83380400001)(41300700001)(38100700002)(66574015)(2616005)(107886003)(1076003)(26005)(86362001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?V253UmhpZkdjQ2l4RE9MaDBOamZ5V0ZsUmQ1bFdBaTNhdG9SNlRQWFdWMHJZ?=
- =?utf-8?B?b3h5WXFMRndsN0w2OUE5N053Z2RjMTI3amVadmJmRlBpdndoSkZqaXpZK1pQ?=
- =?utf-8?B?ZnU4V3kxUGk1ZDdwVktZU05CZW9qOVZSQ0dRaUJsUldDSGhQamxPSisvSU13?=
- =?utf-8?B?M3JCcFBJR090MmlrR2tJM1Y1SVJWNUlwT0VHVG1xbW43Z2tUaThNYU85TkNk?=
- =?utf-8?B?VDdZc29KL2NJRFRrWXNXa1NCQ0c3djlJN2VtZEQwazVlQTdiZkJBQjUwY2NW?=
- =?utf-8?B?cis4dUkzYkNpU2xFblk4S0tFV0F5aG9SRnZjcFFpVmVXZUtQOUtlUGhZU0t2?=
- =?utf-8?B?TGFielRCZTlkOE5oTTd1LytQbEZIWDNsYkRDZjgzcmIrTDZPeHB6WWJtN256?=
- =?utf-8?B?dWRHRXlBbzk2TmVjOUJFQkc2UFoyWWxheVpLY2MzcGpYMnFmeW5NWDVOWmQ2?=
- =?utf-8?B?QVJuQWdVTzc3NWtXTVIrR1pqWGJuUmN2SnIwQTkwV05EazNVSVNaTG1QOURJ?=
- =?utf-8?B?SVhucloyN3ZXVUhEQlcvc29BZ0FiaS83bDFmTW5IS3NSQlZMaTl1YXNTWmtl?=
- =?utf-8?B?Ykc1M0hydnUyTzBpK0M4Vk5LVFVXdzlTTkl5UndaZFFrd1lZUlJDdjZFUFZJ?=
- =?utf-8?B?RDBtN2dJVFI5YUpTN0g4a0h3UHFyMHlsNEM0ZCtUdkthVytrZVk5NW01am5E?=
- =?utf-8?B?VHNsSyt1V0F6WFBGeXA4azh5Z1BFejh2QitJWitwQmEzWGRCR0NEeHRNbXcv?=
- =?utf-8?B?OWpidmJiQTVTS1UvbHQyQXBXSW0ydEE5M2ZsSE9PQ3FnQmtSYldjUU80SWhU?=
- =?utf-8?B?cXdtc2Fkb291L2RKR0piQkZyb2FTL2tpdXY1ZUtjMXQyeFBhYWJGdUc5eHVZ?=
- =?utf-8?B?YTAvdXNYSmloMm9HNUx0MENQT25LcUNMM3VkYld2QnFLVnlQVG9Sc0VLc3Jz?=
- =?utf-8?B?bWQrc0thVUhFZ1JSZUJoZ0xaUk0veVJ0dThYMzdvSkgzc3dZeUNpYTVIWnQ0?=
- =?utf-8?B?UWtkZHdWT2IxVFJtUDBtd0lYTWduajFVdFdWeUhrK0tTK215MGdRSm5TdUE2?=
- =?utf-8?B?TzZvbHJubFo3eVB2TVlpbElRUnRWeVdDd3UvQjFBL0xMUDFNWm92d0h3OHFr?=
- =?utf-8?B?RVZMYTRUcUJ2aVd6OWJXMnk4cXZLZnFLU291aTJOUUwza1ZiS0NXUWdIdVdZ?=
- =?utf-8?B?cG1mWWQxdEdJWU9mL1lNYU5DWFhCUVZkUlNlcDRvUEo4N3RxSEVvbUlDWmFO?=
- =?utf-8?B?VkFWQ1QzVDdCTzM3VjZ1a2FLeTljeWF4NDRHVldxVk9VUTVFNStCSXdaQldD?=
- =?utf-8?B?M1V0Um5TT3J4dG1vVVZJbWd2cGRtdUNlTWJNVnVtT3lIaFFhQmgrQmJDRmw1?=
- =?utf-8?B?Nlp4aWE4aDFvNlJQTGNPY09wQ0M1RS9ySDIyWDl1Um96YjViR1ZqeFhEYklR?=
- =?utf-8?B?YUpReG9TNzNnVUZtZnUrZHY2VXVSZkFERXEvWHZZWHB3OXpjVW1ETDQvN0hK?=
- =?utf-8?B?VUQ0aE81Vy8vUUlEN1hUbnE2dUY0NXM5clRJZlk4V1hTSE0zeUltVVNZaWNm?=
- =?utf-8?B?eVE5T3dNVW85bkJDN0ROMUlhQ0x4a0VMaHJpcG5NNXEvMjdtSVhUUkNvb3M0?=
- =?utf-8?B?bXFJUGo2MExBQkZBZ1RMR0JvVm9RMThlQkZZTjF0cUwzODl6cHlSdDI4bUdV?=
- =?utf-8?B?YUhNRWdyNmU4Ky8vOXNmaDRTS1M0UHY3OUZ2anZlQlFnV1I5MUhpOXFhQTZn?=
- =?utf-8?B?amRibE1ma0kyTTQ3MEJjRjh5WFkxRUNqVjVoem4zMlgwV1BRcjB3NCs1d0Fr?=
- =?utf-8?B?UUNDb2E5ZjdBUXB3UEtpR1RlQzZVWmpabkNVM0xZbThnTzRXQloyOXVXZFA0?=
- =?utf-8?B?Wlo0TDdpcTYvbDU2cEUzRE1heU51Y1lEMVdkUDVEc2cydVFjVjRiVFNmcElF?=
- =?utf-8?B?M2N3WDJtbU9sUDNLdkNxUDVVSldOMisvbFFseW1sRkNZQUlFUXNFVHhOd3VU?=
- =?utf-8?B?bEVTeE9jc3lvNnpMK3YrcHJnbUpyQXo3UXV3ZGNwQlVhWWduQ3dYejFlRjNr?=
- =?utf-8?B?MEYwNGg4NVJjbW44T3RmQ014eU9iSEltL3kwWmdHUkZ5WUVtNTBBQjNDRFdK?=
- =?utf-8?B?QjBxNUl3b0RCWVFESnRXV2kwL3dXc0lZbWZhUUZVRm16ekJUZHpQUEtKNGxD?=
- =?utf-8?B?Nmc9PQ==?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 51effe6a-3aa3-4f10-c000-08dbfc502857
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB4965.namprd11.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?7lkYslOXa5qb1k4ZfV9TMHKnZSUodpT2aH54TVyXk0M3B8kidWECiPNY9uIb?=
+ =?us-ascii?Q?S1MqfmizJNVui5J/baEyS1s3yF51WVGXQHwno7P8IchCpYwI0CKXbbTUA8un?=
+ =?us-ascii?Q?AR81h6ExTMm1By0BwYBV0fgoxQ7yKKQJeKcNphf2uf7Gd0s7vrfSvwonNst5?=
+ =?us-ascii?Q?+lf9Z9HeBC5Lgta12QHg0Rk67k0zhy4vd6Vsn2ed+cc6hm06sQDREBnjqnV8?=
+ =?us-ascii?Q?imkoItA1bver5k2naBbhRwTVEuyVXR68AKJlWYQufJCQ8ybZnyA7fxC5stY7?=
+ =?us-ascii?Q?1pLVohpL2j3BGqr4BVaZK66Q5wZt55yfzadYiSJnDP0TjuFxlv0Xv9EC0Tx8?=
+ =?us-ascii?Q?xRuxhWM92K6kQLoI8mEn4+PTzYoMpMFO2XP35KYTXgkU9M8VBLPF05QVdyJb?=
+ =?us-ascii?Q?ii6XduKpIZhNuxSh5PUsrXk3IdYz5MNDpTZnD0cXISXc405Q+3mRfdM882a0?=
+ =?us-ascii?Q?eO4PSGt2Wsb9hx4o6aXN7URjRyd+hE4+/7gTWii4kJ2XROY4Mzsohvg3I9uq?=
+ =?us-ascii?Q?ICUN7s1Jx/mC8O73CMYYnV/l44MSwbyGI3vPUEihShiA3SGIq1lE4WhCa+ib?=
+ =?us-ascii?Q?ohMnOMNuK1r0RILwoDgdqgxX7OPcmis4OotjEdNDx85wHLdu3wGRRw0DqWc7?=
+ =?us-ascii?Q?83L72xWcFa81cMKTXnKEGlKsi1VsAXhcTZWWhS9AGKK5fzjWIndeaQatAOCD?=
+ =?us-ascii?Q?C1LTS+nYxbSXrRpMWpPlSINe+4BaufXXk/UwMQZaQjgNhPNpr5yX7R+fNJLu?=
+ =?us-ascii?Q?LLIAw3TnrGbdCFyW3iih7VWybR83yPDlTTTLqBgEnKX4i6vNuCtgVhnkdkN4?=
+ =?us-ascii?Q?6WnnhMsE4HXOTC+xnr8tk8MqJaD9uNcQQ83Lp3id4z3gBH2UzxcXcoDDvdBz?=
+ =?us-ascii?Q?uUktslENe76KKWKNjpM5Xkwx2FDsrHGfYgAMEWME2J/L3XAq+bhgai93v2Qv?=
+ =?us-ascii?Q?nxeNja1dU/hLJ7WhJAkOo7KHiBmp4/B0bav1ab0XBhvaWoMtUyZSxw2K5N0x?=
+ =?us-ascii?Q?Z5DFg1Od430y9jNIPSEvGylUTJr7nc9HLvWTnlAIW6z/ZuqhE3R/VHqpL0M+?=
+ =?us-ascii?Q?zr3ylknsa5Panqe7/ctrrVB1rJRUlvtaE/Jv1I3WW3Y8VRGnMbQTXpUnnd7F?=
+ =?us-ascii?Q?vPzYpPW3Hah/lrH4xz0xf52CPwmC3o7Mu47qQZGUYdq5LQl1WRZooovLvxFo?=
+ =?us-ascii?Q?IAy6ytWU1LWeMz4/AFKRZhKrOcj0OvYFLp8x5gNa/8MLb6ErEDm7kw9n0uJ7?=
+ =?us-ascii?Q?PWfabOMOghSuZwNfk1/a60+6JnGjgMGwweP+9MswVaM0Leq/+mItmXdtfdXO?=
+ =?us-ascii?Q?/YOqbewDUD6UqvzFxEZ9WWf7bYiETArzfA35GT6P23GAkwCm6ZoZCnqxKhSh?=
+ =?us-ascii?Q?I5KuLgzA+1uqZ0Edc6Hia+DcFGG5eM/LVU6oG9HVXO8PlxU9WLcajR6d/Teo?=
+ =?us-ascii?Q?meum7o/rsSQPSp0cJ9X4xa4PVpDvnvWnOoicSVzGTAz9eDxGEbtrq6ptHVNC?=
+ =?us-ascii?Q?xuPpzMZvgJyu1YiCMFy3aEOVPuAlVDgYikdBhYVQLm78lCw9jsA+doN3/LPv?=
+ =?us-ascii?Q?b4W5jSP16xWpxtjrOoy5HxDFS11vlkFmxmBKPiA6CikDqaApf6Zo2/jf6n3p?=
+ =?us-ascii?Q?OQ=3D=3D?=
+X-OriginatorOrg: cixtech.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: df46f8e3-2b5e-4adc-653a-08dbfc7e463c
+X-MS-Exchange-CrossTenant-AuthSource: KL1PR06MB6020.apcprd06.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Dec 2023 02:55:41.0555
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Dec 2023 08:25:48.0272
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-Id: 0409f77a-e53d-4d23-943e-ccade7cb4811
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: sDnGzQ+2lQESvBhcA6RBEMmfX0W316b9yNdMmAq8CqwMvBcdmdQFsmk6IKDOBiKm1g+eAquTEDXJvaghkBW34Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR11MB4649
-X-OriginatorOrg: intel.com
+X-MS-Exchange-CrossTenant-UserPrincipalName: ITBZyr+rAZFRbFeshYno2iuqfZ1aEA/FoxlffC2L/UjGQ4bv/2HXvXy+ov0Cr0ZIjcPIbPJthBwoQOe9f09SZQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TY0PR06MB5259
 
-On 11/27/2023 2:34 PM, Yi Liu wrote:
-> From: Lu Baolu <baolu.lu@linux.intel.com>
->
-> This allows the upper layers to set a nested type domain to a PASID of a
-> device if the PASID feature is supported by the IOMMU hardware.
->
-> The set_dev_pasid callback for non-nest domain has already be there, so
-> this only needs to add it for nested domains.
->
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> Signed-off-by: Yi Liu <yi.l.liu@intel.com>
-> ---
->   drivers/iommu/intel/nested.c | 47 ++++++++++++++++++++++++++++++++++++
->   1 file changed, 47 insertions(+)
->
-> diff --git a/drivers/iommu/intel/nested.c b/drivers/iommu/intel/nested.c
-> index 44ad48db7ea0..f6f687750104 100644
-> --- a/drivers/iommu/intel/nested.c
-> +++ b/drivers/iommu/intel/nested.c
-> @@ -68,6 +68,52 @@ static int intel_nested_attach_dev(struct iommu_domain *domain,
->   	return 0;
->   }
->   
-> +static int intel_nested_set_dev_pasid(struct iommu_domain *domain,
-> +				      struct device *dev, ioasid_t pasid)
-> +{
-> +	struct device_domain_info *info = dev_iommu_priv_get(dev);
-> +	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
-> +	struct intel_iommu *iommu = info->iommu;
-> +	struct dev_pasid_info *dev_pasid;
-> +	unsigned long flags;
-> +	int ret = 0;
-> +
-> +	if (!pasid_supported(iommu))
-> +		return -EOPNOTSUPP;
-> +
-> +	if (iommu->agaw < dmar_domain->s2_domain->agaw)
-> +		return -EINVAL;
-> +
-> +	ret = prepare_domain_attach_device(&dmar_domain->s2_domain->domain, dev);
-> +	if (ret)
-> +		return ret;
-> +
-> +	dev_pasid = kzalloc(sizeof(*dev_pasid), GFP_KERNEL);
-> +	if (!dev_pasid)
-> +		return -ENOMEM;
-> +
-> +	ret = domain_attach_iommu(dmar_domain, iommu);
-> +	if (ret)
-> +		goto err_free;
-> +
-> +	ret = intel_pasid_setup_nested(iommu, dev, pasid, dmar_domain);
-> +	if (ret)
-> +		goto err_detach_iommu;
-> +
-> +	dev_pasid->dev = dev;
-> +	dev_pasid->pasid = pasid;
-> +	spin_lock_irqsave(&dmar_domain->lock, flags);
-> +	list_add(&dev_pasid->link_domain, &dmar_domain->dev_pasids);
-> +	spin_unlock_irqrestore(&dmar_domain->lock, flags);
+From: Joakim Zhang <joakim.zhang@cixtech.com>
 
----> list_add(&dev_pasid->link_domain, &dmar_domain->dev_pasids);
+Reproduced with below sequence:
+dma_declare_coherent_memory()->dma_release_coherent_memory()
+->dma_declare_coherent_memory()->"return -EBUSY" error
 
-dev_pasid is linked at later time, this leads to domain->has_iotlb_device is not correctly set, which finally results into a missing of device iotlb flush in iommu_flush_dev_iotlb()when it's called.
-Check this call path:
-domain_attach_iommu()->domain_update_iommu_cap()->domain_update_iotlb()->domain->has_iotlb_device = has_iotlb_device; The ugly fixup is to call domain_update_iommu_cap() or domain_update_iotlb() here again before return.
-The similar issue is in intel_iommu_set_dev_pasid() and intel_nested_attach_dev().
-> +
-> +	return 0;
-> +err_detach_iommu:
-> +	domain_detach_iommu(dmar_domain, iommu);
-> +err_free:
-> +	kfree(dev_pasid);
-> +	return ret;
-> +}
-> +
->   static void intel_nested_domain_free(struct iommu_domain *domain)
->   {
->   	kfree(to_dmar_domain(domain));
-> @@ -128,6 +174,7 @@ static int intel_nested_cache_invalidate_user(struct iommu_domain *domain,
->   
->   static const struct iommu_domain_ops intel_nested_domain_ops = {
->   	.attach_dev		= intel_nested_attach_dev,
-> +	.set_dev_pasid		= intel_nested_set_dev_pasid,
->   	.free			= intel_nested_domain_free,
->   	.cache_invalidate_user	= intel_nested_cache_invalidate_user,
->   };
+It will return -EBUSY from the dma_assign_coherent_memory()
+in dma_declare_coherent_memory(), the reason is that dev->dma_mem
+pointer has not been set to NULL after it's freed.
 
+Fixes: cf65a0f6f6ff ("dma-mapping: move all DMA mapping code to kernel/dma"=
+)
+Signed-off-by: Joakim Zhang <joakim.zhang@cixtech.com>
+---
+ChangeLogs:
+V1->V2:
+        * remove _dma_release_coherent_memory() from
+        rmem_dma_device_release()
+        * update commit message
+---
+ kernel/dma/coherent.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/kernel/dma/coherent.c b/kernel/dma/coherent.c
+index c21abc77c53e..ff5683a57f77 100644
+--- a/kernel/dma/coherent.c
++++ b/kernel/dma/coherent.c
+@@ -132,8 +132,10 @@ int dma_declare_coherent_memory(struct device *dev, ph=
+ys_addr_t phys_addr,
+
+ void dma_release_coherent_memory(struct device *dev)
+ {
+-       if (dev)
++       if (dev) {
+                _dma_release_coherent_memory(dev->dma_mem);
++               dev->dma_mem =3D NULL;
++       }
+ }
+
+ static void *__dma_alloc_from_coherent(struct device *dev,
+--
+2.25.1
+
+
+
+This email (including its attachments) is intended only for the person or e=
+ntity to which it is addressed and may contain information that is privileg=
+ed, confidential or otherwise protected from disclosure. Unauthorized use, =
+dissemination, distribution or copying of this email or the information her=
+ein or taking any action in reliance on the contents of this email or the i=
+nformation herein, by anyone other than the intended recipient, or an emplo=
+yee or agent responsible for delivering the message to the intended recipie=
+nt, is strictly prohibited. If you are not the intended recipient, please d=
+o not read, copy, use or disclose any part of this e-mail to others. Please=
+ notify the sender immediately and permanently delete this e-mail and any a=
+ttachments if you received it in error. Internet communications cannot be g=
+uaranteed to be timely, secure, error-free or virus-free. The sender does n=
+ot accept liability for any errors or omissions.
