@@ -1,38 +1,38 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.43])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B2AC038E
-	for <iommu@lists.linux.dev>; Thu, 14 Dec 2023 00:58:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CAF57EE
+	for <iommu@lists.linux.dev>; Thu, 14 Dec 2023 02:16:38 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="T885dl0E"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="MCyuUjo+"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1702515537; x=1734051537;
+  t=1702520199; x=1734056199;
   h=message-id:date:mime-version:subject:to:cc:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=w4CvfAEx5Otr1z8ctNIsiiCXmkHh9thOmbmC19YRFYY=;
-  b=T885dl0EKN8uwwAjzBtP+zyxpJ8siNu0y6RzoXOan2pVdUNmvUY9ywk9
-   uTSJuVD8ulWjtKyqMqCqQz3N4SNfA+M4rYu+OK5lRC/foEEBgpA9RNc15
-   NfiyjD/QNLsafu5z1z2mWHe7CuemehDmMVMElFjhDgOE92knpXZ4LKpEb
-   E8zzNnvrq4w83nxBhchvJok/7Vkgx6ZnuCdJH2yRQrs1g21j2iDHPyBam
-   EStwvKjxoWH6eeiGcodqBUzOQmQm35p1R28T6mxmcQe+P1H84d2hxa4m7
-   TCoQJRzayBoi3zqQBNSgzuXfujviMmsT5eZecIK6srbBk8w7/rhZfMjVC
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10923"; a="481246316"
+  bh=fEz3jDQ/xk9byD6ipVMs16iK9GZAZqzLksjBqt8qPrA=;
+  b=MCyuUjo+s9LFPsfn5ur7HFg0RTl0HyhaWgTHolfsiDrEGV0SQqA9MuAE
+   L5CcgaB5p3RDQPhYOS75fMmCK/zb1JLcLuam7/6hwXnAEwYpKOXbW4SL3
+   hiTcGLxbYWZkYmGXAEdijtyUonDuH9EI1n1/MCVNv0aICI73c+yt07lbP
+   vj2DOoDDnfHE5ZlIIt77Op6i59TcCm3dXDAT25XeXl80Ypwuax6G01G8q
+   mG4y3GrgnH9/lk8zJL+TxNCBBnkl5ebct+/8a8z3KKnkC+NavWUN+C6PE
+   rgPO1WmUrgqOa6YchFdZyru+PS/mlahigaZanjkjkXV2ivLIchN7eaogd
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10923"; a="16607965"
 X-IronPort-AV: E=Sophos;i="6.04,274,1695711600"; 
-   d="scan'208";a="481246316"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Dec 2023 16:58:56 -0800
+   d="scan'208";a="16607965"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Dec 2023 18:16:38 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10923"; a="750326235"
+X-IronPort-AV: E=McAfee;i="6600,9927,10923"; a="723891359"
 X-IronPort-AV: E=Sophos;i="6.04,274,1695711600"; 
-   d="scan'208";a="750326235"
-Received: from jiqing1x-mobl1.ccr.corp.intel.com (HELO [10.254.210.186]) ([10.254.210.186])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Dec 2023 16:58:53 -0800
-Message-ID: <31bd82b6-6f7e-4dc4-8cbb-46fa806d699f@linux.intel.com>
-Date: Thu, 14 Dec 2023 08:58:49 +0800
+   d="scan'208";a="723891359"
+Received: from zhaohaif-mobl.ccr.corp.intel.com (HELO [10.254.210.186]) ([10.254.210.186])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Dec 2023 18:16:34 -0800
+Message-ID: <7f756fc6-e8ea-4fea-ad8b-30066f41037e@linux.intel.com>
+Date: Thu, 14 Dec 2023 10:16:31 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -40,46 +40,113 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/2] PCI: make pci_dev_is_disconnected() helper public for
- other drivers
+Subject: Re: [PATCH 2/2] iommu/vt-d: don's issue devTLB flush request when
+ device is disconnected
 To: Lukas Wunner <lukas@wunner.de>
 Cc: bhelgaas@google.com, baolu.lu@linux.intel.com, dwmw2@infradead.org,
  will@kernel.org, robin.murphy@arm.com, linux-pci@vger.kernel.org,
  iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
  Haorong Ye <yehaorong@bytedance.com>
 References: <20231213034637.2603013-1-haifeng.zhao@linux.intel.com>
- <20231213034637.2603013-2-haifeng.zhao@linux.intel.com>
- <20231213104930.GB31964@wunner.de>
+ <20231213034637.2603013-3-haifeng.zhao@linux.intel.com>
+ <20231213104417.GA31964@wunner.de>
 From: Ethan Zhao <haifeng.zhao@linux.intel.com>
-In-Reply-To: <20231213104930.GB31964@wunner.de>
+In-Reply-To: <20231213104417.GA31964@wunner.de>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
 
-On 12/13/2023 6:49 PM, Lukas Wunner wrote:
-> On Tue, Dec 12, 2023 at 10:46:36PM -0500, Ethan Zhao wrote:
->> move pci_dev_is_disconnected() from driver/pci/pci.h to public
->> include/linux/pci.h for other driver's reference.
->> no function change.
-> That's merely a prose description of the code.  A reader can already
-> see from the code what it's doing.  You need to explain the *reason*
-> for the change instead.  E.g.:  "Make pci_dev_is_disconnected() public
-> so that it can be called from $DRIVER to speed up hot removal
-> handling which may otherwise take seconds because of $REASONS."
+On 12/13/2023 6:44 PM, Lukas Wunner wrote:
+> On Tue, Dec 12, 2023 at 10:46:37PM -0500, Ethan Zhao wrote:
+>> For those endpoint devices connect to system via hotplug capable ports,
+>> users could request a warm reset to the device by flapping device's link
+>> through setting the slot's link control register,
+> Well, users could just *unplug* the device, right?  Why is it relevant
+> that thay could fiddle with registers in config space?
+>
+Yes, if the device and it's slot are hotplug capable, users could just
 
-Yup, why I made it public. then how about
+'unplug' the device.
+
+But this case reported, users try to do a warm reset with a tool
+
+command like:
+
+   mlxfwreset -d <busid> -y reset
+
+Actually, it will access configuration space  just as
+
+  setpci -s 0000:17:01.0 0x78.L=0x21050010
+
+Well, we couldn't say don't fiddle PCIe config space registers like
+
+that.
+
+>> as pciehpt_ist() DLLSC
+>> interrupt sequence response, pciehp will unload the device driver and
+>> then power it off. thus cause an IOMMU devTLB flush request for device to
+>> be sent and a long time completion/timeout waiting in interrupt context.
+> A completion timeout should be on the order of usecs or msecs, why does it
+> cause a hard lockup?  The dmesg excerpt you've provided shows a 12 *second*
+> delay between hot removal and watchdog reaction.
+>
+In my understanding, the devTLB flush request sent to ATS capable devcie
+
+is non-posted request, if the ATS transaction is broken by endpoint link
+
+-down, power-off event, the timeout will take up to 60 seconds+-30,
+
+see "Invalidate Completion Timeout " part of
+
+chapter 10.3.1 Invalidate Request
+
+In PCIe spec 6.1
 
 "
 
-Make pci_dev_is_disconnected() public so that it can be called from
-Intel vt-d driver to check the device's hotplug removal state when
-issue devTLB flush request."
+IMPLEMENTATION NOTE:
 
+INVALIDATE COMPLETION TIMEOUT
+
+Devices should respond to Invalidate Requests within 1 minute (+50% 
+-0%).Having a bounded time
+
+permits an ATPT to implement Invalidate Completion Timeouts and reuse 
+the associated ITag values.
+
+ATPT designs are implementation specific. As such, Invalidate Completion 
+Timeouts and their
+
+associated error handling are outside the scope of this specification
+
+"
+
+>> Fix it by checking the device's error_state in
+>> devtlb_invalidation_with_pasid() to avoid sending meaningless devTLB flush
+>> request to link down device that is set to pci_channel_io_perm_failure and
+>> then powered off in
+> This doesn't seem to be a proper fix.  It will work most of the time
+> but not always.  A user might bring down the slot via sysfs, then yank
+> the card from the slot just when the iommu flush occurs such that the
+> pci_dev_is_disconnected(pdev) check returns false but the card is
+> physically gone immediately afterwards.  In other words, you've shrunk
+> the time window during which the issue may occur, but haven't eliminated
+> it completely.
+
+If you mean disable the slot via sysfs, that's SAFE_REMOVAL, right ?
+
+that would issse devTLB invalidation first, power off device later, it
+
+wouldn't trigger the hard lockup, though the
+
+pci_dev_is_disconnected() return false. this fix works such case.
 
 
 Thanks,
 
 Ethan
+
+
 
 >
 > Thanks,
