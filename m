@@ -1,37 +1,38 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5410BA56
-	for <iommu@lists.linux.dev>; Fri, 15 Dec 2023 01:03:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2A44CA64
+	for <iommu@lists.linux.dev>; Fri, 15 Dec 2023 01:34:23 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="BzZtDp35"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="GhbWFmer"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1702602224; x=1734138224;
-  h=message-id:date:mime-version:subject:from:to:cc:
-   references:in-reply-to:content-transfer-encoding;
-  bh=CX2MH67xSTwFVAHdUyHhK6vGwtMN4v76VaShUcQZ9X4=;
-  b=BzZtDp35z+ljrMpc60x+gL4iEVxQiHFyeF+R0GYJRa/AYHBPkyla61qT
-   HLA7tgNJJ3pJIYXJybtp/xv29ZNrYGL/8/cyL0NKbbK7AzJ1H3ZrU81M7
-   PsK8GedcAjqLteY9RJ8RSzh8AolBo81OqPTmTrMlED3hJHux3u48pvWs2
-   GxRH5JhgbhncJYTXkkPkeVY5VVnIyyOVUcN8Qgs918VhvwbdzzR5NvfHa
-   q/lzU6fsyIFqKyyKYCxmPy2tajEUPRhdhKSRnLC539+UU/hMP7u7KB2nQ
-   h7C4ofqnmHXDcTkeHGJVo6Y0seY7VRCjId8aT49degIclSvLcBsvEOetF
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10924"; a="2052192"
+  t=1702604064; x=1734140064;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=S/Q5zmtAAGrAUaPeEvARQEllKO3Wd3fwtpI6ys7fByI=;
+  b=GhbWFmerWUBWp20Rz7KoqDvGaFZ0HC43CDGpI0kQzzU1103bkc8M0EHb
+   hXeGlvbFUkBAPqXQlHonB02u7GuLVscNB+070e7WMkxxFeij7C8BGYp4k
+   M9OJLIzVUdSYAj+VIQoErYUtTIUPX4rqBzp5beRxiwxDVRWEzDNQ8CRBA
+   MMVxwCBHu9MogM9sA5aCirfSww8oEb+E0zyKsTHsiF4xATDwIMxgysiQH
+   bsuZi7yEIRn+ccT6WVtMo/JymLi0UVosqJeDJyf6Vuo1BjdaddeN7IpHO
+   AanrmI4Fts6r0GViPpPY2o7lA/T4glpyvdHHSfEoCy5Nl/P7uGSQrpqeJ
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10924"; a="16766932"
 X-IronPort-AV: E=Sophos;i="6.04,277,1695711600"; 
-   d="scan'208";a="2052192"
-Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Dec 2023 17:03:43 -0800
+   d="scan'208";a="16766932"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Dec 2023 17:34:23 -0800
 X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10924"; a="774582765"
 X-IronPort-AV: E=Sophos;i="6.04,277,1695711600"; 
-   d="scan'208";a="17733887"
-Received: from xueyu-mobl.ccr.corp.intel.com (HELO [10.255.30.96]) ([10.255.30.96])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Dec 2023 17:03:40 -0800
-Message-ID: <8c8a1e49-5447-4d61-b3ba-782873cc0f4a@linux.intel.com>
-Date: Fri, 15 Dec 2023 09:03:37 +0800
+   d="scan'208";a="774582765"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.254.213.168]) ([10.254.213.168])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Dec 2023 17:34:18 -0800
+Message-ID: <2f49219e-601d-4ddc-a7b7-6ea8968a2f80@linux.intel.com>
+Date: Fri, 15 Dec 2023 09:34:16 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -39,99 +40,51 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, linux-pci@vger.kernel.org,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ Haorong Ye <yehaorong@bytedance.com>
 Subject: Re: [PATCH 2/2] iommu/vt-d: don's issue devTLB flush request when
  device is disconnected
-From: Ethan Zhao <haifeng.zhao@linux.intel.com>
-To: Baolu Lu <baolu.lu@linux.intel.com>, bhelgaas@google.com,
+To: Ethan Zhao <haifeng.zhao@linux.intel.com>, bhelgaas@google.com,
  dwmw2@infradead.org, will@kernel.org, robin.murphy@arm.com
-Cc: linux-pci@vger.kernel.org, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, Haorong Ye <yehaorong@bytedance.com>
 References: <20231213034637.2603013-1-haifeng.zhao@linux.intel.com>
  <20231213034637.2603013-3-haifeng.zhao@linux.intel.com>
  <96051115-c928-4f3c-bd65-4f3f8e83ca9c@linux.intel.com>
  <e6fddbb0-fa8f-43d4-8a5e-d177e9465912@linux.intel.com>
-In-Reply-To: <e6fddbb0-fa8f-43d4-8a5e-d177e9465912@linux.intel.com>
+ <8c8a1e49-5447-4d61-b3ba-782873cc0f4a@linux.intel.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <8c8a1e49-5447-4d61-b3ba-782873cc0f4a@linux.intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
+On 2023/12/15 9:03, Ethan Zhao wrote:
+> 
+> 2. supprise_removal
+> 
+>   Users remove the devece directly or bring the device link down/turn off
+> 
+>   device power first by setting pci config space, link-down/not-present/
+> 
+>   power-off are all handled by pciehp the same way "supprise_removal", in
+> 
+>   such case, pciehp_ist() will flag the device as "disconnected" first, 
+> then
+> 
+>   unconfig the devcie, unload driver, iommu release device(issing devTLB 
+> flush)
+> 
+>   delete device. so we checking the device state could work such cases.
 
-On 12/14/2023 10:26 AM, Ethan Zhao wrote:
->
-> On 12/13/2023 7:59 PM, Baolu Lu wrote:
->> On 2023/12/13 11:46, Ethan Zhao wrote:
->>> For those endpoint devices connect to system via hotplug capable ports,
->>> users could request a warm reset to the device by flapping device's 
->>> link
->>> through setting the slot's link control register, as pciehpt_ist() 
->>> DLLSC
->>> interrupt sequence response, pciehp will unload the device driver and
->>> then power it off.
->>
->> Is it possible for pciehp to disable ATS on the device before unloading
->> the driver? Or should the device follow some specific steps to warm
->> reset the device?
->>
-> In this case, link down first, then pciehp_ist() got DLLSC interrupt 
-> to know
->
-> that, I don't think it makes sense to disable device ATS here, but it 
-> could
->
-> flag the device is ATS disabled, well,  "disconnected" is enough to let
->
-> vt-d like software knows the device state.
->
->
-For hot "unplug" cases:
+If so, then it is fine for the iommu driver. As Robin said, if the
+device needs more cleanup, the iommu core should register a right
+callback to the driver core and handle it before the device goes away.
 
-1. safe_removal
+Disabling PCI features seems to be a reasonable device cleanup. This
+gives us another reason to move ATS enabling/disabling out from the
+iommu subsystem. Once this is done, the device driver will enable ATS
+during its probe and disable it during its release. There will be no
+such workaround in the iommu driver anymore.
 
-   Users request unplug the device via sysfs or press the attention button,
-
-   Then pciehp will response to unconfig device/unload device driver, power
-
-   if off, and devcie is ready to remove. in this case, devTLB invalidate
-
-   request is sent before device link to be brought down or device power
-
-   to be turned off. so it doesn't trigger the hard lockup.
-
-2. supprise_removal
-
-  Users remove the devece directly or bring the device link down/turn off
-
-  device power first by setting pci config space, link-down/not-present/
-
-  power-off are all handled by pciehp the same way "supprise_removal", in
-
-  such case, pciehp_ist() will flag the device as "disconnected" first, then
-
-  unconfig the devcie, unload driver, iommu release device(issing devTLB 
-flush)
-
-  delete device. so we checking the device state could work such cases.
-
-But I am still think about if there are other windows.
-
-
-Thanks,
-
-Ethan
-
-
->> What happens if IOMMU issues device TLB invalidation after link down but
->> before pci_dev_is_disconnected() returns true?
->
-> Seems it wouldn't happen with hotplug cases, safe_removal or
->
-> supprise_removal.
->
->
->
-> Thanks,
->
-> Ethan
->
->>
->> Best regards,
->> baolu
+Best regards,
+baolu
