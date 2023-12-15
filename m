@@ -1,101 +1,242 @@
-Received: from mail-oa1-f44.google.com (mail-oa1-f44.google.com [209.85.160.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from ixit.cz (ip-89-177-23-149.bb.vodafone.cz [89.177.23.149])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3E1945639C
-	for <iommu@lists.linux.dev>; Fri, 15 Dec 2023 21:11:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=soleen.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=soleen.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E164418ED8
+	for <iommu@lists.linux.dev>; Fri, 15 Dec 2023 23:30:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ixit.cz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ixit.cz
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=soleen.com header.i=@soleen.com header.b="iUgE4Icz"
-Received: by mail-oa1-f44.google.com with SMTP id 586e51a60fabf-2031b9c8389so716931fac.1
-        for <iommu@lists.linux.dev>; Fri, 15 Dec 2023 13:11:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=soleen.com; s=google; t=1702674715; x=1703279515; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=b9KJ+4BbcKeSEG7077PFa7FVZHENUrxS+8ivlb7RAxY=;
-        b=iUgE4IczE0XSg3lo4kslaX18/Nt46O72aZ6cXya6lCJIINRCUZcPp1L8VS9VrJmc/Y
-         kUCY41SxznYXtVElnHJEjYbTWVQrI5Svh2rfu1gcvVaqymq0L+m3iPTFpT2pyKzDSzQ9
-         Q2nmxQddw3F32PvuzhcNw/msinCHTMXQmoHPhBfsQFSbB6xFD63jrrPobBsBprz3krPk
-         Q3Sl5e6z4WPiiTrb1iHDZQf/3F/NGVTOk0xDkKgSdfcCSv3ZFzJBx+NuzXJfvglfrre9
-         7wIOv2s0ZlNHCy+EQYMIC2CJfq66KpXKcpUP4oyhp/1ezURjLXXAzVcvc1/PwMstfl2Q
-         0CbQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1702674715; x=1703279515;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=b9KJ+4BbcKeSEG7077PFa7FVZHENUrxS+8ivlb7RAxY=;
-        b=MoOpUqu2Eqs3cn+8gTt1mV5Tju/FHg8zzjUY5SW3/tslBeTx3labWO0ns57fxc+9Om
-         9DS3njS35h8Kplp+6R870G6827Zm1EHXHEzkdnWi9FBEX2/Wr/TzKbmfRzXk4HxR3qSI
-         FxbIGro6XIYH1fzAVGJFqDroh1QOOM6PwGhwfNSBkMQu9hiR8gwS+nnuBCH9vN4fAE6U
-         Mp2nD7amm53lblLkTpUwhyZ+jL9jIxmtWvB+sdUVkBNyYohSTb329bDniZsASmkgm6+h
-         kYyWSxaUHVQG1mvgldMASJ8H9AWlPlMjSbQWT0OePsMwlmrsEpo1+zXjXy7Ty3qXrOQz
-         DrKQ==
-X-Gm-Message-State: AOJu0YxKsYpmioijb2aprWiV0kxiqIWIWwO+nDGZVapgqmZK3f1LynAj
-	uKy9JF8kofdjXgGu5lyHeoHpRJEeR3jTdcChZyUnpA==
-X-Google-Smtp-Source: AGHT+IFHrLpndT4XCwAesdcyNwQf00aMOvX02D4/8uxdog8acvbjKfsi57jpp2aqEyynfGVCKlt0IXuLjUhCsHgb3nk=
-X-Received: by 2002:a05:6870:c09:b0:203:7ccc:b6e8 with SMTP id
- le9-20020a0568700c0900b002037cccb6e8mr1214533oab.25.1702674715317; Fri, 15
- Dec 2023 13:11:55 -0800 (PST)
+	dkim=pass (1024-bit key) header.d=ixit.cz header.i=@ixit.cz header.b="R3v0C4JB"
+Received: from newone.lan (unknown [10.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by ixit.cz (Postfix) with ESMTPSA id BBD32162DE0;
+	Sat, 16 Dec 2023 00:30:36 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ixit.cz; s=dkim;
+	t=1702683036;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=0Kqx9+WPjKXzEMY9cZQaAajTufst8d0OTezCU/dHeiA=;
+	b=R3v0C4JB1UXChVIKibeBXj4h6LRv1UXFX+arHuuoH0uxXSi14ffpNbJ5grhDp5nl9gHT8n
+	fj0XcFuA4+lWVfgy8RB0ju8kl9MGGJGXyPMw5nD8pvA2tKOF5PLmkvh4MDZ620q8IwZZ7p
+	sCIaHIzi9lD11eI4N2PzIokBX+4Lw84=
+From: David Heidelberg <david@ixit.cz>
+To: Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Andy Gross <agross@kernel.org>,
+	Bjorn Andersson <andersson@kernel.org>,
+	Konrad Dybcio <konrad.dybcio@linaro.org>
+Cc: David Heidelberg <david@ixit.cz>,
+	iommu@lists.linux.dev,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-arm-msm@vger.kernel.org
+Subject: [PATCH v4] dt-bindings: iommu: Convert msm,iommu-v0 to yaml
+Date: Sat, 16 Dec 2023 00:30:18 +0100
+Message-ID: <20231215233034.95789-1-david@ixit.cz>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20231130201504.2322355-1-pasha.tatashin@soleen.com>
- <20231130201504.2322355-11-pasha.tatashin@soleen.com> <c0d23d3e-39e6-57af-fd38-eb1b885d7da4@google.com>
-In-Reply-To: <c0d23d3e-39e6-57af-fd38-eb1b885d7da4@google.com>
-From: Pasha Tatashin <pasha.tatashin@soleen.com>
-Date: Fri, 15 Dec 2023 16:11:18 -0500
-Message-ID: <CA+CK2bD0Wz8mzB_BGKEYKCHRJKKVwr0CPK7OOC0tD_Sxi5Rp5g@mail.gmail.com>
-Subject: Re: [PATCH v2 10/10] iommu: account IOMMU allocated memory
-To: David Rientjes <rientjes@google.com>
-Cc: akpm@linux-foundation.org, alim.akhtar@samsung.com, alyssa@rosenzweig.io, 
-	asahi@lists.linux.dev, baolu.lu@linux.intel.com, bhelgaas@google.com, 
-	cgroups@vger.kernel.org, corbet@lwn.net, david@redhat.com, 
-	dwmw2@infradead.org, hannes@cmpxchg.org, heiko@sntech.de, 
-	iommu@lists.linux.dev, jernej.skrabec@gmail.com, jonathanh@nvidia.com, 
-	joro@8bytes.org, krzysztof.kozlowski@linaro.org, linux-doc@vger.kernel.org, 
-	linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-mm@kvack.org, linux-rockchip@lists.infradead.org, 
-	linux-samsung-soc@vger.kernel.org, linux-sunxi@lists.linux.dev, 
-	linux-tegra@vger.kernel.org, lizefan.x@bytedance.com, marcan@marcan.st, 
-	mhiramat@kernel.org, m.szyprowski@samsung.com, paulmck@kernel.org, 
-	rdunlap@infradead.org, robin.murphy@arm.com, samuel@sholland.org, 
-	suravee.suthikulpanit@amd.com, sven@svenpeter.dev, thierry.reding@gmail.com, 
-	tj@kernel.org, tomas.mudrunka@gmail.com, vdumpa@nvidia.com, wens@csie.org, 
-	will@kernel.org, yu-cheng.yu@intel.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 
-> > diff --git a/Documentation/admin-guide/cgroup-v2.rst b/Documentation/admin-guide/cgroup-v2.rst
-> > index 3f85254f3cef..e004e05a7cde 100644
-> > --- a/Documentation/admin-guide/cgroup-v2.rst
-> > +++ b/Documentation/admin-guide/cgroup-v2.rst
-> > @@ -1418,7 +1418,7 @@ PAGE_SIZE multiple when read back.
-> >         sec_pagetables
-> >               Amount of memory allocated for secondary page tables,
-> >               this currently includes KVM mmu allocations on x86
-> > -             and arm64.
-> > +             and arm64 and IOMMU page tables.
->
-> Hmm, if existing users are parsing this field and alerting when it exceeds
-> an expected value (a cloud provider, let's say), is it safe to add in a
-> whole new set of page tables?
->
-> I understand the documentation allows for it, but I think potential impact
-> on userspace would be more interesting.
+Convert Qualcomm IOMMU v0 implementation to yaml format.
 
-Hi David,
+Signed-off-by: David Heidelberg <david@ixit.cz>
+---
+v4:
+ - renamed to qcom,apq8064-iommu as Rob requested
+ - changed title to Qualcomm APQ8064 IOMMU
+ - dropped quotes around URLs
+ - dropped mdp node
+ - dropped unused mdp_port0 label
 
-This is something that was discussed at LPC'23. I also was proposing a
-separate counter for iommu page tables, but it was noted that we
-specifically have sec_pagetables called this way to include all non
-regular CPU page tables, and we should therefore account for them
-together.
+v3:
+ - I kept the name as -v0, since we have other binding -v1 and it look
+   good, I can change thou in v4 if requested.
+ - dropped non-existent smmu_clk part (and adjusted example, which was
+   using it)
+ - dropped iommu description
+ - moved iommu-cells description to the property #iommu-cells
 
-Please also see this discussion from the previous version of this patch series:
-https://lore.kernel.org/all/CAJD7tkb1FqTqwONrp2nphBDkEamQtPCOFm0208H3tp0Gq2OLMQ@mail.gmail.com/
+v2:
+ - fix wrong path in binding $id
+ - comment qcom,mdp4 node example (we don't want to validate it yet)
 
-Pasha
+ .../bindings/iommu/msm,iommu-v0.txt           | 64 --------------
+ .../bindings/iommu/qcom,apq8064-iommu.yaml    | 83 +++++++++++++++++++
+ 2 files changed, 83 insertions(+), 64 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/iommu/msm,iommu-v0.txt
+ create mode 100644 Documentation/devicetree/bindings/iommu/qcom,apq8064-iommu.yaml
+
+diff --git a/Documentation/devicetree/bindings/iommu/msm,iommu-v0.txt b/Documentation/devicetree/bindings/iommu/msm,iommu-v0.txt
+deleted file mode 100644
+index 20236385f26e..000000000000
+--- a/Documentation/devicetree/bindings/iommu/msm,iommu-v0.txt
++++ /dev/null
+@@ -1,64 +0,0 @@
+-* QCOM IOMMU
+-
+-The MSM IOMMU is an implementation compatible with the ARM VMSA short
+-descriptor page tables. It provides address translation for bus masters outside
+-of the CPU, each connected to the IOMMU through a port called micro-TLB.
+-
+-Required Properties:
+-
+-  - compatible: Must contain "qcom,apq8064-iommu".
+-  - reg: Base address and size of the IOMMU registers.
+-  - interrupts: Specifiers for the MMU fault interrupts. For instances that
+-    support secure mode two interrupts must be specified, for non-secure and
+-    secure mode, in that order. For instances that don't support secure mode a
+-    single interrupt must be specified.
+-  - #iommu-cells: The number of cells needed to specify the stream id. This
+-		  is always 1.
+-  - qcom,ncb:	  The total number of context banks in the IOMMU.
+-  - clocks	: List of clocks to be used during SMMU register access. See
+-		  Documentation/devicetree/bindings/clock/clock-bindings.txt
+-		  for information about the format. For each clock specified
+-		  here, there must be a corresponding entry in clock-names
+-		  (see below).
+-
+-  - clock-names	: List of clock names corresponding to the clocks specified in
+-		  the "clocks" property (above).
+-		  Should be "smmu_pclk" for specifying the interface clock
+-		  required for iommu's register accesses.
+-		  Should be "smmu_clk" for specifying the functional clock
+-		  required by iommu for bus accesses.
+-
+-Each bus master connected to an IOMMU must reference the IOMMU in its device
+-node with the following property:
+-
+-  - iommus: A reference to the IOMMU in multiple cells. The first cell is a
+-	    phandle to the IOMMU and the second cell is the stream id.
+-	    A single master device can be connected to more than one iommu
+-	    and multiple contexts in each of the iommu. So multiple entries
+-	    are required to list all the iommus and the stream ids that the
+-	    master is connected to.
+-
+-Example: mdp iommu and its bus master
+-
+-                mdp_port0: iommu@7500000 {
+-			compatible = "qcom,apq8064-iommu";
+-			#iommu-cells = <1>;
+-			clock-names =
+-			    "smmu_pclk",
+-			    "smmu_clk";
+-			clocks =
+-			    <&mmcc SMMU_AHB_CLK>,
+-			    <&mmcc MDP_AXI_CLK>;
+-			reg = <0x07500000 0x100000>;
+-			interrupts =
+-			    <GIC_SPI 63 0>,
+-			    <GIC_SPI 64 0>;
+-			qcom,ncb = <2>;
+-		};
+-
+-		mdp: qcom,mdp@5100000 {
+-			compatible = "qcom,mdp";
+-			...
+-			iommus = <&mdp_port0 0
+-				  &mdp_port0 2>;
+-		};
+diff --git a/Documentation/devicetree/bindings/iommu/qcom,apq8064-iommu.yaml b/Documentation/devicetree/bindings/iommu/qcom,apq8064-iommu.yaml
+new file mode 100644
+index 000000000000..eef40d25d91c
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iommu/qcom,apq8064-iommu.yaml
+@@ -0,0 +1,83 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++
++$id: http://devicetree.org/schemas/iommu/qcom,apq8064-iommu.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Qualcomm APQ8064 IOMMU
++
++maintainers:
++  - Will Deacon <will@kernel.org>
++
++description: >
++  The MSM IOMMU is an implementation compatible with the ARM VMSA short
++  descriptor page tables. It provides address translation for bus masters
++  outside of the CPU, each connected to the IOMMU through a port called micro-TLB.
++
++properties:
++  compatible:
++    const: qcom,apq8064-iommu
++
++  clocks:
++    items:
++      - description: interface clock for register accesses
++      - description: functional clock for bus accesses
++
++  clock-names:
++    items:
++      - const: smmu_pclk
++      - const: iommu_clk
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    description: Specifiers for the MMU fault interrupts.
++    minItems: 1
++    items:
++      - description: non-secure mode interrupt
++      - description: secure mode interrupt (for instances which supports it)
++
++  "#iommu-cells":
++    const: 1
++    description: |
++      The first cell is a phandle to the IOMMU and
++      the second cell is the stream id.
++      A single master device can be connected to more than one iommu
++      and multiple contexts in each of the iommu.
++      So multiple entries are required to list all the iommus and
++      the stream ids that the master is connected to.
++
++  qcom,ncb:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    description: The total number of context banks in the IOMMU.
++
++required:
++  - clocks
++  - clock-names
++  - reg
++  - interrupts
++  - qcom,ncb
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/clock/qcom,mmcc-msm8960.h>
++
++    iommu@7500000 {
++            compatible = "qcom,apq8064-iommu";
++            #iommu-cells = <1>;
++            clock-names =
++                "smmu_pclk",
++                "iommu_clk";
++            clocks =
++                <&clk SMMU_AHB_CLK>,
++                <&clk MDP_AXI_CLK>;
++            reg = <0x07500000 0x100000>;
++            interrupts =
++                <0 63 0>,
++                <0 64 0>;
++            qcom,ncb = <2>;
++    };
+-- 
+2.43.0
+
