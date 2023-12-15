@@ -1,48 +1,194 @@
-Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1021112E40
-	for <iommu@lists.linux.dev>; Fri, 15 Dec 2023 08:07:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="A4gInUKe"
-Received: from 8bytes.org (p4ffe1e67.dip0.t-ipconnect.de [79.254.30.103])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+Received: from madrid.collaboradmins.com (madrid.collaboradmins.com [46.235.227.194])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 121431A230B;
-	Fri, 15 Dec 2023 09:07:12 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1702627632;
-	bh=DoLMZzXbG/nWSjrpA3fB74d7qoBKCRr4ZyF52F0eyOM=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=A4gInUKeDrLKf9Y9tGxAqDzDUok/NETBtA5ZDULDobcM2JfCceidpXN+T8+RPivxC
-	 dNiTqxRozUciZ1RqVxu5ylyUp5nMkCXD5J8fpudZGEYIWbC/MhxmcTmELSSJDn38hO
-	 ZX19amG6Inl0vqpkCbx+24iEbyWlkq+UrxBSNIjTHVDFm0VrDQfEVWPDEpCuxqqlAE
-	 DyE9oQE/7IetE179DH8ni/Y+DtrO24AeJklIJaq8+2f7UDDBhH/N73/7BRawyzW099
-	 E8acfqEfhl4mXr2bGWjJJIdnX4DVDRz1K2545et/jltidEFKPDW8MEnHCiGQtTzIH4
-	 XJPUGmDNS0uOg==
-Date: Fri, 15 Dec 2023 09:07:10 +0100
-From: Joerg Roedel <joro@8bytes.org>
-To: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
-Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	dan.carpenter@linaro.org, kernel-janitors@vger.kernel.org,
-	error27@gmail.com
-Subject: Re: [PATCH] iommu/sva: Fix memory leak in iommu_sva_bind_device()
-Message-ID: <ZXwJLi9EnfdLVAHA@8bytes.org>
-References: <20231213111450.2487861-1-harshit.m.mogalapalli@oracle.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7BB7F16404
+	for <iommu@lists.linux.dev>; Fri, 15 Dec 2023 08:43:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=collabora.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="jNB+/PlO"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+	s=mail; t=1702629784;
+	bh=EEkU2hJy6nx0uwZjEoszE2dgSDUD/S/tzyjmu//yEgQ=;
+	h=From:To:Cc:Subject:Date:From;
+	b=jNB+/PlOKvBCNFgIZ83VBV2ewniDjF3ZAWlPYVPyRQz66hSzVF0/mu/KbNIxHMYAK
+	 V7F6ZhYGPp7uxsEKMfzW/GuTil9nxGPvPRGWEyFDIhKUPbUMG4oMcHA+GhbvMWsI9X
+	 Mj0dkrUn+6NTbK1crwKAhnmWqX3uEIiuG9gdaG7KldDUo61EnqWMTLkB/BE+QmYEyY
+	 UWVz9yjAiaTYFL4NJPvzAHZH1DXMw/5ZH3TuF3fD8xXSjspq1gjaErtZk+aNsqhkN5
+	 HPHdNckJgbY5+mI0Q9ThQ/d6fk1n4ahocCHWVukPa+jRU4zfceNvW3+uiuEmrc7S+1
+	 /ujwxNLqqdG9Q==
+Received: from localhost.localdomain (cola.collaboradmins.com [195.201.22.229])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	(Authenticated sender: bbrezillon)
+	by madrid.collaboradmins.com (Postfix) with ESMTPSA id EA99437813BC;
+	Fri, 15 Dec 2023 08:43:03 +0000 (UTC)
+From: Boris Brezillon <boris.brezillon@collabora.com>
+To: Joerg Roedel <joro@8bytes.org>,
+	iommu@lists.linux.dev,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	linux-arm-kernel@lists.infradead.org
+Cc: Rob Clark <robdclark@gmail.com>,
+	Gaurav Kohli <quic_gkohli@quicinc.com>,
+	Steven Price <steven.price@arm.com>,
+	kernel@collabora.com,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Boris Brezillon <boris.brezillon@collabora.com>
+Subject: [PATCH v4 1/2] iommu: Allow passing custom allocators to pgtable drivers
+Date: Fri, 15 Dec 2023 09:43:01 +0100
+Message-ID: <20231215084302.2484163-1-boris.brezillon@collabora.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20231213111450.2487861-1-harshit.m.mogalapalli@oracle.com>
+Content-Transfer-Encoding: 8bit
 
-On Wed, Dec 13, 2023 at 03:14:50AM -0800, Harshit Mogalapalli wrote:
->  drivers/iommu/iommu-sva.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
+This will be useful for GPU drivers who want to keep page tables in a
+pool so they can:
 
-Applied, thanks.
+- keep freed page tables in a free pool and speed-up upcoming page
+  table allocations
+- batch page table allocation instead of allocating one page at a time
+- pre-reserve pages for page tables needed for map/unmap operations,
+  to ensure map/unmap operations don't try to allocate memory in paths
+  they're allowed to block or fail
+
+It might also be valuable for other aspects of GPU and similar
+use-cases, like fine-grained memory accounting and resource limiting.
+
+We will extend the Arm LPAE format to support custom allocators in a
+separate commit.
+
+Signed-off-by: Boris Brezillon <boris.brezillon@collabora.com>
+Reviewed-by: Steven Price <steven.price@arm.com>
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+Reviewed-by: Gaurav Kohli <quic_gkohli@quicinc.com>
+Tested-by: Gaurav Kohli <quic_gkohli@quicinc.com>
+---
+v4:
+- Add Gaurav's R-b/T-b
+v3:
+- Add Robin R-b
+- Move caps definition around
+- Add extra constraints to the ->alloc() callback documentation
+v2:
+- Add Steven R-b
+- Expand on possible use-cases for custom allocators
+- Add a caps fields to io_pgtable_init_fns so we can simplify the
+  check_custom_allocator() logic (Robin Murphy)
+---
+ drivers/iommu/io-pgtable.c | 23 +++++++++++++++++++++++
+ include/linux/io-pgtable.h | 34 ++++++++++++++++++++++++++++++++++
+ 2 files changed, 57 insertions(+)
+
+diff --git a/drivers/iommu/io-pgtable.c b/drivers/iommu/io-pgtable.c
+index b843fcd365d2..8841c1487f00 100644
+--- a/drivers/iommu/io-pgtable.c
++++ b/drivers/iommu/io-pgtable.c
+@@ -34,6 +34,26 @@ io_pgtable_init_table[IO_PGTABLE_NUM_FMTS] = {
+ #endif
+ };
+ 
++static int check_custom_allocator(enum io_pgtable_fmt fmt,
++				  struct io_pgtable_cfg *cfg)
++{
++	/* No custom allocator, no need to check the format. */
++	if (!cfg->alloc && !cfg->free)
++		return 0;
++
++	/* When passing a custom allocator, both the alloc and free
++	 * functions should be provided.
++	 */
++	if (!cfg->alloc || !cfg->free)
++		return -EINVAL;
++
++	/* Make sure the format supports custom allocators. */
++	if (io_pgtable_init_table[fmt]->caps & IO_PGTABLE_CAP_CUSTOM_ALLOCATOR)
++		return 0;
++
++	return -EINVAL;
++}
++
+ struct io_pgtable_ops *alloc_io_pgtable_ops(enum io_pgtable_fmt fmt,
+ 					    struct io_pgtable_cfg *cfg,
+ 					    void *cookie)
+@@ -44,6 +64,9 @@ struct io_pgtable_ops *alloc_io_pgtable_ops(enum io_pgtable_fmt fmt,
+ 	if (fmt >= IO_PGTABLE_NUM_FMTS)
+ 		return NULL;
+ 
++	if (check_custom_allocator(fmt, cfg))
++		return NULL;
++
+ 	fns = io_pgtable_init_table[fmt];
+ 	if (!fns)
+ 		return NULL;
+diff --git a/include/linux/io-pgtable.h b/include/linux/io-pgtable.h
+index 25142a0e2fc2..86cf1f7ae389 100644
+--- a/include/linux/io-pgtable.h
++++ b/include/linux/io-pgtable.h
+@@ -100,6 +100,30 @@ struct io_pgtable_cfg {
+ 	const struct iommu_flush_ops	*tlb;
+ 	struct device			*iommu_dev;
+ 
++	/**
++	 * @alloc: Custom page allocator.
++	 *
++	 * Optional hook used to allocate page tables. If this function is NULL,
++	 * @free must be NULL too.
++	 *
++	 * Memory returned should be zeroed and suitable for dma_map_single() and
++	 * virt_to_phys().
++	 *
++	 * Not all formats support custom page allocators. Before considering
++	 * passing a non-NULL value, make sure the chosen page format supports
++	 * this feature.
++	 */
++	void *(*alloc)(void *cookie, size_t size, gfp_t gfp);
++
++	/**
++	 * @free: Custom page de-allocator.
++	 *
++	 * Optional hook used to free page tables allocated with the @alloc
++	 * hook. Must be non-NULL if @alloc is not NULL, must be NULL
++	 * otherwise.
++	 */
++	void (*free)(void *cookie, void *pages, size_t size);
++
+ 	/* Low-level data specific to the table format */
+ 	union {
+ 		struct {
+@@ -241,16 +265,26 @@ io_pgtable_tlb_add_page(struct io_pgtable *iop,
+ 		iop->cfg.tlb->tlb_add_page(gather, iova, granule, iop->cookie);
+ }
+ 
++/**
++ * enum io_pgtable_caps - IO page table backend capabilities.
++ */
++enum io_pgtable_caps {
++	/** @IO_PGTABLE_CAP_CUSTOM_ALLOCATOR: Backend accepts custom page table allocators. */
++	IO_PGTABLE_CAP_CUSTOM_ALLOCATOR = BIT(0),
++};
++
+ /**
+  * struct io_pgtable_init_fns - Alloc/free a set of page tables for a
+  *                              particular format.
+  *
+  * @alloc: Allocate a set of page tables described by cfg.
+  * @free:  Free the page tables associated with iop.
++ * @caps:  Combination of @io_pgtable_caps flags encoding the backend capabilities.
+  */
+ struct io_pgtable_init_fns {
+ 	struct io_pgtable *(*alloc)(struct io_pgtable_cfg *cfg, void *cookie);
+ 	void (*free)(struct io_pgtable *iop);
++	u32 caps;
+ };
+ 
+ extern struct io_pgtable_init_fns io_pgtable_arm_32_lpae_s1_init_fns;
+-- 
+2.43.0
+
