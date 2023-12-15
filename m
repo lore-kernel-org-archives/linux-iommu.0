@@ -1,272 +1,181 @@
-Received: from madrid.collaboradmins.com (madrid.collaboradmins.com [46.235.227.194])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3399916418
-	for <iommu@lists.linux.dev>; Fri, 15 Dec 2023 08:43:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=collabora.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 84EBE19452
+	for <iommu@lists.linux.dev>; Fri, 15 Dec 2023 10:19:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="w3bX4rEr"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-	s=mail; t=1702629785;
-	bh=aN+i4SK/dFKTtQwnSXWUhbsSxj1u5+1d4N+n2o+PpC8=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=w3bX4rEroezOdZQLAvanCzXWPVpWfN9WzVNLzs+Rzn31qj+8gL9AOcnIHspPRLWXP
-	 pe6hbDg4RQRg7vVu8Lc9QtbbphOIuZ/USMH1DpqnMmkrPABxwfE7iCFLbT1nr+qjE0
-	 MpHgHUVlIxcevm3Sv8l3L1vh2s4jn6pFeU8Wlb+Nb8nBBb2lOyczIKO1XN3Jwds8rL
-	 9cFbEvRiAR9vN7LEcWscHPeimOZdbNp4UvYxJ9bVp1Xp1EsQrnn4YtNTqkdmC3wKJE
-	 aMRIdUjYWi9GbSW7jW7+CW4D1qLgv5zMB033o0NQ0ksB6Q5WFdybus8JZ1UKCxkdgj
-	 wB1mfEC8dJC2g==
-Received: from localhost.localdomain (cola.collaboradmins.com [195.201.22.229])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	(Authenticated sender: bbrezillon)
-	by madrid.collaboradmins.com (Postfix) with ESMTPSA id D005937813DA;
-	Fri, 15 Dec 2023 08:43:04 +0000 (UTC)
-From: Boris Brezillon <boris.brezillon@collabora.com>
-To: Joerg Roedel <joro@8bytes.org>,
-	iommu@lists.linux.dev,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	linux-arm-kernel@lists.infradead.org
-Cc: Rob Clark <robdclark@gmail.com>,
-	Gaurav Kohli <quic_gkohli@quicinc.com>,
-	Steven Price <steven.price@arm.com>,
-	kernel@collabora.com,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Boris Brezillon <boris.brezillon@collabora.com>
-Subject: [PATCH v4 2/2] iommu: Extend LPAE page table format to support custom allocators
-Date: Fri, 15 Dec 2023 09:43:02 +0100
-Message-ID: <20231215084302.2484163-2-boris.brezillon@collabora.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20231215084302.2484163-1-boris.brezillon@collabora.com>
-References: <20231215084302.2484163-1-boris.brezillon@collabora.com>
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="QnFykoOB"
+Received: from pps.filterd (m0279869.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 3BF9IAx0010684;
+	Fri, 15 Dec 2023 10:18:52 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	from:to:cc:subject:date:message-id:mime-version:content-type; s=
+	qcppdkim1; bh=ZMp/QztxiryzID7yBBs7i8B2OEcWm+VKvHL8oxEN5oE=; b=Qn
+	FykoOBRgpYDTotB37+QPotRcR1Ns1ViJ/u8PrFKe/lbx9fsQ33/llpEm51Ar0eP5
+	eK+QqnU2CeUhBcDcqWln15XAe4fUz9YVboB1r0dGG5rmzBho2qg8RkT0qiVG4xo2
+	+IpqIZwTK8FXgN0h0lj+wn6wV916FwHGBNuG/IO1QaFk898K4O7LYvoZvc07vyvr
+	XYGqiVWwQHhVRzu9p9bL0vibxNh4n1N8PSRNv7HopkgynrWYWwM73bLFq0Hf+kY0
+	quKMOhTAiGyOI9xJ5oRFmet4xzThyi+5g9lBJ7GA2od6G9btVeC8UD5AHZjzSLsj
+	zfgRTJWcKyQizopYqwvQ==
+Received: from nalasppmta04.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3v07c62q9a-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 15 Dec 2023 10:18:52 +0000 (GMT)
+Received: from nalasex01c.na.qualcomm.com (nalasex01c.na.qualcomm.com [10.47.97.35])
+	by NALASPPMTA04.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 3BFAIphv028433
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 15 Dec 2023 10:18:51 GMT
+Received: from hu-bibekkum-hyd.qualcomm.com (10.80.80.8) by
+ nalasex01c.na.qualcomm.com (10.47.97.35) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.40; Fri, 15 Dec 2023 02:18:44 -0800
+From: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+To: <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
+        <dmitry.baryshkov@linaro.org>, <konrad.dybcio@linaro.org>,
+        <jsnitsel@redhat.com>, <quic_bjorande@quicinc.com>, <mani@kernel.org>,
+        <quic_eberman@quicinc.com>, <robdclark@chromium.org>,
+        <u.kleine-koenig@pengutronix.de>, <robh@kernel.org>,
+        <vladimir.oltean@nxp.com>, <quic_pkondeti@quicinc.com>,
+        <quic_molvera@quicinc.com>
+CC: <linux-arm-msm@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+        <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
+        <qipl.kernel.upstream@quicinc.com>,
+        Bibek Kumar Patro
+	<quic_bibekkum@quicinc.com>
+Subject: [PATCH v4 0/5] iommu/arm-smmu: introduction of ACTLR implementation for Qualcomm SoCs
+Date: Fri, 15 Dec 2023 15:48:22 +0530
+Message-ID: <20231215101827.30549-1-quic_bibekkum@quicinc.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01c.na.qualcomm.com (10.47.97.35)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: zdyiUgdaVUk47dsjRn4e8xcW3BHpBYwr
+X-Proofpoint-ORIG-GUID: zdyiUgdaVUk47dsjRn4e8xcW3BHpBYwr
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.997,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2023-12-09_02,2023-12-07_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011 mlxlogscore=999
+ mlxscore=0 priorityscore=1501 malwarescore=0 suspectscore=0 bulkscore=0
+ spamscore=0 phishscore=0 adultscore=0 impostorscore=0 lowpriorityscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.19.0-2311290000
+ definitions=main-2312150069
 
-We need that in order to implement the VM_BIND ioctl in the GPU driver
-targeting new Mali GPUs.
+This patch series consist of three parts and covers the following:
 
-VM_BIND is about executing MMU map/unmap requests asynchronously,
-possibly after waiting for external dependencies encoded as dma_fences.
-We intend to use the drm_sched framework to automate the dependency
-tracking and VM job dequeuing logic, but this comes with its own set
-of constraints, one of them being the fact we are not allowed to
-allocate memory in the drm_gpu_scheduler_ops::run_job() to avoid this
-sort of deadlocks:
+1. Remove cfg inside qcom_smmu structure and replace it with single
+   pointer to qcom_smmu_match_data avoiding replication of multiple
+   members from same.
 
-- VM_BIND map job needs to allocate a page table to map some memory
-  to the VM. No memory available, so kswapd is kicked
-- GPU driver shrinker backend ends up waiting on the fence attached to
-  the VM map job or any other job fence depending on this VM operation.
+2. Introduce intital set of driver changes to implement ACTLR register
+   for custom prefetcher settings in Qualcomm SoCs.
 
-With custom allocators, we will be able to pre-reserve enough pages to
-guarantee the map/unmap operations we queued will take place without
-going through the system allocator. But we can also optimize
-allocation/reservation by not free-ing pages immediately, so any
-upcoming page table allocation requests can be serviced by some free
-page table pool kept at the driver level.
+3. Add ACTLR data and implementation operations for SM8550.
 
-I might also be valuable for other aspects of GPU and similar
-use-cases, like fine-grained memory accounting and resource limiting.
+4. Add ACTLR data and implementation operations for SC7280.
 
-Signed-off-by: Boris Brezillon <boris.brezillon@collabora.com>
-Reviewed-by: Steven Price <steven.price@arm.com>
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
-Reviewed-by: Gaurav Kohli <quic_gkohli@quicinc.com>
-Tested-by: Gaurav Kohli <quic_gkohli@quicinc.com>
----
-v4:
-- Add Gaurav's R-b/T-b
-v3:
-- Don't pass __GFP_ZERO to the custom ->alloc() hook. Returning zeroed
-  mem is partof the agreement between the io-pgtable and its user
-- Add Robin R-b
-v2:
-- Add Steven R-b
-- Expand on possible use-cases for custom allocators
----
- drivers/iommu/io-pgtable-arm.c | 55 ++++++++++++++++++++++++----------
- 1 file changed, 39 insertions(+), 16 deletions(-)
+5. Re-enable context caching for Qualcomm SoCs to retain prefetcher
+   settings during reset and runtime suspend.
 
-diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-index 72dcdd468cf3..f7828a7aad41 100644
---- a/drivers/iommu/io-pgtable-arm.c
-+++ b/drivers/iommu/io-pgtable-arm.c
-@@ -188,20 +188,28 @@ static dma_addr_t __arm_lpae_dma_addr(void *pages)
- }
- 
- static void *__arm_lpae_alloc_pages(size_t size, gfp_t gfp,
--				    struct io_pgtable_cfg *cfg)
-+				    struct io_pgtable_cfg *cfg,
-+				    void *cookie)
- {
- 	struct device *dev = cfg->iommu_dev;
- 	int order = get_order(size);
--	struct page *p;
- 	dma_addr_t dma;
- 	void *pages;
- 
- 	VM_BUG_ON((gfp & __GFP_HIGHMEM));
--	p = alloc_pages_node(dev_to_node(dev), gfp | __GFP_ZERO, order);
--	if (!p)
-+
-+	if (cfg->alloc) {
-+		pages = cfg->alloc(cookie, size, gfp);
-+	} else {
-+		struct page *p;
-+
-+		p = alloc_pages_node(dev_to_node(dev), gfp | __GFP_ZERO, order);
-+		pages = p ? page_address(p) : NULL;
-+	}
-+
-+	if (!pages)
- 		return NULL;
- 
--	pages = page_address(p);
- 	if (!cfg->coherent_walk) {
- 		dma = dma_map_single(dev, pages, size, DMA_TO_DEVICE);
- 		if (dma_mapping_error(dev, dma))
-@@ -220,18 +228,28 @@ static void *__arm_lpae_alloc_pages(size_t size, gfp_t gfp,
- out_unmap:
- 	dev_err(dev, "Cannot accommodate DMA translation for IOMMU page tables\n");
- 	dma_unmap_single(dev, dma, size, DMA_TO_DEVICE);
-+
- out_free:
--	__free_pages(p, order);
-+	if (cfg->free)
-+		cfg->free(cookie, pages, size);
-+	else
-+		free_pages((unsigned long)pages, order);
-+
- 	return NULL;
- }
- 
- static void __arm_lpae_free_pages(void *pages, size_t size,
--				  struct io_pgtable_cfg *cfg)
-+				  struct io_pgtable_cfg *cfg,
-+				  void *cookie)
- {
- 	if (!cfg->coherent_walk)
- 		dma_unmap_single(cfg->iommu_dev, __arm_lpae_dma_addr(pages),
- 				 size, DMA_TO_DEVICE);
--	free_pages((unsigned long)pages, get_order(size));
-+
-+	if (cfg->free)
-+		cfg->free(cookie, pages, size);
-+	else
-+		free_pages((unsigned long)pages, get_order(size));
- }
- 
- static void __arm_lpae_sync_pte(arm_lpae_iopte *ptep, int num_entries,
-@@ -373,13 +391,13 @@ static int __arm_lpae_map(struct arm_lpae_io_pgtable *data, unsigned long iova,
- 	/* Grab a pointer to the next level */
- 	pte = READ_ONCE(*ptep);
- 	if (!pte) {
--		cptep = __arm_lpae_alloc_pages(tblsz, gfp, cfg);
-+		cptep = __arm_lpae_alloc_pages(tblsz, gfp, cfg, data->iop.cookie);
- 		if (!cptep)
- 			return -ENOMEM;
- 
- 		pte = arm_lpae_install_table(cptep, ptep, 0, data);
- 		if (pte)
--			__arm_lpae_free_pages(cptep, tblsz, cfg);
-+			__arm_lpae_free_pages(cptep, tblsz, cfg, data->iop.cookie);
- 	} else if (!cfg->coherent_walk && !(pte & ARM_LPAE_PTE_SW_SYNC)) {
- 		__arm_lpae_sync_pte(ptep, 1, cfg);
- 	}
-@@ -524,7 +542,7 @@ static void __arm_lpae_free_pgtable(struct arm_lpae_io_pgtable *data, int lvl,
- 		__arm_lpae_free_pgtable(data, lvl + 1, iopte_deref(pte, data));
- 	}
- 
--	__arm_lpae_free_pages(start, table_size, &data->iop.cfg);
-+	__arm_lpae_free_pages(start, table_size, &data->iop.cfg, data->iop.cookie);
- }
- 
- static void arm_lpae_free_pgtable(struct io_pgtable *iop)
-@@ -552,7 +570,7 @@ static size_t arm_lpae_split_blk_unmap(struct arm_lpae_io_pgtable *data,
- 	if (WARN_ON(lvl == ARM_LPAE_MAX_LEVELS))
- 		return 0;
- 
--	tablep = __arm_lpae_alloc_pages(tablesz, GFP_ATOMIC, cfg);
-+	tablep = __arm_lpae_alloc_pages(tablesz, GFP_ATOMIC, cfg, data->iop.cookie);
- 	if (!tablep)
- 		return 0; /* Bytes unmapped */
- 
-@@ -575,7 +593,7 @@ static size_t arm_lpae_split_blk_unmap(struct arm_lpae_io_pgtable *data,
- 
- 	pte = arm_lpae_install_table(tablep, ptep, blk_pte, data);
- 	if (pte != blk_pte) {
--		__arm_lpae_free_pages(tablep, tablesz, cfg);
-+		__arm_lpae_free_pages(tablep, tablesz, cfg, data->iop.cookie);
- 		/*
- 		 * We may race against someone unmapping another part of this
- 		 * block, but anything else is invalid. We can't misinterpret
-@@ -882,7 +900,7 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
- 
- 	/* Looking good; allocate a pgd */
- 	data->pgd = __arm_lpae_alloc_pages(ARM_LPAE_PGD_SIZE(data),
--					   GFP_KERNEL, cfg);
-+					   GFP_KERNEL, cfg, cookie);
- 	if (!data->pgd)
- 		goto out_free_data;
- 
-@@ -984,7 +1002,7 @@ arm_64_lpae_alloc_pgtable_s2(struct io_pgtable_cfg *cfg, void *cookie)
- 
- 	/* Allocate pgd pages */
- 	data->pgd = __arm_lpae_alloc_pages(ARM_LPAE_PGD_SIZE(data),
--					   GFP_KERNEL, cfg);
-+					   GFP_KERNEL, cfg, cookie);
- 	if (!data->pgd)
- 		goto out_free_data;
- 
-@@ -1059,7 +1077,7 @@ arm_mali_lpae_alloc_pgtable(struct io_pgtable_cfg *cfg, void *cookie)
- 		 << ARM_LPAE_MAIR_ATTR_SHIFT(ARM_LPAE_MAIR_ATTR_IDX_DEV));
- 
- 	data->pgd = __arm_lpae_alloc_pages(ARM_LPAE_PGD_SIZE(data), GFP_KERNEL,
--					   cfg);
-+					   cfg, cookie);
- 	if (!data->pgd)
- 		goto out_free_data;
- 
-@@ -1080,26 +1098,31 @@ arm_mali_lpae_alloc_pgtable(struct io_pgtable_cfg *cfg, void *cookie)
- }
- 
- struct io_pgtable_init_fns io_pgtable_arm_64_lpae_s1_init_fns = {
-+	.caps	= IO_PGTABLE_CAP_CUSTOM_ALLOCATOR,
- 	.alloc	= arm_64_lpae_alloc_pgtable_s1,
- 	.free	= arm_lpae_free_pgtable,
- };
- 
- struct io_pgtable_init_fns io_pgtable_arm_64_lpae_s2_init_fns = {
-+	.caps	= IO_PGTABLE_CAP_CUSTOM_ALLOCATOR,
- 	.alloc	= arm_64_lpae_alloc_pgtable_s2,
- 	.free	= arm_lpae_free_pgtable,
- };
- 
- struct io_pgtable_init_fns io_pgtable_arm_32_lpae_s1_init_fns = {
-+	.caps	= IO_PGTABLE_CAP_CUSTOM_ALLOCATOR,
- 	.alloc	= arm_32_lpae_alloc_pgtable_s1,
- 	.free	= arm_lpae_free_pgtable,
- };
- 
- struct io_pgtable_init_fns io_pgtable_arm_32_lpae_s2_init_fns = {
-+	.caps	= IO_PGTABLE_CAP_CUSTOM_ALLOCATOR,
- 	.alloc	= arm_32_lpae_alloc_pgtable_s2,
- 	.free	= arm_lpae_free_pgtable,
- };
- 
- struct io_pgtable_init_fns io_pgtable_arm_mali_lpae_init_fns = {
-+	.caps	= IO_PGTABLE_CAP_CUSTOM_ALLOCATOR,
- 	.alloc	= arm_mali_lpae_alloc_pgtable,
- 	.free	= arm_lpae_free_pgtable,
- };
--- 
-2.43.0
+Changes in v4 from v3:
+ New addition:
+ - Remove actlrcfg_size and use NULL end element instead to traverse
+   the actlr table, as this would be a cleaner approach by removing
+   redundancy of actlrcfg_size.
+ - Renaming of actlr set function to arm_smmu_qcom based proprietary
+   convention.
+ - break from loop once sid is found and ACTLR value is initialized
+   in qcom_smmu_set_actlr.
+ - Modify the GFX prefetch value separating into 2 sensible defines.
+ - Modify comments for prefetch defines as per SMMU-500 TRM.
+ Changes to incorporate suggestions from Konrad as follows:
+ - Use Reverse-Christmas-tree sorting wherever applicable.
+ - Pass arguments directly to arm_smmu_set_actlr instead of creating
+   duplicate variables.
+ - Use array indexing instead of direct pointer addressed by new
+   addition of eliminating actlrcfg_size.
+ - Switch the HEX value's case from upper to lower case in SC7280
+   actlrcfg table.
+ Changes to incorporate suggestions from Dmitry as follows:
+ - Separate changes not related to ACTLR support to different commit
+   with patch 5/5.
+ - Using pointer to struct for arguments in smr_is_subset().
+ Changes to incorporate suggestions from Bjorn as follows:
+ - fix the commit message for patch 2/5 to properly document the
+   value space to avoid confusion.
+ Fixed build issues reported by kernel test robot [1] for
+ arm64-allyesconfig [2].
+ [1]: https://lore.kernel.org/all/202312011750.Pwca3TWE-lkp@intel.com/
+ [2]: https://download.01.org/0day-ci/archive/20231201/202312011750.Pwca3TWE-lkp@intel.com/config
+ Link to v3:
+https://lore.kernel.org/all/20231127145412.3981-1-quic_bibekkum@quicinc.com/
+
+Changes in v3 from v2:
+ New addition:
+ - Include patch 3/4 for adding ACTLR support and data for SC7280.
+ - Add driver changes for actlr support in gpu smmu.
+ - Add target wise actlr data and implementation ops for gpu smmu.
+ Changes to incorporate suggestions from Robin as follows:
+ - Match the ACTLR values with individual corresponding SID instead
+   of assuming that any SMR will be programmed to match a superset of
+   the data.
+ - Instead of replicating each elements from qcom_smmu_match_data to
+   qcom_smmu structre during smmu device creation, replace the
+   replicated members with qcom_smmu_match_data structure inside
+   qcom_smmu structre and handle the dereference in places that
+   requires them.
+ Changes to incorporate suggestions from Dmitry and Konrad as follows:
+ - Maintain actlr table inside a single structure instead of
+   nested structure.
+ - Rename prefetch defines to more appropriately describe their behavior.
+ - Remove SM8550 specific implementation ops and roll back to default
+   qcom_smmu_500_impl implementation ops.
+ - Add back the removed comments which are NAK.
+ - Fix commit description for patch 4/4.
+ Link to v2:
+https://lore.kernel.org/all/20231114135654.30475-1-quic_bibekkum@quicinc.com/
+
+Changes in v2 from v1:
+ - Incorporated suggestions on v1 from Dmitry,Konrad,Pratyush.
+ - Added defines for ACTLR values.
+ - Linked sm8550 implementation structure to corresponding
+   compatible string.
+ - Repackaged actlr value set implementation to separate function.
+ - Fixed indentation errors.
+ - Link to v1:
+https://lore.kernel.org/all/20231103215124.1095-1-quic_bibekkum@quicinc.com/
+
+Changes in v1 from RFC:
+ - Incorporated suggestion form Robin on RFC
+ - Moved the actlr data table into driver, instead of maintaining
+   it inside soc specific DT and piggybacking on exisiting iommus
+   property (iommu = <SID, MASK, ACTLR>) to set this value during
+   smmu probe.
+ - Link to RFC:
+https://lore.kernel.org/all/a01e7e60-6ead-4a9e-ba90-22a8a6bbd03f@quicinc.com/
+Bibek Kumar Patro (5):
+  iommu/arm-smmu: refactor qcom_smmu structure to include single pointer
+  iommu/arm-smmu: introduction of ACTLR for custom prefetcher settings
+  iommu/arm-smmu: add ACTLR data and support for SM8550
+  iommu/arm-smmu: add ACTLR data and support for SC7280
+  iommu/arm-smmu: re-enable context caching in smmu reset operation
+
+ .../iommu/arm/arm-smmu/arm-smmu-qcom-debug.c  |   2 +-
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c    | 184 +++++++++++++++++-
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h    |   6 +-
+ drivers/iommu/arm/arm-smmu/arm-smmu.c         |   5 +-
+ drivers/iommu/arm/arm-smmu/arm-smmu.h         |   5 +
+ 5 files changed, 193 insertions(+), 9 deletions(-)
+
+--
+2.17.1
 
