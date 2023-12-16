@@ -1,45 +1,45 @@
-Received: from mail-lf1-f49.google.com (mail-lf1-f49.google.com [209.85.167.49])
+Received: from mail-lj1-f172.google.com (mail-lj1-f172.google.com [209.85.208.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8640E30357
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E5BF28E04
 	for <iommu@lists.linux.dev>; Sat, 16 Dec 2023 16:27:04 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="e01x6C5V"
-Received: by mail-lf1-f49.google.com with SMTP id 2adb3069b0e04-50e305530baso199585e87.3
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="YuQr5reH"
+Received: by mail-lj1-f172.google.com with SMTP id 38308e7fff4ca-2c9f7fe6623so16968071fa.3
         for <iommu@lists.linux.dev>; Sat, 16 Dec 2023 08:27:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1702744022; x=1703348822; darn=lists.linux.dev;
+        d=linaro.org; s=google; t=1702744023; x=1703348823; darn=lists.linux.dev;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=MXRZlAau+k7NGTbzeyPNFZOgIyK71YnKo+kgg/iWUAM=;
-        b=e01x6C5VJ7tqIGMIhSbou1zYulLcv+Y7zDoRhMzS3ved0nhEzqH48o9XJAsDI/mdcG
-         fSp+aFUQHxG6X7kKIw5v6Thappc36/7rp3XqurCZV1TDpAhOnU8iAM2FE3Y7j/xonKqD
-         tIbMeaLOWD3V1H37jLdKOA3ML7PLeaksssuJNygM6sCphxXA0KlPBQsCTWY/ABhW6f+c
-         Q+3VVGavyaUSJFrZT6AA7GexiXv4cU9pnVrTxISgcRmZ7NLZs+Nk0M8WqhMv8Doc5o8L
-         6MYbqfQKEjQ7qwaHAZ1FIw8TiA2nv+WvqnSmid9soCP/bHO3hbrH8H7KfVkkK1sT42Cs
-         nD8A==
+        bh=u5ZLFRFzD1CGy334KNd57yMYTCMD3u82eZUZ6VE2QPA=;
+        b=YuQr5reHEy09JGgugK9J70jUo7vATBGS4uyS+8cfzxpevy6BYMBnme9BOgH7vinUfL
+         SyH/hfYg+0Vg591sNpLV4grr/6qZjcNNVz85KrknYxOoW4AZhwu/zBoOahN+rl2TsMyz
+         Mm8E+u/MU0FvW3fyisbB+aYuqYVdb4NKRMmo0OJm4fmtMCGTVNvvQYSEUPF6zCKVUz/q
+         r2MaWwOq9H9fTwrD60Aq/2O3UfRwMbtkhpZ6ABC+ymJDA6Qf+w7HSfd50IM+iRaIpC6N
+         MG/YrzWjuT4xP5R+UdIse4pG4T1k473J3OeqXhBrjaodGpQWDspR8wlZwz//lMFWEM+8
+         uPog==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1702744022; x=1703348822;
+        d=1e100.net; s=20230601; t=1702744023; x=1703348823;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=MXRZlAau+k7NGTbzeyPNFZOgIyK71YnKo+kgg/iWUAM=;
-        b=EaMU8TkjaRBJcauXF/H4QHBZ8LODvV0KzlX0EHg4SEI6qPA6nVjkzXESQ75YvHyqeY
-         3zEgybU7LmsCfUIfQeikOXu+G8h6ErfXAr3lsPV658AJSV1BUNnzlJeLvgMdTajGA9Wp
-         ZagUenhL9Q86OGKWL2aTCX13W5DOnur+LQ3EvBub+6UJJir8OKwtOoSuQjSixF70pElP
-         SwGDa8+KkwnaWLbvzJ/HOOU9eovRXXKZR3N5ZtZmq54zhHT4D7Hzk9+C7uNi/mAonUqf
-         OwUNwV1EBYH930oFKXU+D3EgcrLmbq0UGISFpoNPQybSs20p19J+dUDFj1GzKMsWVnNn
-         f7lA==
-X-Gm-Message-State: AOJu0YyXjb7ztOu23Bp0awcsKnT+tkLhj36vImV7hU9u4BuUY8V1w1Jg
-	LElqmh4JMQUJf/EB4CMF8cJsDA==
-X-Google-Smtp-Source: AGHT+IE/jFD3yOHsP0n5a7l283VLf8+ombeu8GqYWfjwZgT22dw0ahGoGVYCJQsfdwyPuBgkZcjp/g==
-X-Received: by 2002:a19:f70b:0:b0:50c:17d6:fff6 with SMTP id z11-20020a19f70b000000b0050c17d6fff6mr5574410lfe.1.1702744022620;
-        Sat, 16 Dec 2023 08:27:02 -0800 (PST)
+        bh=u5ZLFRFzD1CGy334KNd57yMYTCMD3u82eZUZ6VE2QPA=;
+        b=pr3VTJqZVxbtdxD2OzCjBnNtjpi1q1YEsyN1TwkjZ84AwKG7IQjQyRkSX2//SKBeUa
+         N9xe5o+IHh8PLgGru30duxJAkWcJIljXuNuetKybMfhjrHG3JCdkrL0O3OOOya0L8STd
+         ctUSjtUJNZFVDhZGXTGV6BbQ9sZoHRxBRYRoXOE288XacTavYjvJ9KLFG2zhT2fnqrFb
+         BkEbkdd0aLW9cmtTw+e4rUb7LshknZupGfahVzKH/caRUMZzXh8qLUGNd8gKXuTFwAIz
+         GbQR/+bwgiEVFJ1YZJZnCluB0wx1MsENELq+5Kw541BMJUvQV+QQL1PMq/1UNoH6aqSL
+         VuMg==
+X-Gm-Message-State: AOJu0YyVgJPLsDk7iDGFC3bKiWM4Fc4vXW5eG1baNo9AMOihzP4bOrWK
+	keB6MkmRUaCcGbkVgSYRc+3tlg==
+X-Google-Smtp-Source: AGHT+IEdlLjha0pDKVzgZ8VedXq3zwTQeBW66gbUelSUrCVVlVfnjfOPU+pT4taKuf9PB4jXLPRiNQ==
+X-Received: by 2002:a05:6512:15a0:b0:50b:f84a:539d with SMTP id bp32-20020a05651215a000b0050bf84a539dmr4674856lfb.19.1702744023345;
+        Sat, 16 Dec 2023 08:27:03 -0800 (PST)
 Received: from umbar.unikie.fi ([192.130.178.91])
-        by smtp.gmail.com with ESMTPSA id u19-20020a197913000000b0050e304d437dsm69229lfc.223.2023.12.16.08.27.01
+        by smtp.gmail.com with ESMTPSA id u19-20020a197913000000b0050e304d437dsm69229lfc.223.2023.12.16.08.27.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Sat, 16 Dec 2023 08:27:02 -0800 (PST)
 From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
@@ -52,9 +52,9 @@ Cc: linux-arm-kernel@lists.infradead.org,
 	linux-arm-msm@vger.kernel.org,
 	iommu@lists.linux.dev,
 	Russell King <linux@armlinux.org.uk>
-Subject: [PATCH v2 2/3] ARM: qcom: drop most of 32-bit ARCH_QCOM subtypes
-Date: Sat, 16 Dec 2023 18:26:59 +0200
-Message-Id: <20231216162700.863456-3-dmitry.baryshkov@linaro.org>
+Subject: [PATCH v2 3/3] ARM: qcom: merge remaining subplatforms into sensible Kconfig entry
+Date: Sat, 16 Dec 2023 18:27:00 +0200
+Message-Id: <20231216162700.863456-4-dmitry.baryshkov@linaro.org>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20231216162700.863456-1-dmitry.baryshkov@linaro.org>
 References: <20231216162700.863456-1-dmitry.baryshkov@linaro.org>
@@ -66,72 +66,55 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Historically we had several subtypes of 32-bit Qualcomm platforms.
-Nowadays they became just useless symbols in Kconfig. Drop them and pull
-corresponding clocksource entries towards top-level ARCH_QCOM entry.
-
-Note, I've left ARCH_IPQ40XX, ARCH_MSM8x60 and ARCH_MSM8960 in place,
-since they have special TEXT_OFFSET handling, which can be sorted out
-separately.
+Three remaining Qualcomm platforms have special handling of the
+TEXT_OFFSET to reserve the memory at the beginnig of the system RAM, see
+the commit 9e775ad19f52 ("ARM: 7012/1: Set proper TEXT_OFFSET for newer
+MSMs"). This is required for older platforms like IPQ40xx, MSM8x60,
+MSM8960 and APQ8064 and is compatible with other 32-bit Qualcomm
+platforms.
 
 Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 ---
- arch/arm/mach-qcom/Kconfig | 30 ++++--------------------------
- 1 file changed, 4 insertions(+), 26 deletions(-)
+ arch/arm/Makefile          |  4 +---
+ arch/arm/mach-qcom/Kconfig | 13 +++++--------
+ 2 files changed, 6 insertions(+), 11 deletions(-)
 
+diff --git a/arch/arm/Makefile b/arch/arm/Makefile
+index 5ba42f69f8ce..95216a508d80 100644
+--- a/arch/arm/Makefile
++++ b/arch/arm/Makefile
+@@ -158,9 +158,7 @@ textofs-$(CONFIG_ARCH_REALTEK)  := 0x00108000
+ ifeq ($(CONFIG_ARCH_SA1100),y)
+ textofs-$(CONFIG_SA1111) := 0x00208000
+ endif
+-textofs-$(CONFIG_ARCH_IPQ40XX) := 0x00208000
+-textofs-$(CONFIG_ARCH_MSM8X60) := 0x00208000
+-textofs-$(CONFIG_ARCH_MSM8960) := 0x00208000
++textofs-$(CONFIG_ARCH_QCOM_RESERVE_SMEM) := 0x00208000
+ textofs-$(CONFIG_ARCH_MESON) := 0x00208000
+ textofs-$(CONFIG_ARCH_AXXIA) := 0x00308000
+ 
 diff --git a/arch/arm/mach-qcom/Kconfig b/arch/arm/mach-qcom/Kconfig
-index 12a812e61c16..27d5ca0043be 100644
+index 27d5ca0043be..f4765be1b2a0 100644
 --- a/arch/arm/mach-qcom/Kconfig
 +++ b/arch/arm/mach-qcom/Kconfig
-@@ -4,46 +4,24 @@ menuconfig ARCH_QCOM
- 	depends on ARCH_MULTI_V7
- 	select ARM_GIC
- 	select ARM_AMBA
-+	select CLKSRC_QCOM
-+	select HAVE_ARM_ARCH_TIMER
- 	select PINCTRL
- 	select QCOM_SCM if SMP
- 	help
- 	  Support for Qualcomm's devicetree based systems.
-+	  This includes support for a few devices with ARM64 SoC, that have
-+	  ARM32 signed firmware that does not allow booting ARM64 kernels.
+@@ -15,13 +15,10 @@ menuconfig ARCH_QCOM
  
  if ARCH_QCOM
  
- config ARCH_IPQ40XX
- 	bool "Enable support for IPQ40XX"
--	select CLKSRC_QCOM
--	select HAVE_ARM_ARCH_TIMER
- 
- config ARCH_MSM8X60
- 	bool "Enable support for MSM8X60"
--	select CLKSRC_QCOM
+-config ARCH_IPQ40XX
+-	bool "Enable support for IPQ40XX"
 -
--config ARCH_MSM8909
--	bool "Enable support for MSM8909"
--	select HAVE_ARM_ARCH_TIMER
+-config ARCH_MSM8X60
+-	bool "Enable support for MSM8X60"
 -
--config ARCH_MSM8916
--	bool "Enable support for MSM8916"
--	select HAVE_ARM_ARCH_TIMER
--	help
--	  Enable support for the Qualcomm Snapdragon 410 (MSM8916/APQ8016).
--
--	  Note that ARM64 is the main supported architecture for MSM8916.
--	  The ARM32 option is intended for a few devices with signed firmware
--	  that does not allow booting ARM64 kernels.
- 
- config ARCH_MSM8960
- 	bool "Enable support for MSM8960"
--	select CLKSRC_QCOM
--
--config ARCH_MSM8974
--	bool "Enable support for MSM8974"
--	select HAVE_ARM_ARCH_TIMER
--
--config ARCH_MDM9615
--	bool "Enable support for MDM9615"
--	select CLKSRC_QCOM
+-config ARCH_MSM8960
+-	bool "Enable support for MSM8960"
++config ARCH_QCOM_RESERVE_SMEM
++	bool "Reserve SMEM at the beginning of RAM"
++	help
++	  Reserve 2MB at the beginning of the System RAM for shared mem.
++	  This is required on IPQ40xx, MSM8x60 and MSM8960 platforms.
  
  endif
 -- 
