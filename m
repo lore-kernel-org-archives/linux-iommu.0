@@ -1,244 +1,107 @@
-Received: from ixit.cz (ip-89-177-23-149.bb.vodafone.cz [89.177.23.149])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 669E337D2C
-	for <iommu@lists.linux.dev>; Sat, 16 Dec 2023 00:23:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ixit.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ixit.cz
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F21D210A12;
+	Sat, 16 Dec 2023 05:26:40 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=ixit.cz header.i=@ixit.cz header.b="XEbW7uO6"
-Received: from newone.lan (unknown [10.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by ixit.cz (Postfix) with ESMTPSA id D0826162D80;
-	Sat, 16 Dec 2023 01:23:01 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ixit.cz; s=dkim;
-	t=1702686181;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding;
-	bh=e6wK2Gy5xRfcIkaY0Z8w6TvocRTnKcFd48PjUsahsFo=;
-	b=XEbW7uO6h3iO0Dbgn3YLXiajVR2XgK1T2ISDwMEL19GdrGmWraGMhe93l+NzL4jo9Zx/kr
-	TUvWAp22MPBnx9QlvpzCt9lqF2pGMGqpwHwCQSrgIU1wEZCmIfYGU9M/jBvO8MYljDg4fe
-	1G+bPymljJIVcP38vThlRsRbCHUWm4w=
-From: David Heidelberg <david@ixit.cz>
-To: Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Andy Gross <agross@kernel.org>,
-	Bjorn Andersson <andersson@kernel.org>,
-	Konrad Dybcio <konrad.dybcio@linaro.org>
-Cc: David Heidelberg <david@ixit.cz>,
-	iommu@lists.linux.dev,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-arm-msm@vger.kernel.org
-Subject: [PATCH v5] dt-bindings: iommu: Convert msm,iommu-v0 to yaml
-Date: Sat, 16 Dec 2023 01:22:38 +0100
-Message-ID: <20231216002242.112310-2-david@ixit.cz>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ofEErLlT"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5EDAFC433C8;
+	Sat, 16 Dec 2023 05:26:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1702704400;
+	bh=k+HLfjiotNDdVkHZHPA8yO2hBIysL09Q2lJMiNnUa44=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=ofEErLlT+b+m/fmlepLCT++JDLi3yPPnJyCUphwt7syqNT/9ZhptTJGovAn0CKNkE
+	 09qrbA4RafIeeCltUNVbYhqDRiBSifBC9kb7lzoHfeU7m+LOPgjPexkfjRyLjwgM2F
+	 O3s+eX/TuWHlE7XhlcLHWBx0gSYcwm5oRVKTiNeIEsgqvevb+MBnpt77K/RT33xSoS
+	 8uBFQMuK0qFYrRh+fuRakGmXws5zyStAtQ6JQDjOUJSVfv7pqbTfB43Ca0dQ/MptTc
+	 3TkfMAOqON19cFJe0VC8QDEq2mHns6yqvVdZ8LwTC8nIwW4NEcbVjTeomfwYYTbNKc
+	 RQyvjbFlBNb9w==
+Date: Fri, 15 Dec 2023 23:26:37 -0600
+From: Bjorn Andersson <andersson@kernel.org>
+To: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+	Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>, 
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Konrad Dybcio <konrad.dybcio@linaro.org>, 
+	Rob Clark <robdclark@gmail.com>, Vinod Koul <vkoul@kernel.org>, 
+	Sai Prakash Ranjan <quic_saipraka@quicinc.com>, linux-arm-kernel@lists.infradead.org, 
+	linux-arm-msm@vger.kernel.org, iommu@lists.linux.dev, devicetree@vger.kernel.org, 
+	freedreno@lists.freedesktop.org
+Subject: Re: [PATCH 3/3] ARM: qcom: merge remaining subplatforms into
+ sensible Kconfig entry
+Message-ID: <hhaf3ocpnejsxpkg6mfodwnkbjttyb2h5p3qsifbyukosvsavj@rwdpgzsovwak>
+References: <20231207125500.3322229-1-dmitry.baryshkov@linaro.org>
+ <20231207125500.3322229-4-dmitry.baryshkov@linaro.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20231207125500.3322229-4-dmitry.baryshkov@linaro.org>
 
-Convert Qualcomm IOMMU v0 implementation to yaml format.
+On Thu, Dec 07, 2023 at 03:55:00PM +0300, Dmitry Baryshkov wrote:
+> Three remaining Qualcomm platforms have special handling of the
+> TEXT_OFFSET to reserve the memory at the beginnig of the system RAM, see
+> the commit 9e775ad19f52 ("ARM: 7012/1: Set proper TEXT_OFFSET for newer
+> MSMs"). This is required for older platforms like IPQ40xx, MSM8x60,
+> MSM8960 and APQ8064 and is compatible with other 32-bit Qualcomm
+> platforms.
+> 
+> Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+> ---
+>  arch/arm/Makefile          |  4 +---
+>  arch/arm/mach-qcom/Kconfig | 13 +++++--------
+>  2 files changed, 6 insertions(+), 11 deletions(-)
+> 
+> diff --git a/arch/arm/Makefile b/arch/arm/Makefile
+> index 5ba42f69f8ce..45fa8ac001c5 100644
+> --- a/arch/arm/Makefile
+> +++ b/arch/arm/Makefile
+> @@ -158,9 +158,7 @@ textofs-$(CONFIG_ARCH_REALTEK)  := 0x00108000
+>  ifeq ($(CONFIG_ARCH_SA1100),y)
+>  textofs-$(CONFIG_SA1111) := 0x00208000
+>  endif
+> -textofs-$(CONFIG_ARCH_IPQ40XX) := 0x00208000
+> -textofs-$(CONFIG_ARCH_MSM8X60) := 0x00208000
+> -textofs-$(CONFIG_ARCH_MSM8960) := 0x00208000
+> +textofs-$(CONFIG_ARCH_QCOM_SMEM) := 0x00208000
+>  textofs-$(CONFIG_ARCH_MESON) := 0x00208000
+>  textofs-$(CONFIG_ARCH_AXXIA) := 0x00308000
+>  
+> diff --git a/arch/arm/mach-qcom/Kconfig b/arch/arm/mach-qcom/Kconfig
+> index 27d5ca0043be..0c99d0a746d4 100644
+> --- a/arch/arm/mach-qcom/Kconfig
+> +++ b/arch/arm/mach-qcom/Kconfig
+> @@ -15,13 +15,10 @@ menuconfig ARCH_QCOM
+>  
+>  if ARCH_QCOM
+>  
+> -config ARCH_IPQ40XX
+> -	bool "Enable support for IPQ40XX"
+> -
+> -config ARCH_MSM8X60
+> -	bool "Enable support for MSM8X60"
+> -
+> -config ARCH_MSM8960
+> -	bool "Enable support for MSM8960"
+> +config ARCH_QCOM_SMEM
 
-Signed-off-by: David Heidelberg <david@ixit.cz>
----
-v5:
- - updated example (thx @Konrad)
- - ordering of requirements + dropped > and | and reformatted (thx @Konrad)
-v4:
- - renamed to qcom,apq8064-iommu as Rob requested
- - changed title to Qualcomm APQ8064 IOMMU
- - dropped quotes around URLs
- - dropped mdp node
- - dropped unused mdp_port0 label
+How about expanding this to ARCH_QCOM_RESERVE_SMEM or similar, to make
+it more descriptive and less similar to the existing QCOM_SMEM option?
 
-v3:
- - I kept the name as -v0, since we have other binding -v1 and it look
-   good, I can change thou in v4 if requested.
- - dropped non-existent smmu_clk part (and adjusted example, which was
-   using it)
- - dropped iommu description
- - moved iommu-cells description to the property #iommu-cells
+Regards,
+Bjorn
 
-v2:
- - fix wrong path in binding $id
- - comment qcom,mdp4 node example (we don't want to validate it yet)
 
- .../bindings/iommu/msm,iommu-v0.txt           | 64 ---------------
- .../bindings/iommu/qcom,apq8064-iommu.yaml    | 82 +++++++++++++++++++
- 2 files changed, 82 insertions(+), 64 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/iommu/msm,iommu-v0.txt
- create mode 100644 Documentation/devicetree/bindings/iommu/qcom,apq8064-iommu.yaml
-
-diff --git a/Documentation/devicetree/bindings/iommu/msm,iommu-v0.txt b/Documentation/devicetree/bindings/iommu/msm,iommu-v0.txt
-deleted file mode 100644
-index 20236385f26e..000000000000
---- a/Documentation/devicetree/bindings/iommu/msm,iommu-v0.txt
-+++ /dev/null
-@@ -1,64 +0,0 @@
--* QCOM IOMMU
--
--The MSM IOMMU is an implementation compatible with the ARM VMSA short
--descriptor page tables. It provides address translation for bus masters outside
--of the CPU, each connected to the IOMMU through a port called micro-TLB.
--
--Required Properties:
--
--  - compatible: Must contain "qcom,apq8064-iommu".
--  - reg: Base address and size of the IOMMU registers.
--  - interrupts: Specifiers for the MMU fault interrupts. For instances that
--    support secure mode two interrupts must be specified, for non-secure and
--    secure mode, in that order. For instances that don't support secure mode a
--    single interrupt must be specified.
--  - #iommu-cells: The number of cells needed to specify the stream id. This
--		  is always 1.
--  - qcom,ncb:	  The total number of context banks in the IOMMU.
--  - clocks	: List of clocks to be used during SMMU register access. See
--		  Documentation/devicetree/bindings/clock/clock-bindings.txt
--		  for information about the format. For each clock specified
--		  here, there must be a corresponding entry in clock-names
--		  (see below).
--
--  - clock-names	: List of clock names corresponding to the clocks specified in
--		  the "clocks" property (above).
--		  Should be "smmu_pclk" for specifying the interface clock
--		  required for iommu's register accesses.
--		  Should be "smmu_clk" for specifying the functional clock
--		  required by iommu for bus accesses.
--
--Each bus master connected to an IOMMU must reference the IOMMU in its device
--node with the following property:
--
--  - iommus: A reference to the IOMMU in multiple cells. The first cell is a
--	    phandle to the IOMMU and the second cell is the stream id.
--	    A single master device can be connected to more than one iommu
--	    and multiple contexts in each of the iommu. So multiple entries
--	    are required to list all the iommus and the stream ids that the
--	    master is connected to.
--
--Example: mdp iommu and its bus master
--
--                mdp_port0: iommu@7500000 {
--			compatible = "qcom,apq8064-iommu";
--			#iommu-cells = <1>;
--			clock-names =
--			    "smmu_pclk",
--			    "smmu_clk";
--			clocks =
--			    <&mmcc SMMU_AHB_CLK>,
--			    <&mmcc MDP_AXI_CLK>;
--			reg = <0x07500000 0x100000>;
--			interrupts =
--			    <GIC_SPI 63 0>,
--			    <GIC_SPI 64 0>;
--			qcom,ncb = <2>;
--		};
--
--		mdp: qcom,mdp@5100000 {
--			compatible = "qcom,mdp";
--			...
--			iommus = <&mdp_port0 0
--				  &mdp_port0 2>;
--		};
-diff --git a/Documentation/devicetree/bindings/iommu/qcom,apq8064-iommu.yaml b/Documentation/devicetree/bindings/iommu/qcom,apq8064-iommu.yaml
-new file mode 100644
-index 000000000000..5af59305d277
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iommu/qcom,apq8064-iommu.yaml
-@@ -0,0 +1,82 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+
-+$id: http://devicetree.org/schemas/iommu/qcom,apq8064-iommu.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Qualcomm APQ8064 IOMMU
-+
-+maintainers:
-+  - Will Deacon <will@kernel.org>
-+
-+description:
-+  The MSM IOMMU is an implementation compatible with the ARM VMSA short
-+  descriptor page tables. It provides address translation for bus masters
-+  outside of the CPU, each connected to the IOMMU through a port called micro-TLB.
-+
-+properties:
-+  compatible:
-+    const: qcom,apq8064-iommu
-+
-+  clocks:
-+    items:
-+      - description: interface clock for register accesses
-+      - description: functional clock for bus accesses
-+
-+  clock-names:
-+    items:
-+      - const: smmu_pclk
-+      - const: iommu_clk
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    description: Specifiers for the MMU fault interrupts.
-+    minItems: 1
-+    items:
-+      - description: non-secure mode interrupt
-+      - description: secure mode interrupt (for instances which supports it)
-+
-+  "#iommu-cells":
-+    const: 1
-+    description:
-+      The first cell is a phandle to the IOMMU and the second cell
-+      is the stream id.
-+      A single master device can be connected to more than one iommu
-+      and multiple contexts in each of the iommu.
-+      So multiple entries are required to list all the iommus and
-+      the stream ids that the master is connected to.
-+
-+  qcom,ncb:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    description: The total number of context banks in the IOMMU.
-+
-+required:
-+  - reg
-+  - interrupts
-+  - clocks
-+  - clock-names
-+  - qcom,ncb
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/clock/qcom,mmcc-msm8960.h>
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+
-+    iommu@7500000 {
-+            compatible = "qcom,apq8064-iommu";
-+            reg = <0x07500000 0x100000>;
-+            interrupts = <GIC_SPI 63 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 64 IRQ_TYPE_LEVEL_HIGH>;
-+            clocks = <&clk SMMU_AHB_CLK>,
-+                     <&clk MDP_AXI_CLK>;
-+            clock-names = "smmu_pclk",
-+                          "iommu_clk";
-+            #iommu-cells = <1>;
-+            qcom,ncb = <2>;
-+    };
--- 
-2.43.0
-
+> +	bool "Reserve SMEM at the beginning of RAM"
+> +	help
+> +	  Reserve 2MB at the beginning of the System RAM for shared mem.
+> +	  This is required on IPQ40xx, MSM8x60 and MSM8960 platforms.
+>  
+>  endif
+> -- 
+> 2.39.2
+> 
