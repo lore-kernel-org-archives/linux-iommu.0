@@ -1,116 +1,173 @@
-Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam04on2072.outbound.protection.outlook.com [40.107.101.72])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A71813FEE
-	for <iommu@lists.linux.dev>; Sat, 16 Dec 2023 18:40:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3DAC31A66
+	for <iommu@lists.linux.dev>; Sat, 16 Dec 2023 18:49:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="RgA8u7s3"
-Received: by mail-wm1-f45.google.com with SMTP id 5b1f17b1804b1-40c31f18274so21513895e9.0
-        for <iommu@lists.linux.dev>; Sat, 16 Dec 2023 10:40:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1702751998; x=1703356798; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to;
-        bh=1KUtAGMqqIUkAaz6E0SIG7Zf7AtwqKOASLidvCHNXPM=;
-        b=RgA8u7s3X7tVPixw8bt8wc4ioQNZ7v7YydZvZ5ptzMalUWk08lL72dkvsxmWAVhNmg
-         +XTbclVs/QaZhlzMRwWT64ppvMpuibOduUeLHSW2IOylidti1eZkwfMVCCeKiR5KTSUK
-         BRtQQzULFZLiK+sG+y/R+c+2nbpzwMxwsxi6Z81GubcgOpry11teEzMkwNO3e0T7hrji
-         hT2UKFDaqYKh9VVZgvbzMmg/cTyASEs4UwSce/XCluOALWmFvx3d5r0Tf6I+e0o3cEY3
-         CLBKH9F6FgeaIhH76IlQsKI3A1CQi0FO+PpBYHOKlyhdyq5U/hLQcbxNWvg3TgakWn7h
-         qFig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1702751998; x=1703356798;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=1KUtAGMqqIUkAaz6E0SIG7Zf7AtwqKOASLidvCHNXPM=;
-        b=gxnZP0Egt6aGL8cr0M0wptgcofSpj0nPwMHayX+cJSlJr+POXg8GfLqfStCGvUHgpu
-         f7sIusPGDaCynzKdQxZapY7HeGjFV2wejTofMHVuP+APO/PUfExJbidV7TX0T1cji3MT
-         x61kSQRUEZ1rg2wGA7CsUJrM9MrCBt+yzsT72WXnUuUoQeTeNMi4E5TvElrDiMk8Xe0o
-         j5aPUfM52ClQ0JIxyQ0cgx5/v0agGj+BiD31FgtAcqSc+ZYcSUpBlKcI3PlDK5dASsjA
-         O1wg9q+XRmDnRPBkOcNcfivl3psxCs1+6YbKuaE0P8ZWS/qJJvo4zBcsU+nVnuFxsJnp
-         D87Q==
-X-Gm-Message-State: AOJu0YyefF9I37vY7oBxcyfpIqA+f2Zvy2a7RtLJ/T9r9lJ3MutBUwqo
-	nPGJsSa7ALsKNJH5dfkWZbfAAw==
-X-Google-Smtp-Source: AGHT+IEQn2NQopN437dQYBs97niYLPAMDxRmV5lHxm1edSyDF36wNposye+RqIPj/4kPbYSz7QduSg==
-X-Received: by 2002:a05:600c:4fd6:b0:40b:5e1f:6fe5 with SMTP id o22-20020a05600c4fd600b0040b5e1f6fe5mr6646936wmq.58.1702751998560;
-        Sat, 16 Dec 2023 10:39:58 -0800 (PST)
-Received: from [192.168.199.59] (178235179137.dynamic-4-waw-k-1-3-0.vectranet.pl. [178.235.179.137])
-        by smtp.gmail.com with ESMTPSA id tb19-20020a1709078b9300b00a1cd30d06d1sm12354797ejc.14.2023.12.16.10.39.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 16 Dec 2023 10:39:58 -0800 (PST)
-Message-ID: <3160e0b5-7209-46ea-8ff5-48daefcd2d89@linaro.org>
-Date: Sat, 16 Dec 2023 19:39:55 +0100
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="Gf7w9z0u"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jfo+YR03zVnKp+rgGUdJGRmVr8qAxIH86+7wxfmR84jtXAPVentBG0oq64MNeH7aoJ8+D2sVn+Q3z6FcWtGIYAtJ4E4dATCTG3zfPB6HkvIfU+smz8S1VZP08Bw9L7oqjL6jcEh/qn50vwdbvM40BHZDZjYupN8dAHjzCEM4m1hNwphRpibzQACmkijW6tnidrkJgkdEzjHIrnTKzh2+X6aR1woT2iXbNiEA5Kc3n4am9WfaqTPDd7vY1o0M4WfmVXziaaezP68vOT7WXL6AU24y4v4dpO+E/5U8WxKRSGAirkI0AUJg5qrzz21r3DOX8Q35cRZjiD4X0p24sUPKlA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=0dvIvxPCkxLE8UfxG6vaNV3Kf3NfnJ9QDIEbXJZry7Q=;
+ b=SEXOTzgUGsrMVyfCv+3uGukezgJk99K1iQVoJlWZVPu+jYQXJ+DpWQYr9QN4PBTpJDaSSXMPKd8Q2NPvkGVTqF+t7Cdh8L3oMBKTh8jJY7ZxqdI8okWN4K88DydzYl+aKhzZ1P2yPmZfjhJaMwHDKA+NlHPZ7K7xLFQ4o/rYyTtdFLOB3W/iS8+uLHc4g/gPGz1DCZVtvUHiLNMUmrvkFj/jSRb+6e+HDC9fTj2QIz6wAB9uKJtgXfcfG2aEWJUfNDi1wq8K61tyQUNSiDeU1eYxZ2L5JeuT4oSUGIu8QwM69IciX53jXJqVZ6xqzH0/jqJhOx/A6u3V5U8HDARmJw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.160) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=0dvIvxPCkxLE8UfxG6vaNV3Kf3NfnJ9QDIEbXJZry7Q=;
+ b=Gf7w9z0ulmEQjP/hWHHigANkLjl3SyOX2P35jVkrj8S5TAVseh+V7oJkhCxWjVgy1A/d17hjmd03oit3cUzST/rUFSfLUjuhG/2g8tC0KjbZNWwUjUEpRhfc+TCJlKUBLVqPKD0otBRd5yap5lWdRx2U6X15WRYSXVIoLodh5PgEX3cQ/Wt/YcfsQQcQIhOmWMXwY1cCA+WLFImGmyilqTh9rdKtGIS54zY//WQZ+DfONoA+LAJIYSwW7hMLB+80lzoWYfI63nWY6vBEwIwtt0ugxweu42foRkLqJDSDM0A9Q+ZwNxN8EIht3GOyHDYgU1XNRHlc4kPNb23GGaxLGQ==
+Received: from SA9P223CA0019.NAMP223.PROD.OUTLOOK.COM (2603:10b6:806:26::24)
+ by MW3PR12MB4428.namprd12.prod.outlook.com (2603:10b6:303:57::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7091.33; Sat, 16 Dec
+ 2023 18:49:25 +0000
+Received: from SN1PEPF00026367.namprd02.prod.outlook.com
+ (2603:10b6:806:26:cafe::1d) by SA9P223CA0019.outlook.office365.com
+ (2603:10b6:806:26::24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7091.36 via Frontend
+ Transport; Sat, 16 Dec 2023 18:49:24 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ SN1PEPF00026367.mail.protection.outlook.com (10.167.241.132) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.7113.14 via Frontend Transport; Sat, 16 Dec 2023 18:49:24 +0000
+Received: from rnnvmail203.nvidia.com (10.129.68.9) by mail.nvidia.com
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Sat, 16 Dec
+ 2023 10:49:12 -0800
+Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail203.nvidia.com
+ (10.129.68.9) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Sat, 16 Dec
+ 2023 10:49:11 -0800
+Received: from Asurada-Nvidia (10.127.8.9) by mail.nvidia.com (10.129.68.9)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41 via Frontend
+ Transport; Sat, 16 Dec 2023 10:49:10 -0800
+Date: Sat, 16 Dec 2023 10:49:08 -0800
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Yi Liu <yi.l.liu@intel.com>
+CC: "Tian, Kevin" <kevin.tian@intel.com>, "joro@8bytes.org" <joro@8bytes.org>,
+	"alex.williamson@redhat.com" <alex.williamson@redhat.com>, "jgg@nvidia.com"
+	<jgg@nvidia.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>, "cohuck@redhat.com"
+	<cohuck@redhat.com>, "eric.auger@redhat.com" <eric.auger@redhat.com>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>, "mjrosato@linux.ibm.com"
+	<mjrosato@linux.ibm.com>, "chao.p.peng@linux.intel.com"
+	<chao.p.peng@linux.intel.com>, "yi.y.sun@linux.intel.com"
+	<yi.y.sun@linux.intel.com>, "peterx@redhat.com" <peterx@redhat.com>,
+	"jasowang@redhat.com" <jasowang@redhat.com>,
+	"shameerali.kolothum.thodi@huawei.com"
+	<shameerali.kolothum.thodi@huawei.com>, "lulu@redhat.com" <lulu@redhat.com>,
+	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>, "Duan,
+ Zhenzhong" <zhenzhong.duan@intel.com>, "joao.m.martins@oracle.com"
+	<joao.m.martins@oracle.com>, "Zeng, Xin" <xin.zeng@intel.com>, "Zhao, Yan Y"
+	<yan.y.zhao@intel.com>
+Subject: Re: [PATCH v7 1/3] iommufd: Add data structure for Intel VT-d
+ stage-1 cache invalidation
+Message-ID: <ZX3xJH8LPr8noBvt@Asurada-Nvidia>
+References: <20231117131816.24359-1-yi.l.liu@intel.com>
+ <20231117131816.24359-2-yi.l.liu@intel.com>
+ <c967e716-9112-4d1a-b6f7-9a005e28202d@intel.com>
+ <BN9PR11MB5276D14D2A7FF60B41A6A7B48C93A@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <ZXu5whlIGfiq16wF@Asurada-Nvidia>
+ <BN9PR11MB52766D7F774510E0181CC89B8C93A@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <ZXvI2IiXwwuHRE8V@Asurada-Nvidia>
+ <7c398efc-8a2f-479d-bcff-ded8cc1ef3d0@intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 1/3] iommu/msm-iommu: don't limit the driver too much
-To: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
- Bjorn Andersson <andersson@kernel.org>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>
-Cc: linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
- iommu@lists.linux.dev, Russell King <linux@armlinux.org.uk>,
- Joerg Roedel <jroedel@suse.de>
-References: <20231216162700.863456-1-dmitry.baryshkov@linaro.org>
- <20231216162700.863456-2-dmitry.baryshkov@linaro.org>
-Content-Language: en-US
-From: Konrad Dybcio <konrad.dybcio@linaro.org>
-Autocrypt: addr=konrad.dybcio@linaro.org; keydata=
- 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
- izWDgYvmBE8=
-In-Reply-To: <20231216162700.863456-2-dmitry.baryshkov@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <7c398efc-8a2f-479d-bcff-ded8cc1ef3d0@intel.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SN1PEPF00026367:EE_|MW3PR12MB4428:EE_
+X-MS-Office365-Filtering-Correlation-Id: 0d9ff39c-5ca6-4dd2-2270-08dbfe67b948
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	MDhCP4aGGvIzdBfBC7eYEitz9g5EanYlbIK1QjA9LRLOEdBQ12i+r/3o/VXXfic8eUb3zy+MIEmvTMOxhHXVvA3qYybpFIXTQAlXzA0Rc5HH9KbdKdBLquxInd+82kkvlvAwOQbd/M6umW3QY0QIi6Dn/Vwb539GV644sLLgd7XJg/LnMrOPEe8cfWDQWr0HB+DuuTtryi999/vkLZVvILdmr8/g27jovNmI9cFOxYulw/Vg+n3HrEx/cAapCC0jBkoq2+kXWCnKAJBbG3M9aJr+XiYC65ziGuthO+dD29QwJ0ulVahKcBrfGKbgkzeht0qCrpAQem2eHO+RLPbeWY5GqxXwkhMpDGTGEf1t9ZEIM5I9aiO3fYiT1dD8i2ClgwRfE11q0dGd46OsyzHCY08ChWczuCrAp3rVBLy/ZXgdNiYB9rtlnpjhQGcxtK+cVMx9zIeRWhCzttEYeBOE+qKMVgP/7LgczcuP59/2M7qZAYqzt41smBhqafshkHiXau3sYjt35Ee/I0mYut6xVtz9rIu0PZ+UAMHk3o+oYncpV8unbCA/2ozIchIKJaWIesCn6xCrxWNeP+1NqRSssXYURa7f4Nh/JHu8R8R6ghhgTkXMJleFKLyMScZhsxk2MS1+0GFRYwXMe60BOD+gqKUB7iUErtf3UdjhMYwACp1wP+7c8YHE2pyfO+mBliMcHHUIj2qgNn2D1dzEPWLap3Nd8VTVkcR9rk4jJLbr8CmWkSgzwGrUedHX1Ukfo66V
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230031)(4636009)(39860400002)(136003)(376002)(346002)(396003)(230922051799003)(1800799012)(451199024)(82310400011)(64100799003)(186009)(40470700004)(36840700001)(46966006)(40480700001)(55016003)(40460700003)(426003)(336012)(26005)(2906002)(7416002)(70206006)(70586007)(4326008)(316002)(6916009)(54906003)(82740400003)(53546011)(5660300002)(9686003)(83380400001)(36860700001)(41300700001)(8676002)(8936002)(478600001)(356005)(86362001)(47076005)(33716001)(7636003);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Dec 2023 18:49:24.5406
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0d9ff39c-5ca6-4dd2-2270-08dbfe67b948
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	SN1PEPF00026367.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR12MB4428
 
-On 16.12.2023 17:26, Dmitry Baryshkov wrote:
-> In preparation of dropping most of ARCH_QCOM subtypes, stop limiting the
-> driver just to those machines. Allow it to be built for any 32-bit
-> Qualcomm platform (ARCH_QCOM).
+On Fri, Dec 15, 2023 at 12:01:19PM +0800, Yi Liu wrote:
+> On 2023/12/15 11:32, Nicolin Chen wrote:
+> > On Fri, Dec 15, 2023 at 03:04:44AM +0000, Tian, Kevin wrote:
+> > > > From: Nicolin Chen <nicolinc@nvidia.com>
+> > > > Sent: Friday, December 15, 2023 10:28 AM
+> > > > On Fri, Dec 15, 2023 at 01:50:07AM +0000, Tian, Kevin wrote:
+> > > > > > From: Liu, Yi L <yi.l.liu@intel.com>
+> > > > > > Sent: Thursday, December 14, 2023 7:27 PM
+> > > > > > 
+> > > > > > On 2023/11/17 21:18, Yi Liu wrote:
+> > > > > and for this error reporting case what we actually require is the
+> > > > > reverse map i.e. pRID->vRID. Not sure whether we can leverage the
+> > > > > same RID mapping uAPI as for ARM/AMD but ignore viommu_id
+> > > > > and then store vRID under device_domain_info. a bit tricky on
+> > > > > life cycle management and also incompatible with SIOV...
+> > > > 
+> > > > One thing that I am not very clear here: since both vRID and dev_id
+> > > > are given by the VMM, shouldn't it already know the mapping if the
+> > > > point is to translate (pRID->)dev_id->vRID?
+> > > > 
+> > > 
+> > > it's true for current Qemu.
+> > > 
+> > > but there is plan to support Qemu accepting a fd passed by Libvirt.
+> > > In that case Qemu even doesn't see the sysfs path hence is not
+> > > aware of pRID. otherwise yes we could leave the translation to
+> > > VMM instead.
+> > 
+> > I think I misread Yi's narrative: dev_id is a working approach
+> > for VMM to convert to a vRID, while he is asking for a better
+> > alternative :)
 > 
-> Acked-by: Robin Murphy <robin.murphy@arm.com>
-> Acked-by: Joerg Roedel <jroedel@suse.de>
-> Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-> ---
-Reviewed-by: Konrad Dybcio <konrad.dybcio@linaro.org>
+> In concept, dev_id works, but in reality we have problem to get a dev_id
+> for a given device in intel iommu driver, hence I'm asking for help here. :)
 
-Konrad
+Yea, I got that.
+
+Would it be possible for us to postpone this error report in the
+vtd driver?
+
+Jason is taking vacation, so he'll unlikely be very active until
+the new year, although he would probably spare some time taking
+the cache_invalidate series once it's mature.
+
+If the final solution is to use pRID<->vRID mappings for vtd too,
+we'd likely need the viommu/dev_set_virtual_id series that I am
+still working on, which certainly won't make it to this cycle.
+
+Thanks
+Nic
