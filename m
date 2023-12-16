@@ -1,49 +1,49 @@
-Received: from mail-ej1-f41.google.com (mail-ej1-f41.google.com [209.85.218.41])
+Received: from mail-ej1-f48.google.com (mail-ej1-f48.google.com [209.85.218.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 653B148CE6
-	for <iommu@lists.linux.dev>; Fri, 15 Dec 2023 23:54:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A266156384
+	for <iommu@lists.linux.dev>; Sat, 16 Dec 2023 00:00:21 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="EibNce0M"
-Received: by mail-ej1-f41.google.com with SMTP id a640c23a62f3a-9fa2714e828so145766466b.1
-        for <iommu@lists.linux.dev>; Fri, 15 Dec 2023 15:54:58 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="zMu3sdfA"
+Received: by mail-ej1-f48.google.com with SMTP id a640c23a62f3a-a1c8512349dso145359166b.2
+        for <iommu@lists.linux.dev>; Fri, 15 Dec 2023 16:00:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1702684497; x=1703289297; darn=lists.linux.dev;
+        d=linaro.org; s=google; t=1702684820; x=1703289620; darn=lists.linux.dev;
         h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
          :to:content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=BmSdErHsr1zbuomX2DsSYiMRXQ5ZJPIl91wZ8zgMNQI=;
-        b=EibNce0MNwKlaHtjts5Oob1v1eT9Dg8+nLHHljApAiuJEy9xHScdZd4+UgNesExdOP
-         6t93ody7xTqHd7RdDqFaijaw31pzq9XaMkaijj5EyEzbZqXLItQ7cCpJfGWnjlbMTxCF
-         DbdA76WNCS2oh1t8omajeYyE1nHL2o3OM5Lr2v8D35cgGz7SHBlhcDdKErXx+Z28lAA6
-         28LiQb0fHHiQsGn45x1Ri3U1AyGFBn841mIoLkXqoWyH3+thqqcD3p1SxkpKYGMiaF06
-         jFhf8joxXflWmudaY/RPYHzfZKkHB/vP3OsSVz0RW0B1l30NuNyCjOvpnaQWUuA6oY1H
-         /bgQ==
+        bh=sN0lvoDPfS7i150aa8oqtPzHJovkS24N6+5HgMNju2w=;
+        b=zMu3sdfAPLPf4JfZsvcIgPIr0iisqFZhNYHoLYWncW0Y3uL4H95LRzxtPYjGM6PgCL
+         xV1WcfZ9LxQuY6G680hEILNks75Z56O9VhETdSi+1qVcc0lgfY1zMRs/7CM7dzayLPg1
+         dnY2g2DA79tf7JUgij42x23bkVNebkiKgY8iv6hgHaSA0z0V+MSqoraztJ000plqb/s+
+         nSPPr+WBjDAwvUYYzkoatz0RgJmeTnWQCPkvto974Yi2mITzJ8/MXAzLIRhMfqifYssg
+         0XoJRTdfzpxd4aDRbm6Mwn3bSHHRKZuibxejYVTaTxYV/8DVwfRguLti2DBVQ/kBqNoV
+         Vfsw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1702684497; x=1703289297;
+        d=1e100.net; s=20230601; t=1702684820; x=1703289620;
         h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
          :to:content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=BmSdErHsr1zbuomX2DsSYiMRXQ5ZJPIl91wZ8zgMNQI=;
-        b=NOV03J+VW/VtJhCOHscXCQMmTpe2Hpt/1gtn0ZcIEAJcihC8c06MZebG5sLuoy1KgF
-         DzZHy5OFQk/1R05fmBZ68SSdxnWWfUrMp7zESRVIwAY8US9ewmgLfIQhC3CQtOjooVUZ
-         7fR4bCn9DYx4XF0sXQx00W/hUuAfXiZowuAqXdXN5o7ONQ+OKwqLWyTkLGUFlDwczSgK
-         fOUbtV3+MRRczAmswDw+/NJDP+jYVapAg/HXw3j5iuB2ZiR2jc1y45gUpvxveTr0iJis
-         s6BX7DG9IFAs+4974FVwUjEl9I71h+vZQdzyp2Nkw5NfLYhS8yLSOOURYCwEa2VMgb9y
-         pcJg==
-X-Gm-Message-State: AOJu0YzgK+ZrRh1RgjLpEU46f8Rttx3GVL5ZLShQV9nIsTQKsm9k8j1+
-	oUfnbtGeSs1UQF1hHZ9q1P6Bew==
-X-Google-Smtp-Source: AGHT+IH4v3xngaVt3yd1odymJDcdKLFuUIZTg3xffMi+MVG4yX+awGAjWpiiizyjykH9t1C4wXVbFg==
-X-Received: by 2002:a17:906:41:b0:a23:b67:cb1b with SMTP id 1-20020a170906004100b00a230b67cb1bmr2019929ejg.17.1702684496604;
-        Fri, 15 Dec 2023 15:54:56 -0800 (PST)
+        bh=sN0lvoDPfS7i150aa8oqtPzHJovkS24N6+5HgMNju2w=;
+        b=RnZD0OPGbaGtSOJLt2MU+diJ4ad/TR71hbMWdgrfFmL1igv/dsQflgCj2AKUK1kqWL
+         3JjQueLLSAFnYZwcmyvQenx63/CKlMSLf8RPNZtP4TANwG0Y4qoJqAZYZh0jGJofFMr1
+         sgkTgq+Ynrh9A/xFITDWe07jUhHpbRQV+AoXoIiYxHTy/o57sYVMSnMnwgPWHAmBwZPj
+         RvvvUL7ilRmTNgPeyI7+zM9dgrT50/Zsd9H609oAQVHTa4Euv8tld0ccJkyXViVZrqIu
+         eWOfezi+4SBFOVbtWjQQ4bl47ZlHpMYaEBBkdRrmTCemlkdinksn/nRA2hycYbPhijJE
+         rZAQ==
+X-Gm-Message-State: AOJu0Yxybb0uCsk5yiaZELMmGtjYLaC3T03HmE8GQu9zmWap5+zFqHsH
+	yBBCOGYKx1bNfaquIStPqo6ZJA==
+X-Google-Smtp-Source: AGHT+IG8MdgYoGZ3DHrSECZ1F0U1XNTXqNeUPduzwiH4CmH5pEbm1spSlLj5YGFqele1Hlqsqxi5uw==
+X-Received: by 2002:a17:907:869e:b0:a1e:a:12d2 with SMTP id qa30-20020a170907869e00b00a1e000a12d2mr8816400ejc.77.1702684819922;
+        Fri, 15 Dec 2023 16:00:19 -0800 (PST)
 Received: from [192.168.199.59] (178235179137.dynamic-4-waw-k-1-3-0.vectranet.pl. [178.235.179.137])
-        by smtp.gmail.com with ESMTPSA id tz4-20020a170907c78400b00a1aad4d92dbsm11210558ejc.123.2023.12.15.15.54.53
+        by smtp.gmail.com with ESMTPSA id mb8-20020a170906eb0800b00a1de512fa1fsm11201130ejb.186.2023.12.15.16.00.18
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 15 Dec 2023 15:54:56 -0800 (PST)
-Message-ID: <3c7b8c2c-7174-4ced-8954-5a249f792c1e@linaro.org>
-Date: Sat, 16 Dec 2023 00:54:52 +0100
+        Fri, 15 Dec 2023 16:00:19 -0800 (PST)
+Message-ID: <07e24570-4041-430f-b51e-6ac535218a30@linaro.org>
+Date: Sat, 16 Dec 2023 01:00:17 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -51,20 +51,17 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 5/5] iommu/arm-smmu: re-enable context caching in smmu
- reset operation
+Subject: Re: [PATCH v4] dt-bindings: iommu: Convert msm,iommu-v0 to yaml
 Content-Language: en-US
-To: Bibek Kumar Patro <quic_bibekkum@quicinc.com>, will@kernel.org,
- robin.murphy@arm.com, joro@8bytes.org, dmitry.baryshkov@linaro.org,
- jsnitsel@redhat.com, quic_bjorande@quicinc.com, mani@kernel.org,
- quic_eberman@quicinc.com, robdclark@chromium.org,
- u.kleine-koenig@pengutronix.de, robh@kernel.org, vladimir.oltean@nxp.com,
- quic_pkondeti@quicinc.com, quic_molvera@quicinc.com
-Cc: linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- qipl.kernel.upstream@quicinc.com
-References: <20231215101827.30549-1-quic_bibekkum@quicinc.com>
- <20231215101827.30549-6-quic_bibekkum@quicinc.com>
+To: David Heidelberg <david@ixit.cz>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Conor Dooley <conor+dt@kernel.org>, Andy Gross <agross@kernel.org>,
+ Bjorn Andersson <andersson@kernel.org>
+Cc: iommu@lists.linux.dev, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org
+References: <20231215233034.95789-1-david@ixit.cz>
 From: Konrad Dybcio <konrad.dybcio@linaro.org>
 Autocrypt: addr=konrad.dybcio@linaro.org; keydata=
  xsFNBF9ALYUBEADWAhxdTBWrwAgDQQzc1O/bJ5O7b6cXYxwbBd9xKP7MICh5YA0DcCjJSOum
@@ -101,55 +98,112 @@ Autocrypt: addr=konrad.dybcio@linaro.org; keydata=
  bGqMHex48FVZhexNPYOd58EY9/7mL5u0sJmo+jTeb4JBgIbFPJCFyng4HwbniWgQJZ1WqaUC
  nas9J77uICis2WH7N8Bs9jy0wQYezNzqS+FxoNXmDQg2jetX8en4bO2Di7Pmx0jXA4TOb9TM
  izWDgYvmBE8=
-In-Reply-To: <20231215101827.30549-6-quic_bibekkum@quicinc.com>
+In-Reply-To: <20231215233034.95789-1-david@ixit.cz>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 15.12.2023 11:18, Bibek Kumar Patro wrote:
-> Default MMU-500 reset operation disables context caching in
-> prefetch buffer. It is however expected for context banks using
-> the ACTLR register to retain their prefetch value during reset
-> and runtime suspend.
+On 16.12.2023 00:30, David Heidelberg wrote:
+> Convert Qualcomm IOMMU v0 implementation to yaml format.
 > 
-> Replace default MMU-500 reset operation with Qualcomm specific reset
-> operation which envelope the default reset operation and re-enables
-> context caching in prefetch buffer for Qualcomm SoCs.
-> 
-> Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+> Signed-off-by: David Heidelberg <david@ixit.cz>
 > ---
-This probably deserves a fixes tag, but I can't find a good commit for
-it, so I guess not having it is fine as well.
+[...]
 
-Also, since it seems to be independent from the rest of the patches, please
-reorder it to become patch 1 in the next spin, so that it can perhaps be
-easily picked up independently of the rest.
+> +description: >
+Not sure if > is necessary
 
->  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 23 +++++++++++++++++++---
->  1 file changed, 20 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> index c8f5dd4186b7..70d2a5d43993 100644
-> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> @@ -516,11 +516,28 @@ static int qcom_smmu_def_domain_type(struct device *dev)
->  	return match ? IOMMU_DOMAIN_IDENTITY : 0;
->  }
-> 
-> +static int qcom_smmu500_reset(struct arm_smmu_device *smmu)
-> +{
-> +	int i;
-> +	u32 reg;
-That's rather nitty/codestyle-y, but:
-
-- reverse Christmas tree would be nice (it's in a week! :D)
-- "reg" to me sounds like "register address", "val" is used widely for
-  register values
-
+> +  The MSM IOMMU is an implementation compatible with the ARM VMSA short
+> +  descriptor page tables. It provides address translation for bus masters
+> +  outside of the CPU, each connected to the IOMMU through a port called micro-TLB.
 > +
-> +	arm_mmu500_reset(smmu);
-We should check the return value here, in case the function is modified
-some day in a way that makes it return something else than 0
+> +properties:
+> +  compatible:
+> +    const: qcom,apq8064-iommu
+> +
+> +  clocks:
+> +    items:
+> +      - description: interface clock for register accesses
+> +      - description: functional clock for bus accesses
+> +
+> +  clock-names:
+> +    items:
+> +      - const: smmu_pclk
+> +      - const: iommu_clk
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  interrupts:
+> +    description: Specifiers for the MMU fault interrupts.
+> +    minItems: 1
+> +    items:
+> +      - description: non-secure mode interrupt
+> +      - description: secure mode interrupt (for instances which supports it)
+> +
+> +  "#iommu-cells":
+> +    const: 1
+> +    description: |
+| may not be necessary
+> +      The first cell is a phandle to the IOMMU and
+> +      the second cell is the stream id.
+Weird wrapping
 
-LGTM otherwise!
+> +      A single master device can be connected to more than one iommu
+> +      and multiple contexts in each of the iommu.
+> +      So multiple entries are required to list all the iommus and
+> +      the stream ids that the master is connected to.
+> +
+> +  qcom,ncb:
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+> +    description: The total number of context banks in the IOMMU.
+> +
+> +required:
+> +  - clocks
+> +  - clock-names
+> +  - reg
+> +  - interrupts
+> +  - qcom,ncb
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/clock/qcom,mmcc-msm8960.h>
+> +
+> +    iommu@7500000 {
+> +            compatible = "qcom,apq8064-iommu";
+> +            #iommu-cells = <1>;
+> +            clock-names =
+> +                "smmu_pclk",
+> +                "iommu_clk";
+> +            clocks =
+> +                <&clk SMMU_AHB_CLK>,
+> +                <&clk MDP_AXI_CLK>;
+> +            reg = <0x07500000 0x100000>;
+> +            interrupts =
+> +                <0 63 0>,
+> +                <0 64 0>;
+> +            qcom,ncb = <2>;
+2012 codestyle :D
+
+Please update to:
+
+iommu@7500000 {
+	compatible = "qcom,apq8064-iommu";
+	reg = <0x07500000 0x100000>;
+	interrupts = <GIC_SPI 63 IRQ_TYPE_NONE>, //preferably fix this TYPE_NONE
+		     <GIC_SPI 64 IRQ_TYPE_NONE>;
+	clocks = <&clk SMMU_AHB_CLK>,
+		 <&clk MDP_AXI_CLK>;
+	clock-names = "smmu_pclk",
+		      "iommu_clk";
+	#iommu-cells = <1>;
+	qcom,ncb = <2>;
+};
+
++ Krzysztof would likely suggest to reorder the definitions and occurences
+in required: to match this /\
+
+Thanks for taking care of this old junk!
 
 Konrad
