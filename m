@@ -1,49 +1,49 @@
-Received: from mail-ej1-f48.google.com (mail-ej1-f48.google.com [209.85.218.48])
+Received: from mail-ej1-f42.google.com (mail-ej1-f42.google.com [209.85.218.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A266156384
-	for <iommu@lists.linux.dev>; Sat, 16 Dec 2023 00:00:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B0B0883D
+	for <iommu@lists.linux.dev>; Sat, 16 Dec 2023 00:03:12 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="zMu3sdfA"
-Received: by mail-ej1-f48.google.com with SMTP id a640c23a62f3a-a1c8512349dso145359166b.2
-        for <iommu@lists.linux.dev>; Fri, 15 Dec 2023 16:00:21 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="rgviHEK1"
+Received: by mail-ej1-f42.google.com with SMTP id a640c23a62f3a-a1f8a1e9637so214052166b.1
+        for <iommu@lists.linux.dev>; Fri, 15 Dec 2023 16:03:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1702684820; x=1703289620; darn=lists.linux.dev;
+        d=linaro.org; s=google; t=1702684990; x=1703289790; darn=lists.linux.dev;
         h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
          :to:content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=sN0lvoDPfS7i150aa8oqtPzHJovkS24N6+5HgMNju2w=;
-        b=zMu3sdfAPLPf4JfZsvcIgPIr0iisqFZhNYHoLYWncW0Y3uL4H95LRzxtPYjGM6PgCL
-         xV1WcfZ9LxQuY6G680hEILNks75Z56O9VhETdSi+1qVcc0lgfY1zMRs/7CM7dzayLPg1
-         dnY2g2DA79tf7JUgij42x23bkVNebkiKgY8iv6hgHaSA0z0V+MSqoraztJ000plqb/s+
-         nSPPr+WBjDAwvUYYzkoatz0RgJmeTnWQCPkvto974Yi2mITzJ8/MXAzLIRhMfqifYssg
-         0XoJRTdfzpxd4aDRbm6Mwn3bSHHRKZuibxejYVTaTxYV/8DVwfRguLti2DBVQ/kBqNoV
-         Vfsw==
+        bh=bZ7CYe2npAANXdtUrU9jI0jn87kP/74n2PFavC5qkjA=;
+        b=rgviHEK1aZUd1P3ApLtxleMO4usyeok+W72vGA2gpz+v2zwyTXrH6IX4fxOk29rmAk
+         8Vl7g6QmFl5VXiUd071oW5wrdCVnITEdpobiEPIyi4jxVMN5QBfx3ph/nfvgziqLveh0
+         lFHNa4R1i4ookfPY3xR9NiXFOAMeULrC9QW5D+6uGYM5c/oCkq2F30fn7Xoa4mPF7CGI
+         Nh2utRIVL4soKn2EeUHvoNz8BQ/YB91Fat6ZZueFDw69M6m34Pe4b4egN2SAxvkYx2Ys
+         60D0JaPoMukoaBqGw4/ZfsvxXUh1ahbAsKSnJWjybAOJueAAfAqtHjhzRPks8tYvxtXt
+         chPQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1702684820; x=1703289620;
+        d=1e100.net; s=20230601; t=1702684990; x=1703289790;
         h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
          :to:content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=sN0lvoDPfS7i150aa8oqtPzHJovkS24N6+5HgMNju2w=;
-        b=RnZD0OPGbaGtSOJLt2MU+diJ4ad/TR71hbMWdgrfFmL1igv/dsQflgCj2AKUK1kqWL
-         3JjQueLLSAFnYZwcmyvQenx63/CKlMSLf8RPNZtP4TANwG0Y4qoJqAZYZh0jGJofFMr1
-         sgkTgq+Ynrh9A/xFITDWe07jUhHpbRQV+AoXoIiYxHTy/o57sYVMSnMnwgPWHAmBwZPj
-         RvvvUL7ilRmTNgPeyI7+zM9dgrT50/Zsd9H609oAQVHTa4Euv8tld0ccJkyXViVZrqIu
-         eWOfezi+4SBFOVbtWjQQ4bl47ZlHpMYaEBBkdRrmTCemlkdinksn/nRA2hycYbPhijJE
-         rZAQ==
-X-Gm-Message-State: AOJu0Yxybb0uCsk5yiaZELMmGtjYLaC3T03HmE8GQu9zmWap5+zFqHsH
-	yBBCOGYKx1bNfaquIStPqo6ZJA==
-X-Google-Smtp-Source: AGHT+IG8MdgYoGZ3DHrSECZ1F0U1XNTXqNeUPduzwiH4CmH5pEbm1spSlLj5YGFqele1Hlqsqxi5uw==
-X-Received: by 2002:a17:907:869e:b0:a1e:a:12d2 with SMTP id qa30-20020a170907869e00b00a1e000a12d2mr8816400ejc.77.1702684819922;
-        Fri, 15 Dec 2023 16:00:19 -0800 (PST)
+        bh=bZ7CYe2npAANXdtUrU9jI0jn87kP/74n2PFavC5qkjA=;
+        b=M5qB0V/wdSZDJ/o41pxOT/zLdmZmBs0r5PzFIPvzlyh+TgRk6TgUSw65Dw6CGYYsie
+         ZbWfozYXr8WYtOwFYncsdleqak0CDNf/ee9JnCJzysJnFVP/0mfVMqPa3Ujnetiv8KE1
+         NPV+woPqL8NQki+EN6Fs5JyBsnqYfj5t3Ao7eFKneT9PZXhDZFceENtTvCG1uAwjDa/x
+         VsfdMuVDaFXpwYu51ceAwZC9Pn/85tEcGWwT9+4NDvTzxGBjCBmngCvSIVx65j9ljAro
+         9CvIHJIYFvD4rY4yWTVgqNCpEPcQ8RAUM3JkgBaqxwR2NptLCXVySfQC9hhjd5CNM2Y/
+         5OXA==
+X-Gm-Message-State: AOJu0Yw46w3GcxNxYLs+GXOmmGtirsAFbKC5dOq27ta9Xf/G5L33O7x6
+	baSQ6Vi/j0tdPVs5AN/vrsNCBA==
+X-Google-Smtp-Source: AGHT+IFFLbaw5X4Tftfj22SLofa2om+UIAlecqqdrks7DNY0JT7P+X493M9L3tWYA/1rhgG6AVIN0A==
+X-Received: by 2002:a17:906:55:b0:a1b:7700:2c0b with SMTP id 21-20020a170906005500b00a1b77002c0bmr13876599ejg.19.1702684990512;
+        Fri, 15 Dec 2023 16:03:10 -0800 (PST)
 Received: from [192.168.199.59] (178235179137.dynamic-4-waw-k-1-3-0.vectranet.pl. [178.235.179.137])
-        by smtp.gmail.com with ESMTPSA id mb8-20020a170906eb0800b00a1de512fa1fsm11201130ejb.186.2023.12.15.16.00.18
+        by smtp.gmail.com with ESMTPSA id tm6-20020a170907c38600b00a1ca6f5f189sm11420733ejc.179.2023.12.15.16.03.08
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 15 Dec 2023 16:00:19 -0800 (PST)
-Message-ID: <07e24570-4041-430f-b51e-6ac535218a30@linaro.org>
-Date: Sat, 16 Dec 2023 01:00:17 +0100
+        Fri, 15 Dec 2023 16:03:10 -0800 (PST)
+Message-ID: <1eee8bae-59f0-4066-9d04-8c3a5f750d3a@linaro.org>
+Date: Sat, 16 Dec 2023 01:03:07 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -51,17 +51,24 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4] dt-bindings: iommu: Convert msm,iommu-v0 to yaml
+Subject: Re: [PATCH v4 3/5] iommu/arm-smmu: add ACTLR data and support for
+ SM8550
 Content-Language: en-US
-To: David Heidelberg <david@ixit.cz>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Conor Dooley <conor+dt@kernel.org>, Andy Gross <agross@kernel.org>,
- Bjorn Andersson <andersson@kernel.org>
-Cc: iommu@lists.linux.dev, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org
-References: <20231215233034.95789-1-david@ixit.cz>
+To: Robin Murphy <robin.murphy@arm.com>,
+ Bibek Kumar Patro <quic_bibekkum@quicinc.com>,
+ Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Cc: will@kernel.org, joro@8bytes.org, jsnitsel@redhat.com,
+ quic_bjorande@quicinc.com, mani@kernel.org, quic_eberman@quicinc.com,
+ robdclark@chromium.org, u.kleine-koenig@pengutronix.de, robh@kernel.org,
+ vladimir.oltean@nxp.com, quic_pkondeti@quicinc.com,
+ quic_molvera@quicinc.com, linux-arm-msm@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, qipl.kernel.upstream@quicinc.com
+References: <20231215101827.30549-1-quic_bibekkum@quicinc.com>
+ <20231215101827.30549-4-quic_bibekkum@quicinc.com>
+ <CAA8EJppcsr1sbeD1fK0nZ+rASABNcetBK3yMvaP7OiA4JPwskw@mail.gmail.com>
+ <c9493c5f-ccf8-4e21-b00c-5fbc2a5f2edb@quicinc.com>
+ <b7f2bbf9-fb5a-430d-aa32-3a220b46c2f0@arm.com>
 From: Konrad Dybcio <konrad.dybcio@linaro.org>
 Autocrypt: addr=konrad.dybcio@linaro.org; keydata=
  xsFNBF9ALYUBEADWAhxdTBWrwAgDQQzc1O/bJ5O7b6cXYxwbBd9xKP7MICh5YA0DcCjJSOum
@@ -98,112 +105,74 @@ Autocrypt: addr=konrad.dybcio@linaro.org; keydata=
  bGqMHex48FVZhexNPYOd58EY9/7mL5u0sJmo+jTeb4JBgIbFPJCFyng4HwbniWgQJZ1WqaUC
  nas9J77uICis2WH7N8Bs9jy0wQYezNzqS+FxoNXmDQg2jetX8en4bO2Di7Pmx0jXA4TOb9TM
  izWDgYvmBE8=
-In-Reply-To: <20231215233034.95789-1-david@ixit.cz>
+In-Reply-To: <b7f2bbf9-fb5a-430d-aa32-3a220b46c2f0@arm.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 16.12.2023 00:30, David Heidelberg wrote:
-> Convert Qualcomm IOMMU v0 implementation to yaml format.
+On 15.12.2023 13:54, Robin Murphy wrote:
+> On 2023-12-15 12:20 pm, Bibek Kumar Patro wrote:
+>>
+>>
+>> On 12/15/2023 4:14 PM, Dmitry Baryshkov wrote:
+>>> On Fri, 15 Dec 2023 at 12:19, Bibek Kumar Patro
+>>> <quic_bibekkum@quicinc.com> wrote:
+>>>>
+>>>> Add ACTLR data table for SM8550 along with support for
+>>>> same including SM8550 specific implementation operations.
+>>>>
+>>>> Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+>>>> ---
+>>>>   drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 89 ++++++++++++++++++++++
+>>>>   1 file changed, 89 insertions(+)
+>>>>
+>>>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>>> index cb49291f5233..d2006f610243 100644
+>>>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>>> @@ -20,6 +20,85 @@ struct actlr_config {
+>>>>          u32 actlr;
+>>>>   };
+>>>>
+>>>> +/*
+>>>> + * SMMU-500 TRM defines BIT(0) as CMTLB (Enable context caching in the
+>>>> + * macro TLB) and BIT(1) as CPRE (Enable context caching in the prefetch
+>>>> + * buffer). The remaining bits are implementation defined and vary across
+>>>> + * SoCs.
+>>>> + */
+>>>> +
+>>>> +#define PREFETCH_DEFAULT       0
+>>>> +#define PREFETCH_SHALLOW       BIT(8)
+>>>> +#define PREFETCH_MODERATE      BIT(9)
+>>>> +#define PREFETCH_DEEP          (BIT(9) | BIT(8))
+>>>
+>>> I thin the following might be more correct:
+>>>
+>>> #include <linux/bitfield.h>
+>>>
+>>> #define PREFETCH_MASK GENMASK(9, 8)
+>>> #define PREFETCH_DEFAULT FIELD_PREP(PREFETCH_MASK, 0)
+>>> #define PREFETCH_SHALLOW FIELD_PREP(PREFETCH_MASK, 1)
+>>> #define PREFETCH_MODERATE FIELD_PREP(PREFETCH_MASK, 2)
+>>> #define PREFETCH_DEEP FIELD_PREP(PREFETCH_MASK, 3)
+>>>
+>>
+>> Ack, thanks for this suggestion. Let me try this out using
+>> GENMASK. Once tested, will take care of this in next version.
 > 
-> Signed-off-by: David Heidelberg <david@ixit.cz>
-> ---
-[...]
+> FWIW the more typical usage would be to just define the named macros for the raw field values, then put the FIELD_PREP() at the point of use. However in this case that's liable to get pretty verbose, so although I'm usually a fan of bitfield.h, the most readable option here might actually be to stick with simpler definitions of "(0 << 8)", "(1 << 8)", etc. However it's not really a big deal either way, and I defer to whatever Dmitry and Konrad prefer, since they're the ones looking after arm-smmu-qcom the most :)
+My 5 cents would be to just use the "common" style of doing this, so:
 
-> +description: >
-Not sure if > is necessary
+#define ACTRL_PREFETCH	GENMASK(9, 8)
+ #define PREFETCH_DEFAULT 0
+ #define PREFETCH_SHALLOW 1
+ #define PREFETCH_MODERATE 2
+ #define PREFETCH_DEEP 3
 
-> +  The MSM IOMMU is an implementation compatible with the ARM VMSA short
-> +  descriptor page tables. It provides address translation for bus masters
-> +  outside of the CPU, each connected to the IOMMU through a port called micro-TLB.
-> +
-> +properties:
-> +  compatible:
-> +    const: qcom,apq8064-iommu
-> +
-> +  clocks:
-> +    items:
-> +      - description: interface clock for register accesses
-> +      - description: functional clock for bus accesses
-> +
-> +  clock-names:
-> +    items:
-> +      - const: smmu_pclk
-> +      - const: iommu_clk
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  interrupts:
-> +    description: Specifiers for the MMU fault interrupts.
-> +    minItems: 1
-> +    items:
-> +      - description: non-secure mode interrupt
-> +      - description: secure mode interrupt (for instances which supports it)
-> +
-> +  "#iommu-cells":
-> +    const: 1
-> +    description: |
-| may not be necessary
-> +      The first cell is a phandle to the IOMMU and
-> +      the second cell is the stream id.
-Weird wrapping
+and then use 
 
-> +      A single master device can be connected to more than one iommu
-> +      and multiple contexts in each of the iommu.
-> +      So multiple entries are required to list all the iommus and
-> +      the stream ids that the master is connected to.
-> +
-> +  qcom,ncb:
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-> +    description: The total number of context banks in the IOMMU.
-> +
-> +required:
-> +  - clocks
-> +  - clock-names
-> +  - reg
-> +  - interrupts
-> +  - qcom,ncb
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/clock/qcom,mmcc-msm8960.h>
-> +
-> +    iommu@7500000 {
-> +            compatible = "qcom,apq8064-iommu";
-> +            #iommu-cells = <1>;
-> +            clock-names =
-> +                "smmu_pclk",
-> +                "iommu_clk";
-> +            clocks =
-> +                <&clk SMMU_AHB_CLK>,
-> +                <&clk MDP_AXI_CLK>;
-> +            reg = <0x07500000 0x100000>;
-> +            interrupts =
-> +                <0 63 0>,
-> +                <0 64 0>;
-> +            qcom,ncb = <2>;
-2012 codestyle :D
+| FIELD_PREP(ACTRL_PREFETCH, PREFETCH_x)
 
-Please update to:
-
-iommu@7500000 {
-	compatible = "qcom,apq8064-iommu";
-	reg = <0x07500000 0x100000>;
-	interrupts = <GIC_SPI 63 IRQ_TYPE_NONE>, //preferably fix this TYPE_NONE
-		     <GIC_SPI 64 IRQ_TYPE_NONE>;
-	clocks = <&clk SMMU_AHB_CLK>,
-		 <&clk MDP_AXI_CLK>;
-	clock-names = "smmu_pclk",
-		      "iommu_clk";
-	#iommu-cells = <1>;
-	qcom,ncb = <2>;
-};
-
-+ Krzysztof would likely suggest to reorder the definitions and occurences
-in required: to match this /\
-
-Thanks for taking care of this old junk!
+it can get verbose, but.. arguably that's good, since you really want
+to make sure the right bits are set here
 
 Konrad
