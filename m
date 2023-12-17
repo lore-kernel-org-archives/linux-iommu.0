@@ -1,227 +1,226 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2081.outbound.protection.outlook.com [40.107.93.81])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8149D32C94
-	for <iommu@lists.linux.dev>; Sun, 17 Dec 2023 11:49:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4EACB44361
+	for <iommu@lists.linux.dev>; Sun, 17 Dec 2023 13:03:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="T/SJnO1+"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1702813757; x=1734349757;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=cWXn+TxaT3YR7lZfs1eo26jXNNMGOmRyXKjKAQbJKyc=;
-  b=T/SJnO1+HGUDvfu9AN4Mv/jJJD5aN26lgdmo4hAEAsaGx3dhNCa4S+qF
-   0pGjZOcXesELIErHnyvioKVgNcsBZiwjzuYAu02/KGov2evmry0lUMwM+
-   rGF7Iys4OacY1d/EY2YRw+RK9ttkIrwTx/nseCKjSw25CwGLHdwSTifXh
-   6IdzaZ9Pixl00yaw/FHQCOSJ6Iuv4gxbsJjmSJESKxfMtCnAfl2E+uqLg
-   /dOn0gCHlND4BbgYNxNaztwmNleAoKsDRUR96ndTUTbOHfTd8KmubTOdg
-   UxwNDEkf4yoh2gXYHirfW/a/Xtj0UkIcMBLphaCwqh2/qfnTqwBCsPHvY
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10926"; a="2599478"
-X-IronPort-AV: E=Sophos;i="6.04,283,1695711600"; 
-   d="scan'208";a="2599478"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Dec 2023 03:49:16 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10926"; a="751454185"
-X-IronPort-AV: E=Sophos;i="6.04,283,1695711600"; 
-   d="scan'208";a="751454185"
-Received: from ply01-vm-store.bj.intel.com ([10.238.153.201])
-  by orsmga006.jf.intel.com with ESMTP; 17 Dec 2023 03:49:11 -0800
-From: Ethan Zhao <haifeng.zhao@linux.intel.com>
-To: bhelgaas@google.com,
-	baolu.lu@linux.intel.com,
-	dwmw2@infradead.org,
-	will@kernel.org,
-	robin.murphy@arm.com,
-	lukas@wunner.de
-Cc: linux-pci@vger.kernel.org,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH v3 2/2] iommu/vt-d: don's issue devTLB flush request when device is disconnected
-Date: Sun, 17 Dec 2023 06:49:02 -0500
-Message-Id: <20231217114902.3836260-3-haifeng.zhao@linux.intel.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20231217114902.3836260-1-haifeng.zhao@linux.intel.com>
-References: <20231217114902.3836260-1-haifeng.zhao@linux.intel.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="H4L88R/h"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=T0dUi1Td3GD3oYnhyhIfrk12NCdnM/Pj4z+09v2zjijk4tsMD+AmpWZlhERofUIamzRSnk3Zbod5KIxU1szR4VDL4DyOeU8xiHCTzO3ODkZuczKVuS6ojpU6mfmielYxdTrIhK7gPGQlZkUZIOSGuXjQ/fiFj1IUdb45PQ8uQXzJOoQ1ab1wh982DM1BGSQ5kauXUHUFj0Ta4fZ+aQevSDKyyp6lyngr/3AHG0cRhfvcwRh0+kYFFRngGmXfP7xU8ZNpod4rMn1WZVMT4HFCNxOgdodxEors+vhSbw3DucC3Mn0lJ+plSNDkk7QF/ovzBG/JmNxDLRMr8h38S4U9cQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=dOqQH6Hjex+J5dK56vzsttN/lBzlnnMQ3i1uyMVp5BM=;
+ b=bCOlrWrp25djPu7D7vKgFXs7kQkSgup5v8SYc6BEKp23c0VNFiIjBdL6DGcs4811/N6hobjJgVN/aQ0BycYEHq0pmlixD8zT22SZlLOgwK7WujTAeYZ4jWztectRA5b6x1nA6D8E2GA11QTfyA12fBejRBgolxz0tblXwm7//GHiOKtGd9T4O88gsBBQZPo8B34qGDOl53UQzOkfn4llbLG62CmFixL9nqBMh7s2sTEfY71XUb+3zioZ3WPW8aXtTk6c2ndN2F9KemeHyVWsloHfmfsI0IiIE66x2xSxQhuTxwnoj/b+Hdv0E4FYmia1Q4QZ+wyKS2Z4bq2c6F3Maw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=dOqQH6Hjex+J5dK56vzsttN/lBzlnnMQ3i1uyMVp5BM=;
+ b=H4L88R/hac1yP0A6glRc33qJMxQBiqgY+TfP73hx9qdTt4lYYfk57iTkqqK9rQGEZOCYD1zVKykSsF7urVMHqDvKON3lby/M0+NJbmF+hr/r6ZR0n7td/27/4JG0a9jdf391yKpDSA8Fm4ho+RuffmkQMmKWmdnOeSwr8e3MLF1hhKnqxNC7Pp4s4uFRdzSbH6wUgME/6MAgu09DtiAeQapv0g4B7ZVw4QvYZbp/2Eqibsk8djBTTCSd56t7wEvAHgsnJBiuIJ2n/CHabKvhyONXqDUD8eldxwINLYqMiYqIAIIEk8YRE6xVQK+qvOluTOLHkAH+9PJEzShDh0rGng==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by DM4PR12MB6448.namprd12.prod.outlook.com (2603:10b6:8:8a::7) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.7091.37; Sun, 17 Dec 2023 13:03:56 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::60d4:c1e3:e1aa:8f93]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::60d4:c1e3:e1aa:8f93%4]) with mapi id 15.20.7091.034; Sun, 17 Dec 2023
+ 13:03:56 +0000
+Date: Sun, 17 Dec 2023 09:03:55 -0400
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Michael Shavit <mshavit@google.com>
+Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+	linux-arm-kernel@lists.infradead.org,
+	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
+	Nicolin Chen <nicolinc@nvidia.com>
+Subject: Re: [PATCH 04/19] iommu/arm-smmu-v3: Make STE programming
+ independent of the callers
+Message-ID: <ZX7xu8jN/rBZ4A/d@nvidia.com>
+References: <0-v1-e289ca9121be+2be-smmuv3_newapi_p1_jgg@nvidia.com>
+ <4-v1-e289ca9121be+2be-smmuv3_newapi_p1_jgg@nvidia.com>
+ <CAKHBV24UGZuG6+J4cybadJCTyf9hN+e_VgAC0NVOPotmEur7SQ@mail.gmail.com>
+ <20231012121616.GF3952@nvidia.com>
+ <CAKHBV27G1PLZ5gkYkOOCZdD9waZOZypkWqk4_HSR4XXGFT-+LA@mail.gmail.com>
+ <20231018130455.GU3952@nvidia.com>
+ <CAKHBV270uJjdj4zeK-NNt+j3TiqoGDdLUQ5uRrLw9PN0ysCDbw@mail.gmail.com>
+ <20231020113918.GD3952@nvidia.com>
+ <CAKHBV274M-DDD+vJgO-k9s4MF=FLhKajPdphfBVofjyOS3vHbA@mail.gmail.com>
+ <CAKHBV24nfdq1q76T+DRQGNYeA-kP7ONnSjDsRFGsQCJVSrSm0w@mail.gmail.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAKHBV24nfdq1q76T+DRQGNYeA-kP7ONnSjDsRFGsQCJVSrSm0w@mail.gmail.com>
+X-ClientProxiedBy: BLAPR05CA0045.namprd05.prod.outlook.com
+ (2603:10b6:208:335::25) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|DM4PR12MB6448:EE_
+X-MS-Office365-Filtering-Correlation-Id: 20003c56-a459-4093-152b-08dbff00a08b
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	Ca8JmlXaLfl5WalxM1K1Fl1L9cGBksPZ5tssU0xmnmNmsgXlrpgC0DCoQMVj9Bk00NJ0FZoJr8xUFJpi8NZU3n4jfU56/YQRoQE9u4blC8FblDkrM6kuJbB7iQIQmtZzvVw5TAvHrAR24FKIgRLDv3oLO9sJLbnsjDb9S1O/V7OSud3aSrOexQgMruclctPUOI+K8+uRhqKlA9SnLmYbVQSjTwZLDpMJgpiqPKteKsM4F1gKzaq5aOWqfFW+D9QBO8eoJcuURSmGay6rGR39sW23GQD3Fo444SK0njdbbj6MD4InWTlsIK1V8jzYheJ9HlKEAKbIXK6qpZ/HlQBpElHqSApqqytYf8T0hAtB9tiVpYIRosiP24zcEjZNotmBXJif4JEjR0+BdINdOZNhV/Hd/lwl5Jh9pYv19nEpzBvg06Jsc96NHmOPw2j6Kc5eOiYxI2KB6KgwOy1Zdyr9tBvI1DAISc4mXmFA2/Oa7CeGAZ2Dw8zeweYxyNWIAKmngQgeQ1eqKpfFvwMRwoOr13ZnVecj+G2CamrJ0yT/ysJQ+ojJSZK2yZgRJkMk8Hvt
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366004)(396003)(136003)(346002)(39860400002)(376002)(230922051799003)(186009)(64100799003)(451199024)(1800799012)(86362001)(36756003)(38100700002)(83380400001)(107886003)(26005)(2616005)(478600001)(6486002)(66556008)(66476007)(54906003)(6916009)(6512007)(6506007)(316002)(2906002)(8936002)(8676002)(4326008)(66946007)(41300700001)(5660300002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?m8wpEyJKjOUSXcXU/zG/Sa8fKAm9fytifjfp/Fbqjj6RuUiS8OuCRSqGkGFz?=
+ =?us-ascii?Q?SN/6TEmGFTWBR2taehWWaTXpYAxm3RUYjvNstp7VoZ4hffKvh/6eKtpIWOIs?=
+ =?us-ascii?Q?kGy/4QUBsTqwZIqV+CizAFFM2kg4l16jjATQBFAtGvZDa8EvQ9FmpFYCnPmp?=
+ =?us-ascii?Q?TK7MGPHT4TLmJ/7wvgfERyynvRJHpXiFAahUffB+x7X+vSzYMGd0epGut6Aq?=
+ =?us-ascii?Q?bk4ohFCSrSH43yu6aB8lSKjce04NvX2RJuhCTmqYGOxJuXKoZ9uKD6D47Pw1?=
+ =?us-ascii?Q?kBwAmvLdmd9hW2OUfK/QQW0mecoDo1wvVLCHcadLmT2/a/8xXOhALIbHbnAj?=
+ =?us-ascii?Q?c68ydma6XoSs8r/dJP4Wa2oyj9SboCZSw7LD/bSwc8x57ctAYJYiuUdzVpHg?=
+ =?us-ascii?Q?pzPpG+jy1FYjStLniB0eRNKopTGrsmX+NEvpd6N1McRIl+kcnf7lOWtUcuY7?=
+ =?us-ascii?Q?3VgI9cIwh1WtmyfIXXoixo90nN668VpVtJgLF3oVCiArIP+woKTV28Hwws8H?=
+ =?us-ascii?Q?yDcgJAJxQyvpKKaXEYngIdBZuk0KAbhKVhB/OHOc3tPA8GnpWXE/5yTep/Da?=
+ =?us-ascii?Q?ltn6GgHsw6otEPVeXD+1gwIPPrZ8ZSsdvKIZWss0g3HaUb0reAEax43q8Gf/?=
+ =?us-ascii?Q?T0bDD65mxpt47OX4mK2VcjjZ1h7ESSQDJGqjXlDKeXkPOkcvoj4rSEvXcM1h?=
+ =?us-ascii?Q?jxXP8b4+Cni99d/XL0dJ32yQMYfGn8gcf1mygazEooRBdw15Q7i6DU3bs4Ve?=
+ =?us-ascii?Q?sEhs5VPVdXm2UBxZPXe6CkQ5vztc31DnSkUWOh8Ed0wfG2dIUlYeYnA20DPS?=
+ =?us-ascii?Q?5RnSN1WpGWZqoB2XdEQSrz5QCr+eab1hpyWSzKFgjwezdFC49Y1nMMl2SiqZ?=
+ =?us-ascii?Q?cY8Cbs+L50Fu6qNwRv4XJvgyIbN3hQImXgVyVBTS4gjXrqDMkmKBSgI4+dQx?=
+ =?us-ascii?Q?framRg8GszA5pRmN6RWn2adn6HTH+rMTSVkFxYkBjqPcjx+bH3Buj6XkNfCa?=
+ =?us-ascii?Q?sOR3IFNGXLklnaHEYtnJa87n2IHPL3iohsz7JZ5FhLDw7a8hVNv+Kyq8c6NA?=
+ =?us-ascii?Q?mUFbCwbXjmQ761+e0UvhmOcuDMNXSb9kWBphr5t5PHxuc+0cf8jWAw2s6nE8?=
+ =?us-ascii?Q?SEjkEQ/3jMn1N2rgWbAL64DiAtQisbDm8GmYoW5NmHU+S3fh9vuh5O/tIMBi?=
+ =?us-ascii?Q?QzE5UKQ9RVaHYY/RnGkDqFJ29VHD/ZOVWVaNKbqpncHkJ3ImDDC2tNHraFk7?=
+ =?us-ascii?Q?e2q0+TBk2d/9MsQ1oPEMTVws+PAbU/1DBxSPpiMhsEhbdv0nzKYMTXSq/ttl?=
+ =?us-ascii?Q?Uzj5ipowgapyypHVncaJOwJtz6sJ65XKBLHSzUIU/ou+4IswEOqu3I+52R3l?=
+ =?us-ascii?Q?I+MFylZJSIbMO2ZWA/1WI3wgmaQ8htxPiEsFcfzQXM+WVWFOby904tYYMNZp?=
+ =?us-ascii?Q?hP/2EGFabJMEX1h8ZSujDKbx02wCFK0qd6Mmx3CfyHwCN6nsMlcqOCY8LY3u?=
+ =?us-ascii?Q?fSsAZa5bAUSP9MgHOTvNr1RkYTkt57kFiotnEvkg4X9uRPgvnG3fMLseQQ9f?=
+ =?us-ascii?Q?/06AxF0ZmIMHW9XUS+k=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 20003c56-a459-4093-152b-08dbff00a08b
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Dec 2023 13:03:56.3199
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: E5xk1aNX9S+L/YKqZG/aizAHPiirPpo3JlZ2Bs7YY74Lbtqwltz0AZUC3rtVOY1w
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB6448
 
-For those endpoint devices connect to system via hotplug capable ports,
-users could request a warm reset to the device by flapping device's link
-through setting the slot's link control register, as pciehpt_ist() DLLSC
-interrupt sequence response, pciehp will unload the device driver and
-then power it off. thus cause an IOMMU devTLB flush request for device to
-be sent and a long time completion/timeout waiting in interrupt context.
+On Sat, Dec 16, 2023 at 04:26:48AM +0800, Michael Shavit wrote:
 
-That would cause following continuous hard lockup warning and system hang
+> Ok, I took a proper stab at trying to unroll the loop on the github
+> version of this patch (v3+)
+> As you suspected, it's not easy to re-use the unrolled version for
+> both STE and CD writing as we'd have to pass in callbacks for syncing
+> the STE/CD and recomputing arm_smmu_{get_ste/cd}_used. 
 
-[ 4211.433662] pcieport 0000:17:01.0: pciehp: Slot(108): Link Down
-[ 4211.433664] pcieport 0000:17:01.0: pciehp: Slot(108): Card not present
-[ 4223.822591] NMI watchdog: Watchdog detected hard LOCKUP on cpu 144
-[ 4223.822622] CPU: 144 PID: 1422 Comm: irq/57-pciehp Kdump: loaded Tainted: G S
-         OE    kernel version xxxx
-[ 4223.822623] Hardware name: vendorname xxxx 666-106,
-BIOS 01.01.02.03.01 05/15/2023
-[ 4223.822623] RIP: 0010:qi_submit_sync+0x2c0/0x490
-[ 4223.822624] Code: 48 be 00 00 00 00 00 08 00 00 49 85 74 24 20 0f 95 c1 48 8b
- 57 10 83 c1 04 83 3c 1a 03 0f 84 a2 01 00 00 49 8b 04 24 8b 70 34 <40> f6 c6 1
-0 74 17 49 8b 04 24 8b 80 80 00 00 00 89 c2 d3 fa 41 39
-[ 4223.822624] RSP: 0018:ffffc4f074f0bbb8 EFLAGS: 00000093
-[ 4223.822625] RAX: ffffc4f040059000 RBX: 0000000000000014 RCX: 0000000000000005
-[ 4223.822625] RDX: ffff9f3841315800 RSI: 0000000000000000 RDI: ffff9f38401a8340
-[ 4223.822625] RBP: ffff9f38401a8340 R08: ffffc4f074f0bc00 R09: 0000000000000000
-[ 4223.822626] R10: 0000000000000010 R11: 0000000000000018 R12: ffff9f384005e200
-[ 4223.822626] R13: 0000000000000004 R14: 0000000000000046 R15: 0000000000000004
-[ 4223.822626] FS:  0000000000000000(0000) GS:ffffa237ae400000(0000)
-knlGS:0000000000000000
-[ 4223.822627] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[ 4223.822627] CR2: 00007ffe86515d80 CR3: 000002fd3000a001 CR4: 0000000000770ee0
-[ 4223.822627] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-[ 4223.822628] DR3: 0000000000000000 DR6: 00000000fffe07f0 DR7: 0000000000000400
-[ 4223.822628] PKRU: 55555554
-[ 4223.822628] Call Trace:
-[ 4223.822628]  qi_flush_dev_iotlb+0xb1/0xd0
-[ 4223.822628]  __dmar_remove_one_dev_info+0x224/0x250
-[ 4223.822629]  dmar_remove_one_dev_info+0x3e/0x50
-[ 4223.822629]  intel_iommu_release_device+0x1f/0x30
-[ 4223.822629]  iommu_release_device+0x33/0x60
-[ 4223.822629]  iommu_bus_notifier+0x7f/0x90
-[ 4223.822630]  blocking_notifier_call_chain+0x60/0x90
-[ 4223.822630]  device_del+0x2e5/0x420
-[ 4223.822630]  pci_remove_bus_device+0x70/0x110
-[ 4223.822630]  pciehp_unconfigure_device+0x7c/0x130
-[ 4223.822631]  pciehp_disable_slot+0x6b/0x100
-[ 4223.822631]  pciehp_handle_presence_or_link_change+0xd8/0x320
-[ 4223.822631]  pciehp_ist+0x176/0x180
-[ 4223.822631]  ? irq_finalize_oneshot.part.50+0x110/0x110
-[ 4223.822632]  irq_thread_fn+0x19/0x50
-[ 4223.822632]  irq_thread+0x104/0x190
-[ 4223.822632]  ? irq_forced_thread_fn+0x90/0x90
-[ 4223.822632]  ? irq_thread_check_affinity+0xe0/0xe0
-[ 4223.822633]  kthread+0x114/0x130
-[ 4223.822633]  ? __kthread_cancel_work+0x40/0x40
-[ 4223.822633]  ret_from_fork+0x1f/0x30
-[ 4223.822633] Kernel panic - not syncing: Hard LOCKUP
-[ 4223.822634] CPU: 144 PID: 1422 Comm: irq/57-pciehp Kdump: loaded Tainted: G S
-         OE     kernel version xxxx
-[ 4223.822634] Hardware name: vendorname xxxx 666-106,
-BIOS 01.01.02.03.01 05/15/2023
-[ 4223.822634] Call Trace:
-[ 4223.822634]  <NMI>
-[ 4223.822635]  dump_stack+0x6d/0x88
-[ 4223.822635]  panic+0x101/0x2d0
-[ 4223.822635]  ? ret_from_fork+0x11/0x30
-[ 4223.822635]  nmi_panic.cold.14+0xc/0xc
-[ 4223.822636]  watchdog_overflow_callback.cold.8+0x6d/0x81
-[ 4223.822636]  __perf_event_overflow+0x4f/0xf0
-[ 4223.822636]  handle_pmi_common+0x1ef/0x290
-[ 4223.822636]  ? __set_pte_vaddr+0x28/0x40
-[ 4223.822637]  ? flush_tlb_one_kernel+0xa/0x20
-[ 4223.822637]  ? __native_set_fixmap+0x24/0x30
-[ 4223.822637]  ? ghes_copy_tofrom_phys+0x70/0x100
-[ 4223.822637]  ? __ghes_peek_estatus.isra.16+0x49/0xa0
-[ 4223.822637]  intel_pmu_handle_irq+0xba/0x2b0
-[ 4223.822638]  perf_event_nmi_handler+0x24/0x40
-[ 4223.822638]  nmi_handle+0x4d/0xf0
-[ 4223.822638]  default_do_nmi+0x49/0x100
-[ 4223.822638]  exc_nmi+0x134/0x180
-[ 4223.822639]  end_repeat_nmi+0x16/0x67
-[ 4223.822639] RIP: 0010:qi_submit_sync+0x2c0/0x490
-[ 4223.822639] Code: 48 be 00 00 00 00 00 08 00 00 49 85 74 24 20 0f 95 c1 48 8b
- 57 10 83 c1 04 83 3c 1a 03 0f 84 a2 01 00 00 49 8b 04 24 8b 70 34 <40> f6 c6 10
- 74 17 49 8b 04 24 8b 80 80 00 00 00 89 c2 d3 fa 41 39
-[ 4223.822640] RSP: 0018:ffffc4f074f0bbb8 EFLAGS: 00000093
-[ 4223.822640] RAX: ffffc4f040059000 RBX: 0000000000000014 RCX: 0000000000000005
-[ 4223.822640] RDX: ffff9f3841315800 RSI: 0000000000000000 RDI: ffff9f38401a8340
-[ 4223.822641] RBP: ffff9f38401a8340 R08: ffffc4f074f0bc00 R09: 0000000000000000
-[ 4223.822641] R10: 0000000000000010 R11: 0000000000000018 R12: ffff9f384005e200
-[ 4223.822641] R13: 0000000000000004 R14: 0000000000000046 R15: 0000000000000004
-[ 4223.822641]  ? qi_submit_sync+0x2c0/0x490
-[ 4223.822642]  ? qi_submit_sync+0x2c0/0x490
-[ 4223.822642]  </NMI>
-[ 4223.822642]  qi_flush_dev_iotlb+0xb1/0xd0
-[ 4223.822642]  __dmar_remove_one_dev_info+0x224/0x250
-[ 4223.822643]  dmar_remove_one_dev_info+0x3e/0x50
-[ 4223.822643]  intel_iommu_release_device+0x1f/0x30
-[ 4223.822643]  iommu_release_device+0x33/0x60
-[ 4223.822643]  iommu_bus_notifier+0x7f/0x90
-[ 4223.822644]  blocking_notifier_call_chain+0x60/0x90
-[ 4223.822644]  device_del+0x2e5/0x420
-[ 4223.822644]  pci_remove_bus_device+0x70/0x110
-[ 4223.822644]  pciehp_unconfigure_device+0x7c/0x130
-[ 4223.822644]  pciehp_disable_slot+0x6b/0x100
-[ 4223.822645]  pciehp_handle_presence_or_link_change+0xd8/0x320
-[ 4223.822645]  pciehp_ist+0x176/0x180
-[ 4223.822645]  ? irq_finalize_oneshot.part.50+0x110/0x110
-[ 4223.822645]  irq_thread_fn+0x19/0x50
-[ 4223.822646]  irq_thread+0x104/0x190
-[ 4223.822646]  ? irq_forced_thread_fn+0x90/0x90
-[ 4223.822646]  ? irq_thread_check_affinity+0xe0/0xe0
-[ 4223.822646]  kthread+0x114/0x130
-[ 4223.822647]  ? __kthread_cancel_work+0x40/0x40
-[ 4223.822647]  ret_from_fork+0x1f/0x30
-[ 4223.822647] Kernel Offset: 0x6400000 from 0xffffffff81000000 (relocation
-range: 0xffffffff80000000-0xffffffffbfffffff)
+Yes, that is why I structured it as an iterator
+> I personally find this quite a bit more readable as a sequential
+> series of steps instead of a loop. It also only requires 3 STE/CD
+> syncs in the worst case compared to 4 in the loop version since we
 
-Fix it by checking the device's error_state in
-devtlb_invalidation_with_pasid() to avoid sending meaningless devTLB flush
-request to link down device that is set to pci_channel_io_perm_failure and
-then powered off in
+The existing version is max 3 as well, it works the same by
+checking the number of critical qwords after computing the first step
+in the hitless flow.
 
-pciehp_ist()
-   pciehp_handle_presence_or_link_change()
-     pciehp_disable_slot()
-       remove_board()
-         pciehp_unconfigure_device()
+However, what you have below has the same problem as the first sketch,
+it always does 3 syncs. The existing version fully minimizes the
+syncs. It is why it is so complex to unroll it as you have to check
+before every sync if the sync is needed at all.
 
-For SAFE_REMOVAL unplug, link is alive when iommu releases device and
-issues devTLB invalidate request, wouldn't trigger such issue.
+This could probably be organized like this so one shared function
+computes the "plan" and then a cd/ste copy executes the plan. It
+avoids the loop but all the code is still basically the same, there is
+just more of it.
 
-This patch works for all kinds of SURPPRISE_REMOVAL unplug operation.
+I'm fine with any of these ways
 
-Tested-by: Haorong Ye <yehaorong@bytedance.com>
-Signed-off-by: Ethan Zhao <haifeng.zhao@linux.intel.com>
----
- drivers/iommu/intel/pasid.c | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
+Jason
 
-diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
-index 74e8e4c17e81..182eb5df244d 100644
---- a/drivers/iommu/intel/pasid.c
-+++ b/drivers/iommu/intel/pasid.c
-@@ -476,6 +476,23 @@ devtlb_invalidation_with_pasid(struct intel_iommu *iommu,
- {
- 	struct device_domain_info *info;
- 	u16 sid, qdep, pfsid;
-+	struct pci_dev *pdev;
-+
-+	pdev = to_pci_dev(dev);
-+	if (!pdev)
-+		return;
-+
-+	/*
-+	 * If endpoint device's link was brough down by user's pci configuration
-+	 * access to it's hotplug capable slot link control register, as sequence
-+	 * response for DLLSC, pciehp_ist() will set the device error_state to
-+	 * pci_channel_io_perm_failure. Checking device's state here to avoid
-+	 * issuing meaningless devTLB flush request to it, that might cause lockup
-+	 * warning or deadlock because too long time waiting in interrupt context.
-+	 */
-+
-+	if (pci_dev_is_disconnected(pdev))
-+		return;
- 
- 	info = dev_iommu_priv_get(dev);
- 	if (!info || !info->ats_enabled)
--- 
-2.31.1
+>  static void arm_smmu_write_ste(struct arm_smmu_device *smmu, u32 sid,
+>                                struct arm_smmu_ste *ste,
+>                                const struct arm_smmu_ste *target)
+>  {
+> +       struct arm_smmu_ste staging_ste;
+>         struct arm_smmu_ste target_used;
+> +       int writes_required = 0;
+> +       u8 staging_used_diff = 0;
+> +       int i = 0;
+> 
+> +       /*
+> +        * Compute a staging ste that has all the bits currently unused by HW
+> +        * set to their target values, such that comitting it to the ste table
+> +        * woudn't disrupt the hardware.
+> +        */
+> +       memcpy(&staging_ste, ste, sizeof(staging_ste));
+> +       arm_smmu_ste_set_unused_bits(&staging_ste, target);
+> +
+> +       /*
+> +        * Determine if it's possible to reach the target configuration from the
+> +        * staged configured in a single qword write (ignoring bits that are
+> +        * unused under the target configuration).
+> +        */
+>         arm_smmu_get_ste_used(target, &target_used);
+> -               WARN_ON_ONCE(target->data[i] & ~target_used.data[i]);
+> +       /*
+> +        * But first sanity check that masks in arm_smmu_get_ste_used() are up
+> +        * to date.
+> +        */
+> +       for (i = 0; i != ARRAY_SIZE(target->data); i++) {
+> +               if (WARN_ON_ONCE(target->data[i] & ~target_used.data[i]))
+> +                       target_used.data[i] |= target->data[i];
+> +       }
+> 
+> +       for (i = 0; i != ARRAY_SIZE(staging_ste.data); i++) {
+> +               /*
+> +                * Each bit of staging_used_diff indicates the index of a qword
+> +                * within the staged ste that is incorrect compared to the
+> +                * target, considering only the used bits in the target
+> +                */
+> +               if ((staging_ste.data[i] &
+> +                   target_used.data[i]) != (target->data[i]))
+> +                       staging_used_diff |= 1 << i;
+> +       }
+> +       if (hweight8(staging_used_diff) > 1) {
+> +               /*
+> +                * More than 1 qword is mismatched and a hitless transition from
+> +                * the current ste to the target ste is not possible. Clear the
+> +                * V bit and recompute the staging STE.
+> +                * Because the V bit is cleared, the staging STE will be equal
+> +                * to the target STE except for the first qword.
+> +                */
+> +               staging_ste.data[0] &= ~cpu_to_le64(STRTAB_STE_0_V);
+> +               arm_smmu_ste_set_unused_bits(&staging_ste, target);
+> +               staging_used_diff = 1;
+> +       }
+> +
+> +       /*
+> +        * Commit the staging STE.
+> +        */
+> +       for (i = 0; i != ARRAY_SIZE(staging_ste.data); i++)
+> +               WRITE_ONCE(ste->data[i], staging_ste.data[i]);
+> +       arm_smmu_sync_ste_for_sid(smmu, sid);
+> +
+> +       /*
+> +        * It's now possible to switch to the target configuration with a write
+> +        * to a single qword. Make that switch now.
+> +        */
+> +       i = ffs(staging_used_diff) - 1;
+> +       WRITE_ONCE(ste->data[i], target->data[i]);
+> +       arm_smmu_sync_ste_for_sid(smmu, sid);
 
+The non hitless flow doesn't look right to me, it should set v=0 then
+load all qwords but 0 then load 0, in exactly that sequence. If the
+goal is clarity then the two programming flows should be explicitly
+spelled out.
+
+Jason
