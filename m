@@ -1,148 +1,81 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.31])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9ECF6FA3
-	for <iommu@lists.linux.dev>; Mon, 18 Dec 2023 06:38:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17DE6D514
+	for <iommu@lists.linux.dev>; Mon, 18 Dec 2023 07:39:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="dRM4QHdJ"
-Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 3BI3ou2Z029401;
-	Mon, 18 Dec 2023 06:37:50 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	message-id:date:mime-version:subject:to:cc:references:from
-	:in-reply-to:content-type:content-transfer-encoding; s=
-	qcppdkim1; bh=gayK+sHDuUi4o6C3Z7Bj9qdwZbNscH6MTD5VsMa+pSg=; b=dR
-	M4QHdJRWL3ROJqkFh1BvHSQa/gHZHBLJ7DHqLqvv1RbiiW0BZAzXtqexOwVtSa1R
-	CEiFQuL7EBHQuedOUEywl1cmxOj0w8KCOZAIIFFR9kmsimaTyl98+kbHDwpql0Az
-	Jb/P7gsGmSnfwV3ejLjg9tpjG7ONWinIaoHhA4YSfokUXVTkcrUsAOVM5fw8fkJS
-	9OoW2QyMsS6JwAqzFto/uAleSwP8LTc1RvxMFWBynpFaYrT+lNtsN674OTlKTj5/
-	VxF5LxXcr88CYVDQtRaEfUARzWeY6WTz4hCjKLJMIt6x9KwqFAhwGDVYqw9OJo0W
-	alOy7VNzVcO+qP7xkmSA==
-Received: from nalasppmta05.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3v1536uht0-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 18 Dec 2023 06:37:50 +0000 (GMT)
-Received: from nalasex01c.na.qualcomm.com (nalasex01c.na.qualcomm.com [10.47.97.35])
-	by NALASPPMTA05.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 3BI6beST017254
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 18 Dec 2023 06:37:40 GMT
-Received: from [10.214.66.253] (10.80.80.8) by nalasex01c.na.qualcomm.com
- (10.47.97.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.40; Sun, 17 Dec
- 2023 22:37:33 -0800
-Message-ID: <2ef44a36-7895-4562-bac6-703e5fb9c17a@quicinc.com>
-Date: Mon, 18 Dec 2023 12:07:30 +0530
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="m9TMXCM0"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1702885175; x=1734421175;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=GEmWAWVomHWCdUBZyAIApou36iIe4S6MFVaagJvlxvs=;
+  b=m9TMXCM0H2C5rKUwZmutR3Kpy/4Ow4RFFqaz4jPM43/Pk/0r1Q6TUcSA
+   Hx2Meev5VNDu/eeeT98QVwZb0p4MwP5Z5maJSGsVAfMNWLUzddzw9+jXJ
+   kUkjBn+4W3K4ZpZavpLITP5SapatK6Vz7rOQvvN/gVlBQB/jAr+bsoM+L
+   z7I2lFQF1DeYbNEaL00FxHs1/DwFJ304rmTrk50JgVZJIi6iYrCE75mKL
+   FWWvXUUEf+dyL3hZeFVZH3BgMwPc0firfOZlnv897rzSkpzp0ODeSWr9g
+   3O2Ke3ErRrcBPZhY2HsXCJFpQmQm+barCJsT/9xX9YRISVF09iyWKA9Y+
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10927"; a="459793919"
+X-IronPort-AV: E=Sophos;i="6.04,284,1695711600"; 
+   d="scan'208";a="459793919"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Dec 2023 23:39:34 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10927"; a="893723241"
+X-IronPort-AV: E=Sophos;i="6.04,284,1695711600"; 
+   d="scan'208";a="893723241"
+Received: from allen-box.sh.intel.com ([10.239.159.127])
+  by fmsmga002.fm.intel.com with ESMTP; 17 Dec 2023 23:39:31 -0800
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Joerg Roedel <joro@8bytes.org>
+Cc: iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH 0/4] [PULL REQUEST] Intel IOMMU updates for Linux v6.8
+Date: Mon, 18 Dec 2023 15:34:41 +0800
+Message-Id: <20231218073445.142401-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 5/5] iommu/arm-smmu: re-enable context caching in smmu
- reset operation
-Content-Language: en-US
-To: Konrad Dybcio <konrad.dybcio@linaro.org>, <will@kernel.org>,
-        <robin.murphy@arm.com>, <joro@8bytes.org>,
-        <dmitry.baryshkov@linaro.org>, <jsnitsel@redhat.com>,
-        <quic_bjorande@quicinc.com>, <mani@kernel.org>,
-        <quic_eberman@quicinc.com>, <robdclark@chromium.org>,
-        <u.kleine-koenig@pengutronix.de>, <robh@kernel.org>,
-        <vladimir.oltean@nxp.com>, <quic_pkondeti@quicinc.com>,
-        <quic_molvera@quicinc.com>
-CC: <linux-arm-msm@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
-        <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
-        <qipl.kernel.upstream@quicinc.com>
-References: <20231215101827.30549-1-quic_bibekkum@quicinc.com>
- <20231215101827.30549-6-quic_bibekkum@quicinc.com>
- <3c7b8c2c-7174-4ced-8954-5a249f792c1e@linaro.org>
-From: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
-In-Reply-To: <3c7b8c2c-7174-4ced-8954-5a249f792c1e@linaro.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01c.na.qualcomm.com (10.47.97.35)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: xttuK34oYhnfq3L0-gxFPOTsBLsRZ7L2
-X-Proofpoint-ORIG-GUID: xttuK34oYhnfq3L0-gxFPOTsBLsRZ7L2
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.272,Aquarius:18.0.997,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2023-12-09_01,2023-12-07_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 mlxlogscore=999
- mlxscore=0 suspectscore=0 spamscore=0 impostorscore=0 phishscore=0
- priorityscore=1501 malwarescore=0 lowpriorityscore=0 clxscore=1015
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2311290000 definitions=main-2312180046
+Content-Transfer-Encoding: 8bit
 
+Hi Joerg,
 
+The following patches have been queued for v6.8:
 
-On 12/16/2023 5:24 AM, Konrad Dybcio wrote:
-> On 15.12.2023 11:18, Bibek Kumar Patro wrote:
->> Default MMU-500 reset operation disables context caching in
->> prefetch buffer. It is however expected for context banks using
->> the ACTLR register to retain their prefetch value during reset
->> and runtime suspend.
->>
->> Replace default MMU-500 reset operation with Qualcomm specific reset
->> operation which envelope the default reset operation and re-enables
->> context caching in prefetch buffer for Qualcomm SoCs.
->>
->> Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
->> ---
-> This probably deserves a fixes tag, but I can't find a good commit for
-> it, so I guess not having it is fine as well.
-> 
+ - Cleanup and refactoring
 
-I was also trying to find any suitable commit, but this default reset
-implementation didn't have a separate commit, so did not add any fixes
-tag here.
+All patches are based on v6.7-rc6. The series is also available at:
+https://github.com/LuBaolu/intel-iommu/commits/vtd-update-for-v6.8
 
-> Also, since it seems to be independent from the rest of the patches, please
-> reorder it to become patch 1 in the next spin, so that it can perhaps be
-> easily picked up independently of the rest.
-> 
+Please consider them for the next branch.
 
-Sure, agree on the same. Will keep this as 1st patch, and start the rest
-of the patches on top of it.
+Best regards,
+Baolu
 
->>   drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 23 +++++++++++++++++++---
->>   1 file changed, 20 insertions(+), 3 deletions(-)
->>
->> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
->> index c8f5dd4186b7..70d2a5d43993 100644
->> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
->> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
->> @@ -516,11 +516,28 @@ static int qcom_smmu_def_domain_type(struct device *dev)
->>   	return match ? IOMMU_DOMAIN_IDENTITY : 0;
->>   }
->>
->> +static int qcom_smmu500_reset(struct arm_smmu_device *smmu)
->> +{
->> +	int i;
->> +	u32 reg;
-> That's rather nitty/codestyle-y, but:
-> 
-> - reverse Christmas tree would be nice (it's in a week! :D)
-> - "reg" to me sounds like "register address", "val" is used widely for
->    register values
-> 
+Lu Baolu (4):
+  iommu/vt-d: Refactor device_to_iommu() to retrieve iommu directly
+  iommu/vt-d: Remove unused parameter of
+    intel_pasid_setup_pass_through()
+  iommu/vt-d: Remove unused vcmd interfaces
+  iommu/vt-d: Move inline helpers to header files
 
-Thanks for pointing to this, will take care of this val name and
-sorting in next version.(Will try to post the reserse xmas tree sorted
-patch asap for the xmas celebration! :) )
+ drivers/iommu/intel/iommu.h   | 179 +++++++++++++++++++++-
+ drivers/iommu/intel/pasid.h   | 223 +++++++++++++++++++++++++--
+ drivers/iommu/intel/debugfs.c |   3 -
+ drivers/iommu/intel/iommu.c   | 239 +++--------------------------
+ drivers/iommu/intel/pasid.c   | 274 +---------------------------------
+ drivers/iommu/intel/svm.c     |  20 +--
+ 6 files changed, 415 insertions(+), 523 deletions(-)
 
->> +
->> +	arm_mmu500_reset(smmu);
-> We should check the return value here, in case the function is modified
-> some day in a way that makes it return something else than 0
-> 
-> LGTM otherwise!
->
+-- 
+2.34.1
 
-Thanks,
-Bibek
-
-> Konrad
