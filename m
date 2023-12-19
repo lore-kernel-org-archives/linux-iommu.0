@@ -1,54 +1,85 @@
-Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B0F0819473
-	for <iommu@lists.linux.dev>; Tue, 19 Dec 2023 13:37:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="zFZO3aeb"
-Received: from 8bytes.org (p4ffe1e67.dip0.t-ipconnect.de [79.254.30.103])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 9683F1A41B9;
-	Tue, 19 Dec 2023 14:37:19 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1702993039;
-	bh=NpWqJJ4mJlYDo/iteFBb9+HPNteedhEoRraLdLfLkxU=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=zFZO3aebw8/K8FrWn51Gm6sV2ideYQNoWiottCBOJuanOCIiYRcz/h8+oH8+HDHp/
-	 2FULvHwp2fdKe57ByTaQdwKutdoFBUXUaZCGggNFfmAF3nMrk1YkjiokYxWEcvpGU7
-	 94eNJs7t6Vw5pFTAJqEiKj714hgPG5kdukZp15PPoeLQ8WZrD/aOS5sY9zEhEJ6CJ6
-	 pDM8ohN2dYS2RfxMYkS452K051wos/zPnFok6F86VE6XI7sJZLB0pHrMBxhYtWvk3N
-	 lMun5XxUUG4P0oFlEhxCWNGCydr/8Py+gXCZzA6gGw0vlNI0EYBvAJ77365RzmoOW1
-	 TU5+ZVfAyaXQw==
-Date: Tue, 19 Dec 2023 14:37:18 +0100
-From: Joerg Roedel <joro@8bytes.org>
-To: Boris Brezillon <boris.brezillon@collabora.com>
-Cc: iommu@lists.linux.dev, Will Deacon <will@kernel.org>,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 22BF119471;
+	Tue, 19 Dec 2023 13:41:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="ClGsWkTw"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 508A6C433C7;
+	Tue, 19 Dec 2023 13:41:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1702993310;
+	bh=F6ar0VqlrkPhdaatE1FLgFCrEDi1gq3l55wVb/ojN9w=;
+	h=From:To:Cc:Subject:Date:From;
+	b=ClGsWkTw0Noy5KB0LJ5GhsqpJozgFV7MSyHlFPhrh96qDaajKX8+H2kqD9Svd3IxY
+	 CO+VR+Ca7wSECggtfKKf8o9u1tOErpLpw2qpgy/U7FSCVxKSseZVMhq+6dG0W6sej0
+	 j0ih/zq0r/CTXT+WyY80ouDSt8T9Jak0Bz+ZTVck=
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: hch@lst.de,
+	m.szyprowski@samsung.com
+Cc: linux-kernel@vger.kernel.org,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Robin Murphy <robin.murphy@arm.com>,
-	linux-arm-kernel@lists.infradead.org,
-	Rob Clark <robdclark@gmail.com>,
-	Gaurav Kohli <quic_gkohli@quicinc.com>,
-	Steven Price <steven.price@arm.com>, kernel@collabora.com,
-	Jason Gunthorpe <jgg@ziepe.ca>
-Subject: Re: [PATCH v4 1/2] iommu: Allow passing custom allocators to pgtable
- drivers
-Message-ID: <ZYGcju8vsrf5YywX@8bytes.org>
-References: <20231215084302.2484163-1-boris.brezillon@collabora.com>
+	iommu@lists.linux.dev
+Subject: [PATCH] dma-debug: make dma_debug_add_bus take a const pointer
+Date: Tue, 19 Dec 2023 14:41:42 +0100
+Message-ID: <2023121941-dejected-nugget-681e@gregkh>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20231215084302.2484163-1-boris.brezillon@collabora.com>
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1752; i=gregkh@linuxfoundation.org; h=from:subject:message-id; bh=F6ar0VqlrkPhdaatE1FLgFCrEDi1gq3l55wVb/ojN9w=; b=owGbwMvMwCRo6H6F97bub03G02pJDKmNc6e2Hm2dtNjAb48Td1VWxdacZ2x//KI6RKMV169z+ xWxlC+hI5aFQZCJQVZMkeXLNp6j+ysOKXoZ2p6GmcPKBDKEgYtTACby1ZFhnpb8PKZVb6RfbLzR dbF5He8WzqOFVgwLlsfOYvq1+UZnech0Y/21E1a5iT9PBAA=
+X-Developer-Key: i=gregkh@linuxfoundation.org; a=openpgp; fpr=F4B60CC5BF78C2214A313DCB3147D40DDB2DFB29
+Content-Transfer-Encoding: 8bit
 
-On Fri, Dec 15, 2023 at 09:43:01AM +0100, Boris Brezillon wrote:
-> v4:
-> - Add Gaurav's R-b/T-b
+The driver core now can handle a const struct bus_type pointer, and the
+dma_debug_add_bus() call just passes on the pointer give to it to the
+driver core, so make this pointer const as well to allow everyone to use
+read-only struct bus_type pointers going forward.
 
-Thanks for the re-post, but there is too much on-top (including merge
-commits) to replace these.
+Cc: Christoph Hellwig <hch@lst.de>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Robin Murphy <robin.murphy@arm.com>
+Cc: iommu@lists.linux.dev
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ include/linux/dma-map-ops.h | 4 ++--
+ kernel/dma/debug.c          | 2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/include/linux/dma-map-ops.h b/include/linux/dma-map-ops.h
+index f2fc203fb8a1..e401f824a007 100644
+--- a/include/linux/dma-map-ops.h
++++ b/include/linux/dma-map-ops.h
+@@ -443,10 +443,10 @@ static inline void arch_teardown_dma_ops(struct device *dev)
+ #endif /* CONFIG_ARCH_HAS_TEARDOWN_DMA_OPS */
+ 
+ #ifdef CONFIG_DMA_API_DEBUG
+-void dma_debug_add_bus(struct bus_type *bus);
++void dma_debug_add_bus(const struct bus_type *bus);
+ void debug_dma_dump_mappings(struct device *dev);
+ #else
+-static inline void dma_debug_add_bus(struct bus_type *bus)
++static inline void dma_debug_add_bus(const struct bus_type *bus)
+ {
+ }
+ static inline void debug_dma_dump_mappings(struct device *dev)
+diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
+index 3de494375b7b..1a5c86dd87d5 100644
+--- a/kernel/dma/debug.c
++++ b/kernel/dma/debug.c
+@@ -876,7 +876,7 @@ static int dma_debug_device_change(struct notifier_block *nb, unsigned long acti
+ 	return 0;
+ }
+ 
+-void dma_debug_add_bus(struct bus_type *bus)
++void dma_debug_add_bus(const struct bus_type *bus)
+ {
+ 	struct notifier_block *nb;
+ 
+-- 
+2.43.0
 
