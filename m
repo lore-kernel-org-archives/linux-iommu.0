@@ -1,90 +1,209 @@
-Received: from mail-lf1-f50.google.com (mail-lf1-f50.google.com [209.85.167.50])
+Received: from mail-yw1-f170.google.com (mail-yw1-f170.google.com [209.85.128.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9289A1426D
-	for <iommu@lists.linux.dev>; Tue, 19 Dec 2023 10:02:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E9F1314AA2
+	for <iommu@lists.linux.dev>; Tue, 19 Dec 2023 10:22:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="eO7T04IU"
-Received: by mail-lf1-f50.google.com with SMTP id 2adb3069b0e04-50e239c49d0so4065345e87.2
-        for <iommu@lists.linux.dev>; Tue, 19 Dec 2023 02:02:25 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="KRE0JGGW"
+Received: by mail-yw1-f170.google.com with SMTP id 00721157ae682-5e734251f48so11292317b3.1
+        for <iommu@lists.linux.dev>; Tue, 19 Dec 2023 02:22:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1702980143; x=1703584943; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=UDfnExpJZu5lDtrGL4NOnG533YvholurjpF0JSG0JHA=;
-        b=eO7T04IU8zc2W/lZnrSnxna52jTmjv+pOm1Twm4qmu2YhSi3EKlnKgJP23pl6Ret7B
-         Ec/e/hsP+0AoOyzsQK+9GCQ+4/26meIhOaBlO1A/8kYF6ZXs3rR65GSwjfZL8VOhtZZ+
-         H/Xi2woQYcinl4S2hmN6Sgcfz/crdSelSfR3oRMAM/X0fedeBxygzADcMQysu9SWjs5f
-         MdJYRdOraIzXgoobqWj5OJj/u5cLSFLd17P8YtmT7vrKd8Driy+SrNQPTy9dqxv284pU
-         Q469dTFaKfOXfVEcFsxGOlWBSO1rDK0O/4ZLP+o7RucLlLAkOF9hgCrr8DAfr8hkpLwM
-         fVXw==
+        d=linaro.org; s=google; t=1702981330; x=1703586130; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=IWtv0nvouCX5fIsmZ0v0oxZW/THrMx3EmTdh8M6/xgA=;
+        b=KRE0JGGWPbWyhYqtzun2pTKi/HDNTbBOEI6HGrNt4hooeuncUSyySs7odGYGDSzNXu
+         FwIIuAAns1MWlEcjr0aMolFXWvxjbA5Fzozmf7/Fs5oU/cXRVQhFCoRFudKegX/yueZ/
+         4vaE+4vOwJpZTqZe4ayFRlHA67PVzxk8QjydRjdKUIq+TDcLHB1hztjSFj5IJ8CKG/4c
+         2IpPsYBFZEkkHnj3gb8X6GLpxueIfbN25clIkCTikdwXuVUOQ0yCwh7xUD5vp2UpUZLq
+         bvH481R5eVjbBeT7bQwK/YHn63d9UfVzRA88snHo8nx/5LrWiFK0Cx7wT65xkkvaPpDh
+         ub5Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1702980143; x=1703584943;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+        d=1e100.net; s=20230601; t=1702981330; x=1703586130;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=UDfnExpJZu5lDtrGL4NOnG533YvholurjpF0JSG0JHA=;
-        b=kTZZFAWMElddXPf1CB10mfDmL1DPQt7tJWkheZHbO7C6bTF990ZFuUmY/6xPuavMFB
-         FjpJSBW7Q13gFCCgJeKJ2UMJjFj8nYb3sF0M/RdEH5RkkEJuBcmWpvoS+WFQIr9FntIR
-         TAswI//NRRjLC9DxchMKNL1+OrDaPIJ3hQWX0AKNarJjLADvb4O+xSb1DcK1KiuENa9g
-         ib9XHeHDyey86M9/SHOKBtQKGXkowz0W5Zo0/TyGAHyES5QwGocg+6snqlevsuqSMyIC
-         nHfGhpOmjxKuS26+hY7JiIidMFTebNmGDcKmIL1PfpdxBO1wb/zUZaY6EhoTYjMvMYFt
-         g9uQ==
-X-Gm-Message-State: AOJu0Yy1932Tnt54LALKrAgN8+gBGabPKeL0wB9En8G6ihLdAQvO8Ukn
-	NKU7qVjx7NbmKFxcMk9On+8=
-X-Google-Smtp-Source: AGHT+IGGyi36JojkdScUn6fM9cojSilK3uIeYR37ylgaQGGepsG17xKE2lLl8KGvgmI8cf12vBdpMA==
-X-Received: by 2002:ac2:5e35:0:b0:50e:35e5:f22a with SMTP id o21-20020ac25e35000000b0050e35e5f22amr1537214lfg.16.1702980143419;
-        Tue, 19 Dec 2023 02:02:23 -0800 (PST)
-Received: from alsp.netis.cc ([2a02:2168:8a0b:bd00:ec0a:381e:719d:789d])
-        by smtp.googlemail.com with ESMTPSA id s11-20020a056512214b00b0050e4bf426desm42161lfr.246.2023.12.19.02.02.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Dec 2023 02:02:23 -0800 (PST)
-From: Alexander Sapozhnikov <alsp705@gmail.com>
-To: Joerg Roedel <joro@8bytes.org>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	ToWill Deacon <will@kernel.org>
-Cc: Alexander Sapozhnikov <alsp705@gmail.com>,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	lvc-project@linuxtesting.org
-Subject: [PATCH] iommu: amd: NULL value may be dereferenced
-Date: Tue, 19 Dec 2023 13:02:19 +0300
-Message-Id: <20231219100219.17332-1-alsp705@gmail.com>
-X-Mailer: git-send-email 2.40.1
+        bh=IWtv0nvouCX5fIsmZ0v0oxZW/THrMx3EmTdh8M6/xgA=;
+        b=JZc1da7NQ44l5ceSTwx2C8Lc1TDNrCxkqywnZ+pBM7vVWLbLEcrYhpF22EUGG91GpA
+         U2/VPudmsP1eJDBubIHXDSgUoDhj4jY9hHQ3DAp8PHLqGCBB2ane2/xcfKEC7D4U0IeI
+         px+Ivn55hrmdzys70mAW5idgZga3fMe3bKcTEbB6fM+V/4rAd2oCdQ40KrFcWgO7PAUr
+         +ZcJvUs6T319aMsqJyJEyfc2L7CO09m7iyHFzY0ncC5j6BzKpeFL0NDi1dnie55Vyb2+
+         W5MkUoIeQFaCd5OuXHw9ggzs2i8T3drkNLNLe934AXt3yNVo0pHM9cGUgmycX03uQck1
+         RkhQ==
+X-Gm-Message-State: AOJu0YwHZJmWiDiYHW/olQGpt7d7qw7EWbXKMijGri5K82CftLdWW0n7
+	RtQqjfDRvR8EJZMf6DdCKujZtlYON1FVRVTGmLDfmQ==
+X-Google-Smtp-Source: AGHT+IFhpDdAZ1lxMc9AEtbpDAW0YBFm8qR1mzenXUm1MTWc17RrIWYgD0L/pXRE448LohDI8TSYdryTZupOBG6uO14=
+X-Received: by 2002:a81:62d5:0:b0:5e4:d68a:310 with SMTP id
+ w204-20020a8162d5000000b005e4d68a0310mr481678ywb.36.1702981329841; Tue, 19
+ Dec 2023 02:22:09 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20231215101827.30549-1-quic_bibekkum@quicinc.com>
+ <20231215101827.30549-4-quic_bibekkum@quicinc.com> <CAA8EJppcsr1sbeD1fK0nZ+rASABNcetBK3yMvaP7OiA4JPwskw@mail.gmail.com>
+ <c9493c5f-ccf8-4e21-b00c-5fbc2a5f2edb@quicinc.com> <b7f2bbf9-fb5a-430d-aa32-3a220b46c2f0@arm.com>
+ <1eee8bae-59f0-4066-9d04-8c3a5f750d3a@linaro.org> <42d627af-164b-4b50-973e-fa71d86cb84c@linaro.org>
+ <aa8b2ccd-33da-404b-9a93-3d88cf63ec77@quicinc.com> <8338db1e-0216-4fc5-b6ab-ddf43adf3648@linaro.org>
+ <a363c860-62be-43a7-930c-cab8a6f3fa6c@quicinc.com>
+In-Reply-To: <a363c860-62be-43a7-930c-cab8a6f3fa6c@quicinc.com>
+From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Date: Tue, 19 Dec 2023 12:21:58 +0200
+Message-ID: <CAA8EJpoMwrwQ9wBZE6AcobLLkCchFtN23SnHhw3enNOfX3CzTQ@mail.gmail.com>
+Subject: Re: [PATCH v4 3/5] iommu/arm-smmu: add ACTLR data and support for SM8550
+To: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+Cc: Konrad Dybcio <konrad.dybcio@linaro.org>, Robin Murphy <robin.murphy@arm.com>, will@kernel.org, 
+	joro@8bytes.org, jsnitsel@redhat.com, quic_bjorande@quicinc.com, 
+	mani@kernel.org, quic_eberman@quicinc.com, robdclark@chromium.org, 
+	u.kleine-koenig@pengutronix.de, robh@kernel.org, vladimir.oltean@nxp.com, 
+	quic_pkondeti@quicinc.com, quic_molvera@quicinc.com, 
+	linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
+	qipl.kernel.upstream@quicinc.com
+Content-Type: text/plain; charset="UTF-8"
 
-Pointer 'dom' which was dereferenced at iommu.c:1993 
-is compared to NULL value at iommu.c:1998.
+On Tue, 19 Dec 2023 at 10:25, Bibek Kumar Patro
+<quic_bibekkum@quicinc.com> wrote:
+>
+>
+>
+> On 12/18/2023 7:51 PM, Dmitry Baryshkov wrote:
+> > On 18/12/2023 13:23, Bibek Kumar Patro wrote:
+> >>
+> >>
+> >> On 12/16/2023 9:45 PM, Dmitry Baryshkov wrote:
+> >>> On 16/12/2023 02:03, Konrad Dybcio wrote:
+> >>>> On 15.12.2023 13:54, Robin Murphy wrote:
+> >>>>> On 2023-12-15 12:20 pm, Bibek Kumar Patro wrote:
+> >>>>>>
+> >>>>>>
+> >>>>>> On 12/15/2023 4:14 PM, Dmitry Baryshkov wrote:
+> >>>>>>> On Fri, 15 Dec 2023 at 12:19, Bibek Kumar Patro
+> >>>>>>> <quic_bibekkum@quicinc.com> wrote:
+> >>>>>>>>
+> >>>>>>>> Add ACTLR data table for SM8550 along with support for
+> >>>>>>>> same including SM8550 specific implementation operations.
+> >>>>>>>>
+> >>>>>>>> Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+> >>>>>>>> ---
+> >>>>>>>>    drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 89
+> >>>>>>>> ++++++++++++++++++++++
+> >>>>>>>>    1 file changed, 89 insertions(+)
+> >>>>>>>>
+> >>>>>>>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> >>>>>>>> b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> >>>>>>>> index cb49291f5233..d2006f610243 100644
+> >>>>>>>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> >>>>>>>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> >>>>>>>> @@ -20,6 +20,85 @@ struct actlr_config {
+> >>>>>>>>           u32 actlr;
+> >>>>>>>>    };
+> >>>>>>>>
+> >>>>>>>> +/*
+> >>>>>>>> + * SMMU-500 TRM defines BIT(0) as CMTLB (Enable context caching
+> >>>>>>>> in the
+> >>>>>>>> + * macro TLB) and BIT(1) as CPRE (Enable context caching in the
+> >>>>>>>> prefetch
+> >>>>>>>> + * buffer). The remaining bits are implementation defined and
+> >>>>>>>> vary across
+> >>>>>>>> + * SoCs.
+> >>>>>>>> + */
+> >>>>>>>> +
+> >>>>>>>> +#define PREFETCH_DEFAULT       0
+> >>>>>>>> +#define PREFETCH_SHALLOW       BIT(8)
+> >>>>>>>> +#define PREFETCH_MODERATE      BIT(9)
+> >>>>>>>> +#define PREFETCH_DEEP          (BIT(9) | BIT(8))
+> >>>>>>>
+> >>>>>>> I thin the following might be more correct:
+> >>>>>>>
+> >>>>>>> #include <linux/bitfield.h>
+> >>>>>>>
+> >>>>>>> #define PREFETCH_MASK GENMASK(9, 8)
+> >>>>>>> #define PREFETCH_DEFAULT FIELD_PREP(PREFETCH_MASK, 0)
+> >>>>>>> #define PREFETCH_SHALLOW FIELD_PREP(PREFETCH_MASK, 1)
+> >>>>>>> #define PREFETCH_MODERATE FIELD_PREP(PREFETCH_MASK, 2)
+> >>>>>>> #define PREFETCH_DEEP FIELD_PREP(PREFETCH_MASK, 3)
+> >>>>>>>
+> >>>>>>
+> >>>>>> Ack, thanks for this suggestion. Let me try this out using
+> >>>>>> GENMASK. Once tested, will take care of this in next version.
+> >>>>>
+> >>>>> FWIW the more typical usage would be to just define the named
+> >>>>> macros for the raw field values, then put the FIELD_PREP() at the
+> >>>>> point of use. However in this case that's liable to get pretty
+> >>>>> verbose, so although I'm usually a fan of bitfield.h, the most
+> >>>>> readable option here might actually be to stick with simpler
+> >>>>> definitions of "(0 << 8)", "(1 << 8)", etc. However it's not really
+> >>>>> a big deal either way, and I defer to whatever Dmitry and Konrad
+> >>>>> prefer, since they're the ones looking after arm-smmu-qcom the most :)
+> >>>> My 5 cents would be to just use the "common" style of doing this, so:
+> >>>>
+> >>>> #define ACTRL_PREFETCH    GENMASK(9, 8)
+> >>>>   #define PREFETCH_DEFAULT 0
+> >>>>   #define PREFETCH_SHALLOW 1
+> >>>>   #define PREFETCH_MODERATE 2
+> >>>>   #define PREFETCH_DEEP 3
+> >>>>
+> >>>> and then use
+> >>>>
+> >>>> | FIELD_PREP(ACTRL_PREFETCH, PREFETCH_x)
+> >>>>
+> >>>> it can get verbose, but.. arguably that's good, since you really want
+> >>>> to make sure the right bits are set here
+> >>>
+> >>> Sounds good to me.
+> >>>
+> >>
+> >> Konrad, Dimitry, just checked FIELD_PREP() implementation
+> >>
+> >> #define FIELD_FIT(_mask, _val)
+> >> ({                                                              \
+> >>                   __BF_FIELD_CHECK(_mask, 0ULL, _val, "FIELD_PREP: ");  \
+> >>                   ((typeof(_mask))(_val) << __bf_shf(_mask)) & (_mask); \
+> >> })
+> >>
+> >> since it is defined as a block, it won't be possible to use FIELD_PREP
+> >> in macro or as a structure value, and can only be used inside a
+> >> block/function. Orelse would show compilation errors as following
+> >>
+> >> kernel/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c:94:20: note: in
+> >> expansion of macro 'PREFETCH_SHALLOW'
+> >>    { 0x1947, 0x0000, PREFETCH_SHALLOW | CPRE | CMTLB },
+> >>                      ^
+> >> kernel/include/linux/bitfield.h:113:2: error: braced-group within
+> >> expression allowed only inside a function
+> >>    ({        \
+> >>    ^
+> >>
+> >> So as per my understanding I think, we might need to go ahead with the
+> >> generic implementation only. Let me know if I missed something.
+> >
+> > Then anyway (foo << bar) is better compared to BIT(n) | BIT(m).
+> >
+>
+> Sure Dmitry, (foo << bar) would be simpler as well as Robin mentioned
+> earlier in his reply.
+> I can implement the defines as:
+>
+> #define PREFETCH_DEFAULT       0
+> #define PREFETCH_SHALLOW       (1 << 8)
+> #define PREFETCH_MODERATE      (1 << 9)
 
-Found by Linux Verification Center (linuxtesting.org) with SVACE.
+2 << 8. Isn't that hard.
 
-Signed-off-by: Alexander Sapozhnikov <alsp705@gmail.com>
----
- drivers/iommu/amd/iommu.c | 3 +++
- 1 file changed, 3 insertions(+)
+> #define PREFETCH_DEEP          (3 << 8)
+>
+> This should be okay I think ?
+>
+> Thanks,
+> Bibek
+>
 
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index a0924144bac8..64a88e67be9c 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -1985,6 +1985,9 @@ static void amd_iommu_domain_free(struct iommu_domain *dom)
- {
- 	struct protection_domain *domain;
- 
-+	if (!dom)
-+		return;
-+
- 	domain = to_pdomain(dom);
- 
- 	if (domain->dev_cnt > 0)
+
 -- 
-2.40.1
-
+With best wishes
+Dmitry
